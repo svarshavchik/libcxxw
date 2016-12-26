@@ -23,6 +23,8 @@ libcxxw_la_SOURCES=\
 	connection_info.H			    \
 	connection_thread.C			    \
 	connection_thread.H			    \
+	rgb.C					    \
+	rgb.H					    \
 	screen.C				    \
 	screen.H				    \
         #
