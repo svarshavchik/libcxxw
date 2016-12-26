@@ -1,0 +1,45 @@
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+ "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [
+
+<!ENTITY % entity-list SYSTEM "entities">
+
+<!ENTITY app "<application><emphasis>CXX Windows Library</emphasis></application>">
+<!ENTITY appshort "<application><emphasis>LibCXXW</emphasis></application>">
+<!ENTITY xproto "<ulink url=&#34;http://www.x.org/releases/X11R7.7/doc/xproto/x11protocol.html&#34;>X protocol</ulink>">
+<!ENTITY render "<ulink url=&#34;http://www.x.org/releases/current/doc/renderproto/renderproto.txt&#34;>RENDER extension</ulink>">
+<!ENTITY RENDER "<application>RENDER</application>">
+<!ENTITY sxg "<acronym>SXG</acronym>">
+<!ENTITY ns "x">
+<!ENTITY libcxx "<ulink url='/'>LibCXX</ulink>">
+<!ENTITY intro SYSTEM "intro.xml">
+<!ENTITY install SYSTEM "install.xml">
+<!ENTITY refobj "/refobj.html">
+
+
+%entity-list;
+
+]>
+
+<!--
+
+Copyright 2016 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<book id="book">
+  <title>&app;</title>
+
+  <appendix id="COPYING">
+    <title>COPYING</title>
+
+    <para role="COPYING">
+      &app; is free software, distributed under the terms of the
+      GPL, version 3:
+    </para>
+    <blockquote>
+      <literallayout><xi:include href="../COPYING" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></literallayout>
+    </blockquote>
+  </appendix>
+
+</book>

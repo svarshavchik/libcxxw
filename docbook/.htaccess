@@ -1,0 +1,5 @@
+AddDefaultCharset utf-8
+Options +FollowSymLinks
+<FilesMatch "^index\.html$">
+	ForceType text/html
+</FilesMatch>
