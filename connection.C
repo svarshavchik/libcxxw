@@ -2,7 +2,10 @@
 #include "connection_info.H"
 #include "connection_thread.H"
 #include "screen.H"
+#include "messages.H"
+#include "x/w/pictformat.H"
 #include <x/exception.H>
+#include <xcb/xcb_renderutil.h>
 
 LIBCXXW_NAMESPACE_START
 
@@ -36,7 +39,10 @@ connectionObj::implObj::implObj(const std::experimental::string_view &display)
 static inline const xcb_setup_t *get_setup(xcb_connection_t *conn)
 {
 	if (xcb_connection_has_error(conn))
-		throw EXCEPTION("Display connection failed.");
+		throw EXCEPTION(_("Display connection failed."));
+	if (!xcb_render_util_query_version(conn))
+		throw EXCEPTION(_("The display server does not support the X render extension"));
+
 
 	return xcb_get_setup(conn);
 }
@@ -75,11 +81,54 @@ connectionObj::implObj::implObj(const ref<infoObj> &info,
 	: info(info),
 	  thread(thread),
 	  setup(*setup),
-	  screens(get_screens(info, setup))
+	  screens(get_screens(info, setup)),
+	  render_info(info->conn)
 {
 }
 
 connectionObj::implObj::~implObj()=default;
 
+std::string connectionObj::implObj::get_error(const xcb_generic_error_t *e)
+{
+	std::ostringstream o;
+
+	o.imbue(std::locale("C"));
+	static const char bad[][16]={
+		"Success",
+		"Request",
+		"Value",
+		"Window",
+		"Pixmap",
+		"Atom",
+		"Cursor",
+		"Font",
+		"Match",
+		"Drawable",
+		"Access",
+		"Alloc",
+		"Colormap",
+		"GContext",
+		"IDChoice",
+		"Name",
+		"Length",
+		"Implementation",
+	};
+
+	o << "X protocol error: ";
+
+	if ((int)e->error_code < sizeof(bad)/sizeof(bad[0]))
+	{
+		o << "Bad" << bad[(int)e->error_code];
+	}
+	else
+	{
+		o << "error " << (int)e->error_code;
+	}
+
+	o << ", resource=" << e->resource_id
+	  << ", major=" << (int)e->major_code
+	  << ", minor=" << (int)e->minor_code;
+	return o.str();
+}
 
 LIBCXXW_NAMESPACE_END

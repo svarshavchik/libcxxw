@@ -3,6 +3,7 @@
 
 #include <vector>
 
+#include "render.H"
 #include "x/w/connection.H"
 #include "x/w/screenobj.H"
 
@@ -35,6 +36,10 @@ class LIBCXX_HIDDEN connectionObj::implObj : virtual public obj {
 
 	const std::vector<ref<screenObj::implObj>> screens;
 
+	//! Server configuration - RENDER extension.
+
+	const render render_info;
+
 	//! Constructor, connect to the given display.
 
 	implObj(const std::experimental::string_view &display);
@@ -55,6 +60,11 @@ class LIBCXX_HIDDEN connectionObj::implObj : virtual public obj {
 
 	//! Wrap everything up, call xcb_disconnect()
 	~implObj() noexcept;
+
+	//! Return a brief identifier for a protocol error.
+
+	static std::string get_error(const xcb_generic_error_t *e);
+
 };
 
 LIBCXXW_NAMESPACE_END

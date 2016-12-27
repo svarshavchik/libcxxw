@@ -25,6 +25,8 @@ libcxxw_la_SOURCES=\
 	connection_thread.H			    \
 	pictformat.C				    \
 	pictformat.H				    \
+	render.C				    \
+	render.H				    \
 	rgb.C					    \
 	rgb.H					    \
 	screen.C				    \
