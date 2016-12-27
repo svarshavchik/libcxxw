@@ -1,0 +1,66 @@
+#include "libcxxw_config.h"
+#include "pictformat.H"
+#include "messages.H"
+
+namespace LIBCXX_NAMESPACE {
+	namespace w {
+#if 0
+	}
+}
+#endif
+
+pictformatObj::color_index::color_index(uint32_t indexArg, rgb &&colorArg)
+	: index(indexArg), color(std::move(colorArg))
+{
+}
+
+pictformatObj::color_index::~color_index() noexcept
+{
+}
+
+pictformatObj::pictformatObj(const pictform_s &s, ref<implObj> &&implArg,
+			     std::vector<color_index> &&color_indexesArg)
+	: pictform_s(s), impl(std::move(implArg)),
+	  color_indexes(std::move(color_indexesArg))
+{
+}
+
+pictformatObj::~pictformatObj() noexcept
+{
+}
+
+
+pictformatObj::implObj::implObj(xcb_render_pictformat_t idArg)
+	: id(idArg)
+{
+}
+
+pictformatObj::implObj::~implObj() noexcept
+{
+}
+
+bool pictformatObj::rgb_compatible(const const_pictformat &format) const
+{
+	// See rgb_matches().
+
+	if (indexed != format->indexed)
+		return false;
+
+	if (indexed)
+		return depth == format->depth;
+
+	return red_mask == format->red_mask &&
+		red_shift == format->red_shift &&
+		green_mask == format->green_mask &&
+		green_shift == format->green_shift &&
+		blue_mask == format->blue_mask &&
+		blue_shift == format->blue_shift;
+}
+
+
+#if 0
+{
+	{
+#endif
+	}
+}
