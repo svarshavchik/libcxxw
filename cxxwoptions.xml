@@ -1,0 +1,10 @@
+<optclass name="cxxwoptions">
+  <option>
+    <name>display</name>
+    <type>bool</type>
+    <default>false</default>
+    <opt>d</opt>
+    <descr>Show display information</descr>
+  </option>
+  <defaultoptions />
+</optclass>

@@ -10,6 +10,7 @@ libtool: $(LIBTOOL_DEPS)
 STATICLINKFLAGS=-Wl,-lcourier-unicode -Wl,-lpthread @LIBCXXW_LIBS@ -pthread
 
 lib_LTLIBRARIES=libcxxw.la
+bin_PROGRAMS=cxxw
 
 CPPFLAGS += -DPKGDATADIR='"$(pkgdatadir)"'
 
@@ -35,9 +36,14 @@ libcxxw_la_SOURCES=\
 
 TESTLINKTYPE=$(if $(STATIC),-static $(STATICLINKFLAGS))
 
+cxxw_SOURCES=cxxw.C
+cxxw_LDADD=libcxxw.la
+
+$(call OPTIONS_GEN,cxxwoptions.H,cxxwoptions.xml)
 
 EXTRA_DIST = config.rpath m4/ChangeLog  COPYING config.rpath m4/ChangeLog packaging/fedora/libcxxw.spec \
 	po/Makevars.in $(man_MANS)
+
 
 if HAVE_DOCS
 

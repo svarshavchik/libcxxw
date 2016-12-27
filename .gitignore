@@ -12,6 +12,8 @@ config.status
 config.sub
 configure
 /compile
+/cxxw
+/cxxwoptions.H
 /depcomp
 /docbook/entities
 /Doxyfile
