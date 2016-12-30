@@ -44,10 +44,10 @@ public:
 	~screenObj() noexcept LIBCXX_HIDDEN;
 
 	//! The screen's connection
-	inline connection conn() { return connref; }
+	connection conn();
 
 	//! The screen's connection
-	inline const_connection conn() const { return connref; }
+	const_connection conn() const;
 
 	//! The connection mcguffin
 

@@ -7,6 +7,8 @@
 
 LIBCXXW_NAMESPACE_START
 
+#include <x/w/deps/screen_connection.H>
+
 LIBCXXW_NAMESPACE_END
 
 #endif

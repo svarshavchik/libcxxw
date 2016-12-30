@@ -1,5 +1,7 @@
 #include "connection_info.H"
 #include "connection_thread.H"
+#include "window_handler.H"
+#include "xid_t.H"
 
 LOG_CLASS_INIT(LIBCXX_NAMESPACE::w::connectionObj::implObj::threadObj);
 
@@ -61,6 +63,12 @@ void connectionObj::implObj::threadObj
 			e->caught();
 		}
 	} while (keepgoing);
+}
+
+void connectionObj::implObj::threadObj
+::report_error(const xcb_generic_error_t *e)
+{
+	LOG_ERROR(get_error(e));
 }
 
 LIBCXXW_NAMESPACE_END

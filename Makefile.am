@@ -26,6 +26,11 @@ libcxxw_la_SOURCES=\
 	connection_thread.H			    \
 	connection_threadevent.C		    \
 	connection_threadrun.C			    \
+	generic_window.C			    \
+	generic_window.H			    \
+	generic_window_handler.C		    \
+	generic_window_handler.H		    \
+	generic_window_impl.C			    \
 	pictformat.C				    \
 	pictformat.H				    \
 	render.C				    \
@@ -36,6 +41,9 @@ libcxxw_la_SOURCES=\
 	screen.H				    \
 	screen_depthinfo.C			    \
 	screen_depthinfo.H			    \
+	window_handler.C			    \
+	window_handler.H			    \
+	xid_t.H					    \
         #
 
 TESTLINKTYPE=$(if $(STATIC),-static $(STATICLINKFLAGS))

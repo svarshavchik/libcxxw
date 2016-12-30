@@ -68,7 +68,13 @@ then
 fi
 AC_SUBST(TEST_PROGRAMS)
 AM_CONDITIONAL(HAVE_DOCS,[test -d $srcdir/docbook])
-AC_CONFIG_FILES([Makefile Doxyfile po/Makevars po/Makefile.in includes/x/w/Makefile])
+AC_CONFIG_FILES([Makefile
+	Doxyfile
+	po/Makevars
+	po/Makefile.in
+	includes/x/w/Makefile
+	includes/x/w/deps/Makefile
+	])
 
 AC_SUBST([LIBTOOL_DEPS])
 AC_OUTPUT

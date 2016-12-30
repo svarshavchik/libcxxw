@@ -1,6 +1,4 @@
-headerdir=$(includedir)/x/w
-
-SUBDIRS=deps
+headerdir=$(includedir)/x/w/deps
 
 header_HEADERS = $(shell cd $(srcdir) && echo *.H)
 
