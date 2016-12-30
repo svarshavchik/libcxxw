@@ -33,6 +33,7 @@ libcxxw_la_SOURCES=\
 	generic_window_impl.C			    \
 	pictformat.C				    \
 	pictformat.H				    \
+	rectangle.C				    \
 	render.C				    \
 	render.H				    \
 	rgb.C					    \
