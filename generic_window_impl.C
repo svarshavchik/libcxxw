@@ -1,6 +1,7 @@
 #include "generic_window.H"
 #include "generic_window_handler.H"
 #include "screen.H"
+#include "connection.H"
 #include <x/weakptr.H>
 #include <xcb/xcb.h>
 
@@ -76,6 +77,18 @@ generic_windowObj::implObj::~implObj() noexcept
 				   LOG_DEBUG("Destroy: xid " << window_id);
 				   xcb_destroy_window(info->conn, window_id);
 			   });
+}
+
+bool generic_windowObj::implObj::get_frame_extents(dim_t &left,
+						   dim_t &right,
+						   dim_t &top,
+						   dim_t &bottom) const
+{
+	mpobj<ewmh>::lock lock(screenref->conn()->impl->ewmh_info);
+
+	return lock->get_frame_extents(left, right, top, bottom,
+				       screenref->impl->screen_number,
+				       handler->id());
 }
 
 LIBCXXW_NAMESPACE_END

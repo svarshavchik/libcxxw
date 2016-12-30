@@ -53,6 +53,13 @@ class LIBCXX_HIDDEN generic_windowObj::implObj : virtual public obj {
 	//! The window's screen.
 	inline const_screen get_screen() const { return screenref; }
 
+	//! Return the window manager's hints.
+
+	bool get_frame_extents(dim_t &left,
+			       dim_t &right,
+			       dim_t &top,
+			       dim_t &bottom)
+		const;
 };
 
 LIBCXXW_NAMESPACE_END
