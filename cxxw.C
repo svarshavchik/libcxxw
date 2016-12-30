@@ -112,7 +112,12 @@ static void displayscreen()
 	{
 		auto s=LIBCXX_NAMESPACE::w::screen::create(conn, i);
 
-		std::cout << x::gettextmsg(_("Screen %1%: "), i) << std::endl;
+		std::cout << x::gettextmsg(_("Screen %1%: "), i)
+			  << s->width_in_pixels().n << "x"
+			  << s->height_in_pixels().n << ", "
+			  << s->width_in_millimeters().n << "x"
+			  << s->height_in_millimeters().n << "mm"
+			  << std::endl;
 
 		for (const auto &screen_depth: *s->screen_depths)
 		{

@@ -8,6 +8,8 @@
 #include <x/vector.H>
 #include <xcb/xcb.h>
 
+#include <cmath>
+
 LIBCXXW_NAMESPACE_START
 
 class render;
@@ -38,6 +40,49 @@ class LIBCXX_HIDDEN screenObj::implObj : virtual public obj {
 		const render &render_info,
 		const ref<connectionObj::implObj::infoObj> &info);
 	~implObj() noexcept;
+
+	// Get screen dimensions
+
+	dim_t width_in_pixels() const
+	{
+		return dim_t(xcb_screen->width_in_pixels);
+	}
+
+	dim_t height_in_pixels() const
+	{
+		return dim_t(xcb_screen->height_in_pixels);
+	}
+
+	dim_t width_in_millimeters() const
+	{
+		return dim_t(xcb_screen->width_in_millimeters);
+	}
+
+	dim_t height_in_millimeters() const
+	{
+		return dim_t(xcb_screen->height_in_millimeters);
+	}
+
+	double theme_scale() const
+	{
+		return 1;
+	}
+
+	// Compute # of pixels from millimeters
+
+	dim_t compute_width(double millimeters) const
+	{
+		return dim_t(std::round(theme_scale() * millimeters *
+					xcb_screen->width_in_pixels /
+					xcb_screen->width_in_millimeters));
+	}
+
+	dim_t compute_height(double millimeters) const
+	{
+		return dim_t(std::round(theme_scale() * millimeters *
+					xcb_screen->height_in_pixels /
+					xcb_screen->height_in_millimeters));
+	}
 };
 
 LIBCXXW_NAMESPACE_END

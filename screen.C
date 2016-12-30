@@ -73,6 +73,32 @@ ref<obj> screenObj::mcguffin() const
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+//
+// Screen metrics
+
+
+dim_t screenObj::width_in_pixels() const
+{
+	return impl->width_in_pixels();
+}
+
+dim_t screenObj::height_in_pixels() const
+{
+	return impl->height_in_pixels();
+}
+
+dim_t screenObj::width_in_millimeters() const
+{
+	return impl->width_in_millimeters();
+}
+
+dim_t screenObj::height_in_millimeters() const
+{
+	return impl->height_in_millimeters();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
 
 screenObj::implObj::implObj(const xcb_screen_t *xcb_screen,
 			    size_t screen_number,

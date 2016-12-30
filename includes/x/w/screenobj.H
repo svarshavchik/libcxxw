@@ -3,6 +3,7 @@
 
 #include <x/w/screenfwd.H>
 #include <x/w/connectionfwd.H>
+#include <x/w/types.H>
 #include <x/obj.H>
 #include <x/vectorfwd.H>
 
@@ -55,6 +56,16 @@ public:
 	//! \c conn()->mcguffin().
 
 	ref<obj> mcguffin() const;
+
+
+	//! Screen metrics
+	dim_t width_in_pixels() const;
+	//! Screen metrics
+	dim_t height_in_pixels() const;
+	//! Screen metrics
+	dim_t width_in_millimeters() const;
+	//! Screen metrics
+	dim_t height_in_millimeters() const;
 };
 
 LIBCXXW_NAMESPACE_END
