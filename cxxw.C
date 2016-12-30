@@ -119,6 +119,9 @@ static void displayscreen()
 			  << s->height_in_millimeters().n << "mm"
 			  << std::endl;
 
+		std::cout << x::gettextmsg(_("    Workarea: %1%"),
+					   s->get_workarea()) << std::endl;
+
 		for (const auto &screen_depth: *s->screen_depths)
 		{
 			std::cout << "    "
