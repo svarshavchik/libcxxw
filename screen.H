@@ -23,6 +23,7 @@ class LIBCXX_HIDDEN screenObj::implObj : virtual public obj {
 	LOG_CLASS_SCOPE;
 
 	const xcb_screen_t * const xcb_screen;
+	const size_t screen_number;
 	const ref<connectionObj::implObj::infoObj> info;
 
 	// Same screen_depths as the public object.

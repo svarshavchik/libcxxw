@@ -3,7 +3,7 @@
 
 #include <x/w/screenfwd.H>
 #include <x/w/connectionfwd.H>
-#include <x/w/types.H>
+#include <x/w/rectangle.H>
 #include <x/obj.H>
 #include <x/vectorfwd.H>
 
@@ -66,6 +66,30 @@ public:
 	dim_t width_in_millimeters() const;
 	//! Screen metrics
 	dim_t height_in_millimeters() const;
+
+	//! Return the screen's work area.
+
+	//! The screen's window manager might reserve some border space for
+	//! its panels. This returns the actual area of the screen for
+	//! applications' windows.
+	//!
+	//! Returns true if this information is available, false if the
+	//! screen's window manager does not provide that information, in
+	//! which case x & y are 0, and width and height are the same values
+	//! returned by width_in_pixels() and height_in_pixels().
+
+	rectangle get_workarea() const;
+
+	//! Get the default size of a top level window's borders, according to the window manager.
+
+	//! Returns true if this information is provided by the window manager.
+	//! Returns false if unavailable, and the parameters have not been
+	//! updated. The values are in pixels.
+
+	bool get_frame_extents(dim_t &left,
+			       dim_t &right,
+			       dim_t &top,
+			       dim_t &bottom) const;
 };
 
 LIBCXXW_NAMESPACE_END

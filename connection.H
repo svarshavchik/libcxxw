@@ -4,11 +4,12 @@
 #include <vector>
 
 #include "render.H"
+#include "ewmh.H"
 #include "x/w/connection.H"
 #include "x/w/screenobj.H"
 
+#include <x/mpobj.H>
 #include <xcb/xcb.h>
-#include <xcb/xcb_ewmh.h>
 #include <xcb/render.h>
 
 LIBCXXW_NAMESPACE_START
@@ -37,6 +38,10 @@ class LIBCXX_HIDDEN connectionObj::implObj : virtual public obj {
 	//! Server configuration - RENDER extension.
 
 	const render render_info;
+
+	//! Server configuration - EWMH extension
+
+	mpobj<ewmh> ewmh_info;
 
 	//! Server configuration - screens
 

@@ -74,6 +74,34 @@ ref<obj> screenObj::mcguffin() const
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+// Extended Window Manager Hints.
+
+bool screenObj::get_frame_extents(dim_t &left,
+				  dim_t &right,
+				  dim_t &top,
+				  dim_t &bottom) const
+{
+	mpobj<ewmh>::lock lock(conn()->impl->ewmh_info);
+
+	return lock->get_frame_extents(left, right, top, bottom,
+				       impl->screen_number,
+				       impl->xcb_screen->root);
+}
+
+rectangle screenObj::get_workarea() const
+{
+	rectangle ret{coord_t(0),
+			coord_t(0), width_in_pixels(), height_in_pixels()};
+
+	mpobj<ewmh>::lock lock(conn()->impl->ewmh_info);
+
+	lock->get_workarea(impl->screen_number, ret);
+
+	return ret;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
 // Screen metrics
 
 
@@ -104,7 +132,9 @@ screenObj::implObj::implObj(const xcb_screen_t *xcb_screen,
 			    size_t screen_number,
 			    const render &render_info,
 			    const ref<connectionObj::implObj::infoObj> &info)
-	: xcb_screen(xcb_screen), info(info),
+	: xcb_screen(xcb_screen),
+	  screen_number(screen_number),
+	  info(info),
 	  screen_depths(create_screen_depths(xcb_screen,
 					     render_info,
 					     screen_number))
@@ -112,7 +142,5 @@ screenObj::implObj::implObj(const xcb_screen_t *xcb_screen,
 }
 
 screenObj::implObj::~implObj() noexcept=default;
-
-
 
 LIBCXXW_NAMESPACE_END

@@ -98,6 +98,7 @@ connectionObj::implObj::implObj(const ref<infoObj> &info,
 	  thread(thread),
 	  setup(*setup),
 	  render_info(info->conn),
+	  ewmh_info(info->conn),
 	  screens(get_screens(info, render_info, setup))
 {
 	start_thread(thread);

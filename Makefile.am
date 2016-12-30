@@ -26,6 +26,8 @@ libcxxw_la_SOURCES=\
 	connection_thread.H			    \
 	connection_threadevent.C		    \
 	connection_threadrun.C			    \
+	ewmh.C					    \
+	ewmh.H					    \
 	generic_window.C			    \
 	generic_window.H			    \
 	generic_window_handler.C		    \
