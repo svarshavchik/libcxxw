@@ -1,0 +1,142 @@
+<!--
+
+Copyright 2016 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<chapter id="connections_and_screens">
+  <title>Connections and screens</title>
+
+  <blockquote>
+    <informalexample>
+      <programlisting>
+#include &lt;x/w/connection.H>
+#include &lt;x/w/screen.H>
+
+&ns;::w::screen s=&ns;::w::screen::create();
+
+&ns;::w::connection conn=&ns;::w::connection::create();
+
+&ns;::w::connection conn=&ns;::w::connection::create("localhost:0.0");
+
+size_t n=conn->screens();
+
+size_t n=conn->default_screen();
+
+&ns;::w::screen s=&ns;::w::screen::create(conn, 0);
+      </programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    An
+    <ulink url="&link-typedef-x--w-screen;"><classname>&ns;::w::screen</classname></ulink>
+    represents a screen on the display server. The default constructor
+    returns the default screen on the default display server.
+    An
+    explicit
+    <ulink url="&link-typedef-x--w-connection;"><classname>&ns;::w::connection</classname></ulink>
+    represents an explicit connection to the display server, either a
+    default display server, or an explicitly specified one, and can
+    be passed to
+    <ulink url="&link-typedef-x--w-screen;"><classname>&ns;::w::screen</classname></ulink>'s
+    constructor to get the screen for the specified connection.
+    <ulink url="&link-typedef-x--w-connection;"><classname>&ns;::w::connection</classname></ulink>'s
+    <methodname>screens()</methodname> gives the number of screens on the
+    display. They are numbered starting with 0, and
+    <methodname>default_screen()</methodname> gives the default screen's
+    number.
+  </para>
+
+  <para>
+    A screen number can also be passed to
+    <ulink url="&link-typedef-x--w-screen;"><classname>&ns;::w::screen</classname></ulink>'s
+    constructor to get a handle for a screen other than the default one.
+  </para>
+
+  <section id="connection_mcguffins">
+    <title>Connection mcguffins</title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+#include &lt;x/w/connection.H>
+#include &lt;x/w/screen.H>
+#include &lt;x/destroycallbackflag.H>
+
+&ns;:ref&lt;&ns;::obj> application()
+{
+     auto conn=&ns;::w::connection::create();
+
+
+     // ...
+
+     return conn->mcguffin();
+}
+
+int main()
+{
+   try {
+	&ns;::destroyCallbackFlag::base::guard guard;
+
+	guard( application() );
+   } catch (const &ns;::exception &amp;e)
+   {
+       e->caught();
+   }
+}
+</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      As described in <xref linkend="intro" />,
+      &app;'s objects are reference-counted objects that get automatically
+      destroyed when the last reference to the objects go out of scope.
+      However, there are other references to internal objects maintained
+      by the library's internal execution thread. This abbreviated example
+      destroys all objects when <function>application</function>() returns;
+      however a library execution thread could still be running for a brief
+      interval of time before it stops, and the connection to the display
+      server is properly closed.
+    </para>
+
+    <para>
+      A connection object's <methodname>mcguffin</methodname>() method returns
+      a &libcxx; <ulink url="refobj">mcguffin</ulink> that gets destroyed
+      only after every internal library resource is released, and the
+      connection to the display server gets closed.
+    </para>
+
+    <para>
+      Note that the mcguffin will exist if the screen or the connection object
+      still exists, that's why this example returns just the mcguffin from
+      <function>application</function>(), and the screen and connection objects
+      in the <function>application</function>() get destroyed, but the
+      mcguffin survives in <function>main()</function>. This example
+      uses &libcxx;'s guard object to wait until the mcguffin gets destroyed.
+      Now, everything is truly cleaned up.
+    </para>
+
+    <para>
+      Another subtle detail: the mcguffin only gets guarded if
+      <function>application</function>() returns normally. The mcguffin
+      does not get returned, and guarded, when an exception gets thrown.
+      Presumably, a thrown exception indicates that the application reached
+      an abnormal state, and orderly unwinding and destruction of all
+      reference-counted objects may not have taken place. Any dangling
+      reference to some &appshort; object, somewhere, will likely prevent
+      the mcguffin from getting destroyed. Instead, when
+      <function>main</function>() returns, &libcxx; is going to wait
+      a moderate amount of time for all execution threads to stop, and bail
+      out with a complaint in the worst case.
+    </para>
+  </section>
+</chapter>
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "book" "chapter")
+End:
+-->

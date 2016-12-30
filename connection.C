@@ -18,9 +18,19 @@ connectionObj::~connectionObj() noexcept
 {
 }
 
+size_t connectionObj::screens() const
+{
+	return impl->screens.size();
+}
+
 size_t connectionObj::default_screen() const
 {
 	return impl->info->default_screen;
+}
+
+ref<obj> connectionObj::mcguffin() const
+{
+	return impl->info;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -84,9 +94,13 @@ connectionObj::implObj::implObj(const ref<infoObj> &info,
 	  screens(get_screens(info, setup)),
 	  render_info(info->conn)
 {
+	start_thread(thread);
 }
 
-connectionObj::implObj::~implObj()=default;
+connectionObj::implObj::~implObj() noexcept
+{
+	thread->stop();
+}
 
 std::string connectionObj::implObj::get_error(const xcb_generic_error_t *e)
 {

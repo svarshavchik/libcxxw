@@ -24,6 +24,8 @@ libcxxw_la_SOURCES=\
 	connection_info.H			    \
 	connection_thread.C			    \
 	connection_thread.H			    \
+	connection_threadevent.C		    \
+	connection_threadrun.C			    \
 	pictformat.C				    \
 	pictformat.H				    \
 	render.C				    \
@@ -38,6 +40,7 @@ TESTLINKTYPE=$(if $(STATIC),-static $(STATICLINKFLAGS))
 
 cxxw_SOURCES=cxxw.C
 cxxw_LDADD=libcxxw.la
+cxxw_LDFLAGS=$(TESTLINKTYPE)
 
 $(call OPTIONS_GEN,cxxwoptions.H,cxxwoptions.xml)
 

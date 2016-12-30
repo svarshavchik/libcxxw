@@ -5,6 +5,7 @@
 #include "messages.H"
 
 #include <x/logger.H>
+#include <x/destroycallbackflag.H>
 #include <iostream>
 #include <iomanip>
 
@@ -14,13 +15,18 @@ static void displayinfo()
 {
 	LOG_FUNC_SCOPE(cxxwLog);
 
+	x::destroyCallbackFlag::base::guard guard;
+
 	typedef LIBCXXW_NAMESPACE::depth_t::value_type depth_t;
 
 	auto conn=LIBCXXW_NAMESPACE::connection::create();
 
+	guard( conn->mcguffin() );
+
 	auto impl=conn->impl;
 
-	std::cout << x::gettextmsg(_("Default screen: %1%"),
+	std::cout << x::gettextmsg(_("%1 screens, default screen: %2%"),
+				   conn->screens(),
 				   conn->default_screen()) << std::endl;
 	for (const auto &info:impl->render_info.available_pictformats)
 	{

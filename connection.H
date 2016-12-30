@@ -20,6 +20,8 @@ class LIBCXX_HIDDEN connectionObj::implObj : virtual public obj {
  public:
 
 	class threadObj;
+	class threadEventHandlerObj;
+
 	class infoObj;
 
 	//! The actual connection handle

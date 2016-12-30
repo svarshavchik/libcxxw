@@ -14,7 +14,7 @@
 <!ENTITY intro SYSTEM "intro.xml">
 <!ENTITY install SYSTEM "install.xml">
 <!ENTITY refobj "/refobj.html">
-
+<!ENTITY connections_and_screens SYSTEM "connections_and_screens.xml">
 
 %entity-list;
 
@@ -29,6 +29,15 @@ See COPYING for distribution information.
 
 <book id="book">
   <title>&app;</title>
+
+  &intro;
+
+  <part id="tutorial">
+    <title>Tutorial</title>
+
+    &connections_and_screens;
+
+  </part>
 
   <appendix id="COPYING">
     <title>COPYING</title>

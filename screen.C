@@ -62,6 +62,11 @@ screenObj::~screenObj() noexcept
 {
 }
 
+ref<obj> screenObj::mcguffin() const
+{
+	return conn()->mcguffin();
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
 screenObj::implObj::implObj(const xcb_screen_t *xcb_screen,

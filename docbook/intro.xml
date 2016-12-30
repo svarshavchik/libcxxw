@@ -1,0 +1,146 @@
+<!--
+
+Copyright 2014-2016 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<preface id="index">
+  <title>&app;</title>
+  <section id="intro">
+    <title>Introduction</title>
+
+    <para>
+      &appshort; is the first X widget toolkit with a
+      C++1x <acronym>API</acronym>. After several years of private
+      development it has reached beta quality, and
+      is now publicly available.
+      This toolkit is based on the &libcxx; library, see
+      <xref linkend="INSTALL" /> for more information.
+      Notable features:
+    </para>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  A modern, C++1x-style <acronym>API</acronym>; such as:
+	  using lambdas to handle events like pointer clicks and other
+	  user activity; overloaded, variadic-parameter methods offering
+	  alternative means of configuring various display elements; and
+	  other C++1x features.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Implements common traditional UI elements: labels, text input fields,
+	  lists, combo boxes, menus, and dialogs. The UI elements support
+	  basic theming, including scaling -- adjusting the
+	  scaled size of the UI.
+	</para>
+
+	<para>
+	  The default UI elements are scalable, using a
+	  <link linkend="sxg">library-specific
+	    scalable graphic format</link>. Alternatively, an application
+	  may load its own <acronym>GIF</acronym>, <acronym>PNG</acronym>,
+	  or <acronym>JPG</acronym> fixed-size images.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  All display elements have full keyboard navigation, where
+	  possible. Even scrollbars have keyboard-based navigation.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Unlike other high-level toolkits,
+	  &app; does not force the application to be structured around
+	  a classical event-driven design. A separate thread handles all
+	  X events. The main application
+	  thread can be working on a dedicated, long-running task that
+	  blocks all pointer and keyboard events, but the background thread
+	  continues to update the display elements, and process X events
+	  as needed, all by itself.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  All display elements are
+	  &libcxx;'s reference-counted objects. There are no explicit methods
+	  to destroy input fields, buttons, and other display elements.
+	  Each display element is a reference-counted object, and
+	  when the last
+	  reference to the object goes out of scope, and gets destroyed, this
+	  results in the corresponding display element getting destroyed.
+	</para>
+
+	<para>
+	  And because parent display elements hold references to their
+	  child display elements, removing a parent display element from its
+	  container automatically removes and destroys all elements it contains.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  &app; is a compositing toolkit. The underlying video hardware
+	  must implement the X RENDER extension, which is supported by all
+	  modern video hardware.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Anti-aliased fonts get rendered by the Freetype library.
+	</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>
+      &app; is free software, distributed under the terms of the
+      <link linkend="COPYING">GPL, version 3</link>.
+    </para>
+  </section>
+  &install;
+
+  <section id="libcxx_overview">
+    <title>&libcxx; overview</title>
+
+    <para>
+      &app; is built using the &libcxx; library, a library of classes and
+      templates based on reference-counted objects. Some existing familiarity
+      with &libcxx; will be helpful in understanding how to use
+      &appshort;'s classes, but is not strictly necessary.
+      A brief overview:
+    </para>
+
+    <para>
+      All &appshort; classes and templates are defined in the
+      <literal>&ns;::w</literal> namespace.
+    </para>
+
+    <para>
+      All classes and templates, like
+      <ulink url="&link-typedef-x--w-connection;"><classname>&ns;::w::connection</classname></ulink>
+      and
+      <ulink url="&link-typedef-x--w-screen;"><classname>&ns;::w::screen</classname></ulink>
+      are reference-counted objects, based on
+      <ulink url="&refobj;"><classname>&ns;::ref</classname> and
+	<classname>&ns;::ptr</classname></ulink>.
+      These are just reference handles, similar to
+      <classname>std::shared_ptr</classname>.
+    </para>
+  </section>
+</preface>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "book" "preface")
+End:
+-->

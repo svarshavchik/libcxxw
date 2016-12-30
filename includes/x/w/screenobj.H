@@ -37,6 +37,13 @@ public:
 
 	//! The screen's connection
 	inline const_connection conn() const { return connref; }
+
+	//! The connection mcguffin
+
+	//! \see connection for more information, this is forwarded to
+	//! \c conn()->mcguffin().
+
+	ref<obj> mcguffin() const;
 };
 
 LIBCXXW_NAMESPACE_END

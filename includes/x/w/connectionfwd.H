@@ -17,6 +17,30 @@ class connectionObj;
 //! \endcode
 //!
 //! Creates an object representing a connection to the display SERVER.
+//!
+//! \par Screen info
+//!
+//! \code
+//! size_t n=conn->screens();
+//!
+//! size_t n=conn->default_screen();
+//! \endcode
+//!
+//! \par Connection mcguffin
+//!
+//! \code
+//! INSERT_LIBX_NAMESPACE::ref<INSERT_LIBX_NAMESPACE::obj> mcguffin=conn->mcguffin();
+//! \endcode
+//!
+//! \c mcguffin() returns an opaque object representing the underlying
+//! connection to the display server. Even after all public objects related to
+//! a connection go out of scope and get destroyed, a background thread will
+//! briefly run, just long enough to wind up its business, before the
+//! connection to the display server is truly closed.
+//!
+//! \c mcguffin() returns an opaque mcguffin. When the mcguffin gets destroyed
+//! the underlying display server connection is truly gone, and all resources
+//! have been released.
 
 typedef ref<connectionObj> connection;
 

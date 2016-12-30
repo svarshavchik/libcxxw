@@ -29,8 +29,14 @@ class connectionObj : virtual public obj {
 	//! Destructor
 	~connectionObj() noexcept LIBCXX_HIDDEN;
 
+	//! Numbers of screens on this display.
+	size_t screens() const;
+
 	//! Which screen is the default one.
 	size_t default_screen() const;
+
+	//! Returns the mcguffin for the underlying display server connection.
+	ref<obj> mcguffin() const;
 };
 
 LIBCXXW_NAMESPACE_END

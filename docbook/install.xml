@@ -1,0 +1,165 @@
+<!--
+
+Copyright 2014-2016 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<section id="INSTALL">
+  <title>Installation, and requirements</title>
+
+  <informaltable id="externallinks">
+    <thead cols="1">
+      <tr>
+	<th>
+	  <simpara>Links</simpara>
+	</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr>
+	<td>
+	  <simpara>
+	    <ulink url="https://fedorahosted.org/released/libcxx/">Download</ulink>
+	  </simpara>
+
+	  <simpara>
+	    <ulink url="https://lists.fedorahosted.org/mailman/listinfo/libcxx-users">Mailing list</ulink>
+	  </simpara>
+
+	  <simpara>
+	    <ulink url="http://git.fedorahosted.org/git/libcxx.git">fedorahosted</ulink> or
+	    <ulink url="https://github.com/svarshavchik/libcxx.git">GitHUB</ulink>
+	    <acronym>GIT</acronym>
+	  </simpara>
+	  <simpara>
+	    (<quote>libcxxw/master</quote> branch).
+	  </simpara>
+
+	  <simpara>
+	    <ulink url="http://www.courier-mta.org/KEYS.bin">PGP key</ulink>
+	  </simpara>
+	</td>
+      </tr>
+    </tbody>
+  </informaltable>
+
+  <para>
+    The following components must be installed first before building &app;:
+  </para>
+
+  <itemizedlist>
+    <listitem>
+      <para>
+	&libcxx;, which currently runs only on Linux, with some FreeBSD
+	support; therefore &appshort;'s support is limited to these
+	platforms, at this time.
+      </para>
+    </listitem>
+
+    <listitem>
+      <para>
+	Version 2 of <ulink url="http://www.freetype.org">Freetype</ulink>.
+      </para>
+    </listitem>
+
+    <listitem>
+      <para>
+	The <ulink url="http://fontconfig.org">Fontconfig</ulink>
+	library.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+	<ulink url="http://xcb.freedesktop.org/">XCB library</ulink>,
+	including its util modules:
+	xcb-xproto,
+	xcb-keysym,
+	xcb-ewmh,
+	xcb-icccm,
+	xcb-image.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+	<ulink url="http://sourceforge.net/projects/libjpeg-turbo/">libjpeg-turbo</ulink>,
+	<ulink url="http://www.libpng.org/pub/png/">libpng</ulink>,
+	and
+	<ulink url="http://www.sourceforge.net/projects/giflib/">giflib</ulink>.
+      </para>
+    </listitem>
+  </itemizedlist>
+
+  <note>
+    <para>
+      Linux distributions typically have separate runtime and
+      development packages for these libraries. In all cases, the
+      development packages must be installed to build &app;, and
+      only the runtime packages are required to run the applications.
+    </para>
+  </note>
+
+  <para>
+    Implicit from these requirements:
+    using &app; to build applications requires knowledge and familiarity
+    with the core &libcxx; classes and templates, as well as the
+    GNU toolchain (autoconf, automake, and libtool).
+  </para>
+
+  <simplesect>
+    <title>Configuring and building</title>
+
+    <para>
+      The recommended approach is to convert
+      &app; into an installable package; rather than manually building
+      and installing &app; directly. The source tarball
+      is directly buildable on Fedora. Running
+      <quote><command>rpm -ta libcxxw-<replaceable>version</replaceable>.tar.bz2</command></quote>
+      creates the following packages:
+    </para>
+
+    <itemizedlist>
+      <listitem>
+	<para>The main binary rpm package, with runtime libraries.</para>
+      </listitem>
+      <listitem>
+	<para>
+	  The <quote>devel</quote> subpackage, containing header files and
+	  other supporting files used for developing applications that use the
+	  &app;.
+	</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>
+      Use the following documentation as a guide for building &app; on
+      non <acronym>RPM</acronym>-based Linux distirbutions.
+    </para>
+
+    <para>
+      Run the <filename>configure</filename> script, followed by
+      <command>make</command>
+      (or <command>gmake</command>).
+      <filename>configure</filename> takes the usual options that specify
+      non-default installation directories, for various files.
+    </para>
+
+    <para>
+      Run <command>(g)make install DESTDIR=/tmp/libcxxw-install</command>. This
+      creates an installation image in the
+      <filename>/tmp/libcxxw-install</filename> directory, to use as a basis for
+      creating an installable package.
+      A plain <command>(g)make install</command> will do it
+      <quote>for real</quote>, of course.
+      However, using an installable package is strongly recommended.
+    </para>
+  </simplesect>
+</section>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "preface" "section")
+End:
+-->
