@@ -1,6 +1,6 @@
 @LIBCXX_AM@
 
-SUBDIRS= po po includes/x/w
+SUBDIRS= po includes/x/w
 
 configure: libtool
 
@@ -33,17 +33,19 @@ libcxxw_la_SOURCES=\
 	generic_window_handler.C		    \
 	generic_window_handler.H		    \
 	generic_window_impl.C			    \
+	messages.H				    \
 	pictformat.C				    \
 	pictformat.H				    \
 	rectangle.C				    \
 	render.C				    \
 	render.H				    \
+	returned_pointer.H			    \
 	rgb.C					    \
-	rgb.H					    \
 	screen.C				    \
 	screen.H				    \
 	screen_depthinfo.C			    \
 	screen_depthinfo.H			    \
+	values_and_mask.H			    \
 	window_handler.C			    \
 	window_handler.H			    \
 	xid_t.H					    \
@@ -57,8 +59,8 @@ cxxw_LDFLAGS=$(TESTLINKTYPE)
 
 $(call OPTIONS_GEN,cxxwoptions.H,cxxwoptions.xml)
 
-EXTRA_DIST = config.rpath m4/ChangeLog  COPYING config.rpath m4/ChangeLog packaging/fedora/libcxxw.spec \
-	po/Makevars.in $(man_MANS)
+EXTRA_DIST = config.rpath m4/ChangeLog COPYING \
+	$(man_MANS)
 
 
 if HAVE_DOCS
