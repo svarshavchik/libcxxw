@@ -1,4 +1,5 @@
 #include "connection_info.H"
+#include <x/exception.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -33,6 +34,34 @@ connectionObj::implObj::infoObj::infoObj(connection_handle &&handle)
 connectionObj::implObj::infoObj::~infoObj() noexcept
 {
 	xcb_disconnect(conn);
+}
+
+uint32_t connectionObj::implObj::infoObj::alloc_xid()
+{
+	{
+		available_xids_t::lock lock(available_xids);
+
+		if (!lock->empty())
+		{
+			uint32_t xid=lock->front();
+			lock->pop();
+			return xid;
+		}
+	}
+
+	uint32_t id=xcb_generate_id(conn);
+
+	if (id == (uint32_t)-1)
+		throw EXCEPTION("xcb_generate_id() failed");
+
+	return id;
+}
+
+void connectionObj::implObj::infoObj::release_xid(uint32_t xid) noexcept
+{
+	available_xids_t::lock lock(available_xids);
+
+	lock->push(xid);
 }
 
 LIBCXXW_NAMESPACE_END
