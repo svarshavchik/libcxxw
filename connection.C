@@ -68,9 +68,11 @@ connectionObj::implObj::implObj(const ref<infoObj> &info)
 
 static inline std::vector<ref<screenObj::implObj>>
 get_screens(const ref<connectionObj::implObj::infoObj> &info,
+	    const render &render_info,
 	    const xcb_setup_t *setup)
 {
 	std::vector<ref<screenObj::implObj>> v;
+	size_t screen_number=0;
 
 	auto iter=xcb_setup_roots_iterator(setup);
 
@@ -78,7 +80,11 @@ get_screens(const ref<connectionObj::implObj::infoObj> &info,
 
 	while (iter.rem)
 	{
-		v.push_back(ref<screenObj::implObj>::create(iter.data, info));
+		v.push_back(ref<screenObj::implObj>
+			    ::create(iter.data,
+				     screen_number++,
+				     render_info,
+				     info));
 		xcb_screen_next(&iter);
 	}
 
@@ -91,8 +97,8 @@ connectionObj::implObj::implObj(const ref<infoObj> &info,
 	: info(info),
 	  thread(thread),
 	  setup(*setup),
-	  screens(get_screens(info, setup)),
-	  render_info(info->conn)
+	  render_info(info->conn),
+	  screens(get_screens(info, render_info, setup))
 {
 	start_thread(thread);
 }

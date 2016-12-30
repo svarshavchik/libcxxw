@@ -34,6 +34,8 @@ libcxxw_la_SOURCES=\
 	rgb.H					    \
 	screen.C				    \
 	screen.H				    \
+	screen_depthinfo.C			    \
+	screen_depthinfo.H			    \
         #
 
 TESTLINKTYPE=$(if $(STATIC),-static $(STATICLINKFLAGS))

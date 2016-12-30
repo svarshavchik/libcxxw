@@ -34,13 +34,13 @@ class LIBCXX_HIDDEN connectionObj::implObj : virtual public obj {
 
 	const struct xcb_setup_t setup;
 
-	//! Server configuration - screens
-
-	const std::vector<ref<screenObj::implObj>> screens;
-
 	//! Server configuration - RENDER extension.
 
 	const render render_info;
+
+	//! Server configuration - screens
+
+	const std::vector<ref<screenObj::implObj>> screens;
 
 	//! Constructor, connect to the given display.
 

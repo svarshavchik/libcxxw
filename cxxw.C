@@ -1,6 +1,7 @@
 #include "cxxwoptions.H"
 #include "connection.H"
-#include "connection_info.H"
+#include "screen_depthinfo.H"
+#include "x/w/screen.H"
 #include "pictformat.H"
 #include "messages.H"
 
@@ -13,8 +14,6 @@ LOG_FUNC_SCOPE_DECL("cxxw", cxxwLog);
 
 static void displayinfo()
 {
-	LOG_FUNC_SCOPE(cxxwLog);
-
 	x::destroyCallbackFlag::base::guard guard;
 
 	typedef LIBCXXW_NAMESPACE::depth_t::value_type depth_t;
@@ -25,7 +24,7 @@ static void displayinfo()
 
 	auto impl=conn->impl;
 
-	std::cout << x::gettextmsg(_("%1 screens, default screen: %2%"),
+	std::cout << x::gettextmsg(_("%1% screens, default screen: %2%"),
 				   conn->screens(),
 				   conn->default_screen()) << std::endl;
 	for (const auto &info:impl->render_info.available_pictformats)
@@ -97,6 +96,49 @@ static void displayinfo()
 	}
 }
 
+static void displayscreen()
+{
+	x::destroyCallbackFlag::base::guard guard;
+
+	typedef LIBCXXW_NAMESPACE::depth_t::value_type depth_t;
+
+	auto conn=LIBCXXW_NAMESPACE::connection::create();
+
+	guard( conn->mcguffin() );
+
+	size_t n=conn->screens();
+
+	for (size_t i=0; i<n; i++)
+	{
+		auto s=LIBCXX_NAMESPACE::w::screen::create(conn, i);
+
+		std::cout << x::gettextmsg(_("Screen %1%: "), i) << std::endl;
+
+		for (const auto &screen_depth: *s->screen_depths)
+		{
+			std::cout << "    "
+				  << x::gettextmsg(_("    Depth %1%"),
+						   (int)(depth_t)screen_depth->depth)
+				  << std::endl;
+			for (const auto &v:screen_depth->visuals)
+			{
+				std::cout << "      "
+					  << x::gettextmsg(_("Visual %1%, %2% bits, %3% colormap size, %4% red %5%, green %6%, blue %7%%8%"),
+							   (int)v->visual_class_type,
+							   (int)v->bits_per_rgb,
+							   v->colormap_entries,
+							   std::hex,
+							   v->red_mask,
+							   v->green_mask,
+							   v->blue_mask,
+							   std::dec)
+					  << std::endl;
+			}
+		}
+		std::cout << std::endl;
+	}
+}
+
 int main(int argc, char **argv)
 {
 	LOG_FUNC_SCOPE(cxxwLog);
@@ -108,6 +150,8 @@ int main(int argc, char **argv)
 	try {
 		if (options.display->value)
 			displayinfo();
+		if (options.screen->value)
+			displayscreen();
 	} catch (const LIBCXX_NAMESPACE::exception &e)
 	{
 		LOG_ERROR(e);

@@ -8,6 +8,8 @@
 
 LIBCXXW_NAMESPACE_START
 
+LOG_CLASS_INIT(screenObj::implObj);
+
 typedef mpobj< weakptr<refptr_traits<connection>::ptr_t> > default_connection_t;
 
 static default_connection_t default_connection;
@@ -54,7 +56,10 @@ screen screenBase::create(const connection &conn, size_t n)
 }
 
 screenObj::screenObj(const ref<implObj> &impl,
-		     const connection &conn) : impl(impl), connref(conn)
+		     const connection &conn)
+	: impl(impl),
+	  screen_depths(impl->screen_depths),
+	  connref(conn)
 {
 }
 
@@ -70,8 +75,13 @@ ref<obj> screenObj::mcguffin() const
 ///////////////////////////////////////////////////////////////////////////////
 
 screenObj::implObj::implObj(const xcb_screen_t *xcb_screen,
+			    size_t screen_number,
+			    const render &render_info,
 			    const ref<connectionObj::implObj::infoObj> &info)
-	: xcb_screen(xcb_screen), info(info)
+	: xcb_screen(xcb_screen), info(info),
+	  screen_depths(create_screen_depths(xcb_screen,
+					     render_info,
+					     screen_number))
 {
 }
 

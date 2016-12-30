@@ -48,6 +48,17 @@ typedef number<int32_t, coord_squared_tag> coord_squared_t;
 //! The unit type for bit depth of windows, drawables...
 typedef number<uint8_t, depth_tag> depth_t;
 
+//! Visual class
+
+enum class visual_class_t {
+	static_gray=0,
+	gray_scale=1,
+	static_color=2,
+	pseudo_color=3,
+	true_color=4,
+	direct_color=5,
+};
+
 LIBCXXW_NAMESPACE_END
 
 #endif

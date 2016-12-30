@@ -4,7 +4,16 @@
     <type>bool</type>
     <default>false</default>
     <opt>d</opt>
+    <longopt>display</longopt>
     <descr>Show display information</descr>
+  </option>
+  <option>
+    <name>screen</name>
+    <type>bool</type>
+    <default>false</default>
+    <opt>s</opt>
+    <longopt>screens</longopt>
+    <descr>Show screen information</descr>
   </option>
   <defaultoptions />
 </optclass>

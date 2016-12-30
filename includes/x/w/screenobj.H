@@ -4,6 +4,7 @@
 #include <x/w/screenfwd.H>
 #include <x/w/connectionfwd.H>
 #include <x/obj.H>
+#include <x/vectorfwd.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -13,12 +14,22 @@ LIBCXXW_NAMESPACE_START
 
 class screenObj : virtual public obj {
 
- public:
+public:
 	class implObj;
+	class depthObj;
+	class visualObj;
 
 	//! Internal implementation details
 
 	const ref<implObj> impl;
+
+	//! Information about available depths on this screen.
+
+	//! Note that this is an \c INSERT_LIBX_NAMESPACE::vector.
+	//!
+	//! Refer to this class as INSERT_LIBX_NAMESPACE::vector<INSERT_LIBX_NAMESPACE::w::screen::base::depth_t>
+
+	const vector<const_ref<depthObj>> screen_depths;
 
 private:
 	//! Screen's connection
