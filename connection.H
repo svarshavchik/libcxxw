@@ -9,6 +9,8 @@
 
 #include "render.H"
 #include "ewmh.H"
+#include "connection_threadfwd.H"
+#include "connection_infofwd.H"
 #include "x/w/connection.H"
 #include "x/w/screenobj.H"
 
@@ -24,16 +26,13 @@ class LIBCXX_HIDDEN connectionObj::implObj : virtual public obj {
 
  public:
 
-	class threadObj;
 	class threadEventHandlerObj;
 
-	class infoObj;
-
 	//! The actual connection handle
-	const ref<infoObj> info;
+	const connection_info info;
 
 	//! The connection's thread.
-	const ref<threadObj> thread;
+	const connection_thread thread;
 
 	//! Server configuration
 
@@ -59,13 +58,13 @@ class LIBCXX_HIDDEN connectionObj::implObj : virtual public obj {
 
 	//! Intenral constructor
 
-	implObj(const ref<infoObj> &info);
+	implObj(const connection_info &info);
 
 	//! Internal constructor
 
-	implObj(const ref<infoObj> &info,
+	implObj(const connection_info &info,
 		const xcb_setup_t *setup,
-		const ref<threadObj> &threadArg);
+		const connection_thread &threadArg);
 
  public:
 

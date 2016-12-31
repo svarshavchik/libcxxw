@@ -5,6 +5,8 @@
 #include "libcxxw_config.h"
 #include "generic_window.H"
 #include "generic_window_handler.H"
+#include "connection_thread.H"
+#include "connection_info.H"
 #include "screen.H"
 #include "connection.H"
 #include <x/weakptr.H>
@@ -15,18 +17,19 @@ LIBCXXW_NAMESPACE_START
 generic_windowObj::implObj::implObj(const screen &screenref,
 				    const ref<handlerObj> &handler,
 				    xcb_window_t parent,
-				    coord_t x,
-				    coord_t y,
-				    dim_t width,
-				    dim_t height,
+				    const rectangle &initial_position,
 				    const values_and_mask &vm,
 				    uint16_t window_class,
 				    depth_t depth,
 				    xcb_visualid_t visual)
-	: handler(handler), screenref(screenref)
+	: elementimplObj(initial_position),
+	  handler(handler), screenref(screenref)
 {
 	auto thread=handler->thread();
 	auto conn=handler->conn();
+
+	auto width=initial_position.width;
+	auto height=initial_position.height;
 
 	// We can logically attempt to create a window with zero width or
 	// height (empty container, for example). X will complain about
@@ -36,21 +39,20 @@ generic_windowObj::implObj::implObj(const screen &screenref,
 		width=height=1;
 
 	if (width == width.infinite() ||
-	    height == width.infinite())
+	    height == height.infinite())
 		throw EXCEPTION("Internal error, invalid initial display element size");
 
 	auto window_id=handler->id();
 	LOG_DEBUG("Constructor: " << objname() << " xid " << window_id);
 
-	connectionObj::implObj::threadObj::shared_data_t::lock
-		lock(thread->shared_data);
+	connection_threadObj::shared_data_t::lock lock(thread->shared_data);
 
 	xcb_create_window(conn->conn,
 			  (depth_t::value_type)depth,
 			  window_id,
 			  parent,
-			  (coord_t::value_type)x,
-			  (coord_t::value_type)y,
+			  (coord_t::value_type)initial_position.x,
+			  (coord_t::value_type)initial_position.y,
 			  (dim_t::value_type)width,
 			  (dim_t::value_type)height,
 			  2, // Border width
@@ -71,8 +73,7 @@ generic_windowObj::implObj::~implObj() noexcept
 	auto window_id=handler->id();
 	LOG_DEBUG("Destructor: " << objname() << " xid " << window_id);
 
-	connectionObj::implObj::threadObj::shared_data_t::lock
-		lock(thread->shared_data);
+	connection_threadObj::shared_data_t::lock lock(thread->shared_data);
 
 	lock->window_handlers.erase(window_id);
 	lock->destroyed_xids.insert({window_id, xid_obj});

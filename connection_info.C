@@ -10,7 +10,7 @@ LIBCXXW_NAMESPACE_START
 
 //! Internal helper class used during construction.
 
-class LIBCXX_INTERNAL connectionObj::implObj::infoObj::connection_handle {
+class LIBCXX_INTERNAL connection_infoObj::connection_handle {
  public:
 	xcb_connection_t * conn;
 
@@ -25,23 +25,23 @@ class LIBCXX_INTERNAL connectionObj::implObj::infoObj::connection_handle {
 	~connection_handle() noexcept=default;
 };
 
-connectionObj::implObj::infoObj::infoObj(const std::experimental::string_view &display)
-	: infoObj(connection_handle(std::string(display.begin(),
-						display.end())))
+connection_infoObj::connection_infoObj(const std::experimental::string_view &display)
+	: connection_infoObj(connection_handle(std::string(display.begin(),
+							   display.end())))
 {
 }
 
-connectionObj::implObj::infoObj::infoObj(connection_handle &&handle)
+connection_infoObj::connection_infoObj(connection_handle &&handle)
 	: conn(handle.conn), default_screen(handle.default_screen)
 {
 }
 
-connectionObj::implObj::infoObj::~infoObj() noexcept
+connection_infoObj::~connection_infoObj() noexcept
 {
 	xcb_disconnect(conn);
 }
 
-uint32_t connectionObj::implObj::infoObj::alloc_xid()
+uint32_t connection_infoObj::alloc_xid()
 {
 	{
 		available_xids_t::lock lock(available_xids);
@@ -62,7 +62,7 @@ uint32_t connectionObj::implObj::infoObj::alloc_xid()
 	return id;
 }
 
-void connectionObj::implObj::infoObj::release_xid(uint32_t xid) noexcept
+void connection_infoObj::release_xid(uint32_t xid) noexcept
 {
 	available_xids_t::lock lock(available_xids);
 

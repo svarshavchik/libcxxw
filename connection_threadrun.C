@@ -18,7 +18,7 @@ LIBCXXW_NAMESPACE_START
 // 2. An X event, received via xcb_poll_event.
 //
 // 3.
-void connectionObj::implObj::threadObj
+void connection_threadObj
 ::run_something(msgqueue_auto &msgqueue,
 		struct pollfd *topoll,
 		size_t &npoll)

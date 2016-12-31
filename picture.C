@@ -17,7 +17,7 @@ pictureObj::~pictureObj() noexcept=default;
 
 /////////////////////////////////////////////////////////////////////////////
 
-pictureObj::implObj::implObj(const ref<connectionObj::implObj::threadObj> &thread_)
+pictureObj::implObj::implObj(const connection_thread &thread_)
 	: xid_tObj<xcb_render_picture_t>(thread_)
 {
 }

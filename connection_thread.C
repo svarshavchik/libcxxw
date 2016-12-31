@@ -8,19 +8,18 @@
 #include "window_handler.H"
 #include "xid_t.H"
 
-LOG_CLASS_INIT(LIBCXX_NAMESPACE::w::connectionObj::implObj::threadObj);
+LOG_CLASS_INIT(LIBCXX_NAMESPACE::w::connection_threadObj);
 
 LIBCXXW_NAMESPACE_START
 
-connectionObj::implObj::threadObj::threadObj(const ref<infoObj> &info)
-	: info(info)
+connection_threadObj
+::connection_threadObj(const connection_info &info): info(info)
 {
 }
 
-connectionObj::implObj::threadObj::~threadObj() noexcept=default;
+connection_threadObj::~connection_threadObj() noexcept=default;
 
-void connectionObj::implObj::threadObj
-::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin)
+void connection_threadObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin)
 {
 	msgqueue_auto msgqueue(this);
 
@@ -70,10 +69,9 @@ void connectionObj::implObj::threadObj
 	} while (keepgoing);
 }
 
-void connectionObj::implObj::threadObj
-::report_error(const xcb_generic_error_t *e)
+void connection_threadObj::report_error(const xcb_generic_error_t *e)
 {
-	LOG_ERROR(get_error(e));
+	LOG_ERROR(connectionObj::implObj::get_error(e));
 }
 
 LIBCXXW_NAMESPACE_END

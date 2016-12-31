@@ -6,6 +6,7 @@
 #define connection_info_h
 
 #include "connection.H"
+#include "connection_infofwd.H"
 #include <x/threadmsgdispatcher.H>
 #include <x/mpobj.H>
 #include <queue>
@@ -14,7 +15,7 @@ LIBCXXW_NAMESPACE_START
 
 // An opened xcb_connection_t handle.
 
-class LIBCXX_HIDDEN connectionObj::implObj::infoObj : virtual public obj {
+class LIBCXX_HIDDEN connection_infoObj : virtual public obj {
  public:
 
 	class connection_handle;
@@ -23,11 +24,11 @@ class LIBCXX_HIDDEN connectionObj::implObj::infoObj : virtual public obj {
 
 	const int default_screen;
 
-	infoObj(const std::experimental::string_view &display);
+	connection_infoObj(const std::experimental::string_view &display);
 
-	infoObj(connection_handle &&handle);
+	connection_infoObj(connection_handle &&handle);
 
-	~infoObj() noexcept;
+	~connection_infoObj() noexcept;
 
 	// Allocate new XIDs, via xcb_generate_id().
 

@@ -10,8 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-void connectionObj::implObj::threadObj
-::run_event(const xcb_generic_event_t *event)
+void connection_threadObj::run_event(const xcb_generic_event_t *event)
 {
 #define GET_MSG(msg_type)						\
 	auto msg=reinterpret_cast<const xcb_ ## msg_type ## _t		\
@@ -37,7 +36,7 @@ void connectionObj::implObj::threadObj
 	};
 }
 
-void connectionObj::implObj::threadObj::recycle_xid(uint32_t xid)
+void connection_threadObj::recycle_xid(uint32_t xid)
 {
 	shared_data_t::lock lock{shared_data};
 

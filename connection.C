@@ -43,7 +43,7 @@ ref<obj> connectionObj::mcguffin() const
 // The first step is to create the connection info handle.
 
 connectionObj::implObj::implObj(const std::experimental::string_view &display)
-	: implObj(ref<infoObj>::create(display))
+	: implObj(connection_info::create(display))
 {
 }
 
@@ -62,17 +62,17 @@ static inline const xcb_setup_t *get_setup(xcb_connection_t *conn)
 	return xcb_get_setup(conn);
 }
 
-connectionObj::implObj::implObj(const ref<infoObj> &info)
+connectionObj::implObj::implObj(const connection_info &info)
 	: implObj(info,
 		  get_setup(info->conn),
-		  ref<threadObj>::create(info))
+		  connection_thread::create(info))
 {
 }
 
 // Extract screens
 
 static inline std::vector<ref<screenObj::implObj>>
-get_screens(const ref<connectionObj::implObj::infoObj> &info,
+get_screens(const connection_info &info,
 	    const render &render_info,
 	    const xcb_setup_t *setup)
 {
@@ -96,9 +96,9 @@ get_screens(const ref<connectionObj::implObj::infoObj> &info,
 	return v;
 }
 
-connectionObj::implObj::implObj(const ref<infoObj> &info,
+connectionObj::implObj::implObj(const connection_info &info,
 				const xcb_setup_t *setup,
-				const ref<threadObj> &thread)
+				const connection_thread &thread)
 	: info(info),
 	  thread(thread),
 	  setup(*setup),

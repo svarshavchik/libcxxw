@@ -10,8 +10,7 @@ LOG_CLASS_INIT(LIBCXX_NAMESPACE::w::window_handlerObj);
 LIBCXXW_NAMESPACE_START
 
 window_handlerObj
-::window_handlerObj(const ref<connectionObj::implObj::threadObj> &thread_)
-	: xid_t<xcb_window_t>(thread_)
+::window_handlerObj(IN_THREAD_ONLY): xid_t<xcb_window_t>(thread_)
 {
 }
 

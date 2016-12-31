@@ -10,6 +10,7 @@
 #include "x/w/picturefwd.H"
 #include "x/w/rgbfwd.H"
 #include "connection.H"
+#include "connection_infofwd.H"
 #include <x/logger.H>
 #include <x/vector.H>
 #include <x/weakmultimapfwd.H>
@@ -47,7 +48,7 @@ class LIBCXX_HIDDEN screenObj::implObj
 
 	const xcb_screen_t * const xcb_screen;
 	const size_t screen_number;
-	const ref<connectionObj::implObj::infoObj> info;
+	const connection_info info;
 
 	// Same screen_depths as the public object.
 	const vector<const_ref<depthObj>> screen_depths;
@@ -62,7 +63,7 @@ class LIBCXX_HIDDEN screenObj::implObj
 	implObj(const xcb_screen_t *xcb_screen,
 		size_t screen_number,
 		const render &render_info,
-		const ref<connectionObj::implObj::infoObj> &info);
+		const connection_info &info);
 	~implObj() noexcept;
 
 	// Get screen dimensions

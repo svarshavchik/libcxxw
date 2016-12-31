@@ -5,6 +5,7 @@
 #include "libcxxw_config.h"
 #include "screen.H"
 #include "picture.H"
+#include "connection_thread.H"
 #include "x/w/rgb.H"
 #include "x/w/picture.H"
 #include "x/w/pictformat.H"
@@ -32,8 +33,7 @@ screen_solidcolorpictures::~screen_solidcolorpictures() noexcept=default;
 class LIBCXX_HIDDEN solidColorPictureObj : public pictureObj::implObj {
 
  public:
-	solidColorPictureObj(const ref<connectionObj::implObj::threadObj>
-			     &thread_,
+	solidColorPictureObj(const connection_thread &thread_,
 			     const rgb &color)
 		: implObj(thread_)
 	{

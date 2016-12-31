@@ -8,8 +8,10 @@
 #include "x/w/generic_window.H"
 #include "x/w/screen.H"
 #include "x/w/types.H"
+#include "x/w/rectangle.H"
 
 #include "values_and_mask.H"
+#include "elementimpl.H"
 #include <xcb/xcb.h>
 
 LIBCXXW_NAMESPACE_START
@@ -25,7 +27,8 @@ LIBCXXW_NAMESPACE_START
 //! references to the handler object go out of scope and it gets destroyed,
 //! xcb_destroy_window().
 
-class LIBCXX_HIDDEN generic_windowObj::implObj : virtual public obj {
+class LIBCXX_HIDDEN generic_windowObj::implObj
+	: public elementimplObj {
 
  public:
 
@@ -33,10 +36,7 @@ class LIBCXX_HIDDEN generic_windowObj::implObj : virtual public obj {
 	implObj(const screen &screenref,
 		const ref<handlerObj> &handler,
 		xcb_window_t parent,
-		coord_t x,
-		coord_t y,
-		dim_t width,
-		dim_t height,
+		const rectangle &initial_position,
 		const values_and_mask &vm,
 		uint16_t window_class,
 		depth_t depth=depth_t(XCB_COPY_FROM_PARENT),

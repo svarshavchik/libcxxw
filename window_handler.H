@@ -6,7 +6,7 @@
 #define window_handler_h
 
 #include "xid_t.H"
-#include "connection_thread.H"
+#include "connection_threadfwd.H"
 #include <x/logger.H>
 #include <xcb/xcb.h>
 
@@ -17,12 +17,11 @@ LIBCXXW_NAMESPACE_START
 //! Provides callbacks that the connection thread invokes, in response
 //! to messages.
 //!
-//! Its methods can only be called by the connection thread.
-//!
-//! This contains a reference to the connection handler, but
-//! connection handler's map, that maps xcb_window_ts to these handlers,
-//! is stored on the connection handler's execution thread's stack, hence
-//! no circular reference.
+//! This contains a reference to the connection handler, and the connection
+//! handler's shared_data contains references to these handlers. The
+//! reference from shared_data is installed in generic_windowObj::implObj's
+//! constructor. This circular reference is removed from implObj's
+//! destructor.
 
 class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 					virtual public obj {
@@ -31,7 +30,7 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 
 	LOG_CLASS_SCOPE;
 
-	window_handlerObj(const ref<connectionObj::implObj::threadObj> &thread);
+	window_handlerObj(IN_THREAD_ONLY);
 
 	~window_handlerObj() noexcept;
 };

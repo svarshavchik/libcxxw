@@ -5,7 +5,9 @@
 #ifndef connection_thread_h
 #define connection_thread_h
 
-#include "connection.H"
+#include "connection_infofwd.H"
+#include "connection_threadfwd.H"
+#include "connection_info.H"
 #include <x/threadmsgdispatcher.H>
 #include <x/logger.H>
 #include <poll.h>
@@ -15,17 +17,17 @@ LIBCXXW_NAMESPACE_START
 class window_handlerObj;
 class xidObj;
 
-class LIBCXX_HIDDEN connectionObj::implObj::threadObj
+class LIBCXX_HIDDEN connection_threadObj
 	: public threadmsgdispatcherObj {
 
 	LOG_CLASS_SCOPE;
 
  public:
 
-	const ref<infoObj> info;
+	const connection_info info;
 
-	threadObj(const ref<infoObj> &info);
-	~threadObj() noexcept;
+	connection_threadObj(const connection_info &info);
+	~connection_threadObj() noexcept;
 
 	// Call get_error() and log the results.
 
@@ -79,6 +81,8 @@ class LIBCXX_HIDDEN connectionObj::implObj::threadObj
  private:
 	void recycle_xid(uint32_t xid);
 };
+
+#include "xid_t_connection_thread.H"
 
 LIBCXXW_NAMESPACE_END
 

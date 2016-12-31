@@ -17,8 +17,7 @@ class LIBCXX_HIDDEN pictureObj::implObj
 
  public:
 
-	implObj(const ref<connectionObj::implObj::threadObj> &thread_)
-		LIBCXX_HIDDEN;
+	implObj(const connection_thread &thread_) LIBCXX_HIDDEN;
 
 	~implObj() noexcept;
 };

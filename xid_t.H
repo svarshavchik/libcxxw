@@ -2,10 +2,10 @@
 ** Copyright 2017 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
-#ifndef xid_T_H
-#define xid_T_H
+#ifndef xid_t_h
+#define xid_t_h
 
-#include "connection_thread.H"
+#include "connection_threadfwd.H"
 #include "connection_info.H"
 
 namespace LIBCXX_NAMESPACE {
@@ -27,19 +27,12 @@ class LIBCXX_HIDDEN xidObj : virtual public obj {
  public:
 
 	// Connection thread
-	const ref<connectionObj::implObj::threadObj> thread_;
+	const connection_thread thread_;
 
 	const uint32_t id_;
 
-	xidObj(const ref<connectionObj::implObj::threadObj> &thread_)
-		: thread_(thread_), id_(thread_->info->alloc_xid())
-	{
-	}
-
-	~xidObj() noexcept
-	{
-		thread_->info->release_xid(id_);
-	}
+	xidObj(const connection_thread &thread_);
+	~xidObj() noexcept;
 };
 
 // Allocate a specific xid for an object.
@@ -58,7 +51,7 @@ template<typename type> class LIBCXX_HIDDEN xid_t  {
  public:
 	const ref<xidObj> xid_obj;
 
-	xid_t(const ref<connectionObj::implObj::threadObj> &thread_)
+	xid_t(const connection_thread &thread_)
 		: xid_obj(ref<xidObj>::create(thread_))
 	{
 	}
@@ -72,7 +65,7 @@ template<typename type> class LIBCXX_HIDDEN xid_t  {
 
 	inline auto thread() const { return xid_obj->thread_; }
 
-	inline auto conn() const { return xid_obj->thread_->info; }
+	inline auto conn() const;
 };
 
 // When xid_t's indirection is not needed.
@@ -87,10 +80,12 @@ public:
 
 	inline auto thread() const { return this ->thread_; }
 
-	inline auto conn() const { return this->thread_->info; }
+	inline auto conn() const;
 
 	inline type id() const { return this->id_; }
 };
+
+#include "xid_t_connection_thread.H"
 
 #if 0
 {

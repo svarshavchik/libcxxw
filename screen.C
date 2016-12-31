@@ -136,7 +136,7 @@ dim_t screenObj::height_in_millimeters() const
 screenObj::implObj::implObj(const xcb_screen_t *xcb_screen,
 			    size_t screen_number,
 			    const render &render_info,
-			    const ref<connectionObj::implObj::infoObj> &info)
+			    const connection_info &info)
 	: xcb_screen(xcb_screen),
 	  screen_number(screen_number),
 	  info(info),

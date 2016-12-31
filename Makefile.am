@@ -22,10 +22,14 @@ libcxxw_la_SOURCES=\
 	connection.H                                \
 	connection_info.C			    \
 	connection_info.H			    \
+	connection_infofwd.H			    \
 	connection_thread.C			    \
 	connection_thread.H			    \
+	connection_threadfwd.H			    \
 	connection_threadevent.C		    \
 	connection_threadrun.C			    \
+	elementimpl.C				    \
+	elementimpl.H				    \
 	ewmh.C					    \
 	ewmh.H					    \
 	generic_window.C			    \
@@ -53,7 +57,9 @@ libcxxw_la_SOURCES=\
 	values_and_mask.H			    \
 	window_handler.C			    \
 	window_handler.H			    \
+	xid_t.C					    \
 	xid_t.H					    \
+	xid_t_connection_thread.H		    \
         #
 
 TESTLINKTYPE=$(if $(STATIC),-static $(STATICLINKFLAGS))
