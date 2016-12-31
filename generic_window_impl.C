@@ -9,6 +9,7 @@
 #include "connection_info.H"
 #include "screen.H"
 #include "connection.H"
+#include "values_and_mask.H"
 #include <x/weakptr.H>
 #include <xcb/xcb.h>
 
@@ -17,16 +18,16 @@ LIBCXXW_NAMESPACE_START
 generic_windowObj::implObj::implObj(const screen &screenref,
 				    const ref<handlerObj> &handler,
 				    xcb_window_t parent,
+				    size_t nesting_level,
 				    const rectangle &initial_position,
-				    const values_and_mask &vm,
 				    uint16_t window_class,
 				    depth_t depth,
-				    xcb_visualid_t visual)
-	: elementimplObj(initial_position),
+				    xcb_visualid_t visual,
+				    xcb_colormap_t colormap)
+	: elementimplObj(nesting_level, initial_position),
 	  handler(handler), screenref(screenref)
 {
 	auto thread=handler->thread();
-	auto conn=handler->conn();
 
 	auto width=initial_position.width;
 	auto height=initial_position.height;
@@ -45,44 +46,83 @@ generic_windowObj::implObj::implObj(const screen &screenref,
 	auto window_id=handler->id();
 	LOG_DEBUG("Constructor: " << objname() << " xid " << window_id);
 
-	connection_threadObj::shared_data_t::lock lock(thread->shared_data);
+	thread->run_as(RUN_AS,
+		       [=,
+			border_pixel=screenref->impl->xcb_screen->black_pixel]
+		       (IN_THREAD_ONLY)
+		       {
+			       values_and_mask vm(XCB_CW_EVENT_MASK,
+						  handler->current_events(IN_THREAD),
+						  XCB_CW_COLORMAP,
+						  colormap,
+						  XCB_CW_BORDER_PIXEL,
+						  border_pixel);
 
-	xcb_create_window(conn->conn,
-			  (depth_t::value_type)depth,
-			  window_id,
-			  parent,
-			  (coord_t::value_type)initial_position.x,
-			  (coord_t::value_type)initial_position.y,
-			  (dim_t::value_type)width,
-			  (dim_t::value_type)height,
-			  2, // Border width
-			  window_class,
-			  visual,
-			  vm.mask,
-			  vm.values.data());
+			       xcb_create_window(thread_->info->conn,
+						 (depth_t::value_type)depth,
+						 window_id,
+						 parent,
+						 (coord_t::value_type)initial_position.x,
+						 (coord_t::value_type)initial_position.y,
+						 (dim_t::value_type)width,
+						 (dim_t::value_type)height,
+						 2, // Border width
+						 window_class,
+						 visual,
+						 vm.mask(),
+						 vm.values().data());
 
-	lock->window_handlers.insert({window_id, handler});
+			       thread_->window_handlers(IN_THREAD)
+				       ->insert({window_id, handler});
+		       });
 }
 
 generic_windowObj::implObj::~implObj() noexcept
 {
 	auto thread=handler->thread();
-	auto conn=handler->conn();
 	auto xid_obj=handler->xid_obj;
 
 	auto window_id=handler->id();
 	LOG_DEBUG("Destructor: " << objname() << " xid " << window_id);
 
-	connection_threadObj::shared_data_t::lock lock(thread->shared_data);
+	// Disconnect the handler from the thread's window handlers.
 
-	lock->window_handlers.erase(window_id);
-	lock->destroyed_xids.insert({window_id, xid_obj});
+	thread->run_as(RUN_AS,
+		       [=]
+		       (IN_THREAD_ONLY)
+		       {
+			       thread_->window_handlers(IN_THREAD)
+				       ->erase(window_id);
+			       thread->destroyed_xids(IN_THREAD)
+				       ->insert({window_id, xid_obj});
+		       });
 
-	handler->ondestroy([info=thread->info, window_id]
-			   {
-				   LOG_DEBUG("Destroy: xid " << window_id);
-				   xcb_destroy_window(info->conn, window_id);
-			   });
+	// Attach a destructor callback to the handler object.
+
+	// Note that there's a handler reference in window_handlers,
+	// so the following can't happen until the above run_as() completes,
+	// and until all other references to the handler go away. It is now
+	// safe to execute xcb_destroy_window().
+	//
+	// Capturing screenref by value is intentional, so that it won't
+	// get destroyed until the handler gets destroyed, taking the
+	// colormap dud with it...
+
+	handler->ondestroy
+		([thread, window_id, screen=get_screen()]
+		 {
+			 thread->run_as
+				 (RUN_AS,
+				  [window_id, screen]
+				  (IN_THREAD_ONLY)
+				  {
+					  LOG_DEBUG("Destroy: xid "
+						    << window_id);
+					  xcb_destroy_window(thread_->info
+							     ->conn,
+							     window_id);
+				  });
+		 });
 }
 
 bool generic_windowObj::implObj::get_frame_extents(dim_t &left,

@@ -11,6 +11,19 @@
 
 LIBCXXW_NAMESPACE_START
 
+// Received a message to stop, politely.
+
+void connection_threadObj::stop()
+{
+	stop_politely();
+}
+
+void connection_threadObj::dispatch_stop_politely()
+{
+	stop_received=true;
+	LOG_DEBUG("Connection thread stop message received");
+}
+
 // Figure out what the connection thread needs to do next. It could be:
 //
 // 1. Dispatch a message from its message queue.
@@ -18,18 +31,20 @@ LIBCXXW_NAMESPACE_START
 // 2. An X event, received via xcb_poll_event.
 //
 // 3.
+LOG_FUNC_SCOPE_DECL(LIBCXX_NAMESPACE::w::connection_threadObj::run_something,
+		    runLogger);
+
 void connection_threadObj
 ::run_something(msgqueue_auto &msgqueue,
 		struct pollfd *topoll,
 		size_t &npoll)
 {
-	// See if there's a message to be dispatched on the message queue.
+	LOG_FUNC_SCOPE(runLogger);
 
-	if (!msgqueue->empty())
-	{
+	// Process all messages on the queue, this takes priority.
+
+	while (!msgqueue->empty())
 		msgqueue.event();
-		return;
-	}
 
 	// Check if the connection errored out, if not, check for
 	// a message.
@@ -43,25 +58,34 @@ void connection_threadObj
 
 	if (npoll == 2)
 	{
-		auto event=return_pointer(xcb_poll_for_event(info->conn));
+		bool processed_messages=false;
 
-		if (event)
+		while (auto event=return_pointer(xcb_poll_for_event(info->conn)))
 		{
-			LOG_DEBUG("Processing event "
+			processed_messages=true;
+
+			LOG_TRACE("Processing event "
 				  << (int)(event->response_type & ~0x80)
 				  << (event->response_type & 0x80
 				      ? " (SendEvent)":""));
 
 			run_event(event);
-			return;
 		}
+
+		if (processed_messages)
+			return;
 
 		// Flush anything we have.
 		xcb_flush(info->conn);
 	}
 
+	// Ok, no more work to do, and we were asked to politely stop.
+	if (stop_received)
+	{
+		stopping_politely=true;
+	}
 	// Ok, nothing else to do but poll().
-
+	LOG_TRACE("Polling");
 	if (poll(topoll, npoll, -1) < 0)
 	{
 		if (errno != EINTR && errno != EAGAIN &&
@@ -71,6 +95,21 @@ void connection_threadObj
 			throw SYSEXCEPTION("poll");
 		}
 	}
+
+	if (topoll[0].revents & POLLIN)
+		msgqueue->getEventfd()->event();
 }
+
+void connection_threadObj
+::dispatch_do_run_as(const char *file,
+		     int line,
+		     const x::function<void (IN_THREAD_ONLY)> &func)
+{
+	LOG_FUNC_SCOPE(runLogger);
+	LOG_TRACE("Dispatching: " << file << "(" << line << ")");
+
+	func(connection_thread(this));
+}
+
 
 LIBCXXW_NAMESPACE_END

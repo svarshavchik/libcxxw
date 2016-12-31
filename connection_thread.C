@@ -27,6 +27,14 @@ void connection_threadObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin)
 
 	LOG_DEBUG("Connection thread started");
 
+	// Initialize thread-only variables
+
+	std::map<xcb_window_t, ref<window_handlerObj>> window_handlers;
+	std::map<uint32_t, ref<xidObj>> destroyed_xids;
+
+	window_handlers_thread_only= &window_handlers;
+	destroyed_xids_thread_only= &destroyed_xids;
+
 	// Set two file descriptors to poll.
 	//
 	// 1. The message queue event file descriptor, set it to
@@ -52,21 +60,18 @@ void connection_threadObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin)
 
 	size_t n_poll=2;
 
-	bool keepgoing=true;
+	stop_received=false;
+	stopping_politely=false;
 
 	do
 	{
 		try {
 			run_something(msgqueue, pfd, n_poll);
-		} catch (const stopexception &e)
-		{
-			LOG_DEBUG("Connection thread shutdown");
-			keepgoing=false;
 		} catch (const exception &e)
 		{
 			e->caught();
 		}
-	} while (keepgoing);
+	} while (!stopping_politely);
 }
 
 void connection_threadObj::report_error(const xcb_generic_error_t *e)

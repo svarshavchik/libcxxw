@@ -9,6 +9,7 @@
 #include <x/w/connectionfwd.H>
 #include <x/w/rectangle.H>
 #include <x/w/picturefwd.H>
+#include <x/w/main_windowfwd.H>
 #include <x/w/rgbfwd.H>
 #include <x/obj.H>
 #include <x/vectorfwd.H>
@@ -101,6 +102,10 @@ public:
 	//! Create a solid color fill picture object.
 
 	const_picture create_solid_color_picture(const rgb &color) const;
+
+	//! Create a new top level window
+
+	main_window create_mainwindow();
 };
 
 LIBCXXW_NAMESPACE_END

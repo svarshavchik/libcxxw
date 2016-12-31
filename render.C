@@ -211,4 +211,21 @@ render::find_standard_format(xcb_pict_standard_t s) const
 	return iter->second;
 }
 
+std::list<const_pictformat>
+render::compatible_pictformats(const const_pictformat &format)	const
+{
+	std::list<const_pictformat> formats;
+
+	for (const auto &f:available_pictformats)
+	{
+		if (f.second->impl->id == format->impl->id)
+			continue;
+
+		if (f.second->rgb_compatible(format))
+			formats.push_back(f.second);
+	}
+
+	return formats;
+}
+
 LIBCXXW_NAMESPACE_END

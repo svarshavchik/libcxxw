@@ -16,7 +16,6 @@ void connection_threadObj::run_event(const xcb_generic_event_t *event)
 	auto msg=reinterpret_cast<const xcb_ ## msg_type ## _t		\
 				  *>(event);
 
-
 	switch (event->response_type & ~0x80) {
 	case 0:
 		{
@@ -38,9 +37,7 @@ void connection_threadObj::run_event(const xcb_generic_event_t *event)
 
 void connection_threadObj::recycle_xid(uint32_t xid)
 {
-	shared_data_t::lock lock{shared_data};
-
-	lock->destroyed_xids.erase(xid);
+	destroyed_xids_thread_only->erase(xid);
 }
 
 LIBCXXW_NAMESPACE_END

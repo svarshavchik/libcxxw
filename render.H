@@ -6,6 +6,7 @@
 #define render_h
 
 #include <map>
+#include <list>
 #include <vector>
 #include <xcb/xcb.h>
 #include <xcb/xcb_renderutil.h>
@@ -62,6 +63,17 @@ public:
 	// Find an alpha pictformat for the given bit depth.
 
 	const_pictformat find_alpha_pictformat_by_depth(depth_t d) const;
+
+	// Search available_pictformats for all pictformats compatible
+	// with the given one.
+	//
+	// This is typically used to select a pictformat for a top level
+	// window. The screen's root window is an rgb window, and this is
+	// going to find all pictformats that are rgb_compatible() with the
+	// root window's
+
+	std::list<const_pictformat>
+		compatible_pictformats(const const_pictformat &format) const;
 };
 
 LIBCXXW_NAMESPACE_END

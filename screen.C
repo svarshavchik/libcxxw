@@ -4,7 +4,9 @@
 */
 #include "libcxxw_config.h"
 #include "screen.H"
-#include "connection_info.H"
+#include "connection_thread.H"
+#include "screen_depthinfo.H"
+#include "xid_t.H"
 #include <x/mpobj.H>
 #include <x/weakptr.H>
 #include <x/refptr_traits.H>
@@ -130,22 +132,91 @@ dim_t screenObj::height_in_millimeters() const
 	return impl->height_in_millimeters();
 }
 
+///////////////////////////////////////////////////////////////////////////////
+
+screenObj::implObj::toplevelwindow_colormapObj
+::toplevelwindow_colormapObj(const connection_thread &thread,
+			     xcb_window_t window,
+			     xcb_visualid_t visual)
+	: xid_t<xcb_colormap_t>(thread)
+{
+	thread->run_as
+		(RUN_AS,
+		 [window, visual, xid_obj=this->xid_obj]
+		 (IN_THREAD_ONLY)
+		 {
+			 xcb_create_colormap(thread_->info->conn,
+					     XCB_COLORMAP_ALLOC_NONE,
+					     xid_obj->id_,
+					     window,
+					     visual);
+		 });
+}
+
+screenObj::implObj::toplevelwindow_colormapObj
+::~toplevelwindow_colormapObj() noexcept
+{
+	thread()->run_as(RUN_AS,
+			 [xid_obj=this->xid_obj]
+			 (IN_THREAD_ONLY)
+			 {
+				 xcb_free_colormap(thread_->info->conn,
+						   xid_obj->id_);
+			 });
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 
 screenObj::implObj::implObj(const xcb_screen_t *xcb_screen,
 			    size_t screen_number,
 			    const render &render_info,
-			    const connection_info &info)
+			    const vector<const_ref<depthObj>> &screen_depths,
+			    const screen::base::visual_t &toplevelwindow_visual,
+			    const const_pictformat &toplevelwindow_pictformat,
+			    const connection_thread &thread)
 	: xcb_screen(xcb_screen),
 	  screen_number(screen_number),
-	  info(info),
-	  screen_depths(create_screen_depths(xcb_screen,
-					     render_info,
-					     screen_number))
+	  thread(thread),
+	  toplevelwindow_visual(toplevelwindow_visual),
+	  toplevelwindow_pictformat(toplevelwindow_pictformat),
+	  toplevelwindow_colormap(ref<toplevelwindow_colormapObj>
+				  ::create(thread, xcb_screen->root,
+					   toplevelwindow_visual->impl
+					   ->visual_id)),
+	  screen_depths(screen_depths)
 {
 }
 
 screenObj::implObj::~implObj() noexcept=default;
+
+depth_t screenObj::implObj::root_depth() const
+{
+	return depth_t(xcb_screen->root_depth);
+}
+
+screen::base::visual_t screenObj::implObj::root_visual() const
+{
+	return root_visual(xcb_screen, screen_depths);
+}
+
+screen::base::visual_t screenObj::implObj
+::root_visual(const xcb_screen_t *xcb_screen,
+	      const vector<const_ref<depthObj>> &screen_depths)
+{
+	depth_t d{xcb_screen->root_depth};
+
+	for (const auto &depth:*screen_depths)
+	{
+		if (depth->depth != d)
+			continue;
+
+		for (const auto &v:depth->visuals)
+		{
+			if (v->impl->visual_id == xcb_screen->root_visual)
+				return v;
+		}
+	}
+	throw EXCEPTION("Cannot find root visual");
+}
 
 LIBCXXW_NAMESPACE_END

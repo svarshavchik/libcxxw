@@ -1,0 +1,21 @@
+<class name="connection_threadObj">
+  <method name="stop_politely">
+    <comment>
+      //! Stop the thread, after completing all work.
+    </comment>
+  </method>
+  <method name="do_run_as">
+    <comment>
+      //! Run a closure in the connection thread
+    </comment>
+    <param>
+      <decl>const char *file</decl>
+    </param>
+    <param>
+      <decl>int line</decl>
+    </param>
+    <param>
+      <decl>const x::function&lt;void (IN_THREAD_ONLY)> &amp;func</decl>
+    </param>
+  </method>
+</class>

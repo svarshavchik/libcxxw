@@ -12,6 +12,7 @@ config.status
 config.sub
 configure
 /compile
+/connection_thread.msgs.H
 /cxxw
 /cxxwoptions.H
 /depcomp
@@ -29,6 +30,7 @@ ltmain.sh
 missing
 /stamp-h1
 /testderivedaxis
+/testmainwindow
 /m4
 /po
 /xml

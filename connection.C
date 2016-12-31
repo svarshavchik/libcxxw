@@ -8,6 +8,7 @@
 #include "connection_thread.H"
 #include "screen.H"
 #include "messages.H"
+#include "pictformat.H"
 #include "x/w/pictformat.H"
 #include <x/exception.H>
 #include <xcb/xcb_renderutil.h>
@@ -72,7 +73,7 @@ connectionObj::implObj::implObj(const connection_info &info)
 // Extract screens
 
 static inline std::vector<ref<screenObj::implObj>>
-get_screens(const connection_info &info,
+get_screens(const connection_thread &thread,
 	    const render &render_info,
 	    const xcb_setup_t *setup)
 {
@@ -85,33 +86,99 @@ get_screens(const connection_info &info,
 
 	while (iter.rem)
 	{
+		auto xcb_screen=iter.data;
+
+		// Calculate the visual for each screen's top level windows.
+
+		// Start with the root window's advertised visual, then search
+		// for a compatible visual that has an alpha channel.
+
+		auto screen_depths=screenObj::implObj
+			::create_screen_depths(xcb_screen,
+					       render_info,
+					       screen_number);
+
+		auto root_visual=screenObj::implObj::root_visual(xcb_screen,
+								 screen_depths);
+		auto root_pictformat=root_visual->render_format;
+
+		auto compatible_pictformats=
+			render_info.compatible_pictformats(root_pictformat);
+
+		for (const auto &candidate:compatible_pictformats)
+		{
+			if (candidate->alpha_depth
+			    > root_pictformat->alpha_depth)
+				root_pictformat=candidate;
+		}
+
+		bool found=false;
+		for (const auto &depth: *screen_depths)
+		{
+			if (depth->depth != root_pictformat->depth)
+				continue;
+
+			for (const auto &v:depth->visuals)
+			{
+				// This pictformat should be somewhere here
+
+				if (v->render_format->impl->id !=
+				    root_pictformat->impl->id)
+					continue;
+
+				root_visual=v;
+				found=true;
+				break;
+			}
+			if (found)
+				break;
+		}
+
 		v.push_back(ref<screenObj::implObj>
-			    ::create(iter.data,
+			    ::create(xcb_screen,
 				     screen_number++,
 				     render_info,
-				     info));
+				     screen_depths,
+				     root_visual,
+				     root_pictformat,
+				     thread));
 		xcb_screen_next(&iter);
 	}
 
 	return v;
 }
 
-connectionObj::implObj::implObj(const connection_info &info,
-				const xcb_setup_t *setup,
-				const connection_thread &thread)
-	: info(info),
-	  thread(thread),
-	  setup(*setup),
-	  render_info(info->conn),
-	  ewmh_info(info->conn),
-	  screens(get_screens(info, render_info, setup))
+////////////////////////////////////////////////////////////////////////////
+//
+// Wrapper to start and stop the connection thread.
+
+connectionObj::implObj::connection_wrapper
+::connection_wrapper(const connection_thread &thread)
+	: connection_thread(thread)
 {
 	start_thread(thread);
 }
 
+connectionObj::implObj::connection_wrapper
+::~connection_wrapper() noexcept
+{
+	(*this)->stop();
+}
+
+connectionObj::implObj::implObj(const connection_info &info,
+				const xcb_setup_t *setup,
+				const connection_thread &thread)
+	: info(info),
+	  render_info(info->conn),
+	  ewmh_info(info->conn),
+	  setup(*setup),
+	  thread(thread),
+	  screens(get_screens(thread, render_info, setup))
+{
+}
+
 connectionObj::implObj::~implObj() noexcept
 {
-	thread->stop();
 }
 
 std::string connectionObj::implObj::get_error(const xcb_generic_error_t *e)

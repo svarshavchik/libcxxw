@@ -10,7 +10,6 @@
 #include "x/w/types.H"
 #include "x/w/rectangle.H"
 
-#include "values_and_mask.H"
 #include "elementimpl.H"
 #include <xcb/xcb.h>
 
@@ -36,11 +35,12 @@ class LIBCXX_HIDDEN generic_windowObj::implObj
 	implObj(const screen &screenref,
 		const ref<handlerObj> &handler,
 		xcb_window_t parent,
+		size_t nesting_level,
 		const rectangle &initial_position,
-		const values_and_mask &vm,
 		uint16_t window_class,
-		depth_t depth=depth_t(XCB_COPY_FROM_PARENT),
-		xcb_visualid_t visual=XCB_COPY_FROM_PARENT);
+		depth_t depth,
+		xcb_visualid_t visual,
+		xcb_colormap_t colormap);
 
 
 	//! Destructor

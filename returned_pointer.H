@@ -6,6 +6,7 @@
 #define returned_pointer_H
 
 #include <cstdlib>
+#include <algorithm>
 #include "x/w/namespace.H"
 
 LIBCXXW_NAMESPACE_START
@@ -41,11 +42,7 @@ public:
 
 	returned_pointer<ptr_type> &operator=(returned_pointer<ptr_type> &&o)
 	{
-		auto cpy=ptr;
-
-		ptr=o.ptr;
-
-		o.ptr=cpy;
+		std::swap(ptr, o.ptr);
 		return *this;
 	}
 
@@ -55,17 +52,17 @@ public:
 
 	// Pretend we're that pointer.
 
-	decltype(*ptr) &operator*() const { return *ptr; }
+	auto &operator*() const { return *ptr; }
 
-	decltype(*ptr) &operator[](size_t i) { return ptr[i]; }
+	auto &operator[](size_t i) { return ptr[i]; }
 
 	ptr_type operator->() const { return ptr; }
 
 	operator ptr_type() const { return ptr; }
 
-	operator bool() const { return operator ptr_type() != nullptr; }
+	operator bool() const { return ptr != nullptr; }
 
-	bool operator !() const { return operator ptr_type() == nullptr; }
+	bool operator !() const { return ptr == nullptr; }
 
 	//returned_pointer &operator=(ptr_type *ptrArg) // Happens just once.
 	//{

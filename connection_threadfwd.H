@@ -35,13 +35,14 @@ typedef ptr<connection_threadObj> connection_threadptr;
 // name(IN_THREAD)
 
 #define THREAD_DATA_ONLY(name)						\
-	//! name is accessible in connection thread only		\
+	/*! name is accessible in connection thread only */		\
+									\
 	inline auto &name(IN_THREAD_ONLY)				\
 	{								\
 		return name ## _thread_only;				\
 	}								\
 									\
-	//! name is accessible in connection thread only		\
+	/*! name is accessible in connection thread only */		\
 									\
 	inline const auto &name(IN_THREAD_ONLY) const			\
 	{								\

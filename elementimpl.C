@@ -7,8 +7,13 @@
 
 LIBCXXW_NAMESPACE_START
 
-elementimplObj::elementimplObj(const rectangle &initial_position)
-	: current_position_thread_only(initial_position)
+elementimplObj::elementimplObj(size_t nesting_level,
+			       const rectangle &initial_position)
+	: data_thread_only
+	  ({
+		  nesting_level,
+		  initial_position,
+	  })
 {
 }
 

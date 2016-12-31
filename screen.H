@@ -10,7 +10,8 @@
 #include "x/w/picturefwd.H"
 #include "x/w/rgbfwd.H"
 #include "connection.H"
-#include "connection_infofwd.H"
+#include "connection_threadfwd.H"
+#include "xid_t.H"
 #include <x/logger.H>
 #include <x/vector.H>
 #include <x/weakmultimapfwd.H>
@@ -42,13 +43,31 @@ class LIBCXX_HIDDEN screenObj::implObj
 	: virtual public obj,
 	  public screen_solidcolorpictures {
 
+	// Even though we use RENDER, CreateWindow() needs a colormap...
+
+	class toplevelwindow_colormapObj
+		: virtual public obj,
+		  public xid_t<xcb_colormap_t> {
+	public:
+		toplevelwindow_colormapObj(const connection_thread &thread,
+					   xcb_window_t window,
+					   xcb_visualid_t visual);
+
+		~toplevelwindow_colormapObj() noexcept;
+	};
+
  public:
 
 	LOG_CLASS_SCOPE;
 
 	const xcb_screen_t * const xcb_screen;
 	const size_t screen_number;
-	const connection_info info;
+	const connection_thread thread;
+
+	// Use this visual, pictformat, and colormap for top level windows
+	const screen::base::visual_t toplevelwindow_visual;
+	const const_pictformat toplevelwindow_pictformat;
+	const ref<toplevelwindow_colormapObj> toplevelwindow_colormap;
 
 	// Same screen_depths as the public object.
 	const vector<const_ref<depthObj>> screen_depths;
@@ -63,7 +82,10 @@ class LIBCXX_HIDDEN screenObj::implObj
 	implObj(const xcb_screen_t *xcb_screen,
 		size_t screen_number,
 		const render &render_info,
-		const connection_info &info);
+		const vector<const_ref<depthObj>> &screen_depths,
+		const screen::base::visual_t &toplevelwindow_visual,
+		const const_pictformat &toplevelwindow_pictformat,
+		const connection_thread &thread);
 	~implObj() noexcept;
 
 	// Get screen dimensions
@@ -92,6 +114,18 @@ class LIBCXX_HIDDEN screenObj::implObj
 	{
 		return 1;
 	}
+
+	// Return root window's depth.
+
+	depth_t root_depth() const;
+
+	// Return root window's visual
+
+	screen::base::visual_t root_visual() const;
+
+	static screen::base::visual_t
+		root_visual(const xcb_screen_t *xcb_screen,
+			    const vector<const_ref<depthObj>> &screen_depths);
 
 	// Compute # of pixels from millimeters
 

@@ -37,6 +37,11 @@ libcxxw_la_SOURCES=\
 	generic_window_handler.C		    \
 	generic_window_handler.H		    \
 	generic_window_impl.C			    \
+	main_window.C				    \
+	main_window.H				    \
+	main_window_handler.C			    \
+	main_window_handler.H			    \
+	main_window_impl.C			    \
 	messages.H				    \
 	metrics_axis.C				    \
 	metrics_axis.H				    \
@@ -71,15 +76,25 @@ cxxw_LDFLAGS=$(TESTLINKTYPE)
 $(call OPTIONS_GEN,cxxwoptions.H,cxxwoptions.xml)
 
 EXTRA_DIST = config.rpath m4/ChangeLog COPYING \
+	connection_thread.xml \
 	$(man_MANS)
 
-TESTPROGRAMS=testderivedaxis
+$(call THREADMSGDISPATCHER_GEN,connection_thread.msgs.H, connection_thread.msgs.xml)
 
-noinst_PROGRAMS=testderivedaxis
+TESTPROGRAMS=\
+	testderivedaxis					\
+	testmainwindow					\
+	#
+
+noinst_PROGRAMS=$(TESTPROGRAMS)
 
 testderivedaxis_SOURCES=testderivedaxis.C
 testderivedaxis_LDADD=libcxxw.la
 testderivedaxis_LDFLAGS=$(TESTLINKTYPE)
+
+testmainwindow_SOURCES=testmainwindow.C
+testmainwindow_LDADD=libcxxw.la
+testmainwindow_LDFLAGS=$(TESTLINKTYPE)
 
 if HAVE_DOCS
 
