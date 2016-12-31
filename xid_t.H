@@ -25,16 +25,16 @@ class LIBCXX_HIDDEN xidObj : virtual public obj {
 	// Connection thread
 	const ref<connectionObj::implObj::threadObj> thread_;
 
-	const uint32_t id;
+	const uint32_t id_;
 
 	xidObj(const ref<connectionObj::implObj::threadObj> &thread_)
-		: thread_(thread_), id(thread_->info->alloc_xid())
+		: thread_(thread_), id_(thread_->info->alloc_xid())
 	{
 	}
 
 	~xidObj() noexcept
 	{
-		thread_->info->release_xid(id);
+		thread_->info->release_xid(id_);
 	}
 };
 
@@ -63,7 +63,7 @@ template<typename type> class LIBCXX_HIDDEN xid_t  {
 
 	inline type id() const
 	{
-		return xid_obj->id;
+		return xid_obj->id_;
 	}
 
 	inline auto thread() const { return xid_obj->thread_; }
@@ -71,6 +71,22 @@ template<typename type> class LIBCXX_HIDDEN xid_t  {
 	inline auto conn() const { return xid_obj->thread_->info; }
 };
 
+// When xid_t's indirection is not needed.
+
+template<typename type> class LIBCXX_HIDDEN xid_tObj : public xidObj {
+
+public:
+
+	using xidObj::xidObj;
+
+	~xid_tObj() noexcept=default;
+
+	inline auto thread() const { return this ->thread_; }
+
+	inline auto conn() const { return this->thread_->info; }
+
+	inline type id() const { return this->id_; }
+};
 
 #if 0
 {

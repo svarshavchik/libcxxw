@@ -4,6 +4,8 @@
 #include <x/w/screenfwd.H>
 #include <x/w/connectionfwd.H>
 #include <x/w/rectangle.H>
+#include <x/w/picturefwd.H>
+#include <x/w/rgbfwd.H>
 #include <x/obj.H>
 #include <x/vectorfwd.H>
 
@@ -90,6 +92,11 @@ public:
 			       dim_t &right,
 			       dim_t &top,
 			       dim_t &bottom) const;
+
+
+	//! Create a solid color fill picture object.
+
+	const_picture create_solid_color_picture(const rgb &color) const;
 };
 
 LIBCXXW_NAMESPACE_END

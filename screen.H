@@ -3,9 +3,12 @@
 
 #include "x/w/screen.H"
 #include "x/w/screen_depthinfo.H"
+#include "x/w/picturefwd.H"
+#include "x/w/rgbfwd.H"
 #include "connection.H"
 #include <x/logger.H>
 #include <x/vector.H>
+#include <x/weakmultimapfwd.H>
 #include <xcb/xcb.h>
 
 #include <cmath>
@@ -14,9 +17,25 @@ LIBCXXW_NAMESPACE_START
 
 class render;
 
+// A cache of solid color pictures for this screen.
+
+class LIBCXX_HIDDEN screen_solidcolorpictures {
+
+ public:
+	typedef x::weakmultimap<rgb, pictureObj> map_t;
+
+	map_t map;
+
+	screen_solidcolorpictures();
+
+	~screen_solidcolorpictures() noexcept;
+};
+
 //! xcb_screen_t owner.
 
-class LIBCXX_HIDDEN screenObj::implObj : virtual public obj {
+class LIBCXX_HIDDEN screenObj::implObj
+	: virtual public obj,
+	  public screen_solidcolorpictures {
 
  public:
 

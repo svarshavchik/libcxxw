@@ -36,6 +36,8 @@ libcxxw_la_SOURCES=\
 	messages.H				    \
 	pictformat.C				    \
 	pictformat.H				    \
+	picture.C				    \
+	picture.H				    \
 	rectangle.C				    \
 	render.C				    \
 	render.H				    \
@@ -45,6 +47,7 @@ libcxxw_la_SOURCES=\
 	screen.H				    \
 	screen_depthinfo.C			    \
 	screen_depthinfo.H			    \
+	screen_solidcolorpictures.C		    \
 	values_and_mask.H			    \
 	window_handler.C			    \
 	window_handler.H			    \
