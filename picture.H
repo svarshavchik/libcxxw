@@ -1,3 +1,7 @@
+/*
+** Copyright 2017 Double Precision, Inc.
+** See COPYING for distribution information.
+*/
 #ifndef picture_h
 #define picture_h
 

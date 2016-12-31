@@ -1,3 +1,7 @@
+/*
+** Copyright 2017 Double Precision, Inc.
+** See COPYING for distribution information.
+*/
 #ifndef values_and_mask_h
 #define values_and_mask_h
 

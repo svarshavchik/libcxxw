@@ -1,4 +1,8 @@
 /*
+** Copyright 2017 Double Precision, Inc.
+** See COPYING for distribution information.
+*/
+/*
 ** Copyright 2014 Double Precision, Inc.
 ** See COPYING for distribution information.
 */

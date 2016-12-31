@@ -73,6 +73,7 @@ AC_CONFIG_FILES([Makefile
 	po/Makefile.in
 	includes/x/w/Makefile
 	includes/x/w/deps/Makefile
+	includes/x/w/metrics/Makefile
 	])
 
 AC_SUBST([LIBTOOL_DEPS])

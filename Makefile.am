@@ -34,6 +34,8 @@ libcxxw_la_SOURCES=\
 	generic_window_handler.H		    \
 	generic_window_impl.C			    \
 	messages.H				    \
+	metrics_axis.C				    \
+	metrics_axis.H				    \
 	pictformat.C				    \
 	pictformat.H				    \
 	picture.C				    \
@@ -65,6 +67,13 @@ $(call OPTIONS_GEN,cxxwoptions.H,cxxwoptions.xml)
 EXTRA_DIST = config.rpath m4/ChangeLog COPYING \
 	$(man_MANS)
 
+TESTPROGRAMS=testderivedaxis
+
+noinst_PROGRAMS=testderivedaxis
+
+testderivedaxis_SOURCES=testderivedaxis.C
+testderivedaxis_LDADD=libcxxw.la
+testderivedaxis_LDFLAGS=$(TESTLINKTYPE)
 
 if HAVE_DOCS
 

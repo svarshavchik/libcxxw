@@ -1,3 +1,7 @@
+/*
+** Copyright 2017 Double Precision, Inc.
+** See COPYING for distribution information.
+*/
 #ifndef returned_pointer_H
 #define returned_pointer_H
 

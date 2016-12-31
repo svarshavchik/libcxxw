@@ -1,3 +1,7 @@
+/*
+** Copyright 2017 Double Precision, Inc.
+** See COPYING for distribution information.
+*/
 #ifndef x_w_pictureobj_h
 #define x_w_pictureobj_h
 

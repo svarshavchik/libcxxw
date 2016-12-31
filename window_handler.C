@@ -1,3 +1,8 @@
+/*
+** Copyright 2017 Double Precision, Inc.
+** See COPYING for distribution information.
+*/
+#include "libcxxw_config.h"
 #include "window_handler.H"
 
 LOG_CLASS_INIT(LIBCXX_NAMESPACE::w::window_handlerObj);

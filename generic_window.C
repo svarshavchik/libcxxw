@@ -1,3 +1,8 @@
+/*
+** Copyright 2017 Double Precision, Inc.
+** See COPYING for distribution information.
+*/
+#include "libcxxw_config.h"
 #include "generic_window.H"
 #include "x/w/screen.H"
 

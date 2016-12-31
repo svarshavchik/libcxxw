@@ -28,6 +28,7 @@ libtool
 ltmain.sh
 missing
 /stamp-h1
+/testderivedaxis
 /m4
 /po
 /xml

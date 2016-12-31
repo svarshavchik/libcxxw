@@ -1,13 +1,12 @@
+/*
+** Copyright 2017 Double Precision, Inc.
+** See COPYING for distribution information.
+*/
 #include "libcxxw_config.h"
 #include "pictformat.H"
 #include "messages.H"
 
-namespace LIBCXX_NAMESPACE {
-	namespace w {
-#if 0
-	}
-}
-#endif
+LIBCXXW_NAMESPACE_START
 
 pictformatObj::color_index::color_index(uint32_t indexArg, rgb &&colorArg)
 	: index(indexArg), color(std::move(colorArg))
@@ -57,10 +56,4 @@ bool pictformatObj::rgb_compatible(const const_pictformat &format) const
 		blue_shift == format->blue_shift;
 }
 
-
-#if 0
-{
-	{
-#endif
-	}
-}
+LIBCXXW_NAMESPACE_END

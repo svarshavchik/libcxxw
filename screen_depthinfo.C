@@ -1,3 +1,8 @@
+/*
+** Copyright 2017 Double Precision, Inc.
+** See COPYING for distribution information.
+*/
+#include "libcxxw_config.h"
 #include "screen_depthinfo.H"
 #include "messages.H"
 #include "x/w/pictformat.H"
