@@ -35,7 +35,6 @@ libcxxw_la_SOURCES=\
 	element.H				    \
 	elementfwd.H				    \
 	element_impl.C				    \
-	element_screen_thread.H			    \
 	ewmh.C					    \
 	ewmh.H					    \
 	generic_window.C			    \
@@ -43,6 +42,7 @@ libcxxw_la_SOURCES=\
 	generic_window_handler.C		    \
 	generic_window_handler.H		    \
 	generic_window_impl.C			    \
+	impl_connection_thread.H		    \
 	main_window.C				    \
 	main_window.H				    \
 	main_window_handler.C			    \

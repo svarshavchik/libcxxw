@@ -9,6 +9,8 @@
 
 LIBCXXW_NAMESPACE_START
 
+#define THREAD screenref->impl->thread
+
 elementObj::implObj::implObj(const screen &screenref,
 			     size_t nesting_level,
 			     const rectangle &initial_position)
@@ -34,13 +36,13 @@ void elementObj::implObj::request_visibility(bool flag)
 	// The connection thread invokes update_visibility after processing
 	// all messages.
 
-	thread()->run_as(RUN_AS,
-			 [flag, me=elementimpl(this)]
-			 (IN_THREAD_ONLY)
-			 {
-				 me->data(IN_THREAD).requested_visibility=flag;
-				 IN_THREAD->visibility_updated(IN_THREAD)->insert(me);
-			 });
+	THREAD->run_as(RUN_AS,
+		       [flag, me=elementimpl(this)]
+		       (IN_THREAD_ONLY)
+		       {
+			       me->data(IN_THREAD).requested_visibility=flag;
+			       IN_THREAD->visibility_updated(IN_THREAD)->insert(me);
+		       });
 }
 
 void elementObj::implObj::update_visibility(IN_THREAD_ONLY)

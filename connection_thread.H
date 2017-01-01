@@ -129,7 +129,6 @@ class LIBCXX_HIDDEN connection_threadObj
 };
 
 #include "xid_t_connection_thread.H"
-#include "element_screen_thread.H"
 
 LIBCXXW_NAMESPACE_END
 

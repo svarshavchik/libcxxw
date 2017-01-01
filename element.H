@@ -81,11 +81,6 @@ class LIBCXX_HIDDEN elementObj::implObj : virtual public obj {
 	//! The window's screen.
 	inline const_screen get_screen() const { return screenref; }
 
-	//! Return the connection thread
-
-	connection_thread thread();
-
-
 	/////////////////////////////////////////////////////////////////////
 
 
@@ -113,8 +108,6 @@ inline bool elements_by_nesting_level::operator()(const elementimpl &a,
 
 	return a < b;
 }
-
-#include "element_screen_thread.H"
 
 LIBCXXW_NAMESPACE_END
 

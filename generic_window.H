@@ -62,6 +62,8 @@ class LIBCXX_HIDDEN generic_windowObj::implObj
 	//! A visibility update is translated to mapping/unmapping the window.
 
 	void visibility_updated(IN_THREAD_ONLY, bool flag) override;
+
+	connection_thread thread();
 };
 
 LIBCXXW_NAMESPACE_END

@@ -3,6 +3,7 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
+#include "impl_connection_thread.H"
 #include "main_window.H"
 #include "main_window_handler.H"
 #include "connection_thread.H"
