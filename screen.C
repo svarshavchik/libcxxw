@@ -76,7 +76,7 @@ screenObj::~screenObj() noexcept
 
 ref<obj> screenObj::mcguffin() const
 {
-	return conn()->mcguffin();
+	return get_connection()->mcguffin();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -88,7 +88,7 @@ bool screenObj::get_frame_extents(dim_t &left,
 				  dim_t &top,
 				  dim_t &bottom) const
 {
-	mpobj<ewmh>::lock lock(conn()->impl->ewmh_info);
+	mpobj<ewmh>::lock lock(get_connection()->impl->ewmh_info);
 
 	return lock->get_frame_extents(left, right, top, bottom,
 				       impl->screen_number,
@@ -100,7 +100,7 @@ rectangle screenObj::get_workarea() const
 	rectangle ret{coord_t(0),
 			coord_t(0), width_in_pixels(), height_in_pixels()};
 
-	mpobj<ewmh>::lock lock(conn()->impl->ewmh_info);
+	mpobj<ewmh>::lock lock(get_connection()->impl->ewmh_info);
 
 	lock->get_workarea(impl->screen_number, ret);
 

@@ -52,10 +52,10 @@ public:
 	~screenObj() noexcept LIBCXX_HIDDEN;
 
 	//! The screen's connection
-	connection conn();
+	connection get_connection();
 
 	//! The screen's connection
-	const_connection conn() const;
+	const_connection get_connection() const;
 
 	//! The connection mcguffin
 

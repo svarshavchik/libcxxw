@@ -16,6 +16,16 @@ elementObj::~elementObj() noexcept
 {
 }
 
+screen elementObj::get_screen()
+{
+	return impl->get_screen();
+}
+
+const_screen elementObj::get_screen() const
+{
+	return impl->get_screen();
+}
+
 void elementObj::show()
 {
 	impl->request_visibility(true);

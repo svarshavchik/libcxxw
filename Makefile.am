@@ -18,6 +18,7 @@ libcxxw_la_LIBADD=-lcxx
 libcxxw_la_LDFLAGS=$(STATICLINKFLAGS)
 
 libcxxw_la_SOURCES=\
+	catch_exceptions.H			    \
 	connection.C                                \
 	connection.H                                \
 	connection_info.C			    \

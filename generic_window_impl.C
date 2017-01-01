@@ -130,7 +130,7 @@ bool generic_windowObj::implObj::get_frame_extents(dim_t &left,
 						   dim_t &top,
 						   dim_t &bottom) const
 {
-	mpobj<ewmh>::lock lock(get_screen()->conn()->impl->ewmh_info);
+	mpobj<ewmh>::lock lock(get_screen()->get_connection()->impl->ewmh_info);
 
 	return lock->get_frame_extents(left, right, top, bottom,
 				       get_screen()->impl->screen_number,

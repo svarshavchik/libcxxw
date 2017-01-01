@@ -39,6 +39,11 @@ ref<obj> connectionObj::mcguffin() const
 	return impl->info;
 }
 
+void connectionObj::on_disconnect(const std::function<void ()> &callback)
+{
+	return impl->thread->install_on_disconnect(callback);
+}
+
 /////////////////////////////////////////////////////////////////////////////
 
 // The first step is to create the connection info handle.

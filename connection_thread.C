@@ -37,6 +37,7 @@ void connection_threadObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin)
 	window_handlers_thread_only= &window_handlers;
 	destroyed_xids_thread_only= &destroyed_xids;
 	visibility_updated_thread_only= &visibility_updated;
+	disconnect_callback_thread_only=[] {};
 
 	// Set two file descriptors to poll.
 	//

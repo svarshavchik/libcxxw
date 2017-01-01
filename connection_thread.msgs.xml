@@ -4,6 +4,16 @@
       //! Stop the thread, after completing all work.
     </comment>
   </method>
+
+  <method name="install_on_disconnect">
+    <comment>
+      //! Install a new on_disconnect() callback.
+    </comment>
+    <param>
+      <decl>const std::function&lt;void ()&gt; &amp;callback</decl>
+    </param>
+  </method>
+
   <method name="do_run_as">
     <comment>
       //! Run a closure in the connection thread

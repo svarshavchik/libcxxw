@@ -11,6 +11,8 @@
 #include <vector>
 #include <experimental/string_view>
 
+#include <functional>
+
 LIBCXXW_NAMESPACE_START
 
 //! A connection to the server
@@ -41,6 +43,10 @@ class connectionObj : virtual public obj {
 
 	//! Returns the mcguffin for the underlying display server connection.
 	ref<obj> mcguffin() const;
+
+	//! Invoke this lambda if the server disconnects unexpectedly.
+
+	void on_disconnect(const std::function<void ()> &callback);
 };
 
 LIBCXXW_NAMESPACE_END

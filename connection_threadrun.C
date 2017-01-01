@@ -7,7 +7,7 @@
 #include "connection_thread.H"
 #include "element.H"
 #include "returned_pointer.H"
-
+#include "catch_exceptions.H"
 #include <x/sysexception.H>
 
 LIBCXXW_NAMESPACE_START
@@ -23,6 +23,11 @@ void connection_threadObj::dispatch_stop_politely()
 {
 	stop_received=true;
 	LOG_DEBUG("Connection thread stop message received");
+}
+
+void connection_threadObj::dispatch_install_on_disconnect(const std::function<void ()> &callback)
+{
+	disconnect_callback_thread_only=callback;
 }
 
 // Figure out what the connection thread needs to do next. It could be:
@@ -57,6 +62,9 @@ void connection_threadObj
 		LOG_FATAL("Connection to the X server has a fatal error");
 		npoll=1;
 		topoll[1].revents=0;
+		try {
+			disconnect_callback_thread_only();
+		} CATCH_EXCEPTIONS;
 	}
 
 	if (npoll == 2)

@@ -5,9 +5,9 @@
 #ifdef x_w_screen_h
 #ifdef x_w_connection_h
 
-inline connection screenObj::conn() { return connref; }
+inline connection screenObj::get_connection() { return connref; }
 
-inline const_connection screenObj::conn() const { return connref; }
+inline const_connection screenObj::get_connection() const { return connref; }
 
 #endif
 #endif

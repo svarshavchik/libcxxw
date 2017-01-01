@@ -17,18 +17,24 @@ class screenBase;
 //!
 //! \code
 //!
-//! // Open the default screen on the default display connection
 //! auto s=INSERT_LIBX_NAMESPACE::w::screen::create();
 //!
-//! // Open the specified screen on the default display connection
 //! auto s=INSERT_LIBX_NAMESPACE::w::screen::create(1);
 //!
-//! // Open the default screen on the given connection
 //! auto s=INSERT_LIBX_NAMESPACE::w::screen::create(INSERT_LIBX_NAMESPACE::w::connection::create("localhost:0.0"));
 //!
-//! // Open the specified screen on the given connection
 //! auto s=INSERT_LIBX_NAMESPACE::w::screen::create(INSERT_LIBX_NAMESPACE::w::connection::create("localhost:0.0"), 1);
+//!
+//! INSERT_LIBX_NAMESPACE::w::connection conn=s->get_connection()
+//!
 //! \endcode
+//!
+//! create() returns a screen object for the default display of the default
+//! display server connection, a specific screen object, or a screen object
+//! for the explicitly specified connection, depending on the parameters.
+//!
+//! get_connection() returns the existing screen object's
+//! \ref connection "connection object".
 
 typedef ref<screenObj, screenBase> screen;
 

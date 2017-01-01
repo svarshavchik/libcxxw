@@ -59,7 +59,7 @@ const_picture screenObj::create_solid_color_picture(const rgb &color) const
 			       [this, &color]
 			       {
 				       auto impl=ref<solidColorPictureObj>
-					       ::create(this->conn()
+					       ::create(this->get_connection()
 							->impl->thread,
 							color);
 

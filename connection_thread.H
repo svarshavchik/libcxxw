@@ -12,6 +12,7 @@
 #include <x/threadmsgdispatcher.H>
 #include <x/logger.H>
 #include <x/functional.H>
+#include <functional>
 #include <poll.h>
 #include <map>
 #include <set>
@@ -80,6 +81,10 @@ class LIBCXX_HIDDEN connection_threadObj
 	// received.
 
 	std::map<uint32_t, ref<xidObj>> *destroyed_xids_thread_only;
+
+	// on_disconnect() callback
+
+	std::function<void ()> disconnect_callback_thread_only;
 
 	// Event processing
 	void recycle_xid(uint32_t xid);

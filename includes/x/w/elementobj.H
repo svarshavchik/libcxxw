@@ -6,6 +6,7 @@
 #define x_w_elementobj_h
 
 #include <x/w/elementfwd.H>
+#include <x/w/screenfwd.H>
 #include <x/obj.H>
 
 LIBCXXW_NAMESPACE_START
@@ -21,11 +22,25 @@ public:
 
 	const ref<implObj> impl;
 
+	//! Application data.
+
+	//! The library doesn't use this opaque pointer in any way.
+
+	ptr<obj> appdata;
+
 	//! Constructor
 	elementObj(const ref<implObj> &impl) LIBCXX_HIDDEN;
 
 	//! Destructor
 	~elementObj() noexcept LIBCXX_HIDDEN;
+
+	//! Return my screen
+
+	screen get_screen();
+
+	//! Return my screen
+
+	const_screen get_screen() const;
 
 	//! Show this display element
 

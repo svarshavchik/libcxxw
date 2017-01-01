@@ -4,13 +4,29 @@
 */
 #include "x/w/main_window.H"
 #include "x/w/screen.H"
+#include "x/w/connection.H"
 #include <x/destroycallbackflag.H>
-
+#include <x/mpobj.H>
 #include <string>
 #include <iostream>
+
+typedef LIBCXX_NAMESPACE::mpcobj<bool> flag_t;
+
+class stopmeObj : virtual public LIBCXX_NAMESPACE::obj {
+
+public:
+
+	flag_t flag;
+
+	stopmeObj() : flag(false) {}
+	~stopmeObj() noexcept=default;
+};
+
+typedef LIBCXX_NAMESPACE::ref<stopmeObj> stopme;
+
 void testmainwindow()
 {
-	x::destroyCallbackFlag::base::guard guard;
+	LIBCXX_NAMESPACE::destroyCallbackFlag::base::guard guard;
 
 	auto main_window=LIBCXX_NAMESPACE::w::main_window::base::create();
 
@@ -18,9 +34,21 @@ void testmainwindow()
 
 	main_window->show();
 
+	auto flag=stopme::create();
 
-	std::string s;
-	std::getline(std::cin, s);
+	main_window->get_screen()->get_connection()->on_disconnect
+		([flag]
+		 {
+			 flag_t::lock lock{flag->flag};
+
+			 *lock=true;
+
+			 lock.notify_all();
+		 });
+
+	flag_t::lock lock{flag->flag};
+
+	lock.wait( [&] { return *lock; });
 }
 
 int main()
