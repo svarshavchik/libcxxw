@@ -28,8 +28,11 @@ libcxxw_la_SOURCES=\
 	connection_threadfwd.H			    \
 	connection_threadevent.C		    \
 	connection_threadrun.C			    \
-	elementimpl.C				    \
-	elementimpl.H				    \
+	element.C				    \
+	element.H				    \
+	elementfwd.H				    \
+	element_impl.C				    \
+	element_screen_thread.H			    \
 	ewmh.C					    \
 	ewmh.H					    \
 	generic_window.C			    \
@@ -76,7 +79,6 @@ cxxw_LDFLAGS=$(TESTLINKTYPE)
 $(call OPTIONS_GEN,cxxwoptions.H,cxxwoptions.xml)
 
 EXTRA_DIST = config.rpath m4/ChangeLog COPYING \
-	connection_thread.xml \
 	$(man_MANS)
 
 $(call THREADMSGDISPATCHER_GEN,connection_thread.msgs.H, connection_thread.msgs.xml)

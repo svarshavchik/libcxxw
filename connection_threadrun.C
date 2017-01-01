@@ -5,6 +5,7 @@
 #include "libcxxw_config.h"
 #include "connection_info.H"
 #include "connection_thread.H"
+#include "element.H"
 #include "returned_pointer.H"
 
 #include <x/sysexception.H>
@@ -39,6 +40,8 @@ void connection_threadObj
 		struct pollfd *topoll,
 		size_t &npoll)
 {
+	connection_thread me(this);
+
 	LOG_FUNC_SCOPE(runLogger);
 
 	// Process all messages on the queue, this takes priority.
@@ -77,6 +80,23 @@ void connection_threadObj
 
 		// Flush anything we have.
 		xcb_flush(info->conn);
+	}
+
+	if (!visibility_updated_thread_only->empty())
+	{
+		// Some display element changed their visibility. Invoke
+		// their update_visibility() methods.
+		while (!visibility_updated_thread_only->empty())
+		{
+			auto iter=visibility_updated_thread_only->begin();
+
+			auto element=*iter;
+
+			visibility_updated_thread_only->erase(iter);
+
+			element->update_visibility(me);
+		}
+		return;
 	}
 
 	// Ok, no more work to do, and we were asked to politely stop.

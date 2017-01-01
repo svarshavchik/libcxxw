@@ -6,11 +6,11 @@
 #define generic_window_h
 
 #include "x/w/generic_window.H"
-#include "x/w/screen.H"
 #include "x/w/types.H"
 #include "x/w/rectangle.H"
 
-#include "elementimpl.H"
+#include "element.H"
+#include "connection_threadfwd.H"
 #include <xcb/xcb.h>
 
 LIBCXXW_NAMESPACE_START
@@ -27,7 +27,7 @@ LIBCXXW_NAMESPACE_START
 //! xcb_destroy_window().
 
 class LIBCXX_HIDDEN generic_windowObj::implObj
-	: public elementimplObj {
+	: public elementObj::implObj {
 
  public:
 
@@ -48,15 +48,6 @@ class LIBCXX_HIDDEN generic_windowObj::implObj
 
 	const ref<handlerObj> handler;
 
-	// Find my screen.
- private:
-	const screen screenref;
- public:
-	inline screen get_screen() { return screenref; }
-
-	//! The window's screen.
-	inline const_screen get_screen() const { return screenref; }
-
 	//! Return the window manager's hints.
 
 	bool get_frame_extents(dim_t &left,
@@ -64,6 +55,10 @@ class LIBCXX_HIDDEN generic_windowObj::implObj
 			       dim_t &top,
 			       dim_t &bottom)
 		const;
+
+	//! A visibility update is translated to mapping/unmapping the window.
+
+	void visibility_updated(IN_THREAD_ONLY, bool flag) override;
 };
 
 LIBCXXW_NAMESPACE_END

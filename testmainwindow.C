@@ -16,6 +16,9 @@ void testmainwindow()
 
 	guard(main_window->get_screen()->mcguffin());
 
+	main_window->show();
+
+
 	std::string s;
 	std::getline(std::cin, s);
 }

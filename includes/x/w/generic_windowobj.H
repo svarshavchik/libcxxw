@@ -7,6 +7,7 @@
 
 #include <x/w/generic_windowfwd.H>
 #include <x/w/screenfwd.H>
+#include <x/w/elementobj.H>
 #include <x/obj.H>
 #include <x/logger.H>
 
@@ -16,7 +17,7 @@ LIBCXXW_NAMESPACE_START
 
 //! \see generic_window
 
-class generic_windowObj : virtual public obj {
+class generic_windowObj : public elementObj {
 
 public:
 	LOG_CLASS_SCOPE;

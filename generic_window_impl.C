@@ -24,8 +24,8 @@ generic_windowObj::implObj::implObj(const screen &screenref,
 				    depth_t depth,
 				    xcb_visualid_t visual,
 				    xcb_colormap_t colormap)
-	: elementimplObj(nesting_level, initial_position),
-	  handler(handler), screenref(screenref)
+	: elementObj::implObj(screenref, nesting_level, initial_position),
+	  handler(handler)
 {
 	auto thread=handler->thread();
 
@@ -130,11 +130,19 @@ bool generic_windowObj::implObj::get_frame_extents(dim_t &left,
 						   dim_t &top,
 						   dim_t &bottom) const
 {
-	mpobj<ewmh>::lock lock(screenref->conn()->impl->ewmh_info);
+	mpobj<ewmh>::lock lock(get_screen()->conn()->impl->ewmh_info);
 
 	return lock->get_frame_extents(left, right, top, bottom,
-				       screenref->impl->screen_number,
+				       get_screen()->impl->screen_number,
 				       handler->id());
+}
+
+void generic_windowObj::implObj::visibility_updated(IN_THREAD_ONLY, bool flag)
+{
+	if (flag)
+		xcb_map_window(IN_THREAD->info->conn, handler->id());
+	else
+		xcb_unmap_window(IN_THREAD->info->conn, handler->id());
 }
 
 LIBCXXW_NAMESPACE_END

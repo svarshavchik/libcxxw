@@ -144,6 +144,8 @@ class LIBCXX_HIDDEN screenObj::implObj
 	}
 };
 
+#include "element_screen_thread.H"
+
 LIBCXXW_NAMESPACE_END
 
 #endif

@@ -7,11 +7,14 @@
 
 #include "connection_infofwd.H"
 #include "connection_threadfwd.H"
+#include "elementfwd.H"
 #include "connection_info.H"
 #include <x/threadmsgdispatcher.H>
 #include <x/logger.H>
 #include <x/functional.H>
 #include <poll.h>
+#include <map>
+#include <set>
 
 LIBCXXW_NAMESPACE_START
 
@@ -48,6 +51,15 @@ class LIBCXX_HIDDEN connection_threadObj
 
 	void run_event(const xcb_generic_event_t *event);
 
+	// Define a set of elements, ordered by their nesting level.
+
+	typedef std::set<elementimpl, elements_by_nesting_level> element_set_t;
+
+	// Here's a list of elements that have requested their visibility to
+	// be changed.
+
+	element_set_t *visibility_updated_thread_only;
+
 	///////////////////////////////////////////////////////////////////
 	//
 	// These objects are constructed on the connection thread's stack,
@@ -75,6 +87,7 @@ class LIBCXX_HIDDEN connection_threadObj
  public:
 	THREAD_DATA_ONLY(window_handlers);
 	THREAD_DATA_ONLY(destroyed_xids);
+	THREAD_DATA_ONLY(visibility_updated);
 
 #include "connection_thread.msgs.H"
 
@@ -111,6 +124,7 @@ class LIBCXX_HIDDEN connection_threadObj
 };
 
 #include "xid_t_connection_thread.H"
+#include "element_screen_thread.H"
 
 LIBCXXW_NAMESPACE_END
 
