@@ -36,15 +36,17 @@ void testmainwindow()
 
 	auto flag=stopme::create();
 
-	main_window->get_screen()->get_connection()->on_disconnect
-		([flag]
-		 {
-			 flag_t::lock lock{flag->flag};
+	auto stopme=[flag]
+		{
+			flag_t::lock lock{flag->flag};
 
-			 *lock=true;
+			*lock=true;
 
-			 lock.notify_all();
-		 });
+			lock.notify_all();
+		};
+
+	main_window->on_delete(stopme);
+	main_window->get_screen()->get_connection()->on_disconnect(stopme);
 
 	flag_t::lock lock{flag->flag};
 

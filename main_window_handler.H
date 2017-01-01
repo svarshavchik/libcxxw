@@ -7,6 +7,7 @@
 
 #include "generic_window_handler.H"
 #include "main_window.H"
+#include "connection_threadfwd.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -19,12 +20,20 @@ LIBCXXW_NAMESPACE_START
 class LIBCXX_HIDDEN main_windowObj::handlerObj :
 	public generic_windowObj::handlerObj {
 
+	std::function<void ()> on_delete_callback_thread_only;
+
  public:
 
-	using generic_windowObj::handlerObj::handlerObj;
+	THREAD_DATA_ONLY(on_delete_callback);
+
+	handlerObj(IN_THREAD_ONLY);
 
 	//! Destructor
 	~handlerObj() noexcept;
+
+	void client_message_event(IN_THREAD_ONLY,
+				  const xcb_client_message_event_t *event)
+		override;
 };
 
 LIBCXXW_NAMESPACE_END

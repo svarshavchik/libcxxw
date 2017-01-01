@@ -33,6 +33,19 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 	window_handlerObj(IN_THREAD_ONLY);
 
 	~window_handlerObj() noexcept;
+
+	//! Set a window property.
+
+	void change_property(IN_THREAD_ONLY,
+			     uint8_t mode,
+			     xcb_atom_t property,
+			     xcb_atom_t type,
+			     uint8_t format,
+			     uint32_t data_len,
+			     void *data);
+
+	virtual void client_message_event(IN_THREAD_ONLY,
+					  const xcb_client_message_event_t *);
 };
 
 LIBCXXW_NAMESPACE_END

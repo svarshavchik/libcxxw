@@ -8,6 +8,7 @@
 #include "window_handler.H"
 #include "element.H"
 #include "xid_t.H"
+#include "catch_exceptions.H"
 
 LOG_CLASS_INIT(LIBCXX_NAMESPACE::w::connection_threadObj);
 
@@ -71,10 +72,7 @@ void connection_threadObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin)
 	{
 		try {
 			run_something(msgqueue, pfd, n_poll);
-		} catch (const exception &e)
-		{
-			e->caught();
-		}
+		} CATCH_EXCEPTIONS;
 	} while (!stopping_politely);
 }
 

@@ -7,6 +7,7 @@
 
 #include "connection.H"
 #include "connection_infofwd.H"
+#include "builtin_atoms.H"
 #include <x/threadmsgdispatcher.H>
 #include <x/mpobj.H>
 #include <queue>
@@ -23,6 +24,10 @@ class LIBCXX_HIDDEN connection_infoObj : virtual public obj {
 	xcb_connection_t * const conn;
 
 	const int default_screen;
+
+	//! Atoms
+
+	const builtin_atoms atoms_info;
 
 	connection_infoObj(const std::experimental::string_view &display);
 

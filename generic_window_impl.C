@@ -23,7 +23,8 @@ generic_windowObj::implObj::implObj(const screen &screenref,
 				    uint16_t window_class,
 				    depth_t depth,
 				    xcb_visualid_t visual,
-				    xcb_colormap_t colormap)
+				    xcb_colormap_t colormap,
+				    const std::function<void (IN_THREAD_ONLY)> &configure_new_window)
 	: elementObj::implObj(screenref, nesting_level, initial_position),
 	  handler(handler)
 {
@@ -74,6 +75,8 @@ generic_windowObj::implObj::implObj(const screen &screenref,
 
 			       thread_->window_handlers(IN_THREAD)
 				       ->insert({window_id, handler});
+
+			       configure_new_window(IN_THREAD);
 		       });
 }
 

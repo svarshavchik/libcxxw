@@ -12,6 +12,7 @@
 #include "element.H"
 #include "connection_threadfwd.H"
 #include <xcb/xcb.h>
+#include <functional>
 
 LIBCXXW_NAMESPACE_START
 
@@ -40,7 +41,9 @@ class LIBCXX_HIDDEN generic_windowObj::implObj
 		uint16_t window_class,
 		depth_t depth,
 		xcb_visualid_t visual,
-		xcb_colormap_t colormap);
+		xcb_colormap_t colormap,
+		const std::function<void (IN_THREAD_ONLY)>
+		&configure_new_window);
 
 
 	//! Destructor

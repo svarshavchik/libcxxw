@@ -33,6 +33,10 @@ public:
 
 	//! Destructor
 	~main_windowObj() noexcept LIBCXX_HIDDEN;
+
+	//! Install a callback that gets invoke when the window close button is clicked.
+
+	void on_delete(const std::function<void ()> &callback);
 };
 
 LIBCXXW_NAMESPACE_END

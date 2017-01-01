@@ -32,7 +32,8 @@ connection_infoObj::connection_infoObj(const std::experimental::string_view &dis
 }
 
 connection_infoObj::connection_infoObj(connection_handle &&handle)
-	: conn(handle.conn), default_screen(handle.default_screen)
+	: conn(handle.conn), default_screen(handle.default_screen),
+	  atoms_info(handle.conn)
 {
 }
 

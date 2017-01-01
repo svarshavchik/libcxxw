@@ -21,6 +21,11 @@ main_windowObj::main_windowObj(const ref<implObj> &impl)
 
 main_windowObj::~main_windowObj() noexcept=default;
 
+void main_windowObj::on_delete(const std::function<void ()> &callback)
+{
+	impl->on_delete(callback);
+}
+
 //////////////////////////////////////////////////////////////////////////////
 //
 // Create a default main window

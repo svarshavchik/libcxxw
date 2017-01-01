@@ -27,6 +27,10 @@ class LIBCXX_HIDDEN main_windowObj::implObj
 
 	//! The handler for the connection thread events.
 	const ref<handlerObj> handler;
+
+	//! Install a callback to invoke upon close.
+
+	void on_delete(const std::function<void ()> &callback);
 };
 
 LIBCXXW_NAMESPACE_END
