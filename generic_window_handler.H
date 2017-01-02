@@ -7,7 +7,11 @@
 
 #include "window_handler.H"
 #include "generic_window.H"
+#include "drawable.H"
 #include "connection_threadfwd.H"
+#include "background_colorobj.H"
+#include "x/w/pictformatfwd.H"
+#include "x/w/types.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -17,8 +21,10 @@ LIBCXXW_NAMESPACE_START
 //! xcb_destroy_window. An implementation class that holds a reference on
 //! this handler is responsible for that.
 
-class LIBCXX_HIDDEN generic_windowObj::handlerObj :
-	public window_handlerObj::window_handlerObj {
+class LIBCXX_HIDDEN generic_windowObj::handlerObj
+	: public window_handlerObj,
+	  public drawableObj::implObj,
+	  public background_colorObj {
 
 	xcb_event_mask_t current_events_thread_only=
 		xcb_event_mask_t(XCB_EVENT_MASK_EXPOSURE |
@@ -27,12 +33,34 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj :
 
  public:
 
-	using window_handlerObj::window_handlerObj;
+	//! What my constructor needs
+
+	struct constructor_params {
+
+		//! The window's pictformat.
+
+		const_pictformat drawable_pictformat;
+
+		//! The window's initial background color
+
+		background_colorObj
+		::background_color_closure_t initial_background_color;
+	};
+
+	handlerObj(IN_THREAD_ONLY,
+		   const constructor_params &params);
 
 	//! Destructor
 	~handlerObj() noexcept;
 
 	THREAD_DATA_ONLY(current_events);
+
+	//! Create the window's PICTURE.
+
+	//! This gets called after a window is created, immediately after
+	//! xcb_create_window()
+
+	void create_picture(IN_THREAD_ONLY);
 };
 
 LIBCXXW_NAMESPACE_END

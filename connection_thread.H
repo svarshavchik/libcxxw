@@ -9,6 +9,7 @@
 #include "connection_threadfwd.H"
 #include "elementfwd.H"
 #include "connection_info.H"
+#include "x/w/rectangle.H"
 #include <x/threadmsgdispatcher.H>
 #include <x/logger.H>
 #include <x/functional.H>
@@ -81,6 +82,12 @@ class LIBCXX_HIDDEN connection_threadObj
 	// received.
 
 	std::map<uint32_t, ref<xidObj>> *destroyed_xids_thread_only;
+
+	// Collected Expose event rectangles. They get collected until
+	// a received expose event indicates count=0, then the exposure
+	// event gets processed
+
+	std::set<rectangle> *exposed_rectangles_thread_only;
 
 	// on_disconnect() callback
 

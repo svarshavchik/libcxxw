@@ -2,10 +2,6 @@
 ** Copyright 2017 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
-/*
-** Copyright 2014 Double Precision, Inc.
-** See COPYING for distribution information.
-*/
 
 #ifndef x_w_pictformatfwd_H
 #define x_w_pictformatfwd_H

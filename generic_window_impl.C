@@ -76,6 +76,8 @@ generic_windowObj::implObj::implObj(const screen &screenref,
 			       thread_->window_handlers(IN_THREAD)
 				       ->insert({window_id, handler});
 
+			       handler->create_picture(IN_THREAD);
+
 			       configure_new_window(IN_THREAD);
 		       });
 }

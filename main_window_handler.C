@@ -8,8 +8,9 @@
 
 LIBCXXW_NAMESPACE_START
 
-main_windowObj::handlerObj::handlerObj(IN_THREAD_ONLY)
-	: generic_windowObj::handlerObj(IN_THREAD),
+main_windowObj::handlerObj::handlerObj(IN_THREAD_ONLY,
+				       const constructor_params &params)
+	: generic_windowObj::handlerObj(IN_THREAD, params),
 	on_delete_callback_thread_only([] {})
 {
 }

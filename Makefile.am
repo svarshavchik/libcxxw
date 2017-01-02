@@ -18,6 +18,10 @@ libcxxw_la_LIBADD=-lcxx
 libcxxw_la_LDFLAGS=$(STATICLINKFLAGS)
 
 libcxxw_la_SOURCES=\
+	background_color.C			    \
+	background_color.H			    \
+	background_colorfwd.H			    \
+	background_colorobj.H			    \
 	builtin_atoms.C				    \
 	builtin_atoms.H				    \
 	catch_exceptions.H			    \
@@ -31,6 +35,9 @@ libcxxw_la_SOURCES=\
 	connection_threadfwd.H			    \
 	connection_threadevent.C		    \
 	connection_threadrun.C			    \
+	drawable.C				    \
+	drawable.H				    \
+	drawable_impl.C				    \
 	element.C				    \
 	element.H				    \
 	elementfwd.H				    \

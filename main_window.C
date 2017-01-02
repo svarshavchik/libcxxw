@@ -7,6 +7,7 @@
 #include "main_window_handler.H"
 #include "screen.H"
 #include "screen_depthinfo.H"
+#include "x/w/picture.H"
 #include "x/w/screen.H"
 
 LOG_CLASS_INIT(LIBCXX_NAMESPACE::w::main_windowObj);
@@ -37,8 +38,20 @@ main_window main_windowBase::create()
 
 main_window screenObj::create_mainwindow()
 {
+	auto background_color=create_solid_color_picture
+		(rgb(0xCCCC, 0xCCCC, 0xCCCC));
+
+	main_windowObj::handlerObj::constructor_params params{
+		impl->toplevelwindow_pictformat,
+		[background_color]
+		{
+			return background_color;
+		}
+	};
+
+
 	auto handler=ref<main_windowObj::handlerObj>
-		::create(connref->impl->thread);
+		::create(connref->impl->thread, params);
 
 	rectangle dimensions={
 		coord_t{0},

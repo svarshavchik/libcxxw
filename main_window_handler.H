@@ -26,7 +26,7 @@ class LIBCXX_HIDDEN main_windowObj::handlerObj :
 
 	THREAD_DATA_ONLY(on_delete_callback);
 
-	handlerObj(IN_THREAD_ONLY);
+	handlerObj(IN_THREAD_ONLY, const constructor_params &params);
 
 	//! Destructor
 	~handlerObj() noexcept;

@@ -8,6 +8,7 @@
 #include "window_handler.H"
 #include "xid_t.H"
 #include <xcb/xproto.h>
+#include <x/sentry.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -60,6 +61,43 @@ void connection_threadObj::run_event(const xcb_generic_event_t *event)
 			FIND_HANDLER(window);
 
 			DISPATCH_HANDLER(client_message_event,(IN_THREAD, msg));
+		}
+		return;
+	case XCB_EXPOSE:
+		{
+			GET_MSG(expose_event);
+
+			FIND_HANDLER(window);
+
+			// Note that X and Y coordinates in Exposure are
+			// unsigned. Which makes sense; but we're stuffing this
+			// into a generic rectangle, which can have negative
+			// cordinates; hence rectangle's X & Y are signed.
+
+			exposed_rectangles_thread_only
+				->insert(rectangle{coord_t{coord_t::value_type(msg->x)},
+						   coord_t{coord_t::value_type(msg->y)},
+						   dim_t{msg->width},
+						   dim_t{msg->height}
+					});
+
+			if (msg->count)
+				return; // More exposure events coming.
+
+			// Just clear the set of rectangles when we leave this
+			// scope.
+
+			auto sentry=
+				make_sentry([s=this->exposed_rectangles_thread_only]
+					    {
+						    s->clear();
+					    });
+
+			sentry.guard();
+			iter->second->exposure_event
+				(IN_THREAD,
+				 *exposed_rectangles_thread_only);
+
 		}
 		return;
 	};

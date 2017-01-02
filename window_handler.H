@@ -44,8 +44,17 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 			     uint32_t data_len,
 			     void *data);
 
+	////////////////////////////////////////////////////////////////////
+	//
+	// Implement in top level windows:
+
+	//! Protocol client message
 	virtual void client_message_event(IN_THREAD_ONLY,
 					  const xcb_client_message_event_t *);
+
+	//! Exposure event
+	virtual void exposure_event(IN_THREAD_ONLY,
+				    const std::set<rectangle> &);
 };
 
 LIBCXXW_NAMESPACE_END

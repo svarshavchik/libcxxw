@@ -4,6 +4,8 @@
 */
 #include "libcxxw_config.h"
 #include "generic_window.H"
+#include "generic_window_handler.H"
+#include "drawable.H"
 #include "x/w/screen.H"
 
 LOG_CLASS_INIT(LIBCXX_NAMESPACE::w::generic_windowObj);
@@ -12,6 +14,7 @@ LIBCXXW_NAMESPACE_START
 
 generic_windowObj::generic_windowObj(const ref<implObj> &impl)
 	: elementObj(impl),
+	  drawableObj(impl->handler),
 	  impl(impl)
 {
 }

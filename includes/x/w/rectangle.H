@@ -6,6 +6,7 @@
 #define x_w_rectangle_h
 
 #include <x/w/types.H>
+#include <x/w/rectanglefwd.H>
 #include <iostream>
 
 LIBCXXW_NAMESPACE_START
@@ -22,9 +23,6 @@ struct rectangle {
 	dim_t width=dim_t(0);
 	//! Coordinate
 	dim_t height=dim_t(0);
-
-	//! Constructor
-	rectangle()=default;
 
 	//! Destructor
 	~rectangle() noexcept=default;
@@ -56,9 +54,6 @@ struct rectangle {
 	}
 };
 
-//! Dump the rectangle into an output stream.
-
-std::ostream &operator<<(std::ostream &, const rectangle &);
 LIBCXXW_NAMESPACE_END
 
 #endif

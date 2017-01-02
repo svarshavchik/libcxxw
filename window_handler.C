@@ -34,5 +34,9 @@ void window_handlerObj::client_message_event(IN_THREAD_ONLY,
 					     const xcb_client_message_event_t *)
 {
 }
+void window_handlerObj::exposure_event(IN_THREAD_ONLY,
+				       const std::set<rectangle> &)
+{
+}
 
 LIBCXXW_NAMESPACE_END
