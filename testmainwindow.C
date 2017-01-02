@@ -5,7 +5,7 @@
 #include "x/w/main_window.H"
 #include "x/w/screen.H"
 #include "x/w/connection.H"
-#include <x/destroycallbackflag.H>
+#include <x/destroy_callback.H>
 #include <x/mpobj.H>
 #include <string>
 #include <iostream>
@@ -26,7 +26,7 @@ typedef LIBCXX_NAMESPACE::ref<stopmeObj> stopme;
 
 void testmainwindow()
 {
-	LIBCXX_NAMESPACE::destroyCallbackFlag::base::guard guard;
+	LIBCXX_NAMESPACE::destroy_callback::base::guard guard;
 
 	auto main_window=LIBCXX_NAMESPACE::w::main_window::base::create();
 

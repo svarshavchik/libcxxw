@@ -11,7 +11,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-//! Base class for \ref generic "generic window"s.
+//! Base class for \ref generic_window "generic window"s.
 
 //! Refer to this class as \c INSERT_LIBX_NAMESPACE::w::generic_window::base
 

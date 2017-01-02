@@ -11,7 +11,7 @@
 #include "messages.H"
 
 #include <x/logger.H>
-#include <x/destroycallbackflag.H>
+#include <x/destroy_callback.H>
 #include <iostream>
 #include <iomanip>
 
@@ -19,7 +19,7 @@ LOG_FUNC_SCOPE_DECL("cxxw", cxxwLog);
 
 static void displayinfo()
 {
-	x::destroyCallbackFlag::base::guard guard;
+	x::destroy_callback::base::guard guard;
 
 	typedef LIBCXXW_NAMESPACE::depth_t::value_type depth_t;
 
@@ -103,7 +103,7 @@ static void displayinfo()
 
 static void displayscreen()
 {
-	x::destroyCallbackFlag::base::guard guard;
+	x::destroy_callback::base::guard guard;
 
 	typedef LIBCXXW_NAMESPACE::depth_t::value_type depth_t;
 

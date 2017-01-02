@@ -63,7 +63,7 @@ size_t n=conn->default_screen();
 	<programlisting>
 #include &lt;x/w/connection.H>
 #include &lt;x/w/screen.H>
-#include &lt;x/destroycallbackflag.H>
+#include &lt;x/destroy_callback.H>
 
 &ns;:ref&lt;&ns;::obj> application()
 {
@@ -78,7 +78,7 @@ size_t n=conn->default_screen();
 int main()
 {
    try {
-	&ns;::destroyCallbackFlag::base::guard guard;
+	&ns;::destroy_callback::base::guard guard;
 
 	guard( application() );
    } catch (const &ns;::exception &amp;e)
