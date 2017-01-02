@@ -19,7 +19,7 @@ connection_threadObj
 {
 }
 
-connection_threadObj::~connection_threadObj() noexcept=default;
+connection_threadObj::~connection_threadObj()=default;
 
 void connection_threadObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin)
 {

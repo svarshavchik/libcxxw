@@ -21,7 +21,7 @@ generic_windowObj::handlerObj
 {
 }
 
-generic_windowObj::handlerObj::~handlerObj() noexcept=default;
+generic_windowObj::handlerObj::~handlerObj()=default;
 
 void generic_windowObj::handlerObj::create_picture(IN_THREAD_ONLY)
 {

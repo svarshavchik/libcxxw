@@ -33,7 +33,7 @@ class LIBCXX_HIDDEN connection_infoObj : virtual public obj {
 
 	connection_infoObj(connection_handle &&handle);
 
-	~connection_infoObj() noexcept;
+	~connection_infoObj();
 
 	// Allocate new XIDs, via xcb_generate_id().
 

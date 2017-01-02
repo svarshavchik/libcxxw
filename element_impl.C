@@ -23,7 +23,7 @@ elementObj::implObj::implObj(const screen &screenref,
 {
 }
 
-elementObj::implObj::~implObj() noexcept=default;
+elementObj::implObj::~implObj()=default;
 
 void elementObj::implObj::request_visibility(bool flag)
 {

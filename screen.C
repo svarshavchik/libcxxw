@@ -70,7 +70,7 @@ screenObj::screenObj(const ref<implObj> &impl,
 {
 }
 
-screenObj::~screenObj() noexcept
+screenObj::~screenObj()
 {
 }
 
@@ -154,7 +154,7 @@ screenObj::implObj::toplevelwindow_colormapObj
 }
 
 screenObj::implObj::toplevelwindow_colormapObj
-::~toplevelwindow_colormapObj() noexcept
+::~toplevelwindow_colormapObj()
 {
 	thread()->run_as(RUN_AS,
 			 [xid_obj=this->xid_obj]
@@ -187,7 +187,7 @@ screenObj::implObj::implObj(const xcb_screen_t *xcb_screen,
 {
 }
 
-screenObj::implObj::~implObj() noexcept=default;
+screenObj::implObj::~implObj()=default;
 
 depth_t screenObj::implObj::root_depth() const
 {

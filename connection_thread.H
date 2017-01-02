@@ -33,7 +33,7 @@ class LIBCXX_HIDDEN connection_threadObj
 	const connection_info info;
 
 	connection_threadObj(const connection_info &info);
-	~connection_threadObj() noexcept;
+	~connection_threadObj();
 
 	// Call get_error() and log the results.
 

@@ -19,7 +19,7 @@ class LIBCXX_HIDDEN pictureObj::implObj
 
 	implObj(const connection_thread &thread_) LIBCXX_HIDDEN;
 
-	~implObj() noexcept;
+	~implObj();
 };
 
 LIBCXXW_NAMESPACE_END

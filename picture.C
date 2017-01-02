@@ -13,7 +13,7 @@ pictureObj::pictureObj(const ref<implObj> &impl)
 {
 }
 
-pictureObj::~pictureObj() noexcept=default;
+pictureObj::~pictureObj()=default;
 
 /////////////////////////////////////////////////////////////////////////////
 
@@ -22,6 +22,6 @@ pictureObj::implObj::implObj(const connection_thread &thread_)
 {
 }
 
-pictureObj::implObj::~implObj() noexcept=default;
+pictureObj::implObj::~implObj()=default;
 
 LIBCXXW_NAMESPACE_END

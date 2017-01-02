@@ -12,7 +12,7 @@ elementObj::elementObj(const ref<implObj> &impl)
 {
 }
 
-elementObj::~elementObj() noexcept
+elementObj::~elementObj()
 {
 }
 

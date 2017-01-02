@@ -19,7 +19,7 @@ public:
 	flag_t flag;
 
 	stopmeObj() : flag(false) {}
-	~stopmeObj() noexcept=default;
+	~stopmeObj()=default;
 };
 
 typedef LIBCXX_NAMESPACE::ref<stopmeObj> stopme;

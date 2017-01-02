@@ -72,7 +72,7 @@ class LIBCXX_HIDDEN elementObj::implObj : virtual public obj {
 	implObj(const screen &screenref,
 		size_t nesting_level,
 		const rectangle &initial_position);
-	~implObj() noexcept;
+	~implObj();
 
 	THREAD_DATA_ONLY(data);
  public:

@@ -25,7 +25,7 @@ class elements_by_nesting_level {
 public:
 
 	elements_by_nesting_level()=default;
-	~elements_by_nesting_level() noexcept=default;
+	~elements_by_nesting_level()=default;
 
 	bool operator()(const elementimpl &a, const elementimpl &b) const;
 };

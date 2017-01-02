@@ -29,7 +29,7 @@ class LIBCXX_HIDDEN main_windowObj::handlerObj :
 	handlerObj(IN_THREAD_ONLY, const constructor_params &params);
 
 	//! Destructor
-	~handlerObj() noexcept;
+	~handlerObj();
 
 	void client_message_event(IN_THREAD_ONLY,
 				  const xcb_client_message_event_t *event)

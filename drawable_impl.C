@@ -15,6 +15,6 @@ drawableObj::implObj::implObj(xcb_drawable_t drawable_id,
 {
 }
 
-drawableObj::implObj::~implObj() noexcept=default;
+drawableObj::implObj::~implObj()=default;
 
 LIBCXXW_NAMESPACE_END

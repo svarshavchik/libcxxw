@@ -47,7 +47,7 @@ class LIBCXX_HIDDEN generic_windowObj::implObj
 
 
 	//! Destructor
-	~implObj() noexcept;
+	~implObj();
 
 	const ref<handlerObj> handler;
 

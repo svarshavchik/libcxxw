@@ -35,7 +35,7 @@ public:
 	generic_windowObj(const ref<implObj> &impl) LIBCXX_HIDDEN;
 
 	//! Destructor
-	~generic_windowObj() noexcept LIBCXX_HIDDEN;
+	~generic_windowObj() LIBCXX_HIDDEN;
 
 	//! The window's screen.
 	screen get_screen();

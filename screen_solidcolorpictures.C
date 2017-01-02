@@ -25,7 +25,7 @@ screen_solidcolorpictures::screen_solidcolorpictures()
 {
 }
 
-screen_solidcolorpictures::~screen_solidcolorpictures() noexcept=default;
+screen_solidcolorpictures::~screen_solidcolorpictures()=default;
 
 // Subclass of a picture implementation object constructs the picture
 // via xcb_render_create_solid_fill().
@@ -46,7 +46,7 @@ class LIBCXX_HIDDEN solidColorPictureObj : public pictureObj::implObj {
 					     });
 	}
 
-	~solidColorPictureObj() noexcept
+	~solidColorPictureObj()
 	{
 		xcb_render_free_picture(conn()->conn, id());
 	}

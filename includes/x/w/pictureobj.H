@@ -30,7 +30,7 @@ public:
 
 	//! Destructor
 
-	~pictureObj() noexcept;
+	~pictureObj();
 };
 
 LIBCXXW_NAMESPACE_END

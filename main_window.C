@@ -20,7 +20,7 @@ main_windowObj::main_windowObj(const ref<implObj> &impl)
 {
 }
 
-main_windowObj::~main_windowObj() noexcept=default;
+main_windowObj::~main_windowObj()=default;
 
 void main_windowObj::on_delete(const std::function<void ()> &callback)
 {

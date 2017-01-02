@@ -13,6 +13,6 @@ background_colorObj::background_colorObj(const background_color_closure_t
 {
 }
 
-background_colorObj::~background_colorObj() noexcept=default;
+background_colorObj::~background_colorObj()=default;
 
 LIBCXXW_NAMESPACE_END

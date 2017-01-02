@@ -23,7 +23,7 @@ class LIBCXX_HIDDEN main_windowObj::implObj
 		uint16_t window_class);
 
 	//! Destructor
-	~implObj() noexcept;
+	~implObj();
 
 	//! The handler for the connection thread events.
 	const ref<handlerObj> handler;

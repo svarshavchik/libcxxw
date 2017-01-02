@@ -32,7 +32,7 @@ class LIBCXX_HIDDEN xidObj : virtual public obj {
 	const uint32_t id_;
 
 	xidObj(const connection_thread &thread_);
-	~xidObj() noexcept;
+	~xidObj();
 };
 
 // Allocate a specific xid for an object.
@@ -56,7 +56,7 @@ template<typename type> class LIBCXX_HIDDEN xid_t  {
 	{
 	}
 
-	~xid_t() noexcept=default;
+	~xid_t()=default;
 
 	inline type id() const
 	{
@@ -76,7 +76,7 @@ public:
 
 	using xidObj::xidObj;
 
-	~xid_tObj() noexcept=default;
+	~xid_tObj()=default;
 
 	inline auto thread() const { return this ->thread_; }
 

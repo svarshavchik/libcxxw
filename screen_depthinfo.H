@@ -16,7 +16,7 @@ public:
 	const xcb_visualid_t visual_id;
 
 	implObj(xcb_visualid_t visual_id);
-	~implObj() noexcept;
+	~implObj();
 };
 
 LIBCXXW_NAMESPACE_END

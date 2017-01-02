@@ -31,7 +31,7 @@ class LIBCXX_HIDDEN drawableObj::implObj : virtual public obj {
 	implObj(xcb_drawable_t drawable_id,
 		const const_pictformat drawable_pictformat);
 
-	~implObj() noexcept;
+	~implObj();
 };
 
 #if 0

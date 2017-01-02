@@ -49,7 +49,7 @@ public:
 	const uint32_t blue_mask;
 
 	//! Destructor
-	~visualObj() noexcept;
+	~visualObj();
 
 	//! Return an indication whether a pictformat matches this visual's RGB components
 
@@ -68,7 +68,7 @@ public:
 		LIBCXX_HIDDEN;
 
 	//! Destructor
-	~depthObj() noexcept LIBCXX_HIDDEN;
+	~depthObj() LIBCXX_HIDDEN;
 
 	//! Depth value
 	depth_t depth;

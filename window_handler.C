@@ -15,7 +15,7 @@ window_handlerObj
 {
 }
 
-window_handlerObj::~window_handlerObj() noexcept=default;
+window_handlerObj::~window_handlerObj()=default;
 
 
 void window_handlerObj::change_property(IN_THREAD_ONLY,

@@ -33,7 +33,7 @@ class connectionObj : virtual public obj {
 		      std::experimental::string_view());
 
 	//! Destructor
-	~connectionObj() noexcept LIBCXX_HIDDEN;
+	~connectionObj() LIBCXX_HIDDEN;
 
 	//! Numbers of screens on this display.
 	size_t screens() const;

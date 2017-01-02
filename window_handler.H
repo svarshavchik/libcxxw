@@ -32,7 +32,7 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 
 	window_handlerObj(IN_THREAD_ONLY);
 
-	~window_handlerObj() noexcept;
+	~window_handlerObj();
 
 	//! Set a window property.
 

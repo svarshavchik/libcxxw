@@ -32,7 +32,7 @@ public:
 	elementObj(const ref<implObj> &impl) LIBCXX_HIDDEN;
 
 	//! Destructor
-	~elementObj() noexcept LIBCXX_HIDDEN;
+	~elementObj() LIBCXX_HIDDEN;
 
 	//! Return my screen
 

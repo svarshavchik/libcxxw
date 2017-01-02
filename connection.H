@@ -49,7 +49,7 @@ class LIBCXX_HIDDEN connectionObj::implObj : virtual public obj {
 	public:
 
 		connection_wrapper(const connection_thread &thread);
-		~connection_wrapper() noexcept;
+		~connection_wrapper();
 
 		using connection_thread::operator->;
 		using connection_thread::operator*;
@@ -79,7 +79,7 @@ class LIBCXX_HIDDEN connectionObj::implObj : virtual public obj {
  public:
 
 	//! Wrap everything up, call xcb_disconnect()
-	~implObj() noexcept;
+	~implObj();
 
 	//! Return a brief identifier for a protocol error.
 

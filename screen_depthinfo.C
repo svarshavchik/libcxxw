@@ -18,7 +18,7 @@ screenObj::visualObj::implObj::implObj(xcb_visualid_t visual_id)
 {
 }
 
-screenObj::visualObj::implObj::~implObj() noexcept=default;
+screenObj::visualObj::implObj::~implObj()=default;
 
 
 
@@ -42,7 +42,7 @@ screenObj::visualObj::visualObj(const ref<implObj> &impl,
 	  blue_mask(blue_mask)
 {
 }
-screenObj::visualObj::~visualObj() noexcept=default;
+screenObj::visualObj::~visualObj()=default;
 
 bool screenObj::visualObj::rgb_matches(const const_pictformat &format) const
 {
@@ -89,7 +89,7 @@ screenObj::depthObj::depthObj(depth_t depth,
 {
 }
 
-screenObj::depthObj::~depthObj() noexcept=default;
+screenObj::depthObj::~depthObj()=default;
 
 static inline std::vector<const_ref<screenObj::visualObj>>
 visuals_for_screen_and_depth(xcb_depth_t *depth,

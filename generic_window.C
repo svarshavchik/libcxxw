@@ -19,7 +19,7 @@ generic_windowObj::generic_windowObj(const ref<implObj> &impl)
 {
 }
 
-generic_windowObj::~generic_windowObj() noexcept=default;
+generic_windowObj::~generic_windowObj()=default;
 
 screen generic_windowObj::get_screen()
 {

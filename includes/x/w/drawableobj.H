@@ -27,7 +27,7 @@ public:
 	drawableObj(const ref<implObj> &impl) LIBCXX_HIDDEN;
 
 	//! Destructor
-	~drawableObj() noexcept LIBCXX_HIDDEN;
+	~drawableObj() LIBCXX_HIDDEN;
 
 	//! Return the drawable's pictformat.
 

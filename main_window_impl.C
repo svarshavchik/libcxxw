@@ -62,7 +62,7 @@ main_windowObj::implObj::implObj(const screen &screenref,
 {
 }
 
-main_windowObj::implObj::~implObj() noexcept=default;
+main_windowObj::implObj::~implObj()=default;
 
 void main_windowObj::implObj::on_delete(const std::function<void ()> &callback)
 {

@@ -22,7 +22,7 @@ class LIBCXX_INTERNAL connection_infoObj::connection_handle {
 				 nullptr:display.c_str(), &default_screen);
 	}
 
-	~connection_handle() noexcept=default;
+	~connection_handle()=default;
 };
 
 connection_infoObj::connection_infoObj(const std::experimental::string_view &display)
@@ -37,7 +37,7 @@ connection_infoObj::connection_infoObj(connection_handle &&handle)
 {
 }
 
-connection_infoObj::~connection_infoObj() noexcept
+connection_infoObj::~connection_infoObj()
 {
 	xcb_disconnect(conn);
 }

@@ -76,7 +76,7 @@ public:
 	LIBCXX_HIDDEN;
 
 	//! Destructor
-	~pictformatObj() noexcept LIBCXX_HIDDEN;
+	~pictformatObj() LIBCXX_HIDDEN;
 
 	//! Check if another pictformat has the same RGB components.
 

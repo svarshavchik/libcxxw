@@ -20,7 +20,7 @@ connectionObj::connectionObj(const std::experimental::string_view &display)
 {
 }
 
-connectionObj::~connectionObj() noexcept
+connectionObj::~connectionObj()
 {
 }
 
@@ -161,11 +161,11 @@ connectionObj::implObj::connection_wrapper
 ::connection_wrapper(const connection_thread &thread)
 	: connection_thread(thread)
 {
-	start_thread(thread);
+	start_threadmsgdispatcher(thread);
 }
 
 connectionObj::implObj::connection_wrapper
-::~connection_wrapper() noexcept
+::~connection_wrapper()
 {
 	(*this)->stop();
 }
@@ -182,7 +182,7 @@ connectionObj::implObj::implObj(const connection_info &info,
 {
 }
 
-connectionObj::implObj::~implObj() noexcept
+connectionObj::implObj::~implObj()
 {
 }
 

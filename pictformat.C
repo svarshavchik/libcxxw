@@ -13,7 +13,7 @@ pictformatObj::color_index::color_index(uint32_t indexArg, rgb &&colorArg)
 {
 }
 
-pictformatObj::color_index::~color_index() noexcept
+pictformatObj::color_index::~color_index()
 {
 }
 
@@ -24,7 +24,7 @@ pictformatObj::pictformatObj(const pictform_s &s, ref<implObj> &&implArg,
 {
 }
 
-pictformatObj::~pictformatObj() noexcept
+pictformatObj::~pictformatObj()
 {
 }
 
@@ -34,7 +34,7 @@ pictformatObj::implObj::implObj(xcb_render_pictformat_t idArg)
 {
 }
 
-pictformatObj::implObj::~implObj() noexcept
+pictformatObj::implObj::~implObj()
 {
 }
 

@@ -51,7 +51,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 		   const constructor_params &params);
 
 	//! Destructor
-	~handlerObj() noexcept;
+	~handlerObj();
 
 	THREAD_DATA_ONLY(current_events);
 

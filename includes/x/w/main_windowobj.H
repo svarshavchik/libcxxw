@@ -32,7 +32,7 @@ public:
 	main_windowObj(const ref<implObj> &impl) LIBCXX_HIDDEN;
 
 	//! Destructor
-	~main_windowObj() noexcept LIBCXX_HIDDEN;
+	~main_windowObj() LIBCXX_HIDDEN;
 
 	//! Install a callback that gets invoke when the window close button is clicked.
 

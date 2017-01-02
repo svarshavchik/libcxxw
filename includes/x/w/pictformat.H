@@ -29,7 +29,7 @@ public:
 	color_index(uint32_t indexArg, rgb &&colorArg) LIBCXX_HIDDEN;
 
 	//! Destructor
-	~color_index() noexcept; LIBCXX_HIDDEN;
+	~color_index(); LIBCXX_HIDDEN;
 };
 
 LIBCXXW_NAMESPACE_END

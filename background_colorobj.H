@@ -26,7 +26,7 @@ class LIBCXX_HIDDEN background_colorObj : virtual public obj {
  public:
 
 	background_colorObj(const background_color_closure_t &initial_closure);
-	~background_colorObj() noexcept;
+	~background_colorObj();
 
 	THREAD_DATA_ONLY(current_background_color);
 };

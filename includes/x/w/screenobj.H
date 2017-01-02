@@ -49,7 +49,7 @@ public:
 		  const connection &conn) LIBCXX_HIDDEN;
 
 	//! Destructor
-	~screenObj() noexcept LIBCXX_HIDDEN;
+	~screenObj() LIBCXX_HIDDEN;
 
 	//! The screen's connection
 	connection get_connection();

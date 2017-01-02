@@ -15,7 +15,7 @@ main_windowObj::handlerObj::handlerObj(IN_THREAD_ONLY,
 {
 }
 
-main_windowObj::handlerObj::~handlerObj() noexcept=default;
+main_windowObj::handlerObj::~handlerObj()=default;
 
 void main_windowObj::handlerObj
 ::client_message_event(IN_THREAD_ONLY,

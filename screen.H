@@ -34,7 +34,7 @@ class LIBCXX_HIDDEN screen_solidcolorpictures {
 
 	screen_solidcolorpictures();
 
-	~screen_solidcolorpictures() noexcept;
+	~screen_solidcolorpictures();
 };
 
 //! xcb_screen_t owner.
@@ -53,7 +53,7 @@ class LIBCXX_HIDDEN screenObj::implObj
 					   xcb_window_t window,
 					   xcb_visualid_t visual);
 
-		~toplevelwindow_colormapObj() noexcept;
+		~toplevelwindow_colormapObj();
 	};
 
  public:
@@ -86,7 +86,7 @@ class LIBCXX_HIDDEN screenObj::implObj
 		const screen::base::visual_t &toplevelwindow_visual,
 		const const_pictformat &toplevelwindow_pictformat,
 		const connection_thread &thread);
-	~implObj() noexcept;
+	~implObj();
 
 	// Get screen dimensions
 

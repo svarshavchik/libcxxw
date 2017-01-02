@@ -24,7 +24,7 @@ class LIBCXX_HIDDEN pictformatObj::implObj : virtual public obj {
 	const xcb_render_pictformat_t id;
 
 	implObj(xcb_render_pictformat_t idArg);
-	~implObj() noexcept;
+	~implObj();
 };
 
 // Temporary structure used to distribute error values in rgb to indexed

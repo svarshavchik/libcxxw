@@ -13,7 +13,7 @@ drawableObj::drawableObj(const ref<implObj> &impl)
 {
 }
 
-drawableObj::~drawableObj() noexcept=default;
+drawableObj::~drawableObj()=default;
 
 const_pictformat drawableObj::get_pictformat() const
 {

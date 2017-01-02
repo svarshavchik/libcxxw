@@ -82,7 +82,7 @@ generic_windowObj::implObj::implObj(const screen &screenref,
 		       });
 }
 
-generic_windowObj::implObj::~implObj() noexcept
+generic_windowObj::implObj::~implObj()
 {
 	auto thread=handler->thread();
 	auto xid_obj=handler->xid_obj;

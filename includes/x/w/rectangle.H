@@ -25,7 +25,7 @@ struct rectangle {
 	dim_t height=dim_t(0);
 
 	//! Destructor
-	~rectangle() noexcept=default;
+	~rectangle()=default;
 
 	//! Strict weak ordering
 	constexpr bool operator<(const rectangle &o) const

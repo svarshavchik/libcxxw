@@ -14,7 +14,7 @@ xidObj::xidObj(const connection_thread &thread_)
 {
 }
 
-xidObj::~xidObj() noexcept
+xidObj::~xidObj()
 {
 	thread_->info->release_xid(id_);
 }
