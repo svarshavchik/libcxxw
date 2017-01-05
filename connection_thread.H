@@ -135,6 +135,7 @@ class LIBCXX_HIDDEN connection_threadObj
 
 };
 
+#define connection_thread_included
 #include "xid_t_connection_thread.H"
 
 LIBCXXW_NAMESPACE_END

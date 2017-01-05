@@ -6,8 +6,19 @@
 #include "generic_window_handler.H"
 #include "connection_thread.H"
 #include "pictformat.H"
+#include "draw_info.H"
+#include "xid_t.H"
 
 LIBCXXW_NAMESPACE_START
+
+static rectangle element_position(const rectangle &r)
+{
+	auto cpy=r;
+
+	cpy.x=0;
+	cpy.y=0;
+	return cpy;
+}
 
 //////////////////////////////////////////////////////////////////////////
 //
@@ -30,19 +41,71 @@ generic_windowObj::handlerObj
 					     params.drawable_pictformat->impl
 					     ->id),
 
-	background_colorObj(params.initial_background_color)
+	elementObj::implObj(0,
+			    element_position(params.window_handler_params
+					     .initial_position)),
+	current_events_thread_only((xcb_event_mask_t)
+				   params.window_handler_params
+				   .events_and_mask.m.at(XCB_CW_EVENT_MASK)),
+	current_position_thread_only(params.window_handler_params
+				     .initial_position),
+	background_color_thread_only(params.window_handler_params
+				     .screenref
+				     ->create_solid_color_picture
+				     (rgb(0xCCCC, 0xCCCC, 0xCCCC)))
 {
-	current_events(IN_THREAD)=
-		(xcb_event_mask_t)
-		params.window_handler_params
-		.events_and_mask.m.at(XCB_CW_EVENT_MASK);
 }
 
 generic_windowObj::handlerObj::~handlerObj()=default;
 
-void generic_windowObj::handlerObj::create_picture(IN_THREAD_ONLY)
+////////////////////////////////////////////////////////////////////
+//
+// Inherited from elementObj::implObj
+
+generic_windowObj::handlerObj &
+generic_windowObj::handlerObj::get_window_handler()
 {
+	return *this;
 }
 
+const generic_windowObj::handlerObj &
+generic_windowObj::handlerObj::get_window_handler() const
+{
+	return *this;
+}
+
+draw_info generic_windowObj::handlerObj
+::get_draw_info(IN_THREAD_ONLY,
+		const rectangle &initial_viewport)
+{
+	return draw_info{
+		        picture_internal(this),
+			initial_viewport,
+			background_color(IN_THREAD)->impl,
+			0,
+			0,
+	};
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Inherited from window_handler
+
+void generic_windowObj::handlerObj::visibility_updated(IN_THREAD_ONLY,
+						       bool flag)
+{
+	if (flag)
+		xcb_map_window(IN_THREAD->info->conn, id());
+	else
+		xcb_unmap_window(IN_THREAD->info->conn, id());
+}
+
+void generic_windowObj::handlerObj::exposure_event(IN_THREAD_ONLY,
+						   std::set<rectangle> &areas)
+{
+	auto di=get_draw_info(IN_THREAD,
+			      data(IN_THREAD).current_position);
+	clear_to_color(IN_THREAD, di, areas);
+}
 
 LIBCXXW_NAMESPACE_END

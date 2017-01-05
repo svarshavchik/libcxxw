@@ -27,8 +27,7 @@ LIBCXXW_NAMESPACE_START
 //! references to the handler object go out of scope and it gets destroyed,
 //! xcb_destroy_window().
 
-class LIBCXX_HIDDEN generic_windowObj::implObj
-	: public elementObj::implObj {
+class LIBCXX_HIDDEN generic_windowObj::implObj : virtual public obj {
 
  public:
 	//! Constructor
@@ -36,10 +35,7 @@ class LIBCXX_HIDDEN generic_windowObj::implObj
 	//! The constructor installs the window_handler in the connection
 	//! thread's window_handler map.
 
-	implObj(const screen &screenref,
-		const ref<handlerObj> &handler,
-		size_t nesting_level,
-		const rectangle &initial_position);
+	implObj(const ref<handlerObj> &handler);
 
 	//! Destructor
 
@@ -56,10 +52,6 @@ class LIBCXX_HIDDEN generic_windowObj::implObj
 			       dim_t &top,
 			       dim_t &bottom)
 		const;
-
-	//! A visibility update is translated to mapping/unmapping the window.
-
-	void visibility_updated(IN_THREAD_ONLY, bool flag) override;
 
 	//! Return my connection thread
 	connection_thread thread();

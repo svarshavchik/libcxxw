@@ -9,12 +9,12 @@
 
 LIBCXXW_NAMESPACE_START
 
-xidObj::xidObj(const connection_thread &thread_)
+new_xid::new_xid(const connection_thread &thread_)
 	: thread_(thread_), id_(thread_->info->alloc_xid())
 {
 }
 
-xidObj::~xidObj()
+new_xid::~new_xid()
 {
 	thread_->info->release_xid(id_);
 }

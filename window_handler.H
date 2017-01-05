@@ -29,12 +29,15 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 					virtual public obj {
 
  public:
+	//! My screen
+	const screen screenref;
 
 	LOG_CLASS_SCOPE;
 
 	//! Constructor parameters.
 	struct constructor_params {
 
+		screen screenref;
 		xcb_window_t parent;
 		depth_t depth;
 		rectangle initial_position;
@@ -71,8 +74,11 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 					  const xcb_client_message_event_t *);
 
 	//! Exposure event
+
+	//! The implementor is free to trash the rectangle set.
+
 	virtual void exposure_event(IN_THREAD_ONLY,
-				    const std::set<rectangle> &);
+				    std::set<rectangle> &);
 };
 
 LIBCXXW_NAMESPACE_END

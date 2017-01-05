@@ -31,17 +31,15 @@ screen_solidcolorpictures::~screen_solidcolorpictures()=default;
 // via xcb_render_create_solid_fill().
 
 class LIBCXX_HIDDEN solidColorPictureObj
-	: public pictureObj::implObj::picture_xid,
-	  public pictureObj::implObj {
+	: public pictureObj::implObj {
 
  public:
 	solidColorPictureObj(IN_THREAD_ONLY,
 			     const rgb &color)
-		: pictureObj::implObj::picture_xid(IN_THREAD),
-		implObj(pictureObj::implObj::picture_xid::get_picture_xid())
+		:  implObj(IN_THREAD)
 	{
-		xcb_render_create_solid_fill(picture_xid_obj.conn()->conn,
-					     get_picture_xid(),
+		xcb_render_create_solid_fill(picture_conn()->conn,
+					     picture_id(),
 					     {
 						     .red=color.r,
 						     .green=color.g,
@@ -52,8 +50,7 @@ class LIBCXX_HIDDEN solidColorPictureObj
 
 	~solidColorPictureObj()
 	{
-		xcb_render_free_picture(picture_xid_obj.conn()->conn,
-					get_picture_xid());
+		xcb_render_free_picture(picture_conn()->conn, picture_id());
 	}
 };
 

@@ -12,6 +12,8 @@
 
 LIBCXXW_NAMESPACE_START
 
+#include <x/w/constants_inc.H>
+
 template<typename number_1, typename number_2> class valid_add_op;
 template<typename number_1, typename number_2> class valid_sub_op;
 template<typename number_1, typename number_2> class valid_mul_op;
@@ -86,6 +88,18 @@ typedef number<int32_t, coord_squared_tag, types_base> coord_squared_t;
 
 //! The unit type for bit depth of windows, drawables...
 typedef number<uint8_t, depth_tag> depth_t;
+
+//! Adding a coordinate to a coordinate
+
+template<>
+class valid_add_op<coord_t, coord_t> {
+
+public:
+
+	//! The result is coord_squared_t
+
+	typedef coord_squared_t type;
+};
 
 //! Adding a dimension to a coordinate.
 

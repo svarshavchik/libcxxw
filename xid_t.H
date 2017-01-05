@@ -22,7 +22,7 @@ namespace LIBCXX_NAMESPACE {
 // constructor runs, the xid is ready for use. The destructor release_xid()s,
 // to recycle it.
 
-class LIBCXX_HIDDEN xidObj : virtual public obj {
+class LIBCXX_HIDDEN new_xid {
 
  public:
 
@@ -31,12 +31,24 @@ class LIBCXX_HIDDEN xidObj : virtual public obj {
 
 	const uint32_t id_;
 
-	xidObj(const connection_thread &thread_);
-	~xidObj();
+	new_xid(const connection_thread &thread_);
+	~new_xid();
+
+	new_xid(const new_xid &)=delete;
+	new_xid &operator=(const new_xid &)=delete;
 
 	inline auto thread() const;
 
 	inline auto conn() const;
+};
+
+//! A reference-counted new_xid.
+
+class LIBCXX_HIDDEN xidObj : virtual public obj, public new_xid {
+
+public:
+
+	using new_xid::new_xid;
 };
 
 typedef ref<xidObj> xid;
@@ -94,6 +106,7 @@ template<typename type> class LIBCXX_HIDDEN xid_t
 
 };
 
+#define xid_t_included 1
 #include "xid_t_connection_thread.H"
 
 #if 0

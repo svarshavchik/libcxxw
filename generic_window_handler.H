@@ -10,9 +10,10 @@
 #include "drawable.H"
 #include "picture.H"
 #include "connection_threadfwd.H"
-#include "background_colorobj.H"
+#include "element.H"
 #include "x/w/pictformatfwd.H"
 #include "x/w/types.H"
+#include "x/w/screenfwd.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -32,9 +33,20 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 // The picture for the window
 	  public pictureObj::implObj::fromDrawableObj,
-	  public background_colorObj {
 
+// An element
+	  public elementObj::implObj {
+
+	//! Current event mask.
 	xcb_event_mask_t current_events_thread_only;
+
+	//! Current position and dimensions
+
+	rectangle current_position_thread_only;
+
+	//! Window's background color
+
+	const_picture background_color_thread_only;
 
  public:
 	//! What I want for my initial event mask.
@@ -57,11 +69,6 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 		//! The window's pictformat.
 
 		const_pictformat drawable_pictformat;
-
-		//! The window's initial background color
-
-		background_colorObj
-		::background_color_closure_t initial_background_color;
 	};
 
 	handlerObj(IN_THREAD_ONLY,
@@ -71,13 +78,40 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	~handlerObj();
 
 	THREAD_DATA_ONLY(current_events);
+	THREAD_DATA_ONLY(current_position);
+	THREAD_DATA_ONLY(background_color);
 
-	//! Create the window's PICTURE.
+	////////////////////////////////////////////////////////////////////
+	//
+	// Inherited from elementObj::implObj
 
-	//! This gets called after a window is created, immediately after
-	//! xcb_create_window()
+	//! Return myself.
+	generic_windowObj::handlerObj &get_window_handler() override;
 
-	void create_picture(IN_THREAD_ONLY);
+	//! Return myself.
+	const generic_windowObj::handlerObj &get_window_handler() const override;
+
+	//! Construct a draw_info for drawing into the requested viewport.
+
+	//! Give ourselves away as the picture to draw info, and use
+	//! our declared background color.
+
+	draw_info get_draw_info(IN_THREAD_ONLY,
+				const rectangle &initial_viewport)
+		override;
+	////////////////////////////////////////////////////////////////////
+	//
+	// Inherited from window_handler
+
+	//! Implement the exposure event.
+
+	void exposure_event(IN_THREAD_ONLY,
+			    std::set<rectangle> &areas) override;
+
+	//! A visibility update is translated to mapping/unmapping the window.
+
+	void visibility_updated(IN_THREAD_ONLY, bool flag) override;
+
 };
 
 LIBCXXW_NAMESPACE_END

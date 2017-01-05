@@ -6,48 +6,79 @@
 #define picture_h
 
 #include "x/w/picture.H"
-
+#include "x/w/rectangle.H"
 #include "xid_t.H"
 #include <xcb/render.h>
+#include <set>
 
 LIBCXXW_NAMESPACE_START
+
+typedef ref<pictureObj::implObj> picture_internal;
+
+typedef ref<pictureObj::implObj> const_picture_internal;
 
 //! picture internal implementation details.
 
 class LIBCXX_HIDDEN pictureObj::implObj : virtual public obj {
  public:
-	class picture_xid;
+	//! The allocated XID.
+	const new_xid picture_xid;
 
-	const xcb_render_picture_t picture_id;
+	//! My id
 
-	implObj(xcb_render_picture_t picture_id);
+	inline xcb_render_picture_t picture_id() const
+	{
+		return picture_xid.id_;
+	}
 
+	//! My connection
+
+	inline auto picture_conn() const;
+
+	//! The constructor allocates a new XID for the picture.
+	implObj(const connection_thread &thread);
+
+	//! The destructor deallocates the XID.
 	~implObj();
 
+	//! Composite RENDER operation
+
+	void composite(const const_picture_internal &src,
+		       coord_t src_x,
+		       coord_t src_y,
+		       coord_t dst_x,
+		       coord_t dst_y,
+		       dim_t width,
+		       dim_t height,
+		       render_pict_op op=render_pict_op::op_src);
+
+	//! Composire RENDER operation
+
+	inline void composite(const const_picture_internal &src,
+			      coord_t src_x,
+			      coord_t src_y,
+			      const rectangle &rect,
+			      render_pict_op op=render_pict_op::op_src)
+	{
+		composite(src, src_x, src_y,
+			  rect.x,
+			  rect.y,
+			  rect.width,
+			  rect.height,
+			  op);
+	}
+
+	//! SetPictureClipRectangles RENDER operation.
+	void set_clip_rectangle(const rectangle &r,
+				coord_t x=0,
+				coord_t y=0);
+
+	//! SetPictureClipRectangles RENDER operation.
+	void set_clip_rectangles(const std::set<rectangle> &clipregion,
+				 coord_t x=0,
+				 coord_t y=0);
+
 	class fromDrawableObj;
-};
-
-//! A wrapper class to allocate an XID for a picture.
-
-class LIBCXX_HIDDEN pictureObj::implObj::picture_xid {
-
-public:
-	//! The allocated XID.
-	const xid_t<xcb_render_picture_t> picture_xid_obj;
-
-	//! Constructor
-	template<typename Arg>
-	picture_xid(Arg &&arg)
-		: picture_xid_obj(std::forward<Arg>(arg))
-	{
-	}
-
-	//! Return the allocated picture_id
-
-	auto get_picture_xid() const
-	{
-		return picture_xid_obj.id();
-	}
 };
 
 //! Create a picture from a a drawable.
@@ -57,8 +88,7 @@ public:
 //! via xcb_render_create_picture().
 
 class LIBCXX_HIDDEN pictureObj::implObj::fromDrawableObj
-	: public pictureObj::implObj::picture_xid,
-	  public pictureObj::implObj {
+	: public pictureObj::implObj {
  public:
 	//! The constructor invokes xcb_render_create_picture()
 
@@ -70,6 +100,9 @@ class LIBCXX_HIDDEN pictureObj::implObj::fromDrawableObj
 
 	~fromDrawableObj();
 };
+
+#define picture_included 1
+#include "xid_t_connection_thread.H"
 
 LIBCXXW_NAMESPACE_END
 

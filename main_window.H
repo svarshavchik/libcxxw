@@ -16,9 +16,7 @@ class LIBCXX_HIDDEN main_windowObj::implObj
  public:
 
 	//! Constructor
-	implObj(const screen &screenref,
-		const ref<handlerObj> &handler,
-		const rectangle &initial_position);
+	implObj(const ref<handlerObj> &handler);
 
 	//! Destructor
 	~implObj();

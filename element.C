@@ -4,6 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "element.H"
+#include "element_screen.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -18,12 +19,12 @@ elementObj::~elementObj()
 
 screen elementObj::get_screen()
 {
-	return impl->get_screen();
+       return impl->get_screen();
 }
 
 const_screen elementObj::get_screen() const
 {
-	return impl->get_screen();
+       return impl->get_screen();
 }
 
 void elementObj::show()
@@ -35,6 +36,5 @@ void elementObj::hide()
 {
 	impl->request_visibility(false);
 }
-
 
 LIBCXXW_NAMESPACE_END

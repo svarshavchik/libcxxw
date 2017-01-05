@@ -11,6 +11,7 @@ config.rpath
 config.status
 config.sub
 configure
+/ABOUT-NLS
 /compile
 /connection_thread.msgs.H
 /cxxw
@@ -18,7 +19,7 @@ configure
 /depcomp
 /docbook/entities
 /Doxyfile
-/ABOUT-NLS
+/genconstants
 /html
 /install-sh
 *.la
@@ -28,6 +29,7 @@ configure
 libtool
 ltmain.sh
 missing
+/pic_constants.inc.C
 /stamp-h1
 /testderivedaxis
 /testmainwindow

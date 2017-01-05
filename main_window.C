@@ -38,9 +38,6 @@ main_window main_windowBase::create()
 
 main_window screenObj::create_mainwindow()
 {
-	auto background_color=create_solid_color_picture
-		(rgb(0xCCCC, 0xCCCC, 0xCCCC));
-
 	rectangle dimensions={0, 0, 100, 100};
 
 	values_and_mask vm(XCB_CW_EVENT_MASK,
@@ -53,6 +50,7 @@ main_window screenObj::create_mainwindow()
 
 	main_windowObj::handlerObj::constructor_params params{
 		{
+			screen(this),
 			impl->xcb_screen->root, // parent
 			impl->toplevelwindow_pictformat->depth, // depth
 			dimensions, // initial_position
@@ -60,20 +58,13 @@ main_window screenObj::create_mainwindow()
 			impl->toplevelwindow_visual->impl->visual_id, // visual
 			vm, // events_and_mask
 		},
-
-		impl->toplevelwindow_pictformat,
-		[background_color]
-		{
-			return background_color;
-		}
+		impl->toplevelwindow_pictformat
 	};
 
 	auto handler=ref<main_windowObj::handlerObj>
 		::create(connref->impl->thread, params);
 
-	auto window_impl=ref<main_windowObj::implObj>
-		::create(screen(this),
-			 handler, dimensions);
+	auto window_impl=ref<main_windowObj::implObj>::create(handler);
 
 	return ptrrefBase::objfactory<main_window>::create(window_impl);
 }

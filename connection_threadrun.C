@@ -8,6 +8,7 @@
 #include "element.H"
 #include "returned_pointer.H"
 #include "catch_exceptions.H"
+#include "picture.H"
 #include <x/sysexception.H>
 
 LIBCXXW_NAMESPACE_START

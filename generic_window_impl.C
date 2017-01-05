@@ -15,12 +15,8 @@
 
 LIBCXXW_NAMESPACE_START
 
-generic_windowObj::implObj::implObj(const screen &screenref,
-				    const ref<handlerObj> &handler,
-				    size_t nesting_level,
-				    const rectangle &initial_position)
-	: elementObj::implObj(screenref, nesting_level, initial_position),
-	handler(handler)
+generic_windowObj::implObj::implObj(const ref<handlerObj> &handler)
+	: handler(handler)
 {
 	LOG_DEBUG("Constructor: " << objname() << " xid " << handler->id());
 
@@ -72,7 +68,8 @@ generic_windowObj::implObj::~implObj()
 	// colormap dud with it...
 
 	handler->ondestroy
-		([thread=handler->thread(), window_id, screen=get_screen()]
+		([thread=handler->thread(), window_id,
+		  screen=handler->screenref]
 		 {
 			 LOG_DEBUG("Destroying: xid " << window_id);
 			 thread->run_as
@@ -89,19 +86,12 @@ bool generic_windowObj::implObj::get_frame_extents(dim_t &left,
 						   dim_t &top,
 						   dim_t &bottom) const
 {
-	mpobj<ewmh>::lock lock(get_screen()->get_connection()->impl->ewmh_info);
+	mpobj<ewmh>::lock lock(handler->screenref->get_connection()
+			       ->impl->ewmh_info);
 
 	return lock->get_frame_extents(left, right, top, bottom,
-				       get_screen()->impl->screen_number,
+				       handler->screenref->impl->screen_number,
 				       handler->id());
-}
-
-void generic_windowObj::implObj::visibility_updated(IN_THREAD_ONLY, bool flag)
-{
-	if (flag)
-		xcb_map_window(IN_THREAD->info->conn, handler->id());
-	else
-		xcb_unmap_window(IN_THREAD->info->conn, handler->id());
 }
 
 LIBCXXW_NAMESPACE_END

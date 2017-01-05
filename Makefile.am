@@ -12,16 +12,12 @@ STATICLINKFLAGS=-Wl,-lcourier-unicode -Wl,-lpthread @LIBCXXW_LIBS@ -pthread
 lib_LTLIBRARIES=libcxxw.la
 bin_PROGRAMS=cxxw
 
-CPPFLAGS += -DPKGDATADIR='"$(pkgdatadir)"'
+CPPFLAGS += -I$(top_srcdir)/includes -I./includes -DPKGDATADIR='"$(pkgdatadir)"'
 
 libcxxw_la_LIBADD=-lcxx
 libcxxw_la_LDFLAGS=$(STATICLINKFLAGS)
 
 libcxxw_la_SOURCES=\
-	background_color.C			    \
-	background_color.H			    \
-	background_colorfwd.H			    \
-	background_colorobj.H			    \
 	builtin_atoms.C				    \
 	builtin_atoms.H				    \
 	catch_exceptions.H			    \
@@ -38,10 +34,13 @@ libcxxw_la_SOURCES=\
 	drawable.C				    \
 	drawable.H				    \
 	drawable_impl.C				    \
+	draw_infofwd.H				    \
+	draw_info.H				    \
 	element.C				    \
 	element.H				    \
 	elementfwd.H				    \
 	element_impl.C				    \
+	element_screen.H			    \
 	ewmh.C					    \
 	ewmh.H					    \
 	generic_window.C			    \
@@ -90,6 +89,7 @@ cxxw_LDFLAGS=$(TESTLINKTYPE)
 $(call OPTIONS_GEN,cxxwoptions.H,cxxwoptions.xml)
 
 EXTRA_DIST = config.rpath m4/ChangeLog COPYING \
+	pic_constants.xml constants.xsl \
 	$(man_MANS)
 
 $(call THREADMSGDISPATCHER_GEN,connection_thread.msgs.H, connection_thread.msgs.xml)
@@ -99,7 +99,7 @@ TESTPROGRAMS=\
 	testmainwindow					\
 	#
 
-noinst_PROGRAMS=$(TESTPROGRAMS)
+noinst_PROGRAMS=$(TESTPROGRAMS) genconstants
 
 testderivedaxis_SOURCES=testderivedaxis.C
 testderivedaxis_LDADD=libcxxw.la
@@ -108,6 +108,21 @@ testderivedaxis_LDFLAGS=$(TESTLINKTYPE)
 testmainwindow_SOURCES=testmainwindow.C
 testmainwindow_LDADD=libcxxw.la
 testmainwindow_LDFLAGS=$(TESTLINKTYPE)
+
+BUILT_SOURCES=includes/x/w/constants_inc.H \
+	pic_constants.inc.C
+
+CLEANFILES = $(shell cd $(srcdir) && echo *.inc.[CH])
+
+includes/x/w/constants_inc.H: genconstants
+	./genconstants >$@.tmp
+	mv $@.tmp $@
+
+pic_constants.inc.C: pic_constants.xml constants.xsl
+	xsltproc $(srcdir)/constants.xsl $(srcdir)/pic_constants.xml >pic_constants.inc.C.tmp
+	mv -f pic_constants.inc.C.tmp pic_constants.inc.C
+
+genconstants_SOURCES=genconstants.C
 
 if HAVE_DOCS
 

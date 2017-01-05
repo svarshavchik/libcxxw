@@ -5,6 +5,7 @@
 #include "libcxxw_config.h"
 #include "main_window_handler.H"
 #include "connection_thread.H"
+#include "draw_info.H"
 
 LIBCXXW_NAMESPACE_START
 

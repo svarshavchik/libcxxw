@@ -25,7 +25,6 @@ do
 	fi
 done
 
-CPPFLAGS="$CPPFLAGS "'-I$(top_srcdir)/includes'
 CFLAGS="$CFLAGS `pkg-config --cflags xcb-keysyms xcb-ewmh xcb-icccm xcb-image xcb-renderutil freetype2 fontconfig libpng`"
 CXXFLAGS="$CXXFLAGS `pkg-config --cflags xcb-keysyms xcb-ewmh xcb-icccm xcb-image xcb-renderutil freetype2 fontconfig libpng`"
 

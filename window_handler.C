@@ -13,7 +13,8 @@ LIBCXXW_NAMESPACE_START
 window_handlerObj
 ::window_handlerObj(IN_THREAD_ONLY,
 		    const constructor_params &params)
-	: xid_t<xcb_window_t>(IN_THREAD)
+	: xid_t<xcb_window_t>(IN_THREAD),
+	screenref(params.screenref)
 {
 	auto width=params.initial_position.width;
 	auto height=params.initial_position.height;
@@ -66,8 +67,9 @@ void window_handlerObj::client_message_event(IN_THREAD_ONLY,
 					     const xcb_client_message_event_t *)
 {
 }
+
 void window_handlerObj::exposure_event(IN_THREAD_ONLY,
-				       const std::set<rectangle> &)
+				       std::set<rectangle> &)
 {
 }
 

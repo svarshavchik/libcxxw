@@ -17,13 +17,8 @@
 
 LIBCXXW_NAMESPACE_START
 
-main_windowObj::implObj::implObj(const screen &screenref,
-				 const ref<handlerObj> &handler,
-				 const rectangle &initial_position)
-	: generic_windowObj::implObj(screenref,
-				     handler,
-				     0, // nesting_level
-				     initial_position),
+main_windowObj::implObj::implObj(const ref<handlerObj> &handler)
+	: generic_windowObj::implObj(handler),
 	handler(handler)
 {
 }
