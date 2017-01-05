@@ -13,7 +13,7 @@ LIBCXXW_NAMESPACE_START
 window_handlerObj
 ::window_handlerObj(IN_THREAD_ONLY,
 		    const constructor_params &params)
-	: xid_t<xcb_window_t>(thread_)
+	: xid_t<xcb_window_t>(IN_THREAD)
 {
 	auto width=params.initial_position.width;
 	auto height=params.initial_position.height;

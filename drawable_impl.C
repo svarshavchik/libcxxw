@@ -12,7 +12,7 @@
 LIBCXXW_NAMESPACE_START
 
 drawableObj::implObj::implObj(const connection_thread &thread_,
-			      xcb_drawable_t drawable_id,
+			      const xcb_drawable_t drawable_id,
 			      const const_pictformat drawable_pictformat)
 	: thread_(thread_),
 	  drawable_id(drawable_id),
@@ -32,10 +32,10 @@ drawableObj::implObj::~implObj()=default;
 class LIBCXX_HIDDEN drawablePictureObj : public pictureObj::implObj {
 
  public:
-	drawablePictureObj(const connection_thread &thread_,
+	drawablePictureObj(const connection_thread &thread,
 			   xcb_drawable_t drawable,
 			   xcb_render_pictformat_t format)
-		: implObj(thread_)
+		: implObj(thread)
 	{
 		xcb_render_create_picture(conn()->conn,
 					  id(),

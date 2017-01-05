@@ -12,11 +12,10 @@ LIBCXXW_NAMESPACE_START
 generic_windowObj::handlerObj
 ::handlerObj(IN_THREAD_ONLY,
 	     const constructor_params &params)
-
-	// This sets up the xcb_window_t
-
-	: window_handlerObj(IN_THREAD,
+	: // This sets up the xcb_window_t
+	  window_handlerObj(IN_THREAD,
 			    params.window_handler_params),
+	  // And we inherit it as the xcb_drawable_t
 	  drawableObj::implObj(IN_THREAD,
 			       window_handlerObj::id(),
 			       params.drawable_pictformat),

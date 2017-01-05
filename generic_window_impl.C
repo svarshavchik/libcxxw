@@ -49,7 +49,7 @@ generic_windowObj::implObj::~implObj()
 				 IN_THREAD->window_handlers(IN_THREAD)
 					 ->erase(window_id);
 				 IN_THREAD->destroyed_xids(IN_THREAD)
-					 ->insert({window_id, handler->xid_obj});
+					 ->insert({window_id,handler->xid_obj});
 			 });
 
 	// Attach a destructor callback to the handler object.

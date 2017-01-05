@@ -39,54 +39,59 @@ class LIBCXX_HIDDEN xidObj : virtual public obj {
 	inline auto conn() const;
 };
 
-// Allocate a specific xid for an object.
+typedef ref<xidObj> xid;
+
+// Store an XID as a  separate object, xid_obj.
+//
+// This kind of an arrangement is needed to properly dispose of xcb_window_t
+// which has delicate scoping rules. Even after a DestroyWindow() there
+// could be some messages from the display server, referencing the
+// xcb_window_t. This poses some challenges.
+
+class LIBCXX_HIDDEN xid_object_container {
+
+ public:
+	const xid xid_obj;
+
+	//! Regular constructor.
+
+	xid_object_container(const connection_thread &thread)
+		: xid_obj(xid::create(thread))
+	{
+	}
+
+	//! Alias constructor
+
+	xid_object_container(const xid &xid_obj) : xid_obj(xid_obj)
+	{
+	}
+
+	inline auto thread() const;
+
+	inline auto conn() const;
+};
+
+// Implement id() to return a typedef.
 //
 // This is subclassed by a handler object that owns an xid_t, such as a
 // window, which subclasses xid<xcb_window_t>. A graphical context
 // subclasses xid_t<xcb_gcontext_t>, and so on.
 //
-// This kind of an arrangement is needed to properly dispose of xcb_window_t
-// which have marginal scoping rules. Even after a DestroyWindow() there
-// could be some messages from the display server, referencing the
-// xcb_window_t. This poses some challenges.
+// This doesn't really accomplish a great deal at the moment, since the C
+// XCB API aliases all of them to an int.
 
-template<typename type> class LIBCXX_HIDDEN xid_t  {
+template<typename type> class LIBCXX_HIDDEN xid_t
+	: public xid_object_container {
 
  public:
-	const ref<xidObj> xid_obj;
 
-	xid_t(const connection_thread &thread_)
-		: xid_obj(ref<xidObj>::create(thread_))
-	{
-	}
-
-	~xid_t()=default;
+	using xid_object_container::xid_object_container;
 
 	inline type id() const
 	{
 		return xid_obj->id_;
 	}
 
-	inline auto thread() const { return xid_obj->thread_; }
-
-	inline auto conn() const;
-};
-
-// When xid_t's indirection is not needed.
-
-template<typename type> class LIBCXX_HIDDEN xid_tObj : public xidObj {
-
-public:
-
-	using xidObj::xidObj;
-
-	~xid_tObj()=default;
-
-	inline auto thread() const { return this ->thread_; }
-
-	inline auto conn() const;
-
-	inline type id() const { return this->id_; }
 };
 
 #include "xid_t_connection_thread.H"

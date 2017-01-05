@@ -6,9 +6,9 @@
 #define drawable_H
 
 #include "x/w/drawable.H"
+#include "x/w/pictformatfwd.H"
 #include "x/w/picturefwd.H"
-#include "connection_info.H"
-#include "connection_threadfwd.H"
+#include "xid_t.H"
 
 #include <xcb/xproto.h>
 
@@ -23,12 +23,11 @@ namespace LIBCXX_NAMESPACE {
 
 class LIBCXX_HIDDEN drawableObj::implObj : virtual public obj {
 
+	const connection_thread thread_;
+
  public:
 
-	//! My connection
-	const connection_thread &thread_;
-
-	//! My ID.
+	//! My xcb_drawable_t
 
 	const xcb_drawable_t drawable_id;
 
@@ -36,8 +35,16 @@ class LIBCXX_HIDDEN drawableObj::implObj : virtual public obj {
 
 	const const_pictformat drawable_pictformat;
 
-	implObj(const connection_thread &thread_,
-		xcb_drawable_t drawable_id,
+	//! Constructor
+
+	implObj(//! My connection thread
+
+		const connection_thread &thread_,
+
+		//! My drawable
+		const xcb_drawable_t drawable_id,
+
+		//! Drawable's pixtformat.
 		const const_pictformat drawable_pictformat);
 
 	~implObj();

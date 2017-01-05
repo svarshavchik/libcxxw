@@ -29,7 +29,6 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	xcb_event_mask_t current_events_thread_only;
 
  public:
-
 	//! What I want for my initial event mask.
 
 	static constexpr xcb_event_mask_t initial_event_mask()

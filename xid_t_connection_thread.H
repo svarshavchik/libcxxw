@@ -3,24 +3,13 @@
 
 // Must include both connection_thread.H and xid_t.H to get these.
 
-template<typename type>
-inline auto xid_t<type>::conn() const
-{
-	return xid_obj->thread_->info;
-}
-
-
-template<typename type> inline auto xid_tObj<type>::conn() const
-{
-	return this->thread_->info;
-}
-
 inline auto xidObj::thread() const { return thread_; }
 
-inline auto xidObj::conn() const
-{
-	return this->thread_->info;
-}
+inline auto xidObj::conn() const { return this->thread_->info; }
+
+inline auto xid_object_container::thread() const { return xid_obj->thread(); }
+
+inline auto xid_object_container::conn() const { return xid_obj->conn(); }
 
 #endif
 #endif

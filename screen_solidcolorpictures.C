@@ -33,9 +33,9 @@ screen_solidcolorpictures::~screen_solidcolorpictures()=default;
 class LIBCXX_HIDDEN solidColorPictureObj : public pictureObj::implObj {
 
  public:
-	solidColorPictureObj(const connection_thread &thread_,
+	solidColorPictureObj(IN_THREAD_ONLY,
 			     const rgb &color)
-		: implObj(thread_)
+		: implObj(IN_THREAD)
 	{
 		xcb_render_create_solid_fill(conn()->conn, id(),
 					     {

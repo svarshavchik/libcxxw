@@ -17,8 +17,8 @@ pictureObj::~pictureObj()=default;
 
 /////////////////////////////////////////////////////////////////////////////
 
-pictureObj::implObj::implObj(const connection_thread &thread_)
-	: xid_tObj<xcb_render_picture_t>(thread_)
+pictureObj::implObj::implObj(const connection_thread &thread)
+	: xid_t<xcb_render_picture_t>(thread)
 {
 }
 
