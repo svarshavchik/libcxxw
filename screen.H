@@ -131,16 +131,21 @@ class LIBCXX_HIDDEN screenObj::implObj
 
 	dim_t compute_width(double millimeters) const
 	{
-		return dim_t(std::round(theme_scale() * millimeters *
-					xcb_screen->width_in_pixels /
-					xcb_screen->width_in_millimeters));
+		dim_t::value_type scaled=
+			std::round(theme_scale() * millimeters *
+				   xcb_screen->width_in_pixels /
+				   xcb_screen->width_in_millimeters);
+		return scaled;
 	}
 
 	dim_t compute_height(double millimeters) const
 	{
-		return dim_t(std::round(theme_scale() * millimeters *
-					xcb_screen->height_in_pixels /
-					xcb_screen->height_in_millimeters));
+		dim_t::value_type scaled=
+			std::round(theme_scale() * millimeters *
+				   xcb_screen->height_in_pixels /
+				   xcb_screen->height_in_millimeters);
+
+		return scaled;
 	}
 };
 

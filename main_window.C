@@ -41,12 +41,7 @@ main_window screenObj::create_mainwindow()
 	auto background_color=create_solid_color_picture
 		(rgb(0xCCCC, 0xCCCC, 0xCCCC));
 
-	rectangle dimensions={
-		coord_t{0},
-		coord_t{0},
-		dim_t{100},
-		dim_t{100}
-	};
+	rectangle dimensions={0, 0, 100, 100};
 
 	values_and_mask vm(XCB_CW_EVENT_MASK,
 			   (uint32_t)

@@ -75,11 +75,8 @@ void connection_threadObj::run_event(const xcb_generic_event_t *event)
 			// cordinates; hence rectangle's X & Y are signed.
 
 			exposed_rectangles_thread_only
-				->insert(rectangle{coord_t{coord_t::value_type(msg->x)},
-						   coord_t{coord_t::value_type(msg->y)},
-						   dim_t{msg->width},
-						   dim_t{msg->height}
-					});
+				->insert({msg->x, msg->y, msg->width,
+							msg->height});
 
 			if (msg->count)
 				return; // More exposure events coming.

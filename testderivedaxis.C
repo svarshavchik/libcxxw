@@ -45,7 +45,7 @@ void do_check(std::vector<axis> &v,
 	      dim_t::value_type something_else,
 	      more_values ...and_more)
 {
-	v.emplace_back(dim_t{min}, dim_t{pref}, dim_t{max});
+	v.emplace_back(min, pref, max);
 
 	do_check(v, test_name, something_else, and_more...);
 }
