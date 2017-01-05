@@ -4,6 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "generic_window_handler.H"
+#include "connection_thread.H"
 #include "x/w/pictformat.H"
 
 LIBCXXW_NAMESPACE_START
@@ -14,11 +15,17 @@ generic_windowObj::handlerObj
 
 	// This sets up the xcb_window_t
 
-	: window_handlerObj(IN_THREAD),
-	  drawableObj::implObj(window_handlerObj::id(),
+	: window_handlerObj(IN_THREAD,
+			    params.window_handler_params),
+	  drawableObj::implObj(IN_THREAD,
+			       window_handlerObj::id(),
 			       params.drawable_pictformat),
 	  background_colorObj(params.initial_background_color)
 {
+	current_events(IN_THREAD)=
+		(xcb_event_mask_t)
+		params.window_handler_params
+		.events_and_mask.m.at(XCB_CW_EVENT_MASK);
 }
 
 generic_windowObj::handlerObj::~handlerObj()=default;

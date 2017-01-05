@@ -7,6 +7,7 @@
 #define x_w_drawableobj_H
 
 #include <x/obj.H>
+#include <x/w/picturefwd.H>
 #include <x/w/pictformatfwd.H>
 
 LIBCXXW_NAMESPACE_START
@@ -32,6 +33,10 @@ public:
 	//! Return the drawable's pictformat.
 
 	const_pictformat get_pictformat() const;
+
+	//! Create a new picture.
+
+	picture create_picture();
 };
 
 #if 0

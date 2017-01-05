@@ -11,11 +11,43 @@ LOG_CLASS_INIT(LIBCXX_NAMESPACE::w::window_handlerObj);
 LIBCXXW_NAMESPACE_START
 
 window_handlerObj
-::window_handlerObj(IN_THREAD_ONLY): xid_t<xcb_window_t>(thread_)
+::window_handlerObj(IN_THREAD_ONLY,
+		    const constructor_params &params)
+	: xid_t<xcb_window_t>(thread_)
 {
+	auto width=params.initial_position.width;
+	auto height=params.initial_position.height;
+
+	// We can logically attempt to create a window with zero width or
+	// height (empty container, for example). X will complain about
+	// BadValue, so turn this into a tiny 1x1 window.
+
+	if (width == 0 || height == 0)
+		width=height=1;
+
+	if (width == width.infinite() ||
+	    height == height.infinite())
+		throw EXCEPTION("Internal error, invalid initial display element size");
+
+	xcb_create_window(conn()->conn,
+			  (depth_t::value_type)params.depth,
+			  id(),
+			  params.parent,
+			  (coord_t::value_type)params.initial_position.x,
+			  (coord_t::value_type)params.initial_position.y,
+			  (dim_t::value_type)width,
+			  (dim_t::value_type)height,
+			  2, // Border width
+			  params.window_class,
+			  params.visual,
+			  params.events_and_mask.mask(),
+			  params.events_and_mask.values().data());
 }
 
-window_handlerObj::~window_handlerObj()=default;
+window_handlerObj::~window_handlerObj()
+{
+	xcb_destroy_window(conn()->conn, id());
+}
 
 
 void window_handlerObj::change_property(IN_THREAD_ONLY,

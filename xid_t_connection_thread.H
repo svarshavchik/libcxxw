@@ -10,9 +10,17 @@ inline auto xid_t<type>::conn() const
 }
 
 
-template<typename type> auto xid_tObj<type>::conn() const
+template<typename type> inline auto xid_tObj<type>::conn() const
 {
 	return this->thread_->info;
 }
+
+inline auto xidObj::thread() const { return thread_; }
+
+inline auto xidObj::conn() const
+{
+	return this->thread_->info;
+}
+
 #endif
 #endif

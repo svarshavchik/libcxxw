@@ -26,16 +26,26 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	  public drawableObj::implObj,
 	  public background_colorObj {
 
-	xcb_event_mask_t current_events_thread_only=
-		xcb_event_mask_t(XCB_EVENT_MASK_EXPOSURE |
-				 XCB_EVENT_MASK_VISIBILITY_CHANGE |
-				 XCB_EVENT_MASK_STRUCTURE_NOTIFY);
+	xcb_event_mask_t current_events_thread_only;
 
  public:
+
+	//! What I want for my initial event mask.
+
+	static constexpr xcb_event_mask_t initial_event_mask()
+	{
+		return (xcb_event_mask_t)(XCB_EVENT_MASK_EXPOSURE |
+					  XCB_EVENT_MASK_VISIBILITY_CHANGE |
+					  XCB_EVENT_MASK_STRUCTURE_NOTIFY);
+	}
 
 	//! What my constructor needs
 
 	struct constructor_params {
+
+		//! Parameters for window_handler's constructor.
+
+		window_handlerObj::constructor_params window_handler_params;
 
 		//! The window's pictformat.
 

@@ -33,6 +33,10 @@ class LIBCXX_HIDDEN xidObj : virtual public obj {
 
 	xidObj(const connection_thread &thread_);
 	~xidObj();
+
+	inline auto thread() const;
+
+	inline auto conn() const;
 };
 
 // Allocate a specific xid for an object.

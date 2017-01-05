@@ -23,9 +23,13 @@ class values_and_mask {
 public:
 	std::map<uint32_t, uint32_t> m;
 
-	template<typename ...Args> values_and_mask(Args && ...args)
+	template<typename Arg1, typename Arg2,
+		 typename ...Args>
+	values_and_mask(Arg1 &&arg1, Arg2 &&arg2, Args && ...args)
 	{
-		_add(std::forward<Args>(args)...);
+		_add(std::forward<Arg1>(arg1),
+		     std::forward<Arg2>(arg2),
+		     std::forward<Args>(args)...);
 	}
 
 	inline void _add()

@@ -33,20 +33,19 @@ class LIBCXX_HIDDEN generic_windowObj::implObj
  public:
 
 	//! Constructor
+
+	//! The constructor installs the window_handler in the connection
+	//! thread's window_handler map.
+
 	implObj(const screen &screenref,
 		const ref<handlerObj> &handler,
-		xcb_window_t parent,
 		size_t nesting_level,
-		const rectangle &initial_position,
-		uint16_t window_class,
-		depth_t depth,
-		xcb_visualid_t visual,
-		xcb_colormap_t colormap,
-		const std::function<void (IN_THREAD_ONLY)>
-		&configure_new_window);
-
+		const rectangle &initial_position);
 
 	//! Destructor
+
+	//! The destructor removes the window_handler from the connection
+	//! thread's window_handler map.
 	~implObj();
 
 	const ref<handlerObj> handler;
@@ -63,7 +62,9 @@ class LIBCXX_HIDDEN generic_windowObj::implObj
 
 	void visibility_updated(IN_THREAD_ONLY, bool flag) override;
 
+	//! Return my connection thread
 	connection_thread thread();
+
 };
 
 LIBCXXW_NAMESPACE_END

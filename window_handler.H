@@ -7,6 +7,8 @@
 
 #include "xid_t.H"
 #include "connection_threadfwd.H"
+#include "values_and_mask.H"
+#include "x/w/rectangle.H"
 #include <x/logger.H>
 #include <xcb/xcb.h>
 
@@ -30,7 +32,23 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 
 	LOG_CLASS_SCOPE;
 
-	window_handlerObj(IN_THREAD_ONLY);
+	//! Constructor parameters.
+	struct constructor_params {
+
+		xcb_window_t parent;
+		depth_t depth;
+		rectangle initial_position;
+
+		uint16_t window_class;
+		xcb_visualid_t visual;
+		values_and_mask events_and_mask;
+	};
+
+	//! The constructor calls xcb_create_window()
+	window_handlerObj(IN_THREAD_ONLY,
+			  const constructor_params &params);
+
+	//! The destructor calls xcb_destroy_window()
 
 	~window_handlerObj();
 
