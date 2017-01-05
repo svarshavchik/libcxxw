@@ -8,6 +8,7 @@
 #include "window_handler.H"
 #include "generic_window.H"
 #include "drawable.H"
+#include "picture.H"
 #include "connection_threadfwd.H"
 #include "background_colorobj.H"
 #include "x/w/pictformatfwd.H"
@@ -22,8 +23,15 @@ LIBCXXW_NAMESPACE_START
 //! this handler is responsible for that.
 
 class LIBCXX_HIDDEN generic_windowObj::handlerObj
+
+// The window handler
 	: public window_handlerObj,
+
+// The window's drawable
 	  public drawableObj::implObj,
+
+// The picture for the window
+	  public pictureObj::implObj::fromDrawableObj,
 	  public background_colorObj {
 
 	xcb_event_mask_t current_events_thread_only;

@@ -5,9 +5,13 @@
 #include "libcxxw_config.h"
 #include "generic_window_handler.H"
 #include "connection_thread.H"
-#include "x/w/pictformat.H"
+#include "pictformat.H"
 
 LIBCXXW_NAMESPACE_START
+
+//////////////////////////////////////////////////////////////////////////
+//
+// Allocate a picture for the input/output window
 
 generic_windowObj::handlerObj
 ::handlerObj(IN_THREAD_ONLY,
@@ -19,7 +23,14 @@ generic_windowObj::handlerObj
 	  drawableObj::implObj(IN_THREAD,
 			       window_handlerObj::id(),
 			       params.drawable_pictformat),
-	  background_colorObj(params.initial_background_color)
+
+	// We can now construct a picture for the window
+	pictureObj::implObj::fromDrawableObj(IN_THREAD,
+					     window_handlerObj::id(),
+					     params.drawable_pictformat->impl
+					     ->id),
+
+	background_colorObj(params.initial_background_color)
 {
 	current_events(IN_THREAD)=
 		(xcb_event_mask_t)

@@ -31,7 +31,6 @@ class LIBCXX_HIDDEN generic_windowObj::implObj
 	: public elementObj::implObj {
 
  public:
-
 	//! Constructor
 
 	//! The constructor installs the window_handler in the connection

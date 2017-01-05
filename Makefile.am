@@ -62,6 +62,7 @@ libcxxw_la_SOURCES=\
 	pictformat.H				    \
 	picture.C				    \
 	picture.H				    \
+	picture_impl.C				    \
 	rectangle.C				    \
 	render.C				    \
 	render.H				    \

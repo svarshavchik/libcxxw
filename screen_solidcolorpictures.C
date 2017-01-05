@@ -30,14 +30,18 @@ screen_solidcolorpictures::~screen_solidcolorpictures()=default;
 // Subclass of a picture implementation object constructs the picture
 // via xcb_render_create_solid_fill().
 
-class LIBCXX_HIDDEN solidColorPictureObj : public pictureObj::implObj {
+class LIBCXX_HIDDEN solidColorPictureObj
+	: public pictureObj::implObj::picture_xid,
+	  public pictureObj::implObj {
 
  public:
 	solidColorPictureObj(IN_THREAD_ONLY,
 			     const rgb &color)
-		: implObj(IN_THREAD)
+		: pictureObj::implObj::picture_xid(IN_THREAD),
+		implObj(pictureObj::implObj::picture_xid::get_picture_xid())
 	{
-		xcb_render_create_solid_fill(conn()->conn, id(),
+		xcb_render_create_solid_fill(picture_xid_obj.conn()->conn,
+					     get_picture_xid(),
 					     {
 						     .red=color.r,
 						     .green=color.g,
@@ -48,7 +52,8 @@ class LIBCXX_HIDDEN solidColorPictureObj : public pictureObj::implObj {
 
 	~solidColorPictureObj()
 	{
-		xcb_render_free_picture(conn()->conn, id());
+		xcb_render_free_picture(picture_xid_obj.conn()->conn,
+					get_picture_xid());
 	}
 };
 
