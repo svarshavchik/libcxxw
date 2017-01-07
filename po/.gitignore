@@ -1,0 +1,13 @@
+boldquot.sed
+ChangeLog
+en@boldquot.header
+en@quot.header
+insert-header.sin
+libcxxw.pot
+Makefile.in.in
+POTFILES
+quot.sed
+remove-potcdate.sed
+remove-potcdate.sin
+Rules-quot
+stamp-po
