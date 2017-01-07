@@ -7,7 +7,6 @@
 
 #include <x/w/types.H>
 #include <x/w/rectanglefwd.H>
-#include <iostream>
 
 LIBCXXW_NAMESPACE_START
 

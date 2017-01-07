@@ -112,6 +112,10 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 	void visibility_updated(IN_THREAD_ONLY, bool flag) override;
 
+	//! Update the displayed window's element's current_position
+
+	void configure_notify(IN_THREAD_ONLY,
+			      const rectangle &) override;
 };
 
 LIBCXXW_NAMESPACE_END

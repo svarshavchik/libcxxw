@@ -8,11 +8,13 @@
 #include "x/w/rectangle.H"
 #include "x/w/screenfwd.H"
 #include "x/w/generic_windowobj.H"
+#include "x/w/element_state.H"
 #include "connection_threadfwd.H"
 #include "elementfwd.H"
 #include "draw_infofwd.H"
 #include "picture.H"
 #include <x/obj.H>
+#include "x/callback_list.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -55,6 +57,11 @@ class LIBCXX_HIDDEN elementObj::implObj : virtual public obj {
 		//! update_visibility gets called.
 
 		bool actual_visibility=false;
+
+		//! State update handlers
+
+		callback_list<void (const element_state &)> update_handlers=
+			callback_list<void (const element_state &)>::create();
 	};
 
 	//! For the connection thread's use, only.
@@ -88,6 +95,36 @@ class LIBCXX_HIDDEN elementObj::implObj : virtual public obj {
 
 	THREAD_DATA_ONLY(data);
  public:
+
+
+	//! Install a state update callback.
+	template<typename functor_type>
+	ref<obj> on_state_update(functor_type &&functor)
+	{
+		return do_on_state_update(element_state_update_handler_t
+					  ::create(std::forward<functor_type>
+						   (functor)));
+	}
+
+	//! Install a state update callback.
+	ref<obj> do_on_state_update(const element_state_update_handler_t &);
+
+	//! Somebody wishes to inform us of our new current_position
+
+	//! Updates current_position, invokes the element state update
+	//! callbacks.
+	void current_position_updated(IN_THREAD_ONLY,
+				      const rectangle &r);
+
+	//! Create the current element_state for invoking callbacks.
+
+	element_state create_element_state(IN_THREAD_ONLY,
+					   element_state::state_update_t);
+
+	//! Invoke all existing state update callbacks, for some reason.
+
+	void invoke_element_state_updates(IN_THREAD_ONLY,
+					  element_state::state_update_t);
 
 	/////////////////////////////////////////////////////////////////////
 	//

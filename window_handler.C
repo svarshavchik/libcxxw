@@ -63,6 +63,11 @@ void window_handlerObj::change_property(IN_THREAD_ONLY,
 			    type, format, data_len, data);
 }
 
+void window_handlerObj::configure_notify(IN_THREAD_ONLY,
+					 const rectangle &)
+{
+}
+
 void window_handlerObj::client_message_event(IN_THREAD_ONLY,
 					     const xcb_client_message_event_t *)
 {

@@ -79,6 +79,13 @@ generic_windowObj::implObj::~implObj()
 				  {
 				  });
 		 });
+
+	// Also keep a ref on the screen object until the thread receives
+	// DestroyNotify, and drops the xid_obj.
+
+	handler->xid_obj->ondestroy([screen=handler->screenref]
+				    {
+				    });
 }
 
 bool generic_windowObj::implObj::get_frame_extents(dim_t &left,

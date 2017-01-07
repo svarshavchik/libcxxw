@@ -54,6 +54,20 @@ void connection_threadObj::run_event(const xcb_generic_event_t *event)
 			recycle_xid(msg->window);
 		}
 		return;
+	case XCB_CONFIGURE_NOTIFY:
+		{
+			GET_MSG(configure_notify_event);
+			FIND_HANDLER(window);
+			DISPATCH_HANDLER(configure_notify,
+					 (IN_THREAD,
+					 {
+						 msg->x,
+						 msg->y,
+						 msg->width,
+						 msg->height
+					 }));
+		}
+		return;
 	case XCB_CLIENT_MESSAGE:
 		{
 			GET_MSG(client_message_event);

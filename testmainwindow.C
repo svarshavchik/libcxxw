@@ -7,6 +7,7 @@
 #include "x/w/connection.H"
 #include <x/destroy_callback.H>
 #include <x/mpobj.H>
+#include <x/functionalrefptr.H>
 #include <string>
 #include <iostream>
 
@@ -31,6 +32,14 @@ void testmainwindow()
 	auto main_window=LIBCXX_NAMESPACE::w::main_window::base::create();
 
 	guard(main_window->get_screen()->mcguffin());
+
+	auto mcguffin=main_window->on_state_update
+		([]
+		 (const auto &what)
+		 {
+			 std::cout << "Window state update: " << what
+			 << std::endl;
+		 });
 
 	main_window->show();
 

@@ -37,4 +37,16 @@ void elementObj::hide()
 	impl->request_visibility(false);
 }
 
+ref<obj> elementObj::do_on_state_update(const element_state_update_handler_t &h)
+{
+	return impl->do_on_state_update(h);
+}
+
+std::ostream &operator<<(std::ostream &o, const element_state &s)
+{
+	return o << "state update: " << (int)s.state_update
+		 << ", shown=" << s.shown
+		 << ", position: " << s.current_position << std::endl;
+}
+
 LIBCXXW_NAMESPACE_END

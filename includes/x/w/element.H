@@ -8,6 +8,7 @@
 #include <x/w/elementfwd.H>
 #include <x/w/elementobj.H>
 #include <x/ref.H>
+#include <x/functionalrefptr.H>
 
 LIBCXXW_NAMESPACE_START
 

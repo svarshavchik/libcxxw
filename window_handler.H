@@ -79,6 +79,11 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 
 	virtual void exposure_event(IN_THREAD_ONLY,
 				    std::set<rectangle> &);
+
+	//! Configure notification
+
+	virtual void configure_notify(IN_THREAD_ONLY,
+				      const rectangle &);
 };
 
 LIBCXXW_NAMESPACE_END

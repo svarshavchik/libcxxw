@@ -108,4 +108,21 @@ void generic_windowObj::handlerObj::exposure_event(IN_THREAD_ONLY,
 	clear_to_color(IN_THREAD, di, areas);
 }
 
+void generic_windowObj::handlerObj::configure_notify(IN_THREAD_ONLY,
+						     const rectangle &r)
+{
+	// x & y are the window's position on the script
+
+	// for our purposes, the display element representing the top level
+	// window's coordinates are (0, 0), so we update only the width and
+	// the height.
+
+	rectangle cpy=r;
+
+	cpy.x=0;
+	cpy.y=0;
+
+	current_position_updated(IN_THREAD, cpy);
+}
+
 LIBCXXW_NAMESPACE_END
