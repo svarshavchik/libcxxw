@@ -156,6 +156,32 @@ void checkspread(const char *testname,
 				<< res.has_infinites);
 }
 
+void checksortby(const char *testname,
+		 const std::vector<axis> &unsorted_list,
+		 const std::vector<axis> &sorted_list)
+{
+	auto res=axis::sort_sequence_by(unsorted_list.begin(),
+					unsorted_list.end(),
+					[]
+					(const auto &a, const auto &b)
+					{
+						return a.minimum() < b.minimum();
+					});
+
+	std::vector<axis> v;
+	v.resize(unsorted_list.size());
+
+	std::transform(res.begin(), res.end(), v.begin(),
+		       []
+		       (auto iter)
+		       {
+			       return *iter;
+		       });
+
+	if (v != sorted_list)
+		throw EXCEPTION(testname << " failed");
+}
+
 int main()
 {
 	try {
@@ -205,6 +231,19 @@ int main()
 			    {dim_t::infinite(), false},
 			    10, 20, dim_t::infinite()-1,
 			    40, 50, 60);
+
+		checksortby("sort1",
+			    {{30, 40, 50}, {20, 30, 60}, {20, 40, 50}},
+			    {{20, 30, 60}, {20, 40, 50}, {30, 40, 50}});
+
+		checksortby("sort2",
+			    {{20, 30, 60}, {30, 40, 50}, {20, 40, 50}},
+			    {{20, 30, 60}, {20, 40, 50}, {30, 40, 50}});
+
+		checksortby("sort3",
+			    {{20, 30, 60}, {20, 40, 50}, {30, 40, 50}},
+			    {{20, 30, 60}, {20, 40, 50}, {30, 40, 50}});
+
 	} catch (const LIBCXX_NAMESPACE::exception &e)
 	{
 		e->caught();

@@ -8,7 +8,10 @@
 #include <x/w/types.H>
 #include <x/exception.H>
 #include <iostream>
-#include <tuple>
+#include <iterator>
+#include <vector>
+#include <numeric>
+#include <algorithm>
 
 LIBCXXW_NAMESPACE_START
 
@@ -264,6 +267,47 @@ namespace metrics {
 				}
 				++beg_iter;
 			}
+		}
+
+		//! Sort a vector of axises by minimum or maximum.
+
+		//! The beginning and ending iterators must be random
+		//! access iterators to axises.
+		//!
+		//! This returns a vector of iterators to each axis,
+		//! sorted according to the comparison functor, which
+		//! is expected to implement strict weak ordering on
+		//! the individual axises, like by minimum or maximum.
+		//!
+		//! The relative order of axises that compare equally
+		//! is preserved.
+
+		template<typename iter_type, typename compare_functor>
+		static std::vector<iter_type>
+		sort_sequence_by(iter_type beg,
+				 iter_type end,
+				 compare_functor &&c)
+		{
+			std::vector<iter_type> v;
+
+			v.resize(end-beg);
+			std::iota(v.begin(), v.end(), beg);
+
+			std::sort(v.begin(), v.end(),
+				  [&]
+				  (const auto &a_iter, const auto &b_iter)
+				  {
+					  const axis &a=*a_iter,
+						  &b=*b_iter;
+
+					  if (c(a, b)) return true;
+
+					  if (c(b, a)) return false;
+
+					  return (a_iter-beg) < (b_iter-beg);
+				  });
+
+			return v;
 		}
 	};
 
