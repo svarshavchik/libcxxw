@@ -57,20 +57,9 @@ connectionObj::implObj::implObj(const std::experimental::string_view &display)
 // Immediately after xcb_connect_t(), check for errors, and return
 // xcb_get_setup().
 
-static inline const xcb_setup_t *get_setup(xcb_connection_t *conn)
-{
-	if (xcb_connection_has_error(conn))
-		throw EXCEPTION(_("Display connection failed."));
-	if (!xcb_render_util_query_version(conn))
-		throw EXCEPTION(_("The display server does not support the X render extension"));
-
-
-	return xcb_get_setup(conn);
-}
-
 connectionObj::implObj::implObj(const connection_info &info)
 	: implObj(info,
-		  get_setup(info->conn),
+		  xcb_get_setup(info->conn),
 		  connection_thread::create(info))
 {
 }

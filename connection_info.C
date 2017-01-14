@@ -4,6 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "connection_info.H"
+#include "messages.H"
 #include <x/exception.H>
 
 LIBCXXW_NAMESPACE_START
@@ -35,10 +36,22 @@ connection_infoObj::connection_infoObj(connection_handle &&handle)
 	: conn(handle.conn), default_screen(handle.default_screen),
 	  atoms_info(handle.conn)
 {
+	if (xcb_connection_has_error(conn))
+	{
+		xcb_disconnect(conn);
+		throw EXCEPTION(_("Display connection failed."));
+	}
+
+	if (!xcb_render_util_query_version(conn))
+	{
+		xcb_disconnect(conn);
+		throw EXCEPTION(_("The display server does not support the X render extension"));
+	}
 }
 
 connection_infoObj::~connection_infoObj()
 {
+	xcb_render_util_disconnect(conn);
 	xcb_disconnect(conn);
 }
 
