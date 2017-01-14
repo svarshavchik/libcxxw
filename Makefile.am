@@ -110,6 +110,7 @@ $(call THREADMSGDISPATCHER_GEN,connection_thread.msgs.H, connection_thread.msgs.
 
 TESTPROGRAMS=\
 	testderivedaxis					\
+	testgrid					\
 	testmainwindow					\
 	#
 
@@ -118,6 +119,10 @@ noinst_PROGRAMS=$(TESTPROGRAMS) genconstants
 testderivedaxis_SOURCES=testderivedaxis.C
 testderivedaxis_LDADD=libcxxw.la
 testderivedaxis_LDFLAGS=$(TESTLINKTYPE)
+
+testgrid_SOURCES=testgrid.C
+testgrid_LDADD=libcxxw.la
+testgrid_LDFLAGS=-static
 
 testmainwindow_SOURCES=testmainwindow.C
 testmainwindow_LDADD=libcxxw.la
