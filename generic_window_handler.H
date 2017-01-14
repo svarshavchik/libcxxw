@@ -10,7 +10,7 @@
 #include "drawable.H"
 #include "picture.H"
 #include "connection_threadfwd.H"
-#include "element.H"
+#include "container.H"
 #include "x/w/pictformatfwd.H"
 #include "x/w/types.H"
 #include "x/w/screenfwd.H"
@@ -35,7 +35,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	  public pictureObj::implObj::fromDrawableObj,
 
 // An element
-	  public elementObj::implObj {
+	  public containerObj::implObj {
 
 	//! Current event mask.
 	xcb_event_mask_t current_events_thread_only;

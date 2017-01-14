@@ -6,6 +6,7 @@
 #define x_w_main_windowobj_h
 
 #include <x/w/main_windowfwd.H>
+#include <x/w/new_layoutmanagerfwd.H>
 #include <x/w/generic_windowobj.H>
 #include <x/obj.H>
 #include <x/logger.H>
@@ -29,7 +30,8 @@ public:
 	const ref<implObj> impl;
 
 	//! Constructor
-	main_windowObj(const ref<implObj> &impl) LIBCXX_HIDDEN;
+	main_windowObj(const ref<implObj> &impl,
+		       const new_layoutmanager &layout_factory) LIBCXX_HIDDEN;
 
 	//! Destructor
 	~main_windowObj() LIBCXX_HIDDEN;

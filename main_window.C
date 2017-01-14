@@ -8,14 +8,16 @@
 #include "screen.H"
 #include "screen_depthinfo.H"
 #include "x/w/picture.H"
+#include "x/w/new_layoutmanager.H"
 #include "x/w/screen.H"
 
 LOG_CLASS_INIT(LIBCXX_NAMESPACE::w::main_windowObj);
 
 LIBCXXW_NAMESPACE_START
 
-main_windowObj::main_windowObj(const ref<implObj> &impl)
-	: generic_windowObj(impl),
+main_windowObj::main_windowObj(const ref<implObj> &impl,
+			       const new_layoutmanager &layout_factory)
+	: generic_windowObj(impl, layout_factory),
 	  impl(impl)
 {
 }
@@ -37,6 +39,11 @@ main_window main_windowBase::create()
 }
 
 main_window screenObj::create_mainwindow()
+{
+	return create_mainwindow(new_layoutmanager::base::create_grid());
+}
+
+main_window screenObj::create_mainwindow(const new_layoutmanager &layout_factory)
 {
 	rectangle dimensions={0, 0, 100, 100};
 
@@ -66,7 +73,8 @@ main_window screenObj::create_mainwindow()
 
 	auto window_impl=ref<main_windowObj::implObj>::create(handler);
 
-	return ptrrefBase::objfactory<main_window>::create(window_impl);
+	return ptrrefBase::objfactory<main_window>::create(window_impl,
+							   layout_factory);
 }
 
 LIBCXXW_NAMESPACE_END

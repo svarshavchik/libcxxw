@@ -31,6 +31,9 @@ libcxxw_la_SOURCES=\
 	connection_threadfwd.H			    \
 	connection_threadevent.C		    \
 	connection_threadrun.C			    \
+	container.C				    \
+	container.H				    \
+	container_impl.C			    \
 	drawable.C				    \
 	drawable.H				    \
 	drawable_impl.C				    \
@@ -49,6 +52,9 @@ libcxxw_la_SOURCES=\
 	generic_window_handler.H		    \
 	generic_window_impl.C			    \
 	impl_connection_thread.H		    \
+	layoutmanager.C				    \
+	layoutmanager.H				    \
+	layoutmanager_impl.C			    \
 	main_window.C				    \
 	main_window.H				    \
 	main_window_handler.C			    \
@@ -71,6 +77,7 @@ libcxxw_la_SOURCES=\
 	metrics_horizvert.H			    \
 	metrics_horizvertfwd.H			    \
 	metrics_horizvertobj.H			    \
+	new_layoutmanager.C			    \
 	pictformat.C				    \
 	pictformat.H				    \
 	picture.C				    \

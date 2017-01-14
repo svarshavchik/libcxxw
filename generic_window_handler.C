@@ -7,6 +7,8 @@
 #include "connection_thread.H"
 #include "pictformat.H"
 #include "draw_info.H"
+#include "container.H"
+#include "layoutmanager.H"
 #include "xid_t.H"
 
 LIBCXXW_NAMESPACE_START
@@ -41,9 +43,9 @@ generic_windowObj::handlerObj
 					     params.drawable_pictformat->impl
 					     ->id),
 
-	elementObj::implObj(0,
-			    element_position(params.window_handler_params
-					     .initial_position)),
+	containerObj::implObj(0,
+			      element_position(params.window_handler_params
+					       .initial_position)),
 	current_events_thread_only((xcb_event_mask_t)
 				   params.window_handler_params
 				   .events_and_mask.m.at(XCB_CW_EVENT_MASK)),

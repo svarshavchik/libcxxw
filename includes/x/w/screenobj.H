@@ -11,6 +11,7 @@
 #include <x/w/picturefwd.H>
 #include <x/w/main_windowfwd.H>
 #include <x/w/rgbfwd.H>
+#include <x/w/new_layoutmanagerfwd.H>
 #include <x/obj.H>
 #include <x/vectorfwd.H>
 
@@ -103,9 +104,13 @@ public:
 
 	const_picture create_solid_color_picture(const rgb &color) const;
 
-	//! Create a new top level window
+	//! Create a new top level window, using the mainwindowlayout layout manager
 
 	main_window create_mainwindow();
+
+	//! Create a new top level window using a custom layout manager.
+
+	main_window create_mainwindow(const new_layoutmanager &layout_factory);
 };
 
 LIBCXXW_NAMESPACE_END

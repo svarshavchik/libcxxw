@@ -6,8 +6,9 @@
 #define x_w_generic_windowobj_h
 
 #include <x/w/generic_windowfwd.H>
+#include <x/w/new_layoutmanagerfwd.H>
 #include <x/w/screenfwd.H>
-#include <x/w/elementobj.H>
+#include <x/w/containerobj.H>
 #include <x/w/drawableobj.H>
 #include <x/obj.H>
 #include <x/logger.H>
@@ -18,7 +19,7 @@ LIBCXXW_NAMESPACE_START
 
 //! \see generic_window
 
-class generic_windowObj : public elementObj,
+class generic_windowObj : public containerObj,
 			  public drawableObj {
 
 public:
@@ -32,7 +33,9 @@ public:
 	const ref<implObj> impl;
 
 	//! Constructor
-	generic_windowObj(const ref<implObj> &impl) LIBCXX_HIDDEN;
+	generic_windowObj(const ref<implObj> &impl,
+			  const new_layoutmanager &layout_factory)
+		LIBCXX_HIDDEN;
 
 	//! Destructor
 	~generic_windowObj() LIBCXX_HIDDEN;
