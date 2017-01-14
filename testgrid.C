@@ -47,6 +47,18 @@ static void do_test(const char *testname,
 	}
 }
 
+static void do_add(const char *testname,
+		   axis a,
+		   axis b,
+		   axis sum)
+{
+	auto res=a+b;
+
+	if (res != sum)
+		throw EXCEPTION(testname << " failed: got "
+				<< res << ", expected " << sum);
+}
+
 void testgrid()
 {
 	do_test("test1",
@@ -110,6 +122,24 @@ void testgrid()
 			{1, {10, 10, 10}},
 		});
 
+	do_add("add1",
+	       {10, 20, 30},
+	       {30, 40, 50},
+	       {40, 60, 80});
+
+	do_add("add2",
+	       {dim_t::infinite()-1, dim_t::infinite()-1, dim_t::infinite()-1},
+	       {30, 40, 50},
+	       {dim_t::infinite()-1, dim_t::infinite()-1, dim_t::infinite()-1});
+
+	do_add("add3",
+	       {10, 20, dim_t::infinite()},
+	       {30, 40, 50},
+	       {40, 60, dim_t::infinite()});
+	do_add("add4",
+	       {10, 20, 30},
+	       {30, 40, dim_t::infinite()},
+	       {40, 60, dim_t::infinite()});
 }
 
 int main()

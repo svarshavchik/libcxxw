@@ -519,6 +519,9 @@ namespace metrics {
 
 		axis &operator &= (const axis &other);
 
+		//! What would be the axis metrics of two axises?
+
+		axis operator+(const axis &other) const;
 	};
 
 	//! Overload the \c << operator, to display the contents of an axis.

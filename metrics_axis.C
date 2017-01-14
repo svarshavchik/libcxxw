@@ -99,6 +99,49 @@ axis &axis::operator &= (const axis &other)
 	return *this;
 }
 
+axis axis::operator+(const axis &other) const
+{
+	// If the sum total of both minimums' exceeds the largest possible
+	// minimum value, return the largest possible minimum value
+
+	dim_t min=dim_t::infinite()-1;
+
+	if (min-minimum() > other.minimum())
+	{
+		min=(dim_t::value_type)minimum() +
+			(dim_t::value_type)other.minimum();
+	}
+
+	// Ditto for preferred
+
+	dim_t pref=dim_t::infinite()-1;
+
+	if (pref-preferred() > other.preferred())
+	{
+		pref=(dim_t::value_type)preferred() +
+			(dim_t::value_type)other.preferred();
+	}
+
+	// Ditto for maximums, unless one or the other is infinite, in which
+	// case the result is infinite.
+
+	dim_t max=dim_t::infinite();
+
+	if (maximum() != dim_t::infinite() &&
+	    other.maximum() != dim_t::infinite())
+	{
+		--max;
+
+		if (max-maximum() > other.maximum())
+		{
+			max=(dim_t::value_type)maximum() +
+				(dim_t::value_type)other.maximum();
+		}
+	}
+
+	return {min, pref, max};
+}
+
 std::ostream &operator<<(std::ostream &o,
 			 const axis &a)
 {
