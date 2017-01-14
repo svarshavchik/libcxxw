@@ -105,6 +105,59 @@ namespace metrics {
 		{
 			return !operator==(o);
 		}
+
+
+		/////////////////////////////////////////////////////////
+		//
+		// We have "total", that we wish to divide into "into"
+		// equal parts.
+
+		template<typename functor_type>
+		void divide(dim_t into,
+			    functor_type &&functor)
+		{
+			auto preferred_increment = preferred() - minimum();
+			auto maximum_increment = maximum() - preferred();
+
+			dim_squared_t apportioned_minimum=0,
+				apportioned_preferred=0,
+				apportioned_maximum=0;
+
+			for (dim_t i=0; i<into; ++i)
+			{
+				apportioned_minimum += minimum();
+				apportioned_preferred += preferred_increment;
+				apportioned_maximum += maximum_increment;
+
+				auto new_minimum =
+					apportioned_minimum / into;
+				apportioned_minimum %= into;
+
+				auto preferred_increment=
+					apportioned_preferred / into;
+				apportioned_preferred %= into;
+
+				auto maximum_increment=
+					apportioned_maximum / into;
+				apportioned_maximum %= into;
+
+				preferred_increment += new_minimum;
+				maximum_increment   += preferred_increment;
+
+				if (maximum() == dim_t::infinite())
+					maximum_increment=dim_t::infinite();
+
+				// We know that these values will all fit
+				// into dim_t
+
+				functor(axis{(dim_squared_t::value_type)
+							new_minimum,
+							(dim_squared_t::value_type)
+							preferred_increment,
+							(dim_squared_t::value_type)
+							maximum_increment});
+			}
+		}
 	};
 
 	std::ostream &operator<<(std::ostream &o, const axis &);

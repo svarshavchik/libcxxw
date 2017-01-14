@@ -59,6 +59,57 @@ void check(const char *test_name,
 	do_check(v, test_name, values...);
 }
 
+static void checkdivide_compare(const char *name,
+				size_t n,
+				const std::vector<dim_t> &computed_values)
+{
+}
+
+template<typename ...list_of_values>
+static void checkdivide_compare(const char *name,
+				size_t n,
+				const std::vector<dim_t> &computed_values,
+				dim_t::value_type v,
+				list_of_values ...values)
+{
+	if (computed_values[n] != v)
+	{
+		throw EXCEPTION(name << ": expected " << v << " for value #"
+				<< n << ", got " << computed_values[n]);
+	}
+
+	checkdivide_compare(name, n+1, computed_values, values...);
+}
+
+template<typename ...list_of_values>
+void checkdivide(const char *name,
+		 dim_t::value_type min,
+		 dim_t::value_type pref,
+		 dim_t::value_type max,
+		 dim_t::value_type divide_into,
+		 list_of_values ...values)
+{
+	axis a{min, pref, max};
+
+	std::vector<dim_t> computed_values;
+
+	a.divide(divide_into, [&]
+		 (const axis &a)
+		 {
+			 computed_values.push_back(a.minimum());
+			 computed_values.push_back(a.preferred());
+			 computed_values.push_back(a.maximum());
+		 });
+
+	if (computed_values.size() != sizeof...(values))
+		throw EXCEPTION(name << ": expected "
+				<< sizeof...(values) << " values, got "
+				<< computed_values.size());
+
+	checkdivide_compare(name, 0, computed_values,
+			    values...);
+}
+
 int main()
 {
 	try {
@@ -85,6 +136,11 @@ int main()
 		      100, 110, 120,
 		      100, 100, 100);
 
+		checkdivide("basic division",
+			    101, 108, 115,
+			    2,
+			    50, 53, 56,
+			    51, 55, 59);
 	} catch (const LIBCXX_NAMESPACE::exception &e)
 	{
 		e->caught();
