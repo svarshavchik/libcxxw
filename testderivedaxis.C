@@ -182,6 +182,30 @@ void checksortby(const char *testname,
 		throw EXCEPTION(testname << " failed");
 }
 
+void test_increase_minimum_by(const char *testname,
+			      const axis &from,
+			      dim_t by,
+			      const axis &to)
+{
+	auto res=from.increase_minimum_by(by);
+
+	if (res != to)
+		throw EXCEPTION(testname << ": expected " << to
+				<< ", got " << res);
+}
+
+void test_decrease_maximum_by(const char *testname,
+			      const axis &from,
+			      dim_t by,
+			      const axis &to)
+{
+	auto res=from.decrease_maximum_by(by);
+
+	if (res != to)
+		throw EXCEPTION(testname << ": expected " << to
+				<< ", got " << res);
+}
+
 int main()
 {
 	try {
@@ -243,6 +267,51 @@ int main()
 		checksortby("sort3",
 			    {{20, 30, 60}, {20, 40, 50}, {30, 40, 50}},
 			    {{20, 30, 60}, {20, 40, 50}, {30, 40, 50}});
+
+		test_increase_minimum_by("increase1",
+					 {20, 30, 60},
+					 5,
+					 {25, 30, 60});
+
+		test_increase_minimum_by("increase2",
+					 {20, 30, 60},
+					 15,
+					 {35, 35, 60});
+
+		test_increase_minimum_by("increase3",
+					 {20, 30, 60},
+					 45,
+					 {65, 65, 65});
+
+		test_increase_minimum_by("increase4",
+					 {dim_t::infinite()-1,
+					  dim_t::infinite()-1,
+					  dim_t::infinite()},
+					 15,
+					 {dim_t::infinite()-1,
+					  dim_t::infinite()-1,
+					  dim_t::infinite()}
+					 );
+
+		test_decrease_maximum_by("decrease1",
+					 {20, 30, 60},
+					 5,
+					 {20, 30, 55});
+
+		test_decrease_maximum_by("decrease2",
+					 {20, 30, 60},
+					 35,
+					 {20, 25, 25});
+
+		test_decrease_maximum_by("decrease3",
+					 {20, 30, 60},
+					 45,
+					 {20, 20, 20});
+
+		test_decrease_maximum_by("decrease4",
+					 {20, 30, dim_t::infinite()},
+					 45,
+					 {20, 30, dim_t::infinite()});
 
 	} catch (const LIBCXX_NAMESPACE::exception &e)
 	{

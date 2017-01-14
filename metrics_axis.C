@@ -28,6 +28,46 @@ exception axis::invalid_maximum()
 	return EXCEPTION("Preferred metric is more than the maximum one.");
 }
 
+
+axis axis::increase_minimum_by(dim_t howmuch) const
+{
+	auto m=max_increase_minimum_by();
+
+	if (m < howmuch)
+		howmuch=m;
+
+	dim_t new_minimum=(dim_squared_t::value_type)(howmuch + minimum());
+
+	auto new_preferred=preferred();
+
+	if (new_preferred < new_minimum)
+		new_preferred=new_minimum;
+
+	auto new_maximum=maximum();
+
+	if (new_maximum < new_preferred)
+		new_maximum=new_preferred;
+
+	return {new_minimum, new_preferred, new_maximum};
+}
+
+axis axis::decrease_maximum_by(dim_t howmuch) const
+{
+	auto m=max_decrease_maximum_by();
+
+	if (m < howmuch)
+		howmuch=m;
+
+	dim_t new_maximum=maximum()-howmuch;
+
+	auto new_preferred=preferred();
+
+	if (new_preferred > new_maximum)
+		new_preferred=new_maximum;
+
+	return {minimum(), new_preferred, new_maximum};
+}
+
 derived_axis_obj create_derived_axis_obj()
 {
 	return x::derivedvalues<axis>

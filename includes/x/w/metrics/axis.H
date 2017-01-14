@@ -269,6 +269,34 @@ namespace metrics {
 			}
 		}
 
+		//! Return a new axis, with an increased minimum()
+
+		//! preferred() and maximum() adjusted as needed.
+
+		axis increase_minimum_by(dim_t howmuch) const;
+
+		//! Return a new axis, with a decreased maximum()
+
+		//! maximum() does not get decreased below minimum().
+		//! preferred() adjusted as needed.
+
+		axis decrease_maximum_by(dim_t howmuch) const;
+
+		//! Compute the maximum possible value this axis can increase_minimum_by
+
+		constexpr dim_t max_increase_minimum_by() const
+		{
+			return dim_t(dim_t::infinite()-1) - minimum();
+		}
+
+		//! Compute the maximum possible value this axis can increase_minimum_by
+
+		constexpr dim_t max_decrease_maximum_by() const
+		{
+			return maximum() == dim_t::infinite()
+				? dim_t(0):maximum() - minimum();
+		}
+
 		//! Sort a vector of axises by minimum or maximum.
 
 		//! The beginning and ending iterators must be random
