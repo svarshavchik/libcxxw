@@ -83,7 +83,7 @@ int main()
 		check("noone's happy",
 		      10, 20, 30,
 		      100, 110, 120,
-		      65, 65, 65);
+		      100, 100, 100);
 
 	} catch (const LIBCXX_NAMESPACE::exception &e)
 	{

@@ -31,8 +31,7 @@ namespace metrics {
 	//! - The maximum value is the smallest maximum value.
 	//!
 	//! - If the calculated minimum value is greater than the calculated
-	//! maximum value, both minimum and maximum values are set to the
-	//! midpoint between the two.
+	//! maximum value, the maximum is set to the minimum.
 	//!
 	//! - The preferred value is the average of all preferred values,
 	//! adjusted to be no less than the computed minimum value, and
@@ -72,11 +71,7 @@ namespace metrics {
 			auto maximum=smallest_maximum;
 
 			if (minimum > maximum)
-			{
-				minimum=maximum=(dim_t::value_type)
-					((dim_squared_t{minimum.n}
-					+ maximum.n)/2).n;
-			}
+				maximum=minimum;
 
 			auto preferred=dim_t{(dim_t::value_type)
 					     (counter ?
