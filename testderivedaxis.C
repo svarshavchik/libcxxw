@@ -206,6 +206,32 @@ void test_decrease_maximum_by(const char *testname,
 				<< ", got " << res);
 }
 
+void test_increase_minimums_by(const char *testname,
+			       std::vector<axis> axises,
+			       dim_squared_t howmuch,
+			       const std::vector<axis> &result)
+{
+	axis::adjust_minimums_by(axises.begin(),
+				 axises.end(),
+				 howmuch);
+
+	if (axises != result)
+		throw EXCEPTION(testname << " failed");
+}
+
+void test_decrease_maximums_by(const char *testname,
+			       std::vector<axis> axises,
+			       dim_squared_t howmuch,
+			       const std::vector<axis> &result)
+{
+	axis::adjust_maximums_by(axises.begin(),
+				 axises.end(),
+				 howmuch);
+
+	if (axises != result)
+		throw EXCEPTION(testname << " failed");
+}
+
 int main()
 {
 	try {
@@ -312,6 +338,73 @@ int main()
 					 {20, 30, dim_t::infinite()},
 					 45,
 					 {20, 30, dim_t::infinite()});
+
+		test_increase_minimums_by
+			("incrmin1",
+			 { {10, 20, 30}, {20, 25, 30}, {30, 40, 50} },
+			 5,
+			 { {15, 20, 30}, {20, 25, 30}, {30, 40, 50} });
+
+		test_increase_minimums_by
+			("incrmin2",
+			 { {10, 20, 30}, {20, 25, 30}, {30, 40, 50} },
+			 15,
+			 { {20, 20, 30}, {20, 25, 30}, {35, 40, 50} });
+
+		test_increase_minimums_by
+			("incrmin3",
+			 { {10, 20, 30}, {20, 25, 30}, {30, 40, 50} },
+			 20,
+			 { {20, 20, 30}, {20, 25, 30}, {40, 40, 50} });
+
+		test_increase_minimums_by
+			("incrmin4",
+			 { {10, 20, 30}, {20, 25, 30}, {30, 40, 50} },
+			 22,
+			 { {21, 21, 30}, {20, 25, 30}, {41, 41, 50} });
+
+		test_increase_minimums_by
+			("incrmin5",
+			 { {10, 20, 30}, {20, 25, 30}, {30, 40, 50} },
+			 25,
+			 { {22, 22, 30}, {21, 25, 30}, {42, 42, 50} });
+
+		test_increase_minimums_by
+			("incrmin6",
+			 { {10, 20, 30}, {20, 25, 30}, {30, 40, 50} },
+			 50,
+			 { {30, 30, 30}, {30, 30, 30}, {50, 50, 50} });
+
+		test_increase_minimums_by
+			("incrmin7",
+			 { {10, 20, 30}, {20, 25, 30}, {30, 40, 50} },
+			 52,
+			 { {31, 31, 31}, {30, 30, 30}, {51, 51, 51} });
+
+		test_increase_minimums_by
+			("incrmin8",
+			 { {10, 20, 30}, {20, 25, 30}, {30, 40, 50} },
+			 55,
+			 { {32, 32, 32}, {31, 31, 31}, {52, 52, 52} });
+
+		test_increase_minimums_by
+			("incrmin9",
+			 { {10, 20, 30} },
+			 dim_t::infinite(),
+			 { {dim_t::infinite()-1, dim_t::infinite()-1,
+						 dim_t::infinite()-1}});
+
+		test_decrease_maximums_by
+			("decrmax1",
+			 { {10, 20, 30}, {20, 25, 30}, {30, 40, 50} },
+			 5,
+			 { {10, 20, 25}, {20, 25, 30}, {30, 40, 50} });
+
+		test_decrease_maximums_by
+			("decrmax2",
+			 { {10, 20, 30}, {20, 25, 30}, {30, 40, 50} },
+			 dim_t::infinite(),
+			 { {10, 10, 10}, {20, 20, 20}, {30, 30, 30} });
 
 	} catch (const LIBCXX_NAMESPACE::exception &e)
 	{

@@ -183,6 +183,9 @@ html/ref/index.html: $(DOCS_SRC) Doxyfile
 	doxygen; c=$$?;	perl -p -i -e 's/INSERT_LIBX_NAMESPACE/x/g' html/ref/*.html; exit $$c
 endif
 
+check-am:
+	@for p in $(TESTPROGRAMS); do echo $$p; ./$$p || exit 1; done
+
 .PHONY: rpm
 
 rpm: dist

@@ -96,6 +96,10 @@ namespace metrics {
 		//! The maximum metric
 		constexpr dim_t maximum() const { return maximum_; }
 
+		//! maximum() - minimum()
+
+		constexpr dim_t spread() const { return maximum()-minimum(); }
+
 		//! Comparison operator
 		constexpr bool operator==(const axis &o) const
 		{
@@ -336,6 +340,163 @@ namespace metrics {
 				  });
 
 			return v;
+		}
+
+		//! Invoke adjust_by() using max_increase_minimum_by()
+
+		template<typename iter_type>
+		static void adjust_minimums_by(iter_type beg_iter,
+					       iter_type end_iter,
+					       dim_squared_t byhowmuch)
+		{
+			adjust_by(beg_iter, end_iter, byhowmuch,
+				  &axis::increase_minimum_by);
+		}
+
+		//! Invoke adjust_by() using max_increase_minimum_by()
+
+		template<typename iter_type>
+		static void adjust_maximums_by(iter_type beg_iter,
+					       iter_type end_iter,
+					       dim_squared_t byhowmuch)
+		{
+			adjust_by(beg_iter, end_iter, byhowmuch,
+				  &axis::decrease_maximum_by);
+		}
+
+		//! Adjust a sequence of axises by a total amount, fairly.
+
+		//! Applies a total adjustment to a sequence of axises
+		//! in a fair manner.
+		//!
+		//! If the adjustment is to the maximum()s, assumes that none
+		//! of the axises have infinite() maximums, because whatever
+		//! the reason the adjustment is made, it should've taken
+		//! advantage of infinite() maximums, first.
+		//!
+		//! The adjustment is applied first to axises with the
+		//! greatest difference between their minimum and maximum
+		//! values. As much as possible, the same adjustment gets
+		//! applied to all axises with the same difference between
+		//! their minimum and maximum values.
+
+		template<typename iter_type>
+		static void adjust_by(//! RandomAccessIterator, start of seq
+				      iter_type beg_iter,
+				      //! RandomAccessIterator, end of seq
+				      iter_type end_iter,
+				      //! Total adjustment to apply.
+				      dim_squared_t byhowmuch,
+				      //! Either increase_minimum_by or decrease_maximum_by
+				      axis (axis::*adjust)(dim_t) const)
+		{
+			if (beg_iter == end_iter)
+				return;
+
+			// Sort by largest spread first.
+			auto sorted_sequence=
+				sort_sequence_by
+				(beg_iter,
+				 end_iter,
+				 []
+				 (const auto &a, const auto &b)
+				 {
+					 return a.spread() > b.spread();
+				 });
+
+			// Repeatedly try to adjust the spread, until
+			// byhowmuch gets reduced to 0.
+			//
+			// sorted_sequence is now ordered by largest spread
+			// first.
+
+			while (byhowmuch > 0)
+			{
+				const axis &a=*sorted_sequence.front();
+
+				dim_t largest_spread=a.spread();
+
+				// Otherwise, find the 2nd largest spread.
+
+				auto next_largest_spread_iter=
+					std::find_if
+					(sorted_sequence.begin(),
+					 sorted_sequence.end(),
+					 [largest_spread]
+					 (const auto &iter)
+					 {
+						 const axis &a=*iter;
+
+						 return a.spread()
+						 != largest_spread;
+					 });
+
+				// If all remaining axises have the same
+				// spread, divide the pain equally. Divide
+				// byhowmuch by the number of axises.
+
+				dim_squared_t adjust_by;
+
+				if (next_largest_spread_iter
+				    == sorted_sequence.end())
+				{
+					adjust_by=((dim_squared_t::value_type)
+						   byhowmuch
+						   + sorted_sequence.size()-1)
+						 / sorted_sequence.size();
+				}
+				else
+				{
+					// Otherwise use the difference between
+					// the largest spread and the next
+					// largest spread, adjusting each
+					// axis by the difference, essentially
+					// reducing the axises with the largest
+					// spread to the next-largest spread.
+
+					const axis &a=**next_largest_spread_iter;
+					dim_t next_largest_spread=a.spread();
+
+					adjust_by=(dim_t::value_type)
+						(largest_spread-
+						 next_largest_spread);
+				}
+
+				// Iterate over all axises with the largest
+				// spread, and adjust_by them.
+
+				for (auto p=sorted_sequence.begin();
+				     p != next_largest_spread_iter; ++p)
+				{
+					// Adjust by the lesser of adjust_by
+					// and the remaining adjustment to
+					// be applied, in sum.
+
+					dim_squared_t doit=adjust_by;
+
+					if (doit > byhowmuch)
+						doit=byhowmuch;
+
+					if (doit >= dim_t::infinite())
+						doit=dim_t::infinite()-1;
+
+
+					// Use adjust() to apply the adjustment.
+					axis &current_metrics= **p;
+
+					current_metrics=
+						(current_metrics.*adjust)
+						((dim_squared_t::value_type)
+						 doit);
+
+					byhowmuch -= doit;
+
+					// Have we applied the adjustment in
+					// total?
+					if (byhowmuch == 0)
+						break;
+				}
+			}
 		}
 	};
 
