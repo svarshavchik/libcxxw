@@ -34,6 +34,11 @@ class LIBCXX_HIDDEN main_windowObj::handlerObj :
 	void client_message_event(IN_THREAD_ONLY,
 				  const xcb_client_message_event_t *event)
 		override;
+
+
+	//! Inherited from horizvertObj
+
+	void horizvert_updated(IN_THREAD_ONLY) override;
 };
 
 LIBCXXW_NAMESPACE_END

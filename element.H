@@ -24,7 +24,9 @@ LIBCXXW_NAMESPACE_START
 //! Stuff that all display elements have.
 
 class LIBCXX_HIDDEN elementObj::implObj : virtual public obj,
-// metrics::horizvertObj is THREAD_DATA_ONLY
+
+// horizvertObj is considered to be IN_THREAD_ONLY
+
 					  private metrics::horizvertObj {
 
 	//! Most of the stuff is for the connection thread's consumption, only.
@@ -97,8 +99,7 @@ class LIBCXX_HIDDEN elementObj::implObj : virtual public obj,
 	~implObj();
 
 	THREAD_DATA_ONLY(data);
-
-	THREAD_DATA_SUPERCLASS_ONLY(metrics::horizvertObj, horizvert);
+	THREAD_DATA_SUPERCLASS_ONLY(horizvertObj, get_horizvert);
  public:
 
 

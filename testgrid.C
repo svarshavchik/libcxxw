@@ -15,6 +15,18 @@ struct testgrid_info {
 	dim_t min, pref, max;
 };
 
+class myhorizvertObj : public horizvertObj {
+
+public:
+	using horizvertObj::horizvertObj;
+
+	void horizvert_updated(IN_THREAD_ONLY) override
+	{
+	}
+};
+
+typedef ref<myhorizvertObj> myhorizvert;
+
 static void do_test(const char *testname,
 		    const std::vector<testgrid_info> &test_info,
 		    const grid_metrics_t &res)
@@ -23,7 +35,7 @@ static void do_test(const char *testname,
 
 	for (const auto &info: test_info)
 	{
-		horizvert metrics=horizvert::create(info.min, info.pref, info.max);
+		myhorizvert metrics=myhorizvert::create(info.min, info.pref, info.max);
 
 		g.push_back(grid_pos::create(grid_axisrange{info.x1, info.x2},
 					     grid_axisrange{info.y1, info.y2},

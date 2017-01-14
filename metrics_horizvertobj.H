@@ -7,6 +7,7 @@
 
 #include "x/w/types.H"
 #include "x/w/metrics/axis.H"
+#include "connection_threadfwd.H"
 #include <x/obj.H>
 
 LIBCXXW_NAMESPACE_START
@@ -16,10 +17,18 @@ namespace metrics {
 	//! A display element's metrics.
 
 	//! Specifies a display element's horizontal and vertical sizes.
+	//!
+	//! \note
+	//! THIS ENTIRE OBJECT IS IN_THREAD_ONLY
 
 	class horizvertObj : virtual public obj {
 
 	public:
+		/////////////////////////////////////////////////////////////
+		//
+		// NOTE: this entire object is IN_THREAD_ONLY
+
+		virtual void horizvert_updated(IN_THREAD_ONLY)=0;
 
 		//! The horizontal dimensions.
 		axis horiz;
