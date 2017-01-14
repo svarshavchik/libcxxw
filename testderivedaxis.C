@@ -11,6 +11,7 @@
 using namespace LIBCXX_NAMESPACE::w::metrics;
 
 typedef LIBCXX_NAMESPACE::w::dim_t dim_t;
+typedef LIBCXX_NAMESPACE::w::dim_squared_t dim_squared_t;
 
 void do_check(std::vector<axis> &v,
 	      const char *test_name,
@@ -110,6 +111,51 @@ void checkdivide(const char *name,
 			    values...);
 }
 
+static void collect(std::vector<axis> &v)
+{
+}
+
+template<typename ...list_of_values>
+void collect(std::vector<axis> &v,
+	     dim_t minimum, dim_t preferred, dim_t maximum,
+	     list_of_values ...values)
+{
+	v.emplace_back(minimum, preferred, maximum);
+	collect(v, std::forward<list_of_values>(values)...);
+}
+
+template<typename ...list_of_values>
+void checkspread(const char *testname,
+		 dim_squared_t expected_minimum,
+		 std::tuple<dim_squared_t, bool> expected_maximum,
+		 list_of_values ...values)
+{
+	std::vector<axis> axises;
+
+	axises.reserve(sizeof...(values)/3);
+
+	collect(axises, values...);
+
+	auto minimum=axis::total_minimum(axises.begin(), axises.end());
+
+	auto res=axis::total_maximum(axises.begin(), axises.end());
+
+	if (minimum != expected_minimum)
+		throw EXCEPTION(testname << ": expected minimum of "
+				<< expected_minimum << ", got "
+				<< minimum);
+
+	if (res.sum_excluding_infinite != std::get<0>(expected_maximum))
+		throw EXCEPTION(testname << ": expected maximum of "
+				<< std::get<0>(expected_maximum) << ", got "
+				<< res.sum_excluding_infinite);
+
+	if (res.has_infinites != std::get<1>(expected_maximum))
+		throw EXCEPTION(testname << ": expected infinite flag of "
+				<< std::get<1>(expected_maximum) << ", got "
+				<< res.has_infinites);
+}
+
 int main()
 {
 	try {
@@ -141,6 +187,24 @@ int main()
 			    2,
 			    50, 53, 56,
 			    51, 55, 59);
+
+		checkspread("spread1",
+			    50,
+			    {90, false},
+			    10, 20, 30,
+			    40, 50, 60);
+
+		checkspread("spread2",
+			    50,
+			    {30, true},
+			    10, 20, 30,
+			    40, 50, dim_t::infinite());
+
+		checkspread("spread3",
+			    50,
+			    {dim_t::infinite(), false},
+			    10, 20, dim_t::infinite()-1,
+			    40, 50, 60);
 	} catch (const LIBCXX_NAMESPACE::exception &e)
 	{
 		e->caught();

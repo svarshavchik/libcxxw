@@ -8,6 +8,7 @@
 #include <x/w/types.H>
 #include <x/exception.H>
 #include <iostream>
+#include <tuple>
 
 LIBCXXW_NAMESPACE_START
 
@@ -158,8 +159,115 @@ namespace metrics {
 							maximum_increment});
 			}
 		}
+
+		//! Compute the total of all minimums of a sequence of axises.
+
+		template<typename beg_iter_type,
+			 typename end_iter_type>
+		static dim_squared_t total_minimum(beg_iter_type beg_iter,
+						   end_iter_type end_iter)
+		{
+			dim_squared_t n{0};
+
+			while (beg_iter != end_iter)
+			{
+				axis &a=*beg_iter;
+				n += a.minimum();
+				++beg_iter;
+			}
+
+			return n;
+		}
+
+		//! Compute the total of all preferreds of a sequence of axises.
+
+		template<typename beg_iter_type,
+			 typename end_iter_type>
+		static dim_squared_t total_preferred (beg_iter_type beg_iter,
+						      end_iter_type end_iter)
+		{
+			dim_squared_t n{0};
+
+			while (beg_iter != end_iter)
+			{
+				axis &a=*beg_iter;
+				n += a.preferred();
+				++beg_iter;
+			}
+
+			return n;
+		}
+
+		//! What total_maximum() returns.
+
+		struct total_maximum_info {
+
+			//! The total, excluding any infinite() maximums.
+
+			//! This maybe dim_t::infinite() if the sum total
+			//! of maximums exceeds the dim_t range().
+
+			dim_squared_t sum_excluding_infinite=0;
+
+			//! Whether the sequence has any infinite()s.
+			bool has_infinites=false;
+		};
+
+		//! Compute the total of all maximums of a sequence of axises.
+
+		template<typename beg_iter_type,
+			 typename end_iter_type>
+		static total_maximum_info total_maximum (beg_iter_type beg_iter,
+							 end_iter_type end_iter)
+		{
+			dim_squared_t n{0};
+			bool has_infinites=false;
+
+			while (beg_iter != end_iter)
+			{
+				axis &a=*beg_iter;
+				if (a.maximum() == dim_t::infinite())
+				{
+					has_infinites=true;
+				}
+				else
+				{
+					n += a.maximum();
+
+					if ((dim_squared_t::value_type)n >
+					    dim_t::infinite())
+						n=dim_t::infinite();
+				}
+				++beg_iter;
+			}
+
+			return {n, has_infinites};
+		}
+
+		//! Remove infinite axises from a sequence.
+
+		//! Each axis that has a maximum metric of infinite() has
+		//! its maximum metric updated to the highest representable
+		//! maximum value.
+
+		template<typename beg_iter_type,
+			 typename end_iter_type>
+		static void remove_infinites (beg_iter_type beg_iter,
+					      end_iter_type end_iter)
+		{
+			while (beg_iter != end_iter)
+			{
+				axis &a=*beg_iter;
+				if (a.maximum() == dim_t::infinite())
+				{
+					a.maximum_=dim_t::infinite()-1;
+				}
+				++beg_iter;
+			}
+		}
 	};
 
+	//! Overload the \c << operator, to display the contents of an axis.
 	std::ostream &operator<<(std::ostream &o, const axis &);
 }
 
