@@ -2,11 +2,13 @@
 ** Copyright 2017 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
-#include "x/w/metrics/derivedaxis.H"
+
 #include <x/exception.H>
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include "metrics_axis.H"
+#include "x/w/metrics/derivedaxis.H"
 
 using namespace LIBCXX_NAMESPACE::w::metrics;
 
@@ -18,7 +20,20 @@ void do_check(std::vector<axis> &v,
 	      dim_t::value_type minres, dim_t::value_type prefres,
 	      dim_t::value_type maxres)
 {
-	axis res=std::for_each(v.begin(), v.end(), derivedaxis());
+	auto d=create_derived_axis_obj();
+
+	std::vector<derived_axis_obj::base::current_value_t> current_values;
+
+	std::for_each(v.begin(), v.end(),
+		      [&]
+		      (const auto &a)
+		      {
+			      current_values.push_back(d->create(a));
+		      });
+
+	typedef derived_axis_obj::base::vipobj_t vipobj_t;
+
+	auto res=*vipobj_t::readlock(*d);
 
 	if (res.minimum() != minres)
 		throw EXCEPTION("Expected minimum " << minres
@@ -235,8 +250,7 @@ void test_decrease_maximums_by(const char *testname,
 int main()
 {
 	try {
-		check("empty list",
-		      0, 0, 0);
+		check("empty list", 0, 0, 0);
 
 		check("two values",
 		      20, 30, 100,

@@ -114,6 +114,18 @@ namespace metrics {
 			return !operator==(o);
 		}
 
+		//! Update preferred value
+
+		constexpr void set_preferred(dim_t p)
+		{
+			if (p < minimum_)
+				p=minimum_;
+
+			if (p > maximum_)
+				p=maximum_;
+
+			preferred_=p;
+		}
 
 		/////////////////////////////////////////////////////////
 		//
@@ -498,6 +510,15 @@ namespace metrics {
 				}
 			}
 		}
+
+		//! Adjust this axis on account of another axis.
+
+		//! This uses adjust_minimums_by() and adjust_maximums_by()
+		//! only on this axis in order for it to accomodate another
+		//! axis's requirements, as much as possible.
+
+		axis &operator &= (const axis &other);
+
 	};
 
 	//! Overload the \c << operator, to display the contents of an axis.

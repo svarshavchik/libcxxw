@@ -37,15 +37,13 @@ namespace metrics {
 	//! adjusted to be no less than the computed minimum value, and
 	//! no larger than the computed maximum value.
 
-	class derivedaxis {
-
-		dim_t largest_minimum{0};
+	class derivedaxis : public axis {
 
 		dim_squared_t sum_of_preferreds{0};
 
-		dim_t smallest_maximum{dim_t::infinite()};
-
 		size_t counter{0};
+
+		bool is_default=true;
 
 	public:
 		//! Constructor
@@ -54,41 +52,21 @@ namespace metrics {
 		//! The next
 		constexpr derivedaxis &operator()(const axis &a)
 		{
-			if (a.minimum() > largest_minimum)
-				largest_minimum=a.minimum();
-
-			if (a.maximum() < smallest_maximum)
-				smallest_maximum=a.maximum();
-
-			sum_of_preferreds += a.preferred().n;
 			++counter;
+			sum_of_preferreds += a.preferred();
+
+			if (is_default)
+			{
+				is_default=false;
+				axis::operator=(a);
+			}
+			else
+			{
+				axis::operator&=(a);
+				set_preferred( (dim_squared_t::value_type)
+					       (sum_of_preferreds/counter));
+			}
 			return *this;
-		}
-
-		constexpr operator axis() const
-		{
-			auto minimum=largest_minimum;
-
-			auto maximum=smallest_maximum;
-
-			if (minimum > maximum)
-				maximum=minimum;
-
-			auto preferred=dim_t{(dim_t::value_type)
-					     (counter ?
-					      (sum_of_preferreds /
-					       counter).n:0)};
-
-			if (preferred < minimum)
-				preferred=minimum;
-
-			if (preferred > maximum)
-				preferred=maximum;
-
-			if (counter == 0)
-				maximum=dim_t{0};
-
-			return {minimum, preferred, maximum};
 		}
 	};
 }

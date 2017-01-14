@@ -68,23 +68,35 @@ axis axis::decrease_maximum_by(dim_t howmuch) const
 	return {minimum(), new_preferred, new_maximum};
 }
 
-derived_axis_obj create_derived_axis_obj()
+axis &axis::operator &= (const axis &other)
 {
-	return x::derivedvalues<axis>
-		::create( []
-			  {
-				  return derivedaxis();
-			  },
-			  []
-			  (auto &derived, auto &axis)
-			  {
-				  derived(axis);
-			  },
-			  []
-			  (const auto &derived)
-			  {
-				  return axis(derived);
-			  });
+	dim_t target_preferred=other.preferred() > preferred()
+		? other.preferred() - (other.preferred() - preferred())/2
+		: preferred() - (preferred()-other.preferred())/2;
+
+	if (other.minimum() > minimum())
+		*this=increase_minimum_by(other.minimum() - minimum());
+
+	if (other.maximum() != dim_t::infinite())
+	{
+		if (maximum() == dim_t::infinite())
+			--maximum_; // So that decrease_maximum_by() works.
+
+		if (other.maximum() < maximum())
+			*this=decrease_maximum_by(maximum() - other.maximum());
+	}
+
+	if (target_preferred < minimum())
+		target_preferred=minimum();
+
+	if (target_preferred > maximum())
+		target_preferred=maximum();
+
+	if (target_preferred == dim_t::infinite())
+		--target_preferred; // ?
+
+	preferred_=target_preferred;
+	return *this;
 }
 
 std::ostream &operator<<(std::ostream &o,
@@ -93,6 +105,25 @@ std::ostream &operator<<(std::ostream &o,
 	return o << "minimum=" << a.minimum()
 		 << ", preferred=" << a.preferred()
 		 << ", maximum=" << a.maximum();
+}
+
+derived_axis_obj create_derived_axis_obj()
+{
+	return x::derivedvalues<axis>
+		::create( []
+			  {
+				  return derivedaxis();
+			  },
+			  []
+			  (auto &derived, const auto &axis)
+			  {
+				  derived(axis);
+			  },
+			  []
+			  (const auto &derived)
+			  {
+				  return static_cast<axis>(derived);
+			  });
 }
 #if 0
 {
