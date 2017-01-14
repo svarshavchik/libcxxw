@@ -57,6 +57,20 @@ libcxxw_la_SOURCES=\
 	messages.H				    \
 	metrics_axis.C				    \
 	metrics_axis.H				    \
+	metrics_element.C			    \
+	metrics_element.H			    \
+	metrics_elementfwd.H			    \
+	metrics_elementobj.H			    \
+	metrics_grid.H				    \
+	metrics_grid.C				    \
+	metrics_grid_axisrange.C		    \
+	metrics_grid_axisrange.H		    \
+	metrics_grid_axisrangefwd.H		    \
+	metrics_grid_xy.H			    \
+	metrics_grid_pos.C			    \
+	metrics_grid_pos.H			    \
+	metrics_grid_posfwd.H			    \
+	metrics_grid_posobj.H			    \
 	pictformat.C				    \
 	pictformat.H				    \
 	picture.C				    \

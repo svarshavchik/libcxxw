@@ -6,7 +6,7 @@
 #define x_w_matrics_rectangle_H
 
 #include <x/w/types.H>
-#include <x/exception.H>
+#include <x/w/metrics/axis.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -41,7 +41,7 @@ namespace metrics {
 
 		//! Comparison operator
 
-		constexpr bool operator==(const rectangle &o) constexpr
+		constexpr bool operator==(const rectangle &o) const
 		{
 			return horiz == o.horiz && vert == o.vert;
 		}
