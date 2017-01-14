@@ -140,29 +140,17 @@ screenObj::implObj::toplevelwindow_colormapObj
 			     xcb_visualid_t visual)
 	: xid_t<xcb_colormap_t>(thread)
 {
-	thread->run_as
-		(RUN_AS,
-		 [window, visual, xid_obj=this->xid_obj]
-		 (IN_THREAD_ONLY)
-		 {
-			 xcb_create_colormap(thread_->info->conn,
-					     XCB_COLORMAP_ALLOC_NONE,
-					     xid_obj->id_,
-					     window,
-					     visual);
-		 });
+	xcb_create_colormap(thread->info->conn,
+			    XCB_COLORMAP_ALLOC_NONE,
+			    xid_obj->id_,
+			    window,
+			    visual);
 }
 
 screenObj::implObj::toplevelwindow_colormapObj
 ::~toplevelwindow_colormapObj()
 {
-	thread()->run_as(RUN_AS,
-			 [xid_obj=this->xid_obj]
-			 (IN_THREAD_ONLY)
-			 {
-				 xcb_free_colormap(thread_->info->conn,
-						   xid_obj->id_);
-			 });
+	xcb_free_colormap(thread()->info->conn, xid_obj->id_);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
