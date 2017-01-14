@@ -71,7 +71,7 @@ namespace metrics {
 
 		constexpr axis(dim_t minimum=dim_t(0),
 			       dim_t preferred=dim_t(0),
-			       dim_t maximum=dim_t(0))
+			       dim_t maximum=dim_t(dim_t::infinite()))
 			: minimum_{(validate(minimum, preferred, maximum),
 				    minimum)},
 			preferred_{preferred},

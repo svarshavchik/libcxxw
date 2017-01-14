@@ -250,7 +250,7 @@ void test_decrease_maximums_by(const char *testname,
 int main()
 {
 	try {
-		check("empty list", 0, 0, 0);
+		check("empty list", 0, 0, dim_t::infinite());
 
 		check("two values",
 		      20, 30, 100,
