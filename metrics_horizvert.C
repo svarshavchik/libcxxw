@@ -3,7 +3,7 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
-#include "x/w/metrics/horizvert.H"
+#include "metrics_horizvert.H"
 #include <x/exception.H>
 
 LIBCXXW_NAMESPACE_START

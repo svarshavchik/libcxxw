@@ -4,7 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "metrics_grid_pos.H"
-#include "x/w/metrics/horizvert.H"
+#include "metrics_horizvert.H"
 #include <x/exception.H>
 
 LIBCXXW_NAMESPACE_START

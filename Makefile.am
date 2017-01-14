@@ -68,6 +68,9 @@ libcxxw_la_SOURCES=\
 	metrics_grid_posfwd.H			    \
 	metrics_grid_posobj.H			    \
 	metrics_horizvert.C			    \
+	metrics_horizvert.H			    \
+	metrics_horizvertfwd.H			    \
+	metrics_horizvertobj.H			    \
 	pictformat.C				    \
 	pictformat.H				    \
 	picture.C				    \

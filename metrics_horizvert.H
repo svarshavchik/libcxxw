@@ -5,8 +5,8 @@
 #ifndef x_w_metrics_horizvert_H
 #define x_w_metrics_horizvert_H
 
-#include <x/w/metrics/horizvertfwd.H>
-#include <x/w/metrics/horizvertobj.H>
+#include "metrics_horizvertfwd.H"
+#include "metrics_horizvertobj.H"
 #include <x/ref.H>
 
 LIBCXXW_NAMESPACE_START

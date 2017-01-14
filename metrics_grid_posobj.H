@@ -6,7 +6,7 @@
 #define metrics_grid_grid_posobj_H
 
 #include "metrics_grid_axisrange.H"
-#include "x/w/metrics/horizvertfwd.H"
+#include "metrics_horizvertfwd.H"
 
 #include <x/obj.H>
 

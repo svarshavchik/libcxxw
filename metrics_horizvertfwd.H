@@ -2,8 +2,8 @@
 ** Copyright 2017 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
-#ifndef x_w_metrics_horizvertfwd_H
-#define x_w_metrics_horizvertfwd_H
+#ifndef metrics_horizvertfwd_H
+#define metrics_horizvertfwd_H
 
 #include <x/ptrfwd.H>
 #include "x/w/namespace.H"

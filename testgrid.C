@@ -1,6 +1,6 @@
 #include "metrics_grid.H"
 #include <x/exception.H>
-#include "x/w/metrics/horizvert.H"
+#include "metrics_horizvert.H"
 #include "metrics_grid_axisrange.H"
 #include "metrics_grid_pos.H"
 
