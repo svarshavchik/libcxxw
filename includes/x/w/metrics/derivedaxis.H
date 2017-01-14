@@ -62,6 +62,7 @@ namespace metrics {
 
 			sum_of_preferreds += a.preferred().n;
 			++counter;
+			return *this;
 		}
 
 		constexpr operator axis() const

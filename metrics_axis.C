@@ -47,6 +47,13 @@ derived_axis_obj create_derived_axis_obj()
 			  });
 }
 
+std::ostream &operator<<(std::ostream &o,
+			 const axis &a)
+{
+	return o << "minimum=" << a.minimum()
+		 << ", preferred=" << a.preferred()
+		 << ", maximum=" << a.maximum();
+}
 #if 0
 {
 #endif

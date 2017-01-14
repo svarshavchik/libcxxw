@@ -12,16 +12,18 @@ LIBCXXW_NAMESPACE_START
 
 namespace metrics {
 
-	//! Metrics for a rectangle.
+	//! A display element's metrics.
 
-	//! Just its horizontal and vertical axis.
+	//! Specifies a display element's horizontal and vertical sizes.
 
 	class rectangle {
 
 	public:
 
+		//! The horizontal dimensions.
 		axis horiz;
 
+		//! The vertical dimensions.
 		axis vert;
 
 		//! Constructor

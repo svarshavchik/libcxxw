@@ -7,10 +7,22 @@
 
 #include <x/w/types.H>
 #include <x/exception.H>
+#include <iostream>
 
 LIBCXXW_NAMESPACE_START
 
-//! The metrics namespace defines rules for indicating a display element's sizes.
+//! The metrics namespace defines rules for computing a display element's size
+
+//! A display elements horizontal and vertical size is specified by
+//! \ref metrics::axis "INSERT_LIBX_NAMESPACE::w::metrics::axis", which
+//! defines three values: minimum, preferred, and maximum. This specifies
+//! the display element's minimum, preferred, and maximum size in the
+//! given dimension.
+//!
+//! \ref metrics::rectangle "INSERT_LIBX_NAMESPACE::w::metrics::rectangle"
+//! contains two members: horiz and vert. Both of them are \c axis
+//! specifications, and this defines a display element's horizontal and
+//! vertical dimensions.
 
 namespace metrics {
 
@@ -21,15 +33,20 @@ namespace metrics {
 
 	class axis {
 
+		//! Minimum size
 		dim_t minimum_;
 
+		//! Preferred size
 		dim_t preferred_;
 
+		//! Maximum size
 		dim_t maximum_;
 
 		static exception invalid_infinite(),
 			invalid_minimum(),
 			invalid_maximum();
+
+		//! Sanity check the minimum, preferred, and maximum values.
 
 		static constexpr void validate(dim_t minimum, dim_t preferred,
 					       dim_t maximum)
@@ -89,6 +106,8 @@ namespace metrics {
 			return !operator==(o);
 		}
 	};
+
+	std::ostream &operator<<(std::ostream &o, const axis &);
 }
 
 LIBCXXW_NAMESPACE_END
