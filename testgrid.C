@@ -1,6 +1,6 @@
 #include "metrics_grid.H"
 #include <x/exception.H>
-#include "metrics_element.H"
+#include "x/w/metrics/horizvert.H"
 #include "metrics_grid_axisrange.H"
 #include "metrics_grid_pos.H"
 
@@ -23,7 +23,7 @@ static void do_test(const char *testname,
 
 	for (const auto &info: test_info)
 	{
-		element metrics=element::create(info.min, info.pref, info.max);
+		horizvert metrics=horizvert::create(info.min, info.pref, info.max);
 
 		g.push_back(grid_pos::create(grid_axisrange{info.x1, info.x2},
 					     grid_axisrange{info.y1, info.y2},

@@ -4,7 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "metrics_grid_pos.H"
-#include "metrics_element.H"
+#include "x/w/metrics/horizvert.H"
 #include <x/exception.H>
 
 LIBCXXW_NAMESPACE_START
@@ -15,10 +15,10 @@ namespace metrics {
 
 grid_posObj::grid_posObj(const grid_axisrange &horiz_pos,
 			 const grid_axisrange &vert_pos,
-			 const element &metrics)
+			 const horizvert &horizvert_metrics)
 	: horiz_pos(horiz_pos),
 	  vert_pos(vert_pos),
-	  metrics(metrics)
+	  horizvert_metrics(horizvert_metrics)
 {
 }
 

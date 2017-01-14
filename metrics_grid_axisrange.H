@@ -7,7 +7,6 @@
 
 #include <x/number.H>
 #include "metrics_grid_xy.H"
-#include "metrics_elementfwd.H"
 #include "metrics_grid_axisrangefwd.H"
 
 LIBCXXW_NAMESPACE_START

@@ -13,6 +13,7 @@
 #include "elementfwd.H"
 #include "draw_infofwd.H"
 #include "picture.H"
+#include "x/w/metrics/horizvertobj.H"
 #include <x/obj.H>
 #include "x/callback_list.H"
 
@@ -22,7 +23,9 @@ LIBCXXW_NAMESPACE_START
 
 //! Stuff that all display elements have.
 
-class LIBCXX_HIDDEN elementObj::implObj : virtual public obj {
+class LIBCXX_HIDDEN elementObj::implObj : virtual public obj,
+// metrics::elementObj is THREAD_DATA_ONLY
+					  private metrics::horizvertObj {
 
 	//! Most of the stuff is for the connection thread's consumption, only.
 
@@ -94,6 +97,8 @@ class LIBCXX_HIDDEN elementObj::implObj : virtual public obj {
 	~implObj();
 
 	THREAD_DATA_ONLY(data);
+
+	THREAD_DATA_SUPERCLASS_ONLY(metrics::horizvertObj, horizvert);
  public:
 
 

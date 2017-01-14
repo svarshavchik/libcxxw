@@ -35,7 +35,7 @@ struct LIBCXX_INTERNAL grid_major {
 	grid_axisrange grid_posObj::*grid_pos_member;
 
 	//! The horizontal or the vertical grid element's metrics axis.
-	axis rectangle::*axis_pos_member;
+	axis horizvertObj::*axis_pos_member;
 
 	//! The other metric calculations.
 	const struct grid_major *minor;
@@ -49,7 +49,7 @@ struct LIBCXX_INTERNAL grid_major {
 	//! Convenient macro
 	inline axis &get_axis(const grid_pos &p) const
 	{
-		return (*p->metrics).*axis_pos_member;
+		return (*p->horizvert_metrics).*axis_pos_member;
 	}
 };
 
@@ -58,13 +58,13 @@ extern const struct grid_major v_grid;
 
 const struct grid_major h_grid LIBCXX_INTERNAL ={
 	&grid_posObj::horiz_pos,
-	&rectangle::horiz,
+	&horizvertObj::horiz,
 	&v_grid,
 };
 
 const struct grid_major v_grid LIBCXX_INTERNAL ={
 	&grid_posObj::vert_pos,
-	&rectangle::vert,
+	&horizvertObj::vert,
 	&h_grid,
 };
 

@@ -2,11 +2,11 @@
 ** Copyright 2017 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
-#ifndef metrics_element_H
-#define metrics_element_H
+#ifndef x_w_metrics_horizvert_H
+#define x_w_metrics_horizvert_H
 
-#include "metrics_elementfwd.H"
-#include "metrics_elementobj.H"
+#include <x/w/metrics/horizvertfwd.H>
+#include <x/w/metrics/horizvertobj.H>
 #include <x/ref.H>
 
 LIBCXXW_NAMESPACE_START

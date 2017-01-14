@@ -35,18 +35,36 @@ typedef ptr<connection_threadObj> connection_threadptr;
 // name(IN_THREAD)
 
 #define THREAD_DATA_ONLY(name)						\
-	/*! name is accessible in connection thread only */		\
+	/*! This is accessible in connection thread only */		\
 									\
 	inline auto &name(IN_THREAD_ONLY)				\
 	{								\
 		return name ## _thread_only;				\
 	}								\
 									\
-	/*! name is accessible in connection thread only */		\
+	/*! This is accessible in connection thread only */		\
 									\
 	inline const auto &name(IN_THREAD_ONLY) const			\
 	{								\
 		return name ## _thread_only;				\
+	}								\
+
+
+// Similar to THREAD_DATA_ONLY, but for a private superclass.
+
+#define THREAD_DATA_SUPERCLASS_ONLY(superclass,name)			\
+	/*! This is accessible in connection thread only */		\
+									\
+	inline superclass * name(IN_THREAD_ONLY)			\
+	{								\
+		return this;						\
+	}								\
+									\
+	/*! This is accessible in connection thread only */		\
+									\
+	inline const superclass * name(IN_THREAD_ONLY) const		\
+	{								\
+		return this;				\
 	}								\
 
 LIBCXXW_NAMESPACE_END

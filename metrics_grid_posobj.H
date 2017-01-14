@@ -6,7 +6,7 @@
 #define metrics_grid_grid_posobj_H
 
 #include "metrics_grid_axisrange.H"
-#include "metrics_elementfwd.H"
+#include "x/w/metrics/horizvertfwd.H"
 
 #include <x/obj.H>
 
@@ -27,12 +27,12 @@ namespace metrics {
 		grid_axisrange vert_pos;
 
 		//! The element metrics themselves.
-		const element metrics;
+		const horizvert horizvert_metrics;
 
 		//! Constructor
 		grid_posObj(const grid_axisrange &horiz_pos,
 			    const grid_axisrange &vert_pos,
-			    const element &metrics);
+			    const horizvert &horizvert_metrics);
 
 		//! Destructor
 		~grid_posObj();
