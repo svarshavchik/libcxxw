@@ -38,6 +38,22 @@ namespace metrics {
 
 	grid_metrics_t calculate_grid_vert_metrics(const grid_t &g)
 		LIBCXX_HIDDEN;
+
+	//! The actual size of a grid's axis.
+
+	//! This is a vector whose size is always the same as the number
+	//! of keys in grid_metrics_t.
+
+	typedef std::vector<dim_t> grid_sizes_t;
+
+	//! Compute the actual size of each grid axis position.
+
+	//! Given the target size of a grid's axis, parcel out this size
+	//! to each grid position on the axis.
+
+	void calculate_grid_size(const grid_metrics_t &m,
+				 grid_sizes_t &s,
+				 dim_t target_size) LIBCXX_HIDDEN;
 }
 
 LIBCXXW_NAMESPACE_END

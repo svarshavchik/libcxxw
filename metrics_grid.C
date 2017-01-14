@@ -431,6 +431,208 @@ static void apply_metrics(grid_metrics_t &m,
 	}
 }
 
+static void prorated_size(const grid_metrics_t &m,
+			  grid_sizes_t &s,
+
+			  dim_t share,
+			  dim_squared_t total,
+
+			  bool (*do_apply)(const axis &),
+			  dim_t (*towards)(const axis &)) LIBCXX_INTERNAL;
+
+static bool apply_all(const axis &) LIBCXX_INTERNAL;
+static bool apply_noninfinites(const axis &a) LIBCXX_INTERNAL;
+static dim_t apply_minimum_size(const axis &a) LIBCXX_INTERNAL;
+static dim_t apply_preferred_size(const axis &a) LIBCXX_INTERNAL;
+static dim_t apply_maximum_size(const axis &a) LIBCXX_INTERNAL;
+
+// prorated_size: apply to all axises.
+
+static bool apply_all(const axis &)
+{
+	return true;
+}
+
+// prorated_size: apply to all non-infinite maximum axises.
+
+static bool apply_noninfinites(const axis &a)
+{
+	return a.maximum() != dim_t::infinite();
+}
+
+// prorated_size: apply to all infinite maximum axises.
+
+static bool apply_infinites(const axis &a)
+{
+	return a.maximum() == dim_t::infinite();
+}
+
+// prorated_size: apply in proportion to each axis's minimum size
+
+static dim_t apply_minimum_size(const axis &a)
+{
+	return a.minimum();
+}
+
+// prorated_size: apply in proportion to each axis's additional preferred size
+
+static dim_t apply_preferred_size(const axis &a)
+{
+	return a.preferred()-a.minimum();
+}
+
+// prorated_size: apply in proportion to each axis's additional maximum size
+
+static dim_t apply_maximum_size(const axis &a)
+{
+	return a.maximum()-a.preferred();
+}
+
+// Fixed proration factor of 1 for infinite maximum axises.
+
+static dim_t apply_infinite_size(const axis &a)
+{
+	return 1;
+}
+
+void calculate_grid_size(const grid_metrics_t &m,
+			 grid_sizes_t &s,
+			 dim_t target_size)
+{
+	// Clear, and value-initialize the resulting vector to 0.
+
+	s.clear();
+	s.resize(m.size());
+
+	// Sum total of everyone's minimums
+	dim_squared_t apply_total_minimum=0;
+
+	// The sum total of the difference between preferred and minimum.
+
+	dim_squared_t apply_total_preferred=0;
+
+	// The sum total of the difference between maximum and preferred,
+	// but only for the columns that do not have an infinite maximum.
+
+	dim_squared_t apply_total_maximum=0;
+
+	// How many columns with infinite maximum size.
+	size_t n_infinites=0;
+
+	std::for_each(m.begin(), m.end(),
+		      [&]
+		      (const auto &keyvalue)
+		      {
+			      apply_total_minimum +=
+				      apply_minimum_size(keyvalue.second);
+			      apply_total_preferred +=
+				      apply_preferred_size(keyvalue.second);
+
+			      if (apply_noninfinites(keyvalue.second))
+				      apply_total_maximum +=
+					      apply_maximum_size(keyvalue
+								 .second);
+			      else
+				      ++n_infinites;
+		      });
+
+	// We expect that target_size will always be at least as much
+	// as apply_total_minimum. But, just in case, do the right thing.
+
+	dim_t apply=target_size;
+
+	if ((dim_t::value_type)apply >
+	    (dim_squared_t::value_type)apply_total_minimum)
+		apply=(dim_squared_t::value_type)apply_total_minimum;
+
+	prorated_size(m, s, apply, apply_total_minimum, &apply_all,
+		      &apply_minimum_size);
+
+	// After the minimum, apply the preferred amounts.
+
+	target_size -= apply;
+
+	apply=target_size;
+
+	if ((dim_t::value_type)apply >
+	    (dim_squared_t::value_type)apply_total_preferred)
+		apply=(dim_squared_t::value_type)apply_total_preferred;
+	prorated_size(m, s, apply, apply_total_preferred, &apply_all,
+		      &apply_preferred_size);
+
+	target_size -= apply;
+	apply=target_size;
+
+	// Now, the maximum (excluding infinites)
+
+	if ((dim_t::value_type)apply >
+	    (dim_squared_t::value_type)apply_total_maximum)
+		apply=(dim_squared_t::value_type)apply_total_maximum;
+
+	prorated_size(m, s, apply, apply_total_maximum,
+		      &apply_noninfinites,
+		      &apply_maximum_size);
+
+	target_size -= apply;
+	apply=target_size;
+
+	// If there are any maximum-infinite columns. "apply" is what's
+	// left after satisfying all others' maximum sizes.
+	//
+	// So what we do is pass "apply" to prorated_size() as the share
+	// to apply, as usual. But specify n_infinites for, supposedly, the
+	// total amount being applied. apply_infinite_size() returns 1, so
+	// each maximum axis receives 1/n_infinites of "apply".
+
+	if (n_infinites)
+		prorated_size(m, s, apply, n_infinites,
+			      apply_infinites, apply_infinite_size);
+}
+
+// Ok, we are about to distribute 'share' of actual size to grid_sizes_t,
+// which is equal to or less than 'total', which is the sum total of the
+// actual size that can be distributed.
+//
+// do_apply() indicates whether this applies to the given axis.
+//
+// towards() returns each axis's individual 'share' that contributes to total.
+//
+// The amount actually applied to each grid position is
+// towards() * (share/total). That is, if share is half of total, a half of
+// each axis's towards() is applied.
+
+static void prorated_size(const grid_metrics_t &m,
+			  grid_sizes_t &s,
+
+			  dim_t share,
+			  dim_squared_t total,
+
+			  bool (*do_apply)(const axis &),
+			  dim_t (*towards)(const axis &))
+{
+	dim_squared_t carry_over{0};
+
+	auto p=s.begin();
+
+	std::for_each(m.begin(), m.end(),
+		      [&]
+		      (const auto &keyvalue)
+		      {
+			      if (do_apply(keyvalue.second))
+			      {
+				      auto numerator=carry_over +
+					      share * towards(keyvalue.second);
+
+				      *p += (dim_squared_t::value_type)
+					      (numerator / total);
+
+				      carry_over = numerator % total;
+			      }
+			      ++p;
+		      });
+}
+
+
 
 #if 0
 {

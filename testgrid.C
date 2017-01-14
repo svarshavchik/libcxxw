@@ -59,6 +59,44 @@ static void do_add(const char *testname,
 				<< res << ", expected " << sum);
 }
 
+static void do_size(const char *testname,
+		    const std::vector<axis> &axises,
+		    dim_t target_size,
+		    const grid_sizes_t &expected_result)
+{
+	grid_metrics_t m;
+
+	grid_xy c=0;
+	std::for_each(axises.begin(), axises.end(),
+		      [&]
+		      (const axis &a)
+		      {
+			      m[c++]=a;
+		      });
+
+	grid_sizes_t s;
+
+	calculate_grid_size(m, s, target_size);
+
+	if (s != expected_result)
+	{
+		std::ostringstream o;
+
+		const char *sep="";
+
+		std::for_each(s.begin(), s.end(),
+			      [&]
+			      (auto v)
+			      {
+				      o << sep << v;
+				      sep=", ";
+			      });
+
+		throw EXCEPTION(testname << ": wrong result: "
+				<< o.str());
+	}
+}
+
 void testgrid()
 {
 	do_test("test1",
@@ -140,6 +178,68 @@ void testgrid()
 	       {10, 20, 30},
 	       {30, 40, dim_t::infinite()},
 	       {40, 60, dim_t::infinite()});
+
+	do_size("size1",
+		{ {10, 20, 30}, {40, 80, 100} },
+		25,
+		{5, 20});
+
+	do_size("size2",
+		{ {10, 20, 30}, {40, 80, 100} },
+		50,
+		{10, 40});
+
+	do_size("size3",
+		{ {10, 20, 30}, {40, 80, 100} },
+		75,
+		{15, 60});
+
+	do_size("size4",
+		{ {10, 20, 30}, {40, 80, 100} },
+		100,
+		{20, 80});
+
+	do_size("size5",
+		{ {10, 20, 30}, {40, 80, 100} },
+		115,
+		{25, 90});
+
+	do_size("size6",
+		{ {10, 20, 30}, {40, 80, 100} },
+		130,
+		{30, 100});
+
+	do_size("size7",
+		{ {10, 20, 30}, {40, 80, 100} },
+		150,
+		{30, 100});
+
+	do_size("size8",
+		{
+			{10, 20, 30},
+			{40, 80, dim_t::infinite()},
+			{50, 90, dim_t::infinite()},
+		},
+		190,
+		{20, 80, 90});
+
+	do_size("size9",
+		{
+			{10, 20, 30},
+			{40, 80, dim_t::infinite()},
+			{50, 90, dim_t::infinite()},
+		},
+		200,
+		{30, 80, 90});
+
+	do_size("size10",
+		{
+			{10, 20, 30},
+			{40, 80, dim_t::infinite()},
+			{50, 90, dim_t::infinite()},
+		},
+		300,
+		{30, 130, 140});
 }
 
 int main()
