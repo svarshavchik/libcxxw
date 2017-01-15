@@ -149,18 +149,26 @@ public:
 	}
 };
 
+void elementObj::implObj::draw(IN_THREAD_ONLY,
+			       const draw_info &di,
+			       const rectangle_set &areas)
+{
+	clear_to_color(IN_THREAD, di, areas);
+}
+
 void elementObj::implObj::clear_to_color(IN_THREAD_ONLY,
 					 const draw_info &di,
-					 const std::set<rectangle> &areas)
+					 const rectangle_set &areas)
 {
 	clear_to_color(IN_THREAD,
 		       clip_region_set(IN_THREAD, *this, di),
 		       di, areas);
 }
+
 void elementObj::implObj::clear_to_color(IN_THREAD_ONLY,
 					 const clip_region_set &,
 					 const draw_info &di,
-					 const std::set<rectangle> &areas)
+					 const rectangle_set &areas)
 {
 	for (auto area:areas)
 	{

@@ -7,8 +7,7 @@
 
 #include <x/w/types.H>
 #include <x/w/rectanglefwd.H>
-
-#include <set>
+#include <unordered_set>
 
 LIBCXXW_NAMESPACE_START
 
@@ -83,29 +82,62 @@ struct rectangle {
 	}
 };
 
+//! A hash for rectangle structures.
+
+class rectangle_hash {
+
+public:
+
+	inline constexpr size_t operator()(const rectangle &r) const
+	{
+		return (((size_t)(coord_t::value_type)r.x << 16)
+			| ((coord_t::value_type)r.y & 0xFFFF)) ^
+			(((size_t)(dim_t::value_type)r.width << 16)
+			 | ((dim_t::value_type)r.height & 0xFFFF));
+	}
+};
+
+//! A set of rectangles
+
+typedef std::unordered_set<rectangle, rectangle_hash> rectangle_set;
+
 //! Add two rectangle sets together.
 
 //! The returned rectangle set consists of all the combined rectangles, with
 //! all overlapping areas removed.
+//!
+//! offsetx and offsety are added to all rectangles' returned coordinates.
 
-std::set<rectangle> operator+(const std::set<rectangle> &,
-			      const std::set<rectangle> &);
+rectangle_set add(const rectangle_set &,
+		  const rectangle_set &,
+		  coord_t offsetx=0,
+		  coord_t offsety=0);
 
 //! Return an intersection set of two rectangles.
 
 //! The returned rectangle set consists of only rectangular areas present
 //! in both sets.
+//!
+//! offsetx and offsety are added to all rectangles' returned coordinates.
+//!
+//! offsetx and offsety are added to all rectangles' returned coordinates.
 
-std::set<rectangle> operator*(const std::set<rectangle> &,
-			      const std::set<rectangle> &);
+rectangle_set intersect(const rectangle_set &,
+			const rectangle_set &,
+			coord_t offsetx=0,
+			coord_t offsety=0);
 
 //! Subtract two rectangle sets.
 
 //! The returned rectangle set consists of the first rectangle set, with
 //! rectangles in the second set removed.
+//!
+//! offsetx and offsety are added to all rectangles' returned coordinates.
 
-std::set<rectangle> operator-(const std::set<rectangle> &,
-			      const std::set<rectangle> &);
+rectangle_set subtract(const rectangle_set &,
+		       const rectangle_set &,
+		       coord_t ofssetx=0,
+		       coord_t offsety=0);
 
 LIBCXXW_NAMESPACE_END
 

@@ -34,7 +34,7 @@ void connection_threadObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin)
 
 	std::map<xcb_window_t, ref<window_handlerObj>> window_handlers;
 	std::map<uint32_t, ref<xidObj>> destroyed_xids;
-	std::set<rectangle> exposed_rectangles;
+	rectangle_set exposed_rectangles;
 
 	element_set_t visibility_updated;
 	containers_2_recalculate_map containers_2_recalculate;

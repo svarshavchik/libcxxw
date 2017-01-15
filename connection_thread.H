@@ -88,7 +88,7 @@ class LIBCXX_HIDDEN connection_threadObj
 	// a received expose event indicates count=0, then the exposure
 	// event gets processed
 
-	std::set<rectangle> *exposed_rectangles_thread_only;
+	rectangle_set *exposed_rectangles_thread_only;
 
 	// Which containers need to be recalculated
 	containers_2_recalculate_map *containers_2_recalculate_thread_only;

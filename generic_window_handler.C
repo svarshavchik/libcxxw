@@ -103,11 +103,11 @@ void generic_windowObj::handlerObj::visibility_updated(IN_THREAD_ONLY,
 }
 
 void generic_windowObj::handlerObj::exposure_event(IN_THREAD_ONLY,
-						   std::set<rectangle> &areas)
+						   rectangle_set &areas)
 {
 	auto di=get_draw_info(IN_THREAD,
 			      data(IN_THREAD).current_position);
-	clear_to_color(IN_THREAD, di, areas);
+	draw(IN_THREAD, di, areas);
 }
 
 void generic_windowObj::handlerObj::configure_notify(IN_THREAD_ONLY,

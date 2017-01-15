@@ -74,7 +74,7 @@ void window_handlerObj::client_message_event(IN_THREAD_ONLY,
 }
 
 void window_handlerObj::exposure_event(IN_THREAD_ONLY,
-				       std::set<rectangle> &)
+				       rectangle_set &)
 {
 }
 

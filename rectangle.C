@@ -100,7 +100,7 @@ class LIBCXX_INTERNAL rectangle_to_merge {
  public:
 
 	// The original rectangle in the original std::set
-	std::set<rectangle>::iterator rect_iter;
+	rectangle_set::iterator rect_iter;
 
 	// Points to the edge object for the left or the top of this rectangle.
 	std::set<rectangle_edge>::iterator prev;
@@ -109,7 +109,7 @@ class LIBCXX_INTERNAL rectangle_to_merge {
 
 	std::set<rectangle_edge>::iterator next;
 
-	rectangle_to_merge(std::set<rectangle>::iterator rect_iter,
+	rectangle_to_merge(rectangle_set::iterator rect_iter,
 			   std::set<rectangle_edge>::iterator prev,
 			   std::set<rectangle_edge>::iterator next)
 		: rect_iter(rect_iter),
@@ -124,7 +124,7 @@ class LIBCXX_INTERNAL rect_merge_pass {
  public:
 
 	const rect_op_orientation &orientation;
-	std::set<rectangle> &rectangles;
+	rectangle_set &rectangles;
 
 	std::vector<rectangle_to_merge> merge_list;
 	std::set<rectangle_edge> edges;
@@ -132,7 +132,7 @@ class LIBCXX_INTERNAL rect_merge_pass {
 	bool merged=false;
 
 	rect_merge_pass(const rect_op_orientation &orientation,
-			std::set<rectangle> &rectangles)
+			rectangle_set &rectangles)
 		: orientation(orientation), rectangles(rectangles)
 	{
 		merge_list.reserve(rectangles.size());
@@ -245,7 +245,7 @@ class LIBCXX_INTERNAL rect_merge_pass {
 	}
 };
 
-void merge(std::set<rectangle> &rectangles)
+void merge(rectangle_set &rectangles)
 {
 	bool merged_horizontally;
 	bool merged_vertically;
@@ -415,8 +415,8 @@ class LIBCXX_INTERNAL rect_slice_pass {
 // Each rectangle set is unrolled into a vector, then each set slices each
 // other.
 
-rectangle_slicer::rectangle_slicer(const std::set<rectangle> &slicee,
-				   const std::set<rectangle> &slicer)
+rectangle_slicer::rectangle_slicer(const rectangle_set &slicee,
+				   const rectangle_set &slicer)
 	: slicee_v(slicee.begin(), slicee.end()),
 	  slicer_v(slicer.begin(), slicer.end())
 {
@@ -436,15 +436,29 @@ void rectangle_slicer::slice_slicer()
 	rect_slice_pass(vertical_dim, slicer_v, slicee_v);
 }
 
-std::set<rectangle> operator+(const std::set<rectangle> &a,
-			      const std::set<rectangle> &b)
+rectangle_set add(const rectangle_set &a,
+		  const rectangle_set &b,
+		  coord_t x_offset,
+		  coord_t y_offset)
 {
 	rectangle_slicer slicer{a, b};
 
 	slicer.slice_slicee();
 	slicer.slice_slicer();
 
-	std::set<rectangle> result{slicer.slicee_v.begin(),
+	for (auto &r:slicer.slicee_v)
+	{
+		r.x = (coord_squared_t::value_type)(r.x + x_offset);
+		r.y = (coord_squared_t::value_type)(r.y + y_offset);
+	}
+
+	for (auto &r:slicer.slicer_v)
+	{
+		r.x = (coord_squared_t::value_type)(r.x + x_offset);
+		r.y = (coord_squared_t::value_type)(r.y + y_offset);
+	}
+
+	rectangle_set result{slicer.slicee_v.begin(),
 			slicer.slicee_v.end()
 			};
 
@@ -456,21 +470,25 @@ std::set<rectangle> operator+(const std::set<rectangle> &a,
 	return result;
 }
 
-std::set<rectangle> operator*(const std::set<rectangle> &a,
-			      const std::set<rectangle> &b)
+rectangle_set intersect(const rectangle_set &a,
+			const rectangle_set &b,
+			coord_t x_offset,
+			coord_t y_offset)
 {
 	rectangle_slicer slicer{a, b};
 
 	slicer.slice_slicee();
 	slicer.slice_slicer();
 
-	std::set<rectangle> result{slicer.slicee_v.begin(),
+	rectangle_set result{slicer.slicee_v.begin(),
 			slicer.slicee_v.end()
 			};
 
-	std::set<rectangle> other_result{
+	rectangle_set other_result{
 		slicer.slicer_v.begin(),
 			slicer.slicer_v.end()};
+
+	rectangle_set intersection;
 
 	for (auto p=result.begin(); p != result.end(); )
 	{
@@ -478,23 +496,32 @@ std::set<rectangle> operator*(const std::set<rectangle> &a,
 
 		++p;
 
-		if (other_result.find(*q) == other_result.end())
-			result.erase(q);
-	}
-	merge(result);
+		if (other_result.find(*q) != other_result.end())
+		{
+			rectangle c=*q;
 
-	return result;
+			c.x = (coord_squared_t::value_type)(c.x + x_offset);
+			c.y = (coord_squared_t::value_type)(c.y + y_offset);
+
+			intersection.insert(c);
+		}
+	}
+	merge(intersection);
+
+	return intersection;
 }
 
-std::set<rectangle> operator-(const std::set<rectangle> &a,
-			      const std::set<rectangle> &b)
+rectangle_set subtract(const rectangle_set &a,
+		       const rectangle_set &b,
+		       coord_t x_offset,
+		       coord_t y_offset)
 {
 	rectangle_slicer slicer{a, b};
 
 	slicer.slice_slicee();
 	slicer.slice_slicer();
 
-	std::set<rectangle> result{slicer.slicee_v.begin(),
+	rectangle_set result{slicer.slicee_v.begin(),
 			slicer.slicee_v.end()
 			};
 
@@ -508,7 +535,19 @@ std::set<rectangle> operator-(const std::set<rectangle> &a,
 
 	merge(result);
 
-	return result;
+	if (x_offset == 0 && y_offset == 0)
+		return result;
+
+	rectangle_set subtraction;
+
+	for (auto c:result)
+	{
+		c.x = (coord_squared_t::value_type)(c.x + x_offset);
+		c.y = (coord_squared_t::value_type)(c.y + y_offset);
+
+		subtraction.insert(c);
+	}
+	return subtraction;
 
 }
 

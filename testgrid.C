@@ -111,8 +111,8 @@ static void do_size(const char *testname,
 }
 
 void do_rectmerge(const char *testname,
-		  std::set<rectangle> rectangles,
-		  const std::set<rectangle> &expected)
+		  rectangle_set rectangles,
+		  const rectangle_set &expected)
 {
 	merge(rectangles);
 
@@ -134,7 +134,7 @@ void do_rectmerge(const char *testname,
 }
 
 
-static dim_squared_t total_area(const std::set<rectangle> &r)
+static dim_squared_t total_area(const rectangle_set &r)
 {
 	dim_squared_t sum{0};
 
@@ -149,7 +149,7 @@ static dim_squared_t total_area(const std::set<rectangle> &r)
 }
 
 void do_rectmergearea(const char *testname,
-		      std::set<rectangle> rectangles,
+		      rectangle_set rectangles,
 		      size_t nrectangles,
 		      dim_squared_t expected_total_area)
 {
@@ -174,15 +174,15 @@ void do_rectmergearea(const char *testname,
 }
 
 void do_testslice(const char *testname,
-		  const std::set<rectangle> &slicee,
-		  const std::set<rectangle> &slicer,
-		  const std::set<rectangle> &right_result)
+		  const rectangle_set &slicee,
+		  const rectangle_set &slicer,
+		  const rectangle_set &right_result)
 {
 	rectangle_slicer rslicer{slicee, slicer};
 
 	rslicer.slice_slicee();
 
-	std::set<rectangle>
+	rectangle_set
 		result{rslicer.slicee_v.begin(), rslicer.slicee_v.end()};
 
 	if (result != right_result)
@@ -389,8 +389,17 @@ void testgrid()
 		     });
 
 	{
-		auto res=std::set<rectangle>( {{10, 10, 10, 10}} )
-			+std::set<rectangle>( {{15, 15, 10, 10}} );
+		auto res=add(rectangle_set( {{0, 0, 2, 2}} ),
+			     rectangle_set(),
+			     1, 2);
+
+		if (res != rectangle_set( {{1, 2, 2, 2}}))
+			throw EXCEPTION("Offset in add() don't work");
+	}
+
+	{
+		auto res=add(rectangle_set( {{10, 10, 10, 10}} ),
+			     rectangle_set( {{15, 15, 10, 10}} ));
 
 		if (total_area(res) != 10 * 10 * 2 - 5 * 5)
 		{
@@ -405,13 +414,22 @@ void testgrid()
 					      sep="; ";
 				      });
 
-			throw EXCEPTION("operator+ failed: " << o.str());
+			throw EXCEPTION("add failed: " << o.str());
 		}
 	}
 
 	{
-		auto res=std::set<rectangle>( {{10, 10, 10, 10}} )
-			-std::set<rectangle>( {{15, 15, 10, 10}} );
+		auto res=subtract(rectangle_set( {{10, 10, 10, 10}} ),
+				  rectangle_set( {{10, 10, 5, 10}} ),
+				  -15, -10);
+
+		if (res != rectangle_set( {{0, 0, 5, 10}} ))
+			throw EXCEPTION("Subtraction offset did not work");
+	}
+
+	{
+		auto res=subtract(rectangle_set( {{10, 10, 10, 10}} ),
+				  rectangle_set( {{15, 15, 10, 10}} ));
 
 		if (total_area(res) != 10 * 10 - 5 * 5)
 		{
@@ -431,10 +449,11 @@ void testgrid()
 	}
 
 	{
-		auto res=std::set<rectangle>( {{10, 10, 10, 10}} )
-			*std::set<rectangle>( {{15, 15, 10, 10}} );
+		auto res=intersect(rectangle_set( {{10, 10, 10, 10}} ),
+				   rectangle_set( {{15, 15, 10, 10}} ),
+				   -5, -10);
 
-		if (res != std::set<rectangle>({{15, 15, 5, 5}}))
+		if (res != rectangle_set({{10, 5, 5, 5}}))
 		{
 			std::ostringstream o;
 			const char *sep="";

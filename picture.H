@@ -9,7 +9,6 @@
 #include "x/w/rectangle.H"
 #include "xid_t.H"
 #include <xcb/render.h>
-#include <set>
 
 LIBCXXW_NAMESPACE_START
 
@@ -74,7 +73,7 @@ class LIBCXX_HIDDEN pictureObj::implObj : virtual public obj {
 				coord_t y=0);
 
 	//! SetPictureClipRectangles RENDER operation.
-	void set_clip_rectangles(const std::set<rectangle> &clipregion,
+	void set_clip_rectangles(const rectangle_set &clipregion,
 				 coord_t x=0,
 				 coord_t y=0);
 

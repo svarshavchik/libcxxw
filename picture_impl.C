@@ -11,7 +11,7 @@
 LIBCXXW_NAMESPACE_START
 
 static void to_xcb_rectangles(std::vector<xcb_rectangle_t> &v,
-			      const std::set<rectangle> &rectangles)
+			      const rectangle_set &rectangles)
 {
 	v.clear();
 	v.reserve(rectangles.size());
@@ -37,12 +37,12 @@ void pictureObj::implObj::set_clip_rectangle(const rectangle &r,
 					     coord_t x,
 					     coord_t y)
 {
-	std::set<rectangle> s={ r };
+	rectangle_set s={ r };
 
 	set_clip_rectangles(s, x, y);
 }
 
-void pictureObj::implObj::set_clip_rectangles(const std::set<rectangle> &clipregion,
+void pictureObj::implObj::set_clip_rectangles(const rectangle_set &clipregion,
 					      coord_t x,
 					      coord_t y)
 {

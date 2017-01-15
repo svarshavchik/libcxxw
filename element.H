@@ -156,13 +156,23 @@ class LIBCXX_HIDDEN elementObj::implObj : virtual public obj,
 
 	class clip_region_set;
 
+	//! Draw the display element.
+
+	//! The default implementation invokes clear_to_color().
+	//!
+	//! The rectangle cooridnates are specified relative to the viewport.
+
+	virtual void draw(IN_THREAD_ONLY,
+			  const draw_info &di,
+			  const rectangle_set &areas);
+
 	//! Clear to background color
 
 	//! Wrapper that acquires a clip_region_set, first.
 
 	void clear_to_color(IN_THREAD_ONLY,
 			    const draw_info &di,
-			    const std::set<rectangle> &areas);
+			    const rectangle_set &areas);
 
 	//! Clear to background color
 
@@ -172,7 +182,7 @@ class LIBCXX_HIDDEN elementObj::implObj : virtual public obj,
 	void clear_to_color(IN_THREAD_ONLY,
 			    const clip_region_set &,
 			    const draw_info &di,
-			    const std::set<rectangle> &areas);
+			    const rectangle_set &areas);
 };
 
 inline bool elements_by_nesting_level::operator()(const elementimpl &a,

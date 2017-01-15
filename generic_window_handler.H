@@ -106,7 +106,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! Implement the exposure event.
 
 	void exposure_event(IN_THREAD_ONLY,
-			    std::set<rectangle> &areas) override;
+			    rectangle_set &areas) override;
 
 	//! A visibility update is translated to mapping/unmapping the window.
 
