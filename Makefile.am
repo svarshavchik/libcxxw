@@ -89,6 +89,7 @@ libcxxw_la_SOURCES=\
 	picture.H				    \
 	picture_impl.C				    \
 	rectangle.C				    \
+	rectangle.H				    \
 	render.C				    \
 	render.H				    \
 	returned_pointer.H			    \

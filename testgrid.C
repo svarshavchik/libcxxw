@@ -3,6 +3,7 @@
 #include "metrics_horizvert.H"
 #include "metrics_grid_axisrange.H"
 #include "metrics_grid_pos.H"
+#include "rectangle.H"
 
 #include <sstream>
 
@@ -108,6 +109,99 @@ static void do_size(const char *testname,
 				<< o.str());
 	}
 }
+
+void do_rectmerge(const char *testname,
+		  std::set<rectangle> rectangles,
+		  const std::set<rectangle> &expected)
+{
+	merge(rectangles);
+
+	if (rectangles != expected)
+	{
+		std::ostringstream o;
+		const char *sep="";
+
+		std::for_each(rectangles.begin(), rectangles.end(),
+			      [&]
+			      (const auto &r)
+			      {
+				      o << sep << r;
+				      sep="; ";
+			      });
+
+		throw EXCEPTION("testname failed: " << o.str());
+	}
+}
+
+
+static dim_squared_t total_area(const std::set<rectangle> &r)
+{
+	dim_squared_t sum{0};
+
+	std::for_each(r.begin(), r.end(),
+		      [&]
+		      (const rectangle &r)
+		      {
+			      sum += r.width * r.height;
+		      });
+
+	return sum;
+}
+
+void do_rectmergearea(const char *testname,
+		      std::set<rectangle> rectangles,
+		      size_t nrectangles,
+		      dim_squared_t expected_total_area)
+{
+	merge(rectangles);
+
+	if (rectangles.size() != nrectangles ||
+	    total_area(rectangles) != expected_total_area)
+	{
+		std::ostringstream o;
+		const char *sep="";
+
+		std::for_each(rectangles.begin(), rectangles.end(),
+			      [&]
+			      (const auto &r)
+			      {
+				      o << sep << r;
+				      sep="; ";
+			      });
+
+		throw EXCEPTION(testname << " failed: " << o.str());
+	}
+}
+
+void do_testslice(const char *testname,
+		  const std::set<rectangle> &slicee,
+		  const std::set<rectangle> &slicer,
+		  const std::set<rectangle> &right_result)
+{
+	rectangle_slicer rslicer{slicee, slicer};
+
+	rslicer.slice_slicee();
+
+	std::set<rectangle>
+		result{rslicer.slicee_v.begin(), rslicer.slicee_v.end()};
+
+	if (result != right_result)
+	{
+		std::ostringstream o;
+		const char *sep="";
+
+		std::for_each(result.begin(), result.end(),
+			      [&]
+			      (const auto &r)
+			      {
+				      o << sep << r;
+				      sep="; ";
+			      });
+
+		throw EXCEPTION(testname << " failed: " << o.str());
+	}
+}
+
 
 void testgrid()
 {
@@ -252,6 +346,110 @@ void testgrid()
 		},
 		300,
 		{30, 130, 140});
+
+
+	do_rectmerge("rectmerge1",
+		     { {0, 0, 1, 1}, {1, 0, 1, 1}, {2, 0, 1, 2} },
+
+		     { {0, 0, 2, 1}, {2, 0, 1, 2} });
+
+	do_rectmerge("rectmerge2",
+		     { {0, 0, 2, 1}, {0, 1, 1, 1}, {1, 1, 1, 1} },
+
+		     { {0, 0, 2, 2} });
+
+	do_rectmerge("rectmerge3",
+		     { {0, 0, 1, 2}, {1, 0, 1, 1}, {1, 1, 1, 1} },
+
+		     { {0, 0, 2, 2} });
+
+	do_rectmergearea("rectmerge3",
+			 { {0, 0, 1, 1}, {0, 1, 1, 1}, {1, 1, 1, 1} },
+
+			 2, 3);
+
+
+	do_testslice("slice1",
+		     { {10, 10, 10, 10} },
+
+		     { {0, 0, 2, 20},
+		       {18, 2, 1, 2},
+		       {30, 0, 1, 30},
+		       {19, 30, 1, 1},
+
+		       {6, 6, 5, 30},
+		       {11, 6, 3, 30},
+		       {15, 6, 5, 30},
+		     },
+		     {
+			     {10, 10, 1, 10},
+			     {11, 10, 3, 10},
+			     {14, 10, 1, 10},
+			     {15, 10, 5, 10},
+		     });
+
+	{
+		auto res=std::set<rectangle>( {{10, 10, 10, 10}} )
+			+std::set<rectangle>( {{15, 15, 10, 10}} );
+
+		if (total_area(res) != 10 * 10 * 2 - 5 * 5)
+		{
+			std::ostringstream o;
+			const char *sep="";
+
+			std::for_each(res.begin(), res.end(),
+				      [&]
+				      (const auto &r)
+				      {
+					      o << sep << r;
+					      sep="; ";
+				      });
+
+			throw EXCEPTION("operator+ failed: " << o.str());
+		}
+	}
+
+	{
+		auto res=std::set<rectangle>( {{10, 10, 10, 10}} )
+			-std::set<rectangle>( {{15, 15, 10, 10}} );
+
+		if (total_area(res) != 10 * 10 - 5 * 5)
+		{
+			std::ostringstream o;
+			const char *sep="";
+
+			std::for_each(res.begin(), res.end(),
+				      [&]
+				      (const auto &r)
+				      {
+					      o << sep << r;
+					      sep="; ";
+				      });
+
+			throw EXCEPTION("operator- failed: " << o.str());
+		}
+	}
+
+	{
+		auto res=std::set<rectangle>( {{10, 10, 10, 10}} )
+			*std::set<rectangle>( {{15, 15, 10, 10}} );
+
+		if (res != std::set<rectangle>({{15, 15, 5, 5}}))
+		{
+			std::ostringstream o;
+			const char *sep="";
+
+			std::for_each(res.begin(), res.end(),
+				      [&]
+				      (const auto &r)
+				      {
+					      o << sep << r;
+					      sep="; ";
+				      });
+
+			throw EXCEPTION("operator* failed: " << o.str());
+		}
+	}
 }
 
 int main()
