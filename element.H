@@ -33,12 +33,6 @@ class LIBCXX_HIDDEN elementObj::implObj : virtual public obj,
 
 	struct data_thread_only_t {
 
-		//! Nesting level.
-
-		//! Top level window elements have a nesting level of 0.
-		//! All others have one more than their parent element.
-		size_t nesting_level;
-
 		//! Current position
 		rectangle current_position;
 
@@ -86,10 +80,11 @@ class LIBCXX_HIDDEN elementObj::implObj : virtual public obj,
 	//! Return the element's screen
 	const_screen get_screen() const;
 
-	// We assume that anything that uses the comparison function will
-	// enforce thread_only.
+	//! Nesting level.
 
-	friend class elements_by_nesting_level;
+	//! Top level window elements have a nesting level of 0.
+	//! All others have one more than their parent element.
+	const size_t nesting_level;
 
 	//! Constructor
 	implObj(size_t nesting_level,
@@ -183,10 +178,10 @@ class LIBCXX_HIDDEN elementObj::implObj : virtual public obj,
 inline bool elements_by_nesting_level::operator()(const elementimpl &a,
 						  const elementimpl &b) const
 {
-	if (a->data_thread_only.nesting_level < b->data_thread_only.nesting_level)
+	if (a->nesting_level < b->nesting_level)
 		return true;
 
-	if (b->data_thread_only.nesting_level < a->data_thread_only.nesting_level)
+	if (b->nesting_level < a->nesting_level)
 		return false;
 
 	return a < b;

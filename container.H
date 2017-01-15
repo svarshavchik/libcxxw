@@ -7,9 +7,12 @@
 
 #include "x/w/containerobj.H"
 #include "x/w/layoutmanagerobj.H"
-#include "element.H"
+#include "child_element.H"
 
 #include <x/mpobj.H>
+
+#include <map>
+#include <set>
 
 LIBCXXW_NAMESPACE_START
 
@@ -68,7 +71,18 @@ public:
 	//! Invoked from layoutmanager's public object's destructor
 
 	void uninstall_layoutmanager();
- };
+};
+
+// The connection thread maintains a map of all containers that need to
+// be recalculated. The map key is the nesting_level, the map value is a
+// set of all containers, with that nesting level, that may need to be
+// recalculated
+
+class LIBCXX_HIDDEN containers_2_recalculate_map
+	: public std::map<size_t,
+			  std::set<ref<containerObj::implObj>>>
+{
+};
 
 LIBCXXW_NAMESPACE_END
 

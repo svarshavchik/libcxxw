@@ -8,6 +8,7 @@
 #include "x/w/layoutmanager.H"
 #include "x/w/containerobj.H"
 #include "element.H"
+#include "connection_threadfwd.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -36,7 +37,13 @@ LIBCXXW_NAMESPACE_START
 
 class LIBCXX_HIDDEN layoutmanagerObj::implObj : virtual public obj {
 
+	//! Whether this layout needs to be "recalculated"
+
+	bool recalculate_needed_thread_only=false;
+
  public:
+
+	THREAD_DATA_ONLY(recalculate_needed);
 
 	//! My container implementation.
 
@@ -47,6 +54,23 @@ class LIBCXX_HIDDEN layoutmanagerObj::implObj : virtual public obj {
 
 	//! Destructor
 	~implObj();
+
+	//! Mark this layout as needing recalculation.
+
+	void needs_recalculation();
+
+	//! Mark this layout as needing recalculation.
+
+	void needs_recalculation(IN_THREAD_ONLY);
+
+	//! Invoke by the connection thread. Checks recalculate_needed, invokes recalculate()
+
+	void check_if_recalculate_needed(IN_THREAD_ONLY);
+ private:
+
+	//! Implemented by subclass
+
+	virtual void recalculate(IN_THREAD_ONLY)=0;
 };
 
 LIBCXXW_NAMESPACE_END

@@ -15,6 +15,18 @@ new_layoutmanagerObj::~new_layoutmanagerObj()=default;
 
 // TODO
 
+class LIBCXX_HIDDEN dummy_gridlayoutmanagerObj
+	: public layoutmanagerObj::implObj {
+
+ public:
+
+	using layoutmanagerObj::implObj::implObj;
+
+	void recalculate(IN_THREAD_ONLY) override
+	{
+	}
+};
+
 class LIBCXX_HIDDEN dummy_layoutmanager_factoryObj : public new_layoutmanagerObj
 {
  public:
@@ -27,7 +39,7 @@ class LIBCXX_HIDDEN dummy_layoutmanager_factoryObj : public new_layoutmanagerObj
 		create(const ref<containerObj::implObj> &container_impl)
 		override
 	{
-		return ref<layoutmanagerObj::implObj>::create
+		return ref<dummy_gridlayoutmanagerObj>::create
 			(container_impl);
 	}
 };

@@ -19,9 +19,9 @@ elementObj::implObj::implObj(size_t nesting_level,
 			     const rectangle &initial_position)
 	: data_thread_only
 	  ({
-		  nesting_level,
-		  initial_position,
-	  })
+	      initial_position,
+	  }),
+	  nesting_level(nesting_level)
 {
 }
 

@@ -7,6 +7,7 @@
 #include "connection_thread.H"
 #include "window_handler.H"
 #include "element.H"
+#include "container.H"
 #include "xid_t.H"
 #include "catch_exceptions.H"
 
@@ -36,10 +37,12 @@ void connection_threadObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin)
 	std::set<rectangle> exposed_rectangles;
 
 	element_set_t visibility_updated;
+	containers_2_recalculate_map containers_2_recalculate;
 
 	window_handlers_thread_only= &window_handlers;
 	destroyed_xids_thread_only= &destroyed_xids;
 	exposed_rectangles_thread_only= &exposed_rectangles;
+	containers_2_recalculate_thread_only= &containers_2_recalculate;
 
 	visibility_updated_thread_only= &visibility_updated;
 	disconnect_callback_thread_only=[] {};

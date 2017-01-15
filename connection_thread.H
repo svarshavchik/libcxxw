@@ -22,6 +22,7 @@ LIBCXXW_NAMESPACE_START
 
 class window_handlerObj;
 class xidObj;
+class containers_2_recalculate_map;
 
 class LIBCXX_HIDDEN connection_threadObj
 	: public threadmsgdispatcherObj {
@@ -89,6 +90,9 @@ class LIBCXX_HIDDEN connection_threadObj
 
 	std::set<rectangle> *exposed_rectangles_thread_only;
 
+	// Which containers need to be recalculated
+	containers_2_recalculate_map *containers_2_recalculate_thread_only;
+
 	// on_disconnect() callback
 
 	std::function<void ()> disconnect_callback_thread_only;
@@ -100,6 +104,7 @@ class LIBCXX_HIDDEN connection_threadObj
 	THREAD_DATA_ONLY(window_handlers);
 	THREAD_DATA_ONLY(destroyed_xids);
 	THREAD_DATA_ONLY(visibility_updated);
+	THREAD_DATA_ONLY(containers_2_recalculate);
 
 #include "connection_thread.msgs.H"
 

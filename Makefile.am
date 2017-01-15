@@ -21,6 +21,10 @@ libcxxw_la_SOURCES=\
 	builtin_atoms.C				    \
 	builtin_atoms.H				    \
 	catch_exceptions.H			    \
+	child_element.C				    \
+	child_element.H				    \
+	child_elementfwd.H			    \
+	child_elementobj.H			    \
 	connection.C                                \
 	connection.H                                \
 	connection_info.C			    \

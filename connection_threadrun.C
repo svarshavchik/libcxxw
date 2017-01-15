@@ -6,6 +6,8 @@
 #include "connection_info.H"
 #include "connection_thread.H"
 #include "element.H"
+#include "container.H"
+#include "layoutmanager.H"
 #include "returned_pointer.H"
 #include "catch_exceptions.H"
 #include "picture.H"
@@ -108,6 +110,40 @@ void connection_threadObj
 		return;
 	}
 
+	if (!containers_2_recalculate_thread_only->empty())
+	{
+		// Get the next container to be recalculated, with the
+		// highest nesting level.
+
+		while (!containers_2_recalculate_thread_only->empty())
+		{
+			auto p=--containers_2_recalculate_thread_only->end();
+
+			auto last=--p->second.end();
+
+			auto container=*last;
+
+			// Now that we have it, remove it from
+			// containers_2_recalculate
+
+			p->second.erase(last);
+
+			if (p->second.empty())
+				containers_2_recalculate_thread_only->erase(p);
+
+			// And invoke it
+
+			try {
+				container->invoke_layoutmanager
+					([&]
+					 (const auto &l)
+					 {
+						 l->check_if_recalculate_needed(me);
+					 });
+			} CATCH_EXCEPTIONS;
+		}
+		return;
+	}
 	// Ok, no more work to do, and we were asked to politely stop.
 	if (stop_received)
 	{
