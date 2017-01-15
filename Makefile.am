@@ -50,6 +50,7 @@ libcxxw_la_SOURCES=\
 	element_screen.H			    \
 	ewmh.C					    \
 	ewmh.H					    \
+	factory.C				    \
 	generic_window.C			    \
 	generic_window.H			    \
 	generic_window_handler.C		    \
