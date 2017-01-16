@@ -32,7 +32,7 @@ static void do_test(const char *testname,
 		    const std::vector<testgrid_info> &test_info,
 		    const grid_metrics_t &res)
 {
-	grid_t g;
+	std::list<grid_pos> g;
 
 	for (const auto &info: test_info)
 	{

@@ -7,20 +7,21 @@
 
 #include <map>
 #include <list>
-#include <string>
-#include "metrics_grid_posfwd.H"
+#include <set>
+#include "metrics_grid_pos.H"
+#include "metrics_horizvertobj.H"
 #include "metrics_grid_xy.H"
+#include "metrics_grid_axisrangefwd.H"
 #include "x/w/metrics/axis.H"
 
 LIBCXXW_NAMESPACE_START
 
+//////////////////////////////////////////////////////////////////////////
+//
+// Defines calculate_grid_horiz_metrics() and calculate_grid_vert_metrics()
+// for effecting grid calcuations.
+
 namespace metrics {
-
-	//! A container of elements arranged in a grid.
-
-	//! The elements are simply stored in a list.
-
-	typedef std::list<grid_pos> grid_t;
 
 	//! Computed horizontal and vertical grid metrics.
 
@@ -29,15 +30,132 @@ namespace metrics {
 
 	typedef std::map<grid_xy, axis> grid_metrics_t;
 
-	//! Compute a grid's horizontal metrics.
+	//! What grid metric calculations look at.
 
-	grid_metrics_t calculate_grid_horiz_metrics(const grid_t &g)
-		LIBCXX_HIDDEN;
+	//! Both horizontal and vertical metrics use the same logic.
+	//! This tells the code whether we're looking at grid_pos's, and
+	//! the associated element metric rectangle's horizontal or vertical
+	//! axises.
 
-	//! Compute a grid's vertical metrics.
+	struct LIBCXX_INTERNAL grid_major {
+		//! The horizontal or the vertical grid element's position.
+		grid_axisrange grid_posObj::*grid_pos_member;
 
-	grid_metrics_t calculate_grid_vert_metrics(const grid_t &g)
-		LIBCXX_HIDDEN;
+		//! The horizontal or the vertical grid element's metrics axis.
+		axis horizvertObj::*axis_pos_member;
+
+		//! The other metric calculations.
+		const struct grid_major *minor;
+
+		//! Convenient macro
+		inline grid_axisrange &get_axisrange(const grid_pos &p) const
+		{
+			return (*p).*grid_pos_member;
+		}
+
+		//! Convenient macro
+		inline axis &get_axis(const grid_pos &p) const
+		{
+			return (*p->horizvert_metrics).*axis_pos_member;
+		}
+	};
+
+	extern const struct grid_major h_grid;
+	extern const struct grid_major v_grid;
+
+	//! Internal calculation function invoked from calculate_grid_metrics().
+
+	//! Does not need to be exposed in the header file.
+	void apply_metrics(grid_metrics_t &m,
+			   const std::set<grid_xy> &all_grid_positions,
+			   const grid_axisrange &r,
+			   const axis &a) LIBCXX_HIDDEN;
+
+	// Visibility declarations.
+
+	template<typename GRID_T> grid_metrics_t
+	calculate_grid_horiz_metrics(GRID_T &&g) LIBCXX_HIDDEN;
+
+	template<typename GRID_T> grid_metrics_t
+	calculate_grid_vert_metrics(GRID_T &&g) LIBCXX_HIDDEN;
+
+	template<typename GRID_T> grid_metrics_t
+	calculate_grid_metrics(GRID_T &&g,
+			       const grid_major &major) LIBCXX_HIDDEN;
+
+	//! Calculate horizontal metrics.
+
+	//! This is called with a container of grid_pos objects.
+
+	template<typename GRID_T> grid_metrics_t
+	calculate_grid_horiz_metrics(GRID_T &&g)
+	{
+		return calculate_grid_metrics(std::forward<GRID_T>(g), h_grid);
+	}
+
+	//! Calculate vertical metrics.
+
+	//! This is called with a container of grid_pos objects.
+
+	template<typename GRID_T> grid_metrics_t
+	calculate_grid_vert_metrics(GRID_T &&g)
+	{
+		return calculate_grid_metrics(std::forward<GRID_T>(g), v_grid);
+	}
+
+	//! Calculate horizontal  or vertical metrics.
+
+	template<typename GRID_T> grid_metrics_t
+	calculate_grid_metrics(GRID_T &&g,
+			       const grid_major &major)
+	{
+		grid_metrics_t grid_metrics;
+
+		typedef std::map<grid_xy, std::list<grid_pos>
+				 > grid_by_range_map;
+
+		// Sort grid elements by their axis's range.
+
+		// grid_by_range[0] is a list of all elements whose
+		// start=end.
+
+		// grid_by_range[1]  is a list of all elements whose
+		// start+1=end.
+		// And so on.
+
+		grid_by_range_map grid_by_range;
+
+		std::set<grid_xy> all_grid_positions;
+
+		for (auto b=g.begin(), e=g.end(); b != e; ++b)
+		{
+			grid_axisrange &range=major.get_axisrange(*b);
+
+			grid_by_range[range.end-range.start]
+				.push_back(*b);
+			all_grid_positions.insert(range.start);
+			all_grid_positions.insert(range.end);
+		}
+
+		// Now we iterate over everything, in the right order,
+		// and factor in each cell's metrics.
+		//
+		// We start with the elements that span the smallest
+		// range, then work our way up to the bigger ones.
+
+		for (const auto &range:grid_by_range)
+		{
+			for (const auto &element:range.second)
+			{
+				apply_metrics(grid_metrics,
+					      all_grid_positions,
+					      major.get_axisrange
+					      (element),
+					      major.get_axis(element));
+			}
+		}
+		return grid_metrics;
+	}
 
 	//! The actual size of a grid's axis.
 
