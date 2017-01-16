@@ -127,25 +127,35 @@ class LIBCXX_HIDDEN screenObj::implObj
 		root_visual(const xcb_screen_t *xcb_screen,
 			    const vector<const_ref<depthObj>> &screen_depths);
 
-	// Compute # of pixels from millimeters
+	// Compute # of pixels from millimeters, for width or height.
+
+	// Given number must be possible. It is truncated at the largest
+	// possible dim_t value.
 
 	dim_t compute_width(double millimeters) const
 	{
-		dim_t::value_type scaled=
+		auto scaled=
 			std::round(theme_scale() * millimeters *
 				   xcb_screen->width_in_pixels /
 				   xcb_screen->width_in_millimeters);
-		return scaled;
+
+		if (scaled > dim_t::infinite()-1)
+			scaled=dim_t::infinite()-1;
+
+		return dim_t::value_type(scaled);
 	}
 
 	dim_t compute_height(double millimeters) const
 	{
-		dim_t::value_type scaled=
+		auto scaled=
 			std::round(theme_scale() * millimeters *
 				   xcb_screen->height_in_pixels /
 				   xcb_screen->height_in_millimeters);
 
-		return scaled;
+		if (scaled > dim_t::infinite()-1)
+			scaled=dim_t::infinite()-1;
+
+		return dim_t::value_type(scaled);
 	}
 };
 
