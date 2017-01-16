@@ -14,6 +14,7 @@
 #include <x/w/new_layoutmanagerfwd.H>
 #include <x/obj.H>
 #include <x/vectorfwd.H>
+#include <x/functional.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -106,11 +107,39 @@ public:
 
 	//! Create a new top level window, using the mainwindowlayout layout manager
 
-	main_window create_mainwindow();
+	template<typename functor>
+	main_window create_mainwindow(functor &&f)
+	{
+		return do_create_mainwindow
+			(make_function<void (const main_window &w)>
+			 (std::forward<functor>(f)));
+	}
+
+	//! Creator for create_mainwindow()
+
+	typedef void main_window_creator_t(const main_window &);
 
 	//! Create a new top level window using a custom layout manager.
+	template<typename functor>
+	main_window create_mainwindow(const new_layoutmanager &layout_factory,
+				      functor &&f)
+	{
+		return do_create_mainwindow
+			(layout_factory,
+			 make_function<main_window_creator_t>
+			 (std::forward<functor>(f)));
+	}
 
-	main_window create_mainwindow(const new_layoutmanager &layout_factory);
+	//! create_mainwindow() implementation.
+
+	main_window do_create_mainwindow(const function<main_window_creator_t>
+					 &f);
+
+	//! create_mainwindow() implementation.
+
+	main_window do_create_mainwindow(const new_layoutmanager &actory,
+					 const function<main_window_creator_t>
+					 &f);
 };
 
 LIBCXXW_NAMESPACE_END

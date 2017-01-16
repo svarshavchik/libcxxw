@@ -19,7 +19,12 @@ class main_windowBase;
 //!
 //! auto screen=INSERT_LIBX_NAMESPACE::w::screen::create();
 //!
-//! INSERT_LIBX_NAMESPACE::w::mainwindow=screen->create_mainwindow();
+//! INSERT_LIBX_NAMESPACE::w::mainwindow=screen->create_mainwindow(
+//!                 []
+//!                 (const INSERT_LIBX_NAMESPACE::w::mainwindow &w)
+//!                 {
+//!                        // Fill in the contents of the new window.
+//!                 });
 //!
 //! \endcode
 

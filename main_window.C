@@ -7,6 +7,8 @@
 #include "main_window_handler.H"
 #include "screen.H"
 #include "screen_depthinfo.H"
+#include "connection_thread.H"
+#include "batch_queue.H"
 #include "x/w/picture.H"
 #include "x/w/new_layoutmanager.H"
 #include "x/w/screen.H"
@@ -33,17 +35,26 @@ void main_windowObj::on_delete(const std::function<void ()> &callback)
 //
 // Create a default main window
 
-main_window main_windowBase::create()
+main_window main_windowBase::do_create(const function<main_window_creator_t> &f)
 {
-	return screen::base::create()->create_mainwindow();
+	return screen::base::create()->do_create_mainwindow(f);
 }
 
-main_window screenObj::create_mainwindow()
+main_window main_windowBase::do_create(const new_layoutmanager &factory,
+				       const function<main_window_creator_t> &f)
 {
-	return create_mainwindow(new_layoutmanager::base::create_grid());
+	return screen::base::create()->do_create_mainwindow(factory, f);
 }
 
-main_window screenObj::create_mainwindow(const new_layoutmanager &layout_factory)
+main_window screenObj
+::do_create_mainwindow(const function<main_window_creator_t> &f)
+{
+	return do_create_mainwindow(new_layoutmanager::base::create_grid(), f);
+}
+
+main_window screenObj
+::do_create_mainwindow(const new_layoutmanager &layout_factory,
+		       const function<main_window_creator_t> &f)
 {
 	rectangle dimensions={0, 0, 100, 100};
 
@@ -68,13 +79,19 @@ main_window screenObj::create_mainwindow(const new_layoutmanager &layout_factory
 		impl->toplevelwindow_pictformat
 	};
 
+	auto queue=connref->impl->thread->get_batch_queue();
+
 	auto handler=ref<main_windowObj::handlerObj>
 		::create(connref->impl->thread, params);
 
 	auto window_impl=ref<main_windowObj::implObj>::create(handler);
 
-	return ptrrefBase::objfactory<main_window>::create(window_impl,
-							   layout_factory);
+	auto mw=ptrrefBase::objfactory<main_window>::create(window_impl,
+							    layout_factory);
+
+	f(mw);
+
+	return mw;
 }
 
 LIBCXXW_NAMESPACE_END

@@ -29,7 +29,11 @@ void testmainwindow()
 {
 	LIBCXX_NAMESPACE::destroy_callback::base::guard guard;
 
-	auto main_window=LIBCXX_NAMESPACE::w::main_window::base::create();
+	auto main_window=LIBCXX_NAMESPACE::w::main_window::base
+		::create([]
+			 (const auto &ignore)
+			 {
+			 });
 
 	guard(main_window->get_screen()->mcguffin());
 

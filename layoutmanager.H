@@ -2,7 +2,7 @@
 ** Copyright 2017 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
-#ifndef layoutmanager_H
+#ifndef layoutmanager_h
 #define layoutmanager_h
 
 #include "x/w/layoutmanager.H"
