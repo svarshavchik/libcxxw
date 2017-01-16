@@ -7,8 +7,14 @@
 
 #include "x/w/layoutmanager.H"
 #include "x/w/containerobj.H"
+#include "x/w/rectangle.H"
+#include "draw_infofwd.H"
+#include "child_elementfwd.H"
 #include "element.H"
 #include "connection_threadfwd.H"
+
+#include <x/functional.H>
+#include <x/logger.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -36,6 +42,8 @@ LIBCXXW_NAMESPACE_START
 //! container object, gets destroyed.
 
 class LIBCXX_HIDDEN layoutmanagerObj::implObj : virtual public obj {
+
+	LOG_CLASS_SCOPE;
 
 	//! Whether this layout needs to be "recalculated"
 
@@ -66,11 +74,36 @@ class LIBCXX_HIDDEN layoutmanagerObj::implObj : virtual public obj {
 	//! Invoke by the connection thread. Checks recalculate_needed, invokes recalculate()
 
 	void check_if_recalculate_needed(IN_THREAD_ONLY);
+
+	//! Draw all elements in the container.
+
+	//! Returns the drawn areas.
+
+	virtual rectangle_set draw(IN_THREAD_ONLY,
+				   const draw_info &di,
+				   const rectangle_set &areas);
+
+	//! Iterate over all child elements
+
+	template<typename functor_type>
+		void for_each_child(IN_THREAD_ONLY,
+				    functor_type &&functor)
+	{
+		do_for_each_child(IN_THREAD,
+				  make_function<void (const child_element &e)>
+				  (std::forward<functor_type>(functor)));
+	}
+
  private:
 
 	//! Implemented by subclass
 
 	virtual void recalculate(IN_THREAD_ONLY)=0;
+
+	//! Subclass iterates over each child element.
+	virtual void do_for_each_child(IN_THREAD_ONLY,
+				       const function<void
+				       (const child_element &e)> &)=0;
 };
 
 LIBCXXW_NAMESPACE_END

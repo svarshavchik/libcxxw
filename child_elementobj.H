@@ -47,6 +47,13 @@ class LIBCXX_HIDDEN child_elementObj : public elementObj::implObj {
 	draw_info get_draw_info(IN_THREAD_ONLY,
 				const rectangle &initial_viewport) override;
 
+	//! update_visibility() invokes this callback.
+
+	//! This element's inherited visibility is visible only if
+	//! both this element is explicitly visible, and its parent is.
+
+	void visibility_updated(IN_THREAD_ONLY, bool flag) override;
+
 	/////////////////////////////////////////////////////////////////////
 	//
 	// Inherited from horizvertObj

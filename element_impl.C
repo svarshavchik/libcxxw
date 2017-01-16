@@ -71,16 +71,37 @@ void elementObj::implObj::update_visibility(IN_THREAD_ONLY)
 	    data(IN_THREAD).requested_visibility)
 		return;
 
-	// Notify handlers that we're about to show or hide this element.
-
-	invoke_element_state_updates(IN_THREAD,
-				     data(IN_THREAD).requested_visibility
-				     ? element_state::before_showing
-				     : element_state::before_hiding);
 	visibility_updated(IN_THREAD,
 			   (
 			    data(IN_THREAD).actual_visibility=
 			    data(IN_THREAD).requested_visibility));
+}
+
+void elementObj::implObj::visibility_updated(IN_THREAD_ONLY, bool flag)
+{
+	if (data(IN_THREAD).inherited_visibility == flag)
+		return;
+
+	inherited_visibility_updated(IN_THREAD, flag);
+	draw_after_visibility_updated(IN_THREAD, flag);
+}
+
+void elementObj::implObj::inherited_visibility_updated(IN_THREAD_ONLY,
+						       bool flag)
+{
+	do_inherited_visibility_updated(IN_THREAD, flag);
+}
+
+void elementObj::implObj::do_inherited_visibility_updated(IN_THREAD_ONLY,
+							  bool flag)
+{
+	// Notify handlers that we're about to show or hide this element.
+
+	invoke_element_state_updates(IN_THREAD,
+				     flag
+				     ? element_state::before_showing
+				     : element_state::before_hiding);
+	data(IN_THREAD).inherited_visibility=flag;
 
 	// Notify handlers that we just shown or hidden this element.
 
@@ -90,8 +111,20 @@ void elementObj::implObj::update_visibility(IN_THREAD_ONLY)
 				     : element_state::after_hiding);
 }
 
-void elementObj::implObj::visibility_updated(IN_THREAD_ONLY, bool flag)
+void elementObj::implObj::draw_after_visibility_updated(IN_THREAD_ONLY,
+							bool flag)
 {
+	auto initial_viewport=data(IN_THREAD).current_position;
+
+	auto di=get_draw_info(IN_THREAD, initial_viewport);
+
+	// Simulate an exposure of the entire element.
+
+	rectangle_set entire_area;
+
+	entire_area.insert({0, 0, initial_viewport.width,
+				initial_viewport.height});
+	draw(IN_THREAD, di, entire_area);
 }
 
 ref<obj> elementObj::implObj
@@ -170,6 +203,19 @@ public:
 void elementObj::implObj::draw(IN_THREAD_ONLY,
 			       const draw_info &di,
 			       const rectangle_set &areas)
+{
+	if (data(IN_THREAD).inherited_visibility)
+	{
+		do_draw(IN_THREAD, di, areas);
+		return;
+	}
+
+	clear_to_color(IN_THREAD, di, areas);
+}
+
+void elementObj::implObj::do_draw(IN_THREAD_ONLY,
+				  const draw_info &di,
+				  const rectangle_set &areas)
 {
 	clear_to_color(IN_THREAD, di, areas);
 }

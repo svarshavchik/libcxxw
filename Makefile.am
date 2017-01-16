@@ -40,6 +40,8 @@ libcxxw_la_SOURCES=\
 	connection_threadrun.C			    \
 	container.C				    \
 	container.H				    \
+	container_element_overrides_decl.H	    \
+	container_element_overrides_impl.H	    \
 	container_impl.C			    \
 	drawable.C				    \
 	drawable.H				    \

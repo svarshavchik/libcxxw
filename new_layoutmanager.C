@@ -25,6 +25,13 @@ class LIBCXX_HIDDEN dummy_gridlayoutmanagerObj
 	void recalculate(IN_THREAD_ONLY) override
 	{
 	}
+
+	void do_for_each_child(IN_THREAD_ONLY,
+			       const function<void
+			       (const child_element &e)> &callback) override
+	{
+	}
+
 };
 
 class LIBCXX_HIDDEN dummy_layoutmanager_factoryObj : public new_layoutmanagerObj

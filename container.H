@@ -9,6 +9,9 @@
 #include "x/w/layoutmanagerobj.H"
 #include "x/w/elementobj.H"
 #include "x/w/generic_windowobj.H"
+#include "x/w/rectangle.H"
+#include "connection_threadfwd.H"
+#include "draw_infofwd.H"
 #include <x/mpobj.H>
 
 #include <map>
@@ -89,6 +92,33 @@ public:
 	//! Invoked from layoutmanager's public object's destructor
 
 	void uninstall_layoutmanager();
+
+	/////////////////////////////////////////////////////////////////////
+	//
+	// The parent class that inherits from container and element must
+	// override the following element methods, and invoke the container's
+	// methods.
+
+	//! Draw the container.
+
+	//! Punts to the layout manager, to draw all elements in the
+	//! container, the fills in the remaining areas with the background
+	//! color.
+
+	void do_draw(IN_THREAD_ONLY,
+		     const draw_info &di,
+		     const rectangle_set &areas);
+
+	//! Container's inherited visibility has been updated.
+
+	//! The subclass must inherit from elementObj::implObj, and override
+	//! inherited_visibility_updated, and invoke this method.
+
+	void inherited_visibility_updated(IN_THREAD_ONLY,
+					  bool flag);
+
+ private:
+	void propagate_inherited_visibility(IN_THREAD_ONLY, bool flag);
 };
 
 // The connection thread maintains a map of all containers that need to

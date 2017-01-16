@@ -110,6 +110,9 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	draw_info get_draw_info(IN_THREAD_ONLY,
 				const rectangle &initial_viewport)
 		override;
+
+#include "container_element_overrides_decl.H"
+
 	////////////////////////////////////////////////////////////////////
 	//
 	// Inherited from window_handler
@@ -121,7 +124,8 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 	//! A visibility update is translated to mapping/unmapping the window.
 
-	void visibility_updated(IN_THREAD_ONLY, bool flag) override;
+	void draw_after_visibility_updated(IN_THREAD_ONLY,
+					   bool flag) override;
 
 	//! Update the displayed window's element's current_position
 

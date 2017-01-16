@@ -13,6 +13,10 @@
 
 LIBCXXW_NAMESPACE_START
 
+#define ELEMENT_SUBCLASS generic_windowObj::handlerObj
+
+#include "container_element_overrides_impl.H"
+
 static rectangle element_position(const rectangle &r)
 {
 	auto cpy=r;
@@ -104,18 +108,18 @@ draw_info generic_windowObj::handlerObj
 	};
 }
 
-///////////////////////////////////////////////////////////////////////////////
-//
-// Inherited from window_handler
-
-void generic_windowObj::handlerObj::visibility_updated(IN_THREAD_ONLY,
-						       bool flag)
+void generic_windowObj::handlerObj
+::draw_after_visibility_updated(IN_THREAD_ONLY, bool flag)
 {
 	if (flag)
 		xcb_map_window(IN_THREAD->info->conn, id());
 	else
 		xcb_unmap_window(IN_THREAD->info->conn, id());
 }
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Inherited from window_handler
 
 void generic_windowObj::handlerObj::exposure_event(IN_THREAD_ONLY,
 						   rectangle_set &areas)

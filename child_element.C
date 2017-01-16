@@ -49,6 +49,15 @@ draw_info child_elementObj::get_draw_info(IN_THREAD_ONLY,
 		.get_draw_info(IN_THREAD, revised_viewport);
 }
 
+void child_elementObj::visibility_updated(IN_THREAD_ONLY, bool flag)
+{
+	if (!container->get_element_impl()
+	    .data(IN_THREAD).inherited_visibility)
+		flag=false;
+
+	elementObj::implObj::visibility_updated(IN_THREAD, flag);
+}
+
 // When metrics are updated, notify my layout manager.
 void child_elementObj::horizvert_updated(IN_THREAD_ONLY)
 {

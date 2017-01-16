@@ -62,6 +62,13 @@ class LIBCXX_HIDDEN elementObj::implObj : virtual public obj,
 
 		bool actual_visibility=false;
 
+		//! Inherited visibility
+
+		//! An element is actually visible only if the element,
+		//! and all of its parent elements are visible.
+
+		bool inherited_visibility=false;
+
 		//! State update handlers
 
 		callback_list<void (const element_state &)> update_handlers=
@@ -153,7 +160,49 @@ class LIBCXX_HIDDEN elementObj::implObj : virtual public obj,
 
 	//! update_visibility() invokes this callback.
 
+	//! This is overridden in child_elementObj, which also checks
+	//! the parent's inherited visibility. If the parent is hidden,
+	//! this element is not visible, and flag is forced to off, before
+	//! invoking this method.
+	//!
+	//! visibility_updated() compares flag with the
+	//! current value of inherited_visibility flag. If it's different,
+	//! inherited_visibility_updated() gets invoked.
 	virtual void visibility_updated(IN_THREAD_ONLY, bool flag);
+
+
+	//! This element's inherited_visibility flag has changed.
+
+	//! This default implementation calls do_inherited_visibility_updated().
+	//! If this is a container, this gets overridden, and the container
+	//! also updates the containers' elements inherited visibility,
+	//! before invoking do_inherited_visibility_updated().
+
+	virtual void inherited_visibility_updated(IN_THREAD_ONLY,
+						  bool flag);
+
+	//! Finally update this element's inherited visibility status.
+
+	//! The relationships with the parent element and any child elements
+	//! (if this is a container), have been squared away.
+	//!
+	//! Update the flag, invoke before/after showing/hiding callbacks.
+
+	void do_inherited_visibility_updated(IN_THREAD_ONLY,
+					     bool flag);
+
+	//! Redraw this display element, after showing or hiding it.
+
+	//! visibility_updated() invokes it after it invokes
+	//! inherited_visibility_updated().
+	//!
+	//! The default implementation calls draw(). Overriden by
+	//! generic_windowObj::handlerObj to call xcb_map_window() or
+	//! xcb_unmap_window().
+
+	virtual void draw_after_visibility_updated(IN_THREAD_ONLY,
+						   bool flag);
+
 
 	//! Return my viewport.
 
@@ -169,13 +218,22 @@ class LIBCXX_HIDDEN elementObj::implObj : virtual public obj,
 
 	//! Draw the display element.
 
+	//! If the display element is not visible, invokes clear_to_color().
+	//!
+	//! Otherwise calls do_draw().
+	void draw(IN_THREAD_ONLY,
+		  const draw_info &di,
+		  const rectangle_set &areas);
+
+	//! Draw the display element.
+
 	//! The default implementation invokes clear_to_color().
 	//!
 	//! The rectangle cooridnates are specified relative to the viewport.
 
-	virtual void draw(IN_THREAD_ONLY,
-			  const draw_info &di,
-			  const rectangle_set &areas);
+	virtual void do_draw(IN_THREAD_ONLY,
+			     const draw_info &di,
+			     const rectangle_set &areas);
 
 	//! Clear to background color
 
