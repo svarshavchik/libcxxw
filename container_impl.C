@@ -9,6 +9,8 @@
 
 LIBCXXW_NAMESPACE_START
 
+containerObj::implObj::implObj()=default;
+
 containerObj::implObj::~implObj()=default;
 
 void containerObj::implObj

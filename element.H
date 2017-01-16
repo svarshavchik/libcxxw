@@ -16,6 +16,7 @@
 #include "metrics_horizvertobj.H"
 #include <x/obj.H>
 #include <x/callback_list.H>
+#include <x/logger.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -28,6 +29,10 @@ class LIBCXX_HIDDEN elementObj::implObj : virtual public obj,
 // horizvertObj is considered to be IN_THREAD_ONLY
 
 					  private metrics::horizvertObj {
+
+ protected:
+	LOG_CLASS_SCOPE;
+ private:
 
 	//! Most of the stuff is for the connection thread's consumption, only.
 
@@ -89,6 +94,12 @@ class LIBCXX_HIDDEN elementObj::implObj : virtual public obj,
 	//! Constructor
 	implObj(size_t nesting_level,
 		const rectangle &initial_position);
+
+	//! Constructor
+	implObj(size_t nesting_level,
+		const rectangle &initial_position,
+		const metrics::axis &horiz,
+		const metrics::axis &vert);
 
 	//! Destructor
 	~implObj();

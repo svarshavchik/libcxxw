@@ -23,6 +23,13 @@ horizvertObj::horizvertObj(dim_t h_minimum,
 {
 }
 
+horizvertObj::horizvertObj(const axis &horiz,
+			   const axis &vert)
+	: horiz(horiz),
+	  vert(vert)
+{
+}
+
 horizvertObj::~horizvertObj()=default;
 
 #if 0

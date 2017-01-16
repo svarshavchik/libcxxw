@@ -7,8 +7,8 @@
 
 #include "x/w/containerobj.H"
 #include "x/w/layoutmanagerobj.H"
-#include "child_element.H"
-
+#include "x/w/elementobj.H"
+#include "x/w/generic_windowobj.H"
 #include <x/mpobj.H>
 
 #include <map>
@@ -23,17 +23,35 @@ LIBCXXW_NAMESPACE_START
 //! installed and torn down by the container's public object, see
 //! layoutmanagerObj::implObj.
 
-class LIBCXX_HIDDEN containerObj::implObj : public elementObj::implObj {
+class LIBCXX_HIDDEN containerObj::implObj : virtual public obj {
 
 public:
 
 	//! Constructor
 
-	using elementObj::implObj::implObj;
+	implObj();
 
 	//! Destructor
 
 	~implObj();
+
+	//! This container must be an element.
+
+	//! Must be implement in a subclass
+
+	virtual elementObj::implObj &get_element_impl()=0;
+
+	//! This container must be an element.
+
+	//! Must be implement in a subclass
+
+	virtual const elementObj::implObj &get_element_impl() const=0;
+
+	//! Return my window
+	virtual generic_windowObj::handlerObj &get_window_handler()=0;
+
+	//! Return my window
+	virtual const generic_windowObj::handlerObj &get_window_handler() const=0;
 
 	//! The mutex-protected container for the layout manager implementation.
 

@@ -8,7 +8,7 @@
 #include "element.H"
 #include "container.H"
 #include "connection_threadfwd.H"
-
+#include "x/w/metrics/axis.H"
 LIBCXXW_NAMESPACE_START
 
 //! An element that has a parent element.
@@ -26,8 +26,10 @@ class LIBCXX_HIDDEN child_elementObj : public elementObj::implObj {
 	//! Save parent element, increase this element's nesting level.
 
 	child_elementObj(const ref<containerObj::implObj> &container,
-			 const rectangle &initial_position);
+			 const metrics::axis &horiz=metrics::axis(),
+			 const metrics::axis &vert=metrics::axis());
 
+	//! Destructor
 	~child_elementObj();
 
 	//////////////////////////////////////////////////////////////////////

@@ -11,6 +11,9 @@
 #include "draw_info.H"
 #include "x/w/element_state.H"
 #include "x/callback_list.H"
+#include <x/logger.H>
+
+LOG_CLASS_INIT(LIBCXX_NAMESPACE::w::elementObj::implObj);
 
 LIBCXXW_NAMESPACE_START
 
@@ -23,6 +26,19 @@ elementObj::implObj::implObj(size_t nesting_level,
 	      initial_position,
 	  }),
 	  nesting_level(nesting_level)
+{
+}
+
+elementObj::implObj::implObj(size_t nesting_level,
+			     const rectangle &initial_position,
+			     const metrics::axis &horiz,
+			     const metrics::axis &vert)
+	: metrics::horizvertObj(horiz, vert),
+	data_thread_only
+	({
+		initial_position,
+	}),
+	nesting_level(nesting_level)
 {
 }
 

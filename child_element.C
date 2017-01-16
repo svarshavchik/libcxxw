@@ -11,9 +11,12 @@
 LIBCXXW_NAMESPACE_START
 
 child_elementObj::child_elementObj(const ref<containerObj::implObj> &container,
-				   const rectangle &initial_position)
-	: elementObj::implObj(container->nesting_level+1,
-			      initial_position),
+				   const metrics::axis &horiz,
+				   const metrics::axis &vert)
+	: elementObj::implObj(container->get_element_impl().nesting_level+1,
+			      {0, 0, 0, 0},
+			      // The container will position me later
+			      horiz, vert),
 	container(container)
 {
 }
@@ -36,12 +39,14 @@ draw_info child_elementObj::get_draw_info(IN_THREAD_ONLY,
 {
 	auto revised_viewport=initial_viewport;
 
-	auto &parent_position=container->data(IN_THREAD).current_position;
+	auto &parent_position=container->get_element_impl()
+		.data(IN_THREAD).current_position;
 
 	revised_viewport.x += (coord_t::value_type)parent_position.x;
 	revised_viewport.y += (coord_t::value_type)parent_position.y;
 
-	return container->get_draw_info(IN_THREAD, revised_viewport);
+	return container->get_element_impl()
+		.get_draw_info(IN_THREAD, revised_viewport);
 }
 
 // When metrics are updated, notify my layout manager.

@@ -34,8 +34,11 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 // The picture for the window
 	  public pictureObj::implObj::fromDrawableObj,
 
-// An element
-	  public containerObj::implObj {
+// The container
+	  public containerObj::implObj,
+
+// The display element.
+	  public elementObj::implObj {
 
 	//! Current event mask.
 	xcb_event_mask_t current_events_thread_only;
@@ -80,6 +83,14 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	THREAD_DATA_ONLY(current_events);
 	THREAD_DATA_ONLY(current_position);
 	THREAD_DATA_ONLY(background_color);
+
+	////////////////////////////////////////////////////////////////////
+	//
+	// Inherited from containerObj::implObj
+
+	elementObj::implObj &get_element_impl() override;
+
+	const elementObj::implObj &get_element_impl() const override;
 
 	////////////////////////////////////////////////////////////////////
 	//

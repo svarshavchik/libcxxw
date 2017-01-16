@@ -44,6 +44,11 @@ namespace metrics {
 			     dim_t v_preferred=dim_t(0),
 			     dim_t v_maximum=dim_t(0));
 
+		//! Constructor
+
+		horizvertObj(const axis &horiz,
+			     const axis &vert);
+
 		//! Destructor
 
 		~horizvertObj();

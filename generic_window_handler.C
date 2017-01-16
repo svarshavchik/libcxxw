@@ -43,9 +43,9 @@ generic_windowObj::handlerObj
 					     params.drawable_pictformat->impl
 					     ->id),
 
-	containerObj::implObj(0,
-			      element_position(params.window_handler_params
-					       .initial_position)),
+       elementObj::implObj(0,
+			   element_position(params.window_handler_params
+					    .initial_position)),
 	current_events_thread_only((xcb_event_mask_t)
 				   params.window_handler_params
 				   .events_and_mask.m.at(XCB_CW_EVENT_MASK)),
@@ -59,6 +59,21 @@ generic_windowObj::handlerObj
 }
 
 generic_windowObj::handlerObj::~handlerObj()=default;
+
+////////////////////////////////////////////////////////////////////
+//
+// Inherited from containerObj::implObj
+
+elementObj::implObj &generic_windowObj::handlerObj::get_element_impl()
+{
+	return *this;
+}
+
+const elementObj::implObj &generic_windowObj::handlerObj::get_element_impl()
+	const
+{
+	return *this;
+}
 
 ////////////////////////////////////////////////////////////////////
 //

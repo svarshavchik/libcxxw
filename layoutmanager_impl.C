@@ -35,7 +35,7 @@ void layoutmanagerObj::implObj::needs_recalculation(IN_THREAD_ONLY)
 	recalculate_needed(IN_THREAD)=true;
 
 	(*IN_THREAD->containers_2_recalculate(IN_THREAD))
-		[container_impl->nesting_level]
+		[container_impl->get_element_impl().nesting_level]
 		.insert(ref<layoutmanagerObj::implObj>(this));
 }
 
