@@ -6,6 +6,7 @@
 #include "element.H"
 #include "screen.H"
 #include "connection_thread.H"
+#include "batch_queue.H"
 #include "generic_window_handler.H"
 #include "draw_info.H"
 #include "x/w/element_state.H"
@@ -38,13 +39,14 @@ void elementObj::implObj::request_visibility(bool flag)
 	// The connection thread invokes update_visibility after processing
 	// all messages.
 
-	THREAD->run_as(RUN_AS,
-		       [flag, me=elementimpl(this)]
-		       (IN_THREAD_ONLY)
-		       {
-			       me->data(IN_THREAD).requested_visibility=flag;
-			       IN_THREAD->visibility_updated(IN_THREAD)->insert(me);
-		       });
+	THREAD->get_batch_queue()->run_as
+		(RUN_AS,
+		 [flag, me=elementimpl(this)]
+		 (IN_THREAD_ONLY)
+		 {
+			 me->data(IN_THREAD).requested_visibility=flag;
+			 IN_THREAD->visibility_updated(IN_THREAD)->insert(me);
+		 });
 }
 
 void elementObj::implObj::update_visibility(IN_THREAD_ONLY)

@@ -8,6 +8,7 @@
 #include "window_handler.H"
 #include "element.H"
 #include "container.H"
+#include "batch_queue.H"
 #include "xid_t.H"
 #include "catch_exceptions.H"
 
@@ -16,7 +17,9 @@ LOG_CLASS_INIT(LIBCXX_NAMESPACE::w::connection_threadObj);
 LIBCXXW_NAMESPACE_START
 
 connection_threadObj
-::connection_threadObj(const connection_info &info): info(info)
+::connection_threadObj(const connection_info &info)
+	: info(info),
+	  internal_batch_queue(ref<threadmsgdispatcherObj>::create())
 {
 }
 
@@ -25,6 +28,10 @@ connection_threadObj::~connection_threadObj()=default;
 void connection_threadObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin)
 {
 	msgqueue_auto msgqueue(this);
+
+	// No need for a separate eventfd for the batch queue.
+	msgqueue_auto batchqueue(&*internal_batch_queue,
+				 msgqueue->getEventfd());
 
 	threadmsgdispatcher_mcguffin=nullptr;
 
@@ -86,6 +93,36 @@ void connection_threadObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin)
 void connection_threadObj::report_error(const xcb_generic_error_t *e)
 {
 	LOG_ERROR(connectionObj::implObj::get_error(e));
+}
+
+batch_queue connection_threadObj::get_batch_queue()
+{
+	mpobj<weakptr<batch_queueptr>>::lock lock(current_batch_queue);
+
+	// Return the existing batch_queue object, if there is one.
+
+	auto p=lock->getptr();
+
+	if (!p.null())
+		return p;
+
+	auto new_batch_queue=batch_queue::create(connection_thread(this));
+
+	*lock=new_batch_queue;
+
+	return new_batch_queue;
+}
+
+void connection_threadObj::dispatch_execute_batched_jobs()
+{
+	msgqueue_t q=internal_batch_queue->get_msgqueue();
+
+	while (!q->empty())
+	{
+		try {
+			q->pop()->dispatch();
+		} CATCH_EXCEPTIONS;
+	}
 }
 
 LIBCXXW_NAMESPACE_END

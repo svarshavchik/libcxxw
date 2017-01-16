@@ -7,12 +7,15 @@
 
 #include "connection_infofwd.H"
 #include "connection_threadfwd.H"
+#include "x/w/batch_queuefwd.H"
 #include "elementfwd.H"
 #include "connection_info.H"
 #include "x/w/rectangle.H"
 #include <x/threadmsgdispatcher.H>
 #include <x/logger.H>
 #include <x/functional.H>
+#include <x/mpobj.H>
+#include <x/weakptr.H>
 #include <functional>
 #include <poll.h>
 #include <map>
@@ -138,6 +141,30 @@ class LIBCXX_HIDDEN connection_threadObj
 	bool stop_received;
 	bool stopping_politely;
 
+	// Secondary queue for batched messages.
+
+	const ref<threadmsgdispatcherObj> internal_batch_queue;
+
+	mpobj<weakptr<batch_queueptr>> current_batch_queue;
+
+ public:
+
+	//! Same as run_as, but the job goes into the batch queue, instead.
+
+	template<typename T>
+		void run_as_batched(const char *file, int line, T &&func)
+	{
+		internal_batch_queue->sendevent
+			(&connection_threadObj::dispatch_do_run_as,
+			 this,
+			 file, line,
+			 make_function<void (IN_THREAD_ONLY)>
+			 (std::forward<T>(func)));
+	}
+
+	//! Return a batch_queue object, for batching jobs for the thread.
+
+	batch_queue get_batch_queue();
 };
 
 #define connection_thread_included

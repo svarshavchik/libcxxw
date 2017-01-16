@@ -18,6 +18,9 @@ libcxxw_la_LIBADD=-lcxx
 libcxxw_la_LDFLAGS=$(STATICLINKFLAGS)
 
 libcxxw_la_SOURCES=\
+	batch_queue.C				    \
+	batch_queue.H				    \
+	batch_queueobj.H			    \
 	builtin_atoms.C				    \
 	builtin_atoms.H				    \
 	catch_exceptions.H			    \

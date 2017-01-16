@@ -176,5 +176,4 @@ void connection_threadObj
 	func(connection_thread(this));
 }
 
-
 LIBCXXW_NAMESPACE_END
