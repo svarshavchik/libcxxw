@@ -6,6 +6,7 @@
 #include "x/w/new_layoutmanager.H"
 #include "container.H"
 #include "layoutmanager.H"
+#include "gridlayoutmanager.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -13,47 +14,25 @@ new_layoutmanagerObj::new_layoutmanagerObj()=default;
 
 new_layoutmanagerObj::~new_layoutmanagerObj()=default;
 
-// TODO
-
-class LIBCXX_HIDDEN dummy_gridlayoutmanagerObj
-	: public layoutmanagerObj::implObj {
-
- public:
-
-	using layoutmanagerObj::implObj::implObj;
-
-	void recalculate(IN_THREAD_ONLY) override
-	{
-	}
-
-	void do_for_each_child(IN_THREAD_ONLY,
-			       const function<void
-			       (const child_element &e)> &callback) override
-	{
-	}
-
-};
-
-class LIBCXX_HIDDEN dummy_layoutmanager_factoryObj : public new_layoutmanagerObj
+class LIBCXX_HIDDEN grid_factoryObj : public new_layoutmanagerObj
 {
  public:
 
-	dummy_layoutmanager_factoryObj()=default;
+	grid_factoryObj()=default;
 
-	~dummy_layoutmanager_factoryObj()=default;
+	~grid_factoryObj()=default;
 
 	ref<layoutmanagerObj::implObj>
 		create(const ref<containerObj::implObj> &container_impl)
 		override
 	{
-		return ref<dummy_gridlayoutmanagerObj>::create
-			(container_impl);
+		return ref<gridlayoutmanagerObj::implObj>::create(container_impl);
 	}
 };
 
 new_layoutmanager new_layoutmanagerBase::create_grid()
 {
-	return ref<dummy_layoutmanager_factoryObj>::create();
+	return ref<grid_factoryObj>::create();
 }
 
 LIBCXXW_NAMESPACE_END

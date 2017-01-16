@@ -8,6 +8,7 @@
 #include "x/w/layoutmanager.H"
 #include "x/w/containerobj.H"
 #include "x/w/rectangle.H"
+#include "x/w/batch_queuefwd.H"
 #include "draw_infofwd.H"
 #include "child_elementfwd.H"
 #include "element.H"
@@ -43,8 +44,10 @@ LIBCXXW_NAMESPACE_START
 
 class LIBCXX_HIDDEN layoutmanagerObj::implObj : virtual public obj {
 
+ protected:
 	LOG_CLASS_SCOPE;
 
+ private:
 	//! Whether this layout needs to be "recalculated"
 
 	bool recalculate_needed_thread_only=false;
@@ -65,13 +68,13 @@ class LIBCXX_HIDDEN layoutmanagerObj::implObj : virtual public obj {
 
 	//! Mark this layout as needing recalculation.
 
-	void needs_recalculation();
+	void needs_recalculation(const batch_queue &queue);
 
 	//! Mark this layout as needing recalculation.
 
 	void needs_recalculation(IN_THREAD_ONLY);
 
-	//! Invoke by the connection thread. Checks recalculate_needed, invokes recalculate()
+	//! Invoked by the connection thread. Checks recalculate_needed, invokes recalculate()
 
 	void check_if_recalculate_needed(IN_THREAD_ONLY);
 
@@ -93,6 +96,12 @@ class LIBCXX_HIDDEN layoutmanagerObj::implObj : virtual public obj {
 				  make_function<void (const child_element &e)>
 				  (std::forward<functor_type>(functor)));
 	}
+
+	//! Create a public object for this layout manager
+
+	//! This is invoked by the container's get_layoutmanager().
+
+	virtual layoutmanager create_public_object()=0;
 
  private:
 

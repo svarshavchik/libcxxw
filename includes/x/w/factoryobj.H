@@ -6,7 +6,10 @@
 #define x_w_factoryobj_h
 
 #include <x/w/factoryfwd.H>
+#include <x/w/elementfwd.H>
 #include <x/w/containerobj.H>
+#include <x/w/metrics/axis.H>
+#include <x/obj.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -33,6 +36,9 @@ public:
 	//! Destructor
 	~factoryObj() LIBCXX_HIDDEN;
 
+	//! Create empty filler
+	element create_empty_element(const metrics::axis &horiz_axis=metrics::axis(),
+				     const metrics::axis &vert_axis=metrics::axis());
 };
 
 LIBCXXW_NAMESPACE_END

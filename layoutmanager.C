@@ -6,20 +6,26 @@
 #include "layoutmanager.H"
 #include "x/w/new_layoutmanager.H"
 #include "container.H"
+#include "xid_t.H"
+#include "generic_window_handler.H"
+#include "connection_thread.H"
+#include "batch_queue.H"
 
 LIBCXXW_NAMESPACE_START
 
-layoutmanagerObj::layoutmanagerObj(const new_layoutmanager &layout_factory,
-				   const ref<containerObj::implObj>
-				   &container_impl)
-	: impl(layout_factory->create(container_impl))
+layoutmanagerObj::layoutmanagerObj(const ref<implObj> &impl)
+	: impl(impl),
+	  queue(impl->container_impl->get_window_handler().thread()
+		->get_batch_queue())
+
 {
-	impl->container_impl->install_layoutmanager(impl);
 }
+
+// When the public object drops off, trigger layout recalculation.
 
 layoutmanagerObj::~layoutmanagerObj()
 {
-	impl->container_impl->uninstall_layoutmanager();
+	impl->needs_recalculation(queue);
 }
 
 LIBCXXW_NAMESPACE_END

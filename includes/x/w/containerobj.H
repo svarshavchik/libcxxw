@@ -7,6 +7,7 @@
 
 #include <x/w/containerfwd.H>
 #include <x/w/layoutmanagerfwd.H>
+#include <x/w/layoutmanagerobj.H>
 #include <x/w/new_layoutmanagerfwd.H>
 #include <x/w/elementobj.H>
 
@@ -25,12 +26,9 @@ public:
 
 	const ref<implObj> impl;
 
-protected:
-	//! This container's layout manager
+	//! Layout manager's internal implementation object.
 
-	const layoutmanager manager;
-
-public:
+	const ref<layoutmanagerObj::implObj> layout_impl;
 
 	//! Return this container's layout manager.
 	layoutmanager get_layoutmanager();

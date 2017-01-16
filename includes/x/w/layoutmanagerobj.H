@@ -6,9 +6,8 @@
 #define x_w_layoutmanagerobj_h
 
 #include <x/w/layoutmanagerfwd.H>
-#include <x/w/new_layoutmanagerfwd.H>
-#include <x/w/elementobj.H>
-#include <x/w/containerobj.H>
+#include <x/w/batch_queuefwd.H>
+#include <x/obj.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -24,10 +23,12 @@ public:
 	//! Internal implementation object.
 	const ref<implObj> impl;
 
+	//! Internal implementation object.
+
+	const batch_queue queue;
+
 	//! Constructor
-	layoutmanagerObj(const new_layoutmanager &layout_factory,
-			 const ref<containerObj::implObj> &container_impl)
-		LIBCXX_HIDDEN;
+	layoutmanagerObj(const ref<implObj> &impl) LIBCXX_HIDDEN;
 
 	//! Destructor
 	~layoutmanagerObj() LIBCXX_HIDDEN;

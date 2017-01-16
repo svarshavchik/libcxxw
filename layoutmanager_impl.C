@@ -11,6 +11,7 @@
 #include "draw_info.H"
 #include "child_element.H"
 #include "catch_exceptions.H"
+#include "batch_queue.H"
 
 LOG_CLASS_INIT(LIBCXX_NAMESPACE::w::layoutmanagerObj::implObj);
 
@@ -24,15 +25,14 @@ layoutmanagerObj::implObj
 
 layoutmanagerObj::implObj::~implObj()=default;
 
-void layoutmanagerObj::implObj::needs_recalculation()
+void layoutmanagerObj::implObj::needs_recalculation(const batch_queue &queue)
 {
-	container_impl->get_window_handler().thread()
-		->run_as(RUN_AS,
-			 [me=ref<layoutmanagerObj::implObj>(this)]
-			 (IN_THREAD_ONLY)
-			 {
-				 me->needs_recalculation(IN_THREAD);
-			 });
+	queue->run_as(RUN_AS,
+		      [me=ref<layoutmanagerObj::implObj>(this)]
+		      (IN_THREAD_ONLY)
+		      {
+			      me->needs_recalculation(IN_THREAD);
+		      });
 }
 
 void layoutmanagerObj::implObj::needs_recalculation(IN_THREAD_ONLY)

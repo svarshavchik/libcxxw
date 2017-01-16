@@ -19,7 +19,7 @@ class layoutmanagerObj;
 
 typedef ref<layoutmanagerObj> layoutmanager;
 
-//! A constant generic window handler
+//! A constant generic layout manager.
 
 //! \see layoutmanager
 

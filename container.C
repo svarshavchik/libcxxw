@@ -14,22 +14,24 @@ containerObj::containerObj(const ref<implObj> &impl,
 			   const new_layoutmanager &layout_factory)
 	: elementObj(impl),
 	  impl(impl),
-	  manager(layoutmanager::create(layout_factory, impl))
+	  layout_impl(layout_factory->create(impl))
 {
+	impl->install_layoutmanager(layout_impl);
 }
 
 containerObj::~containerObj()
 {
+	impl->uninstall_layoutmanager();
 }
 
 layoutmanager containerObj::get_layoutmanager()
 {
-	return manager;
+	return layout_impl->create_public_object();
 }
 
 const_layoutmanager containerObj::get_layoutmanager() const
 {
-	return manager;
+	return layout_impl->create_public_object();
 }
 
 LIBCXXW_NAMESPACE_END
