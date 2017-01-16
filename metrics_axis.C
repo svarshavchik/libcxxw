@@ -4,6 +4,8 @@
 */
 #include "libcxxw_config.h"
 #include "metrics_axis.H"
+#include "screen.H"
+#include "messages.H"
 #include <x/exception.H>
 
 LIBCXXW_NAMESPACE_START
@@ -14,20 +16,41 @@ namespace metrics {
 
 exception axis::invalid_infinite()
 {
-	return EXCEPTION("Cannot specify an infinite minimum or preferred metric.");
+	return EXCEPTION(_("Cannot specify an infinite minimum or preferred metric."));
 
 }
 
 exception axis::invalid_minimum()
 {
-	return EXCEPTION("Preferred metric less than the minimum one,");
+	return EXCEPTION(_("Preferred metric less than the minimum one."));
 }
 
 exception axis::invalid_maximum()
 {
-	return EXCEPTION("Preferred metric is more than the maximum one.");
+	return EXCEPTION(_("Preferred metric is more than the maximum one."));
 }
 
+static dim_t convert_from_double(axis::hv which, const screen &s,
+				 double n)
+{
+	if (n < 0)
+		throw EXCEPTION("Metric cannot be negative");
+
+	return (which == axis::horizontal ?
+		s->impl->compute_width(n):s->impl->compute_height(n));
+}
+
+axis::axis(hv which,
+	   const screen &s,
+	   double minimum,
+	   double preferred,
+	   double maximum)
+	: axis(convert_from_double(which, s, minimum),
+	       convert_from_double(which, s, preferred),
+	       std::isinf(maximum) ? dim_t::infinite()
+	       : convert_from_double(which, s, maximum))
+{
+}
 
 axis axis::increase_minimum_by(dim_t howmuch) const
 {

@@ -6,12 +6,14 @@
 #define x_w_matrics_axis_H
 
 #include <x/w/types.H>
+#include <x/w/screenfwd.H>
 #include <x/exception.H>
 #include <iostream>
 #include <iterator>
 #include <vector>
 #include <numeric>
 #include <algorithm>
+#include <math.h>
 
 LIBCXXW_NAMESPACE_START
 
@@ -67,7 +69,7 @@ namespace metrics {
 		}
 
 	public:
-		//! Constructor
+		//! Constructor, the dimensions are specified in pixels.
 
 		constexpr axis(dim_t minimum=dim_t(0),
 			       dim_t preferred=dim_t(0),
@@ -78,6 +80,22 @@ namespace metrics {
 				maximum_{maximum}
 			{
 			}
+
+		//! Horizontal or vertical screen dimensions
+
+		enum hv { horizontal, vertical };
+
+		//! Constructor, the dimensions are specified in millimeters
+
+		//! Takes a horizontal/vertical indication, and a screen
+		//! object, and uses the screen's resolution to create an
+		//! axis whose dimensions are specified in millimeters.
+
+		axis(hv which,
+		     const screen &s,
+		     double minimum,
+		     double preferred,
+		     double maximum=INFINITY);
 
 		//! Update the metrics.
 
