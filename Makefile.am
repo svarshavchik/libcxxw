@@ -61,6 +61,10 @@ libcxxw_la_SOURCES=\
 	generic_window_handler.C		    \
 	generic_window_handler.H		    \
 	generic_window_impl.C			    \
+	gridfactory.C				    \
+	gridfactory.H				    \
+	gridfactoryfwd.H			    \
+	gridfactoryobj.H			    \
 	gridlayoutmanager.C			    \
 	gridlayoutmanager.H			    \
 	gridlayoutmanager_impl.C		    \

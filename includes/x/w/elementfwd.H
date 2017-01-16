@@ -33,6 +33,11 @@ class elementObj;
 
 typedef ref<elementObj> element;
 
+//! A nullable pointer reference to an element.
+
+typedef ptr<elementObj> elementptr;
+
+
 //! A constant generic window handler
 
 //! \see element
