@@ -17,6 +17,7 @@ class LIBCXX_HIDDEN builtin_atoms {
 
 	xcb_atom_t wm_protocols;
 	xcb_atom_t wm_delete_window;
+	xcb_atom_t wm_normal_hints;
 
 	builtin_atoms(xcb_connection_t *conn);
 };

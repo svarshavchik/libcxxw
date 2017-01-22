@@ -47,9 +47,4 @@ void main_windowObj::handlerObj
 	}
 }
 
-void main_windowObj::handlerObj::horizvert_updated(IN_THREAD_ONLY)
-{
-	// auto p=get_horizvert(IN_THREAD);
-}
-
 LIBCXXW_NAMESPACE_END

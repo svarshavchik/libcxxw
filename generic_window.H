@@ -45,14 +45,6 @@ class LIBCXX_HIDDEN generic_windowObj::implObj : virtual public obj {
 
 	const ref<handlerObj> handler;
 
-	//! Return the window manager's hints.
-
-	bool get_frame_extents(dim_t &left,
-			       dim_t &right,
-			       dim_t &top,
-			       dim_t &bottom)
-		const;
-
 	//! Return my connection thread
 	connection_thread thread();
 

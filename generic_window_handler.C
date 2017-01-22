@@ -9,8 +9,10 @@
 #include "draw_info.H"
 #include "container.H"
 #include "layoutmanager.H"
+#include "screen.H"
 #include "xid_t.H"
 
+#include <xcb/xcb_icccm.h>
 LIBCXXW_NAMESPACE_START
 
 #define ELEMENT_SUBCLASS generic_windowObj::handlerObj
@@ -144,6 +146,72 @@ void generic_windowObj::handlerObj::configure_notify(IN_THREAD_ONLY,
 	cpy.y=0;
 
 	current_position_updated(IN_THREAD, cpy);
+}
+
+
+bool generic_windowObj::handlerObj::get_frame_extents(dim_t &left,
+						      dim_t &right,
+						      dim_t &top,
+						      dim_t &bottom) const
+{
+	mpobj<ewmh>::lock lock(screenref->get_connection()
+			       ->impl->ewmh_info);
+
+	return lock->get_frame_extents(left, right, top, bottom,
+				       screenref->impl->screen_number,
+				       id());
+}
+
+void generic_windowObj::handlerObj::horizvert_updated(IN_THREAD_ONLY)
+{
+	auto conn=screenref->get_connection()->impl;
+
+	auto p=get_horizvert(IN_THREAD);
+
+	auto minimum_width=p->horiz.minimum();
+	auto minimum_height=p->vert.minimum();
+
+	// Don't tell the window manager that our minimum
+	// dimensions exceed usable workarea size.
+
+	// Subtract frame size from total workarea size.
+	// That's our cap.
+
+	dim_t left, right, top, bottom;
+
+	auto workarea=screenref->get_workarea();
+
+	if (get_frame_extents(left, right, top, bottom))
+	{
+		auto usable_workarea_width=
+			workarea.width-left-right;
+
+		auto usable_workarea_height=
+			workarea.height-top-bottom;
+
+		if (usable_workarea_width < minimum_width)
+			minimum_width=usable_workarea_width;
+
+		if (usable_workarea_height < minimum_height)
+			minimum_height=usable_workarea_height;
+	}
+
+	xcb_size_hints_t hints=xcb_size_hints_t();
+
+	xcb_icccm_size_hints_set_min_size(&hints,
+					  (dim_t::value_type)minimum_width,
+					  (dim_t::value_type)minimum_height);
+	xcb_icccm_size_hints_set_base_size(&hints,
+					   (dim_t::value_type)p->horiz.preferred(),
+					   (dim_t::value_type)p->vert.preferred());
+	xcb_icccm_size_hints_set_max_size(&hints,
+					  (dim_t::value_type)p->horiz.maximum(),
+					  (dim_t::value_type)p->vert.maximum());
+
+	xcb_icccm_set_wm_size_hints(conn->info->conn,
+				    id(),
+				    conn->info->atoms_info.wm_normal_hints,
+				    &hints);
 }
 
 LIBCXXW_NAMESPACE_END

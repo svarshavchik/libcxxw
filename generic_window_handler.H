@@ -131,6 +131,18 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 	void configure_notify(IN_THREAD_ONLY,
 			      const rectangle &) override;
+
+	//! Return the window manager's hints.
+
+	bool get_frame_extents(dim_t &left,
+			       dim_t &right,
+			       dim_t &top,
+			       dim_t &bottom)
+		const;
+
+	//! Inherited from horizvertObj
+
+	void horizvert_updated(IN_THREAD_ONLY) override;
 };
 
 LIBCXXW_NAMESPACE_END

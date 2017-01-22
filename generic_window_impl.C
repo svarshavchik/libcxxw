@@ -88,17 +88,4 @@ generic_windowObj::implObj::~implObj()
 				    });
 }
 
-bool generic_windowObj::implObj::get_frame_extents(dim_t &left,
-						   dim_t &right,
-						   dim_t &top,
-						   dim_t &bottom) const
-{
-	mpobj<ewmh>::lock lock(handler->screenref->get_connection()
-			       ->impl->ewmh_info);
-
-	return lock->get_frame_extents(left, right, top, bottom,
-				       handler->screenref->impl->screen_number,
-				       handler->id());
-}
-
 LIBCXXW_NAMESPACE_END

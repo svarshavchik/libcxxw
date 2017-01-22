@@ -24,6 +24,7 @@ builtin_atoms::builtin_atoms(xcb_connection_t *conn)
 	} atoms[] = {
 		{"WM_PROTOCOLS", &builtin_atoms::wm_protocols},
 		{"WM_DELETE_WINDOW", &builtin_atoms::wm_delete_window},
+		{"WM_NORMAL_HINTS", &builtin_atoms::wm_normal_hints},
 	};
 
 	std::vector<xcb_intern_atom_cookie_t> cookies;
