@@ -68,6 +68,8 @@ libcxxw_la_SOURCES=\
 	gridlayoutmanager.C			    \
 	gridlayoutmanager.H			    \
 	gridlayoutmanager_impl.C		    \
+	gridlayoutmanager_impl_elements.C	    \
+	gridlayoutmanager_impl_elements.H	    \
 	impl_connection_thread.H		    \
 	layoutmanager.C				    \
 	layoutmanager.H				    \

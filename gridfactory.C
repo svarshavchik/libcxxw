@@ -27,6 +27,7 @@ gridfactoryObj::~gridfactoryObj()=default;
 
 void gridfactoryObj::created(const child_element &new_element)
 {
+	gridlayout->impl->insert(new_element, x, y, width, height);
 }
 
 LIBCXXW_NAMESPACE_END
