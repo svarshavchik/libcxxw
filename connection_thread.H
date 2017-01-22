@@ -68,12 +68,13 @@ class LIBCXX_HIDDEN connection_threadObj
 
 	typedef std::map<size_t, std::unordered_set<elementimpl>> element_set_t;
 
+ public:
 	static void insert_element_set(element_set_t &s,
 				       const elementimpl &i);
 
 	static elementimpl next_lowest_element(element_set_t &s);
 	static elementimpl next_highest_element(element_set_t &s);
-
+ private:
 	// Here's a list of elements that have requested their visibility to
 	// be changed.
 
@@ -118,6 +119,13 @@ class LIBCXX_HIDDEN connection_threadObj
 
 	bool recalculate_containers(IN_THREAD_ONLY);
 
+	// Which elements' position has been updated. Rather than invoking
+	// process_updated_position() immediately, they get cached here, and
+	// processed.
+
+	element_set_t *element_position_updated_thread_only;
+	bool process_element_position_updated(IN_THREAD_ONLY);
+
 	// on_disconnect() callback
 
 	std::function<void ()> disconnect_callback_thread_only;
@@ -131,6 +139,7 @@ class LIBCXX_HIDDEN connection_threadObj
 	THREAD_DATA_ONLY(visibility_updated);
 	THREAD_DATA_ONLY(elements_to_redraw);
 	THREAD_DATA_ONLY(containers_2_recalculate);
+	THREAD_DATA_ONLY(element_position_updated);
 
 #include "connection_thread.msgs.H"
 

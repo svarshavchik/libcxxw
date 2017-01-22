@@ -64,7 +64,7 @@ void child_elementObj::horizvert_updated(IN_THREAD_ONLY)
 	container->invoke_layoutmanager([&]
 					(const auto &manager)
 					{
-						manager->needs_recalculation
+						manager->child_metrics_updated
 							(IN_THREAD);
 					});
 }

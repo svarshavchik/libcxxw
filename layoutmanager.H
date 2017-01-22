@@ -47,14 +47,7 @@ class LIBCXX_HIDDEN layoutmanagerObj::implObj : virtual public obj {
  protected:
 	LOG_CLASS_SCOPE;
 
- private:
-	//! Whether this layout needs to be "recalculated"
-
-	bool recalculate_needed_thread_only=false;
-
  public:
-
-	THREAD_DATA_ONLY(recalculate_needed);
 
 	//! My container implementation.
 
@@ -66,6 +59,12 @@ class LIBCXX_HIDDEN layoutmanagerObj::implObj : virtual public obj {
 	//! Destructor
 	~implObj();
 
+	//! An element in the container has updated metrics.
+
+	//! The default implementation invokes needs_recalculation().
+
+	virtual void child_metrics_updated(IN_THREAD_ONLY);
+
 	//! Mark this layout as needing recalculation.
 
 	void needs_recalculation(const batch_queue &queue);
@@ -73,10 +72,6 @@ class LIBCXX_HIDDEN layoutmanagerObj::implObj : virtual public obj {
 	//! Mark this layout as needing recalculation.
 
 	void needs_recalculation(IN_THREAD_ONLY);
-
-	//! Invoked by the connection thread. Checks recalculate_needed, invokes recalculate()
-
-	void check_if_recalculate_needed(IN_THREAD_ONLY);
 
 	//! Draw all elements in the container.
 
@@ -93,7 +88,7 @@ class LIBCXX_HIDDEN layoutmanagerObj::implObj : virtual public obj {
 				    functor_type &&functor)
 	{
 		do_for_each_child(IN_THREAD,
-				  make_function<void (const child_element &e)>
+				  make_function<void (const element &e)>
 				  (std::forward<functor_type>(functor)));
 	}
 
@@ -103,16 +98,27 @@ class LIBCXX_HIDDEN layoutmanagerObj::implObj : virtual public obj {
 
 	virtual layoutmanager create_public_object()=0;
 
- private:
+ public:
 
 	//! Implemented by subclass
 
 	virtual void recalculate(IN_THREAD_ONLY)=0;
 
+ private:
 	//! Subclass iterates over each child element.
 	virtual void do_for_each_child(IN_THREAD_ONLY,
 				       const function<void
-				       (const child_element &e)> &)=0;
+				       (const element &e)> &)=0;
+ public:
+	//! The container's position has been updated.
+
+	virtual void process_updated_position(IN_THREAD_ONLY,
+					      const rectangle &position)=0;
+ protected:
+
+	//! Invokes the container's element function of the same name.
+
+	void current_position_updated(IN_THREAD_ONLY);
 };
 
 LIBCXXW_NAMESPACE_END

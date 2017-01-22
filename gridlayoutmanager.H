@@ -6,7 +6,6 @@
 #define gridlayoutmanager_h
 
 #include "x/w/gridlayoutmanager.H"
-#include "child_elementfwd.H"
 #include "layoutmanager.H"
 #include "metrics_grid_posfwd.H"
 #include "connection_threadfwd.H"
@@ -32,11 +31,13 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 	//
 	// Overridden methods.
 
+	void child_metrics_updated(IN_THREAD_ONLY) override;
+
 	void recalculate(IN_THREAD_ONLY) override;
 
 	void do_for_each_child(IN_THREAD_ONLY,
 			       const function<void
-			       (const child_element &e)> &callback) override;
+			       (const element &e)> &callback) override;
 
 	layoutmanager create_public_object() override;
 
@@ -60,7 +61,7 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 	struct grid_map_value_t {
 
 		//! The element in the grid
-		child_element element;
+		element child_element;
 
 		//! The element's complete position.
 		metrics::grid_pos pos;
@@ -76,10 +77,17 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 	//! manager object, whose destructor invokes needs_recalculation
 	//! as a batched job, which will eventually call recalculate(), that
 	//! picks up the ball and runs with it.
+	//!
+	//! When a child element's metrics have changed, child_metrics_updated
+	//! is set to true. rebuild_elements() returns true if either modified
+	//! or child_metrics_updated is set to true, but it skips rebuilding
+	//! all_elements unless modified is true.
 
 	struct grid_map_info_t {
 
 		bool modified=false;
+
+		bool child_metrics_updated=false;
 		std::map<grid_map_key_t, grid_map_value_t> elements;
 	};
 
@@ -92,7 +100,7 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
  public:
 
 	//! Insert a new grid element.
-	void insert(const child_element &new_element,
+	void insert(const element &new_element,
 		    dim_t x, dim_t y, dim_t width, dim_t height);
 
  private:
@@ -109,6 +117,11 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 
  public:
 	THREAD_DATA_ONLY(grid_elements);
+
+	//! The container's position has been updated.
+
+	void process_updated_position(IN_THREAD_ONLY,
+				      const rectangle &position) override;
 };
 
 LIBCXXW_NAMESPACE_END

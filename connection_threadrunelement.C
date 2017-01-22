@@ -77,9 +77,12 @@ bool connection_threadObj::process_visibility_updated(IN_THREAD_ONLY)
 
 	while (!visibility_updated_thread_only->empty())
 	{
+		auto e=next_lowest_element(*visibility_updated_thread_only);
+
+		LOG_TRACE("update_visibility: " << e->objname()
+			  << "(" << &*e << ")");
 		try {
-			next_lowest_element(*visibility_updated_thread_only)
-				->update_visibility(IN_THREAD);
+			e->update_visibility(IN_THREAD);
 		} CATCH_EXCEPTIONS;
 	}
 	return true;
@@ -109,6 +112,9 @@ bool connection_threadObj::recalculate_containers(IN_THREAD_ONLY)
 		if (p->second.empty())
 			containers_2_recalculate_thread_only->erase(p);
 
+		LOG_TRACE("recalculate_if_needed: " << container->objname()
+			  << "(" << &*container << ")");
+
 		// And invoke it
 
 		try {
@@ -116,9 +122,26 @@ bool connection_threadObj::recalculate_containers(IN_THREAD_ONLY)
 				([&]
 				 (const auto &l)
 				 {
-					 l->check_if_recalculate_needed
-						 (IN_THREAD);
+					 l->recalculate(IN_THREAD);
 				 });
+		} CATCH_EXCEPTIONS;
+	}
+	return true;
+}
+
+bool connection_threadObj::process_element_position_updated(IN_THREAD_ONLY)
+{
+	if (element_position_updated_thread_only->empty())
+		return false;
+
+	while (!element_position_updated_thread_only->empty())
+	{
+		auto e=next_highest_element(*element_position_updated_thread_only);
+
+		LOG_TRACE("element_position_updated: " << e->objname()
+			  << "(" << &*e << ")");
+		try {
+			e->process_updated_position(IN_THREAD);
 		} CATCH_EXCEPTIONS;
 	}
 	return true;
@@ -133,10 +156,13 @@ bool connection_threadObj::redraw_elements(IN_THREAD_ONLY)
 	{
 		auto p=elements_to_redraw_thread_only->begin();
 
-		auto elem=*p;
+		auto e=*p;
 		elements_to_redraw_thread_only->erase(p);
 
-		elem->explicit_redraw(IN_THREAD);
+		LOG_TRACE("explicit_redraw: " << e->objname()
+			  << "(" << &*e << ")");
+
+		e->explicit_redraw(IN_THREAD);
 	}
 
 	return true;

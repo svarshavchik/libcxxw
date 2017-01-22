@@ -7,7 +7,6 @@
 
 #include "x/w/factoryobj.H"
 #include "x/w/gridlayoutmanagerfwd.H"
-#include "child_elementfwd.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -45,7 +44,7 @@ class LIBCXX_HIDDEN gridfactoryObj : public factoryObj {
 	~gridfactoryObj();
 
 	//! Created a new display element for the grid.
-	void created(const child_element &new_element) override;
+	void created(const element &new_element) override;
 };
 
 LIBCXXW_NAMESPACE_END

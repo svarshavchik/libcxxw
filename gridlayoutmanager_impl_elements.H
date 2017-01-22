@@ -7,7 +7,7 @@
 
 #include "gridlayoutmanager.H"
 #include "metrics_grid.H"
-#include "child_element.H"
+#include "element.H"
 
 #include <vector>
 
@@ -24,7 +24,6 @@ class gridlayoutmanagerObj::implObj::elementsObj : virtual public obj {
 
 public:
 
-
 	//! One element in the grid.
 
 	//! calculate_grid_horiz/vert_metrics cares only about
@@ -37,13 +36,13 @@ public:
 
 	struct pos_axis : public metrics::pos_axis {
 
-		child_element element;
+		element child_element;
 
 		pos_axis(const metrics::grid_pos &pos,
 			 const metrics::horizvert &axises,
-			 const child_element &element)
+			 const element &child_element)
 			: metrics::pos_axis({pos, axises}),
-			element(element) {}
+			child_element(child_element) {}
 	};
 
 	//! A cached vector of all elements in the grid.
@@ -65,6 +64,10 @@ public:
 	//! Cached metrics for all rows.
 
 	metrics::grid_metrics_t vert_metrics;
+
+	//! Calculate total horiz_metrics or vert_metrics
+
+	metrics::axis total_metrics(const metrics::grid_metrics_t &metrics);
 
 	//! Recalculate horiz_metrics and vert_metrics
 

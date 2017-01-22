@@ -75,8 +75,21 @@ static void do_add(const char *testname,
 static void do_size(const char *testname,
 		    const std::vector<axis> &axises,
 		    dim_t target_size,
-		    const grid_sizes_t &expected_result)
+		    const std::vector<dim_t> &expected_result_sizes)
 {
+	grid_sizes_t expected_result;
+
+	coord_t p=0;
+	grid_xy xy=0;
+
+	for (const auto &s:expected_result_sizes)
+	{
+		expected_result[xy]={p, s};
+
+		p=(coord_squared_t::value_type)(p+s);
+		++xy;
+	}
+
 	grid_metrics_t m;
 
 	grid_xy c=0;
@@ -99,9 +112,14 @@ static void do_size(const char *testname,
 
 		std::for_each(s.begin(), s.end(),
 			      [&]
-			      (auto v)
+			      (const auto &v)
 			      {
-				      o << sep << v;
+				      o << sep << v.first << ": ("
+					<< std::get<coord_t>(v.second)
+					<< ", "
+					<< std::get<dim_t>(v.second)
+					<< ")";
+
 				      sep=", ";
 			      });
 
@@ -287,8 +305,8 @@ void testgrid()
 
 	do_size("size1",
 		{ {10, 20, 30}, {40, 80, 100} },
-		25,
-		{5, 20});
+		50,
+		{10, 40});
 
 	do_size("size2",
 		{ {10, 20, 30}, {40, 80, 100} },
@@ -347,6 +365,12 @@ void testgrid()
 		300,
 		{30, 130, 140});
 
+	do_size("size11",
+		{
+			{10, 10, 10},
+		},
+		10,
+		{10});
 
 	do_rectmerge("rectmerge1",
 		     { {0, 0, 1, 1}, {1, 0, 1, 1}, {2, 0, 1, 2} },

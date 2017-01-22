@@ -25,10 +25,11 @@ public:
 
 	const ref<containerObj::implObj> container_impl;
 
+private:
 	//! Invoked by factory's methods, after creating a new element.
 
-	virtual void created(const ref<child_elementObj> &)=0;
-
+	virtual void created(const element &)=0;
+public:
 	//! Constructor
 	factoryObj(const ref<containerObj::implObj> &container_impl)
 		LIBCXX_HIDDEN;

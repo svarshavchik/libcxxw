@@ -47,12 +47,14 @@ void connection_threadObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin)
 	element_set_t visibility_updated;
 	elements_to_redraw_set elements_to_redraw;
 	containers_2_recalculate_map containers_2_recalculate;
+	element_set_t element_position_updated;
 
 	window_handlers_thread_only= &window_handlers;
 	destroyed_xids_thread_only= &destroyed_xids;
 	exposed_rectangles_thread_only= &exposed_rectangles;
 	elements_to_redraw_thread_only= &elements_to_redraw;
 	containers_2_recalculate_thread_only= &containers_2_recalculate;
+	element_position_updated_thread_only= &element_position_updated;
 
 	visibility_updated_thread_only= &visibility_updated;
 	disconnect_callback_thread_only=[] {};

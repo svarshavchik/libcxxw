@@ -65,6 +65,19 @@ namespace metrics {
 		{
 			return !operator==(o);
 		}
+
+		//! Update the metrics.
+
+		void set(IN_THREAD_ONLY,
+			 const axis &new_horiz, const axis &new_vert)
+		{
+			if (horiz != new_horiz || vert != new_vert)
+			{
+				horiz=new_horiz;
+				vert=new_vert;
+				horizvert_updated(IN_THREAD);
+			}
+		}
 	};
 }
 

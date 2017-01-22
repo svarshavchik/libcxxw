@@ -56,7 +56,7 @@ main_window screenObj
 ::do_create_mainwindow(const new_layoutmanager &layout_factory,
 		       const function<main_window_creator_t> &f)
 {
-	rectangle dimensions={0, 0, 100, 100};
+	rectangle dimensions={0, 0, 1, 1};
 
 	values_and_mask vm(XCB_CW_EVENT_MASK,
 			   (uint32_t)

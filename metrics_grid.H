@@ -6,12 +6,14 @@
 #define metrics_grid_grid_H
 
 #include <map>
+#include <unordered_map>
 #include <list>
 #include <set>
 #include "metrics_grid_pos.H"
 #include "metrics_grid_xy.H"
 #include "metrics_grid_axisrangefwd.H"
 #include "x/w/metrics/axis.H"
+#include <x/number_hash.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -169,12 +171,10 @@ namespace metrics {
 		return grid_metrics;
 	}
 
-	//! The actual size of a grid's axis.
+	//! The actual size and position along each grid axis
 
-	//! This is a vector whose size is always the same as the number
-	//! of keys in grid_metrics_t.
-
-	typedef std::vector<dim_t> grid_sizes_t;
+	typedef std::unordered_map<grid_xy,
+				   std::tuple<coord_t, dim_t>> grid_sizes_t;
 
 	//! Compute the actual size of each grid axis position.
 

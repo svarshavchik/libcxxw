@@ -13,9 +13,7 @@ elementObj::elementObj(const ref<implObj> &impl)
 {
 }
 
-elementObj::~elementObj()
-{
-}
+elementObj::~elementObj()=default;
 
 screen elementObj::get_screen()
 {

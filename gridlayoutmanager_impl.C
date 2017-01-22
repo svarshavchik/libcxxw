@@ -5,7 +5,8 @@
 #include "libcxxw_config.h"
 #include "gridlayoutmanager.H"
 #include "gridlayoutmanager_impl_elements.H"
-#include "child_element.H"
+#include "element.H"
+#include "container.H"
 #include "metrics_grid_pos.H"
 #include "messages.H"
 
@@ -19,6 +20,11 @@ gridlayoutmanagerObj::implObj
 }
 
 gridlayoutmanagerObj::implObj::~implObj()=default;
+
+void gridlayoutmanagerObj::implObj::child_metrics_updated(IN_THREAD_ONLY)
+{
+	layoutmanagerObj::implObj::child_metrics_updated(IN_THREAD);
+}
 
 void gridlayoutmanagerObj::implObj::recalculate(IN_THREAD_ONLY)
 {
@@ -35,12 +41,10 @@ void gridlayoutmanagerObj::implObj::recalculate(IN_THREAD_ONLY)
 	if (!grid_elements(IN_THREAD)->recalculate_metrics(IN_THREAD,
 							   flag, my_metrics))
 		return;
-}
 
-void gridlayoutmanagerObj::implObj
-::do_for_each_child(IN_THREAD_ONLY,
-		    const function<void (const child_element &e)> &callback)
-{
+	// Even though the current position hasn't changed, we need to
+	// recalculate and reposition our display elements.
+	current_position_updated(IN_THREAD);
 }
 
 layoutmanager gridlayoutmanagerObj::implObj::create_public_object()
@@ -49,7 +53,7 @@ layoutmanager gridlayoutmanagerObj::implObj::create_public_object()
 }
 
 void gridlayoutmanagerObj::implObj
-::insert(const child_element &new_element,
+::insert(const element &new_element,
 	 dim_t x, dim_t y, dim_t width, dim_t height)
 {
 	if (width == 0 || height == 0)
@@ -71,6 +75,7 @@ void gridlayoutmanagerObj::implObj
 
 	if (lock->elements.find(key) != lock->elements.end())
 		throw EXCEPTION(_("Grid element already exists"));
+
 	lock->elements.insert({key, {new_element, grid_pos}});
 	lock->modified=true;
 }

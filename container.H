@@ -121,6 +121,13 @@ public:
 	void inherited_visibility_updated(IN_THREAD_ONLY,
 					  bool flag);
 
+	//! The container's position has been updated.
+
+	//! Invokes the layout manager's process_updated_position() callback,
+	//! then the container's element's notify_updated_position().
+
+	void process_updated_position(IN_THREAD_ONLY);
+
  private:
 	void propagate_inherited_visibility(IN_THREAD_ONLY, bool flag);
 };

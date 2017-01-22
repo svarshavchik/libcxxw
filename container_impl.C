@@ -84,17 +84,34 @@ void containerObj::implObj::propagate_inherited_visibility(IN_THREAD_ONLY,
 			 manager->for_each_child
 				 (IN_THREAD,
 				  [&]
-				  (const child_element &e)
+				  (const element &e)
 				  {
-					  if (!e->data(IN_THREAD)
+					  if (!e->impl->data(IN_THREAD)
 					      .actual_visibility)
 						  return;
 
-					  e->inherited_visibility_updated
+					  e->impl->inherited_visibility_updated
 						  (IN_THREAD,
 						   flag);
 				  });
 		 });
+}
+
+void containerObj::implObj::process_updated_position(IN_THREAD_ONLY)
+{
+	invoke_layoutmanager
+		([&]
+		 (const auto &manager)
+		 {
+			 manager->process_updated_position(IN_THREAD,
+							   get_element_impl()
+							   .data(IN_THREAD)
+							   .current_position);
+		 });
+
+	auto &element_impl=get_element_impl();
+
+	element_impl.elementObj::implObj::process_updated_position(IN_THREAD);
 }
 
 LIBCXXW_NAMESPACE_END

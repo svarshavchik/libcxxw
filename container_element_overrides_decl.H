@@ -6,12 +6,11 @@
 // Declare overrides for methods inherited from elementObj::implObj that
 // are implemented in containerObj::implObj.
 
-
-//! Implement do_draw() in containerObj::implObj
-
 void do_draw(IN_THREAD_ONLY,
 	     const draw_info &di,
 	     const rectangle_set &areas) override;
 
 void inherited_visibility_updated(IN_THREAD_ONLY,
 				  bool flag) override;
+
+void process_updated_position(IN_THREAD_ONLY);

@@ -48,10 +48,23 @@ void connection_threadObj
 
 	LOG_FUNC_SCOPE(runLogger);
 
+	if (process_visibility_updated(IN_THREAD))
+		return;
+
+	if (recalculate_containers(IN_THREAD))
+		return;
+
+	if (process_element_position_updated(IN_THREAD))
+		return;
+
 	// Process all messages on the queue, this takes priority.
 
-	while (!msgqueue->empty())
-		msgqueue.event();
+	if (!msgqueue->empty())
+	{
+		while (!msgqueue->empty())
+			msgqueue.event();
+		return;
+	}
 
 	// Check if the connection errored out, if not, check for
 	// a message.
@@ -88,12 +101,6 @@ void connection_threadObj
 		// Flush anything we have.
 		xcb_flush(info->conn);
 	}
-
-	if (process_visibility_updated(IN_THREAD))
-		return;
-
-	if (recalculate_containers(IN_THREAD))
-		return;
 
 	if (redraw_elements(IN_THREAD))
 		return;

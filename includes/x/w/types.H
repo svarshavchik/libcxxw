@@ -252,6 +252,15 @@ public:
 	typedef dim_squared_t type;
 };
 
+template<>
+class valid_sub_op<coord_squared_t, coord_t> {
+
+public:
+	//! The result is dim_squared_t
+
+	typedef dim_squared_t type;
+};
+
 //! Dimensions can be subtracted from each other.
 
 template<>

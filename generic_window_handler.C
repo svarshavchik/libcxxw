@@ -145,7 +145,7 @@ void generic_windowObj::handlerObj::configure_notify(IN_THREAD_ONLY,
 	cpy.x=0;
 	cpy.y=0;
 
-	current_position_updated(IN_THREAD, cpy);
+	update_current_position(IN_THREAD, cpy);
 }
 
 

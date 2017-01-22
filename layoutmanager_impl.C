@@ -35,24 +35,16 @@ void layoutmanagerObj::implObj::needs_recalculation(const batch_queue &queue)
 		      });
 }
 
-void layoutmanagerObj::implObj::needs_recalculation(IN_THREAD_ONLY)
+void layoutmanagerObj::implObj::child_metrics_updated(IN_THREAD_ONLY)
 {
-	recalculate_needed(IN_THREAD)=true;
-
-	(*IN_THREAD->containers_2_recalculate(IN_THREAD))
-		[container_impl->get_element_impl().nesting_level]
-		.insert(ref<layoutmanagerObj::implObj>(this));
+	needs_recalculation(IN_THREAD);
 }
 
-void layoutmanagerObj::implObj::check_if_recalculate_needed(IN_THREAD_ONLY)
+void layoutmanagerObj::implObj::needs_recalculation(IN_THREAD_ONLY)
 {
-	auto &flag=recalculate_needed(IN_THREAD);
-
-	if (!flag)
-		return;
-
-	flag=false;
-	recalculate(IN_THREAD);
+	(*IN_THREAD->containers_2_recalculate(IN_THREAD))
+		[container_impl->get_element_impl().nesting_level]
+		.insert(container_impl);
 }
 
 rectangle_set layoutmanagerObj::implObj::draw(IN_THREAD_ONLY,
@@ -63,18 +55,18 @@ rectangle_set layoutmanagerObj::implObj::draw(IN_THREAD_ONLY,
 
 	for_each_child(IN_THREAD,
 		       [&]
-		       (const child_element &c)
+		       (const element &c)
 		       {
 			       // Skip invisible elements. Although the
 			       // element's draw() will not do anything,
 			       // we don't want to include its area in the
 			       // drawn set.
 
-			       if (!c->data(IN_THREAD).inherited_visibility)
+			       if (!c->impl->data(IN_THREAD).inherited_visibility)
 				       return;
 
 			       const auto &current_position=
-				       c->data(IN_THREAD).current_position;
+				       c->impl->data(IN_THREAD).current_position;
 			       drawn.insert(current_position);
 
 			       // Create an updated draw_info for this
@@ -117,11 +109,16 @@ rectangle_set layoutmanagerObj::implObj::draw(IN_THREAD_ONLY,
 						 );
 
 			       try {
-				       c->draw(IN_THREAD, child_di,
-					       adjust_drawn_area);
+				       c->impl->draw(IN_THREAD, child_di,
+						     adjust_drawn_area);
 			       } CATCH_EXCEPTIONS;
 		       });
 	return drawn;
+}
+
+void layoutmanagerObj::implObj::current_position_updated(IN_THREAD_ONLY)
+{
+	container_impl->get_element_impl().current_position_updated(IN_THREAD);
 }
 
 LIBCXXW_NAMESPACE_END

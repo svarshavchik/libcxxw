@@ -19,3 +19,8 @@ void ELEMENT_SUBCLASS::do_draw(IN_THREAD_ONLY,
 {
 	containerObj::implObj::do_draw(IN_THREAD, di, areas);
 }
+
+void ELEMENT_SUBCLASS::process_updated_position(IN_THREAD_ONLY)
+{
+	containerObj::implObj::process_updated_position(IN_THREAD);
+}

@@ -11,7 +11,6 @@
 LIBCXXW_NAMESPACE_START
 
 class factoryObj;
-class child_elementObj;
 
 //! An element factory
 

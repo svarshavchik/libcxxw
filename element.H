@@ -130,13 +130,34 @@ class LIBCXX_HIDDEN elementObj::implObj : virtual public obj,
 
 	//! Somebody wishes to inform us of our new current_position
 
-	//! Updates current_position, invokes the element state update
-	//! callbacks.
-	void current_position_updated(IN_THREAD_ONLY,
-				      const rectangle &r);
+	//! If the given rectangle is different than the existing current
+	//! position, update it, and call current_position_updated().
+
+	void update_current_position(IN_THREAD_ONLY,
+				     const rectangle &r);
+
+	//! This element's current_position has been updated.
+
+	//! Unsert this element into the connection thread's
+	//! element_position_updated list.
+
+	void current_position_updated(IN_THREAD_ONLY);
+
+	//! Invoked by the connection thread.
+
+	//! The default implementation invokes notify_updated_position()
+	//! and schedule_redraw().
+	//!
+	//! Overridden by containers, which notify their layout manager,
+	//! before invoking notify_updated_position().
+
+	virtual void process_updated_position(IN_THREAD_ONLY);
+
+	//! Calls invoke_element_state_updates().
+
+	void notify_updated_position(IN_THREAD_ONLY);
 
 	//! Create the current element_state for invoking callbacks.
-
 	element_state create_element_state(IN_THREAD_ONLY,
 					   element_state::state_update_t);
 
@@ -196,7 +217,7 @@ class LIBCXX_HIDDEN elementObj::implObj : virtual public obj,
 	//! visibility_updated() invokes it after it invokes
 	//! inherited_visibility_updated().
 	//!
-	//! The default implementation calls draw(). Overriden by
+	//! The default implementation calls schedule_redraw(). Overriden by
 	//! generic_windowObj::handlerObj to call xcb_map_window() or
 	//! xcb_unmap_window().
 
@@ -215,6 +236,10 @@ class LIBCXX_HIDDEN elementObj::implObj : virtual public obj,
 					const rectangle &initial_viewport)=0;
 
 	class clip_region_set;
+
+	//! Schedule the connection thread to invoke explicit_redraw().
+
+	void schedule_redraw(IN_THREAD_ONLY);
 
 	//! Forcibly redraw this display element
 

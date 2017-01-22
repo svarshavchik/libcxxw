@@ -10,6 +10,7 @@
 #include <functional>
 #include <iterator>
 #include <set>
+#include <limits>
 
 //#define DEBUG
 
@@ -328,9 +329,11 @@ void apply_metrics(grid_metrics_t &m,
 }
 
 static void prorated_size(const grid_metrics_t &m,
+			  const std::vector<grid_xy> &sorted_xy,
+
 			  grid_sizes_t &s,
 
-			  dim_t share,
+			  dim_squared_t share,
 			  dim_squared_t total,
 
 			  bool (*do_apply)(const axis &),
@@ -395,10 +398,22 @@ bool calculate_grid_size(const grid_metrics_t &m,
 			 grid_sizes_t &current_sizes,
 			 dim_t target_size)
 {
-	// Clear, and value-initialize the resulting vector to 0.
+	// Clear, and value-initialize a new current_sizes to 0.
+
+	// At the same time, sort the positions in order.
 
 	grid_sizes_t s;
-	s.resize(m.size());
+
+	std::vector<grid_xy> sorted_xy;
+
+	sorted_xy.reserve(m.size());
+	for (const auto &key:m)
+	{
+		s[key.first]; // Value initialization
+		sorted_xy.push_back(key.first);
+	}
+
+	std::sort(sorted_xy.begin(), sorted_xy.end());
 
 	// Sum total of everyone's minimums
 	dim_squared_t apply_total_minimum=0;
@@ -433,44 +448,39 @@ bool calculate_grid_size(const grid_metrics_t &m,
 		      });
 
 	// We expect that target_size will always be at least as much
-	// as apply_total_minimum. But, just in case, do the right thing.
+	// as apply_total_minimum.
 
-	dim_t apply=target_size;
-
-	if ((dim_t::value_type)apply >
-	    (dim_squared_t::value_type)apply_total_minimum)
-		apply=(dim_squared_t::value_type)apply_total_minimum;
-
-	prorated_size(m, s, apply, apply_total_minimum, &apply_all,
-		      &apply_minimum_size);
+	prorated_size(m, sorted_xy, s, apply_total_minimum, apply_total_minimum,
+		      &apply_all, &apply_minimum_size);
 
 	// After the minimum, apply the preferred amounts.
 
-	target_size -= apply;
+	dim_squared_t remaining=
+		target_size+(dim_t)0 > apply_total_minimum
+		? target_size+dim_t(0)-apply_total_minimum
+		: dim_squared_t(0);
 
-	apply=target_size;
+	dim_squared_t apply=remaining;
 
-	if ((dim_t::value_type)apply >
-	    (dim_squared_t::value_type)apply_total_preferred)
-		apply=(dim_squared_t::value_type)apply_total_preferred;
-	prorated_size(m, s, apply, apply_total_preferred, &apply_all,
+	if (apply > apply_total_preferred)
+		apply=apply_total_preferred;
+	prorated_size(m, sorted_xy, s, apply, apply_total_preferred, &apply_all,
 		      &apply_preferred_size);
 
-	target_size -= apply;
-	apply=target_size;
+	remaining -= apply;
+	apply=remaining;
 
 	// Now, the maximum (excluding infinites)
 
-	if ((dim_t::value_type)apply >
-	    (dim_squared_t::value_type)apply_total_maximum)
-		apply=(dim_squared_t::value_type)apply_total_maximum;
+	if (apply > apply_total_maximum)
+		apply=apply_total_maximum;
 
-	prorated_size(m, s, apply, apply_total_maximum,
+	prorated_size(m, sorted_xy, s, apply, apply_total_maximum,
 		      &apply_noninfinites,
 		      &apply_maximum_size);
 
-	target_size -= apply;
-	apply=target_size;
+	remaining -= apply;
+	apply=remaining;
 
 	// If there are any maximum-infinite columns. "apply" is what's
 	// left after satisfying all others' maximum sizes.
@@ -481,13 +491,33 @@ bool calculate_grid_size(const grid_metrics_t &m,
 	// each maximum axis receives 1/n_infinites of "apply".
 
 	if (n_infinites)
-		prorated_size(m, s, apply, n_infinites,
+		prorated_size(m, sorted_xy, s, apply, n_infinites,
 			      apply_infinites, apply_infinite_size);
+
+	// Now that all dimensions have been computed, calculate the
+	// starting coordinates
+
+	coord_t p=0;
+
+	for (const auto &xy: sorted_xy)
+	{
+		auto &dimpos=s.at(xy);
+
+		std::get<coord_t>(dimpos)=p;
+
+		auto next_p=(coord_squared_t::value_type)
+			(p+std::get<dim_t>(dimpos));
+
+		if (p.overflows(next_p))
+			next_p=std::numeric_limits<coord_t::value_type>::max();
+		p=next_p;
+	}
 
 	if (s == current_sizes)
 		return false;
 
 	current_sizes=s;
+
 	return true;
 }
 
@@ -504,37 +534,38 @@ bool calculate_grid_size(const grid_metrics_t &m,
 // each axis's towards() is applied.
 
 static void prorated_size(const grid_metrics_t &m,
+			  const std::vector<grid_xy> &sorted_xy,
+
 			  grid_sizes_t &s,
 
-			  dim_t share,
+			  dim_squared_t share,
 			  dim_squared_t total,
 
 			  bool (*do_apply)(const axis &),
 			  dim_t (*towards)(const axis &))
 {
+	if (share == 0)
+		return; // Edge case
+
 	dim_squared_t carry_over{0};
 
-	auto p=s.begin();
+	for (const auto &xy: sorted_xy)
+	{
+		const auto &keyvalue=m.at(xy);
 
-	std::for_each(m.begin(), m.end(),
-		      [&]
-		      (const auto &keyvalue)
-		      {
-			      if (do_apply(keyvalue.second))
-			      {
-				      auto numerator=carry_over +
-					      share * towards(keyvalue.second);
+		if (do_apply(keyvalue))
+		{
+			auto numerator=carry_over +
+				share * towards(keyvalue);
 
-				      *p += (dim_squared_t::value_type)
-					      (numerator / total);
+			std::get<dim_t>(s[xy])
+				+= (dim_squared_t::value_type)
+				(numerator / total);
 
-				      carry_over = numerator % total;
-			      }
-			      ++p;
-		      });
+			carry_over = numerator % total;
+		}
+	}
 }
-
-
 
 #if 0
 {

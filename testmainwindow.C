@@ -5,6 +5,8 @@
 #include "x/w/main_window.H"
 #include "x/w/screen.H"
 #include "x/w/connection.H"
+#include "x/w/gridlayoutmanager.H"
+#include "x/w/factory.H"
 #include <x/destroy_callback.H>
 #include <x/mpobj.H>
 #include <x/functionalrefptr.H>
@@ -31,8 +33,19 @@ void testmainwindow()
 
 	auto main_window=LIBCXX_NAMESPACE::w::main_window::base
 		::create([]
-			 (const auto &ignore)
+			 (const auto &main_window)
 			 {
+				 LIBCXX_NAMESPACE::w::gridlayoutmanager m=main_window->get_layoutmanager();
+				 m->insert(0, 0)->create_empty_element
+				 ({
+					 LIBCXX_NAMESPACE::w::metrics::axis
+						 ::horizontal,
+						 main_window->get_screen(),
+						 10, 10, 10 }, {
+					 LIBCXX_NAMESPACE::w::metrics::axis
+						 ::vertical,
+						 main_window->get_screen(),
+						 10, 10, 10 });
 			 });
 
 	guard(main_window->get_screen()->mcguffin());

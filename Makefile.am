@@ -139,10 +139,13 @@ $(call THREADMSGDISPATCHER_GEN,connection_thread.msgs.H, connection_thread.msgs.
 TESTPROGRAMS=\
 	testderivedaxis					\
 	testgrid					\
+	#
+
+INTERACTIVETESTPROGRAMS=\
 	testmainwindow					\
 	#
 
-noinst_PROGRAMS=$(TESTPROGRAMS) genconstants
+noinst_PROGRAMS=$(TESTPROGRAMS) $(INTERACTIVETESTPROGRAMS) genconstants
 
 testderivedaxis_SOURCES=testderivedaxis.C
 testderivedaxis_LDADD=libcxxw.la
@@ -218,6 +221,9 @@ endif
 
 check-am:
 	@for p in $(TESTPROGRAMS); do echo $$p; ./$$p || exit 1; done
+
+test:
+	@for p in $(INTERACTIVETESTPROGRAMS); do echo $$p; ./$$p || exit 1; done
 
 .PHONY: rpm
 

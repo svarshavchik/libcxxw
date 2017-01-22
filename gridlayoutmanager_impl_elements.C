@@ -12,7 +12,14 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(IN_THREAD_ONLY)
 	grid_map_t::lock lock(grid_map);
 
 	if (!lock->modified)
-		return false;
+	{
+		// Still need to recalculate everything if child_metrics_updated
+
+		bool flag=lock->child_metrics_updated;
+
+		lock->child_metrics_updated=false;
+		return flag;
+	}
 
 	std::vector<elementsObj::pos_axis> &all_elements=
 		grid_elements(IN_THREAD)->all_elements;
@@ -38,13 +45,22 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(IN_THREAD_ONLY)
 
 		all_elements.emplace_back
 			(element.second.pos,
-			 metrics::horizvert(element.second.element
+			 metrics::horizvert(element.second.child_element->impl
 					    ->get_horizvert(IN_THREAD)),
-			 element.second.element);
+			 element.second.child_element);
 	}
 	lock->modified=false;
+	lock->child_metrics_updated=false;
 
 	return true;
+}
+
+void gridlayoutmanagerObj::implObj
+::do_for_each_child(IN_THREAD_ONLY,
+		    const function<void (const element &e)> &callback)
+{
+	for (const auto &child:grid_elements(IN_THREAD)->all_elements)
+		callback(child.child_element);
 }
 
 bool gridlayoutmanagerObj::implObj::elementsObj
@@ -65,8 +81,36 @@ bool gridlayoutmanagerObj::implObj::elementsObj
 	horiz_metrics=new_horiz_metrics;
 	vert_metrics=new_vert_metrics;
 
+	my_metrics->set(IN_THREAD,
+			total_metrics(horiz_metrics),
+			total_metrics(vert_metrics));
+
 	return flag;
 }
+
+metrics::axis gridlayoutmanagerObj::implObj::elementsObj
+::total_metrics(const metrics::grid_metrics_t &metrics)
+{
+	metrics::axis total;
+
+	auto b=metrics.begin();
+	auto e=metrics.end();
+
+	if (b != e)
+	{
+		total=b->second;
+		++b;
+	}
+
+	while (b != e)
+	{
+		total=total+b->second;
+		++b;
+	}
+
+	return total;
+}
+
 
 bool gridlayoutmanagerObj::implObj::elementsObj
 ::recalculate_sizes(dim_t target_width,
@@ -74,15 +118,124 @@ bool gridlayoutmanagerObj::implObj::elementsObj
 {
 	bool flag=false;
 
-	if (metrics::calculate_grid_size(horiz_metrics, horiz_sizes,
+	if (metrics::calculate_grid_size(horiz_metrics,
+					 horiz_sizes,
 					 target_width))
 		flag=true;
 
-	if (metrics::calculate_grid_size(vert_metrics, vert_sizes,
+	if (metrics::calculate_grid_size(vert_metrics,
+					 vert_sizes,
 					 target_height))
 		flag=true;
 
 	return flag;
+}
+
+
+void gridlayoutmanagerObj::implObj
+::process_updated_position(IN_THREAD_ONLY,
+			   const rectangle &position)
+{
+	auto &elements=*grid_elements(IN_THREAD);
+
+	// Ignore the return value from recalculate_sizes(). We can get
+	// here when the child metrics have changed. This may not necessarily
+	// result in the sizes of the rows and columns changing. However if
+	// the child element's maximum metrics have changed, the child
+	// element might need to be reposition within its cells, by the
+	// code below.
+	elements.recalculate_sizes(position.width, position.height);
+
+	for (const auto &child:elements.all_elements)
+	{
+		const auto &element=child.child_element;
+
+		auto hv=element->impl->get_horizvert(IN_THREAD);
+
+		// Find the element's first and last row and column.
+
+		const auto &horiz_pos=child.pos->horiz_pos;
+		const auto &vert_pos=child.pos->vert_pos;
+
+		auto h_start=elements.horiz_sizes.find(horiz_pos.start);
+		auto h_end=elements.horiz_sizes.find(horiz_pos.end);
+
+		auto v_start=elements.horiz_sizes.find(vert_pos.start);
+		auto v_end=elements.horiz_sizes.find(vert_pos.end);
+
+		if (h_start == elements.horiz_sizes.end() ||
+		    h_end == elements.horiz_sizes.end() ||
+		    v_start == elements.vert_sizes.end() ||
+		    v_end == elements.vert_sizes.end())
+		{
+			LOG_FATAL("Internal: cannot find grid rows or columns for an element, horiz_pos=" << horiz_pos.start << "-" << horiz_pos.end
+				  << ", vert_pos=" << vert_pos.start << "-" <<vert_pos.end);
+			continue;
+		}
+
+		coord_t x=std::get<coord_t>(h_start->second);
+		coord_t y=std::get<coord_t>(v_start->second);
+
+		// Compute the sum total size of the element's rows and columns
+
+		auto new_width=
+			(std::get<coord_t>(h_end->second)
+			 + std::get<coord_t>(h_end->second)
+			 - x);
+
+		auto new_height=
+			(std::get<coord_t>(v_end->second)
+			 + std::get<coord_t>(v_end->second)
+			 - y);
+
+		if (dim_t::overflows(new_width))
+			new_width=std::numeric_limits<dim_t::value_type>::max();
+
+		if (dim_t::overflows(new_height))
+			new_height=std::numeric_limits<dim_t::value_type>::max();
+
+		// If the total size of the element's rows and columns
+		// exceeds the elements maximum metric, position the
+		// element accordingly. Adjust new_width and new_height,
+		// so the element does not get resized.
+
+		if (hv->horiz.maximum() != dim_t::infinite())
+		{
+			auto max_width=hv->horiz.maximum()+dim_t(0);
+
+			if (max_width < new_width)
+			{
+				auto padding=(new_width - max_width) / 2;
+
+				new_width=max_width;
+
+				x=x.truncate(x+padding);
+			}
+		}
+
+		if (hv->vert.maximum() != dim_t::infinite())
+		{
+			auto max_height=hv->vert.maximum()+dim_t(0);
+
+			if (max_height < new_height)
+			{
+				auto padding=
+					(new_height - max_height) / 2;
+
+				new_height=max_height;
+				y=y.truncate(y+padding);
+			}
+
+		}
+
+		element->impl->update_current_position
+			(IN_THREAD,
+			 {
+				 x, y,
+					 dim_t::truncate(new_width),
+					 dim_t::truncate(new_height),
+			 });
+	}
 }
 
 LIBCXXW_NAMESPACE_END

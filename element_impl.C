@@ -69,6 +69,7 @@ void elementObj::implObj::request_visibility(bool flag)
 
 void elementObj::implObj::update_visibility(IN_THREAD_ONLY)
 {
+
 	// This is invoked from the connection thread, when it processes the
 	// IN_THREAD->visibility_updated set.
 	//
@@ -150,8 +151,13 @@ void elementObj::implObj::draw_after_visibility_updated(IN_THREAD_ONLY,
 	// generic_window_handler overrides this, and maps or unmaps the
 	// window. This is what this action means for actual windows.
 	//
-	// Otherwise we call forced_redraw().
-	explicit_redraw(IN_THREAD);
+	// Otherwise we call schedule_redraw().
+	schedule_redraw(IN_THREAD);
+}
+
+void elementObj::implObj::schedule_redraw(IN_THREAD_ONLY)
+{
+	IN_THREAD->elements_to_redraw(IN_THREAD)->insert(elementimpl(this));
 }
 
 void elementObj::implObj::explicit_redraw(IN_THREAD_ONLY)
@@ -194,8 +200,8 @@ ref<obj> elementObj::implObj
 	return mcguffin;
 }
 
-void elementObj::implObj::current_position_updated(IN_THREAD_ONLY,
-						   const rectangle &r)
+void elementObj::implObj::update_current_position(IN_THREAD_ONLY,
+						  const rectangle &r)
 {
 	auto &current_data=data(IN_THREAD);
 
@@ -203,6 +209,25 @@ void elementObj::implObj::current_position_updated(IN_THREAD_ONLY,
 		return;
 
 	current_data.current_position=r;
+
+	current_position_updated(IN_THREAD);
+}
+
+void elementObj::implObj::current_position_updated(IN_THREAD_ONLY)
+{
+	IN_THREAD->insert_element_set(*IN_THREAD->element_position_updated
+				      (IN_THREAD),
+				      elementimpl(this));
+}
+
+void elementObj::implObj::process_updated_position(IN_THREAD_ONLY)
+{
+	schedule_redraw(IN_THREAD);
+	notify_updated_position(IN_THREAD);
+}
+
+void elementObj::implObj::notify_updated_position(IN_THREAD_ONLY)
+{
 	invoke_element_state_updates(IN_THREAD,
 				     element_state::current_state);
 }

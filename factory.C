@@ -23,7 +23,7 @@ element factoryObj::create_empty_element(const metrics::axis &horiz_axis,
 
 	auto e=element::create(ce);
 
-	created(ce);
+	created(e);
 
 	return e;
 }
