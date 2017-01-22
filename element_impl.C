@@ -61,12 +61,21 @@ void elementObj::implObj::request_visibility(bool flag)
 		 (IN_THREAD_ONLY)
 		 {
 			 me->data(IN_THREAD).requested_visibility=flag;
-			 IN_THREAD->visibility_updated(IN_THREAD)->insert(me);
+			 IN_THREAD->insert_element_set
+				 (*IN_THREAD->visibility_updated(IN_THREAD),
+				  me);
 		 });
 }
 
 void elementObj::implObj::update_visibility(IN_THREAD_ONLY)
 {
+	// This is invoked from the connection thread, when it processes the
+	// IN_THREAD->visibility_updated set.
+	//
+	// Do nothing if request_visibility() matches actual_visibility.
+	// Otherwise set actual_visibility to requested_visibility and call
+	// visibility_updated().
+
 	if (data(IN_THREAD).actual_visibility ==
 	    data(IN_THREAD).requested_visibility)
 		return;
@@ -79,6 +88,15 @@ void elementObj::implObj::update_visibility(IN_THREAD_ONLY)
 
 void elementObj::implObj::visibility_updated(IN_THREAD_ONLY, bool flag)
 {
+	// This is called when this element's actual visibility changes.
+	//
+	// Note that child_element overrides it, and checks if the parent
+	// container's inherited_visibility is false, and then overrides 'flag'
+	// to false in that case.
+	//
+	// If the visibility matches the current inherited_visibility, do
+	// nothing.
+
 	if (data(IN_THREAD).inherited_visibility == flag)
 		return;
 
@@ -89,18 +107,31 @@ void elementObj::implObj::visibility_updated(IN_THREAD_ONLY, bool flag)
 void elementObj::implObj::inherited_visibility_updated(IN_THREAD_ONLY,
 						       bool flag)
 {
+	// This is called when the element's inherited_visibility, the
+	// "real" visibility, after taking into consideration the parent
+	// display element's visibility, changes.
+	//
+	// This calls do_inherited_visibility_updated(). container_impl
+	// overrides this, and also takes care of whatever needs to be done
+	// with the child elements, in addition to calling
+	// do_inherited_visibility_updated(), too.
 	do_inherited_visibility_updated(IN_THREAD, flag);
 }
 
 void elementObj::implObj::do_inherited_visibility_updated(IN_THREAD_ONLY,
 							  bool flag)
 {
+	// Officially record the fact that this element is now visible, or
+	// not visible, for real.
+	//
 	// Notify handlers that we're about to show or hide this element.
 
 	invoke_element_state_updates(IN_THREAD,
 				     flag
 				     ? element_state::before_showing
 				     : element_state::before_hiding);
+
+	// Offically update this element's "real" visibility.
 	data(IN_THREAD).inherited_visibility=flag;
 
 	// Notify handlers that we just shown or hidden this element.
@@ -114,6 +145,19 @@ void elementObj::implObj::do_inherited_visibility_updated(IN_THREAD_ONLY,
 void elementObj::implObj::draw_after_visibility_updated(IN_THREAD_ONLY,
 							bool flag)
 {
+	// Display the contents of this element.
+	//
+	// generic_window_handler overrides this, and maps or unmaps the
+	// window. This is what this action means for actual windows.
+	//
+	// Otherwise we call forced_redraw().
+	explicit_redraw(IN_THREAD);
+}
+
+void elementObj::implObj::explicit_redraw(IN_THREAD_ONLY)
+{
+	// Invoke draw() to refresh the contents of this disiplay element.
+
 	auto initial_viewport=data(IN_THREAD).current_position;
 
 	auto di=get_draw_info(IN_THREAD, initial_viewport);
@@ -209,8 +253,6 @@ void elementObj::implObj::draw(IN_THREAD_ONLY,
 		do_draw(IN_THREAD, di, areas);
 		return;
 	}
-
-	clear_to_color(IN_THREAD, di, areas);
 }
 
 void elementObj::implObj::do_draw(IN_THREAD_ONLY,

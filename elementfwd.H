@@ -16,20 +16,6 @@ typedef ref<elementObj::implObj> elementimpl;
 
 typedef ptr<elementObj::implObj> elementimplptr;
 
-// Comparison function implementing strict weak ordering of elements by
-// their nesting level. Elements with the same nesting level are ordered
-// by their pointers.
-
-class elements_by_nesting_level {
-
-public:
-
-	elements_by_nesting_level()=default;
-	~elements_by_nesting_level()=default;
-
-	bool operator()(const elementimpl &a, const elementimpl &b) const;
-};
-
 LIBCXXW_NAMESPACE_END
 
 #endif

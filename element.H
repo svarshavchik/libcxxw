@@ -216,9 +216,13 @@ class LIBCXX_HIDDEN elementObj::implObj : virtual public obj,
 
 	class clip_region_set;
 
+	//! Forcibly redraw this display element
+
+	void explicit_redraw(IN_THREAD_ONLY);
+
 	//! Draw the display element.
 
-	//! If the display element is not visible, invokes clear_to_color().
+	//! If the display element is not visible, does nothing.
 	//!
 	//! Otherwise calls do_draw().
 	void draw(IN_THREAD_ONLY,
@@ -253,18 +257,6 @@ class LIBCXX_HIDDEN elementObj::implObj : virtual public obj,
 			    const draw_info &di,
 			    const rectangle_set &areas);
 };
-
-inline bool elements_by_nesting_level::operator()(const elementimpl &a,
-						  const elementimpl &b) const
-{
-	if (a->nesting_level < b->nesting_level)
-		return true;
-
-	if (b->nesting_level < a->nesting_level)
-		return false;
-
-	return a < b;
-}
 
 LIBCXXW_NAMESPACE_END
 

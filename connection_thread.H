@@ -16,9 +16,11 @@
 #include <x/functional.H>
 #include <x/mpobj.H>
 #include <x/weakptr.H>
+#include <x/refptr_hash.H>
 #include <functional>
 #include <poll.h>
-#include <map>
+#include <unordered_map>
+#include <unordered_set>
 #include <set>
 
 LIBCXXW_NAMESPACE_START
@@ -57,23 +59,32 @@ class LIBCXX_HIDDEN connection_threadObj
 
 	void run_event(const xcb_generic_event_t *event);
 
+	///////////////////////////////////////////////////////////////////
+	//
+	// These objects are constructed on the connection thread's stack,
+	// and are accessible IN_THREAD_ONLY
+
 	// Define a set of elements, ordered by their nesting level.
 
-	typedef std::set<elementimpl, elements_by_nesting_level> element_set_t;
+	typedef std::map<size_t, std::unordered_set<elementimpl>> element_set_t;
+
+	static void insert_element_set(element_set_t &s,
+				       const elementimpl &i);
+
+	static elementimpl next_lowest_element(element_set_t &s);
+	static elementimpl next_highest_element(element_set_t &s);
 
 	// Here's a list of elements that have requested their visibility to
 	// be changed.
 
 	element_set_t *visibility_updated_thread_only;
 
-	///////////////////////////////////////////////////////////////////
-	//
-	// These objects are constructed on the connection thread's stack,
-	// and are accessible IN_THREAD_ONLY
+	bool process_visibility_updated(IN_THREAD_ONLY);
 
 	// Active window handlers.
 
-	std::map<xcb_window_t, ref<window_handlerObj>> *window_handlers_thread_only;
+	std::unordered_map<xcb_window_t,
+			   ref<window_handlerObj>> *window_handlers_thread_only;
 
 	// Destroyed xids, waiting until the corresponding
 	// "destroyed" message is received from the display server.
@@ -85,7 +96,7 @@ class LIBCXX_HIDDEN connection_threadObj
 	// is destroyed it goes here, until the destroyed message is
 	// received.
 
-	std::map<uint32_t, ref<xidObj>> *destroyed_xids_thread_only;
+	std::unordered_map<uint32_t, ref<xidObj>> *destroyed_xids_thread_only;
 
 	// Collected Expose event rectangles. They get collected until
 	// a received expose event indicates count=0, then the exposure
@@ -93,8 +104,19 @@ class LIBCXX_HIDDEN connection_threadObj
 
 	rectangle_set *exposed_rectangles_thread_only;
 
+	// Elements that need to be redrawn
+
+	typedef std::unordered_set<ref<elementObj::implObj>
+				   > elements_to_redraw_set;
+
+	elements_to_redraw_set *elements_to_redraw_thread_only;
+
+	bool redraw_elements(IN_THREAD_ONLY);
+
 	// Which containers need to be recalculated
 	containers_2_recalculate_map *containers_2_recalculate_thread_only;
+
+	bool recalculate_containers(IN_THREAD_ONLY);
 
 	// on_disconnect() callback
 
@@ -107,6 +129,7 @@ class LIBCXX_HIDDEN connection_threadObj
 	THREAD_DATA_ONLY(window_handlers);
 	THREAD_DATA_ONLY(destroyed_xids);
 	THREAD_DATA_ONLY(visibility_updated);
+	THREAD_DATA_ONLY(elements_to_redraw);
 	THREAD_DATA_ONLY(containers_2_recalculate);
 
 #include "connection_thread.msgs.H"

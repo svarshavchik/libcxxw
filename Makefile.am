@@ -38,6 +38,7 @@ libcxxw_la_SOURCES=\
 	connection_threadfwd.H			    \
 	connection_threadevent.C		    \
 	connection_threadrun.C			    \
+	connection_threadrunelement.C		    \
 	container.C				    \
 	container.H				    \
 	container_element_overrides_decl.H	    \

@@ -5,12 +5,8 @@
 #include "libcxxw_config.h"
 #include "connection_info.H"
 #include "connection_thread.H"
-#include "element.H"
-#include "container.H"
-#include "layoutmanager.H"
 #include "returned_pointer.H"
 #include "catch_exceptions.H"
-#include "picture.H"
 #include <x/sysexception.H>
 
 LIBCXXW_NAMESPACE_START
@@ -48,7 +44,7 @@ void connection_threadObj
 		struct pollfd *topoll,
 		size_t &npoll)
 {
-	connection_thread me(this);
+	connection_thread thread_(this);
 
 	LOG_FUNC_SCOPE(runLogger);
 
@@ -93,57 +89,15 @@ void connection_threadObj
 		xcb_flush(info->conn);
 	}
 
-	if (!visibility_updated_thread_only->empty())
-	{
-		// Some display element changed their visibility. Invoke
-		// their update_visibility() methods.
-		while (!visibility_updated_thread_only->empty())
-		{
-			auto iter=visibility_updated_thread_only->begin();
-
-			auto element=*iter;
-
-			visibility_updated_thread_only->erase(iter);
-
-			element->update_visibility(me);
-		}
+	if (process_visibility_updated(IN_THREAD))
 		return;
-	}
 
-	if (!containers_2_recalculate_thread_only->empty())
-	{
-		// Get the next container to be recalculated, with the
-		// highest nesting level.
-
-		while (!containers_2_recalculate_thread_only->empty())
-		{
-			auto p=--containers_2_recalculate_thread_only->end();
-
-			auto last=--p->second.end();
-
-			auto container=*last;
-
-			// Now that we have it, remove it from
-			// containers_2_recalculate
-
-			p->second.erase(last);
-
-			if (p->second.empty())
-				containers_2_recalculate_thread_only->erase(p);
-
-			// And invoke it
-
-			try {
-				container->invoke_layoutmanager
-					([&]
-					 (const auto &l)
-					 {
-						 l->check_if_recalculate_needed(me);
-					 });
-			} CATCH_EXCEPTIONS;
-		}
+	if (recalculate_containers(IN_THREAD))
 		return;
-	}
+
+	if (redraw_elements(IN_THREAD))
+		return;
+
 	// Ok, no more work to do, and we were asked to politely stop.
 	if (stop_received)
 	{

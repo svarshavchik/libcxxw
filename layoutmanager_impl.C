@@ -65,6 +65,14 @@ rectangle_set layoutmanagerObj::implObj::draw(IN_THREAD_ONLY,
 		       [&]
 		       (const child_element &c)
 		       {
+			       // Skip invisible elements. Although the
+			       // element's draw() will not do anything,
+			       // we don't want to include its area in the
+			       // drawn set.
+
+			       if (!c->data(IN_THREAD).inherited_visibility)
+				       return;
+
 			       const auto &current_position=
 				       c->data(IN_THREAD).current_position;
 			       drawn.insert(current_position);
