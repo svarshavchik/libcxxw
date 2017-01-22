@@ -391,13 +391,13 @@ static dim_t apply_infinite_size(const axis &a)
 	return 1;
 }
 
-void calculate_grid_size(const grid_metrics_t &m,
-			 grid_sizes_t &s,
+bool calculate_grid_size(const grid_metrics_t &m,
+			 grid_sizes_t &current_sizes,
 			 dim_t target_size)
 {
 	// Clear, and value-initialize the resulting vector to 0.
 
-	s.clear();
+	grid_sizes_t s;
 	s.resize(m.size());
 
 	// Sum total of everyone's minimums
@@ -483,6 +483,12 @@ void calculate_grid_size(const grid_metrics_t &m,
 	if (n_infinites)
 		prorated_size(m, s, apply, n_infinites,
 			      apply_infinites, apply_infinite_size);
+
+	if (s == current_sizes)
+		return false;
+
+	current_sizes=s;
+	return true;
 }
 
 // Ok, we are about to distribute 'share' of actual size to grid_sizes_t,

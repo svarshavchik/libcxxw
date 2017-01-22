@@ -76,6 +76,19 @@ public:
 	bool recalculate_metrics(IN_THREAD_ONLY,
 				 bool flag,
 				 const metrics::horizvert &my_metrics);
+
+	//! Cached sizes for all columns
+
+	metrics::grid_sizes_t horiz_sizes;
+
+	//! Cached sizes for all rows
+
+	metrics::grid_sizes_t vert_sizes;
+
+	//! Recalculate horiz_sizes and vert_sizes
+
+	bool recalculate_sizes(dim_t target_width,
+			       dim_t target_height);
 };
 
 LIBCXXW_NAMESPACE_END

@@ -68,4 +68,21 @@ bool gridlayoutmanagerObj::implObj::elementsObj
 	return flag;
 }
 
+bool gridlayoutmanagerObj::implObj::elementsObj
+::recalculate_sizes(dim_t target_width,
+		    dim_t target_height)
+{
+	bool flag=false;
+
+	if (metrics::calculate_grid_size(horiz_metrics, horiz_sizes,
+					 target_width))
+		flag=true;
+
+	if (metrics::calculate_grid_size(vert_metrics, vert_sizes,
+					 target_height))
+		flag=true;
+
+	return flag;
+}
+
 LIBCXXW_NAMESPACE_END

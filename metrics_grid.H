@@ -180,8 +180,10 @@ namespace metrics {
 
 	//! Given the target size of a grid's axis, parcel out this size
 	//! to each grid position on the axis.
-
-	void calculate_grid_size(const grid_metrics_t &m,
+	//!
+	//! s are the current sizes. Returns true if the current sizes have
+	//! changed.
+	bool calculate_grid_size(const grid_metrics_t &m,
 				 grid_sizes_t &s,
 				 dim_t target_size) LIBCXX_HIDDEN;
 }
