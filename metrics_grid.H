@@ -9,7 +9,6 @@
 #include <list>
 #include <set>
 #include "metrics_grid_pos.H"
-#include "metrics_horizvertobj.H"
 #include "metrics_grid_xy.H"
 #include "metrics_grid_axisrangefwd.H"
 #include "x/w/metrics/axis.H"
@@ -19,9 +18,22 @@ LIBCXXW_NAMESPACE_START
 //////////////////////////////////////////////////////////////////////////
 //
 // Defines calculate_grid_horiz_metrics() and calculate_grid_vert_metrics()
-// for effecting grid calcuations.
+// for effecting grid calculations.
 
 namespace metrics {
+
+	//! Data for calculations
+
+	//! calculate_grid_horiz_metrics() and calculate_grid_vert_metrics()
+	//! process a container of the following values:
+
+	struct pos_axis {
+		//! Horizontal and vertical position of this display element
+		grid_pos pos;
+
+		//! Horizontal and vertical metrics of this display element.
+		horizvert axises;
+	};
 
 	//! Computed horizontal and vertical grid metrics.
 
@@ -48,15 +60,15 @@ namespace metrics {
 		const struct grid_major *minor;
 
 		//! Convenient macro
-		inline grid_axisrange &get_axisrange(const grid_pos &p) const
+		inline grid_axisrange &get_axisrange(const pos_axis &p) const
 		{
-			return (*p).*grid_pos_member;
+			return (*p.pos).*grid_pos_member;
 		}
 
 		//! Convenient macro
-		inline axis &get_axis(const grid_pos &p) const
+		inline axis &get_axis(const pos_axis &p) const
 		{
-			return (*p->horizvert_metrics).*axis_pos_member;
+			return (*p.axises).*axis_pos_member;
 		}
 	};
 
@@ -85,7 +97,7 @@ namespace metrics {
 
 	//! Calculate horizontal metrics.
 
-	//! This is called with a container of grid_pos objects.
+	//! This is called with a container of pos_axis objects.
 
 	template<typename GRID_T> grid_metrics_t
 	calculate_grid_horiz_metrics(GRID_T &&g)
@@ -95,7 +107,7 @@ namespace metrics {
 
 	//! Calculate vertical metrics.
 
-	//! This is called with a container of grid_pos objects.
+	//! This is called with a container of pos_axis objects.
 
 	template<typename GRID_T> grid_metrics_t
 	calculate_grid_vert_metrics(GRID_T &&g)
@@ -111,7 +123,7 @@ namespace metrics {
 	{
 		grid_metrics_t grid_metrics;
 
-		typedef std::map<grid_xy, std::list<grid_pos>
+		typedef std::map<grid_xy, std::list<pos_axis>
 				 > grid_by_range_map;
 
 		// Sort grid elements by their axis's range.

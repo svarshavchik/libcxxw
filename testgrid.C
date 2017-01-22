@@ -32,15 +32,15 @@ static void do_test(const char *testname,
 		    const std::vector<testgrid_info> &test_info,
 		    const grid_metrics_t &res)
 {
-	std::list<grid_pos> g;
+	std::list<pos_axis> g;
 
 	for (const auto &info: test_info)
 	{
 		myhorizvert metrics=myhorizvert::create(info.min, info.pref, info.max);
 
-		g.push_back(grid_pos::create(grid_axisrange{info.x1, info.x2},
-					     grid_axisrange{info.y1, info.y2},
-					     metrics));
+		g.push_back({grid_pos::create(grid_axisrange{info.x1, info.x2},
+					      grid_axisrange{info.y1, info.y2}),
+					metrics});
 	}
 
 	auto metrics=calculate_grid_horiz_metrics(g);
