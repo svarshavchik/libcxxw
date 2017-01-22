@@ -25,6 +25,16 @@ void gridlayoutmanagerObj::implObj::recalculate(IN_THREAD_ONLY)
 	// Not all recalculation is the result of inserting or removing
 	// elements. rebuild_elements() will do its work only if needed.
 	bool flag=rebuild_elements(IN_THREAD);
+
+	// recalculate_metrics would want to update the container's own
+	// metrics, as the result of the recalculation.
+
+	auto my_metrics=metrics::horizvert(container_impl->get_element_impl()
+					   .get_horizvert(IN_THREAD));
+
+	if (!grid_elements(IN_THREAD)->recalculate_metrics(IN_THREAD,
+							   flag, my_metrics))
+		return;
 }
 
 void gridlayoutmanagerObj::implObj

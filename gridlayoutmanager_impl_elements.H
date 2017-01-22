@@ -53,6 +53,29 @@ public:
 	elementsObj()=default;
 
 	~elementsObj()=default;
+
+	/////////////////////////////////////////////////////////////////////
+	//
+	// Metrics calculation data.
+
+	//! Cached metrics for all columns.
+
+	metrics::grid_metrics_t horiz_metrics;
+
+	//! Cached metrics for all rows.
+
+	metrics::grid_metrics_t vert_metrics;
+
+	//! Recalculate horiz_metrics and vert_metrics
+
+	//! The bool parameter specifies whether the recalculation was
+	//! triggered by addition or removal of elements from the grid.
+	//!
+	//! This saves some work.
+
+	bool recalculate_metrics(IN_THREAD_ONLY,
+				 bool flag,
+				 const metrics::horizvert &my_metrics);
 };
 
 LIBCXXW_NAMESPACE_END

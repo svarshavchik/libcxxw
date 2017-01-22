@@ -47,4 +47,25 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(IN_THREAD_ONLY)
 	return true;
 }
 
+bool gridlayoutmanagerObj::implObj::elementsObj
+::recalculate_metrics(IN_THREAD_ONLY,
+		      bool flag,
+		      const metrics::horizvert &my_metrics)
+{
+	auto new_horiz_metrics=
+		metrics::calculate_grid_horiz_metrics(all_elements);
+
+	auto new_vert_metrics=
+		metrics::calculate_grid_vert_metrics(all_elements);
+
+	if (!flag && (horiz_metrics != new_horiz_metrics ||
+		      vert_metrics != new_vert_metrics))
+		flag=true;
+
+	horiz_metrics=new_horiz_metrics;
+	vert_metrics=new_vert_metrics;
+
+	return flag;
+}
+
 LIBCXXW_NAMESPACE_END
