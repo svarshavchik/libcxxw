@@ -24,3 +24,8 @@ void ELEMENT_SUBCLASS::process_updated_position(IN_THREAD_ONLY)
 {
 	containerObj::implObj::process_updated_position(IN_THREAD);
 }
+
+void ELEMENT_SUBCLASS::request_visibility_recursive(IN_THREAD_ONLY, bool flag)
+{
+	containerObj::implObj::request_visibility_recursive(IN_THREAD, flag);
+}

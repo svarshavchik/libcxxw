@@ -7,6 +7,7 @@
 
 #include "x/w/rectangle.H"
 #include "x/w/screenfwd.H"
+#include "x/w/picturefwd.H"
 #include "x/w/generic_windowobj.H"
 #include "x/w/element_state.H"
 #include "connection_threadfwd.H"
@@ -86,6 +87,16 @@ class LIBCXX_HIDDEN elementObj::implObj : virtual public obj,
 
 	//! Return my window
 	virtual const generic_windowObj::handlerObj &get_window_handler() const=0;
+
+	//! Use parent display element's background color.
+
+	virtual void remove_background_color(IN_THREAD_ONLY)=0;
+
+	//! Use its own background color.
+
+	virtual void set_background_color(IN_THREAD_ONLY,
+					  const const_picture &)=0;
+
 	//! Return the element's screen
 	screen get_screen();
 
@@ -131,7 +142,8 @@ class LIBCXX_HIDDEN elementObj::implObj : virtual public obj,
 	//! Somebody wishes to inform us of our new current_position
 
 	//! If the given rectangle is different than the existing current
-	//! position, update it, and call current_position_updated().
+	//! position, update it, and call notify_updated_position()
+	//! and current_position_updated().
 
 	void update_current_position(IN_THREAD_ONLY,
 				     const rectangle &r);
@@ -145,8 +157,7 @@ class LIBCXX_HIDDEN elementObj::implObj : virtual public obj,
 
 	//! Invoked by the connection thread.
 
-	//! The default implementation invokes notify_updated_position()
-	//! and schedule_redraw().
+	//! The default implementation invokes schedule_redraw().
 	//!
 	//! Overridden by containers, which notify their layout manager,
 	//! before invoking notify_updated_position().
@@ -172,6 +183,28 @@ class LIBCXX_HIDDEN elementObj::implObj : virtual public obj,
 	//! show() or hide() this display element.
 
 	void request_visibility(bool flag);
+
+	//! show() or hide() this display element.
+
+	//! Executed in the connection thread.
+	//!
+	//! Overridden in generic_window_handler(). The first time a top
+	//! level window is made visible, it gets resized to its preferred
+	//! width, first.
+
+	virtual void request_visibility(IN_THREAD_ONLY, bool flag);
+
+	//! Recursive show() or hide().
+
+	void request_visibility_recursive(bool flag);
+
+	//! Recursive show() or hide().
+
+	//! Executed in the connection thread.
+	//! The default implementation invokes request_visibility().
+	//! Overridden by the container implementation object.
+
+	virtual void request_visibility_recursive(IN_THREAD_ONLY, bool flag);
 
 	//! Executed in the connection thread.
 
@@ -212,14 +245,26 @@ class LIBCXX_HIDDEN elementObj::implObj : virtual public obj,
 	void do_inherited_visibility_updated(IN_THREAD_ONLY,
 					     bool flag);
 
+	//! Actually set the inherited visibility flag, and I do really mean it.
+
+	//! do_inherited_visibility_updated() invokes set_inherited_visibility()
+	//! after invoking the before_showing/hiding callbacks, and before
+	//! invoking the after_showing/hiding callbacks.
+	//!
+	//! The default implementation sets data.inherited_visibility.
+	//!
+	//! Overridden in generic_window_handler to also invoke
+	//! xcb_map_window or xcb_unmap_window.
+	virtual void set_inherited_visibility(IN_THREAD_ONLY, bool flag);
+
 	//! Redraw this display element, after showing or hiding it.
 
 	//! visibility_updated() invokes it after it invokes
 	//! inherited_visibility_updated().
 	//!
 	//! The default implementation calls schedule_redraw(). Overriden by
-	//! generic_windowObj::handlerObj to call xcb_map_window() or
-	//! xcb_unmap_window().
+	//! generic_windowObj::handlerObj to do nothing. Top level windows are
+	//! redrawn by expose events.
 
 	virtual void draw_after_visibility_updated(IN_THREAD_ONLY,
 						   bool flag);
@@ -237,11 +282,28 @@ class LIBCXX_HIDDEN elementObj::implObj : virtual public obj,
 
 	class clip_region_set;
 
+	//! Prepare draw_info before draw() gets called.
+
+	//! The default implementation does nothing. child_elementObj
+	//! overrides and sets the display element's custom background color,
+	//! if any.
+
+	virtual void prepare_draw_info(IN_THREAD_ONLY,
+				       draw_info &);
+
+	//! If this display element is visible, call schedule_redraw().
+
+	void schedule_redraw_if_visible(IN_THREAD_ONLY);
+
 	//! Schedule the connection thread to invoke explicit_redraw().
 
 	void schedule_redraw(IN_THREAD_ONLY);
 
 	//! Forcibly redraw this display element
+
+	//! If this display element is not visible, calls clear_to_color().
+	//! Otherwise calls draw() (which then has to call do_draw(), because
+	//! the element is visible).
 
 	void explicit_redraw(IN_THREAD_ONLY);
 

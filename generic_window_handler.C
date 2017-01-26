@@ -11,7 +11,8 @@
 #include "layoutmanager.H"
 #include "screen.H"
 #include "xid_t.H"
-
+#include "element_screen.H"
+#include "values_and_mask.H"
 #include <xcb/xcb_icccm.h>
 LIBCXXW_NAMESPACE_START
 
@@ -26,6 +27,11 @@ static rectangle element_position(const rectangle &r)
 	cpy.x=0;
 	cpy.y=0;
 	return cpy;
+}
+
+static const_picture default_background_color(const screen &s)
+{
+	return s->create_solid_color_picture(rgb(0xCCCC, 0xCCCC, 0xCCCC));
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -57,10 +63,8 @@ generic_windowObj::handlerObj
 				   .events_and_mask.m.at(XCB_CW_EVENT_MASK)),
 	current_position_thread_only(params.window_handler_params
 				     .initial_position),
-	background_color_thread_only(params.window_handler_params
-				     .screenref
-				     ->create_solid_color_picture
-				     (rgb(0xCCCC, 0xCCCC, 0xCCCC)))
+	background_color_thread_only(default_background_color
+				     (params.window_handler_params.screenref))
 {
 }
 
@@ -113,10 +117,88 @@ draw_info generic_windowObj::handlerObj
 void generic_windowObj::handlerObj
 ::draw_after_visibility_updated(IN_THREAD_ONLY, bool flag)
 {
+}
+
+void generic_windowObj::handlerObj
+::set_inherited_visibility(IN_THREAD_ONLY, bool flag)
+{
 	if (flag)
 		xcb_map_window(IN_THREAD->info->conn, id());
 	else
 		xcb_unmap_window(IN_THREAD->info->conn, id());
+
+	elementObj::implObj::set_inherited_visibility(IN_THREAD, flag);
+}
+
+void generic_windowObj::handlerObj::request_visibility(IN_THREAD_ONLY,
+						       bool flag)
+{
+	if (!flag || preferred_dimensions_set(IN_THREAD))
+	{
+		elementObj::implObj::request_visibility(IN_THREAD, flag);
+		return;
+	}
+
+	// Don't do this immediately. Schedule a thread job to do this, after
+	// everything shakes down.
+
+	IN_THREAD->run_as
+		(RUN_AS,
+		 [me=ref<generic_windowObj::handlerObj>(this)]
+		 (IN_THREAD_ONLY)
+		 {
+			 me->preferred_dimensions_set(IN_THREAD)=true;
+
+			 values_and_mask configure_window_vals
+				 (XCB_CONFIG_WINDOW_WIDTH,
+				  (dim_t::value_type)
+				  me->preferred_width(IN_THREAD),
+				  XCB_CONFIG_WINDOW_HEIGHT,
+				  (dim_t::value_type)
+				  me->preferred_height(IN_THREAD))
+				 ;
+
+			 xcb_configure_window(IN_THREAD->info->conn, me->id(),
+					      configure_window_vals.mask(),
+					      configure_window_vals.values()
+					      .data());
+
+			 // Also simulate a configure_notify(), so that the
+			 // display elements get arranged accordingly right
+			 // away. We don't know when we'll get back the
+			 // ConfigureNotify message from the display server.
+
+			 rectangle r{0, 0, me->preferred_width(IN_THREAD),
+					 me->preferred_height(IN_THREAD)};
+
+			 me->configure_notify(IN_THREAD, r);
+
+			 // Ok, need to wait for the reconfiguration to shake
+			 // itself out too, so schedule another job to finally
+			 // nail this coffin shut.
+
+			 IN_THREAD->run_as
+				 (RUN_AS,
+				  [me]
+				  (IN_THREAD_ONLY)
+				  {
+					  me->request_visibility(IN_THREAD,
+								 true);
+				  });
+		 });
+}
+
+void generic_windowObj::handlerObj::remove_background_color(IN_THREAD_ONLY)
+{
+	background_color(IN_THREAD)=default_background_color(get_screen());
+	schedule_redraw_if_visible(IN_THREAD);
+}
+
+void generic_windowObj::handlerObj::set_background_color(IN_THREAD_ONLY,
+							 const const_picture &p)
+{
+	background_color(IN_THREAD)=p;
+	schedule_redraw_if_visible(IN_THREAD);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -170,6 +252,8 @@ void generic_windowObj::handlerObj::horizvert_updated(IN_THREAD_ONLY)
 
 	auto minimum_width=p->horiz.minimum();
 	auto minimum_height=p->vert.minimum();
+	auto new_preferred_width=p->horiz.preferred();
+	auto new_preferred_height=p->vert.preferred();
 
 	// Don't tell the window manager that our minimum
 	// dimensions exceed usable workarea size.
@@ -194,7 +278,16 @@ void generic_windowObj::handlerObj::horizvert_updated(IN_THREAD_ONLY)
 
 		if (usable_workarea_height < minimum_height)
 			minimum_height=usable_workarea_height;
+
+		if (usable_workarea_width < new_preferred_width)
+			new_preferred_width=usable_workarea_width;
+
+		if (usable_workarea_height < new_preferred_height)
+			new_preferred_height=usable_workarea_height;
 	}
+
+	preferred_width(IN_THREAD)=new_preferred_width;
+	preferred_height(IN_THREAD)=new_preferred_height;
 
 	xcb_size_hints_t hints=xcb_size_hints_t();
 
@@ -202,8 +295,8 @@ void generic_windowObj::handlerObj::horizvert_updated(IN_THREAD_ONLY)
 					  (dim_t::value_type)minimum_width,
 					  (dim_t::value_type)minimum_height);
 	xcb_icccm_size_hints_set_base_size(&hints,
-					   (dim_t::value_type)p->horiz.preferred(),
-					   (dim_t::value_type)p->vert.preferred());
+					   (dim_t::value_type)new_preferred_width,
+					   (dim_t::value_type)new_preferred_height);
 	xcb_icccm_size_hints_set_max_size(&hints,
 					  (dim_t::value_type)p->horiz.maximum(),
 					  (dim_t::value_type)p->vert.maximum());

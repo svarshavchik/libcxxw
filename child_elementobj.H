@@ -9,14 +9,35 @@
 #include "container.H"
 #include "connection_threadfwd.H"
 #include "x/w/metrics/axis.H"
+#include "x/w/picturefwd.H"
+
 LIBCXXW_NAMESPACE_START
 
 //! An element that has a parent element.
 
 class LIBCXX_HIDDEN child_elementObj : public elementObj::implObj {
 
+	//! Set the background color in the draw_info for this display element.
+
+	//! After obtaining the draw_info from the parent element, if this
+	//! display element has a background color, the corresponding
+	//! members in draw_info get updated accordingly.
+
+	typedef std::function<void (IN_THREAD_ONLY, draw_info &,
+				    child_elementObj &)>
+		update_background_color_t;
+
+	//! This display element's background color
+
+	update_background_color_t background_color_thread_only=no_background();
+
+	//! Return a no-op update_background_color_t;
+
+	static update_background_color_t no_background();
 
  public:
+
+	THREAD_DATA_ONLY(background_color);
 
 	//! My parent element
 	const ref<containerObj::implObj> container;
@@ -43,9 +64,22 @@ class LIBCXX_HIDDEN child_elementObj : public elementObj::implObj {
 	const generic_windowObj::handlerObj &get_window_handler() const
 		override;
 
+	//! Use parent display element's background color.
+
+	void remove_background_color(IN_THREAD_ONLY) override;
+
+	//! Use its own background color.
+
+	void set_background_color(IN_THREAD_ONLY,
+				  const const_picture &) override;
+
 	//! Invoke parent_element->draw_info(), and update the results.
 	draw_info get_draw_info(IN_THREAD_ONLY,
 				const rectangle &initial_viewport) override;
+
+	//! Set this child element's background color
+	void prepare_draw_info(IN_THREAD_ONLY,
+			       draw_info &) override;
 
 	//! update_visibility() invokes this callback.
 

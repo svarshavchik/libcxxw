@@ -5,6 +5,9 @@
 #include "libcxxw_config.h"
 #include "element.H"
 #include "element_screen.H"
+#include "screen.H"
+#include "batch_queue.H"
+#include "x/w/picture.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -25,6 +28,16 @@ const_screen elementObj::get_screen() const
        return impl->get_screen();
 }
 
+void elementObj::show_all()
+{
+	impl->request_visibility_recursive(true);
+}
+
+void elementObj::hide_all()
+{
+	impl->request_visibility_recursive(false);
+}
+
 void elementObj::show()
 {
 	impl->request_visibility(true);
@@ -33,6 +46,29 @@ void elementObj::show()
 void elementObj::hide()
 {
 	impl->request_visibility(false);
+}
+
+void elementObj::set_background_color(const const_picture &background_color)
+{
+	get_screen()->impl->thread->get_batch_queue()
+		->run_as(RUN_AS,
+			 [impl=this->impl, background_color]
+			 (IN_THREAD_ONLY)
+			 {
+				 impl->set_background_color(IN_THREAD,
+							    background_color);
+			 });
+}
+
+void elementObj::remove_background_color()
+{
+	get_screen()->impl->thread->get_batch_queue()
+		->run_as(RUN_AS,
+			 [impl=this->impl]
+			 (IN_THREAD_ONLY)
+			 {
+				 impl->remove_background_color(IN_THREAD);
+			 });
 }
 
 ref<obj> elementObj::do_on_state_update(const element_state_update_handler_t &h)

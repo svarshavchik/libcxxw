@@ -155,9 +155,11 @@ testgrid_SOURCES=testgrid.C
 testgrid_LDADD=libcxxw.la
 testgrid_LDFLAGS=-static
 
+$(call OPTIONS_GEN,testmainwindowoptions.H,testmainwindowoptions.xml)
+
 testmainwindow_SOURCES=testmainwindow.C
-testmainwindow_LDADD=libcxxw.la
-testmainwindow_LDFLAGS=$(TESTLINKTYPE)
+testmainwindow_LDADD=libcxxw.la -lcxx
+testmainwindow_LDFLAGS=-static $(STATICLINKFLAGS)
 
 BUILT_SOURCES=includes/x/w/constants_inc.H \
 	pic_constants.inc.C
@@ -223,7 +225,10 @@ check-am:
 	@for p in $(TESTPROGRAMS); do echo $$p; ./$$p || exit 1; done
 
 test:
-	@for p in $(INTERACTIVETESTPROGRAMS); do echo $$p; ./$$p || exit 1; done
+	./testmainwindow --state
+	./testmainwindow
+	./testmainwindow --showhide
+	./testmainwindow --usemain
 
 .PHONY: rpm
 

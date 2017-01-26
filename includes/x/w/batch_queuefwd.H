@@ -28,6 +28,14 @@ class batch_queueObj;
 //!
 //! This is used to batch up changes to the UI, for optimization purposes.
 //! The jobs will be executed in the order received.
+//!
+//! The batch queue is used for:
+//!
+//! - batching request_visibility() calls (show/hide).
+//!
+//! - held by the layoutmanager object, for the duration of its existence.
+//!
+//! - internally held during create_mainwindow().
 
 typedef ref<batch_queueObj> batch_queue;
 

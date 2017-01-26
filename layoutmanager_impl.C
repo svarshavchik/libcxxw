@@ -109,6 +109,9 @@ rectangle_set layoutmanagerObj::implObj::draw(IN_THREAD_ONLY,
 						 );
 
 			       try {
+				       c->impl->prepare_draw_info(IN_THREAD,
+								  child_di);
+
 				       c->impl->draw(IN_THREAD, child_di,
 						     adjust_drawn_area);
 			       } CATCH_EXCEPTIONS;

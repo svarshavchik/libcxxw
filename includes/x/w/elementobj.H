@@ -8,6 +8,7 @@
 #include <x/w/elementfwd.H>
 #include <x/w/screenfwd.H>
 #include <x/w/element_statefwd.H>
+#include <x/w/picturefwd.H>
 #include <x/obj.H>
 
 LIBCXXW_NAMESPACE_START
@@ -43,13 +44,29 @@ public:
 
 	const_screen get_screen() const;
 
-	//! Show this display element
+	//! Show this display element, and all elements inside it.
+
+	void show_all();
+
+	//! Hide this display element, and all elements inside it.
+
+	void hide_all();
+
+	//! Show this display element only.
 
 	void show();
 
-	//! Hide this display element
+	//! Hide this display element only.
 
 	void hide();
+
+	//! Use a custom background color for this display element.
+
+	void set_background_color(const const_picture &background_color);
+
+	//! Remove this display element's custom background color.
+
+	void remove_background_color();
 
 	//! Install a state update callback.
 

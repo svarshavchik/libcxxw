@@ -43,11 +43,13 @@ void containerObj::implObj::do_draw(IN_THREAD_ONLY,
 							      di,
 							      areas);
 
-				     this->get_element_impl()
-					     .clear_to_color(IN_THREAD,
-							     di,
-							     subtract
-							     (areas, drawn));
+				     auto remaining=subtract(areas, drawn);
+
+				     if (!remaining.empty())
+					     this->get_element_impl()
+						     .clear_to_color(IN_THREAD,
+								     di,
+								     remaining);
 			     });
 }
 
@@ -112,6 +114,28 @@ void containerObj::implObj::process_updated_position(IN_THREAD_ONLY)
 	auto &element_impl=get_element_impl();
 
 	element_impl.elementObj::implObj::process_updated_position(IN_THREAD);
+}
+
+void containerObj::implObj::request_visibility_recursive(IN_THREAD_ONLY,
+							 bool flag)
+{
+	invoke_layoutmanager
+		([&]
+		 (const auto &manager)
+		 {
+			 manager->for_each_child
+				 (IN_THREAD,
+				  [&]
+				  (const element &e)
+				  {
+					  e->impl->request_visibility_recursive
+						  (IN_THREAD, flag);
+				  });
+		 });
+
+	auto &element_impl=get_element_impl();
+	element_impl.elementObj::implObj::request_visibility_recursive
+		(IN_THREAD, flag);
 }
 
 LIBCXXW_NAMESPACE_END

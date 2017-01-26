@@ -128,6 +128,14 @@ public:
 
 	void process_updated_position(IN_THREAD_ONLY);
 
+	//! Recursive show() or hide().
+
+	//! Recursively invoke the child elements'
+	//! request_visibility_recursive in addition to invoking the
+	//! container's element's request_visibility().
+
+	void request_visibility_recursive(IN_THREAD_ONLY, bool flag);
+
  private:
 	void propagate_inherited_visibility(IN_THREAD_ONLY, bool flag);
 };

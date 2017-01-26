@@ -51,6 +51,16 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 	const_picture background_color_thread_only;
 
+	//! The first time the window is mapped, it's resized to its preferred size, first.
+
+	bool preferred_dimensions_set_thread_only=false;
+
+	//! Preferred width
+	dim_t preferred_width_thread_only;
+
+	//! Preferred height
+	dim_t preferred_height_thread_only;
+
  public:
 	//! What I want for my initial event mask.
 
@@ -83,6 +93,9 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	THREAD_DATA_ONLY(current_events);
 	THREAD_DATA_ONLY(current_position);
 	THREAD_DATA_ONLY(background_color);
+	THREAD_DATA_ONLY(preferred_dimensions_set);
+	THREAD_DATA_ONLY(preferred_width);
+	THREAD_DATA_ONLY(preferred_height);
 
 	////////////////////////////////////////////////////////////////////
 	//
@@ -111,6 +124,13 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 				const rectangle &initial_viewport)
 		override;
 
+	void remove_background_color(IN_THREAD_ONLY) override;
+
+	//! Use its own background color.
+
+	void set_background_color(IN_THREAD_ONLY,
+				  const const_picture &) override;
+
 #include "container_element_overrides_decl.H"
 
 	////////////////////////////////////////////////////////////////////
@@ -122,10 +142,29 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	void exposure_event(IN_THREAD_ONLY,
 			    rectangle_set &areas) override;
 
-	//! A visibility update is translated to mapping/unmapping the window.
+	//! Do not redraw after the window's visibility is updated.
+
+	//! Instead, we redraw in response to exposure events.
 
 	void draw_after_visibility_updated(IN_THREAD_ONLY,
 					   bool flag) override;
+
+	//! Setting the inherited_visibility flag.
+
+	//! This gets translated to mapping/unmapping the window.
+
+	void set_inherited_visibility(IN_THREAD_ONLY, bool flag) override;
+
+	//! Set window size to preferred size before its visible for 1st time.
+
+	void request_visibility(IN_THREAD_ONLY, bool flag) override;
+
+	//! Whether this window is mapped.
+
+	bool is_mapped(IN_THREAD_ONLY) const
+	{
+		return data(IN_THREAD).inherited_visibility;
+	}
 
 	//! Update the displayed window's element's current_position
 

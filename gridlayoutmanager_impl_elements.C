@@ -180,12 +180,12 @@ void gridlayoutmanagerObj::implObj
 
 		auto new_width=
 			(std::get<coord_t>(h_end->second)
-			 + std::get<coord_t>(h_end->second)
+			 + std::get<dim_t>(h_end->second)
 			 - x);
 
 		auto new_height=
 			(std::get<coord_t>(v_end->second)
-			 + std::get<coord_t>(v_end->second)
+			 + std::get<dim_t>(v_end->second)
 			 - y);
 
 		if (dim_t::overflows(new_width))

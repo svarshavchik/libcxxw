@@ -48,22 +48,27 @@ void connection_threadObj
 
 	LOG_FUNC_SCOPE(runLogger);
 
-	if (process_visibility_updated(IN_THREAD))
-		return;
+ try_again:
 
 	if (recalculate_containers(IN_THREAD))
-		return;
+		goto try_again;
 
 	if (process_element_position_updated(IN_THREAD))
-		return;
+		goto try_again;
 
-	// Process all messages on the queue, this takes priority.
+	if (process_visibility_updated(IN_THREAD))
+		goto try_again;
+
+	// Process a message in the message queue. If processing a message
+	// resulted in container recalculation, element position update, or
+	// visibility update, this was an app request which must be processed
+	// before the next message, another app request, gets processed, so
+	// we
 
 	if (!msgqueue->empty())
 	{
-		while (!msgqueue->empty())
-			msgqueue.event();
-		return;
+		msgqueue.event();
+		goto try_again;
 	}
 
 	// Check if the connection errored out, if not, check for
@@ -109,6 +114,7 @@ void connection_threadObj
 	if (stop_received)
 	{
 		stopping_politely=true;
+		return;
 	}
 	// Ok, nothing else to do but poll().
 	LOG_TRACE("Polling");
@@ -132,7 +138,7 @@ void connection_threadObj
 		     const x::function<void (IN_THREAD_ONLY)> &func)
 {
 	LOG_FUNC_SCOPE(runLogger);
-	LOG_TRACE("Dispatching: " << file << "(" << line << ")");
+	LOG_DEBUG("Dispatching: " << file << "(" << line << ")");
 
 	func(connection_thread(this));
 }

@@ -1,0 +1,32 @@
+<optclass name="testmainwindowoptions">
+  <option>
+    <name>state</name>
+    <type>bool</type>
+    <default>false</default>
+    <opt>s</opt>
+    <longopt>state</longopt>
+    <descr>Verify on_state_update() callbacks</descr>
+  </option>
+  <option>
+    <name>usemain</name>
+    <type>bool</type>
+    <default>false</default>
+    <opt>m</opt>
+    <longopt>usemain</longopt>
+    <descr>Change main window's color</descr>
+  </option>
+  <option>
+    <name>showhide</name>
+    <type>bool</type>
+    <default>false</default>
+    <opt>s</opt>
+    <longopt>showhide</longopt>
+    <descr>Change color via show()/hide()</descr>
+  </option>
+  <mutex>
+    <name>state</name>
+    <name>usemain</name>
+    <name>showhide</name>
+  </mutex>
+  <defaultoptions />
+</optclass>

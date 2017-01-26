@@ -7,6 +7,7 @@
 #include "draw_info.H"
 #include "container.H"
 #include "layoutmanager.H"
+#include "x/w/picture.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -45,8 +46,12 @@ draw_info child_elementObj::get_draw_info(IN_THREAD_ONLY,
 	revised_viewport.x += (coord_t::value_type)parent_position.x;
 	revised_viewport.y += (coord_t::value_type)parent_position.y;
 
-	return container->get_element_impl()
+	draw_info di=container->get_element_impl()
 		.get_draw_info(IN_THREAD, revised_viewport);
+
+	prepare_draw_info(IN_THREAD, di);
+
+	return di;
 }
 
 void child_elementObj::visibility_updated(IN_THREAD_ONLY, bool flag)
@@ -67,6 +72,42 @@ void child_elementObj::horizvert_updated(IN_THREAD_ONLY)
 						manager->child_metrics_updated
 							(IN_THREAD);
 					});
+}
+
+child_elementObj::update_background_color_t
+child_elementObj::no_background()
+{
+	return [](IN_THREAD_ONLY, draw_info &, child_elementObj &)
+	{
+	};
+}
+
+void child_elementObj::remove_background_color(IN_THREAD_ONLY)
+{
+	background_color(IN_THREAD)=no_background();
+	schedule_redraw_if_visible(IN_THREAD);
+}
+
+void child_elementObj::set_background_color(IN_THREAD_ONLY,
+					    const const_picture &bgcolor)
+{
+	background_color(IN_THREAD)=
+		[bgcolor](IN_THREAD_ONLY, draw_info &di, child_elementObj &e)
+		{
+			if (!e.data(IN_THREAD).inherited_visibility)
+				return; // None, use parent background.
+
+			di.window_background=bgcolor->impl;
+			di.background_x=di.viewport.x;
+			di.background_y=di.viewport.y;
+		};
+	schedule_redraw_if_visible(IN_THREAD);
+}
+
+void child_elementObj::prepare_draw_info(IN_THREAD_ONLY,
+					 draw_info &di)
+{
+	background_color(IN_THREAD)(IN_THREAD, di, *this);
 }
 
 LIBCXXW_NAMESPACE_END

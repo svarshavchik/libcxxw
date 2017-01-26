@@ -60,11 +60,33 @@ void elementObj::implObj::request_visibility(bool flag)
 		 [flag, me=elementimpl(this)]
 		 (IN_THREAD_ONLY)
 		 {
-			 me->data(IN_THREAD).requested_visibility=flag;
-			 IN_THREAD->insert_element_set
-				 (*IN_THREAD->visibility_updated(IN_THREAD),
-				  me);
+			 me->request_visibility(IN_THREAD, flag);
 		 });
+}
+
+void elementObj::implObj::request_visibility(IN_THREAD_ONLY, bool flag)
+{
+	data(IN_THREAD).requested_visibility=flag;
+
+	IN_THREAD->insert_element_set
+		(*IN_THREAD->visibility_updated(IN_THREAD), elementimpl(this));
+}
+
+void elementObj::implObj::request_visibility_recursive(bool flag)
+{
+	THREAD->get_batch_queue()->run_as
+		(RUN_AS,
+		 [flag, me=elementimpl(this)]
+		 (IN_THREAD_ONLY)
+		 {
+			 me->request_visibility_recursive(IN_THREAD, flag);
+		 });
+}
+
+void elementObj::implObj::request_visibility_recursive(IN_THREAD_ONLY,
+						       bool flag)
+{
+	request_visibility(IN_THREAD, flag);
 }
 
 void elementObj::implObj::update_visibility(IN_THREAD_ONLY)
@@ -132,8 +154,7 @@ void elementObj::implObj::do_inherited_visibility_updated(IN_THREAD_ONLY,
 				     ? element_state::before_showing
 				     : element_state::before_hiding);
 
-	// Offically update this element's "real" visibility.
-	data(IN_THREAD).inherited_visibility=flag;
+	set_inherited_visibility(IN_THREAD, flag);
 
 	// Notify handlers that we just shown or hidden this element.
 
@@ -141,6 +162,13 @@ void elementObj::implObj::do_inherited_visibility_updated(IN_THREAD_ONLY,
 				     data(IN_THREAD).requested_visibility
 				     ? element_state::after_showing
 				     : element_state::after_hiding);
+}
+
+void elementObj::implObj::set_inherited_visibility(IN_THREAD_ONLY,
+						   bool flag)
+{
+	// Offically update this element's "real" visibility.
+	data(IN_THREAD).inherited_visibility=flag;
 }
 
 void elementObj::implObj::draw_after_visibility_updated(IN_THREAD_ONLY,
@@ -152,6 +180,13 @@ void elementObj::implObj::draw_after_visibility_updated(IN_THREAD_ONLY,
 	// window. This is what this action means for actual windows.
 	//
 	// Otherwise we call schedule_redraw().
+	schedule_redraw(IN_THREAD);
+}
+
+void elementObj::implObj::schedule_redraw_if_visible(IN_THREAD_ONLY)
+{
+	if (!data(IN_THREAD).inherited_visibility)
+		return;
 	schedule_redraw(IN_THREAD);
 }
 
@@ -174,7 +209,15 @@ void elementObj::implObj::explicit_redraw(IN_THREAD_ONLY)
 
 	entire_area.insert({0, 0, initial_viewport.width,
 				initial_viewport.height});
-	draw(IN_THREAD, di, entire_area);
+
+	if (data(IN_THREAD).inherited_visibility)
+	{
+		draw(IN_THREAD, di, entire_area);
+	}
+	else
+	{
+		clear_to_color(IN_THREAD, di, entire_area);
+	}
 }
 
 ref<obj> elementObj::implObj
@@ -210,6 +253,7 @@ void elementObj::implObj::update_current_position(IN_THREAD_ONLY,
 
 	current_data.current_position=r;
 
+	notify_updated_position(IN_THREAD);
 	current_position_updated(IN_THREAD);
 }
 
@@ -222,8 +266,7 @@ void elementObj::implObj::current_position_updated(IN_THREAD_ONLY)
 
 void elementObj::implObj::process_updated_position(IN_THREAD_ONLY)
 {
-	schedule_redraw(IN_THREAD);
-	notify_updated_position(IN_THREAD);
+	schedule_redraw_if_visible(IN_THREAD);
 }
 
 void elementObj::implObj::notify_updated_position(IN_THREAD_ONLY)
@@ -269,6 +312,11 @@ public:
 	}
 };
 
+void elementObj::implObj::prepare_draw_info(IN_THREAD_ONLY,
+					    draw_info &)
+{
+}
+
 void elementObj::implObj::draw(IN_THREAD_ONLY,
 			       const draw_info &di,
 			       const rectangle_set &areas)
@@ -301,6 +349,10 @@ void elementObj::implObj::clear_to_color(IN_THREAD_ONLY,
 					 const draw_info &di,
 					 const rectangle_set &areas)
 {
+#ifdef CLEAR_TO_COLOR_LOG
+	CLEAR_TO_COLOR_LOG();
+#endif
+
 	for (auto area:areas)
 	{
 		// areas's (0, 0) is the (0, 0) coordinates of the viewport.
