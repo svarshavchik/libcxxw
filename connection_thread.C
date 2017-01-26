@@ -18,8 +18,7 @@ LIBCXXW_NAMESPACE_START
 
 connection_threadObj
 ::connection_threadObj(const connection_info &info)
-	: info(info),
-	  internal_batch_queue(ref<threadmsgdispatcherObj>::create())
+	: info(info)
 {
 }
 
@@ -28,10 +27,7 @@ connection_threadObj::~connection_threadObj()=default;
 void connection_threadObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin)
 {
 	msgqueue_auto msgqueue(this);
-
-	// No need for a separate eventfd for the batch queue.
-	msgqueue_auto batchqueue(&*internal_batch_queue,
-				 msgqueue->getEventfd());
+	msgqueue_auto msgbatched_queue(this, batched_queue);
 
 	threadmsgdispatcher_mcguffin=nullptr;
 
@@ -116,18 +112,6 @@ batch_queue connection_threadObj::get_batch_queue()
 	*lock=new_batch_queue;
 
 	return new_batch_queue;
-}
-
-void connection_threadObj::dispatch_execute_batched_jobs()
-{
-	msgqueue_t q=internal_batch_queue->get_msgqueue();
-
-	while (!q->empty())
-	{
-		try {
-			q->pop()->dispatch();
-		} CATCH_EXCEPTIONS;
-	}
 }
 
 LIBCXXW_NAMESPACE_END

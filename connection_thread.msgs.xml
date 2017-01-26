@@ -28,10 +28,4 @@
       <decl>const x::function&lt;void (IN_THREAD_ONLY)> &amp;func</decl>
     </param>
   </method>
-
-  <method name="execute_batched_jobs">
-    <comment>
-      //! Execute all batched run_as() jobs.
-    </comment>
-  </method>
 </class>

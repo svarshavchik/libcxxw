@@ -175,7 +175,7 @@ class LIBCXX_HIDDEN connection_threadObj
 
 	// Secondary queue for batched messages.
 
-	const ref<threadmsgdispatcherObj> internal_batch_queue;
+	active_queue_t batched_queue;
 
 	mpobj<weakptr<batch_queueptr>> current_batch_queue;
 
@@ -186,12 +186,17 @@ class LIBCXX_HIDDEN connection_threadObj
 	template<typename T>
 		void run_as_batched(const char *file, int line, T &&func)
 	{
-		internal_batch_queue->sendevent
-			(&connection_threadObj::dispatch_do_run_as,
-			 this,
-			 file, line,
-			 make_function<void (IN_THREAD_ONLY)>
-			 (std::forward<T>(func)));
+		sendeventaux(batched_queue,
+			     &connection_threadObj::dispatch_do_run_as,
+			     this,
+			     file, line,
+			     make_function<void (IN_THREAD_ONLY)>
+			     (std::forward<T>(func)));
+	}
+
+	void execute_batched_jobs()
+	{
+		process_events(batched_queue);
 	}
 
 	//! Return a batch_queue object, for batching jobs for the thread.
