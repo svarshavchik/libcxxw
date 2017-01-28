@@ -7,7 +7,7 @@
 
 #include "xid_t.H"
 #include "connection_threadfwd.H"
-#include "values_and_mask.H"
+#include "x/w/values_and_mask.H"
 #include "x/w/rectangle.H"
 #include "x/w/screenfwd.H"
 #include <x/logger.H>

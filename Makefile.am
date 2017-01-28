@@ -57,6 +57,10 @@ libcxxw_la_SOURCES=\
 	ewmh.C					    \
 	ewmh.H					    \
 	factory.C				    \
+	gc.C					    \
+	gc.H					    \
+	gc_thread.H				    \
+	gc_impl.C				    \
 	generic_window.C			    \
 	generic_window.H			    \
 	generic_window_handler.C		    \
@@ -117,7 +121,6 @@ libcxxw_la_SOURCES=\
 	screen_depthinfo.C			    \
 	screen_depthinfo.H			    \
 	screen_solidcolorpictures.C		    \
-	values_and_mask.H			    \
 	window_handler.C			    \
 	window_handler.H			    \
 	xid_t.C					    \
@@ -134,7 +137,7 @@ cxxw_LDFLAGS=$(TESTLINKTYPE)
 $(call OPTIONS_GEN,cxxwoptions.H,cxxwoptions.xml)
 
 EXTRA_DIST = config.rpath m4/ChangeLog COPYING \
-	pic_constants.xml constants.xsl \
+	pic_constants.xml gc_constants.xml constants.xsl \
 	$(man_MANS)
 
 $(call THREADMSGDISPATCHER_GEN,connection_thread.msgs.H, connection_thread.msgs.xml)
@@ -165,13 +168,17 @@ testmainwindow_LDADD=libcxxw.la -lcxx
 testmainwindow_LDFLAGS=-static $(STATICLINKFLAGS)
 
 BUILT_SOURCES=includes/x/w/constants_inc.H \
-	pic_constants.inc.C
+	gc_constants.inc.C pic_constants.inc.C
 
 CLEANFILES = $(shell cd $(srcdir) && echo *.inc.[CH])
 
 includes/x/w/constants_inc.H: genconstants
 	./genconstants >$@.tmp
 	mv $@.tmp $@
+
+gc_constants.inc.C: gc_constants.xml constants.xsl
+	xsltproc $(srcdir)/constants.xsl $(srcdir)/gc_constants.xml >gc_constants.inc.C.tmp
+	mv -f gc_constants.inc.C.tmp gc_constants.inc.C
 
 pic_constants.inc.C: pic_constants.xml constants.xsl
 	xsltproc $(srcdir)/constants.xsl $(srcdir)/pic_constants.xml >pic_constants.inc.C.tmp

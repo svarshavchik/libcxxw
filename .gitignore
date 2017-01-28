@@ -19,6 +19,7 @@ configure
 /depcomp
 /docbook/entities
 /Doxyfile
+/gc_constants.inc.C
 /genconstants
 /html
 /install-sh

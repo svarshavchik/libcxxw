@@ -2,8 +2,8 @@
 ** Copyright 2017 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
-#ifndef values_and_mask_h
-#define values_and_mask_h
+#ifndef x_w_values_and_mask_h
+#define x_w_values_and_mask_h
 
 #include <vector>
 #include <map>
@@ -11,8 +11,14 @@
 #include <utility>
 #include <algorithm>
 
+#include <x/w/namespace.H>
+
+LIBCXXW_NAMESPACE_START
+
 //! Assemble a list of values, and a mask flagging the numbers in the list.
 
+//! Helper class for constructing parameters to an X protocol request.
+//!
 //! Several X protocol parameters take the form of a mask value, and an
 //! array of values, with the mask used to interpret the value array.
 //!
@@ -21,7 +27,14 @@
 class values_and_mask {
 
 public:
+	//! Assembled map of parameter name/value pais.
+
 	std::map<uint32_t, uint32_t> m;
+
+	//! Default constructor
+	values_and_mask()=default;
+
+	//! Constructor
 
 	template<typename Arg1, typename Arg2,
 		 typename ...Args>
@@ -32,9 +45,15 @@ public:
 		     std::forward<Args>(args)...);
 	}
 
+	//! Overloaded _add() helper.
+
 	inline void _add()
 	{
 	}
+
+	//! Overloaded _add() helper
+
+	//! Adds the next pair of key/values to the map.
 
 	template<typename ...Args> inline void _add(uint32_t key,
 						    uint32_t value,
@@ -43,6 +62,10 @@ public:
 		m[key]=value;
 		_add(std::forward<Args>(args)...);
 	}
+
+	//! Return the parameter mask.
+
+	//! The parameter mask is the logical-OR of all parameter keys.
 
 	uint32_t mask() const
 	{
@@ -56,6 +79,10 @@ public:
 			      });
 		return v;
 	}
+
+	//! Return the parameter values
+
+	//! The list of values in the map, in key order.
 
 	std::vector<uint32_t> values() const
 	{
@@ -72,6 +99,14 @@ public:
 		return v;
 	}
 
+	//! Comparison operator
+
+	bool operator==(const values_and_mask &o) const
+	{
+		return m == o.m;
+	}
 };
+
+LIBCXXW_NAMESPACE_END
 
 #endif
