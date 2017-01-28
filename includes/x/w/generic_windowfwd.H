@@ -14,15 +14,6 @@ class generic_windowObj;
 class generic_windowBase;
 
 //! Generic window methods.
-//!
-//! \code
-//!
-//! // Open the default screen on the default display connection
-//! auto s=window->get_screen();
-//!
-//! \endcode
-//!
-//! \c get_screen() returns the window's \ref screen "screen".
 
 typedef ref<generic_windowObj, generic_windowBase> generic_window;
 

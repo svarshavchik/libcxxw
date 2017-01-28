@@ -15,7 +15,26 @@ class drawableObj;
 
 //! A drawable object.
 
-//! \internal
+//! A common superclass of \ref generic_window "generic windows" and
+//! \ref pixmap "pixmaps".
+//!
+//! \code
+//!
+//! // Return the drawable's screen
+//!
+//! auto s=drawable->get_screen();
+//!
+//! \endcode
+//!
+//! \c get_screen() returns the drawable's \ref screen "screen".
+//!
+//! \code
+//!
+//! auto p=drawable->create_picture();
+//!
+//! \endcode
+//!
+//! Create a \ref picture "picture object" for this drawable.
 
 typedef ref<drawableObj> drawable;
 

@@ -9,6 +9,7 @@
 #include "connection_threadfwd.H"
 #include "values_and_mask.H"
 #include "x/w/rectangle.H"
+#include "x/w/screenfwd.H"
 #include <x/logger.H>
 #include <xcb/xcb.h>
 

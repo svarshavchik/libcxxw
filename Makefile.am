@@ -103,6 +103,9 @@ libcxxw_la_SOURCES=\
 	picture.C				    \
 	picture.H				    \
 	picture_impl.C				    \
+	pixmap.C				    \
+	pixmap.H				    \
+	pixmap_impl.C				    \
 	rectangle.C				    \
 	rectangle.H				    \
 	render.C				    \

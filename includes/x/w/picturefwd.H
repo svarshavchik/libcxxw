@@ -14,7 +14,8 @@ class pictureObj;
 
 //! A Picture object, as specified in the X Rendering extension.
 
-//! A picture consists of a drawable, a \ref pictformat "pictformat", and
+//! A picture consists of a
+//! \ref drawable "drawable", a \ref pictformat "pictformat", and
 //! some rendering state, and implements rendering operations.
 
 typedef ref<pictureObj> picture;

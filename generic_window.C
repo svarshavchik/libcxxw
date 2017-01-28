@@ -22,14 +22,4 @@ generic_windowObj::generic_windowObj(const ref<implObj> &impl,
 
 generic_windowObj::~generic_windowObj()=default;
 
-screen generic_windowObj::get_screen()
-{
-	return impl->handler->screenref;
-}
-
-const_screen generic_windowObj::get_screen() const
-{
-	return impl->handler->screenref;
-}
-
 LIBCXXW_NAMESPACE_END

@@ -61,8 +61,7 @@ generic_windowObj::handlerObj
 	current_events_thread_only((xcb_event_mask_t)
 				   params.window_handler_params
 				   .events_and_mask.m.at(XCB_CW_EVENT_MASK)),
-	current_position_thread_only(params.window_handler_params
-				     .initial_position),
+	current_position(params.window_handler_params.initial_position),
 	background_color_thread_only(default_background_color
 				     (params.window_handler_params.screenref))
 {
@@ -168,8 +167,10 @@ void generic_windowObj::handlerObj::request_visibility(IN_THREAD_ONLY,
 			 // away. We don't know when we'll get back the
 			 // ConfigureNotify message from the display server.
 
-			 rectangle r{0, 0, me->preferred_width(IN_THREAD),
-					 me->preferred_height(IN_THREAD)};
+			 auto r=*mpobj<rectangle>::lock(me->current_position);
+
+			 r.width=me->preferred_width(IN_THREAD);
+			 r.height=me->preferred_height(IN_THREAD);
 
 			 me->configure_notify(IN_THREAD, r);
 
@@ -216,6 +217,8 @@ void generic_windowObj::handlerObj::exposure_event(IN_THREAD_ONLY,
 void generic_windowObj::handlerObj::configure_notify(IN_THREAD_ONLY,
 						     const rectangle &r)
 {
+	*mpobj<rectangle>::lock(current_position)=r;
+
 	// x & y are the window's position on the script
 
 	// for our purposes, the display element representing the top level
@@ -305,6 +308,30 @@ void generic_windowObj::handlerObj::horizvert_updated(IN_THREAD_ONLY)
 				    id(),
 				    conn->info->atoms_info.wm_normal_hints,
 				    &hints);
+}
+
+////////////////////////////////////////////////////////////////////
+//
+// Inherited from drawableObj::implObj
+
+screen generic_windowObj::handlerObj::get_screen()
+{
+	return screenref;
+}
+
+const_screen generic_windowObj::handlerObj::get_screen() const
+{
+	return screenref;
+}
+
+dim_t generic_windowObj::handlerObj::get_width() const
+{
+	return mpobj<rectangle>::lock(current_position)->width;
+}
+
+dim_t generic_windowObj::handlerObj::get_height() const
+{
+	return mpobj<rectangle>::lock(current_position)->width;
 }
 
 LIBCXXW_NAMESPACE_END

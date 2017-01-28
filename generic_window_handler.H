@@ -13,7 +13,6 @@
 #include "container.H"
 #include "x/w/pictformatfwd.H"
 #include "x/w/types.H"
-#include "x/w/screenfwd.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -45,7 +44,16 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 	//! Current position and dimensions
 
-	rectangle current_position_thread_only;
+	//! This is a mutex-protected object. ConfigureNotify event saves
+	//! a copy of the new window location and size here, before
+	//! invoking the element superclass's update_current_position().
+	//!
+	//! get_width() and get_height(), inherited from drawableObj read this.
+	//! The mutex protection allows them to be used outside of the
+	//! connection thread, but this means that this object must be
+	//! mutable, to be usable by the overridden const methods.
+
+	mutable mpobj<rectangle> current_position;
 
 	//! Window's background color
 
@@ -62,6 +70,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	dim_t preferred_height_thread_only;
 
  public:
+
 	//! What I want for my initial event mask.
 
 	static constexpr xcb_event_mask_t initial_event_mask()
@@ -91,7 +100,6 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	~handlerObj();
 
 	THREAD_DATA_ONLY(current_events);
-	THREAD_DATA_ONLY(current_position);
 	THREAD_DATA_ONLY(background_color);
 	THREAD_DATA_ONLY(preferred_dimensions_set);
 	THREAD_DATA_ONLY(preferred_width);
@@ -182,6 +190,22 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! Inherited from horizvertObj
 
 	void horizvert_updated(IN_THREAD_ONLY) override;
+
+	////////////////////////////////////////////////////////////////////
+	//
+	// Inherited from drawableObj::implObj
+
+	//! Return my screen
+	screen get_screen() override;
+
+	//! Return my screen
+	const_screen get_screen() const override;
+
+	//! Return my width
+	dim_t get_width() const override;
+
+	//! Return my height
+	dim_t get_height() const override;
 };
 
 LIBCXXW_NAMESPACE_END

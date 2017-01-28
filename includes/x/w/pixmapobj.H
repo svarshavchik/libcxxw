@@ -2,11 +2,12 @@
 ** Copyright 2017 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
-#ifndef x_w_generic_windowobj_h
-#define x_w_generic_windowobj_h
+#ifndef x_w_pixmapobj_h
+#define x_w_pixmapobj_h
 
-#include <x/w/generic_windowfwd.H>
+#include <x/w/pixmapfwd.H>
 #include <x/w/new_layoutmanagerfwd.H>
+#include <x/w/screenfwd.H>
 #include <x/w/containerobj.H>
 #include <x/w/drawableobj.H>
 #include <x/obj.H>
@@ -16,30 +17,22 @@ LIBCXXW_NAMESPACE_START
 
 //! Generic window facilities.
 
-//! \see generic_window
+//! \see pixmap
 
-class generic_windowObj : public containerObj,
-			  public drawableObj {
+class pixmapObj : public drawableObj {
 
 public:
-	LOG_CLASS_SCOPE;
-
 	class implObj;
-	class handlerObj;
 
 	//! Internal implementation details
 
 	const ref<implObj> impl;
 
 	//! Constructor
-	generic_windowObj(const ref<implObj> &impl,
-			  const new_layoutmanager &layout_factory)
-		LIBCXX_HIDDEN;
+	pixmapObj(const ref<implObj> &impl) LIBCXX_HIDDEN;
 
 	//! Destructor
-	~generic_windowObj() LIBCXX_HIDDEN;
-
-	using drawableObj::get_screen;
+	~pixmapObj() LIBCXX_HIDDEN;
 };
 
 LIBCXXW_NAMESPACE_END
