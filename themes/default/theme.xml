@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<theme>
+
+  <name>Default theme</name>
+
+  <dim id="no-padding" axis="pixels">0</dim>
+
+  <color id="transparent_color">
+    <a>0</a>
+  </color>
+
+  <color id="0%_color" />
+
+  <color id="10%_color">
+    <r>.1</r>
+    <g>.1</g>
+    <b>.1</b>
+  </color>
+
+  <color id="30%_color">
+    <r>.3</r>
+    <g>.3</g>
+    <b>.3</b>
+  </color>
+
+  <color id="50%_color">
+    <r>.5</r>
+    <g>.5</g>
+    <b>.5</b>
+  </color>
+
+  <color id="70%_color">
+    <r>.7</r>
+    <g>.7</g>
+    <b>.7</b>
+  </color>
+
+  <color id="75%_color">
+    <r>.75</r>
+    <g>.75</g>
+    <b>.75</b>
+  </color>
+
+  <color id="80%_color">
+    <r>.8</r>
+    <g>.8</g>
+    <b>.8</b>
+  </color>
+
+  <color id="90%_color">
+    <r>.9</r>
+    <g>.9</g>
+    <b>.9</b>
+  </color>
+
+  <color id="100%_color">
+    <r>1</r>
+    <g>1</g>
+    <b>1</b>
+  </color>
+
+  <color id="modal_shade_color">
+    <r>0</r>
+    <g>0</g>
+    <b>0</b>
+    <a>.5</a>
+  </color>
+
+  <color id="mainwindow_background_color" scale="75%_color" />
+</theme>

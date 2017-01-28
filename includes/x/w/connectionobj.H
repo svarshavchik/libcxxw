@@ -47,6 +47,11 @@ class connectionObj : virtual public obj {
 	//! Invoke this lambda if the server disconnects unexpectedly.
 
 	void on_disconnect(const std::function<void ()> &callback);
+
+
+	//! Returns the current theme and scaling factor.
+
+	std::pair<std::string, int> current_theme();
 };
 
 LIBCXXW_NAMESPACE_END

@@ -28,6 +28,8 @@ libcxxw_la_SOURCES=\
 	child_element.H				    \
 	child_elementfwd.H			    \
 	child_elementobj.H			    \
+	configfile.C				    \
+	configfile.H				    \
 	connection.C                                \
 	connection.H                                \
 	connection_info.C			    \
@@ -44,6 +46,10 @@ libcxxw_la_SOURCES=\
 	container_element_overrides_decl.H	    \
 	container_element_overrides_impl.H	    \
 	container_impl.C			    \
+	defaulttheme.C				    \
+	defaulttheme.H				    \
+	defaultthemefwd.H			    \
+	defaultthemeobj.H			    \
 	drawable.C				    \
 	drawable.H				    \
 	drawable_impl.C				    \
@@ -230,6 +236,59 @@ html/ref/index.html: $(DOCS_SRC) Doxyfile
 	mkdir -p html/ref
 	doxygen; c=$$?;	perl -p -i -e 's/INSERT_LIBX_NAMESPACE/x/g' html/ref/*.html; exit $$c
 endif
+
+# Find the names of all the themes
+
+all_themes=$(shell cd $(srcdir)/themes && echo */. | tr ' ' '\012' | sed 's@/.$$@@')
+
+# Prepend $(pkgdatadir)/themes to each directory in all_themes
+all_installed_theme_dirs=
+
+# We will go through all files in all_themes, append each file to
+# all_theme_source_files, and prepend $pkgdatadir/themes/name to each file
+# and put it into all_installed_theme_files
+
+all_theme_source_files=
+all_installed_theme_files=
+
+define passthrough
+$(1)
+endef
+
+define install_theme_file
+
+$(call passthrough,all_installed_theme_files += $(DESTDIR)$(pkgdatadir)/themes/$(2)/$(3))
+$(call passthrough,all_theme_source_files += $(1))
+
+$(DESTDIR)$(pkgdatadir)/themes/$(2)/$(3): $(1) install-data-hook-create-dir
+	$(INSTALL_DATA) $(1) $(DESTDIR)$(pkgdatadir)/themes/$(2)/$(3)
+endef
+
+define install_theme
+$(call passthrough,all_installed_theme_dirs += $(pkgdatadir)/themes/$(1))
+
+$(foreach f,$(wildcard $(srcdir)/themes/$(1)/*.sxg) $(wildcard $(srcdir)/themes/$(1)/*.xml), $(call install_theme_file,$(f),$(1),$(notdir $(f))))
+endef
+
+$(foreach d,$(all_themes),$(eval $(call install_theme,$d)))
+
+install-data-hook: $(all_installed_theme_files) $(DESTDIR)$(pkgdatadir)/themes/cxxwtheme.properties
+
+install-data-hook-create-dir:
+	$(MKDIR_P) $(foreach d,$(all_installed_theme_dirs),$(DESTDIR)$(d))
+
+$(DESTDIR)$(pkgdatadir)/themes/cxxwtheme.properties: themes/cxxwtheme.properties
+	$(INSTALL_DATA) $(srcdir)/themes/cxxwtheme.properties $(DESTDIR)$(pkgdatadir)/themes/cxxwtheme.properties
+
+uninstall-hook:
+	rm -f $(all_installed_theme_files)
+	rm -f $(DESTDIR)$(pkgdatadir)/themes/cxxwtheme.properties
+	-rmdir $(foreach d,$(all_installed_theme_dirs),$(DESTDIR)$(d))
+	-rmdir $(DESTDIR)$(pkgdatadir)/themes
+	-rmdir $(DESTDIR)$(pkgdatadir)
+
+EXTRA_DIST += $(patsubst $(srcdir)/%,%,$(all_theme_source_files)) \
+	themes/cxxwtheme.properties
 
 check-am:
 	@for p in $(TESTPROGRAMS); do echo $$p; ./$$p || exit 1; done
