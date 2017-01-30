@@ -9,6 +9,7 @@
 #include "generic_window.H"
 #include "drawable.H"
 #include "picture.H"
+#include "background_colorfwd.H"
 #include "connection_threadfwd.H"
 #include "container.H"
 #include "x/w/pictformatfwd.H"
@@ -57,7 +58,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 	//! Window's background color
 
-	const_picture background_color_thread_only;
+	background_color current_background_color_thread_only;
 
 	//! The first time the window is mapped, it's resized to its preferred size, first.
 
@@ -100,7 +101,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	~handlerObj();
 
 	THREAD_DATA_ONLY(current_events);
-	THREAD_DATA_ONLY(background_color);
+	THREAD_DATA_ONLY(current_background_color);
 	THREAD_DATA_ONLY(preferred_dimensions_set);
 	THREAD_DATA_ONLY(preferred_width);
 	THREAD_DATA_ONLY(preferred_height);
@@ -137,7 +138,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! Use its own background color.
 
 	void set_background_color(IN_THREAD_ONLY,
-				  const const_picture &) override;
+				  const background_color &) override;
 
 #include "container_element_overrides_decl.H"
 

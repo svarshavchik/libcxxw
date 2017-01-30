@@ -7,6 +7,7 @@
 #include "draw_info.H"
 #include "container.H"
 #include "layoutmanager.H"
+#include "background_color.H"
 #include "x/w/picture.H"
 
 LIBCXXW_NAMESPACE_START
@@ -84,20 +85,20 @@ child_elementObj::no_background()
 
 void child_elementObj::remove_background_color(IN_THREAD_ONLY)
 {
-	background_color(IN_THREAD)=no_background();
+	current_background_color(IN_THREAD)=no_background();
 	schedule_redraw_if_visible(IN_THREAD);
 }
 
 void child_elementObj::set_background_color(IN_THREAD_ONLY,
-					    const const_picture &bgcolor)
+					    const background_color &bgcolor)
 {
-	background_color(IN_THREAD)=
+	current_background_color(IN_THREAD)=
 		[bgcolor](IN_THREAD_ONLY, draw_info &di, child_elementObj &e)
 		{
 			if (!e.data(IN_THREAD).inherited_visibility)
 				return; // None, use parent background.
 
-			di.window_background=bgcolor->impl;
+			di.window_background=bgcolor->get_current_color()->impl;
 			di.background_x=di.viewport.x;
 			di.background_y=di.viewport.y;
 		};
@@ -107,7 +108,7 @@ void child_elementObj::set_background_color(IN_THREAD_ONLY,
 void child_elementObj::prepare_draw_info(IN_THREAD_ONLY,
 					 draw_info &di)
 {
-	background_color(IN_THREAD)(IN_THREAD, di, *this);
+	current_background_color(IN_THREAD)(IN_THREAD, di, *this);
 }
 
 LIBCXXW_NAMESPACE_END

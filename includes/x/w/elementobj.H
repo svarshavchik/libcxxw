@@ -9,7 +9,10 @@
 #include <x/w/screenfwd.H>
 #include <x/w/element_statefwd.H>
 #include <x/w/picturefwd.H>
+#include <x/w/rgbfwd.H>
 #include <x/obj.H>
+
+#include <experimental/string_view>
 
 LIBCXXW_NAMESPACE_START
 
@@ -59,6 +62,14 @@ public:
 	//! Hide this display element only.
 
 	void hide();
+
+	//! Use a standard background color for this display element.
+
+	//! If there's no background color of the given name, use the
+	//! default value.
+
+	void set_background_color(const std::experimental::string_view &name,
+				  const rgb &default_value);
 
 	//! Use a custom background color for this display element.
 

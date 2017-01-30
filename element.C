@@ -7,6 +7,7 @@
 #include "element_screen.H"
 #include "screen.H"
 #include "batch_queue.H"
+#include "background_color.H"
 #include "x/w/picture.H"
 
 LIBCXXW_NAMESPACE_START
@@ -48,27 +49,22 @@ void elementObj::hide()
 	impl->request_visibility(false);
 }
 
+void elementObj::set_background_color(const std::experimental::string_view
+				      &name,
+				      const rgb &default_value)
+{
+	impl->set_background_color(name, default_value);
+}
+
 void elementObj::set_background_color(const const_picture &background_color)
 {
-	get_screen()->impl->thread->get_batch_queue()
-		->run_as(RUN_AS,
-			 [impl=this->impl, background_color]
-			 (IN_THREAD_ONLY)
-			 {
-				 impl->set_background_color(IN_THREAD,
-							    background_color);
-			 });
+	impl->set_background_color(background_color);
 }
+
 
 void elementObj::remove_background_color()
 {
-	get_screen()->impl->thread->get_batch_queue()
-		->run_as(RUN_AS,
-			 [impl=this->impl]
-			 (IN_THREAD_ONLY)
-			 {
-				 impl->remove_background_color(IN_THREAD);
-			 });
+	impl->remove_background_color();
 }
 
 ref<obj> elementObj::do_on_state_update(const element_state_update_handler_t &h)

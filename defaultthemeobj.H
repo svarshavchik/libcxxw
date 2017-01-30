@@ -1,3 +1,7 @@
+/*
+** Copyright 2017 Double Precision, Inc.
+** See COPYING for distribution information.
+*/
 #ifndef defaultthemeobj_H
 #define defaultthemeobj_H
 

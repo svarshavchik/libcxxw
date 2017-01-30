@@ -57,14 +57,17 @@ class LIBCXX_HIDDEN solidColorPictureObj
 
 const_picture screenObj::create_solid_color_picture(const rgb &color) const
 {
-	return impl->screen_solidcolorpictures::map->
+	return impl->create_solid_color_picture(color);
+}
+
+const_picture screenObj::implObj::create_solid_color_picture(const rgb &color)
+{
+	return screen_solidcolorpictures::map->
 		find_or_create(color,
 			       [this, &color]
 			       {
 				       auto impl=ref<solidColorPictureObj>
-					       ::create(this->get_connection()
-							->impl->thread,
-							color);
+					       ::create(thread, color);
 
 				       return ref<pictureObj>::create(impl);
 			       });

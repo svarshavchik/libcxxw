@@ -7,7 +7,9 @@
 #include "connection_thread.H"
 #include "screen_depthinfo.H"
 #include "defaulttheme.H"
+#include "background_color.H"
 #include "xid_t.H"
+#include "picture.H"
 #include <x/mpobj.H>
 #include <x/weakptr.H>
 #include <x/refptr_traits.H>
@@ -214,7 +216,8 @@ screen::base::visual_t screenObj::implObj
 //
 // Theme access
 
-dim_t screenObj::implObj::get_theme_dim_t(const std::string &id,
+dim_t screenObj::implObj::get_theme_dim_t(const std::experimental
+					  ::string_view &id,
 					  dim_t default_value)
 {
 	current_theme_t::lock lock(current_theme);
@@ -222,7 +225,7 @@ dim_t screenObj::implObj::get_theme_dim_t(const std::string &id,
 	return (*lock)->get_theme_dim_t(id, default_value);
 }
 
-rgb screenObj::implObj::get_theme_color(const std::string &id,
+rgb screenObj::implObj::get_theme_color(const std::experimental::string_view &id,
 					const rgb &default_value)
 {
 	current_theme_t::lock lock(current_theme);
@@ -231,12 +234,81 @@ rgb screenObj::implObj::get_theme_color(const std::string &id,
 }
 
 rgb::gradient_t screenObj::implObj
-::get_theme_color_gradient(const std::string &id,
+::get_theme_color_gradient(const std::experimental::string_view &id,
 			   const rgb::gradient_t &default_value)
 {
 	current_theme_t::lock lock(current_theme);
 
 	return (*lock)->get_theme_color_gradient(id, default_value);
 }
+
+////////////////////////////////////////////////////////////////////////////
+
+class LIBCXX_HIDDEN theme_background_colorObj : public background_colorObj {
+
+	struct s_info {
+
+		rgb current_rgb;
+		const_picture current_color;
+	};
+
+	typedef mpobj<s_info> info_t;
+
+	const std::string theme_color;
+	const ref<screenObj::implObj> screen;
+
+	info_t info;
+
+ public:
+
+	theme_background_colorObj(const std::experimental::string_view
+				  &theme_color,
+				  const rgb &current_rgb,
+				  const const_picture &current_picture,
+				  const ref<screenObj::implObj> &screen)
+		: theme_color(theme_color),
+		screen(screen),
+		info{current_rgb, current_picture}
+		{
+		}
+
+	~theme_background_colorObj()=default;
+
+	const_picture get_current_color() override
+	{
+		info_t::lock lock(info);
+
+		// Check the current theme color. Did it change?
+
+		auto current_rgb=screen->get_theme_color(theme_color,
+							 lock->current_rgb);
+
+		if (current_rgb != lock->current_rgb)
+		{
+			// Create a new color.
+
+			lock->current_color=screen->create_solid_color_picture
+				(current_rgb);
+
+			lock->current_rgb=current_rgb;
+		}
+
+		return lock->current_color;
+	}
+};
+
+background_color screenObj::implObj
+::create_background_color(const std::experimental::string_view &color_name,
+			  const rgb &default_value)
+{
+	auto current_rgb=get_theme_color(color_name, default_value);
+
+	return ref<theme_background_colorObj>
+		::create(color_name,
+			 current_rgb,
+			 create_solid_color_picture(current_rgb),
+			 ref<screenObj::implObj>(this));
+}
+
 
 LIBCXXW_NAMESPACE_END

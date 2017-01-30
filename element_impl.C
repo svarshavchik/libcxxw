@@ -9,8 +9,10 @@
 #include "batch_queue.H"
 #include "generic_window_handler.H"
 #include "draw_info.H"
+#include "background_color.H"
 #include "x/w/element_state.H"
 #include "x/callback_list.H"
+#include "element_screen.H"
 #include <x/logger.H>
 
 LOG_CLASS_INIT(LIBCXX_NAMESPACE::w::elementObj::implObj);
@@ -312,8 +314,7 @@ public:
 	}
 };
 
-void elementObj::implObj::prepare_draw_info(IN_THREAD_ONLY,
-					    draw_info &)
+void elementObj::implObj::prepare_draw_info(IN_THREAD_ONLY, draw_info &)
 {
 }
 
@@ -366,6 +367,44 @@ void elementObj::implObj::clear_to_color(IN_THREAD_ONLY,
 					     (area.y-di.background_y),
 					     area);
 	}
+}
+
+void elementObj::implObj::remove_background_color()
+{
+	get_screen()->impl->thread->get_batch_queue()
+		->run_as(RUN_AS,
+			 [impl=ref<implObj>(this)]
+			 (IN_THREAD_ONLY)
+			 {
+				 impl->remove_background_color(IN_THREAD);
+			 });
+}
+
+void elementObj::implObj
+::set_background_color(const std::experimental::string_view &name,
+		       const rgb &default_value)
+{
+	set_background_color(get_screen()->impl
+			     ->create_background_color(name, default_value));
+}
+
+void elementObj::implObj
+::set_background_color(const const_picture &background_color)
+{
+	set_background_color(background_color::base
+			     ::create_background_color(background_color));
+}
+
+void elementObj::implObj
+::set_background_color(const background_color &c)
+{
+	get_screen()->impl->thread->get_batch_queue()
+		->run_as(RUN_AS,
+			 [impl=ref<implObj>(this), c]
+			 (IN_THREAD_ONLY)
+			 {
+				 impl->set_background_color(IN_THREAD, c);
+			 });
 }
 
 LIBCXXW_NAMESPACE_END

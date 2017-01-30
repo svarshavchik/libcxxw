@@ -7,13 +7,12 @@
 
 #include "x/w/rectangle.H"
 #include "x/w/screenfwd.H"
-#include "x/w/picturefwd.H"
 #include "x/w/generic_windowobj.H"
 #include "x/w/element_state.H"
 #include "connection_threadfwd.H"
 #include "elementfwd.H"
 #include "draw_infofwd.H"
-#include "picture.H"
+#include "background_colorfwd.H"
 #include "metrics_horizvertobj.H"
 #include <x/obj.H>
 #include <x/callback_list.H>
@@ -90,12 +89,38 @@ class LIBCXX_HIDDEN elementObj::implObj : virtual public obj,
 
 	//! Use parent display element's background color.
 
+	//! Schedules the virtual method to be invoked by the connection thread.
+
+	void remove_background_color();
+
+	//! Use parent display element's background color.
+
 	virtual void remove_background_color(IN_THREAD_ONLY)=0;
 
-	//! Use its own background color.
+
+	//! Use a standard background color for this display element.
+
+	//! If there's no background color of the given name, use the
+	//! default value.
+
+	void set_background_color(const std::experimental::string_view &name,
+				  const rgb &default_value);
+
+	//! Use a custom background color for this display element.
+
+	void set_background_color(const const_picture &background_color);
+
+	//! Set the background color.
+
+	//! Schedules the virtual method to be invoked by the connection thread.
+
+	void set_background_color(const background_color &);
+
+	//! Install the background color
 
 	virtual void set_background_color(IN_THREAD_ONLY,
-					  const const_picture &)=0;
+					  const background_color &)=0;
+
 
 	//! Return the element's screen
 	screen get_screen();

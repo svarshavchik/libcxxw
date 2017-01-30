@@ -12,6 +12,7 @@
 #include "screen.H"
 #include "xid_t.H"
 #include "element_screen.H"
+#include "background_color.H"
 #include "x/w/values_and_mask.H"
 #include <xcb/xcb_icccm.h>
 LIBCXXW_NAMESPACE_START
@@ -29,9 +30,11 @@ static rectangle element_position(const rectangle &r)
 	return cpy;
 }
 
-static const_picture default_background_color(const screen &s)
+static background_color default_background_color(const screen &s)
 {
-	return s->create_solid_color_picture(rgb(0xCCCC, 0xCCCC, 0xCCCC));
+	return s->impl
+		->create_background_color("mainwindow_background_color",
+					  DEFAULT_MAINWINDOW_BACKGROUND_COLOR);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -62,8 +65,9 @@ generic_windowObj::handlerObj
 				   params.window_handler_params
 				   .events_and_mask.m.at(XCB_CW_EVENT_MASK)),
 	current_position(params.window_handler_params.initial_position),
-	background_color_thread_only(default_background_color
-				     (params.window_handler_params.screenref))
+	current_background_color_thread_only(default_background_color
+					     (params.window_handler_params
+					      .screenref))
 {
 }
 
@@ -107,7 +111,8 @@ draw_info generic_windowObj::handlerObj
 	return draw_info{
 		        picture_internal(this),
 			initial_viewport,
-			background_color(IN_THREAD)->impl,
+			current_background_color(IN_THREAD)->get_current_color()
+				->impl,
 			0,
 			0,
 	};
@@ -191,14 +196,16 @@ void generic_windowObj::handlerObj::request_visibility(IN_THREAD_ONLY,
 
 void generic_windowObj::handlerObj::remove_background_color(IN_THREAD_ONLY)
 {
-	background_color(IN_THREAD)=default_background_color(get_screen());
+	current_background_color(IN_THREAD)=
+		default_background_color(get_screen());
 	schedule_redraw_if_visible(IN_THREAD);
 }
 
 void generic_windowObj::handlerObj::set_background_color(IN_THREAD_ONLY,
-							 const const_picture &p)
+							 const background_color
+							 &c)
 {
-	background_color(IN_THREAD)=p;
+	current_background_color(IN_THREAD)=c;
 	schedule_redraw_if_visible(IN_THREAD);
 }
 

@@ -7,6 +7,7 @@
 
 #include "element.H"
 #include "container.H"
+#include "background_colorfwd.H"
 #include "connection_threadfwd.H"
 #include "x/w/metrics/axis.H"
 #include "x/w/picturefwd.H"
@@ -29,7 +30,8 @@ class LIBCXX_HIDDEN child_elementObj : public elementObj::implObj {
 
 	//! This display element's background color
 
-	update_background_color_t background_color_thread_only=no_background();
+	update_background_color_t current_background_color_thread_only=
+		no_background();
 
 	//! Return a no-op update_background_color_t;
 
@@ -37,7 +39,7 @@ class LIBCXX_HIDDEN child_elementObj : public elementObj::implObj {
 
  public:
 
-	THREAD_DATA_ONLY(background_color);
+	THREAD_DATA_ONLY(current_background_color);
 
 	//! My parent element
 	const ref<containerObj::implObj> container;
@@ -71,7 +73,7 @@ class LIBCXX_HIDDEN child_elementObj : public elementObj::implObj {
 	//! Use its own background color.
 
 	void set_background_color(IN_THREAD_ONLY,
-				  const const_picture &) override;
+				  const background_color &) override;
 
 	//! Invoke parent_element->draw_info(), and update the results.
 	draw_info get_draw_info(IN_THREAD_ONLY,

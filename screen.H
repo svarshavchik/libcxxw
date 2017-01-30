@@ -12,6 +12,7 @@
 #include "connection.H"
 #include "connection_threadfwd.H"
 #include "defaultthemefwd.H"
+#include "background_colorfwd.H"
 #include "xid_t.H"
 #include <x/logger.H>
 #include <x/vector.H>
@@ -143,17 +144,33 @@ class LIBCXX_HIDDEN screenObj::implObj
 	// Lock the current theme, and obtain the theme-specific data.
 
 	//! Retrieve theme dimension
-	dim_t get_theme_dim_t(const std::string &id,
+	dim_t get_theme_dim_t(const std::experimental::string_view &id,
 			      dim_t default_value);
 
 	//! Retrieve theme color
-	rgb get_theme_color(const std::string &id,
-				   const rgb &default_value);
+	rgb get_theme_color(const std::experimental::string_view &id,
+			    const rgb &default_value);
 
 	//! Retrieve theme gradient
-	rgb::gradient_t get_theme_color_gradient(const std::string &id,
+	rgb::gradient_t get_theme_color_gradient(const std::experimental::string_view &id,
 						 const rgb::gradient_t
 						 &default_value);
+
+	//! Create a cached solid color picture;
+
+	const_picture create_solid_color_picture(const rgb &color);
+
+	//! Create a background color from the current theme.
+
+	//! This returns a background_color object. Its get_current_color()
+	//! method returns the background color from the current theme. If
+	//! the theme changes, the returned color will be from the new theme.
+	//!
+	//! The returned object holds a reference to this screen object.
+
+	background_color create_background_color(const std::experimental
+						 ::string_view &color_name,
+						 const rgb &default_value);
 
 	// Compute # of pixels from millimeters, for width or height.
 

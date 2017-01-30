@@ -18,6 +18,10 @@ libcxxw_la_LIBADD=-lcxx
 libcxxw_la_LDFLAGS=$(STATICLINKFLAGS)
 
 libcxxw_la_SOURCES=\
+	background_color.C			    \
+	background_color.H			    \
+	background_colorfwd.H			    \
+	background_colorobj.H			    \
 	batch_queue.C				    \
 	batch_queue.H				    \
 	batch_queueobj.H			    \
