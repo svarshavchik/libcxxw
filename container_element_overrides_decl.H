@@ -16,3 +16,5 @@ void inherited_visibility_updated(IN_THREAD_ONLY,
 void process_updated_position(IN_THREAD_ONLY) override;
 
 void request_visibility_recursive(IN_THREAD_ONLY, bool flag) override;
+
+void theme_updated(IN_THREAD_ONLY) override;

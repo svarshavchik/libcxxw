@@ -7,6 +7,7 @@
 #include "connection_thread.H"
 #include "window_handler.H"
 #include "xid_t.H"
+#include "catch_exceptions.H"
 #include <xcb/xproto.h>
 #include <x/sentry.H>
 
@@ -68,6 +69,25 @@ void connection_threadObj::run_event(const xcb_generic_event_t *event)
 					 }));
 		}
 		return;
+	case XCB_PROPERTY_NOTIFY:
+		{
+			GET_MSG(property_notify_event);
+
+			if (msg->window == root_window_thread_only &&
+			    msg->atom == info->atoms_info.cxxwtheme)
+			{
+				try {
+					(*cxxwtheme_changed_thread_only)();
+				} CATCH_EXCEPTIONS;
+
+				for (const auto &window_handler
+					     : *window_handlers_thread_only)
+					window_handler.second
+						->theme_updated_event
+						(IN_THREAD);
+			}
+		}
+		return;
 	case XCB_CLIENT_MESSAGE:
 		{
 			GET_MSG(client_message_event);
@@ -117,6 +137,22 @@ void connection_threadObj::run_event(const xcb_generic_event_t *event)
 void connection_threadObj::recycle_xid(uint32_t xid)
 {
 	destroyed_xids_thread_only->erase(xid);
+}
+
+void connection_threadObj
+::dispatch_set_theme_changed_callback(xcb_window_t root_window,
+				      const std::function<void ()> &callback)
+{
+	root_window_thread_only=root_window;
+	*cxxwtheme_changed_thread_only=callback;
+
+	values_and_mask change_notify{XCB_CW_EVENT_MASK,
+			XCB_EVENT_MASK_PROPERTY_CHANGE};
+
+	xcb_change_window_attributes(info->conn,
+				     root_window,
+				     change_notify.mask(),
+				     change_notify.values().data());
 }
 
 LIBCXXW_NAMESPACE_END

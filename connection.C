@@ -67,6 +67,8 @@ connectionObj::implObj::implObj(const connection_info &info)
 
 // Extract screens
 
+// This is called by the constructor, to create the screens.
+
 static inline std::vector<ref<screenObj::implObj>>
 get_screens(const connection_thread &thread,
 	    const render &render_info,
@@ -153,6 +155,30 @@ get_screens(const connection_thread &thread,
 	return v;
 }
 
+// This is the callback that gets invoked when the CXXWTHEMES property is
+// updated.
+//
+// We take care of loading and installing the new theme into each
+// screen object. The connection thread takes care of notifying all windows.
+
+static inline void update_themes(const std::vector<ref<screenObj::implObj>> &s,
+				 const connection_thread &thread)
+{
+	auto theme_config=defaulttheme::base::get_config(s.at(0)->xcb_screen,
+							 thread);
+
+	for (const auto &screen:s)
+	{
+		auto new_theme=defaulttheme::create(screen->xcb_screen,
+						    theme_config);
+
+		screenObj::implObj::current_theme_t::lock
+			lock(screen->current_theme);
+
+		*lock=new_theme;
+	}
+}
+
 ////////////////////////////////////////////////////////////////////////////
 //
 // Wrapper to start and stop the connection thread.
@@ -180,6 +206,12 @@ connectionObj::implObj::implObj(const connection_info &info,
 	  thread(thread),
 	  screens(get_screens(thread, render_info, setup))
 {
+	thread->set_theme_changed_callback(screens.at(0)->xcb_screen->root,
+					   [screens=this->screens, thread]
+					   {
+						   update_themes(screens,
+								 thread);
+					   });
 }
 
 connectionObj::implObj::~implObj()

@@ -48,10 +48,14 @@ class connectionObj : virtual public obj {
 
 	void on_disconnect(const std::function<void ()> &callback);
 
-
 	//! Returns the current theme and scaling factor.
 
-	std::pair<std::string, int> current_theme();
+	std::pair<std::string, int> current_theme() const;
+
+	//! Sets a new theme and scaling factor.
+
+	void set_theme(const std::string &identifier,
+		       int factor);
 };
 
 LIBCXXW_NAMESPACE_END

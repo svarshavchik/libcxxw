@@ -407,4 +407,8 @@ void elementObj::implObj
 			 });
 }
 
+void elementObj::implObj::theme_updated(IN_THREAD_ONLY)
+{
+}
+
 LIBCXXW_NAMESPACE_END

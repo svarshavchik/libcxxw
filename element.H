@@ -368,6 +368,17 @@ class LIBCXX_HIDDEN elementObj::implObj : virtual public obj,
 			    const clip_region_set &,
 			    const draw_info &di,
 			    const rectangle_set &areas);
+
+	//! A new theme has been installed.
+
+	//! This is invoked from the window handler's theme_updated_event(),
+	//! which is going to take care of redrawing the entire window.
+	//!
+	//! The element is responsible for doing everything else.
+	//!
+	//! The default implementation does nothing.
+
+	virtual void theme_updated(IN_THREAD_ONLY);
 };
 
 LIBCXXW_NAMESPACE_END

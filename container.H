@@ -136,6 +136,10 @@ public:
 
 	void request_visibility_recursive(IN_THREAD_ONLY, bool flag);
 
+	//! Recursively invoke theme_updated() for all child elements.
+
+	void theme_updated(IN_THREAD_ONLY);
+
  private:
 	void propagate_inherited_visibility(IN_THREAD_ONLY, bool flag);
 };

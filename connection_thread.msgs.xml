@@ -28,4 +28,25 @@
       <decl>const x::function&lt;void (IN_THREAD_ONLY)> &amp;func</decl>
     </param>
   </method>
+
+  <method name="set_theme_changed_callback">
+    <comment>
+      //! Installs a callback that gets invoked when CXXWTHEME changes.
+    </comment>
+
+    <param>
+      <comment>
+	//! screen 0's root window.
+      </comment>
+      <decl>xcb_window_t root_window</decl>
+    </param>
+
+    <param>
+      <comment>
+	//! The callback
+      </comment>
+
+      <decl>const std::function&lt;void ()&gt; &amp;callback</decl>
+    </param>
+  </method>
 </class>

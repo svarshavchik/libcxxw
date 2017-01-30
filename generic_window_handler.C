@@ -221,6 +221,12 @@ void generic_windowObj::handlerObj::exposure_event(IN_THREAD_ONLY,
 	draw(IN_THREAD, di, areas);
 }
 
+void generic_windowObj::handlerObj::theme_updated_event(IN_THREAD_ONLY)
+{
+	schedule_redraw_if_visible(IN_THREAD);
+	theme_updated(IN_THREAD);
+}
+
 void generic_windowObj::handlerObj::configure_notify(IN_THREAD_ONLY,
 						     const rectangle &r)
 {

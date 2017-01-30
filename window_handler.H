@@ -81,6 +81,10 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 	virtual void exposure_event(IN_THREAD_ONLY,
 				    rectangle_set &);
 
+	//! A new theme has been installed
+
+	virtual void theme_updated_event(IN_THREAD_ONLY);
+
 	//! Configure notification
 
 	virtual void configure_notify(IN_THREAD_ONLY,

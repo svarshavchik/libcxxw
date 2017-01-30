@@ -151,6 +151,9 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	void exposure_event(IN_THREAD_ONLY,
 			    rectangle_set &areas) override;
 
+	//! Theme update notification.
+	void theme_updated_event(IN_THREAD_ONLY) override;
+
 	//! Do not redraw after the window's visibility is updated.
 
 	//! Instead, we redraw in response to exposure events.

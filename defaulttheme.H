@@ -23,7 +23,7 @@ public:
 	typedef defaultthemeObj::config config;
 
 	//! Load the theme configuration.
-	static config get_config(xcb_screen_t *screen_0,
+	static config get_config(const xcb_screen_t *screen_0,
 				 const connection_thread &thread);
 };
 

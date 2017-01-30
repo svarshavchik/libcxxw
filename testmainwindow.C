@@ -256,9 +256,105 @@ void runtestflashwithcolor(const testmainwindowoptions &options)
 	}
 }
 
+void runtestflashwiththeme(const testmainwindowoptions &options)
+{
+	{
+		clear_to_color_stats_t::lock lock(clear_element_counters);
+
+		*lock=clear_to_color_stats();
+	}
+
+	alarm(30);
+
+	LIBCXX_NAMESPACE::destroy_callback::base::guard guard;
+
+	auto main_window=LIBCXX_NAMESPACE::w::main_window::base
+		::create([&]
+			 (const auto &main_window)
+			 {
+				 LIBCXX_NAMESPACE::w::gridlayoutmanager m=main_window->get_layoutmanager();
+				 auto e=m->insert(0, 0)->create_empty_element
+				 ({
+					 LIBCXX_NAMESPACE::w::metrics::axis
+						 ::horizontal,
+						 main_window->get_screen(),
+						 10, 10, 10 }, {
+					 LIBCXX_NAMESPACE::w::metrics::axis
+						 ::vertical,
+						 main_window->get_screen(),
+						 10, 10, 10 });
+			 });
+
+	auto original_theme=main_window->get_screen()->get_connection()
+		->current_theme();
+
+	std::string alternate_theme;
+
+	for (const auto &theme:LIBCXX_NAMESPACE::w::connection::base
+		     ::available_themes())
+	{
+		if (theme.identifier == original_theme.first)
+			continue;
+		alternate_theme=theme.identifier;
+		break;
+	}
+
+	if (alternate_theme.empty())
+		throw EXCEPTION("Couldn't find an alternate theme to use");
+
+	guard(main_window->get_screen()->mcguffin());
+
+	countstateupdate c=countstateupdate::create();
+
+	main_window->show_all();
+
+	main_window->get_screen()->get_connection()->on_disconnect([]
+								   {
+									   exit(1);
+								   });
+	bool flag=true;
+
+	for (int i=0; i<4; ++i)
+	{
+		{
+			clear_to_color_stats_t::lock lock(clear_element_counters);
+
+			lock.wait_for(std::chrono::milliseconds(500),
+				      [&]
+				      { return false; });
+		}
+
+		main_window->get_screen()->get_connection()
+			->set_theme(flag ? alternate_theme:original_theme.first,
+				    original_theme.second);
+
+		flag= !flag;
+		{
+			clear_to_color_stats_t::lock lock(clear_element_counters);
+
+			lock.wait_for(std::chrono::milliseconds(500),
+				      [&]
+				      { return false; });
+		}
+	}
+}
+
 void testflashwithcolor(const testmainwindowoptions &options)
 {
 	runtestflashwithcolor(options);
+
+	clear_to_color_stats_t::lock lock(clear_element_counters);
+
+	if (lock->number_of_calls != 5 || lock->number_of_areas != 5)
+		throw EXCEPTION("There were " << lock->number_of_calls
+				<< " clear_to_color() calls, for "
+				<< lock->number_of_areas
+				<< " rectangles instead of five");
+}
+
+void testflashwiththeme(const testmainwindowoptions &options)
+{
+	runtestflashwiththeme(options);
 
 	clear_to_color_stats_t::lock lock(clear_element_counters);
 
@@ -278,6 +374,10 @@ int main(int argc, char **argv)
 	try {
 		if (options.state->value)
 			teststate();
+		else if (options.usetheme->value)
+		{
+			testflashwiththeme(options);
+		}
 		else
 		{
 			if (options.showhide->value)

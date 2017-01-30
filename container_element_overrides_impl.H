@@ -29,3 +29,8 @@ void ELEMENT_SUBCLASS::request_visibility_recursive(IN_THREAD_ONLY, bool flag)
 {
 	containerObj::implObj::request_visibility_recursive(IN_THREAD, flag);
 }
+
+void ELEMENT_SUBCLASS::theme_updated(IN_THREAD_ONLY)
+{
+	containerObj::implObj::theme_updated(IN_THREAD);
+}

@@ -243,6 +243,13 @@ rgb::gradient_t screenObj::implObj
 }
 
 ////////////////////////////////////////////////////////////////////////////
+//
+// Implements background_color object as a color specified by the theme.
+//
+// The current background color picture is cached. Each call to
+// get_current_color() retrieves the color from theme, which is just an
+// unordered_map lookup, compares it to the cached color, and creates a
+// new picture, if necessary.
 
 class LIBCXX_HIDDEN theme_background_colorObj : public background_colorObj {
 
@@ -260,6 +267,8 @@ class LIBCXX_HIDDEN theme_background_colorObj : public background_colorObj {
 	info_t info;
 
  public:
+
+	// The constructor gets initializes with the current background color
 
 	theme_background_colorObj(const std::experimental::string_view
 				  &theme_color,

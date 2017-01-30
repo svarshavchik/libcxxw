@@ -16,10 +16,12 @@
 #include <x/chrcasecmp.H>
 #include <x/strtok.H>
 #include <x/join.H>
+#include <x/glob.H>
 #include <x/xml/doc.H>
 
 #include <sstream>
 #include <cmath>
+#include <algorithm>
 
 LIBCXXW_NAMESPACE_START
 
@@ -275,7 +277,7 @@ void load_cxxwtheme_property(const screen &screen0,
 // Used by cxxwtheme tool, which overrides the theme to the default, for
 // itself, to find the currently set theme.
 
-std::pair<std::string, int> connectionObj::current_theme()
+std::pair<std::string, int> connectionObj::current_theme() const
 {
 	auto property=cxxwtheme_property(impl->screens.at(0)->xcb_screen,
 					 impl->thread);
@@ -288,8 +290,84 @@ std::pair<std::string, int> connectionObj::current_theme()
 			};
 }
 
+void connectionObj::set_theme(const std::string &identifier,
+			      int factor)
+{
+	auto available_themes=connection::base::available_themes();
+
+	if (std::find_if(available_themes.begin(),
+			 available_themes.end(),
+			 [&]
+			 (const auto &t)
+			 {
+				 return t.identifier == identifier;
+			 }) == available_themes.end())
+		throw EXCEPTION(gettextmsg(_("No such theme: %1%"),
+					   identifier));
+
+	if (factor < SCALE_MIN || factor > SCALE_MAX)
+		throw EXCEPTION(gettextmsg(_("Theme scaling factor must be between %1% and %2%"),
+					   SCALE_MIN, SCALE_MAX));
+
+	load_cxxwtheme_property(impl->screens.at(0)->xcb_screen,
+				impl->thread,
+				identifier,
+				factor);
+}
+
+std::vector<connection::base::available_theme>
+connection::base::available_themes()
+{
+	std::vector<connection::base::available_theme> themes;
+
+	std::vector<std::string> filenames;
+
+	glob::create()->expand(themedirroot() + "/*/theme.xml")->get(filenames);
+
+	for (const auto &theme_xml:filenames)
+	{
+		// Extract <name> from each theme.
+
+		auto xml=x::xml::doc::create(theme_xml,
+					     "nonet xinclude");
+
+		auto directory=
+			theme_xml.substr(0, theme_xml.rfind('/'));
+
+		std::string name=directory.substr(directory.rfind('/')+1);
+		std::string description=name;
+
+		auto root=xml->readlock();
+
+		if (root->get_root())
+		{
+			auto xpath=root->get_xpath("/theme/name");
+
+			if (xpath->count())
+			{
+				xpath->to_node(1);
+				description=root->get_text();
+			}
+		}
+
+		themes.push_back({name, description});
+	}
+
+	// In alphabetical order.
+
+	std::sort(themes.begin(), themes.end(),
+		  [&]
+		  (const auto &info1,
+		   const auto &info2)
+		  {
+			  return info1.description < info2.description;
+		  });
+
+	return themes;
+}
+
 defaulttheme::base::config
-defaulttheme::base::get_config(xcb_screen_t *screen_0,
+defaulttheme::base::get_config(const xcb_screen_t *screen_0,
 			       const connection_thread &thread)
 {
 	auto property=cxxwtheme_property(screen_0, thread);

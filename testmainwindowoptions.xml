@@ -23,10 +23,19 @@
     <longopt>showhide</longopt>
     <descr>Change color via show()/hide()</descr>
   </option>
+  <option>
+    <name>usetheme</name>
+    <type>bool</type>
+    <default>false</default>
+    <opt>t</opt>
+    <longopt>usetheme</longopt>
+    <descr>Change color by changing the theme</descr>
+  </option>
   <mutex>
     <name>state</name>
     <name>usemain</name>
     <name>showhide</name>
+    <name>usetheme</name>
   </mutex>
   <defaultoptions />
 </optclass>

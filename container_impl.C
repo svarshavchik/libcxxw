@@ -138,4 +138,20 @@ void containerObj::implObj::request_visibility_recursive(IN_THREAD_ONLY,
 		(IN_THREAD, flag);
 }
 
+void containerObj::implObj::theme_updated(IN_THREAD_ONLY)
+{
+	invoke_layoutmanager
+		([&]
+		 (const auto &manager)
+		 {
+			 manager->for_each_child
+				 (IN_THREAD,
+				  [&]
+				  (const element &e)
+				  {
+					  e->impl->theme_updated(IN_THREAD);
+				  });
+		 });
+}
+
 LIBCXXW_NAMESPACE_END

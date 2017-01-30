@@ -78,4 +78,8 @@ void window_handlerObj::exposure_event(IN_THREAD_ONLY,
 {
 }
 
+void window_handlerObj::theme_updated_event(IN_THREAD_ONLY)
+{
+}
+
 LIBCXXW_NAMESPACE_END

@@ -82,6 +82,14 @@ class LIBCXX_HIDDEN connection_threadObj
 
 	bool process_visibility_updated(IN_THREAD_ONLY);
 
+	// Root window on screen 0
+
+	xcb_window_t root_window_thread_only;
+
+	// Callback for when CXXWTHEME on the root window change.s
+
+	std::function<void ()> *cxxwtheme_changed_thread_only;
+
 	// Active window handlers.
 
 	std::unordered_map<xcb_window_t,

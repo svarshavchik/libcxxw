@@ -44,6 +44,7 @@ void connection_threadObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin)
 	elements_to_redraw_set elements_to_redraw;
 	containers_2_recalculate_map containers_2_recalculate;
 	element_set_t element_position_updated;
+	std::function<void ()> cxxwtheme_changed=[] {};
 
 	window_handlers_thread_only= &window_handlers;
 	destroyed_xids_thread_only= &destroyed_xids;
@@ -54,6 +55,9 @@ void connection_threadObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin)
 
 	visibility_updated_thread_only= &visibility_updated;
 	disconnect_callback_thread_only=[] {};
+
+	root_window_thread_only=XCB_NONE;
+	cxxwtheme_changed_thread_only=&cxxwtheme_changed;
 
 	// Set two file descriptors to poll.
 	//

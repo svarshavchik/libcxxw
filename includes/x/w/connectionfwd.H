@@ -11,6 +11,7 @@
 LIBCXXW_NAMESPACE_START
 
 class connectionObj;
+class connectionBase;
 
 //! A connection to the display server
 
@@ -45,14 +46,23 @@ class connectionObj;
 //! \c mcguffin() returns an opaque mcguffin. When the mcguffin gets destroyed
 //! the underlying display server connection is truly gone, and all resources
 //! have been released.
+//!
+//! \par Themes
+//!
+//! \code
+//! std::pair<std::string, int> conn->current_theme();
+//! \endcode
+//!
+//! Returns the identifier for the current theme, and the scaling factor
+//! percentage.
 
-typedef ref<connectionObj> connection;
+typedef ref<connectionObj, connectionBase> connection;
 
 //! A constant connection to the display server
 
 //! \see connection
 
-typedef const_ref<connectionObj> const_connection;
+typedef const_ref<connectionObj, connectionBase> const_connection;
 
 LIBCXXW_NAMESPACE_END
 
