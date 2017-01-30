@@ -6,6 +6,7 @@
 #include "screen.H"
 #include "connection_thread.H"
 #include "screen_depthinfo.H"
+#include "defaulttheme.H"
 #include "xid_t.H"
 #include <x/mpobj.H>
 #include <x/weakptr.H>
@@ -159,6 +160,7 @@ screenObj::implObj::implObj(const xcb_screen_t *xcb_screen,
 			    size_t screen_number,
 			    const render &render_info,
 			    const vector<const_ref<depthObj>> &screen_depths,
+			    const defaulttheme &current_theme,
 			    const screen::base::visual_t &toplevelwindow_visual,
 			    const const_pictformat &toplevelwindow_pictformat,
 			    const connection_thread &thread)
@@ -171,7 +173,8 @@ screenObj::implObj::implObj(const xcb_screen_t *xcb_screen,
 				  ::create(thread, xcb_screen->root,
 					   toplevelwindow_visual->impl
 					   ->visual_id)),
-	  screen_depths(screen_depths)
+	  screen_depths(screen_depths),
+	  current_theme(current_theme)
 {
 }
 
@@ -205,6 +208,35 @@ screen::base::visual_t screenObj::implObj
 		}
 	}
 	throw EXCEPTION("Cannot find root visual");
+}
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Theme access
+
+dim_t screenObj::implObj::get_theme_dim_t(const std::string &id,
+					  dim_t default_value)
+{
+	current_theme_t::lock lock(current_theme);
+
+	return (*lock)->get_theme_dim_t(id, default_value);
+}
+
+rgb screenObj::implObj::get_theme_color(const std::string &id,
+					const rgb &default_value)
+{
+	current_theme_t::lock lock(current_theme);
+
+	return (*lock)->get_theme_color(id, default_value);
+}
+
+rgb::gradient_t screenObj::implObj
+::get_theme_color_gradient(const std::string &id,
+			   const rgb::gradient_t &default_value)
+{
+	current_theme_t::lock lock(current_theme);
+
+	return (*lock)->get_theme_color_gradient(id, default_value);
 }
 
 LIBCXXW_NAMESPACE_END

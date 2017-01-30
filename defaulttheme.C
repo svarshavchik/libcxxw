@@ -341,7 +341,10 @@ defaultthemeObj::defaultthemeObj(const xcb_screen_t *screen,
 		}
 	} catch (const exception &e)
 	{
-		e->caught();
+		std::cerr << "An error occured while parsing the "
+			  << themename << " theme configuration file: "
+			  << e << std::endl;
+		_exit(1);
 	}
 }
 
@@ -417,7 +420,12 @@ static bool parse_dim(const xml::doc::base::readlock &lock,
 
 	dim_t min_value=0;
 
-	std::istringstream(lock->get_any_attribute("min")) >> min_value;
+	auto min_value_s=lock->get_any_attribute("min");
+
+	if (!min_value_s.empty())
+	{
+		std::istringstream(min_value_s) >> min_value;
+	}
 
 	if (min_value > mm)
 		mm=min_value;
@@ -700,10 +708,10 @@ void defaultthemeObj::load_color_gradients(const xml::doc &config)
 
 /////////////////////////////////////////////////////////////////////////////
 
-dim_t defaultthemeObj::get_theme_dim_t(const std::string &id,
+dim_t defaultthemeObj::get_theme_dim_t(const std::experimental::string_view &id,
 				       dim_t default_value)
 {
-	auto iter=dims.find(id);
+	auto iter=dims.find(std::string(id.begin(), id.end()));
 
 	if (iter == dims.end())
 		return default_value;
@@ -711,9 +719,8 @@ dim_t defaultthemeObj::get_theme_dim_t(const std::string &id,
 	return iter->second;
 }
 
-
-const rgb &defaultthemeObj::get_theme_color(const std::string &id,
-					    const rgb &default_value)
+rgb defaultthemeObj::get_theme_color(const std::experimental::string_view &id,
+				     const rgb &default_value)
 {
 	std::vector<std::string> ids;
 
@@ -731,9 +738,9 @@ const rgb &defaultthemeObj::get_theme_color(const std::string &id,
 	return default_value;
 }
 
-const rgb::gradient_t
-&defaultthemeObj::get_theme_color_gradient(const std::string &id,
-					   const rgb::gradient_t &default_value)
+rgb::gradient_t
+defaultthemeObj::get_theme_color_gradient(const std::experimental::string_view &id,
+					  const rgb::gradient_t &default_value)
 {
 	std::vector<std::string> ids;
 

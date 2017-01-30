@@ -14,6 +14,7 @@
 #include <string>
 #include <unordered_map>
 #include <xcb/xproto.h>
+#include <experimental/string_view>
 
 LIBCXXW_NAMESPACE_START
 
@@ -67,17 +68,17 @@ public:
  public:
 
 	//! Retrieve theme dimension
-	dim_t get_theme_dim_t(const std::string &id,
+	dim_t get_theme_dim_t(const std::experimental::string_view &id,
 			      dim_t default_value);
 
 	//! Retrieve theme color
-	const rgb &get_theme_color(const std::string &id,
-				   const rgb &default_value);
+	rgb get_theme_color(const std::experimental::string_view &id,
+			    const rgb &default_value);
 
 	//! Retrieve theme gradient
-	const rgb::gradient_t &get_theme_color_gradient(const std::string &id,
-							const rgb::gradient_t
-							&default_value);
+	rgb::gradient_t get_theme_color_gradient(const std::experimental::string_view &id,
+						 const rgb::gradient_t
+						 &default_value);
 
 	//! Structure returned by \c INSERT_LIBX_NAMESPACE::w::defaulttheme::base::get_config()
 

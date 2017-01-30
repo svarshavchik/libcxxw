@@ -9,6 +9,7 @@
 #include "screen.H"
 #include "messages.H"
 #include "pictformat.H"
+#include "defaulttheme.H"
 #include "x/w/pictformat.H"
 #include <x/exception.H>
 #include <xcb/xcb_renderutil.h>
@@ -78,6 +79,14 @@ get_screens(const connection_thread &thread,
 
 	v.reserve(iter.rem);
 
+	if (iter.rem == 0)
+		throw EXCEPTION("No screens reported by the display server?");
+
+	// Peek at screen #0, in order to construct the default theme
+	// configuration.
+
+	auto theme_config=defaulttheme::base::get_config(iter.data, thread);
+
 	while (iter.rem)
 	{
 		auto xcb_screen=iter.data;
@@ -133,6 +142,8 @@ get_screens(const connection_thread &thread,
 				     screen_number++,
 				     render_info,
 				     screen_depths,
+				     defaulttheme::create(xcb_screen,
+							  theme_config),
 				     root_visual,
 				     root_pictformat,
 				     thread));

@@ -8,12 +8,14 @@
 #include "x/w/screen.H"
 #include "x/w/screen_depthinfo.H"
 #include "x/w/picturefwd.H"
-#include "x/w/rgbfwd.H"
+#include "x/w/rgb.H"
 #include "connection.H"
 #include "connection_threadfwd.H"
+#include "defaultthemefwd.H"
 #include "xid_t.H"
 #include <x/logger.H>
 #include <x/vector.H>
+#include <x/mpobj.H>
 #include <x/weakmultimapfwd.H>
 #include <xcb/xcb.h>
 
@@ -72,6 +74,16 @@ class LIBCXX_HIDDEN screenObj::implObj
 	// Same screen_depths as the public object.
 	const vector<const_ref<depthObj>> screen_depths;
 
+	// Current theme, mutex protected.
+	//
+	// The current theme must be consulted when constructing new
+	// display elements, and it is also accessed by the connection thread
+	// as well.
+
+	typedef mpobj<defaulttheme> current_theme_t;
+
+	current_theme_t current_theme;
+
 	// Create the screen_depths. Called from the constructor.
 
 	static vector<const_ref<depthObj>>
@@ -83,6 +95,7 @@ class LIBCXX_HIDDEN screenObj::implObj
 		size_t screen_number,
 		const render &render_info,
 		const vector<const_ref<depthObj>> &screen_depths,
+		const defaulttheme &current_theme,
 		const screen::base::visual_t &toplevelwindow_visual,
 		const const_pictformat &toplevelwindow_pictformat,
 		const connection_thread &thread);
@@ -126,6 +139,21 @@ class LIBCXX_HIDDEN screenObj::implObj
 	static screen::base::visual_t
 		root_visual(const xcb_screen_t *xcb_screen,
 			    const vector<const_ref<depthObj>> &screen_depths);
+
+	// Lock the current theme, and obtain the theme-specific data.
+
+	//! Retrieve theme dimension
+	dim_t get_theme_dim_t(const std::string &id,
+			      dim_t default_value);
+
+	//! Retrieve theme color
+	rgb get_theme_color(const std::string &id,
+				   const rgb &default_value);
+
+	//! Retrieve theme gradient
+	rgb::gradient_t get_theme_color_gradient(const std::string &id,
+						 const rgb::gradient_t
+						 &default_value);
 
 	// Compute # of pixels from millimeters, for width or height.
 
