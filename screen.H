@@ -16,7 +16,7 @@
 #include <x/logger.H>
 #include <x/vector.H>
 #include <x/mpobj.H>
-#include <x/weakmultimapfwd.H>
+#include <x/weakunordered_multimapfwd.H>
 #include <xcb/xcb.h>
 
 #include <cmath>
@@ -30,7 +30,7 @@ class render;
 class LIBCXX_HIDDEN screen_solidcolorpictures {
 
  public:
-	typedef x::weakmultimap<rgb, pictureObj> map_t;
+	typedef x::weakunordered_multimap<rgb, pictureObj> map_t;
 
 	map_t map;
 

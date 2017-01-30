@@ -2,10 +2,6 @@
 ** Copyright 2017 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
-/*
-** Copyright 2016 Double Precision, Inc.
-** See COPYING for distribution information.
-*/
 
 #ifndef x_w_rgb_H
 #define x_w_rgb_H
@@ -51,6 +47,12 @@ public:
 	bool operator==(const rgb &o) const
 	{
 		return r == o.r && g == o.g && b == o.b && a == o.a;
+	}
+
+	//! Comparator
+	bool operator!=(const rgb &o) const
+	{
+		return !operator==(o);
 	}
 
 	//! Comparator, for associative containers

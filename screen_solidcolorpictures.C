@@ -7,9 +7,10 @@
 #include "picture.H"
 #include "connection_thread.H"
 #include "x/w/rgb.H"
+#include "x/w/rgb_hash.H"
 #include "x/w/picture.H"
 #include "x/w/pictformat.H"
-#include <x/weakmultimap.H>
+#include <x/weakunordered_multimap.H>
 
 LIBCXXW_NAMESPACE_START
 
