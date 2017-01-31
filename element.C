@@ -61,7 +61,6 @@ void elementObj::set_background_color(const const_picture &background_color)
 	impl->set_background_color(background_color);
 }
 
-
 void elementObj::remove_background_color()
 {
 	impl->remove_background_color();

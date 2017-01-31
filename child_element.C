@@ -86,6 +86,7 @@ child_elementObj::no_background()
 void child_elementObj::remove_background_color(IN_THREAD_ONLY)
 {
 	current_background_color(IN_THREAD)=no_background();
+	own_background_color(IN_THREAD)=false;
 	schedule_redraw_if_visible(IN_THREAD);
 }
 
@@ -102,7 +103,13 @@ void child_elementObj::set_background_color(IN_THREAD_ONLY,
 			di.background_x=di.viewport.x;
 			di.background_y=di.viewport.y;
 		};
+	own_background_color(IN_THREAD)=true;
 	schedule_redraw_if_visible(IN_THREAD);
+}
+
+bool child_elementObj::has_own_background_color(IN_THREAD_ONLY)
+{
+	return own_background_color(IN_THREAD);
 }
 
 void child_elementObj::prepare_draw_info(IN_THREAD_ONLY,

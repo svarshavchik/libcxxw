@@ -302,6 +302,7 @@ test:
 	./testmainwindow
 	./testmainwindow --showhide
 	./testmainwindow --usemain
+	./testmainwindow --usetheme
 
 .PHONY: rpm
 

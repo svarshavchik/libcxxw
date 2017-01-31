@@ -33,6 +33,10 @@ class LIBCXX_HIDDEN child_elementObj : public elementObj::implObj {
 	update_background_color_t current_background_color_thread_only=
 		no_background();
 
+	//! Whether this display element uses its own background color
+
+	bool own_background_color_thread_only=false;
+
 	//! Return a no-op update_background_color_t;
 
 	static update_background_color_t no_background();
@@ -40,6 +44,7 @@ class LIBCXX_HIDDEN child_elementObj : public elementObj::implObj {
  public:
 
 	THREAD_DATA_ONLY(current_background_color);
+	THREAD_DATA_ONLY(own_background_color);
 
 	//! My parent element
 	const ref<containerObj::implObj> container;
@@ -74,6 +79,10 @@ class LIBCXX_HIDDEN child_elementObj : public elementObj::implObj {
 
 	void set_background_color(IN_THREAD_ONLY,
 				  const background_color &) override;
+
+	//! Whether set_background_color() is in force.
+
+	bool has_own_background_color(IN_THREAD_ONLY) override;
 
 	//! Invoke parent_element->draw_info(), and update the results.
 	draw_info get_draw_info(IN_THREAD_ONLY,

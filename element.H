@@ -121,6 +121,12 @@ class LIBCXX_HIDDEN elementObj::implObj : virtual public obj,
 	virtual void set_background_color(IN_THREAD_ONLY,
 					  const background_color &)=0;
 
+	//! Whether this element uses its own custom background color
+
+	//! The default implementation always returns true.
+	//! child_element overrides this, and returns the correct values.
+
+	virtual bool has_own_background_color(IN_THREAD_ONLY);
 
 	//! Return the element's screen
 	screen get_screen();
