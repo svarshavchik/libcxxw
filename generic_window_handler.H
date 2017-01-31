@@ -129,8 +129,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! Give ourselves away as the picture to draw info, and use
 	//! our declared background color.
 
-	draw_info get_draw_info(IN_THREAD_ONLY,
-				const rectangle &initial_viewport)
+	draw_info &get_draw_info(IN_THREAD_ONLY)
 		override;
 
 	void remove_background_color(IN_THREAD_ONLY) override;
@@ -139,6 +138,8 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 	void set_background_color(IN_THREAD_ONLY,
 				  const background_color &) override;
+
+	void current_position_updated(IN_THREAD_ONLY) override;
 
 #include "container_element_overrides_decl.H"
 
@@ -158,8 +159,8 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 	//! Instead, we redraw in response to exposure events.
 
-	void draw_after_visibility_updated(IN_THREAD_ONLY,
-					   bool flag) override;
+	void draw_child_elements_after_visibility_updated(IN_THREAD_ONLY,
+							  bool flag) override;
 
 	//! Setting the inherited_visibility flag.
 

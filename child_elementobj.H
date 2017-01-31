@@ -85,8 +85,7 @@ class LIBCXX_HIDDEN child_elementObj : public elementObj::implObj {
 	bool has_own_background_color(IN_THREAD_ONLY) override;
 
 	//! Invoke parent_element->draw_info(), and update the results.
-	draw_info get_draw_info(IN_THREAD_ONLY,
-				const rectangle &initial_viewport) override;
+	draw_info &get_draw_info(IN_THREAD_ONLY) override;
 
 	//! Set this child element's background color
 	void prepare_draw_info(IN_THREAD_ONLY,

@@ -7,6 +7,7 @@
 #include "connection_thread.H"
 #include "returned_pointer.H"
 #include "catch_exceptions.H"
+#include "draw_info_cache.H"
 #include <x/sysexception.H>
 
 LIBCXXW_NAMESPACE_START
@@ -48,67 +49,83 @@ void connection_threadObj
 
 	LOG_FUNC_SCOPE(runLogger);
 
- try_again:
+	// Construct a draw_info_cache that will persistent throughout all
+	// callbacks.
+	draw_info_cache current_draw_info_cache;
+	current_draw_info_cache_thread_only= &current_draw_info_cache;
 
-	if (recalculate_containers(IN_THREAD))
-		goto try_again;
-
-	if (process_element_position_updated(IN_THREAD))
-		goto try_again;
-
-	if (process_visibility_updated(IN_THREAD))
-		goto try_again;
-
-	// Process a message in the message queue. If processing a message
-	// resulted in container recalculation, element position update, or
-	// visibility update, this was an app request which must be processed
-	// before the next message, another app request, gets processed, so
-	// we
-
-	if (!msgqueue->empty())
+	while (1)
 	{
-		msgqueue.event();
-		goto try_again;
-	}
+		if (recalculate_containers(IN_THREAD))
+			continue;
 
-	// Check if the connection errored out, if not, check for
-	// a message.
+		if (process_element_position_updated(IN_THREAD))
+			continue;
 
-	if (npoll == 2 && xcb_connection_has_error(info->conn))
-	{
-		LOG_FATAL("Connection to the X server has a fatal error");
-		npoll=1;
-		topoll[1].revents=0;
-		try {
-			disconnect_callback_thread_only();
-		} CATCH_EXCEPTIONS;
-	}
+		if (process_visibility_updated(IN_THREAD))
+			continue;
 
-	if (npoll == 2)
-	{
-		bool processed_messages=false;
+		// Process a message in the message queue. If processing a
+		// message resulted in container recalculation, element
+		// position update, or visibility update, that was an
+		// app request which must be processed before the next message,
+		// another app request, gets processed, so we go back to the top
+		// before processing the next message.
 
-		while (auto event=return_pointer(xcb_poll_for_event(info->conn)))
+		if (!msgqueue->empty())
 		{
-			processed_messages=true;
+			msgqueue.event();
 
-			LOG_TRACE("Processing event "
-				  << (int)(event->response_type & ~0x80)
-				  << (event->response_type & 0x80
-				      ? " (SendEvent)":""));
+			if (!current_draw_info_cache.draw_info_cache.empty())
+				// Don't go back to the top of the loop,
+				// above, and potentially execute something
+				// that invalidates the cached draw_info
+				// data. Rather return, and go back here,
+				// and create a new draw_info_cache.
+				return;
 
-			run_event(event);
+			continue;
 		}
 
-		if (processed_messages)
-			return;
+		// Check if the connection errored out, if not, check for
+		// a message.
 
-		// Flush anything we have.
-		xcb_flush(info->conn);
+		if (npoll == 2 && xcb_connection_has_error(info->conn))
+		{
+			LOG_FATAL("Connection to the X server has a fatal error");
+			npoll=1;
+			topoll[1].revents=0;
+			try {
+				disconnect_callback_thread_only();
+			} CATCH_EXCEPTIONS;
+		}
+
+		if (npoll == 2)
+		{
+			if (auto event=return_pointer(xcb_poll_for_event
+						      (info->conn)))
+			{
+				LOG_TRACE("Processing event "
+					  << (int)(event->response_type & ~0x80)
+					  << (event->response_type & 0x80
+					      ? " (SendEvent)":""));
+
+				run_event(IN_THREAD, event);
+				continue;
+			}
+		}
+		if (redraw_elements(IN_THREAD))
+			// Don't bother checking draw_info_cache. It's unlikely
+			// that redraw_elements() did anything that might
+			// generate recalculation or processing activity,
+			// above. To be on the save side, return and go back
+			// here with a freshly wiped draw_info_cache, and
+			// take it from the top.
+			return;
+		break;
 	}
 
-	if (redraw_elements(IN_THREAD))
-		return;
+	xcb_flush(info->conn);
 
 	// Ok, no more work to do, and we were asked to politely stop.
 	if (stop_received)

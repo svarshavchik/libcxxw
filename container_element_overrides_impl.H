@@ -30,7 +30,13 @@ void ELEMENT_SUBCLASS::request_visibility_recursive(IN_THREAD_ONLY, bool flag)
 	containerObj::implObj::request_visibility_recursive(IN_THREAD, flag);
 }
 
-void ELEMENT_SUBCLASS::theme_updated(IN_THREAD_ONLY)
+void ELEMENT_SUBCLASS::do_for_each_child(IN_THREAD_ONLY,
+					 const function<void (const element &)> &e)
 {
-	containerObj::implObj::theme_updated(IN_THREAD);
+	containerObj::implObj::do_for_each_child(IN_THREAD, e);
+}
+
+void ELEMENT_SUBCLASS::draw_after_visibility_updated(IN_THREAD_ONLY, bool flag)
+{
+	containerObj::implObj::draw_after_visibility_updated(IN_THREAD, flag);
 }

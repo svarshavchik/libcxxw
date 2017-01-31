@@ -59,6 +59,8 @@ libcxxw_la_SOURCES=\
 	drawable_impl.C				    \
 	draw_infofwd.H				    \
 	draw_info.H				    \
+	draw_info_cache.H			    \
+	draw_info_cachefwd.H			    \
 	element.C				    \
 	element.H				    \
 	elementfwd.H				    \

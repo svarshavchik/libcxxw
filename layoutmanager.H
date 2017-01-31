@@ -73,14 +73,6 @@ class LIBCXX_HIDDEN layoutmanagerObj::implObj : virtual public obj {
 
 	void needs_recalculation(IN_THREAD_ONLY);
 
-	//! Draw all elements in the container.
-
-	//! Returns the drawn areas.
-
-	virtual rectangle_set draw(IN_THREAD_ONLY,
-				   const draw_info &di,
-				   const rectangle_set &areas);
-
 	//! Iterate over all child elements
 
 	template<typename functor_type>
@@ -92,24 +84,21 @@ class LIBCXX_HIDDEN layoutmanagerObj::implObj : virtual public obj {
 				  (std::forward<functor_type>(functor)));
 	}
 
+	//! Subclass iterates over each child element.
+	virtual void do_for_each_child(IN_THREAD_ONLY,
+				       const function<void
+				       (const element &e)> &)=0;
+
 	//! Create a public object for this layout manager
 
 	//! This is invoked by the container's get_layoutmanager().
 
 	virtual layoutmanager create_public_object()=0;
 
- public:
-
 	//! Implemented by subclass
 
 	virtual void recalculate(IN_THREAD_ONLY)=0;
 
- private:
-	//! Subclass iterates over each child element.
-	virtual void do_for_each_child(IN_THREAD_ONLY,
-				       const function<void
-				       (const element &e)> &)=0;
- public:
 	//! The container's position has been updated.
 
 	virtual void process_updated_position(IN_THREAD_ONLY,

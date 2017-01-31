@@ -17,4 +17,7 @@ void process_updated_position(IN_THREAD_ONLY) override;
 
 void request_visibility_recursive(IN_THREAD_ONLY, bool flag) override;
 
-void theme_updated(IN_THREAD_ONLY) override;
+void draw_after_visibility_updated(IN_THREAD_ONLY, bool flag) override;
+
+void do_for_each_child(IN_THREAD_ONLY,
+		       const function<void (const element &e)> &) override;

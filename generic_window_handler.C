@@ -7,6 +7,7 @@
 #include "connection_thread.H"
 #include "pictformat.H"
 #include "draw_info.H"
+#include "draw_info_cache.H"
 #include "container.H"
 #include "layoutmanager.H"
 #include "screen.H"
@@ -104,22 +105,31 @@ generic_windowObj::handlerObj::get_window_handler() const
 	return *this;
 }
 
-draw_info generic_windowObj::handlerObj
-::get_draw_info(IN_THREAD_ONLY,
-		const rectangle &initial_viewport)
+draw_info &generic_windowObj::handlerObj::get_draw_info(IN_THREAD_ONLY)
 {
-	return draw_info{
-		        picture_internal(this),
-			initial_viewport,
+	auto &c=*IN_THREAD->current_draw_info_cache(IN_THREAD);
+	auto e=ref<elementObj::implObj>(this);
+
+	auto iter=c.draw_info_cache.find(e);
+
+	if (iter != c.draw_info_cache.end())
+		return iter->second;
+
+	auto &viewport=data(IN_THREAD).current_position;
+
+	return c.draw_info_cache.insert({e, {
+			picture_internal(this),
+			viewport,
+			viewport,
 			current_background_color(IN_THREAD)->get_current_color()
 				->impl,
 			0,
 			0,
-	};
+	       }}).first->second;
 }
 
 void generic_windowObj::handlerObj
-::draw_after_visibility_updated(IN_THREAD_ONLY, bool flag)
+::draw_child_elements_after_visibility_updated(IN_THREAD_ONLY, bool flag)
 {
 }
 
@@ -198,7 +208,7 @@ void generic_windowObj::handlerObj::remove_background_color(IN_THREAD_ONLY)
 {
 	current_background_color(IN_THREAD)=
 		default_background_color(get_screen());
-	schedule_redraw_if_visible(IN_THREAD);
+	background_color_changed(IN_THREAD);
 }
 
 void generic_windowObj::handlerObj::set_background_color(IN_THREAD_ONLY,
@@ -206,7 +216,7 @@ void generic_windowObj::handlerObj::set_background_color(IN_THREAD_ONLY,
 							 &c)
 {
 	current_background_color(IN_THREAD)=c;
-	schedule_redraw_if_visible(IN_THREAD);
+	background_color_changed(IN_THREAD);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -216,36 +226,34 @@ void generic_windowObj::handlerObj::set_background_color(IN_THREAD_ONLY,
 void generic_windowObj::handlerObj::exposure_event(IN_THREAD_ONLY,
 						   rectangle_set &areas)
 {
-	auto di=get_draw_info(IN_THREAD,
-			      data(IN_THREAD).current_position);
-	draw(IN_THREAD, di, areas);
+	exposure_event_recursive(IN_THREAD, areas);
 }
 
 void generic_windowObj::handlerObj::theme_updated_event(IN_THREAD_ONLY)
 {
-	schedule_redraw_if_visible(IN_THREAD);
 	theme_updated(IN_THREAD);
 }
 
 void generic_windowObj::handlerObj::configure_notify(IN_THREAD_ONLY,
 						     const rectangle &r)
 {
-	*mpobj<rectangle>::lock(current_position)=r;
+	{
+		mpobj<rectangle>::lock lock(current_position);
 
-	// x & y are the window's position on the script
+		if (*lock == r)
+			return;
 
-	// for our purposes, the display element representing the top level
-	// window's coordinates are (0, 0), so we update only the width and
-	// the height.
+		*lock=r;
+	}
 
-	rectangle cpy=r;
-
-	cpy.x=0;
-	cpy.y=0;
-
-	update_current_position(IN_THREAD, cpy);
+	update_current_position(IN_THREAD,
+				element_position(r));
 }
 
+void generic_windowObj::handlerObj::current_position_updated(IN_THREAD_ONLY)
+{
+	schedule_update_position_processing(IN_THREAD);
+}
 
 bool generic_windowObj::handlerObj::get_frame_extents(dim_t &left,
 						      dim_t &right,

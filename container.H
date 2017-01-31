@@ -13,6 +13,7 @@
 #include "connection_threadfwd.H"
 #include "draw_infofwd.H"
 #include <x/mpobj.H>
+#include <x/functional.H>
 
 #include <map>
 #include <set>
@@ -93,6 +94,15 @@ public:
 
 	void uninstall_layoutmanager();
 
+	//! If this element is visible, recursively invoke draw_after_visibility_updated().
+
+	//! Overridden in generic_window_handler. Top level visibility is
+	//! translated into MapWindow(), and we'll draw everything when we
+	//! get the exposure event.
+
+	virtual void draw_child_elements_after_visibility_updated
+		(IN_THREAD_ONLY, bool flag);
+
 	/////////////////////////////////////////////////////////////////////
 	//
 	// The parent class that inherits from container and element must
@@ -136,9 +146,29 @@ public:
 
 	void request_visibility_recursive(IN_THREAD_ONLY, bool flag);
 
-	//! Recursively invoke theme_updated() for all child elements.
+	//! Invoke draw_child_elements_after_visibility_updated.
 
-	void theme_updated(IN_THREAD_ONLY);
+	void draw_after_visibility_updated(IN_THREAD_ONLY, bool flag);
+
+	//////////////////////////////////////////////////////////////////////
+
+	//! Invoke a lambda for each child element.
+
+	template<typename functor_type>
+		void for_each_child(IN_THREAD_ONLY,
+				    functor_type &&functor)
+	{
+		do_for_each_child(IN_THREAD,
+				  make_function<void (const element &e)>
+				  (std::forward<functor_type>(functor)));
+	}
+
+	//! Iterate over all child elements.
+
+	//! Invoke the layout manager's do_for_each_child.
+
+	void do_for_each_child(IN_THREAD_ONLY,
+			       const function<void (const element &)> &);
 
  private:
 	void propagate_inherited_visibility(IN_THREAD_ONLY, bool flag);

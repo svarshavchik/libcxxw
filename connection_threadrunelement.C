@@ -8,6 +8,7 @@
 #include "container.H"
 #include "layoutmanager.H"
 #include "catch_exceptions.H"
+#include "draw_info_cache.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -152,17 +153,13 @@ bool connection_threadObj::redraw_elements(IN_THREAD_ONLY)
 	if (elements_to_redraw_thread_only->empty())
 		return false;
 
+	draw_info_cache c;
+
 	while (!elements_to_redraw_thread_only->empty())
 	{
-		auto p=elements_to_redraw_thread_only->begin();
+		auto e=*elements_to_redraw_thread_only->begin();
 
-		auto e=*p;
-		elements_to_redraw_thread_only->erase(p);
-
-		LOG_TRACE("explicit_redraw: " << e->objname()
-			  << "(" << &*e << ")");
-
-		e->explicit_redraw(IN_THREAD);
+		e->explicit_redraw(IN_THREAD, c);
 	}
 
 	return true;

@@ -5,6 +5,8 @@
 #include "libcxxw_config.h"
 #include "child_element.H"
 #include "draw_info.H"
+#include "draw_info_cache.H"
+#include "connection_thread.H"
 #include "container.H"
 #include "layoutmanager.H"
 #include "background_color.H"
@@ -36,19 +38,53 @@ const generic_windowObj::handlerObj &child_elementObj::get_window_handler()
 	return container->get_window_handler();
 }
 
-draw_info child_elementObj::get_draw_info(IN_THREAD_ONLY,
-					  const rectangle &initial_viewport)
+draw_info &child_elementObj::get_draw_info(IN_THREAD_ONLY)
 {
-	auto revised_viewport=initial_viewport;
+	auto &c=*IN_THREAD->current_draw_info_cache(IN_THREAD);
+	auto e=ref<elementObj::implObj>(this);
 
-	auto &parent_position=container->get_element_impl()
-		.data(IN_THREAD).current_position;
+	auto iter=c.draw_info_cache.find(e);
 
-	revised_viewport.x += (coord_t::value_type)parent_position.x;
-	revised_viewport.y += (coord_t::value_type)parent_position.y;
+	if (iter != c.draw_info_cache.end())
+		return iter->second;
 
-	draw_info di=container->get_element_impl()
-		.get_draw_info(IN_THREAD, revised_viewport);
+	// Start by copying the parent to the child
+
+	draw_info &di=
+		c.draw_info_cache.insert({e,
+					container->get_element_impl()
+					.get_draw_info(IN_THREAD)}).first
+		->second;
+
+	// Add this parent's x/y coordinates to current_position, calculating
+	// the new absolute_location
+	auto cpy=data(IN_THREAD).current_position;
+
+	cpy.x = coord_t::truncate(cpy.x+di.absolute_location.x);
+	cpy.y = coord_t::truncate(cpy.y+di.absolute_location.y);
+
+	// But before we update di.absolute_location, compute the intersect
+	// between the parent's absolute_location and this element's
+	// aboslute_location.
+	//
+	// If this element lies outside of the parent's absolute location
+	// it is invisible.
+
+	rectangle_set a{di.absolute_location};
+	rectangle_set b{cpy};
+
+	auto res=intersect(a,b);
+
+	if (res.size() > 1)
+		throw EXCEPTION("Unexpected result from an intersection of two rectangles");
+
+	rectangle res_rect;
+
+	if (!res.empty())
+		res_rect=*res.begin();
+
+	di.absolute_location=cpy;
+	di.element_viewport=res_rect;
 
 	prepare_draw_info(IN_THREAD, di);
 
@@ -87,7 +123,7 @@ void child_elementObj::remove_background_color(IN_THREAD_ONLY)
 {
 	current_background_color(IN_THREAD)=no_background();
 	own_background_color(IN_THREAD)=false;
-	schedule_redraw_if_visible(IN_THREAD);
+	background_color_changed(IN_THREAD);
 }
 
 void child_elementObj::set_background_color(IN_THREAD_ONLY,
@@ -100,11 +136,11 @@ void child_elementObj::set_background_color(IN_THREAD_ONLY,
 				return; // None, use parent background.
 
 			di.window_background=bgcolor->get_current_color()->impl;
-			di.background_x=di.viewport.x;
-			di.background_y=di.viewport.y;
+			di.background_x=di.absolute_location.x;
+			di.background_y=di.absolute_location.y;
 		};
 	own_background_color(IN_THREAD)=true;
-	schedule_redraw_if_visible(IN_THREAD);
+	background_color_changed(IN_THREAD);
 }
 
 bool child_elementObj::has_own_background_color(IN_THREAD_ONLY)

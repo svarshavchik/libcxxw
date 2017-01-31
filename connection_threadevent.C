@@ -13,10 +13,9 @@
 
 LIBCXXW_NAMESPACE_START
 
-void connection_threadObj::run_event(const xcb_generic_event_t *event)
+void connection_threadObj::run_event(IN_THREAD_ONLY,
+				     const xcb_generic_event_t *event)
 {
-	connection_thread thread_(this);
-
 	// Macro: declare a local variable named "msg" which is a
 	// reinterpret_cast-ed event parameter, pointing to a xcb_msg_type_t
 

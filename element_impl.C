@@ -25,7 +25,7 @@ elementObj::implObj::implObj(size_t nesting_level,
 			     const rectangle &initial_position)
 	: data_thread_only
 	  ({
-	      initial_position,
+	      initial_position
 	  }),
 	  nesting_level(nesting_level)
 {
@@ -197,20 +197,22 @@ void elementObj::implObj::schedule_redraw(IN_THREAD_ONLY)
 	IN_THREAD->elements_to_redraw(IN_THREAD)->insert(elementimpl(this));
 }
 
-void elementObj::implObj::explicit_redraw(IN_THREAD_ONLY)
+void elementObj::implObj::explicit_redraw(IN_THREAD_ONLY, draw_info_cache &c)
 {
+	// Remove myself from the connection thread's list.
+
+	IN_THREAD->elements_to_redraw(IN_THREAD)->erase(ref<implObj>(this));
+
 	// Invoke draw() to refresh the contents of this disiplay element.
 
-	auto initial_viewport=data(IN_THREAD).current_position;
-
-	auto di=get_draw_info(IN_THREAD, initial_viewport);
+	auto di=get_draw_info(IN_THREAD);
 
 	// Simulate an exposure of the entire element.
 
 	rectangle_set entire_area;
 
-	entire_area.insert({0, 0, initial_viewport.width,
-				initial_viewport.height});
+	entire_area.insert({0, 0, data(IN_THREAD).current_position.width,
+				data(IN_THREAD).current_position.height});
 
 	if (data(IN_THREAD).inherited_visibility)
 	{
@@ -261,6 +263,20 @@ void elementObj::implObj::update_current_position(IN_THREAD_ONLY,
 
 void elementObj::implObj::current_position_updated(IN_THREAD_ONLY)
 {
+	schedule_update_position_processing(IN_THREAD);
+
+	// Well, if we changed position, so must be all child elements.
+
+	for_each_child(IN_THREAD,
+		       [&]
+		       (const element &e)
+		       {
+			       e->impl->current_position_updated(IN_THREAD);
+		       });
+}
+
+void elementObj::implObj::schedule_update_position_processing(IN_THREAD_ONLY)
+{
 	IN_THREAD->insert_element_set(*IN_THREAD->element_position_updated
 				      (IN_THREAD),
 				      elementimpl(this));
@@ -308,14 +324,59 @@ public:
 			implObj &me,
 			const draw_info &di)
 	{
-		// This now clips the subsequent draw operation to this
-		// display element's viewport.
-		di.window_picture->set_clip_rectangle(di.viewport);
+		if (di.element_viewport.width != 0 &&
+		    di.element_viewport.height != 0)
+		{
+			// This now clips the subsequent draw operation to this
+			// display element's viewport.
+			di.window_picture
+				->set_clip_rectangle(di.element_viewport);
+		}
+		else
+		{
+			// Clip everything.
+
+			di.window_picture->set_clip_rectangles(rectangle_set());
+		}
 	}
 };
 
 void elementObj::implObj::prepare_draw_info(IN_THREAD_ONLY, draw_info &)
 {
+}
+
+void elementObj::implObj::exposure_event_recursive(IN_THREAD_ONLY,
+						   rectangle_set &areas)
+{
+	auto di=get_draw_info(IN_THREAD);
+
+	draw(IN_THREAD, di, areas);
+
+	// Now, we need to recursively propagate this event.
+
+	for_each_child(IN_THREAD,
+		       [&]
+		       (const element &e)
+		       {
+			       if (!e->impl->data(IN_THREAD).actual_visibility)
+				       return;
+
+			       auto child_position=e->impl->data(IN_THREAD)
+				       .current_position;
+
+			       auto child_areas=
+				       intersect(areas, {child_position},
+						 coord_t::truncate
+						 (0-child_position.x),
+						 coord_t::truncate
+						 (0-child_position.y));
+
+			       if (child_areas.empty())
+				       return;
+
+			       e->impl->exposure_event_recursive(IN_THREAD,
+								 areas);
+		       });
 }
 
 void elementObj::implObj::draw(IN_THREAD_ONLY,
@@ -357,8 +418,8 @@ void elementObj::implObj::clear_to_color(IN_THREAD_ONLY,
 	for (auto area:areas)
 	{
 		// areas's (0, 0) is the (0, 0) coordinates of the viewport.
-		area.x = (coord_squared_t::value_type)(area.x+di.viewport.x);
-		area.y = (coord_squared_t::value_type)(area.y+di.viewport.y);
+		area.x = coord_t::truncate(area.x+di.absolute_location.x);
+		area.y = coord_t::truncate(area.y+di.absolute_location.y);
 
 		di.window_picture->composite(di.window_background,
 					     (dim_squared_t::value_type)
@@ -412,7 +473,41 @@ bool elementObj::implObj::has_own_background_color(IN_THREAD_ONLY)
 	return true;
 }
 
+void elementObj::implObj::background_color_changed(IN_THREAD_ONLY)
+{
+	schedule_redraw_if_visible(IN_THREAD);
+
+	for_each_child(IN_THREAD, [&]
+		       (const element &e)
+		       {
+			       if (!e->impl->data(IN_THREAD)
+				   .inherited_visibility)
+				       return;
+
+			       if (e->impl->has_own_background_color(IN_THREAD))
+				       return;
+			       e->impl->background_color_changed(IN_THREAD);
+		       });
+}
+
 void elementObj::implObj::theme_updated(IN_THREAD_ONLY)
+{
+	schedule_redraw_if_visible(IN_THREAD);
+
+	for_each_child(IN_THREAD, [&]
+		       (const element &e)
+		       {
+			       if (!e->impl->data(IN_THREAD)
+				   .inherited_visibility)
+				       return;
+
+			       e->impl->theme_updated(IN_THREAD);
+		       });
+}
+
+void elementObj::implObj::do_for_each_child(IN_THREAD_ONLY,
+					    const function<void
+					    (const element &e)> &)
 {
 }
 

@@ -12,11 +12,13 @@
 #include "connection_threadfwd.H"
 #include "elementfwd.H"
 #include "draw_infofwd.H"
+#include "draw_info_cachefwd.H"
 #include "background_colorfwd.H"
 #include "metrics_horizvertobj.H"
 #include <x/obj.H>
 #include <x/callback_list.H>
 #include <x/logger.H>
+#include <x/functional.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -39,8 +41,10 @@ class LIBCXX_HIDDEN elementObj::implObj : virtual public obj,
 	struct data_thread_only_t {
 
 		//! Current position
-		rectangle current_position;
 
+		//! The X & Y coordinates are relative to parent's
+
+		rectangle current_position;
 
 		////////////////////////////////////////////////////////////
 		//
@@ -128,6 +132,15 @@ class LIBCXX_HIDDEN elementObj::implObj : virtual public obj,
 
 	virtual bool has_own_background_color(IN_THREAD_ONLY);
 
+	//! This element's background color has changed.
+
+	//! Invoke schedule_redraw_if_visible(), in order to redraw it.
+	//! But wait, there's more!. If this is a container, and the
+	//! container has any visible child elements that use the parent's
+	//! background color, they need to be redrawn too!
+
+	void background_color_changed(IN_THREAD_ONLY);
+
 	//! Return the element's screen
 	screen get_screen();
 
@@ -155,8 +168,6 @@ class LIBCXX_HIDDEN elementObj::implObj : virtual public obj,
 
 	THREAD_DATA_ONLY(data);
 	THREAD_DATA_SUPERCLASS_ONLY(horizvertObj, get_horizvert);
- public:
-
 
 	//! Install a state update callback.
 	template<typename functor_type>
@@ -181,10 +192,31 @@ class LIBCXX_HIDDEN elementObj::implObj : virtual public obj,
 
 	//! This element's current_position has been updated.
 
-	//! Unsert this element into the connection thread's
-	//! element_position_updated list.
+	//! Invoke schedule_update_position_processing(), then recursively
+	//! invoke current_position_updated() for any and all child elements.
+	//! The net effective is that this element, and its child elements,
+	//! are scheduled to be redrawn.
+	//!
+	//! generic_window_handler overrides this. A redraw is not required
+	//! when the top level window's position changed. If its size also
+	//! changed, and the top level window's layout manager has to reposition
+	//! the child elements, that will itself trigger a redraw.
 
-	void current_position_updated(IN_THREAD_ONLY);
+	virtual void current_position_updated(IN_THREAD_ONLY);
+
+	//! Add this element to the element_position_updated() queue.
+
+	//! Adds this element to the queue that the connection thread uses
+	//! to invoke process_updated_position().
+	//!
+	//! generic_window_handler invokes this directly, bypassing
+	//! current_position_updated(). It is not necessary to recursively
+	//! do this for all display elements when the top level window is
+	//! resized or moved. It is only necessary to schedule the top level
+	//! window to execute current_position_updated(), as the top level
+	//! container will recalculate and reposition all elements, as needed.
+
+	void schedule_update_position_processing(IN_THREAD_ONLY);
 
 	//! Invoked by the connection thread.
 
@@ -293,23 +325,20 @@ class LIBCXX_HIDDEN elementObj::implObj : virtual public obj,
 	//! visibility_updated() invokes it after it invokes
 	//! inherited_visibility_updated().
 	//!
-	//! The default implementation calls schedule_redraw(). Overriden by
-	//! generic_windowObj::handlerObj to do nothing. Top level windows are
-	//! redrawn by expose events.
+	//! The default implementation calls schedule_redraw(). Overridden
+	//! by containers to draw their elements after they become visible.
+	//! The containers draw their own area by overriding do_draw().
 
 	virtual void draw_after_visibility_updated(IN_THREAD_ONLY,
 						   bool flag);
 
 
-	//! Return my viewport.
+	//! Calculate draw_info for this element.
 
-	//! The element calls this if it wants to draw itself.
-	//! It passes its current_position for the initial_viewport.
-	//! The implementation may modify it, before returning the final
-	//! viewport in get_draw_info().
+	//! If it's not cached already, calculate it and cache, return a
+	//! reference to the cached draw_info.
 
-	virtual draw_info get_draw_info(IN_THREAD_ONLY,
-					const rectangle &initial_viewport)=0;
+	virtual draw_info &get_draw_info(IN_THREAD_ONLY)=0;
 
 	class clip_region_set;
 
@@ -336,7 +365,17 @@ class LIBCXX_HIDDEN elementObj::implObj : virtual public obj,
 	//! Otherwise calls draw() (which then has to call do_draw(), because
 	//! the element is visible).
 
-	void explicit_redraw(IN_THREAD_ONLY);
+	void explicit_redraw(IN_THREAD_ONLY, draw_info_cache &);
+
+	//! Exposure event handling.
+
+	//! We get areas to redraw for this element. Invoke draw(),
+	//! then recursively invoke ourselves for all visible children,
+	//! after calculating each child's rectangle_set consisting of the
+	//! given rectangle_set intersected with the child's viewport.
+
+	void exposure_event_recursive(IN_THREAD_ONLY,
+				      rectangle_set &areas);
 
 	//! Draw the display element.
 
@@ -378,13 +417,31 @@ class LIBCXX_HIDDEN elementObj::implObj : virtual public obj,
 	//! A new theme has been installed.
 
 	//! This is invoked from the window handler's theme_updated_event(),
-	//! which is going to take care of redrawing the entire window.
-	//!
-	//! The element is responsible for doing everything else.
-	//!
-	//! The default implementation does nothing.
+	//! Invoke schedule_redraw_if_visible(), then recursively invoke
+	//! theme_updated() for all visible elements.
 
-	virtual void theme_updated(IN_THREAD_ONLY);
+	void theme_updated(IN_THREAD_ONLY);
+
+	//! Invoke a lambda for each child element.
+
+	template<typename functor_type>
+		void for_each_child(IN_THREAD_ONLY,
+				    functor_type &&functor)
+	{
+		do_for_each_child(IN_THREAD,
+				  make_function<void (const element &e)>
+				  (std::forward<functor_type>(functor)));
+	}
+
+	//! Iterate over all child elements.
+
+	//! The default implementation does nothing. This is overridden in
+	//! containerObj.
+
+	virtual void do_for_each_child(IN_THREAD_ONLY,
+				       const function<void
+				       (const element &e)> &);
+
 };
 
 LIBCXXW_NAMESPACE_END

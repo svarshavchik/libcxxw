@@ -18,8 +18,21 @@ struct draw_info {
 	//! The element is drawn in this window.
 	picture_internal window_picture;
 
-	//! The element is drawn in this boundary, inside window_picture
-	rectangle viewport;
+	//! The display element's position in the window
+
+	//! This is, essentially, the sum of x/y coordinates of all elements
+	//! starting with the top level window, whose x/y coordinates are
+	//! logically (0,0), and ending with this display element.
+
+	rectangle absolute_location;
+
+	//! The element is clipped to this viewport.
+
+	//! It's possible that a display element is outside the visible
+	//! region of its parent. The calculated visibly-clipped region is
+	//! placed here. This is an empty rectangle if this display element
+	//! is completely invisible
+	rectangle element_viewport;
 
 	//! The window's background color
 	const_picture_internal window_background;
