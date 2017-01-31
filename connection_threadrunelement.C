@@ -105,18 +105,15 @@ bool connection_threadObj::recalculate_containers(IN_THREAD_ONLY)
 
 		auto container=*last;
 
-		// Now that we have it, remove it from
-		// containers_2_recalculate
+		// Wait until recalculate() is invoked before removing it.
 
-		p->second.erase(last);
-
-		if (p->second.empty())
-			containers_2_recalculate_thread_only->erase(p);
-
-		LOG_TRACE("recalculate_if_needed: " << container->objname()
-			  << "(" << &*container << ")");
-
-		// And invoke it
+		// A layout manager might invoke theme_updated() for a
+		// newly-added child element, which might result in the
+		// child element attempting to schedule its container
+		// for recalculation :-)
+		//
+		// This avoid needless work. The 'last' iterator is not
+		// going to go anywhere...
 
 		try {
 			container->invoke_layoutmanager
@@ -126,6 +123,13 @@ bool connection_threadObj::recalculate_containers(IN_THREAD_ONLY)
 					 l->recalculate(IN_THREAD);
 				 });
 		} CATCH_EXCEPTIONS;
+
+		// Ok, we can get rid of this.
+
+		p->second.erase(last);
+
+		if (p->second.empty())
+			containers_2_recalculate_thread_only->erase(p);
 	}
 	return true;
 }

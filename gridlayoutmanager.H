@@ -115,6 +115,10 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 
 	bool rebuild_elements(IN_THREAD_ONLY);
 
+	//! After rebuilding the elements initialize() the new ones.
+
+	void initialize_new_elements(IN_THREAD_ONLY);
+
  public:
 	THREAD_DATA_ONLY(grid_elements);
 

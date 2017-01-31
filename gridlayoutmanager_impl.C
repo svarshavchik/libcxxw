@@ -32,6 +32,9 @@ void gridlayoutmanagerObj::implObj::recalculate(IN_THREAD_ONLY)
 	// elements. rebuild_elements() will do its work only if needed.
 	bool flag=rebuild_elements(IN_THREAD);
 
+	if (flag)
+		initialize_new_elements(IN_THREAD);
+
 	// recalculate_metrics would want to update the container's own
 	// metrics, as the result of the recalculation.
 

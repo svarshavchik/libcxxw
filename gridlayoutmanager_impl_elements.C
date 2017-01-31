@@ -4,6 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "gridlayoutmanager_impl_elements.H"
+#include "catch_exceptions.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -53,6 +54,41 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(IN_THREAD_ONLY)
 	lock->child_metrics_updated=false;
 
 	return true;
+}
+
+void gridlayoutmanagerObj::implObj::initialize_new_elements(IN_THREAD_ONLY)
+{
+	bool flag;
+
+	// Before calculating the metrics, check if any of these
+	// need to be initialize()d.
+
+	do
+	{
+		for (const auto &element:grid_elements(IN_THREAD)->all_elements)
+		{
+			auto &initialized=element.child_element
+				->impl->data(IN_THREAD).initialized;
+
+			if (!initialized)
+				continue;
+
+			initialized=true;
+
+			try {
+				element.child_element->impl
+					->initialize(IN_THREAD);
+			} CATCH_EXCEPTIONS;
+		}
+
+		// initialize_new_elements() was invoked only if
+		// rebuild_elements() retursn true.
+		//
+		// Maybe the initialize() callback add more elements
+		// to this grid? If so, let's do this again.
+
+		flag=rebuild_elements(IN_THREAD);
+	} while (flag);
 }
 
 void gridlayoutmanagerObj::implObj

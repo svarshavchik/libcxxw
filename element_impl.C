@@ -505,6 +505,10 @@ void elementObj::implObj::theme_updated(IN_THREAD_ONLY)
 		       });
 }
 
+void elementObj::implObj::initialize(IN_THREAD_ONLY)
+{
+}
+
 void elementObj::implObj::do_for_each_child(IN_THREAD_ONLY,
 					    const function<void
 					    (const element &e)> &)

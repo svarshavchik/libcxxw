@@ -73,6 +73,10 @@ class LIBCXX_HIDDEN elementObj::implObj : virtual public obj,
 
 		bool inherited_visibility=false;
 
+		//! Whether initialize() has been called.
+
+		bool initialized=false;
+
 		//! State update handlers
 
 		callback_list<void (const element_state &)> update_handlers=
@@ -421,6 +425,15 @@ class LIBCXX_HIDDEN elementObj::implObj : virtual public obj,
 	//! theme_updated() for all visible elements.
 
 	void theme_updated(IN_THREAD_ONLY);
+
+	//! Initialize this display element.
+
+	//! After a display element gets added to a container, the layout
+	//! manager should invoke initialize() from the connection thread.
+	//!
+	//! The default implementation does nothing.
+
+	virtual void initialize(IN_THREAD_ONLY);
 
 	//! Invoke a lambda for each child element.
 
