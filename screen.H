@@ -9,6 +9,7 @@
 #include "x/w/screen_depthinfo.H"
 #include "x/w/picturefwd.H"
 #include "x/w/rgb.H"
+#include "x/w/metrics/mmaxisfwd.H"
 #include "connection.H"
 #include "connection_threadfwd.H"
 #include "defaultthemefwd.H"
@@ -172,36 +173,29 @@ class LIBCXX_HIDDEN screenObj::implObj
 						 ::string_view &color_name,
 						 const rgb &default_value);
 
-	// Compute # of pixels from millimeters, for width or height.
+	//! Compute # of pixels from millimeters, for width
 
-	// Given number must be possible. It is truncated at the largest
-	// possible dim_t value.
+	dim_t compute_width(double millimeters);
 
-	dim_t compute_width(double millimeters) const
-	{
-		auto scaled=
-			std::round(theme_scale() * millimeters *
-				   xcb_screen->width_in_pixels /
-				   xcb_screen->width_in_millimeters);
+	//! Compute # of pixels from millimeters, for height
 
-		if (scaled > dim_t::infinite()-1)
-			scaled=dim_t::infinite()-1;
+	dim_t compute_height(double millimeters);
 
-		return dim_t::value_type(scaled);
-	}
+	//! Compute # of pixels from millimeters, for width
 
-	dim_t compute_height(double millimeters) const
-	{
-		auto scaled=
-			std::round(theme_scale() * millimeters *
-				   xcb_screen->height_in_pixels /
-				   xcb_screen->height_in_millimeters);
+	dim_t compute_width(const current_theme_t::lock &, double millimeters);
 
-		if (scaled > dim_t::infinite()-1)
-			scaled=dim_t::infinite()-1;
+	//! Compute # of pixels from millimeters, for height
 
-		return dim_t::value_type(scaled);
-	}
+	dim_t compute_height(const current_theme_t::lock &, double millimeters);
+
+	//! Compute # of pixels from millimeters, for width
+
+	metrics::axis compute_width(const metrics::mmaxis &);
+
+	//! Compute # of pixels from millimeters, for height
+
+	metrics::axis compute_height(const metrics::mmaxis &);
 };
 
 LIBCXXW_NAMESPACE_END

@@ -68,8 +68,9 @@ namespace metrics {
 
 		//! Update the metrics.
 
-		void set(IN_THREAD_ONLY,
-			 const axis &new_horiz, const axis &new_vert)
+		void set_element_metrics(IN_THREAD_ONLY,
+					 const axis &new_horiz,
+					 const axis &new_vert)
 		{
 			if (horiz != new_horiz || vert != new_vert)
 			{

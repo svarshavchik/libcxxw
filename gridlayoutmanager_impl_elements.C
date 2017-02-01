@@ -109,9 +109,9 @@ bool gridlayoutmanagerObj::implObj::elementsObj
 	horiz_metrics=new_horiz_metrics;
 	vert_metrics=new_vert_metrics;
 
-	my_metrics->set(IN_THREAD,
-			total_metrics(horiz_metrics),
-			total_metrics(vert_metrics));
+	my_metrics->set_element_metrics(IN_THREAD,
+					total_metrics(horiz_metrics),
+					total_metrics(vert_metrics));
 
 	return flag;
 }

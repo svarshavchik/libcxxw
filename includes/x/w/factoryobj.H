@@ -8,8 +8,11 @@
 #include <x/w/factoryfwd.H>
 #include <x/w/elementfwd.H>
 #include <x/w/containerobj.H>
+#include <x/w/canvasfwd.H>
 #include <x/w/metrics/axis.H>
+#include <x/w/metrics/mmaxisfwd.H>
 #include <x/obj.H>
+#include <x/functional.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -37,9 +40,23 @@ public:
 	//! Destructor
 	~factoryObj() LIBCXX_HIDDEN;
 
-	//! Create empty filler
-	element create_empty_element(const metrics::axis &horiz_axis=metrics::axis(),
-				     const metrics::axis &vert_axis=metrics::axis());
+	//! Create an empty \ref canvas "canvas".
+	template<typename functor>
+	canvas create_canvas(functor &&creator,
+			     const metrics::mmaxis &horiz,
+			     const metrics::mmaxis &vert)
+	{
+		return do_create_canvas(make_function<void (const canvas &)>
+					(creator),
+					horiz, vert);
+	}
+
+	//! Create an empty \ref canvas "canvas".
+
+	canvas do_create_canvas(const function<void (const canvas &)> &creator,
+				const metrics::mmaxis &horiz,
+				const metrics::mmaxis &vert);
+
 };
 
 LIBCXXW_NAMESPACE_END

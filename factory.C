@@ -5,7 +5,7 @@
 #include "libcxxw_config.h"
 #include "x/w/factory.H"
 #include "container.H"
-#include "child_element.H"
+#include "canvas.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -16,17 +16,21 @@ factoryObj::factoryObj(const ref<containerObj::implObj> &container_impl)
 
 factoryObj::~factoryObj()=default;
 
-element factoryObj::create_empty_element(const metrics::axis &horiz_axis,
-					 const metrics::axis &vert_axis)
+canvas factoryObj::do_create_canvas(const function<void (const canvas &)>
+				    &creator,
+				    const metrics::mmaxis &horiz,
+				    const metrics::mmaxis &vert)
 {
-	auto ce=child_element::create(container_impl, horiz_axis, vert_axis);
+	auto canvas_impl=ref<canvasObj::implObj>::create(container_impl,
+							 horiz,
+							 vert);
 
-	auto e=element::create(ce);
+	auto c=canvas::create(canvas_impl);
 
-	created(e);
+	creator(c);
+	created(c);
 
-	return e;
+	return c;
 }
-
 
 LIBCXXW_NAMESPACE_END

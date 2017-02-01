@@ -27,6 +27,9 @@ libcxxw_la_SOURCES=\
 	batch_queueobj.H			    \
 	builtin_atoms.C				    \
 	builtin_atoms.H				    \
+	canvas.H				    \
+	canvas.C				    \
+	canvas_impl.C				    \
 	catch_exceptions.H			    \
 	child_element.C				    \
 	child_element.H				    \
@@ -113,6 +116,7 @@ libcxxw_la_SOURCES=\
 	metrics_horizvert.H			    \
 	metrics_horizvertfwd.H			    \
 	metrics_horizvertobj.H			    \
+	metrics_mmaxis.C			    \
 	new_layoutmanager.C			    \
 	pictformat.C				    \
 	pictformat.H				    \

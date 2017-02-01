@@ -2,8 +2,8 @@
 ** Copyright 2017 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
-#ifndef x_w_matrics_axis_H
-#define x_w_matrics_axis_H
+#ifndef x_w_metrics_axis_H
+#define x_w_metrics_axis_H
 
 #include <x/w/types.H>
 #include <x/w/screenfwd.H>
@@ -13,7 +13,7 @@
 #include <vector>
 #include <numeric>
 #include <algorithm>
-#include <math.h>
+#include <cmath>
 
 LIBCXXW_NAMESPACE_START
 
@@ -48,10 +48,14 @@ namespace metrics {
 		//! Maximum size
 		dim_t maximum_;
 
+	public:
+		//! Helper for returning an exception to throw
 		static exception invalid_infinite(),
+		//! Helper for returning an exception to throw
 			invalid_minimum(),
+		//! Helper for returning an exception to throw
 			invalid_maximum();
-
+	private:
 		//! Sanity check the minimum, preferred, and maximum values.
 
 		static constexpr void validate(dim_t minimum, dim_t preferred,
@@ -96,14 +100,6 @@ namespace metrics {
 		     double minimum,
 		     double preferred,
 		     double maximum=INFINITY);
-
-		//! Update the metrics.
-
-		constexpr void update(dim_t minimum, dim_t preferred,
-				      dim_t maximum)
-		{
-			validate(minimum, preferred, maximum);
-		}
 
 		//! The minimum metric
 		constexpr dim_t minimum() const { return minimum_; }

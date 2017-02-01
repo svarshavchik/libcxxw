@@ -137,7 +137,12 @@ void generic_windowObj::handlerObj
 ::set_inherited_visibility(IN_THREAD_ONLY, bool flag)
 {
 	if (flag)
+	{
+#ifdef MAP_LOG
+		MAP_LOG();
+#endif
 		xcb_map_window(IN_THREAD->info->conn, id());
+	}
 	else
 		xcb_unmap_window(IN_THREAD->info->conn, id());
 
@@ -171,7 +176,11 @@ void generic_windowObj::handlerObj::request_visibility(IN_THREAD_ONLY,
 				  (dim_t::value_type)
 				  me->preferred_height(IN_THREAD))
 				 ;
-
+#ifdef REQUEST_VISIBILITY_LOG
+			 REQUEST_VISIBILITY_LOG(me->preferred_width(IN_THREAD),
+						me->preferred_height(IN_THREAD)
+						);
+#endif
 			 xcb_configure_window(IN_THREAD->info->conn, me->id(),
 					      configure_window_vals.mask(),
 					      configure_window_vals.values()

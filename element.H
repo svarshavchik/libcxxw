@@ -29,7 +29,8 @@ LIBCXXW_NAMESPACE_START
 class LIBCXX_HIDDEN elementObj::implObj : virtual public obj,
 
 // horizvertObj is considered to be IN_THREAD_ONLY
-
+//
+// **** use get_horizvert() to access it. ****
 					  private metrics::horizvertObj {
 
  protected:
@@ -432,7 +433,7 @@ class LIBCXX_HIDDEN elementObj::implObj : virtual public obj,
 	//! Invoke schedule_redraw_if_visible(), then recursively invoke
 	//! theme_updated() for all visible elements.
 
-	void theme_updated(IN_THREAD_ONLY);
+	virtual void theme_updated(IN_THREAD_ONLY);
 
 	//! Invoke initialize(), if necessary.
 

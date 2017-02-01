@@ -48,6 +48,9 @@ void gridlayoutmanagerObj::implObj::recalculate(IN_THREAD_ONLY)
 	// Even though the current position hasn't changed, we need to
 	// recalculate and reposition our display elements.
 	current_position_updated(IN_THREAD);
+#ifdef GRIDLAYOUTMANAGER_RECALCULATE_LOG
+	GRIDLAYOUTMANAGER_RECALCULATE_LOG(grid_elements(IN_THREAD));
+#endif
 }
 
 layoutmanager gridlayoutmanagerObj::implObj::create_public_object()
