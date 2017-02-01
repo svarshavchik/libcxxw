@@ -255,11 +255,19 @@ class LIBCXX_HIDDEN elementObj::implObj : virtual public obj,
 
 	//! Executed in the connection thread.
 	//!
+	//! Invokes schedule_update_visibility().
+	//!
 	//! Overridden in generic_window_handler(). The first time a top
 	//! level window is made visible, it gets resized to its preferred
 	//! width, first.
 
 	virtual void request_visibility(IN_THREAD_ONLY, bool flag);
+
+	//! Schedule update_visibility() to be invoke by the connection thread.
+
+	//! Inserts this element into the visibility_update list.
+
+	void schedule_update_visibility(IN_THREAD_ONLY);
 
 	//! Recursive show() or hide().
 
@@ -426,6 +434,24 @@ class LIBCXX_HIDDEN elementObj::implObj : virtual public obj,
 
 	void theme_updated(IN_THREAD_ONLY);
 
+	//! Invoke initialize(), if necessary.
+
+	inline void initialize_if_needed(IN_THREAD_ONLY)
+	{
+		auto &flag=data(IN_THREAD).initialized;
+
+		if (flag)
+			return; // Already initialized
+
+		flag=true;
+
+		// update_visibility() bailed out if we were not initialized(),
+		// so reschedule this.
+
+		schedule_update_visibility(IN_THREAD);
+		initialize(IN_THREAD);
+	}
+
 	//! Initialize this display element.
 
 	//! After a display element gets added to a container, the layout
@@ -434,6 +460,13 @@ class LIBCXX_HIDDEN elementObj::implObj : virtual public obj,
 	//! The default implementation does nothing.
 
 	virtual void initialize(IN_THREAD_ONLY);
+
+	//! Whether this display element has been initialized
+
+	inline bool initialized(IN_THREAD_ONLY) const
+	{
+		return data(IN_THREAD).initialized;
+	}
 
 	//! Invoke a lambda for each child element.
 

@@ -70,6 +70,11 @@ void elementObj::implObj::request_visibility(IN_THREAD_ONLY, bool flag)
 {
 	data(IN_THREAD).requested_visibility=flag;
 
+	schedule_update_visibility(IN_THREAD);
+}
+
+void elementObj::implObj::schedule_update_visibility(IN_THREAD_ONLY)
+{
 	IN_THREAD->insert_element_set
 		(*IN_THREAD->visibility_updated(IN_THREAD), elementimpl(this));
 }
@@ -93,6 +98,8 @@ void elementObj::implObj::request_visibility_recursive(IN_THREAD_ONLY,
 
 void elementObj::implObj::update_visibility(IN_THREAD_ONLY)
 {
+	if (!initialized(IN_THREAD))
+		return;
 
 	// This is invoked from the connection thread, when it processes the
 	// IN_THREAD->visibility_updated set.

@@ -37,12 +37,17 @@ typedef ref<elementObj> element;
 
 typedef ptr<elementObj> elementptr;
 
-
-//! A constant generic window handler
+//! A reference to a constant element.
 
 //! \see element
 
 typedef const_ref<elementObj> const_element;
+
+//! A nullable pointer reference to a constant element.
+
+//! \see element
+
+typedef const_ptr<elementObj> const_elementptr;
 
 LIBCXXW_NAMESPACE_END
 

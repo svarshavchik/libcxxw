@@ -67,17 +67,9 @@ void gridlayoutmanagerObj::implObj::initialize_new_elements(IN_THREAD_ONLY)
 	{
 		for (const auto &element:grid_elements(IN_THREAD)->all_elements)
 		{
-			auto &initialized=element.child_element
-				->impl->data(IN_THREAD).initialized;
-
-			if (!initialized)
-				continue;
-
-			initialized=true;
-
 			try {
 				element.child_element->impl
-					->initialize(IN_THREAD);
+					->initialize_if_needed(IN_THREAD);
 			} CATCH_EXCEPTIONS;
 		}
 
