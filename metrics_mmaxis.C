@@ -9,12 +9,6 @@
 
 LIBCXXW_NAMESPACE_START
 
-dim_t screenObj::implObj::compute_width(double millimeters)
-{
-	return compute_width(current_theme_t::lock(current_theme),
-			     millimeters);
-}
-
 dim_t screenObj::implObj::compute_width(const current_theme_t::lock &lock,
 					double millimeters)
 {
@@ -32,13 +26,6 @@ dim_t screenObj::implObj::compute_width(const current_theme_t::lock &lock,
 		scaled=1;
 
 	return dim_t::value_type(scaled);
-}
-
-
-dim_t screenObj::implObj::compute_height(double millimeters)
-{
-	return compute_height(current_theme_t::lock(current_theme),
-			      millimeters);
 }
 
 dim_t screenObj::implObj::compute_height(const current_theme_t::lock &lock,

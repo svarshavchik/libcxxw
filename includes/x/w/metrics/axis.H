@@ -85,22 +85,6 @@ namespace metrics {
 			{
 			}
 
-		//! Horizontal or vertical screen dimensions
-
-		enum hv { horizontal, vertical };
-
-		//! Constructor, the dimensions are specified in millimeters
-
-		//! Takes a horizontal/vertical indication, and a screen
-		//! object, and uses the screen's resolution to create an
-		//! axis whose dimensions are specified in millimeters.
-
-		axis(hv which,
-		     const screen &s,
-		     double minimum,
-		     double preferred,
-		     double maximum=INFINITY);
-
 		//! The minimum metric
 		constexpr dim_t minimum() const { return minimum_; }
 

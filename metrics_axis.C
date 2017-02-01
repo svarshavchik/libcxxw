@@ -30,28 +30,6 @@ exception axis::invalid_maximum()
 	return EXCEPTION(_("Preferred metric is more than the maximum one."));
 }
 
-static dim_t convert_from_double(axis::hv which, const screen &s,
-				 double n)
-{
-	if (n < 0)
-		throw EXCEPTION("Metric cannot be negative");
-
-	return (which == axis::horizontal ?
-		s->impl->compute_width(n):s->impl->compute_height(n));
-}
-
-axis::axis(hv which,
-	   const screen &s,
-	   double minimum,
-	   double preferred,
-	   double maximum)
-	: axis(convert_from_double(which, s, minimum),
-	       convert_from_double(which, s, preferred),
-	       std::isinf(maximum) ? dim_t::infinite()
-	       : convert_from_double(which, s, maximum))
-{
-}
-
 axis axis::increase_minimum_by(dim_t howmuch) const
 {
 	auto m=max_increase_minimum_by();

@@ -20,7 +20,6 @@
 #include <x/mpobj.H>
 #include <x/weakunordered_multimapfwd.H>
 #include <xcb/xcb.h>
-
 #include <cmath>
 
 LIBCXXW_NAMESPACE_START
@@ -172,14 +171,6 @@ class LIBCXX_HIDDEN screenObj::implObj
 	background_color create_background_color(const std::experimental
 						 ::string_view &color_name,
 						 const rgb &default_value);
-
-	//! Compute # of pixels from millimeters, for width
-
-	dim_t compute_width(double millimeters);
-
-	//! Compute # of pixels from millimeters, for height
-
-	dim_t compute_height(double millimeters);
 
 	//! Compute # of pixels from millimeters, for width
 
