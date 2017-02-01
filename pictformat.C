@@ -29,8 +29,9 @@ pictformatObj::~pictformatObj()
 }
 
 
-pictformatObj::implObj::implObj(xcb_render_pictformat_t idArg)
-	: id(idArg)
+pictformatObj::implObj::implObj(const connection_info &info,
+				xcb_render_pictformat_t idArg)
+	: info(info), id(idArg)
 {
 }
 

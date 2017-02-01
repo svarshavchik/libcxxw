@@ -6,9 +6,11 @@
 #define pictformat_H
 
 #include "x/w/pictformat.H"
+#include "connection_info.H"
 
 #include <xcb/xcb.h>
 #include <xcb/render.h>
+
 namespace LIBCXX_NAMESPACE {
 	namespace w {
 #if 0
@@ -16,14 +18,20 @@ namespace LIBCXX_NAMESPACE {
 }
 #endif
 
+//! Pictformat implementation object.
 class LIBCXX_HIDDEN pictformatObj::implObj : virtual public obj {
 
  public:
-	// Identifier for this pictformat
+	//! This pictformat's connection
+
+	const connection_info info;
+
+	//! Identifier for this pictformat
 
 	const xcb_render_pictformat_t id;
 
-	implObj(xcb_render_pictformat_t idArg);
+	implObj(const connection_info &info,
+		xcb_render_pictformat_t idArg);
 	~implObj();
 };
 

@@ -8,6 +8,7 @@
 
 #include "render.H"
 #include "connection.H"
+#include "connection_info.H"
 #include "pictformat.H"
 
 LIBCXXW_NAMESPACE_START
@@ -71,7 +72,7 @@ get_indexes(xcb_connection_t *conn,
 LOG_FUNC_SCOPE_DECL(LIBCXXW_NAMESPACE::render::render,
 		    initialize_renderLog);
 
-render::render(xcb_connection_t *conn)
+render::render(const connection_info &info)
 {
 	LOG_FUNC_SCOPE(initialize_renderLog);
 
@@ -79,8 +80,9 @@ render::render(xcb_connection_t *conn)
 
 	render_pict_formats=return_pointer
 		(xcb_render_query_pict_formats_reply
-		 (conn,
-		  xcb_render_query_pict_formats(conn), error.addressof()));
+		 (info->conn,
+		  xcb_render_query_pict_formats(info->conn),
+		  error.addressof()));
 
 	if (!render_pict_formats)
 	{
@@ -114,8 +116,9 @@ render::render(xcb_connection_t *conn)
 		};
 
 		auto pf=const_pictformat::create(s, ref<pictformatObj::implObj>
-						 ::create(p->id),
-						 get_indexes(conn, s, p->id));
+						 ::create(info, p->id),
+						 get_indexes(info->conn,
+							     s, p->id));
 
 		available_pictformats.insert({p->id, pf});
 

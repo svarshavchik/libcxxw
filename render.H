@@ -11,6 +11,7 @@
 #include <xcb/xcb.h>
 #include <xcb/xcb_renderutil.h>
 #include "returned_pointer.H"
+#include "connection_infofwd.H"
 #include "x/w/pictformatfwd.H"
 #include "x/w/types.H"
 
@@ -27,7 +28,7 @@ class LIBCXX_HIDDEN render {
 public:
 	// Construct this structure
 
-	render(xcb_connection_t *conn);
+	render(const connection_info &info);
 
 	// The xcb_render_query_pict_formats_reply_t from the server.
 

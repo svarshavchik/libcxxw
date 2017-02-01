@@ -48,8 +48,8 @@ void gcObj::implObj::change_gc_locked(const gcObj::properties &props)
 {
 	if (!props.references.mask.null())
 	{
-		if (props.references.mask->impl->get_screen()->impl->xcb_screen->root !=
-		    drawable->get_screen()->impl->xcb_screen->root)
+		if (props.references.mask->impl->get_screen()->impl !=
+		    drawable->get_screen()->impl)
 			throw EXCEPTION("Attempting to set graphic context mask pixmap from a different root window");
 		if (props.references.mask->impl->get_depth() != 1)
 			throw EXCEPTION("Graphic context mask must have depth of 1");
@@ -57,8 +57,8 @@ void gcObj::implObj::change_gc_locked(const gcObj::properties &props)
 
 	if (!props.references.tile.null())
 	{
-		if (props.references.tile->impl->get_screen()->impl->xcb_screen->root !=
-		    drawable->get_screen()->impl->xcb_screen->root)
+		if (props.references.tile->impl->get_screen()->impl !=
+		    drawable->get_screen()->impl)
 			throw EXCEPTION("Attempting to set graphic context tile pixmap from a different root window");
 
 		if (props.references.tile->impl->get_depth() !=
@@ -68,8 +68,8 @@ void gcObj::implObj::change_gc_locked(const gcObj::properties &props)
 
 	if (!props.references.stipple.null())
 	{
-		if (props.references.stipple->impl->get_screen()->impl->xcb_screen->root !=
-		    drawable->get_screen()->impl->xcb_screen->root)
+		if (props.references.stipple->impl->get_screen()->impl !=
+		    drawable->get_screen()->impl)
 			throw EXCEPTION("Attempting to set graphic context stipple pixmap from a different root window");
 		if (props.references.stipple->impl->get_depth() != 1)
 			throw EXCEPTION("Stipple pixmap must have depth of 1");

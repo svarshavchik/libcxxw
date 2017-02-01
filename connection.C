@@ -200,7 +200,7 @@ connectionObj::implObj::implObj(const connection_info &info,
 				const xcb_setup_t *setup,
 				const connection_thread &thread)
 	: info(info),
-	  render_info(info->conn),
+	  render_info(info),
 	  ewmh_info(info->conn),
 	  setup(*setup),
 	  thread(thread),
