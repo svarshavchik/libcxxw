@@ -10,6 +10,8 @@
 #include "background_color.H"
 #include "xid_t.H"
 #include "picture.H"
+#include "screen_solidcolorpictures.H"
+#include "recycled_pixmaps.H"
 #include <x/mpobj.H>
 #include <x/weakptr.H>
 #include <x/refptr_traits.H>
@@ -176,7 +178,9 @@ screenObj::implObj::implObj(const xcb_screen_t *xcb_screen,
 					   toplevelwindow_visual->impl
 					   ->visual_id)),
 	  screen_depths(screen_depths),
-	  current_theme(current_theme)
+	  current_theme(current_theme),
+	  solid_color_picture_cache(screen_solidcolorpictures::create()),
+	  recycled_pixmaps_cache(recycled_pixmaps::create())
 {
 }
 

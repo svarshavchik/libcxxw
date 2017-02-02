@@ -128,15 +128,24 @@ libcxxw_la_SOURCES=\
 	pixmap_impl.C				    \
 	rectangle.C				    \
 	rectangle.H				    \
+	recycled_pixmaps.C			    \
+	recycled_pixmaps.H			    \
+	recycled_pixmapsfwd.H			    \
+	recycled_pixmapsobj.H			    \
 	render.C				    \
 	render.H				    \
 	returned_pointer.H			    \
 	rgb.C					    \
+	scratch_buffer.C			    \
+	scratch_buffer_impl.C			    \
+	scratch_buffer.H			    \
 	screen.C				    \
 	screen.H				    \
 	screen_depthinfo.C			    \
 	screen_depthinfo.H			    \
 	screen_solidcolorpictures.C		    \
+	screen_solidcolorpictures.H		    \
+	screen_solidcolorpicturesfwd.H		    \
 	window_handler.C			    \
 	window_handler.H			    \
 	xid_t.C					    \

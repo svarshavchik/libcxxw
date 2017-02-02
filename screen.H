@@ -8,45 +8,34 @@
 #include "x/w/screen.H"
 #include "x/w/screen_depthinfo.H"
 #include "x/w/picturefwd.H"
+#include "x/w/pictformatfwd.H"
+#include "x/w/scratch_bufferfwd.H"
+#include "recycled_pixmapsfwd.H"
 #include "x/w/rgb.H"
 #include "x/w/metrics/mmaxisfwd.H"
 #include "connection.H"
 #include "connection_threadfwd.H"
 #include "defaultthemefwd.H"
 #include "background_colorfwd.H"
+#include "screen_solidcolorpicturesfwd.H"
 #include "xid_t.H"
 #include <x/logger.H>
 #include <x/vector.H>
 #include <x/mpobj.H>
-#include <x/weakunordered_multimapfwd.H>
 #include <xcb/xcb.h>
 #include <cmath>
+#include <string>
 
 LIBCXXW_NAMESPACE_START
 
 class render;
 
-// A cache of solid color pictures for this screen.
-
-class LIBCXX_HIDDEN screen_solidcolorpictures {
-
- public:
-	typedef x::weakunordered_multimap<rgb, pictureObj> map_t;
-
-	map_t map;
-
-	screen_solidcolorpictures();
-
-	~screen_solidcolorpictures();
-};
-
 //! xcb_screen_t owner.
 
 class LIBCXX_HIDDEN screenObj::implObj
-	: virtual public obj,
-	  public screen_solidcolorpictures {
+	: virtual public obj {
 
-	// Even though we use RENDER, CreateWindow() needs a colormap...
+	//! Even though we use RENDER, CreateWindow() needs a colormap...
 
 	class toplevelwindow_colormapObj
 		: virtual public obj,
@@ -63,35 +52,59 @@ class LIBCXX_HIDDEN screenObj::implObj
 
 	LOG_CLASS_SCOPE;
 
+	//! This screen
 	const xcb_screen_t * const xcb_screen;
+
+	//! This screen's number
 	const size_t screen_number;
+
+	//! The connection thread
 	const connection_thread thread;
 
-	// Use this visual, pictformat, and colormap for top level windows
+	//! Use this visual for top level windows.
 	const screen::base::visual_t toplevelwindow_visual;
+
+	//! Use this pictformat for top level windows
 	const const_pictformat toplevelwindow_pictformat;
+
+	//! Temporary colormap for top level windows
 	const ref<toplevelwindow_colormapObj> toplevelwindow_colormap;
 
-	// Same screen_depths as the public object.
+	//! Same screen_depths as the public object.
 	const vector<const_ref<depthObj>> screen_depths;
 
-	// Current theme, mutex protected.
-	//
-	// The current theme must be consulted when constructing new
-	// display elements, and it is also accessed by the connection thread
-	// as well.
+	//! Current theme, mutex protected.
+
+	//! The current theme must be consulted when constructing new
+	//! display elements, and it is also accessed by the connection thread
+	//! as well.
 
 	typedef mpobj<defaulttheme> current_theme_t;
 
+	//! The current theme for this screen.
 	current_theme_t current_theme;
 
-	// Create the screen_depths. Called from the constructor.
+ private:
+	//! A cache of solid color picture objects
+
+	//! Used by create_solid_color_picture().
+	const screen_solidcolorpictures solid_color_picture_cache;
+
+	//! A cache of recycled pixtures and pixmaps
+
+	//! Used by create_scratch_buffer().
+
+	const recycled_pixmaps recycled_pixmaps_cache;
+
+ public:
+	//! Create the screen_depths. Called from the constructor.
 
 	static vector<const_ref<depthObj>>
 		create_screen_depths(const xcb_screen_t *,
 				     const render &,
 				     size_t);
 
+	//! Constructor
 	implObj(const xcb_screen_t *xcb_screen,
 		size_t screen_number,
 		const render &render_info,
@@ -100,42 +113,47 @@ class LIBCXX_HIDDEN screenObj::implObj
 		const screen::base::visual_t &toplevelwindow_visual,
 		const const_pictformat &toplevelwindow_pictformat,
 		const connection_thread &thread);
+
+	//! Destructor
 	~implObj();
 
-	// Get screen dimensions
+	//! Get screen dimensions
 
 	dim_t width_in_pixels() const
 	{
 		return dim_t(xcb_screen->width_in_pixels);
 	}
 
+	//! Get screen dimensions
+
 	dim_t height_in_pixels() const
 	{
 		return dim_t(xcb_screen->height_in_pixels);
 	}
+
+	//! Get screen dimensions
 
 	dim_t width_in_millimeters() const
 	{
 		return dim_t(xcb_screen->width_in_millimeters);
 	}
 
+	//! Get screen dimensions
+
 	dim_t height_in_millimeters() const
 	{
 		return dim_t(xcb_screen->height_in_millimeters);
-	}
-
-	double theme_scale() const
-	{
-		return 1;
 	}
 
 	// Return root window's depth.
 
 	depth_t root_depth() const;
 
-	// Return root window's visual
+	//! Return root window's visual
 
 	screen::base::visual_t root_visual() const;
+
+	//! Return root window's visual.
 
 	static screen::base::visual_t
 		root_visual(const xcb_screen_t *xcb_screen,
@@ -187,6 +205,22 @@ class LIBCXX_HIDDEN screenObj::implObj
 	//! Compute # of pixels from millimeters, for height
 
 	metrics::axis compute_height(const metrics::mmaxis &);
+
+
+	//! Create a temporary buffer for building images.
+
+	//! The returned \ref scratch_buffer "scratch_buffer" object may
+	//! be an existing object (it comes from a weak map pool). If a new
+	//! shared picture needs to be created, its size is specified by
+	//! \c initial_width and \c initial_height.
+
+	scratch_buffer create_scratch_buffer(const screen &public_object,
+					     const std::string &identifier,
+					     const pictformat &pf,
+					     dim_t initial_width,
+					     dim_t initial_height);
+
+
 };
 
 LIBCXXW_NAMESPACE_END

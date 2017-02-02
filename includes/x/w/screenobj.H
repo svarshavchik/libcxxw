@@ -9,6 +9,8 @@
 #include <x/w/connectionfwd.H>
 #include <x/w/rectangle.H>
 #include <x/w/picturefwd.H>
+#include <x/w/pictformatfwd.H>
+#include <x/w/scratch_bufferfwd.H>
 #include <x/w/main_windowfwd.H>
 #include <x/w/rgbfwd.H>
 #include <x/w/new_layoutmanagerfwd.H>
@@ -140,6 +142,19 @@ public:
 	main_window do_create_mainwindow(const new_layoutmanager &actory,
 					 const function<main_window_creator_t>
 					 &f);
+
+
+	////////////////////////////////////////////////////////////////////
+
+	//! Internal method.
+
+	//! \internal
+
+	scratch_buffer create_scratch_buffer(const std::string &identifier,
+					     const pictformat &pf,
+					     dim_t initial_width,
+					     dim_t initial_height)
+		LIBCXX_HIDDEN;
 };
 
 LIBCXXW_NAMESPACE_END

@@ -65,6 +65,12 @@ public:
 	pixmap create_pixmap(dim_t width,
 			     dim_t height,
 			     depth_t depth);
+
+	//! Return my width
+	dim_t get_width() const;
+
+	//! Return my height
+	dim_t get_height() const;
 };
 
 #if 0

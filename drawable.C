@@ -57,4 +57,15 @@ pixmap drawableObj::create_pixmap(dim_t width,
 	return impl->create_pixmap(width, height, depth);
 }
 
+dim_t drawableObj::get_width() const
+{
+	return impl->get_width();
+}
+
+dim_t drawableObj::get_height() const
+{
+	return impl->get_height();
+}
+
+
 LIBCXXW_NAMESPACE_END

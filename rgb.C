@@ -6,12 +6,7 @@
 #include "x/w/rgb.H"
 #include "messages.H"
 
-namespace LIBCXX_NAMESPACE {
-	namespace w {
-#if 0
-	}
-}
-#endif
+LIBCXXW_NAMESPACE_START
 
 rgb rgb::gradient(const rgb &other, uint16_t i, uint16_t n) const
 {
@@ -49,9 +44,5 @@ rgb rgb::gradient(const gradient_t &g, size_t i, size_t n)
 	return prev->second.gradient(next->second, scaled_i-prev->first,
 				     next->first-prev->first);
 }
-#if 0
-{
-	{
-#endif
-	}
-}
+
+LIBCXXW_NAMESPACE_END
