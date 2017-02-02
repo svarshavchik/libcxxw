@@ -339,8 +339,6 @@ void runtestflashwiththeme(const testmainwindowoptions &options)
 
 	guard(main_window->get_screen()->mcguffin());
 
-	countstateupdate c=countstateupdate::create();
-
 	main_window->show_all();
 
 	main_window->get_screen()->get_connection()->on_disconnect([]
@@ -377,6 +375,7 @@ void runtestflashwiththeme(const testmainwindowoptions &options)
 void testflashwithcolor(const testmainwindowoptions &options)
 {
 	runtestflashwithcolor(options);
+	alarm(0);
 
 	sausage_factory_t::lock lock(sausages);
 
@@ -385,6 +384,154 @@ void testflashwithcolor(const testmainwindowoptions &options)
 				<< " clear_to_color() calls, for "
 				<< lock->number_of_areas
 				<< " rectangles instead of five");
+}
+
+///////////////////////////////////////////////////////////////////////////
+
+class countsizeupdateObj : virtual public LIBCXX_NAMESPACE::obj {
+
+public:
+	typedef std::map<LIBCXX_NAMESPACE::w::dim_t, int> s;
+
+	LIBCXX_NAMESPACE::mpobj<s> counter;
+
+	void increment(auto n)
+	{
+		LIBCXX_NAMESPACE::mpobj<s>::lock lock(counter);
+
+		++(*lock)[n];
+	}
+
+	auto get()
+	{
+		return *LIBCXX_NAMESPACE::mpobj<s>::lock(counter);
+	}
+};
+
+typedef LIBCXX_NAMESPACE::ref<countsizeupdateObj> countsizeupdate;
+
+std::tuple<countsizeupdate,
+	   countsizeupdate>
+runtestthemescale(const testmainwindowoptions &options)
+{
+	{
+		sausage_factory_t::lock lock(sausages);
+
+		*lock=sausage_factory();
+	}
+
+	alarm(30);
+
+	typedef LIBCXX_NAMESPACE::mcguffinstash<> stash_t;
+
+	LIBCXX_NAMESPACE::destroy_callback::base::guard guard;
+
+	auto main_window=LIBCXX_NAMESPACE::w::main_window::base
+		::create([&]
+			 (const auto &main_window)
+			 {
+				 auto stash=stash_t::create();
+
+				 main_window->appdata=stash;
+
+				 LIBCXX_NAMESPACE::w::gridlayoutmanager m=main_window->get_layoutmanager();
+				 auto c=m->insert(0, 0)->create_canvas
+				 ([]
+				  (const auto &ignore) {},
+				  10, 10);
+
+				 stash->insert("canvas", c);
+			 });
+
+	auto original_theme=main_window->get_screen()->get_connection()
+		->current_theme();
+
+	guard(main_window->get_screen()->mcguffin());
+
+	countsizeupdate cmain=countsizeupdate::create();
+
+	auto mainmcguffin=main_window->on_state_update
+		([cmain]
+		 (const auto &what)
+		 {
+			 std::cout << "Main window: " << what << std::endl;
+
+			 if (what.shown &&
+			     what.state_update == what.current_state)
+				 cmain->increment(what.current_position.width);
+		 });
+
+	countsizeupdate ccanvas=countsizeupdate::create();
+
+	auto canvasmcguffin=
+		LIBCXX_NAMESPACE::w::element(stash_t(main_window->appdata)
+					     ->get("canvas"))
+		->on_state_update
+		([ccanvas]
+		 (const auto &what)
+		 {
+			 std::cout << "Canvas: " << what << std::endl;
+			 if (what.shown &&
+			     what.state_update == what.current_state)
+				 ccanvas->increment(what.current_position.width);
+		 });
+
+	main_window->show_all();
+
+	main_window->get_screen()->get_connection()->on_disconnect([]
+								   {
+									   exit(1);
+								   });
+	bool flag=true;
+
+	for (int i=0; i<4; ++i)
+	{
+		{
+			sausage_factory_t::lock lock(sausages);
+
+			lock.wait_for(std::chrono::milliseconds(500),
+				      [&]
+				      { return false; });
+		}
+
+		main_window->get_screen()->get_connection()
+			->set_theme(original_theme.first,
+				    (i % 2) ? 100:200);
+
+		flag= !flag;
+		{
+			sausage_factory_t::lock lock(sausages);
+
+			lock.wait_for(std::chrono::milliseconds(500),
+				      [&]
+				      { return false; });
+		}
+	}
+	return {cmain, ccanvas};
+}
+
+void testthemescale(const testmainwindowoptions &options)
+{
+	auto c=runtestthemescale(options);
+	alarm(0);
+
+	auto s=std::get<0>(c)->get();
+
+	if (s.size() != 2)
+		throw EXCEPTION("Main window did not have exactly two sizes");
+
+	for (const auto &n:s)
+		if (n.second != 2)
+			throw EXCEPTION("Main window expected two updates for each size");
+
+	s=std::get<1>(c)->get();
+
+	if (s.size() != 2)
+		throw EXCEPTION("Canvas did not have exactly two sizes");
+
+	for (const auto &n:s)
+		if (n.second != 2)
+			throw EXCEPTION("Canvas expected two updates for each size");
 }
 
 void testflashwiththeme(const testmainwindowoptions &options)
@@ -415,6 +562,10 @@ int main(int argc, char **argv)
 		else if (options.usetheme->value)
 		{
 			testflashwiththeme(options);
+		}
+		else if (options.themescale->value)
+		{
+			testthemescale(options);
 		}
 		else
 		{

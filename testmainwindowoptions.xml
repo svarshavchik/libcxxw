@@ -31,11 +31,20 @@
     <longopt>usetheme</longopt>
     <descr>Change color by changing the theme</descr>
   </option>
+  <option>
+    <name>themescale</name>
+    <type>bool</type>
+    <default>false</default>
+    <opt>T</opt>
+    <longopt>themescale</longopt>
+    <descr>Alternate theme scales</descr>
+  </option>
   <mutex>
     <name>state</name>
     <name>usemain</name>
     <name>showhide</name>
     <name>usetheme</name>
+    <name>themescale</name>
   </mutex>
   <defaultoptions />
 </optclass>
