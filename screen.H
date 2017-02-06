@@ -263,11 +263,13 @@ class LIBCXX_HIDDEN screenObj::implObj
 
 	scratch_buffer create_scratch_buffer(const screen &public_object,
 					     const std::string &identifier,
-					     const pictformat &pf,
+					     const const_pictformat &pf,
 					     dim_t initial_width,
 					     dim_t initial_height);
 
+	//! Shortcut to render metadat.
 
+	const_pictformat find_alpha_pictformat_by_depth(depth_t d) const;
 };
 
 LIBCXXW_NAMESPACE_END

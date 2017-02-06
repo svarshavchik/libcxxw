@@ -29,7 +29,7 @@ class LIBCXX_HIDDEN recycled_pixmapsObj : virtual public obj {
 		std::string identifier;
 
 		//! Scratch buffer's pictformat.
-		pictformat pf;
+		const_pictformat pf;
 
 		//! Equality comparison
 		bool operator==(const scratch_buffer_key &) const;

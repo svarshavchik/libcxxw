@@ -143,6 +143,9 @@ public:
 					 const function<main_window_creator_t>
 					 &f);
 
+	//! Shortcut to render data.
+
+	const_pictformat find_alpha_pictformat_by_depth(depth_t d) const;
 
 	////////////////////////////////////////////////////////////////////
 
@@ -151,7 +154,7 @@ public:
 	//! \internal
 
 	scratch_buffer create_scratch_buffer(const std::string &identifier,
-					     const pictformat &pf,
+					     const const_pictformat &pf,
 					     dim_t initial_width,
 					     dim_t initial_height)
 		LIBCXX_HIDDEN;

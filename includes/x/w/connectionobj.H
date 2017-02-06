@@ -7,6 +7,7 @@
 
 #include <x/w/connectionfwd.H>
 #include <x/w/screenfwd.H>
+#include <x/w/pictformatfwd.H>
 #include <x/obj.H>
 #include <vector>
 #include <experimental/string_view>
@@ -56,6 +57,9 @@ class connectionObj : virtual public obj {
 
 	void set_theme(const std::string &identifier,
 		       int factor);
+
+	//! Shortcut to render information.
+	const_pictformat find_alpha_pictformat_by_depth(depth_t d) const;
 };
 
 LIBCXXW_NAMESPACE_END

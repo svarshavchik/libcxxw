@@ -113,6 +113,11 @@ rectangle screenObj::get_workarea() const
 	return ret;
 }
 
+const_pictformat screenObj::find_alpha_pictformat_by_depth(depth_t d) const
+{
+	return get_connection()->find_alpha_pictformat_by_depth(d);
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 // Screen metrics

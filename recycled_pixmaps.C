@@ -25,7 +25,7 @@ recycled_pixmapsObj::recycled_pixmapsObj()
 recycled_pixmapsObj::~recycled_pixmapsObj()=default;
 
 scratch_buffer screenObj::create_scratch_buffer(const std::string &identifier,
-						const pictformat &pf,
+						const const_pictformat &pf,
 						dim_t initial_width,
 						dim_t initial_height)
 {
@@ -39,7 +39,7 @@ scratch_buffer screenObj::create_scratch_buffer(const std::string &identifier,
 scratch_buffer screenObj::implObj
 ::create_scratch_buffer(const screen &public_object,
 			const std::string &identifier,
-			const pictformat &pf,
+			const const_pictformat &pf,
 			dim_t initial_width,
 			dim_t initial_height)
 {
@@ -157,7 +157,7 @@ size_t recycled_pixmapsObj
 ::scratch_buffer_key_hash::operator()(const scratch_buffer_key &k) const
 {
 	return std::hash<std::string>()(k.identifier)
-		+ std::hash<pictformat>()(k.pf);
+		+ std::hash<const_pictformat>()(k.pf);
 }
 
 LIBCXXW_NAMESPACE_END

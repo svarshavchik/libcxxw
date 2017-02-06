@@ -45,6 +45,11 @@ void connectionObj::on_disconnect(const std::function<void ()> &callback)
 	return impl->thread->install_on_disconnect(callback);
 }
 
+const_pictformat connectionObj::find_alpha_pictformat_by_depth(depth_t d) const
+{
+	return impl->render_info.find_alpha_pictformat_by_depth(d);
+}
+
 /////////////////////////////////////////////////////////////////////////////
 
 // The first step is to create the connection info handle.
