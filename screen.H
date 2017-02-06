@@ -18,6 +18,7 @@
 #include "defaultthemefwd.H"
 #include "background_colorfwd.H"
 #include "screen_solidcolorpicturesfwd.H"
+#include "border_implfwd.H"
 #include "xid_t.H"
 #include <x/logger.H>
 #include <x/vector.H>
@@ -51,6 +52,10 @@ class LIBCXX_HIDDEN screenObj::implObj
  public:
 
 	LOG_CLASS_SCOPE;
+
+	//////////////////////////////////////////////////////////////////
+	//
+	// Class members
 
 	//! This screen
 	const xcb_screen_t * const xcb_screen;
@@ -97,6 +102,10 @@ class LIBCXX_HIDDEN screenObj::implObj
 	const recycled_pixmaps recycled_pixmaps_cache;
 
  public:
+	///////////////////////////////////////////////////////////////////
+	//
+	// Construction
+
 	//! Create the screen_depths. Called from the constructor.
 
 	static vector<const_ref<depthObj>>
@@ -116,6 +125,10 @@ class LIBCXX_HIDDEN screenObj::implObj
 
 	//! Destructor
 	~implObj();
+
+	////////////////////////////////////////////////////////////////
+	//
+	// Screen dimension for informational purposes only.
 
 	//! Get screen dimensions
 
@@ -159,6 +172,8 @@ class LIBCXX_HIDDEN screenObj::implObj
 		root_visual(const xcb_screen_t *xcb_screen,
 			    const vector<const_ref<depthObj>> &screen_depths);
 
+	/////////////////////////////////////////////////////////////////////
+	//
 	// Lock the current theme, and obtain the theme-specific data.
 
 	//! Retrieve theme dimension
@@ -173,6 +188,31 @@ class LIBCXX_HIDDEN screenObj::implObj
 	rgb::gradient_t get_theme_color_gradient(const std::experimental::string_view &id,
 						 const rgb::gradient_t
 						 &default_value);
+
+	//! Retrieve a theme border.
+	const_border_impl get_theme_border(const std::experimental::string_view
+					   &id,
+					   const border_info &default_value);
+	//! Retrieve a theme border.
+	const_border_impl get_theme_border(const std::experimental::string_view
+					   &id,
+					   const const_border_impl
+					   &default_value);
+	//! Retrieve a theme border.
+	const_border_impl get_theme_border(current_theme_t::lock &,
+					   const std::experimental::string_view
+					   &id,
+					   const border_info &default_value);
+	//! Retrieve a theme border.
+	const_border_impl get_theme_border(current_theme_t::lock &,
+					   const std::experimental::string_view
+					   &id,
+					   const const_border_impl
+					   &default_value);
+
+	//////////////////////////////////////////////////////////////////////
+	//
+	// Colors
 
 	//! Create a cached solid color picture;
 
@@ -190,6 +230,10 @@ class LIBCXX_HIDDEN screenObj::implObj
 						 ::string_view &color_name,
 						 const rgb &default_value);
 
+	/////////////////////////////////////////////////////////////////////
+	//
+	// Compute a size in pixels given the size in millimeters.
+
 	//! Compute # of pixels from millimeters, for width
 
 	dim_t compute_width(const current_theme_t::lock &, double millimeters);
@@ -206,6 +250,9 @@ class LIBCXX_HIDDEN screenObj::implObj
 
 	metrics::axis compute_height(const metrics::mmaxis &);
 
+	/////////////////////////////////////////////////////////////////////
+	//
+	// Temporary pixmaps and other objects.
 
 	//! Create a temporary buffer for building images.
 

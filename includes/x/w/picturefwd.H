@@ -11,6 +11,7 @@
 LIBCXXW_NAMESPACE_START
 
 class pictureObj;
+class pictureBase;
 
 //! A Picture object, as specified in the X Rendering extension.
 
@@ -18,11 +19,11 @@ class pictureObj;
 //! \ref drawable "drawable", a \ref pictformat "pictformat", and
 //! some rendering state, and implements rendering operations.
 
-typedef ref<pictureObj> picture;
+typedef ref<pictureObj, pictureBase> picture;
 
 //! A constant picture
 
-typedef const_ref<pictureObj> const_picture;
+typedef const_ref<pictureObj, pictureBase> const_picture;
 
 LIBCXXW_NAMESPACE_END
 

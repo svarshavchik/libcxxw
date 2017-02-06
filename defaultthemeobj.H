@@ -92,6 +92,20 @@ public:
 						 const rgb::gradient_t
 						 &default_value);
 
+	//! Retrieve a theme border.
+	const_border_impl get_theme_border(const std::experimental::string_view
+					   &id,
+					   const border_info &default_value);
+	//! Retrieve a theme border.
+	const_border_impl get_theme_border(const std::experimental::string_view
+					   &id,
+					   const const_border_impl
+					   &default_value);
+
+	/////////////////////////////////////////////////////////////////////
+	//
+	// Construction and initialization
+
 	//! Structure returned by \c INSERT_LIBX_NAMESPACE::w::defaulttheme::base::get_config()
 
 	struct config {

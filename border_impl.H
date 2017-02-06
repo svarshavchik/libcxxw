@@ -17,6 +17,26 @@ LIBCXXW_NAMESPACE_START
 
 class border_impl_base : public ptrrefBase {
 
+public:
+	//! typedef alias
+
+	typedef border_implObj::draw_info draw_info;
+
+	//! Drawing the top/left corner of a cell.
+
+	static constexpr int cornertl() { return 1; }
+
+	//! Drawing the top/right corner of a cell.
+
+	static constexpr int cornertr() { return 2; }
+
+	//! Drawing the bottom-left corner of a cell.
+
+	static constexpr int cornerbl() { return 4; }
+
+	//! Drawing the bottom-right corner of a cell.
+
+	static constexpr int cornerbr() { return 8; }
 };
 
 LIBCXXW_NAMESPACE_END

@@ -241,7 +241,7 @@ public:
 	typedef dim_squared_t type;
 };
 
-//! Coordinates can be subtracted from each result.
+//! Coordinates can be subtracted from each one.
 
 template<>
 class valid_sub_op<coord_t, coord_t> {
@@ -250,6 +250,17 @@ public:
 	//! The result is dim_squared_t
 
 	typedef dim_squared_t type;
+};
+
+//! A dimension can be subtracted from a coordinate.
+
+template<>
+class valid_sub_op<coord_t, dim_t> {
+
+public:
+	//! The result is dim_squared_t
+
+	typedef coord_squared_t type;
 };
 
 template<>

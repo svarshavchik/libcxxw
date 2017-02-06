@@ -11,6 +11,17 @@
 
 LIBCXXW_NAMESPACE_START
 
+//! Base class of \ref picture "pictures".
+
+class pictureBase : public ptrrefBase {
+
+public:
+
+	//! typedef alias
+
+	typedef pictureObj::clip_mask clip_mask;
+};
+
 LIBCXXW_NAMESPACE_END
 
 #endif

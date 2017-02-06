@@ -979,6 +979,7 @@ void defaultthemeObj::load_borders(const xml::doc &config,
 				}
 			}
 			new_border->calculate();
+			borders.insert({id, new_border});
 			parsed=true;
 		}
 	} while (parsed);
@@ -995,12 +996,12 @@ void defaultthemeObj::load_borders(const xml::doc &config,
 	}
 }
 
-
 /////////////////////////////////////////////////////////////////////////////
 
 dim_t defaultthemeObj::get_theme_dim_t(const std::experimental::string_view &id,
 				       dim_t default_value)
 {
+	// TODO: gcc 6.3.1, string_view support is incomplete.
 	auto iter=dims.find(std::string(id.begin(), id.end()));
 
 	if (iter == dims.end())
@@ -1047,6 +1048,34 @@ defaultthemeObj::get_theme_color_gradient(const std::experimental::string_view &
 
 	return default_value;
 }
+
+
+const_border_impl
+defaultthemeObj::get_theme_border(const std::experimental::string_view &id,
+				  const border_info &default_value)
+{
+	// TODO: gcc 6.3.1, string_view support is incomplete.
+	auto iter=borders.find(std::string(id.begin(), id.end()));
+
+	if (iter != borders.end())
+		return iter->second;
+
+	return border_impl::create(default_value);
+}
+
+const_border_impl
+defaultthemeObj::get_theme_border(const std::experimental::string_view &id,
+				  const const_border_impl &default_value)
+{
+	// TODO: gcc 6.3.1, string_view support is incomplete.
+	auto iter=borders.find(std::string(id.begin(), id.end()));
+
+	if (iter != borders.end())
+		return iter->second;
+
+	return default_value;
+}
+
 //////////////////////////////////////////////////////////////////////////////
 
 LIBCXXW_NAMESPACE_END

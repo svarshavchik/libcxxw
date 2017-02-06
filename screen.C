@@ -12,6 +12,7 @@
 #include "picture.H"
 #include "screen_solidcolorpictures.H"
 #include "recycled_pixmaps.H"
+#include "border_impl.H"
 #include <x/mpobj.H>
 #include <x/weakptr.H>
 #include <x/refptr_traits.H>
@@ -244,6 +245,40 @@ rgb::gradient_t screenObj::implObj
 	current_theme_t::lock lock(current_theme);
 
 	return (*lock)->get_theme_color_gradient(id, default_value);
+}
+
+const_border_impl screenObj::implObj
+::get_theme_border(const std::experimental::string_view &id,
+		   const border_info &default_value)
+{
+	current_theme_t::lock lock(current_theme);
+
+	return get_theme_border(lock, id, default_value);
+}
+
+const_border_impl screenObj::implObj
+::get_theme_border(const std::experimental::string_view &id,
+		   const const_border_impl &default_value)
+{
+	current_theme_t::lock lock(current_theme);
+
+	return get_theme_border(lock, id, default_value);
+}
+
+const_border_impl screenObj::implObj
+::get_theme_border(current_theme_t::lock &lock,
+		   const std::experimental::string_view &id,
+		   const border_info &default_value)
+{
+	return (*lock)->get_theme_border(id, default_value);
+}
+
+const_border_impl screenObj::implObj
+::get_theme_border(current_theme_t::lock &lock,
+		   const std::experimental::string_view &id,
+		   const const_border_impl &default_value)
+{
+	return (*lock)->get_theme_border(id, default_value);
 }
 
 LIBCXXW_NAMESPACE_END
