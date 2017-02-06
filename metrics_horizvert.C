@@ -12,19 +12,19 @@ namespace metrics {
 }
 #endif
 
-horizvertObj::horizvertObj(dim_t h_minimum,
-			   dim_t h_preferred,
-			   dim_t h_maximum,
-			   dim_t v_minimum,
-			   dim_t v_preferred,
-			   dim_t v_maximum)
+horizvert_axi::horizvert_axi(dim_t h_minimum,
+			     dim_t h_preferred,
+			     dim_t h_maximum,
+			     dim_t v_minimum,
+			     dim_t v_preferred,
+			     dim_t v_maximum)
 	: horiz(h_minimum, h_preferred, h_maximum),
 	  vert(v_minimum, v_preferred, v_maximum)
 {
 }
 
-horizvertObj::horizvertObj(const axis &horiz,
-			   const axis &vert)
+horizvert_axi::horizvert_axi(const axis &horiz,
+			     const axis &vert)
 	: horiz(horiz),
 	  vert(vert)
 {

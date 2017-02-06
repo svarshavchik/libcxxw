@@ -14,21 +14,8 @@ LIBCXXW_NAMESPACE_START
 
 namespace metrics {
 
-	//! A display element's metrics.
-
-	//! Specifies a display element's horizontal and vertical sizes.
-	//!
-	//! \note
-	//! THIS ENTIRE OBJECT IS IN_THREAD_ONLY
-
-	class horizvertObj : virtual public obj {
-
-	public:
-		/////////////////////////////////////////////////////////////
-		//
-		// NOTE: this entire object is IN_THREAD_ONLY
-
-		virtual void horizvert_updated(IN_THREAD_ONLY)=0;
+	//! Horizontal and vertical axis:
+	struct LIBCXX_HIDDEN horizvert_axi {
 
 		//! The horizontal dimensions.
 		axis horiz;
@@ -37,17 +24,37 @@ namespace metrics {
 		axis vert;
 
 		//! Constructor
-		horizvertObj(dim_t h_minimum=dim_t(0),
-			     dim_t h_preferred=dim_t(0),
-			     dim_t h_maximum=dim_t(0),
-			     dim_t v_minimum=dim_t(0),
-			     dim_t v_preferred=dim_t(0),
-			     dim_t v_maximum=dim_t(0));
+
+		horizvert_axi(dim_t h_minimum=dim_t(0),
+			      dim_t h_preferred=dim_t(0),
+			      dim_t h_maximum=dim_t(0),
+			      dim_t v_minimum=dim_t(0),
+			      dim_t v_preferred=dim_t(0),
+			      dim_t v_maximum=dim_t(0));
 
 		//! Constructor
+		horizvert_axi(const axis &horiz,
+			      const axis &vert);
+	};
 
-		horizvertObj(const axis &horiz,
-			     const axis &vert);
+	//! A display element's metrics.
+
+	//! Specifies a display element's horizontal and vertical sizes.
+	//!
+	//! \note
+	//! THIS ENTIRE OBJECT IS IN_THREAD_ONLY
+
+	class LIBCXX_HIDDEN horizvertObj : public horizvert_axi,
+					   virtual public obj {
+
+	public:
+		/////////////////////////////////////////////////////////////
+		//
+		// NOTE: this entire object is IN_THREAD_ONLY
+
+		virtual void horizvert_updated(IN_THREAD_ONLY)=0;
+
+		using horizvert_axi::horizvert_axi;
 
 		//! Destructor
 

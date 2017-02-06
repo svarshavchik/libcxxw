@@ -16,7 +16,7 @@ struct testgrid_info {
 	dim_t min, pref, max;
 };
 
-class myhorizvertObj : public horizvertObj {
+class LIBCXX_HIDDEN myhorizvertObj : public horizvertObj {
 
 public:
 	using horizvertObj::horizvertObj;

@@ -29,7 +29,7 @@ namespace metrics {
 	//! calculate_grid_horiz_metrics() and calculate_grid_vert_metrics()
 	//! process a container of the following values:
 
-	struct pos_axis {
+	struct LIBCXX_HIDDEN pos_axis {
 		//! Horizontal and vertical position of this display element
 		grid_pos pos;
 
