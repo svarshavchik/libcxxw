@@ -25,6 +25,10 @@ libcxxw_la_SOURCES=\
 	batch_queue.C				    \
 	batch_queue.H				    \
 	batch_queueobj.H			    \
+	border_impl.C				    \
+	border_impl.H				    \
+	border_implfwd.H			    \
+	border_implobj.H			    \
 	builtin_atoms.C				    \
 	builtin_atoms.H				    \
 	canvas.H				    \

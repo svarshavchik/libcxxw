@@ -67,4 +67,21 @@
   </color>
 
   <color id="mainwindow_background_color" scale="75%_color" />
+
+  <!-- Stock borders -->
+
+  <border id="empty_border">
+    <width axis="pixels">0</width>
+    <height axis="pixels">0</height>
+  </border>
+
+  <border id="thin_border">
+    <width axis="horiz">.4</width>
+    <height axis="vert">.4</height>
+  </border>
+
+  <border id="thin_0%_border" from="thin_border">
+    <color>0%_color</color>
+  </border>
+
 </theme>

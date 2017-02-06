@@ -11,7 +11,7 @@
 #include "screen.H"
 #include "drawable.H"
 #include "messages.H"
-
+#include "border_impl.H"
 #include <x/property_value.H>
 #include <x/chrcasecmp.H>
 #include <x/strtok.H>
@@ -411,7 +411,11 @@ defaultthemeObj::defaultthemeObj(const xcb_screen_t *screen,
 					theme_config.thread,
 					theme_config.themename,
 					theme_config.themescale * 100);
+}
 
+void defaultthemeObj::load(const config &theme_config,
+			   const ref<screenObj::implObj> &screen)
+{
 	try {
 		if (!theme_config.theme_configfile.null())
 		{
@@ -420,6 +424,7 @@ defaultthemeObj::defaultthemeObj(const xcb_screen_t *screen,
 			load_dims(config);
 			load_colors(config);
 			load_color_gradients(config);
+			load_borders(config, screen);
 		}
 	} catch (const exception &e)
 	{
@@ -432,17 +437,38 @@ defaultthemeObj::defaultthemeObj(const xcb_screen_t *screen,
 
 defaultthemeObj::~defaultthemeObj()=default;
 
+////////////////////////////////////////////////////////////////////////////
+//
+// Theme parsing functions.
+
+// Look up something optional.
+
+static bool if_given(const xml::doc::base::readlock &lock,
+		     const char *xpath_node)
+{
+	auto xpath=lock->get_xpath(xpath_node);
+
+	return xpath->count() > 0;
+}
+
+// Take a dim_t, multiply it by a double scale, round off the result.
+
 template<typename dim_type>
-static dim_t dim_scale(dim_type &&orig,
-		       double scale)
+static dim_t dim_scale(dim_type &&orig, double scale)
 {
 	typedef typename std::remove_reference<dim_type>::type::value_type
 		value_type;
 
 	auto res=std::round(value_type(orig) * scale);
 
-	if (res >= std::numeric_limits<dim_t::value_type>::max())
+	if (res >= std::numeric_limits<dim_t::value_type>::max()-1)
 		res=std::numeric_limits<dim_t::value_type>::max()-1;
+
+	// However, if the scale is tiny, and the original value is not 0,
+	// we cannot scale it to 0.
+
+	if (orig != 0 && res < 1)
+		res=1;
 
 	return (dim_t::value_type)res;
 }
@@ -469,6 +495,12 @@ static bool parse_dim(const xml::doc::base::readlock &lock,
 			throw EXCEPTION(gettextmsg(_("could not parse %1% id=%2%"),
 						   descr,
 						   id));
+
+		if (v < 0)
+			throw EXCEPTION(gettextmsg(_("%1% id=%2% cannot be negative"),
+						   descr,
+						   id));
+
 	}
 
 	if (!scale.empty())
@@ -500,18 +532,6 @@ static bool parse_dim(const xml::doc::base::readlock &lock,
 		}
 	}
 
-	dim_t min_value=0;
-
-	auto min_value_s=lock->get_any_attribute("min");
-
-	if (!min_value_s.empty())
-	{
-		std::istringstream(min_value_s) >> min_value;
-	}
-
-	if (min_value > mm)
-		mm=min_value;
-
 	return true;
 }
 
@@ -525,7 +545,6 @@ static void unknown_dim(const char *element, const std::string &id)
 				   id));
 }
 
-#if 0
 // Look up a dimension, when parsing something else.
 
 static void update_dim_if_given(const xml::doc::base::readlock &lock,
@@ -548,7 +567,32 @@ static void update_dim_if_given(const xml::doc::base::readlock &lock,
 	if (!parse_dim(node, existing_dims, h1mm, v1mm, mm, descr, id))
 		unknown_dim(descr, id);
 }
-#endif
+
+static bool update_color(const xml::doc::base::readlock &lock,
+			 const char *xpath_name,
+			 const std::unordered_map<std::string, rgb> &colors,
+			 rgb &color)
+{
+	auto color_node=lock->clone();
+
+	auto xpath=color_node->get_xpath(xpath_name);
+
+	if (xpath->count() == 0)
+		return false;
+
+	xpath->to_node();
+
+	auto name=color_node->get_text();
+
+	auto iter=colors.find(name);
+
+	if (iter == colors.end())
+		throw EXCEPTION(gettextmsg(_("undefined color: %1%"),
+					   name));
+
+	color=iter->second;
+	return true;
+}
 
 void defaultthemeObj::load_dims(const xml::doc &config)
 {
@@ -787,6 +831,170 @@ void defaultthemeObj::load_color_gradients(const xml::doc &config)
 	}
 }
 
+//////////////////////////////////////////////////////////////////////////////
+//
+// Borders
+
+void defaultthemeObj::load_borders(const xml::doc &config,
+				   const ref<screenObj::implObj> &screen)
+{
+	auto lock=config->readlock();
+
+	if (!lock->get_root())
+		return;
+
+	auto xpath=lock->get_xpath("/theme/border");
+
+	size_t count=xpath->count();
+
+	bool parsed;
+
+	// Repeatedly pass over all colors, parsing the ones that are not based
+	// on unparsed colors.
+
+	do
+	{
+		parsed=false;
+
+		for (size_t i=0; i<count; ++i)
+		{
+			xpath->to_node(i+1);
+
+			auto id=lock->get_any_attribute("id");
+
+			if (id.empty())
+				throw EXCEPTION(_("no id specified for border"));
+
+			if (borders.find(id) != borders.end())
+				continue; // Did this one already.
+
+			auto from=lock->get_any_attribute("from");
+
+			bool copied_from=false;
+
+			auto new_border=from.empty()
+				? border_impl::create() :
+				({
+					auto iter=borders.find(from);
+
+					if (iter == borders.end())
+						continue; // Not yet parsed
+
+					copied_from=true;
+
+					auto b=iter->second->clone();
+
+					borders.insert({id, b});
+
+					b;
+				});
+
+			update_dim_if_given(lock, "width",
+					    dims, h1mm, v1mm,
+					    new_border->width,
+					    "border", id);
+
+			update_dim_if_given(lock, "height",
+					    dims, h1mm, v1mm,
+					    new_border->height,
+					    "border", id);
+
+			update_dim_if_given(lock, "radius",
+					    dims, h1mm, v1mm,
+					    new_border->radius,
+					    "border", id);
+
+
+			// If we copied the border from another from, then
+			// unless the following values are given, don't
+			// touch the colors.
+
+			if (!copied_from || if_given(lock, "cellcolor") ||
+			    if_given(lock, "nocellcolor") ||
+			    if_given(lock, "color"))
+			{
+
+				bool cellcolor=false;
+
+				{
+					auto node=lock->clone();
+					auto xpath=node->get_xpath("cellcolor");
+
+					if (xpath->count())
+						cellcolor=true;
+				}
+
+				new_border->colors.clear();
+				new_border->colors.reserve(2);
+
+				if (!cellcolor)
+				{
+					rgb color;
+					update_color(lock, "color", colors,
+						     color);
+
+					new_border->colors.push_back
+						(screen
+						 ->create_solid_color_picture
+						 (color));
+
+					if (update_color(lock, "color2", colors,
+							 color))
+					{
+						new_border->colors.push_back
+							(screen
+							 ->create_solid_color_picture
+							 (color));
+					}
+				}
+			}
+
+			{
+				auto dash_nodes=lock->clone();
+
+				auto xpath=dash_nodes->get_xpath("dash");
+
+				size_t n=xpath->count();
+
+				if (n)
+				{
+					new_border->dashes.clear();
+					new_border->dashes.reserve(n);
+				}
+
+				for (i=0; i<n; ++i)
+				{
+					xpath->to_node(i+1);
+
+					dim_t mm;
+
+					if (!parse_dim(dash_nodes, dims,
+						       h1mm, v1mm, mm,
+						       "dash", id))
+						unknown_dim("dash", id);
+
+					new_border->dashes
+						.push_back((dim_t::value_type)
+							   mm);
+				}
+			}
+			new_border->calculate();
+			parsed=true;
+		}
+	} while (parsed);
+
+	for (size_t i=0; i<count; ++i)
+	{
+		xpath->to_node(i+1);
+
+		auto id=lock->get_any_attribute("id");
+
+		if (borders.find(id) == borders.end())
+			throw EXCEPTION(gettextmsg(_("circular or non-existent dependency of border id=%1%"),
+						   id));
+	}
+}
+
 
 /////////////////////////////////////////////////////////////////////////////
 
@@ -839,7 +1047,6 @@ defaultthemeObj::get_theme_color_gradient(const std::experimental::string_view &
 
 	return default_value;
 }
-
 //////////////////////////////////////////////////////////////////////////////
 
 LIBCXXW_NAMESPACE_END

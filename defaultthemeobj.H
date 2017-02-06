@@ -14,6 +14,7 @@
 #include "x/w/pictformatfwd.H"
 #include "connection_threadfwd.H"
 #include "defaultthemefwd.H"
+#include "border_implfwd.H"
 
 #include <string>
 #include <unordered_map>
@@ -60,6 +61,9 @@ public:
 	//! Parsed gradients
 	std::unordered_map<std::string, rgb::gradient_t> color_gradients;
 
+	//! Borders
+	std::unordered_map<std::string, const_border_impl> borders;
+
 	//! Parse dimensions from the configuration file.
 	void load_dims(const xml::doc &config);
 
@@ -68,6 +72,10 @@ public:
 
 	//! Parse gradients from the configuration file.
 	void load_color_gradients(const xml::doc &config);
+
+	//! Parse boders from the configuration file.
+	void load_borders(const xml::doc &config,
+			  const ref<screenObj::implObj> &screen);
 
  public:
 
@@ -108,10 +116,21 @@ public:
 	};
 
 
-	//! Constructor a theme for the given screen.
+	//! Construct a theme for the given screen.
 
+	//! This construct the object, but does not fully initialize it.
+	//! After constructing the theme object, load() must be invoked with
+	//! the same theme_config parameter.
 	defaultthemeObj(const xcb_screen_t *screen,
 			const config &theme_config);
+
+	//! Actually load the theme into the newly-constructed object.
+
+	//! Finish the construction. Must get the same theme_config that
+	//! the constructor got, plus a reference to the theme's screen.
+
+	void load(const config &theme_config,
+		  const ref<screenObj::implObj> &screen);
 
 	~defaultthemeObj();
 };

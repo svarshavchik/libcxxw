@@ -139,16 +139,20 @@ get_screens(const connection_thread &thread,
 				break;
 		}
 
-		v.push_back(ref<screenObj::implObj>
-			    ::create(xcb_screen,
-				     screen_number++,
-				     render_info,
-				     screen_depths,
-				     defaulttheme::create(xcb_screen,
-							  theme_config),
-				     root_visual,
-				     root_pictformat,
-				     thread));
+		auto new_theme=defaulttheme::create(xcb_screen, theme_config);
+
+		auto s=ref<screenObj::implObj>::create(xcb_screen,
+						       screen_number++,
+						       render_info,
+						       screen_depths,
+						       new_theme,
+						       root_visual,
+						       root_pictformat,
+						       thread);
+
+		new_theme->load(theme_config, s);
+
+		v.push_back(s);
 		xcb_screen_next(&iter);
 	}
 
@@ -172,6 +176,7 @@ static inline void update_themes(const std::vector<ref<screenObj::implObj>> &s,
 		auto new_theme=defaulttheme::create(screen->xcb_screen,
 						    theme_config);
 
+		new_theme->load(theme_config, screen);
 		screenObj::implObj::current_theme_t::lock
 			lock(screen->current_theme);
 
