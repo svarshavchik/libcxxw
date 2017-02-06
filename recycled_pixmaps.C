@@ -5,6 +5,7 @@
 #include "libcxxw_config.h"
 #include "recycled_pixmaps.H"
 #include "scratch_buffer.H"
+#include "background_color.H"
 #include "screen.H"
 #include "x/w/pictformat.H"
 #include "pixmap.H"
@@ -16,7 +17,8 @@
 LIBCXXW_NAMESPACE_START
 
 recycled_pixmapsObj::recycled_pixmapsObj()
-	: scratch_buffer_cache(scratch_buffer_cache_t::create())
+	: scratch_buffer_cache{scratch_buffer_cache_t::create()},
+	  theme_background_color_cache{theme_background_color_cache_t::create()}
 {
 }
 
@@ -55,6 +57,91 @@ scratch_buffer screenObj::implObj
 
 					 return scratch_buffer::create(i);
 				 });
+}
+
+////////////////////////////////////////////////////////////////////////////
+//
+// Implements background_color object as a color specified by the theme.
+//
+// The current background color picture is cached. Each call to
+// get_current_color() retrieves the color from theme, which is just an
+// unordered_map lookup, compares it to the cached color, and creates a
+// new picture, if necessary.
+
+class LIBCXX_HIDDEN theme_background_colorObj : public background_colorObj {
+
+	struct s_info {
+
+		rgb current_rgb;
+		const_picture current_color;
+	};
+
+	typedef mpobj<s_info> info_t;
+
+	const std::string theme_color;
+	const ref<screenObj::implObj> screen;
+
+	info_t info;
+
+ public:
+
+	// The constructor gets initializes with the current background color
+
+	theme_background_colorObj(const std::string &theme_color,
+				  const rgb &current_rgb,
+				  const const_picture &current_picture,
+				  const ref<screenObj::implObj> &screen)
+		: theme_color(theme_color),
+		screen(screen),
+		info{current_rgb, current_picture}
+		{
+		}
+
+	~theme_background_colorObj()=default;
+
+	const_picture get_current_color() override
+	{
+		info_t::lock lock(info);
+
+		// Check the current theme color. Did it change?
+
+		auto current_rgb=screen->get_theme_color(theme_color,
+							 lock->current_rgb);
+
+		if (current_rgb != lock->current_rgb)
+		{
+			// Create a new color.
+
+			lock->current_color=screen->create_solid_color_picture
+				(current_rgb);
+
+			lock->current_rgb=current_rgb;
+		}
+
+		return lock->current_color;
+	}
+};
+
+background_color screenObj::implObj
+::create_background_color(const std::experimental::string_view &color_name,
+			  const rgb &default_value)
+{
+	std::string color_name_str{color_name};
+
+	auto current_rgb=get_theme_color(color_name, default_value);
+
+	return recycled_pixmaps_cache->theme_background_color_cache
+		->find_or_create
+		(color_name_str,
+		 [&,this]
+		 {
+			 return ref<theme_background_colorObj>
+				 ::create(color_name_str,
+					  current_rgb,
+					  this->create_solid_color_picture
+					  (current_rgb),
+					  ref<screenObj::implObj>(this));
+		 });
 }
 
 

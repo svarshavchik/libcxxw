@@ -6,6 +6,7 @@
 #define recycled_pixmapsobj_h
 
 #include "recycled_pixmapsfwd.H"
+#include "background_colorfwd.H"
 #include "x/w/pictformatfwd.H"
 #include "x/w/scratch_bufferfwd.H"
 #include <x/obj.H>
@@ -55,6 +56,13 @@ public:
 	//! The cache of scratch buffers.
 
 	scratch_buffer_cache_t scratch_buffer_cache;
+
+	//! Container for a cache of theme background colors
+
+	typedef weakunordered_multimap<std::string, background_colorObj>
+		theme_background_color_cache_t;
+
+	theme_background_color_cache_t theme_background_color_cache;
 
 	//! Constructor
 
