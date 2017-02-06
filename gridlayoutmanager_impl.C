@@ -75,14 +75,11 @@ void gridlayoutmanagerObj::implObj
 						metrics::grid_axisrange
 						(y1v, y2v));
 
-	grid_map_key_t key{x, y};
+	grid_map_value_t metadata{grid_pos};
 
 	grid_map_t::lock lock(grid_map);
 
-	if (lock->elements.find(key) != lock->elements.end())
-		throw EXCEPTION(_("Grid element already exists"));
-
-	lock->elements.insert({key, {new_element, grid_pos}});
+	lock->elements.insert({new_element, metadata});
 	lock->modified=true;
 }
 

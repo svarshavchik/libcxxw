@@ -55,13 +55,11 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
  private:
 	//! Grid element map value
 
-	//! We store the grid elements in a map, together with precalculated
-	//! grid_pos object for the element.
+	//! We are storing the grid elements in a map, as map keys, together
+	//! with some element-specific value. Currently it's only a
+	//! precalculated grid_pos object for the element.
 
 	struct grid_map_value_t {
-
-		//! The element in the grid
-		element child_element;
 
 		//! The element's complete position.
 		metrics::grid_pos pos;
@@ -88,7 +86,8 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 		bool modified=false;
 
 		bool child_metrics_updated=false;
-		std::map<grid_map_key_t, grid_map_value_t> elements;
+
+		std::map<element, grid_map_value_t> elements;
 	};
 
 	typedef mpobj<grid_map_info_t> grid_map_t;

@@ -46,9 +46,9 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(IN_THREAD_ONLY)
 
 		all_elements.emplace_back
 			(element.second.pos,
-			 metrics::horizvert(element.second.child_element->impl
+			 metrics::horizvert(element.first->impl
 					    ->get_horizvert(IN_THREAD)),
-			 element.second.child_element);
+			 element.first);
 	}
 	lock->modified=false;
 	lock->child_metrics_updated=false;
