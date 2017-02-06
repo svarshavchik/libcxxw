@@ -4,6 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "drawable.H"
+#include "gc.H"
 #include "x/w/pixmap.H"
 #include "x/w/picture.H"
 #include "x/w/pictformat.H"
@@ -67,5 +68,9 @@ dim_t drawableObj::get_height() const
 	return impl->get_height();
 }
 
+gc drawableObj::create_gc()
+{
+	return gc::create(ref<gcObj::implObj>::create(impl));
+}
 
 LIBCXXW_NAMESPACE_END

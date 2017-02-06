@@ -8,6 +8,7 @@
 #include "scratch_bufferfwd.H"
 #include "x/w/pixmapfwd.H"
 #include "x/w/picturefwd.H"
+#include "x/w/gcfwd.H"
 #include "x/w/types.H"
 #include <x/obj.H>
 #include <x/functional.H>
@@ -92,6 +93,7 @@ class scratch_bufferObj::implObj : virtual public obj {
 	struct cached_picture_info {
 		pixmap pm;
 		picture pic;
+		gc graphic_context;
 	};
 
 	//! The cached pixmap and picture are mutex-protected.
@@ -126,6 +128,10 @@ public:
 	//! if so we won't ask for a minimum size
 
 	const_pixmap get_pixmap();
+
+	//! Retrieve the cached graphic context.
+
+	gc get_gc();
 };
 
 LIBCXXW_NAMESPACE_END

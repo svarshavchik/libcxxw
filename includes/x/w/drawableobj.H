@@ -11,6 +11,7 @@
 #include <x/w/pictformatfwd.H>
 #include <x/w/screenfwd.H>
 #include <x/w/pixmapfwd.H>
+#include <x/w/gcfwd.H>
 #include <x/w/types.H>
 
 LIBCXXW_NAMESPACE_START
@@ -71,6 +72,9 @@ public:
 
 	//! Return my height
 	dim_t get_height() const;
+
+	//! Create a graphic context for this drawable.
+	gc create_gc();
 };
 
 #if 0

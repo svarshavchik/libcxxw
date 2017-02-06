@@ -19,7 +19,8 @@ scratch_bufferObj::~scratch_bufferObj()=default;
 void scratch_bufferObj::do_get(dim_t minimum_width,
 			       dim_t minimum_height,
 			       const function<void (const picture &,
-						    const pixmap &)> &callback)
+						    const pixmap &,
+						    const gc &)> &callback)
 {
 	impl->do_get(minimum_width, minimum_height, callback);
 }

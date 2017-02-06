@@ -10,7 +10,7 @@
 LIBCXXW_NAMESPACE_START
 
 scratch_bufferObj::implObj::implObj(const pixmap &pm)
-	: cached_picture{pm, pm->create_picture()}
+	: cached_picture{pm, pm->create_picture(), pm->create_gc()}
 {
 }
 
@@ -19,7 +19,8 @@ scratch_bufferObj::implObj::~implObj()=default;
 void scratch_bufferObj::implObj
 ::do_get(dim_t minimum_width,
 	 dim_t minimum_height,
-	 const function<void (const picture &, const pixmap &)> &callback)
+	 const function<void (const picture &, const pixmap &,
+			      const gc &)> &callback)
 {
 	if (minimum_width == dim_t::infinite() ||
 	    minimum_height == dim_t::infinite())
@@ -39,11 +40,13 @@ void scratch_bufferObj::implObj
 			h -= 1;
 		auto new_pm=lock->pm->create_pixmap(w, h);
 		auto new_pic=new_pm->create_picture();
+		auto new_gc=new_pm->create_gc();
 
 		lock->pm=new_pm;
 		lock->pic=new_pic;
+		lock->graphic_context=new_gc;
 	}
-	callback(lock->pic, lock->pm);
+	callback(lock->pic, lock->pm, lock->graphic_context);
 }
 
 const_picture scratch_bufferObj::implObj::get_picture()

@@ -6,6 +6,7 @@
 #define scratch_buffer_h
 
 #include "x/w/scratch_buffer.H"
+#include "x/w/gc.H"
 #include <x/mpobj.H>
 
 LIBCXXW_NAMESPACE_START
@@ -21,6 +22,7 @@ class scratch_bufferObj::implObj : virtual public obj {
 	struct cached_picture_info {
 		pixmap pm;
 		picture pic;
+		gc graphic_context;
 	};
 
 	//! The cached pixmap and picture are mutex-protected.
@@ -40,7 +42,8 @@ public:
 
 	void do_get(dim_t minimum_width,
 		    dim_t minimum_height,
-		    const function<void (const picture &, const pixmap &)> &);
+		    const function<void (const picture &, const pixmap &,
+					 const gc &)> &);
 
 	//! Retrieve the cached picture
 
