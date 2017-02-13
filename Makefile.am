@@ -35,6 +35,7 @@ libcxxw_la_SOURCES=\
 	border_infomm.C				    \
 	builtin_atoms.C				    \
 	builtin_atoms.H				    \
+	calculate_borders.H			    \
 	canvas.H				    \
 	canvas.C				    \
 	canvas_impl.C				    \
@@ -184,6 +185,7 @@ EXTRA_DIST = config.rpath m4/ChangeLog COPYING \
 $(call THREADMSGDISPATCHER_GEN,connection_thread.msgs.H, connection_thread.msgs.xml)
 
 TESTPROGRAMS=\
+	testcollapse					\
 	testderivedaxis					\
 	testgrid					\
 	#
@@ -193,6 +195,10 @@ INTERACTIVETESTPROGRAMS=\
 	#
 
 noinst_PROGRAMS=$(TESTPROGRAMS) $(INTERACTIVETESTPROGRAMS) genconstants
+
+testcollapse_SOURCES=testcollapse.C
+testcollapse_LDADD=-lcxx
+testcollapse_LDFLAGS=-static
 
 testderivedaxis_SOURCES=testderivedaxis.C
 testderivedaxis_LDADD=libcxxw.la
