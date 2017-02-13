@@ -11,6 +11,7 @@
 #include <x/w/canvasfwd.H>
 #include <x/w/metrics/axis.H>
 #include <x/w/metrics/mmaxisfwd.H>
+#include <x/w/border_infommfwd.H>
 #include <x/obj.H>
 #include <x/functional.H>
 

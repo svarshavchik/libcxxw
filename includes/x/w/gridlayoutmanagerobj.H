@@ -7,9 +7,13 @@
 
 #include <x/w/gridlayoutmanagerfwd.H>
 #include <x/w/layoutmanagerobj.H>
-#include <x/w/factoryfwd.H>
+#include <x/w/gridfactoryfwd.H>
 #include <x/w/elementfwd.H>
+#include <x/w/grid_elementfwd.H>
 #include <x/w/types.H>
+#include <x/mpobj.H>
+
+#include <vector>
 
 LIBCXXW_NAMESPACE_START
 
@@ -20,6 +24,54 @@ LIBCXXW_NAMESPACE_START
 class gridlayoutmanagerObj : public layoutmanagerObj {
 
 public:
+
+	//! Mutex-protected container for elements in the grid.
+
+	//! \internal
+	//!
+	//! Since it's not only accessible from the connection thread.
+	//! The main application thread can insert or delete stuff here.
+	//!
+	//! get_layoutmanager() constructs this \c gridlayoutmanager
+	//! which acquires a lock on this internal object. The lock gets
+	//! released when the last reference to the \c gridlayoutmanager
+	//! goes out of scope and this object gets destroyed.
+	//!
+	//! This lock may block the connection thread, so the
+	//! \c gridlayoutmanager object MUST NOT persist!
+	//!
+	//! Inserting or deleting an element sets the modified flag.
+	//! Inserting or deleting an element requires using the layout
+	//! manager object, whose destructor invokes needs_recalculation()
+	//! as a batched job, which will eventually call recalculate(), that
+	//! picks up the ball and runs with it.
+	//!
+	//! When a child element's metrics have changed, child_metrics_updated
+	//! is set to true. rebuild_elements() returns true if either modified
+	//! or child_metrics_updated is set to true, but it skips rebuilding
+	//! all_elements unless modified is true.
+
+	struct grid_map_info_t {
+
+		bool modified=false;
+
+		bool child_metrics_updated=false;
+
+		std::vector<std::vector<grid_element>> elements;
+	};
+
+	//! Mutex-protected grid map.
+
+	typedef mpobj<grid_map_info_t> grid_map_t;
+
+private:
+	//! An internal lock.
+
+	grid_map_t::lock lock;
+
+public:
+	friend class gridfactoryObj;
+
 	class implObj;
 
 	//! Internal implementation object.
@@ -31,11 +83,9 @@ public:
 	//! Destructor
 	~gridlayoutmanagerObj() LIBCXX_HIDDEN;
 
-	//! Install a new display element in the given location.
+	//! Create new display elements
 
-	factory insert(dim_t x, dim_t y,
-		       dim_t width=1,
-		       dim_t height=1);
+	gridfactory create();
 
 	//! Remove a display element from the given location.
 	void erase(dim_t x, dim_t y);

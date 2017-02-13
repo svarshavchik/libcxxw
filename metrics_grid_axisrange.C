@@ -12,9 +12,10 @@ namespace metrics {
 }
 #endif
 
-grid_axisrange::grid_axisrange(const grid_xy &start,
-			       const grid_xy &end)
-	: start(start), end(end)
+grid_axisrange::grid_axisrange()=default;
+grid_axisrange::~grid_axisrange()=default;
+
+void grid_axisrange::validate() const
 {
 	if (end < start)
 		throw EXCEPTION("ending grid position " << end

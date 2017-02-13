@@ -2,8 +2,8 @@
 ** Copyright 2017 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
-#ifndef gridfactoryfwd_h
-#define gridfactoryfwd_h
+#ifndef x_w_gridfactoryfwd_h
+#define x_w_gridfactoryfwd_h
 
 #include <x/ptrfwd.H>
 #include "x/w/namespace.H"
@@ -14,9 +14,7 @@ class gridfactoryObj;
 
 //! Factory implementation for a grid.
 
-//! This grid factory gets returned by the grid layout manager's insert()
-//! method. When a new element gets created, it gets inserted into the
-//! given grid address.
+//! This grid factory gets returned by the grid layout manager.
 
 typedef ref<gridfactoryObj> gridfactory;
 

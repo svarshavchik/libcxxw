@@ -8,8 +8,11 @@
 #include "gridlayoutmanager.H"
 #include "metrics_grid.H"
 #include "element.H"
-
+#include "straight_borderfwd.H"
+#include "metrics_grid_xy.H"
 #include <vector>
+#include <tuple>
+#include <unordered_map>
 
 LIBCXXW_NAMESPACE_START
 
@@ -49,9 +52,60 @@ public:
 
 	std::vector<pos_axis> all_elements;
 
-	elementsObj()=default;
+	//! Metadata stored in \c straight_border_info
 
-	~elementsObj()=default;
+	struct straight_border_info {
+
+		//! The border
+		straight_border border;
+
+		//! The border's position.
+		metrics::grid_pos pos;
+
+		//! Flag used when rebuilding the straight borders.
+		bool is_current;
+	};
+
+	//! Hash straight border starting positions.
+
+	struct straight_border_map_hash  {
+
+		size_t operator()(const std::tuple<metrics::grid_xy,
+				  metrics::grid_xy> &xy) const;
+	};
+
+	//! Current straight borders.
+
+	//! Based on calculate_borders(), this container stores the
+	//! straight_border elements. The container keeps track of
+	//! both the horizontal and vertical borders, since their starting
+	//! position is unambiguous (vertical borders always are on the even
+	//! x coordinates, while horizontal borders start and end on odd
+	//! x coordinates).
+	//!
+	//! calculate_borders() computes each border's x/y coordinate, and
+	//! its size. From that, straight_border_info gets constructed, and
+	//! stored in this map.
+	//!
+	//! The map's key is the starting and ending x/y coordinate. When
+	//! rebuilding the straight border map if we find an existing
+	//! entry that matches the coordinates, we'll update_horizontal_border()
+	//! or update_vertical_border(), as needed, as an optimization.
+	//!
+	//! Before rebuilding all borders, every existing border's
+	//! is_current flag gets cleared, and its get set as an existing
+	//! border is updated, or a new border gets created, afterwards,
+	//! all remaining borders with is_current not set are removed, they're
+	//! obsolete.
+
+	std::unordered_map< std::tuple<metrics::grid_xy,
+				       metrics::grid_xy>,
+			    straight_border_info,
+			    straight_border_map_hash> straight_borders;
+
+	elementsObj();
+
+	~elementsObj();
 
 	/////////////////////////////////////////////////////////////////////
 	//

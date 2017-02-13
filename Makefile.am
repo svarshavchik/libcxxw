@@ -102,8 +102,7 @@ libcxxw_la_SOURCES=\
 	grid_elementobj.H			    \
 	gridfactory.C				    \
 	gridfactory.H				    \
-	gridfactoryfwd.H			    \
-	gridfactoryobj.H			    \
+	gridfactory_impl.C			    \
 	gridlayoutmanager.C			    \
 	gridlayoutmanager.H			    \
 	gridlayoutmanager_impl.C		    \

@@ -4,24 +4,27 @@
 */
 #include "libcxxw_config.h"
 #include "gridlayoutmanager.H"
+#include "gridfactory.H"
 #include "x/w/element.H"
 #include "gridfactory.H"
+#include "metrics_grid_pos.H"
+#include "current_border_impl.H"
 
 LIBCXXW_NAMESPACE_START
 
 gridlayoutmanagerObj::gridlayoutmanagerObj(const ref<implObj> &impl)
-	: layoutmanagerObj(impl), impl(impl)
+	: layoutmanagerObj(impl), lock(impl->grid_map), impl(impl)
 {
 }
 
 gridlayoutmanagerObj::~gridlayoutmanagerObj()=default;
 
-factory gridlayoutmanagerObj::insert(dim_t x, dim_t y,
-				     dim_t width,
-				     dim_t height)
+gridfactory gridlayoutmanagerObj::create()
 {
-	return gridfactory::create(gridlayoutmanager(this),
-				   x, y, width, height);
+	auto me=gridlayoutmanager(this);
+
+	return gridfactory::create(me,
+				   ref<gridfactoryObj::implObj>::create(me));
 }
 
 void gridlayoutmanagerObj::erase(dim_t x, dim_t y)

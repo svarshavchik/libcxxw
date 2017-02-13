@@ -6,6 +6,8 @@
 #include "x/w/factory.H"
 #include "container.H"
 #include "canvas.H"
+#include "messages.H"
+#include <x/exception.H>
 
 LIBCXXW_NAMESPACE_START
 

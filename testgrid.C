@@ -38,9 +38,14 @@ static void do_test(const char *testname,
 	{
 		myhorizvert metrics=myhorizvert::create(info.min, info.pref, info.max);
 
-		g.push_back({grid_pos::create(grid_axisrange{info.x1, info.x2},
-					      grid_axisrange{info.y1, info.y2}),
-					metrics});
+		auto gp=grid_pos::create();
+
+		gp->horiz_pos.start=info.x1;
+		gp->horiz_pos.end=info.x2;
+		gp->vert_pos.start=info.y1;
+		gp->vert_pos.end=info.y2;
+
+		g.push_back({gp, metrics});
 	}
 
 	auto metrics=calculate_grid_horiz_metrics(g);

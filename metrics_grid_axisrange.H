@@ -21,16 +21,22 @@ namespace metrics {
 
 		//! The starting X or Y position.
 
-		const grid_xy start;
+		grid_xy start;
 
 		//! The ending X or Y position.
 
-		const grid_xy end;
+		grid_xy end;
 
 		//! Constructor
 
-		grid_axisrange(const grid_xy &start,
-			       const grid_xy &end);
+		grid_axisrange();
+
+		//! Destructor
+
+		~grid_axisrange();
+
+		//! Make a sanity check
+		void validate() const;
 	};
 }
 

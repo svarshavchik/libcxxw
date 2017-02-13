@@ -6,9 +6,13 @@
 #define gridlayoutmanager_h
 
 #include "x/w/gridlayoutmanager.H"
+#include "x/w/border_infommfwd.H"
 #include "layoutmanager.H"
+#include "gridfactory.H"
 #include "metrics_grid_posfwd.H"
 #include "connection_threadfwd.H"
+#include "current_border_implfwd.H"
+#include "grid_elementobj.H"
 #include <x/vector.H>
 #include <tuple>
 
@@ -47,60 +51,19 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 	// The official elements in the grid are stored in this mutex-protected
 	// map.
 
-	//! Grid element map key.
-
-	//! We store the grid elements in a map, keyed by x and y coordinates.
-
-	typedef std::tuple<dim_t, dim_t> grid_map_key_t;
- private:
-	//! Grid element map value
-
-	//! We are storing the grid elements in a map, as map keys, together
-	//! with some element-specific value. Currently it's only a
-	//! precalculated grid_pos object for the element.
-
-	struct grid_map_value_t {
-
-		//! The element's complete position.
-		metrics::grid_pos pos;
-	};
-
-	//! Mutex-protected container for elements in the grid.
-
-	//! Since it's not only accessible from the connection thread.
-	//! The main application thread can insert or delete stuff here.
-	//!
-	//! Inserting or deleting an element sets the modified flag.
-	//! Inserting or deleting an element requires using the layout
-	//! manager object, whose destructor invokes needs_recalculation
-	//! as a batched job, which will eventually call recalculate(), that
-	//! picks up the ball and runs with it.
-	//!
-	//! When a child element's metrics have changed, child_metrics_updated
-	//! is set to true. rebuild_elements() returns true if either modified
-	//! or child_metrics_updated is set to true, but it skips rebuilding
-	//! all_elements unless modified is true.
-
-	struct grid_map_info_t {
-
-		bool modified=false;
-
-		bool child_metrics_updated=false;
-
-		std::map<element, grid_map_value_t> elements;
-	};
-
-	typedef mpobj<grid_map_info_t> grid_map_t;
-
 	//! Contents of the grid are added or removed to this map.
 
+ public:
 	grid_map_t grid_map;
 
- public:
-
 	//! Insert a new grid element.
-	void insert(const element &new_element,
-		    dim_t x, dim_t y, dim_t width, dim_t height);
+	void insert(grid_map_t::lock &lock,
+		    const element &new_element,
+		    const new_grid_element_info &info);
+
+	//! Construct a new border object.
+
+	current_border_impl get_custom_border(const border_infomm &info);
 
  private:
 

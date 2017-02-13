@@ -9,6 +9,11 @@
 #include "container.H"
 #include "metrics_grid_pos.H"
 #include "messages.H"
+#include "current_border_impl.H"
+#include "border_impl.H"
+#include "screen.H"
+#include "connection.H"
+#include "generic_window_handler.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -59,28 +64,25 @@ layoutmanager gridlayoutmanagerObj::implObj::create_public_object()
 }
 
 void gridlayoutmanagerObj::implObj
-::insert(const element &new_element,
-	 dim_t x, dim_t y, dim_t width, dim_t height)
+::insert(grid_map_t::lock &lock,
+	 const element &new_element,
+	 const new_grid_element_info &info)
 {
-	if (width == 0 || height == 0)
+	if (info.width == 0 || info.height == 0)
 		throw EXCEPTION(_("Width or height of a new grid element cannot be 0"));
 
-	auto x1v=(dim_t::value_type)x, y1v=(dim_t::value_type)y;
+	auto elem=grid_element::create(info, new_element);
 
-	auto x2v=(dim_squared_t::value_type)(x+(width-1)),
-		y2v=(dim_squared_t::value_type)(y+(height-1));
-
-	auto grid_pos=metrics::grid_pos::create(metrics::grid_axisrange
-						(x1v, x2v),
-						metrics::grid_axisrange
-						(y1v, y2v));
-
-	grid_map_value_t metadata{grid_pos};
-
-	grid_map_t::lock lock(grid_map);
-
-	lock->elements.insert({new_element, metadata});
+	lock->elements.push_back(std::vector<grid_element>());
+	(--lock->elements.end())->push_back(elem);
 	lock->modified=true;
+}
+
+current_border_impl gridlayoutmanagerObj::implObj
+::get_custom_border(const border_infomm &info)
+{
+	return container_impl->get_window_handler().screenref
+		->impl->get_custom_border(info);
 }
 
 LIBCXXW_NAMESPACE_END

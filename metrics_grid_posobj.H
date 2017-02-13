@@ -26,11 +26,13 @@ namespace metrics {
 		grid_axisrange vert_pos;
 
 		//! Constructor
-		grid_posObj(const grid_axisrange &horiz_pos,
-			    const grid_axisrange &vert_pos);
+		grid_posObj();
 
 		//! Destructor
 		~grid_posObj();
+
+		//! Make a sanity check
+		void validate() const;
 	};
 }
 

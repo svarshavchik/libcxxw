@@ -12,15 +12,15 @@ namespace metrics {
 }
 #endif
 
-grid_posObj::grid_posObj(const grid_axisrange &horiz_pos,
-			 const grid_axisrange &vert_pos)
-	: horiz_pos(horiz_pos),
-	  vert_pos(vert_pos)
-{
-}
+grid_posObj::grid_posObj()=default;
 
 grid_posObj::~grid_posObj()=default;
 
+void grid_posObj::validate() const
+{
+	horiz_pos.validate();
+	vert_pos.validate();
+}
 #if 0
 {
 #endif

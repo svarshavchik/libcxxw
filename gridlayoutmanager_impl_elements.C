@@ -5,8 +5,22 @@
 #include "libcxxw_config.h"
 #include "gridlayoutmanager_impl_elements.H"
 #include "catch_exceptions.H"
+#include "calculate_borders.H"
+#include "straight_border.H"
+#include "current_border_impl.H"
+#include <x/number_hash.H>
 
 LIBCXXW_NAMESPACE_START
+
+size_t gridlayoutmanagerObj::implObj::elementsObj::straight_border_map_hash
+::operator()(const std::tuple<metrics::grid_xy, metrics::grid_xy> &xy) const
+{
+	return (((size_t)std::get<0>(xy).n) << 16) ^ (size_t)std::get<1>(xy).n;
+}
+
+gridlayoutmanagerObj::implObj::elementsObj::elementsObj()=default;
+
+gridlayoutmanagerObj::implObj::elementsObj::~elementsObj()=default;
 
 bool gridlayoutmanagerObj::implObj::rebuild_elements(IN_THREAD_ONLY)
 {
@@ -22,34 +36,198 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(IN_THREAD_ONLY)
 		return flag;
 	}
 
-	std::vector<elementsObj::pos_axis> &all_elements=
-		grid_elements(IN_THREAD)->all_elements;
+	auto &ge=grid_elements(IN_THREAD);
+
+	//! Clear the existing straight borders
+
+	for (auto &sb:ge->straight_borders)
+		sb.second.is_current=false;
+
+	auto update_border=[&, this]
+		(straight_border::base::factory_t factory,
+		 straight_border::base::update_t update,
+
+		 metrics::grid_xy xstart,
+		 metrics::grid_xy xend,
+		 metrics::grid_xy ystart,
+		 metrics::grid_xy yend,
+
+		 grid_element *element_1,
+		 grid_element *element_2)
+		{
+			auto e1=element_1 ? grid_elementptr(*element_1)
+			: grid_elementptr();
+			auto e2=element_2 ? grid_elementptr(*element_2)
+			: grid_elementptr();
+
+			std::tuple<metrics::grid_xy,
+			metrics::grid_xy> xy{xstart, ystart};
+
+			auto iter=ge->straight_borders.find(xy);
+
+			if (iter != ge->straight_borders.end())
+			{
+				if (iter->second.pos->horiz_pos.end == xend &&
+				    iter->second.pos->vert_pos.end == yend)
+				{
+					// Preserve the visibility of the
+					// updated border.
+
+					bool orig_visibility=
+						iter->second.border
+						->impl->data(IN_THREAD)
+						.requested_visibility;
+
+					iter->second.border=
+						update(IN_THREAD,
+						       iter->second.border,
+						       e1, e2,
+
+						       // TODO: default border
+						       current_border_implptr()
+						       );
+					iter->second.border->impl
+						->request_visibility
+						(IN_THREAD,
+						 orig_visibility);
+					iter->second.is_current=true;
+					return;
+				}
+				ge->straight_borders.erase(iter);
+			}
+
+			auto new_border=factory(this->container_impl,
+						e1, e2,
+
+						// TODO: default border
+						current_border_implptr()
+						);
+
+			// The new border is visible, by default.
+			new_border->impl->request_visibility(IN_THREAD,
+							     true);
+
+			auto pos=metrics::grid_pos::create();
+
+			pos->horiz_pos.start=xstart;
+			pos->vert_pos.start=ystart;
+			pos->horiz_pos.end=xend;
+			pos->vert_pos.end=yend;
+
+			ge->straight_borders.insert
+			({xy, {new_border, pos, true}});
+		};
+
+	calculate_borders(lock->elements,
+			  // v_lambda()
+			  [&]
+			  (grid_element *left,
+			   grid_element *right,
+			   metrics::grid_xy column_number,
+			   metrics::grid_xy row_start,
+			   metrics::grid_xy row_end)
+			  {
+				  update_border(&straight_border::base
+						::create_vertical_border,
+						&straight_border::base
+						::update_vertical_border,
+
+						column_number,
+						column_number,
+
+						row_start,
+						row_end,
+
+						left, right);
+
+			  },
+			  // h_lambda
+			  [&]
+			  (grid_element *above,
+			   grid_element *below,
+			   metrics::grid_xy row_number,
+			   metrics::grid_xy col1,
+			   metrics::grid_xy col2)
+			  {
+				  update_border(&straight_border::base
+						::create_horizontal_border,
+						&straight_border::base
+						::update_horizontal_border,
+
+						col1,
+						col2,
+
+						row_number,
+						row_number,
+
+						above, below);
+			  });
+
+	// Make a pass, and remove all non-current borders.
+
+	for (auto b=ge->straight_borders.begin(),
+		     e=ge->straight_borders.end(); b != e; )
+	{
+		if (!b->second.is_current)
+		{
+			b=ge->straight_borders.erase(b);
+			continue;
+		}
+
+		++b;
+	}
+
+	size_t total_size=ge->straight_borders.size();
+
+	// Now add to total_size the count of all actual grid elements.
+
+	for (const auto &row:lock->elements)
+		total_size += row.size();
+
+	std::vector<elementsObj::pos_axis> &all_elements=ge->all_elements;
 
 	all_elements.clear();
-	all_elements.reserve(lock->elements.size());
+	all_elements.reserve(total_size);
 
-	for (const auto &element:lock->elements)
+	for (const auto &row:lock->elements)
+		for (const auto &col:row)
+		{
+			// We don't care about the keys. col is:
+			//
+			//       grid_element - the child element.
+			//       pos     - its metrics::grid_pos
+			//
+			// The all_elements vector contains a class that
+			// inherits from metrics::pos_axis which contains:
+			//       pos     - the metrics::grid_pos
+			//       horizvert - the element's axises
+			//
+			// plus the element itself.
+			//
+			// So this is really just shuffling the deck, a
+			// little bit.
+
+			col->pos->validate();
+			all_elements.emplace_back
+				(col->pos,
+				 metrics::horizvert(col->grid_element->impl
+						    ->get_horizvert(IN_THREAD)),
+				 col->grid_element);
+		}
+
+		// Now, add all the borders to the mix.
+
+	for (const auto &b:ge->straight_borders)
 	{
-		// We don't care about the keys. The value in the map is:
-		//
-		//       element - the child element.
-		//       pos     - its metrics::grid_pos
-		//
-		// The all_elements vector contains a class that inherits from
-		// metrics::pos_axis which contains:
-		//       pos     - the metrics::grid_pos
-		//       horizvert - the element's axises
-		//
-		// plus the element itself.
-		//
-		// So this is really just shuffling the deck, a little bit.
-
-		all_elements.emplace_back
-			(element.second.pos,
-			 metrics::horizvert(element.first->impl
-					    ->get_horizvert(IN_THREAD)),
-			 element.first);
+		b.second.pos->validate();
+		all_elements.emplace_back(b.second.pos,
+					  metrics::horizvert(b.second.border
+							     ->impl
+							     ->get_horizvert
+							     (IN_THREAD)),
+					  b.second.border);
 	}
+
 	lock->modified=false;
 	lock->child_metrics_updated=false;
 

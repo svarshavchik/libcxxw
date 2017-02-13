@@ -134,7 +134,7 @@ countstateupdate runteststate(bool individual_show)
 				 main_window->appdata=stash;
 
 				 LIBCXX_NAMESPACE::w::gridlayoutmanager m=main_window->get_layoutmanager();
-				 auto e=m->insert(0, 0)->create_canvas
+				 auto e=m->create()->create_canvas
 				 ([&]
 				  (const auto &c) {
 					 set_filler_color(c);
@@ -226,7 +226,7 @@ void runtestflashwithcolor(const testmainwindowoptions &options)
 				 main_window->appdata=stash;
 
 				 LIBCXX_NAMESPACE::w::gridlayoutmanager m=main_window->get_layoutmanager();
-				 auto e=m->insert(0, 0)->create_canvas
+				 auto e=m->create()->create_canvas
 				 ([&]
 				  (const auto &c) {
 					 if (options.showhide->value)
@@ -314,7 +314,7 @@ void runtestflashwiththeme(const testmainwindowoptions &options)
 			 (const auto &main_window)
 			 {
 				 LIBCXX_NAMESPACE::w::gridlayoutmanager m=main_window->get_layoutmanager();
-				 m->insert(0, 0)->create_canvas
+				 m->create()->create_canvas
 				 ([]
 				  (const auto &ignore) {},
 				  10, 10);
@@ -435,10 +435,23 @@ runtestthemescale(const testmainwindowoptions &options)
 				 main_window->appdata=stash;
 
 				 LIBCXX_NAMESPACE::w::gridlayoutmanager m=main_window->get_layoutmanager();
-				 auto c=m->insert(0, 0)->create_canvas
+
+				 auto bg=main_window->get_screen()
+				 ->create_solid_color_picture({0, 0, 0});
+
+				 LIBCXX_NAMESPACE::w::border_infomm b;
+
+				 b.colors.push_back(bg);
+				 b.width=1;
+				 b.height=1;
+				 b.dashes.push_back(2);
+				 b.dashes.push_back(3);
+				 b.dashes.push_back(2);
+
+				 auto c=m->create()->border(b).create_canvas
 				 ([]
 				  (const auto &ignore) {},
-				  10, 10);
+				  30, 30);
 
 				 stash->insert("canvas", c);
 			 });
