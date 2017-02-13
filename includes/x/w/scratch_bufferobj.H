@@ -53,7 +53,8 @@ public:
 		do_get(minimum_width,
 		       minimum_height,
 		       make_function<void (const picture &,
-					   const pixmap &)>(f));
+					   const pixmap &,
+					   const gc &)>(f));
 	}
 
 	//! Lock the cached pixmap and picture.

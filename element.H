@@ -353,7 +353,21 @@ class LIBCXX_HIDDEN elementObj::implObj : virtual public obj,
 
 	virtual draw_info &get_draw_info(IN_THREAD_ONLY)=0;
 
-	class clip_region_set;
+	//! Clip drawing operation to draw_info.element_viewport.
+
+	//! This install a clip mask into di.window_picture that clips
+	//! any drawinfo operation (to the di.absolute_location region)
+	//! into the element_viewport.
+
+	class clip_region_set {
+
+	public:
+		//! Constructor - install clip mask for drawing.
+
+		clip_region_set(IN_THREAD_ONLY,
+				implObj &me,
+				const draw_info &di);
+	};
 
 	//! Prepare draw_info before draw() gets called.
 

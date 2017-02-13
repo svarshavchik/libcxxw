@@ -51,7 +51,7 @@ class LIBCXX_HIDDEN pictureObj::implObj : virtual public obj {
 		       dim_t height,
 		       render_pict_op op=render_pict_op::op_src);
 
-	//! Composire RENDER operation
+	//! Composite RENDER operation
 
 	inline void composite(const const_picture_internal &src,
 			      coord_t src_x,

@@ -321,32 +321,25 @@ void elementObj::implObj
 						(IN_THREAD, reason));
 }
 
-// Before rendering the element, we need to reset the window picture's
-// clip region to current_position. Just in case.
-
-class LIBCXX_INTERNAL elementObj::implObj::clip_region_set {
-
-public:
-	clip_region_set(IN_THREAD_ONLY,
-			implObj &me,
-			const draw_info &di)
+elementObj::implObj::clip_region_set::clip_region_set(IN_THREAD_ONLY,
+						      implObj &me,
+						      const draw_info &di)
+{
+	if (di.element_viewport.width != 0 &&
+	    di.element_viewport.height != 0)
 	{
-		if (di.element_viewport.width != 0 &&
-		    di.element_viewport.height != 0)
-		{
-			// This now clips the subsequent draw operation to this
-			// display element's viewport.
-			di.window_picture
-				->set_clip_rectangle(di.element_viewport);
-		}
-		else
-		{
-			// Clip everything.
-
-			di.window_picture->set_clip_rectangles(rectangle_set());
-		}
+		// This now clips the subsequent draw operation to this
+		// display element's viewport.
+		di.window_picture
+			->set_clip_rectangle(di.element_viewport);
 	}
-};
+	else
+	{
+		// Clip everything.
+
+		di.window_picture->set_clip_rectangles(rectangle_set());
+	}
+}
 
 void elementObj::implObj::prepare_draw_info(IN_THREAD_ONLY, draw_info &)
 {

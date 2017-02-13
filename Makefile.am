@@ -89,6 +89,9 @@ libcxxw_la_SOURCES=\
 	generic_window_handler.C		    \
 	generic_window_handler.H		    \
 	generic_window_impl.C			    \
+	grid_element.C				    \
+	grid_element.H				    \
+	grid_elementobj.H			    \
 	gridfactory.C				    \
 	gridfactory.H				    \
 	gridfactoryfwd.H			    \
@@ -154,6 +157,11 @@ libcxxw_la_SOURCES=\
 	screen_solidcolorpictures.C		    \
 	screen_solidcolorpictures.H		    \
 	screen_solidcolorpicturesfwd.H		    \
+	straight_border.C			    \
+	straight_border.H			    \
+	straight_borderfwd.H			    \
+	straight_borderobj.H			    \
+	straight_border_impl.C			    \
 	window_handler.C			    \
 	window_handler.H			    \
 	xid_t.C					    \

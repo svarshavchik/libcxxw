@@ -23,6 +23,9 @@ struct draw_info {
 	//! This is, essentially, the sum of x/y coordinates of all elements
 	//! starting with the top level window, whose x/y coordinates are
 	//! logically (0,0), and ending with this display element.
+	//!
+	//! width and height of this is the element's current position's
+	//! width and height.
 
 	rectangle absolute_location;
 
