@@ -64,7 +64,7 @@ public:
 
 	//! Comparator, for associative containers
 
-	uint64_t value() const
+	uint64_t value() const noexcept
 	{
 		return (((((((uint64_t)a) << 16) | r) << 16) | g) << 16) | b;
 	}

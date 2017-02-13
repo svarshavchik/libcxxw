@@ -62,6 +62,13 @@ libcxxw_la_SOURCES=\
 	container_element_overrides_decl.H	    \
 	container_element_overrides_impl.H	    \
 	container_impl.C			    \
+	current_border_impl.C			    \
+	current_border_impl.H			    \
+	current_border_implfwd.H		    \
+	current_border_implobj.H		    \
+	custom_border_cache.C			    \
+	custom_border_cache.H			    \
+	custom_border_cachefwd.H		    \
 	defaulttheme.C				    \
 	defaulttheme.H				    \
 	defaultthemefwd.H			    \

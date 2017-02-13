@@ -11,6 +11,7 @@
 #include "ewmh.H"
 #include "connection_threadfwd.H"
 #include "connection_infofwd.H"
+#include "current_border_implfwd.H"
 #include "x/w/connection.H"
 #include "x/w/screenobj.H"
 

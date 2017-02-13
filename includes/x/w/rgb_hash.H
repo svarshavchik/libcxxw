@@ -16,7 +16,7 @@ namespace std {
 	struct hash<LIBCXX_NAMESPACE::w::rgb> {
 
 		inline size_t operator()(const LIBCXX_NAMESPACE::w::rgb &r)
-			const
+			const noexcept
 		{
 			return r.value();
 		}
