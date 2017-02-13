@@ -29,6 +29,10 @@ libcxxw_la_SOURCES=\
 	border_impl.H				    \
 	border_implfwd.H			    \
 	border_implobj.H			    \
+	border_info.C				    \
+	border_info.H				    \
+	border_infofwd.H			    \
+	border_infomm.C				    \
 	builtin_atoms.C				    \
 	builtin_atoms.H				    \
 	canvas.H				    \

@@ -65,7 +65,7 @@ bool border_implObj::no_border(const draw_info &di) const
 	// The area to draw the border is too narrow. This shouldn't happen,
 	// but can be a temporary condition when the theme changes.
 
-	return width == 0 || height == 0 || colors.empty()
+	return border_info::no_border()
 		|| (di.area_rectangle.width < calculated_border_width)
 		|| (di.area_rectangle.height < calculated_border_height);
 }

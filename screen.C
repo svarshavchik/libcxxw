@@ -13,6 +13,7 @@
 #include "screen_solidcolorpictures.H"
 #include "recycled_pixmaps.H"
 #include "border_impl.H"
+#include "custom_border_cache.H"
 #include <x/mpobj.H>
 #include <x/weakptr.H>
 #include <x/refptr_traits.H>
@@ -186,7 +187,8 @@ screenObj::implObj::implObj(const xcb_screen_t *xcb_screen,
 	  screen_depths(screen_depths),
 	  current_theme(current_theme),
 	  solid_color_picture_cache(screen_solidcolorpictures::create()),
-	  recycled_pixmaps_cache(recycled_pixmaps::create())
+	  recycled_pixmaps_cache(recycled_pixmaps::create()),
+	  custom_borders(custom_border_cache::create())
 {
 }
 

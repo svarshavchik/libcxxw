@@ -10,6 +10,7 @@
 #include "x/w/picturefwd.H"
 #include "x/w/pictformatfwd.H"
 #include "x/w/scratch_bufferfwd.H"
+#include "x/w/border_infommfwd.H"
 #include "recycled_pixmapsfwd.H"
 #include "x/w/rgb.H"
 #include "x/w/metrics/mmaxisfwd.H"
@@ -19,6 +20,7 @@
 #include "background_colorfwd.H"
 #include "screen_solidcolorpicturesfwd.H"
 #include "border_implfwd.H"
+#include "custom_border_cachefwd.H"
 #include "xid_t.H"
 #include <x/logger.H>
 #include <x/vector.H>
@@ -100,6 +102,12 @@ class LIBCXX_HIDDEN screenObj::implObj
 	//! Used by create_scratch_buffer().
 
 	const recycled_pixmaps recycled_pixmaps_cache;
+
+	//! The custom border cache.
+
+	//! Used by get_custom_border().
+
+	const custom_border_cache custom_borders;
 
  public:
 	///////////////////////////////////////////////////////////////////
@@ -249,6 +257,19 @@ class LIBCXX_HIDDEN screenObj::implObj
 	//! Compute # of pixels from millimeters, for height
 
 	metrics::axis compute_height(const metrics::mmaxis &);
+
+	//! Convert border_infomm to border_info
+	border_info convert_to_border_info(const border_infomm &mm);
+
+
+	//! Convert border_infomm to border_info
+	border_info convert_to_border_info(const current_theme_t::lock &lock,
+					   const border_infomm &mm);
+
+	//! Find or create a custom border.
+
+	current_border_impl get_custom_border(const border_infomm &);
+
 
 	/////////////////////////////////////////////////////////////////////
 	//

@@ -13,82 +13,12 @@
 #include "x/w/gcfwd.H"
 #include "x/w/gcobj.H"
 #include "x/w/rectangle.H"
+#include "border_info.H"
 #include "border_implfwd.H"
 #include <vector>
 #include <tuple>
 
 LIBCXXW_NAMESPACE_START
-
-//! The type of a border
-
-//! Specifies all properties of a border.
-//!
-//! border_implObj inherits from this. This makes it easy to clone() a border.
-//!
-//! \c width and \c height is the border size that's specified in the
-//! theme. This is not the actual size of the border, which also depends on
-//! whether the border is rounded, or not.
-//!
-//! calculate() computes the calculated values for the border size.
-
-struct LIBCXX_HIDDEN border_info {
-
-	//! Border's colors
-
-	//! Typically 1 color, but maybe two.
-
-	std::vector<const_picture> colors;
-
-	//! Configured width in pixels
-	dim_t width=1;
-
-	//! Configured height in pixels
-	dim_t height=1;
-
-	//! Rounded corner, and/or radius
-
-	//! 0: square corner
-
-	//! 1: rounded corner
-
-	//! >1: rounded corner, with inside radius
-	dim_t radius=0;
-
-	//! If not empty, dashed border, this gives the dash lengths in pixels.
-	std::vector<uint8_t> dashes;
-
-	//! Equality operator
-
-	bool operator==(const border_info &o) const
-	{
-		return width == o.width && height == o.height &&
-			radius == o.radius && dashes == o.dashes &&
-			colors == o.colors;
-	}
-
-	//! Ordering operator
-
-	bool compare(const border_info &o) const
-	{
-		if (width + height < o.width + o.height)
-			return true;
-		if (o.width + o.height < width + height)
-			return false;
-
-		if (radius < o.radius)
-			return true;
-		if (o.radius < radius)
-			return false;
-
-		if (dashes < o.dashes)
-			return true;
-
-		if (o.dashes < o.dashes)
-			return false;
-
-		return colors < o.colors;
-	}
-};
 
 //! A border implementation
 
@@ -320,10 +250,13 @@ class LIBCXX_HIDDEN border_implObj: virtual public obj, public border_info {
 				coord_t x,
 				coord_t y) const;
 
+ public:
 	//! This is no border at all
+	using border_info::no_border;
 
+	//! There's no border to draw, here.
 	bool no_border(const draw_info &di) const;
-
+ private:
 	//! Compute x-centerline of a horizontal border.
 
 	//! The X protocol draws lines of given thickness centered over the

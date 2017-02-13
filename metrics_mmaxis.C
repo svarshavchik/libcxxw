@@ -15,6 +15,9 @@ dim_t screenObj::implObj::compute_width(const current_theme_t::lock &lock,
 	if (std::isnan(millimeters))
 		return dim_t::infinite();
 
+	if (millimeters < 0)
+		millimeters= -millimeters;
+
 	auto scaled=std::round((*lock)->themescale * millimeters *
 			       xcb_screen->width_in_pixels /
 			       xcb_screen->width_in_millimeters);
@@ -33,6 +36,9 @@ dim_t screenObj::implObj::compute_height(const current_theme_t::lock &lock,
 {
 	if (std::isnan(millimeters))
 		return dim_t::infinite();
+
+	if (millimeters < 0)
+		millimeters= -millimeters;
 
 	auto scaled=std::round((*lock)->themescale * millimeters *
 			       xcb_screen->height_in_pixels /
