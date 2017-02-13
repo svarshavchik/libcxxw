@@ -323,9 +323,9 @@ void border_implObj::composite_line(const draw_info &di, size_t n) const
 {
 	// Now we'll use the pixmap as a mask to compose colors[n] into the
 	// area.
-	picture::base::clip_mask(di.area_picture,
-				 di.mask_pixmap,
-				 0, 0);
+	picture::base::clip_mask mask(di.area_picture,
+				      di.mask_pixmap,
+				      0, 0);
 
 	di.area_picture->composite(colors.at(n),
 

@@ -84,11 +84,6 @@ main_window screenObj
 	auto handler=ref<main_windowObj::handlerObj>
 		::create(connref->impl->thread, params);
 
-	// We do not override initialize(), we just need to set the
-	// initialized() flag. The top level window is not a child element in
-	// a container. So, it's hereby initialized!
-	handler->initialize_if_needed(connref->impl->thread);
-
 	auto window_impl=ref<main_windowObj::implObj>::create(handler);
 
 	auto mw=ptrrefBase::objfactory<main_window>::create(window_impl,

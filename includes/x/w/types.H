@@ -46,6 +46,10 @@ public:
 	//! Define resulting type for modulus operations.
 	template<typename number_1, typename number_2>
 	using resulting_mod_op=typename valid_divmod_op<number_1, number_2>::type;
+
+	//! Default unary negation operation.
+	template<typename number_1>
+	using resulting_uneg_op=number_default_uneg_op<number_1>;
 };
 
 //! Tag used by \ref dim_t

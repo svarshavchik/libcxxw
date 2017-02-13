@@ -366,10 +366,8 @@ void elementObj::implObj::exposure_event_recursive(IN_THREAD_ONLY,
 
 			       auto child_areas=
 				       intersect(areas, {child_position},
-						 coord_t::truncate
-						 (0-child_position.x),
-						 coord_t::truncate
-						 (0-child_position.y));
+						 -child_position.x,
+						 -child_position.y);
 
 			       if (child_areas.empty())
 				       return;

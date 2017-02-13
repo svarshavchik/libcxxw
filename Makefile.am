@@ -346,6 +346,7 @@ test:
 	./testmainwindow --showhide
 	./testmainwindow --usemain
 	./testmainwindow --usetheme
+	./testmainwindow --themescale
 
 .PHONY: rpm
 
