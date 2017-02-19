@@ -18,6 +18,26 @@
 
 LIBCXXW_NAMESPACE_START
 
+//! Look up where the element is.
+
+//! The value in the lookup table keyed by an element in the grid.
+//! Gives the element's row and column, which can be used to locate the
+//! grid_element object in the two-dimensional elements vector.
+
+class LIBCXX_HIDDEN gridlayoutmanagerObj::lookup_infoObj : virtual public obj {
+
+ public:
+
+	//! Row in the elements vector
+	size_t row;
+
+	//! Column in the elements vector
+	size_t col;
+
+	//! When updating the lookup table, a flag that's used to purge removed elements.
+	bool seen;
+};
+
 //! The grid layout manager implementation object.
 
 class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj

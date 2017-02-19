@@ -48,6 +48,8 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(IN_THREAD_ONLY)
 		return flag;
 	}
 
+	const auto &lookup=lock->get_lookup_table();
+
 	//! Clear the existing straight borders
 
 	for (auto &sb:ge->straight_borders)

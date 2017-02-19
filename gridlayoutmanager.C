@@ -19,6 +19,67 @@ gridlayoutmanagerObj::gridlayoutmanagerObj(const ref<implObj> &impl)
 
 gridlayoutmanagerObj::~gridlayoutmanagerObj()=default;
 
+const gridlayoutmanagerObj::grid_map_info_t::lookup_t &
+gridlayoutmanagerObj::grid_map_info_t::get_lookup_table()
+{
+	if (!lookup_table_is_current)
+	{
+		// Clear the flags, first.
+
+		for (const auto &info:lookup)
+			info.second->seen=false;
+
+		// Make a straightforward pass over the elements, counting
+		// off each row and column, and update the lookup table.
+
+		size_t row_number=0;
+
+		for (const auto &row:elements)
+		{
+			size_t col_number=0;
+
+			for (const auto &col:row)
+			{
+				auto iter=lookup.find(col->grid_element);
+
+				if (iter == lookup.end())
+				{
+					iter=lookup.insert
+						({col->grid_element,
+						  lookup_info::create()})
+						.first;
+				}
+
+				iter->second->row=row_number;
+				iter->second->col=col_number;
+				iter->second->seen=true;
+
+				++col_number;
+			}
+
+			++row_number;
+		}
+
+		// Remove from the lookup table any elements that have been
+		// removed.
+
+		for (auto b=lookup.begin(), e=lookup.end(); b != e; )
+		{
+			if (b->second->seen)
+			{
+				++b;
+				continue;
+			}
+
+			b=lookup.erase(b);
+		}
+
+		lookup_table_is_current=true;
+	}
+
+	return lookup;
+}
+
 gridfactory gridlayoutmanagerObj::create()
 {
 	auto me=gridlayoutmanager(this);

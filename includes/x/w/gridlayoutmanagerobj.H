@@ -12,8 +12,10 @@
 #include <x/w/grid_elementfwd.H>
 #include <x/w/types.H>
 #include <x/mpobj.H>
+#include <x/refptr_hash.H>
 
 #include <vector>
+#include <unordered_map>
 
 LIBCXXW_NAMESPACE_START
 
@@ -24,6 +26,12 @@ LIBCXXW_NAMESPACE_START
 class gridlayoutmanagerObj : public layoutmanagerObj {
 
 public:
+
+	class lookup_infoObj;
+
+	//! Internal lookup object stored in grid_map_info_t
+
+	typedef ref<lookup_infoObj> lookup_info;
 
 	//! Mutex-protected container for elements in the grid.
 
@@ -61,8 +69,24 @@ public:
 		elements_t elements;
 
 	private:
+		//! Internal flag: element modification processing is needed.
 		bool modified_flag=false;
+
+		//! Internal flag: element_lookup_table needs rebuilding
 		bool lookup_table_is_current=true;
+
+		//! Container for the element lookup table.
+
+		typedef std::unordered_map<element, lookup_info> lookup_t;
+
+		//! An internal lookup table.
+
+		//! The elements in the grid are stored in the elements
+		//! two-dimension vector, and we also need to look them up,
+		//! by element.
+
+		lookup_t lookup;
+
 	public:
 
 		//! The elements vector has been changed.
@@ -92,6 +116,12 @@ public:
 		{
 			modified_flag=false;
 		}
+
+		//! Return the lookup table.
+
+		//! Before returning it, if the lookup table needs updating
+		//! it gets updated.
+		const lookup_t &get_lookup_table();
 
 		grid_map_info_t() LIBCXX_HIDDEN;
 
