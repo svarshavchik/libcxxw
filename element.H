@@ -165,8 +165,7 @@ class LIBCXX_HIDDEN elementObj::implObj : virtual public obj,
 	//! Constructor
 	implObj(size_t nesting_level,
 		const rectangle &initial_position,
-		const metrics::axis &horiz,
-		const metrics::axis &vert);
+		const metrics::horizvert_axi &initial_metrics);
 
 	//! Destructor
 	~implObj();

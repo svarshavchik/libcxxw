@@ -423,8 +423,22 @@ void gridlayoutmanagerObj::implObj
 
 			if (max_width < new_width)
 			{
-				auto padding=(new_width - max_width) / 2;
+				dim_squared_t padding=0;
 
+				switch (hv->horizontal_alignment) {
+				case metrics::halign::left:
+					max_width=new_width;
+					break;
+				case metrics::halign::center:
+					padding=(new_width - max_width) / 2;
+					break;
+				case metrics::halign::right:
+					padding=(new_width - max_width);
+					break;
+				case metrics::halign::fill:
+					max_width=new_width;
+					break;
+				}
 				new_width=max_width;
 
 				x=x.truncate(x+padding);
@@ -437,8 +451,23 @@ void gridlayoutmanagerObj::implObj
 
 			if (max_height < new_height)
 			{
-				auto padding=
-					(new_height - max_height) / 2;
+				dim_squared_t padding=0;
+
+
+				switch (hv->vertical_alignment) {
+				case metrics::valign::top:
+					max_height=new_height;
+					break;
+				case metrics::valign::middle:
+					padding=(new_height - max_height) / 2;
+					break;
+				case metrics::valign::bottom:
+					padding=(new_height - max_height);
+					break;
+				case metrics::valign::fill:
+					max_height=new_height;
+					break;
+				}
 
 				new_height=max_height;
 				y=y.truncate(y+padding);

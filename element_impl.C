@@ -33,9 +33,8 @@ elementObj::implObj::implObj(size_t nesting_level,
 
 elementObj::implObj::implObj(size_t nesting_level,
 			     const rectangle &initial_position,
-			     const metrics::axis &horiz,
-			     const metrics::axis &vert)
-	: metrics::horizvertObj(horiz, vert),
+			     const metrics::horizvert_axi &initial_metrics)
+	: metrics::horizvertObj(initial_metrics),
 	data_thread_only
 	({
 		initial_position,

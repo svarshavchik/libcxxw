@@ -8,6 +8,7 @@
 #include "x/w/types.H"
 #include "x/w/metrics/axis.H"
 #include "connection_threadfwd.H"
+#include "metrics_horizvertfwd.H"
 #include <x/obj.H>
 
 LIBCXXW_NAMESPACE_START
@@ -23,18 +24,21 @@ namespace metrics {
 		//! The vertical dimensions.
 		axis vert;
 
+		//! Horizontal alignment
+		halign horizontal_alignment;
+
+		//! Vertical alignment
+		valign vertical_alignment;
+
 		//! Constructor
 
-		horizvert_axi(dim_t h_minimum=dim_t(0),
-			      dim_t h_preferred=dim_t(0),
-			      dim_t h_maximum=dim_t(0),
-			      dim_t v_minimum=dim_t(0),
-			      dim_t v_preferred=dim_t(0),
-			      dim_t v_maximum=dim_t(0));
+		horizvert_axi();
 
 		//! Constructor
 		horizvert_axi(const axis &horiz,
-			      const axis &vert);
+			      const axis &vert,
+			      metrics::halign h,
+			      metrics::valign v);
 	};
 
 	//! A display element's metrics.
@@ -54,24 +58,15 @@ namespace metrics {
 
 		virtual void horizvert_updated(IN_THREAD_ONLY)=0;
 
-		using horizvert_axi::horizvert_axi;
+		//! Default constructor
+		horizvertObj();
+
+		//! Also can use the copy constructor
+		horizvertObj(const horizvert_axi &c);
 
 		//! Destructor
 
 		~horizvertObj();
-
-		//! Comparison operator
-
-		bool operator==(const horizvertObj &o) const
-		{
-			return horiz == o.horiz && vert == o.vert;
-		}
-
-		//! Comparison operator
-		bool operator!=(const horizvertObj &o) const
-		{
-			return !operator==(o);
-		}
 
 		//! Update the metrics.
 
@@ -83,6 +78,30 @@ namespace metrics {
 			{
 				horiz=new_horiz;
 				vert=new_vert;
+				horizvert_updated(IN_THREAD);
+			}
+		}
+
+		//! Update the metrics.
+
+		void set_element_metrics(IN_THREAD_ONLY,
+					 halign new_alignment)
+		{
+			if (horizontal_alignment != new_alignment)
+			{
+				horizontal_alignment=new_alignment;
+				horizvert_updated(IN_THREAD);
+			}
+		}
+
+		//! Update the metrics.
+
+		void set_element_metrics(IN_THREAD_ONLY,
+					 valign new_alignment)
+		{
+			if (vertical_alignment != new_alignment)
+			{
+				vertical_alignment=new_alignment;
 				horizvert_updated(IN_THREAD);
 			}
 		}

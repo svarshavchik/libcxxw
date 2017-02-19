@@ -45,18 +45,22 @@ public:
 	template<typename functor>
 	canvas create_canvas(functor &&creator,
 			     const metrics::mmaxis &horiz,
-			     const metrics::mmaxis &vert)
+			     const metrics::mmaxis &vert,
+			     metrics::halign h=metrics::halign::center,
+			     metrics::valign v=metrics::valign::middle)
 	{
 		return do_create_canvas(make_function<void (const canvas &)>
 					(creator),
-					horiz, vert);
+					horiz, vert, h, v);
 	}
 
 	//! Create an empty \ref canvas "canvas".
 
 	canvas do_create_canvas(const function<void (const canvas &)> &creator,
 				const metrics::mmaxis &horiz,
-				const metrics::mmaxis &vert);
+				const metrics::mmaxis &vert,
+				metrics::halign h,
+				metrics::valign v);
 
 };
 

@@ -11,20 +11,29 @@ LIBCXXW_NAMESPACE_START
 
 canvasObj::implObj::implObj(const ref<containerObj::implObj> &container,
 			    const metrics::mmaxis &horiz_metrics,
-			    const metrics::mmaxis &vert_metrics)
+			    const metrics::mmaxis &vert_metrics,
+			    metrics::halign horizontal_alignment,
+			    metrics::valign vertical_alignment)
 	: implObj(container, container->get_element_impl().get_screen()->impl,
 		  horiz_metrics,
-		  vert_metrics)
+		  vert_metrics,
+		  horizontal_alignment,
+		  vertical_alignment)
 {
 }
 
 canvasObj::implObj::implObj(const ref<containerObj::implObj> &container,
 			    const ref<screenObj::implObj> &screen,
 			    const metrics::mmaxis &horiz_metrics,
-			    const metrics::mmaxis &vert_metrics)
-	: child_elementObj(container,
-			   screen->compute_width(horiz_metrics),
-			   screen->compute_height(horiz_metrics)),
+			    const metrics::mmaxis &vert_metrics,
+			    metrics::halign horizontal_alignment,
+			    metrics::valign vertical_alignment)
+	: child_elementObj(container, {
+			screen->compute_width(horiz_metrics),
+				screen->compute_height(horiz_metrics),
+				horizontal_alignment,
+				vertical_alignment
+				}),
 	  horiz_metrics_thread_only(horiz_metrics),
 	  vert_metrics_thread_only(vert_metrics)
 {

@@ -15,12 +15,11 @@
 LIBCXXW_NAMESPACE_START
 
 child_elementObj::child_elementObj(const ref<containerObj::implObj> &container,
-				   const metrics::axis &horiz,
-				   const metrics::axis &vert)
+				   const metrics::horizvert_axi &initial_metrics)
 	: elementObj::implObj(container->get_element_impl().nesting_level+1,
 			      {0, 0, 0, 0},
 			      // The container will position me later
-			      horiz, vert),
+			      initial_metrics),
 	container(container)
 {
 }

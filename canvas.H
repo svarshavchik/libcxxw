@@ -29,7 +29,9 @@ public:
 
 	implObj(const ref<containerObj::implObj> &container,
 		const metrics::mmaxis &horiz_metrics,
-		const metrics::mmaxis &vert_metrics);
+		const metrics::mmaxis &vert_metrics,
+		metrics::halign horizontal_alignment,
+		metrics::valign vertical_alignment);
 
  private:
 	//! Private constructor
@@ -37,7 +39,9 @@ public:
 	implObj(const ref<containerObj::implObj> &container,
 		const ref<screenObj::implObj> &screen,
 		const metrics::mmaxis &horiz_metrics,
-		const metrics::mmaxis &vert_metrics);
+		const metrics::mmaxis &vert_metrics,
+		metrics::halign horizontal_alignment,
+		metrics::valign vertical_alignment);
 
  public:
 	//! Destructor

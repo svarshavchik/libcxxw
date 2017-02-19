@@ -125,6 +125,49 @@ class LIBCXX_HIDDEN straight_border_implObj
 
 };
 
+// Horizontal border implementation
+
+typedef straight_border_implObj<
+	&border_implObj::calculated_border_width,
+	&border_implObj::calculated_border_height,
+	&metrics::horizvert_axi::horiz,
+	&metrics::horizvert_axi::vert,
+	&border_implObj::draw_horizontal> horizontal_impl;
+
+class LIBCXX_HIDDEN horizontal_straight_borderObj : public horizontal_impl {
+
+ public:
+
+	horizontal_straight_borderObj(const ref<containerObj::implObj> &c,
+				      const grid_elementptr &element_1,
+				      const current_border_implptr &border1,
+				      const grid_elementptr &element_2,
+				      const current_border_implptr &border2,
+				      const current_border_implptr &border_default)
+		: horizontal_impl(c,
+				  ({
+					  // We want to fill ourselves entirely
+					  // within the allotted border space.
+
+					  metrics::horizvert_axi m;
+
+					  m.vertical_alignment=
+						  metrics::valign::fill;
+
+					  m;
+				  }),
+
+				  "horiz-border@libcxx",
+				  element_1,
+				  border1,
+				  element_2,
+				  border2,
+				  border_default)
+	{
+	}
+
+	~horizontal_straight_borderObj()=default;
+};
 
 straight_border straight_borderBase
 ::create_horizontal_border(const ref<containerObj::implObj> &container,
@@ -132,61 +175,90 @@ straight_border straight_borderBase
 			   const grid_elementptr &element_below,
 			   const current_border_implptr &default_border)
 {
-	auto impl=ref<straight_border_implObj<
-		&border_implObj::calculated_border_width,
-			      &border_implObj::calculated_border_height,
-			      &metrics::horizvert_axi::horiz,
-			      &metrics::horizvert_axi::vert,
+	auto impl=ref<horizontal_straight_borderObj>
+		::create(container,
 
-			      &border_implObj::draw_horizontal>
-		      >::create(container, "horiz-border@libcxx",
+			 element_above,
+			 (element_above.null()
+			  ? current_border_implptr()
+			  : current_border_implptr
+			  (element_above->bottom_border)),
 
-				element_above,
-				(element_above.null()
-				 ? current_border_implptr()
-				 : current_border_implptr
-				 (element_above->bottom_border)),
+			 element_below,
+			 (element_below.null()
+			  ? current_border_implptr()
+			  : current_border_implptr
+			  (element_below->top_border)),
 
-				element_below,
-				(element_below.null()
-				 ? current_border_implptr()
-				 : current_border_implptr
-				 (element_below->top_border)),
-
-				default_border);
+			 default_border);
 
 	return ptrrefBase::objfactory<straight_border>::create(impl);
 }
 
+// Vertical border implementation
+typedef straight_border_implObj<
+	&border_implObj::calculated_border_height,
+	&border_implObj::calculated_border_width,
+	&metrics::horizvert_axi::vert,
+	&metrics::horizvert_axi::horiz,
+	&border_implObj::draw_vertical> vertical_impl;
+
+class LIBCXX_HIDDEN vertical_straight_borderObj : public vertical_impl {
+
+ public:
+
+	vertical_straight_borderObj(const ref<containerObj::implObj> &c,
+				      const grid_elementptr &element_1,
+				      const current_border_implptr &border1,
+				      const grid_elementptr &element_2,
+				      const current_border_implptr &border2,
+				      const current_border_implptr &border_default)
+		: vertical_impl(c,
+				({
+					// We want to fill ourselves entirely
+					// within the allotted border space.
+
+					metrics::horizvert_axi m;
+
+					m.horizontal_alignment=
+						metrics::halign::fill;
+
+					m;
+				}),
+				"vert-border@libcxx",
+				element_1,
+				border1,
+				element_2,
+				border2,
+				border_default)
+	{
+	}
+
+	~vertical_straight_borderObj()=default;
+};
 
 straight_border straight_borderBase
 ::create_vertical_border(const ref<containerObj::implObj> &container,
-			       const grid_elementptr &element_onleft,
-			       const grid_elementptr &element_onright,
-			       const current_border_implptr &default_border)
+			 const grid_elementptr &element_onleft,
+			 const grid_elementptr &element_onright,
+			 const current_border_implptr &default_border)
 {
-	auto impl=ref<straight_border_implObj<
-		&border_implObj::calculated_border_height,
-			      &border_implObj::calculated_border_width,
-			      &metrics::horizvert_axi::vert,
-			      &metrics::horizvert_axi::horiz,
+	auto impl=ref<vertical_straight_borderObj>
+		::create(container,
 
-			      &border_implObj::draw_vertical>
-		   >::create(container, "vert-border@libcxx",
+			 element_onleft,
+			 (element_onleft.null()
+			  ? current_border_implptr()
+			  : current_border_implptr
+			  (element_onleft->right_border)),
 
-				element_onleft,
-				(element_onleft.null()
-				 ? current_border_implptr()
-				 : current_border_implptr
-				 (element_onleft->right_border)),
+			 element_onright,
+			 (element_onright.null()
+			  ? current_border_implptr()
+			  : current_border_implptr
+			  (element_onright->bottom_border)),
 
-				element_onright,
-				(element_onright.null()
-				 ? current_border_implptr()
-				 : current_border_implptr
-				 (element_onright->bottom_border)),
-
-			     default_border);
+			 default_border);
 
 	return ptrrefBase::objfactory<straight_border>::create(impl);
 }
@@ -258,13 +330,14 @@ straight_border straight_borderBase
 
 straight_borderObj::implObj
 ::implObj(const ref<containerObj::implObj> &container,
+	  const metrics::horizvert_axi &initial_metrics,
 	  const char *scratch_buffer_label,
 	  const grid_elementptr &element_1,
 	  const current_border_implptr &border1,
 	  const grid_elementptr &element_2,
 	  const current_border_implptr &border2,
 	  const current_border_implptr &border_default)
-	: implObj(container,
+	: implObj(container, initial_metrics,
 		  scratch_buffer_label,
 		  container->get_window_handler(),
 		  element_1, border1, element_2, border2, border_default)
@@ -273,6 +346,7 @@ straight_borderObj::implObj
 
 straight_borderObj::implObj
 ::implObj(const ref<containerObj::implObj> &container,
+	  const metrics::horizvert_axi &initial_metrics,
 	  const char *scratch_buffer_label,
 	  generic_windowObj::handlerObj &h,
 	  const grid_elementptr &element_1,
@@ -280,7 +354,7 @@ straight_borderObj::implObj
 	  const grid_elementptr &element_2,
 	  const current_border_implptr &border2,
 	  const current_border_implptr &border_default)
-	: child_elementObj(container),
+	: child_elementObj(container, initial_metrics),
 	  borders_thread_only{element_1, border1, element_2, border2,
 		border_default},
 	  area_scratch( h.get_screen()->create_scratch_buffer

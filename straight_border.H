@@ -118,6 +118,7 @@ class LIBCXX_HIDDEN straight_borderObj::implObj : public child_elementObj {
 	THREAD_DATA_ONLY(borders);
 
 	implObj(const ref<containerObj::implObj> &container,
+		const metrics::horizvert_axi &initial_metrics,
 		const char *scratch_buffer_label,
 		const grid_elementptr &element_1,
 		const current_border_implptr &border1,
@@ -126,6 +127,7 @@ class LIBCXX_HIDDEN straight_borderObj::implObj : public child_elementObj {
 		const current_border_implptr &border_default);
  private:
 	implObj(const ref<containerObj::implObj> &container,
+		const metrics::horizvert_axi &initial_metrics,
 		const char *scratch_buffer_label,
 		generic_windowObj::handlerObj &h,
 		const grid_elementptr &element_1,

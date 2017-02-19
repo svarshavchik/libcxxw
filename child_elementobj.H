@@ -54,8 +54,7 @@ class LIBCXX_HIDDEN child_elementObj : public elementObj::implObj {
 	//! Save parent element, increase this element's nesting level.
 
 	child_elementObj(const ref<containerObj::implObj> &container,
-			 const metrics::axis &horiz=metrics::axis(),
-			 const metrics::axis &vert=metrics::axis());
+			 const metrics::horizvert_axi &initial_metrics);
 
 	//! Destructor
 	~child_elementObj();

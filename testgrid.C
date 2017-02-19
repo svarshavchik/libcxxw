@@ -36,7 +36,9 @@ static void do_test(const char *testname,
 
 	for (const auto &info: test_info)
 	{
-		myhorizvert metrics=myhorizvert::create(info.min, info.pref, info.max);
+		myhorizvert metrics=myhorizvert::create();
+
+		metrics->horiz={info.min, info.pref, info.max};
 
 		auto gp=grid_pos::create();
 
