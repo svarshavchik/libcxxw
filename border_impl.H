@@ -37,6 +37,22 @@ public:
 	//! Drawing the bottom-right corner of a cell.
 
 	static constexpr int cornerbr() { return 8; }
+
+	//! Drawing the top stub of the corner border
+
+	static constexpr int top_stub() { return 1; }
+
+	//! Drawing the bottom stub of the corner border
+
+	static constexpr int bottom_stub() { return 2; }
+
+	//! Drawing the left stub of the corner border
+
+	static constexpr int left_stub() { return 4; }
+
+	//! Drawing the right stub of the corner border
+
+	static constexpr int right_stub() { return 8; }
 };
 
 LIBCXXW_NAMESPACE_END

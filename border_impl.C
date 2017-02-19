@@ -20,6 +20,132 @@ border_implObj::border_implObj(const border_info &b)
 
 border_implObj::~border_implObj()=default;
 
+///////////////////////////////////////////////////////////////////////////////
+//
+// Based on calculated dimensions, and draw_info, compute various coordinates
+// needed to draw the corner of this border.
+
+struct border_implObj::corner_draw_info {
+
+	// The draw_info we're based on.
+
+	const draw_info &di;
+
+	// The border we're for.
+	const border_implObj &me;
+
+	// First, any padding on each side, if the alloted area for the
+	// border exceeds our calculated dimensions.
+
+	dim_t left_pad, right_pad, top_pad, bottom_pad;
+
+	// We may have two, three, or four, corners to draw. Start unraveling
+	// this by dividing calculated_border_width/height into two halfs,
+	// each.
+
+	dim_t left_half_width, right_half_width,
+		top_half_height,
+		bottom_half_height;
+
+	// left_pad and right_pad are the starting (x,y) coordinates
+	// for the real border.
+	coord_t x, y;
+
+	// Adding left_half_width and top_half_height to (x, y)
+	// produces the center point.
+	coord_t center_x, center_y;
+
+	corner_draw_info(const draw_info &di,
+			 const border_implObj &me);
+
+	// Draw extra lines in the padding areas.
+
+	void draw_top_pad(bool left_border, bool right_border)
+	{
+		me.draw_vertical(di, 0, top_pad, left_border, right_border);
+	}
+
+	void draw_bottom_pad(bool left_border, bool right_border)
+	{
+		me.draw_vertical(di,
+				 coord_t::truncate(top_pad
+						   +me.calculated_border_height
+						   ),
+				 bottom_pad,
+				 left_border, right_border);
+	}
+
+	void draw_left_pad(bool top_border, bool bottom_border)
+	{
+		me.draw_horizontal(di, 0, left_pad, top_border, bottom_border);
+	}
+
+	void draw_right_pad(bool top_border, bool bottom_border)
+	{
+		me.draw_horizontal(di,
+				   coord_t::truncate(left_pad
+						     +me.calculated_border_width
+						     ),
+				   right_pad,
+				   top_border, bottom_border);
+	}
+
+	// Now, draw the corresponding line to the center of the border.
+
+	void draw_top_stub(bool left_border, bool right_border)
+	{
+		me.draw_vertical(di, y, top_half_height,
+				 left_border, right_border);
+	}
+
+	void draw_bottom_stub(bool left_border, bool right_border)
+	{
+		me.draw_vertical(di, center_y, bottom_half_height,
+				 left_border, right_border);
+	}
+
+	void draw_left_stub(bool top_border, bool bottom_border)
+	{
+		me.draw_horizontal(di, 0, left_half_width,
+				   top_border, bottom_border);
+	}
+
+	void draw_right_stub(bool top_border, bool bottom_border)
+	{
+		me.draw_horizontal(di, center_x, right_half_width,
+				   top_border, bottom_border);
+	}
+};
+
+border_implObj::corner_draw_info::corner_draw_info(const draw_info &di,
+						   const border_implObj &me)
+
+	// Calculate any padding due to extra dimensions.
+
+	: di(di),
+	  me(me),
+	  left_pad((di.area_rectangle.width - me.calculated_border_width)/2),
+	  right_pad(di.area_rectangle.width - left_pad - me.calculated_border_width),
+	  top_pad((di.area_rectangle.height - me.calculated_border_height)/2),
+	  bottom_pad(di.area_rectangle.height - top_pad - me.calculated_border_height),
+
+	  // Half the calculated size.
+	  left_half_width(me.calculated_border_width/2),
+	  right_half_width(me.calculated_border_width-left_half_width),
+
+	  top_half_height(me.calculated_border_height/2),
+	  bottom_half_height(me.calculated_border_height-top_half_height),
+
+	  // Starting x/y coordinates for the border.
+	  x(coord_t::truncate(left_pad)),
+	  y(coord_t::truncate(top_pad)),
+
+	  // And the center point.
+	  center_x(coord_t::truncate(x+left_half_width)),
+	  center_y(coord_t::truncate(y+top_half_height))
+{
+}
+
 border_impl border_implObj::clone() const
 {
 	const border_info &me=*this;
@@ -154,15 +280,7 @@ void border_implObj::draw_corner(const draw_info &di, int which_corners) const
 	if (no_border(di))
 		return;
 
-	// First, take care of any extra padding using lines.
-
-	dim_t left_pad=(di.area_rectangle.width - calculated_border_width)/2;
-	dim_t right_pad=
-		di.area_rectangle.width - left_pad - calculated_border_width;
-
-	dim_t top_pad=(di.area_rectangle.height - calculated_border_height)/2;
-	dim_t bottom_pad=
-		di.area_rectangle.height - top_pad - calculated_border_height;
+	corner_draw_info cdi{di, *this};
 
 	bool tl=which_corners & border_impl::base::cornertl() ? true:false;
 	bool tr=which_corners & border_impl::base::cornertr() ? true:false;
@@ -170,56 +288,31 @@ void border_implObj::draw_corner(const draw_info &di, int which_corners) const
 	bool br=which_corners & border_impl::base::cornerbr() ? true:false;
 
 	if (tl || tr)
-		draw_vertical(di, 0, top_pad, tl, tr);
+		cdi.draw_top_pad(tl, tr);
 
 	if (bl || br)
-		draw_vertical(di,
-			      coord_t::truncate(top_pad
-						+calculated_border_height),
-			      bottom_pad,
-			      bl, br);
+		cdi.draw_bottom_pad(bl, br);
+
 	if (tl || bl)
-		draw_horizontal(di, 0, left_pad, tl, bl);
+		cdi.draw_left_pad(tl, bl);
 
 	if (tr || br)
-		draw_horizontal(di,
-				coord_t::truncate(left_pad
-						  +calculated_border_width),
-				right_pad,
-				tr, br);
-
-	// Ok, now, what are we doing with this corner?
-
-	coord_t x=coord_t::truncate(left_pad);
-	coord_t y=coord_t::truncate(top_pad);
+		cdi.draw_right_pad(tr, br);
 
 	switch (which_corners) {
 	case border_impl::base::cornertl():
-		draw_cornertl(di, x, y);
+		draw_cornertl(di, cdi.x, cdi.y);
 		return;
 	case border_impl::base::cornertr():
-		draw_cornertr(di, x, y);
+		draw_cornertr(di, cdi.x, cdi.y);
 		return;
 	case border_impl::base::cornerbl():
-		draw_cornerbl(di, x, y);
+		draw_cornerbl(di, cdi.x, cdi.y);
 		return;
 	case border_impl::base::cornerbr():
-		draw_cornerbr(di, x, y);
+		draw_cornerbr(di, cdi.x, cdi.y);
 		return;
 	}
-
-	// We have two, three, or four, corners to draw. Start unraveling
-	// this by dividing calculated_border_width/height into two halfs,
-	// each.
-	dim_t left_half_width=calculated_border_width/2;
-	dim_t right_half_width=calculated_border_width-left_half_width;
-
-	dim_t top_half_height=calculated_border_height/2;
-	dim_t bottom_half_height=calculated_border_height-top_half_height;
-
-	// And then using two of the half to compute the center point.
-	coord_t center_x=coord_t::truncate(x+left_half_width);
-	coord_t center_y=coord_t::truncate(y+top_half_height);
 
 	bool drew_top=false, drew_bottom=false,
 		drew_left=false, drew_right=false;
@@ -229,25 +322,25 @@ void border_implObj::draw_corner(const draw_info &di, int which_corners) const
 
 	if ( (tl && tr) && !bl && !br)
 	{
-		draw_vertical(di, y, top_half_height, true, true);
+		cdi.draw_top_stub(true, true);
 		drew_top=true;
 	}
 
 	if ( (bl && br) && !tl && !tr)
 	{
-		draw_vertical(di, center_y, bottom_half_height, true, true);
+		cdi.draw_bottom_stub(true, true);
 		drew_bottom=true;
 	}
 
 	if ( (tl && bl) && !tr && !br)
 	{
-		draw_horizontal(di, 0, left_half_width, true, true);
+		cdi.draw_left_stub(true, true);
 		drew_left=true;
 	}
 
 	if ( (tr && br) && !tl && !bl)
 	{
-		draw_horizontal(di, center_x, right_half_width, true, true);
+		cdi.draw_right_stub(true, true);
 		drew_right=true;
 	}
 
@@ -255,23 +348,23 @@ void border_implObj::draw_corner(const draw_info &di, int which_corners) const
 
 	if ( (tl || tr) && !drew_top)
 	{
-		draw_vertical(di, y, top_half_height, tl, tr);
+		draw_vertical(di, cdi.y, cdi.top_half_height, tl, tr);
 	}
 
 	if ( (bl || br) && !drew_bottom)
 	{
-		draw_vertical(di, center_y, bottom_half_height, bl, br);
+		draw_vertical(di, cdi.center_y, cdi.bottom_half_height, bl, br);
 
 	}
 
 	if ( (tl || bl) && !drew_left)
 	{
-		draw_horizontal(di, 0, left_half_width, tl, bl);
+		draw_horizontal(di, 0, cdi.left_half_width, tl, bl);
 	}
 
 	if ( (tr || br) && !drew_right)
 	{
-		draw_horizontal(di, center_x, right_half_width, tr, br);
+		draw_horizontal(di, cdi.center_x, cdi.right_half_width, tr, br);
 	}
 }
 
@@ -317,6 +410,38 @@ void border_implObj::draw_square_corner(const draw_info &di,
 				   calculated_border_width,
 				   calculated_border_height, props);
 	composite_line(di, 0);
+}
+
+void border_implObj::draw_stubs(const draw_info &di, int stubs) const
+{
+	if (no_border(di))
+		return;
+
+	corner_draw_info cdi{di, *this};
+
+	if (stubs & border_impl::base::top_stub())
+	{
+		cdi.draw_top_pad(true, true);
+		cdi.draw_top_stub(true, true);
+	}
+
+	if (stubs & border_impl::base::bottom_stub())
+	{
+		cdi.draw_bottom_pad(true, true);
+		cdi.draw_bottom_stub(true, true);
+	}
+
+	if (stubs & border_impl::base::left_stub())
+	{
+		cdi.draw_left_pad(true, true);
+		cdi.draw_left_stub(true, true);
+	}
+
+	if (stubs & border_impl::base::right_stub())
+	{
+		cdi.draw_right_pad(true, true);
+		cdi.draw_right_stub(true, true);
+	}
 }
 
 void border_implObj::composite_line(const draw_info &di, size_t n) const

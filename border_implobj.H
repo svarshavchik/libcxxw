@@ -134,6 +134,8 @@ class LIBCXX_HIDDEN border_implObj: virtual public obj, public border_info {
 			     //! elements.
 			     bool bottom_border) const;
 
+	struct corner_draw_info;
+
  private:
 	//! Draw a horizontal border
 
@@ -223,6 +225,18 @@ class LIBCXX_HIDDEN border_implObj: virtual public obj, public border_info {
 
 			 //! Which corner(s) is being drawn.
 			 int which_corners) const;
+
+	//! Draw a non-joining corner stub.
+
+	//! When a border does not join through a corner, the border is
+	//! simply a stub to the center of the border area.
+
+	void draw_stubs(//! Information needed to draw the border
+			const draw_info &di,
+
+			//! Which stubs are being drawn
+			int which_stubs) const;
+
  private:
 
 	//! Draw a top-left corner.
