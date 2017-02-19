@@ -6,7 +6,7 @@
 #define straight_borderfwd_h
 
 #include <x/ptrfwd.H>
-#include <x/w/namespace.H>
+#include "x/w/namespace.H"
 
 LIBCXXW_NAMESPACE_START
 

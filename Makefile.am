@@ -157,6 +157,12 @@ libcxxw_la_SOURCES=\
 	scratch_buffer.C			    \
 	scratch_buffer_impl.C			    \
 	scratch_buffer.H			    \
+	scratch_buffer_draw.C			    \
+	scratch_buffer_draw.H			    \
+	scratch_buffer_drawfwd.H		    \
+	scratch_and_mask_buffer_draw.C		    \
+	scratch_and_mask_buffer_draw.H		    \
+	scratch_and_mask_buffer_drawfwd.H	    \
 	screen.C				    \
 	screen.H				    \
 	screen_depthinfo.C			    \

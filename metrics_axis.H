@@ -5,7 +5,7 @@
 #ifndef metrics_axis_H
 #define metrics_axis_H
 
-#include <x/w/metrics/derivedaxis.H>
+#include "x/w/metrics/derivedaxis.H"
 #include <x/derivedvalue.H>
 
 LIBCXXW_NAMESPACE_START

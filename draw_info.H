@@ -8,7 +8,7 @@
 #include "draw_infofwd.H"
 #include "picture.H"
 #include "x/w/rectangle.H"
-#include <x/w/namespace.H>
+#include "x/w/namespace.H"
 
 LIBCXXW_NAMESPACE_START
 

@@ -14,8 +14,9 @@
 #include "x/w/containerobj.H"
 #include "straight_borderfwd.H"
 #include "straight_borderobj.H"
-
+#include "corner_borderfwd.H"
 #include "connection_threadfwd.H"
+#include "scratch_and_mask_buffer_drawfwd.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -90,7 +91,8 @@ public:
 //! This is an abstract class. Logic that's specific to a horizontal
 //! or a vertical border is defined by an internal subclass.
 
-class LIBCXX_HIDDEN straight_borderObj::implObj : public child_elementObj {
+class LIBCXX_HIDDEN straight_borderObj::implObj
+	: public scratch_and_mask_buffer_draw<child_elementObj> {
 
 	struct possible_borders {
 
@@ -108,11 +110,6 @@ class LIBCXX_HIDDEN straight_borderObj::implObj : public child_elementObj {
 	//! Implemented in the border_element_implObj subclass.
 	virtual void compute_metrics(IN_THREAD_ONLY)=0;
 
-	//! Scratch buffer for drawing this element.
-	const scratch_buffer area_scratch;
-
-	//! Scratch 1-bit deep buffer for masking
-	const scratch_buffer mask_scratch;
  public:
 
 	THREAD_DATA_ONLY(borders);
@@ -138,6 +135,8 @@ class LIBCXX_HIDDEN straight_borderObj::implObj : public child_elementObj {
  public:
 	//! Destructor
 	~implObj();
+
+	friend class corner_borderObj;
 
  protected:
 
@@ -172,7 +171,13 @@ class LIBCXX_HIDDEN straight_borderObj::implObj : public child_elementObj {
 	//! Draw the border.
 	void do_draw(IN_THREAD_ONLY,
 		     const draw_info &di,
-		     const rectangle_set &areas) override;
+		     const picture &area_picture,
+		     const pixmap &area_pixmap,
+		     const gc &area_gc,
+		     const picture &mask_picture,
+		     const pixmap &mask_pixmap,
+		     const gc &mask_gc,
+		     const rectangle &area_entire_rect) override;
 };
 
 LIBCXXW_NAMESPACE_END

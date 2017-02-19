@@ -6,7 +6,7 @@
 #define straight_borderobj_h
 
 #include "straight_borderfwd.H"
-#include <x/w/elementobj.H>
+#include "x/w/elementobj.H"
 
 LIBCXXW_NAMESPACE_START
 

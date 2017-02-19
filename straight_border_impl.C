@@ -9,6 +9,7 @@
 #include "draw_info.H"
 #include "current_border_impl.H"
 #include "grid_element.H"
+#include "scratch_and_mask_buffer_draw.H"
 #include "x/w/scratch_buffer.H"
 #include "x/w/pictformat.H"
 
@@ -361,19 +362,13 @@ straight_borderObj::implObj
 	  const grid_elementptr &element_2,
 	  const current_border_implptr &border2,
 	  const current_border_implptr &border_default)
-	: child_elementObj(container, initial_metrics),
-	  borders_thread_only{element_1, border1, element_2, border2,
-		border_default},
-	  area_scratch( h.get_screen()->create_scratch_buffer
-			(std::string("area-")+scratch_buffer_label,
-			 h.drawable_pictformat,
-			 h.get_width()/10+1,
-			 h.get_height()/10+1)),
-	  mask_scratch( h.get_screen()->create_scratch_buffer
-			(std::string("mask-")+scratch_buffer_label,
-			 h.get_screen()->find_alpha_pictformat_by_depth(1),
-			 h.get_width()/10+1,
-			 h.get_height()/10+1))
+	: scratch_and_mask_buffer_draw<child_elementObj>
+	(std::string("area-")+scratch_buffer_label,
+	 std::string("mask-")+scratch_buffer_label,
+	 h.get_width()/10+1,
+	 h.get_height()/10+1, container, initial_metrics),
+	borders_thread_only{element_1, border1, element_2, border2,
+		border_default}
 {
 }
 
@@ -401,62 +396,25 @@ const current_border_implptr &straight_borderObj::implObj
 
 void straight_borderObj::implObj::do_draw(IN_THREAD_ONLY,
 					  const draw_info &di,
-					  const rectangle_set &areas)
+					  const picture &area_picture,
+					  const pixmap &area_pixmap,
+					  const gc &area_gc,
+					  const picture &mask_picture,
+					  const pixmap &mask_pixmap,
+					  const gc &mask_gc,
+					  const rectangle &area_entire_rect)
 {
-	// Retrieve both scratch buffers, and hand them over to
-	// draw_horizvert().
-	area_scratch->get
-		(di.absolute_location.width,
-		 di.absolute_location.height,
-		 [&, this]
-		 (const picture &area_picture,
-		  const pixmap &area_pixmap,
-		  const gc &area_gc)
-		 {
-			 rectangle area_entire_rect{0, 0,
-					 di.absolute_location.width,
-					 di.absolute_location.height};
+	border_implObj::draw_info
+		border_draw_info{area_picture,
+			area_entire_rect,
+			area_pixmap,
+			mask_picture,
+			mask_pixmap,
+			mask_gc,
+			di.absolute_location.x,
+			di.absolute_location.y};
 
-			 // But before draw_horizvert(), clear the
-			 // area_picture buffer to the background color.
-
-			 area_picture->impl->composite(di.window_background,
-						       di.background_x,
-						       di.background_y,
-						       area_entire_rect);
-
-			 mask_scratch->get
-				 (di.absolute_location.width,
-				  di.absolute_location.height,
-				  [&, this]
-				  (const picture &mask_picture,
-				   const pixmap &mask_pixmap,
-				   const gc &mask_gc)
-				  {
-					  // First, clear it to color
-
-
-					  border_implObj::draw_info
-						  border_draw_info{
-						  area_picture,
-						  area_entire_rect,
-						  area_pixmap,
-						  mask_picture,
-						  mask_pixmap,
-						  mask_gc,
-						  di.absolute_location.x,
-						  di.absolute_location.y};
-
-					  draw_horizvert(IN_THREAD,
-							 border_draw_info);
-				  });
-
-			 clip_region_set clip{IN_THREAD, *this, di};
-
-			 di.window_picture->composite(area_picture->impl,
-						      0, 0,
-						      di.absolute_location);
-		 });
+	draw_horizvert(IN_THREAD, border_draw_info);
 }
 
 LIBCXXW_NAMESPACE_END
