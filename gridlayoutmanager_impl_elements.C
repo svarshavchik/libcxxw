@@ -48,6 +48,10 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(IN_THREAD_ONLY)
 		return flag;
 	}
 
+#ifdef GRID_REBUILD_ELEMENTS
+	GRID_REBUILD_ELEMENTS();
+#endif
+
 	const auto &lookup=lock->get_lookup_table();
 
 	//! Clear the existing straight borders
@@ -294,7 +298,10 @@ bool gridlayoutmanagerObj::implObj::elementsObj
 
 	if (!flag && (horiz_metrics != new_horiz_metrics ||
 		      vert_metrics != new_vert_metrics))
+	{
+		std::cout << "   TRUE" << std::endl;
 		flag=true;
+	}
 
 	horiz_metrics=new_horiz_metrics;
 	vert_metrics=new_vert_metrics;

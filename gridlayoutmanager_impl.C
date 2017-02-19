@@ -45,6 +45,10 @@ void gridlayoutmanagerObj::implObj::recalculate(IN_THREAD_ONLY)
 	auto my_metrics=metrics::horizvert(container_impl->get_element_impl()
 					   .get_horizvert(IN_THREAD));
 
+#ifdef CALLING_RECALCULATE
+	CALLING_RECALCULATE();
+#endif
+
 	if (!grid_elements(IN_THREAD)->recalculate_metrics(IN_THREAD,
 							   flag, my_metrics))
 		return;

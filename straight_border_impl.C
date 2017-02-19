@@ -175,6 +175,10 @@ straight_border straight_borderBase
 			   const grid_elementptr &element_below,
 			   const current_border_implptr &default_border)
 {
+#ifdef CREATE_STRAIGHT_BORDER
+	CREATE_STRAIGHT_BORDER();
+#endif
+
 	auto impl=ref<horizontal_straight_borderObj>
 		::create(container,
 
@@ -243,6 +247,9 @@ straight_border straight_borderBase
 			 const grid_elementptr &element_onright,
 			 const current_border_implptr &default_border)
 {
+#ifdef CREATE_STRAIGHT_BORDER
+	CREATE_STRAIGHT_BORDER();
+#endif
 	auto impl=ref<vertical_straight_borderObj>
 		::create(container,
 

@@ -9,7 +9,11 @@ struct sausage_factory {
 
 	int number_of_calls=0;
 	int number_of_areas=0;
+	int rebuild_elements=0;
+	int created_straight_border=0;
 
+	int called_recalculate_with_false_flag=0;
+	int called_recalculate_with_true_flag=0;
 	bool correct_metrics_set=false;
 	bool correct_metrics_set_to_configure_window=false;
 	bool correct_metrics_set_when_mapping_window=false;
@@ -53,9 +57,57 @@ sausage_factory_t sausages;
 			lock->correct_metrics_set=true;			\
 	} while(0)
 
+#define GRID_REBUILD_ELEMENTS() do {					\
+		sausage_factory_t::lock					\
+			lock(sausages);					\
+		++lock->rebuild_elements;				\
+	} while (0)
+
+#define CREATE_STRAIGHT_BORDER() do {					\
+		sausage_factory_t::lock					\
+			lock(sausages);					\
+		++lock->created_straight_border;			\
+	} while (0)
+
+#define CALLING_RECALCULATE() do {					\
+		sausage_factory_t::lock					\
+			lock(sausages);					\
+									\
+		if (flag)						\
+		{							\
+			++lock->called_recalculate_with_true_flag;	\
+			if (lock->called_recalculate_with_true_flag == 2) \
+			{						\
+				IN_THREAD->run_as(RUN_AS,		\
+						  [me=ref<implObj>(this)] \
+						  (IN_THREAD_ONLY) {	\
+							  me->child_metrics_updated(IN_THREAD);	\
+						  });			\
+			}						\
+			if (lock->called_recalculate_with_true_flag == 5) \
+			{						\
+				IN_THREAD->run_as(RUN_AS,		\
+						  [me=ref<implObj>(this)] \
+						  (IN_THREAD_ONLY) {	\
+							  grid_map_t::lock \
+								  lock(me->grid_map); \
+							  lock->elements_have_been_modified(); \
+									\
+							  me->child_metrics_updated(IN_THREAD);	\
+						  });			\
+			}						\
+		}							\
+		else							\
+			++lock->called_recalculate_with_false_flag;	\
+									\
+		std::cout << "RECALCULATE_METRICS, flag=" << flag << std::endl;\
+	} while (0)
+
 #include "element_impl.C"
 #include "generic_window_handler.C"
 #include "gridlayoutmanager_impl.C"
+#include "gridlayoutmanager_impl_elements.C"
+#include "straight_border_impl.C"
 
 #include "x/w/main_window.H"
 #include "x/w/screen.H"
@@ -528,6 +580,35 @@ void testthemescale(const testmainwindowoptions &options)
 	auto c=runtestthemescale(options);
 	alarm(0);
 
+	{
+		sausage_factory_t::lock lock(sausages);
+
+		// Initial rebuild, plus rebuild forced by manually setting
+		// elements_have_been_modified();
+
+		if (lock->rebuild_elements != 2)
+			throw EXCEPTION("Rebuilt elements " <<
+					lock->rebuild_elements <<
+					" times instead of two times.");
+
+		if (lock->created_straight_border != 4)
+			throw EXCEPTION("Expected 4 new borders, got " <<
+					lock->created_straight_border);
+
+		if (lock->called_recalculate_with_false_flag != 0)
+			throw EXCEPTION("Expected 0 false recalcs, got " <<
+					lock->called_recalculate_with_false_flag
+					);
+
+		// Initial recalc
+		// 4 recalcs due to theme scale change.
+		// Two extra dummy recalcs triggered by CALLING_RECALCULATE()
+
+		if (lock->called_recalculate_with_true_flag != 7)
+			throw EXCEPTION("Expected 7 true recalcs, got " <<
+					lock->called_recalculate_with_true_flag
+					);
+	}
 	auto s=std::get<0>(c)->get();
 
 	if (s.size() != 2)
