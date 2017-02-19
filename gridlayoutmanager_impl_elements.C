@@ -22,21 +22,31 @@ gridlayoutmanagerObj::implObj::elementsObj::elementsObj()=default;
 
 gridlayoutmanagerObj::implObj::elementsObj::~elementsObj()=default;
 
+void gridlayoutmanagerObj::implObj::child_metrics_updated(IN_THREAD_ONLY)
+{
+	auto &ge=grid_elements(IN_THREAD);
+
+	ge->child_metrics_updated_flag=true;
+
+	layoutmanagerObj::implObj::child_metrics_updated(IN_THREAD);
+}
+
+
 bool gridlayoutmanagerObj::implObj::rebuild_elements(IN_THREAD_ONLY)
 {
 	grid_map_t::lock lock(grid_map);
 
-	if (!lock->modified)
+	auto &ge=grid_elements(IN_THREAD);
+
+	if (!lock->element_modifications_need_processing())
 	{
 		// Still need to recalculate everything if child_metrics_updated
 
-		bool flag=lock->child_metrics_updated;
+		bool flag=ge->child_metrics_updated_flag;
 
-		lock->child_metrics_updated=false;
+		ge->child_metrics_updated_flag=false;
 		return flag;
 	}
-
-	auto &ge=grid_elements(IN_THREAD);
 
 	//! Clear the existing straight borders
 
@@ -228,8 +238,8 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(IN_THREAD_ONLY)
 					  b.second.border);
 	}
 
-	lock->modified=false;
-	lock->child_metrics_updated=false;
+	lock->element_modifications_are_processed();
+	ge->child_metrics_updated_flag=false;
 
 	return true;
 }

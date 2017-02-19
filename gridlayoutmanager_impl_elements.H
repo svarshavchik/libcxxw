@@ -48,6 +48,10 @@ public:
 			child_element(child_element) {}
 	};
 
+	//! Flag, a child metrics has been updated.
+
+	bool child_metrics_updated_flag=false;
+
 	//! A cached vector of all elements in the grid.
 
 	std::vector<pos_axis> all_elements;

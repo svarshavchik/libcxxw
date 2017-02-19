@@ -17,6 +17,10 @@
 
 LIBCXXW_NAMESPACE_START
 
+gridlayoutmanagerObj::grid_map_info_t::grid_map_info_t()=default;
+
+gridlayoutmanagerObj::grid_map_info_t::~grid_map_info_t()=default;
+
 gridlayoutmanagerObj::implObj
 ::implObj(const ref<containerObj::implObj> &container_impl)
 	: layoutmanagerObj::implObj(container_impl),
@@ -25,11 +29,6 @@ gridlayoutmanagerObj::implObj
 }
 
 gridlayoutmanagerObj::implObj::~implObj()=default;
-
-void gridlayoutmanagerObj::implObj::child_metrics_updated(IN_THREAD_ONLY)
-{
-	layoutmanagerObj::implObj::child_metrics_updated(IN_THREAD);
-}
 
 void gridlayoutmanagerObj::implObj::recalculate(IN_THREAD_ONLY)
 {
@@ -75,7 +74,7 @@ void gridlayoutmanagerObj::implObj
 
 	lock->elements.push_back(std::vector<grid_element>());
 	(--lock->elements.end())->push_back(elem);
-	lock->modified=true;
+	lock->elements_have_been_modified();
 }
 
 current_border_impl gridlayoutmanagerObj::implObj

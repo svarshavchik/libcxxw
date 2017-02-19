@@ -53,11 +53,49 @@ public:
 
 	struct grid_map_info_t {
 
-		bool modified=false;
+		//! Container for the elements in the grid.
+		typedef std::vector<std::vector<grid_element>> elements_t;
 
-		bool child_metrics_updated=false;
+		//! The elements in the grid.
 
-		std::vector<std::vector<grid_element>> elements;
+		elements_t elements;
+
+	private:
+		bool modified_flag=false;
+		bool lookup_table_is_current=true;
+	public:
+
+		//! The elements vector has been changed.
+
+		//! Two separate things need to be done after elements are
+		//! changed: the lookup table needs updating, and the
+		//! background thread need to process the element modifications.
+		//!
+		//! Clear the lookup_table_is_current flag, and set the
+		//! modified_flag.
+		void elements_have_been_modified()
+		{
+			lookup_table_is_current=false;
+			modified_flag=true;
+		}
+
+		//! Check the 'modified_flag'.
+
+		bool element_modifications_need_processing() const
+		{
+			return modified_flag;
+		}
+
+		//! Turn off the 'modified_flag'
+
+		void element_modifications_are_processed()
+		{
+			modified_flag=false;
+		}
+
+		grid_map_info_t() LIBCXX_HIDDEN;
+
+		~grid_map_info_t() LIBCXX_HIDDEN;
 	};
 
 	//! Mutex-protected grid map.
