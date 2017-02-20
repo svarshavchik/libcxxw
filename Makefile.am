@@ -33,6 +33,11 @@ libcxxw_la_SOURCES=\
 	border_info.H				    \
 	border_infofwd.H			    \
 	border_infomm.C				    \
+	corner_border.C				    \
+	corner_border.H				    \
+	corner_borderfwd.H			    \
+	corner_borderobj.H			    \
+	corner_border_impl.C			    \
 	builtin_atoms.C				    \
 	builtin_atoms.H				    \
 	calculate_borders.H			    \
