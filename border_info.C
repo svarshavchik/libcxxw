@@ -20,8 +20,8 @@ bool border_info::no_border() const
 bool border_info::operator==(const border_info &o) const
 {
 	return width == o.width && height == o.height &&
-		radius == o.radius && dashes == o.dashes &&
-		colors == o.colors;
+		hradius == o.hradius && vradius == o.vradius &&
+		dashes == o.dashes && colors == o.colors;
 }
 
 bool border_info::compare(const border_info &o) const
@@ -31,9 +31,9 @@ bool border_info::compare(const border_info &o) const
 	if (o.width + o.height < width + height)
 		return false;
 
-	if (radius < o.radius)
+	if (hradius+vradius < o.hradius + o.vradius)
 		return true;
-	if (o.radius < radius)
+	if (o.hradius+o.vradius < hradius + vradius)
 		return false;
 
 	if (dashes < o.dashes)

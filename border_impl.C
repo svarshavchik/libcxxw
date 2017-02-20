@@ -155,8 +155,8 @@ border_impl border_implObj::clone() const
 
 void border_implObj::calculate()
 {
-	calculated_border_width=dim_t::truncate(width + inner_radius()*2);
-	calculated_border_height=dim_t::truncate(height + inner_radius()*2);
+	calculated_border_width=dim_t::truncate(width + inner_hradius()*2);
+	calculated_border_height=dim_t::truncate(height + inner_vradius()*2);
 
 	calculated_dashes_sum=0;
 

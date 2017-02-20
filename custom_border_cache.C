@@ -48,15 +48,20 @@ border_info screenObj::implObj
 	    radius_h == dim_t::infinite())
 		radius_w=radius_h=0;
 
-	dim_t radius=dim_squared_t::value_type((radius_w+radius_h)/2);
+	if (radius_w == 0 && mm.rounded)
+		radius_w=1;
 
-	if (radius == 0 && mm.rounded)
-		radius=1;
+	if (radius_h == 0 && mm.rounded)
+		radius_h=1;
 
-	if (radius <= 1 && mm.radius)
-		radius=2;
+	if (radius_w <= 1 && mm.radius)
+		radius_w=2;
 
-	info.radius=radius;
+	if (radius_h <= 1 && mm.radius)
+		radius_h=2;
+
+	info.hradius=radius_w;
+	info.vradius=radius_h;
 
 	info.dashes.reserve(mm.dashes.size());
 

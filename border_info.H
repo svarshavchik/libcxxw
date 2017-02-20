@@ -49,7 +49,18 @@ struct border_info {
 	//! 1: rounded corner
 
 	//! >1: rounded corner, with inside radius
-	dim_t radius=0;
+	dim_t hradius=0;
+
+	//! Rounded corner, and/or radius
+
+	//! Both hradius and vradius=0: square corner.
+
+	//! Both hradius and vradius are 2 or more: rounded corner, with
+	//! inside radius.
+
+	//! Otherwise rounded outside corner.
+
+	dim_t vradius=0;
 
 	//! If not empty, dashed border, this gives the dash lengths in pixels.
 	std::vector<uint8_t> dashes;

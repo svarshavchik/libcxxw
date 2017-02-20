@@ -524,7 +524,7 @@ static bool parse_dim(const xml::doc::base::readlock &lock,
 			mm=dim_scale(v1mm, v);
 			break;
 		case 'p':
-			mm=(dim_t::value_type)v;
+			mm=dim_t::truncate(v);
 			break;
 		default:
 			mm=dim_scale(h1mm+v1mm, v/2);
@@ -899,11 +899,15 @@ void defaultthemeObj::load_borders(const xml::doc &config,
 					    new_border->height,
 					    "border", id);
 
-			update_dim_if_given(lock, "radius",
+			update_dim_if_given(lock, "hradius",
 					    dims, h1mm, v1mm,
-					    new_border->radius,
+					    new_border->hradius,
 					    "border", id);
 
+			update_dim_if_given(lock, "vradius",
+					    dims, h1mm, v1mm,
+					    new_border->vradius,
+					    "border", id);
 
 			// If we copied the border from another from, then
 			// unless the following values are given, don't

@@ -61,9 +61,22 @@ class LIBCXX_HIDDEN border_implObj: virtual public obj, public border_info {
 
 	//! A border_radius value of 2 or more has an inner radius.
 
-	dim_t inner_radius() const
+	//! Both hradius and vradius must be 2 or more, otherwise it's 0.
+
+	dim_t inner_hradius() const
 	{
-		return inner_radius(radius);
+		return inner_radius(vradius) != 0
+			? inner_radius(hradius):dim_t{0};
+	}
+
+	//! A border_radius value of 2 or more has an inner radius.
+
+	//! Both hradius and vradius must be 2 or more, otherwise it's 0.
+
+	dim_t inner_vradius() const
+	{
+		return inner_radius(hradius) != 0
+			? inner_radius(vradius):dim_t{0};
 	}
 
 	//! Information that's passed to the various draw...() methods.
