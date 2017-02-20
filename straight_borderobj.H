@@ -14,7 +14,7 @@ LIBCXXW_NAMESPACE_START
 
 //! \see straight_border
 
-class straight_borderObj: public elementObj {
+class LIBCXX_HIDDEN straight_borderObj: public elementObj {
 
 public:
 	class implObj;

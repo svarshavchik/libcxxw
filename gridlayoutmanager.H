@@ -36,6 +36,10 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::lookup_infoObj : virtual public obj {
 
 	//! When updating the lookup table, a flag that's used to purge removed elements.
 	bool seen;
+
+	//! All the border elements, on each side of this element.
+
+	std::vector<element> border_elements;
 };
 
 //! The grid layout manager implementation object.

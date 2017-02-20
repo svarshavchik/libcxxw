@@ -27,41 +27,14 @@ LIBCXXW_NAMESPACE_START
 class straight_borderBase {
 
 public:
-	//! A signature for a border factory.
-
-	//! create_horizontal_border() and create_vertical_border() take
-	//! the following list of parameters:
-	//!
-	//! - the parent container (the grid container)
-	//! - two elements, on either side of the border (each one possibly
-	//!   null, for an element on the edge of the border).
-	//! - the default border for the grid.
-
-	typedef straight_border factory_t(const ref<containerObj::implObj> &c,
-					  const grid_elementptr &e1,
-					  const grid_elementptr &e2,
-					  const current_border_implptr &d);
-
-	//! A signature for a border updater.
-
-	//! Parameters for update_horizontal_border() and
-	//! update_vertical_border().
-
-	typedef straight_border update_t(IN_THREAD_ONLY,
-					 const straight_border &b,
-					 const grid_elementptr &e1,
-					 const grid_elementptr &e2,
-					 const current_border_implptr &d);
-
-
 
 	//! Create a horizontal border.
 
-	static factory_t create_horizontal_border;
+	static straight_border_factory_t create_horizontal_border;
 
 	//! Create a vertical border
 
-	static factory_t create_vertical_border;
+	static straight_border_factory_t create_vertical_border;
 
 	//! Update a horizontal border
 
@@ -72,7 +45,7 @@ public:
 	//! create_horizontal_border() would create, otherwise this calls
 	//! create_horizontal_border.
 
-	static update_t update_horizontal_border;
+	static straight_border_update_t update_horizontal_border;
 
 	//! Update a vertical border
 
@@ -83,7 +56,7 @@ public:
 	//! create_vertical_border() would create, otherwise this calls
 	//! create_vertical_border.
 
-	static update_t update_vertical_border;
+	static straight_border_update_t update_vertical_border;
 };
 
 //! A horizontal or a vertical border element implementation object.

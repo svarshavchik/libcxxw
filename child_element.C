@@ -79,7 +79,11 @@ draw_info &child_elementObj::get_draw_info(IN_THREAD_ONLY)
 
 	rectangle res_rect;
 
-	if (!res.empty())
+	if (res.empty())
+	{
+		// std::cout << "EMPTY VIEWPORT" << std::endl;
+	}
+	else
 		res_rect=*res.begin();
 
 	di.absolute_location=cpy;

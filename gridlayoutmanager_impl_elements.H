@@ -9,6 +9,7 @@
 #include "metrics_grid.H"
 #include "element.H"
 #include "straight_borderfwd.H"
+#include "corner_borderfwd.H"
 #include "metrics_grid_xy.H"
 #include <vector>
 #include <tuple>
@@ -70,9 +71,26 @@ public:
 		bool is_current;
 	};
 
-	//! Hash straight border starting positions.
+	//! Metadata stored in \c corner_border_info
 
-	struct straight_border_map_hash  {
+	struct corner_border_info {
+
+		//! The border
+		corner_border border;
+
+		//! The border's position.
+		metrics::grid_pos pos;
+
+		//! Flag used when rebuilding the straight borders.
+		bool is_new;
+
+		//! Flag used when rebuilding the straight borders.
+		bool is_updated;
+	};
+
+	//! Hash straight border starting positions, and corner border positions.
+
+	struct border_map_hash  {
 
 		size_t operator()(const std::tuple<metrics::grid_xy,
 				  metrics::grid_xy> &xy) const;
@@ -105,8 +123,41 @@ public:
 	std::unordered_map< std::tuple<metrics::grid_xy,
 				       metrics::grid_xy>,
 			    straight_border_info,
-			    straight_border_map_hash> straight_borders;
+			    border_map_hash> straight_borders;
 
+	straight_border get_straight_border(IN_THREAD_ONLY,
+					    const ref<containerObj::implObj>
+					    &container_impl,
+					    straight_border_factory_t factory,
+					    straight_border_update_t update,
+
+					    metrics::grid_xy xstart,
+					    metrics::grid_xy xend,
+					    metrics::grid_xy ystart,
+					    metrics::grid_xy yend,
+
+					    const grid_elementptr &e1,
+					    const grid_elementptr &e2);
+
+	//! Current corner borders
+
+	//! After the straight borders are calculated, their information
+	//! gets used to build the corner border elements.
+
+	std::unordered_map< std::tuple<metrics::grid_xy,
+				       metrics::grid_xy>,
+			    corner_border_info,
+			    border_map_hash> corner_borders;
+
+	//! Create a corner border cell, if needed.
+
+	corner_border get_corner_border(IN_THREAD_ONLY,
+					const ref<containerObj::implObj>
+					&container_impl,
+					metrics::grid_xy x,
+					metrics::grid_xy y);
+
+	//! Register a bor
 	elementsObj();
 
 	~elementsObj();

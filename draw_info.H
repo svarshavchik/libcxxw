@@ -37,6 +37,14 @@ struct draw_info {
 	//! is completely invisible
 	rectangle element_viewport;
 
+	//! Everything is clipped.
+
+	bool no_viewport() const
+	{
+		return element_viewport.width == 0 &&
+			element_viewport.height == 0;
+	}
+
 	//! The window's background color
 	const_picture_internal window_background;
 

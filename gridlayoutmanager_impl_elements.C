@@ -7,12 +7,13 @@
 #include "catch_exceptions.H"
 #include "calculate_borders.H"
 #include "straight_border.H"
+#include "corner_border.H"
 #include "current_border_impl.H"
 #include <x/number_hash.H>
 
 LIBCXXW_NAMESPACE_START
 
-size_t gridlayoutmanagerObj::implObj::elementsObj::straight_border_map_hash
+size_t gridlayoutmanagerObj::implObj::elementsObj::border_map_hash
 ::operator()(const std::tuple<metrics::grid_xy, metrics::grid_xy> &xy) const
 {
 	return (((size_t)std::get<0>(xy).n) << 16) ^ (size_t)std::get<1>(xy).n;
@@ -31,6 +32,17 @@ void gridlayoutmanagerObj::implObj::child_metrics_updated(IN_THREAD_ONLY)
 	layoutmanagerObj::implObj::child_metrics_updated(IN_THREAD);
 }
 
+static void register_border(auto &lookup,
+			    grid_element *ptr,
+			    const element &border_element)
+{
+	auto iter=lookup.find( (*ptr)->grid_element );
+
+	if (iter == lookup.end())
+		throw EXCEPTION("Internal element, unable to find grid element in the lookup table.");
+
+	iter->second->border_elements.push_back(border_element);
+}
 
 bool gridlayoutmanagerObj::implObj::rebuild_elements(IN_THREAD_ONLY)
 {
@@ -52,87 +64,43 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(IN_THREAD_ONLY)
 	GRID_REBUILD_ELEMENTS();
 #endif
 
-	const auto &lookup=lock->get_lookup_table();
+	auto &lookup=lock->get_lookup_table();
+
+	// Recalculate the border elements around each grid element. Each
+	// grid element can have up to eight borders: four side borders and
+	// four corner borders.
+
+	for (auto &lookup_entry:lookup)
+	{
+		lookup_entry.second->border_elements.clear();
+		lookup_entry.second->border_elements.reserve(8);
+	}
 
 	//! Clear the existing straight borders
 
 	for (auto &sb:ge->straight_borders)
 		sb.second.is_current=false;
 
-	auto update_border=[&, this]
-		(straight_border::base::factory_t factory,
-		 straight_border::base::update_t update,
+	// Clear the existing corner borders
+	//
+	// Clear both is_new and is_updated. get_corner_border() will set
+	// is_updated on every corner border it finds.
 
-		 metrics::grid_xy xstart,
-		 metrics::grid_xy xend,
-		 metrics::grid_xy ystart,
-		 metrics::grid_xy yend,
+	{
+		corner_borderObj::implObj::surrounding_elements_info new_info;
 
-		 grid_element *element_1,
-		 grid_element *element_2)
+		for (auto &sb:ge->corner_borders)
 		{
-			auto e1=element_1 ? grid_elementptr(*element_1)
-			: grid_elementptr();
-			auto e2=element_2 ? grid_elementptr(*element_2)
-			: grid_elementptr();
+			sb.second.is_new=false;
+			sb.second.is_updated=false;
+			auto &b=*sb.second.border->impl;
 
-			std::tuple<metrics::grid_xy,
-			metrics::grid_xy> xy{xstart, ystart};
+			b.old_surrounding_elements(IN_THREAD)=
+				b.surrounding_elements(IN_THREAD);
 
-			auto iter=ge->straight_borders.find(xy);
-
-			if (iter != ge->straight_borders.end())
-			{
-				if (iter->second.pos->horiz_pos.end == xend &&
-				    iter->second.pos->vert_pos.end == yend)
-				{
-					// Preserve the visibility of the
-					// updated border.
-
-					bool orig_visibility=
-						iter->second.border
-						->impl->data(IN_THREAD)
-						.requested_visibility;
-
-					iter->second.border=
-						update(IN_THREAD,
-						       iter->second.border,
-						       e1, e2,
-
-						       // TODO: default border
-						       current_border_implptr()
-						       );
-					iter->second.border->impl
-						->request_visibility
-						(IN_THREAD,
-						 orig_visibility);
-					iter->second.is_current=true;
-					return;
-				}
-				ge->straight_borders.erase(iter);
-			}
-
-			auto new_border=factory(this->container_impl,
-						e1, e2,
-
-						// TODO: default border
-						current_border_implptr()
-						);
-
-			// The new border is visible, by default.
-			new_border->impl->request_visibility(IN_THREAD,
-							     true);
-
-			auto pos=metrics::grid_pos::create();
-
-			pos->horiz_pos.start=xstart;
-			pos->vert_pos.start=ystart;
-			pos->horiz_pos.end=xend;
-			pos->vert_pos.end=yend;
-
-			ge->straight_borders.insert
-			({xy, {new_border, pos, true}});
-		};
+			b.surrounding_elements(IN_THREAD)=new_info;
+		}
+	}
 
 	calculate_borders(lock->elements,
 			  // v_lambda()
@@ -143,19 +111,100 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(IN_THREAD_ONLY)
 			   metrics::grid_xy row_start,
 			   metrics::grid_xy row_end)
 			  {
-				  update_border(&straight_border::base
-						::create_vertical_border,
-						&straight_border::base
-						::update_vertical_border,
+				  auto eleft=left
+					  ? grid_elementptr(*left)
+					  : grid_elementptr();
 
-						column_number,
-						column_number,
+				  auto eright=right
+					  ? grid_elementptr(*right)
+					  : grid_elementptr();
 
-						row_start,
-						row_end,
+				  auto b=ge->get_straight_border
+					  (IN_THREAD,
+					   this->container_impl,
+					   &straight_border::base
+					   ::create_vertical_border,
+					   &straight_border::base
+					   ::update_vertical_border,
 
-						left, right);
+					   column_number,
+					   column_number,
 
+					   row_start,
+					   row_end,
+
+					   eleft, eright);
+
+				  // Now that we have a new straight border,
+				  // connect it to the corner on both of
+				  // its sides.
+
+				  // The corner border on the top of this new
+				  // vertical border.
+
+				  auto cb1=ge->get_corner_border
+					  (IN_THREAD,
+					   this->container_impl,
+					   column_number, row_start-1);
+
+				  // We can set the bottomleft and bottomright
+				  // elements in this corner, the corner on
+				  // the top end of this vertical border, and
+				  // the new straight border we just created
+				  // is the bottom border in that corner border.
+
+				  auto &top_info=
+					  cb1->impl->surrounding_elements
+					  (IN_THREAD);
+
+				  top_info.bottomleft=eleft;
+				  top_info.bottomright=eright;
+				  top_info.frombottom_border=b;
+
+				  // The corner border on the top of this new
+				  // vertical border.
+
+				  auto cb2=ge->get_corner_border
+					  (IN_THREAD,
+					   this->container_impl,
+					   column_number, row_end+1);
+
+				  // We can set the topleft and topright
+				  // elements in this corner, the corner on
+				  // the bottom end of this vertical border, and
+				  // the new straight border we just created
+				  // is the top border in that corner border.
+
+				  auto &bottom_info=
+					  cb2->impl->surrounding_elements
+					  (IN_THREAD);
+				  bottom_info.topleft=eleft;
+				  bottom_info.topright=eright;
+				  bottom_info.fromtop_border=b;
+
+				  // Register the vertical border with the
+				  // element on each side of the border.
+				  //
+				  // We also register the corner borders too.
+				  // We only need to register the corner
+				  // borders here, and don't need to do it
+				  // in h_lambda below, because the same
+				  // corner border is seen by both h_lambda
+				  // and v_lambda.
+
+				  if (left)
+				  {
+					  register_border(lookup, left, b);
+					  register_border(lookup, left, cb1);
+					  register_border(lookup, left, cb2);
+				  }
+
+				  if (right)
+				  {
+					  register_border(lookup, right, b);
+					  register_border(lookup, right, cb1);
+					  register_border(lookup, right, cb2);
+				  }
 			  },
 			  // h_lambda
 			  [&]
@@ -165,18 +214,86 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(IN_THREAD_ONLY)
 			   metrics::grid_xy col1,
 			   metrics::grid_xy col2)
 			  {
-				  update_border(&straight_border::base
-						::create_horizontal_border,
-						&straight_border::base
-						::update_horizontal_border,
+				  auto eabove=above
+					  ? grid_elementptr(*above)
+					  : grid_elementptr();
 
-						col1,
-						col2,
+				  auto ebelow=below
+					  ? grid_elementptr(*below)
+					  : grid_elementptr();
 
-						row_number,
-						row_number,
+				  auto b=ge->get_straight_border
+					  (IN_THREAD,
+					   this->container_impl,
+					   &straight_border::base
+					   ::create_horizontal_border,
+					   &straight_border::base
+					   ::update_horizontal_border,
 
-						above, below);
+					   col1,
+					   col2,
+
+					   row_number,
+					   row_number,
+
+					   eabove, ebelow);
+
+				  // Register the horizontal border with
+				  // the element on each side of the border.
+
+				  if (above)
+					  register_border(lookup, above, b);
+
+				  if (below)
+					  register_border(lookup, below, b);
+
+				  // Now that we have a new straight border,
+				  // connect it to the corner on both of
+				  // its sides.
+
+				  // The corner border on the left of this new
+				  // horizontal border.
+
+				  auto cb=ge->get_corner_border
+					  (IN_THREAD,
+					   this->container_impl,
+					   col1-1, row_number);
+
+				  // We can set the topright and bottomright
+				  // elements in this corner, the corner on
+				  // the left end of this horizontal border, and
+				  // the new straight border we just created
+				  // is the right border in that corner border.
+
+				  auto &left_info=
+					  cb->impl->surrounding_elements
+					  (IN_THREAD);
+
+				  left_info.topright=eabove;
+				  left_info.bottomright=ebelow;
+				  left_info.fromright_border=b;
+
+				  // The corner border on the right of this new
+				  // horizontal border.
+
+				  cb=ge->get_corner_border
+					  (IN_THREAD,
+					   this->container_impl,
+					   col2+1, row_number);
+
+				  // We can set the topleft and bottomleft
+				  // elements in this corner, the corner on
+				  // the right end of this horizontal border,
+				  // and the new straight border we just created
+				  // is the left border in that corner border.
+
+				  auto &right_info=
+					  cb->impl->surrounding_elements
+					  (IN_THREAD);
+
+				  right_info.topleft=eabove;
+				  right_info.bottomleft=ebelow;
+				  right_info.fromleft_border=b;
 			  });
 
 	// Make a pass, and remove all non-current borders.
@@ -193,7 +310,32 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(IN_THREAD_ONLY)
 		++b;
 	}
 
-	size_t total_size=ge->straight_borders.size();
+	for (auto b=ge->corner_borders.begin(),
+		     e=ge->corner_borders.end(); b != e; )
+	{
+		// Examine each corner border. If it is NOT new...
+
+		if (!b->second.is_new)
+		{
+			// ... and it has been seen, then it's updated().
+
+			if (b->second.is_updated)
+			{
+				b->second.border->impl->updated(IN_THREAD);
+			}
+			else
+			{
+				// It's not been seen. Remove.
+
+				b=ge->corner_borders.erase(b);
+				continue;
+			}
+		}
+		++b;
+	}
+
+	size_t total_size=ge->straight_borders.size() +
+		ge->corner_borders.size();
 
 	// Now add to total_size the count of all actual grid elements.
 
@@ -231,9 +373,20 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(IN_THREAD_ONLY)
 				 col->grid_element);
 		}
 
-		// Now, add all the borders to the mix.
+	// Now, add all the borders to the mix.
 
 	for (const auto &b:ge->straight_borders)
+	{
+		b.second.pos->validate();
+		all_elements.emplace_back(b.second.pos,
+					  metrics::horizvert(b.second.border
+							     ->impl
+							     ->get_horizvert
+							     (IN_THREAD)),
+					  b.second.border);
+	}
+
+	for (const auto &b:ge->corner_borders)
 	{
 		b.second.pos->validate();
 		all_elements.emplace_back(b.second.pos,
@@ -247,7 +400,113 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(IN_THREAD_ONLY)
 	lock->element_modifications_are_processed();
 	ge->child_metrics_updated_flag=false;
 
+#ifdef GRID_REBUILD_ELEMENTS_DONE
+	GRID_REBUILD_ELEMENTS_DONE();
+#endif
+
 	return true;
+}
+
+straight_border gridlayoutmanagerObj::implObj::elementsObj
+::get_straight_border(IN_THREAD_ONLY,
+		      const ref<containerObj::implObj> &container_impl,
+		      straight_border_factory_t factory,
+		      straight_border_update_t update,
+
+		      metrics::grid_xy xstart,
+		      metrics::grid_xy xend,
+		      metrics::grid_xy ystart,
+		      metrics::grid_xy yend,
+		      const grid_elementptr &e1,
+		      const grid_elementptr &e2)
+{
+	std::tuple<metrics::grid_xy, metrics::grid_xy> xy{xstart, ystart};
+
+	auto iter=straight_borders.find(xy);
+
+	if (iter != straight_borders.end())
+	{
+		if (iter->second.pos->horiz_pos.end == xend &&
+		    iter->second.pos->vert_pos.end == yend)
+		{
+			// Preserve the visibility of the
+			// updated border.
+
+			bool orig_visibility=iter->second.border
+				->impl->data(IN_THREAD).requested_visibility;
+
+			iter->second.border=
+				update(IN_THREAD,
+				       iter->second.border,
+				       e1, e2,
+
+				       // TODO: default border
+				       current_border_implptr());
+			iter->second.border->impl->request_visibility
+				(IN_THREAD, orig_visibility);
+			iter->second.is_current=true;
+			return iter->second.border;
+		}
+		straight_borders.erase(iter);
+	}
+
+	auto new_border=factory(container_impl, e1, e2,
+
+				// TODO: default border
+				current_border_implptr());
+
+	// The new border is visible, by default.
+	new_border->impl->request_visibility(IN_THREAD, true);
+
+	auto pos=metrics::grid_pos::create();
+
+	pos->horiz_pos.start=xstart;
+	pos->vert_pos.start=ystart;
+	pos->horiz_pos.end=xend;
+	pos->vert_pos.end=yend;
+
+	straight_borders.insert({xy, {new_border, pos, true}});
+	return new_border;
+}
+
+corner_border gridlayoutmanagerObj::implObj::elementsObj
+::get_corner_border(IN_THREAD_ONLY,
+		    const ref<containerObj::implObj> &container_impl,
+		    metrics::grid_xy x,
+		    metrics::grid_xy y)
+{
+	// Check if this element exists already.
+	std::tuple<metrics::grid_xy, metrics::grid_xy> xy{x, y};
+
+	auto iter=corner_borders.find(xy);
+
+	if (iter != corner_borders.end())
+	{
+		// If it is, set is_updated.
+		iter->second.is_updated=true;
+		return iter->second.border;
+	}
+
+	// A new corner border element, not seen before. Here's it's position.
+
+	auto pos=metrics::grid_pos::create();
+
+	pos->horiz_pos.start=x;
+	pos->vert_pos.start=y;
+	pos->horiz_pos.end=x;
+	pos->vert_pos.end=y;
+
+	auto impl=ref<corner_borderObj::implObj>::create(container_impl);
+
+	auto new_border=corner_border::create(impl);
+
+	// The new border is visible, by default.
+	new_border->impl->request_visibility(IN_THREAD, true);
+
+	// is_new=true
+	// is_updated=false
+	corner_borders.insert({xy, {new_border, pos, true, false}});
+	return new_border;
 }
 
 void gridlayoutmanagerObj::implObj::initialize_new_elements(IN_THREAD_ONLY)

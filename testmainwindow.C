@@ -4,6 +4,7 @@
 */
 
 #include <x/mpobj.H>
+#include <vector>
 
 struct sausage_factory {
 
@@ -11,12 +12,15 @@ struct sausage_factory {
 	int number_of_areas=0;
 	int rebuild_elements=0;
 	int created_straight_border=0;
+	int changed_corner_border=0;
 
 	int called_recalculate_with_false_flag=0;
 	int called_recalculate_with_true_flag=0;
+	std::vector<int> border_elements_survey;
 	bool correct_metrics_set=false;
 	bool correct_metrics_set_to_configure_window=false;
 	bool correct_metrics_set_when_mapping_window=false;
+	bool drew_stub_border=false;
 };
 
 typedef LIBCXX_NAMESPACE::mpcobj<sausage_factory> sausage_factory_t;
@@ -63,6 +67,15 @@ sausage_factory_t sausages;
 		++lock->rebuild_elements;				\
 	} while (0)
 
+#define GRID_REBUILD_ELEMENTS_DONE() do {				\
+		sausage_factory_t::lock					\
+			lock(sausages);					\
+		for (auto &l:lookup)					\
+			lock->border_elements_survey			\
+				.push_back(l.second			\
+					   ->border_elements.size());	\
+	} while (0)
+
 #define CREATE_STRAIGHT_BORDER() do {					\
 		sausage_factory_t::lock					\
 			lock(sausages);					\
@@ -103,11 +116,27 @@ sausage_factory_t sausages;
 		std::cout << "RECALCULATE_METRICS, flag=" << flag << std::endl;\
 	} while (0)
 
+#define CHANGED_CORNER_BORDER() do {					\
+		sausage_factory_t::lock					\
+			lock(sausages);					\
+									\
+		++lock->changed_corner_border;				\
+	} while(0)
+
+#define DRAW_STUB_BORDER() do {						\
+		sausage_factory_t::lock					\
+			lock(sausages);					\
+									\
+		lock->drew_stub_border=true;				\
+	} while(0)
+
+
 #include "element_impl.C"
 #include "generic_window_handler.C"
 #include "gridlayoutmanager_impl.C"
 #include "gridlayoutmanager_impl_elements.C"
 #include "straight_border_impl.C"
+#include "corner_border_impl.C"
 
 #include "x/w/main_window.H"
 #include "x/w/screen.H"
@@ -590,7 +619,10 @@ void testthemescale(const testmainwindowoptions &options)
 			throw EXCEPTION("Rebuilt elements " <<
 					lock->rebuild_elements <<
 					" times instead of two times.");
-
+		// Check that rebuild_elements created a single grid_element
+		// with 8 borders.
+		if (lock->border_elements_survey != std::vector<int>({8, 8}))
+			throw EXCEPTION("Did not get expected border_elements.");
 		if (lock->created_straight_border != 4)
 			throw EXCEPTION("Expected 4 new borders, got " <<
 					lock->created_straight_border);
@@ -608,6 +640,12 @@ void testthemescale(const testmainwindowoptions &options)
 			throw EXCEPTION("Expected 7 true recalcs, got " <<
 					lock->called_recalculate_with_true_flag
 					);
+
+		if (lock->drew_stub_border)
+			throw EXCEPTION("Did not expect to draw a stub border");
+
+		if (lock->changed_corner_border > 0)
+			throw EXCEPTION("Did not expect to change a corner border");
 	}
 	auto s=std::get<0>(c)->get();
 

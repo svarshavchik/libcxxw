@@ -35,6 +35,9 @@ void scratch_buffer_draw_impl::get_scratch_buffer(IN_THREAD_ONLY,
 						  const draw_info &di,
 						  const rectangle_set &areas)
 {
+	if (di.no_viewport())
+		return;
+
 	area_scratch->get
 		(di.absolute_location.width,
 		 di.absolute_location.height,
