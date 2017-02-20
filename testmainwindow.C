@@ -215,6 +215,7 @@ countstateupdate runteststate(bool individual_show)
 				 main_window->appdata=stash;
 
 				 LIBCXX_NAMESPACE::w::gridlayoutmanager m=main_window->get_layoutmanager();
+
 				 auto e=m->create()->create_canvas
 				 ([&]
 				  (const auto &c) {
@@ -307,7 +308,18 @@ void runtestflashwithcolor(const testmainwindowoptions &options)
 				 main_window->appdata=stash;
 
 				 LIBCXX_NAMESPACE::w::gridlayoutmanager m=main_window->get_layoutmanager();
-				 auto e=m->create()->create_canvas
+				 LIBCXX_NAMESPACE::w::border_infomm b;
+
+				 auto bg=main_window->get_screen()
+				 ->create_solid_color_picture({0, 0, 0});
+
+				 b.colors.push_back(bg);
+				 b.width=3;
+				 b.height=3;
+				 b.rounded=true;
+				 b.radius=3;
+
+				 auto e=m->create()->border(b).create_canvas
 				 ([&]
 				  (const auto &c) {
 					 if (options.showhide->value)

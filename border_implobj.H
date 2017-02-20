@@ -277,12 +277,24 @@ class LIBCXX_HIDDEN border_implObj: virtual public obj, public border_info {
 				coord_t x,
 				coord_t y) const;
 
+	//! There's both a horizontal and a vertical radius to be drawn.
+	void draw_round_corner(const draw_info &di,
+			       coord_t x,
+			       coord_t y,
+			       bool subtract_width,
+			       bool subtract_height,
+			       int16_t angle1,
+			       int16_t angle2) const;
+
  public:
-	//! This is no border at all
-	using border_info::no_border;
+	//! There's no border to draw, here.
+	bool no_corner_border(const draw_info &di) const;
 
 	//! There's no border to draw, here.
-	bool no_border(const draw_info &di) const;
+	bool no_horizontal_border(const draw_info &di) const;
+
+	//! There's no border to draw, here.
+	bool no_vertical_border(const draw_info &di) const;
  private:
 	//! Compute x-centerline of a horizontal border.
 

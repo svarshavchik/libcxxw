@@ -182,7 +182,7 @@ void border_implObj::calculate()
 
 // No border is drawn when:
 
-bool border_implObj::no_border(const draw_info &di) const
+bool border_implObj::no_corner_border(const draw_info &di) const
 {
 	// width or height is 0, or
 	//
@@ -196,11 +196,37 @@ bool border_implObj::no_border(const draw_info &di) const
 		|| (di.area_rectangle.height < calculated_border_height);
 }
 
+bool border_implObj::no_horizontal_border(const draw_info &di) const
+{
+	// width or height is 0, or
+	//
+	// no colors, or
+	//
+	// The area to draw the border is too narrow. This shouldn't happen,
+	// but can be a temporary condition when the theme changes.
+
+	return border_info::no_border()
+		|| (di.area_rectangle.height < calculated_border_height);
+}
+
+bool border_implObj::no_vertical_border(const draw_info &di) const
+{
+	// width or height is 0, or
+	//
+	// no colors, or
+	//
+	// The area to draw the border is too narrow. This shouldn't happen,
+	// but can be a temporary condition when the theme changes.
+
+	return border_info::no_border()
+		|| (di.area_rectangle.width < calculated_border_width);
+}
+
 void border_implObj::draw_horizontal(const draw_info &di,
 				     bool top_border,
 				     bool bottom_border) const
 {
-	if (no_border(di))
+	if (no_horizontal_border(di))
 		return;
 
 	draw_horizontal(di, 0, di.area_rectangle.width,
@@ -246,7 +272,7 @@ void border_implObj::draw_vertical(const draw_info &di,
 				   bool left_border,
 				   bool right_border) const
 {
-	if (no_border(di))
+	if (no_vertical_border(di))
 		return;
 
 	draw_vertical(di, 0, di.area_rectangle.height,
@@ -277,7 +303,7 @@ void border_implObj::draw_vertical(const draw_info &di,
 
 void border_implObj::draw_corner(const draw_info &di, int which_corners) const
 {
-	if (no_border(di))
+	if (no_corner_border(di))
 		return;
 
 	corner_draw_info cdi{di, *this};
@@ -372,6 +398,14 @@ void border_implObj::draw_cornertl(const draw_info &di,
 				   coord_t x,
 				   coord_t y) const
 {
+	if (hradius != 0 && vradius != 0)
+	{
+		draw_round_corner(di,
+				  x, y,
+				  false, false,
+				  270 * 64, 90 * 64);
+		return;
+	}
 	draw_square_corner(di, x, y);
 }
 
@@ -379,6 +413,14 @@ void border_implObj::draw_cornertr(const draw_info &di,
 				   coord_t x,
 				   coord_t y) const
 {
+	if (hradius != 0 && vradius != 0)
+	{
+		draw_round_corner(di,
+				  x, y,
+				  true, false,
+				  180 * 64, 90 * 64);
+		return;
+	}
 	draw_square_corner(di, x, y);
 }
 
@@ -386,6 +428,14 @@ void border_implObj::draw_cornerbl(const draw_info &di,
 				   coord_t x,
 				   coord_t y) const
 {
+	if (hradius != 0 && vradius != 0)
+	{
+		draw_round_corner(di,
+				  x, y,
+				  false, true,
+				  90 * 64, -90 * 64);
+		return;
+	}
 	draw_square_corner(di, x, y);
 }
 
@@ -393,6 +443,14 @@ void border_implObj::draw_cornerbr(const draw_info &di,
 				   coord_t x,
 				   coord_t y) const
 {
+	if (hradius != 0 && vradius != 0)
+	{
+		draw_round_corner(di,
+				  x, y,
+				  true, true,
+				  180 * 64, -90 * 64);
+		return;
+	}
 	draw_square_corner(di, x, y);
 }
 
@@ -412,9 +470,89 @@ void border_implObj::draw_square_corner(const draw_info &di,
 	composite_line(di, 0);
 }
 
+// The x & y coordinates we use specify the center of the arc.
+//
+// X protocol requests specify the arc as a bounding rectangle.
+//
+// Calculate the X protocol arc given the x/y center coordinates, and the
+// horizontal and vertical radius.
+
+static gc::base::arc compute_arc(coord_t x,
+				 coord_t y,
+				 dim_squared_t hradius,
+				 dim_squared_t vradius,
+				 int16_t angle1,
+				 int16_t angle2)
+{
+	x=coord_t::truncate(x-dim_squared_t::value_type(hradius));
+	y=coord_t::truncate(y-dim_squared_t::value_type(vradius));
+
+	// The bounding rectangle is twice the horizontal and vertical radius,
+	// but X protocol uses an inclusive bounding rectangle, hence the need
+	// to subtract 1.
+
+	dim_t h=dim_t::truncate(hradius*2-1);
+	dim_t v=dim_t::truncate(vradius*2-1);
+
+	return {x, y, h, v, angle1, angle2};
+}
+
+void border_implObj::draw_round_corner(const draw_info &di,
+				       coord_t x,
+				       coord_t y,
+				       bool add_width,
+				       bool add_height,
+				       int16_t angle1,
+				       int16_t angle2) const
+{
+	if (add_width)
+		x=coord_t::truncate(x+calculated_border_width);
+
+	if (add_height)
+		y=coord_t::truncate(y+calculated_border_height);
+
+	mask_gc_clear(di);
+	gc::base::properties props;
+
+	props.background(1);
+	props.function(gc::base::function::SET);
+
+	// First, fill in the entire pie from the corner border.
+
+	di.mask_gc->fill_arc(compute_arc(x, y,
+					 inner_hradius() + width+1,
+					 inner_vradius() + height+1,
+					 angle1,
+					 angle2), props);
+
+	if (inner_hradius() > 0)
+	{
+		// Now, clear the inner border.
+
+		props.function(gc::base::function::CLEAR);
+
+		di.mask_gc->fill_arc(compute_arc(x, y,
+						 inner_hradius()+dim_t{1},
+						 inner_vradius()+dim_t{1},
+						 angle1,
+						 angle2), props);
+
+		// Redraw the outer border, to make sure there's at least a
+		// 1-pixel rounded line.
+		props.function(gc::base::function::SET);
+		di.mask_gc->draw_arc(compute_arc(x, y,
+						 inner_hradius() + width,
+						 inner_vradius() + height,
+						 angle1,
+						 angle2), props);
+	}
+
+	composite_line(di, 0);
+}
+
 void border_implObj::draw_stubs(const draw_info &di, int stubs) const
 {
-	if (no_border(di))
+	if (no_corner_border(di))
 		return;
 
 	corner_draw_info cdi{di, *this};

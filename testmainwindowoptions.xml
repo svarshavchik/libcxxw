@@ -39,12 +39,21 @@
     <longopt>themescale</longopt>
     <descr>Alternate theme scales</descr>
   </option>
+  <option>
+    <name>roundborder</name>
+    <type>bool</type>
+    <default>false</default>
+    <opt>r</opt>
+    <longopt>roundborder</longopt>
+    <descr>Test round borders</descr>
+  </option>
   <mutex>
     <name>state</name>
     <name>usemain</name>
     <name>showhide</name>
     <name>usetheme</name>
     <name>themescale</name>
+    <name>roundborder</name>
   </mutex>
   <defaultoptions />
 </optclass>
