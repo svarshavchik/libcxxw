@@ -140,6 +140,14 @@ class LIBCXX_HIDDEN straight_borderObj::implObj
 		const=0;
 
  public:
+	//! Fill background colors of elements above/below this horiz border.
+	void background_horizontal(IN_THREAD_ONLY,
+				   const border_implObj::draw_info &bg) const;
+
+	//! Fill background colors of elements to the left/right of this vert border.
+	void background_vertical(IN_THREAD_ONLY,
+				 const border_implObj::draw_info &bg) const;
+
 
 	//! Draw the border.
 	void do_draw(IN_THREAD_ONLY,

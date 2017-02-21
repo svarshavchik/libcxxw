@@ -34,6 +34,9 @@ template<dim_t border_implObj::*calc_major,
 	 metrics::axis metrics::horizvert_axi::*axis_major,
 	 metrics::axis metrics::horizvert_axi::*axis_minor,
 
+	 // Fill in elements' background color
+	 void (straight_borderObj::implObj::*do_fill_bg)
+	 (IN_THREAD_ONLY, const border_implObj::draw_info &) const,
 	 // draw_horizontal, or draw_vertical, of course.
 	 void (border_implObj::
 	       *do_draw_horizvert)(const border_implObj::draw_info &,
@@ -112,6 +115,8 @@ class LIBCXX_HIDDEN straight_border_implObj
 			    const border_implObj::draw_info &di)
 		const override
 	{
+		((*this).*do_fill_bg)(IN_THREAD, di);
+
 		const auto &b=this->best_border(IN_THREAD);
 
 		if (!b.null())
@@ -133,6 +138,7 @@ typedef straight_border_implObj<
 	&border_implObj::calculated_border_height,
 	&metrics::horizvert_axi::horiz,
 	&metrics::horizvert_axi::vert,
+	&straight_borderObj::implObj::background_horizontal,
 	&border_implObj::draw_horizontal> horizontal_impl;
 
 class LIBCXX_HIDDEN horizontal_straight_borderObj : public horizontal_impl {
@@ -206,6 +212,7 @@ typedef straight_border_implObj<
 	&border_implObj::calculated_border_width,
 	&metrics::horizvert_axi::vert,
 	&metrics::horizvert_axi::horiz,
+	&straight_borderObj::implObj::background_vertical,
 	&border_implObj::draw_vertical> vertical_impl;
 
 class LIBCXX_HIDDEN vertical_straight_borderObj : public vertical_impl {
@@ -415,6 +422,102 @@ void straight_borderObj::implObj::do_draw(IN_THREAD_ONLY,
 			di.absolute_location.y};
 
 	draw_horizvert(IN_THREAD, border_draw_info);
+}
+
+void straight_borderObj::implObj
+::background_horizontal(IN_THREAD_ONLY,
+			const border_implObj::draw_info &bg) const
+{
+	dim_t top_height=bg.area_rectangle.height/2;
+	dim_t bottom_height=bg.area_rectangle.height - top_height;
+
+	if (borders(IN_THREAD).element_1 && top_height > 0)
+	{
+		auto &di=borders(IN_THREAD).element_1->grid_element->impl
+			->get_draw_info(IN_THREAD);
+
+		coord_t x=coord_t::truncate(coord_t::value_type(bg.area_x) -
+					    coord_t::value_type(di.background_x)
+					    );
+		coord_t y=coord_t::truncate(coord_t::value_type(bg.area_y) -
+					    coord_t::value_type(di.background_y)
+					    );
+
+		bg.area_picture->impl->composite(di.window_background,
+						 x, y,
+						 0, 0,
+						 bg.area_rectangle.width,
+						 top_height);
+	}
+
+	if (borders(IN_THREAD).element_2 && top_height > 0)
+	{
+		auto &di=borders(IN_THREAD).element_2->grid_element->impl
+			->get_draw_info(IN_THREAD);
+
+		coord_t x=coord_t::truncate(coord_t::value_type(bg.area_x) -
+					    coord_t::value_type(di.background_x)
+					    );
+		coord_t y=coord_t::truncate(coord_t::value_type(bg.area_y) +
+					    dim_t::value_type(top_height) -
+					    coord_t::value_type(di.background_y)
+					    );
+
+		bg.area_picture->impl->composite(di.window_background,
+						 x, y,
+						 0,
+						 coord_t::truncate(top_height),
+						 bg.area_rectangle.width,
+						 bottom_height);
+	}
+}
+
+void straight_borderObj::implObj
+::background_vertical(IN_THREAD_ONLY,
+		      const border_implObj::draw_info &bg) const
+{
+	dim_t left_width=bg.area_rectangle.width/2;
+	dim_t right_width=bg.area_rectangle.width - left_width;
+
+	if (borders(IN_THREAD).element_1 && left_width > 0)
+	{
+		auto &di=borders(IN_THREAD).element_1->grid_element->impl
+			->get_draw_info(IN_THREAD);
+
+		coord_t x=coord_t::truncate(coord_t::value_type(bg.area_x) -
+					    coord_t::value_type(di.background_x)
+					    );
+		coord_t y=coord_t::truncate(coord_t::value_type(bg.area_y) -
+					    coord_t::value_type(di.background_y)
+					    );
+
+		bg.area_picture->impl->composite(di.window_background,
+						 x, y,
+						 0, 0,
+						 left_width,
+						 bg.area_rectangle.height);
+	}
+
+	if (borders(IN_THREAD).element_2 && left_width > 0)
+	{
+		auto &di=borders(IN_THREAD).element_2->grid_element->impl
+			->get_draw_info(IN_THREAD);
+
+		coord_t x=coord_t::truncate(coord_t::value_type(bg.area_x) -
+					    coord_t::value_type(di.background_x)
+					    );
+		coord_t y=coord_t::truncate(coord_t::value_type(bg.area_y) +
+					    dim_t::value_type(left_width) -
+					    coord_t::value_type(di.background_y)
+					    );
+
+		bg.area_picture->impl->composite(di.window_background,
+						 x, y,
+						 coord_t::truncate(left_width),
+						 0,
+						 right_width,
+						 bg.area_rectangle.height);
+	}
 }
 
 LIBCXXW_NAMESPACE_END
