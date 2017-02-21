@@ -15,6 +15,8 @@
 #include "x/w/rectangle.H"
 #include "border_info.H"
 #include "border_implfwd.H"
+#include "corner_borderfwd.H"
+#include "connection_threadfwd.H"
 #include <vector>
 #include <tuple>
 
@@ -137,15 +139,11 @@ class LIBCXX_HIDDEN border_implObj: virtual public obj, public border_info {
 	void draw_horizontal(//! Information needed to draw the border
 			     const draw_info &di,
 
-			     //! Draw a top border
-			     bool top_border,
+			     //! Element above the border.
+			     const grid_elementptr &top_element,
 
-			     //! Draw a bottom border
-
-			     //! Both top and bottom border can be set,
-			     //! indicating that this border is between two
-			     //! elements.
-			     bool bottom_border) const;
+			     //! Element below the border
+			     const grid_elementptr &bottom_element) const;
 
 	struct corner_draw_info;
 
@@ -161,30 +159,22 @@ class LIBCXX_HIDDEN border_implObj: virtual public obj, public border_info {
 			     //! The length of the border to draw, in pixels.
 			     dim_t length,
 
-			     //! Draw a top border
-			     bool top_border,
+			     //! Element above the border.
+			     const grid_elementptr &top_element,
 
-			     //! Draw a bottom border
-
-			     //! Both top and bottom border can be set,
-			     //! indicating that this border is between two
-			     //! elements.
-			     bool bottom_border) const;
+			     //! Element below the border
+			     const grid_elementptr &bottom_element) const;
  public:
 	//! Draw a vertical border
 
 	void draw_vertical(//! Information needed to draw the border
 			   const draw_info &di,
 
-			   //! Draw a left border
-			   bool left_border,
+			   //! Element to the left of the border
+			   const grid_elementptr &left_element,
 
-			   //! Draw a right border
-
-			   //! Both left and right border can be set,
-			   //! indicating that this border is between two
-			   //! elements.
-			   bool right_border) const;
+			   //! Element to the right of the border
+			   const grid_elementptr &right_element) const;
 
  private:
 	//! Draw a vertical border
@@ -198,15 +188,11 @@ class LIBCXX_HIDDEN border_implObj: virtual public obj, public border_info {
 			   //! The length of the border to draw, in pixels.
 			   dim_t length,
 
-			   //! Draw a left border
-			   bool left_border,
+			   //! Element to the left of the border
+			   const grid_elementptr &left_element,
 
-			   //! Draw a right border
-
-			   //! Both left and right border can be set,
-			   //! indicating that this border is between two
-			   //! elements.
-			   bool right_border) const;
+			   //! Element to the right of the border
+			   const grid_elementptr &right_element) const;
 
 	//! Composite color #n into the area_picture.
 
@@ -233,11 +219,18 @@ class LIBCXX_HIDDEN border_implObj: virtual public obj, public border_info {
 	//! indicate a centered rectangle in area_pictures that's
 	//! exactly calculated_border_width/height in size.
 
-	void draw_corner(//! Information needed to draw the border
+	void draw_corner(IN_THREAD_ONLY,
+
+			 //! Information needed to draw the border
 			 const draw_info &di,
 
 			 //! Which corner(s) is being drawn.
-			 int which_corners) const;
+			 int which_corners,
+
+			 //! Elements around the border
+			 const struct surrounding_elements_info &elements
+
+			 ) const;
 
 	//! Draw a non-joining corner stub.
 
@@ -253,24 +246,32 @@ class LIBCXX_HIDDEN border_implObj: virtual public obj, public border_info {
  private:
 
 	//! Draw a top-left corner.
-	void draw_cornertl(const draw_info &di,
+	void draw_cornertl(IN_THREAD_ONLY,
+			   const draw_info &di,
 			   coord_t x,
-			   coord_t y) const;
+			   coord_t y,
+			   const grid_elementptr &element) const;
 
 	//! Draw a top-right corner.
-	void draw_cornertr(const draw_info &di,
+	void draw_cornertr(IN_THREAD_ONLY,
+			   const draw_info &di,
 			   coord_t x,
-			   coord_t y) const;
+			   coord_t y,
+			   const grid_elementptr &element) const;
 
 	//! Draw a bottom-left corner.
-	void draw_cornerbl(const draw_info &di,
+	void draw_cornerbl(IN_THREAD_ONLY,
+			   const draw_info &di,
 			   coord_t x,
-			   coord_t y) const;
+			   coord_t y,
+			   const grid_elementptr &element) const;
 
 	//! Draw a bottom-right corner.
-	void draw_cornerbr(const draw_info &di,
+	void draw_cornerbr(IN_THREAD_ONLY,
+			   const draw_info &di,
 			   coord_t x,
-			   coord_t y) const;
+			   coord_t y,
+			   const grid_elementptr &element) const;
 
 	//! When there's no radius, all the corners are just plain squares.
 	void draw_square_corner(const draw_info &di,
@@ -278,13 +279,15 @@ class LIBCXX_HIDDEN border_implObj: virtual public obj, public border_info {
 				coord_t y) const;
 
 	//! There's both a horizontal and a vertical radius to be drawn.
-	void draw_round_corner(const draw_info &di,
+	void draw_round_corner(IN_THREAD_ONLY,
+			       const draw_info &di,
 			       coord_t x,
 			       coord_t y,
 			       bool subtract_width,
 			       bool subtract_height,
 			       int16_t angle1,
-			       int16_t angle2) const;
+			       int16_t angle2,
+			       const grid_elementptr &element) const;
 
  public:
 	//! There's no border to draw, here.

@@ -192,11 +192,16 @@ void corner_borderObj::implObj::do_draw(IN_THREAD_ONLY,
 
 		const auto &border_impl=b->border(IN_THREAD);
 
-		border_impl->draw_corner(border_draw_info,
+		// We'll pass the elements to draw_corner(), it'll take care
+		// of filling in any gaps with each corner's background color.
+
+		border_impl->draw_corner(IN_THREAD,
+					 border_draw_info,
 					 border_impl::base::cornertl() |
 					 border_impl::base::cornertr() |
 					 border_impl::base::cornerbl() |
-					 border_impl::base::cornerbr());
+					 border_impl::base::cornerbr(),
+					 elements);
 		return;
 	}
 
@@ -287,6 +292,103 @@ void corner_borderObj::implObj::do_draw(IN_THREAD_ONLY,
 			return std::get<0>(a)->compare(*std::get<0>(b));
 		};
 
+	// Based on the detected corners, figure out which quadrants will
+	// not have a border drawn; hence we will need to clear them manually
+	// to the element's background_color, ourselves.
+	//
+	// We'll start with all four corners, then remove whatever we find
+	// in the corners vector. That corner's background color will get
+	// taken care of by draw_corner(), when we call it below.
+
+	int all_corners=border_impl::base::cornertl() |
+		border_impl::base::cornertr() |
+		border_impl::base::cornerbl() |
+		border_impl::base::cornerbr();
+
+	for (const auto &b:corners)
+		all_corners &= ~std::get<1>(b);
+
+	dim_t leftwidth=area_entire_rect.width/2;
+	dim_t rightwidth=area_entire_rect.width - leftwidth;
+	dim_t topheight=area_entire_rect.height/2;
+	dim_t bottomheight=area_entire_rect.height - topheight;
+
+	// Now, for the corners where we won't call draw_corner(), take care
+	// of filling that corner with the correposnding element's background
+	// color ourselves, here.
+
+	if ((all_corners & border_impl::base::cornertl())
+	    && elements.topleft)
+	{
+		auto &e_draw_info=elements.topleft->grid_element->impl
+			->get_draw_info(IN_THREAD);
+
+		auto xy=e_draw_info.background_xy_to(di);
+
+		area_picture->impl->composite(e_draw_info.window_background,
+					      xy.first,
+					      xy.second,
+					      0, 0,
+					      leftwidth,
+					      topheight);
+	}
+
+	if ((all_corners & border_impl::base::cornertr())
+	    && elements.topright)
+	{
+		auto &e_draw_info=elements.topright->grid_element->impl
+			->get_draw_info(IN_THREAD);
+
+		auto xy=e_draw_info.background_xy_to(di,
+						     coord_t::truncate(leftwidth),
+						     0);
+
+		area_picture->impl->composite(e_draw_info.window_background,
+					      xy.first,
+					      xy.second,
+					      coord_t::truncate(leftwidth), 0,
+					      rightwidth,
+					      topheight);
+	}
+
+
+	if ((all_corners & border_impl::base::cornerbl())
+	    && elements.bottomleft)
+	{
+		auto &e_draw_info=elements.bottomleft->grid_element->impl
+			->get_draw_info(IN_THREAD);
+
+		auto xy=e_draw_info.background_xy_to(di,
+						     0,
+						     coord_t::truncate(topheight));
+
+		area_picture->impl->composite(e_draw_info.window_background,
+					      xy.first,
+					      xy.second,
+					      0,
+					      coord_t::truncate(topheight),
+					      leftwidth,
+					      bottomheight);
+	}
+
+	if ((all_corners & border_impl::base::cornerbr())
+	    && elements.bottomright)
+	{
+		auto &e_draw_info=elements.bottomright->grid_element->impl
+			->get_draw_info(IN_THREAD);
+
+		auto xy=e_draw_info.background_xy_to(di,
+						     coord_t::truncate(leftwidth),
+						     coord_t::truncate(topheight));
+
+		area_picture->impl->composite(e_draw_info.window_background,
+					      xy.first,
+					      xy.second,
+					      coord_t::truncate(leftwidth),
+					      coord_t::truncate(topheight),
+					      rightwidth,
+					      bottomheight);
+	}
 
 	// Draw corners according to their relative "importantness".
 	std::sort(stubs.begin(), stubs.end(), sorter);
@@ -302,7 +404,9 @@ void corner_borderObj::implObj::do_draw(IN_THREAD_ONLY,
 
 	for (const auto &b:corners)
 	{
-		std::get<0>(b)->draw_corner(border_draw_info, std::get<1>(b));
+		std::get<0>(b)->draw_corner(IN_THREAD,
+					    border_draw_info, std::get<1>(b),
+					    elements);
 	}
 }
 

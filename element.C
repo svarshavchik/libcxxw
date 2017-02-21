@@ -8,6 +8,7 @@
 #include "screen.H"
 #include "batch_queue.H"
 #include "background_color.H"
+#include "draw_info.H"
 #include "x/w/picture.H"
 
 LIBCXXW_NAMESPACE_START
@@ -78,4 +79,22 @@ std::ostream &operator<<(std::ostream &o, const element_state &s)
 		 << ", position: " << s.current_position << std::endl;
 }
 
+///////////////////////////////////////////////////////////////////
+
+std::pair<coord_t, coord_t> draw_info::background_xy_to(coord_t x,
+							coord_t y,
+							coord_t offset_x,
+							coord_t offset_y) const
+{
+	coord_squared_t::value_type x2=coord_t::value_type(background_x)
+		- coord_t::value_type(x);
+
+	coord_squared_t::value_type y2=coord_t::value_type(background_y)
+		- coord_t::value_type(y);
+
+	x2 += coord_t::value_type(offset_x);
+	y2 += coord_t::value_type(offset_y);
+
+	return { coord_t::truncate(x2), coord_t::truncate(y2) };
+}
 LIBCXXW_NAMESPACE_END

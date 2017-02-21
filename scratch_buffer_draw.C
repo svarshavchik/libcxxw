@@ -50,16 +50,12 @@ void scratch_buffer_draw_impl::get_scratch_buffer(IN_THREAD_ONLY,
 					 di.absolute_location.width,
 					 di.absolute_location.height};
 
-			 // ok, di.absolute_location is our coordinate.
-
-			 // di.background_[xy] is the background color's
-			 // (0, 0). It follows that we copy
-			 // absolute.[xy]-background_[xy].
+			 auto bgxy=di.background_xy_to(di);
 
 			 area_picture->impl
 				 ->composite(di.window_background,
-					     coord_t::truncate(di.absolute_location.x-di.background_x),
-					     coord_t::truncate(di.absolute_location.y-di.background_y),
+					     bgxy.first,
+					     bgxy.second,
 					     area_entire_rect);
 
 			 do_draw(IN_THREAD, di,

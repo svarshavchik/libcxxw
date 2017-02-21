@@ -40,7 +40,8 @@ template<dim_t border_implObj::*calc_major,
 	 // draw_horizontal, or draw_vertical, of course.
 	 void (border_implObj::
 	       *do_draw_horizvert)(const border_implObj::draw_info &,
-				   bool, bool) const>
+				   const grid_elementptr &,
+				   const grid_elementptr &) const>
 class LIBCXX_HIDDEN straight_border_implObj
 	: public straight_borderObj::implObj {
 
@@ -123,9 +124,13 @@ class LIBCXX_HIDDEN straight_border_implObj
 		{
 			auto &b_impl=b->border(IN_THREAD);
 
-			// TODO - calculate the two flags
+// Straight border object already took care of filling in the background
+// color.
+
+			grid_elementptr dummy;
+
 			((*b_impl).*do_draw_horizvert)
-				(di, true, true);
+				(di, dummy, dummy);
 		}
 	}
 
@@ -436,15 +441,10 @@ void straight_borderObj::implObj
 		auto &di=borders(IN_THREAD).element_1->grid_element->impl
 			->get_draw_info(IN_THREAD);
 
-		coord_t x=coord_t::truncate(coord_t::value_type(bg.area_x) -
-					    coord_t::value_type(di.background_x)
-					    );
-		coord_t y=coord_t::truncate(coord_t::value_type(bg.area_y) -
-					    coord_t::value_type(di.background_y)
-					    );
+		auto xy=di.background_xy_to(bg.area_x, bg.area_y);
 
 		bg.area_picture->impl->composite(di.window_background,
-						 x, y,
+						 xy.first, xy.second,
 						 0, 0,
 						 bg.area_rectangle.width,
 						 top_height);
@@ -455,16 +455,12 @@ void straight_borderObj::implObj
 		auto &di=borders(IN_THREAD).element_2->grid_element->impl
 			->get_draw_info(IN_THREAD);
 
-		coord_t x=coord_t::truncate(coord_t::value_type(bg.area_x) -
-					    coord_t::value_type(di.background_x)
-					    );
-		coord_t y=coord_t::truncate(coord_t::value_type(bg.area_y) +
-					    dim_t::value_type(top_height) -
-					    coord_t::value_type(di.background_y)
-					    );
+		auto xy=di.background_xy_to(bg.area_x, bg.area_y,
+					    0,
+					    dim_t::value_type(top_height));
 
 		bg.area_picture->impl->composite(di.window_background,
-						 x, y,
+						 xy.first, xy.second,
 						 0,
 						 coord_t::truncate(top_height),
 						 bg.area_rectangle.width,
@@ -484,15 +480,10 @@ void straight_borderObj::implObj
 		auto &di=borders(IN_THREAD).element_1->grid_element->impl
 			->get_draw_info(IN_THREAD);
 
-		coord_t x=coord_t::truncate(coord_t::value_type(bg.area_x) -
-					    coord_t::value_type(di.background_x)
-					    );
-		coord_t y=coord_t::truncate(coord_t::value_type(bg.area_y) -
-					    coord_t::value_type(di.background_y)
-					    );
+		auto xy=di.background_xy_to(bg.area_x, bg.area_y);
 
 		bg.area_picture->impl->composite(di.window_background,
-						 x, y,
+						 xy.first, xy.second,
 						 0, 0,
 						 left_width,
 						 bg.area_rectangle.height);
@@ -503,16 +494,12 @@ void straight_borderObj::implObj
 		auto &di=borders(IN_THREAD).element_2->grid_element->impl
 			->get_draw_info(IN_THREAD);
 
-		coord_t x=coord_t::truncate(coord_t::value_type(bg.area_x) -
-					    coord_t::value_type(di.background_x)
-					    );
-		coord_t y=coord_t::truncate(coord_t::value_type(bg.area_y) +
-					    dim_t::value_type(left_width) -
-					    coord_t::value_type(di.background_y)
-					    );
+		auto xy=di.background_xy_to(bg.area_x, bg.area_y,
+					    dim_t::value_type(left_width),
+					    0);
 
 		bg.area_picture->impl->composite(di.window_background,
-						 x, y,
+						 xy.first, xy.second,
 						 coord_t::truncate(left_width),
 						 0,
 						 right_width,

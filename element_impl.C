@@ -418,11 +418,10 @@ void elementObj::implObj::clear_to_color(IN_THREAD_ONLY,
 		area.x = coord_t::truncate(area.x+di.absolute_location.x);
 		area.y = coord_t::truncate(area.y+di.absolute_location.y);
 
+		auto bgxy=di.background_xy_to(di, area.x, area.y);
 		di.window_picture->composite(di.window_background,
-					     (dim_squared_t::value_type)
-					     (area.x-di.background_x),
-					     (dim_squared_t::value_type)
-					     (area.y-di.background_y),
+					     bgxy.first,
+					     bgxy.second,
 					     area);
 	}
 }

@@ -33,7 +33,7 @@ public:
 
 	//! Maximum intensity
 
-	static const uint16_t maximum=0xFFFF;
+	static constexpr uint16_t maximum=0xFFFF;
 
 	//! Default constructor
 	rgb() : r(0), g(0), b(0), a(maximum) {}
