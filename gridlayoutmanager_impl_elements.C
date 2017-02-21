@@ -107,7 +107,8 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(IN_THREAD_ONLY)
 	// is_updated on every corner border it finds.
 
 	{
-		corner_borderObj::implObj::surrounding_elements_info new_info;
+		corner_borderObj::implObj::surrounding_elements_and_borders
+			new_info;
 
 		for (auto &sb:ge->corner_borders)
 		{

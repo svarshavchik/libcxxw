@@ -24,22 +24,11 @@ class LIBCXX_HIDDEN corner_borderObj::implObj
  public:
 	//! Metadata: the elements and the straight borders that surround me.
 
-	struct surrounding_elements_info {
+	struct surrounding_elements_and_borders :
+		public surrounding_elements_info {
 
-		surrounding_elements_info();
-		~surrounding_elements_info();
-
-		//! The top/left element, maybe null if this is the grid edge.
-		grid_elementptr topleft;
-
-		//! The bottom/right element, maybe null if this is the grid edge.
-		grid_elementptr topright;
-
-		//! The bottom/left element, maybe null if this is the grid edge.
-		grid_elementptr bottomleft;
-
-		//! The bottom/right element, maybe null if this is the grid edge.
-		grid_elementptr bottomright;
+		surrounding_elements_and_borders();
+		~surrounding_elements_and_borders();
 
 		//! Border that enters this corner from the top.
 
@@ -58,7 +47,7 @@ class LIBCXX_HIDDEN corner_borderObj::implObj
 		straight_borderptr fromright_border;
 
 		//! Pointer to one of the borders.
-		typedef straight_borderptr surrounding_elements_info::*from_b;
+		typedef straight_borderptr surrounding_elements_and_borders::*from_b;
 
 		//! Find same border that can be drawn as a corner border.
 
@@ -91,17 +80,17 @@ class LIBCXX_HIDDEN corner_borderObj::implObj
 
 		//! Default comparison operator
 
-		bool operator==(const surrounding_elements_info &) const;
+		bool operator==(const surrounding_elements_and_borders &) const;
 
 		//! Default copy constructor
 
-		surrounding_elements_info(const surrounding_elements_info &);
+		surrounding_elements_and_borders(const surrounding_elements_and_borders &);
 	};
 
  private:
 	//! The elements and the straight borders that surround me.
 
-	surrounding_elements_info surrounding_elements_thread_only;
+	surrounding_elements_and_borders surrounding_elements_thread_only;
 
 	//! When rebuilding the grid, the updated surrounding_elements metadata.
 
@@ -109,7 +98,7 @@ class LIBCXX_HIDDEN corner_borderObj::implObj
 	//! surrounding_elements in order to determine if the corner is
 	//! unchanged.
 
-	surrounding_elements_info old_surrounding_elements_thread_only;
+	surrounding_elements_and_borders old_surrounding_elements_thread_only;
 
  public:
 

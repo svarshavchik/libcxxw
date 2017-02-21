@@ -18,17 +18,24 @@
 
 LIBCXXW_NAMESPACE_START
 
-corner_borderObj::implObj::surrounding_elements_info
-::surrounding_elements_info()=default;
+surrounding_elements_info::surrounding_elements_info()=default;
 
-corner_borderObj::implObj::surrounding_elements_info
-::~surrounding_elements_info()=default;
+surrounding_elements_info::~surrounding_elements_info()=default;
 
-corner_borderObj::implObj::surrounding_elements_info
+surrounding_elements_info
 ::surrounding_elements_info(const surrounding_elements_info &)=default;
 
-bool corner_borderObj::implObj::surrounding_elements_info
-::operator==(const surrounding_elements_info &o) const
+corner_borderObj::implObj::surrounding_elements_and_borders
+::surrounding_elements_and_borders()=default;
+
+corner_borderObj::implObj::surrounding_elements_and_borders
+::~surrounding_elements_and_borders()=default;
+
+corner_borderObj::implObj::surrounding_elements_and_borders
+::surrounding_elements_and_borders(const surrounding_elements_and_borders &)=default;
+
+bool corner_borderObj::implObj::surrounding_elements_and_borders
+::operator==(const surrounding_elements_and_borders &o) const
 {
 	return topleft == o.topleft &&
 		topright == o.topright &&
@@ -73,7 +80,7 @@ void corner_borderObj::implObj::updated(IN_THREAD_ONLY)
 		old_surrounding_elements(IN_THREAD);
 
 	// Make sure and drop references to old elements.
-	old_surrounding_elements(IN_THREAD)=surrounding_elements_info();
+	old_surrounding_elements(IN_THREAD)=surrounding_elements_and_borders();
 
 	if (unchanged)
 		return;
@@ -219,32 +226,32 @@ void corner_borderObj::implObj::do_draw(IN_THREAD_ONLY,
 	int need=left|right|top|bottom;
 
 	elements.get_same_border(IN_THREAD,
-				 &surrounding_elements_info::fromleft_border,
-				 &surrounding_elements_info::fromtop_border,
+				 &surrounding_elements_and_borders::fromleft_border,
+				 &surrounding_elements_and_borders::fromtop_border,
 				 border_impl::base::cornertl(),
 				 need,
 				 ~(left | top),
 				 corners);
 
 	elements.get_same_border(IN_THREAD,
-				 &surrounding_elements_info::fromtop_border,
-				 &surrounding_elements_info::fromright_border,
+				 &surrounding_elements_and_borders::fromtop_border,
+				 &surrounding_elements_and_borders::fromright_border,
 				 border_impl::base::cornertr(),
 				 need,
 				 ~(right | top),
 				 corners);
 
 	elements.get_same_border(IN_THREAD,
-				 &surrounding_elements_info::frombottom_border,
-				 &surrounding_elements_info::fromright_border,
+				 &surrounding_elements_and_borders::frombottom_border,
+				 &surrounding_elements_and_borders::fromright_border,
 				 border_impl::base::cornerbr(),
 				 need,
 				 ~(right | bottom),
 				 corners);
 
 	elements.get_same_border(IN_THREAD,
-				 &surrounding_elements_info::frombottom_border,
-				 &surrounding_elements_info::fromleft_border,
+				 &surrounding_elements_and_borders::frombottom_border,
+				 &surrounding_elements_and_borders::fromleft_border,
 				 border_impl::base::cornerbl(),
 				 need,
 				 ~(left | bottom),
@@ -252,25 +259,25 @@ void corner_borderObj::implObj::do_draw(IN_THREAD_ONLY,
 
 	if (need & left)
 		elements.pick_border(IN_THREAD,
-				     &surrounding_elements_info::fromleft_border,
+				     &surrounding_elements_and_borders::fromleft_border,
 				     left,
 				     stubs);
 
 	if (need & right)
 		elements.pick_border(IN_THREAD,
-				     &surrounding_elements_info::fromright_border,
+				     &surrounding_elements_and_borders::fromright_border,
 				     right,
 				     stubs);
 
 	if (need & top)
 		elements.pick_border(IN_THREAD,
-				     &surrounding_elements_info::fromtop_border,
+				     &surrounding_elements_and_borders::fromtop_border,
 				     top,
 				     stubs);
 
 	if (need & bottom)
 		elements.pick_border(IN_THREAD,
-				     &surrounding_elements_info::frombottom_border,
+				     &surrounding_elements_and_borders::frombottom_border,
 				     bottom,
 				     stubs);
 
@@ -301,7 +308,7 @@ void corner_borderObj::implObj::do_draw(IN_THREAD_ONLY,
 
 //////////////////////////////////////////////////////////////////////////////
 
-void corner_borderObj::implObj::surrounding_elements_info
+void corner_borderObj::implObj::surrounding_elements_and_borders
 ::get_same_border(IN_THREAD_ONLY,
 		  from_b border1,
 		  from_b border2,
@@ -330,7 +337,7 @@ void corner_borderObj::implObj::surrounding_elements_info
 	flags &= mask;
 }
 
-void corner_borderObj::implObj::surrounding_elements_info
+void corner_borderObj::implObj::surrounding_elements_and_borders
 ::pick_border(IN_THREAD_ONLY,
 	      from_b which_border,
 	      int flag,
