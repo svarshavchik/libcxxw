@@ -58,8 +58,8 @@ public:
 	template<typename T> class objfactory {
 	public:
 
-		template<typename ref_type, typename ...Args>
-		static inline ref_type create(Args && ...args)
+		template<typename ...Args>
+		static inline T create(Args && ...args)
 		{
 			return main_windowBase::create(std::forward<Args>
 						       (args)...);

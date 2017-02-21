@@ -83,7 +83,7 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 	//! Insert a new grid element.
 	void insert(grid_map_t::lock &lock,
 		    const element &new_element,
-		    const new_grid_element_info &info);
+		    new_grid_element_info &info);
 
 	//! Construct a new border object.
 

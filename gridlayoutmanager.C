@@ -80,12 +80,22 @@ gridlayoutmanagerObj::grid_map_info_t::get_lookup_table()
 	return lookup;
 }
 
-gridfactory gridlayoutmanagerObj::create()
+gridfactory gridlayoutmanagerObj::append_row()
 {
 	auto me=gridlayoutmanager(this);
 
+	dim_t row=({
+			grid_map_t::lock lock(me->impl->grid_map);
+
+			lock->elements.push_back({});
+
+			lock->elements.size()-1;
+		});
+
 	return gridfactory::create(me,
-				   ref<gridfactoryObj::implObj>::create(me));
+				   ref<gridfactoryObj::implObj>::create(me,
+									row,
+									0));
 }
 
 void gridlayoutmanagerObj::erase(dim_t x, dim_t y)

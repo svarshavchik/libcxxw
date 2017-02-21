@@ -132,7 +132,7 @@ public:
 
 	//! Mutex-protected grid map.
 
-	typedef mpobj<grid_map_info_t> grid_map_t;
+	typedef mpobj<grid_map_info_t, std::recursive_mutex> grid_map_t;
 
 private:
 	//! An internal lock.
@@ -153,9 +153,8 @@ public:
 	//! Destructor
 	~gridlayoutmanagerObj() LIBCXX_HIDDEN;
 
-	//! Create new display elements
-
-	gridfactory create();
+	//! Append a row to the grid, and create elements in it.
+	gridfactory append_row();
 
 	//! Remove a display element from the given location.
 	void erase(dim_t x, dim_t y);

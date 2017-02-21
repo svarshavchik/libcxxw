@@ -21,6 +21,12 @@ LIBCXXW_NAMESPACE_START
 
 struct new_grid_element_info {
 
+	//! New element's location
+	dim_t row;
+
+	//! New element's location
+	dim_t col;
+
 	//! New element's location.
 	dim_t width=1;
 
@@ -40,8 +46,9 @@ struct new_grid_element_info {
 	current_border_impl bottom_border;
 
 	//! Constructor
-	new_grid_element_info(const current_border_impl
-			      &initial_border);
+	new_grid_element_info(dim_t row,
+			      dim_t col,
+			      const current_border_impl &initial_border);
 
 	//! Copy constructor
 	new_grid_element_info(const new_grid_element_info &);

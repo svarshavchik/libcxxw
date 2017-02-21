@@ -33,6 +33,8 @@ namespace metrics {
 		double maximum_;
 
 	public:
+		//! Specify an unlimited maximum value.
+
 		static constexpr double infinite() { return NAN; }
 
 		//! Sanity check the minimum, preferred, and maximum values.

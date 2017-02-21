@@ -25,7 +25,7 @@ LIBCXXW_NAMESPACE_START
 //! the display element's minimum, preferred, and maximum size in the
 //! given dimension.
 //!
-//! \ref metrics::rectangle "INSERT_LIBX_NAMESPACE::w::metrics::rectangle"
+//! \ref rectangle "INSERT_LIBX_NAMESPACE::w::metrics::rectangle"
 //! contains two members: horiz and vert. Both of them are \c axis
 //! specifications, and this defines a display element's horizontal and
 //! vertical dimensions.
@@ -42,8 +42,23 @@ namespace metrics {
 
 	//! A single horizontal or a vertical axis.
 
-	//! A display element specifies its requested minimum, desired, and
-	//! maximum dimensions.
+	//! The minimum, preferred, and maximum size of a display element.
+	//!
+	//! The display element will not be any smaller than its stated
+	//! minimum size. Its initial size, if possible, will be its
+	//! stated preferred size, which cannot be smaller than the minimum
+	//! size. The display element will not be any larger than its stated
+	//! maximum size, if possible; but it may end up being larger if
+	//! needed to satisfy its container's layout requirements.
+	//!
+	//! The maximum size cannot be smaller than its preferred size, The
+	//! maximum size can also be specified as infinite(), indicating that
+	//! the display element does not specify a maximum size.
+	//!
+	//! This is mostly an internal object that specifies the size in
+	//! pixel counts. The library uses \ref mmaxis "mmaxis" which
+	//! expresses the sizes in millimeters, to define sizes of display
+	//! elements.
 
 	class axis {
 

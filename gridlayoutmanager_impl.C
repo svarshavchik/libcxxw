@@ -69,15 +69,26 @@ layoutmanager gridlayoutmanagerObj::implObj::create_public_object()
 void gridlayoutmanagerObj::implObj
 ::insert(grid_map_t::lock &lock,
 	 const element &new_element,
-	 const new_grid_element_info &info)
+	 new_grid_element_info &info)
 {
 	if (info.width == 0 || info.height == 0)
 		throw EXCEPTION(_("Width or height of a new grid element cannot be 0"));
 
+	if (info.row >= lock->elements.size())
+		throw EXCEPTION(_("Attempting to add a display element into a nonexistent row"));
+
+	auto &row=lock->elements.at(dim_t::value_type(info.row));
+
+	if (info.col > row.size())
+		throw EXCEPTION(_("Attempting to add a display element into a nonexistent column"));
 	auto elem=grid_element::create(info, new_element);
 
-	lock->elements.push_back(std::vector<grid_element>());
-	(--lock->elements.end())->push_back(elem);
+	if (info.col >= row.size())
+		row.push_back(elem);
+	else
+		row.insert(row.begin()+dim_t::value_type(info.col), elem);
+
+	++info.col;
 	lock->elements_have_been_modified();
 }
 

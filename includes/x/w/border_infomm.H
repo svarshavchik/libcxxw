@@ -11,14 +11,23 @@
 
 LIBCXXW_NAMESPACE_START
 
-//! The type of a border
+//! A border of an element in a grid.
 
-//! Specifies all properties of a border.
+//! The \ref gridlayoutmanager "grid layout manager" draws borders around
+//! each grid element. This class specifies the grid element's border.
 //!
+//! Borders of adjacent elements get collapsed together, with the "better"
+//! border ending up on top, and ruling the roost.
 
 struct border_infomm {
 
 	//! Constructor
+
+	//! Creates an empty border. No border. Zilch. There won't be a border.
+	//! At the minimum, a border must have at least one color, and
+	//! non-zero width and height. Otherwise this border isn't going to
+	//! go anywhere.
+
 	border_infomm();
 
 	//! Destructor
@@ -30,16 +39,16 @@ struct border_infomm {
 
 	std::vector<const_picture> colors;
 
-	//! Configured width in millimeters
+	//! Border width in millimeters
 	double width=0;
 
-	//! Configured height in millimeters
+	//! Border height in millimeters
 	double height=0;
 
-	//! Rounded cornder
+	//! Round corners.
 	bool rounded=false;
 
-	//! Non-0, inner rounded radius, in millimeters
+	//! If non-0, inner rounded radius, in millimeters
 
 	double radius=0;
 

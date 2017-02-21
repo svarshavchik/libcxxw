@@ -206,7 +206,7 @@ countstateupdate runteststate(bool individual_show)
 
 	typedef LIBCXX_NAMESPACE::mcguffinstash<> stash_t;
 
-	auto main_window=LIBCXX_NAMESPACE::w::main_window::base
+	auto main_window=LIBCXX_NAMESPACE::w::main_window
 		::create([individual_show]
 			 (const auto &main_window)
 			 {
@@ -215,7 +215,7 @@ countstateupdate runteststate(bool individual_show)
 				 main_window->appdata=stash;
 
 				 LIBCXX_NAMESPACE::w::gridlayoutmanager m=main_window->get_layoutmanager();
-				 auto e=m->create()->create_canvas
+				 auto e=m->append_row()->create_canvas
 				 ([&]
 				  (const auto &c) {
 					 set_filler_color(c);
@@ -298,7 +298,7 @@ void runtestflashwithcolor(const testmainwindowoptions &options)
 
 	typedef LIBCXX_NAMESPACE::mcguffinstash<> stash_t;
 
-	auto main_window=LIBCXX_NAMESPACE::w::main_window::base
+	auto main_window=LIBCXX_NAMESPACE::w::main_window
 		::create([&]
 			 (const auto &main_window)
 			 {
@@ -321,7 +321,7 @@ void runtestflashwithcolor(const testmainwindowoptions &options)
 				 b.rounded=true;
 				 b.radius=3;
 
-				 auto e=m->create()->border(b).create_canvas
+				 auto e=m->append_row()->border(b).create_canvas
 				 ([&]
 				  (const auto &c) {
 					 if (options.showhide->value)
@@ -404,12 +404,12 @@ void runtestflashwiththeme(const testmainwindowoptions &options)
 
 	LIBCXX_NAMESPACE::destroy_callback::base::guard guard;
 
-	auto main_window=LIBCXX_NAMESPACE::w::main_window::base
+	auto main_window=LIBCXX_NAMESPACE::w::main_window
 		::create([&]
 			 (const auto &main_window)
 			 {
 				 LIBCXX_NAMESPACE::w::gridlayoutmanager m=main_window->get_layoutmanager();
-				 m->create()->create_canvas
+				 m->append_row()->create_canvas
 				 ([]
 				  (const auto &ignore) {},
 				  10, 10);
@@ -521,7 +521,7 @@ runtestthemescale(const testmainwindowoptions &options)
 
 	LIBCXX_NAMESPACE::destroy_callback::base::guard guard;
 
-	auto main_window=LIBCXX_NAMESPACE::w::main_window::base
+	auto main_window=LIBCXX_NAMESPACE::w::main_window
 		::create([&]
 			 (const auto &main_window)
 			 {
@@ -543,7 +543,7 @@ runtestthemescale(const testmainwindowoptions &options)
 				 b.dashes.push_back(3);
 				 b.dashes.push_back(2);
 
-				 auto c=m->create()->border(b).create_canvas
+				 auto c=m->append_row()->border(b).create_canvas
 				 ([]
 				  (const auto &ignore) {},
 				  30, 30);

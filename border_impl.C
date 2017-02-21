@@ -457,6 +457,10 @@ void border_implObj::draw_corner(IN_THREAD_ONLY,
 	// Zero or multiple corners. We will draw a straight border around
 	// each one, but start by filling each requested corner with the
 	// corresponding element's background color.
+	//
+	// We need to do this explicitly instead of passing the appropriate
+	// elements to draw_<name>_(). We want to fill in the background
+	// color before any of the stubs get drawn.
 
 	if (which_corners & border_impl::base::cornertl())
 		cdi.topleft_background_fill(IN_THREAD, elements);

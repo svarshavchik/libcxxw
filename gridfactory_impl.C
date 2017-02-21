@@ -10,8 +10,10 @@
 
 LIBCXXW_NAMESPACE_START
 
-gridfactoryObj::implObj::implObj(const gridlayoutmanager &gridlayout)
-	: new_grid_element{gridlayout->impl->get_custom_border(border_infomm())}
+gridfactoryObj::implObj::implObj(const gridlayoutmanager &gridlayout,
+				 dim_t row, dim_t col)
+	: new_grid_element{row, col,
+		gridlayout->impl->get_custom_border(border_infomm())}
 {
 }
 

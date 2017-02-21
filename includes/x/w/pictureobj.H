@@ -58,7 +58,7 @@ public:
 	//! Clip the picture with a pixmap.
 
 	//! The constructor installs the clip mask, the destructor removes it.
-	//! Refer to this class as \ref LIBCXX_NAMESPACE::w::picture::base::clip_mask
+	//! Refer to this class as \c LIBCXX_NAMESPACE::w::picture::base::clip_mask
 
 	class clip_mask {
 		//! My picture

@@ -15,7 +15,21 @@ class layoutmanagerObj;
 //! A layout manager
 
 //! Every container has a layout manager, that manages the elements inside
-//! the container element.
+//! the container element. get_layoutmanager() returns the container's
+//! layout manager, which can be:
+//!
+//! - \ref gridlayoutmanager "The grid layout manager"
+//!
+//! The layout manager returned by get_layoutmanager() typically acquires
+//! an internal lock on the container. The lock gets released when all
+//! references to the returned layout manager object go out of scope and get
+//! destroyed. At this time, any updates to the container are processed and
+//! finalized.
+//!
+//! The internal lock can block the background thread that updates the
+//! display. The layout manager object handle returned by get_layoutmanager()
+//! should not persist for a long time; otherwise the display will be
+//! unresponsive.
 
 typedef ref<layoutmanagerObj> layoutmanager;
 

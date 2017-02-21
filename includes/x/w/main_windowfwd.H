@@ -16,17 +16,31 @@ class main_windowBase;
 //! Top level application window.
 //!
 //! \code
+//! // Create an application window on the default screen.
+//!
+//! INSERT_LIBX_NAMESPACE::w::main_window main_window=INSERT_LIBX_NAMESPACE::w::main_window::create(
+//!      []
+//!      (const INSERT_LIBX_NAMESPACE::w::main_window &new_main_window)
+//!      {
+//!           // Initialize the new main window.
+//!      });
+//!
+//! // Explicitly create an application window on a specific screen.
 //!
 //! auto screen=INSERT_LIBX_NAMESPACE::w::screen::create();
 //!
-//! INSERT_LIBX_NAMESPACE::w::mainwindow=screen->create_mainwindow(
+//! INSERT_LIBX_NAMESPACE::w::main_window main_window=screen->create_mainwindow(
 //!                 []
 //!                 (const INSERT_LIBX_NAMESPACE::w::mainwindow &w)
 //!                 {
-//!                        // Fill in the contents of the new window.
+//!                        // Initialize the new main window.
 //!                 });
 //!
 //! \endcode
+//!
+//! Like \ref factory "factories", creating a top level application window
+//! uses an initializer lambda to populate its contents. The initializer
+//! lambda's parameter is the new main window.
 
 typedef ref<main_windowObj, main_windowBase> main_window;
 

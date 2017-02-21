@@ -1,6 +1,6 @@
 <!--
 
-Copyright 2014-2016 Double Precision, Inc.
+Copyright 2014-2017 Double Precision, Inc.
 See COPYING for distribution information.
 
 -->
@@ -12,7 +12,7 @@ See COPYING for distribution information.
 
     <para>
       &appshort; is the first X widget toolkit with a
-      C++1x <acronym>API</acronym>. After several years of private
+      C++1z <acronym>API</acronym>. After several years of private
       development it has reached beta quality, and
       is now publicly available.
       This toolkit is based on the &libcxx; library, see
@@ -23,11 +23,11 @@ See COPYING for distribution information.
     <itemizedlist>
       <listitem>
 	<para>
-	  A modern, C++1x-style <acronym>API</acronym>; such as:
+	  A modern, C++1z-style <acronym>API</acronym>; such as:
 	  using lambdas to handle events like pointer clicks and other
 	  user activity; overloaded, variadic-parameter methods offering
 	  alternative means of configuring various display elements; and
-	  other C++1x features.
+	  other C++1z features.
 	</para>
       </listitem>
 
@@ -116,7 +116,7 @@ See COPYING for distribution information.
       templates based on reference-counted objects. Some existing familiarity
       with &libcxx; will be helpful in understanding how to use
       &appshort;'s classes, but is not strictly necessary.
-      A brief overview:
+      A brief overview follows.
     </para>
 
     <para>
@@ -124,17 +124,140 @@ See COPYING for distribution information.
       <literal>&ns;::w</literal> namespace.
     </para>
 
-    <para>
-      All classes and templates, like
-      <ulink url="&link-typedef-x--w-connection;"><classname>&ns;::w::connection</classname></ulink>
-      and
-      <ulink url="&link-typedef-x--w-screen;"><classname>&ns;::w::screen</classname></ulink>
-      are reference-counted objects, based on
-      <ulink url="&refobj;"><classname>&ns;::ref</classname> and
-	<classname>&ns;::ptr</classname></ulink>.
-      These are just reference handles, similar to
-      <classname>std::shared_ptr</classname>.
-    </para>
+    <section id="referencehier">
+      <title>References</title>
+
+      <para>
+	It's important to understand the relationship between the various
+	objects and classes.
+
+	All classes and templates, like
+	<ulink url="&link-typedef-x--w-connection;"><classname>&ns;::w::connection</classname></ulink>
+	and
+	<ulink url="&link-typedef-x--w-screen;"><classname>&ns;::w::screen</classname></ulink>
+	are reference-counted objects, based on
+	<ulink url="&refobj;"><classname>&ns;::ref</classname> and
+	  <classname>&ns;::ptr</classname></ulink>.
+	<classname>&ns;::w::connection</classname>,
+	<classname>&ns;::w::screen</classname> and others,
+	are just reference handles, similar to
+	<classname>std::shared_ptr</classname>.
+      </para>
+
+      <para>
+	The &app; takes care of creating the actual, underlying objects, and
+	when the last reference, last handle, to the underlying object goes
+	out of scope, the underlying object gets destroyed. This includes
+	both the explicit references, and the internal references the underlying
+	objects have to each other.
+      </para>
+
+      <para>
+	Except as stated, the &app;'s internal references are generally
+	as follows:
+      </para>
+
+      <itemizedlist>
+	<listitem>
+	  <para>
+	    The &app; does not maintain its own internal references to top
+	    level display elements, like
+	    <ulink url="&link-typedef-x--w-main-window;"><classname>&ns;::w::main_window</classname></ulink>.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    <classname>&ns;::w::main_window</classname> holds a reference on
+	    its
+	    <classname>&ns;::w::screen</classname>, which holds a refernece on
+	    its
+	    <classname>&ns;::w::connection</classname>.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    A <ulink url="&link-typedef-x--w-container;">container</ulink>
+	    holds a reference to its
+	    <ulink url="&link-typedef-x--w-layoutmanager;">layout
+	      manager</ulink>, and the layout manager holds reference to
+	    all elements in the container.
+	  </para>
+	</listitem>
+      </itemizedlist>
+
+      <para>
+	A main window is a container. Typically, an application
+	creates its main window, and stores its
+	<classname>&ns;::w::main_window</classname> somewhere. The application
+	procedes and creates the various display elements, putting them in their
+	containers, which now hold a reference on them.
+      </para>
+
+      <para>
+	In this manner, all references end up being rooted in their main
+	window object.
+	When the application destroys its
+	<classname>&ns;::w::main_window</classname> handle, the cascading
+	effect from that destroys all display elements and internal objects.
+      </para>
+
+      <para>
+	This works correctly as long as no other references to any display
+	elements, or other related objects, exist. If the application has
+	a reference to a display element, or some other &app; object that's
+	tied to the main application window, directly, or indirectly, this is
+	going to prevent the main application window from getting properly
+	destroyed.
+      </para>
+    </section>
+
+    <section id="connection_thread">
+      <title>The connection thread</title>
+
+      <para>
+	As mentioned briefly in the introduction, the &app; uses a separate
+	thread for the connection with the display server. &app; takes care
+	of starting the connection thread. The connection thread gets
+	automatically stopped when the last top level window gets destroyed.
+      </para>
+
+      <para>
+	The connection thread takes care of updating the display, and
+	processing internal display protocol messages. The connection thread
+	may also end up executing an application-supplied callback in the form
+	of a lambda or some other callable object.
+      </para>
+
+      <para>
+	The connection thread resumes its normal duties after the application
+	callback returns. Application callbacks should not get bogged down
+	with long-running tasks, as this will result in the application
+	window appearing to be frozen. Callbacks should be minimal, and consist
+	of little more than sending a message of some kind, or setting a flag.
+      </para>
+
+      <para>
+	Different callbacks get installed or uninstalled in different ways.
+	Due to asynchronous nature of the connection thread, the application
+	must be prepared for the callback to be executing at the same time
+	the application requests the callback to be turned off or uninstalled;
+	or shortly thereafter before the callback's deactivation gets finalized.
+      </para>
+
+      <para>
+	As such, application's callbacks should safely capture anything they
+	need by value. &libcxx;'s reference-counted objects (which are,
+	incidentally, are used to build the &app; itself) are an excellent
+	suggestion. The callback and the main application coordinate their
+	mutual dependency through some refernece-counted object. After both
+	the application gets rid of its reference, and the callback gets
+	uninstalled, with the captured reference going out of scope and
+	getting destroyed, the underlying reference-counted object which was
+	used for this coordination gets destroyed automatically.
+      </para>
+    </section>
   </section>
 </preface>
 
