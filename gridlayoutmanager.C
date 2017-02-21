@@ -40,12 +40,12 @@ gridlayoutmanagerObj::grid_map_info_t::get_lookup_table()
 
 			for (const auto &col:row)
 			{
-				auto iter=lookup.find(col->grid_element);
+				auto iter=lookup.find(col->grid_element->impl);
 
 				if (iter == lookup.end())
 				{
 					iter=lookup.insert
-						({col->grid_element,
+						({col->grid_element->impl,
 						  lookup_info::create()})
 						.first;
 				}

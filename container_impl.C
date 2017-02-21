@@ -77,6 +77,19 @@ void containerObj::implObj::do_draw(IN_THREAD_ONLY,
 		get_element_impl().clear_to_color(IN_THREAD, di, remaining);
 }
 
+void containerObj::implObj
+::child_background_color_changed(IN_THREAD_ONLY,
+				 const ref<elementObj::implObj> &child)
+{
+	invoke_layoutmanager
+		([&]
+		 (const auto &manager)
+		 {
+			 manager->child_background_color_changed(IN_THREAD,
+								 child);
+		 });
+}
+
 void containerObj::implObj::inherited_visibility_updated(IN_THREAD_ONLY,
 							 bool flag)
 {

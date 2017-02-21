@@ -103,6 +103,12 @@ class LIBCXX_HIDDEN layoutmanagerObj::implObj : virtual public obj {
 
 	virtual void process_updated_position(IN_THREAD_ONLY,
 					      const rectangle &position)=0;
+
+	//! A child element's background color has changed
+
+	virtual void child_background_color_changed(IN_THREAD_ONLY,
+						    const ref<elementObj
+						    ::implObj> &child);
  protected:
 
 	//! Invokes the container's element function of the same name.

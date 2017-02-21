@@ -330,6 +330,12 @@ class LIBCXX_HIDDEN elementObj::implObj : virtual public obj,
 	//!
 	//! Overridden in generic_window_handler to also invoke
 	//! xcb_map_window or xcb_unmap_window.
+	//!
+	//! Also overridden in child_elementObj to also invoke its container's
+	//! child_background_color_changed() callback, since when the
+	//! child element is not shown, it falls back to using the parent's
+	//! background color, so officially its background color has changed.
+
 	virtual void set_inherited_visibility(IN_THREAD_ONLY, bool flag);
 
 	//! Redraw this display element, after showing or hiding it.

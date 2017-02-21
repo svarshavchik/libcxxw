@@ -112,6 +112,10 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 
 	void process_updated_position(IN_THREAD_ONLY,
 				      const rectangle &position) override;
+
+	void child_background_color_changed(IN_THREAD_ONLY,
+					    const ref<elementObj::implObj>
+					    &child) override;
 };
 
 LIBCXXW_NAMESPACE_END

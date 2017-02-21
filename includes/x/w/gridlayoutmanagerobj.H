@@ -9,6 +9,7 @@
 #include <x/w/layoutmanagerobj.H>
 #include <x/w/gridfactoryfwd.H>
 #include <x/w/elementfwd.H>
+#include <x/w/elementobj.H>
 #include <x/w/grid_elementfwd.H>
 #include <x/w/types.H>
 #include <x/mpobj.H>
@@ -77,7 +78,8 @@ public:
 
 		//! Container for the element lookup table.
 
-		typedef std::unordered_map<element, lookup_info> lookup_t;
+		typedef std::unordered_map<ref<elementObj::implObj>,
+					   lookup_info> lookup_t;
 
 		//! An internal lookup table.
 

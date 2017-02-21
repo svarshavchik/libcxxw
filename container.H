@@ -170,6 +170,11 @@ public:
 	void do_for_each_child(IN_THREAD_ONLY,
 			       const function<void (const element &)> &);
 
+	//! Child element's background color has changed
+
+	void child_background_color_changed(IN_THREAD_ONLY,
+					    const ref<elementObj::implObj>
+					    &child);
  private:
 	void propagate_inherited_visibility(IN_THREAD_ONLY, bool flag);
 };

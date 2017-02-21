@@ -52,4 +52,10 @@ void layoutmanagerObj::implObj::current_position_updated(IN_THREAD_ONLY)
 	container_impl->get_element_impl().current_position_updated(IN_THREAD);
 }
 
+void layoutmanagerObj::implObj
+::child_background_color_changed(IN_THREAD_ONLY,
+				 const ref<elementObj::implObj> &child)
+{
+}
+
 LIBCXXW_NAMESPACE_END

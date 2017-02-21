@@ -36,12 +36,32 @@ static void register_border(auto &lookup,
 			    grid_element *ptr,
 			    const element &border_element)
 {
-	auto iter=lookup.find( (*ptr)->grid_element );
+	auto iter=lookup.find( (*ptr)->grid_element->impl );
 
 	if (iter == lookup.end())
 		throw EXCEPTION("Internal element, unable to find grid element in the lookup table.");
 
 	iter->second->border_elements.push_back(border_element);
+}
+
+// When a child element's background color changes, schedule a redraw of its
+// surrounding borders.
+
+void gridlayoutmanagerObj::implObj
+::child_background_color_changed(IN_THREAD_ONLY,
+				 const ref<elementObj::implObj> &child)
+{
+	grid_map_t::lock lock(grid_map);
+
+	auto &lookup=lock->get_lookup_table();
+
+	auto iter=lookup.find(child);
+
+	if (iter == lookup.end())
+		return;
+
+	for (const auto &b:iter->second->border_elements)
+		b->impl->schedule_redraw_if_visible(IN_THREAD);
 }
 
 bool gridlayoutmanagerObj::implObj::rebuild_elements(IN_THREAD_ONLY)
