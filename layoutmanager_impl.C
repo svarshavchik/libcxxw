@@ -58,4 +58,10 @@ void layoutmanagerObj::implObj
 {
 }
 
+rectangle layoutmanagerObj::implObj::padded_position(IN_THREAD_ONLY,
+						     const element &e)
+{
+	return e->impl->data(IN_THREAD).current_position;
+}
+
 LIBCXXW_NAMESPACE_END

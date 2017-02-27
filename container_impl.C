@@ -50,17 +50,30 @@ void containerObj::implObj::do_draw(IN_THREAD_ONLY,
 
 	rectangle_set child_areas;
 
-	for_each_child(IN_THREAD,
-		       [&]
-		       (const element &e)
-		       {
-			       if (!e->impl->data(IN_THREAD)
-				   .inherited_visibility)
-				       return;
+	invoke_layoutmanager
+		([&]
+		 (const auto &manager)
+		 {
+			 manager->for_each_child
+				 (IN_THREAD,
+				  [&]
+				  (const element &e)
+				  {
+					  if (!e->impl->data(IN_THREAD)
+					      .inherited_visibility)
+						  return;
 
-			       child_areas.insert(e->impl->data(IN_THREAD)
-						  .current_position);
-		       });
+					  rectangle padded_position=
+						  manager->padded_position
+						  (IN_THREAD, e);
+
+					  rectangle position=
+						  e->impl->data(IN_THREAD)
+						  .current_position;
+
+					  child_areas.insert(position);
+				  });
+		 });
 
 	// Subtract it from our area.
 	auto current_position=
