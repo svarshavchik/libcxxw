@@ -16,6 +16,23 @@ typedef ref<elementObj::implObj> elementimpl;
 
 typedef ptr<elementObj::implObj> elementimplptr;
 
+
+//! Parameter for elementObj::implObj::set_inherited_visibility()
+
+struct LIBCXX_HIDDEN inherited_visibility_info {
+
+	//! The new value for the inherited_visibility_flag
+
+	bool flag;
+
+	//! Do not redraw the display element, when making it visible.
+
+	//! This is used when the visibility changes as a result
+	//! of MapWindow(). We expect to receive exposure events, that
+	//! will take care of drawing the display elements for us.
+	bool do_not_redraw;
+};
+
 LIBCXXW_NAMESPACE_END
 
 #endif

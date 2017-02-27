@@ -107,15 +107,24 @@ class LIBCXX_HIDDEN layoutmanagerObj::implObj : virtual public obj {
 	//! A child element's background color has changed
 
 	virtual void child_background_color_changed(IN_THREAD_ONLY,
-						    const ref<elementObj
-						    ::implObj> &child);
+						    const elementimpl &child);
+
+	//! A child element's visibility has changed
+
+	virtual void child_visibility_changed(IN_THREAD_ONLY,
+					      struct inherited_visibility_info &info,
+					      const elementimpl &child);
 
 	//! Return the child element position that includes any container-provided padding.
 
 	//! The default implementation returns the same rectangle as the
 	//! element's current_position.
 
-	virtual rectangle padded_position(IN_THREAD_ONLY, const element &e);
+	virtual rectangle padded_position(IN_THREAD_ONLY, const elementimpl &e);
+
+	//! The theme has changed
+
+	virtual void theme_updated(IN_THREAD_ONLY);
 
  protected:
 

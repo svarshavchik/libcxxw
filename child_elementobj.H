@@ -81,7 +81,9 @@ class LIBCXX_HIDDEN child_elementObj : public elementObj::implObj {
 
 	//! Changed visibility mean a change to the background color.
 
-	void set_inherited_visibility(IN_THREAD_ONLY, bool flag) override;
+	void set_inherited_visibility(IN_THREAD_ONLY,
+				      inherited_visibility_info
+				      &visibility_info) override;
 
 	//! Whether set_background_color() is in force.
 

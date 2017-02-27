@@ -7,10 +7,11 @@
 // The class declaration #includes container_element_overrides_decl.H.
 // The class definition sets ELEMENT_SUBCLASS, and #includes this.
 
-void ELEMENT_SUBCLASS::inherited_visibility_updated(IN_THREAD_ONLY,
-						    bool flag)
+void ELEMENT_SUBCLASS
+::inherited_visibility_updated(IN_THREAD_ONLY,
+			       inherited_visibility_info &info)
 {
-	containerObj::implObj::inherited_visibility_updated(IN_THREAD, flag);
+	containerObj::implObj::inherited_visibility_updated(IN_THREAD, info);
 }
 
 void ELEMENT_SUBCLASS::do_draw(IN_THREAD_ONLY,
@@ -39,4 +40,10 @@ void ELEMENT_SUBCLASS::do_for_each_child(IN_THREAD_ONLY,
 void ELEMENT_SUBCLASS::draw_after_visibility_updated(IN_THREAD_ONLY, bool flag)
 {
 	containerObj::implObj::draw_after_visibility_updated(IN_THREAD, flag);
+}
+
+void ELEMENT_SUBCLASS::theme_updated(IN_THREAD_ONLY)
+{
+	elementObj::implObj::theme_updated(IN_THREAD);
+	containerObj::implObj::theme_updated(IN_THREAD);
 }

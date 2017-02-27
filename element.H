@@ -308,7 +308,7 @@ class LIBCXX_HIDDEN elementObj::implObj : virtual public obj,
 	//! before invoking do_inherited_visibility_updated().
 
 	virtual void inherited_visibility_updated(IN_THREAD_ONLY,
-						  bool flag);
+						  inherited_visibility_info &info);
 
 	//! Finally update this element's inherited visibility status.
 
@@ -318,7 +318,7 @@ class LIBCXX_HIDDEN elementObj::implObj : virtual public obj,
 	//! Update the flag, invoke before/after showing/hiding callbacks.
 
 	void do_inherited_visibility_updated(IN_THREAD_ONLY,
-					     bool flag);
+					     inherited_visibility_info &info);
 
 	//! Actually set the inherited visibility flag, and I do really mean it.
 
@@ -336,7 +336,9 @@ class LIBCXX_HIDDEN elementObj::implObj : virtual public obj,
 	//! child element is not shown, it falls back to using the parent's
 	//! background color, so officially its background color has changed.
 
-	virtual void set_inherited_visibility(IN_THREAD_ONLY, bool flag);
+	virtual void set_inherited_visibility(IN_THREAD_ONLY,
+					      inherited_visibility_info
+					      &visibility_info);
 
 	//! Redraw this display element, after showing or hiding it.
 
@@ -438,12 +440,13 @@ class LIBCXX_HIDDEN elementObj::implObj : virtual public obj,
 
 	//! Clear to background color
 
-	//! Wrapper that acquires a clip_region_set, first.
 	//! The rectangles' coordinates are relative to the viewport.
-
+	//! background_color_di is the draw_info of the element whose background
+	//! color is drawn here (default is the same as di).
 	void clear_to_color(IN_THREAD_ONLY,
 			    const clip_region_set &,
 			    const draw_info &di,
+			    const draw_info &background_color_di,
 			    const rectangle_set &areas);
 
 	//! A new theme has been installed.

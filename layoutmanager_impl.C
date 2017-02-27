@@ -53,15 +53,25 @@ void layoutmanagerObj::implObj::current_position_updated(IN_THREAD_ONLY)
 }
 
 void layoutmanagerObj::implObj
-::child_background_color_changed(IN_THREAD_ONLY,
-				 const ref<elementObj::implObj> &child)
+::child_background_color_changed(IN_THREAD_ONLY, const elementimpl &child)
+{
+}
+
+void layoutmanagerObj::implObj
+::child_visibility_changed(IN_THREAD_ONLY,
+			   inherited_visibility_info &info,
+			   const elementimpl &child)
 {
 }
 
 rectangle layoutmanagerObj::implObj::padded_position(IN_THREAD_ONLY,
-						     const element &e)
+						     const elementimpl &e_impl)
 {
-	return e->impl->data(IN_THREAD).current_position;
+	return e_impl->data(IN_THREAD).current_position;
+}
+
+void layoutmanagerObj::implObj::theme_updated(IN_THREAD_ONLY)
+{
 }
 
 LIBCXXW_NAMESPACE_END

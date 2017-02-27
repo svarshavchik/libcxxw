@@ -105,6 +105,11 @@ public:
 			modified_flag=true;
 		}
 
+		void padding_recalculated()
+		{
+			modified_flag=true;
+		}
+
 		//! Check the 'modified_flag'.
 
 		bool element_modifications_need_processing() const

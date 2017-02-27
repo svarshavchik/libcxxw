@@ -7,11 +7,11 @@
 
 #include "x/w/containerobj.H"
 #include "x/w/layoutmanagerobj.H"
-#include "x/w/elementobj.H"
 #include "x/w/generic_windowobj.H"
 #include "x/w/rectangle.H"
 #include "connection_threadfwd.H"
 #include "draw_infofwd.H"
+#include "elementfwd.H"
 #include <x/mpobj.H>
 #include <x/functional.H>
 
@@ -129,7 +129,7 @@ public:
 	//! inherited_visibility_updated, and invoke this method.
 
 	void inherited_visibility_updated(IN_THREAD_ONLY,
-					  bool flag);
+					  inherited_visibility_info &info);
 
 	//! The container's position has been updated.
 
@@ -150,6 +150,9 @@ public:
 
 	void draw_after_visibility_updated(IN_THREAD_ONLY, bool flag);
 
+	//! Invoke layout manager's theme_updated() method.
+
+	void theme_updated(IN_THREAD_ONLY);
 	//////////////////////////////////////////////////////////////////////
 
 	//! Invoke a lambda for each child element.
@@ -173,10 +176,16 @@ public:
 	//! Child element's background color has changed
 
 	void child_background_color_changed(IN_THREAD_ONLY,
-					    const ref<elementObj::implObj>
-					    &child);
+					    const elementimpl &child);
+
+	//! Child element's visibility has changed.
+
+	void child_visibility_changed(IN_THREAD_ONLY,
+				      inherited_visibility_info &info,
+				      const elementimpl &child);
  private:
-	void propagate_inherited_visibility(IN_THREAD_ONLY, bool flag);
+	void propagate_inherited_visibility(IN_THREAD_ONLY,
+					    inherited_visibility_info &info);
 };
 
 // The connection thread maintains a map of all containers that need to

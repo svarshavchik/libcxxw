@@ -24,6 +24,17 @@ LIBCXXW_NAMESPACE_START
 
 namespace metrics {
 
+	struct LIBCXX_HIDDEN pos_axis_padding {
+
+		dim_t left_padding;
+
+		dim_t top_padding;
+
+		dim_t total_horiz_padding;
+
+		dim_t total_vert_padding;
+	};
+
 	//! Data for calculations
 
 	//! calculate_grid_horiz_metrics() and calculate_grid_vert_metrics()
@@ -35,6 +46,10 @@ namespace metrics {
 
 		//! Horizontal and vertical metrics of this display element.
 		horizvert axises;
+
+		//! The padding to be applied to the axises
+
+		pos_axis_padding padding;
 	};
 
 	//! Computed horizontal and vertical grid metrics.
@@ -57,6 +72,9 @@ namespace metrics {
 
 		//! The horizontal or the vertical grid element's metrics axis.
 		axis horizvertObj::*axis_pos_member;
+
+		//! The additional padding for this element
+		dim_t pos_axis_padding::*axis_padding;
 
 		//! The other metric calculations.
 		const struct grid_major *minor;
@@ -83,7 +101,8 @@ namespace metrics {
 	void apply_metrics(grid_metrics_t &m,
 			   const std::set<grid_xy> &all_grid_positions,
 			   const grid_axisrange &r,
-			   const axis &a) LIBCXX_HIDDEN;
+			   const axis &a,
+			   dim_t axis_padding) LIBCXX_HIDDEN;
 
 	// Visibility declarations.
 
@@ -165,7 +184,9 @@ namespace metrics {
 					      all_grid_positions,
 					      major.get_axisrange
 					      (element),
-					      major.get_axis(element));
+					      major.get_axis(element),
+					      element.padding
+					      .*(major.axis_padding));
 			}
 		}
 		return grid_metrics;

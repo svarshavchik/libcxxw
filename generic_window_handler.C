@@ -134,19 +134,22 @@ void generic_windowObj::handlerObj
 }
 
 void generic_windowObj::handlerObj
-::set_inherited_visibility(IN_THREAD_ONLY, bool flag)
+::set_inherited_visibility(IN_THREAD_ONLY,
+			   inherited_visibility_info &visibility_info)
 {
-	if (flag)
+	if (visibility_info.flag)
 	{
 #ifdef MAP_LOG
 		MAP_LOG();
 #endif
 		xcb_map_window(IN_THREAD->info->conn, id());
+		visibility_info.do_not_redraw=true;
 	}
 	else
 		xcb_unmap_window(IN_THREAD->info->conn, id());
 
-	elementObj::implObj::set_inherited_visibility(IN_THREAD, flag);
+	elementObj::implObj::set_inherited_visibility(IN_THREAD,
+						      visibility_info);
 }
 
 void generic_windowObj::handlerObj::request_visibility(IN_THREAD_ONLY,

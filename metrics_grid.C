@@ -28,12 +28,14 @@ namespace metrics {
 const struct grid_major h_grid LIBCXX_HIDDEN ={
 	&grid_posObj::horiz_pos,
 	&horizvertObj::horiz,
+	&pos_axis_padding::total_horiz_padding,
 	&v_grid,
 };
 
 const struct grid_major v_grid LIBCXX_INTERNAL ={
 	&grid_posObj::vert_pos,
 	&horizvertObj::vert,
+	&pos_axis_padding::total_vert_padding,
 	&h_grid,
 };
 
@@ -135,8 +137,38 @@ create_grid_metrics_refvec(grid_metrics_t &m,
 void apply_metrics(grid_metrics_t &m,
 		   const std::set<grid_xy> &all_grid_positions,
 		   const grid_axisrange &r,
-		   const axis &a)
+		   const axis &aa,
+		   dim_t axis_padding)
 {
+	// Ok, here's how big this grid element is.
+
+	dim_t a_minimum=aa.minimum();
+	dim_t a_preferred=aa.preferred();
+	dim_t a_maximum=aa.maximum();
+
+	// Adjust for the padding.
+
+	if (a_maximum < dim_t::infinite())
+	{
+		a_maximum=dim_t::truncate(a_maximum+axis_padding);
+
+		if (a_maximum == dim_t::infinite())
+			--a_maximum;
+	}
+
+	a_preferred=dim_t::truncate(a_preferred+axis_padding);
+
+	if (a_preferred == dim_t::infinite())
+		--a_preferred;
+
+	if (a_preferred > a_maximum)
+		a_preferred=a_maximum;
+
+	a_minimum=dim_t::truncate(a_minimum+axis_padding);
+
+	if (a_minimum > a_preferred)
+		a_minimum=a_preferred;
+
 	std::set<grid_xy> missing_pos;
 
 #ifdef DEBUG
@@ -172,8 +204,8 @@ void apply_metrics(grid_metrics_t &m,
 		// Otherwise the new columns' minimums are 0. This element
 		// already spans columns that meet the required minimum.
 		dim_t new_minimum=
-			total_minimum < (dim_t::value_type)a.minimum()
-					? a.minimum()-total_minimum
+			total_minimum < (dim_t::value_type)a_minimum
+					? a_minimum-total_minimum
 					: dim_t(0);
 
 		// For now, assume that the new columns' preferred is the
@@ -188,9 +220,9 @@ void apply_metrics(grid_metrics_t &m,
 		// existing columns' preferred total, the additional
 		// preferred can be handled by the new columns.
 
-		if (total_preferred < (dim_t::value_type)a.preferred())
+		if (total_preferred < (dim_t::value_type)a_preferred)
 		{
-			new_preferred=a.preferred()-total_preferred;
+			new_preferred=a_preferred-total_preferred;
 			if (new_preferred < new_minimum)
 				new_preferred=new_minimum;
 		}
@@ -199,7 +231,7 @@ void apply_metrics(grid_metrics_t &m,
 		dim_t new_maximum=dim_t::infinite();
 
 		// But if it's not:
-		if (a.maximum() != dim_t::infinite())
+		if (a_maximum != dim_t::infinite())
 		{
 			// If the existing calculated columns that are
 			// spanned by this range have infinite maximums,
@@ -230,9 +262,9 @@ void apply_metrics(grid_metrics_t &m,
 			new_maximum=new_minimum;
 
 			if (new_maximum + total_maximum.sum_excluding_infinite
-			    < (dim_t::value_type)a.maximum())
+			    < (dim_t::value_type)a_maximum)
 			{
-				new_maximum=a.maximum() - total_maximum.sum_excluding_infinite;
+				new_maximum=a_maximum - total_maximum.sum_excluding_infinite;
 			}
 		}
 
@@ -291,10 +323,10 @@ void apply_metrics(grid_metrics_t &m,
 	// exist. See if the existing display positions' total_minimum is
 	// less than the new element's minimum. If so, they need to be
 	// adjusted.
-	if (total_minimum < (dim_t::value_type)a.minimum())
+	if (total_minimum < (dim_t::value_type)a_minimum)
 	{
 		axis::adjust_minimums_by(v.begin(), v.end(),
-					 (dim_t::value_type)a.minimum()
+					 (dim_t::value_type)a_minimum
 					 -total_minimum);
 
 		// adjust_minimums_by() could've updated some position's
@@ -304,7 +336,7 @@ void apply_metrics(grid_metrics_t &m,
 
 	// If the new element's maximum size is not infinite, we need to
 	// enforce it.
-	if (a.maximum() != dim_t::infinite())
+	if (a_maximum != dim_t::infinite())
 	{
 		// The first step towards enforcing it is to get rid of
 		// any existing infinite positions.
@@ -317,12 +349,12 @@ void apply_metrics(grid_metrics_t &m,
 		// Use adjust_maximums_by(), to try to reduce the maximum
 		// sizes.
 		if (total_maximum.sum_excluding_infinite
-		    > (dim_t::value_type)a.maximum())
+		    > (dim_t::value_type)a_maximum)
 		{
 			axis::adjust_maximums_by(v.begin(), v.end(),
 						 total_maximum
 						 .sum_excluding_infinite -
-						 (dim_t::value_type)a.maximum()
+						 (dim_t::value_type)a_maximum
 						 );
 		}
 	}

@@ -58,6 +58,25 @@ class LIBCXX_HIDDEN gridfactoryObj : public factoryObj {
 
 	gridfactoryObj &bottom_border(const border_infomm &info);
 
+	//! Set new element's padding, first.
+
+	gridfactoryObj &padding(double paddingmm);
+
+	//! Set new element's padding, first.
+
+	gridfactoryObj &left_padding(double paddingmm);
+
+	//! Set new element's padding, first.
+
+	gridfactoryObj &right_padding(double paddingmm);
+
+	//! Set new element's padding, first.
+
+	gridfactoryObj &top_padding(double paddingmm);
+
+	//! Set new element's padding, first.
+
+	gridfactoryObj &bottom_padding(double paddingmm);
 	//! Created a new display element for the grid.
 	void created(const element &new_element) override;
 };

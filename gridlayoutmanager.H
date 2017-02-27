@@ -113,9 +113,32 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 	void process_updated_position(IN_THREAD_ONLY,
 				      const rectangle &position) override;
 
+	//! Redraw the borders around the child element.
+
 	void child_background_color_changed(IN_THREAD_ONLY,
-					    const ref<elementObj::implObj>
-					    &child) override;
+					    const elementimpl &child) override;
+
+	//! Redraw the borders around the child element.
+	void child_visibility_changed(IN_THREAD_ONLY,
+				      struct inherited_visibility_info &info,
+				      const elementimpl &child) override;
+ private:
+	//! Redraw the borders around the child element.
+
+	void redraw_child_borders_and_padding(IN_THREAD_ONLY,
+					      const elementimpl &child);
+ public:
+
+
+	//! Recalculate paddings.
+
+	void theme_updated(IN_THREAD_ONLY) override;
+
+	//! Return the display element's position with padding.
+
+	rectangle padded_position(IN_THREAD_ONLY,
+				  const elementimpl &e)
+		override;
 };
 
 LIBCXXW_NAMESPACE_END

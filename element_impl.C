@@ -131,12 +131,22 @@ void elementObj::implObj::visibility_updated(IN_THREAD_ONLY, bool flag)
 	if (data(IN_THREAD).inherited_visibility == flag)
 		return;
 
-	inherited_visibility_updated(IN_THREAD, flag);
-	draw_after_visibility_updated(IN_THREAD, flag);
+	// Prepare the default inherited_visibility_info object: here's the
+	// new visibility status, in "flag", and do_not_redraw is false,
+	// because we certainly want to redraw the element, as a result of the
+	// visibility change.
+
+	inherited_visibility_info visibility_info{flag, false};
+
+	inherited_visibility_updated(IN_THREAD, visibility_info);
+
+	if (!visibility_info.do_not_redraw)
+		draw_after_visibility_updated(IN_THREAD, flag);
 }
 
-void elementObj::implObj::inherited_visibility_updated(IN_THREAD_ONLY,
-						       bool flag)
+void elementObj::implObj
+::inherited_visibility_updated(IN_THREAD_ONLY,
+			       inherited_visibility_info &visibility_info)
 {
 	// This is called when the element's inherited_visibility, the
 	// "real" visibility, after taking into consideration the parent
@@ -146,11 +156,12 @@ void elementObj::implObj::inherited_visibility_updated(IN_THREAD_ONLY,
 	// overrides this, and also takes care of whatever needs to be done
 	// with the child elements, in addition to calling
 	// do_inherited_visibility_updated(), too.
-	do_inherited_visibility_updated(IN_THREAD, flag);
+	do_inherited_visibility_updated(IN_THREAD, visibility_info);
 }
 
-void elementObj::implObj::do_inherited_visibility_updated(IN_THREAD_ONLY,
-							  bool flag)
+void elementObj::implObj
+::do_inherited_visibility_updated(IN_THREAD_ONLY,
+				  inherited_visibility_info &info)
 {
 	// Officially record the fact that this element is now visible, or
 	// not visible, for real.
@@ -158,11 +169,11 @@ void elementObj::implObj::do_inherited_visibility_updated(IN_THREAD_ONLY,
 	// Notify handlers that we're about to show or hide this element.
 
 	invoke_element_state_updates(IN_THREAD,
-				     flag
+				     info.flag
 				     ? element_state::before_showing
 				     : element_state::before_hiding);
 
-	set_inherited_visibility(IN_THREAD, flag);
+	set_inherited_visibility(IN_THREAD, info);
 
 	// Notify handlers that we just shown or hidden this element.
 
@@ -172,11 +183,12 @@ void elementObj::implObj::do_inherited_visibility_updated(IN_THREAD_ONLY,
 				     : element_state::after_hiding);
 }
 
-void elementObj::implObj::set_inherited_visibility(IN_THREAD_ONLY,
-						   bool flag)
+void elementObj::implObj
+::set_inherited_visibility(IN_THREAD_ONLY,
+			   inherited_visibility_info &info)
 {
 	// Offically update this element's "real" visibility.
-	data(IN_THREAD).inherited_visibility=flag;
+	data(IN_THREAD).inherited_visibility=info.flag;
 }
 
 void elementObj::implObj::draw_after_visibility_updated(IN_THREAD_ONLY,
@@ -372,7 +384,7 @@ void elementObj::implObj::exposure_event_recursive(IN_THREAD_ONLY,
 				       return;
 
 			       e->impl->exposure_event_recursive(IN_THREAD,
-								 areas);
+								 child_areas);
 		       });
 }
 
@@ -400,12 +412,13 @@ void elementObj::implObj::clear_to_color(IN_THREAD_ONLY,
 {
 	clear_to_color(IN_THREAD,
 		       clip_region_set(IN_THREAD, *this, di),
-		       di, areas);
+		       di, di, areas);
 }
 
 void elementObj::implObj::clear_to_color(IN_THREAD_ONLY,
 					 const clip_region_set &,
 					 const draw_info &di,
+					 const draw_info &background_color_di,
 					 const rectangle_set &areas)
 {
 #ifdef CLEAR_TO_COLOR_LOG
@@ -418,8 +431,10 @@ void elementObj::implObj::clear_to_color(IN_THREAD_ONLY,
 		area.x = coord_t::truncate(area.x+di.absolute_location.x);
 		area.y = coord_t::truncate(area.y+di.absolute_location.y);
 
-		auto bgxy=di.background_xy_to(di, area.x, area.y);
-		di.window_picture->composite(di.window_background,
+		auto bgxy=background_color_di
+			.background_xy_to(di, area.x, area.y);
+		di.window_picture->composite(background_color_di
+					     .window_background,
 					     bgxy.first,
 					     bgxy.second,
 					     area);

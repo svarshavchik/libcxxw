@@ -81,7 +81,11 @@ void gridlayoutmanagerObj::implObj
 
 	if (info.col > row.size())
 		throw EXCEPTION(_("Attempting to add a display element into a nonexistent column"));
-	auto elem=grid_element::create(info, new_element);
+	auto elem=grid_element::create(info, new_element,
+				       grid_element_padding_lock{
+					       container_impl
+						       ->get_element_impl()
+						       .get_screen()});
 
 	if (info.col >= row.size())
 		row.push_back(elem);
@@ -97,6 +101,25 @@ current_border_impl gridlayoutmanagerObj::implObj
 {
 	return container_impl->get_window_handler().screenref
 		->impl->get_custom_border(info);
+}
+
+void gridlayoutmanagerObj::implObj
+::child_background_color_changed(IN_THREAD_ONLY,
+				 const elementimpl &child)
+{
+	redraw_child_borders_and_padding(IN_THREAD, child);
+}
+
+void gridlayoutmanagerObj::implObj
+::child_visibility_changed(IN_THREAD_ONLY,
+			   struct inherited_visibility_info &info,
+			   const elementimpl &child)
+{
+	// No need to redraw when the visibility change is the result of
+	// mapping the top level window. The forthcoming exposure events
+	// will take care of this.
+	if (!info.do_not_redraw)
+		redraw_child_borders_and_padding(IN_THREAD, child);
 }
 
 LIBCXXW_NAMESPACE_END

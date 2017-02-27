@@ -152,20 +152,15 @@ void child_elementObj::set_background_color(IN_THREAD_ONLY,
 						  (this));
 }
 
-void child_elementObj::set_inherited_visibility(IN_THREAD_ONLY, bool flag)
+void child_elementObj
+::set_inherited_visibility(IN_THREAD_ONLY,
+			   inherited_visibility_info &visibility_info)
 {
-	elementObj::implObj::set_inherited_visibility(IN_THREAD, flag);
-
-	// Note that current_background_color that's installed by
-	// set_bakcground_color() checks inherited_visibility. This means that
-	// technically a visibility change means a logically different
-	// background color, that our container needs to know about. The
-	// grid layout manager would want to redraw its borders around this
-	// element to reflect the logically different background color.
-
-	container->child_background_color_changed(IN_THREAD,
-						  ref<elementObj::implObj>
-						  (this));
+	elementObj::implObj::set_inherited_visibility(IN_THREAD,
+						      visibility_info);
+	container->child_visibility_changed(IN_THREAD,
+					    visibility_info,
+					    elementimpl(this));
 }
 
 bool child_elementObj::has_own_background_color(IN_THREAD_ONLY)

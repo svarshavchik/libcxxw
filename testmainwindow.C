@@ -5,6 +5,7 @@
 
 #include <x/mpobj.H>
 #include <vector>
+#include <iostream>
 
 struct sausage_factory {
 
@@ -191,7 +192,8 @@ void set_filler_color(const LIBCXX_NAMESPACE::w::element &e)
 				->create_solid_color_picture({0, 0, 0}));
 }
 
-countstateupdate runteststate(bool individual_show)
+countstateupdate runteststate(testmainwindowoptions &options,
+			      bool individual_show)
 {
 	std::cout << "*** runteststate" << std::endl << std::flush;
 	{
@@ -207,7 +209,7 @@ countstateupdate runteststate(bool individual_show)
 	typedef LIBCXX_NAMESPACE::mcguffinstash<> stash_t;
 
 	auto main_window=LIBCXX_NAMESPACE::w::main_window
-		::create([individual_show]
+		::create([individual_show, &options]
 			 (const auto &main_window)
 			 {
 				 auto stash=stash_t::create();
@@ -215,7 +217,7 @@ countstateupdate runteststate(bool individual_show)
 				 main_window->appdata=stash;
 
 				 LIBCXX_NAMESPACE::w::gridlayoutmanager m=main_window->get_layoutmanager();
-				 auto e=m->append_row()->create_canvas
+				 auto e=m->append_row()->padding(options.nopadding->value ? 0:1).create_canvas
 				 ([&]
 				  (const auto &c) {
 					 set_filler_color(c);
@@ -257,14 +259,19 @@ countstateupdate runteststate(bool individual_show)
 									   exit(1);
 								   });
 
-	wait_until_clear(0);
+	// When there's no padding, we expect one clear event, for the canvas
+	// element that takes up the entire window. When we use padding, we
+	// expect an extra call to clear_to_color, for the padding area around
+	// the element.
+
+	wait_until_clear(options.nopadding->value ? 0:1);
 
 	return c;
 }
 
-void teststate(bool flag)
+void teststate(testmainwindowoptions &options, bool flag)
 {
-	auto c=runteststate(flag);
+	auto c=runteststate(options, flag);
 
 	alarm(0);
 
@@ -273,12 +280,28 @@ void teststate(bool flag)
 
 	sausage_factory_t::lock lock(sausages);
 
-	if (lock->number_of_calls != 1 ||
-	    lock->number_of_areas != 1)
+	// No padding, a single clear_to_color call.
+
+	int number_of_calls=1;
+	int number_of_areas=1;
+
+	// With padding, one more clear to color, for the padding area,
+	// comprising of four rectangles
+
+	if (!options.nopadding->value)
+	{
+		number_of_calls=2;
+		number_of_areas=5;
+	}
+
+	if (lock->number_of_calls != number_of_calls ||
+	    lock->number_of_areas != number_of_areas)
 		throw EXCEPTION("There were " << lock->number_of_calls
 				<< " clear_to_color() calls, for "
 				<< lock->number_of_areas
-				<< " rectangles instead of a single call");
+				<< " rectangles instead of "
+				<< number_of_calls << " and "
+				<< number_of_areas);
 
 	if (!lock->correct_metrics_set_when_mapping_window)
 		throw EXCEPTION("Didn't get the right initial window size");
@@ -321,7 +344,7 @@ void runtestflashwithcolor(const testmainwindowoptions &options)
 				 b.rounded=true;
 				 b.radius=3;
 
-				 auto e=m->append_row()->border(b).create_canvas
+				 auto e=m->append_row()->padding(options.nopadding->value ? 0:1).border(b).create_canvas
 				 ([&]
 				  (const auto &c) {
 					 if (options.showhide->value)
@@ -409,7 +432,7 @@ void runtestflashwiththeme(const testmainwindowoptions &options)
 			 (const auto &main_window)
 			 {
 				 LIBCXX_NAMESPACE::w::gridlayoutmanager m=main_window->get_layoutmanager();
-				 m->append_row()->create_canvas
+				 m->append_row()->padding(options.nopadding->value ? 0:1).create_canvas
 				 ([]
 				  (const auto &ignore) {},
 				  10, 10);
@@ -467,18 +490,43 @@ void runtestflashwiththeme(const testmainwindowoptions &options)
 	}
 }
 
+void verify_clears(const testmainwindowoptions &options)
+{
+	sausage_factory_t::lock lock(sausages);
+
+	// No padding: there's one call to clear_to_color() from the initial
+	// exposure, then four more calls for each color change. Each color
+	// change draws a single rectangle.
+
+	int number_of_calls=5;
+	int number_of_areas=5;
+
+	if (!options.nopadding->value)
+	{
+		// With padding, there are five additional calls, for the
+		// padding area. Each call clears for rectangles, for the
+		// padding area around the center cell.
+
+		number_of_calls += 5;
+		number_of_areas += 20;
+
+	}
+
+	if (lock->number_of_calls != number_of_calls ||
+	    lock->number_of_areas != number_of_areas)
+		throw EXCEPTION("There were " << lock->number_of_calls
+				<< " clear_to_color() calls, for "
+				<< lock->number_of_areas
+				<< " rectangles instead of "
+				<< number_of_calls << " and "
+				<< number_of_areas);
+}
+
 void testflashwithcolor(const testmainwindowoptions &options)
 {
 	runtestflashwithcolor(options);
 	alarm(0);
-
-	sausage_factory_t::lock lock(sausages);
-
-	if (lock->number_of_calls != 5 || lock->number_of_areas != 5)
-		throw EXCEPTION("There were " << lock->number_of_calls
-				<< " clear_to_color() calls, for "
-				<< lock->number_of_areas
-				<< " rectangles instead of five");
+	verify_clears(options);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -627,15 +675,16 @@ void testthemescale(const testmainwindowoptions &options)
 		sausage_factory_t::lock lock(sausages);
 
 		// Initial rebuild, plus rebuild forced by manually setting
-		// elements_have_been_modified();
+		// elements_have_been_modified(), plus for more rebuilts
+		// triggered by padding_recalculated().
 
-		if (lock->rebuild_elements != 2)
+		if (lock->rebuild_elements != 6)
 			throw EXCEPTION("Rebuilt elements " <<
 					lock->rebuild_elements <<
-					" times instead of two times.");
+					" times instead of six times.");
 		// Check that rebuild_elements created a single grid_element
 		// with 8 borders.
-		if (lock->border_elements_survey != std::vector<int>({8, 8}))
+		if (lock->border_elements_survey != std::vector<int>({8, 8, 8, 8, 8, 8}))
 			throw EXCEPTION("Did not get expected border_elements.");
 		if (lock->created_straight_border != 4)
 			throw EXCEPTION("Expected 4 new borders, got " <<
@@ -683,14 +732,8 @@ void testthemescale(const testmainwindowoptions &options)
 void testflashwiththeme(const testmainwindowoptions &options)
 {
 	runtestflashwiththeme(options);
-
-	sausage_factory_t::lock lock(sausages);
-
-	if (lock->number_of_calls != 5 || lock->number_of_areas != 5)
-		throw EXCEPTION("There were " << lock->number_of_calls
-				<< " clear_to_color() calls, for "
-				<< lock->number_of_areas
-				<< " rectangles instead of five");
+	alarm(0);
+	verify_clears(options);
 }
 
 int main(int argc, char **argv)
@@ -702,8 +745,8 @@ int main(int argc, char **argv)
 	try {
 		if (options.state->value)
 		{
-			teststate(false);
-			teststate(true);
+			teststate(options, false);
+			teststate(options, true);
 		}
 		else if (options.usetheme->value)
 		{

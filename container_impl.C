@@ -4,6 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "container.H"
+#include "container_impl.H"
 #include "x/w/container.H"
 #include "layoutmanager.H"
 #include "child_element.H"
@@ -42,13 +43,78 @@ void containerObj::implObj::do_for_each_child(IN_THREAD_ONLY,
 			     });
 }
 
+// Common code shared by the container and the layout manager, to clear
+// the container-provided padding around an element in the container, using
+// the element's background color.
+//
+// This is invoked from containerObj::implObj::do_draw(), when drawing the
+// container portion. This is also invoked by the layout manager when an
+// element changes its background color, to redraw the padding with the new
+// background color.
+//
+// Provided parameters:
+//
+// - The container element
+// - The layout manager
+// - The element whose padding needs to get drawn
+// - The container element's get_draw_info().
+// - The container element's instantiated clip region.
+// - A rectangle_set where the area of the element, including its padding
+//   region, gets added to.
+//
+// The calling convention is optimized for the do_draw() caller, with do_draw
+// acquiring its get_draw_info() and clip region once, and using it for
+// drawing all of its elements' padding; and accumulated the total area drawn
+// into a rectangle_set. The layout manager, when it calls this as a result
+// of the element's background color change, simply rides the coat-tails.
+
+void container_clear_padding(IN_THREAD_ONLY,
+			     elementObj::implObj &container_element_impl,
+			     layoutmanagerObj::implObj &manager,
+			     const elementimpl &e_impl,
+			     const draw_info &di,
+			     elementObj::implObj::clip_region_set &clip,
+			     rectangle_set &child_areas)
+{
+	rectangle padded_position=manager.padded_position(IN_THREAD, e_impl);
+
+	// We combine all padded child areas into child_areas.
+	//
+	// But only if the child element is visible. If not, its area gets
+	// drawn as part of the container's background.
+
+	if (e_impl->data(IN_THREAD).inherited_visibility)
+		child_areas.insert(padded_position);
+
+	rectangle position=e_impl->data(IN_THREAD).current_position;
+
+	// Subtract position from
+	// padded_position, to obtain the
+	// padding area, then clear it to
+	// the child's color.
+
+	auto padding=subtract({padded_position}, {position});
+
+	if (padding.empty())
+		return;
+
+	auto &child_di=e_impl->get_draw_info(IN_THREAD);
+
+	container_element_impl
+		.clear_to_color(IN_THREAD, clip, di, child_di, padding);
+}
+
 void containerObj::implObj::do_draw(IN_THREAD_ONLY,
 				    const draw_info &di,
 				    const rectangle_set &areas)
 {
+	auto &element_impl=get_element_impl();
+
 	// Compute the areas where the child elements are.
 
 	rectangle_set child_areas;
+
+	elementObj::implObj::clip_region_set clip{IN_THREAD, element_impl, di};
 
 	invoke_layoutmanager
 		([&]
@@ -59,25 +125,18 @@ void containerObj::implObj::do_draw(IN_THREAD_ONLY,
 				  [&]
 				  (const element &e)
 				  {
-					  if (!e->impl->data(IN_THREAD)
-					      .inherited_visibility)
-						  return;
-
-					  rectangle padded_position=
-						  manager->padded_position
-						  (IN_THREAD, e);
-
-					  rectangle position=
-						  e->impl->data(IN_THREAD)
-						  .current_position;
-
-					  child_areas.insert(position);
+					  container_clear_padding(IN_THREAD,
+								  element_impl,
+								  *manager,
+								  e->impl,
+								  di, clip,
+								  child_areas);
 				  });
 		 });
 
 	// Subtract it from our area.
 	auto current_position=
-		get_element_impl().data(IN_THREAD).current_position;
+		element_impl.data(IN_THREAD).current_position;
 
 	current_position.x=0;
 	current_position.y=0;
@@ -87,12 +146,12 @@ void containerObj::implObj::do_draw(IN_THREAD_ONLY,
 	auto remaining=subtract(my_area, child_areas);
 
 	if (!remaining.empty())
-		get_element_impl().clear_to_color(IN_THREAD, di, remaining);
+		element_impl.clear_to_color(IN_THREAD, clip, di, di, remaining);
 }
 
+
 void containerObj::implObj
-::child_background_color_changed(IN_THREAD_ONLY,
-				 const ref<elementObj::implObj> &child)
+::child_background_color_changed(IN_THREAD_ONLY, const elementimpl &child)
 {
 	invoke_layoutmanager
 		([&]
@@ -103,20 +162,35 @@ void containerObj::implObj
 		 });
 }
 
-void containerObj::implObj::inherited_visibility_updated(IN_THREAD_ONLY,
-							 bool flag)
+void containerObj::implObj
+::child_visibility_changed(IN_THREAD_ONLY,
+			   inherited_visibility_info &info,
+			   const elementimpl &child)
+{
+	invoke_layoutmanager
+		([&]
+		 (const auto &manager)
+		 {
+			 manager->child_visibility_changed(IN_THREAD,
+							   info, child);
+		 });
+}
+
+void containerObj::implObj
+::inherited_visibility_updated(IN_THREAD_ONLY,
+			       inherited_visibility_info &info)
 {
 	// When the container gets hidden, the child elements are hidden
 	// first. When the container gets shown, the child elements are
 	// shown after the container.
 
-	if (!flag)
-		propagate_inherited_visibility(IN_THREAD, flag);
+	if (!info.flag)
+		propagate_inherited_visibility(IN_THREAD, info);
 
-	get_element_impl().do_inherited_visibility_updated(IN_THREAD, flag);
+	get_element_impl().do_inherited_visibility_updated(IN_THREAD, info);
 
-	if (flag)
-		propagate_inherited_visibility(IN_THREAD, flag);
+	if (info.flag)
+		propagate_inherited_visibility(IN_THREAD, info);
 }
 
 // If this container's child elements have actual_visibility set (they
@@ -126,8 +200,9 @@ void containerObj::implObj::inherited_visibility_updated(IN_THREAD_ONLY,
 // Get the child elements from the layout manager, and invoke their
 // inherited_visibility_updated().
 
-void containerObj::implObj::propagate_inherited_visibility(IN_THREAD_ONLY,
-							   bool flag)
+void containerObj::implObj
+::propagate_inherited_visibility(IN_THREAD_ONLY,
+				 inherited_visibility_info &info)
 {
 	for_each_child(IN_THREAD,
 		       [&]
@@ -137,7 +212,7 @@ void containerObj::implObj::propagate_inherited_visibility(IN_THREAD_ONLY,
 				       return;
 
 			       e->impl->inherited_visibility_updated
-				       (IN_THREAD, flag);
+				       (IN_THREAD, info);
 		       });
 }
 
@@ -212,6 +287,14 @@ void containerObj::implObj::request_visibility_recursive(IN_THREAD_ONLY,
 	auto &element_impl=get_element_impl();
 	element_impl.elementObj::implObj::request_visibility_recursive
 		(IN_THREAD, flag);
+}
+
+void containerObj::implObj::theme_updated(IN_THREAD_ONLY)
+{
+	invoke_layoutmanager([&](const auto &manager)
+			     {
+				     manager->theme_updated(IN_THREAD);
+			     });
 }
 
 LIBCXXW_NAMESPACE_END

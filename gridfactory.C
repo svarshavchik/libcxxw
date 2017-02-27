@@ -69,6 +69,54 @@ gridfactoryObj &gridfactoryObj::bottom_border(const border_infomm &info)
 	return *this;
 }
 
+gridfactoryObj &gridfactoryObj::padding(double paddingmm)
+{
+	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
+
+	lock->left_paddingmm=paddingmm;
+	lock->right_paddingmm=paddingmm;
+	lock->top_paddingmm=paddingmm;
+	lock->bottom_paddingmm=paddingmm;
+
+	return *this;
+}
+
+gridfactoryObj &gridfactoryObj::left_padding(double paddingmm)
+{
+	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
+
+	lock->left_paddingmm=paddingmm;
+
+	return *this;
+}
+
+gridfactoryObj &gridfactoryObj::right_padding(double paddingmm)
+{
+	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
+
+	lock->right_paddingmm=paddingmm;
+
+	return *this;
+}
+
+gridfactoryObj &gridfactoryObj::top_padding(double paddingmm)
+{
+	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
+
+	lock->top_paddingmm=paddingmm;
+
+	return *this;
+}
+
+gridfactoryObj &gridfactoryObj::bottom_padding(double paddingmm)
+{
+	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
+
+	lock->bottom_paddingmm=paddingmm;
+
+	return *this;
+}
+
 void gridfactoryObj::created(const element &new_element)
 {
 	implObj::new_grid_element_t::lock lock(impl->new_grid_element);

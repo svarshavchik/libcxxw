@@ -166,7 +166,8 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 	//! This gets translated to mapping/unmapping the window.
 
-	void set_inherited_visibility(IN_THREAD_ONLY, bool flag) override;
+	void set_inherited_visibility(IN_THREAD_ONLY,
+				      inherited_visibility_info &info) override;
 
 	//! Set window size to preferred size before its visible for 1st time.
 

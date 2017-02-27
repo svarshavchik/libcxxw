@@ -64,6 +64,7 @@ libcxxw_la_SOURCES=\
 	connection_threadrunelement.C		    \
 	container.C				    \
 	container.H				    \
+	container_impl.H			    \
 	container_element_overrides_decl.H	    \
 	container_element_overrides_impl.H	    \
 	container_impl.C			    \
@@ -353,11 +354,17 @@ check-am:
 
 test:
 	./testmainwindow --state
+	./testmainwindow --state --nopadding
 	./testmainwindow
+	./testmainwindow --nopadding
 	./testmainwindow --showhide
+	./testmainwindow --showhide --nopadding
 	./testmainwindow --usemain
+	./testmainwindow --usemain --nopadding
 	./testmainwindow --usetheme
+	./testmainwindow --usetheme --nopadding
 	./testmainwindow --themescale
+	./testmainwindow --themescale --nopadding
 
 .PHONY: rpm
 

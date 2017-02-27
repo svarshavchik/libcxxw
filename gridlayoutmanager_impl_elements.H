@@ -44,8 +44,9 @@ public:
 
 		pos_axis(const metrics::grid_pos &pos,
 			 const metrics::horizvert &axises,
+			 const metrics::pos_axis_padding &padding,
 			 const element &child_element)
-			: metrics::pos_axis({pos, axises}),
+			: metrics::pos_axis({pos, axises, padding}),
 			child_element(child_element) {}
 	};
 

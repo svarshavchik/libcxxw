@@ -9,6 +9,7 @@
 #include "straight_border.H"
 #include "corner_border.H"
 #include "current_border_impl.H"
+#include "container_impl.H"
 #include <x/number_hash.H>
 
 LIBCXXW_NAMESPACE_START
@@ -48,9 +49,33 @@ static void register_border(auto &lookup,
 // surrounding borders.
 
 void gridlayoutmanagerObj::implObj
-::child_background_color_changed(IN_THREAD_ONLY,
-				 const ref<elementObj::implObj> &child)
+::redraw_child_borders_and_padding(IN_THREAD_ONLY,
+				   const ref<elementObj::implObj> &child)
 {
+	elementObj::implObj &container_element_impl=
+		container_impl->get_element_impl();
+
+	if (!container_element_impl.data(IN_THREAD).inherited_visibility)
+		return; // This container is not visible, don't bother.
+
+	// Clear any padding around the element to its background color,
+	// borrowing the container code.
+
+	{
+		const draw_info &di=container_element_impl
+			.get_draw_info(IN_THREAD);
+		elementObj::implObj::clip_region_set clip{IN_THREAD,
+				container_element_impl, di};
+		rectangle_set dummy;
+
+		container_clear_padding(IN_THREAD,
+					container_element_impl,
+					*this,
+					child,
+					di,
+					clip,
+					dummy);
+	}
 	grid_map_t::lock lock(grid_map);
 
 	auto &lookup=lock->get_lookup_table();
@@ -62,6 +87,22 @@ void gridlayoutmanagerObj::implObj
 
 	for (const auto &b:iter->second->border_elements)
 		b->impl->schedule_redraw_if_visible(IN_THREAD);
+}
+
+void gridlayoutmanagerObj::implObj::theme_updated(IN_THREAD_ONLY)
+{
+	grid_map_t::lock lock(grid_map);
+
+	grid_element_padding_lock
+		padding_lock{container_impl->get_element_impl().get_screen()};
+
+	for (const auto &row:lock->elements)
+		for (const auto &col:row)
+			col->calculate_padding(padding_lock);
+
+	lock->padding_recalculated();
+
+	needs_recalculation(IN_THREAD);
 }
 
 bool gridlayoutmanagerObj::implObj::rebuild_elements(IN_THREAD_ONLY)
@@ -391,10 +432,13 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(IN_THREAD_ONLY)
 				(col->pos,
 				 metrics::horizvert(col->grid_element->impl
 						    ->get_horizvert(IN_THREAD)),
+				 *col,
 				 col->grid_element);
 		}
 
 	// Now, add all the borders to the mix.
+
+	metrics::pos_axis_padding no_padding;
 
 	for (const auto &b:ge->straight_borders)
 	{
@@ -404,6 +448,7 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(IN_THREAD_ONLY)
 							     ->impl
 							     ->get_horizvert
 							     (IN_THREAD)),
+					  no_padding,
 					  b.second.border);
 	}
 
@@ -415,6 +460,7 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(IN_THREAD_ONLY)
 							     ->impl
 							     ->get_horizvert
 							     (IN_THREAD)),
+					  no_padding,
 					  b.second.border);
 	}
 
@@ -579,7 +625,6 @@ bool gridlayoutmanagerObj::implObj::elementsObj
 	if (!flag && (horiz_metrics != new_horiz_metrics ||
 		      vert_metrics != new_vert_metrics))
 	{
-		std::cout << "   TRUE" << std::endl;
 		flag=true;
 	}
 
@@ -655,10 +700,32 @@ void gridlayoutmanagerObj::implObj
 	{
 		const auto &element=child.child_element;
 
+		const metrics::pos_axis_padding &padding=child.padding;
+
 		auto hv=element->impl->get_horizvert(IN_THREAD);
 
 		auto element_position=
 			elements.compute_element_position(child);
+
+		// Adjust for the element's requested padding. Reduce
+		// the computed position by the element's stated padding,
+		// as the first order of business.
+
+		if (element_position.width >=
+		    dim_t::value_type(padding.total_horiz_padding))
+		{
+			element_position.width -= padding.total_horiz_padding;
+			element_position.x = coord_t::truncate
+				(element_position.x+padding.left_padding);
+		}
+
+		if (element_position.height >=
+		    dim_t::value_type(padding.total_vert_padding))
+		{
+			element_position.height -= padding.total_vert_padding;
+			element_position.y = coord_t::truncate
+				(element_position.y+padding.left_padding);
+		}
 
 		// If the total size of the element's rows and columns
 		// exceeds the elements maximum metric, position the
@@ -729,6 +796,33 @@ void gridlayoutmanagerObj::implObj
 		element->impl->update_current_position(IN_THREAD,
 						       element_position);
 	}
+}
+
+rectangle gridlayoutmanagerObj::implObj
+::padded_position(IN_THREAD_ONLY,
+		  const ref<elementObj::implObj> &e_impl)
+{
+	rectangle ret=layoutmanagerObj::implObj::padded_position(IN_THREAD,
+								 e_impl);
+
+	grid_map_t::lock lock(grid_map);
+
+	auto &lookup=lock->get_lookup_table();
+
+	auto iter=lookup.find(e_impl);
+
+	if (iter == lookup.end())
+		return ret; // This is probably a border element. No padding.
+
+	auto ge=lock->elements.at(iter->second->row).at(iter->second->col);
+
+	ret.x=coord_t::truncate(ret.x-ge->left_padding);
+	ret.y=coord_t::truncate(ret.y-ge->top_padding);
+
+	ret.width=dim_t::truncate(ret.width+ge->total_horiz_padding);
+	ret.height=dim_t::truncate(ret.height+ge->total_vert_padding);
+
+	return ret;
 }
 
 rectangle gridlayoutmanagerObj::implObj::elementsObj
