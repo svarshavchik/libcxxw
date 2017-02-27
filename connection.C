@@ -182,8 +182,7 @@ static inline void update_themes(const std::vector<ref<screenObj::implObj>> &s,
 						    theme_config);
 
 		new_theme->load(theme_config, screen);
-		screenObj::implObj::current_theme_t::lock
-			lock(screen->current_theme);
+		current_theme_t::lock lock(screen->current_theme);
 
 		*lock=new_theme;
 	}

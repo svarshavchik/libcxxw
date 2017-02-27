@@ -94,8 +94,6 @@ class LIBCXX_HIDDEN custom_current_border_implObj
 
 	defaulttheme current_theme_thread_only;
 
-	typedef screenObj::implObj::current_theme_t current_theme_t;
-
 	static border_impl border_impl_from_info(const ref<screenObj::implObj>
 						 &screen,
 						 const border_infomm &info,

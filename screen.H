@@ -24,7 +24,6 @@
 #include "xid_t.H"
 #include <x/logger.H>
 #include <x/vector.H>
-#include <x/mpobj.H>
 #include <xcb/xcb.h>
 #include <cmath>
 #include <string>
@@ -79,14 +78,6 @@ class LIBCXX_HIDDEN screenObj::implObj
 
 	//! Same screen_depths as the public object.
 	const vector<const_ref<depthObj>> screen_depths;
-
-	//! Current theme, mutex protected.
-
-	//! The current theme must be consulted when constructing new
-	//! display elements, and it is also accessed by the connection thread
-	//! as well.
-
-	typedef mpobj<defaulttheme> current_theme_t;
 
 	//! The current theme for this screen.
 	current_theme_t current_theme;
