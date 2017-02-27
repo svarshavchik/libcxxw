@@ -245,6 +245,8 @@ class LIBCXX_INTERNAL rect_merge_pass {
 	}
 };
 
+void merge(rectangle_set &rectangles) LIBCXX_HIDDEN;
+
 void merge(rectangle_set &rectangles)
 {
 	bool merged_horizontally;

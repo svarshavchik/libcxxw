@@ -431,6 +431,9 @@ void elementObj::implObj::clear_to_color(IN_THREAD_ONLY,
 		area.x = coord_t::truncate(area.x+di.absolute_location.x);
 		area.y = coord_t::truncate(area.y+di.absolute_location.y);
 
+#ifdef CLEAR_TO_COLOR_RECT
+		CLEAR_TO_COLOR_RECT();
+#endif
 		auto bgxy=background_color_di
 			.background_xy_to(di, area.x, area.y);
 		di.window_picture->composite(background_color_di

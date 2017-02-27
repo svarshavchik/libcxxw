@@ -6,6 +6,8 @@
 #include <x/mpobj.H>
 #include <vector>
 #include <iostream>
+#include <unordered_set>
+#include "x/w/rectangle.H"
 
 struct sausage_factory {
 
@@ -15,6 +17,7 @@ struct sausage_factory {
 	int created_straight_border=0;
 	int changed_corner_border=0;
 
+	LIBCXXW_NAMESPACE::rectangle_set drawn_rectangles;
 	int called_recalculate_with_false_flag=0;
 	int called_recalculate_with_true_flag=0;
 	std::vector<int> border_elements_survey;
@@ -35,6 +38,13 @@ sausage_factory_t sausages;
 		lock->number_of_areas += areas.size();			\
 		lock->number_of_calls++;				\
 		lock.notify_all();					\
+	} while(0)
+
+#define CLEAR_TO_COLOR_RECT() do {					\
+		sausage_factory_t::lock					\
+			lock(sausages);					\
+									\
+		lock->drawn_rectangles.insert(area);			\
 	} while(0)
 
 #define REQUEST_VISIBILITY_LOG(w,h) do {				\
@@ -138,6 +148,7 @@ sausage_factory_t sausages;
 #include "gridlayoutmanager_impl_elements.C"
 #include "straight_border_impl.C"
 #include "corner_border_impl.C"
+#include "rectangle.C"
 
 #include "x/w/main_window.H"
 #include "x/w/screen.H"
@@ -305,6 +316,31 @@ void teststate(testmainwindowoptions &options, bool flag)
 
 	if (!lock->correct_metrics_set_when_mapping_window)
 		throw EXCEPTION("Didn't get the right initial window size");
+
+	LIBCXXW_NAMESPACE::rectangle_slicer
+		slicer{lock->drawn_rectangles,
+			lock->drawn_rectangles};
+
+	slicer.slice_slicee();
+	slicer.slice_slicer();
+
+	LIBCXXW_NAMESPACE::rectangle_set test_set{slicer.slicee_v.begin(),
+			slicer.slicee_v.end()
+			};
+
+	if (test_set == lock->drawn_rectangles)
+	{
+		LIBCXXW_NAMESPACE::merge(test_set);
+
+		if (test_set.size() == 1)
+			return;
+	}
+	std::ostringstream o;
+
+	for (const auto &r:lock->drawn_rectangles)
+		o << " " << std::endl;
+
+	throw EXCEPTION("Bad set of cleared rectangles:" << o.str());
 }
 
 void runtestflashwithcolor(const testmainwindowoptions &options)

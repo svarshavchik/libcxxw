@@ -32,13 +32,23 @@ class gridfactoryObj;
 //! gridfactory->right_border(new_border);
 //! gridfactory->top_border(new_border);
 //! gridfactory->bottom_border(new_border);
+//!
+//! gridfactory->padding(2.5);
+//! gridfactory->left_padding(2.5);
+//! gridfactory->right_padding(2.5);
+//! gridfactory->top_padding(2.5);
+//! gridfactory->bottom_padding(2.5);
 //! \endcode
 //!
-//! These methods specify the border for each added element. Typically,
-//! border() sets the same \ref border_infomm "border"
-//! for each one of the new element's four sides, and borders from adjacent
-//! elements sharing the same side get collapsed together, with the "best"
-//! border coming out on top.
+//! Each display element in the grid has borders and inner padding.
+//! Before creating and adding a new display element to the grid, these
+//! methods specify its border and the padding.
+//!
+//! border() and padding() set the border and the padding for all four sides,
+//! or they can be set individually.
+//!
+//! A border gets specified as a \ref border_infomm "INSERT_LIBX_NAMESPACE::w::border_infomm".
+//! The padding gets specified in millimeters.
 
 typedef ref<gridfactoryObj> gridfactory;
 
