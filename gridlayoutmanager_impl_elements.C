@@ -657,119 +657,121 @@ void gridlayoutmanagerObj::implObj
 
 		auto hv=element->impl->get_horizvert(IN_THREAD);
 
-		// Find the element's first and last row and column.
-
-		const auto &horiz_pos=child.pos->horiz_pos;
-		const auto &vert_pos=child.pos->vert_pos;
-
-		auto h_start=elements.horiz_sizes.find(horiz_pos.start);
-		auto h_end=elements.horiz_sizes.find(horiz_pos.end);
-
-		auto v_start=elements.horiz_sizes.find(vert_pos.start);
-		auto v_end=elements.horiz_sizes.find(vert_pos.end);
-
-		if (h_start == elements.horiz_sizes.end() ||
-		    h_end == elements.horiz_sizes.end() ||
-		    v_start == elements.vert_sizes.end() ||
-		    v_end == elements.vert_sizes.end())
-		{
-			LOG_FATAL("Internal: cannot find grid rows or columns for an element, horiz_pos=" << horiz_pos.start << "-" << horiz_pos.end
-				  << ", vert_pos=" << vert_pos.start << "-" <<vert_pos.end);
-			continue;
-		}
-
-		coord_t x=std::get<coord_t>(h_start->second);
-		coord_t y=std::get<coord_t>(v_start->second);
-
-		// Compute the sum total size of the element's rows and columns
-
-		auto new_width=
-			(std::get<coord_t>(h_end->second)
-			 + std::get<dim_t>(h_end->second)
-			 - x);
-
-		auto new_height=
-			(std::get<coord_t>(v_end->second)
-			 + std::get<dim_t>(v_end->second)
-			 - y);
-
-		if (dim_t::overflows(new_width))
-			new_width=std::numeric_limits<dim_t::value_type>::max();
-
-		if (dim_t::overflows(new_height))
-			new_height=std::numeric_limits<dim_t::value_type>::max();
+		auto element_position=
+			elements.compute_element_position(child);
 
 		// If the total size of the element's rows and columns
 		// exceeds the elements maximum metric, position the
-		// element accordingly. Adjust new_width and new_height,
+		// element accordingly. width and height,
 		// so the element does not get resized.
 
 		if (hv->horiz.maximum() != dim_t::infinite())
 		{
-			auto max_width=hv->horiz.maximum()+dim_t(0);
+			dim_t max_width=hv->horiz.maximum();
 
-			if (max_width < new_width)
+			if (max_width < element_position.width)
 			{
-				dim_squared_t padding=0;
+				dim_t padding=0;
 
 				switch (hv->horizontal_alignment) {
 				case metrics::halign::left:
-					max_width=new_width;
+					max_width=element_position.width;
 					break;
 				case metrics::halign::center:
-					padding=(new_width - max_width) / 2;
+					padding=(element_position.width - max_width) / 2;
 					break;
 				case metrics::halign::right:
-					padding=(new_width - max_width);
+					padding=(element_position.width - max_width);
 					break;
 				case metrics::halign::fill:
-					max_width=new_width;
+					max_width=element_position.width;
 					break;
 				}
-				new_width=max_width;
+				element_position.width=max_width;
 
-				x=x.truncate(x+padding);
+				element_position.x=
+					element_position.x.truncate
+					(element_position.x+padding);
 			}
 		}
 
 		if (hv->vert.maximum() != dim_t::infinite())
 		{
-			auto max_height=hv->vert.maximum()+dim_t(0);
+			dim_t max_height=hv->vert.maximum();
 
-			if (max_height < new_height)
+			if (max_height < element_position.height)
 			{
-				dim_squared_t padding=0;
-
+				dim_t padding=0;
 
 				switch (hv->vertical_alignment) {
 				case metrics::valign::top:
-					max_height=new_height;
+					max_height=element_position.height;
 					break;
 				case metrics::valign::middle:
-					padding=(new_height - max_height) / 2;
+					padding=(element_position.height - max_height) / 2;
 					break;
 				case metrics::valign::bottom:
-					padding=(new_height - max_height);
+					padding=(element_position.height - max_height);
 					break;
 				case metrics::valign::fill:
-					max_height=new_height;
+					max_height=element_position.height;
 					break;
 				}
 
-				new_height=max_height;
-				y=y.truncate(y+padding);
+				element_position.height=max_height;
+				element_position.y=
+					element_position.y.truncate
+					(element_position.y+padding);
 			}
 
 		}
 
-		element->impl->update_current_position
-			(IN_THREAD,
-			 {
-				 x, y,
-					 dim_t::truncate(new_width),
-					 dim_t::truncate(new_height),
-			 });
+		element->impl->update_current_position(IN_THREAD,
+						       element_position);
 	}
 }
+
+rectangle gridlayoutmanagerObj::implObj::elementsObj
+::compute_element_position(const pos_axis &child)
+{
+	// Find the element's first and last row and column.
+
+	const auto &horiz_pos=child.pos->horiz_pos;
+	const auto &vert_pos=child.pos->vert_pos;
+
+	auto h_start=horiz_sizes.find(horiz_pos.start);
+	auto h_end=horiz_sizes.find(horiz_pos.end);
+
+	auto v_start=horiz_sizes.find(vert_pos.start);
+	auto v_end=horiz_sizes.find(vert_pos.end);
+
+	if (h_start == horiz_sizes.end() ||
+	    h_end == horiz_sizes.end() ||
+	    v_start == vert_sizes.end() ||
+	    v_end == vert_sizes.end())
+	{
+		LOG_FATAL("Internal: cannot find grid rows or columns for an element, horiz_pos=" << horiz_pos.start << "-" << horiz_pos.end
+			  << ", vert_pos=" << vert_pos.start << "-" <<vert_pos.end);
+		return {};
+	}
+
+	coord_t x=std::get<coord_t>(h_start->second);
+	coord_t y=std::get<coord_t>(v_start->second);
+
+	// Compute the sum total size of the element's rows and columns
+
+	dim_t new_width=dim_t::truncate
+		(std::get<coord_t>(h_end->second)
+		 + std::get<dim_t>(h_end->second)
+		 - x);
+
+	dim_t new_height=dim_t::truncate
+		(std::get<coord_t>(v_end->second)
+		 + std::get<dim_t>(v_end->second)
+		 - y);
+
+	return {x, y, new_width, new_height};
+}
+
 
 LIBCXXW_NAMESPACE_END

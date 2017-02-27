@@ -201,6 +201,10 @@ public:
 
 	bool recalculate_sizes(dim_t target_width,
 			       dim_t target_height);
+
+	//! Now that everything's calculate, compute an element's position
+
+	rectangle compute_element_position(const pos_axis &child);
 };
 
 LIBCXXW_NAMESPACE_END
