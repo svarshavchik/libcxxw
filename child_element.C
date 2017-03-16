@@ -114,18 +114,9 @@ void child_elementObj::horizvert_updated(IN_THREAD_ONLY)
 					});
 }
 
-child_elementObj::update_background_color_t
-child_elementObj::no_background()
-{
-	return [](IN_THREAD_ONLY, draw_info &, child_elementObj &)
-	{
-	};
-}
-
 void child_elementObj::remove_background_color(IN_THREAD_ONLY)
 {
-	current_background_color(IN_THREAD)=no_background();
-	own_background_color(IN_THREAD)=false;
+	current_background_color(IN_THREAD)=nullptr;
 	background_color_changed(IN_THREAD);
 	container->child_background_color_changed(IN_THREAD,
 						  ref<elementObj::implObj>
@@ -135,21 +126,19 @@ void child_elementObj::remove_background_color(IN_THREAD_ONLY)
 void child_elementObj::set_background_color(IN_THREAD_ONLY,
 					    const background_color &bgcolor)
 {
-	current_background_color(IN_THREAD)=
-		[bgcolor](IN_THREAD_ONLY, draw_info &di, child_elementObj &e)
-		{
-			if (!e.data(IN_THREAD).inherited_visibility)
-				return; // None, use parent background.
-
-			di.window_background=bgcolor->get_current_color()->impl;
-			di.background_x=di.absolute_location.x;
-			di.background_y=di.absolute_location.y;
-		};
-	own_background_color(IN_THREAD)=true;
+	current_background_color(IN_THREAD)=bgcolor;
 	background_color_changed(IN_THREAD);
 	container->child_background_color_changed(IN_THREAD,
 						  ref<elementObj::implObj>
 						  (this));
+}
+
+void child_elementObj::theme_updated(IN_THREAD_ONLY)
+{
+	if (!current_background_color(IN_THREAD).null())
+		current_background_color(IN_THREAD)->theme_updated(IN_THREAD);
+
+	elementObj::implObj::theme_updated(IN_THREAD);
 }
 
 void child_elementObj
@@ -165,13 +154,21 @@ void child_elementObj
 
 bool child_elementObj::has_own_background_color(IN_THREAD_ONLY)
 {
-	return own_background_color(IN_THREAD);
+	return !current_background_color(IN_THREAD).null();
 }
 
-void child_elementObj::prepare_draw_info(IN_THREAD_ONLY,
-					 draw_info &di)
+void child_elementObj::prepare_draw_info(IN_THREAD_ONLY, draw_info &di)
 {
-	current_background_color(IN_THREAD)(IN_THREAD, di, *this);
+	if (current_background_color(IN_THREAD).null())
+		return;
+
+	if (!data(IN_THREAD).inherited_visibility)
+		return; // None, use parent background.
+
+	di.window_background=current_background_color(IN_THREAD)
+		->get_current_color(IN_THREAD)->impl;
+	di.background_x=di.absolute_location.x;
+	di.background_y=di.absolute_location.y;
 }
 
 LIBCXXW_NAMESPACE_END

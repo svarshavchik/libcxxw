@@ -229,6 +229,8 @@ class LIBCXX_HIDDEN screenObj::implObj
 						 ::string_view &color_name,
 						 const rgb &default_value);
 
+	background_color create_background_color(const const_picture &pic);
+
 	/////////////////////////////////////////////////////////////////////
 	//
 	// Compute a size in pixels given the size in millimeters.

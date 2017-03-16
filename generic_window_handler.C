@@ -121,7 +121,8 @@ draw_info &generic_windowObj::handlerObj::get_draw_info(IN_THREAD_ONLY)
 			picture_internal(this),
 			viewport,
 			viewport,
-			current_background_color(IN_THREAD)->get_current_color()
+			current_background_color(IN_THREAD)
+				->get_current_color(IN_THREAD)
 				->impl,
 			0,
 			0,
@@ -243,6 +244,10 @@ void generic_windowObj::handlerObj::exposure_event(IN_THREAD_ONLY,
 
 void generic_windowObj::handlerObj::theme_updated_event(IN_THREAD_ONLY)
 {
+	// container_element_overrides_decl hijacks theme_updated(), so we
+	// just do this here.
+
+	current_background_color(IN_THREAD)->theme_updated(IN_THREAD);
 	theme_updated(IN_THREAD);
 }
 

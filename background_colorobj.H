@@ -7,6 +7,7 @@
 
 #include <x/obj.H>
 #include "x/w/picturefwd.H"
+#include "connection_threadfwd.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -16,7 +17,8 @@ public:
 	background_colorObj();
 	~background_colorObj();
 
-	virtual const_picture get_current_color()=0;
+	virtual const_picture get_current_color(IN_THREAD_ONLY)=0;
+	virtual void theme_updated(IN_THREAD_ONLY)=0;
 };
 
 LIBCXXW_NAMESPACE_END

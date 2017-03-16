@@ -223,7 +223,7 @@ void elementObj::implObj::explicit_redraw(IN_THREAD_ONLY, draw_info_cache &c)
 
 	// Invoke draw() to refresh the contents of this disiplay element.
 
-	auto di=get_draw_info(IN_THREAD);
+	auto &di=get_draw_info(IN_THREAD);
 
 	// Simulate an exposure of the entire element.
 
@@ -359,7 +359,7 @@ void elementObj::implObj::prepare_draw_info(IN_THREAD_ONLY, draw_info &)
 void elementObj::implObj::exposure_event_recursive(IN_THREAD_ONLY,
 						   rectangle_set &areas)
 {
-	auto di=get_draw_info(IN_THREAD);
+	auto &di=get_draw_info(IN_THREAD);
 
 	draw(IN_THREAD, di, areas);
 
@@ -466,8 +466,8 @@ void elementObj::implObj
 void elementObj::implObj
 ::set_background_color(const const_picture &background_color)
 {
-	set_background_color(background_color::base
-			     ::create_background_color(background_color));
+	set_background_color(get_screen()->impl
+			     ->create_background_color(background_color));
 }
 
 void elementObj::implObj

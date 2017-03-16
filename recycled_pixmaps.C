@@ -9,6 +9,7 @@
 #include "screen.H"
 #include "x/w/pictformat.H"
 #include "pixmap.H"
+#include "defaulttheme.H"
 #include "x/w/picture.H"
 #include <x/ref.H>
 #include <x/refptr_hash.H>
@@ -18,7 +19,10 @@ LIBCXXW_NAMESPACE_START
 
 recycled_pixmapsObj::recycled_pixmapsObj()
 	: scratch_buffer_cache{scratch_buffer_cache_t::create()},
-	  theme_background_color_cache{theme_background_color_cache_t::create()}
+	  theme_background_color_cache{
+		  theme_background_color_cache_t::create()},
+	  nontheme_background_color_cache{
+		  nontheme_background_color_cache_t::create()}
 {
 }
 
@@ -70,18 +74,13 @@ scratch_buffer screenObj::implObj
 
 class LIBCXX_HIDDEN theme_background_colorObj : public background_colorObj {
 
-	struct s_info {
-
-		rgb current_rgb;
-		const_picture current_color;
-	};
-
-	typedef mpobj<s_info> info_t;
-
 	const std::string theme_color;
 	const ref<screenObj::implObj> screen;
 
-	info_t info;
+	rgb current_rgb;
+	const_picture current_color;
+
+	defaulttheme current_theme;
 
  public:
 
@@ -93,32 +92,42 @@ class LIBCXX_HIDDEN theme_background_colorObj : public background_colorObj {
 				  const ref<screenObj::implObj> &screen)
 		: theme_color(theme_color),
 		screen(screen),
-		info{current_rgb, current_picture}
+		current_rgb(current_rgb),
+		current_color(current_picture),
+		current_theme(*current_theme_t::lock(screen->current_theme))
 		{
 		}
 
 	~theme_background_colorObj()=default;
 
-	const_picture get_current_color() override
+	const_picture get_current_color(IN_THREAD_ONLY) override
 	{
-		info_t::lock lock(info);
+		return current_color;
+	}
+
+	void theme_updated(IN_THREAD_ONLY) override
+	{
+		current_theme_t::lock lock{screen->current_theme};
+
+		if (*lock==current_theme)
+			return;
 
 		// Check the current theme color. Did it change?
 
-		auto current_rgb=screen->get_theme_color(theme_color,
-							 lock->current_rgb);
+		auto new_rgb=(*lock)->get_theme_color(theme_color,
+						      current_rgb);
 
-		if (current_rgb != lock->current_rgb)
+		if (current_rgb != new_rgb)
 		{
 			// Create a new color.
 
-			lock->current_color=screen->create_solid_color_picture
-				(current_rgb);
+			current_color=screen->create_solid_color_picture
+				(new_rgb);
 
-			lock->current_rgb=current_rgb;
+			current_rgb=new_rgb;
 		}
 
-		return lock->current_color;
+		current_theme=*lock;
 	}
 };
 
@@ -144,6 +153,41 @@ background_color screenObj::implObj
 		 });
 }
 
+
+class LIBCXX_HIDDEN nonThemeBackgroundColorObj : public background_colorObj {
+
+
+	const const_picture fixed_color;
+
+ public:
+	nonThemeBackgroundColorObj(const const_picture &fixed_color)
+		: fixed_color(fixed_color)
+	{
+	}
+
+	~nonThemeBackgroundColorObj()=default;
+
+	const_picture get_current_color(IN_THREAD_ONLY) override
+	{
+		return fixed_color;
+	}
+
+	void theme_updated(IN_THREAD_ONLY) override
+	{
+	}
+};
+
+background_color screenObj::implObj
+::create_background_color(const const_picture &pic)
+{
+	return recycled_pixmaps_cache->nontheme_background_color_cache
+		->find_or_create
+		(pic,
+		 [&, this]
+		 {
+			 return ref<nonThemeBackgroundColorObj>::create(pic);
+		 });
+}
 
 /////////////////////////////////////////////////////////////////////////////
 

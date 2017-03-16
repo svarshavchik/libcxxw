@@ -11,13 +11,26 @@
 LIBCXXW_NAMESPACE_START
 
 class background_colorObj;
-class background_colorBase;
 
-//! A background color in the current theme.
+//! A background color, possibly dependent on the current theme.
 
 //! This object produces, on demand, a background color.
+//!
+//! get_current_color() returns the picture for the background color.
+//! theme_updated() gets invoked when the screen's theme changes. If this
+//! is a theme-dependent background color, all subsequent calls to
+//! get_current_color() will return a new picture.
+//!
+//! The background color objects are cached. Background color objects
+//! individually created for the same underlying color will end up being
+//! the same object. recycled_pixmaps contains caches for both theme-
+//! dependent and theme-independent background colors.
 
-typedef ref<background_colorObj, background_colorBase> background_color;
+typedef ref<background_colorObj> background_color;
+
+//! A nullable pointer reference to a \ref background_color "background color".
+
+typedef ptr<background_colorObj> background_colorptr;
 
 #define DEFAULT_MAINWINDOW_BACKGROUND_COLOR rgb(0xCCCC, 0xCCCC, 0xCCCC)
 

@@ -9,6 +9,7 @@
 #include "background_colorfwd.H"
 #include "x/w/pictformatfwd.H"
 #include "x/w/scratch_bufferfwd.H"
+#include "x/w/picturefwd.H"
 #include <x/obj.H>
 #include <x/weakunordered_multimapfwd.H>
 #include <string>
@@ -63,6 +64,13 @@ public:
 		theme_background_color_cache_t;
 
 	theme_background_color_cache_t theme_background_color_cache;
+
+	//! Container for a cache of non-theme background colors
+
+	typedef weakunordered_multimap<const_picture, background_colorObj>
+		nontheme_background_color_cache_t;
+
+	nontheme_background_color_cache_t nontheme_background_color_cache;
 
 	//! Constructor
 

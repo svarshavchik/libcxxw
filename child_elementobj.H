@@ -18,33 +18,13 @@ LIBCXXW_NAMESPACE_START
 
 class LIBCXX_HIDDEN child_elementObj : public elementObj::implObj {
 
-	//! Set the background color in the draw_info for this display element.
-
-	//! After obtaining the draw_info from the parent element, if this
-	//! display element has a background color, the corresponding
-	//! members in draw_info get updated accordingly.
-
-	typedef std::function<void (IN_THREAD_ONLY, draw_info &,
-				    child_elementObj &)>
-		update_background_color_t;
-
 	//! This display element's background color
 
-	update_background_color_t current_background_color_thread_only=
-		no_background();
-
-	//! Whether this display element uses its own background color
-
-	bool own_background_color_thread_only=false;
-
-	//! Return a no-op update_background_color_t;
-
-	static update_background_color_t no_background();
+	background_colorptr current_background_color_thread_only;
 
  public:
 
 	THREAD_DATA_ONLY(current_background_color);
-	THREAD_DATA_ONLY(own_background_color);
 
 	//! My parent element
 	const ref<containerObj::implObj> container;
@@ -78,6 +58,10 @@ class LIBCXX_HIDDEN child_elementObj : public elementObj::implObj {
 
 	void set_background_color(IN_THREAD_ONLY,
 				  const background_color &) override;
+
+	//! Update the theme-dependendent background color, then call the parent.
+
+	void theme_updated(IN_THREAD_ONLY) override;
 
 	//! Changed visibility mean a change to the background color.
 
