@@ -10,6 +10,9 @@
 
 LIBCXXW_NAMESPACE_START
 
+#define TOVALUE(v) (((int32_t)v.integer << 16) | v.fraction)
+#define POINT(p) { TOVALUE(p.x), TOVALUE(p.y) }
+
 static void to_xcb_rectangles(std::vector<xcb_rectangle_t> &v,
 			      const rectangle_set &rectangles)
 {
@@ -79,6 +82,56 @@ void pictureObj::implObj::composite(const const_picture_internal &src,
 			     (coord_t::value_type)dst_y,
 			     (dim_t::value_type)width,
 			     (dim_t::value_type)height);
+}
+
+void pictureObj::implObj::fill_tri_strip(const point *points,
+					 size_t n_points,
+					 const const_picture_internal &src,
+					 render_pict_op op,
+					 coord_t src_x,
+					 coord_t src_y)
+{
+	do_fill_tri_strip(points, n_points, src, XCB_NONE, op, src_x, src_y);
+}
+
+void pictureObj::implObj::fill_tri_strip(const point *points,
+					 size_t n_points,
+					 const const_picture_internal &src,
+					 const const_pictformat &mask,
+					 render_pict_op op,
+					 coord_t src_x,
+					 coord_t src_y)
+{
+	do_fill_tri_strip(points, n_points, src, mask->impl->id, op,
+			  src_x, src_y);
+}
+
+void pictureObj::implObj::do_fill_tri_strip(const point *points,
+					    size_t n_points,
+					    const const_picture_internal &src,
+					    xcb_render_pictformat_t mask,
+					    render_pict_op op,
+					    coord_t src_x,
+					    coord_t src_y)
+{
+	if (n_points <= 0)
+		return;
+
+
+	xcb_render_pointfix_t strip[n_points];
+
+	for (size_t i=0; i<n_points; ++i)
+		strip[i]=xcb_render_pointfix_t(POINT(points[i]));
+
+	xcb_render_tri_strip(picture_conn()->conn,
+			     (uint8_t)op,
+			     src->picture_id(),
+			     picture_id(),
+			     mask,
+			     coord_t::value_type(src_x),
+			     coord_t::value_type(src_y),
+			     n_points,
+			     &strip[0]);
 }
 
 ////////////////////////////////////////////////////////////////////////////

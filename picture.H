@@ -77,6 +77,31 @@ class LIBCXX_HIDDEN pictureObj::implObj : virtual public obj {
 				 coord_t x=0,
 				 coord_t y=0);
 
+	//! Fill triangle strip
+	void fill_tri_strip(const point *points,
+			    size_t n_points,
+			    const const_picture_internal &src,
+			    render_pict_op op=render_pict_op::op_src,
+			    coord_t src_x=0,
+			    coord_t src_y=0);
+
+	//! Fill triangle strip
+	void fill_tri_strip(const point *points,
+			    size_t n_points,
+			    const const_picture_internal &src,
+			    const const_pictformat &mask,
+			    render_pict_op op=render_pict_op::op_src,
+			    coord_t src_x=0,
+			    coord_t src_y=0);
+
+	//! Fill triangle strip
+	void do_fill_tri_strip(const point *points,
+			       size_t n_points,
+			       const const_picture_internal &src,
+			       xcb_render_pictformat_t mask,
+			       render_pict_op op,
+			       coord_t src_x,
+			       coord_t src_y);
 	class fromDrawableObj;
 };
 

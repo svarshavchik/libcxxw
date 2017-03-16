@@ -77,6 +77,107 @@ public:
 		clip_mask &operator=(const clip_mask &)=delete;
 	};
 
+	//! Fixed precision
+
+	struct fixedprec {
+
+		//! Integer portion of the value
+		int16_t integer;
+
+		//! Fractional portion of the value
+		uint16_t fraction;
+
+		//! Constructor
+		fixedprec(int16_t integer, uint16_t fraction)
+			: integer(integer),
+			  fraction(fraction)
+		{
+		}
+
+		//! Constructor
+		inline fixedprec(const coord_t &c)
+			: integer{coord_t::value_type(c)}, fraction{0}
+		{
+		}
+
+		//! Comparison operator
+		int compare(const fixedprec &o) const
+		{
+			return integer < o.integer ? -1:
+				integer > o.integer ? 1:
+				fraction < o.fraction ? -1:
+				fraction > o.fraction ? 1:0;
+		}
+
+		//! Comparison operator
+
+		bool operator<(const fixedprec &o) const
+		{
+			return compare(o) < 0;
+		}
+	};
+
+	//! Fixed point
+
+	struct point {
+		//! X coordinate
+		fixedprec x;
+
+		//! Y coordinate
+		fixedprec y;
+
+		//! Comparison operator
+		int compare(const point &o) const
+		{
+			int v=x.compare(o.x);
+
+			if (!v)
+				v=y.compare(o.y);
+
+			return v;
+		}
+
+		//! Comparison operator
+
+		bool operator<(const point &o) const
+		{
+			return compare(o) < 0;
+		}
+	};
+
+	//! Triangle
+	struct triangle {
+
+		//! First point
+		struct point p1;
+
+		//! Second point
+		struct point p2;
+
+		//! Third point
+		struct point p3;
+
+		//! Comparison operator
+
+		int compare(const triangle &o) const
+		{
+			int v=p1.compare(o.p1);
+
+			if (!v) v=p2.compare(o.p2);
+
+			if (!v) v=p3.compare(o.p3);
+
+			return v;
+		}
+
+		//! Comparison operator
+
+		bool operator<(const triangle &o) const
+		{
+			return compare(o) < 0;
+		}
+
+	};
 };
 
 LIBCXXW_NAMESPACE_END

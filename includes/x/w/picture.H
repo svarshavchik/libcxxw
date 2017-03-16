@@ -20,6 +20,19 @@ public:
 	//! typedef alias
 
 	typedef pictureObj::clip_mask clip_mask;
+
+	//! typedef alias
+
+	typedef pictureObj::fixedprec fixedprec;
+
+	//! typedef alias
+
+	typedef pictureObj::point point;
+
+	//! typedef alias
+
+	typedef pictureObj::triangle triangle;
+
 };
 
 LIBCXXW_NAMESPACE_END
