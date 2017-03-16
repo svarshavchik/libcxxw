@@ -6,6 +6,7 @@
 #include "gridlayoutmanager.H"
 #include "gridlayoutmanager_impl_elements.H"
 #include "element.H"
+#include "element_screen.H"
 #include "container.H"
 #include "metrics_grid_pos.H"
 #include "messages.H"

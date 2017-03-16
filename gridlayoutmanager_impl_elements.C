@@ -10,6 +10,7 @@
 #include "corner_border.H"
 #include "current_border_impl.H"
 #include "container_impl.H"
+#include "element_screen.H"
 #include <x/number_hash.H>
 
 LIBCXXW_NAMESPACE_START

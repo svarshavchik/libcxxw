@@ -13,6 +13,7 @@ lib_LTLIBRARIES=libcxxw.la
 bin_PROGRAMS=cxxw
 
 CPPFLAGS += -I$(top_srcdir)/includes -I./includes -DPKGDATADIR='"$(pkgdatadir)"'
+CXXFLAGS += -fvisibility-inlines-hidden
 
 libcxxw_la_LIBADD=-lcxx
 libcxxw_la_LDFLAGS=$(STATICLINKFLAGS)
