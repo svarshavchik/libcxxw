@@ -425,6 +425,7 @@ void defaultthemeObj::load(const config &theme_config,
 			load_colors(config);
 			load_color_gradients(config);
 			load_borders(config, screen);
+			load_fonts(config);
 		}
 	} catch (const exception &e)
 	{
@@ -1075,6 +1076,146 @@ defaultthemeObj::get_theme_border(const std::experimental::string_view &id,
 	auto iter=borders.find(std::string(id.begin(), id.end()));
 
 	if (iter != borders.end())
+		return iter->second;
+
+	return default_value;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+
+void defaultthemeObj::load_fonts(const xml::doc &config)
+{
+	auto lock=config->readlock();
+
+	if (!lock->get_root())
+		return;
+
+	auto xpath=lock->get_xpath("/theme/font");
+
+	size_t count=xpath->count();
+
+	bool parsed;
+
+	// Repeatedly pass over all fonts, parsing the ones that are not based
+	// on unparsed fonts.
+
+	do
+	{
+		parsed=false;
+
+		for (size_t i=0; i<count; ++i)
+		{
+			xpath->to_node(i+1);
+
+			auto id=lock->get_any_attribute("id");
+
+			if (id.empty())
+				throw EXCEPTION(_("no id specified for font"));
+
+			if (fonts.find(id) != fonts.end())
+				continue; // Did this one already.
+
+			auto from=lock->get_any_attribute("from");
+
+			font new_font;
+
+			if (!from.empty())
+			{
+				auto iter=fonts.find(from);
+
+				if (iter == fonts.end())
+					continue; // Not yet parsed
+
+				new_font=iter->second;
+			}
+
+			static const struct {
+				const char *name;
+				font &(font::*handler)(double);
+			} double_values[]={
+				{ "point_size", &font::set_point_size},
+				{ "scale", &font::scale},
+			};
+
+			for (const auto &v:double_values)
+			{
+				double value;
+				auto node=lock->clone();
+
+				auto xpath=node->get_xpath(v.name);
+
+				if (xpath->count() == 0)
+					continue;
+
+				xpath->to_node();
+
+				std::istringstream i(node->get_text());
+
+				i >> value;
+
+				if (i.fail())
+					throw EXCEPTION(gettextmsg(_("Cannot parse %1%, font id=%2%"),
+								   v.name,
+								   id));
+
+				(new_font.*(v.handler))(value);
+			}
+
+			static const struct {
+				const char *name;
+				font &(font::*handler1)(const std::string &);
+				font &(font::*handler2)(const std::experimental::string_view &);
+			} string_values[]={
+				{ "foundry", &font::set_foundry, nullptr},
+				{ "style", &font::set_style, nullptr},
+				{ "weight", nullptr, &font::set_weight},
+				{ "spacing", nullptr, &font::set_spacing},
+				{ "slant", nullptr, &font::set_slant},
+				{ "width", nullptr, &font::set_width},
+			};
+
+			for (const auto &v:string_values)
+			{
+				auto node=lock->clone();
+
+				auto xpath=node->get_xpath(v.name);
+
+				if (xpath->count() == 0)
+					continue;
+
+				xpath->to_node();
+
+				if (v.handler1)
+					(new_font.*(v.handler1))
+						(node->get_text());
+				if (v.handler2)
+					(new_font.*(v.handler2))
+						(node->get_text());
+			}
+
+			fonts.insert({id, new_font});
+			parsed=true;
+		}
+	} while (parsed);
+
+	for (size_t i=0; i<count; ++i)
+	{
+		xpath->to_node(i+1);
+
+		auto id=lock->get_any_attribute("id");
+
+		if (fonts.find(id) == fonts.end())
+			throw EXCEPTION(gettextmsg(_("circular or non-existent dependency of font id=%1%"),
+						   id));
+	}
+}
+
+font defaultthemeObj::get_theme_font(const std::string &id,
+				     const font &default_value)
+{
+	auto iter=fonts.find(id);
+
+	if (iter != fonts.end())
 		return iter->second;
 
 	return default_value;

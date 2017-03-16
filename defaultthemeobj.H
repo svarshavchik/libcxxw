@@ -8,6 +8,7 @@
 #include <x/xml/doc.H>
 #include "x/w/drawablefwd.H"
 #include "x/w/rgb.H"
+#include "x/w/font.H"
 #include "x/w/picturefwd.H"
 #include "x/w/screenfwd.H"
 #include "x/w/screenobj.H"
@@ -64,6 +65,9 @@ public:
 	//! Borders
 	std::unordered_map<std::string, const_border_impl> borders;
 
+	//! Fonts
+	std::unordered_map<std::string, font> fonts;
+
 	//! Parse dimensions from the configuration file.
 	void load_dims(const xml::doc &config);
 
@@ -76,6 +80,8 @@ public:
 	//! Parse boders from the configuration file.
 	void load_borders(const xml::doc &config,
 			  const ref<screenObj::implObj> &screen);
+
+	void load_fonts(const xml::doc &config);
 
  public:
 
@@ -101,6 +107,9 @@ public:
 					   &id,
 					   const const_border_impl
 					   &default_value);
+	//! Retrieve a theme font.
+	font get_theme_font(const std::string &id,
+			    const font &default_value);
 
 	/////////////////////////////////////////////////////////////////////
 	//

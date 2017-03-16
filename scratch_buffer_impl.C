@@ -10,7 +10,7 @@
 LIBCXXW_NAMESPACE_START
 
 scratch_bufferObj::implObj::implObj(const pixmap &pm)
-	: cached_picture{pm, pm->create_picture(), pm->create_gc()}
+	: cached_picture(pm, pm->create_picture(), pm->create_gc())
 {
 }
 

@@ -19,9 +19,12 @@
 #include "defaultthemefwd.H"
 #include "background_colorfwd.H"
 #include "screen_solidcolorpicturesfwd.H"
+#include "screen_fontcachesfwd.H"
 #include "border_implfwd.H"
 #include "custom_border_cachefwd.H"
 #include "xid_t.H"
+#include "fonts/fontconfigfwd.H"
+#include "fonts/freetypefwd.H"
 #include <x/logger.H>
 #include <x/vector.H>
 #include <xcb/xcb.h>
@@ -82,6 +85,14 @@ class LIBCXX_HIDDEN screenObj::implObj
 	//! The current theme for this screen.
 	current_theme_t current_theme;
 
+	//! The fontconfig library
+
+	const fontconfig::config fc;
+
+	//! The freetype library
+
+	const freetype ft;
+
  private:
 	//! A cache of solid color picture objects
 
@@ -101,6 +112,13 @@ class LIBCXX_HIDDEN screenObj::implObj
 	const custom_border_cache custom_borders;
 
  public:
+
+	//! Font caches
+
+	//! Use by create_font().
+
+	const screen_fontcaches fontcaches;
+
 	///////////////////////////////////////////////////////////////////
 	//
 	// Construction
@@ -280,10 +298,6 @@ class LIBCXX_HIDDEN screenObj::implObj
 					     const const_pictformat &pf,
 					     dim_t initial_width,
 					     dim_t initial_height);
-
-	//! Shortcut to render metadat.
-
-	const_pictformat find_alpha_pictformat_by_depth(depth_t d) const;
 };
 
 LIBCXXW_NAMESPACE_END

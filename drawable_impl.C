@@ -92,9 +92,24 @@ pixmap drawableObj::implObj::create_pixmap(dim_t width,
 				       width, height));
 }
 
-depth_t drawableObj::implObj::get_depth()
+depth_t drawableObj::implObj::get_depth() const
 {
 	return drawable_pictformat->depth;
+}
+
+depth_t drawableObj::implObj::font_alpha_depth() const
+{
+	auto d=get_depth();
+
+        switch (depth_t::value_type(d)) {
+        case 1:
+        case 2:
+        case 4:
+                return d;
+        default:
+                break;
+        }
+        return 8;
 }
 
 LIBCXXW_NAMESPACE_END

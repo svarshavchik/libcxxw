@@ -17,6 +17,7 @@ configure
 /cxxw
 /cxxwoptions.H
 /depcomp
+.dirstamp
 /docbook/entities
 /Doxyfile
 /gc_constants.inc.C

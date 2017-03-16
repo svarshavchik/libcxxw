@@ -84,4 +84,68 @@
     <color>0%_color</color>
   </border>
 
+  <!-- Fonts -->
+
+  <font id="sans_serif_font">
+    <family>liberation sans</family>
+  </font>
+
+  <font id="serif_font">
+    <family>liberation serif</family>
+  </font>
+
+  <font id="mono_font">
+    <family>liberation mono</family>
+  </font>
+
+  <font id="label_font" from="sans_serif_font">
+    <point_size>12</point_size>
+  </font>
+
+  <font id="list_font" from="sans_serif_font">
+    <point_size>12</point_size>
+  </font>
+
+  <font id="menubar_font" from="sans_serif_font">
+    <point_size>12</point_size>
+  </font>
+
+  <font id="action_button_font" from="serif_font">
+    <point_size>16</point_size>
+  </font>
+
+  <font id="progressbar_font" from="serif_font">
+    <point_size>16</point_size>
+  </font>
+
+  <font id="textedit_font" from="mono_font">
+    <point_size>12</point_size>
+  </font>
+
+  <font id="password_font" from="mono_font">
+    <point_size>12</point_size>
+  </font>
+
+  <font id="tooltip_font" from="sans_serif_font">
+    <point_size>10</point_size>
+  </font>
+
+  <font id="combobox_font" from="label_font" />
+
+  <font id="menu_font" from="label_font" />
+
+  <font id="menu_shortcut_font" from="serif_font">
+    <point_size>12</point_size>
+    <slant>italic</slant>
+    <weight>bold</weight>
+  </font>
+
+  <font id="notebook_ribbon_label_font" from="label_font">
+    <point_size>16</point_size>
+  </font>
+
+  <font id="dialog_label_font" from="serif_font">
+    <point_size>16</point_size>
+  </font>
+
 </theme>

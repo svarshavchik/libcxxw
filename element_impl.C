@@ -15,6 +15,7 @@
 #include "x/w/scratch_buffer.H"
 #include "x/callback_list.H"
 #include "element_screen.H"
+#include "fonts/current_fontcollection.H"
 #include <x/logger.H>
 
 LOG_CLASS_INIT(LIBCXX_NAMESPACE::w::elementObj::implObj);
@@ -612,6 +613,17 @@ void elementObj::implObj::do_for_each_child(IN_THREAD_ONLY,
 					    const function<void
 					    (const element &e)> &)
 {
+}
+
+current_fontcollection elementObj::implObj::create_font(const font &props)
+{
+	return get_window_handler().create_font(props);
+}
+
+current_fontcollection elementObj::implObj
+::create_theme_font(const std::experimental::string_view &font)
+{
+	return get_window_handler().create_theme_font(font);
 }
 
 LIBCXXW_NAMESPACE_END

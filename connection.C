@@ -10,6 +10,9 @@
 #include "messages.H"
 #include "pictformat.H"
 #include "defaulttheme.H"
+#include "fonts/cached_font.H"
+#include "fonts/fontcollection.H"
+#include "fonts/fontid_t_hash.H"
 #include "x/w/pictformat.H"
 #include <x/exception.H>
 #include <xcb/xcb_renderutil.h>
@@ -213,7 +216,9 @@ connectionObj::implObj::implObj(const connection_info &info,
 	  ewmh_info(info->conn),
 	  setup(*setup),
 	  thread(thread),
-	  screens(get_screens(thread, render_info, setup))
+	  screens(get_screens(thread, render_info, setup)),
+	  font_cache(font_cache_t::create()),
+	  sorted_font_cache(sorted_font_cache_t::create())
 {
 	thread->set_theme_changed_callback(screens.at(0)->xcb_screen->root,
 					   [screens=this->screens, thread]

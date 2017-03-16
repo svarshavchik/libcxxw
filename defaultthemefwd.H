@@ -29,8 +29,6 @@ typedef ref<defaultthemeObj, defaultthemeBase> defaulttheme;
 //! display elements, and it is also accessed by the connection thread
 //! as well.
 
-	typedef mpobj<defaulttheme> current_theme_t;
-
 typedef mpobj<defaulttheme> current_theme_t;
 
 LIBCXXW_NAMESPACE_END

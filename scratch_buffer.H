@@ -23,6 +23,11 @@ class scratch_bufferObj::implObj : virtual public obj {
 		pixmap pm;
 		picture pic;
 		gc graphic_context;
+
+		cached_picture_info(const pixmap &pm,
+				    const picture &pic,
+				    const gc &graphic_context)
+			: pm(pm), pic(pic), graphic_context(graphic_context) {}
 	};
 
 	//! The cached pixmap and picture are mutex-protected.

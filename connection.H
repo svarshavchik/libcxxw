@@ -12,6 +12,8 @@
 #include "connection_threadfwd.H"
 #include "connection_infofwd.H"
 #include "current_border_implfwd.H"
+#include "fonts/cached_fontfwd.H"
+#include "fonts/fontcollectionfwd.H"
 #include "x/w/connection.H"
 #include "x/w/screenobj.H"
 
@@ -64,6 +66,12 @@ class LIBCXX_HIDDEN connectionObj::implObj : virtual public obj {
 	//! Constructor, connect to the given display.
 
 	implObj(const std::experimental::string_view &display);
+
+	// A cache of individual fonts currently in use
+	mpobj<font_cache_t> font_cache;
+
+	// A cache of sorted font lists, currently in use
+	mpobj<sorted_font_cache_t> sorted_font_cache;
 
  private:
 

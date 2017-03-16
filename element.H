@@ -18,10 +18,13 @@
 #include "draw_info_cachefwd.H"
 #include "background_colorfwd.H"
 #include "metrics_horizvertobj.H"
+#include "x/w/current_fontcollectionfwd.H"
+#include "x/w/fontfwd.H"
 #include <x/obj.H>
 #include <x/callback_list.H>
 #include <x/logger.H>
 #include <x/functional.H>
+#include <experimental/string_view>
 
 LIBCXXW_NAMESPACE_START
 
@@ -555,6 +558,21 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 				       const function<void
 				       (const element &e)> &);
 
+	//! Create a font for this display element.
+
+	//! Creates a non-standard font. This gets forwarded to
+	//! \ref generic_windowObj::handlerObj "window handler's"
+	//! create_font().
+
+	current_fontcollection create_font(const font &props);
+
+	//! Create a theme font for a display element in this window.
+
+	//! Creates a theme font. This gets forwarded to
+	//! \ref generic_windowObj::handlerObj "window handler's"
+	//! create_theme_font().
+
+	current_fontcollection create_theme_font(const std::experimental::string_view &font);
 };
 
 LIBCXXW_NAMESPACE_END

@@ -11,9 +11,12 @@
 #include "xid_t.H"
 #include "picture.H"
 #include "screen_solidcolorpictures.H"
+#include "screen_fontcaches.H"
 #include "recycled_pixmaps.H"
 #include "border_impl.H"
 #include "custom_border_cache.H"
+#include "fonts/fontconfig.H"
+#include "fonts/freetype.H"
 #include <x/mpobj.H>
 #include <x/weakptr.H>
 #include <x/refptr_traits.H>
@@ -186,7 +189,10 @@ screenObj::implObj::implObj(const xcb_screen_t *xcb_screen,
 					   ->visual_id)),
 	  screen_depths(screen_depths),
 	  current_theme(current_theme),
+	  fc(fontconfig::create()),
+	  ft(freetype::create()),
 	  solid_color_picture_cache(screen_solidcolorpictures::create()),
+	  fontcaches(screen_fontcaches::create()),
 	  recycled_pixmaps_cache(recycled_pixmaps::create()),
 	  custom_borders(custom_border_cache::create())
 {

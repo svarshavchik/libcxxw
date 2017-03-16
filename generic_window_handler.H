@@ -14,6 +14,9 @@
 #include "container.H"
 #include "x/w/pictformatfwd.H"
 #include "x/w/types.H"
+#include "x/w/current_fontcollectionfwd.H"
+#include "x/w/fontfwd.H"
+#include <experimental/string_view>
 
 LIBCXXW_NAMESPACE_START
 
@@ -212,6 +215,23 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 	//! Return my height
 	dim_t get_height() const override;
+
+	//! Create a non-theme font for a display element in this window.
+
+	//! Creates a \ref current_fontcollection "current font collection".
+	//!
+	//! Even though it's a non-theme font, the font's size still depends on
+	//! the theme's scale, so it is still a theme-dependent font. Everything
+	//! is a theme-dependent font.
+	//!
+	//! These fonts get cached in screen's custom_screen_font_cache.
+
+	current_fontcollection create_font(const font &props);
+
+	//! Create a theme font for a display element in this window.
+
+	current_fontcollection create_theme_font(const std::experimental::string_view &font);
+
 };
 
 LIBCXXW_NAMESPACE_END

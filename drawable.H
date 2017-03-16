@@ -86,7 +86,10 @@ class LIBCXX_HIDDEN drawableObj::implObj : virtual public obj {
 	virtual dim_t get_height() const=0;
 
 	//! Return my depth
-	depth_t get_depth();
+	depth_t get_depth() const;
+
+	//! Compute depth of alpha channel for rendering fonts into this drawable.
+	depth_t font_alpha_depth() const;
 };
 
 #if 0

@@ -1,5 +1,7 @@
 @LIBCXX_AM@
 
+AUTOMAKE_OPTIONS=subdir-objects
+
 SUBDIRS= po includes/x/w
 
 configure: libtool
@@ -12,10 +14,12 @@ STATICLINKFLAGS=-Wl,-lcourier-unicode -Wl,-lpthread @LIBCXXW_LIBS@ -pthread
 lib_LTLIBRARIES=libcxxw.la
 bin_PROGRAMS=cxxw
 
-CPPFLAGS += -I$(top_srcdir)/includes -I./includes -DPKGDATADIR='"$(pkgdatadir)"'
+CPPFLAGS += -I$(top_srcdir)/includes -I./includes -I$(top_srcdir) -I. \
+            -DPKGDATADIR='"$(pkgdatadir)"'
 CXXFLAGS += -fvisibility-inlines-hidden
 
 libcxxw_la_LIBADD=-lcxx
+
 libcxxw_la_LDFLAGS=$(STATICLINKFLAGS)
 
 libcxxw_la_SOURCES=\
@@ -97,6 +101,73 @@ libcxxw_la_SOURCES=\
 	ewmh.H					    \
 	factory.C				    \
 	gc.C					    \
+	fonts/composite_text_stream.C		    \
+	fonts/composite_text_stream.H		    \
+	fonts/composite_text_streamfwd.H	    \
+	fonts/current_fontcollection.C		    \
+	fonts/current_fontcollection.H		    \
+	fonts/current_fontcollectionobj.H	    \
+	fonts/cached_font.C			    \
+	fonts/cached_font.H			    \
+	fonts/cached_fontfwd.H			    \
+	fonts/font.C				    \
+	fonts/fontcharset.C			    \
+	fonts/fontcharset.H			    \
+	fonts/fontcharsetfwd.H			    \
+	fonts/fontcharsetobj.H			    \
+	fonts/fontcharset_impl.H		    \
+	fonts/fontcharset_impl.C		    \
+	fonts/fontcollection.C			    \
+	fonts/fontcollection.H			    \
+	fonts/fontcollectionfwd.H		    \
+	fonts/fontcollectionobj.H		    \
+	fonts/fontcollection_impl.C		    \
+	fonts/fontcollection_impl.H		    \
+	fonts/fontconfig.C			    \
+	fonts/fontconfig.H			    \
+	fonts/fontconfigfwd.H			    \
+	fonts/fontconfigobj.H			    \
+	fonts/fontconfig_impl.C			    \
+	fonts/fontconfig_impl.H			    \
+	fonts/fontid_t.H			    \
+	fonts/fontid_t_hash.H			    \
+	fonts/fontlist.C			    \
+	fonts/fontlist.H			    \
+	fonts/fontlistfwd.H			    \
+	fonts/fontlistobj.H			    \
+	fonts/fontlist_impl.C			    \
+	fonts/fontlist_impl.H			    \
+	fonts/fontobjectset.C			    \
+	fonts/fontobjectset.H			    \
+	fonts/fontobjectsetfwd.H		    \
+	fonts/fontobjectsetobj.H		    \
+	fonts/fontobjectset_impl.C		    \
+	fonts/fontobjectset_impl.H		    \
+	fonts/fontpattern.C			    \
+	fonts/fontpattern.H			    \
+	fonts/fontpatternfwd.H			    \
+	fonts/fontpatternobj.H			    \
+	fonts/fontpattern_impl.C		    \
+	fonts/fontpattern_impl.H		    \
+	fonts/fontsortedlist.C			    \
+	fonts/fontsortedlist.H			    \
+	fonts/fontsortedlistfwd.H		    \
+	fonts/fontsortedlistobj.H		    \
+	fonts/fontsortedlist_impl.C		    \
+	fonts/fontsortedlist_impl.H		    \
+	fonts/freetype.C			    \
+	fonts/freetype.H			    \
+	fonts/freetypefwd.H			    \
+	fonts/freetypeobj.H			    \
+	fonts/freetypefont.C			    \
+	fonts/freetypefont.H			    \
+	fonts/freetypefontfwd.H			    \
+	fonts/freetypefontobj.H			    \
+	fonts/freetypefont_impl.C		    \
+	fonts/freetypefont_impl.H		    \
+	fonts/glyphset.C			    \
+	fonts/glyphset.H			    \
+	fonts/scanline.H			    \
 	gc.H					    \
 	gc_thread.H				    \
 	gc_impl.C				    \
@@ -175,6 +246,9 @@ libcxxw_la_SOURCES=\
 	screen.H				    \
 	screen_depthinfo.C			    \
 	screen_depthinfo.H			    \
+	screen_fontcaches.C			    \
+	screen_fontcaches.H			    \
+	screen_fontcachesfwd.H			    \
 	screen_solidcolorpictures.C		    \
 	screen_solidcolorpictures.H		    \
 	screen_solidcolorpicturesfwd.H		    \
