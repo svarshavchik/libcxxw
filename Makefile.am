@@ -89,6 +89,7 @@ libcxxw_la_SOURCES=\
 	draw_info_cachefwd.H			    \
 	element.C				    \
 	element.H				    \
+	element_draw.H				    \
 	elementfwd.H				    \
 	element_impl.C				    \
 	element_screen.H			    \

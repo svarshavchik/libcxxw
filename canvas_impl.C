@@ -33,7 +33,8 @@ canvasObj::implObj::implObj(const ref<containerObj::implObj> &container,
 				screen->compute_height(horiz_metrics),
 				horizontal_alignment,
 				vertical_alignment
-				}),
+				},
+		"background@libcxx"),
 	  horiz_metrics_thread_only(horiz_metrics),
 	  vert_metrics_thread_only(vert_metrics)
 {

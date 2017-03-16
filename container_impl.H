@@ -19,7 +19,7 @@ void container_clear_padding(IN_THREAD_ONLY,
 			     layoutmanagerObj::implObj &manager,
 			     const ref<elementObj::implObj> &e_impl,
 			     const draw_info &di,
-			     elementObj::implObj::clip_region_set &clip,
+			     clip_region_set &clip,
 			     rectangle_set &child_areas) LIBCXX_HIDDEN;
 
 LIBCXXW_NAMESPACE_END

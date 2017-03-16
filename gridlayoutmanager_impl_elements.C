@@ -11,6 +11,7 @@
 #include "current_border_impl.H"
 #include "container_impl.H"
 #include "element_screen.H"
+#include "element_draw.H"
 #include <x/number_hash.H>
 
 LIBCXXW_NAMESPACE_START
@@ -65,8 +66,7 @@ void gridlayoutmanagerObj::implObj
 	{
 		const draw_info &di=container_element_impl
 			.get_draw_info(IN_THREAD);
-		elementObj::implObj::clip_region_set clip{IN_THREAD,
-				container_element_impl, di};
+		clip_region_set clip{IN_THREAD,  di};
 		rectangle_set dummy;
 
 		container_clear_padding(IN_THREAD,

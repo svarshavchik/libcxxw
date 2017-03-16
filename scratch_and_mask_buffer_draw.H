@@ -13,20 +13,16 @@ LIBCXXW_NAMESPACE_START
 //! Constructor
 
 template<typename child_type>
-template<typename name1_type, typename name2_type, typename ...Args>
+template<typename name1_type, typename ...Args>
 scratch_and_mask_buffer_draw<child_type>
-::scratch_and_mask_buffer_draw(name1_type &&scratch_picture_name,
-			       name2_type &&mask_picture_name,
+::scratch_and_mask_buffer_draw(name1_type &&mask_picture_name,
 			       dim_t estimated_width,
 			       dim_t estimated_height,
 			       Args && ...args)
 	: scratch_buffer_draw<child_type>
-	(std::forward<name1_type>(scratch_picture_name),
-	 estimated_width,
-		 estimated_height,
-		 std::forward<Args>(args)...),
+	(std::forward<Args>(args)...),
 	scratch_and_mask_buffer_draw_impl
-	(std::forward<name2_type>(mask_picture_name),
+	(std::forward<name1_type>(mask_picture_name),
 		 this->get_window_handler(),
 		 estimated_width,
 		 estimated_height)

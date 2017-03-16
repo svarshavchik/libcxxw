@@ -10,16 +10,22 @@
 #include "container.H"
 #include "layoutmanager.H"
 #include "background_color.H"
+#include "generic_window_handler.H"
 #include "x/w/picture.H"
 
 LIBCXXW_NAMESPACE_START
 
 child_elementObj::child_elementObj(const ref<containerObj::implObj> &container,
-				   const metrics::horizvert_axi &initial_metrics)
+				   const metrics::horizvert_axi
+				   &initial_metrics,
+				   const std::string &scratch_buffer_id)
 	: elementObj::implObj(container->get_element_impl().nesting_level+1,
 			      {0, 0, 0, 0},
 			      // The container will position me later
-			      initial_metrics),
+			      initial_metrics,
+			      container->get_window_handler().get_screen(),
+			      container->get_window_handler().drawable_pictformat,
+			      scratch_buffer_id),
 	container(container)
 {
 }

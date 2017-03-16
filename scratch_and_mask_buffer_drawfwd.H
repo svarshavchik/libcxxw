@@ -82,9 +82,8 @@ class LIBCXX_HIDDEN scratch_and_mask_buffer_draw
 
  public:
 
-	template<typename name1_type, typename name2_type, typename ...Args>
-		scratch_and_mask_buffer_draw(name1_type &&scratch_picture_name,
-					     name2_type &&mask_picture_name,
+	template<typename name1_type, typename ...Args>
+		scratch_and_mask_buffer_draw(name1_type &&mask_picture_name,
 					     dim_t estimated_width,
 					     dim_t estimated_height,
 					     Args && ...args);

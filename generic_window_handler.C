@@ -61,7 +61,10 @@ generic_windowObj::handlerObj
 
        elementObj::implObj(0,
 			   element_position(params.window_handler_params
-					    .initial_position)),
+					    .initial_position),
+			   params.window_handler_params.screenref,
+			   params.drawable_pictformat,
+			   "background@libcxx"),
 	current_events_thread_only((xcb_event_mask_t)
 				   params.window_handler_params
 				   .events_and_mask.m.at(XCB_CW_EVENT_MASK)),

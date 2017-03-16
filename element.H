@@ -9,8 +9,11 @@
 #include "x/w/screenfwd.H"
 #include "x/w/generic_windowobj.H"
 #include "x/w/element_state.H"
+#include "x/w/pictformatfwd.H"
+#include "x/w/scratch_bufferfwd.H"
 #include "connection_threadfwd.H"
 #include "elementfwd.H"
+#include "element_draw.H"
 #include "draw_infofwd.H"
 #include "draw_info_cachefwd.H"
 #include "background_colorfwd.H"
@@ -22,11 +25,13 @@
 
 LIBCXXW_NAMESPACE_START
 
+class clip_region_set;
+
 //! Base class for element implementation.
 
 //! Stuff that all display elements have.
 
-class LIBCXX_HIDDEN elementObj::implObj : virtual public obj,
+class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 // horizvertObj is considered to be IN_THREAD_ONLY
 //
@@ -158,14 +163,24 @@ class LIBCXX_HIDDEN elementObj::implObj : virtual public obj,
 	//! All others have one more than their parent element.
 	const size_t nesting_level;
 
-	//! Constructor
-	implObj(size_t nesting_level,
-		const rectangle &initial_position);
+	//! Available scratch buffer, for drawing in this element.
+
+	const scratch_buffer element_scratch_buffer;
 
 	//! Constructor
 	implObj(size_t nesting_level,
 		const rectangle &initial_position,
-		const metrics::horizvert_axi &initial_metrics);
+		const screen &my_screen,
+		const const_pictformat &my_pictformat,
+		const std::string &scratch_buffer_id);
+
+	//! Constructor
+	implObj(size_t nesting_level,
+		const rectangle &initial_position,
+		const metrics::horizvert_axi &initial_metrics,
+		const screen &my_screen,
+		const const_pictformat &my_pictformat,
+		const std::string &scratch_buffer_id);
 
 	//! Destructor
 	~implObj();
@@ -360,22 +375,6 @@ class LIBCXX_HIDDEN elementObj::implObj : virtual public obj,
 
 	virtual draw_info &get_draw_info(IN_THREAD_ONLY)=0;
 
-	//! Clip drawing operation to draw_info.element_viewport.
-
-	//! This install a clip mask into di.window_picture that clips
-	//! any drawinfo operation (to the di.absolute_location region)
-	//! into the element_viewport.
-
-	class clip_region_set {
-
-	public:
-		//! Constructor - install clip mask for drawing.
-
-		clip_region_set(IN_THREAD_ONLY,
-				implObj &me,
-				const draw_info &di);
-	};
-
 	//! Prepare draw_info before draw() gets called.
 
 	//! The default implementation does nothing. child_elementObj
@@ -429,6 +428,51 @@ class LIBCXX_HIDDEN elementObj::implObj : virtual public obj,
 	virtual void do_draw(IN_THREAD_ONLY,
 			     const draw_info &di,
 			     const rectangle_set &areas);
+
+
+	//! Implementation of draw_using_scratch_buffer() with element_scratch_uffer.
+	void do_draw_using_scratch_buffer(IN_THREAD_ONLY,
+					  const function
+					  <scratch_buffer_draw_func_t> &cb,
+					  const rectangle &rect,
+					  const draw_info &di,
+					  const draw_info &background_color_di,
+					  const clip_region_set &clipped)
+		override;
+
+	//! Implementation of draw_using_scratch_buffer() with a custom scratch buffer.
+	void do_draw_using_scratch_buffer(IN_THREAD_ONLY,
+					  const function
+					  <scratch_buffer_draw_func_t> &cb,
+					  const rectangle &rect,
+					  const draw_info &di,
+					  const draw_info &background_color_di,
+					  const clip_region_set &clipped,
+					  const scratch_buffer &buffer)
+		override;
+
+	//! A subclass drew all or a portion of this element.
+
+	//! Composite it into draw_info.window_picture. All drawing of this
+	//! element's contents is ultimately funneled through draw_to_window
+	//! picture.
+
+	void draw_to_window_picture(IN_THREAD_ONLY,
+				    //! The draw operation is now clipped
+				    const clip_region_set &set,
+
+				    //! This element's draw_info
+				    const draw_info &di,
+
+				    //! Where the subclass drew what it drew.
+				    const const_picture &contents,
+
+				    //! Which portion of this element is drawn.
+
+				    //! The subclass draws a portion of the
+				    //! this element specified by "rect"
+				    //! in "contents".
+				    const rectangle &rect);
 
 	//! Clear to background color
 

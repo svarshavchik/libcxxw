@@ -375,10 +375,10 @@ straight_borderObj::implObj
 	  const current_border_implptr &border2,
 	  const current_border_implptr &border_default)
 	: scratch_and_mask_buffer_draw<child_elementObj>
-	(std::string("area-")+scratch_buffer_label,
-	 std::string("mask-")+scratch_buffer_label,
+	(std::string("mask-")+scratch_buffer_label,
 	 h.get_width()/10+1,
-	 h.get_height()/10+1, container, initial_metrics),
+	 h.get_height()/10+1, container, initial_metrics,
+	 std::string("area-")+scratch_buffer_label),
 	borders_thread_only{element_1, border1, element_2, border2,
 		border_default}
 {

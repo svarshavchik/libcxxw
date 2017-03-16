@@ -8,6 +8,7 @@
 #include "x/w/container.H"
 #include "layoutmanager.H"
 #include "child_element.H"
+#include "element_draw.H"
 #include "connection_thread.H"
 #include "draw_info.H"
 
@@ -73,7 +74,7 @@ void container_clear_padding(IN_THREAD_ONLY,
 			     layoutmanagerObj::implObj &manager,
 			     const elementimpl &e_impl,
 			     const draw_info &di,
-			     elementObj::implObj::clip_region_set &clip,
+			     clip_region_set &clip,
 			     rectangle_set &child_areas)
 {
 	rectangle padded_position=manager.padded_position(IN_THREAD, e_impl);
@@ -114,7 +115,7 @@ void containerObj::implObj::do_draw(IN_THREAD_ONLY,
 
 	rectangle_set child_areas;
 
-	elementObj::implObj::clip_region_set clip{IN_THREAD, element_impl, di};
+	clip_region_set clip{IN_THREAD, di};
 
 	invoke_layoutmanager
 		([&]

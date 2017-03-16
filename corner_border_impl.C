@@ -57,8 +57,7 @@ corner_borderObj::implObj
 ::implObj(const ref<containerObj::implObj> &container,
 	  generic_windowObj::handlerObj &h)
 	: scratch_and_mask_buffer_draw<child_elementObj>
-	("corner@libcxx",
-	 "cornermask@libcxx",
+	("cornermask@libcxx",
 	 h.get_width()/20+1,
 	 h.get_height()/20+1, container,
 	 ({
@@ -68,7 +67,7 @@ corner_borderObj::implObj
 		 m.vertical_alignment=metrics::valign::fill;
 
 		 m;
-	 }))
+	 }), "corner@libcxx")
 {
 }
 

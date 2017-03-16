@@ -44,7 +44,10 @@ sausage_factory_t sausages;
 		sausage_factory_t::lock					\
 			lock(sausages);					\
 									\
-		lock->drawn_rectangles.insert(area);			\
+		auto cpy=area;						\
+		cpy.x = coord_t::truncate(cpy.x+di.absolute_location.x); \
+		cpy.y = coord_t::truncate(cpy.y+di.absolute_location.y); \
+		lock->drawn_rectangles.insert(cpy);			\
 	} while(0)
 
 #define REQUEST_VISIBILITY_LOG(w,h) do {				\
@@ -338,7 +341,7 @@ void teststate(testmainwindowoptions &options, bool flag)
 	std::ostringstream o;
 
 	for (const auto &r:lock->drawn_rectangles)
-		o << " " << std::endl;
+		o << " " << r << std::endl;
 
 	throw EXCEPTION("Bad set of cleared rectangles:" << o.str());
 }

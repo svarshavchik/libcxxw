@@ -4,6 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "element.H"
+#include "element_draw.H"
 #include "screen.H"
 #include "connection_thread.H"
 #include "batch_queue.H"
@@ -11,6 +12,7 @@
 #include "draw_info.H"
 #include "background_color.H"
 #include "x/w/element_state.H"
+#include "x/w/scratch_buffer.H"
 #include "x/callback_list.H"
 #include "element_screen.H"
 #include <x/logger.H>
@@ -22,24 +24,38 @@ LIBCXXW_NAMESPACE_START
 #define THREAD get_window_handler().screenref->impl->thread
 
 elementObj::implObj::implObj(size_t nesting_level,
-			     const rectangle &initial_position)
+			     const rectangle &initial_position,
+			     const screen &my_screen,
+			     const const_pictformat &my_pictformat,
+			     const std::string &scratch_buffer_id)
 	: data_thread_only
 	  ({
 	      initial_position
 	  }),
-	  nesting_level(nesting_level)
+	  nesting_level(nesting_level),
+	  element_scratch_buffer(my_screen->impl->create_scratch_buffer
+				 (my_screen, scratch_buffer_id, my_pictformat,
+				  initial_position.width / 20 + 1,
+				  initial_position.height / 20 + 1))
 {
 }
 
 elementObj::implObj::implObj(size_t nesting_level,
 			     const rectangle &initial_position,
-			     const metrics::horizvert_axi &initial_metrics)
+			     const metrics::horizvert_axi &initial_metrics,
+			     const screen &my_screen,
+			     const const_pictformat &my_pictformat,
+			     const std::string &scratch_buffer_id)
 	: metrics::horizvertObj(initial_metrics),
 	data_thread_only
 	({
 		initial_position,
 	}),
-	nesting_level(nesting_level)
+	nesting_level(nesting_level),
+	element_scratch_buffer(my_screen->impl->create_scratch_buffer
+			       (my_screen, scratch_buffer_id, my_pictformat,
+				initial_position.width / 20 + 1,
+				initial_position.height / 20 + 1))
 {
 }
 
@@ -332,9 +348,8 @@ void elementObj::implObj
 						(IN_THREAD, reason));
 }
 
-elementObj::implObj::clip_region_set::clip_region_set(IN_THREAD_ONLY,
-						      implObj &me,
-						      const draw_info &di)
+clip_region_set::clip_region_set(IN_THREAD_ONLY,
+				  const draw_info &di)
 {
 	if (di.element_viewport.width != 0 &&
 	    di.element_viewport.height != 0)
@@ -406,17 +421,89 @@ void elementObj::implObj::do_draw(IN_THREAD_ONLY,
 	clear_to_color(IN_THREAD, di, areas);
 }
 
+void elementObj::implObj
+::do_draw_using_scratch_buffer(IN_THREAD_ONLY,
+			       const function<scratch_buffer_draw_func_t> &cb,
+			       const rectangle &rect,
+			       const draw_info &di,
+			       const draw_info &background_color_di,
+			       const clip_region_set &clipped)
+{
+	do_draw_using_scratch_buffer(IN_THREAD, cb, rect,
+				     di, background_color_di, clipped,
+				     element_scratch_buffer);
+}
+
+void elementObj::implObj
+::do_draw_using_scratch_buffer(IN_THREAD_ONLY,
+			       const function<scratch_buffer_draw_func_t> &cb,
+			       const rectangle &rect,
+			       const draw_info &di,
+			       const draw_info &background_color_di,
+			       const clip_region_set &clipped,
+			       const scratch_buffer &buffer)
+{
+	if (di.no_viewport())
+		return;
+
+	buffer->get
+		(rect.width,
+		 rect.height,
+		 [&, this]
+		 (const picture &area_picture,
+		  const pixmap &area_pixmap,
+		  const gc &area_gc)
+		 {
+			 rectangle area_entire_rect{0, 0,
+					 rect.width, rect.height};
+
+			 auto bgxy=background_color_di.background_xy_to(di);
+
+			 area_picture->impl
+				 ->composite(background_color_di
+					     .window_background,
+					     coord_t::truncate(bgxy.first + rect.x),
+					     coord_t::truncate(bgxy.second + rect.y),
+					     area_entire_rect);
+
+			 cb(area_picture, area_pixmap, area_gc);
+
+			 this->draw_to_window_picture(IN_THREAD,
+						      clipped,
+						      di,
+						      area_picture,
+						      rect);
+		 });
+
+}
+
+void elementObj::implObj
+::draw_to_window_picture(IN_THREAD_ONLY,
+			 const clip_region_set &set,
+			 const draw_info &di,
+			 const const_picture &contents,
+			 const rectangle &rect)
+{
+	rectangle cpy=rect;
+
+	cpy.x = coord_t::truncate(cpy.x + di.absolute_location.x);
+	cpy.y = coord_t::truncate(cpy.y + di.absolute_location.y);
+
+	di.window_picture->composite(contents->impl,
+				     0, 0,
+				     cpy);
+}
 void elementObj::implObj::clear_to_color(IN_THREAD_ONLY,
 					 const draw_info &di,
 					 const rectangle_set &areas)
 {
 	clear_to_color(IN_THREAD,
-		       clip_region_set(IN_THREAD, *this, di),
+		       clip_region_set(IN_THREAD, di),
 		       di, di, areas);
 }
 
 void elementObj::implObj::clear_to_color(IN_THREAD_ONLY,
-					 const clip_region_set &,
+					 const clip_region_set &clip,
 					 const draw_info &di,
 					 const draw_info &background_color_di,
 					 const rectangle_set &areas)
@@ -425,22 +512,20 @@ void elementObj::implObj::clear_to_color(IN_THREAD_ONLY,
 	CLEAR_TO_COLOR_LOG();
 #endif
 
-	for (auto area:areas)
+	for (const auto &area:areas)
 	{
-		// areas's (0, 0) is the (0, 0) coordinates of the viewport.
-		area.x = coord_t::truncate(area.x+di.absolute_location.x);
-		area.y = coord_t::truncate(area.y+di.absolute_location.y);
-
 #ifdef CLEAR_TO_COLOR_RECT
 		CLEAR_TO_COLOR_RECT();
 #endif
-		auto bgxy=background_color_di
-			.background_xy_to(di, area.x, area.y);
-		di.window_picture->composite(background_color_di
-					     .window_background,
-					     bgxy.first,
-					     bgxy.second,
-					     area);
+		draw_using_scratch_buffer
+			(IN_THREAD,
+			 []
+			 (const auto &, const auto &, const auto &)
+			 {
+			 },
+			 area,
+			 di, background_color_di,
+			 clip);
 	}
 }
 

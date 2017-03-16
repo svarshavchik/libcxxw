@@ -7,6 +7,7 @@
 #include "scratch_buffer.H"
 #include "child_element.H"
 #include "generic_window_handler.H"
+#include "element_draw.H"
 #include "x/w/picture.H"
 #include "x/w/pixmap.H"
 #include "x/w/gc.H"
@@ -15,61 +16,38 @@ LIBCXXW_NAMESPACE_START
 
 template class scratch_buffer_draw<child_elementObj>;
 
-scratch_buffer_draw_impl
-::scratch_buffer_draw_impl(const std::string &label,
-			   generic_windowObj::handlerObj &h,
-			   dim_t estimated_width,
-			   dim_t estimated_height)
-	: area_scratch(h.get_screen()
-		       ->create_scratch_buffer(label,
-					       h.drawable_pictformat,
-					       estimated_width,
-					       estimated_height))
-{
-}
+scratch_buffer_draw_impl::scratch_buffer_draw_impl()=default;
 
 scratch_buffer_draw_impl::~scratch_buffer_draw_impl()=default;
 
 void scratch_buffer_draw_impl::get_scratch_buffer(IN_THREAD_ONLY,
 						  elementObj::implObj &element,
-						  const draw_info &di,
-						  const rectangle_set &areas)
+						  const draw_info &di)
 {
 	if (di.no_viewport())
 		return;
 
-	area_scratch->get
-		(di.absolute_location.width,
-		 di.absolute_location.height,
+	rectangle area_entire_rect{0, 0,
+			di.absolute_location.width,
+			di.absolute_location.height};
+
+	clip_region_set clip{IN_THREAD, di};
+
+	element.draw_using_scratch_buffer
+		(IN_THREAD,
 		 [&, this]
 		 (const picture &area_picture,
 		  const pixmap &area_pixmap,
 		  const gc &area_gc)
 		 {
-			 rectangle area_entire_rect{0, 0,
-					 di.absolute_location.width,
-					 di.absolute_location.height};
-
-			 auto bgxy=di.background_xy_to(di);
-
-			 area_picture->impl
-				 ->composite(di.window_background,
-					     bgxy.first,
-					     bgxy.second,
-					     area_entire_rect);
-
 			 do_draw(IN_THREAD, di,
 				 area_picture, area_pixmap,
 				 area_gc, area_entire_rect);
-
-			 elementObj::implObj::clip_region_set
-				 clip{IN_THREAD, element, di};
-
-			 di.window_picture->composite
-				 (area_picture->impl,
-				  0, 0,
-				  di.absolute_location);
-		 });
+		 },
+		 area_entire_rect,
+		 di,
+		 di,
+		 clip);
 }
 
 LIBCXXW_NAMESPACE_END
