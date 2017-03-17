@@ -235,6 +235,22 @@ libcxxw_la_SOURCES=\
 	render.H				    \
 	returned_pointer.H			    \
 	rgb.C					    \
+	richtext/fragment_list.C		    \
+	richtext/fragment_list.H		    \
+	richtext/paragraph_list.C		    \
+	richtext/paragraph_list.H		    \
+	richtext/richtext.C			    \
+	richtext/richtext.H			    \
+	richtext/richtextobj.H			    \
+	richtext/richtext_impl.C		    \
+	richtext/richtext_impl.H		    \
+	richtext/richtextfwd.H			    \
+	richtext/richtextcursorlocation.C	    \
+	richtext/richtextcursorlocation.H	    \
+	richtext/richtextcursorlocationfwd.H	    \
+	richtext/richtextfragment.C		    \
+	richtext/richtextfragment.H		    \
+	richtext/richtextfragment_render.H	    \
 	richtext/richtextmeta.C			    \
 	richtext/richtextmeta.H			    \
 	richtext/richtextmetafwd.H		    \
@@ -242,6 +258,13 @@ libcxxw_la_SOURCES=\
 	richtext/richtextmetalink.H		    \
 	richtext/richtextmetalinkfwd.H		    \
 	richtext/richtextmetalinkobj.H		    \
+	richtext/richtextmetalinkcollection.C	    \
+	richtext/richtextmetalinkcollection.H	    \
+	richtext/richtextmetalinkcollectionfwd.H    \
+	richtext/richtextmetalinkcollectionobj.H    \
+	richtext/richtextparagraph.C		    \
+	richtext/richtextparagraph.H		    \
+	richtext/richtextparagraphfwd.H		    \
 	richtext/richtextstring.C		    \
 	richtext/richtextstring.H		    \
 	richtext/richtextstring2.C		    \
@@ -295,6 +318,7 @@ TESTPROGRAMS=\
 	testderivedaxis					\
 	testgrid					\
 	testrichtextstring				\
+	testrichtext					\
 	#
 
 INTERACTIVETESTPROGRAMS=\
@@ -314,6 +338,10 @@ testderivedaxis_LDFLAGS=$(TESTLINKTYPE)
 testgrid_SOURCES=testgrid.C
 testgrid_LDADD=libcxxw.la
 testgrid_LDFLAGS=-static
+
+testrichtext_SOURCES=testrichtext.C
+testrichtext_LDADD=libcxxw.la
+testrichtext_LDFLAGS=-static $(STATICLINKFLAGS)
 
 testrichtextstring_SOURCES=testrichtextstring.C
 testrichtextstring_LDADD=-lcxx

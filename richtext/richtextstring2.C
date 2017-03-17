@@ -192,8 +192,8 @@ void richtextstring::compute_width(IN_THREAD_ONLY,
 		assert_or_throw(end_char <= string.size() &&
 				start_char <= end_char,
 				"Internal error: invalid character range in compute_width()");
-		if (start_char <= end_skip)
-			break; // Optimization, we can start now.
+		if (start_char >= end_skip)
+			break; // Optimization, we're done.
 
 		if (skip > start_char)
 		{

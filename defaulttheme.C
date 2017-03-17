@@ -525,7 +525,7 @@ static bool parse_dim(const xml::doc::base::readlock &lock,
 			mm=dim_scale(v1mm, v);
 			break;
 		case 'p':
-			mm=dim_t::truncate(v);
+			mm=dim_scale(dim_t{1}, v);
 			break;
 		default:
 			mm=dim_scale(h1mm+v1mm, v/2);
