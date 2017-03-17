@@ -1,0 +1,275 @@
+/*
+** Copyright 2017 Double Precision, Inc.
+** See COPYING for distribution information.
+*/
+
+#ifndef richtextstring_H
+#define richtextstring_H
+
+#include "richtext/richtextmetafwd.H"
+#include "fonts/freetypefontfwd.H"
+#include "connection_threadfwd.H"
+#include "x/w/types.H"
+#include <courier-unicode.h>
+#include <unordered_map>
+#include <x/functional.H>
+
+LIBCXXW_NAMESPACE_START
+
+//! A unicode string, marked up by \ref richtextmeta "a richtextmeta".
+
+//! Encapsulate a unicode string, with a list of fonts and colors for drawing
+//! it.
+//!
+//! Define a \c std::u32string, and a list of
+//! index+richtextmeta tuples. "index" specifies that character #n in the
+//! \c std::u32string, and all following characters up until th enext "index"
+//! are rendered by the corresponding \c richtextmeta.
+//!
+//! Index #0 must always be specified, unless the string is empty.
+//! The last index in the list of index+richtextmeta tuples specifies the
+//! metadata for the remainder of the text string.
+//!
+//! This class is not thread safe. It's expected that it's sitting behind
+//! a lock, somewhere. Some methods are accessible only to the execution
+//! thread, but the lock must still be acquired before invoking them.
+
+class LIBCXX_HIDDEN richtextstring {
+
+	//! Our unicode string.
+	std::u32string string;
+
+	//! Our container for the metadata.
+
+	//! This a tuple of index+richtextmeta, sorted by index. Externally
+	//! this is sorced from a map, so there won't be any duplicates.
+	typedef std::vector<std::pair<size_t, richtextmeta>> meta_t;
+
+	//! The metadata.
+	meta_t meta;
+
+	//! Sort the meta, which was imported from a map.
+
+	//! Sorts it by index, validates it against a stirng of size 'n'.
+	//!
+	//! If 'n' is 0, the metadata must be empty. Otherwise the last index
+	//! in the metadata must be less than 'n'. Since the metadata comes
+	//! from a map there won't be duplicates. There must be an entry
+	//! for index #0.
+
+	static void sort_and_validate(meta_t &meta, size_t n);
+
+	//! Whether a coalesce() is needed.
+
+	//! This flag is set when the string or metadata is modified, and
+	//! is cleared by coalesce().
+
+	bool coalesce_needed=false;
+
+	//! Remove consecutive metadata entries that are the same.
+
+	//! If \c coalesce_needed is set, scans the metadata array.
+	//! Consecutive entries with the same metadata are removed.
+	void coalesce();
+
+	//! Make sure there is an entry in the metadata vector for index #n.
+
+	//! If there isn't one, duplicate the next lowest one, just before
+	//! index #n.
+	meta_t::iterator duplicate(size_t);
+
+	//! Make sure there is an entry in the metadata vector for index #n.
+
+	//! If there isn't one, duplicate the next lowest one, just before
+	//! index #n.
+	static meta_t::iterator duplicate(meta_t &, size_t);
+
+	class compare_meta_by_pos;
+
+	//! A lower_bound() search by the index # in the meta vector.
+	meta_t::iterator meta_lower_bound_by_pos(size_t p);
+
+	//! An upper_bound() search by the index # in the meta vector.
+	static meta_t::iterator meta_upper_bound_by_pos(meta_t &meta, size_t p);
+
+	//! Invoked by insert() and erase()
+	void modified();
+
+ public:
+
+	//! Default constructors
+	richtextstring()=default;
+
+	//! Constructor
+
+	//! Initializes the richtextstring from the given string and metadata.
+
+	richtextstring(const std::u32string &string,
+		       const std::unordered_map<size_t, richtextmeta> &meta);
+
+	//! Construct from a substring.
+
+	richtextstring(const richtextstring &other,
+		       size_t pos,
+		       size_t n);
+
+	//! Destructor
+	~richtextstring();
+
+	//! Insert new text into the richtextstring
+
+	//! Specifies the insert point, and the new text and the new text's
+	//! metadata.
+	void insert(size_t pos,
+		    const std::u32string &s,
+		    const std::unordered_map<size_t, richtextmeta> &smeta);
+
+	//! Insert another string into richtextstring
+
+	//! Specifies the insert point, and another string.
+
+	void insert (size_t pos, const richtextstring &s);
+ private:
+
+	//! insert() implementation.
+
+	void insert(size_t pos,
+		    const std::u32string &s,
+		    meta_t &new_meta);
+ public:
+	//! Remove portions of this string.
+	void erase(size_t pos, size_t n);
+
+	//! Remove this entire string.
+	void clear();
+
+	//! Return the text string
+	const std::u32string &get_string() const { return string; }
+
+	//! Return the metadata.
+	const meta_t &get_meta() { coalesce(); return meta; }
+
+ private:
+
+	//! A container for resolved fonts.
+	typedef std::vector<std::pair<size_t, freetypefont>> resolved_fonts_t;
+
+	//! Container returned by resolve_fonts()
+
+	resolved_fonts_t resolved_fonts;
+
+	//! Whether the string or metadata was modified, and resolved_fonts needs caching.
+	bool fonts_need_resolving=true;
+
+ public:
+	//! Lookup the metadata's freetypefonts.
+
+	//! Determine consecutive ranges of this text string that get rendered
+	//! with the same freetypefont.
+	//!
+	//! Returns a vector containing:
+	//!
+	//! - starting character index
+	//!
+	//! - freetypefont for rendering text starting at the given
+	//! character.
+	//!
+	//! The vector is sorted by starting position. For a non-empty string
+	//! the first vector always has index #0.
+	//! The freetypefont remains in effect until the next element's index,
+	//! or the end of the string.
+	//!
+	//! If password_char is non-zero, the fonts are resolved as if every
+	//! character in the string is password_char.
+	//!
+	//! It is expected that all calls to resolve_fonts(), compute_fonts(),
+	//! will pass the same password_char.
+
+	const resolved_fonts_t &resolve_fonts(IN_THREAD_ONLY,
+					      char32_t password_char);
+
+	//! Calculate the width and the kerning of each character.
+
+	//! Computes the width of each character, in pixels. The current is
+	//! the offset to be added to the previous character's position plus
+	//! its width to get the starting position of this character.
+	//!
+	//! If \c previous_string is not null it points to a "previous"
+	//! richtextstring. The kerning of character #0 is zero, unless
+	//! the last font in the previous richtextstring is the same as the
+	//! first font in this string.
+	//!
+	//! Characters that cannot be represented get replaced by
+	//! unprintable_char.
+	//!
+	//! If password_char is non-zero, the fonts are resolved as if every
+	//! character in the string is password_char.
+	//!
+	//! It is expected that all calls to resolve_fonts(), compute_fonts(),
+	//! will pass the same password_char.
+
+	void compute_width(IN_THREAD_ONLY,
+			   richtextstring *previous_string,
+			   char32_t unprintable_char,
+			   std::vector<dim_t> &widths,
+			   std::vector<int16_t> &kernings,
+			   char32_t password_char);
+
+	//! Update existing widths and kernings.
+
+	//! This is a timesaver for updating an existing width and kernings
+	//! vector for the given character range.
+	//!
+	//! "skip" gives the index of the first character whose width and
+	//! kerning gets updated.
+	//!
+	//! "count" gives the count of characters, starting at "skip", that
+	//! get updated.
+
+	void compute_width(IN_THREAD_ONLY,
+			   richtextstring *previous_string,
+			   char32_t unprintable_char,
+			   std::vector<dim_t> &widths,
+			   std::vector<int16_t> &kernings,
+			   char32_t password_char,
+			   size_t skip,
+			   size_t count);
+
+	//! Reserve space for so many characters and metadata.
+
+	void reserve(size_t n_chars, size_t n_meta);
+
+	//! An append operation
+
+	richtextstring &operator+=(const richtextstring &o);
+
+	//! The current theme was updated.
+
+	//! Invoke all fonts' theme_updated().
+	void theme_updated(IN_THREAD_ONLY);
+
+	//! Modify rich text meta.
+
+	//! Invoke the lambda, passing it all the metadata within the given
+	//! range.
+	template<typename lambda>
+		void modify_meta(size_t start, size_t count,
+				 lambda &&l)
+	{
+		do_modify_meta(start, count,
+			       make_function<void (size_t, richtextmeta &meta)>
+			       (std::forward<lambda>(l)));
+	}
+
+	//! Modify rich text meta.
+
+	//! Invoke the lambda, passing it all the metadata within the given
+	//! range.
+	void do_modify_meta(size_t start, size_t count,
+			    const function<void (size_t, richtextmeta &meta)>
+			    &l);
+};
+
+LIBCXXW_NAMESPACE_END
+
+#endif

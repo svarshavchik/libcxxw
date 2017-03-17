@@ -23,6 +23,8 @@ libcxxw_la_LIBADD=-lcxx
 libcxxw_la_LDFLAGS=$(STATICLINKFLAGS)
 
 libcxxw_la_SOURCES=\
+	assert_or_throw.C			    \
+	assert_or_throw.H			    \
 	background_color.C			    \
 	background_color.H			    \
 	background_colorfwd.H			    \
@@ -233,6 +235,16 @@ libcxxw_la_SOURCES=\
 	render.H				    \
 	returned_pointer.H			    \
 	rgb.C					    \
+	richtext/richtextmeta.C			    \
+	richtext/richtextmeta.H			    \
+	richtext/richtextmetafwd.H		    \
+	richtext/richtextmetalink.C		    \
+	richtext/richtextmetalink.H		    \
+	richtext/richtextmetalinkfwd.H		    \
+	richtext/richtextmetalinkobj.H		    \
+	richtext/richtextstring.C		    \
+	richtext/richtextstring.H		    \
+	richtext/richtextstring2.C		    \
 	scratch_buffer.C			    \
 	scratch_buffer_impl.C			    \
 	scratch_buffer.H			    \
@@ -282,6 +294,7 @@ TESTPROGRAMS=\
 	testcollapse					\
 	testderivedaxis					\
 	testgrid					\
+	testrichtextstring				\
 	#
 
 INTERACTIVETESTPROGRAMS=\
@@ -301,6 +314,9 @@ testderivedaxis_LDFLAGS=$(TESTLINKTYPE)
 testgrid_SOURCES=testgrid.C
 testgrid_LDADD=libcxxw.la
 testgrid_LDFLAGS=-static
+
+testrichtextstring_SOURCES=testrichtextstring.C
+testrichtextstring_LDADD=-lcxx
 
 $(call OPTIONS_GEN,testmainwindowoptions.H,testmainwindowoptions.xml)
 
