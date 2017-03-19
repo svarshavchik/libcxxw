@@ -23,7 +23,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-richtextObj::implObj::implObj(metrics::halign alignmentArg)
+richtextObj::implObj::implObj(halign alignmentArg)
 	: alignment(alignmentArg)
 {
 }

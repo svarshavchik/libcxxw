@@ -889,17 +889,17 @@ void richtextfragmentObj::overlay_merge(overlay_map_t &overlay,
 	overlay.insert(std::make_pair(end, resume));
 }
 
-coord_t richtextfragmentObj::first_xpos(metrics::halign alignment,
+coord_t richtextfragmentObj::first_xpos(halign alignment,
 					dim_t text_width) const
 {
 	if (width < text_width)
 	{
 		auto pad=dim_t::value_type(text_width-width);
 
-		if (alignment == metrics::halign::center)
+		if (alignment == halign::center)
 			return coord_t::truncate(pad/2);
 
-		if (alignment == metrics::halign::right)
+		if (alignment == halign::right)
 			return coord_t::truncate(pad);
 	}
 

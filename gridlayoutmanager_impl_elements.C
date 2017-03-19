@@ -742,16 +742,16 @@ void gridlayoutmanagerObj::implObj
 				dim_t padding=0;
 
 				switch (hv->horizontal_alignment) {
-				case metrics::halign::left:
+				case halign::left:
 					max_width=element_position.width;
 					break;
-				case metrics::halign::center:
+				case halign::center:
 					padding=(element_position.width - max_width) / 2;
 					break;
-				case metrics::halign::right:
+				case halign::right:
 					padding=(element_position.width - max_width);
 					break;
-				case metrics::halign::fill:
+				case halign::fill:
 					max_width=element_position.width;
 					break;
 				}
@@ -772,16 +772,16 @@ void gridlayoutmanagerObj::implObj
 				dim_t padding=0;
 
 				switch (hv->vertical_alignment) {
-				case metrics::valign::top:
+				case valign::top:
 					max_height=element_position.height;
 					break;
-				case metrics::valign::middle:
+				case valign::middle:
 					padding=(element_position.height - max_height) / 2;
 					break;
-				case metrics::valign::bottom:
+				case valign::bottom:
 					padding=(element_position.height - max_height);
 					break;
-				case metrics::valign::fill:
+				case valign::fill:
 					max_height=element_position.height;
 					break;
 				}

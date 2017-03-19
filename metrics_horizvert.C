@@ -22,8 +22,8 @@ horizvert_axi::horizvert_axi()
 
 horizvert_axi::horizvert_axi(const axis &horiz,
 			     const axis &vert,
-			     metrics::halign h,
-			     metrics::valign v)
+			     halign h,
+			     valign v)
 	: horiz(horiz),
 	  vert(vert),
 	  horizontal_alignment(h),

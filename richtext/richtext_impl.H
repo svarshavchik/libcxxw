@@ -146,11 +146,11 @@ public:
 
 	//! We store it here, but richtextObj doesn't use it. The rendering
 	//! code picks it up, and forwards it to richtextparagraphObj::render().
-	metrics::halign alignment;
+	halign alignment;
 
 	//! Constructor
 	implObj(//! Alignment
-		metrics::halign alignmentArg);
+		halign alignmentArg);
 
 	//! Replace existing contents by something else.
 

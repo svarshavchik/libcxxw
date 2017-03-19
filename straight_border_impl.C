@@ -163,8 +163,7 @@ class LIBCXX_HIDDEN horizontal_straight_borderObj : public horizontal_impl {
 
 					  metrics::horizvert_axi m;
 
-					  m.vertical_alignment=
-						  metrics::valign::fill;
+					  m.vertical_alignment=valign::fill;
 
 					  m;
 				  }),
@@ -237,8 +236,7 @@ class LIBCXX_HIDDEN vertical_straight_borderObj : public vertical_impl {
 
 					metrics::horizvert_axi m;
 
-					m.horizontal_alignment=
-						metrics::halign::fill;
+					m.horizontal_alignment=halign::fill;
 
 					m;
 				}),

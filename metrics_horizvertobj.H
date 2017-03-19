@@ -7,6 +7,7 @@
 
 #include "x/w/types.H"
 #include "x/w/metrics/axis.H"
+#include "x/w/alignment.H"
 #include "connection_threadfwd.H"
 #include "metrics_horizvertfwd.H"
 #include <x/obj.H>
@@ -37,8 +38,8 @@ namespace metrics {
 		//! Constructor
 		horizvert_axi(const axis &horiz,
 			      const axis &vert,
-			      metrics::halign h,
-			      metrics::valign v);
+			      halign h,
+			      valign v);
 	};
 
 	//! A display element's metrics.

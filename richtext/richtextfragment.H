@@ -23,6 +23,7 @@
 #include "x/w/rgb_hash.H"
 #include "x/w/screenfwd.H"
 #include "x/w/metrics/axis.H"
+#include "x/w/alignment.H"
 #include "assert_or_throw.H"
 
 #include <list>
@@ -398,7 +399,7 @@ public:
 		    const render_info &info);
 
 	//! Compute starting X position of the rendered fragment.
-	coord_t first_xpos(metrics::halign alignment, dim_t text_width) const;
+	coord_t first_xpos(halign alignment, dim_t text_width) const;
 
 	//! Check if this fragment that has metadata for the given link
 

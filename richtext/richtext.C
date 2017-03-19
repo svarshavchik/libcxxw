@@ -8,7 +8,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-richtext richtextBase::create(metrics::halign alignment, dim_t initial_width)
+richtext richtextBase::create(halign alignment, dim_t initial_width)
 {
 	return ptrrefBase::objfactory<richtext>
 		::create(ref<richtextObj::implObj>

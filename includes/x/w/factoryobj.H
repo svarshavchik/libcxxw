@@ -12,6 +12,7 @@
 #include <x/w/metrics/axis.H>
 #include <x/w/metrics/mmaxisfwd.H>
 #include <x/w/border_infommfwd.H>
+#include <x/w/alignment.H>
 #include <x/obj.H>
 #include <x/functional.H>
 
@@ -46,8 +47,8 @@ public:
 	canvas create_canvas(functor &&creator,
 			     const metrics::mmaxis &horiz,
 			     const metrics::mmaxis &vert,
-			     metrics::halign h=metrics::halign::center,
-			     metrics::valign v=metrics::valign::middle)
+			     halign h=halign::center,
+			     valign v=valign::middle)
 	{
 		return do_create_canvas(make_function<void (const canvas &)>
 					(creator),
@@ -59,8 +60,8 @@ public:
 	canvas do_create_canvas(const function<void (const canvas &)> &creator,
 				const metrics::mmaxis &horiz,
 				const metrics::mmaxis &vert,
-				metrics::halign h,
-				metrics::valign v);
+				halign h,
+				valign v);
 
 };
 

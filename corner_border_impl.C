@@ -63,8 +63,8 @@ corner_borderObj::implObj
 	 ({
 		 metrics::horizvert_axi m;
 
-		 m.horizontal_alignment=metrics::halign::fill;
-		 m.vertical_alignment=metrics::valign::fill;
+		 m.horizontal_alignment=halign::fill;
+		 m.vertical_alignment=valign::fill;
 
 		 m;
 	 }), "corner@libcxx")

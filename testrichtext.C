@@ -24,7 +24,7 @@ void testrichtext(const current_fontcollection &font1,
 	auto black=w->get_screen()->impl->create_background_color("0%_color",
 								  {0,0,0});
 
-	auto richtext=richtext::create(metrics::halign::left, 0);
+	auto richtext=richtext::create(halign::left, 0);
 
 	richtextstring ustring{
 		U"Hello world\nHello\nworld\n",
@@ -142,7 +142,7 @@ void testsplit(const current_fontcollection &font1,
 
 	for (const auto &test:tests)
 	{
-		auto richtext=richtext::create(metrics::halign::left, 0);
+		auto richtext=richtext::create(halign::left, 0);
 		auto impl=richtext->debug_get_impl();
 
 		impl->set(IN_THREAD, ustring);

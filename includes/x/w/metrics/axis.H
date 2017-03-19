@@ -32,14 +32,6 @@ LIBCXXW_NAMESPACE_START
 
 namespace metrics {
 
-	//! Horizontal alignment
-
-	enum class halign { left, center, right, fill};
-
-	//! Vertical alignment
-
-	enum class valign { top, middle, bottom, fill};
-
 	//! A single horizontal or a vertical axis.
 
 	//! The minimum, preferred, and maximum size of a display element.

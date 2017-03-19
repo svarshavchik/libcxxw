@@ -30,8 +30,8 @@ public:
 	implObj(const ref<containerObj::implObj> &container,
 		const metrics::mmaxis &horiz_metrics,
 		const metrics::mmaxis &vert_metrics,
-		metrics::halign horizontal_alignment,
-		metrics::valign vertical_alignment);
+		halign horizontal_alignment,
+		valign vertical_alignment);
 
  private:
 	//! Private constructor
@@ -40,8 +40,8 @@ public:
 		const ref<screenObj::implObj> &screen,
 		const metrics::mmaxis &horiz_metrics,
 		const metrics::mmaxis &vert_metrics,
-		metrics::halign horizontal_alignment,
-		metrics::valign vertical_alignment);
+		halign horizontal_alignment,
+		valign vertical_alignment);
 
  public:
 	//! Destructor
