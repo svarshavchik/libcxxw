@@ -12,6 +12,7 @@
 #include <x/w/theme_font.H>
 #include <x/w/theme_color.H>
 #include <x/w/screenfwd.H>
+#include <x/w/text_paramfwd.H>
 #include <string>
 #include <unordered_map>
 #include <utility>
@@ -20,155 +21,159 @@ LIBCXXW_NAMESPACE_START
 
 //! A text parameter for a new display element.
 
-//! This parameter specifies a text string when creating
-//! a new display element using the \ref factory "element factory"; such
-//! as create_label(), for example.
-//!
-//! The text is more than just text, it may include colors and markups.
-//!
-//! The first way to create a \c text_param is by using uniform initialization
-//! syntax:
-//!
-//! \code
-//! factory->create_label({INSERT_LIBX_NAMESPACE::w::rgb(0,0,0),
-//!                        "Hello world"});
-//! \endcode
-//!
-//! This invokes \c text_param's constructor, that takes a variadic parameter
-//! pack.
-//!
-//! A \c text_param can also be created using a default constructor, and
-//! then initialized one piece at a time.
-//!
-//! \code
-//! INSERT_LIBX_NAMESPACE::w::text_param p;
-//!
-//! p(INSERT_LIBX_NAMESPACE::w::rgb(0, 0, 0));
-//! p("Hello world");
-//!
-//! factory->create_label(p);
-//! \endcode
-//!
-//! or
-//!
-//! \code
-//! INSERT_LIBX_NAMESPACE::w::text_param p;
-//!
-//! p(INSERT_LIBX_NAMESPACE::w::rgb(0, 0, 0), "Hello world");
-//!
-//! factory->create_label(p);
-//! \endcode
-//!
-//! The available parameters to the constructor, and to the \c () operator
-//! are:
-//!
-//! \code
-//! INSERT_LIBX_NAMESPACE::w::text_param p;
-//!
-//! p("Hello world");
-//! \endcode
-//!
-//! A \c std::string specifies a UTF-8 string.
-//!
-//! \code
-//! INSERT_LIBX_NAMESPACE::w::text_param p;
-//!
-//! p(U"Hello world");
-//! \endcode
-//!
-//! A \c std::u32string specifies a unicode string.
-//!
-//! \code
-//! INSERT_LIBX_NAMESPACE::w::text_param p;
-//!
-//! p(INSERT_LIBX_NAMESPACE::w::font{"liberation sans", 12.0});
-//! p("Hello world");
-//!
-//! // ... or ...
-//!
-//! p(INSERT_LIBX_NAMESPACE::w::font{"liberation sans", 12.0}, "Hello world");
-//! \endcode
-//!
-//! A \ref font "INSERT_LIBX_NAMESPACE::w::font" specifies a new font.
-//! This must be followed by at least one additional string parameter (either
-//! UTF-8 or unicode), otherwise an exception gets thrown.
-//! The specified font applies to all subsequent strings passed to the
-//! constructor or the \c () operator, until the next font, if there is one.
-//!
-//! \code
-//! INSERT_LIBX_NAMESPACE::w::text_param p;
-//!
-//! p(INSERT_LIBX_NAMESPACE::w::theme_font{"label"};
-//! p("Hello world");
-//!
-//! // ... or ...
-//!
-//! #include <INSERT_LIBX_NAMESPACE/w/text_param_literals.H>
-//!
-//! p("label"_font, "Hello world!");
-//! \endcode
-//!
-//! A \ref theme_font "INSERT_LIBX_NAMESPACE::w::theme_font" specifies a new
-//! theme-specified font.
-//! This must be followed by at least one additional string parameter (either
-//! UTF-8 or unicode), otherwise an exception gets thrown.
-//! The specified theme font applies to all subsequent strings passed to the
-//! constructor or the \c () operator, until the next font, if there is one.
-//!
-//! Including \c text_param_literals.H allows a theme font to be specified
-//! using a \c "name"_font string literal.
-//!
-//! \code
-//! INSERT_LIBX_NAMESPACE::w::text_param p;
-//!
-//! p(INSERT_LIBX_NAMESPACE::w::rgb{INSERT_LIBX_NAMESPACE::w::rgb::maximum,
-//!           INSERT_LIBX_NAMESPACE::w::rgb::maximum,
-//!           INSERT_LIBX_NAMESPACE::w::rgb::maximum});
-//! p("Hello world");
-//!
-//! \endcode
-//!
-//! A \ref rgb "INSERT_LIBX_NAMESPACE::w::rgb" specifies a new color.
-//! This must be followed by at least one additional string parameter (either
-//! UTF-8 or unicode), otherwise an exception gets thrown.
-//! The specified color applies to all subsequent strings passed to the
-//! constructor or the \c () operator, until the next font, if there is one.
-//!
-//! \code
-//! INSERT_LIBX_NAMESPACE::w::text_param p;
-//!
-//! p(INSERT_LIBX_NAMESPACE::w::theme_color{"highlight"};
-//! p("Hello world");
-//!
-//! // ... or ...
-//!
-//! #include <INSERT_LIBX_NAMESPACE/w/text_param_literals.H>
-//!
-//! p("hightlight"_color, "Hello world!");
-//! \endcode
-//!
-//! A \ref theme_color "INSERT_LIBX_NAMESPACE::w::theme_color" specifies a new
-//! theme-specified color.
-//! This must be followed by at least one additional string parameter (either
-//! UTF-8 or unicode), otherwise an exception gets thrown.
-//! The specified theme color applies to all subsequent strings passed to the
-//! constructor or the \c () operator, until the next color, if there is one.
-//!
-//! Including \c text_param_literals.H allows a theme color to be specified
-//! using a \c "name"_color string literal.
-//!
-//! \code
-//! p("hightlight_fg"_color, "hightlight_fg"_color, "Hello world!");
-//! \endcode
-//!
-//! Specifying two colors in a row, without an intervening text string,
-//! has the effect of setting both the foreground and the background color
-//! for the following text. Either the foreground or the background color
-//! can be an explicit \ref rgb "rgb color", or a theme color.
-//!
-//! Both the foreground and background color apply to all subsequent strings
-//! passed to the constructor or the \c () operator, until the next color, if
-//! there is one.
+/*!
+This parameter specifies a text string when creating
+a new display element using the \ref factory "element factory"; such
+as create_label(), for example.
+
+The text may include colors and markups, as described here.
+
+The first way to create a \c text_param is with uniform initialization
+syntax:
+
+\code
+factory->create_label({INSERT_LIBX_NAMESPACE::w::rgb(0,0,0),
+                       "Hello world"});
+\endcode
+
+This invokes \c text_param's constructor, which takes a variadic parameter
+pack.
+
+A \c text_param also has a default constructor. This makes to possible to
+construct a \c text_param one piece at a time.
+
+\code
+INSERT_LIBX_NAMESPACE::w::text_param p;
+
+p(INSERT_LIBX_NAMESPACE::w::rgb(0, 0, 0));
+p("Hello world");
+
+factory->create_label(p);
+\endcode
+
+or
+
+\code
+INSERT_LIBX_NAMESPACE::w::text_param p;
+
+p(INSERT_LIBX_NAMESPACE::w::rgb(0, 0, 0), "Hello world");
+
+factory->create_label(p);
+\endcode
+
+The \c () operator takes a variadic parameter pack, and like the constructor
+each parameter gets processed individually.
+
+The available parameters to the constructor, and to the \c () operator
+are:
+
+\code
+INSERT_LIBX_NAMESPACE::w::text_param p;
+
+p("Hello world");
+\endcode
+
+A \c std::string specifies a UTF-8 string.
+
+\code
+INSERT_LIBX_NAMESPACE::w::text_param p;
+
+p(U"Hello world");
+\endcode
+
+A \c std::u32string specifies a unicode string.
+
+\code
+INSERT_LIBX_NAMESPACE::w::text_param p;
+
+p(INSERT_LIBX_NAMESPACE::w::font{"liberation sans", 12.0});
+p("Hello world");
+
+// ... or ...
+
+p(INSERT_LIBX_NAMESPACE::w::font{"liberation sans", 12.0}, "Hello world");
+\endcode
+
+A \ref font "INSERT_LIBX_NAMESPACE::w::font" specifies a new font.
+At least one additional string parameter (either UTF-8 or unicode) must
+follow a font specification, otherwise an exception gets thrown; either
+in the same variadic parameter pack, or in a subsequent \c () call.
+
+The specified font applies to all subsequent string or strings, passed to the
+constructor or the \c () operator, until the next font change, if there is one.
+
+\code
+INSERT_LIBX_NAMESPACE::w::text_param p;
+
+p(INSERT_LIBX_NAMESPACE::w::theme_font{"label"};
+p("Hello world");
+
+// ... or ...
+
+#include <INSERT_LIBX_NAMESPACE/w/text_param_literals.H>
+
+p("label"_theme_font, "Hello world!");
+\endcode
+
+A \ref theme_font "INSERT_LIBX_NAMESPACE::w::theme_font" specifies a new
+theme-specified font, instead of a custom font.
+The specified theme font applies to all subsequent strings passed to the
+constructor or the \c () operator, until the next font, if there is one.
+
+\c text_param_literals.H allows using a \c "name"_theme_font string literal
+to specify a theme font.
+
+\code
+INSERT_LIBX_NAMESPACE::w::text_param p;
+
+p(INSERT_LIBX_NAMESPACE::w::rgb{INSERT_LIBX_NAMESPACE::w::rgb::maximum,
+          INSERT_LIBX_NAMESPACE::w::rgb::maximum,
+          INSERT_LIBX_NAMESPACE::w::rgb::maximum});
+p("Hello world");
+
+\endcode
+
+A \ref rgb "INSERT_LIBX_NAMESPACE::w::rgb" parameter specifies a new color.
+This must be followed by at least one additional string parameter (either
+UTF-8 or unicode), otherwise an exception gets thrown.
+The specified color applies to all subsequent strings passed to the
+constructor or the \c () operator, until the next font, if there is one.
+
+\code
+INSERT_LIBX_NAMESPACE::w::text_param p;
+
+p(INSERT_LIBX_NAMESPACE::w::theme_color{"highlight"};
+p("Hello world");
+
+// ... or ...
+
+#include <INSERT_LIBX_NAMESPACE/w/text_param_literals.H>
+
+p("hightlight"_color, "Hello world!");
+\endcode
+
+A \ref theme_color "INSERT_LIBX_NAMESPACE::w::theme_color" specifies a new
+theme-specified color.
+At least one additional string parameter (either UTF-8 or unicode) must
+follow a color specification, otherwise an exception gets thrown; either
+in the same variadic parameter pack, or in a subsequent \c () call.
+\c text_param_literals.H allows using a \c "name"_color string literal
+to specify a color.
+
+\code
+p("hightlight_fg"_color, "hightlight_fg"_color, "Hello world!");
+\endcode
+
+Specifying two colors in a row, without an intervening text string,
+has the effect of setting both the foreground and the background color
+for the following text. Either the foreground or the background color
+can be an explicit \ref rgb "rgb color", or a theme color.
+
+Both the foreground and background color apply to all subsequent strings
+passed to the constructor or the \c () operator, until the next color
+specification, if there is one.
+
+*/
 
 class text_param {
 

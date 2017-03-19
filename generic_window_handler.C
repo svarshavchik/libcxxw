@@ -175,13 +175,24 @@ void generic_windowObj::handlerObj::request_visibility(IN_THREAD_ONLY,
 		 {
 			 me->preferred_dimensions_set(IN_THREAD)=true;
 
+			 // An X server will report a BadValue for a window
+			 // of size (0,0). Our metrics can compute such
+			 // a preferred size, as an edge case. So, we deal
+			 // with it.
+
+			 auto w=me->preferred_width(IN_THREAD);
+			 auto h=me->preferred_height(IN_THREAD);
+
+			 if (w == 0 || h == 0)
+				 w=h=1;
+
 			 values_and_mask configure_window_vals
 				 (XCB_CONFIG_WINDOW_WIDTH,
-				  (dim_t::value_type)
-				  me->preferred_width(IN_THREAD),
+				  (dim_t::value_type)w,
+
 				  XCB_CONFIG_WINDOW_HEIGHT,
-				  (dim_t::value_type)
-				  me->preferred_height(IN_THREAD))
+				  (dim_t::value_type)h);
+
 				 ;
 #ifdef REQUEST_VISIBILITY_LOG
 			 REQUEST_VISIBILITY_LOG(me->preferred_width(IN_THREAD),

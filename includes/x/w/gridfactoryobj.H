@@ -17,7 +17,7 @@ LIBCXXW_NAMESPACE_START
 
 //! \see gridfactory
 
-class LIBCXX_HIDDEN gridfactoryObj : public factoryObj {
+class gridfactoryObj : public factoryObj {
 
  public:
 
@@ -33,10 +33,10 @@ class LIBCXX_HIDDEN gridfactoryObj : public factoryObj {
 	//! Constructor
 
 	gridfactoryObj(const gridlayoutmanager &gridlayout,
-		       const ref<implObj> &implArg);
+		       const ref<implObj> &implArg) LIBCXX_HIDDEN;
 
 	//! Destructor
-	~gridfactoryObj();
+	~gridfactoryObj() LIBCXX_HIDDEN;
 
 	//! Set new element's border, first.
 
@@ -77,8 +77,10 @@ class LIBCXX_HIDDEN gridfactoryObj : public factoryObj {
 	//! Set new element's padding, first.
 
 	gridfactoryObj &bottom_padding(double paddingmm);
+
+private:
 	//! Created a new display element for the grid.
-	void created(const element &new_element) override;
+	void created(const element &new_element) override LIBCXX_HIDDEN;
 };
 
 LIBCXXW_NAMESPACE_END

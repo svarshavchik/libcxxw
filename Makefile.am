@@ -190,6 +190,9 @@ libcxxw_la_SOURCES=\
 	gridlayoutmanager_impl_elements.C	    \
 	gridlayoutmanager_impl_elements.H	    \
 	impl_connection_thread.H		    \
+	label.H					    \
+	label.C					    \
+	label_impl.C				    \
 	layoutmanager.C				    \
 	layoutmanager.H				    \
 	layoutmanager_impl.C			    \
@@ -325,6 +328,7 @@ TESTPROGRAMS=\
 
 INTERACTIVETESTPROGRAMS=\
 	testmainwindow					\
+	testlabel					\
 	#
 
 noinst_PROGRAMS=$(TESTPROGRAMS) $(INTERACTIVETESTPROGRAMS) genconstants
@@ -340,6 +344,10 @@ testderivedaxis_LDFLAGS=$(TESTLINKTYPE)
 testgrid_SOURCES=testgrid.C
 testgrid_LDADD=libcxxw.la
 testgrid_LDFLAGS=-static
+
+testlabel_SOURCES=testlabel.C
+testlabel_LDADD=libcxxw.la
+testlabel_LDFLAGS=-static $(STATICLINKFLAGS)
 
 testrichtext_SOURCES=testrichtext.C
 testrichtext_LDADD=libcxxw.la

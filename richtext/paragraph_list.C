@@ -180,11 +180,7 @@ void paragraph_list::theme_updated(IN_THREAD_ONLY)
 					 ([&]
 					  (const richtextfragment &f)
 					  {
-						  f->string.theme_updated
-							  (IN_THREAD);
-						  f->recalculate_size
-							  (IN_THREAD);
-						  f->redraw_needed=true;
+						  f->theme_updated(IN_THREAD);
 					  });
 
 				 fragments.theme_was_updated=true;

@@ -34,11 +34,11 @@ struct richtextfragmentObj::render_info {
 
 	//! Reverse video background color
 
-	picture reverse_video_bg;
+	ref<pictureObj::implObj> reverse_video_bg;
 
 	//! Reverse video foreground color
 
-	picture reverse_video_fg;
+	ref<pictureObj::implObj> reverse_video_fg;
 
 	//! The width of the scratch_buffer.
 

@@ -629,6 +629,14 @@ current_fontcollection elementObj::implObj
 	return get_window_handler().create_theme_font(font);
 }
 
+background_color elementObj::implObj
+::create_background_color(const std::experimental::string_view &color_name,
+			  const rgb &default_value)
+{
+	return get_screen()->impl->create_background_color(color_name,
+							   default_value);
+}
+
 richtextstring elementObj::implObj::convert(richtextmeta font,
 					    const text_param &t)
 {
@@ -660,6 +668,7 @@ richtextstring elementObj::implObj::convert(richtextmeta font,
 
 	for (const auto &p:all_positions)
 	{
+		// If there is no initial font/color, insert one automatically.
 		if (p > 0 && !inserted_default)
 			m.insert({0, font});
 		inserted_default=true;
@@ -730,7 +739,13 @@ richtextstring elementObj::implObj::convert(richtextmeta font,
 		m.insert({p, font});
 	}
 
-	return richtextstring{t.string, m};
+	// If there were no font/color specifications, at all, and the string
+	// is not empty, insert the default one.
+
+	if (!inserted_default && !t.string.empty())
+		m.insert({0, font});
+
+	return {t.string, m};
 }
 
 LIBCXXW_NAMESPACE_END

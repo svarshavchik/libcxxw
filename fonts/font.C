@@ -10,6 +10,8 @@
 #include "messages.H"
 #include <fontconfig/fontconfig.h>
 
+#include <algorithm>
+
 LIBCXXW_NAMESPACE_START
 
 #ifndef DEFAULT_FONT
@@ -200,4 +202,83 @@ font &font::scale(double ratio)
 	return *this;
 }
 
+/////////////////////////////////////////////////////////////////////////
+
+font operator"" _font(const char *str, size_t s)
+{
+	font f;
+
+	const char *end=str+s;
+
+	const char *beg=std::find(str, end, ';');
+
+	if (beg != str)
+		f.family=std::string(str, beg);
+
+	chrcasecmp::str_equal_to cmpi;
+
+	const auto eof=std::istringstream::traits_type::eof();
+
+	while (beg != end)
+	{
+		auto p=++beg;
+		beg=std::find(beg, end, ';');
+
+		std::string setting{p, beg};
+
+		if (setting.empty()) continue;
+
+		auto equals=setting.find('=');
+
+		if (equals == setting.npos)
+			throw EXCEPTION(_("Invalid font specification"));
+
+		std::string name=setting.substr(0, equals);
+		std::string value=setting.substr(equals+1);
+
+		if (cmpi(name, "point_size"))
+		{
+			double v;
+
+			std::istringstream i{value};
+
+			i >> v;
+
+			if (!i.fail() || i.get() == eof)
+				f.set_point_size(v);
+		}
+
+		if (cmpi(name, "scale"))
+		{
+			double v;
+
+			std::istringstream i{value};
+
+			i >> v;
+
+			if (!i.fail() || i.get() == eof)
+				f.scale(v);
+		}
+
+		if (cmpi(name, "weight"))
+			f.set_weight(value);
+
+		if (cmpi(name, "slant"))
+			f.set_slant(value);
+
+		if (cmpi(name, "width"))
+			f.set_width(value);
+
+		if (cmpi(name, "style"))
+			f.set_style(value);
+
+		if (cmpi(name, "foundry"))
+			f.set_foundry(value);
+
+		if (cmpi(name, "spacing"))
+			f.set_spacing(value);
+	}
+
+	return f;
+}
 LIBCXXW_NAMESPACE_END

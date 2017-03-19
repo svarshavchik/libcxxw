@@ -98,10 +98,6 @@
     <family>liberation mono</family>
   </font>
 
-  <font id="label" from="sans_serif">
-    <point_size>12</point_size>
-  </font>
-
   <font id="list" from="sans_serif">
     <point_size>12</point_size>
   </font>
@@ -147,5 +143,14 @@
   <font id="dialog_label" from="serif">
     <point_size>16</point_size>
   </font>
+
+  <!-- Labels -->
+
+  <font id="label" from="sans_serif">
+    <point_size>12</point_size>
+  </font>
+
+  <color id="label_foreground_color" scale="10%" />
+
 
 </theme>

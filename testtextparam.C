@@ -24,7 +24,7 @@ void testtextparam(const auto &main_window)
 
 	text_param param2(rgb(0,0,0), rgb(0,0,0),
 			  "foo",
-			  "sans_serif"_font,
+			  "sans_serif"_theme_font,
 			  "0%"_color,
 			  "foobaz");
 

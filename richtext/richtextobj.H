@@ -7,6 +7,7 @@
 #define richtextobj_H
 
 #include "connection_threadfwd.H"
+#include "element_draw.H"
 #include "richtext/richtextfwd.H"
 #include "richtext/richtextstring.H"
 #include "x/w/types.H"
@@ -64,9 +65,38 @@ class LIBCXX_HIDDEN richtextObj : virtual public obj {
 	//! Destructor
 	~richtextObj();
 
+	//! Return the text object's current metrics
+
+	//! Return the text object's current horizontal and vertical sizes.
+
+	std::pair<metrics::axis,
+		  metrics::axis> get_metrics(IN_THREAD_ONLY);
+
+	//! Theme has been updated
+
+	//! Forwarded to the implementation object.
+
+	void theme_updated(IN_THREAD_ONLY);
+
 	//! Set the entire contents of the richtext.
 
 	void set(IN_THREAD_ONLY, richtextstring &string);
+
+	//! Draw the text
+
+	void do_draw(IN_THREAD_ONLY,
+		     //! The element being drawn
+		     element_drawObj &element,
+
+		     //! The drawn element's draw_info
+		     const draw_info &di,
+
+		     //! Whether to forcibly redraw everything.
+
+		     //! If \c false, only \c redraw_needed fragments get
+		     //! redrawn.
+
+		     bool force);
 
 	//! For testing purpose.
 

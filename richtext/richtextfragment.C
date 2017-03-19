@@ -186,12 +186,18 @@ richtextfragmentObj::find_y_position(size_t y_position_requested)
 	return ret;
 }
 
-#if 0
+void richtextfragmentObj::theme_updated(IN_THREAD_ONLY)
+{
+	string.theme_updated(IN_THREAD);
+	load_glyphs_widths_kernings(IN_THREAD);
+	recalculate_size(IN_THREAD);
+	redraw_needed=true;
+}
+
 void richtextfragmentObj::load_glyphs_widths_kernings(IN_THREAD_ONLY)
 {
 	load_glyphs_widths_kernings(IN_THREAD, prev_fragment());
 }
-#endif
 
 void richtextfragmentObj
 ::load_glyphs_widths_kernings(IN_THREAD_ONLY,
@@ -842,8 +848,8 @@ inline void richtextfragmentObj
 		case meta_overlay::inverse:
 			has_background_color=true;
 
-			color_impl=range_info.info.reverse_video_fg->impl;
-			background_color_impl=range_info.info.reverse_video_bg->impl;
+			color_impl=range_info.info.reverse_video_fg;
+			background_color_impl=range_info.info.reverse_video_bg;
 
 			background_x=0;
 			background_y=y_position();
@@ -1084,6 +1090,8 @@ void richtextfragmentObj::render(IN_THREAD_ONLY,
 			meta_iter=next_iter;
 		}
 	}
+
+	redraw_needed=false;
 }
 
 bool richtextfragmentObj::has_link(const richtextmetalinkptr &link)

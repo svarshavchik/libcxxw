@@ -837,8 +837,8 @@ rectangle gridlayoutmanagerObj::implObj::elementsObj
 	auto h_start=horiz_sizes.find(horiz_pos.start);
 	auto h_end=horiz_sizes.find(horiz_pos.end);
 
-	auto v_start=horiz_sizes.find(vert_pos.start);
-	auto v_end=horiz_sizes.find(vert_pos.end);
+	auto v_start=vert_sizes.find(vert_pos.start);
+	auto v_end=vert_sizes.find(vert_pos.end);
 
 	if (h_start == horiz_sizes.end() ||
 	    h_end == horiz_sizes.end() ||

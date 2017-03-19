@@ -247,6 +247,8 @@ class LIBCXX_HIDDEN screenObj::implObj
 						 ::string_view &color_name,
 						 const rgb &default_value);
 
+	//! Return a non-theme background_color object.
+
 	background_color create_background_color(const const_picture &pic);
 
 	/////////////////////////////////////////////////////////////////////

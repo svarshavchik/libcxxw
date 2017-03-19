@@ -13,7 +13,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-theme_font operator"" _font(const char *s, size_t l)
+theme_font operator"" _theme_font(const char *s, size_t l)
 {
 	return LIBCXXW_NAMESPACE::theme_font{{s, s+l}};
 }

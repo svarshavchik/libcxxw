@@ -207,6 +207,8 @@ public:
 
 	std::vector<int16_t> kernings;
 
+	void theme_updated(IN_THREAD_ONLY);
+
  private:
 
 	//! Make sure that all glyphs are loaded. Calculate widths and kernings.
@@ -253,20 +255,6 @@ public:
 	//! wrap things up and load_glyphs_widths_kernings().
 
 	void finish_setting(IN_THREAD_ONLY);
-
-#if 0
-	template<typename break_iter>
-		richtextfragmentObj(const richtextstring &string,
-				    break_iter beg_breaks,
-				    break_iter end_breaks)
-		: string(string),
-		breaks(beg_breaks, end_breaks)
-		{
-			assert_or_throw(this->string.get_string().size()
-					== breaks.size(),
-					"Internal error: text fragment initialized with uneven text/break metadata");
-		}
-#endif
 
 	//! Private constructor
 

@@ -13,6 +13,8 @@
 #include <x/w/metrics/mmaxisfwd.H>
 #include <x/w/border_infommfwd.H>
 #include <x/w/alignment.H>
+#include <x/w/text_paramfwd.H>
+#include <x/w/labelfwd.H>
 #include <x/obj.H>
 #include <x/functional.H>
 
@@ -63,6 +65,10 @@ public:
 				halign h,
 				valign v);
 
+	//! Create a label
+
+	label create_label(const text_param &text,
+			   halign alignment=halign::left);
 };
 
 LIBCXXW_NAMESPACE_END

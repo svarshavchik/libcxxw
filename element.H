@@ -577,6 +577,12 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 	current_fontcollection create_theme_font(const std::experimental::string_view &font);
 
+	//! Shortcut for invoking the same screen method
+
+	background_color create_background_color(const std::experimental
+						 ::string_view &color_name,
+						 const rgb &default_value);
+
 	//! Create a \ref richtextstring "rich text string", based on a \ref text_param "text_param" and a default \ref richtextmeta "richtextmeta".
 
 	//! Converts between the library API version of a rich text string,
