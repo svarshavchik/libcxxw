@@ -149,7 +149,13 @@ public:
 	halign alignment;
 
 	//! Constructor
-	implObj(//! Alignment
+	implObj(//! Initial contents
+
+		//! The constructor does not modify str, but it uses some
+		//! non-const methods in str, hence it must be non-const.
+		richtextstring &str,
+
+		//! Alignment
 		halign alignmentArg);
 
 	//! Replace existing contents by something else.
@@ -159,10 +165,26 @@ public:
 		 richtextstring &string);
 
  private:
-	void do_set(IN_THREAD_ONLY,
-		    //! Text string
+	//! Invoked from set(), after all existing locations are copied.
+	void do_set(//! Text string
 		    richtextstring &string);
+
  public:
+
+	bool initialized=false;
+
+	//! Finish initialization of new text.
+
+	//! If initialized is not set, calculate the new text size, and load
+	//! all glyphs.
+	//!
+	//! Invoked from set(), after initialized is set to false.
+	//!
+	//! Also invoked from the parent rich text object, after acquiring
+	//! the lock IN_THREAD_ONLY, to finish the construction of this object.
+
+	void finish_initialization(IN_THREAD_ONLY);
+
 	//! Destructor
 	~implObj();
 

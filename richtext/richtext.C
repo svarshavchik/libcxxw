@@ -8,11 +8,12 @@
 
 LIBCXXW_NAMESPACE_START
 
-richtext richtextBase::create(halign alignment, dim_t initial_width)
+richtext richtextBase::create(richtextstring &string,
+			      halign alignment, dim_t initial_width)
 {
 	return ptrrefBase::objfactory<richtext>
 		::create(ref<richtextObj::implObj>
-			 ::create(alignment), initial_width);
+			 ::create(string, alignment), initial_width);
 }
 
 richtextObj::richtextObj(const ref<implObj> &impl,
@@ -24,16 +25,25 @@ richtextObj::richtextObj(const ref<implObj> &impl,
 
 richtextObj::~richtextObj()=default;
 
+// We must make sure that finish_initialization() gets invoked after the
+// object gets constructed.
+
+richtextObj::impl_t::lock::lock(IN_THREAD_ONLY,
+				impl_t &me) : mpobj::lock(me)
+{
+	(**this)->finish_initialization(IN_THREAD);
+}
+
 void richtextObj::set(IN_THREAD_ONLY, richtextstring &string)
 {
-	impl_t::lock lock{impl};
+	impl_t::lock lock{IN_THREAD, impl};
 
 	(*lock)->set(IN_THREAD, string);
 }
 
-ref<richtextObj::implObj> richtextObj::debug_get_impl()
+ref<richtextObj::implObj> richtextObj::debug_get_impl(IN_THREAD_ONLY)
 {
-	impl_t::lock lock{impl};
+	impl_t::lock lock{IN_THREAD, impl};
 
 	return *lock;
 }

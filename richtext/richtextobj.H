@@ -10,6 +10,7 @@
 #include "richtext/richtextfwd.H"
 #include "richtext/richtextstring.H"
 #include "x/w/types.H"
+#include "x/w/metrics/axis.H"
 #include <x/obj.H>
 #include <x/mpobj.H>
 
@@ -27,7 +28,18 @@ class LIBCXX_HIDDEN richtextObj : virtual public obj {
  private:
 	//! The implementation object is mutex-protected.
 
-	typedef	mpobj<ref<implObj>> impl_t;
+	class impl_t : public mpobj<ref<implObj>> {
+
+	public:
+
+		using mpobj::mpobj;
+
+		class lock : public mpobj<ref<implObj>>::lock {
+
+		public:
+			lock(IN_THREAD_ONLY, impl_t &);
+		};
+	};
 
 	//! The implementation object.
 
@@ -58,7 +70,7 @@ class LIBCXX_HIDDEN richtextObj : virtual public obj {
 
 	//! For testing purpose.
 
-	ref<implObj> debug_get_impl();
+	ref<implObj> debug_get_impl(IN_THREAD_ONLY);
 };
 
 

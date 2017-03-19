@@ -21,7 +21,10 @@ class richtextBase;
 //! colors and fonts.
 //!
 //! The implementation object is protected by a mutex, because it is not
-//! thread safe.
+//! thread safe. finish_initialization() must be invoked every time the mutex
+//! protecting this object gets locked, except in order to obtain the
+//! current contents of the rich text. This is required in order to finish
+//! construction of this object.
 
 typedef ref<richtextObj, richtextBase> richtext;
 

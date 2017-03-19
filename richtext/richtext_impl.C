@@ -23,9 +23,11 @@
 
 LIBCXXW_NAMESPACE_START
 
-richtextObj::implObj::implObj(halign alignmentArg)
+richtextObj::implObj::implObj(richtextstring &string,
+			      halign alignmentArg)
 	: alignment(alignmentArg)
 {
+	do_set(string);
 }
 
 void richtextObj::implObj::set(IN_THREAD_ONLY, richtextstring &string)
@@ -67,7 +69,10 @@ void richtextObj::implObj::set(IN_THREAD_ONLY, richtextstring &string)
 
 	restore_paragraphs_sentry.guard();
 
-	do_set(IN_THREAD, string);
+	do_set(string);
+
+	initialized=false;
+	finish_initialization(IN_THREAD);
 
 	// Ok, now move all locations to the last character of the new text.
 
@@ -114,7 +119,7 @@ void richtextObj::implObj::set(IN_THREAD_ONLY, richtextstring &string)
 	restore_paragraphs_sentry.unguard();
 }
 
-void richtextObj::implObj::do_set(IN_THREAD_ONLY, richtextstring &string)
+void richtextObj::implObj::do_set(richtextstring &string)
 {
 	paragraphs.clear();
 	num_chars=0;
@@ -167,16 +172,41 @@ void richtextObj::implObj::do_set(IN_THREAD_ONLY, richtextstring &string)
 
 		my_fragments.append_no_recalculate(new_fragment);
 
-		new_fragment->finish_setting(IN_THREAD);
-
-		// Now that the fragment has been initialized, the
-		// paragraph's metrics can be recalculated
-		my_fragments.fragment_text_changed(IN_THREAD,
-						   new_fragment
-						   ->my_fragment_number,
-						   0);
 		i=j;
 	}
+}
+
+void richtextObj::implObj::finish_initialization(IN_THREAD_ONLY)
+{
+	if (initialized)
+		return;
+
+	paragraph_list my_paragraphs(*this);
+
+	paragraphs.for_paragraphs
+		(0,
+		 [&]
+		 (const auto &new_paragraph)
+		 {
+			 fragment_list my_fragments(my_paragraphs,
+						    *new_paragraph);
+
+			 if (my_fragments.size() != 1)
+				 throw EXCEPTION("Internal error: expected 1 fragment in finish_initialization()");
+
+			 auto new_fragment=
+				 new_paragraph->get_fragment(0);
+
+			 new_fragment->finish_setting(IN_THREAD);
+
+			 // Now that the fragment has been initialized, the
+			 // paragraph's metrics can be recalculated
+			 my_fragments.fragment_text_changed(IN_THREAD, 0,
+							    0);
+
+			 return true;
+		 });
+	initialized=true;
 }
 
 richtextObj::implObj::~implObj()=default;

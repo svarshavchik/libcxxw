@@ -24,8 +24,6 @@ void testrichtext(const current_fontcollection &font1,
 	auto black=w->get_screen()->impl->create_background_color("0%",
 								  {0,0,0});
 
-	auto richtext=richtext::create(halign::left, 0);
-
 	richtextstring ustring{
 		U"Hello world\nHello\nworld\n",
 		{
@@ -36,9 +34,8 @@ void testrichtext(const current_fontcollection &font1,
 			{20, {black, font2}}
 		}};
 
-	richtext->set(IN_THREAD, ustring);
-
-	auto impl=richtext->debug_get_impl();
+	auto richtext=richtext::create(ustring, halign::left, 0);
+	auto impl=richtext->debug_get_impl(IN_THREAD);
 
 	if (impl->paragraphs.size() != 3)
 		throw EXCEPTION("Did not get 3 paragraphs");
@@ -142,10 +139,8 @@ void testsplit(const current_fontcollection &font1,
 
 	for (const auto &test:tests)
 	{
-		auto richtext=richtext::create(halign::left, 0);
-		auto impl=richtext->debug_get_impl();
-
-		impl->set(IN_THREAD, ustring);
+		auto richtext=richtext::create(ustring, halign::left, 0);
+		auto impl=richtext->debug_get_impl(IN_THREAD);
 
 		assert_or_throw(impl->num_chars == ustring.get_string().size(),
 				"num_chars in rich text is not right after set()");
