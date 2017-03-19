@@ -34,6 +34,16 @@ richtextmeta &richtextmeta::operator=(const richtextmeta &)=default;
 
 richtextmeta::~richtextmeta()=default;
 
+richtextmeta richtextmeta::replace_font(const current_fontcollection &font)
+	const
+{
+	auto cpy=*this;
+
+	cpy.textfont=font;
+
+	return cpy;
+}
+
 bool richtextmeta::operator==(const richtextmeta &o) const
 {
 	return textcolor==o.textcolor &&

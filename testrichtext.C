@@ -21,7 +21,7 @@ void testrichtext(const current_fontcollection &font1,
 {
 	auto thread_=w->get_screen()->impl->thread;
 
-	auto black=w->get_screen()->impl->create_background_color("0%_color",
+	auto black=w->get_screen()->impl->create_background_color("0%",
 								  {0,0,0});
 
 	auto richtext=richtext::create(halign::left, 0);
@@ -99,7 +99,7 @@ void testsplit(const current_fontcollection &font1,
 {
 	auto thread_=w->get_screen()->impl->thread;
 
-	auto black=w->get_screen()->impl->create_background_color("0%_color",
+	auto black=w->get_screen()->impl->create_background_color("0%",
 								  {0,0,0});
 
 	richtextstring ustring{
@@ -244,7 +244,7 @@ void testlink(const current_fontcollection &font1,
 	      const current_fontcollection &font2,
 	      const main_window &w)
 {
-	auto black=w->get_screen()->impl->create_background_color("0%_color",
+	auto black=w->get_screen()->impl->create_background_color("0%",
 								  {0,0,0});
 
 	richtextstring ustring{

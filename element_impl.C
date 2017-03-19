@@ -16,6 +16,9 @@
 #include "x/callback_list.H"
 #include "element_screen.H"
 #include "fonts/current_fontcollection.H"
+#include "richtext/richtextstring.H"
+#include "richtext/richtextmeta.H"
+#include "x/w/text_param.H"
 #include <x/logger.H>
 
 LOG_CLASS_INIT(LIBCXX_NAMESPACE::w::elementObj::implObj);
@@ -624,6 +627,110 @@ current_fontcollection elementObj::implObj
 ::create_theme_font(const std::experimental::string_view &font)
 {
 	return get_window_handler().create_theme_font(font);
+}
+
+richtextstring elementObj::implObj::convert(richtextmeta font,
+					    const text_param &t)
+{
+	// Compute all offsets into the richtextstring where fonts or colors
+	// change.
+
+	std::set<size_t> all_positions;
+
+	for (const auto &p:t.fonts)
+		all_positions.insert(p.first);
+	for (const auto &p:t.theme_fonts)
+		all_positions.insert(p.first);
+	for (const auto &p:t.colors)
+		all_positions.insert(p.first);
+	for (const auto &p:t.background_colors)
+		all_positions.insert(p.first);
+	for (const auto &p:t.theme_colors)
+		all_positions.insert(p.first);
+	for (const auto &p:t.theme_background_colors)
+		all_positions.insert(p.first);
+
+	// Now iterate over them, in order, to create the unordered_map for
+	// richtextstring's constructor.
+	std::unordered_map<size_t, richtextmeta> m;
+
+	bool inserted_default=false;
+
+	auto screen_impl=get_screen()->impl;
+
+	for (const auto &p:all_positions)
+	{
+		if (p > 0 && !inserted_default)
+			m.insert({0, font});
+		inserted_default=true;
+
+		{
+			auto iter=t.fonts.find(p);
+
+			if (iter != t.fonts.end())
+				font=font.replace_font(create_font
+						       (iter->second));
+		}
+
+		{
+			auto iter=t.theme_fonts.find(p);
+
+			if (iter != t.theme_fonts.end())
+				font=font.replace_font(create_theme_font
+						       (iter->second));
+		}
+
+		{
+			auto iter=t.colors.find(p);
+
+			if (iter != t.colors.end())
+			{
+				font.textcolor=screen_impl
+					->create_background_color
+					(screen_impl->create_solid_color_picture
+					 (iter->second));
+				font.bg_color=background_colorptr();
+			}
+		}
+
+		{
+			auto iter=t.theme_colors.find(p);
+
+			if (iter != t.theme_colors.end())
+			{
+				font.textcolor=screen_impl
+					->create_background_color
+					(iter->second, rgb());
+				font.bg_color=background_colorptr();
+			}
+		}
+
+
+		{
+			auto iter=t.background_colors.find(p);
+
+			if (iter != t.background_colors.end())
+			{
+				font.bg_color=screen_impl
+					->create_background_color
+					(screen_impl->create_solid_color_picture
+					 (iter->second));
+			}
+		}
+
+		{
+			auto iter=t.theme_background_colors.find(p);
+
+			if (iter != t.theme_background_colors.end())
+				font.bg_color=screen_impl
+					->create_background_color
+					(iter->second, rgb());
+		}
+
+		m.insert({p, font});
+	}
+
+	return richtextstring{t.string, m};
 }
 
 LIBCXXW_NAMESPACE_END

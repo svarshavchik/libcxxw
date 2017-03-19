@@ -5,146 +5,146 @@
 
   <dim id="no-padding" axis="pixels">0</dim>
 
-  <color id="transparent_color">
+  <color id="transparent">
     <a>0</a>
   </color>
 
-  <color id="0%_color" />
+  <color id="0%" />
 
-  <color id="10%_color">
+  <color id="10%">
     <r>.1</r>
     <g>.1</g>
     <b>.1</b>
   </color>
 
-  <color id="30%_color">
+  <color id="30%">
     <r>.3</r>
     <g>.3</g>
     <b>.3</b>
   </color>
 
-  <color id="50%_color">
+  <color id="50%">
     <r>.5</r>
     <g>.5</g>
     <b>.5</b>
   </color>
 
-  <color id="70%_color">
+  <color id="70%">
     <r>.7</r>
     <g>.7</g>
     <b>.7</b>
   </color>
 
-  <color id="75%_color">
+  <color id="75%">
     <r>.75</r>
     <g>.75</g>
     <b>.75</b>
   </color>
 
-  <color id="80%_color">
+  <color id="80%">
     <r>.8</r>
     <g>.8</g>
     <b>.8</b>
   </color>
 
-  <color id="90%_color">
+  <color id="90%">
     <r>.9</r>
     <g>.9</g>
     <b>.9</b>
   </color>
 
-  <color id="100%_color">
+  <color id="100%">
     <r>1</r>
     <g>1</g>
     <b>1</b>
   </color>
 
-  <color id="modal_shade_color">
+  <color id="modal_shade">
     <r>0</r>
     <g>0</g>
     <b>0</b>
     <a>.5</a>
   </color>
 
-  <color id="mainwindow_background_color" scale="75%_color" />
+  <color id="mainwindow_background" scale="75%" />
 
   <!-- Stock borders -->
 
-  <border id="empty_border">
+  <border id="empty">
     <width axis="pixels">0</width>
     <height axis="pixels">0</height>
   </border>
 
-  <border id="thin_border">
+  <border id="thin">
     <width axis="horiz">.4</width>
     <height axis="vert">.4</height>
   </border>
 
-  <border id="thin_0%_border" from="thin_border">
-    <color>0%_color</color>
+  <border id="thin_0%" from="thin">
+    <color>0%</color>
   </border>
 
   <!-- Fonts -->
 
-  <font id="sans_serif_font">
+  <font id="sans_serif">
     <family>liberation sans</family>
   </font>
 
-  <font id="serif_font">
+  <font id="serif">
     <family>liberation serif</family>
   </font>
 
-  <font id="mono_font">
+  <font id="mono">
     <family>liberation mono</family>
   </font>
 
-  <font id="label_font" from="sans_serif_font">
+  <font id="label" from="sans_serif">
     <point_size>12</point_size>
   </font>
 
-  <font id="list_font" from="sans_serif_font">
+  <font id="list" from="sans_serif">
     <point_size>12</point_size>
   </font>
 
-  <font id="menubar_font" from="sans_serif_font">
+  <font id="menubar" from="sans_serif">
     <point_size>12</point_size>
   </font>
 
-  <font id="action_button_font" from="serif_font">
+  <font id="action_button" from="serif">
     <point_size>16</point_size>
   </font>
 
-  <font id="progressbar_font" from="serif_font">
+  <font id="progressbar" from="serif">
     <point_size>16</point_size>
   </font>
 
-  <font id="textedit_font" from="mono_font">
+  <font id="textedit" from="mono">
     <point_size>12</point_size>
   </font>
 
-  <font id="password_font" from="mono_font">
+  <font id="password" from="mono">
     <point_size>12</point_size>
   </font>
 
-  <font id="tooltip_font" from="sans_serif_font">
+  <font id="tooltip" from="sans_serif">
     <point_size>10</point_size>
   </font>
 
-  <font id="combobox_font" from="label_font" />
+  <font id="combobox" from="label" />
 
-  <font id="menu_font" from="label_font" />
+  <font id="menu" from="label" />
 
-  <font id="menu_shortcut_font" from="serif_font">
+  <font id="menu_shortcut" from="serif">
     <point_size>12</point_size>
     <slant>italic</slant>
     <weight>bold</weight>
   </font>
 
-  <font id="notebook_ribbon_label_font" from="label_font">
+  <font id="notebook_ribbon_label" from="label">
     <point_size>16</point_size>
   </font>
 
-  <font id="dialog_label_font" from="serif_font">
+  <font id="dialog_label" from="serif">
     <point_size>16</point_size>
   </font>
 

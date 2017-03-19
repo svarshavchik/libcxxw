@@ -19,6 +19,7 @@ richtextstring::richtextstring(const std::u32string &string,
 	: string(string), meta(meta.begin(), meta.end())
 {
 	sort_and_validate(this->meta, string.size());
+	modified();
 }
 
 richtextstring::richtextstring(const richtextstring &other,

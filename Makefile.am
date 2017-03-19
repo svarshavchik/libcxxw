@@ -292,6 +292,7 @@ libcxxw_la_SOURCES=\
 	straight_borderfwd.H			    \
 	straight_borderobj.H			    \
 	straight_border_impl.C			    \
+	text_param.C				    \
 	window_handler.C			    \
 	window_handler.H			    \
 	xid_t.C					    \
@@ -319,6 +320,7 @@ TESTPROGRAMS=\
 	testgrid					\
 	testrichtextstring				\
 	testrichtext					\
+	testtextparam					\
 	#
 
 INTERACTIVETESTPROGRAMS=\
@@ -345,6 +347,10 @@ testrichtext_LDFLAGS=-static $(STATICLINKFLAGS)
 
 testrichtextstring_SOURCES=testrichtextstring.C
 testrichtextstring_LDADD=-lcxx
+
+testtextparam_SOURCES=testtextparam.C
+testtextparam_LDADD=libcxxw.la
+testtextparam_LDFLAGS=-static $(STATICLINKFLAGS)
 
 $(call OPTIONS_GEN,testmainwindowoptions.H,testmainwindowoptions.xml)
 

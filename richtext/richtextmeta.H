@@ -67,6 +67,12 @@ public:
 
 	const current_fontcollection &getfont() const { return textfont; }
 
+	//! Replace textfont.
+
+	//! We have to return a new object.
+
+	richtextmeta replace_font(const current_fontcollection &font) const;
+
 	//! Background color
 
 	background_colorptr bg_color;

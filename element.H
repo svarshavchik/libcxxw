@@ -29,6 +29,9 @@
 LIBCXXW_NAMESPACE_START
 
 class clip_region_set;
+class richtextstring;
+class richtextmeta;
+class text_param;
 
 //! Base class for element implementation.
 
@@ -573,6 +576,17 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! create_theme_font().
 
 	current_fontcollection create_theme_font(const std::experimental::string_view &font);
+
+	//! Create a \ref richtextstring "rich text string", based on a \ref text_param "text_param" and a default \ref richtextmeta "richtextmeta".
+
+	//! Converts between the library API version of a rich text string,
+	//! and the internal object.
+	//!
+	//! font specifies the initial font and color, if not explicitly
+	//! specified in the text_param.
+
+	richtextstring convert(richtextmeta font,
+			       const text_param &t);
 };
 
 LIBCXXW_NAMESPACE_END
