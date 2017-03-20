@@ -12,6 +12,8 @@
 #include <x/obj.H>
 #include <x/logger.H>
 
+#include <experimental/string_view>
+
 LIBCXXW_NAMESPACE_START
 
 //! Generic window facilities.
@@ -40,6 +42,12 @@ public:
 	~generic_windowObj() LIBCXX_HIDDEN;
 
 	using drawableObj::get_screen;
+
+	//! Set the window's title
+	void set_window_title(const std::experimental::string_view &);
+
+	//! Set the window's title
+	void set_window_title(const std::experimental::u32string_view &);
 };
 
 LIBCXXW_NAMESPACE_END

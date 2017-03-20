@@ -68,6 +68,8 @@ void testlabel()
 					 x::w::halign::center);
 			 });
 
+	main_window->set_window_title("Hello world!");
+
 	guard(main_window->get_screen()->mcguffin());
 
 	main_window->get_screen()->get_connection()->on_disconnect([]

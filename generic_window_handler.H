@@ -216,6 +216,9 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! Return my height
 	dim_t get_height() const override;
 
+	//! Set window title
+	void set_window_title(const std::experimental::string_view &s);
+
 	//! Create a non-theme font for a display element in this window.
 
 	//! Creates a \ref current_fontcollection "current font collection".

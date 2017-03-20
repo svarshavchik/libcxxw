@@ -386,4 +386,30 @@ dim_t generic_windowObj::handlerObj::get_height() const
 	return mpobj<rectangle>::lock(current_position)->width;
 }
 
+void generic_windowObj::handlerObj
+::set_window_title(const std::experimental::string_view &s)
+{
+	IN_THREAD->run_as
+		(RUN_AS,
+		 [title=std::string{s},
+		  connection_impl=screenref->get_connection()->impl,
+		  me=ref<generic_windowObj::handlerObj>(this)]
+		 (IN_THREAD_ONLY)
+		 {
+			 mpobj<ewmh>::lock lock(connection_impl->ewmh_info);
+
+			 if (lock->ewmh_available)
+				 xcb_ewmh_set_wm_name(&*lock,
+						      me->id(),
+						      title.size(),
+						      title.c_str());
+			 else
+				 xcb_icccm_set_wm_name(IN_THREAD->info->conn,
+						       me->id(),
+						       XCB_ATOM_STRING, 8,
+						       title.size(),
+						       title.c_str());
+		 });
+}
+
 LIBCXXW_NAMESPACE_END
