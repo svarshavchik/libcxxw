@@ -14,6 +14,7 @@
 <!ENTITY intro SYSTEM "intro.xml">
 <!ENTITY install SYSTEM "install.xml">
 <!ENTITY refobj "/refobj.html">
+<!ENTITY helloworld SYSTEM "helloworld.xml">
 <!ENTITY connections_and_screens SYSTEM "connections_and_screens.xml">
 
 %entity-list;
@@ -34,6 +35,8 @@ See COPYING for distribution information.
 
   <part id="tutorial">
     <title>Tutorial</title>
+
+    &helloworld;
 
     &connections_and_screens;
 

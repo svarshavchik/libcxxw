@@ -9,7 +9,7 @@
 #include <x/ref.H>
 #include <x/obj.H>
 #include "fonts/fontcollectionfwd.H"
-#include "x/w/current_fontcollectionfwd.H"
+#include "fonts/current_fontcollectionfwd.H"
 #include "connection_threadfwd.H"
 #include "defaultthemefwd.H"
 #include "x/w/screenfwd.H"

@@ -18,7 +18,7 @@
 #include "draw_info_cachefwd.H"
 #include "background_colorfwd.H"
 #include "metrics_horizvertobj.H"
-#include "x/w/current_fontcollectionfwd.H"
+#include "fonts/current_fontcollectionfwd.H"
 #include "x/w/fontfwd.H"
 #include <x/obj.H>
 #include <x/callback_list.H>

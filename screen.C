@@ -84,7 +84,7 @@ screenObj::~screenObj()
 {
 }
 
-ref<obj> screenObj::mcguffin() const
+ref<obj> screenObj::connection_mcguffin() const
 {
 	return get_connection()->mcguffin();
 }
@@ -192,9 +192,9 @@ screenObj::implObj::implObj(const xcb_screen_t *xcb_screen,
 	  fc(fontconfig::create()),
 	  ft(freetype::create()),
 	  solid_color_picture_cache(screen_solidcolorpictures::create()),
-	  fontcaches(screen_fontcaches::create()),
 	  recycled_pixmaps_cache(recycled_pixmaps::create()),
-	  custom_borders(custom_border_cache::create())
+	  custom_borders(custom_border_cache::create()),
+	  fontcaches(screen_fontcaches::create())
 {
 }
 

@@ -1,0 +1,76 @@
+Summary: LIBCXXw
+Name: libcxxw
+Version: @VERSION@
+Release: 1%{?extrarelease}
+License: GPL
+Group: System Environment/Libraries
+URL: http://www.libcxx.org/w/
+Source0: %{name}-%{version}.tar.bz2
+
+%define _hardened_build 1
+
+Requires: font(liberationsans)
+Requires: font(liberationserif)
+Requires: font(liberationmono)
+Requires(post): /sbin/ldconfig
+Requires(postun): /sbin/ldconfig
+
+BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
+BuildRequires: libcxxbase-devel
+BuildRequires: freetype-devel
+BuildRequires: libxcb-devel
+BuildRequires: xcb-util-wm-devel
+BuildRequires: xcb-util-keysyms-devel
+BuildRequires: xcb-util-image-devel
+BuildRequires: xcb-util-renderutil-devel
+BuildRequires: libX11-devel
+BuildRequires: libjpeg-turbo-devel
+
+%description
+LibCXX widget toolkit.
+
+%package devel
+Group: Development/Libraries
+Summary: LIBCXXw development libraries
+Requires: %{name} = 0:%{version}-%{release}
+Requires: libcxxbase-devel
+
+%description devel
+This package installs files needed to develop applications that use LIBCXXw.
+
+%prep
+%setup -q
+%configure
+
+%build
+%{__make} %{_smp_mflags}
+
+%install
+rm -rf $RPM_BUILD_ROOT
+%{__make} install DESTDIR=$RPM_BUILD_ROOT
+#%{__mkdir_p} $RPM_BUILD_ROOT/%{_datadir}/applications
+#%{__install} -m 0644 cxxwtheme.desktop $RPM_BUILD_ROOT/%{_datadir}/applications
+rm -f $RPM_BUILD_ROOT/%{_libdir}/*.la
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
+%post
+/sbin/ldconfig
+#%{_bindir}/properties --set=%{_datadir}/libcxxw/themes/cxxwtheme.properties %{_bindir}/cxxwtheme >/dev/null
+
+%postun -p /sbin/ldconfig
+
+%files
+%defattr(-,root,root,-)
+%{_libdir}/libcxxw.so.*
+%{_datadir}/libcxxw
+#%{_datadir}/applications/*
+%{_bindir}/*
+
+%files devel
+%defattr(-,root,root,-)
+%{_libdir}/*.so
+%{_libdir}/*.a
+%{_includedir}/x/w
+%doc examples

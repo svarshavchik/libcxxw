@@ -108,6 +108,7 @@ libcxxw_la_SOURCES=\
 	fonts/composite_text_streamfwd.H	    \
 	fonts/current_fontcollection.C		    \
 	fonts/current_fontcollection.H		    \
+	fonts/current_fontcollectionfwd.H	    \
 	fonts/current_fontcollectionobj.H	    \
 	fonts/cached_font.C			    \
 	fonts/cached_font.H			    \
@@ -313,6 +314,11 @@ $(call OPTIONS_GEN,cxxwoptions.H,cxxwoptions.xml)
 
 EXTRA_DIST = config.rpath m4/ChangeLog COPYING \
 	pic_constants.xml gc_constants.xml constants.xsl \
+	packaging/fedora/libcxxw.spec \
+        examples/configure.ac \
+	examples/Makefile.am \
+        examples/*.C \
+	examples/*.H \
 	$(man_MANS)
 
 $(call THREADMSGDISPATCHER_GEN,connection_thread.msgs.H, connection_thread.msgs.xml)
@@ -387,21 +393,21 @@ genconstants_SOURCES=genconstants.C
 
 if HAVE_DOCS
 
-docs: html/index.html html/book.css html/.htaccess html/frame.js html/icon.gif
+DOCIMAGES=$(patsubst docbook/%,html/%,$(wildcard docbook/*.gif) $(wildcard docbook/*.png))
+
+define install_docimage
+html/$(1): html/index.html docbook/$(1)
+	$(INSTALL) -m 0644 $(srcdir)/docbook/$(1) html/$(1)
+endef
+
+ALL_DOCS=html/book.css html/.htaccess html/frame.js \
+      $(DOCIMAGES)
+
+docs: $(ALL_DOCS) html/index.html
 
 DOCS_SRC = $(shell find includes -name '*.H' -print)
 
-html/book.css: html/index.html docbook/book.css
-	$(INSTALL) -m 0644 $(srcdir)/docbook/book.css html/book.css
-
-html/.htaccess: html/index.html docbook/.htaccess
-	$(INSTALL) -m 0644 $(srcdir)/docbook/.htaccess html/.htaccess
-
-html/frame.js: html/index.html docbook/frame.js
-	$(INSTALL) -m 0644 $(srcdir)/docbook/frame.js html/frame.js
-
-html/icon.gif: html/index.html docbook/icon.gif
-	$(INSTALL) -m 0644 $(srcdir)/docbook/icon.gif html/icon.gif
+$(foreach f,$(patsubst html/%,%,$(ALL_DOCS)),$(eval $(call install_docimage,$(f))))
 
 html/index.html: html/ref/index.html $(wildcard docbook/*.xml) docbook/xmllinks.xsl
 	mkdir -p docbook
@@ -499,6 +505,7 @@ test:
 	./testmainwindow --usetheme --nopadding
 	./testmainwindow --themescale
 	./testmainwindow --themescale --nopadding
+	./testlabel
 
 .PHONY: rpm
 

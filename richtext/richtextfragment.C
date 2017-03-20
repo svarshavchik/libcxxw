@@ -352,7 +352,6 @@ size_t richtextfragmentObj::insert(IN_THREAD_ONLY,
 			"Invalid pos parameter to insert()");
 
 	auto n_size=new_string.get_string().size();
-	auto old_size=current_string.size();
 
 	if (n_size == 0) return 0; // Marginal
 

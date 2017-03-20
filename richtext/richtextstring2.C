@@ -44,10 +44,12 @@ const richtextstring::resolved_fonts_t
 				"Internal error: text fragment metadata inconsistent");
 
 		size_t orig_start_char=start_char;
-		size_t orig_end_char=end_char;
 
 		auto rb=textp+start_char;
 		auto re=textp+end_char;
+
+		// If we're replacing everything with a password character,
+		// feed only the password character to lookup().
 
 		if (password_char)
 		{
@@ -64,14 +66,8 @@ const richtextstring::resolved_fonts_t
 			  auto e,
 			  const freetypefont &font)
 			 {
-				 auto start_char=b-textp;
-				 auto end_char=e-textp;
-
-				 if (password_char)
-				 {
-					 start_char=orig_start_char;
-					 end_char=orig_end_char;
-				 }
+				 auto start_char=password_char
+					 ? orig_start_char : b-textp;
 
 				 // If this is still the same font, just
 				 // keep going.

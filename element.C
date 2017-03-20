@@ -20,6 +20,11 @@ elementObj::elementObj(const ref<implObj> &impl)
 
 elementObj::~elementObj()=default;
 
+ref<obj> elementObj::connection_mcguffin() const
+{
+	return get_screen()->connection_mcguffin();
+}
+
 screen elementObj::get_screen()
 {
        return impl->get_screen();

@@ -1,0 +1,429 @@
+<!--
+
+Copyright 2017 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<chapter id="helloworld">
+  <title>Hello world!</title>
+
+  <mediaobject>
+    <imageobject>
+      <imagedata fileref="helloworld.png" format="PNG" />
+    </imageobject>
+    <textobject>
+      <phrase>
+	Hello World!
+      </phrase>
+    </textobject>
+    <caption>
+      <para>
+	The following <quote>hello world</quote> program displays
+	the above application window.
+      </para>
+    </caption>
+  </mediaobject>
+
+  <blockquote>
+    <title><ulink url="examples/helloworld.C">helloworld.C</ulink></title>
+
+    <informalexample>
+      <programlisting><xi:include href="../examples/helloworld.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <section id="examples">
+    <title>Building example programs</title>
+
+    <para>
+      The above program comes from the <ulink url="examples">examples
+	directory</ulink>. The GNU toolchain
+      (<application>autoconf</application>,
+      <application>automake</application>, and
+      <application>gmake</application>)
+      is required to build &app;'s example programs:
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+cd examples
+autoreconf
+./configure
+make</programlisting>
+      </informalexample>
+    </blockquote>
+  </section>
+
+  <section id="concepts">
+    <title>Basic concepts</title>
+
+    <para>
+      The <link linkend="helloworld"><filename>helloworld.C</filename></link>
+      example demonstrates several basic concepts used by &app;:
+    </para>
+
+    <section id="refobjelements">
+      <title>Display elements are reference-counted objects with smart pointers</title>
+      <para>
+	<filename>helloworld.C</filename> creates an
+	<ulink url="&link-typedef-x--w-main-window;"><classname>&ns;::w::main_window</classname></ulink>,
+	an object that represents the main application window.
+	<classname>&ns;::w::main_window</classname> is a smart pointer.
+	&appshort; does not use C++ library's
+	<classname>std::shared_ptr</classname>,
+	but &libcxx;'s own
+	<ulink url="/ref.html"><classname>&ns;::ref</classname></ulink>
+	which works in a similar way (but has additional features).
+	This documentation uses the term <quote>reference</quote> to
+	refer to &libcxx;'s <classname>&ns;::ref</classname> smart
+	pointers.
+      </para>
+
+      <para>
+	The application does not need to take an explicit step to destroy
+	the main window, or any other display object. When its
+	<classname>&ns;::ref</classname> goes out of scope and gets destroyed
+	the display element gets destroyed and removed.
+      </para>
+    </section>
+
+    <section id="containerrefs">
+      <title>Containers own references to the elements in the container</title>
+      <para>
+	<classname>&ns;::w::main_window</classname> is a
+	container,
+	a display element that contains other display elements.
+	Naturally, containers hold references on the elements in the
+	container. Removing an element from the container gets rid of the
+	container's reference on the element. Normally, no other references
+	remain and all resources used by the display element are released.
+      </para>
+
+      <para>
+	An application may also obtain its own reference on a display
+	element. The application must make sure that it no longer holds
+	its own reference on a display element when it gets destroyed;
+	or when any of its parent containers get destroyed.
+      </para>
+
+      <para>
+	Since <classname>&ns;::w::main_window</classname> is a top-level
+	application window, nothing else holds a reference to it.
+	<link linkend="helloworld"><filename>helloworld.C</filename></link>
+	creates an <classname>&ns;::w::main_window</classname> in its
+	<function>testlabel</function>() function. There are no other
+	references to it, and when it returns the last reference to the
+	main window goes out of scope, it gets destroyed and removed from
+	the display.
+      </para>
+
+      <para>
+	<function>create_label</function>() creates a
+	label
+	display element in the main window, but
+	<function>testlabel</function>() does not store this reference
+	itself, leaving the only reference to the label in its
+	main window container. When <function>testlabel</function>()
+	returns, the last reference to the main window goes away and
+	the underlying object gets destroyed. Since that object held
+	the only reference to the label display element object, the
+	label display element object gets destroyed as well.
+      </para>
+
+      <para>
+	In this manner, removing a container recursively removes and
+	destroyes everything in the container, recursively. However if
+	the application retained its own reference to the label object,
+	this would prevent everything from getting destroyed properly,
+	and all resources released.
+      </para>
+    </section>
+
+    <section id="connthread">
+      <title>Connection threads and callbacks</title>
+
+      <para>
+	&app; starts an internal execution thread that manages the
+	connection to the X server. Unlike other X toolkits, &app; does
+	not force the application into an event-driven design pattern.
+	&app; takes care of automatically starting the internal
+	execution thread, and stopping it after the last top level
+	window object gets destroyed.
+      </para>
+
+      <para>
+	In
+	<link linkend="helloworld"><filename>helloworld.C</filename></link>,
+	returning from <function>testlabel</function>() destroys the
+	<classname>&ns;::w::main_window</classname>, which stops
+	the execution thread. However the execution thread does not get
+	stopped immediately, and it continues to perform some final
+	cleanup duties, while <function>main</function>() wraps up its
+	own responsibilities.
+      </para>
+
+      <para>
+	<link linkend="helloworld"><filename>helloworld.C</filename></link>
+	shows an example of waiting until the connection thread terminates
+	and the connection to the X server gets closed. This uses
+	various classes from the &libcxx; parent library:
+      </para>
+
+      <orderedlist>
+	<listitem>
+	  <para>
+	    <link linkend="helloworld"><filename>helloworld.C</filename></link>
+	    uses <function>connection_mcguffin</function> to retrieve
+	    a <ulink url="/ondestroy">mcguffin</ulink> for the underlying
+	    X protocol connection.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    An <ulink url="/ondestroyguard"><classname>&ns;::destroy_callback::base::guard</classname></ulink>
+	    object gets declared before the top level window. A such
+	    the guard object gets destroyed last.
+	    The guard object takes the mcguffin, and the guard object's
+	    destructor waits until the mcguffin gets destroyed,
+	    indicating that the X protocol connection object was destroyed
+	    and the execution thread stopped.
+	  </para>
+
+	  <para>
+	    In this manner, while destroying the guard object, when
+	    returning from <function>testlabel</function>(), the main
+	    execution thread stops and waits for &app;'s internal
+	    execution thread to finish up, and disconnect from the
+	    X server.
+	  </para>
+	</listitem>
+      </orderedlist>
+    </section>
+
+    <section id="callbacks">
+      <title>Callbacks</title>
+
+      <para>
+	<link linkend="helloworld"><filename>helloworld.C</filename></link>,
+	installs two lambdas:
+	the <function>on_disconnect</function>() lambda gets invoked if
+	the connection to the X server was unexpectedly disconnected; and
+	<classname>&ns;::w::main_window</classname>'s
+	<function>on_delete</function>() lambda gets invoked when the
+	main window's <quote>Close</quote> button gets clicked.
+      </para>
+
+      <para>
+	The internal &app; execution thread is what invokes the callback
+	lambdas, so their code must be thread safe. Callbacks, in general,
+	should not engage in lengthy, time-consuming tasks. Until the
+	callback returns, the internal connection thread will be unable to
+	process any additional X protocol messages. Callbacks should be
+	limited to simple tasks, such as sending messages to the main
+	application thread, to execute the actual task at hand.
+      </para>
+
+      <para>
+	To effectively do this in a thread safe manner, the recommended
+	approach is:
+      </para>
+
+      <orderedlist>
+	<listitem>
+	  <para>
+	    Use &app;'s <classname>&ns;::ref</classname>s and
+	    <classname>&ns;::obj</classname>s to construc
+	    t reference-counted,
+	    thread-safe objects. See &app;'s documentation for more
+	    information.
+	  </para>
+
+	  <para>
+	    <link linkend="helloworld"><filename>helloworld.C</filename></link>,
+	    and other example programs,
+	    implements <function>on_delete</function>()
+	    using a simple
+	    <ulink url="examples/close_flag.H"><classname>close_flag</classname></ulink>
+	    object, containing a <classname>bool</classname> flag,
+	    a mutex, and a condition variable.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Capture the shared flag objects by value.
+	    <link linkend="helloworld"><filename>helloworld.C</filename></link>'s
+	    <function>on_delete</function>()
+	    lambda callback captures the <classname>close_flag</classname>
+	    by value.
+	    Clicking <quote>Close</quote> results in the lambda acquiring
+	    the mutex, setting the flag, and signaling the condition
+	    variable.
+	  </para>
+
+	  <para>
+	    The main execution thread only needs to acquire
+	    <classname>close_flag</classname>'s mutex, and wait on the
+	    condition variable until the flag gets set.
+	  </para>
+
+	  <para>
+	    The underlying &libcxx;'s smart pointers take care of destroying
+	    the <classname>close_flag</classname> themselves.
+	  </para>
+	</listitem>
+      </orderedlist>
+    </section>
+
+    <section id="containercreator">
+      <title>Containers and creators</title>
+
+      <para>
+	<ulink url="&link-typedef-x--w-main-window;"><classname>&ns;::w::main_window</classname></ulink>
+	is an example of a container.
+	A container is a display element which contains other display
+	elements.
+	<link linkend="helloworld"><filename>helloworld.C</filename></link>
+	creates a
+	<classname>&ns;::w::main_window</classname> that has
+	label
+	element.
+      </para>
+
+      <para>
+	<classname>&ns;::w::main_window</classname>'s
+	<function>create</function>() static method returns a new
+	<classname>&ns;::w::main_window</classname>.
+	Other containers get created in various other ways.
+	In all cases a <quote>creator lambda</quote> must be provided.
+	<classname>&ns;::w::main_window</classname>'s
+	creator lambda gets called just before
+	<function>create</function>() returns. In general, a creator
+	lambda gets called just before the function or the method
+	returns the new container:
+      </para>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+	auto main_window=x::w::main_window
+		::create([]
+			 (const x::w::main_window &main_window)
+			 {
+                            // ...
+]]></programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	The creator lambda gets the new display element as its parameter.
+	This is the same object that's going returned from
+	<function>create</function>(), and the creator gets invoked just
+	before <function>create</function>() returns.
+      </para>
+
+      <para>
+	The purpose of the creator lambda is to initialize the new object.
+	<link linkend="helloworld"><filename>helloworld.C</filename></link>
+	initializes the main window, in the creator, by adding a new label
+	to it.
+      </para>
+
+      <para>
+	Observe that
+	<link linkend="helloworld"><filename>helloworld.C</filename></link>'s
+	window gets automatically sized for the label.
+	The creator lambda is an optimization.
+	The size of a new container gets computed after the creator lambda
+	returns, but before the newly-created container itself gets returned
+	to the application.
+      </para>
+
+      <para>
+	<link linkend="helloworld"><filename>helloworld.C</filename></link>
+	could do nothing in its creator lambda, and then add the label to
+	the
+	<classname>&ns;::w::main_window</classname> itself.
+	However, this will be less efficient. Initially the main window's
+	size gets calculated as empty, there's nothing in it. After the
+	label gets added the size of the main window must be recalculated
+	again.
+      </para>
+
+      <para>
+	Populating the container in its creator lambda avoids doing this
+	extra recalculation, and is more efficient.
+      </para>
+    </section>
+
+    <section id="layoutmanager">
+      <title>Containers and layout manager</title>
+
+      <para>
+	Each container has a <quote>layout manager</quote>. The layout
+	manager is responsible for managing the display elements in the
+	container.
+	A container's <methodname>get_layoutmanager</methodname>() method
+	returns a
+	<ulink url="&link-typedef-x--w-layoutmanager;"><classname>&ns;::w::layoutmanager</classname></ulink>,
+	which is a superclass of all the layout managers.
+	This makes it possible to add or remove display elements from the
+	container, or make other layout changes.
+      </para>
+
+      <para>
+	The actual layout manager gets specified when creating the container,
+	and the return value of <methodname>get_layoutmanager</methodname>()
+	gets converted accordingly.
+	<link linkend="helloworld"><filename>helloworld.C</filename></link>
+	explicitly specifies the grid layout manager for its main window;
+	thusly setting <methodname>get_layoutmanager</methodname>()'s return
+	value to a
+	<ulink url="&link-typedef-x--w-gridlayoutmanager;"><classname>&ns;::w::gridlayoutmanager</classname></ulink>.
+      </para>
+
+      <note>
+	<para>
+	  The layout manager object returned from
+	  <methodname>get_layoutmanager</methodname>() holds an internal
+	  lock on the container.
+	  Like all other &app; objects, this is a reference-counted object.
+	  The internal lock gets released
+	  when the application finishes using the layout manager, and the
+	  last reference to the underlying object goes out of scope and
+	  it gets destroyed.
+	</para>
+
+	<para>
+	  For this reason, the application should not store, or stash away,
+	  the layout manager object, but use it only long enough to effect
+	  changes to the container. The internal lock blocks the
+	  <link linkend="connthread">connection thread</link>, until the
+	  lock gets released, and all changes made to the container, through
+	  the layout manager, take effect.
+	</para>
+      </note>
+    </section>
+
+    <section id="exception">
+      <title>Exceptions</title>
+
+      <para>
+	Fatal errors in &app; get reported by throwing an
+	<ulink url="/exceptions"><classname>&ns;::exception</classname></ulink>
+	&libcxx; object.
+	<link linkend="helloworld"><filename>helloworld.C</filename></link>
+	shows the basic approach of catching the exception, and reporting it.
+      </para>
+    </section>
+  </section>
+</chapter>
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "book" "chapter")
+End:
+-->

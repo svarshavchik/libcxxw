@@ -48,6 +48,11 @@ public:
 
 	//! Set the window's title
 	void set_window_title(const std::experimental::u32string_view &);
+
+	//! Invoke this lambda if the server disconnects unexpectedly.
+
+	//! \see connection
+	void on_disconnect(const std::function<void ()> &callback);
 };
 
 LIBCXXW_NAMESPACE_END

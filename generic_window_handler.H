@@ -14,7 +14,7 @@
 #include "container.H"
 #include "x/w/pictformatfwd.H"
 #include "x/w/types.H"
-#include "x/w/current_fontcollectionfwd.H"
+#include "fonts/current_fontcollectionfwd.H"
 #include "x/w/fontfwd.H"
 #include <experimental/string_view>
 

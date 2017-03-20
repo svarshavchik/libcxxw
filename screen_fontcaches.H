@@ -8,7 +8,7 @@
 #include "screen_fontcachesfwd.H"
 #include "x/w/fontfwd.H"
 #include "x/w/types.H"
-#include "x/w/current_fontcollectionfwd.H"
+#include "fonts/current_fontcollectionfwd.H"
 #include <x/weakunordered_multimapfwd.H>
 #include <x/obj.H>
 #include <x/ref.H>

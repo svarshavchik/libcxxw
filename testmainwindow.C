@@ -243,7 +243,7 @@ countstateupdate runteststate(testmainwindowoptions &options,
 				 stash->insert("canvas", e);
 			 });
 
-	guard(main_window->get_screen()->mcguffin());
+	guard(main_window->connection_mcguffin());
 
 	countstateupdate c=countstateupdate::create();
 
@@ -395,7 +395,7 @@ void runtestflashwithcolor(const testmainwindowoptions &options)
 
 			 });
 
-	guard(main_window->get_screen()->mcguffin());
+	guard(main_window->connection_mcguffin());
 
 	LIBCXX_NAMESPACE::w::element e=
 		stash_t(main_window->appdata)->get("canvas");
@@ -494,7 +494,7 @@ void runtestflashwiththeme(const testmainwindowoptions &options)
 	if (alternate_theme.empty())
 		throw EXCEPTION("Couldn't find an alternate theme to use");
 
-	guard(main_window->get_screen()->mcguffin());
+	guard(main_window->connection_mcguffin());
 
 	main_window->show_all();
 
@@ -641,7 +641,7 @@ runtestthemescale(const testmainwindowoptions &options)
 	auto original_theme=main_window->get_screen()->get_connection()
 		->current_theme();
 
-	guard(main_window->get_screen()->mcguffin());
+	guard(main_window->connection_mcguffin());
 
 	countsizeupdate cmain=countsizeupdate::create();
 

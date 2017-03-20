@@ -92,6 +92,11 @@ public:
 	//! Install a state update callback.
 
 	ref<obj> do_on_state_update(const element_state_update_handler_t &);
+
+	//! Return the mcguffin for this display element's connection.
+
+	//! \see connection
+	ref<obj> connection_mcguffin() const;
 };
 
 LIBCXXW_NAMESPACE_END

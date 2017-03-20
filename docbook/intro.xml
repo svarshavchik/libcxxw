@@ -12,7 +12,7 @@ See COPYING for distribution information.
 
     <para>
       &appshort; is the first X widget toolkit with a
-      C++1z <acronym>API</acronym>. After several years of private
+      C++17 <acronym>API</acronym>. After several years of private
       development it has reached beta quality, and
       is now publicly available.
       This toolkit is based on the &libcxx; library, see
@@ -23,7 +23,7 @@ See COPYING for distribution information.
     <itemizedlist>
       <listitem>
 	<para>
-	  A modern, C++1z-style <acronym>API</acronym>; such as:
+	  Uses modern C++17 language features; such as:
 	  using lambdas to handle events like pointer clicks and other
 	  user activity; overloaded, variadic-parameter methods offering
 	  alternative means of configuring various display elements; and
@@ -33,7 +33,7 @@ See COPYING for distribution information.
 
       <listitem>
 	<para>
-	  Implements common traditional UI elements: labels, text input fields,
+	  Implements typical traditional UI elements: labels, text input fields,
 	  lists, combo boxes, menus, and dialogs. The UI elements support
 	  basic theming, including scaling -- adjusting the
 	  scaled size of the UI.
@@ -58,8 +58,8 @@ See COPYING for distribution information.
       <listitem>
 	<para>
 	  Unlike other high-level toolkits,
-	  &app; does not force the application to be structured around
-	  a classical event-driven design. A separate thread handles all
+	  &app; does not require the application to use an event-driven
+	  design. &app; manages an internal execution thread that handles all
 	  X events. The main application
 	  thread can be working on a dedicated, long-running task that
 	  blocks all pointer and keyboard events, but the background thread
@@ -89,7 +89,7 @@ See COPYING for distribution information.
       <listitem>
 	<para>
 	  &app; is a compositing toolkit. The underlying video hardware
-	  must implement the X RENDER extension, which is supported by all
+	  must implement the X RENDER extension. This should supported by all
 	  modern video hardware.
 	</para>
       </listitem>
@@ -106,6 +106,7 @@ See COPYING for distribution information.
       <link linkend="COPYING">GPL, version 3</link>.
     </para>
   </section>
+
   &install;
 
   <section id="libcxx_overview">

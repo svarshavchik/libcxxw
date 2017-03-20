@@ -54,7 +54,8 @@ See COPYING for distribution information.
       <para>
 	&libcxx;, which currently runs only on Linux, with some FreeBSD
 	support; therefore &appshort;'s support is limited to these
-	platforms, at this time.
+	platforms, at this time. Note that &libcxx; itself requires the
+	current version of gcc, with C++17 support.
       </para>
     </listitem>
 

@@ -40,21 +40,21 @@ main_window main_windowBase::do_create(const function<main_window_creator_t> &f)
 	return screen::base::create()->do_create_mainwindow(f);
 }
 
-main_window main_windowBase::do_create(const new_layoutmanager &factory,
-				       const function<main_window_creator_t> &f)
+main_window main_windowBase::do_create(const function<main_window_creator_t> &f,
+				       const new_layoutmanager &factory)
 {
-	return screen::base::create()->do_create_mainwindow(factory, f);
+	return screen::base::create()->do_create_mainwindow(f, factory);
 }
 
 main_window screenObj
 ::do_create_mainwindow(const function<main_window_creator_t> &f)
 {
-	return do_create_mainwindow(new_layoutmanager::base::create_grid(), f);
+	return do_create_mainwindow(f, new_layoutmanager::base::create_grid());
 }
 
 main_window screenObj
-::do_create_mainwindow(const new_layoutmanager &layout_factory,
-		       const function<main_window_creator_t> &f)
+::do_create_mainwindow(const function<main_window_creator_t> &f,
+		       const new_layoutmanager &layout_factory)
 {
 	rectangle dimensions={0, 0, 1, 1};
 

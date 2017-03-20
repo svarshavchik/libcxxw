@@ -13,10 +13,10 @@
 #include "x/w/label.H"
 #include "x/w/gridlayoutmanager.H"
 #include "x/w/gridfactory.H"
-#include "x/w/screen.H"
-#include "x/w/connection.H"
 #include "x/w/text_param_literals.H"
 #include "x/w/font_literals.H"
+#include "x/w/screen.H"
+#include "x/w/connection.H"
 #include <string>
 #include <iostream>
 
@@ -70,12 +70,12 @@ void testlabel()
 
 	main_window->set_window_title("Hello world!");
 
-	guard(main_window->get_screen()->mcguffin());
+	guard(main_window->connection_mcguffin());
 
-	main_window->get_screen()->get_connection()->on_disconnect([]
-								   {
-									   exit(1);
-								   });
+	main_window->on_disconnect([]
+				   {
+					   exit(1);
+				   });
 
 	main_window->on_delete
 		([close_flag]

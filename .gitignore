@@ -32,7 +32,8 @@ libtool
 ltmain.sh
 missing
 /pic_constants.inc.C
-/stamp-h1
+/rpm
+stamp-h1
 /testcollapse
 /testderivedaxis
 /testgrid

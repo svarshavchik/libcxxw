@@ -15,8 +15,8 @@ class current_fontcollectionObj;
 
 //! A font collection based on the current theme.
 
-//! A \ref fontcollection "font collection" that's accessible only to the
-//! current execution thread.
+//! A \ref current_fontcollection "font collection" that's accessible only to
+//! the current execution thread.
 //!
 //! theme_updated() recreates the font collection after a new theme is
 //! installed.

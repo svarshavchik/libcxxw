@@ -36,12 +36,12 @@ public:
 
 	//! Create a new top level window using a custom layout manager.
 	template<typename functor>
-	static main_window create(const new_layoutmanager &layout_factory,
-				  functor &&f)
+	static main_window create(functor &&f,
+				  const new_layoutmanager &layout_factory)
 	{
-		return do_create(layout_factory,
-				 make_function<main_window_creator_t>
-				 (std::forward<functor>(f)));
+		return do_create(make_function<main_window_creator_t>
+				 (std::forward<functor>(f)),
+				 layout_factory);
 	}
 
 	//! create() implementation.
@@ -50,8 +50,8 @@ public:
 
 	//! create() implementation.
 
-	static main_window do_create(const new_layoutmanager &actory,
-				     const function<main_window_creator_t> &f);
+	static main_window do_create(const function<main_window_creator_t> &f,
+				     const new_layoutmanager &actory);
 
 	//! The custom create() for main window objects.
 

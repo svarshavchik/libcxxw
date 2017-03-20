@@ -66,8 +66,7 @@ public:
 	//! \see connection for more information, this is forwarded to
 	//! \c conn()->mcguffin().
 
-	ref<obj> mcguffin() const;
-
+	ref<obj> connection_mcguffin() const;
 
 	//! Screen metrics
 	dim_t width_in_pixels() const;
@@ -123,13 +122,13 @@ public:
 
 	//! Create a new top level window using a custom layout manager.
 	template<typename functor>
-	main_window create_mainwindow(const new_layoutmanager &layout_factory,
-				      functor &&f)
+	main_window create_mainwindow(functor &&f,
+				      const new_layoutmanager &layout_factory)
 	{
 		return do_create_mainwindow
-			(layout_factory,
-			 make_function<main_window_creator_t>
-			 (std::forward<functor>(f)));
+			(make_function<main_window_creator_t>
+			 (std::forward<functor>(f)),
+			 layout_factory);
 	}
 
 	//! create_mainwindow() implementation.
@@ -139,9 +138,9 @@ public:
 
 	//! create_mainwindow() implementation.
 
-	main_window do_create_mainwindow(const new_layoutmanager &actory,
-					 const function<main_window_creator_t>
-					 &f);
+	main_window do_create_mainwindow(const function<main_window_creator_t>
+					 &f,
+					 const new_layoutmanager &factory);
 
 	//! Shortcut to render data.
 
