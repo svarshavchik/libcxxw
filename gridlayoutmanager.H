@@ -15,6 +15,7 @@
 #include "grid_elementobj.H"
 #include <x/vector.H>
 #include <tuple>
+#include <experimental/string_view>
 
 LIBCXXW_NAMESPACE_START
 
@@ -88,6 +89,10 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 	//! Construct a new border object.
 
 	current_border_impl get_custom_border(const border_infomm &info);
+
+	//! Construct a new border object.
+
+	current_border_impl get_theme_border(const std::experimental::string_view &id);
 
  private:
 

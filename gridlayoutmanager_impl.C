@@ -104,6 +104,13 @@ current_border_impl gridlayoutmanagerObj::implObj
 		->impl->get_custom_border(info);
 }
 
+current_border_impl gridlayoutmanagerObj::implObj
+::get_theme_border(const std::experimental::string_view &id)
+{
+	return container_impl->get_window_handler().screenref
+		->impl->get_theme_border(id);
+}
+
 void gridlayoutmanagerObj::implObj
 ::child_background_color_changed(IN_THREAD_ONLY,
 				 const elementimpl &child)

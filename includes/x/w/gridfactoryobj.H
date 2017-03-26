@@ -10,6 +10,7 @@
 #include <x/w/gridlayoutmanagerfwd.H>
 #include <x/w/border_infomm.H>
 #include <x/mpobj.H>
+#include <experimental/string_view>
 
 LIBCXXW_NAMESPACE_START
 
@@ -57,6 +58,21 @@ class gridfactoryObj : public factoryObj {
 	//! Set new element's border, first.
 
 	gridfactoryObj &bottom_border(const border_infomm &info);
+
+	//! Set new element's border, first.
+	gridfactoryObj &border(const std::experimental::string_view &id);
+
+	//! Set new element's border, first.
+	gridfactoryObj &left_border(const std::experimental::string_view &id);
+
+	//! Set new element's border, first.
+	gridfactoryObj &right_border(const std::experimental::string_view &id);
+
+	//! Set new element's border, first.
+	gridfactoryObj &top_border(const std::experimental::string_view &id);
+
+	//! Set new element's border, first.
+	gridfactoryObj &bottom_border(const std::experimental::string_view &id);
 
 	//! Set new element's padding, first.
 

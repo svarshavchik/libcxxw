@@ -49,6 +49,17 @@ class gridfactoryObj;
 //!
 //! A border gets specified as a \ref border_infomm "INSERT_LIBX_NAMESPACE::w::border_infomm".
 //! The padding gets specified in millimeters.
+//!
+//! \code
+//! gridfactory->border("inputfocuson_border");
+//! gridfactory->left_border("inputfocuson_border");
+//! gridfactory->right_border("inputfocuson_border");
+//! gridfactory->top_border("inputfocuson_border");
+//! gridfactory->bottom_border("inputfocuson_border");
+//! \endcode
+//!
+//! A border defined in the current theme can also be specified, alternatively.
+//! This is mostly for the library's internal use.
 
 typedef ref<gridfactoryObj> gridfactory;
 
