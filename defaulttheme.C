@@ -630,7 +630,7 @@ void defaultthemeObj::load_dims(const xml::doc &config)
 
 			if (!parse_dim(lock, dims, h1mm, v1mm, mm, "dim", id))
 				continue;
-			dims.insert(std::make_pair(id, mm));
+			dims.insert({id, mm});
 			parsed=true;
 		}
 	} while (parsed);
@@ -750,7 +750,7 @@ void defaultthemeObj::load_colors(const xml::doc &config)
 				color.*(fields[i])=c;
 			}
 
-			colors.insert(std::make_pair(id, color));
+			colors.insert({id, color});
 			parsed=true;
 		}
 	} while (parsed);
@@ -821,14 +821,14 @@ void defaultthemeObj::load_color_gradients(const xml::doc &config)
 				throw EXCEPTION(gettextmsg(_("Color gradient id=%1% references non-existent color %2%"), id, color->get_text()));
 
 			if (!new_gradient
-			    .insert(std::make_pair(v, iter->second)).second)
+			    .insert({v, iter->second}).second)
 				throw EXCEPTION(gettextmsg(_("Duplicate value %1% specified for color gradient id=%1%"), v, id));
 		}
 
 		if (new_gradient.find(0) == new_gradient.end())
 			throw EXCEPTION(gettextmsg(_("Gradient value 0 specified for color gradient id=%1%"), id));
 
-		color_gradients.insert(std::make_pair(id, new_gradient));
+		color_gradients.insert({id, new_gradient});
 	}
 }
 

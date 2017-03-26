@@ -34,7 +34,7 @@ static rectangle element_position(const rectangle &r)
 static background_color default_background_color(const screen &s)
 {
 	return s->impl
-		->create_background_color("mainwindow_background_color",
+		->create_background_color("mainwindow_background",
 					  DEFAULT_MAINWINDOW_BACKGROUND_COLOR);
 }
 

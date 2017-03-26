@@ -3,55 +3,55 @@
 
   <name>Inverse video</name>
 
-  <color id="0%_color">
+  <color id="0%">
     <r>1</r>
     <g>1</g>
     <b>1</b>
   </color>
 
-  <color id="10%_color">
+  <color id="10%">
     <r>.9</r>
     <g>.9</g>
     <b>.9</b>
   </color>
 
-  <color id="30%_color">
+  <color id="30%">
     <r>.7</r>
     <g>.7</g>
     <b>.7</b>
   </color>
 
-  <color id="50%_color">
+  <color id="50%">
     <r>.5</r>
     <g>.5</g>
     <b>.5</b>
   </color>
 
-  <color id="70%_color">
+  <color id="70%">
     <r>.3</r>
     <g>.3</g>
     <b>.3</b>
   </color>
 
-  <color id="75%_color">
+  <color id="75%">
     <r>.25</r>
     <g>.25</g>
     <b>.25</b>
   </color>
 
-  <color id="80%_color">
+  <color id="80%">
     <r>.2</r>
     <g>.2</g>
     <b>.2</b>
   </color>
 
-  <color id="90%_color">
+  <color id="90%">
     <r>.1</r>
     <g>.1</g>
     <b>.1</b>
   </color>
 
-  <color id="100%_color" />
+  <color id="100%" />
 
   <xi:include href="../default/theme.xml" xpointer="xpointer(/theme/*)" />
 </theme>
