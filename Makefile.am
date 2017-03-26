@@ -201,6 +201,11 @@ libcxxw_la_SOURCES=\
 	gridlayoutmanager_impl_elements.H	    \
 	hotspot.C				    \
 	hotspot.H				    \
+	hotspot_bgcolor.C			    \
+	hotspot_bgcolor.H			    \
+	hotspot_bgcolor_element.H		    \
+	hotspot_bgcolor_elementfwd.H		    \
+	hotspot_bgcolor_impl.C			    \
 	hotspot_element.H			    \
 	hotspot_elementfwd.H			    \
 	hotspot_impl.C				    \
