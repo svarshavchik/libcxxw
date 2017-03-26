@@ -64,6 +64,11 @@ void gridlayoutmanagerObj::implObj::recalculate(IN_THREAD_ONLY)
 
 layoutmanager gridlayoutmanagerObj::implObj::create_public_object()
 {
+	return create_gridlayoutmanager();
+}
+
+gridlayoutmanager gridlayoutmanagerObj::implObj::create_gridlayoutmanager()
+{
 	return gridlayoutmanager::create(ref<implObj>(this));
 }
 

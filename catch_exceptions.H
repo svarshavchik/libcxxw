@@ -6,6 +6,7 @@
 #define catch_exceptions_H
 
 #include <x/exception.H>
+#include <x/logger.H>
 
 #define CATCH_EXCEPTIONS catch (const exception &e)		\
 	{							\

@@ -23,6 +23,9 @@ libcxxw_la_LIBADD=-lcxx
 libcxxw_la_LDFLAGS=$(STATICLINKFLAGS)
 
 libcxxw_la_SOURCES=\
+	actionbutton.C				    \
+	actionbutton.H				    \
+	actionbutton_impl.C			    \
 	assert_or_throw.C			    \
 	assert_or_throw.H			    \
 	background_color.C			    \
@@ -370,11 +373,16 @@ TESTPROGRAMS=\
 	#
 
 INTERACTIVETESTPROGRAMS=\
+	testactionbutton				\
 	testmainwindow					\
 	testlabel					\
 	#
 
 noinst_PROGRAMS=$(TESTPROGRAMS) $(INTERACTIVETESTPROGRAMS) genconstants
+
+testactionbutton_SOURCES=testactionbutton.C
+testactionbutton_LDADD=libcxxw.la
+testactionbutton_LDFLAGS=-static $(STATICLINKFLAGS)
 
 testcollapse_SOURCES=testcollapse.C
 testcollapse_LDADD=-lcxx

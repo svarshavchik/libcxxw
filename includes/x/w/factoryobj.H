@@ -15,6 +15,7 @@
 #include <x/w/alignment.H>
 #include <x/w/text_paramfwd.H>
 #include <x/w/labelfwd.H>
+#include <x/w/actionbuttonfwd.H>
 #include <x/obj.H>
 #include <x/functional.H>
 
@@ -73,6 +74,55 @@ public:
 
 	label create_label(const text_param &text,
 			   halign alignment=halign::left);
+
+	//! Create an action button with a label, and a normal border.
+	actionbutton
+	create_normal_actionbutton_with_label(const text_param &text,
+					      halign alignment=halign::left);
+
+	//! Create an action button with a label, and a special border.
+	actionbutton
+	create_special_actionbutton_with_label(const text_param &text,
+					       halign alignment=halign::left);
+
+	//! Create an action button with custom contents and a normal border.
+	template<typename functor>
+	actionbutton create_normal_actionbutton(functor &&f)
+	{
+		return do_create_normal_actionbutton(make_function<void
+						     (const factory &)>
+						     (std::forward<function>(f))
+						     );
+	}
+
+	//! Create an action button with custom contents and a special border.
+	template<typename functor>
+	actionbutton create_special_actionbutton(functor &&f)
+	{
+		return do_create_normal_actionbutton(make_function<void
+						     (const factory &)>
+						     (std::forward<function>(f))
+						     );
+	}
+
+	//! Helper for creating action buttons.
+	actionbutton do_create_normal_actionbutton(const function<
+						   void (const factory &)> &);
+
+	//! Helper for creating action buttons.
+	actionbutton do_create_special_actionbutton(const function<
+						    void (const factory &)> &);
+
+	//! Helper for creating action buttons.
+	actionbutton do_create_actionbutton(const char *,
+					    const function<
+					    void (const factory &)> &);
+
+	//! Helper for creating action buttons.
+	actionbutton
+	create_actionbutton_with_label(const char *theme_border,
+				       const text_param &text,
+				       halign alignment=halign::left);
 };
 
 LIBCXXW_NAMESPACE_END

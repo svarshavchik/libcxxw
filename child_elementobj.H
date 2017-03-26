@@ -59,7 +59,6 @@ class LIBCXX_HIDDEN child_elementObj : public elementObj::implObj {
 	const generic_windowObj::handlerObj &get_window_handler() const
 		override;
 
- protected:
 	//! Use parent display element's background color.
 
 	void remove_background_color(IN_THREAD_ONLY) override;
@@ -72,6 +71,8 @@ class LIBCXX_HIDDEN child_elementObj : public elementObj::implObj {
 	//! If child_element doesn't handle it, punt it back to the parent.
 	bool process_key_event(IN_THREAD_ONLY, char32_t unicode,
 			       uint32_t keysym, bool keypress);
+
+ protected:
 
 	//! Update the theme-dependendent background color, then call the parent.
 

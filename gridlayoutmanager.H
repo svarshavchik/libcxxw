@@ -70,6 +70,8 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 
 	layoutmanager create_public_object() override;
 
+	// create_public_object() simply calls this.
+	gridlayoutmanager create_gridlayoutmanager();
  protected:
 	/////////////////////////////////////////////////////////////////////
 	//
