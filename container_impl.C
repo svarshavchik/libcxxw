@@ -18,6 +18,17 @@ containerObj::implObj::implObj()=default;
 
 containerObj::implObj::~implObj()=default;
 
+generic_windowObj::handlerObj &containerObj::implObj::get_window_handler()
+{
+	return get_element_impl().get_window_handler();
+}
+
+const generic_windowObj::handlerObj &containerObj::implObj::get_window_handler()
+	const
+{
+	return get_element_impl().get_window_handler();
+}
+
 void containerObj::implObj
 ::install_layoutmanager(const ref<layoutmanagerObj::implObj> &impl)
 {

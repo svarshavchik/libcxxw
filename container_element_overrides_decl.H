@@ -23,3 +23,7 @@ void do_for_each_child(IN_THREAD_ONLY,
 		       const function<void (const element &e)> &) override;
 
 void theme_updated(IN_THREAD_ONLY);
+
+elementObj::implObj &get_element_impl() override;
+
+const elementObj::implObj &get_element_impl() const override;

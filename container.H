@@ -52,10 +52,10 @@ public:
 	virtual const elementObj::implObj &get_element_impl() const=0;
 
 	//! Return my window
-	virtual generic_windowObj::handlerObj &get_window_handler()=0;
+	generic_windowObj::handlerObj &get_window_handler();
 
 	//! Return my window
-	virtual const generic_windowObj::handlerObj &get_window_handler() const=0;
+	const generic_windowObj::handlerObj &get_window_handler() const;
 
 	//! The mutex-protected container for the layout manager implementation.
 

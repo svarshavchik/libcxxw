@@ -47,3 +47,13 @@ void ELEMENT_SUBCLASS::theme_updated(IN_THREAD_ONLY)
 	elementObj::implObj::theme_updated(IN_THREAD);
 	containerObj::implObj::theme_updated(IN_THREAD);
 }
+
+elementObj::implObj &ELEMENT_SUBCLASS::get_element_impl()
+{
+	return *this;
+}
+
+const elementObj::implObj &ELEMENT_SUBCLASS::get_element_impl() const
+{
+	return *this;
+}

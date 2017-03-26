@@ -111,14 +111,6 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 	////////////////////////////////////////////////////////////////////
 	//
-	// Inherited from containerObj::implObj
-
-	elementObj::implObj &get_element_impl() override;
-
-	const elementObj::implObj &get_element_impl() const override;
-
-	////////////////////////////////////////////////////////////////////
-	//
 	// Inherited from elementObj::implObj
 
 	//! Return myself.

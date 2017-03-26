@@ -79,21 +79,6 @@ generic_windowObj::handlerObj::~handlerObj()=default;
 
 ////////////////////////////////////////////////////////////////////
 //
-// Inherited from containerObj::implObj
-
-elementObj::implObj &generic_windowObj::handlerObj::get_element_impl()
-{
-	return *this;
-}
-
-const elementObj::implObj &generic_windowObj::handlerObj::get_element_impl()
-	const
-{
-	return *this;
-}
-
-////////////////////////////////////////////////////////////////////
-//
 // Inherited from elementObj::implObj
 
 generic_windowObj::handlerObj &
