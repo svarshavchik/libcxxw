@@ -19,6 +19,17 @@ child_elementObj::child_elementObj(const ref<containerObj::implObj> &container,
 				   const metrics::horizvert_axi
 				   &initial_metrics,
 				   const std::string &scratch_buffer_id)
+	: child_elementObj(container, initial_metrics, scratch_buffer_id,
+			   background_colorptr())
+{
+}
+
+child_elementObj::child_elementObj(const ref<containerObj::implObj> &container,
+				   const metrics::horizvert_axi
+				   &initial_metrics,
+				   const std::string &scratch_buffer_id,
+				   const background_colorptr
+				   &initial_background_color)
 	: elementObj::implObj(container->get_element_impl().nesting_level+1,
 			      {0, 0, 0, 0},
 			      // The container will position me later
@@ -26,6 +37,7 @@ child_elementObj::child_elementObj(const ref<containerObj::implObj> &container,
 			      container->get_window_handler().get_screen(),
 			      container->get_window_handler().drawable_pictformat,
 			      scratch_buffer_id),
+	current_background_color_thread_only(initial_background_color),
 	container(container)
 {
 }

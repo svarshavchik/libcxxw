@@ -39,6 +39,12 @@ class LIBCXX_HIDDEN child_elementObj : public elementObj::implObj {
 			 const metrics::horizvert_axi &initial_metrics,
 			 const std::string &scratch_buffer_id);
 
+	//! Constructor, explicit background color.
+	child_elementObj(const ref<containerObj::implObj> &container,
+			 const metrics::horizvert_axi &initial_metrics,
+			 const std::string &scratch_buffer_id,
+			 const background_colorptr &initial_background_color);
+
 	//! Destructor
 	~child_elementObj();
 
