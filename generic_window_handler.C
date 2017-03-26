@@ -8,7 +8,7 @@
 #include "pictformat.H"
 #include "draw_info.H"
 #include "draw_info_cache.H"
-#include "container.H"
+#include "container_element.H"
 #include "layoutmanager.H"
 #include "screen.H"
 #include "xid_t.H"
@@ -18,10 +18,6 @@
 #include "x/w/values_and_mask.H"
 #include <xcb/xcb_icccm.h>
 LIBCXXW_NAMESPACE_START
-
-#define ELEMENT_SUBCLASS generic_windowObj::handlerObj
-
-#include "container_element_overrides_impl.H"
 
 static rectangle element_position(const rectangle &r)
 {
@@ -60,12 +56,12 @@ generic_windowObj::handlerObj
 					     params.drawable_pictformat->impl
 					     ->id),
 
-       elementObj::implObj(0,
-			   element_position(params.window_handler_params
-					    .initial_position),
-			   params.window_handler_params.screenref,
-			   params.drawable_pictformat,
-			   "background@libcxx"),
+	container_elementObj<elementObj::implObj>
+	(0,
+	 element_position(params.window_handler_params.initial_position),
+	 params.window_handler_params.screenref,
+	 params.drawable_pictformat,
+	 "background@libcxx"),
 	current_events_thread_only((xcb_event_mask_t)
 				   params.window_handler_params
 				   .events_and_mask.m.at(XCB_CW_EVENT_MASK)),

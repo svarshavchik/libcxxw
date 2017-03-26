@@ -71,9 +71,9 @@ libcxxw_la_SOURCES=\
 	connection_threadrunelement.C		    \
 	container.C				    \
 	container.H				    \
+	container_element.H			    \
+	container_elementfwd.H			    \
 	container_impl.H			    \
-	container_element_overrides_decl.H	    \
-	container_element_overrides_impl.H	    \
 	container_impl.C			    \
 	current_border_impl.C			    \
 	current_border_impl.H			    \

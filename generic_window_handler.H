@@ -11,7 +11,7 @@
 #include "picture.H"
 #include "background_colorfwd.H"
 #include "connection_threadfwd.H"
-#include "container.H"
+#include "container_elementfwd.H"
 #include "x/w/pictformatfwd.H"
 #include "x/w/types.H"
 #include "x/w/focusablefwd.H"
@@ -39,10 +39,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	  public pictureObj::implObj::fromDrawableObj,
 
 // The container
-	  public containerObj::implObj,
-
-// The display element.
-	  public elementObj::implObj {
+	  public container_elementObj<elementObj::implObj> {
 
 	//! Current event mask.
 	xcb_event_mask_t current_events_thread_only;
@@ -136,8 +133,6 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 				  const background_color &) override;
 
 	void current_position_updated(IN_THREAD_ONLY) override;
-
-#include "container_element_overrides_decl.H"
 
 	////////////////////////////////////////////////////////////////////
 	//
