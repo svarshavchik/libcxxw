@@ -23,6 +23,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <set>
+#include <atomic>
 
 LIBCXXW_NAMESPACE_START
 
@@ -169,6 +170,12 @@ class LIBCXX_HIDDEN connection_threadObj
 	template<typename T>
 		void run_as(const char *file, int line, T &&func)
 	{
+		// Make sure all changes in the main execution thread are
+		// committed by now. Although this should theoretically
+		// taken care of by the mutex, this is technically required
+		// for the connection thread to see what it needs to see.
+		std::atomic_thread_fence(std::memory_order_release);
+
 		do_run_as(file, line,
 			  make_function<void (IN_THREAD_ONLY)>(std::forward<T>
 							       (func)));

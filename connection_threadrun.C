@@ -9,6 +9,7 @@
 #include "catch_exceptions.H"
 #include "draw_info_cache.H"
 #include <x/sysexception.H>
+#include <atomic>
 
 LIBCXXW_NAMESPACE_START
 
@@ -156,6 +157,13 @@ void connection_threadObj
 {
 	LOG_FUNC_SCOPE(runLogger);
 	LOG_DEBUG("Dispatching: " << file << "(" << line << ")");
+
+	// Make sure all changes in the main execution thread are
+	// committed by now. Although this should theoretically
+	// taken care of by the mutex, this is technically required
+	// for the connection thread to see what it needs to see.
+
+	std::atomic_thread_fence(std::memory_order_acquire);
 
 	func(connection_thread(this));
 }
