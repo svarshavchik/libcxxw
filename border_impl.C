@@ -791,7 +791,15 @@ void border_implObj::composite_line(const draw_info &di, size_t n) const
 				   // border, that's "calculate_border_height"
 				   // call.
 				   di.area_rectangle.width,
-				   di.area_rectangle.height);
+				   di.area_rectangle.height,
+
+				   // Use ATOP composition. The picture buffer
+				   // is initially filled with the background
+				   // color. This allows an invisible border
+				   // by setting the border color's alpha
+				   // channel to 0.
+
+				   render_pict_op::op_atop);
 }
 
 // We need to calculate the centerline of a vertical border.
