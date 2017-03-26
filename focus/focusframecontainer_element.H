@@ -1,0 +1,45 @@
+/*
+** Copyright 2017 Double Precision, Inc.
+** See COPYING for distribution information.
+*/
+#ifndef focusframecontainer_element_h
+#define focusframecontainer_element_h
+
+#include "focus/focusframecontainer.H"
+#include "focus/focusframecontainer_elementfwd.H"
+
+LIBCXXW_NAMESPACE_START
+
+template<typename element_impl>
+focusframecontainer_elementObj<element_impl>::~focusframecontainer_elementObj()
+=default;
+
+template<typename element_impl>
+containerObj::implObj &focusframecontainer_elementObj<element_impl>
+::get_container_impl()
+{
+	return *this;
+}
+
+template<typename element_impl>
+const containerObj::implObj &focusframecontainer_elementObj<element_impl>
+::get_container_impl() const
+{
+	return *this;
+}
+
+template<typename element_impl>
+void focusframecontainer_elementObj<element_impl>
+::keyboard_focus(IN_THREAD_ONLY,
+		 focus_change event,
+		 const ref<elementObj::implObj> &ptr)
+{
+	element_impl::keyboard_focus(IN_THREAD, event, ptr);
+	focusframecontainerObj::implObj::keyboard_focus(IN_THREAD, event, ptr);
+}
+
+
+
+LIBCXXW_NAMESPACE_END
+
+#endif

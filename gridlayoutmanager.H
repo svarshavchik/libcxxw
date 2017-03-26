@@ -79,6 +79,9 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 	//! Contents of the grid are added or removed to this map.
 
  public:
+
+	//! The elements in the grid.
+
 	grid_map_t grid_map;
 
 	//! Insert a new grid element.
@@ -105,6 +108,14 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 	//! Rebuild elements, if needed.
 
 	bool rebuild_elements(IN_THREAD_ONLY);
+
+	//! Invoked from rebuild_elements() after the grid map gets locked.
+
+	//! A hook for a subclass to perform any processing on the grid
+	//! map nodes. The default implementation does nothing.
+
+	virtual void rebuild_elements_start(IN_THREAD_ONLY,
+					    grid_map_t::lock &lock);
 
 	//! After rebuilding the elements initialize() the new ones.
 

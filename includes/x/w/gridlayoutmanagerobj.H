@@ -161,6 +161,9 @@ public:
 	//! Append a row to the grid, and create elements in it.
 	gridfactory append_row();
 
+	//! Remove everything from the grid.
+	void erase();
+
 	//! Remove a display element from the given location.
 	void erase(size_t x, size_t y);
 

@@ -126,6 +126,8 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(IN_THREAD_ONLY)
 	GRID_REBUILD_ELEMENTS();
 #endif
 
+	rebuild_elements_start(IN_THREAD, lock);
+
 	auto &lookup=lock->get_lookup_table();
 
 	// Recalculate the border elements around each grid element. Each
@@ -491,6 +493,11 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(IN_THREAD_ONLY)
 		e->impl->removed_from_container(IN_THREAD);
 
 	return true;
+}
+
+void gridlayoutmanagerObj::implObj::rebuild_elements_start(IN_THREAD_ONLY,
+							   grid_map_t::lock &)
+{
 }
 
 straight_border gridlayoutmanagerObj::implObj::elementsObj

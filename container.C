@@ -12,9 +12,16 @@ LIBCXXW_NAMESPACE_START
 
 containerObj::containerObj(const ref<implObj> &impl,
 			   const new_layoutmanager &layout_factory)
+	: containerObj(impl,
+		       layout_factory.create({impl}).layout_manager_impl)
+{
+}
+
+containerObj::containerObj(const ref<implObj> &impl,
+			   const ref<layoutmanagerObj::implObj> layout_impl)
 	: elementObj(impl),
 	  impl(impl),
-	  layout_impl(layout_factory.create({impl}).layout_manager_impl)
+	  layout_impl(layout_impl)
 {
 	impl->install_layoutmanager(layout_impl);
 }

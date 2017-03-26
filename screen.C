@@ -15,6 +15,7 @@
 #include "recycled_pixmaps.H"
 #include "border_impl.H"
 #include "custom_border_cache.H"
+#include "theme_border_cache.H"
 #include "fonts/fontconfig.H"
 #include "fonts/freetype.H"
 #include <x/mpobj.H>
@@ -194,6 +195,7 @@ screenObj::implObj::implObj(const xcb_screen_t *xcb_screen,
 	  solid_color_picture_cache(screen_solidcolorpictures::create()),
 	  recycled_pixmaps_cache(recycled_pixmaps::create()),
 	  custom_borders(custom_border_cache::create()),
+	  theme_borders(theme_border_cache::create()),
 	  fontcaches(screen_fontcaches::create())
 {
 }
@@ -258,40 +260,6 @@ rgb::gradient_t screenObj::implObj
 	current_theme_t::lock lock(current_theme);
 
 	return (*lock)->get_theme_color_gradient(id, default_value);
-}
-
-const_border_impl screenObj::implObj
-::get_theme_border(const std::experimental::string_view &id,
-		   const border_info &default_value)
-{
-	current_theme_t::lock lock(current_theme);
-
-	return get_theme_border(lock, id, default_value);
-}
-
-const_border_impl screenObj::implObj
-::get_theme_border(const std::experimental::string_view &id,
-		   const const_border_impl &default_value)
-{
-	current_theme_t::lock lock(current_theme);
-
-	return get_theme_border(lock, id, default_value);
-}
-
-const_border_impl screenObj::implObj
-::get_theme_border(current_theme_t::lock &lock,
-		   const std::experimental::string_view &id,
-		   const border_info &default_value)
-{
-	return (*lock)->get_theme_border(id, default_value);
-}
-
-const_border_impl screenObj::implObj
-::get_theme_border(current_theme_t::lock &lock,
-		   const std::experimental::string_view &id,
-		   const const_border_impl &default_value)
-{
-	return (*lock)->get_theme_border(id, default_value);
 }
 
 LIBCXXW_NAMESPACE_END

@@ -112,6 +112,17 @@ libcxxw_la_SOURCES=\
 	focus/focusable_elementfwd.H		    \
 	focus/focusable_impl.C			    \
 	focus/focusable_owner.C			    \
+	focus/focusframecontainer.C		    \
+	focus/focusframecontainer.H		    \
+	focus/focusframecontainerfwd.H		    \
+	focus/focusframecontainerobj.H		    \
+	focus/focusframecontainer_element.H	    \
+	focus/focusframecontainer_elementfwd.H	    \
+	focus/focusframecontainer_impl.C	    \
+	focus/focusframecontainer_impl.H	    \
+	focus/focusframelayoutimpl.C		    \
+	focus/focusframelayoutimpl.H		    \
+	focus/focusframelayoutimplfwd.H		    \
 	fonts/composite_text_stream.C		    \
 	fonts/composite_text_stream.H		    \
 	fonts/composite_text_streamfwd.H	    \
@@ -320,6 +331,9 @@ libcxxw_la_SOURCES=\
 	straight_borderobj.H			    \
 	straight_border_impl.C			    \
 	text_param.C				    \
+	theme_border_cache.C			    \
+	theme_border_cache.H			    \
+	theme_border_cachefwd.H			    \
 	window_handler.C			    \
 	window_handler.H			    \
 	xid_t.C					    \

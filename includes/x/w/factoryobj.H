@@ -32,6 +32,10 @@ public:
 
 	const ref<containerObj::implObj> container_impl;
 
+	//! An internal call to create().
+
+	void created_internally(const element &) LIBCXX_HIDDEN;
+
 private:
 	//! Invoked by factory's methods, after creating a new element.
 

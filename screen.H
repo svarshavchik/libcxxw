@@ -22,6 +22,7 @@
 #include "screen_fontcachesfwd.H"
 #include "border_implfwd.H"
 #include "custom_border_cachefwd.H"
+#include "theme_border_cachefwd.H"
 #include "xid_t.H"
 #include "fonts/fontconfigfwd.H"
 #include "fonts/freetypefwd.H"
@@ -110,6 +111,12 @@ class LIBCXX_HIDDEN screenObj::implObj
 	//! Used by get_custom_border().
 
 	const custom_border_cache custom_borders;
+
+	//! The theme border cache.
+
+	//! Used by get_theme_border().
+
+	const theme_border_cache theme_borders;
 
  public:
 
@@ -205,27 +212,11 @@ class LIBCXX_HIDDEN screenObj::implObj
 	rgb::gradient_t get_theme_color_gradient(const std::experimental::string_view &id,
 						 const rgb::gradient_t
 						 &default_value);
+	//! Find or create a theme border
 
-	//! Retrieve a theme border.
-	const_border_impl get_theme_border(const std::experimental::string_view
-					   &id,
-					   const border_info &default_value);
-	//! Retrieve a theme border.
-	const_border_impl get_theme_border(const std::experimental::string_view
-					   &id,
-					   const const_border_impl
-					   &default_value);
-	//! Retrieve a theme border.
-	const_border_impl get_theme_border(current_theme_t::lock &,
-					   const std::experimental::string_view
-					   &id,
-					   const border_info &default_value);
-	//! Retrieve a theme border.
-	const_border_impl get_theme_border(current_theme_t::lock &,
-					   const std::experimental::string_view
-					   &id,
-					   const const_border_impl
-					   &default_value);
+	current_border_impl
+		get_theme_border(const std::experimental::string_view &id);
+
 
 	//////////////////////////////////////////////////////////////////////
 	//
@@ -282,7 +273,6 @@ class LIBCXX_HIDDEN screenObj::implObj
 	//! Find or create a custom border.
 
 	current_border_impl get_custom_border(const border_infomm &);
-
 
 	/////////////////////////////////////////////////////////////////////
 	//

@@ -40,6 +40,11 @@ public:
 	containerObj(const ref<implObj> &impl,
 		     const new_layoutmanager &layout_factory) LIBCXX_HIDDEN;
 
+	//! Constructor
+	containerObj(const ref<implObj> &impl,
+		     const ref<layoutmanagerObj::implObj> layout_impl)
+		LIBCXX_HIDDEN;
+
 	//! Destructor
 	~containerObj() LIBCXX_HIDDEN;
 

@@ -18,6 +18,11 @@ factoryObj::factoryObj(const ref<containerObj::implObj> &container_impl)
 
 factoryObj::~factoryObj()=default;
 
+void factoryObj::created_internally(const element &e)
+{
+	created(e);
+}
+
 canvas factoryObj::do_create_canvas(const function<void (const canvas &)>
 				    &creator,
 				    const metrics::mmaxis &horiz,

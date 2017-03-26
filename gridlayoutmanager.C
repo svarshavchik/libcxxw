@@ -98,6 +98,14 @@ gridfactory gridlayoutmanagerObj::append_row()
 									0));
 }
 
+void gridlayoutmanagerObj::erase()
+{
+	grid_map_t::lock lock{impl->grid_map};
+
+	lock->elements.clear();
+	lock->elements_have_been_modified();
+}
+
 void gridlayoutmanagerObj::erase(size_t x, size_t y)
 {
 	grid_map_t::lock lock{impl->grid_map};
