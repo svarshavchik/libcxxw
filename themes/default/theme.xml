@@ -68,6 +68,12 @@
 
   <color id="mainwindow_background" scale="75%" />
 
+  <color id="action_color1" scale="10%" />
+  <color id="action_color2" scale="50%" />
+
+  <color id="inputfocus_color1" scale="10%" />
+  <color id="inputfocus_color2" scale="50%" />
+
   <!-- Stock borders -->
 
   <border id="empty">
@@ -83,6 +89,58 @@
   <border id="thin_0%" from="thin">
     <color>0%</color>
   </border>
+
+  <border id="inputfocusoff_border">
+    <color>transparent</color>
+    <width axis="horiz">.75</width>
+    <height axis="vert">.75</height>
+  </border>
+
+  <border id="inputfocuson_border" from="inputfocusoff_border">
+    <color>inputfocus_color1</color>
+    <color2>inputfocus_color2</color2>
+    <dash>.75</dash>
+  </border>
+
+  <!--
+      Action button borders are size in units based on
+      action_button_base_[horiz|vert].
+
+Normal action button border: 1 unit thick + 1 unit inner padding
+(border/width, border/height).
+
+Special action button border: 2 units + 0 unit inner padding
+
+Padding: (normal|special)_action_inner_(hpad|vpad).
+
+  -->
+  <dim id="action_button_base_horiz" axis="horiz">.4</dim>
+  <dim id="action_button_base_vert"  axis="vert">.4</dim>
+
+  <border id="normal_action_border">
+    <width scale="action_button_base_horiz">1</width>
+    <height scale="action_button_base_horiz">1</height>
+    <hradius>.5</hradius>
+    <vradius>.5</vradius>
+    <dash axis="horiz">.5</dash>
+    <dash axis="vert">.5</dash>
+    <color>action_color1</color>
+    <color2>action_color2</color2>
+  </border>
+
+  <dim    id="normal_action_inner_hpad" scale="action_button_base_horiz">1</dim>
+  <dim    id="normal_action_inner_vpad" scale="action_button_base_vert">1</dim>
+
+  <border id="special_action_border">
+    <width scale="action_button_base_horiz">2</width>
+    <height scale="action_button_base_horiz">2</height>
+    <hradius>.5</hradius>
+    <vradius>.5</vradius>
+    <color>action_color1</color>
+  </border>
+
+  <dim    id="special_action_inner_hpad">0</dim>
+  <dim    id="special_action_inner_vpad">0</dim>
 
   <!-- Fonts -->
 

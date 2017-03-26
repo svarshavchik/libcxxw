@@ -63,61 +63,6 @@ static inline dim_t one_millimeter(dim_t pixels, dim_t millimeters,
 
 // Miscellaneous parsing functions.
 
-#if 0
-// Look up something optional.
-
-static bool if_given(const xml::doc::base::readlock &lock,
-		     const char *xpath_node)
-{
-	auto xpath=lock->get_xpath(xpath_node);
-
-	return xpath->count() > 0;
-}
-
-template<typename value>
-static bool update_if_given(const xml::doc::base::readlock &lock,
-			    const char *xpath_node,
-			    value &v,
-			    const char *descr,
-			    const std::string &id)
-{
-	auto node=lock->clone();
-
-	auto xpath=node->get_xpath(xpath_node);
-
-	if (xpath->count() == 0)
-		return false;
-
-	xpath->to_node();
-
-	std::istringstream i(node->get_text());
-
-	i >> v;
-
-	if (i.fail())
-		throw EXCEPTION(gettextmsg(_("Cannot parse %1%, id=%2%"),
-					   descr, id));
-	return true;
-}
-
-template<typename value, typename functor>
-static bool update_and_validate_if_given(const xml::doc::base::readlock &lock,
-					 const char *xpath_node,
-					 value &v,
-					 const char *descr,
-					 const std::string &id,
-					 functor &&f)
-{
-	if (!update_if_given(lock, xpath_node, v, descr, id))
-		return false;
-
-	if (!f(v))
-		throw EXCEPTION(gettextmsg(_("Invalid value for %1%, id=%2%"),
-					   descr, id));
-	return true;
-}
-#endif
-
 //////////////////////////////////////////////////////////////////////////////
 
 // We have the theme property setting (maybe) and the configuration file
@@ -548,7 +493,7 @@ static void unknown_dim(const char *element, const std::string &id)
 
 // Look up a dimension, when parsing something else.
 
-static void update_dim_if_given(const xml::doc::base::readlock &lock,
+static bool update_dim_if_given(const xml::doc::base::readlock &lock,
 				const char *xpath_node,
 				const std::unordered_map<std::string, dim_t
 				> &existing_dims,
@@ -561,12 +506,14 @@ static void update_dim_if_given(const xml::doc::base::readlock &lock,
 	auto xpath=node->get_xpath(xpath_node);
 
 	if (xpath->count() == 0)
-		return;
+		return false;
 
 	xpath->to_node();
 
 	if (!parse_dim(node, existing_dims, h1mm, v1mm, mm, descr, id))
 		unknown_dim(descr, id);
+
+	return true;
 }
 
 static bool update_color(const xml::doc::base::readlock &lock,
@@ -900,16 +847,43 @@ void defaultthemeObj::load_borders(const xml::doc &config,
 					    new_border->height,
 					    "border", id);
 
-			update_dim_if_given(lock, "hradius",
-					    dims, h1mm, v1mm,
-					    new_border->hradius,
-					    "border", id);
+			// <rounded> sets the radii both to 1.
 
-			update_dim_if_given(lock, "vradius",
-					    dims, h1mm, v1mm,
-					    new_border->vradius,
-					    "border", id);
+			if (if_given(lock, "rounded"))
+			{
+				new_border->hradius=1;
+				new_border->vradius=1;
+			}
 
+			// Alternatively, hradius and vradius will set them
+			// to at least 2.
+
+			if (update_dim_if_given(lock, "hradius",
+						dims, h1mm, v1mm,
+						new_border->hradius,
+						"border", id))
+			{
+				if (new_border->hradius < 2)
+					new_border->hradius=2;
+			}
+
+			if (update_dim_if_given(lock, "vradius",
+						dims, h1mm, v1mm,
+						new_border->vradius,
+						"border", id))
+			{
+				if (new_border->vradius < 2)
+					new_border->vradius=2;
+			}
+
+			if (new_border->hradius >= 2 ||
+			    new_border->vradius >= 2)
+			{
+				if (new_border->hradius < 2)
+					new_border->hradius=2;
+				if (new_border->vradius < 2)
+					new_border->vradius=2;
+			}
 			// If we copied the border from another from, then
 			// unless the following values are given, don't
 			// touch the colors.
