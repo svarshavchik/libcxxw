@@ -162,10 +162,10 @@ public:
 	gridfactory append_row();
 
 	//! Remove a display element from the given location.
-	void erase(dim_t x, dim_t y);
+	void erase(size_t x, size_t y);
 
 	//! Get the display element at the given location.
-	elementptr get(dim_t x, dim_t y);
+	elementptr get(size_t x, size_t y) const;
 };
 
 LIBCXXW_NAMESPACE_END

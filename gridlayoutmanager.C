@@ -98,12 +98,33 @@ gridfactory gridlayoutmanagerObj::append_row()
 									0));
 }
 
-void gridlayoutmanagerObj::erase(dim_t x, dim_t y)
+void gridlayoutmanagerObj::erase(size_t x, size_t y)
 {
+	grid_map_t::lock lock{impl->grid_map};
+
+	if (y < lock->elements.size())
+	{
+		auto &row=lock->elements.at(y);
+
+		if (x < row.size())
+		{
+			row.erase(row.begin()+x);
+			lock->elements_have_been_modified();
+		}
+	}
 }
 
-elementptr gridlayoutmanagerObj::get(dim_t x, dim_t y)
+elementptr gridlayoutmanagerObj::get(size_t x, size_t y) const
 {
+	grid_map_t::lock lock{impl->grid_map};
+
+	if (y < lock->elements.size())
+	{
+		const auto &row=lock->elements.at(y);
+
+		if (x < row.size())
+			return row.at(x)->grid_element;
+	}
 	return elementptr();
 }
 
