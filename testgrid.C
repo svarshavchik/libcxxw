@@ -502,9 +502,21 @@ void testgrid()
 	}
 }
 
+void testrectangleset()
+{
+	rectangle_set a={{0, 0, 1, 1}, {1, 0, 1, 1}, {2, 0, 1, 1}};
+	rectangle_set b={{3, 0, 0, 0}}; // This should be quietly erased.
+
+	auto result = add(a,b);
+
+	if (result != rectangle_set{ {0, 0, 3, 1}})
+		throw EXCEPTION("testrectangleset failed");
+}
+
 int main()
 {
 	try {
+		testrectangleset();
 		testgrid();
 	} catch (const exception &e)
 	{

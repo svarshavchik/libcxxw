@@ -143,8 +143,18 @@ class LIBCXX_INTERNAL rect_merge_pass {
 		// rectangles set. At the same time populate the
 		// edges set.
 
-		for (auto p=rectangles.begin(); p != rectangles.end(); ++p)
+		for (auto p=rectangles.begin(), q=p; p != rectangles.end(); p=q)
 		{
+			q=p;
+			++q;
+
+			// Get rid of rectangles that have no width or depth.
+			if (p->width == 0 || p->height == 0)
+			{
+				rectangles.erase(p);
+				continue;
+			}
+
 			auto prev=find_leading_edge(*p);
 			auto next=find_trailing_edge(*p);
 
