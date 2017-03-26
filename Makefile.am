@@ -199,6 +199,11 @@ libcxxw_la_SOURCES=\
 	gridlayoutmanager_impl.C		    \
 	gridlayoutmanager_impl_elements.C	    \
 	gridlayoutmanager_impl_elements.H	    \
+	hotspot.C				    \
+	hotspot.H				    \
+	hotspot_element.H			    \
+	hotspot_elementfwd.H			    \
+	hotspot_impl.C				    \
 	impl_connection_thread.H		    \
 	input_mask.C				    \
 	keysyms.C				    \
