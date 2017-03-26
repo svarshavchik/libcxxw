@@ -14,6 +14,7 @@
 #include "container.H"
 #include "x/w/pictformatfwd.H"
 #include "x/w/types.H"
+#include "x/w/focusablefwd.H"
 #include "fonts/current_fontcollectionfwd.H"
 #include "x/w/fontfwd.H"
 #include <experimental/string_view>
@@ -227,6 +228,24 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 	current_fontcollection create_theme_font(const std::experimental::string_view &font);
 
+ private:
+	///////////////////////////////////////////////////////////////////
+	//
+
+	//! A list of focusable fields in this window.
+
+	//! This points to child elements. This would normally be a circular
+	//! reference. However, focusableObj's destructor is going to take
+	//! care of dropping the reference to the child member.
+
+	std::list<ref<focusableImplObj>> focusable_fields_thread_only;
+
+	//! Current field that's receiving input focus.
+	ptr<focusableImplObj> current_focus_thread_only;
+
+ public:
+	THREAD_DATA_ONLY(focusable_fields);
+	THREAD_DATA_ONLY(current_focus);
 };
 
 LIBCXXW_NAMESPACE_END

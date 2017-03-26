@@ -18,6 +18,7 @@
 #include "draw_info_cachefwd.H"
 #include "background_colorfwd.H"
 #include "metrics_horizvertobj.H"
+#include "focus/focus.H"
 #include "fonts/current_fontcollectionfwd.H"
 #include "x/w/fontfwd.H"
 #include <x/obj.H>
@@ -569,6 +570,10 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 				       const function<void
 				       (const element &e)> &);
 
+	////////////////////////////////////////////////////////////////////
+	//
+	// Fonts, colors, text.
+
 	//! Create a font for this display element.
 
 	//! Creates a non-standard font. This gets forwarded to
@@ -601,6 +606,124 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 	richtextstring convert(richtextmeta font,
 			       const text_param &t);
+
+
+	//////////////////////////////////////////////////////////////////
+	//
+	// Input focus handling
+
+	//! Used in input focus processing, accessed by the connection thread only.
+
+	bool original_focus;
+
+	//! Used in input focus processing, accessed by the connection thread only.
+
+	bool new_focus;
+
+	//! The focus reporter parameter to request_focus() and leave_focus().
+
+	typedef void (elementObj::implObj::*focus_reporter_t)
+		(IN_THREAD_ONLY, focus_change, const ref<elementObj::implObj> &)
+		;
+
+	//! Input focus is being requested for this display element.
+
+	//! Generates calls to <type>_focus() for all affected display elements.
+	//!
+	//! focus_reporter parameter is either &report_keyboard_focus or
+	//! &report_pointer_focus.
+	//!
+	//! \see focus_change
+
+	void request_focus(IN_THREAD_ONLY,
+			   const ptr<elementObj::implObj> &current_focus,
+			   focus_reporter_t focus_reporter);
+
+	//! Input focus is being lost completely.
+
+	//! focus_reporter parameter is either &report_keyboard_focus or
+	//! &report_pointer_focus.
+	//!
+	//! Generates calls to <type>_focus() for all affected display elements.
+	//! \see focus_change
+
+	void lose_focus(IN_THREAD_ONLY,
+			focus_reporter_t focus_reporter)
+	{
+		requested_focus_from(IN_THREAD);
+		leaving_focus(IN_THREAD, ptr<elementObj::implObj>(),
+			      focus_reporter);
+	}
+
+	//! Internal focus processing, see element_focusable.C
+
+	virtual void requested_focus_to(IN_THREAD_ONLY,
+					const ptr<elementObj::implObj> &current_focus);
+
+	//! Internal focus processing, see element_focusable.C
+	virtual void requested_focus_from(IN_THREAD_ONLY);
+
+	//! Internal focus processing, see element_focusable.C
+
+	void leaving_focus(IN_THREAD_ONLY,
+			   const ptr<elementObj::implObj> &leaving_for,
+			   focus_reporter_t focus_reporter);
+
+	//! Internal focus processing, see element_focusable.C
+	virtual void do_leaving_focus(IN_THREAD_ONLY,
+				      focus_change &event,
+				      const ref<implObj> &focus_from,
+				      const ptr<elementObj::implObj>
+				      &leaving_for,
+				      focus_reporter_t reporter);
+
+	//! Internal focus processing, see element_focusable.C
+
+	void entering_focus(IN_THREAD_ONLY,
+			    const ptr<elementObj::implObj> &focus_from,
+			    focus_reporter_t focus_reporter);
+
+	//! Internal focus processing, see element_focusable.C
+
+	virtual void do_entering_focus(IN_THREAD_ONLY,
+				       focus_change event,
+				       const ref<implObj> &focus_to,
+				       const ptr<elementObj::implObj> &focus_from,
+				       focus_reporter_t focus_reporter);
+
+	//! Invoke the keyboard_focus() virtual function.
+
+	inline void report_keyboard_focus(IN_THREAD_ONLY,
+					  focus_change event,
+					  const ref<implObj> &ptr)
+	{
+		keyboard_focus(IN_THREAD, event, ptr);
+	}
+
+	//! The result of all this is a bunch of calls to keyboard_focus().
+
+	//! The default implementation does nothing.
+
+	virtual void keyboard_focus(IN_THREAD_ONLY,
+				    focus_change event,
+				    const ref<implObj> &ptr);
+
+ private:
+
+	//! The most recent keyboard_focus() reported
+	focus_change most_recent_keyboard_focus_change_thread_only=focus_change::lost;
+
+ public:
+
+	THREAD_DATA_ONLY(most_recent_keyboard_focus_change);
+
+	//! Whether this display element currently has input focus.
+
+	//! Returns true if most_recent_keyboard_focus_change was one of:
+	//! focus_gained, child_gained, child_moved_to, gained_from_child,
+	//! lost_to_child.
+
+	bool current_keyboard_focus(IN_THREAD_ONLY);
 };
 
 LIBCXXW_NAMESPACE_END

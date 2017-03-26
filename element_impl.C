@@ -761,4 +761,23 @@ richtextstring elementObj::implObj::convert(richtextmeta font,
 	return {t.string, m};
 }
 
+void elementObj::implObj::keyboard_focus(IN_THREAD_ONLY,
+					 focus_change event,
+					 const ref<implObj> &ptr)
+{
+	most_recent_keyboard_focus_change(IN_THREAD)=event;
+}
+
+bool elementObj::implObj::current_keyboard_focus(IN_THREAD_ONLY)
+{
+	switch (most_recent_keyboard_focus_change(IN_THREAD)) {
+	case focus_change::gained:
+	case focus_change::child_gained:
+	case focus_change::child_moved_to:
+	case focus_change::gained_from_child:
+		return true;
+	}
+	return false;
+}
+
 LIBCXXW_NAMESPACE_END

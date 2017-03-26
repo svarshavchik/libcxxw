@@ -14,6 +14,7 @@
 #include "xid_t.H"
 #include "element_screen.H"
 #include "background_color.H"
+#include "focus/focusable.H"
 #include "x/w/values_and_mask.H"
 #include <xcb/xcb_icccm.h>
 LIBCXXW_NAMESPACE_START

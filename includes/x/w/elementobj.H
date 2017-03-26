@@ -25,6 +25,8 @@ class elementObj : virtual public obj {
 public:
 	class implObj;
 
+	//! Internal implementation details.
+
 	const ref<implObj> impl;
 
 	//! Application data.

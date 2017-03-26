@@ -103,6 +103,15 @@ libcxxw_la_SOURCES=\
 	ewmh.H					    \
 	factory.C				    \
 	gc.C					    \
+	focus/element_focusable.C		    \
+	focus/focus.H				    \
+	focus/focusable.C			    \
+	focus/focusable.H			    \
+	focus/focusablefwd.H			    \
+	focus/focusable_element.H		    \
+	focus/focusable_elementfwd.H		    \
+	focus/focusable_impl.C			    \
+	focus/focusable_owner.C			    \
 	fonts/composite_text_stream.C		    \
 	fonts/composite_text_stream.H		    \
 	fonts/composite_text_streamfwd.H	    \
@@ -318,8 +327,7 @@ EXTRA_DIST = config.rpath m4/ChangeLog COPYING \
 	packaging/fedora/libcxxw.spec \
         examples/configure.ac \
 	examples/Makefile.am \
-        examples/*.C \
-	examples/*.H \
+        $(shell cd $(srcdir) && echo examples/*.C examples/*.H) \
 	$(man_MANS)
 
 $(call THREADMSGDISPATCHER_GEN,connection_thread.msgs.H, connection_thread.msgs.xml)
@@ -327,6 +335,7 @@ $(call THREADMSGDISPATCHER_GEN,connection_thread.msgs.H, connection_thread.msgs.
 TESTPROGRAMS=\
 	testcollapse					\
 	testderivedaxis					\
+	testfocusable					\
 	testgrid					\
 	testrichtextstring				\
 	testrichtext					\
@@ -347,6 +356,9 @@ testcollapse_LDFLAGS=-static
 testderivedaxis_SOURCES=testderivedaxis.C
 testderivedaxis_LDADD=libcxxw.la
 testderivedaxis_LDFLAGS=$(TESTLINKTYPE)
+
+testfocusable_SOURCES=testfocusable.C
+testfocusable_LDADD=-lcxx
 
 testgrid_SOURCES=testgrid.C
 testgrid_LDADD=libcxxw.la
@@ -477,7 +489,7 @@ install-data-hook: $(all_installed_theme_files) $(DESTDIR)$(pkgdatadir)/themes/c
 install-data-hook-create-dir:
 	$(MKDIR_P) $(foreach d,$(all_installed_theme_dirs),$(DESTDIR)$(d))
 
-$(DESTDIR)$(pkgdatadir)/themes/cxxwtheme.properties: themes/cxxwtheme.properties
+$(DESTDIR)$(pkgdatadir)/themes/cxxwtheme.properties: themes/cxxwtheme.properties install-data-hook-create-dir
 	$(INSTALL_DATA) $(srcdir)/themes/cxxwtheme.properties $(DESTDIR)$(pkgdatadir)/themes/cxxwtheme.properties
 
 uninstall-hook:

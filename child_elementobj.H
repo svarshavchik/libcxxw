@@ -9,6 +9,7 @@
 #include "container.H"
 #include "background_colorfwd.H"
 #include "connection_threadfwd.H"
+#include "focus/focusablefwd.H"
 #include "x/w/metrics/axis.H"
 #include "x/w/picturefwd.H"
 
@@ -52,6 +53,7 @@ class LIBCXX_HIDDEN child_elementObj : public elementObj::implObj {
 	const generic_windowObj::handlerObj &get_window_handler() const
 		override;
 
+ protected:
 	//! Use parent display element's background color.
 
 	void remove_background_color(IN_THREAD_ONLY) override;
@@ -89,11 +91,52 @@ class LIBCXX_HIDDEN child_elementObj : public elementObj::implObj {
 
 	void visibility_updated(IN_THREAD_ONLY, bool flag) override;
 
+ public:
+	//! Input focus processing.
+
+	//! See element_focusable.C
+	void requested_focus_to(IN_THREAD_ONLY,
+				const ptr<elementObj::implObj> &current_focus)
+		override;
+
+	//! Input focus processing.
+
+	//! See element_focusable.C
+	void requested_focus_from(IN_THREAD_ONLY)
+		override;
+
+	//! Input focus processing.
+
+	//! See element_focusable.C
+	void do_leaving_focus(IN_THREAD_ONLY,
+			      focus_change &event,
+			      const ref<implObj> &focus_from,
+			      const ptr<elementObj::implObj> &leaving_for,
+			      focus_reporter_t focus_reporter)
+		override;
+
+	//! Input focus processing.
+
+	//! See element_focusable.C
+	void do_entering_focus(IN_THREAD_ONLY,
+			       focus_change event,
+			       const ref<implObj> &focus_to,
+			       const ptr<elementObj::implObj> &focus_from,
+			       focus_reporter_t focus_reporter)
+		override;
+ protected:
 	/////////////////////////////////////////////////////////////////////
 	//
 	// Inherited from horizvertObj
 
 	void horizvert_updated(IN_THREAD_ONLY) override;
+
+ public:
+
+	//! Used by focusableImplObj to find the insert position in focusable_fields
+
+	virtual focusable_fields_t::iterator
+		initial_focusable_fields_insert_pos(IN_THREAD_ONLY);
 };
 
 LIBCXXW_NAMESPACE_END
