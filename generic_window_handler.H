@@ -78,6 +78,8 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	static constexpr xcb_event_mask_t initial_event_mask()
 	{
 		return (xcb_event_mask_t)(XCB_EVENT_MASK_EXPOSURE |
+					  XCB_EVENT_MASK_KEY_PRESS |
+					  XCB_EVENT_MASK_KEY_RELEASE |
 					  XCB_EVENT_MASK_VISIBILITY_CHANGE |
 					  XCB_EVENT_MASK_STRUCTURE_NOTIFY);
 	}
@@ -134,6 +136,11 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 	void current_position_updated(IN_THREAD_ONLY) override;
 
+	//! Process TAB/Shift TAB, do move the input focus.
+
+	bool process_key_event(IN_THREAD_ONLY, char32_t unicode,
+			       uint32_t keysym, bool keypress) override;
+
 	////////////////////////////////////////////////////////////////////
 	//
 	// Inherited from window_handler
@@ -146,6 +153,23 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! Theme update notification.
 	void theme_updated_event(IN_THREAD_ONLY) override;
 
+	//! Key press event
+	void key_press_event(IN_THREAD_ONLY,
+			     const xcb_key_press_event_t *event,
+			     uint16_t sequencehi) override;
+
+	//! Key release event
+	void key_release_event(IN_THREAD_ONLY,
+			       const xcb_key_release_event_t *event,
+			       uint16_t sequencehi) override;
+ private:
+
+	//! Process a key press or release event.
+	void key_event(IN_THREAD_ONLY,
+		       const xcb_key_release_event_t *event,
+		       uint16_t sequencehi,
+		       bool keypress);
+ public:
 	//! Do not redraw after the window's visibility is updated.
 
 	//! Instead, we redraw in response to exposure events.

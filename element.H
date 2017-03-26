@@ -708,6 +708,15 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 				    focus_change event,
 				    const ref<implObj> &ptr);
 
+	//! Here come the keypresses.
+
+	//! Returns true or false, indicating whether the key press or
+	//! release was consumed.
+	//!
+	//! The default implementation always returns false.
+
+	virtual bool process_key_event(IN_THREAD_ONLY, char32_t unicode,
+				       uint32_t keysym, bool keypress);
  private:
 
 	//! The most recent keyboard_focus() reported

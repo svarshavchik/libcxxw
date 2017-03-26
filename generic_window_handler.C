@@ -17,6 +17,9 @@
 #include "focus/focusable.H"
 #include "x/w/values_and_mask.H"
 #include <xcb/xcb_icccm.h>
+#include <X11/keysym.h>
+#include "child_element.H"
+
 LIBCXXW_NAMESPACE_START
 
 static rectangle element_position(const rectangle &r)
@@ -247,6 +250,57 @@ void generic_windowObj::handlerObj::theme_updated_event(IN_THREAD_ONLY)
 	theme_updated(IN_THREAD);
 }
 
+void generic_windowObj::handlerObj
+::key_press_event(IN_THREAD_ONLY,
+		  const xcb_key_press_event_t *event,
+		  uint16_t sequencehi)
+{
+	key_event(IN_THREAD, event, sequencehi, true);
+}
+
+void generic_windowObj::handlerObj
+::key_release_event(IN_THREAD_ONLY,
+		    const xcb_key_release_event_t *event,
+		    uint16_t sequencehi)
+{
+	key_event(IN_THREAD, event, sequencehi, false);
+}
+
+void generic_windowObj::handlerObj
+::key_event(IN_THREAD_ONLY,
+	    const xcb_key_release_event_t *event,
+	    uint16_t sequencehi,
+	    bool keypress)
+{
+	char32_t unicode;
+	uint32_t keysym;
+
+	auto &keysyms=
+		get_screen()->get_connection()->impl->keysyms_info(IN_THREAD);
+
+	input_mask mask{event->state, keysyms};
+
+	bool has_unicode=keysyms.lookup(event->detail, mask,
+					unicode, keysym);
+
+	if (!has_unicode)
+		unicode=0;
+
+	// If there's an element with a focus, delegate this to it. If
+	// it doesn't process the key event, it'll eventually percolate back
+	// to us.
+	//
+	// If there's no element in the focus, jump to our handler,
+	// directly.
+
+	if (current_focus(IN_THREAD))
+		current_focus(IN_THREAD)->get_focusable_element()
+			.process_key_event(IN_THREAD, unicode, keysym,
+					   keypress);
+	else
+		process_key_event(IN_THREAD, unicode, keysym, keypress);
+}
+
 void generic_windowObj::handlerObj::configure_notify(IN_THREAD_ONLY,
 						     const rectangle &r)
 {
@@ -266,6 +320,67 @@ void generic_windowObj::handlerObj::configure_notify(IN_THREAD_ONLY,
 void generic_windowObj::handlerObj::current_position_updated(IN_THREAD_ONLY)
 {
 	schedule_update_position_processing(IN_THREAD);
+}
+
+bool generic_windowObj::handlerObj::process_key_event(IN_THREAD_ONLY,
+						      char32_t unicode,
+						      uint32_t keysym,
+						      bool keypress)
+{
+	if (!keypress)
+		return false;
+
+	if (keypress == XK_ISO_Left_Tab)
+	{
+		if (current_focus(IN_THREAD))
+		{
+			current_focus(IN_THREAD)->prev_focus(IN_THREAD);
+			return true;
+		}
+
+		for (auto b=focusable_fields(IN_THREAD).begin(),
+			     e=focusable_fields(IN_THREAD).end();
+		     b != e;)
+		{
+			--e;
+			const auto &element=*e;
+
+			if (element->is_enabled(IN_THREAD))
+			{
+				current_focus(IN_THREAD)=element;
+				element->get_focusable_element()
+					.request_focus(IN_THREAD,
+						       ptr<elementObj::implObj>
+						       (),
+						       &elementObj::implObj
+						       ::report_keyboard_focus);
+				return true;
+			}
+		}
+	}
+
+	if (unicode == '\t')
+	{
+		if (current_focus(IN_THREAD))
+		{
+			current_focus(IN_THREAD)->next_focus(IN_THREAD);
+			return true;
+		}
+
+		for (const auto &element:focusable_fields(IN_THREAD))
+			if (element->is_enabled(IN_THREAD))
+			{
+				current_focus(IN_THREAD)=element;
+				element->get_focusable_element()
+					.request_focus(IN_THREAD,
+						       ptr<elementObj::implObj>
+						       (),
+						       &elementObj::implObj
+						       ::report_keyboard_focus);
+				return true;
+			}
+	}
+	return false;
 }
 
 bool generic_windowObj::handlerObj::get_frame_extents(dim_t &left,

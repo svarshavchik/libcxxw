@@ -82,4 +82,16 @@ void window_handlerObj::theme_updated_event(IN_THREAD_ONLY)
 {
 }
 
+void window_handlerObj::key_press_event(IN_THREAD_ONLY,
+					const xcb_key_press_event_t *event,
+					uint16_t sequencehi)
+{
+}
+
+void window_handlerObj::key_release_event(IN_THREAD_ONLY,
+					  const xcb_key_release_event_t *event,
+					  uint16_t sequencehi)
+{
+}
+
 LIBCXXW_NAMESPACE_END

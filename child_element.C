@@ -189,4 +189,13 @@ void child_elementObj::prepare_draw_info(IN_THREAD_ONLY, draw_info &di)
 	di.background_y=di.absolute_location.y;
 }
 
+bool child_elementObj::process_key_event(IN_THREAD_ONLY, char32_t unicode,
+					 uint32_t keysym, bool keypress)
+{
+	return elementObj::implObj::process_key_event(IN_THREAD, unicode,
+						      keysym, keypress)
+		|| container->get_element_impl()
+		.process_key_event(IN_THREAD, unicode, keysym, keypress);
+}
+
 LIBCXXW_NAMESPACE_END

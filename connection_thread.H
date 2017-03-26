@@ -61,6 +61,9 @@ class LIBCXX_HIDDEN connection_threadObj
 
 	void run_event(IN_THREAD_ONLY, const xcb_generic_event_t *event);
 
+	//! Most recent timestamp from the server.
+
+	xcb_timestamp_t timestamp=XCB_CURRENT_TIME;
 	///////////////////////////////////////////////////////////////////
 	//
 	// These objects are constructed on the connection thread's stack,

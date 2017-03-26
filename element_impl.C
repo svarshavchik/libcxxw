@@ -780,4 +780,10 @@ bool elementObj::implObj::current_keyboard_focus(IN_THREAD_ONLY)
 	return false;
 }
 
+bool elementObj::implObj::process_key_event(IN_THREAD_ONLY, char32_t unicode,
+					    uint32_t keysym, bool keypress)
+{
+	return false;
+}
+
 LIBCXXW_NAMESPACE_END

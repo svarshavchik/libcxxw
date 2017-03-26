@@ -9,6 +9,7 @@
 
 #include "render.H"
 #include "ewmh.H"
+#include "keysyms.H"
 #include "connection_threadfwd.H"
 #include "connection_infofwd.H"
 #include "current_border_implfwd.H"
@@ -41,6 +42,13 @@ class LIBCXX_HIDDEN connectionObj::implObj : virtual public obj {
 	//! Server configuration - EWMH extension
 
 	mpobj<ewmh> ewmh_info;
+
+ private:
+	//! Keysyms
+
+	const keysyms keysyms_info_thread_only;
+ public:
+	THREAD_DATA_ONLY(keysyms_info);
 
 	//! Server configuration
 

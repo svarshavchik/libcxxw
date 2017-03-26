@@ -200,6 +200,9 @@ libcxxw_la_SOURCES=\
 	gridlayoutmanager_impl_elements.C	    \
 	gridlayoutmanager_impl_elements.H	    \
 	impl_connection_thread.H		    \
+	input_mask.C				    \
+	keysyms.C				    \
+	keysyms.H				    \
 	label.H					    \
 	label.C					    \
 	label_impl.C				    \

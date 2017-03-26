@@ -89,6 +89,16 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 
 	virtual void configure_notify(IN_THREAD_ONLY,
 				      const rectangle &);
+
+	//! Key press event
+	virtual void key_press_event(IN_THREAD_ONLY,
+				     const xcb_key_press_event_t *event,
+				     uint16_t sequencehi);
+
+	//! Key release event
+	virtual void key_release_event(IN_THREAD_ONLY,
+				       const xcb_key_release_event_t *event,
+				       uint16_t sequencehi);
 };
 
 LIBCXXW_NAMESPACE_END

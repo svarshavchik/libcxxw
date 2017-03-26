@@ -47,6 +47,32 @@ void connection_threadObj::run_event(IN_THREAD_ONLY,
 			report_error(error);
 		}
 		return;
+	case XCB_KEY_PRESS:
+		{
+			GET_MSG(key_press_event);
+
+			timestamp=msg->time;
+
+			FIND_HANDLER(event);
+			DISPATCH_HANDLER(key_press_event,
+					 (IN_THREAD,
+					  msg,
+					  event->full_sequence >> 16));
+		}
+		return;
+	case XCB_KEY_RELEASE:
+		{
+			GET_MSG(key_release_event);
+
+			timestamp=msg->time;
+
+			FIND_HANDLER(event);
+			DISPATCH_HANDLER(key_release_event,
+					 (IN_THREAD,
+					  msg,
+					  event->full_sequence >> 16));
+		}
+		return;
 	case XCB_DESTROY_NOTIFY:
 		{
 			GET_MSG(destroy_notify_event);
@@ -71,6 +97,8 @@ void connection_threadObj::run_event(IN_THREAD_ONLY,
 	case XCB_PROPERTY_NOTIFY:
 		{
 			GET_MSG(property_notify_event);
+
+			timestamp=msg->time;
 
 			if (msg->window == root_window_thread_only &&
 			    msg->atom == info->atoms_info.cxxwtheme)

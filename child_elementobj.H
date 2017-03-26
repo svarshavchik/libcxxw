@@ -69,6 +69,10 @@ class LIBCXX_HIDDEN child_elementObj : public elementObj::implObj {
 	void set_background_color(IN_THREAD_ONLY,
 				  const background_color &) override;
 
+	//! If child_element doesn't handle it, punt it back to the parent.
+	bool process_key_event(IN_THREAD_ONLY, char32_t unicode,
+			       uint32_t keysym, bool keypress);
+
 	//! Update the theme-dependendent background color, then call the parent.
 
 	void theme_updated(IN_THREAD_ONLY) override;
