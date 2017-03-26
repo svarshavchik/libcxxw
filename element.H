@@ -89,6 +89,10 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 		bool initialized=false;
 
+		//! Whether the element has been removed from its container.
+
+		bool removed=false;
+
 		//! State update handlers
 
 		callback_list<void (const element_state &)> update_handlers=
@@ -193,6 +197,10 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 	THREAD_DATA_ONLY(data);
 	THREAD_DATA_SUPERCLASS_ONLY(horizvertObj, get_horizvert);
+
+	//! The container has removed this element.
+
+	void removed_from_container(IN_THREAD_ONLY);
 
 	//! Install a state update callback.
 	template<typename functor_type>

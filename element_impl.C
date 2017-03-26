@@ -65,6 +65,17 @@ elementObj::implObj::implObj(size_t nesting_level,
 
 elementObj::implObj::~implObj()=default;
 
+void elementObj::implObj::removed_from_container(IN_THREAD_ONLY)
+{
+	data(IN_THREAD).removed=true;
+	for_each_child(IN_THREAD,
+		       [&]
+		       (const element &e)
+		       {
+			       e->impl->removed_from_container(IN_THREAD);
+		       });
+}
+
 void elementObj::implObj::request_visibility(bool flag)
 {
 	// Set requested_visibility, make sure this is done in the connection
@@ -402,6 +413,14 @@ void elementObj::implObj::draw(IN_THREAD_ONLY,
 			       const draw_info &di,
 			       const rectangle_set &areas)
 {
+	// Between the the time schedule_redraw() was called, we could've been
+	// removed from my container. Recalculation has higher priority than
+	// drawing, so we should no longer scribble over our window after
+	// we've been removed.
+	if (data(IN_THREAD).removed)
+		return;
+
+
 	if (data(IN_THREAD).inherited_visibility)
 	{
 		do_draw(IN_THREAD, di, areas);
