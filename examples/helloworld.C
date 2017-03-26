@@ -84,13 +84,18 @@ void testlabel()
 
 			 // Our main window will use the grid layout manager...
 
-			 // ... but we already knew that. But, this is the
-			 // second parameter to create(), which obediently
-			 // creates the main window and invokes the creator
-			 // lambda, above, which expects to see a
-			 // gridlayoutmanager, hencewith...
+			 // ... but we already knew that. However, for
+			 // completeness, this is the default value for the
+			 // second parameter to create(), that specifies the
+			 // grid layout manager for the new main window.
+			 //
+			 // This is why when the creator lambda gets invoked
+			 // above, it expects to see a gridlayoutmanager.
+			 // This parameter, if specified, must be a subclass
+			 // of x::w::new_layoutmanager, and this is one such
+			 // subclass.
 
-			 x::w::new_layoutmanager::base::create_grid());
+			 x::w::new_gridlayoutmanager{});
 
 	// If the connection to the display server goes away, we don't have
 	// many options...

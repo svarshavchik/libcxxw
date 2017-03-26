@@ -49,7 +49,7 @@ main_window main_windowBase::do_create(const function<main_window_creator_t> &f,
 main_window screenObj
 ::do_create_mainwindow(const function<main_window_creator_t> &f)
 {
-	return do_create_mainwindow(f, new_layoutmanager::base::create_grid());
+	return do_create_mainwindow(f, new_gridlayoutmanager{});
 }
 
 main_window screenObj

@@ -6,20 +6,26 @@
 #define x_w_new_layoutmanager_h
 
 #include <x/w/new_layoutmanagerfwd.H>
-#include <x/w/new_layoutmanagerobj.H>
-#include <x/ref.H>
 
 LIBCXXW_NAMESPACE_START
 
-//! Base class for new layout managers
+//! Create a new grid layout manager.
 
-//! Refer to this class as \c INSERT_LIBX_NAMESPACE::w::new_layoutmanager::base
+//! This parameter is passed when create a main window, or a container that
+//! uses the grid layout manager.
 
-class new_layoutmanagerBase {
+class LIBCXX_HIDDEN new_gridlayoutmanager : public new_layoutmanager {
 
 public:
 
-	static new_layoutmanager create_grid();
+	//! Constructor
+	new_gridlayoutmanager() LIBCXX_PUBLIC;
+
+	//! Destructor
+	~new_gridlayoutmanager() LIBCXX_PUBLIC;
+
+	new_layoutmanager_results create(const new_layoutmanager_info &)
+		const override LIBCXX_HIDDEN;
 };
 
 LIBCXXW_NAMESPACE_END

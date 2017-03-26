@@ -221,6 +221,7 @@ libcxxw_la_SOURCES=\
 	metrics_horizvertobj.H			    \
 	metrics_mmaxis.C			    \
 	new_layoutmanager.C			    \
+	new_layoutmanager.H			    \
 	pictformat.C				    \
 	pictformat.H				    \
 	picture.C				    \

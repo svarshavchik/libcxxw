@@ -46,12 +46,14 @@ public:
 
 	//! create() implementation.
 
-	static main_window do_create(const function<main_window_creator_t> &f);
+	static main_window do_create(const function<main_window_creator_t> &f)
+		LIBCXX_PUBLIC;
 
 	//! create() implementation.
 
 	static main_window do_create(const function<main_window_creator_t> &f,
-				     const new_layoutmanager &actory);
+				     const new_layoutmanager &actory)
+		LIBCXX_PUBLIC;
 
 	//! The custom create() for main window objects.
 

@@ -6,31 +6,31 @@
 #define x_w_new_layoutmanagerfwd_h
 
 #include <x/w/namespace.H>
-#include <x/ptrfwd.H>
 
 LIBCXXW_NAMESPACE_START
 
-class new_layoutmanagerObj;
-class new_layoutmanagerBase;
+class new_layoutmanager_info;
+class new_layoutmanager_results;
 
 //! A new layout manager
 
 //! A new container's layout manager gets created before the
 //! \ref container "container" gets created.
 //!
-//! A layout manager factory returns this new_layoutmanager object, which
-//! gets used to construct the new container.
-//!
-//! After the container gets created, this object must be destroyed.
+//! A subclass of new_layoutmanager gets passed to methods that create
+//! layout managers.
 
-typedef ref<new_layoutmanagerObj, new_layoutmanagerBase> new_layoutmanager;
+class LIBCXX_HIDDEN new_layoutmanager {
 
-//! A constant generic window handler
+public:
 
-//! \see new_layoutmanager
+	new_layoutmanager();
 
-typedef const_ref<new_layoutmanagerObj,
-		  new_layoutmanagerBase> const_new_layoutmanager;
+	~new_layoutmanager();
+
+	virtual new_layoutmanager_results create(const new_layoutmanager_info &)
+		const =0;
+};
 
 LIBCXXW_NAMESPACE_END
 

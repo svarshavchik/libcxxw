@@ -3,36 +3,27 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
-#include "x/w/new_layoutmanager.H"
+#include "new_layoutmanager.H"
 #include "container.H"
 #include "layoutmanager.H"
 #include "gridlayoutmanager.H"
 
 LIBCXXW_NAMESPACE_START
 
-new_layoutmanagerObj::new_layoutmanagerObj()=default;
+new_layoutmanager::new_layoutmanager()=default;
 
-new_layoutmanagerObj::~new_layoutmanagerObj()=default;
+new_layoutmanager::~new_layoutmanager()=default;
 
-class LIBCXX_HIDDEN grid_factoryObj : public new_layoutmanagerObj
+new_gridlayoutmanager::new_gridlayoutmanager()=default;
+
+new_gridlayoutmanager::~new_gridlayoutmanager()=default;
+
+new_layoutmanager_results
+new_gridlayoutmanager::create(const new_layoutmanager_info &info) const
 {
- public:
-
-	grid_factoryObj()=default;
-
-	~grid_factoryObj()=default;
-
-	ref<layoutmanagerObj::implObj>
-		create(const ref<containerObj::implObj> &container_impl)
-		override
-	{
-		return ref<gridlayoutmanagerObj::implObj>::create(container_impl);
-	}
-};
-
-new_layoutmanager new_layoutmanagerBase::create_grid()
-{
-	return ref<grid_factoryObj>::create();
+	return {
+		ref<gridlayoutmanagerObj::implObj>::create(info.container_impl),
+			};
 }
 
 LIBCXXW_NAMESPACE_END
