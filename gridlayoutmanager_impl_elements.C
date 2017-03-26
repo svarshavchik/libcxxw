@@ -87,7 +87,7 @@ void gridlayoutmanagerObj::implObj
 		return;
 
 	for (const auto &b:iter->second->border_elements)
-		b->impl->schedule_redraw_if_visible(IN_THREAD);
+		b->impl->schedule_redraw(IN_THREAD);
 }
 
 void gridlayoutmanagerObj::implObj::theme_updated(IN_THREAD_ONLY)

@@ -150,7 +150,7 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 	//! This element's background color has changed.
 
-	//! Invoke schedule_redraw_if_visible(), in order to redraw it.
+	//! Invoke schedule_redraw() if this element is visible.
 	//! But wait, there's more!. If this is a container, and the
 	//! container has any visible child elements that use the parent's
 	//! background color, they need to be redrawn too!
@@ -502,8 +502,8 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! A new theme has been installed.
 
 	//! This is invoked from the window handler's theme_updated_event(),
-	//! Invoke schedule_redraw_if_visible(), then recursively invoke
-	//! theme_updated() for all visible elements.
+	//! Invoke schedule_redraw(), then recursively invoke
+	//! theme_updated() (as long as we're visible, of course).
 
 	virtual void theme_updated(IN_THREAD_ONLY);
 

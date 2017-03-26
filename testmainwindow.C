@@ -31,11 +31,22 @@ typedef LIBCXX_NAMESPACE::mpcobj<sausage_factory> sausage_factory_t;
 
 sausage_factory_t sausages;
 
+#define LOG_CLEAR_TO_COLOR_AREAS()	do {				\
+		std::cout << "CLEAR: " << objname() << std::endl;	\
+		for (const auto &aa:areas)				\
+			std::cout << "    " << aa << std::endl;		\
+	} while(0)
+
+#undef LOG_CLEAR_TO_COLOR_AREAS
+#define LOG_CLEAR_TO_COLOR_AREAS() do {} while(0)
+
+
 #define CLEAR_TO_COLOR_LOG() do {					\
 		sausage_factory_t::lock					\
 			lock(sausages);					\
 									\
 		lock->number_of_areas += areas.size();			\
+		LOG_CLEAR_TO_COLOR_AREAS();				\
 		lock->number_of_calls++;				\
 		lock.notify_all();					\
 	} while(0)
@@ -195,7 +206,7 @@ auto wait_until_clear(int current_number_of_calls)
 	sausage_factory_t::lock lock(sausages);
 
 	lock.wait([&]
-		  { return lock->number_of_calls > current_number_of_calls; });
+		  { return lock->number_of_calls >= current_number_of_calls; });
 
 	return *lock;
 }
@@ -206,8 +217,8 @@ void set_filler_color(const LIBCXX_NAMESPACE::w::element &e)
 				->create_solid_color_picture({0, 0, 0}));
 }
 
-countstateupdate runteststate(testmainwindowoptions &options,
-			      bool individual_show)
+auto runteststate(testmainwindowoptions &options,
+		  bool individual_show)
 {
 	std::cout << "*** runteststate" << std::endl << std::flush;
 	{
@@ -278,9 +289,9 @@ countstateupdate runteststate(testmainwindowoptions &options,
 	// expect an extra call to clear_to_color, for the padding area around
 	// the element.
 
-	wait_until_clear(options.nopadding->value ? 0:1);
+	wait_until_clear(options.nopadding->value ? 1:2);
 
-	return c;
+	return c->get();
 }
 
 void teststate(testmainwindowoptions &options, bool flag)
@@ -289,8 +300,8 @@ void teststate(testmainwindowoptions &options, bool flag)
 
 	alarm(0);
 
-	if (c->get() != 4)
-		throw EXCEPTION("Expected 4 state updates");
+	if (c != 4)
+		throw EXCEPTION("Expected 4 state updates, got " << c);
 
 	sausage_factory_t::lock lock(sausages);
 

@@ -223,15 +223,12 @@ void elementObj::implObj::draw_after_visibility_updated(IN_THREAD_ONLY,
 	schedule_redraw(IN_THREAD);
 }
 
-void elementObj::implObj::schedule_redraw_if_visible(IN_THREAD_ONLY)
-{
-	if (!data(IN_THREAD).inherited_visibility)
-		return;
-	schedule_redraw(IN_THREAD);
-}
-
 void elementObj::implObj::schedule_redraw(IN_THREAD_ONLY)
 {
+	if (!get_window_handler().data(IN_THREAD).inherited_visibility)
+		// Top level window is not mapped, don't bother.
+		return;
+
 	IN_THREAD->elements_to_redraw(IN_THREAD)->insert(elementimpl(this));
 }
 
@@ -252,14 +249,7 @@ void elementObj::implObj::explicit_redraw(IN_THREAD_ONLY, draw_info_cache &c)
 	entire_area.insert({0, 0, data(IN_THREAD).current_position.width,
 				data(IN_THREAD).current_position.height});
 
-	if (data(IN_THREAD).inherited_visibility)
-	{
-		draw(IN_THREAD, di, entire_area);
-	}
-	else
-	{
-		clear_to_color(IN_THREAD, di, entire_area);
-	}
+	draw(IN_THREAD, di, entire_area);
 }
 
 ref<obj> elementObj::implObj
@@ -322,7 +312,7 @@ void elementObj::implObj::schedule_update_position_processing(IN_THREAD_ONLY)
 
 void elementObj::implObj::process_updated_position(IN_THREAD_ONLY)
 {
-	schedule_redraw_if_visible(IN_THREAD);
+	schedule_redraw(IN_THREAD);
 }
 
 void elementObj::implObj::notify_updated_position(IN_THREAD_ONLY)
@@ -388,7 +378,8 @@ void elementObj::implObj::exposure_event_recursive(IN_THREAD_ONLY,
 		       [&]
 		       (const element &e)
 		       {
-			       if (!e->impl->data(IN_THREAD).actual_visibility)
+			       if (!e->impl->data(IN_THREAD)
+				   .inherited_visibility)
 				       return;
 
 			       auto child_position=e->impl->data(IN_THREAD)
@@ -415,6 +406,10 @@ void elementObj::implObj::draw(IN_THREAD_ONLY,
 	{
 		do_draw(IN_THREAD, di, areas);
 		return;
+	}
+	else
+	{
+		clear_to_color(IN_THREAD, di, areas);
 	}
 }
 
@@ -578,16 +573,17 @@ bool elementObj::implObj::has_own_background_color(IN_THREAD_ONLY)
 
 void elementObj::implObj::background_color_changed(IN_THREAD_ONLY)
 {
-	schedule_redraw_if_visible(IN_THREAD);
+	if (!data(IN_THREAD).inherited_visibility)
+		return;
+
+	schedule_redraw(IN_THREAD);
 
 	for_each_child(IN_THREAD, [&]
 		       (const element &e)
 		       {
-			       if (!e->impl->data(IN_THREAD)
-				   .inherited_visibility)
-				       return;
-
-			       if (e->impl->has_own_background_color(IN_THREAD))
+			       if (e->impl->data(IN_THREAD)
+				   .inherited_visibility &&
+				   e->impl->has_own_background_color(IN_THREAD))
 				       return;
 			       e->impl->background_color_changed(IN_THREAD);
 		       });
@@ -595,15 +591,13 @@ void elementObj::implObj::background_color_changed(IN_THREAD_ONLY)
 
 void elementObj::implObj::theme_updated(IN_THREAD_ONLY)
 {
-	schedule_redraw_if_visible(IN_THREAD);
+	if (!data(IN_THREAD).inherited_visibility)
+		return;
+	schedule_redraw(IN_THREAD);
 
 	for_each_child(IN_THREAD, [&]
 		       (const element &e)
 		       {
-			       if (!e->impl->data(IN_THREAD)
-				   .inherited_visibility)
-				       return;
-
 			       e->impl->theme_updated(IN_THREAD);
 		       });
 }

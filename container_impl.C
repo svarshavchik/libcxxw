@@ -95,8 +95,8 @@ void container_clear_padding(IN_THREAD_ONLY,
 	// But only if the child element is visible. If not, its area gets
 	// drawn as part of the container's background.
 
-	if (e_impl->data(IN_THREAD).inherited_visibility)
-		child_areas.insert(padded_position);
+	// if (e_impl->data(IN_THREAD).inherited_visibility)
+	child_areas.insert(padded_position);
 
 	rectangle position=e_impl->data(IN_THREAD).current_position;
 

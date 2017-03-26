@@ -39,6 +39,7 @@ void ELEMENT_SUBCLASS::do_for_each_child(IN_THREAD_ONLY,
 
 void ELEMENT_SUBCLASS::draw_after_visibility_updated(IN_THREAD_ONLY, bool flag)
 {
+	elementObj::implObj::draw_after_visibility_updated(IN_THREAD, flag);
 	containerObj::implObj::draw_after_visibility_updated(IN_THREAD, flag);
 }
 
