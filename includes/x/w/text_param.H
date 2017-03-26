@@ -67,6 +67,8 @@ each parameter gets processed individually.
 The available parameters to the constructor, and to the \c () operator
 are:
 
+\par Text
+
 \code
 INSERT_LIBX_NAMESPACE::w::text_param p;
 
@@ -82,6 +84,8 @@ p(U"Hello world");
 \endcode
 
 A \c std::u32string specifies a unicode string.
+
+\par Fonts
 
 \code
 INSERT_LIBX_NAMESPACE::w::text_param p;
@@ -101,6 +105,20 @@ in the same variadic parameter pack, or in a subsequent \c () call.
 
 The specified font applies to all subsequent string or strings, passed to the
 constructor or the \c () operator, until the next font change, if there is one.
+
+\code
+#include <INSERT_LIBX_NAMESPACE/w/font_literals.H>
+
+INSERT_LIBX_NAMESPACE::w::text_param p;
+
+p("liberation mono;point_size=18"_font);
+p("Hello world");
+\endcode
+
+\c font_literals.H allows using a \c "font"_font string literal to
+to specify a font.
+
+\par Theme fonts
 
 \code
 INSERT_LIBX_NAMESPACE::w::text_param p;
@@ -123,6 +141,8 @@ constructor or the \c () operator, until the next font, if there is one.
 \c text_param_literals.H allows using a \c "name"_theme_font string literal
 to specify a theme font.
 
+\par Colors
+
 \code
 INSERT_LIBX_NAMESPACE::w::text_param p;
 
@@ -138,6 +158,8 @@ This must be followed by at least one additional string parameter (either
 UTF-8 or unicode), otherwise an exception gets thrown.
 The specified color applies to all subsequent strings passed to the
 constructor or the \c () operator, until the next font, if there is one.
+
+\par Theme colors
 
 \code
 INSERT_LIBX_NAMESPACE::w::text_param p;
@@ -159,6 +181,8 @@ follow a color specification, otherwise an exception gets thrown; either
 in the same variadic parameter pack, or in a subsequent \c () call.
 \c text_param_literals.H allows using a \c "name"_color string literal
 to specify a color.
+
+\par Foreground and background colors
 
 \code
 p("hightlight_fg"_color, "hightlight_fg"_color, "Hello world!");

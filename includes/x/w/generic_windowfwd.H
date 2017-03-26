@@ -13,7 +13,27 @@ LIBCXXW_NAMESPACE_START
 class generic_windowObj;
 class generic_windowBase;
 
-//! Generic window methods.
+//! Generic top level window methods.
+
+//! \code
+//! main_window->set_window_title("Hello world");
+//!
+//! main_window->set_window_title(U"Hello world");
+//! \endcode
+//!
+//! \c set_window_title() sets the top level window's title, that gets
+//! specified as either a UTF-8 or a Unicode string.
+//!
+//! \code
+//! main_window->on_disconnect([]{ /* ... */ });
+//! \endcode
+//!
+//! Installs a callback that gets invoked if the connection to the X server
+//! gets shut down unexpectedly.
+//!
+//! A generic window is also a
+//! \ref container "container" and a
+//! \ref drawable "drawable".
 
 typedef ref<generic_windowObj, generic_windowBase> generic_window;
 

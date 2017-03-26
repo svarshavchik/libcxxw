@@ -11,9 +11,13 @@
 
 LIBCXXW_NAMESPACE_START
 
+//! Theme font name
+
 //! "sans_serif"_theme_font specifies a theme font in a \ref text_param "text parameter".
 
 theme_font operator"" _theme_font(const char *, size_t);
+
+//! Theme color name
 
 //! "0%"_color specifies a theme font in a \ref text_param "text parameter".
 theme_color operator"" _color(const char *, size_t);

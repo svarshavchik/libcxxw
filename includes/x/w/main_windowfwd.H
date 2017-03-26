@@ -39,8 +39,10 @@ class main_windowBase;
 //! \endcode
 //!
 //! Like \ref factory "factories", creating a top level application window
-//! uses an initializer lambda to populate its contents. The initializer
+//! uses a creator lambda to populate its contents. The creator
 //! lambda's parameter is the new main window.
+//!
+//! Main windows inherit from \ref generic_window "generic windows".
 
 typedef ref<main_windowObj, main_windowBase> main_window;
 

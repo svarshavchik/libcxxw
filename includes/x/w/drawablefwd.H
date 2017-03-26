@@ -35,6 +35,32 @@ class drawableObj;
 //! \endcode
 //!
 //! Create a \ref picture "picture object" for this drawable.
+//!
+//! \code
+//! auto p=drawable->create_pixmap(100, 100);
+//! \endcode
+//!
+//! Create a pixmap, with the same bit depth as the drawable. An optional
+//! third parameter specifies a different \ref pictformat "pictformat"
+//! for the new pixmap.
+//!
+//! The optional third parameter may also be a \c depth_t, which picks
+//! an alpha-channel only pictformat with the given bit depth. This parameter
+//! can only be 1, 4, or 8.
+//!
+//! \code
+//! INSERT_LIBX_NAMESPACE::w::dim_t width=drawable->get_width();
+//! INSERT_LIBX_NAMESPACE::w::dim_t height=drawable->get_height();
+//! \endcode
+//!
+//! Returns this drawable's size.
+//!
+//! \code
+//! INSERT_LIBX_NAMESPACE::w::gc gc=drawable->create_gc();
+//! \endcode
+//!
+//! Creates a new X protocol GraphicContext object for this drawable. This
+//! is mostly for internal use.
 
 typedef ref<drawableObj> drawable;
 

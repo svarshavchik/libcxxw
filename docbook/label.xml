@@ -1,0 +1,79 @@
+<!--
+
+Copyright 2017 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<chapter id="labels">
+  <title>Label display elements</title>
+
+  <blockquote>
+    <informalexample>
+      <programlisting>
+#include &lt;x/w/label.H&gt;
+
+&ns;::w::label s=factory-&gt;create_label({"Hello world"});
+      </programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    <methodname>create_label</methodname>() creates a simple display
+    element, a
+    <ulink url="&link-typedef-x--w-label;"><classname>&ns;::w::label</classname></ulink>,
+    that displays text. The first parameter to
+    <methodname>create_label</methodname>() is a
+    <ulink url="&link-x--w--text-param;"><classname>&ns;::w::text_param</classname></ulink>
+    object, which gives the label's text, and colors.
+    Labels use a default font and color, if not specified in the
+    <classname>&ns;::w::text_param</classname>.
+  </para>
+
+  <para>
+    <quote><literal>\n</literal></quote> characters in the text string
+    create labels with multiple lines. An optional second parameter
+    controls the alignment of multiple lines of text:
+  </para>
+  <variablelist>
+    <varlistentry>
+      <term><literal>&ns;::w::halign::left</literal> (default)</term>
+      <listitem>
+	<para>
+	  Display the lines normally, left-aligned.
+	</para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term><literal>&ns;::w::halign::center</literal></term>
+      <listitem>
+	<para>
+	  Center all the lines.
+	</para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term><literal>&ns;::w::halign::right</literal></term>
+      <listitem>
+	<para>
+	  Align all lines against their right margin.
+	</para>
+      </listitem>
+    </varlistentry>
+  </variablelist>
+
+  <para>
+    Sometimes it's desirable to explicitly set the alignment even for labels
+    with just a single line of text. Normally display elements get
+    automatically sized for their content. It's possible that a
+    <link linkend="containercreator">container</link> adjusts the label to
+    a wider size that it needs, due to other elements in the container, and
+    the alignment setting will then govern how the text gets padded.
+  </para>
+</chapter>
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "book" "chapter")
+End:
+-->

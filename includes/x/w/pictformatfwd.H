@@ -13,7 +13,10 @@ LIBCXXW_NAMESPACE_START
 
 class pictformatObj;
 
-//! Available picture formats on the server
+//! Available picture formats on the server.
+
+//! X protocol RENDER parameter, specifying the RENDER format of
+//! \ref picture "pictures". See RENDER documentation for more information.
 
 typedef ref<pictformatObj> pictformat;
 
