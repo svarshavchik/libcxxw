@@ -127,10 +127,9 @@ class LIBCXX_HIDDEN straight_border_implObj
 // Straight border object already took care of filling in the background
 // color.
 
-			grid_elementptr dummy;
-
 			((*b_impl).*do_draw_horizvert)
-				(di, dummy, dummy);
+				(di, borders(IN_THREAD).element_1,
+				 borders(IN_THREAD).element_2);
 		}
 	}
 
