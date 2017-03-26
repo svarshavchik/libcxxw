@@ -273,7 +273,7 @@ straight_border straight_borderBase
 			 (element_onright.null()
 			  ? current_border_implptr()
 			  : current_border_implptr
-			  (element_onright->bottom_border)),
+			  (element_onright->left_border)),
 
 			 default_border);
 
@@ -301,10 +301,10 @@ straight_border straight_borderBase
 		// We also want to compare the actual borders, they must be
 		// the same.
 		if ((element_above.null() ||
-		     element_above->bottom_border == b.element_1->bottom_border)
+		     element_above->bottom_border == b.border_1)
 		    &&
 		    (element_below.null() ||
-		     element_below->bottom_border == b.element_2->bottom_border)
+		     element_below->top_border == b.border_2)
 		    )
 			return existing_border;
 	}
@@ -330,12 +330,10 @@ straight_border straight_borderBase
 		// We also want to compare the actual borders, they must be
 		// the same.
 		if ((element_onleft.null() ||
-		     element_onleft->bottom_border ==
-		     b.element_1->bottom_border)
+		     element_onleft->right_border == b.border_1)
 		    &&
 		    (element_onright.null() ||
-		     element_onright->bottom_border ==
-		     b.element_2->bottom_border)
+		     element_onright->left_border == b.border_2)
 		    )
 		return existing_border;
 	}
