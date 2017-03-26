@@ -16,6 +16,10 @@
 
 LIBCXXW_NAMESPACE_START
 
+// #define PROCESS_UPDATED_POSITION_DEBUG
+
+// #define STRAIGHT_BORDERS_DEBUG
+
 size_t gridlayoutmanagerObj::implObj::elementsObj::border_map_hash
 ::operator()(const std::tuple<metrics::grid_xy, metrics::grid_xy> &xy) const
 {
@@ -142,9 +146,18 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(IN_THREAD_ONLY)
 
 	//! Clear the existing straight borders
 
+#ifdef STRAIGHT_BORDERS_DEBUG
+	std::cout << "*** START STRAIGHT BORDER DEBUG: "
+		  << &*ge << std::endl;
+#endif
 	for (auto &sb:ge->straight_borders)
+	{
+#ifdef STRAIGHT_BORDERS_DEBUG
+		std::cout << "*** STRAIGHT BORDER: EXISTING BORDER: "
+			  << &*((element)sb.second.border)->impl << std::endl;
+#endif
 		sb.second.is_current=false;
-
+	}
 	// Clear the existing corner borders
 	//
 	// Clear both is_new and is_updated. get_corner_border() will set
@@ -368,6 +381,11 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(IN_THREAD_ONLY)
 	{
 		if (!b->second.is_current)
 		{
+#ifdef STRAIGHT_BORDERS_DEBUG
+			std::cout << "*** STRAIGHT BORDER: REMOVE "
+				  << &*((element)b->second.border)->impl << std::endl;
+			std::cout << "         " << &*b->second.border << std::endl;
+#endif
 			b=ge->straight_borders.erase(b);
 			continue;
 		}
@@ -461,6 +479,13 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(IN_THREAD_ONLY)
 							     (IN_THREAD)),
 					  no_padding,
 					  b.second.border);
+
+#ifdef STRAIGHT_BORDERS_DEBUG
+		std::cout << "*** STRAIGHT BORDER: FINAL: "
+			  << &*((element)b.second.border)->impl << std::endl;
+		std::cout << "         " << &*b.second.border << std::endl;
+#endif
+
 	}
 
 	for (const auto &b:ge->corner_borders)
@@ -528,6 +553,9 @@ straight_border gridlayoutmanagerObj::implObj::elementsObj
 			bool orig_visibility=iter->second.border
 				->impl->data(IN_THREAD).requested_visibility;
 
+#ifdef STRAIGHT_BORDERS_DEBUG
+			auto orig_border=iter->second.border;
+#endif
 			iter->second.border=
 				update(IN_THREAD,
 				       iter->second.border,
@@ -538,8 +566,20 @@ straight_border gridlayoutmanagerObj::implObj::elementsObj
 			iter->second.border->impl->request_visibility
 				(IN_THREAD, orig_visibility);
 			iter->second.is_current=true;
+
+#ifdef STRAIGHT_BORDERS_DEBUG
+			std::cout << "*** STRAIGHT BORDER: RECYCLE "
+				  << &*((element)orig_border)->impl
+				  << " -> "
+				  << &*((element)iter->second.border)->impl << std::endl;
+#endif
+
 			return iter->second.border;
 		}
+#ifdef STRAIGHT_BORDERS_DEBUG
+		std::cout << "*** STRAIGHT BORDER: REMOVE "
+			  << &*((element)iter->second.border)->impl << std::endl;
+#endif
 		straight_borders.erase(iter);
 	}
 
@@ -559,6 +599,10 @@ straight_border gridlayoutmanagerObj::implObj::elementsObj
 	pos->vert_pos.end=yend;
 
 	straight_borders.insert({xy, {new_border, pos, true}});
+#ifdef STRAIGHT_BORDERS_DEBUG
+	std::cout << "*** STRAIGHT BORDER: CREATE "
+		  << &*((element)new_border)->impl << std::endl;
+#endif
 	return new_border;
 }
 
@@ -707,7 +751,6 @@ bool gridlayoutmanagerObj::implObj::elementsObj
 	return flag;
 }
 
-
 void gridlayoutmanagerObj::implObj
 ::process_updated_position(IN_THREAD_ONLY,
 			   const rectangle &position)
@@ -721,6 +764,13 @@ void gridlayoutmanagerObj::implObj
 	// element might need to be reposition within its cells, by the
 	// code below.
 	elements.recalculate_sizes(position.width, position.height);
+
+#ifdef PROCESS_UPDATED_POSITION_DEBUG
+
+	rectangle_set total_set;
+
+	std::cout << "----" << std::endl;
+#endif
 
 	for (const auto &child:elements.all_elements)
 	{
@@ -821,7 +871,31 @@ void gridlayoutmanagerObj::implObj
 
 		element->impl->update_current_position(IN_THREAD,
 						       element_position);
+
+#ifdef PROCESS_UPDATED_POSITION_DEBUG
+		if (element_position.width > 0 && element_position.height > 0)
+		{
+			rectangle_set check_overlap=intersect(total_set, {
+					element_position
+					});
+
+			if (!check_overlap.empty())
+				abort();
+
+			total_set=add(total_set, { element_position });
+			std::cout << "RECT: " << element_position
+				  << " ("
+				  << element->impl->objname()
+				  << " "
+				  << &*element->impl
+				  << ")"
+				  << std::endl;
+		}
+#endif
 	}
+#ifdef PROCESS_UPDATED_POSITION_DEBUG
+	std::cout << "SET: " << total_set.size() << std::endl;
+#endif
 }
 
 rectangle gridlayoutmanagerObj::implObj
