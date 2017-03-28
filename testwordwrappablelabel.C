@@ -48,7 +48,9 @@ static void initialize_label(const LIBCXX_NAMESPACE::w::factory &factory)
 		({
 			"label_title"_theme_font,
 			 blue,
+			"underline"_decoration,
 			"Lorem ipsum\n",
+			"no"_decoration,
 			"label"_theme_font,
 			black,
 			"dolor sit amet, consectetur adipisicing elit, "

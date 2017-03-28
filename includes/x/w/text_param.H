@@ -19,6 +19,13 @@
 
 LIBCXXW_NAMESPACE_START
 
+//! Optional text decorations for \ref text_param "text parameters".
+
+enum class text_decoration {
+	none=0,
+	underline=1,
+};
+
 //! A text parameter for a new display element.
 
 /*!
@@ -197,6 +204,29 @@ Both the foreground and background color apply to all subsequent strings
 passed to the constructor or the \c () operator, until the next color
 specification, if there is one.
 
+\par Text decorations
+
+\code
+p(INSERT_LIBX_NAMESPACE::w::text_decoration::underline);
+\endcode
+
+All following text gets underlined until the next \c none decoration.
+
+\code
+p(INSERT_LIBX_NAMESPACE::w::text_decoration::none);
+\endcode
+
+Alternatively:
+
+\code
+#include <INSERT_LIBX_NAMESPACE/w/text_param_literals.H>
+
+p("underline"_decoration,
+  "Hello"
+  "none"_decoration,
+   " world!");
+\endcode
+
 */
 
 class text_param {
@@ -244,12 +274,21 @@ public:
 	//!
 	//! Do not touch, use \c operator() exclusively.
 	std::unordered_map<size_t, std::string> theme_colors;
+
 	//! Colors for the text string being built.
 
 	//! \internal
 	//!
 	//! Do not touch, use \c operator() exclusively.
 	std::unordered_map<size_t, std::string> theme_background_colors;
+
+	//! Decorations for the text string being built.
+
+	//! \internal
+	//!
+	//! Do not touch, use \c operator() exclusively.
+
+	std::unordered_map<size_t, text_decoration> decorations;
 
 	//! Default constructor
 	text_param();
@@ -299,6 +338,9 @@ public:
 
 	//! Use this color for all text going forward.
 	text_param &operator()(const theme_color &);
+
+	//! Use this decoration for all text going forward.
+	text_param &operator()(const text_decoration);
 
 	//! Variadic list of parameters to the \c () operator.
 
