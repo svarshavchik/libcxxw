@@ -7,6 +7,7 @@
 #include "screen.H"
 #include "messages.H"
 #include "element.H"
+#include "element_screen.H"
 #include "background_color.H"
 #include "x/w/text_param.H"
 #include "x/w/text_param_literals.H"

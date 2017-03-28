@@ -77,6 +77,12 @@ public:
 
 	void set_background_color(const const_picture &background_color);
 
+	//! Create a solid color fill picture object.
+
+	//! To be used as a background. Forwarded to the screen object.
+
+	const_picture create_solid_color_picture(const rgb &color) const;
+
 	//! Remove this display element's custom background color.
 
 	void remove_background_color();

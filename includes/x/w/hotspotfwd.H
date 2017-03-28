@@ -18,7 +18,7 @@ class hotspotObj;
 
 typedef std::function<void ()> hotspot_callback_t;
 
-//! A display element that can be activated.
+//! \anchor hotspot A display element that can be activated.
 
 //! A display element that can be activated, in some way, with a pointer
 //! button or ENTER or SPACE.
@@ -44,25 +44,19 @@ typedef std::function<void ()> hotspot_callback_t;
 
 typedef ref<hotspotObj> hotspot;
 
-//! A nullable pointer reference to an activatable display element.
-
-//! \see hotspot
+//! A nullable pointer reference to an \ref hotspot "activatable display element".
 
 typedef ptr<hotspotObj> hotspotptr;
 
-//! A reference to a constant activatable display element.
-
-//! \see hotspot
+//! A reference to a constant \ref hotspot "activatable display element".
 
 typedef const_ref<hotspotObj> const_hotspot;
 
-//! A nullable pointer reference to a constant activatable display element.
-
-//! \see hotspot
+//! A nullable pointer reference to a constant \ref hotspot "activatable display element".
 
 typedef const_ptr<hotspotObj> const_hotspotptr;
 
-//! Current temperature of a \ref hotspot "hot spot".
+//! Current temperature of an \ref hotspot "activatable display element".
 
 enum class temperature {
 

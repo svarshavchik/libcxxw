@@ -83,6 +83,11 @@ void elementObj::remove_background_color()
 	impl->remove_background_color();
 }
 
+const_picture elementObj::create_solid_color_picture(const rgb &color) const
+{
+	return impl->get_screen()->create_solid_color_picture(color);
+}
+
 ref<obj> elementObj::do_on_state_update(const element_state_update_handler_t &h)
 {
 	return impl->do_on_state_update(h);

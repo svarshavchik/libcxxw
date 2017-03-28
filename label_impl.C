@@ -113,6 +113,9 @@ void labelObj::implObj::process_updated_position(IN_THREAD_ONLY)
 {
 	child_elementObj::process_updated_position(IN_THREAD);
 
+	if (word_wrap_widthmm(IN_THREAD) == 0)
+		return; // Not word wrapping.
+
 	// If the width matches the rich text's current position, nothing
 	// must've changed.
 

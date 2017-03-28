@@ -26,9 +26,8 @@ enum class text_decoration {
 	underline=1,
 };
 
-//! A text parameter for a new display element.
+/*! \brief \anchor text_param A text parameter for a new display element.
 
-/*!
 This parameter specifies a text string when creating
 a new display element using the \ref factory "element factory"; such
 as create_label(), for example.
