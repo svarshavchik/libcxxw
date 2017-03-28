@@ -80,6 +80,16 @@ struct rectangle {
 
 		return true; // No other possibilities.
 	}
+
+	//! Whether the given X coordinate is inside the rectangle.
+
+	constexpr bool overlaps(coord_t x, coord_t y) const
+	{
+		return x >= this->x &&
+			y >= this->y &&
+			x < coord_t::truncate(this->x+width) &&
+			y < coord_t::truncate(this->y+height);
+	}
 };
 
 //! A hash for rectangle structures.

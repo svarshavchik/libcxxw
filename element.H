@@ -11,6 +11,7 @@
 #include "x/w/element_state.H"
 #include "x/w/pictformatfwd.H"
 #include "x/w/scratch_bufferfwd.H"
+#include "x/w/input_mask.H"
 #include "connection_threadfwd.H"
 #include "elementfwd.H"
 #include "element_draw.H"
@@ -717,22 +718,64 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 	virtual bool process_key_event(IN_THREAD_ONLY, char32_t unicode,
 				       uint32_t keysym, bool keypress);
+
+	//! Here come the buttons.
+
+	//! Returns true or false, indicating when the button press or
+	//! release was consumed.
+	//!
+	//! The default implementation always returns false.
+
+	virtual bool process_button_event(IN_THREAD_ONLY,
+					  int button,
+					  bool press,
+					  const input_mask &mask);
+
+	//! Invoke the pointer_focus() virtual function.
+
+	inline void report_pointer_focus(IN_THREAD_ONLY,
+					  focus_change event,
+					  const ref<implObj> &ptr)
+	{
+		pointer_focus(IN_THREAD, event, ptr);
+	}
+
+	//! The result of all this is a bunch of calls to pointer_focus().
+
+	//! The default implementation does nothing.
+
+	virtual void pointer_focus(IN_THREAD_ONLY,
+				   focus_change event,
+				   const ref<implObj> &ptr);
+
  private:
 
 	//! The most recent keyboard_focus() reported
 	focus_change most_recent_keyboard_focus_change_thread_only=focus_change::lost;
 
+	//! The most recent pointer_focus() reported
+	focus_change most_recent_pointer_focus_change_thread_only=focus_change::lost;
+
  public:
 
 	THREAD_DATA_ONLY(most_recent_keyboard_focus_change);
+	THREAD_DATA_ONLY(most_recent_pointer_focus_change);
 
-	//! Whether this display element currently has input focus.
+	//! Whether this display element currently has keyboard input focus.
 
 	//! Returns true if most_recent_keyboard_focus_change was one of:
 	//! focus_gained, child_gained, child_moved_to, gained_from_child,
 	//! lost_to_child.
 
 	bool current_keyboard_focus(IN_THREAD_ONLY);
+
+	//! Whether this display element currently has pointer input focus.
+
+	//! Returns true if most_recent_pointer_focus_change was one of:
+	//! focus_gained, child_gained, child_moved_to, gained_from_child,
+	//! lost_to_child.
+
+	bool current_pointer_focus(IN_THREAD_ONLY);
 };
 
 LIBCXXW_NAMESPACE_END

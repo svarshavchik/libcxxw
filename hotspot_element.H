@@ -16,7 +16,7 @@ LIBCXXW_NAMESPACE_START
 template<typename element_impl>
 hotspot_elementObj<element_impl>::~hotspot_elementObj()=default;
 
-//! Implement get_hotspot_element() for hotspotImplObj.
+//! Implement get_hotspot_element() for hotspotObj::implObj.
 
 template<typename element_impl>
 child_elementObj &hotspot_elementObj<element_impl>::get_hotspot_element()
@@ -24,11 +24,27 @@ child_elementObj &hotspot_elementObj<element_impl>::get_hotspot_element()
 	return *this;
 }
 
-//! Implement get_hotspot_element() for hotspotImplObj.
+//! Implement get_hotspot_element() for hotspotObj::implObj.
 
 template<typename element_impl>
-const child_elementObj &hotspot_elementObj<element_impl>
-::get_hotspot_element() const
+const child_elementObj &hotspot_elementObj<element_impl>::get_hotspot_element()
+	const
+{
+	return *this;
+}
+
+//! Implement get_hotspot_focusable() for hotspotObj::implObj.
+
+template<typename element_impl>
+focusableImplObj &hotspot_elementObj<element_impl>
+::get_hotspot_focusable()
+{
+	return *this;
+}
+
+template<typename element_impl>
+const focusableImplObj &hotspot_elementObj<element_impl>
+::get_hotspot_focusable() const
 {
 	return *this;
 }
@@ -47,6 +63,20 @@ void hotspot_elementObj<element_impl>::keyboard_focus(IN_THREAD_ONLY,
 	hotspotObj::implObj::keyboard_focus(IN_THREAD, event, ptr);
 }
 
+//! Implement pointer_focus(), inherited from elementObj::implObj
+
+//! Forward it hotspotObj::implObj.
+
+template<typename element_impl>
+void hotspot_elementObj<element_impl>::pointer_focus(IN_THREAD_ONLY,
+						     focus_change event,
+						     const ref<elementObj::implObj> &ptr)
+{
+	focusable_elementObj<element_impl>::pointer_focus(IN_THREAD, event,
+							   ptr);
+	hotspotObj::implObj::pointer_focus(IN_THREAD, event, ptr);
+}
+
 //! Implement process_key_event(), inherited from elementObj::implObj
 
 //! Handle SPACE and ENTER ourselves, punt for everything else.
@@ -62,6 +92,27 @@ bool hotspot_elementObj<element_impl>
 		focusable_elementObj<element_impl>
 		::process_key_event(IN_THREAD, unicode,
 				    keysym, keypress);
+}
+
+//! Implement process_button_event(), inherited from elementObj::implObj
+
+//! Button 1 press requests input focus.
+
+template<typename element_impl>
+bool hotspot_elementObj<element_impl>
+::process_button_event(IN_THREAD_ONLY,
+		       int button,
+		       bool press,
+		       const input_mask &mask)
+{
+	auto ret=focusable_elementObj<element_impl>
+		::process_button_event(IN_THREAD, button, press, mask);
+
+	if (hotspotObj::implObj::process_button_event(IN_THREAD, button, press,
+						      mask))
+		ret=true;
+
+	return ret;
 }
 
 LIBCXXW_NAMESPACE_END

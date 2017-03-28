@@ -37,6 +37,12 @@ void connection_threadObj::run_event(IN_THREAD_ONLY,
 #define DISPATCH_HANDLER(callback, msg)		\
 	iter->second->callback msg
 
+	// Any message other than motion_notify means that we should flush out
+	// any motion_notifys that were buffered.
+
+	if ((event->response_type & ~0x80) != XCB_MOTION_NOTIFY)
+		process_buffered_motion_event(IN_THREAD);
+
 	switch (event->response_type & ~0x80) {
 	case 0:
 		{
@@ -71,6 +77,64 @@ void connection_threadObj::run_event(IN_THREAD_ONLY,
 					 (IN_THREAD,
 					  msg,
 					  event->full_sequence >> 16));
+		}
+		return;
+	case XCB_BUTTON_PRESS:
+		{
+			GET_MSG(button_press_event);
+
+			timestamp=msg->time;
+
+			FIND_HANDLER(event);
+
+			DISPATCH_HANDLER(button_press_event,(IN_THREAD, msg));
+		}
+		return;
+	case XCB_BUTTON_RELEASE:
+		{
+			GET_MSG(button_release_event);
+
+			timestamp=msg->time;
+
+			FIND_HANDLER(event);
+
+			DISPATCH_HANDLER(button_release_event,(IN_THREAD, msg));
+		}
+		return;
+	case XCB_MOTION_NOTIFY:
+		{
+			GET_MSG(motion_notify_event);
+
+			timestamp=msg->time;
+
+			// We'll buffer this, and not take any action for now.
+			// But first, see if there's already a buffered
+			// motion_notify event that needs to see the light of
+			// day.
+
+			if (motion_event_is_buffered &&
+			    buffered_motion_event.event != msg->event)
+				process_buffered_motion_event(IN_THREAD);
+			motion_event_is_buffered=true;
+			buffered_motion_event=*msg;
+		}
+		return;
+	case XCB_ENTER_NOTIFY:
+		{
+			GET_MSG(enter_notify_event);
+
+			timestamp=msg->time;
+			FIND_HANDLER(event);
+			DISPATCH_HANDLER(enter_notify_event, (IN_THREAD, msg));
+		}
+		return;
+	case XCB_LEAVE_NOTIFY:
+		{
+			GET_MSG(leave_notify_event);
+
+			timestamp=msg->time;
+			FIND_HANDLER(event);
+			DISPATCH_HANDLER(leave_notify_event, (IN_THREAD, msg));
 		}
 		return;
 	case XCB_DESTROY_NOTIFY:
@@ -159,6 +223,23 @@ void connection_threadObj::run_event(IN_THREAD_ONLY,
 		}
 		return;
 	};
+}
+
+bool connection_threadObj::process_buffered_motion_event(IN_THREAD_ONLY)
+{
+	if (!motion_event_is_buffered)
+		return false;
+
+	// Actually process the motion event. For real, this time.
+
+	motion_event_is_buffered=false;
+	auto msg= &buffered_motion_event;
+
+	auto iter=window_handlers_thread_only->find(msg->event);
+	if (iter == window_handlers_thread_only->end()) return false;
+
+	iter->second->pointer_motion_event(IN_THREAD, msg);
+	return true;
 }
 
 void connection_threadObj::recycle_xid(uint32_t xid)

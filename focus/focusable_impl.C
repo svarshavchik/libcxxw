@@ -159,10 +159,28 @@ void focusableImplObj::remove_focus(IN_THREAD_ONLY)
 
 	// See element_focusable.C
 
-	get_focusable_element().requested_focus_from(IN_THREAD);
-	get_focusable_element().leaving_focus(IN_THREAD, ptr<elementObj::implObj>(),
-				    &elementObj::implObj
-				    ::report_keyboard_focus);
+	get_focusable_element().lose_focus(IN_THREAD,
+					   &elementObj::implObj
+					   ::report_keyboard_focus);
+}
+
+void focusableImplObj::set_focus(IN_THREAD_ONLY)
+{
+	auto &e=get_focusable_element();
+	auto &h=e.get_window_handler();
+
+	auto current_focus=h.current_focus(IN_THREAD);
+
+	if (!current_focus.null())
+	{
+		current_focus->switch_focus(IN_THREAD, focusable_impl(this));
+		return;
+	}
+
+	h.current_focus(IN_THREAD)=focusable_impl(this);
+	e.request_focus(IN_THREAD,
+			ptr<elementObj::implObj>(),
+			&elementObj::implObj::report_keyboard_focus);
 }
 
 void focusableImplObj::switch_focus(IN_THREAD_ONLY,

@@ -99,6 +99,23 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 	virtual void key_release_event(IN_THREAD_ONLY,
 				       const xcb_key_release_event_t *event,
 				       uint16_t sequencehi);
+	//! Button press event
+	virtual void button_press_event(IN_THREAD_ONLY,
+					const xcb_button_press_event_t *event);
+
+	//! Button release event
+	virtual void button_release_event(IN_THREAD_ONLY,
+					  const xcb_button_release_event_t *event);
+	//! Pointer motion event.
+	virtual void pointer_motion_event(IN_THREAD_ONLY,
+					  const xcb_motion_notify_event_t *);
+	//! Enter event.
+	virtual void enter_notify_event(IN_THREAD_ONLY,
+					const xcb_enter_notify_event_t *);
+	//! Leave event.
+	virtual void leave_notify_event(IN_THREAD_ONLY,
+					const xcb_enter_notify_event_t *);
+
 };
 
 LIBCXXW_NAMESPACE_END

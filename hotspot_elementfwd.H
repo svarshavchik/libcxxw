@@ -7,6 +7,7 @@
 
 #include "hotspot.H"
 #include "x/w/elementobj.H"
+#include "x/w/input_mask.H"
 #include "focus/focus.H"
 #include "focus/focusable_elementfwd.H"
 
@@ -36,12 +37,24 @@ class LIBCXX_HIDDEN hotspot_elementObj
 
 	const child_elementObj &get_hotspot_element() const override;
 
+	focusableImplObj &get_hotspot_focusable() override;
+
+	const focusableImplObj &get_hotspot_focusable() const override;
+
 	void keyboard_focus(IN_THREAD_ONLY,
 			    focus_change event,
 			    const ref<elementObj::implObj> &ptr) override;
 
+	void pointer_focus(IN_THREAD_ONLY,
+			   focus_change event,
+			   const ref<elementObj::implObj> &ptr) override;
+
 	bool process_key_event(IN_THREAD_ONLY, char32_t unicode,
 			       uint32_t keysym, bool keypress) override;
+	bool process_button_event(IN_THREAD_ONLY,
+				  int button,
+				  bool press,
+				  const input_mask &mask) override;
 };
 
 

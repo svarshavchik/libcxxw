@@ -96,10 +96,13 @@ class LIBCXX_HIDDEN focusableImplObj : virtual public obj {
 	//! Advance input focus to the previous focusable field.
 	void prev_focus(IN_THREAD_ONLY);
 
- private:
-
 	//! Called to remove input focus completely, no other focusable fields.
 	void remove_focus(IN_THREAD_ONLY);
+
+	//! Set focus to this focusable element.
+	void set_focus(IN_THREAD_ONLY);
+
+ private:
 
 	//! Called to move input focus to another focusable field.
 	void switch_focus(IN_THREAD_ONLY, const focusable_impl &focus_to);

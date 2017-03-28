@@ -198,4 +198,21 @@ bool child_elementObj::process_key_event(IN_THREAD_ONLY, char32_t unicode,
 		.process_key_event(IN_THREAD, unicode, keysym, keypress);
 }
 
+bool child_elementObj::process_button_event(IN_THREAD_ONLY,
+					    int button,
+					    bool press,
+					    const input_mask &mask)
+{
+	auto ret=elementObj::implObj::process_button_event(IN_THREAD,
+							   button,
+							   press,
+							   mask);
+
+	if (container->get_element_impl()
+	    .process_button_event(IN_THREAD, button, press, mask))
+		ret=true;
+
+	return ret;
+}
+
 LIBCXXW_NAMESPACE_END

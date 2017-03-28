@@ -27,6 +27,18 @@ void hotspotObj::implObj::keyboard_focus(IN_THREAD_ONLY,
 					 focus_change event,
 					 const ref<elementObj::implObj> &ptr)
 {
+	if (!get_hotspot_element().current_keyboard_focus(IN_THREAD))
+		is_key_down=false;
+	update(IN_THREAD);
+}
+
+void hotspotObj::implObj::pointer_focus(IN_THREAD_ONLY,
+					focus_change event,
+					const ref<elementObj::implObj> &ptr)
+{
+	if (!get_hotspot_element().current_pointer_focus(IN_THREAD))
+		is_button1_down=false;
+
 	update(IN_THREAD);
 }
 
@@ -47,16 +59,41 @@ bool hotspotObj::implObj::process_key_event(IN_THREAD_ONLY, char32_t unicode,
 	return false;
 }
 
+bool hotspotObj::implObj::process_button_event(IN_THREAD_ONLY,
+					       int button,
+					       bool press,
+					       const input_mask &mask)
+{
+	if (button == 1)
+	{
+		if (is_button1_down == press)
+			return true; // Could be due to enter/leave. Ignore.
+
+		is_button1_down=press;
+		update(IN_THREAD);
+
+		if (press)
+			get_hotspot_focusable().set_focus(IN_THREAD);
+		else
+			activated(IN_THREAD);
+		return true;
+	}
+
+	return false;
+}
+
 void hotspotObj::implObj::update(IN_THREAD_ONLY)
 {
 	temperature new_temperature=temperature::cold;
 
-	if (get_hotspot_element().current_keyboard_focus(IN_THREAD))
-		new_temperature=temperature::warm;
-	else
-		is_key_down=false; // No focus, no key.
+	auto &e=get_hotspot_element();
 
-	if (new_temperature == temperature::warm && is_key_down)
+	if (e.current_keyboard_focus(IN_THREAD) ||
+	    e.current_pointer_focus(IN_THREAD))
+		new_temperature=temperature::warm;
+
+	if (new_temperature == temperature::warm &&
+	    (is_key_down || is_button1_down))
 		new_temperature=temperature::hot;
 
 	if (new_temperature == hotspot_temperature(IN_THREAD))

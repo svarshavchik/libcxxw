@@ -226,6 +226,18 @@ class LIBCXX_HIDDEN connection_threadObj
 	//! Return a batch_queue object, for batching jobs for the thread.
 
 	batch_queue get_batch_queue();
+
+
+ private:
+	//! Whether a MOTION_NOTIFY_EVENT has been buffered;
+	bool motion_event_is_buffered=false;
+
+	//! The buffered motion event
+	xcb_motion_notify_event_t buffered_motion_event;
+
+	//! We try to buffer up MOTION_EVENTs until they stop coming.
+
+	bool process_buffered_motion_event(IN_THREAD_ONLY);
 };
 
 #define connection_thread_included

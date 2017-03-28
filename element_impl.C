@@ -67,6 +67,9 @@ elementObj::implObj::~implObj()=default;
 
 void elementObj::implObj::removed_from_container(IN_THREAD_ONLY)
 {
+	if (data(IN_THREAD).removed)
+		return;
+
 	data(IN_THREAD).removed=true;
 	for_each_child(IN_THREAD,
 		       [&]
@@ -768,6 +771,13 @@ void elementObj::implObj::keyboard_focus(IN_THREAD_ONLY,
 	most_recent_keyboard_focus_change(IN_THREAD)=event;
 }
 
+void elementObj::implObj::pointer_focus(IN_THREAD_ONLY,
+					 focus_change event,
+					 const ref<implObj> &ptr)
+{
+	most_recent_pointer_focus_change(IN_THREAD)=event;
+}
+
 bool elementObj::implObj::current_keyboard_focus(IN_THREAD_ONLY)
 {
 	switch (most_recent_keyboard_focus_change(IN_THREAD)) {
@@ -780,8 +790,28 @@ bool elementObj::implObj::current_keyboard_focus(IN_THREAD_ONLY)
 	return false;
 }
 
+bool elementObj::implObj::current_pointer_focus(IN_THREAD_ONLY)
+{
+	switch (most_recent_pointer_focus_change(IN_THREAD)) {
+	case focus_change::gained:
+	case focus_change::child_gained:
+	case focus_change::child_moved_to:
+	case focus_change::gained_from_child:
+		return true;
+	}
+	return false;
+}
+
 bool elementObj::implObj::process_key_event(IN_THREAD_ONLY, char32_t unicode,
 					    uint32_t keysym, bool keypress)
+{
+	return false;
+}
+
+bool elementObj::implObj::process_button_event(IN_THREAD_ONLY,
+					       int button,
+					       bool press,
+					       const input_mask &mask)
 {
 	return false;
 }

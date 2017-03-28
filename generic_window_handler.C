@@ -301,6 +301,45 @@ void generic_windowObj::handlerObj
 		process_key_event(IN_THREAD, unicode, keysym, keypress);
 }
 
+void generic_windowObj::handlerObj
+::button_press_event(IN_THREAD_ONLY,
+		     const xcb_button_press_event_t *event)
+{
+	button_event(IN_THREAD, event, true);
+}
+
+void generic_windowObj::handlerObj
+::button_release_event(IN_THREAD_ONLY,
+		       const xcb_button_release_event_t *event)
+{
+	button_event(IN_THREAD, event, false);
+}
+
+void generic_windowObj::handlerObj
+::button_event(IN_THREAD_ONLY,
+	       const xcb_button_release_event_t *event,
+	       bool buttonpress)
+{
+	auto &keysyms=
+		get_screen()->get_connection()->impl->keysyms_info(IN_THREAD);
+
+	input_mask mask{event->state, keysyms};
+
+	report_pointer_xy(IN_THREAD, event->event_x, event->event_y);
+
+	// report_pointer_xy() might not always set
+	// most_recent_element_with_pointer(IN_THREAD).
+
+	if (most_recent_element_with_pointer(IN_THREAD) &&
+	    !most_recent_element_with_pointer(IN_THREAD)
+	    ->process_button_event(IN_THREAD, event->detail, buttonpress, mask)
+	    && event->detail == 1 && buttonpress &&
+	    current_focus(IN_THREAD))
+	{
+		current_focus(IN_THREAD)->remove_focus(IN_THREAD);
+	}
+}
+
 void generic_windowObj::handlerObj::configure_notify(IN_THREAD_ONLY,
 						     const rectangle &r)
 {
@@ -381,6 +420,117 @@ bool generic_windowObj::handlerObj::process_key_event(IN_THREAD_ONLY,
 			}
 	}
 	return false;
+}
+
+void generic_windowObj::handlerObj
+::pointer_motion_event(IN_THREAD_ONLY,
+		       const xcb_motion_notify_event_t *event)
+{
+	report_pointer_xy(IN_THREAD, event->event_x, event->event_y);
+}
+
+void generic_windowObj::handlerObj
+::enter_notify_event(IN_THREAD_ONLY,
+		     const xcb_enter_notify_event_t *event)
+{
+	// Treat it just as any other pointer motion event
+
+	report_pointer_xy(IN_THREAD, event->event_x, event->event_y);
+}
+
+void generic_windowObj::handlerObj
+::leave_notify_event(IN_THREAD_ONLY,
+		     const xcb_leave_notify_event_t *event)
+{
+	pointer_focus_lost(IN_THREAD);
+}
+
+void generic_windowObj::handlerObj
+::report_pointer_xy(IN_THREAD_ONLY,
+			       coord_t x,
+			       coord_t y)
+{
+	// Locate the lowermost element for the given position.
+
+	ref<elementObj::implObj> e{this};
+
+	bool found;
+
+	do
+	{
+		found=false;
+
+		e->for_each_child(IN_THREAD,
+				  [&]
+				  (const auto &child_element)
+				  {
+					  auto child=child_element->impl;
+
+					  if (found)
+						  return;
+
+					  // Ignore zombies!
+
+					  if (child->data(IN_THREAD).removed)
+						  return;
+
+					  const auto &p=child->data(IN_THREAD)
+						  .current_position;
+
+					  if (!p.overlaps(x, y))
+						  return;
+
+					  found=true;
+					  e=child;
+
+					  x=coord_t::truncate(x-p.x);
+					  y=coord_t::truncate(y-p.y);
+				  });
+	} while (found);
+
+	// Even though we checked the "removed" flag, already, someday someone
+	// may win the lottery and we end up here when the top level
+	// main_window gets removed. The whole purpose of the removed flag
+	// is to avoid circular references.
+
+	if (e->data(IN_THREAD).removed)
+	{
+		pointer_focus_lost(IN_THREAD);
+		return;
+	}
+
+	if (most_recent_element_with_pointer(IN_THREAD) != e)
+	{
+		auto old=most_recent_element_with_pointer(IN_THREAD);
+		most_recent_element_with_pointer(IN_THREAD)=e;
+
+		e->request_focus(IN_THREAD, old,
+				 &elementObj::implObj::report_pointer_focus);
+	}
+}
+
+void generic_windowObj::handlerObj::removing_element(IN_THREAD_ONLY,
+						     const ref<elementObj
+						     ::implObj> &ei)
+{
+	// The container should've done this, but we'll do it just in case,
+	// too...
+	ei->removed_from_container(IN_THREAD);
+
+	if (most_recent_element_with_pointer(IN_THREAD) == ei)
+		pointer_focus_lost(IN_THREAD);
+}
+
+void generic_windowObj::handlerObj::pointer_focus_lost(IN_THREAD_ONLY)
+{
+	auto cpy=most_recent_element_with_pointer(IN_THREAD);
+
+	if (cpy.null())
+		return;
+
+	most_recent_element_with_pointer(IN_THREAD)=nullptr;
+	cpy->lose_focus(IN_THREAD,
+			&elementObj::implObj::report_pointer_focus);
 }
 
 bool generic_windowObj::handlerObj::get_frame_extents(dim_t &left,

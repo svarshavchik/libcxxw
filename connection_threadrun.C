@@ -114,6 +114,9 @@ void connection_threadObj
 				run_event(IN_THREAD, event);
 				continue;
 			}
+
+			if (process_buffered_motion_event(IN_THREAD))
+				continue;
 		}
 		if (redraw_elements(IN_THREAD))
 			// Don't bother checking draw_info_cache. It's unlikely

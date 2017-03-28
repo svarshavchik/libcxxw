@@ -70,7 +70,18 @@ class LIBCXX_HIDDEN child_elementObj : public elementObj::implObj {
 
 	//! If child_element doesn't handle it, punt it back to the parent.
 	bool process_key_event(IN_THREAD_ONLY, char32_t unicode,
-			       uint32_t keysym, bool keypress);
+			       uint32_t keysym, bool keypress) override;
+
+	//! Button events
+
+	//! All display elements, starting with the one under the pointer
+	//! and its parents, get notified of a button event. The return
+	//! value is true if anyone returned true.
+
+	bool process_button_event(IN_THREAD_ONLY,
+				  int button,
+				  bool press,
+				  const input_mask &mask) override;
 
  protected:
 

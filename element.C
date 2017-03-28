@@ -8,6 +8,7 @@
 #include "screen.H"
 #include "batch_queue.H"
 #include "background_color.H"
+#include "generic_window_handler.H"
 #include "draw_info.H"
 #include "x/w/picture.H"
 
@@ -18,7 +19,17 @@ elementObj::elementObj(const ref<implObj> &impl)
 {
 }
 
-elementObj::~elementObj()=default;
+elementObj::~elementObj()
+{
+	get_screen()->impl->thread->run_as
+		(RUN_AS,
+		 [impl=this->impl]
+		 (IN_THREAD_ONLY)
+		 {
+			 impl->get_window_handler().removing_element(IN_THREAD,
+								     impl);
+		 });
+}
 
 ref<obj> elementObj::connection_mcguffin() const
 {

@@ -80,6 +80,11 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 		return (xcb_event_mask_t)(XCB_EVENT_MASK_EXPOSURE |
 					  XCB_EVENT_MASK_KEY_PRESS |
 					  XCB_EVENT_MASK_KEY_RELEASE |
+					  XCB_EVENT_MASK_BUTTON_PRESS |
+					  XCB_EVENT_MASK_BUTTON_RELEASE |
+					  XCB_EVENT_MASK_ENTER_WINDOW |
+					  XCB_EVENT_MASK_LEAVE_WINDOW |
+					  XCB_EVENT_MASK_POINTER_MOTION |
 					  XCB_EVENT_MASK_VISIBILITY_CHANGE |
 					  XCB_EVENT_MASK_STRUCTURE_NOTIFY);
 	}
@@ -141,6 +146,53 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	bool process_key_event(IN_THREAD_ONLY, char32_t unicode,
 			       uint32_t keysym, bool keypress) override;
 
+ private:
+	//! Most recent element where the pointer motion event went to.
+
+	ptr<elementObj::implObj> most_recent_element_with_pointer_thread_only;
+
+ public:
+	THREAD_DATA_ONLY(most_recent_element_with_pointer);
+
+	//! Process pointer motion event.
+
+	void pointer_motion_event(IN_THREAD_ONLY,
+				  const xcb_motion_notify_event_t *)
+		override;
+
+	//! Enter event.
+	void enter_notify_event(IN_THREAD_ONLY,
+				const xcb_enter_notify_event_t *) override;
+
+	//! Leave event.
+	void leave_notify_event(IN_THREAD_ONLY,
+				const xcb_enter_notify_event_t *) override;
+
+ private:
+	//! Find an element for the reported pointer X and Y coordinates.
+
+	//! And if it's a different element now, report_pointer_focus()
+	//! changes, accordingly.
+
+	void report_pointer_xy(IN_THREAD_ONLY,
+			       coord_t x,
+			       coord_t y);
+ public:
+	//! An element is being removed.
+
+	//! This takes care of making sure the element is not pointed to from
+	//! most_recent_element_with_pointer.
+	void removing_element(IN_THREAD_ONLY, const ref<elementObj::implObj> &);
+ private:
+
+	//! Remove pointer reporting
+
+	//! The element with the pointer focus is being removed, or the
+	//! pointer has left the window. Report lossage of pointer focus.
+
+	void pointer_focus_lost(IN_THREAD_ONLY);
+ public:
+
 	////////////////////////////////////////////////////////////////////
 	//
 	// Inherited from window_handler
@@ -162,6 +214,13 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	void key_release_event(IN_THREAD_ONLY,
 			       const xcb_key_release_event_t *event,
 			       uint16_t sequencehi) override;
+	//! Button press event
+	void button_press_event(IN_THREAD_ONLY,
+				const xcb_button_press_event_t *event) override;
+
+	//! Button release event
+	void button_release_event(IN_THREAD_ONLY,
+				  const xcb_button_release_event_t *event) override;
  private:
 
 	//! Process a key press or release event.
@@ -169,6 +228,17 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 		       const xcb_key_release_event_t *event,
 		       uint16_t sequencehi,
 		       bool keypress);
+
+	//! Process a button press or release event.
+
+	//! Finds the display element under the pointer and invokes its
+	//! process_button_event(). If the button event does not get processed
+	//! and it is a button #1 press, the keyboard input focus gets removed
+	//! from the element that currently has the keyboard input focus.
+
+	void button_event(IN_THREAD_ONLY,
+			  const xcb_button_release_event_t *event,
+			  bool buttonpress);
  public:
 	//! Do not redraw after the window's visibility is updated.
 

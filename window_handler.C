@@ -94,4 +94,29 @@ void window_handlerObj::key_release_event(IN_THREAD_ONLY,
 {
 }
 
+void window_handlerObj::button_press_event(IN_THREAD_ONLY,
+					   const xcb_button_press_event_t *event)
+{
+}
+
+void window_handlerObj::button_release_event(IN_THREAD_ONLY,
+					     const xcb_button_release_event_t *event)
+{
+}
+
+void window_handlerObj::pointer_motion_event(IN_THREAD_ONLY,
+					     const xcb_motion_notify_event_t *)
+{
+}
+
+void window_handlerObj::enter_notify_event(IN_THREAD_ONLY,
+					     const xcb_enter_notify_event_t *)
+{
+}
+
+void window_handlerObj::leave_notify_event(IN_THREAD_ONLY,
+					   const xcb_leave_notify_event_t *)
+{
+}
+
 LIBCXXW_NAMESPACE_END
