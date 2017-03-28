@@ -309,4 +309,9 @@ void containerObj::implObj::theme_updated(IN_THREAD_ONLY)
 			     });
 }
 
+const char *containerObj::implObj::label_theme_font() const
+{
+	return "label";
+}
+
 LIBCXXW_NAMESPACE_END

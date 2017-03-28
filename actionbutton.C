@@ -28,12 +28,29 @@ typedef hotspot_bgcolor_elementObj<focusframecontainer_elementObj<
 					   <child_elementObj>>
 				   > ff_impl_t;
 
+class LIBCXX_HIDDEN actionbutton_focusframeObj : public ff_impl_t {
+
+ public:
+	using ff_impl_t::ff_impl_t;
+
+	~actionbutton_focusframeObj()=default;
+
+	// create_label() in this container will use an action_button font.
+
+	const char *label_theme_font() const override
+	{
+		return "action_button";
+	}
+};
+
 struct LIBCXX_HIDDEN actionbuttonObj::internal_construction_info {
 
 	ref<gridlayoutmanagerObj::implObj> glmi;
 
 	ref<ff_impl_t> ff_impl;
 };
+
+typedef ref<actionbutton_focusframeObj> actionbutton_focusframe;
 
 // We get:
 //
@@ -63,7 +80,7 @@ create_actionbutton_focusframe(const ref<actionbuttonObj::implObj> &impl,
 	// be populating the contents of the action button ends up populating
 	// the contents of the focusframecontainer.
 
-	auto ffi=ref<ff_impl_t>
+	auto ffi=actionbutton_focusframe
 		::create(impl->create_background_color("action_normal_color",
 						       rgb(rgb::maximum * .7,
 							   rgb::maximum * .7,

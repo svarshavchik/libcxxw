@@ -186,6 +186,14 @@ public:
  private:
 	void propagate_inherited_visibility(IN_THREAD_ONLY,
 					    inherited_visibility_info &info);
+
+ public:
+
+	//! Theme font for labels in this container.
+
+	//! The default implementation returns "label".
+
+	virtual const char *label_theme_font() const;
 };
 
 // The connection thread maintains a map of all containers that need to

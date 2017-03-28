@@ -156,6 +156,18 @@ struct font {
 
 	//! Request a specific font
 
+	//! Specifies FC_FAMILY
+
+	inline font &set_family(const std::string &arg)
+	{
+		family=arg;
+		return *this;
+	}
+
+	///////////////////////////////////////////////////////////////////////
+
+	//! Request a specific font
+
 	//! Specifies FC_STYLE
 
 	inline font &set_foundry(const std::string &arg)

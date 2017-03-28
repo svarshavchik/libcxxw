@@ -1140,6 +1140,7 @@ void defaultthemeObj::load_fonts(const xml::doc &config)
 				font &(font::*handler1)(const std::string &);
 				font &(font::*handler2)(const std::experimental::string_view &);
 			} string_values[]={
+				{ "family", &font::set_family, nullptr},
 				{ "foundry", &font::set_foundry, nullptr},
 				{ "style", &font::set_style, nullptr},
 				{ "weight", nullptr, &font::set_weight},

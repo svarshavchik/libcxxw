@@ -39,7 +39,7 @@ static inline richtext create_rich_text(const auto &container, const auto &text,
 		     rgb::maximum/10,
 		     rgb::maximum/10));
 
-	auto font=element_impl.create_theme_font("label");
+	auto font=element_impl.create_theme_font(container->label_theme_font());
 
 	auto string=element_impl.convert({ background_color, font },
 					 text);
