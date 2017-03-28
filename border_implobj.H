@@ -357,6 +357,15 @@ class LIBCXX_HIDDEN border_implObj: virtual public obj, public border_info {
 			  coord_t x2,
 			  //! Ending segment position
 			  coord_t y2) const;
+
+	//! Invert the max_pixmap.
+
+	//! After mask_segment(), XOR all the bits in the mask, flipping them.
+
+	void mask_segment_xor(const draw_info &di,
+			      dim_t line_width,
+			      coord_t x1, coord_t y1,
+			      coord_t x2, coord_t y2) const;
 };
 
 LIBCXXW_NAMESPACE_END

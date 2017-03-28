@@ -367,11 +367,18 @@ void border_implObj::draw_horizontal(const draw_info &di,
 	// Draw a horizontal line (0, ycenter)-(width, ycenter),
 	// that's "height" pixels thick.
 
+	auto x2=coord_t::truncate(x+length);
+
 	mask_segment(di, absolute_x, height,
 		     x, ycenter,
-		     coord_t::truncate(x+length), ycenter);
+		     x2, ycenter);
 
 	composite_line(di, 0);
+	if (colors.size() > 1)
+	{
+		mask_segment_xor(di, height, x, ycenter, x2, ycenter);
+		composite_line(di, 1);
+	}
 }
 
 // Same logic as draw_horizontal, but in the other direction.
@@ -401,12 +408,18 @@ void border_implObj::draw_vertical(const draw_info &di,
 	mask_gc_clear(di);
 
 	auto xcenter=compute_xcenter(di);
+	auto y2=coord_t::truncate(y+length);
 
 	mask_segment(di, absolute_y, width,
 		     xcenter, y,
-		     xcenter, coord_t::truncate(y+length));
+		     xcenter, y2);
 
 	composite_line(di, 0);
+	if (colors.size() > 1)
+	{
+		mask_segment_xor(di, width, xcenter, y, xcenter, y2);
+		composite_line(di, 1);
+	}
 }
 
 void border_implObj::draw_corner(IN_THREAD_ONLY,
@@ -915,5 +928,19 @@ void border_implObj::mask_segment(const draw_info &di,
 
 	di.mask_gc->segment(x1, y1, x2, y2, props);
 }
+
+void border_implObj::mask_segment_xor(const draw_info &di,
+				      dim_t line_width,
+				      coord_t x1, coord_t y1,
+				      coord_t x2, coord_t y2) const
+{
+	gc::base::properties props;
+
+	props.line_width((dim_t::value_type)line_width);
+	props.foreground(1);
+	props.function(gc::base::function::XOR);
+	di.mask_gc->segment(x1, y1, x2, y2, props);
+}
+
 
 LIBCXXW_NAMESPACE_END
