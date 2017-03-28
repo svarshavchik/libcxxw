@@ -41,6 +41,7 @@ suppressfile*
 /testfocusable
 /testgrid
 /testlabel
+/testwordwrappablelabel
 /testmainwindow
 /testmainwindowoptions.H
 /testrichtext

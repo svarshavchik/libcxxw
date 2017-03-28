@@ -208,5 +208,11 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
 
   <color id="label_foreground_color" scale="10%" />
 
+  <font id="label_title" from="label">
+    <scale>3</scale>
+  </font>
 
+  <font id="label_header" from="label">
+    <scale>1.3</scale>
+  </font>
 </theme>

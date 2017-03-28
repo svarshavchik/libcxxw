@@ -376,6 +376,7 @@ INTERACTIVETESTPROGRAMS=\
 	testactionbutton				\
 	testmainwindow					\
 	testlabel					\
+	testwordwrappablelabel				\
 	#
 
 noinst_PROGRAMS=$(TESTPROGRAMS) $(INTERACTIVETESTPROGRAMS) genconstants
@@ -402,6 +403,10 @@ testgrid_LDFLAGS=-static
 testlabel_SOURCES=testlabel.C
 testlabel_LDADD=libcxxw.la
 testlabel_LDFLAGS=-static $(STATICLINKFLAGS)
+
+testwordwrappablelabel_SOURCES=testwordwrappablelabel.C
+testwordwrappablelabel_LDADD=libcxxw.la
+testwordwrappablelabel_LDFLAGS=-static $(STATICLINKFLAGS)
 
 testrichtext_SOURCES=testrichtext.C
 testrichtext_LDADD=libcxxw.la

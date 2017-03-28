@@ -114,6 +114,10 @@ public:
 	//! The height of the tallest fragment in this paragraph
 	dim_t height_of_tallest_fragment=0;
 
+	//! The largest of all fragments' minimum_width.
+
+	dim_t minimum_width=0;
+
 	//! first_fragment_y_position plus height
 
 	size_t next_paragraph_y_position() const

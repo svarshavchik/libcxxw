@@ -262,6 +262,10 @@ class LIBCXX_HIDDEN screenObj::implObj
 
 	metrics::axis compute_height(const metrics::mmaxis &);
 
+	//! Compute # of millimeters from pixels.
+
+	double compute_widthmm(const current_theme_t::lock &, dim_t pixels);
+
 	//! Convert border_infomm to border_info
 	border_info convert_to_border_info(const border_infomm &mm);
 

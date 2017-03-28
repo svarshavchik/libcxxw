@@ -31,6 +31,15 @@ dim_t screenObj::implObj::compute_width(const current_theme_t::lock &lock,
 	return dim_t::value_type(scaled);
 }
 
+double screenObj::implObj::compute_widthmm(const current_theme_t::lock &lock,
+					   dim_t pixels)
+{
+	return dim_t::value_type(pixels)
+		/ (*lock)->themescale
+		* xcb_screen->width_in_millimeters
+		/ xcb_screen->width_in_pixels;
+}
+
 dim_t screenObj::implObj::compute_height(const current_theme_t::lock &lock,
 					 double millimeters)
 {

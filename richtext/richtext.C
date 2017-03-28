@@ -48,20 +48,60 @@ void richtextObj::set(IN_THREAD_ONLY, richtextstring &string)
 	(*lock)->set(IN_THREAD, string);
 }
 
-std::pair<metrics::axis, metrics::axis> richtextObj::get_metrics(IN_THREAD_ONLY)
+bool richtextObj::rewrap(IN_THREAD_ONLY,
+			 dim_t width)
 {
 	impl_t::lock lock{IN_THREAD, impl};
 
-	auto width= dim_t::truncate((*lock)->width());
-	auto height= dim_t::truncate((*lock)->height());
+	word_wrap_width(IN_THREAD)=width;
+
+	return width > 0 ? (*lock)->rewrap(IN_THREAD, width)
+		: (*lock)->unwrap(IN_THREAD);
+}
+
+std::pair<metrics::axis, metrics::axis>
+richtextObj::get_metrics(IN_THREAD_ONLY, dim_t preferred_width)
+{
+	impl_t::lock lock{IN_THREAD, impl};
+
+	dim_t width= dim_t::truncate((*lock)->width());
+	dim_t height= dim_t::truncate((*lock)->height());
 
 	if (width >= dim_t::infinite())
 		width=width-1;
 	if (height >= dim_t::infinite())
 		height=height-1;
 
+	auto min_width=width;
+	auto max_width=width;
+
+	if (word_wrap_width(IN_THREAD) > 0)
+	{
+		// This label is word-wrapped. We compute the metrics like
+		// this. Here's our minimum and maximum widths:
+		max_width=dim_t::truncate((*lock)->real_maximum_width);
+
+		if (max_width == dim_t::infinite()) // Let's not go there.
+			max_width=max_width-1;
+
+		min_width=(*lock)->minimum_width;
+
+		// And let's try to be sane.
+
+		if (min_width > max_width)
+			min_width=max_width;
+
+		width=preferred_width;
+
+		if (width < min_width)
+			width=min_width;
+
+		if (width > max_width)
+			width=max_width;
+	}
+
 	return {
-		{width, width, width},
+		{min_width, width, max_width},
 		{height, height, height}
 	};
 }

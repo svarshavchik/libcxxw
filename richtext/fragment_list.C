@@ -307,6 +307,7 @@ void fragment_list::recalculate_size(bool &width_changed,
 	paragraph.width=0;
 	paragraph.maximum_width_if_one_line=0;
 	paragraph.height_of_tallest_fragment=0;
+	paragraph.minimum_width=0;
 	paragraph.above_baseline=0;
 	paragraph.below_baseline=0;
 
@@ -315,6 +316,9 @@ void fragment_list::recalculate_size(bool &width_changed,
 
 	for (const auto &fragment:paragraph.fragments)
 	{
+		if (fragment->minimum_width > paragraph.minimum_width)
+			paragraph.minimum_width=fragment->minimum_width;
+
 		fragment->first_char_n=first_char_n;
 		fragment->y_pos=fragment_y_pos;
 

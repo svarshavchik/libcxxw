@@ -95,6 +95,7 @@ void paragraph_list::erase(size_t paragraph_number)
 
 void paragraph_list::recalculate_size()
 {
+	text.minimum_width=0;
 	text.real_width=0;
 	text.real_maximum_width=0;
 	text.height_of_tallest_fragment=0;
@@ -104,6 +105,8 @@ void paragraph_list::recalculate_size()
 
 	for (const auto &paragraph:text.paragraphs)
 	{
+		if (paragraph->minimum_width > text.minimum_width)
+			text.minimum_width=paragraph->minimum_width;
 		paragraph->first_char_n=first_char_n;
 
 		first_char_n += paragraph->num_chars;

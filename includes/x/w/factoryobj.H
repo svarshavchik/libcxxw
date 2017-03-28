@@ -75,6 +75,16 @@ public:
 	label create_label(const text_param &text,
 			   halign alignment=halign::left);
 
+	//! Create a label that word-wraps the text to the given width
+
+	//! The initial width of the label is specified in millimeters.
+	//! The label's text gets word-wrapped accordingly, and the label's
+	//! width will adjust to match the width of its column.
+
+	label create_label(const text_param &text,
+			   double widthmm,
+			   halign alignment=halign::left);
+
 	//! Create an action button with a label, and a normal border.
 	actionbutton
 	create_normal_actionbutton_with_label(const text_param &text,
