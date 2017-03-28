@@ -118,4 +118,22 @@ batch_queue connection_threadObj::get_batch_queue()
 	return new_batch_queue;
 }
 
+void connection_threadObj::allow_events(IN_THREAD_ONLY)
+{
+	for (const auto &window_handler:*window_handlers(IN_THREAD))
+	{
+		auto timestamp=
+			window_handler.second->grabbed_timestamp(IN_THREAD);
+
+		if (timestamp == XCB_CURRENT_TIME)
+			continue;
+
+		window_handler.second->grabbed_timestamp(IN_THREAD)=
+			XCB_CURRENT_TIME;
+
+		xcb_ungrab_pointer(IN_THREAD->info->conn, timestamp);
+		xcb_ungrab_keyboard(IN_THREAD->info->conn, timestamp);
+	}
+}
+
 LIBCXXW_NAMESPACE_END

@@ -126,16 +126,55 @@ void generic_windowObj::handlerObj
 ::set_inherited_visibility(IN_THREAD_ONLY,
 			   inherited_visibility_info &visibility_info)
 {
+	// We establish passive grabs for any button or keypress.
+
+	// button_press_event() and key_press_event() will take care of
+	// releasing the grabs.
+
 	if (visibility_info.flag)
 	{
 #ifdef MAP_LOG
 		MAP_LOG();
 #endif
+		xcb_grab_button(IN_THREAD->info->conn,
+				false,
+				id(),
+				current_events(IN_THREAD) &
+				(XCB_EVENT_MASK_BUTTON_PRESS |
+				 XCB_EVENT_MASK_BUTTON_RELEASE |
+				 XCB_EVENT_MASK_ENTER_WINDOW |
+				 XCB_EVENT_MASK_LEAVE_WINDOW |
+				 XCB_EVENT_MASK_POINTER_MOTION),
+				XCB_GRAB_MODE_SYNC,
+				XCB_GRAB_MODE_SYNC,
+				XCB_NONE,
+				XCB_NONE,
+			        0,
+				XCB_MOD_MASK_ANY);
+
+		xcb_grab_key(IN_THREAD->info->conn,
+			     false,
+			     id(),
+			     XCB_MOD_MASK_ANY,
+			     0,
+			     XCB_GRAB_MODE_SYNC,
+			     XCB_GRAB_MODE_SYNC);
 		xcb_map_window(IN_THREAD->info->conn, id());
 		visibility_info.do_not_redraw=true;
 	}
 	else
+	{
 		xcb_unmap_window(IN_THREAD->info->conn, id());
+		xcb_ungrab_key(IN_THREAD->info->conn,
+			       0,
+			       id(),
+			       XCB_MOD_MASK_ANY);
+
+		xcb_ungrab_button(IN_THREAD->info->conn,
+				  0,
+				  id(),
+				  XCB_MOD_MASK_ANY);
+	}
 
 	elementObj::implObj::set_inherited_visibility(IN_THREAD,
 						      visibility_info);
@@ -255,6 +294,11 @@ void generic_windowObj::handlerObj
 		  const xcb_key_press_event_t *event,
 		  uint16_t sequencehi)
 {
+	// We grab_button()ed and grab_key()ed.
+	// Make sure we'll release the grab, when the dust settles.
+
+	grabbed_timestamp(IN_THREAD)=event->time;
+
 	key_event(IN_THREAD, event, sequencehi, true);
 }
 
@@ -305,6 +349,10 @@ void generic_windowObj::handlerObj
 ::button_press_event(IN_THREAD_ONLY,
 		     const xcb_button_press_event_t *event)
 {
+	// We grab_button()ed and grab_key()ed.
+	// Make sure we'll release the grab, when the dust settles.
+
+	grabbed_timestamp(IN_THREAD)=event->time;
 	button_event(IN_THREAD, event, true);
 }
 

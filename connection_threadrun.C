@@ -129,6 +129,7 @@ void connection_threadObj
 		break;
 	}
 
+	allow_events(IN_THREAD);
 	xcb_flush(info->conn);
 
 	// Ok, no more work to do, and we were asked to politely stop.

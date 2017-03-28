@@ -29,7 +29,16 @@ LIBCXXW_NAMESPACE_START
 class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 					virtual public obj {
 
+	//! The timestamp of the most recent activated passive grab.
+
+	//! When the connection thread has nothing to do, all grabs are going
+	//! to get released.
+	xcb_timestamp_t grabbed_timestamp_thread_only=XCB_CURRENT_TIME;
+
  public:
+
+	THREAD_DATA_ONLY(grabbed_timestamp);
+
 	//! My screen
 	const screen screenref;
 

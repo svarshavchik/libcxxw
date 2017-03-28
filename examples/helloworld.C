@@ -99,9 +99,17 @@ void testlabel()
 
 	// If the connection to the display server goes away, we don't have
 	// many options...
+	//
+	// For this simple program, close_flag->close(), like the more
+	// orderly on_Delete() does, will also work.
+	//
+	// _exit() is for emergencies. Can't use exit() because the library
+	// will try to wait for the execution thread to finish, but it'll
+	// still be running (but doing nothing of importance).
+
 	main_window->on_disconnect([]
 				   {
-					   exit(1);
+					   _exit(1);
 				   });
 
 	// Retrieve the mcguffin for the underlying display connection, and

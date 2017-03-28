@@ -139,6 +139,10 @@ class LIBCXX_HIDDEN connection_threadObj
 	element_set_t *element_position_updated_thread_only;
 	bool process_element_position_updated(IN_THREAD_ONLY);
 
+	// And when there's nothing else to do, just before waiting for
+	// events, check for any established grabs, and grab them.
+	void allow_events(IN_THREAD_ONLY);
+
 	// on_disconnect() callback
 
 	std::function<void ()> disconnect_callback_thread_only;

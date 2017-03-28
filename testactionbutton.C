@@ -74,7 +74,7 @@ void testactionbutton()
 
 	main_window->on_disconnect([]
 				   {
-					   exit(1);
+					   _exit(1);
 				   });
 
 	main_window->on_delete
