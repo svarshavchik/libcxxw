@@ -108,7 +108,7 @@ draw_info &generic_windowObj::handlerObj::get_draw_info(IN_THREAD_ONLY)
 	return c.draw_info_cache.insert({e, {
 			picture_internal(this),
 			viewport,
-			viewport,
+			{viewport}, // No parent, everything is visible.
 			current_background_color(IN_THREAD)
 				->get_current_color(IN_THREAD)
 				->impl,
@@ -275,7 +275,7 @@ void generic_windowObj::handlerObj::set_background_color(IN_THREAD_ONLY,
 // Inherited from window_handler
 
 void generic_windowObj::handlerObj::exposure_event(IN_THREAD_ONLY,
-						   rectangle_set &areas)
+						   const rectangle_set &areas)
 {
 	exposure_event_recursive(IN_THREAD, areas);
 }

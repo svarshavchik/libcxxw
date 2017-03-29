@@ -33,16 +33,16 @@ struct draw_info {
 
 	//! It's possible that a display element is outside the visible
 	//! region of its parent. The calculated visibly-clipped region is
-	//! placed here. This is an empty rectangle if this display element
-	//! is completely invisible
-	rectangle element_viewport;
+	//! placed here. This is an empty set if this display element
+	//! is completely invisible.
+
+	rectangle_set element_viewport;
 
 	//! Everything is clipped.
 
 	bool no_viewport() const
 	{
-		return element_viewport.width == 0 &&
-			element_viewport.height == 0;
+		return element_viewport.empty();
 	}
 
 	//! The window's background color

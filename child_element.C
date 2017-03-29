@@ -81,31 +81,11 @@ draw_info &child_elementObj::get_draw_info(IN_THREAD_ONLY)
 	cpy.y = coord_t::truncate(cpy.y+di.absolute_location.y);
 
 	// But before we update di.absolute_location, compute the intersect
-	// between the parent's absolute_location and this element's
-	// aboslute_location.
-	//
-	// If this element lies outside of the parent's absolute location
-	// it is invisible.
+	// between the parent's viewport and this element's absolute_location,
+	// to derive this element's viewport.
 
-	rectangle_set a{di.absolute_location};
-	rectangle_set b{cpy};
-
-	auto res=intersect(a,b);
-
-	if (res.size() > 1)
-		throw EXCEPTION("Unexpected result from an intersection of two rectangles");
-
-	rectangle res_rect;
-
-	if (res.empty())
-	{
-		// std::cout << "EMPTY VIEWPORT" << std::endl;
-	}
-	else
-		res_rect=*res.begin();
-
+	di.element_viewport=intersect(di.element_viewport, {cpy});
 	di.absolute_location=cpy;
-	di.element_viewport=res_rect;
 
 	prepare_draw_info(IN_THREAD, di);
 

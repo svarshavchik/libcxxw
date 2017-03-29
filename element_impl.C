@@ -22,6 +22,8 @@ LOG_CLASS_INIT(LIBCXX_NAMESPACE::w::elementObj::implObj);
 
 LIBCXXW_NAMESPACE_START
 
+// #define DEBUG_EXPOSURE_CALCULATIONS
+
 #define THREAD get_window_handler().screenref->impl->thread
 
 elementObj::implObj::implObj(size_t nesting_level,
@@ -356,20 +358,7 @@ void elementObj::implObj
 clip_region_set::clip_region_set(IN_THREAD_ONLY,
 				  const draw_info &di)
 {
-	if (di.element_viewport.width != 0 &&
-	    di.element_viewport.height != 0)
-	{
-		// This now clips the subsequent draw operation to this
-		// display element's viewport.
-		di.window_picture
-			->set_clip_rectangle(di.element_viewport);
-	}
-	else
-	{
-		// Clip everything.
-
-		di.window_picture->set_clip_rectangles(rectangle_set());
-	}
+	di.window_picture->set_clip_rectangles(di.element_viewport);
 }
 
 void elementObj::implObj::prepare_draw_info(IN_THREAD_ONLY, draw_info &)
@@ -377,11 +366,45 @@ void elementObj::implObj::prepare_draw_info(IN_THREAD_ONLY, draw_info &)
 }
 
 void elementObj::implObj::exposure_event_recursive(IN_THREAD_ONLY,
-						   rectangle_set &areas)
+						   const rectangle_set &areas)
 {
 	auto &di=get_draw_info(IN_THREAD);
 
-	draw(IN_THREAD, di, areas);
+	// Any queued redraws are moot, now.
+	IN_THREAD->elements_to_redraw(IN_THREAD)->erase(elementimpl(this));
+
+#ifdef DEBUG_EXPOSURE_CALCULATIONS
+
+	std::cout << "Exposure: " << objname() << ": "
+		  << data(IN_THREAD).current_position << std::endl;
+
+	for (const auto &r:areas)
+		std::cout << "        " << r << std::endl;
+
+	std::cout << "    Viewport:" << std::endl;
+
+	for (const auto &r:di.element_viewport)
+		std::cout << "        " << r << std::endl;
+#endif
+	// The intersection of areas, and the calculated viewport, is what
+	// we need to draw.
+	//
+	// But draw() expects all coordinates relative to the display
+	// element, and they're absolute now. No problem.
+
+	auto draw_area=intersect(di.element_viewport, areas,
+				 -di.absolute_location.x,
+				 -di.absolute_location.y);
+
+#ifdef DEBUG_EXPOSURE_CALCULATIONS
+
+	std::cout << "    Draw:" << std::endl;
+
+	for (const auto &r:draw_area)
+		std::cout << "        " << r << std::endl;
+#endif
+
+	draw(IN_THREAD, di, draw_area);
 
 	// Now, we need to recursively propagate this event.
 
@@ -389,23 +412,8 @@ void elementObj::implObj::exposure_event_recursive(IN_THREAD_ONLY,
 		       [&]
 		       (const element &e)
 		       {
-			       if (!e->impl->data(IN_THREAD)
-				   .inherited_visibility)
-				       return;
-
-			       auto child_position=e->impl->data(IN_THREAD)
-				       .current_position;
-
-			       auto child_areas=
-				       intersect(areas, {child_position},
-						 -child_position.x,
-						 -child_position.y);
-
-			       if (child_areas.empty())
-				       return;
-
 			       e->impl->exposure_event_recursive(IN_THREAD,
-								 child_areas);
+								 areas);
 		       });
 }
 
@@ -420,6 +428,8 @@ void elementObj::implObj::draw(IN_THREAD_ONLY,
 	if (data(IN_THREAD).removed)
 		return;
 
+	if (areas.empty())
+		return; // Don't bother.
 
 	if (data(IN_THREAD).inherited_visibility)
 	{

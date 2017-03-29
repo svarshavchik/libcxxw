@@ -200,7 +200,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! Implement the exposure event.
 
 	void exposure_event(IN_THREAD_ONLY,
-			    rectangle_set &areas) override;
+			    const rectangle_set &areas) override;
 
 	//! Theme update notification.
 	void theme_updated_event(IN_THREAD_ONLY) override;

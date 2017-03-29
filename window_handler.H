@@ -88,7 +88,7 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 	//! The implementor is free to trash the rectangle set.
 
 	virtual void exposure_event(IN_THREAD_ONLY,
-				    rectangle_set &);
+				    const rectangle_set &);
 
 	//! A new theme has been installed
 

@@ -424,7 +424,7 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! given rectangle_set intersected with the child's viewport.
 
 	void exposure_event_recursive(IN_THREAD_ONLY,
-				      rectangle_set &areas);
+				      const rectangle_set &areas);
 
 	//! Draw the display element.
 
