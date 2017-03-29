@@ -18,6 +18,7 @@
 #include "richtext/richtextmeta.H"
 #include "richtext/richtextstring.H"
 #include "richtext/richtextcursorlocationfwd.H"
+#include "richtext/richtexthorizinfo.H"
 #include "x/w/picturefwd.H"
 #include "x/w/pictureobj.H"
 #include "x/w/rgb_hash.H"
@@ -187,26 +188,10 @@ public:
 
 	std::vector<short> breaks;
 
-	//! Width of each character in pixels.
+	//! Horizontal dimensions cache.
+	richtexthorizinfo_t horiz_info;
 
-	//! The constructor does not initialize widths either, this is also
-	//! initialized by load_glyphs.
-
-	std::vector<dim_t> widths;
-
-	//! Kerning offset of each character in pixels, from the previous char.
-
-	//! The constructor does not initialize kernings either, this is also
-	//! initialized by load_glyphs.
-	//!
-	//! The horizontal position of character #n+1 is the horizontal
-	//! position of character #n + widths[n]+kernings[n+1].
-	//!
-	//! kernings[0] is the kerning of the first character if it were
-	//! drawn immediately after the last character of the previous fragment.
-
-	std::vector<int16_t> kernings;
-
+	//! Current theme was updated. Fonts have been changed.
 	void theme_updated(IN_THREAD_ONLY);
 
  private:
@@ -264,15 +249,9 @@ public:
 	//! lifted off the existing fragment, avoiding the need to recompute
 	//! it from scratch.
 
-	richtextfragmentObj(const richtextstring &string,
+	richtextfragmentObj(const richtextfragmentObj &current_fragment,
 			    size_t substr_pos,
-			    size_t substr_len,
-			    std::vector<short>::const_iterator beg_breaks,
-			    std::vector<short>::const_iterator end_breaks,
-			    std::vector<dim_t>::const_iterator beg_widths,
-			    std::vector<dim_t>::const_iterator end_widths,
-			    std::vector<int16_t>::const_iterator beg_kernings,
-			    std::vector<int16_t>::const_iterator end_kernings);
+			    size_t substr_len);
 
 	//! Split this text fragment at character #n.
 

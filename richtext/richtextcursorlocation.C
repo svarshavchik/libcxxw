@@ -67,26 +67,22 @@ void richtextcursorlocationObj::update_horiz_pos()
 {
 	assert_or_throw(my_fragment, "Internal error in update_horiz_pos(): my_fragment is not initialized");
 
-	assert_or_throw(my_fragment->widths.size() ==
-			my_fragment->kernings.size(),
-			"Internal error in update_horiz_pos(): fragment width and kernings inconsistency");
-
-	assert_or_throw(my_fragment->widths.size() > position.offset,
+	assert_or_throw(my_fragment->horiz_info.size() > position.offset,
 			"Inernal error in update_horiz_pos(): cursor location out of range");
 
 	position.horiz_pos=0;
 
 	for (size_t i=0; i<position.offset; ++i)
 	{
-		position.horiz_pos += my_fragment->widths[i];
-		position.horiz_pos += my_fragment->kernings[i+1];
+		position.horiz_pos += my_fragment->horiz_info.width(i);
+		position.horiz_pos += my_fragment->horiz_info.kerning(i+1);
 	}
 
 	if (position.offset)
 	{
-		position.horiz_pos -= my_fragment->kernings[0];
+		position.horiz_pos -= my_fragment->horiz_info.kerning(0);
 		// Does not count
-		position.horiz_pos += my_fragment->kernings[position.offset];
+		position.horiz_pos += my_fragment->horiz_info.kerning(position.offset);
 		// Does count
 	}
 	position.reset_horiz_pos();
@@ -96,21 +92,17 @@ void richtextcursorlocationObj::update_offset(dim_squared_t targeted_horiz_pos)
 {
 	assert_or_throw(my_fragment, "Internal error in update_offset(): my_fragment is not initialized");
 
-	assert_or_throw(my_fragment->widths.size() ==
-			my_fragment->kernings.size(),
-			"Internal error in update_offset(): fragment width and kernings inconsistency");
-
 	position.horiz_pos=0;
 	position.offset=0;
 
-	auto n=my_fragment->widths.size();
+	auto n=my_fragment->horiz_info.size();
 
 	// Iterate until we cross targeted_horiz_pos;
 	for ( ; position.offset+1 < n; )
 	{
 		auto next_horiz_pos=position.horiz_pos +
-			my_fragment->widths[position.offset] +
-			my_fragment->kernings[position.offset+1];
+			my_fragment->horiz_info.width(position.offset) +
+			my_fragment->horiz_info.kerning(position.offset+1);
 
 		if (next_horiz_pos > targeted_horiz_pos)
 		{
@@ -158,9 +150,9 @@ void richtextcursorlocationObj::move(ssize_t howmuch)
 			// Subtract the current character's kerning.
 			// Subtract the previous character's width.
 
-			position.horiz_pos-=my_fragment->kernings[position.offset];
+			position.horiz_pos-=my_fragment->horiz_info.kerning(position.offset);
 			--position.offset;
-			position.horiz_pos-=my_fragment->widths[position.offset];
+			position.horiz_pos-=my_fragment->horiz_info.width(position.offset);
 			position.reset_horiz_pos();
 			++howmuch;
 			continue;
@@ -320,13 +312,13 @@ void richtextcursorlocationObj::move(ssize_t howmuch)
 		// Add in this character's width.
 
 		position.horiz_pos+=
-			my_fragment->widths[position.offset];
+			my_fragment->horiz_info.width(position.offset);
 		++position.offset;
 
 		// Add in the next character's kerning.
 
 		position.horiz_pos+=
-			my_fragment->kernings[position.offset];
+			my_fragment->horiz_info.kerning(position.offset);
 		position.reset_horiz_pos();
 		--howmuch;
 	}

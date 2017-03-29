@@ -292,6 +292,8 @@ libcxxw_la_SOURCES=\
 	richtext/richtextfragment.C		    \
 	richtext/richtextfragment.H		    \
 	richtext/richtextfragment_render.H	    \
+	richtext/richtexthorizinfo.C		    \
+	richtext/richtexthorizinfo.H		    \
 	richtext/richtextmeta.C			    \
 	richtext/richtextmeta.H			    \
 	richtext/richtextmetafwd.H		    \

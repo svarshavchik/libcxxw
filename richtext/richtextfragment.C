@@ -91,27 +91,17 @@ void richtextfragmentObj::finish_setting(IN_THREAD_ONLY)
 }
 
 richtextfragmentObj
-::richtextfragmentObj(const richtextstring &string,
+::richtextfragmentObj(const richtextfragmentObj &current_fragment,
 		      size_t substr_pos,
-		      size_t substr_len,
-		      std::vector<short>::const_iterator beg_breaks,
-		      std::vector<short>::const_iterator end_breaks,
-		      std::vector<dim_t>::const_iterator beg_widths,
-		      std::vector<dim_t>::const_iterator end_widths,
-		      std::vector<int16_t>::const_iterator beg_kernings,
-		      std::vector<int16_t>::const_iterator end_kernings)
-	: string(string, substr_pos, substr_len),
-	  breaks(beg_breaks, end_breaks),
-	widths(beg_widths, end_widths),
-	kernings(beg_kernings, end_kernings)
+		      size_t substr_len)
+	: string(current_fragment.string, substr_pos, substr_len),
+	  breaks(current_fragment.breaks.begin()+substr_pos,
+		 current_fragment.breaks.begin()+substr_pos+substr_len),
+	  horiz_info(current_fragment.horiz_info, substr_pos, substr_len)
 {
-	auto s=this->string.get_string().size();
-
-	assert_or_throw(s == breaks.size() &&
-			s == widths.size() &&
-			s == kernings.size(),
-			"Internal error, text fragment initialized with uneven text/break/widths/kernings metadata");
 }
+
+
 
 richtextfragmentObj::~richtextfragmentObj()
 {
@@ -205,13 +195,18 @@ void richtextfragmentObj
 {
 	USING_MY_PARAGRAPH();
 
-	string.compute_width(IN_THREAD,
-			     previous_fragment ?
-			     &previous_fragment->string:NULL,
-			     my_paragraph->my_richtext->unprintable_char,
-			     widths,
-			     kernings,
-			     my_paragraph->my_richtext->password_char);
+	horiz_info.update([&, this]
+			  (auto &widths,
+			   auto &kernings)
+			  {
+				  string.compute_width(IN_THREAD,
+						       previous_fragment ?
+						       &previous_fragment->string:NULL,
+						       my_paragraph->my_richtext->unprintable_char,
+						       widths,
+						       kernings,
+						       my_paragraph->my_richtext->password_char);
+			  });
 }
 
 void richtextfragmentObj::update_glyphs_widths_kernings(IN_THREAD_ONLY,
@@ -222,14 +217,19 @@ void richtextfragmentObj::update_glyphs_widths_kernings(IN_THREAD_ONLY,
 
 	auto previous_fragment=prev_fragment();
 
-	string.compute_width(IN_THREAD,
-			     previous_fragment ?
-			     &previous_fragment->string:NULL,
-			     my_paragraph->my_richtext->unprintable_char,
-			     widths,
-			     kernings,
-			     my_paragraph->my_richtext->password_char,
-			     pos, count);
+	horiz_info.update([&, this]
+			  (auto &widths,
+			   auto &kernings)
+			  {
+				  string.compute_width(IN_THREAD,
+						       previous_fragment ?
+						       &previous_fragment->string:NULL,
+						       my_paragraph->my_richtext->unprintable_char,
+						       widths,
+						       kernings,
+						       my_paragraph->my_richtext->password_char,
+						       pos, count);
+			  });
 }
 
 richtextfragmentObj *richtextfragmentObj::prev_fragment() const
@@ -293,15 +293,14 @@ void richtextfragmentObj::recalculate_size(IN_THREAD_ONLY)
 	above_baseline=0;
 	below_baseline=0;
 
-	assert_or_throw(widths.size() == kernings.size() &&
-			widths.size() == breaks.size(),
+	assert_or_throw(horiz_info.size() == breaks.size(),
 			"Internal error: different width and breaks/kernings vectors");
 
-	for (size_t i=widths.size(); i; )
+	for (size_t i=horiz_info.size(); i; )
 	{
 		--i;
 
-		auto total=widths[i]+kernings[i];
+		auto total=horiz_info.width(i)+horiz_info.kerning(i);
 
 		width = dim_t::truncate(width + total);
 		minimum_width = dim_t::truncate(minimum_width + total);
@@ -310,8 +309,8 @@ void richtextfragmentObj::recalculate_size(IN_THREAD_ONLY)
 			minimum_width=0;
 	}
 
-	if (!kernings.empty())
-		width -= kernings[0]; // Doesn't count
+	if (!horiz_info.empty())
+		width -= horiz_info.kerning(0); // Doesn't count
 
 	// Don't adjust minimum_width, we'll want to know if the initial
 	// portion can be appended to the previous fragment, with the default
@@ -371,18 +370,10 @@ size_t richtextfragmentObj::insert(IN_THREAD_ONLY,
 						 breaks.begin()+(pos+n_size));
 			    });
 
-	auto widths_sentry=
+	auto horiz_info_sentry=
 		make_sentry([&]
 			    {
-				    widths.erase(widths.begin()+pos,
-						 widths.begin()+(pos+n_size));
-			    });
-
-	auto kernings_sentry=
-		make_sentry([&]
-			    {
-				    kernings.erase(kernings.begin()+pos,
-						 kernings.begin()+(pos+n_size));
+				    horiz_info.erase(pos, pos+n_size);
 			    });
 
 	string.insert(pos, new_string);
@@ -392,10 +383,9 @@ size_t richtextfragmentObj::insert(IN_THREAD_ONLY,
 
 	breaks.insert(breaks.begin()+pos, n_size, 0);
 	breaks_sentry.guard();
-	widths.insert(widths.begin()+pos, n_size, 0);
-	widths_sentry.guard();
-	kernings.insert(kernings.begin()+pos, n_size, 0);
-	kernings_sentry.guard();
+
+	horiz_info.insert(pos, n_size);
+	horiz_info_sentry.guard();
 #if 0
 	no_meta_for_trailing_space();
 #endif
@@ -431,8 +421,7 @@ size_t richtextfragmentObj::insert(IN_THREAD_ONLY,
 	// At this point, it's new paragraphs, or bust!
 	string_sentry.unguard();
 	breaks_sentry.unguard();
-	widths_sentry.unguard();
-	kernings_sentry.unguard();
+	horiz_info_sentry.unguard();
 
 	redraw_needed=true;
 
@@ -961,7 +950,8 @@ void richtextfragmentObj::render(IN_THREAD_ONLY,
 
 	while (start_char + 1 < current_string.size())
 	{
-		auto next_x=x + widths[start_char] + kernings[start_char+1];
+		auto next_x=x + horiz_info.width(start_char)
+			+ horiz_info.kerning(start_char+1);
 
 		if (next_x > 0)
 			break;
@@ -1128,22 +1118,16 @@ richtextfragment richtextfragmentObj::split(IN_THREAD_ONLY,
 	auto break_type=breaks[pos];
 
 	// We can copy the relevant parts from myself, into a new fragment...
-	auto new_fragment=richtextfragment::create(string,
+	auto new_fragment=richtextfragment::create(*this,
 						   pos,
-						   current_string.size()-pos,
-						   breaks.begin()+pos,
-						   breaks.end(),
-						   widths.begin()+pos,
-						   widths.end(),
-						   kernings.begin()+pos,
-						   kernings.end());
+						   current_string.size()-pos);
 
 	// ... then truncate myself accordingly.
 
-	string.erase(pos, current_string.size()-pos);
+	size_t n_erased=current_string.size()-pos;
+	string.erase(pos, n_erased);
 	breaks.erase(breaks.begin()+pos, breaks.end());
-	widths.erase(widths.begin()+pos, widths.end());
-	kernings.erase(kernings.begin()+pos, kernings.end());
+	horiz_info.erase(pos, n_erased);
 
 	// We also must move any cursor locations to the new fragment.
 
@@ -1251,17 +1235,14 @@ void richtextfragmentObj::merge(IN_THREAD_ONLY, fragment_list &my_fragments)
 		size_t orig_pos=current_string.size();
 
 		breaks.reserve(breaks.size() + other->breaks.size());
-		widths.reserve(widths.size() + other->widths.size());
-		kernings.reserve(kernings.size() + other->kernings.size());
 
 		string.insert(orig_pos, other->string);
 
 		breaks.insert(breaks.end(), other->breaks.begin(),
 			      other->breaks.end());
-		widths.insert(widths.end(), other->widths.begin(),
-			      other->widths.end());
-		kernings.insert(kernings.end(), other->kernings.begin(),
-				other->kernings.end());
+
+		horiz_info.append(other->horiz_info);
+
 		update_glyphs_widths_kernings(IN_THREAD, orig_pos, 1);
 	}
 
@@ -1306,9 +1287,7 @@ void richtextfragmentObj::remove(IN_THREAD_ONLY,
 	string.erase(pos, nchars);
 
 	breaks.erase(breaks.begin()+pos, breaks.begin()+pos+nchars);
-	widths.erase(widths.begin()+pos, widths.begin()+pos+nchars);
-	kernings.erase(kernings.begin()+pos, kernings.begin()+pos+nchars);
-
+	horiz_info.erase(pos, nchars);
 	update_glyphs_widths_kernings(IN_THREAD, pos, 1);
 
 	// Adjust all locations on or after the removal point.

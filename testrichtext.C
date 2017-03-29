@@ -164,8 +164,8 @@ void testsplit(const current_fontcollection &font1,
 
 		auto control_text=fragment->string;
 		auto control_breaks=fragment->breaks;
-		auto control_widths=fragment->widths;
-		auto control_kernings=fragment->kernings;
+
+		auto control_horiz=fragment->horiz_info;
 
 		auto new_fragment=fragment->split(IN_THREAD, my_fragments,
 						  test.split_pos);
@@ -214,11 +214,8 @@ void testsplit(const current_fontcollection &font1,
 		if (control_breaks != fragment->breaks)
 			throw EXCEPTION(std::string("Breaks was different after split/merge: ") + test.results);
 
-		if (control_widths != fragment->widths)
+		if (control_horiz != fragment->horiz_info)
 			throw EXCEPTION(std::string("Widths was different after split/merge: ") + test.results);
-
-		if (control_kernings != fragment->kernings)
-			throw EXCEPTION(std::string("Kernings was different after split/merge: ") + test.results);
 	}
 }
 

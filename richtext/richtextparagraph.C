@@ -99,14 +99,14 @@ void richtextparagraphObj::rewrap_fragment(IN_THREAD_ONLY,
 	if ( (*iter)->width <= dim_t::value_type(width))
 		return; // We're fine.
 
-	assert_or_throw(! (*iter)->widths.empty(),
+	assert_or_throw(! (*iter)->horiz_info.empty(),
 			"How can we be so big, when there are no widths?");
 
 	size_t last_break_pos=0;
 
 	dim_squared_t accumulated_width=0;
 
-	size_t n=(*iter)->widths.size();
+	size_t n=(*iter)->horiz_info.size();
 	for (size_t i=0; ; ++i)
 	{
 		// Checkpoint at each breakable character, and at the end of the
@@ -115,7 +115,7 @@ void richtextparagraphObj::rewrap_fragment(IN_THREAD_ONLY,
 		if (i && (i == n || (*iter)->breaks[i] != UNICODE_LB_NONE))
 		{
 			if (accumulated_width-
-			    (*iter)->kernings[0] // Doesn't count
+			    (*iter)->horiz_info.kerning(0) // Doesn't count
 			    > wwidth
 
 			    // If the initial fragment is too big for the
@@ -128,7 +128,7 @@ void richtextparagraphObj::rewrap_fragment(IN_THREAD_ONLY,
 		if (i == n)
 			break;
 
-		accumulated_width += (*iter)->widths[i]+(*iter)->kernings[i];
+		accumulated_width += (*iter)->horiz_info.width(i)+(*iter)->horiz_info.kerning(i);
 	}
 
 	// At this point, break at the last position that fell below the

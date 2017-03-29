@@ -331,9 +331,9 @@ void fragment_list::recalculate_size(bool &width_changed,
 
 		// Width does not include the first character's kerning.
 
-		if (!fragment->kernings.empty())
+		if (!fragment->horiz_info.empty())
 			paragraph.maximum_width_if_one_line
-				+= fragment->kernings[0];
+				+= fragment->horiz_info.kerning(0);
 
 		auto h=fragment->height();
 
