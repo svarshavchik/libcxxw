@@ -10,7 +10,8 @@ See COPYING for distribution information.
 
   <mediaobject>
     <imageobject>
-      <imagedata fileref="helloworld.png" format="PNG" />
+      <imagedata fileref="helloworld.png" format="PNG"
+		 contentwidth="452px" contentdepth="165px" />
     </imageobject>
     <textobject>
       <phrase>

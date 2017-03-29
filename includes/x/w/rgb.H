@@ -19,28 +19,32 @@ LIBCXXW_NAMESPACE_START
 class rgb {
 
 public:
+	//! Type of each component
+
+	typedef uint16_t component_t;
+
 	//! Red component
-	uint16_t r;
+	component_t r;
 
 	//! Green component
-	uint16_t g;
+	component_t g;
 
 	//! Blue component
-	uint16_t b;
+	component_t b;
 
 	//! Alpha component
-	uint16_t a;
+	component_t a;
 
 	//! Maximum intensity
 
-	static constexpr uint16_t maximum=0xFFFF;
+	static constexpr component_t maximum=0xFFFF;
 
 	//! Default constructor
 	rgb() : r(0), g(0), b(0), a(maximum) {}
 
 	//! Constructor
-	rgb(uint16_t rv, uint16_t gv, uint16_t bv,
-	    uint16_t av=maximum) : r(rv), g(gv), b(bv), a(av) {}
+	rgb(component_t rv, component_t gv, component_t bv,
+	    component_t av=maximum) : r(rv), g(gv), b(bv), a(av) {}
 
 	//! Comparator
 
@@ -76,7 +80,7 @@ public:
 	//!
 	//! When i=0 returns this color.
 	//! When i=n returns other.
-	rgb gradient(const rgb &other, uint16_t i, uint16_t n) const;
+	rgb gradient(const rgb &other, component_t i, component_t n) const;
 
 	//! A gradient involving multiple colors
 
@@ -84,7 +88,7 @@ public:
 	//! key in the map defines the ending rgb color. The rgb at
 	//! position \#i defines the rgb color for that value.
 
-	typedef std::map<uint16_t, rgb> gradient_t;
+	typedef std::map<component_t, rgb> gradient_t;
 
 	//! Compute multiple gradient.
 

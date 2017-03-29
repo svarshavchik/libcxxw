@@ -6,6 +6,7 @@
 #include "libcxxw_config.h"
 #include <x/chrcasecmp.H>
 #include <x/exception.H>
+#include <x/strtok.H>
 #include "x/w/font.H"
 #include "messages.H"
 #include <fontconfig/fontconfig.h>
@@ -233,8 +234,8 @@ font operator"" _font(const char *str, size_t s)
 		if (equals == setting.npos)
 			throw EXCEPTION(_("Invalid font specification"));
 
-		std::string name=setting.substr(0, equals);
-		std::string value=setting.substr(equals+1);
+		std::string name=trim(setting.substr(0, equals));
+		std::string value=trim(setting.substr(equals+1));
 
 		if (cmpi(name, "point_size"))
 		{

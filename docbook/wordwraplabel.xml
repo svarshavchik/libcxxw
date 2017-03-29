@@ -1,0 +1,142 @@
+<!--
+
+Copyright 2017 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<chapter id="wordwraplabel">
+  <title>Word-wrapping labels</title>
+
+  <mediaobject>
+    <imageobject>
+      <imagedata fileref="wordwraplabel.png" format="PNG"
+		 contentwidth="394px" contentdepth="268px"/>
+    </imageobject>
+    <textobject>
+      <phrase>
+	Hello World!
+      </phrase>
+    </textobject>
+    <caption>
+      <para>
+	This example follows up
+	on the <link linkend="helloworld"><quote>hello world</quote>
+	program</link>.
+	It uses <link linkend="labels">a
+	<methodname>create_label()</methodname> overload</link> to
+	create a label that word-wraps its text to the given width.
+      </para>
+
+      <para>
+	See <xref linkend="examples" /> for more information on building
+	this example:
+      </para>
+    </caption>
+  </mediaobject>
+
+  <blockquote>
+    <title><ulink url="examples/wordwraplabel.C">wordwraplabel.C</ulink></title>
+
+    <informalexample>
+      <programlisting><xi:include href="../examples/wordwraplabel.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    Notes:
+  </para>
+
+  <itemizedlist>
+    <listitem>
+      <para>
+	<link linkend="containercreator"><classname>&ns;::w::main_window</classname>
+	  creator lambda</link> is factored out, in this example, into
+	a separate function, for clarity.
+	<function>create_mainwindow</function>() sets the main window's
+	background to light yellow, then just like
+	<link linkend="helloworld"><filename>helloworld.C</filename></link>
+	it uses the main window's grid layout manager to
+	<methodname>create_label</methodname>() inside it.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+	A word-wrapped label gets created by passing an estimated width
+	after its <ulink url="&link-x--w--text-param;"><classname>&ns;::w::text_param</classname></ulink>.
+	The estimated width is in millimeters.
+	Passing this parameter changes
+	<methodname>create_label</methodname>()'s resulting
+	<ulink url="&link-typedef-x--w-label;"><classname>&ns;::w::label</classname></ulink>
+	object.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+	Newline characters create multi-line text in a regular, unsized, label.
+	Specifying
+	an estimated width essentially turns the newline characters into
+	paragraph breaks, and the label gets word-wrapped.
+      </para>
+
+      <para>
+	The estimated width parameter sets the initial text label width, in most
+	cases; but this is only a suggestion.
+	The label automatically adjusts the width of the
+	word-wrapped text to fit whatever space is available. When a window
+	has other elements the grid layout manager typically computes
+	the width of the label's columns based on other display elements'
+	requirements. The label then adjusts its width accordingly.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+	The above example does not create any other display elements, so
+	the window does not have any other requirements. The resulting
+	window's width becomes resizable. The window's width can be increased
+	or decreased. The text flows to fit the window's width; in turn
+	adjusting the window's height as well.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+	An optional <classname>x::w::halign</classname> parameter sets the
+	horizontal alignment of each line. If not specified the text is
+	shown left-aligned, normally.
+      </para>
+    </listitem>
+  </itemizedlist>
+
+  <para>
+    <filename>wordwraplabel.C</filename> also demonstrates several other
+    formatting options for the text parameter:
+  </para>
+
+  <itemizedlist>
+    <listitem>
+      <para>
+	An <ulink url="&link-x--w--rgb;"><classname>&ns;::w::rgb</classname></ulink>
+	parameter sets the color for the following text. A second
+	<classname>&ns;::w::rgb</classname> parameter in a row sets the
+	text's background color.
+      </para>
+    </listitem>
+
+    <listitem>
+      <para>
+	An <ulink url="&link-function-x--w--font-font;"><classname>x::w::font</classname></ulink>
+	parameter sets the font for the following text.
+	<literal>#include &lt;&ns;/w/font_literals.H&gt;</literal> allows
+	specifying the font as a
+	<ulink url="&link-function-x--w-operatorQQ--font;">"<replaceable>description</replaceable>"<literal>_font</literal>
+	  decorator</ulink>.
+      </para>
+    </listitem>
+  </itemizedlist>
+</chapter>
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "book" "chapter")
+End:
+-->

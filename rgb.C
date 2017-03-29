@@ -8,11 +8,11 @@
 
 LIBCXXW_NAMESPACE_START
 
-rgb rgb::gradient(const rgb &other, uint16_t i, uint16_t n) const
+rgb rgb::gradient(const rgb &other, component_t i, component_t n) const
 {
 	if (n == 0) return other; // GIGO
 
-#define SCALE(channel) ((uint16_t)					\
+#define SCALE(channel) ((component_t)					\
 			(int32_t)channel +				\
 			(((int32_t)other.channel-channel)*(int32_t)i+(n/2))/n)
 
@@ -31,7 +31,7 @@ rgb rgb::gradient(const gradient_t &g, size_t i, size_t n)
 
 	// First, map i to the range 0..k
 
-	uint16_t scaled_i= (i*k)/n;
+	component_t scaled_i= (i*k)/n;
 
 	auto next=g.upper_bound(scaled_i);
 

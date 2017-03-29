@@ -16,6 +16,7 @@
 <!ENTITY refobj "/refobj.html">
 <!ENTITY helloworld SYSTEM "helloworld.xml">
 <!ENTITY label SYSTEM "label.xml">
+<!ENTITY wordwraplabel SYSTEM "wordwraplabel.xml">
 <!ENTITY connections_and_screens SYSTEM "connections_and_screens.xml">
 
 %entity-list;
@@ -39,8 +40,8 @@ See COPYING for distribution information.
 
     &helloworld;
     &label;
+    &wordwraplabel;
     &connections_and_screens;
-
   </part>
 
   <appendix id="COPYING">

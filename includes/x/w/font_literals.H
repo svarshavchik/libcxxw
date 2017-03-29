@@ -20,7 +20,7 @@ semicolon-delimited list of attributes follows the font family name,
 for example:
 
 \code
-"liberation mono;point_size=10;weight=bold"_font
+"liberation mono; point_size=10; weight=bold"_font
 \endcode
 
 The available attributes are:
@@ -36,8 +36,8 @@ gets automatically scaled by the current theme.
 
 - weight=value
 
-Sets the font's weight. "value" is one of: thin, light, normal, medium,
-demibold, bold, heavy, or extrablack.
+Sets the font's weight. "value" is one of: "thin", "light", "normal", "medium",
+"demibold", "bold", "heavy", or "extrablack".
 
 - slant=value
 
