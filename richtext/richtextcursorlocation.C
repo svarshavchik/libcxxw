@@ -8,6 +8,7 @@
 #include "richtext/richtextparagraph.H"
 #include "richtext/richtext_impl.H"
 #include "assert_or_throw.H"
+#include <functional>
 
 LIBCXXW_NAMESPACE_START
 
@@ -21,6 +22,14 @@ richtextcursorlocationObj::richtextcursorlocationObj()
 
 richtextcursorlocationObj::~richtextcursorlocationObj() noexcept
 {
+}
+
+void richtextcursorlocationObj::initialize(const richtextcursorlocation &clone)
+{
+	assert_or_throw(clone->my_fragment,
+			"Internal: cloning an unattached location");
+	initialize(clone->my_fragment, 0);
+	position=clone->position;
 }
 
 void richtextcursorlocationObj::initialize(richtextfragmentObj *fragment,
@@ -45,7 +54,7 @@ void richtextcursorlocationObj::initialize(richtextfragmentObj *fragment,
 	my_fragment_iter=new_iter;
 
 	position.offset=offsetArg;
-	update_horiz_pos();
+	horiz_pos_no_longer_valid();
 }
 
 void richtextcursorlocationObj::deinitialize()
@@ -55,44 +64,57 @@ void richtextcursorlocationObj::deinitialize()
 	my_fragment=nullptr;
 }
 
-richtextcursorlocation richtextcursorlocationObj::clone() const
+dim_t richtextcursorlocationObj::get_horiz_pos(IN_THREAD_ONLY)
 {
-	auto l=richtextcursorlocation::create();
-
-	l->position=position;
-	return l;
+	cache_horiz_pos(IN_THREAD);
+	return dim_t::truncate(position.cached_horiz_pos);
 }
 
-void richtextcursorlocationObj::update_horiz_pos()
+void richtextcursorlocationObj::cache_horiz_pos(IN_THREAD_ONLY)
 {
-	assert_or_throw(my_fragment, "Internal error in update_horiz_pos(): my_fragment is not initialized");
+	assert_or_throw(my_fragment, "Internal error in cache_horiz_pos(): my_fragment is not initialized");
 
 	assert_or_throw(my_fragment->horiz_info.size() > position.offset,
-			"Inernal error in update_horiz_pos(): cursor location out of range");
+			"Inernal error in cache_horiz_pos(): cursor location out of range");
 
-	position.horiz_pos=0;
+	if (position.horiz_pos_is_valid)
+		return;
+
+	position.horiz_pos_is_valid=true;
+	position.cached_horiz_pos=0;
 
 	for (size_t i=0; i<position.offset; ++i)
 	{
-		position.horiz_pos += my_fragment->horiz_info.width(i);
-		position.horiz_pos += my_fragment->horiz_info.kerning(i+1);
+		position.cached_horiz_pos += my_fragment->horiz_info.width(i);
+		position.cached_horiz_pos += my_fragment->horiz_info.kerning(i+1);
 	}
 
 	if (position.offset)
 	{
-		position.horiz_pos -= my_fragment->horiz_info.kerning(0);
+		position.cached_horiz_pos -= my_fragment->horiz_info.kerning(0);
 		// Does not count
-		position.horiz_pos += my_fragment->horiz_info.kerning(position.offset);
+		position.cached_horiz_pos += my_fragment->horiz_info.kerning(position.offset);
 		// Does count
 	}
-	position.reset_horiz_pos();
+	position.set_targeted_horiz_pos();
 }
 
-void richtextcursorlocationObj::update_offset(dim_squared_t targeted_horiz_pos)
+dim_squared_t richtextcursorlocationObj::get_targeted_horiz_pos(IN_THREAD_ONLY)
 {
-	assert_or_throw(my_fragment, "Internal error in update_offset(): my_fragment is not initialized");
+	cache_horiz_pos(IN_THREAD);
+	return position.targeted_horiz_pos;
+}
 
-	position.horiz_pos=0;
+void richtextcursorlocationObj
+::set_targeted_horiz_pos(IN_THREAD_ONLY,
+			 dim_squared_t targeted_horiz_pos)
+{
+	assert_or_throw(my_fragment, "Internal error in set_targeted_horiz_pos(): my_fragment is not initialized");
+	assert_or_throw(my_fragment->horiz_info.size() > 0,
+			"Inernal error in set_targeted_horiz_pos(): empty fragment");
+
+	position.horiz_pos_is_valid=true;
+	position.cached_horiz_pos=0;
 	position.offset=0;
 
 	auto n=my_fragment->horiz_info.size();
@@ -100,26 +122,67 @@ void richtextcursorlocationObj::update_offset(dim_squared_t targeted_horiz_pos)
 	// Iterate until we cross targeted_horiz_pos;
 	for ( ; position.offset+1 < n; )
 	{
-		auto next_horiz_pos=position.horiz_pos +
+		auto next_horiz_pos=position.cached_horiz_pos +
 			my_fragment->horiz_info.width(position.offset) +
 			my_fragment->horiz_info.kerning(position.offset+1);
 
 		if (next_horiz_pos > targeted_horiz_pos)
 		{
 			// Choose the closest X position.
-			if ( position.horiz_pos +
-			     (next_horiz_pos-position.horiz_pos)/2 >=
+			if ( position.cached_horiz_pos +
+			     (next_horiz_pos-position.cached_horiz_pos)/2 >=
 			     targeted_horiz_pos)
 				break;
 
 			++position.offset;
-			position.horiz_pos=next_horiz_pos;
+			position.cached_horiz_pos=next_horiz_pos;
 			break;
 		}
 		++position.offset;
-		position.horiz_pos=next_horiz_pos;
+		position.cached_horiz_pos=next_horiz_pos;
 	}
 	position.targeted_horiz_pos=targeted_horiz_pos;
+}
+
+// leftby1() and rightby1() are invoked from move().
+//
+// If horiz_pos_is_valid, horiz_pos gets updated too.
+
+inline void richtextcursorlocationObj::leftby1()
+{
+	if (!position.horiz_pos_is_valid)
+	{
+		--position.offset;
+		return;
+	}
+	// Move by one character.
+	// Subtract the current character's kerning.
+	// Subtract the previous character's width.
+
+	position.cached_horiz_pos-=my_fragment->horiz_info.kerning(position.offset);
+	--position.offset;
+	position.cached_horiz_pos-=my_fragment->horiz_info.width(position.offset);
+	position.set_targeted_horiz_pos();
+}
+
+inline void richtextcursorlocationObj::rightby1()
+{
+	if (!position.horiz_pos_is_valid)
+	{
+		++position.offset;
+		return;
+	}
+	// Add in this character's width.
+
+	position.cached_horiz_pos+=
+		my_fragment->horiz_info.width(position.offset);
+	++position.offset;
+
+	// Add in the next character's kerning.
+
+	position.cached_horiz_pos+=
+		my_fragment->horiz_info.kerning(position.offset);
+	position.set_targeted_horiz_pos();
 }
 
 void richtextcursorlocationObj::move(ssize_t howmuch)
@@ -146,14 +209,7 @@ void richtextcursorlocationObj::move(ssize_t howmuch)
 				continue;
 			}
 
-			// Move by one character.
-			// Subtract the current character's kerning.
-			// Subtract the previous character's width.
-
-			position.horiz_pos-=my_fragment->horiz_info.kerning(position.offset);
-			--position.offset;
-			position.horiz_pos-=my_fragment->horiz_info.width(position.offset);
-			position.reset_horiz_pos();
+			leftby1();
 			++howmuch;
 			continue;
 		}
@@ -216,28 +272,27 @@ void richtextcursorlocationObj::move(ssize_t howmuch)
 				position.offset < my_fragment->string.get_string().size(),
 				"Internal error in move(): invalid offset");
 
-		auto chars_left=
-			my_fragment->string.get_string().size()-position.offset;
+		bool initialization_required=false;
 
-		if (chars_left <= (size_t)howmuch)
+		size_t chars_left;
+
+		auto f=my_fragment;
+
+		while (howmuch >=
+		       (chars_left=
+			f->string.get_string().size()-position.offset))
 		{
-			// We have enough left to move to the next line,
-			// at least.
-			//
-			// From this point on, initialize() must occur before
-			// leaving this scope.
+			initialization_required=true;
 
-			auto f=my_fragment;
-
-		start_of_line_going_forward:
+			// If we're at the start of the paragraph, and we're
+			// moving forward by at least as much as the number of
+			// characters in the paragraph, skip the entire
+			// paragraph in one gulp.
 
 			if (f->my_fragment_number == 0 &&
 			    position.offset == 0 &&
 			    (size_t)howmuch>=f->my_paragraph->num_chars)
 			{
-				// We have enough to skip an entire
-				// paragraph.
-
 				auto next_paragraph_number=
 					f->my_paragraph->my_paragraph_number+1;
 
@@ -258,13 +313,12 @@ void richtextcursorlocationObj::move(ssize_t howmuch)
 					howmuch-=f->my_paragraph->num_chars;
 					f=&**(*next_paragraph_iter)
 						->fragments.get_iter(0);
-					goto start_of_line_going_forward;
+					continue;
 				}
 			}
 
-			chars_left= // This could've changed in the loop above.
-				my_fragment->string.get_string().size()
-				-position.offset;
+			// We have enough left to move to the next line,
+			// at least.
 
 			auto next_f=f->next_fragment();
 
@@ -285,19 +339,10 @@ void richtextcursorlocationObj::move(ssize_t howmuch)
 			howmuch-=chars_left;
 			f=next_f;
 			position.offset=0;
-			chars_left=f->string.get_string().size();
-
-			// Is there enough left for at least another line?
-			if (chars_left <= (size_t)howmuch)
-				goto start_of_line_going_forward;
-
-			// We entered this if() statement when howmuch was
-			// enough to at least move the location to the next
-			// line. Therefore, we must leave the scope in the
-			// same state.
-
-			initialize(f, 0);
 		}
+
+		if (initialization_required)
+			initialize(f, 0);
 
 		// We can end up with howmuch being 0, if we landed it exactly.
 		if (howmuch == 0)
@@ -309,17 +354,7 @@ void richtextcursorlocationObj::move(ssize_t howmuch)
 
 		// Advance to the next character in the fragment.
 
-		// Add in this character's width.
-
-		position.horiz_pos+=
-			my_fragment->horiz_info.width(position.offset);
-		++position.offset;
-
-		// Add in the next character's kerning.
-
-		position.horiz_pos+=
-			my_fragment->horiz_info.kerning(position.offset);
-		position.reset_horiz_pos();
+		rightby1();
 		--howmuch;
 	}
 }
@@ -327,22 +362,75 @@ void richtextcursorlocationObj::move(ssize_t howmuch)
 void richtextcursorlocationObj::start_of_line()
 {
 	assert_or_throw(my_fragment &&
-			position.offset < my_fragment->string.get_string().size(),
+			my_fragment->string.get_string().size() > 0,
 			"Internal error in start_of_line(): invalid offset");
 
 	position.offset=0;
-	update_horiz_pos();
+	position.targeted_horiz_pos=0;
+	horiz_pos_no_longer_valid();
 }
 
 void richtextcursorlocationObj::end_of_line()
 {
 	assert_or_throw(my_fragment &&
-			position.offset < my_fragment->string.get_string().size(),
+			my_fragment->string.get_string().size() > 0,
 			"Internal error in start_of_line(): invalid offset");
 
 	position.offset=my_fragment->string.get_string().size()-1;
-	update_horiz_pos();
 	position.targeted_horiz_pos=~0;
+	horiz_pos_no_longer_valid();
+}
+
+void richtextcursorlocationObj::inserted_at(IN_THREAD_ONLY,
+					    size_t pos,
+					    size_t nchars,
+					    dim_t extra_width)
+{
+	if (position.offset >= pos)
+	{
+		position.offset += nchars;
+
+		if (position.horiz_pos_is_valid)
+		{
+			position.cached_horiz_pos += extra_width;
+			position.set_targeted_horiz_pos();
+		}
+		else
+		{
+			cache_horiz_pos(IN_THREAD);
+		}
+	}
+}
+
+bool richtextcursorlocationObj::same(const richtextcursorlocationObj &b) const
+{
+	assert_or_throw(my_fragment && b.my_fragment &&
+			my_fragment->my_paragraph &&
+			b.my_fragment->my_paragraph &&
+			my_fragment->my_paragraph->my_richtext &&
+			b.my_fragment->my_paragraph->my_richtext,
+			"Uninitialized locations in same_position()");
+
+	return std::equal_to<void>()(my_fragment, b.my_fragment) &&
+		position.offset == b.position.offset;
+}
+
+std::ptrdiff_t richtextcursorlocationObj::compare(const richtextcursorlocationObj &b) const
+{
+	assert_or_throw(my_fragment && b.my_fragment,
+			"Uninitialized locations in compare_location()");
+
+	auto a_index=my_fragment->index(),
+		b_index=b.my_fragment->index();
+
+	if (a_index < b_index)
+		return -(b_index-a_index+1);
+
+	if (a_index > b_index)
+		return a_index-b_index+1;
+
+	return position.offset < b.position.offset ? -1:
+		position.offset > b.position.offset ? 1:0;
 }
 
 LIBCXXW_NAMESPACE_END

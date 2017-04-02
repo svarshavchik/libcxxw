@@ -11,6 +11,8 @@
 
 LIBCXXW_NAMESPACE_START
 
+//! \ref richtextcursorlocation "richtextcursorlocation" implementation object.
+
 class LIBCXX_HIDDEN richtextcursorlocationObj : virtual public obj {
 
  public:
@@ -35,19 +37,15 @@ class LIBCXX_HIDDEN richtextcursorlocationObj : virtual public obj {
 			size_t offsetArg,
 			richtextfragmentObj::locations_t::iterator new_iter);
 
+	//! Alternative initialization used by clone().
+	void initialize(const richtextcursorlocation &clone);
+
 	//! Deinitialize this location
 
 	//! The public wrapper for this object is responsible for invoking
 	//! deinitialize(), in the public object's destructor.
 
 	void deinitialize();
-
-	//! Clone this cursor.
-
-	//! This does not copy my_fragment and my_fragment_iter.
-	//! This is taken care of in richtextcursorObj::clone().
-
-	richtextcursorlocation clone() const;
 
 	//! Convenience typedef
 	typedef richtextfragmentObj::locations_t locations_t;
@@ -87,49 +85,129 @@ class LIBCXX_HIDDEN richtextcursorlocationObj : virtual public obj {
 		//! This cursor is positioned on character text[offset].
 		size_t offset=0;
 
+		//! Whether horiz_pos is valid.
+		bool horiz_pos_is_valid=false;
+
 		//! Actual horizontal offset of this cursor, in pixels.
-		dim_squared_t horiz_pos=0;
+		dim_squared_t cached_horiz_pos=0;
 
 		//! Targeted horiz_pos when the cursor is moving up/down
 		dim_squared_t targeted_horiz_pos=0;
 
 		//! Reset targeted_horiz_pos
 
-		inline void reset_horiz_pos()
+		inline void set_targeted_horiz_pos()
 		{
-			targeted_horiz_pos=horiz_pos;
-		}
-
-		//! At start of line
-
-		inline void start_of_line()
-		{
-			offset=0;
-			horiz_pos=0;
-			targeted_horiz_pos=0;
+			targeted_horiz_pos=cached_horiz_pos;
 		}
 	};
 
+ private:
 	//! The position of this location in the fragment
 	position_t position;
+
+	//! What is says.
+	inline void horiz_pos_no_longer_valid()
+	{
+		position.horiz_pos_is_valid=false;
+	}
+
+ public:
+	//! Return our offset.
+	auto get_offset() const
+	{
+		return position.offset;
+	}
+
+	//! After a split(), subtract from offset.
+
+	//! \internal
+	inline void split_from_fragment(size_t howmuchremoved)
+	{
+		position.offset -= howmuchremoved;
+		horiz_pos_no_longer_valid();
+	}
+
+	//! After a merge(), there are more characters before us.
+
+	//! \internal
+	inline void merged_from_fragment(size_t howmanymore)
+	{
+		position.offset += howmanymore;
+		horiz_pos_no_longer_valid();
+	}
+
+	//! There were nchars characters removed starting at position #pos.
+
+	//! We are advised, so, by richtextfragment. Adjust ourselves
+	//! accordingly.
+
+	inline void removed_from_fragment(size_t pos, size_t nchars)
+	{
+		if (position.offset < pos)
+			return;
+
+		if (position.offset <= pos+nchars)
+		{
+			position.offset=pos;
+		}
+		else
+			position.offset -= nchars;
+
+		horiz_pos_no_longer_valid();
+	}
 
 	//! This is a cursor location for the currently-visible cursor
 	bool cursor_on=false;
 
-	//! Reset horiz_pos to point exactly to the character.
-	void update_horiz_pos();
+	//! Reset horiz_pos to point exactly to this location.
+
+	//! If it is not already cached.
+	void cache_horiz_pos(IN_THREAD_ONLY);
+
+	//! Return the current "targeted" horizontal position.
+	dim_squared_t get_targeted_horiz_pos(IN_THREAD_ONLY);
 
 	//! Reset offset and horiz pos to point to targeted_horiz_pos
-	void update_offset(dim_squared_t targeted_horiz_pos);
+	void set_targeted_horiz_pos(IN_THREAD_ONLY,
+				    dim_squared_t targeted_horiz_pos);
 
-	//! Ahead by 1
+	//! Return the current horizontal position
+
+	dim_t get_horiz_pos(IN_THREAD_ONLY);
+
+	//! Adjust location by character count.
 	void move(ssize_t howmuch);
 
+ private:
+	void leftby1();
+	void rightby1();
+ public:
 	//! Beginning of fragment
 	void start_of_line();
 
 	//! End of fragment
 	void end_of_line();
+
+	//! richtextfragment inserted nchars at offset #pos, with extra_width pixels
+
+	void inserted_at(IN_THREAD_ONLY,
+			 size_t pos, size_t nchars, dim_t extra_width);
+
+	//! The same location?
+	bool same(const richtextcursorlocationObj &b) const;
+
+	//! Compare locations.
+
+	// Compare two cursors' locations.
+
+	// Returns 0 if the two cursors point to the same spot.
+	// Returns 1 or -1 if the two cursors point to the same fragment,
+	// but they're not the same. Returns >1 or <-1 if the two cursors
+	// point to different fragments. Basically, this is the number
+	// of fragments between the two cursors, inclusively.
+
+	std::ptrdiff_t compare(const richtextcursorlocationObj &b) const;
 };
 
 LIBCXXW_NAMESPACE_END

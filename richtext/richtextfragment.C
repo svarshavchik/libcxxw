@@ -409,12 +409,11 @@ size_t richtextfragmentObj::insert(IN_THREAD_ONLY,
 
 	for (const auto &location:locations)
 	{
-		if (!location->do_not_adjust_in_insert &&
-		    location->position.offset >= pos)
+		if (!location->do_not_adjust_in_insert)
 		{
-			location->position.offset += n_size;
-			location->position.horiz_pos += (width-old_width);
-			location->position.reset_horiz_pos();
+			location->inserted_at(IN_THREAD,
+					      pos, n_size,
+					      width-old_width);
 		}
 	}
 
@@ -926,9 +925,11 @@ void richtextfragmentObj::render(IN_THREAD_ONLY,
 
 		if (l.cursor_on)
 		{
+			auto offset=l.get_offset();
+
 			overlay_merge(overlay,
-				      l.position.offset,
-				      l.position.offset+1,
+				      offset,
+				      offset+1,
 				      meta_overlay::inverse);
 		}
 	}
@@ -1137,7 +1138,7 @@ richtextfragment richtextfragmentObj::split(IN_THREAD_ONLY,
 
 		++iter;
 
-		if ((*p)->position.offset >= pos)
+		if ((*p)->get_offset() >= pos)
 		{
 			// This cursor location is now in the new fragment
 
@@ -1148,8 +1149,7 @@ richtextfragment richtextfragmentObj::split(IN_THREAD_ONLY,
 
 			l->my_fragment=&*new_fragment;
 			l->my_fragment_iter=--new_fragment->locations.end();
-			l->position.offset -= pos;
-			l->update_horiz_pos();
+			l->split_from_fragment(pos);
 		}
 	}
 
@@ -1254,8 +1254,7 @@ void richtextfragmentObj::merge(IN_THREAD_ONLY, fragment_list &my_fragments)
 		locations.push_back(l);
 		l->my_fragment=this;
 		l->my_fragment_iter=--locations.end();
-		l->position.offset += orig_size;
-		l->update_horiz_pos();
+		l->merged_from_fragment(orig_size);
 		other->locations.pop_front();
 	}
 	my_fragments.erase(my_paragraph->fragments.get_iter(n));
@@ -1293,17 +1292,7 @@ void richtextfragmentObj::remove(IN_THREAD_ONLY,
 	// Adjust all locations on or after the removal point.
 	for (const auto &l:locations)
 	{
-		if (l->position.offset < pos)
-			continue;
-
-		if (l->position.offset <= pos+nchars)
-		{
-			l->position.offset=pos;
-		}
-		else
-			l->position.offset -= nchars;
-
-		l->update_horiz_pos();
+		l->removed_from_fragment(pos, nchars);
 	}
 
 	recalculate_linebreaks();
@@ -1327,7 +1316,7 @@ void richtextfragmentObj
 			n->locations.insert(n->locations.end(), l);
 		l->my_fragment=n;
 
-		l->position.start_of_line();
+		l->start_of_line();
 		locations.erase(p);
 	}
 }

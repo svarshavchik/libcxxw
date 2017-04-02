@@ -22,7 +22,17 @@ class richtextcursorlocationObj;
 //! point to the next or the previous character.
 //!
 //! Like the \ref richtext "rich text object", this is not a thread-safe
-//! object. A public object provides a thread-safe wrapper.
+//! object. The \ref richtextiterator "rich text iterator object" provides
+//! a thread-safe wrapper for this object. This object is considered an
+//! internal object owned by the rich text classes, and gets modified by
+//! them.
+//!
+//! We thread a very fine needle here. In all cases, we can only get here
+//! under protection of richtextobj's big lock. So, we're single-threaded
+//! here in all cases. But, additionally, IN_THREAD_ONLY we may also look
+//! at my richtextfragmentObj's horiz_info in order to cache the horizontal
+//! pixel offset that this location represents.
+
 typedef ref<richtextcursorlocationObj> richtextcursorlocation;
 
 LIBCXXW_NAMESPACE_END
