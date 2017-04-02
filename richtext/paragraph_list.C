@@ -179,13 +179,6 @@ void paragraph_list::theme_updated(IN_THREAD_ONLY)
 			 {
 				 fragment_list fragments{IN_THREAD, *this, *p};
 
-				 p->fragments.for_fragments
-					 ([&]
-					  (const richtextfragment &f)
-					  {
-						  f->theme_updated(IN_THREAD);
-					  });
-
 				 fragments.theme_was_updated=true;
 			 }
 

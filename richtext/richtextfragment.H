@@ -199,7 +199,7 @@ public:
 	richtexthorizinfo_t horiz_info;
 
 	//! Current theme was updated. Fonts have been changed.
-	void theme_updated(IN_THREAD_ONLY);
+	void theme_updated_called_by_fragment_list(IN_THREAD_ONLY);
 
  private:
 
@@ -359,9 +359,13 @@ public:
 	std::pair<richtextfragmentObj *, bool>
 		find_y_position(size_t y_position_requested);
 
+	//! Set by fragment_list in order to recalculate this fragment's size
+
+	bool recalculate_size_needed=false;
+
 	//! Invoked by fragment_list to recalculate this fragment.
 
-	void recalculate_size(IN_THREAD_ONLY);
+	void recalculate_size_called_by_fragment_list(IN_THREAD_ONLY);
 
 	struct render_info;
 

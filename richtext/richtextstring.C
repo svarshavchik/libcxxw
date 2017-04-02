@@ -47,6 +47,53 @@ richtextstring::richtextstring(const richtextstring &other,
 	for (auto &m:meta)
 		m.first -= pos;
 	modified();
+
+	if (!other.fonts_need_resolving)
+	{
+		// We can save ourselves a lot of work by copying these, too.
+
+		auto b=std::upper_bound
+			(other.resolved_fonts.begin(),
+			 other.resolved_fonts.end(),
+			 pos,
+			 []
+			 (size_t pos, const auto &pair)
+			 {
+				 return pos < pair.first;
+			 });
+
+		if (b == other.resolved_fonts.begin())
+			throw EXCEPTION("Internal error: invalid resolved_fonts cache");
+		--b;
+
+		auto e=std::lower_bound
+			(other.resolved_fonts.begin(),
+			 other.resolved_fonts.end(),
+			 pos+n,
+			 []
+			 (const auto &pair, size_t pos)
+			 {
+				 return pair.first < pos;
+			 });
+
+		if (!(b < e))
+			throw EXCEPTION("Internal error: invalid resolved_fonts cache");
+		resolved_fonts.reserve(e-b);
+
+		std::transform(b, e,
+			       std::back_insert_iterator<resolved_fonts_t>
+			       (resolved_fonts),
+			       [pos]
+			       (const auto &pair)
+			       {
+				       auto cpy=pair;
+
+				       cpy.first=cpy.first < pos ? 0:
+					       cpy.first-pos;
+				       return cpy;
+			       });
+		fonts_need_resolving=false;
+	}
 }
 
 richtextstring::~richtextstring()=default;
@@ -78,6 +125,9 @@ void richtextstring::sort_and_validate(meta_t &meta, size_t n)
 
 void richtextstring::modified()
 {
+	// NOTE: insert() and erase() adjusts resolved_fonts, and only sets
+	// coalesce_needed, by itself.
+
 	coalesce_needed=true;
 	fonts_need_resolving=true;
 	resolved_fonts.clear();
@@ -157,34 +207,153 @@ richtextstring::meta_t::iterator richtextstring::duplicate(meta_t &meta,
 }
 
 void richtextstring::insert(size_t pos,
-			    const std::u32string &s,
-			    const std::unordered_map<size_t,
-			    richtextmeta> &smeta)
+			    const std::u32string &s)
 {
-	meta_t new_meta(smeta.begin(), smeta.end());
+	if (s.size() == 0)
+		return;
 
-	// smeta may be empty, to insert only text no metadata. Otherwise
-	// smeta must be valid for the text string.
-	if (!new_meta.empty())
-		sort_and_validate(new_meta, s.size());
+	meta_t new_meta;
 
-	if (s.empty())
-		return; // Edge case, nothing to insert.
+	modified();
 
-	insert(pos, s, new_meta);
+	do_insert(pos, s, new_meta);
 }
 
-void richtextstring::insert(size_t pos,
-			    const richtextstring &s)
+void richtextstring::insert(size_t pos, richtextstring s)
 {
-	meta_t meta_cpy=s.meta;
+	if (s.size() == 0)
+		return;
 
-	insert(pos, s.string, meta_cpy);
+	if (size() == 0)
+	{
+		*this=s;
+		return; // Edge case.
+	}
+
+	bool fonts_not_resolved =
+		fonts_need_resolving || s.fonts_need_resolving;
+
+	do_insert(pos, s.string, s.meta);
+
+	if (fonts_not_resolved)
+	{
+		modified();
+		return;
+	}
+	coalesce_needed=true;
+
+	// We can save ourselves some work resolving fonts by logically
+	// inserting the other string's resolved fonts.
+
+	resolved_fonts.reserve(resolved_fonts.size()
+			       + s.resolved_fonts.size() + 1);
+
+	// Find the insert position, insert the other string's resolved fonts
+	// ...
+
+	auto insert_pos=std::upper_bound
+		(resolved_fonts.begin(),
+		 resolved_fonts.end(),
+		 pos,
+		 []
+		 (size_t pos, const auto &pair)
+		 {
+			 return pos < pair.first;
+		 });
+
+	assert_or_throw(insert_pos != resolved_fonts.begin(),
+			"Internal error: corrupted resolved_fonts");
+
+	// The C++ standard is too harsh:
+	//
+	// "If no reallocation happens, all the iterators and references
+	// before the insertion point remain valid.
+	//
+	// So, if we insert() here, insert_pos will be technically invalid.
+
+	size_t insert_idx=insert_pos-resolved_fonts.begin();
+
+	if (insert_pos[-1].first == pos)
+	{
+		--insert_pos;
+		--insert_idx;
+	}
+	else
+	{
+		auto cpy= insert_pos[-1];
+		cpy.first=pos;
+
+		resolved_fonts.insert(insert_pos, cpy);
+
+		insert_pos=resolved_fonts.begin() + insert_idx;
+	}
+
+	resolved_fonts.insert(insert_pos,
+			      s.resolved_fonts.begin(),
+			      s.resolved_fonts.end());
+
+	insert_pos=resolved_fonts.begin()+insert_idx;
+
+	// ... and adjust the inserted indexes accordingly.
+	auto after_insert_pos=insert_pos+s.resolved_fonts.size();
+
+	std::for_each(insert_pos, after_insert_pos,
+		      [pos]
+		      (auto &pair)
+		      {
+			      pair.first += pos;
+		      });
+
+	std::for_each(after_insert_pos, resolved_fonts.end(),
+		      [len=s.size()]
+		      (auto &pair)
+		      {
+			      pair.first += len;
+		      });
+
+	// We now need to check both ends of the inserted string, to see if
+	// coalescing is needed.
+	//
+	// Although we know how vector iterators work, the C++ standard is
+	// a bit harsh: all iterators on or after the erase() point get
+	// invalidated. It's overkill, but let's be strictly conforming.
+
+	size_t insert_index=insert_pos-resolved_fonts.begin();
+	size_t after_insert_idx=after_insert_pos-resolved_fonts.begin();
+
+	while (insert_index > 0 &&
+	       (insert_pos[-1].first == insert_pos->first ||
+		insert_pos[-1].second == insert_pos->second))
+	{
+		--insert_pos;
+
+		auto saved_pos=insert_pos->first;
+		resolved_fonts.erase(insert_pos);
+
+		insert_pos=resolved_fonts.begin()+(--insert_index);
+		insert_pos->first=saved_pos;
+		--after_insert_idx;
+	}
+	after_insert_pos=resolved_fonts.begin()+after_insert_idx;
+
+	while (after_insert_idx > 0 &&
+	       after_insert_pos != resolved_fonts.end() && // Shouldn't happen
+	       (after_insert_pos[-1].first == after_insert_pos->first ||
+		after_insert_pos[-1].second == after_insert_pos->second))
+	{
+		--after_insert_pos;
+		--after_insert_idx;
+
+		auto saved_pos=after_insert_pos->first;
+		resolved_fonts.erase(after_insert_pos);
+		after_insert_pos=resolved_fonts.begin()+after_insert_idx;
+		after_insert_pos->first=saved_pos;
+	}
 }
 
-void richtextstring::insert(size_t pos,
-			    const std::u32string &s,
-			    meta_t &new_meta)
+void richtextstring::do_insert(size_t pos,
+			       const std::u32string &s,
+			       meta_t &new_meta)
 {
 	// Sanity check: insert point not past the end of the string.
 	assert_or_throw(pos <= string.size(), "Internal error: bad position.");
@@ -196,8 +365,6 @@ void richtextstring::insert(size_t pos,
 	// Add insert position to the to-be-inserted metadata.
 	for (auto &m:new_meta)
 		m.first += pos;
-
-	modified();
 
 	// If an exception gets thrown, make sure we'll unwind everything.
 	bool text_inserted=false;
@@ -277,7 +444,65 @@ void richtextstring::erase(size_t pos, size_t n)
 		return;
 	}
 
-	modified();
+	coalesce_needed=true;
+
+	if (!fonts_need_resolving)
+	{
+		// Adjust resolved font cache.
+
+		resolved_fonts.reserve(resolved_fonts.size()+1);
+
+		auto after_erased=std::upper_bound
+			(resolved_fonts.begin(),
+			 resolved_fonts.end(),
+			 pos+n,
+			 []
+			 (size_t pos, const auto &pair)
+			 {
+				 return pos < pair.first;
+			 });
+
+		assert_or_throw(after_erased != resolved_fonts.begin(),
+				"Internal error: corrupted resolved_fonts");
+
+		if ((--after_erased)->first != pos+n)
+		{
+			resolved_fonts.insert(after_erased+1,
+					      {pos+n, after_erased->second});
+			++after_erased;
+		}
+
+		auto before_erased=std::lower_bound
+			(resolved_fonts.begin(),
+			 resolved_fonts.end(),
+			 pos,
+			 []
+			 (const auto &pair, size_t pos)
+			 {
+				 return pair.first < pos;
+			 });
+
+		size_t before_index=before_erased-resolved_fonts.begin();
+
+		resolved_fonts.erase(before_erased, after_erased);
+
+		before_erased=resolved_fonts.begin()+before_index;
+
+		std::for_each(before_erased, resolved_fonts.end(),
+			      [n]
+			      (auto &pair)
+			      {
+				      pair.first -= n;
+			      });
+
+		while (before_erased > resolved_fonts.begin() &&
+		       before_erased[-1].second == before_erased->second)
+		{
+			--before_erased;
+
+			resolved_fonts.erase(before_erased+1);
+		}
+	}
 
 	// Duplicate the metadata at the end of the range, then erase the
 	// metadata in the range.

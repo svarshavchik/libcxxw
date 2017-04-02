@@ -94,6 +94,10 @@ void richtextparagraphObj::rewrap_fragment(IN_THREAD_ONLY,
 		(*iter)->merge(IN_THREAD, my_fragments);
 		iter=get_fragment_iter(fragment_n);
 		toosmall=true;
+
+		// Need to compute updated fragment sizes in order to
+		// continue.
+		my_fragments.recalculate_needed_fragment_sizes();
 	}
 
 	if ( (*iter)->width <= dim_t::value_type(width))
@@ -144,6 +148,10 @@ void richtextparagraphObj::rewrap_fragment(IN_THREAD_ONLY,
 			toobig=true;
 
 		++iter;
+
+		// Need to compute updated fragment sizes in order to
+		// continue.
+		my_fragments.recalculate_needed_fragment_sizes();
 	}
 }
 

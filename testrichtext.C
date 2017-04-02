@@ -276,6 +276,140 @@ void testlink(const current_fontcollection &font1,
 		throw EXCEPTION("textlink() failed: " << o.str());
 }
 
+void testresolvedfonts(const current_fontcollection &font1,
+		       const current_fontcollection &font2,
+		       const main_window &w)
+{
+	auto thread_=w->get_screen()->impl->thread;
+	auto black=w->get_screen()->impl->create_background_color("0%",
+								  {0,0,0});
+
+	richtextstring ustring{
+		U"0123456789",
+		{
+			{0, {black, font1}},
+			{5, {black, font2}},
+		}};
+
+	const auto &resolved_fonts=ustring.resolve_fonts(IN_THREAD, 0);
+
+	if (ustring.need_font_resolution())
+		throw EXCEPTION("resolve_fonts() didn't cache");
+
+	if (resolved_fonts.size() != 2)
+		throw EXCEPTION("Unexpected return value from resolve_fonts");
+
+	auto ffont1=resolved_fonts.at(0).second;
+	auto ffont2=resolved_fonts.at(1).second;
+
+	static const struct {
+		size_t pos;
+		size_t len;
+
+		std::vector<std::pair<size_t, freetypefont>> results;
+	} substr_tests[]={
+		{0, 4, {
+				{0, ffont1},
+			}},
+		{0, 5, {
+				{0, ffont1},
+			}},
+		{0, 6, {
+				{0, ffont1},
+				{5, ffont2},
+			}},
+		{0, 7, {
+				{0, ffont1},
+				{5, ffont2},
+			}},
+		{4, 1, {
+				{0, ffont1},
+			}},
+		{4, 2, {
+				{0, ffont1},
+				{1, ffont2},
+			}},
+		{4, 3, {
+				{0, ffont1},
+				{1, ffont2},
+			}},
+	};
+
+	for (const auto &t:substr_tests)
+	{
+		richtextstring substr{ustring, t.pos, t.len};
+
+		if (substr.need_font_resolution())
+			throw EXCEPTION("substr() didn't produce cached results");
+
+		if (substr.resolve_fonts(IN_THREAD, 0)!=t.results)
+			throw EXCEPTION("substr(" << t.pos << ", "
+					<< t.len << ") did not recalculate"
+					" resolved fonts correctly");
+	}
+
+	static const struct {
+		size_t pos;
+
+		std::vector<std::pair<size_t, freetypefont>> results;
+	} insert_tests[]={
+		{0, {
+				{0, ffont1},
+				{5, ffont2},
+				{10, ffont1},
+				{15, ffont2},
+			}},
+		{1, {
+				{0, ffont1},
+				{6, ffont2},
+				{11, ffont1},
+				{15, ffont2},
+			}},
+		{5, {
+				{0, ffont1},
+				{10, ffont2},
+			}},
+		{6, {
+				{0, ffont1},
+				{5, ffont2},
+				{6, ffont1},
+				{11, ffont2},
+			}},
+		{10, {
+				{0, ffont1},
+				{5, ffont2},
+				{10, ffont1},
+				{15, ffont2},
+			}},
+	};
+
+	for (const auto &t:insert_tests)
+	{
+		richtextstring orig=ustring;
+
+		orig.insert(t.pos, orig);
+
+		if (orig.need_font_resolution())
+			throw EXCEPTION("substr() didn't produce cached results");
+
+		if (orig.resolve_fonts(IN_THREAD, 0)!=t.results)
+			throw EXCEPTION("insert(" << t.pos
+					<< ") did not recalculate"
+					" resolved fonts correctly");
+
+		orig.erase(t.pos, ustring.size());
+
+		if (orig.need_font_resolution())
+			throw EXCEPTION("substr() didn't produce cached results");
+
+		if (orig.resolve_fonts(IN_THREAD, 0) !=
+		    ustring.resolve_fonts(IN_THREAD, 0))
+			throw EXCEPTION("erase(" << t.pos
+					<< ") did not recalculate"
+					" resolved fonts correctly");
+	}
+}
+
 int main(int argc, char **argv)
 {
 	try {
@@ -309,6 +443,7 @@ int main(int argc, char **argv)
 		auto font1=mw->impl->handler->create_theme_font("serif");
 		auto font2=mw->impl->handler->create_theme_font("sans serif");
 
+		testresolvedfonts(font1, font2, mw);
 		testrichtext(font1, font2, mw);
 		testsplit(font1, font2, mw);
 		testlink(font1, font2, mw);

@@ -118,24 +118,25 @@ class LIBCXX_HIDDEN richtextstring {
 
 	//! Insert new text into the richtextstring
 
-	//! Specifies the insert point, and the new text and the new text's
-	//! metadata.
+	//! Specifies the insert point, and another string.
+
 	void insert(size_t pos,
-		    const std::u32string &s,
-		    const std::unordered_map<size_t, richtextmeta> &smeta);
+		    const std::u32string &s);
 
 	//! Insert another string into richtextstring
 
-	//! Specifies the insert point, and another string.
+	//! Specifies the insert point, and another string. Emphasis on
+	//! "another", hence the parameter is passed by value :-).
 
-	void insert (size_t pos, const richtextstring &s);
+	void insert (size_t pos, richtextstring s);
  private:
 
 	//! insert() implementation.
 
-	void insert(size_t pos,
-		    const std::u32string &s,
-		    meta_t &new_meta);
+	//! Must call modified() also.
+	void do_insert(size_t pos,
+		       const std::u32string &s,
+		       meta_t &new_meta);
  public:
 	//! Remove portions of this string.
 	void erase(size_t pos, size_t n);
@@ -144,10 +145,13 @@ class LIBCXX_HIDDEN richtextstring {
 	void clear();
 
 	//! Return the text string
-	const std::u32string &get_string() const { return string; }
+	inline const std::u32string &get_string() const { return string; }
 
 	//! Return the metadata.
-	const meta_t &get_meta() { coalesce(); return meta; }
+	inline const meta_t &get_meta() { coalesce(); return meta; }
+
+	//! Return the size of the string.
+	inline size_t size() const { return string.size(); }
 
  private:
 
@@ -162,6 +166,13 @@ class LIBCXX_HIDDEN richtextstring {
 	bool fonts_need_resolving=true;
 
  public:
+	//! Whether font resolution is required
+
+	bool need_font_resolution() const
+	{
+		return fonts_need_resolving;
+	}
+
 	//! Lookup the metadata's freetypefonts.
 
 	//! Determine consecutive ranges of this text string that get rendered

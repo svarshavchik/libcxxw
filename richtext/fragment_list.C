@@ -103,7 +103,8 @@ void const_fragment_list
 fragment_list::fragment_list(IN_THREAD_ONLY,
 			     paragraph_list &my_paragraphsArg,
 			     richtextparagraphObj &paragraphArg)
-	: const_fragment_list{my_paragraphsArg, paragraphArg}
+	: const_fragment_list{my_paragraphsArg, paragraphArg},
+	  IN_THREAD{IN_THREAD}
 {
 }
 
@@ -113,17 +114,40 @@ fragment_list::~fragment_list()
 
 	if (theme_was_updated)
 	{
+		paragraph.fragments.for_fragments
+			([&]
+			 (const richtextfragment &f)
+			 {
+				 f->theme_updated_called_by_fragment_list(IN_THREAD);
+			 });
+
 		recalculate_size();
 		return;
 	}
 
 	bool changed=false;
 
+	if (size_changed)
+		recalculate_needed_fragment_sizes();
 	if (size_changed && recalculate_size())
 		changed=true;
 
 	if (changed)
 		my_paragraphs.size_changed=true;
+}
+
+void fragment_list::recalculate_needed_fragment_sizes()
+{
+	paragraph.fragments.for_fragments
+		([&, this]
+		 (const richtextfragment &f)
+		 {
+			 if (!f->recalculate_size_needed)
+				 return;
+
+			 f->recalculate_size_needed=false;
+			 f->recalculate_size_called_by_fragment_list(IN_THREAD);
+		 });
 }
 
 void fragment_list::insert_no_change_in_char_count(IN_THREAD_ONLY,
@@ -300,7 +324,7 @@ void fragment_list::recalculate_fragment_size(IN_THREAD_ONLY,
 			"Invalid fragment_number in recalculat_fragments()");
 
 	paragraph.fragments.begin()[fragment_number]
-		->recalculate_size(IN_THREAD);
+		->recalculate_size_needed=true;
 	size_changed=true;
 }
 

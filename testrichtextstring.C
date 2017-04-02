@@ -212,8 +212,8 @@ void inserttest()
 		richtextstring rts{test.initial_s, test.initial_meta};
 
 		rts.insert(test.insert_pos,
-			   test.insert_s,
-			   test.insert_meta);
+			   richtextstring{test.insert_s,
+					   test.insert_meta});
 
 		if (rts.get_string() != test.expect_s ||
 		    rts.get_meta() != test.expect_meta)

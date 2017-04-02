@@ -176,11 +176,11 @@ richtextfragmentObj::find_y_position(size_t y_position_requested)
 	return ret;
 }
 
-void richtextfragmentObj::theme_updated(IN_THREAD_ONLY)
+void richtextfragmentObj::theme_updated_called_by_fragment_list(IN_THREAD_ONLY)
 {
 	string.theme_updated(IN_THREAD);
 	load_glyphs_widths_kernings(IN_THREAD);
-	recalculate_size(IN_THREAD);
+	recalculate_size_called_by_fragment_list(IN_THREAD);
 	redraw_needed=true;
 }
 
@@ -286,7 +286,7 @@ richtextfragmentObj *richtextfragmentObj::next_fragment() const
 	return nullptr;
 }
 
-void richtextfragmentObj::recalculate_size(IN_THREAD_ONLY)
+void richtextfragmentObj::recalculate_size_called_by_fragment_list(IN_THREAD_ONLY)
 {
 	width=0;
 	minimum_width=0;

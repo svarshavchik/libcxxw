@@ -80,6 +80,7 @@ const richtextstring::resolved_fonts_t
 				 last_font=--resolved_fonts.end();
 			 });
 	}
+	fonts_need_resolving=false;
 	return resolved_fonts;
 }
 
@@ -273,6 +274,9 @@ void richtextstring::theme_updated(IN_THREAD_ONLY)
 		if (!m.second.bg_color.null())
 			m.second.bg_color->theme_updated(IN_THREAD);
 	}
+
+	// This is mostly to clear the cached resolved fonts:
+	modified();
 }
 
 LIBCXXW_NAMESPACE_END

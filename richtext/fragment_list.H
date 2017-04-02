@@ -70,6 +70,8 @@ class LIBCXX_HIDDEN fragment_list : public const_fragment_list {
 
  private:
 
+	IN_THREAD_ONLY;
+
 	//! Internal flag set by the methods when the fragments were modified.
 
 	//! Checked in the destructor
@@ -108,6 +110,12 @@ class LIBCXX_HIDDEN fragment_list : public const_fragment_list {
 	//! the paragraph gets removed from the richtext object.
 
 	~fragment_list();
+
+	//! Recalculate sizes of all fragments whose sizes have changed.
+
+	//! Invoked from destructor, and from rewrap_fragment().
+
+	void recalculate_needed_fragment_sizes();
 
 	//! Insert a new fragment at the indicated position.
 
