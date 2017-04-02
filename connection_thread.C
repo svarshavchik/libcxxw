@@ -11,6 +11,8 @@
 #include "batch_queue.H"
 #include "xid_t.H"
 #include "catch_exceptions.H"
+#include <x/functionalrefptr.H>
+#include <x/mcguffinmultimap.H>
 
 LOG_CLASS_INIT(LIBCXX_NAMESPACE::w::connection_threadObj);
 
@@ -44,6 +46,8 @@ void connection_threadObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin)
 	elements_to_redraw_set elements_to_redraw;
 	containers_2_recalculate_map containers_2_recalculate;
 	element_set_t element_position_updated;
+	scheduled_callbacks_t scheduled_callbacks=
+		scheduled_callbacks_t::create();
 	std::function<void ()> cxxwtheme_changed=[] {};
 
 	window_handlers_thread_only= &window_handlers;
@@ -52,6 +56,7 @@ void connection_threadObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin)
 	elements_to_redraw_thread_only= &elements_to_redraw;
 	containers_2_recalculate_thread_only= &containers_2_recalculate;
 	element_position_updated_thread_only= &element_position_updated;
+	scheduled_callbacks_thread_only= &scheduled_callbacks;
 
 	visibility_updated_thread_only= &visibility_updated;
 	disconnect_callback_thread_only=[] {};

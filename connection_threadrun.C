@@ -9,6 +9,8 @@
 #include "catch_exceptions.H"
 #include "draw_info_cache.H"
 #include <x/sysexception.H>
+#include <x/functionalrefptr.H>
+#include <x/mcguffinmultimap.H>
 #include <atomic>
 
 LIBCXXW_NAMESPACE_START
@@ -55,6 +57,9 @@ void connection_threadObj
 	draw_info_cache current_draw_info_cache;
 	current_draw_info_cache_thread_only= &current_draw_info_cache;
 
+	// Assume we'll poll() indefinitely, unless there's a change in plans.
+	int poll_for= -1;
+
 	while (1)
 	{
 		if (recalculate_containers(IN_THREAD))
@@ -84,6 +89,16 @@ void connection_threadObj
 				// data. Rather return, and go back here,
 				// and create a new draw_info_cache.
 				return;
+
+			continue;
+		}
+
+		// Search: are there any scheduled callbacks?
+
+		if (invoke_scheduled_callbacks(IN_THREAD, poll_for))
+		{
+			if (!current_draw_info_cache.draw_info_cache.empty())
+				return; // Look above.
 
 			continue;
 		}
@@ -140,7 +155,7 @@ void connection_threadObj
 	}
 	// Ok, nothing else to do but poll().
 	LOG_TRACE("Polling");
-	if (poll(topoll, npoll, -1) < 0)
+	if (poll(topoll, npoll, poll_for) < 0)
 	{
 		if (errno != EINTR && errno != EAGAIN &&
 		    errno != EWOULDBLOCK)
@@ -152,6 +167,113 @@ void connection_threadObj
 
 	if (topoll[0].revents & POLLIN)
 		msgqueue->getEventfd()->event();
+}
+
+// Insert a new callback
+
+ref<obj> connection_threadObj
+::do_schedule_callback(IN_THREAD_ONLY,
+		       const tick_clock_t::duration &timeout,
+		       const callback_functional_t &callback)
+{
+	return (*scheduled_callbacks(IN_THREAD))->insert(tick_clock_t::now()
+							 + timeout,
+							 callback);
+}
+
+// Check scheduled_callbacks() list.
+
+// Returns a bool indicating whether we executed something.
+// If false is returned, may update poll_for with the timeout for poll(),
+// at which point something might be scheduled, then. Otherwise poll_for
+// is left alone (it should be initialized to -1.
+
+bool connection_threadObj::invoke_scheduled_callbacks(IN_THREAD_ONLY,
+						      int &poll_for)
+{
+	// Scan the scheduled_callbacks list.
+
+	auto b=(*scheduled_callbacks(IN_THREAD))->begin();
+	auto e=(*scheduled_callbacks(IN_THREAD))->end();
+
+	const auto maximum_poll=
+		std::chrono::duration_cast<tick_clock_t::duration>
+		(std::chrono::minutes(30));
+
+	while (b != e)
+	{
+		auto p=b->second.getptr();
+
+		if (p.null())
+		{
+			++b;
+			continue; // Zombie callback.
+		}
+
+		// At this point we should check the current
+		// system clock, and see if the callback time
+		// has elapsed.
+
+		auto now=tick_clock_t::now();
+
+		// And take a closer look
+		for ( ; b != e && now >= b->first; ++b)
+		{
+			if (p.null())
+				// Second, and subsequent, time here.
+				p=b->second.getptr();
+
+			if (p.null())
+				continue; // Ignore zombies
+
+			// Remove this callback, and invoke it.
+			b->second.erase();
+
+			try {
+				p->invoke(IN_THREAD);
+			} CATCH_EXCEPTIONS;
+
+			p=nullptr;
+
+			// At this point, if the iterator hasn't reached
+			// end, b->first must be greater than now.
+		}
+
+		if (b != e)
+		{
+			// Compute how long to poll_for.
+
+			auto when=b->first;
+
+			// We don't have anything more than
+			// a few seconds in the future, but
+			// just in case we have long terrm
+			// plans, limit poll() to 30 minute
+			// timeouts.
+
+			if (when > now + maximum_poll)
+			{
+				poll_for=30*60 * 1000;
+			}
+			else
+			{
+				poll_for=std::chrono::duration_cast
+					<std::chrono::milliseconds>
+					(when-now).count();
+
+				// It's possible if the system
+				// clock's precision is greater
+				// than a millisecond, the
+				// duration cast produces a
+				// goose egg. poll() for a lone
+				// millisecond, in that case.
+
+				if (poll_for == 0)
+					poll_for=1;
+			}
+		}
+		break;
+	}
 }
 
 void connection_threadObj

@@ -15,6 +15,9 @@
 #include <x/threadmsgdispatcher.H>
 #include <x/logger.H>
 #include <x/functional.H>
+#include <x/functionalrefptrfwd.H>
+#include <x/mcguffinmultimapfwd.H>
+#include <x/mcguffincontainerobj.H>
 #include <x/mpobj.H>
 #include <x/weakptr.H>
 #include <x/refptr_hash.H>
@@ -24,6 +27,7 @@
 #include <unordered_set>
 #include <set>
 #include <atomic>
+#include <chrono>
 
 LIBCXXW_NAMESPACE_START
 
@@ -31,6 +35,7 @@ class window_handlerObj;
 class xidObj;
 class containers_2_recalculate_map;
 
+//! The connection thread. Handles X server events. Does everything.
 class LIBCXX_HIDDEN connection_threadObj
 	: public threadmsgdispatcherObj {
 
@@ -38,26 +43,34 @@ class LIBCXX_HIDDEN connection_threadObj
 
  public:
 
+	//! Our connection.
 	const connection_info info;
 
+	//! Constructor
 	connection_threadObj(const connection_info &info);
+
+	//! Destructor
 	~connection_threadObj();
 
-	// Call get_error() and log the results.
+	//! Call get_error() and log the results.
 
 	void report_error(const xcb_generic_error_t *e);
 
+	//! Execution thread!
 	void run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin);
 
  private:
 
 	/////////////////////////////////////////////////////////////////////
 	//
-	// Run something.
+
+	//! Run something.
 
 	void run_something(msgqueue_auto &msgqueue,
 			   struct pollfd *topoll,
 			   size_t &npoll);
+
+	//! Run an event received from the X server.
 
 	void run_event(IN_THREAD_ONLY, const xcb_generic_event_t *event);
 
@@ -69,7 +82,7 @@ class LIBCXX_HIDDEN connection_threadObj
 	// These objects are constructed on the connection thread's stack,
 	// and are accessible IN_THREAD_ONLY
 
-	// Define a set of elements, ordered by their nesting level.
+	//! Define a set of elements, ordered by their nesting level.
 
 	typedef std::map<size_t, std::unordered_set<elementimpl>> element_set_t;
 
@@ -80,77 +93,118 @@ class LIBCXX_HIDDEN connection_threadObj
 	static elementimpl next_lowest_element(element_set_t &s);
 	static elementimpl next_highest_element(element_set_t &s);
  private:
-	// Here's a list of elements that have requested their visibility to
-	// be changed.
+	//! A list of elements that have requested their visibility to be changed.
 
 	element_set_t *visibility_updated_thread_only;
 
+	//! Check for a visibility change, and process it.
+
 	bool process_visibility_updated(IN_THREAD_ONLY);
 
-	// Root window on screen 0
+	//! Root window on screen 0
 
 	xcb_window_t root_window_thread_only;
 
-	// Callback for when CXXWTHEME on the root window change.s
+	// Callback for when CXXWTHEME on the root window changes.
 
 	std::function<void ()> *cxxwtheme_changed_thread_only;
 
-	// Active window handlers.
+	//! Active window handlers.
 
 	std::unordered_map<xcb_window_t,
 			   ref<window_handlerObj>> *window_handlers_thread_only;
 
-	// Destroyed xids, waiting until the corresponding
-	// "destroyed" message is received from the display server.
-	//
-	// We can't get rid of them immediately, because it would
-	// recycle these xids, and until a "destroyed" message is
-	// received, a message related to the current xid could be
-	// interpreted as related to the new xid. So, once something
-	// is destroyed it goes here, until the destroyed message is
-	// received.
+	//! Zombies
+
+	//! Destroyed xids, waiting until the corresponding
+	//! "destroyed" message is received from the display server.
+	//!
+	//! We can't get rid of them immediately, because it would
+	//! recycle these xids, and until a "destroyed" message is
+	//! received, a message related to the current xid could be
+	//! interpreted as related to the new xid. So, once something
+	//! is destroyed it goes here, until the destroyed message is
+	//! received.
 
 	std::unordered_map<uint32_t, ref<xidObj>> *destroyed_xids_thread_only;
 
-	// Collected Expose event rectangles. They get collected until
-	// a received expose event indicates count=0, then the exposure
-	// event gets processed
+	//! Collecting exposure rectangles.
+
+	//! They get collected until
+	//! a received expose event indicates count=0, then the exposure
+	//! event gets processed
 
 	rectangle_set *exposed_rectangles_thread_only;
 
-	// Elements that need to be redrawn
+	//! A container for elements that need to be redrawn.
 
 	typedef std::unordered_set<ref<elementObj::implObj>
 				   > elements_to_redraw_set;
 
+
+	//! Elements that need to be redrawn
 	elements_to_redraw_set *elements_to_redraw_thread_only;
 
+	//! Draw elements.
 	bool redraw_elements(IN_THREAD_ONLY);
 
-	// Which containers need to be recalculated
+	//! Which containers need to be recalculated
 	containers_2_recalculate_map *containers_2_recalculate_thread_only;
 
+	//! Find a container to recalculate
 	bool recalculate_containers(IN_THREAD_ONLY);
 
-	// Which elements' position has been updated. Rather than invoking
-	// process_updated_position() immediately, they get cached here, and
-	// processed.
+	//! Display elements that need their updated positions processed.
+
+	//! Which elements' position has been updated. Rather than invoking
+	//! process_updated_position() immediately, they get cached here, and
+	//! processed.
 
 	element_set_t *element_position_updated_thread_only;
+
+	//! Process an element's position.
 	bool process_element_position_updated(IN_THREAD_ONLY);
 
-	// And when there's nothing else to do, just before waiting for
-	// events, check for any established grabs, and grab them.
+		//! A clock for regularly-scheduled callbacks.
+
+	typedef std::chrono::steady_clock tick_clock_t;
+
+	//! tick_clock_t's time_point.
+
+	typedef tick_clock_t::time_point callback_time_point_t;
+
+	//! A regularly-scheduled callback function object.
+
+	typedef functionref<void (IN_THREAD_ONLY)> callback_functional_t;
+
+	//! A container for currently scheduled callbacks.
+
+	typedef mcguffinmultimap<callback_time_point_t,
+				 callback_functional_t>
+		scheduled_callbacks_t;
+
+	//! Scheduled callbacks
+
+	scheduled_callbacks_t *scheduled_callbacks_thread_only;
+
+	//! Check for any scheduled callbacks, and invoke them.
+
+	bool invoke_scheduled_callbacks(IN_THREAD_ONLY, int &);
+
+	//! Nothing to do.
+
+	//! And when there's nothing else to do, just before waiting for
+	//! events, check for any established grabs, and grab them.
 	void allow_events(IN_THREAD_ONLY);
 
-	// on_disconnect() callback
+	//! on_disconnect() callback
 
 	std::function<void ()> disconnect_callback_thread_only;
 
-	// Event processing
+	//! Event processing
 	void recycle_xid(uint32_t xid);
 
-	// Current draw_info cache object.
+	//! Current draw_info cache object.
 
 	draw_info_cache *current_draw_info_cache_thread_only;
 
@@ -162,6 +216,7 @@ class LIBCXX_HIDDEN connection_threadObj
 	THREAD_DATA_ONLY(containers_2_recalculate);
 	THREAD_DATA_ONLY(element_position_updated);
 	THREAD_DATA_ONLY(current_draw_info_cache);
+	THREAD_DATA_ONLY(scheduled_callbacks);
 
 #include "connection_thread.msgs.H"
 
@@ -187,6 +242,31 @@ class LIBCXX_HIDDEN connection_threadObj
 			  make_function<void (IN_THREAD_ONLY)>(std::forward<T>
 							       (func)));
 	}
+
+	//! Have the connection thread execute a lambda at some point later.
+
+	//! Takes a duration, and a lambda, and makes arrangements for the
+	//! lambda to be invoked at the prescribed point in time.
+
+	template<typename lambda, typename timeout_duration>
+		ref<obj> schedule_callback(IN_THREAD_ONLY,
+					   timeout_duration &&duration,
+					   lambda &&l)
+	{
+		return do_schedule_callback(IN_THREAD,
+					    std::chrono::duration_cast
+					    <tick_clock_t::duration>
+					    (std::forward<timeout_duration>
+					     (duration)),
+					    callback_functional_t::create
+					    (std::forward<lambda>(l)));
+	}
+
+	//! Implement schedule_callback().
+
+	ref<obj> do_schedule_callback(IN_THREAD_ONLY,
+				      const tick_clock_t::duration &timeout,
+				      const callback_functional_t &callback);
 
 	//! Macro for logging purpose
 
