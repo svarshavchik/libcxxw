@@ -30,7 +30,7 @@ void richtextmetalinkcollectionObj::apply(richtextstring &string) const
 
 	std::map<size_t, const metalink_tuple_t *> lookup;
 
-	auto s=string.get_string().size();
+	auto s=string.size();
 
 	for (const auto &tuple:*this)
 	{

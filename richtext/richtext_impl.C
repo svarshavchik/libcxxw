@@ -108,7 +108,7 @@ void richtextObj::implObj::set(IN_THREAD_ONLY, richtextstring &string)
 		locations_sentry.unguard();
 
 		auto fragment_ptr=&*last_fragment;
-		size_t n=fragment_ptr->string.get_string().size()-1;
+		size_t n=fragment_ptr->string.size()-1;
 
 		for (auto b=fragment_ptr->locations.begin(),
 			     e=fragment_ptr->locations.end(); b != e; ++b)
@@ -340,7 +340,7 @@ richtextstring richtextObj::implObj::get_as_richtext() const
 				  (const auto &fragment)
 				  {
 					  total_chars=fragment->string
-						  .get_string().size();
+						  .size();
 					  total_meta=fragment->string
 						  .get_meta().size();
 				  });

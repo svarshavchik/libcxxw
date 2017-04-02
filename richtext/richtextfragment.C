@@ -461,7 +461,7 @@ void richtextfragmentObj::recalculate_linebreaks()
 	{
 		--start_with;
 		++n;
-		skip += my_paragraph->get_fragment(start_with)->string.get_string().size();
+		skip += my_paragraph->get_fragment(start_with)->string.size();
 	}
 
 	auto end_with=my_fragment_number;
@@ -548,7 +548,7 @@ size_t richtextfragmentObj::meta_ending_pos(richtextmetamap_t::iterator iter)
 			"Internal error: meta_ending_pos received ending iterator value");
 
 	if (++iter == metadata.end())
-		return string.get_string().size();
+		return string.size();
 
 	return iter->first;
 }
@@ -1181,7 +1181,7 @@ richtextfragment richtextfragmentObj::split(IN_THREAD_ONLY,
 						 new_fragment);
 	}
 
-	if (new_fragment->string.get_string().size())
+	if (new_fragment->string.size())
 		new_fragment->update_glyphs_widths_kernings(IN_THREAD, 0, 1);
 
 	my_fragments.fragment_text_changed(IN_THREAD, my_fragment_number, 0);
@@ -1394,7 +1394,7 @@ richtextfragment richtextfragmentObj::fragments_t::find_fragment_for_pos(size_t 
 
 	pos -= fragment->first_char_n;
 
-	size_t s=fragment->string.get_string().size();
+	size_t s=fragment->string.size();
 
 	if (pos >= s)
 	{

@@ -96,7 +96,7 @@ void const_fragment_list
 	const
 {
 	insert_no_recalculate(paragraph.fragments.end(), new_fragment);
-	paragraph.adjust_char_count(new_fragment->string.get_string().size());
+	paragraph.adjust_char_count(new_fragment->string.size());
 }
 
 
@@ -194,7 +194,7 @@ void fragment_list::split_from(IN_THREAD_ONLY,
 
 	// We added size() here, so subtract the same from over there.
 	split_after->my_paragraph->adjust_char_count(-new_fragment->string
-						     .get_string().size());
+						     .size());
 
 	// Make a copy of the fragments that are going to get moved.
 	auto &old_fragments=split_after->my_paragraph->fragments;
@@ -211,7 +211,7 @@ void fragment_list::split_from(IN_THREAD_ONLY,
 	// paragraph, and adjust the current paragraph's character count.
 	for (const auto &f:copy)
 	{
-		split_after->my_paragraph->adjust_char_count(-f->string.get_string().size());
+		split_after->my_paragraph->adjust_char_count(-f->string.size());
 		f->my_paragraph=nullptr;
 	}
 
@@ -253,7 +253,7 @@ size_t fragment_list::remove(size_t first_fragment,
 	{
 		// Accounting
 
-		size_t nchars=p->string.get_string().size();
+		size_t nchars=p->string.size();
 
 		paragraph.adjust_char_count(-nchars);
 
@@ -362,7 +362,7 @@ void fragment_list::recalculate_size(bool &width_changed,
 		fragment->first_char_n=first_char_n;
 		fragment->y_pos=fragment_y_pos;
 
-		first_char_n += fragment->string.get_string().size();
+		first_char_n += fragment->string.size();
 		fragment_y_pos += dim_t::value_type(fragment->height());
 
 		paragraph.maximum_width_if_one_line =

@@ -252,7 +252,7 @@ void validate_richtext(IN_THREAD_ONLY,
 			assert_or_throw(fragment->height() > 0,
 					"fragment height is 0");
 
-			n += fragment->string.get_string().size();
+			n += fragment->string.size();
 		}
 
 		assert_or_throw(paragraph->num_chars == n,

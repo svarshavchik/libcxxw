@@ -19,12 +19,16 @@ class richtextiteratorObj;
 //! iterators. Each iterator owns a reference on its richtext object, and
 //! a reference to the \ref richtextcursorlocation "richtextcursorlocation",
 //! an internal placeholder for
-//! the iterator, that rich text classes update themselves.
+//! the iterator, that the rich text classes update themselves.
 //!
 //! The \ref richtextcursorlocation "richtextcursorlocation" can only be
 //! accessed while holding a lock on the underlying rich text object.
 //! The iterator's method invoke \ref richtext "rich text"'s methods to do
 //! that.
+//!
+//! richtextiterators have a special relationship to their richtexts. Their
+//! methods acquire locks on the richtext, and are able to access info that
+//! other classes can't.
 
 typedef ref<richtextiteratorObj> richtextiterator;
 

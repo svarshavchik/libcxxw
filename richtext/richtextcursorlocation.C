@@ -192,7 +192,7 @@ void richtextcursorlocationObj::move(ssize_t howmuch)
 		assert_or_throw(my_fragment && my_fragment->my_paragraph &&
 				my_fragment->my_paragraph->my_richtext &&
 				position.offset
-				< my_fragment->string.get_string().size(),
+				< my_fragment->string.size(),
 				"Internal error in move(): invalid offset");
 
 		if (position.offset)
@@ -235,7 +235,7 @@ void richtextcursorlocationObj::move(ssize_t howmuch)
 				"Internal error in move(): null paragraph");
 
 		auto new_fragment_text_size=
-			new_fragment->string.get_string().size();
+			new_fragment->string.size();
 		assert_or_throw(new_fragment_text_size,
 				"Internal error in move(): empty fragment");
 
@@ -269,7 +269,7 @@ void richtextcursorlocationObj::move(ssize_t howmuch)
 	{
 		assert_or_throw(my_fragment && my_fragment->my_paragraph &&
 				my_fragment->my_paragraph->my_richtext &&
-				position.offset < my_fragment->string.get_string().size(),
+				position.offset < my_fragment->string.size(),
 				"Internal error in move(): invalid offset");
 
 		bool initialization_required=false;
@@ -280,7 +280,7 @@ void richtextcursorlocationObj::move(ssize_t howmuch)
 
 		while (howmuch >=
 		       (chars_left=
-			f->string.get_string().size()-position.offset))
+			f->string.size()-position.offset))
 		{
 			initialization_required=true;
 
@@ -330,7 +330,7 @@ void richtextcursorlocationObj::move(ssize_t howmuch)
 				assert_or_throw(!f->string.get_string().empty(),
 						"Internal error in move(): "
 						"empty fragment");
-				auto pos=f->string.get_string().size()-1;
+				auto pos=f->string.size()-1;
 
 				initialize(f, pos);
 				return;
@@ -362,7 +362,7 @@ void richtextcursorlocationObj::move(ssize_t howmuch)
 void richtextcursorlocationObj::start_of_line()
 {
 	assert_or_throw(my_fragment &&
-			my_fragment->string.get_string().size() > 0,
+			my_fragment->string.size() > 0,
 			"Internal error in start_of_line(): invalid offset");
 
 	position.offset=0;
@@ -373,10 +373,10 @@ void richtextcursorlocationObj::start_of_line()
 void richtextcursorlocationObj::end_of_line()
 {
 	assert_or_throw(my_fragment &&
-			my_fragment->string.get_string().size() > 0,
+			my_fragment->string.size() > 0,
 			"Internal error in start_of_line(): invalid offset");
 
-	position.offset=my_fragment->string.get_string().size()-1;
+	position.offset=my_fragment->string.size()-1;
 	position.targeted_horiz_pos=~0;
 	horiz_pos_no_longer_valid();
 }

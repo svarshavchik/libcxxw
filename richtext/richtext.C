@@ -262,7 +262,7 @@ richtextiterator richtextObj::at(impl_t::read_only_lock &lock, size_t npos)
 
 	auto fragment=(*paragraph_iter)->find_fragment_for_pos(npos);
 
-	auto s=fragment->string.get_string().size();
+	auto s=fragment->string.size();
 
 	if (s == 0)
 		throw EXCEPTION("Internal error: empty rich text fragment in at().");
@@ -302,7 +302,7 @@ size_t richtextObj::pos(const impl_t::read_only_lock &lock,
 {
 	assert_or_throw
 		(l->my_fragment &&
-		 l->my_fragment->string.get_string().size() > l->get_offset() &&
+		 l->my_fragment->string.size() > l->get_offset() &&
 		 l->my_fragment->my_paragraph,
 		 "Internal error in pos(): invalid cursor location");
 
@@ -351,7 +351,7 @@ void richtextObj::get(const impl_t::read_only_lock &lock,
 	str.insert(0, {location_a->my_fragment->string,
 				location_a->get_offset(),
 				location_a->my_fragment
-				->string.get_string().size()
+				->string.size()
 				-location_a->get_offset()});
 	--diff;
 	auto f=location_a->my_fragment->next_fragment();
@@ -359,13 +359,13 @@ void richtextObj::get(const impl_t::read_only_lock &lock,
 	while (--diff)
 	{
 		assert_or_throw(f, "Internal error: NULL fragment");
-		str.insert(str.get_string().size(), f->string);
+		str.insert(str.size(), f->string);
 
 		f=f->next_fragment();
 	}
 	assert_or_throw(f, "Internal error: NULL fragment");
 
-	str.insert(str.get_string().size(),
+	str.insert(str.size(),
 		   {f->string, 0, location_b->get_offset()});
 }
 

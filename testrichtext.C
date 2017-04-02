@@ -40,7 +40,7 @@ void testrichtext(const current_fontcollection &font1,
 	if (impl->paragraphs.size() != 3)
 		throw EXCEPTION("Did not get 3 paragraphs");
 
-	if (impl->num_chars != ustring.get_string().size())
+	if (impl->num_chars != ustring.size())
 		throw EXCEPTION("Rich text size wrong");
 
 	std::cout << "Width: " << impl->real_width
@@ -142,13 +142,13 @@ void testsplit(const current_fontcollection &font1,
 		auto richtext=richtext::create(ustring, halign::left, 0);
 		auto impl=richtext->debug_get_impl(IN_THREAD);
 
-		assert_or_throw(impl->num_chars == ustring.get_string().size(),
+		assert_or_throw(impl->num_chars == ustring.size(),
 				"num_chars in rich text is not right after set()");
 
 		assert_or_throw(impl->paragraphs.size() == 1,
 				"rich text was not 1 paragraph");
 		assert_or_throw((*impl->paragraphs.get_paragraph(0))
-				->num_chars == ustring.get_string().size(),
+				->num_chars == ustring.size(),
 				"num_chars in paragraph is not right after set()");
 
 		const auto &paragraph=*impl->paragraphs.get_paragraph(0);
@@ -174,12 +174,12 @@ void testsplit(const current_fontcollection &font1,
 
 		fragment=*paragraph->fragments.get_iter(0);
 
-		assert_or_throw(impl->num_chars == ustring.get_string().size(),
+		assert_or_throw(impl->num_chars == ustring.size(),
 				"num_chars in rich text should not have changed");
 		assert_or_throw(impl->paragraphs.size() == 1,
 				"rich text is not still 1 paragraph");
 		assert_or_throw((*impl->paragraphs.get_paragraph(0))
-				->num_chars == ustring.get_string().size(),
+				->num_chars == ustring.size(),
 				"num_chars in paragraph is not right after split()");
 
 		std::ostringstream o;

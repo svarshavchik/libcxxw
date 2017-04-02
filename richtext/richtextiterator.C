@@ -229,7 +229,7 @@ richtextiteratorObj::at_info richtextiteratorObj::at() const
 			 assert_or_throw(my_location->my_fragment &&
 					 my_location->get_offset() <
 					 my_location->my_fragment->string
-					 .get_string().size(),
+					 .size(),
 					 "Internal error: invalid fragment");
 
 			 return at_info{
