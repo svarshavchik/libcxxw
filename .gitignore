@@ -46,6 +46,7 @@ suppressfile*
 /testmainwindowoptions.H
 /testrichtext
 /testrichtextstring
+/testrichtextiterator
 /testtextparam
 /m4
 /xml

@@ -286,6 +286,12 @@ libcxxw_la_SOURCES=\
 	richtext/richtext_impl.C		    \
 	richtext/richtext_impl.H		    \
 	richtext/richtextfwd.H			    \
+	richtext/richtext_insert.H		    \
+	richtext/richtext_insertfwd.H		    \
+	richtext/richtextiterator.C		    \
+	richtext/richtextiterator.H		    \
+	richtext/richtextiteratorfwd.H		    \
+	richtext/richtextiteratorobj.H		    \
 	richtext/richtextcursorlocation.C	    \
 	richtext/richtextcursorlocation.H	    \
 	richtext/richtextcursorlocationfwd.H	    \
@@ -371,6 +377,7 @@ TESTPROGRAMS=\
 	testgrid					\
 	testrichtextstring				\
 	testrichtext					\
+	testrichtextiterator				\
 	testtextparam					\
 	#
 
@@ -413,6 +420,10 @@ testwordwrappablelabel_LDFLAGS=-static $(STATICLINKFLAGS)
 testrichtext_SOURCES=testrichtext.C
 testrichtext_LDADD=libcxxw.la
 testrichtext_LDFLAGS=-static $(STATICLINKFLAGS)
+
+testrichtextiterator_SOURCES=testrichtextiterator.C
+testrichtextiterator_LDADD=libcxxw.la
+testrichtextiterator_LDFLAGS=-static $(STATICLINKFLAGS)
 
 testrichtextstring_SOURCES=testrichtextstring.C
 testrichtextstring_LDADD=-lcxx

@@ -155,16 +155,6 @@ void richtextparagraphObj::rewrap_fragment(IN_THREAD_ONLY,
 	}
 }
 
-void richtextparagraphObj::insert(IN_THREAD_ONLY,
-				  paragraph_list &my_paragraphs,
-				  size_t pos,
-				  const richtextstring &string)
-{
-	auto fragment=find_fragment_for_pos(pos);
-
-	fragment->insert(IN_THREAD, my_paragraphs, pos, string);
-}
-
 richtextfragment richtextparagraphObj::find_fragment_for_pos(size_t &pos) const
 {
 	return fragments.find_fragment_for_pos(pos);

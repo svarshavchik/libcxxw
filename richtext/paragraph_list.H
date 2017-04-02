@@ -37,6 +37,13 @@ public:
 	bool size_changed=false;
  public:
 
+	//! Have the destructor force recalculation.
+
+	//! We can't do everything ourselves. Somebody did something else,
+	//! and our destructor needs to carry its share of the load...
+
+	inline void recalculation_required() { size_changed=true; }
+
 	//! Constructor
 	paragraph_list(richtextObj::implObj &textArg);
 

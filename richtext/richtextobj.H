@@ -10,6 +10,9 @@
 #include "element_draw.H"
 #include "richtext/richtextfwd.H"
 #include "richtext/richtextstring.H"
+#include "richtext/richtextiteratorfwd.H"
+#include "richtext/richtextcursorlocation.H"
+#include "richtext/richtext_insertfwd.H"
 #include "x/w/types.H"
 #include "x/w/metrics/axis.H"
 #include <x/obj.H>
@@ -35,7 +38,11 @@ class LIBCXX_HIDDEN richtextObj : virtual public obj {
 
 		using mpobj::mpobj;
 
-		class lock : public mpobj<ref<implObj>>::lock {
+		//! Read lock, on an honor system.
+		typedef mpobj<ref<implObj>>::lock read_only_lock;
+
+		//! IN_THREAD has full rights on the underlying object.
+		class lock : public read_only_lock {
 
 		public:
 			lock(IN_THREAD_ONLY, impl_t &);
@@ -104,6 +111,92 @@ class LIBCXX_HIDDEN richtextObj : virtual public obj {
 
 		     bool force);
 
+	//! Return an iterator to the first character of the rich text.
+
+	richtextiterator begin();
+
+	//! Return an iterator to the last character of the rich text.
+
+	//! Note that this ending iterator is not "one-past". Iterators are
+	//! used with richtext objects used for input fields, which append
+	//! an extra space character at the end, and this is what this returns.
+
+	richtextiterator end();
+
+	//! Return an iterator to the given character # in the rich text.
+
+	richtextiterator at(size_t npos);
+
+	//! Run something while protected by a read only lock.
+
+	//! This is used by richtextiterator to gain read-only access (on an
+	//! honor system) to the underlying implementation object.
+	//!
+	//! Here, "read-only" means: no access to the horiz_info structure of
+	//! any text fragment. It is accessible IN_THREAD_ONLY.
+
+	template<typename lambda>
+		auto read_only_lock(lambda &&l)
+	{
+		impl_t::read_only_lock lock{impl};
+
+		return l(lock);
+	}
+
+	//! Run something while protected by the big thread lock.
+
+	//! This must be used by any IN_THREAD-scoped execution path.
+
+	template<typename lambda>
+		auto thread_lock(IN_THREAD_ONLY, lambda &&l)
+	{
+		impl_t::lock lock{IN_THREAD, impl};
+
+		return l(IN_THREAD, lock);
+	}
+
+	//! Insert text.
+
+	//! Invoked from richtextiterator->insert() after a thread_lock().
+	//! Passes a richtextcursorlocation that must have the
+	//! do_not_adjust_in_insert flag set.
+	//!
+	//! See richtextfragmentObj::insert() for the description of the
+	//! return value.
+
+	size_t insert_at_location(IN_THREAD_ONLY,
+				  impl_t::lock &lock,
+				  const richtext_insert_base &new_text);
+
+
+	//! Remove text.
+
+	//! Invoked from richtextiterator->insert() after a thread_lock().
+
+	void remove_at_location(IN_THREAD_ONLY,
+				impl_t::lock &lock,
+				const richtextcursorlocation &a,
+				const richtextcursorlocation &b);
+
+	//! Calculate a location's position'
+
+	static size_t pos(const impl_t::read_only_lock &,
+			  const richtextcursorlocation &);
+
+	//! Get text between two locations.
+
+	//! Invoked from richtextiterator->get() after a read_only_lock().
+
+	static void get(const impl_t::read_only_lock &,
+			richtextstring &,
+			const richtextcursorlocation &,
+			const richtextcursorlocation &);
+
+ private:
+	//! Return an iterator to the given character # in the rich text.
+
+	richtextiterator at(impl_t::read_only_lock &lock, size_t npos);
+ public:
 	//! For testing purpose.
 
 	ref<implObj> debug_get_impl(IN_THREAD_ONLY);

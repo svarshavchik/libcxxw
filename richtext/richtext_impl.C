@@ -10,11 +10,12 @@
 #include "richtext/richtextparagraph.H"
 #include "richtext/richtextfragment.H"
 #include "richtext/richtextcursorlocation.H"
+#include "richtext/fragment_list.H"
+#include "richtext/paragraph_list.H"
+#include "richtext/richtext_insert.H"
 #include "x/w/screen.H"
 #include "messages.H"
 #include "assert_or_throw.H"
-#include "fragment_list.H"
-#include "paragraph_list.H"
 
 #include <x/vector.H>
 #include <x/sentry.H>
@@ -231,24 +232,6 @@ bool richtextObj::implObj::unwrap(IN_THREAD_ONLY)
 	return my_paragraphs.unwrap(IN_THREAD);
 }
 
-void richtextObj::implObj::insert(IN_THREAD_ONLY,
-			 size_t pos,
-			 const richtextstring &text)
-{
-	assert_or_throw(!paragraphs.empty(),
-			"Internal error: no paragraphs in insert()");
-
-	// Which paragraph?
-
-	auto paragraph=paragraphs.get_paragraph(find_paragraph_for_pos(pos));
-
-	// Let paragraph_list take care of this, from now on.
-
-	paragraph_list my_paragraphs(*this);
-
-	(*paragraph)->insert(IN_THREAD, my_paragraphs, pos, text);
-}
-
 size_t richtextObj::implObj::find_paragraph_for_pos(size_t &pos)
 {
 	auto p=paragraphs.find_paragraph_for_pos(pos);
@@ -391,5 +374,190 @@ void richtextObj::implObj::theme_updated(IN_THREAD_ONLY)
 
 	my_paragraphs.theme_updated(IN_THREAD);
 }
+
+
+void richtextObj::implObj::rewrap_at_fragment(IN_THREAD_ONLY,
+					      dim_t width,
+					      richtextfragmentObj *fragment,
+					      fragment_list &fragment_list_arg)
+{
+	assert_or_throw(fragment && fragment->my_paragraph,
+			"Internal error: fragment or paragraph is null");
+
+	int n=1;
+	auto paragraph=fragment->my_paragraph;
+	auto fragment_n=fragment->my_fragment_number;
+	if (fragment_n)
+	{
+		--fragment_n;
+		++n;
+	}
+
+	paragraph_list my_paragraphs{*this};
+	fragment_list my_fragments{IN_THREAD, my_paragraphs, *paragraph};
+
+	bool wrapped=false;
+	while (n && fragment_n < paragraph->fragments.size())
+	{
+		bool toosmall, toobig;
+
+		paragraph->rewrap_fragment(IN_THREAD,
+					   my_fragments,
+					   width,
+					   fragment_n,
+					   toosmall, toobig);
+		if (toobig || toosmall)
+			wrapped=true;
+		if (toobig)
+			++n;
+
+		if (!toosmall && !toobig)
+			--n;
+		++fragment_n;
+	}
+
+	if (wrapped)
+		my_fragments.fragments_were_rewrapped();
+}
+
+size_t richtextObj::implObj::insert_at_location(IN_THREAD_ONLY,
+						dim_t word_wrap_width,
+						const richtext_insert_base
+						&new_text)
+{
+	assert_or_throw(new_text.fragment(),
+			"Internal error: null my_fragment in insert()");
+
+	paragraph_list my_paragraphs{*this};
+
+	// Start by inserting the text. insert() returns the number of
+	// inserted paragraph breaks.
+
+	auto num_inserted=
+		new_text.fragment()->insert(IN_THREAD,
+					    my_paragraphs,
+					    new_text);
+
+	if (word_wrap_width > 0)
+	{
+		auto orig_fragment=new_text.fragment();
+
+		assert_or_throw(orig_fragment && orig_fragment->my_paragraph &&
+				orig_fragment->my_paragraph->my_richtext,
+				"my_fragment, my_paragraph, or my_richtext "
+				"is null in "
+				"lock_and_insert_at_location()");
+
+		// First, rewrap whole paragraphs inserted.
+
+		if (num_inserted > 1)
+		{
+			paragraphs.for_paragraphs
+				(orig_fragment->my_paragraph
+				 ->my_paragraph_number+1,
+				 num_inserted-1,
+				 [&]
+				 (const richtextparagraph &p)
+				 {
+					 p->rewrap(IN_THREAD,
+						   my_paragraphs,
+						   word_wrap_width);
+					 return true;
+				 });
+		}
+
+		// Now, rewrap the inserted-into paragraph
+
+		fragment_list my_fragments(IN_THREAD, my_paragraphs,
+					   *orig_fragment->my_paragraph);
+
+		rewrap_at_fragment(IN_THREAD,
+				   word_wrap_width,
+				   orig_fragment, my_fragments);
+	}
+
+	return num_inserted;
+}
+
+void richtextObj::implObj::remove_at_location(IN_THREAD_ONLY,
+					      dim_t word_wrap_width,
+					      const richtextcursorlocation &ar,
+					      const richtextcursorlocation &br)
+{
+	const richtextcursorlocationObj *location_a=&*ar;
+	const richtextcursorlocationObj *location_b=&*br;
+
+	auto diff=location_a->compare(*location_b);
+
+	if (diff == 0)
+		return; // Too easy
+
+	// Make sure we go from a to b.
+
+	if (diff > 0)
+	{
+		location_b=&*ar;
+		location_a=&*br;
+	}
+	else
+	{
+		diff= -diff;
+	}
+
+	assert_or_throw(location_a->my_fragment &&
+			location_b->my_fragment,
+			"uninitialized fragments in remove_between()");
+
+	auto fragment_a=location_a->my_fragment;
+	auto fragment_b=location_b->my_fragment;
+
+	paragraph_list my_paragraphs{*this};
+	fragment_list fragment_a_list(IN_THREAD,
+				      my_paragraphs,
+				      *fragment_a->my_paragraph);
+
+	if (diff > 1)
+	{
+		// Remove intermediate fragments completely, and quickly.
+
+		--diff;
+		auto p=fragment_a->next_fragment();
+
+		if (--diff)
+		{
+			while (diff)
+			{
+				{
+					fragment_list
+						rem_fragments{IN_THREAD,
+							my_paragraphs,
+							*p->my_paragraph};
+
+					diff -= rem_fragments
+						.remove(p->my_fragment_number,
+							diff,
+							fragment_b);
+				}
+
+				p=fragment_a->next_fragment();
+			}
+		}
+
+		// Then merge the next fragment into this one.
+
+		fragment_a->merge(IN_THREAD, fragment_a_list);
+		my_paragraphs.recalculation_required();
+	}
+
+	fragment_a->remove(IN_THREAD, location_a->get_offset(),
+			   location_b->get_offset()-
+			   location_a->get_offset(),
+			   fragment_a_list);
+
+	if (word_wrap_width > 0)
+		rewrap_at_fragment(IN_THREAD, word_wrap_width,
+				   fragment_a, fragment_a_list);
+}
+
 
 LIBCXXW_NAMESPACE_END

@@ -8,6 +8,7 @@
 #include "richtext/richtextparagraph.H"
 #include "richtext/richtextcursorlocation.H"
 #include "richtext/richtext.H"
+#include "richtext/richtext_insert.H"
 #include "richtext/fragment_list.H"
 #include "richtext/paragraph_list.H"
 #include "richtext/richtextmetalink.H"
@@ -342,18 +343,18 @@ void richtextfragmentObj::recalculate_size_called_by_fragment_list(IN_THREAD_ONL
 
 size_t richtextfragmentObj::insert(IN_THREAD_ONLY,
 				   paragraph_list &my_paragraphs,
-				   size_t pos,
-				   const richtextstring &new_string)
+				   const richtext_insert_base &new_string)
 {
 	USING_MY_PARAGRAPH();
 
+	auto pos=new_string.pos();
 	const std::u32string &current_string=string.get_string();
 
 	// Sanity checks
 	assert_or_throw(pos <= current_string.size(),
 			"Invalid pos parameter to insert()");
 
-	auto n_size=new_string.get_string().size();
+	auto n_size=new_string.size();
 
 	if (n_size == 0) return 0; // Marginal
 
@@ -379,7 +380,7 @@ size_t richtextfragmentObj::insert(IN_THREAD_ONLY,
 				    horiz_info.erase(pos, pos+n_size);
 			    });
 
-	string.insert(pos, new_string);
+	new_string(string);
 	string_sentry.guard();
 
 	// Make room for breaks, widths, and kernings.

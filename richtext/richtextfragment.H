@@ -19,6 +19,7 @@
 #include "richtext/richtextstring.H"
 #include "richtext/richtextcursorlocationfwd.H"
 #include "richtext/richtexthorizinfo.H"
+#include "richtext/richtext_insertfwd.H"
 #include "x/w/picturefwd.H"
 #include "x/w/pictureobj.H"
 #include "x/w/rgb_hash.H"
@@ -318,8 +319,7 @@ public:
 
 	size_t insert(IN_THREAD_ONLY,
 		      paragraph_list &my_paragraphs,
-		      size_t pos,
-		      const richtextstring &new_string);
+		      const richtext_insert_base &new_string);
 
 	//! Computed width of this text fragment.
 

@@ -161,13 +161,6 @@ public:
 
 	/////////////////////////////////////////////////////////////////////
 
-	//! Insert content at the given position.
-
-	void insert(IN_THREAD_ONLY,
-		    paragraph_list &my_paragraphs,
-		    size_t pos,
-		    const richtextstring &string);
-
 	//! Locate a fragment.
 
 	//! Given an index of a character, searches through the fragments

@@ -22,6 +22,7 @@ LIBCXXW_NAMESPACE_START
 
 class paragraph_list;
 class richtextfragmentObj;
+class richtext_insert_base;
 
 //! A list of text paragraphs that ends with a mandatory line break.
 
@@ -230,6 +231,13 @@ public:
 	bool rewrap(IN_THREAD_ONLY,
 		    dim_t width);
 
+	// Text was removed and inserted here. Rewrap only from here.
+
+	void rewrap_at_fragment(IN_THREAD_ONLY,
+				dim_t width,
+				richtextfragmentObj *fragment,
+				fragment_list &fragment_list_arg);
+
 	//! Unwrap all text
 
 	//! Returns true if the rich text was reformatted.
@@ -239,8 +247,24 @@ public:
 
 	//! Insert content at the given position.
 
-	void insert(IN_THREAD_ONLY, size_t pos,
-		    const richtextstring &text);
+	//! Invoked from the public object's insert_at_location(), after
+	//! locking everything down tightly, and supplying us with the
+	//! word_wrap_width.
+
+	size_t insert_at_location(IN_THREAD_ONLY,
+				  dim_t word_wrap_width,
+				  const richtext_insert_base &new_text);
+
+ public:
+	//! Remove content between two cursors.
+
+	//! Invoked from the public object's remove_at_location(), after
+	//! locking everything down tightly, and supplying us with the
+	//! word_wrap_width.
+	void remove_at_location(IN_THREAD_ONLY,
+				dim_t word_wrap_width,
+				const richtextcursorlocation &a,
+				const richtextcursorlocation &b);
 
 	// Locate the paragraph containing character #pos
 
