@@ -31,7 +31,7 @@ rgb rgb::gradient(const gradient_t &g, size_t i, size_t n)
 
 	// First, map i to the range 0..k
 
-	component_t scaled_i= (i*k)/n;
+	auto scaled_i= (i*k)/n;
 
 	auto next=g.upper_bound(scaled_i);
 

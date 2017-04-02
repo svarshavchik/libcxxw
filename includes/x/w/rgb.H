@@ -88,7 +88,7 @@ public:
 	//! key in the map defines the ending rgb color. The rgb at
 	//! position \#i defines the rgb color for that value.
 
-	typedef std::map<component_t, rgb> gradient_t;
+	typedef std::map<unsigned, rgb> gradient_t;
 
 	//! Compute multiple gradient.
 
