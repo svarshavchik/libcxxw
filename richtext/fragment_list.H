@@ -16,17 +16,57 @@ class paragraph_list;
 
 //! A helper class that operates on \ref richtextfragmentObj "fragments".
 
-//! This is the only class that has full access to a paragraph's fragments_t.
+//! fragment_list and const_fragment_list are the only classes
+//! that have full access to a paragraph's fragments_t.
 
-class LIBCXX_HIDDEN fragment_list {
+class LIBCXX_HIDDEN const_fragment_list {
 
 public:
+	typedef richtextfragmentObj::fragments_t fragments_t;
+
 	//! The \ref paragraph_list "paragraph list" must be instantiated, first.
 
 	paragraph_list &my_paragraphs;
 
 	//! This is a fragment list from this paragraph.
 	richtextparagraphObj &paragraph;
+
+	//! Constructor
+	const_fragment_list(paragraph_list &my_paragraphsArg,
+			    richtextparagraphObj &paragraphArg);
+
+	~const_fragment_list();
+
+ protected:
+
+	//! Internal function: insert a new fragment.
+
+	//! Inserts the fragment into paragraphs.fragments, set its
+	//! my_fragment_number, and increment all successive paragraphs'
+	//! my_fragment_number.
+
+	void insert_no_recalculate(fragments_t::iterator at,
+				   const richtextfragment &fragment)
+		const;
+ public:
+	//! Internal function: append a new fragment.
+
+	//! This is invoked only from append(), and from richtext->set(),
+	//! as an optimized bulk_insert of new text.
+	//!
+	//! Calls insert_no_recalculate(), followed by
+	//! paragraph.adjust_char_count().
+
+	void append_no_recalculate(const richtextfragment &new_fragment)
+		const;
+};
+
+//! A helper class that operates on \ref richtextfragmentObj "fragments".
+
+//! fragment_list and const_fragment_list are the only classes
+//! that have full access to a paragraph's fragments_t.
+
+class LIBCXX_HIDDEN fragment_list : public const_fragment_list {
 
  private:
 
@@ -46,8 +86,6 @@ public:
 	//! Manually set in theme_updated().
 
 	bool theme_was_updated=false;
-
-	typedef richtextfragmentObj::fragments_t fragments_t;
 
 	//! Constructor
 	fragment_list(paragraph_list &my_paragraphsArg,
@@ -96,28 +134,7 @@ public:
 	//! Like insert(), but uses append_no_recalculate() instead.
 	void append(IN_THREAD_ONLY, const richtextfragment &new_fragment);
 
- private:
-
-	//! Internal function: insert a new fragment.
-
-	//! Inserts the fragment into paragraphs.fragments, set its
-	//! my_fragment_number, and increment all successive paragraphs'
-	//! my_fragment_number.
-
-	void insert_no_recalculate(fragments_t::iterator at,
-				   const richtextfragment &fragment);
-
  public:
-
-	//! Internal function: append a new fragment.
-
-	//! This is invoked only from append(), and from richtext->set(),
-	//! as an optimized bulk_insert of new text.
-	//!
-	//! Calls insert_no_recalculate(), followed by
-	//! paragraph.adjust_char_count().
-
-	void append_no_recalculate(const richtextfragment &new_fragment);
 
 	//! Returns paragraph.fragments.size()
 
@@ -174,16 +191,6 @@ public:
 				   size_t fragment_number,
 				   ssize_t text_count_changed);
 
-	//! Find a fragment in this paragraph containing character #pos
-
-	//! Given an index of a character, searches through the fragments
-	//! to find the highest first_char_n no greater than pos, and returns
-	//! this fragment.
-	//!
-	//! Returns the fragment, and updates pos to the index of the given
-	//! character in its paragraph.
-
-	richtextfragment find_fragment_for_pos(size_t &pos) const;
  private:
 
 	//! Recalculate the dimensions of the given fragment

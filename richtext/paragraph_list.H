@@ -74,6 +74,7 @@ public:
 	void recalculate_size();
  public:
 	friend class fragment_list;
+	friend class const_fragment_list;
 
 	//! Invoke all paragraphs' rewrap() method.
 	bool rewrap(IN_THREAD_ONLY, dim_t width);

@@ -38,6 +38,7 @@ class richtextfragmentObj;
 class richtextfragmentBase;
 class richtextparagraphObj;
 class fragment_list;
+class const_fragment_list;
 class paragraph_list;
 
 //! A fragment of unicode text, ending at an allowed or a mandatory line break.
@@ -119,7 +120,13 @@ public:
 		//! fragment.
 		richtextfragmentptr find_fragment_for_y_position(size_t);
 
+		//! Find the fragment for the given position.
+
+		//! Used by richtextparagraphObj::find_fragment_for_pos()
+		richtextfragment find_fragment_for_pos(size_t &) const;
+
 		friend class fragment_list;
+		friend class const_fragment_list;
 
 		//! Helper for invoking the given lambda for each fragment.
 

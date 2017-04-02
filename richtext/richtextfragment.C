@@ -1372,4 +1372,33 @@ void richtextfragmentObj::fragments_t::paragraph_destroyed()
 		fragment->my_paragraph=nullptr;
 }
 
+richtextfragment richtextfragmentObj::fragments_t::find_fragment_for_pos(size_t &pos) const
+{
+	auto iter=std::lower_bound(begin(),
+				   end(), pos,
+				   []
+				   (const richtextfragment &f, size_t pos)
+				   {
+					   return f->first_char_n <= pos;
+				   });
+
+	assert_or_throw(iter != begin(),
+			"Internal error: empty list in find_fragment_for_pos");
+
+	auto fragment=*--iter;
+
+	pos -= fragment->first_char_n;
+
+	size_t s=fragment->string.get_string().size();
+
+	if (pos >= s)
+	{
+		assert_or_throw(s,
+				"Internal error: empty fragment in find_fragment_for_pos()");
+		pos=s-1;
+	}
+
+	return fragment;
+}
+
 LIBCXXW_NAMESPACE_END

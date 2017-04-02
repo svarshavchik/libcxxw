@@ -157,12 +157,9 @@ void richtextparagraphObj::insert(IN_THREAD_ONLY,
 	fragment->insert(IN_THREAD, my_paragraphs, pos, string);
 }
 
-richtextfragment richtextparagraphObj::find_fragment_for_pos(size_t &pos)
+richtextfragment richtextparagraphObj::find_fragment_for_pos(size_t &pos) const
 {
-	paragraph_list my_paragraphs(*my_richtext);
-	fragment_list my_fragments(my_paragraphs, *this);
-
-	return my_fragments.find_fragment_for_pos(pos);
+	return fragments.find_fragment_for_pos(pos);
 }
 
 LIBCXXW_NAMESPACE_END

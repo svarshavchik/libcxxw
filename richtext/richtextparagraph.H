@@ -168,8 +168,16 @@ public:
 		    size_t pos,
 		    const richtextstring &string);
 
-	richtextfragment find_fragment_for_pos(size_t &pos);
+	//! Locate a fragment.
 
+	//! Given an index of a character, searches through the fragments
+	//! to find the highest first_char_n no greater than pos, and returns
+	//! this fragment.
+	//!
+	//! Returns the fragment, and updates pos to the index of the given
+	//! character in its paragraph.
+
+	richtextfragment find_fragment_for_pos(size_t &pos) const;
 
 	// Invoked only from fragment_list
 

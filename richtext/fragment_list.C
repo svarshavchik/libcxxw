@@ -13,27 +13,14 @@
 
 LIBCXXW_NAMESPACE_START
 
-fragment_list::fragment_list(paragraph_list &my_paragraphsArg,
-			     richtextparagraphObj &paragraphArg)
+const_fragment_list::const_fragment_list(paragraph_list &my_paragraphsArg,
+					 richtextparagraphObj &paragraphArg)
 	: my_paragraphs(my_paragraphsArg), paragraph(paragraphArg)
 {
 }
 
-fragment_list::~fragment_list()
+const_fragment_list::~const_fragment_list()
 {
-	if (paragraph.my_richtext == nullptr) return;
-
-	if (theme_was_updated)
-	{
-		recalculate_size();
-		return;
-	}
-
-	bool changed=false;
-
-	if (size_changed && recalculate_size())
-		changed=true;
-
 	// Make sure this paragraph is frobbed correctly, then
 	// keep frobbing the remaining paragraphs.
 
@@ -50,7 +37,7 @@ fragment_list::~fragment_list()
 
 	paragraph.my_richtext->paragraphs.for_paragraphs
 		(paragraph.my_paragraph_number+1,
-		 [&]
+		 [&, this]
 		 (const richtextparagraph &b)
 		 {
 			 auto &p=*b;
@@ -72,7 +59,7 @@ fragment_list::~fragment_list()
 			 first_fragment_n += n_fragments_in_paragraph;
 			 first_fragment_y_position=
 				 p.next_paragraph_y_position();
-			 changed=true;
+			 my_paragraphs.size_changed=true;
 			 return true;
 		 });
 
@@ -81,13 +68,13 @@ fragment_list::~fragment_list()
 		paragraph.my_richtext=nullptr;
 		my_paragraphs.erase(paragraph.my_paragraph_number);
 	}
-
-	if (changed)
-		my_paragraphs.size_changed=true;
 }
 
-void fragment_list::insert_no_recalculate(fragments_t::iterator at,
-					  const richtextfragment &fragment)
+
+void const_fragment_list
+::insert_no_recalculate(fragments_t::iterator at,
+			const richtextfragment &fragment)
+	const
 {
 	auto iter=paragraph.fragments.insert(at, fragment);
 
@@ -99,6 +86,43 @@ void fragment_list::insert_no_recalculate(fragments_t::iterator at,
 		++(*iter)->my_fragment_number;
 
 	fragment->my_paragraph=&paragraph;
+}
+
+// This is used in set(). The fragment doesn't have any text yet, it must
+// be linked into the paragraph, before it is loaded.
+
+void const_fragment_list
+::append_no_recalculate(const richtextfragment &new_fragment)
+	const
+{
+	insert_no_recalculate(paragraph.fragments.end(), new_fragment);
+	paragraph.adjust_char_count(new_fragment->string.get_string().size());
+}
+
+
+fragment_list::fragment_list(paragraph_list &my_paragraphsArg,
+			     richtextparagraphObj &paragraphArg)
+	: const_fragment_list{my_paragraphsArg, paragraphArg}
+{
+}
+
+fragment_list::~fragment_list()
+{
+	if (paragraph.my_richtext == nullptr) return;
+
+	if (theme_was_updated)
+	{
+		recalculate_size();
+		return;
+	}
+
+	bool changed=false;
+
+	if (size_changed && recalculate_size())
+		changed=true;
+
+	if (changed)
+		my_paragraphs.size_changed=true;
 }
 
 void fragment_list::insert_no_change_in_char_count(IN_THREAD_ONLY,
@@ -118,15 +142,6 @@ void fragment_list::erase(fragments_t::iterator at)
 	(*at)->my_paragraph=nullptr;
 	paragraph.fragments.erase(at);
 	size_changed=true;
-}
-
-// This is used in set(). The fragment doesn't have any text yet, it must
-// be linked into the paragraph, before it is loaded.
-
-void fragment_list::append_no_recalculate(const richtextfragment &new_fragment)
-{
-	insert_no_recalculate(paragraph.fragments.end(), new_fragment);
-	paragraph.adjust_char_count(new_fragment->string.get_string().size());
 }
 
 void fragment_list::append(IN_THREAD_ONLY,
@@ -363,35 +378,6 @@ void fragment_list::recalculate_size(bool &width_changed,
 	width_changed=old_width != paragraph.width;
 	height_changed=old_height !=
 		paragraph.above_baseline+paragraph.below_baseline;
-}
-
-richtextfragment fragment_list::find_fragment_for_pos(size_t &pos) const
-{
-	auto iter=std::lower_bound(paragraph.fragments.begin(),
-				   paragraph.fragments.end(), pos,
-				   []
-				   (const richtextfragment &f, size_t pos)
-				   {
-					   return f->first_char_n <= pos;
-				   });
-
-	assert_or_throw(iter != paragraph.fragments.begin(),
-			"Internal error: empty list in find_fragment_for_pos");
-
-	auto fragment=*--iter;
-
-	pos -= fragment->first_char_n;
-
-	size_t s=fragment->string.get_string().size();
-
-	if (pos >= s)
-	{
-		assert_or_throw(s,
-				"Internal error: empty fragment in find_fragment_for_pos()");
-		pos=s-1;
-	}
-
-	return fragment;
 }
 
 LIBCXXW_NAMESPACE_END
