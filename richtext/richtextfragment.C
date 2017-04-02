@@ -335,6 +335,9 @@ void richtextfragmentObj::recalculate_size(IN_THREAD_ONLY)
 		if (below_baseline < descender)
 			below_baseline=descender;
 	}
+
+	for (const auto &location:locations)
+		location->horiz_pos_no_longer_valid();
 }
 
 size_t richtextfragmentObj::insert(IN_THREAD_ONLY,
@@ -394,7 +397,7 @@ size_t richtextfragmentObj::insert(IN_THREAD_ONLY,
 
 	recalculate_linebreaks();
 
-	fragment_list my_fragments(my_paragraphs, *my_paragraph);
+	fragment_list my_fragments{IN_THREAD, my_paragraphs, *my_paragraph};
 
 	auto old_width=width;
 
@@ -1163,8 +1166,9 @@ richtextfragment richtextfragmentObj::split(IN_THREAD_ONLY,
 
 		// This was split from here.
 		fragment_list
-			new_paragraph_fragments(my_fragments.my_paragraphs,
-						*new_paragraph);
+			new_paragraph_fragments{IN_THREAD,
+				my_fragments.my_paragraphs,
+				*new_paragraph};
 
 		// Move the remaining fragments to the new paragraph
 		new_paragraph_fragments.split_from(IN_THREAD,

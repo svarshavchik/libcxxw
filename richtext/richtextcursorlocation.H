@@ -106,13 +106,13 @@ class LIBCXX_HIDDEN richtextcursorlocationObj : virtual public obj {
 	//! The position of this location in the fragment
 	position_t position;
 
+ public:
 	//! What is says.
 	inline void horiz_pos_no_longer_valid()
 	{
 		position.horiz_pos_is_valid=false;
 	}
 
- public:
 	//! Return our offset.
 	auto get_offset() const
 	{

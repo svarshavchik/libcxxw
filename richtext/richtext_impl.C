@@ -168,7 +168,8 @@ void richtextObj::implObj::do_set(richtextstring &string)
 						 breaks.begin()+j);
 
 
-		fragment_list my_fragments(my_paragraphs, *new_paragraph);
+		const_fragment_list my_fragments{my_paragraphs,
+				*new_paragraph};
 
 		my_fragments.append_no_recalculate(new_fragment);
 
@@ -188,8 +189,8 @@ void richtextObj::implObj::finish_initialization(IN_THREAD_ONLY)
 		 [&]
 		 (const auto &new_paragraph)
 		 {
-			 fragment_list my_fragments(my_paragraphs,
-						    *new_paragraph);
+			 fragment_list my_fragments{IN_THREAD,
+					 my_paragraphs, *new_paragraph};
 
 			 if (my_fragments.size() != 1)
 				 throw EXCEPTION("Internal error: expected 1 fragment in finish_initialization()");

@@ -25,7 +25,7 @@ bool richtextparagraphObj::rewrap(IN_THREAD_ONLY,
 				  paragraph_list &my_paragraphs,
 				  dim_t width)
 {
-	fragment_list my_fragments(my_paragraphs, *this);
+	fragment_list my_fragments(IN_THREAD, my_paragraphs, *this);
 
 	size_t my_fragment_n=0;
 	bool changed=false;
@@ -51,7 +51,7 @@ bool richtextparagraphObj::rewrap(IN_THREAD_ONLY,
 bool richtextparagraphObj::unwrap(IN_THREAD_ONLY,
 				  paragraph_list &my_paragraphs)
 {
-	fragment_list my_fragments(my_paragraphs, *this);
+	fragment_list my_fragments(IN_THREAD, my_paragraphs, *this);
 
 	if (my_fragments.size() == 0)
 		return false;

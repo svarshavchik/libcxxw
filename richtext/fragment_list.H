@@ -88,7 +88,7 @@ class LIBCXX_HIDDEN fragment_list : public const_fragment_list {
 	bool theme_was_updated=false;
 
 	//! Constructor
-	fragment_list(paragraph_list &my_paragraphsArg,
+	fragment_list(IN_THREAD_ONLY, paragraph_list &my_paragraphsArg,
 		      richtextparagraphObj &paragraphArg);
 
 	//! Destructor

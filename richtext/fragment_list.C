@@ -100,7 +100,8 @@ void const_fragment_list
 }
 
 
-fragment_list::fragment_list(paragraph_list &my_paragraphsArg,
+fragment_list::fragment_list(IN_THREAD_ONLY,
+			     paragraph_list &my_paragraphsArg,
 			     richtextparagraphObj &paragraphArg)
 	: const_fragment_list{my_paragraphsArg, paragraphArg}
 {

@@ -156,9 +156,11 @@ void testsplit(const current_fontcollection &font1,
 		if (paragraph->fragments.size() != 1)
 			throw EXCEPTION("Did not get 1 my_fragments");
 
-		LIBCXX_NAMESPACE::w::paragraph_list my_paragraphs(*impl);
-		LIBCXX_NAMESPACE::w::fragment_list my_fragments(my_paragraphs,
-								*paragraph);
+		LIBCXX_NAMESPACE::w::paragraph_list my_paragraphs{*impl};
+		LIBCXX_NAMESPACE::w::fragment_list
+			my_fragments{IN_THREAD,
+				my_paragraphs,
+				*paragraph};
 
 		auto fragment=*paragraph->fragments.get_iter(0);
 

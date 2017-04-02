@@ -39,7 +39,7 @@ richtextparagraph paragraph_list::append_new_paragraph()
 		// This calculates new paragraph's starting metrics, using
 		// the code in fragment_list's destructor.
 
-		fragment_list previous_paragraph_fragments
+		const_fragment_list previous_paragraph_fragments
 			(*this,
 			 **text.paragraphs
 			 .get_paragraph(new_paragraph->my_paragraph_number-1));
@@ -177,7 +177,7 @@ void paragraph_list::theme_updated(IN_THREAD_ONLY)
 				 first_fragment_y_position;
 
 			 {
-				 fragment_list fragments{*this, *p};
+				 fragment_list fragments{IN_THREAD, *this, *p};
 
 				 p->fragments.for_fragments
 					 ([&]
