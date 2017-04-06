@@ -415,6 +415,8 @@ public:
 			  const richtextmeta &markup,
 			  bool has_background_color,
 			  const ref<pictureObj::implObj> &color_impl,
+			  coord_t color_x,
+			  coord_t color_y,
 			  const ref<pictureObj::implObj> &background_color_impl,
 			  coord_t background_x,
 			  coord_t background_y);

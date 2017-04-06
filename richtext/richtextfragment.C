@@ -631,7 +631,9 @@ static inline void underline(const picture_internal &src,
 			     int64_t delta_x,
 			     int64_t delta_y,
 			     dim_t length_v,
-			     dim_t underline_thickness_v)
+			     dim_t underline_thickness_v,
+			     coord_t src_x,
+			     coord_t src_y)
 {
 	const dim_t::value_type length{length_v},
 		underline_thickness{underline_thickness_v};
@@ -657,7 +659,8 @@ static inline void underline(const picture_internal &src,
 		{{x4}, {y4}},
 	};
 
-	dst->fill_tri_strip(points, 4, src, render_pict_op::op_over);
+	dst->fill_tri_strip(points, 4, src, render_pict_op::op_over,
+			    src_x, src_y);
 }
 
 // Draw custom text attributes
@@ -666,6 +669,8 @@ static inline void attributes(const richtextmeta &markup,
 			      const freetypefont &font,
 			      bool has_background_color,
 			      const picture_internal &src,
+			      coord_t src_x,
+			      coord_t src_y,
 			      const picture_internal &src_background,
 			      coord_t background_x,
 			      coord_t background_y,
@@ -715,7 +720,8 @@ static inline void attributes(const richtextmeta &markup,
 					       font->descender);
 
 		underline(src, dst, x1, y1, x2, y2,
-			  delta_x, delta_y, length, thickness);
+			  delta_x, delta_y, length, thickness,
+			  src_x, src_y);
 	}
 }
 
@@ -726,6 +732,8 @@ inline void richtextfragmentObj
 	       const richtextmeta &markup,
 	       bool has_background_color,
 	       const picture_internal &color_impl,
+	       coord_t color_x,
+	       coord_t color_y,
 	       const picture_internal &background_color_impl,
 	       coord_t background_x,
 	       coord_t background_y)
@@ -748,6 +756,8 @@ inline void richtextfragmentObj
 		   *range_info.font,
 		   has_background_color,
 		   color_impl,
+		   color_x,
+		   color_y,
 		   background_color_impl,
 		   background_x, background_y,
 		   range_info.info.scratch_buffer->impl,
@@ -760,8 +770,8 @@ inline void richtextfragmentObj
 		 color_impl->picture_id(),
 		 range_info.info.scratch_buffer->impl->picture_id(),
 		 XCB_NONE,
-		 coord_t::value_type(start_x),
-		 coord_t::value_type(start_y),
+		 coord_t::value_type(color_x),
+		 coord_t::value_type(color_y),
 		 s.s);
 	range_info.prev_char=range_info.str[range_info.end_char-1];
 }
@@ -804,6 +814,8 @@ inline void richtextfragmentObj
 
 		auto color_impl=markup.textcolor
 			->get_current_color(IN_THREAD)->impl;
+		coord_t color_x=range_info.xpos;
+		coord_t color_y=range_info.ypos;
 
 		// We expect to render this text starting with row
 		// y_position(). As such,
@@ -837,17 +849,13 @@ inline void richtextfragmentObj
 		case meta_overlay::normal:
 			break;
 		case meta_overlay::inverse:
-			has_background_color=true;
-
-			color_impl=range_info.info.reverse_video_fg;
-			background_color_impl=range_info.info.reverse_video_bg;
-
-			background_x=0;
-			background_y=y_position();
+			std::swap(color_x, background_x);
+			std::swap(color_y, background_y);
+			std::swap(color_impl, background_color_impl);
 			break;
 		}
 		render_range(range_info, markup,
-			     has_background_color, color_impl,
+			     has_background_color, color_impl, color_x, color_y,
 			     background_color_impl, background_x, background_y);
 		range_info.start_char=range_info.end_char;
 	}

@@ -175,12 +175,6 @@ void richtextObj::do_draw(IN_THREAD_ONLY,
 						 di,
 						 di,
 
-						 // We don't use reverse_video,
-						 // so just pass something here.
-
-						 di.window_picture,
-						 di.window_picture,
-
 						 di.absolute_location.width,
 						 0, // render_x_start
 						 0, // vert_scroll

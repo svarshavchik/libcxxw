@@ -42,6 +42,9 @@ typedef LIBCXX_NAMESPACE::ref<close_flagObj> close_flag_ref;
 static void initialize_label(const LIBCXX_NAMESPACE::w::factory &factory)
 {
 	LIBCXX_NAMESPACE::w::rgb blue{0, 0, LIBCXX_NAMESPACE::w::rgb::maximum};
+	LIBCXX_NAMESPACE::w::rgb lightblue{
+		LIBCXX_NAMESPACE::w::rgb::maximum/4*3,
+			LIBCXX_NAMESPACE::w::rgb::maximum/4*3, LIBCXX_NAMESPACE::w::rgb::maximum};
 	LIBCXX_NAMESPACE::w::rgb black;
 
 	factory->create_label
@@ -52,8 +55,10 @@ static void initialize_label(const LIBCXX_NAMESPACE::w::factory &factory)
 			"Lorem ipsum\n",
 			"no"_decoration,
 			"label"_theme_font,
+			black, lightblue,
+			"dolor sit amet,",
 			black,
-			"dolor sit amet, consectetur adipisicing elit, "
+			" consectetur adipisicing elit, "
 			"sed do eiusmod tempor incididunt ut labore et dolore magna "
 			"aliqua. Ut enim ad minim veniam, quis nostrud exercitation "
 			"ullamco laboris nisi ut aliquip ex ea commodo consequat. "
