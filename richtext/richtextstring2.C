@@ -176,7 +176,12 @@ void richtextstring::compute_width(IN_THREAD_ONLY,
 
 		// If character #skip starts on a new font, we want to ignore
 		// any previous_char we already set.
-		previous_char=0;
+
+		if (b->first == skip)
+			previous_char=0;
+		else
+			previous_char=string.at(skip-1);
+
 	}
 
 	for (auto p=b, e=fonts.end(); b != e; b=p)
@@ -202,7 +207,7 @@ void richtextstring::compute_width(IN_THREAD_ONLY,
 			// kerning from the previous character. Below we'll
 			// ignore the update of character #skip-1
 
-			start_char=skip-1;
+			start_char=skip;
 		}
 
 		if (end_char > end_skip)

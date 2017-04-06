@@ -212,7 +212,25 @@ void richtextstring::insert(size_t pos,
 	if (s.size() == 0)
 		return;
 
-	meta_t new_meta;
+	// Find the metadata at the given position, and use it for this insert.
+
+	if (string.empty())
+		throw EXCEPTION("Internal error: Non-metadata insert into an empty string.");
+
+	auto p=std::upper_bound(meta.begin(),
+				meta.end(),
+				pos,
+				[]
+				(size_t pos, const auto &pair)
+				{
+					return pos < pair.first;
+				});
+
+	if (p == meta.begin())
+		throw EXCEPTION("Internal error: bad metadata.");
+	--p;
+
+	meta_t new_meta{ {0, p->second} };
 
 	modified();
 
