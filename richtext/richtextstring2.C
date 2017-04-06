@@ -224,7 +224,7 @@ void richtextstring::compute_width(IN_THREAD_ONLY,
 			se=sb+1;
 		}
 
-		b->second->load_glyphs(sb, se);
+		b->second->load_glyphs(sb, se, unprintable_char);
 
 		b->second->glyphs_width
 			(sb, se,

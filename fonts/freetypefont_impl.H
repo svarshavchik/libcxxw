@@ -74,7 +74,8 @@ class LIBCXX_HIDDEN freetypefontObj::implObj : virtual public obj {
 	//! Type-erased load_glyphs() implementation.
 
 	void do_load_glyphs(const function<bool ()> &more,
-			    const function<char32_t ()> &next) const;
+			    const function<char32_t ()> &next,
+			    char32_t unprintable_char) const;
 
 	//! Type-erased glyphs_to_stream() implementation.
 

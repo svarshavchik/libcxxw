@@ -31,10 +31,11 @@ freetypefontObj::~freetypefontObj()
 }
 
 void freetypefontObj::do_load_glyphs(const function<bool ()> &more,
-				     const function<char32_t ()>&next)
+				     const function<char32_t ()>&next,
+				     char32_t unprintable_char)
 	const
 {
-	impl->do_load_glyphs(more, next);
+	impl->do_load_glyphs(more, next, unprintable_char);
 }
 
 void freetypefontObj::do_glyphs_to_stream(const function<bool ()> &more,

@@ -107,8 +107,10 @@ freetypefontObj::implObj::~implObj()
 // the unicode character in the font. We check if the character has been
 // loaded, if not we load it into the server.
 
-void freetypefontObj::implObj::do_load_glyphs(const function<bool ()> &more,
-					const function<char32_t ()>&next) const
+void freetypefontObj::implObj
+::do_load_glyphs(const function<bool ()> &more,
+		 const function<char32_t ()>&next,
+		 char32_t unprintable_char) const
 {
 	face_t::const_lock lock(face);
 
@@ -128,6 +130,14 @@ void freetypefontObj::implObj::do_load_glyphs(const function<bool ()> &more,
 	{
 		// Look up the character in the font
 		auto c=next();
+
+		if (UNPRINTABLE(c))
+		{
+			c=unprintable_char;
+
+			if (UNPRINTABLE(c))
+				continue;
+		}
 
 		auto glyph_index=FT_Get_Char_Index((*lock), c);
 

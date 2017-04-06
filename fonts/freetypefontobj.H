@@ -60,7 +60,8 @@ public:
 	// The glyphs are defined by an input iterator sequence.
 
 	template<typename iter_type>
-		void load_glyphs(iter_type b, iter_type e) const
+		void load_glyphs(iter_type b, iter_type e,
+				 char32_t unprintable_char) const
 	{
 		do_load_glyphs(make_function<bool ()>
 			       ([&]
@@ -74,7 +75,7 @@ public:
 					char32_t c=*b;
 					++b;
 					return c;
-				}));
+				}), unprintable_char);
 	}
 
 	//! Add glyphs to a composite_text_stream
@@ -169,7 +170,8 @@ public:
 	//! Type-erased load_glyphs() implementation.
 
 	void do_load_glyphs(const function<bool ()> &more,
-			    const function<char32_t ()> &next) const;
+			    const function<char32_t ()> &next,
+			    char32_t unprintable_char) const;
 
 	//! Type-erased glyphs_to_stream() implementation.
 
