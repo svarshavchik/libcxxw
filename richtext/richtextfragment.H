@@ -377,7 +377,7 @@ public:
 		    const render_info &info);
 
 	//! Compute starting X position of the rendered fragment.
-	coord_t first_xpos(halign alignment, dim_t text_width) const;
+	coord_t first_xpos(IN_THREAD_ONLY) const;
 
 	//! Check if this fragment that has metadata for the given link
 

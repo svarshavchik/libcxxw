@@ -894,12 +894,18 @@ void richtextfragmentObj::overlay_merge(overlay_map_t &overlay,
 	overlay.insert(std::make_pair(end, resume));
 }
 
-coord_t richtextfragmentObj::first_xpos(halign alignment,
-					dim_t text_width) const
+coord_t richtextfragmentObj::first_xpos(IN_THREAD_ONLY) const
 {
+	assert_or_throw(my_paragraph && my_paragraph->my_richtext,
+			"Internal error: fragment not linked.");
+
+	auto richtext=my_paragraph->my_richtext;
+	auto text_width=richtext->width();
+
 	if (width < text_width)
 	{
 		auto pad=dim_t::value_type(text_width-width);
+		auto alignment=richtext->alignment;
 
 		if (alignment == halign::center)
 			return coord_t::truncate(pad/2);
@@ -949,10 +955,7 @@ void richtextfragmentObj::render(IN_THREAD_ONLY,
 	// Compute the real starting X coordinate using the alignment
 	// (first_xpos), and adjust it by the horiz_scroll value.
 
-	coord_squared_t x=
-		first_xpos(info.alignment,
-			   my_paragraph->my_richtext->width())
-		- info.render_x_start;
+	coord_squared_t x=first_xpos(IN_THREAD)-info.render_x_start;
 
 	const auto &resolved_fonts=RESOLVE_FONTS();
 

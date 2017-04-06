@@ -82,7 +82,8 @@ void richtextcursorlocationObj::cache_horiz_pos(IN_THREAD_ONLY)
 
 	position.horiz_pos_is_valid=true;
 	position.cached_horiz_pos=dim_squared_t::truncate
-		(my_fragment->horiz_info.x_pos(position.offset));
+		(my_fragment->horiz_info.x_pos(position.offset)
+		 + my_fragment->first_xpos(IN_THREAD));
 	position.set_targeted_horiz_pos();
 }
 
@@ -106,7 +107,8 @@ void richtextcursorlocationObj
 		my_fragment->horiz_info.find_x_pos(dim_t::truncate
 						   (targeted_horiz_pos));
 	position.cached_horiz_pos=dim_squared_t::truncate
-		(my_fragment->horiz_info.x_pos(position.offset));
+		(my_fragment->horiz_info.x_pos(position.offset)
+		 + my_fragment->first_xpos(IN_THREAD));
 	position.targeted_horiz_pos=targeted_horiz_pos;
 }
 

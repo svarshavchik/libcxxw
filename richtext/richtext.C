@@ -224,8 +224,6 @@ void richtextObj::do_draw(IN_THREAD_ONLY,
 
 						 draw_bounds.width,
 						 dim_t::truncate(draw_bounds.x),
-						 0, // vert_scroll
-						 (*lock)->alignment,
 						 };
 
 				 f->redraw_needed=false;

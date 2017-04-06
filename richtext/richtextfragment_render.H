@@ -57,9 +57,6 @@ struct richtextfragmentObj::render_info {
 
 	coord_t vert_scroll=0;
 
-	//! Horizontal alignment
-	halign alignment=halign::left;
-
 	//! Used by richtexteditorwindow to highlight selected text
 	size_t selection_start=0;
 
