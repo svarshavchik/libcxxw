@@ -120,6 +120,7 @@ cached_fontptr freetypeObj::font(const const_screen &screenArg,
 				 dim_t max_advance;
 				 dim_t height=(dim_t::value_type)
 					 std::round(pixel_size);
+				 bool fixed_width;
 
 				 auto impl=ref<freetypefontObj::implObj>
 					 ::create(screenArg,
@@ -129,14 +130,58 @@ cached_fontptr freetypeObj::font(const const_screen &screenArg,
 						  0, height,
 						  ascender_value,
 						  descender_value,
-						  max_advance);
+						  max_advance, fixed_width);
 
-				 return cached_font::create
-					 (freetypefont::create(ascender_value,
+				 dim_t nominal_width=max_advance;
+
+				 if (!fixed_width)
+				 {
+					 // Calculate nominal font width by calculating
+					 // the average width of the first page's
+					 // worth of characters in the font. We start
+					 // by finding a page with at least 32
+					 // defined characters.
+
+					 std::vector<char32_t> characters_in_font;
+
+					 cs->enumerate
+						 ([&]
+						  (const auto &coverage)
+						  {
+							  if (coverage.size() < 32)
+								  return true;
+
+							  characters_in_font=coverage;
+							  return false;
+						  });
+
+					 // Now, get the width info.
+
+					 dim_squared_t total_width=0;
+
+					 for (char c:characters_in_font)
+						 total_width +=
+							 impl->width_lookup(c);
+
+					 if (!characters_in_font.empty())
+						 nominal_width =
+							 dim_t::truncate
+							 (total_width /
+							  characters_in_font
+							  .size());
+
+					 if (nominal_width < 2)
+						 nominal_width=1;
+				 }
+
+				 auto ftf=freetypefont::create(ascender_value,
 							       descender_value,
 							       max_advance,
-							       impl),
-					  cs);
+							       nominal_width,
+							       fixed_width,
+							       impl);
+
+				 return cached_font::create(ftf, cs);
 			 });
 	} catch (const exception &e)
 	{

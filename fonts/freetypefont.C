@@ -8,13 +8,16 @@
 
 LIBCXXW_NAMESPACE_START
 
-freetypefontObj::freetypefontObj(dim_t ascenderArg,
-				 dim_t descenderArg,
-				 dim_t max_advanceArg,
-				 const ref<implObj> &implArg)
-	: ascender(ascenderArg), descender(descenderArg),
-	  max_advance(max_advanceArg),
-	  impl(implArg)
+freetypefontObj::freetypefontObj(dim_t ascender,
+				 dim_t descender,
+				 dim_t max_advance,
+				 dim_t nominal_width,
+				 bool fixed_width,
+				 const ref<implObj> &impl)
+	: ascender(ascender), descender(descender),
+	  max_advance(max_advance),
+	  nominal_width(nominal_width), fixed_width(fixed_width),
+	  impl(impl)
 {
 }
 
@@ -22,6 +25,7 @@ freetypefontObj::freetypefontObj(const freetypefont &original)
 	: ascender(original->ascender),
 	  descender(original->descender),
 	  max_advance(original->max_advance),
+	  fixed_width(original->fixed_width),
 	  impl(original->impl)
 {
 }

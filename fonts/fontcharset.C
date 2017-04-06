@@ -159,6 +159,49 @@ void charsetObj::merge(const const_charset &cs) const
 	FcCharSetMerge(*lock.first, *lock.second, NULL);
 }
 
+void charsetObj::do_enumerate(const function<enumerate_callback_t> &callback)
+	const
+{
+	FcChar32 map[FC_CHARSET_MAP_SIZE];
+	FcChar32 cur, next;
+	std::vector<char32_t> chars;
+
+	chars.reserve(FC_CHARSET_MAP_SIZE*32);
+
+	{
+		charset_lock lock{impl->charset};
+		cur=FcCharSetFirstPage(*lock, map, &next);
+	}
+
+	while (1)
+	{
+		chars.clear();
+
+		for (size_t i=0; i<FC_CHARSET_MAP_SIZE; ++i)
+		{
+			char32_t j=cur + i*32;
+
+			while (map[i])
+			{
+				if (map[i] & 1)
+				{
+					chars.push_back(j);
+					map[i] >>= 1;
+					++j;
+				}
+			}
+		}
+
+		if (!callback(chars))
+			break;
+		if (next == FC_CHARSET_DONE)
+			break;
+
+		charset_lock lock{impl->charset};
+		cur=FcCharSetNextPage(*lock, map, &next);
+	}
+}
+
 #if 0
 {
 #endif

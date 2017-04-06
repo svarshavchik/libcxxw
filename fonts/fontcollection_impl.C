@@ -219,13 +219,43 @@ dim_t fontcollectionObj::implObj::max_advance()
 
 	for (const auto &f:lock->opened_fonts)
 	{
-		const auto &ft=*f.second->f;
-
-		advance=ft.max_advance;
+		advance=f.second->f->max_advance;
 		break;
 	}
 
 	return advance;
+}
+
+dim_t fontcollectionObj::implObj::nominal_width()
+{
+	metadata_t::lock lock(metadata);
+	lookup_default(lock);
+
+	dim_t nominal_width=0;
+
+	for (const auto &f:lock->opened_fonts)
+	{
+		nominal_width=f.second->f->nominal_width;
+		break;
+	}
+
+	return nominal_width;
+}
+
+bool fontcollectionObj::implObj::fixed_width()
+{
+	metadata_t::lock lock(metadata);
+	lookup_default(lock);
+
+	bool flag=false;
+
+	for (const auto &f:lock->opened_fonts)
+	{
+		flag=f.second->f->fixed_width;
+		break;
+	}
+
+	return flag;
 }
 
 void fontcollectionObj::implObj::lookup_default(metadata_t::lock &lock)

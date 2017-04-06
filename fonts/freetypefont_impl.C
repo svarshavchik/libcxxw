@@ -29,7 +29,8 @@ static inline FT_Face create_face(const const_freetype &library,
 				  dim_t height,
 				  dim_t &ascender_value,
 				  dim_t &descender_value,
-				  dim_t &max_advance)
+				  dim_t &max_advance,
+				  bool &fixed_width)
 {
 	FT_Face f;
 
@@ -69,6 +70,7 @@ static inline FT_Face create_face(const const_freetype &library,
 	auto d=f->size->metrics.descender;
 	descender_value=d > 0 ? 0:(-d + 63) >> 6;
 	max_advance=f->size->metrics.max_advance >> 6;
+	fixed_width=f->face_flags & FT_FACE_FLAG_FIXED_WIDTH ? true:false;
 
 	return f;
 }
@@ -82,7 +84,8 @@ freetypefontObj::implObj::implObj(const const_screen &screenArg,
 				  dim_t height,
 				  dim_t &ascender_value,
 				  dim_t &descender_value,
-				  dim_t &max_advance)
+				  dim_t &max_advance,
+				  bool &fixed_width)
 	: glyphset(ref<glyphsetObj>
 		   ::create(screenArg,
 			    screenArg->find_alpha_pictformat_by_depth
@@ -90,7 +93,7 @@ freetypefontObj::implObj::implObj(const const_screen &screenArg,
 	  face(libraryArg, create_face(libraryArg, filename, font_index,
 				       width, height, ascender_value,
 				       descender_value,
-				       max_advance)),
+				       max_advance, fixed_width)),
 	  has_kerning(FT_HAS_KERNING((*face_t::lock(face)))),
 	  depth(font_idArg.depth)
 {
@@ -144,17 +147,8 @@ void freetypefontObj::implObj
 		if (!add->ready_to_add_glyph(glyph_index))
 			continue;
 
-		if (FT_Load_Glyph((*lock), glyph_index, FT_LOAD_RENDER))
-		{
-			LOG_ERROR("FT_Load_Glyph failed for glyph " << c);
+		if (!load_and_render_glyph(lock, glyph_index))
 			continue;
-		}
-
-		if (FT_Render_Glyph((*lock)->glyph,
-				    FT_RENDER_MODE_NORMAL))
-		{
-			LOG_ERROR("FT_Render_Glyph failed for glyph " << c);
-		}
 
 		xcb_render_glyphinfo_t glyphinfo={
 			.width=(uint16_t)(*lock)->glyph->bitmap.width,
@@ -229,6 +223,38 @@ void freetypefontObj::implObj
 				       };
 			       });
 	}
+}
+
+bool freetypefontObj::implObj::load_and_render_glyph(face_t::const_lock &lock,
+						     size_t glyph_index)
+{
+	if (FT_Load_Glyph((*lock), glyph_index, FT_LOAD_RENDER))
+	{
+		LOG_ERROR("FT_Load_Glyph failed for glyph " << glyph_index);
+		return false;
+	}
+
+	if (FT_Render_Glyph((*lock)->glyph,
+			    FT_RENDER_MODE_NORMAL))
+	{
+		LOG_ERROR("FT_Render_Glyph failed for glyph " << glyph_index);
+		return false;
+	}
+	return true;
+}
+
+dim_t freetypefontObj::implObj::width_lookup(char32_t c)
+{
+	face_t::const_lock lock(face);
+
+	auto glyph_index=FT_Get_Char_Index((*lock), c);
+
+	dim_t width=0;
+
+	if (load_and_render_glyph(lock, glyph_index))
+		width=(*lock)->glyph->bitmap.width;
+
+	return width;
 }
 
 //

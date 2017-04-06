@@ -77,8 +77,14 @@ public:
 
 	dim_t height();
 
-	// Take the largest max advance fro mall known fonts.
+	//! Take the largest max advance from the default font.
 	dim_t max_advance();
+
+	//! Take nominal_width() from the default font.
+	dim_t nominal_width();
+
+	//! Check if the default font is fixed width.
+	bool fixed_width();
 
 	//! Implement lookup()
 

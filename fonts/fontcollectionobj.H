@@ -42,8 +42,17 @@ public:
 	//! Fonts' height
 	dim_t height() const;
 
-	//! Fonts' maximum advance
+	//! Font's maximum advance
 	dim_t max_advance() const;
+
+	//! Font's nominal width
+
+	//! This is the same as max_advance() for a fixed_width() font,
+	//! otherwise this is a heuristically-computed estimate.
+	dim_t nominal_width() const;
+
+	//! Whether this is a fixed width font
+	bool fixed_width() const;
 
 	//! Look up fonts for a unicode character sequence.
 

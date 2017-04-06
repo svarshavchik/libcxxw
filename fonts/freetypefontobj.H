@@ -34,6 +34,15 @@ public:
 	//! Font max advance
 	const dim_t max_advance;
 
+	//! Font nominal width
+
+	//! This is the same as max_advance for fixed_width fonts. For
+	//! proportional font this is determined based on heuristics.
+	const dim_t nominal_width;
+
+	//! Whether this is a fixed width font
+	const bool fixed_width;
+
 	//! Font's height
 	inline dim_t height() const { return dim_t::truncate(ascender+descender); }
 
@@ -44,9 +53,11 @@ public:
 	const ref<implObj> impl;
 
 	//! Constructor
-	freetypefontObj(dim_t ascenderArg,
-			dim_t descenderArg,
-			dim_t max_advanceArg,
+	freetypefontObj(dim_t ascender,
+			dim_t descender,
+			dim_t max_advance,
+			dim_t nominal_width,
+			bool fixed_width,
 			const ref<implObj> &implArg);
 
 	//! Internal constructor

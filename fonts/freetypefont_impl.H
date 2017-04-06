@@ -65,7 +65,8 @@ class LIBCXX_HIDDEN freetypefontObj::implObj : virtual public obj {
 		dim_t height,
 		dim_t &ascender_value,
 		dim_t &descender_value,
-		dim_t &max_advance);
+		dim_t &max_advance,
+		bool &fixed_width);
 
 	~implObj();
 
@@ -94,6 +95,20 @@ class LIBCXX_HIDDEN freetypefontObj::implObj : virtual public obj {
 			     const function<bool(dim_t, int16_t)> &width,
 			     char32_t prev_char,
 			     char32_t unprintable_char) const;
+
+	//! Quick lookup of a character's pixel width.
+
+	//! Used only when loading a font, to compute its nominal width.
+
+	dim_t width_lookup(char32_t c);
+
+ private:
+
+	//! Prepare a glyph for rendering.
+
+	//! \internal
+	static bool load_and_render_glyph(face_t::const_lock &lock,
+					  size_t glyph_index);
 };
 
 LIBCXXW_NAMESPACE_END

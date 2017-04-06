@@ -8,8 +8,10 @@
 
 #include <x/ref.H>
 #include <x/obj.H>
+#include <vector>
 
 #include <courier-unicode.h>
+#include <x/functional.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -74,6 +76,29 @@ public:
 
 	//! Combine another character set map with this one.
 	void merge(const const_charset &cs) const;
+
+	//! Callback passed to enumerate().
+
+	//! The callable object gets repeatedly invoked to enumerate characters
+	//! in this charset. The characters get enumerated in pages.
+	//!
+	//! Enumeration continues until all characters are enumerated, or until
+	//! the callback function returns \c false.
+
+	typedef bool enumerate_callback_t(const std::vector<char32_t> &chars);
+
+	//! Enumerate character set map coverage.
+
+	template<typename lambda>
+		void enumerate(lambda &&l) const
+	{
+		do_enumerate(make_function<enumerate_callback_t>
+			     (std::forward<lambda>(l)));
+	}
+
+	//! Enumerate character set map coverage.
+
+	void do_enumerate(const function<enumerate_callback_t> &callback) const;
 };
 
 #if 0

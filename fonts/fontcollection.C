@@ -37,6 +37,16 @@ dim_t fontcollectionObj::max_advance() const
 	return impl->max_advance();
 }
 
+dim_t fontcollectionObj::nominal_width() const
+{
+	return impl->nominal_width();
+}
+
+bool fontcollectionObj::fixed_width() const
+{
+	return impl->fixed_width();
+}
+
 void fontcollectionObj::do_lookup(const function< bool(char32_t &) > &next,
 				  const function< void(const freetypefont &) >
 				  &callback)
