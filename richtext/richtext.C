@@ -17,7 +17,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-richtext richtextBase::create(richtextstring &string,
+richtext richtextBase::create(const richtextstring &string,
 			      halign alignment, dim_t initial_width)
 {
 	return ptrrefBase::objfactory<richtext>

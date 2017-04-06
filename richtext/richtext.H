@@ -18,14 +18,14 @@ class richtextBase {
 
 public:
 
-	static richtext create(richtextstring &string,
+	static richtext create(const richtextstring &string,
 			       halign alignment, dim_t initial_width);
 
 	template<typename ref_type>
 	class objfactory {
 
 	public:
-		static inline ref_type create(richtextstring &string,
+		static inline ref_type create(const richtextstring &string,
 					      halign alignment,
 					      dim_t initial_width)
 		{

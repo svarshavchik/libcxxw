@@ -24,14 +24,14 @@
 
 LIBCXXW_NAMESPACE_START
 
-richtextObj::implObj::implObj(richtextstring &string,
+richtextObj::implObj::implObj(const richtextstring &string,
 			      halign alignmentArg)
 	: alignment(alignmentArg)
 {
 	do_set(string);
 }
 
-void richtextObj::implObj::set(IN_THREAD_ONLY, richtextstring &string)
+void richtextObj::implObj::set(IN_THREAD_ONLY, const richtextstring &string)
 {
 	// If the existing rich text object has any cursor locations, make
 	// a copy of them.
@@ -120,7 +120,7 @@ void richtextObj::implObj::set(IN_THREAD_ONLY, richtextstring &string)
 	restore_paragraphs_sentry.unguard();
 }
 
-void richtextObj::implObj::do_set(richtextstring &string)
+void richtextObj::implObj::do_set(const richtextstring &string)
 {
 	paragraphs.clear();
 	num_chars=0;

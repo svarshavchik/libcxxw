@@ -151,10 +151,7 @@ public:
 
 	//! Constructor
 	implObj(//! Initial contents
-
-		//! The constructor does not modify str, but it uses some
-		//! non-const methods in str, hence it must be non-const.
-		richtextstring &str,
+		const richtextstring &str,
 
 		//! Alignment
 		halign alignmentArg);
@@ -163,12 +160,12 @@ public:
 
 	void set(IN_THREAD_ONLY,
 		 //! Text string
-		 richtextstring &string);
+		 const richtextstring &string);
 
  private:
 	//! Invoked from set(), after all existing locations are copied.
 	void do_set(//! Text string
-		    richtextstring &string);
+		    const richtextstring &string);
 
  public:
 

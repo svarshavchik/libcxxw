@@ -36,12 +36,22 @@ public:
 
 	const richtext text;
 
-	//! Constructor
+	//! Constructor for a label element.
 
 	implObj(const ref<containerObj::implObj> &container,
 		const text_param &text,
 		halign alignment,
 		double initial_width);
+
+	//! Constructor used by editor subclass.
+
+	implObj(const ref<containerObj::implObj> &container,
+		const text_param &text,
+		halign alignment,
+		double initial_width,
+		const background_color &label_color,
+		const current_fontcollection &label_font,
+		const char *element_id);
 
 	//! Destructor
 	~implObj();

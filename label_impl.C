@@ -33,37 +33,36 @@ label factoryObj::create_label(const text_param &text,
 	return l;
 }
 
-// Helper function invoked from the constructor to construct the richtext
-// member object.
-
-static inline richtext create_rich_text(const auto &container, const auto &text,
-					halign alignment)
+labelObj::implObj::implObj(const ref<containerObj::implObj> &container,
+			   const text_param &text,
+			   halign alignment,
+			   double initial_width)
+	: implObj(container, text, alignment, initial_width,
+		  container->get_element_impl()
+		  .create_background_color
+		  ("label_foreground_color",
+		   rgb(rgb::maximum/10,
+		       rgb::maximum/10,
+		       rgb::maximum/10)),
+		  container->get_element_impl()
+		  .create_theme_font(container->label_theme_font()),
+		  "label@libcxx")
 {
-	auto &element_impl=container->get_element_impl();
-
-	auto background_color=
-		element_impl.create_background_color
-		("label_foreground_color",
-		 rgb(rgb::maximum/10,
-		     rgb::maximum/10,
-		     rgb::maximum/10));
-
-	auto font=element_impl.create_theme_font(container->label_theme_font());
-
-	auto string=element_impl.convert({ background_color, font },
-					 text);
-
-	return richtext::create(string, alignment, 0);
 }
 
 labelObj::implObj::implObj(const ref<containerObj::implObj> &container,
 			   const text_param &text,
 			   halign alignment,
-			   double initial_width)
+			   double initial_width,
+			   const background_color &label_color,
+			   const current_fontcollection &label_font,
+			   const char *element_id)
 	: child_elementObj(container, metrics::horizvert_axi(),
-			   "label@libcxx"),
+			   element_id),
 	  word_wrap_widthmm_thread_only(initial_width),
-	  text(create_rich_text(container, text, alignment))
+	  text(richtext::create(container->get_element_impl()
+				.convert({label_color, label_font}, text),
+				alignment, 0))
 {
 	if (initial_width < 0)
 		throw EXCEPTION(_("Label width cannot be negative"));
