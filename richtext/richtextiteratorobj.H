@@ -86,11 +86,13 @@ class LIBCXX_HIDDEN richtextiteratorObj : virtual public obj {
 	//! What the at() returns.
 
 	struct at_info {
-		char32_t character;
+		char32_t character; //!< The character at the iterator
+		coord_t x;	    //!< Character's current X position
+		dim_t w;	    //!< Character's width.
 	};
 
 	//! What's at this iterator's location
-	at_info at() const;
+	at_info at(IN_THREAD_ONLY) const;
 
 	//! Current offset from the start of text, in characters
 	size_t pos() const;

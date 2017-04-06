@@ -36,9 +36,9 @@ void testrichtext1(const main_window &w,
 	auto b=richtext->at(0);
 	auto e=richtext->end();
 
-	assert_or_throw(b->at().character == 'H',
+	assert_or_throw(b->at(IN_THREAD).character == 'H',
 			"pos(0) is not character 'H'.");
-	assert_or_throw(e->at().character == ' ',
+	assert_or_throw(e->at(IN_THREAD).character == ' ',
 			"end() is not space.");
 	assert_or_throw(b->debug_get_location()->get_offset() == 0,
 			"pos(0) offset is not 0");
@@ -78,7 +78,7 @@ void testrichtext1(const main_window &w,
 	b->next();
 	b->next();
 	b->next();
-	assert_or_throw(b->at().character == 'w',
+	assert_or_throw(b->at(IN_THREAD).character == 'w',
 			"pos(5) is not character 'w'.");
 
 	auto o=b->insert(IN_THREAD, {
@@ -96,14 +96,14 @@ void testrichtext1(const main_window &w,
 			->num_chars == 6,
 			"Number of characters in 2nd paragraph is not 12.");
 
-	assert_or_throw(b->at().character == 'w',
+	assert_or_throw(b->at(IN_THREAD).character == 'w',
 			"pos(6) is not character 'w' after insert");
 	assert_or_throw(b->debug_get_location()->get_offset() == 0,
 			"pos(6) offset is not 0");
 
 	assert_or_throw(o->debug_get_location()->get_offset() == 5,
 			"pos(5) offset is not 5");
-	assert_or_throw(o->at().character == '\n',
+	assert_or_throw(o->at(IN_THREAD).character == '\n',
 			"pos(5) is not character '\\n' after insert");
 
 	auto meta=o->debug_get_location()->my_fragment->string.get_meta();
@@ -370,7 +370,7 @@ void testrichtext2(const main_window &w,
 
 		auto b=text->at(test.insert_pos);
 
-		assert_or_throw(b->at().character == orig[test.insert_pos],
+		assert_or_throw(b->at(IN_THREAD).character == orig[test.insert_pos],
 				"before insert, unexpected cursor position's"
 				" value");
 
@@ -499,10 +499,10 @@ void testrichtext3(const main_window &w,
 
 		auto pos_middle=text->at((test.pos1+test.pos2)/2);
 
-		assert_or_throw(pos1->at().character ==
+		assert_or_throw(pos1->at(IN_THREAD).character ==
 				(char32_t)test_string[test.pos1],
 				"unexpected return from at(pos1)");
-		assert_or_throw(pos2->at().character ==
+		assert_or_throw(pos2->at(IN_THREAD).character ==
 				(char32_t)test_string[test.pos2],
 				"unexpected return from at(pos2)");
 
@@ -540,15 +540,15 @@ void testrichtext3(const main_window &w,
 				      test_string.begin()+test.pos1);
 		}
 
-		assert_or_throw(pos1->at().character ==
+		assert_or_throw(pos1->at(IN_THREAD).character ==
 				(char32_t)test_string[p],
 				"after remove() unexpected return from at(pos1)"
 				);
-		assert_or_throw(pos2->at().character ==
+		assert_or_throw(pos2->at(IN_THREAD).character ==
 				(char32_t)test_string[p],
 				"after remove() unexpected return from at(pos2)"
 				);
-		assert_or_throw(pos_middle->at().character ==
+		assert_or_throw(pos_middle->at(IN_THREAD).character ==
 				(char32_t)test_string[p],
 				"after remove() unexpected return from at(pos_middle)"
 				);
@@ -643,12 +643,12 @@ void testrichtext4(const main_window &w,
 			  << ", move by: " << (j-i);
 
 			auto cursor=richtext->at(i);
-			if (cursor->at().character != test_string[i])
+			if (cursor->at(IN_THREAD).character != test_string[i])
 				throw EXCEPTION(o.str() +
 						": unexpected character under cursor");
 			cursor->move(j-i);
 
-			if (cursor->at().character !=
+			if (cursor->at(IN_THREAD).character !=
 			    test_string[j < 0 ? 0: j >= n ? n-1:j])
 				throw EXCEPTION(o.str() +
 						": unexpected character under cursor");

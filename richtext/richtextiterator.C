@@ -220,22 +220,24 @@ void richtextiteratorObj::remove(IN_THREAD_ONLY,
 		 });
 }
 
-richtextiteratorObj::at_info richtextiteratorObj::at() const
+richtextiteratorObj::at_info richtextiteratorObj::at(IN_THREAD_ONLY) const
 {
-	return my_richtext->read_only_lock
-		([this]
-		 (const auto &lock)
+	return my_richtext->thread_lock
+		(IN_THREAD,
+		 [this]
+		 (IN_THREAD_ONLY, const auto &lock)
 		 {
-			 assert_or_throw(my_location->my_fragment &&
-					 my_location->get_offset() <
-					 my_location->my_fragment->string
-					 .size(),
+			 auto f=my_location->my_fragment;
+			 auto o=my_location->get_offset();
+
+			 assert_or_throw(f && o < f->string.size(),
 					 "Internal error: invalid fragment");
 
 			 return at_info{
-				 my_location->my_fragment->string
-					 .get_string()
-					 .at(my_location->get_offset())
+				 f->string.get_string().at(o),
+					 coord_t::truncate(f->horiz_info
+							   .x_pos(o)),
+					 f->horiz_info.width(o)
 					 };
 		 });
 }
