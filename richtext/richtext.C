@@ -157,6 +157,8 @@ void richtextObj::do_draw(IN_THREAD_ONLY,
 				what_to_draw;
 			}));
 
+	assert_or_throw(draw_bounds.x >= 0 && draw_bounds.y >= 0,
+			"Bounding rectangle cannot start on a negative coordinate");
 	impl_t::lock lock{IN_THREAD, impl};
 
 	clip_region_set clipped{IN_THREAD, di};
@@ -220,8 +222,8 @@ void richtextObj::do_draw(IN_THREAD_ONLY,
 						 di,
 						 di,
 
-						 di.absolute_location.width,
-						 0, // render_x_start
+						 draw_bounds.width,
+						 dim_t::truncate(draw_bounds.x),
 						 0, // vert_scroll
 						 (*lock)->alignment,
 						 };
@@ -232,8 +234,8 @@ void richtextObj::do_draw(IN_THREAD_ONLY,
 				 scratch_height=scratch_pixmap->get_height();
 
 			 },
-			 rectangle{0, coord_t::truncate(y_position),
-					 di.absolute_location.width, height},
+			 rectangle{draw_bounds.x, coord_t::truncate(y_position),
+					 draw_bounds.width, height},
 			 di, di,
 			 clipped);
 	}

@@ -1029,7 +1029,7 @@ void richtextfragmentObj::render(IN_THREAD_ONLY,
 		// existing resolved font range, we have a previous character
 		// to look at.
 		if (start_char > resolved_font_iter->first)
-			prev_char=current_string.at(prev_char-1);
+			prev_char=current_string.at(start_char-1);
 
 		auto font=resolved_font_iter->second;
 
