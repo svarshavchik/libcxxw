@@ -182,13 +182,11 @@ void child_elementObj::prepare_draw_info(IN_THREAD_ONLY, draw_info &di)
 	di.background_y=di.absolute_location.y;
 }
 
-bool child_elementObj::process_key_event(IN_THREAD_ONLY, char32_t unicode,
-					 uint32_t keysym, bool keypress)
+bool child_elementObj::process_key_event(IN_THREAD_ONLY, const key_event &ke)
 {
-	return elementObj::implObj::process_key_event(IN_THREAD, unicode,
-						      keysym, keypress)
+	return elementObj::implObj::process_key_event(IN_THREAD, ke)
 		|| container->get_element_impl()
-		.process_key_event(IN_THREAD, unicode, keysym, keypress);
+		.process_key_event(IN_THREAD, ke);
 }
 
 bool child_elementObj::process_button_event(IN_THREAD_ONLY,

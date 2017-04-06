@@ -69,8 +69,7 @@ class LIBCXX_HIDDEN child_elementObj : public elementObj::implObj {
 				  const background_color &) override;
 
 	//! If child_element doesn't handle it, punt it back to the parent.
-	bool process_key_event(IN_THREAD_ONLY, char32_t unicode,
-			       uint32_t keysym, bool keypress) override;
+	bool process_key_event(IN_THREAD_ONLY, const key_event &) override;
 
 	//! Button events
 

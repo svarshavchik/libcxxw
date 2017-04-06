@@ -143,8 +143,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 	//! Process TAB/Shift TAB, do move the input focus.
 
-	bool process_key_event(IN_THREAD_ONLY, char32_t unicode,
-			       uint32_t keysym, bool keypress) override;
+	bool process_key_event(IN_THREAD_ONLY, const key_event &ke) override;
 
  private:
 	//! Most recent element where the pointer motion event went to.
@@ -224,10 +223,10 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
  private:
 
 	//! Process a key press or release event.
-	void key_event(IN_THREAD_ONLY,
-		       const xcb_key_release_event_t *event,
-		       uint16_t sequencehi,
-		       bool keypress);
+	void do_key_event(IN_THREAD_ONLY,
+			  const xcb_key_release_event_t *event,
+			  uint16_t sequencehi,
+			  bool keypress);
 
 	//! Process a button press or release event.
 

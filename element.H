@@ -21,6 +21,7 @@
 #include "metrics_horizvertobj.H"
 #include "focus/focus.H"
 #include "fonts/current_fontcollectionfwd.H"
+#include "x/w/key_eventfwd.H"
 #include "x/w/fontfwd.H"
 #include <x/obj.H>
 #include <x/callback_list.H>
@@ -720,8 +721,7 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//!
 	//! The default implementation always returns false.
 
-	virtual bool process_key_event(IN_THREAD_ONLY, char32_t unicode,
-				       uint32_t keysym, bool keypress);
+	virtual bool process_key_event(IN_THREAD_ONLY, const key_event &ke);
 
 	//! Here come the buttons.
 

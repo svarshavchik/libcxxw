@@ -7,6 +7,7 @@
 #include "child_element.H"
 #include "screen.H"
 #include "element_screen.H"
+#include "x/w/key_event.H"
 #include "focus/focusable_element.H"
 #include "connection_thread.H"
 #include "catch_exceptions.H"
@@ -42,14 +43,13 @@ void hotspotObj::implObj::pointer_focus(IN_THREAD_ONLY,
 	update(IN_THREAD);
 }
 
-bool hotspotObj::implObj::process_key_event(IN_THREAD_ONLY, char32_t unicode,
-					    uint32_t keysym, bool keypress)
+bool hotspotObj::implObj::process_key_event(IN_THREAD_ONLY, const key_event &ke)
 {
-	if (unicode == ' ' || unicode == '\n')
+	if (ke.notspecial() && (ke.unicode == ' ' || ke.unicode == '\n'))
 	{
-		bool activated_flag=!keypress && is_key_down;
+		bool activated_flag=!ke.keypress && is_key_down;
 
-		is_key_down=keypress;
+		is_key_down=ke.keypress;
 		update(IN_THREAD);
 
 		if (activated_flag)

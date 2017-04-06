@@ -15,6 +15,7 @@
 #include "element_screen.H"
 #include "background_color.H"
 #include "focus/focusable.H"
+#include "x/w/key_event.H"
 #include "x/w/values_and_mask.H"
 #include <xcb/xcb_icccm.h>
 #include <X11/keysym.h>
@@ -299,7 +300,7 @@ void generic_windowObj::handlerObj
 
 	grabbed_timestamp(IN_THREAD)=event->time;
 
-	key_event(IN_THREAD, event, sequencehi, true);
+	do_key_event(IN_THREAD, event, sequencehi, true);
 }
 
 void generic_windowObj::handlerObj
@@ -307,28 +308,27 @@ void generic_windowObj::handlerObj
 		    const xcb_key_release_event_t *event,
 		    uint16_t sequencehi)
 {
-	key_event(IN_THREAD, event, sequencehi, false);
+	do_key_event(IN_THREAD, event, sequencehi, false);
 }
 
 void generic_windowObj::handlerObj
-::key_event(IN_THREAD_ONLY,
-	    const xcb_key_release_event_t *event,
-	    uint16_t sequencehi,
-	    bool keypress)
+::do_key_event(IN_THREAD_ONLY,
+	       const xcb_key_release_event_t *event,
+	       uint16_t sequencehi,
+	       bool keypress)
 {
-	char32_t unicode;
-	uint32_t keysym;
-
 	auto &keysyms=
 		get_screen()->get_connection()->impl->keysyms_info(IN_THREAD);
 
-	input_mask mask{event->state, keysyms};
+	key_event ke{event->state, keysyms};
 
-	bool has_unicode=keysyms.lookup(event->detail, mask,
-					unicode, keysym);
+	ke.keypress=keypress;
+
+	bool has_unicode=keysyms.lookup(event->detail, ke,
+				      ke.unicode, ke.keysym);
 
 	if (!has_unicode)
-		unicode=0;
+		ke.unicode=0;
 
 	// If there's an element with a focus, delegate this to it. If
 	// it doesn't process the key event, it'll eventually percolate back
@@ -339,10 +339,9 @@ void generic_windowObj::handlerObj
 
 	if (current_focus(IN_THREAD))
 		current_focus(IN_THREAD)->get_focusable_element()
-			.process_key_event(IN_THREAD, unicode, keysym,
-					   keypress);
+			.process_key_event(IN_THREAD, ke);
 	else
-		process_key_event(IN_THREAD, unicode, keysym, keypress);
+		process_key_event(IN_THREAD, ke);
 }
 
 void generic_windowObj::handlerObj
@@ -410,14 +409,15 @@ void generic_windowObj::handlerObj::current_position_updated(IN_THREAD_ONLY)
 }
 
 bool generic_windowObj::handlerObj::process_key_event(IN_THREAD_ONLY,
-						      char32_t unicode,
-						      uint32_t keysym,
-						      bool keypress)
+						      const key_event &ke)
 {
-	if (!keypress)
+	if (!ke.keypress)
 		return false;
 
-	if (keypress == XK_ISO_Left_Tab)
+	if (!ke.notspecial())
+		return false;
+
+	if (ke.keypress == XK_ISO_Left_Tab)
 	{
 		if (current_focus(IN_THREAD))
 		{
@@ -446,7 +446,7 @@ bool generic_windowObj::handlerObj::process_key_event(IN_THREAD_ONLY,
 		}
 	}
 
-	if (unicode == '\t')
+	if (ke.unicode == '\t')
 	{
 		if (current_focus(IN_THREAD))
 		{

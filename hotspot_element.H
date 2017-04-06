@@ -83,15 +83,12 @@ void hotspot_elementObj<element_impl>::pointer_focus(IN_THREAD_ONLY,
 
 template<typename element_impl>
 bool hotspot_elementObj<element_impl>
-::process_key_event(IN_THREAD_ONLY, char32_t unicode,
-		    uint32_t keysym, bool keypress)
+::process_key_event(IN_THREAD_ONLY, const key_event &ke)
 {
-	return hotspotObj::implObj::process_key_event(IN_THREAD, unicode,
-						      keysym, keypress)
+	return hotspotObj::implObj::process_key_event(IN_THREAD, ke)
 		||
 		focusable_elementObj<element_impl>
-		::process_key_event(IN_THREAD, unicode,
-				    keysym, keypress);
+		::process_key_event(IN_THREAD, ke);
 }
 
 //! Implement process_button_event(), inherited from elementObj::implObj

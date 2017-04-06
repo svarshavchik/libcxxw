@@ -10,6 +10,7 @@
 #include "x/w/elementobj.H"
 #include "x/w/input_mask.H"
 #include "x/w/focusablefwd.H"
+#include "x/w/key_eventfwd.H"
 #include "focus/focus.H"
 #include "focus/focusable_elementfwd.H"
 #include "connection_threadfwd.H"
@@ -90,8 +91,7 @@ class LIBCXX_HIDDEN hotspotObj::implObj : virtual public obj {
 
 	//! Update hotspot temperature due to a keyboard event.
 
-	bool process_key_event(IN_THREAD_ONLY, char32_t unicode,
-			       uint32_t keysym, bool keypress);
+	bool process_key_event(IN_THREAD_ONLY, const key_event &ke);
 
 	//! Button 1 press requests focus to us.
 

@@ -227,6 +227,7 @@ libcxxw_la_SOURCES=\
 	input_mask.C				    \
 	keysyms.C				    \
 	keysyms.H				    \
+	key_event.C				    \
 	label.H					    \
 	label.C					    \
 	label_impl.C				    \
