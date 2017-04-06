@@ -84,7 +84,16 @@ void richtextcursorlocationObj::cache_horiz_pos(IN_THREAD_ONLY)
 	position.cached_horiz_pos=dim_squared_t::truncate
 		(my_fragment->horiz_info.x_pos(position.offset)
 		 + my_fragment->first_xpos(IN_THREAD));
-	position.set_targeted_horiz_pos();
+	new_targeted_horiz_pos(IN_THREAD);
+}
+
+void richtextcursorlocationObj::new_targeted_horiz_pos(IN_THREAD_ONLY)
+{
+	assert_or_throw(my_fragment, "Internal error in new_targeted_horiz_pos(): my_fragment is not initialized");
+
+	position.set_targeted_horiz_pos(position.cached_horiz_pos
+					+ my_fragment->horiz_info.width
+					(get_offset())/2);
 }
 
 dim_squared_t richtextcursorlocationObj::get_targeted_horiz_pos(IN_THREAD_ONLY)
@@ -116,36 +125,25 @@ void richtextcursorlocationObj
 //
 // If horiz_pos_is_valid, horiz_pos gets updated too.
 
-inline void richtextcursorlocationObj::leftby1()
+inline void richtextcursorlocationObj::leftby1(IN_THREAD_ONLY)
 {
-	if (!position.horiz_pos_is_valid)
-	{
-		--position.offset;
-		return;
-	}
 	// Move by one character.
 
 	position.cached_horiz_pos=
 		dim_t::truncate
 		(my_fragment->horiz_info.x_pos(--position.offset));
-	position.set_targeted_horiz_pos();
+	new_targeted_horiz_pos(IN_THREAD);
 }
 
-inline void richtextcursorlocationObj::rightby1()
+inline void richtextcursorlocationObj::rightby1(IN_THREAD_ONLY)
 {
-	if (!position.horiz_pos_is_valid)
-	{
-		++position.offset;
-		return;
-	}
-
 	position.cached_horiz_pos=
 		dim_t::truncate
 		(my_fragment->horiz_info.x_pos(++position.offset));
-	position.set_targeted_horiz_pos();
+	new_targeted_horiz_pos(IN_THREAD);
 }
 
-void richtextcursorlocationObj::move(ssize_t howmuch)
+void richtextcursorlocationObj::move(IN_THREAD_ONLY, ssize_t howmuch)
 {
 	while (howmuch < 0)
 	{
@@ -169,7 +167,7 @@ void richtextcursorlocationObj::move(ssize_t howmuch)
 				continue;
 			}
 
-			leftby1();
+			leftby1(IN_THREAD);
 			++howmuch;
 			continue;
 		}
@@ -314,9 +312,33 @@ void richtextcursorlocationObj::move(ssize_t howmuch)
 
 		// Advance to the next character in the fragment.
 
-		rightby1();
+		rightby1(IN_THREAD);
 		--howmuch;
 	}
+}
+
+void richtextcursorlocationObj::up(IN_THREAD_ONLY)
+{
+	auto targeted_horiz_pos=get_targeted_horiz_pos(IN_THREAD);
+
+	auto new_fragment=my_fragment->prev_fragment();
+
+	if (!new_fragment)
+		return;
+	initialize(new_fragment, 0);
+	set_targeted_horiz_pos(IN_THREAD, targeted_horiz_pos);
+}
+
+void richtextcursorlocationObj::down(IN_THREAD_ONLY)
+{
+	auto targeted_horiz_pos=get_targeted_horiz_pos(IN_THREAD);
+
+	auto new_fragment=my_fragment->next_fragment();
+
+	if (!new_fragment)
+		return;
+	initialize(new_fragment, 0);
+	set_targeted_horiz_pos(IN_THREAD, targeted_horiz_pos);
 }
 
 void richtextcursorlocationObj::start_of_line()
@@ -334,10 +356,10 @@ void richtextcursorlocationObj::end_of_line()
 {
 	assert_or_throw(my_fragment &&
 			my_fragment->string.size() > 0,
-			"Internal error in start_of_line(): invalid offset");
+			"Internal error in end_of_line(): invalid offset");
 
 	position.offset=my_fragment->string.size()-1;
-	position.targeted_horiz_pos=~0;
+	position.targeted_horiz_pos=dim_squared_t::truncate(~0);
 	horiz_pos_no_longer_valid();
 }
 
@@ -353,7 +375,7 @@ void richtextcursorlocationObj::inserted_at(IN_THREAD_ONLY,
 		if (position.horiz_pos_is_valid)
 		{
 			position.cached_horiz_pos += extra_width;
-			position.set_targeted_horiz_pos();
+			new_targeted_horiz_pos(IN_THREAD);
 		}
 		else
 		{

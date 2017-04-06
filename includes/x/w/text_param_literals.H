@@ -11,6 +11,8 @@
 
 LIBCXXW_NAMESPACE_START
 
+enum class text_decoration;
+
 //! Theme font name
 
 //! "sans_serif"_theme_font specifies a theme font in a \ref text_param "text parameter".

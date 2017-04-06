@@ -38,15 +38,7 @@ labelObj::implObj::implObj(const ref<containerObj::implObj> &container,
 			   halign alignment,
 			   double initial_width)
 	: implObj(container, text, alignment, initial_width,
-		  container->get_element_impl()
-		  .create_background_color
-		  ("label_foreground_color",
-		   rgb(rgb::maximum/10,
-		       rgb::maximum/10,
-		       rgb::maximum/10)),
-		  container->get_element_impl()
-		  .create_theme_font(container->label_theme_font()),
-		  "label@libcxx")
+		  container->get_element_impl())
 {
 }
 
@@ -54,15 +46,30 @@ labelObj::implObj::implObj(const ref<containerObj::implObj> &container,
 			   const text_param &text,
 			   halign alignment,
 			   double initial_width,
-			   const background_color &label_color,
-			   const current_fontcollection &label_font,
+			   elementObj::implObj &container_element)
+	: implObj(container, alignment, initial_width,
+		  container_element.convert
+		  ({container_element.create_background_color
+				  ("label_foreground_color",
+				   rgb(rgb::maximum/10,
+				       rgb::maximum/10,
+				       rgb::maximum/10)),
+				  container_element.create_theme_font
+				  (container->label_theme_font())},
+			  text),
+		  "label@libcxx")
+{
+}
+
+labelObj::implObj::implObj(const ref<containerObj::implObj> &container,
+			   halign alignment,
+			   double initial_width,
+			   const richtextstring &string,
 			   const char *element_id)
 	: child_elementObj(container, metrics::horizvert_axi(),
 			   element_id),
 	  word_wrap_widthmm_thread_only(initial_width),
-	  text(richtext::create(container->get_element_impl()
-				.convert({label_color, label_font}, text),
-				alignment, 0))
+	  text(richtext::create(string, alignment, 0))
 {
 	if (initial_width < 0)
 		throw EXCEPTION(_("Label width cannot be negative"));
@@ -90,7 +97,7 @@ void labelObj::implObj::initialize(IN_THREAD_ONLY)
 
 	// We can now compute and set our initial metrics.
 
-	auto metrics=text->get_metrics(IN_THREAD, preferred_width);
+	auto metrics=calculate_current_metrics(IN_THREAD);
 
 	auto current_metrics=get_horizvert(IN_THREAD);
 
@@ -112,6 +119,11 @@ void labelObj::implObj::process_updated_position(IN_THREAD_ONLY)
 {
 	child_elementObj::process_updated_position(IN_THREAD);
 
+	rewrap_due_to_updated_position(IN_THREAD);
+}
+
+void labelObj::implObj::rewrap_due_to_updated_position(IN_THREAD_ONLY)
+{
 	if (word_wrap_widthmm(IN_THREAD) == 0)
 		return; // Not word wrapping.
 
@@ -156,12 +168,18 @@ void labelObj::implObj::do_draw(IN_THREAD_ONLY,
 
 void labelObj::implObj::recalculate(IN_THREAD_ONLY)
 {
-	auto metrics=text->get_metrics(IN_THREAD, preferred_width);
+	auto metrics=calculate_current_metrics(IN_THREAD);
 
 	get_horizvert(IN_THREAD)->set_element_metrics
 		(IN_THREAD,
 		 metrics.first,
 		 metrics.second);
+}
+
+std::pair<metrics::axis, metrics::axis>
+labelObj::implObj::calculate_current_metrics(IN_THREAD_ONLY)
+{
+	return text->get_metrics(IN_THREAD, preferred_width);
 }
 
 LIBCXXW_NAMESPACE_END

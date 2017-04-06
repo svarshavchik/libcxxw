@@ -136,7 +136,7 @@ public:
 
 	//! Replacement character to show instead of unprintable characters.
 
-	//! richtexteditorwindow overwrites this with a space, so that a
+	//! \ref editor "editor" overwrites this with a space, so that a
 	//! cursor on top of a newline character is visible.
 	char32_t unprintable_char=0;
 

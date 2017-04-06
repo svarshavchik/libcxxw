@@ -16,6 +16,7 @@
 #include <string>
 #include <unordered_map>
 #include <utility>
+#include <type_traits>
 
 LIBCXXW_NAMESPACE_START
 
@@ -305,7 +306,11 @@ public:
 
 	//! Forward to the default constructor, then forward to \c operator().
 
-	template<typename first_arg, typename ...args>
+	template<typename first_arg, typename ...args,
+		 typename not_copy_constructor=typename std::enable_if
+		 <std::negation<std::is_same<typename std::decay<first_arg>
+					     ::type,
+					     text_param>>::value>::type>
 	inline text_param(first_arg &&arg1, args && ...remaining_args)
 		: text_param()
 	{

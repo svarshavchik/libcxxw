@@ -79,13 +79,54 @@ std::ptrdiff_t richtextiteratorObj::compare(const const_richtextiterator &other)
 		 });
 }
 
-void richtextiteratorObj::move(ssize_t howmuch)
+void richtextiteratorObj::move(IN_THREAD_ONLY, ssize_t howmuch)
+{
+	my_richtext->thread_lock
+		(IN_THREAD,
+		 [&, this]
+		 (IN_THREAD_ONLY, const auto &ignore)
+		 {
+			 my_location->move(IN_THREAD, howmuch);
+		 });
+}
+
+void richtextiteratorObj::start_of_line()
 {
 	my_richtext->read_only_lock
 		([&, this]
 		 (const auto &ignore)
 		 {
-			 my_location->move(howmuch);
+			 my_location->start_of_line();
+		 });
+}
+
+void richtextiteratorObj::up(IN_THREAD_ONLY)
+{
+	my_richtext->thread_lock(IN_THREAD,
+				 [this]
+				 (IN_THREAD_ONLY, const auto &lock)
+				 {
+					 my_location->up(IN_THREAD);
+				 });
+}
+
+void richtextiteratorObj::down(IN_THREAD_ONLY)
+{
+	my_richtext->thread_lock(IN_THREAD,
+				 [this]
+				 (IN_THREAD_ONLY, const auto &lock)
+				 {
+					 my_location->down(IN_THREAD);
+				 });
+}
+
+void richtextiteratorObj::end_of_line()
+{
+	my_richtext->read_only_lock
+		([&, this]
+		 (const auto &ignore)
+		 {
+			 my_location->end_of_line();
 		 });
 }
 

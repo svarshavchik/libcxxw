@@ -49,8 +49,8 @@ void testrichtext1(const main_window &w,
 	auto b_horiz_pos=b->horiz_pos(IN_THREAD);
 	auto e_horiz_pos=e->horiz_pos(IN_THREAD);
 
-	b->next();
-	e->prev();
+	b->next(IN_THREAD);
+	e->prev(IN_THREAD);
 
 	assert_or_throw(b->debug_get_location()->get_offset() == 1,
 			"pos(0)+1 offset is not 1");
@@ -62,8 +62,8 @@ void testrichtext1(const main_window &w,
 	assert_or_throw(e->horiz_pos(IN_THREAD) != e_horiz_pos,
 			"end() horiz pos did not change");
 
-	b->prev();
-	e->next();
+	b->prev(IN_THREAD);
+	e->next(IN_THREAD);
 
 	assert_or_throw(b->debug_get_location()->get_offset() == 0,
 			"pos(0) offset is not 0");
@@ -73,11 +73,11 @@ void testrichtext1(const main_window &w,
 			"pos(0) horiz pos different");
 	assert_or_throw(e->horiz_pos(IN_THREAD) == e_horiz_pos,
 			"end() horiz pos different");
-	b->next();
-	b->next();
-	b->next();
-	b->next();
-	b->next();
+	b->next(IN_THREAD);
+	b->next(IN_THREAD);
+	b->next(IN_THREAD);
+	b->next(IN_THREAD);
+	b->next(IN_THREAD);
 	assert_or_throw(b->at(IN_THREAD).character == 'w',
 			"pos(5) is not character 'w'.");
 
@@ -131,30 +131,30 @@ void testrichtext1(const main_window &w,
 	{
 		auto ee=e->clone();
 
-		ee->next();
+		ee->next(IN_THREAD);
 
 		assert_or_throw(e->debug_get_location()->get_offset() == 5,
 				"offset changed after next() on end cursor");
 	}
-	e->prev();
-	e->prev();
-	e->prev();
-	e->prev();
-	e->prev();
+	e->prev(IN_THREAD);
+	e->prev(IN_THREAD);
+	e->prev(IN_THREAD);
+	e->prev(IN_THREAD);
+	e->prev(IN_THREAD);
 
 	assert_or_throw(e->debug_get_location()->get_offset() == 0,
 			"end()-5 offset is not 0");
 	assert_or_throw(e->horiz_pos(IN_THREAD) == 0,
 			"end()-5 horiz pos is not 0");
 
-	e->prev();
+	e->prev(IN_THREAD);
 	assert_or_throw(!e->debug_get_location()->my_fragment->prev_fragment(),
 		"Cursor not on first fragment");
 
 	assert_or_throw(e->debug_get_location()->get_offset() == 5,
 		"Cursor did not move to previous fragment");
 
-	o->next();
+	o->next(IN_THREAD);
 	assert_or_throw(!o->debug_get_location()->my_fragment->next_fragment(),
 		"Cursor not on last fragment");
 	assert_or_throw(o->debug_get_location()->get_offset() == 0,
@@ -646,14 +646,14 @@ void testrichtext4(const main_window &w,
 			if (cursor->at(IN_THREAD).character != test_string[i])
 				throw EXCEPTION(o.str() +
 						": unexpected character under cursor");
-			cursor->move(j-i);
+			cursor->move(IN_THREAD, j-i);
 
 			if (cursor->at(IN_THREAD).character !=
 			    test_string[j < 0 ? 0: j >= n ? n-1:j])
 				throw EXCEPTION(o.str() +
 						": unexpected character under cursor");
-			cursor->next();
-			cursor->prev();
+			cursor->next(IN_THREAD);
+			cursor->prev(IN_THREAD);
 		}
 	}
 }

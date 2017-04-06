@@ -849,6 +849,7 @@ inline void richtextfragmentObj
 		case meta_overlay::normal:
 			break;
 		case meta_overlay::inverse:
+			has_background_color=true;
 			std::swap(color_x, background_x);
 			std::swap(color_y, background_y);
 			std::swap(color_impl, background_color_impl);
@@ -1272,6 +1273,7 @@ void richtextfragmentObj::merge(IN_THREAD_ONLY, fragment_list &my_fragments)
 		l->my_fragment_iter=--locations.end();
 		l->merged_from_fragment(orig_size);
 		other->locations.pop_front();
+		l->split_from_fragment(0);
 	}
 	my_fragments.erase(my_paragraph->fragments.get_iter(n));
 	my_fragments.fragment_text_changed(IN_THREAD, my_fragment_number, 0);

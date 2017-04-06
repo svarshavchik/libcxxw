@@ -96,6 +96,12 @@ libcxxw_la_SOURCES=\
 	draw_info.H				    \
 	draw_info_cache.H			    \
 	draw_info_cachefwd.H			    \
+	editor.C				    \
+	editor.H				    \
+	editorfwd.H				    \
+	editorobj.H				    \
+	editor_impl.C				    \
+	editor_impl.H				    \
 	element.C				    \
 	element.H				    \
 	element_draw.H				    \

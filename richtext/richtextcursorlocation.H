@@ -96,15 +96,18 @@ class LIBCXX_HIDDEN richtextcursorlocationObj : virtual public obj {
 
 		//! Reset targeted_horiz_pos
 
-		inline void set_targeted_horiz_pos()
+		inline void set_targeted_horiz_pos(dim_squared_t p)
 		{
-			targeted_horiz_pos=cached_horiz_pos;
+			targeted_horiz_pos=p;
 		}
 	};
 
  private:
 	//! The position of this location in the fragment
 	position_t position;
+
+	//! Set a new targeted horiz pos for the current actual cursor location.
+	void new_targeted_horiz_pos(IN_THREAD_ONLY);
 
  public:
 	//! What is says.
@@ -114,7 +117,7 @@ class LIBCXX_HIDDEN richtextcursorlocationObj : virtual public obj {
 	}
 
 	//! Return our offset.
-	auto get_offset() const
+	inline auto get_offset() const
 	{
 		return position.offset;
 	}
@@ -177,17 +180,23 @@ class LIBCXX_HIDDEN richtextcursorlocationObj : virtual public obj {
 	dim_t get_horiz_pos(IN_THREAD_ONLY);
 
 	//! Adjust location by character count.
-	void move(ssize_t howmuch);
+	void move(IN_THREAD_ONLY, ssize_t howmuch);
 
  private:
-	void leftby1();
-	void rightby1();
+	void leftby1(IN_THREAD_ONLY);
+	void rightby1(IN_THREAD_ONLY);
  public:
 	//! Beginning of fragment
 	void start_of_line();
 
 	//! End of fragment
 	void end_of_line();
+
+	//! Up
+	void up(IN_THREAD_ONLY);
+
+	//! Down
+	void down(IN_THREAD_ONLY);
 
 	//! richtextfragment inserted nchars at offset #pos, with extra_width pixels
 

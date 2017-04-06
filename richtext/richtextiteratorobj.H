@@ -69,19 +69,31 @@ class LIBCXX_HIDDEN richtextiteratorObj : virtual public obj {
 	richtextiterator pos(size_t offset) const;
 
 	//! Ahead by 1
-	void next()
+	inline void next(IN_THREAD_ONLY)
 	{
-		move(1);
+		move(IN_THREAD, 1);
 	}
 
 	//! Reverse by 1
-	void prev()
+	inline void prev(IN_THREAD_ONLY)
 	{
-		move(-1);
+		move(IN_THREAD, -1);
 	}
 
 	//! Advance the iterator
-	void move(ssize_t howmuch);
+	void move(IN_THREAD_ONLY, ssize_t howmuch);
+
+	//! Ditto
+	void start_of_line();
+
+	//! Ditto
+	void end_of_line();
+
+	//! Ditto
+	void up(IN_THREAD_ONLY);
+
+	//! Ditto
+	void down(IN_THREAD_ONLY);
 
 	//! What the at() returns.
 

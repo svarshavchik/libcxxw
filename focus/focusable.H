@@ -17,6 +17,9 @@ class child_elementObj;
 
 //! The focusable_elementObj template inherits from this class and a subclass
 //! of child_elementObj, and implements get_focusable_element().
+//!
+//! The public object must inherit from focusableObj::ownerObj, which takes
+//! care of invoking focusable_initialize() and focusable_deinitialize().
 
 class LIBCXX_HIDDEN focusableImplObj : virtual public obj {
 
