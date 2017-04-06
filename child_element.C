@@ -63,7 +63,16 @@ draw_info &child_elementObj::get_draw_info(IN_THREAD_ONLY)
 	auto iter=c.draw_info_cache.find(e);
 
 	if (iter != c.draw_info_cache.end())
+	{
+		// Between the the time schedule_redraw() was called, we
+		// could've been removed from my container. Recalculation
+		// has higher priority than drawing, so we should no longer
+		// scribble over our window after we've been removed.
+
+		if (data(IN_THREAD).removed)
+			iter->second.element_viewport.clear();
 		return iter->second;
+	}
 
 	// Start by copying the parent to the child
 
@@ -85,6 +94,10 @@ draw_info &child_elementObj::get_draw_info(IN_THREAD_ONLY)
 	// to derive this element's viewport.
 
 	di.element_viewport=intersect(di.element_viewport, {cpy});
+
+	if (data(IN_THREAD).removed)
+		di.element_viewport.clear(); // See above.
+
 	di.absolute_location=cpy;
 
 	prepare_draw_info(IN_THREAD, di);

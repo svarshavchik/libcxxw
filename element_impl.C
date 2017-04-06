@@ -245,6 +245,12 @@ void elementObj::implObj::schedule_redraw(IN_THREAD_ONLY)
 	IN_THREAD->elements_to_redraw(IN_THREAD)->insert(elementimpl(this));
 }
 
+rectangle_set elementObj::implObj::data_thread_only_t::entire_area() const
+{
+	return {{0, 0, current_position.width,
+				current_position.height}};
+}
+
 void elementObj::implObj::explicit_redraw(IN_THREAD_ONLY, draw_info_cache &c)
 {
 	// Remove myself from the connection thread's list.
@@ -257,12 +263,7 @@ void elementObj::implObj::explicit_redraw(IN_THREAD_ONLY, draw_info_cache &c)
 
 	// Simulate an exposure of the entire element.
 
-	rectangle_set entire_area;
-
-	entire_area.insert({0, 0, data(IN_THREAD).current_position.width,
-				data(IN_THREAD).current_position.height});
-
-	draw(IN_THREAD, di, entire_area);
+	draw(IN_THREAD, di, data(IN_THREAD).entire_area());
 }
 
 ref<obj> elementObj::implObj
@@ -421,13 +422,6 @@ void elementObj::implObj::draw(IN_THREAD_ONLY,
 			       const draw_info &di,
 			       const rectangle_set &areas)
 {
-	// Between the the time schedule_redraw() was called, we could've been
-	// removed from my container. Recalculation has higher priority than
-	// drawing, so we should no longer scribble over our window after
-	// we've been removed.
-	if (data(IN_THREAD).removed)
-		return;
-
 	if (areas.empty())
 		return; // Don't bother.
 

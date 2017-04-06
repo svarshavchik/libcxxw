@@ -511,6 +511,10 @@ void testrectangleset()
 
 	if (result != rectangle_set{ {0, 0, 3, 1}})
 		throw EXCEPTION("testrectangleset failed");
+
+
+	if (bounds({ {1,1,1,1},{0,0,1,1},{2,2,1,1}}) != rectangle{0,0,3,3})
+		throw EXCEPTION("bounds() failed");
 }
 
 int main()

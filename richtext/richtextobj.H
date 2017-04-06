@@ -15,6 +15,7 @@
 #include "richtext/richtext_insertfwd.H"
 #include "x/w/types.H"
 #include "x/w/metrics/axis.H"
+#include "x/w/rectanglefwd.H"
 #include <x/obj.H>
 #include <x/mpobj.H>
 
@@ -109,7 +110,11 @@ class LIBCXX_HIDDEN richtextObj : virtual public obj {
 		     //! If \c false, only \c redraw_needed fragments get
 		     //! redrawn.
 
-		     bool force);
+		     bool force,
+
+		     //! Which areas to redraw
+		     const rectangle_set &areas
+		     );
 
 	//! Return an iterator to the first character of the rich text.
 

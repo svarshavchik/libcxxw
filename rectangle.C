@@ -563,4 +563,34 @@ rectangle_set subtract(const rectangle_set &a,
 
 }
 
+rectangle bounds(const rectangle_set &s)
+{
+	if (s.empty())
+		return {};
+
+	auto b=s.begin(), e=s.end();
+
+	coord_t x1=b->x, y1=b->y;
+	auto x2=b->x+b->width, y2=b->y+b->height;
+
+	while (++b != e)
+	{
+		if (b->x < x1)
+			x1=b->x;
+
+		if (b->y < y1)
+			y1=b->y;
+
+		auto x3=b->x+b->width, y3=b->y+b->height;
+
+		if (x3 > x2)
+			x2=x3;
+
+		if (y3 > y2)
+			y2=y3;
+	}
+
+	return {x1, y1, dim_t::truncate(x2-x1), dim_t::truncate(y2-y1)};
+}
+
 LIBCXXW_NAMESPACE_END

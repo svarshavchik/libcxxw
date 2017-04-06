@@ -138,6 +138,10 @@ class LIBCXX_HIDDEN richtextiteratorObj : virtual public obj {
 
 	dim_t horiz_pos(IN_THREAD_ONLY);
 
+	//! Set the "cursor" flag for this iterator
+
+	void set_cursor(IN_THREAD_ONLY, bool cursor_on);
+
 	//! For testing purpose.
 
 	auto debug_get_location() const { return my_location; }

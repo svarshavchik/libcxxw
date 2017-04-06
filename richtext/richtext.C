@@ -118,8 +118,45 @@ void richtextObj::theme_updated(IN_THREAD_ONLY)
 void richtextObj::do_draw(IN_THREAD_ONLY,
 			  element_drawObj &element,
 			  const draw_info &di,
-			  bool force)
+			  bool force,
+			  const rectangle_set &areas)
 {
+	// Do only the bare minimum of work. We are told to draw only the
+	// given areas.
+
+	// First, translate element_view from absolute window coordinates
+	// to relative element coordinates. Compute the intersection with
+	// the given areas. If the result is empty, draw nothing.
+	//
+	// Otherwise we compute the bounding rectangle and draw only the
+	// fragments that fall within the boundaries. of the bounding
+	// rectangle.
+	auto draw_bounds=bounds
+		(({
+				std::vector<rectangle>
+					rects{di.element_viewport.begin(),
+						di.element_viewport.end()
+						};
+
+				for (auto &r:rects)
+				{
+					r.x=coord_t::truncate
+						(r.x-di.absolute_location.x);
+					r.y=coord_t::truncate
+						(r.y-di.absolute_location.y);
+				}
+
+				auto what_to_draw=
+					intersect(rectangle_set{rects.begin(),
+								rects.end()},
+						areas);
+
+				if (what_to_draw.empty())
+					return;
+
+				what_to_draw;
+			}));
+
 	impl_t::lock lock{IN_THREAD, impl};
 
 	clip_region_set clipped{IN_THREAD, di};
@@ -128,7 +165,13 @@ void richtextObj::do_draw(IN_THREAD_ONLY,
 
 	if (!(*lock)->paragraphs.empty())
 	{
-		f= &*(*(*lock)->paragraphs.get_paragraph(0))->get_fragment(0);
+		size_t y_pos=draw_bounds.y < 0 ? 0:
+			(coord_t::value_type)(draw_bounds.y);
+
+		auto frag=(*lock)->find_fragment_for_y_position(y_pos);
+
+		if (frag)
+			f=&*frag;
 	}
 
 	// We'll capture the height of the scratch pixmap we're using
@@ -139,7 +182,9 @@ void richtextObj::do_draw(IN_THREAD_ONLY,
 	// It's unlikely, but possible that the container gave us
 	// more height than we'll actually draw. Keep track of the ending
 	// y coordinate that was rendered.
-	coord_t y=0;
+	coord_t y=draw_bounds.y;
+
+	auto ending_y_position=draw_bounds.y + draw_bounds.height;
 
 	// Now draw each fragment. Loop iteration advances y by each
 	// fragment's height.
@@ -148,16 +193,16 @@ void richtextObj::do_draw(IN_THREAD_ONLY,
 	{
 		// We rely on the fragments' y_position()s being accurate.
 
-		dim_t y_position=f->y_position();
+		auto y_position=coord_squared_t{f->y_position()};
 
-		if (y_position >= di.absolute_location.height)
+		if (ending_y_position <= y_position)
 			break;
 
 		auto height=f->height();
 
 		y=coord_t::truncate(y_position+height);
 
-		if (!force)
+		if (!force) // Only draw fragments that must be redrawn.
 		{
 			if (!f->redraw_needed)
 				continue;

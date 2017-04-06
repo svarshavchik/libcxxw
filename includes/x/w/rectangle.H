@@ -7,7 +7,6 @@
 
 #include <x/w/types.H>
 #include <x/w/rectanglefwd.H>
-#include <unordered_set>
 
 LIBCXXW_NAMESPACE_START
 
@@ -107,10 +106,6 @@ public:
 	}
 };
 
-//! A set of rectangles
-
-typedef std::unordered_set<rectangle, rectangle_hash> rectangle_set;
-
 //! Add two rectangle sets together.
 
 //! The returned rectangle set consists of all the combined rectangles, with
@@ -148,6 +143,10 @@ rectangle_set subtract(const rectangle_set &,
 		       const rectangle_set &,
 		       coord_t ofssetx=0,
 		       coord_t offsety=0);
+
+//! Return a bounding rectangle for the given rectangle set
+
+rectangle bounds(const rectangle_set &);
 
 LIBCXXW_NAMESPACE_END
 

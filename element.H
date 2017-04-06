@@ -60,6 +60,10 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 		rectangle current_position;
 
+		// Return current_position, with x and y set to 0.
+
+		rectangle_set entire_area() const;
+
 		////////////////////////////////////////////////////////////
 		//
 		// Defaulted values.

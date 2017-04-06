@@ -307,4 +307,18 @@ dim_t richtextiteratorObj::horiz_pos(IN_THREAD_ONLY)
 		 });
 }
 
+void richtextiteratorObj::set_cursor(IN_THREAD_ONLY, bool cursor_on)
+{
+	my_richtext->thread_lock
+		(IN_THREAD,
+		 [cursor_on, this]
+		 (IN_THREAD_ONLY, auto &lock)
+		 {
+			 assert_or_throw(my_location->my_fragment,
+					 "my_fragment cannot be null.");
+			 my_location->cursor_on=cursor_on;
+			 my_location->my_fragment->redraw_needed=true;
+		 });
+}
+
 LIBCXXW_NAMESPACE_END

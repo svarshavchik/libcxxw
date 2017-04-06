@@ -151,7 +151,7 @@ void labelObj::implObj::do_draw(IN_THREAD_ONLY,
 				const draw_info &di,
 				const rectangle_set &areas)
 {
-	text->do_draw(IN_THREAD, *this, di, true);
+	text->do_draw(IN_THREAD, *this, di, true, areas);
 }
 
 void labelObj::implObj::recalculate(IN_THREAD_ONLY)
