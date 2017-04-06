@@ -116,6 +116,31 @@ public:
 
 	//! Sanity check after an update.
 	void updated();
+
+private:
+
+	//! Whether the offset vector is valid.
+
+	bool offsets_valid=false;
+
+	//! Helper vector for find_x_pos() and x_pos()
+
+	std::vector<std::pair<dim_t, dim_t>> offsets;
+
+	//! Compute the offsets() array.
+
+	void compute_offsets();
+public:
+
+	//! Find the character that's at horizontal position x_pos
+
+	//! Returns size() if x_pos is to the right of the last character
+
+	size_t find_x_pos(dim_t xpos);
+
+	//! Returns the starting position for character #x.
+
+	dim_t x_pos(size_t n);
 };
 
 LIBCXXW_NAMESPACE_END

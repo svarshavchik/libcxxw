@@ -81,21 +81,8 @@ void richtextcursorlocationObj::cache_horiz_pos(IN_THREAD_ONLY)
 		return;
 
 	position.horiz_pos_is_valid=true;
-	position.cached_horiz_pos=0;
-
-	for (size_t i=0; i<position.offset; ++i)
-	{
-		position.cached_horiz_pos += my_fragment->horiz_info.width(i);
-		position.cached_horiz_pos += my_fragment->horiz_info.kerning(i+1);
-	}
-
-	if (position.offset)
-	{
-		position.cached_horiz_pos -= my_fragment->horiz_info.kerning(0);
-		// Does not count
-		position.cached_horiz_pos += my_fragment->horiz_info.kerning(position.offset);
-		// Does count
-	}
+	position.cached_horiz_pos=dim_squared_t::truncate
+		(my_fragment->horiz_info.x_pos(position.offset));
 	position.set_targeted_horiz_pos();
 }
 
@@ -114,33 +101,12 @@ void richtextcursorlocationObj
 			"Inernal error in set_targeted_horiz_pos(): empty fragment");
 
 	position.horiz_pos_is_valid=true;
-	position.cached_horiz_pos=0;
-	position.offset=0;
 
-	auto n=my_fragment->horiz_info.size();
-
-	// Iterate until we cross targeted_horiz_pos;
-	for ( ; position.offset+1 < n; )
-	{
-		auto next_horiz_pos=position.cached_horiz_pos +
-			my_fragment->horiz_info.width(position.offset) +
-			my_fragment->horiz_info.kerning(position.offset+1);
-
-		if (next_horiz_pos > targeted_horiz_pos)
-		{
-			// Choose the closest X position.
-			if ( position.cached_horiz_pos +
-			     (next_horiz_pos-position.cached_horiz_pos)/2 >=
-			     targeted_horiz_pos)
-				break;
-
-			++position.offset;
-			position.cached_horiz_pos=next_horiz_pos;
-			break;
-		}
-		++position.offset;
-		position.cached_horiz_pos=next_horiz_pos;
-	}
+	position.offset=
+		my_fragment->horiz_info.find_x_pos(dim_t::truncate
+						   (targeted_horiz_pos));
+	position.cached_horiz_pos=dim_squared_t::truncate
+		(my_fragment->horiz_info.x_pos(position.offset));
 	position.targeted_horiz_pos=targeted_horiz_pos;
 }
 
@@ -156,12 +122,10 @@ inline void richtextcursorlocationObj::leftby1()
 		return;
 	}
 	// Move by one character.
-	// Subtract the current character's kerning.
-	// Subtract the previous character's width.
 
-	position.cached_horiz_pos-=my_fragment->horiz_info.kerning(position.offset);
-	--position.offset;
-	position.cached_horiz_pos-=my_fragment->horiz_info.width(position.offset);
+	position.cached_horiz_pos=
+		dim_t::truncate
+		(my_fragment->horiz_info.x_pos(--position.offset));
 	position.set_targeted_horiz_pos();
 }
 
@@ -172,16 +136,10 @@ inline void richtextcursorlocationObj::rightby1()
 		++position.offset;
 		return;
 	}
-	// Add in this character's width.
 
-	position.cached_horiz_pos+=
-		my_fragment->horiz_info.width(position.offset);
-	++position.offset;
-
-	// Add in the next character's kerning.
-
-	position.cached_horiz_pos+=
-		my_fragment->horiz_info.kerning(position.offset);
+	position.cached_horiz_pos=
+		dim_t::truncate
+		(my_fragment->horiz_info.x_pos(++position.offset));
 	position.set_targeted_horiz_pos();
 }
 
