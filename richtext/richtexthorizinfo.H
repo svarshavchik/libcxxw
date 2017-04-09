@@ -134,7 +134,7 @@ public:
 
 	//! Find the character that's at horizontal position x_pos
 
-	//! Returns size() if x_pos is to the right of the last character
+	//! Returns size()-1 if x_pos is to the right of the last character
 
 	size_t find_x_pos(dim_t xpos);
 

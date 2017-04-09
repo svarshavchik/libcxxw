@@ -275,11 +275,15 @@ richtextiteratorObj::at_info richtextiteratorObj::at(IN_THREAD_ONLY) const
 					 "Internal error: invalid fragment");
 
 			 return at_info{
-				 f->string.get_string().at(o),
-					 coord_t::truncate(f->horiz_info
-							   .x_pos(o)),
-					 f->horiz_info.width(o)
-					 };
+				 {
+					 coord_t::truncate
+						 (my_location->get_horiz_pos
+						  (IN_THREAD)),
+					 f->y_position(),
+					 f->horiz_info.width(o),
+					 f->height()
+				 },
+					 f->string.get_string().at(o)};
 		 });
 }
 

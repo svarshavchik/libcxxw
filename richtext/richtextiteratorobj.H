@@ -10,6 +10,7 @@
 #include "richtext/richtextfwd.H"
 #include "richtext/richtextcursorlocationfwd.H"
 #include "richtext/richtextstring.H"
+#include "x/w/rectangle.H"
 #include <x/obj.H>
 
 LIBCXXW_NAMESPACE_START
@@ -98,9 +99,8 @@ class LIBCXX_HIDDEN richtextiteratorObj : virtual public obj {
 	//! What the at() returns.
 
 	struct at_info {
+		rectangle position; //!< Where the character is drawn.
 		char32_t character; //!< The character at the iterator
-		coord_t x;	    //!< Character's current X position
-		dim_t w;	    //!< Character's width.
 	};
 
 	//! What's at this iterator's location

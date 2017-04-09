@@ -105,7 +105,8 @@ size_t richtexthorizinfo_t::find_x_pos(dim_t xpos)
 {
 	compute_offsets();
 	auto b=offsets.begin();
-	auto iter=std::upper_bound(b, offsets.end(),
+	auto e=offsets.end();
+	auto iter=std::upper_bound(b, e,
 				   xpos,
 				   []
 				   (dim_t xpos, auto &pair)
@@ -117,7 +118,8 @@ size_t richtexthorizinfo_t::find_x_pos(dim_t xpos)
 			"upper_bound() should not have returned begin()");
 
 
-	if (xpos < dim_t::truncate(iter[-1].second + widths.at(iter-b-1)))
+	if (xpos < dim_t::truncate(iter[-1].second + widths.at(iter-b-1)) ||
+	    iter == e)
 		--iter;
 
 	return iter-b;
