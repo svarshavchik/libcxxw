@@ -7,6 +7,8 @@
 
 #include <x/w/factoryfwd.H>
 #include <x/w/elementfwd.H>
+#include <x/w/new_layoutmanagerfwd.H>
+#include <x/w/containerfwd.H>
 #include <x/w/containerobj.H>
 #include <x/w/canvasfwd.H>
 #include <x/w/metrics/axis.H>
@@ -69,6 +71,24 @@ public:
 				const metrics::mmaxis &vert,
 				halign h,
 				valign v);
+
+	//! Create a nested container
+
+	template<typename functor>
+	container create_container(functor &&creator,
+				   const new_layoutmanager &layout_manager)
+	{
+		return do_create_container(make_function<void (const container
+							       &)>
+					   (creator),
+					   layout_manager);
+	}
+
+	//! Create a nested container
+
+	container do_create_container(const function<void (const container &)>
+				      &creator,
+				      const new_layoutmanager &layout_manager);
 
 	//! Create a label
 

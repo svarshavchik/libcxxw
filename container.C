@@ -5,8 +5,11 @@
 #include "libcxxw_config.h"
 #include "container.H"
 #include "x/w/container.H"
+#include "x/w/factory.H"
 #include "new_layoutmanager.H"
 #include "layoutmanager.H"
+#include "container_element.H"
+#include "child_element.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -39,6 +42,21 @@ layoutmanager containerObj::get_layoutmanager()
 const_layoutmanager containerObj::get_layoutmanager() const
 {
 	return layout_impl->create_public_object();
+}
+
+container factoryObj
+::do_create_container(const function<void (const container &)> &creator,
+		      const new_layoutmanager &layout_manager)
+{
+	auto c=container::create(ref<container_elementObj<child_elementObj>>
+				 ::create(container_impl,
+					  metrics::horizvert_axi(),
+					  "background@libcxx"),
+				 layout_manager);
+
+	creator(c);
+	created(c);
+	return c;
 }
 
 LIBCXXW_NAMESPACE_END
