@@ -31,11 +31,14 @@ public:
 	const ref<implObj> impl;
 
 	//! Constructor
-	focusframecontainerObj(const ref<implObj> &impl) LIBCXX_HIDDEN;
+	focusframecontainerObj(const ref<implObj> &impl,
+			       const ref<focusableImplObj> &focusable_impl)
+		LIBCXX_HIDDEN;
 
 	//! Internal constructor
 
 	focusframecontainerObj(const ref<implObj> &impl,
+			       const ref<focusableImplObj> &focusable_impl,
 			       const new_focusframelayoutmanager &factory)
 		LIBCXX_HIDDEN;
 	//! Destructor

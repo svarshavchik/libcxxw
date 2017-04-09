@@ -24,8 +24,10 @@ struct LIBCXX_HIDDEN focusframecontainerObj::new_focusframelayoutmanager {
 // Main constructor: create a focusframelayoutimplObj instance, then invoke
 // the delegated constructor
 
-focusframecontainerObj::focusframecontainerObj(const ref<implObj> &impl)
-	: focusframecontainerObj(impl,
+focusframecontainerObj::focusframecontainerObj(const ref<implObj> &impl,
+					       const ref<focusableImplObj>
+					       &focusable_impl)
+	: focusframecontainerObj(impl, focusable_impl,
 				 new_focusframelayoutmanager{
 					 ref<focusframelayoutimplObj>
 						 ::create(impl)})
@@ -38,11 +40,13 @@ focusframecontainerObj::focusframecontainerObj(const ref<implObj> &impl)
 // a ref to the grid layout manager subclass in it.
 
 focusframecontainerObj::focusframecontainerObj(const ref<implObj> &impl,
+					       const ref<focusableImplObj>
+					       &focusable_impl,
 					       const new_focusframelayoutmanager
 					       &factory)
 
 	: containerObj(impl, factory.new_layoutmanager),
-	  focusableObj::ownerObj(impl),
+	  focusableObj::ownerObj(focusable_impl),
 	  impl(impl)
 {
 }

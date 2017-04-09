@@ -7,7 +7,7 @@
 
 #include "editor_containerfwd.H"
 #include "editor_containerobj.H"
-#include "x/w/factoryfwd.H"
+#include "x/w/containerobj.H"
 #include "x/w/text_paramfwd.H"
 #include "x/w/input_field_config.H"
 #include <x/ref.H>
@@ -20,7 +20,7 @@ LIBCXXW_NAMESPACE_START
 //! The peephole will scroll the editor element to keep its cursor in view.
 
 editor_container
-create_editor_container(const factory &in_factory,
+create_editor_container(const ref<containerObj::implObj> &parent_container,
 			const text_param &initial_contents,
 			const input_field_config &config) LIBCXX_HIDDEN;
 

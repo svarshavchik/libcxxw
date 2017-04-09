@@ -6,7 +6,6 @@
 #define editorobj_h
 
 #include "x/w/elementobj.H"
-#include "x/w/focusableownerobj.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -14,8 +13,7 @@ LIBCXXW_NAMESPACE_START
 
 //! \see editor
 
-class LIBCXX_HIDDEN editorObj : public elementObj,
-				public focusableObj::ownerObj {
+class LIBCXX_HIDDEN editorObj : public elementObj {
 
 public:
 	class implObj;

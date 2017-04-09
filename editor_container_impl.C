@@ -8,6 +8,7 @@
 #include "peephole_get_element.H"
 #include "editor.H"
 #include "editor_impl.H"
+#include "nonrecursive_visibility.H"
 #include "fonts/current_fontcollection.H"
 #include "fonts/fontcollection.H"
 
@@ -51,12 +52,6 @@ void editor_containerObj::implObj::recalculate(IN_THREAD_ONLY)
 				     {width, width, width},
 				     {height, height, height});
 		    });
-}
-
-void editor_containerObj::implObj::request_visibility_recursive(IN_THREAD_ONLY,
-								bool flag)
-{
-	request_visibility(IN_THREAD, flag);
 }
 
 LIBCXXW_NAMESPACE_END

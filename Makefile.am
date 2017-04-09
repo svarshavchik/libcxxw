@@ -236,6 +236,9 @@ libcxxw_la_SOURCES=\
 	hotspot_elementfwd.H			    \
 	hotspot_impl.C				    \
 	impl_connection_thread.H		    \
+	input_field.H				    \
+	input_field.C				    \
+	input_field_impl.C			    \
 	input_mask.C				    \
 	keysyms.C				    \
 	keysyms.H				    \
@@ -271,6 +274,8 @@ libcxxw_la_SOURCES=\
 	metrics_mmaxis.C			    \
 	new_layoutmanager.C			    \
 	new_layoutmanager.H			    \
+	nonrecursive_visibility.H		    \
+	nonrecursive_visibilityfwd.H		    \
 	peephole.H				    \
 	peephole.C				    \
 	peepholefwd.H				    \
@@ -405,6 +410,7 @@ TESTPROGRAMS=\
 
 INTERACTIVETESTPROGRAMS=\
 	testactionbutton				\
+	testinputfield					\
 	testmainwindow					\
 	testlabel					\
 	testwordwrappablelabel				\
@@ -415,6 +421,10 @@ noinst_PROGRAMS=$(TESTPROGRAMS) $(INTERACTIVETESTPROGRAMS) genconstants
 testactionbutton_SOURCES=testactionbutton.C
 testactionbutton_LDADD=libcxxw.la
 testactionbutton_LDFLAGS=-static $(STATICLINKFLAGS)
+
+testinputfield_SOURCES=testinputfield.C
+testinputfield_LDADD=libcxxw.la
+testinputfield_LDFLAGS=-static $(STATICLINKFLAGS)
 
 testcollapse_SOURCES=testcollapse.C
 testcollapse_LDADD=-lcxx

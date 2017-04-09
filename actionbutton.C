@@ -98,7 +98,7 @@ create_actionbutton_focusframe(const ref<actionbuttonObj::implObj> &impl,
 			 metrics::horizvert_axi(),
 			 "focusframe@libcxx");
 
-	auto ff=focusframecontainer::create(ffi);
+	auto ff=focusframecontainer::create(ffi, ffi);
 
 	// Call the application-provided creator to populate the contents
 	// of the action button.

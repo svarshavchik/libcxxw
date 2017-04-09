@@ -15,14 +15,14 @@
 LIBCXXW_NAMESPACE_START
 
 editor_container
-create_editor_container(const factory &f,
+create_editor_container(const ref<containerObj::implObj> &parent_container,
 			const text_param &initial_contents,
 			const input_field_config &config)
 {
 	// First, the implementation object for the editor container.
 
 	auto impl=ref<editor_containerObj::implObj>
-		::create(f->container_impl,
+		::create(parent_container,
 			 metrics::horizvert_axi(),
 			 "textedit@libcxx");
 
@@ -49,10 +49,7 @@ create_editor_container(const factory &f,
 	editor->show();
 
 	// Ok, we can now create the container.
-	auto ec=editor_container::create(editor, impl, layout_impl);
-
-	f->created_internally(ec);
-	return ec;
+	return editor_container::create(editor, impl, layout_impl);
 }
 
 editor_containerObj::editor_containerObj(const editor &editor_element,

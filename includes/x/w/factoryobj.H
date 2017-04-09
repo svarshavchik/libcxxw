@@ -18,6 +18,7 @@
 #include <x/w/text_paramfwd.H>
 #include <x/w/labelfwd.H>
 #include <x/w/actionbuttonfwd.H>
+#include <x/w/input_fieldfwd.H>
 #include <x/obj.H>
 #include <x/functional.H>
 
@@ -153,6 +154,17 @@ public:
 	create_actionbutton_with_label(const char *theme_border,
 				       const text_param &text,
 				       halign alignment=halign::left);
+
+	//! Create a text input field
+
+	input_field
+	create_input_field(const text_param &text);
+
+	//! Create a text input field
+
+	input_field
+	create_input_field(const text_param &text,
+			   const input_field_config &config);
 };
 
 LIBCXXW_NAMESPACE_END

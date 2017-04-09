@@ -46,7 +46,7 @@ factory->create_label({INSERT_LIBX_NAMESPACE::w::rgb(0,0,0),
 This invokes \c text_param's constructor, which takes a variadic parameter
 pack.
 
-A \c text_param also has a default constructor. This makes to possible to
+A \c text_param also has a default constructor. This makes it possible to
 construct a \c text_param one piece at a time.
 
 \code
@@ -130,7 +130,7 @@ to specify a font.
 \code
 INSERT_LIBX_NAMESPACE::w::text_param p;
 
-p(INSERT_LIBX_NAMESPACE::w::theme_font{"label"};
+p(INSERT_LIBX_NAMESPACE::w::theme_font{"label"});
 p("Hello world");
 
 // ... or ...
@@ -178,7 +178,7 @@ p("Hello world");
 
 #include <INSERT_LIBX_NAMESPACE/w/text_param_literals.H>
 
-p("hightlight"_color, "Hello world!");
+p("highlight"_color, "Hello world!");
 \endcode
 
 A \ref theme_color "INSERT_LIBX_NAMESPACE::w::theme_color" specifies a new
@@ -192,7 +192,7 @@ to specify a color.
 \par Foreground and background colors
 
 \code
-p("hightlight_fg"_color, "hightlight_fg"_color, "Hello world!");
+p("highlight_fg"_color, "highlight_bg"_color, "Hello world!");
 \endcode
 
 Specifying two colors in a row, without an intervening text string,

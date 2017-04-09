@@ -219,5 +219,8 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
   </font>
 
   <color id="textedit_foreground_color" scale="0%" />
+  <color id="textedit_background_color" scale="100%" />
+
+  <border id="textedit_border" from="thin_0%" />
 
 </theme>

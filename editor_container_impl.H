@@ -3,21 +3,24 @@
 ** See COPYING for distribution information.
 */
 
-#ifndef editor_container_impl_impl_H
-#define editor_container_impl_impl_H
+#ifndef editor_container_impl_H
+#define editor_container_impl_H
 
 #include "editor_containerobj.H"
 #include "peephole_impl.H"
+#include "nonrecursive_visibilityfwd.H"
 
 LIBCXXW_NAMESPACE_START
 
 //! Internal-internal editor container implementation object.
 
-class LIBCXX_HIDDEN editor_containerObj::implObj : public peepholeObj::implObj {
+class LIBCXX_HIDDEN editor_containerObj::implObj
+	: public nonrecursive_visibilityObj<peepholeObj::implObj> {
 
  public:
 
-	using peepholeObj::implObj::implObj;
+	using nonrecursive_visibilityObj<peepholeObj::implObj>
+		::nonrecursive_visibilityObj;
 
 	//! We now have everything that's needed to set our metrics.
 
@@ -32,13 +35,6 @@ class LIBCXX_HIDDEN editor_containerObj::implObj : public peepholeObj::implObj {
 	//! Compute updated metrics.
 	void recalculate(IN_THREAD_ONLY);
  public:
-	//! Override request_visibility_recursive().
-
-	//! The editor element in this container is always visible, and
-	//! request_visibility_recursive punts to request_visibility().
-
-	void request_visibility_recursive(IN_THREAD_ONLY, bool flag)
-		override;
 
 	//! Destructor
 	~implObj();

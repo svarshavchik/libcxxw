@@ -9,6 +9,7 @@
 
 #include <x/w/types.H>
 #include <x/w/alignment.H>
+#include <x/w/input_field_configfwd.H>
 
 LIBCXXW_NAMESPACE_START
 

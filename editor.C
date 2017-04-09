@@ -22,7 +22,6 @@ editor create_editor(const ref<containerObj::implObj> &parent_container,
 
 editorObj::editorObj(const ref<implObj> &impl)
 	: elementObj(impl),
-	  focusableObj::ownerObj(impl),
 	  impl(impl)
 {
 }

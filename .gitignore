@@ -40,6 +40,7 @@ suppressfile*
 /testderivedaxis
 /testfocusable
 /testgrid
+/testinputfield
 /testlabel
 /testwordwrappablelabel
 /testmainwindow
