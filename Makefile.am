@@ -102,6 +102,12 @@ libcxxw_la_SOURCES=\
 	editorobj.H				    \
 	editor_impl.C				    \
 	editor_impl.H				    \
+	editor_container.C			    \
+	editor_container.H			    \
+	editor_containerfwd.H			    \
+	editor_containerobj.H			    \
+	editor_container_impl.C			    \
+	editor_container_impl.H			    \
 	element.C				    \
 	element.H				    \
 	element_draw.H				    \
@@ -572,7 +578,7 @@ EXTRA_DIST += $(patsubst $(srcdir)/%,%,$(all_theme_source_files)) \
 	themes/cxxwtheme.properties
 
 check-am:
-	@for p in $(TESTPROGRAMS); do echo $$p; ./$$p || exit 1; done
+	@for p in $(TESTPROGRAMS); do echo $$p; ./$$p --set-property x::w::themes=$(srcdir)/themes || exit 1; done
 
 test:
 	./testmainwindow --state

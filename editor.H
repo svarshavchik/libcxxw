@@ -7,6 +7,7 @@
 
 #include "editorfwd.H"
 #include "editorobj.H"
+#include "x/w/containerobj.H"
 #include "x/w/factoryfwd.H"
 #include "x/w/text_paramfwd.H"
 #include "x/w/input_field_config.H"
@@ -14,9 +15,16 @@
 
 LIBCXXW_NAMESPACE_START
 
-editor create_editor(const factory &f,
+//! Create the editor display element.
+
+//! \internal
+//!
+//! Constructs the \ref editor "editor display element" inside an
+//! \ref editor_container "editor peephole container".
+
+editor create_editor(const ref<containerObj::implObj> &parent_container,
 		     const text_param &initial_contents,
-		     const input_field_config &config);
+		     const input_field_config &config) LIBCXX_HIDDEN;
 
 LIBCXXW_NAMESPACE_END
 

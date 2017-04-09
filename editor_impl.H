@@ -116,6 +116,10 @@ class LIBCXX_HIDDEN editorObj::implObj
 
 	//! Process key press.
 	bool process_keypress(IN_THREAD_ONLY, const key_event &);
+
+	//! ensure_visibility() of the cursor.
+	void scroll_cursor_into_view(IN_THREAD_ONLY);
+
 };
 
 LIBCXXW_NAMESPACE_END

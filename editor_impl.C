@@ -144,6 +144,7 @@ void editorObj::implObj::keyboard_focus(IN_THREAD_ONLY,
 	if (blinking)
 		return;
 
+	scroll_cursor_into_view(IN_THREAD);
 	schedule_blink(IN_THREAD);
 	blinkon=false;
 	blink(IN_THREAD);
@@ -184,8 +185,8 @@ void editorObj::implObj::blink(IN_THREAD_ONLY)
 	auto at=cursor->at(IN_THREAD);
 	auto current_position=data(IN_THREAD).current_position;
 
-	current_position.x=at.x;
-	current_position.width=at.w;
+	current_position.x=at.position.x;
+	current_position.width=at.position.width;
 	current_position.y=0;
 	text->do_draw(IN_THREAD, *this,
 		      get_draw_info(IN_THREAD), false,
@@ -194,9 +195,14 @@ void editorObj::implObj::blink(IN_THREAD_ONLY)
 
 bool editorObj::implObj::process_key_event(IN_THREAD_ONLY, const key_event &ke)
 {
-	if (ke.keypress && ke.notspecial() && process_keypress(IN_THREAD, ke))
-		return true;
-
+	if (ke.keypress && ke.notspecial())
+	{
+		if (process_keypress(IN_THREAD, ke))
+		{
+			scroll_cursor_into_view(IN_THREAD);
+			return true;
+		}
+	}
 	return superclass_t::process_key_event(IN_THREAD, ke);
 }
 
@@ -306,6 +312,11 @@ void editorObj::implObj::draw_changes(IN_THREAD_ONLY)
 	text->do_draw(IN_THREAD, *this,
 		      get_draw_info(IN_THREAD), false,
 		      data(IN_THREAD).entire_area());
+}
+
+void editorObj::implObj::scroll_cursor_into_view(IN_THREAD_ONLY)
+{
+	ensure_visibility(IN_THREAD, cursor->at(IN_THREAD).position);
 }
 
 LIBCXXW_NAMESPACE_END

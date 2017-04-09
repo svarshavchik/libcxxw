@@ -9,19 +9,15 @@
 
 LIBCXXW_NAMESPACE_START
 
-editor create_editor(const factory &f,
+editor create_editor(const ref<containerObj::implObj> &parent_container,
 		     const text_param &initial_contents,
 		     const input_field_config &config)
 {
-	auto impl=ref<editorObj::implObj>::create(f->container_impl,
+	auto impl=ref<editorObj::implObj>::create(parent_container,
 						  initial_contents,
 						  config);
 
-	auto e=editor::create(impl);
-
-	f->created_internally(e);
-
-	return e;
+	return editor::create(impl);
 }
 
 editorObj::editorObj(const ref<implObj> &impl)

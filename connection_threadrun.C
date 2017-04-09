@@ -127,6 +127,8 @@ void connection_threadObj
 					      ? " (SendEvent)":""));
 
 				run_event(IN_THREAD, event);
+				if (!current_draw_info_cache.draw_info_cache.empty())
+					return; // Look above.
 				continue;
 			}
 
