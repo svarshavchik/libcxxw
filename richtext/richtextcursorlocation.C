@@ -236,7 +236,7 @@ void richtextcursorlocationObj::move(IN_THREAD_ONLY, ssize_t howmuch)
 
 		auto f=my_fragment;
 
-		while (howmuch >=
+		while ((size_t)howmuch >=
 		       (chars_left=
 			f->string.size()-position.offset))
 		{

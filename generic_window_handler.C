@@ -417,7 +417,7 @@ bool generic_windowObj::handlerObj::process_key_event(IN_THREAD_ONLY,
 	if (!ke.notspecial())
 		return false;
 
-	if (ke.keypress == XK_ISO_Left_Tab)
+	if (ke.keysym == XK_ISO_Left_Tab)
 	{
 		if (current_focus(IN_THREAD))
 		{

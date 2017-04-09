@@ -193,6 +193,8 @@ ref<obj> connection_threadObj
 bool connection_threadObj::invoke_scheduled_callbacks(IN_THREAD_ONLY,
 						      int &poll_for)
 {
+	bool invoked=false;
+
 	// Scan the scheduled_callbacks list.
 
 	auto b=(*scheduled_callbacks(IN_THREAD))->begin();
@@ -234,7 +236,7 @@ bool connection_threadObj::invoke_scheduled_callbacks(IN_THREAD_ONLY,
 			try {
 				p->invoke(IN_THREAD);
 			} CATCH_EXCEPTIONS;
-
+			invoked=true;
 			p=nullptr;
 
 			// At this point, if the iterator hasn't reached
@@ -276,6 +278,8 @@ bool connection_threadObj::invoke_scheduled_callbacks(IN_THREAD_ONLY,
 		}
 		break;
 	}
+
+	return invoked;
 }
 
 void connection_threadObj

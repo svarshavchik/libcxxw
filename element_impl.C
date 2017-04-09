@@ -676,6 +676,8 @@ bool elementObj::implObj::current_keyboard_focus(IN_THREAD_ONLY)
 	case focus_change::child_moved_to:
 	case focus_change::gained_from_child:
 		return true;
+	default:
+		break;
 	}
 	return false;
 }
@@ -688,6 +690,8 @@ bool elementObj::implObj::current_pointer_focus(IN_THREAD_ONLY)
 	case focus_change::child_moved_to:
 	case focus_change::gained_from_child:
 		return true;
+	default:
+		break;
 	}
 	return false;
 }

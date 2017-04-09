@@ -370,7 +370,8 @@ void testrichtext2(const main_window &w,
 
 		auto b=text->at(test.insert_pos);
 
-		assert_or_throw(b->at(IN_THREAD).character == orig[test.insert_pos],
+		assert_or_throw(b->at(IN_THREAD).character ==
+				(char32_t)orig[test.insert_pos],
 				"before insert, unexpected cursor position's"
 				" value");
 
@@ -643,13 +644,14 @@ void testrichtext4(const main_window &w,
 			  << ", move by: " << (j-i);
 
 			auto cursor=richtext->at(i);
-			if (cursor->at(IN_THREAD).character != test_string[i])
+			if (cursor->at(IN_THREAD).character !=
+			    (char32_t)test_string[i])
 				throw EXCEPTION(o.str() +
 						": unexpected character under cursor");
 			cursor->move(IN_THREAD, j-i);
 
-			if (cursor->at(IN_THREAD).character !=
-			    test_string[j < 0 ? 0: j >= n ? n-1:j])
+			if (cursor->at(IN_THREAD).character != (char32_t)
+			    (test_string[j < 0 ? 0: j >= n ? n-1:j]))
 				throw EXCEPTION(o.str() +
 						": unexpected character under cursor");
 			cursor->next(IN_THREAD);

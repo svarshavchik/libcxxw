@@ -57,6 +57,9 @@ void testactionbutton()
 
 				 factory->create_input_field
 				 ({"sans_serif"_font,
+						 LIBCXX_NAMESPACE::w::rgb{
+						 0, 0,
+							 LIBCXX_NAMESPACE::w::rgb::maximum},
 						 "Hello world!"}, {30});
 			 });
 
