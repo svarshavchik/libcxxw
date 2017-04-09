@@ -705,4 +705,8 @@ bool elementObj::implObj::process_button_event(IN_THREAD_ONLY,
 	return false;
 }
 
+void elementObj::implObj::ensure_visibility(IN_THREAD_ONLY, const rectangle &r)
+{
+}
+
 LIBCXXW_NAMESPACE_END

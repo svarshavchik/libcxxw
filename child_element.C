@@ -206,4 +206,9 @@ bool child_elementObj::process_button_event(IN_THREAD_ONLY,
 	return ret;
 }
 
+void child_elementObj::ensure_visibility(IN_THREAD_ONLY, const rectangle &r)
+{
+	container->ensure_visibility(IN_THREAD, *this, r);
+}
+
 LIBCXXW_NAMESPACE_END

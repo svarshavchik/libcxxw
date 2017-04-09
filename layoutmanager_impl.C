@@ -74,4 +74,10 @@ void layoutmanagerObj::implObj::theme_updated(IN_THREAD_ONLY)
 {
 }
 
+void layoutmanagerObj::implObj::ensure_visibility(IN_THREAD_ONLY,
+						  elementObj::implObj &e,
+						  const rectangle &r)
+{
+}
+
 LIBCXXW_NAMESPACE_END

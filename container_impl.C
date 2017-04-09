@@ -314,4 +314,27 @@ const char *containerObj::implObj::label_theme_font() const
 	return "label";
 }
 
+void containerObj::implObj::ensure_visibility(IN_THREAD_ONLY,
+					      elementObj::implObj &e,
+					      const rectangle &r)
+{
+	// First, have the layout manager do any adjustments to the element.
+
+	invoke_layoutmanager([&](const auto &manager)
+			     {
+				     manager->ensure_visibility(IN_THREAD,
+								e,
+								r);
+			     });
+
+	// Guess what? Make this entire container visible.
+
+	auto &container_e=get_element_impl();
+	auto width=container_e.data(IN_THREAD).current_position.width;
+	auto height=container_e.data(IN_THREAD).current_position.height;
+
+	container_e.ensure_visibility(IN_THREAD,
+				      {0, 0, width, height});
+}
+
 LIBCXXW_NAMESPACE_END

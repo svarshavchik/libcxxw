@@ -265,6 +265,15 @@ libcxxw_la_SOURCES=\
 	metrics_mmaxis.C			    \
 	new_layoutmanager.C			    \
 	new_layoutmanager.H			    \
+	peephole.H				    \
+	peephole.C				    \
+	peepholefwd.H				    \
+	peepholeobj.H				    \
+	peephole_get_element.H			    \
+	peephole_impl.C				    \
+	peephole_impl.H				    \
+	peephole_layoutmanager_impl.C		    \
+	peephole_layoutmanager_impl.H		    \
 	pictformat.C				    \
 	pictformat.H				    \
 	picture.C				    \

@@ -194,6 +194,12 @@ public:
 	//! The default implementation returns "label".
 
 	virtual const char *label_theme_font() const;
+
+
+	//! This element wants to make sure that this part of it is visible.
+
+	void ensure_visibility(IN_THREAD_ONLY, elementObj::implObj &e,
+			       const rectangle &r);
 };
 
 // The connection thread maintains a map of all containers that need to

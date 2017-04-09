@@ -95,7 +95,14 @@ class LIBCXX_HIDDEN layoutmanagerObj::implObj : virtual public obj {
 
 	virtual layoutmanager create_public_object()=0;
 
-	//! Implemented by subclass
+	//! Implemented by subclass.
+
+	//! This is called as a result of the public layoutmanager object
+	//! getting destroyed. The layout manager can buffer changes to the
+	//! container, and then process them in recalculate().
+	//!
+	//! If there are any new elements in the container, recalculate()
+	//! should call initialize_if_needed() on them.
 
 	virtual void recalculate(IN_THREAD_ONLY)=0;
 
@@ -131,6 +138,20 @@ class LIBCXX_HIDDEN layoutmanagerObj::implObj : virtual public obj {
 	//! Invokes the container's element function of the same name.
 
 	void current_position_updated(IN_THREAD_ONLY);
+
+ public:
+
+	//! This element wants to make sure that part of it is visible.
+
+	//! An element's ensure_visibility() winds up here.
+	//!
+	//! The default implementation does nothing.
+	//! The peephole layout manager makes sure that its element scrolls
+	//! this part of it into view.
+
+	virtual void ensure_visibility(IN_THREAD_ONLY,
+				       elementObj::implObj &e,
+				       const rectangle &r);
 };
 
 LIBCXXW_NAMESPACE_END

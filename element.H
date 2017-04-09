@@ -780,6 +780,22 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! lost_to_child.
 
 	bool current_pointer_focus(IN_THREAD_ONLY);
+
+	//! Make sure that the given rectangle is visible.
+
+	//! The default implementation does nothing.
+	//!
+	//! child_elementObj forwards this call to its container.
+	//!
+	//! The container's layout manager, by default, adds this element's
+	//! current_position, and forward it to the container's element.
+	//!
+	//! The \ref peepholeObj::layoutmanager_implObj "peephole layout manager"
+	//! makes sure that its child element's specified position will be
+	//! scrolled into view.
+
+	virtual void ensure_visibility(IN_THREAD_ONLY, const rectangle &);
+
 };
 
 LIBCXXW_NAMESPACE_END

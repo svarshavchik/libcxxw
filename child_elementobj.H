@@ -145,6 +145,11 @@ class LIBCXX_HIDDEN child_elementObj : public elementObj::implObj {
 			       const ptr<elementObj::implObj> &focus_from,
 			       focus_reporter_t focus_reporter)
 		override;
+
+	//! Override ensure_visibility.
+
+	void ensure_visibility(IN_THREAD_ONLY, const rectangle &) override;
+
  protected:
 	/////////////////////////////////////////////////////////////////////
 	//
