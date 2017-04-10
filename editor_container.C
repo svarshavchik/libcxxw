@@ -24,7 +24,7 @@ create_editor_container(const ref<containerObj::implObj> &parent_container,
 	auto impl=ref<editor_containerObj::implObj>
 		::create(parent_container,
 			 metrics::horizvert_axi(),
-			 "textedit@libcxx");
+			 "textedit-peephole@libcxx");
 
 	// Create the editor element.
 	auto editor=create_editor(impl, initial_contents, config);

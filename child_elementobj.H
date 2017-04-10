@@ -35,6 +35,9 @@ class LIBCXX_HIDDEN child_elementObj : public elementObj::implObj {
 	//! Save parent element, increase this element's nesting level.
 	//! scratch_buffer_id is forwarded to the element constructor.
 
+	child_elementObj(const ref<containerObj::implObj> &container);
+
+	//! Constructor, custom metrics and scratch buffer ID.
 	child_elementObj(const ref<containerObj::implObj> &container,
 			 const metrics::horizvert_axi &initial_metrics,
 			 const std::string &scratch_buffer_id);

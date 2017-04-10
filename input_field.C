@@ -55,7 +55,7 @@ static inline void create_focusframe_with_editor(const auto &factory,
 	auto focusframecontainer_impl=ref<focusframe_impl_t>
 		::create(factory->container_impl,
 			 metrics::horizvert_axi(),
-			 "background@libcxx",
+			 "focusframe@libcxx",
 			 factory->container_impl->get_element_impl()
 			 .create_background_color
 			 ("textedit_background_color",
@@ -111,9 +111,7 @@ factoryObj::create_input_field(const text_param &text,
 	// basically a grid container.
 
 	auto impl=ref<input_fieldObj::implObj>
-		::create(container_impl,
-			 metrics::horizvert_axi(),
-			 "background@libcxx");
+		::create(container_impl);
 	auto input_field=input_field::create(impl);
 
 	gridlayoutmanager grid=input_field->get_layoutmanager();

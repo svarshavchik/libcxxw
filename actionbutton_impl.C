@@ -9,9 +9,7 @@
 LIBCXXW_NAMESPACE_START
 
 actionbuttonObj::implObj::implObj(const ref<containerObj::implObj> &container)
-	: container_elementObj<child_elementObj>(container,
-						 metrics::horizvert_axi(),
-						 "focusframe@libcxx")
+	: container_elementObj<child_elementObj>(container)
 {
 }
 

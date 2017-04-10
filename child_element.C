@@ -15,6 +15,12 @@
 
 LIBCXXW_NAMESPACE_START
 
+child_elementObj::child_elementObj(const ref<containerObj::implObj> &container)
+	: child_elementObj(container, metrics::horizvert_axi(),
+			   "default@libcxx")
+{
+}
+
 child_elementObj::child_elementObj(const ref<containerObj::implObj> &container,
 				   const metrics::horizvert_axi
 				   &initial_metrics,
