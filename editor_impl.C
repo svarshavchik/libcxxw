@@ -188,9 +188,9 @@ void editorObj::implObj::blink(IN_THREAD_ONLY)
 	current_position.x=at.position.x;
 	current_position.width=at.position.width;
 	current_position.y=0;
-	text->do_draw(IN_THREAD, *this,
-		      get_draw_info(IN_THREAD), false,
-		      {current_position});
+	text->redraw_whatsneeded(IN_THREAD, *this,
+				 get_draw_info(IN_THREAD),
+				 {current_position});
 }
 
 bool editorObj::implObj::process_key_event(IN_THREAD_ONLY, const key_event &ke)
@@ -309,9 +309,8 @@ bool editorObj::implObj::process_keypress(IN_THREAD_ONLY, const key_event &ke)
 
 void editorObj::implObj::draw_changes(IN_THREAD_ONLY)
 {
-	text->do_draw(IN_THREAD, *this,
-		      get_draw_info(IN_THREAD), false,
-		      data(IN_THREAD).entire_area());
+	text->redraw_whatsneeded(IN_THREAD, *this,
+				 get_draw_info(IN_THREAD));
 }
 
 void editorObj::implObj::scroll_cursor_into_view(IN_THREAD_ONLY)

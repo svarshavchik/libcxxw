@@ -115,11 +115,34 @@ void richtextObj::theme_updated(IN_THREAD_ONLY)
 	(*lock)->theme_updated(IN_THREAD);
 }
 
-void richtextObj::do_draw(IN_THREAD_ONLY,
-			  element_drawObj &element,
-			  const draw_info &di,
-			  bool force,
-			  const rectangle_set &areas)
+void richtextObj::full_redraw(IN_THREAD_ONLY,
+			      element_drawObj &element,
+			      const draw_info &di,
+			      const rectangle_set &areas)
+{
+	draw(IN_THREAD, element, di, true, areas);
+}
+
+void richtextObj::redraw_whatsneeded(IN_THREAD_ONLY,
+				     element_drawObj &element,
+				     const draw_info &di)
+{
+	redraw_whatsneeded(IN_THREAD, element, di, di.entire_area());
+}
+
+void richtextObj::redraw_whatsneeded(IN_THREAD_ONLY,
+				     element_drawObj &element,
+				     const draw_info &di,
+				     const rectangle_set &areas)
+{
+	draw(IN_THREAD, element, di, false, areas);
+}
+
+void richtextObj::draw(IN_THREAD_ONLY,
+		       element_drawObj &element,
+		       const draw_info &di,
+		       bool force,
+		       const rectangle_set &areas)
 {
 	// Do only the bare minimum of work. We are told to draw only the
 	// given areas.
@@ -247,13 +270,16 @@ void richtextObj::do_draw(IN_THREAD_ONLY,
 	// the element's background color. That's all we need to do, and
 	// nothing more.
 
-	while (dim_t::truncate(y) < di.absolute_location.height)
+	while (y < coord_t::truncate(ending_y_position))
 	{
+		// If we know the height of the existing scratch buffer, take
+		// advantage of it fully, to clear the remaining space.
+		//
+		// But make sure that it's at least 16 pixels.
 		if (scratch_height < 16)
 			scratch_height=16;
 
-		dim_t remaining_height=
-			di.absolute_location.height-dim_t::truncate(y);
+		dim_t remaining_height=dim_t::truncate(ending_y_position - y);
 
 		if (remaining_height < scratch_height)
 			scratch_height=remaining_height;

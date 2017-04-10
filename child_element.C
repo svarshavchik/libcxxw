@@ -55,6 +55,12 @@ const generic_windowObj::handlerObj &child_elementObj::get_window_handler()
 	return container->get_window_handler();
 }
 
+void child_elementObj::process_updated_position(IN_THREAD_ONLY)
+{
+	elementObj::implObj::process_updated_position(IN_THREAD);
+	container->get_element_impl().schedule_redraw(IN_THREAD);
+}
+
 draw_info &child_elementObj::get_draw_info(IN_THREAD_ONLY)
 {
 	auto &c=*IN_THREAD->current_draw_info_cache(IN_THREAD);

@@ -42,6 +42,7 @@ void container_elementObj<element_impl>
 ::process_updated_position(IN_THREAD_ONLY)
 {
 	containerObj::implObj::process_updated_position(IN_THREAD);
+	element_impl::process_updated_position(IN_THREAD);
 }
 
 //! Override request_visibility_recursive().

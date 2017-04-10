@@ -60,7 +60,7 @@ void testactionbutton()
 						 LIBCXX_NAMESPACE::w::rgb{
 						 0, 0,
 							 LIBCXX_NAMESPACE::w::rgb::maximum},
-						 "Hello world!"}, {30});
+						 "Hello world!"}, {30, 4});
 			 });
 
 	main_window->set_window_title("Hello world!");

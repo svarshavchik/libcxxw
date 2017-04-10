@@ -29,6 +29,13 @@ struct draw_info {
 
 	rectangle absolute_location;
 
+	//! Return a rectangle_set containing just absolute_location, at (0, 0)
+
+	//! This used to construct a rectangle_set to redraw this entire
+	//! element.
+
+	rectangle_set entire_area() const;
+
 	//! The element is clipped to this viewport.
 
 	//! It's possible that a display element is outside the visible

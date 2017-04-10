@@ -62,6 +62,17 @@ void connection_threadObj
 
 	while (1)
 	{
+		if (!current_draw_info_cache.draw_info_cache.empty())
+			// Something must've used the draw cache.
+			// Don't potentially execute something again
+			// that might use the stale cached draw_info
+			// data. It might be rendered moot by
+			// recalculate_containers() (and some containers'
+			// recalculation involves explicit redraws). Rather,
+			// return, and go back here, to create a new
+			// draw_info_cache.
+				return;
+
 		if (recalculate_containers(IN_THREAD))
 			continue;
 
@@ -81,27 +92,13 @@ void connection_threadObj
 		if (!msgqueue->empty())
 		{
 			msgqueue.event();
-
-			if (!current_draw_info_cache.draw_info_cache.empty())
-				// Don't go back to the top of the loop,
-				// above, and potentially execute something
-				// that invalidates the cached draw_info
-				// data. Rather return, and go back here,
-				// and create a new draw_info_cache.
-				return;
-
 			continue;
 		}
 
 		// Search: are there any scheduled callbacks?
 
 		if (invoke_scheduled_callbacks(IN_THREAD, poll_for))
-		{
-			if (!current_draw_info_cache.draw_info_cache.empty())
-				return; // Look above.
-
 			continue;
-		}
 
 		// Check if the connection errored out, if not, check for
 		// a message.

@@ -116,6 +116,13 @@ void container_clear_padding(IN_THREAD_ONLY,
 		.clear_to_color(IN_THREAD, clip, di, child_di, padding);
 }
 
+void containerObj::implObj::do_draw(IN_THREAD_ONLY)
+{
+	const auto &di=get_element_impl().get_draw_info(IN_THREAD);
+
+	do_draw(IN_THREAD, di, di.entire_area());
+}
+
 void containerObj::implObj::do_draw(IN_THREAD_ONLY,
 				    const draw_info &di,
 				    const rectangle_set &areas)
@@ -273,10 +280,6 @@ void containerObj::implObj::process_updated_position(IN_THREAD_ONLY)
 							   .data(IN_THREAD)
 							   .current_position);
 		 });
-
-	auto &element_impl=get_element_impl();
-
-	element_impl.elementObj::implObj::process_updated_position(IN_THREAD);
 }
 
 void containerObj::implObj::request_visibility_recursive(IN_THREAD_ONLY,

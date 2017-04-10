@@ -59,6 +59,13 @@ class LIBCXX_HIDDEN child_elementObj : public elementObj::implObj {
 	const generic_windowObj::handlerObj &get_window_handler() const
 		override;
 
+	//! Redraw my container after my position is updated.
+
+	//! The container is responsible for clearing parts of it that are
+	//! not covered by any element.
+
+	void process_updated_position(IN_THREAD_ONLY) override;
+
 	//! Use parent display element's background color.
 
 	void remove_background_color(IN_THREAD_ONLY) override;

@@ -169,7 +169,8 @@ void peepholeObj::layoutmanager_implObj::recalculate(IN_THREAD_ONLY)
 		element_pos.y=min_scroll_y;
 
 	LOG_DEBUG("Positioning element to: " << element_pos);
-	peephole_element->impl->update_current_position(IN_THREAD, element_pos);
+	peephole_element->impl->update_current_position(IN_THREAD,
+							element_pos);
 }
 
 void peepholeObj::layoutmanager_implObj

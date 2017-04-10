@@ -61,10 +61,6 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 		rectangle current_position;
 
-		// Return current_position, with x and y set to 0.
-
-		rectangle_set entire_area() const;
-
 		////////////////////////////////////////////////////////////
 		//
 		// Defaulted values.
@@ -404,10 +400,6 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 	virtual void prepare_draw_info(IN_THREAD_ONLY,
 				       draw_info &);
-
-	//! If this display element is visible, call schedule_redraw().
-
-	void schedule_redraw_if_visible(IN_THREAD_ONLY);
 
 	//! Schedule the connection thread to invoke explicit_redraw().
 

@@ -245,10 +245,9 @@ void elementObj::implObj::schedule_redraw(IN_THREAD_ONLY)
 	IN_THREAD->elements_to_redraw(IN_THREAD)->insert(elementimpl(this));
 }
 
-rectangle_set elementObj::implObj::data_thread_only_t::entire_area() const
+rectangle_set draw_info::entire_area() const
 {
-	return {{0, 0, current_position.width,
-				current_position.height}};
+	return {{0, 0, absolute_location.width, absolute_location.height}};
 }
 
 void elementObj::implObj::explicit_redraw(IN_THREAD_ONLY, draw_info_cache &c)
@@ -263,7 +262,7 @@ void elementObj::implObj::explicit_redraw(IN_THREAD_ONLY, draw_info_cache &c)
 
 	// Simulate an exposure of the entire element.
 
-	draw(IN_THREAD, di, data(IN_THREAD).entire_area());
+	draw(IN_THREAD, di, di.entire_area());
 }
 
 ref<obj> elementObj::implObj

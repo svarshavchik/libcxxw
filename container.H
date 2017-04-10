@@ -115,13 +115,19 @@ public:
 
 	//! Draw the container.
 
-	//! Punts to the layout manager, to draw all elements in the
-	//! container, the fills in the remaining areas with the background
-	//! color.
+	//! The only thing we need to do is clear all parts of the container
+	//! that are not occupted by any element in the container. The
+	//! elements in the container will take care of drawing themselves.
 
 	void do_draw(IN_THREAD_ONLY,
 		     const draw_info &di,
 		     const rectangle_set &areas);
+
+	//! Forcibly redraw the entire container.
+
+	//! Invoked by layout managers in order to clear the filler space
+	//! in the container, after they reposition their display elements.
+	void do_draw(IN_THREAD_ONLY);
 
 	//! Container's inherited visibility has been updated.
 

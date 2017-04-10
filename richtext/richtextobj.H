@@ -96,26 +96,53 @@ class LIBCXX_HIDDEN richtextObj : virtual public obj {
 
 	void set(IN_THREAD_ONLY, richtextstring &string);
 
+	//! Redraw this element fully.
+
+	//! Invoked from do_draw(), which handles exposure events.
+
+	void full_redraw(IN_THREAD_ONLY,
+			 element_drawObj &,
+			 const draw_info &,
+			 const rectangle_set &);
+
+	//! Redraw only the fragments that need redrawing.
+
+	//! Invoked after the text is modified.
+
+	void redraw_whatsneeded(IN_THREAD_ONLY,
+				element_drawObj &,
+				const draw_info &);
+
+	//! Redraw only the fragments that need redrawing.
+
+	//! Invoked after the text is modified. The rectangleset further
+	//! narrows down what needs to be redrawn.
+
+	void redraw_whatsneeded(IN_THREAD_ONLY,
+				element_drawObj &,
+				const draw_info &,
+				const rectangle_set &);
+ private:
 	//! Draw the text
 
-	void do_draw(IN_THREAD_ONLY,
-		     //! The element being drawn
-		     element_drawObj &element,
+	void draw(IN_THREAD_ONLY,
+		  //! The element being drawn
+		  element_drawObj &element,
 
-		     //! The drawn element's draw_info
-		     const draw_info &di,
+		  //! The drawn element's draw_info
+		  const draw_info &di,
 
-		     //! Whether to forcibly redraw everything.
+		  //! Whether to forcibly redraw everything.
 
-		     //! If \c false, only \c redraw_needed fragments get
-		     //! redrawn.
+		  //! If \c false, only \c redraw_needed fragments get
+		  //! redrawn.
 
-		     bool force,
+		  bool force,
 
-		     //! Which areas to redraw
-		     const rectangle_set &areas
-		     );
-
+		  //! Which areas to redraw
+		  const rectangle_set &areas
+		  );
+ public:
 	//! Return an iterator to the first character of the rich text.
 
 	richtextiterator begin();
