@@ -32,6 +32,10 @@ class richtextiteratorObj;
 
 typedef ref<richtextiteratorObj> richtextiterator;
 
+//! A nullable pointer reference to a \ref richtextiterator "rich text iterator".
+
+typedef ptr<richtextiteratorObj> richtextiteratorptr;
+
 //! A constant reference to a \ref richtextiterator "rich text iterator".
 
 typedef const_ref<richtextiteratorObj> const_richtextiterator;

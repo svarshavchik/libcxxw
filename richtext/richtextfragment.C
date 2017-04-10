@@ -935,9 +935,13 @@ void richtextfragmentObj::render(IN_THREAD_ONLY,
 	overlay.insert(std::make_pair(0, meta_overlay::normal));
 
 	if (info.selection_end > info.selection_start)
+	{
+		assert_or_throw(info.selection_end <= current_string.size(),
+				"Internal error: selected text range out of range.");
+
 		overlay_merge(overlay, info.selection_start, info.selection_end,
 			      meta_overlay::inverse);
-
+	}
 	for (const auto &location:locations)
 	{
 		const auto &l=*location;

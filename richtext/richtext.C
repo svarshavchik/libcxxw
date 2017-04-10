@@ -12,6 +12,7 @@
 #include "richtext/richtextfragment_render.H"
 #include "richtext/richtextiterator.H"
 #include "richtext/richtextcursorlocation.H"
+#include "richtext/richtext_draw_info.H"
 #include "draw_info.H"
 #include "element_draw.H"
 
@@ -117,10 +118,11 @@ void richtextObj::theme_updated(IN_THREAD_ONLY)
 
 void richtextObj::full_redraw(IN_THREAD_ONLY,
 			      element_drawObj &element,
+			      const richtext_draw_info &rdi,
 			      const draw_info &di,
 			      const rectangle_set &areas)
 {
-	draw(IN_THREAD, element, di,
+	draw(IN_THREAD, element, rdi, di,
 	     make_function<bool (richtextfragmentObj *)>
 	     ([]
 	      (richtextfragmentObj *ignore)
@@ -132,28 +134,80 @@ void richtextObj::full_redraw(IN_THREAD_ONLY,
 
 void richtextObj::redraw_whatsneeded(IN_THREAD_ONLY,
 				     element_drawObj &element,
+				     const richtext_draw_info &rdi,
 				     const draw_info &di)
 {
-	redraw_whatsneeded(IN_THREAD, element, di, di.entire_area());
+	redraw_whatsneeded(IN_THREAD, element, rdi, di, di.entire_area());
 }
 
 void richtextObj::redraw_whatsneeded(IN_THREAD_ONLY,
 				     element_drawObj &element,
+				     const richtext_draw_info &rdi,
 				     const draw_info &di,
 				     const rectangle_set &areas)
 {
-	draw(IN_THREAD, element, di,
+	draw(IN_THREAD, element, rdi, di,
 	     make_function<bool (richtextfragmentObj *)>
 	     ([]
 	      (richtextfragmentObj *f)
 	      {
-		      return f->redraw_needed;
+		      bool flag=f->redraw_needed;
+		      f->redraw_needed=false;
+		      return flag;
 	      }),
 	     false, areas);
 }
 
+void richtextObj::redraw_between(IN_THREAD_ONLY,
+				 element_drawObj &element,
+				 const richtextiterator &a,
+				 const richtextiterator &b,
+				 const richtext_draw_info &rdi,
+				 const draw_info &di)
+{
+	assert_or_throw(a->my_richtext == b->my_richtext &&
+			a->my_richtext == richtext(this),
+			"Internal error: invalid iterators passed to redraw_between().");
+
+	bool first=true;
+	size_t a_index=0;
+	size_t b_index=0;
+
+	draw(IN_THREAD, element, rdi, di,
+	     make_function<bool (richtextfragmentObj *)>
+	     ([&]
+	      (richtextfragmentObj *f)
+	      {
+		      // This is now executing while holding a lock on the
+		      // implementation object. We cannot access the fragments
+		      // until this happens.
+
+		      if (first)
+		      {
+			      assert_or_throw(a->my_location->my_fragment &&
+					      b->my_location->my_fragment,
+					      "Internal error: null fragment "
+					      " in redraw_between");
+
+			      first=false;
+			      a_index=a->my_location->my_fragment->index();
+			      b_index=b->my_location->my_fragment->index();
+
+			      if (a_index > b_index)
+				      std::swap(a_index, b_index);
+		      }
+
+		      auto i=f->index();
+
+		      return ( a_index <= i && i <= b_index );
+	      }),
+	     false,
+	     di.entire_area());
+}
+
 void richtextObj::draw(IN_THREAD_ONLY,
 		       element_drawObj &element,
+		       const richtext_draw_info &rdi,
 		       const draw_info &di,
 		       const function<bool (richtextfragmentObj *)> &redraw_fragment,
 		       bool clear_padding,
@@ -226,10 +280,41 @@ void richtextObj::draw(IN_THREAD_ONLY,
 
 	auto ending_y_position=draw_bounds.y + draw_bounds.height;
 
+	// Determine if there's a current selection.
+
+	size_t selection_start_fragment_index=0;
+	size_t selection_start_offset=0;
+	size_t selection_end_fragment_index=0;
+	size_t selection_end_offset=0;
+	bool has_selection=false;
+
+	if (rdi.selection_start && rdi.selection_end)
+	{
+		auto a=rdi.selection_start->my_location;
+		auto b=rdi.selection_end->my_location;
+
+		auto cmp=a->compare(*b);
+
+		if (cmp)
+		{
+			if (cmp > 0)
+				std::swap(a, b);
+
+			selection_start_fragment_index=a->my_fragment->index();
+			selection_start_offset=a->get_offset();
+
+			selection_end_fragment_index=b->my_fragment->index();
+			selection_end_offset=b->get_offset();
+			has_selection=true;
+		}
+	}
+
 	// Now draw each fragment. Loop iteration advances y by each
 	// fragment's height.
 
-	for (; f; f=f->next_fragment())
+	auto fragment_index=f ? f->index():0;
+
+	for (; f; (f=f->next_fragment()), ++fragment_index)
 	{
 		// We rely on the fragments' y_position()s being accurate.
 
@@ -261,7 +346,30 @@ void richtextObj::draw(IN_THREAD_ONLY,
 						 dim_t::truncate(draw_bounds.x),
 						 };
 
-				 f->redraw_needed=false;
+				 // If we're drawing a selection, figure out
+				 // which part of it is on this line.
+
+				 if (has_selection &&
+				     fragment_index >=
+				     selection_start_fragment_index &&
+				     fragment_index <=
+				     selection_end_fragment_index)
+				 {
+					 size_t from=0;
+					 size_t to=f->string.size();
+
+					 if (fragment_index ==
+					     selection_start_fragment_index)
+						 from=selection_start_offset;
+
+					 if (fragment_index ==
+					     selection_end_fragment_index)
+						 to=selection_end_offset;
+
+					 render_info.selection_start=from;
+					 render_info.selection_end=to;
+				 }
+
 				 f->render(IN_THREAD, render_info);
 
 				 scratch_height=scratch_pixmap->get_height();

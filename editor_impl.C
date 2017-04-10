@@ -13,6 +13,7 @@
 #include "richtext/richtext.H"
 #include "richtext/richtext_impl.H"
 #include "richtext/richtextiterator.H"
+#include "richtext/richtext_draw_info.H"
 #include "background_color.H"
 #include "messages.H"
 #include "connection_thread.H"
@@ -44,6 +45,69 @@ create_initial_string(const ref<containerObj::implObj> &container,
 
 	return string;
 }
+
+////////////////////////////////////////////////////////////////////////////
+
+// Helper object constructed on the stack before moving the cursor, and
+// destroyed after the cursor is moved.
+//
+// If the SHIFT key is held down, and there is no current selection, a
+// new selection is started.
+//
+// When there's a selection, the starting cursor position is saved, and
+// the destructor redraws all fragments between the former cursor position and
+// the current one, in order to update the display of selected text.
+//
+// If the SHIFT key is not held down, and there is a current selection, it
+// is removed and the formerly selected text fragments get redrawn, to show
+// that the selection has been removed.
+
+struct LIBCXX_HIDDEN editorObj::implObj::moving_cursor {
+
+	IN_THREAD_ONLY;
+	editorObj::implObj &me;
+
+	richtextiteratorptr old_cursor;
+
+	moving_cursor(IN_THREAD_ONLY, editorObj::implObj &me,
+		      const key_event &ke)
+		: IN_THREAD(IN_THREAD), me(me)
+	{
+		if (ke.shift)
+		{
+			if (!me.selection_start(IN_THREAD))
+				me.selection_start(IN_THREAD)=
+					me.cursor->clone();
+		}
+		else
+		{
+			auto p=me.selection_start(IN_THREAD);
+
+			if (p)
+			{
+				me.selection_start(IN_THREAD)=
+					richtextiteratorptr();
+
+				me.draw_between(IN_THREAD, p, me.cursor);
+			}
+		}
+
+		if (me.selection_start(IN_THREAD))
+			old_cursor=me.cursor->clone();
+	}
+
+	~moving_cursor()
+	{
+		if (old_cursor)
+		{
+			me.draw_between(IN_THREAD,
+					old_cursor,
+					me.cursor);
+		}
+	}
+};
+
+////////////////////////////////////////////////////////////////////////////
 
 editorObj::implObj::implObj(const ref<containerObj::implObj> &container,
 			    const text_param &text,
@@ -176,7 +240,14 @@ void editorObj::implObj::unblink(IN_THREAD_ONLY)
 void editorObj::implObj::blink(IN_THREAD_ONLY)
 {
 	blinkon= !blinkon;
-	cursor->set_cursor(IN_THREAD, blinkon);
+
+	// We actually blink the cursor only when we are not showing a
+	// selection.
+
+	if ( (!selection_start(IN_THREAD)) ||
+	     selection_start(IN_THREAD)->compare(cursor) == 0)
+		cursor->set_cursor(IN_THREAD, blinkon);
+
 	schedule_blink(IN_THREAD);
 
 	// Tell do_draw() to draw only the vertical slice defined by the
@@ -189,6 +260,7 @@ void editorObj::implObj::blink(IN_THREAD_ONLY)
 	current_position.width=at.position.width;
 	current_position.y=0;
 	text->redraw_whatsneeded(IN_THREAD, *this,
+				 {selection_start(IN_THREAD), cursor},
 				 get_draw_info(IN_THREAD),
 				 {current_position});
 }
@@ -215,30 +287,47 @@ bool editorObj::implObj::process_keypress(IN_THREAD_ONLY, const key_event &ke)
 	case XK_Left:
 	case XK_KP_Left:
 		unblink(IN_THREAD);
-		cursor->prev(IN_THREAD);
+		{
+			moving_cursor moving{IN_THREAD, *this, ke};
+			cursor->prev(IN_THREAD);
+		}
 		blink(IN_THREAD);
 		return true;
 	case XK_Right:
 	case XK_KP_Right:
 		unblink(IN_THREAD);
-		cursor->next(IN_THREAD);
+		{
+			moving_cursor moving{IN_THREAD, *this, ke};
+			cursor->next(IN_THREAD);
+		}
 		blink(IN_THREAD);
 		return true;
 	case XK_Up:
 	case XK_KP_Up:
 		unblink(IN_THREAD);
-		cursor->up(IN_THREAD);
+		{
+			moving_cursor moving{IN_THREAD, *this, ke};
+			cursor->up(IN_THREAD);
+		}
 		blink(IN_THREAD);
 		return true;
 	case XK_Down:
 	case XK_KP_Down:
 		unblink(IN_THREAD);
-		cursor->down(IN_THREAD);
+		{
+			moving_cursor moving{IN_THREAD, *this, ke};
+			cursor->down(IN_THREAD);
+		}
 		blink(IN_THREAD);
 		return true;
 	case XK_Delete:
 	case XK_KP_Delete:
 		unblink(IN_THREAD);
+		if (selection_start(IN_THREAD))
+		{
+			delete_selection(IN_THREAD, ke);
+		}
+		else
 		{
 			auto clone=cursor->clone();
 			clone->next(IN_THREAD);
@@ -260,12 +349,18 @@ bool editorObj::implObj::process_keypress(IN_THREAD_ONLY, const key_event &ke)
 		return true;
 	case XK_Home:
 		unblink(IN_THREAD);
-		cursor->start_of_line();
+		{
+			moving_cursor moving{IN_THREAD, *this, ke};
+			cursor->start_of_line();
+		}
 		blink(IN_THREAD);
 		return true;
 	case XK_End:
 		unblink(IN_THREAD);
-		cursor->end_of_line();
+		{
+			moving_cursor moving{IN_THREAD, *this, ke};
+			cursor->end_of_line();
+		}
 		blink(IN_THREAD);
 		return true;
 	case XK_KP_Home:
@@ -285,6 +380,8 @@ bool editorObj::implObj::process_keypress(IN_THREAD_ONLY, const key_event &ke)
 	if ((!config.oneline() && ke.unicode == '\n') || ke.unicode >= ' ')
 	{
 		unblink(IN_THREAD);
+		if (selection_start(IN_THREAD))
+			delete_selection(IN_THREAD, ke);
 		cursor->insert(IN_THREAD,
 			       std::u32string(&ke.unicode, &ke.unicode+1));
 		recalculate(IN_THREAD);
@@ -296,9 +393,14 @@ bool editorObj::implObj::process_keypress(IN_THREAD_ONLY, const key_event &ke)
 	if (ke.unicode == '\b')
 	{
 		unblink(IN_THREAD);
-		auto old=cursor->clone();
-		cursor->prev(IN_THREAD);
-		cursor->remove(IN_THREAD, old);
+		if (selection_start(IN_THREAD))
+			delete_selection(IN_THREAD, ke);
+		else
+		{
+			auto old=cursor->clone();
+			cursor->prev(IN_THREAD);
+			cursor->remove(IN_THREAD, old);
+		}
 		recalculate(IN_THREAD);
 		draw_changes(IN_THREAD);
 		blink(IN_THREAD);
@@ -307,10 +409,27 @@ bool editorObj::implObj::process_keypress(IN_THREAD_ONLY, const key_event &ke)
 	return false;
 }
 
+void editorObj::implObj::delete_selection(IN_THREAD_ONLY, const key_event &ke)
+{
+	cursor->remove(IN_THREAD, selection_start(IN_THREAD));
+	selection_start(IN_THREAD)=richtextiteratorptr();
+}
+
 void editorObj::implObj::draw_changes(IN_THREAD_ONLY)
 {
 	text->redraw_whatsneeded(IN_THREAD, *this,
+				 {selection_start(IN_THREAD), cursor},
 				 get_draw_info(IN_THREAD));
+}
+
+void editorObj::implObj::draw_between(IN_THREAD_ONLY,
+				      const richtextiterator &a,
+				      const richtextiterator &b)
+{
+	text->redraw_between(IN_THREAD, *this,
+			     a, b,
+			     {selection_start(IN_THREAD), cursor},
+			     get_draw_info(IN_THREAD));
 }
 
 void editorObj::implObj::scroll_cursor_into_view(IN_THREAD_ONLY)

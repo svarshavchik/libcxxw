@@ -8,6 +8,7 @@
 #include "screen.H"
 #include "richtext/richtext.H"
 #include "richtext/richtextmeta.H"
+#include "richtext/richtext_draw_info.H"
 #include "background_color.H"
 #include "messages.H"
 #include "x/w/factory.H"
@@ -163,7 +164,7 @@ void labelObj::implObj::do_draw(IN_THREAD_ONLY,
 				const draw_info &di,
 				const rectangle_set &areas)
 {
-	text->full_redraw(IN_THREAD, *this, di, areas);
+	text->full_redraw(IN_THREAD, *this, {}, di, areas);
 }
 
 void labelObj::implObj::recalculate(IN_THREAD_ONLY)

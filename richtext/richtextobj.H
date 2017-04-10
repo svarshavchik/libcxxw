@@ -13,6 +13,7 @@
 #include "richtext/richtextiteratorfwd.H"
 #include "richtext/richtextcursorlocation.H"
 #include "richtext/richtext_insertfwd.H"
+#include "richtext/richtext_draw_infofwd.H"
 #include "x/w/types.H"
 #include "x/w/metrics/axis.H"
 #include "x/w/rectanglefwd.H"
@@ -103,6 +104,7 @@ class LIBCXX_HIDDEN richtextObj : virtual public obj {
 
 	void full_redraw(IN_THREAD_ONLY,
 			 element_drawObj &,
+			 const richtext_draw_info &,
 			 const draw_info &,
 			 const rectangle_set &);
 
@@ -112,6 +114,7 @@ class LIBCXX_HIDDEN richtextObj : virtual public obj {
 
 	void redraw_whatsneeded(IN_THREAD_ONLY,
 				element_drawObj &,
+				const richtext_draw_info &,
 				const draw_info &);
 
 	//! Redraw only the fragments that need redrawing.
@@ -121,14 +124,29 @@ class LIBCXX_HIDDEN richtextObj : virtual public obj {
 
 	void redraw_whatsneeded(IN_THREAD_ONLY,
 				element_drawObj &,
+				const richtext_draw_info &,
 				const draw_info &,
 				const rectangle_set &);
+
+	//! Redraw a fragment range.
+
+	void redraw_between(IN_THREAD_ONLY,
+			    element_drawObj &,
+			    const richtextiterator &,
+			    const richtextiterator &,
+			    const richtext_draw_info &,
+			    const draw_info &);
  private:
 	//! Draw the text
 
 	void draw(IN_THREAD_ONLY,
 		  //! The element being drawn
 		  element_drawObj &element,
+
+		  //! Additional drawing information
+
+		  //! Such as whether any part of the text is "selected".
+		  const richtext_draw_info &rdi,
 
 		  //! The drawn element's draw_info
 		  const draw_info &di,

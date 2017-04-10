@@ -26,7 +26,15 @@ class LIBCXX_HIDDEN editorObj::implObj
 	//! The current cursor position.
 	const richtextiterator cursor;
 
+	//! Whether a selection is currently in effect.
+
+	richtextiteratorptr selection_start_thread_only;
+
+	struct moving_cursor;
+
  public:
+
+	THREAD_DATA_ONLY(selection_start);
 
 	//! Editing font.
 	const current_fontcollection font;
@@ -114,12 +122,19 @@ class LIBCXX_HIDDEN editorObj::implObj
 	//! Draw changed text fragments.
 	void draw_changes(IN_THREAD_ONLY);
 
+	//! Draw a fragment range.
+	void draw_between(IN_THREAD_ONLY,
+			  const richtextiterator &a,
+			  const richtextiterator &b);
+
 	//! Process key press.
 	bool process_keypress(IN_THREAD_ONLY, const key_event &);
 
 	//! ensure_visibility() of the cursor.
 	void scroll_cursor_into_view(IN_THREAD_ONLY);
 
+	//! Delete the current selection
+	void delete_selection(IN_THREAD_ONLY, const key_event &ke);
 };
 
 LIBCXXW_NAMESPACE_END

@@ -310,6 +310,8 @@ libcxxw_la_SOURCES=\
 	richtext/richtext.C			    \
 	richtext/richtext.H			    \
 	richtext/richtextobj.H			    \
+	richtext/richtext_draw_info.H		    \
+	richtext/richtext_draw_infofwd.H	    \
 	richtext/richtext_impl.C		    \
 	richtext/richtext_impl.H		    \
 	richtext/richtextfwd.H			    \
