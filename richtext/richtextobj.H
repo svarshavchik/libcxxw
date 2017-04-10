@@ -18,6 +18,7 @@
 #include "x/w/rectanglefwd.H"
 #include <x/obj.H>
 #include <x/mpobj.H>
+#include <x/functional.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -132,12 +133,18 @@ class LIBCXX_HIDDEN richtextObj : virtual public obj {
 		  //! The drawn element's draw_info
 		  const draw_info &di,
 
-		  //! Whether to forcibly redraw everything.
+		  //! Whether to redraw the given fragment
 
-		  //! If \c false, only \c redraw_needed fragments get
-		  //! redrawn.
+		  //! full_redraw() always returns true. redraw_whatsneeded
+		  //! checks the fragment's redraw_needed.
+		  const function<bool (richtextfragmentObj *)> &redraw_fragment,
 
-		  bool force,
+		  //! Whether to clear the area below the last fragment.
+
+		  //! full_redraw() sets this to true. redraw_whatsneeded
+		  //! sets it to false.
+
+		  bool clear_padding,
 
 		  //! Which areas to redraw
 		  const rectangle_set &areas

@@ -120,7 +120,14 @@ void richtextObj::full_redraw(IN_THREAD_ONLY,
 			      const draw_info &di,
 			      const rectangle_set &areas)
 {
-	draw(IN_THREAD, element, di, true, areas);
+	draw(IN_THREAD, element, di,
+	     make_function<bool (richtextfragmentObj *)>
+	     ([]
+	      (richtextfragmentObj *ignore)
+	      {
+		      return true;
+	      }),
+	     true, areas);
 }
 
 void richtextObj::redraw_whatsneeded(IN_THREAD_ONLY,
@@ -135,13 +142,21 @@ void richtextObj::redraw_whatsneeded(IN_THREAD_ONLY,
 				     const draw_info &di,
 				     const rectangle_set &areas)
 {
-	draw(IN_THREAD, element, di, false, areas);
+	draw(IN_THREAD, element, di,
+	     make_function<bool (richtextfragmentObj *)>
+	     ([]
+	      (richtextfragmentObj *f)
+	      {
+		      return f->redraw_needed;
+	      }),
+	     false, areas);
 }
 
 void richtextObj::draw(IN_THREAD_ONLY,
 		       element_drawObj &element,
 		       const draw_info &di,
-		       bool force,
+		       const function<bool (richtextfragmentObj *)> &redraw_fragment,
+		       bool clear_padding,
 		       const rectangle_set &areas)
 {
 	// Do only the bare minimum of work. We are told to draw only the
@@ -227,11 +242,8 @@ void richtextObj::draw(IN_THREAD_ONLY,
 
 		y=coord_t::truncate(y_position+height);
 
-		if (!force) // Only draw fragments that must be redrawn.
-		{
-			if (!f->redraw_needed)
-				continue;
-		}
+		if (!redraw_fragment(f))
+			continue;
 
 		element.draw_using_scratch_buffer
 			(IN_THREAD,
@@ -261,7 +273,7 @@ void richtextObj::draw(IN_THREAD_ONLY,
 			 clipped);
 	}
 
-	if (!force)
+	if (!clear_padding)
 		return;
 
 	// If there's undrawn area between the label and the bottom of the
