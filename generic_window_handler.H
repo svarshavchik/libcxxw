@@ -132,6 +132,18 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	draw_info &get_draw_info(IN_THREAD_ONLY)
 		override;
 
+	//! Override get_absolute_location().
+
+	//! For top level display elements, this is the same as
+	//! their alleged current_position.
+
+	rectangle get_absolute_location(IN_THREAD_ONLY) override;
+
+	//! Remove our own background color.
+
+	//! For top level windows, this simply sets their background color
+	//! to the default background color.
+
 	void remove_background_color(IN_THREAD_ONLY) override;
 
 	//! Use its own background color.
@@ -174,6 +186,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! changes, accordingly.
 
 	void report_pointer_xy(IN_THREAD_ONLY,
+			       const input_mask &mask,
 			       coord_t x,
 			       coord_t y);
  public:

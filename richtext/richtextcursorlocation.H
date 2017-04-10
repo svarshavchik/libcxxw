@@ -198,6 +198,9 @@ class LIBCXX_HIDDEN richtextcursorlocationObj : virtual public obj {
 	//! Down
 	void down(IN_THREAD_ONLY);
 
+	//! Move to the given coordinates
+	void moveto(IN_THREAD_ONLY, coord_t x, coord_t y);
+
 	//! richtextfragment inserted nchars at offset #pos, with extra_width pixels
 
 	void inserted_at(IN_THREAD_ONLY,

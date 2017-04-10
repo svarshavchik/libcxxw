@@ -28,7 +28,9 @@ bool focusableImplObj::is_enabled(IN_THREAD_ONLY)
 	// prevent the input focus from bouncing until it escapes the
 	// elements that are being destroyed.
 
-	if (get_focusable_element().data(IN_THREAD).removed)
+	const auto &data=get_focusable_element().data(IN_THREAD);
+
+	if (data.removed || !data.inherited_visibility)
 		return false;
 
 	return enabled_flag(IN_THREAD);

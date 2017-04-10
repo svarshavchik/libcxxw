@@ -120,6 +120,16 @@ void richtextiteratorObj::down(IN_THREAD_ONLY)
 				 });
 }
 
+void richtextiteratorObj::moveto(IN_THREAD_ONLY, coord_t x, coord_t y)
+{
+	my_richtext->thread_lock(IN_THREAD,
+				 [&, this]
+				 (IN_THREAD_ONLY, const auto &lock)
+				 {
+					 my_location->moveto(IN_THREAD, x, y);
+				 });
+}
+
 void richtextiteratorObj::end_of_line()
 {
 	my_richtext->read_only_lock

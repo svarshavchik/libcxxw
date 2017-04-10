@@ -96,6 +96,9 @@ class LIBCXX_HIDDEN richtextiteratorObj : virtual public obj {
 	//! Ditto
 	void down(IN_THREAD_ONLY);
 
+	//! Move to the given coordinates
+	void moveto(IN_THREAD_ONLY, coord_t x, coord_t y);
+
 	//! What the at() returns.
 
 	struct at_info {

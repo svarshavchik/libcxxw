@@ -118,6 +118,12 @@ draw_info &generic_windowObj::handlerObj::get_draw_info(IN_THREAD_ONLY)
 	       }}).first->second;
 }
 
+rectangle generic_windowObj::handlerObj
+::get_absolute_location(IN_THREAD_ONLY)
+{
+	return data(IN_THREAD).current_position;
+}
+
 void generic_windowObj::handlerObj
 ::draw_child_elements_after_visibility_updated(IN_THREAD_ONLY, bool flag)
 {
@@ -372,7 +378,7 @@ void generic_windowObj::handlerObj
 
 	input_mask mask{event->state, keysyms};
 
-	report_pointer_xy(IN_THREAD, event->event_x, event->event_y);
+	report_pointer_xy(IN_THREAD, mask, event->event_x, event->event_y);
 
 	// report_pointer_xy() might not always set
 	// most_recent_element_with_pointer(IN_THREAD).
@@ -474,7 +480,12 @@ void generic_windowObj::handlerObj
 ::pointer_motion_event(IN_THREAD_ONLY,
 		       const xcb_motion_notify_event_t *event)
 {
-	report_pointer_xy(IN_THREAD, event->event_x, event->event_y);
+	auto &keysyms=
+		get_screen()->get_connection()->impl->keysyms_info(IN_THREAD);
+
+	input_mask mask{event->state, keysyms};
+
+	report_pointer_xy(IN_THREAD, mask, event->event_x, event->event_y);
 }
 
 void generic_windowObj::handlerObj
@@ -483,7 +494,12 @@ void generic_windowObj::handlerObj
 {
 	// Treat it just as any other pointer motion event
 
-	report_pointer_xy(IN_THREAD, event->event_x, event->event_y);
+	auto &keysyms=
+		get_screen()->get_connection()->impl->keysyms_info(IN_THREAD);
+
+	input_mask mask{event->state, keysyms};
+
+	report_pointer_xy(IN_THREAD, mask, event->event_x, event->event_y);
 }
 
 void generic_windowObj::handlerObj
@@ -495,10 +511,11 @@ void generic_windowObj::handlerObj
 
 void generic_windowObj::handlerObj
 ::report_pointer_xy(IN_THREAD_ONLY,
-			       coord_t x,
-			       coord_t y)
+		    const input_mask &mask,
+		    coord_t x,
+		    coord_t y)
 {
-	// Locate the lowermost element for the given position.
+	// Locate the lowermost visibile element for the given position.
 
 	ref<elementObj::implObj> e{this};
 
@@ -520,6 +537,10 @@ void generic_windowObj::handlerObj
 					  // Ignore zombies!
 
 					  if (child->data(IN_THREAD).removed)
+						  return;
+
+					  if (!child->data(IN_THREAD)
+					      .inherited_visibility)
 						  return;
 
 					  const auto &p=child->data(IN_THREAD)
@@ -554,6 +575,12 @@ void generic_windowObj::handlerObj
 
 		e->request_focus(IN_THREAD, old,
 				 &elementObj::implObj::report_pointer_focus);
+	}
+	else
+	{
+		if (most_recent_element_with_pointer(IN_THREAD))
+			most_recent_element_with_pointer(IN_THREAD)
+				->motion_event(IN_THREAD, x, y, mask);
 	}
 }
 

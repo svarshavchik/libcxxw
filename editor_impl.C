@@ -70,10 +70,10 @@ struct LIBCXX_HIDDEN editorObj::implObj::moving_cursor {
 	richtextiteratorptr old_cursor;
 
 	moving_cursor(IN_THREAD_ONLY, editorObj::implObj &me,
-		      const key_event &ke)
+		      const input_mask &mask)
 		: IN_THREAD(IN_THREAD), me(me)
 	{
-		if (ke.shift)
+		if (mask.shift)
 		{
 			if (!me.selection_start(IN_THREAD))
 				me.selection_start(IN_THREAD)=
@@ -435,6 +435,33 @@ void editorObj::implObj::draw_between(IN_THREAD_ONLY,
 void editorObj::implObj::scroll_cursor_into_view(IN_THREAD_ONLY)
 {
 	ensure_visibility(IN_THREAD, cursor->at(IN_THREAD).position);
+}
+
+bool editorObj::implObj::process_button_event(IN_THREAD_ONLY,
+					      int button,
+					      bool press,
+					      const input_mask &mask)
+{
+	if (press && button == 1)
+	{
+		unblink(IN_THREAD);
+		moving_cursor moving{IN_THREAD, *this, mask};
+
+		cursor->moveto(IN_THREAD, most_recent_x, most_recent_y);
+		blink(IN_THREAD);
+	}
+
+	// We do not consume the button event. The editor container also
+	// consumes the button press, and moves the input focus here.
+	return superclass_t::process_button_event(IN_THREAD, button, press,
+						  mask);
+}
+
+void editorObj::implObj::motion_event(IN_THREAD_ONLY, coord_t x, coord_t y,
+				      const input_mask &mask)
+{
+	most_recent_x=x;
+	most_recent_y=y;
 }
 
 LIBCXXW_NAMESPACE_END

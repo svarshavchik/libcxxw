@@ -105,7 +105,23 @@ class LIBCXX_HIDDEN editorObj::implObj
 
 	//! Processes a key event.
 	bool process_key_event(IN_THREAD_ONLY, const key_event &ke);
+
+	//! Button 1 moves the cursor.
+
+	bool process_button_event(IN_THREAD_ONLY,
+				  int button,
+				  bool press,
+				  const input_mask &mask);
+	//! Pointer motion event
+	void motion_event(IN_THREAD_ONLY, coord_t x, coord_t y,
+			  const input_mask &mask) override;
+
  private:
+	//! Most recently reported coordinates
+	coord_t most_recent_x;
+
+	//! Most recently reported coordinates
+	coord_t most_recent_y;
 
 	//! Set a callback for the next cursor blink on/off.
 	void schedule_blink(IN_THREAD_ONLY);

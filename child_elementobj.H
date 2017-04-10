@@ -92,6 +92,14 @@ class LIBCXX_HIDDEN child_elementObj : public elementObj::implObj {
 				  bool press,
 				  const input_mask &mask) override;
 
+	//! Motion events
+
+	//! The motion event, after it's reported for this elemenbt,
+	//! gets also reported for its parent display element.
+
+	void motion_event(IN_THREAD_ONLY, coord_t x, coord_t y,
+			  const input_mask &mask) override;
+
  protected:
 
 	//! Update the theme-dependendent background color, then call the parent.
@@ -110,6 +118,9 @@ class LIBCXX_HIDDEN child_elementObj : public elementObj::implObj {
 
 	//! Invoke parent_element->draw_info(), and update the results.
 	draw_info &get_draw_info(IN_THREAD_ONLY) override;
+
+	//! Invoke parent_element->get_absolute_location(), and add my x/y
+	rectangle get_absolute_location(IN_THREAD_ONLY) override;
 
 	//! Set this child element's background color
 	void prepare_draw_info(IN_THREAD_ONLY,

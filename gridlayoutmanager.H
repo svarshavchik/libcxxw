@@ -72,6 +72,9 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 
 	// create_public_object() simply calls this.
 	gridlayoutmanager create_gridlayoutmanager();
+
+	//! Get the display element at the given location.
+	elementptr get(size_t x, size_t y);
  protected:
 	/////////////////////////////////////////////////////////////////////
 	//

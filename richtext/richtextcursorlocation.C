@@ -341,6 +341,47 @@ void richtextcursorlocationObj::down(IN_THREAD_ONLY)
 	set_targeted_horiz_pos(IN_THREAD, targeted_horiz_pos);
 }
 
+void richtextcursorlocationObj::moveto(IN_THREAD_ONLY, coord_t x, coord_t y)
+{
+	// We expect that the requested x/y coordinates will be near this
+	// existing location; so we just search.
+
+	if (y < 0)
+		y=0;
+
+	assert_or_throw(my_fragment,
+			"Internal error: my_fragment is null in moveto()");
+
+	auto f=my_fragment;
+
+	while ((size_t)(coord_t::value_type)y < f->y_position())
+	{
+		auto prevf=f->prev_fragment();
+
+		if (!prevf) break; // Shouldn't really happen.
+
+		f=prevf;
+	}
+
+	while (1)
+	{
+		auto nextf=f->next_fragment();
+
+		if (!nextf)
+			break;
+
+		if ((size_t)(coord_t::value_type)y < nextf->y_position())
+			break;
+
+		f=nextf;
+	}
+	initialize(f, 0);
+
+	if (x < 0)
+		x=0;
+	set_targeted_horiz_pos(IN_THREAD, dim_t::truncate(x));
+}
+
 void richtextcursorlocationObj::start_of_line()
 {
 	assert_or_throw(my_fragment &&

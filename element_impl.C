@@ -708,6 +708,11 @@ bool elementObj::implObj::process_button_event(IN_THREAD_ONLY,
 	return false;
 }
 
+void elementObj::implObj::motion_event(IN_THREAD_ONLY, coord_t x, coord_t y,
+				       const input_mask &mask)
+{
+}
+
 void elementObj::implObj::ensure_visibility(IN_THREAD_ONLY, const rectangle &r)
 {
 }

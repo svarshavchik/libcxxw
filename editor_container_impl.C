@@ -9,6 +9,7 @@
 #include "editor.H"
 #include "editor_impl.H"
 #include "nonrecursive_visibility.H"
+#include "peephole_layoutmanager_impl.H"
 #include "fonts/current_fontcollection.H"
 #include "fonts/fontcollection.H"
 
@@ -52,6 +53,25 @@ void editor_containerObj::implObj::recalculate(IN_THREAD_ONLY)
 				     {width, width, width},
 				     {height, height, height});
 		    });
+}
+
+bool editor_containerObj::implObj::process_button_event(IN_THREAD_ONLY,
+							int button,
+							bool press,
+							const input_mask &mask)
+{
+	if (button != 1 || !press)
+		return false;
+
+	invoke_layoutmanager
+		([&]
+		 (const ref<peepholeObj::layoutmanager_implObj> &lm)
+		 {
+			 editor e=lm->peephole_element;
+
+			 e->impl->set_focus(IN_THREAD);
+		 });
+	return true;
 }
 
 LIBCXXW_NAMESPACE_END

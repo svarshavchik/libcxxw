@@ -124,16 +124,7 @@ void gridlayoutmanagerObj::erase(size_t x, size_t y)
 
 elementptr gridlayoutmanagerObj::get(size_t x, size_t y) const
 {
-	grid_map_t::lock lock{impl->grid_map};
-
-	if (y < lock->elements.size())
-	{
-		const auto &row=lock->elements.at(y);
-
-		if (x < row.size())
-			return row.at(x)->grid_element;
-	}
-	return elementptr();
+	return impl->get(x, y);
 }
 
 LIBCXXW_NAMESPACE_END

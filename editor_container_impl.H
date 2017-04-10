@@ -30,6 +30,12 @@ class LIBCXX_HIDDEN editor_containerObj::implObj
 	//! Invoke recalculate(), after the theme has been updated().
 	void theme_updated(IN_THREAD_ONLY) override;
 
+	//! Button 1 sets focus to the element.
+
+	bool process_button_event(IN_THREAD_ONLY,
+				  int button,
+				  bool press,
+				  const input_mask &mask);
  private:
 
 	//! Compute updated metrics.

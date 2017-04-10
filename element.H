@@ -392,6 +392,10 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 	virtual draw_info &get_draw_info(IN_THREAD_ONLY)=0;
 
+	//! We don't need the full draw_info, just the absolute location.
+
+	virtual rectangle get_absolute_location(IN_THREAD_ONLY)=0;
+
 	//! Prepare draw_info before draw() gets called.
 
 	//! The default implementation does nothing. child_elementObj
@@ -720,6 +724,9 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! Returns true or false, indicating when the button press or
 	//! release was consumed.
 	//!
+	//! The button event is always preceded by a motion event, reporting
+	//! the pointer's x & y coordinates.
+	//!
 	//! The default implementation always returns false.
 
 	virtual bool process_button_event(IN_THREAD_ONLY,
@@ -744,6 +751,11 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 				   focus_change event,
 				   const ref<implObj> &ptr);
 
+	//! The pointer has moved.
+
+	//! The default implementation does nothing.
+	virtual void motion_event(IN_THREAD_ONLY, coord_t x, coord_t y,
+				  const input_mask &mask);
  private:
 
 	//! The most recent keyboard_focus() reported

@@ -117,6 +117,17 @@ draw_info &child_elementObj::get_draw_info(IN_THREAD_ONLY)
 	return di;
 }
 
+rectangle child_elementObj::get_absolute_location(IN_THREAD_ONLY)
+{
+	auto r=container->get_element_impl().get_absolute_location(IN_THREAD);
+
+	auto cpy=data(IN_THREAD).current_position;
+
+	cpy.x = coord_t::truncate(cpy.x+r.x);
+	cpy.y = coord_t::truncate(cpy.y+r.y);
+	return cpy;
+}
+
 void child_elementObj::visibility_updated(IN_THREAD_ONLY, bool flag)
 {
 	if (!container->get_element_impl()
@@ -216,6 +227,19 @@ bool child_elementObj::process_button_event(IN_THREAD_ONLY,
 		ret=true;
 
 	return ret;
+}
+
+void child_elementObj::motion_event(IN_THREAD_ONLY, coord_t x, coord_t y,
+				    const input_mask &mask)
+{
+	elementObj::implObj::motion_event(IN_THREAD, x, y, mask);
+
+	container->get_element_impl()
+		.motion_event(IN_THREAD,
+			      coord_t::truncate(x + data(IN_THREAD)
+						.current_position.x),
+			      coord_t::truncate(y + data(IN_THREAD)
+						.current_position.y), mask);
 }
 
 void child_elementObj::ensure_visibility(IN_THREAD_ONLY, const rectangle &r)

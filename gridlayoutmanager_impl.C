@@ -31,6 +31,20 @@ gridlayoutmanagerObj::implObj
 
 gridlayoutmanagerObj::implObj::~implObj()=default;
 
+elementptr gridlayoutmanagerObj::implObj::get(size_t x, size_t y)
+{
+	grid_map_t::lock lock{grid_map};
+
+	if (y < lock->elements.size())
+	{
+		const auto &row=lock->elements.at(y);
+
+		if (x < row.size())
+			return row.at(x)->grid_element;
+	}
+	return elementptr();
+}
+
 void gridlayoutmanagerObj::implObj::recalculate(IN_THREAD_ONLY)
 {
 	// Not all recalculation is the result of inserting or removing
