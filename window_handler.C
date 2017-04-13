@@ -50,6 +50,21 @@ window_handlerObj::~window_handlerObj()
 	xcb_destroy_window(conn()->conn, id());
 }
 
+void window_handlerObj::release_grabs(IN_THREAD_ONLY)
+{
+	auto timestamp=grabbed_timestamp(IN_THREAD);
+
+	if (timestamp == XCB_CURRENT_TIME)
+		return;
+
+	if (grab_locked(IN_THREAD))
+		return;
+
+	grabbed_timestamp(IN_THREAD)=XCB_CURRENT_TIME;
+
+	xcb_ungrab_pointer(IN_THREAD->info->conn, timestamp);
+	xcb_ungrab_keyboard(IN_THREAD->info->conn, timestamp);
+}
 
 void window_handlerObj::change_property(IN_THREAD_ONLY,
 					uint8_t mode,

@@ -311,6 +311,16 @@ class LIBCXX_HIDDEN connection_threadObj
 
 	batch_queue get_batch_queue();
 
+	//! Destroy a window handler.
+
+	//! This is scheduled for execution from generic_windowObj::implObj's
+	//! destructor.
+	//!
+	//! The given handler is removed from window_handlers, and its xid_obj
+	//! is moved into destroyed_xids, pending receipt of a destroy notify.
+
+	void destroy_window_handler(IN_THREAD_ONLY,
+				    const ref<window_handlerObj> &handler);
 
  private:
 	//! Whether a MOTION_NOTIFY_EVENT has been buffered;

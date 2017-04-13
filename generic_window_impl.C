@@ -42,10 +42,8 @@ generic_windowObj::implObj::~implObj()
 			 [handler=this->handler, window_id]
 			 (IN_THREAD_ONLY)
 			 {
-				 IN_THREAD->window_handlers(IN_THREAD)
-					 ->erase(window_id);
-				 IN_THREAD->destroyed_xids(IN_THREAD)
-					 ->insert({window_id,handler->xid_obj});
+				 IN_THREAD->destroy_window_handler(IN_THREAD,
+								   handler);
 			 });
 
 	// Attach a destructor callback to the handler object.

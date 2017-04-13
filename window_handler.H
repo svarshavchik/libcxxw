@@ -35,9 +35,15 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 	//! to get released.
 	xcb_timestamp_t grabbed_timestamp_thread_only=XCB_CURRENT_TIME;
 
+	//! Semi-permanent passive grab.
+
+	//! A display element wishes to extend the passive grab.
+
+	bool grab_locked_thread_only=false;
  public:
 
 	THREAD_DATA_ONLY(grabbed_timestamp);
+	THREAD_DATA_ONLY(grab_locked);
 
 	//! My screen
 	const screen screenref;
@@ -64,6 +70,10 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 	//! The destructor calls xcb_destroy_window()
 
 	~window_handlerObj();
+
+	//! Release this handler's grabs, if there are any.
+
+	void release_grabs(IN_THREAD_ONLY);
 
 	//! Set a window property.
 

@@ -126,19 +126,21 @@ batch_queue connection_threadObj::get_batch_queue()
 void connection_threadObj::allow_events(IN_THREAD_ONLY)
 {
 	for (const auto &window_handler:*window_handlers(IN_THREAD))
-	{
-		auto timestamp=
-			window_handler.second->grabbed_timestamp(IN_THREAD);
+		window_handler.second->release_grabs(IN_THREAD);
+}
 
-		if (timestamp == XCB_CURRENT_TIME)
-			continue;
+void connection_threadObj
+::destroy_window_handler(IN_THREAD_ONLY,
+			 const ref<window_handlerObj> &handler)
+{
+	auto window_id=handler->id();
 
-		window_handler.second->grabbed_timestamp(IN_THREAD)=
-			XCB_CURRENT_TIME;
+	//! If it's grabbed something, ungrab it.
 
-		xcb_ungrab_pointer(IN_THREAD->info->conn, timestamp);
-		xcb_ungrab_keyboard(IN_THREAD->info->conn, timestamp);
-	}
+	handler->grab_locked(IN_THREAD)=false;
+	handler->release_grabs(IN_THREAD);
+	window_handlers(IN_THREAD)->erase(window_id);
+	destroyed_xids(IN_THREAD)->insert({window_id,handler->xid_obj});
 }
 
 LIBCXXW_NAMESPACE_END
