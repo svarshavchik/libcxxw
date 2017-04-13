@@ -57,7 +57,7 @@ void connection_threadObj::run_event(IN_THREAD_ONLY,
 		{
 			GET_MSG(key_press_event);
 
-			timestamp=msg->time;
+			timestamp(IN_THREAD)=msg->time;
 
 			FIND_HANDLER(event);
 			DISPATCH_HANDLER(key_press_event,
@@ -70,7 +70,7 @@ void connection_threadObj::run_event(IN_THREAD_ONLY,
 		{
 			GET_MSG(key_release_event);
 
-			timestamp=msg->time;
+			timestamp(IN_THREAD)=msg->time;
 
 			FIND_HANDLER(event);
 			DISPATCH_HANDLER(key_release_event,
@@ -83,7 +83,7 @@ void connection_threadObj::run_event(IN_THREAD_ONLY,
 		{
 			GET_MSG(button_press_event);
 
-			timestamp=msg->time;
+			timestamp(IN_THREAD)=msg->time;
 
 			FIND_HANDLER(event);
 
@@ -94,7 +94,7 @@ void connection_threadObj::run_event(IN_THREAD_ONLY,
 		{
 			GET_MSG(button_release_event);
 
-			timestamp=msg->time;
+			timestamp(IN_THREAD)=msg->time;
 
 			FIND_HANDLER(event);
 
@@ -105,7 +105,7 @@ void connection_threadObj::run_event(IN_THREAD_ONLY,
 		{
 			GET_MSG(motion_notify_event);
 
-			timestamp=msg->time;
+			timestamp(IN_THREAD)=msg->time;
 
 			// We'll buffer this, and not take any action for now.
 			// But first, see if there's already a buffered
@@ -123,7 +123,7 @@ void connection_threadObj::run_event(IN_THREAD_ONLY,
 		{
 			GET_MSG(enter_notify_event);
 
-			timestamp=msg->time;
+			timestamp(IN_THREAD)=msg->time;
 			FIND_HANDLER(event);
 			DISPATCH_HANDLER(enter_notify_event, (IN_THREAD, msg));
 		}
@@ -132,7 +132,7 @@ void connection_threadObj::run_event(IN_THREAD_ONLY,
 		{
 			GET_MSG(leave_notify_event);
 
-			timestamp=msg->time;
+			timestamp(IN_THREAD)=msg->time;
 			FIND_HANDLER(event);
 			DISPATCH_HANDLER(leave_notify_event, (IN_THREAD, msg));
 		}
@@ -162,7 +162,7 @@ void connection_threadObj::run_event(IN_THREAD_ONLY,
 		{
 			GET_MSG(property_notify_event);
 
-			timestamp=msg->time;
+			timestamp(IN_THREAD)=msg->time;
 
 			if (msg->window == IN_THREAD->root_window(IN_THREAD) &&
 			    msg->atom == info->atoms_info.cxxwtheme)
@@ -180,6 +180,33 @@ void connection_threadObj::run_event(IN_THREAD_ONLY,
 			handle_incremental_update(IN_THREAD, msg);
 		}
 		return;
+	case XCB_SELECTION_CLEAR:
+		{
+			GET_MSG(selection_clear_event);
+
+			FIND_HANDLER(owner);
+
+			DISPATCH_HANDLER(selection_clear_event,
+					 (IN_THREAD, msg->selection,
+					  msg->time));
+		}
+		return;
+	case XCB_SELECTION_REQUEST:
+		{
+			GET_MSG(selection_request_event);
+
+			FIND_HANDLER(owner);
+
+			xcb_selection_notify_event_t reply{};
+			DISPATCH_HANDLER(selection_request_event,
+					 (IN_THREAD, *msg, reply));
+
+			xcb_send_event(info->conn, 0,
+				       msg->requestor, 0,
+				       (const char *)&reply);
+		}
+		return;
+
 	case XCB_CLIENT_MESSAGE:
 		{
 			GET_MSG(client_message_event);

@@ -5,6 +5,12 @@
 #include "libcxxw_config.h"
 #include "window_handler.H"
 #include "connection_thread.H"
+#include "assert_or_throw.H"
+#include "selection/current_selection.H"
+#include "selection/incremental_selection_updates.H"
+#include <x/vector.H>
+#include <X11/X.h>
+#include <X11/Xatom.h>
 
 LOG_CLASS_INIT(LIBCXX_NAMESPACE::w::window_handlerObj);
 
@@ -132,6 +138,216 @@ void window_handlerObj::enter_notify_event(IN_THREAD_ONLY,
 void window_handlerObj::leave_notify_event(IN_THREAD_ONLY,
 					   const xcb_leave_notify_event_t *)
 {
+}
+
+LOG_FUNC_SCOPE_DECL(INSERT_LIBX_NAMESPACE::w::selection, selection_debug_log);
+
+void window_handlerObj
+::selection_request_event(IN_THREAD_ONLY,
+			  const xcb_selection_request_event_t &request,
+			  xcb_selection_notify_event_t &reply)
+{
+	LOG_FUNC_SCOPE(selection_debug_log);
+
+	reply.response_type=XCB_SELECTION_NOTIFY;
+	reply.time=request.time;
+	reply.requestor=request.requestor;
+	reply.selection=request.selection;
+	reply.property=request.property;
+
+	auto iter=selections(IN_THREAD).find(request.selection);
+
+	if (iter == selections(IN_THREAD).end() ||
+	    iter->second->timestamp > request.time)
+	{
+		LOG_DEBUG("Selection not found");
+		reply.property=XCB_NONE;
+		return;
+	}
+
+	if (reply.target == IN_THREAD->info->atoms_info.multiple &&
+	    reply.property != XCB_NONE)
+	{
+		selection_request_multiple(IN_THREAD, request, reply,
+					   iter->second);
+		return;
+	}
+
+	if (reply.property == XCB_NONE)
+		reply.property=reply.target;
+
+	auto v=reply.target != IN_THREAD->info->atoms_info.targets
+		? iter->second->convert(IN_THREAD, request.target)
+		: ({
+				// TARGETS
+
+				LOG_DEBUG("TARGETS requested");
+				auto targets=iter->second->supported(IN_THREAD);
+
+				vector<uint8_t> data=
+					vector<uint8_t>::create
+					(reinterpret_cast<uint8_t *>
+					 (&targets[0]),
+					 reinterpret_cast<uint8_t *>
+					 (&targets[targets.size()]));
+
+				ptr<current_selectionObj::convertedValueObj>
+					::create(XA_ATOM, 32,
+						 data,
+						 data->begin(),
+						 data->end());
+			});
+
+
+	if (v.null())
+	{
+		LOG_DEBUG("Cannot convert selection to requested format");
+		reply.property=XCB_NONE;
+		return;
+	}
+
+	// If the supplied value exceeds maximum chunk size, replace 'v'
+	// with ConvertedIncrementalValueObj, which will deal it out piecemeal.
+
+	auto setup=xcb_get_setup(IN_THREAD->info->conn);
+
+	assert_or_throw(setup->maximum_request_length >= 1024,
+			"WTF? maximum request length < 1024 bytes???");
+
+	size_t max_chunk_size=setup->maximum_request_length-1024;
+
+	max_chunk_size = max_chunk_size/4*4;
+
+	if (!v->incremental && v->data->size() > max_chunk_size)
+		v=ref<current_selectionObj::convertedIncrementalValueObj>
+			::create(v, max_chunk_size, IN_THREAD->info
+				 ->atoms_info.incr);
+
+	reply.target=v->type;
+
+	if (v->incremental)
+	{
+		LOG_DEBUG("Beginning incremental selection update of property "
+			  << request.property
+			  << " of window " << request.requestor);
+
+		auto &existing_updates=
+			IN_THREAD->pending_incremental_updates(IN_THREAD)
+			->get_updates_for_window(IN_THREAD, request.requestor);
+
+		auto ret=existing_updates.updates
+			.insert({request.property,v});
+
+		if (!ret.second)
+		{
+			LOG_ERROR("Multiple incremental updates of the same "
+				  "property to the same window");
+			ret.first->second=v;
+			// It's possible that the first one was lost somewhere?
+		}
+	}
+
+	LOG_DEBUG("Updated property "
+		  << IN_THREAD->info->get_atom_name(reply.property)
+		  << " of window " << request.requestor
+		  << " using format " << IN_THREAD->info->get_atom_name(v->type)
+		  << " (" << (v->data_end-v->data_begin)
+		  << " bytes, format="
+		  << (int)v->format << ")");
+
+	xcb_change_property(IN_THREAD->info->conn,
+			    XCB_PROP_MODE_REPLACE,
+			    request.requestor,
+			    reply.property,
+			    v->type,
+			    v->format,
+			    (v->data_end-v->data_begin)/(v->format/8),
+			    &*v->data_begin);
+}
+
+void window_handlerObj
+::selection_request_multiple(IN_THREAD_ONLY,
+			     const xcb_selection_request_event_t &request,
+			     xcb_selection_notify_event_t &reply,
+			     const current_selection &selection)
+{
+	LOG_FUNC_SCOPE(selection_debug_log);
+
+	LOG_DEBUG("Converting MULTIPLE selection");
+
+	std::vector<xcb_atom_t> atoms;
+	bool error=false;
+
+	IN_THREAD->info->get_entire_property_with
+		(request.requestor, reply.target,
+		 XCB_GET_PROPERTY_TYPE_ANY, false,
+		 [&]
+		 (xcb_atom_t type,
+		  uint8_t format,
+		  void *data,
+		  size_t data_size)
+		 {
+			 if (format != 32)
+			 {
+				 error=true;
+				 return;
+			 }
+			 auto p=reinterpret_cast<xcb_atom_t *>(data);
+
+			 atoms.insert(atoms.end(),
+				      p,
+				      p+data_size/sizeof(*p));
+		 });
+
+	if (error || (atoms.size() & 1))
+	{
+		LOG_ERROR("Received bad MULTIPLE conversion request.");
+		return;
+	}
+
+	bool conversion_failed=false;
+
+	for (size_t i=0; i<atoms.size(); i += 2)
+	{
+		auto v=selection->convert(IN_THREAD, atoms[i]);
+
+		if (v.null())
+		{
+			atoms[i]=XCB_NONE;
+			conversion_failed=true;
+			continue;
+		}
+
+		if (v->incremental)
+		{
+			LOG_ERROR("Cannot send incremental update in a MULTIPLE conversion request");
+			atoms[i]=XCB_NONE;
+			conversion_failed=true;
+			continue;
+		}
+
+		xcb_change_property(IN_THREAD->info->conn,
+				    XCB_PROP_MODE_REPLACE,
+				    request.requestor,
+				    atoms[i+1],
+				    v->type,
+				    v->format,
+				    (v->data_end-v->data_begin)/(v->format/8),
+				    &*v->data_begin);
+	}
+
+	if (conversion_failed)
+	{
+		xcb_change_property(IN_THREAD->info->conn,
+				    XCB_PROP_MODE_REPLACE,
+				    request.requestor,
+				    reply.target,
+				    XA_ATOM,
+				    32,
+				    atoms.size(),
+				    &atoms[0]);
+
+	}
 }
 
 LIBCXXW_NAMESPACE_END

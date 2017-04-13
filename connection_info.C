@@ -200,4 +200,20 @@ void connection_infoObj
 			 buffer.size());
 }
 
+std::string connection_infoObj::get_atom_name(xcb_atom_t atom) const
+{
+	returned_pointer<xcb_generic_error_t *> error;
+
+	auto value=return_pointer(xcb_get_atom_name_reply
+				  (conn, xcb_get_atom_name(conn, atom),
+				   error.addressof()));
+
+	if (error)
+		return "(unknown)";
+
+	auto p=xcb_get_atom_name_name(value);
+
+	return std::string(p, p+xcb_get_atom_name_name_length(value));
+}
+
 LIBCXXW_NAMESPACE_END

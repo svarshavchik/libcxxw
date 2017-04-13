@@ -5,6 +5,9 @@
 
 #include "libcxxw_config.h"
 #include "selection/current_selection.H"
+#include "window_handler.H"
+#include "connection_thread.H"
+#include "catch_exceptions.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -93,6 +96,71 @@ current_selectionObj::convertedIncrementalValueObj::next_chunk(IN_THREAD_ONLY)
 				       next_chunk_start, p);
 	next_chunk_start=p;
 	return c;
+}
+
+////////////////////////////////////////////////////////////////////////////
+
+void window_handlerObj::selection_clear_event(IN_THREAD_ONLY,
+					      xcb_atom_t selection_atom,
+					      xcb_timestamp_t timestamp)
+{
+	auto iter=selections(IN_THREAD).find(selection_atom);
+
+	if (iter == selections(IN_THREAD).end())
+		return;
+
+	auto old_selection=iter->second;
+	if (old_selection->timestamp > timestamp)
+		return;
+
+	selections(IN_THREAD).erase(iter);
+
+	try {
+		old_selection->clear(IN_THREAD);
+	} CATCH_EXCEPTIONS;
+}
+
+void window_handlerObj::selection_announce(IN_THREAD_ONLY,
+					   xcb_atom_t selection_atom,
+					   const current_selection &selection)
+{
+	current_selectionptr old_selection;
+
+	auto iter=selections(IN_THREAD).find(selection_atom);
+
+	if (iter != selections(IN_THREAD).end())
+	{
+		old_selection=iter->second;
+		selections(IN_THREAD).erase(iter);
+	}
+
+	selections(IN_THREAD).insert({selection_atom, selection});
+
+	xcb_set_selection_owner(conn()->conn, id(),
+				selection_atom, selection->timestamp);
+
+	if (old_selection)
+		try {
+			old_selection->clear(IN_THREAD);
+		} CATCH_EXCEPTIONS;
+}
+
+void window_handlerObj::selection_discard(IN_THREAD_ONLY,
+					  xcb_atom_t selection_atom)
+{
+	auto iter=selections(IN_THREAD).find(selection_atom);
+
+	if (iter==selections(IN_THREAD).end())
+		return;
+
+	try {
+		if ( iter->second->stillvalid(IN_THREAD))
+			return; // Race condition, already been replaced
+	} CATCH_EXCEPTIONS;
+
+	xcb_set_selection_owner(conn()->conn, XCB_NONE, selection_atom,
+				iter->second->timestamp);
+	selections(IN_THREAD).erase(iter);
 }
 
 LIBCXXW_NAMESPACE_END

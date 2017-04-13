@@ -20,7 +20,11 @@ class LIBCXX_HIDDEN builtin_atoms {
 	xcb_atom_t wm_normal_hints;
 
 	xcb_atom_t string;
+	xcb_atom_t utf8_string;
 	xcb_atom_t cxxwtheme;
+	xcb_atom_t multiple;
+	xcb_atom_t targets;
+	xcb_atom_t incr;
 
 	builtin_atoms(xcb_connection_t *conn);
 };

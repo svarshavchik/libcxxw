@@ -203,7 +203,17 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 	//! The container has removed this element.
 
+	//! Recursively invokes removed_from_container if this element itself
+	//! is a container.
+	//!
+	//! If data.removed is not set, sets it and invoked removed().
+
 	void removed_from_container(IN_THREAD_ONLY);
+
+	//! This element has been removed from its container just now.
+
+	//! The default implementation does nothing.
+	virtual void removed(IN_THREAD_ONLY);
 
 	//! Install a state update callback.
 	template<typename functor_type>

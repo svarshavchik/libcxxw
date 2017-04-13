@@ -70,12 +70,17 @@ void elementObj::implObj::removed_from_container(IN_THREAD_ONLY)
 		return;
 
 	data(IN_THREAD).removed=true;
+	removed(IN_THREAD);
 	for_each_child(IN_THREAD,
 		       [&]
 		       (const element &e)
 		       {
 			       e->impl->removed_from_container(IN_THREAD);
 		       });
+}
+
+void elementObj::implObj::removed(IN_THREAD_ONLY)
+{
 }
 
 void elementObj::implObj::request_visibility(bool flag)

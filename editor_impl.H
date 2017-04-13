@@ -30,11 +30,31 @@ class LIBCXX_HIDDEN editorObj::implObj
 
 	richtextiteratorptr selection_start_thread_only;
 
+	//! Our subclass of current_selectionObj
+
+	class selectionObj;
+
+	//! Typedef alias
+
+	typedef ref<selectionObj> selection;
+
+	//! Typedef alias
+
+	typedef ptr<selectionObj> selectionptr;
+
+	//! For the X server
+	selectionptr primary_selection_thread_only;
+
+	//! For the X server
+	selectionptr secondary_selection_thread_only;
+
 	struct moving_cursor;
 
  public:
 
 	THREAD_DATA_ONLY(selection_start);
+	THREAD_DATA_ONLY(primary_selection);
+	THREAD_DATA_ONLY(secondary_selection);
 
 	//! Editing font.
 	const current_fontcollection font;
@@ -68,6 +88,9 @@ class LIBCXX_HIDDEN editorObj::implObj
 	void do_draw(IN_THREAD_ONLY,
 		     const draw_info &di,
 		     const rectangle_set &areas) override;
+
+	//! Override removed()
+	void removed(IN_THREAD_ONLY) override;
 
  protected:
 	//! Override compute_preferred_width().
@@ -185,6 +208,21 @@ class LIBCXX_HIDDEN editorObj::implObj
 
 	//! Delete the current selection
 	void delete_selection(IN_THREAD_ONLY, const key_event &ke);
+
+	//! Create a new selection object.
+	selection create_selection(IN_THREAD_ONLY);
+
+	//! Prepare a new primary selection, if we can.
+	void create_primary_selection(IN_THREAD_ONLY);
+
+	//! Prepare a new secondary selection, if we can.
+	void create_secondary_selection(IN_THREAD_ONLY);
+
+	//! Remove the announced primary selection.
+	void remove_primary_selection(IN_THREAD_ONLY);
+
+	//! Remove the announced secondary selection.
+	void remove_secondary_selection(IN_THREAD_ONLY);
 };
 
 LIBCXXW_NAMESPACE_END

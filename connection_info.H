@@ -146,6 +146,10 @@ class LIBCXX_HIDDEN connection_infoObj : virtual public obj {
 					(std::forward<lambda>(l)));
 	}
 
+	//! Return an atom's name
+
+	std::string get_atom_name(xcb_atom_t atom) const;
+
  private:
 	typedef mpobj<std::queue<uint32_t>> available_xids_t;
 

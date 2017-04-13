@@ -10,8 +10,10 @@
 #include "x/w/values_and_mask.H"
 #include "x/w/rectangle.H"
 #include "x/w/screenfwd.H"
+#include "selection/current_selectionfwd.H"
 #include <x/logger.H>
 #include <xcb/xcb.h>
+#include <unordered_map>
 
 LIBCXXW_NAMESPACE_START
 
@@ -40,10 +42,16 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 	//! A display element wishes to extend the passive grab.
 
 	bool grab_locked_thread_only=false;
+
+	//! Selections announced from this window
+
+	std::unordered_map<xcb_atom_t,
+			   current_selection> selections_thread_only;
  public:
 
 	THREAD_DATA_ONLY(grabbed_timestamp);
 	THREAD_DATA_ONLY(grab_locked);
+	THREAD_DATA_ONLY(selections);
 
 	//! My screen
 	const screen screenref;
@@ -135,6 +143,40 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 	virtual void leave_notify_event(IN_THREAD_ONLY,
 					const xcb_enter_notify_event_t *);
 
+	//! Received a SelectionClear event
+	void selection_clear_event(IN_THREAD_ONLY,
+				   xcb_atom_t selection_atom,
+				   xcb_timestamp_t timestamp);
+
+	//! Received a SelectionRequest event
+	void selection_request_event(IN_THREAD_ONLY,
+				     const xcb_selection_request_event_t
+				     &request,
+				     xcb_selection_notify_event_t &reply);
+ private:
+	//! Handle request for a MULTIPLE target.
+	void selection_request_multiple(IN_THREAD_ONLY,
+					const xcb_selection_request_event_t
+					&request,
+					xcb_selection_notify_event_t &reply,
+					const current_selection &selection);
+ public:
+	//! An element in this window wishes to announce a new selection.
+
+	//! If there's an existing selection, its clear() method gets
+	//! invoked, after the new selection is replaced.
+
+	void selection_announce(IN_THREAD_ONLY,
+				xcb_atom_t selection_atom,
+				const current_selection &selection);
+
+	//! The element in this window wishes to discard its selection
+
+	//! The element must arrange for its current_selection to return
+	//! \c false to stillvalid(). If the specified selection returns
+	//! \c false, it is removed.
+	void selection_discard(IN_THREAD_ONLY,
+			       xcb_atom_t selection_atom);
 };
 
 LIBCXXW_NAMESPACE_END

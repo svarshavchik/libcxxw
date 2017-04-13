@@ -26,7 +26,11 @@ builtin_atoms::builtin_atoms(xcb_connection_t *conn)
 		{"WM_DELETE_WINDOW", &builtin_atoms::wm_delete_window},
 		{"WM_NORMAL_HINTS", &builtin_atoms::wm_normal_hints},
 		{"STRING", &builtin_atoms::string},
+		{"UTF8_STRING", &builtin_atoms::utf8_string},
 		{"CXXWTHEME", &builtin_atoms::cxxwtheme},
+		{"MULTIPLE", &builtin_atoms::multiple},
+		{"TARGETS", &builtin_atoms::targets},
+		{"INCR", &builtin_atoms::incr},
 	};
 
 	std::vector<xcb_intern_atom_cookie_t> cookies;

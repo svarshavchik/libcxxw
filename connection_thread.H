@@ -76,7 +76,7 @@ class LIBCXX_HIDDEN connection_threadObj
 
 	//! Most recent timestamp from the server.
 
-	xcb_timestamp_t timestamp=XCB_CURRENT_TIME;
+	xcb_timestamp_t timestamp_thread_only=XCB_CURRENT_TIME;
 	///////////////////////////////////////////////////////////////////
 	//
 	// These objects are constructed on the connection thread's stack,
@@ -87,6 +87,7 @@ class LIBCXX_HIDDEN connection_threadObj
 	typedef std::map<size_t, std::unordered_set<elementimpl>> element_set_t;
 
  public:
+	THREAD_DATA_ONLY(timestamp);
 	static void insert_element_set(element_set_t &s,
 				       const elementimpl &i);
 
