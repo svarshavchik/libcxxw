@@ -63,6 +63,12 @@ class LIBCXX_HIDDEN editorObj::implObj
 	//! Destructor
 	~implObj();
 
+	//! Override do_draw().
+
+	void do_draw(IN_THREAD_ONLY,
+		     const draw_info &di,
+		     const rectangle_set &areas) override;
+
  protected:
 	//! Override compute_preferred_width().
 
@@ -117,11 +123,27 @@ class LIBCXX_HIDDEN editorObj::implObj
 			  const input_mask &mask) override;
 
  private:
-	//! Most recently reported coordinates
+	//! Most recently reported coordinates.
 	coord_t most_recent_x;
 
-	//! Most recently reported coordinates
+	//! Most recently reported coordinates.
 	coord_t most_recent_y;
+
+	//! Timer for scrolling while moving the cursor
+
+	ptr<obj> motion_scroll_callback;
+
+	//! Install a motion_scroll_callback
+
+	void start_scrolling(IN_THREAD_ONLY);
+
+	//! Remove the motion_scroll_callback, and scroll the editor.
+
+	void stop_scrolling(IN_THREAD_ONLY);
+
+	//! Scroll while dragging the mouse button.
+
+	void scroll(IN_THREAD_ONLY);
 
 	//! Set a callback for the next cursor blink on/off.
 	void schedule_blink(IN_THREAD_ONLY);
@@ -129,11 +151,23 @@ class LIBCXX_HIDDEN editorObj::implObj
 	//! Blink the cursor, on or off.
 	void blink(IN_THREAD_ONLY);
 
+	//! Blink the cursor, on or off.
+
+	//! Entry point using by moving_cursor, with the saved cursor position
+	//! prior the move.
+	void blink(IN_THREAD_ONLY, const richtextiterator &cursor);
+
 	//! Whether the cursor is blinked on.
 	bool blinkon;
 
 	//! If the cursor is currently blinked on, blink it off.
 	void unblink(IN_THREAD_ONLY);
+
+	//! If the cursor is currently blinked on, blink it off.
+
+	//! Entry point using by moving_cursor, with the saved cursor position
+	//! prior the move.
+	void unblink(IN_THREAD_ONLY, const richtextiterator &cursor);
 
 	//! Draw changed text fragments.
 	void draw_changes(IN_THREAD_ONLY);

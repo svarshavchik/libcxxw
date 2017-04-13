@@ -51,8 +51,8 @@ create_initial_string(const ref<containerObj::implObj> &container,
 // Helper object constructed on the stack before moving the cursor, and
 // destroyed after the cursor is moved.
 //
-// If the SHIFT key is held down, and there is no current selection, a
-// new selection is started.
+// If the SHIFT key or button #1 is held down, and there is no current
+// selection, a new selection is started.
 //
 // When there's a selection, the starting cursor position is saved, and
 // the destructor redraws all fragments between the former cursor position and
@@ -61,19 +61,23 @@ create_initial_string(const ref<containerObj::implObj> &container,
 // If the SHIFT key is not held down, and there is a current selection, it
 // is removed and the formerly selected text fragments get redrawn, to show
 // that the selection has been removed.
+//
+// If the cursor is actually moved, it is unblink-ed, and then re-blinked
+// at the new position.
 
 struct LIBCXX_HIDDEN editorObj::implObj::moving_cursor {
 
 	IN_THREAD_ONLY;
 	editorObj::implObj &me;
 
-	richtextiteratorptr old_cursor;
+	bool in_selection=false;
+	richtextiterator old_cursor;
 
 	moving_cursor(IN_THREAD_ONLY, editorObj::implObj &me,
 		      const input_mask &mask)
-		: IN_THREAD(IN_THREAD), me(me)
+		: IN_THREAD(IN_THREAD), me(me), old_cursor(me.cursor->clone())
 	{
-		if (mask.shift)
+		if (mask.shift || (mask.buttons & 1))
 		{
 			if (!me.selection_start(IN_THREAD))
 				me.selection_start(IN_THREAD)=
@@ -93,17 +97,27 @@ struct LIBCXX_HIDDEN editorObj::implObj::moving_cursor {
 		}
 
 		if (me.selection_start(IN_THREAD))
-			old_cursor=me.cursor->clone();
+			in_selection=true;
 	}
 
 	~moving_cursor()
 	{
-		if (old_cursor)
+		bool blink_needed=false;
+
+		if (me.cursor->compare(old_cursor))
+		{
+			me.unblink(IN_THREAD, old_cursor);
+			blink_needed=true;
+		}
+
+		if (in_selection)
 		{
 			me.draw_between(IN_THREAD,
 					old_cursor,
 					me.cursor);
 		}
+		if (blink_needed)
+			me.blink(IN_THREAD);
 	}
 };
 
@@ -233,11 +247,23 @@ void editorObj::implObj::schedule_blink(IN_THREAD_ONLY)
 
 void editorObj::implObj::unblink(IN_THREAD_ONLY)
 {
+	unblink(IN_THREAD, cursor);
+}
+
+void editorObj::implObj::unblink(IN_THREAD_ONLY,
+				  const richtextiterator &cursor)
+{
 	if (blinkon)
-		blink(IN_THREAD);
+		blink(IN_THREAD, cursor);
 }
 
 void editorObj::implObj::blink(IN_THREAD_ONLY)
+{
+	blink(IN_THREAD, cursor);
+}
+
+void editorObj::implObj::blink(IN_THREAD_ONLY,
+			       const richtextiterator &cursor)
 {
 	blinkon= !blinkon;
 
@@ -247,7 +273,10 @@ void editorObj::implObj::blink(IN_THREAD_ONLY)
 	if ( (!selection_start(IN_THREAD)) ||
 	     selection_start(IN_THREAD)->compare(cursor) == 0)
 		cursor->set_cursor(IN_THREAD, blinkon);
-
+	else
+		// We might get here from moving_cursor's destructor. Make
+		// sure the old cursor is unblinked.
+		cursor->set_cursor(IN_THREAD, false);
 	schedule_blink(IN_THREAD);
 
 	// Tell do_draw() to draw only the vertical slice defined by the
@@ -286,39 +315,31 @@ bool editorObj::implObj::process_keypress(IN_THREAD_ONLY, const key_event &ke)
 	switch (ke.keysym) {
 	case XK_Left:
 	case XK_KP_Left:
-		unblink(IN_THREAD);
 		{
 			moving_cursor moving{IN_THREAD, *this, ke};
 			cursor->prev(IN_THREAD);
 		}
-		blink(IN_THREAD);
 		return true;
 	case XK_Right:
 	case XK_KP_Right:
-		unblink(IN_THREAD);
 		{
 			moving_cursor moving{IN_THREAD, *this, ke};
 			cursor->next(IN_THREAD);
 		}
-		blink(IN_THREAD);
 		return true;
 	case XK_Up:
 	case XK_KP_Up:
-		unblink(IN_THREAD);
 		{
 			moving_cursor moving{IN_THREAD, *this, ke};
 			cursor->up(IN_THREAD);
 		}
-		blink(IN_THREAD);
 		return true;
 	case XK_Down:
 	case XK_KP_Down:
-		unblink(IN_THREAD);
 		{
 			moving_cursor moving{IN_THREAD, *this, ke};
 			cursor->down(IN_THREAD);
 		}
-		blink(IN_THREAD);
 		return true;
 	case XK_Delete:
 	case XK_KP_Delete:
@@ -348,20 +369,16 @@ bool editorObj::implObj::process_keypress(IN_THREAD_ONLY, const key_event &ke)
 		blink(IN_THREAD);
 		return true;
 	case XK_Home:
-		unblink(IN_THREAD);
 		{
 			moving_cursor moving{IN_THREAD, *this, ke};
 			cursor->start_of_line();
 		}
-		blink(IN_THREAD);
 		return true;
 	case XK_End:
-		unblink(IN_THREAD);
 		{
 			moving_cursor moving{IN_THREAD, *this, ke};
 			cursor->end_of_line();
 		}
-		blink(IN_THREAD);
 		return true;
 	case XK_KP_Home:
 		unblink(IN_THREAD);
@@ -422,6 +439,15 @@ void editorObj::implObj::draw_changes(IN_THREAD_ONLY)
 				 get_draw_info(IN_THREAD));
 }
 
+void editorObj::implObj::do_draw(IN_THREAD_ONLY,
+				 const draw_info &di,
+				 const rectangle_set &areas)
+{
+	text->full_redraw(IN_THREAD, *this,
+			     {selection_start(IN_THREAD), cursor},
+			  di, areas);
+}
+
 void editorObj::implObj::draw_between(IN_THREAD_ONLY,
 				      const richtextiterator &a,
 				      const richtextiterator &b)
@@ -444,11 +470,14 @@ bool editorObj::implObj::process_button_event(IN_THREAD_ONLY,
 {
 	if (press && button == 1)
 	{
-		unblink(IN_THREAD);
 		moving_cursor moving{IN_THREAD, *this, mask};
 
 		cursor->moveto(IN_THREAD, most_recent_x, most_recent_y);
-		blink(IN_THREAD);
+		grab(IN_THREAD);
+	}
+	else if (button == 1)
+	{
+		stop_scrolling(IN_THREAD);
 	}
 
 	// We do not consume the button event. The editor container also
@@ -462,6 +491,49 @@ void editorObj::implObj::motion_event(IN_THREAD_ONLY, coord_t x, coord_t y,
 {
 	most_recent_x=x;
 	most_recent_y=y;
+
+	if (mask.buttons & 1)
+	{
+		{
+			moving_cursor moving{IN_THREAD, *this, mask};
+			cursor->moveto(IN_THREAD, most_recent_x, most_recent_y);
+		}
+
+		if (!motion_scroll_callback)
+			start_scrolling(IN_THREAD);
+	}
+}
+
+void editorObj::implObj::start_scrolling(IN_THREAD_ONLY)
+{
+	motion_scroll_callback=get_screen()->impl->thread->schedule_callback
+		(IN_THREAD,
+		 std::chrono::milliseconds{250},
+		 // Don't create a lambda that owns a strong ref to me.
+		 // Use a weak pointer.
+		 [me=make_weak_capture(ref<implObj>(this))]
+		 (IN_THREAD_ONLY)
+		 {
+			 me.get([&]
+				(const auto &me) {
+					me->scroll(IN_THREAD);
+				});
+		 });
+}
+
+void editorObj::implObj::scroll(IN_THREAD_ONLY)
+{
+	stop_scrolling(IN_THREAD);
+	// In order to scroll_cursor_into_view, that's it.
+	//
+	// If motion_event()s continue, the next one will start_scrolling()
+	// again.
+}
+
+void editorObj::implObj::stop_scrolling(IN_THREAD_ONLY)
+{
+	motion_scroll_callback=nullptr;
+	scroll_cursor_into_view(IN_THREAD);
 }
 
 LIBCXXW_NAMESPACE_END
