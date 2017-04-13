@@ -96,6 +96,12 @@ class LIBCXX_HIDDEN richtextiteratorObj : virtual public obj {
 	//! Ditto
 	void down(IN_THREAD_ONLY);
 
+	//! Ditto
+	void page_up(IN_THREAD_ONLY, dim_t height);
+
+	//! Ditto
+	void page_down(IN_THREAD_ONLY, dim_t height);
+
 	//! Move to the given coordinates
 	void moveto(IN_THREAD_ONLY, coord_t x, coord_t y);
 

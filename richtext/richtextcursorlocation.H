@@ -198,6 +198,12 @@ class LIBCXX_HIDDEN richtextcursorlocationObj : virtual public obj {
 	//! Down
 	void down(IN_THREAD_ONLY);
 
+	//! Up
+	void page_up(IN_THREAD_ONLY, dim_t height);
+
+	//! Down
+	void page_down(IN_THREAD_ONLY, dim_t height);
+
 	//! Move to the given coordinates
 	void moveto(IN_THREAD_ONLY, coord_t x, coord_t y);
 

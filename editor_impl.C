@@ -7,6 +7,7 @@
 #include "editor_impl.H"
 #include "element_screen.H"
 #include "screen.H"
+#include "draw_info.H"
 #include "fonts/current_fontcollection.H"
 #include "fonts/fontcollection.H"
 #include "focus/focusable_element.H"
@@ -360,13 +361,21 @@ bool editorObj::implObj::process_keypress(IN_THREAD_ONLY, const key_event &ke)
 		return true;
 	case XK_Page_Up:
 	case XK_KP_Page_Up:
-		unblink(IN_THREAD);
-		blink(IN_THREAD);
+		{
+			moving_cursor moving{IN_THREAD, *this, ke};
+			cursor->page_up(IN_THREAD,
+					bounds(get_draw_info(IN_THREAD)
+					       .element_viewport).height);
+		}
 		return true;
 	case XK_Page_Down:
 	case XK_KP_Page_Down:
-		unblink(IN_THREAD);
-		blink(IN_THREAD);
+		{
+			moving_cursor moving{IN_THREAD, *this, ke};
+			cursor->page_down(IN_THREAD,
+					  bounds(get_draw_info(IN_THREAD)
+						 .element_viewport).height);
+		}
 		return true;
 	case XK_Home:
 		{

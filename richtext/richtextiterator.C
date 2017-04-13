@@ -120,6 +120,28 @@ void richtextiteratorObj::down(IN_THREAD_ONLY)
 				 });
 }
 
+void richtextiteratorObj::page_up(IN_THREAD_ONLY, dim_t height)
+{
+	my_richtext->thread_lock(IN_THREAD,
+				 [height, this]
+				 (IN_THREAD_ONLY, const auto &lock)
+				 {
+					 my_location->page_up(IN_THREAD,
+							      height);
+				 });
+}
+
+void richtextiteratorObj::page_down(IN_THREAD_ONLY, dim_t height)
+{
+	my_richtext->thread_lock(IN_THREAD,
+				 [height, this]
+				 (IN_THREAD_ONLY, const auto &lock)
+				 {
+					 my_location->page_down(IN_THREAD,
+								height);
+				 });
+}
+
 void richtextiteratorObj::moveto(IN_THREAD_ONLY, coord_t x, coord_t y)
 {
 	my_richtext->thread_lock(IN_THREAD,

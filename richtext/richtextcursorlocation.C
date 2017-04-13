@@ -341,6 +341,58 @@ void richtextcursorlocationObj::down(IN_THREAD_ONLY)
 	set_targeted_horiz_pos(IN_THREAD, targeted_horiz_pos);
 }
 
+void richtextcursorlocationObj::page_up(IN_THREAD_ONLY, dim_t height)
+{
+	auto targeted_horiz_pos=get_targeted_horiz_pos(IN_THREAD);
+
+	auto new_fragment=my_fragment->prev_fragment();
+
+	if (!new_fragment)
+		return;
+
+	auto last_fragment=new_fragment;
+
+	while (new_fragment)
+	{
+		last_fragment=new_fragment;
+
+		if (new_fragment->height() >= height)
+			break;
+
+		height -= new_fragment->height();
+		new_fragment=new_fragment->prev_fragment();
+	}
+
+	initialize(last_fragment, 0);
+	set_targeted_horiz_pos(IN_THREAD, targeted_horiz_pos);
+}
+
+void richtextcursorlocationObj::page_down(IN_THREAD_ONLY, dim_t height)
+{
+	auto targeted_horiz_pos=get_targeted_horiz_pos(IN_THREAD);
+
+	auto new_fragment=my_fragment->next_fragment();
+
+	if (!new_fragment)
+		return;
+
+	auto last_fragment=new_fragment;
+
+	while (new_fragment)
+	{
+		last_fragment=new_fragment;
+
+		if (new_fragment->height() >= height)
+			break;
+
+		height -= new_fragment->height();
+		new_fragment=new_fragment->next_fragment();
+	}
+
+	initialize(last_fragment, 0);
+	set_targeted_horiz_pos(IN_THREAD, targeted_horiz_pos);
+}
+
 void richtextcursorlocationObj::moveto(IN_THREAD_ONLY, coord_t x, coord_t y)
 {
 	// We expect that the requested x/y coordinates will be near this
