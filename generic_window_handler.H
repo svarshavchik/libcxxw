@@ -189,6 +189,12 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 			       const input_mask &mask,
 			       coord_t x,
 			       coord_t y);
+
+	//! This is the element that should be receiving pointer events.
+
+	void set_element_with_pointer(IN_THREAD_ONLY,
+				      const ref<elementObj::implObj> &e);
+
  public:
 	//! An element is being removed.
 
@@ -233,6 +239,10 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! Button release event
 	void button_release_event(IN_THREAD_ONLY,
 				  const xcb_button_release_event_t *event) override;
+
+	//! An element's button_press_event() wishes to grab the pointer.
+
+	void grab(IN_THREAD_ONLY, const ref<elementObj::implObj> &e);
  private:
 
 	//! Process a key press or release event.
@@ -251,6 +261,11 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	void button_event(IN_THREAD_ONLY,
 			  const xcb_button_release_event_t *event,
 			  bool buttonpress);
+
+	//! The top level display element cannot grab. Throw an exception.
+
+	void grab(IN_THREAD_ONLY) override;
+
  public:
 	//! Do not redraw after the window's visibility is updated.
 

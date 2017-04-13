@@ -172,6 +172,8 @@ void generic_windowObj::handlerObj
 	else
 	{
 		xcb_unmap_window(IN_THREAD->info->conn, id());
+		grab_locked(IN_THREAD)=false;
+		release_grabs(IN_THREAD);
 		xcb_ungrab_key(IN_THREAD->info->conn,
 			       0,
 			       id(),
@@ -301,6 +303,9 @@ void generic_windowObj::handlerObj
 		  const xcb_key_press_event_t *event,
 		  uint16_t sequencehi)
 {
+	grab_locked(IN_THREAD)=false;
+	release_grabs(IN_THREAD); // Any previous grabs.
+
 	// We grab_button()ed and grab_key()ed.
 	// Make sure we'll release the grab, when the dust settles.
 
@@ -314,6 +319,8 @@ void generic_windowObj::handlerObj
 		    const xcb_key_release_event_t *event,
 		    uint16_t sequencehi)
 {
+	grab_locked(IN_THREAD)=false;
+	release_grabs(IN_THREAD); // Any previous grabs.
 	do_key_event(IN_THREAD, event, sequencehi, false);
 }
 
@@ -354,6 +361,9 @@ void generic_windowObj::handlerObj
 ::button_press_event(IN_THREAD_ONLY,
 		     const xcb_button_press_event_t *event)
 {
+	grab_locked(IN_THREAD)=false;
+	release_grabs(IN_THREAD); // Any previous grabs.
+
 	// We grab_button()ed and grab_key()ed.
 	// Make sure we'll release the grab, when the dust settles.
 
@@ -365,6 +375,8 @@ void generic_windowObj::handlerObj
 ::button_release_event(IN_THREAD_ONLY,
 		       const xcb_button_release_event_t *event)
 {
+	grab_locked(IN_THREAD)=false;
+	release_grabs(IN_THREAD); // Any previous grabs.
 	button_event(IN_THREAD, event, false);
 }
 
@@ -391,6 +403,26 @@ void generic_windowObj::handlerObj
 	{
 		current_focus(IN_THREAD)->remove_focus(IN_THREAD);
 	}
+}
+
+void generic_windowObj::handlerObj::grab(IN_THREAD_ONLY,
+					 const ref<elementObj::implObj> &e)
+{
+	set_element_with_pointer(IN_THREAD, e);
+	if (most_recent_element_with_pointer(IN_THREAD) &&
+	    grabbed_timestamp(IN_THREAD) != XCB_CURRENT_TIME &&
+	    !grab_locked(IN_THREAD))
+	{
+		grab_locked(IN_THREAD)=true;
+		xcb_allow_events(IN_THREAD->info->conn,
+				 XCB_ALLOW_ASYNC_BOTH,
+				 grabbed_timestamp(IN_THREAD));
+	}
+}
+
+void generic_windowObj::handlerObj::grab(IN_THREAD_ONLY)
+{
+	throw EXCEPTION("Internal error: called grab() on the top level window.");
 }
 
 void generic_windowObj::handlerObj::configure_notify(IN_THREAD_ONLY,
@@ -515,6 +547,25 @@ void generic_windowObj::handlerObj
 		    coord_t x,
 		    coord_t y)
 {
+	if (grab_locked(IN_THREAD) &&
+	    most_recent_element_with_pointer(IN_THREAD))
+	{
+		auto e=most_recent_element_with_pointer(IN_THREAD);
+
+		auto position=e->get_absolute_location(IN_THREAD);
+
+		e->motion_event(IN_THREAD,
+				coord_t::truncate((coord_squared_t::value_type)
+						  coord_t::value_type(x)
+						  -coord_t::value_type
+						  (position.x)),
+				coord_t::truncate((coord_squared_t::value_type)
+						  coord_t::value_type(y)
+						  -coord_t::value_type
+						  (position.y)),
+				mask);
+		return;
+	}
 	// Locate the lowermost visibile element for the given position.
 
 	ref<elementObj::implObj> e{this};
@@ -557,6 +608,16 @@ void generic_windowObj::handlerObj
 				  });
 	} while (found);
 
+	set_element_with_pointer(IN_THREAD, e);
+
+	if (most_recent_element_with_pointer(IN_THREAD))
+		most_recent_element_with_pointer(IN_THREAD)
+			->motion_event(IN_THREAD, x, y, mask);
+}
+
+void generic_windowObj::handlerObj
+::set_element_with_pointer(IN_THREAD_ONLY, const ref<elementObj::implObj> &e)
+{
 	// Even though we checked the "removed" flag, already, someday someone
 	// may win the lottery and we end up here when the top level
 	// main_window gets removed. The whole purpose of the removed flag
@@ -576,12 +637,6 @@ void generic_windowObj::handlerObj
 		e->request_focus(IN_THREAD, old,
 				 &elementObj::implObj::report_pointer_focus);
 	}
-	else
-	{
-		if (most_recent_element_with_pointer(IN_THREAD))
-			most_recent_element_with_pointer(IN_THREAD)
-				->motion_event(IN_THREAD, x, y, mask);
-	}
 }
 
 void generic_windowObj::handlerObj::removing_element(IN_THREAD_ONLY,
@@ -593,11 +648,18 @@ void generic_windowObj::handlerObj::removing_element(IN_THREAD_ONLY,
 	ei->removed_from_container(IN_THREAD);
 
 	if (most_recent_element_with_pointer(IN_THREAD) == ei)
+	{
+		grab_locked(IN_THREAD)=false;
+		release_grabs(IN_THREAD);
 		pointer_focus_lost(IN_THREAD);
+	}
 }
 
 void generic_windowObj::handlerObj::pointer_focus_lost(IN_THREAD_ONLY)
 {
+	if (grab_locked(IN_THREAD))
+		return;
+
 	auto cpy=most_recent_element_with_pointer(IN_THREAD);
 
 	if (cpy.null())

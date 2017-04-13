@@ -229,6 +229,11 @@ bool child_elementObj::process_button_event(IN_THREAD_ONLY,
 	return ret;
 }
 
+void child_elementObj::grab(IN_THREAD_ONLY)
+{
+	get_window_handler().grab(IN_THREAD, ref<elementObj::implObj>(this));
+}
+
 void child_elementObj::motion_event(IN_THREAD_ONLY, coord_t x, coord_t y,
 				    const input_mask &mask)
 {

@@ -92,6 +92,10 @@ class LIBCXX_HIDDEN child_elementObj : public elementObj::implObj {
 				  bool press,
 				  const input_mask &mask) override;
 
+	//! Implement grab().
+
+	void grab(IN_THREAD_ONLY) override;
+
 	//! Motion events
 
 	//! The motion event, after it's reported for this elemenbt,

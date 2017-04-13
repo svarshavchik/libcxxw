@@ -734,6 +734,10 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 					  bool press,
 					  const input_mask &mask);
 
+	//! process_button_event() calls grab() to grab the pointer.
+
+	virtual void grab(IN_THREAD_ONLY)=0;
+
 	//! Invoke the pointer_focus() virtual function.
 
 	inline void report_pointer_focus(IN_THREAD_ONLY,
