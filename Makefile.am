@@ -365,6 +365,11 @@ libcxxw_la_SOURCES=\
 	screen_solidcolorpictures.C		    \
 	screen_solidcolorpictures.H		    \
 	screen_solidcolorpicturesfwd.H		    \
+	selection/current_selection.C		    \
+	selection/current_selection.H		    \
+	selection/current_selectionfwd.H	    \
+	selection/incremental_selection_updates.C   \
+	selection/incremental_selection_updates.H   \
 	straight_border.C			    \
 	straight_border.H			    \
 	straight_borderfwd.H			    \

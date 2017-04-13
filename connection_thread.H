@@ -187,10 +187,33 @@ class LIBCXX_HIDDEN connection_threadObj
 
 	scheduled_callbacks_t *scheduled_callbacks_thread_only;
 
+	class incremental_selection_update_info;
+
+	//! Pending incremental selection updates we're sending.
+
+	incremental_selection_update_info *pending_incremental_updates_thread_only;
 	//! Check for any scheduled callbacks, and invoke them.
 
 	bool invoke_scheduled_callbacks(IN_THREAD_ONLY, int &);
 
+	//! Expire incremental selection updates
+
+	void expire_incremental_updates(IN_THREAD_ONLY, int &);
+
+	//! Handle an incremental update.
+
+	void handle_incremental_update(IN_THREAD_ONLY,
+				       const xcb_property_notify_event_t *);
+
+	//! Compute timeout parameter for poll().
+
+	//! Used by invoke_scheduled_callbacks() and
+	//! expire_incremental_updates(), when now is before the next
+	//! scheduled timeout, when. Computes the timeout parameter, in
+	//! milliseconds, for poll().
+
+	static int compute_poll_until(tick_clock_t::time_point now,
+				      tick_clock_t::time_point when);
 	//! Nothing to do.
 
 	//! And when there's nothing else to do, just before waiting for
@@ -209,6 +232,7 @@ class LIBCXX_HIDDEN connection_threadObj
 	draw_info_cache *current_draw_info_cache_thread_only;
 
  public:
+	THREAD_DATA_ONLY(root_window);
 	THREAD_DATA_ONLY(window_handlers);
 	THREAD_DATA_ONLY(destroyed_xids);
 	THREAD_DATA_ONLY(visibility_updated);
@@ -217,6 +241,7 @@ class LIBCXX_HIDDEN connection_threadObj
 	THREAD_DATA_ONLY(element_position_updated);
 	THREAD_DATA_ONLY(current_draw_info_cache);
 	THREAD_DATA_ONLY(scheduled_callbacks);
+	THREAD_DATA_ONLY(pending_incremental_updates);
 
 #include "connection_thread.msgs.H"
 

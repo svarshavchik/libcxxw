@@ -58,10 +58,12 @@ void connection_threadObj
 	current_draw_info_cache_thread_only= &current_draw_info_cache;
 
 	// Assume we'll poll() indefinitely, unless there's a change in plans.
-	int poll_for= -1;
+	int poll_for;
 
 	while (1)
 	{
+		poll_for= -1;
+
 		if (!current_draw_info_cache.draw_info_cache.empty())
 			// Something must've used the draw cache.
 			// Don't potentially execute something again
@@ -99,6 +101,8 @@ void connection_threadObj
 
 		if (invoke_scheduled_callbacks(IN_THREAD, poll_for))
 			continue;
+
+		expire_incremental_updates(IN_THREAD, poll_for);
 
 		// Check if the connection errored out, if not, check for
 		// a message.
@@ -197,10 +201,6 @@ bool connection_threadObj::invoke_scheduled_callbacks(IN_THREAD_ONLY,
 	auto b=(*scheduled_callbacks(IN_THREAD))->begin();
 	auto e=(*scheduled_callbacks(IN_THREAD))->end();
 
-	const auto maximum_poll=
-		std::chrono::duration_cast<tick_clock_t::duration>
-		(std::chrono::minutes(30));
-
 	while (b != e)
 	{
 		auto p=b->second.getptr();
@@ -241,42 +241,44 @@ bool connection_threadObj::invoke_scheduled_callbacks(IN_THREAD_ONLY,
 		}
 
 		if (b != e)
-		{
-			// Compute how long to poll_for.
+			poll_for=compute_poll_until(now, b->first);
 
-			auto when=b->first;
-
-			// We don't have anything more than
-			// a few seconds in the future, but
-			// just in case we have long terrm
-			// plans, limit poll() to 30 minute
-			// timeouts.
-
-			if (when > now + maximum_poll)
-			{
-				poll_for=30*60 * 1000;
-			}
-			else
-			{
-				poll_for=std::chrono::duration_cast
-					<std::chrono::milliseconds>
-					(when-now).count();
-
-				// It's possible if the system
-				// clock's precision is greater
-				// than a millisecond, the
-				// duration cast produces a
-				// goose egg. poll() for a lone
-				// millisecond, in that case.
-
-				if (poll_for == 0)
-					poll_for=1;
-			}
-		}
 		break;
 	}
 
 	return invoked;
+}
+
+int connection_threadObj::compute_poll_until(tick_clock_t::time_point now,
+					     tick_clock_t::time_point when)
+{
+	const auto maximum_poll=
+		std::chrono::duration_cast<tick_clock_t::duration>
+		(std::chrono::minutes(30));
+
+	// We don't have anything more than
+	// a few seconds in the future, but
+	// just in case we have long terrm
+	// plans, limit poll() to 30 minute
+	// timeouts.
+
+	if (when > now + maximum_poll)
+		return 30*60 * 1000;
+
+	auto v=std::chrono::duration_cast
+		<std::chrono::milliseconds>
+		(when-now).count();
+
+	// It's possible if the system
+	// clock's precision is greater
+	// than a millisecond, the
+	// duration cast produces a
+	// goose egg. poll() for a lone
+	// millisecond, in that case.
+
+	if (v == 0)
+		v=1;
+	return v;
 }
 
 void connection_threadObj

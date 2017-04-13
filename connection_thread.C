@@ -11,6 +11,7 @@
 #include "batch_queue.H"
 #include "xid_t.H"
 #include "catch_exceptions.H"
+#include "selection/incremental_selection_updates.H"
 #include <x/functionalrefptr.H>
 #include <x/mcguffinmultimap.H>
 
@@ -48,6 +49,8 @@ void connection_threadObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin)
 	element_set_t element_position_updated;
 	scheduled_callbacks_t scheduled_callbacks=
 		scheduled_callbacks_t::create();
+	incremental_selection_update_info pending_incremental_updates;
+
 	std::function<void ()> cxxwtheme_changed=[] {};
 
 	window_handlers_thread_only= &window_handlers;
@@ -57,6 +60,7 @@ void connection_threadObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin)
 	containers_2_recalculate_thread_only= &containers_2_recalculate;
 	element_position_updated_thread_only= &element_position_updated;
 	scheduled_callbacks_thread_only= &scheduled_callbacks;
+	pending_incremental_updates_thread_only= &pending_incremental_updates;
 
 	visibility_updated_thread_only= &visibility_updated;
 	disconnect_callback_thread_only=[] {};

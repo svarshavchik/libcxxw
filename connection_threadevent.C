@@ -164,7 +164,7 @@ void connection_threadObj::run_event(IN_THREAD_ONLY,
 
 			timestamp=msg->time;
 
-			if (msg->window == root_window_thread_only &&
+			if (msg->window == IN_THREAD->root_window(IN_THREAD) &&
 			    msg->atom == info->atoms_info.cxxwtheme)
 			{
 				try {
@@ -177,6 +177,7 @@ void connection_threadObj::run_event(IN_THREAD_ONLY,
 						->theme_updated_event
 						(IN_THREAD);
 			}
+			handle_incremental_update(IN_THREAD, msg);
 		}
 		return;
 	case XCB_CLIENT_MESSAGE:
