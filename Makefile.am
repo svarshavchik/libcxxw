@@ -370,6 +370,7 @@ libcxxw_la_SOURCES=\
 	selection/current_selectionfwd.H	    \
 	selection/incremental_selection_updates.C   \
 	selection/incremental_selection_updates.H   \
+	selection/convert_selection.C		    \
 	straight_border.C			    \
 	straight_border.H			    \
 	straight_borderfwd.H			    \

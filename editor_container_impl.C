@@ -58,9 +58,11 @@ void editor_containerObj::implObj::recalculate(IN_THREAD_ONLY)
 bool editor_containerObj::implObj::process_button_event(IN_THREAD_ONLY,
 							int button,
 							bool press,
+							xcb_timestamp_t
+							timestamp,
 							const input_mask &mask)
 {
-	if (button != 1 || !press)
+	if ((button != 1 && button != 2) || !press)
 		return false;
 
 	invoke_layoutmanager

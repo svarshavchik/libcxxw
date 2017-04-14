@@ -100,12 +100,15 @@ bool hotspot_elementObj<element_impl>
 ::process_button_event(IN_THREAD_ONLY,
 		       int button,
 		       bool press,
+		       xcb_timestamp_t timestamp,
 		       const input_mask &mask)
 {
 	auto ret=focusable_elementObj<element_impl>
-		::process_button_event(IN_THREAD, button, press, mask);
+		::process_button_event(IN_THREAD, button, press, timestamp,
+				       mask);
 
 	if (hotspotObj::implObj::process_button_event(IN_THREAD, button, press,
+						      timestamp,
 						      mask))
 		ret=true;
 

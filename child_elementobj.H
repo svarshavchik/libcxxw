@@ -93,6 +93,7 @@ class LIBCXX_HIDDEN child_elementObj : public elementObj::implObj {
 	bool process_button_event(IN_THREAD_ONLY,
 				  int button,
 				  bool press,
+				  xcb_timestamp_t timestamp,
 				  const input_mask &mask) override;
 
 	//! Implement grab().
@@ -191,6 +192,13 @@ class LIBCXX_HIDDEN child_elementObj : public elementObj::implObj {
 
 	virtual focusable_fields_t::iterator
 		initial_focusable_fields_insert_pos(IN_THREAD_ONLY);
+
+	//! Received pasted text.
+
+	//! Forwarded to the container, if not handled by the element.
+
+	bool pasted(IN_THREAD_ONLY,
+		    const std::experimental::u32string_view &str) override;
 };
 
 LIBCXXW_NAMESPACE_END

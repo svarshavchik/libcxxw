@@ -35,6 +35,7 @@ class LIBCXX_HIDDEN editor_containerObj::implObj
 	bool process_button_event(IN_THREAD_ONLY,
 				  int button,
 				  bool press,
+				  xcb_timestamp_t timestamp,
 				  const input_mask &mask);
  private:
 

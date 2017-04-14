@@ -44,7 +44,7 @@ create_initial_string(const ref<containerObj::implObj> &container,
 
 	cpy(" ");
 
-	auto string=element.convert({bg_color, font}, cpy);
+	auto string=element.create_richtextstring({bg_color, font}, cpy);
 
 	if (string.get_meta().size() > 1)
 		throw EXCEPTION(_("Input text cannot contain embedded formatting."));
@@ -91,14 +91,15 @@ struct LIBCXX_HIDDEN editorObj::implObj::moving_cursor {
 		      bool processing_clear)
 		: IN_THREAD(IN_THREAD), me(me), old_cursor(me.cursor->clone())
 	{
+		// Make sure to turn off the blink, before
+		// starting a selection.
+		me.unblink(IN_THREAD);
+
 		if (selection_in_progress)
 		{
 			if (!me.selection_start(IN_THREAD))
-			{
-				me.unblink(IN_THREAD);
 				me.selection_start(IN_THREAD)=
 					me.cursor->clone();
-			}
 		}
 		else
 		{
@@ -106,13 +107,12 @@ struct LIBCXX_HIDDEN editorObj::implObj::moving_cursor {
 
 			if (p)
 			{
+				// Remove the highlighted selection.
+
 				me.selection_start(IN_THREAD)=
 					richtextiteratorptr();
 
 				me.draw_between(IN_THREAD, p, me.cursor);
-
-				me.blinkon=true;
-				me.unblink(IN_THREAD);
 
 				// processing_clear is set when clear()ing
 				// the current selection in response to
@@ -131,19 +131,15 @@ struct LIBCXX_HIDDEN editorObj::implObj::moving_cursor {
 
 	~moving_cursor()
 	{
-		if (me.cursor->compare(old_cursor))
+		if (in_selection)
 		{
-			me.unblink(IN_THREAD, old_cursor);
-
-			if (in_selection)
-			{
-				me.draw_between(IN_THREAD,
-						old_cursor,
-						me.cursor);
-			}
-
-			me.blink(IN_THREAD);
+			me.draw_between(IN_THREAD,
+					old_cursor,
+					me.cursor);
 		}
+
+		if (me.current_keyboard_focus(IN_THREAD))
+			me.blink(IN_THREAD);
 	}
 };
 
@@ -160,9 +156,8 @@ class editorObj::implObj::selectionObj : public current_selectionObj {
 
 	weakptr<ptr<implObj>> me;
 
-	// The text is represented by two iterators.
-	const richtextiterator a;
-	const richtextiterator b;
+	// Cut text
+	std::u32string cut_text;
 
 public:
 	THREAD_DATA_ONLY(valid_flag);
@@ -275,25 +270,28 @@ void editorObj::implObj::keyboard_focus(IN_THREAD_ONLY,
 {
 	superclass_t::keyboard_focus(IN_THREAD, event, ptr);
 
-	window_focus_change(IN_THREAD, false);
+	blink_if_has_focus(IN_THREAD);
 }
 
 void editorObj::implObj::window_focus_change(IN_THREAD_ONLY, bool flag)
 {
-	if (!is_enabled(IN_THREAD) || !current_keyboard_focus(IN_THREAD))
+	blink_if_has_focus(IN_THREAD);
+	superclass_t::window_focus_change(IN_THREAD, flag);
+}
+
+void editorObj::implObj::blink_if_has_focus(IN_THREAD_ONLY)
+{
+	if (current_keyboard_focus(IN_THREAD))
+	{
+		if (!blinking)
+			blink(IN_THREAD);
+		scroll_cursor_into_view(IN_THREAD);
+	}
+	else
 	{
 		unblink(IN_THREAD);
 		blinking=nullptr;
-		return;
 	}
-
-	if (blinking)
-		return;
-
-	scroll_cursor_into_view(IN_THREAD);
-	schedule_blink(IN_THREAD);
-	blinkon=false;
-	blink(IN_THREAD);
 }
 
 void editorObj::implObj::schedule_blink(IN_THREAD_ONLY)
@@ -333,20 +331,19 @@ void editorObj::implObj::blink(IN_THREAD_ONLY)
 void editorObj::implObj::blink(IN_THREAD_ONLY,
 			       const richtextiterator &cursor)
 {
-	blinkon= !blinkon;
-
 	// We actually blink the cursor only when we are not showing a
 	// selection.
 
 	if ( (!selection_start(IN_THREAD)) ||
 	     selection_start(IN_THREAD)->compare(cursor) == 0)
 	{
+		blinkon= !blinkon;
+
 		cursor->set_cursor(IN_THREAD, blinkon);
 		schedule_blink(IN_THREAD);
 	}
 	else
 	{
-		blinkon=false;
 		blinking=nullptr;
 		return;
 	}
@@ -393,7 +390,6 @@ bool editorObj::implObj::process_keypress(IN_THREAD_ONLY, const key_event &ke)
 	{
 		if (ke.keysym == XK_Insert)
 		{
-			std::cout << "SECONDARY" << std::endl;
 			create_secondary_selection(IN_THREAD);
 			return true;
 		}
@@ -434,7 +430,9 @@ bool editorObj::implObj::process_keypress(IN_THREAD_ONLY, const key_event &ke)
 		unblink(IN_THREAD);
 		if (selection_start(IN_THREAD))
 		{
-			delete_selection(IN_THREAD, ke);
+			if (ke.shift)
+				create_secondary_selection(IN_THREAD);
+			delete_selection(IN_THREAD);
 		}
 		else
 		{
@@ -485,21 +483,17 @@ bool editorObj::implObj::process_keypress(IN_THREAD_ONLY, const key_event &ke)
 		blink(IN_THREAD);
 		return true;
 	case XK_Insert:
-		unblink(IN_THREAD);
-		blink(IN_THREAD);
+		if (ke.shift)
+			get_window_handler()
+				.paste(IN_THREAD,
+				       XCB_ATOM_SECONDARY,
+				       IN_THREAD->timestamp(IN_THREAD));
 		return true;
 	}
 
 	if ((!config.oneline() && ke.unicode == '\n') || ke.unicode >= ' ')
 	{
-		unblink(IN_THREAD);
-		if (selection_start(IN_THREAD))
-			delete_selection(IN_THREAD, ke);
-		cursor->insert(IN_THREAD,
-			       std::u32string(&ke.unicode, &ke.unicode+1));
-		recalculate(IN_THREAD);
-		draw_changes(IN_THREAD);
-		blink(IN_THREAD);
+		pasted(IN_THREAD, {&ke.unicode, 1});
 		return true;
 	}
 
@@ -507,7 +501,7 @@ bool editorObj::implObj::process_keypress(IN_THREAD_ONLY, const key_event &ke)
 	{
 		unblink(IN_THREAD);
 		if (selection_start(IN_THREAD))
-			delete_selection(IN_THREAD, ke);
+			delete_selection(IN_THREAD);
 		else
 		{
 			auto old=cursor->clone();
@@ -520,6 +514,20 @@ bool editorObj::implObj::process_keypress(IN_THREAD_ONLY, const key_event &ke)
 		return true;
 	}
 	return false;
+}
+
+bool editorObj::implObj::pasted(IN_THREAD_ONLY,
+				const std::experimental::u32string_view &str)
+{
+	unblink(IN_THREAD);
+
+	if (selection_start(IN_THREAD))
+		delete_selection(IN_THREAD);
+	cursor->insert(IN_THREAD, str);
+	recalculate(IN_THREAD);
+	draw_changes(IN_THREAD);
+	blink(IN_THREAD);
+	return true;
 }
 
 void editorObj::implObj::draw_changes(IN_THREAD_ONLY)
@@ -556,14 +564,19 @@ void editorObj::implObj::scroll_cursor_into_view(IN_THREAD_ONLY)
 bool editorObj::implObj::process_button_event(IN_THREAD_ONLY,
 					      int button,
 					      bool press,
+					      xcb_timestamp_t timestamp,
 					      const input_mask &mask)
 {
-	if (press && button == 1)
+	if (press && (button == 1 || button == 2))
 	{
 		moving_cursor moving{IN_THREAD, *this, mask};
 
 		cursor->moveto(IN_THREAD, most_recent_x, most_recent_y);
 		grab(IN_THREAD);
+
+		if (button == 2)
+			get_window_handler().paste(IN_THREAD, XCB_ATOM_PRIMARY,
+						   timestamp);
 	}
 	else if (button == 1)
 	{
@@ -574,7 +587,7 @@ bool editorObj::implObj::process_button_event(IN_THREAD_ONLY,
 	// We do not consume the button event. The editor container also
 	// consumes the button press, and moves the input focus here.
 	return superclass_t::process_button_event(IN_THREAD, button, press,
-						  mask);
+						  timestamp, mask);
 }
 
 void editorObj::implObj::motion_event(IN_THREAD_ONLY, coord_t x, coord_t y,
@@ -644,7 +657,8 @@ editorObj::implObj::selectionObj::
 selectionObj(xcb_timestamp_t timestamp, const ref<implObj> &me,
 	     const richtextiterator &a,
 	     const richtextiterator &b)
-	: current_selectionObj(timestamp), me(me), a(a), b(b)
+	: current_selectionObj(timestamp), me(me),
+	  cut_text{a->get(b).get_string()}
 {
 }
 
@@ -710,22 +724,14 @@ ptr<current_selectionObj::convertedValueObj> editorObj::implObj::selectionObj
 	if (!charset)
 		return ptr<convertedValueObj>();
 
-	auto aiter=a;
-	auto biter=b;
-
-	if (aiter->compare(biter) > 0)
-		std::swap(aiter, biter);
-
-	auto contents=aiter->get(biter);
-
 	auto bytes=vector<uint8_t>::create();
 
-	bytes->reserve(contents.size()*2);
+	bytes->reserve(cut_text.size()*2);
 
 	bool ignore;
 
-	unicode::iconvert::fromu::convert(contents.get_string().begin(),
-					  contents.get_string().end(),
+	unicode::iconvert::fromu::convert(cut_text.begin(),
+					  cut_text.end(),
 					  charset,
 					  std::back_insert_iterator<std::vector
 					  <uint8_t>>(*bytes), ignore);
@@ -734,7 +740,7 @@ ptr<current_selectionObj::convertedValueObj> editorObj::implObj::selectionObj
 		::create(type, 8, bytes);
 }
 
-void editorObj::implObj::delete_selection(IN_THREAD_ONLY, const key_event &ke)
+void editorObj::implObj::delete_selection(IN_THREAD_ONLY)
 {
 	cursor->remove(IN_THREAD, selection_start(IN_THREAD));
 	selection_start(IN_THREAD)=richtextiteratorptr();
@@ -767,7 +773,7 @@ void editorObj::implObj::create_primary_selection(IN_THREAD_ONLY)
 	get_window_handler().selection_announce(IN_THREAD, XCB_ATOM_PRIMARY, s);
 }
 
- void editorObj::implObj::create_secondary_selection(IN_THREAD_ONLY)
+void editorObj::implObj::create_secondary_selection(IN_THREAD_ONLY)
 {
 	if (!selection_start(IN_THREAD))
 		return;

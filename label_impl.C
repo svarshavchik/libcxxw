@@ -49,7 +49,7 @@ labelObj::implObj::implObj(const ref<containerObj::implObj> &container,
 			   double initial_width,
 			   elementObj::implObj &container_element)
 	: implObj(container, alignment, initial_width,
-		  container_element.convert
+		  container_element.create_richtextstring
 		  ({container_element.create_background_color
 				  ("label_foreground_color",
 				   rgb(rgb::maximum/10,

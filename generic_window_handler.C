@@ -397,7 +397,8 @@ void generic_windowObj::handlerObj
 
 	if (most_recent_element_with_pointer(IN_THREAD) &&
 	    !most_recent_element_with_pointer(IN_THREAD)
-	    ->process_button_event(IN_THREAD, event->detail, buttonpress, mask)
+	    ->process_button_event(IN_THREAD, event->detail, buttonpress,
+				   event->time, mask)
 	    && event->detail == 1 && buttonpress &&
 	    current_focus(IN_THREAD))
 	{
@@ -803,6 +804,14 @@ void generic_windowObj::handlerObj
 						       title.size(),
 						       title.c_str());
 		 });
+}
+
+void generic_windowObj::handlerObj
+::pasted_string(IN_THREAD_ONLY, const std::experimental::u32string_view &s)
+{
+	if (current_focus(IN_THREAD))
+		current_focus(IN_THREAD)->get_focusable_element()
+			.pasted(IN_THREAD, s);
 }
 
 LIBCXXW_NAMESPACE_END

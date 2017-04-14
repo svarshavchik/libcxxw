@@ -15,6 +15,8 @@
 #include "focus/focusable_elementfwd.H"
 #include "connection_threadfwd.H"
 
+#include <xcb/xproto.h>
+
 LIBCXXW_NAMESPACE_START
 
 class child_elementObj;
@@ -98,6 +100,7 @@ class LIBCXX_HIDDEN hotspotObj::implObj : virtual public obj {
 	bool process_button_event(IN_THREAD_ONLY,
 				  int button,
 				  bool press,
+				  xcb_timestamp_t timestamp,
 				  const input_mask &mask);
  private:
 

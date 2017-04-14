@@ -62,6 +62,7 @@ bool hotspotObj::implObj::process_key_event(IN_THREAD_ONLY, const key_event &ke)
 bool hotspotObj::implObj::process_button_event(IN_THREAD_ONLY,
 					       int button,
 					       bool press,
+					       xcb_timestamp_t timestamp,
 					       const input_mask &mask)
 {
 	if (button == 1)

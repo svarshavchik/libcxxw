@@ -133,16 +133,26 @@ class LIBCXX_HIDDEN editorObj::implObj
 	//! Starts or stop the cursor blink.
 	void window_focus_change(IN_THREAD_ONLY, bool flag) override;
 
+ private:
+
+	//! Input focus has transferred into or out of this display element.
+
+	//! Call scroll_cursor_into_view(), then start blinking, if enabled,
+	// and has current_keyboard_focus(). Otherwise stop blinking.
+
+	void blink_if_has_focus(IN_THREAD_ONLY);
+ public:
 	//! Inherited from elementObj::implObj
 
 	//! Processes a key event.
 	bool process_key_event(IN_THREAD_ONLY, const key_event &ke);
 
-	//! Button 1 moves the cursor.
+	//! Button 1 moves the cursor, button2 pastes the primary clipboard.
 
 	bool process_button_event(IN_THREAD_ONLY,
 				  int button,
 				  bool press,
+				  xcb_timestamp_t timestamp,
 				  const input_mask &mask);
 	//! Pointer motion event
 	void motion_event(IN_THREAD_ONLY, coord_t x, coord_t y,
@@ -184,7 +194,7 @@ class LIBCXX_HIDDEN editorObj::implObj
 	void blink(IN_THREAD_ONLY, const richtextiterator &cursor);
 
 	//! Whether the cursor is blinked on.
-	bool blinkon;
+	bool blinkon=false;
 
 	//! If the cursor is currently blinked on, blink it off.
 	void unblink(IN_THREAD_ONLY);
@@ -210,7 +220,7 @@ class LIBCXX_HIDDEN editorObj::implObj
 	void scroll_cursor_into_view(IN_THREAD_ONLY);
 
 	//! Delete the current selection
-	void delete_selection(IN_THREAD_ONLY, const key_event &ke);
+	void delete_selection(IN_THREAD_ONLY);
 
 	//! Create a new selection object.
 	selection create_selection(IN_THREAD_ONLY);
@@ -226,6 +236,10 @@ class LIBCXX_HIDDEN editorObj::implObj
 
 	//! Remove the announced secondary selection.
 	void remove_secondary_selection(IN_THREAD_ONLY);
+
+	//! Text was pasted.
+	bool pasted(IN_THREAD_ONLY,
+		    const std::experimental::u32string_view &str) override;
 };
 
 LIBCXXW_NAMESPACE_END

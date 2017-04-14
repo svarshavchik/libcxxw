@@ -29,7 +29,8 @@ void testtextparam(const auto &main_window)
 			  "foobaz");
 
 	auto string=
-		main_window->impl->handler->convert( {main_window->get_screen()
+		main_window->impl->handler
+		->create_richtextstring( {main_window->get_screen()
 					->impl
 					->create_background_color("0%",
 								  {0, 0, 0}),

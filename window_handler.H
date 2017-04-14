@@ -14,6 +14,8 @@
 #include <x/logger.H>
 #include <xcb/xcb.h>
 #include <unordered_map>
+#include <experimental/string_view>
+#include <courier-unicode.h>
 
 LIBCXXW_NAMESPACE_START
 
@@ -27,8 +29,12 @@ LIBCXXW_NAMESPACE_START
 //! reference from shared_data is installed in generic_windowObj::implObj's
 //! constructor. This circular reference is removed from implObj's
 //! destructor.
+//!
+//! Inherits from unicode::iconvert::tou, which converts pasted text to unicode
+//! strings, and invokes pasted().
 
 class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
+					public unicode::iconvert::tou,
 					virtual public obj {
 
 	//! The timestamp of the most recent activated passive grab.
@@ -180,6 +186,48 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 	//! \c false, it is removed.
 	void selection_discard(IN_THREAD_ONLY,
 			       xcb_atom_t selection_atom);
+
+	//! Retrieve selection
+
+	void paste(IN_THREAD_ONLY, xcb_atom_t clipboard,
+		   xcb_timestamp_t timestamp);
+
+	//! selection_notify event, the selection has been pasted.
+
+	void selection_notify_event(IN_THREAD_ONLY,
+				    const xcb_selection_notify_event_t *msg);
+ private:
+
+	//! Convert selection to the given type.
+
+	void paste(IN_THREAD_ONLY, xcb_atom_t clipboard,
+		   xcb_atom_t type, xcb_timestamp_t timestamp);
+
+	//! Selection conversion failed.
+
+	void conversion_failed(IN_THREAD_ONLY, xcb_atom_t clipboard,
+			       xcb_atom_t type, xcb_timestamp_t timestamp);
+
+	xcb_atom_t most_recent_paste=0;
+	bool incremental_paste=false;
+
+ public:
+	//! Someone pasted something to us?
+
+	void property_notify_event(IN_THREAD_ONLY,
+				   const xcb_property_notify_event_t *msg);
+
+ private:
+	//! Inherited from unicode::iconvert::tou
+
+	int converted(const char32_t *ptr, size_t cnt) override;
+
+ public:
+
+	//! Digested converted pasted text.
+
+	virtual void pasted_string(IN_THREAD_ONLY,
+				   const std::experimental::u32string_view &s);
 };
 
 LIBCXXW_NAMESPACE_END

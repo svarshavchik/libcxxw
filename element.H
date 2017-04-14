@@ -28,6 +28,7 @@
 #include <x/logger.H>
 #include <x/functional.H>
 #include <experimental/string_view>
+#include <xcb/xproto.h>
 
 LIBCXXW_NAMESPACE_START
 
@@ -616,8 +617,8 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! font specifies the initial font and color, if not explicitly
 	//! specified in the text_param.
 
-	richtextstring convert(richtextmeta font,
-			       const text_param &t);
+	richtextstring create_richtextstring(richtextmeta font,
+					     const text_param &t);
 
 
 	//////////////////////////////////////////////////////////////////
@@ -742,6 +743,7 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	virtual bool process_button_event(IN_THREAD_ONLY,
 					  int button,
 					  bool press,
+					  xcb_timestamp_t timestamp,
 					  const input_mask &mask);
 
 	//! process_button_event() calls grab() to grab the pointer.
@@ -820,6 +822,13 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 	virtual void ensure_visibility(IN_THREAD_ONLY, const rectangle &);
 
+	//! Process pasted text.
+
+	//! Returns true if this element processed the pasted text.
+	//! The default elementation returns false.
+
+	virtual bool pasted(IN_THREAD_ONLY,
+			    const std::experimental::u32string_view &str);
 };
 
 LIBCXXW_NAMESPACE_END

@@ -207,7 +207,7 @@ richtextstring::meta_t::iterator richtextstring::duplicate(meta_t &meta,
 }
 
 void richtextstring::insert(size_t pos,
-			    const std::u32string &s)
+			    const std::experimental::u32string_view &s)
 {
 	if (s.size() == 0)
 		return;
@@ -370,7 +370,7 @@ void richtextstring::insert(size_t pos, richtextstring s)
 }
 
 void richtextstring::do_insert(size_t pos,
-			       const std::u32string &s,
+			       const std::experimental::u32string_view &s,
 			       meta_t &new_meta)
 {
 	// Sanity check: insert point not past the end of the string.

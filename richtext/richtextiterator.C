@@ -193,7 +193,7 @@ struct LIBCXX_HIDDEN richtextiteratorObj::internal_insert {
 };
 
 // Implement type-erasure for internal_insert. The template parameter is
-// either a std::u32string or a richtextstring. This is constructed directly
+// either a std::u32string_view or a richtextstring. This is constructed directly
 // by insert(), and captures a reference to one or the other string type.
 //
 // The implemented operator() has everything it needs to construct a
@@ -230,10 +230,11 @@ richtextiteratorObj::insert(IN_THREAD_ONLY,
 
 std::pair<richtextiterator, size_t>
 richtextiteratorObj::insert(IN_THREAD_ONLY,
-			    const std::u32string &new_string)
+			    const std::experimental::u32string_view &new_string)
 {
 	return insert(IN_THREAD,
-		      internal_insert_impl<std::u32string>{new_string});
+		      internal_insert_impl<std::experimental::u32string_view>
+		      {new_string});
 }
 
 // This handles the common insert() code. The type of the inserted string

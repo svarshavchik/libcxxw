@@ -178,6 +178,10 @@ void connection_threadObj::run_event(IN_THREAD_ONLY,
 
 			timestamp(IN_THREAD)=msg->time;
 
+			// We can be handling several things here.
+
+			// 1) CXXWTHEME in the screen 0's root window.
+
 			if (msg->window == IN_THREAD->root_window(IN_THREAD) &&
 			    msg->atom == info->atoms_info.cxxwtheme)
 			{
@@ -191,6 +195,17 @@ void connection_threadObj::run_event(IN_THREAD_ONLY,
 						->theme_updated_event
 						(IN_THREAD);
 			}
+
+			// 2) We requested someone to convert a selection
+			// for us (paste to us).
+			auto iter=window_handlers_thread_only
+				->find(msg->window);
+			if (iter != window_handlers_thread_only->end())
+				iter->second->property_notify_event(IN_THREAD,
+								    msg);
+
+			// 3) We are sending someone incremental
+			// selection updates (paste from us).
 			handle_incremental_update(IN_THREAD, msg);
 		}
 		return;
@@ -218,6 +233,16 @@ void connection_threadObj::run_event(IN_THREAD_ONLY,
 			xcb_send_event(info->conn, 0,
 				       msg->requestor, 0,
 				       (const char *)&reply);
+		}
+		return;
+	case XCB_SELECTION_NOTIFY:
+		{
+			GET_MSG(selection_notify_event);
+
+			FIND_HANDLER(requestor);
+
+			DISPATCH_HANDLER(selection_notify_event,
+					 (IN_THREAD, msg));
 		}
 		return;
 

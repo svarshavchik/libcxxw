@@ -371,6 +371,11 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
  public:
 	THREAD_DATA_ONLY(focusable_fields);
 	THREAD_DATA_ONLY(current_focus);
+
+	//! Pasted text into this window. Forward to pasted().
+
+	void pasted_string(IN_THREAD_ONLY,
+			   const std::experimental::u32string_view &) override;
 };
 
 LIBCXXW_NAMESPACE_END

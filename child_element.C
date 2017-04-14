@@ -221,15 +221,17 @@ bool child_elementObj::process_key_event(IN_THREAD_ONLY, const key_event &ke)
 bool child_elementObj::process_button_event(IN_THREAD_ONLY,
 					    int button,
 					    bool press,
+					    xcb_timestamp_t timestamp,
 					    const input_mask &mask)
 {
 	auto ret=elementObj::implObj::process_button_event(IN_THREAD,
 							   button,
 							   press,
+							   timestamp,
 							   mask);
 
 	if (container->get_element_impl()
-	    .process_button_event(IN_THREAD, button, press, mask))
+	    .process_button_event(IN_THREAD, button, press, timestamp, mask))
 		ret=true;
 
 	return ret;
@@ -256,6 +258,13 @@ void child_elementObj::motion_event(IN_THREAD_ONLY, coord_t x, coord_t y,
 void child_elementObj::ensure_visibility(IN_THREAD_ONLY, const rectangle &r)
 {
 	container->ensure_visibility(IN_THREAD, *this, r);
+}
+
+bool child_elementObj::pasted(IN_THREAD_ONLY,
+			      const std::experimental::u32string_view &str)
+{
+	return elementObj::implObj::pasted(IN_THREAD, str) ||
+		container->get_element_impl().pasted(IN_THREAD, str);
 }
 
 LIBCXXW_NAMESPACE_END

@@ -139,8 +139,8 @@ text_param &text_param::operator()(const text_decoration d)
 //
 // Convert text_param into a richtextstring.
 
-richtextstring elementObj::implObj::convert(richtextmeta font,
-					    const text_param &t)
+richtextstring elementObj::implObj::create_richtextstring(richtextmeta font,
+							  const text_param &t)
 {
 	// Compute all offsets into the richtextstring where fonts or colors
 	// change.

@@ -12,6 +12,7 @@
 #include "richtext/richtextstring.H"
 #include "x/w/rectangle.H"
 #include <x/obj.H>
+#include <experimental/string_view>
 
 LIBCXXW_NAMESPACE_START
 
@@ -133,7 +134,8 @@ class LIBCXX_HIDDEN richtextiteratorObj : virtual public obj {
 	//! \overload
 
 	std::pair<richtextiterator, size_t>
-		insert(IN_THREAD_ONLY, const std::u32string &string);
+		insert(IN_THREAD_ONLY, const std::experimental::u32string_view
+		       &string);
 
  private:
 	class internal_insert;

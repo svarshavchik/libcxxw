@@ -712,6 +712,7 @@ bool elementObj::implObj::process_key_event(IN_THREAD_ONLY, const key_event &)
 bool elementObj::implObj::process_button_event(IN_THREAD_ONLY,
 					       int button,
 					       bool press,
+					       xcb_timestamp_t timestamp,
 					       const input_mask &mask)
 {
 	return false;
@@ -724,6 +725,12 @@ void elementObj::implObj::motion_event(IN_THREAD_ONLY, coord_t x, coord_t y,
 
 void elementObj::implObj::ensure_visibility(IN_THREAD_ONLY, const rectangle &r)
 {
+}
+
+bool elementObj::implObj::pasted(IN_THREAD_ONLY,
+				 const std::experimental::u32string_view &str)
+{
+	return false;
 }
 
 LIBCXXW_NAMESPACE_END
