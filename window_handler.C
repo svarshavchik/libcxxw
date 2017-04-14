@@ -12,8 +12,6 @@
 #include <X11/X.h>
 #include <X11/Xatom.h>
 
-LOG_CLASS_INIT(LIBCXX_NAMESPACE::w::window_handlerObj);
-
 LIBCXXW_NAMESPACE_START
 
 window_handlerObj
@@ -208,6 +206,7 @@ void window_handlerObj
 	{
 		LOG_DEBUG("Cannot convert selection to requested format");
 		reply.property=XCB_NONE;
+		reply.target=request.target;
 		return;
 	}
 

@@ -18,6 +18,7 @@
 #include "fonts/current_fontcollectionfwd.H"
 #include "x/w/fontfwd.H"
 #include <experimental/string_view>
+#include <courier-unicode.h>
 
 LIBCXXW_NAMESPACE_START
 
@@ -37,6 +38,9 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 // The picture for the window
 	  public pictureObj::implObj::fromDrawableObj,
+
+// Used by paste() code to convert pasted text to unicode
+	  public unicode::iconvert::tou,
 
 // The container
 	  public container_elementObj<elementObj::implObj> {
@@ -372,10 +376,73 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	THREAD_DATA_ONLY(focusable_fields);
 	THREAD_DATA_ONLY(current_focus);
 
+	//! Paste a string from a clipboard.
+
+	//! Should only be called by an element that's receiving keyboard
+	//! input focus. Results in that element's pasted() getting invoked,
+	//! piecemeal, with the pasted text.
+
+	void paste(IN_THREAD_ONLY, xcb_atom_t clipboard,
+		   xcb_timestamp_t timestamp);
+
+ private:
+
+	////////////////////////////////////////////////////////////////////
+	//
+	// Inherited from window_handlerObj. Implements its conversion
+	// callbacks to convert the pasted text to unicode.
+
+	//! Should this data be converted?
+
+	//! Recognize STRING and UTF8_STRING atoms, that start the conversion.
+
+	bool begin_converted_data(IN_THREAD_ONLY, xcb_atom_t type,
+				  xcb_timestamp_t timestamp) override;
+
+	//! Receive converted data.
+
+	void converted_data(IN_THREAD_ONLY, xcb_atom_t clipboard,
+			    xcb_atom_t actual_type,
+			    xcb_atom_t format,
+			    void *data,
+			    size_t size) override;
+
+	//! Whether converted_data was called after begin_converted_data.
+
+	bool received_converted_data;
+
+	//! Converted data has been received.
+	void end_converted_data(IN_THREAD_ONLY, xcb_atom_t type,
+				xcb_timestamp_t timestamp) override;
+
+	//! Incremental conversion in progress.
+
+	void converting_incrementally(IN_THREAD_ONLY,
+				      xcb_atom_t type,
+				      xcb_timestamp_t timestamp,
+				      uint32_t estimated_size) override;
+
+	//! Incremental conversion in progress.
+	bool incremental_conversion_in_progress;
+
+	//! Implement conversion_failed().
+
+	//! This means that paste() failed.
+
+	void conversion_failed(IN_THREAD_ONLY, xcb_atom_t clipboard,
+			       xcb_atom_t type,
+			       xcb_timestamp_t timestamp) override;
+
+	//! Inherited from unicode::iconvert::tou
+
+	//! Handles the converted_data() as unicode.
+
+	int converted(const char32_t *ptr, size_t cnt) override;
+
 	//! Pasted text into this window. Forward to pasted().
 
 	void pasted_string(IN_THREAD_ONLY,
-			   const std::experimental::u32string_view &) override;
+			   const std::experimental::u32string_view &);
 };
 
 LIBCXXW_NAMESPACE_END

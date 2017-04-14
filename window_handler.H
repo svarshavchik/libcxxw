@@ -14,8 +14,6 @@
 #include <x/logger.H>
 #include <xcb/xcb.h>
 #include <unordered_map>
-#include <experimental/string_view>
-#include <courier-unicode.h>
 
 LIBCXXW_NAMESPACE_START
 
@@ -34,7 +32,6 @@ LIBCXXW_NAMESPACE_START
 //! strings, and invokes pasted().
 
 class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
-					public unicode::iconvert::tou,
 					virtual public obj {
 
 	//! The timestamp of the most recent activated passive grab.
@@ -61,8 +58,6 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 
 	//! My screen
 	const screen screenref;
-
-	LOG_CLASS_SCOPE;
 
 	//! Constructor parameters.
 	struct constructor_params {
@@ -187,47 +182,106 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 	void selection_discard(IN_THREAD_ONLY,
 			       xcb_atom_t selection_atom);
 
-	//! Retrieve selection
-
-	void paste(IN_THREAD_ONLY, xcb_atom_t clipboard,
-		   xcb_timestamp_t timestamp);
-
 	//! selection_notify event, the selection has been pasted.
 
 	void selection_notify_event(IN_THREAD_ONLY,
 				    const xcb_selection_notify_event_t *msg);
- private:
+
+	////////////////////////////////////////////////////////////////////
+	//
+	// Receive converted selections.
 
 	//! Convert selection to the given type.
 
-	void paste(IN_THREAD_ONLY, xcb_atom_t clipboard,
-		   xcb_atom_t type, xcb_timestamp_t timestamp);
+	//! A subclass invokes convert_selection(). This will have two
+	//! possible results.
+	//!
+	//! - conversion_failed() gets invoked if the conversion failed for
+	//!   some reason.
+	//!
+	//! - otherwise, at some point later, begin_converted_data(),
+	//!   converted_data(), and end_converted_data() get invoked.
+	//!
+	//! But wait, there's more. If the selection is being sent
+	//! incrementally, this will result in, firstly,
+	//! converting_incrementally() instead of converted_data() (followed
+	//! by end_converted_data().
+	//!
+	//! The incrementally sent data will result in subsequent calls to
+	//! begin_converted_data(), converted_data(), and end_converted_data()
+	//! sequences.
+	//!
+	//! The end of the incrementally sent data is indicated by a call to
+	//! begin_converted_data() and end_converted_data(), without a call to
+	//! converted_data() between them.
+
+	void convert_selection(IN_THREAD_ONLY, xcb_atom_t clipboard,
+			       xcb_atom_t type, xcb_timestamp_t timestamp);
 
 	//! Selection conversion failed.
 
-	void conversion_failed(IN_THREAD_ONLY, xcb_atom_t clipboard,
-			       xcb_atom_t type, xcb_timestamp_t timestamp);
+	virtual void conversion_failed(IN_THREAD_ONLY, xcb_atom_t clipboard,
+				       xcb_atom_t type,
+				       xcb_timestamp_t timestamp);
 
-	xcb_atom_t most_recent_paste=0;
-	bool incremental_paste=false;
+	//! Potentially convert the requested selection.
 
- public:
+	//! The subclass that calls convert_selection() must implement
+	//! begin_converted_data() as follows:
+	//!
+	//! - if the subclass previously requested a selection to be
+	//! converted to the given type, it must return true. The converted
+	//! selection's data will be passed by repeatedly invoking
+	//! converted_data() followed by end_converted_data().
+	//!
+	//! - the subclass must return false if the subclass did not request
+	//! conversion to this type.
+	//!
+	//! begin_converted_data() gets invoked upon receipt of every
+	//! PropertyNotify for a new property. If the subclass returns true
+	//! the property gets automatically deleted, after it is processed.
+	//!
+	//! If the subclass returned true for the initial call to
+	//! begin_converted_data(), the subclass must also return true for
+	//! all subsequent calls.
+	//!
+	//! Generally, the return value from begin_converted_data() should
+	//! depend only on "type". The subclass should always accept converted
+	//! data of the same type.
+
+	virtual bool begin_converted_data(IN_THREAD_ONLY, xcb_atom_t type,
+					  xcb_timestamp_t timestamp);
+
+	//! Converted selection data.
+
+	virtual void converted_data(IN_THREAD_ONLY, xcb_atom_t clipboard,
+				    xcb_atom_t actual_type,
+				    xcb_atom_t format,
+				    void *data,
+				    size_t size);
+
+	//! Converted selection data will be sent incrementally.
+
+	virtual void converting_incrementally(IN_THREAD_ONLY,
+					      xcb_atom_t type,
+					      xcb_timestamp_t timestamp,
+					      uint32_t estimated_size);
+
+	//! Notify the subclass of the end of converted selection.
+
+	//! If the converted selection's data was empty, converted_data()
+	//! never gets called, only end_converted_data().
+
+	virtual void end_converted_data(IN_THREAD_ONLY,
+					xcb_atom_t type,
+					xcb_timestamp_t timestamp);
+
 	//! Someone pasted something to us?
 
+	//! Invoked begin_converted_data(). If it returns true than calls
+	//! to
 	void property_notify_event(IN_THREAD_ONLY,
 				   const xcb_property_notify_event_t *msg);
-
- private:
-	//! Inherited from unicode::iconvert::tou
-
-	int converted(const char32_t *ptr, size_t cnt) override;
-
- public:
-
-	//! Digested converted pasted text.
-
-	virtual void pasted_string(IN_THREAD_ONLY,
-				   const std::experimental::u32string_view &s);
 };
 
 LIBCXXW_NAMESPACE_END

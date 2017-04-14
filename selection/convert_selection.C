@@ -13,16 +13,19 @@
 
 LIBCXXW_NAMESPACE_START
 
-void window_handlerObj::paste(IN_THREAD_ONLY, xcb_atom_t clipboard,
-			      xcb_timestamp_t timestamp)
-{
-	paste(IN_THREAD, clipboard, IN_THREAD->info->atoms_info.utf8_string,
-	      timestamp);
-}
+LOG_FUNC_SCOPE_DECL(LIBCXXW_NAMESPACE::window_handlerObj::convert,
+		    convert_log);
 
-void window_handlerObj::paste(IN_THREAD_ONLY, xcb_atom_t clipboard,
-			      xcb_atom_t type, xcb_timestamp_t timestamp)
+void window_handlerObj::convert_selection(IN_THREAD_ONLY, xcb_atom_t clipboard,
+					  xcb_atom_t type,
+					  xcb_timestamp_t timestamp)
 {
+	LOG_FUNC_SCOPE(convert_log);
+
+	LOG_DEBUG("Convert "
+		  << IN_THREAD->info->get_atom_name(clipboard) << " to "
+		  << IN_THREAD->info->get_atom_name(type));
+
 	returned_pointer<xcb_generic_error_t *> error;
 
 	auto conn=IN_THREAD->info->conn;
@@ -35,18 +38,19 @@ void window_handlerObj::paste(IN_THREAD_ONLY, xcb_atom_t clipboard,
 	if (error)
 	{
 		LOG_ERROR(connectionObj::implObj::get_error(error));
+		conversion_failed(IN_THREAD, clipboard, type, timestamp);
 		return;
 	}
 
 	if (value->owner == XCB_NONE)
 	{
-		LOG_DEBUG(IN_THREAD->info->get_atom_name(type)
+		LOG_DEBUG(IN_THREAD->info->get_atom_name(clipboard)
 			  << " is not available");
+		conversion_failed(IN_THREAD, clipboard, type, timestamp);
 		return;
 	}
 
 	xcb_delete_property(conn, id(), type);
-	incremental_paste=false;
 	xcb_convert_selection(conn,
 			      id(),
 			      clipboard,
@@ -55,59 +59,52 @@ void window_handlerObj::paste(IN_THREAD_ONLY, xcb_atom_t clipboard,
 			      timestamp);
 }
 
-void window_handlerObj::conversion_failed(IN_THREAD_ONLY, xcb_atom_t clipboard,
-					  xcb_atom_t type,
-					  xcb_timestamp_t timestamp)
-{
-	if (type == IN_THREAD->info->atoms_info.utf8_string)
-		paste(IN_THREAD, clipboard,
-		      IN_THREAD->info->atoms_info.string,
-		      timestamp);
-}
-
 void window_handlerObj
 ::selection_notify_event(IN_THREAD_ONLY,
 			 const xcb_selection_notify_event_t *msg)
 {
+	LOG_FUNC_SCOPE(convert_log);
+
 	if (msg->property == XCB_NONE)
+	{
+		LOG_DEBUG("Conversion of "
+			  << IN_THREAD->info->get_atom_name(msg->selection)
+			  << " to "
+			  << IN_THREAD->info->get_atom_name(msg->target)
+			  << " failed");
+
 		conversion_failed(IN_THREAD, msg->selection,
 				  msg->target, msg->time);
+	}
 }
 
 void window_handlerObj
 ::property_notify_event(IN_THREAD_ONLY,
 			const xcb_property_notify_event_t *msg)
 {
+	LOG_FUNC_SCOPE(convert_log);
+
 	if (msg->state != XCB_PROPERTY_NEW_VALUE)
 		return;
 
 	LOG_DEBUG("New Property Value: "
 		  << IN_THREAD->info->get_atom_name(msg->atom));
 
-	if (msg->atom == IN_THREAD->info->atoms_info.string)
-	{
-		if (most_recent_paste != msg->atom)
-		{
-			end();
-			begin(unicode::iso_8859_1);
-		}
-	}
-	else if (msg->atom == IN_THREAD->info->atoms_info.utf8_string)
-	{
-		if (most_recent_paste != msg->atom)
-		{
-			end();
-			begin(unicode::utf_8);
-		}
-	}
-	else
-	{
-		return;
-	}
+	// If an INCR conversion is not in progress, call begin_converted_data()
 
-	bool nonempty_property=false;
+	bool ignore_conversion=true;
 
-	most_recent_paste=msg->atom;
+	LOG_DEBUG("Property conversion started");
+
+	try {
+
+		ignore_conversion=!begin_converted_data(IN_THREAD, msg->atom,
+							msg->time);
+	} CATCH_EXCEPTIONS;
+
+	if (ignore_conversion)
+		LOG_TRACE("Ignoring conversion");
+
 	IN_THREAD->info->get_entire_property_with
 		(id(), msg->atom,
 		 XCB_GET_PROPERTY_TYPE_ANY, false,
@@ -117,46 +114,91 @@ void window_handlerObj
 		  void *data,
 		  size_t data_size)
 		 {
-			 if (type == IN_THREAD->info->atoms_info.incr)
-				 incremental_paste=true;
-
-			 nonempty_property=true;
-
-			 LOG_DEBUG("Incremental paste: "
-				   << incremental_paste
-				   << ", size=" << data_size);
-
-			 // Ignore INCR types.
-			 if (format != 8 || type != msg->atom)
+			 if (ignore_conversion)
 				 return;
 
-			 unicode::iconvert::tou::operator()
-				 (reinterpret_cast<char *>(data), data_size);
+			 LOG_TRACE("Property: size=" << data_size);
+
+			 if (type == IN_THREAD->info->atoms_info.incr)
+			 {
+				 uint32_t size=0;
+
+				 if (data_size >= sizeof(size))
+				 {
+					 const char *p=reinterpret_cast<char *>
+						 (data);
+
+					 std::copy(p, p+sizeof(size),
+						   reinterpret_cast<char *>
+						   (&size));
+				 }
+				 LOG_DEBUG("Incremental conversion, estimated "
+					   "size is " << size);
+
+				 try {
+					 converting_incrementally
+						 (IN_THREAD,
+						  msg->atom,
+						  msg->time,
+						  size);
+				 } CATCH_EXCEPTIONS;
+
+				 return;
+			 }
+
+			 try {
+				 converted_data(IN_THREAD, msg->atom, type,
+						format, data, data_size);
+			 } CATCH_EXCEPTIONS;
 		 });
 
-	if (!nonempty_property)
-		incremental_paste=false;
+	LOG_DEBUG("Property conversion complete");
 
-	if (!incremental_paste)
+	if (!ignore_conversion)
 	{
-		end();
-		most_recent_paste=0;
+		try {
+			end_converted_data(IN_THREAD, msg->atom, msg->time);
+		} CATCH_EXCEPTIONS;
+
+		xcb_delete_property(IN_THREAD->info->conn, id(), msg->atom);
 	}
-	xcb_delete_property(IN_THREAD->info->conn, id(), msg->atom);
 }
 
-int window_handlerObj::converted(const char32_t *ptr, size_t cnt)
+void window_handlerObj
+::conversion_failed(IN_THREAD_ONLY, xcb_atom_t clipboard,
+		    xcb_atom_t type,
+		    xcb_timestamp_t timestamp)
 {
-	LOG_DEBUG("Pasted " << cnt << " characters");
-	try {
-		// This is called from property_notify_event(), above.
-		pasted_string(thread(), {ptr, cnt});
-	} CATCH_EXCEPTIONS;
-	return 0;
 }
 
-void window_handlerObj::pasted_string(IN_THREAD_ONLY,
-				      const std::experimental::u32string_view &)
+bool window_handlerObj
+::begin_converted_data(IN_THREAD_ONLY, xcb_atom_t type,
+		       xcb_timestamp_t timestamp)
+{
+	return false;
+}
+
+void window_handlerObj
+::converting_incrementally(IN_THREAD_ONLY,
+			   xcb_atom_t type,
+			   xcb_timestamp_t timestamp,
+			   uint32_t estimated_size)
+{
+}
+
+void window_handlerObj
+::converted_data(IN_THREAD_ONLY, xcb_atom_t clipboard,
+		 xcb_atom_t actual_type,
+		 xcb_atom_t format,
+		 void *data,
+		 size_t size)
+{
+}
+
+void window_handlerObj
+::end_converted_data(IN_THREAD_ONLY,
+		     xcb_atom_t type,
+		     xcb_timestamp_t timestamp)
 {
 }
 

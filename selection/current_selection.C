@@ -8,8 +8,12 @@
 #include "window_handler.H"
 #include "connection_thread.H"
 #include "catch_exceptions.H"
+#include <x/logger.H>
 
 LIBCXXW_NAMESPACE_START
+
+LOG_FUNC_SCOPE_DECL(LIBCXXW_NAMESPACE::window_handlerObj::selection,
+		    selection_log);
 
 current_selectionObj::current_selectionObj(xcb_timestamp_t timestamp)
 	: timestamp(timestamp)
@@ -104,6 +108,11 @@ void window_handlerObj::selection_clear_event(IN_THREAD_ONLY,
 					      xcb_atom_t selection_atom,
 					      xcb_timestamp_t timestamp)
 {
+	LOG_FUNC_SCOPE(selection_log);
+
+	LOG_DEBUG("Selection clear: "
+		  << IN_THREAD->info->get_atom_name(selection_atom));
+
 	auto iter=selections(IN_THREAD).find(selection_atom);
 
 	if (iter == selections(IN_THREAD).end())
@@ -124,6 +133,11 @@ void window_handlerObj::selection_announce(IN_THREAD_ONLY,
 					   xcb_atom_t selection_atom,
 					   const current_selection &selection)
 {
+	LOG_FUNC_SCOPE(selection_log);
+
+	LOG_DEBUG("Selection announce: "
+		  << IN_THREAD->info->get_atom_name(selection_atom));
+
 	current_selectionptr old_selection;
 
 	auto iter=selections(IN_THREAD).find(selection_atom);
@@ -148,6 +162,11 @@ void window_handlerObj::selection_announce(IN_THREAD_ONLY,
 void window_handlerObj::selection_discard(IN_THREAD_ONLY,
 					  xcb_atom_t selection_atom)
 {
+	LOG_FUNC_SCOPE(selection_log);
+
+	LOG_DEBUG("Selection discard: "
+		  << IN_THREAD->info->get_atom_name(selection_atom));
+
 	auto iter=selections(IN_THREAD).find(selection_atom);
 
 	if (iter==selections(IN_THREAD).end())
