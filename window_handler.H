@@ -28,8 +28,12 @@ LIBCXXW_NAMESPACE_START
 //! constructor. This circular reference is removed from implObj's
 //! destructor.
 //!
-//! Inherits from unicode::iconvert::tou, which converts pasted text to unicode
-//! strings, and invokes pasted().
+//! Every instance of this class must be owned by a
+//! \ref windowObj "windowObj". \c window_handlerObj's constructor calls
+//! xcb_create_window() and the destructor calls xcb_destroy_window().
+//! The \ref windowObj "windowObj owner" is responsible for registering
+//! this window with the connection thread, in its constructor, and
+//! setting up the callbacks to deregister this window in the destructor.
 
 class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 					virtual public obj {

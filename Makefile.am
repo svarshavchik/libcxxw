@@ -380,6 +380,8 @@ libcxxw_la_SOURCES=\
 	theme_border_cache.C			    \
 	theme_border_cache.H			    \
 	theme_border_cachefwd.H			    \
+	windowobj.C				    \
+	windowobj.H				    \
 	window_handler.C			    \
 	window_handler.H			    \
 	xid_t.C					    \

@@ -11,6 +11,7 @@
 
 #include "element.H"
 #include "connection_threadfwd.H"
+#include "windowobj.H"
 #include <xcb/xcb.h>
 #include <functional>
 
@@ -18,16 +19,7 @@ LIBCXXW_NAMESPACE_START
 
 //! Generic window internal implemenation object.
 
-//! The constructor calls xcb_create_window(), and installs the
-//! handler in the connection thread.
-//!
-//! The destructor removes the handler from the connection thread, and
-//! installs the handler's xid in the connection thread's destroyed_xids,
-//! then installs a destructor callback on the handler object. When all
-//! references to the handler object go out of scope and it gets destroyed,
-//! xcb_destroy_window().
-
-class LIBCXX_HIDDEN generic_windowObj::implObj : virtual public obj {
+class LIBCXX_HIDDEN generic_windowObj::implObj : public windowObj {
 
  public:
 	//! Constructor
