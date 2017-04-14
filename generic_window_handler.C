@@ -542,6 +542,15 @@ void generic_windowObj::handlerObj
 }
 
 void generic_windowObj::handlerObj
+::focus_change_event(IN_THREAD_ONLY, bool flag)
+{
+	has_focus(IN_THREAD)=flag;
+	if (current_focus(IN_THREAD))
+		current_focus(IN_THREAD)->get_focusable_element()
+			.window_focus_change(IN_THREAD, flag);
+}
+
+void generic_windowObj::handlerObj
 ::report_pointer_xy(IN_THREAD_ONLY,
 		    const input_mask &mask,
 		    coord_t x,

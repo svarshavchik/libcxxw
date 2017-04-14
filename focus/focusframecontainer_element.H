@@ -38,6 +38,14 @@ void focusframecontainer_elementObj<element_impl>
 	focusframecontainerObj::implObj::keyboard_focus(IN_THREAD, event, ptr);
 }
 
+template<typename element_impl>
+void focusframecontainer_elementObj<element_impl>
+::window_focus_change(IN_THREAD_ONLY, bool flag)
+{
+	element_impl::window_focus_change(IN_THREAD, flag);
+	focusframecontainerObj::implObj::window_focus_change(IN_THREAD, flag);
+}
+
 
 
 LIBCXXW_NAMESPACE_END

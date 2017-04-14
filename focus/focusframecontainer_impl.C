@@ -19,6 +19,18 @@ void focusframecontainerObj::implObj
 		 focus_change event,
 		 const ref<elementObj::implObj> &ptr)
 {
+	update_focusframe(IN_THREAD);
+}
+
+void focusframecontainerObj::implObj
+::window_focus_change(IN_THREAD_ONLY, bool flag)
+{
+	update_focusframe(IN_THREAD);
+}
+
+void focusframecontainerObj::implObj
+::update_focusframe(IN_THREAD_ONLY)
+{
 	get_container_impl().invoke_layoutmanager
 		([&]
 		 (const ref<gridlayoutmanagerObj::implObj> &manager)

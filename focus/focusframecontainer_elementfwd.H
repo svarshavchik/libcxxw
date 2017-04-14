@@ -34,6 +34,7 @@ class LIBCXX_HIDDEN focusframecontainer_elementObj
 			    focus_change event,
 			    const ref<elementObj::implObj> &ptr) override;
 
+	void window_focus_change(IN_THREAD_ONLY, bool flag) override;
 };
 
 

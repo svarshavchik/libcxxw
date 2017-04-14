@@ -78,6 +78,9 @@ class LIBCXX_HIDDEN child_elementObj : public elementObj::implObj {
 	void set_background_color(IN_THREAD_ONLY,
 				  const background_color &) override;
 
+	//! Forward the call to the container.
+	void window_focus_change(IN_THREAD_ONLY, bool flag) override;
+
 	//! If child_element doesn't handle it, punt it back to the parent.
 	bool process_key_event(IN_THREAD_ONLY, const key_event &) override;
 

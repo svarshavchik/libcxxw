@@ -71,6 +71,9 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! Preferred height
 	dim_t preferred_height_thread_only;
 
+	//! Whether this window is currently receiving input focus
+
+	bool has_focus_thread_only=false;
  public:
 
 	//! What I want for my initial event mask.
@@ -87,7 +90,8 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 					  XCB_EVENT_MASK_POINTER_MOTION |
 					  XCB_EVENT_MASK_VISIBILITY_CHANGE |
 					  XCB_EVENT_MASK_PROPERTY_CHANGE |
-					  XCB_EVENT_MASK_STRUCTURE_NOTIFY);
+					  XCB_EVENT_MASK_STRUCTURE_NOTIFY |
+					  XCB_EVENT_MASK_FOCUS_CHANGE);
 	}
 
 	//! What my constructor needs
@@ -114,6 +118,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	THREAD_DATA_ONLY(preferred_dimensions_set);
 	THREAD_DATA_ONLY(preferred_width);
 	THREAD_DATA_ONLY(preferred_height);
+	THREAD_DATA_ONLY(has_focus);
 
 	////////////////////////////////////////////////////////////////////
 	//
@@ -179,6 +184,9 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! Leave event.
 	void leave_notify_event(IN_THREAD_ONLY,
 				const xcb_enter_notify_event_t *) override;
+
+	//! Focus change event
+	void focus_change_event(IN_THREAD_ONLY, bool) override;
 
  private:
 	//! Find an element for the reported pointer X and Y coordinates.

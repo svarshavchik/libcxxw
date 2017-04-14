@@ -205,6 +205,12 @@ void child_elementObj::prepare_draw_info(IN_THREAD_ONLY, draw_info &di)
 	di.background_y=di.absolute_location.y;
 }
 
+void child_elementObj::window_focus_change(IN_THREAD_ONLY, bool flag)
+{
+	elementObj::implObj::window_focus_change(IN_THREAD, flag);
+	container->get_element_impl().window_focus_change(IN_THREAD, flag);
+}
+
 bool child_elementObj::process_key_event(IN_THREAD_ONLY, const key_event &ke)
 {
 	return elementObj::implObj::process_key_event(IN_THREAD, ke)

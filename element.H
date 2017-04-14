@@ -783,11 +783,17 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	THREAD_DATA_ONLY(most_recent_keyboard_focus_change);
 	THREAD_DATA_ONLY(most_recent_pointer_focus_change);
 
+	//! The window lost or gained input focus
+
+	//! The default implementation does nothing.
+
+	virtual void window_focus_change(IN_THREAD_ONLY, bool flag);
+
 	//! Whether this display element currently has keyboard input focus.
 
 	//! Returns true if most_recent_keyboard_focus_change was one of:
 	//! focus_gained, child_gained, child_moved_to, gained_from_child,
-	//! lost_to_child.
+	//! lost_to_child; and the window has input focus.
 
 	bool current_keyboard_focus(IN_THREAD_ONLY);
 

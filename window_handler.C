@@ -140,6 +140,11 @@ void window_handlerObj::leave_notify_event(IN_THREAD_ONLY,
 {
 }
 
+void window_handlerObj::focus_change_event(IN_THREAD_ONLY, bool)
+{
+}
+
+
 LOG_FUNC_SCOPE_DECL(INSERT_LIBX_NAMESPACE::w::selection, selection_debug_log);
 
 void window_handlerObj

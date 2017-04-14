@@ -144,6 +144,20 @@ void connection_threadObj::run_event(IN_THREAD_ONLY,
 			recycle_xid(msg->window);
 		}
 		return;
+	case XCB_FOCUS_IN:
+		{
+			GET_MSG(focus_in_event);
+			FIND_HANDLER(event);
+			DISPATCH_HANDLER(focus_change_event, (IN_THREAD, true));
+		}
+		return;
+	case XCB_FOCUS_OUT:
+		{
+			GET_MSG(focus_out_event);
+			FIND_HANDLER(event);
+			DISPATCH_HANDLER(focus_change_event, (IN_THREAD, false));
+		}
+		return;
 	case XCB_CONFIGURE_NOTIFY:
 		{
 			GET_MSG(configure_notify_event);

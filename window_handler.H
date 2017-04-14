@@ -143,6 +143,9 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 	virtual void leave_notify_event(IN_THREAD_ONLY,
 					const xcb_enter_notify_event_t *);
 
+	//! Focus change on the window
+	virtual void focus_change_event(IN_THREAD_ONLY, bool);
+
 	//! Received a SelectionClear event
 	void selection_clear_event(IN_THREAD_ONLY,
 				   xcb_atom_t selection_atom,

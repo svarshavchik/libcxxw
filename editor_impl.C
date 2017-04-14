@@ -275,7 +275,12 @@ void editorObj::implObj::keyboard_focus(IN_THREAD_ONLY,
 {
 	superclass_t::keyboard_focus(IN_THREAD, event, ptr);
 
-	if (!is_enabled(IN_THREAD))
+	window_focus_change(IN_THREAD, false);
+}
+
+void editorObj::implObj::window_focus_change(IN_THREAD_ONLY, bool flag)
+{
+	if (!is_enabled(IN_THREAD) || !current_keyboard_focus(IN_THREAD))
 	{
 		unblink(IN_THREAD);
 		blinking=nullptr;

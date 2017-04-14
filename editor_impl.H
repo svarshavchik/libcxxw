@@ -130,6 +130,9 @@ class LIBCXX_HIDDEN editorObj::implObj
 			    focus_change event,
 			    const ref<elementObj::implObj> &ptr) override;
 
+	//! Starts or stop the cursor blink.
+	void window_focus_change(IN_THREAD_ONLY, bool flag) override;
+
 	//! Inherited from elementObj::implObj
 
 	//! Processes a key event.
