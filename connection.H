@@ -19,6 +19,7 @@
 #include "x/w/screenobj.H"
 
 #include <x/mpobj.H>
+#include <x/threads/run.H>
 #include <xcb/xcb.h>
 #include <xcb/render.h>
 
@@ -54,7 +55,9 @@ class LIBCXX_HIDDEN connectionObj::implObj : virtual public obj {
 
 	const struct xcb_setup_t setup;
 
-	//! The connection's thread.
+	//! A wrapper for the connection thread.
+
+	//! The constructor starts it. The destructor stop()s it.
 
 	class connection_wrapper : public connection_thread {
 	public:
@@ -64,8 +67,17 @@ class LIBCXX_HIDDEN connectionObj::implObj : virtual public obj {
 
 		using connection_thread::operator->;
 		using connection_thread::operator*;
+
+		//! The running connection thread info.
+		const runthreadbase running_thread;
 	};
+
+	//! The connection's thread.
+
 	const connection_wrapper thread;
+
+	//! Returns true if the invoking thread is the connection thread.
+	bool is_connection_thread() const;
 
 	//! Server configuration - screens
 

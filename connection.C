@@ -197,15 +197,20 @@ static inline void update_themes(const std::vector<ref<screenObj::implObj>> &s,
 
 connectionObj::implObj::connection_wrapper
 ::connection_wrapper(const connection_thread &thread)
-	: connection_thread(thread)
+	: connection_thread(thread),
+	  running_thread(start_threadmsgdispatcher(thread))
 {
-	start_threadmsgdispatcher(thread);
 }
 
 connectionObj::implObj::connection_wrapper
 ::~connection_wrapper()
 {
 	(*this)->stop();
+}
+
+bool connectionObj::implObj::is_connection_thread() const
+{
+	return thread.running_thread->get_id() == std::this_thread::get_id();
 }
 
 connectionObj::implObj::implObj(const connection_info &info,
