@@ -90,33 +90,31 @@ void window_handlerObj
 	LOG_DEBUG("New Property Value: "
 		  << IN_THREAD->info->get_atom_name(msg->atom));
 
-	// If an INCR conversion is not in progress, call begin_converted_data()
-
-	bool ignore_conversion=true;
+	bool do_conversion=false;
 
 	LOG_DEBUG("Property conversion started");
 
 	try {
 
-		ignore_conversion=!begin_converted_data(IN_THREAD, msg->atom,
-							msg->time);
+		do_conversion=begin_converted_data(IN_THREAD, msg->atom,
+						   msg->time);
 	} CATCH_EXCEPTIONS;
 
-	if (ignore_conversion)
+	if (!do_conversion)
+	{
 		LOG_TRACE("Ignoring conversion");
+		return;
+	}
 
 	IN_THREAD->info->get_entire_property_with
 		(id(), msg->atom,
-		 XCB_GET_PROPERTY_TYPE_ANY, false,
+		 XCB_GET_PROPERTY_TYPE_ANY, true,
 		 [&]
 		 (xcb_atom_t type,
 		  uint8_t format,
 		  void *data,
 		  size_t data_size)
 		 {
-			 if (ignore_conversion)
-				 return;
-
 			 LOG_TRACE("Property: size=" << data_size);
 
 			 if (type == IN_THREAD->info->atoms_info.incr)
@@ -154,14 +152,9 @@ void window_handlerObj
 
 	LOG_DEBUG("Property conversion complete");
 
-	if (!ignore_conversion)
-	{
-		try {
-			end_converted_data(IN_THREAD, msg->atom, msg->time);
-		} CATCH_EXCEPTIONS;
-
-		xcb_delete_property(IN_THREAD->info->conn, id(), msg->atom);
-	}
+	try {
+		end_converted_data(IN_THREAD, msg->atom, msg->time);
+	} CATCH_EXCEPTIONS;
 }
 
 void window_handlerObj
