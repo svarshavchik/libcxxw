@@ -95,6 +95,7 @@ void connection_threadObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin)
 
 	stop_received=false;
 	stopping_politely=false;
+	disconnected_flag_thread_only=false;
 
 	do
 	{
@@ -134,8 +135,21 @@ void connection_threadObj::allow_events(IN_THREAD_ONLY)
 }
 
 void connection_threadObj
-::destroy_window_handler(IN_THREAD_ONLY,
+::install_window_handler(IN_THREAD_ONLY,
 			 const ref<window_handlerObj> &handler)
+{
+	IN_THREAD->window_handlers(IN_THREAD)
+		->insert({handler->id(), handler});
+
+	if (disconnected_flag_thread_only) // Already disconnected
+		try {
+			handler->disconnected(IN_THREAD);
+		} CATCH_EXCEPTIONS;
+}
+
+void connection_threadObj
+::uninstall_window_handler(IN_THREAD_ONLY,
+			   const ref<window_handlerObj> &handler)
 {
 	auto window_id=handler->id();
 

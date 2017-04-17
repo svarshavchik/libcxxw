@@ -84,6 +84,12 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 
 	~window_handlerObj();
 
+	//! Unexpected disconnection from the server.
+
+	//! The default implementation does nothing.
+
+	virtual void disconnected(IN_THREAD_ONLY);
+
 	//! Release this handler's grabs, if there are any.
 
 	void release_grabs(IN_THREAD_ONLY);

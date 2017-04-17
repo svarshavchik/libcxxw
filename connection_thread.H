@@ -225,6 +225,9 @@ class LIBCXX_HIDDEN connection_threadObj
 
 	std::function<void ()> disconnect_callback_thread_only;
 
+	//! Flag that gets set upon a disconnect.
+	bool disconnected_flag_thread_only;
+
 	//! Event processing
 	void recycle_xid(uint32_t xid);
 
@@ -337,16 +340,26 @@ class LIBCXX_HIDDEN connection_threadObj
 
 	batch_queue get_batch_queue();
 
-	//! Destroy a window handler.
+	//! Install a window handler
 
-	//! This is scheduled for execution from generic_windowObj::implObj's
+	//! This gets scheduled for execution from generic_windowObj::implObj's
+	//! constructor.
+
+	//! The given handler gets added to window_handlers.
+
+	void install_window_handler(IN_THREAD_ONLY,
+				    const ref<window_handlerObj> &handler);
+
+	//! Uninstall a window handler.
+
+	//! This gets scheduled for execution from generic_windowObj::implObj's
 	//! destructor.
 	//!
 	//! The given handler is removed from window_handlers, and its xid_obj
 	//! is moved into destroyed_xids, pending receipt of a destroy notify.
 
-	void destroy_window_handler(IN_THREAD_ONLY,
-				    const ref<window_handlerObj> &handler);
+	void uninstall_window_handler(IN_THREAD_ONLY,
+				      const ref<window_handlerObj> &handler);
 
  private:
 	//! Whether a MOTION_NOTIFY_EVENT has been buffered;

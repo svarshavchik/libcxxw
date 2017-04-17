@@ -23,8 +23,7 @@ windowObj::windowObj(const ref<window_handlerObj> &handler)
 		 [handler]
 		 (IN_THREAD_ONLY)
 		 {
-			 IN_THREAD->window_handlers(IN_THREAD)
-				 ->insert({handler->id(), handler});
+			 IN_THREAD->install_window_handler(IN_THREAD, handler);
 		 });
 }
 
@@ -42,7 +41,7 @@ windowObj::~windowObj()
 		 [handler=this->handler]
 		 (IN_THREAD_ONLY)
 		 {
-			 IN_THREAD->destroy_window_handler(IN_THREAD, handler);
+			 IN_THREAD->uninstall_window_handler(IN_THREAD, handler);
 		 });
 
 	// Attach a destructor callback to the handler object.

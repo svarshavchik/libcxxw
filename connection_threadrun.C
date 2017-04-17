@@ -7,6 +7,7 @@
 #include "connection_thread.H"
 #include "returned_pointer.H"
 #include "catch_exceptions.H"
+#include "window_handler.H"
 #include "draw_info_cache.H"
 #include <x/sysexception.H>
 #include <x/functionalrefptr.H>
@@ -112,9 +113,15 @@ void connection_threadObj
 			LOG_FATAL("Connection to the X server has a fatal error");
 			npoll=1;
 			topoll[1].revents=0;
+			disconnected_flag_thread_only=true;
 			try {
 				disconnect_callback_thread_only();
 			} CATCH_EXCEPTIONS;
+
+			for (const auto &handler:*window_handlers_thread_only)
+				try {
+					handler.second->disconnected(IN_THREAD);
+				} CATCH_EXCEPTIONS;
 		}
 
 		if (npoll == 2)

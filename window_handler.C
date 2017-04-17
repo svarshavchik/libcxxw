@@ -54,6 +54,10 @@ window_handlerObj::~window_handlerObj()
 	xcb_destroy_window(conn()->conn, id());
 }
 
+void window_handlerObj::disconnected(IN_THREAD_ONLY)
+{
+}
+
 void window_handlerObj::release_grabs(IN_THREAD_ONLY)
 {
 	auto timestamp=grabbed_timestamp(IN_THREAD);
