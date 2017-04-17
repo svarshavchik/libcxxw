@@ -7,13 +7,9 @@
 
 #include "connection_threadfwd.H"
 #include "connection_info.H"
+#include "xid_t_fwd.H"
 
-namespace LIBCXX_NAMESPACE {
-	namespace w {
-#if 0
-	}
-}
-#endif
+LIBCXXW_NAMESPACE_START
 
 // An allocated xid, from xcb_generate_id()
 //
@@ -50,8 +46,6 @@ public:
 
 	using new_xid::new_xid;
 };
-
-typedef ref<xidObj> xid;
 
 // Store an XID as a  separate object, xid_obj.
 //
@@ -109,11 +103,6 @@ template<typename type> class LIBCXX_HIDDEN xid_t
 #define xid_t_included 1
 #include "xid_t_connection_thread.H"
 
-#if 0
-{
-	{
-#endif
-	}
-}
+LIBCXXW_NAMESPACE_END
 
 #endif

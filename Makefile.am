@@ -371,6 +371,8 @@ libcxxw_la_SOURCES=\
 	selection/incremental_selection_updates.C   \
 	selection/incremental_selection_updates.H   \
 	selection/convert_selection.C		    \
+	service_window_handler.C		    \
+	service_window_handler.H		    \
 	straight_border.C			    \
 	straight_border.H			    \
 	straight_borderfwd.H			    \
@@ -386,10 +388,28 @@ libcxxw_la_SOURCES=\
 	window_handler.H			    \
 	xim/ximencoding.C			    \
 	xim/ximencoding.H			    \
+	xim/ximrequest.C			    \
+	xim/ximrequest.H			    \
+	xim/ximrequestfwd.H			    \
+	xim/ximclient.C				    \
+	xim/ximclient.H				    \
+	xim/ximclientfwd.H			    \
+	xim/ximclientobj.H			    \
+	xim/ximserver.C				    \
+	xim/ximserver.H				    \
+	xim/ximserverfwd.H			    \
+	xim/ximxtransport.C		  	    \
+	xim/ximxtransport.H			    \
+	xim/ximxtransportfwd.H			    \
+	xim/ximxtransport_impl.C		    \
+	xim/ximxtransport_impl.H		    \
 	xid_t.C					    \
 	xid_t.H					    \
 	xid_t_connection_thread.H		    \
+	xid_t_fwd.H				    \
         #
+
+XIM_AUTOGEN=xim/ximclient.inc.C xim/ximclient2.inc.C xim/ximclient.inc.H
 
 TESTLINKTYPE=$(if $(STATIC),-static $(STATICLINKFLAGS))
 
@@ -401,6 +421,7 @@ $(call OPTIONS_GEN,cxxwoptions.H,cxxwoptions.xml)
 
 EXTRA_DIST = config.rpath m4/ChangeLog COPYING \
 	pic_constants.xml gc_constants.xml constants.xsl \
+	xim/xim.xml xim/xim.xsl \
 	packaging/fedora/libcxxw.spec \
         examples/configure.ac \
 	examples/Makefile.am \
@@ -483,9 +504,10 @@ testmainwindow_LDADD=libcxxw.la -lcxx
 testmainwindow_LDFLAGS=-static $(STATICLINKFLAGS)
 
 BUILT_SOURCES=includes/x/w/constants_inc.H \
+	$(XIM_AUTOGEN) \
 	gc_constants.inc.C pic_constants.inc.C
 
-CLEANFILES = $(shell cd $(srcdir) && echo *.inc.[CH])
+CLEANFILES = $(shell cd $(srcdir) && echo *.inc.[CH]) $(XIM_AUTOGEN)
 
 includes/x/w/constants_inc.H: genconstants
 	./genconstants >$@.tmp
@@ -498,6 +520,18 @@ gc_constants.inc.C: gc_constants.xml constants.xsl
 pic_constants.inc.C: pic_constants.xml constants.xsl
 	xsltproc $(srcdir)/constants.xsl $(srcdir)/pic_constants.xml >pic_constants.inc.C.tmp
 	mv -f pic_constants.inc.C.tmp pic_constants.inc.C
+
+xim/ximclient.inc.H: xim/xim.xml xim/xim.xsl
+	xsltproc --stringparam mode request-prototypes $(srcdir)/xim/xim.xsl $(srcdir)/xim/xim.xml >xim/ximclient.inc.H.tmp
+	mv -f xim/ximclient.inc.H.tmp xim/ximclient.inc.H
+
+xim/ximclient.inc.C: xim/xim.xml xim/xim.xsl
+	xsltproc --stringparam mode request $(srcdir)/xim/xim.xsl $(srcdir)/xim/xim.xml >xim/ximclient.inc.C.tmp
+	mv -f xim/ximclient.inc.C.tmp xim/ximclient.inc.C
+
+xim/ximclient2.inc.C: xim/xim.xml xim/xim.xsl
+	xsltproc --stringparam mode received-switch $(srcdir)/xim/xim.xsl $(srcdir)/xim/xim.xml >xim/ximclient2.inc.C.tmp
+	mv -f xim/ximclient2.inc.C.tmp xim/ximclient2.inc.C
 
 genconstants_SOURCES=genconstants.C
 

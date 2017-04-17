@@ -9,6 +9,9 @@
 #include "x/w/types.H"
 #include "x/w/rectangle.H"
 
+#include "xim/ximxtransportfwd.H"
+#include "xim/ximclientfwd.H"
+
 #include "element.H"
 #include "connection_threadfwd.H"
 #include "windowobj.H"
@@ -35,7 +38,14 @@ class LIBCXX_HIDDEN generic_windowObj::implObj : public windowObj {
 	//! thread's window_handler map.
 	~implObj();
 
+	//! The window handler
 	const ref<handlerObj> handler;
+
+	//! The X Input Method transport
+	const ximxtransport xim;
+
+	//! The X Input Method client for the window.
+	const ximclient xim_client;
 
 	//! Return my connection thread
 	connection_thread thread();

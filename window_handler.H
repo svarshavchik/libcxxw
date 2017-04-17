@@ -11,6 +11,7 @@
 #include "x/w/rectangle.H"
 #include "x/w/screenfwd.H"
 #include "selection/current_selectionfwd.H"
+#include "xim/ximclientfwd.H"
 #include <x/logger.H>
 #include <xcb/xcb.h>
 #include <unordered_map>
@@ -283,15 +284,37 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 	//! never gets called, only end_converted_data().
 
 	virtual void end_converted_data(IN_THREAD_ONLY,
-					xcb_atom_t type,
+					xcb_atom_t clipboard,
 					xcb_timestamp_t timestamp);
 
 	//! Someone pasted something to us?
 
-	//! Invoked begin_converted_data(). If it returns true than calls
-	//! to
+	//! This default implementation results in calls to
+	//! begin_converted_data(), converted_data()/converting_incrementally()
+	//! and end_converted_data().
+
 	void property_notify_event(IN_THREAD_ONLY,
 				   const xcb_property_notify_event_t *msg);
+
+
+
+	///////////////////////////////////////////////////////////////////
+
+	//! A pointer to this window's X Input Method client.
+
+	ximclientptr ximclient_ptr;
+
+	//! Perform a XIM client function safely.
+
+	template<typename lambda>
+		void with_xim_client(lambda &&l)
+	{
+		auto copy=ximclient_ptr; // Makes a copy of the ptr.
+
+		if (copy) // The client has been installed.
+			lambda(copy);
+	}
+
 };
 
 LIBCXXW_NAMESPACE_END

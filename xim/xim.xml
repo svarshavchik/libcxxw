@@ -1,0 +1,1393 @@
+<!--
+    An XML-based descriptions of requests and reply packets in the
+    X input method protocol. Robo-generated code gets created from this
+    XML description by a stylesheet.
+-->
+
+<protocol>
+
+  <!-- STRING ELEMENT -->
+
+  <datatype>
+    <name>STRING</name>
+    <parameter>
+      <type>std::string</type>
+      <class />
+      <name>arg</name>
+    </parameter>
+    <element>
+      <type>CARD16</type>
+      <length>arg</length>
+    </element>
+    <element>
+      <type>CARD8</type>
+      <list>arg</list>
+      <recvtype>uint8_t</recvtype>
+    </element>
+    <element>
+      <listpad>arg</listpad>
+      <extra>2</extra>
+    </element>
+  </datatype>
+
+  <!-- STR ELEMENT -->
+
+  <datatype>
+    <name>STR</name>
+    <parameter>
+      <type>std::string</type>
+      <class />
+      <name>arg</name>
+    </parameter>
+    <element>
+      <type>CARD8</type>
+      <length>arg</length>
+    </element>
+    <element>
+      <type>CARD8</type>
+      <list>arg</list>
+      <recvtype>uint8_t</recvtype>
+    </element>
+  </datatype>
+
+  <!-- XIMATTR/XICATTR element -->
+
+  <datatype>
+    <name>ATTR</name>
+    <parameter>
+      <type>attr</type>
+      <class />
+      <name>a</name>
+    </parameter>
+
+    <element>
+      <type>CARD16</type>
+      <name>a.id</name>
+      <recvtype>uint16_t</recvtype>
+    </element>
+
+    <element>
+      <type>CARD16</type>
+      <name>a.type</name>
+      <recvtype>uint16_t</recvtype>
+    </element>
+
+    <element>
+      <type>STRING</type>
+      <name>a.name</name>
+      <recvtype>std::string</recvtype>
+    </element>
+  </datatype>
+
+  <!-- XIMATTRIBUTE/XICATTRIBUTE element -->
+
+  <datatype>
+    <name>ATTRVALUE</name>
+    <parameter>
+      <type>attrvalue</type>
+      <class />
+      <name>a</name>
+    </parameter>
+
+    <element>
+      <type>CARD16</type>
+      <name>a.id</name>
+      <recvtype>uint16_t</recvtype>
+    </element>
+
+    <element>
+      <type>ATTRVALUE_buffer</type>
+      <name>a.value</name>
+    </element>
+  </datatype>
+
+  <datatype>
+    <name>ATTRVALUE_buffer</name>
+    <parameter>
+      <type>std::vector&lt;uint8_t&gt;</type>
+      <name>buffer</name>
+      <class />
+    </parameter>
+
+    <element>
+      <type>CARD16</type>
+      <length>buffer</length>
+      <recvtype>uint16_t</recvtype>
+    </element>
+
+    <element>
+      <type>CARD8</type>
+      <list>buffer</list>
+      <recvtype>uint8_t</recvtype>
+    </element>
+
+    <element>
+      <listpad>buffer</listpad>
+      <extra>0</extra>
+    </element>
+  </datatype>
+
+  <!-- XIMStyles attribute -->
+
+  <datatype>
+    <name>XIMStyles</name>
+
+    <parameter>
+      <type>std::vector&lt;uint32_t&gt;</type>
+      <name>styles</name>
+      <class />
+    </parameter>
+
+    <unused>
+      <type>CARD16</type>
+      <name>unused</name>
+    </unused>
+
+    <element>
+      <type>CARD16</type>
+      <length>styles</length>
+      <recvtype>uint16_t</recvtype>
+    </element>
+
+    <element>
+      <type>CARD16</type>
+      <constant>0</constant>
+      <name>unused</name>
+    </element>
+
+    <element>
+      <type>CARD32</type>
+      <list>styles</list>
+      <recvtype>uint32_t</recvtype>
+    </element>
+  </datatype>
+
+  <!-- XIMTRIGGERKEY -->
+
+  <datatype>
+    <name>TRIGGERKEY</name>
+    <parameter>
+      <name>k</name>
+      <class />
+      <type>triggerkey</type>
+    </parameter>
+    <element>
+      <type>CARD32</type>
+      <name>k.keysym</name>
+      <recvtype>uint32_t</recvtype>
+    </element>
+    <element>
+      <type>CARD32</type>
+      <name>k.modifier</name>
+      <recvtype>uint32_t</recvtype>
+    </element>
+    <element>
+      <type>CARD32</type>
+      <name>k.mask</name>
+      <recvtype>uint32_t</recvtype>
+    </element>
+  </datatype>
+
+  <datatype>
+    <name>key_press_release_event</name>
+    <parameter>
+      <name>e</name>
+      <type>xcb_key_press_event_t</type>
+      <class />
+    </parameter>
+
+    <unused>
+      <name>pad0</name>
+      <type>uint8_t</type>
+    </unused>
+
+    <element>
+      <name>e.response_type</name>
+      <type>CARD8</type>
+    </element>
+
+    <element>
+      <name>e.detail</name>
+      <type>CARD8</type>
+    </element>
+
+    <element>
+      <name>e.sequence</name>
+      <type>CARD16</type>
+    </element>
+
+    <element>
+      <name>e.time</name>
+      <type>CARD32</type>
+    </element>
+
+    <element>
+      <name>e.root</name>
+      <type>CARD32</type>
+    </element>
+
+    <element>
+      <name>e.event</name>
+      <type>CARD32</type>
+    </element>
+
+    <element>
+      <name>e.child</name>
+      <type>CARD32</type>
+    </element>
+
+    <element>
+      <name>e.root_x</name>
+      <type>INT16</type>
+    </element>
+
+    <element>
+      <name>e.root_y</name>
+      <type>INT16</type>
+    </element>
+
+    <element>
+      <name>e.event_x</name>
+      <type>INT16</type>
+    </element>
+
+    <element>
+      <name>e.event_y</name>
+      <type>INT16</type>
+    </element>
+
+    <element>
+      <name>e.state</name>
+      <type>CARD16</type>
+    </element>
+
+    <element>
+      <name>e.same_screen</name>
+      <type>CARD8</type>
+    </element>
+
+    <element>
+      <name>pad0</name>
+      <constant>0</constant>
+      <type>CARD8</type>
+    </element>
+  </datatype>
+
+  <!-- CONNECT request -->
+
+  <request>
+    <name>xim_connect</name>
+    <major>1</major>
+    <parameter>
+      <type>uint16_t</type>
+      <name>major</name>
+    </parameter>
+    <parameter>
+      <type>uint16_t</type>
+      <name>minor</name>
+    </parameter>
+    <parameter>
+      <type>std::vector&lt;std::string&gt;</type>
+      <class />
+      <name>auth_protocols</name>
+    </parameter>
+
+    <element>
+      <type>CARD8</type>
+      <constant>0x42</constant>
+    </element>
+
+    <element>
+      <type>CARD8</type>
+      <constant>0</constant>
+    </element>
+
+    <element>
+      <type>CARD16</type>
+      <name>major</name>
+    </element>
+
+    <element>
+      <type>CARD16</type>
+      <name>minor</name>
+    </element>
+
+    <element>
+      <type>CARD16</type>
+      <length>auth_protocols</length>
+    </element>
+
+    <element>
+      <type>STRING</type>
+      <list>auth_protocols</list>
+    </element>
+  </request>
+
+  <!-- CONNECT_REPLY response -->
+
+  <reply>
+    <name>xim_connect_reply</name>
+    <major>2</major>
+    <parameter>
+      <type>uint16_t</type>
+      <name>major</name>
+    </parameter>
+    <parameter>
+      <type>uint16_t</type>
+      <name>minor</name>
+    </parameter>
+
+    <element>
+      <type>CARD16</type>
+      <name>major</name>
+    </element>
+    <element>
+      <type>CARD16</type>
+      <name>minor</name>
+    </element>
+  </reply>
+
+  <!-- DISCONNECT request -->
+
+  <request>
+    <name>xim_disconnect</name>
+    <major>3</major>
+  </request>
+
+  <!-- DISCONNECT reply -->
+
+  <reply>
+    <name>xim_disconnect_reply</name>
+    <major>4</major>
+  </reply>
+
+  <!-- OPEN request -->
+
+  <request>
+    <name>xim_open</name>
+    <major>30</major>
+    <parameter>
+      <type>std::string</type>
+      <class />
+      <name>locale</name>
+    </parameter>
+
+    <element>
+      <type>STR</type>
+      <name>locale</name>
+    </element>
+
+    <element>
+      <listpad>locale</listpad>
+      <extra>1</extra>
+    </element>
+  </request>
+
+  <!-- OPEN reply -->
+
+  <reply>
+    <name>xim_open_reply</name>
+    <major>31</major>
+    <parameter>
+      <type>xim_im_t</type>
+      <name>input_method_id</name>
+    </parameter>
+
+    <parameter>
+      <type>std::vector&lt;attr&gt;</type>
+      <class />
+      <name>im_attributes</name>
+    </parameter>
+
+    <parameter>
+      <type>std::vector&lt;attr&gt;</type>
+      <class />
+      <name>ic_attributes</name>
+    </parameter>
+
+    <unused>
+      <type>CARD16</type>
+      <name>unused</name>
+    </unused>
+
+    <element>
+      <type>CARD16</type>
+      <name>input_method_id</name>
+    </element>
+
+    <element>
+      <type>CARD16</type>
+      <length>im_attributes</length>
+      <lengthinbytes />
+    </element>
+
+    <element>
+      <type>ATTR</type>
+      <list>im_attributes</list>
+      <lengthinbytes>CARD16</lengthinbytes>
+      <recvtype>attr</recvtype>
+    </element>
+
+    <element>
+      <type>CARD16</type>
+      <length>ic_attributes</length>
+      <lengthinbytes />
+    </element>
+
+    <element>
+      <type>CARD16</type>
+      <constant>0</constant>
+      <name>unused</name>
+    </element>
+
+    <element>
+      <type>ATTR</type>
+      <list>ic_attributes</list>
+      <lengthinbytes>CARD16</lengthinbytes>
+      <recvtype>attr</recvtype>
+    </element>
+  </reply>
+
+  <request>
+    <name>xim_close</name>
+    <major>32</major>
+    <parameter>
+      <type>xim_im_t</type>
+      <name>input_method_id</name>
+    </parameter>
+
+    <element>
+      <type>CARD16</type>
+      <name>input_method_id</name>
+    </element>
+  </request>
+
+  <!-- CLOSE reply -->
+  <reply>
+    <name>xim_close_reply</name>
+    <major>33</major>
+    <parameter>
+      <type>xim_im_t</type>
+      <name>input_method_id</name>
+    </parameter>
+
+    <element>
+      <type>CARD16</type>
+      <name>input_method_id</name>
+    </element>
+  </reply>
+
+  <!-- SET_EVENT_MASK -->
+
+  <reply>
+    <name>xim_set_event_mask</name>
+    <major>37</major>
+    <parameter>
+      <type>xim_im_t</type>
+      <name>input_method_id</name>
+    </parameter>
+    <parameter>
+      <type>xim_ic_t</type>
+      <name>input_context_id</name>
+    </parameter>
+    <parameter>
+      <type>uint32_t</type>
+      <name>forward_event_mask</name>
+    </parameter>
+    <parameter>
+      <type>uint32_t</type>
+      <name>synchronous_event_mask</name>
+    </parameter>
+
+    <element>
+      <type>CARD16</type>
+      <name>input_method_id</name>
+    </element>
+
+    <element>
+      <type>CARD16</type>
+      <name>input_context_id</name>
+    </element>
+
+    <element>
+      <type>CARD32</type>
+      <name>forward_event_mask</name>
+    </element>
+
+    <element>
+      <type>CARD32</type>
+      <name>synchronous_event_mask</name>
+    </element>
+  </reply>
+
+  <!-- REGISTER_TRIGGERKEYS -->
+
+  <reply>
+    <name>xim_register_triggerkeys</name>
+    <major>34</major>
+
+    <parameter>
+      <type>xim_im_t</type>
+      <name>input_method_id</name>
+    </parameter>
+
+    <parameter>
+      <type>std::vector&lt;triggerkey&gt;</type>
+      <name>on_keys</name>
+      <class />
+    </parameter>
+
+    <parameter>
+      <type>std::vector&lt;triggerkey&gt;</type>
+      <name>off_keys</name>
+      <class />
+    </parameter>
+
+    <unused>
+      <type>CARD16</type>
+      <name>unused</name>
+    </unused>
+
+    <element>
+      <type>CARD16</type>
+      <name>input_method_id</name>
+    </element>
+
+    <element>
+      <type>CARD16</type>
+      <constant>0</constant>
+      <name>unused</name>
+    </element>
+
+    <element>
+      <type>CARD32</type>
+      <length>off_keys</length>
+      <lengthinbytes />
+    </element>
+
+    <element>
+      <type>TRIGGERKEY</type>
+      <list>off_keys</list>
+      <lengthinbytes>CARD32</lengthinbytes>
+      <recvtype>triggerkey</recvtype>
+    </element>
+
+    <element>
+      <type>CARD32</type>
+      <length>on_keys</length>
+      <lengthinbytes />
+    </element>
+
+    <element>
+      <type>TRIGGERKEY</type>
+      <list>on_keys</list>
+      <lengthinbytes>CARD32</lengthinbytes>
+      <recvtype>triggerkey</recvtype>
+    </element>
+  </reply>
+
+  <!-- ENCODING_NEGOTIATION -->
+
+  <request>
+    <name>xim_encoding_negotiation</name>
+    <major>38</major>
+
+    <parameter>
+      <type>xim_im_t</type>
+      <name>input_method_id</name>
+    </parameter>
+
+    <parameter>
+      <type>std::vector&lt;std::string&gt;</type>
+      <class />
+      <name>encodings</name>
+    </parameter>
+
+    <parameter>
+      <type>std::vector&lt;std::string&gt;</type>
+      <class />
+      <name>detail</name>
+    </parameter>
+
+    <unused>
+      <type>CARD16</type>
+      <name>unused</name>
+    </unused>
+
+    <element>
+      <type>CARD16</type>
+      <name>input_method_id</name>
+    </element>
+
+    <element>
+      <type>CARD16</type>
+      <length>encodings</length>
+      <lengthinbytes />
+    </element>
+
+    <element>
+      <type>STR</type>
+      <list>encodings</list>
+      <lengthinbytes>CARD16</lengthinbytes>
+    </element>
+
+    <element>
+      <type>CARD16</type>
+      <length>detail</length>
+      <lengthinbytes />
+    </element>
+
+    <element>
+      <type>CARD16</type>
+      <constant>0</constant>
+      <name>unused</name>
+    </element>
+
+    <element>
+      <type>STRING</type>
+      <list>detail</list>
+      <lengthinbytes>CARD16</lengthinbytes>
+    </element>
+  </request>
+
+  <!-- ENCODING_NEGOTIATION_REPLY -->
+
+  <reply>
+    <name>xim_encoding_negotiation_reply</name>
+    <major>39</major>
+
+    <parameter>
+      <name>input_method_id</name>
+      <type>xim_im_t</type>
+    </parameter>
+
+    <parameter>
+      <name>category</name>
+      <type>uint16_t</type>
+    </parameter>
+
+    <parameter>
+      <name>index</name>
+      <type>int16_t</type>
+    </parameter>
+
+    <unused>
+      <type>CARD16</type>
+      <name>unused</name>
+    </unused>
+
+    <element>
+      <name>input_method_id</name>
+      <type>CARD16</type>
+    </element>
+
+    <element>
+      <name>category</name>
+      <type>CARD16</type>
+    </element>
+
+    <element>
+      <name>index</name>
+      <type>INT16</type>
+    </element>
+
+    <element>
+      <name>unused</name>
+      <type>CARD16</type>
+    </element>
+  </reply>
+
+  <!-- XIM_SYNC and XIM_SYNC_REPLY -->
+
+  <reply>
+    <name>xim_sync</name>
+    <major>61</major>
+
+    <parameter>
+      <name>input_method_id</name>
+      <type>xim_im_t</type>
+    </parameter>
+
+    <parameter>
+      <name>input_context_id</name>
+      <type>xim_ic_t</type>
+    </parameter>
+
+    <element>
+      <name>input_method_id</name>
+      <type>CARD16</type>
+    </element>
+
+    <element>
+      <name>input_context_id</name>
+      <type>CARD16</type>
+    </element>
+  </reply>
+
+  <request>
+    <name>xim_sync_reply</name>
+    <major>62</major>
+
+    <parameter>
+      <name>input_method_id</name>
+      <type>xim_im_t</type>
+    </parameter>
+
+    <parameter>
+      <name>input_context_id</name>
+      <type>xim_ic_t</type>
+    </parameter>
+
+    <element>
+      <name>input_method_id</name>
+      <type>CARD16</type>
+    </element>
+
+    <element>
+      <name>input_context_id</name>
+      <type>CARD16</type>
+    </element>
+  </request>
+
+  <reply>
+    <name>xim_sync_reply</name>
+    <major>62</major>
+
+    <parameter>
+      <name>input_method_id</name>
+      <type>xim_im_t</type>
+    </parameter>
+
+    <parameter>
+      <name>input_context_id</name>
+      <type>xim_ic_t</type>
+    </parameter>
+
+    <element>
+      <name>input_method_id</name>
+      <type>CARD16</type>
+    </element>
+
+    <element>
+      <name>input_context_id</name>
+      <type>CARD16</type>
+    </element>
+  </reply>
+
+  <request>
+    <name>xim_get_im_values</name>
+    <major>44</major>
+    <parameter>
+      <name>input_method_id</name>
+      <type>xim_im_t</type>
+    </parameter>
+
+    <parameter>
+      <name>im_attributes</name>
+      <type>std::vector&lt;uint16_t&gt;</type>
+      <class />
+    </parameter>
+
+    <element>
+      <type>CARD16</type>
+      <name>input_method_id</name>
+    </element>
+
+    <element>
+      <type>CARD16</type>
+      <length>im_attributes</length>
+      <lengthinbytes />
+    </element>
+
+    <element>
+      <type>CARD16</type>
+      <list>im_attributes</list>
+      <lengthinbytes>CARD16</lengthinbytes>
+    </element>
+
+    <element>
+      <listpad>im_attributes</listpad>
+      <extra>0</extra>
+    </element>
+  </request>
+
+  <reply>
+    <name>xim_get_im_values_reply</name>
+    <major>45</major>
+    <parameter>
+      <name>input_method_id</name>
+      <type>xim_im_t</type>
+    </parameter>
+
+    <parameter>
+      <name>im_attributes</name>
+      <type>std::vector&lt;attrvalue&gt;</type>
+      <class />
+    </parameter>
+
+    <element>
+      <type>CARD16</type>
+      <name>input_method_id</name>
+    </element>
+
+    <element>
+      <type>CARD16</type>
+      <length>im_attributes</length>
+      <lengthinbytes />
+    </element>
+
+    <element>
+      <type>ATTRVALUE</type>
+      <list>im_attributes</list>
+      <lengthinbytes>CARD16</lengthinbytes>
+      <recvtype>attrvalue</recvtype>
+    </element>
+  </reply>
+
+  <!-- XIM_CREATE_IC and XIM_CREATE_IC_REPLY -->
+
+  <request>
+    <name>xim_create_ic</name>
+    <major>50</major>
+
+    <parameter>
+      <name>input_method_id</name>
+      <type>xim_im_t</type>
+    </parameter>
+
+    <parameter>
+      <name>ic_attributes</name>
+      <type>std::vector&lt;attrvalue&gt;</type>
+      <class />
+    </parameter>
+
+    <element>
+      <type>CARD16</type>
+      <name>input_method_id</name>
+    </element>
+
+    <element>
+      <type>CARD16</type>
+      <length>ic_attributes</length>
+      <lengthinbytes />
+    </element>
+
+    <element>
+      <type>ATTRVALUE</type>
+      <list>ic_attributes</list>
+      <lengthinbytes>CARD16</lengthinbytes>
+      <recvtype>attrvalue</recvtype>
+    </element>
+  </request>
+
+  <reply>
+    <name>xim_create_ic_reply</name>
+    <major>51</major>
+
+    <parameter>
+      <name>input_method_id</name>
+      <type>xim_im_t</type>
+    </parameter>
+
+    <parameter>
+      <name>input_context_id</name>
+      <type>xim_ic_t</type>
+    </parameter>
+
+    <element>
+      <type>CARD16</type>
+      <name>input_method_id</name>
+    </element>
+
+    <element>
+      <type>CARD16</type>
+      <name>input_context_id</name>
+    </element>
+  </reply>
+
+  <!-- XIM_SET_IC_VALUES and XIM_SET_IC_VALUES_REPLY -->
+
+  <request>
+    <name>xim_set_ic_values</name>
+    <major>54</major>
+
+    <parameter>
+      <name>input_method_id</name>
+      <type>xim_im_t</type>
+    </parameter>
+
+    <parameter>
+      <name>input_context_id</name>
+      <type>xim_ic_t</type>
+    </parameter>
+
+    <parameter>
+      <name>attributes</name>
+      <type>std::vector&lt;attrvalue&gt;</type>
+      <class />
+    </parameter>
+
+    <element>
+      <type>CARD16</type>
+      <name>input_method_id</name>
+    </element>
+
+    <element>
+      <type>CARD16</type>
+      <name>input_context_id</name>
+    </element>
+
+    <element>
+      <type>CARD16</type>
+      <length>attributes</length>
+      <lengthinbytes />
+    </element>
+
+    <element>
+      <type>CARD16</type>
+      <name>0</name>
+    </element>
+
+    <element>
+      <type>ATTRVALUE</type>
+      <list>attributes</list>
+      <lengthinbytes>CARD16</lengthinbytes>
+      <recvtype>attrvalue</recvtype>
+    </element>
+  </request>
+
+  <reply>
+    <name>xim_set_ic_values_reply</name>
+    <major>55</major>
+    <parameter>
+      <type>xim_im_t</type>
+      <name>input_method_id</name>
+    </parameter>
+    <parameter>
+      <type>xim_ic_t</type>
+      <name>input_context_id</name>
+    </parameter>
+
+    <element>
+      <type>CARD16</type>
+      <name>input_method_id</name>
+    </element>
+
+    <element>
+      <type>CARD16</type>
+      <name>input_context_id</name>
+    </element>
+
+  </reply>
+
+  <!-- XIM_DESTROY_IC and XIM_DESTROY_IC_REPLY -->
+
+  <request>
+    <name>xim_destroy_ic</name>
+    <major>52</major>
+
+    <parameter>
+      <name>input_method_id</name>
+      <type>xim_im_t</type>
+    </parameter>
+
+    <parameter>
+      <name>input_context_id</name>
+      <type>xim_ic_t</type>
+    </parameter>
+
+    <element>
+      <type>CARD16</type>
+      <name>input_method_id</name>
+    </element>
+
+    <element>
+      <type>CARD16</type>
+      <name>input_context_id</name>
+    </element>
+  </request>
+
+  <reply>
+    <name>xim_destroy_ic_reply</name>
+    <major>53</major>
+
+    <parameter>
+      <name>input_method_id</name>
+      <type>xim_im_t</type>
+    </parameter>
+
+    <parameter>
+      <name>input_context_id</name>
+      <type>xim_ic_t</type>
+    </parameter>
+
+    <element>
+      <type>CARD16</type>
+      <name>input_method_id</name>
+    </element>
+
+    <element>
+      <type>CARD16</type>
+      <name>input_context_id</name>
+    </element>
+  </reply>
+
+  <request>
+    <name>xim_set_ic_focus</name>
+    <major>58</major>
+
+    <parameter>
+      <name>input_method_id</name>
+      <type>xim_im_t</type>
+    </parameter>
+
+    <parameter>
+      <name>input_context_id</name>
+      <type>xim_ic_t</type>
+    </parameter>
+
+    <element>
+      <type>CARD16</type>
+      <name>input_method_id</name>
+    </element>
+
+    <element>
+      <type>CARD16</type>
+      <name>input_context_id</name>
+    </element>
+  </request>
+
+  <request>
+    <name>xim_unset_ic_focus</name>
+    <major>59</major>
+
+    <parameter>
+      <name>input_method_id</name>
+      <type>xim_im_t</type>
+    </parameter>
+
+    <parameter>
+      <name>input_context_id</name>
+      <type>xim_ic_t</type>
+    </parameter>
+
+    <element>
+      <type>CARD16</type>
+      <name>input_method_id</name>
+    </element>
+
+    <element>
+      <type>CARD16</type>
+      <name>input_context_id</name>
+    </element>
+  </request>
+
+  <!-- XIM_FORWARD_EVENT of a keypress event -->
+
+  <request>
+    <name>xim_forward_keypress_event</name>
+    <major>60</major>
+
+    <parameter>
+      <name>input_method_id</name>
+      <type>xim_im_t</type>
+    </parameter>
+
+    <parameter>
+      <name>input_context_id</name>
+      <type>xim_ic_t</type>
+    </parameter>
+
+    <parameter>
+      <name>flag</name>
+      <type>uint16_t</type>
+    </parameter>
+
+    <parameter>
+      <name>sequencehi</name>
+      <type>uint16_t</type>
+    </parameter>
+
+    <parameter>
+      <name>key_press_release_event</name>
+      <type>xcb_key_press_event_t</type>
+      <class />
+    </parameter>
+
+    <element>
+      <type>CARD16</type>
+      <name>input_method_id</name>
+    </element>
+
+    <element>
+      <type>CARD16</type>
+      <name>input_context_id</name>
+    </element>
+
+    <element>
+      <type>CARD16</type>
+      <name>flag</name>
+    </element>
+
+    <element>
+      <type>CARD16</type>
+      <name>sequencehi</name>
+    </element>
+
+    <element>
+      <name>key_press_release_event</name>
+      <type>key_press_release_event</type>
+      <class />
+    </element>
+  </request>
+
+  <reply>
+    <name>xim_forwarded_event</name>
+    <major>60</major>
+
+    <parameter>
+      <name>input_method_id</name>
+      <type>xim_im_t</type>
+    </parameter>
+
+    <parameter>
+      <name>input_context_id</name>
+      <type>xim_ic_t</type>
+    </parameter>
+
+    <parameter>
+      <name>flag</name>
+      <type>uint16_t</type>
+    </parameter>
+
+    <parameter>
+      <name>sequencehi</name>
+      <type>uint16_t</type>
+    </parameter>
+
+    <parameter>
+      <name>eventbuf</name>
+      <type>eventbuf_t</type>
+      <class />
+    </parameter>
+
+    <element>
+      <type>CARD16</type>
+      <name>input_method_id</name>
+    </element>
+
+    <element>
+      <type>CARD16</type>
+      <name>input_context_id</name>
+    </element>
+
+    <element>
+      <type>CARD16</type>
+      <name>flag</name>
+    </element>
+
+    <element>
+      <type>CARD16</type>
+      <name>sequencehi</name>
+    </element>
+
+    <element>
+      <name>eventbuf</name>
+      <type>eventbuf_t</type>
+      <class />
+    </element>
+  </reply>
+
+  <!-- XIM_COMMIT -->
+
+  <reply>
+    <name>xim_commit</name>
+    <major>63</major>
+
+    <parameter>
+      <name>input_method_id</name>
+      <type>xim_im_t</type>
+    </parameter>
+
+    <parameter>
+      <name>input_context_id</name>
+      <type>xim_ic_t</type>
+    </parameter>
+
+    <parameter>
+      <name>flag</name>
+      <type>uint16_t</type>
+    </parameter>
+
+    <parameter>
+      <name>keysym</name>
+      <type>uint32_t</type>
+      <default>0</default>
+    </parameter>
+
+    <parameter>
+      <name>string</name>
+      <type>std::string</type>
+      <class />
+    </parameter>
+
+    <unused>
+      <type>CARD16</type>
+      <name>unused</name>
+    </unused>
+
+    <element>
+      <type>CARD16</type>
+      <name>input_method_id</name>
+    </element>
+
+    <element>
+      <type>CARD16</type>
+      <name>input_context_id</name>
+    </element>
+
+    <element>
+      <type>CARD16</type>
+      <name>flag</name>
+    </element>
+
+    <if test="(flag &amp; 6) == 4">
+      <element>
+	<type>CARD16</type>
+	<constant>0</constant>
+	<name>unused</name>
+      </element>
+
+      <element>
+	<type>CARD32</type>
+	<name>keysym</name>
+      </element>
+    </if>
+
+    <if test="(flag &amp; 6) == 2">
+      <element>
+	<type>CARD16</type>
+	<length>string</length>
+      </element>
+
+      <element>
+	<type>CARD8</type>
+	<list>string</list>
+	<recvtype>uint8_t</recvtype>
+      </element>
+
+      <element>
+	<listpad>string</listpad>
+	<extra>0</extra>
+      </element>
+    </if>
+
+    <if test="(flag &amp; 6) == 6">
+      <element>
+	<type>CARD16</type>
+	<constant>0</constant>
+	<name>unused</name>
+      </element>
+
+      <element>
+	<type>CARD32</type>
+	<name>keysym</name>
+      </element>
+
+      <element>
+	<type>CARD16</type>
+	<length>string</length>
+      </element>
+
+      <element>
+	<type>CARD8</type>
+	<list>string</list>
+	<recvtype>uint8_t</recvtype>
+      </element>
+
+      <element>
+	<listpad>string</listpad>
+	<extra>2</extra>
+      </element>
+    </if>
+  </reply>
+
+  <!-- ERROR -->
+
+  <reply>
+    <name>xim_error</name>
+    <major>20</major>
+    <parameter>
+      <type>xim_im_t</type>
+      <name>input_method_id</name>
+    </parameter>
+
+    <parameter>
+      <type>xim_ic_t</type>
+      <name>input_context_id</name>
+    </parameter>
+
+    <parameter>
+      <type>uint16_t</type>
+      <name>flag</name>
+    </parameter>
+
+    <parameter>
+      <type>uint16_t</type>
+      <name>error_code</name>
+    </parameter>
+
+    <parameter>
+      <type>uint16_t</type>
+      <name>error_type</name>
+    </parameter>
+
+    <parameter>
+      <type>std::string</type>
+      <class />
+      <name>error_detail</name>
+    </parameter>
+
+    <element>
+      <type>CARD16</type>
+      <name>input_method_id</name>
+    </element>
+
+    <element>
+      <type>CARD16</type>
+      <name>input_context_id</name>
+    </element>
+
+    <element>
+      <type>CARD16</type>
+      <name>flag</name>
+    </element>
+
+    <element>
+      <type>CARD16</type>
+      <name>error_code</name>
+    </element>
+
+    <element>
+      <type>CARD16</type>
+      <length>error_detail</length>
+    </element>
+
+    <element>
+      <type>CARD16</type>
+      <name>error_type</name>
+    </element>
+
+    <element>
+      <type>CARD8</type>
+      <list>error_detail</list>
+      <recvtype>uint8_t</recvtype>
+    </element>
+
+    <element>
+      <listpad>error_detail</listpad>
+      <extra>0</extra>
+    </element>
+  </reply>
+
+</protocol>

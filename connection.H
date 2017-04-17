@@ -15,6 +15,7 @@
 #include "current_border_implfwd.H"
 #include "fonts/cached_fontfwd.H"
 #include "fonts/fontcollectionfwd.H"
+#include "xim/ximxtransportfwd.H"
 #include "x/w/connection.H"
 #include "x/w/screenobj.H"
 
@@ -48,6 +49,14 @@ class LIBCXX_HIDDEN connectionObj::implObj : virtual public obj {
 	//! Keysyms
 
 	const keysyms keysyms_info_thread_only;
+
+	//! Container for the X Input Method server singleton object.
+
+	typedef mpobj<weakptr<ximxtransportptr>> xim_t;
+
+	//! X Input Method server returned by get_ximxtransport().
+
+	xim_t xim;
  public:
 	THREAD_DATA_ONLY(keysyms_info);
 
@@ -114,6 +123,15 @@ class LIBCXX_HIDDEN connectionObj::implObj : virtual public obj {
 
 	static std::string get_error(const xcb_generic_error_t *e);
 
+	//! Returns the X Input Method transport object for this connection.
+
+	//! The ximxtransport is a singleton. The first call to
+	//! get_ximxtransport() constructs it.
+	//!
+	//! The public conncetion object gets passed as a
+	//! parameter to get_ximxtransport().
+
+	ximxtransport get_ximxtransport(const connection &conn);
 };
 
 LIBCXXW_NAMESPACE_END

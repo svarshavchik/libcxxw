@@ -26,6 +26,11 @@ class LIBCXX_HIDDEN builtin_atoms {
 	xcb_atom_t targets;
 	xcb_atom_t incr;
 
+	xcb_atom_t xim_xconnect;
+	xcb_atom_t xim_protocol;
+	xcb_atom_t xim_moredata;
+	xcb_atom_t xim_clientXXX;
+
 	builtin_atoms(xcb_connection_t *conn);
 };
 

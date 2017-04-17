@@ -13,6 +13,7 @@
 #include "fonts/cached_font.H"
 #include "fonts/fontcollection.H"
 #include "fonts/fontid_t_hash.H"
+#include "xim/ximxtransport.H"
 #include "x/w/pictformat.H"
 #include <x/exception.H>
 #include <xcb/xcb_renderutil.h>
@@ -279,6 +280,24 @@ std::string connectionObj::implObj::get_error(const xcb_generic_error_t *e)
 	  << ", major=" << (int)e->major_code
 	  << ", minor=" << (int)e->minor_code;
 	return o.str();
+}
+
+ximxtransport connectionObj::implObj::get_ximxtransport(const connection &conn)
+{
+	xim_t::lock lock{xim};
+
+	auto p=lock->getptr();
+
+	if (p)
+		return p;
+
+	//! Create an X Input Method client on screen 0.
+
+	auto new_xim=ximxtransport::create(screen::create(conn, 0));
+
+	*lock=new_xim;
+
+	return new_xim;
 }
 
 LIBCXXW_NAMESPACE_END

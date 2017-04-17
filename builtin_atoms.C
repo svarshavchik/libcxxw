@@ -31,6 +31,11 @@ builtin_atoms::builtin_atoms(xcb_connection_t *conn)
 		{"MULTIPLE", &builtin_atoms::multiple},
 		{"TARGETS", &builtin_atoms::targets},
 		{"INCR", &builtin_atoms::incr},
+
+		{"_XIM_XCONNECT", &builtin_atoms::xim_xconnect},
+		{"_XIM_PROTOCOL", &builtin_atoms::xim_protocol},
+		{"_XIM_MOREDATA", &builtin_atoms::xim_moredata},
+		{"_clientXXX", &builtin_atoms::xim_clientXXX},
 	};
 
 	std::vector<xcb_intern_atom_cookie_t> cookies;

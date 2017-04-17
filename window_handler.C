@@ -8,6 +8,7 @@
 #include "assert_or_throw.H"
 #include "selection/current_selection.H"
 #include "selection/incremental_selection_updates.H"
+#include "xim/ximclient.H"
 #include <x/vector.H>
 #include <X11/X.h>
 #include <X11/Xatom.h>
@@ -42,7 +43,9 @@ window_handlerObj
 			  (coord_t::value_type)params.initial_position.y,
 			  (dim_t::value_type)width,
 			  (dim_t::value_type)height,
-			  2, // Border width
+
+			  params.window_class == XCB_WINDOW_CLASS_INPUT_OUTPUT
+			  ? 2:0, // Border width
 			  params.window_class,
 			  params.visual,
 			  params.events_and_mask.mask(),

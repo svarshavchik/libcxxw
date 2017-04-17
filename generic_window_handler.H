@@ -412,7 +412,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	bool received_converted_data;
 
 	//! Converted data has been received.
-	void end_converted_data(IN_THREAD_ONLY, xcb_atom_t type,
+	void end_converted_data(IN_THREAD_ONLY, xcb_atom_t clipboard,
 				xcb_timestamp_t timestamp) override;
 
 	//! Incremental conversion in progress.
