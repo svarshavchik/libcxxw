@@ -384,6 +384,8 @@ libcxxw_la_SOURCES=\
 	windowobj.H				    \
 	window_handler.C			    \
 	window_handler.H			    \
+	xim/ximencoding.C			    \
+	xim/ximencoding.H			    \
 	xid_t.C					    \
 	xid_t.H					    \
 	xid_t_connection_thread.H		    \
