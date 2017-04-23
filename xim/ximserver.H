@@ -10,6 +10,7 @@
 #include "xim/ximserverfwd.H"
 #include "xim/ximrequestfwd.H"
 #include "xim/ximencoding.H"
+#include "x/w/types.H"
 #include <x/obj.H>
 #include <x/logger.H>
 #include <x/functional.H>
@@ -24,8 +25,19 @@
 
 LIBCXXW_NAMESPACE_START
 
-class ximserverBase : public ptrrefBase {
+class LIBCXX_HIDDEN ximserverBase : public ptrrefBase {
+};
 
+//! An XIM attribute value
+
+class LIBCXX_HIDDEN ximattrvalue {
+public:
+	uint16_t id;
+	std::vector<uint8_t> value;
+
+	ximattrvalue()=default;
+	ximattrvalue(uint16_t idArg,
+		     uint32_t valueArg);
 };
 
 // Talk to the X input method server.
@@ -86,17 +98,9 @@ public:
 		std::string name;
 	};
 
-	//! An XIM attribute value
+	//! Convenince typedef
 
-	class attrvalue {
-	public:
-		uint16_t id;
-		std::vector<uint8_t> value;
-
-		attrvalue()=default;
-		attrvalue(uint16_t idArg,
-			  uint32_t valueArg);
-	};
+	typedef ximattrvalue attrvalue;
 
 	//! An XIM trigger keypress.
 	class triggerkey {
@@ -133,6 +137,12 @@ public:
 
 	//! Bitmasks, #define XIM*
 	std::vector<uint32_t> input_styles_thread_only;
+
+	//! Default forward event mask for all clients
+	uint32_t default_forward_event_mask=0;
+
+	//! Default synchronous event mask for all clients
+	uint32_t default_synchronous_event_mask=0;
  public:
 
 	THREAD_DATA_ONLY(input_method_id);
@@ -194,6 +204,24 @@ public:
 			 const ximrequest &req,
 			 const send_sync_request_callback_t &callback);
 
+	//! A wrapper for add_request() for requests linked to a client.
+
+	//! Deals with a race condition of some request coming in after
+	//! a client has been destroyed. destroy_client() gets called from
+	//! xim_client_deregister() which gets invoked from generic_window's
+	//! implementation object's destructor. There might be some
+	//! events in flight at the same time that might result in request
+	//! for the client to come in after its destroy message is sent.
+	//!
+	//! input_context_id gets cleared to 0 when xim_destroy_ic is set.
+	//! the wrapper will check this, and if 0, it returns.
+	void add_client_request(IN_THREAD_ONLY,
+				const ximrequest &req,
+				const ximclient &client,
+				const std::function<bool (IN_THREAD_ONLY,
+							  const ximserver &,
+							  const ximclient &)>
+				&callback);
 	// Synchronous request queue
 	std::deque<std::pair<send_sync_request_callback_t, ximrequest>>
 		request_queue;
@@ -261,6 +289,12 @@ public:
  private:
 	class create_ic_requestObj;
 	class destroy_ic_requestObj;
+	class sync_requestObj;
+	class get_ic_valuesObj;
+
+	//! Diagnostic
+	void get_ic_values(IN_THREAD_ONLY, const ximclient &client,
+			   const std::vector<std::string> &values);
 
 	//! Process a reply to a synchronous message.
 
@@ -281,6 +315,21 @@ public:
 
 	void do_sync_reply_received(IN_THREAD_ONLY, const function<void
 				    (const ximrequest &)> &callback);
+
+ public:
+	//! Report a client's spotLocation
+	void set_spot_location(IN_THREAD_ONLY, const ximclient &client);
+
+	//! Report a client's focus state
+
+	void focus_state(IN_THREAD_ONLY, const ximclient &client, bool flag);
+
+	//! Forward a key press or release event.
+	bool forward_key_press_release_event(IN_THREAD_ONLY,
+					     const ximclient &client,
+					     const xcb_key_release_event_t &e,
+					     uint16_t sequencehi,
+					     uint32_t mask);
 };
 
 LIBCXXW_NAMESPACE_END

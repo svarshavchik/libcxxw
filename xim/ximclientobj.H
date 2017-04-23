@@ -9,6 +9,7 @@
 #include "xim/ximserverfwd.H"
 #include "xim/ximclientfwd.H"
 #include "window_handler.H"
+#include "x/w/rectangle.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -70,9 +71,65 @@ class LIBCXX_HIDDEN ximclientObj : virtual public obj {
 
 	//! For server's use only.
 	xim_ic_t input_context_id_thread_only=0;
+
+	//! Forward event mask
+	uint32_t forward_event_mask_thread_only=0;
+
+	//! Synchronous event mask
+	uint32_t synchronous_event_mask_thread_only=0;
+
  public:
 
 	THREAD_DATA_ONLY(input_context_id);
+	THREAD_DATA_ONLY(forward_event_mask);
+	THREAD_DATA_ONLY(synchronous_event_mask);
+
+ private:
+	//! Most recent cursor location that was reported to us.
+
+	rectangle reported_cursor_position_thread_only;
+
+	//! Most recent cursor location that was used to set the spotLocation.
+
+	rectangle sent_cursor_position_thread_only;
+
+ public:
+	THREAD_DATA_ONLY(reported_cursor_position);
+	THREAD_DATA_ONLY(sent_cursor_position);
+
+	//! Notify the XIM server of our input location.
+
+	//! Sets reported_cursor_position, if it changed, and schedules
+	//! a request to update the server.
+	void current_cursor_position(IN_THREAD_ONLY, const rectangle &);
+
+ private:
+
+	//! Whether we should have input focus now, for X Input Method entry.
+	bool reported_focus_thread_only=false;
+
+	//! Most recent focus status that was sent to the XIM server.
+	bool sent_focus_thread_only=false;
+ public:
+
+	THREAD_DATA_ONLY(reported_focus);
+	THREAD_DATA_ONLY(sent_focus);
+
+	//! Notify the XIM server whether or not we should have input focus.
+
+	void focus_state(IN_THREAD_ONLY, bool flag);
+
+	//! Forward key event to the XIM server.
+
+	bool forward_key_press_event(IN_THREAD_ONLY,
+				     const xcb_key_press_event_t &e,
+				     uint16_t sequencehi);
+
+	//! Forward key event to the XIM server.
+
+	bool forward_key_release_event(IN_THREAD_ONLY,
+				       const xcb_key_release_event_t &e,
+				       uint16_t sequencehi);
 };
 
 LIBCXXW_NAMESPACE_END

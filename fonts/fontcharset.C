@@ -186,9 +186,9 @@ void charsetObj::do_enumerate(const function<enumerate_callback_t> &callback)
 				if (map[i] & 1)
 				{
 					chars.push_back(j);
-					map[i] >>= 1;
 					++j;
 				}
+				map[i] >>= 1;
 			}
 		}
 

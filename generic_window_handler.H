@@ -259,11 +259,18 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	void grab(IN_THREAD_ONLY, const ref<elementObj::implObj> &e);
  private:
 
+	//! Forward key event to the X Input Method server.
+
+	//! If XIM not available, call handle_key_event().
+	void forward_key_event(IN_THREAD_ONLY,
+			       const xcb_key_release_event_t *event,
+			       uint16_t sequencehi,
+			       bool keypress);
+
 	//! Process a key press or release event.
-	void do_key_event(IN_THREAD_ONLY,
-			  const xcb_key_release_event_t *event,
-			  uint16_t sequencehi,
-			  bool keypress);
+	void handle_key_event(IN_THREAD_ONLY,
+			      const xcb_key_release_event_t *event,
+			      bool keypress) override;
 
 	//! Process a button press or release event.
 
@@ -446,10 +453,14 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 	int converted(const char32_t *ptr, size_t cnt) override;
 
+ public:
 	//! Pasted text into this window. Forward to pasted().
 
+	//! This is also called to commit an string from the XIM server.
+
 	void pasted_string(IN_THREAD_ONLY,
-			   const std::experimental::u32string_view &);
+			   const std::experimental::u32string_view &)
+		override;
 };
 
 LIBCXXW_NAMESPACE_END

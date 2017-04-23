@@ -15,6 +15,7 @@
 #include "element_screen.H"
 #include "background_color.H"
 #include "focus/focusable.H"
+#include "xim/ximclient.H"
 #include "x/w/key_event.H"
 #include "x/w/values_and_mask.H"
 #include <xcb/xcb_icccm.h>
@@ -312,7 +313,7 @@ void generic_windowObj::handlerObj
 
 	grabbed_timestamp(IN_THREAD)=event->time;
 
-	do_key_event(IN_THREAD, event, sequencehi, true);
+	forward_key_event(IN_THREAD, event, sequencehi, true);
 }
 
 void generic_windowObj::handlerObj
@@ -322,14 +323,43 @@ void generic_windowObj::handlerObj
 {
 	grab_locked(IN_THREAD)=false;
 	release_grabs(IN_THREAD); // Any previous grabs.
-	do_key_event(IN_THREAD, event, sequencehi, false);
+	forward_key_event(IN_THREAD, event, sequencehi, false);
 }
 
 void generic_windowObj::handlerObj
-::do_key_event(IN_THREAD_ONLY,
-	       const xcb_key_release_event_t *event,
-	       uint16_t sequencehi,
-	       bool keypress)
+::forward_key_event(IN_THREAD_ONLY,
+		    const xcb_key_release_event_t *event,
+		    uint16_t sequencehi,
+		    bool keypress)
+{
+	bool forwarded=false;
+
+	if (keyboard_focus(IN_THREAD) &&
+	    keyboard_focus(IN_THREAD)->get_focusable_element()
+	    .uses_input_method())
+	{
+		with_xim_client
+			([&]
+			 (const auto &client)
+			 {
+				 forwarded=keypress ?
+					 client->forward_key_press_event
+					 (IN_THREAD, *event, sequencehi)
+					 :
+					 client->forward_key_release_event
+					 (IN_THREAD, *event, sequencehi);
+			 });
+	}
+	if (forwarded)
+		return;
+
+	handle_key_event(IN_THREAD, event, keypress);
+}
+
+void generic_windowObj::handlerObj
+::handle_key_event(IN_THREAD_ONLY,
+		   const xcb_key_release_event_t *event,
+		   bool keypress)
 {
 	auto &keysyms=
 		get_screen()->get_connection()->impl->keysyms_info(IN_THREAD);
@@ -508,6 +538,14 @@ void generic_windowObj::handlerObj::unset_keyboard_focus(IN_THREAD_ONLY)
 				    &elementObj::implObj
 				    ::report_keyboard_focus);
 	}
+
+	// Notify the XIM server that we do not have input focus.
+
+	with_xim_client([&]
+			(const auto &client)
+			{
+				client->focus_state(IN_THREAD, false);
+			});
 }
 
 void generic_windowObj::handlerObj
@@ -517,9 +555,26 @@ void generic_windowObj::handlerObj
 
 	keyboard_focus(IN_THREAD)=element;
 
-	element->get_focusable_element()
-		.request_focus(IN_THREAD, old_focus,
-			       &elementObj::implObj::report_keyboard_focus);
+	auto &e=element->get_focusable_element();
+
+	e.request_focus(IN_THREAD, old_focus,
+			&elementObj::implObj::report_keyboard_focus);
+
+	// Update the XIM server.
+
+	// uses_input_method() gets translated to an indication to the XIM
+	// server whether we have the input focus or not. If the display
+	// element does not use the input method, the XIM server is informed
+	// that we do not have input focus. If the display element will use
+	// an input method, we notify the XIM server that we have input
+	// focus.
+
+	with_xim_client([&]
+			(const auto &client)
+			{
+				client->focus_state(IN_THREAD,
+						    e.uses_input_method());
+			});
 }
 
 void generic_windowObj::handlerObj

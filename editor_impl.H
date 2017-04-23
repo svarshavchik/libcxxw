@@ -147,13 +147,17 @@ class LIBCXX_HIDDEN editorObj::implObj
 	//! Processes a key event.
 	bool process_key_event(IN_THREAD_ONLY, const key_event &ke);
 
+	//! This display element uses XIM.
+
+	bool uses_input_method() override;
+
 	//! Button 1 moves the cursor, button2 pastes the primary clipboard.
 
 	bool process_button_event(IN_THREAD_ONLY,
 				  int button,
 				  bool press,
 				  xcb_timestamp_t timestamp,
-				  const input_mask &mask);
+				  const input_mask &mask) override;
 	//! Pointer motion event
 	void motion_event(IN_THREAD_ONLY, coord_t x, coord_t y,
 			  const input_mask &mask) override;
@@ -238,8 +242,19 @@ class LIBCXX_HIDDEN editorObj::implObj
 	void remove_secondary_selection(IN_THREAD_ONLY);
 
 	//! Text was pasted.
+
+	//! Calls insert(), then scroll_cursor_into_view().
+
 	bool pasted(IN_THREAD_ONLY,
 		    const std::experimental::u32string_view &str) override;
+
+ private:
+
+	//! Insert text at current position.
+
+	void insert(IN_THREAD_ONLY,
+		    const std::experimental::u32string_view &str);
+
 };
 
 LIBCXXW_NAMESPACE_END

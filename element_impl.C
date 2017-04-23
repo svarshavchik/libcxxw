@@ -709,6 +709,11 @@ bool elementObj::implObj::process_key_event(IN_THREAD_ONLY, const key_event &)
 	return false;
 }
 
+bool elementObj::implObj::uses_input_method()
+{
+	return false;
+}
+
 bool elementObj::implObj::process_button_event(IN_THREAD_ONLY,
 					       int button,
 					       bool press,

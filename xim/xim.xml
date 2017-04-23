@@ -774,6 +774,8 @@
     </element>
   </reply>
 
+  <!-- XIM_GET_IM_VALUES and XIM_GET_IM_VALUES_REPLY -->
+
   <request>
     <name>xim_get_im_values</name>
     <major>44</major>
@@ -843,6 +845,111 @@
       <recvtype>attrvalue</recvtype>
     </element>
   </reply>
+
+  <!-- XIM_GET_IC_VALUES and XIM_GET_IC_VALUES_REPLY
+
+  <request>
+    <name>xim_get_ic_values</name>
+    <major>56</major>
+
+    <parameter>
+      <name>input_method_id</name>
+      <type>xim_im_t</type>
+    </parameter>
+
+    <parameter>
+      <name>input_context_id</name>
+      <type>xim_ic_t</type>
+    </parameter>
+
+    <parameter>
+      <name>ic_attributes</name>
+      <type>std::vector&lt;uint16_t&gt;</type>
+      <class />
+    </parameter>
+
+    <element>
+      <type>CARD16</type>
+      <name>input_method_id</name>
+    </element>
+
+    <element>
+      <type>CARD16</type>
+      <name>input_context_id</name>
+    </element>
+
+    <element>
+      <type>CARD16</type>
+      <length>ic_attributes</length>
+      <lengthinbytes />
+    </element>
+
+    <element>
+      <type>CARD16</type>
+      <list>ic_attributes</list>
+      <lengthinbytes>CARD16</lengthinbytes>
+    </element>
+
+    <element>
+      <listpad>ic_attributes</listpad>
+      <extra>2</extra>
+    </element>
+  </request>
+
+  <reply>
+    <name>xim_get_ic_values_reply</name>
+    <major>57</major>
+    <parameter>
+      <name>input_method_id</name>
+      <type>xim_im_t</type>
+    </parameter>
+
+    <parameter>
+      <name>input_context_id</name>
+      <type>xim_ic_t</type>
+    </parameter>
+
+    <parameter>
+      <name>ic_attributes</name>
+      <type>std::vector&lt;attrvalue&gt;</type>
+      <class />
+    </parameter>
+
+    <unused>
+      <type>CARD16</type>
+      <name>unused</name>
+    </unused>
+
+    <element>
+      <type>CARD16</type>
+      <name>input_method_id</name>
+    </element>
+
+    <element>
+      <type>CARD16</type>
+      <name>input_context_id</name>
+    </element>
+
+    <element>
+      <type>CARD16</type>
+      <length>ic_attributes</length>
+      <lengthinbytes />
+    </element>
+
+    <element>
+      <type>CARD16</type>
+      <constant>0</constant>
+      <name>unused</name>
+    </element>
+
+    <element>
+      <type>ATTRVALUE</type>
+      <list>ic_attributes</list>
+      <lengthinbytes>CARD16</lengthinbytes>
+      <recvtype>attrvalue</recvtype>
+    </element>
+  </reply>
+  -->
 
   <!-- XIM_CREATE_IC and XIM_CREATE_IC_REPLY -->
 

@@ -114,6 +114,12 @@ void window_handlerObj::key_press_event(IN_THREAD_ONLY,
 {
 }
 
+void window_handlerObj::handle_key_event(IN_THREAD_ONLY,
+					 const xcb_key_release_event_t *event,
+					 bool keypress)
+{
+}
+
 void window_handlerObj::key_release_event(IN_THREAD_ONLY,
 					  const xcb_key_release_event_t *event,
 					  uint16_t sequencehi)
@@ -274,6 +280,12 @@ void window_handlerObj
 			    v->format,
 			    (v->data_end-v->data_begin)/(v->format/8),
 			    &*v->data_begin);
+}
+
+void window_handlerObj::
+pasted_string(IN_THREAD_ONLY,
+	      const std::experimental::u32string_view &)
+{
 }
 
 void window_handlerObj

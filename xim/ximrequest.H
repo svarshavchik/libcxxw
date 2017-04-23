@@ -55,6 +55,13 @@ class LIBCXX_HIDDEN ximrequestObj : virtual public obj {
 	virtual void xim_sync_reply(IN_THREAD_ONLY,
 				    const ximserver &server,
 				    uint16_t input_context_id);
+#if 0
+	virtual void xim_get_ic_values_reply(IN_THREAD_ONLY,
+					     const ximserver &server,
+					     uint16_t input_context_id,
+					     const std::vector<
+					     ximattrvalue> &ic_attributes);
+#endif
 };
 
 LIBCXXW_NAMESPACE_END

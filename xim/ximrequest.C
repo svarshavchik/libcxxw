@@ -49,10 +49,15 @@ void ximrequestObj::xim_sync_reply(IN_THREAD_ONLY,
 {
 	wrong_request_type("xim_sync_reply");
 }
-
 #if 0
+void ximrequestObj::xim_get_ic_values_reply(IN_THREAD_ONLY,
+					    const ximserver &server,
+					    uint16_t input_context_id,
+					    const std::vector<ximattrvalue>
+					    &ic_attributes)
 {
-	{
-#endif
-	}
+	wrong_request_type("xim_get_ic_values_reply");
 }
+#endif
+
+LIBCXXW_NAMESPACE_END

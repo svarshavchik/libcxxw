@@ -138,6 +138,14 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 	virtual void key_release_event(IN_THREAD_ONLY,
 				       const xcb_key_release_event_t *event,
 				       uint16_t sequencehi);
+
+	//! Process a key press or release event.
+
+	//! Invoked by XIM server when a forwarded key event is received.
+	virtual void handle_key_event(IN_THREAD_ONLY,
+				      const xcb_key_release_event_t *event,
+				      bool keypress);
+
 	//! Button press event
 	virtual void button_press_event(IN_THREAD_ONLY,
 					const xcb_button_press_event_t *event);
@@ -312,9 +320,14 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 		auto copy=ximclient_ptr; // Makes a copy of the ptr.
 
 		if (copy) // The client has been installed.
-			lambda(copy);
+			l(copy);
 	}
 
+	//! Paste a string into the window
+
+	//! Called by the XIM server.
+	virtual void pasted_string(IN_THREAD_ONLY,
+				   const std::experimental::u32string_view &);
 };
 
 LIBCXXW_NAMESPACE_END

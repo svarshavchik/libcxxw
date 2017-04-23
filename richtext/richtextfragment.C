@@ -1097,7 +1097,9 @@ void richtextfragmentObj::render(IN_THREAD_ONLY,
 			prev_char=str[range_end_char-1];
 
 			start_char=range_end_char;
-			meta_iter=next_iter;
+			if (meta_iter + 1 != meta.end() &&
+			    meta_iter[1].first <= start_char)
+				++meta_iter;
 		}
 	}
 

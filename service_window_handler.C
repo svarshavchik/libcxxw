@@ -196,7 +196,8 @@ bool service_window_handlerObj
 ::begin_converted_data(IN_THREAD_ONLY, xcb_atom_t type,
 		       xcb_timestamp_t timestamp)
 {
-	return type == attribute_atoms.at(current_attribute_checked);
+	return current_attribute_checked < attribute_atoms.size() &&
+		type == attribute_atoms.at(current_attribute_checked);
 }
 
 void service_window_handlerObj

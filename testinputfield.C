@@ -18,6 +18,7 @@
 #include "x/w/font_literals.H"
 #include "x/w/screen.H"
 #include "x/w/connection.H"
+#include "x/w/actionbutton.H"
 #include <string>
 #include <iostream>
 
@@ -61,6 +62,9 @@ void testactionbutton()
 						 0, 0,
 							 LIBCXX_NAMESPACE::w::rgb::maximum},
 						 "Hello world!"}, {30, 4});
+
+				 factory=layout->append_row();
+				 factory->create_special_actionbutton_with_label({"Ok"});
 			 });
 
 	main_window->set_window_title("Hello world!");

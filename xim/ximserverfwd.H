@@ -13,6 +13,7 @@ LIBCXXW_NAMESPACE_START
 
 class ximserverObj;
 class ximserverBase;
+class ximattrvalue;
 
 /*! XIM Input Method ID */
 

@@ -7,6 +7,7 @@
 #include "messages.H"
 #include <x/locale.H>
 #include <x/chrcasecmp.H>
+#include <x/sentry.H>
 #include <algorithm>
 #include <X11/Xlib.h>
 
@@ -32,6 +33,31 @@ void ximserverObj::stop(IN_THREAD_ONLY)
 		input_contexts.clear();
 	}
 }
+
+void ximserverObj
+::add_client_request(IN_THREAD_ONLY,
+		     const ximrequest &req,
+		     const ximclient &client,
+		     const std::function<bool (IN_THREAD_ONLY,
+					       const ximserver &,
+					       const ximclient &)>
+		     &callback)
+{
+	add_request(IN_THREAD, req,
+		    [=]
+		    (IN_THREAD_ONLY, const ximserver &server)
+		    {
+			    if (client->input_context_id(IN_THREAD) == 0)
+			    {
+				    LOG_DEBUG(req->request_type <<
+					      ": ignoring, client context has been destroyed.");
+				    return false;
+			    }
+
+			    return callback(IN_THREAD, server, client);
+		    });
+}
+
 
 // Queue up a synchronous request.
 
@@ -79,7 +105,7 @@ void ximserverObj::send_next_request(IN_THREAD_ONLY)
 			}
 		} CATCH_EXCEPTIONS;
 
-		LOG_DEBUG("Request discarded.");
+		LOG_DEBUG("Request discarded/unused.");
 		request_queue.pop_front();
 	}
 }
@@ -248,6 +274,57 @@ static inline void eventbuf_t_generate(uint8_t * &p,
 		*p++=a[i];
 }
 
+static void set_preedit_position(const auto &ic_attributes_by_name,
+				 const rectangle &pos,
+				 std::vector<ximattrvalue> &attrs)
+{
+	auto preedit_iter=ic_attributes_by_name.find("preeditattributes");
+	if (preedit_iter == ic_attributes_by_name.end())
+		return; // Shouldn't happen.
+
+	auto iter=ic_attributes_by_name.find("spotlocation");
+	if (iter == ic_attributes_by_name.end())
+		return;
+
+#if 0
+	auto iter2=ic_attributes_by_name.find("area");
+	if (iter2 == ic_attributes_by_name.end())
+		return;
+#endif
+
+	auto x=pos.x;
+	auto y=pos.y+pos.height;
+
+	ximattrvalue v;
+
+	v.id=preedit_iter->second.id;
+	v.value.resize(8);
+
+	auto p=&v.value[0];
+
+	CARD16_generate(p, iter->second.id);
+	CARD16_generate(p, 4);
+	CARD16_generate(p, coord_t::value_type(x));
+	CARD16_generate(p, coord_squared_t::value_type(y));
+
+	attrs.push_back(v);
+
+#if 0
+	ximattrvalue v2;
+
+	v2.id=iter2->second.id;
+	v2.value.resize(8);
+
+	p=&v2.value[0];
+
+	INT16_generate(p, coord_t::value_type(pos.x));
+	INT16_generate(p, coord_t::value_type(pos.y));
+	CARD16_generate(p, dim_t::value_type(pos.width));
+	CARD16_generate(p, dim_t::value_type(pos.height));
+	attrs.push_back(v2);
+#endif
+}
+
 
 void ximserverObj::badmessage(IN_THREAD_ONLY, const char *message)
 {
@@ -260,8 +337,8 @@ void ximserverObj::badmessage(IN_THREAD_ONLY, const char *message)
 
 #include "ximclient.inc.C"
 
-ximserverObj::attrvalue::attrvalue(uint16_t idArg,
-				   uint32_t valueArg) : id(idArg)
+ximattrvalue::ximattrvalue(uint16_t idArg,
+			   uint32_t valueArg) : id(idArg)
 {
 	value.resize(4);
 	auto p=&value[0];
@@ -609,6 +686,10 @@ class LIBCXX_HIDDEN ximserverObj::create_ic_requestObj : public ximrequestObj {
 
 		server->input_contexts.insert({input_context_id, client});
 		client->input_context_id(IN_THREAD)=input_context_id;
+		client->forward_event_mask(IN_THREAD)=
+			server->default_forward_event_mask;
+		client->synchronous_event_mask(IN_THREAD)=
+			server->default_synchronous_event_mask;
 	}
 };
 
@@ -645,36 +726,49 @@ bool ximserverObj::attempt_to_create_client(IN_THREAD_ONLY,
 		return false;
 	}
 
-	attributes.emplace_back
-		(iter->second.id,
-		 find_best_input_style
-		 (IN_THREAD,
-		  []
-		  (uint32_t s)
-		  {
-			  /*
-			    See XLIB Programming Manual, Rel 5,
-			    Page 368.
+	auto style=find_best_input_style
+		(IN_THREAD,
+		 []
+		 (uint32_t s)
+		 {
+			 /*
+			   See XLIB Programming Manual, Rel 5,
+			   Page 368.
 
-			    XIMStatusNothing: display status info in the root
-			    window.
-			    XIMStatusNone: do not display any status
+			   XIMStatusNothing: display status info in the root
+			   window.
+			   XIMStatusNone: do not display any status
 
-			    XIMPreeditNothing: display preedit in the root
-			    window
-			    XIMPreeditNone: do not do any pre-editing
+			   XIMPreeditNothing: display preedit in the root
+			   window
+			   XIMPreeditNone: do not do any pre-editing
 
-			    XIMPreeditPosition: we'll provide the location
-			    of the insertion cursor
+			   XIMPreeditPosition: we'll provide the location
+			   of the insertion cursor
 
-			  */
+			 */
 
 
-			  return ((s & XIMStatusNothing) ? 0x0200:
-				  (s & XIMStatusNone) ? 0x0100:0) |
-				  ((s & XIMPreeditNothing) ? 0x0002:
-				   (s & XIMPreeditNone) ? 0x0001:0);
-		  }));
+			 return ((s & XIMStatusNothing) ? 0x0200:
+				 (s & XIMStatusNone) ? 0x0100:0) |
+			 ((s & XIMPreeditNothing) ? 0x0002:
+			  (s & XIMPreeditNone) ? 0x0001:0) |
+			 (s & XIMPreeditPosition ? 0x0400:0);
+		 });
+
+	attributes.emplace_back(iter->second.id, style);
+
+	LOG_DEBUG(({
+
+				std::ostringstream o;
+
+				o << "Using input style "
+				  << std::hex << std::setw(8)
+				  << std::setfill('0')
+				  << (int)style;
+
+				o.str();
+			}));
 
 	auto window_id=client->client_window->id();
 
@@ -695,6 +789,12 @@ bool ximserverObj::attempt_to_create_client(IN_THREAD_ONLY,
 		return false;
 	}
 	attributes.emplace_back(iter->second.id, window_id);
+
+	set_preedit_position(ic_attributes_by_name(IN_THREAD),
+			     {},
+			     attributes);
+
+	LOG_DEBUG("There are " << attributes.size() << " attributes");
 
 	xim_create_ic_send(IN_THREAD,
 			   input_method_id(IN_THREAD),
@@ -744,6 +844,7 @@ void ximserverObj::destroy_client(IN_THREAD_ONLY, const ximclient &client)
 				    return false;
 			    }
 
+			    client->input_context_id(IN_THREAD)=0;
 			    server->input_contexts.erase(iter);
 
 			    server->xim_destroy_ic_send(IN_THREAD,
@@ -763,6 +864,28 @@ void ximserverObj
 			      uint32_t forward_event_mask,
 			      uint32_t synchronous_event_mask)
 {
+	LOG_DEBUG("XIM_SET_EVENT_MASK reply: context_id="
+		  << input_context_id
+		  << ", forward_event_mask=" << forward_event_mask
+		  << ", synchronous_event_mask="
+		  << synchronous_event_mask);
+
+	if (input_context_id == 0)
+	{
+		// Defaults
+
+		default_forward_event_mask=forward_event_mask;
+		default_synchronous_event_mask=synchronous_event_mask;
+		return;
+	}
+
+	auto c=input_contexts.find(input_context_id);
+
+	if (c == input_contexts.end())
+		return;
+
+	c->second->forward_event_mask(IN_THREAD)=forward_event_mask;
+	c->second->synchronous_event_mask(IN_THREAD)=synchronous_event_mask;
 }
 
 void ximserverObj
@@ -771,18 +894,78 @@ void ximserverObj
 				    const std::vector<triggerkey> &on_keys,
 				    const std::vector<triggerkey> &off_keys)
 {
+	LOG_DEBUG( ({
+				std::ostringstream o;
+
+				o << "XIM_REGISTER_TRIGGERKEYS reply: "
+					"ON: ";
+
+				auto dump=[&o]
+					(const std::vector<triggerkey> &v)
+					{
+						const char *sep="";
+
+						for (const auto &k:v)
+						{
+							o << sep
+							  << "key="
+							  << k.keysym
+							  << ", modified="
+							  << k.modifier
+							  << ", mask="
+							  << k.mask
+							  << std::endl;
+							sep="; ";
+						}
+					};
+				dump(on_keys);
+				o << "; OFF: ";
+				dump(off_keys);
+
+				o.str();
+			}));
 }
 
 void ximserverObj::received_xim_sync(IN_THREAD_ONLY,
 				     xim_im_t input_method_id,
 				     xim_ic_t input_context_id)
 {
+	xim_sync_reply_send(IN_THREAD, input_method_id, input_context_id);
 }
+
+class LIBCXX_HIDDEN ximserverObj::sync_requestObj : public ximrequestObj {
+
+ public:
+
+	sync_requestObj(const char *request_type)
+		: ximrequestObj(request_type)
+	{
+	}
+
+	~sync_requestObj() noexcept
+	{
+	}
+
+	void xim_sync_reply(IN_THREAD_ONLY,
+			    const ximserver &server,
+			    uint16_t input_context_id) override
+	{
+		// No-op
+	}
+};
 
 void ximserverObj::received_xim_sync_reply(IN_THREAD_ONLY,
 					   xim_im_t input_method_id,
 					   xim_ic_t input_context_id)
 {
+	sync_reply_received(IN_THREAD,
+			    [&, this]
+			    (const ximrequest &req)
+			    {
+				    req->xim_sync_reply(IN_THREAD,
+							ximserver(this),
+							input_context_id);
+			    });
 }
 
 void ximserverObj::received_xim_create_ic_reply(IN_THREAD_ONLY,
@@ -813,6 +996,138 @@ void ximserverObj::received_xim_destroy_ic_reply(IN_THREAD_ONLY,
 			    });
 }
 
+
+void ximserverObj::set_spot_location(IN_THREAD_ONLY,
+				     const ximclient &client)
+{
+	add_client_request
+		(IN_THREAD,
+		 ximrequest::create("XIM_SET_IC_VALUES(spotLocation)"),
+		 client,
+		 []
+		 (IN_THREAD_ONLY,
+		  const ximserver &me, const ximclient &client)
+		 {
+			 auto &pos=client->sent_cursor_position(IN_THREAD);
+			 if (client->reported_cursor_position(IN_THREAD) ==
+			     pos)
+				 return false;
+
+			 pos=client->reported_cursor_position(IN_THREAD);
+			 std::vector<attrvalue> attrs;
+
+			 set_preedit_position
+				 (me->ic_attributes_by_name(IN_THREAD),
+				  pos,
+				  attrs);
+
+			 LOG_DEBUG("Sending cursor position based on "
+				   << pos
+				   << "(" << attrs.size() << ")");
+
+			 me->xim_set_ic_values_send(IN_THREAD,
+						    me->input_method_id
+						    (IN_THREAD),
+						    client->input_context_id
+						    (IN_THREAD),
+						    attrs);
+#if 0
+			 me->get_ic_values(IN_THREAD, client,
+					   {"spotlocation","area"});
+#endif
+			 return true;
+		 });
+}
+
+void ximserverObj::focus_state(IN_THREAD_ONLY, const ximclient &client,
+			       bool flag)
+{
+	add_client_request
+		(IN_THREAD,
+		 ximrequest::create(flag ?
+				    "XIM_SET_IC_FOCUS":"XIM_UNSET_IC_FOCUS"),
+		 client,
+		 [flag]
+		 (IN_THREAD_ONLY,
+		  const ximserver &me, const ximclient &client)
+		 {
+			 if (client->sent_focus(IN_THREAD) == flag)
+				 return false;
+
+			 client->sent_focus(IN_THREAD)=flag;
+
+			 if (flag)
+				 me->xim_set_ic_focus_send
+					 (IN_THREAD,
+					  me->input_method_id(IN_THREAD),
+					  client->input_context_id(IN_THREAD));
+			 else
+				 me->xim_unset_ic_focus_send
+					 (IN_THREAD,
+					  me->input_method_id(IN_THREAD),
+					  client->input_context_id(IN_THREAD));
+
+			 // This is not really a synchronous request, it's
+			 // just more convenient to implement everything using
+			 // add_request().
+
+			 return false;
+		 });
+
+}
+
+bool ximserverObj
+::forward_key_press_release_event(IN_THREAD_ONLY,
+				  const ximclient &client,
+				  const xcb_key_release_event_t &e,
+				  uint16_t sequencehi,
+				  uint32_t mask)
+{
+	if (client->input_context_id(IN_THREAD) == 0
+	    || !(client->forward_event_mask(IN_THREAD) & mask))
+		return false;
+
+	// If the X input method wants events to be forwarded
+	// synchronously, queue up a synchronous request.
+	if (client->synchronous_event_mask(IN_THREAD) & mask)
+	{
+		LOG_DEBUG("Forwarding key event synchronously");
+
+		auto req=ref<sync_requestObj>
+			::create("xim_forward_keypress_event");
+
+		add_client_request
+			(IN_THREAD, req, client,
+			 [e, sequencehi]
+			 (IN_THREAD_ONLY, const ximserver &server,
+			  const ximclient &client)
+			 {
+				 server->xim_forward_keypress_event_send
+					 (IN_THREAD,
+					  server->input_method_id(IN_THREAD),
+					  client->input_context_id(IN_THREAD),
+					  3, // sync+request_filtering
+					  sequencehi,
+					  e);
+				 return true;
+			 });
+	}
+	else
+	{
+		// Otherwise, send asynchronously.
+		LOG_DEBUG("Forwarding key event asynchronously");
+
+		xim_forward_keypress_event_send
+			(IN_THREAD,
+			 input_method_id(IN_THREAD),
+			 client->input_context_id(IN_THREAD),
+			 2,
+			 sequencehi, e);
+	}
+
+	return true;
+}
+
 void ximserverObj::received_xim_forwarded_event(IN_THREAD_ONLY,
 						xim_im_t input_method_id,
 						xim_ic_t input_context_id,
@@ -820,6 +1135,52 @@ void ximserverObj::received_xim_forwarded_event(IN_THREAD_ONLY,
 						uint16_t sequencehi,
 						const eventbuf_t &eventbuf)
 {
+	LOG_DEBUG("Received forwarded event: flag=" << flag);
+
+	auto sentry=make_sentry
+		([&]
+		 {
+			 if (flag & 1)
+				 // XIM server wants a sync reply.
+				 xim_sync_reply_send(IN_THREAD,
+						     input_method_id,
+						     input_context_id);
+		 });
+
+	sentry.guard();
+
+	switch (eventbuf[0]) {
+	case KeyPress:
+	case KeyRelease:
+
+		// Filtered event, can now be forwarded back to the input
+		// context's window, for processing.
+		{
+			xcb_key_press_event_t e{};
+
+			const uint8_t *p=eventbuf;
+			size_t size=sizeof(eventbuf);
+
+			key_press_release_event_received(IN_THREAD, p, size, e);
+
+			auto c=input_contexts.find(input_context_id);
+
+			if (c == input_contexts.end())
+			{
+				LOG_WARNING("Unable to find the input context for a forwarded key event");
+				return;
+			}
+
+			c->second->client_window->handle_key_event
+				(IN_THREAD,
+				 &e,
+				 eventbuf[0] == KeyPress);
+		}
+		break;
+	default:
+		LOG_WARNING("Received unknown forwarded event "
+			    << (int)eventbuf[0]);
+	}
 }
 
 void ximserverObj::received_xim_commit(IN_THREAD_ONLY,
@@ -829,13 +1190,173 @@ void ximserverObj::received_xim_commit(IN_THREAD_ONLY,
 				       uint32_t keysym,
 				       const std::string &string)
 {
+	LOG_DEBUG("Received commit string: flag=" << flag
+		  << ", keysym=" << keysym << ", string:" << ({
+				  std::ostringstream o;
+
+				  o << std::hex << std::setw(2)
+				    << std::setfill('0');
+
+				  for (unsigned char c:string)
+					  o << (int)c;
+
+				  o.str();
+			  }));
+
+	if (flag & 1) // XIM server wants a sync reply.
+		xim_sync_reply_send(IN_THREAD, input_method_id,
+				    input_context_id);
+
+	auto c=input_contexts.find(input_context_id);
+
+	if (c == input_contexts.end())
+	{
+		LOG_WARNING("Unable to find the input context for a committed string");
+		return;
+	}
+
+	try {
+		c->second->client_window->pasted_string
+			(IN_THREAD,
+			 encoding(IN_THREAD)->to_ustring(string));
+	} CATCH_EXCEPTIONS;
 }
 
 void ximserverObj::received_xim_set_ic_values_reply(IN_THREAD_ONLY,
 						    xim_im_t input_method_id,
 						    xim_ic_t input_context_id)
 {
+	sync_reply_received(IN_THREAD,
+			    [&, this]
+			    (const ximrequest &req)
+			    {
+				    // Nothing needs to be done.
+			    });
+
 }
+#if 0
+class LIBCXX_HIDDEN ximserverObj::get_ic_valuesObj : public ximrequestObj {
+
+public:
+	get_ic_valuesObj() : ximrequestObj("XIM_GET_IC_VALUES")
+	{
+	}
+
+	~get_ic_valuesObj()=default;
+
+	void xim_get_ic_values_reply(IN_THREAD_ONLY,
+				     const ximserver &server,
+				     uint16_t input_context_id,
+				     const std::vector<ximattrvalue>
+				     &ic_attributes) override;
+};
+
+void ximserverObj::get_ic_valuesObj
+::xim_get_ic_values_reply(IN_THREAD_ONLY,
+			  const ximserver &server,
+			  uint16_t input_context_id,
+			  const std::vector<attrvalue> &ic_attributes)
+{
+	LOG_DEBUG(({
+				std::ostringstream o;
+
+				o << "Received IC attributes:" << std::endl;
+
+				std::map<uint16_t, std::string> lookup;
+
+				for (const auto &i:server
+					     ->ic_attributes_by_name(IN_THREAD))
+					lookup.insert({i.second.id,
+								i.first});
+
+				for (const auto &a:ic_attributes)
+				{
+					auto p=lookup.find(a.id);
+
+					o << "    " << (p == lookup.end()
+					      ? "(unknown)":p->second)
+					  << ": ("
+					  << a.value.size() << "): ";
+
+					for (auto byte:a.value)
+					{
+						o << ' '
+						  << std::hex
+						  << std::setw(2)
+						  << std::setfill('0')
+						  << (int)byte
+						  << std::dec;
+					}
+					o << std::endl;
+				}
+
+				o.str();
+			}));
+}
+
+void ximserverObj::get_ic_values(IN_THREAD_ONLY,
+				 const ximclient &client,
+				 const std::vector<std::string> &values)
+{
+	add_client_request
+		(IN_THREAD,
+		 ref<get_ic_valuesObj>::create(),
+		 client,
+		 [values]
+		 (IN_THREAD_ONLY,
+		  const ximserver &me, const ximclient &client)
+		 {
+			 std::vector<uint16_t> ids;
+
+			 ids.reserve(values.size());
+
+			 for (const auto &name:values)
+			 {
+				 auto iter=me->ic_attributes_by_name(IN_THREAD)
+					 .find(name);
+
+				 if (iter==me
+				     ->ic_attributes_by_name(IN_THREAD).end())
+				 {
+					 LOG_ERROR("No such attribute: "
+						   << name);
+					 continue;
+				 }
+				 ids.push_back(iter->second.id);
+			 }
+			 if (ids.empty())
+				 return false;
+
+			 me->xim_get_ic_values_send(IN_THREAD,
+						    me->input_method_id
+						    (IN_THREAD),
+						    client->input_context_id
+						    (IN_THREAD),
+						    ids);
+			 return true;
+		 });
+}
+
+void ximserverObj
+::received_xim_get_ic_values_reply(IN_THREAD_ONLY,
+				   xim_im_t input_method_id,
+				   xim_ic_t input_context_id,
+				   const std::vector<attrvalue> &ic_attributes)
+{
+	sync_reply_received(IN_THREAD,
+			    [&, this]
+			    (const ximrequest &req)
+			    {
+				    req->xim_get_ic_values_reply
+					    (IN_THREAD,
+					     ximserver(this),
+					     input_context_id,
+					     ic_attributes);
+			    });
+
+
+}
+#endif
 
 void ximserverObj::received_xim_error(IN_THREAD_ONLY,
 				      xim_im_t input_method_id,

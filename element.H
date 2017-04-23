@@ -746,6 +746,14 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 					  xcb_timestamp_t timestamp,
 					  const input_mask &mask);
 
+	//! Whether this element will use the X Input Method.
+
+	//! The default implementation returns false. When the element
+	//! returns true, text entered via XIM gets pasted().
+
+	virtual bool uses_input_method();
+
+
 	//! process_button_event() calls grab() to grab the pointer.
 
 	virtual void grab(IN_THREAD_ONLY)=0;

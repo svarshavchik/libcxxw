@@ -20,6 +20,7 @@
 #include "messages.H"
 #include "connection_thread.H"
 #include "generic_window_handler.H"
+#include "xim/ximclient.H"
 #include "x/w/key_event.H"
 #include <x/vector.H>
 #include <x/weakcapture.H>
@@ -493,7 +494,7 @@ bool editorObj::implObj::process_keypress(IN_THREAD_ONLY, const key_event &ke)
 
 	if ((!config.oneline() && ke.unicode == '\n') || ke.unicode >= ' ')
 	{
-		pasted(IN_THREAD, {&ke.unicode, 1});
+		insert(IN_THREAD, {&ke.unicode, 1});
 		return true;
 	}
 
@@ -516,7 +517,20 @@ bool editorObj::implObj::process_keypress(IN_THREAD_ONLY, const key_event &ke)
 	return false;
 }
 
+bool editorObj::implObj::uses_input_method()
+{
+	return true;
+}
+
 bool editorObj::implObj::pasted(IN_THREAD_ONLY,
+				const std::experimental::u32string_view &str)
+{
+	insert(IN_THREAD, str);
+	scroll_cursor_into_view(IN_THREAD);
+	return true;
+}
+
+void editorObj::implObj::insert(IN_THREAD_ONLY,
 				const std::experimental::u32string_view &str)
 {
 	unblink(IN_THREAD);
@@ -527,7 +541,6 @@ bool editorObj::implObj::pasted(IN_THREAD_ONLY,
 	recalculate(IN_THREAD);
 	draw_changes(IN_THREAD);
 	blink(IN_THREAD);
-	return true;
 }
 
 void editorObj::implObj::draw_changes(IN_THREAD_ONLY)
@@ -558,7 +571,21 @@ void editorObj::implObj::draw_between(IN_THREAD_ONLY,
 
 void editorObj::implObj::scroll_cursor_into_view(IN_THREAD_ONLY)
 {
-	ensure_visibility(IN_THREAD, cursor->at(IN_THREAD).position);
+	auto pos=cursor->at(IN_THREAD).position;
+
+	ensure_visibility(IN_THREAD, pos);
+
+	auto loc=get_absolute_location(IN_THREAD);
+
+	pos.x=coord_t::truncate(pos.x+loc.x);
+	pos.y=coord_t::truncate(pos.y+loc.y);
+
+	get_window_handler().with_xim_client
+		([&]
+		 (auto &client)
+		 {
+			 client->current_cursor_position(IN_THREAD, pos);
+		 });
 }
 
 bool editorObj::implObj::process_button_event(IN_THREAD_ONLY,
@@ -572,6 +599,8 @@ bool editorObj::implObj::process_button_event(IN_THREAD_ONLY,
 		moving_cursor moving{IN_THREAD, *this, mask};
 
 		cursor->moveto(IN_THREAD, most_recent_x, most_recent_y);
+
+		// We grab the pointer while the button is held down.
 		grab(IN_THREAD);
 
 		if (button == 2)

@@ -3,6 +3,7 @@
 #include "xim/ximclient.H"
 #include "xid_t.H"
 #include "connection_thread.H"
+#include <xcb/xproto.h>
 
 LIBCXXW_NAMESPACE_START
 
@@ -36,6 +37,43 @@ void ximclientObj::xim_client_deregister() noexcept
 			 client_window->ximclient_ptr=nullptr;
 			 me->server->destroy_client(IN_THREAD, me);
 		 });
+}
+
+void ximclientObj::current_cursor_position(IN_THREAD_ONLY,
+					   const rectangle &r)
+{
+	if (r == reported_cursor_position(IN_THREAD))
+		return;
+	reported_cursor_position(IN_THREAD)=r;
+
+	server->set_spot_location(IN_THREAD, ximclient(this));
+}
+
+void ximclientObj::focus_state(IN_THREAD_ONLY, bool flag)
+{
+	if (flag == reported_focus(IN_THREAD))
+		return;
+
+	reported_focus(IN_THREAD)=flag;
+	server->focus_state(IN_THREAD, ximclient(this), flag);
+}
+
+bool ximclientObj::forward_key_press_event(IN_THREAD_ONLY,
+					   const xcb_key_press_event_t &e,
+					   uint16_t sequencehi)
+{
+	return server->forward_key_press_release_event
+		(IN_THREAD, ximclient(this), e, sequencehi,
+		 XCB_EVENT_MASK_KEY_PRESS);
+}
+
+bool ximclientObj::forward_key_release_event(IN_THREAD_ONLY,
+					     const xcb_key_release_event_t &e,
+					     uint16_t sequencehi)
+{
+	return server->forward_key_press_release_event
+		(IN_THREAD, ximclient(this), e, sequencehi,
+		 XCB_EVENT_MASK_KEY_RELEASE);
 }
 
 LIBCXXW_NAMESPACE_END

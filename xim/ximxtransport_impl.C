@@ -7,6 +7,7 @@
 #include "connection_thread.H"
 #include "catch_exceptions.H"
 #include <x/strtok.H>
+#include <x/property_value.H>
 #include <string>
 #include <list>
 #include <algorithm>
@@ -17,6 +18,11 @@ LIBCXXW_NAMESPACE_START
 
 LOG_FUNC_SCOPE_DECL(LIBCXXW_NAMESPACE::ximxtransportObj,
 		    transport_log);
+static property::value<bool>
+disable_xim(LIBCXX_NAMESPACE_STR "::w::disable_xim", false);
+
+static property::value<bool>
+skip_xim_disconnect(LIBCXX_NAMESPACE_STR "::w::skip_xim_disconnect", false);
 
 ximxtransportObj::implObj::~implObj()=default;
 
@@ -28,6 +34,13 @@ void ximxtransportObj::implObj::disconnected(IN_THREAD_ONLY)
 
 void ximxtransportObj::implObj::connect(IN_THREAD_ONLY)
 {
+	if (disable_xim.getValue())
+	{
+		LOG_DEBUG("Disabling XIM");
+		xim_disconnected(IN_THREAD);
+		return;
+	}
+
 	const char * const attributes[]={"TRANSPORT", "LOCALES", nullptr};
 
 	connect_service(IN_THREAD, "XIM_SERVERS", attributes);
@@ -150,9 +163,15 @@ void ximxtransportObj::implObj
 
 	thread()->run_as
 		(RUN_AS,
-		 [me=ref<implObj>(this)]
+		 [me=ref<implObj>(this), &logger]
 		 (IN_THREAD_ONLY)
 		 {
+			 if (skip_xim_disconnect.getValue())
+			 {
+				 LOG_DEBUG("Disabling XIM orderly shutdown");
+				 me->xim_disconnected(IN_THREAD);
+				 return;
+			 }
 			 me->shutdown(IN_THREAD);
 		 });
 
@@ -354,6 +373,8 @@ void ximxtransportObj::implObj
 void ximxtransportObj::implObj
 ::send(IN_THREAD_ONLY, const uint8_t *data, size_t n)
 {
+	LOG_FUNC_SCOPE(transport_log);
+
 	if (!protocol_connected())
 		return;
 
@@ -361,6 +382,7 @@ void ximxtransportObj::implObj
 
 	if (major(IN_THREAD) != 1 && n <= dividing_size(IN_THREAD))
 	{
+		LOG_TRACE("send: sending XCB_CLIENT_MESSAGE(_XIM_PROTOCOL)");
 		xcb_client_message_event_t message{};
 		// CM can be used here.
 
@@ -380,6 +402,7 @@ void ximxtransportObj::implObj
 
 	if (major(IN_THREAD) > 0 || minor(IN_THREAD) != 1)
 	{
+		LOG_TRACE("send: setting _clientXXX property");
 		xcb_change_property(conn, XCB_PROP_MODE_APPEND,
 				    owner(IN_THREAD),
 				    IN_THREAD->info->atoms_info
@@ -393,6 +416,7 @@ void ximxtransportObj::implObj
 
 		if (major(IN_THREAD) > 0)
 		{
+			LOG_TRACE("send: notifying via PROPERTY_NOTIFY");
 			// Via PropertyNotify message.
 
 			xcb_property_notify_event_t notify{};
@@ -409,6 +433,7 @@ void ximxtransportObj::implObj
 		}
 		else
 		{
+			LOG_TRACE("send: sendevent(_clientXXX)");
 			// Via client message.
 			xcb_client_message_event_t message{};
 
@@ -445,6 +470,9 @@ void ximxtransportObj::implObj
 		message.type=n-todo ? IN_THREAD->info->atoms_info
 			.xim_moredata:IN_THREAD->info->atoms_info
 			.xim_protocol;
+		LOG_TRACE("send: sending multiCM ("
+			  << IN_THREAD->info->get_atom_name(message.type)
+			  << ")");
 		std::copy(data, data+todo, &message.data.data8[0]);
 
 		data += todo;
