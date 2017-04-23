@@ -351,8 +351,8 @@ void generic_windowObj::handlerObj
 	// If there's no element in the focus, jump to our handler,
 	// directly.
 
-	if (current_focus(IN_THREAD))
-		current_focus(IN_THREAD)->get_focusable_element()
+	if (keyboard_focus(IN_THREAD))
+		keyboard_focus(IN_THREAD)->get_focusable_element()
 			.process_key_event(IN_THREAD, ke);
 	else
 		process_key_event(IN_THREAD, ke);
@@ -400,11 +400,8 @@ void generic_windowObj::handlerObj
 	    !most_recent_element_with_pointer(IN_THREAD)
 	    ->process_button_event(IN_THREAD, event->detail, buttonpress,
 				   event->time, mask)
-	    && event->detail == 1 && buttonpress &&
-	    current_focus(IN_THREAD))
-	{
-		current_focus(IN_THREAD)->remove_focus(IN_THREAD);
-	}
+	    && event->detail == 1 && buttonpress)
+		unset_keyboard_focus(IN_THREAD);
 }
 
 void generic_windowObj::handlerObj::grab(IN_THREAD_ONLY,
@@ -459,9 +456,9 @@ bool generic_windowObj::handlerObj::process_key_event(IN_THREAD_ONLY,
 
 	if (ke.keysym == XK_ISO_Left_Tab)
 	{
-		if (current_focus(IN_THREAD))
+		if (keyboard_focus(IN_THREAD))
 		{
-			current_focus(IN_THREAD)->prev_focus(IN_THREAD);
+			keyboard_focus(IN_THREAD)->prev_focus(IN_THREAD);
 			return true;
 		}
 
@@ -474,13 +471,7 @@ bool generic_windowObj::handlerObj::process_key_event(IN_THREAD_ONLY,
 
 			if (element->is_enabled(IN_THREAD))
 			{
-				current_focus(IN_THREAD)=element;
-				element->get_focusable_element()
-					.request_focus(IN_THREAD,
-						       ptr<elementObj::implObj>
-						       (),
-						       &elementObj::implObj
-						       ::report_keyboard_focus);
+				set_keyboard_focus_to(IN_THREAD, element);
 				return true;
 			}
 		}
@@ -488,26 +479,47 @@ bool generic_windowObj::handlerObj::process_key_event(IN_THREAD_ONLY,
 
 	if (ke.unicode == '\t')
 	{
-		if (current_focus(IN_THREAD))
+		if (keyboard_focus(IN_THREAD))
 		{
-			current_focus(IN_THREAD)->next_focus(IN_THREAD);
+			keyboard_focus(IN_THREAD)->next_focus(IN_THREAD);
 			return true;
 		}
 
 		for (const auto &element:focusable_fields(IN_THREAD))
 			if (element->is_enabled(IN_THREAD))
 			{
-				current_focus(IN_THREAD)=element;
-				element->get_focusable_element()
-					.request_focus(IN_THREAD,
-						       ptr<elementObj::implObj>
-						       (),
-						       &elementObj::implObj
-						       ::report_keyboard_focus);
+				set_keyboard_focus_to(IN_THREAD, element);
 				return true;
 			}
 	}
 	return false;
+}
+
+void generic_windowObj::handlerObj::unset_keyboard_focus(IN_THREAD_ONLY)
+{
+	if (keyboard_focus(IN_THREAD))
+	{
+		focusable_impl f=keyboard_focus(IN_THREAD);
+
+		keyboard_focus(IN_THREAD)=nullptr;
+
+		f->get_focusable_element()
+			.lose_focus(IN_THREAD,
+				    &elementObj::implObj
+				    ::report_keyboard_focus);
+	}
+}
+
+void generic_windowObj::handlerObj
+::set_keyboard_focus_to(IN_THREAD_ONLY, const focusable_impl &element)
+{
+	auto old_focus=keyboard_focus(IN_THREAD);
+
+	keyboard_focus(IN_THREAD)=element;
+
+	element->get_focusable_element()
+		.request_focus(IN_THREAD, old_focus,
+			       &elementObj::implObj::report_keyboard_focus);
 }
 
 void generic_windowObj::handlerObj
@@ -547,8 +559,8 @@ void generic_windowObj::handlerObj
 ::focus_change_event(IN_THREAD_ONLY, bool flag)
 {
 	has_focus(IN_THREAD)=flag;
-	if (current_focus(IN_THREAD))
-		current_focus(IN_THREAD)->get_focusable_element()
+	if (keyboard_focus(IN_THREAD))
+		keyboard_focus(IN_THREAD)->get_focusable_element()
 			.window_focus_change(IN_THREAD, flag);
 }
 
@@ -901,8 +913,8 @@ int generic_windowObj::handlerObj::converted(const char32_t *ptr, size_t cnt)
 void generic_windowObj::handlerObj
 ::pasted_string(IN_THREAD_ONLY, const std::experimental::u32string_view &s)
 {
-	if (current_focus(IN_THREAD))
-		current_focus(IN_THREAD)->get_focusable_element()
+	if (keyboard_focus(IN_THREAD))
+		keyboard_focus(IN_THREAD)->get_focusable_element()
 			.pasted(IN_THREAD, s);
 }
 

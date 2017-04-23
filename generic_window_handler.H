@@ -15,6 +15,7 @@
 #include "x/w/pictformatfwd.H"
 #include "x/w/types.H"
 #include "x/w/focusablefwd.H"
+#include "focus/focusablefwd.H"
 #include "fonts/current_fontcollectionfwd.H"
 #include "x/w/fontfwd.H"
 #include <experimental/string_view>
@@ -370,11 +371,17 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	std::list<ref<focusableImplObj>> focusable_fields_thread_only;
 
 	//! Current field that's receiving input focus.
-	ptr<focusableImplObj> current_focus_thread_only;
+	ptr<focusableImplObj> keyboard_focus_thread_only;
 
  public:
 	THREAD_DATA_ONLY(focusable_fields);
-	THREAD_DATA_ONLY(current_focus);
+	THREAD_DATA_ONLY(keyboard_focus);
+
+	//! Move the current keyboard focus to another element.
+	void set_keyboard_focus_to(IN_THREAD_ONLY, const focusable_impl &f);
+
+	//! No element has keyboard focus any more.
+	void unset_keyboard_focus(IN_THREAD_ONLY);
 
 	//! Paste a string from a clipboard.
 

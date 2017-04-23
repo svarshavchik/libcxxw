@@ -78,12 +78,12 @@ void focusableImplObj::focusable_deinitialize(IN_THREAD_ONLY)
 	// focus we're golden. Just removing it from
 	// focusable_fields is enough.
 
-	if (window_handler.current_focus(IN_THREAD) == ptr_impl)
+	if (window_handler.keyboard_focus(IN_THREAD) == ptr_impl)
 		// Find another field to switch the input
 		// focus to. This will also null out
-		// current_focus, in every case. Either it
+		// keyboard_focus, in every case. Either it
 		// will find another focusable field, and
-		// update current_focus, or call remove_focus()
+		// update keyboard_focus, or call remove_focus()
 		// and null it out.
 		next_focus(IN_THREAD, next_iter);
 }
@@ -109,20 +109,23 @@ void focusableImplObj::next_focus(IN_THREAD_ONLY,
 	while (starting_iter != ff.end())
 	{
 		if ((*starting_iter)->is_enabled(IN_THREAD))
-			break;
+		{
+			switch_focus(IN_THREAD, *starting_iter);
+			return;
+		}
 		++starting_iter;
 	}
 
-	if (starting_iter == ff.end())
-		for (starting_iter=ff.begin(); starting_iter != ff.end();
-		     ++starting_iter)
-			if ((*starting_iter)->is_enabled(IN_THREAD))
-				break;
+	for (starting_iter=ff.begin(); starting_iter != ff.end();
+	     ++starting_iter)
+		if ((*starting_iter)->is_enabled(IN_THREAD))
+		{
+			switch_focus(IN_THREAD, *starting_iter);
+			return;
+		}
 
-	if (starting_iter == ff.end())
-		remove_focus(IN_THREAD);
-	else
-		switch_focus(IN_THREAD, *starting_iter);
+	get_focusable_element().get_window_handler()
+		.unset_keyboard_focus(IN_THREAD);
 }
 
 void focusableImplObj::prev_focus(IN_THREAD_ONLY)
@@ -151,49 +154,20 @@ void focusableImplObj::prev_focus(IN_THREAD_ONLY)
 		}
 	}
 
-	remove_focus(IN_THREAD);
-}
-
-void focusableImplObj::remove_focus(IN_THREAD_ONLY)
-{
 	get_focusable_element().get_window_handler()
-		.current_focus(IN_THREAD)=ptr<focusableImplObj>();
-
-	// See element_focusable.C
-
-	get_focusable_element().lose_focus(IN_THREAD,
-					   &elementObj::implObj
-					   ::report_keyboard_focus);
+		.unset_keyboard_focus(IN_THREAD);
 }
 
 void focusableImplObj::set_focus(IN_THREAD_ONLY)
 {
-	auto &e=get_focusable_element();
-	auto &h=e.get_window_handler();
-
-	auto current_focus=h.current_focus(IN_THREAD);
-
-	if (!current_focus.null())
-	{
-		current_focus->switch_focus(IN_THREAD, focusable_impl(this));
-		return;
-	}
-
-	h.current_focus(IN_THREAD)=focusable_impl(this);
-	e.request_focus(IN_THREAD,
-			ptr<elementObj::implObj>(),
-			&elementObj::implObj::report_keyboard_focus);
+	get_focusable_element().get_window_handler()
+		.set_keyboard_focus_to(IN_THREAD, focusable_impl(this));
 }
 
 void focusableImplObj::switch_focus(IN_THREAD_ONLY,
 				    const focusable_impl &focus_to)
 {
 	get_focusable_element().get_window_handler()
-		.current_focus(IN_THREAD)=focus_to;
-
-	focus_to->get_focusable_element()
-		.request_focus(IN_THREAD,
-			       ptr<elementObj::implObj>(&get_focusable_element()),
-			       &elementObj::implObj::report_keyboard_focus);
+		.set_keyboard_focus_to(IN_THREAD, focus_to);
 }
 LIBCXXW_NAMESPACE_END
