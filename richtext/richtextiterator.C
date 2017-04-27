@@ -9,6 +9,7 @@
 #include "richtext/richtext_insert.H"
 #include "richtext/richtextcursorlocation.H"
 
+#include <utility>
 LIBCXXW_NAMESPACE_START
 
 /////////////////////////////////////////////////////////////////////////////
@@ -63,6 +64,19 @@ richtextiterator richtextiteratorObj::clone() const
 		 {
 			 return richtextiterator::create(*this);
 		 });
+}
+
+void richtextiteratorObj::swap(const richtextiterator &other)
+{
+	assert_or_throw(my_richtext == other->my_richtext,
+			"Iterators to two different objects.");
+
+	my_richtext->read_only_lock([&, this]
+				    (const auto &ignore)
+				    {
+					    std::swap(my_location,
+						      other->my_location);
+				    });
 }
 
 std::ptrdiff_t richtextiteratorObj::compare(const const_richtextiterator &other)

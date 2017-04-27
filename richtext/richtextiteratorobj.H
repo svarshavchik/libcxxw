@@ -34,7 +34,7 @@ class LIBCXX_HIDDEN richtextiteratorObj : virtual public obj {
 	//! An internal implementation object, basically. Accessible only
 	//! while holding a lock on the underlying implementation object.
 
-	const richtextcursorlocation my_location;
+	richtextcursorlocation my_location;
  public:
 
 	friend class richtextObj; // It has access to my_location, I trust him.
@@ -63,6 +63,9 @@ class LIBCXX_HIDDEN richtextiteratorObj : virtual public obj {
 
 	//! Creates another iterator for the same location
 	richtextiterator clone() const;
+
+	//! Swap two iterators
+	void swap(const richtextiterator &other);
 
 	//! Create another iterator pointing to the end of the text.
 	richtextiterator end() const;

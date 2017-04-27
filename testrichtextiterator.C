@@ -46,6 +46,13 @@ void testrichtext1(const main_window &w,
 			"end() offset is not 10");
 
 
+	b->swap(e);
+	assert_or_throw(e->debug_get_location()->get_offset() == 0,
+			"pos(0) offset is not 0 after swap");
+	assert_or_throw(b->debug_get_location()->get_offset() == 10,
+			"end() offset is not 10 after swap");
+	b->swap(e);
+
 	auto b_horiz_pos=b->horiz_pos(IN_THREAD);
 	auto e_horiz_pos=e->horiz_pos(IN_THREAD);
 
