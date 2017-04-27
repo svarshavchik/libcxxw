@@ -156,17 +156,7 @@ class LIBCXX_HIDDEN horizontal_straight_borderObj : public horizontal_impl {
 				      const current_border_implptr &border2,
 				      const current_border_implptr &border_default)
 		: horizontal_impl(c,
-				  ({
-					  // We want to fill ourselves entirely
-					  // within the allotted border space.
-
-					  metrics::horizvert_axi m;
-
-					  m.vertical_alignment=valign::fill;
-
-					  m;
-				  }),
-
+				  metrics::horizvert_axi(),
 				  "horiz-border@libcxx",
 				  element_1,
 				  border1,
@@ -229,16 +219,7 @@ class LIBCXX_HIDDEN vertical_straight_borderObj : public vertical_impl {
 				      const current_border_implptr &border2,
 				      const current_border_implptr &border_default)
 		: vertical_impl(c,
-				({
-					// We want to fill ourselves entirely
-					// within the allotted border space.
-
-					metrics::horizvert_axi m;
-
-					m.horizontal_alignment=halign::fill;
-
-					m;
-				}),
+				metrics::horizvert_axi(),
 				"vert-border@libcxx",
 				element_1,
 				border1,

@@ -26,15 +26,11 @@ void factoryObj::created_internally(const element &e)
 canvas factoryObj::do_create_canvas(const function<void (const canvas &)>
 				    &creator,
 				    const metrics::mmaxis &horiz,
-				    const metrics::mmaxis &vert,
-				    halign h,
-				    valign v)
+				    const metrics::mmaxis &vert)
 {
 	auto canvas_impl=ref<canvasObj::implObj>::create(container_impl,
 							 horiz,
-							 vert,
-							 h,
-							 v);
+							 vert);
 
 	auto c=canvas::create(canvas_impl);
 

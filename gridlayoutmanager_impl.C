@@ -112,7 +112,9 @@ void gridlayoutmanagerObj::implObj
 	else
 		row.insert(row.begin()+dim_t::value_type(info.col), elem);
 
-	++info.col;
+	// Reset the next element to defaults.
+	info=new_grid_element_info{info.row, info.col+1,
+				   get_custom_border(border_infomm{})};
 	lock->elements_have_been_modified();
 }
 

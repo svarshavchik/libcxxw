@@ -60,6 +60,12 @@ struct new_grid_element_info {
 	//! Padding
 	double bottom_paddingmm=1;
 
+	//! Horizontal alignment
+	halign horizontal_alignment=halign::left;
+
+	//! Vertical alignment
+	valign vertical_alignment=valign::top;
+
 	//! Constructor
 	new_grid_element_info(dim_t row,
 			      dim_t col,

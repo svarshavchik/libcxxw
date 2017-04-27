@@ -9,6 +9,7 @@
 #include <x/w/factoryobj.H>
 #include <x/w/gridlayoutmanagerfwd.H>
 #include <x/w/border_infomm.H>
+#include <x/w/alignment.H>
 #include <x/mpobj.H>
 #include <experimental/string_view>
 
@@ -38,6 +39,22 @@ class gridfactoryObj : public factoryObj {
 
 	//! Destructor
 	~gridfactoryObj() LIBCXX_HIDDEN;
+
+	//! Set new element's width
+
+	gridfactoryObj &colspan(size_t);
+
+	//! Set new element's height
+
+	gridfactoryObj &rowspan(size_t);
+
+	//! Set new element's alignment
+
+	gridfactoryObj &halign(LIBCXXW_NAMESPACE::halign);
+
+	//! Set new element's alignment
+
+	gridfactoryObj &valign(LIBCXXW_NAMESPACE::valign);
 
 	//! Set new element's border, first.
 

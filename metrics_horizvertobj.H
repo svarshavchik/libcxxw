@@ -25,21 +25,13 @@ namespace metrics {
 		//! The vertical dimensions.
 		axis vert;
 
-		//! Horizontal alignment
-		halign horizontal_alignment;
-
-		//! Vertical alignment
-		valign vertical_alignment;
-
 		//! Constructor
 
 		horizvert_axi();
 
 		//! Constructor
 		horizvert_axi(const axis &horiz,
-			      const axis &vert,
-			      halign h,
-			      valign v);
+			      const axis &vert);
 	};
 
 	//! A display element's metrics.
@@ -79,30 +71,6 @@ namespace metrics {
 			{
 				horiz=new_horiz;
 				vert=new_vert;
-				horizvert_updated(IN_THREAD);
-			}
-		}
-
-		//! Update the metrics.
-
-		void set_element_metrics(IN_THREAD_ONLY,
-					 halign new_alignment)
-		{
-			if (horizontal_alignment != new_alignment)
-			{
-				horizontal_alignment=new_alignment;
-				horizvert_updated(IN_THREAD);
-			}
-		}
-
-		//! Update the metrics.
-
-		void set_element_metrics(IN_THREAD_ONLY,
-					 valign new_alignment)
-		{
-			if (vertical_alignment != new_alignment)
-			{
-				vertical_alignment=new_alignment;
 				horizvert_updated(IN_THREAD);
 			}
 		}

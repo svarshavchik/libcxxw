@@ -41,13 +41,19 @@ public:
 	struct pos_axis : public metrics::pos_axis {
 
 		element child_element;
+		halign horizontal_alignment;
+		valign vertical_alignment;
 
 		pos_axis(const metrics::grid_pos &pos,
 			 const metrics::horizvert &axises,
 			 const metrics::pos_axis_padding &padding,
-			 const element &child_element)
+			 const element &child_element,
+			 halign horizontal_alignment,
+			 valign vertical_alignment)
 			: metrics::pos_axis({pos, axises, padding}),
-			child_element(child_element) {}
+			child_element(child_element),
+			horizontal_alignment(horizontal_alignment),
+			vertical_alignment(vertical_alignment) {}
 	};
 
 	//! Flag, a child metrics has been updated.
@@ -136,7 +142,6 @@ public:
 					    metrics::grid_xy xend,
 					    metrics::grid_xy ystart,
 					    metrics::grid_xy yend,
-
 					    const grid_elementptr &e1,
 					    const grid_elementptr &e2);
 

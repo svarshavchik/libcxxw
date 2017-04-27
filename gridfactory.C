@@ -9,6 +9,7 @@
 #include "gridlayoutmanager.H"
 #include "child_element.H"
 #include "current_border_impl.H"
+#include "messages.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -160,6 +161,44 @@ gridfactoryObj &gridfactoryObj::bottom_padding(double paddingmm)
 
 	lock->bottom_paddingmm=paddingmm;
 
+	return *this;
+}
+
+gridfactoryObj &gridfactoryObj::colspan(size_t n)
+{
+	if (n <= 0 || n >= dim_t::value_type(dim_t::infinite()))
+		throw EXCEPTION(_("Invalid colspan value"));
+
+	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
+
+	lock->width=n;
+	return *this;
+}
+
+gridfactoryObj &gridfactoryObj::rowspan(size_t n)
+{
+	if (n <= 0 || n >= dim_t::value_type(dim_t::infinite()))
+		throw EXCEPTION(_("Invalid rowspan value"));
+
+	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
+
+	lock->height=n;
+	return *this;
+}
+
+gridfactoryObj &gridfactoryObj::halign(LIBCXXW_NAMESPACE::halign v)
+{
+	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
+
+	lock->horizontal_alignment=v;
+	return *this;
+}
+
+gridfactoryObj &gridfactoryObj::valign(LIBCXXW_NAMESPACE::valign v)
+{
+	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
+
+	lock->vertical_alignment=v;
 	return *this;
 }
 

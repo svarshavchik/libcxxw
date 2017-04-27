@@ -14,20 +14,14 @@ namespace metrics {
 
 horizvert_axi::horizvert_axi()
 	: horiz(0, 0, 0),
-	  vert(0, 0, 0),
-	  horizontal_alignment(halign::center),
-	  vertical_alignment(valign::middle)
+	  vert(0, 0, 0)
 {
 }
 
 horizvert_axi::horizvert_axi(const axis &horiz,
-			     const axis &vert,
-			     halign h,
-			     valign v)
+			     const axis &vert)
 	: horiz(horiz),
-	  vert(vert),
-	  horizontal_alignment(h),
-	  vertical_alignment(v)
+	  vert(vert)
 {
 }
 

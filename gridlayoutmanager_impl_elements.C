@@ -210,7 +210,6 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(IN_THREAD_ONLY)
 
 					   row_start,
 					   row_end,
-
 					   eleft, eright);
 
 				  // Now that we have a new straight border,
@@ -462,7 +461,9 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(IN_THREAD_ONLY)
 				 metrics::horizvert(col->grid_element->impl
 						    ->get_horizvert(IN_THREAD)),
 				 *col,
-				 col->grid_element);
+				 col->grid_element,
+				 col->horizontal_alignment,
+				 col->vertical_alignment);
 		}
 
 	// Now, add all the borders to the mix.
@@ -478,7 +479,9 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(IN_THREAD_ONLY)
 							     ->get_horizvert
 							     (IN_THREAD)),
 					  no_padding,
-					  b.second.border);
+					  b.second.border,
+					  halign::fill,
+					  valign::fill);
 
 #ifdef STRAIGHT_BORDERS_DEBUG
 		std::cout << "*** STRAIGHT BORDER: FINAL: "
@@ -497,7 +500,9 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(IN_THREAD_ONLY)
 							     ->get_horizvert
 							     (IN_THREAD)),
 					  no_padding,
-					  b.second.border);
+					  b.second.border,
+					  halign::fill,
+					  valign::fill);
 	}
 
 	lock->element_modifications_are_processed();
@@ -535,6 +540,7 @@ straight_border gridlayoutmanagerObj::implObj::elementsObj
 		      metrics::grid_xy xend,
 		      metrics::grid_xy ystart,
 		      metrics::grid_xy yend,
+
 		      const grid_elementptr &e1,
 		      const grid_elementptr &e2)
 {
@@ -816,7 +822,7 @@ void gridlayoutmanagerObj::implObj
 			{
 				dim_t padding=0;
 
-				switch (hv->horizontal_alignment) {
+				switch (child.horizontal_alignment) {
 				case halign::left:
 					max_width=element_position.width;
 					break;
@@ -846,7 +852,7 @@ void gridlayoutmanagerObj::implObj
 			{
 				dim_t padding=0;
 
-				switch (hv->vertical_alignment) {
+				switch (child.vertical_alignment) {
 				case valign::top:
 					max_height=element_position.height;
 					break;

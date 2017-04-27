@@ -60,14 +60,8 @@ corner_borderObj::implObj
 	("cornermask@libcxx",
 	 h.get_width()/20+1,
 	 h.get_height()/20+1, container,
-	 ({
-		 metrics::horizvert_axi m;
-
-		 m.horizontal_alignment=halign::fill;
-		 m.vertical_alignment=valign::fill;
-
-		 m;
-	 }), "corner@libcxx")
+	 metrics::horizvert_axi(),
+	 "corner@libcxx")
 {
 }
 
