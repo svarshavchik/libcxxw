@@ -10,12 +10,16 @@
 #include "focus/focusframecontainer_element.H"
 #include "background_color.H"
 #include "nonrecursive_visibility.H"
+#include "generic_window_handler.H"
+#include "connection_thread.H"
+#include "xid_t.H"
 #include "x/w/input_field.H"
 #include "x/w/new_layoutmanager.H"
 #include "x/w/input_field_config.H"
 #include "x/w/text_param.H"
 #include "x/w/gridlayoutmanager.H"
 #include "x/w/gridfactory.H"
+#include <courier-unicode.h>
 
 LIBCXXW_NAMESPACE_START
 
@@ -135,6 +139,51 @@ factoryObj::create_input_field(const text_param &text,
 
 	created(input_field);
 	return input_field;
+}
+
+input_fieldObj::internal_editor input_fieldObj::get_internal_editor() const
+{
+	const_gridlayoutmanager glm=get_layoutmanager();
+
+	container inner_container=glm->get(0, 0);
+
+	glm=inner_container->get_layoutmanager();
+
+	focusframecontainer ff=glm->get(0, 0);
+
+	editor_container ec=ff->get_focusable();
+
+	return ec->editor_element;
+}
+
+std::u32string input_fieldObj::get_unicode() const
+{
+	return get_internal_editor()->impl->get();
+}
+
+std::string input_fieldObj::get() const
+{
+	return unicode::iconvert::fromu::convert(get_unicode(),
+						 unicode::utf_8).first;
+}
+
+void input_fieldObj::set(const std::experimental::string_view &str)
+{
+	set(unicode::iconvert::tou::convert(std::string{str},
+					    unicode::utf_8).first);
+}
+
+void input_fieldObj::set(const std::experimental::u32string_view &str)
+{
+	auto impl=get_internal_editor()->impl;
+
+	impl->get_window_handler().thread()->run_as
+		(RUN_AS,
+		 [str=std::u32string{str}, impl]
+		 (IN_THREAD_ONLY)
+		 {
+			 impl->set(IN_THREAD, str);
+		 });
 }
 
 LIBCXXW_NAMESPACE_END

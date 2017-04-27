@@ -124,7 +124,7 @@ See COPYING for distribution information.
 
     <listitem>
       <para>
-	An <ulink url="&link-function-x--w--font-font;"><classname>x::w::font</classname></ulink>
+	An <ulink url="&link-x--w--font;"><classname>x::w::font</classname></ulink>
 	parameter sets the font for the following text.
 	<literal>#include &lt;&ns;/w/font_literals.H&gt;</literal> allows
 	specifying the font as a

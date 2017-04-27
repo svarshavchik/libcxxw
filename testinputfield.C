@@ -8,6 +8,7 @@
 #include <x/destroy_callback.H>
 #include <x/ref.H>
 #include <x/obj.H>
+#include <x/mcguffinstash.H>
 
 #include "x/w/main_window.H"
 #include "x/w/input_field.H"
@@ -51,22 +52,28 @@ void testbutton()
 		::create([&]
 			 (const auto &main_window)
 			 {
+				 auto stash=LIBCXX_NAMESPACE::mcguffinstash<>::create();
+				 main_window->appdata=stash;
+
 				 LIBCXX_NAMESPACE::w::gridlayoutmanager
 				     layout=main_window->get_layoutmanager();
 				 LIBCXX_NAMESPACE::w::gridfactory factory=
 				 layout->append_row();
 
-				 factory->create_input_field
-				 ({""}, {30});
+				 stash->insert("first",
+					       factory->create_input_field
+					       ({""}, {30}));
 
 				 factory=layout->append_row();
-				 factory->halign(LIBCXXW_NAMESPACE::halign::right)
-				 .create_input_field
-				 ({"sans_serif"_font,
-						 LIBCXX_NAMESPACE::w::rgb{
-						 0, 0,
-							 LIBCXX_NAMESPACE::w::rgb::maximum},
-						 "Hello world!"}, {30, 4});
+
+				 stash->insert("second",
+					       factory->halign(LIBCXXW_NAMESPACE::halign::right)
+					       .create_input_field
+					       ({"sans_serif"_font,
+							       LIBCXX_NAMESPACE::w::rgb{
+							       0, 0,
+								       LIBCXX_NAMESPACE::w::rgb::maximum},
+							       "Hello world!"}, {30, 4}));
 
 				 factory=layout->append_row();
 
@@ -97,6 +104,15 @@ void testbutton()
 
 	lock.wait([&] { return *lock; });
 
+	LIBCXX_NAMESPACE::mcguffinstash<> stash=main_window->appdata;
+
+	LIBCXX_NAMESPACE::w::input_field f=stash->get("first");
+
+	std::cout << f->get() << std::endl;
+
+	f=stash->get("second");
+
+	std::cout << f->get() << std::endl;
 	std::cout << "Done" << std::endl;
 }
 

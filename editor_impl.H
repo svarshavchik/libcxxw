@@ -255,6 +255,27 @@ class LIBCXX_HIDDEN editorObj::implObj
 	void insert(IN_THREAD_ONLY,
 		    const std::experimental::u32string_view &str);
 
+	//! Move cursor to the beginning of the text.
+	void to_begin(IN_THREAD_ONLY, const input_mask &mask);
+
+	//! Move cursor to the end of the text.
+	void to_end(IN_THREAD_ONLY, const input_mask &mask);
+
+	//! Select the entire text.
+	void select_all(IN_THREAD_ONLY);
+
+	//! What happens when DEL is pressed.
+	void delete_char_or_selection(IN_THREAD_ONLY, const input_mask &mask);
+
+ public:
+
+	//! Return the current contents  of the editor.
+
+	std::u32string get();
+
+	//! Set the current contents of the editor
+
+	void set(IN_THREAD_ONLY, const std::u32string &string);
 };
 
 LIBCXXW_NAMESPACE_END

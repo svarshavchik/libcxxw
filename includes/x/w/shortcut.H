@@ -30,12 +30,16 @@ public:
 
 	uint32_t keysym;
 
-	//! Default constructor
+	//! Default constructor.
+
+	//! The default constructor does not define any actual shortcut.
+	//! matches() will never return \c true.
+
 	shortcut();
 
 	//! Whether the shortcut is specified
 
-	//! Return \false for a default constructor.
+	//! Return \c false for a default constructor.
 
 	operator bool() const;
 
@@ -44,8 +48,8 @@ public:
 
 	//! Defines a shortcut comprising of a single key.
 
-	//! This is typically done only for \c \n or \c Esc.
-	//! Most shortcut should specify some modifier, like Alt.
+	//! This is typically done only for \c \\n or \c Esc.
+	//! Most shortcuts should have a modifier, like Alt.
 	shortcut(char32_t unicode);
 
 	//! Specify a shortcut comprising of a modifier and a key.

@@ -5,7 +5,7 @@
 
 <xsl:output method="text" />
 
-<xsl:template match="/doxygenindex/compound[@kind='class']">
+<xsl:template match="/doxygenindex/compound[@kind='class' or @kind='struct']">
   <xsl:text>&lt;!ENTITY link-</xsl:text>
   <xsl:value-of select="translate(name,': &amp;&lt;&gt;,_[]()*~&#34;','-----------ZDQ')" />
   <xsl:text> &quot;ref/</xsl:text>

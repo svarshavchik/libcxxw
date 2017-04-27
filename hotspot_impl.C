@@ -17,7 +17,9 @@
 
 LIBCXXW_NAMESPACE_START
 
-static hotspot_callback_t no_callback() { return [] {}; }
+static void no_callback()
+{
+}
 
 hotspotObj::implObj::implObj()
 	: hotspot_temperature_thread_only(temperature::cold),

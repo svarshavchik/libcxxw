@@ -8,8 +8,18 @@
 #include "x/w/input_fieldobj.H"
 #include "container_elementfwd.H"
 #include "child_elementobj.H"
+#include "editorfwd.H"
 
 LIBCXXW_NAMESPACE_START
+
+class LIBCXX_HIDDEN input_fieldObj::internal_editor
+	: public editor {
+
+ public:
+
+	using editor::editor;
+
+};
 
 //! \ref input_field "input_field" implementation class.
 
@@ -22,6 +32,10 @@ class LIBCXX_HIDDEN input_fieldObj::implObj
 
 	//! Destructor
 	~implObj();
+
+	//! Return the editor object that's in here.
+
+	editor get_editor();
 };
 
 LIBCXXW_NAMESPACE_END

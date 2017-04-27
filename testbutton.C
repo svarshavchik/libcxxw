@@ -65,7 +65,7 @@ void testbutton()
 				 ({"World"})->on_activate([] {
 						 std::cout << "World!"
 							   << std::endl;
-							 });
+					 });
 			 });
 
 	main_window->set_window_title("Hello world!");

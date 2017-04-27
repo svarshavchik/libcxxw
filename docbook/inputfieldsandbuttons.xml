@@ -1,0 +1,282 @@
+<!--
+
+Copyright 2017 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<chapter id="inputfieldsandbuttons">
+  <title>Input fields and buttons</title>
+
+  <mediaobject>
+    <imageobject>
+      <imagedata fileref="inputfieldsandbuttons.png" format="PNG"
+		 contentwidth="405px" contentdepth="221px" />
+    </imageobject>
+    <textobject>
+      <phrase>
+	Hello World!
+      </phrase>
+    </textobject>
+    <caption>
+      <para>
+	The following program creates a small window with some input fields
+	and buttons.
+      </para>
+    </caption>
+  </mediaobject>
+
+  <blockquote>
+    <title><ulink url="examples/inputfieldsandbuttons.C">inputfieldsandbuttons.C</ulink></title>
+
+    <informalexample>
+      <programlisting><xi:include href="../examples/inputfieldsandbuttons.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <section id="inputfields">
+    <title>Input fields</title>
+
+    <para>
+      A &factory;'s
+      <methodname>create_input_field</methodname>() method returns a new
+      <ulink url="&link-typedef-x--w-input-field;"><classname>&ns;::w::input_field</classname></ulink>.
+      <methodname>create_input_field</methodname>()'s parameters are:
+    </para>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  A <ulink url="&link-x--w--text-param;"><classname>&ns;::w::text_param</classname></ulink>
+	  that sets the initial contents of the text input field.
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  An optional
+	  <ulink url="&link-x--w--input-field-config;"><classname>&ns;::w::input_field_config</classname></ulink>
+	  parameter sets the number of rows and columns in the
+	  new input field.
+	</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>
+      <link linkend="inputfieldsandbuttons"><filename>inputfieldsandbuttons.C</filename></link>
+      creates two text input
+      fields. The first input field is 30 columns wide, and is a single line
+      text input field, by default.
+    </para>
+
+    <para>
+      The <classname>&ns;::w::text_param</classname> parameter
+      cannot contain any
+      formatting or color options, except that the
+      <classname>&ns;::w::text_param</classname>
+      can optionally specify an initial font or color.
+
+      <filename>inputfieldsandbuttons.C</filename>'s second text input
+      specifies a non-default proportional font. The second text input
+      field has four rows, and also 30 columns. However, the second text
+      input field's width is smaller because of the
+      non-default proportional font.
+    </para>
+
+    <para>
+      A single line text input field, by definition, accepts a single line
+      of text. The <keycap>Enter</keycap> key does nothing. A single line
+      text input field scrolls horizontally if more text is entered than can
+      fit within its margins.
+      A text input field consisting of two or more lines word-wraps instead
+      of scrolling horizontally, and inserts a hard line break in
+      response to the <keycap>Enter</keycap>; and scroll vertically when
+      the text has more rows than can fit into the text input field.
+    </para>
+
+    <section id="textclipboards">
+      <title>Clipboards</title>
+
+      <para>
+	&app;'s text input fields make use of two clipboards.
+      </para>
+
+      <variablelist>
+	<varlistentry>
+	  <term>Primary clipboard</term>
+
+	  <listitem>
+	    <para>
+	      A primary clipboard selection is made by holding the
+	      <keycap>Shift</keycap> while moving the cursor, or by
+	      highlighting text while holding the first mouse pointer button
+	      down. Releasing the <keycap>Shift</keycap> key or the mouse
+	      pointer button copies the highlighted text from the clipboard.
+	    </para>
+
+	    <para>
+	      The primary clipboard is temporary, and the copied text gets
+	      removed from the clipboard after the next keypress.
+	      <keycap>Ctrl</keycap>-<keycap>Space</keycap> inserts the text
+	      from the primary keyboard at the current cursor position.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>Secondary clipboard</term>
+
+	  <listitem>
+	    <para>
+	      After making a primary clipboard selection,
+	      <keycap>Ctrl</keycap>-<keycap>Insert</keycap> copies the
+	      primary clipboard selection to the secondary clipboard.
+	      <keycap>Shift</keycap>-<keycap>Delete</keycap> copies it
+	      and deletes the selected text
+	      (<keycap>Delete</keycap> by itself deletes the selected text
+	      without copying it).
+	    </para>
+
+	    <para>
+	      A secondary clipboard selection remains in place until it's
+	      replaced by another secondary clipboard selection; unlike the
+	      primary clipboard selection it does not get automatically
+	      removed.
+	      <keycap>Shift</keycap>-<keycap>Insert</keycap> inserts the text
+	      from the secondary clipboard at the current cursor position.
+	    </para>
+	  </listitem>
+	</varlistentry>
+      </variablelist>
+    </section>
+  </section>
+
+  <section id="buttons">
+    <title>Buttons</title>
+
+    <para>
+      <link linkend="inputfieldsandbuttons"><filename>inputfieldsandbuttons.C</filename></link>
+      creates three buttons at the bottom of the window,
+      using a &factory;'s
+      <methodname>create_normal_button_with_label</methodname>() and
+      <methodname>create_special_button_with_label</methodname>() methods.
+      The only difference between normal and special buttons is the buttons'
+      border: a normal border, and a thick border. In all other respects, there
+      is no difference between a normal and a special
+      <ulink url="&link-typedef-x--w-button;"><classname>&ns;::w::button</classname></ulink>.
+    </para>
+
+    <para>
+      A &factory; also offers more generic
+      <methodname>create_normal_button</methodname>() and
+      <methodname>create_special_button</methodname>() methods.
+      <filename>inputfieldsandbuttons.C</filename> creates ordinary buttons
+      with a simple text label inside them, but a button's contents are
+      arbitrary:
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+factory->create_normal_button([]
+     (const &ns;::w::factory &amp;f)
+     {
+
+     });</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      <methodname>create_normal_button</methodname>() and
+      <methodname>create_special_button</methodname>() take a single lambda
+      as a parameter. The lambda receives another factory as its sole
+      argument, and is expected to use that factory to create a single display
+      element. This becomes the contents of the button.
+    </para>
+
+    <para>
+      <methodname>create_normal_button_with_label</methodname>() and
+      <methodname>create_special_button_with_label</methodname>() are simply
+      wrappers that <link linkend="labels">use
+	<methodname>create_label</methodname>()</link> to put the label into
+      the button.
+    </para>
+
+    <para>
+      An optional second parameter specifies the button's keyboard shortcut,
+      this is a
+      <ulink url="&link-x--w--shortcut;"><classname>&ns;::w::shortcut</classname></ulink>
+      object.
+      There are several ways to activate a button:
+    </para>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  Clicking on the button with pointer button 1.
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  <keycap>Enter</keycap> or
+	  <keycap>Space</keycap> with the input focus in the button.
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  The keyboard shortcut, with the input focus anywhere in the window.
+	</para>
+      </listitem>
+    </itemizedlist>
+
+    <section id="shortcutactivation">
+      <title>Shortcut activation</title>
+
+      <para>
+	A keyboard shortcut gets recognized only if the key combination
+	does not get processed by the field with the current keyboard input
+	focus.
+	<link linkend="inputfieldsandbuttons"><filename>inputfieldsandbuttons.C</filename></link>
+	sets shortcuts for all three buttons it creates:
+	<keycap>Esc</keycap> for the <quote>Cancel</quote> button,
+	<keycap>ALT-R</keycap> for the <quote>Reset</quote> button, and
+	<keycap>Enter</keycap> for the <quote>Ok</quote> button, but
+	the <keycap>Enter</keycap> shortcut only works when the keyboard
+	focus is in the first text input field (or no input field has
+	keyboard focus).
+      </para>
+
+      <para>
+	When the current keyboard input focus is in the second text input
+	field, <keycap>Enter</keycap> inserts a new row. When it's in any
+	button, <keycap>Enter</keycap> activates that button.
+	A keyboard shortcut takes effect only if its key does not result
+	in any other action.
+      </para>
+    </section>
+  </section>
+
+  <section id="activation">
+    <title>Element activation</title>
+
+    <para>
+      <link linkend="inputfieldsandbuttons"><filename>inputfieldsandbuttons.C</filename></link>
+      shows an example of specifying what action to take in response when
+      a button gets activated by a pointer click or a key press, using
+      <methodname>on_activate</methodname>().
+    </para>
+
+    <para>
+      <methodname>on_activate</methodname>()'s parameter is a lambda that
+      gets executed when the button gets activated.
+      Note that the lambda gets invoked by the execution thread, see
+      <xref linkend="callbacks" /> and
+      <xref linkend="containerrefs" /> for more information.
+    </para>
+  </section>
+</chapter>
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "book" "chapter")
+End:
+-->

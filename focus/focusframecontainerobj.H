@@ -46,6 +46,9 @@ public:
 
 	//! Replace the display element.
 	factory set_focusable();
+
+	//! Return the display element
+	element get_focusable() const;
 };
 
 LIBCXXW_NAMESPACE_END

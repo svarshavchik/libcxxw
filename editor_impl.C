@@ -394,6 +394,20 @@ bool editorObj::implObj::process_keypress(IN_THREAD_ONLY, const key_event &ke)
 			create_secondary_selection(IN_THREAD);
 			return true;
 		}
+
+		if (ke.unicode == 1) // CTRL-A
+		{
+			select_all(IN_THREAD);
+			return true;
+		}
+
+		if (ke.unicode == ' ')
+		{
+			get_window_handler()
+				.paste(IN_THREAD, XCB_ATOM_PRIMARY,
+				       IN_THREAD->timestamp(IN_THREAD));
+		}
+
 		return false;
 	}
 
@@ -429,18 +443,7 @@ bool editorObj::implObj::process_keypress(IN_THREAD_ONLY, const key_event &ke)
 	case XK_Delete:
 	case XK_KP_Delete:
 		unblink(IN_THREAD);
-		if (selection_start(IN_THREAD))
-		{
-			if (ke.shift)
-				create_secondary_selection(IN_THREAD);
-			delete_selection(IN_THREAD);
-		}
-		else
-		{
-			auto clone=cursor->clone();
-			clone->next(IN_THREAD);
-			cursor->remove(IN_THREAD, clone);
-		}
+		delete_char_or_selection(IN_THREAD, ke);
 		recalculate(IN_THREAD);
 		draw_changes(IN_THREAD);
 		blink(IN_THREAD);
@@ -476,12 +479,10 @@ bool editorObj::implObj::process_keypress(IN_THREAD_ONLY, const key_event &ke)
 		}
 		return true;
 	case XK_KP_Home:
-		unblink(IN_THREAD);
-		blink(IN_THREAD);
+		to_begin(IN_THREAD, ke);
 		return true;
 	case XK_KP_End:
-		unblink(IN_THREAD);
-		blink(IN_THREAD);
+		to_end(IN_THREAD, ke);
 		return true;
 	case XK_Insert:
 		if (ke.shift)
@@ -839,6 +840,67 @@ void editorObj::implObj::remove_secondary_selection(IN_THREAD_ONLY)
 	secondary_selection(IN_THREAD)=nullptr;
 
 	get_window_handler().selection_discard(IN_THREAD, XCB_ATOM_SECONDARY);
+}
+
+void editorObj::implObj::to_begin(IN_THREAD_ONLY, const input_mask &mask)
+{
+	moving_cursor moving{IN_THREAD, *this, mask};
+
+	cursor->swap(cursor->begin());
+}
+
+void editorObj::implObj::to_end(IN_THREAD_ONLY, const input_mask &mask)
+{
+	moving_cursor moving{IN_THREAD, *this, mask};
+
+	cursor->swap(cursor->end());
+}
+
+void editorObj::implObj::select_all(IN_THREAD_ONLY)
+{
+	input_mask mask;
+
+	to_begin(IN_THREAD, mask);
+
+	mask.shift=true;
+
+	to_end(IN_THREAD, mask);
+}
+
+void editorObj::implObj::delete_char_or_selection(IN_THREAD_ONLY,
+						  const input_mask &mask)
+{
+	if (selection_start(IN_THREAD))
+	{
+		if (mask.shift)
+			create_secondary_selection(IN_THREAD);
+		delete_selection(IN_THREAD);
+	}
+	else
+	{
+		auto clone=cursor->clone();
+		clone->next(IN_THREAD);
+		cursor->remove(IN_THREAD, clone);
+	}
+}
+
+std::u32string editorObj::implObj::get()
+{
+	return cursor->begin()->get(cursor->end()).get_string();
+}
+
+void editorObj::implObj::set(IN_THREAD_ONLY, const std::u32string &string)
+{
+	input_mask dummy;
+
+	moving_cursor moving{IN_THREAD, *this, dummy};
+
+	to_end(IN_THREAD, dummy);
+	selection_start(IN_THREAD)=cursor->begin();
+	delete_char_or_selection(IN_THREAD, dummy);
+	cursor->insert(IN_THREAD, string);
+	recalculate(IN_THREAD);
+	draw_changes(IN_THREAD);
 }
 
 LIBCXXW_NAMESPACE_END

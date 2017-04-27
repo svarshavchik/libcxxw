@@ -86,4 +86,11 @@ factory focusframecontainerObj::set_focusable()
 		(ref<focusframecontainerObj>(this));
 }
 
+element focusframecontainerObj::get_focusable() const
+{
+	const_gridlayoutmanager glm=get_layoutmanager();
+
+	return glm->get(0, 0);
+}
+
 LIBCXXW_NAMESPACE_END

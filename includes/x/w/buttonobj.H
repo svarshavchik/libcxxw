@@ -15,6 +15,10 @@ LIBCXXW_NAMESPACE_START
 //! Button implementation object.
 
 //! \see button
+//!
+//! Internally derived from a container and a focusable object. The button
+//! manages its own internal container. Do not use container methods, they're
+//! for internal use only.
 
 class buttonObj : public containerObj,
 		  public focusableObj,

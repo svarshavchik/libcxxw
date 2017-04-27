@@ -140,6 +140,13 @@ make</programlisting>
 	this would prevent everything from getting destroyed properly,
 	and all resources released.
       </para>
+
+      <para>
+	This also means that a <link linkend="callbacks">callback</link>
+	that's related to a display element cannot capture its display
+	element, or any of its parent display elements, because this would
+	also create a circular reference.
+      </para>
     </section>
 
     <section id="connthread">
@@ -235,10 +242,10 @@ make</programlisting>
       <orderedlist>
 	<listitem>
 	  <para>
-	    Use &app;'s <classname>&ns;::ref</classname>s and
-	    <classname>&ns;::obj</classname>s to construc
-	    t reference-counted,
-	    thread-safe objects. See &app;'s documentation for more
+	    Use &libcxx;'s <classname>&ns;::ref</classname>s and
+	    <classname>&ns;::obj</classname>s to construct
+	    reference-counted, thread-safe objects. See &libcxx;'s
+	    documentation for more
 	    information.
 	  </para>
 
@@ -289,9 +296,8 @@ make</programlisting>
 	elements.
 	<link linkend="helloworld"><filename>helloworld.C</filename></link>
 	creates a
-	<classname>&ns;::w::main_window</classname> that has
-	label
-	element.
+	<classname>&ns;::w::main_window</classname> that has a
+	label element.
       </para>
 
       <para>
@@ -361,18 +367,18 @@ make</programlisting>
     </section>
 
     <section id="layoutmanager">
-      <title>Containers and layout manager</title>
+      <title>Containers, layout managers, and factories</title>
 
       <para>
+	A container is a display element that contains other display elements.
+	The main application window is a container.
 	Each container has a <quote>layout manager</quote>. The layout
-	manager is responsible for managing the display elements in the
-	container.
+	manager is arranges the display elements in the container.
 	A container's <methodname>get_layoutmanager</methodname>() method
 	returns a
-	<ulink url="&link-typedef-x--w-layoutmanager;"><classname>&ns;::w::layoutmanager</classname></ulink>,
-	which is a superclass of all the layout managers.
-	This makes it possible to add or remove display elements from the
-	container, or make other layout changes.
+	<ulink url="&link-typedef-x--w-layoutmanager;"><classname>&ns;::w::layoutmanager</classname></ulink>.
+	There are several layout managers that are derived from a
+	<classname>&ns;::w::layoutmanager</classname>.
       </para>
 
       <para>
@@ -380,9 +386,8 @@ make</programlisting>
 	and the return value of <methodname>get_layoutmanager</methodname>()
 	gets converted accordingly.
 	<link linkend="helloworld"><filename>helloworld.C</filename></link>
-	explicitly specifies the grid layout manager for its main window;
-	thusly setting <methodname>get_layoutmanager</methodname>()'s return
-	value to a
+	explicitly specifies the grid layout manager for its main window, so
+	its <methodname>get_layoutmanager</methodname>() returns a
 	<ulink url="&link-typedef-x--w-gridlayoutmanager;"><classname>&ns;::w::gridlayoutmanager</classname></ulink>.
       </para>
 
@@ -407,6 +412,17 @@ make</programlisting>
 	  the layout manager, take effect.
 	</para>
       </note>
+
+      <para>
+	A <ulink url="&link-typedef-x--w-factory;"><classname>&ns;::w::factory</classname></ulink>
+	creates new display elements. The factory comes from the layout manager,
+	and the process for obtaining a factory is specific to each layout
+	manager.
+	<link linkend="helloworld"><filename>helloworld.C</filename></link>
+	calls its grid layout manager's
+	<methodname>append_row</methodname>() method, which returns a
+	factory that places the new display element in a new row in the grid.
+      </para>
     </section>
 
     <section id="exception">

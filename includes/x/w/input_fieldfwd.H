@@ -15,12 +15,39 @@ class input_fieldObj;
 //! A text input field.
 
 //! \code
-//! factory->create_input_field({""}, {20});
+//! #include <INSERT_LIBX_NAMESPACE/w/input_field.H>
+//!
+//! INSERT_LIBX_NAMESPACE::w::input_field f=factory->create_input_field({""}, {20});
 //! \endcode
 //!
-//! \see factory
-//!
 //! This is a text input field, with a blinking cursor.
+//!
+//! \code
+//! std::string contents=f->get();
+//!
+//! std::u32string contents=f->get_unicode();
+//! \endcode
+//!
+//! get() returns the current contents of the input field, in UTF-8; and
+//! get_unicode() returns the current contents as a unicode string.
+//!
+//! \code
+//! f->set("Hello world");
+//!
+//! f->set_unicode(U"Hello world");
+//! \endcode
+//!
+//! set() specifies the new contents of the input field, in UTF-8.
+//! set_unicode() specifies the new contents as a unicode string.
+//!
+//! \note
+//! Getting the contents of the input field immediately after setting it may
+//! still retrieve the original contents. The input field, like all other
+//! display elements, gets updated by a separate execution thread, which
+//! might be busy with other things, before focusing its attention on
+//! updating the input field's contents.
+//!
+//! \see factory
 
 typedef ref<input_fieldObj> input_field;
 

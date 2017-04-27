@@ -116,8 +116,8 @@ Additionally, \c INSERT_LIBX_NAMESPACE::w::halign::fill and
 \c INSERT_LIBX_NAMESPACE::w::valign::fill are available options which
 stretch the display element to the full width or height of its row or column,
 if its bigger because of other display elements in the same row or column.
-This should be used only with nested \ref "containers" that are placed into the
-grid layout manager.
+This should be used only with nested \ref container "containers" that are
+placed into the grid layout manager.
 
 */
 

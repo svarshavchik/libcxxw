@@ -12,7 +12,15 @@ LIBCXXW_NAMESPACE_START
 
 class buttonObj;
 
-//! A button.
+//! A clickable button.
+
+//! \code
+//! button->on_activate([]
+//!                     {
+//!                     });
+//! \endcode
+//!
+//! on_activate() installs a callback that gets invoked by clicking the button.
 
 typedef ref<buttonObj> button;
 

@@ -17,7 +17,10 @@
 <!ENTITY helloworld SYSTEM "helloworld.xml">
 <!ENTITY label SYSTEM "label.xml">
 <!ENTITY wordwraplabel SYSTEM "wordwraplabel.xml">
+<!ENTITY inputfieldsandbuttons SYSTEM "inputfieldsandbuttons.xml">
 <!ENTITY connections_and_screens SYSTEM "connections_and_screens.xml">
+
+<!ENTITY factory "<link linkend='layoutmanager'>factory</link>">
 
 %entity-list;
 
@@ -41,6 +44,7 @@ See COPYING for distribution information.
     &helloworld;
     &label;
     &wordwraplabel;
+    &inputfieldsandbuttons;
     &connections_and_screens;
   </part>
 

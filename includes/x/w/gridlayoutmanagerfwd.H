@@ -25,7 +25,7 @@ INSERT_LIBX_NAMESPACE::w::gridfactory factory=gridlayout->append_row();
 \endcode
 
 append_row() adds a new empty row to the grid, and returns a
-\ref gridfactory "grid factory". The grid factory is set up to add
+\ref gridfactory "grid factory". This grid adds
 elements to the newly-added row.
 
 \code
@@ -33,6 +33,22 @@ gridlayout->erase();
 \endcode
 
 erase() removes all existing elements from the grid.
+
+\code
+gridlayout->erase(x, y);
+\endcode
+
+This erase() removes one element from an existing row in the grid.
+Any remaining elements in the row get shifted over by one column, filling
+the space from the removed element.
+
+\code
+elementptr e=gridlayout->get(x, y);
+\endcode
+
+get() returns the element at the given grid coordinates. A \c nullptr
+display element gets returned if no element exists at the given coordinates.
+
 
 */
 

@@ -19,7 +19,7 @@
 #include <string>
 #include <iostream>
 
-// This is the creator lambda, that's passed to create_mainwindow(), below,
+// This is the creator lambda, that gets passed to create_mainwindow() below,
 // factored out for readability.
 
 void create_mainwindow(const x::w::main_window &main_window)
