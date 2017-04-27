@@ -10,7 +10,7 @@
 #include <x/obj.H>
 
 #include "x/w/main_window.H"
-#include "x/w/actionbutton.H"
+#include "x/w/button.H"
 #include "x/w/gridlayoutmanager.H"
 #include "x/w/gridfactory.H"
 #include "x/w/text_param_literals.H"
@@ -39,7 +39,7 @@ public:
 
 typedef LIBCXX_NAMESPACE::ref<close_flagObj> close_flag_ref;
 
-void testactionbutton()
+void testbutton()
 {
 	LIBCXX_NAMESPACE::destroy_callback::base::guard guard;
 
@@ -54,14 +54,14 @@ void testactionbutton()
 				 LIBCXX_NAMESPACE::w::gridfactory factory=
 				     layout->append_row();
 
-				 factory->create_normal_actionbutton_with_label
+				 factory->create_normal_button_with_label
 				 ({"Hello"})->on_activate([] {
 						 std::cout << "Hello!"
 							   << std::endl;
 					 });
 
 
-				 factory->create_special_actionbutton_with_label
+				 factory->create_special_button_with_label
 				 ({"World"})->on_activate([] {
 						 std::cout << "World!"
 							   << std::endl;
@@ -95,7 +95,7 @@ void testactionbutton()
 int main(int argc, char **argv)
 {
 	try {
-		testactionbutton();
+		testbutton();
 	} catch (const LIBCXX_NAMESPACE::exception &e)
 	{
 		e->caught();

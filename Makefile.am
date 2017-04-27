@@ -23,9 +23,6 @@ libcxxw_la_LIBADD=-lcxx
 libcxxw_la_LDFLAGS=$(STATICLINKFLAGS)
 
 libcxxw_la_SOURCES=\
-	actionbutton.C				    \
-	actionbutton.H				    \
-	actionbutton_impl.C			    \
 	assert_or_throw.C			    \
 	assert_or_throw.H			    \
 	background_color.C			    \
@@ -43,6 +40,9 @@ libcxxw_la_SOURCES=\
 	border_info.H				    \
 	border_infofwd.H			    \
 	border_infomm.C				    \
+	button.C				    \
+	button.H				    \
+	button_impl.C			    \
 	corner_border.C				    \
 	corner_border.H				    \
 	corner_borderfwd.H			    \
@@ -227,6 +227,7 @@ libcxxw_la_SOURCES=\
 	gridlayoutmanager_impl_elements.H	    \
 	hotspot.C				    \
 	hotspot.H				    \
+	hotspotfwd.H				    \
 	hotspot_bgcolor.C			    \
 	hotspot_bgcolor.H			    \
 	hotspot_bgcolor_element.H		    \
@@ -365,6 +366,7 @@ libcxxw_la_SOURCES=\
 	screen_solidcolorpictures.C		    \
 	screen_solidcolorpictures.H		    \
 	screen_solidcolorpicturesfwd.H		    \
+	shortcut.C				    \
 	selection/current_selection.C		    \
 	selection/current_selection.H		    \
 	selection/current_selectionfwd.H	    \
@@ -442,7 +444,7 @@ TESTPROGRAMS=\
 	#
 
 INTERACTIVETESTPROGRAMS=\
-	testactionbutton				\
+	testbutton					\
 	testinputfield					\
 	testmainwindow					\
 	testlabel					\
@@ -453,9 +455,9 @@ EXTRA_PROGRAMS=$(TESTPROGRAMS) $(INTERACTIVETESTPROGRAMS)
 
 noinst_PROGRAMS=$(BUILT_TESTPROGRAMS) $(BUILT_INTERACTIVETESTPROGRAMS) genconstants
 
-testactionbutton_SOURCES=testactionbutton.C
-testactionbutton_LDADD=libcxxw.la
-testactionbutton_LDFLAGS=-static $(STATICLINKFLAGS)
+testbutton_SOURCES=testbutton.C
+testbutton_LDADD=libcxxw.la
+testbutton_LDFLAGS=-static $(STATICLINKFLAGS)
 
 testinputfield_SOURCES=testinputfield.C
 testinputfield_LDADD=libcxxw.la

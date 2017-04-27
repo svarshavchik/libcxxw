@@ -5,12 +5,12 @@
 #ifndef hotspot_h
 #define hotspot_h
 
-#include "x/w/hotspotobj.H"
-#include "x/w/hotspotfwd.H"
+#include "hotspotfwd.H"
 #include "x/w/elementobj.H"
 #include "x/w/input_mask.H"
 #include "x/w/focusablefwd.H"
 #include "x/w/key_eventfwd.H"
+#include "x/w/shortcut.H"
 #include "focus/focus.H"
 #include "focus/focusable_elementfwd.H"
 #include "connection_threadfwd.H"
@@ -50,6 +50,11 @@ class LIBCXX_HIDDEN hotspotObj::implObj : virtual public obj {
 
 	//! Destructor
 	~implObj();
+
+	//! Invoked from the public object's destructor
+
+	//! Uninstalls any currently-installed shortcut
+	void hotspot_deinitialize(IN_THREAD_ONLY);
 
 	//! Must be implement in the subclass.
 
@@ -127,6 +132,28 @@ class LIBCXX_HIDDEN hotspotObj::implObj : virtual public obj {
 	//! The default implementation invokes callback().
 
 	virtual void activated(IN_THREAD_ONLY);
+
+ private:
+
+	//! The shortcut for this hotspot
+	shortcut hotspot_shortcut;
+
+	//! When shortcut is non-empty, it's installed a shortcut_lookup_t.
+
+	shortcut_lookup_t::iterator installed_hotspot_iter;
+
+ public:
+
+	//! Set the keyboard shortcut for this hotspot.
+
+	void set_shortcut(IN_THREAD_ONLY, const shortcut &);
+
+	//! Get the keyboard shortcut.
+
+	inline const shortcut &get_shortcut(IN_THREAD_ONLY)
+	{
+		return hotspot_shortcut;
+	}
 };
 
 LIBCXXW_NAMESPACE_END

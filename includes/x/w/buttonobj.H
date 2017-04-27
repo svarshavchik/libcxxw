@@ -2,25 +2,23 @@
 ** Copyright 2017 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
-#ifndef x_w_actionbuttonobj_h
-#define x_w_actionbuttonobj_h
+#ifndef x_w_buttonobj_h
+#define x_w_buttonobj_h
 
-#include <x/w/actionbuttonfwd.H>
+#include <x/w/buttonfwd.H>
 #include <x/w/containerobj.H>
 #include <x/w/focusableobj.H>
-#include <x/w/factoryfwd.H>
-#include <x/w/gridlayoutmanagerobj.H>
 #include <x/w/hotspot_bgcolorobj.H>
 
 LIBCXXW_NAMESPACE_START
 
-//! Methods common to all display action buttons
+//! Button implementation object.
 
-//! \see actionbutton
+//! \see button
 
-class actionbuttonObj : public containerObj,
-			public focusableObj,
-			public hotspot_bgcolorObj {
+class buttonObj : public containerObj,
+		  public focusableObj,
+		  public hotspot_bgcolorObj {
 
 public:
 	class implObj;
@@ -32,14 +30,14 @@ public:
 	const ref<implObj> impl;
 
 	//! Constructor
-	actionbuttonObj(const ref<implObj> &,
-			const internal_construction_info &)
+	buttonObj(const ref<implObj> &,
+		  const internal_construction_info &)
 		LIBCXX_HIDDEN;
 
 	//! Destructor
-	~actionbuttonObj() LIBCXX_HIDDEN;
+	~buttonObj() LIBCXX_HIDDEN;
 
-	//! Return the focusable object inside the action button.
+	//! Return the focusable object inside the button.
 
 	//! \internal
 

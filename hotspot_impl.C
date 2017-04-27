@@ -9,8 +9,11 @@
 #include "element_screen.H"
 #include "x/w/key_event.H"
 #include "focus/focusable_element.H"
+#include "generic_window_handler.H"
 #include "connection_thread.H"
 #include "catch_exceptions.H"
+
+#include <x/mcguffinunordered_multimap.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -23,6 +26,11 @@ hotspotObj::implObj::implObj()
 }
 
 hotspotObj::implObj::~implObj()=default;
+
+void hotspotObj::implObj::hotspot_deinitialize(IN_THREAD_ONLY)
+{
+	set_shortcut(IN_THREAD, shortcut());
+}
 
 void hotspotObj::implObj::keyboard_focus(IN_THREAD_ONLY,
 					 focus_change event,
@@ -134,6 +142,22 @@ void hotspotObj::implObj::activated(IN_THREAD_ONLY)
 	try {
 		callback(IN_THREAD)();
 	} CATCH_EXCEPTIONS;
+}
+
+void hotspotObj::implObj::set_shortcut(IN_THREAD_ONLY, const shortcut &sc)
+{
+	auto &h=get_hotspot_element().get_window_handler();
+
+	if (hotspot_shortcut) // Existing shortcut
+		h.shortcut_lookup(IN_THREAD).erase(installed_hotspot_iter);
+
+	if (sc)
+	{
+		installed_hotspot_iter=h.shortcut_lookup(IN_THREAD)
+			.insert({sc.unicode, ref<implObj>(this)});
+	}
+
+	hotspot_shortcut=sc;
 }
 
 LIBCXXW_NAMESPACE_END

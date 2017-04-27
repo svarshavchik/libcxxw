@@ -21,6 +21,7 @@
 #include <xcb/xcb_icccm.h>
 #include <X11/keysym.h>
 #include "child_element.H"
+#include "hotspot.H"
 #include "catch_exceptions.H"
 
 LIBCXXW_NAMESPACE_START
@@ -381,11 +382,66 @@ void generic_windowObj::handlerObj
 	// If there's no element in the focus, jump to our handler,
 	// directly.
 
+	bool processed;
+
 	if (keyboard_focus(IN_THREAD))
-		keyboard_focus(IN_THREAD)->get_focusable_element()
+		processed=keyboard_focus(IN_THREAD)->get_focusable_element()
 			.process_key_event(IN_THREAD, ke);
 	else
-		process_key_event(IN_THREAD, ke);
+		processed=process_key_event(IN_THREAD, ke);
+
+	// Check for shortcuts, as the last resort
+	if (processed)
+		return;
+
+	auto shortcuts=shortcut_lookup(IN_THREAD).equal_range(ke.unicode);
+
+	while (shortcuts.first != shortcuts.second)
+	{
+		auto best_shortcut=shortcuts.first->second;
+
+		++shortcuts.first;
+
+		if (!best_shortcut->get_hotspot_focusable()
+		    .is_enabled(IN_THREAD)
+		    ||
+		    !best_shortcut->get_shortcut(IN_THREAD).matches(ke))
+			continue;
+
+		// If there are shortcuts for both shift-Foo and
+		// shift-ctrl-Foo, make sure that shift-ctrl-Foo matches
+		// the right shortcut.
+
+		auto best_ordinal=
+			best_shortcut->get_shortcut(IN_THREAD)
+			.ordinal();
+
+		while (shortcuts.first != shortcuts.second)
+		{
+			auto p=shortcuts.first->second;
+
+			++shortcuts.first;
+
+			if (!p->get_hotspot_focusable()
+			    .is_enabled(IN_THREAD)
+			    ||
+			    !p->get_shortcut(IN_THREAD).matches(ke))
+				continue;
+
+			auto ordinal=p->get_shortcut(IN_THREAD)
+				.ordinal();
+
+			if (ordinal < best_ordinal)
+				continue;
+
+			best_shortcut=p;
+			best_ordinal=ordinal;
+		}
+
+		try {
+			best_shortcut->activated(IN_THREAD);
+		} CATCH_EXCEPTIONS;
+	}
 }
 
 void generic_windowObj::handlerObj

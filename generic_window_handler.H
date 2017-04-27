@@ -12,6 +12,7 @@
 #include "background_colorfwd.H"
 #include "connection_threadfwd.H"
 #include "container_elementfwd.H"
+#include "hotspotfwd.H"
 #include "x/w/pictformatfwd.H"
 #include "x/w/types.H"
 #include "x/w/focusablefwd.H"
@@ -20,6 +21,7 @@
 #include "x/w/fontfwd.H"
 #include <experimental/string_view>
 #include <courier-unicode.h>
+#include <list>
 
 LIBCXXW_NAMESPACE_START
 
@@ -372,7 +374,10 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! A list of focusable fields in this window.
 
 	//! This points to child elements. This would normally be a circular
-	//! reference. However, focusableObj's destructor is going to take
+	//! reference. However, each focusable implementation object is pointed
+	//! to by \ref focusableObj::ownerObj "an owner object", whose
+	//! constructor and destructor invoke focusable_initialize() and
+	//! focusable_deinitialize(). focusable_deinitialize() takes
 	//! care of dropping the reference to the child member.
 
 	std::list<ref<focusableImplObj>> focusable_fields_thread_only;
@@ -380,9 +385,14 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! Current field that's receiving input focus.
 	ptr<focusableImplObj> keyboard_focus_thread_only;
 
+	//! Look up focusables that installed a shortcut.
+
+	shortcut_lookup_t shortcut_lookup_thread_only;
+
  public:
 	THREAD_DATA_ONLY(focusable_fields);
 	THREAD_DATA_ONLY(keyboard_focus);
+	THREAD_DATA_ONLY(shortcut_lookup);
 
 	//! Move the current keyboard focus to another element.
 	void set_keyboard_focus_to(IN_THREAD_ONLY, const focusable_impl &f);

@@ -140,7 +140,8 @@ public:
 
 	main_window do_create_mainwindow(const function<main_window_creator_t>
 					 &f,
-					 const new_layoutmanager &factory);
+					 const new_layoutmanager &factory)
+		LIBCXX_PUBLIC;
 
 	//! Shortcut to render data.
 

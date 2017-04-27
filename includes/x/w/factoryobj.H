@@ -16,8 +16,9 @@
 #include <x/w/border_infommfwd.H>
 #include <x/w/alignment.H>
 #include <x/w/text_paramfwd.H>
+#include <x/w/shortcutfwd.H>
 #include <x/w/labelfwd.H>
-#include <x/w/actionbuttonfwd.H>
+#include <x/w/buttonfwd.H>
 #include <x/w/input_fieldfwd.H>
 #include <x/obj.H>
 #include <x/functional.H>
@@ -45,6 +46,10 @@ private:
 
 	virtual void created(const element &)=0;
 public:
+	//! A creator that takes a factory parameter.
+
+	typedef void factory_creator_t(const factory &);
+
 	//! Constructor
 	factoryObj(const ref<containerObj::implObj> &container_impl)
 		LIBCXX_HIDDEN;
@@ -85,7 +90,8 @@ public:
 
 	container do_create_container(const function<void (const container &)>
 				      &creator,
-				      const new_layoutmanager &layout_manager);
+				      const new_layoutmanager &layout_manager)
+		LIBCXX_PUBLIC;
 
 	//! Create a label
 
@@ -102,54 +108,95 @@ public:
 			   double widthmm,
 			   halign alignment=halign::left);
 
-	//! Create an action button with a label, and a normal border.
-	actionbutton
-	create_normal_actionbutton_with_label(const text_param &text,
-					      halign alignment=halign::left);
-
-	//! Create an action button with a label, and a special border.
-	actionbutton
-	create_special_actionbutton_with_label(const text_param &text,
+	//! Create an button with a label, and a normal border.
+	button create_normal_button_with_label(const text_param &text,
 					       halign alignment=halign::left);
 
-	//! Create an action button with custom contents and a normal border.
+	//! Create an button with a label, and a normal border.
+
+	//! \overload
+	button create_normal_button_with_label(const text_param &text,
+					       const shortcut &key_shortcut,
+					       halign alignment=halign::left);
+
+	//! Create an button with a label, and a special border.
+	button create_special_button_with_label(const text_param &text,
+						halign alignment=halign::left);
+
+	//! Create an button with a label, and a special border.
+
+	//! \overload
+	button create_special_button_with_label(const text_param &text,
+						const shortcut &key_shortcut,
+						halign alignment=halign::left);
+
+
+	//! Create an button with custom contents and a normal border.
 	template<typename functor>
-	actionbutton create_normal_actionbutton(functor &&f)
+	button create_normal_button(functor &&f)
 	{
-		return do_create_normal_actionbutton(make_function<void
-						     (const factory &)>
-						     (std::forward<function>(f))
-						     );
+		return do_create_normal_button(make_function<factory_creator_t>
+					       (std::forward<function>(f))
+					       );
 	}
 
-	//! Create an action button with custom contents and a special border.
+	//! Create an button with custom contents and a normal border.
+
+	//! \overload
 	template<typename functor>
-	actionbutton create_special_actionbutton(functor &&f)
+	button create_normal_button(functor &&f,
+				    const shortcut &shortcut_key)
 	{
-		return do_create_normal_actionbutton(make_function<void
-						     (const factory &)>
-						     (std::forward<function>(f))
-						     );
+		return do_create_normal_button(make_function<factory_creator_t>
+					       (std::forward<function>(f)),
+					       shortcut_key);
 	}
 
-	//! Helper for creating action buttons.
-	actionbutton do_create_normal_actionbutton(const function<
-						   void (const factory &)> &);
+	//! Create an button with custom contents and a special border.
+	template<typename functor>
+	button create_special_button(functor &&f)
+	{
+		return do_create_special_button(make_function<factory_creator_t>
+						(std::forward<function>(f))
+						);
+	}
 
-	//! Helper for creating action buttons.
-	actionbutton do_create_special_actionbutton(const function<
-						    void (const factory &)> &);
+	//! Create an button with custom contents and a special border.
 
-	//! Helper for creating action buttons.
-	actionbutton do_create_actionbutton(const char *,
-					    const function<
-					    void (const factory &)> &);
+	//! \overload
+	template<typename functor>
+	button create_special_button(functor &&f,
+				     const shortcut &shortcut_key)
+	{
+		return do_create_special_button(make_function<factory_creator_t>
+						(std::forward<function>(f)),
+						shortcut_key);
+	}
 
-	//! Helper for creating action buttons.
-	actionbutton
-	create_actionbutton_with_label(const char *theme_border,
-				       const text_param &text,
-				       halign alignment=halign::left);
+	//! Helper for creating buttons.
+	button do_create_normal_button(const function<factory_creator_t> &);
+
+	//! Helper for creating buttons.
+	button do_create_special_button(const function<factory_creator_t> &);
+
+	//! Helper for creating buttons.
+	button do_create_normal_button(const function<factory_creator_t> &,
+				       const shortcut &);
+
+	//! Helper for creating buttons.
+	button do_create_special_button(const function<factory_creator_t> &,
+					const shortcut &);
+
+	//! Helper for creating buttons.
+	button do_create_button(const char *,
+				const function<factory_creator_t> &,
+				const shortcut &);
+
+	//! Helper for creating buttons.
+	button create_button_with_label(const char *theme_border,
+					const text_param &text,
+					const shortcut &shortcut_key,
+					halign alignment=halign::left);
 
 	//! Create a text input field
 

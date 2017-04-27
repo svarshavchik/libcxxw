@@ -85,9 +85,9 @@ INSERT_LIBX_NAMESPACE::w::container new_container=
 
 create_container() creates a new element that is, itself, another container.
 
-When a grid layout manager's sophisticated layout capabilities are simply
-not enough, one of its element can simply be another grid layout manager,
-for example.
+A grid layout manager's sophisticated layout capabilities are simply
+not enough sometimes. For those situations, one of its elements can simply
+be another grid layout manager.
 
 \par Labels
 
@@ -121,46 +121,55 @@ An optional third parameter sets the label's \ref halign "alignment".
 \par Buttons
 
 \code
-#include <INSERT_LIBX_NAMESPACE/w/actionbutton.H>
+#include <INSERT_LIBX_NAMESPACE/w/button.H>
 
-INSERT_LIBX_NAMESPACE::w::actionbutton button=
-   factory->create_normal_actionbutton(
+INSERT_LIBX_NAMESPACE::w::button button=
+   factory->create_normal_button(
           []
           (const INSERT_LIBX_NAMESPACE::w::factory &f)
           {
               f->create_label({"Cancel"});
           });
 
-INSERT_LIBX_NAMESPACE::w::actionbutton button=
-   factory->create_special_actionbutton(
+INSERT_LIBX_NAMESPACE::w::button button=
+   factory->create_special_button(
           []
           (const INSERT_LIBX_NAMESPACE::w::factory &f)
           {
               f->create_label({"Ok"});
           });
 
-INSERT_LIBX_NAMESPACE::w::actionbutton button=
-   factory->create_normal_actionbutton_with_label({"Cancel"});
+INSERT_LIBX_NAMESPACE::w::button button=
+   factory->create_normal_button_with_label({"Cancel"});
 
-INSERT_LIBX_NAMESPACE::w::actionbutton button=
-   factory->create_special_actionbutton_with_label({"Cancel"});
+INSERT_LIBX_NAMESPACE::w::button button=
+   factory->create_special_button_with_label({"Cancel"});
 \endcode
 
 These functions create buttons. Buttons have either normal borders, or
 "special" borders, that emphasize that the button is the default choice,
 in some fashion.
 
-\c create_normal_actionbutton()'s and \c create_special_actionbutton()'s
+\c create_normal_button()'s and \c create_special_button()'s
 parameter
 is an initializer lambda. The initializer lambda receives its own
 factory as a parameter. The initializer lambda must use the factory to
-create a single display element that servers as the contents of the action
+create a single display element that servers as the contents of the
 button.
 
-create_normal_actionbutton_with_label() and
-create_special_actionbutton_with_label() are short-cuts that use
-\c create_label() to create the contents of the action button, a plain
+create_normal_button_with_label() and
+create_special_button_with_label() are short-cuts that use
+\c create_label() to create the contents of the button, a plain
 text label. They take the same parameters as create_label().
+
+\code
+INSERT_LIBX_NAMESPACE::w::button button=
+   factory->create_normal_button_with_label({"Cancel"}, {'\n'});
+\endcode
+
+When creating a button, a \ref shortcut "INSERT_LIBX_NAMESPACE::w::shortcut"
+is an optional second parameter that defines a keyboard shortcut
+for activating the button even when it does not have keyboard input focus.
 
 \par Input fields
 

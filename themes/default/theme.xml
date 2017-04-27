@@ -103,8 +103,8 @@
   </border>
 
   <!--
-      Action button borders are size in units based on
-      action_button_base_[horiz|vert].
+      Button borders are size in units based on
+      button_base_[horiz|vert].
 
 Normal action button border: 3 units radius = 6 padding, 1 unit width/height=7
 units width/height.
@@ -114,31 +114,31 @@ Special action button border: 2 units radius = 4 padding, 3 unit width/height=7
 Padding: (normal|special)_action_inner_(hpad|vpad).
 
   -->
-  <dim id="action_button_base_horiz" axis="horiz">.2</dim>
-  <dim id="action_button_base_vert"  axis="vert">.2</dim>
+  <dim id="button_base_horiz" axis="horiz">.2</dim>
+  <dim id="button_base_vert"  axis="vert">.2</dim>
 
-  <border id="normal_action_border">
-    <width scale="action_button_base_horiz">1</width>
-    <height scale="action_button_base_vert">1</height>
-    <hradius scale="action_button_base_horiz">3</hradius>
-    <vradius scale="action_button_base_vert">3</vradius>
+  <border id="normal_button_border">
+    <width scale="button_base_horiz">1</width>
+    <height scale="button_base_vert">1</height>
+    <hradius scale="button_base_horiz">3</hradius>
+    <vradius scale="button_base_vert">3</vradius>
     <dash axis="horiz">.5</dash>
     <dash axis="vert">.5</dash>
     <color>action_color1</color>
     <color2>action_color2</color2>
   </border>
 
-  <border id="special_action_border">
-    <width scale="action_button_base_horiz">3</width>
-    <height scale="action_button_base_vert">3</height>
-    <hradius scale="action_button_base_horiz">2</hradius>
-    <vradius scale="action_button_base_vert">2</vradius>
+  <border id="special_button_border">
+    <width scale="button_base_horiz">3</width>
+    <height scale="button_base_vert">3</height>
+    <hradius scale="button_base_horiz">2</hradius>
+    <vradius scale="button_base_vert">2</vradius>
     <color>action_color1</color>
   </border>
 
-  <color  id="action_normal_color" scale="70%" />
-  <color  id="action_selected_color" scale="80%" />
-  <color  id="action_active_color" scale="100%" />
+  <color  id="button_normal_color" scale="70%" />
+  <color  id="button_selected_color" scale="80%" />
+  <color  id="button_active_color" scale="100%" />
 
   <!-- Fonts -->
 
@@ -162,7 +162,7 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
     <point_size>12</point_size>
   </font>
 
-  <font id="action_button" from="serif">
+  <font id="button" from="serif">
     <point_size>16</point_size>
   </font>
 
@@ -195,7 +195,7 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
   <!-- Labels -->
 
   <font id="label" from="sans_serif">
-    <point_size>12</point_size>
+    <point_size>14</point_size>
   </font>
 
   <color id="label_foreground_color" scale="10%" />

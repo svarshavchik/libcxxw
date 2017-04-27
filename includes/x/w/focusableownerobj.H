@@ -9,7 +9,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-//! Subclass of focusableObj which owners the internal implementation object.
+//! Subclass of focusableObj which owns the internal implementation object.
 
 //! \see focusable
 

@@ -18,7 +18,7 @@
 #include "x/w/font_literals.H"
 #include "x/w/screen.H"
 #include "x/w/connection.H"
-#include "x/w/actionbutton.H"
+#include "x/w/button.H"
 #include <string>
 #include <iostream>
 
@@ -41,22 +41,27 @@ public:
 
 typedef LIBCXX_NAMESPACE::ref<close_flagObj> close_flag_ref;
 
-void testactionbutton()
+void testbutton()
 {
 	LIBCXX_NAMESPACE::destroy_callback::base::guard guard;
 
 	auto close_flag=close_flag_ref::create();
 
 	auto main_window=LIBCXX_NAMESPACE::w::main_window
-		::create([]
+		::create([&]
 			 (const auto &main_window)
 			 {
 				 LIBCXX_NAMESPACE::w::gridlayoutmanager
 				     layout=main_window->get_layoutmanager();
 				 LIBCXX_NAMESPACE::w::gridfactory factory=
-				     layout->append_row();
+				 layout->append_row();
 
 				 factory->create_input_field
+				 ({""}, {30});
+
+				 factory=layout->append_row();
+				 factory->halign(LIBCXXW_NAMESPACE::halign::right)
+				 .create_input_field
 				 ({"sans_serif"_font,
 						 LIBCXX_NAMESPACE::w::rgb{
 						 0, 0,
@@ -64,7 +69,11 @@ void testactionbutton()
 						 "Hello world!"}, {30, 4});
 
 				 factory=layout->append_row();
-				 factory->create_special_actionbutton_with_label({"Ok"});
+
+				 auto b=factory->create_special_button_with_label({"Ok"},{'\n'});
+				 b->on_activate([close_flag] {
+						 close_flag->close();
+					 });
 			 });
 
 	main_window->set_window_title("Hello world!");
@@ -94,7 +103,7 @@ void testactionbutton()
 int main(int argc, char **argv)
 {
 	try {
-		testactionbutton();
+		testbutton();
 	} catch (const LIBCXX_NAMESPACE::exception &e)
 	{
 		e->caught();

@@ -6,12 +6,8 @@
 #define x_w_pixmapobj_h
 
 #include <x/w/pixmapfwd.H>
-#include <x/w/new_layoutmanagerfwd.H>
-#include <x/w/screenfwd.H>
-#include <x/w/containerobj.H>
 #include <x/w/drawableobj.H>
 #include <x/obj.H>
-#include <x/logger.H>
 
 LIBCXXW_NAMESPACE_START
 

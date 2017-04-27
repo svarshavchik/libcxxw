@@ -6,6 +6,7 @@
 #include "scratch_buffer.H"
 #include "x/w/picture.H"
 #include "x/w/pixmap.H"
+#include <x/exception.H>
 
 LIBCXXW_NAMESPACE_START
 
