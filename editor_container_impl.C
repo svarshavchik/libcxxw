@@ -12,6 +12,7 @@
 #include "peephole_layoutmanager_impl.H"
 #include "fonts/current_fontcollection.H"
 #include "fonts/fontcollection.H"
+#include "x/w/button_event.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -56,13 +57,11 @@ void editor_containerObj::implObj::recalculate(IN_THREAD_ONLY)
 }
 
 bool editor_containerObj::implObj::process_button_event(IN_THREAD_ONLY,
-							int button,
-							bool press,
+							const button_event &be,
 							xcb_timestamp_t
-							timestamp,
-							const input_mask &mask)
+							timestamp)
 {
-	if ((button != 1 && button != 2) || !press)
+	if ((be.button != 1 && be.button != 2) || !be.press)
 		return false;
 
 	invoke_layoutmanager

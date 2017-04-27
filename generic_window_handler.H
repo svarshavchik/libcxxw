@@ -281,9 +281,9 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! and it is a button #1 press, the keyboard input focus gets removed
 	//! from the element that currently has the keyboard input focus.
 
-	void button_event(IN_THREAD_ONLY,
-			  const xcb_button_release_event_t *event,
-			  bool buttonpress);
+	void do_button_event(IN_THREAD_ONLY,
+			     const xcb_button_release_event_t *event,
+			     bool buttonpress);
 
 	//! The top level display element cannot grab. Throw an exception.
 

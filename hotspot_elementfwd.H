@@ -8,6 +8,7 @@
 #include "hotspot.H"
 #include "x/w/elementobj.H"
 #include "x/w/input_mask.H"
+#include "x/w/button_eventfwd.H"
 #include "x/w/key_eventfwd.H"
 #include "focus/focus.H"
 #include "focus/focusable_elementfwd.H"
@@ -52,10 +53,8 @@ class LIBCXX_HIDDEN hotspot_elementObj
 
 	bool process_key_event(IN_THREAD_ONLY, const key_event &ke) override;
 	bool process_button_event(IN_THREAD_ONLY,
-				  int button,
-				  bool press,
-				  xcb_timestamp_t timestamp,
-				  const input_mask &mask) override;
+				  const button_event &be,
+				  xcb_timestamp_t timestamp) override;
 };
 
 

@@ -715,10 +715,8 @@ bool elementObj::implObj::uses_input_method()
 }
 
 bool elementObj::implObj::process_button_event(IN_THREAD_ONLY,
-					       int button,
-					       bool press,
-					       xcb_timestamp_t timestamp,
-					       const input_mask &mask)
+					       const button_event &be,
+					       xcb_timestamp_t timestamp)
 {
 	return false;
 }

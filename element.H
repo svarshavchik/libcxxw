@@ -12,6 +12,7 @@
 #include "x/w/pictformatfwd.H"
 #include "x/w/scratch_bufferfwd.H"
 #include "x/w/input_mask.H"
+#include "x/w/button_eventfwd.H"
 #include "connection_threadfwd.H"
 #include "elementfwd.H"
 #include "element_draw.H"
@@ -741,10 +742,8 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! The default implementation always returns false.
 
 	virtual bool process_button_event(IN_THREAD_ONLY,
-					  int button,
-					  bool press,
-					  xcb_timestamp_t timestamp,
-					  const input_mask &mask);
+					  const button_event &be,
+					  xcb_timestamp_t timestamp);
 
 	//! Whether this element will use the X Input Method.
 

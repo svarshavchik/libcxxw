@@ -42,7 +42,8 @@ libcxxw_la_SOURCES=\
 	border_infomm.C				    \
 	button.C				    \
 	button.H				    \
-	button_impl.C			    \
+	button_event.C				    \
+	button_impl.C				    \
 	corner_border.C				    \
 	corner_border.H				    \
 	corner_borderfwd.H			    \

@@ -22,6 +22,7 @@
 #include "generic_window_handler.H"
 #include "xim/ximclient.H"
 #include "x/w/key_event.H"
+#include "x/w/button_event.H"
 #include <x/vector.H>
 #include <x/weakcapture.H>
 #include <X11/keysym.h>
@@ -590,25 +591,23 @@ void editorObj::implObj::scroll_cursor_into_view(IN_THREAD_ONLY)
 }
 
 bool editorObj::implObj::process_button_event(IN_THREAD_ONLY,
-					      int button,
-					      bool press,
-					      xcb_timestamp_t timestamp,
-					      const input_mask &mask)
+					      const button_event &be,
+					      xcb_timestamp_t timestamp)
 {
-	if (press && (button == 1 || button == 2))
+	if (be.press && (be.button == 1 || be.button == 2))
 	{
-		moving_cursor moving{IN_THREAD, *this, mask};
+		moving_cursor moving{IN_THREAD, *this, be};
 
 		cursor->moveto(IN_THREAD, most_recent_x, most_recent_y);
 
 		// We grab the pointer while the button is held down.
 		grab(IN_THREAD);
 
-		if (button == 2)
+		if (be.button == 2)
 			get_window_handler().paste(IN_THREAD, XCB_ATOM_PRIMARY,
 						   timestamp);
 	}
-	else if (button == 1)
+	else if (be.button == 1)
 	{
 		stop_scrolling(IN_THREAD);
 		create_primary_selection(IN_THREAD);
@@ -616,8 +615,7 @@ bool editorObj::implObj::process_button_event(IN_THREAD_ONLY,
 
 	// We do not consume the button event. The editor container also
 	// consumes the button press, and moves the input focus here.
-	return superclass_t::process_button_event(IN_THREAD, button, press,
-						  timestamp, mask);
+	return superclass_t::process_button_event(IN_THREAD, be, timestamp);
 }
 
 void editorObj::implObj::motion_event(IN_THREAD_ONLY, coord_t x, coord_t y,

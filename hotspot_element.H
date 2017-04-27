@@ -6,6 +6,7 @@
 #define hotspot_element_h
 
 #include "x/w/hotspot.H"
+#include "x/w/button_event.H"
 #include "hotspot_elementfwd.H"
 #include "focus/focusable_element.H"
 
@@ -98,18 +99,14 @@ bool hotspot_elementObj<element_impl>
 template<typename element_impl>
 bool hotspot_elementObj<element_impl>
 ::process_button_event(IN_THREAD_ONLY,
-		       int button,
-		       bool press,
-		       xcb_timestamp_t timestamp,
-		       const input_mask &mask)
+		       const button_event &be,
+		       xcb_timestamp_t timestamp)
 {
 	auto ret=focusable_elementObj<element_impl>
-		::process_button_event(IN_THREAD, button, press, timestamp,
-				       mask);
+		::process_button_event(IN_THREAD, be, timestamp);
 
-	if (hotspotObj::implObj::process_button_event(IN_THREAD, button, press,
-						      timestamp,
-						      mask))
+	if (hotspotObj::implObj::process_button_event(IN_THREAD, be,
+						      timestamp))
 		ret=true;
 
 	return ret;

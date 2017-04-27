@@ -11,6 +11,7 @@
 #include "focus/focusable_elementfwd.H"
 #include "richtext/richtextiteratorfwd.H"
 #include "x/w/input_field_config.H"
+#include "x/w/button_eventfwd.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -154,10 +155,8 @@ class LIBCXX_HIDDEN editorObj::implObj
 	//! Button 1 moves the cursor, button2 pastes the primary clipboard.
 
 	bool process_button_event(IN_THREAD_ONLY,
-				  int button,
-				  bool press,
-				  xcb_timestamp_t timestamp,
-				  const input_mask &mask) override;
+				  const button_event &be,
+				  xcb_timestamp_t timestamp) override;
 	//! Pointer motion event
 	void motion_event(IN_THREAD_ONLY, coord_t x, coord_t y,
 			  const input_mask &mask) override;

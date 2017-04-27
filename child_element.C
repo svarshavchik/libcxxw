@@ -219,19 +219,14 @@ bool child_elementObj::process_key_event(IN_THREAD_ONLY, const key_event &ke)
 }
 
 bool child_elementObj::process_button_event(IN_THREAD_ONLY,
-					    int button,
-					    bool press,
-					    xcb_timestamp_t timestamp,
-					    const input_mask &mask)
+					    const button_event &be,
+					    xcb_timestamp_t timestamp)
 {
-	auto ret=elementObj::implObj::process_button_event(IN_THREAD,
-							   button,
-							   press,
-							   timestamp,
-							   mask);
+	auto ret=elementObj::implObj::process_button_event(IN_THREAD, be,
+							   timestamp);
 
 	if (container->get_element_impl()
-	    .process_button_event(IN_THREAD, button, press, timestamp, mask))
+	    .process_button_event(IN_THREAD, be, timestamp))
 		ret=true;
 
 	return ret;

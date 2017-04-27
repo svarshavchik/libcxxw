@@ -17,6 +17,7 @@
 #include "focus/focusable.H"
 #include "xim/ximclient.H"
 #include "x/w/key_event.H"
+#include "x/w/button_event.H"
 #include "x/w/values_and_mask.H"
 #include <xcb/xcb_icccm.h>
 #include <X11/keysym.h>
@@ -455,7 +456,7 @@ void generic_windowObj::handlerObj
 	// Make sure we'll release the grab, when the dust settles.
 
 	grabbed_timestamp(IN_THREAD)=event->time;
-	button_event(IN_THREAD, event, true);
+	do_button_event(IN_THREAD, event, true);
 }
 
 void generic_windowObj::handlerObj
@@ -464,29 +465,31 @@ void generic_windowObj::handlerObj
 {
 	grab_locked(IN_THREAD)=false;
 	release_grabs(IN_THREAD); // Any previous grabs.
-	button_event(IN_THREAD, event, false);
+	do_button_event(IN_THREAD, event, false);
 }
 
 void generic_windowObj::handlerObj
-::button_event(IN_THREAD_ONLY,
-	       const xcb_button_release_event_t *event,
-	       bool buttonpress)
+::do_button_event(IN_THREAD_ONLY,
+		  const xcb_button_release_event_t *event,
+		  bool buttonpress)
 {
 	auto &keysyms=
 		get_screen()->get_connection()->impl->keysyms_info(IN_THREAD);
 
-	input_mask mask{event->state, keysyms};
+	button_event be{event->state, keysyms, event->detail, buttonpress};
 
-	report_pointer_xy(IN_THREAD, mask, event->event_x, event->event_y);
+	report_pointer_xy(IN_THREAD, be, event->event_x, event->event_y);
 
 	// report_pointer_xy() might not always set
 	// most_recent_element_with_pointer(IN_THREAD).
 
 	if (most_recent_element_with_pointer(IN_THREAD) &&
 	    !most_recent_element_with_pointer(IN_THREAD)
-	    ->process_button_event(IN_THREAD, event->detail, buttonpress,
-				   event->time, mask)
-	    && event->detail == 1 && buttonpress)
+	    ->process_button_event(IN_THREAD, be, event->time)
+
+	    // Clicking pointer button 1 nowhere in particular removes keyboard
+	    // focus from anything that might have it, right now.
+	    && be.button == 1 && buttonpress)
 		unset_keyboard_focus(IN_THREAD);
 }
 

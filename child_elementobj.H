@@ -91,10 +91,8 @@ class LIBCXX_HIDDEN child_elementObj : public elementObj::implObj {
 	//! value is true if anyone returned true.
 
 	bool process_button_event(IN_THREAD_ONLY,
-				  int button,
-				  bool press,
-				  xcb_timestamp_t timestamp,
-				  const input_mask &mask) override;
+				  const button_event &be,
+				  xcb_timestamp_t timestamp) override;
 
 	//! Implement grab().
 

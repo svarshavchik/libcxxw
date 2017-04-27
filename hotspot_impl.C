@@ -8,6 +8,7 @@
 #include "screen.H"
 #include "element_screen.H"
 #include "x/w/key_event.H"
+#include "x/w/button_event.H"
 #include "focus/focusable_element.H"
 #include "generic_window_handler.H"
 #include "connection_thread.H"
@@ -70,20 +71,18 @@ bool hotspotObj::implObj::process_key_event(IN_THREAD_ONLY, const key_event &ke)
 }
 
 bool hotspotObj::implObj::process_button_event(IN_THREAD_ONLY,
-					       int button,
-					       bool press,
-					       xcb_timestamp_t timestamp,
-					       const input_mask &mask)
+					       const button_event &be,
+					       xcb_timestamp_t timestamp)
 {
-	if (button == 1)
+	if (be.button == 1)
 	{
-		if (is_button1_down == press)
+		if (is_button1_down == be.press)
 			return true; // Could be due to enter/leave. Ignore.
 
-		is_button1_down=press;
+		is_button1_down=be.press;
 		update(IN_THREAD);
 
-		if (press)
+		if (be.press)
 			get_hotspot_focusable().set_focus(IN_THREAD);
 		else
 			activated(IN_THREAD);

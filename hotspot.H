@@ -10,6 +10,7 @@
 #include "x/w/input_mask.H"
 #include "x/w/focusablefwd.H"
 #include "x/w/key_eventfwd.H"
+#include "x/w/button_eventfwd.H"
 #include "x/w/shortcut.H"
 #include "focus/focus.H"
 #include "focus/focusable_elementfwd.H"
@@ -103,10 +104,8 @@ class LIBCXX_HIDDEN hotspotObj::implObj : virtual public obj {
 	//! Button 1 press requests focus to us.
 
 	bool process_button_event(IN_THREAD_ONLY,
-				  int button,
-				  bool press,
-				  xcb_timestamp_t timestamp,
-				  const input_mask &mask);
+				  const button_event &be,
+				  xcb_timestamp_t timestamp);
  private:
 
 	//! Update the current temperature

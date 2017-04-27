@@ -9,6 +9,7 @@
 #include "editor_containerobj.H"
 #include "peephole_impl.H"
 #include "nonrecursive_visibilityfwd.H"
+#include "x/w/button_eventfwd.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -33,10 +34,8 @@ class LIBCXX_HIDDEN editor_containerObj::implObj
 	//! Button 1 sets focus to the element.
 
 	bool process_button_event(IN_THREAD_ONLY,
-				  int button,
-				  bool press,
-				  xcb_timestamp_t timestamp,
-				  const input_mask &mask);
+				  const button_event &be,
+				  xcb_timestamp_t timestamp);
  private:
 
 	//! Compute updated metrics.
