@@ -335,7 +335,7 @@ void ximserverObj::badmessage(IN_THREAD_ONLY, const char *message)
 				   message));
 }
 
-#include "ximclient.inc.C"
+#include "xim/ximclient.inc.C"
 
 ximattrvalue::ximattrvalue(uint16_t idArg,
 			   uint32_t valueArg) : id(idArg)
@@ -367,7 +367,7 @@ void ximserverObj::received(IN_THREAD_ONLY, const uint8_t *data, size_t p)
 	data += 4;
 
 	switch (message_major) {
-#include "ximclient2.inc.C"
+#include "xim/ximclient2.inc.C"
 	default:
 		LOG_INFO("Received unknown message, major=" << message_major
 			 << ", minor=" << message_minor);

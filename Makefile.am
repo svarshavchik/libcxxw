@@ -449,7 +449,9 @@ INTERACTIVETESTPROGRAMS=\
 	testwordwrappablelabel				\
 	#
 
-noinst_PROGRAMS=$(TESTPROGRAMS) $(INTERACTIVETESTPROGRAMS) genconstants
+EXTRA_PROGRAMS=$(TESTPROGRAMS) $(INTERACTIVETESTPROGRAMS)
+
+noinst_PROGRAMS=$(BUILT_TESTPROGRAMS) $(BUILT_INTERACTIVETESTPROGRAMS) genconstants
 
 testactionbutton_SOURCES=testactionbutton.C
 testactionbutton_LDADD=libcxxw.la
@@ -634,7 +636,7 @@ EXTRA_DIST += $(patsubst $(srcdir)/%,%,$(all_theme_source_files)) \
 	themes/cxxwtheme.properties
 
 check-am:
-	@for p in $(TESTPROGRAMS); do echo $$p; ./$$p --set-property x::w::themes=$(srcdir)/themes || exit 1; done
+	@test -n "$(BUILT_TESTPROGRAMS)" || exit 0; for p in $(BUILT_TESTPROGRAMS); do echo $$p; ./$$p --set-property x::w::themes=$(srcdir)/themes || exit 1; done
 
 test:
 	./testmainwindow --state

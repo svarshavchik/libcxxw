@@ -112,7 +112,7 @@ public:
 
 	typedef uint8_t eventbuf_t[32]; // XEVENT in the XIM_FORWARD_EVENT
 
-#include "ximclient.inc.H"
+#include "xim/ximclient.inc.H"
 
 
  private:
