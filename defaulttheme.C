@@ -1066,6 +1066,28 @@ void defaultthemeObj::load_fonts(const xml::doc &config)
 
 	auto xpath=lock->get_xpath("/theme/font");
 
+	load_fonts(lock, xpath,
+		   [&, this]
+		   (const std::string &id, const auto &new_font)
+		   {
+			   fonts.insert({id, new_font});
+		   },
+		   [this]
+		   (const std::string &from,
+		    auto &new_font)
+		   {
+			   return false;
+		   });
+}
+
+void defaultthemeObj::do_load_fonts(const xml::doc::base::readlock &lock,
+				    const xml::doc::base::xpath &xpath,
+				    const function<void (const std::string &,
+							 const font &)>
+				    &install,
+				    const function<bool (const std::string &,
+							 font &)> &lookup)
+{
 	size_t count=xpath->count();
 
 	bool parsed;
@@ -1086,21 +1108,24 @@ void defaultthemeObj::load_fonts(const xml::doc &config)
 			if (id.empty())
 				throw EXCEPTION(_("no id specified for font"));
 
-			if (fonts.find(id) != fonts.end())
+			font new_font;
+
+			if (fonts.find(id) != fonts.end() ||
+			    lookup(id, new_font))
 				continue; // Did this one already.
 
 			auto from=lock->get_any_attribute("from");
-
-			font new_font;
 
 			if (!from.empty())
 			{
 				auto iter=fonts.find(from);
 
-				if (iter == fonts.end())
-					continue; // Not yet parsed
-
-				new_font=iter->second;
+				if (iter != fonts.end())
+					new_font=iter->second;
+				else
+					if (!lookup(from, new_font))
+						// Not yet parsed
+						continue;
 			}
 
 			static const struct {
@@ -1167,11 +1192,12 @@ void defaultthemeObj::load_fonts(const xml::doc &config)
 					(new_font.*(v.handler2))
 						(node->get_text());
 			}
-
-			fonts.insert({id, new_font});
+			install(id, new_font);
 			parsed=true;
 		}
 	} while (parsed);
+
+	font new_font;
 
 	for (size_t i=0; i<count; ++i)
 	{
@@ -1179,7 +1205,8 @@ void defaultthemeObj::load_fonts(const xml::doc &config)
 
 		auto id=lock->get_any_attribute("id");
 
-		if (fonts.find(id) == fonts.end())
+		if (fonts.find(id) == fonts.end() &&
+		    !lookup(id, new_font))
 			throw EXCEPTION(gettextmsg(_("circular or non-existent dependency of font id=%1%"),
 						   id));
 	}

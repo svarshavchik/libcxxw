@@ -6,6 +6,8 @@
 #define defaultthemeobj_H
 
 #include <x/xml/doc.H>
+#include <x/functional.H>
+
 #include "x/w/drawablefwd.H"
 #include "x/w/rgb.H"
 #include "x/w/font.H"
@@ -84,6 +86,36 @@ public:
 	void load_fonts(const xml::doc &config);
 
  public:
+
+	//! Load font definitions.
+
+	//! This is also used by the SXG file parser.
+	//! The functor does not get invoked if the <font> specifies a
+	//! "from" that has not been parsed yet.
+
+	template<typename install_functor, typename lookup_functor>
+		void load_fonts(const xml::doc::base::readlock &lock,
+				const xml::doc::base::xpath &xpath,
+				install_functor &&install,
+				lookup_functor &&lookup)
+	{
+		do_load_fonts(lock,
+			      xpath,
+			      make_function<void (const std::string &,
+						  const font &)>
+			      (std::forward<install_functor>(install)),
+			      make_function<bool (const std::string &, font &)>
+			      (std::forward<lookup_functor>(lookup)));
+	}
+
+	//! Load font definitions.
+
+	void do_load_fonts(const xml::doc::base::readlock &lock,
+			   const xml::doc::base::xpath &xpath,
+			   const function<void (const std::string &,
+						const font &)> &install,
+			   const function<bool (const std::string &,font &)>
+			   &lookup);
 
 	//! Retrieve theme dimension
 	dim_t get_theme_dim_t(const std::experimental::string_view &id,
