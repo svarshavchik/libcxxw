@@ -1134,6 +1134,7 @@ void defaultthemeObj::do_load_fonts(const xml::doc::base::readlock &lock,
 				font &(font::*handler)(double);
 			} double_values[]={
 				{ "point_size", &font::set_point_size},
+				{ "scaled_size", &font::set_scaled_size},
 				{ "scale", &font::scale},
 			};
 
@@ -1157,7 +1158,6 @@ void defaultthemeObj::do_load_fonts(const xml::doc::base::readlock &lock,
 					throw EXCEPTION(gettextmsg(_("Cannot parse %1%, font id=%2%"),
 								   v.name,
 								   id));
-
 				(new_font.*(v.handler))(value);
 			}
 

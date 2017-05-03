@@ -183,22 +183,33 @@ font &font::set_spacing(const std::experimental::string_view &value)
 }
 
 font &font::scale(unsigned numerator,
-					unsigned denominator)
+		  unsigned denominator)
 {
-	if (point_size <= 0)
+	if (point_size <= 0 && scaled_size <= 0)
 		throw EXCEPTION(_("Font size to scale() has not been set."));
 
-	point_size=point_size*numerator/denominator;
+	if (point_size > 0)
+		point_size=point_size*numerator/denominator;
+
+	if (scaled_size > 0)
+		point_size=scaled_size*numerator/denominator;
 
 	return *this;
 }
 
 font &font::scale(double ratio)
 {
-	if (point_size <= 0)
+	if (ratio < 0)
+		throw EXCEPTION("Invalid scale() ratio.");
+
+	if (point_size <= 0 && scaled_size <= 0)
 		throw EXCEPTION(_("Font size to scale() has not been set."));
 
-	point_size *= ratio;
+	if (point_size > 0)
+		point_size *= ratio;
+
+	if (scaled_size > 0)
+		scaled_size *= ratio;
 
 	return *this;
 }

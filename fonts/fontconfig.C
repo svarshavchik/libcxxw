@@ -67,7 +67,9 @@ pattern configObj::create_pattern(const font &props, double dpi)
 	if (!props.style.empty())
 		p->add_string(FC_STYLE, props.style);
 
-	if (props.point_size > 0)
+	if (props.pixel_size > 0)
+		p->add_double(FC_PIXEL_SIZE, props.pixel_size);
+	else if (props.point_size > 0)
 		p->add_double(FC_PIXEL_SIZE,
 			      std::round(dpi * props.point_size	 / 72));
 

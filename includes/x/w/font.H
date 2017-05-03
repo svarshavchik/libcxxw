@@ -42,6 +42,14 @@ struct font {
 
 	double point_size=0;
 
+	//! Scaled size
+
+	double scaled_size=0;
+
+	//! Pixel size
+
+	double pixel_size=0;
+
 	//! Font spacing
 
 	int spacing=-1;
@@ -214,16 +222,39 @@ struct font {
 		return *this;
 	}
 
+	//! Request a specific font
+
+	//! Specifies the size of the font on some arbitrary scale.
+	//! This is currently used by SXG files.
+
+	inline font &set_scaled_size(double arg)
+	{
+		scaled_size=arg;
+
+		return *this;
+	}
+
+	//! Request a specific font
+
+	//! Specifies the size of the font in pixels.
+	//! This is currently used by SXG files.
+
+	inline font &set_pixel_size(double arg)
+	{
+		pixel_size=arg;
+
+		return *this;
+	}
+
 	//! Scale pixel size.
 
-	//! Multiplies pixel size by numerator/denominator.
-	//! Rounds off to the nearest pixel size.
+	//! Multiplies point_size and scaled_size by numerator/denominator.
+
 	font &scale(unsigned numerator, unsigned denominator);
 
 	//! Scale the pixel size.
 
-	//! Multiplies pixel size by the ratio.
-	//! Rounds off to the nearest pixel size.
+	//! Multiplies point_size and scaled_size by the ratio.
 	font &scale(double ratio);
 };
 
