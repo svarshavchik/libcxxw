@@ -324,8 +324,9 @@ defaulttheme::base::get_config(const xcb_screen_t *screen_0,
 
 	xml::docptr theme_configfile;
 
+	auto themedir=themedirbase.getValue() + "/" + themename;
 
-	auto filename=themedirbase.getValue() + "/" + themename + "/theme.xml";
+	auto filename=themedir + "/theme.xml";
 
 	try {
 		theme_configfile=xml::doc::create(filename, "nonet xinclude");
@@ -335,7 +336,7 @@ defaulttheme::base::get_config(const xcb_screen_t *screen_0,
 			  << ": " << e << std::endl;
 	}
 
-	return { screen_0, thread, property, themename, themescale,
+	return { screen_0, thread, property, themename, themedir, themescale,
 			theme_configfile };
 }
 

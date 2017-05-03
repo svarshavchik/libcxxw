@@ -163,6 +163,9 @@ public:
 		//! Determined theme name
 		std::string themename;
 
+		//! Theme directory
+		std::string themedir;
+
 		//! Determined theme scale
 		double themescale;
 
