@@ -26,6 +26,7 @@
 #include "xid_t.H"
 #include "fonts/fontconfigfwd.H"
 #include "fonts/freetypefwd.H"
+#include "icon_cachefwd.H"
 #include <x/logger.H>
 #include <x/vector.H>
 #include <xcb/xcb.h>
@@ -125,6 +126,10 @@ class LIBCXX_HIDDEN screenObj::implObj
 	//! Use by create_font().
 
 	const screen_fontcaches fontcaches;
+
+	//! Loaded icons for this screen.
+
+	const icon_cache iconcaches;
 
 	///////////////////////////////////////////////////////////////////
 	//

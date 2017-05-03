@@ -62,16 +62,23 @@ current_fontcollection
 generic_windowObj::handlerObj::create_font(const font &font_spec)
 {
 	auto s=get_screen();
-	auto depth=font_alpha_depth();
 
-	return s->impl->fontcaches->custom_font_cache
+	return s->impl->fontcaches->create_custom_font(s, font_alpha_depth(),
+						       font_spec);
+}
+
+current_fontcollection
+screen_fontcachesObj::create_custom_font(const screen &s,
+					 depth_t depth,
+					 const font &font_spec)
+{
+	return custom_font_cache
 		->find_or_create({font_spec, depth},
 				[&]
 				{
 					return current_fontcollection::create
 						(s, depth, font_spec);
 				});
-
 }
 
 // Subclass of current_fontcollectionObj that implements a real theme font.

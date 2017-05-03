@@ -9,6 +9,7 @@
 #include <x/obj.H>
 #include <x/w/gcfwd.H>
 #include <x/w/pixmapfwd.H>
+#include <x/w/drawablefwd.H>
 #include <x/w/rectangle.H>
 #include <x/w/values_and_mask.H>
 #include <x/w/namespace.H>
@@ -24,12 +25,15 @@ class gcObj : virtual public obj {
 public:
 	class implObj;
 
+	//! The drawable this graphic context is for.
+	const drawable gc_drawable;
+
 	//! Internal implementation object
 
 	const ref<implObj> impl;
 
 	//! Constructor
-	gcObj(const ref<implObj> &impl);
+	gcObj(const drawable &gc_drawable, const ref<implObj> &impl);
 
 	//! Destructor
 	~gcObj();
@@ -108,6 +112,13 @@ public:
 
 		//! Current references
 		references_t references;
+
+		//! Clip rectangles
+		rectangle_set current_cliprects;
+
+		//! Whether there are cliprects.
+		bool has_cliprects=false;
+
 	public:
 		friend class implObj;
 
@@ -179,6 +190,11 @@ public:
 
 		//! Set clip mask pixmap
 		properties &clipmask(const pixmap &pixmap,
+				     uint32_t origin_x=0,
+				     uint32_t origin_y=0);
+
+		//! Set clip mask rectangles
+		properties &clipmask(const rectangle_set &r,
 				     uint32_t origin_x=0,
 				     uint32_t origin_y=0);
 

@@ -73,6 +73,9 @@ public:
 	//! Return my height
 	dim_t get_height() const;
 
+	//! Return my depth
+	depth_t get_depth() const;
+
 	//! Create a graphic context for this drawable.
 	gc create_gc();
 };

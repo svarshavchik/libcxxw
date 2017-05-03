@@ -68,9 +68,14 @@ dim_t drawableObj::get_height() const
 	return impl->get_height();
 }
 
+depth_t drawableObj::get_depth() const
+{
+	return impl->get_depth();
+}
+
 gc drawableObj::create_gc()
 {
-	return gc::create(ref<gcObj::implObj>::create(impl));
+	return gc::create(drawable(this), ref<gcObj::implObj>::create(impl));
 }
 
 LIBCXXW_NAMESPACE_END

@@ -8,6 +8,7 @@
 #include "screen_fontcachesfwd.H"
 #include "x/w/fontfwd.H"
 #include "x/w/types.H"
+#include "x/w/screenfwd.H"
 #include "fonts/current_fontcollectionfwd.H"
 #include <x/weakunordered_multimapfwd.H>
 #include <x/obj.H>
@@ -29,6 +30,17 @@ class LIBCXX_HIDDEN screen_fontcachesObj : virtual public obj {
 
 	//! Custom fonts.
 	const custom_font_cache_t custom_font_cache;
+
+	//! find_or_create() a font in the custom_font_cache
+
+	//! The screen parameter is the screen this fontcache is a part of.
+	//!
+	//! Creates or returns a current_fontcollection for font_spec of
+	//! the given depth.
+
+	current_fontcollection create_custom_font(const screen &s,
+						  depth_t depth,
+						  const font &font_spec);
 
 	//! Theme fonts are cached by their font name+alpha depth
 	typedef x::weakunordered_multimap<std::pair<std::string, depth_t>,

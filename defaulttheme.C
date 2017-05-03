@@ -344,6 +344,7 @@ defaultthemeObj::defaultthemeObj(const xcb_screen_t *screen,
 				 const config &theme_config)
 	: themename(theme_config.themename),
 	  themescale(theme_config.themescale),
+	  themedir(theme_config.themedir),
 	  h1mm(one_millimeter(screen->width_in_pixels,
 			      screen->width_in_millimeters, themescale)),
 	  v1mm(one_millimeter(screen->height_in_pixels,

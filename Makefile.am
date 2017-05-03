@@ -237,6 +237,14 @@ libcxxw_la_SOURCES=\
 	hotspot_element.H			    \
 	hotspot_elementfwd.H			    \
 	hotspot_impl.C				    \
+	icon_cache.C				    \
+	icon_cache.H				    \
+	icon_cachefwd.H				    \
+	icon_cacheobj.H				    \
+	icon_image.C				    \
+	icon_image.H				    \
+	icon_imagefwd.H				    \
+	icon_imageobj.H				    \
 	impl_connection_thread.H		    \
 	input_field.H				    \
 	input_field.C				    \
@@ -381,6 +389,15 @@ libcxxw_la_SOURCES=\
 	straight_borderfwd.H			    \
 	straight_borderobj.H			    \
 	straight_border_impl.C			    \
+	sxg/sxg_image.C				    \
+	sxg/sxg_image.H				    \
+	sxg/sxg_imagefwd.H			    \
+	sxg/sxg_imageobj.H			    \
+	sxg/sxg_parser.C			    \
+	sxg/sxg_parser.H			    \
+	sxg/sxg_parserfwd.H			    \
+	sxg/sxg_parserobj.H			    \
+	sxg/sxg_parser_text.C			    \
 	text_param.C				    \
 	theme_border_cache.C			    \
 	theme_border_cache.H			    \

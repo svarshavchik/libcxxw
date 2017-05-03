@@ -86,6 +86,32 @@ void gcObj::implObj::change_gc_locked(const gcObj::properties &props)
 			       (dim_t::value_type)props.dashes_offset,
 			       props.dashes.size(), &props.dashes[0]);
 	}
+
+	if (props.has_cliprects)
+	{
+		xcb_rectangle_t
+			xcb_rectangles[props.current_cliprects.size()+1];
+
+		size_t i=0;
+
+		for (const auto &rectangle:props.current_cliprects)
+		{
+			xcb_rectangles[i++]= xcb_rectangle_t({
+				.x=(coord_t::value_type)rectangle.x,
+				.y=(coord_t::value_type)rectangle.y,
+				.width=(dim_t::value_type)rectangle.width,
+				.height=(dim_t::value_type)rectangle.height
+			});
+		}
+		xcb_set_clip_rectangles(conn(),
+					XCB_CLIP_ORDERING_UNSORTED,
+					gc_id(),
+					props.raw_values.m
+					.at(XCB_GC_CLIP_ORIGIN_X),
+					props.raw_values.m
+					.at(XCB_GC_CLIP_ORIGIN_Y),
+					i, xcb_rectangles);
+	}
 }
 
 

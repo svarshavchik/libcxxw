@@ -45,6 +45,9 @@ public:
 	//! Scaling factor
 	const double themescale;
 
+	//! The directory this theme was loaded from
+	const std::string themedir;
+
 	//! Horizontal distance of 1 millimeter, in pixels
 
 	const dim_t h1mm;

@@ -219,6 +219,8 @@ gcObj::properties &gcObj::properties::clipmask(const pixmap &pixmap_arg,
 					       uint32_t origin_x,
 					       uint32_t origin_y)
 {
+	clipmask();
+
 	references.mask=pixmap_arg;
 
 	raw_values.m[XCB_GC_CLIP_MASK]=pixmap_arg->impl->pixmap_id();
@@ -227,9 +229,24 @@ gcObj::properties &gcObj::properties::clipmask(const pixmap &pixmap_arg,
 	return *this;
 }
 
+gcObj::properties &gcObj::properties::clipmask(const rectangle_set &r,
+					       uint32_t origin_x,
+					       uint32_t origin_y)
+{
+	clipmask();
+
+	raw_values.m.erase(XCB_GC_CLIP_MASK);
+	current_cliprects=r;
+	has_cliprects=true;
+	raw_values.m[XCB_GC_CLIP_ORIGIN_X]=origin_x;
+	raw_values.m[XCB_GC_CLIP_ORIGIN_Y]=origin_y;
+	return *this;
+}
+
 gcObj::properties &gcObj::properties::clipmask()
 {
 	references.mask=pixmapptr();
+	has_cliprects=false;
 
 	raw_values.m[XCB_GC_CLIP_MASK]=XCB_NONE;
 	raw_values.m[XCB_GC_CLIP_ORIGIN_X]=0;
@@ -237,7 +254,9 @@ gcObj::properties &gcObj::properties::clipmask()
 	return *this;
 }
 
-gcObj::gcObj(const ref<implObj> &impl) : impl(impl)
+gcObj::gcObj(const drawable &gc_drawable,const ref<implObj> &impl)
+	: gc_drawable(gc_drawable),
+	  impl(impl)
 {
 }
 

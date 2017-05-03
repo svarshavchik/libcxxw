@@ -1,0 +1,2919 @@
+<!--
+
+Copyright 2015 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<appendix id="sxg">
+  <title>Scalable X protocol Graphics</title>
+
+  <para>
+    &sxg; is an <acronym>XML</acronym>-based file format.
+    &app; uses &sxg; to draw scalable icons and other display elements.
+    &app; uses its own custom icon file format for the following reasons:
+  </para>
+
+  <itemizedlist>
+    <listitem>
+      <para>
+	No dependencies on other libraries. External libraries to render
+	<acronym>SVG</acronym> files have a large number of dependencies that
+	pull in a large number of auxiliary libraries from other toolkits.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+	The &sxg; format maps
+	directly into &xproto; and &render; commands that draw graphics.
+	&app; does not do any rendering itself, but simply translates the
+	instructions in the &sxg; file into X protocol commands.
+	The following documentation assumes working knowledge of the
+	X protocol and &RENDER; extension commands and data structures.
+      </para>
+    </listitem>
+
+    <listitem>
+      <para>
+	&sxg; provides scaling hints specifying scaling increments to avoid
+	display artifacts from rounding due to scaling to arbitrary sizes.
+      </para>
+    </listitem>
+
+    <listitem>
+      <para>
+	&sxg; images can reference colors and fonts from the current
+	display theme.
+      </para>
+    </listitem>
+  </itemizedlist>
+
+  <section id="sxgstructure">
+    <title>Structure of an &sxg; file</title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<sxg>
+  <width>16</width>
+  <height>16</height>
+  <widthmm>10</widthmm>
+  <heightmm>10</widthmm>
+
+  <!-- <depth>1</depth> -->
+
+  <!-- optional -->
+
+  <widthfactor>2</widthfactor>
+  <heightfactor>2</heightfactor>
+
+  <!-- font declaration -->
+
+  <!-- pixmap and picture declaration -->
+
+  <!-- gc and render instructions -->
+</sxg>
+]]></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      The top level <tag class='element'>sxg</tag> element defines:
+    </para>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  Dimensions of the virtual cartesian coordinate space of the &sxg; file.
+	  The drawing instructions in the rest of the file get specified using
+	  these dimensions.
+	</para>
+
+	<para>
+	  The above example specifies that this &sxg; file gives drawing
+	  instructions on a canvas that's virtual
+	  16 pixels across, and 16 virtual pixels tall.
+	  The X and Y coordinates, therefore, range from 0 to 15. Coordinate
+	  (0, 0) is the top left corner.
+	</para>
+
+	<para>
+	  &app; scales the coordinates in the &sxg; to the
+	  displayed image's actual size. For example, if &app; needs to scale
+	  the above
+	  image to a 32x32 icon, all coordinates in the &sxg; file
+	  get effectively
+	  doubled.
+	</para>
+
+	<para>
+	  The coordinates in the &sxg; file can be fractional (i.e., fill
+	  a <tag class='element'>rectangle</tag> 8.5 pixels wide, and this
+	  dimension gets scaled appropriately). However, it's better to use
+	  the smallest
+	  virtual coordinate space that's large enough to represent all points
+	  as whole numbers,
+	</para>
+
+	<note>
+	  <para>
+	    The individual drawing instructions' coordinates may be fractional,
+	    but the <tag class='element'>width</tag> and
+	    <tag class='element'>height</tag> elements must specify integer
+	    values.
+	  </para>
+	</note>
+      </listitem>
+
+      <listitem>
+	<para>
+	  The <tag class='element'>widthmm</tag> and
+	  <tag class='element'>heightmm</tag> elements give the default,
+	  or nominal, size of the image in the &sxg; file.
+	  The dimensions are in millimeters. The values may be fractional,
+	  but they compute an integer pixel value according to the
+	  screen display's resolution.
+	</para>
+
+	<para>
+	  For example, with the default &sxg; size given as ten millimeters
+	  wide and tall, a screen display with the resolution of 2.5 pixels
+	  per millimeter produces the nominal &sxg; size of 25x25 pixels,
+	  and the all coordinates in the &sxg; file <link linkend="sxgscaling">get scaled</link> accordingly.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Optional elements <tag class='element'>widthfactor</tag> and
+	  <tag class='element'>heightfactor</tag> default to 1.
+	  The nominal width and height gets rounded off to an even multiple
+	  of pixels specified by this value.
+	  For example, setting both to 2 ensures that the default image width
+	  and height is always an even number of pixels.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Some special-purpose &sxg; icons have a
+	  <tag class='element'>depth</tag> element with a value of
+	  <literal>1</literal>. This creates a one-bit deep image that's
+	  typically used to create a masking image of some kind.
+	</para>
+
+	<para>
+	  Currently this is used to create a masking picture for
+	  <link linkend="windowicon"><methodname>set_wm_hints_icon</methodname>()</link>.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  The <tag class='element'>font</tag> elements specify the
+	  fonts used by text pictures.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  The <tag class='element'>pixmap</tag> and
+	  <tag class='element'>picture</tag> elements create pixmaps
+	  and picture objects used in drawing the &sxg; image.
+	  These elements directly correspond to &xproto;'s pixmap and
+	  &render;'s picture objects.
+	</para>
+
+	<para>
+	  A unique label identifies each picture and pixmap.
+	  A picture labeled <quote>main</quote> gets created by default, this
+	  is the final drawn image.
+	  After executing the drawing instructions in the &sxg; file,
+	  the <quote>main</quote> picture's contents become the drawn image.
+	  All other pictures and pixmaps get discarded.
+	  The <quote>main</quote> picture's actual size determines the
+	  scaling factors for all scaled drawing instructions. The &app;
+	  creates a picture object, perhaps after consulting &sxg; file's
+	  nominal width and height, and the drawing instructions in the
+	  &sxg; file <link linkend="sxgscaling">get scaled</link> accordingly.
+	</para>
+
+	<para>
+	  All picture and pixmap labels are unique. The same label cannot be
+	  used for both a picture and a pixmap.
+	  To make things slightly confusing, pixmaps may be specified as
+	  picture parameters in some drawing instructions, using their
+	  label. This is because a
+	  <tag class='element'>picture</tag> gets created for each
+	  <tag class='element'>pixmap</tag>.
+
+	  And to confuse things even
+	  further, each regular
+	  <tag class='element'>picture</tag> object, of course, represents a
+	  <tag class='element'>pixmap</tag>, and
+	  a <tag class='element'>pixmap</tag> gets created for each regular
+	  <tag class='element'>picture</tag> (except for solid color pictures,
+	  as explained later).
+	</para>
+
+	<para>
+	  The reason for separate
+	  <tag class='element'>pixmap</tag> and
+	  <tag class='element'>picture</tag> declarations has to do with
+	  the pictformat of the resulting pixmap/picture duo.
+	  There are two main groups of drawing instructions in the &sxg;
+	  file. One group uses X protocol's graphic contexts that are only
+	  used with pixmaps. The second group uses &RENDER;
+	  extension instructions; which can only use pictures.
+	</para>
+
+	<para>
+	  The size of regular <tag class='element'>picture</tag> and
+	  <tag class='element'>pixmap</tag> objects either <link linkend="sxgscaling">get scaled</link>
+	  based on <quote>main</quote>'s picture, or they are fixed
+	  dimensions, as specified
+	  by their <link linkend="sxgsize"><tag class='element'>size</tag></link> element.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  The rest of the &sxg; file consists of
+	  <tag class='element'>gc</tag> and
+	  <tag class='element'>render</tag> elements.
+	  Each pixmap has a collection of one or more
+	  <tag class='element'>gc</tag>s, that
+	  are directly equivalent to &xproto;'s graphic contexts, which
+	  draw on their pixmap. Graphic contexts also have unique
+	  label identifiers. The same graphic context label cannot
+	  be used by another pixmap's graphic context.
+	</para>
+
+	<para>
+	  The <tag class='element'>gc</tag> element specifies a list of
+	  commands to execute for a graphic context object with the specified
+	  label identifier.
+	  The <tag class='element'>render</tag> element specifies a list of
+	  commands to execute for a picture object with the specified
+	  label identifier.
+	</para>
+
+	<para>
+	  All coordinates in
+	  <tag class='element'>gc</tag> and
+	  <tag class='element'>render</tag> elements may be fractional, and they
+	  <link linkend="sxgscaling">get scaled</link> according to the referenced pixmap or picture's
+	  <link linkend="sxgsize"><tag class='element'>size</tag></link>.
+
+	  Example: a picture or a pixmap defines its size as
+	  ten by ten "millimeters". The display's resolution is
+	  3.5 pixels per millimeter. The actual object's size is
+	  35 by 35 pixels. All coordinates specified in the
+	  <tag class='element'>gc</tag> or
+	  <tag class='element'>render</tag> elements are still
+	  values between and up to, but not including 10. Fractional
+	  coordinates are allowed, and they
+	  get scaled to the 0-34 range.
+	</para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
+  <section id="sxgscaling">
+    <title>Scaling and round-off errors</title>
+
+    <para>
+      The only way to avoid all round-off errors when scaling an &sxg;
+      image is to:
+    </para>
+
+    <orderedlist>
+      <listitem>
+	<para>
+	  Use whole numbers for all coordinates in the &sxg; file.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Use the smallest possible
+	  <tag class='element'>width</tag> and
+	  <tag class='element'>height</tag>.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Set the
+	  <tag class='element'>widthfactor</tag> and
+	  <tag class='element'>heightfactor</tag> to be same as the
+	  <tag class='element'>width</tag> and
+	  <tag class='element'>height</tag>.
+	</para>
+      </listitem>
+    </orderedlist>
+
+    <para>
+      This results in the &sxg; image always getting scaled
+      by a multiple of its original size,
+      With simple &sxg; images containing only horizontal, vertical, and
+      rectangular components, it might be possible to avoid using
+      <tag class='element'>widthfactor</tag> and
+      <tag class='element'>heightfactor</tag>, or perhaps setting them to
+      some small power of 2, with tolerable rounding artifacts.
+    </para>
+
+    <section id="sxgscalingalgo">
+      <title>Scaling algorithm</title>
+
+      <para>
+	When scaling pixel coordinates, each pixel coordinate represents the
+	center of a virtual pixel. If, for example, the image is scaled
+	to five times its virtual size, pixel coordinate (0, 0) becomes
+	(2, 2). Each virtual pixel is now five pixels across and five pixels
+	tall, with coordinate (2, 2) being its center (and virtual pixel
+	(1, 0) becoming physical pixel (7, 2), and so on).
+      </para>
+
+      <para>
+	However, the
+	<tag class="element">fill</tag> element, for both pictures
+	and pixmaps,
+	as well as the picture
+	<tag class="element">clip</tag> element, translates virtual X and Y
+	coordinates to the top left corner of the corresponding physical
+	pixels. If, for example, the image gets
+	scaled to five times its nominal size, then
+
+	<blockquote>
+	  <informalexample>
+	    <programlisting><![CDATA[
+<fill>
+  <x>0</x>
+  <y>0</y>
+  <width>4</width>
+  <height4</height>
+</fill>]]></programlisting>
+	  </informalexample>
+	</blockquote>
+
+	ends up clearing pixels (0, 0) through (15, 15), and not
+	(2, 2) through (17, 17).
+      </para>
+
+      <para>
+	In other elements,
+	<tag class="element">x</tag> and
+	<tag class="element">y</tag> have an optional attribute that
+	scales the coordinate to the top left corder of the scaled pixel,
+	rather than its center:
+      </para>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<sxg>
+  <width>16</width>
+  <height>16</height>
+
+  <!-- -->
+    <composite>
+      <op>over</op>
+      <x orientation="beginning">8</x>
+      <y orientation="beginning">8</y>
+      <srcsize />
+      <halign>centered</halign>
+      <valign>middle</valign>
+      <src>
+	<picture>logo</picture>
+      </src>
+    </composite>]]></programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	This example composes the <quote><literal>logo</literal></quote>
+	picture in the dead center of the displayed image.
+	Normally the coordinate (8, 8) gets translated to the center of the
+	scaled pixel. If this image gets scaled to three times it's original
+	size, the coordinate gets scaled to (25, 25), and not (24, 24).
+      </para>
+
+      <para>
+	The
+	<tag class='attribute'>orientation</tag> attribute's value is either
+	<quote><literal>centered</literal></quote>, the default translation
+	to the center of the scaled pixel; or
+	<quote><literal>beginning</literal></quote>, which scales the
+	coordinate to the starting point of the scaled pixel; or
+	<quote><literal>ending</literal></quote>, the opposite of
+	<quote><literal>beginning</literal></quote>,
+	which scales the
+	coordinate to the ending point of the scaled pixel,
+	In this case, the coordinate gets scaled to (24, 24), and the
+	<quote><literal>logo</literal></quote> pictures get center-aligned
+	itself, over this coordinate.
+      </para>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+  <!-- -->
+    <line>
+      <point>
+	<x orientation="width">0</x>
+	<y orientation="width">0</y>
+      </point>
+
+  <!-- -->]]></programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	The
+	<quote><literal>width</literal></quote> orientation is
+	available only in
+	<link linkend="sxg_pixmap_line"><tag class="element">line</tag></link>s.
+	This orientation scales the coordinate as follows.
+      </para>
+
+      <itemizedlist>
+	<listitem>
+	  <para>
+	    Use the
+	    <quote><literal>centered</literal></quote> orientation
+	    if the scaled
+	    <link linkend="sxg_pixmap_line_width"><tag class="element">line_width</tag></link>
+	    is 0.
+	  </para>
+	</listitem>
+	<listitem>
+	  <para>
+	    Use the
+	    <quote><literal>beginning</literal></quote> orientation
+	    if the scaled
+	    <link linkend="sxg_pixmap_line_width"><tag class="element">line_width</tag></link>
+	    is not 0, then add
+	    <quote><literal>line_width/2</literal></quote> to the
+	    computed coordinate.
+	  </para>
+	</listitem>
+      </itemizedlist>
+    </section>
+  </section>
+  <section id="sxgfonts">
+    <title>Specifying fonts</title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<!-- -->
+
+  <font id="question_mark_font">
+    <family>liberation serif</family>
+    <scaled_size>.3</scaled_size>
+  </font>
+
+  <font id="question_mark_font_bold" from="question_mark_font">
+    <weight>heavy</weight>
+  </font>
+
+]]></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      A <tag class='element'>font</tag>'s
+      <tag class='attribute'>id</tag> attribute gives the label that
+      text pictures in the &sxg; file use to refer to this font.
+      An optional
+      <tag class='attribute'>from</tag> attribute specifies that this
+      font specification is based on another font. The other font's
+      definition gets copied, and this font's settings
+      modify the original font's setting.
+    </para>
+
+    <para>
+      The <tag class='attribute'>from</tag> attribute can also reference
+      a font specification in the default theme.
+    </para>
+
+    <para>
+      The <tag class='element'>font</tag> element contains the following
+      elements:
+    </para>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  <tag class='element'>foundry</tag> and
+	  <tag class='element'>family</tag> specify the system font.
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  <tag class='element'>point_size</tag> specifies the font's height
+	  in points.
+	  <tag class='element'>scaled_size</tag> scales the size of the font
+	  based on the scaled height of the <quote>main</quote> picture.
+	  The above example creates two fonts approximately 1/3rd the height
+	  of the <quote>main</quote> picture.
+	</para>
+
+	<note>
+	  <para>
+	    Font sizes are approximate. The actual font size could slightly
+	    vary.
+	    Even an explicit pixel size may not produce a font with the given
+	    height. Some fonts' height can only scale to a small pixel
+	    multiple.
+	  </para>
+	</note>
+      </listitem>
+
+      <listitem>
+	<para>
+	  <tag class='element'>weight</tag> of
+	  <literal>thin</literal>,
+	  <literal>light</literal>,
+	  <literal>normal</literal>,
+	  <literal>medium</literal>,
+	  <literal>demibold</literal>,
+	  <literal>bold</literal>,
+	  <literal>heavy</literal>, or
+	  <literal>extrablack</literal>.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  <tag class='element'>slant</tag> of
+	  <literal>roman</literal>,
+	  <literal>italic</literal>, or
+	  <literal>oblique</literal>.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  <tag class='element'>width</tag> of
+	  <literal>condensed</literal>,
+	  <literal>normal</literal>, or
+	  <literal>expanded</literal>.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  A font-specific <tag class='element'>style</tag>.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  A <tag class='element'>spacing</tag> of
+	  <literal>proportional</literal>,
+	  <literal>dual</literal>,
+	  <literal>monospace</literal>, or
+	  <literal>charcell</literal>.
+	</para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
+  <section id="sxgpictures">
+    <title>Creating pictures</title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<sxg>
+
+  <width>16</width>
+  <height>16</height>
+  <widthmm>10</widthmm>
+  <heightmm>10</widthmm>
+
+  <picture id="pen">
+    <type>pixmap</type>
+    <size>scaled</size>
+    <width>16</width>
+    <height>16</height>
+  </picture>
+
+  <picture id="checkerboard">
+    <type>pixmap</type>
+    <size>
+      <type>mmrounded</type>
+      <factor>.5</factor>
+    </size>
+    <width>16</width>
+    <height>16</height>
+  </picture>
+
+  <!-- ... -->
+
+</sxg>
+]]></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      A <tag class='element'>picture</tag>'s
+      <tag class='attribute'>id</tag> attribute gives the label that the
+      drawing instructions in the &sxg; file use to refer to this picture.
+      A <tag class='element'>picture</tag>'s
+      <tag class='element'>type</tag> element specifies the picture's
+      type. There are three picture types:
+    </para>
+
+    <variablelist>
+      <varlistentry>
+	<term><literal>rgb</literal></term>
+	<listitem>
+	  <para>
+	    This creates a <link linkend="sxgsolidcolorpictures">solid
+	      color picture</link>.
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term><literal>text</literal></term>
+	<listitem>
+	  <para>
+	    This creates a <link linkend="sxgtextpictures">text picture</link>.
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term><literal>pixmap</literal></term>
+	<listitem>
+	  <para>
+	    This creates a picture for a new pixmap.
+	    The picture uses the same pictformat as the
+	    <quote>main</quote>
+	    <tag class='element'>picture</tag>, creating a new pixmap of
+	    the appropriate depth.
+	  </para>
+	</listitem>
+      </varlistentry>
+    </variablelist>
+
+    <para><anchor id="sxgsize" />
+      A pixmap <tag class='element'>picture</tag>'s
+      <tag class='element'>size</tag> element calculates the pixmap's
+      actual size. A
+      <tag class='element'>pixmap</tag> has the same
+      <tag class='element'>size</tag> element, too:
+    </para>
+
+    <variablelist>
+      <varlistentry>
+	<term><literal>scaled</literal></term>
+	<listitem>
+	  <para>
+	    <quote>scaled</quote> is the default sizing type, if not
+	    specified.
+	    <quote>scaled</quote>
+	    <tag class='element'>picture</tag>s' pixmaps
+	    <link linkend="sxgscaling">get scaled</link> according to
+	    the <quote>main</quote> picture's size.
+	    This example specifies a 16x16 pixmap for this picture,
+	    with a 16x16 &sxg;
+	    file. With the picture's dimension matching the dimensions of the
+	    &sxg; file, this
+	    <tag class='element'>picture</tag>s' pixmap
+	    always gets scaled to match the scaled
+	    image's size.
+	  </para>
+
+	  <para>
+	    If this &sxg; file gets scaled to a 32x32 image, this picture's
+	    pixmap's actual size also gets scaled accordingly.
+	    In this example, if the <tag class='element'>picture</tag>'s
+	    <tag class='element'>width</tag> is 8, this
+	    always creates a pixmap for this picture that's
+	    half as wide as the
+	    <quote>main</quote> picture's pixmap.
+	  </para>
+
+	  <para>
+	    The coordinates and dimensions given in a
+	    <quote>scaled</quote> picture's
+	    <tag class='element'>render</tag> commands also <link linkend="sxgscaling">get scaled</link>
+	    accordingly.
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term><literal>fixed</literal></term>
+	<listitem>
+	  <para>
+	    The
+	    <tag class='element'>picture</tag>'s
+	    <tag class='element'>width</tag> and
+	    <tag class='element'>height</tag> elements specify a fixed
+	    picture size in pixels. The
+	    <tag class='element'>picture</tag>, and the coordinates for
+	    its <tag class='element'>render</tag> commands, do not get
+	    scaled.
+	  </para>
+
+	  <para>
+	    <quote>fixed</quote>
+	    <tag class='element'>picture</tag>s
+	    get typically used to create pixel-specific rendering
+	    patterns.
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term><literal>mm</literal></term>
+	<listitem>
+	  <para>
+	    Similar to <quote>fixed</quote>
+	    <tag class='element'>picture</tag>s, but
+	    the
+	    <tag class='element'>width</tag> and
+	    <tag class='element'>height</tag> specify the size of the
+	    picture in millimeters.
+	    The width and height can be fractional, but the final
+	    <tag class='element'>picture</tag> size gets rounded off to the
+	    nearest whole pixel size.
+	  </para>
+
+	  <para>
+	    <tag class='element'>render</tag> command coordinates
+	    for <quote>mm</quote>
+	    <tag class='element'>picture</tag> <link linkend="sxgscaling">get scaled</link> accordingly.
+	    For example, a 10mm by 10mm
+	    <tag class='element'>picture</tag>'s coordinates range from 0
+	    and up to, but not including, 10. The coordinate (5, 5) is
+	    the center. If the display's resolution is 2.5 pixels per
+	    millimenter, the
+	    <tag class='element'>picture</tag>'s pixmap's actual size is
+	    25x25 pixels. Coordinates for the
+	    <tag class='element'>picture</tag>'s
+	    <tag class='element'>render</tag>ing commands get scaled and
+	    rounded to the nearest pixel boundary, so the
+	    virtual coordinate (5, 5) gets scaled to the actual
+	    coordinate (13, 13), the center of the actual picture.
+	  </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term><literal>mmrounded</literal></term>
+	<listitem>
+	  <para>
+	    A special format that calculates the pixmap or the picture's
+	    size, and coordinates, based on scaled
+	    <quote>pseudo-millimeters</quote>.
+	    The scaling factors are based on the number of pixels per
+	    millimeter multiplied by
+	    <tag class='element'>factor</tag> (which defaults to 1),
+	    then rounded off
+	    to the nearest whole pixel value.
+	  </para>
+
+	  <para>
+	    Example: the display's resolution is
+	    4.5 pixels per millimeter,
+	    <tag class='element'>factor</tag> is .5, with a "10x10" picture
+	    or pixmap size.
+	    Multiplying 4.5*.5 gives 2.25, which gets rounded off to
+	    two pixels per "pseudo-millimeter", and the resulting image
+	    size becoms 20 pixels wide, and high.
+	  </para>
+
+	  <para>
+	    If rounding off results in zero, this gets increased to
+	    one, so the result cannot be zero pixels per "pseudo-millimeter".
+	  </para>
+
+	  <para>
+	    This is a convenient way to produce relatively small patterns
+	    that do not suffer from display artifacts due to rounding.
+	    Pixel coordinates can be fractional, but consider a
+	    small checkerboard-style pattern, with two columns and rows,
+	    defined by a pixmap or a picture object that's 1x1 millimeters
+	    in size, and a display with five pixels per millimeter.
+	    This may result in a visually-noticeable, uneven pattern of
+	    alternating two and three pixel-wide rows and columns.
+	  </para>
+
+	  <para>
+	    Alternatively, using a <literal>mmrounded</literal> size with
+	    a factor of .5, the pixmap or picture's size can be specified
+	    as 2x2
+	    <quote>rounded-off pseudo-millimeters</quote>, the final object
+	    size is guaranteed to have an even number of pixels.
+	  </para>
+	</listitem>
+      </varlistentry>
+    </variablelist>
+
+    <para>
+      A <tag class='element'>picture</tag> initial contents are cleared
+      to a transparent background color (zero red, green, blue, and alpha
+      channels).
+    </para>
+  </section>
+
+  <section id="sxgsolidcolorpictures">
+    <title>Creating solid color pictures</title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<sxg>
+
+  <!-- width and height declarations -->
+
+  <picture id="orange">
+    <type>rgb</type>
+    <r>1</r>
+    <g>.5</g>
+  </picture>
+
+  <!-- ... -->
+
+</sxg>
+]]></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      An <literal>rgb</literal>-type picture
+      creates a solid color picture (using &RENDER;'s
+      <function>CreateSolidFill</function> command).
+      Its
+      <tag class='element'>r</tag>,
+      <tag class='element'>g</tag>,
+      <tag class='element'>b</tag>, and
+      <tag class='element'>a</tag> elements specify the value
+      of the red, green, blue, and alpha channels, respectively.
+      Each value ranges between 0 (minimum) and
+      1 (maximum).
+      <tag class='element'>r</tag>,
+      <tag class='element'>g</tag>,
+      <tag class='element'>b</tag>'s defaults to 0, minimum intensity.
+      <tag class='element'>a</tag> defaults to 1, maximum intensity.
+      This example creates a color picture with a full red intensity and
+      50% green intensity, with a label of <quote>orange</quote>.
+    </para>
+
+    <section id="sxgthemecolors">
+      <title>Using theme colors</title>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<!-- -->
+
+<picture id="orange">
+  <type>rgb</type>
+  <color>grey</color>
+  <r>1.5</r>
+  <g>.5</g>
+</picture>
+]]></programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	Instead of specifying an explicit color, the
+	<tag class='element'>color</tag> element copies a predefined color from
+	the current display theme. This example copies the predefined
+	color named <quote>grey</quote>.
+	Combining the optional
+	<tag class='element'>r</tag>,
+	<tag class='element'>g</tag>,
+	<tag class='element'>b</tag>, and
+	<tag class='element'>a</tag> elements
+	has the effect of multiplying the predefined color's channel by
+	the given value. The multiplication factor may exceed 1, but
+	the final value is limited to 1, maximum intensity,
+      </para>
+    </section>
+
+    <section id="sxglocations">
+      <title>Using predefined locations and dimensions</title>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+  <fill>
+    <x>2</x>
+    <y>y</y>
+    <width>10</width>
+    <height>10</height>
+  </fill>
+
+  <!-- -->
+
+  <location id="a">
+    <x>2</x>
+    <y>2</y>
+  </location>
+
+  <dimension id="medium">
+    <width>10</width>
+    <height>10</height>
+  </location>
+
+  <fill>
+    <location>a</location>
+    <dimension>medium</dimension>
+  </fill>
+
+]]></programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	Often the same coordinate gets referenced from multiple rendering
+	elements.
+	The
+	<tag class='element'>location</tag> element assigns a label identifier
+	to a coordinate, that can referenced in each rendering element,
+	anywhere where
+	<tag class='element'>x</tag> and
+	<tag class='element'>y</tag> must be specified.
+	By assigning a location label to all key coordinates, it makes it
+	easier to tweak the placement of multiple related rendering
+	instructions.
+      </para>
+
+      <para>
+	One special usage of a
+	<tag class='element'>location</tag> element is
+	the defined
+	<quote><literal>hotspot</literal></quote> location in an &sxg;
+	file for a cursor. This specifies the cursor's hotspot.
+      </para>
+
+      <para>
+	Similarly, the <tag class='element'>dimension</tag> element list
+	predefined widths and heights that can be referenced accordingly.
+      </para>
+    </section>
+  </section>
+
+  <section id="sxgtextpictures">
+    <title>Creating text pictures</title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<sxg>
+
+  <!-- ... -->
+
+  <picture id="question_mark">
+    <type>text</type>
+
+    <align>centered</align>
+    <font>title_color</font>
+    <rgb>
+      <color>0%_color</color>
+    </rgb>
+    <text>Lorem ipsum&#10;</text>
+    <font>main_font</font>
+    <rgb>
+      <r>1</r>
+      <g>1</g>
+      <b>1</b>
+    </rgb>
+    <text>dolor sit amet</text>
+  </picture>
+
+  <!-- ... -->
+
+</sxg>
+]]></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      A text-type picture has a transparent background, containing some text,
+      possibly in multiple fonts and colors. The size of the text picture
+      depends on the dimensions of the rendered text.
+      The text picture gets typically used as a source picture
+      in the
+      <link linkend="sxg_render_composite"><tag class="element">composite</tag></link> command,
+      using <tag class='element'>srcsize</tag>,
+      <tag class='element'>halign</tag> and
+      <tag class='element'>valign</tag> to position it in the
+      <quote>main</quote> picture.
+    </para>
+
+    <para>
+      The
+      <tag class='element'>text</tag>
+      element specifies the text that makes up the picture.
+      A newline, <literal>&amp;#10;</literal> introduces a linebreak.
+      An optional
+      <tag class='element'>align</tag> element sets the relative alignment
+      of multiple text lines to either
+      <literal>left</literal> (default),
+      <literal>centered</literal>, or
+      <literal>right</literal>.
+    </para>
+
+    <para>
+      The <tag class='element'>font</tag> element references a previously
+      defined font, for all following text, until the next
+      <tag class='element'>font</tag> element.
+    </para>
+
+    <para>
+      The <tag class='element'>rgb</tag> element sets the foreground color
+      for all following text, until the next
+      <tag class='element'>rgb</tag> element.
+      The
+      <tag class='element'>color</tag> element selects a theme color.
+      Alternatively,
+      <tag class='element'>r</tag>,
+      <tag class='element'>g</tag>,
+      <tag class='element'>b</tag>, and
+      <tag class='element'>a</tag> specify the value of the colors
+      red, green, blue, and alpha channels, ranging from 0 (no color),
+      to 1 (maximum intensity.
+      <tag class='element'>r</tag>,
+      <tag class='element'>g</tag>, and
+      <tag class='element'>b</tag> defaults to 0;
+      <tag class='element'>a</tag> defaults to 1.
+    </para>
+  </section>
+
+  <section id="sxgpixmaps">
+    <title>Creating pixmaps</title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<sxg>
+
+  <!-- width and height declarations -->
+
+  <pixmap id="bullet">
+    <size>scaled</size>
+    <width>16</width>
+    <height>16</height>
+    <gc id="bullet_gc1" />
+    <gc id="bullet_gc2" />
+  </pixmap>
+
+  <!-- ... -->
+
+</sxg>
+]]></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      A <tag class='element'>pixmap</tag>'s
+      <tag class='attribute'>id</tag>,
+      <link linkend="sxgsize"><tag class='element'>size</tag></link>,
+      <tag class='element'>width</tag>, and
+      <tag class='element'>height</tag> mean the same as a
+      <tag class='element'>picture</tag>'s.
+      <tag class='element'>pixmap</tag>
+      creates a pixmap for use as an alpha-channel only picture
+      in rendering commands.
+      A pixmap that's used as a
+      <tag class='element'>clip</tag> mask, or a
+      <link linkend="sxg_pixmap_fill_style">fill stipple</link>
+      must specify a
+      <tag class='element'>mask</tag> element, which
+      creates a one-bit deep pixmap:
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<sxg>
+
+  <!-- width and height declarations -->
+
+  <pixmap id="bullet">
+    <size>scaled</size>
+    <width>16</width>
+    <height>16</height>
+    <mask />
+    <gc id="bullet_gc1" />
+    <gc id="bullet_gc2" />
+  </pixmap>
+
+  <!-- ... -->
+
+</sxg>
+]]></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      Each <tag class='element'>pixmap</tag>'s
+      <tag class='element'>gc</tag> element creates a graphic
+      context for drawing into the pixmap.
+      All <tag class='element'>gc</tag>'s
+      <tag class='attribute'>id</tag>s are unique.
+      Different
+      <tag class='element'>pixmap</tag>s cannot use the same
+      <tag class='element'>gc</tag>
+      <tag class='attribute'>id</tag>.
+    </para>
+  </section>
+
+  <section id="sxggc">
+    <title>Graphic context commands</title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<sxg>
+
+  <!-- width and height declarations -->
+
+  <pixmap id="pixmap1">
+    <size>scaled</size>
+    <width>16</width>
+    <height>16</height>
+    <gc id="pixmap1_gc1" />
+  </pixmap>
+
+  <gc id="pixmap1_gc">
+
+    <!-- Graphic context commands -->
+
+  </gc>
+</sxg>
+]]></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      After declaring one or more
+      <tag class='element'>gc</tag>s
+      inside their
+      <tag class='element'>pixmap</tag>s,
+      the
+      <tag class='element'>gc</tag> elements
+      execute commands for the graphic context specified by their
+      <tag class='attribute'>id</tag> attribute.
+      A <tag class='element'>gc</tag> element is a list of
+      commands described below.
+      Each list gets executed in the given order, and the
+      &sxg; file itself has a list of
+      <tag class='element'>gc</tag> and
+      <tag class='element'>render</tag> elements, which are processed
+      in the order of their appearance.
+      It's possible to have more than one appearance of a
+      <tag class='element'>gc</tag> element referencing the same
+      graphic context
+      <tag class='attribute'>id</tag>:
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<sxg>
+
+    <!-- ... -->
+
+  <gc id="pixmap1_gc">
+
+    <!-- ... -->
+
+  </gc>
+
+  <render id="cell">
+
+    <!-- ... -->
+
+  </render>
+
+  <gc id="pixmap2_gc">
+
+    <!-- ... -->
+
+  </gc>
+
+  <gc id="pixmap1_gc">
+
+    <!-- ... -->
+
+  </gc>
+
+  <render id="main">
+
+    <!-- ... -->
+
+  </render>
+
+</sxg>
+]]></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      This executes some graphic context commands for the graphic context
+      <quote>pixmap1_gc</quote>,
+      followed by &RENDER; commands for the picture
+      <quote>cell</quote>, then graphic context commands for the graphic context
+      <quote>pixmap2_gc</quote>, then
+      <quote>pixmap1_gc</quote>, and finally
+      some &RENDER; commands for the <quote>main</quote> picture.
+    </para>
+
+    <note>
+      <para>
+	The graphic context state is persistent. If, for example,
+	the first set of
+	<quote>pixmap1_gc</quote> commands included setting the graphic
+	context's
+	<tag class='element'>function</tag>, the second set of
+	<quote>pixmap1_gc</quote> commands starts with the graphic context
+	still having that
+	<tag class='element'>function</tag> set.
+      </para>
+    </note>
+
+    <section id="sxg_pixmap_mode">
+      <title><tag class="element">function</tag></title>
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<gc id="pixmap1_gc">
+
+  <!-- -->
+
+  <function>set</function>
+
+  <!-- -->
+
+</gc>
+]]></programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	This sets the current
+	<quote>function</quote> component value for the
+	graphic context. The value must be one of the following:
+	<quote>clear</quote>,
+	<quote>and</quote>,
+	<quote>and_reverse</quote>,
+	<quote>copy</quote>,
+	<quote>and_inverted</quote>,
+	<quote>noop</quote>,
+	<quote>xor</quote>,
+	<quote>or</quote>,
+	<quote>nor</quote>,
+	<quote>equiv</quote>,
+	<quote>invert</quote>,
+	<quote>or_reverse</quote>,
+	<quote>copy_inverted</quote>,
+	<quote>or_inverted</quote>,
+	<quote>nand</quote>, or
+	<quote>set</quote>.
+      </para>
+    </section>
+
+    <section id="sxg_pixmap_foreground">
+      <title><tag class="element">foreground</tag></title>
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<gc id="pixmap1_gc">
+
+  <!-- -->
+
+  <foreground>.5</foreground>
+
+  <!-- -->
+
+</gc>
+]]></programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	This sets the <quote>foreground</quote> component value for the
+	graphic context.
+	The X protocol defines this
+	component value as an integer, ranging from 0 and up to the value
+	based on the pixmap's depth.
+	The value specified in
+	<tag class='element'>foreground</tag> ranges from 0 to 1, and gets
+	scaled to the appropriate range of permissible foreground values.
+      </para>
+      <para>
+	As described previously, the
+	pixmap serves as an alpha channel filter. A value of 0 is a completely
+	transparent pixel value, a value of 1 is a fully opaque pixel value.
+	A pixmap declared with a
+	<tag class='element'>mask</tag> element can only have a value of a 0
+	or a 1, since it's a 1 bit deep pixmap. A non-mask pixmap is 8 bits
+	deep, and a value between 0 and 1 gets scaled across the entire
+	8-bit deep pixmap.
+      </para>
+    </section>
+
+    <section id="sxg_pixmap_background">
+      <title><tag class="element">background</tag></title>
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<gc id="pixmap1_gc">
+
+  <!-- -->
+
+  <background>.5</background>
+
+  <!-- -->
+
+</gc>
+]]></programlisting>
+	</informalexample>
+      </blockquote>
+      <para>
+	This sets the <quote>background</quote> component value for the
+	graphic context.
+	The X protocol defines this
+	component value as an integer, ranging from 0 and up to the value
+	based on the pixmap's depth.
+	The value specified in
+	<tag class='element'>background</tag> ranges from 0 to 1, and gets
+	scaled to the appropriate range of permissible background values.
+      </para>
+      <para>
+	As described previously, the
+	pixmap serves as an alpha channel filter. A value of 0 is a completely
+	transparent pixel value, a value of 1 is a fully opaque pixel value.
+	A pixmap declared with a
+	<tag class='element'>mask</tag> element can only have a value of a 0
+	or a 1.
+      </para>
+    </section>
+
+    <section id="sxg_pixmap_line_width">
+      <title><tag class="element">line_width</tag></title>
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<gc id="pixmap1_gc">
+
+  <!-- -->
+
+  <line_width>1</line_width>
+
+  <!-- -->
+
+</gc>
+]]></programlisting>
+	</informalexample>
+      </blockquote>
+      <para>
+	This sets the <quote>line-width</quote> component value of the
+	graphic context.
+	Specifying the value 0 set <literal>line-width</literal> to 0.
+	Specifying a non-0 value scales it according to the pixmap's
+	<link linkend="sxgsize"><tag class='element'>size</tag></link>;
+	and if the result gets rounded off to 0, it gets increased to 1
+	before setting the <literal>line-width</literal>.
+      </para>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+  <line_width slim="1">1</line_width>
+</gc>
+]]></programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	An optional
+	<tag class='attribute'>slim</tag>
+	attribute adds an additional scaling step:
+	<literal>line-width</literal> gets set 0 if the scaled line width
+	got rounded off to 1. The
+	<literal>line-width</literal> remains unchanged if the scaled line
+	width got rounded off to 2, or higher.
+      </para>
+    </section>
+    <section id="sxg_pixmap_line_style">
+      <title><tag class="element">line_style</tag></title>
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<gc id="pixmap1_gc">
+
+  <!-- -->
+
+  <line_style>on_off_dash</line_style>
+
+  <!-- -->
+
+</gc>
+]]></programlisting>
+	</informalexample>
+      </blockquote>
+      <para>
+	This sets the <quote>line-style</quote> component value of the
+	graphic context. The <replaceable>value</replaceable> is one of:
+	<quote>solid</quote>,
+	<quote>on_off_dash</quote>, or
+	<quote>double_dash</quote>.
+      </para>
+    </section>
+    <section id="sxg_pixmap_join_style">
+      <title><tag class="element">join_style</tag></title>
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<gc id="pixmap1_gc">
+
+  <!-- -->
+
+  <join_style>bevel</join_style>
+
+  <!-- -->
+
+</gc>
+]]></programlisting>
+	</informalexample>
+      </blockquote>
+      <para>
+	This sets the <quote>join-style</quote> component value of the
+	graphic context. The <replaceable>value</replaceable> is one of:
+	<quote>miter</quote> (default value),
+	<quote>round</quote>, or
+	<quote>bevel</quote>.
+      </para>
+    </section>
+    <section id="sxg_pixmap_cap_style">
+      <title><tag class="element">cap_style</tag></title>
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<gc id="pixmap1_gc">
+
+  <!-- -->
+
+  <cap_style>round</cap_style>
+
+  <!-- -->
+
+</gc>
+]]></programlisting>
+	</informalexample>
+      </blockquote>
+      <para>
+	This sets the <quote>cap-style</quote> component value of the
+	graphic context. The <replaceable>value</replaceable> is one of:
+	<quote>not_last</quote>,
+	<quote>butt</quote> (default value)
+	<quote>round</quote>, or
+	<quote>projecting</quote>.
+      </para>
+    </section>
+    <section id="sxg_pixmap_fill_style">
+      <title><tag class="element">fill_style</tag></title>
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<gc id="pixmap1_gc">
+
+  <!-- -->
+
+    <fill_style />
+
+    <fill_style>
+      <tiled>non_mask_pixmap</tiled>
+      <x>0</x>
+      <y>0</y>
+    </fill_style>
+
+    <fill_style>
+      <stippled>mask_pixmap</stippled>
+      <x>0</x>
+      <y>0</y>
+    </fill_style>
+
+    <fill_style>
+      <opaque_stippled>mask_pixmap</opaque_stippled>
+      <x>0</x>
+      <y>0</y>
+    </fill_style>
+
+  <!-- -->
+
+</gc>
+]]></programlisting>
+	</informalexample>
+      </blockquote>
+      <para>
+	This sets the <quote>fill-style</quote>,
+	<quote>tile-stipple-x-origin</quote>, and
+	<quote>tile-stipple-y-origin</quote>
+	component values of the
+	graphic context.
+
+	An empty <tag class="element">fill_style</tag> element
+	sets the <quote>fill-style</quote> component to
+	<literal>Solid</literal>.
+	Otherwise, the <quote>fill-style</quote> component gets set
+	to <literal>Tiled</literal>,
+	<literal>Stippled</literal>, or
+	<literal>OpaqueStippled</literal>, with
+	either the <quote>tile</quote> or the <quote>stipple</quote>
+	component value set to specified pixmap.
+	The stipple pixmap must be declared with the
+	<tag class="element">mask</tag> element. The tile pixmap cannot
+	be declared with
+	<tag class="element">mask</tag> element.
+      </para>
+
+      <para>
+	The optional <tag class="element">x</tag> and
+	<tag class="element">y</tag> elements set the
+	<quote>tile-stipple-x-origin</quote>, and
+	<quote>tile-stipple-y-origin</quote> component values.
+	The coordinates <link linkend="sxgscaling">get scaled</link> according to the pixmap's
+	<link linkend="sxgsize"><tag class='element'>size</tag></link>.
+	If not specified, they default to actual (0, 0) coordinates.
+      </para>
+    </section>
+    <section id="sxg_pixmap_clip">
+      <title><tag class="element">clip</tag></title>
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<gc id="pixmap1_gc">
+
+  <!-- -->
+
+    <clip>
+      <pixmap>pixmap2</pixmap>
+      <x>0</x>
+      <y>0</y>
+
+      <clipped>
+	<line>
+
+	  <!-- -->
+
+	</line>
+      </clipped>
+    </clip>
+
+    <clip>
+      <rectangle>
+	<x>0</x>
+	<y>0</y>
+	<width>10</width>
+	<height><10</height>
+      </rectangle>
+      <rectangle>
+	<x>10</x>
+	<y>10</y>
+	<width>10</width>
+	<height><10</height>
+      </rectangle>
+
+      <clipped>
+	<line>
+
+	  <!-- -->
+
+	</line>
+      </clipped>
+
+    </clip>
+
+    <!-- -->
+
+</gc>
+]]></programlisting>
+	</informalexample>
+      </blockquote>
+      <para>
+	This sets the <quote>clip-mask</quote> component value of the
+	graphic context, in one of two ways:
+      </para>
+
+      <itemizedlist>
+	<listitem>
+	  <para>
+	    Using the id label of a
+	    <tag class='element'>pixmap</tag> that serves as a clipping mask.
+	    This <tag class='element'>pixmap</tag> must be declared with a
+	    <tag class='element'>mask</tag> element.
+	  </para>
+
+	  <para>
+	    This option sets the graphic context's
+	    <literal>clip-mask</literal> attribute directly.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Using a list of rectangles.
+	    Each rectangle's coordinates <link linkend="sxgscaling">get scaled</link> according to the
+	    underlying pixmap's
+	    <link linkend="sxgsize"><tag class='element'>size</tag></link>.
+	  </para>
+	</listitem>
+      </itemizedlist>
+
+      <para>
+	When a pixmap is specified,
+	the optional <tag class="element">x</tag> and
+	<tag class="element">y</tag> elements set the
+	<quote>clip-x-origin</quote>, and
+	<quote>clip-y-origin</quote> component values.
+	The coordinates <link linkend="sxgscaling">get scaled</link> according to the pixmap's
+	<link linkend="sxgsize"><tag class='element'>size</tag></link>.
+	If not specified, they default to actual (0, 0) coordinates.
+      </para>
+
+      <para>
+	The pixmap specified by
+	<quote>pixmap</quote> must be declared with a
+	<tag class="element">mask</tag> element.
+      </para>
+
+      <para>
+	The <tag class="element">clip</tag>
+	must have exactly one
+	<tag class="element">clipped</tag> inner element, which
+	contains a list of any element that can appear in a
+	<tag class="element">gc</tag>, except for another
+	<tag class="element">clip</tag>.
+	The elements in <tag class="element">clipped</tag> get executed
+	with the clip mask in effect, after which point the clip mask
+	is removed.
+      </para>
+    </section>
+    <section id="sxg_pixmap_dashes">
+      <title><tag class="element">dashes</tag></title>
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<gc id="pixmap1_gc">
+
+  <!-- -->
+
+  <dashes>
+    <dash>1</dash>
+    <dash>2</dash>
+  </dashes>
+
+  <!-- -->
+
+</gc>
+]]></programlisting>
+	</informalexample>
+      </blockquote>
+      <para>
+	This executes
+	the <function>SetDashes</function> X protocol command using
+	the
+	<tag class="element">dash</tag> values.
+      </para>
+
+      <para>
+	The <tag class="element">offset</tag>
+	element defaults to 0, if not given, and
+	sets the <quote>dash-offset</quote>.
+      </para>
+
+      <para>
+	All of these values <link linkend="sxgscaling">get scaled</link> according to the pixmap's
+	<link linkend="sxgsize"><tag class='element'>size</tag></link>.
+      </para>
+    </section>
+    <section id="sxg_pixmap_line">
+      <title><tag class="element">line</tag></title>
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<gc id="pixmap1_gc">
+
+  <!-- -->
+
+  <line>
+    <point>
+      <x>0</x>
+      <y>0</y>
+    </point>
+    <point>
+      <x>5</x>
+      <y>5</y>
+    </point>
+    <point>
+      <x>0</x>
+      <y>10</y>
+    </point>
+  </line>
+
+  <!-- -->
+
+</gc>
+]]></programlisting>
+	</informalexample>
+      </blockquote>
+      <para>
+	This executes
+	the <function>PolyLine</function> X protocol command using
+	the
+	<tag class="element">point</tag> coordinates.
+	All of these coordinates <link linkend="sxgscaling">get scaled</link> according to the pixmap's
+	<link linkend="sxgsize"><tag class='element'>size</tag></link>.
+      </para>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<gc id="pixmap1_gc">
+
+  <!-- -->
+
+  <line>
+    <fill>convex</fill>
+    <point>
+      <x>0</x>
+      <y>0</y>
+    </point>
+    <point>
+      <x>5</x>
+      <y>5</y>
+    </point>
+    <point>
+      <x>0</x>
+      <y>10</y>
+    </point>
+  </line>
+
+  <!-- -->
+
+</gc>
+]]></programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	An optional
+	<tag class="element">fill</tag> executes the
+	the <function>FillPoly</function> X protocol instead of
+	<function>PolyLine</function>.
+	The
+	<tag class="element">fill</tag> specifies either
+	<quote><literal>complex</literal></quote>
+	<quote><literal>nonconvex</literal></quote> or
+	<quote><literal>convex</literal></quote>. This sets the
+	<replaceable>shape</replaceable> command parameter.
+      </para>
+    </section>
+
+    <section id="sxg_pixmap_fill">
+      <title><tag class="element">fill</tag> and <tag class="element">clear</tag></title>
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<gc id="pixmap1_gc">
+
+  <!-- -->
+
+  <fill>
+    <x>0</x>
+    <y>0</y>
+    <width>10</width>
+    <height>10</height>
+  </fill>
+
+  <!-- -->
+
+  <clear />
+
+</gc>
+]]></programlisting>
+	</informalexample>
+      </blockquote>
+      <para>
+	<tag class='element'>fill</tag>
+	executes
+	the <function>PolyFillRectangle</function> X protocol command for
+	one rectangle specified by the coordinates.
+	All of these coordinates
+	<link linkend="sxgscaling"><link linkend="sxgscaling">get scaled</link> according</link> to the pixmap's
+	<link linkend="sxgsize"><tag class='element'>size</tag></link>.
+      </para>
+
+      <para>
+	<tag class='element'>clear</tag> is a shorthand for a
+	<tag class='element'>fill</tag> that covers the entire pixmap.
+	This is helpful in clearing
+	<link linkend="sxgscaling">scaled pixmaps</link>.
+      </para>
+
+      <note>
+	<para>
+	  Since <tag class='element'>clear</tag> is really a
+	  <tag class='element'>fill</tag>, the
+	  <tag class='element'>function</tag> must be set to
+	  <quote>clear</quote> to actually clear the pixmap.
+	</para>
+      </note>
+    </section>
+    <section id="sxg_pixmap_fill_arc_mode">
+      <title><tag class="element">fill_arc_mode</tag></title>
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<gc id="pixmap1_gc">
+
+  <!-- -->
+
+  <fill_arc_mode>pie_slice</fill_arc_mode>
+
+  <!-- -->
+
+</gc>
+]]></programlisting>
+	</informalexample>
+      </blockquote>
+      <para>
+	This sets the <quote>arc-mode</quote> component value of the
+	graphic context. The <replaceable>value</replaceable> is either
+	<quote>chord</quote> or
+	<quote>pie_slice</quote>.
+      </para>
+    </section>
+
+    <section id="sxg_pixmap_arcs">
+      <title><tag class="element">arcs</tag></title>
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<gc id="pixmap1_gc">
+
+  <!-- -->
+
+  <arcs>
+
+    <fill /> <!-- optional -->
+
+    <arc>
+      <x>0</x>
+      <y>0</y>
+      <width>10</width>
+      <height>10</height>
+      <angle1>45</angle1>
+      <angle2>90</angle2>
+    </arc>
+
+    <arc>
+      <x>5</x>
+      <y>5</y>
+      <width>10</width>
+      <height>10</height>
+      <angle1>45</angle1>
+      <angle2>90</angle2>
+    </arc>
+  </arcs>
+
+  <!-- -->
+
+</gc>
+]]></programlisting>
+	</informalexample>
+      </blockquote>
+      <para>
+	This executes either
+	the <function>PolyArc</function> or the
+	<function>PolyFillArc</function> protocol command,
+	depending on whether the
+	<tag class='element'>fill</tag> element exists.
+	Each arc's coordinates <link linkend="sxgscaling">get scaled</link> according to the pixmap's
+	<link linkend="sxgsize"><tag class='element'>size</tag></link>.
+      </para>
+
+      <note>
+	<para>
+	  The angles are specified in degrees, and &sxg; takes care of
+	  scaling it by 64, as defined by the X protocol.
+	</para>
+
+	<para>
+	  Additionally, &app; adjusts the width and the height of the
+	  arc as follows.
+	  X Protocol's
+	  <function>PolyArc</function> and
+	  <function>PolyFillArc</function> commands' arcs are specified by
+	  the bounding rectangle of pixels (x,y) through (x+width,x+height)
+	  inclusively. So, a circle 50 pixels across and tall gets specified
+	  by an actual width and height of 49 (indicating fifty pixels starting
+	  with x and ending with pixel x+49, across, same for height).
+	</para>
+
+	<para>
+	  &sxg; interprets the width and height values in absolute terms, like
+	  all other instructions in the &sxg; file.
+	  A circle 50 pixels across and tall gets specified by a
+	  <tag class='element'>width</tag> and
+	  <tag class='element'>height</tag> of 50. After
+	  <link linkend="sxgscaling">scaling the coordinates
+	  </link> according to the referenced pixmap or picture's
+	  <link linkend="sxgsize"><tag class='element'>size</tag></link>,
+	  &sxg; automatically subtracts 1 from each arc's width and height.
+	</para>
+      </note>
+    </section>
+  </section>
+
+  <section id="sxgrender">
+    <title>Picture render commands</title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<sxg>
+
+  <!-- width and height declarations -->
+
+  <picture id="pen">
+    <type>pixmap</type>
+    <size>scaled</size>
+    <width>16</width>
+    <height>16</height>
+  </picture>
+
+  <render id="pen">
+
+    <!-- Graphic context commands -->
+
+  </render>
+</sxg>
+]]></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      After declaring one or more
+      <tag class='element'>pictures</tag>s,
+      the
+      <tag class='element'>render</tag> elements
+      execute commands for the picture object specified by their
+      <tag class='attribute'>id</tag> attribute.
+      A <tag class='element'>picture</tag> object with the id
+      <quote>main</quote> gets automatically created by default.
+      It represents the final
+      drawn picture.
+      Each <tag class='element'>render</tag> element itself
+      contains a list of commands to execute, and the
+      &sxg; file itself has a list of
+      <tag class='element'>gc</tag> and
+      <tag class='element'>render</tag> elements, which are processed
+      in the order of their appearance.
+      It's possible to have more than one appearance of a
+      <tag class='element'>render</tag> element referencing the same picture
+      <tag class='attribute'>id</tag>:
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<sxg>
+
+    <!-- ... -->
+
+  <render id="pen">
+
+    <!-- ... -->
+
+  </render>
+
+  <gc id="pixmap1_gc">
+
+    <!-- ... -->
+
+  </gc>
+
+  <render id="pen">
+
+    <!-- ... -->
+
+  </render>
+
+  <render id="main">
+
+    <!-- ... -->
+
+  </render>
+
+</sxg>
+]]></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      This executes some rendering commands for the <quote>pen</quote>
+      picture, followed by graphic context commands for the graphic context
+      <quote>pixmap1_gc</quote>,
+      followed by more render commands for picture
+      <quote>pen</quote>, and finally
+      some render commands for the <quote>main</quote> picture.
+    </para>
+
+    <section id="sxg_render_op">
+      <title><tag class="element">op</tag></title>
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+  <!-- -->
+
+  <op>atop</op>
+
+  <!-- -->
+]]></programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	Several commands described below contain an optional
+	<tag class='element'>op</tag> which specifies the compositing
+	operator.
+	Its value must be one of the following, setting
+	the correposnding compositing operation from the &RENDER;
+	specification:
+	<quote><literal>clear</literal></quote>,
+	<quote><literal>src</literal></quote>,
+	<quote><literal>dst</literal></quote>,
+	<quote><literal>over</literal></quote>,
+	<quote><literal>over_reverse</literal></quote>,
+	<quote><literal>in</literal></quote>,
+	<quote><literal>in_reverse</literal></quote>,
+	<quote><literal>out</literal></quote>,
+	<quote><literal>out_reverse</literal></quote>,
+	<quote><literal>atop</literal></quote>,
+	<quote><literal>atop_reverse</literal></quote>,
+	<quote><literal>xor</literal></quote>,
+	<quote><literal>add</literal></quote>,
+	<quote><literal>saturate</literal></quote>,
+	<quote><literal>disjoint_clear</literal></quote>,
+	<quote><literal>disjoint_src</literal></quote>,
+	<quote><literal>disjoint_dst</literal></quote>,
+	<quote><literal>disjoint_over</literal></quote>,
+	<quote><literal>disjoint_over_reverse</literal></quote>,
+	<quote><literal>disjoint_in</literal></quote>,
+	<quote><literal>disjoint_in_reverse</literal></quote>,
+	<quote><literal>disjoint_out</literal></quote>,
+	<quote><literal>disjoint_out_reverse</literal></quote>,
+	<quote><literal>disjoint_atop</literal></quote>,
+	<quote><literal>disjoint_atop_reverse</literal></quote>,
+	<quote><literal>disjoint_xor</literal></quote>,
+	<quote><literal>conjoint_clear</literal></quote>,
+	<quote><literal>conjoint_src</literal></quote>,
+	<quote><literal>conjoint_dst</literal></quote>,
+	<quote><literal>conjoint_over</literal></quote>,
+	<quote><literal>conjoint_over_reverse</literal></quote>,
+	<quote><literal>conjoint_in</literal></quote>,
+	<quote><literal>conjoint_in_reverse</literal></quote>,
+	<quote><literal>conjoint_out</literal></quote>,
+	<quote><literal>conjoint_out_reverse</literal></quote>,
+	<quote><literal>conjoint_atop</literal></quote>,
+	<quote><literal>conjoint_atop_reverse</literal></quote>,
+	<quote><literal>conjoint_xor</literal></quote>,
+	<quote><literal>multiply</literal></quote>,
+	<quote><literal>screen</literal></quote>,
+	<quote><literal>overlay</literal></quote>,
+	<quote><literal>darken</literal></quote>,
+	<quote><literal>lighten</literal></quote>,
+	<quote><literal>color_dodge</literal></quote>,
+	<quote><literal>color_burn</literal></quote>,
+	<quote><literal>hard_light</literal></quote>,
+	<quote><literal>soft_light</literal></quote>,
+	<quote><literal>difference</literal></quote>,
+	<quote><literal>exclusion</literal></quote>,
+	<quote><literal>hsl_hue</literal></quote>,
+	<quote><literal>hsl_saturation</literal></quote>,
+	<quote><literal>hsl_color</literal></quote>, or
+	<quote><literal>hsl_luminosity</literal></quote>.
+      </para>
+
+      <note>
+	<para>
+	  The last fifteen compositing operators are not specified in
+	  the &render;, but are defined by the XCB library, and these
+	  definitions are available, as is. Since &sxg; uses the
+	  display server to execute all drawing instructions, support
+	  for each compositing operator depends on the display server.
+	</para>
+      </note>
+    </section>
+
+    <section id="sxg_render_repeat">
+      <title><tag class="element">repeat</tag></title>
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<render id="pic1">
+
+  <!-- -->
+
+  <repeat>normal</repeat>
+
+  <!-- -->
+
+</render>
+]]></programlisting>
+      </informalexample>
+      </blockquote>
+
+      <para>
+	The
+	<tag class='element'>repeat</tag> element sets the picture's
+	<literal>repeat</literal> attribute.
+	The value must be
+	<quote>none</quote>,
+	<quote>normal</quote>,
+	<quote>pad</quote>,
+	or
+	<quote>reflect</quote>.
+      </para>
+    </section>
+
+    <section id="sxg_render_clip">
+      <title><tag class="element">clip</tag></title>
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<render id="pic1">
+
+  <!-- -->
+
+  <clip>
+    <pixmap>pixmap1</pixmap>
+    <clipped>
+      <fill>
+
+	<!-- -->
+
+      </fill>
+    </clipped>
+  </clip>
+
+  <clip>
+    <rectangle>
+      <x>0</x> <!-- optional -->
+      <y>0</y>
+      <width>10</width>
+      <height><10</height>
+   </rectangle>
+
+    <rectangle>
+      <x>10</x>
+      <y>10</y>
+      <width>10</width>
+      <height><10</height>
+    </rectangle>
+    <clipped>
+      <fill>
+
+	<!-- -->
+
+      </fill>
+    </clipped>
+  </clip>
+
+  <!-- -->
+
+</render>
+]]></programlisting>
+	</informalexample>
+      </blockquote>
+      <para>
+	The
+	<tag class='element'>clip</tag> element sets the picture's
+	clip area in one of two different ways:
+      </para>
+
+      <itemizedlist>
+	<listitem>
+	  <para>
+	    Using the id label of a
+	    <tag class='element'>pixmap</tag> that serves as a clipping mask.
+	    This <tag class='element'>pixmap</tag> must be declared with a
+	    <tag class='element'>mask</tag> element.
+	  </para>
+
+	  <para>
+	    This option sets the picture object's
+	    <literal>clip-mask</literal> attribute directly.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Using a list of rectangles.
+	    Each rectangle's coordinates <link linkend="sxgscaling">get scaled</link> according to the
+	    pixture's
+	    <link linkend="sxgsize"><tag class='element'>size</tag></link>.
+	    This option uses the <function>SetPictureClipRectangles</function>
+	    command to set the picture object's
+	    <literal>clip-mask</literal> attribute.
+	  </para>
+	</listitem>
+      </itemizedlist>
+
+      <para>
+	The optional <tag class="element">x</tag> and
+	<tag class="element">y</tag> elements set the
+	<quote>clip-x-origin</quote>, and
+	<quote>clip-y-origin</quote> attributes values.
+	The coordinates <link linkend="sxgscaling">get scaled</link> according
+	to the picture's
+	<link linkend="sxgsize"><tag class='element'>size</tag></link>.
+	If not specified, they default to actual (0, 0) coordinates.
+      </para>
+
+      <para>
+	The <tag class="element">clip</tag>
+	must have exactly one
+	<tag class="element">clipped</tag> inner element, which
+	contains a list of any element that can appear in a
+	<tag class="element">render</tag>, except for another
+	<tag class="element">clip</tag>.
+	The elements in <tag class="element">clipped</tag> get executed
+	with the clip mask in effect, after which point the clip mask
+	is removed.
+      </para>
+    </section>
+
+    <section id="sxg_render_fill">
+      <title><tag class="element">fill</tag></title>
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<render id="pic1">
+
+  <!-- -->
+
+  <fill>
+    <op>over</op>  <!-- optional, defaults to src -->
+
+    <r>1</r>
+    <g>1</g>
+
+    <rectangle>
+      <x>0</x>
+      <y>0</y>
+      <width>10</width>
+      <height><10</height>
+    </rectangle>
+
+    <rectangle>
+      <x>10</x>
+      <y>10</y>
+      <width>10</width>
+      <height><10</height>
+    </rectangle>
+  </fill>
+
+  <!-- -->
+
+</render>
+]]></programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	The
+	<tag class='element'>fill</tag> element executes a
+	<function>FillRectangles</function> render command.
+	Its
+	<tag class='element'>r</tag>,
+	<tag class='element'>g</tag>,
+	<tag class='element'>b</tag>, and
+	<tag class='element'>a</tag> elements specify the value
+	of the red, green, blue, and alpha channels, respectively.
+	Each value ranges between 0 (minimum) and
+	1 (maximum).
+	<tag class='element'>r</tag>,
+	<tag class='element'>g</tag>, and
+	<tag class='element'>b</tag> defaults to 0, minimum intensity.
+	<tag class='element'>a</tag> defaults to 1, maximum intensity.
+	Alternatively, a
+	<link linkend="sxgthemecolors">predefined theme color</link>
+	can also be specified.
+      </para>
+      <para>
+	The optional
+	<link linkend="sxg_render_op"><tag class='element'>op</tag></link>
+	elements defaults to <literal>src</literal>,
+	Each rectangle's coordinates <link linkend="sxgscaling">get scaled</link> according to the
+	pixture's
+	<link linkend="sxgsize"><tag class='element'>size</tag></link>.
+      </para>
+    </section>
+
+    <section id="sxg_render_composite">
+      <title><tag class="element">composite</tag></title>
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<render id="pic1">
+
+  <!-- -->
+
+  <composite>
+    <op>over</op>
+    <x>0</x>    <!-- optional -->
+    <y>0</y>
+    <width>10</width>
+    <height>10</height>
+    <src>
+      <picture>yellow</picture>
+      <x>0</x>    <!-- optional -->
+      <y>0</y>
+    </src>
+    <mask>   <!-- optional -->
+      <pixmap>pixmap1</pixmap>
+      <x>0</x>    <!-- optional -->
+      <y>0</y>
+    </mask>
+  </composite>
+
+  <!-- -->
+
+  <composite>
+    <op>over</op>
+    <x>5</x>
+    <y>5</y>
+
+    <srcsize />
+
+    <halign>centered</halign>
+    <valign>middle</valign>
+
+    <src>
+      <picture>prompt</picture>
+    </src>
+  </composite>
+
+  <!-- -->
+
+</render>
+]]></programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	The
+	<tag class='element'>composite</tag> element executes a
+	<function>Composite</function> render command. The
+	<function>Composite</function>'s
+	<literal>dst</literal> picture is the
+	<tag class='element'>render</tag> element that contains
+	the
+	<tag class='element'>composite</tag> command.
+	<tag class='element'>x</tag>,
+	<tag class='element'>y</tag>,
+	<tag class='element'>width</tag>, and
+	<tag class='element'>height</tag> specify the
+	<varname>dst-x</varname>,
+	<varname>dst-y</varname>,
+	<varname>width</varname> and
+	<varname>height</varname> parameters.
+      </para>
+
+      <para>
+	A <tag class='element'>srcsize</tag> is an alternative to
+	<tag class='element'>width</tag> and
+	<tag class='element'>height</tag>, this uses the source picture's
+	width and height, instead.
+	The optional
+	<tag class='element'>halign</tag> and
+	<tag class='element'>valign</tag> elements determine how
+	<tag class='element'>x</tag>,
+	<tag class='element'>y</tag> values are interpreted.
+
+	<tag class='element'>halign</tag> may be
+	<literal>left</literal> (default),
+	<literal>centered</literal>, or
+	<literal>right</literal>.
+	<tag class='element'>valign</tag> may be
+	<literal>top</literal> (default),
+	<literal>middle</literal>, or
+	<literal>or bottom</literal>.
+      </para>
+
+      <para>
+	<link linkend="sxg_render_op"><tag class='element'>op</tag></link>
+	specifies the compositing operator.
+	<tag class='element'>src</tag> specifies the
+	<varname>src</varname> picture's label id, and
+	the
+	<varname>src-x</varname> and
+	<varname>src-y</varname> parameters.
+      </para>
+
+      <para>
+	The optional
+	<tag class='element'>mask</tag> gives the ID of the pixmap
+	for the <varname>mask</varname> parameter (the &render;
+	specifies this
+	as a picture object, and &sxg; provides a picture object for the
+	given pixmap); together with
+	the
+	<varname>mask-x</varname> and
+	<varname>mask-y</varname> parameters.
+      </para>
+
+      <para>
+	All coordinates <link linkend="sxgscaling">get scaled</link> according
+	to their respective element's
+	<link linkend="sxgsize"><tag class='element'>size</tag></link>.
+	If not specified, they default to actual (0, 0) coordinates.
+	Both the destination picture, the source picture, and the optional
+	masking pixmap if specified, should have the same
+	<link linkend="sxgsize"><tag class='element'>size</tag></link> setting.
+      </para>
+    </section>
+
+    <section id="sxg_render_triangles">
+      <title><tag class="element">triangles</tag></title>
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<render id="pic1">
+
+  <!-- -->
+
+  <triangles>
+    <op>over</op>          <!-- optional -->
+    <mask>pixmap1</mask>   <!-- optional -->
+
+    <x>0</x>               <!-- optional -->
+    <y>0</y>               <!-- optional -->
+
+    <src>yellow</src>
+
+    <triangle>
+      <p1>
+	<x>0</x>
+	<y>0</y>
+      </p1>
+      <p2>
+	<x>10</x>
+	<y>0</y>
+      </p2>
+      <p3>
+	<x>0</x>
+	<y>10</y>
+      </p3>
+    </triangle>
+
+    <triangle>
+      <p1>
+	<x>10</x>
+	<y>0</y>
+      </p1>
+      <p2>
+	<x>20</x>
+	<y>0</y>
+      </p2>
+      <p3>
+	<x>20</x>
+	<y>10</y>
+      </p3>
+    </triangle>
+  </triangles>
+  <!-- -->
+
+</render>
+]]></programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	The
+	<tag class='element'>triangles</tag> element executes a
+	<function>Triangles</function> render command. The optional
+	<link linkend="sxg_render_op"><tag class='element'>op</tag></link>
+	specifies the compositing operator, and defaults to
+	<literal>src</literal>.
+	The optional
+	<tag class='element'>mask</tag> gives the ID of the pixmap
+	for the <varname>mask</varname> parameter (the &render;
+	specifies this
+	as a picture object, and &sxg; provides a picture object for the
+	given pixmap).
+	The optional
+	<tag class='element'>x</tag> and
+	<tag class='element'>y</tag> set
+	<function>Triangles</function>'
+	<literal>src-x</literal> and
+	<literal>src-y</literal> parameters.
+	The coordinates <link linkend="sxgscaling">get scaled</link> according
+	to the picture's
+	<link linkend="sxgsize"><tag class='element'>size</tag></link>.
+	If not specified, they default to actual (0, 0) coordinates.
+	The <tag class='element'>src</tag> element is the id label of
+	a picture that sets the
+	<literal>src</literal> parameter.
+      </para>
+
+      <para>
+	The
+	<tag class='element'>triangle</tag> elements define each triangle's
+	three corners.
+	All coordinates <link linkend="sxgscaling">get scaled</link> according to the
+	pixture's
+	<link linkend="sxgsize"><tag class='element'>size</tag></link>.
+      </para>
+    </section>
+    <section id="sxg_render_tristrip">
+      <title><tag class="element">tristrip</tag> and <tag class="element">trifan</tag></title>
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<render id="pic1">
+
+  <!-- -->
+
+  <tristrip>
+    <op>over</op>          <!-- optional -->
+    <mask>pixmap1</mask>   <!-- optional -->
+    <x>0</x>               <!-- optional -->
+    <y>0</y>               <!-- optional -->
+    <src>yellow</src>
+    <point>
+      <x>0</x>
+      <y>0</y>
+    </point>
+    <point>
+      <x>10</x>
+      <y>0</y>
+    </point>
+    <point>
+      <x>10</x>
+      <y>10</y>
+    </point>
+    <point>
+      <x>20</x>
+      <y>10</y>
+    </point>
+  </tristrip>
+
+  <trifan>
+    <op>over</op>          <!-- optional -->
+    <mask>pixmap1</mask>   <!-- optional -->
+    <x>0</x>               <!-- optional -->
+    <y>0</y>               <!-- optional -->
+    <src>yellow</src>
+    <point>
+      <x>0</x>
+      <y>0</y>
+    </point>
+    <point>
+      <x>10</x>
+      <y>0</y>
+    </point>
+    <point>
+      <x>10</x>
+      <y>10</y>
+    </point>
+    <point>
+      <x>0</x>
+      <y>10</y>
+    </point>
+  </trifan>
+
+  <!-- -->
+
+</render>
+]]></programlisting>
+	</informalexample>
+      </blockquote>
+      <para>
+	These elements execute the
+	<function>TriStrip</function> or the
+	<function>TriFan</function> render command.
+	The optional
+	<link linkend="sxg_render_op"><tag class='element'>op</tag></link>
+	specifies the compositing operator, and defaults to
+	<literal>src</literal>.
+	The optional
+	<tag class='element'>mask</tag> gives the ID of the pixmap
+	for the <varname>mask</varname> parameter (the &render;
+	specifies this
+	as a picture object, and &sxg; provides a picture object for the
+	given pixmap).
+	The optional
+	<tag class='element'>x</tag> and
+	<tag class='element'>y</tag> parameters set
+	<literal>src-x</literal> and
+	<literal>src-y</literal> parameters.
+	The coordinates <link linkend="sxgscaling">get scaled</link> according
+	to the picture's
+	<link linkend="sxgsize"><tag class='element'>size</tag></link>.
+	If not specified, they default to actual (0, 0) coordinates.
+	The <tag class='element'>src</tag> element is the id label of
+	a picture that sets the
+	<literal>src</literal> parameter.
+      </para>
+
+      <para>
+	A list of <tag class='element'>point</tag> elements provides
+	the coordinates for the <varname>points</varname> command parameter.
+	All coordinates <link linkend="sxgscaling">get scaled</link> according to the
+	pixture's
+	<link linkend="sxgsize"><tag class='element'>size</tag></link>.
+      </para>
+    </section>
+  </section>
+
+  <section id="sxgexample">
+    <title>Example &sxg; file</title>
+
+    <para>
+      The following example creates an image of a circle with a grey border,
+      filled with a small black-and-white checkerboard pattern.
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[<sxg>
+  <width>32</width>
+  <height>32</height>
+
+  <widthmm>10</widthmm>
+  <heightmm>10</heightmm>
+
+  <widthfactor>2</widthfactor>
+  <heightfactor>2</heightfactor>
+
+  <picture id="grey">
+    <type>rgb</type>
+    <r>.5</r>
+    <g>.5</g>
+    <b>.5</b>
+  </picture>
+
+  <picture id="checkerboard">
+    <size>
+      <type>mmrounded</type>
+      <factor>.5</factor>
+    </size>
+    <width>2</width>
+    <height>2</height>
+  </picture>
+
+  <pixmap id="circle_mask">
+    <size>scaled</size>
+    <width>32</width>
+    <height>32</height>
+    <mask />
+    <gc id="circle_mask_gc" />
+  </pixmap>
+
+  <render id="checkerboard">
+    <repeat>normal</repeat>
+    <fill>
+      <rectangle>
+	<x>0</x>
+	<y>0</y>
+	<width>2</width>
+	<height>2</height>
+      </rectangle>
+    </fill>
+    <fill>
+      <r>1</r>
+      <g>1</g>
+      <b>1</b>
+
+      <rectangle>
+	<x>0</x>
+	<y>0</y>
+	<width>1</width>
+	<height>1</height>
+      </rectangle>
+      <rectangle>
+	<x>1</x>
+	<y>1</y>
+	<width>1</width>
+	<height>1</height>
+      </rectangle>
+    </fill>
+  </render>
+
+  <gc id="circle_mask_gc">
+    <function>set</function>
+
+    <arcs>
+      <fill />
+
+      <arc>
+	<x>2</x>
+	<y>2</y>
+	<width>28</width>
+	<height>28</height>
+	<angle1>0</angle1>
+	<angle2>360</angle2>
+      </arc>
+    </arcs>
+  </gc>
+
+  <render id="main">
+    <composite>
+      <op>src</op>
+      <mask>
+	<pixmap>circle_mask</pixmap>
+	<x>0</x>
+	<y>0</y>
+      </mask>
+      <src>
+	<picture>checkerboard</picture>
+	<x>0</x>
+	<y>0</y>
+      </src>
+      <x>0</x>
+      <y>0</y>
+      <width>32</width>
+      <height>32</height>
+    </composite>
+  </render>
+
+  <gc id="circle_mask_gc">
+    <function>clear</function>
+
+    <fill>
+	<x>0</x>
+	<y>0</y>
+	<width>32</width>
+	<height>32</height>
+    </fill>
+
+    <function>set</function>
+    <line_width>4</line_width>
+
+    <arcs>
+      <arc>
+	<x>2</x>
+	<y>2</y>
+	<width>28</width>
+	<height>28</height>
+	<angle1>0</angle1>
+	<angle2>360</angle2>
+      </arc>
+    </arcs>
+  </gc>
+
+  <render id="main">
+    <composite>
+      <op>over</op>
+      <mask>
+	<pixmap>circle_mask</pixmap>
+	<x>0</x>
+	<y>0</y>
+      </mask>
+      <src>
+	<picture>grey</picture>
+	<x>0</x>
+	<y>0</y>
+      </src>
+      <x>0</x>
+      <y>0</y>
+      <width>32</width>
+      <height>32</height>
+    </composite>
+  </render>
+</sxg>
+]]></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      This &sxg; file defines its nominal size as 10x10 millimeters, using
+      a virtual 32x32 coordinate space.
+      First, a 2x2 pseudo-millimeter-sized picture gets entirely filled with
+      a black color, then two 1x1 white rectangles get drawn, forming the
+      checkerboard pattern.
+    </para>
+
+    <para>
+      A mask pixmap gets created, for the full 32x32 virtual coordinate space,
+      and is filled with a circle. This is used as a mask to compose the
+      checkerboard pattern into the main picture.
+    </para>
+
+    <para>
+      The mask pixmap is modifying by clearing a 28x28 circle inside it,
+      leaving the mask as only a 4 virtual pixel-wide border. This mask
+      then gets used to compose the grey color on top of the main picture.
+    </para>
+  </section>
+
+  <section id="sxgxinclude">
+    <title>Using XInclude with &sxg; files</title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting><![CDATA[
+<?xml version="1.0"?>
+
+<sxg xmlns:xi="http://www.w3.org/2003/XInclude">
+
+  <picture id="checkerboard">
+    <type>pixmap</type>
+    <size>
+      <type>mmrounded</type>
+      <factor>.25</factor>
+    </size>
+    <width>2</width>
+    <height>2</height>
+  </picture>
+
+  <!-- -->
+  <xi:include href="radio1.sxg" xpointer="xpointer(/sxg/*)" />
+
+</sxg>]]></programlisting>
+    </informalexample>
+  </blockquote>
+
+    <para>
+      &sxg; files can use
+      <ulink url='http://www.w3.org/TR/xinclude/'>XInclude</ulink> to assemble
+      the <acronym>XML</acronym> document. The &sxg; file gets processed only
+      after the entire document gets created. The order in which individual
+      elements in the document get processed:
+    </para>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  The
+	  <tag class='element'>location</tag> and
+	  <tag class='element'>dimension</tag> elements.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  The
+	  <tag class='element'>width</tag>,
+	  <tag class='element'>height</tag>,
+	  <tag class='element'>widthfactor</tag>,
+	  <tag class='element'>heightfactor</tag>,
+	  <tag class='element'>widthmm</tag> and
+	  <tag class='element'>heightmm</tag> elements.
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  The
+	  <tag class='element'>font</tag>,
+	  <tag class='element'>pixmap</tag>, and
+	  <tag class='element'>picture</tag>
+	  elements.
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  The
+	  <tag class='element'>gc</tag>, and
+	  <tag class='element'>render</tag>
+	  elements.
+	</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>
+      Even though the above example includes the
+      <filename>radio1.sxg</filename> document after its
+      own
+      <tag class='element'>picture</tag>, this
+      document's
+      <tag class='element'>render</tag> and
+      <tag class='element'>gc</tag> elements
+      can reference pictures and fonts from
+      <filename>radio1.sxg</filename>.
+    </para>
+  </section>
+</appendix>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "book" "appendix")
+End:
+-->

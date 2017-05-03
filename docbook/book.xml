@@ -18,6 +18,7 @@
 <!ENTITY label SYSTEM "label.xml">
 <!ENTITY wordwraplabel SYSTEM "wordwraplabel.xml">
 <!ENTITY inputfieldsandbuttons SYSTEM "inputfieldsandbuttons.xml">
+<!ENTITY sxgdoc SYSTEM "sxg.xml">
 <!ENTITY connections_and_screens SYSTEM "connections_and_screens.xml">
 
 <!ENTITY factory "<link linkend='layoutmanager'>factory</link>">
@@ -47,6 +48,8 @@ See COPYING for distribution information.
     &inputfieldsandbuttons;
     &connections_and_screens;
   </part>
+
+  &sxgdoc;
 
   <appendix id="COPYING">
     <title>COPYING</title>
