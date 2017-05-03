@@ -67,6 +67,23 @@ class LIBCXX_HIDDEN pictureObj::implObj : virtual public obj {
 			  op);
 	}
 
+	//! Composite RENDER operation
+
+	void composite(render_pict_op op,
+		       const const_picture_internal &src,
+		       const const_picture_internal &mask,
+		       coord_t src_x,
+		       coord_t src_y,
+		       coord_t mask_x,
+		       coord_t mask_y,
+		       coord_t dst_x,
+		       coord_t dst_y,
+		       dim_t width,
+		       dim_t height);
+
+	//! Set REPEAT property.
+	void repeat(render_repeat value);
+
 	//! SetPictureClipRectangles RENDER operation.
 	void set_clip_rectangle(const rectangle &r,
 				coord_t x=0,
@@ -76,6 +93,20 @@ class LIBCXX_HIDDEN pictureObj::implObj : virtual public obj {
 	void set_clip_rectangles(const rectangle_set &clipregion,
 				 coord_t x=0,
 				 coord_t y=0);
+
+	//! Fill a rectangle
+	void fill_rectangle(coord_t x, coord_t y, dim_t width, dim_t height,
+			    const rgb &color,
+			    render_pict_op op=render_pict_op::op_src);
+	//! Fill a rectangle
+	void fill_rectangle(const rectangle &rectangle,
+			    const rgb &color,
+			    render_pict_op op=render_pict_op::op_src);
+	//! Fill rectangles
+	void fill_rectangles(const rectangle *rectangles,
+			     size_t n_rectangles,
+			     const rgb &color,
+			     render_pict_op op=render_pict_op::op_src);
 
 	//! Fill triangle strip
 	void fill_tri_strip(const point *points,
@@ -102,6 +133,57 @@ class LIBCXX_HIDDEN pictureObj::implObj : virtual public obj {
 			       render_pict_op op,
 			       coord_t src_x,
 			       coord_t src_y);
+
+	//! Fill triangles
+	void fill_triangles(const std::set<triangle> &triangles,
+			    const const_picture_internal &src,
+			    render_pict_op op=render_pict_op::op_src,
+			    coord_t src_x=0,
+			    coord_t src_y=0);
+
+	//! Fill triangles
+	void fill_triangles(const std::set<triangle> &triangles,
+			    const const_picture_internal &src,
+			    const const_pictformat &mask,
+			    render_pict_op op=render_pict_op::op_src,
+			    coord_t src_x=0,
+			    coord_t src_y=0);
+
+	//! Fill triangles
+	void do_fill_triangles(const std::set<triangle> &triangles,
+			       const const_picture_internal &src,
+			       xcb_render_pictformat_t mask,
+			       render_pict_op op,
+			       coord_t src_x,
+			       coord_t src_y);
+
+	//! Fill a triangle fan.
+	void fill_tri_fan(const point *points,
+			  size_t n_points,
+			  const const_picture_internal &src,
+			  render_pict_op op=render_pict_op::op_src,
+			  coord_t src_x=0,
+			  coord_t src_y=0);
+
+	//! Fill a triangle fan.
+	void fill_tri_fan(const point *points,
+			  size_t n_points,
+			  const const_picture_internal &src,
+			  const const_pictformat &mask,
+			  render_pict_op op=render_pict_op::op_src,
+			  coord_t src_x=0,
+			  coord_t src_y=0);
+
+	//! Fill triangle fan
+	void do_fill_tri_fan(const point *points,
+			     size_t n_points,
+			     const const_picture_internal &src,
+			     xcb_render_pictformat_t mask,
+			     render_pict_op op,
+			     coord_t src_x,
+			     coord_t src_y);
+
+
 	class fromDrawableObj;
 };
 

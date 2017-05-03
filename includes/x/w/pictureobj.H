@@ -10,8 +10,12 @@
 #include <x/w/pictformatfwd.H>
 #include <x/w/rectanglefwd.H>
 #include <x/w/pixmapfwd.H>
+#include <x/w/rgbfwd.H>
 #include <x/w/types.H>
 #include <x/obj.H>
+
+#include <vector>
+#include <set>
 
 LIBCXXW_NAMESPACE_START
 
@@ -55,6 +59,23 @@ public:
 		       const rectangle &rect,
 		       render_pict_op op=render_pict_op::op_src);
 
+	//! Composite operation
+
+	void composite(render_pict_op op,
+		       const const_picture &src,
+		       const const_picture &mask,
+		       coord_t src_x,
+		       coord_t src_y,
+		       coord_t mask_x,
+		       coord_t mask_y,
+		       coord_t dst_x,
+		       coord_t dst_y,
+		       dim_t width,
+		       dim_t height);
+
+	//! Set repeat property
+	void repeat(render_repeat value);
+
 	//! Clip the picture with a pixmap.
 
 	//! The constructor installs the clip mask, the destructor removes it.
@@ -77,6 +98,31 @@ public:
 		clip_mask &operator=(const clip_mask &)=delete;
 	};
 
+	//! Rectangular clip mask
+
+	class rectangular_clip_mask {
+
+		//! My picture
+		const picture clipped_picture;
+
+	public:
+		rectangular_clip_mask(const picture &clipped_picture,
+				      const rectangle_set &rectangles,
+				      coord_t x=0,
+				      coord_t y=0);
+
+		~rectangular_clip_mask();
+
+		rectangular_clip_mask(const rectangular_clip_mask &)=delete;
+
+		rectangular_clip_mask &operator=(const rectangular_clip_mask &)
+		=delete;
+	};
+	//! SetPictureClipRectangles RENDER operation.
+	void set_clip_rectangles(const rectangle_set &clipregion,
+				 coord_t x=0,
+				 coord_t y=0);
+
 	//! Fixed precision
 
 	struct fixedprec {
@@ -86,6 +132,9 @@ public:
 
 		//! Fractional portion of the value
 		uint16_t fraction;
+
+		//! Default constructor
+		fixedprec() : integer(0), fraction(0) {}
 
 		//! Constructor
 		fixedprec(int16_t integer, uint16_t fraction)
@@ -178,6 +227,141 @@ public:
 		}
 
 	};
+
+	//! Fill rectangles
+	void fill_rectangle(const rectangle &r,
+			     const rgb &color,
+			     render_pict_op op=render_pict_op::op_src);
+
+	//! Fill rectangles
+	void fill_rectangles(const rectangle *rectangles,
+			     size_t n_rectangles,
+			     const rgb &color,
+			     render_pict_op op=render_pict_op::op_src);
+	//! Fill triangles
+	void fill_triangles(const std::set<triangle> &triangles,
+			    const const_picture &src,
+			    render_pict_op op=render_pict_op::op_src,
+			    coord_t src_x=0,
+			    coord_t src_y=0);
+
+	//! Fill triangles
+	void fill_triangles(const std::set<triangle> &triangles,
+			    const const_picture &src,
+			    const const_pictformat &mask,
+			    render_pict_op op=render_pict_op::op_src,
+			    coord_t src_x=0,
+			    coord_t src_y=0);
+
+	//! Fill a triangle strip.
+	void fill_tri_strip(const std::vector<point> &tri_strip,
+			    const const_picture &src,
+			    render_pict_op op=render_pict_op::op_src,
+			    coord_t src_x=0,
+			    coord_t src_y=0)
+	{
+		if (tri_strip.empty())
+			return;
+
+		fill_tri_strip(&tri_strip.at(0),
+			       tri_strip.size(),
+			       src,
+			       op,
+			       src_x,
+			       src_y);
+	}
+
+	//! Fill a triangle strip.
+	void fill_tri_strip(const std::vector<point> &tri_strip,
+			    const const_picture &src,
+			    const const_pictformat &mask,
+			    render_pict_op op=render_pict_op::op_src,
+			    coord_t src_x=0,
+			    coord_t src_y=0)
+	{
+		if (tri_strip.empty())
+			return;
+
+		fill_tri_strip(&tri_strip.at(0),
+			       tri_strip.size(),
+			       src,
+			       mask,
+			       op,
+			       src_x,
+			       src_y);
+	}
+
+	//! Fill a triangle strip.
+	void fill_tri_strip(const point *points,
+			    size_t n_points,
+			    const const_picture &src,
+			    render_pict_op op=render_pict_op::op_src,
+			    coord_t src_x=0,
+			    coord_t src_y=0);
+
+	//! Fill a triangle strip.
+	void fill_tri_strip(const point *points,
+			    size_t n_points,
+			    const const_picture &src,
+			    const const_pictformat &mask,
+			    render_pict_op op=render_pict_op::op_src,
+			    coord_t src_x=0,
+			    coord_t src_y=0);
+
+	//! Fill a triangle fan.
+	void fill_tri_fan(const std::vector<point> &tri_strip,
+			    const const_picture &src,
+			    render_pict_op op=render_pict_op::op_src,
+			    coord_t src_x=0,
+			    coord_t src_y=0)
+	{
+		if (tri_strip.empty())
+			return;
+
+		fill_tri_fan(&tri_strip.at(0),
+			     tri_strip.size(),
+			     src,
+			     op,
+			     src_x,
+			     src_y);
+	}
+
+	//! Fill a triangle fan.
+	void fill_tri_fan(const std::vector<point> &tri_strip,
+			    const const_picture &src,
+			    const const_pictformat &mask,
+			    render_pict_op op=render_pict_op::op_src,
+			    coord_t src_x=0,
+			    coord_t src_y=0)
+	{
+		if (tri_strip.empty())
+			return;
+
+		fill_tri_fan(&tri_strip.at(0),
+			     tri_strip.size(),
+			     src,
+			     mask,
+			     op,
+			     src_x,
+			     src_y);
+	}
+
+	//! Fill a triangle fan.
+	void fill_tri_fan(const point *points,
+			  size_t n_points,
+			  const const_picture &src,
+			  render_pict_op op=render_pict_op::op_src,
+			  coord_t src_x=0,
+			  coord_t src_y=0);
+
+	//! Fill a triangle fan.
+	void fill_tri_fan(const point *points,
+			  size_t n_points,
+			  const const_picture &src,
+			  const const_pictformat &mask,
+			  render_pict_op op=render_pict_op::op_src,
+			  coord_t src_x=0,
+			  coord_t src_y=0);
 };
 
 LIBCXXW_NAMESPACE_END

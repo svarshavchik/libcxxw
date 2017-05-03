@@ -75,6 +75,35 @@ void pictureObj::composite(const const_picture &src,
 			height, op);
 }
 
+void pictureObj::composite(render_pict_op op,
+			   const const_picture &src,
+			   const const_picture &mask,
+			   coord_t src_x,
+			   coord_t src_y,
+			   coord_t mask_x,
+			   coord_t mask_y,
+			   coord_t dst_x,
+			   coord_t dst_y,
+			   dim_t width,
+			   dim_t height)
+{
+	impl->composite(op, src->impl, mask->impl, src_x, src_y,
+			mask_x, mask_y,
+			dst_x, dst_y, width, height);
+}
+
+void pictureObj::repeat(render_repeat value)
+{
+	impl->repeat(value);
+}
+
+void pictureObj::set_clip_rectangles(const rectangle_set &clipregion,
+				     coord_t x,
+				     coord_t y)
+{
+	impl->set_clip_rectangles(clipregion, x, y);
+}
+
 pictureObj::clip_mask::clip_mask(const picture &clipped_picture,
 				 const pixmap &picture_clip_mask,
 				 coord_t clip_x_origin,
@@ -104,6 +133,103 @@ pictureObj::clip_mask::~clip_mask()
 	xcb_render_change_picture(picture_clip_mask->impl->conn()->conn,
 				  clipped_picture->impl->picture_id(),
 				  XCB_RENDER_CP_CLIP_MASK, &id);
+}
+
+pictureObj::rectangular_clip_mask
+::rectangular_clip_mask(const picture &clipped_picture,
+			const rectangle_set &rectangles,
+			coord_t x,
+			coord_t y)
+	: clipped_picture(clipped_picture)
+{
+	clipped_picture->impl->set_clip_rectangles(rectangles, x, y);
+}
+
+pictureObj::rectangular_clip_mask::~rectangular_clip_mask()
+{
+	xcb_pixmap_t id=XCB_NONE;
+
+	xcb_render_change_picture(clipped_picture->impl->picture_conn()->conn,
+				  clipped_picture->impl->picture_id(),
+				  XCB_RENDER_CP_CLIP_MASK, &id);
+}
+
+void pictureObj::fill_rectangle(const rectangle &r,
+				const rgb &color,
+				render_pict_op op)
+{
+	impl->fill_rectangles(&r, 1, color, op);
+}
+
+void pictureObj::fill_rectangles(const rectangle *rectangles,
+				 size_t n_rectangles,
+				 const rgb &color,
+				 render_pict_op op)
+{
+	impl->fill_rectangles(rectangles, n_rectangles, color, op);
+}
+
+void pictureObj::fill_triangles(const std::set<triangle> &triangles,
+				const const_picture &src,
+				render_pict_op op,
+				coord_t src_x,
+				coord_t src_y)
+{
+	impl->fill_triangles(triangles, src->impl, op, src_x, src_y);
+}
+
+void pictureObj::fill_triangles(const std::set<triangle> &triangles,
+				const const_picture &src,
+				const const_pictformat &mask,
+				render_pict_op op,
+				coord_t src_x,
+				coord_t src_y)
+{
+	impl->fill_triangles(triangles, src->impl, mask, op, src_x, src_y);
+}
+
+void pictureObj::fill_tri_strip(const point *points,
+				size_t n_points,
+				const const_picture &src,
+				render_pict_op op,
+				coord_t src_x,
+				coord_t src_y)
+{
+	impl->fill_tri_strip(points, n_points, src->impl, op, src_x, src_y);
+}
+
+void pictureObj::fill_tri_strip(const point *points,
+				size_t n_points,
+				const const_picture &src,
+				const const_pictformat &mask,
+				render_pict_op op,
+				coord_t src_x,
+				coord_t src_y)
+{
+	impl->fill_tri_strip(points, n_points, src->impl, mask, op,
+			     src_x, src_y);
+}
+
+void pictureObj::fill_tri_fan(const point *points,
+			      size_t n_points,
+			      const const_picture &src,
+			      render_pict_op op,
+			      coord_t src_x,
+			      coord_t src_y)
+{
+	impl->fill_tri_fan(points, n_points, src->impl, op, src_x, src_y);
+}
+
+void pictureObj::fill_tri_fan(const point *points,
+			      size_t n_points,
+			      const const_picture &src,
+			      const const_pictformat &mask,
+			      render_pict_op op,
+			      coord_t src_x,
+			      coord_t src_y)
+{
+	impl->fill_tri_fan(points, n_points, src->impl, mask, op,
+			   src_x, src_y);
 }
 
 LIBCXXW_NAMESPACE_END

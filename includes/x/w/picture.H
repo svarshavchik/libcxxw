@@ -25,6 +25,10 @@ public:
 
 	//! typedef alias
 
+	typedef pictureObj::rectangular_clip_mask rectangular_clip_mask;
+
+	//! typedef alias
+
 	typedef pictureObj::fixedprec fixedprec;
 
 	//! typedef alias
