@@ -18,7 +18,7 @@ std::string gc::base::function_to_string(gc::base::function v)
 	return gc_function_to_string(v);
 }
 
-gc::base::function gc::base::function_from_string(const std::string &s)
+gc::base::function gc::base::function_from_string(const std::experimental::string_view &s)
 {
 	return gc_function_from_string(s);
 }
@@ -28,7 +28,7 @@ std::string gc::base::line_style_to_string(gc::base::line_style v)
 	return gc_line_style_to_string(v);
 }
 
-gc::base::line_style gc::base::line_style_from_string(const std::string &s)
+gc::base::line_style gc::base::line_style_from_string(const std::experimental::string_view &s)
 {
 	return gc_line_style_from_string(s);
 }
@@ -38,7 +38,7 @@ std::string gc::base::fill_arc_mode_to_string(gc::base::fill_arc_mode v)
 	return gc_fill_arc_mode_to_string(v);
 }
 
-gc::base::fill_arc_mode gc::base::fill_arc_mode_from_string(const std::string &s)
+gc::base::fill_arc_mode gc::base::fill_arc_mode_from_string(const std::experimental::string_view &s)
 {
 	return gc_fill_arc_mode_from_string(s);
 }
@@ -48,7 +48,7 @@ std::string gc::base::cap_style_to_string(cap_style v)
 	return gc_cap_style_to_string(v);
 }
 
-cap_style gc::base::cap_style_from_string(const std::string &s)
+cap_style gc::base::cap_style_from_string(const std::experimental::string_view &s)
 {
 	return gc_cap_style_from_string(s);
 }
@@ -58,7 +58,7 @@ std::string gc::base::join_style_to_string(join_style v)
 	return gc_join_style_to_string(v);
 }
 
-join_style gc::base::join_style_from_string(const std::string &s)
+join_style gc::base::join_style_from_string(const std::experimental::string_view &s)
 {
 	return gc_join_style_from_string(s);
 }

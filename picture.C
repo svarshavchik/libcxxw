@@ -13,7 +13,33 @@
 #include "connection_thread.H"
 #include "messages.H"
 
+#include <x/chrcasecmp.H>
+
 LIBCXXW_NAMESPACE_START
+
+#include "pic_constants.inc.C"
+
+std::string picture::base::render_pict_op_to_string(render_pict_op v)
+{
+	return pic_render_pict_op_to_string(v);
+}
+
+render_pict_op
+picture::base::render_pict_op_from_string(const std::experimental::string_view &s)
+{
+	return pic_render_pict_op_from_string(s);
+}
+
+std::string picture::base::render_repeat_tostring(render_repeat v)
+{
+	return pic_render_repeat_to_string(v);
+}
+
+render_repeat picture::base
+::render_repeat_from_string(const std::experimental::string_view &s)
+{
+	return pic_render_repeat_from_string(s);
+}
 
 pictureObj::pictureObj(const ref<implObj> &impl)
 	: impl(impl)

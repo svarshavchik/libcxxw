@@ -9,6 +9,8 @@
 #include <x/w/pictureobj.H>
 #include <x/ref.H>
 
+#include <experimental/string_view>
+
 LIBCXXW_NAMESPACE_START
 
 //! Base class of \ref picture "pictures".
@@ -32,6 +34,22 @@ public:
 	//! typedef alias
 
 	typedef pictureObj::triangle triangle;
+
+	//! Convert operation value to string
+
+	static std::string render_pict_op_to_string(render_pict_op);
+
+	//! Convert operation value from string
+
+	static render_pict_op render_pict_op_from_string(const std::experimental::string_view &);
+
+	//! Convert repeat value to string
+
+	static std::string render_repeat_tostring(render_repeat);
+
+	//! Convert repeat value from string
+
+	static render_repeat render_repeat_from_string(const std::experimental::string_view &);
 
 };
 
