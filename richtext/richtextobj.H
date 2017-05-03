@@ -17,6 +17,7 @@
 #include "x/w/types.H"
 #include "x/w/metrics/axis.H"
 #include "x/w/rectanglefwd.H"
+#include "x/w/drawablefwd.H"
 #include <x/obj.H>
 #include <x/mpobj.H>
 #include <x/functional.H>
@@ -116,6 +117,13 @@ class LIBCXX_HIDDEN richtextObj : virtual public obj {
 				element_drawObj &,
 				const richtext_draw_info &,
 				const draw_info &);
+
+	//! Create a picture containing this text
+
+	//! This constructs a pixmap and a picture, then renders the text
+	//! into the picture.
+	std::tuple<pixmap, picture> create(IN_THREAD_ONLY,
+					   const drawable &for_drawable);
 
 	//! Redraw only the fragments that need redrawing.
 

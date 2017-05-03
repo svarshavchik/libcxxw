@@ -22,15 +22,23 @@ struct richtextfragmentObj::render_info {
 
 	picture scratch_buffer;
 
-	//! The draw_info for the display element being drawn.
+	//! The background color of the display element being drawn.
 
-	const draw_info &di;
+	ref<pictureObj::implObj> background_color_impl;
 
-	//! The draw_info for the background color's element
+	//! The absolute location of background color's (0, 0)
 
-	//! scratch_buffer is already cleared to this background color
+	coord_t background_x;
 
-	const draw_info &background_color_di;
+	//! The absolute location of background color's (0, 0)
+
+	coord_t background_y;
+
+	//! The absolute location of this element's (0, 0);
+	coord_t absolute_x;
+
+	//! The absolute location of this element's (0, 0);
+	coord_t absolute_y;
 
 	//! The width of the scratch_buffer.
 
@@ -49,13 +57,6 @@ struct richtextfragmentObj::render_info {
 	//! be written (starting at X coordinate 0 in the scratch buffer).
 
 	dim_t render_x_start=0;
-
-	//! Added to the effective starting Y coordinate for the fragment.
-
-	//! We always render into scratch_buffer at Y coordinate 0. This
-	//! is used for background offset calculations.
-
-	coord_t vert_scroll=0;
 
 	//! Used by richtexteditorwindow to highlight selected text
 	size_t selection_start=0;

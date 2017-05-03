@@ -821,29 +821,30 @@ inline void richtextfragmentObj
 		// y_position(). As such,
 		bool has_background_color=!markup.bg_color.null();
 
-		auto bgxy=range_info.info.background_color_di.background_xy_to
-			(0,
-			 coord_t::truncate
-			 (coord_squared_t::truncate
-			  (range_info.info.di.absolute_location.y)
-			  + range_info.ypos
-			  + range_info.info.vert_scroll));
 
-		coord_t background_x=bgxy.first;
-		coord_t background_y=bgxy.second;
+		auto background_x=range_info.info.background_x;
+		auto background_y=range_info.info.background_y;
 
 		auto background_color_impl=
-			range_info.info.background_color_di.window_background;
+			range_info.info.background_color_impl;
 
 		if (has_background_color)
 		{
-			background_x=range_info.info.di.absolute_location.x;
-			background_y=range_info.info.di.absolute_location.y;
+			background_x=range_info.info.absolute_x;
+			background_y=range_info.info.absolute_y;
 
 			background_color_impl=
 				markup.bg_color->get_current_color(IN_THREAD)
 				->impl;
 		}
+
+		background_x=coord_t::truncate(background_x-
+					       coord_t::value_type(range_info.info.absolute_x)-
+					       coord_t::value_type(range_info.xpos)
+					       );
+		background_y=coord_t::truncate(background_y-
+					       coord_t::value_type(range_info.info.absolute_y)-
+					       coord_t::value_type(range_info.ypos));
 
 		switch (iter->second) {
 		case meta_overlay::normal:

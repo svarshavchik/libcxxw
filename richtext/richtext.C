@@ -5,6 +5,7 @@
 
 #include "libcxxw_config.h"
 #include "x/w/pixmap.H"
+#include "x/w/drawable.H"
 #include "richtext/richtext_impl.H"
 #include "richtext/richtextparagraph.H"
 #include "richtext/richtextmetalink.H"
@@ -15,6 +16,7 @@
 #include "richtext/richtext_draw_info.H"
 #include "draw_info.H"
 #include "element_draw.H"
+#include "screen.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -339,8 +341,11 @@ void richtextObj::draw(IN_THREAD_ONLY,
 			 {
 				 richtextfragmentObj::render_info
 					 render_info{ scratch_picture,
-						 di,
-						 di,
+						 di.window_background,
+						 di.background_x,
+						 di.background_y,
+						 di.absolute_location.x,
+						 di.absolute_location.y,
 
 						 draw_bounds.width,
 						 dim_t::truncate(draw_bounds.x),
@@ -420,6 +425,64 @@ void richtextObj::draw(IN_THREAD_ONLY,
 			 clipped);
 	}
 
+}
+
+std::tuple<pixmap, picture> richtextObj::create(IN_THREAD_ONLY,
+						const drawable &for_drawable)
+{
+	auto metrics=get_metrics(IN_THREAD, 0);
+
+	auto width=metrics.first.preferred();
+	auto height=metrics.second.preferred();
+
+	auto pixmap=for_drawable->create_pixmap(width, height);
+	auto p=pixmap->create_picture();
+
+	impl_t::lock lock{IN_THREAD, impl};
+
+	dim_t largest_height=1;
+
+	// The text must be non-empty. There must always be a fragment.
+
+	richtextfragment frag=(*lock)->find_fragment_for_y_position(0);
+
+	for (auto f=&*frag; f; f=f->next_fragment())
+	{
+		auto h=f->height();
+
+		if (h > largest_height)
+			largest_height=h;
+	}
+
+	auto scratch_pixmap=for_drawable->create_pixmap(width, largest_height);
+	auto scratch_picture=scratch_pixmap->create_picture();
+
+	auto transparent=rgb(0, 0, 0, 0);
+	auto transparent_color=for_drawable->get_screen()->impl
+		->create_solid_color_picture(transparent);
+
+	coord_t y=0;
+	for (auto f=&*frag; f; f=f->next_fragment())
+	{
+		auto h=f->height();
+
+		scratch_picture->fill_rectangle({0, 0, width, largest_height},
+						transparent);
+
+		richtextfragmentObj::render_info
+			render_info{ scratch_picture,
+				transparent_color->impl,
+				0, 0,
+				0, 0,
+				width};
+		f->render(IN_THREAD, render_info);
+		p->composite(scratch_picture,
+			     0, 0,
+			     {0, y, width, h});
+		y=coord_t::truncate(y+h);
+	}
+
+	return {pixmap, p};
 }
 
 richtextiterator richtextObj::begin()
