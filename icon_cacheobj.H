@@ -7,6 +7,7 @@
 
 #include "defaultthemefwd.H"
 #include "icon_cachefwd.H"
+#include "iconobj.H"
 #include "sxg/sxg_parserfwd.H"
 #include "sxg/sxg_parserobj.H"
 #include "sxg/sxg_imagefwd.H"
@@ -61,6 +62,24 @@ class LIBCXX_HIDDEN icon_cacheObj : virtual public obj {
 
 	//! Cache of rendered images.
 	const sxg_image_cache_t sxg_image_cache;
+
+	////////////////////////////////////////////////////////////////
+	//
+	// Images whose size is specified in millimeters.
+
+	struct mm_image_cache_key;
+	struct mm_image_cache_key_hash;
+
+	//! Type of the cache of rendered images.
+
+	typedef weakunordered_multimap<mm_image_cache_key,
+				       iconObj,
+				       mm_image_cache_key_hash>
+		mm_image_cache_t;
+
+	//! Cache of rendered images.
+	const mm_image_cache_t mm_image_cache;
+
 };
 
 LIBCXXW_NAMESPACE_END

@@ -9,16 +9,14 @@
 #include "x/w/pictformatfwd.H"
 #include "x/w/picturefwd.H"
 #include "x/w/screenfwd.H"
+#include "iconfwd.H"
 #include "xid_t.H"
 
 #include <xcb/xproto.h>
 
-namespace LIBCXX_NAMESPACE {
-	namespace w {
-#if 0
-	}
-}
-#endif
+#include <experimental/string_view>
+
+LIBCXXW_NAMESPACE_START
 
 //! Drawable implementation details.
 
@@ -54,7 +52,10 @@ class LIBCXX_HIDDEN drawableObj::implObj : virtual public obj {
 
 	picture create_picture();
 
-	//! Create a new pixmap, using the same pictformat.
+	//! Create a new pixmap, using the same pictformat as this drawable.
+
+	//! The new pixmap does not have any reference to this drawable.
+	//! This drawable is used only to set the new pixmap's pictformat.
 
 	pixmap create_pixmap(dim_t width,
 			     dim_t height);
@@ -68,6 +69,10 @@ class LIBCXX_HIDDEN drawableObj::implObj : virtual public obj {
 			     depth_t depth);
 
 	//! Create a new pixmap, using a different pictformat.
+
+	//! The new pixmap does not have any reference to this drawable.
+	//! This drawable is used only to link the new pixmap to the same
+	//! screen that this drawable is linked to.
 
 	pixmap create_pixmap(dim_t width,
 			     dim_t height,
@@ -90,13 +95,19 @@ class LIBCXX_HIDDEN drawableObj::implObj : virtual public obj {
 
 	//! Compute depth of alpha channel for rendering fonts into this drawable.
 	depth_t font_alpha_depth() const;
+
+	//! Create an icon, with dimensions specified in millimeters
+
+	//! The created icon does not have any reference to this drawable.
+	//! This drawable is used only to obtain the icon's pictformat, and
+	//! create_pixmap().
+
+	icon create_icon_mm(const std::experimental::string_view &name,
+			    render_repeat icon_repeat,
+			    double widthmm,
+			    double heightmm);
 };
 
-#if 0
-{
-	{
-#endif
-	}
-}
+LIBCXXW_NAMESPACE_END
 
 #endif

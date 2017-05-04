@@ -237,6 +237,10 @@ libcxxw_la_SOURCES=\
 	hotspot_element.H			    \
 	hotspot_elementfwd.H			    \
 	hotspot_impl.C				    \
+	icon.C					    \
+	icon.H					    \
+	iconfwd.H				    \
+	iconobj.H				    \
 	icon_cache.C				    \
 	icon_cache.H				    \
 	icon_cachefwd.H				    \

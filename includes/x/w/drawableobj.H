@@ -48,12 +48,19 @@ public:
 	//! The drawable's screen.
 	const_screen get_screen() const;
 
-	//! Create a new pixmap, using the same pictformat.
+	//! Create a new pixmap, using the same pictformat as this drawable.
+
+	//! The new pixmap does not have any reference to this drawable.
+	//! This drawable is used only to set the new pixmap's pictformat.
 
 	pixmap create_pixmap(dim_t width,
 			     dim_t height);
 
 	//! Create a new pixmap, using a different pictformat.
+
+	//! The new pixmap does not have any reference to this drawable.
+	//! This drawable is used only to link the new pixmap to the same
+	//! screen that this drawable is linked to.
 
 	pixmap create_pixmap(dim_t width,
 			     dim_t height,
