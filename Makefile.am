@@ -252,6 +252,15 @@ libcxxw_la_SOURCES=\
 	image.C					    \
 	image.H					    \
 	image_impl.C				    \
+	image_button.C				    \
+	image_button.H				    \
+	image_button_impl.C			    \
+	image_button_internal.C			    \
+	image_button_internal.H			    \
+	image_button_internalfwd.H		    \
+	image_button_internalobj.H		    \
+	image_button_internal_impl.H		    \
+	image_button_internal_impl.C		    \
 	impl_connection_thread.H		    \
 	input_field.H				    \
 	input_field.C				    \
@@ -470,6 +479,7 @@ TESTPROGRAMS=\
 
 INTERACTIVETESTPROGRAMS=\
 	testbutton					\
+	testimagebuttons			        \
 	testinputfield					\
 	testmainwindow					\
 	testlabel					\
@@ -483,6 +493,10 @@ noinst_PROGRAMS=$(BUILT_TESTPROGRAMS) $(BUILT_INTERACTIVETESTPROGRAMS) genconsta
 testbutton_SOURCES=testbutton.C
 testbutton_LDADD=libcxxw.la
 testbutton_LDFLAGS=-static $(STATICLINKFLAGS)
+
+testimagebuttons_SOURCES=testimagebuttons.C
+testimagebuttons_LDADD=libcxxw.la
+testimagebuttons_LDFLAGS=-static $(STATICLINKFLAGS)
 
 testinputfield_SOURCES=testinputfield.C
 testinputfield_LDADD=libcxxw.la

@@ -1,0 +1,323 @@
+<sxg>
+  <width>12</width>
+  <height>12</height>
+
+  <widthmm>6</widthmm>
+  <heightmm>6</heightmm>
+
+  <widthfactor>12</widthfactor>
+  <heightfactor>12</heightfactor>
+
+  <picture id="outline">
+    <type>rgb</type>
+    <color>0%</color>
+  </picture>
+
+  <picture id="checkfill">
+    <type>rgb</type>
+    <color>50%</color>
+  </picture>
+
+  <picture id="boxfill">
+    <type>rgb</type>
+    <color>100%</color>
+  </picture>
+
+  <pixmap id="mask">
+    <size>scaled</size>
+    <width>12</width>
+    <height>12</height>
+    <gc id="mask_gc" />
+  </pixmap>
+
+  <render id="main">
+    <tristrip>
+      <op>over</op>
+      <src>boxfill</src>
+      <point>
+	<x>9</x>
+	<y>2</y>
+      </point>
+
+      <point>
+	<x>2</x>
+	<y>2</y>
+      </point>
+
+      <point>
+	<x>9</x>
+	<y>9</y>
+      </point>
+
+      <point>
+	<x>2</x>
+	<y>9</y>
+      </point>
+    </tristrip>
+
+    <tristrip>
+      <op>clear</op>
+      <src>boxfill</src>
+      <point>
+	<x>4</x>
+	<y>4</y>
+      </point>
+
+      <point>
+	<x>7</x>
+	<y>4</y>
+      </point>
+
+      <point>
+	<x>7</x>
+	<y>7</y>
+      </point>
+
+      <point>
+	<x>4</x>
+	<y>7</y>
+      </point>
+    </tristrip>
+  </render>
+
+  <gc id="mask_gc">
+
+    <function>clear</function>
+    <fill>
+      <x>0</x>
+      <y>0</y>
+      <width>12</width>
+      <height>12</height>
+    </fill>
+
+    <function>set</function>
+
+    <line_width>.5</line_width>
+
+    <line>
+      <point>
+	<x>2</x>
+	<y>2</y>
+      </point>
+
+      <point>
+	<x>9</x>
+	<y>2</y>
+      </point>
+
+      <point>
+	<x>9</x>
+	<y>9</y>
+      </point>
+
+      <point>
+	<x>2</x>
+	<y>9</y>
+      </point>
+
+      <point>
+	<x>2</x>
+	<y>2</y>
+      </point>
+    </line>
+    <line>
+      <point>
+	<x>4</x>
+	<y>4</y>
+      </point>
+
+      <point>
+	<x>7</x>
+	<y>4</y>
+      </point>
+
+      <point>
+	<x>7</x>
+	<y>7</y>
+      </point>
+
+      <point>
+	<x>4</x>
+	<y>7</y>
+      </point>
+
+      <point>
+	<x>4</x>
+	<y>4</y>
+      </point>
+      </line>
+  </gc>
+
+  <render id="main">
+    <composite>
+      <op>over</op>
+      <x>0</x>
+      <y>0</y>
+      <width>12</width>
+      <height>12</height>
+      <src>
+	<picture>outline</picture>
+	<x>0</x>
+	<y>0</y>
+      </src>
+      <mask>
+	<pixmap>mask</pixmap>
+	<x>0</x>
+	<y>0</y>
+      </mask>
+    </composite>
+  </render>
+
+
+  <location id="a">
+    <x>1</x>
+    <y>4</y>
+  </location>
+
+  <location id="b">
+    <x>6</x>
+    <y>8</y>
+  </location>
+
+  <location id="c">
+    <x>9</x>
+    <y>1</y>
+  </location>
+
+  <location id="d">
+    <x>10</x>
+    <y>1</y>
+  </location>
+
+  <location id="e">
+    <x>10</x>
+    <y>3</y>
+  </location>
+
+  <location id="f">
+    <x>7</x>
+    <y>11</y>
+  </location>
+
+  <location id="g">
+    <x>6</x>
+    <y>11</y>
+  </location>
+
+  <location id="h">
+    <x>1</x>
+    <y>6</y>
+  </location>
+
+  <render id="main">
+    <tristrip>
+      <op>over</op>
+      <mask>mask</mask>
+      <src>checkfill</src>
+      <point>
+	<location>a</location>
+      </point>
+      <point>
+	<location>h</location>
+      </point>
+      <point>
+	<location>b</location>
+      </point>
+      <point>
+	<location>g</location>
+      </point>
+      <point>
+	<location>f</location>
+      </point>
+    </tristrip>
+    <tristrip>
+      <op>over</op>
+      <mask>mask</mask>
+      <src>checkfill</src>
+      <point>
+	<location>g</location>
+      </point>
+      <point>
+	<location>b</location>
+      </point>
+      <point>
+	<location>f</location>
+      </point>
+      <point>
+	<location>c</location>
+      </point>
+      <point>
+	<location>e</location>
+      </point>
+      <point>
+	<location>d</location>
+      </point>
+    </tristrip>
+  </render>
+
+  <gc id="mask_gc">
+
+    <function>clear</function>
+    <fill>
+      <x>0</x>
+      <y>0</y>
+      <width>32</width>
+      <height>32</height>
+    </fill>
+
+    <function>set</function>
+
+    <line_width>1</line_width>
+
+    <line>
+      <point>
+	<location>a</location>
+      </point>
+      <point>
+	<location>b</location>
+      </point>
+      <point>
+	<location>c</location>
+      </point>
+      <point>
+	<location>d</location>
+      </point>
+      <point>
+	<location>e</location>
+      </point>
+      <point>
+	<location>f</location>
+      </point>
+      <point>
+	<location>g</location>
+      </point>
+      <point>
+	<location>h</location>
+      </point>
+      <point>
+	<location>a</location>
+      </point>
+    </line>
+  </gc>
+  <render id="main">
+    <composite>
+      <op>over</op>
+      <x>0</x>
+      <y>0</y>
+      <width>12</width>
+      <height>12</height>
+      <src>
+	<picture>outline</picture>
+	<x>0</x>
+	<y>0</y>
+      </src>
+      <mask>
+	<pixmap>mask</pixmap>
+	<x>0</x>
+	<y>0</y>
+      </mask>
+    </composite>
+  </render>
+
+
+</sxg>

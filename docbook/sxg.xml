@@ -340,7 +340,9 @@ See COPYING for distribution information.
 	<tag class="element">fill</tag> element, for both pictures
 	and pixmaps,
 	as well as the picture
-	<tag class="element">clip</tag> element, translates virtual X and Y
+	<tag class="element">clip</tag> and
+	<tag class="element">composite</tag>
+	elements translate virtual X and Y
 	coordinates to the top left corner of the corresponding physical
 	pixels. If, for example, the image gets
 	scaled to five times its nominal size, then
@@ -362,41 +364,45 @@ See COPYING for distribution information.
       </para>
 
       <para>
-	In other elements,
+	In all other elements
 	<tag class="element">x</tag> and
 	<tag class="element">y</tag> have an optional attribute that
-	scales the coordinate to the top left corder of the scaled pixel,
-	rather than its center:
+	adjust the default scaling of the coordinate to the pixel's center:
       </para>
 
       <blockquote>
 	<informalexample>
 	  <programlisting><![CDATA[
-<sxg>
-  <width>16</width>
-  <height>16</height>
+  <gc id="pixmap1_gc">
 
   <!-- -->
-    <composite>
-      <op>over</op>
-      <x orientation="beginning">8</x>
-      <y orientation="beginning">8</y>
-      <srcsize />
-      <halign>centered</halign>
-      <valign>middle</valign>
-      <src>
-	<picture>logo</picture>
-      </src>
-    </composite>]]></programlisting>
+
+    <line>
+      <point>
+        <x orientation='beginning'>0</x>
+        <y orientation='beginning'>0</y>
+      </point>
+      <point>
+        <x orientation='ending'>5</x>
+        <y orientation='ending'>5</y>
+      </point>
+    </line>
+
+  <!-- -->
+
+  </gc>
+
+]]></programlisting>
 	</informalexample>
       </blockquote>
 
       <para>
-	This example composes the <quote><literal>logo</literal></quote>
-	picture in the dead center of the displayed image.
-	Normally the coordinate (8, 8) gets translated to the center of the
+	This example draws a line from the top-left corner of the scaled
+	pixel (0, 0) to the bottom-right corner of the scaled pixel (5, 5),
+	Normally each coordinate gets translated to the center of the
 	scaled pixel. If this image gets scaled to three times it's original
-	size, the coordinate gets scaled to (25, 25), and not (24, 24).
+	size, this draws a line from (0, 0) to (14, 14) instead of
+	(1, 1) to (13, 13).
       </para>
 
       <para>

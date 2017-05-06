@@ -2141,14 +2141,18 @@ sxg_parserObj::parse_render_composite(const xml::doc::base::readlock &render_ele
 			 auto src=info.info.source_picture(src_picture);
 			 auto src_scale=info.info.source_scale(src_picture);
 
-			 auto x_scaled=info.scale.x_pixel(x);
-			 auto y_scaled=info.scale.y_pixel(y);
+			 auto x_scaled=
+				 info.scale.x_pixel(x, scale_info::beginning);
+			 auto y_scaled=
+				 info.scale.y_pixel(y, scale_info::beginning);
 
 			 if (!has_xy)
 				 x_scaled=y_scaled=0;
 
-			 auto src_x_scaled=src_scale.x_pixel(src_x);
-			 auto src_y_scaled=src_scale.y_pixel(src_y);
+			 auto src_x_scaled=
+				 src_scale.x_pixel(src_x, scale_info::beginning);
+			 auto src_y_scaled=
+				 src_scale.y_pixel(src_y, scale_info::beginning);
 
 			 dim_t width_scaled, height_scaled;
 			 dim_t width_copy2, height_copy2;
@@ -2170,10 +2174,12 @@ sxg_parserObj::parse_render_composite(const xml::doc::base::readlock &render_ele
 			 else
 			 {
 				 width_scaled=dim_t::truncate
-					 (info.scale.x_pixel(x+width)
+					 (info.scale.x_pixel(x+width,
+							     scale_info::beginning)
 					  -x_scaled);
 				 height_scaled=dim_t::truncate
-					 (info.scale.y_pixel(y+height)
+					 (info.scale.y_pixel(y+height,
+							     scale_info::beginning)
 					  -y_scaled);
 
 				 auto width_copy=width_scaled;
@@ -2221,8 +2227,12 @@ sxg_parserObj::parse_render_composite(const xml::doc::base::readlock &render_ele
 				 auto mask_scale=info.info
 					 .source_scale(mask_picture);
 
-				 auto mask_x_scaled=mask_scale.x_pixel(mask_x);
-				 auto mask_y_scaled=mask_scale.y_pixel(mask_y);
+				 auto mask_x_scaled=
+					 mask_scale.x_pixel(mask_x,
+							    scale_info::beginning);
+				 auto mask_y_scaled=
+					 mask_scale.y_pixel(mask_y,
+							    scale_info::beginning);
 
 				 if (!has_maskxy)
 					 mask_x_scaled=mask_y_scaled=0;

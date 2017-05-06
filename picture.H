@@ -94,6 +94,9 @@ class LIBCXX_HIDDEN pictureObj::implObj : virtual public obj {
 				 coord_t x=0,
 				 coord_t y=0);
 
+	//! Clear the clip area completely.
+	void clear_clip();
+
 	//! Fill a rectangle
 	void fill_rectangle(coord_t x, coord_t y, dim_t width, dim_t height,
 			    const rgb &color,

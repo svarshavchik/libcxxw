@@ -51,6 +51,7 @@ struct icon_cacheObj::sxg_cache_key_t_hash
 // SXG images are cached by the following parameters:
 
 struct icon_cacheObj::sxg_image_cache_key {
+	sxg_parser          sxg_image;
 	const_pictformat    drawable_pictformat;
 	render_repeat       repeat;
 	dim_t               width;
@@ -62,7 +63,8 @@ struct icon_cacheObj::sxg_image_cache_key {
 bool icon_cacheObj::sxg_image_cache_key
 ::operator==(const sxg_image_cache_key &o) const
 {
-	return drawable_pictformat == o.drawable_pictformat &&
+	return sxg_image == o.sxg_image &&
+		drawable_pictformat == o.drawable_pictformat &&
 		repeat == o.repeat &&
 		width == o.width &&
 		height == o.height;
@@ -70,12 +72,15 @@ bool icon_cacheObj::sxg_image_cache_key
 
 struct icon_cacheObj::sxg_image_cache_key_hash
 	: public std::hash<const_pictformat>,
+	  public std::hash<sxg_parser>,
 	  public std::hash<dim_t> {
 
 	size_t operator()(const sxg_image_cache_key &k) const
 	{
-		return std::hash<const_pictformat>::operator()
-			(k.drawable_pictformat) ^ (size_t)k.repeat
+		return (std::hash<const_pictformat>::operator()
+			(k.drawable_pictformat) +
+			std::hash<sxg_parser>::operator()(k.sxg_image))
+			^ (size_t)k.repeat
 			^ (std::hash<dim_t>::operator()(k.width) << 16)
 			^ (std::hash<dim_t>::operator()(k.height) << 4);
 	}
@@ -206,7 +211,7 @@ static inline const_sxg_image create_sxg_image(drawableObj::implObj
 
 	return sxg->screenref->impl->iconcaches
 		->sxg_image_cache->find_or_create
-		({drawable_impl->drawable_pictformat, repeat, w, h},
+		({sxg, drawable_impl->drawable_pictformat, repeat, w, h},
 		 [&]
 		 {
 			 auto pixmap=drawable_impl->create_pixmap(w, h);

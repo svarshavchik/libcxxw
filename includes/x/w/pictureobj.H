@@ -123,6 +123,9 @@ public:
 				 coord_t x=0,
 				 coord_t y=0);
 
+	//! Clear the clip area completely.
+	void clear_clip();
+
 	//! Fixed precision
 
 	struct fixedprec {

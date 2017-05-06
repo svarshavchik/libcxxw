@@ -11,7 +11,8 @@
 LIBCXXW_NAMESPACE_START
 
 focusableImplObj::focusableImplObj(bool enabled)
-	: enabled_flag_thread_only(enabled)
+	: in_focusable_fields_thread_only(false),
+	  enabled_flag_thread_only(enabled)
 {
 }
 
@@ -45,6 +46,10 @@ bool focusableImplObj::is_enabled(IN_THREAD_ONLY)
 
 void focusableImplObj::focusable_initialize(IN_THREAD_ONLY)
 {
+	if (in_focusable_fields(IN_THREAD))
+		throw EXCEPTION("Internal element: multiply-linked focusable: "
+				<< objname());
+
 	focusable_fields_iter(IN_THREAD)=
 		focusable_fields(IN_THREAD).insert
 		(get_focusable_element().initial_focusable_fields_insert_pos(IN_THREAD),
@@ -62,6 +67,9 @@ child_elementObj::initial_focusable_fields_insert_pos(IN_THREAD_ONLY)
 
 void focusableImplObj::focusable_deinitialize(IN_THREAD_ONLY)
 {
+	if (!in_focusable_fields(IN_THREAD))
+		throw EXCEPTION("Internal element: multiply-linked focusable: "
+				<< objname());
 	auto &window_handler=get_focusable_element().get_window_handler();
 
 	auto &ff=window_handler.focusable_fields(IN_THREAD);

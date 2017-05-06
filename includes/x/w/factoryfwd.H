@@ -216,6 +216,17 @@ INSERT_LIBX_NAMESPACE::w::image image=factory->create_image_mm("image1.png");
 
 This creates a display element that shows an image.
 
+\par Checkboxes and radio buttons.
+
+\code
+#include <INSERT_LIBX_NAMESPACE/w/image_button.H>
+
+INSERT_LIBX_NAMESPACE::w::image_button checkbox=factory->create_checkbox();
+
+\endcode
+
+create_checkbox() creates a simple checkbox display element.
+
 */
 
 typedef ref<factoryObj> factory;

@@ -104,6 +104,11 @@ void pictureObj::set_clip_rectangles(const rectangle_set &clipregion,
 	impl->set_clip_rectangles(clipregion, x, y);
 }
 
+void pictureObj::clear_clip()
+{
+	impl->clear_clip();
+}
+
 pictureObj::clip_mask::clip_mask(const picture &clipped_picture,
 				 const pixmap &picture_clip_mask,
 				 coord_t clip_x_origin,

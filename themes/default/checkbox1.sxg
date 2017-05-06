@@ -1,0 +1,165 @@
+<sxg>
+  <width>12</width>
+  <height>12</height>
+
+  <widthmm>6</widthmm>
+  <heightmm>6</heightmm>
+
+  <widthfactor>12</widthfactor>
+  <heightfactor>12</heightfactor>
+
+  <picture id="outline">
+    <type>rgb</type>
+    <color>0%</color>
+  </picture>
+
+  <picture id="boxfill">
+    <type>rgb</type>
+    <color>100%</color>
+  </picture>
+
+  <pixmap id="mask">
+    <size>scaled</size>
+    <width>12</width>
+    <height>12</height>
+    <gc id="mask_gc" />
+  </pixmap>
+
+  <render id="main">
+    <tristrip>
+      <op>over</op>
+      <src>boxfill</src>
+      <point>
+	<x>9</x>
+	<y>2</y>
+      </point>
+
+      <point>
+	<x>2</x>
+	<y>2</y>
+      </point>
+
+      <point>
+	<x>9</x>
+	<y>9</y>
+      </point>
+
+      <point>
+	<x>2</x>
+	<y>9</y>
+      </point>
+    </tristrip>
+
+    <tristrip>
+      <op>clear</op>
+      <src>boxfill</src>
+      <point>
+	<x>4</x>
+	<y>4</y>
+      </point>
+
+      <point>
+	<x>7</x>
+	<y>4</y>
+      </point>
+
+      <point>
+	<x>7</x>
+	<y>7</y>
+      </point>
+
+      <point>
+	<x>4</x>
+	<y>7</y>
+      </point>
+    </tristrip>
+  </render>
+
+  <gc id="mask_gc">
+
+    <function>clear</function>
+    <fill>
+      <x>0</x>
+      <y>0</y>
+      <width>12</width>
+      <height>12</height>
+    </fill>
+
+    <function>set</function>
+
+    <line_width>.5</line_width>
+
+    <line>
+      <point>
+	<x>2</x>
+	<y>2</y>
+      </point>
+
+      <point>
+	<x>9</x>
+	<y>2</y>
+      </point>
+
+      <point>
+	<x>9</x>
+	<y>9</y>
+      </point>
+
+      <point>
+	<x>2</x>
+	<y>9</y>
+      </point>
+
+      <point>
+	<x>2</x>
+	<y>2</y>
+      </point>
+    </line>
+    <line>
+      <point>
+	<x>4</x>
+	<y>4</y>
+      </point>
+
+      <point>
+	<x>7</x>
+	<y>4</y>
+      </point>
+
+      <point>
+	<x>7</x>
+	<y>7</y>
+      </point>
+
+      <point>
+	<x>4</x>
+	<y>7</y>
+      </point>
+
+      <point>
+	<x>4</x>
+	<y>4</y>
+      </point>
+      </line>
+  </gc>
+
+  <render id="main">
+    <composite>
+      <op>over</op>
+      <x>0</x>
+      <y>0</y>
+      <width>12</width>
+      <height>12</height>
+      <src>
+	<picture>outline</picture>
+	<x>0</x>
+	<y>0</y>
+      </src>
+      <mask>
+	<pixmap>mask</pixmap>
+	<x>0</x>
+	<y>0</y>
+      </mask>
+    </composite>
+  </render>
+</sxg>

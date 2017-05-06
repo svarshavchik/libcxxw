@@ -70,6 +70,14 @@ void pictureObj::implObj::set_clip_rectangles(const rectangle_set &clipregion,
 					       v.data());
 }
 
+void pictureObj::implObj::clear_clip()
+{
+	uint32_t v=XCB_NONE;
+
+	xcb_render_change_picture(picture_conn()->conn, picture_id(),
+				  (uint32_t)XCB_RENDER_CP_CLIP_MASK, &v);
+}
+
 void pictureObj::implObj::composite(const const_picture_internal &src,
 				    coord_t src_x,
 				    coord_t src_y,

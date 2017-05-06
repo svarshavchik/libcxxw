@@ -24,8 +24,12 @@
 #include "child_element.H"
 #include "hotspot.H"
 #include "catch_exceptions.H"
+#include <x/property_value.H>
 
 LIBCXXW_NAMESPACE_START
+
+static property::value<bool> disable_grabs(LIBCXX_NAMESPACE_STR
+					   "::w::disable_grab", false);
 
 static rectangle element_position(const rectangle &r)
 {
@@ -147,29 +151,32 @@ void generic_windowObj::handlerObj
 #ifdef MAP_LOG
 		MAP_LOG();
 #endif
-		xcb_grab_button(IN_THREAD->info->conn,
-				false,
-				id(),
-				current_events(IN_THREAD) &
-				(XCB_EVENT_MASK_BUTTON_PRESS |
-				 XCB_EVENT_MASK_BUTTON_RELEASE |
-				 XCB_EVENT_MASK_ENTER_WINDOW |
-				 XCB_EVENT_MASK_LEAVE_WINDOW |
-				 XCB_EVENT_MASK_POINTER_MOTION),
-				XCB_GRAB_MODE_SYNC,
-				XCB_GRAB_MODE_SYNC,
-				XCB_NONE,
-				XCB_NONE,
-			        0,
-				XCB_MOD_MASK_ANY);
+		if (!disable_grabs.getValue())
+		{
+			xcb_grab_button(IN_THREAD->info->conn,
+					false,
+					id(),
+					current_events(IN_THREAD) &
+					(XCB_EVENT_MASK_BUTTON_PRESS |
+					 XCB_EVENT_MASK_BUTTON_RELEASE |
+					 XCB_EVENT_MASK_ENTER_WINDOW |
+					 XCB_EVENT_MASK_LEAVE_WINDOW |
+					 XCB_EVENT_MASK_POINTER_MOTION),
+					XCB_GRAB_MODE_SYNC,
+					XCB_GRAB_MODE_SYNC,
+					XCB_NONE,
+					XCB_NONE,
+					0,
+					XCB_MOD_MASK_ANY);
 
-		xcb_grab_key(IN_THREAD->info->conn,
-			     false,
-			     id(),
-			     XCB_MOD_MASK_ANY,
-			     0,
-			     XCB_GRAB_MODE_SYNC,
-			     XCB_GRAB_MODE_SYNC);
+			xcb_grab_key(IN_THREAD->info->conn,
+				     false,
+				     id(),
+				     XCB_MOD_MASK_ANY,
+				     0,
+				     XCB_GRAB_MODE_SYNC,
+				     XCB_GRAB_MODE_SYNC);
+		}
 		xcb_map_window(IN_THREAD->info->conn, id());
 		visibility_info.do_not_redraw=true;
 	}

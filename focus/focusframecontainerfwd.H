@@ -25,6 +25,20 @@ class focusframecontainerObj;
 //!
 //! replace_focusable() returns a factory object which will install a
 //! new display element as the underlying new element.
+//!
+//! The focusframe "public" object does not really have to be created for
+//! the implementation object. There are two general possibilities:
+//!
+//! 1) The focusframecontainer_element mixin is combined with a container
+//! mixin that itself is combined with a focusable element, such as a hotspot.
+//! In this case the focusframecontainer "public" object gets used, and it
+//! is the focusable owner of the implementation focusframecontainer object.
+//! The contents of the container are user-replaceable, and cannot be
+//! focusable objects.
+//!
+//! 2) The focusframecontainer_element mix is combined with a non-container
+//! focusable element, and some other public object that's set as the
+//! focusable owner.
 
 typedef ref<focusframecontainerObj> focusframecontainer;
 

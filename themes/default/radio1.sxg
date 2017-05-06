@@ -1,0 +1,135 @@
+<?xml version="1.0"?>
+
+<sxg>
+  <width>7</width>
+  <height>7</height>
+
+  <widthmm>4</widthmm>
+  <heightmm>4</heightmm>
+
+  <widthfactor>7</widthfactor>
+  <heightfactor>7</heightfactor>
+
+  <picture id="outline">
+    <type>rgb</type>
+    <color>0%</color>
+  </picture>
+
+  <picture id="fill">
+    <type>rgb</type>
+    <color>100%</color>
+  </picture>
+
+  <pixmap id="circle_mask">
+    <size>scaled</size>
+    <width>7</width>
+    <height>7</height>
+    <gc id="circle_mask_gc" />
+  </pixmap>
+
+  <gc id="circle_mask_gc">
+    <function>set</function>
+
+    <arcs>
+      <fill />
+
+      <arc>
+	<x>0</x>
+	<y>0</y>
+	<width>6</width>
+	<height>6</height>
+	<angle1>0</angle1>
+	<angle2>360</angle2>
+      </arc>
+    </arcs>
+
+    <function>clear</function>
+
+    <arcs>
+      <fill />
+
+      <arc>
+	<x>1</x>
+	<y>1</y>
+	<width>4</width>
+	<height>4</height>
+	<angle1>0</angle1>
+	<angle2>360</angle2>
+      </arc>
+    </arcs>
+  </gc>
+
+  <render id="main">
+    <composite>
+      <op>over</op>
+      <mask>
+	<pixmap>circle_mask</pixmap>
+	<x>0</x>
+	<y>0</y>
+      </mask>
+      <src>
+	<picture>fill</picture>
+	<x>0</x>
+	<y>0</y>
+      </src>
+      <x>0</x>
+      <y>0</y>
+      <width>7</width>
+      <height>7</height>
+    </composite>
+  </render>
+
+  <gc id="circle_mask_gc">
+    <function>clear</function>
+
+    <fill>
+      <x>0</x>
+      <y>0</y>
+      <width>7</width>
+      <height>7</height>
+    </fill>
+
+    <function>set</function>
+    <line_width>.3</line_width>
+
+    <arcs>
+      <arc>
+	<x>0</x>
+	<y>0</y>
+	<width>6</width>
+	<height>6</height>
+	<angle1>0</angle1>
+	<angle2>360</angle2>
+      </arc>
+
+      <arc>
+	<x>1</x>
+	<y>1</y>
+	<width>4</width>
+	<height>4</height>
+	<angle1>0</angle1>
+	<angle2>360</angle2>
+      </arc>
+    </arcs>
+  </gc>
+
+  <render id="main">
+    <composite>
+      <op>over</op>
+      <mask>
+	<pixmap>circle_mask</pixmap>
+	<x>0</x>
+	<y>0</y>
+      </mask>
+      <src>
+	<picture>outline</picture>
+	<x>0</x>
+	<y>0</y>
+      </src>
+      <x>0</x>
+      <y>0</y>
+      <width>7</width>
+      <height>7</height>
+    </composite>
+  </render>
+</sxg>

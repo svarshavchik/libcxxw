@@ -21,6 +21,7 @@
 #include <x/w/buttonfwd.H>
 #include <x/w/input_fieldfwd.H>
 #include <x/w/imagefwd.H>
+#include <x/w/image_buttonfwd.H>
 #include <x/obj.H>
 #include <x/functional.H>
 
@@ -217,6 +218,13 @@ public:
 			      double widthmm=0,
 			      double heightmm=0,
 			      render_repeat=render_repeat::none);
+
+	//! Create a checkbox
+	image_button create_checkbox();
+
+	//! Create a checkbox, with custom images.
+	image_button create_checkbox(const std::vector<std::experimental::string_view> &images);
+
 };
 
 LIBCXXW_NAMESPACE_END
