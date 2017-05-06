@@ -13,7 +13,6 @@
 #include "xid_t.H"
 
 #include <xcb/xproto.h>
-
 #include <experimental/string_view>
 
 LIBCXXW_NAMESPACE_START

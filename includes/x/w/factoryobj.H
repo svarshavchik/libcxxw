@@ -20,8 +20,11 @@
 #include <x/w/labelfwd.H>
 #include <x/w/buttonfwd.H>
 #include <x/w/input_fieldfwd.H>
+#include <x/w/imagefwd.H>
 #include <x/obj.H>
 #include <x/functional.H>
+
+#include <experimental/string_view>
 
 LIBCXXW_NAMESPACE_START
 
@@ -208,6 +211,12 @@ public:
 	input_field
 	create_input_field(const text_param &text,
 			   const input_field_config &config);
+
+	//! Create an image
+	image create_image_mm(const std::experimental::string_view &name,
+			      double widthmm=0,
+			      double heightmm=0,
+			      render_repeat=render_repeat::none);
 };
 
 LIBCXXW_NAMESPACE_END

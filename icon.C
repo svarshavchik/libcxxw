@@ -9,7 +9,7 @@
 LIBCXXW_NAMESPACE_START
 
 iconObj::iconObj(const const_icon_image &image)
-	: image_thread_only(image)
+	: image(image)
 {
 }
 

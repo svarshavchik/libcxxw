@@ -249,6 +249,9 @@ libcxxw_la_SOURCES=\
 	icon_image.H				    \
 	icon_imagefwd.H				    \
 	icon_imageobj.H				    \
+	image.C					    \
+	image.H					    \
+	image_impl.C				    \
 	impl_connection_thread.H		    \
 	input_field.H				    \
 	input_field.C				    \
@@ -502,7 +505,6 @@ testgrid_LDFLAGS=-static
 
 testlabel_SOURCES=testlabel.C
 testlabel_LDADD=libcxxw.la
-testlabel_LDFLAGS=-static $(STATICLINKFLAGS)
 
 testwordwrappablelabel_SOURCES=testwordwrappablelabel.C
 testwordwrappablelabel_LDADD=libcxxw.la

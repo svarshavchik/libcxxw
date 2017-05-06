@@ -5,7 +5,6 @@
 #include "libcxxw_config.h"
 #include "x/w/factory.H"
 #include "container.H"
-#include "canvas.H"
 #include "messages.H"
 #include <x/exception.H>
 
@@ -21,23 +20,6 @@ factoryObj::~factoryObj()=default;
 void factoryObj::created_internally(const element &e)
 {
 	created(e);
-}
-
-canvas factoryObj::do_create_canvas(const function<void (const canvas &)>
-				    &creator,
-				    const metrics::mmaxis &horiz,
-				    const metrics::mmaxis &vert)
-{
-	auto canvas_impl=ref<canvasObj::implObj>::create(container_impl,
-							 horiz,
-							 vert);
-
-	auto c=canvas::create(canvas_impl);
-
-	creator(c);
-	created(c);
-
-	return c;
 }
 
 LIBCXXW_NAMESPACE_END

@@ -16,6 +16,8 @@
 #include <x/refptr_hash.H>
 #include <x/number_hash.H>
 #include <x/weakunordered_multimap.H>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <unistd.h>
 
 LIBCXXW_NAMESPACE_START
@@ -128,27 +130,6 @@ icon_cacheObj::icon_cacheObj()
 
 icon_cacheObj::~icon_cacheObj()=default;
 
-sxg_parser get_sxg(const std::experimental::string_view &filename,
-		   const screen &screenref,
-		   const defaulttheme &theme)
-{
-	std::string f{filename};
-
-	if (f.find('/') == f.npos && access(f.c_str(), R_OK))
-	{
-		f=theme->themedir + "/" + f;
-
-		if (filename.find('.') == filename.npos)
-			f += ".sxg";
-	}
-	return screenref->impl->iconcaches->sxg_parser_cache->find_or_create
-		({f, theme},
-		 [&]
-		 {
-			 return sxg_parser::create(f, screenref, theme);
-		 });
-}
-
 ///////////////////////////////////////////////////////////////////////
 
 //! An SXG-based icon.
@@ -231,12 +212,77 @@ static inline const_sxg_image create_sxg_image(drawableObj::implObj
 			 auto pixmap=drawable_impl->create_pixmap(w, h);
 			 auto picture=pixmap->create_picture();
 
-			 auto ri=sxg_image::create(pixmap, picture, repeat);
+			 auto ri=sxg_image::create(picture, pixmap, repeat);
 
 			 sxg->render(picture, pixmap, ri->points);
 
 			 return ri;
 		 });
+}
+
+static icon create_sxg_icon_from_filename(const std::experimental
+					  ::string_view &name,
+					  const std::string &filename,
+					  drawableObj::implObj *for_drawable,
+					  const screen &screenref,
+					  const defaulttheme &theme,
+					  render_repeat icon_repeat,
+					  double widthmm,
+					  double heightmm)
+{
+	auto sxg=screenref->impl->iconcaches->sxg_parser_cache->find_or_create
+		({filename, theme},
+		 [&]
+		 {
+			 return sxg_parser::create(filename, screenref,
+						   theme);
+		 });
+
+	auto image=create_sxg_image(for_drawable, sxg, icon_repeat,
+				    widthmm, heightmm);
+
+	return ref<sxg_mmiconObj>::create(name,
+					  widthmm,
+					  heightmm,
+					  sxg, image);
+}
+
+static const struct {
+	const char *extension;
+
+	icon (*create_mm)(const std::experimental::string_view &name,
+			  const std::string &filename,
+			  drawableObj::implObj *for_drawable,
+			  const screen &screenref,
+			  const defaulttheme &theme,
+			  render_repeat icon_repeat,
+			  double widthmm,
+			  double heightmm);
+} extensions[]={
+	{".sxg", &create_sxg_icon_from_filename},
+};
+
+static bool search_file(std::string &filename,
+			const defaulttheme &theme)
+{
+	struct stat stat_buf;
+
+	if (stat(filename.c_str(), &stat_buf) == 0)
+		return true;
+
+	if (filename.find('/') == filename.npos)
+	{
+		std::string n=theme->themedir + "/" + filename;
+
+		if (stat(n.c_str(), &stat_buf) == 0)
+		{
+			filename=n;
+			return true;
+		}
+
+	}
+
+	return false;
 }
 
 icon drawableObj::implObj
@@ -246,26 +292,54 @@ icon drawableObj::implObj
 		 double heightmm)
 {
 	auto screen=get_screen();
-
 	auto theme=*current_theme_t::lock{screen->impl->current_theme};
 
-	return screen->impl->iconcaches->mm_image_cache->find_or_create
-		({std::string(name), theme,
-				drawable_pictformat,
-				icon_repeat, widthmm, heightmm},
-			[&, this]
+	size_t p=name.rfind('/');
+
+	if (p == name.npos)
+		p=0;
+	p=name.find('.', p);
+
+	bool found_extension=false;
+
+	for (const auto &filetype:extensions)
+	{
+		if (p != name.npos)
+		{
+			if (name.substr(p) == filetype.extension)
 			{
-				auto sxg=get_sxg(name, screen, theme);
+				std::string n{name};
 
-				auto image=create_sxg_image(this, sxg,
-							    icon_repeat,
-							    widthmm, heightmm);
+				found_extension=true;
 
-				return ref<sxg_mmiconObj>::create(name,
-								  widthmm,
-								  heightmm,
-								  sxg, image);
-			});
+				if (!search_file(n, theme))
+					break;
+
+				return (*filetype.create_mm)
+					(name, n, this, screen, theme,
+					 icon_repeat,
+					 widthmm, heightmm);
+			}
+			continue;
+		}
+
+		std::string n{name};
+
+		n += filetype.extension;
+
+		if (!search_file(n, theme))
+			continue;
+
+		return (*filetype.create_mm)
+			(name, n, this, screen, theme,
+			 icon_repeat,
+			 widthmm, heightmm);
+	}
+
+	if (p != name.npos && !found_extension)
+		throw EXCEPTION("Unsupported file format: " << name);
+
+	throw EXCEPTION(name << " not found");
 }
 
 sxg_mmiconObj::sxg_mmiconObj(const std::experimental::string_view &name,
@@ -295,9 +369,9 @@ icon sxg_mmiconObj::theme_updated(IN_THREAD_ONLY)
 		return icon(this); // Unchanged
 
 	// All right, take it from the top.
-	auto icon=image(IN_THREAD)->icon_pixmap->impl
+	auto icon=image->icon_pixmap->impl
 		->create_icon_mm(name,
-				 image(IN_THREAD)->repeat,
+				 image->repeat,
 				 widthmm,
 				 heightmm);
 

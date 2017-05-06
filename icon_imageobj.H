@@ -22,10 +22,10 @@ class LIBCXX_HIDDEN icon_imageObj : virtual public obj {
 public:
 
 	//! The icon's picture
-	const picture icon_picture;
+	const const_picture icon_picture;
 
 	//! The icon's pixmap
-	const pixmap  icon_pixmap;
+	const const_pixmap  icon_pixmap;
 
 	//! The icon's REPEAT render setting.
 	const render_repeat repeat;

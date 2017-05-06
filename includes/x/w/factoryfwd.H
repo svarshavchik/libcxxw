@@ -206,6 +206,16 @@ The second parameter to \c create_input_field() is optional. It is an
 \ref input_field_config "input_field_config" that sets the width of the
 text input field, and various other properties.
 
+\par Images
+
+\code
+#include <INSERT_LIBX_NAMESPACE/w/image.H>
+
+INSERT_LIBX_NAMESPACE::w::image image=factory->create_image_mm("image1.png");
+\endcode
+
+This creates a display element that shows an image.
+
 */
 
 typedef ref<factoryObj> factory;

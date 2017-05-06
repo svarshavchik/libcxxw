@@ -16,13 +16,11 @@ LIBCXXW_NAMESPACE_START;
 
 class LIBCXX_HIDDEN iconObj : virtual public obj {
 
-	//! The loaded image.
-
-	const_icon_image image_thread_only;
-
 public:
 
-	THREAD_DATA_ONLY(image);
+	//! The loaded image.
+
+	const const_icon_image image;
 
 	//! Constructor
 
@@ -35,6 +33,11 @@ public:
 	//! Finish icon's initialization.
 
 	//! The default implementation calls theme_updated().
+	//!
+	//! Because icon images are cached, a single icon's initialize()
+	//! may be called multiple times, as each display element that
+	//! receives its supposedly new icon takes care of its obligation
+	//! to call initialize().
 
 	virtual icon initialize(IN_THREAD_ONLY);
 
