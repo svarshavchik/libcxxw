@@ -7,6 +7,7 @@
 #include "focus/focusable_element.H"
 #include "hotspot_element.H"
 #include "icon.H"
+#include "radio_group.H"
 #include <x/exception.H>
 
 LIBCXXW_NAMESPACE_START
@@ -48,8 +49,18 @@ void image_button_internalObj::implObj::theme_updated(IN_THREAD_ONLY)
 	superclass_t::theme_updated(IN_THREAD);
 }
 
+void image_button_internalObj::implObj::next_icon(IN_THREAD_ONLY,
+						  size_t next_icon)
+{
+	current_image(IN_THREAD)=next_icon;
+
+	set_icon(IN_THREAD, icon_images(IN_THREAD).at(next_icon));
+}
+
+/////////////////////////////////////////////////////////////////////////
+//
 // Subclass of the image button implementation button that implements
-// checkbox semantics: each activation cycles the images.
+// checkbox semantics: each activation cycles to the next image.
 
 class LIBCXX_HIDDEN checkbox_image_buttonObj :
 	public image_button_internalObj::implObj {
@@ -59,14 +70,14 @@ class LIBCXX_HIDDEN checkbox_image_buttonObj :
 
 	~checkbox_image_buttonObj()=default;
 
+	//! Overridden from hotspotObj::implObj
+
+	//! We do not use hotspot callbacks. Invoke next_icon();
+
 	void activated(IN_THREAD_ONLY) override
 	{
-		current_image(IN_THREAD)=(current_image(IN_THREAD)+1)
-			% icon_images(IN_THREAD).size();
-
-		set_icon(IN_THREAD, icon_images(IN_THREAD)
-			 .at(current_image(IN_THREAD)));
-		image_button_internalObj::implObj::activated(IN_THREAD);
+		next_icon(IN_THREAD, (current_image(IN_THREAD)+1)
+			  % icon_images(IN_THREAD).size());
 	}
 };
 
@@ -75,6 +86,89 @@ create_checkbox_impl(const ref<containerObj::implObj> &container,
 		     const std::vector<icon> &icon_images)
 {
 	return ref<checkbox_image_buttonObj>::create(container, icon_images);
+}
+
+/////////////////////////////////////////////////////////////////////////
+//
+// Subclass of the image button implementation button that implements
+// radio button semantics. When activated, all other radio buttons in the
+// group cycle to image #0, and this radio button cycles to the next non-0
+// image.
+
+class LIBCXX_HIDDEN radio_image_buttonObj :
+	public image_button_internalObj::implObj {
+ public:
+
+	//! Constructor
+	radio_image_buttonObj(const radio_group &group,
+			      const ref<containerObj::implObj> &container,
+			      const std::vector<icon> &icon_images)
+		: image_button_internalObj::implObj(container, icon_images),
+		group(group)
+		{
+		}
+
+	//! Destructor
+	~radio_image_buttonObj()=default;
+
+	//! My radio group
+
+	const radio_group group;
+
+	//! Overridden from hotspotObj::implObj
+
+	//! We do not use hotspot callbacks. Invoke next_icon();
+
+	void activated(IN_THREAD_ONLY) override;
+};
+
+ref<image_button_internalObj::implObj>
+create_radio_impl(const radio_group &group,
+		  const ref<containerObj::implObj> &container,
+		  const std::vector<icon> &icon_images)
+{
+	auto r=ref<radio_image_buttonObj>::create(group,
+						  container, icon_images);
+
+	r->group->impl->button_list->push_back(r);
+
+	return r;
+}
+
+void radio_image_buttonObj::activated(IN_THREAD_ONLY)
+{
+	ref<image_button_internalObj::implObj> me(this);
+
+	// Turn off all other radio buttons...
+
+	for (const auto &buttonptr : *group->impl->button_list)
+	{
+		auto buttonp=buttonptr.getptr();
+
+		if (!buttonp)
+			continue;
+
+		ref<image_button_internalObj::implObj> button=buttonp;
+
+		// ... except me.
+
+		if (button == me)
+			continue;
+
+		if (button->current_image(IN_THREAD) == 0)
+			continue;
+
+		button->next_icon(IN_THREAD, 0);
+	}
+
+	// And turn on myself.
+
+	auto n=(current_image(IN_THREAD)+1) % icon_images(IN_THREAD).size();
+
+	if (n == 0) n=(n+1) % icon_images(IN_THREAD).size();
+
+	if (n != current_image(IN_THREAD))
+		next_icon(IN_THREAD, n);
 }
 
 LIBCXXW_NAMESPACE_END

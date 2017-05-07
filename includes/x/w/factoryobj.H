@@ -22,6 +22,7 @@
 #include <x/w/input_fieldfwd.H>
 #include <x/w/imagefwd.H>
 #include <x/w/image_buttonfwd.H>
+#include <x/w/radio_groupfwd.H>
 #include <x/obj.H>
 #include <x/functional.H>
 
@@ -224,6 +225,13 @@ public:
 
 	//! Create a checkbox, with custom images.
 	image_button create_checkbox(const std::vector<std::experimental::string_view> &images);
+
+	//! Create a radio button
+	image_button create_radio(const radio_group &group);
+
+	//! Create a radio button, with custom images.
+	image_button create_radio(const radio_group &group,
+				  const std::vector<std::experimental::string_view> &images);
 
 };
 

@@ -222,10 +222,21 @@ This creates a display element that shows an image.
 #include <INSERT_LIBX_NAMESPACE/w/image_button.H>
 
 INSERT_LIBX_NAMESPACE::w::image_button checkbox=factory->create_checkbox();
-
 \endcode
 
 create_checkbox() creates a simple checkbox display element.
+
+\code
+#include <INSERT_LIBX_NAMESPACE/w/radio_group.H>
+#include <INSERT_LIBX_NAMESPACE/w/image_button.H>
+
+auto group=INSERT_LIBX_NAMESPACE::w::radio_group::create();
+
+INSERT_LIBX_NAMESPACE::w::image_button checkbox=factory->create_radio(group);
+\endcode
+
+A \ref radio_group "radio_group" object gets created in advance.
+create_radio() creates a new radio button.
 
 */
 

@@ -63,10 +63,18 @@ class LIBCXX_HIDDEN image_button_containerObj
 typedef ref<focusframecontainer_elementObj<
 		    container_elementObj<child_elementObj>>> ff_impl_t;
 
+// The factory do_create_image_button invokes to contsruct the internal
+// implementation object.
+
+typedef ref<image_button_internalObj::implObj>
+image_button_factory_t(const ref<containerObj::implObj> &,
+		       const std::vector<icon> &);
+
 static image_button
-create_image_button(const std::vector<std::experimental::string_view> &images,
-		    auto img_impl_factory,
-		    factoryObj &f)
+do_create_image_button(const std::vector<std::experimental::string_view>
+		       &images,
+		       const function<image_button_factory_t> &img_impl_factory,
+		       factoryObj &f)
 {
 	if (images.empty())
 		throw EXCEPTION(_("Attempt to create an image button without any images."));
@@ -138,15 +146,53 @@ create_image_button(const std::vector<std::experimental::string_view> &images,
 	return b;
 }
 
+template<typename functor>
+static inline image_button
+create_image_button(const std::vector<std::experimental::string_view>
+		    &images,
+		    functor &&creator,
+		    factoryObj &f)
+{
+	return do_create_image_button(images,
+				      make_function<image_button_factory_t>
+				      (std::forward<functor>(creator)),
+				      f);
+}
+
 image_button factoryObj::create_checkbox()
 {
 	return create_checkbox({"checkbox1", "checkbox2"});
 }
 
+// Call create_image_button, using create_checkbox_impl() to create the
+// internal image button.
+
 image_button factoryObj::create_checkbox(const std::vector<std::experimental
 					 ::string_view> &images)
 {
 	return create_image_button(images, create_checkbox_impl, *this);
+}
+
+image_button factoryObj::create_radio(const radio_group &group)
+{
+	return create_radio(group, {"radio1", "radio2"});
+}
+
+// Call create_image_button, using create_radio_impl() to create the
+// internal image button.
+
+image_button factoryObj::create_radio(const radio_group &group,
+				      const std::vector<std::experimental::string_view> &images)
+{
+	return create_image_button(images,
+				   [&]
+				   (const auto &container,
+				    const auto &images)
+				   {
+					   return create_radio_impl(group,
+								    container,
+								    images);
+				   }, *this);
 }
 
 LIBCXXW_NAMESPACE_END

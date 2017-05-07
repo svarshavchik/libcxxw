@@ -319,6 +319,9 @@ libcxxw_la_SOURCES=\
 	pixmap.C				    \
 	pixmap.H				    \
 	pixmap_impl.C				    \
+	radio_group.C				    \
+	radio_group.H				    \
+	radio_group_impl.C			    \
 	rectangle.C				    \
 	rectangle.H				    \
 	recycled_pixmaps.C			    \

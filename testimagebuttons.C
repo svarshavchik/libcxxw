@@ -15,6 +15,7 @@
 #include "x/w/gridfactory.H"
 #include "x/w/screen.H"
 #include "x/w/connection.H"
+#include "x/w/radio_group.H"
 #include <string>
 #include <iostream>
 
@@ -50,9 +51,14 @@ void testlabel()
 			 {
 				 LIBCXX_NAMESPACE::w::gridlayoutmanager
 				     layout=main_window->get_layoutmanager();
+
+				 auto radios=LIBCXX_NAMESPACE::w::radio_group::create();
+
 				 LIBCXX_NAMESPACE::w::gridfactory factory=
 				     layout->append_row();
-				 factory->create_checkbox();
+				 factory->create_radio(radios);
+				 factory->create_radio(radios);
+				 factory->create_radio(radios);
 			 });
 
 	main_window->set_window_title("Hello world!");
@@ -77,6 +83,10 @@ void testlabel()
 
 	LIBCXX_NAMESPACE::mpcobj<bool>::lock lock{close_flag->flag};
 
+	lock.wait_for(std::chrono::seconds(30),
+		      [&] { return *lock; });
+
+#if 0
 	for (int i=0; i < 4 && !*lock; ++i)
 	{
 		lock.wait_for(std::chrono::seconds(1),
@@ -86,6 +96,7 @@ void testlabel()
 			->set_theme(original_theme.first,
 				    (i % 2) ? 100:200);
 	}
+#endif
 }
 
 int main(int argc, char **argv)

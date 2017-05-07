@@ -1880,8 +1880,8 @@ See COPYING for distribution information.
     <arc>
       <x>0</x>
       <y>0</y>
-      <width>10</width>
-      <height>10</height>
+      <width>9</width>
+      <height>9</height>
       <angle1>45</angle1>
       <angle2>90</angle2>
     </arc>
@@ -1889,8 +1889,8 @@ See COPYING for distribution information.
     <arc>
       <x>5</x>
       <y>5</y>
-      <width>10</width>
-      <height>10</height>
+      <width>9</width>
+      <height>9</height>
       <angle1>45</angle1>
       <angle2>90</angle2>
     </arc>
@@ -1917,13 +1917,83 @@ See COPYING for distribution information.
 	  The angles are specified in degrees, and &sxg; takes care of
 	  scaling it by 64, as defined by the X protocol.
 	</para>
+      </note>
+
+      <note>
+	<para>
+	  Note that, by default, &app;
+	  <link linkend="sxgscalingalgo">calculates coordinates based on the
+	    center of virtually-scaled pixels</link>.
+	  This has implications on the specification of the
+	  <tag class='element'>width</tag> and
+	  <tag class='element'>height</tag> of the arc.
+	  The width and the height of the scaled arc is computed from
+	  <tag class='element'>x</tag> to
+	  <tag class='element'>x</tag>+<tag class='element'>width</tag>
+	  and
+	  <tag class='element'>y</tag> to
+	  <tag class='element'>y</tag>+<tag class='element'>height</tag>.
+	</para>
+
+	<blockquote>
+	  <informalexample>
+	<programlisting><![CDATA[
+<sxg>
+  <width>10</width>
+  <height>10</height>
+
+  <!-- -->
+
+  <arcs>
+
+    <arc>
+      <x>0</x>
+      <y>0</y>
+      <width>9</width>
+      <height>9</height>
+      <angle1>0</angle1>
+      <angle2>360</angle2>
+    </arc>]]></programlisting>
+	  </informalexample>
+	</blockquote>
 
 	<para>
-	  Additionally, &app; adjusts the width and the height of the
-	  arc as follows.
-	  X Protocol's
+	  This defines a virtual cartesian coordinate space of 10x10 pixels,
+	  and draws a full circle within the coordinates defined by
+	  (<tag class='element'>x</tag>, <tag class='element'>y</tag>) and
+	  (<tag class='element'>x</tag>+<tag class='element'>width</tag>,
+	  <tag class='element'>y</tag>+<tag class='element'>height</tag>);
+	  or (0, 0) through (9, 9), the entire size of the virtual
+	  10x10 cartesian coordinate space.
+	</para>
+
+	<para>
+	  When scaled, the scaled circle gets bounded on the center of the
+	  virtually-scaled pixels. If the scaled image 1:1, the circle
+	  touches the sides of the image, since each virtual pixel is
+	  equivalent to a single physical pixel. If the scaled image is 3:1,
+	  there's a one pixel gap between the circle and the sides of the
+	  image, since the circle is scaled to the centerpoints of the
+	  virtuals, which now correspond to 3x3 physical pixels.
+	</para>
+
+	<para>
+	  Note that explicitly specifying a
+	  <link linkend="sxg_pixmap_line_width"><tag class="element">line_width</tag></link>
+	  of 1 also scales the width of the drawn line. With a 3:1 scale the
+	  drawn line becomes three pixels thick; and with the circle boundary is
+	  anchored at the centerpoint of the scaled pixel, the drawn circle
+	  once again touches the sides of the image.
+	</para>
+      </note>
+
+      <note>
+	<para>
+	  &app; also makes an additional, final adjustment to the size of the
+	  drawn arc.
+	  The underlying X Protocol's
 	  <function>PolyArc</function> and
-	  <function>PolyFillArc</function> commands' arcs are specified by
+	  <function>PolyFillArc</function> commands' arcs specify
 	  the bounding rectangle of pixels (x,y) through (x+width,x+height)
 	  inclusively. So, a circle 50 pixels across and tall gets specified
 	  by an actual width and height of 49 (indicating fifty pixels starting
@@ -1931,15 +2001,9 @@ See COPYING for distribution information.
 	</para>
 
 	<para>
-	  &sxg; interprets the width and height values in absolute terms, like
-	  all other instructions in the &sxg; file.
-	  A circle 50 pixels across and tall gets specified by a
-	  <tag class='element'>width</tag> and
-	  <tag class='element'>height</tag> of 50. After
-	  <link linkend="sxgscaling">scaling the coordinates
-	  </link> according to the referenced pixmap or picture's
-	  <link linkend="sxgsize"><tag class='element'>size</tag></link>,
-	  &sxg; automatically subtracts 1 from each arc's width and height.
+	  The &sxg; image only needs to specify the coordinates
+	  based on the centerpoints of virtual pixels, and the scaled
+	  adjusted width and height gets calculated accordingly.
 	</para>
       </note>
     </section>

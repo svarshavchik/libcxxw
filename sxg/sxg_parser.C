@@ -1895,6 +1895,7 @@ sxg_parserObj::parse_gc_arcs(const xml::doc::base::readlock &lock)
 					 .x_pixel(arc.x);
 				 gc_arc.y=info.scale
 					 .y_pixel(arc.y);
+
 				 auto w=dim_t::truncate
 					 (info.scale
 					  .x_pixel(arc.x+arc.width)
@@ -1913,6 +1914,14 @@ sxg_parserObj::parse_gc_arcs(const xml::doc::base::readlock &lock)
 
 				 if (w == 0 || h == 0)
 					 continue;
+
+				 /*
+				   The X protocol appears to specify the
+				   bounding rectangle inclusively. An arc
+				   bound by a rectangle 50x50 pixels gets
+				   specified with a width/height of 49/49.
+				   Make this adjustment.
+				  */
 
 				 gc_arc.width=w-1;
 				 gc_arc.height=h-1;
