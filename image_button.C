@@ -34,6 +34,22 @@ ref<focusableImplObj> image_buttonObj::get_impl() const
 	return impl->button->impl;
 }
 
+size_t image_buttonObj::get_value() const
+{
+	return impl->button->impl->get_image_number();
+}
+
+void image_buttonObj::set_value(size_t n)
+{
+	impl->button->impl->get_window_handler().IN_THREAD->run_as
+		(RUN_AS,
+		 [impl=this->impl, n]
+		 (IN_THREAD_ONLY)
+		 {
+			 impl->button->impl->set_image_number(IN_THREAD, n);
+		 });
+}
+
 ///////////////////////////////////////////////////////////////////////////
 //
 // This is the container implementation button for the image_buttonObj's

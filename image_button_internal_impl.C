@@ -25,7 +25,7 @@ image_button_internalObj::implObj
 	  const std::vector<icon> &icon_images)
 	: superclass_t(true, container, get_first_icon_image(icon_images)),
 	  icon_images_thread_only(icon_images),
-	  current_image_thread_only(0)
+	  current_image(0)
 {
 }
 
@@ -49,12 +49,31 @@ void image_button_internalObj::implObj::theme_updated(IN_THREAD_ONLY)
 	superclass_t::theme_updated(IN_THREAD);
 }
 
-void image_button_internalObj::implObj::next_icon(IN_THREAD_ONLY,
-						  size_t next_icon)
+void image_button_internalObj::implObj::activated(IN_THREAD_ONLY)
 {
-	current_image(IN_THREAD)=next_icon;
+	set_image_number(IN_THREAD, get_image_number()+1);
+}
+
+void image_button_internalObj::implObj::set_image_number(IN_THREAD_ONLY,
+							 size_t next_icon)
+{
+	do_set_image_number(IN_THREAD, next_icon);
+}
+
+void image_button_internalObj::implObj::do_set_image_number(IN_THREAD_ONLY,
+							    size_t next_icon)
+{
+	next_icon %= icon_images(IN_THREAD).size();
+
+	*current_image_t::lock(current_image)=next_icon;
 
 	set_icon(IN_THREAD, icon_images(IN_THREAD).at(next_icon));
+}
+
+//! Return the current icon number.
+size_t image_button_internalObj::implObj::get_image_number()
+{
+	return *current_image_t::lock(current_image);
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -69,16 +88,6 @@ class LIBCXX_HIDDEN checkbox_image_buttonObj :
 	using image_button_internalObj::implObj::implObj;
 
 	~checkbox_image_buttonObj()=default;
-
-	//! Overridden from hotspotObj::implObj
-
-	//! We do not use hotspot callbacks. Invoke next_icon();
-
-	void activated(IN_THREAD_ONLY) override
-	{
-		next_icon(IN_THREAD, (current_image(IN_THREAD)+1)
-			  % icon_images(IN_THREAD).size());
-	}
 };
 
 ref<image_button_internalObj::implObj>
@@ -115,11 +124,12 @@ class LIBCXX_HIDDEN radio_image_buttonObj :
 
 	const radio_group group;
 
-	//! Overridden from hotspotObj::implObj
+	//! Override set_image_number().
 
-	//! We do not use hotspot callbacks. Invoke next_icon();
+	//! activated() calls it, as well as the public object's set_value().
+	//! This way, the same radio button logic gets used for both.
 
-	void activated(IN_THREAD_ONLY) override;
+	void set_image_number(IN_THREAD_ONLY, size_t) override;
 };
 
 ref<image_button_internalObj::implObj>
@@ -135,8 +145,13 @@ create_radio_impl(const radio_group &group,
 	return r;
 }
 
-void radio_image_buttonObj::activated(IN_THREAD_ONLY)
+void radio_image_buttonObj::set_image_number(IN_THREAD_ONLY, size_t n)
 {
+	n %= icon_images(IN_THREAD).size();
+
+	if (n == 0)
+		if (n == 0) n=(n+1) % icon_images(IN_THREAD).size();
+
 	ref<image_button_internalObj::implObj> me(this);
 
 	// Turn off all other radio buttons...
@@ -155,20 +170,16 @@ void radio_image_buttonObj::activated(IN_THREAD_ONLY)
 		if (button == me)
 			continue;
 
-		if (button->current_image(IN_THREAD) == 0)
+		if (button->get_image_number() == 0)
 			continue;
 
-		button->next_icon(IN_THREAD, 0);
+		button->do_set_image_number(IN_THREAD, 0);
 	}
 
 	// And turn on myself.
 
-	auto n=(current_image(IN_THREAD)+1) % icon_images(IN_THREAD).size();
-
-	if (n == 0) n=(n+1) % icon_images(IN_THREAD).size();
-
-	if (n != current_image(IN_THREAD))
-		next_icon(IN_THREAD, n);
+	if (n != get_image_number())
+		do_set_image_number(IN_THREAD, n);
 }
 
 LIBCXXW_NAMESPACE_END

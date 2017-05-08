@@ -36,6 +36,21 @@ public:
 
 	//! Implement get_impl().
 	ref<focusableImplObj> get_impl() const override;
+
+	//! Which image is currently being shown by this image button.
+
+	//! For checkboxes and radio buttons 0 means unselected, 1 means
+	//! selected. Values greater than one are possible for custom
+	//! configured image buttons.
+
+	size_t get_value() const;
+
+	//! Set the image being shown by this image button.
+
+	//! The image number gets updated by the connection thread, so
+	//! immediately calling get_value() may not reflect the new value.
+
+	void set_value(size_t);
 };
 
 LIBCXXW_NAMESPACE_END
