@@ -7,6 +7,7 @@
 
 #include "x/w/gridlayoutmanager.H"
 #include "x/w/border_infommfwd.H"
+#include "x/w/grid_map_infofwd.H"
 #include "layoutmanager.H"
 #include "gridfactory.H"
 #include "metrics_grid_posfwd.H"
@@ -18,30 +19,6 @@
 #include <experimental/string_view>
 
 LIBCXXW_NAMESPACE_START
-
-//! Look up where the element is.
-
-//! The value in the lookup table keyed by an element in the grid.
-//! Gives the element's row and column, which can be used to locate the
-//! grid_element object in the two-dimensional elements vector.
-
-class LIBCXX_HIDDEN gridlayoutmanagerObj::lookup_infoObj : virtual public obj {
-
- public:
-
-	//! Row in the elements vector
-	size_t row;
-
-	//! Column in the elements vector
-	size_t col;
-
-	//! When updating the lookup table, a flag that's used to purge removed elements.
-	bool seen;
-
-	//! All the border elements, on each side of this element.
-
-	std::vector<element> border_elements;
-};
 
 //! The grid layout manager implementation object.
 

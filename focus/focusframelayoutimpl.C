@@ -9,6 +9,7 @@
 #include "element_screen.H"
 #include "screen.H"
 #include "grid_element.H"
+#include "grid_map_info.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -39,7 +40,7 @@ void focusframelayoutimplObj::rebuild_elements_start(IN_THREAD_ONLY,
 
 	// Should always be one element, here.
 
-	for (const auto &row:lock->elements)
+	for (const auto &row:(*lock)->elements)
 		for (const auto &col:row)
 		{
 			col->left_border=

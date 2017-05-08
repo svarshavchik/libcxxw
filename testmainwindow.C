@@ -129,7 +129,7 @@ sausage_factory_t sausages;
 						  (IN_THREAD_ONLY) {	\
 							  grid_map_t::lock \
 								  lock(me->grid_map); \
-							  lock->elements_have_been_modified(); \
+							  (*lock)->elements_have_been_modified(); \
 									\
 							  me->child_metrics_updated(IN_THREAD);	\
 						  });			\

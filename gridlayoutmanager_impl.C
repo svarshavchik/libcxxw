@@ -5,6 +5,7 @@
 #include "libcxxw_config.h"
 #include "gridlayoutmanager.H"
 #include "gridlayoutmanager_impl_elements.H"
+#include "grid_map_info.H"
 #include "element.H"
 #include "element_screen.H"
 #include "container.H"
@@ -18,13 +19,10 @@
 
 LIBCXXW_NAMESPACE_START
 
-gridlayoutmanagerObj::grid_map_info_t::grid_map_info_t()=default;
-
-gridlayoutmanagerObj::grid_map_info_t::~grid_map_info_t()=default;
-
 gridlayoutmanagerObj::implObj
 ::implObj(const ref<containerObj::implObj> &container_impl)
 	: layoutmanagerObj::implObj(container_impl),
+	grid_map(ref<grid_map_infoObj>::create()),
 	grid_elements_thread_only(ref<elementsObj>::create())
 {
 }
@@ -35,9 +33,9 @@ elementptr gridlayoutmanagerObj::implObj::get(size_t x, size_t y)
 {
 	grid_map_t::lock lock{grid_map};
 
-	if (y < lock->elements.size())
+	if (y < (*lock)->elements.size())
 	{
-		const auto &row=lock->elements.at(y);
+		const auto &row=(*lock)->elements.at(y);
 
 		if (x < row.size())
 			return row.at(x)->grid_element;
@@ -94,10 +92,10 @@ void gridlayoutmanagerObj::implObj
 	if (info.width == 0 || info.height == 0)
 		throw EXCEPTION(_("Width or height of a new grid element cannot be 0"));
 
-	if (info.row >= lock->elements.size())
+	if (info.row >= (*lock)->elements.size())
 		throw EXCEPTION(_("Attempting to add a display element into a nonexistent row"));
 
-	auto &row=lock->elements.at(dim_t::value_type(info.row));
+	auto &row=(*lock)->elements.at(dim_t::value_type(info.row));
 
 	if (info.col > row.size())
 		throw EXCEPTION(_("Attempting to add a display element into a nonexistent column"));
@@ -115,7 +113,7 @@ void gridlayoutmanagerObj::implObj
 	// Reset the next element to defaults.
 	info=new_grid_element_info{info.row, info.col+1,
 				   get_custom_border(border_infomm{})};
-	lock->elements_have_been_modified();
+	(*lock)->elements_have_been_modified();
 }
 
 current_border_impl gridlayoutmanagerObj::implObj

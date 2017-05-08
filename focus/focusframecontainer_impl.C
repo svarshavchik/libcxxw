@@ -6,6 +6,7 @@
 #include "focus/focusframecontainer_impl.H"
 #include "focus/focusframecontainer_element.H"
 #include "gridlayoutmanager.H"
+#include "grid_map_info.H"
 #include "container_element.H"
 
 LIBCXXW_NAMESPACE_START
@@ -38,7 +39,7 @@ void focusframecontainerObj::implObj
 			 gridlayoutmanagerObj::grid_map_t::lock
 				 lock{manager->grid_map};
 
-			 lock->elements_have_been_modified();
+			 (*lock)->elements_have_been_modified();
 			 manager->needs_recalculation(IN_THREAD);
 		 });
 }

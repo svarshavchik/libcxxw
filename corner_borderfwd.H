@@ -7,7 +7,7 @@
 
 #include <x/ptrfwd.H>
 #include "x/w/namespace.H"
-#include "x/w/grid_elementfwd.H"
+#include "grid_elementfwd.H"
 
 LIBCXXW_NAMESPACE_START
 

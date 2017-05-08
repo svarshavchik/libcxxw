@@ -4,6 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "gridlayoutmanager_impl_elements.H"
+#include "grid_map_info.H"
 #include "catch_exceptions.H"
 #include "calculate_borders.H"
 #include "straight_border.H"
@@ -83,7 +84,7 @@ void gridlayoutmanagerObj::implObj
 	}
 	grid_map_t::lock lock(grid_map);
 
-	auto &lookup=lock->get_lookup_table();
+	auto &lookup=(*lock)->get_lookup_table();
 
 	auto iter=lookup.find(child);
 
@@ -101,11 +102,25 @@ void gridlayoutmanagerObj::implObj::theme_updated(IN_THREAD_ONLY)
 	grid_element_padding_lock
 		padding_lock{container_impl->get_element_impl().get_screen()};
 
-	for (const auto &row:lock->elements)
+	for (const auto &row:(*lock)->elements)
 		for (const auto &col:row)
+		{
 			col->calculate_padding(padding_lock);
 
-	lock->padding_recalculated();
+			// Borders elements are display elements. Each border
+			// specified by a grid element should be a part of
+			// some actual border, in straight_borders or corner
+			// borders, and, get updated directly (see
+			// straight_border_implObj). But, just to be sure, do
+			// our due diligence.
+
+			col->left_border->theme_updated(IN_THREAD);
+			col->right_border->theme_updated(IN_THREAD);
+			col->top_border->theme_updated(IN_THREAD);
+			col->bottom_border->theme_updated(IN_THREAD);
+		}
+
+	(*lock)->padding_recalculated();
 
 	needs_recalculation(IN_THREAD);
 }
@@ -116,7 +131,7 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(IN_THREAD_ONLY)
 
 	auto &ge=grid_elements(IN_THREAD);
 
-	if (!lock->element_modifications_need_processing())
+	if (!(*lock)->element_modifications_need_processing())
 	{
 		// Still need to recalculate everything if child_metrics_updated
 
@@ -132,7 +147,7 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(IN_THREAD_ONLY)
 
 	rebuild_elements_start(IN_THREAD, lock);
 
-	auto &lookup=lock->get_lookup_table();
+	auto &lookup=(*lock)->get_lookup_table();
 
 	// Recalculate the border elements around each grid element. Each
 	// grid element can have up to eight borders: four side borders and
@@ -180,7 +195,7 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(IN_THREAD_ONLY)
 		}
 	}
 
-	calculate_borders(lock->elements,
+	calculate_borders((*lock)->elements,
 			  // v_lambda()
 			  [&]
 			  (grid_element *left,
@@ -421,7 +436,7 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(IN_THREAD_ONLY)
 
 	// Now add to total_size the count of all actual grid elements.
 
-	for (const auto &row:lock->elements)
+	for (const auto &row:(*lock)->elements)
 		total_size += row.size();
 
 	std::vector<elementsObj::pos_axis> &all_elements=ge->all_elements;
@@ -437,7 +452,7 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(IN_THREAD_ONLY)
 	all_elements.clear();
 	all_elements.reserve(total_size);
 
-	for (const auto &row:lock->elements)
+	for (const auto &row:(*lock)->elements)
 		for (const auto &col:row)
 		{
 			// We don't care about the keys. col is:
@@ -505,7 +520,7 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(IN_THREAD_ONLY)
 					  valign::fill);
 	}
 
-	lock->element_modifications_are_processed();
+	(*lock)->element_modifications_are_processed();
 	ge->child_metrics_updated_flag=false;
 
 #ifdef GRID_REBUILD_ELEMENTS_DONE
@@ -913,14 +928,14 @@ rectangle gridlayoutmanagerObj::implObj
 
 	grid_map_t::lock lock(grid_map);
 
-	auto &lookup=lock->get_lookup_table();
+	auto &lookup=(*lock)->get_lookup_table();
 
 	auto iter=lookup.find(e_impl);
 
 	if (iter == lookup.end())
 		return ret; // This is probably a border element. No padding.
 
-	auto ge=lock->elements.at(iter->second->row).at(iter->second->col);
+	auto ge=(*lock)->elements.at(iter->second->row).at(iter->second->col);
 
 	ret.x=coord_t::truncate(ret.x-ge->left_padding);
 	ret.y=coord_t::truncate(ret.y-ge->top_padding);

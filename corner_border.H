@@ -6,7 +6,7 @@
 #define corner_border_h
 
 #include "child_elementobj.H"
-#include "x/w/grid_elementfwd.H"
+#include "grid_elementfwd.H"
 #include "x/w/scratch_bufferfwd.H"
 #include "straight_borderfwd.H"
 #include "scratch_and_mask_buffer_drawfwd.H"

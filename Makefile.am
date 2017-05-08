@@ -217,7 +217,11 @@ libcxxw_la_SOURCES=\
 	generic_window_impl.C			    \
 	grid_element.C				    \
 	grid_element.H				    \
+	grid_elementfwd.H			    \
 	grid_elementobj.H			    \
+	grid_map_info.C				    \
+	grid_map_info.H				    \
+	grid_map_infoobj.H			    \
 	gridfactory.C				    \
 	gridfactory.H				    \
 	gridfactory_impl.C			    \

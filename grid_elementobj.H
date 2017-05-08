@@ -5,7 +5,7 @@
 #ifndef grid_elementobj_h
 #define grid_elementobj_h
 
-#include "x/w/grid_elementfwd.H"
+#include "grid_elementfwd.H"
 #include "current_border_implfwd.H"
 #include "metrics_grid_posfwd.H"
 #include "metrics_grid.H"
