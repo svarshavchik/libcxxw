@@ -34,7 +34,9 @@ class LIBCXX_HIDDEN focusframelayoutimplObj
 
 	//! Constructor
 	focusframelayoutimplObj(const ref<containerObj::implObj>
-				&container_impl);
+				&container_impl,
+				const char *off_border,
+				const char *on_border);
 
 	//! Destructor
 	~focusframelayoutimplObj();

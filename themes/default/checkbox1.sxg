@@ -1,12 +1,12 @@
 <sxg>
-  <width>12</width>
-  <height>12</height>
+  <width>11</width>
+  <height>11</height>
 
-  <widthmm>6</widthmm>
-  <heightmm>6</heightmm>
+  <widthmm>4</widthmm>
+  <heightmm>4</heightmm>
 
-  <widthfactor>12</widthfactor>
-  <heightfactor>12</heightfactor>
+  <widthfactor>11</widthfactor>
+  <heightfactor>11</heightfactor>
 
   <picture id="outline">
     <type>rgb</type>
@@ -20,8 +20,8 @@
 
   <pixmap id="mask">
     <size>scaled</size>
-    <width>12</width>
-    <height>12</height>
+    <width>11</width>
+    <height>11</height>
     <gc id="mask_gc" />
   </pixmap>
 
@@ -30,47 +30,23 @@
       <op>over</op>
       <src>boxfill</src>
       <point>
-	<x>9</x>
-	<y>2</y>
+	<x>10</x>
+	<y>0</y>
       </point>
 
       <point>
-	<x>2</x>
-	<y>2</y>
+	<x>0</x>
+	<y>0</y>
       </point>
 
       <point>
-	<x>9</x>
-	<y>9</y>
+	<x>10</x>
+	<y>10</y>
       </point>
 
       <point>
-	<x>2</x>
-	<y>9</y>
-      </point>
-    </tristrip>
-
-    <tristrip>
-      <op>clear</op>
-      <src>boxfill</src>
-      <point>
-	<x>4</x>
-	<y>4</y>
-      </point>
-
-      <point>
-	<x>7</x>
-	<y>4</y>
-      </point>
-
-      <point>
-	<x>7</x>
-	<y>7</y>
-      </point>
-
-      <point>
-	<x>4</x>
-	<y>7</y>
+	<x>0</x>
+	<y>10</y>
       </point>
     </tristrip>
   </render>
@@ -81,8 +57,8 @@
     <fill>
       <x>0</x>
       <y>0</y>
-      <width>12</width>
-      <height>12</height>
+      <width>11</width>
+      <height>11</height>
     </fill>
 
     <function>set</function>
@@ -91,56 +67,30 @@
 
     <line>
       <point>
-	<x>2</x>
-	<y>2</y>
+	<x>0</x>
+	<y>0</y>
       </point>
 
       <point>
-	<x>9</x>
-	<y>2</y>
+	<x>10</x>
+	<y>0</y>
       </point>
 
       <point>
-	<x>9</x>
-	<y>9</y>
+	<x>10</x>
+	<y>10</y>
       </point>
 
       <point>
-	<x>2</x>
-	<y>9</y>
+	<x>0</x>
+	<y>10</y>
       </point>
 
       <point>
-	<x>2</x>
-	<y>2</y>
+	<x>0</x>
+	<y>0</y>
       </point>
     </line>
-    <line>
-      <point>
-	<x>4</x>
-	<y>4</y>
-      </point>
-
-      <point>
-	<x>7</x>
-	<y>4</y>
-      </point>
-
-      <point>
-	<x>7</x>
-	<y>7</y>
-      </point>
-
-      <point>
-	<x>4</x>
-	<y>7</y>
-      </point>
-
-      <point>
-	<x>4</x>
-	<y>4</y>
-      </point>
-      </line>
   </gc>
 
   <render id="main">
@@ -148,8 +98,8 @@
       <op>over</op>
       <x>0</x>
       <y>0</y>
-      <width>12</width>
-      <height>12</height>
+      <width>11</width>
+      <height>11</height>
       <src>
 	<picture>outline</picture>
 	<x>0</x>

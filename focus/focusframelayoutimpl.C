@@ -13,12 +13,14 @@
 LIBCXXW_NAMESPACE_START
 
 focusframelayoutimplObj
-::focusframelayoutimplObj(const ref<containerObj::implObj> &container_impl)
+::focusframelayoutimplObj(const ref<containerObj::implObj> &container_impl,
+			  const char *off_border,
+			  const char *on_border)
 	: gridlayoutmanagerObj::implObj(container_impl),
 	focusoff_border(container_impl->get_element_impl().get_screen()->impl
-			->get_theme_border("inputfocusoff_border")),
+			->get_theme_border(off_border)),
 	focuson_border(container_impl->get_element_impl().get_screen()->impl
-		       ->get_theme_border("inputfocuson_border"))
+		       ->get_theme_border(on_border))
 
 {
 }

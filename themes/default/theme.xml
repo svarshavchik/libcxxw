@@ -102,6 +102,19 @@
     <dash>.75</dash>
   </border>
 
+  <border id="thin_inputfocusoff_border">
+    <color>transparent</color>
+    <width axis="horiz">.5</width>
+    <height axis="vert">.5</height>
+  </border>
+
+  <border id="thin_inputfocuson_border" from="thin_inputfocusoff_border">
+    <color>inputfocus_color1</color>
+    <color2>inputfocus_color2</color2>
+    <dash>.75</dash>
+  </border>
+
+
   <!--
       Button borders are size in units based on
       button_base_[horiz|vert].

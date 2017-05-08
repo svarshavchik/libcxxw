@@ -78,23 +78,14 @@ size_t image_button_internalObj::implObj::get_image_number()
 
 /////////////////////////////////////////////////////////////////////////
 //
-// Subclass of the image button implementation button that implements
-// checkbox semantics: each activation cycles to the next image.
-
-class LIBCXX_HIDDEN checkbox_image_buttonObj :
-	public image_button_internalObj::implObj {
- public:
-
-	using image_button_internalObj::implObj::implObj;
-
-	~checkbox_image_buttonObj()=default;
-};
+// A regular image_button_internalObj::implObj instance correctly handles
+// checkbox semantics.
 
 ref<image_button_internalObj::implObj>
 create_checkbox_impl(const ref<containerObj::implObj> &container,
 		     const std::vector<icon> &icon_images)
 {
-	return ref<checkbox_image_buttonObj>::create(container, icon_images);
+	return ref<image_button_internalObj::implObj>::create(container, icon_images);
 }
 
 /////////////////////////////////////////////////////////////////////////

@@ -62,6 +62,14 @@ public:
 	//! Destructor
 	~factoryObj() LIBCXX_HIDDEN;
 
+	//! Create an empty \ref canvas.
+
+	//! A default usage of create_canvas() that specifies a completely
+	//! unbound canvas. This is used to fill in unused cells in
+	//! a \ref gridlayout "grid layout manager".
+
+	canvas create_canvas();
+
 	//! Create an empty \ref canvas "canvas".
 	template<typename functor>
 	canvas create_canvas(functor &&creator,

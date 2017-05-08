@@ -9,6 +9,7 @@
 #include "gridfactory.H"
 #include "metrics_grid_pos.H"
 #include "current_border_impl.H"
+#include "messages.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -96,6 +97,25 @@ gridfactory gridlayoutmanagerObj::append_row()
 				   ref<gridfactoryObj::implObj>::create(me,
 									row,
 									0));
+}
+
+gridfactory gridlayoutmanagerObj::append_columns(size_t row)
+{
+	auto me=gridlayoutmanager(this);
+
+	dim_t col=({
+			grid_map_t::lock lock(me->impl->grid_map);
+
+			if (lock->elements.size() <= row)
+				throw EXCEPTION(_("Attempting to add columns to a nonexistent row"));
+
+			lock->elements.at(row).size();
+		});
+
+	return gridfactory::create(me,
+				   ref<gridfactoryObj::implObj>::create(me,
+									row,
+									col));
 }
 
 void gridlayoutmanagerObj::erase()

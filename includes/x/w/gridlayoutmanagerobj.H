@@ -161,6 +161,9 @@ public:
 	//! Append a row to the grid, and create elements in it.
 	gridfactory append_row();
 
+	//! Append elements at the end of an existing row.
+	gridfactory append_columns(size_t row_number);
+
 	//! Remove everything from the grid.
 	void erase();
 

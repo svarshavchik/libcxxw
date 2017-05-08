@@ -26,11 +26,14 @@ struct LIBCXX_HIDDEN focusframecontainerObj::new_focusframelayoutmanager {
 
 focusframecontainerObj::focusframecontainerObj(const ref<implObj> &impl,
 					       const ref<focusableImplObj>
-					       &focusable_impl)
+					       &focusable_impl,
+					       const char *off_border,
+					       const char *on_border)
 	: focusframecontainerObj(impl, focusable_impl,
 				 new_focusframelayoutmanager{
 					 ref<focusframelayoutimplObj>
-						 ::create(impl)})
+						 ::create(impl, off_border,
+							  on_border)})
 {
 }
 

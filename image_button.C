@@ -132,7 +132,10 @@ do_create_image_button(const std::vector<std::experimental::string_view>
 	// Now, create the focusframecontainer object, pointing it to the
 	// image_button_internalObj as its focusable implementation object.
 
-	auto focus_frame=focusframecontainer::create(focus_frame_impl, ibii);
+	auto focus_frame=focusframecontainer::create(focus_frame_impl,
+						     ibii,
+						     "thin_inputfocusoff_border",
+						     "thin_inputfocuson_border");
 
 	// And "create" the image_button_internal inside the focusframe.
 

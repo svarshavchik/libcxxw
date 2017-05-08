@@ -15,7 +15,9 @@
 #include "x/w/gridfactory.H"
 #include "x/w/screen.H"
 #include "x/w/connection.H"
+#include "x/w/label.H"
 #include "x/w/radio_group.H"
+#include "x/w/canvas.H"
 #include <string>
 #include <iostream>
 
@@ -38,8 +40,56 @@ public:
 
 typedef LIBCXX_NAMESPACE::ref<close_flagObj> close_flag_ref;
 
+static void create_mainwindow(const LIBCXX_NAMESPACE::w::main_window &main_window)
+{
+	LIBCXX_NAMESPACE::w::gridlayoutmanager layout=main_window->get_layoutmanager();
 
-void testlabel()
+	static const char * const days_of_week[]={
+		"Sunday",
+		"Monday",
+		"Tuesday",
+		"Wednesday",
+		"Thursday",
+		"Friday",
+		"Saturday"};
+
+	for (auto day_of_week:days_of_week)
+	{
+		LIBCXX_NAMESPACE::w::gridfactory factory=
+			layout->append_row();
+
+		LIBCXX_NAMESPACE::w::image_button checkbox=
+			factory->valign(LIBCXX_NAMESPACE::w::valign::middle)
+			.create_checkbox();
+		auto label=factory->right_padding(3)
+			.create_label({day_of_week});
+	}
+
+	LIBCXX_NAMESPACE::w::radio_group group=LIBCXX_NAMESPACE::w::radio_group::create();
+
+	auto factory=layout->append_columns(0);
+	LIBCXX_NAMESPACE::w::image_button
+		train=factory->valign(LIBCXX_NAMESPACE::w::valign::middle)
+			.create_radio(group);
+	train->set_value(1);
+	factory->create_label({"Train"});
+
+	factory=layout->append_columns(1);
+	factory->valign(LIBCXX_NAMESPACE::w::valign::middle)
+		.create_radio(group);
+	factory->create_label({"Bus"});
+
+	factory=layout->append_columns(2);
+	factory->valign(LIBCXX_NAMESPACE::w::valign::middle)
+		.create_radio(group);
+	factory->create_label({"Drive"});
+
+	for (size_t i=3; i<7; ++i)
+		layout->append_columns(i)->colspan(2)
+			.create_canvas();
+}
+
+void testimagebuttons()
 {
 	LIBCXX_NAMESPACE::destroy_callback::base::guard guard;
 
@@ -49,16 +99,7 @@ void testlabel()
 		::create([]
 			 (const auto &main_window)
 			 {
-				 LIBCXX_NAMESPACE::w::gridlayoutmanager
-				     layout=main_window->get_layoutmanager();
-
-				 auto radios=LIBCXX_NAMESPACE::w::radio_group::create();
-
-				 LIBCXX_NAMESPACE::w::gridfactory factory=
-				     layout->append_row();
-				 factory->create_radio(radios);
-				 factory->create_radio(radios);
-				 factory->create_radio(radios);
+				 create_mainwindow(main_window);
 			 });
 
 	main_window->set_window_title("Hello world!");
@@ -102,7 +143,7 @@ void testlabel()
 int main(int argc, char **argv)
 {
 	try {
-		testlabel();
+		testimagebuttons();
 	} catch (const LIBCXX_NAMESPACE::exception &e)
 	{
 		e->caught();

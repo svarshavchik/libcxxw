@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
 
 <sxg>
-  <width>12</width>
-  <height>12</height>
+  <width>11</width>
+  <height>11</height>
 
-  <widthmm>6</widthmm>
-  <heightmm>6</heightmm>
+  <widthmm>4</widthmm>
+  <heightmm>4</heightmm>
 
-  <widthfactor>12</widthfactor>
-  <heightfactor>12</heightfactor>
+  <widthfactor>11</widthfactor>
+  <heightfactor>11</heightfactor>
 
   <picture id="outline">
     <type>rgb</type>
@@ -22,8 +22,8 @@
 
   <pixmap id="circle_mask">
     <size>scaled</size>
-    <width>12</width>
-    <height>12</height>
+    <width>11</width>
+    <height>11</height>
     <gc id="circle_mask_gc" />
   </pixmap>
 
@@ -34,25 +34,10 @@
       <fill />
 
       <arc>
-	<x>1</x>
-	<y>1</y>
-	<width>9</width>
-	<height>9</height>
-	<angle1>0</angle1>
-	<angle2>360</angle2>
-      </arc>
-    </arcs>
-
-    <function>clear</function>
-
-    <arcs>
-      <fill />
-
-      <arc>
-	<x>3</x>
-	<y>3</y>
-	<width>5</width>
-	<height>5</height>
+	<x>0</x>
+	<y>0</y>
+	<width>10</width>
+	<height>10</height>
 	<angle1>0</angle1>
 	<angle2>360</angle2>
       </arc>
@@ -74,8 +59,8 @@
       </src>
       <x>0</x>
       <y>0</y>
-      <width>12</width>
-      <height>12</height>
+      <width>11</width>
+      <height>11</height>
     </composite>
   </render>
 
@@ -85,28 +70,19 @@
     <fill>
       <x>0</x>
       <y>0</y>
-      <width>12</width>
-      <height>12</height>
+      <width>11</width>
+      <height>11</height>
     </fill>
 
     <function>set</function>
-    <line_width>.6</line_width>
+    <line_width>1</line_width>
 
     <arcs>
       <arc>
-	<x>1</x>
-	<y>1</y>
-	<width>9</width>
-	<height>9</height>
-	<angle1>0</angle1>
-	<angle2>360</angle2>
-      </arc>
-
-      <arc>
-	<x>3</x>
-	<y>3</y>
-	<width>5</width>
-	<height>5</height>
+	<x>0</x>
+	<y>0</y>
+	<width>10</width>
+	<height>10</height>
 	<angle1>0</angle1>
 	<angle2>360</angle2>
       </arc>
@@ -128,8 +104,8 @@
       </src>
       <x>0</x>
       <y>0</y>
-      <width>12</width>
-      <height>12</height>
+      <width>11</width>
+      <height>11</height>
     </composite>
   </render>
 </sxg>

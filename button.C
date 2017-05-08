@@ -103,7 +103,9 @@ create_button_focusframe(const ref<buttonObj::implObj> &impl,
 			 metrics::horizvert_axi(),
 			 "focusframe@libcxx");
 
-	auto ff=focusframecontainer::create(ffi, ffi);
+	auto ff=focusframecontainer::create(ffi, ffi,
+					    "inputfocusoff_border",
+					    "inputfocuson_border");
 
 	// Call the application-provided creator to populate the contents
 	// of the button.

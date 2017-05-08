@@ -15,6 +15,16 @@ canvasObj::canvasObj(const ref<implObj> &impl) : elementObj(impl),
 
 canvasObj::~canvasObj()=default;
 
+canvas factoryObj::create_canvas()
+{
+	return create_canvas([]
+			     (const auto &ignore)
+			     {
+			     },
+			     {0, 0},
+			     {0, 0});
+}
+
 canvas factoryObj::do_create_canvas(const function<void (const canvas &)>
 				    &creator,
 				    const metrics::mmaxis &horiz,

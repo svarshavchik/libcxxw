@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
 
 <sxg>
-  <width>12</width>
-  <height>12</height>
+  <width>11</width>
+  <height>11</height>
 
-  <widthmm>6</widthmm>
-  <heightmm>6</heightmm>
+  <widthmm>4</widthmm>
+  <heightmm>4</heightmm>
 
-  <widthfactor>12</widthfactor>
-  <heightfactor>12</heightfactor>
+  <widthfactor>11</widthfactor>
+  <heightfactor>11</heightfactor>
 
   <picture id="outline">
     <type>rgb</type>
@@ -20,54 +20,12 @@
     <color>100%</color>
   </picture>
 
-  <picture id="checkerboard">
-    <type>pixmap</type>
-    <size>
-      <type>mmrounded</type>
-      <factor>.25</factor>
-    </size>
-    <width>2</width>
-    <height>2</height>
-  </picture>
-
   <pixmap id="circle_mask">
     <size>scaled</size>
-    <width>12</width>
-    <height>12</height>
+    <width>11</width>
+    <height>11</height>
     <gc id="circle_mask_gc" />
   </pixmap>
-
-  <render id="checkerboard">
-    <repeat>normal</repeat>
-    <fill>
-      <color>0%</color>
-      <rectangle>
-	<x>0</x>
-	<y>0</y>
-	<width>2</width>
-	<height>2</height>
-      </rectangle>
-    </fill>
-
-    <fill>
-      <color>100%</color>
-
-      <rectangle>
-	<x>0</x>
-	<y>0</y>
-	<width>1</width>
-	<height>1</height>
-      </rectangle>
-
-      <rectangle>
-	<color>100%</color>
-	<x>1</x>
-	<y>1</y>
-	<width>1</width>
-	<height>1</height>
-      </rectangle>
-    </fill>
-  </render>
 
   <gc id="circle_mask_gc">
     <function>set</function>
@@ -76,47 +34,10 @@
       <fill />
 
       <arc>
-	<x>1</x>
-	<y>1</y>
-	<width>9</width>
-	<height>9</height>
-	<angle1>0</angle1>
-	<angle2>360</angle2>
-      </arc>
-    </arcs>
-  </gc>
-
-  <render id="main">
-    <composite>
-      <op>over</op>
-      <mask>
-	<pixmap>circle_mask</pixmap>
 	<x>0</x>
 	<y>0</y>
-      </mask>
-      <src>
-	<picture>checkerboard</picture>
-	<x>0</x>
-	<y>0</y>
-      </src>
-      <x>0</x>
-      <y>0</y>
-      <width>12</width>
-      <height>12</height>
-    </composite>
-  </render>
-
-  <gc id="circle_mask_gc">
-    <function>clear</function>
-
-    <arcs>
-      <fill />
-
-      <arc>
-	<x>3</x>
-	<y>3</y>
-	<width>5</width>
-	<height>5</height>
+	<width>10</width>
+	<height>10</height>
 	<angle1>0</angle1>
 	<angle2>360</angle2>
       </arc>
@@ -138,8 +59,45 @@
       </src>
       <x>0</x>
       <y>0</y>
-      <width>12</width>
-      <height>12</height>
+      <width>11</width>
+      <height>11</height>
+    </composite>
+  </render>
+
+  <gc id="circle_mask_gc">
+    <function>clear</function>
+
+    <arcs>
+      <fill />
+
+      <arc>
+	<x>2</x>
+	<y>2</y>
+	<width>6</width>
+	<height>6</height>
+	<angle1>0</angle1>
+	<angle2>360</angle2>
+      </arc>
+    </arcs>
+  </gc>
+
+  <render id="main">
+    <composite>
+      <op>over</op>
+      <mask>
+	<pixmap>circle_mask</pixmap>
+	<x>0</x>
+	<y>0</y>
+      </mask>
+      <src>
+	<picture>fill</picture>
+	<x>0</x>
+	<y>0</y>
+      </src>
+      <x>0</x>
+      <y>0</y>
+      <width>11</width>
+      <height>11</height>
     </composite>
   </render>
 
@@ -149,8 +107,8 @@
     <fill>
       <x>0</x>
       <y>0</y>
-      <width>12</width>
-      <height>12</height>
+      <width>11</width>
+      <height>11</height>
     </fill>
 
     <function>set</function>
@@ -159,21 +117,22 @@
 
     <arcs>
       <arc>
-	<x>1</x>
-	<y>1</y>
-	<width>9</width>
-	<height>9</height>
+	<x>0</x>
+	<y>0</y>
+	<width>10</width>
+	<height>10</height>
 	<angle1>0</angle1>
 	<angle2>360</angle2>
       </arc>
     </arcs>
 
     <arcs>
+      <fill />
       <arc>
-	<x>3</x>
-	<y>3</y>
-	<width>5</width>
-	<height>5</height>
+	<x>2</x>
+	<y>2</y>
+	<width>6</width>
+	<height>6</height>
 	<angle1>0</angle1>
 	<angle2>360</angle2>
       </arc>
@@ -195,8 +154,8 @@
       </src>
       <x>0</x>
       <y>0</y>
-      <width>12</width>
-      <height>12</height>
+      <width>11</width>
+      <height>11</height>
     </composite>
   </render>
 </sxg>

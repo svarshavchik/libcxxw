@@ -80,7 +80,9 @@ static inline void create_focusframe_with_editor(const auto &factory,
 
 	auto ff=focusframecontainer
 		::create(focusframecontainer_impl,
-			 editor_container->editor_element->impl);
+			 editor_container->editor_element->impl,
+			 "inputfocusoff_border",
+			 "inputfocuson_border");
 
 	// We still need to:
 	//

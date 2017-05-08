@@ -21,12 +21,17 @@ grid.
 #include <INSERT_LIBX_NAMESPACE/w/gridfactory.H>
 
 INSERT_LIBX_NAMESPACE::w::gridfactory factory=gridlayout->append_row();
+INSERT_LIBX_NAMESPACE::w::gridfactory factory=gridlayout->append_columns(4);
 
 \endcode
 
 append_row() adds a new empty row to the grid, and returns a
-\ref gridfactory "grid factory". This grid adds
+\ref gridfactory "grid factory". This grid factory adds
 elements to the newly-added row.
+
+append_columns() returns a
+\ref gridfactory "grid factory" that adds
+more elements to an existing row.
 
 \code
 gridlayout->erase();
