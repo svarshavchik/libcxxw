@@ -6,6 +6,7 @@
 #define image_button_internal_impl_h
 
 #include "x/w/radio_groupfwd.H"
+#include "x/w/image_buttonfwd.H"
 #include "image_button_internal.H"
 #include "iconfwd.H"
 #include "image.H"
@@ -35,8 +36,11 @@ class LIBCXX_HIDDEN image_button_internalObj::implObj :
 	//! Current index in icon_images
 	current_image_t current_image;
 
+	image_button_callback_t current_callback_thread_only;
+
 public:
 	THREAD_DATA_ONLY(icon_images);
+	THREAD_DATA_ONLY(current_callback);
 
 	//! Constructor
 	implObj(const ref<containerObj::implObj> &container,

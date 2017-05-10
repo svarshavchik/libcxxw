@@ -51,6 +51,10 @@ public:
 	//! immediately calling get_value() may not reflect the new value.
 
 	void set_value(size_t);
+
+	//! Install a new activation callback.
+
+	void on_activate(const image_button_callback_t &callback);
 };
 
 LIBCXXW_NAMESPACE_END

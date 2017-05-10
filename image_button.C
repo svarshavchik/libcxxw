@@ -15,8 +15,11 @@
 #include "nonrecursive_visibility.H"
 #include "messages.H"
 #include "generic_window_handler.H"
+#include "catch_exceptions.H"
 
 LIBCXXW_NAMESPACE_START
+
+LOG_FUNC_SCOPE_DECL(INSERT_LIBX_NAMESPACE::w::image_button, image_log);
 
 image_buttonObj::image_buttonObj(const ref<implObj> &impl,
 				 const ref<containerObj::implObj>
@@ -50,6 +53,24 @@ void image_buttonObj::set_value(size_t n)
 		 });
 }
 
+void image_buttonObj::on_activate(const image_button_callback_t &callback)
+{
+	LOG_FUNC_SCOPE(image_log);
+	impl->button->impl->get_window_handler().IN_THREAD->run_as
+		(RUN_AS,
+		 [&, impl=this->impl, callback]
+		 (IN_THREAD_ONLY)
+		 {
+			 auto i=impl->button->impl;
+
+			 i->current_callback(IN_THREAD)=callback;
+
+			 try {
+				 callback(true, i->get_image_number(),
+					  i->get_busy());
+			 } CATCH_EXCEPTIONS;
+		 });
+}
 ///////////////////////////////////////////////////////////////////////////
 //
 // This is the container implementation button for the image_buttonObj's

@@ -78,7 +78,7 @@ void testbutton()
 				 factory=layout->append_row();
 
 				 auto b=factory->create_special_button_with_label({"Ok"},{'\n'});
-				 b->on_activate([close_flag] {
+				 b->on_activate([close_flag](const auto &) {
 						 close_flag->close();
 					 });
 			 });

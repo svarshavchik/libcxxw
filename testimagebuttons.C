@@ -61,6 +61,20 @@ static void create_mainwindow(const LIBCXX_NAMESPACE::w::main_window &main_windo
 		LIBCXX_NAMESPACE::w::image_button checkbox=
 			factory->valign(LIBCXX_NAMESPACE::w::valign::middle)
 			.create_checkbox();
+
+		checkbox->on_activate([day_of_week]
+				      (bool first_time, size_t flag,
+				       const auto &ignore)
+				      {
+					      if (first_time)
+						      return;
+
+					      std::cout << day_of_week
+							<< ": "
+							<< (flag ? "":"not ")
+							<< "checked"
+							<< std::endl;
+				      });
 		auto label=factory->right_padding(3)
 			.create_label({day_of_week});
 	}
@@ -70,18 +84,58 @@ static void create_mainwindow(const LIBCXX_NAMESPACE::w::main_window &main_windo
 	auto factory=layout->append_columns(0);
 	LIBCXX_NAMESPACE::w::image_button
 		train=factory->valign(LIBCXX_NAMESPACE::w::valign::middle)
-			.create_radio(group);
+		.create_radio(group);
+
 	train->set_value(1);
+	train->on_activate([]
+			   (bool first_time, size_t flag,
+			    const auto &ignore)
+			   {
+				   if (first_time)
+					   return;
+
+				   std::cout << "Train: "
+					     << (flag ? "":"not ")
+					     << "checked"
+					     << std::endl;
+			   });
 	factory->create_label({"Train"});
 
 	factory=layout->append_columns(1);
-	factory->valign(LIBCXX_NAMESPACE::w::valign::middle)
+	LIBCXX_NAMESPACE::w::image_button
+		bus=factory->valign(LIBCXX_NAMESPACE::w::valign::middle)
 		.create_radio(group);
+	bus->on_activate([]
+			   (bool first_time, size_t flag,
+			    const auto &ignore)
+			   {
+				   if (first_time)
+					   return;
+
+				   std::cout << "Bus: "
+					     << (flag ? "":"not ")
+					     << "checked"
+					     << std::endl;
+			   });
+
 	factory->create_label({"Bus"});
 
 	factory=layout->append_columns(2);
-	factory->valign(LIBCXX_NAMESPACE::w::valign::middle)
+	LIBCXX_NAMESPACE::w::image_button
+		drive=factory->valign(LIBCXX_NAMESPACE::w::valign::middle)
 		.create_radio(group);
+	drive->on_activate([]
+			   (bool first_time, size_t flag,
+			    const auto &ignore)
+			   {
+				   if (first_time)
+					   return;
+
+				   std::cout << "Drive: "
+					     << (flag ? "":"not ")
+					     << "checked"
+					     << std::endl;
+			   });
 	factory->create_label({"Drive"});
 
 	for (size_t i=3; i<7; ++i)

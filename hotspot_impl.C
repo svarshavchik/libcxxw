@@ -9,6 +9,7 @@
 #include "element_screen.H"
 #include "x/w/key_event.H"
 #include "x/w/button_event.H"
+#include "x/w/busy.H"
 #include "focus/focusable_element.H"
 #include "generic_window_handler.H"
 #include "connection_thread.H"
@@ -18,7 +19,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-static void no_callback()
+static void no_callback(const busy &ignore)
 {
 }
 
@@ -141,7 +142,7 @@ void hotspotObj::implObj::activated(IN_THREAD_ONLY)
 	LOG_FUNC_SCOPE(hotspot_log);
 
 	try {
-		callback(IN_THREAD)();
+		callback(IN_THREAD)(get_hotspot_element().get_busy());
 	} CATCH_EXCEPTIONS;
 }
 

@@ -6,6 +6,7 @@
 #define x_w_hotspotfwd_h
 
 #include <x/w/namespace.H>
+#include <x/w/busyfwd.H>
 #include <x/ptrfwd.H>
 
 #include <functional>
@@ -16,7 +17,7 @@ class hotspotObj;
 
 //! Signature for a hotspot activation function.
 
-typedef std::function<void ()> hotspot_callback_t;
+typedef std::function<void (const busy &)> hotspot_callback_t;
 
 //! \anchor hotspot A display element that can be activated.
 

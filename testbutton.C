@@ -55,17 +55,19 @@ void testbutton()
 				     layout->append_row();
 
 				 factory->create_normal_button_with_label
-				 ({"Hello"})->on_activate([] {
-						 std::cout << "Hello!"
-							   << std::endl;
-					 });
+				 ({"Hello"})->on_activate
+				 ([]
+				  (const auto &) {
+					 std::cout << "Hello!" << std::endl;
+				 });
 
 
 				 factory->create_special_button_with_label
-				 ({"World"})->on_activate([] {
-						 std::cout << "World!"
-							   << std::endl;
-					 });
+				 ({"World"})->on_activate
+				 ([]
+				  (const auto &) {
+					 std::cout << "World!" << std::endl;
+				 });
 			 });
 
 	main_window->set_window_title("Hello world!");

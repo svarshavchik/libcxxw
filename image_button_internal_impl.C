@@ -3,12 +3,13 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
+#include "x/w/busy.H"
 #include "image_button_internal_impl.H"
 #include "focus/focusable_element.H"
 #include "hotspot_element.H"
 #include "icon.H"
 #include "radio_group.H"
-#include <x/exception.H>
+#include "catch_exceptions.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -25,7 +26,8 @@ image_button_internalObj::implObj
 	  const std::vector<icon> &icon_images)
 	: superclass_t(true, container, get_first_icon_image(icon_images)),
 	  icon_images_thread_only(icon_images),
-	  current_image(0)
+	  current_image(0),
+	  current_callback_thread_only([](bool, size_t, const auto &) {})
 {
 }
 
@@ -57,7 +59,16 @@ void image_button_internalObj::implObj::activated(IN_THREAD_ONLY)
 void image_button_internalObj::implObj::set_image_number(IN_THREAD_ONLY,
 							 size_t next_icon)
 {
+	auto p=get_image_number();
+
 	do_set_image_number(IN_THREAD, next_icon);
+
+	auto n=get_image_number();
+
+	if (p != n)
+		try {
+			current_callback(IN_THREAD)(false, n, get_busy());
+		} CATCH_EXCEPTIONS;
 }
 
 void image_button_internalObj::implObj::do_set_image_number(IN_THREAD_ONLY,
@@ -143,6 +154,12 @@ void radio_image_buttonObj::set_image_number(IN_THREAD_ONLY, size_t n)
 	if (n == 0)
 		if (n == 0) n=(n+1) % icon_images(IN_THREAD).size();
 
+	// Invoke all callbacks after updating all image buttons' state.
+
+	std::vector<image_button_callback_t> callbacks;
+
+	callbacks.reserve(group->impl->button_list->size());
+
 	ref<image_button_internalObj::implObj> me(this);
 
 	// Turn off all other radio buttons...
@@ -164,13 +181,29 @@ void radio_image_buttonObj::set_image_number(IN_THREAD_ONLY, size_t n)
 		if (button->get_image_number() == 0)
 			continue;
 
+		if (button->get_image_number())
+			callbacks.push_back(button->current_callback(IN_THREAD));
+
 		button->do_set_image_number(IN_THREAD, 0);
 	}
 
 	// And turn on myself.
 
-	if (n != get_image_number())
+	auto p=get_image_number();
+	if (n != p)
 		do_set_image_number(IN_THREAD, n);
+
+	auto i_am_busy=get_busy();
+
+	for (const auto &cb:callbacks)
+		try {
+			cb(false, 0, i_am_busy);
+		} CATCH_EXCEPTIONS;
+
+	if (n != p)
+		try {
+			current_callback(IN_THREAD)(false, n, i_am_busy);
+		} CATCH_EXCEPTIONS;
 }
 
 LIBCXXW_NAMESPACE_END
