@@ -6,6 +6,7 @@
 #include "generic_window_handler.H"
 #include "connection_thread.H"
 #include "pictformat.H"
+#include "icon.H"
 #include "draw_info.H"
 #include "draw_info_cache.H"
 #include "container_element.H"
@@ -78,6 +79,9 @@ generic_windowObj::handlerObj
 				   params.window_handler_params
 				   .events_and_mask.m.at(XCB_CW_EVENT_MASK)),
 	current_position(params.window_handler_params.initial_position),
+	disabled_mask_thread_only(create_icon_mm("disabled_mask",
+						 render_repeat::normal,
+						 0, 0)),
 	current_background_color_thread_only(default_background_color
 					     (params.window_handler_params
 					      .screenref))
@@ -151,6 +155,10 @@ void generic_windowObj::handlerObj
 #ifdef MAP_LOG
 		MAP_LOG();
 #endif
+		// First convenient time to initialize the icon, as per
+		// the contract.
+		disabled_mask(IN_THREAD)=
+			disabled_mask(IN_THREAD)->initialize(IN_THREAD);
 		if (!disable_grabs.getValue())
 		{
 			xcb_grab_button(IN_THREAD->info->conn,

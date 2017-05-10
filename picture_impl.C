@@ -101,8 +101,7 @@ void pictureObj::implObj::composite(const const_picture_internal &src,
 			     (dim_t::value_type)height);
 }
 
-void pictureObj::implObj::composite(render_pict_op op,
-				    const const_picture_internal &src,
+void pictureObj::implObj::composite(const const_picture_internal &src,
 				    const const_picture_internal &mask,
 				    coord_t src_x,
 				    coord_t src_y,
@@ -111,7 +110,8 @@ void pictureObj::implObj::composite(render_pict_op op,
 				    coord_t dst_x,
 				    coord_t dst_y,
 				    dim_t width,
-				    dim_t height)
+				    dim_t height,
+				    render_pict_op op)
 {
 	xcb_render_composite(picture_conn()->conn,
 			     (uint8_t)op,

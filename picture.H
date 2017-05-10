@@ -69,8 +69,7 @@ class LIBCXX_HIDDEN pictureObj::implObj : virtual public obj {
 
 	//! Composite RENDER operation
 
-	void composite(render_pict_op op,
-		       const const_picture_internal &src,
+	void composite(const const_picture_internal &src,
 		       const const_picture_internal &mask,
 		       coord_t src_x,
 		       coord_t src_y,
@@ -79,7 +78,8 @@ class LIBCXX_HIDDEN pictureObj::implObj : virtual public obj {
 		       coord_t dst_x,
 		       coord_t dst_y,
 		       dim_t width,
-		       dim_t height);
+		       dim_t height,
+		       render_pict_op op=render_pict_op::op_src);
 
 	//! Set REPEAT property.
 	void repeat(render_repeat value);

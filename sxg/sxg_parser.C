@@ -2253,7 +2253,7 @@ sxg_parserObj::parse_render_composite(const xml::doc::base::readlock &render_ele
 							 width,
 							 height);
 
-				 info.dest_picture->composite(op, src, mask,
+				 info.dest_picture->composite(src, mask,
 							      src_x_scaled,
 							      src_y_scaled,
 							      mask_x_scaled,
@@ -2261,7 +2261,8 @@ sxg_parserObj::parse_render_composite(const xml::doc::base::readlock &render_ele
 							      x_scaled,
 							      y_scaled,
 							      width_scaled,
-							      height_scaled);
+							      height_scaled,
+							      op);
 			 }
 			 else
 			 {

@@ -10,9 +10,8 @@
 
 LIBCXXW_NAMESPACE_START
 
-focusableImplObj::focusableImplObj(bool enabled)
-	: in_focusable_fields_thread_only(false),
-	  enabled_flag_thread_only(enabled)
+focusableImplObj::focusableImplObj()
+	: in_focusable_fields_thread_only(false)
 {
 }
 
@@ -34,7 +33,7 @@ bool focusableImplObj::is_enabled(IN_THREAD_ONLY)
 	if (data.removed || !data.inherited_visibility)
 		return false;
 
-	return enabled_flag(IN_THREAD);
+	return data.enabled;
 }
 
 #define GET_FOCUSABLE_FIELD_ITER() ({		\
@@ -100,6 +99,30 @@ focusable_fields_t &focusableImplObj::focusable_fields(IN_THREAD_ONLY)
 {
 	return get_focusable_element().get_window_handler()
 		.focusable_fields(IN_THREAD);
+}
+
+void focusableImplObj::set_enabled(IN_THREAD_ONLY, bool flag)
+{
+	(void)GET_FOCUSABLE_FIELD_ITER();
+
+	auto &fe=get_focusable_element();
+
+	if (fe.data(IN_THREAD).enabled == flag)
+		return;
+
+	fe.data(IN_THREAD).enabled=flag;
+
+	fe.schedule_redraw(IN_THREAD);
+
+	if (flag)
+		return;
+
+	auto ptr_impl=ptr<focusableImplObj>(this);
+
+	if (fe.get_window_handler().keyboard_focus(IN_THREAD) != ptr_impl)
+		return;
+
+	next_focus(IN_THREAD);
 }
 
 void focusableImplObj::next_focus(IN_THREAD_ONLY)

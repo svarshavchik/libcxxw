@@ -10,20 +10,6 @@
 
 LIBCXXW_NAMESPACE_START
 
-//! Constructor
-
-//! The first bool parameter constructs focusableImpl, the remaining
-//! parameters get forwarded to the element_impl constructor.
-
-template<typename element_impl>
-template<typename ...Args>
-focusable_elementObj<element_impl>::focusable_elementObj(bool enabled,
-							 Args && ...args)
-	: element_impl(std::forward<Args>(args)...),
-	  focusableImplObj(enabled)
-{
-}
-
 //! Destructor
 
 template<typename element_impl>

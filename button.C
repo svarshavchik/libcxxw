@@ -98,7 +98,6 @@ create_button_focusframe(const ref<buttonObj::implObj> &impl,
 						       rgb(rgb::maximum,
 							   rgb::maximum,
 							   rgb::maximum)),
-			 true,
 			 glmi->container_impl,
 			 metrics::horizvert_axi(),
 			 "focusframe@libcxx");

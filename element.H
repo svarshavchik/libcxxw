@@ -99,6 +99,13 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 		bool removed=false;
 
+		//! Whether this element is "enabled".
+
+		//! If this is an element that receives pointer and keyboard
+		//! focus, it can be selectively disabled. If this element
+		//! is disabled, we draw a shade over its contents.
+
+		bool enabled=true;
 		//! State update handlers
 
 		callback_list<void (const element_state &)> update_handlers=
@@ -499,7 +506,10 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 				    const draw_info &di,
 
 				    //! Where the subclass drew what it drew.
-				    const const_picture &contents,
+
+				    //! draw_to_window_picture() may make
+				    //! further modifications.
+				    const picture &contents,
 
 				    //! Which portion of this element is drawn.
 

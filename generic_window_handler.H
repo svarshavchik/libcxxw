@@ -9,6 +9,7 @@
 #include "generic_window.H"
 #include "drawable.H"
 #include "picture.H"
+#include "iconfwd.H"
 #include "background_colorfwd.H"
 #include "connection_threadfwd.H"
 #include "container_elementfwd.H"
@@ -64,6 +65,10 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! mutable, to be usable by the overridden const methods.
 
 	mutable mpobj<rectangle> current_position;
+
+	//! The mask for drawing disabled elements.
+
+	icon disabled_mask_thread_only;
 
 	//! Window's background color
 
@@ -122,6 +127,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	~handlerObj();
 
 	THREAD_DATA_ONLY(current_events);
+	THREAD_DATA_ONLY(disabled_mask);
 	THREAD_DATA_ONLY(current_background_color);
 	THREAD_DATA_ONLY(preferred_dimensions_set);
 	THREAD_DATA_ONLY(preferred_width);

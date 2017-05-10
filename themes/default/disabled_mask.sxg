@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+
+<sxg xmlns:xi="http://www.w3.org/2003/XInclude">
+  <width>2</width>
+  <height>2</height>
+  <depth>1</depth>
+  <widthmm>0.1</widthmm>
+  <heightmm>0.1</heightmm>
+
+  <widthfactor>2</widthfactor>
+  <heightfactor>2</heightfactor>
+
+  <render id="main">
+    <fill>
+      <r>1</r>
+      <g>1</g>
+      <b>1</b>
+
+      <rectangle>
+	<x>0</x>
+	<y>0</y>
+	<width>1</width>
+	<height>1</height>
+      </rectangle>
+
+      <rectangle>
+	<x>1</x>
+	<y>1</y>
+	<width>1</width>
+	<height>1</height>
+      </rectangle>
+    </fill>
+  </render>
+</sxg>

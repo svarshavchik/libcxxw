@@ -53,6 +53,8 @@ static void create_mainwindow(const LIBCXX_NAMESPACE::w::main_window &main_windo
 		"Friday",
 		"Saturday"};
 
+	std::vector<LIBCXX_NAMESPACE::w::image_button> days_of_week_checkboxes;
+
 	for (auto day_of_week:days_of_week)
 	{
 		LIBCXX_NAMESPACE::w::gridfactory factory=
@@ -75,6 +77,7 @@ static void create_mainwindow(const LIBCXX_NAMESPACE::w::main_window &main_windo
 							<< "checked"
 							<< std::endl;
 				      });
+		days_of_week_checkboxes.push_back(checkbox);
 		auto label=factory->right_padding(3)
 			.create_label({day_of_week});
 	}
@@ -87,7 +90,15 @@ static void create_mainwindow(const LIBCXX_NAMESPACE::w::main_window &main_windo
 		.create_radio(group);
 
 	train->set_value(1);
-	train->on_activate([]
+
+
+	auto sunday=*days_of_week_checkboxes.begin();
+	auto saturday=*--days_of_week_checkboxes.end();
+
+	sunday->set_enabled(false);
+	saturday->set_enabled(false);
+
+	train->on_activate([saturday, sunday]
 			   (bool first_time, size_t flag,
 			    const auto &ignore)
 			   {
@@ -98,6 +109,8 @@ static void create_mainwindow(const LIBCXX_NAMESPACE::w::main_window &main_windo
 					     << (flag ? "":"not ")
 					     << "checked"
 					     << std::endl;
+				   sunday->set_enabled(!flag);
+				   saturday->set_enabled(!flag);
 			   });
 	factory->create_label({"Train"});
 
@@ -180,12 +193,10 @@ void testimagebuttons()
 
 	LIBCXX_NAMESPACE::mpcobj<bool>::lock lock{close_flag->flag};
 
-#if 0
+#if 1
 	lock.wait_for(std::chrono::seconds(30),
 		      [&] { return *lock; });
-#endif
-
-
+#else
 	for (int i=0; i < 4 && !*lock; ++i)
 	{
 		lock.wait_for(std::chrono::seconds(1),
@@ -195,6 +206,7 @@ void testimagebuttons()
 			->set_theme(original_theme.first,
 				    (i % 2) ? 100:200);
 	}
+#endif
 }
 
 int main(int argc, char **argv)

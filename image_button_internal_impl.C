@@ -24,7 +24,7 @@ static auto get_first_icon_image(const auto &v)
 image_button_internalObj::implObj
 ::implObj(const ref<containerObj::implObj> &container,
 	  const std::vector<icon> &icon_images)
-	: superclass_t(true, container, get_first_icon_image(icon_images)),
+	: superclass_t(container, get_first_icon_image(icon_images)),
 	  icon_images_thread_only(icon_images),
 	  current_image(0),
 	  current_callback_thread_only([](bool, size_t, const auto &) {})

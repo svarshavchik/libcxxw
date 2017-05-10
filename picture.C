@@ -75,8 +75,7 @@ void pictureObj::composite(const const_picture &src,
 			height, op);
 }
 
-void pictureObj::composite(render_pict_op op,
-			   const const_picture &src,
+void pictureObj::composite(const const_picture &src,
 			   const const_picture &mask,
 			   coord_t src_x,
 			   coord_t src_y,
@@ -85,11 +84,12 @@ void pictureObj::composite(render_pict_op op,
 			   coord_t dst_x,
 			   coord_t dst_y,
 			   dim_t width,
-			   dim_t height)
+			   dim_t height,
+			   render_pict_op op)
 {
-	impl->composite(op, src->impl, mask->impl, src_x, src_y,
+	impl->composite(src->impl, mask->impl, src_x, src_y,
 			mask_x, mask_y,
-			dst_x, dst_y, width, height);
+			dst_x, dst_y, width, height, op);
 }
 
 void pictureObj::repeat(render_repeat value)

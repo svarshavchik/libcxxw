@@ -39,17 +39,13 @@ class LIBCXX_HIDDEN focusableImplObj : virtual public obj {
 	// NOTE: USE GET_FOCUSABLE_FIELDS_ITER macro to access the above two!!!
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-	//! Whether this focusable field is enabled.
-	bool enabled_flag_thread_only;
-
  public:
 
 	THREAD_DATA_ONLY(focusable_fields_iter);
 	THREAD_DATA_ONLY(in_focusable_fields);
-	THREAD_DATA_ONLY(enabled_flag);
 
 	//! Constructor
-	focusableImplObj(bool enabled);
+	focusableImplObj();
 
 	//! Destructor
 	~focusableImplObj();
@@ -57,6 +53,10 @@ class LIBCXX_HIDDEN focusableImplObj : virtual public obj {
 	//! Whether this element is enabled for focusing.
 
 	bool is_enabled(IN_THREAD_ONLY);
+
+	//! Set enabled/disabled
+
+	void set_enabled(IN_THREAD_ONLY, bool flag);
 
 	//! Must be implement in the subclass.
 

@@ -163,8 +163,8 @@ See COPYING for distribution information.
 	</para>
 
 	<para>
-	  Currently this is used to create a masking picture for
-	  <link linkend="windowicon"><methodname>set_wm_hints_icon</methodname>()</link>.
+	  This is used to create a masking picture, such as the mask
+	  for dithering display elements that are disabled from input.
 	</para>
       </listitem>
 

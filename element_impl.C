@@ -10,6 +10,8 @@
 #include "batch_queue.H"
 #include "generic_window_handler.H"
 #include "draw_info.H"
+#include "icon.H"
+#include "icon_image.H"
 #include "background_color.H"
 #include "x/w/element_state.H"
 #include "x/w/scratch_buffer.H"
@@ -512,7 +514,7 @@ void elementObj::implObj
 ::draw_to_window_picture(IN_THREAD_ONLY,
 			 const clip_region_set &set,
 			 const draw_info &di,
-			 const const_picture &contents,
+			 const picture &contents,
 			 const rectangle &rect)
 {
 	rectangle cpy=rect;
@@ -520,6 +522,26 @@ void elementObj::implObj
 	cpy.x = coord_t::truncate(cpy.x + di.absolute_location.x);
 	cpy.y = coord_t::truncate(cpy.y + di.absolute_location.y);
 
+	if (!data(IN_THREAD).enabled)
+	{
+		// Disabled element rendering -- dither in the main window's
+		// background color.
+
+		auto &wh=get_window_handler();
+
+		auto &di=wh.get_draw_info(IN_THREAD);
+
+		auto xy=di.background_xy_to(cpy.x, cpy.y);
+
+		contents->impl->composite(di.window_background,
+					  wh.disabled_mask(IN_THREAD)
+					  ->image->icon_picture->impl,
+					  xy.first, xy.second,
+					  cpy.x, cpy.y,
+					  0, 0,
+					  cpy.width, cpy.height,
+					  render_pict_op::op_over);
+	}
 	di.window_picture->composite(contents->impl,
 				     0, 0,
 				     cpy);

@@ -20,8 +20,7 @@ class LIBCXX_HIDDEN focusable_elementObj : public element_impl,
 
  public:
 
-	template<typename ...Args>
-		focusable_elementObj(bool enabled, Args && ...args);
+	using element_impl::element_impl;
 
 	~focusable_elementObj();
 

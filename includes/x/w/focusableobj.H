@@ -29,6 +29,11 @@ public:
 
 	//! \internal
 	virtual ref<focusableImplObj> get_impl() const LIBCXX_HIDDEN=0;
+
+
+	//! Enable/disable the focusable object.
+
+	void set_enabled(bool);
 };
 
 LIBCXXW_NAMESPACE_END
