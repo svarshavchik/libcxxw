@@ -37,16 +37,16 @@ struct new_grid_element_info {
 	dim_t height=1;
 
 	//! New element's border
-	current_border_impl left_border;
+	current_border_implptr left_border;
 
 	//! New element's border
-	current_border_impl right_border;
+	current_border_implptr right_border;
 
 	//! New element's border
-	current_border_impl top_border;
+	current_border_implptr top_border;
 
 	//! New element's border
-	current_border_impl bottom_border;
+	current_border_implptr bottom_border;
 
 	//! Padding
 	double left_paddingmm=.5;
@@ -68,8 +68,7 @@ struct new_grid_element_info {
 
 	//! Constructor
 	new_grid_element_info(dim_t row,
-			      dim_t col,
-			      const current_border_impl &initial_border);
+			      dim_t col);
 
 	//! Copy constructor
 	new_grid_element_info(const new_grid_element_info &);

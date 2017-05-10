@@ -29,7 +29,36 @@ typedef ref<defaultthemeObj, defaultthemeBase> defaulttheme;
 //! display elements, and it is also accessed by the connection thread
 //! as well.
 
+
 typedef mpobj<defaulttheme> current_theme_t;
+
+#if 0
+class current_theme_t : public mpobj<defaulttheme> {
+
+public:
+	using mpobj<defaulttheme>::mpobj;
+
+	class lock : public mpobj<defaulttheme>::lock {
+
+	public:
+		static int counter;
+
+		lock(mpobj<defaulttheme> &l)
+			: mpobj<defaulttheme>::lock(((std::cout << "LOCK "
+						      << ++counter
+						      << std::endl), l))
+		{
+			if (counter == 144)
+				abort();
+		}
+
+		~lock()
+		{
+			std::cout << "UNLOCK" << std::endl;
+		}
+	};
+};
+#endif
 
 LIBCXXW_NAMESPACE_END
 

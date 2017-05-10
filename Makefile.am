@@ -527,6 +527,7 @@ testgrid_LDFLAGS=-static
 
 testlabel_SOURCES=testlabel.C
 testlabel_LDADD=libcxxw.la
+testlabel_LDFLAGS=$(TESTLINKTYPE)
 
 testwordwrappablelabel_SOURCES=testwordwrappablelabel.C
 testwordwrappablelabel_LDADD=libcxxw.la

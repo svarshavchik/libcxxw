@@ -90,6 +90,29 @@
     <color>0%</color>
   </border>
 
+  <border id="thick">
+    <width axis="horiz">.75</width>
+    <height axis="vert">.75</height>
+  </border>
+
+  <border id="thick_0%" from="thick">
+    <color>0%</color>
+  </border>
+
+  <border id="thin_dashed_0%">
+    <width axis="horiz">.4</width>
+    <height axis="vert">.4</height>
+    <dash>.4</dash>
+    <color>0%</color>
+  </border>
+
+  <border id="thick_dashed_0%">
+    <width axis="horiz">.75</width>
+    <height axis="vert">.75</height>
+    <dash>.4</dash>
+    <color>0%</color>
+  </border>
+
   <border id="inputfocusoff_border">
     <color>transparent</color>
     <width axis="horiz">.75</width>

@@ -5,8 +5,41 @@
 
 #include "libcxxw_config.h"
 #include "grid_map_info.H"
+#include "current_border_impl.H"
 
 LIBCXXW_NAMESPACE_START
+
+grid_map_column_defaults::grid_map_column_defaults()=default;
+
+grid_map_column_defaults::~grid_map_column_defaults()=default;
+
+grid_map_column_defaults
+::grid_map_column_defaults(const grid_map_column_defaults &)=default;
+
+grid_map_column_defaults::grid_map_column_defaults(grid_map_column_defaults &&)
+=default;
+
+grid_map_column_defaults &grid_map_column_defaults
+::operator=(const grid_map_column_defaults &)=default;
+
+grid_map_column_defaults &grid_map_column_defaults
+::operator=(grid_map_column_defaults &&)=default;
+
+grid_map_row_defaults::grid_map_row_defaults()=default;
+
+grid_map_row_defaults::~grid_map_row_defaults()=default;
+
+grid_map_row_defaults
+::grid_map_row_defaults(const grid_map_row_defaults &)=default;
+
+grid_map_row_defaults::grid_map_row_defaults(grid_map_row_defaults &&)
+=default;
+
+grid_map_row_defaults &grid_map_row_defaults
+::operator=(const grid_map_row_defaults &)=default;
+
+grid_map_row_defaults &grid_map_row_defaults
+::operator=(grid_map_row_defaults &&)=default;
 
 grid_map_infoObj::grid_map_infoObj()=default;
 

@@ -23,6 +23,10 @@ LIBCXXW_NAMESPACE_START
 //! Vertical spanning is computed incrementally. Increment by one logical row.
 #define CALCULATE_BORDERS_INCR_SPAN(n) ((n)=(n)+2)
 
+//! Given a border coordinate, translate to logical row or column number.
+
+#define BORDER_COORD_TO_ROWCOL(n) ((n)/2)
+
 //! Invoke v_lambda passed to calculate_borders()
 
 //! The logical calls to v_lambda pass logical rows and column. This

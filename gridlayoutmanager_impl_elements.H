@@ -138,6 +138,9 @@ public:
 					    straight_border_factory_t factory,
 					    straight_border_update_t update,
 
+					    const current_border_implptr
+					    &default_border,
+
 					    metrics::grid_xy xstart,
 					    metrics::grid_xy xend,
 					    metrics::grid_xy ystart,

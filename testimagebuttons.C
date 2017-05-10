@@ -141,6 +141,8 @@ static void create_mainwindow(const LIBCXX_NAMESPACE::w::main_window &main_windo
 	for (size_t i=3; i<7; ++i)
 		layout->append_columns(i)->colspan(2)
 			.create_canvas();
+
+	// layout->default_col_border(2, "thick_dashed_0%");
 }
 
 void testimagebuttons()
@@ -178,10 +180,12 @@ void testimagebuttons()
 
 	LIBCXX_NAMESPACE::mpcobj<bool>::lock lock{close_flag->flag};
 
+#if 0
 	lock.wait_for(std::chrono::seconds(30),
 		      [&] { return *lock; });
+#endif
 
-#if 0
+
 	for (int i=0; i < 4 && !*lock; ++i)
 	{
 		lock.wait_for(std::chrono::seconds(1),
@@ -191,7 +195,6 @@ void testimagebuttons()
 			->set_theme(original_theme.first,
 				    (i % 2) ? 100:200);
 	}
-#endif
 }
 
 int main(int argc, char **argv)

@@ -14,14 +14,9 @@ LIBCXXW_NAMESPACE_START
 
 new_grid_element_info
 ::new_grid_element_info(dim_t row,
-			dim_t col,
-			const current_border_impl &initial_border)
+			dim_t col)
 	: row(row),
-	  col(col),
-	  left_border(initial_border),
-	  right_border(initial_border),
-	  top_border(initial_border),
-	  bottom_border(initial_border)
+	  col(col)
 {
 }
 

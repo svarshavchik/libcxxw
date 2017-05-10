@@ -12,11 +12,13 @@
 #include <x/w/elementfwd.H>
 #include <x/w/elementobj.H>
 #include <x/w/types.H>
+#include <x/w/border_infomm.H>
 #include <x/mpobj.H>
 #include <x/refptr_hash.H>
 
 #include <vector>
 #include <unordered_map>
+#include <experimental/string_view>
 
 LIBCXXW_NAMESPACE_START
 
@@ -65,6 +67,26 @@ public:
 
 	//! Get the display element at the given location.
 	elementptr get(size_t x, size_t y) const;
+
+	//! Set the default border above this row.
+	void default_row_border(size_t row, const border_infomm &info);
+
+	//! Set the default border above this row.
+	void default_row_border(size_t row,
+				const std::experimental::string_view &name);
+
+	//! Set the default border to the left of this column
+	void default_col_border(size_t col, const border_infomm &info);
+
+	//! Set the default border to the left of this column
+	void default_col_border(size_t col,
+				const std::experimental::string_view &name);
+
+	//! Remove all custom row defaults.
+	void remove_row_defaults(size_t row);
+
+	//! Remove all custom column defaults.
+	void remove_col_defaults(size_t col);
 };
 
 LIBCXXW_NAMESPACE_END

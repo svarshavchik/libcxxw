@@ -10,12 +10,70 @@
 #include "x/w/elementobj.H"
 #include "x/w/grid_map_infofwd.H"
 #include "grid_elementfwd.H"
+#include "current_border_implfwd.H"
+#include "metrics_grid_xy.H"
 
 #include <x/refptr_hash.H>
 #include <vector>
 #include <unordered_map>
 
 LIBCXXW_NAMESPACE_START
+
+//! Default grid column info
+
+struct grid_map_column_defaults {
+
+	//! Constructor
+	grid_map_column_defaults();
+
+	//! Destructor
+	~grid_map_column_defaults();
+
+	//! Copy constructor
+
+	grid_map_column_defaults(const grid_map_column_defaults &);
+
+	//! Move constructor
+
+	grid_map_column_defaults(grid_map_column_defaults &&);
+
+	//! Assignment operator
+	grid_map_column_defaults &operator=(const grid_map_column_defaults &);
+
+	//! Assignment operator
+	grid_map_column_defaults &operator=(grid_map_column_defaults &&);
+
+	//! Default border above this row
+	current_border_implptr default_border;
+};
+
+//! Default grid column info
+
+struct grid_map_row_defaults {
+
+	//! Constructor
+	grid_map_row_defaults();
+
+	//! Destructor
+	~grid_map_row_defaults();
+
+	//! Copy constructor
+
+	grid_map_row_defaults(const grid_map_row_defaults &);
+
+	//! Move constructor
+
+	grid_map_row_defaults(grid_map_row_defaults &&);
+
+	//! Assignment operator
+	grid_map_row_defaults &operator=(const grid_map_row_defaults &);
+
+	//! Assignment operator
+	grid_map_row_defaults &operator=(grid_map_row_defaults &&);
+
+	//! Default border to the left of this column
+	current_border_implptr default_border;
+};
 
 //! Mutex-protected container for elements in the grid.
 
@@ -85,7 +143,15 @@ public:
 
 	elements_t elements;
 
-private:
+	//! Column defaults
+
+	std::unordered_map<metrics::grid_xy, grid_map_column_defaults> column_defaults;
+
+	//! row defaults
+
+	std::unordered_map<metrics::grid_xy, grid_map_column_defaults> row_defaults;
+
+ private:
 	//! Internal flag: element modification processing is needed.
 	bool modified_flag=false;
 
@@ -122,8 +188,19 @@ public:
 	}
 
 	//! Possible change in padding.
-
 	void padding_recalculated()
+	{
+		modified_flag=true;
+	}
+
+	//! Defaults have been removed.
+	void defaults_changed()
+	{
+		borders_changed();
+	}
+
+	//! Possible change in borders.
+	void borders_changed()
 	{
 		modified_flag=true;
 	}

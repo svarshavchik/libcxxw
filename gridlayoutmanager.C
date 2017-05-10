@@ -87,4 +87,66 @@ elementptr gridlayoutmanagerObj::get(size_t x, size_t y) const
 	return impl->get(x, y);
 }
 
+void gridlayoutmanagerObj::default_row_border(size_t row,
+					      const border_infomm &info)
+{
+	auto border_impl=impl->get_custom_border(info);
+
+	grid_map_t::lock lock{impl->grid_map};
+
+	(*lock)->row_defaults[row].default_border=border_impl;
+	(*lock)->borders_changed();
+}
+
+void gridlayoutmanagerObj::default_row_border(size_t row,
+					      const std::experimental
+					      ::string_view &n)
+{
+	auto border_impl=impl->get_theme_border(n);
+
+	grid_map_t::lock lock{impl->grid_map};
+
+	(*lock)->row_defaults[row].default_border=border_impl;
+	(*lock)->borders_changed();
+}
+
+void gridlayoutmanagerObj::default_col_border(size_t col,
+					      const border_infomm &info)
+{
+	auto border_impl=impl->get_custom_border(info);
+
+	grid_map_t::lock lock{impl->grid_map};
+
+	(*lock)->column_defaults[col].default_border=border_impl;
+	(*lock)->borders_changed();
+}
+
+void gridlayoutmanagerObj::default_col_border(size_t col,
+					      const std::experimental
+					      ::string_view &n)
+{
+	auto border_impl=impl->get_theme_border(n);
+
+	grid_map_t::lock lock{impl->grid_map};
+
+	(*lock)->column_defaults[col].default_border=border_impl;
+	(*lock)->borders_changed();
+}
+
+void gridlayoutmanagerObj::remove_row_defaults(size_t row)
+{
+	grid_map_t::lock lock{impl->grid_map};
+
+	(*lock)->row_defaults.erase(row);
+	(*lock)->defaults_changed();
+}
+
+void gridlayoutmanagerObj::remove_col_defaults(size_t col)
+{
+	grid_map_t::lock lock{impl->grid_map};
+
+	(*lock)->column_defaults.erase(col);
+	(*lock)->defaults_changed();
+}
+
 LIBCXXW_NAMESPACE_END

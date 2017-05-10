@@ -125,8 +125,12 @@ void corner_borderObj::implObj::compute_metrics(IN_THREAD_ONLY)
 
 	for (const auto &b:all_borders)
 	{
-		const auto &current_border=b->impl->best_border(IN_THREAD)
-			->border(IN_THREAD);
+		const auto &bb=b->impl->best_border(IN_THREAD);
+
+		if (!bb)
+			continue;
+
+		const auto &current_border=bb->border(IN_THREAD);
 
 		if (current_border->calculated_border_width > width)
 			width=current_border->calculated_border_width;

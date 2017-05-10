@@ -99,14 +99,19 @@ void gridlayoutmanagerObj::implObj::theme_updated(IN_THREAD_ONLY)
 {
 	grid_map_t::lock lock(grid_map);
 
-	grid_element_padding_lock
-		padding_lock{container_impl->get_element_impl().get_screen()};
+	{
+		grid_element_padding_lock
+			padding_lock{container_impl->get_element_impl()
+				.get_screen()};
+
+		for (const auto &row:(*lock)->elements)
+			for (const auto &col:row)
+				col->calculate_padding(padding_lock);
+	}
 
 	for (const auto &row:(*lock)->elements)
 		for (const auto &col:row)
 		{
-			col->calculate_padding(padding_lock);
-
 			// Borders elements are display elements. Each border
 			// specified by a grid element should be a part of
 			// some actual border, in straight_borders or corner
@@ -114,13 +119,26 @@ void gridlayoutmanagerObj::implObj::theme_updated(IN_THREAD_ONLY)
 			// straight_border_implObj). But, just to be sure, do
 			// our due diligence.
 
-			col->left_border->theme_updated(IN_THREAD);
-			col->right_border->theme_updated(IN_THREAD);
-			col->top_border->theme_updated(IN_THREAD);
-			col->bottom_border->theme_updated(IN_THREAD);
+			if (col->left_border)
+				col->left_border->theme_updated(IN_THREAD);
+			if (col->right_border)
+				col->right_border->theme_updated(IN_THREAD);
+			if (col->top_border)
+				col->top_border->theme_updated(IN_THREAD);
+			if (col->bottom_border)
+				col->bottom_border->theme_updated(IN_THREAD);
 		}
 
+	// Ditto
+	for (const auto &def: (*lock)->column_defaults)
+		if (def.second.default_border)
+			def.second.default_border->theme_updated(IN_THREAD);
+	for (const auto &def: (*lock)->row_defaults)
+		if (def.second.default_border)
+			def.second.default_border->theme_updated(IN_THREAD);
+
 	(*lock)->padding_recalculated();
+	(*lock)->borders_changed();
 
 	needs_recalculation(IN_THREAD);
 }
@@ -212,6 +230,19 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(IN_THREAD_ONLY)
 					  ? grid_elementptr(*right)
 					  : grid_elementptr();
 
+				  // Check if a default border was given.
+
+				  auto col_default=
+					  (*lock)->column_defaults.find
+					  (BORDER_COORD_TO_ROWCOL(column_number));
+
+				  current_border_implptr default_border;
+
+				  if (col_default !=
+				      (*lock)->column_defaults.end())
+					  default_border=col_default->second
+						  .default_border;
+
 				  auto b=ge->get_straight_border
 					  (IN_THREAD,
 					   this->container_impl,
@@ -219,6 +250,8 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(IN_THREAD_ONLY)
 					   ::create_vertical_border,
 					   &straight_border::base
 					   ::update_vertical_border,
+
+					   default_border,
 
 					   column_number,
 					   column_number,
@@ -314,6 +347,19 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(IN_THREAD_ONLY)
 					  ? grid_elementptr(*below)
 					  : grid_elementptr();
 
+				  // Check if a default border was given.
+
+				  auto row_default=
+					  (*lock)->row_defaults.find
+					  (BORDER_COORD_TO_ROWCOL(row_number));
+
+				  current_border_implptr default_border;
+
+				  if (row_default !=
+				      (*lock)->row_defaults.end())
+					  default_border=row_default->second
+						  .default_border;
+
 				  auto b=ge->get_straight_border
 					  (IN_THREAD,
 					   this->container_impl,
@@ -321,6 +367,7 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(IN_THREAD_ONLY)
 					   ::create_horizontal_border,
 					   &straight_border::base
 					   ::update_horizontal_border,
+					   default_border,
 
 					   col1,
 					   col2,
@@ -550,6 +597,7 @@ straight_border gridlayoutmanagerObj::implObj::elementsObj
 		      const ref<containerObj::implObj> &container_impl,
 		      straight_border_factory_t factory,
 		      straight_border_update_t update,
+		      const current_border_implptr &default_border,
 
 		      metrics::grid_xy xstart,
 		      metrics::grid_xy xend,
@@ -581,9 +629,7 @@ straight_border gridlayoutmanagerObj::implObj::elementsObj
 				update(IN_THREAD,
 				       iter->second.border,
 				       e1, e2,
-
-				       // TODO: default border
-				       current_border_implptr());
+				       default_border);
 			iter->second.border->impl->request_visibility
 				(IN_THREAD, orig_visibility);
 			iter->second.is_current=true;
@@ -604,10 +650,7 @@ straight_border gridlayoutmanagerObj::implObj::elementsObj
 		straight_borders.erase(iter);
 	}
 
-	auto new_border=factory(container_impl, e1, e2,
-
-				// TODO: default border
-				current_border_implptr());
+	auto new_border=factory(container_impl, e1, e2, default_border);
 
 	// The new border is visible, by default.
 	new_border->impl->request_visibility(IN_THREAD, true);

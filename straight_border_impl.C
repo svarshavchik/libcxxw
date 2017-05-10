@@ -87,7 +87,7 @@ class LIBCXX_HIDDEN straight_border_implObj
 
 		const auto &b=this->best_border(IN_THREAD);
 
-		if (!b.null())
+		if (b)
 		{
 			// The horizontal axis, for horizontal borders,
 			// can range 0 to infinite.
@@ -120,7 +120,7 @@ class LIBCXX_HIDDEN straight_border_implObj
 
 		const auto &b=this->best_border(IN_THREAD);
 
-		if (!b.null())
+		if (b)
 		{
 			auto &b_impl=b->border(IN_THREAD);
 
@@ -367,16 +367,16 @@ const current_border_implptr &straight_borderObj::implObj
 {
 	const auto &b=borders(IN_THREAD);
 
-	if (!b.border_1.null() && !b.border_2.null())
+	if (b.border_1 && b.border_2)
 	{
 		return b.border_1->border(IN_THREAD)
 			->compare(*b.border_2->border(IN_THREAD))
 			? b.border_2:b.border_1;
 	}
 
-	if (!b.border_1.null())
+	if (b.border_1)
 		return b.border_1;
-	if (!b.border_2.null())
+	if (b.border_2)
 		return b.border_2;
 
 	return b.border_default;
