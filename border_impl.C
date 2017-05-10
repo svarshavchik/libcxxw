@@ -349,14 +349,16 @@ void border_implObj::draw_horizontal(const draw_info &di,
 {
 	if (length == 0)
 		return; // Corner case.
+
 	// The border's top/left coordinate is (x, y) in area_picture, whose
-	// top/left coordinate is (area_rectangle.x, area_rectangle.y) in
-	// its container.
+	// top/left coordinate is (area_rectangle.x, area_rectangle.y), of
+	// an element position at (area_x, area_y) in its container.
 	//
 	// Therefore, absolute_x/y is going to be the border's absolute
 	// starting position.
 
-	coord_t absolute_x=coord_t::truncate(di.area_rectangle.x+x);
+	coord_t absolute_x=coord_t::truncate
+		(coord_t::truncate(di.area_rectangle.x+x)+di.area_x);
 
 	// Clear up the 1-bit masking pixmap, for the drawn border.
 
@@ -403,7 +405,9 @@ void border_implObj::draw_vertical(const draw_info &di,
 	if (length == 0)
 		return;
 
-	coord_t absolute_y=coord_t::truncate(di.area_rectangle.y+y);
+	coord_t absolute_y=
+		coord_t::truncate(coord_t::truncate(di.area_rectangle.y+y)
+				  +di.area_y);
 
 	mask_gc_clear(di);
 

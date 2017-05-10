@@ -158,8 +158,8 @@ void corner_borderObj::implObj::do_draw(IN_THREAD_ONLY,
 					 mask_picture,
 					 mask_pixmap,
 					 mask_gc,
-					 di.absolute_location.x,
-					 di.absolute_location.y};
+					 data(IN_THREAD).current_position.x,
+					 data(IN_THREAD).current_position.y};
 
 	auto &elements=surrounding_elements(IN_THREAD);
 
