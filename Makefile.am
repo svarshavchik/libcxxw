@@ -40,6 +40,7 @@ libcxxw_la_SOURCES=\
 	border_info.H				    \
 	border_infofwd.H			    \
 	border_infomm.C				    \
+	busy.C					    \
 	button.C				    \
 	button.H				    \
 	button_event.C				    \

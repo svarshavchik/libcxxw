@@ -16,6 +16,7 @@
 #include "x/w/pictformatfwd.H"
 #include "x/w/types.H"
 #include "x/w/focusablefwd.H"
+#include "x/w/busy.H"
 #include "focus/focusablefwd.H"
 #include "fonts/current_fontcollectionfwd.H"
 #include "x/w/fontfwd.H"
@@ -256,6 +257,9 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	void button_release_event(IN_THREAD_ONLY,
 				  const xcb_button_release_event_t *event) override;
 
+	//! Counter of all outstanding busy instance objects.
+
+	refcnt busy_count;
 	//! An element's button_press_event() wishes to grab the pointer.
 
 	void grab(IN_THREAD_ONLY, const ref<elementObj::implObj> &e);

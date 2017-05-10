@@ -322,6 +322,11 @@ void generic_windowObj::handlerObj
 
 	grabbed_timestamp(IN_THREAD)=event->time;
 
+	if (busy_count.refadd(0))
+		// We're busy now. Since we're grabbing all key presses this
+		// can only be checked now, after the grab processing.
+		return;
+
 	forward_key_event(IN_THREAD, event, sequencehi, true);
 }
 
@@ -463,6 +468,11 @@ void generic_windowObj::handlerObj
 	// Make sure we'll release the grab, when the dust settles.
 
 	grabbed_timestamp(IN_THREAD)=event->time;
+
+	if (busy_count.refadd(0))
+		// We're busy now. Since we're grabbing all key presses this
+		// can only be checked now, after the grab processing.
+		return;
 	do_button_event(IN_THREAD, event, true);
 }
 

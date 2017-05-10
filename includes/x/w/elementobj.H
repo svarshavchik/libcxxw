@@ -10,6 +10,7 @@
 #include <x/w/element_statefwd.H>
 #include <x/w/picturefwd.H>
 #include <x/w/rgbfwd.H>
+#include <x/w/busyfwd.H>
 #include <x/obj.H>
 
 #include <experimental/string_view>
@@ -105,6 +106,10 @@ public:
 
 	//! \see connection
 	ref<obj> connection_mcguffin() const;
+
+	//! Block all keyboard and pointer button processing, till further notice.
+
+	busy get_busy() const;
 };
 
 LIBCXXW_NAMESPACE_END

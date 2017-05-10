@@ -64,6 +64,11 @@ elementObj::implObj::implObj(size_t nesting_level,
 
 elementObj::implObj::~implObj()=default;
 
+busy elementObj::implObj::get_busy()
+{
+	return {ref<generic_windowObj::handlerObj>(&get_window_handler())};
+}
+
 void elementObj::implObj::removed_from_container(IN_THREAD_ONLY)
 {
 	if (data(IN_THREAD).removed)

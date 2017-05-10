@@ -13,6 +13,7 @@
 #include "x/w/scratch_bufferfwd.H"
 #include "x/w/input_mask.H"
 #include "x/w/button_eventfwd.H"
+#include "x/w/busyfwd.H"
 #include "connection_threadfwd.H"
 #include "elementfwd.H"
 #include "element_draw.H"
@@ -199,6 +200,10 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 	//! Destructor
 	~implObj();
+
+	//! Obtain a busy handle.
+
+	busy get_busy();
 
 	THREAD_DATA_ONLY(data);
 	THREAD_DATA_SUPERCLASS_ONLY(horizvertObj, get_horizvert);

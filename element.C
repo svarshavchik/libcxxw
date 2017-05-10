@@ -11,6 +11,7 @@
 #include "generic_window_handler.H"
 #include "draw_info.H"
 #include "x/w/picture.H"
+#include "x/w/busy.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -91,6 +92,11 @@ const_picture elementObj::create_solid_color_picture(const rgb &color) const
 ref<obj> elementObj::do_on_state_update(const element_state_update_handler_t &h)
 {
 	return impl->do_on_state_update(h);
+}
+
+busy elementObj::get_busy() const
+{
+	return impl->get_busy();
 }
 
 std::ostream &operator<<(std::ostream &o, const element_state &s)
