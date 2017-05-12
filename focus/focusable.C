@@ -3,7 +3,7 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
-#include "focusable.H"
+#include "focus/focusable.H"
 #include "child_element.H"
 #include "generic_window_handler.H"
 #include "connection_thread.H"

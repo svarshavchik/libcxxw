@@ -22,6 +22,8 @@
 #include "background_colorfwd.H"
 #include "metrics_horizvertobj.H"
 #include "focus/focus.H"
+#include "focus/label_forfwd.H"
+#include "focus/label_forobj.H"
 #include "fonts/current_fontcollectionfwd.H"
 #include "x/w/key_eventfwd.H"
 #include "x/w/fontfwd.H"
@@ -110,6 +112,19 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 		callback_list<void (const element_state &)> update_handlers=
 			callback_list<void (const element_state &)>::create();
+
+
+		//! Whether this element is a label for some focusable.
+
+		label_forptr label_for;
+
+		//! Most recently reported motion
+
+		coord_t last_motion_x=0;
+
+		//! Most recently reported motion
+
+		coord_t last_motion_y=0;
 	};
 
 	//! For the connection thread's use, only.
@@ -518,6 +533,12 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 				    //! in "contents".
 				    const rectangle &rect);
 
+	//! Whether draw_to_window_picture() should apply the disabled_mask
+
+	//! Determines whether this display element should be shown as
+	//! "disabled".
+
+	bool draw_to_window_picture_as_disabled(IN_THREAD_ONLY);
 	//! Clear to background color
 
 	//! Wrapper that acquires a clip_region_set, first.

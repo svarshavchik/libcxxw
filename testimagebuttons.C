@@ -80,6 +80,8 @@ static void create_mainwindow(const LIBCXX_NAMESPACE::w::main_window &main_windo
 		days_of_week_checkboxes.push_back(checkbox);
 		auto label=factory->right_padding(3)
 			.create_label({day_of_week});
+
+		label->label_for(checkbox);
 	}
 
 	LIBCXX_NAMESPACE::w::radio_group group=LIBCXX_NAMESPACE::w::radio_group::create();

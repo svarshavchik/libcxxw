@@ -4,14 +4,19 @@
 */
 #include "libcxxw_config.h"
 #include "x/w/focusable.H"
+#include "x/w/button_event.H"
 #include "focus/focusable.H"
 #include "generic_window_handler.H"
 #include "child_element.H"
+#include "messages.H"
+#include "connection_thread.H"
+#include "xid_t.H"
 
 LIBCXXW_NAMESPACE_START
 
 focusableImplObj::focusableImplObj()
-	: in_focusable_fields_thread_only(false)
+	: in_focusable_fields_thread_only(false),
+	  my_labels_thread_only(my_labels_t::create())
 {
 }
 
@@ -69,6 +74,40 @@ void focusableImplObj::focusable_deinitialize(IN_THREAD_ONLY)
 	if (!in_focusable_fields(IN_THREAD))
 		throw EXCEPTION("Internal element: multiply-linked focusable: "
 				<< objname());
+
+	// Remove all of my labels, redrawing them if needed.
+
+	for (const auto &labels: *my_labels(IN_THREAD))
+	{
+		auto label_for=labels.getptr();
+
+		if (!label_for)
+			continue;
+
+		label_for->with_link
+			(IN_THREAD, [&]
+			 (const auto &label_element,
+			  const auto &thats_me)
+			 {
+				 auto before=label_element
+					 ->draw_to_window_picture_as_disabled
+					 (IN_THREAD);
+
+				 label_element->data(IN_THREAD).label_for=
+					 nullptr;
+
+				 auto after=label_element
+					 ->draw_to_window_picture_as_disabled
+					 (IN_THREAD);
+
+				 if (before == after)
+					 return;
+
+				 label_element->schedule_redraw(IN_THREAD);
+			 });
+	}
+
+
 	auto &window_handler=get_focusable_element().get_window_handler();
 
 	auto &ff=window_handler.focusable_fields(IN_THREAD);
@@ -114,6 +153,24 @@ void focusableImplObj::set_enabled(IN_THREAD_ONLY, bool flag)
 
 	fe.schedule_redraw(IN_THREAD);
 
+	// Redraw all my labels too.
+
+	for (const auto &labels: *my_labels(IN_THREAD))
+	{
+		auto label_for=labels.getptr();
+
+		if (!label_for)
+			continue;
+
+		label_for->with_link
+			(IN_THREAD, [&]
+			 (const auto &label_element,
+			  const auto &thats_me)
+			 {
+				 label_element->schedule_redraw(IN_THREAD);
+			 });
+	}
+
 	if (flag)
 		return;
 
@@ -123,6 +180,122 @@ void focusableImplObj::set_enabled(IN_THREAD_ONLY, bool flag)
 		return;
 
 	next_focus(IN_THREAD);
+}
+
+bool elementObj::implObj
+::draw_to_window_picture_as_disabled(IN_THREAD_ONLY)
+{
+	if (data(IN_THREAD).label_for)
+	{
+		// This element is a label for another focusable element.
+
+		// Check if the other focusable element is disabled.
+
+		bool focusable_enabled=true;
+
+		data(IN_THREAD).label_for->with_link
+			(IN_THREAD, [&]
+			 (const auto &thats_me,
+			  const auto &focusable)
+			 {
+				 auto &fe=focusable->get_focusable_element();
+
+				 focusable_enabled=fe.data(IN_THREAD).enabled;
+			 });
+
+		if (!focusable_enabled)
+			return true;
+
+	}
+	return !data(IN_THREAD).enabled;
+}
+
+void elementObj::label_for(const focusable &f)
+{
+	auto check1=ref<generic_windowObj::handlerObj>(&impl->get_window_handler());
+
+	auto check2=ref<generic_windowObj::handlerObj>(&f->get_impl()
+						       ->get_focusable_element()
+						       .get_window_handler());
+
+	if (check1 != check2)
+		throw EXCEPTION(_("Attempt to create a label for another window's element."));
+
+
+	impl->get_window_handler().thread()->run_as
+		(RUN_AS,
+		 [me=element(this), f]
+		 (IN_THREAD_ONLY)
+		 {
+			 auto focusable_impl=f->get_impl();
+
+			 auto before=me->impl
+				 ->draw_to_window_picture_as_disabled
+				 (IN_THREAD);
+
+			 auto link=label_for::create(me->impl,
+						     focusable_impl);
+
+			 focusable_impl->my_labels(IN_THREAD)->push_back(link);
+
+			 me->impl->data(IN_THREAD).label_for=link;
+
+			 auto after=
+				 me->impl->draw_to_window_picture_as_disabled
+				 (IN_THREAD);
+
+			 if (before == after)
+				 return;
+
+			 me->impl->schedule_redraw(IN_THREAD);
+		 });
+}
+
+bool elementObj::implObj::process_button_event(IN_THREAD_ONLY,
+					       const button_event &be,
+					       xcb_timestamp_t timestamp)
+{
+	bool processed=false;
+
+	if (data(IN_THREAD).label_for && !be.redirected)
+	{
+		data(IN_THREAD).label_for->with_link
+			(IN_THREAD, [&, this]
+			 (const auto &thats_me,
+			  const auto &focusable)
+			 {
+				 elementObj::implObj &fe=
+					 focusable->get_focusable_element();
+
+				 // We need to re-report the last pointer
+				 // motion event in the focusable element.
+
+				 auto iamhere=
+					 this->get_absolute_location(IN_THREAD);
+				 auto itsoverthere=
+					 fe.get_absolute_location(IN_THREAD);
+
+				 auto updated_event=be;
+				 updated_event.redirected=true;
+
+				 auto x=this->data(IN_THREAD).last_motion_x;
+				 auto y=this->data(IN_THREAD).last_motion_y;
+
+				 x=coord_t::truncate(x+iamhere.x);
+				 y=coord_t::truncate(y+iamhere.y);
+				 x=coord_t::truncate(x-itsoverthere.x);
+				 y=coord_t::truncate(y-itsoverthere.y);
+
+				 fe.motion_event(IN_THREAD, x, y, be);
+
+				 processed=fe
+					 .process_button_event(IN_THREAD,
+							       updated_event,
+							       timestamp);
+			 });
+	}
+
+	return processed;
 }
 
 void focusableImplObj::next_focus(IN_THREAD_ONLY)

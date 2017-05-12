@@ -29,6 +29,8 @@ public:
 
 	int button; //!< Pointer button number
 	bool press; //!< Press or release
+
+	bool redirected=false; //!< Internal flag, don't touch.
 };
 
 

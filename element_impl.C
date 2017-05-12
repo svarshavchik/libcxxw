@@ -17,6 +17,7 @@
 #include "x/w/scratch_buffer.H"
 #include "x/callback_list.H"
 #include "element_screen.H"
+#include "focus/label_for.H"
 #include "fonts/current_fontcollection.H"
 #include <x/logger.H>
 
@@ -522,7 +523,7 @@ void elementObj::implObj
 	cpy.x = coord_t::truncate(cpy.x + di.absolute_location.x);
 	cpy.y = coord_t::truncate(cpy.y + di.absolute_location.y);
 
-	if (!data(IN_THREAD).enabled)
+	if (draw_to_window_picture_as_disabled(IN_THREAD))
 	{
 		// Disabled element rendering -- dither in the main window's
 		// background color.
@@ -741,16 +742,11 @@ bool elementObj::implObj::uses_input_method()
 	return false;
 }
 
-bool elementObj::implObj::process_button_event(IN_THREAD_ONLY,
-					       const button_event &be,
-					       xcb_timestamp_t timestamp)
-{
-	return false;
-}
-
 void elementObj::implObj::motion_event(IN_THREAD_ONLY, coord_t x, coord_t y,
 				       const input_mask &mask)
 {
+	data(IN_THREAD).last_motion_x=x;
+	data(IN_THREAD).last_motion_y=y;
 }
 
 void elementObj::implObj::ensure_visibility(IN_THREAD_ONLY, const rectangle &r)

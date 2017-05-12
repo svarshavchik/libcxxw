@@ -6,8 +6,12 @@
 #define focusable_h
 
 #include "x/w/focusableobj.H"
+#include "x/w/elementobj.H"
 #include "focus/focusablefwd.H"
+#include "focus/label_forfwd.H"
 #include "connection_threadfwd.H"
+
+#include <x/weaklist.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -39,10 +43,18 @@ class LIBCXX_HIDDEN focusableImplObj : virtual public obj {
 	// NOTE: USE GET_FOCUSABLE_FIELDS_ITER macro to access the above two!!!
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+	//! Container of all labels for this focusable.
+	typedef weaklist<label_forObj> my_labels_t;
+
+	//! All labels for this focusable.
+
+	my_labels_t my_labels_thread_only;
+
  public:
 
 	THREAD_DATA_ONLY(focusable_fields_iter);
 	THREAD_DATA_ONLY(in_focusable_fields);
+	THREAD_DATA_ONLY(my_labels);
 
 	//! Constructor
 	focusableImplObj();
@@ -86,6 +98,9 @@ class LIBCXX_HIDDEN focusableImplObj : virtual public obj {
 
 	//! Advance input focus to the next focusable field.
 	void next_focus(IN_THREAD_ONLY);
+
+	//! This is a label for this display element.
+	void set_label(const ref<elementObj::implObj> &);
 
  private:
 	//! Advance input focus to the next focusable field, on or after this iterator.

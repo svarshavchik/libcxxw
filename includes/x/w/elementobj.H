@@ -7,6 +7,7 @@
 
 #include <x/w/elementfwd.H>
 #include <x/w/screenfwd.H>
+#include <x/w/focusablefwd.H>
 #include <x/w/element_statefwd.H>
 #include <x/w/picturefwd.H>
 #include <x/w/rgbfwd.H>
@@ -110,6 +111,10 @@ public:
 	//! Block all keyboard and pointer button processing, till further notice.
 
 	busy get_busy() const;
+
+	//! This display element is a label for another focusable element.
+
+	void label_for(const focusable &f);
 };
 
 LIBCXXW_NAMESPACE_END
