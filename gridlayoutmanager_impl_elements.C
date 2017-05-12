@@ -797,19 +797,69 @@ metrics::axis gridlayoutmanagerObj::implObj::elementsObj
 
 
 bool gridlayoutmanagerObj::implObj::elementsObj
-::recalculate_sizes(dim_t target_width,
+::recalculate_sizes(const grid_map_t::lock &lock,
+		    dim_t target_width,
 		    dim_t target_height)
 {
 	bool flag=false;
 
-	if (metrics::calculate_grid_size(horiz_metrics,
-					 horiz_sizes,
-					 target_width))
+	// Requested axis size:
+
+	// For axises that are used by collapsed border elements always return
+	// requested size of 0 (which will be automatically increased by any
+	// minimum required to draw the border).
+	//
+	// Otherwise we consult (column|row)_defaults.axis_size.
+	//
+	// The requested axis size is used only when the
+	// total recalculated size based on each row/column's
+	// preferred/minimum/maximum is still less than target_width/height,
+	// and then we'll look for any specified sizes.
+
+	std::unordered_map<metrics::grid_xy, int> axis_sizes;
+
+	for (const auto &as: (*lock)->column_defaults)
+	{
+		if (as.second.axis_size < 0)
+			continue;
+
+		axis_sizes.insert({CALCULATE_BORDERS_COORD(as.first),
+					as.second.axis_size});
+	}
+
+	auto lookup=make_function<metrics::get_req_axis_size_t>
+		([&]
+		 (const metrics::grid_xy &xy)
+		 {
+			 if (IS_BORDER_RESERVED_COORD(xy))
+				 return 0;
+
+			 auto iter=axis_sizes.find(xy);
+
+			 if (iter == axis_sizes.end())
+				 return -1;
+
+			 return iter->second;
+		 });
+
+	if (metrics::do_calculate_grid_size(horiz_metrics,
+					    horiz_sizes,
+					    target_width, lookup))
 		flag=true;
 
-	if (metrics::calculate_grid_size(vert_metrics,
-					 vert_sizes,
-					 target_height))
+	axis_sizes.clear();
+	for (const auto &as: (*lock)->row_defaults)
+	{
+		if (as.second.axis_size < 0)
+			continue;
+
+		axis_sizes.insert({CALCULATE_BORDERS_COORD(as.first),
+					as.second.axis_size});
+	}
+
+	if (metrics::do_calculate_grid_size(vert_metrics,
+					    vert_sizes,
+					    target_height, lookup))
 		flag=true;
 
 	return flag;
@@ -827,7 +877,8 @@ void gridlayoutmanagerObj::implObj
 	// the child element's maximum metrics have changed, the child
 	// element might need to be reposition within its cells, by the
 	// code below.
-	elements.recalculate_sizes(position.width, position.height);
+	elements.recalculate_sizes(grid_map_t::lock(grid_map),
+				   position.width, position.height);
 
 #ifdef PROCESS_UPDATED_POSITION_DEBUG
 
@@ -882,7 +933,6 @@ void gridlayoutmanagerObj::implObj
 
 				switch (child.horizontal_alignment) {
 				case halign::left:
-					max_width=element_position.width;
 					break;
 				case halign::center:
 					padding=(element_position.width - max_width) / 2;
@@ -912,7 +962,6 @@ void gridlayoutmanagerObj::implObj
 
 				switch (child.vertical_alignment) {
 				case valign::top:
-					max_height=element_position.height;
 					break;
 				case valign::middle:
 					padding=(element_position.height - max_height) / 2;

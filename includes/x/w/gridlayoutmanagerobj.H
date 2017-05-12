@@ -75,12 +75,24 @@ public:
 	void default_row_border(size_t row,
 				const std::experimental::string_view &name);
 
+	//! Set the requested row height.
+
+	//! The row height is specified as a percentage, 0-100, of the total
+	//! height of the grid.
+	void requested_row_height(size_t row, int percentage);
+
 	//! Set the default border to the left of this column
 	void default_col_border(size_t col, const border_infomm &info);
 
 	//! Set the default border to the left of this column
 	void default_col_border(size_t col,
 				const std::experimental::string_view &name);
+
+	//! Set the requested column width.
+
+	//! The column width is specified as a percentage, 0-100, of the total
+	//! width of the grid.
+	void requested_col_width(size_t col, int percentage);
 
 	//! Remove all custom row defaults.
 	void remove_row_defaults(size_t row);

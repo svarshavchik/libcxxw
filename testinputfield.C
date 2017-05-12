@@ -12,6 +12,8 @@
 
 #include "x/w/main_window.H"
 #include "x/w/input_field.H"
+#include "x/w/label.H"
+#include "x/w/new_layoutmanager.H"
 #include "x/w/gridlayoutmanager.H"
 #include "x/w/gridfactory.H"
 #include "x/w/text_param.H"
@@ -81,6 +83,21 @@ void testbutton()
 				 b->on_activate([close_flag](const auto &) {
 						 close_flag->close();
 					 });
+				 factory=layout->append_row();
+
+				 factory->halign(x::w::halign::fill).create_container
+				 (
+				  []
+				  (const auto &c)
+		{
+			x::w::gridlayoutmanager layout=c->get_layoutmanager();
+			layout->requested_col_width(1, 100);
+			auto factory=layout->append_row();
+			factory->create_label({"Foo"});
+			factory->create_label({"Bar"});
+		},
+				  x::w::new_gridlayoutmanager());
+
 			 });
 
 	main_window->set_window_title("Hello world!");

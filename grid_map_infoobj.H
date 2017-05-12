@@ -45,6 +45,9 @@ struct grid_map_column_defaults {
 
 	//! Default border above this row
 	current_border_implptr default_border;
+
+	//! Default column width (percentage, negative means unspecified).
+	int axis_size=-1;
 };
 
 //! Default grid column info
@@ -73,6 +76,9 @@ struct grid_map_row_defaults {
 
 	//! Default border to the left of this column
 	current_border_implptr default_border;
+
+	//! Default row height (percentage, negative means unspecified).
+	int axis_size=-1;
 };
 
 //! Mutex-protected container for elements in the grid.

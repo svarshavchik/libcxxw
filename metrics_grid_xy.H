@@ -17,6 +17,11 @@ namespace metrics {
 	//! This numeric type represents a display element's X or Y grid position
 
 	typedef number<uint16_t, grid_xy_tag> grid_xy;
+
+
+	//! Specified axis size, as n%
+	typedef unsigned axis_size_t;
+
 }
 
 LIBCXXW_NAMESPACE_END

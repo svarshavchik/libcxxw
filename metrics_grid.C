@@ -6,6 +6,7 @@
 #include "metrics_grid.H"
 #include "metrics_grid_pos.H"
 #include "metrics_grid_axisrange.H"
+#include <x/functional.H>
 
 #include <functional>
 #include <iterator>
@@ -360,75 +361,92 @@ void apply_metrics(grid_metrics_t &m,
 	}
 }
 
-static void prorated_size(const grid_metrics_t &m,
-			  const std::vector<grid_xy> &sorted_xy,
+typedef bool do_apply_functor_t(grid_xy, const axis &);
+typedef dim_t towards_functor_t(grid_xy, const axis &);
 
-			  grid_sizes_t &s,
+template<typename do_apply_functor,
+	 typename towards_functor>
+void prorated_size(const grid_metrics_t &m,
+		   const std::vector<grid_xy> &sorted_xy,
 
-			  dim_squared_t share,
-			  dim_squared_t total,
+		   grid_sizes_t &s,
 
-			  bool (*do_apply)(const axis &),
-			  dim_t (*towards)(const axis &)) LIBCXX_INTERNAL;
+		   dim_squared_t share,
+		   dim_squared_t total,
+		   do_apply_functor &&do_apply,
+		   towards_functor &&towards)
+{
+	do_prorated_size(m, sorted_xy, s, share, total,
+			 make_function<do_apply_functor_t>
+			 (std::forward<do_apply_functor>(do_apply)),
+			 make_function<towards_functor_t>
+			 (std::forward<towards_functor>(towards)));
+}
 
-static bool apply_all(const axis &) LIBCXX_INTERNAL;
-static bool apply_noninfinites(const axis &a) LIBCXX_INTERNAL;
-static dim_t apply_minimum_size(const axis &a) LIBCXX_INTERNAL;
-static dim_t apply_preferred_size(const axis &a) LIBCXX_INTERNAL;
-static dim_t apply_maximum_size(const axis &a) LIBCXX_INTERNAL;
+static void do_prorated_size(const grid_metrics_t &m,
+			     const std::vector<grid_xy> &sorted_xy,
+
+			     grid_sizes_t &s,
+
+			     dim_squared_t share,
+			     dim_squared_t total,
+
+			     const function<do_apply_functor_t> &do_apply,
+			     const function<towards_functor_t> &towards)
+	LIBCXX_INTERNAL;
+
+static bool apply_all(const grid_xy &ignore, const axis &) LIBCXX_INTERNAL;
+static bool apply_noninfinites(const grid_xy &ignore, const axis &a) LIBCXX_INTERNAL;
+static dim_t apply_minimum_size(const grid_xy &ignore,
+				const axis &a) LIBCXX_INTERNAL;
+static dim_t apply_preferred_size(const grid_xy &ignore,
+				  const axis &a) LIBCXX_INTERNAL;
+static dim_t apply_maximum_size(const grid_xy &ignore,
+				const axis &a) LIBCXX_INTERNAL;
 
 // prorated_size: apply to all axises.
 
-static bool apply_all(const axis &)
+static bool apply_all(const grid_xy &ignore, const axis &)
 {
 	return true;
 }
 
 // prorated_size: apply to all non-infinite maximum axises.
 
-static bool apply_noninfinites(const axis &a)
+static bool apply_noninfinites(const grid_xy &ignore, const axis &a)
 {
 	return a.maximum() != dim_t::infinite();
 }
 
-// prorated_size: apply to all infinite maximum axises.
-
-static bool apply_infinites(const axis &a)
-{
-	return a.maximum() == dim_t::infinite();
-}
-
 // prorated_size: apply in proportion to each axis's minimum size
 
-static dim_t apply_minimum_size(const axis &a)
+static dim_t apply_minimum_size(const grid_xy &ignore,
+				const axis &a)
 {
 	return a.minimum();
 }
 
 // prorated_size: apply in proportion to each axis's additional preferred size
 
-static dim_t apply_preferred_size(const axis &a)
+static dim_t apply_preferred_size(const grid_xy &ignore,
+				  const axis &a)
 {
 	return a.preferred()-a.minimum();
 }
 
 // prorated_size: apply in proportion to each axis's additional maximum size
 
-static dim_t apply_maximum_size(const axis &a)
+static dim_t apply_maximum_size(const grid_xy &ignore,
+				const axis &a)
 {
 	return a.maximum()-a.preferred();
 }
 
-// Fixed proration factor of 1 for infinite maximum axises.
-
-static dim_t apply_infinite_size(const axis &a)
-{
-	return 1;
-}
-
-bool calculate_grid_size(const grid_metrics_t &m,
-			 grid_sizes_t &current_sizes,
-			 dim_t target_size)
+bool do_calculate_grid_size(const grid_metrics_t &m,
+			    grid_sizes_t &current_sizes,
+			    dim_t target_size,
+			    const function<get_req_axis_size_t>
+			    &get_req_axis_size)
 {
 	// Clear, and value-initialize a new current_sizes to 0.
 
@@ -467,13 +485,13 @@ bool calculate_grid_size(const grid_metrics_t &m,
 		      (const auto &keyvalue)
 		      {
 			      apply_total_minimum +=
-				      apply_minimum_size(keyvalue.second);
+				      apply_minimum_size(0, keyvalue.second);
 			      apply_total_preferred +=
-				      apply_preferred_size(keyvalue.second);
+				      apply_preferred_size(0, keyvalue.second);
 
-			      if (apply_noninfinites(keyvalue.second))
+			      if (apply_noninfinites(0, keyvalue.second))
 				      apply_total_maximum +=
-					      apply_maximum_size(keyvalue
+					      apply_maximum_size(0, keyvalue
 								 .second);
 			      else
 				      ++n_infinites;
@@ -523,8 +541,107 @@ bool calculate_grid_size(const grid_metrics_t &m,
 	// each maximum axis receives 1/n_infinites of "apply".
 
 	if (n_infinites)
+	{
 		prorated_size(m, sorted_xy, s, apply, n_infinites,
-			      apply_infinites, apply_infinite_size);
+			      []
+			      (const auto &, const auto &a)
+			      {
+				      // prorated_size: apply to all infinite
+				      // maximum axises.
+
+				      return a.maximum() == dim_t::infinite();
+			      },
+			      []
+			      (const auto &, const auto &)
+			      {
+				      // Fixed proration factor of 1 for
+				      // infinite maximum axises.
+
+				      return 1;
+			      });
+		remaining=0;
+	}
+
+	// Consider axis_sizes only if there's anything remaining.
+
+	if (remaining > 0)
+	{
+		std::unordered_map<grid_xy, dim_t> add_extra;
+
+		dim_squared_t total_extra=0;
+
+		dim_squared_t num_no_min_sizes=0;
+
+		for (const auto &xy: sorted_xy)
+		{
+			auto req_axis_size=get_req_axis_size(xy);
+
+			if (req_axis_size < 0)
+			{
+				++num_no_min_sizes;
+				continue;
+			}
+
+			auto cur_size=std::get<dim_t>(s[xy]);
+
+			dim_t req_size=dim_t::truncate( (target_size
+							 * req_axis_size + 50)
+							/ 100);
+
+			if (req_size < cur_size)
+				continue;
+
+			auto more=req_size-cur_size;
+
+			add_extra.insert({xy, more});
+			total_extra += more;
+		}
+
+		if (!add_extra.empty())
+		{
+			// The rest gets divided amongst all axises without
+			// a specified size.
+
+			auto apply=total_extra < remaining
+						 ? total_extra : remaining;
+
+			prorated_size(m, sorted_xy, s,
+				      apply, total_extra,
+				      [&]
+				      (grid_xy i, const auto &ignore)
+				      {
+					      return add_extra.find(i) !=
+						      add_extra.end();
+				      },
+				      [&]
+				      (grid_xy i, const auto &ignore)
+				      {
+					      return add_extra.at(i);
+				      });
+
+			remaining -= apply;
+		}
+
+		// Distribute the rest evenly amongst axises with no
+		// minimum size specified.
+
+		if (remaining > 0 && num_no_min_sizes > 0)
+		{
+			prorated_size(m, sorted_xy, s,
+				      remaining,
+				      dim_t::truncate(num_no_min_sizes),
+				      [&]
+				      (grid_xy i, const auto &ignore)
+				      {
+					      return get_req_axis_size(i) < 0;
+				      },
+				      [&]
+				      (grid_xy i, const auto &ignore)
+				      {
+					      return 1;
+				      });
+		}
+	}
 
 	// Now that all dimensions have been computed, calculate the
 	// starting coordinates
@@ -565,16 +682,16 @@ bool calculate_grid_size(const grid_metrics_t &m,
 // towards() * (share/total). That is, if share is half of total, a half of
 // each axis's towards() is applied.
 
-static void prorated_size(const grid_metrics_t &m,
-			  const std::vector<grid_xy> &sorted_xy,
+static void do_prorated_size(const grid_metrics_t &m,
+			     const std::vector<grid_xy> &sorted_xy,
 
-			  grid_sizes_t &s,
+			     grid_sizes_t &s,
 
-			  dim_squared_t share,
-			  dim_squared_t total,
+			     dim_squared_t share,
+			     dim_squared_t total,
 
-			  bool (*do_apply)(const axis &),
-			  dim_t (*towards)(const axis &))
+			     const function<do_apply_functor_t> &do_apply,
+			     const function<towards_functor_t> &towards)
 {
 	if (share == 0)
 		return; // Edge case
@@ -585,10 +702,10 @@ static void prorated_size(const grid_metrics_t &m,
 	{
 		const auto &keyvalue=m.at(xy);
 
-		if (do_apply(keyvalue))
+		if (do_apply(xy, keyvalue))
 		{
 			auto numerator=carry_over +
-				share * towards(keyvalue);
+				share * towards(xy, keyvalue);
 
 			std::get<dim_t>(s[xy])
 				+= (dim_squared_t::value_type)

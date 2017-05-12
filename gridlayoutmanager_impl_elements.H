@@ -208,7 +208,8 @@ public:
 
 	//! Recalculate horiz_sizes and vert_sizes
 
-	bool recalculate_sizes(dim_t target_width,
+	bool recalculate_sizes(const grid_map_t::lock &lock,
+			       dim_t target_width,
 			       dim_t target_height);
 
 	//! Now that everything's calculate, compute an element's position

@@ -82,6 +82,7 @@ static void do_add(const char *testname,
 static void do_size(const char *testname,
 		    const std::vector<axis> &axises,
 		    dim_t target_size,
+		    const std::unordered_map<grid_xy, int> &axis_sizes,
 		    const std::vector<dim_t> &expected_result_sizes)
 {
 	grid_sizes_t expected_result;
@@ -109,7 +110,17 @@ static void do_size(const char *testname,
 
 	grid_sizes_t s;
 
-	calculate_grid_size(m, s, target_size);
+	calculate_grid_size(m, s, target_size,
+			    [&]
+			    (const auto &xy)
+			    {
+				    auto iter=axis_sizes.find(xy);
+
+				    if (iter == axis_sizes.end())
+					    return -1;
+
+				    return iter->second;
+			    });
 
 	if (s != expected_result)
 	{
@@ -312,37 +323,38 @@ void testgrid()
 
 	do_size("size1",
 		{ {10, 20, 30}, {40, 80, 100} },
-		50,
+		50, {},
 		{10, 40});
 
 	do_size("size2",
 		{ {10, 20, 30}, {40, 80, 100} },
-		50,
+		50, {},
 		{10, 40});
 
 	do_size("size3",
 		{ {10, 20, 30}, {40, 80, 100} },
-		75,
+		75, {},
 		{15, 60});
 
 	do_size("size4",
 		{ {10, 20, 30}, {40, 80, 100} },
-		100,
+		100, {},
 		{20, 80});
 
 	do_size("size5",
 		{ {10, 20, 30}, {40, 80, 100} },
-		115,
+		115, {},
 		{25, 90});
 
 	do_size("size6",
 		{ {10, 20, 30}, {40, 80, 100} },
-		130,
+		130, {},
 		{30, 100});
 
 	do_size("size7",
 		{ {10, 20, 30}, {40, 80, 100} },
 		150,
+		{{0, 0}, {1, 0}},
 		{30, 100});
 
 	do_size("size8",
@@ -351,7 +363,7 @@ void testgrid()
 			{40, 80, dim_t::infinite()},
 			{50, 90, dim_t::infinite()},
 		},
-		190,
+		190, {},
 		{20, 80, 90});
 
 	do_size("size9",
@@ -360,7 +372,7 @@ void testgrid()
 			{40, 80, dim_t::infinite()},
 			{50, 90, dim_t::infinite()},
 		},
-		200,
+		200, {},
 		{30, 80, 90});
 
 	do_size("size10",
@@ -369,15 +381,54 @@ void testgrid()
 			{40, 80, dim_t::infinite()},
 			{50, 90, dim_t::infinite()},
 		},
-		300,
+		300, {},
 		{30, 130, 140});
 
 	do_size("size11",
 		{
 			{10, 10, 10},
 		},
-		10,
+		10, {},
 		{10});
+
+	do_size("size12",
+		{
+			{10, 15, 30},
+			{10, 10, 10},
+			{10, 10, 10}
+		},
+		100, {{0, 0}, {1, 0}, {2, 0}},
+		{30, 10, 10});
+
+	do_size("size13",
+		{
+			{10, 15, 30},
+			{10, 10, 10},
+			{10, 10, 10}
+		},
+		100,
+		{ {0, 5}, {1, 15}, {2, 20} },
+		{30, 15, 20});
+
+	do_size("size14",
+		{
+			{20, 20, 20},
+			{20, 20, 20},
+			{20, 20, 20},
+			{10, 10, 10},
+		},
+		100,
+		{ {0, 5}, {1, 0}, {2, 65}, {3, 100} },
+		{20, 20, 30, 30});
+
+	do_size("size15",
+		{
+			{10, 10, 10},
+			{10, 10, 10},
+		},
+		100,
+		{ {0, 25} },
+		{25, 75});
 
 	do_rectmerge("rectmerge1",
 		     { {0, 0, 1, 1}, {1, 0, 1, 1}, {2, 0, 1, 2} },

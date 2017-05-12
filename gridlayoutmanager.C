@@ -110,6 +110,20 @@ void gridlayoutmanagerObj::default_row_border(size_t row,
 	(*lock)->borders_changed();
 }
 
+void gridlayoutmanagerObj::requested_row_height(size_t row, int percentage)
+{
+	if (percentage < 0)
+		percentage=0;
+
+	if (percentage > 100)
+		percentage=100;
+
+	grid_map_t::lock lock{impl->grid_map};
+
+	(*lock)->row_defaults[row].axis_size=percentage;
+	(*lock)->padding_recalculated();
+}
+
 void gridlayoutmanagerObj::default_col_border(size_t col,
 					      const border_infomm &info)
 {
@@ -131,6 +145,20 @@ void gridlayoutmanagerObj::default_col_border(size_t col,
 
 	(*lock)->column_defaults[col].default_border=border_impl;
 	(*lock)->borders_changed();
+}
+
+void gridlayoutmanagerObj::requested_col_width(size_t col, int percentage)
+{
+	if (percentage < 0)
+		percentage=0;
+
+	if (percentage > 100)
+		percentage=100;
+
+	grid_map_t::lock lock{impl->grid_map};
+
+	(*lock)->column_defaults[col].axis_size=percentage;
+	(*lock)->padding_recalculated();
 }
 
 void gridlayoutmanagerObj::remove_row_defaults(size_t row)

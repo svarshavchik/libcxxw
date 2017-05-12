@@ -20,6 +20,9 @@ LIBCXXW_NAMESPACE_START
 
 #define CALCULATE_BORDERS_COORD(n) ((n)*2+1)
 
+//! And border positions are even grid coords
+#define IS_BORDER_RESERVED_COORD(n) ( ((n) % 2) == 0)
+
 //! Vertical spanning is computed incrementally. Increment by one logical row.
 #define CALCULATE_BORDERS_INCR_SPAN(n) ((n)=(n)+2)
 

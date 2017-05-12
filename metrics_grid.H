@@ -14,6 +14,7 @@
 #include "metrics_grid_axisrangefwd.H"
 #include "x/w/metrics/axis.H"
 #include <x/number_hash.H>
+#include <x/functional.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -34,6 +35,13 @@ namespace metrics {
 
 		dim_t total_vert_padding;
 	};
+
+	//! Callback: given a row or a column number, return its requested size.
+
+	//! The size is specified as a percentage 0-100. A negative value
+	//! indicates no specified size.
+
+	typedef int get_req_axis_size_t(grid_xy);
 
 	//! Data for calculations
 
@@ -204,9 +212,36 @@ namespace metrics {
 	//!
 	//! s are the current sizes. Returns true if the current sizes have
 	//! changed.
+
+	template<typename callback_t>
 	bool calculate_grid_size(const grid_metrics_t &m,
 				 grid_sizes_t &s,
-				 dim_t target_size) LIBCXX_HIDDEN;
+				 dim_t target_size,
+				 callback_t &&get_req_axis_size)
+		LIBCXX_HIDDEN;
+
+	//! Compute the actual size of each grid axis position.
+
+	//! \overload
+	//! \see calculate_grid_size()
+	bool do_calculate_grid_size(const grid_metrics_t &m,
+				    grid_sizes_t &s,
+				    dim_t target_size,
+				    const function<get_req_axis_size_t>
+				    &get_req_axis_size)
+		LIBCXX_HIDDEN;
+
+	template<typename callback_t>
+	bool calculate_grid_size(const grid_metrics_t &m,
+				 grid_sizes_t &s,
+				 dim_t target_size,
+				 callback_t &&get_req_axis_size)
+	{
+		return do_calculate_grid_size(m, s, target_size,
+					      make_function<get_req_axis_size_t>
+					      (std::forward<callback_t>
+					       (get_req_axis_size)));
+	}
 }
 
 LIBCXXW_NAMESPACE_END
