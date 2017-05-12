@@ -201,7 +201,7 @@ create_image_button(const std::vector<std::experimental::string_view>
 
 image_button factoryObj::create_checkbox()
 {
-	return create_checkbox({"checkbox1", "checkbox2"});
+	return create_checkbox({"checkbox1", "checkbox2", "checkbox3"});
 }
 
 // Call create_image_button, using create_checkbox_impl() to create the

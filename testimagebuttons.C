@@ -55,14 +55,21 @@ static void create_mainwindow(const LIBCXX_NAMESPACE::w::main_window &main_windo
 
 	std::vector<LIBCXX_NAMESPACE::w::image_button> days_of_week_checkboxes;
 
+	int n=0;
+
 	for (auto day_of_week:days_of_week)
 	{
+		++n;
+
 		LIBCXX_NAMESPACE::w::gridfactory factory=
 			layout->append_row();
 
 		LIBCXX_NAMESPACE::w::image_button checkbox=
 			factory->valign(LIBCXX_NAMESPACE::w::valign::middle)
 			.create_checkbox();
+
+		if (n > 1 && n < 7)
+			checkbox->set_value(2);
 
 		checkbox->on_activate([day_of_week]
 				      (bool first_time, size_t flag,
@@ -92,7 +99,6 @@ static void create_mainwindow(const LIBCXX_NAMESPACE::w::main_window &main_windo
 		.create_radio(group);
 
 	train->set_value(1);
-
 
 	auto sunday=*days_of_week_checkboxes.begin();
 	auto saturday=*--days_of_week_checkboxes.end();

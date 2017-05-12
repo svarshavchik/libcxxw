@@ -53,7 +53,7 @@ void image_button_internalObj::implObj::theme_updated(IN_THREAD_ONLY)
 
 void image_button_internalObj::implObj::activated(IN_THREAD_ONLY)
 {
-	set_image_number(IN_THREAD, get_image_number()+1);
+	set_image_number(IN_THREAD, get_image_number() ? 0:1);
 }
 
 void image_button_internalObj::implObj::set_image_number(IN_THREAD_ONLY,
