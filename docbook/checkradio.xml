@@ -1,0 +1,273 @@
+<!--
+
+Copyright 2017 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<chapter id="checkradio">
+  <title>Checkboxes and radio buttons</title>
+
+  <mediaobject>
+    <imageobject>
+      <imagedata fileref="checkradio.png" format="PNG"
+		 contentwidth="209px" contentdepth="203px" />
+    </imageobject>
+    <textobject>
+      <phrase>
+	Checkboxes
+      </phrase>
+    </textobject>
+    <caption>
+      <para>
+	The following program creates a window with some checkboxes and
+	radio buttons.
+      </para>
+    </caption>
+  </mediaobject>
+
+  <blockquote>
+    <title><ulink url="examples/checkradio.C">checkradio.C</ulink></title>
+
+    <informalexample>
+      <programlisting><xi:include href="../examples/checkradio.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <section id="checkradio_create">
+    <title>Creating checkboxes and radio buttons</title>
+
+    <para>
+      A &factory;'s
+      <methodname>create_checkbox</methodname>() and
+      <methodname>create_radio</methodname>() and methods return an
+      <ulink url="&link-typedef-x--w-image-button;"><classname>&ns;::w::image_button</classname></ulink>.
+      Creating a radio button requires an
+      <ulink url="&link-typedef-x--w-radio-group;"><classname>&ns;::w::radio_group</classname></ulink>.
+      Radio buttons in the same radio button group are mutually exclusive
+      with each other.
+      The application has no further
+      need to keep track of the
+      <classname>&ns;::w::radio_group</classname> object
+      after creating all the radio buttons. Each radio button maintains
+      its own internal link with the radio group object.
+    </para>
+  </section>
+
+  <section id="checkradio_setstate">
+    <title>Setting checkbox and radio button state</title>
+
+    <para>
+      Clicking on a checkbox or a radio button with pointer button #1
+      changes its state. Checkboxes flip between an on and off state.
+      A radio button always gets set to the on state, turning off the
+      previous radio button in its group to the off state.
+      Checkboxes and radio buttons also handle keyboard input focus.
+      Tabbing to a
+      checkbox or a radio button draws a thin focus frame around it;
+      with <keycap>SPACE</keycap> or <keycap>ENTER</keycap> setting the
+      checkbox's or the radio button's state.
+    </para>
+
+    <para>
+      <methodname>set_state</methodname>() directly sets the checkbox's
+      or the radio button's state:
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+button->set_state(1);</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      <literal>set_state(1)</literal> turns on the checkbox or the radio button,
+      <literal>set_state(0)</literal> turns off the checkbox. Radio buttons
+      should not be turned off directly. Turning on another radio button
+      in the same radio group automatically turns off the currently turned
+      on radio button.
+    </para>
+
+    <para>
+      Checkboxes also respond to <literal>set_state(2)</literal>, which is
+      defined as an <quote>intermediate</quote> state. Only
+      <methodname>set_state</methodname>() can set the intermediate state,
+      it cannot be set by clicking on the checkbox.
+    </para>
+  </section>
+
+  <section id="checkradio_getstate">
+    <title>Getting checkbox and radio button state</title>
+
+    <para>
+      There are two ways to get the current state of a checkbox or a radio
+      button.
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+size_t n=button->get_state();</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      <methodname>get_state</methodname>() returns the current state of the
+      checkbox or the radio button, directly. A turned off checkbox or a
+      radio button returns 0. A turned on checkbox or a radio button returns
+      1, and a checkbox with an
+      <link linkend="checkradio_setstate">explicitly set
+	<quote>intermediate</quote> state</link> returns 2.
+    </para>
+
+    <note>
+      <para>
+	Using <methodname>get_state</methodname>() immediately after an
+	explicit
+	<methodname>set_state</methodname>() may return the button's
+	previous state.
+	This is because the checkbox's or the radio button's state
+	gets updated by &app;'s <link linkend="connection_thread">internal
+	  execution thread</link>, and that hasn't happened just yet.
+	<methodname>set_state</methodname>() sends an internal message
+	to the execution thread, which might be busy with other things.
+	Once all other urgen matters get resolved, the execution thread
+	will process the message and update the button's state.
+      </para>
+    </note>
+
+    <para>
+      <methodname>on_activate</methodname> installs
+      <link linkend="callbacks">a callback</link> that gets executed by
+      the internal thread whenever it updates the checkbox's or the radio
+      button's state:
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+button->on_activate([]
+                    (bool first_time, size_t value, const x::w::busy &amp;mcguffin)
+                    {
+                    });</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      The lambda gets executed whenever the button changes its value.
+      The lambda also gets executed immediately after it gets installed,
+      and receives the checkbox's current state as the
+      <varname>value</varname>. Its first <classname>bool</classname>
+      parameter is a flag that specifies that this is the initial
+      checkbox value. The first time the lambda gets invoked the
+      <classname>bool</classname> flag is <literal>true</literal>.
+      All subsequent calls, whenever the button changes state, have the
+      <classname>bool</classname> flag set to <literal>false</literal>.
+    </para>
+
+    <note>
+      <para>
+	Because the lambda gets executed from the
+	<link linkend="connection_thread">internal execution thread</link>
+	the lambda may get invoked before or after
+	<methodname>on_activate</methodname>()
+	returns.
+      </para>
+    </note>
+
+    <para>
+      Only one callback can be installed at a time. Installing a second
+      callback replaces the first one, and the second callback also gets
+      executed with the <varname>first_time</varname> flag set to
+      <literal>true</literal>. Since callback execution and installation
+      is asynchronous, it's possible for the first callback to be executed
+      one last time after
+      <methodname>on_activate</methodname>() gets called to install a
+      replacement callback, if the internal execution thread already started
+      processing a button click. The first callback never gets called after
+      the initial execution of the second callback; this is a confirmation
+      that the callback has been replaced.
+    </para>
+
+    <para>
+      These callbacks get invoked to report new button values set directly,
+      by pointer and button clicks; and manually with
+      <methodname>set_value</methodname>(). Setting a new radio button
+      results in callbacks for both the previously set and the newly set
+      radio button getting invoked, in turn, reporting the change to the
+      value of the previous radio button and the newly set one.
+    </para>
+  </section>
+
+  <section id="checkradio_label">
+    <title>Checkbox and radio button labels</title>
+
+    <para>
+      Clicking on a checkbox or a radio button changes its state.
+      <link linkend="checkradio"><filename>checkradio.C</filename></link>
+      implements a traditional user interface design of putting a
+      text label next to each checkbox and radio button.
+    </para>
+
+    <para>
+      Intuitively, one expects to click on the label to set the button's
+      state too, in addition to moving the pointer directly on top of the
+      button and clicking it. However, the label is its own, independent,
+      <link linkend="labels"><classname>&ns;::w::label</classname></link>
+      display element.
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+label->label_for(button);</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      <link linkend="checkradio"><filename>checkradio.C</filename></link>
+      shows an example of using <methodname>label_for</methodname>().
+      Only <quote>inert</quote> display elements that do not directly
+      respond to pointer clicks can have their
+      <methodname>label_for</methodname>() method used, and the parameter
+      must be a second display element that does respond to pointer button
+      clicks.
+    </para>
+
+    <para>
+      <methodname>label_for</methodname>() designates its display element
+      as a <quote>label</quote> for the <quote>focusable</quote> element,
+      specified by its parameter.
+      Invoking the display element's <methodname>label_for</methodname>()
+      has the following results:
+    </para>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  Clicking on the label element results in the pointer click getting
+	  processed by the focusable element.
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  The label's visual appearance also matches the focusable's visual
+	  appearance when the focusable gets enabled
+	  or disabled by <methodname>set_enabled</methodname>().
+	</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>
+      It is possible to define two or more labels for the same focusable;
+      but a given label can be a label for only one focusable.
+    </para>
+  </section>
+</chapter>
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "book" "chapter")
+End:
+-->

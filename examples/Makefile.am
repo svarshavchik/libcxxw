@@ -1,9 +1,13 @@
 @LIBCXX_AM@
 
 noinst_PROGRAMS=\
+	checkradio				\
 	helloworld				\
 	inputfieldsandbuttons			\
 	wordwraplabel
+
+checkradio_SOURCES=checkradio.C close_flag.H
+checkradio_LDADD=-lcxxw -lcxx
 
 helloworld_SOURCES=helloworld.C close_flag.H
 helloworld_LDADD=-lcxxw -lcxx

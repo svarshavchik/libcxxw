@@ -15,7 +15,7 @@ class radio_groupObj;
 //! A group of radio buttons.
 
 //! Construct this object, and pass it to a \ref factory "factory"'s
-//! create_radiobutton() to link related radio buttons together.
+//! create_radio() to link related radio buttons together.
 
 typedef ref<radio_groupObj> radio_group;
 

@@ -66,7 +66,7 @@ public:
 
 	//! A default usage of create_canvas() that specifies a completely
 	//! unbound canvas. This is used to fill in unused cells in
-	//! a \ref gridlayout "grid layout manager".
+	//! a \ref gridlayoutmanager "grid layout manager".
 
 	canvas create_canvas();
 
