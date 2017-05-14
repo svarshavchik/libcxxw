@@ -121,6 +121,23 @@ class LIBCXX_HIDDEN focusableImplObj : virtual public obj {
 
 	//! Called to move input focus to another focusable field.
 	void switch_focus(IN_THREAD_ONLY, const focusable_impl &focus_to);
+
+ public:
+	//! Set tabbing order.
+	void get_focus_before(IN_THREAD_ONLY,
+			      const ref<focusableImplObj> &other);
+	//! Set tabbing order.
+	void get_focus_after(IN_THREAD_ONLY,
+			      const ref<focusableImplObj> &other);
+
+ private:
+	//! Set tabbing order.
+	void i_will_get_focus_before(IN_THREAD_ONLY,
+				     focusableImplObj &other);
+	//! Set tabbing order.
+	void i_will_get_focus_after(IN_THREAD_ONLY,
+				    focusableImplObj &other);
+
 };
 
 LIBCXXW_NAMESPACE_END

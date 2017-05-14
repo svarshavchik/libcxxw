@@ -30,7 +30,9 @@ typedef ref<myhorizvertObj> myhorizvert;
 
 static void do_test(const char *testname,
 		    const std::vector<testgrid_info> &test_info,
-		    const grid_metrics_t &res)
+		    const grid_metrics_t &res,
+		    const std::function<bool (grid_xy)> &freeze_func=
+		    [](const auto &ignore) { return false; })
 {
 	std::list<pos_axis> g;
 
@@ -50,7 +52,7 @@ static void do_test(const char *testname,
 		g.push_back({gp, metrics});
 	}
 
-	auto metrics=calculate_grid_horiz_metrics(g);
+	auto metrics=calculate_grid_horiz_metrics(g, freeze_func);
 
 	if (metrics != res)
 	{
@@ -298,8 +300,44 @@ void testgrid()
 			{ 0, 1, 1, 1, 15, 15, 20},
 		},
 		{
-			{0, {5, 5, 10}},
-			{1, {10, 10, 10}},
+			{0, {5, 5, 5}},
+			{1, {10, 15, 15}},
+		});
+
+	do_test("test7",
+		{
+			{0, 2, 0, 0, 100, 100, 100},
+			{0, 0, 1, 1, 20, 20, 20},
+			{1, 1, 1, 1, 20, 20, 20},
+			{2, 2, 1, 1, 0, 0, dim_t::infinite()}
+		},
+		{
+			{0, {20, 20, 20}},
+			{1, {20, 20, 20}},
+			{2, {60, 60, 60}}
+		});
+
+	do_test("test8",
+		{
+			{0, 0, 0, 0, 0, 0, 0},
+			{1, 1, 0, 0, 25, 25, 25},
+			{2, 2, 0, 0, 0, 0, 0},
+			{3, 3, 0, 0, 0, 0, dim_t::infinite()},
+			{4, 4, 0, 0, 0, 0, 0},
+			{0, 4, 1, 1, 50, 50, 50},
+			{0, 4, 2, 2, 100, 100, 100}
+		},
+		{
+			{0, {0, 0, 0}},
+			{1, {50, 50, 50}},
+			{2, {0, 0, 0}},
+			{3, {50, 50, 50}},
+			{4, {0, 0, 0}}
+		},
+		[]
+		(const auto &n)
+		{
+			return (n % 2) == 0;
 		});
 
 	do_add("add1",

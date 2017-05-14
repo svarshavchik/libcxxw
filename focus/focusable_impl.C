@@ -360,4 +360,50 @@ void focusableImplObj::switch_focus(IN_THREAD_ONLY,
 	get_focusable_element().get_window_handler()
 		.set_keyboard_focus_to(IN_THREAD, focus_to);
 }
+
+// Need to do a song-and-dance routine to make sure that both focusables
+// get a clean bill of health from GET_FOCUSABLE_FIELD_ITER().
+
+void focusableImplObj::get_focus_before(IN_THREAD_ONLY,
+					const ref<focusableImplObj> &other)
+{
+	(void)GET_FOCUSABLE_FIELD_ITER();
+
+	other->i_will_get_focus_after(IN_THREAD, *this);
+}
+
+void focusableImplObj::get_focus_after(IN_THREAD_ONLY,
+				       const ref<focusableImplObj> &other)
+{
+	(void)GET_FOCUSABLE_FIELD_ITER();
+
+	other->i_will_get_focus_before(IN_THREAD, *this);
+}
+
+void focusableImplObj::i_will_get_focus_before(IN_THREAD_ONLY,
+					       focusableImplObj &other)
+{
+	auto iter=GET_FOCUSABLE_FIELD_ITER();
+
+	auto &ff=focusable_fields(IN_THREAD);
+
+	auto new_iter=ff.insert(++iter, ref<focusableImplObj>(&other));
+
+	ff.erase(other.focusable_fields_iter(IN_THREAD));
+	other.focusable_fields_iter(IN_THREAD)=new_iter;
+}
+
+void focusableImplObj::i_will_get_focus_after(IN_THREAD_ONLY,
+					      focusableImplObj &other)
+{
+	auto iter=GET_FOCUSABLE_FIELD_ITER();
+
+	auto &ff=focusable_fields(IN_THREAD);
+
+	auto new_iter=ff.insert(iter, ref<focusableImplObj>(&other));
+
+	ff.erase(other.focusable_fields_iter(IN_THREAD));
+	other.focusable_fields_iter(IN_THREAD)=new_iter;
+}
+
 LIBCXXW_NAMESPACE_END

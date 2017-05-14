@@ -34,6 +34,14 @@ public:
 	//! Enable/disable the focusable object.
 
 	void set_enabled(bool);
+
+	//! This focusable should be tabbed to before the other one.
+
+	void get_focus_before(const focusable &other);
+
+	//! This focusable should be tabbed to after the other one
+
+	void get_focus_after(const focusable &other);
 };
 
 LIBCXXW_NAMESPACE_END

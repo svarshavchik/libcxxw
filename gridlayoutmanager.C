@@ -39,6 +39,25 @@ gridfactory gridlayoutmanagerObj::append_row()
 									0));
 }
 
+gridfactory gridlayoutmanagerObj::insert_row(size_t row)
+{
+	auto me=gridlayoutmanager(this);
+
+	{
+		grid_map_t::lock lock(me->impl->grid_map);
+
+		if ((*lock)->elements.size() < row)
+			throw EXCEPTION(_("Attempting to insert a row before a nonexistent row"));
+
+		(*lock)->elements.emplace((*lock)->elements.begin()+row);
+	}
+
+	return gridfactory::create(me,
+				   ref<gridfactoryObj::implObj>::create(me,
+									row,
+									0));
+}
+
 gridfactory gridlayoutmanagerObj::append_columns(size_t row)
 {
 	auto me=gridlayoutmanager(this);
@@ -58,7 +77,29 @@ gridfactory gridlayoutmanagerObj::append_columns(size_t row)
 									col));
 }
 
-void gridlayoutmanagerObj::erase()
+gridfactory gridlayoutmanagerObj::insert_columns(size_t row, size_t col)
+{
+	auto me=gridlayoutmanager(this);
+
+	size_t s=({
+			grid_map_t::lock lock(me->impl->grid_map);
+
+			if ((*lock)->elements.size() <= row)
+				throw EXCEPTION(_("Attempting to add columns to a nonexistent row"));
+
+			(*lock)->elements.at(row).size();
+		});
+
+	if (col >= s)
+	    throw EXCEPTION(_("Attempting to insert columns before a nonexistent column"));
+
+	return gridfactory::create(me,
+				   ref<gridfactoryObj::implObj>::create(me,
+									row,
+									col));
+}
+
+void gridlayoutmanagerObj::remove()
 {
 	grid_map_t::lock lock{impl->grid_map};
 
@@ -66,25 +107,53 @@ void gridlayoutmanagerObj::erase()
 	(*lock)->elements_have_been_modified();
 }
 
-void gridlayoutmanagerObj::erase(size_t x, size_t y)
+void gridlayoutmanagerObj::remove(size_t row, size_t col)
 {
 	grid_map_t::lock lock{impl->grid_map};
 
-	if (y < (*lock)->elements.size())
+	if (row < (*lock)->elements.size())
 	{
-		auto &row=(*lock)->elements.at(y);
+		auto &r=(*lock)->elements.at(row);
 
-		if (x < row.size())
+		if (col < r.size())
 		{
-			row.erase(row.begin()+x);
+			r.erase(r.begin()+col);
 			(*lock)->elements_have_been_modified();
 		}
 	}
 }
 
-elementptr gridlayoutmanagerObj::get(size_t x, size_t y) const
+void gridlayoutmanagerObj::remove_row(size_t row)
 {
-	return impl->get(x, y);
+	grid_map_t::lock lock{impl->grid_map};
+
+	if (row < (*lock)->elements.size())
+	{
+		(*lock)->elements.erase( (*lock)->elements.begin()+row);
+		(*lock)->elements_have_been_modified();
+	}
+}
+
+size_t gridlayoutmanagerObj::rows()
+{
+	grid_map_t::lock lock{impl->grid_map};
+
+	return (*lock)->elements.size();
+}
+
+size_t gridlayoutmanagerObj::cols(size_t row)
+{
+	grid_map_t::lock lock{impl->grid_map};
+
+	if (row >= (*lock)->elements.size())
+		throw EXCEPTION(_("Attempting to get the number of columns in a nonexistent row"));
+
+	return (*lock)->elements.at(row).size();
+}
+
+elementptr gridlayoutmanagerObj::get(size_t row, size_t col) const
+{
+	return impl->get(row, col);
 }
 
 void gridlayoutmanagerObj::default_row_border(size_t row,

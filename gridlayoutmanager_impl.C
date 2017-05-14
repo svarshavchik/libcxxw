@@ -29,16 +29,16 @@ gridlayoutmanagerObj::implObj
 
 gridlayoutmanagerObj::implObj::~implObj()=default;
 
-elementptr gridlayoutmanagerObj::implObj::get(size_t x, size_t y)
+elementptr gridlayoutmanagerObj::implObj::get(size_t row, size_t col)
 {
 	grid_map_t::lock lock{grid_map};
 
-	if (y < (*lock)->elements.size())
+	if (row < (*lock)->elements.size())
 	{
-		const auto &row=(*lock)->elements.at(y);
+		const auto &r=(*lock)->elements.at(row);
 
-		if (x < row.size())
-			return row.at(x)->grid_element;
+		if (col < r.size())
+			return r.at(col)->grid_element;
 	}
 	return elementptr();
 }

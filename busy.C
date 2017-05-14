@@ -4,22 +4,39 @@
 */
 #include "libcxxw_config.h"
 #include "generic_window_handler.H"
+#include "busy.H"
 
 LIBCXXW_NAMESPACE_START
 
-busy::busy(const ref<generic_windowObj::handlerObj> &w) : w(w)
+busy_impl::busy_impl(elementObj::implObj &i)
+	: busy_impl(ref<generic_windowObj::handlerObj>(&i.get_window_handler()))
 {
-	w->busy_count.refadd(1);
 }
 
-busy::busy(const busy &c) : w(c.w)
+busy_impl::busy_impl(const ref<generic_windowObj::handlerObj> &w) : w(w)
 {
-	w->busy_count.refadd(1);
 }
 
-busy::~busy()
+busy_impl::~busy_impl()=default;
+
+
+x::ref<x::obj> busy_impl::get_mcguffin() const
 {
-	w->busy_count.refadd(-1);
+	generic_windowObj::handlerObj::busy_mcguffin_t::lock
+		lock{w->busy_mcguffin};
+
+	auto p=lock->getptr();
+
+	if (p) return p;
+
+	auto n=ref<obj>::create();
+
+	*lock=n;
+	return n;
 }
+
+busy::busy()=default;
+
+busy::~busy()=default;
 
 LIBCXXW_NAMESPACE_END

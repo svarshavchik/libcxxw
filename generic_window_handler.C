@@ -317,6 +317,11 @@ void generic_windowObj::handlerObj::theme_updated_event(IN_THREAD_ONLY)
 	theme_updated(IN_THREAD);
 }
 
+bool generic_windowObj::handlerObj::is_busy()
+{
+	return !!busy_mcguffin_t::lock{busy_mcguffin}->getptr();
+}
+
 void generic_windowObj::handlerObj
 ::key_press_event(IN_THREAD_ONLY,
 		  const xcb_key_press_event_t *event,
@@ -330,7 +335,7 @@ void generic_windowObj::handlerObj
 
 	grabbed_timestamp(IN_THREAD)=event->time;
 
-	if (busy_count.refadd(0))
+	if (is_busy())
 		// We're busy now. Since we're grabbing all key presses this
 		// can only be checked now, after the grab processing.
 		return;
@@ -477,7 +482,7 @@ void generic_windowObj::handlerObj
 
 	grabbed_timestamp(IN_THREAD)=event->time;
 
-	if (busy_count.refadd(0))
+	if (is_busy())
 		// We're busy now. Since we're grabbing all key presses this
 		// can only be checked now, after the grab processing.
 		return;

@@ -117,8 +117,10 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 		//! State update handlers
 
-		callback_list<void (const element_state &)> update_handlers=
-			callback_list<void (const element_state &)>::create();
+		callback_list<void (const element_state &,
+				    const busy &)> update_handlers=
+			callback_list<void (const element_state &,
+					    const busy &)>::create();
 
 
 		//! Whether this element is a label for some focusable.
@@ -229,10 +231,6 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 	//! Destructor
 	~implObj();
-
-	//! Obtain a busy handle.
-
-	busy get_busy();
 
 	THREAD_DATA_ONLY(data);
 	THREAD_DATA_SUPERCLASS_ONLY(horizvertObj, get_horizvert);

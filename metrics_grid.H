@@ -110,44 +110,62 @@ namespace metrics {
 			   const std::set<grid_xy> &all_grid_positions,
 			   const grid_axisrange &r,
 			   const axis &a,
-			   dim_t axis_padding) LIBCXX_HIDDEN;
+			   dim_t axis_padding,
+			   const function<bool (grid_xy)> &freeze_func)
+		LIBCXX_HIDDEN;
 
 	// Visibility declarations.
 
-	template<typename GRID_T> grid_metrics_t
-	calculate_grid_horiz_metrics(GRID_T &&g) LIBCXX_HIDDEN;
+	template<typename GRID_T,
+		 typename freeze_func_t> grid_metrics_t
+	calculate_grid_horiz_metrics(GRID_T &&g,
+				     freeze_func_t &&f) LIBCXX_HIDDEN;
 
-	template<typename GRID_T> grid_metrics_t
-	calculate_grid_vert_metrics(GRID_T &&g) LIBCXX_HIDDEN;
+	template<typename GRID_T,
+		 typename freeze_func_t> grid_metrics_t
+	calculate_grid_vert_metrics(GRID_T &&g,
+				    freeze_func_t &&f) LIBCXX_HIDDEN;
 
 	template<typename GRID_T> grid_metrics_t
 	calculate_grid_metrics(GRID_T &&g,
+			       const function<bool (grid_xy)> &freeze_func,
 			       const grid_major &major) LIBCXX_HIDDEN;
 
 	//! Calculate horizontal metrics.
 
 	//! This is called with a container of pos_axis objects.
 
-	template<typename GRID_T> grid_metrics_t
-	calculate_grid_horiz_metrics(GRID_T &&g)
+	template<typename GRID_T,
+		 typename freeze_func_t> grid_metrics_t
+	calculate_grid_horiz_metrics(GRID_T &&g,
+				     freeze_func_t &&f)
 	{
-		return calculate_grid_metrics(std::forward<GRID_T>(g), h_grid);
+		return calculate_grid_metrics(std::forward<GRID_T>(g),
+					      make_function<bool (grid_xy)>
+					      (std::forward<freeze_func_t>(f)),
+					      h_grid);
 	}
 
 	//! Calculate vertical metrics.
 
 	//! This is called with a container of pos_axis objects.
 
-	template<typename GRID_T> grid_metrics_t
-	calculate_grid_vert_metrics(GRID_T &&g)
+	template<typename GRID_T,
+		 typename freeze_func_t> grid_metrics_t
+	calculate_grid_vert_metrics(GRID_T &&g,
+				    freeze_func_t &&f)
 	{
-		return calculate_grid_metrics(std::forward<GRID_T>(g), v_grid);
+		return calculate_grid_metrics(std::forward<GRID_T>(g),
+					      make_function<bool (grid_xy)>
+					      (std::forward<freeze_func_t>(f)),
+					      v_grid);
 	}
 
 	//! Calculate horizontal  or vertical metrics.
 
 	template<typename GRID_T> grid_metrics_t
 	calculate_grid_metrics(GRID_T &&g,
+			       const function<bool (grid_xy)> &freeze_func,
 			       const grid_major &major)
 	{
 		grid_metrics_t grid_metrics;
@@ -194,7 +212,8 @@ namespace metrics {
 					      (element),
 					      major.get_axis(element),
 					      element.padding
-					      .*(major.axis_padding));
+					      .*(major.axis_padding),
+					      freeze_func);
 			}
 		}
 		return grid_metrics;
@@ -212,6 +231,10 @@ namespace metrics {
 	//!
 	//! s are the current sizes. Returns true if the current sizes have
 	//! changed.
+	//!
+	//! The callback returns the requested size of the axis, as a
+	//! percentage of the total size (0-100). The callback returns a
+	//! negative value if the given axis's size is not specified.
 
 	template<typename callback_t>
 	bool calculate_grid_size(const grid_metrics_t &m,

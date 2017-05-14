@@ -1,5 +1,6 @@
 /*.bz2
 /*.gz
+*.inc.[CH]
 INSTALL
 Makefile
 Makefile.in
@@ -20,7 +21,6 @@ configure
 .dirstamp
 /docbook/entities
 /Doxyfile
-/gc_constants.inc.C
 /genconstants
 /html
 /install-sh
@@ -31,7 +31,6 @@ configure
 libtool
 ltmain.sh
 missing
-/pic_constants.inc.C
 /rpm
 stamp-h1
 suppressfile*

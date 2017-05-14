@@ -56,17 +56,46 @@ public:
 	//! Append a row to the grid, and create elements in it.
 	gridfactory append_row();
 
+	//! Insert a row in the grid before another row, then create elements in it.
+
+	gridfactory insert_row(size_t row_number);
+
 	//! Append elements at the end of an existing row.
 	gridfactory append_columns(size_t row_number);
 
+	//! Insert elements before an existing element on an existing row.
+	gridfactory insert_columns(size_t row_number, size_t col_number);
+
 	//! Remove everything from the grid.
-	void erase();
+	void remove();
 
 	//! Remove a display element from the given location.
-	void erase(size_t x, size_t y);
+
+	//! The given column does not count spanned cells.
+	void remove(size_t row, size_t col);
+
+	//! Remove an entire row
+
+	//! Does not remove any cells from prior rows that span the row.
+	//!
+	//! Does not adjust the row span value of cells that span vertically
+	//! into this row, those cells still span the given number of rows,
+	//! in the adjusted grid.
+
+	void remove_row(size_t row);
+
+	//! How many rows there are here.
+	size_t rows();
+
+	//! How many defined cells there are in the given row.
+
+	//! This does not include spanned cells.
+	size_t cols(size_t row);
 
 	//! Get the display element at the given location.
-	elementptr get(size_t x, size_t y) const;
+
+	//! The column does not count spanned cells.
+	elementptr get(size_t row, size_t col) const;
 
 	//! Set the default border above this row.
 	void default_row_border(size_t row, const border_infomm &info);

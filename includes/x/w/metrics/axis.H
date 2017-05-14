@@ -265,10 +265,6 @@ namespace metrics {
 				else
 				{
 					n += a.maximum();
-
-					if ((dim_squared_t::value_type)n >
-					    dim_t::infinite())
-						n=dim_t::infinite();
 				}
 				++beg_iter;
 			}

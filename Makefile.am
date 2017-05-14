@@ -40,6 +40,7 @@ libcxxw_la_SOURCES=\
 	border_info.H				    \
 	border_infofwd.H			    \
 	border_infomm.C				    \
+	busy.H					    \
 	busy.C					    \
 	button.C				    \
 	button.H				    \
@@ -509,6 +510,8 @@ testbutton_LDFLAGS=-static $(STATICLINKFLAGS)
 testimagebuttons_SOURCES=testimagebuttons.C
 testimagebuttons_LDADD=libcxxw.la
 testimagebuttons_LDFLAGS=-static $(STATICLINKFLAGS)
+
+$(call REFCOLLECTION_GEN,testinputfield.inc.H,testinputfield.xml)
 
 testinputfield_SOURCES=testinputfield.C
 testinputfield_LDADD=libcxxw.la

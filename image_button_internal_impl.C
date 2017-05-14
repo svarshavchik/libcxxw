@@ -9,6 +9,7 @@
 #include "hotspot_element.H"
 #include "icon.H"
 #include "radio_group.H"
+#include "busy.H"
 #include "catch_exceptions.H"
 
 LIBCXXW_NAMESPACE_START
@@ -67,7 +68,7 @@ void image_button_internalObj::implObj::set_image_number(IN_THREAD_ONLY,
 
 	if (p != n)
 		try {
-			current_callback(IN_THREAD)(false, n, get_busy());
+			current_callback(IN_THREAD)(false, n, busy_impl{*this});
 		} CATCH_EXCEPTIONS;
 }
 
@@ -193,7 +194,7 @@ void radio_image_buttonObj::set_image_number(IN_THREAD_ONLY, size_t n)
 	if (n != p)
 		do_set_image_number(IN_THREAD, n);
 
-	auto i_am_busy=get_busy();
+	busy_impl i_am_busy{*this};
 
 	for (const auto &cb:callbacks)
 		try {

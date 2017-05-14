@@ -7,8 +7,8 @@
 #include <x/exception.H>
 #include <x/destroy_callback.H>
 #include <x/ref.H>
+#include <x/refptr_traits.H>
 #include <x/obj.H>
-#include <x/mcguffinstash.H>
 
 #include "x/w/main_window.H"
 #include "x/w/input_field.H"
@@ -44,38 +44,44 @@ public:
 
 typedef LIBCXX_NAMESPACE::ref<close_flagObj> close_flag_ref;
 
+#include "testinputfield.inc.H"
+
+class appdataObj : public inputfields, virtual public LIBCXX_NAMESPACE::obj {
+
+public:
+	using inputfields::inputfields;
+};
+
 void testbutton()
 {
 	LIBCXX_NAMESPACE::destroy_callback::base::guard guard;
 
 	auto close_flag=close_flag_ref::create();
 
+	typedef LIBCXX_NAMESPACE::ref<appdataObj> appdata_t;
+
 	auto main_window=LIBCXX_NAMESPACE::w::main_window
 		::create([&]
 			 (const auto &main_window)
 			 {
-				 auto stash=LIBCXX_NAMESPACE::mcguffinstash<>::create();
-				 main_window->appdata=stash;
+				 inputfieldsptr fields;
 
 				 LIBCXX_NAMESPACE::w::gridlayoutmanager
 				     layout=main_window->get_layoutmanager();
 				 LIBCXX_NAMESPACE::w::gridfactory factory=
 				 layout->append_row();
 
-				 stash->insert("first",
-					       factory->create_input_field
-					       ({""}, {30}));
+				 fields.first=factory->create_input_field({""}, {30});
 
 				 factory=layout->append_row();
 
-				 stash->insert("second",
-					       factory->halign(LIBCXXW_NAMESPACE::halign::right)
-					       .create_input_field
-					       ({"sans_serif"_font,
-							       LIBCXX_NAMESPACE::w::rgb{
-							       0, 0,
-								       LIBCXX_NAMESPACE::w::rgb::maximum},
-							       "Hello world!"}, {30, 4}));
+				 fields.second=factory->halign(LIBCXXW_NAMESPACE::halign::right)
+				 .create_input_field
+				 ({"sans_serif"_font,
+						 LIBCXX_NAMESPACE::w::rgb{
+						 0, 0,
+							 LIBCXX_NAMESPACE::w::rgb::maximum},
+						 "Hello world!"}, {30, 4});
 
 				 factory=layout->append_row();
 
@@ -98,6 +104,7 @@ void testbutton()
 		},
 				  x::w::new_gridlayoutmanager());
 
+			 main_window->appdata=appdata_t::create(fields);
 			 });
 
 	main_window->set_window_title("Hello world!");
@@ -121,15 +128,10 @@ void testbutton()
 
 	lock.wait([&] { return *lock; });
 
-	LIBCXX_NAMESPACE::mcguffinstash<> stash=main_window->appdata;
+	appdata_t appdata=main_window->appdata;
 
-	LIBCXX_NAMESPACE::w::input_field f=stash->get("first");
-
-	std::cout << f->get() << std::endl;
-
-	f=stash->get("second");
-
-	std::cout << f->get() << std::endl;
+	std::cout << appdata->first->get() << std::endl;
+	std::cout << appdata->second->get() << std::endl;
 	std::cout << "Done" << std::endl;
 }
 

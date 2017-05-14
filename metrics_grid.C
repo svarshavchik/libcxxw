@@ -139,7 +139,8 @@ void apply_metrics(grid_metrics_t &m,
 		   const std::set<grid_xy> &all_grid_positions,
 		   const grid_axisrange &r,
 		   const axis &aa,
-		   dim_t axis_padding)
+		   dim_t axis_padding,
+		   const function<bool (grid_xy)> &freeze_func)
 {
 	// Ok, here's how big this grid element is.
 
@@ -249,11 +250,19 @@ void apply_metrics(grid_metrics_t &m,
 			// Opening bid: see if the total_maximum for this
 			// element can be removed from the existing positions
 			// spanned by this element.
-			axis::adjust_maximums_by(v.begin(), v.end(),
-						 total_maximum.sum_excluding_infinite);
-			// Recompute the revised total_maximum.
-			total_maximum=axis::total_maximum(v.begin(),
-							  v.end());
+			if (total_maximum.sum_excluding_infinite >
+			    dim_squared_t::truncate(a_maximum))
+			{
+				axis::adjust_maximums_by(v.begin(),
+							 v.end(),
+							 total_maximum
+							 .sum_excluding_infinite
+							 -a_maximum);
+
+				// Recompute the revised total_maximum.
+				total_maximum=axis::total_maximum(v.begin(),
+								  v.end());
+			}
 
 			// Pay attention: if the new positions' minimum plus
 			// total maximum of existing positions is less than
@@ -326,10 +335,58 @@ void apply_metrics(grid_metrics_t &m,
 	// adjusted.
 	if (total_minimum < (dim_t::value_type)a_minimum)
 	{
-		axis::adjust_minimums_by(v.begin(), v.end(),
-					 (dim_t::value_type)a_minimum
-					 -total_minimum);
+		dim_squared_t adjust_minimums_by=
+			dim_squared_t::truncate(a_minimum - total_minimum);
 
+		// Calculate, in advance, how much axis::adjust_minimums_by
+		// will find up for grabs.
+
+		dim_squared_t existing_spread=0;
+
+		for (const metrics::axis &a:v)
+			existing_spread += a.spread();
+
+		auto do_adjust_minimums_by=
+			existing_spread < adjust_minimums_by
+					  ? existing_spread:adjust_minimums_by;
+
+		if (do_adjust_minimums_by > 0)
+		{
+			axis::adjust_minimums_by(v.begin(), v.end(),
+						 do_adjust_minimums_by);
+
+			adjust_minimums_by -= do_adjust_minimums_by;
+		}
+
+		// If we still need to increase minimum column size, we can
+		// only do it for the axises that freeze_func() doesn't mind.
+
+		if (adjust_minimums_by > 0)
+		{
+			grid_metrics_refvec_t v2;
+
+			v2.reserve(v.size());
+
+			grid_metrics_t::iterator b=m.lower_bound(r.start);
+			grid_metrics_t::iterator e=m.upper_bound(r.end);
+
+			while (b != e)
+			{
+				if (!freeze_func(b->first))
+					v2.push_back(b->second);
+				++b;
+			}
+
+			if (v2.empty())
+				v2=v;
+
+			axis::adjust_minimums_by(v2.begin(), v2.end(),
+						 adjust_minimums_by);
+
+			adjust_minimums_by -= do_adjust_minimums_by;
+		}
+
+		// The last fun and games we had made it possible that
 		// adjust_minimums_by() could've updated some position's
 		// maximum value too, so recalculate the total_maximum.
 		total_maximum=axis::total_maximum(v.begin(), v.end());

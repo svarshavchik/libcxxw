@@ -284,6 +284,104 @@ make</programlisting>
 	  </para>
 	</listitem>
       </orderedlist>
+
+      <section id="callbackrefs">
+	<title>Special rules for captured references in callbacks</title>
+
+	<para>
+	  It's explained in <xref linkend="containerrefs" />
+	  how containers own references to all elements in the container.
+	  It is possible to attach additional application data to
+	  any display element, including containers; and
+	  <xref linkend="appdata" /> explains that the attached
+	  application data cannot have references to any parent (of the
+	  display element the data is attached to). This results in a
+	  circular reference because the parent has its own direct
+	  or indirect reference to the element in the container; and
+	  &app; uses reference-counted objects for all display elements,
+	  which get destroyed automatically, but only when the last reference
+	  to each object goes out of scope.
+	</para>
+
+	<para>
+	  References captured by lambdas used as callbacks have additional
+	  restrictions. Capturing a parent or a child element results in
+	  a circular reference (capturing an element not in the parent or the
+	  child element hierarchy is fine).
+	</para>
+
+	<para>
+	  The recommended design pattern is for callbacks to capture a
+	  message queue-like object, and use the message queue to send a
+	  message to the main execution thread:
+	</para>
+
+	<blockquote>
+	  <informalexample>
+	    <programlisting><![CDATA[
+main_window->on_delete([queue]
+    {
+        queue->message([]
+            (const x::w::main_window &main_window, const appdata_t &appdata)
+	    {
+                appdata->close_flag=true;
+            })
+    });]]></programlisting>
+	  </informalexample>
+	</blockquote>
+
+	<para>
+	  In this example the captured <varname>queue</varname> is
+	  a simple <classname>&ns;::ref</classname> to a thread-safe
+	  queue-like object, perhaps a <classname>std::deque</classname> of
+	  <classname>std::function</classname>s.
+	  The messages take the form of type-erased
+	  <classname>std::function</classname> lambdas. The main execution
+	  thread runs a loop that waits for and executes application
+	  messages:
+	</para>
+
+	<blockquote>
+	  <informalexample>
+	    <programlisting><![CDATA[
+while (!appdata->close_flag)
+    appdata->queue->next_message(main_window, appdata);
+]]></programlisting>
+	  </informalexample>
+	</blockquote>
+
+	<para>
+	  The thread-safe queue is a member of the
+	  application data object, and contains no other references.
+	  <methodname>next_message</methodname>() waits for the next message
+	  and invokes the function, passing to it the main window object,
+	  and the application data object. The application data object can
+	  simply be attached <link linkend="appdata">as the main window's
+	    <varname>appdata</varname></link> and the executed lambda could
+	  fetch it, itself. This simply saves a step.
+	</para>
+
+	<para>
+	  No rules are broken here. The callback lambda only captures a
+	  reference to the message queue. It does not capture a reference to
+	  anything else. When executed, the main window object and the
+	  application data object get passed to it, as parameters.
+	  The message lambdas always get invoked by the main execution thread,
+	  so no locking is required for setting the
+	  <varname>close_flag</varname> which only the main execution thread
+	  checks, as well. And even though the callback cannot capture
+	  references to its parent or child element, it has full access to
+	  all display elements, from the passed-in main window element;
+	  or from any references in the application data object.
+	</para>
+
+	<para>
+	  The only thing that the main execution thread needs to be careful
+	  with is to make sure that its own reference to the application
+	  data object goes out of scope before the main window display element
+	  goes out of scope and gets destroyed.
+	</para>
+      </section>
     </section>
 
     <section id="containercreator">

@@ -77,7 +77,7 @@ class LIBCXX_HIDDEN focusframelayoutmanagerObj : public factoryObj {
 	{
 		gridlayoutmanager glm=ffc->get_layoutmanager();
 
-		glm->erase();
+		glm->remove();
 
 		glm->append_row()->padding(0).created_internally(e);
 	}

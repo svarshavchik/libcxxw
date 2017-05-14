@@ -1,0 +1,27 @@
+<collection>
+  <name>mainwindowfields</name>
+  <ref>
+    <name>horizontal_container</name>
+    <type>x::w::container</type>
+  </ref>
+  <ref>
+    <name>vertical_container</name>
+    <type>x::w::container</type>
+  </ref>
+  <ref>
+    <name>insert_column</name>
+    <type>x::w::button</type>
+  </ref>
+  <ref>
+    <name>remove_column</name>
+    <type>x::w::button</type>
+  </ref>
+  <ref>
+    <name>insert_row</name>
+    <type>x::w::button</type>
+  </ref>
+  <ref>
+    <name>remove_row</name>
+    <type>x::w::button</type>
+  </ref>
+</collection>

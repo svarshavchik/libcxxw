@@ -24,6 +24,8 @@
 #include <experimental/string_view>
 #include <courier-unicode.h>
 #include <list>
+#include <x/weakptr.H>
+#include <x/mpobj.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -263,9 +265,18 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	void button_release_event(IN_THREAD_ONLY,
 				  const xcb_button_release_event_t *event) override;
 
-	//! Counter of all outstanding busy instance objects.
+	//! A container for the busy mcguffin.
 
-	refcnt busy_count;
+	typedef mpobj<weakptr<ptr<obj>>> busy_mcguffin_t;
+
+	//! Busy mcguffin.
+
+	busy_mcguffin_t busy_mcguffin;
+
+	//! Whether we're busy (ignore keyboard or button press events)
+
+	bool is_busy();
+
 	//! An element's button_press_event() wishes to grab the pointer.
 
 	void grab(IN_THREAD_ONLY, const ref<elementObj::implObj> &e);

@@ -6,6 +6,7 @@
 #include "hotspot.H"
 #include "child_element.H"
 #include "screen.H"
+#include "busy.H"
 #include "element_screen.H"
 #include "x/w/key_event.H"
 #include "x/w/button_event.H"
@@ -143,7 +144,7 @@ void hotspotObj::implObj::activated(IN_THREAD_ONLY)
 	LOG_FUNC_SCOPE(hotspot_log);
 
 	try {
-		callback(IN_THREAD)(get_hotspot_element().get_busy());
+		callback(IN_THREAD)(busy_impl{get_hotspot_element()});
 	} CATCH_EXCEPTIONS;
 }
 

@@ -10,6 +10,7 @@
 #include "batch_queue.H"
 #include "generic_window_handler.H"
 #include "draw_info.H"
+#include "busy.H"
 #include "icon.H"
 #include "icon_image.H"
 #include "background_color.H"
@@ -66,11 +67,6 @@ elementObj::implObj::implObj(size_t nesting_level,
 }
 
 elementObj::implObj::~implObj()=default;
-
-busy elementObj::implObj::get_busy()
-{
-	return {ref<generic_windowObj::handlerObj>(&get_window_handler())};
-}
 
 void elementObj::implObj::removed_from_container(IN_THREAD_ONLY)
 {
@@ -307,7 +303,8 @@ ref<obj> elementObj::implObj
 
 			       handler->invoke(me->create_element_state
 					       (IN_THREAD,
-						element_state::current_state));
+						element_state::current_state),
+					       busy_impl{*me});
 		       });
 
 	return mcguffin;
@@ -377,7 +374,8 @@ void elementObj::implObj
 			       element_state::state_update_t reason)
 {
 	data(IN_THREAD).update_handlers->invoke(create_element_state
-						(IN_THREAD, reason));
+						(IN_THREAD, reason),
+						busy_impl{*this});
 }
 
 clip_region_set::clip_region_set(IN_THREAD_ONLY,

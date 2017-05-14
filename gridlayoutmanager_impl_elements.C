@@ -750,11 +750,19 @@ bool gridlayoutmanagerObj::implObj::elementsObj
 		      bool flag,
 		      const metrics::horizvert &my_metrics)
 {
+	auto do_not_expand_borders=[]
+		(metrics::grid_xy rowcol)
+		{
+			return IS_BORDER_RESERVED_COORD(rowcol);
+		};
+
 	auto new_horiz_metrics=
-		metrics::calculate_grid_horiz_metrics(all_elements);
+		metrics::calculate_grid_horiz_metrics(all_elements,
+						      do_not_expand_borders);
 
 	auto new_vert_metrics=
-		metrics::calculate_grid_vert_metrics(all_elements);
+		metrics::calculate_grid_vert_metrics(all_elements,
+						     do_not_expand_borders);
 
 	if (!flag && (horiz_metrics != new_horiz_metrics ||
 		      vert_metrics != new_vert_metrics))
@@ -775,7 +783,7 @@ bool gridlayoutmanagerObj::implObj::elementsObj
 metrics::axis gridlayoutmanagerObj::implObj::elementsObj
 ::total_metrics(const metrics::grid_metrics_t &metrics)
 {
-	metrics::axis total;
+	metrics::axis total{0, 0, 0};
 
 	auto b=metrics.begin();
 	auto e=metrics.end();

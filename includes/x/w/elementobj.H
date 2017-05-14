@@ -110,7 +110,7 @@ public:
 
 	//! Block all keyboard and pointer button processing, till further notice.
 
-	busy get_busy() const;
+	ref<obj> get_busy_mcguffin() const;
 
 	//! This display element is a label for another focusable element.
 

@@ -10,8 +10,8 @@
 #include "background_color.H"
 #include "generic_window_handler.H"
 #include "draw_info.H"
+#include "busy.H"
 #include "x/w/picture.H"
-#include "x/w/busy.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -94,9 +94,9 @@ ref<obj> elementObj::do_on_state_update(const element_state_update_handler_t &h)
 	return impl->do_on_state_update(h);
 }
 
-busy elementObj::get_busy() const
+x::ref<x::obj> elementObj::get_busy_mcguffin() const
 {
-	return impl->get_busy();
+	return busy_impl{*impl}.get_mcguffin();
 }
 
 std::ostream &operator<<(std::ostream &o, const element_state &s)

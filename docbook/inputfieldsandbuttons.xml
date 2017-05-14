@@ -273,6 +273,157 @@ factory->create_normal_button([]
       <xref linkend="containerrefs" /> for more information.
     </para>
   </section>
+
+  <section id="appdata">
+    <title>Attaching application data to display elements</title>
+
+    <para>
+      All display elements, including the main application window, have
+      an opaque <varname>appdata</varname> member that &app; does not use
+      itself.
+      <varname>appdata</varname> is an opaque
+      <classname>&ns;::ptr&lt;&ns;::obj&gt;</classname> object,
+      a reference-counted
+      object. See &libcxx;'s documentation for more information.
+    </para>
+
+    <para>
+      <varname>appdata</varname> provides convenient means for an application
+      to attach its own data to a display element, by deriving from
+      <classname>&ns;::obj</classname>, and saving a
+      <classname>&ns;::ref</classname> to it in <classname>appdata</classname>.
+    </para>
+
+    <para>
+      With application windows having complicated layouts, and a large number of
+      display elements, it's more convenient to stash away a direct reference
+      to a particular display element, rather than having to drill down and
+      find it, each time.
+      As explained in <xref linkend="containerrefs" />, &app;'s containers
+      own references to their elements, and in order for application
+      windows and their elements to be properly destroyed and terminated the
+      application must release its own references to them.
+      With &app; built on top of &libcxx;'s reference-counted object framework,
+      a lingering reference from an application to some display element will
+      prevent proper destruction of display elements.
+    </para>
+
+    <para>
+      The <varname>appdata</varname> provides a convenient way to compile a
+      list of all display elements in one place, safely:
+    </para>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  A list of the display elements gets collected into an object and
+	  installed as an <varname>appdata</varname> object, that's attached
+	  to the top level main window object.
+	  The <varname>appdata</varname> may contain anything that the
+	  application wants, not just <classname>&ns;::ref</classname>s to
+	  various display elements in the main window.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  The application only holds a reference to the top level
+	  display element, such as an
+	  <ulink url="&link-typedef-x--w-main-window;"><classname>&ns;::w::main_window</classname></ulink>.
+	  The application always uses the top level display element to access
+	  the <varname>appdata</varname>.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  When the top level display element goes out of scope and gets
+	  destroyed, no other reference to the <varname>appdata</varname>
+	  remain, so it gets destroyed, together with its references to
+	  the display elements in the <varname>appdata</varname>.
+	  Because top level elements, and all containers,
+	  <link linkend="containerrefs">own references to their
+	    child elements</link>, all references to the child elements
+	  properly go out of scope and they get properly destroyed.
+	</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>
+      The <link linkend="inputfieldsandbuttons">earlier example in this
+	chapter</link> gives an example of this approach.
+      <ulink url="examples/inputfieldsandbuttons.C">inputfieldsandbuttons.C</ulink>
+      creates a window containing, amongst other things, two
+      <ulink url="&link-typedef-x--w-input-field;"><classname>&ns;::w::input_field</classname></ulink>.
+      Besides being placed into the window, they're also placed into
+      an object that's attached to the main window's <varname>appdata</varname>.
+      When the window gets closed the application retrieves the main window's
+      <varname>appdata</varname>, retrieves the two input fields, and prints
+      their contents.
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+#include &lt;&ns;refptr_traits.H>
+#include "inputfields.inc.H"
+
+class appdataObj : virtual public &ns;::obj, public inputfields {
+public:
+
+	using inputfields::inputfields;
+};
+
+typedef &ns;::ref&lt;appdataObj&gt; appdata_t;</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      The sample program uses some supporting framework from the
+      &libcxx; base classes and templates library.
+      The
+      <ulink url="examples/Makefile.am">Makefile in the
+	<filename>examples</filename> directory</ulink>
+      runs a stylesheet to process
+      <ulink url="examples/inputfields.xml">inputfields.xml</ulink>, a
+      simplistic list of fields and their types.
+      This generates a header file that declares two classes. The first one
+      has a list of <classname>&ns;::ptr</classname>s for all fields. The
+      declared <classname>&ns;::ptr</classname>s are convenient to have when
+      creating them, piecemeal.
+    </para>
+
+    <para>
+      The second class is <classname>inputfields</classname>, with
+      the final collection of the listed fields,
+      as their natural <classname>&ns;::ref</classname>s.
+      This is multiply-inherited with
+      <classname>&ns;::obj</classname> to produce a reference-counted
+      object, an <classname>appdata_t</classname>. This gets
+      <function>create</function>()d and attached as the
+      <ulink url="&link-typedef-x--w-main-window;"><classname>&ns;::w::main_window</classname></ulink>'s
+      <varname>appdata</varname>.
+    </para>
+
+    <para>
+      Before exiting, the sample program retrieves the main window's
+      <varname>appdata</varname>, and shows the contents of the input
+      fields.
+    </para>
+
+    <para>
+      Every display element has an available <classname>appdata</classname>.
+      The application can use this to attach an object to any
+      display element; but it is important to understand that the display
+      element owns a reference to its <classname>appdata</classname> so this
+      object should not have its own reference to the display element or to
+      any of its parent container elements (see
+      <xref linkend="containerrefs" /> for more information). Otherwise
+      this creates a problematic circular reference.
+      With some care, it's possible to use
+      <ulink url="/weakptr.html">weak pointers</ulink>, though.
+    </para>
+  </section>
 </chapter>
 <!--
 Local Variables:

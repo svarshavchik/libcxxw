@@ -51,7 +51,7 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 	gridlayoutmanager create_gridlayoutmanager();
 
 	//! Get the display element at the given location.
-	elementptr get(size_t x, size_t y);
+	elementptr get(size_t row, size_t col);
  protected:
 	/////////////////////////////////////////////////////////////////////
 	//

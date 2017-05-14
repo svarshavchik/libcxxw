@@ -7,35 +7,53 @@
 
 #include <x/w/namespace.H>
 #include <x/w/busyfwd.H>
-#include <x/w/generic_windowobj.H>
-#include <x/refcnt.H>
 #include <x/ref.H>
+#include <x/obj.H>
 
 LIBCXXW_NAMESPACE_START
 
 //! Block processing of all key and button press event.
 
-//! While any instance of this object exists in scope, somewhere, the
-//! library ignores all key and button events.
+//! This is passed to callbacks invoked by the library's internal thread.
+//! The internal thread resumes processing X events after the callback returns.
+//! Invoking get_mcguffin() returns an opaque mcguffin.
+//!
+//! The execution thread ignores button and keyboard press events (but
+//! not button and keyboard release events) until the last reference to the
+//! mcguffin goes out of scope and it gets destroyed. So if the callback
+//! retrieves the mcguffin and stores it somewhere, or includes it in a
+//! message to the main application thread, the internal library thread
+//! will ignore button and keyboard press events until the last reference
+//! to the mcguffin goes out of scope and it gets destroyed.
+//!
+//! The execution thread may continue to invoke other callbacks that are
+//! unrelated to keyboard or button activity, and those callbacks can also
+//! get_mcguffin(). This will return another reference to the same mcguffin,
+//! and all references must go out of scope before the mcguffin gets destroyed.
+//!
+//! The pointer and button activity is blocked only for the top level
+//! application window from which the mcguffin was obtained. Each top level
+//! application window has its own individual busy mcguffin.
+//!
+//! Any display element's get_mcguffin() method can be used to obtain a
+//! busy mcguffin, independently.
 
 class busy {
 
-	//! Internal reference pointer.
-
-	ref<generic_windowObj::handlerObj> w;
-
 public:
 	//! Constructor
-	busy(const ref<generic_windowObj::handlerObj> &);
+	busy() LIBCXX_HIDDEN;
 
 	//! Destructor
-	~busy();
+	virtual ~busy() LIBCXX_HIDDEN;
 
-	//! Copy constructor
-	busy(const busy &);
+	//! Copy constructor is deleted.
+	busy(const busy &)=delete;
 
 	//! Assignment operator is deleted.
 	busy &operator=(const busy &)=delete;
+
+	virtual x::ref<x::obj> get_mcguffin() const=0;
 };
 
 LIBCXXW_NAMESPACE_END

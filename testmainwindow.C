@@ -175,7 +175,6 @@ sausage_factory_t sausages;
 #include <x/destroy_callback.H>
 #include <x/mpobj.H>
 #include <x/functionalrefptr.H>
-#include <x/mcguffinstash.H>
 #include <string>
 #include <iostream>
 #include <unistd.h>
@@ -231,16 +230,10 @@ auto runteststate(testmainwindowoptions &options,
 
 	LIBCXX_NAMESPACE::destroy_callback::base::guard guard;
 
-	typedef LIBCXX_NAMESPACE::mcguffinstash<> stash_t;
-
 	auto main_window=LIBCXX_NAMESPACE::w::main_window
 		::create([individual_show, &options]
 			 (const auto &main_window)
 			 {
-				 auto stash=stash_t::create();
-
-				 main_window->appdata=stash;
-
 				 LIBCXX_NAMESPACE::w::gridlayoutmanager m=main_window->get_layoutmanager();
 				 auto e=m->append_row()->padding(options.nopadding->value ? 0:1).create_canvas
 				 ([&]
@@ -251,7 +244,7 @@ auto runteststate(testmainwindowoptions &options,
 				 },
 				  10, 10);
 
-				 stash->insert("canvas", e);
+				 main_window->appdata=e;
 			 });
 
 	guard(main_window->connection_mcguffin());
@@ -260,7 +253,7 @@ auto runteststate(testmainwindowoptions &options,
 
 	auto mcguffin=main_window->on_state_update
 		([c]
-		 (const auto &what)
+		 (const auto &what, const auto &ignore)
 		 {
 			 std::cout << "Window state update: " << what
 			 << std::endl;
@@ -369,16 +362,10 @@ void runtestflashwithcolor(const testmainwindowoptions &options)
 
 	LIBCXX_NAMESPACE::destroy_callback::base::guard guard;
 
-	typedef LIBCXX_NAMESPACE::mcguffinstash<> stash_t;
-
 	auto main_window=LIBCXX_NAMESPACE::w::main_window
 		::create([&]
 			 (const auto &main_window)
 			 {
-				 auto stash=stash_t::create();
-
-				 main_window->appdata=stash;
-
 				 LIBCXX_NAMESPACE::w::gridlayoutmanager m=main_window->get_layoutmanager();
 				 LIBCXX_NAMESPACE::w::border_infomm b;
 
@@ -401,15 +388,13 @@ void runtestflashwithcolor(const testmainwindowoptions &options)
 						 set_filler_color(c);
 				 },
 				  10.0, 10.0);
-				 stash->insert("canvas", e);
 
-
+				 main_window->appdata=e;
 			 });
 
 	guard(main_window->connection_mcguffin());
 
-	LIBCXX_NAMESPACE::w::element e=
-		stash_t(main_window->appdata)->get("canvas");
+	LIBCXX_NAMESPACE::w::element e=main_window->appdata;
 
 	if (options.usemain->value)
 		e=main_window;
@@ -615,18 +600,12 @@ runtestthemescale(const testmainwindowoptions &options)
 
 	alarm(30);
 
-	typedef LIBCXX_NAMESPACE::mcguffinstash<> stash_t;
-
 	LIBCXX_NAMESPACE::destroy_callback::base::guard guard;
 
 	auto main_window=LIBCXX_NAMESPACE::w::main_window
 		::create([&]
 			 (const auto &main_window)
 			 {
-				 auto stash=stash_t::create();
-
-				 main_window->appdata=stash;
-
 				 LIBCXX_NAMESPACE::w::gridlayoutmanager m=main_window->get_layoutmanager();
 
 				 auto bg=main_window->get_screen()
@@ -646,7 +625,7 @@ runtestthemescale(const testmainwindowoptions &options)
 				  (const auto &ignore) {},
 				  30, 30);
 
-				 stash->insert("canvas", c);
+				 main_window->appdata=c;
 			 });
 
 	auto original_theme=main_window->get_screen()->get_connection()
@@ -658,7 +637,7 @@ runtestthemescale(const testmainwindowoptions &options)
 
 	auto mainmcguffin=main_window->on_state_update
 		([cmain]
-		 (const auto &what)
+		 (const auto &what, const auto &ignore)
 		 {
 			 std::cout << "Main window: " << what << std::endl;
 
@@ -670,11 +649,10 @@ runtestthemescale(const testmainwindowoptions &options)
 	countsizeupdate ccanvas=countsizeupdate::create();
 
 	auto canvasmcguffin=
-		LIBCXX_NAMESPACE::w::element(stash_t(main_window->appdata)
-					     ->get("canvas"))
+		LIBCXX_NAMESPACE::w::element(main_window->appdata)
 		->on_state_update
 		([ccanvas]
-		 (const auto &what)
+		 (const auto &what, const auto &ignore)
 		 {
 			 std::cout << "Canvas: " << what << std::endl;
 			 if (what.shown &&

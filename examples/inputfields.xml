@@ -1,0 +1,11 @@
+<collection>
+  <name>inputfields</name>
+  <ref>
+    <name>subject</name>
+    <type>x::w::input_field</type>
+  </ref>
+  <ref>
+    <name>text</name>
+    <type>x::w::input_field</type>
+  </ref>
+</collection>

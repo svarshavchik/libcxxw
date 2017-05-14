@@ -1,0 +1,11 @@
+<collection>
+  <name>inputfields</name>
+  <ref>
+    <name>first</name>
+    <type>LIBCXX_NAMESPACE::w::input_field</type>
+  </ref>
+  <ref>
+    <name>second</name>
+    <type>LIBCXX_NAMESPACE::w::input_field</type>
+  </ref>
+</collection>

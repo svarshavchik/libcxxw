@@ -9,6 +9,7 @@
 #include "focus/focusframecontainer.H"
 #include "focus/focusframecontainer_element.H"
 #include "icon.H"
+#include "busy.H"
 #include "x/w/factory.H"
 #include "container_element.H"
 #include "gridlayoutmanager.H"
@@ -67,7 +68,7 @@ void image_buttonObj::on_activate(const image_button_callback_t &callback)
 
 			 try {
 				 callback(true, i->get_image_number(),
-					  i->get_busy());
+					  busy_impl{*i});
 			 } CATCH_EXCEPTIONS;
 		 });
 }

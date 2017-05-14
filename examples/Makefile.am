@@ -2,6 +2,7 @@
 
 noinst_PROGRAMS=\
 	checkradio				\
+	gridlayoutmanager			\
 	helloworld				\
 	inputfieldsandbuttons			\
 	wordwraplabel
@@ -9,8 +10,15 @@ noinst_PROGRAMS=\
 checkradio_SOURCES=checkradio.C close_flag.H
 checkradio_LDADD=-lcxxw -lcxx
 
+$(call REFCOLLECTION_GEN,gridlayoutmanager.inc.H,gridlayoutmanager.xml)
+
+gridlayoutmanager_SOURCES=gridlayoutmanager.C msgqueue.H
+gridlayoutmanager_LDADD=-lcxxw -lcxx
+
 helloworld_SOURCES=helloworld.C close_flag.H
 helloworld_LDADD=-lcxxw -lcxx
+
+$(call REFCOLLECTION_GEN,inputfields.inc.H,inputfields.xml)
 
 inputfieldsandbuttons_SOURCES=inputfieldsandbuttons.C close_flag.H
 inputfieldsandbuttons_LDADD=-lcxxw -lcxx
