@@ -87,14 +87,14 @@ class LIBCXX_HIDDEN straight_border_implObj
 
 		const auto &b=this->best_border(IN_THREAD);
 
+		// The horizontal axis, for horizontal borders,
+		// can range 0 to infinite.
+
+		current_axi.*axis_major =
+			metrics::axis(0, 0, dim_t::infinite());
+
 		if (b)
 		{
-			// The horizontal axis, for horizontal borders,
-			// can range 0 to infinite.
-
-			current_axi.*axis_major =
-				metrics::axis(0, 0, dim_t::infinite());
-
 			auto &b_impl=b->border(IN_THREAD);
 			auto value= (*b_impl).*calc_minor;
 
