@@ -63,7 +63,7 @@ text_param &text_param::operator()(const std::experimental::u32string_view &s)
 	return *this;
 }
 
-text_param &text_param::operator()(const font &f)
+text_param &text_param::operator()(const explicit_font &f)
 {
 	auto s=string.size();
 
@@ -71,7 +71,7 @@ text_param &text_param::operator()(const font &f)
 	    theme_fonts.find(s) != theme_fonts.end())
 		throw EXCEPTION(gettextmsg("Duplicate font specification."));
 
-	fonts.insert({s, f});
+	fonts.insert({s, f.f});
 	return *this;
 }
 

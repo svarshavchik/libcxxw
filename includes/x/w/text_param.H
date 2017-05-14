@@ -331,8 +331,28 @@ public:
 	//! Add more text.
 	text_param &operator()(const std::experimental::u32string_view &s);
 
+	//! Helper class to avoid ambiguous resolution failures.
+
+	//! A font has a constructor that takes a string. Nothing wrong
+	//! with the constructor participating in implicit construction of
+	//! a font. However, our operator() accepts both fonts and strings.
+	//! This results in ambiguous overloads.
+	//!
+	//! Have our operator() take an explicit_font as a parameter, which
+	//! is constructible from a font. So an explicit font object must
+	//! be passed in to our constructor, and a string parameter resolves
+	//! to our operator().
+
+	class explicit_font {
+
+	public:
+		const font &f;
+
+		inline explicit_font(const font &f) : f(f) {}
+	};
+
 	//! Use this font for all text going forward.
-	text_param &operator()(const font &f);
+	text_param &operator()(const explicit_font &f);
 
 	//! Use this font for all text going forward.
 	text_param &operator()(const theme_font &f);
