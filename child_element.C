@@ -218,6 +218,14 @@ bool child_elementObj::process_key_event(IN_THREAD_ONLY, const key_event &ke)
 		.process_key_event(IN_THREAD, ke);
 }
 
+bool child_elementObj::enabled(IN_THREAD_ONLY)
+{
+	if (!container->get_element_impl().enabled(IN_THREAD))
+		return false;
+
+	return elementObj::implObj::enabled(IN_THREAD);
+}
+
 bool child_elementObj::process_button_event(IN_THREAD_ONLY,
 					    const button_event &be,
 					    xcb_timestamp_t timestamp)

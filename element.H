@@ -106,8 +106,15 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 		//! If this is an element that receives pointer and keyboard
 		//! focus, it can be selectively disabled. If this element
 		//! is disabled, we draw a shade over its contents.
+		//!
+		//! The enabled() method checks not only this element's
+		//! enabled flag, but also all of its parent containers.
+		//! If any of them are disabled this element is considered to
+		//! be disabled. The enabled flag only specifies whether
+		//! this element is explicitly set as enabled or not.
 
 		bool enabled=true;
+
 		//! State update handlers
 
 		callback_list<void (const element_state &)> update_handlers=
@@ -448,6 +455,10 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 	void schedule_redraw(IN_THREAD_ONLY);
 
+	//! schedule_redraw() this one, and all child elements.
+
+	void schedule_redraw_recursively(IN_THREAD_ONLY);
+
 	//! Forcibly redraw this display element
 
 	//! If this display element is not visible, calls clear_to_color().
@@ -661,6 +672,15 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//////////////////////////////////////////////////////////////////
 	//
 	// Input focus handling
+
+
+	//! Whether this element is enabled for focus processing.
+
+	//! Overridden in child_elementObj, to forward to the parent element.
+	//! Turning off focus in any parent element automatically turns off
+	//! focus processing for all of their child elements, in this manner.
+
+	virtual bool enabled(IN_THREAD_ONLY);
 
 	//! Used in input focus processing, accessed by the connection thread only.
 

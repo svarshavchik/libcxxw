@@ -258,6 +258,18 @@ void elementObj::implObj::schedule_redraw(IN_THREAD_ONLY)
 	IN_THREAD->elements_to_redraw(IN_THREAD)->insert(elementimpl(this));
 }
 
+void elementObj::implObj::schedule_redraw_recursively(IN_THREAD_ONLY)
+{
+	schedule_redraw(IN_THREAD);
+
+	for_each_child(IN_THREAD,
+		       [&]
+		       (const element &e)
+		       {
+			       e->impl->schedule_redraw_recursively(IN_THREAD);
+		       });
+}
+
 rectangle_set draw_info::entire_area() const
 {
 	return {{0, 0, absolute_location.width, absolute_location.height}};
@@ -684,6 +696,23 @@ background_color elementObj::implObj
 {
 	return get_screen()->impl->create_background_color(color_name,
 							   default_value);
+}
+
+bool elementObj::implObj::enabled(IN_THREAD_ONLY)
+{
+	// This element has been removed from the container.
+	//
+	// The destructor of the public object will make sure that
+	// the focus has been properly removed from me. But, when an
+	// entire container is removed, remove() recursively sets the removed
+	// flag on the container's entire contents, and this is going to
+	// prevent the input focus from bouncing until it escapes the
+	// elements that are being destroyed.
+
+	if (data(IN_THREAD).removed || !data(IN_THREAD).inherited_visibility)
+		return false;
+
+	return data(IN_THREAD).enabled;
 }
 
 void elementObj::implObj::keyboard_focus(IN_THREAD_ONLY,

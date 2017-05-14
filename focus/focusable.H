@@ -64,7 +64,7 @@ class LIBCXX_HIDDEN focusableImplObj : virtual public obj {
 
 	//! Whether this element is enabled for focusing.
 
-	bool is_enabled(IN_THREAD_ONLY);
+	bool enabled(IN_THREAD_ONLY);
 
 	//! Set enabled/disabled
 

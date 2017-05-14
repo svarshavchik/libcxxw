@@ -84,6 +84,10 @@ class LIBCXX_HIDDEN child_elementObj : public elementObj::implObj {
 	//! If child_element doesn't handle it, punt it back to the parent.
 	bool process_key_event(IN_THREAD_ONLY, const key_event &) override;
 
+	//! If the parent container is set as disabled, so are we.
+
+	bool enabled(IN_THREAD_ONLY) override;
+
 	//! Button events
 
 	//! All display elements, starting with the one under the pointer

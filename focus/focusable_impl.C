@@ -22,23 +22,9 @@ focusableImplObj::focusableImplObj()
 
 focusableImplObj::~focusableImplObj()=default;
 
-bool focusableImplObj::is_enabled(IN_THREAD_ONLY)
+bool focusableImplObj::enabled(IN_THREAD_ONLY)
 {
-	// This element has been removed from the container.
-	//
-	// The destructor of the public object will make sure that
-	// the focus has been properly removed from me. But, when an
-	// entire container is removed, remove() recursive sets the removed
-	// flag on the container's entire contents, and this is going to
-	// prevent the input focus from bouncing until it escapes the
-	// elements that are being destroyed.
-
-	const auto &data=get_focusable_element().data(IN_THREAD);
-
-	if (data.removed || !data.inherited_visibility)
-		return false;
-
-	return data.enabled;
+	return get_focusable_element().enabled(IN_THREAD);
 }
 
 #define GET_FOCUSABLE_FIELD_ITER() ({		\
@@ -150,8 +136,9 @@ void focusableImplObj::set_enabled(IN_THREAD_ONLY, bool flag)
 		return;
 
 	fe.data(IN_THREAD).enabled=flag;
-
-	fe.schedule_redraw(IN_THREAD);
+	// Because this may be the parent element, we want to recursively
+	// redraw this.
+	fe.schedule_redraw_recursively(IN_THREAD);
 
 	// Redraw all my labels too.
 
@@ -167,7 +154,7 @@ void focusableImplObj::set_enabled(IN_THREAD_ONLY, bool flag)
 			 (const auto &label_element,
 			  const auto &thats_me)
 			 {
-				 label_element->schedule_redraw(IN_THREAD);
+				 label_element->schedule_redraw_recursively(IN_THREAD);
 			 });
 	}
 
@@ -198,16 +185,15 @@ bool elementObj::implObj
 			 (const auto &thats_me,
 			  const auto &focusable)
 			 {
-				 auto &fe=focusable->get_focusable_element();
-
-				 focusable_enabled=fe.data(IN_THREAD).enabled;
+				 focusable_enabled=
+					 focusable->enabled(IN_THREAD);
 			 });
 
 		if (!focusable_enabled)
 			return true;
 
 	}
-	return !data(IN_THREAD).enabled;
+	return !enabled(IN_THREAD);
 }
 
 void elementObj::label_for(const focusable &f)
@@ -312,7 +298,7 @@ void focusableImplObj::next_focus(IN_THREAD_ONLY,
 
 	while (starting_iter != ff.end())
 	{
-		if ((*starting_iter)->is_enabled(IN_THREAD))
+		if ((*starting_iter)->enabled(IN_THREAD))
 		{
 			switch_focus(IN_THREAD, *starting_iter);
 			return;
@@ -322,7 +308,7 @@ void focusableImplObj::next_focus(IN_THREAD_ONLY,
 
 	for (starting_iter=ff.begin(); starting_iter != ff.end();
 	     ++starting_iter)
-		if ((*starting_iter)->is_enabled(IN_THREAD))
+		if ((*starting_iter)->enabled(IN_THREAD))
 		{
 			switch_focus(IN_THREAD, *starting_iter);
 			return;
@@ -341,7 +327,7 @@ void focusableImplObj::prev_focus(IN_THREAD_ONLY)
 	while (iter != ff.begin())
 	{
 		--iter;
-		if ((*iter)->is_enabled(IN_THREAD))
+		if ((*iter)->enabled(IN_THREAD))
 		{
 			switch_focus(IN_THREAD, *iter);
 			return;
@@ -351,7 +337,7 @@ void focusableImplObj::prev_focus(IN_THREAD_ONLY)
 	for (iter=ff.end(); iter != ff.begin(); )
 	{
 		--iter;
-		if ((*iter)->is_enabled(IN_THREAD))
+		if ((*iter)->enabled(IN_THREAD))
 		{
 			switch_focus(IN_THREAD, *iter);
 			return;

@@ -424,7 +424,7 @@ void generic_windowObj::handlerObj
 		++shortcuts.first;
 
 		if (!best_shortcut->get_hotspot_focusable()
-		    .is_enabled(IN_THREAD)
+		    .enabled(IN_THREAD)
 		    ||
 		    !best_shortcut->get_shortcut(IN_THREAD).matches(ke))
 			continue;
@@ -444,7 +444,7 @@ void generic_windowObj::handlerObj
 			++shortcuts.first;
 
 			if (!p->get_hotspot_focusable()
-			    .is_enabled(IN_THREAD)
+			    .enabled(IN_THREAD)
 			    ||
 			    !p->get_shortcut(IN_THREAD).matches(ke))
 				continue;
@@ -583,7 +583,7 @@ bool generic_windowObj::handlerObj::process_key_event(IN_THREAD_ONLY,
 			--e;
 			const auto &element=*e;
 
-			if (element->is_enabled(IN_THREAD))
+			if (element->enabled(IN_THREAD))
 			{
 				set_keyboard_focus_to(IN_THREAD, element);
 				return true;
@@ -600,7 +600,7 @@ bool generic_windowObj::handlerObj::process_key_event(IN_THREAD_ONLY,
 		}
 
 		for (const auto &element:focusable_fields(IN_THREAD))
-			if (element->is_enabled(IN_THREAD))
+			if (element->enabled(IN_THREAD))
 			{
 				set_keyboard_focus_to(IN_THREAD, element);
 				return true;

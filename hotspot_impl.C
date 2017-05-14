@@ -99,8 +99,9 @@ void hotspotObj::implObj::update(IN_THREAD_ONLY)
 
 	auto &e=get_hotspot_element();
 
-	if (e.current_keyboard_focus(IN_THREAD) ||
-	    e.current_pointer_focus(IN_THREAD))
+	if (e.enabled(IN_THREAD) &&
+	    (e.current_keyboard_focus(IN_THREAD) ||
+	     e.current_pointer_focus(IN_THREAD)))
 		new_temperature=temperature::warm;
 
 	if (new_temperature == temperature::warm &&
