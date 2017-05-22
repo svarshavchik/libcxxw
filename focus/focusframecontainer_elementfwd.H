@@ -15,7 +15,7 @@ LIBCXXW_NAMESPACE_START
 //! This template class multiply-inherits from the
 //! template parameter, and focusframecontainerObj::implObj.
 
-template<typename element_impl=containerObj::implObj>
+template<typename element_impl>
 class LIBCXX_HIDDEN focusframecontainer_elementObj
 	: public element_impl,
 	  public focusframecontainerObj::implObj {

@@ -138,6 +138,8 @@ libcxxw_la_SOURCES=\
 	focus/focusframecontainer_elementfwd.H	    \
 	focus/focusframecontainer_impl.C	    \
 	focus/focusframecontainer_impl.H	    \
+	focus/focusframefactory.C		    \
+	focus/focusframefactory.H		    \
 	focus/focusframelayoutimpl.C		    \
 	focus/focusframelayoutimpl.H		    \
 	focus/focusframelayoutimplfwd.H		    \

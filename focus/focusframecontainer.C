@@ -4,11 +4,11 @@
 */
 #include "libcxxw_config.h"
 #include "focus/focusable.H"
+#include "focus/focusframefactory.H"
 #include "focus/focusframecontainer.H"
 #include "focus/focusframecontainer_impl.H"
 #include "focus/focusframelayoutimpl.H"
 #include "new_layoutmanager.H"
-#include "x/w/gridfactory.H"
 #include "container.H"
 #include "gridlayoutmanager.H"
 
@@ -61,32 +61,9 @@ focusframecontainerObj::~focusframecontainerObj()=default;
 // set_focusable() returns a private factory object, whose created() installs
 // the new display element into the real, underlying grid factory.
 
-class LIBCXX_HIDDEN focusframelayoutmanagerObj : public factoryObj {
-
- public:
-
-	const focusframecontainer ffc;
-
-	focusframelayoutmanagerObj(const focusframecontainer &ffc)
-		: factoryObj(ffc->impl),
-		ffc(ffc)
-		{
-		}
-
-	void created(const element &e) override
-	{
-		gridlayoutmanager glm=ffc->get_layoutmanager();
-
-		glm->remove();
-
-		glm->append_row()->padding(0).created_internally(e);
-	}
-};
-
 factory focusframecontainerObj::set_focusable()
 {
-	return ref<focusframelayoutmanagerObj>::create
-		(ref<focusframecontainerObj>(this));
+	return focusframefactory::create(container(this));
 }
 
 element focusframecontainerObj::get_focusable() const
