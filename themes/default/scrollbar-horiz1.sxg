@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<sxg xmlns:xi="http://www.w3.org/2003/XInclude">
+  <width>30</width>
+  <height>30</height>
+
+  <widthmm>6</widthmm>
+  <heightmm>6</heightmm>
+
+  <widthfactor>1</widthfactor>
+  <heightfactor>1</heightfactor>
+
+  <xi:include href="scrollbar-knob-colors1.inc.sxg" xpointer="xpointer(/sxg/*)" />
+
+  <xi:include href="scrollbar-horiz.inc.sxg" xpointer="xpointer(/sxg/*)" />
+</sxg>

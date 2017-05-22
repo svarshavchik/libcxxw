@@ -125,6 +125,10 @@
     <dash>.75</dash>
   </border>
 
+  <border id="inputfocusnoton_border" from="inputfocusoff_border">
+    <color>0%</color>
+  </border>
+
   <border id="thin_inputfocusoff_border">
     <color>transparent</color>
     <width axis="horiz">.5</width>
@@ -258,5 +262,12 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
   <color id="textedit_background_color" scale="100%" />
 
   <border id="textedit_border" from="thin_0%" />
+
+  <!-- Scrollbars -->
+
+  <color  id="scrollbar_background_color" scale="30%" />
+  <color  id="scrollbar_foreground_color" scale="70%" />
+  <color  id="scrollbar_foreground_highlight_color" scale="80%" />
+  <color  id="scrollbar_dragging_color" scale="90%" />
 
 </theme>

@@ -1,0 +1,52 @@
+<sxg xmlns:xi="http://www.w3.org/2003/XInclude">
+
+  <pixmap id="mask">
+    <size>scaled</size>
+    <width>30</width>
+    <height>30</height>
+    <gc id="mask_gc" />
+  </pixmap>
+
+  <gc id="mask_gc">
+    <function>set</function>
+    <line_width>5</line_width>
+    <line>
+      <point>
+	<x orientation="beginning">0</x>
+	<y orientation="beginning">0</y>
+      </point>
+      <point>
+	<x orientation="ending">29</x>
+	<y orientation="beginning">0</y>
+      </point>
+      <point>
+	<x orientation="ending">29</x>
+	<y orientation="ending">29</y>
+      </point>
+      <point>
+	<x orientation="beginning">0</x>
+	<y orientation="ending">29</y>
+      </point>
+      <point>
+	<x orientation="beginning">0</x>
+	<y orientation="beginning">0</y>
+      </point>
+    </line>
+  </gc>
+  <render id="main">
+    <composite>
+      <op>over</op>
+
+      <width>30</width>
+      <height>30</height>
+      <mask>
+	<pixmap>mask</pixmap>
+      </mask>
+
+      <src>
+	<picture>border</picture>
+      </src>
+    </composite>
+  </render>
+
+</sxg>

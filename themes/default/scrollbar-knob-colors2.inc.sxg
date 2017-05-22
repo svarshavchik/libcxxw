@@ -1,0 +1,11 @@
+<sxg>
+  <picture id="outline">
+    <type>rgb</type>
+    <color>scrollbar_foreground_highlight_color</color>
+  </picture>
+
+  <picture id="fill">
+    <type>rgb</type>
+    <color>scrollbar_dragging_color</color>
+  </picture>
+</sxg>

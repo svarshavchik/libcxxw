@@ -1,0 +1,190 @@
+<sxg xmlns:xi="http://www.w3.org/2003/XInclude">
+
+  <xi:include href="scroll.inc.sxg" xpointer="xpointer(/sxg/*)" />
+
+  <render id="main">
+    <composite>
+      <op>over</op>
+
+      <width>30</width>
+      <height>30</height>
+      <src>
+	<picture>bg</picture>
+      </src>
+    </composite>
+
+    <tristrip>
+      <op>over</op>
+      <mask>mask</mask>
+      <src>chevron_outline</src>
+      <point>
+	<x orientation="beginning">5</x>
+	<y orientation="beginning">15</y>
+      </point>
+      <point>
+	<x orientation="beginning">5</x>
+	<y orientation="beginning">20</y>
+      </point>
+      <point>
+	<x orientation="beginning">15</x>
+	<y orientation="beginning">20</y>
+      </point>
+      <point>
+	<x orientation="beginning">15</x>
+	<y orientation="beginning">25</y>
+      </point>
+      <point>
+	<x orientation="beginning">25</x>
+	<y orientation="beginning">20</y>
+      </point>
+    </tristrip>
+
+    <tristrip>
+      <op>over</op>
+      <mask>mask</mask>
+      <src>chevron_outline</src>
+      <point>
+	<x orientation="beginning">15</x>
+	<y orientation="beginning">25</y>
+      </point>
+      <point>
+	<x orientation="beginning">15</x>
+	<y orientation="beginning">20</y>
+      </point>
+      <point>
+	<x orientation="beginning">25</x>
+	<y orientation="beginning">20</y>
+      </point>
+      <point>
+	<x orientation="beginning">25</x>
+	<y orientation="beginning">15</y>
+      </point>
+    </tristrip>
+
+    <tristrip>
+      <op>over</op>
+      <mask>mask</mask>
+      <src>chevron_outline</src>
+      <point>
+	<x orientation="beginning">5</x>
+	<y orientation="beginning">5</y>
+      </point>
+      <point>
+	<x orientation="beginning">5</x>
+	<y orientation="beginning">10</y>
+      </point>
+      <point>
+	<x orientation="beginning">15</x>
+	<y orientation="beginning">10</y>
+      </point>
+      <point>
+	<x orientation="beginning">15</x>
+	<y orientation="beginning">15</y>
+      </point>
+      <point>
+	<x orientation="beginning">25</x>
+	<y orientation="beginning">10</y>
+      </point>
+    </tristrip>
+
+    <tristrip>
+      <op>over</op>
+      <mask>mask</mask>
+      <src>chevron_outline</src>
+      <point>
+	<x orientation="beginning">15</x>
+	<y orientation="beginning">15</y>
+      </point>
+      <point>
+	<x orientation="beginning">15</x>
+	<y orientation="beginning">10</y>
+      </point>
+      <point>
+	<x orientation="beginning">25</x>
+	<y orientation="beginning">10</y>
+      </point>
+      <point>
+	<x orientation="beginning">25</x>
+	<y orientation="beginning">5</y>
+      </point>
+    </tristrip>
+  </render>
+
+  <xi:include href="scroll-border.inc.sxg" xpointer="xpointer(/sxg/*)" />
+
+  <gc id="mask_gc">
+    <function>clear</function>
+
+    <clear />
+
+    <function>set</function>
+    <line_width>2</line_width>
+
+    <line>
+      <point>
+	<x orientation="beginning">5</x>
+	<y orientation="beginning">17.5</y>
+      </point>
+
+      <point>
+	<x orientation="beginning">15</x>
+	<y orientation="beginning">22.5</y>
+      </point>
+
+      <point>
+	<x orientation="beginning">25</x>
+	<y orientation="beginning">17.5</y>
+      </point>
+    </line>
+
+    <line>
+      <point>
+	<x orientation="beginning">5</x>
+	<y orientation="beginning">7.5</y>
+      </point>
+
+      <point>
+	<x orientation="beginning">15</x>
+	<y orientation="beginning">12.5</y>
+      </point>
+
+      <point>
+	<x orientation="beginning">25</x>
+	<y orientation="beginning">7.5</y>
+      </point>
+    </line>
+
+    <function>clear</function>
+
+    <fill>
+      <x>0</x>
+      <y>0</y>
+      <width>6</width>
+      <height>30</height>
+    </fill>
+
+    <fill>
+      <x>24</x>
+      <y>0</y>
+      <width>6</width>
+      <height>30</height>
+    </fill>
+  </gc>
+
+  <render id="main">
+    <composite>
+      <op>over</op>
+
+      <width>30</width>
+      <height>30</height>
+      <mask>
+	<pixmap>mask</pixmap>
+      </mask>
+
+      <src>
+	<picture>chevron_fill</picture>
+      </src>
+    </composite>
+  </render>
+
+</sxg>

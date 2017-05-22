@@ -48,6 +48,8 @@ suppressfile*
 /testrichtext
 /testrichtextstring
 /testrichtextiterator
+/testscrollbar
+/testscrollbar_metrics
 /testtextparam
 /m4
 /xml

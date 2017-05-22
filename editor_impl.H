@@ -3,7 +3,7 @@
 ** See COPYING for distribution information.
 */
 #ifndef editor_impl_h
-#define editorimpl_h
+#define editor_impl_h
 
 #include "editorobj.H"
 #include "label.H"

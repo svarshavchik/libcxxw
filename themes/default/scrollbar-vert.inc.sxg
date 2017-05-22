@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+
+<sxg>
+  <render id="main">
+    <composite>
+      <op>src</op>
+      <x>0</x>
+      <y>0</y>
+      <width>30</width>
+      <height>30</height>
+      <src>
+	<picture>outline</picture>
+      </src>
+    </composite>
+    <composite>
+      <op>src</op>
+      <x>5</x>
+      <y>0</y>
+      <width>20</width>
+      <height>30</height>
+      <src>
+	<picture>fill</picture>
+      </src>
+    </composite>
+  </render>
+</sxg>

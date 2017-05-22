@@ -406,6 +406,16 @@ libcxxw_la_SOURCES=\
 	screen_solidcolorpictures.C		    \
 	screen_solidcolorpictures.H		    \
 	screen_solidcolorpicturesfwd.H		    \
+	scrollbar/scrollbar.C			    \
+	scrollbar/scrollbar.H			    \
+	scrollbar/scrollbarfwd.			    \
+	scrollbar/scrollbarobj.H		    \
+	scrollbar/scrollbar_icon_set.C		    \
+	scrollbar/scrollbar_icon_set.H		    \
+	scrollbar/scrollbar_impl.C		    \
+	scrollbar/scrollbar_impl.H		    \
+	scrollbar/scrollbar_metrics.C		    \
+	scrollbar/scrollbar_metrics.H		    \
 	shortcut.C				    \
 	selection/current_selection.C		    \
 	selection/current_selection.H		    \
@@ -489,6 +499,7 @@ TESTPROGRAMS=\
 	testrichtextstring				\
 	testrichtext					\
 	testrichtextiterator				\
+	testscrollbar_metrics			        \
 	testtextparam					\
 	#
 
@@ -498,6 +509,7 @@ INTERACTIVETESTPROGRAMS=\
 	testinputfield					\
 	testmainwindow					\
 	testlabel					\
+	testscrollbar					\
 	testwordwrappablelabel				\
 	#
 
@@ -552,6 +564,14 @@ testrichtextiterator_LDFLAGS=-static $(STATICLINKFLAGS)
 
 testrichtextstring_SOURCES=testrichtextstring.C
 testrichtextstring_LDADD=-lcxx
+
+testscrollbar_SOURCES=testscrollbar.C
+testscrollbar_LDADD=libcxxw.la
+testscrollbar_LDFLAGS=-static $(STATICLINKFLAGS)
+
+testscrollbar_metrics_SOURCES=testscrollbar_metrics.C
+testscrollbar_metrics_LDADD=libcxxw.la
+testscrollbar_metrics_LDFLAGS=-static $(STATICLINKFLAGS)
 
 testtextparam_SOURCES=testtextparam.C
 testtextparam_LDADD=libcxxw.la
