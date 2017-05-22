@@ -247,31 +247,23 @@ class LIBCXX_HIDDEN border_implObj: virtual public obj, public border_info {
 
 	//! Draw a top-left corner.
 	void draw_cornertl(IN_THREAD_ONLY,
-			   const draw_info &di,
-			   coord_t x,
-			   coord_t y,
-			   const grid_elementptr &element) const;
+			   const corner_draw_info &di,
+			   const surrounding_elements_info &elements) const;
 
 	//! Draw a top-right corner.
 	void draw_cornertr(IN_THREAD_ONLY,
-			   const draw_info &di,
-			   coord_t x,
-			   coord_t y,
-			   const grid_elementptr &element) const;
+			   const corner_draw_info &di,
+			   const surrounding_elements_info &elements) const;
 
 	//! Draw a bottom-left corner.
 	void draw_cornerbl(IN_THREAD_ONLY,
-			   const draw_info &di,
-			   coord_t x,
-			   coord_t y,
-			   const grid_elementptr &element) const;
+			   const corner_draw_info &di,
+			   const surrounding_elements_info &elements) const;
 
 	//! Draw a bottom-right corner.
 	void draw_cornerbr(IN_THREAD_ONLY,
-			   const draw_info &di,
-			   coord_t x,
-			   coord_t y,
-			   const grid_elementptr &element) const;
+			   const corner_draw_info &di,
+			   const surrounding_elements_info &elements) const;
 
 	//! When there's no radius, all the corners are just plain squares.
 	void draw_square_corner(const draw_info &di,

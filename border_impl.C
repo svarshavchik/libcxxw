@@ -133,6 +133,7 @@ struct border_implObj::corner_draw_info {
 
 	void topleft_background_fill(IN_THREAD_ONLY,
 				     const surrounding_elements_info &elements)
+		const
 	{
 		if (!elements.topleft)
 			return;
@@ -154,6 +155,7 @@ struct border_implObj::corner_draw_info {
 
 	void topright_background_fill(IN_THREAD_ONLY,
 				      const surrounding_elements_info &elements)
+		const
 	{
 		if (!elements.topright)
 			return;
@@ -177,7 +179,7 @@ struct border_implObj::corner_draw_info {
 
 	void bottomleft_background_fill(IN_THREAD_ONLY,
 					const surrounding_elements_info
-					&elements)
+					&elements) const
 	{
 		if (!elements.bottomleft)
 			return;
@@ -201,7 +203,7 @@ struct border_implObj::corner_draw_info {
 
 	void bottomright_background_fill(IN_THREAD_ONLY,
 					 const surrounding_elements_info
-					 &elements)
+					 &elements) const
 	{
 		if (!elements.bottomright)
 			return;
@@ -222,6 +224,26 @@ struct border_implObj::corner_draw_info {
 						 new_x, new_y,
 						 right_half_width,
 						 bottom_half_height);
+	}
+
+	//! Invoke the appropriate background_fill based on which_corners.
+
+	void background_fill(IN_THREAD_ONLY,
+			     int which_corners,
+			     const surrounding_elements_info &elements)
+		const
+	{
+		if (which_corners & border_impl::base::cornertl())
+			topleft_background_fill(IN_THREAD, elements);
+
+		if (which_corners & border_impl::base::cornertr())
+			topright_background_fill(IN_THREAD, elements);
+
+		if (which_corners & border_impl::base::cornerbl())
+			bottomleft_background_fill(IN_THREAD, elements);
+
+		if (which_corners & border_impl::base::cornerbr())
+			bottomright_background_fill(IN_THREAD, elements);
 	}
 };
 
@@ -431,10 +453,13 @@ void border_implObj::draw_corner(IN_THREAD_ONLY,
 				 const surrounding_elements_info &elements
 				 ) const
 {
-	if (no_corner_border(di))
-		return;
-
 	corner_draw_info cdi{di, *this};
+
+	if (no_corner_border(di))
+	{
+		cdi.background_fill(IN_THREAD, which_corners, elements);
+		return;
+	}
 
 	bool tl=which_corners & border_impl::base::cornertl() ? true:false;
 	bool tr=which_corners & border_impl::base::cornertr() ? true:false;
@@ -455,19 +480,37 @@ void border_implObj::draw_corner(IN_THREAD_ONLY,
 
 	// If which_corners is a single corner, we have special code for that.
 
+	// Before we draw the corner, though, make sure, that all other
+	// corners' background colors are filled in from the corners'
+	// element.
+
 	switch (which_corners) {
 	case border_impl::base::cornertl():
-		draw_cornertl(IN_THREAD, di, cdi.x, cdi.y, elements.topleft);
+	case border_impl::base::cornertr():
+	case border_impl::base::cornerbl():
+	case border_impl::base::cornerbr():
+
+		int other_corners = (border_impl::base::cornertl() |
+				     border_impl::base::cornertr() |
+				     border_impl::base::cornerbl() |
+				     border_impl::base::cornerbr()
+				     ) ^ which_corners;
+		cdi.background_fill(IN_THREAD, other_corners, elements);
+		break;
+	}
+
+	switch (which_corners) {
+	case border_impl::base::cornertl():
+		draw_cornertl(IN_THREAD, cdi, elements);
 		return;
 	case border_impl::base::cornertr():
-		draw_cornertr(IN_THREAD, di, cdi.x, cdi.y, elements.topright);
+		draw_cornertr(IN_THREAD, cdi, elements);
 		return;
 	case border_impl::base::cornerbl():
-		draw_cornerbl(IN_THREAD, di, cdi.x, cdi.y, elements.bottomleft);
+		draw_cornerbl(IN_THREAD, cdi, elements);
 		return;
 	case border_impl::base::cornerbr():
-		draw_cornerbr(IN_THREAD, di, cdi.x, cdi.y,
-			      elements.bottomright);
+		draw_cornerbr(IN_THREAD, cdi, elements);
 		return;
 	}
 
@@ -479,17 +522,7 @@ void border_implObj::draw_corner(IN_THREAD_ONLY,
 	// elements to draw_<name>_(). We want to fill in the background
 	// color before any of the stubs get drawn.
 
-	if (which_corners & border_impl::base::cornertl())
-		cdi.topleft_background_fill(IN_THREAD, elements);
-
-	if (which_corners & border_impl::base::cornertr())
-		cdi.topright_background_fill(IN_THREAD, elements);
-
-	if (which_corners & border_impl::base::cornerbl())
-		cdi.bottomleft_background_fill(IN_THREAD, elements);
-
-	if (which_corners & border_impl::base::cornerbr())
-		cdi.bottomright_background_fill(IN_THREAD, elements);
+	cdi.background_fill(IN_THREAD, which_corners, elements);
 
 	bool drew_top=false, drew_bottom=false,
 		drew_left=false, drew_right=false;
@@ -551,79 +584,79 @@ void border_implObj::draw_corner(IN_THREAD_ONLY,
 }
 
 void border_implObj::draw_cornertl(IN_THREAD_ONLY,
-				   const draw_info &di,
-				   coord_t x,
-				   coord_t y,
-				   const grid_elementptr &element) const
+				   const corner_draw_info &cdi,
+				   const surrounding_elements_info &elements)
+	const
 {
 	if (hradius != 0 && vradius != 0)
 	{
 		draw_round_corner(IN_THREAD,
-				  di,
-				  x, y,
+				  cdi.di,
+				  cdi.x, cdi.y,
 				  false, false,
 				  270 * 64, 90 * 64,
-				  element);
+				  elements.topleft);
 		return;
 	}
-	draw_square_corner(di, x, y);
+	cdi.topleft_background_fill(IN_THREAD, elements);
+	draw_square_corner(cdi.di, cdi.x, cdi.y);
 }
 
 void border_implObj::draw_cornertr(IN_THREAD_ONLY,
-				   const draw_info &di,
-				   coord_t x,
-				   coord_t y,
-				   const grid_elementptr &element) const
+				   const corner_draw_info &cdi,
+				   const surrounding_elements_info &elements)
+	const
 {
 	if (hradius != 0 && vradius != 0)
 	{
 		draw_round_corner(IN_THREAD,
-				  di,
-				  x, y,
+				  cdi.di,
+				  cdi.x, cdi.y,
 				  true, false,
 				  180 * 64, 90 * 64,
-				  element);
+				  elements.topright);
 		return;
 	}
-	draw_square_corner(di, x, y);
+	cdi.topright_background_fill(IN_THREAD, elements);
+	draw_square_corner(cdi.di, cdi.x, cdi.y);
 }
 
 void border_implObj::draw_cornerbl(IN_THREAD_ONLY,
-				   const draw_info &di,
-				   coord_t x,
-				   coord_t y,
-				   const grid_elementptr &element) const
+				   const corner_draw_info &cdi,
+				   const surrounding_elements_info &elements)
+	const
 {
 	if (hradius != 0 && vradius != 0)
 	{
 		draw_round_corner(IN_THREAD,
-				  di,
-				  x, y,
+				  cdi.di,
+				  cdi.x, cdi.y,
 				  false, true,
 				  90 * 64, -90 * 64,
-				  element);
+				  elements.bottomleft);
 		return;
 	}
-	draw_square_corner(di, x, y);
+	cdi.bottomleft_background_fill(IN_THREAD, elements);
+	draw_square_corner(cdi.di, cdi.x, cdi.y);
 }
 
 void border_implObj::draw_cornerbr(IN_THREAD_ONLY,
-				   const draw_info &di,
-				   coord_t x,
-				   coord_t y,
-				   const grid_elementptr &element) const
+				   const corner_draw_info &cdi,
+				   const surrounding_elements_info &elements)
+	const
 {
 	if (hradius != 0 && vradius != 0)
 	{
 		draw_round_corner(IN_THREAD,
-				  di,
-				  x, y,
+				  cdi.di,
+				  cdi.x, cdi.y,
 				  true, true,
 				  180 * 64, -90 * 64,
-				  element);
+				  elements.bottomright);
 		return;
 	}
-	draw_square_corner(di, x, y);
+	cdi.bottomright_background_fill(IN_THREAD, elements);
+	draw_square_corner(cdi.di, cdi.x, cdi.y);
 }
 
 void border_implObj::draw_square_corner(const draw_info &di,
