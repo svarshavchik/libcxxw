@@ -493,9 +493,16 @@ void generic_windowObj::handlerObj
 ::button_release_event(IN_THREAD_ONLY,
 		       const xcb_button_release_event_t *event)
 {
+	// We need to remove all the grab first, in the case that the
+	// code that processed the button release event wants to regrab
+	// the pointer, for some reason. However we need to use the
+	// current grab status for do_button_event(), so save it first.
+
+	bool was_grabbed=grab_locked(IN_THREAD);
 	grab_locked(IN_THREAD)=false;
 	release_grabs(IN_THREAD); // Any previous grabs.
-	do_button_event(IN_THREAD, event, false);
+
+	do_button_event(IN_THREAD, event, false, was_grabbed);
 }
 
 void generic_windowObj::handlerObj
@@ -503,12 +510,22 @@ void generic_windowObj::handlerObj
 		  const xcb_button_release_event_t *event,
 		  bool buttonpress)
 {
+	do_button_event(IN_THREAD, event, buttonpress, grab_locked(IN_THREAD));
+}
+
+void generic_windowObj::handlerObj
+::do_button_event(IN_THREAD_ONLY,
+		  const xcb_button_release_event_t *event,
+		  bool buttonpress,
+		  bool was_grabbed)
+{
 	auto &keysyms=
 		get_screen()->get_connection()->impl->keysyms_info(IN_THREAD);
 
 	button_event be{event->state, keysyms, event->detail, buttonpress};
 
-	report_pointer_xy(IN_THREAD, be, event->event_x, event->event_y);
+	report_pointer_xy(IN_THREAD, be, event->event_x, event->event_y,
+			  was_grabbed);
 
 	// report_pointer_xy() might not always set
 	// most_recent_element_with_pointer(IN_THREAD).
@@ -714,7 +731,17 @@ void generic_windowObj::handlerObj
 		    coord_t x,
 		    coord_t y)
 {
-	if (grab_locked(IN_THREAD) &&
+	report_pointer_xy(IN_THREAD, mask, x, y, grab_locked(IN_THREAD));
+}
+
+void generic_windowObj::handlerObj
+::report_pointer_xy(IN_THREAD_ONLY,
+		    const input_mask &mask,
+		    coord_t x,
+		    coord_t y,
+		    bool was_grabbed)
+{
+	if (was_grabbed &&
 	    most_recent_element_with_pointer(IN_THREAD))
 	{
 		auto e=most_recent_element_with_pointer(IN_THREAD);

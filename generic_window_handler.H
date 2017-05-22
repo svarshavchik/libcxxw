@@ -205,10 +205,19 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	void focus_change_event(IN_THREAD_ONLY, bool) override;
 
  private:
+
 	//! Find an element for the reported pointer X and Y coordinates.
 
 	//! And if it's a different element now, report_pointer_focus()
 	//! changes, accordingly.
+
+	void report_pointer_xy(IN_THREAD_ONLY,
+			       const input_mask &mask,
+			       coord_t x,
+			       coord_t y,
+			       bool was_grabbed);
+
+	//! Use grab_locked() for was_grabbed in the overloaded method.
 
 	void report_pointer_xy(IN_THREAD_ONLY,
 			       const input_mask &mask,
@@ -301,6 +310,13 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! process_button_event(). If the button event does not get processed
 	//! and it is a button #1 press, the keyboard input focus gets removed
 	//! from the element that currently has the keyboard input focus.
+
+	void do_button_event(IN_THREAD_ONLY,
+			     const xcb_button_release_event_t *event,
+			     bool buttonpress,
+			     bool was_grabbed);
+
+	//! Use grab_locked() for was_grabbed in the overloaded method.
 
 	void do_button_event(IN_THREAD_ONLY,
 			     const xcb_button_release_event_t *event,
