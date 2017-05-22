@@ -7,6 +7,7 @@
 #include <x/exception.H>
 #include <x/destroy_callback.H>
 #include <x/refptr_traits.H>
+#include <x/weakcapture.H>
 
 #include <x/w/new_layoutmanager.H>
 #include <x/w/main_window.H>
@@ -16,14 +17,11 @@
 #include <x/w/label.H>
 #include <x/w/button.H>
 #include <x/w/image_button.H>
-#include <x/w/canvas.H>
-#include <x/w/busy.H>
 #include <string>
 #include <iostream>
 
 #include "gridlayoutmanager.inc.H"
-
-#include "msgqueue.H"
+#include "close_flag.H"
 
 // This is attached as the main_window's appdata.
 
@@ -35,26 +33,18 @@ class appdataObj : virtual public x::obj,
 
 public:
 
-	// The message queue, from the callbacks.
-
-	x::ref<msgqueueObj> msgqueue=x::ref<msgqueueObj>::create();
-
-	// Whether the close window button has been pressed.
-
-	bool close_flag=false;
-
-	appdataObj(const mainwindowfieldsptr &p) : mainwindowfields(p) {}
+	using mainwindowfields::mainwindowfields;
 };
 
 typedef x::ref<appdataObj> appdata;
 
-static void update_button_state(const auto &my_appdata);
+static void update_button_state(const appdata &my_appdata);
 
 // When the insert button gets clicked we insert a
 // new label in the horizontal_container, at the beginning of the row,
 // pushing all other elements to the right.
 
-static inline void insert_column(const auto &my_appdata,
+static inline void insert_column(const appdata &my_appdata,
 				 int counter)
 {
 	std::ostringstream o;
@@ -78,7 +68,7 @@ static inline void insert_column(const auto &my_appdata,
 // And the "Remove Column" button removes the last label in the horizontal
 // container.
 
-static inline void remove_column(const auto &my_appdata)
+static inline void remove_column(const appdata &my_appdata)
 {
 	x::w::gridlayoutmanager
 		l=my_appdata->horizontal_container->get_layoutmanager();
@@ -101,7 +91,7 @@ static inline void remove_column(const auto &my_appdata)
 //
 // The new row consists of a checkbox and a label.
 
-static inline void insert_row(const auto &my_appdata,
+static inline void insert_row(const appdata &my_appdata,
 			      int counter)
 {
 	std::ostringstream o;
@@ -150,7 +140,7 @@ static inline void insert_row(const auto &my_appdata,
 
 // And the "Remove Row" button removes the bottom-most row.
 
-static inline void remove_row(const auto &my_appdata)
+static inline void remove_row(const appdata &my_appdata)
 {
 	x::w::gridlayoutmanager l=
 		my_appdata->vertical_container->get_layoutmanager();
@@ -169,7 +159,7 @@ static inline void remove_row(const auto &my_appdata)
 // remove_column()) redundant. We'll never be able to get there, in that case.
 // Still that's a proper thing to do.
 
-static void update_button_state(const auto &my_appdata)
+static void update_button_state(const appdata &my_appdata)
 {
 	x::w::gridlayoutmanager l=
 		my_appdata->horizontal_container->get_layoutmanager();
@@ -218,6 +208,21 @@ inline void create_mainwindow(const x::w::main_window &main_window)
 				   },
 				   x::w::new_gridlayoutmanager());
 
+	// The vertical container in the middle part will have rows containing
+	// a checkbox and its label. The top part and the bottom part will
+	// be much wider. The main window's grid layout manager will size
+	// all parts to the same width, and the grid layout manager for the
+	// nested container in the middle part will attempt to spread apart
+	// its two columns evenly, across, its horizontal space.
+	//
+	// This will look bad. Use requested_col_width() to instruct
+	// vertical_container's grid layout manager that column #1 should
+	// take up 100% of the container's width. That, of course, will never
+	// happen, since there will also be a column with a checkbox, on each
+	// row, so the grid layout manager will try its best to do this,
+	// and end up using all remaining horizontal width for column #1,
+	// so its label gets left aligned and appear right next to the
+	// checkbox in column #0.
 	fields.vertical_container=layout->append_row()->create_container
 		([]
 		 (const auto &container)
@@ -262,71 +267,70 @@ inline void create_mainwindow(const x::w::main_window &main_window)
 	auto my_appdata=appdata::create(fields);
 	main_window->appdata=my_appdata;
 
-	// Now we'll attach all the callbacks to the buttons. Each callback
-	// enqueue a message to be processed by the main execution thread.
+	// Excluding references in automatic scope, the main_window
+	// owns a reference on the appdata, which owns references to all the
+	// buttons and containers (and the main_window also has its own
+	// references to its containers as child elements).
 	//
-	// Carefully, each callback's message captures the busy mcguffin
-	// by value. When the message lambda gets executed, and the enqueue
-	// message object gets removed from the queue and destroyed, the
-	// busy mcguffin gets destroyed, reenabling pointer and keyboard
-	// processing.
+	// The callbacks are owned by their respective display elements,
+	// so the callbacks cannot capture references directly to the
+	// main_window, or appdata. This will create a circular reference.
+	//
+	// To do this correctly, we'll use make_weak_capture() to capture
+	// a weak reference to the main_window, with the callback recovering
+	// a strong reference during execution (or doing nothing if the
+	// weakly reference object no longer exists).
 
 	my_appdata->insert_column->on_activate
-		([msgqueue=my_appdata->msgqueue, counter=0]
+		([main_window=x::make_weak_capture(main_window), counter=0]
 		 (const auto &busy)
 		 mutable
 		 {
-			 msgqueue->message
-				 ([mcguffin=busy.get_mcguffin(),
-				   counter=++counter]
-				  (const auto &main_window,
-				   const auto &my_appdata)
+			 main_window.get
+				 ([&]
+				  (const auto &main_window)
 				  {
-					  insert_column(my_appdata,
-							counter);
+					  insert_column(main_window->appdata,
+							++counter);
 				  });
 		 });
 
 	my_appdata->remove_column->on_activate
-		([msgqueue=my_appdata->msgqueue]
+		([main_window=x::make_weak_capture(main_window)]
 		 (const auto &busy)
 		 {
-			 msgqueue->message
-				 ([mcguffin=busy.get_mcguffin()]
-				  (const auto &main_window,
-				   const auto &my_appdata)
+			 main_window.get
+				 ([&]
+				  (const auto &main_window)
 				  {
-					  remove_column(my_appdata);
+					  remove_column(main_window->appdata);
 				  });
 		 });
 
 	my_appdata->insert_row->on_activate
-		([msgqueue=my_appdata->msgqueue, counter=0]
+		([main_window=x::make_weak_capture(main_window), counter=0]
 		 (const auto &busy)
 		 mutable
 		 {
-			 msgqueue->message
-				 ([mcguffin=busy.get_mcguffin(),
-				   counter=++counter]
-				  (const auto &main_window,
-				   const auto &my_appdata)
+			 main_window.get
+				 ([&]
+				  (const auto &main_window)
 				  {
-					  insert_row(my_appdata,
-						     counter);
+					  insert_row(main_window->appdata,
+						     ++counter);
 				  });
 		 });
 
 	my_appdata->remove_row->on_activate
-		([msgqueue=my_appdata->msgqueue, counter=0]
+		([main_window=x::make_weak_capture(main_window), counter=0]
 		 (const auto &busy)
 		 mutable
 		 {
-			 msgqueue->message
-				 ([mcguffin=busy.get_mcguffin()]
-				  (const auto &main_window,
-				   const auto &my_appdata)
+			 main_window.get
+				 ([&]
+				  (const auto &main_window)
 				  {
-					  remove_row(my_appdata);
+					  remove_row(main_window->appdata);
 				  });
 		 });
 
@@ -350,26 +354,19 @@ void gridlayoutmanager()
 
 	guard(main_window->connection_mcguffin());
 
-	main_window->set_window_title("Hello world!");
+	main_window->set_window_title("Grid Layout Manager");
 
-	// Use the message queue framework to set the close_flag.
+	auto close_flag=close_flag_ref::create();
 
 	main_window->on_delete
-		([msgqueue=my_appdata->msgqueue]
+		([close_flag]
 		 {
-			 msgqueue->message
-				 ([]
-				  (const auto &main_window,
-				   const auto &my_appdata)
-				  {
-					  my_appdata->close_flag=true;
-				  });
+			 close_flag->close();
 		 });
 
 	main_window->show_all();
 
-	while (!my_appdata->close_flag)
-		my_appdata->msgqueue->next_message(main_window, my_appdata);
+	close_flag->wait();
 }
 
 int main(int argc, char **argv)

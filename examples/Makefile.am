@@ -12,7 +12,7 @@ checkradio_LDADD=-lcxxw -lcxx
 
 $(call REFCOLLECTION_GEN,gridlayoutmanager.inc.H,gridlayoutmanager.xml)
 
-gridlayoutmanager_SOURCES=gridlayoutmanager.C msgqueue.H
+gridlayoutmanager_SOURCES=gridlayoutmanager.C
 gridlayoutmanager_LDADD=-lcxxw -lcxx
 
 helloworld_SOURCES=helloworld.C close_flag.H
