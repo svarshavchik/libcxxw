@@ -45,6 +45,12 @@ public:
 
 	//! The default implementation returns the same object.
 	virtual icon theme_updated(IN_THREAD_ONLY);
+
+	//! Resize this icon, if this is a resizable icon.
+	virtual icon resizemm(IN_THREAD_ONLY, double widthmm, double heightmm);
+
+	//! Resize this icon, if this is a resizable icon.
+	virtual icon resize(IN_THREAD_ONLY, dim_t w, dim_t h);
 };
 
 LIBCXXW_NAMESPACE_END

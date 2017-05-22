@@ -25,4 +25,14 @@ icon iconObj::theme_updated(IN_THREAD_ONLY)
 	return icon(this);
 }
 
+icon iconObj::resizemm(IN_THREAD_ONLY, double widthmm, double heightmm)
+{
+	return icon(this);
+}
+
+icon iconObj::resize(IN_THREAD_ONLY, dim_t w, dim_t h)
+{
+	return icon(this);
+}
+
 LIBCXXW_NAMESPACE_END
