@@ -140,13 +140,6 @@ make</programlisting>
 	this would prevent everything from getting destroyed properly,
 	and all resources released.
       </para>
-
-      <para>
-	This also means that a <link linkend="callbacks">callback</link>
-	that's related to a display element cannot capture its display
-	element, or any of its parent display elements, because this would
-	also create a circular reference.
-      </para>
     </section>
 
     <section id="connthread">
@@ -304,14 +297,20 @@ make</programlisting>
 	</para>
 
 	<para>
-	  References captured by lambdas used as callbacks have additional
-	  restrictions. Capturing a parent or a child element results in
-	  a circular reference (capturing an element not in the parent or the
+	  References captured by lambdas tha are used as callbacks have
+	  additional restrictions. Capturing a parent or a child element
+	  results in an internal circular reference.
+	  Capturing a reference to an element not in the parent or the
 	  child element hierarchy is fine).
 	</para>
 
 	<para>
-	  The recommended design pattern is for callbacks to capture a
+	  There are several ways to correctly capture references to other
+	  display elements for use in callbacks. One way is to use
+	  weak capture, see <xref linkend="callbackweakcaptures" />
+	  in <xref linkend="gridlayoutmanager" /> for
+	  an example.
+	  Another design pattern is for callbacks to capture a
 	  message queue-like object, and use the message queue to send a
 	  message to the main execution thread:
 	</para>

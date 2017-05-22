@@ -1,0 +1,301 @@
+<!--
+
+Copyright 2017 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<chapter id="gridlayoutmanager">
+  <title>The grid layout manager</title>
+
+  <para>
+    The following example show how to use additional features of the
+    grid layout manager, introduced in previous chapters.
+    It also shows a design pattern for properly capturing object references
+    for <link linkend="callbacks">callbacks</link>.
+  </para>
+
+  <para>
+    This example creates a window with two parts, and a third part consisting
+    of a row with four buttons.
+    Two of the buttons add and remove elements in a horizontal row on the
+    top half of the window. The other two buttons add and remove elements
+    in a vertical column in the second part of the window:
+  </para>
+
+  <blockquote>
+    <title><ulink url="examples/gridlayoutmanager.C">gridlayoutmanager.C</ulink></title>
+
+    <informalexample>
+      <programlisting><xi:include href="../examples/gridlayoutmanager.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    The four buttons correspond to the
+    <methodname>insert_column</methodname>(),
+    <methodname>remove_column</methodname>(),
+    <methodname>insert_row</methodname>(), and
+    <methodname>remove_row</methodname>() functions. These functions use
+    the following
+    <ulink url='&link-typedef-x--w-gridlayoutmanager;'>grid layout
+      manager</ulink>
+    methods:
+  </para>
+
+  <variablelist>
+    <varlistentry>
+      <term><methodname>insert_row</methodname>(row)</term>
+      <listitem>
+	<para>
+	  Insert a new row into the grid, before an existing row.
+	</para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term><methodname>append_row</methodname>()</term>
+      <listitem>
+	<para>
+	  Append a new row to the grid.
+	</para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term><methodname>insert_columns</methodname>(row, col)</term>
+      <listitem>
+	<para>
+	  Insert new elements before an existing element in an existing row.
+	</para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term><methodname>remove</methodname>(row, col)</term>
+      <listitem>
+	<para>
+	  Remove an element in the given row and column.
+	</para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term><methodname>remove_row</methodname>()</term>
+      <listitem>
+	<para>
+	  Remove an entire row.
+	</para>
+      </listitem>
+    </varlistentry>
+  </variablelist>
+
+  <para>
+    <methodname>insert_row</methodname>(),
+    <methodname>append_row</methodname>(), and
+    <methodname>insert_columns</methodname>()
+    (there's also <methodname>append_columns</methodname>() too)
+    return a &factory;. New display elements created by the factory
+    get placed into the grid accordingly.
+  </para>
+
+  <section id='nestedcontainers'>
+    <title>Nested containers</title>
+
+    <para>
+      The grid layout manager arranges its elements into even rows and
+      columns.
+      <ulink url="examples/gridlayoutmanager.C">gridlayoutmanager.C</ulink>
+      shows how to handle a situation where different parts of the window
+      need to have different numbers of rows and columns, or when they
+      should not line up together.
+      <ulink url="examples/gridlayoutmanager.C">gridlayoutmanager.C</ulink>'s
+      window is divided into three parts, the top part that contains a
+      varying number of columns; the middle part containing rows with
+      two columns: a checkbox and its label; and the bottom part, a row
+      of buttons.
+    </para>
+
+    <para>
+      Using nested containers is the solution. An element in the grid
+      can simply be another container with its own grid layout manager.
+      The nested grid layout manager is self-contained, and independently
+      manages its contents. This container is viewed as a single element
+      by the main window's grid layout manager, which positions it as a
+      single element, and the nested container's grid layout manager aligns
+      its cells independently.
+    </para>
+
+    <para>
+      Prior chapters also showed examples with button rows that used this
+      approach.
+      <ulink url="examples/gridlayoutmanager.C">gridlayoutmanager.C</ulink>
+      takes this approach even further, with the main window's
+      grid layout manager containing only other nested containers, with
+      their own grid layout managers.
+    </para>
+  </section>
+
+  <section id="gridrequestedrowcolsize">
+    <title>Setting the size of grid rows and columns</title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+&ns;::w::gridlayoutmanager layout=container->get_layoutmanager();
+
+layout->requested_col_width(1, 100);</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      When a nested container is sized to be wider than its natural
+      width, the nested container's grid layout manager attempts to
+      expand all the columns' width evenly, to fill in the extra space.
+      <methodname>requested_col_width</methodname>(<replaceable>col</replaceable>,
+      <replaceable>percentage</replaceable>)
+      instructs the grid layout manager that
+      column #<replaceable>col</replaceable> should take up the given percentage
+      of the total width of the container, as much as possible
+      (the leftmost column in the grid is column #0).
+    </para>
+
+    <para>
+      If there's extra width available, the grid layout manager will attempt
+      to use the extra space to grow the columns to their requested size.
+      The grid layout manager never makes column shorter than their minimum
+      size.
+      <quote>requested_col_width(1, 100);</quote> requests 100% of the
+      total width for column #1. Of course, the grid also has column #0,
+      and perhaps other columns. They have to take up some of the horizontal
+      real estate. The end game is that column #1 takes whatever extra space
+      there's left. Requesting 100% for a column is a roundabout way
+      of putting all extra space into the given column
+    </para>
+
+    <para>
+      In
+      <ulink url="examples/gridlayoutmanager.C">gridlayoutmanager.C</ulink>,
+      the nested container in the middle part of the window has two columns.
+      In each row column #0 has a checkbox, and column #1 has its label.
+      The top and the bottom parts of the window are much wider, but the
+      main window's grid layout manager lines up all the nested containers
+      in a single column, so the middle part's container ends up being
+      much wider than it needs to be.
+    </para>
+
+    <para>
+      That container, with a checkbox and a label in each row, tries to
+      use the extra space evenly for both columns. Having the checkbox
+      on the left side of the window and its label in the center of the
+      window, and a bunch of extra space between the two is not the right
+      result. The solution is a
+      <quote>requested_col_width(1, 100)</quote>. The column with the
+      checkbox is only as wide as it needs to be. All the extra space
+      goes into column #1, with the label. With the label aligned against
+      its cell's left margin, it appears naturally, right next to its
+      checkbox.
+    </para>
+
+    <para>
+      More than one column may have a set width. The grid layout manager
+      attempts to use the extra space to fatten up all the requested columns.
+      If there's still additional space left it gets divided amongst all other
+      columns.
+    </para>
+
+    <para>
+      There's also a <methodname>requested_row_height</methodname>() that
+      works similarly for any extra vertical real estate.
+    </para>
+
+    <note>
+      <para>
+	<methodname>insert_row</methodname>(),
+	<methodname>append_row</methodname>() and
+	<methodname>remove_row</methodname>() do not adjust the specified
+	row heights. If, for example, a requested height gets set for row #5,
+	and <methodname>remove_row</methodname>(3) removes row #3 from the
+	grid, the grid's requested height for row #5 is still in place.
+	However row #5 in the grid was the former row #6. After removing
+	row #3, all subsequent rows move up a notch.
+      </para>
+    </note>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+layout->remove_row_defaults(row);
+layout->remove_col_defaults(col);
+	</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      <methodname>remove_col_defaults</methodname>() unsets the requested
+      width for the given column, if any, together with all other column
+      settings, returning the column to its default width, and other
+      properties.
+      <methodname>remove_row_defaults</methodname>() unsets the requested
+      height for the given row, if any, together with all other row
+      settings, returning the row to its default width, and other
+      properties.
+    </para>
+  </section>
+
+  <section id="callbackweakcaptures">
+    <title>Callbacks and captures</title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+button-&gt;on_activate
+    ([main_window=&ns;::make_weak_capture(main_window)]
+     (const auto &amp;ignore)
+     {
+          main_winow.get([&amp;]
+                         (const auto &amp;main_window)
+                         {
+                              // ...
+                         });
+     });</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      As explained in <xref linkend="callbackrefs" />, callbacks attached
+      to display elements can't capture references to parent or child
+      display elements. This creates an internal circular reference that
+      prevents the display elements, which are reference-counted objects,
+      from getting destroyed.
+    </para>
+
+    <para>
+      But the application's action in response to a click on a lowly button
+      typically involves doing work that often affects the entire application
+      and the entire display window.
+    </para>
+
+    <para>
+      The solution is to use <function>&ns;::make_weak_capture</function>(),
+      from the core &libcxx; classes, to construct a weak pointer.
+      When the callback executes the weak pointer <methodname>get</methodname>()
+      converted to a regular reference, ready to use.
+      If the callback happens to execute while the main window is getting
+      destroyed, and the top level <varname>main_window</varname> no longer
+      exists, <methodname>get</methodname>() does nothing.
+    </para>
+
+    <para>
+      In <ulink url="examples/gridlayoutmanager.C">gridlayoutmanager.C</ulink>
+      each button's <methodname>on_activate</methodname>() takes this
+      approach. Strictly speaking, <filename>gridlayoutmanager.C</filename>
+      doesn't actually need to do this. Each button's action affects only
+      other display elements that are neither its parent or child display
+      element; <filename>gridlayoutmanager.C</filename> uses weak captures
+      as an example of this design pattern.
+    </para>
+  </section>
+</chapter>
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "book" "chapter")
+End:
+-->

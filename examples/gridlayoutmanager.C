@@ -85,9 +85,8 @@ static inline void remove_column(const appdata &my_appdata)
 	update_button_state(my_appdata);
 }
 
-// When the insert button gets clicked we insert a
-// new row between the horizontal container on the first row in the main
-// window, and the button container. I.e., insert a new row on row #1.
+// When the insert button gets clicked we insert a new row #0 into the
+// vertical container, pushing its existing rows down.
 //
 // The new row consists of a checkbox and a label.
 

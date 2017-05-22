@@ -11,6 +11,9 @@
 <!ENTITY sxg "<acronym>SXG</acronym>">
 <!ENTITY ns "x">
 <!ENTITY libcxx "<ulink url='/'>LibCXX</ulink>">
+<!ENTITY factory "<link linkend='layoutmanager'>factory</link>">
+
+
 <!ENTITY intro SYSTEM "intro.xml">
 <!ENTITY install SYSTEM "install.xml">
 <!ENTITY refobj "/refobj.html">
@@ -19,6 +22,7 @@
 <!ENTITY wordwraplabel SYSTEM "wordwraplabel.xml">
 <!ENTITY inputfieldsandbuttons SYSTEM "inputfieldsandbuttons.xml">
 <!ENTITY checkradio SYSTEM "checkradio.xml">
+<!ENTITY gridlayoutmanager SYSTEM "gridlayoutmanager.xml">
 <!ENTITY sxgdoc SYSTEM "sxg.xml">
 <!ENTITY connections_and_screens SYSTEM "connections_and_screens.xml">
 
@@ -48,6 +52,7 @@ See COPYING for distribution information.
     &wordwraplabel;
     &inputfieldsandbuttons;
     &checkradio;
+    &gridlayoutmanager;
     &connections_and_screens;
   </part>
 
