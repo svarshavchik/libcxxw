@@ -34,6 +34,13 @@ void containerObj::implObj
 {
 	layoutmanager_ptr_t::lock lock(layoutmanager_ptr);
 
+	if (*lock)
+		throw EXCEPTION("Internal error: duplicate layout manager installation");
+
+	if (impl->container_impl !=
+	    ref<containerObj::implObj>(this))
+		throw EXCEPTION("Internal error: layout manager getting installed into the wrong container.");
+
 	*lock=impl;
 }
 
@@ -42,6 +49,8 @@ void containerObj::implObj::uninstall_layoutmanager()
 {
 	layoutmanager_ptr_t::lock lock(layoutmanager_ptr);
 
+	if (!*lock)
+		throw EXCEPTION("Internal error - no layout manager to uninstall");
 	*lock=ptr<layoutmanagerObj::implObj>();
 }
 
