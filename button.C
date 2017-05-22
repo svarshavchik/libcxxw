@@ -175,6 +175,14 @@ button factoryObj::do_create_button(const char *theme_border,
 			       create_button_focusframe
 			       (impl, theme_border, f));
 
+	// Left to its own devices, the real focusable element is the internal
+	// container inside the focus frame. Pointer clicks just outside of it,
+	// on the focus frame, but inside the exterior borders, won't register.
+	//
+	// Simple solution. The whole button is the label for the focus frame.
+
+	ab->label_for(ab);
+
 	static_cast<elementObj::implObj &>(*impl)
 		.get_window_handler().thread()->run_as
 		(RUN_AS,
