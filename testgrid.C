@@ -28,13 +28,23 @@ public:
 
 typedef ref<myhorizvertObj> myhorizvert;
 
+struct LIBCXX_HIDDEN my_pos_axis : public pos_axis {
+
+	bool takes_up_space=true;
+
+	my_pos_axis(const grid_pos &p, const horizvert &hv)
+		: pos_axis{p, hv}
+	{
+	}
+};
+
 static void do_test(const char *testname,
 		    const std::vector<testgrid_info> &test_info,
 		    const grid_metrics_t &res,
 		    const std::function<bool (grid_xy)> &freeze_func=
 		    [](const auto &ignore) { return false; })
 {
-	std::list<pos_axis> g;
+	std::list<my_pos_axis> g;
 
 	for (const auto &info: test_info)
 	{

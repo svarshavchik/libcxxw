@@ -141,11 +141,43 @@ void gridlayoutmanagerObj::implObj
 			   struct inherited_visibility_info &info,
 			   const elementimpl &child)
 {
-	// No need to redraw when the visibility change is the result of
-	// mapping the top level window. The forthcoming exposure events
-	// will take care of this.
-	if (!info.do_not_redraw)
-		redraw_child_borders_and_padding(IN_THREAD, child);
+	grid_map_t::lock lock(grid_map);
+
+	auto &lookup_table=(*lock)->get_lookup_table();
+
+	auto lookup=lookup_table.find(child);
+
+	if (lookup == lookup_table.end())
+		return;
+
+	const auto &ge=(*lock)->elements.at(lookup->second->row)
+		.at(lookup->second->col);
+
+	if (ge->remove_when_hidden)
+	{
+		// Needs to complete recalculate the container since the
+		// child's visibility affects whether the grid makes room for
+		// it.
+
+		(*lock)->borders_changed();
+		needs_recalculation(IN_THREAD);
+	}
+	else
+	{
+		// The layout of the container is not going to be changed
+		// as a result of the child visibility change. The only thing
+		// that needs to be done is to redraw the padding around the
+		// element (if there is any) to reflect the presence/absence
+		// of the child element's background color, which is used for
+		// the padding when the child element is visible.
+		//
+		// No need to redraw when the visibility change is the result of
+		// mapping the top level window. The forthcoming exposure events
+		// will take care of this.
+
+		if (!info.do_not_redraw)
+			redraw_child_borders_and_padding(IN_THREAD, child);
+	}
 }
 
 LIBCXXW_NAMESPACE_END

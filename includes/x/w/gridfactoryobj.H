@@ -111,6 +111,13 @@ class gridfactoryObj : public factoryObj {
 
 	gridfactoryObj &bottom_padding(double paddingmm);
 
+	//! When this display element is hidden, "remove" it from the grid.
+
+	//! It is not actually removed, just ignored for the purposes of
+	//! calculating the grid layout.
+
+	gridfactoryObj &remove_when_hidden(bool=true);
+
 private:
 	//! Created a new display element for the grid.
 	void created(const element &new_element) override LIBCXX_HIDDEN;

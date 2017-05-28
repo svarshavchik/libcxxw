@@ -6,9 +6,8 @@
 #define grid_map_infoobj_h
 
 #include "x/w/namespace.H"
-#include "x/w/elementfwd.H"
-#include "x/w/elementobj.H"
 #include "x/w/grid_map_infofwd.H"
+#include "elementfwd.H"
 #include "grid_elementfwd.H"
 #include "current_border_implfwd.H"
 #include "metrics_grid_xy.H"
@@ -166,8 +165,7 @@ public:
 
 	//! Container for the element lookup table.
 
-	typedef std::unordered_map<ref<elementObj::implObj>,
-				   lookup_info> lookup_t;
+	typedef std::unordered_map<elementimpl, lookup_info> lookup_t;
 
 	//! An internal lookup table.
 

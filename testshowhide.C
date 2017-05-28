@@ -8,6 +8,7 @@
 #include <x/destroy_callback.H>
 #include <x/ref.H>
 #include <x/obj.H>
+#include <x/refptr_traits.H>
 
 #include "x/w/main_window.H"
 #include "x/w/new_layoutmanager.H"
@@ -18,6 +19,8 @@
 #include "x/w/button.H"
 #include <string>
 #include <iostream>
+
+#include "testshowhide.inc.H"
 
 using namespace LIBCXX_NAMESPACE;
 using namespace LIBCXX_NAMESPACE::w;
@@ -47,6 +50,8 @@ void testshowhide()
 
 	auto close_flag=close_flag_ref::create();
 
+	showhideptr buttons;
+
 	auto main_window=main_window::create
 		([&]
 		 (const auto &main_window)
@@ -62,39 +67,20 @@ void testshowhide()
 
 			 auto factory=layout->append_row();
 
-			 auto button1=factory->border(my_border).create_normal_button_with_label({"Show/Hide"});
+			 factory->border(my_border).create_normal_button_with_label({"Show/Hide 1"});
 
-			 auto button2=factory->border(my_border).create_normal_button_with_label({"Button"});
+			 auto button1=factory->border(my_border).remove_when_hidden().create_normal_button_with_label({"Button 1"});
+			 auto button2=factory->border(my_border).create_normal_button_with_label({"Button 2"});
+			 auto yellow=button1->create_solid_color_picture
+			 ({rgb::maximum, rgb::maximum, 0});
 
-			 button2->set_background_color
-			 (button2->create_solid_color_picture
-			  ({rgb::maximum,
-					  rgb::maximum, 0}));
+			 button1->set_background_color(yellow);
+			 button2->set_background_color(yellow);
 
-			 auto button3=factory->border(my_border).create_normal_button_with_label({"Show/Hide"});
+			 buttons.button1=button1;
+			 buttons.button2=button2;
 
-			 button1->on_activate
-			 ([flag=true, button2]
-			  (const auto &ignore)
-			  mutable {
-				 flag=!flag;
-
-				 if (flag)
-					 button2->show();
-				 else
-					 button2->hide();
-			 });
-			 button3->on_activate
-			 ([flag=true, button2]
-			  (const auto &ignore)
-			  mutable {
-				 flag=!flag;
-
-				 if (flag)
-					 button2->show();
-				 else
-					 button2->hide();
-			 });
+			 factory->border(my_border).create_normal_button_with_label({"Show/Hide 2"});
 		 });
 
 	main_window->set_window_title("Hello world!");
@@ -116,7 +102,27 @@ void testshowhide()
 
 	mpcobj<bool>::lock lock{close_flag->flag};
 
-	lock.wait_for(std::chrono::seconds{30}, [&] { return *lock; });
+	int i=0;
+
+	while (lock.wait_for(std::chrono::seconds{2}, [&] { return *lock; }),
+	       !*lock)
+	{
+		switch (++i) {
+		case 1:
+			buttons.button2->hide();
+			continue;
+		case 2:
+			buttons.button2->show();
+			continue;
+		case 3:
+			buttons.button1->hide();
+			continue;
+		case 4:
+			buttons.button1->show();
+			continue;
+		}
+		break;
+	}
 }
 
 int main(int argc, char **argv)

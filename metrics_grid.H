@@ -188,6 +188,9 @@ namespace metrics {
 
 		for (auto b=g.begin(), e=g.end(); b != e; ++b)
 		{
+			if (!b->takes_up_space)
+				continue;
+
 			grid_axisrange &range=major.get_axisrange(*b);
 
 			grid_by_range[range.end-range.start]

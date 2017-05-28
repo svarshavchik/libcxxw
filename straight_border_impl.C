@@ -135,6 +135,18 @@ class LIBCXX_HIDDEN straight_border_implObj
 
 };
 
+border_source::border_source(const grid_elementptr &e) : e(e)
+{
+}
+
+current_border_implptr border_source::get_border(IN_THREAD_ONLY,
+						 current_border_implptr
+						 grid_elementObj::*which_one)
+	const
+{
+	return e ? (*e).*which_one:current_border_implptr();
+}
+
 // Horizontal border implementation
 
 typedef straight_border_implObj<
@@ -170,9 +182,10 @@ class LIBCXX_HIDDEN horizontal_straight_borderObj : public horizontal_impl {
 };
 
 straight_border straight_borderBase
-::create_horizontal_border(const ref<containerObj::implObj> &container,
-			   const grid_elementptr &element_above,
-			   const grid_elementptr &element_below,
+::create_horizontal_border(IN_THREAD_ONLY,
+			   const ref<containerObj::implObj> &container,
+			   const border_source &element_above,
+			   const border_source &element_below,
 			   const current_border_implptr &default_border)
 {
 #ifdef CREATE_STRAIGHT_BORDER
@@ -182,17 +195,15 @@ straight_border straight_borderBase
 	auto impl=ref<horizontal_straight_borderObj>
 		::create(container,
 
-			 element_above,
-			 (element_above.null()
-			  ? current_border_implptr()
-			  : current_border_implptr
-			  (element_above->bottom_border)),
+			 element_above.e,
+			 element_above
+			 .get_border(IN_THREAD,
+				     &grid_elementObj::bottom_border),
 
-			 element_below,
-			 (element_below.null()
-			  ? current_border_implptr()
-			  : current_border_implptr
-			  (element_below->top_border)),
+			 element_below.e,
+			 element_below
+			 .get_border(IN_THREAD,
+				     &grid_elementObj::top_border),
 
 			 default_border);
 
@@ -233,9 +244,10 @@ class LIBCXX_HIDDEN vertical_straight_borderObj : public vertical_impl {
 };
 
 straight_border straight_borderBase
-::create_vertical_border(const ref<containerObj::implObj> &container,
-			 const grid_elementptr &element_onleft,
-			 const grid_elementptr &element_onright,
+::create_vertical_border(IN_THREAD_ONLY,
+			 const ref<containerObj::implObj> &container,
+			 const border_source &element_onleft,
+			 const border_source &element_onright,
 			 const current_border_implptr &default_border)
 {
 #ifdef CREATE_STRAIGHT_BORDER
@@ -244,17 +256,13 @@ straight_border straight_borderBase
 	auto impl=ref<vertical_straight_borderObj>
 		::create(container,
 
-			 element_onleft,
-			 (element_onleft.null()
-			  ? current_border_implptr()
-			  : current_border_implptr
-			  (element_onleft->right_border)),
+			 element_onleft.e,
+			 element_onleft
+			 .get_border(IN_THREAD, &grid_elementObj::right_border),
 
-			 element_onright,
-			 (element_onright.null()
-			  ? current_border_implptr()
-			  : current_border_implptr
-			  (element_onright->left_border)),
+			 element_onright.e,
+			 element_onright
+			 .get_border(IN_THREAD, &grid_elementObj::left_border),
 
 			 default_border);
 
@@ -269,27 +277,28 @@ straight_border straight_borderBase
 straight_border straight_borderBase
 ::update_horizontal_border(IN_THREAD_ONLY,
 			   const straight_border &existing_border,
-			   const grid_elementptr &element_above,
-			   const grid_elementptr &element_below,
+			   const border_source &element_above,
+			   const border_source &element_below,
 			   const current_border_implptr &default_border)
 {
 	const auto &b=existing_border->impl->borders(IN_THREAD);
 
-	if (b.element_1 == element_above &&
-	    b.element_2 == element_below &&
+	if (b.element_1 == element_above.e &&
+	    b.element_2 == element_below.e &&
 	    b.border_default == default_border)
 	{
 		// We also want to compare the actual borders, they must be
 		// the same.
-		if ((element_above.null() ||
-		     element_above->bottom_border == b.border_1)
-		    &&
-		    (element_below.null() ||
-		     element_below->top_border == b.border_2)
-		    )
+		if (element_above.get_border(IN_THREAD,
+					     &grid_elementObj::bottom_border)
+		    == b.border_1 &&
+		    element_below.get_border(IN_THREAD,
+					     &grid_elementObj::top_border)
+		    == b.border_2)
 			return existing_border;
 	}
-	return create_horizontal_border(existing_border->impl->container,
+	return create_horizontal_border(IN_THREAD,
+					existing_border->impl->container,
 					element_above,
 					element_below,
 					default_border);
@@ -298,27 +307,29 @@ straight_border straight_borderBase
 straight_border straight_borderBase
 ::update_vertical_border(IN_THREAD_ONLY,
 			 const straight_border &existing_border,
-			 const grid_elementptr &element_onleft,
-			 const grid_elementptr &element_onright,
+			 const border_source &element_onleft,
+			 const border_source &element_onright,
 			 const current_border_implptr &default_border)
 {
 	const auto &b=existing_border->impl->borders(IN_THREAD);
 
-	if (b.element_1 == element_onleft &&
-	    b.element_2 == element_onright &&
+	if (b.element_1 == element_onleft.e &&
+	    b.element_2 == element_onright.e &&
 	    b.border_default == default_border)
 	{
 		// We also want to compare the actual borders, they must be
 		// the same.
-		if ((element_onleft.null() ||
-		     element_onleft->right_border == b.border_1)
+		if (element_onleft.get_border(IN_THREAD,
+					      &grid_elementObj::right_border)
+		    == b.border_1
 		    &&
-		    (element_onright.null() ||
-		     element_onright->left_border == b.border_2)
-		    )
+		    element_onright.get_border(IN_THREAD,
+					       &grid_elementObj::left_border)
+		    == b.border_2)
 		return existing_border;
 	}
-	return create_vertical_border(existing_border->impl->container,
+	return create_vertical_border(IN_THREAD,
+				      existing_border->impl->container,
 				      element_onleft,
 				      element_onright,
 				      default_border);

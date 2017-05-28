@@ -66,6 +66,13 @@ struct new_grid_element_info {
 	//! Vertical alignment
 	valign vertical_alignment=valign::top;
 
+	//! When this display element is hidden, "remove" it from the grid.
+
+	//! It is not actually removed, just ignored for the purposes of
+	//! calculating the grid layout.
+
+	bool remove_when_hidden=false;
+
 	//! Constructor
 	new_grid_element_info(dim_t row,
 			      dim_t col);
@@ -126,6 +133,10 @@ class LIBCXX_HIDDEN grid_elementObj
 	//! calculation cares about is the total padding in each axis).
 
 	void calculate_padding(const grid_element_padding_lock &lock);
+
+	//! Return true if the element is visible, or if its space is reserved.
+
+	bool takes_up_space(IN_THREAD_ONLY) const;
 };
 
 LIBCXXW_NAMESPACE_END

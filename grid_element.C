@@ -7,7 +7,7 @@
 #include "grid_element.H"
 #include "current_border_impl.H"
 #include "metrics_grid_pos.H"
-#include "x/w/element.H"
+#include "element.H"
 #include "screen.H"
 
 LIBCXXW_NAMESPACE_START
@@ -71,6 +71,12 @@ void grid_elementObj::calculate_padding(const grid_element_padding_lock &lock)
 	if (total == dim_t::infinite())
 		--total;
 	total_vert_padding=total;
+}
+
+bool grid_elementObj::takes_up_space(IN_THREAD_ONLY) const
+{
+	return grid_element->impl->data(IN_THREAD).inherited_visibility ||
+		!remove_when_hidden;
 }
 
 LIBCXXW_NAMESPACE_END

@@ -36,6 +36,25 @@ typedef const_ref<straight_borderObj, straight_borderBase> const_straight_border
 
 typedef const_ptr<straight_borderObj, straight_borderBase> const_straight_borderptr;
 
+//! A grid element passed to a straight border factory creator/updater.
+
+struct LIBCXX_HIDDEN border_source {
+
+	grid_elementptr e;
+
+	//! Constructor
+
+	border_source(const grid_elementptr &e);
+
+	//! Return the border
+
+	//! If the grid element exists return the specified border, else
+	//! return a null pointer.
+
+	current_border_implptr get_border(IN_THREAD_ONLY,
+					  current_border_implptr
+					  grid_elementObj::*which_one) const;
+};
 
 //! A signature for a border factory.
 
@@ -48,9 +67,10 @@ typedef const_ptr<straight_borderObj, straight_borderBase> const_straight_border
 //! - the default border for the grid.
 
 typedef straight_border
-straight_border_factory_t(const ref<containerObj::implObj> &c,
-			  const grid_elementptr &e1,
-			  const grid_elementptr &e2,
+straight_border_factory_t(IN_THREAD_ONLY,
+			  const ref<containerObj::implObj> &c,
+			  const border_source &e1,
+			  const border_source &e2,
 			  const current_border_implptr &d);
 
 //! A signature for a border updater.
@@ -61,8 +81,8 @@ straight_border_factory_t(const ref<containerObj::implObj> &c,
 typedef straight_border
 straight_border_update_t(IN_THREAD_ONLY,
 			 const straight_border &b,
-			 const grid_elementptr &e1,
-			 const grid_elementptr &e2,
+			 const border_source &e1,
+			 const border_source &e2,
 			 const current_border_implptr &d);
 
 LIBCXXW_NAMESPACE_END

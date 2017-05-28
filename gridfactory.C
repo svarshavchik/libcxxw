@@ -202,6 +202,14 @@ gridfactoryObj &gridfactoryObj::valign(LIBCXXW_NAMESPACE::valign v)
 	return *this;
 }
 
+gridfactoryObj &gridfactoryObj::remove_when_hidden(bool flag)
+{
+	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
+
+	lock->remove_when_hidden=flag;
+	return *this;
+}
+
 void gridfactoryObj::created(const element &new_element)
 {
 	implObj::new_grid_element_t::lock lock(impl->new_grid_element);

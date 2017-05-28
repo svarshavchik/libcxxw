@@ -119,6 +119,16 @@ if its bigger because of other display elements in the same row or column.
 This should be used only with nested \ref container "containers" that are
 placed into the grid layout manager.
 
+\code
+gridfactory->remove_when_hidden();
+\endcode
+
+Specifies that space for the new element gets removed from the grid when
+the new element is hidden.
+
+\note
+The borders on the opposite sites of a hidden element do not get collapsed.
+
 */
 
 typedef ref<gridfactoryObj> gridfactory;

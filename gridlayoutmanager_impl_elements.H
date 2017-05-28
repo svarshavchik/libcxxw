@@ -41,10 +41,12 @@ public:
 	struct pos_axis : public metrics::pos_axis {
 
 		element child_element;
+		bool takes_up_space;
 		halign horizontal_alignment;
 		valign vertical_alignment;
 
 		pos_axis(const metrics::grid_pos &pos,
+			 bool takes_up_space,
 			 const metrics::horizvert &axises,
 			 const metrics::pos_axis_padding &padding,
 			 const element &child_element,
@@ -52,6 +54,7 @@ public:
 			 valign vertical_alignment)
 			: metrics::pos_axis({pos, axises, padding}),
 			child_element(child_element),
+			takes_up_space(takes_up_space),
 			horizontal_alignment(horizontal_alignment),
 			vertical_alignment(vertical_alignment) {}
 	};

@@ -1,0 +1,11 @@
+<collection>
+  <name>showhide</name>
+  <ref>
+    <name>button1</name>
+    <type>LIBCXX_NAMESPACE::w::button</type>
+  </ref>
+  <ref>
+    <name>button2</name>
+    <type>LIBCXX_NAMESPACE::w::button</type>
+  </ref>
+</collection>

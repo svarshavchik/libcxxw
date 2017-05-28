@@ -222,6 +222,20 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(IN_THREAD_ONLY)
 			   metrics::grid_xy row_start,
 			   metrics::grid_xy row_end)
 			  {
+				  // If either one does not takes_up_space(),
+				  // pretend it does not exist for the purpose
+				  // of creating straight borders.
+
+				  if (left && !(*left)->takes_up_space(IN_THREAD))
+					  left=nullptr;
+				  if (right && !(*right)->takes_up_space(IN_THREAD))
+					  right=nullptr;
+
+				  if (!left && !right)
+					  return;
+
+				  // Otherwise, let's construct real ptrs.
+
 				  auto eleft=left
 					  ? grid_elementptr(*left)
 					  : grid_elementptr();
@@ -339,6 +353,20 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(IN_THREAD_ONLY)
 			   metrics::grid_xy col1,
 			   metrics::grid_xy col2)
 			  {
+				  // If either one does not takes_up_space(),
+				  // pretend it does not exist for the purpose
+				  // of creating straight borders.
+
+				  if (above && !(*above)->takes_up_space(IN_THREAD))
+					  above=nullptr;
+				  if (below && !(*below)->takes_up_space(IN_THREAD))
+					  below=nullptr;
+
+				  if (!above && !below)
+					  return;
+
+				  // Otherwise, let's construct real ptrs.
+
 				  auto eabove=above
 					  ? grid_elementptr(*above)
 					  : grid_elementptr();
@@ -520,6 +548,7 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(IN_THREAD_ONLY)
 			col->pos->validate();
 			all_elements.emplace_back
 				(col->pos,
+				 col->takes_up_space(IN_THREAD),
 				 metrics::horizvert(col->grid_element->impl
 						    ->get_horizvert(IN_THREAD)),
 				 *col,
@@ -536,6 +565,7 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(IN_THREAD_ONLY)
 	{
 		b.second.pos->validate();
 		all_elements.emplace_back(b.second.pos,
+					  true,
 					  metrics::horizvert(b.second.border
 							     ->impl
 							     ->get_horizvert
@@ -557,6 +587,7 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(IN_THREAD_ONLY)
 	{
 		b.second.pos->validate();
 		all_elements.emplace_back(b.second.pos,
+					  true,
 					  metrics::horizvert(b.second.border
 							     ->impl
 							     ->get_horizvert
@@ -650,7 +681,8 @@ straight_border gridlayoutmanagerObj::implObj::elementsObj
 		straight_borders.erase(iter);
 	}
 
-	auto new_border=factory(container_impl, e1, e2, default_border);
+	auto new_border=factory(IN_THREAD,
+				container_impl, e1, e2, default_border);
 
 	// The new border is visible, by default.
 	new_border->impl->request_visibility(IN_THREAD, true);
@@ -927,6 +959,12 @@ void gridlayoutmanagerObj::implObj
 
 	for (const auto &child:elements.all_elements)
 	{
+		// If this element does not takes_up_space(), we don't need
+		// to compute its position.
+
+		if (!child.takes_up_space)
+			continue;
+
 		const auto &element=child.child_element;
 
 		const metrics::pos_axis_padding &padding=child.padding;

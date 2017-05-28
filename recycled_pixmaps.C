@@ -10,7 +10,10 @@
 #include "x/w/pictformat.H"
 #include "pixmap.H"
 #include "defaulttheme.H"
-#include "x/w/picture.H"
+#include "picture.H"
+#include "xid_t.H"
+#include "connection_thread.H"
+#include "messages.H"
 #include <x/ref.H>
 #include <x/refptr_hash.H>
 #include <x/weakunordered_multimap.H>
@@ -180,6 +183,9 @@ class LIBCXX_HIDDEN nonThemeBackgroundColorObj : public background_colorObj {
 background_color screenObj::implObj
 ::create_background_color(const const_picture &pic)
 {
+	if (pic->impl->picture_xid.thread() != thread)
+		throw EXCEPTION(_("Attempt to set a background color picture from a different screen."));
+
 	return recycled_pixmaps_cache->nontheme_background_color_cache
 		->find_or_create
 		(pic,

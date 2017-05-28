@@ -574,6 +574,7 @@ testscrollbar_metrics_SOURCES=testscrollbar_metrics.C
 testscrollbar_metrics_LDADD=libcxxw.la
 testscrollbar_metrics_LDFLAGS=-static $(STATICLINKFLAGS)
 
+$(call REFCOLLECTION_GEN,testshowhide.inc.H,testshowhide.xml)
 testshowhide_SOURCES=testshowhide.C
 testshowhide_LDADD=libcxxw.la
 
