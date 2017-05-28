@@ -6,6 +6,7 @@
 #define x_w_input_fieldobj_h
 
 #include <x/w/containerobj.H>
+#include <x/w/focusableobj.H>
 #include <string>
 
 LIBCXXW_NAMESPACE_START
@@ -18,7 +19,7 @@ LIBCXXW_NAMESPACE_START
 
 //! \see input_field
 
-class input_fieldObj : public containerObj {
+class input_fieldObj : public containerObj, public focusableObj {
 
 public:
 	class implObj;
@@ -44,6 +45,12 @@ public:
 
 	//! Set the contents of the input field, as unicode.
 	void set(const std::experimental::u32string_view &str);
+
+	//! Inherited from focusableObj
+
+	//! \internal
+
+	ref<focusableImplObj> get_impl() const override LIBCXX_HIDDEN;
 };
 
 LIBCXXW_NAMESPACE_END

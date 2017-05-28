@@ -164,6 +164,11 @@ factoryObj::create_input_field(const text_param &text,
 	return input_field;
 }
 
+ref<focusableImplObj> input_fieldObj::get_impl() const
+{
+	return get_focusframecontainer(this)->get_impl();
+}
+
 std::u32string input_fieldObj::get_unicode() const
 {
 	return get_internal_editor(this)->impl->get();
