@@ -42,6 +42,18 @@ public:
 	//! This focusable should be tabbed to after the other one
 
 	void get_focus_after(const focusable &other);
+
+private:
+
+	//! How many real internal focusable objects comprise this focusable.
+
+	//! \internal
+	virtual size_t internal_impl_count() const LIBCXX_HIDDEN;
+
+	//! Retrieve an internal focusable object.
+
+	//! \internal
+	virtual ref<focusableImplObj> get_impl(size_t) const LIBCXX_HIDDEN;
 };
 
 LIBCXXW_NAMESPACE_END

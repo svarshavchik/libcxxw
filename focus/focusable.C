@@ -18,19 +18,33 @@ focusableObj::focusableObj()
 
 focusableObj::~focusableObj()=default;
 
+size_t focusableObj::internal_impl_count() const
+{
+	return 1;
+}
+
+ref<focusableImplObj> focusableObj::get_impl(size_t) const
+{
+	return get_impl();
+}
+
 void focusableObj::set_enabled(bool flag)
 {
 	auto me=ref<focusableObj>(this);
 
-	auto impl=get_impl();
-
-	impl->get_focusable_element().get_window_handler()
+	get_impl()->get_focusable_element().get_window_handler()
 		.thread()->run_as(RUN_AS,
 				[=]
 				(IN_THREAD_ONLY)
 				{
-					me->get_impl()->set_enabled(IN_THREAD,
-								    flag);
+					// Enable or disable all real focusables
+
+					auto n=me->internal_impl_count();
+
+					for (size_t i=0; i<n; ++i)
+						me->get_impl(i)
+							->set_enabled(IN_THREAD,
+								      flag);
 				});
 }
 
@@ -55,10 +69,20 @@ void focusableObj::get_focus_before(const focusable &other)
 
 	sanity_check(impl1, impl2)->run_as
 		(RUN_AS,
-		 [=]
+		 [me=focusable(this), other]
 		 (IN_THREAD_ONLY)
 		 {
-			 impl1->get_focus_before(IN_THREAD, impl2);
+			 auto b=other->get_impl(0);
+
+			 auto n=me->internal_impl_count();
+
+			 while (n)
+			 {
+				 auto i=me->get_impl(--n);
+
+				 i->get_focus_before(IN_THREAD, b);
+				 b=i;
+			 }
 		 });
 }
 
@@ -69,10 +93,19 @@ void focusableObj::get_focus_after(const focusable &other)
 
 	sanity_check(impl1, impl2)->run_as
 		(RUN_AS,
-		 [=]
+		 [me=focusable(this), other]
 		 (IN_THREAD_ONLY)
 		 {
-			 impl1->get_focus_after(IN_THREAD, impl2);
+			 auto a=other->get_impl(other->internal_impl_count()-1);
+
+			 auto n=me->internal_impl_count();
+			 for (size_t i=0; i<n; ++i)
+			 {
+				 auto impl=me->get_impl(i);
+
+				 impl->get_focus_after(IN_THREAD, a);
+				 a=impl;
+			 }
 		 });
 }
 
