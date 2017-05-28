@@ -12,15 +12,6 @@
 
 LIBCXXW_NAMESPACE_START
 
-class LIBCXX_HIDDEN input_fieldObj::internal_editor
-	: public editor {
-
- public:
-
-	using editor::editor;
-
-};
-
 //! \ref input_field "input_field" implementation class.
 
 class LIBCXX_HIDDEN input_fieldObj::implObj

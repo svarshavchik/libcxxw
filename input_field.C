@@ -44,6 +44,27 @@ input_fieldObj::~input_fieldObj()=default;
 // The element in the text edit border is a focus frame that contains
 // the editor_container element.
 
+static focusframecontainer get_focusframecontainer(const input_fieldObj *field)
+{
+	const_gridlayoutmanager glm=field->get_layoutmanager();
+
+	container inner_container=glm->get(0, 0);
+
+	glm=inner_container->get_layoutmanager();
+
+	return glm->get(0, 0);
+}
+
+static editor_container get_editor_container(const input_fieldObj *field)
+{
+	return get_focusframecontainer(field)->get_focusable();
+}
+
+static editor get_internal_editor(const input_fieldObj *field)
+{
+	return get_editor_container(field)->editor_element;
+}
+
 typedef nonrecursive_visibilityObj<focusframecontainer_elementObj<
 					   container_elementObj<
 						   child_elementObj>>
@@ -143,24 +164,9 @@ factoryObj::create_input_field(const text_param &text,
 	return input_field;
 }
 
-input_fieldObj::internal_editor input_fieldObj::get_internal_editor() const
-{
-	const_gridlayoutmanager glm=get_layoutmanager();
-
-	container inner_container=glm->get(0, 0);
-
-	glm=inner_container->get_layoutmanager();
-
-	focusframecontainer ff=glm->get(0, 0);
-
-	editor_container ec=ff->get_focusable();
-
-	return ec->editor_element;
-}
-
 std::u32string input_fieldObj::get_unicode() const
 {
-	return get_internal_editor()->impl->get();
+	return get_internal_editor(this)->impl->get();
 }
 
 std::string input_fieldObj::get() const
@@ -177,7 +183,7 @@ void input_fieldObj::set(const std::experimental::string_view &str)
 
 void input_fieldObj::set(const std::experimental::u32string_view &str)
 {
-	auto impl=get_internal_editor()->impl;
+	auto impl=get_internal_editor(this)->impl;
 
 	impl->get_window_handler().thread()->run_as
 		(RUN_AS,

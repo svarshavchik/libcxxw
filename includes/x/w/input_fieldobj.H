@@ -23,8 +23,6 @@ class input_fieldObj : public containerObj {
 public:
 	class implObj;
 
-	class internal_editor;
-
 	//! Internal implementation object.
 
 	const ref<implObj> impl;
@@ -34,9 +32,6 @@ public:
 
 	//! Destructor
 	~input_fieldObj() LIBCXX_HIDDEN;
-
-	//! Internal function to retrieve the real editor display element.
-	internal_editor get_internal_editor() const LIBCXX_HIDDEN;
 
 	//! Return the current contents of the input field.
 	std::string get() const;
