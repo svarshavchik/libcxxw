@@ -6,6 +6,7 @@
 #define editorobj_h
 
 #include "x/w/elementobj.H"
+#include "peepholed_elementobj.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -13,7 +14,7 @@ LIBCXXW_NAMESPACE_START
 
 //! \see editor
 
-class LIBCXX_HIDDEN editorObj : public elementObj {
+class LIBCXX_HIDDEN editorObj : public peepholed_elementObj {
 
 public:
 	class implObj;
@@ -25,6 +26,12 @@ public:
 
 	//! Destructor
 	~editorObj() LIBCXX_HIDDEN;
+
+	//! Return the preferred horizontal increment
+	dim_t horizontal_increment(IN_THREAD_ONLY) const override;
+
+	//! Return the preferred vertical increment
+	dim_t vertical_increment(IN_THREAD_ONLY) const override;
 };
 
 LIBCXXW_NAMESPACE_END

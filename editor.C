@@ -6,6 +6,8 @@
 #include "editor.H"
 #include "editor_impl.H"
 #include "x/w/factory.H"
+#include "fonts/current_fontcollection.H"
+#include "fonts/fontcollection.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -21,11 +23,22 @@ editor create_editor(const ref<containerObj::implObj> &parent_container,
 }
 
 editorObj::editorObj(const ref<implObj> &impl)
-	: elementObj(impl),
+	: peepholed_elementObj(impl),
 	  impl(impl)
 {
 }
 
 editorObj::~editorObj()=default;
+
+dim_t editorObj::horizontal_increment(IN_THREAD_ONLY) const
+{
+	return impl->font->fc(IN_THREAD)->nominal_width();
+}
+
+dim_t editorObj::vertical_increment(IN_THREAD_ONLY) const
+{
+	return impl->font->fc(IN_THREAD)->height();
+}
+
 
 LIBCXXW_NAMESPACE_END

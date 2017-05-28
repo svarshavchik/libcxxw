@@ -109,6 +109,19 @@ void scrollbarObj::implObj::theme_updated(IN_THREAD_ONLY)
 	superclass_t::theme_updated(IN_THREAD);
 }
 
+void scrollbarObj::implObj::update_config(IN_THREAD_ONLY,
+					  const scrollbar_config &new_config)
+{
+	if (new_config == conf)
+		return;
+
+	reset_state(IN_THREAD);
+	conf=new_config;
+	validate_conf();
+	calculate_scrollbar_metrics(IN_THREAD);
+	draw_slider(IN_THREAD);
+}
+
 dim_t scrollbarObj::implObj::major_size(const rectangle &r) const
 {
 	return r.*(orientation.major_size);
@@ -216,23 +229,24 @@ void scrollbarObj::implObj::current_position_updated(IN_THREAD_ONLY)
 	superclass_t::current_position_updated(IN_THREAD);
 }
 
-bool scrollbarObj::implObj::reset_state(IN_THREAD_ONLY)
+void scrollbarObj::implObj::reset_state(IN_THREAD_ONLY)
 {
-	bool there_was_something_to_reset=
-		scroll_low_pressed ||
-		handlebar_pressed ||
-		scroll_high_pressed ||
-		dragging;
-
 	bool was_dragging=dragging;
+	bool was_scroll_low_pressed=scroll_low_pressed;
+	bool was_scroll_high_pressed=scroll_high_pressed;
+
 	scroll_low_pressed=handlebar_pressed=scroll_high_pressed=dragging=false;
 
+	if (was_scroll_low_pressed)
+		draw_scroll_low(IN_THREAD);
+	if (was_scroll_high_pressed)
+		draw_scroll_high(IN_THREAD);
+
 	if (was_dragging)
-	{
 		abort_dragging(IN_THREAD);
+
+	if (was_dragging || handlebar_pressed)
 		draw_slider(IN_THREAD);
-	}
-	return there_was_something_to_reset;
 }
 
 bool scrollbarObj::implObj::calculate_scrollbar_metrics(IN_THREAD_ONLY)
@@ -408,7 +422,7 @@ void scrollbarObj::implObj::do_draw_scroll_high(IN_THREAD_ONLY,
 
 void scrollbarObj::implObj::draw_slider(IN_THREAD_ONLY)
 {
-	if (metrics.too_small || metrics.no_slider)
+	if (metrics.too_small)
 		return;
 
 	auto &di=get_draw_info(IN_THREAD);
@@ -430,8 +444,9 @@ void scrollbarObj::implObj::draw_slider(IN_THREAD_ONLY)
 		  const auto &pixmap,
 		  const auto &gc)
 		 {
-			 this->do_draw_slider(IN_THREAD,
-					      picture, 0);
+			 if (metrics.no_slider)
+				 return;
+			 this->do_draw_slider(IN_THREAD, picture, 0);
 		 },
 		 r, di, di, clipped);
 }
@@ -871,8 +886,8 @@ void scrollbarObj::implObj::keyboard_focus(IN_THREAD_ONLY,
 {
 	superclass_t::keyboard_focus(IN_THREAD, event, ptr);
 
-	if (!current_keyboard_focus(IN_THREAD) && reset_state(IN_THREAD))
-		schedule_redraw(IN_THREAD);
+	if (!current_keyboard_focus(IN_THREAD))
+		reset_state(IN_THREAD);
 }
 
 //////////////////////////////////////////////////////////////////////////

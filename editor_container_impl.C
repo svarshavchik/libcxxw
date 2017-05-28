@@ -68,7 +68,7 @@ bool editor_containerObj::implObj::process_button_event(IN_THREAD_ONLY,
 		([&]
 		 (const ref<peepholeObj::layoutmanager_implObj> &lm)
 		 {
-			 editor e=lm->peephole_element;
+			 editor e=lm->element_in_peephole;
 
 			 e->impl->set_focus(IN_THREAD);
 		 });

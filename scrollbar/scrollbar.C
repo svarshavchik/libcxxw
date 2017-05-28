@@ -10,7 +10,6 @@
 #include "focus/focusframefactory.H"
 #include "focus/focusframelayoutimpl.H"
 #include "focus/focusframecontainer_element.H"
-#include "x/w/factory.H"
 #include "x/w/rgb.H"
 
 LIBCXXW_NAMESPACE_START
@@ -28,7 +27,7 @@ scrollbarObj::~scrollbarObj()=default;
 
 // Construct a vertical or a horizontal scrollbar.
 
-static scrollbar create_scrollbar(const factory &f,
+static scrollbar create_scrollbar(const ref<containerObj::implObj> &parent_container,
 				  const scrollbar_config &conf,
 				  const scrollbar_orientation &orientation,
 				  const scrollbar_icon_set &icon_set_1,
@@ -49,7 +48,7 @@ static scrollbar create_scrollbar(const factory &f,
 		ffcontainer_impl_t;
 
 	auto ffcontainer_impl=ref<ffcontainer_impl_t>
-		::create(f->container_impl,
+		::create(parent_container,
 			 metrics::horizvert_axi(),
 			 "focusframe@libcxx");
 
@@ -57,7 +56,7 @@ static scrollbar create_scrollbar(const factory &f,
 
 	auto fflayout=ref<focusframelayoutimplObj>
 		::create(ffcontainer_impl,
-			 "inputfocusnoton_border",
+			 "scrollbarfocusoff_border",
 			 "inputfocuson_border");
 
 	// The focus frame will manage the actual scrollbar element. Create
@@ -93,10 +92,6 @@ static scrollbar create_scrollbar(const factory &f,
 						 rgb::maximum/10*3});
 	e->show();
 
-	// And tell the factory that expects the new element that here it is.
-
-	f->created_internally(sb);
-
 	return sb;
 }
 
@@ -129,14 +124,14 @@ create_scrollbar_icon_set(drawableObj::implObj &drawable,
 	};
 }
 
-scrollbar do_create_h_scrollbar(const factory &f,
+scrollbar do_create_h_scrollbar(const ref<containerObj::implObj> &parent_container,
 				const scrollbar_config &conf,
 				const function<scrollbar_impl_constructor>
 				&create_impl)
 {
-	auto &window_handler=f->container_impl->get_window_handler();
+	auto &window_handler=parent_container->get_window_handler();
 
-	return create_scrollbar(f, conf,
+	return create_scrollbar(parent_container, conf,
 				horizontal_scrollbar,
 				create_scrollbar_icon_set
 				(window_handler,
@@ -149,14 +144,14 @@ scrollbar do_create_h_scrollbar(const factory &f,
 				create_impl);
 }
 
-scrollbar do_create_v_scrollbar(const factory &f,
+scrollbar do_create_v_scrollbar(const ref<containerObj::implObj> &parent_container,
 				const scrollbar_config &conf,
 				const function<scrollbar_impl_constructor>
 				&create_impl)
 {
-	auto &window_handler=f->container_impl->get_window_handler();
+	auto &window_handler=parent_container->get_window_handler();
 
-	return create_scrollbar(f, conf,
+	return create_scrollbar(parent_container, conf,
 				vertical_scrollbar,
 				create_scrollbar_icon_set
 				(window_handler,

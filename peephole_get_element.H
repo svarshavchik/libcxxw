@@ -20,7 +20,7 @@ void peepholeObj::implObj::get_element(lambda &&callback)
 		([&]
 		 (const ref<peepholeObj::layoutmanager_implObj> &l)
 		 {
-			 callback(l->peephole_element);
+			 callback(l->element_in_peephole);
 		 });
 }
 

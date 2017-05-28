@@ -8,10 +8,13 @@
 #include "editor_impl.H"
 #include "input_field.H"
 #include "focus/focusframecontainer_element.H"
+#include "scrollbar/scrollbar.H"
 #include "background_color.H"
 #include "nonrecursive_visibility.H"
 #include "generic_window_handler.H"
 #include "connection_thread.H"
+#include "peephole.H"
+#include "peephole_layoutmanager_impl.H"
 #include "xid_t.H"
 #include "x/w/input_field.H"
 #include "x/w/new_layoutmanager.H"
@@ -48,10 +51,6 @@ static focusframecontainer get_focusframecontainer(const input_fieldObj *field)
 {
 	const_gridlayoutmanager glm=field->get_layoutmanager();
 
-	container inner_container=glm->get(0, 0);
-
-	glm=inner_container->get_layoutmanager();
-
 	return glm->get(0, 0);
 }
 
@@ -70,10 +69,11 @@ typedef nonrecursive_visibilityObj<focusframecontainer_elementObj<
 						   child_elementObj>>
 				   > focusframe_impl_t;
 
-static inline void create_focusframe_with_editor(const auto &factory,
-						 const text_param &text,
-						 const input_field_config
-						 &config)
+static inline std::tuple<scrollbar, scrollbar>
+create_focusframe_with_editor(const auto &factory,
+			      const auto &parent_container,
+			      const text_param &text,
+			      const input_field_config &config)
 {
 	// Create the focusframe implementation object, first.
 
@@ -89,11 +89,19 @@ static inline void create_focusframe_with_editor(const auto &factory,
 			 );
 
 	// Now that the focusframe implementation object exists we can
-	// crate the editor_container element.
+	// create the editor_container element.
 
-	auto editor_container=create_editor_container(focusframecontainer_impl,
-						      text,
-						      config);
+	// create_editor_container creates the editor, and the two
+	// scrollbars.
+
+	// TODO: structured bindings
+	auto all_elements=create_editor_container(focusframecontainer_impl,
+						  parent_container,
+						  text,
+						  config);
+	auto &editor_container=std::get<0>(all_elements);
+	auto &horizontal_scrollbar=std::get<1>(all_elements);
+	auto &vertical_scrollbar=std::get<2>(all_elements);
 
 	// We can now create the focusframecontainer public object, now that
 	// the implementation object, and the focusable object (the
@@ -104,6 +112,11 @@ static inline void create_focusframe_with_editor(const auto &factory,
 			 editor_container->editor_element->impl,
 			 "inputfocusoff_border",
 			 "inputfocuson_border");
+
+	// Make sure that the the focusframe and the scrollbars use the
+	// correct tabbing order.
+	set_peephole_scrollbar_focus_order(ff, horizontal_scrollbar,
+					   vertical_scrollbar);
 
 	// We still need to:
 	//
@@ -123,6 +136,8 @@ static inline void create_focusframe_with_editor(const auto &factory,
 	ff->show();
 
 	factory->padding(0).created_internally(ff);
+
+	return {horizontal_scrollbar, vertical_scrollbar};
 }
 
 input_field factoryObj::create_input_field(const text_param &text)
@@ -143,23 +158,33 @@ factoryObj::create_input_field(const text_param &text,
 
 	gridlayoutmanager grid=input_field->get_layoutmanager();
 
-	auto new_container=grid->append_row()
-		->padding(0).border("textedit_border")
-		.create_container
-		([&]
-		 (const auto &container)
-		 {
-			 // Ok, now create a focus frame in here.
+	auto factory=grid->append_row();
 
-			 gridlayoutmanager grid=
-				 container->get_layoutmanager();
+	factory->padding(0).border("textedit_border");
 
-			 create_focusframe_with_editor(grid->append_row(),
-						       text,
-						       config);
-		 },
-		 new_gridlayoutmanager());
+	// TODO: structured bindings
+	auto elements=
+		create_focusframe_with_editor(factory,
+					      impl,
+					      text,
+					      config);
+	auto &horizontal_scrollbar=std::get<0>(elements);
+	auto &vertical_scrollbar=std::get<1>(elements);
 
+	// Before letting install_peephole_scrollbars() finish the job,
+	// let's prime the cells with the right border.
+
+	factory->border("textedit_border");
+
+	auto factory2=grid->append_row();
+	factory2->border("textedit_border");
+
+	install_peephole_scrollbars(vertical_scrollbar,
+				    config.vertical_scrollbar,
+				    factory,
+				    horizontal_scrollbar,
+				    scrollbar_visibility::never,
+				    factory2);
 	created(input_field);
 	return input_field;
 }
@@ -167,6 +192,36 @@ factoryObj::create_input_field(const text_param &text,
 ref<focusableImplObj> input_fieldObj::get_impl() const
 {
 	return get_focusframecontainer(this)->get_impl();
+}
+
+// The input field has three focusable fields inside it.
+
+size_t input_fieldObj::internal_impl_count() const
+{
+	return 3;
+}
+
+ref<focusableImplObj> input_fieldObj::get_impl(size_t n) const
+{
+	if (n == 1)
+	{
+		const_gridlayoutmanager glm=get_layoutmanager();
+
+		scrollbar sb=glm->get(0, 1);
+
+		return sb->get_impl();
+	}
+
+	if (n == 2)
+	{
+		const_gridlayoutmanager glm=get_layoutmanager();
+
+		scrollbar sb=glm->get(1, 0);
+
+		return sb->get_impl();
+	}
+
+	return get_impl();
 }
 
 std::u32string input_fieldObj::get_unicode() const

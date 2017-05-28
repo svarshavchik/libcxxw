@@ -16,10 +16,12 @@ class editorObj;
 
 //! This is an internal editing element. It implements just the editing
 //! functionality. Additional scaffolding is used to create an externally
-//! visible input field: it gets place inside a
+//! visible input field: it gets placed inside a
 //! \ref focusframecontainer "focus frame container", and that goes inside
-//! the actual input field, that also supplies the optional scrollbars,
-//! if the input field is specified as using them.
+//! the actual input field.
+//!
+//! The input field is a grid layout manager container, that provides
+//! the scrollbars for the peephole containing the editing element.
 
 typedef ref<editorObj> editor;
 

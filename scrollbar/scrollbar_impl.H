@@ -130,11 +130,8 @@ class LIBCXX_HIDDEN scrollbarObj::implObj : public focusable_elementObj<> {
 	//!
 	//! If we were in a middle of something, like a button or a key press,
 	//! none of that applies. Reset all the flags to defaults.
-	//!
-	//! Returns an indication that something was reset. If this was
-	//! the case, we better redraw everything.
 
-	bool reset_state(IN_THREAD_ONLY);
+	void reset_state(IN_THREAD_ONLY);
 
 	//! Pixel value when dragging started.
 	scroll_v_t drag_start_current_pixel=0;
@@ -253,6 +250,13 @@ class LIBCXX_HIDDEN scrollbarObj::implObj : public focusable_elementObj<> {
 				   scroll_v_t value,
 				   scroll_v_t dragged_value)=0;
 
+	//! Manually update the scrollbar's configuration.
+
+	//! This updates the scrollbar's configuration. The updated_value()
+	//! callback does not get invoked.
+
+	void update_config(IN_THREAD_ONLY,
+			   const scrollbar_config &new_config);
  private:
 
 	//! Clean up after an aborted drag.

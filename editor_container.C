@@ -10,12 +10,15 @@
 #include "peephole_impl.H"
 #include "peephole_layoutmanager_impl.H"
 #include "container_element.H"
+#include "fonts/current_fontcollection.H"
 #include "x/w/factory.H"
+#include "scrollbar/scrollbar.H"
 
 LIBCXXW_NAMESPACE_START
 
-editor_container
+std::tuple<editor_container, scrollbar, scrollbar>
 create_editor_container(const ref<containerObj::implObj> &parent_container,
+			const ref<containerObj::implObj> &scrollbars_container,
 			const text_param &initial_contents,
 			const input_field_config &config)
 {
@@ -32,8 +35,15 @@ create_editor_container(const ref<containerObj::implObj> &parent_container,
 	// We can now create our layout manager, and give it the created
 	// editor.
 
+	auto scrollbars=create_peephole_scrollbars(scrollbars_container);
+
 	auto layout_impl=ref<editor_containerObj::layoutmanager_implObj>
-		::create(impl, editor);
+		::create(impl, editor,
+			 scrollbars,
+			 scrollbar_visibility::never,
+			 config.vertical_scrollbar);
+
+	layout_impl->initialize_scrollbars();
 
 	// In order to properly initialize the editor element, the layout
 	// manager needs_recalculation(). Arrange to invoke it indirectly
@@ -49,7 +59,9 @@ create_editor_container(const ref<containerObj::implObj> &parent_container,
 	editor->show();
 
 	// Ok, we can now create the container.
-	return editor_container::create(editor, impl, layout_impl);
+	return {editor_container::create(editor, impl, layout_impl),
+			scrollbars.horizontal_scrollbar,
+			scrollbars.vertical_scrollbar};
 }
 
 editor_containerObj::editor_containerObj(const editor &editor_element,

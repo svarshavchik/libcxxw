@@ -40,8 +40,8 @@ void scrollbar_metrics::calculate(scroll_v_t scroll_low_size,
 	auto whatsleft=pixel_size-scroll_low_size-scroll_high_size;
 	handlebar_pixel_size=whatsleft;
 
-	if (page_size >= virtual_size ||
-	    whatsleft <= minimum_handlebar_pixel_size)
+	if (page_size > virtual_size ||
+	    whatsleft < minimum_handlebar_pixel_size)
 		return;
 
 	no_slider=false;

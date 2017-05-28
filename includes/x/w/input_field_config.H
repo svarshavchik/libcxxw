@@ -10,6 +10,7 @@
 #include <x/w/types.H>
 #include <x/w/alignment.H>
 #include <x/w/input_field_configfwd.H>
+#include <x/w/scrollbar.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -22,6 +23,10 @@ struct input_field_config {
 
 	//! Number of rows
 	size_t rows=1;
+
+	//! When to show the vertical scrollbar
+
+	scrollbar_visibility vertical_scrollbar=scrollbar_visibility::never;
 
 	//! Inner alignment
 	halign alignment=halign::left;

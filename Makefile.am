@@ -323,6 +323,10 @@ libcxxw_la_SOURCES=\
 	peephole_impl.H				    \
 	peephole_layoutmanager_impl.C		    \
 	peephole_layoutmanager_impl.H		    \
+	peepholed_element.C			    \
+	peepholed_element.H			    \
+	peepholed_elementfwd.H			    \
+	peepholed_elementobj.H			    \
 	pictformat.C				    \
 	pictformat.H				    \
 	picture.C				    \
