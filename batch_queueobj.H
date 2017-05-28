@@ -6,7 +6,10 @@
 #define batch_queueobj_h
 
 #include "x/w/batch_queuefwd.H"
+#include "x/w/layoutmanagerobj.H"
 #include "connection_threadfwd.H"
+#include <x/mpobj.H>
+#include <x/ptrfwd.H>
 #include <x/obj.H>
 
 LIBCXXW_NAMESPACE_START
@@ -14,6 +17,15 @@ LIBCXXW_NAMESPACE_START
 //! An element that has a parent element.
 
 class LIBCXX_HIDDEN batch_queueObj : virtual public obj {
+
+	class containers_2_recalculateObj;
+
+	//! An internal container for all layoutmanagers that need recalcing.
+
+	typedef mpobj<ref<containers_2_recalculateObj>> c2r_t;
+
+	//! All layout managers that need recalcing.
+	c2r_t c2r;
 
  public:
 
@@ -28,6 +40,14 @@ class LIBCXX_HIDDEN batch_queueObj : virtual public obj {
 	//! The destructor schedules all the jobs.
 
 	~batch_queueObj();
+
+	//! Schedule a container for recalculation
+
+	//! All layout managers gets collected, and a single run_as()
+	//! call gets batched, to invoke needs_recalculation() on all of them
+	//! in one shot.
+
+	void schedule_for_recalculation(const ref<layoutmanagerObj::implObj> &);
 
 	//! Execute the functor in the connection thread.
 

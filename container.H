@@ -223,7 +223,7 @@ public:
 
 class LIBCXX_HIDDEN containers_2_recalculate_map
 	: public std::map<size_t,
-			  std::set<ref<containerObj::implObj>>>
+			  std::unordered_set<ref<containerObj::implObj>>>
 {
 };
 

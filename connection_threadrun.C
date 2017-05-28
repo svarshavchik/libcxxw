@@ -9,6 +9,7 @@
 #include "catch_exceptions.H"
 #include "window_handler.H"
 #include "draw_info_cache.H"
+#include "batch_queue.H"
 #include <x/sysexception.H>
 #include <x/functionalrefptr.H>
 #include <x/mcguffinmultimap.H>
@@ -61,7 +62,10 @@ void connection_threadObj
 	// Assume we'll poll() indefinitely, unless there's a change in plans.
 	int poll_for;
 
-	while (1)
+	auto batch_queue=get_batch_queue();
+	bool maybe_theres_something_in_batch_queue=false;
+
+	for ( ; ; maybe_theres_something_in_batch_queue=true)
 	{
 		poll_for= -1;
 
@@ -143,6 +147,12 @@ void connection_threadObj
 			if (process_buffered_motion_event(IN_THREAD))
 				continue;
 		}
+
+		if (maybe_theres_something_in_batch_queue)
+			// Give the batch queue an opportunity to flush the
+			// batched jobs.
+			return;
+
 		if (redraw_elements(IN_THREAD))
 			// Don't bother checking draw_info_cache. It's unlikely
 			// that redraw_elements() did anything that might

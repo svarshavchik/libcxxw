@@ -27,12 +27,7 @@ layoutmanagerObj::implObj::~implObj()=default;
 
 void layoutmanagerObj::implObj::needs_recalculation(const batch_queue &queue)
 {
-	queue->run_as(RUN_AS,
-		      [me=ref<layoutmanagerObj::implObj>(this)]
-		      (IN_THREAD_ONLY)
-		      {
-			      me->needs_recalculation(IN_THREAD);
-		      });
+	queue->schedule_for_recalculation(ref<implObj>(this));
 }
 
 void layoutmanagerObj::implObj::child_metrics_updated(IN_THREAD_ONLY)

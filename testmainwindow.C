@@ -651,13 +651,21 @@ runtestthemescale(const testmainwindowoptions &options)
 	auto canvasmcguffin=
 		LIBCXX_NAMESPACE::w::element(main_window->appdata)
 		->on_state_update
-		([ccanvas]
+		([ccanvas, first_time=true]
 		 (const auto &what, const auto &ignore)
+		 mutable
 		 {
 			 std::cout << "Canvas: " << what << std::endl;
 			 if (what.shown &&
 			     what.state_update == what.current_state)
+			 {
+				 if (first_time)
+				 {
+					 first_time=false;
+					 return;
+				 }
 				 ccanvas->increment(what.current_position.width);
+			 }
 		 });
 
 	main_window->show_all();

@@ -101,9 +101,9 @@ bool connection_threadObj::recalculate_containers(IN_THREAD_ONLY)
 	{
 		auto p=--containers_2_recalculate_thread_only->end();
 
-		auto last=--p->second.end();
+		auto first=p->second.begin();
 
-		auto container=*last;
+		auto container=*first;
 
 		// Wait until recalculate() is invoked before removing it.
 
@@ -112,7 +112,7 @@ bool connection_threadObj::recalculate_containers(IN_THREAD_ONLY)
 		// child element attempting to schedule its container
 		// for recalculation :-)
 		//
-		// This avoid needless work. The 'last' iterator is not
+		// This avoid needless work. The 'first' iterator is not
 		// going to go anywhere...
 
 		try {
@@ -126,7 +126,7 @@ bool connection_threadObj::recalculate_containers(IN_THREAD_ONLY)
 
 		// Ok, we can get rid of this.
 
-		p->second.erase(last);
+		p->second.erase(first);
 
 		if (p->second.empty())
 			containers_2_recalculate_thread_only->erase(p);

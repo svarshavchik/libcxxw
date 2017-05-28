@@ -741,8 +741,38 @@ void gridlayoutmanagerObj::implObj
 ::do_for_each_child(IN_THREAD_ONLY,
 		    const function<void (const element &e)> &callback)
 {
+	// It's possible that we get here before processing any new elements
+	// that were added to the grid. So iterating over
+	// grid_elements->all_elements is not enough. First, copy all the
+	// "official" grid elements.
+
+	std::unordered_set<element> all_elements;
+
+	{
+		grid_map_t::lock lock(grid_map);
+
+		for (const auto &row:(*lock)->elements)
+			for (const auto &col:row)
+			{
+				all_elements.insert(col->grid_element);
+				try {
+					col->grid_element->impl
+						->initialize_if_needed(IN_THREAD);
+				} CATCH_EXCEPTIONS;
+
+				// And pass them to the callback.
+				callback(col->grid_element);
+			}
+	}
+
+	// Now, pass over all_elements, skipping the ones that were already
+	// called.
 	for (const auto &child:grid_elements(IN_THREAD)->all_elements)
-		callback(child.child_element);
+	{
+		if (all_elements.find(child.child_element) ==
+		    all_elements.end())
+			callback(child.child_element);
+	}
 }
 
 bool gridlayoutmanagerObj::implObj::elementsObj
