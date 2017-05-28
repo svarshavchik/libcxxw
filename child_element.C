@@ -61,6 +61,13 @@ const generic_windowObj::handlerObj &child_elementObj::get_window_handler()
 	return container->get_window_handler();
 }
 
+void child_elementObj::draw_after_visibility_updated(IN_THREAD_ONLY,
+						     bool flag)
+{
+	container->child_visibility_updated(IN_THREAD, flag);
+	elementObj::implObj::draw_after_visibility_updated(IN_THREAD, flag);
+}
+
 void child_elementObj::process_updated_position(IN_THREAD_ONLY)
 {
 	elementObj::implObj::process_updated_position(IN_THREAD);

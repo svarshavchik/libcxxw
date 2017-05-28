@@ -103,6 +103,14 @@ public:
 	virtual void draw_child_elements_after_visibility_updated
 		(IN_THREAD_ONLY, bool flag);
 
+	//! A child element became visible or not visible.
+
+	void child_visibility_updated(IN_THREAD_ONLY, bool flag);
+
+	//! Add this container to containers_2_recalculate
+
+	void needs_recalculation(IN_THREAD_ONLY);
+
 	/////////////////////////////////////////////////////////////////////
 	//
 	// The parent class that inherits from container and element must

@@ -97,14 +97,19 @@ void container_clear_padding(IN_THREAD_ONLY,
 			     clip_region_set &clip,
 			     rectangle_set &child_areas)
 {
+	// If the child element is not visibible, we quietly terminate.
+	// This has the effect of not the child element's padding with the
+	// child element's background color, and not including the padded
+	// area+child element's position in child_areas, which results in that
+	// area eventually getting cleared with the container's background
+	// color.
+
+	if (!e_impl->data(IN_THREAD).inherited_visibility)
+		return;
+
 	rectangle padded_position=manager.padded_position(IN_THREAD, e_impl);
 
 	// We combine all padded child areas into child_areas.
-	//
-	// But only if the child element is visible. If not, its area gets
-	// drawn as part of the container's background.
-
-	// if (e_impl->data(IN_THREAD).inherited_visibility)
 	child_areas.insert(padded_position);
 
 	rectangle position=e_impl->data(IN_THREAD).current_position;
@@ -311,6 +316,20 @@ void containerObj::implObj::request_visibility_recursive(IN_THREAD_ONLY,
 	auto &element_impl=get_element_impl();
 	element_impl.elementObj::implObj::request_visibility_recursive
 		(IN_THREAD, flag);
+}
+
+void containerObj::implObj::child_visibility_updated(IN_THREAD_ONLY,
+						     bool flag)
+{
+	needs_recalculation(IN_THREAD);
+	get_element_impl().schedule_redraw(IN_THREAD);
+}
+
+void containerObj::implObj::needs_recalculation(IN_THREAD_ONLY)
+{
+	(*IN_THREAD->containers_2_recalculate(IN_THREAD))
+		[get_element_impl().nesting_level]
+		.insert(ref<implObj>(this));
 }
 
 void containerObj::implObj::theme_updated(IN_THREAD_ONLY)

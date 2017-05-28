@@ -424,6 +424,9 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! The default implementation calls schedule_redraw(). Overridden
 	//! by containers to draw their elements after they become visible.
 	//! The containers draw their own area by overriding do_draw().
+	//!
+	//! Overridden by child_element, calling the container's
+	//! child_visibility_updated().
 
 	virtual void draw_after_visibility_updated(IN_THREAD_ONLY,
 						   bool flag);

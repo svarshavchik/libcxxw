@@ -78,6 +78,14 @@ class LIBCXX_HIDDEN child_elementObj : public elementObj::implObj {
 	void set_background_color(IN_THREAD_ONLY,
 				  const background_color &) override;
 
+	//! My visibility has changed.
+
+	//! If this element is not shown any more, have the container redraw
+	//! itself.
+
+	void draw_after_visibility_updated(IN_THREAD_ONLY,
+					   bool flag) override;
+
 	//! Forward the call to the container.
 	void window_focus_change(IN_THREAD_ONLY, bool flag) override;
 

@@ -510,6 +510,7 @@ INTERACTIVETESTPROGRAMS=\
 	testmainwindow					\
 	testlabel					\
 	testscrollbar					\
+	testshowhide					\
 	testwordwrappablelabel				\
 	#
 
@@ -572,6 +573,9 @@ testscrollbar_LDFLAGS=-static $(STATICLINKFLAGS)
 testscrollbar_metrics_SOURCES=testscrollbar_metrics.C
 testscrollbar_metrics_LDADD=libcxxw.la
 testscrollbar_metrics_LDFLAGS=-static $(STATICLINKFLAGS)
+
+testshowhide_SOURCES=testshowhide.C
+testshowhide_LDADD=libcxxw.la
 
 testtextparam_SOURCES=testtextparam.C
 testtextparam_LDADD=libcxxw.la

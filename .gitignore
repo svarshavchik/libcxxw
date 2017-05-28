@@ -50,6 +50,7 @@ suppressfile*
 /testrichtextiterator
 /testscrollbar
 /testscrollbar_metrics
+/testshowhide
 /testtextparam
 /m4
 /xml

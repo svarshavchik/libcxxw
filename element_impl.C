@@ -30,6 +30,8 @@ LIBCXXW_NAMESPACE_START
 
 #define THREAD get_window_handler().screenref->impl->thread
 
+#define DO_NOT_DRAW (!data(IN_THREAD).inherited_visibility)
+
 elementObj::implObj::implObj(size_t nesting_level,
 			     const rectangle &initial_position,
 			     const screen &my_screen,
@@ -490,6 +492,9 @@ void elementObj::implObj
 	if (di.no_viewport())
 		return;
 
+	if (DO_NOT_DRAW)
+		return;
+
 	buffer->get
 		(rect.width,
 		 rect.height,
@@ -572,6 +577,9 @@ void elementObj::implObj::clear_to_color(IN_THREAD_ONLY,
 					 const draw_info &background_color_di,
 					 const rectangle_set &areas)
 {
+	if (DO_NOT_DRAW)
+		return;
+
 #ifdef CLEAR_TO_COLOR_LOG
 	CLEAR_TO_COLOR_LOG();
 #endif

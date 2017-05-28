@@ -42,9 +42,7 @@ void layoutmanagerObj::implObj::child_metrics_updated(IN_THREAD_ONLY)
 
 void layoutmanagerObj::implObj::needs_recalculation(IN_THREAD_ONLY)
 {
-	(*IN_THREAD->containers_2_recalculate(IN_THREAD))
-		[container_impl->get_element_impl().nesting_level]
-		.insert(container_impl);
+	container_impl->needs_recalculation(IN_THREAD);
 }
 
 void layoutmanagerObj::implObj::current_position_updated(IN_THREAD_ONLY)
