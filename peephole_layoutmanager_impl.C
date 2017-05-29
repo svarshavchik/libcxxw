@@ -165,7 +165,7 @@ peephole_scrollbars::~peephole_scrollbars()=default;
 
 peepholeObj::layoutmanager_implObj
 ::layoutmanager_implObj(const ref<containerObj::implObj> &container_impl,
-			const peepholed_element &element_in_peephole,
+			const peepholed &element_in_peephole,
 
 			const peephole_scrollbars &scrollbars,
 			const scrollbar_visibility horizontal_scrollbar_visibility,
@@ -201,7 +201,7 @@ void peepholeObj::layoutmanager_implObj
 ::do_for_each_child(IN_THREAD_ONLY,
 		    const function<void (const element &e)> &callback)
 {
-	callback(element_in_peephole);
+	callback(element_in_peephole->get_element());
 }
 
 layoutmanager peepholeObj::layoutmanager_implObj::create_public_object()
@@ -262,8 +262,10 @@ void peepholeObj::layoutmanager_implObj::recalculate(IN_THREAD_ONLY)
 void peepholeObj::layoutmanager_implObj
 ::recalculate_with_requested_visibility(IN_THREAD_ONLY, bool flag)
 {
+	auto peephole_element_impl=element_in_peephole->get_element()->impl;
+
 	try {
-		element_in_peephole->impl->initialize_if_needed(IN_THREAD);
+		peephole_element_impl->initialize_if_needed(IN_THREAD);
 	} CATCH_EXCEPTIONS;
 
 	auto &current_position=container_impl->get_element_impl()
@@ -271,11 +273,11 @@ void peepholeObj::layoutmanager_implObj
 
 	// This is the peepholed element's current position
 	auto &element_current_position=
-		element_in_peephole->impl->data(IN_THREAD).current_position;
+		peephole_element_impl->data(IN_THREAD).current_position;
 
 	// This is its advertised metrics
 	auto element_horizvert=
-		element_in_peephole->impl->get_horizvert(IN_THREAD);
+		peephole_element_impl->get_horizvert(IN_THREAD);
 
 	// Compute the peepholed element's new position. Start with its
 	// current x/y coordinates, and tentatively size it at its maximum
@@ -387,8 +389,8 @@ void peepholeObj::layoutmanager_implObj
 		element_pos.y=min_scroll_y;
 
 	LOG_DEBUG("Positioning element to: " << element_pos);
-	element_in_peephole->impl->update_current_position(IN_THREAD,
-							   element_pos);
+	peephole_element_impl->update_current_position(IN_THREAD,
+						       element_pos);
 
 	update_scrollbar(IN_THREAD,
 			 horizontal_scrollbar,
@@ -410,23 +412,27 @@ void peepholeObj::layoutmanager_implObj
 void peepholeObj::layoutmanager_implObj
 ::update_horizontal_scroll(IN_THREAD_ONLY, dim_t offset)
 {
-	auto cur_pos=element_in_peephole->impl->data(IN_THREAD).current_position;
+	auto peephole_element_impl=element_in_peephole->get_element()->impl;
+
+	auto cur_pos=peephole_element_impl->data(IN_THREAD).current_position;
 
 	coord_t x=coord_t::truncate(offset);
 
 	cur_pos.x= -x;
-	element_in_peephole->impl->update_current_position(IN_THREAD, cur_pos);
+	peephole_element_impl->update_current_position(IN_THREAD, cur_pos);
 }
 
 void peepholeObj::layoutmanager_implObj
 ::update_vertical_scroll(IN_THREAD_ONLY, dim_t offset)
 {
-	auto cur_pos=element_in_peephole->impl->data(IN_THREAD).current_position;
+	auto peephole_element_impl=element_in_peephole->get_element()->impl;
+
+	auto cur_pos=peephole_element_impl->data(IN_THREAD).current_position;
 
 	coord_t y=coord_t::truncate(offset);
 
 	cur_pos.y= -y;
-	element_in_peephole->impl->update_current_position(IN_THREAD, cur_pos);
+	peephole_element_impl->update_current_position(IN_THREAD, cur_pos);
 }
 
 void peepholeObj::layoutmanager_implObj

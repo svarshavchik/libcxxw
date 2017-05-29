@@ -83,7 +83,7 @@ class LIBCXX_HIDDEN peepholeObj::layoutmanager_implObj
 
 	//! The element in the peephole.
 
-	const peepholed_element element_in_peephole;
+	const peepholed element_in_peephole;
 
 	//! Finish initialization of the scrollbars
 
@@ -134,7 +134,7 @@ class LIBCXX_HIDDEN peepholeObj::layoutmanager_implObj
 
 	//! Constructor
 	layoutmanager_implObj(const ref<containerObj::implObj> &container_impl,
-			      const peepholed_element &element_in_peephole,
+			      const peepholed &element_in_peephole,
 			      const peephole_scrollbars &scrollbars,
 			      const scrollbar_visibility horizontal_scrollbar_visibility,
 			      const scrollbar_visibility vertical_scrollbar_visibility);

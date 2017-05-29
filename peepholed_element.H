@@ -6,10 +6,18 @@
 #define peepholed_element_h
 
 #include "peepholed_elementfwd.H"
-#include "peepholed_elementobj.H"
-#include <x/ref.H>
+#include "peepholed.H"
+#include "x/w/element.H"
 
 LIBCXXW_NAMESPACE_START
+
+//! Inherited from peepholedObj.
+
+template<typename element_impl>
+element peepholed_elementObj<element_impl>::get_element()
+{
+	return element(this);
+}
 
 LIBCXXW_NAMESPACE_END
 

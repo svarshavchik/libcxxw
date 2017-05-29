@@ -2,22 +2,33 @@
 ** Copyright 2017 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
-#ifndef peepholed_elementobj_h
-#define peepholed_elementobj_h
+#ifndef peepholedobj_h
+#define peepholedobj_h
 
-#include "x/w/elementobj.H"
 #include "x/w/types.H"
-#include "peepholed_elementfwd.H"
+#include "x/w/elementfwd.H"
+#include "peepholedfwd.H"
 #include "connection_threadfwd.H"
+
+#include <x/obj.H>
 
 LIBCXXW_NAMESPACE_START
 
-class LIBCXX_HIDDEN peepholed_elementObj : public elementObj {
+//! An element in a peephole.
+
+class LIBCXX_HIDDEN peepholedObj : virtual public obj {
 
  public:
-	using elementObj::elementObj;
 
-	~peepholed_elementObj();
+	//! Constructor
+	peepholedObj();
+
+	//! Destructor
+	~peepholedObj();
+
+	//! Return the peepholed element.
+
+	virtual element get_element()=0;
 
 	//! Return the preferred horizontal increment
 	virtual dim_t horizontal_increment(IN_THREAD_ONLY) const=0;

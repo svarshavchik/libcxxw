@@ -3,10 +3,12 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
-#include "peepholed_element.H"
+#include "peepholed.H"
 
 LIBCXXW_NAMESPACE_START
 
-peepholed_elementObj::~peepholed_elementObj()=default;
+peepholedObj::peepholedObj()=default;
+
+peepholedObj::~peepholedObj()=default;
 
 LIBCXXW_NAMESPACE_END

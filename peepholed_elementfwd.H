@@ -7,17 +7,29 @@
 
 #include <x/w/namespace.H>
 #include <x/ptrfwd.H>
+#include "peepholedobj.H"
 
 LIBCXXW_NAMESPACE_START
 
-class peepholed_elementObj;
+//! A mixin for an element in a peephole.
 
-//! An element in a peephole.
+//! The template parameter must be an elementObj or a subclass of it.
+//!
+//! Multiply-inherits from the template parameter and a peepholedObj.
 
-//! The element in the peephole provides its preferred horizontal and vertical
-//! scroll increment.
+template<typename element_impl>
+class LIBCXX_HIDDEN peepholed_elementObj : public element_impl,
+					   public peepholedObj {
 
-typedef ref<peepholed_elementObj> peepholed_element;
+public:
+	using element_impl::element_impl;
+
+	element get_element() override;
+};
+
+//! A peepholed element
+
+typedef ref<peepholedObj> peepholed;
 
 LIBCXXW_NAMESPACE_END
 

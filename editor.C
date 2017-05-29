@@ -8,6 +8,7 @@
 #include "x/w/factory.H"
 #include "fonts/current_fontcollection.H"
 #include "fonts/fontcollection.H"
+#include "peepholed_element.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -23,7 +24,7 @@ editor create_editor(const ref<containerObj::implObj> &parent_container,
 }
 
 editorObj::editorObj(const ref<implObj> &impl)
-	: peepholed_elementObj(impl),
+	: superclass_t(impl),
 	  impl(impl)
 {
 }

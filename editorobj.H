@@ -6,7 +6,7 @@
 #define editorobj_h
 
 #include "x/w/elementobj.H"
-#include "peepholed_elementobj.H"
+#include "peepholed_elementfwd.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -14,7 +14,11 @@ LIBCXXW_NAMESPACE_START
 
 //! \see editor
 
-class LIBCXX_HIDDEN editorObj : public peepholed_elementObj {
+class LIBCXX_HIDDEN editorObj : public peepholed_elementObj<elementObj> {
+
+	//! Alias for my mixin superclass.
+
+	typedef peepholed_elementObj<elementObj> superclass_t;
 
 public:
 	class implObj;
