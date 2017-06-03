@@ -57,6 +57,10 @@ window_handlerObj::~window_handlerObj()
 	xcb_destroy_window(conn()->conn, id());
 }
 
+void window_handlerObj::installed(IN_THREAD_ONLY)
+{
+}
+
 void window_handlerObj::disconnected(IN_THREAD_ONLY)
 {
 }

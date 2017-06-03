@@ -6,7 +6,7 @@
 #define editorobj_h
 
 #include "x/w/elementobj.H"
-#include "peepholed_elementfwd.H"
+#include "peephole/peepholed_elementfwd.H"
 
 LIBCXXW_NAMESPACE_START
 

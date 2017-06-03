@@ -36,6 +36,11 @@ class LIBCXX_HIDDEN ewmh : public xcb_ewmh_connection_t {
 
 	bool get_workarea(size_t screen_number, rectangle &ret);
 
+	//! Request frame extents from the window manager.
+
+	void request_frame_extents(size_t screen_number,
+				   xcb_window_t window_id);
+
 	//! Retrieve the given window's frame size.
 
 	//! Indicates how much extra space the window manager slaps on
@@ -45,16 +50,6 @@ class LIBCXX_HIDDEN ewmh : public xcb_ewmh_connection_t {
 	//! 0 if EWMH not available. Otherwise sets them and returns
 	//! \c true.
 
-	bool get_frame_extents(dim_t &left,
-			       dim_t &right,
-			       dim_t &top,
-			       dim_t &bottom,
-			       size_t screen_number,
-			       xcb_window_t window_id);
-
- private:
-
-	//! \internal
 	bool get_frame_extents(dim_t &left,
 			       dim_t &right,
 			       dim_t &top,

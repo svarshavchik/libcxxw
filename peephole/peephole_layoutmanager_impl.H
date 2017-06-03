@@ -6,10 +6,10 @@
 #ifndef peephole_layoutmanager_impl_H
 #define peephole_layoutmanager_impl_H
 
-#include "peepholeobj.H"
+#include "peephole/peepholeobj.H"
 #include "layoutmanager.H"
 #include "scrollbar/scrollbarfwd.H"
-#include "peepholed_elementfwd.H"
+#include "peephole/peepholed_elementfwd.H"
 #include "x/w/elementfwd.H"
 #include "x/w/scrollbar.H"
 #include "x/w/gridfactoryfwd.H"
@@ -110,7 +110,7 @@ class LIBCXX_HIDDEN peepholeObj::layoutmanager_implObj
 	//! The internal implementation object for the vertical scrollbar
 	const ref<scrollbar_implObj> vertical_scrollbar;
 
- private:
+ protected:
 
 	//! The horizontal scrollbar display element
 

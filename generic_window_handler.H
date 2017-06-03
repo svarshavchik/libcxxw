@@ -89,6 +89,29 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! Whether this window is currently receiving input focus
 
 	bool has_focus_thread_only=false;
+
+	//! Window manager's frame size and screen geometry.
+	struct frame_extents_t {
+
+		//! My workarea.
+		rectangle workarea;
+
+		dim_t left,		//!< Window manager frame's size
+			right,		//!< Window manager frame's size
+			top,		//!< Window manager frame's size
+			bottom;		//!< Window manager frame's size
+
+		//! Constructor
+		frame_extents_t(const rectangle &workarea);
+
+		//! Comparison operator.
+		bool operator==(const frame_extents_t &o);
+	};
+
+	//! The current window frame size and screen geometry.
+
+	frame_extents_t frame_extents_thread_only;
+
  public:
 
 	//! What I want for my initial event mask.
@@ -135,6 +158,13 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	THREAD_DATA_ONLY(preferred_width);
 	THREAD_DATA_ONLY(preferred_height);
 	THREAD_DATA_ONLY(has_focus);
+	THREAD_DATA_ONLY(frame_extents);
+
+	//! Invoked after the handler gets installed.
+
+	//! The handler is now registered with the connection thread.
+
+	void installed(IN_THREAD_ONLY) override;
 
 	////////////////////////////////////////////////////////////////////
 	//
@@ -357,13 +387,12 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	void configure_notify(IN_THREAD_ONLY,
 			      const rectangle &) override;
 
-	//! Return the window manager's hints.
+	//! Update frame extents
 
-	bool get_frame_extents(dim_t &left,
-			       dim_t &right,
-			       dim_t &top,
-			       dim_t &bottom)
-		const;
+	//! Invoked in response to the _NET_FRAME_EXTENTS property getting
+	//! updated.
+
+	void update_frame_extents(IN_THREAD_ONLY);
 
 	//! Inherited from horizvertObj
 

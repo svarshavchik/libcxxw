@@ -6,7 +6,7 @@
 #ifndef peephole_impl_H
 #define peephole_impl_H
 
-#include "peepholeobj.H"
+#include "peephole/peepholeobj.H"
 #include "container_elementfwd.H"
 #include "child_element.H"
 

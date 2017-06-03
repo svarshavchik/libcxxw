@@ -8,7 +8,7 @@
 #include "x/w/factory.H"
 #include "fonts/current_fontcollection.H"
 #include "fonts/fontcollection.H"
-#include "peepholed_element.H"
+#include "peephole/peepholed_element.H"
 
 LIBCXXW_NAMESPACE_START
 

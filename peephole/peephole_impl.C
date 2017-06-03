@@ -3,12 +3,11 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
-#include "peepholed_toplevel.H"
+#include "container_element.H"
+#include "peephole/peephole_impl.H"
 
 LIBCXXW_NAMESPACE_START
 
-peepholed_toplevelObj::peepholed_toplevelObj()=default;
-
-peepholed_toplevelObj::~peepholed_toplevelObj()=default;
+peepholeObj::implObj::~implObj()=default;
 
 LIBCXXW_NAMESPACE_END

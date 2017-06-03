@@ -7,7 +7,7 @@
 
 #include <x/w/namespace.H>
 #include <x/ptrfwd.H>
-#include "peepholedobj.H"
+#include "peephole/peepholedobj.H"
 
 LIBCXXW_NAMESPACE_START
 

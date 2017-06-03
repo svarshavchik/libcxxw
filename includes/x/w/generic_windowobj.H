@@ -7,6 +7,7 @@
 
 #include <x/w/generic_windowfwd.H>
 #include <x/w/new_layoutmanagerfwd.H>
+#include <x/w/layoutmanagerobj.H>
 #include <x/w/containerobj.H>
 #include <x/w/drawableobj.H>
 #include <x/obj.H>
@@ -35,7 +36,7 @@ public:
 
 	//! Constructor
 	generic_windowObj(const ref<implObj> &impl,
-			  const new_layoutmanager &layout_factory)
+			  const ref<layoutmanagerObj::implObj> &lm)
 		LIBCXX_HIDDEN;
 
 	//! Destructor

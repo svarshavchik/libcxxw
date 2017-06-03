@@ -3,9 +3,9 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
-#include "peephole_impl.H"
-#include "peephole_layoutmanager_impl.H"
-#include "peephole.H"
+#include "peephole/peephole_impl.H"
+#include "peephole/peephole_layoutmanager_impl.H"
+#include "peephole/peephole.H"
 
 LIBCXXW_NAMESPACE_START
 

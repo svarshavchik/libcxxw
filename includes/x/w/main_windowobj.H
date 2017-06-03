@@ -31,7 +31,8 @@ public:
 
 	//! Constructor
 	main_windowObj(const ref<implObj> &impl,
-		       const new_layoutmanager &layout_factory) LIBCXX_HIDDEN;
+		       const ref<layoutmanagerObj::implObj> &lm)
+		LIBCXX_HIDDEN;
 
 	//! Destructor
 	~main_windowObj() LIBCXX_HIDDEN;
@@ -39,6 +40,12 @@ public:
 	//! Install a callback that gets invoke when the window close button is clicked.
 
 	void on_delete(const std::function<void ()> &callback);
+
+private:
+
+	//! Inherited from containerObj
+
+	ref<layoutmanagerObj::implObj> get_layout_impl() const override;
 };
 
 LIBCXXW_NAMESPACE_END

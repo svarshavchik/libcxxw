@@ -5,8 +5,8 @@
 #ifndef peepholed_toplevel_element_h
 #define peepholed_toplevel_element_h
 
-#include "peepholed_toplevel_elementfwd.H"
-#include "peepholed_toplevel.H"
+#include "peephole/peepholed_toplevel_elementfwd.H"
+#include "peephole/peepholed_toplevel.H"
 #include "x/w/element.H"
 
 LIBCXXW_NAMESPACE_START

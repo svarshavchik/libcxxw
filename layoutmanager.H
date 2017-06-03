@@ -71,7 +71,7 @@ class LIBCXX_HIDDEN layoutmanagerObj::implObj : virtual public obj {
 
 	//! Mark this layout as needing recalculation.
 
-	void needs_recalculation(IN_THREAD_ONLY);
+	virtual void needs_recalculation(IN_THREAD_ONLY);
 
 	//! Iterate over all child elements
 

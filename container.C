@@ -21,7 +21,7 @@ containerObj::containerObj(const ref<implObj> &impl,
 }
 
 containerObj::containerObj(const ref<implObj> &impl,
-			   const ref<layoutmanagerObj::implObj> layout_impl)
+			   const ref<layoutmanagerObj::implObj> &layout_impl)
 	: elementObj(impl),
 	  impl(impl),
 	  layout_impl(layout_impl)
@@ -34,14 +34,19 @@ containerObj::~containerObj()
 	impl->uninstall_layoutmanager();
 }
 
+ref<layoutmanagerObj::implObj> containerObj::get_layout_impl() const
+{
+	return layout_impl;
+}
+
 layoutmanager containerObj::get_layoutmanager()
 {
-	return layout_impl->create_public_object();
+	return get_layout_impl()->create_public_object();
 }
 
 const_layoutmanager containerObj::get_layoutmanager() const
 {
-	return layout_impl->create_public_object();
+	return get_layout_impl()->create_public_object();
 }
 
 container factoryObj

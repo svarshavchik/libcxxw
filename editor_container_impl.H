@@ -7,7 +7,7 @@
 #define editor_container_impl_H
 
 #include "editor_containerobj.H"
-#include "peephole_impl.H"
+#include "peephole/peephole_impl.H"
 #include "nonrecursive_visibilityfwd.H"
 #include "x/w/button_eventfwd.H"
 

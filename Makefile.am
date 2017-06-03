@@ -316,25 +316,37 @@ libcxxw_la_SOURCES=\
 	new_layoutmanager.H			    \
 	nonrecursive_visibility.H		    \
 	nonrecursive_visibilityfwd.H		    \
-	peephole.H				    \
-	peephole.C				    \
-	peepholefwd.H				    \
-	peepholeobj.H				    \
-	peephole_get_element.H			    \
-	peephole_impl.C				    \
-	peephole_impl.H				    \
-	peephole_layoutmanager_impl.C		    \
-	peephole_layoutmanager_impl.H		    \
-	peepholed.C				    \
-	peepholed.H				    \
-	peepholedfwd.H				    \
-	peepholedobj.H				    \
-	peepholed_element.H			    \
-	peepholed_elementfwd.H			    \
-	peepholed_toplevel.C			    \
-	peepholed_toplevel.H			    \
-	peepholed_toplevelfwd.H			    \
-	peepholed_toplevelobj.H			    \
+	peephole/peephole.H			    \
+	peephole/peephole.C			    \
+	peephole/peepholefwd.H			    \
+	peephole/peepholeobj.H			    \
+	peephole/peephole_get_element.H		    \
+	peephole/peephole_impl.C		    \
+	peephole/peephole_impl.H		    \
+	peephole/peephole_layoutmanager_impl.C	    \
+	peephole/peephole_layoutmanager_impl.H	    \
+	peephole/peephole_toplevel.C		    \
+	peephole/peephole_toplevel.H		    \
+	peephole/peephole_toplevel_gridlayoutmanager.C	  \
+	peephole/peephole_toplevel_gridlayoutmanager.H	  \
+	peephole/peephole_toplevel_gridlayoutmanagerfwd.H \
+	peephole/peephole_toplevel_gridlayoutmanagerobj.H \
+	peephole/peepholed.C			    \
+	peephole/peepholed.H			    \
+	peephole/peepholedfwd.H			    \
+	peephole/peepholedobj.H			    \
+	peephole/peepholed_element.H		    \
+	peephole/peepholed_elementfwd.H		    \
+	peephole/peepholed_toplevel.C		    \
+	peephole/peepholed_toplevel.H		    \
+	peephole/peepholed_toplevelfwd.H	    \
+	peephole/peepholed_toplevelobj.H	    \
+	peepholed_toplevel_main_window.C	    \
+	peepholed_toplevel_main_window.H	    \
+	peepholed_toplevel_main_windowobj.H	    \
+	peepholed_toplevel_main_windowfwd.H	    \
+	peepholed_toplevel_main_window_impl.C	    \
+	peepholed_toplevel_main_window_impl.H	    \
 	pictformat.C				    \
 	pictformat.H				    \
 	picture.C				    \

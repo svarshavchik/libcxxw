@@ -5,8 +5,8 @@
 #ifndef peepholed_element_h
 #define peepholed_element_h
 
-#include "peepholed_elementfwd.H"
-#include "peepholed.H"
+#include "peephole/peepholed_elementfwd.H"
+#include "peephole/peepholed.H"
 #include "x/w/element.H"
 
 LIBCXXW_NAMESPACE_START

@@ -6,8 +6,8 @@
 #ifndef peephole_get_element_H
 #define peephole_get_element_H
 
-#include "peephole_impl.H"
-#include "peephole_layoutmanager_impl.H"
+#include "peephole/peephole_impl.H"
+#include "peephole/peephole_layoutmanager_impl.H"
 
 LIBCXXW_NAMESPACE_START
 

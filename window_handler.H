@@ -85,6 +85,12 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 
 	~window_handlerObj();
 
+	//! Invoked after the handler gets installed.
+
+	//! The handler is now registered with the connection thread.
+
+	virtual void installed(IN_THREAD_ONLY);
+
 	//! Unexpected disconnection from the server.
 
 	//! The default implementation does nothing.

@@ -12,14 +12,19 @@
 #include "x/w/picture.H"
 #include "x/w/new_layoutmanager.H"
 #include "x/w/screen.H"
+#include "layoutmanager.H"
+#include "peephole/peephole_toplevel.H"
+#include "peephole/peepholed_toplevel_element.H"
+#include "peepholed_toplevel_main_window.H"
+#include "peepholed_toplevel_main_window_impl.H"
 
 LOG_CLASS_INIT(LIBCXX_NAMESPACE::w::main_windowObj);
 
 LIBCXXW_NAMESPACE_START
 
 main_windowObj::main_windowObj(const ref<implObj> &impl,
-			       const new_layoutmanager &layout_factory)
-	: generic_windowObj(impl, layout_factory),
+			       const ref<layoutmanagerObj::implObj> &lm)
+	: generic_windowObj(impl, lm),
 	  impl(impl)
 {
 }
@@ -84,14 +89,45 @@ main_window screenObj
 	auto handler=ref<main_windowObj::handlerObj>
 		::create(connref->impl->thread, params);
 
-	auto window_impl=ref<main_windowObj::implObj>::create(handler);
+	peepholed_toplevel_main_windowptr real_container;
 
-	auto mw=ptrrefBase::objfactory<main_window>::create(window_impl,
-							    layout_factory);
+	// Create a top level peephole in the main_window.
+
+	auto lm=create_peephole_toplevel
+		(handler,
+		 [&]
+		 (const ref<containerObj::implObj> &parent)
+		 {
+			 // A toplevel_container_implObj is in the peephole,
+			 // and that's the container that will use the
+			 // requested layout_factory.
+
+			 auto impl=ref<peepholed_toplevel_main_windowObj::implObj>
+			 ::create(parent);
+
+			 auto c=peepholed_toplevel_main_window
+			 ::create(impl, layout_factory);
+
+			 real_container=c;
+
+			 c->show();
+			 return c;
+		 });
+
+	auto window_impl=ref<main_windowObj::implObj>
+		::create(handler, real_container);
+
+	auto mw=ptrrefBase::objfactory<main_window>
+		::create(window_impl, lm->impl);
 
 	f(mw);
 
 	return mw;
+}
+
+ref<layoutmanagerObj::implObj> main_windowObj::get_layout_impl() const
+{
+	return impl->peepholed_container->get_layout_impl();
 }
 
 LIBCXXW_NAMESPACE_END

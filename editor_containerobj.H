@@ -6,7 +6,7 @@
 #define editor_containerobj_h
 
 #include "x/w/containerobj.H"
-#include "peepholeobj.H"
+#include "peephole/peepholeobj.H"
 #include "editorfwd.H"
 #include "editor_containerfwd.H"
 

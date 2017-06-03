@@ -49,6 +49,23 @@ static background_color default_background_color(const screen &s)
 }
 
 //////////////////////////////////////////////////////////////////////////
+
+
+generic_windowObj::handlerObj::frame_extents_t
+::frame_extents_t(const rectangle &workarea)
+	: workarea(workarea)
+{
+}
+
+bool generic_windowObj::handlerObj::frame_extents_t
+::operator==(const frame_extents_t &o)
+{
+	return workarea == o.workarea &&
+		left == o.left && right == o.right &&
+		top == o.top && bottom == o.bottom;
+}
+
+//////////////////////////////////////////////////////////////////////////
 //
 // Allocate a picture for the input/output window
 
@@ -84,11 +101,21 @@ generic_windowObj::handlerObj
 						 0, 0)),
 	current_background_color_thread_only(default_background_color
 					     (params.window_handler_params
-					      .screenref))
+					      .screenref)),
+	frame_extents_thread_only(params.window_handler_params.screenref
+				  ->get_workarea())
 {
 }
 
 generic_windowObj::handlerObj::~handlerObj()=default;
+
+void generic_windowObj::handlerObj::installed(IN_THREAD_ONLY)
+{
+	mpobj<ewmh>::lock lock(screenref->get_connection()
+			       ->impl->ewmh_info);
+
+	lock->request_frame_extents(screenref->impl->screen_number, id());
+}
 
 ////////////////////////////////////////////////////////////////////
 //
@@ -864,17 +891,35 @@ void generic_windowObj::handlerObj::pointer_focus_lost(IN_THREAD_ONLY)
 			&elementObj::implObj::report_pointer_focus);
 }
 
-bool generic_windowObj::handlerObj::get_frame_extents(dim_t &left,
-						      dim_t &right,
-						      dim_t &top,
-						      dim_t &bottom) const
+void generic_windowObj::handlerObj::update_frame_extents(IN_THREAD_ONLY)
 {
-	mpobj<ewmh>::lock lock(screenref->get_connection()
-			       ->impl->ewmh_info);
+	auto &data=frame_extents(IN_THREAD);
 
-	return lock->get_frame_extents(left, right, top, bottom,
-				       screenref->impl->screen_number,
-				       id());
+	auto old_data=data;
+
+	data.workarea=get_screen()->get_workarea();
+	{
+		mpobj<ewmh>::lock lock(screenref->get_connection()->impl
+				       ->ewmh_info);
+
+		lock->get_frame_extents(data.left,
+					data.right,
+					data.top,
+					data.bottom,
+					id());
+	}
+
+	if (old_data == data)
+		return;
+
+	// Notify the top level window manager.
+
+	invoke_layoutmanager
+		([&]
+		 (const auto &lm)
+		 {
+			 lm->needs_recalculation(IN_THREAD);
+		 });
 }
 
 void generic_windowObj::handlerObj::horizvert_updated(IN_THREAD_ONLY)
@@ -887,37 +932,6 @@ void generic_windowObj::handlerObj::horizvert_updated(IN_THREAD_ONLY)
 	auto minimum_height=p->vert.minimum();
 	auto new_preferred_width=p->horiz.preferred();
 	auto new_preferred_height=p->vert.preferred();
-
-	// Don't tell the window manager that our minimum
-	// dimensions exceed usable workarea size.
-
-	// Subtract frame size from total workarea size.
-	// That's our cap.
-
-	dim_t left, right, top, bottom;
-
-	auto workarea=screenref->get_workarea();
-
-	if (get_frame_extents(left, right, top, bottom))
-	{
-		auto usable_workarea_width=
-			workarea.width-left-right;
-
-		auto usable_workarea_height=
-			workarea.height-top-bottom;
-
-		if (usable_workarea_width < minimum_width)
-			minimum_width=usable_workarea_width;
-
-		if (usable_workarea_height < minimum_height)
-			minimum_height=usable_workarea_height;
-
-		if (usable_workarea_width < new_preferred_width)
-			new_preferred_width=usable_workarea_width;
-
-		if (usable_workarea_height < new_preferred_height)
-			new_preferred_height=usable_workarea_height;
-	}
 
 	preferred_width(IN_THREAD)=new_preferred_width;
 	preferred_height(IN_THREAD)=new_preferred_height;
@@ -1033,7 +1047,8 @@ bool generic_windowObj::handlerObj
 	}
 	else
 	{
-		return false;
+		if (type == IN_THREAD->info->atoms_info.net_frame_extents)
+			update_frame_extents(IN_THREAD);
 	}
 	received_converted_data=false;
 	return true;

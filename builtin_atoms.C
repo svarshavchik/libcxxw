@@ -32,6 +32,7 @@ builtin_atoms::builtin_atoms(xcb_connection_t *conn)
 		{"TARGETS", &builtin_atoms::targets},
 		{"INCR", &builtin_atoms::incr},
 
+		{"_NET_FRAME_EXTENTS", &builtin_atoms::net_frame_extents},
 		{"_XIM_XCONNECT", &builtin_atoms::xim_xconnect},
 		{"_XIM_PROTOCOL", &builtin_atoms::xim_protocol},
 		{"_XIM_MOREDATA", &builtin_atoms::xim_moredata},

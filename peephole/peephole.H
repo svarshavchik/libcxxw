@@ -5,8 +5,8 @@
 #ifndef peephole_h
 #define peephole_h
 
-#include "peepholefwd.H"
-#include "peepholeobj.H"
+#include "peephole/peepholefwd.H"
+#include "peephole/peepholeobj.H"
 
 LIBCXXW_NAMESPACE_START
 

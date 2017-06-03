@@ -5,7 +5,7 @@
 #ifndef peepholeobj_h
 #define peepholeobj_h
 
-#include "peepholefwd.H"
+#include "peephole/peepholefwd.H"
 #include "x/w/containerobj.H"
 
 LIBCXXW_NAMESPACE_START

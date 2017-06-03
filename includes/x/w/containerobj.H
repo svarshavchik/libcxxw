@@ -26,9 +26,21 @@ public:
 
 	const ref<implObj> impl;
 
+private:
 	//! Layout manager's internal implementation object.
 
 	const ref<layoutmanagerObj::implObj> layout_impl;
+public:
+	//! Return my implementation object.
+
+	//! This is overridden by top level elements, like main_windowObj,
+	//! which installs a grid layout manager instead of the requested
+	//! one, and then creates an internal element with the requested
+	//! layout manager, then overrides get_layout_impl() so that it
+	//! looks like the top level display element is using that layout
+	//! manager.
+
+	virtual ref<layoutmanagerObj::implObj> get_layout_impl() const;
 
 	//! Return this container's layout manager.
 	layoutmanager get_layoutmanager();
@@ -42,7 +54,7 @@ public:
 
 	//! Constructor
 	containerObj(const ref<implObj> &impl,
-		     const ref<layoutmanagerObj::implObj> layout_impl)
+		     const ref<layoutmanagerObj::implObj> &layout_impl)
 		LIBCXX_HIDDEN;
 
 	//! Destructor

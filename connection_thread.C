@@ -140,6 +140,7 @@ void connection_threadObj
 {
 	IN_THREAD->window_handlers(IN_THREAD)
 		->insert({handler->id(), handler});
+	handler->installed(IN_THREAD);
 
 	if (disconnected_flag_thread_only) // Already disconnected
 		try {

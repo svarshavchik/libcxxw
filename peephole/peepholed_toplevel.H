@@ -5,9 +5,9 @@
 #ifndef peepholed_toplevel_h
 #define peepholed_toplevel_h
 
-#include "peepholed_toplevelfwd.H"
-#include "peepholed_toplevelobj.H"
-#include "peepholed.H"
+#include "peephole/peepholed_toplevelfwd.H"
+#include "peephole/peepholed_toplevelobj.H"
+#include "peephole/peepholed.H"
 
 LIBCXXW_NAMESPACE_START
 

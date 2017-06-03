@@ -6,6 +6,7 @@
 #include "impl_connection_thread.H"
 #include "main_window.H"
 #include "main_window_handler.H"
+#include "x/w/container.H"
 #include "connection_thread.H"
 #include "connection_info.H"
 #include "connection.H"
@@ -17,9 +18,11 @@
 
 LIBCXXW_NAMESPACE_START
 
-main_windowObj::implObj::implObj(const ref<handlerObj> &handler)
+main_windowObj::implObj::implObj(const ref<handlerObj> &handler,
+				 const container &peepholed_container)
 	: generic_windowObj::implObj(handler),
-	handler(handler)
+	handler(handler),
+	peepholed_container(peepholed_container)
 {
 }
 

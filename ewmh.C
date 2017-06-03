@@ -102,23 +102,11 @@ bool ewmh::get_workarea(size_t screen_number, rectangle &ret)
 	return true;
 }
 
-bool ewmh::get_frame_extents(dim_t &left,
-			     dim_t &right,
-			     dim_t &top,
-			     dim_t &bottom,
-			     size_t screen_number,
-			     xcb_window_t window_id)
+void ewmh::request_frame_extents(size_t screen_number, xcb_window_t window_id)
 {
-	left=right=top=bottom=0;
-
-	if (get_frame_extents(left, right, top, bottom, window_id))
-		return true;
-
 	xcb_ewmh_request_frame_extents(this,
 				       screen_number,
 				       window_id);
-
-	return get_frame_extents(left, right, top, bottom, window_id);
 }
 
 bool ewmh::get_frame_extents(dim_t &left,
