@@ -154,11 +154,17 @@ public:
 
 	//! Recursive show() or hide().
 
-	//! Recursively invoke the child elements'
-	//! request_visibility_recursive in addition to invoking the
-	//! container's element's request_visibility().
+	//! Invokes request_child_visibility_recursive(), then invoke
+	//! the container's element's request_visibility.
 
 	void request_visibility_recursive(IN_THREAD_ONLY, bool flag);
+
+	//! request_visibility_recursive() for all elements in the container.
+
+	//! Recursively invoke the child elements'
+	//! request_visibility_recursive.
+
+	void request_child_visibility_recursive(IN_THREAD_ONLY, bool flag);
 
 	//! Invoke draw_child_elements_after_visibility_updated.
 

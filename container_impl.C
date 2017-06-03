@@ -296,8 +296,8 @@ void containerObj::implObj::process_updated_position(IN_THREAD_ONLY)
 		 });
 }
 
-void containerObj::implObj::request_visibility_recursive(IN_THREAD_ONLY,
-							 bool flag)
+void containerObj::implObj::request_child_visibility_recursive(IN_THREAD_ONLY,
+							       bool flag)
 {
 	invoke_layoutmanager
 		([&]
@@ -312,6 +312,12 @@ void containerObj::implObj::request_visibility_recursive(IN_THREAD_ONLY,
 						  (IN_THREAD, flag);
 				  });
 		 });
+}
+
+void containerObj::implObj::request_visibility_recursive(IN_THREAD_ONLY,
+							 bool flag)
+{
+	request_child_visibility_recursive(IN_THREAD, flag);
 
 	auto &element_impl=get_element_impl();
 	element_impl.elementObj::implObj::request_visibility_recursive

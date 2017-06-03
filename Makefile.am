@@ -23,6 +23,8 @@ libcxxw_la_LIBADD=-lcxx
 libcxxw_la_LDFLAGS=$(STATICLINKFLAGS)
 
 libcxxw_la_SOURCES=\
+	always_visible.H			    \
+	always_visiblefwd.H			    \
 	assert_or_throw.C			    \
 	assert_or_throw.H			    \
 	background_color.C			    \
