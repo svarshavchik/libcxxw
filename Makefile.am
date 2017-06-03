@@ -329,6 +329,10 @@ libcxxw_la_SOURCES=\
 	peepholedobj.H				    \
 	peepholed_element.H			    \
 	peepholed_elementfwd.H			    \
+	peepholed_toplevel.C			    \
+	peepholed_toplevel.H			    \
+	peepholed_toplevelfwd.H			    \
+	peepholed_toplevelobj.H			    \
 	pictformat.C				    \
 	pictformat.H				    \
 	picture.C				    \
