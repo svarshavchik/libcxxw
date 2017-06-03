@@ -95,18 +95,6 @@ ref<obj> screenObj::connection_mcguffin() const
 //
 // Extended Window Manager Hints.
 
-bool screenObj::get_frame_extents(dim_t &left,
-				  dim_t &right,
-				  dim_t &top,
-				  dim_t &bottom) const
-{
-	mpobj<ewmh>::lock lock(get_connection()->impl->ewmh_info);
-
-	return lock->get_frame_extents(left, right, top, bottom,
-				       impl->screen_number,
-				       impl->xcb_screen->root);
-}
-
 rectangle screenObj::get_workarea() const
 {
 	rectangle ret{coord_t(0),

@@ -80,16 +80,10 @@ Determine the size of the screen.
 
 \code
 INSERT_LIBX_NAMESPACE::w::rectangle size=s->get_workarea();
-
-INSERT_LIBX_NAMESPACE::w::dim_t left, right, top, bottom;
-
-bool flag=s->get_frame_extents(left, right, top, bottom);
 \endcode
 
-\c get_workarea() returns the screen's work area, get_frame_extents() returns
-the size of the window manager's borders for a top level window, in pixels,
-returning \c true or \c false indicating whether the window manager provided
-this information.
+\c get_workarea() returns the screen's work area, the usable area of the
+screen.
 
 */
 

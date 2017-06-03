@@ -90,18 +90,6 @@ public:
 
 	rectangle get_workarea() const;
 
-	//! Get the default size of a top level window's borders, according to the window manager.
-
-	//! Returns true if this information is provided by the window manager.
-	//! Returns false if unavailable, and the parameters have not been
-	//! updated. The values are in pixels.
-
-	bool get_frame_extents(dim_t &left,
-			       dim_t &right,
-			       dim_t &top,
-			       dim_t &bottom) const;
-
-
 	//! Create a solid color fill picture object.
 
 	const_picture create_solid_color_picture(const rgb &color) const;
