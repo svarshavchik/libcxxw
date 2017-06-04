@@ -6,6 +6,8 @@
 #define editorobj_h
 
 #include "x/w/elementobj.H"
+#include "x/w/focusableobj.H"
+#include "focus/focusablefwd.H"
 #include "peephole/peepholed_elementfwd.H"
 
 LIBCXXW_NAMESPACE_START
@@ -14,7 +16,8 @@ LIBCXXW_NAMESPACE_START
 
 //! \see editor
 
-class LIBCXX_HIDDEN editorObj : public peepholed_elementObj<elementObj> {
+class LIBCXX_HIDDEN editorObj : public peepholed_elementObj<elementObj>,
+				public focusableObj {
 
 	//! Alias for my mixin superclass.
 
@@ -30,6 +33,9 @@ public:
 
 	//! Destructor
 	~editorObj() LIBCXX_HIDDEN;
+
+	//! Inherited from focusableObj
+	virtual focusable_impl get_impl() const;
 
 	//! Return the preferred horizontal increment
 	dim_t horizontal_increment(IN_THREAD_ONLY) const override;

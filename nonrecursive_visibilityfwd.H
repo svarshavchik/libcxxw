@@ -7,6 +7,7 @@
 #define nonrecursive_visibility_fwd_H
 
 #include "x/w/namespace.H"
+#include "connection_threadfwd.H"
 
 LIBCXXW_NAMESPACE_START
 

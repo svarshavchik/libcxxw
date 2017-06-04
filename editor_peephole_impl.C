@@ -4,11 +4,10 @@
 */
 #include "libcxxw_config.h"
 #include "container_element.H"
-#include "editor_container_impl.H"
+#include "editor_peephole_impl.H"
 #include "peephole/peephole_get_element.H"
 #include "editor.H"
 #include "editor_impl.H"
-#include "nonrecursive_visibility.H"
 #include "peephole/peephole_layoutmanager_impl.H"
 #include "fonts/current_fontcollection.H"
 #include "fonts/fontcollection.H"
@@ -16,21 +15,21 @@
 
 LIBCXXW_NAMESPACE_START
 
-editor_containerObj::implObj::~implObj()=default;
+editor_peephole_implObj::~editor_peephole_implObj()=default;
 
-void editor_containerObj::implObj::initialize(IN_THREAD_ONLY)
+void editor_peephole_implObj::initialize(IN_THREAD_ONLY)
 {
 	peepholeObj::implObj::initialize(IN_THREAD);
 	recalculate(IN_THREAD);
 }
 
-void editor_containerObj::implObj::theme_updated(IN_THREAD_ONLY)
+void editor_peephole_implObj::theme_updated(IN_THREAD_ONLY)
 {
 	peepholeObj::implObj::theme_updated(IN_THREAD);
 	recalculate(IN_THREAD);
 }
 
-void editor_containerObj::implObj::recalculate(IN_THREAD_ONLY)
+void editor_peephole_implObj::recalculate(IN_THREAD_ONLY)
 {
 	get_element([&, this]
 		    (const editor &e)
@@ -56,22 +55,19 @@ void editor_containerObj::implObj::recalculate(IN_THREAD_ONLY)
 		    });
 }
 
-bool editor_containerObj::implObj::process_button_event(IN_THREAD_ONLY,
-							const button_event &be,
-							xcb_timestamp_t
-							timestamp)
+bool editor_peephole_implObj::process_button_event(IN_THREAD_ONLY,
+						   const button_event &be,
+						   xcb_timestamp_t
+						   timestamp)
 {
 	if ((be.button != 1 && be.button != 2) || !be.press)
 		return false;
 
-	invoke_layoutmanager
-		([&]
-		 (const ref<peepholeObj::layoutmanager_implObj> &lm)
-		 {
-			 editor e=lm->element_in_peephole;
-
-			 e->impl->set_focus(IN_THREAD);
-		 });
+	get_element([&]
+		    (const focusable &f)
+		    {
+			    f->get_impl()->set_focus(IN_THREAD);
+		    });
 	return true;
 }
 

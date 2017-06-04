@@ -29,7 +29,9 @@ public:
 	const ref<implObj> impl;
 
 	//! Constructor
-	input_fieldObj(const ref<implObj> &impl) LIBCXX_HIDDEN;
+	input_fieldObj(const ref<implObj> &impl,
+		       const ref<layoutmanagerObj::implObj> &layout_impl)
+		LIBCXX_HIDDEN;
 
 	//! Destructor
 	~input_fieldObj() LIBCXX_HIDDEN;

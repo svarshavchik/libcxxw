@@ -107,12 +107,8 @@ libcxxw_la_SOURCES=\
 	editorobj.H				    \
 	editor_impl.C				    \
 	editor_impl.H				    \
-	editor_container.C			    \
-	editor_container.H			    \
-	editor_containerfwd.H			    \
-	editor_containerobj.H			    \
-	editor_container_impl.C			    \
-	editor_container_impl.H			    \
+	editor_peephole_impl.C			    \
+	editor_peephole_impl.H			    \
 	element.C				    \
 	element.H				    \
 	element_draw.H				    \
@@ -341,6 +337,10 @@ libcxxw_la_SOURCES=\
 	peephole/peepholed_toplevel.H		    \
 	peephole/peepholed_toplevelfwd.H	    \
 	peephole/peepholed_toplevelobj.H	    \
+	peepholed_focusable.C			    \
+	peepholed_focusable.H			    \
+	peepholed_focusablefwd.H		    \
+	peepholed_focusableobj.H		    \
 	peepholed_toplevel_main_window.C	    \
 	peepholed_toplevel_main_window.H	    \
 	peepholed_toplevel_main_windowobj.H	    \

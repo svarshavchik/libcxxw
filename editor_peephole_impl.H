@@ -3,25 +3,29 @@
 ** See COPYING for distribution information.
 */
 
-#ifndef editor_container_impl_H
-#define editor_container_impl_H
+#ifndef editor_peephole_impl_H
+#define editor_peephole_impl_H
 
-#include "editor_containerobj.H"
 #include "peephole/peephole_impl.H"
-#include "nonrecursive_visibilityfwd.H"
 #include "x/w/button_eventfwd.H"
 
 LIBCXXW_NAMESPACE_START
 
-//! Internal-internal editor container implementation object.
+//! Subclass of peepholeObj::implObj for a peephole that contains an \ref editor "editor".
 
-class LIBCXX_HIDDEN editor_containerObj::implObj
-	: public nonrecursive_visibilityObj<peepholeObj::implObj> {
+//! Sets the peephole's metrics based on the configured size of the internal
+//! editor element, defined as rows and columns.
+//!
+//! Also handles button events. editorObj::implObj::process_button_event()
+//! does not consume button 1 and button 2 events, so they propagate here.
+//! We process these events by setting the focus to the editor element.
+
+class LIBCXX_HIDDEN editor_peephole_implObj
+	: public peepholeObj::implObj {
 
  public:
 
-	using nonrecursive_visibilityObj<peepholeObj::implObj>
-		::nonrecursive_visibilityObj;
+	using peepholeObj::implObj::implObj;
 
 	//! We now have everything that's needed to set our metrics.
 
@@ -43,7 +47,7 @@ class LIBCXX_HIDDEN editor_containerObj::implObj
  public:
 
 	//! Destructor
-	~implObj();
+	~editor_peephole_implObj();
 };
 
 LIBCXXW_NAMESPACE_END

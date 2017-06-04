@@ -10,20 +10,37 @@
 #include "child_elementobj.H"
 #include "editorfwd.H"
 #include "nonrecursive_visibilityfwd.H"
+#include "peepholed_focusablefwd.H"
+#include "focus/focusframecontainerfwd.H"
+#include "scrollbar/scrollbarfwd.H"
 
 LIBCXXW_NAMESPACE_START
 
 //! \ref input_field "input_field" implementation class.
 
-class LIBCXX_HIDDEN input_fieldObj::implObj
-	: public nonrecursive_visibilityObj<container_elementObj<child_elementObj>> {
+class LIBCXX_HIDDEN input_fieldObj::implObj : virtual public obj {
 
  public:
 
-	typedef nonrecursive_visibilityObj<container_elementObj
-					   <child_elementObj>> superclass_t;
+	//! The actual implementation object is this mixin.
 
-	using superclass_t::superclass_t;
+	typedef ref<nonrecursive_visibilityObj<container_elementObj<
+		child_elementObj>>> impl_mixin;
+
+	//! The real internal implementation object.
+
+	const impl_mixin impl;
+
+	//! Direct access to the editor element.
+
+	const editor editor_element;
+
+	const peepholed_focusable peephole_info;
+
+	//! Constructor
+	implObj(const impl_mixin &impl,
+		const editor &editor_element,
+		const peepholed_focusable &peephole_info);
 
 	//! Destructor
 	~implObj();

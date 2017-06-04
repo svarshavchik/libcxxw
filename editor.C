@@ -31,6 +31,11 @@ editorObj::editorObj(const ref<implObj> &impl)
 
 editorObj::~editorObj()=default;
 
+focusable_impl editorObj::get_impl() const
+{
+	return impl;
+}
+
 dim_t editorObj::horizontal_increment(IN_THREAD_ONLY) const
 {
 	return impl->font->fc(IN_THREAD)->nominal_width();

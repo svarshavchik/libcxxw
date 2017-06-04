@@ -612,8 +612,10 @@ bool editorObj::implObj::process_button_event(IN_THREAD_ONLY,
 		create_primary_selection(IN_THREAD);
 	}
 
-	// We do not consume the button event. The editor container also
-	// consumes the button press, and moves the input focus here.
+	// We do not consume the button event. The peephole with this editor
+	// element also consumes the button press, and moves the input focus
+	// here, see editor_peephole_implObj.
+
 	return superclass_t::process_button_event(IN_THREAD, be, timestamp);
 }
 

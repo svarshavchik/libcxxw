@@ -129,6 +129,9 @@ void set_peephole_scrollbar_focus_order(const focusable &element,
 					const focusable &horizontal_scrollbar,
 					const focusable &vertical_scrollbar)
 {
+	// Note that the resulting order corresponds to the
+	// order specified in peepholed_focusableObj::get_impl().
+
 	vertical_scrollbar->get_focus_after(element);
 
 	set_peephole_scrollbar_focus_order(horizontal_scrollbar,
