@@ -14,6 +14,7 @@
 #include "container_element.H"
 #include "gridlayoutmanager.H"
 #include "nonrecursive_visibility.H"
+#include "container_visible_element.H"
 #include "messages.H"
 #include "generic_window_handler.H"
 #include "catch_exceptions.H"
@@ -76,20 +77,20 @@ void image_buttonObj::on_activate(const image_button_callback_t &callback)
 //
 // This is the container implementation button for the image_buttonObj's
 // container superclass.
+typedef container_visible_elementObj<nonrecursive_visibilityObj
+				     <container_elementObj<child_elementObj>>
+				     > image_button_container_superclass_t;
 
 class LIBCXX_HIDDEN image_button_containerObj
-	: public nonrecursive_visibilityObj<
-	container_elementObj<child_elementObj>> {
-
-	typedef nonrecursive_visibilityObj<
-		container_elementObj<child_elementObj>> superclass_t;
+	: public image_button_container_superclass_t {
 
  public:
 
 	image_button_containerObj(const ref<containerObj::implObj>
 				  &parent_container)
-		: superclass_t(parent_container, metrics::horizvert_axi(),
-			       "focusframe@libcxx")
+		: image_button_container_superclass_t(parent_container,
+						      metrics::horizvert_axi(),
+						      "focusframe@libcxx")
 	{
 	}
 

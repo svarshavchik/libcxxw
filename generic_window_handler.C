@@ -634,7 +634,7 @@ bool generic_windowObj::handlerObj::process_key_event(IN_THREAD_ONLY,
 
 			if (element->enabled(IN_THREAD))
 			{
-				set_keyboard_focus_to(IN_THREAD, element);
+				element->set_focus_and_ensure_visibility(IN_THREAD);
 				return true;
 			}
 		}
@@ -651,7 +651,7 @@ bool generic_windowObj::handlerObj::process_key_event(IN_THREAD_ONLY,
 		for (const auto &element:focusable_fields(IN_THREAD))
 			if (element->enabled(IN_THREAD))
 			{
-				set_keyboard_focus_to(IN_THREAD, element);
+				element->set_focus_and_ensure_visibility(IN_THREAD);
 				return true;
 			}
 	}

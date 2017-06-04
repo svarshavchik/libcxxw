@@ -570,6 +570,11 @@ void editorObj::implObj::draw_between(IN_THREAD_ONLY,
 			     get_draw_info(IN_THREAD));
 }
 
+void editorObj::implObj::set_focus_and_ensure_visibility(IN_THREAD_ONLY)
+{
+	set_focus_only(IN_THREAD);
+}
+
 void editorObj::implObj::scroll_cursor_into_view(IN_THREAD_ONLY)
 {
 	auto pos=cursor->at(IN_THREAD).position;

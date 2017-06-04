@@ -83,6 +83,8 @@ libcxxw_la_SOURCES=\
 	container_elementfwd.H			    \
 	container_impl.H			    \
 	container_impl.C			    \
+	container_visible_element.H		    \
+	container_visible_elementfwd.H		    \
 	current_border_impl.C			    \
 	current_border_impl.H			    \
 	current_border_implfwd.H		    \

@@ -7,6 +7,7 @@
 
 #include "child_elementobj.H"
 #include "container_elementfwd.H"
+#include "container_visible_elementfwd.H"
 #include "x/w/buttonobj.H"
 
 LIBCXXW_NAMESPACE_START
@@ -14,7 +15,8 @@ LIBCXXW_NAMESPACE_START
 //!  button implementation object.
 
 class LIBCXX_HIDDEN buttonObj::implObj
-	: public container_elementObj<child_elementObj> {
+	: public container_visible_elementObj<
+	container_elementObj<child_elementObj>> {
 
  public:
 

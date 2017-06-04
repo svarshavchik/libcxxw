@@ -222,6 +222,14 @@ class LIBCXX_HIDDEN editorObj::implObj
 	//! ensure_visibility() of the cursor.
 	void scroll_cursor_into_view(IN_THREAD_ONLY);
 
+	//! Override set_focus_and_ensure_visibility()
+
+	//! The scroll_cursor_into_view() ensures visibility for the cursor.
+	//! This display element is in a peephole, and the peephole will take
+	//! care of making everything visible.
+
+	void set_focus_and_ensure_visibility(IN_THREAD_ONLY) override;
+
 	//! Delete the current selection
 	void delete_selection(IN_THREAD_ONLY);
 

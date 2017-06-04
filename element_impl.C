@@ -788,6 +788,13 @@ void elementObj::implObj::ensure_visibility(IN_THREAD_ONLY, const rectangle &r)
 {
 }
 
+void elementObj::implObj::ensure_entire_visibility(IN_THREAD_ONLY)
+{
+	ensure_visibility(IN_THREAD, {0, 0,
+				data(IN_THREAD).current_position.width,
+				data(IN_THREAD).current_position.height});
+}
+
 bool elementObj::implObj::pasted(IN_THREAD_ONLY,
 				 const std::experimental::u32string_view &str)
 {

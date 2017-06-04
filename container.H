@@ -218,8 +218,23 @@ public:
 
 	//! This element wants to make sure that this part of it is visible.
 
+	//! Notifies the layout manager, then invokes
+	//! ensured_visibility_of_child_element().
+
 	void ensure_visibility(IN_THREAD_ONLY, elementObj::implObj &e,
 			       const rectangle &r);
+
+	//! A child element was just ensure_visibility()-ed.
+
+	//! Overriden by the container_visible_element mixin.
+	//!
+	//! The default implementation checks the child element's current
+	//! coordinates, then computes the corresponding coordinates in the
+	//! container, then invokes the container's ensure_visibility().
+
+	virtual void ensured_visibility_of_child_element(IN_THREAD_ONLY,
+							 elementObj::implObj &e,
+							 const rectangle &r);
 };
 
 // The connection thread maintains a map of all containers that need to

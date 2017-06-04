@@ -364,14 +364,59 @@ void containerObj::implObj::ensure_visibility(IN_THREAD_ONLY,
 								r);
 			     });
 
-	// Guess what? Make this entire container visible.
+	ensured_visibility_of_child_element(IN_THREAD, e, r);
+}
 
-	auto &container_e=get_element_impl();
-	auto width=container_e.data(IN_THREAD).current_position.width;
-	auto height=container_e.data(IN_THREAD).current_position.height;
+void containerObj::implObj
+::ensured_visibility_of_child_element(IN_THREAD_ONLY,
+				      elementObj::implObj &e,
+				      const rectangle &r)
+{
+	const auto &my_pos=get_element_impl().data(IN_THREAD).current_position;
 
-	container_e.ensure_visibility(IN_THREAD,
-				      {0, 0, width, height});
+	// Add the child element (x, y) coordinate to the requested visibility
+	// (x, y) coordinate, to derive the position in this container whose
+	// visibility is requested.
+
+	auto ex=e.data(IN_THREAD).current_position.x+r.x;
+	auto ey=e.data(IN_THREAD).current_position.y+r.y;
+
+	// Adding the requested width+height to (ex, ey) computes the
+	// bottom-right coordinate of position in this container whose
+	// visibility is requested.
+
+	auto right=ex+r.width;
+	auto bottom=ey+r.height;
+
+	// Is this element completely out of this container's boundaries?
+
+	if (dim_t::truncate(ex) >= my_pos.width ||
+	    dim_t::truncate(ey) >= my_pos.height ||
+	    right <= 0 || bottom <= 0)
+		return;
+
+	// Clip the coordinates to this countainer's boundaries.
+
+	if (ex < 0)
+		ex=0;
+	if (ey < 0)
+		ey=0;
+
+	if (right > coord_squared_t::truncate(my_pos.width))
+		right=coord_squared_t::truncate(my_pos.width);
+
+	if (bottom > coord_squared_t::truncate(my_pos.height))
+		bottom=coord_squared_t::truncate(my_pos.height);
+
+	coord_t new_x=coord_t::truncate(ex);
+	coord_t new_y=coord_t::truncate(ey);
+
+
+	get_element_impl().ensure_visibility(IN_THREAD, {
+			new_x, new_y,
+				dim_t::truncate(right-new_x),
+				dim_t::truncate(bottom-new_y)
+				});
 }
 
 LIBCXXW_NAMESPACE_END

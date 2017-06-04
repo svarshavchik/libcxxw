@@ -9,6 +9,7 @@
 #include "x/w/factory.H"
 #include "x/w/label.H"
 #include "container_element.H"
+#include "container_visible_element.H"
 #include "hotspot_bgcolor_element.H"
 #include "focus/focusframecontainer_element.H"
 #include "generic_window_handler.H"

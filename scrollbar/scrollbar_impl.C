@@ -659,7 +659,7 @@ bool scrollbarObj::implObj::process_button_event(IN_THREAD_ONLY,
 							  timestamp);
 
 	if (be.press)
-		set_focus(IN_THREAD);
+		set_focus_only(IN_THREAD);
 
 	rectangle r;
 

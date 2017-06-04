@@ -115,11 +115,21 @@ class LIBCXX_HIDDEN focusableImplObj : virtual public obj {
 	void prev_focus(IN_THREAD_ONLY);
 
 	//! Set focus to this focusable element.
-	void set_focus(IN_THREAD_ONLY);
+
+	//! Sets the focus, but doesn't bother to call ensure_visibility().
+
+	void set_focus_only(IN_THREAD_ONLY);
+
+	//! Set focus to this focusable element and make sure it is visible.
+
+	virtual void set_focus_and_ensure_visibility(IN_THREAD_ONLY);
 
  private:
 
 	//! Called to move input focus to another focusable field.
+
+	//! Invokes focus_to's set_focus_and_ensure_visibility().
+
 	void switch_focus(IN_THREAD_ONLY, const focusable_impl &focus_to);
 
  public:

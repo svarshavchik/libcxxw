@@ -348,17 +348,23 @@ void focusableImplObj::prev_focus(IN_THREAD_ONLY)
 		.unset_keyboard_focus(IN_THREAD);
 }
 
-void focusableImplObj::set_focus(IN_THREAD_ONLY)
+void focusableImplObj::set_focus_only(IN_THREAD_ONLY)
 {
 	get_focusable_element().get_window_handler()
 		.set_keyboard_focus_to(IN_THREAD, focusable_impl(this));
 }
 
+void focusableImplObj::set_focus_and_ensure_visibility(IN_THREAD_ONLY)
+{
+	set_focus_only(IN_THREAD);
+	get_focusable_element().ensure_entire_visibility(IN_THREAD);
+}
+
 void focusableImplObj::switch_focus(IN_THREAD_ONLY,
 				    const focusable_impl &focus_to)
 {
-	get_focusable_element().get_window_handler()
-		.set_keyboard_focus_to(IN_THREAD, focus_to);
+	focus_to->set_focus_and_ensure_visibility(IN_THREAD);
+
 }
 
 // Need to do a song-and-dance routine to make sure that both focusables

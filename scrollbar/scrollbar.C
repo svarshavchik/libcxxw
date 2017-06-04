@@ -6,6 +6,7 @@
 #include "generic_window_handler.H"
 #include "scrollbar_impl.H"
 #include "container_element.H"
+#include "container_visible_element.H"
 #include "nonrecursive_visibility.H"
 #include "focus/focusframefactory.H"
 #include "focus/focusframelayoutimpl.H"
@@ -43,8 +44,9 @@ static scrollbar create_scrollbar(const ref<containerObj::implObj> &parent_conta
 	// factory's container.
 
 	typedef nonrecursive_visibilityObj
-		<focusframecontainer_elementObj<container_elementObj
-						<child_elementObj>>>
+		<focusframecontainer_elementObj
+		 <container_visible_elementObj<container_elementObj
+					       <child_elementObj>>>>
 		ffcontainer_impl_t;
 
 	auto ffcontainer_impl=ref<ffcontainer_impl_t>

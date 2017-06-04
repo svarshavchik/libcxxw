@@ -85,7 +85,7 @@ bool hotspotObj::implObj::process_button_event(IN_THREAD_ONLY,
 		update(IN_THREAD);
 
 		if (be.press)
-			get_hotspot_focusable().set_focus(IN_THREAD);
+			get_hotspot_focusable().set_focus_only(IN_THREAD);
 		else
 			activated(IN_THREAD);
 		return true;
