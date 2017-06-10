@@ -147,8 +147,7 @@ public:
 
 	//! The container's position has been updated.
 
-	//! Invokes the layout manager's process_updated_position() callback,
-	//! then the container's element's notify_updated_position().
+	//! Invokes the layout manager's process_updated_position() callback.
 
 	void process_updated_position(IN_THREAD_ONLY);
 

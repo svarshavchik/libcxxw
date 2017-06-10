@@ -108,6 +108,9 @@ class LIBCXX_HIDDEN layoutmanagerObj::implObj : virtual public obj {
 
 	//! The container's position has been updated.
 
+	//! The container should, if necessary, recalculated and update
+	//! the child elements' positions.
+
 	virtual void process_updated_position(IN_THREAD_ONLY,
 					      const rectangle &position)=0;
 
