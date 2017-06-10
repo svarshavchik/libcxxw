@@ -60,7 +60,7 @@ typedef nonrecursive_visibilityObj<focusframecontainer_elementObj<
 						   child_elementObj>>
 				   > focusframe_impl_t;
 
-std::tuple<scrollbar, scrollbar, gridlayoutmanager>
+std::tuple<peepholed_focusable, gridlayoutmanager>
 create_peepholed_focusable_with_frame_impl
 (const char *border,
  const char *inputfocusoff_border,
@@ -98,6 +98,7 @@ create_peepholed_focusable_with_frame_impl
 	auto &impl=std::get<0>(ret);
 	auto &editor=std::get<1>(ret);
 	auto &focusable_element=std::get<2>(ret);
+	auto &focusable_element_impl=std::get<3>(ret);
 
 	// We can now create our layout manager, and give it the created
 	// editor.
@@ -127,7 +128,7 @@ create_peepholed_focusable_with_frame_impl
 
 	auto ff=focusframecontainer
 		::create(focusframecontainer_impl,
-			 focusable_element,
+			 focusable_element_impl,
 			 inputfocusoff_border,
 			 inputfocuson_border);
 
@@ -172,7 +173,9 @@ create_peepholed_focusable_with_frame_impl
 				    horizontal_visibility,
 				    factory2);
 
-	return {scrollbars.vertical_scrollbar, scrollbars.horizontal_scrollbar,
+	return {peepholed_focusable::create(focusable_element,
+					    scrollbars.vertical_scrollbar,
+					    scrollbars.horizontal_scrollbar),
 			grid};
 }
 

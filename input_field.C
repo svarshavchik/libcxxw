@@ -94,22 +94,19 @@ factoryObj::create_input_field(const text_param &text,
 
 			e->show();
 
-			return std::make_tuple(peephole_impl, e, e->impl);
+			return std::make_tuple(peephole_impl, e, e, e->impl);
 		}),
 		 scrollbar_visibility::never,
 		 config.vertical_scrollbar);
 
 	// TODO: structured bindings
-	auto &vertical_scrollbar=std::get<0>(elements);
-	auto &horizontal_scrollbar=std::get<1>(elements);
-	auto &lm=std::get<2>(elements);
+	auto &peephole_info=std::get<0>(elements);
+	auto &lm=std::get<1>(elements);
 
 	auto impl=ref<input_fieldObj::implObj>
 		::create(impl_mixin,
 			 created_editor,
-			 peepholed_focusable::create(created_editor,
-						     vertical_scrollbar,
-						     horizontal_scrollbar));
+			 peephole_info);
 
 	auto input_field=input_field::create(impl, lm->impl);
 

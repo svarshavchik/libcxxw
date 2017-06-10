@@ -8,6 +8,7 @@
 
 #include "peephole/peephole_impl.H"
 #include "x/w/button_eventfwd.H"
+#include "editorobj.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -34,7 +35,10 @@ class LIBCXX_HIDDEN editor_peephole_implObj
 				  xcb_timestamp_t timestamp);
 
 	//! Compute updated metrics.
-	void recalculate(IN_THREAD_ONLY);
+
+	//! Invoke from the editor element, when its metrics have changed.
+	//! We might need to adjust our own metrics as well.
+	void recalculate(IN_THREAD_ONLY, editorObj::implObj &e);
 
 	//! Destructor
 	~editor_peephole_implObj();

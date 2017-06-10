@@ -17,33 +17,29 @@ LIBCXXW_NAMESPACE_START
 
 editor_peephole_implObj::~editor_peephole_implObj()=default;
 
-void editor_peephole_implObj::recalculate(IN_THREAD_ONLY)
+void editor_peephole_implObj::recalculate(IN_THREAD_ONLY,
+					  editorObj::implObj &e)
 {
-	get_element([&, this]
-		    (const editor &e)
-		    {
-			    auto nominal_height=e->impl->font_height(IN_THREAD);
-			    auto nominal_width=
-				    e->impl->font_nominal_width(IN_THREAD);
+	auto nominal_height=e.font_height(IN_THREAD);
+	auto nominal_width=e.font_nominal_width(IN_THREAD);
 
-			    const auto &config=e->impl->config;
+	const auto &config=e.config;
 
-			    dim_t height=dim_t::truncate
-				    (config.rows*dim_t::value_type
-				     (nominal_height));
+	dim_t height=dim_t::truncate
+		(config.rows*dim_t::value_type
+		 (nominal_height));
 
-			    dim_t width=dim_t::truncate
-				    (config.columns*dim_t::value_type
-				     (nominal_width));
+	dim_t width=dim_t::truncate
+		(config.columns*dim_t::value_type
+		 (nominal_width));
 
-			    if (width == dim_t::infinite())
-				    --width;
+	if (width == dim_t::infinite())
+		--width;
 
-			    get_horizvert(IN_THREAD)->set_element_metrics
-				    (IN_THREAD,
-				     {width, width, width},
-				     {height, height, height});
-		    });
+	get_horizvert(IN_THREAD)->set_element_metrics
+		(IN_THREAD,
+		 {width, width, width},
+		 {height, height, height});
 }
 
 bool editor_peephole_implObj::process_button_event(IN_THREAD_ONLY,

@@ -7,9 +7,9 @@
 
 #include "peepholed_focusablefwd.H"
 #include "peepholed_focusableobj.H"
-#include "x/w/scrollbar.H"
 #include "x/w/containerobj.H"
 #include "x/w/gridlayoutmanagerfwd.H"
+#include "x/w/scrollbarfwd.H"
 #include "scrollbar/scrollbarfwd.H"
 #include "peephole/peepholefwd.H"
 #include "peephole/peepholedfwd.H"
@@ -25,13 +25,14 @@ LIBCXXW_NAMESPACE_START
 //! Factory signature that gets passed to \ref create_peepholed_focusable_with_frame "create_peepholed_focusable_with_frame()".
 
 typedef std::tuple<ref<peepholeObj::implObj>, peepholed,
+		   focusable,
 		   focusable_impl> make_peepholed_func_t(const
 							 ref<containerObj
 							 ::implObj> &);
 
 //! Type-erased implementation of \ref create_peepholed_focusable_with_frame "create_peepholed_focusable_with_frame()".
 
-std::tuple<scrollbar, scrollbar, gridlayoutmanager>
+std::tuple<peepholed_focusable, gridlayoutmanager>
 create_peepholed_focusable_with_frame_impl(const char *border,
 			       const char *inputfocusoff_border,
 			       const char *inputfocuson_border,
@@ -53,10 +54,10 @@ LIBCXX_HIDDEN;
 //! The display element must be a container, and the container's implementation
 //! object gets created first.
 //!
-//! create_peepholed_focusable_with_frame() returns the peephole's vertical scrollbar,
-//! the horizontal scrollbar, and the grid layout manager for the display
-//! element. The grid layout manager should then be used to construct
-//! the public display element's container superclass.
+//! create_peepholed_focusable_with_frame() returns the
+//! \ref peepholed_focusable "peepholed_focusable"
+//! and the grid layout manager for the container's implementation
+//! object.
 //!
 //! The \c make_peepholed parameter is a lambda that gets invoked with a
 //! container implementation object as its parameter. This will be the
@@ -64,11 +65,8 @@ LIBCXX_HIDDEN;
 //!
 //! The lambda must create a subclass of peepholeObj::implObj, using the
 //! container implementation parameter to construct it. The lambda returns
-//! a subclass of peepholeObj::implObj, the peepholed display element and its
-//! focusable implementation object.
-//!
-//! The returned scrollbars, and the focusable implementation object should
-//! be used to construct a \ref peepholed_focusable "peepholed_focusable".
+//! a subclass of peepholeObj::implObj, the peepholed display element,
+//! its focusable, and its focusable implementation object.
 //!
 //! The public display element inherits from focusableObj, and delegates the
 //! inherited methods to the peepholed_focusable, so it looks like a single
@@ -79,7 +77,7 @@ LIBCXX_HIDDEN;
 //! the focusable object in the peephole.
 
 template<typename make_peepholed_t>
-inline std::tuple<scrollbar, scrollbar, gridlayoutmanager>
+inline std::tuple<peepholed_focusable, gridlayoutmanager>
 create_peepholed_focusable_with_frame
 (//! The border around the focus frame and scrollbars.
  const char *border,
@@ -98,8 +96,7 @@ create_peepholed_focusable_with_frame
  const background_color &focusable_background_color,
 
  //! The implementation object of the display element under construction.
- const ref<containerObj::implObj>
- &parent_container,
+ const ref<containerObj::implObj> &parent_container,
 
  //! Factor for the peephole and the focusable.
  make_peepholed_t &&make_peepholed,

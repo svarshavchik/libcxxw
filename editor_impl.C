@@ -219,13 +219,13 @@ editorObj::implObj::~implObj()=default;
 void editorObj::implObj::initialize(IN_THREAD_ONLY)
 {
 	superclass_t::initialize(IN_THREAD);
-	parent_peephole->recalculate(IN_THREAD);
+	parent_peephole->recalculate(IN_THREAD, *this);
 }
 
 void editorObj::implObj::theme_updated(IN_THREAD_ONLY)
 {
 	superclass_t::theme_updated(IN_THREAD);
-	parent_peephole->recalculate(IN_THREAD);
+	parent_peephole->recalculate(IN_THREAD, *this);
 }
 
 void editorObj::implObj::compute_preferred_width(IN_THREAD_ONLY)
