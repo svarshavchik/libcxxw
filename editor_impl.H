@@ -7,8 +7,10 @@
 
 #include "editorobj.H"
 #include "label.H"
+#include "reference_font_elementfwd.H"
 #include "fonts/current_fontcollectionfwd.H"
 #include "focus/focusable_elementfwd.H"
+#include "editor_peephole_impl.H"
 #include "richtext/richtextiteratorfwd.H"
 #include "x/w/input_field_config.H"
 #include "x/w/button_eventfwd.H"
@@ -16,10 +18,12 @@
 LIBCXXW_NAMESPACE_START
 
 class LIBCXX_HIDDEN editorObj::implObj
-	: public focusable_elementObj<labelObj::implObj> {
+	: public reference_font_elementObj<focusable_elementObj
+					   <labelObj::implObj>> {
 
 	//! My superclass alias.
-	typedef focusable_elementObj<labelObj::implObj> superclass_t;
+	typedef reference_font_elementObj<focusable_elementObj
+					  <labelObj::implObj>> superclass_t;
 
 	//! Mcguffin for the scheduled cursor blink callback.
 	ptr<obj> blinking;
@@ -51,32 +55,40 @@ class LIBCXX_HIDDEN editorObj::implObj
 
 	struct moving_cursor;
 
+	//! My parent peephole
+	const ref<editor_peephole_implObj> parent_peephole;
+
  public:
 
 	THREAD_DATA_ONLY(selection_start);
 	THREAD_DATA_ONLY(primary_selection);
 	THREAD_DATA_ONLY(secondary_selection);
 
-	//! Editing font.
-	const current_fontcollection font;
-
 	//! This editor's configuration.
 
 	const input_field_config config;
+
+	//! After the reference font is initialized, recalculate the peephole.
+
+	void initialize(IN_THREAD_ONLY) override;
+
+	//! After the theme is updated, recalculate the peephole.
+
+	void theme_updated(IN_THREAD_ONLY) override;
 
 	//! Multiply columns by font's nominal width.
 
 	dim_t nominal_width(IN_THREAD_ONLY) const;
 
 	//! Contsructor
-	implObj(const ref<containerObj::implObj> &container,
+	implObj(const ref<editor_peephole_implObj> &parent_peephole,
 		const text_param &text,
 		const input_field_config &config);
 
  private:
 	//! Internal constructor
 
-	implObj(const ref<containerObj::implObj> &container,
+	implObj(const ref<editor_peephole_implObj> &parent_peephole,
 		richtextstring &&string,
 		const input_field_config &config);
 
@@ -119,9 +131,6 @@ class LIBCXX_HIDDEN editorObj::implObj
 	//! sets the metrics, and that's the final word on it.
 
 	void rewrap_due_to_updated_position(IN_THREAD_ONLY) override;
-
-	//! Override theme_updated
-	void theme_updated(IN_THREAD_ONLY) override;
 
 	//! Inherited from elementObj::implObj
 

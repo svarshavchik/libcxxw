@@ -6,6 +6,7 @@
 #include "editor.H"
 #include "editor_impl.H"
 #include "element_screen.H"
+#include "reference_font_element.H"
 #include "screen.H"
 #include "draw_info.H"
 #include "fonts/current_fontcollection.H"
@@ -182,24 +183,24 @@ public:
 
 ////////////////////////////////////////////////////////////////////////////
 
-editorObj::implObj::implObj(const ref<containerObj::implObj> &container,
+editorObj::implObj::implObj(const ref<editor_peephole_implObj> &parent_peephole,
 			    const text_param &text,
 			    const input_field_config &config)
-	: implObj(container, create_initial_string(container, text), config)
+	: implObj(parent_peephole,
+		  create_initial_string(parent_peephole, text), config)
 {
 }
 
-editorObj::implObj::implObj(const ref<containerObj::implObj> &container,
+editorObj::implObj::implObj(const ref<editor_peephole_implObj> &parent_peephole,
 			    richtextstring &&string,
 			    const input_field_config &config)
-	: superclass_t(container, config.alignment, 0,
+	: superclass_t(// Capture the string's font.
+		       string.get_meta().at(0).second.getfont(),
+		       parent_peephole, config.alignment, 0,
 		       std::move(string),
 		       "textedit@libcxx"),
 	  cursor(this->text->end()),
-
-	  // Capture the string's font.
-	  font(string.get_meta().at(0).second.getfont()),
-
+	  parent_peephole(parent_peephole),
 	  config(config)
 {
 	if (config.columns <= 2)
@@ -215,6 +216,18 @@ editorObj::implObj::implObj(const ref<containerObj::implObj> &container,
 
 editorObj::implObj::~implObj()=default;
 
+void editorObj::implObj::initialize(IN_THREAD_ONLY)
+{
+	superclass_t::initialize(IN_THREAD);
+	parent_peephole->recalculate(IN_THREAD);
+}
+
+void editorObj::implObj::theme_updated(IN_THREAD_ONLY)
+{
+	superclass_t::theme_updated(IN_THREAD);
+	parent_peephole->recalculate(IN_THREAD);
+}
+
 void editorObj::implObj::compute_preferred_width(IN_THREAD_ONLY)
 {
 	preferred_width=config.oneline() ? 0:nominal_width(IN_THREAD);
@@ -224,7 +237,7 @@ dim_t editorObj::implObj::nominal_width(IN_THREAD_ONLY) const
 {
 	return dim_t::truncate(config.columns *
 			       (dim_t::value_type)
-			       font->fc(IN_THREAD)->nominal_width());
+			       font_nominal_width(IN_THREAD));
 }
 
 bool editorObj::implObj::rewrap(IN_THREAD_ONLY)
@@ -255,14 +268,6 @@ editorObj::implObj::calculate_current_metrics(IN_THREAD_ONLY)
 
 void editorObj::implObj::rewrap_due_to_updated_position(IN_THREAD_ONLY)
 {
-}
-
-void editorObj::implObj::theme_updated(IN_THREAD_ONLY)
-{
-	// Although the superclass SHOULD hit out font, don't assume that.
-
-	font->theme_updated(IN_THREAD);
-	labelObj::implObj::theme_updated(IN_THREAD);
 }
 
 void editorObj::implObj::keyboard_focus(IN_THREAD_ONLY,

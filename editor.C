@@ -6,13 +6,11 @@
 #include "editor.H"
 #include "editor_impl.H"
 #include "x/w/factory.H"
-#include "fonts/current_fontcollection.H"
-#include "fonts/fontcollection.H"
 #include "peephole/peepholed_element.H"
 
 LIBCXXW_NAMESPACE_START
 
-editor create_editor(const ref<containerObj::implObj> &parent_container,
+editor create_editor(const ref<editor_peephole_implObj> &parent_container,
 		     const text_param &initial_contents,
 		     const input_field_config &config)
 {
@@ -38,12 +36,12 @@ focusable_impl editorObj::get_impl() const
 
 dim_t editorObj::horizontal_increment(IN_THREAD_ONLY) const
 {
-	return impl->font->fc(IN_THREAD)->nominal_width();
+	return impl->font_nominal_width(IN_THREAD);
 }
 
 dim_t editorObj::vertical_increment(IN_THREAD_ONLY) const
 {
-	return impl->font->fc(IN_THREAD)->height();
+	return impl->font_height(IN_THREAD);
 }
 
 

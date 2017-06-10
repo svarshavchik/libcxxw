@@ -17,33 +17,24 @@ LIBCXXW_NAMESPACE_START
 
 editor_peephole_implObj::~editor_peephole_implObj()=default;
 
-void editor_peephole_implObj::initialize(IN_THREAD_ONLY)
-{
-	peepholeObj::implObj::initialize(IN_THREAD);
-	recalculate(IN_THREAD);
-}
-
-void editor_peephole_implObj::theme_updated(IN_THREAD_ONLY)
-{
-	peepholeObj::implObj::theme_updated(IN_THREAD);
-	recalculate(IN_THREAD);
-}
-
 void editor_peephole_implObj::recalculate(IN_THREAD_ONLY)
 {
 	get_element([&, this]
 		    (const editor &e)
 		    {
-			    const auto &font=e->impl->font->fc(IN_THREAD);
+			    auto nominal_height=e->impl->font_height(IN_THREAD);
+			    auto nominal_width=
+				    e->impl->font_nominal_width(IN_THREAD);
+
 			    const auto &config=e->impl->config;
 
 			    dim_t height=dim_t::truncate
 				    (config.rows*dim_t::value_type
-				     (font->height()));
+				     (nominal_height));
 
 			    dim_t width=dim_t::truncate
 				    (config.columns*dim_t::value_type
-				     (font->nominal_width()));
+				     (nominal_width));
 
 			    if (width == dim_t::infinite())
 				    --width;

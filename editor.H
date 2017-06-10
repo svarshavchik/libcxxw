@@ -7,6 +7,7 @@
 
 #include "editorfwd.H"
 #include "editorobj.H"
+#include "editor_peephole_impl.H"
 #include "x/w/containerobj.H"
 #include "x/w/factoryfwd.H"
 #include "x/w/text_paramfwd.H"
@@ -22,7 +23,7 @@ LIBCXXW_NAMESPACE_START
 //! Constructs the \ref editor "editor display element" inside an
 //! \ref editor_container "editor peephole container".
 
-editor create_editor(const ref<containerObj::implObj> &parent_container,
+editor create_editor(const ref<editor_peephole_implObj> &parent_container,
 		     const text_param &initial_contents,
 		     const input_field_config &config) LIBCXX_HIDDEN;
 

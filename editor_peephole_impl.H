@@ -27,24 +27,14 @@ class LIBCXX_HIDDEN editor_peephole_implObj
 
 	using peepholeObj::implObj::implObj;
 
-	//! We now have everything that's needed to set our metrics.
-
-	//! Invoke recalculate().
-	void initialize(IN_THREAD_ONLY) override;
-
-	//! Invoke recalculate(), after the theme has been updated().
-	void theme_updated(IN_THREAD_ONLY) override;
-
 	//! Button 1 sets focus to the element.
 
 	bool process_button_event(IN_THREAD_ONLY,
 				  const button_event &be,
 				  xcb_timestamp_t timestamp);
- private:
 
 	//! Compute updated metrics.
 	void recalculate(IN_THREAD_ONLY);
- public:
 
 	//! Destructor
 	~editor_peephole_implObj();
