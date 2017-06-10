@@ -3,6 +3,8 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
+#include "container.H"
+#include "child_element.H"
 #include "gridlayoutmanager.H"
 #include "gridfactory.H"
 #include "grid_map_info.H"
@@ -13,6 +15,16 @@
 #include "messages.H"
 
 LIBCXXW_NAMESPACE_START
+
+new_gridlayoutmanager::new_gridlayoutmanager()=default;
+
+new_gridlayoutmanager::~new_gridlayoutmanager()=default;
+
+ref<layoutmanagerObj::implObj>
+new_gridlayoutmanager::create(const ref<containerObj::implObj> &parent) const
+{
+	return ref<gridlayoutmanagerObj::implObj>::create(parent);
+}
 
 gridlayoutmanagerObj::gridlayoutmanagerObj(const ref<implObj> &impl)
 	: layoutmanagerObj(impl), lock(impl->grid_map), impl(impl)

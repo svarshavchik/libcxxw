@@ -6,7 +6,6 @@
 #include "peephole/peephole_toplevel.H"
 #include "child_element.H"
 #include "always_visible.H"
-#include "x/w/new_layoutmanager.H"
 #include "gridlayoutmanager.H"
 #include "peephole/peephole.H"
 #include "peephole/peephole_impl.H"

@@ -3,10 +3,10 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
-#include "new_layoutmanager.H"
-#include "container.H"
+#include "x/w/new_layoutmanagerfwd.H"
+#include "container_element.H"
+#include "child_element.H"
 #include "layoutmanager.H"
-#include "gridlayoutmanager.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -14,16 +14,14 @@ new_layoutmanager::new_layoutmanager()=default;
 
 new_layoutmanager::~new_layoutmanager()=default;
 
-new_gridlayoutmanager::new_gridlayoutmanager()=default;
-
-new_gridlayoutmanager::~new_gridlayoutmanager()=default;
-
-new_layoutmanager_results
-new_gridlayoutmanager::create(const new_layoutmanager_info &info) const
+container new_layoutmanager
+::create(const ref<containerObj::implObj> &parent,
+	 const function<void(const container &)> &creator) const
 {
-	return {
-		ref<gridlayoutmanagerObj::implObj>::create(info.container_impl),
-			};
+	auto impl=ref<container_elementObj<child_elementObj>>
+		::create(parent,child_element_init_params{"background@libcxx"});
+
+	return container::create(impl, create(impl));
 }
 
 LIBCXXW_NAMESPACE_END

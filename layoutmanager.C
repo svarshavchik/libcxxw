@@ -4,7 +4,6 @@
 */
 #include "libcxxw_config.h"
 #include "layoutmanager.H"
-#include "x/w/new_layoutmanager.H"
 #include "container.H"
 #include "xid_t.H"
 #include "generic_window_handler.H"

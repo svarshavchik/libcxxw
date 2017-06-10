@@ -6,11 +6,12 @@
 #define x_w_new_layoutmanagerfwd_h
 
 #include <x/w/namespace.H>
+#include <x/w/containerfwd.H>
+#include <x/w/containerobj.H>
+
+#include <x/functional.H>
 
 LIBCXXW_NAMESPACE_START
-
-class new_layoutmanager_info;
-class new_layoutmanager_results;
 
 //! A new layout manager
 
@@ -24,12 +25,20 @@ class LIBCXX_HIDDEN new_layoutmanager {
 
 public:
 
+	//! Constructor
 	new_layoutmanager();
 
+	//! Destructor
 	~new_layoutmanager();
 
-	virtual new_layoutmanager_results create(const new_layoutmanager_info &)
-		const =0;
+	//! Internal implementation
+	virtual ref<layoutmanagerObj::implObj>
+		create(const ref<containerObj::implObj> &) const=0;
+
+	//! Internal implementation
+	virtual container create(const ref<containerObj::implObj> &,
+				 const function<void(const container &)> &)
+		const;
 };
 
 LIBCXXW_NAMESPACE_END

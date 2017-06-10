@@ -332,7 +332,6 @@ libcxxw_la_SOURCES=\
 	metrics_horizvertobj.H			    \
 	metrics_mmaxis.C			    \
 	new_layoutmanager.C			    \
-	new_layoutmanager.H			    \
 	nonrecursive_visibility.H		    \
 	nonrecursive_visibilityfwd.H		    \
 	peephole/peephole.H			    \
@@ -360,6 +359,8 @@ libcxxw_la_SOURCES=\
 	peephole/peepholed_toplevel.H		    \
 	peephole/peepholed_toplevelfwd.H	    \
 	peephole/peepholed_toplevelobj.H	    \
+	peephole/peepholed_toplevel_element.H	    \
+	peephole/peepholed_toplevel_elementfwd.H    \
 	peepholed_focusable.C			    \
 	peepholed_focusable.H			    \
 	peepholed_focusablefwd.H		    \
@@ -390,6 +391,7 @@ libcxxw_la_SOURCES=\
 	reference_font.C			    \
 	reference_font.H			    \
 	reference_fontfwd.H			    \
+	reference_fontobj.H			    \
 	reference_font_element.H		    \
 	reference_font_elementfwd.H		    \
 	render.C				    \
@@ -460,7 +462,7 @@ libcxxw_la_SOURCES=\
 	screen_solidcolorpicturesfwd.H		    \
 	scrollbar/scrollbar.C			    \
 	scrollbar/scrollbar.H			    \
-	scrollbar/scrollbarfwd.			    \
+	scrollbar/scrollbarfwd.H		    \
 	scrollbar/scrollbarobj.H		    \
 	scrollbar/scrollbar_icon_set.C		    \
 	scrollbar/scrollbar_icon_set.H		    \

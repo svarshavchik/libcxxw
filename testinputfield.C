@@ -13,7 +13,6 @@
 #include "x/w/main_window.H"
 #include "x/w/input_field.H"
 #include "x/w/label.H"
-#include "x/w/new_layoutmanager.H"
 #include "x/w/gridlayoutmanager.H"
 #include "x/w/gridfactory.H"
 #include "x/w/text_param.H"

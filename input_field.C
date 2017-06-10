@@ -18,7 +18,6 @@
 #include "editor_peephole_impl.H"
 #include "xid_t.H"
 #include "x/w/input_field.H"
-#include "x/w/new_layoutmanager.H"
 #include "x/w/input_field_config.H"
 #include "x/w/text_param.H"
 #include "gridlayoutmanager.H"

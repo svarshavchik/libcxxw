@@ -9,7 +9,6 @@
 #include <x/exception.H>
 #include <x/destroy_callback.H>
 
-#include <x/w/new_layoutmanager.H>
 #include <x/w/main_window.H>
 #include <x/w/gridlayoutmanager.H>
 #include <x/w/gridfactory.H>

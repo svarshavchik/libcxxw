@@ -8,7 +8,6 @@
 #include <x/w/containerfwd.H>
 #include <x/w/layoutmanagerfwd.H>
 #include <x/w/layoutmanagerobj.H>
-#include <x/w/new_layoutmanagerfwd.H>
 #include <x/w/elementobj.H>
 
 LIBCXXW_NAMESPACE_START
@@ -47,10 +46,6 @@ public:
 
 	//! Return this container's layout manager.
 	const_layoutmanager get_layoutmanager() const;
-
-	//! Constructor
-	containerObj(const ref<implObj> &impl,
-		     const new_layoutmanager &layout_factory) LIBCXX_HIDDEN;
 
 	//! Constructor
 	containerObj(const ref<implObj> &impl,

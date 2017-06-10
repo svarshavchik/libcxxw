@@ -7,6 +7,7 @@
 
 #include "peephole/peepholed_toplevel_elementfwd.H"
 #include "x/w/containerobj.H"
+#include "x/w/new_layoutmanagerfwd.H"
 #include "x/w/types.H"
 
 LIBCXXW_NAMESPACE_START
@@ -32,7 +33,7 @@ class LIBCXX_HIDDEN peepholed_toplevel_main_windowObj
 
 	//! Constructor
 	peepholed_toplevel_main_windowObj(const ref<implObj> &impl,
-					const new_layoutmanager &factory);
+					  const new_layoutmanager &factory);
 
 	//! Destructor
 	~peepholed_toplevel_main_windowObj();

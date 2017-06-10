@@ -8,7 +8,6 @@
 #include "focus/focusframecontainer.H"
 #include "focus/focusframecontainer_impl.H"
 #include "focus/focusframelayoutimpl.H"
-#include "new_layoutmanager.H"
 #include "container.H"
 #include "gridlayoutmanager.H"
 

@@ -10,7 +10,6 @@
 #include <x/obj.H>
 
 #include "x/w/main_window.H"
-#include "x/w/new_layoutmanager.H"
 #include "x/w/gridlayoutmanager.H"
 #include "x/w/gridfactory.H"
 #include "x/w/screen.H"

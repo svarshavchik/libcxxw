@@ -6,19 +6,11 @@
 #include "container.H"
 #include "x/w/container.H"
 #include "x/w/factory.H"
-#include "new_layoutmanager.H"
 #include "layoutmanager.H"
 #include "container_element.H"
 #include "child_element.H"
 
 LIBCXXW_NAMESPACE_START
-
-containerObj::containerObj(const ref<implObj> &impl,
-			   const new_layoutmanager &layout_factory)
-	: containerObj(impl,
-		       layout_factory.create({impl}).layout_manager_impl)
-{
-}
 
 containerObj::containerObj(const ref<implObj> &impl,
 			   const ref<layoutmanagerObj::implObj> &layout_impl)
@@ -53,13 +45,7 @@ container factoryObj
 ::do_create_container(const function<void (const container &)> &creator,
 		      const new_layoutmanager &layout_manager)
 {
-	auto c=container::create(ref<container_elementObj<child_elementObj>>
-				 ::create(container_impl,
-					  child_element_init_params{
-						  "background@libcxx"}),
-				 layout_manager);
-
-	creator(c);
+	auto c=layout_manager.create(container_impl, creator);
 	created(c);
 	return c;
 }
