@@ -38,12 +38,12 @@ dim_t peepholed_toplevel_main_windowObj::max_height(IN_THREAD_ONLY) const
 dim_t peepholed_toplevel_main_windowObj::horizontal_increment(IN_THREAD_ONLY)
 	const
 {
-	return impl->data(IN_THREAD).horizontal_increment;
+	return impl->reference_font::font_nominal_width(IN_THREAD);
 }
 
 dim_t peepholed_toplevel_main_windowObj::vertical_increment(IN_THREAD_ONLY) const
 {
-	return impl->data(IN_THREAD).vertical_increment;
+	return impl->reference_font::font_height(IN_THREAD);
 }
 
 LIBCXXW_NAMESPACE_END

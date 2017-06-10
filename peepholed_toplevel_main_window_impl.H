@@ -11,6 +11,7 @@
 #include "container_elementfwd.H"
 #include "child_element.H"
 #include "always_visiblefwd.H"
+#include "reference_font_elementfwd.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -23,30 +24,33 @@ LIBCXXW_NAMESPACE_START
 //! \see peepholed_toplevel_main_window
 
 class LIBCXX_HIDDEN peepholed_toplevel_main_windowObj::implObj
-	: public always_visibleObj<container_elementObj<child_elementObj>> {
+	: public reference_font_elementObj<always_visibleObj
+					   <container_elementObj
+					    <child_elementObj>>> {
 
 	//! Parent class.
 
-	typedef always_visibleObj<container_elementObj<child_elementObj>
-				  > superclass_t;
+	typedef reference_font_elementObj<always_visibleObj
+					   <container_elementObj
+					    <child_elementObj>>> superclass_t;
 
 	//! The calculated metrics.
 	struct data_t {
 		dim_t max_width;
 		dim_t max_height;
-		dim_t horizontal_increment;
-		dim_t vertical_increment;
 	} data_thread_only;
-
-	//! Reference font used to compute the increments.
-
-	const current_fontcollection reference_font;
 
  public:
 	THREAD_DATA_ONLY(data);
 
+	//! Constructor
 	implObj(const ref<containerObj::implObj> &parent_container);
+
+	//! Destructor
 	~implObj();
+
+	//! Convenient typedef alias.
+	typedef reference_font_element<> reference_font;
 
 	//! Inherited from elementObj::implObj
 
