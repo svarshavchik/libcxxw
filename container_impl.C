@@ -18,6 +18,12 @@ containerObj::implObj::implObj()=default;
 
 containerObj::implObj::~implObj()=default;
 
+ref<containerObj::implObj>
+containerObj::implObj::parent_for_new_child(const ref<implObj> &me)
+{
+	return me;
+}
+
 generic_windowObj::handlerObj &containerObj::implObj::get_window_handler()
 {
 	return get_element_impl().get_window_handler();

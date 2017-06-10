@@ -86,8 +86,7 @@ create_peepholed_focusable_with_frame_impl
 
 	auto focusframecontainer_impl=ref<focusframe_impl_t>
 		::create(factory->container_impl,
-			 metrics::horizvert_axi(),
-			 "focusframe@libcxx",
+			 child_element_init_params{"focusframe@libcxx"},
 			 focusable_background_color);
 
 	// Now that the focusframe implementation object exists we can

@@ -100,8 +100,7 @@ create_button_focusframe(const ref<buttonObj::implObj> &impl,
 							   rgb::maximum,
 							   rgb::maximum)),
 			 glmi->container_impl,
-			 metrics::horizvert_axi(),
-			 "focusframe@libcxx");
+			 child_element_init_params{"focusframe@libcxx"});
 
 	auto ff=focusframecontainer::create(ffi, ffi,
 					    "inputfocusoff_border",

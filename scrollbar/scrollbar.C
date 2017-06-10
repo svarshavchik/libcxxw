@@ -51,8 +51,7 @@ static scrollbar create_scrollbar(const ref<containerObj::implObj> &parent_conta
 
 	auto ffcontainer_impl=ref<ffcontainer_impl_t>
 		::create(parent_container,
-			 metrics::horizvert_axi(),
-			 "focusframe@libcxx");
+			 child_element_init_params{"focusframe@libcxx"});
 
 	// And this will be its layout manager.
 

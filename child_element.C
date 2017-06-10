@@ -16,35 +16,34 @@
 LIBCXXW_NAMESPACE_START
 
 child_elementObj::child_elementObj(const ref<containerObj::implObj> &container)
-	: child_elementObj(container, metrics::horizvert_axi(),
-			   "default@libcxx")
+	: child_elementObj(container, {})
 {
 }
 
 child_elementObj::child_elementObj(const ref<containerObj::implObj> &container,
-				   const metrics::horizvert_axi
-				   &initial_metrics,
-				   const std::string &scratch_buffer_id)
-	: child_elementObj(container, initial_metrics, scratch_buffer_id,
-			   background_colorptr())
+				   const child_element_init_params &init_params)
+	: child_elementObj(container, init_params, background_colorptr())
 {
 }
 
 child_elementObj::child_elementObj(const ref<containerObj::implObj> &container,
-				   const metrics::horizvert_axi
-				   &initial_metrics,
-				   const std::string &scratch_buffer_id,
+				   const child_element_init_params &init_params,
 				   const background_colorptr
 				   &initial_background_color)
-	: elementObj::implObj(container->get_element_impl().nesting_level+1,
+	: elementObj::implObj(container->get_element_impl()
+			      .nesting_level+1,
 			      {0, 0, 0, 0},
 			      // The container will position me later
-			      initial_metrics,
-			      container->get_window_handler().get_screen(),
-			      container->get_window_handler().drawable_pictformat,
-			      scratch_buffer_id),
+			      init_params.initial_metrics,
+			      container->get_window_handler()
+			      .get_screen(),
+			      container->get_window_handler()
+			      .drawable_pictformat,
+			      init_params.scratch_buffer_id.empty()
+			      ? "default@libcxx":init_params.scratch_buffer_id),
 	current_background_color_thread_only(initial_background_color),
-	container(container)
+	container(init_params.container_override ? container
+		  : container->parent_for_new_child(container))
 {
 }
 

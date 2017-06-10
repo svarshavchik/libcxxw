@@ -22,11 +22,10 @@ canvasObj::implObj::implObj(const ref<containerObj::implObj> &container,
 			    const ref<screenObj::implObj> &screen,
 			    const metrics::mmaxis &horiz_metrics,
 			    const metrics::mmaxis &vert_metrics)
-	: child_elementObj(container, {
-			screen->compute_width(horiz_metrics),
-				screen->compute_height(horiz_metrics)
-				},
-		"background@libcxx"),
+	: child_elementObj(container, {"background@libcxx", {
+				screen->compute_width(horiz_metrics),
+					screen->compute_height(horiz_metrics)
+					}}),
 	  horiz_metrics_thread_only(horiz_metrics),
 	  vert_metrics_thread_only(vert_metrics)
 {

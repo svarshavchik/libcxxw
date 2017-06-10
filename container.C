@@ -55,8 +55,8 @@ container factoryObj
 {
 	auto c=container::create(ref<container_elementObj<child_elementObj>>
 				 ::create(container_impl,
-					  metrics::horizvert_axi(),
-					  "background@libcxx"),
+					  child_element_init_params{
+						  "background@libcxx"}),
 				 layout_manager);
 
 	creator(c);

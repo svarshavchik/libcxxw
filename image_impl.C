@@ -27,9 +27,10 @@ imageObj::implObj::implObj(const ref<containerObj::implObj> &container,
 		 dim_t icon_height,
 		 const std::string &scratch_bufer_id)
 	: child_elementObj(container,
-			   { {icon_width, icon_width, icon_width},
-				   {icon_height, icon_height, icon_height}},
-			   "image@libcxx"),
+			   {"image@libcxx",
+				   { {icon_width, icon_width, icon_width},
+					   {icon_height, icon_height,
+							   icon_height}}}),
 	  current_icon(initial_icon)
 {
 }

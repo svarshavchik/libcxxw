@@ -67,8 +67,7 @@ labelObj::implObj::implObj(const ref<containerObj::implObj> &container,
 			   double initial_width,
 			   const richtextstring &string,
 			   const char *element_id)
-	: child_elementObj(container, metrics::horizvert_axi(),
-			   element_id),
+	: child_elementObj(container, {element_id}),
 	  word_wrap_widthmm_thread_only(initial_width),
 	  text(richtext::create(string, alignment, 0))
 {

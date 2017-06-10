@@ -89,8 +89,7 @@ class LIBCXX_HIDDEN image_button_containerObj
 	image_button_containerObj(const ref<containerObj::implObj>
 				  &parent_container)
 		: image_button_container_superclass_t(parent_container,
-						      metrics::horizvert_axi(),
-						      "focusframe@libcxx")
+						      {"focusframe@libcxx"})
 	{
 	}
 
@@ -141,8 +140,10 @@ do_create_image_button(const std::vector<std::experimental::string_view>
 
 	// This grid layout manager will contain a single focusframecontainer.
 
-	auto focus_frame_impl=ff_impl_t::create(image_button_outer_container_impl, metrics::horizvert_axi(),
-				       "focusframe@libcxx");
+	auto focus_frame_impl=
+		ff_impl_t::create(image_button_outer_container_impl,
+				  child_element_init_params{"focusframe@libcxx"}
+				  );
 
 	// Create an image_button_internal implementation object. Its
 	// container is the focusframecontainer.

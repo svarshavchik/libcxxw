@@ -64,8 +64,8 @@ const scrollbar_orientation vertical_scrollbar={
 };
 
 scrollbarObj::implObj::implObj(const scrollbar_impl_init_params &init_params)
-	: superclass_t(init_params.container, metrics::horizvert_axi(),
-		       init_params.orientation.scratch_buffer_id),
+	: superclass_t(init_params.container,
+		       {init_params.orientation.scratch_buffer_id}),
 	  orientation(init_params.orientation),
 	  icon_set_1(init_params.icon_set_1),
 	  icon_set_2(init_params.icon_set_2),

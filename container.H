@@ -39,6 +39,12 @@ public:
 
 	~implObj();
 
+	//! A new child element has been constructed
+
+	//! child_elementObj's constructor passes the same container as the
+	//! parameter, and the default implementation returns the parameter.
+	virtual ref<implObj> parent_for_new_child(const ref<implObj> &me);
+
 	//! This container must be an element.
 
 	//! Must be implement in a subclass

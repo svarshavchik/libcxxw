@@ -15,10 +15,25 @@
 
 LIBCXXW_NAMESPACE_START
 
+//! Additional constructor parameters
+
+struct LIBCXX_HIDDEN child_element_init_params {
+
+	//! The ID for the element's scratch buffer.
+	std::string scratch_buffer_id;
+
+	//! Element's initial metrics
+	metrics::horizvert_axi initial_metrics;
+
+	//! Do not invoke container's parent_for_new_child()
+	bool container_override=false;
+};
+
 //! An element that has a parent element.
 
 class LIBCXX_HIDDEN child_elementObj : public elementObj::implObj {
 
+ private:
 	//! This display element's background color
 
 	background_colorptr current_background_color_thread_only;
@@ -33,19 +48,20 @@ class LIBCXX_HIDDEN child_elementObj : public elementObj::implObj {
 	//! Constructor.
 
 	//! Save parent element, increase this element's nesting level.
-	//! scratch_buffer_id is forwarded to the element constructor.
 
 	child_elementObj(const ref<containerObj::implObj> &container);
 
-	//! Constructor, custom metrics and scratch buffer ID.
-	child_elementObj(const ref<containerObj::implObj> &container,
-			 const metrics::horizvert_axi &initial_metrics,
-			 const std::string &scratch_buffer_id);
+	//! Constructor
 
-	//! Constructor, explicit background color.
+	//! Additional constructor parameters
 	child_elementObj(const ref<containerObj::implObj> &container,
-			 const metrics::horizvert_axi &initial_metrics,
-			 const std::string &scratch_buffer_id,
+			 const child_element_init_params &init_params);
+
+	//! Constructor
+
+	//! Additional constructor parameters
+	child_elementObj(const ref<containerObj::implObj> &container,
+			 const child_element_init_params &init_params,
 			 const background_colorptr &initial_background_color);
 
 	//! Destructor
