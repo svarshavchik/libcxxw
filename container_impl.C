@@ -41,7 +41,7 @@ void containerObj::implObj
 	layoutmanager_ptr_t::lock lock(layoutmanager_ptr);
 
 	if (*lock)
-		throw EXCEPTION("Internal error: duplicate layout manager installation");
+		throw EXCEPTION("Internal error: duplicate layout manager installation (already have a " << (*lock)->objname() << ")");
 
 	if (impl->container_impl !=
 	    ref<containerObj::implObj>(this))

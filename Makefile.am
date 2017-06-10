@@ -287,12 +287,27 @@ libcxxw_la_SOURCES=\
 	layoutmanager.C				    \
 	layoutmanager.H				    \
 	layoutmanager_impl.C			    \
+	listlayoutmanager/listcontainer.C	    \
+	listlayoutmanager/listcontainer.H	    \
+	listlayoutmanager/listcontainerfwd.H	    \
+	listlayoutmanager/listcontainerobj.H	    \
+	listlayoutmanager/listcontainer_impl.C	    \
+	listlayoutmanager/listcontainer_impl.H	    \
+	listlayoutmanager/listitemfactory.C	    \
+	listlayoutmanager/listitemfactory.H	    \
+	listlayoutmanager/listitemfactoryfwd.H	    \
+	listlayoutmanager/listitemfactoryobj.H	    \
 	listlayoutmanager/listitemlayoutmanager.C   \
 	listlayoutmanager/listitemlayoutmanager.H   \
 	listlayoutmanager/listitemlayoutmanagerfwd.H   \
 	listlayoutmanager/listitemlayoutmanagerobj.H   \
 	listlayoutmanager/listitemlayoutmanager_impl.C \
 	listlayoutmanager/listitemlayoutmanager_impl.H \
+	listlayoutmanager/listlayoutmanager.C	    \
+	listlayoutmanager/listlayoutmanager.H	    \
+	listlayoutmanager/listlayoutmanager_impl.C  \
+	listlayoutmanager/listlayoutstyle.C	    \
+	listlayoutmanager/listlayoutstyle.H	    \
 	main_window.C				    \
 	main_window.H				    \
 	main_window_handler.C			    \

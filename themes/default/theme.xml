@@ -269,4 +269,22 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
   <border id="scrollbarfocusoff_border" from="inputfocusoff_border">
     <color>50%</color>
   </border>
+
+  <!-- Selection lists -->
+
+  <dim id="list_v_padding" axis="vert">.2</dim>
+  <dim id="list_left_padding" axis="horiz">.2</dim>
+  <dim id="list_inner_padding" axis="horiz">.2</dim>
+  <dim id="list_right_padding" axis="horiz">.2</dim>
+
+  <border id="list_border" from="thin_0%" />
+
+  <color id="list_label_color" scale="10%" />
+
+  <color id="list_background_color" scale="80%" />
+
+  <color id="list_selected_color" scale="90%" />
+
+  <color id="list_highlighted_color" scale="100%" />
+
 </theme>
