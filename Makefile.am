@@ -366,6 +366,11 @@ libcxxw_la_SOURCES=\
 	recycled_pixmaps.H			    \
 	recycled_pixmapsfwd.H			    \
 	recycled_pixmapsobj.H			    \
+	reference_font.C			    \
+	reference_font.H			    \
+	reference_fontfwd.H			    \
+	reference_font_element.H		    \
+	reference_font_elementfwd.H		    \
 	render.C				    \
 	render.H				    \
 	returned_pointer.H			    \
