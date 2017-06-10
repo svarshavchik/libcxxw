@@ -29,7 +29,7 @@ class listlayoutstyle;
 
 //! Specification for padding between list items
 
-struct list_padding {
+struct list_style {
 
 	//! Padding above and below each list item
 	std::string v_padding;
@@ -46,11 +46,11 @@ struct list_padding {
 
 //! Default list padding
 
-list_padding default_list_padding();
+list_style default_list_style();
 
 //! The list highlights items to indicate they're selected
 
-extern const listlayoutstyle &highlighted_list_style;
+extern const listlayoutstyle &highlighted_list;
 
 LIBCXXW_NAMESPACE_END
 

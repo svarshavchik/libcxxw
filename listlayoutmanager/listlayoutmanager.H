@@ -46,27 +46,27 @@ class LIBCXX_HIDDEN listlayoutmanagerObj::implObj
 template<typename builder_t>
 container create_listlayoutmanager(const factory &f,
 				   size_t columns,
-				   const listlayoutstyle &style,
-				   const list_padding &padding,
+				   const listlayoutstyle &layout_style,
+				   const list_style &style,
 				   builder_t &&builder)
 	LIBCXX_HIDDEN;
 
 //! Create a new list layout manager.
 
 //! The first parameter is the parent container's factory. The number of
-//! columns, the style, and the padding gets specified.
+//! columns, and the style gets specified.
 //!
 //! The lambda is the builder for the new list layout manager.
 
 template<typename builder_t>
 inline container create_listlayoutmanager(const factory &f,
 					  size_t columns,
-					  const listlayoutstyle &style,
-					  const list_padding &padding,
+					  const listlayoutstyle &layout_style,
+					  const list_style &style,
 					  builder_t &&builder)
 {
 	return create_listlayoutmanager_impl
-		(f, columns, style, padding,
+		(f, columns, layout_style, style,
 		 make_function<void (const container &)>
 		 (std::forward<builder_t>(builder)));
 }
@@ -75,8 +75,8 @@ inline container create_listlayoutmanager(const factory &f,
 
 container create_listlayoutmanager_impl(const factory &f,
 					size_t columns,
-					const listlayoutstyle &style,
-					const list_padding &padding,
+					const listlayoutstyle &layout_style,
+					const list_style &style,
 					const function<void (const container &)>
 					&builder)
 	LIBCXX_HIDDEN;

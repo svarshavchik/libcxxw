@@ -21,7 +21,7 @@ struct listcontainer_dim_right;
 //! Superclass of the list container implementation object
 
 //! The list container implementation object stores a mixin with four
-//! theme-based dimensions which set the list items' padding.
+//! theme-based dimensions which set the list items' style.
 
 typedef themedim_elementObj<container_elementObj<child_elementObj>,
 			    listcontainer_dim_v,
@@ -43,7 +43,7 @@ class LIBCXX_HIDDEN listcontainerObj::implObj :
 	//! Constructor
 
 	implObj(const ref<containerObj::implObj> &parent,
-		const list_padding &padding);
+		const list_style &style);
 
 	//! Destructor
 	~implObj();

@@ -10,11 +10,11 @@
 LIBCXXW_NAMESPACE_START
 
 listcontainerObj::implObj::implObj(const ref<containerObj::implObj> &parent,
-				   const list_padding &padding)
-	: listcontainer_impl_superclass_t(padding.v_padding,
-					  padding.left_padding,
-					  padding.inner_padding,
-					  padding.right_padding,
+				   const list_style &style)
+	: listcontainer_impl_superclass_t(style.v_padding,
+					  style.left_padding,
+					  style.inner_padding,
+					  style.right_padding,
 					  parent)
 {
 }

@@ -26,7 +26,7 @@ class LIBCXX_HIDDEN highlighted_list_style_impl
 
 static const highlighted_list_style_impl highlighted_list_style_instance;
 
-const listlayoutstyle &highlighted_list_style=highlighted_list_style_instance;
+const listlayoutstyle &highlighted_list=highlighted_list_style_instance;
 
 void highlighted_list_style_impl
 ::create_item(const ref<listlayoutmanagerObj::implObj> &lilm,

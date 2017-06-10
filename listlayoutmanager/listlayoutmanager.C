@@ -11,7 +11,7 @@ LIBCXXW_NAMESPACE_START
 
 //! Default list padding
 
-list_padding default_list_padding()
+list_style default_list_style()
 {
 	return {"list_v_padding",
 			"list_left_padding",
@@ -23,17 +23,17 @@ list_padding default_list_padding()
 container create_listlayoutmanager_impl
 (const factory &f,
  size_t columns,
- const listlayoutstyle &style,
- const list_padding &padding,
+ const listlayoutstyle &layout_style,
+ const list_style &style,
  const function<void (const container &)> &builder)
 {
 	auto impl=ref<listcontainerObj::implObj>
-		::create(f->container_impl, padding);
+		::create(f->container_impl, style);
 
 	auto c=listcontainer::create
 		(impl,
 		 ref<listlayoutmanagerObj::implObj>::create
-		 (impl, style, columns));
+		 (impl, layout_style, columns));
 
 	builder(c);
 	f->created_internally(c);
