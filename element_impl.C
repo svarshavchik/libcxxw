@@ -270,6 +270,9 @@ void elementObj::implObj::schedule_redraw_recursively(IN_THREAD_ONLY)
 
 rectangle_set draw_info::entire_area() const
 {
+	if (absolute_location.width == 0 || absolute_location.height == 0)
+		return {};
+
 	return {{0, 0, absolute_location.width, absolute_location.height}};
 }
 

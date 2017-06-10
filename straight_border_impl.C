@@ -183,7 +183,7 @@ class LIBCXX_HIDDEN horizontal_straight_borderObj : public horizontal_impl {
 
 straight_border straight_borderBase
 ::create_horizontal_border(IN_THREAD_ONLY,
-			   const ref<containerObj::implObj> &container,
+			   const ref<containerObj::implObj> &container_impl,
 			   const border_source &element_above,
 			   const border_source &element_below,
 			   const current_border_implptr &default_border)
@@ -193,7 +193,7 @@ straight_border straight_borderBase
 #endif
 
 	auto impl=ref<horizontal_straight_borderObj>
-		::create(container,
+		::create(container_impl,
 
 			 element_above.e,
 			 element_above
@@ -245,7 +245,7 @@ class LIBCXX_HIDDEN vertical_straight_borderObj : public vertical_impl {
 
 straight_border straight_borderBase
 ::create_vertical_border(IN_THREAD_ONLY,
-			 const ref<containerObj::implObj> &container,
+			 const ref<containerObj::implObj> &container_impl,
 			 const border_source &element_onleft,
 			 const border_source &element_onright,
 			 const current_border_implptr &default_border)
@@ -254,7 +254,7 @@ straight_border straight_borderBase
 	CREATE_STRAIGHT_BORDER();
 #endif
 	auto impl=ref<vertical_straight_borderObj>
-		::create(container,
+		::create(container_impl,
 
 			 element_onleft.e,
 			 element_onleft

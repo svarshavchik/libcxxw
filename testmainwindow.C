@@ -86,28 +86,49 @@ sausage_factory_t sausages;
 			lock->correct_metrics_set=true;			\
 	} while(0)
 
+#define IS_MAIN_GRID \
+	(container_impl->objname() == LIBCXX_NAMESPACE_STR	\
+	 "::w::peepholed_toplevel_main_windowObj::implObj")
+
 #define GRID_REBUILD_ELEMENTS() do {					\
+		if (!IS_MAIN_GRID) break;				\
 		sausage_factory_t::lock					\
 			lock(sausages);					\
+		std::cout << "REBUILD ON: "				\
+			  << container_impl->objname() << std::endl;	\
 		++lock->rebuild_elements;				\
 	} while (0)
 
+static void foobar()
+{
+}
+
 #define GRID_REBUILD_ELEMENTS_DONE() do {				\
+		if (!IS_MAIN_GRID) break;				\
 		sausage_factory_t::lock					\
 			lock(sausages);					\
 		for (auto &l:lookup)					\
+		{							\
 			lock->border_elements_survey			\
 				.push_back(l.second			\
 					   ->border_elements.size());	\
+			std::cout << "GOT BORDER " <<			\
+				l.second->border_elements.size()	\
+				  << " FROM " << l.first->objname()	\
+				  << std::endl;				\
+			foobar();					\
+		}							\
 	} while (0)
 
 #define CREATE_STRAIGHT_BORDER() do {					\
+		if (!IS_MAIN_GRID) break;				\
 		sausage_factory_t::lock					\
 			lock(sausages);					\
 		++lock->created_straight_border;			\
 	} while (0)
 
 #define CALLING_RECALCULATE() do {					\
+		if (!IS_MAIN_GRID) break;				\
 		sausage_factory_t::lock					\
 			lock(sausages);					\
 									\
@@ -137,11 +158,10 @@ sausage_factory_t sausages;
 		}							\
 		else							\
 			++lock->called_recalculate_with_false_flag;	\
-									\
-		std::cout << "RECALCULATE_METRICS, flag=" << flag << std::endl;\
 	} while (0)
 
 #define CHANGED_CORNER_BORDER() do {					\
+		if (!IS_MAIN_GRID) break;				\
 		sausage_factory_t::lock					\
 			lock(sausages);					\
 									\

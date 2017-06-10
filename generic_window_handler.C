@@ -1049,6 +1049,7 @@ bool generic_windowObj::handlerObj
 	{
 		if (type == IN_THREAD->info->atoms_info.net_frame_extents)
 			update_frame_extents(IN_THREAD);
+		return false;
 	}
 	received_converted_data=false;
 	return true;
