@@ -474,6 +474,12 @@ libcxxw_la_SOURCES=\
 	theme_border_cache.C			    \
 	theme_border_cache.H			    \
 	theme_border_cachefwd.H			    \
+	themedim.C				    \
+	themedim.H				    \
+	themedimfwd.H				    \
+	themedimobj.H				    \
+	themedim_element.H			    \
+	themedim_elementfwd.H			    \
 	windowobj.C				    \
 	windowobj.H				    \
 	window_handler.C			    \
