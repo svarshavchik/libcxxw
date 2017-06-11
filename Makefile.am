@@ -126,6 +126,7 @@ libcxxw_la_SOURCES=\
 	focus/focusable.C			    \
 	focus/focusable.H			    \
 	focus/focusablefwd.H			    \
+	focus/focusable_container.C		    \
 	focus/focusable_element.H		    \
 	focus/focusable_elementfwd.H		    \
 	focus/focusable_impl.C			    \

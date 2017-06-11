@@ -31,7 +31,7 @@ class containerObj;
 
 typedef ref<containerObj> container;
 
-//! A constant generic window handler
+//! A constant container.
 
 //! \see container
 
