@@ -7,7 +7,6 @@
 
 #include <x/w/namespace.H>
 #include <x/ptrfwd.H>
-#include <string>
 
 LIBCXXW_NAMESPACE_START
 
@@ -27,26 +26,7 @@ typedef const_ref<listlayoutmanagerObj> const_listlayoutmanager;
 
 class listlayoutstyle;
 
-//! Specification for padding between list items
-
-struct list_style {
-
-	//! Padding above and below each list item
-	std::string v_padding;
-
-	//! Left margin
-	std::string left_padding;
-
-	//! Padding between columns of multicolumn lists
-	std::string inner_padding;
-
-	//! Right margin padding
-	std::string right_padding;
-};
-
-//! Default list padding
-
-list_style default_list_style();
+class new_listlayoutmanager;
 
 //! The list highlights items to indicate they're selected
 

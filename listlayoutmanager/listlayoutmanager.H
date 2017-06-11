@@ -7,7 +7,7 @@
 
 #include "x/w/listlayoutmanager.H"
 #include "gridlayoutmanager.H"
-#include "listlayoutmanager/listcontainerobj.H"
+#include "listlayoutmanager/listcontainer.H"
 #include <x/functional.H>
 
 LIBCXXW_NAMESPACE_START
@@ -32,8 +32,7 @@ class LIBCXX_HIDDEN listlayoutmanagerObj::implObj
 
 	//! Constructor
 	implObj(const ref<listcontainerObj::implObj> &container_impl,
-		const listlayoutstyle &style,
-		size_t columns);
+		const new_listlayoutmanager &style);
 
 	//! Destructor
 	~implObj();
@@ -42,44 +41,6 @@ class LIBCXX_HIDDEN listlayoutmanagerObj::implObj
 
 	layoutmanager create_public_object() override;
 };
-
-template<typename builder_t>
-container create_listlayoutmanager(const factory &f,
-				   size_t columns,
-				   const listlayoutstyle &layout_style,
-				   const list_style &style,
-				   builder_t &&builder)
-	LIBCXX_HIDDEN;
-
-//! Create a new list layout manager.
-
-//! The first parameter is the parent container's factory. The number of
-//! columns, and the style gets specified.
-//!
-//! The lambda is the builder for the new list layout manager.
-
-template<typename builder_t>
-inline container create_listlayoutmanager(const factory &f,
-					  size_t columns,
-					  const listlayoutstyle &layout_style,
-					  const list_style &style,
-					  builder_t &&builder)
-{
-	return create_listlayoutmanager_impl
-		(f, columns, layout_style, style,
-		 make_function<void (const container &)>
-		 (std::forward<builder_t>(builder)));
-}
-
-//! Type-erased create_listlayoutmanager().
-
-container create_listlayoutmanager_impl(const factory &f,
-					size_t columns,
-					const listlayoutstyle &layout_style,
-					const list_style &style,
-					const function<void (const container &)>
-					&builder)
-	LIBCXX_HIDDEN;
 
 LIBCXXW_NAMESPACE_END
 

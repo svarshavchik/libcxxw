@@ -11,6 +11,7 @@
 #include "editorfwd.H"
 #include "nonrecursive_visibilityfwd.H"
 #include "focus/focusframecontainerfwd.H"
+#include "peepholed_focusable.H"
 #include "scrollbar/scrollbarfwd.H"
 
 LIBCXXW_NAMESPACE_START
@@ -23,8 +24,7 @@ class LIBCXX_HIDDEN input_fieldObj::implObj : virtual public obj {
 
 	//! The actual implementation object is this mixin.
 
-	typedef ref<nonrecursive_visibilityObj<container_elementObj<
-		child_elementObj>>> impl_mixin;
+	typedef ref<peepholed_container_impl_t> impl_mixin;
 
 	//! The real internal implementation object.
 

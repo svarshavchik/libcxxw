@@ -7,17 +7,17 @@
 #include "listlayoutmanager/listcontainer_impl.H"
 #include "themedim.H"
 #include "element_screen.H"
+#include "x/w/listlayoutmanager.H"
 
 LIBCXXW_NAMESPACE_START
 
 listlayoutmanagerObj::implObj
 ::implObj(const ref<listcontainerObj::implObj> &container_impl,
-	  const listlayoutstyle &style,
-	  size_t columns)
+	  const new_listlayoutmanager &style)
 	: gridlayoutmanagerObj::implObj(container_impl),
 	container_impl(container_impl),
-	style(style),
-	columns(columns)
+	style(style.layout_style),
+	columns(style.columns)
 {
 }
 

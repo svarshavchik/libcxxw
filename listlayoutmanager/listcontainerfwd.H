@@ -14,9 +14,21 @@ class listcontainerObj;
 
 //! A container with a listlayoutmanager
 
+//! An internal, focusable container. Handles keyboard and pointer events.
+//! using the list layout manager.
+//!
+//! Not a focus owner. This is placed inside a peepholed focusframe, which
+//! owns this focusable.
+//!
 //! \see listlayoutmanager
 
 typedef ref<listcontainerObj> listcontainer;
+
+//! A nullable pointer reference to a container with a listlayoutmanager
+
+//! \see listcontainer
+
+typedef ptr<listcontainerObj> listcontainerptr;
 
 LIBCXXW_NAMESPACE_END
 

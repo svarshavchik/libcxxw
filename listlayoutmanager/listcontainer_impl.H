@@ -9,7 +9,9 @@
 #include "child_element.H"
 #include "container_elementfwd.H"
 #include "themedim_elementfwd.H"
+#include "focus/focusable_elementfwd.H"
 #include "x/w/listlayoutmanagerfwd.H"
+#include "focus/focusable.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -23,7 +25,8 @@ struct listcontainer_dim_right;
 //! The list container implementation object stores a mixin with four
 //! theme-based dimensions which set the list items' style.
 
-typedef themedim_elementObj<container_elementObj<child_elementObj>,
+typedef themedim_elementObj<focusable_elementObj
+			    <container_elementObj<child_elementObj>>,
 			    listcontainer_dim_v,
 			    listcontainer_dim_left,
 			    listcontainer_dim_inner,
@@ -43,7 +46,7 @@ class LIBCXX_HIDDEN listcontainerObj::implObj :
 	//! Constructor
 
 	implObj(const ref<containerObj::implObj> &parent,
-		const list_style &style);
+		const new_listlayoutmanager &style);
 
 	//! Destructor
 	~implObj();

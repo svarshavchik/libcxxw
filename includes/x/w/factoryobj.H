@@ -8,6 +8,7 @@
 #include <x/w/factoryfwd.H>
 #include <x/w/elementfwd.H>
 #include <x/w/new_layoutmanagerfwd.H>
+#include <x/w/new_focusable_layoutmanagerfwd.H>
 #include <x/w/containerfwd.H>
 #include <x/w/containerobj.H>
 #include <x/w/canvasfwd.H>
@@ -23,6 +24,7 @@
 #include <x/w/imagefwd.H>
 #include <x/w/image_buttonfwd.H>
 #include <x/w/radio_groupfwd.H>
+#include <x/w/focusable_containerfwd.H>
 #include <x/obj.H>
 #include <x/functional.H>
 
@@ -241,6 +243,27 @@ public:
 	image_button create_radio(const radio_group &group,
 				  const std::vector<std::experimental::string_view> &images);
 
+	//! Create a focusable container.
+
+	template<typename functor>
+	focusable_container
+	create_focusable_container(functor &&creator,
+				   const new_focusable_layoutmanager
+				   &layout_manager)
+	{
+		return do_create_focusable_container(make_function<void
+						     (const focusable_container
+						      &)>(creator),
+						     layout_manager);
+	}
+
+	//! Create a focusable container
+	focusable_container
+	do_create_focusable_container(const function<void
+				      (const focusable_container
+				       &)> &creator,
+				      const new_focusable_layoutmanager
+				      &layout_manager);
 };
 
 LIBCXXW_NAMESPACE_END

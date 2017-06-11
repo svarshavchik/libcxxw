@@ -84,6 +84,7 @@ void highlighted_list_style_impl
 		// Show everything
 		item_e->show();
 		c->show();
+		underlying_factory->padding(0);
 		underlying_factory->created_internally(c);
 	}
 }

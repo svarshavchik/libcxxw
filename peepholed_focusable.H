@@ -15,6 +15,10 @@
 #include "peephole/peepholeobj.H"
 #include "background_colorfwd.H"
 #include "focus/focusablefwd.H"
+#include "nonrecursive_visibilityfwd.H"
+#include "container_elementfwd.H"
+#include "child_element.H"
+
 #include <x/functional.H>
 #include <x/ref.H>
 #include <tuple>
@@ -45,6 +49,16 @@ create_peepholed_focusable_with_frame_impl(const char *border,
 			       scrollbar_visibility vertical_visibility)
 LIBCXX_HIDDEN;
 
+//! The default parent_container for created_peepholed_focusable_with_frame
+
+//! The internal implementation object for the peepholed focusable is a
+//! container, and it should also inherit from the nonrecursive_visibilityObj
+//! because every contained child element is visible, and the entire
+//! display element is shown/hidden as a single element.
+
+typedef nonrecursive_visibilityObj<container_elementObj<child_elementObj>
+				  > peepholed_container_impl_t;
+
 //! Construct a focusframe with a peephole inside it, containing a focusable element.
 
 //! Creates a scrollable peephole for a focusable element. The peephole has
@@ -62,7 +76,6 @@ LIBCXX_HIDDEN;
 //! The public object should inherit from peepholed_focusableObj, passing
 //! the \c peepholed_focusable implementation object together with the
 //! layout manager to the constructor.
-
 //!
 //! The \c make_peepholed parameter is a lambda that gets invoked with a
 //! container implementation object as its parameter. This will be the
@@ -100,7 +113,10 @@ create_peepholed_focusable_with_frame
  //! the focusable element inheriting it.
  const background_color &focusable_background_color,
 
- //! The implementation object of the display element under construction.
+ //! The implementation object of the new display element under construction.
+
+ //! This implementation object should inherit from the nonrecursive_visibility
+ //! mixin.
  const ref<containerObj::implObj> &parent_container,
 
  //! Factor for the peephole and the focusable.

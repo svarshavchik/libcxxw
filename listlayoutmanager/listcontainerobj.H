@@ -6,7 +6,7 @@
 #define listcontainerobj_h
 
 #include "listlayoutmanager/listcontainerfwd.H"
-#include "x/w/containerobj.H"
+#include "x/w/focusable_containerobj.H"
 #include "x/w/listlayoutmanagerobj.H"
 
 LIBCXXW_NAMESPACE_START
@@ -14,7 +14,7 @@ LIBCXXW_NAMESPACE_START
 //! An object for a container with a listlayoutmanager
 
 //! \see listlayoutmanager
-class LIBCXX_HIDDEN listcontainerObj : public containerObj {
+class LIBCXX_HIDDEN listcontainerObj : public focusable_containerObj {
  public:
 
 	class implObj;
@@ -28,6 +28,9 @@ class LIBCXX_HIDDEN listcontainerObj : public containerObj {
 
 	//! Destructor
 	~listcontainerObj();
+
+	//! Inherited from focusableObj
+	ref<focusableImplObj> get_impl() const override;
 };
 
 LIBCXXW_NAMESPACE_END

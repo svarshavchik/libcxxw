@@ -274,7 +274,7 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
 
   <dim id="list_v_padding" axis="vert">.2</dim>
   <dim id="list_left_padding" axis="horiz">.2</dim>
-  <dim id="list_inner_padding" axis="horiz">.2</dim>
+  <dim id="list_inner_padding" axis="horiz">.5</dim>
   <dim id="list_right_padding" axis="horiz">.2</dim>
 
   <border id="list_border" from="thin_0%" />

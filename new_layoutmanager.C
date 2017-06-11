@@ -21,7 +21,9 @@ container new_layoutmanager
 	auto impl=ref<container_elementObj<child_elementObj>>
 		::create(parent,child_element_init_params{"background@libcxx"});
 
-	return container::create(impl, create(impl));
+	auto c=container::create(impl, create(impl));
+	creator(c);
+	return c;
 }
 
 LIBCXXW_NAMESPACE_END

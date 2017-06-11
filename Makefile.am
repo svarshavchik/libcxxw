@@ -121,6 +121,7 @@ libcxxw_la_SOURCES=\
 	ewmh.H					    \
 	factory.C				    \
 	gc.C					    \
+	focusable_container.C			    \
 	focus/element_focusable.C		    \
 	focus/focus.H				    \
 	focus/focusable.C			    \
@@ -288,6 +289,7 @@ libcxxw_la_SOURCES=\
 	layoutmanager.C				    \
 	layoutmanager.H				    \
 	layoutmanager_impl.C			    \
+	list.C					    \
 	listlayoutmanager/listcontainer.C	    \
 	listlayoutmanager/listcontainer.H	    \
 	listlayoutmanager/listcontainerfwd.H	    \
@@ -365,6 +367,12 @@ libcxxw_la_SOURCES=\
 	peepholed_focusable.C			    \
 	peepholed_focusable.H			    \
 	peepholed_focusable_impl.H		    \
+	peepholed_listcontainer.C		    \
+	peepholed_listcontainer.H		    \
+	peepholed_listcontainerfwd.H		    \
+	peepholed_listcontainerobj.H		    \
+	peepholed_listcontainer_impl.C		    \
+	peepholed_listcontainer_impl.H		    \
 	peepholed_toplevel_main_window.C	    \
 	peepholed_toplevel_main_window.H	    \
 	peepholed_toplevel_main_windowobj.H	    \
