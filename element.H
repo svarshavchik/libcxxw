@@ -897,6 +897,13 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 	virtual bool pasted(IN_THREAD_ONLY,
 			    const std::experimental::u32string_view &str);
+
+	//! Creating a focusable element in this container.
+
+	//! The default implementation does nothing. child_elementObj also
+	//! forwards it to its parent container.
+
+	virtual void creating_focusable_element();
 };
 
 LIBCXXW_NAMESPACE_END

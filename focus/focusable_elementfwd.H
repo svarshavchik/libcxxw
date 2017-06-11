@@ -20,6 +20,9 @@ class LIBCXX_HIDDEN focusable_elementObj : public element_impl,
 
  public:
 
+	template<typename ...Args>
+		focusable_elementObj(Args && ...args);
+
 	using element_impl::element_impl;
 
 	~focusable_elementObj();
@@ -27,6 +30,8 @@ class LIBCXX_HIDDEN focusable_elementObj : public element_impl,
 	child_elementObj &get_focusable_element() override;
 
 	const child_elementObj &get_focusable_element() const override;
+
+	void creating_focusable_element() override;
 };
 
 

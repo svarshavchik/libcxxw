@@ -412,4 +412,9 @@ void focusableImplObj::i_will_get_focus_after(IN_THREAD_ONLY,
 	other.focusable_fields_iter(IN_THREAD)=new_iter;
 }
 
+void focusableImplObj::creating_focusable_child_element()
+{
+	throw EXCEPTION(_("Focusable display elements cannot be created inside another focusable element."));
+}
+
 LIBCXXW_NAMESPACE_END

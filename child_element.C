@@ -276,4 +276,9 @@ bool child_elementObj::pasted(IN_THREAD_ONLY,
 		container->get_element_impl().pasted(IN_THREAD, str);
 }
 
+void child_elementObj::creating_focusable_element()
+{
+	return container->get_element_impl().creating_focusable_element();
+}
+
 LIBCXXW_NAMESPACE_END

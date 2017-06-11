@@ -148,6 +148,16 @@ class LIBCXX_HIDDEN focusableImplObj : virtual public obj {
 	void i_will_get_focus_after(IN_THREAD_ONLY,
 				    focusableImplObj &other);
 
+ public:
+
+	//! Throw an exception
+
+	//! Invoked by the focusable_elementObj mixin when a child focusable
+	//! element gets created.
+	//!
+	//! Throw an exception, can't do it.
+
+	void creating_focusable_child_element();
 };
 
 LIBCXXW_NAMESPACE_END

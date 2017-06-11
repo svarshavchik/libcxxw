@@ -225,6 +225,10 @@ class LIBCXX_HIDDEN child_elementObj : public elementObj::implObj {
 
 	bool pasted(IN_THREAD_ONLY,
 		    const std::experimental::u32string_view &str) override;
+
+	//! Override creating_focusable_element().
+
+	void creating_focusable_element() override;
 };
 
 LIBCXXW_NAMESPACE_END

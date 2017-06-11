@@ -804,4 +804,8 @@ bool elementObj::implObj::pasted(IN_THREAD_ONLY,
 	return false;
 }
 
+void elementObj::implObj::creating_focusable_element()
+{
+}
+
 LIBCXXW_NAMESPACE_END
