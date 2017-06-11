@@ -156,6 +156,9 @@ void child_elementObj::horizvert_updated(IN_THREAD_ONLY)
 
 void child_elementObj::remove_background_color(IN_THREAD_ONLY)
 {
+	if (!current_background_color(IN_THREAD))
+		return; // no-op
+
 	current_background_color(IN_THREAD)=nullptr;
 	background_color_changed(IN_THREAD);
 	container->child_background_color_changed(IN_THREAD,
@@ -166,6 +169,9 @@ void child_elementObj::remove_background_color(IN_THREAD_ONLY)
 void child_elementObj::set_background_color(IN_THREAD_ONLY,
 					    const background_color &bgcolor)
 {
+	if (current_background_color(IN_THREAD) == bgcolor)
+		return; // noop
+
 	current_background_color(IN_THREAD)=bgcolor;
 	background_color_changed(IN_THREAD);
 	container->child_background_color_changed(IN_THREAD,

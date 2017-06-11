@@ -351,6 +351,17 @@ straight_borderObj::implObj
 {
 }
 
+static inline child_element_init_params
+straight_border_child_init_params(const std::string &label,
+				  const metrics::horizvert_axi &initial_metrics)
+{
+	child_element_init_params p{label, initial_metrics};
+
+	p.container_override=true;
+
+	return p;
+}
+
 straight_borderObj::implObj
 ::implObj(const ref<containerObj::implObj> &container,
 	  const metrics::horizvert_axi &initial_metrics,
@@ -365,8 +376,9 @@ straight_borderObj::implObj
 	(std::string("mask-")+scratch_buffer_label,
 	 h.get_width()/10+1,
 	 h.get_height()/10+1, container,
-	 child_element_init_params{std::string("area-")+scratch_buffer_label,
-			initial_metrics}),
+	 straight_border_child_init_params(std::string("area-")
+					   +scratch_buffer_label,
+					   initial_metrics)),
 	borders_thread_only{element_1, border1, element_2, border2,
 		border_default}
 {
