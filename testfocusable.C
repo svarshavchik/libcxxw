@@ -1,7 +1,7 @@
 #include "libcxxw_config.h"
 #include <x/exception.H>
 
-#include "focus/focus.H"
+#include "x/w/focus.H"
 #include <vector>
 #include <tuple>
 

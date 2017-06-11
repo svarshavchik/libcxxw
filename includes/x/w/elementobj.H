@@ -12,9 +12,11 @@
 #include <x/w/picturefwd.H>
 #include <x/w/rgbfwd.H>
 #include <x/w/busyfwd.H>
+#include <x/w/focus.H>
 #include <x/obj.H>
 
 #include <experimental/string_view>
+#include <functional>
 
 LIBCXXW_NAMESPACE_START
 
@@ -115,6 +117,9 @@ public:
 	//! This display element is a label for another focusable element.
 
 	void label_for(const focusable &f);
+
+	//! Install a pointer focus callback.
+	void on_pointer_focus(const std::function<focus_callback_t> &callback);
 };
 
 LIBCXXW_NAMESPACE_END

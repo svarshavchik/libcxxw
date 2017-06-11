@@ -12,7 +12,7 @@
 #include "x/w/key_eventfwd.H"
 #include "x/w/button_eventfwd.H"
 #include "x/w/shortcut.H"
-#include "focus/focus.H"
+#include "x/w/focus.H"
 #include "focus/focusable_elementfwd.H"
 #include "connection_threadfwd.H"
 

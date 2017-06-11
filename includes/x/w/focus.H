@@ -23,6 +23,17 @@ enum class focus_change {
 	lost_to_child,           //! After a lost focus, the focus was received by a child element.
 };
 
+//! Convert a very detailed focus_change to a simple boolean value.
+
+//! Returns true for gained, child_gained, child_moved_to, and
+//! gained_from_child; and false for all others
+
+bool in_focus(focus_change f);
+
+//! Focus callback
+
+typedef void focus_callback_t(focus_change);
+
 LIBCXXW_NAMESPACE_END
 
 #endif

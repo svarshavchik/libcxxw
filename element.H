@@ -14,6 +14,7 @@
 #include "x/w/input_mask.H"
 #include "x/w/button_eventfwd.H"
 #include "x/w/busyfwd.H"
+#include "x/w/focus.H"
 #include "connection_threadfwd.H"
 #include "elementfwd.H"
 #include "element_draw.H"
@@ -21,7 +22,6 @@
 #include "draw_info_cachefwd.H"
 #include "background_colorfwd.H"
 #include "metrics_horizvertobj.H"
-#include "focus/focus.H"
 #include "focus/label_forfwd.H"
 #include "focus/label_forobj.H"
 #include "fonts/current_fontcollectionfwd.H"
@@ -33,6 +33,8 @@
 #include <x/functional.H>
 #include <experimental/string_view>
 #include <xcb/xproto.h>
+
+#include <functional>
 
 LIBCXXW_NAMESPACE_START
 
@@ -122,6 +124,20 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 			callback_list<void (const element_state &,
 					    const busy &)>::create();
 
+
+		//! Pointer focus callback
+
+		std::function<focus_callback_t> on_pointer_callback=
+			no_focus_callback;
+
+		//! Keyboard focus callback
+
+		std::function<focus_callback_t> on_keyboard_callback=
+			no_focus_callback;
+
+		//! Default pointer and keyboard callback, does nothing.
+
+		static void no_focus_callback(focus_change);
 
 		//! Whether this element is a label for some focusable.
 
@@ -773,12 +789,24 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 	//! The result of all this is a bunch of calls to keyboard_focus().
 
-	//! The default implementation does nothing.
+	//! The default implementation sets most_recent_keyboard_focus_change()
+	//! and invokes the keyboard focus callback.
 
 	virtual void keyboard_focus(IN_THREAD_ONLY,
 				    focus_change event,
 				    const ref<implObj> &ptr);
 
+	//! Install a new keyboard focus callback
+	void on_keyboard_focus(const std::function<focus_callback_t> &callback);
+
+	//! Install a new keyboard focus callback
+	void on_keyboard_focus(IN_THREAD_ONLY,
+			       const std::function<focus_callback_t> &callback);
+
+ private:
+	//! Invoke the callback
+	void invoke_keyboard_focus_callback(IN_THREAD_ONLY);
+ public:
 	//! Here come the keypresses.
 
 	//! Returns true or false, indicating whether the key press or
@@ -825,11 +853,23 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 	//! The result of all this is a bunch of calls to pointer_focus().
 
-	//! The default implementation does nothing.
+	//! The default implementation sets most_recent_pointer_focus_change()
+	//! and invokes the pointer focus callback.
 
 	virtual void pointer_focus(IN_THREAD_ONLY,
 				   focus_change event,
 				   const ref<implObj> &ptr);
+
+	//! Install a new keyboard focus callback
+	void on_pointer_focus(const std::function<focus_callback_t> &callback);
+
+	//! Install a new keyboard focus callback
+	void on_pointer_focus(IN_THREAD_ONLY,
+			      const std::function<focus_callback_t> &callback);
+ private:
+	//! Invoke the callback
+	void invoke_pointer_focus_callback(IN_THREAD_ONLY);
+ public:
 
 	//! The pointer has moved.
 

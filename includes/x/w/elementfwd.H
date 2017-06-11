@@ -71,6 +71,41 @@ class elementObj;
 //! results in the callback getting invoked when the connection to the
 //! underlying display server is closed and the internal execution thread,
 //! for the connection, stops.
+//!
+//! \par Pointer focus callback
+//!
+//! \code
+//! element->on_pointer_focus([]
+//!                           (INSERT_LIBX_NAMESPACE::w::focus_change)
+//!                           {
+//!                               // ...
+//!                           });
+//! \endcode
+//!
+//! Installs a callback that reports the element's pointer focus state
+//! (when the pointer moves in and out of the display element).
+//!
+//! The callback also gets invoked immediately to report the element's
+//! current focus state.
+//!
+//! \note
+//! Well, not immediately. The callbacks get invoked and updated by an
+//! internal execution thread, and the callback's initial invocation will
+//! likely occur after on_pointer_focus() returns.
+//!
+//! Only one callback may get installed at a time. Installing a callback
+//! replaces the previous callback. Since the callbacks are handled by
+//! the aforementioned internal execution thread, it is possible that
+//! the previous callback still gets invoked after on_pointer_focus()
+//! returns, if the execution thread was about to call it. In any case,
+//! after the execution thread invokes the replacement callback once, the
+//! previous one is a distant memory.
+//!
+//! \note
+//! The callback cannot capture references to its display element, any of its
+//! parent display elements, or any of its child display elements (if the
+//! element is a container). This creates a circular references. Weak captures
+//! must be used.
 
 typedef ref<elementObj> element;
 

@@ -7,7 +7,7 @@
 
 #include "x/w/containerobj.H"
 #include "x/w/elementobj.H"
-#include "focus/focus.H"
+#include "x/w/focus.H"
 #include "focus/focusframecontainerobj.H"
 #include "connection_threadfwd.H"
 

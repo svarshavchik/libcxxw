@@ -20,6 +20,7 @@
 #include "element_screen.H"
 #include "focus/label_for.H"
 #include "fonts/current_fontcollection.H"
+#include "catch_exceptions.H"
 #include <x/logger.H>
 
 LOG_CLASS_INIT(LIBCXX_NAMESPACE::w::elementObj::implObj);
@@ -31,6 +32,10 @@ LIBCXXW_NAMESPACE_START
 #define THREAD get_window_handler().screenref->impl->thread
 
 #define DO_NOT_DRAW (!data(IN_THREAD).inherited_visibility)
+
+void elementObj::implObj::data_thread_only_t::no_focus_callback(focus_change)
+{
+}
 
 elementObj::implObj::implObj(size_t nesting_level,
 			     const rectangle &initial_position,
@@ -724,11 +729,62 @@ bool elementObj::implObj::enabled(IN_THREAD_ONLY)
 	return data(IN_THREAD).enabled;
 }
 
+void elementObj::implObj::on_keyboard_focus(const
+					    std::function<focus_callback_t>
+					    &callback)
+{
+	THREAD->run_as(RUN_AS,
+		       [me=ref<elementObj::implObj>(this), callback]
+		       (IN_THREAD_ONLY)
+		       {
+			       me->on_keyboard_focus(IN_THREAD, callback);
+		       });
+}
+
+void elementObj::implObj::on_keyboard_focus(IN_THREAD_ONLY,
+					    const
+					    std::function<focus_callback_t>
+					    &callback)
+{
+	data(IN_THREAD).on_keyboard_callback=callback;
+	invoke_keyboard_focus_callback(IN_THREAD);
+}
+
 void elementObj::implObj::keyboard_focus(IN_THREAD_ONLY,
 					 focus_change event,
 					 const ref<implObj> &ptr)
 {
 	most_recent_keyboard_focus_change(IN_THREAD)=event;
+	invoke_keyboard_focus_callback(IN_THREAD);
+}
+
+void elementObj::implObj::invoke_keyboard_focus_callback(IN_THREAD_ONLY)
+{
+	try {
+		data(IN_THREAD).on_keyboard_callback
+			(most_recent_keyboard_focus_change(IN_THREAD));
+	} CATCH_EXCEPTIONS;
+}
+
+void elementObj::implObj::on_pointer_focus(const
+					    std::function<focus_callback_t>
+					    &callback)
+{
+	THREAD->run_as(RUN_AS,
+		       [me=ref<elementObj::implObj>(this), callback]
+		       (IN_THREAD_ONLY)
+		       {
+			       me->on_pointer_focus(IN_THREAD, callback);
+		       });
+}
+
+void elementObj::implObj::on_pointer_focus(IN_THREAD_ONLY,
+					    const
+					    std::function<focus_callback_t>
+					    &callback)
+{
+	data(IN_THREAD).on_pointer_callback=callback;
+	invoke_pointer_focus_callback(IN_THREAD);
 }
 
 void elementObj::implObj::pointer_focus(IN_THREAD_ONLY,
@@ -736,6 +792,15 @@ void elementObj::implObj::pointer_focus(IN_THREAD_ONLY,
 					 const ref<implObj> &ptr)
 {
 	most_recent_pointer_focus_change(IN_THREAD)=event;
+	invoke_pointer_focus_callback(IN_THREAD);
+}
+
+void elementObj::implObj::invoke_pointer_focus_callback(IN_THREAD_ONLY)
+{
+	try {
+		data(IN_THREAD).on_pointer_callback
+			(most_recent_pointer_focus_change(IN_THREAD));
+	} CATCH_EXCEPTIONS;
 }
 
 void elementObj::implObj::window_focus_change(IN_THREAD_ONLY, bool flag)
@@ -758,7 +823,12 @@ bool elementObj::implObj::current_keyboard_focus(IN_THREAD_ONLY)
 
 bool elementObj::implObj::current_pointer_focus(IN_THREAD_ONLY)
 {
-	switch (most_recent_pointer_focus_change(IN_THREAD)) {
+	return in_focus(most_recent_pointer_focus_change(IN_THREAD));
+}
+
+bool in_focus(focus_change v)
+{
+	switch (v) {
 	case focus_change::gained:
 	case focus_change::child_gained:
 	case focus_change::child_moved_to:

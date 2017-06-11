@@ -94,6 +94,11 @@ ref<obj> elementObj::do_on_state_update(const element_state_update_handler_t &h)
 	return impl->do_on_state_update(h);
 }
 
+void elementObj::on_pointer_focus(const std::function<focus_callback_t> &callback)
+{
+	impl->on_pointer_focus(callback);
+}
+
 x::ref<x::obj> elementObj::get_busy_mcguffin() const
 {
 	return busy_impl{*impl}.get_mcguffin();

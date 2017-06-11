@@ -10,7 +10,7 @@
 #include "x/w/input_mask.H"
 #include "x/w/button_eventfwd.H"
 #include "x/w/key_eventfwd.H"
-#include "focus/focus.H"
+#include "x/w/focus.H"
 #include "focus/focusable_elementfwd.H"
 
 LIBCXXW_NAMESPACE_START
