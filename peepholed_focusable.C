@@ -20,12 +20,10 @@
 LIBCXXW_NAMESPACE_START
 
 peepholed_focusableObj
-::peepholed_focusableObj(const focusable &peepholed_element,
-			 const scrollbar &vertical_scrollbar,
-			 const scrollbar &horizontal_scrollbar)
-	: peepholed_element(peepholed_element),
-	  vertical_scrollbar(vertical_scrollbar),
-	  horizontal_scrollbar(horizontal_scrollbar)
+::peepholed_focusableObj(const ref<implObj> &impl,
+			 const ref<layoutmanagerObj::implObj> &layout_impl)
+	: focusable_containerObj(layout_impl->container_impl, layout_impl),
+	  impl(impl)
 {
 }
 
@@ -33,15 +31,45 @@ peepholed_focusableObj::~peepholed_focusableObj()=default;
 
 ref<focusableImplObj> peepholed_focusableObj::get_impl() const
 {
+	return impl->get_impl();
+}
+
+// The input field has three focusable fields inside it.
+
+size_t peepholed_focusableObj::internal_impl_count() const
+{
+	return impl->internal_impl_count();
+}
+
+ref<focusableImplObj> peepholed_focusableObj::get_impl(size_t n) const
+{
+	return impl->get_impl();
+}
+
+
+peepholed_focusableObj::implObj
+::implObj(const focusable &peepholed_element,
+	  const scrollbar &vertical_scrollbar,
+	  const scrollbar &horizontal_scrollbar)
+	: peepholed_element(peepholed_element),
+	  vertical_scrollbar(vertical_scrollbar),
+	  horizontal_scrollbar(horizontal_scrollbar)
+{
+}
+
+peepholed_focusableObj::implObj::~implObj()=default;
+
+ref<focusableImplObj> peepholed_focusableObj::implObj::get_impl() const
+{
 	return peepholed_element->get_impl();
 }
 
-size_t peepholed_focusableObj::internal_impl_count() const
+size_t peepholed_focusableObj::implObj::internal_impl_count() const
 {
 	return 3;
 }
 
-focusable_impl peepholed_focusableObj::get_impl(size_t n) const
+focusable_impl peepholed_focusableObj::implObj::get_impl(size_t n) const
 {
 	// Note that the resulting order corresponds to the
 	// order that's initially set by set_peephole_scrollbar_focus_order().
@@ -60,7 +88,7 @@ typedef nonrecursive_visibilityObj<focusframecontainer_elementObj<
 						   child_elementObj>>
 				   > focusframe_impl_t;
 
-std::tuple<peepholed_focusable, gridlayoutmanager>
+std::tuple<ref<peepholed_focusableObj::implObj>, gridlayoutmanager>
 create_peepholed_focusable_with_frame_impl
 (const char *border,
  const char *inputfocusoff_border,
@@ -173,9 +201,10 @@ create_peepholed_focusable_with_frame_impl
 				    horizontal_visibility,
 				    factory2);
 
-	return {peepholed_focusable::create(focusable_element,
-					    scrollbars.vertical_scrollbar,
-					    scrollbars.horizontal_scrollbar),
+	return {ref<peepholed_focusableObj::implObj>
+			::create(focusable_element,
+				 scrollbars.vertical_scrollbar,
+				 scrollbars.horizontal_scrollbar),
 			grid};
 }
 

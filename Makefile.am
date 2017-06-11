@@ -364,8 +364,7 @@ libcxxw_la_SOURCES=\
 	peephole/peepholed_toplevel_elementfwd.H    \
 	peepholed_focusable.C			    \
 	peepholed_focusable.H			    \
-	peepholed_focusablefwd.H		    \
-	peepholed_focusableobj.H		    \
+	peepholed_focusable_impl.H		    \
 	peepholed_toplevel_main_window.C	    \
 	peepholed_toplevel_main_window.H	    \
 	peepholed_toplevel_main_windowobj.H	    \

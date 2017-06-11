@@ -6,6 +6,7 @@
 #define scrollbarfwd_h
 
 #include <x/ptrfwd.H>
+#include <x/w/namespace.H>
 
 LIBCXXW_NAMESPACE_START
 

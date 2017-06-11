@@ -27,9 +27,11 @@
 LIBCXXW_NAMESPACE_START
 
 input_fieldObj::input_fieldObj(const ref<implObj> &impl,
+			       const ref<peepholed_focusableObj::implObj>
+			       &peephole_impl,
 			       const ref<layoutmanagerObj::implObj>
 			       &layout_impl)
-	: containerObj(impl->impl, layout_impl),
+	: peepholed_focusableObj(peephole_impl, layout_impl),
 	  impl(impl)
 {
 }
@@ -104,30 +106,14 @@ factoryObj::create_input_field(const text_param &text,
 
 	auto impl=ref<input_fieldObj::implObj>
 		::create(impl_mixin,
-			 created_editor,
-			 peephole_info);
+			 created_editor);
 
-	auto input_field=input_field::create(impl, lm->impl);
+	auto input_field=input_field::create(impl,
+					     peephole_info,
+					     lm->impl);
 
 	created(input_field);
 	return input_field;
-}
-
-ref<focusableImplObj> input_fieldObj::get_impl() const
-{
-	return impl->peephole_info->get_impl();
-}
-
-// The input field has three focusable fields inside it.
-
-size_t input_fieldObj::internal_impl_count() const
-{
-	return impl->peephole_info->internal_impl_count();
-}
-
-ref<focusableImplObj> input_fieldObj::get_impl(size_t n) const
-{
-	return impl->peephole_info->get_impl();
 }
 
 std::u32string input_fieldObj::get_unicode() const

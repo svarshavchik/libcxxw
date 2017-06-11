@@ -2,12 +2,12 @@
 ** Copyright 2017 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
-#ifndef peepholed_focusableobj_h
-#define peepholed_focusableobj_h
+#ifndef peepholed_focusable_impl_h
+#define peepholed_focusable_impl_h
 
-#include "peepholed_focusablefwd.H"
 #include "scrollbar/scrollbarfwd.H"
 #include "focus/focusablefwd.H"
+#include "x/w/peepholed_focusableobj.H"
 #include "x/w/focusablefwd.H"
 #include <x/obj.H>
 
@@ -17,7 +17,7 @@ LIBCXXW_NAMESPACE_START
 
 //! \see peepholed_focusable
 
-class LIBCXX_HIDDEN peepholed_focusableObj : virtual public obj {
+class LIBCXX_HIDDEN peepholed_focusableObj::implObj : virtual public obj {
 
  public:
 
@@ -32,12 +32,12 @@ class LIBCXX_HIDDEN peepholed_focusableObj : virtual public obj {
 	const scrollbar horizontal_scrollbar;
 
 	//! Constructor
-	peepholed_focusableObj(const focusable &peepholed_element,
+	implObj(const focusable &peepholed_element,
 			       const scrollbar &vertical_scrollbar,
 			       const scrollbar &horizontal_scrollbar);
 
 	//! Destructor
-	~peepholed_focusableObj();
+	~implObj();
 
 	//! Implement the display element's method inherited from focusableObj.
 

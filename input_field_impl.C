@@ -10,11 +10,9 @@
 LIBCXXW_NAMESPACE_START
 
 input_fieldObj::implObj::implObj(const impl_mixin &impl,
-				 const editor &editor_element,
-				 const peepholed_focusable &peephole_info)
+				 const editor &editor_element)
 	: impl(impl),
-	  editor_element(editor_element),
-	  peephole_info(peephole_info)
+	  editor_element(editor_element)
 {
 }
 

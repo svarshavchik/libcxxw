@@ -10,7 +10,6 @@
 #include "child_elementobj.H"
 #include "editorfwd.H"
 #include "nonrecursive_visibilityfwd.H"
-#include "peepholed_focusablefwd.H"
 #include "focus/focusframecontainerfwd.H"
 #include "scrollbar/scrollbarfwd.H"
 
@@ -35,12 +34,9 @@ class LIBCXX_HIDDEN input_fieldObj::implObj : virtual public obj {
 
 	const editor editor_element;
 
-	const peepholed_focusable peephole_info;
-
 	//! Constructor
 	implObj(const impl_mixin &impl,
-		const editor &editor_element,
-		const peepholed_focusable &peephole_info);
+		const editor &editor_element);
 
 	//! Destructor
 	~implObj();

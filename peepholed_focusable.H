@@ -5,8 +5,7 @@
 #ifndef peepholed_focusable_h
 #define peepholed_focusable_h
 
-#include "peepholed_focusablefwd.H"
-#include "peepholed_focusableobj.H"
+#include "peepholed_focusable_impl.H"
 #include "x/w/containerobj.H"
 #include "x/w/gridlayoutmanagerfwd.H"
 #include "x/w/scrollbarfwd.H"
@@ -32,7 +31,7 @@ typedef std::tuple<ref<peepholeObj::implObj>, peepholed,
 
 //! Type-erased implementation of \ref create_peepholed_focusable_with_frame "create_peepholed_focusable_with_frame()".
 
-std::tuple<peepholed_focusable, gridlayoutmanager>
+std::tuple<ref<peepholed_focusableObj::implObj>, gridlayoutmanager>
 create_peepholed_focusable_with_frame_impl(const char *border,
 			       const char *inputfocusoff_border,
 			       const char *inputfocuson_border,
@@ -56,8 +55,14 @@ LIBCXX_HIDDEN;
 //!
 //! create_peepholed_focusable_with_frame() returns the
 //! \ref peepholed_focusable "peepholed_focusable"
+//! implementation object
 //! and the grid layout manager for the container's implementation
 //! object.
+//!
+//! The public object should inherit from peepholed_focusableObj, passing
+//! the \c peepholed_focusable implementation object together with the
+//! layout manager to the constructor.
+
 //!
 //! The \c make_peepholed parameter is a lambda that gets invoked with a
 //! container implementation object as its parameter. This will be the
@@ -77,7 +82,7 @@ LIBCXX_HIDDEN;
 //! the focusable object in the peephole.
 
 template<typename make_peepholed_t>
-inline std::tuple<peepholed_focusable, gridlayoutmanager>
+inline std::tuple<ref<peepholed_focusableObj::implObj>, gridlayoutmanager>
 create_peepholed_focusable_with_frame
 (//! The border around the focus frame and scrollbars.
  const char *border,

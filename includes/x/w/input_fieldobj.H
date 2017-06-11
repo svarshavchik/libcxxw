@@ -5,8 +5,7 @@
 #ifndef x_w_input_fieldobj_h
 #define x_w_input_fieldobj_h
 
-#include <x/w/containerobj.H>
-#include <x/w/focusableobj.H>
+#include <x/w/peepholed_focusableobj.H>
 #include <string>
 
 LIBCXXW_NAMESPACE_START
@@ -19,7 +18,7 @@ LIBCXXW_NAMESPACE_START
 
 //! \see input_field
 
-class input_fieldObj : public containerObj, public focusableObj {
+class input_fieldObj : public peepholed_focusableObj {
 
 public:
 	class implObj;
@@ -30,6 +29,7 @@ public:
 
 	//! Constructor
 	input_fieldObj(const ref<implObj> &impl,
+		       const ref<peepholed_focusableObj::implObj> &peephole_impl,
 		       const ref<layoutmanagerObj::implObj> &layout_impl)
 		LIBCXX_HIDDEN;
 
@@ -47,24 +47,6 @@ public:
 
 	//! Set the contents of the input field, as unicode.
 	void set(const std::experimental::u32string_view &str);
-
-	//! Inherited from focusableObj
-
-	//! \internal
-
-	ref<focusableImplObj> get_impl() const override LIBCXX_HIDDEN;
-
-	//! Inherited from focusableObj
-
-	//! \internal
-
-	size_t internal_impl_count() const override LIBCXX_HIDDEN;
-
-	//! Inherited from focusableObj
-
-	//! \internal
-
-	ref<focusableImplObj> get_impl(size_t) const override LIBCXX_HIDDEN;
 };
 
 LIBCXXW_NAMESPACE_END
