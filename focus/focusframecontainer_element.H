@@ -30,12 +30,10 @@ const containerObj::implObj &focusframecontainer_elementObj<element_impl>
 
 template<typename element_impl>
 void focusframecontainer_elementObj<element_impl>
-::keyboard_focus(IN_THREAD_ONLY,
-		 focus_change event,
-		 const ref<elementObj::implObj> &ptr)
+::keyboard_focus(IN_THREAD_ONLY)
 {
-	element_impl::keyboard_focus(IN_THREAD, event, ptr);
-	focusframecontainerObj::implObj::keyboard_focus(IN_THREAD, event, ptr);
+	element_impl::keyboard_focus(IN_THREAD);
+	focusframecontainerObj::implObj::keyboard_focus(IN_THREAD);
 }
 
 template<typename element_impl>

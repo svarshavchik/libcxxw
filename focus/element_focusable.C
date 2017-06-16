@@ -51,6 +51,13 @@ void elementObj::implObj::request_focus(IN_THREAD_ONLY,
 	if (focus_from)
 		focus_from->leaving_focus(IN_THREAD, me, focus_reporter);
 	entering_focus(IN_THREAD, focus_from, focus_reporter);
+
+
+	focus_movement_complete(IN_THREAD, true, focus_reporter);
+
+	if (focus_from)
+		focus_from->focus_movement_complete(IN_THREAD, false,
+						    focus_reporter);
 }
 
 // Part 1: clear "original_focus" on all display elements starting with
@@ -129,18 +136,16 @@ void elementObj::implObj::do_leaving_focus(IN_THREAD_ONLY,
 	    leaving_for == ptr<elementObj::implObj>(this))
 	{
 		((*this).*focus_reporter)(IN_THREAD,
-					  focus_change::gained_from_child,
-					  element);
+					  focus_change::gained_from_child);
 		return;
 	}
 	if (new_focus && event != focus_change::lost)
 	{
 		((*this).*focus_reporter)(IN_THREAD,
-					  focus_change::child_moved_from,
-					  element);
+					  focus_change::child_moved_from);
 		return;
 	}
-	((*this).*focus_reporter)(IN_THREAD, event, element);
+	((*this).*focus_reporter)(IN_THREAD, event);
 	event=focus_change::child_lost;
 }
 
@@ -200,18 +205,42 @@ void elementObj::implObj::do_entering_focus(IN_THREAD_ONLY,
 {
 	if (focus_from && focus_from == ptr<elementObj::implObj>(this))
 	{
-		((*this).*focus_reporter)(IN_THREAD, focus_change::lost_to_child, element);
+		((*this).*focus_reporter)(IN_THREAD,
+					  focus_change::lost_to_child);
 	}
 	else if (original_focus && event != focus_change::gained)
 	{
 		((*this).*focus_reporter)(IN_THREAD,
-					  focus_change::child_moved_to,
-					  element);
+					  focus_change::child_moved_to);
 	}
 	else
 	{
-		((*this).*focus_reporter)(IN_THREAD, event, element);
+		((*this).*focus_reporter)(IN_THREAD, event);
 	}
+}
+
+void elementObj::implObj::focus_movement_complete(IN_THREAD_ONLY,
+						  bool stop_at_original_focus,
+						  focus_reporter_t focus_reporter)
+{
+	if (stop_at_original_focus && original_focus)
+		return;
+
+	(this->*focus_reporter)(IN_THREAD,
+				focus_change::focus_movement_complete);
+}
+
+void child_elementObj::focus_movement_complete(IN_THREAD_ONLY,
+					       bool stop_at_original_focus,
+					       focus_reporter_t focus_reporter)
+{
+	elementObj::implObj::focus_movement_complete(IN_THREAD,
+						     stop_at_original_focus,
+						     focus_reporter);
+	container->get_element_impl()
+		.focus_movement_complete(IN_THREAD,
+					 stop_at_original_focus,
+					 focus_reporter);
 }
 
 LIBCXXW_NAMESPACE_END

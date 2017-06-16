@@ -30,9 +30,7 @@ class LIBCXX_HIDDEN focusframecontainer_elementObj
 
 	const containerObj::implObj &get_container_impl() const override;
 
-	void keyboard_focus(IN_THREAD_ONLY,
-			    focus_change event,
-			    const ref<elementObj::implObj> &ptr) override;
+	void keyboard_focus(IN_THREAD_ONLY) override;
 
 	void window_focus_change(IN_THREAD_ONLY, bool flag) override;
 };

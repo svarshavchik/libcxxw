@@ -270,11 +270,9 @@ void editorObj::implObj::rewrap_due_to_updated_position(IN_THREAD_ONLY)
 {
 }
 
-void editorObj::implObj::keyboard_focus(IN_THREAD_ONLY,
-					focus_change event,
-					const ref<elementObj::implObj> &ptr)
+void editorObj::implObj::keyboard_focus(IN_THREAD_ONLY)
 {
-	superclass_t::keyboard_focus(IN_THREAD, event, ptr);
+	superclass_t::keyboard_focus(IN_THREAD);
 
 	blink_if_has_focus(IN_THREAD);
 }

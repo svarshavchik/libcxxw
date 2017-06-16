@@ -16,9 +16,7 @@ focusframecontainerObj::implObj::implObj()=default;
 focusframecontainerObj::implObj::~implObj()=default;
 
 void focusframecontainerObj::implObj
-::keyboard_focus(IN_THREAD_ONLY,
-		 focus_change event,
-		 const ref<elementObj::implObj> &ptr)
+::keyboard_focus(IN_THREAD_ONLY)
 {
 	update_focusframe(IN_THREAD);
 }

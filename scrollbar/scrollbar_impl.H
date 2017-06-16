@@ -232,9 +232,7 @@ class LIBCXX_HIDDEN scrollbarObj::implObj : public focusable_elementObj<> {
 
 	//! Process a focus change notification.
 
-	void keyboard_focus(IN_THREAD_ONLY,
-			    focus_change event,
-			    const ref<elementObj::implObj> &ptr) override;
+	void keyboard_focus(IN_THREAD_ONLY) override;
 
 	//////////////////////////////////////////////////////////////////
 

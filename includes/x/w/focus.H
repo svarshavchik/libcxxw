@@ -21,6 +21,8 @@ enum class focus_change {
 
 	gained_from_child,       //! Child lost focus for me, a gained event will follow
 	lost_to_child,           //! After a lost focus, the focus was received by a child element.
+
+	focus_movement_complete, //! Focus movement has finished (internal state only).
 };
 
 //! Convert a very detailed focus_change to a simple boolean value.

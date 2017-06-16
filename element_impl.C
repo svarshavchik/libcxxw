@@ -750,11 +750,21 @@ void elementObj::implObj::on_keyboard_focus(IN_THREAD_ONLY,
 	invoke_keyboard_focus_callback(IN_THREAD);
 }
 
-void elementObj::implObj::keyboard_focus(IN_THREAD_ONLY,
-					 focus_change event,
-					 const ref<implObj> &ptr)
+void elementObj::implObj::report_keyboard_focus(IN_THREAD_ONLY,
+					       focus_change event)
 {
-	most_recent_keyboard_focus_change(IN_THREAD)=event;
+	if (event != focus_change::focus_movement_complete)
+	{
+		most_recent_keyboard_focus_change(IN_THREAD)=event;
+		return;
+	}
+
+	keyboard_focus(IN_THREAD);
+}
+
+
+void elementObj::implObj::keyboard_focus(IN_THREAD_ONLY)
+{
 	invoke_keyboard_focus_callback(IN_THREAD);
 }
 
@@ -787,11 +797,20 @@ void elementObj::implObj::on_pointer_focus(IN_THREAD_ONLY,
 	invoke_pointer_focus_callback(IN_THREAD);
 }
 
-void elementObj::implObj::pointer_focus(IN_THREAD_ONLY,
-					 focus_change event,
-					 const ref<implObj> &ptr)
+void elementObj::implObj::report_pointer_focus(IN_THREAD_ONLY,
+					       focus_change event)
 {
-	most_recent_pointer_focus_change(IN_THREAD)=event;
+	if (event != focus_change::focus_movement_complete)
+	{
+		most_recent_pointer_focus_change(IN_THREAD)=event;
+		return;
+	}
+
+	pointer_focus(IN_THREAD);
+}
+
+void elementObj::implObj::pointer_focus(IN_THREAD_ONLY)
+{
 	invoke_pointer_focus_callback(IN_THREAD);
 }
 
@@ -828,16 +847,7 @@ bool elementObj::implObj::current_pointer_focus(IN_THREAD_ONLY)
 
 bool in_focus(focus_change v)
 {
-	switch (v) {
-	case focus_change::gained:
-	case focus_change::child_gained:
-	case focus_change::child_moved_to:
-	case focus_change::gained_from_child:
-		return true;
-	default:
-		break;
-	}
-	return false;
+	return v != focus_change::lost;
 }
 
 bool elementObj::implObj::process_key_event(IN_THREAD_ONLY, const key_event &)

@@ -204,6 +204,14 @@ class LIBCXX_HIDDEN child_elementObj : public elementObj::implObj {
 			       focus_reporter_t focus_reporter)
 		override;
 
+	//! Input focus processing.
+
+	//! See element_focusable.C
+
+	void focus_movement_complete(IN_THREAD_ONLY,
+				     bool stop_at_original_focus,
+				     focus_reporter_t focus_reporter) override;
+
 	//! Override ensure_visibility.
 
 	void ensure_visibility(IN_THREAD_ONLY, const rectangle &) override;

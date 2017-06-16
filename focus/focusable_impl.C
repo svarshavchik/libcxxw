@@ -110,7 +110,7 @@ void focusableImplObj::focusable_deinitialize(IN_THREAD_ONLY)
 	// focus we're golden. Just removing it from
 	// focusable_fields is enough.
 
-	if (window_handler.keyboard_focus(IN_THREAD) == ptr_impl)
+	if (window_handler.most_recent_keyboard_focus(IN_THREAD) == ptr_impl)
 		// Find another field to switch the input
 		// focus to. This will also null out
 		// keyboard_focus, in every case. Either it
@@ -163,7 +163,8 @@ void focusableImplObj::set_enabled(IN_THREAD_ONLY, bool flag)
 
 	auto ptr_impl=ptr<focusableImplObj>(this);
 
-	if (fe.get_window_handler().keyboard_focus(IN_THREAD) != ptr_impl)
+	if (fe.get_window_handler().most_recent_keyboard_focus(IN_THREAD)
+	    != ptr_impl)
 		return;
 
 	next_focus(IN_THREAD);

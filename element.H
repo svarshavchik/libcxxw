@@ -710,8 +710,7 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! The focus reporter parameter to request_focus() and leave_focus().
 
 	typedef void (elementObj::implObj::*focus_reporter_t)
-		(IN_THREAD_ONLY, focus_change, const ref<elementObj::implObj> &)
-		;
+		(IN_THREAD_ONLY, focus_change);
 
 	//! Input focus is being requested for this display element.
 
@@ -733,6 +732,9 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//!
 	//! Generates calls to <type>_focus() for all affected display elements.
 	//! \see focus_change
+	//!
+	//! In testfocusable.C this is equivalent to the (!t.to) case in
+	//! testfocusable().
 
 	void lose_focus(IN_THREAD_ONLY,
 			focus_reporter_t focus_reporter)
@@ -740,6 +742,7 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 		requested_focus_from(IN_THREAD);
 		leaving_focus(IN_THREAD, ptr<elementObj::implObj>(),
 			      focus_reporter);
+		focus_movement_complete(IN_THREAD, false, focus_reporter);
 	}
 
 	//! Internal focus processing, see element_focusable.C
@@ -778,23 +781,21 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 				       const ptr<elementObj::implObj> &focus_from,
 				       focus_reporter_t focus_reporter);
 
+	//! Internal focus processing, see element_focusable.C
+	virtual void focus_movement_complete(IN_THREAD_ONLY,
+					     bool stop_at_original_focus,
+					     focus_reporter_t focus_reporter);
+
 	//! Invoke the keyboard_focus() virtual function.
 
-	inline void report_keyboard_focus(IN_THREAD_ONLY,
-					  focus_change event,
-					  const ref<implObj> &ptr)
-	{
-		keyboard_focus(IN_THREAD, event, ptr);
-	}
+	void report_keyboard_focus(IN_THREAD_ONLY,
+				   focus_change event);
 
 	//! The result of all this is a bunch of calls to keyboard_focus().
 
-	//! The default implementation sets most_recent_keyboard_focus_change()
-	//! and invokes the keyboard focus callback.
+	//! The default implementation invokes the keyboard focus callback.
 
-	virtual void keyboard_focus(IN_THREAD_ONLY,
-				    focus_change event,
-				    const ref<implObj> &ptr);
+	virtual void keyboard_focus(IN_THREAD_ONLY);
 
 	//! Install a new keyboard focus callback
 	void on_keyboard_focus(const std::function<focus_callback_t> &callback);
@@ -843,22 +844,14 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	virtual void grab(IN_THREAD_ONLY)=0;
 
 	//! Invoke the pointer_focus() virtual function.
-
-	inline void report_pointer_focus(IN_THREAD_ONLY,
-					  focus_change event,
-					  const ref<implObj> &ptr)
-	{
-		pointer_focus(IN_THREAD, event, ptr);
-	}
+	void report_pointer_focus(IN_THREAD_ONLY,
+				  focus_change event);
 
 	//! The result of all this is a bunch of calls to pointer_focus().
 
-	//! The default implementation sets most_recent_pointer_focus_change()
-	//! and invokes the pointer focus callback.
+	//! The default implementation invokes the pointer focus callback.
 
-	virtual void pointer_focus(IN_THREAD_ONLY,
-				   focus_change event,
-				   const ref<implObj> &ptr);
+	virtual void pointer_focus(IN_THREAD_ONLY);
 
 	//! Install a new keyboard focus callback
 	void on_pointer_focus(const std::function<focus_callback_t> &callback);
@@ -905,9 +898,8 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 	//! Whether this display element currently has pointer input focus.
 
-	//! Returns true if most_recent_pointer_focus_change was one of:
-	//! focus_gained, child_gained, child_moved_to, gained_from_child,
-	//! lost_to_child.
+	//! Returns true if most_recent_pointer_focus_change was anything
+	//! other than focus_change::lost.
 
 	bool current_pointer_focus(IN_THREAD_ONLY);
 

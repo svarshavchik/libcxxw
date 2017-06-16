@@ -37,18 +37,15 @@ void hotspotObj::implObj::hotspot_deinitialize(IN_THREAD_ONLY)
 	set_shortcut(IN_THREAD, shortcut());
 }
 
-void hotspotObj::implObj::keyboard_focus(IN_THREAD_ONLY,
-					 focus_change event,
-					 const ref<elementObj::implObj> &ptr)
+void hotspotObj::implObj::keyboard_focus(IN_THREAD_ONLY)
 {
 	if (!get_hotspot_element().current_keyboard_focus(IN_THREAD))
 		is_key_down=false;
+
 	update(IN_THREAD);
 }
 
-void hotspotObj::implObj::pointer_focus(IN_THREAD_ONLY,
-					focus_change event,
-					const ref<elementObj::implObj> &ptr)
+void hotspotObj::implObj::pointer_focus(IN_THREAD_ONLY)
 {
 	if (!get_hotspot_element().current_pointer_focus(IN_THREAD))
 		is_button1_down=false;

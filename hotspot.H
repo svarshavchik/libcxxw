@@ -87,15 +87,11 @@ class LIBCXX_HIDDEN hotspotObj::implObj : virtual public obj {
 
 	//! Update hotspot temperature due to keyboard focus change.
 
-	void keyboard_focus(IN_THREAD_ONLY,
-			    focus_change event,
-			    const ref<elementObj::implObj> &ptr);
+	void keyboard_focus(IN_THREAD_ONLY);
 
 	//! Update hotspot temperature due to pointer focus change.
 
-	void pointer_focus(IN_THREAD_ONLY,
-			   focus_change event,
-			   const ref<elementObj::implObj> &ptr);
+	void pointer_focus(IN_THREAD_ONLY);
 
 	//! Update hotspot temperature due to a keyboard event.
 

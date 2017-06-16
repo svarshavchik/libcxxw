@@ -136,9 +136,7 @@ class LIBCXX_HIDDEN editorObj::implObj
 
 	//! Starts or stops the cursor blink.
 
-	void keyboard_focus(IN_THREAD_ONLY,
-			    focus_change event,
-			    const ref<elementObj::implObj> &ptr) override;
+	void keyboard_focus(IN_THREAD_ONLY) override;
 
 	//! Starts or stop the cursor blink.
 	void window_focus_change(IN_THREAD_ONLY, bool flag) override;

@@ -23,7 +23,7 @@ LIBCXXW_NAMESPACE_END
 typedef LIBCXX_NAMESPACE::ref<LIBCXX_NAMESPACE::w::elementObj::implObj
 			      > element_impl;
 
-std::vector<std::tuple<int, int, LIBCXX_NAMESPACE::w::focus_change>> results;
+std::vector<std::tuple<int, LIBCXX_NAMESPACE::w::focus_change>> results;
 
 struct LIBCXX_NAMESPACE::w::elementObj::implObj :
 	virtual public LIBCXX_NAMESPACE::obj {
@@ -39,7 +39,7 @@ struct LIBCXX_NAMESPACE::w::elementObj::implObj :
 	implObj(int id) : id(id) {}
 
 	typedef void (elementObj::implObj::*focus_reporter_t)
-		(IN_THREAD_ONLY, focus_change, const ref<elementObj::implObj> &)
+		(IN_THREAD_ONLY, focus_change)
 		;
 
 	void request_focus(IN_THREAD_ONLY,
@@ -71,11 +71,14 @@ struct LIBCXX_NAMESPACE::w::elementObj::implObj :
 				       focus_reporter_t focus_reporter);
 
 	void focus_event(IN_THREAD_ONLY,
-			 LIBCXX_NAMESPACE::w::focus_change event,
-			 const element_impl &ptr)
+			 LIBCXX_NAMESPACE::w::focus_change event)
 	{
-		results.push_back({ptr->id, id, event});
+		results.push_back({id, event});
 	}
+
+	virtual void focus_movement_complete(IN_THREAD_ONLY,
+					     bool,
+					     focus_reporter_t);
 };
 
 struct LIBCXX_NAMESPACE::w::child_elementObj
@@ -106,6 +109,10 @@ struct LIBCXX_NAMESPACE::w::child_elementObj
 			       const ptr<elementObj::implObj> &focus_from,
 			       focus_reporter_t focus_reporter)
 		override;
+
+	void focus_movement_complete(IN_THREAD_ONLY,
+				     bool,
+				     focus_reporter_t) override;
 };
 
 #define child_element_h
@@ -113,6 +120,18 @@ struct LIBCXX_NAMESPACE::w::child_elementObj
 
 using namespace LIBCXX_NAMESPACE;
 using namespace LIBCXX_NAMESPACE::w;
+
+//
+//                  0
+//                  |
+//                  1
+//                  |
+//                  2
+//               +--+--+
+//               |     |
+//               3     5
+//               |     |
+//               4     6
 
 static const element_impl root=element_impl::create(0);
 static const element_impl first=ref<child_elementObj>::create(1, &*root);
@@ -125,16 +144,19 @@ static const element_impl sixth=ref<child_elementObj>::create(6, &*fifth);
 static const struct {
 	const char *testname;
 	ptr<elementObj::implObj> from, to;
-	std::vector<std::tuple<int, int, focus_change>> expected_results;
+	std::vector<std::tuple<int, focus_change>> expected_results;
 } tests[]={
 	{
 		"lost",
 		second,
 		ptr<elementObj::implObj>(),
 		{
-			{2, 2, focus_change::lost},
-			{2, 1, focus_change::child_lost},
-			{2, 0, focus_change::child_lost},
+			{2, focus_change::lost},
+			{1, focus_change::child_lost},
+			{0, focus_change::child_lost},
+			{2, focus_change::focus_movement_complete},
+			{1, focus_change::focus_movement_complete},
+			{0, focus_change::focus_movement_complete},
 		},
 	},
 	{
@@ -142,24 +164,43 @@ static const struct {
 		ptr<elementObj::implObj>(),
 		second,
 		{
-			{2, 0, focus_change::child_gained},
-			{2, 1, focus_change::child_gained},
-			{2, 2, focus_change::gained},
+			{0, focus_change::child_gained},
+			{1, focus_change::child_gained},
+			{2, focus_change::gained},
+			{2, focus_change::focus_movement_complete},
+			{1, focus_change::focus_movement_complete},
+			{0, focus_change::focus_movement_complete},
 		},
 	},
+
+	// We receive focus gained events from new elements before the
+	// focus lost elements for the old elements.
+	//
+	// This way a container can monitor the events of its child elements
+	// and know that a child element lost its focus because a new child
+	// element already received it. The list layout manager depends on
+	// this behavior for optimal performance.
+	//
+	// Only a focus lost event without a focus gained event indicates
+	// a true loss of focusage.
 	{
 		"shallow transit",
 		fifth,
 		third,
 		{
-			{5, 5, focus_change::lost},
-			{5, 2, focus_change::child_moved_from},
-			{5, 1, focus_change::child_moved_from},
-			{5, 0, focus_change::child_moved_from},
-			{3, 0, focus_change::child_moved_to},
-			{3, 1, focus_change::child_moved_to},
-			{3, 2, focus_change::child_moved_to},
-			{3, 3, focus_change::gained},
+			{5, focus_change::lost},
+			{2, focus_change::child_moved_from},
+			{1, focus_change::child_moved_from},
+			{0, focus_change::child_moved_from},
+			{0, focus_change::child_moved_to},
+			{1, focus_change::child_moved_to},
+			{2, focus_change::child_moved_to},
+			{3, focus_change::gained},
+			{3, focus_change::focus_movement_complete},
+			{5, focus_change::focus_movement_complete},
+			{2, focus_change::focus_movement_complete},
+			{1, focus_change::focus_movement_complete},
+			{0, focus_change::focus_movement_complete},
 		},
 	},
 	{
@@ -167,16 +208,23 @@ static const struct {
 		fourth,
 		sixth,
 		{
-			{4, 4, focus_change::lost},
-			{4, 3, focus_change::child_lost},
-			{4, 2, focus_change::child_moved_from},
-			{4, 1, focus_change::child_moved_from},
-			{4, 0, focus_change::child_moved_from},
-			{6, 0, focus_change::child_moved_to},
-			{6, 1, focus_change::child_moved_to},
-			{6, 2, focus_change::child_moved_to},
-			{6, 5, focus_change::child_gained},
-			{6, 6, focus_change::gained},
+			{4, focus_change::lost},
+			{3, focus_change::child_lost},
+			{2, focus_change::child_moved_from},
+			{1, focus_change::child_moved_from},
+			{0, focus_change::child_moved_from},
+			{0, focus_change::child_moved_to},
+			{1, focus_change::child_moved_to},
+			{2, focus_change::child_moved_to},
+			{5, focus_change::child_gained},
+			{6, focus_change::gained},
+			{6, focus_change::focus_movement_complete},
+			{5, focus_change::focus_movement_complete},
+			{4, focus_change::focus_movement_complete},
+			{3, focus_change::focus_movement_complete},
+			{2, focus_change::focus_movement_complete},
+			{1, focus_change::focus_movement_complete},
+			{0, focus_change::focus_movement_complete},
 		},
 	},
 
@@ -185,26 +233,33 @@ static const struct {
 		fifth,
 		first,
 		{
-			{5, 5, focus_change::lost},
-			{5, 2, focus_change::child_lost},
-			{5, 1, focus_change::gained_from_child},
-			{5, 0, focus_change::child_moved_from},
-			{1, 0, focus_change::child_moved_to},
-			{1, 1, focus_change::gained},
+			{5, focus_change::lost},
+			{2, focus_change::child_lost},
+			{1, focus_change::gained_from_child},
+			{0, focus_change::child_moved_from},
+			{0, focus_change::child_moved_to},
+			{1, focus_change::gained},
+			{5, focus_change::focus_movement_complete},
+			{2, focus_change::focus_movement_complete},
+			{1, focus_change::focus_movement_complete},
+			{0, focus_change::focus_movement_complete},
 		},
 	},
-
 	{
 		"to child",
 		first,
 		fifth,
 		{
-			{1, 1, focus_change::lost},
-			{1, 0, focus_change::child_moved_from},
-			{5, 0, focus_change::child_moved_to},
-			{5, 1, focus_change::lost_to_child},
-			{5, 2, focus_change::child_gained},
-			{5, 5, focus_change::gained},
+			{1, focus_change::lost},
+			{0, focus_change::child_moved_from},
+			{0, focus_change::child_moved_to},
+			{1, focus_change::lost_to_child},
+			{2, focus_change::child_gained},
+			{5, focus_change::gained},
+			{5, focus_change::focus_movement_complete},
+			{2, focus_change::focus_movement_complete},
+			{1, focus_change::focus_movement_complete},
+			{0, focus_change::focus_movement_complete},
 		},
 	},
 };
@@ -217,9 +272,12 @@ void testfocusable()
 
 		if (!t.to)
 		{
+			// This is equivalent to elementObj::implObj::lose_focus().
 			t.from->requested_focus_from(0);
 			t.from->leaving_focus(0, ptr<obj>(),
 					      &elementObj::implObj::focus_event);
+			t.from->focus_movement_complete(0, false,
+							&elementObj::implObj::focus_event);
 		}
 		else
 		{

@@ -449,7 +449,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	std::list<ref<focusableImplObj>> focusable_fields_thread_only;
 
 	//! Current field that's receiving input focus.
-	ptr<focusableImplObj> keyboard_focus_thread_only;
+	ptr<focusableImplObj> most_recent_keyboard_focus_thread_only;
 
 	//! Look up focusables that installed a shortcut.
 
@@ -457,7 +457,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
  public:
 	THREAD_DATA_ONLY(focusable_fields);
-	THREAD_DATA_ONLY(keyboard_focus);
+	THREAD_DATA_ONLY(most_recent_keyboard_focus);
 	THREAD_DATA_ONLY(shortcut_lookup);
 
 	//! Move the current keyboard focus to another element.
