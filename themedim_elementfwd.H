@@ -63,7 +63,7 @@ template<typename ...args> struct themedims_element_types;
 //! Helper template used by themedim_elementObj
 
 template<typename base, typename arg>
-struct themedims_element_types<base, arg> {
+struct LIBCXX_HIDDEN themedims_element_types<base, arg> {
 
 	typedef themedim1_elementObj<base, arg> type;
 };
@@ -71,7 +71,7 @@ struct themedims_element_types<base, arg> {
 //! Helper template used by themedim_elementObj
 
 template<typename base, typename arg1, typename arg2, typename ...args>
-struct themedims_element_types<base, arg1, arg2, args...> {
+struct LIBCXX_HIDDEN themedims_element_types<base, arg1, arg2, args...> {
 
 	typedef themedim1_elementObj<typename
 				     themedims_element_types<base, arg2,

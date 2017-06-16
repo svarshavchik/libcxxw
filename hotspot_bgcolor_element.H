@@ -7,24 +7,12 @@
 
 #include "x/w/hotspot.H"
 #include "hotspot_bgcolor_elementfwd.H"
+#include "background_color_element.H"
 #include "hotspot_element.H"
 
 LIBCXXW_NAMESPACE_START
 
 //! Constructor
-
-template<typename element_impl>
-template<typename ...Args>
-hotspot_bgcolor_elementObj<element_impl>
-::hotspot_bgcolor_elementObj(const background_color &cold_color,
-			     const background_color &warm_color,
-			     const background_color &hot_color,
-			     Args && ...args)
-	: hotspot_elementObj<element_impl>(std::forward<Args>(args)...,
-					   cold_color),
-	  hotspot_bgcolorObj::implObj(cold_color, warm_color, hot_color)
-{
-}
 
 //! Destructor
 
@@ -59,6 +47,30 @@ void hotspot_bgcolor_elementObj<element_impl>
 {
 	hotspot_elementObj<element_impl>::temperature_changed(IN_THREAD);
 	hotspot_bgcolorObj::implObj::temperature_changed(IN_THREAD);
+}
+
+//! Implement cold_color().
+template<typename element_impl>
+background_color
+hotspot_bgcolor_elementObj<element_impl>::cold_color(IN_THREAD_ONLY)
+{
+	return background_color_element<hotspot_cold_color>::get(IN_THREAD);
+}
+
+//! Implement warm_color().
+template<typename element_impl>
+background_color
+hotspot_bgcolor_elementObj<element_impl>::warm_color(IN_THREAD_ONLY)
+{
+	return background_color_element<hotspot_warm_color>::get(IN_THREAD);
+}
+
+//! Implement hot_color().
+template<typename element_impl>
+background_color
+hotspot_bgcolor_elementObj<element_impl>::hot_color(IN_THREAD_ONLY)
+{
+	return background_color_element<hotspot_hot_color>::get(IN_THREAD);
 }
 
 LIBCXXW_NAMESPACE_END

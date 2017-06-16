@@ -136,6 +136,9 @@ class LIBCXX_HIDDEN child_elementObj : public elementObj::implObj {
 
  protected:
 
+	//! Override initialize()
+	void initialize(IN_THREAD_ONLY) override;
+
 	//! Update the theme-dependendent background color, then call the parent.
 
 	void theme_updated(IN_THREAD_ONLY) override;

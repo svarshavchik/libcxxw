@@ -17,23 +17,10 @@ LIBCXXW_NAMESPACE_START
 
 class LIBCXX_HIDDEN hotspot_bgcolorObj::implObj : virtual public obj {
 
-	//! Background color when the hotspot is cold.
-	background_color cold_color_thread_only;
-
-	//! Background color when the hotspot is warm.
-	background_color warm_color_thread_only;
-
-	//! Background color when the hotspot is hot.
-	background_color hot_color_thread_only;
  public:
-	THREAD_DATA_ONLY(cold_color);
-	THREAD_DATA_ONLY(warm_color);
-	THREAD_DATA_ONLY(hot_color);
 
 	//! Constructor
-	implObj(const background_color &cold_color,
-		const background_color &warm_color,
-		const background_color &hot_color);
+	implObj();
 
 	//! Destructor
 	~implObj();
@@ -43,6 +30,16 @@ class LIBCXX_HIDDEN hotspot_bgcolorObj::implObj : virtual public obj {
 
 	//! Get my hotspot implementation object.
 	virtual const hotspotObj::implObj &get_hotspot_impl() const=0;
+
+	//! Get my cold color
+
+	virtual background_color cold_color(IN_THREAD_ONLY)=0;
+
+	//! Get my warm color
+	virtual background_color warm_color(IN_THREAD_ONLY)=0;
+
+	//! Get my hot color
+	virtual background_color hot_color(IN_THREAD_ONLY)=0;
 
 	//! Update the current background color.
 

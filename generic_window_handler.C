@@ -340,8 +340,8 @@ void generic_windowObj::handlerObj::theme_updated_event(IN_THREAD_ONLY)
 	// container_element_overrides_decl hijacks theme_updated(), so we
 	// just do this here.
 
-	current_background_color(IN_THREAD)->theme_updated(IN_THREAD);
 	theme_updated(IN_THREAD);
+	current_background_color(IN_THREAD)->theme_updated(IN_THREAD);
 }
 
 bool generic_windowObj::handlerObj::is_busy()

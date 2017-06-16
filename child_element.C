@@ -154,6 +154,20 @@ void child_elementObj::horizvert_updated(IN_THREAD_ONLY)
 					});
 }
 
+void child_elementObj::initialize(IN_THREAD_ONLY)
+{
+	elementObj::implObj::initialize(IN_THREAD);
+	if (current_background_color(IN_THREAD))
+		current_background_color(IN_THREAD)->theme_updated(IN_THREAD);
+}
+
+void child_elementObj::theme_updated(IN_THREAD_ONLY)
+{
+	elementObj::implObj::theme_updated(IN_THREAD);
+	if (current_background_color(IN_THREAD))
+		current_background_color(IN_THREAD)->theme_updated(IN_THREAD);
+}
+
 void child_elementObj::remove_background_color(IN_THREAD_ONLY)
 {
 	if (!current_background_color(IN_THREAD))
@@ -177,14 +191,6 @@ void child_elementObj::set_background_color(IN_THREAD_ONLY,
 	container->child_background_color_changed(IN_THREAD,
 						  ref<elementObj::implObj>
 						  (this));
-}
-
-void child_elementObj::theme_updated(IN_THREAD_ONLY)
-{
-	if (!current_background_color(IN_THREAD).null())
-		current_background_color(IN_THREAD)->theme_updated(IN_THREAD);
-
-	elementObj::implObj::theme_updated(IN_THREAD);
 }
 
 void child_elementObj

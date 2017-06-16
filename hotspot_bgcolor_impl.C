@@ -10,15 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-hotspot_bgcolorObj::implObj
-::implObj(const background_color &cold_color,
-	  const background_color &warm_color,
-	  const background_color &hot_color)
-	: cold_color_thread_only(cold_color),
-	  warm_color_thread_only(warm_color),
-	  hot_color_thread_only(hot_color)
-{
-}
+hotspot_bgcolorObj::implObj::implObj()=default;
 
 hotspot_bgcolorObj::implObj::~implObj()=default;
 
