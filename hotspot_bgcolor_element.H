@@ -35,6 +35,16 @@ const hotspotObj::implObj &hotspot_bgcolor_elementObj<element_impl>
 	return *this;
 }
 
+//! Override initialize().
+
+//! Invokes cold_color() to set the initial background color of the hotspot.
+
+template<typename element_impl>
+void hotspot_bgcolor_elementObj<element_impl>::initialize(IN_THREAD_ONLY)
+{
+	hotspot_elementObj<element_impl>::initialize(IN_THREAD);
+	hotspot_bgcolorObj::implObj::temperature_changed(IN_THREAD);
+}
 
 //! Override temperature_changed() from hotspotObj::implObj.
 

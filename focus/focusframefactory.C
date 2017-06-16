@@ -21,7 +21,13 @@ void focusframefactoryObj::created(const element &e)
 {
 	glm->remove();
 
-	glm->append_row()->padding(0).created_internally(e);
+	// If the focusframe is inside a grid layout and the cell is filled
+	// with the focus frame, return the courtesy by centering the contents
+	// of the focus frame.
+	glm->append_row()->padding(0)
+		.halign(halign::center)
+		.valign(valign::middle)
+		.created_internally(e);
 }
 
 LIBCXXW_NAMESPACE_END

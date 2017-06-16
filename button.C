@@ -11,6 +11,7 @@
 #include "container_element.H"
 #include "container_visible_element.H"
 #include "hotspot_bgcolor_element.H"
+#include "always_visible.H"
 #include "focus/focusframecontainer_element.H"
 #include "generic_window_handler.H"
 #include "xid_t.H"
@@ -27,10 +28,10 @@ LIBCXXW_NAMESPACE_START
 // Which is a container, derived from child_elementObj, since we must be
 // somebody's child element.
 
-typedef hotspot_bgcolor_elementObj<focusframecontainer_elementObj<
-					   container_elementObj
-					   <child_elementObj>>
-				   > ff_impl_t;
+typedef hotspot_bgcolor_elementObj<always_visibleObj<
+	focusframecontainer_elementObj<
+		container_elementObj
+		<child_elementObj>>>> ff_impl_t;
 
 class LIBCXX_HIDDEN button_focusframeObj : public ff_impl_t {
 
@@ -118,6 +119,13 @@ create_button_focusframe(const ref<buttonObj::implObj> &impl,
 
 	factory->padding(0);	// No padding for the focus frame.
 	factory->border(border); // And set its border, too.
+
+	// If the button is placed in a grid cell that fill()ed, it will
+	// stretch the button element. Stretch the focusframe too, in that
+	// case.
+	factory->halign(halign::fill);
+	factory->valign(valign::fill);
+	ff->show();
 
 	factory->created_internally(ff);
 
@@ -245,7 +253,7 @@ factoryObj::create_button_with_label(const char *theme_border,
 		 ([&text, alignment]
 		  (const auto &f)
 		  {
-			  f->create_label(text, alignment);
+			  f->create_label(text, alignment)->show();
 		  }),
 		 shortcut_key);
 }

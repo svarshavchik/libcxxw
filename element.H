@@ -890,16 +890,15 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 	//! Whether this display element currently has keyboard input focus.
 
-	//! Returns true if most_recent_keyboard_focus_change was one of:
-	//! focus_gained, child_gained, child_moved_to, gained_from_child,
-	//! lost_to_child; and the window has input focus.
+	//! Returns true if most_recent_keyboard_focus_change was anything
+	//! other than focus_change::lost or focus_change::child_lost
 
 	bool current_keyboard_focus(IN_THREAD_ONLY);
 
 	//! Whether this display element currently has pointer input focus.
 
 	//! Returns true if most_recent_pointer_focus_change was anything
-	//! other than focus_change::lost.
+	//! other than focus_change::lost or focus_change::child_lost
 
 	bool current_pointer_focus(IN_THREAD_ONLY);
 

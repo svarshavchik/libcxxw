@@ -15,12 +15,16 @@ LIBCXXW_NAMESPACE_START
 //!  button implementation object.
 
 class LIBCXX_HIDDEN buttonObj::implObj
-	: public container_visible_elementObj<
-	container_elementObj<child_elementObj>> {
+	: public container_visible_elementObj<container_elementObj
+					      <child_elementObj>> {
 
  public:
+	typedef container_visible_elementObj<
+		container_elementObj<child_elementObj>
+	 > superclass_t;
 
 	//! Constructor
+
 	implObj(const ref<containerObj::implObj> &container);
 
 	//! Destructor

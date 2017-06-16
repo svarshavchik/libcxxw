@@ -10,8 +10,7 @@
 LIBCXXW_NAMESPACE_START
 
 buttonObj::implObj::implObj(const ref<containerObj::implObj> &container)
-	: container_visible_elementObj<container_elementObj
-				       <child_elementObj>>(container)
+	: superclass_t(container)
 {
 }
 

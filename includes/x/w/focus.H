@@ -16,8 +16,7 @@ enum class focus_change {
 	lost,         //!< Lost focus
 	child_gained, //!< Child element gained focus
 	child_lost,   //!< Child element lost focus
-	child_moved_from,        //!< Focus moved to a different child element.
-	child_moved_to,          //!< Focus moved to a different child element.
+	child_moved,        //!< Focus moved to a different child element.
 
 	gained_from_child,       //! Child lost focus for me, a gained event will follow
 	lost_to_child,           //! After a lost focus, the focus was received by a child element.
@@ -27,8 +26,7 @@ enum class focus_change {
 
 //! Convert a very detailed focus_change to a simple boolean value.
 
-//! Returns true for gained, child_gained, child_moved_to, and
-//! gained_from_child; and false for all others
+//! Returns false for lost and child_lost, true for all others.
 
 bool in_focus(focus_change f);
 

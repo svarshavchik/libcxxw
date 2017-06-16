@@ -828,16 +828,7 @@ void elementObj::implObj::window_focus_change(IN_THREAD_ONLY, bool flag)
 
 bool elementObj::implObj::current_keyboard_focus(IN_THREAD_ONLY)
 {
-	switch (most_recent_keyboard_focus_change(IN_THREAD)) {
-	case focus_change::gained:
-	case focus_change::child_gained:
-	case focus_change::child_moved_to:
-	case focus_change::gained_from_child:
-		return get_window_handler().has_focus(IN_THREAD);
-	default:
-		break;
-	}
-	return false;
+	return in_focus(most_recent_keyboard_focus_change(IN_THREAD));
 }
 
 bool elementObj::implObj::current_pointer_focus(IN_THREAD_ONLY)
@@ -847,7 +838,7 @@ bool elementObj::implObj::current_pointer_focus(IN_THREAD_ONLY)
 
 bool in_focus(focus_change v)
 {
-	return v != focus_change::lost;
+	return v != focus_change::lost && v != focus_change::child_lost;
 }
 
 bool elementObj::implObj::process_key_event(IN_THREAD_ONLY, const key_event &)

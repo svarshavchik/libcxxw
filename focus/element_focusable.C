@@ -142,7 +142,7 @@ void elementObj::implObj::do_leaving_focus(IN_THREAD_ONLY,
 	if (new_focus && event != focus_change::lost)
 	{
 		((*this).*focus_reporter)(IN_THREAD,
-					  focus_change::child_moved_from);
+					  focus_change::child_moved);
 		return;
 	}
 	((*this).*focus_reporter)(IN_THREAD, event);
@@ -211,7 +211,7 @@ void elementObj::implObj::do_entering_focus(IN_THREAD_ONLY,
 	else if (original_focus && event != focus_change::gained)
 	{
 		((*this).*focus_reporter)(IN_THREAD,
-					  focus_change::child_moved_to);
+					  focus_change::child_moved);
 	}
 	else
 	{

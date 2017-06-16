@@ -190,7 +190,9 @@ factory->create_normal_button([]
       <methodname>create_special_button</methodname>() take a single lambda
       as a parameter. The lambda receives another factory as its sole
       argument, and is expected to use that factory to create a single display
-      element. This becomes the contents of the button.
+      element. This becomes the contents of the button. Like all display
+      elements they must be <methodname>show</methodname>()n in order to
+      be visible.
     </para>
 
     <para>
@@ -198,7 +200,7 @@ factory->create_normal_button([]
       <methodname>create_special_button_with_label</methodname>() are simply
       wrappers that <link linkend="labels">use
 	<methodname>create_label</methodname>()</link> to put the label into
-      the button.
+      the button, and <methodname>show</methodname>() it.
     </para>
 
     <para>
