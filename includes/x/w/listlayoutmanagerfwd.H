@@ -28,6 +28,8 @@ class listlayoutstyle;
 
 class new_listlayoutmanager;
 
+class list_lock;
+
 //! The list highlights items to indicate they're selected
 
 extern const listlayoutstyle &highlighted_list;

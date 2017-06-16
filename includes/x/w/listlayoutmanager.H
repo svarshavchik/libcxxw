@@ -10,6 +10,7 @@
 #include <x/w/listlayoutmanagerobj.H>
 #include <x/w/layoutmanager.H>
 #include <x/w/scrollbar.H>
+#include <x/w/grid_map_infofwd.H>
 #include <x/ref.H>
 #include <string>
 
@@ -60,6 +61,25 @@ class LIBCXX_HIDDEN new_listlayoutmanager : public new_focusable_layoutmanager {
 
 	focusable_container create(const ref<containerObj::implObj> &)
 		const override;
+};
+
+//! Lock the list layout manager.
+
+//! Blocks modifications to the contents of the list.
+
+class list_lock : public grid_map_t::lock {
+
+public:
+
+	//! Constructor
+
+	list_lock(const const_listlayoutmanager &manager);
+
+	//! Constructor
+	list_lock(grid_map_t &map);
+
+	//! Destructor
+	~list_lock();
 };
 
 LIBCXXW_NAMESPACE_END

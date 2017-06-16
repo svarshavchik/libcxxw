@@ -9,6 +9,17 @@
 
 LIBCXXW_NAMESPACE_START
 
+list_lock::list_lock(const const_listlayoutmanager &manager)
+	: list_lock(manager->impl->grid_map)
+{
+}
+
+list_lock::list_lock(grid_map_t &map) : grid_map_t::lock{map}
+{
+}
+
+list_lock::~list_lock()=default;
+
 listlayoutmanagerObj::listlayoutmanagerObj(const ref<implObj> &impl)
 	: gridlayoutmanagerObj(impl),
 	  impl(impl)
