@@ -35,47 +35,23 @@ gridlayoutmanagerObj::~gridlayoutmanagerObj()=default;
 
 gridfactory gridlayoutmanagerObj::append_row()
 {
-	auto me=gridlayoutmanager(this);
-
-	dim_t row=({
-			grid_map_t::lock lock(me->impl->grid_map);
-
-			(*lock)->elements.push_back({});
-
-			(*lock)->elements.size()-1;
-		});
-
-	return gridfactory::create(me,
-				   ref<gridfactoryObj::implObj>::create(me,
-									row,
-									0));
+	return impl->append_row(this);
 }
 
 gridfactory gridlayoutmanagerObj::insert_row(size_t row)
 {
-	auto me=gridlayoutmanager(this);
+	return impl->insert_row(this, row);
+}
 
-	{
-		grid_map_t::lock lock(me->impl->grid_map);
-
-		if ((*lock)->elements.size() < row)
-			throw EXCEPTION(_("Attempting to insert a row before a nonexistent row"));
-
-		(*lock)->elements.emplace((*lock)->elements.begin()+row);
-	}
-
-	return gridfactory::create(me,
-				   ref<gridfactoryObj::implObj>::create(me,
-									row,
-									0));
+gridfactory gridlayoutmanagerObj::replace_row(size_t row)
+{
+	return impl->replace_row(this, row);
 }
 
 gridfactory gridlayoutmanagerObj::append_columns(size_t row)
 {
-	auto me=gridlayoutmanager(this);
-
-	dim_t col=({
-			grid_map_t::lock lock(me->impl->grid_map);
+	size_t col=({
+			grid_map_t::lock lock(impl->grid_map);
 
 			if ((*lock)->elements.size() <= row)
 				throw EXCEPTION(_("Attempting to add columns to a nonexistent row"));
@@ -83,10 +59,7 @@ gridfactory gridlayoutmanagerObj::append_columns(size_t row)
 			(*lock)->elements.at(row).size();
 		});
 
-	return gridfactory::create(me,
-				   ref<gridfactoryObj::implObj>::create(me,
-									row,
-									col));
+	return impl->create_gridfactory(this, row, col);
 }
 
 gridfactory gridlayoutmanagerObj::insert_columns(size_t row, size_t col)
@@ -94,7 +67,7 @@ gridfactory gridlayoutmanagerObj::insert_columns(size_t row, size_t col)
 	auto me=gridlayoutmanager(this);
 
 	size_t s=({
-			grid_map_t::lock lock(me->impl->grid_map);
+			grid_map_t::lock lock(impl->grid_map);
 
 			if ((*lock)->elements.size() <= row)
 				throw EXCEPTION(_("Attempting to add columns to a nonexistent row"));
@@ -105,10 +78,7 @@ gridfactory gridlayoutmanagerObj::insert_columns(size_t row, size_t col)
 	if (col >= s)
 	    throw EXCEPTION(_("Attempting to insert columns before a nonexistent column"));
 
-	return gridfactory::create(me,
-				   ref<gridfactoryObj::implObj>::create(me,
-									row,
-									col));
+	return impl->create_gridfactory(this, row, col);
 }
 
 void gridlayoutmanagerObj::remove()
@@ -137,13 +107,7 @@ void gridlayoutmanagerObj::remove(size_t row, size_t col)
 
 void gridlayoutmanagerObj::remove_row(size_t row)
 {
-	grid_map_t::lock lock{impl->grid_map};
-
-	if (row < (*lock)->elements.size())
-	{
-		(*lock)->elements.erase( (*lock)->elements.begin()+row);
-		(*lock)->elements_have_been_modified();
-	}
+	impl->remove_row(row);
 }
 
 size_t gridlayoutmanagerObj::rows()

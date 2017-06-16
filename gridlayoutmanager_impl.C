@@ -29,6 +29,72 @@ gridlayoutmanagerObj::implObj
 
 gridlayoutmanagerObj::implObj::~implObj()=default;
 
+gridfactory gridlayoutmanagerObj::implObj
+::create_gridfactory(layoutmanagerObj *public_object,
+		     size_t row, size_t col)
+{
+	return gridfactory::create(layoutmanager{public_object},
+				   ref<implObj>(this),
+				   ref<gridfactoryObj::implObj>::create
+				   (row, col));
+}
+
+gridfactory gridlayoutmanagerObj::implObj
+::append_row(layoutmanagerObj *public_object)
+{
+	size_t row=({
+			grid_map_t::lock lock(grid_map);
+
+			(*lock)->elements.push_back({});
+
+			(*lock)->elements.size()-1;
+		});
+
+	return create_gridfactory(public_object, row, 0);
+}
+
+gridfactory gridlayoutmanagerObj::implObj
+::insert_row(layoutmanagerObj *public_object, size_t row)
+{
+	{
+		grid_map_t::lock lock(grid_map);
+
+		if ((*lock)->elements.size() < row)
+			throw EXCEPTION(_("Attempting to insert a row before a nonexistent row"));
+
+		(*lock)->elements.emplace((*lock)->elements.begin()+row);
+	}
+
+	return create_gridfactory(public_object, row, 0);
+}
+
+gridfactory gridlayoutmanagerObj::implObj
+::replace_row(layoutmanagerObj *public_object, size_t row)
+{
+	{
+		grid_map_t::lock lock(grid_map);
+
+		if ((*lock)->elements.size() <= row)
+			throw EXCEPTION(_("Attempting to replace a non-existent row"));
+
+		(*lock)->elements.at(row).clear();
+		(*lock)->elements_have_been_modified();
+	}
+
+	return create_gridfactory(public_object, row, 0);
+}
+
+void gridlayoutmanagerObj::implObj::remove_row(size_t row)
+{
+	grid_map_t::lock lock{grid_map};
+
+	if (row < (*lock)->elements.size())
+	{
+		(*lock)->elements.erase( (*lock)->elements.begin()+row);
+		(*lock)->elements_have_been_modified();
+	}
+}
+
 elementptr gridlayoutmanagerObj::implObj::get(size_t row, size_t col)
 {
 	grid_map_t::lock lock{grid_map};

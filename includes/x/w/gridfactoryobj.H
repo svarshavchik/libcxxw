@@ -6,8 +6,10 @@
 #define x_w_gridfactoryobj_h
 
 #include <x/w/gridfactoryfwd.H>
+#include <x/w/grid_map_infofwd.H>
 #include <x/w/factoryobj.H>
 #include <x/w/gridlayoutmanagerfwd.H>
+#include <x/w/gridlayoutmanagerobj.H>
 #include <x/w/border_infomm.H>
 #include <x/w/alignment.H>
 #include <x/mpobj.H>
@@ -21,10 +23,16 @@ LIBCXXW_NAMESPACE_START
 
 class gridfactoryObj : public factoryObj {
 
- public:
+	//! The public layout manager
+	const layoutmanager layout;
 
-	//! This factory is for this layout.
-	const gridlayoutmanager gridlayout;
+	//! This internal object.
+	const ref<gridlayoutmanagerObj::implObj> gridlayout;
+
+	//! The internal lock
+	grid_map_t::lock lock;
+
+ public:
 
 	class implObj;
 
@@ -34,7 +42,8 @@ class gridfactoryObj : public factoryObj {
 
 	//! Constructor
 
-	gridfactoryObj(const gridlayoutmanager &gridlayout,
+	gridfactoryObj(const layoutmanager &layout,
+		       const ref<gridlayoutmanagerObj::implObj> &gridlayout,
 		       const ref<implObj> &implArg) LIBCXX_HIDDEN;
 
 	//! Destructor

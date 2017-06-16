@@ -31,8 +31,7 @@ class LIBCXX_HIDDEN gridfactoryObj::implObj : virtual public obj {
 	new_grid_element_t new_grid_element;
 
 	//! Constructor
-	implObj(const gridlayoutmanager &gridlayout,
-		dim_t row, dim_t col);
+	implObj(dim_t row, dim_t col);
 
 	//! Destructor
 	~implObj();

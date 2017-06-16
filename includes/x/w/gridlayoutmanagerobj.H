@@ -52,6 +52,10 @@ public:
 
 	gridfactory insert_row(size_t row_number);
 
+	//! Remove all columns from an existing row, then create new elements in the row.
+
+	gridfactory replace_row(size_t row_number);
+
 	//! Append elements at the end of an existing row.
 	gridfactory append_columns(size_t row_number);
 

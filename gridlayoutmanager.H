@@ -33,6 +33,30 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 	//! Destructor
 	~implObj();
 
+	//! Create a gridfactory for me.
+
+	gridfactory create_gridfactory(//! The public layout manager object.
+
+				       //! This is the gridlayoutmanager of
+				       //! which we are the internal
+				       //! implementation object. Or,
+				       //! perhaps the listlayoutmanager
+				       // facade.
+				       layoutmanagerObj *public_object,
+				       size_t row, size_t col);
+
+	//! Append a row, then call create_gridfactory()
+	gridfactory append_row(layoutmanagerObj *public_object);
+
+	//! Insert a row, then call create_gridfactory()
+	gridfactory insert_row(layoutmanagerObj *public_object, size_t row);
+
+	//! Remove the entire row.
+	void remove_row(size_t row);
+
+	//! Remove all existing elements in the row, then call create_gridfactory()
+	gridfactory replace_row(layoutmanagerObj *public_object, size_t row);
+
 	/////////////////////////////////////////////////////////////////////
 	//
 	// Overridden methods.

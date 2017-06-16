@@ -41,6 +41,8 @@ INSERT_LIBX_NAMESPACE::w::gridfactory factory=gridlayout->append_columns(4);
 
 INSERT_LIBX_NAMESPACE::w::gridfactory factory=gridlayout->insert_row(1);
 
+INSERT_LIBX_NAMESPACE::w::gridfactory factory=gridlayout->replace_row(1);
+
 INSERT_LIBX_NAMESPACE::w::gridfactory factory=gridlayout->insert_columns(1, 2);
 
 \endcode
@@ -53,6 +55,11 @@ insert_row() adds a new empty row to the grid before another existing row,
 and returns a
 \ref gridfactory "grid factory". This grid factory adds
 elements to the newly-inserted row.
+
+replace_row() removes all elements from an existing row
+and returns a
+\ref gridfactory "grid factory". This grid factory adds
+replacement elements in the row.
 
 append_columns() returns a
 \ref gridfactory "grid factory" that adds

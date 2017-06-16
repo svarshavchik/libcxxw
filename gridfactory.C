@@ -13,10 +13,14 @@
 
 LIBCXXW_NAMESPACE_START
 
-gridfactoryObj::gridfactoryObj(const gridlayoutmanager &gridlayout,
+gridfactoryObj::gridfactoryObj(const layoutmanager &layout,
+			       const ref<gridlayoutmanagerObj::implObj> &gridlayout,
 			       const ref<implObj> &impl)
-	: factoryObj(gridlayout->impl->container_impl),
-	  gridlayout(gridlayout), impl(impl)
+	: factoryObj(layout->impl->container_impl),
+	  layout(layout),
+	  gridlayout(gridlayout),
+	  lock(gridlayout->grid_map),
+	  impl(impl)
 {
 }
 
@@ -26,7 +30,7 @@ gridfactoryObj::~gridfactoryObj()=default;
 
 gridfactoryObj &gridfactoryObj::border(const border_infomm &info)
 {
-	auto border_impl=gridlayout->impl->get_custom_border(info);
+	auto border_impl=gridlayout->get_custom_border(info);
 	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
 
 	lock->left_border=lock->right_border=lock->top_border=
@@ -36,7 +40,7 @@ gridfactoryObj &gridfactoryObj::border(const border_infomm &info)
 
 gridfactoryObj &gridfactoryObj::left_border(const border_infomm &info)
 {
-	auto border_impl=gridlayout->impl->get_custom_border(info);
+	auto border_impl=gridlayout->get_custom_border(info);
 	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
 
 	lock->left_border=border_impl;
@@ -45,7 +49,7 @@ gridfactoryObj &gridfactoryObj::left_border(const border_infomm &info)
 
 gridfactoryObj &gridfactoryObj::right_border(const border_infomm &info)
 {
-	auto border_impl=gridlayout->impl->get_custom_border(info);
+	auto border_impl=gridlayout->get_custom_border(info);
 	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
 
 	lock->right_border=border_impl;
@@ -54,7 +58,7 @@ gridfactoryObj &gridfactoryObj::right_border(const border_infomm &info)
 
 gridfactoryObj &gridfactoryObj::top_border(const border_infomm &info)
 {
-	auto border_impl=gridlayout->impl->get_custom_border(info);
+	auto border_impl=gridlayout->get_custom_border(info);
 	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
 
 	lock->top_border=border_impl;
@@ -63,7 +67,7 @@ gridfactoryObj &gridfactoryObj::top_border(const border_infomm &info)
 
 gridfactoryObj &gridfactoryObj::bottom_border(const border_infomm &info)
 {
-	auto border_impl=gridlayout->impl->get_custom_border(info);
+	auto border_impl=gridlayout->get_custom_border(info);
 	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
 
 	lock->bottom_border=border_impl;
@@ -72,7 +76,7 @@ gridfactoryObj &gridfactoryObj::bottom_border(const border_infomm &info)
 
 gridfactoryObj &gridfactoryObj::border(const std::experimental::string_view &id)
 {
-	auto border_impl=gridlayout->impl->get_theme_border(id);
+	auto border_impl=gridlayout->get_theme_border(id);
 	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
 
 	lock->left_border=lock->right_border=lock->top_border=
@@ -82,7 +86,7 @@ gridfactoryObj &gridfactoryObj::border(const std::experimental::string_view &id)
 
 gridfactoryObj &gridfactoryObj::left_border(const std::experimental::string_view &id)
 {
-	auto border_impl=gridlayout->impl->get_theme_border(id);
+	auto border_impl=gridlayout->get_theme_border(id);
 	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
 
 	lock->left_border=border_impl;
@@ -91,7 +95,7 @@ gridfactoryObj &gridfactoryObj::left_border(const std::experimental::string_view
 
 gridfactoryObj &gridfactoryObj::right_border(const std::experimental::string_view &id)
 {
-	auto border_impl=gridlayout->impl->get_theme_border(id);
+	auto border_impl=gridlayout->get_theme_border(id);
 	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
 
 	lock->right_border=border_impl;
@@ -100,7 +104,7 @@ gridfactoryObj &gridfactoryObj::right_border(const std::experimental::string_vie
 
 gridfactoryObj &gridfactoryObj::top_border(const std::experimental::string_view &id)
 {
-	auto border_impl=gridlayout->impl->get_theme_border(id);
+	auto border_impl=gridlayout->get_theme_border(id);
 	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
 
 	lock->top_border=border_impl;
@@ -109,7 +113,7 @@ gridfactoryObj &gridfactoryObj::top_border(const std::experimental::string_view 
 
 gridfactoryObj &gridfactoryObj::bottom_border(const std::experimental::string_view &id)
 {
-	auto border_impl=gridlayout->impl->get_theme_border(id);
+	auto border_impl=gridlayout->get_theme_border(id);
 	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
 
 	lock->bottom_border=border_impl;
@@ -212,10 +216,9 @@ gridfactoryObj &gridfactoryObj::remove_when_hidden(bool flag)
 
 void gridfactoryObj::created(const element &new_element)
 {
-	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
+	implObj::new_grid_element_t::lock element_lock(impl->new_grid_element);
 
-	gridlayout->impl->insert(gridlayout->lock,
-				 new_element, *lock);
+	gridlayout->insert(lock, new_element, *element_lock);
 }
 
 LIBCXXW_NAMESPACE_END

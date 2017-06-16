@@ -10,8 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-gridfactoryObj::implObj::implObj(const gridlayoutmanager &gridlayout,
-				 dim_t row, dim_t col)
+gridfactoryObj::implObj::implObj(dim_t row, dim_t col)
 	: new_grid_element{row, col}
 {
 }
