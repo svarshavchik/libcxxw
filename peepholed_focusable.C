@@ -13,6 +13,7 @@
 #include "focus/focusframecontainer_element.H"
 #include "scrollbar/scrollbar.H"
 #include "container_element.H"
+#include "container_visible_element.H"
 #include "gridlayoutmanager.H"
 #include "x/w/factory.H"
 #include "x/w/gridfactory.H"
@@ -84,8 +85,9 @@ focusable_impl peepholed_focusableObj::implObj::get_impl(size_t n) const
 }
 
 typedef nonrecursive_visibilityObj<focusframecontainer_elementObj<
-					   container_elementObj<
-						   child_elementObj>>
+					   container_visible_elementObj<
+						   container_elementObj<
+							   child_elementObj>>>
 				   > focusframe_impl_t;
 
 std::tuple<ref<peepholed_focusableObj::implObj>, gridlayoutmanager>
