@@ -57,16 +57,27 @@ class LIBCXX_HIDDEN listObj : public peepholed_focusableObj {
 
 ///////////////////////////////////////////////////////////
 
+static void default_selection_changed(const listlayoutmanager &,
+				      size_t, bool, const busy &)
+{
+}
+
 new_listlayoutmanager
 ::new_listlayoutmanager(const listlayoutstyle &layout_style)
 	: layout_style(layout_style),
+	  selection_type(single_selection_type),
+	  selection_changed(default_selection_changed),
+	  rows(4),
+	  columns(1),
 	  v_padding("list_v_padding"),
 	  left_padding("list_left_padding"),
 	  inner_padding("list_inner_padding"),
 	  right_padding("list_right_padding"),
-	  rows(4),
-	  columns(1),
-	  vertical_scrollbar(scrollbar_visibility::automatic)
+	  vertical_scrollbar(scrollbar_visibility::automatic),
+	  background_color("list_background_color"),
+	  selected_color("list_selected_color"),
+	  highlighted_color("list_highlighted_color"),
+	  current_color("list_current_color")
 {
 }
 
@@ -111,7 +122,7 @@ new_listlayoutmanager::create(const ref<containerObj::implObj>
 		 "inputfocuson_border",
 		 0,
 		 focusable_container_impl->get_element_impl()
-		 .create_background_color("list_background_color",
+		 .create_background_color(background_color,
 					  {
 						  rgb::maximum/10*8,
 						  rgb::maximum/10*8,
@@ -143,6 +154,32 @@ new_listlayoutmanager::create(const ref<containerObj::implObj>
 
 	return ref<listObj>::create(internal_listcontainer, peephole_info,
 				    lm->impl);
+}
+
+////////////////////////////////////////////////////////////////////////////
+
+
+void single_selection_type(list_lock &lock,
+			   const listlayoutmanager &layout_manager,
+			   size_t i)
+{
+	for (auto n=layout_manager->size(); n > 0; )
+	{
+		--n;
+
+		if (n != i)
+			layout_manager->selected(lock, n, false);
+	}
+
+	layout_manager->selected(lock, i, true);
+}
+
+void multiple_selection_type(list_lock &lock,
+			     const listlayoutmanager &layout_manager,
+			     size_t i)
+{
+	layout_manager->selected(lock, i,
+				 !layout_manager->selected(lock, i));
 }
 
 LIBCXXW_NAMESPACE_END

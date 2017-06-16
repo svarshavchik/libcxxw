@@ -73,21 +73,56 @@ initializer), create_canvas()'s remaining two parameters specify the
 
 \code
 #include <INSERT_LIBX_NAMESPACE/w/container.H>
-#include <INSERT_LIBX_NAMESPACE/w/new_gridlayoutmanager.H>
+#include <INSERT_LIBX_NAMESPACE/w/gridlayoutmanager.H>
 
 INSERT_LIBX_NAMESPACE::w::container new_container=
    factory->create_container([]
                           (const auto &new_container)
                           {
                                 // Initializer lambda
-                          }, new_gridlayoutmanager());
+                          }, LIBCXX_NAMESPACE::w::new_gridlayoutmanager());
 \endcode
 
 create_container() creates a new element that is, itself, another container.
 
 A grid layout manager's sophisticated layout capabilities are simply
 not enough sometimes. For those situations, one of its elements can simply
-be another grid layout manager.
+be another layout manager, such as the grid layout manager.
+
+The first parameter is a lambda that initializes the new container before
+it's attached to its parent display element. The lambda receives a single
+parameter, the new \ref container "INSERT_LIBX_NAMESPACE::w::container" and
+ the lambda gets invoked just before create_container() returns.
+
+The second parameter specifies the layout manager for the new container.
+It can be one of:
+
+- \ref new_gridlayoutmanager "LIBCXX_NAMESPACE::w::new_gridlayoutmanager":
+the new container uses the \ref gridlayoutmanager "grid layout manager".
+
+\code
+#include <INSERT_LIBX_NAMESPACE/w/focusable_container.H>
+#include <INSERT_LIBX_NAMESPACE/w/listlayoutmanager.H>
+
+LIBCXX_NAMESPACE::w::new_listlayoutmanager list_style{
+    LIBCXX_NAMESPACE::w::highlighted_list
+};
+
+INSERT_LIBX_NAMESPACE::w::focusable_container new_container=
+   factory->create_focusable_container([]
+                          (const auto &new_container)
+                          {
+                                // Initializer lambda
+                          }, list_style);
+\endcode
+
+create_focusable_container() is similar to create_container(), but
+creates a container that handles input focus. Its second parameter can be one
+of:
+
+- \ref new_listlayoutmanager "LIBCXX_NAMESPACE::w::new_listlayoutmanager":
+the new container uses the \ref listlayoutmanager "list layout manager".
+This creates a selection list.
 
 \par Labels
 

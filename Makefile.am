@@ -299,6 +299,12 @@ libcxxw_la_SOURCES=\
 	listlayoutmanager/listcontainerobj.H	    \
 	listlayoutmanager/listcontainer_impl.C	    \
 	listlayoutmanager/listcontainer_impl.H	    \
+	listlayoutmanager/listitemcontainer.C	    \
+	listlayoutmanager/listitemcontainer.H	    \
+	listlayoutmanager/listitemcontainerfwd.H    \
+	listlayoutmanager/listitemcontainerobj.H    \
+	listlayoutmanager/listitemcontainer_impl.C  \
+	listlayoutmanager/listitemcontainer_impl.H  \
 	listlayoutmanager/listitemfactory.C	    \
 	listlayoutmanager/listitemfactory.H	    \
 	listlayoutmanager/listitemfactoryfwd.H	    \

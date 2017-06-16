@@ -40,8 +40,10 @@ public:
 
 	void created(const element &e) override;
 
-	//! Give me a factory for the new list item's grid row.
-	virtual gridfactory create_factory() const=0;
+	//! Create a new item from these elements.
+
+	virtual void create_item(const listlayoutstyle::new_list_items_t
+				 &new_item)=0;
 };
 
 LIBCXXW_NAMESPACE_END

@@ -33,8 +33,7 @@ void listitemfactoryObj::created(const element &e)
 	if (lock->size() < me->impl->columns)
 		return;
 
-	me->impl->style.create_item(me->impl, create_factory(),
-				    me->queue, *lock);
+	create_item(*lock);
 	lock->clear(); // Ready for the next item
 }
 

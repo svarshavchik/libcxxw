@@ -12,9 +12,11 @@
 
 LIBCXXW_NAMESPACE_START
 
-//! Create a new grid layout manager.
+//! Create a new container with a \ref gridlayoutmanager "grid layout manager".
 
-//! This parameter is passed when create a main window, or a container that
+//! This parameter gets passed to a \ref factory "factory"'s
+//! \c create_container()
+//! when creating a main window, or a container that
 //! uses the grid layout manager.
 
 class LIBCXX_HIDDEN new_gridlayoutmanager : public new_layoutmanager {
@@ -27,7 +29,9 @@ public:
 	//! Destructor
 	~new_gridlayoutmanager() LIBCXX_PUBLIC;
 
+	//! \internal
 	//! Create a container with the grid layout manager.
+
 	ref<layoutmanagerObj::implObj>
 		create(const ref<containerObj::implObj> &) const override;
 };

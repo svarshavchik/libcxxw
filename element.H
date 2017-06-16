@@ -919,6 +919,8 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 	//! Ensure visibility of this entire element.
 
+	//! Constructs a rectangle for this entire display element's current
+	//! size and invokes ensure_visibility().
 	void ensure_entire_visibility(IN_THREAD_ONLY);
 
 	//! Process pasted text.
