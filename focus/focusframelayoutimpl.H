@@ -23,9 +23,6 @@ class LIBCXX_HIDDEN focusframelayoutimplObj
 
  public:
 
-	//! Convenience alias
-	typedef gridlayoutmanagerObj::grid_map_t grid_map_t;
-
 	//! Border we insert around the element.
 	const current_border_impl focusoff_border;
 

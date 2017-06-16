@@ -34,8 +34,7 @@ void focusframecontainerObj::implObj
 		([&]
 		 (const ref<gridlayoutmanagerObj::implObj> &manager)
 		 {
-			 gridlayoutmanagerObj::grid_map_t::lock
-				 lock{manager->grid_map};
+			 grid_map_t::lock lock{manager->grid_map};
 
 			 (*lock)->elements_have_been_modified();
 			 manager->needs_recalculation(IN_THREAD);

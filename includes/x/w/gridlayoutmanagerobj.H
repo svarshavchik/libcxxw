@@ -13,7 +13,6 @@
 #include <x/w/elementobj.H>
 #include <x/w/types.H>
 #include <x/w/border_infomm.H>
-#include <x/mpobj.H>
 #include <x/refptr_hash.H>
 
 #include <vector>
@@ -28,13 +27,6 @@ LIBCXXW_NAMESPACE_START
 
 class gridlayoutmanagerObj : public layoutmanagerObj {
 
-public:
-
-	//! Mutex-protected internal grid data.
-
-	typedef mpobj<ref<grid_map_infoObj>, std::recursive_mutex> grid_map_t;
-
-private:
 	//! An internal lock.
 
 	grid_map_t::lock lock;
