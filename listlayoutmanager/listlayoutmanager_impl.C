@@ -97,6 +97,10 @@ void listlayoutmanagerObj::implObj::keyboard_focus(IN_THREAD_ONLY, bool flag)
 	{
 		grid_map_t::lock lock{grid_map};
 
+		if (currently_highlighted_row != (size_t)-1)
+			 // Could be pointer focus, don't change that.
+			return;
+
 		size_t row=previously_highlighted_keyboard_focus_row;
 
 		unhighlight_current_row(IN_THREAD, lock);
@@ -320,7 +324,7 @@ void listlayoutmanagerObj::implObj::selected(const listlayoutmanager &me,
 			 [c, me, selected_flag]
 			 (IN_THREAD_ONLY)
 			 {
-				 grid_map_t::lock lock{me->impl->grid_map};
+				 list_lock lock{me};
 
 				 auto rc=me->impl->lookup_row_col(lock,
 								  c->impl);
@@ -344,7 +348,7 @@ void listlayoutmanagerObj::implObj::selected(const listlayoutmanager &me,
 
 				 try {
 					 me->impl->selection_changed(IN_THREAD)
-						 (me, r, selected_flag,
+						 (lock, me, r, selected_flag,
 						  yes_i_am);
 				 } CATCH_EXCEPTIONS;
 			 });
@@ -558,6 +562,29 @@ void listlayoutmanagerObj::implObj
 
 	if (currently_highlighted_row == i)
 		currently_highlighted_row= -1;
+}
+
+void listlayoutmanagerObj::implObj
+::remove_all_items(const listlayoutmanager &me)
+{
+	container_impl->get_element_impl().get_screen()->impl->thread
+		->run_as(RUN_AS,
+			 [=]
+			 (IN_THREAD_ONLY)
+			 {
+				 me->impl->remove_all_items(IN_THREAD);
+			 });
+}
+
+void listlayoutmanagerObj::implObj::remove_all_items(IN_THREAD_ONLY)
+{
+	grid_map_t::lock lock{grid_map};
+
+	remove_all_rows(lock);
+
+	currently_highlighted_row=-1;
+	currently_highlighted_col=-1;
+	previously_highlighted_keyboard_focus_row= -1;
 }
 
 LIBCXXW_NAMESPACE_END

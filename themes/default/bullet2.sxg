@@ -1,0 +1,111 @@
+<?xml version="1.0"?>
+
+<sxg xmlns:xi="http://www.w3.org/2003/XInclude">
+
+  <width>32</width>
+  <height>32</height>
+
+  <widthmm>4</widthmm>
+  <heightmm>4</heightmm>
+
+  <widthfactor>2</widthfactor>
+  <heightfactor>2</heightfactor>
+
+  <picture id="outline">
+    <type>rgb</type>
+    <color>50%</color>
+  </picture>
+
+  <picture id="fill">
+    <type>rgb</type>
+    <color>0%</color>
+  </picture>
+
+  <pixmap id="mask">
+    <size>scaled</size>
+    <width>32</width>
+    <height>32</height>
+    <gc id="mask_gc" />
+  </pixmap>
+
+  <gc id="mask_gc">
+    <function>set</function>
+
+    <arcs>
+      <fill />
+      <arc>
+	<x>8</x>
+	<y>8</y>
+	<width>16</width>
+	<height>16</height>
+	<angle1>0</angle1>
+	<angle2>360</angle2>
+      </arc>
+    </arcs>
+  </gc>
+
+  <render id="main">
+    <composite>
+      <op>over</op>
+      <x>0</x>
+      <y>0</y>
+      <width>32</width>
+      <height>32</height>
+      <mask>
+	<pixmap>mask</pixmap>
+	<x>0</x>
+	<y>0</y>
+      </mask>
+      <src>
+	<picture>fill</picture>
+	<y>0</y>
+	<x>0</x>
+      </src>
+    </composite>
+  </render>
+
+  <gc id="mask_gc">
+    <function>clear</function>
+
+    <fill>
+      <x>0</x>
+      <y>0</y>
+      <width>32</width>
+      <height>32</height>
+    </fill>
+
+    <function>set</function>
+    <line_width>4</line_width>
+
+    <arcs>
+      <arc>
+	<x>8</x>
+	<y>8</y>
+	<width>16</width>
+	<height>16</height>
+	<angle1>0</angle1>
+	<angle2>360</angle2>
+      </arc>
+    </arcs>
+  </gc>
+
+  <render id="main">
+    <composite>
+      <op>over</op>
+      <x>0</x>
+      <y>0</y>
+      <width>32</width>
+      <height>32</height>
+      <mask>
+	<pixmap>mask</pixmap>
+	<x>0</x>
+	<y>0</y>
+      </mask>
+      <src>
+	<picture>outline</picture>
+	<y>0</y>
+	<x>0</x>
+      </src>
+    </composite>
+  </render>
+</sxg>

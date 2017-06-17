@@ -153,7 +153,7 @@ variadic parameters, or a vector of \ref text_param "text_param"s.
 Overloaded bulk methods must be used with multiple column lists.
 
 \code
-INSERT_LIBX_NAMESPACE::w::new_listlayoutmanager new_list{INSERT_LIBX_NAMESPACE::w::highlighted_list};
+INSERT_LIBX_NAMESPACE::w::new_listlayoutmanager new_list;
 
 new_list.columns=3;
 
@@ -269,6 +269,10 @@ class list_lock;
 //! The list highlights items to indicate they're selected
 
 extern const listlayoutstyle &highlighted_list;
+
+//! A bullet is to the left of each selected item
+
+extern const listlayoutstyle &bulleted_list;
 
 //! Single selection list.
 

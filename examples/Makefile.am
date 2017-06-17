@@ -5,6 +5,7 @@ noinst_PROGRAMS=\
 	gridlayoutmanager			\
 	helloworld				\
 	inputfieldsandbuttons			\
+	listlayoutmanager			\
 	wordwraplabel
 
 checkradio_SOURCES=checkradio.C close_flag.H
@@ -22,6 +23,10 @@ $(call REFCOLLECTION_GEN,inputfields.inc.H,inputfields.xml)
 
 inputfieldsandbuttons_SOURCES=inputfieldsandbuttons.C close_flag.H
 inputfieldsandbuttons_LDADD=-lcxxw -lcxx
+
+$(call OPTIONS_GEN,listlayoutmanager.H,listlayoutmanager.xml)
+listlayoutmanager_SOURCES=listlayoutmanager.C close_flag.H
+listlayoutmanager_LDADD=-lcxxw -lcxx
 
 wordwraplabel_SOURCES=wordwraplabel.C close_flag.H
 wordwraplabel_LDADD=-lcxxw -lcxx

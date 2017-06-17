@@ -1,0 +1,26 @@
+<optclass name="options">
+  <option>
+    <name>rows</name>
+    <type>size_t</type>
+    <opt>r</opt>
+    <longopt>rows</longopt>
+    <descr>Number of rows in the list</descr>
+  </option>
+  <option>
+    <name>multiple</name>
+    <type>bool</type>
+    <default>false</default>
+    <opt>m</opt>
+    <longopt>multiple</longopt>
+    <descr>Multiple selection list</descr>
+  </option>
+  <option>
+    <name>bullets</name>
+    <type>bool</type>
+    <default>false</default>
+    <opt>b</opt>
+    <longopt>bullets</longopt>
+    <descr>Use bulleted list style</descr>
+  </option>
+  <defaultoptions />
+</optclass>

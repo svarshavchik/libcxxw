@@ -1,0 +1,237 @@
+<!--
+
+Copyright 2017 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<chapter id="list">
+  <title>Selection lists</title>
+
+  <mediaobject>
+    <imageobject>
+      <imagedata fileref="listlayoutmanager.png" format="PNG"
+		 contentwidth="361px" contentdepth="316px" />
+    </imageobject>
+    <textobject>
+      <phrase>
+	Selection lists, using the list layout manager.
+      </phrase>
+    </textobject>
+    <caption>
+      <para>
+	A selection list is a vertical list, typically containing text labels.
+	One or more items in the list are selected by clicking on them or
+	by using the keyboard.
+      </para>
+    </caption>
+  </mediaobject>
+
+  <blockquote>
+    <title><ulink url="examples/listlayoutmanager.C">listlayoutmanager.C</ulink></title>
+
+    <informalexample>
+      <programlisting><xi:include href="../examples/listlayoutmanager.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <section id="listlayoutmanager">
+    <title>Creating a list layout manager</title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+#include &lt;&ns;/w/focusable_container.H&gt;
+#include &lt;&ns;/w/listlayoutmanager.H&gt;
+
+&ns;::w::new_listlayoutmanager new_list;
+
+&ns;::w::focusable_container list=f->create_focusable_container(
+       []
+       (const &ns;::w::focusable_container &amp;c)
+       {
+            &ns;::w::listlayoutmanager l=c->get_layoutmanager();
+       },
+       new_list);</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      The first parameter to a &factory;'s
+      <methodname>create_focusable_container</methodname>() is a
+      <link linkend="creator">creator lambda</link>. Passing a
+      <ulink url="&link-x--w--new-listlayoutmanager;"><classname>&ns;::w::new_listlayoutmanager</classname></ulink>
+      for the second parameter results in a <quote>selection list</quote>
+      implemented by a
+      <ulink url="&link-typedef-x--w-focusable-container;"><classname>&ns;::w::focusable_container</classname></ulink>
+      with a <methodname>get_layoutmanager</methodname>() that returns ax
+      <ulink url="&link-typedef-x--w-listlayoutmanager;"><classname>&ns;::w::listlayoutmanager</classname></ulink>.
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+new_list.rows=6;
+	</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      A typical selection list consists of rows of items. The selection list
+      automatically sizes itself to be wide enough to show its widest item.
+      The selection list provides a vertical scrollbar for scrolling the
+      list vertically when the selection list has more items than its set
+      number of rows.
+      <ulink url="examples/listlayoutmanager.C"><filename>listlayoutmanager.C</filename></ulink>'s
+      <option>--rows</option> option sets the number of rows in the shown
+      list.
+    </para>
+
+    <para>
+      An item in a list is selected by clicking on it, or by tabbing
+      to the selection list, pressing <keycap>Cursor-Down</keycap> to
+      highlight the first item in the list, then using
+      <keycap>Cursor-Down</keycap> and <keycap>Cursor-Up</keycap> to
+      highlight the list item, and <keycap>Enter</keycap> to select it.
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+&ns;::w::new_listlayoutmanager new_list{&ns;::w::bulleted_list};
+	</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      The default list style changes the background color of selected list
+      items.
+      Setting
+      <ulink url="&link-x--w--new-listlayoutmanager;"><classname>&ns;::w::new_listlayoutmanager</classname></ulink>'s
+      constructor's optional parameter to
+      <literal>&ns;::w::bulleted_list</literal> reserves some room to the left
+      of each item, and draws a bullet there next to the selected item.
+      <ulink url="examples/listlayoutmanager.C"><filename>listlayoutmanager.C</filename></ulink>'s
+      <option>--bullets</option> option does that.
+    </para>
+  </section>
+
+  <section id="listcallbacks">
+    <title>Selecting multiple items in a list, and callbacks</title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+&ns;::w::new_listlayoutmanager new_list;
+
+new_list.selection_type=&ns;::w::multiple_selection_type;
+
+new_list.selection_type=[]
+       (&ns;::w::list_lock &amp; lock,
+        const &ns;::w::listlayoutmanager &amp; l,
+        size_t item_number)
+       {
+       };
+
+new_list.selection_changed=[]
+       (&ns;::w::list_lock &amp; lock,
+        const &ns;::w::listlayoutmanager &amp; l,
+        size_t item_number,
+        bool is_selected,
+        const &ns;::w::busy &amp;busy_mcguffin)
+       {
+       };
+	</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      The default behavior of a selection list is that selecting a list item
+      automatically unselects the previously-selected list item.
+      Setting <varname>selection_type</varname>
+      to <literal>&ns;::w::multiple_selection_type</literal> results
+      in each list item getting selected and unselected individually.
+      Clicking on a list item with a pointer, or tabbing to the list,
+      moving the cursor to the item's row, and pressing <keycap>Enter</keycap>
+      selects and unselects that item only.
+    </para>
+
+    <para>
+      Setting <varname>selection_type</varname> to a lambda results in
+      custom selection
+      <link linkend="callback">callback</link> lambda.
+      Clicking on an item executes the lambda,
+      and the lambda has full control over which list items get selected
+      or unselected. The <varname>selection_type</varname> lambda's parameters
+      are a list lock, the list layout manager instance, and the index of which
+      item was clicked on. The lambda is responsible for selecting or
+      unselecting the list's items.
+    </para>
+
+    <para>
+      <varname>selection_changed</varname> is an optional
+      <link linkend="callback">callback</link> that gets invoked whenever
+      any item in the list gets selected or unselected, individually.
+      The callback's parameters specify which list item's selection status
+      changed, and what its new status is.
+    </para>
+
+    <note>
+      <para>
+	The usual rules for <link linkend="callbackrefs">captured
+	  references</link> apply. Callbacks cannot capture references
+	to their list's container, or any of its parent elements.
+	The callbacks conveniently receive their list layout manager
+	as one of their parameters, which should take care of most of their
+	needs.
+      </para>
+    </note>
+  </section>
+
+  <section id="listlock">
+    <title>List locks</title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+&ns;::w::list_lock lock{l};</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      The library's internal execution thread invokes all
+      <link linkend="listcallbacks">list callbacks</link>.
+      These callbacks receive a list lock as one of their parameters, and the
+      <ulink url="&link-x--w--list-lock;"><classname>&ns;::w::list_lock</classname></ulink>
+      is constructible independently, by passing a
+      <ulink url="&link-typedef-x--w-listlayoutmanager;"><classname>&ns;::w::listlayoutmanager</classname></ulink>
+      to its constructor.
+    </para>
+
+    <para>
+      Constructing the list lock blocks other execution threads from accessing
+      the contents of the list until the list lock goes out of scope and
+      gets destroyed. The list lock is available to the application's main
+      execution thread, making a consistent snapshot of the list's
+      items, and blocking the library's execution thread from changing the
+      list items' selection status in the interim. Similarly the callbacks
+      invoked by the internal execution threads acquire a list lock to
+      prevent the application from accessing the lists' items while they're
+      being modified.
+    </para>
+
+    <note>
+      <para>
+	If the library's internal execution thread gets blocked by the list
+	lock it won't be able to process any other messages from the
+	display server until the list lock gets released.
+      </para>
+    </note>
+  </section>
+</chapter>
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "book" "chapter")
+End:
+-->

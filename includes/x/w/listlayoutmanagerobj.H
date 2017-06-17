@@ -101,6 +101,14 @@ public:
 	//! Remove a list item
 	void remove_item(size_t item_number);
 
+	//! Replace all list items
+	factory replace_all();
+
+	//! Replace all list items
+
+	//! \overload
+	void replace_all(const std::vector<text_param> &items);
+
 	///////////////////////////////////////////////////////////////
 
 	//! Number of items in the list

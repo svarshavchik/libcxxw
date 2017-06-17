@@ -66,7 +66,7 @@ See COPYING for distribution information.
     Sometimes it's desirable to explicitly set the alignment even for labels
     with just a single line of text. Normally display elements get
     automatically sized for their content. It's possible that a
-    <link linkend="containercreator">container</link> adjusts the label to
+    <link linkend="container">container</link> adjusts the label to
     a wider size that it needs, due to other elements in the container, and
     the alignment setting will then govern how the text gets padded.
   </para>

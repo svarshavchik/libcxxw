@@ -54,6 +54,9 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 	//! Remove the entire row.
 	void remove_row(size_t row);
 
+	//! Remove everything.
+	void remove_all_rows(grid_map_t::lock &lock);
+
 	//! Remove all existing elements in the row, then call create_gridfactory()
 	gridfactory replace_row(layoutmanagerObj *public_object, size_t row);
 

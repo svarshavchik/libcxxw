@@ -25,10 +25,11 @@ LIBCXXW_NAMESPACE_START
 //! \c create_focusable_container()
 //! to create a simple selection list.
 //!
-//! The constructor takes one parameter, which can be:
+//! The constructor takes one optional parameter, which can be:
 //!
-//! - \c INSERT_LIBX_NAMESPACE::w::highlighted_list - selecteded items in
-//! the list are displayed by a highlighted background color.
+//! - \c INSERT_LIBX_NAMESPACE::w::highlighted_list - selected items in
+//! the list are displayed by a highlighted background color. This is the
+//! default value.
 //!
 //! The remaining fields get initialized to their default values and may be
 //! modified prior before using \c create_focusable_container().
@@ -62,7 +63,7 @@ class LIBCXX_HIDDEN new_listlayoutmanager : public new_focusable_layoutmanager {
 	//! This callback cannot strongly capture the list display element
 	//! or any of its parent display elements.
 
-	std::function<void (const listlayoutmanager &,
+	std::function<void (list_lock &, const listlayoutmanager &,
 			    size_t, bool, const busy &)
 		      > selection_changed;
 
@@ -109,7 +110,8 @@ class LIBCXX_HIDDEN new_listlayoutmanager : public new_focusable_layoutmanager {
 	std::string current_color;
 
 	//! Constructor
-	new_listlayoutmanager(const listlayoutstyle &) LIBCXX_PUBLIC;
+	new_listlayoutmanager(const listlayoutstyle &v=highlighted_list)
+		LIBCXX_PUBLIC;
 
 	//! Destructor
 	~new_listlayoutmanager() LIBCXX_PUBLIC;

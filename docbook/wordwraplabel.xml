@@ -50,7 +50,7 @@ See COPYING for distribution information.
   <itemizedlist>
     <listitem>
       <para>
-	<link linkend="containercreator"><classname>&ns;::w::main_window</classname>
+	<link linkend="creator"><classname>&ns;::w::main_window</classname>
 	  creator lambda</link> is factored out, in this example, into
 	a separate function, for clarity.
 	<function>create_mainwindow</function>() sets the main window's

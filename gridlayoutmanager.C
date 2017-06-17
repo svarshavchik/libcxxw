@@ -85,8 +85,7 @@ void gridlayoutmanagerObj::remove()
 {
 	grid_map_t::lock lock{impl->grid_map};
 
-	(*lock)->elements.clear();
-	(*lock)->elements_have_been_modified();
+	impl->remove_all_rows(lock);
 }
 
 void gridlayoutmanagerObj::remove(size_t row, size_t col)

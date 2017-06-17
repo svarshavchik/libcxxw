@@ -84,6 +84,12 @@ gridfactory gridlayoutmanagerObj::implObj
 	return create_gridfactory(public_object, row, 0);
 }
 
+void gridlayoutmanagerObj::implObj::remove_all_rows(grid_map_t::lock &lock)
+{
+	(*lock)->elements.clear();
+	(*lock)->elements_have_been_modified();
+}
+
 void gridlayoutmanagerObj::implObj::remove_row(size_t row)
 {
 	grid_map_t::lock lock{grid_map};

@@ -149,6 +149,39 @@ void listlayoutmanagerObj::remove_item(size_t item_number)
 	impl->remove_item(listlayoutmanager(this), lock, item_number);
 }
 
+//! The factory returned by replace_all()
+
+class LIBCXX_HIDDEN list_replace_all_factoryObj
+	: public list_append_item_factoryObj {
+
+	grid_map_t::lock lock;
+
+ public:
+
+	list_replace_all_factoryObj(const listlayoutmanager &l)
+		: list_append_item_factoryObj(l),
+		lock{l->impl->grid_map}
+	{
+		l->impl->remove_all_items(me);
+	}
+
+	~list_replace_all_factoryObj() = default;
+};
+
+factory listlayoutmanagerObj::replace_all()
+{
+	return ref<list_replace_all_factoryObj>
+		::create(listlayoutmanager(this));
+}
+
+void listlayoutmanagerObj::replace_all(const std::vector<text_param> &items)
+{
+	auto f=replace_all();
+
+	for (const auto &item:items)
+		f->create_label(item);
+}
+
 ////////////////////////////////////////////////////////////////////////////
 
 size_t listlayoutmanagerObj::size() const

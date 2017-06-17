@@ -263,7 +263,7 @@ public:
 				      (const focusable_container
 				       &)> &creator,
 				      const new_focusable_layoutmanager
-				      &layout_manager);
+				      &layout_manager) LIBCXX_PUBLIC;
 };
 
 LIBCXXW_NAMESPACE_END

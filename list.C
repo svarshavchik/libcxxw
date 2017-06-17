@@ -57,7 +57,7 @@ class LIBCXX_HIDDEN listObj : public peepholed_focusableObj {
 
 ///////////////////////////////////////////////////////////
 
-static void default_selection_changed(const listlayoutmanager &,
+static void default_selection_changed(list_lock &, const listlayoutmanager &,
 				      size_t, bool, const busy &)
 {
 }

@@ -23,6 +23,7 @@
 <!ENTITY inputfieldsandbuttons SYSTEM "inputfieldsandbuttons.xml">
 <!ENTITY checkradio SYSTEM "checkradio.xml">
 <!ENTITY gridlayoutmanager SYSTEM "gridlayoutmanager.xml">
+<!ENTITY list SYSTEM "list.xml">
 <!ENTITY sxgdoc SYSTEM "sxg.xml">
 <!ENTITY connections_and_screens SYSTEM "connections_and_screens.xml">
 
@@ -53,6 +54,7 @@ See COPYING for distribution information.
     &inputfieldsandbuttons;
     &checkradio;
     &gridlayoutmanager;
+    &list;
     &connections_and_screens;
   </part>
 

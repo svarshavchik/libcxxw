@@ -21,9 +21,10 @@ from \ref factory "the factory base class". Each call to
 the layout manager's methods add the new element to the grid, one after
 another on the same row.
 
-The \ref gridlayoutmanager "grid layout manager's" append_row() method
-returns a grid factory that initially adds new elements to a new row that's
-added to the bottom of the grid.
+The \ref gridlayoutmanager "grid layout manager's" methods, like append_row()
+and insert_row(),
+return a grid factory that add new elements accordingly (to a new row
+appended to the grid, a row inserted in the middle of the grid, etc...).
 
 This factory also implements additional methods described below. These
 methods modify the position, alignment, or other attributes of the

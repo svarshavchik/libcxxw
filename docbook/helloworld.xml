@@ -301,7 +301,7 @@ make</programlisting>
 	  additional restrictions. Capturing a parent or a child element
 	  results in an internal circular reference.
 	  Capturing a reference to an element not in the parent or the
-	  child element hierarchy is fine).
+	  child element hierarchy is fine.
 	</para>
 
 	<para>
@@ -383,8 +383,8 @@ while (!appdata->close_flag)
       </section>
     </section>
 
-    <section id="containercreator">
-      <title>Containers and creators</title>
+    <section id="container">
+      <title>Containers</title>
 
       <para>
 	<ulink url="&link-typedef-x--w-main-window;"><classname>&ns;::w::main_window</classname></ulink>
@@ -402,10 +402,22 @@ while (!appdata->close_flag)
 	<function>create</function>() static method returns a new
 	<classname>&ns;::w::main_window</classname>.
 	Other containers get created in various other ways.
-	In all cases a <quote>creator lambda</quote> must be provided.
+      </para>
+    </section>
+
+    <section id="creator">
+      <title>Creator lambdas</title>
+
+      <para>
+	Creator lambdas initialize the contents of a new container.
+	A lambda gets passed as a parameter to a function or a method
+	that creates a new container, like a
+	<link linkend="factory">factory</link>'s
+	<methodname>create_container</methodname>() or
+	<methodname>create_focusable_container</methodname>().
+	A creator also gets passed to a
 	<classname>&ns;::w::main_window</classname>'s
-	creator lambda gets called just before
-	<function>create</function>() returns. In general, a creator
+	<function>create</function>(). In general, a creator
 	lambda gets called just before the function or the method
 	returns the new container:
       </para>
@@ -418,19 +430,26 @@ while (!appdata->close_flag)
 			 (const x::w::main_window &main_window)
 			 {
                             // ...
-]]></programlisting>
+]]>
+
+        x::w::container c=factory->create_container(
+	         []
+	         (const x::w::container &amp;c)
+                 {
+                      // ...
+</programlisting>
 	</informalexample>
       </blockquote>
 
       <para>
 	The creator lambda gets the new display element as its parameter.
-	This is the same object that's going returned from
-	<function>create</function>(), and the creator gets invoked just
-	before <function>create</function>() returns.
+	This is the same object that's going returned from the function or
+	a method that's creating it. The creator lambda gets invoked just
+	before that function or method returns.
       </para>
 
       <para>
-	The purpose of the creator lambda is to initialize the new object.
+	The purpose of the creator lambda is to initialize the new container.
 	<link linkend="helloworld"><filename>helloworld.C</filename></link>
 	initializes the main window, in the creator, by adding a new label
 	to it.
@@ -464,7 +483,7 @@ while (!appdata->close_flag)
     </section>
 
     <section id="layoutmanager">
-      <title>Containers, layout managers, and factories</title>
+      <title>Layout managers</title>
 
       <para>
 	A container is a display element that contains other display elements.
@@ -509,6 +528,19 @@ while (!appdata->close_flag)
 	  the layout manager, take effect.
 	</para>
       </note>
+    </section>
+
+    <section id="factory">
+      <title>
+	Factories
+      </title>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting>
+x::w::label l=f->create_label("Hello world");</programlisting>
+	</informalexample>
+      </blockquote>
 
       <para>
 	A <ulink url="&link-typedef-x--w-factory;"><classname>&ns;::w::factory</classname></ulink>
@@ -519,6 +551,15 @@ while (!appdata->close_flag)
 	calls its grid layout manager's
 	<methodname>append_row</methodname>() method, which returns a
 	factory that places the new display element in a new row in the grid.
+      </para>
+
+      <para>
+	Some layout managers provide factories with additional functionality.
+	<link linkend="gridlayoutmanager">Grid layout manager</link>'s
+	methods return a
+	<ulink url="&link-typedef-x--w-gridfactory;"><classname>&ns;::w::gridfactory</classname></ulink>
+	with additional methods that set each new element's borders, padding
+	and alignment.
       </para>
     </section>
 

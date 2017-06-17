@@ -61,7 +61,7 @@ class LIBCXX_HIDDEN listlayoutmanagerObj::implObj
 			    size_t)
 		      > selection_type_thread_only;
 
-	std::function<void (const listlayoutmanager &,
+	std::function<void (list_lock &, const listlayoutmanager &,
 			    size_t, bool, const x::w::busy &)
 		      > selection_changed_thread_only;
  public:
@@ -170,6 +170,9 @@ class LIBCXX_HIDDEN listlayoutmanagerObj::implObj
 			  const listlayoutstyle::new_list_items_t &new_item,
 			  size_t item_number);
 
+	//! Called from the public object to remove all existing items in the list.
+	void remove_all_items(const listlayoutmanager &me);
+
  private:
 
 	//! Callback used by connection_thread_op_t
@@ -226,6 +229,8 @@ class LIBCXX_HIDDEN listlayoutmanagerObj::implObj
 			 list_lock &lock, size_t item_number,
 			 const listlayoutstyle::new_list_items_t &new_item);
 
+	//! Called from the public object to remove all existing items in the list.
+	void remove_all_items(IN_THREAD_ONLY);
 };
 
 LIBCXXW_NAMESPACE_END
