@@ -7,6 +7,7 @@
 #include "image_button_internal_impl.H"
 #include "focus/focusable_element.H"
 #include "hotspot_element.H"
+#include "icon_images_vector_element.H"
 #include "icon.H"
 #include "radio_group.H"
 #include "busy.H"
@@ -25,32 +26,14 @@ static auto get_first_icon_image(const auto &v)
 image_button_internalObj::implObj
 ::implObj(const ref<containerObj::implObj> &container,
 	  const std::vector<icon> &icon_images)
-	: superclass_t(container, get_first_icon_image(icon_images)),
-	  icon_images_thread_only(icon_images),
+	: superclass_t(icon_images, container,
+		       get_first_icon_image(icon_images)),
 	  current_image(0),
 	  current_callback_thread_only([](bool, size_t, const auto &) {})
 {
 }
 
 image_button_internalObj::implObj::~implObj()=default;
-
-void image_button_internalObj::implObj::initialize(IN_THREAD_ONLY)
-{
-	for (auto &i:icon_images(IN_THREAD))
-	{
-		i=i->initialize(IN_THREAD);
-	}
-	superclass_t::initialize(IN_THREAD);
-}
-
-void image_button_internalObj::implObj::theme_updated(IN_THREAD_ONLY)
-{
-	for (auto &i:icon_images(IN_THREAD))
-	{
-		i=i->theme_updated(IN_THREAD);
-	}
-	superclass_t::theme_updated(IN_THREAD);
-}
 
 void image_button_internalObj::implObj::activated(IN_THREAD_ONLY)
 {
@@ -153,7 +136,7 @@ void radio_image_buttonObj::set_image_number(IN_THREAD_ONLY, size_t n)
 	n %= icon_images(IN_THREAD).size();
 
 	if (n == 0)
-		if (n == 0) n=(n+1) % icon_images(IN_THREAD).size();
+		n=(n+1) % icon_images(IN_THREAD).size();
 
 	// Invoke all callbacks after updating all image buttons' state.
 

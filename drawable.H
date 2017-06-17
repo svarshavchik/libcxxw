@@ -115,6 +115,13 @@ class LIBCXX_HIDDEN drawableObj::implObj : virtual public obj {
 	icon create_icon(const std::experimental::string_view &name,
 			 render_repeat icon_repeat,
 			 dim_t w, dim_t h);
+
+	//! Create a vector of icons, with default dimensions.
+
+	std::vector<icon>
+		create_icon_vector(const std::vector
+				   <std::experimental::string_view>
+				   &images);
 };
 
 LIBCXXW_NAMESPACE_END

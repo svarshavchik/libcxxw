@@ -266,6 +266,10 @@ libcxxw_la_SOURCES=\
 	icon_image.H				    \
 	icon_imagefwd.H				    \
 	icon_imageobj.H				    \
+	icon_images_vector.C			    \
+	icon_images_vectorobj.H			    \
+	icon_images_vector_element.H		    \
+	icon_images_vector_elementfwd.H		    \
 	image.C					    \
 	image.H					    \
 	image_impl.C				    \

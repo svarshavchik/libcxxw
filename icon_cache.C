@@ -389,6 +389,20 @@ static bool search_file(std::string &filename,
 	return false;
 }
 
+std::vector<icon> drawableObj::implObj
+::create_icon_vector(const std::vector<std::experimental::string_view> &images)
+{
+	std::vector<icon> icons;
+
+	icons.reserve(images.size());
+
+	for (const auto &name:images)
+		icons.push_back(create_icon_mm(name, render_repeat::none,
+					       0, 0));
+
+	return icons;
+}
+
 icon drawableObj::implObj
 ::create_icon_mm(const std::experimental::string_view &name,
 		 render_repeat icon_repeat,
