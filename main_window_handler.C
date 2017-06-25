@@ -10,8 +10,8 @@
 LIBCXXW_NAMESPACE_START
 
 main_windowObj::handlerObj::handlerObj(IN_THREAD_ONLY,
-				       const constructor_params &params)
-	: generic_windowObj::handlerObj(IN_THREAD, params),
+				       const screen &parent_screen)
+	: generic_windowObj::handlerObj(IN_THREAD, parent_screen),
 	on_delete_callback_thread_only([] {})
 {
 	// The top level window is not a child element in a container,

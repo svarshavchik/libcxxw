@@ -12,6 +12,7 @@
 #include "container_element.H"
 #include "layoutmanager.H"
 #include "screen.H"
+#include "screen_depthinfo.H"
 #include "xid_t.H"
 #include "element_screen.H"
 #include "background_color.H"
@@ -66,8 +67,39 @@ bool generic_windowObj::handlerObj::frame_extents_t
 }
 
 //////////////////////////////////////////////////////////////////////////
-//
-// Allocate a picture for the input/output window
+
+static inline generic_windowObj::handlerObj::constructor_params
+create_constructor_params(const screen &parent_screen)
+{
+	rectangle dimensions={0, 0, 1, 1};
+
+	values_and_mask vm(XCB_CW_EVENT_MASK,
+			   (uint32_t)
+			   generic_windowObj::handlerObj::initial_event_mask(),
+			   XCB_CW_COLORMAP,
+			   parent_screen->impl->toplevelwindow_colormap->id(),
+			   XCB_CW_BORDER_PIXEL,
+			   parent_screen->impl->xcb_screen->black_pixel);
+
+	return {
+		{
+			parent_screen,
+			parent_screen->impl->xcb_screen->root, // parent
+			parent_screen->impl->toplevelwindow_pictformat->depth, // depth
+			dimensions, // initial_position
+			XCB_WINDOW_CLASS_INPUT_OUTPUT, // window_class
+			parent_screen->impl->toplevelwindow_visual->impl->visual_id, // visual
+			vm, // events_and_mask
+		},
+		parent_screen->impl->toplevelwindow_pictformat
+	};
+}
+
+generic_windowObj::handlerObj::handlerObj(IN_THREAD_ONLY,
+					  const screen &parent_screen)
+	: handlerObj(IN_THREAD, create_constructor_params(parent_screen))
+{
+}
 
 generic_windowObj::handlerObj
 ::handlerObj(IN_THREAD_ONLY,

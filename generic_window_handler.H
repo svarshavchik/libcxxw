@@ -146,8 +146,12 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	};
 
 	handlerObj(IN_THREAD_ONLY,
-		   const constructor_params &params);
+		   const screen &me);
 
+ private:
+	handlerObj(IN_THREAD_ONLY,
+		   const constructor_params &params);
+ public:
 	//! Destructor
 	~handlerObj();
 

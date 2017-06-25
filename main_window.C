@@ -6,7 +6,6 @@
 #include "main_window.H"
 #include "main_window_handler.H"
 #include "screen.H"
-#include "screen_depthinfo.H"
 #include "connection_thread.H"
 #include "batch_queue.H"
 #include "x/w/picture.H"
@@ -61,33 +60,10 @@ main_window screenObj
 ::do_create_mainwindow(const function<main_window_creator_t> &f,
 		       const new_layoutmanager &layout_factory)
 {
-	rectangle dimensions={0, 0, 1, 1};
-
-	values_and_mask vm(XCB_CW_EVENT_MASK,
-			   (uint32_t)
-			   main_windowObj::handlerObj::initial_event_mask(),
-			   XCB_CW_COLORMAP,
-			   impl->toplevelwindow_colormap->id(),
-			   XCB_CW_BORDER_PIXEL,
-			   impl->xcb_screen->black_pixel);
-
-	main_windowObj::handlerObj::constructor_params params{
-		{
-			screen(this),
-			impl->xcb_screen->root, // parent
-			impl->toplevelwindow_pictformat->depth, // depth
-			dimensions, // initial_position
-			XCB_WINDOW_CLASS_INPUT_OUTPUT, // window_class
-			impl->toplevelwindow_visual->impl->visual_id, // visual
-			vm, // events_and_mask
-		},
-		impl->toplevelwindow_pictformat
-	};
-
 	auto queue=connref->impl->thread->get_batch_queue();
 
 	auto handler=ref<main_windowObj::handlerObj>
-		::create(connref->impl->thread, params);
+		::create(connref->impl->thread, screen(this));
 
 	peepholed_toplevel_main_windowptr real_container;
 
