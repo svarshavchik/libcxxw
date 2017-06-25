@@ -57,7 +57,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! Current event mask.
 	xcb_event_mask_t current_events_thread_only;
 
- protected:
+ public:
 	//! Current position and dimensions
 
 	//! This is a mutex-protected object. ConfigureNotify event saves

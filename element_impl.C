@@ -281,6 +281,18 @@ rectangle_set draw_info::entire_area() const
 	return {{0, 0, absolute_location.width, absolute_location.height}};
 }
 
+rectangle elementObj::implObj::get_absolute_location_on_screen(IN_THREAD_ONLY)
+{
+	auto r=get_absolute_location(IN_THREAD);
+
+	mpobj<rectangle>::lock lock{get_window_handler().current_position};
+
+	r.x=coord_t::truncate(r.x+lock->x);
+	r.y=coord_t::truncate(r.y+lock->y);
+
+	return r;
+}
+
 void elementObj::implObj::explicit_redraw(IN_THREAD_ONLY, draw_info_cache &c)
 {
 	// Remove myself from the connection thread's list.

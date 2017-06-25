@@ -467,6 +467,9 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 	virtual rectangle get_absolute_location(IN_THREAD_ONLY)=0;
 
+	//! We need get_absolute_location() for the screen!
+	rectangle get_absolute_location_on_screen(IN_THREAD_ONLY);
+
 	//! Prepare draw_info before draw() gets called.
 
 	//! The default implementation does nothing. child_elementObj
