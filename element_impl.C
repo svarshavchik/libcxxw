@@ -716,6 +716,11 @@ void elementObj::implObj::do_for_each_child(IN_THREAD_ONLY,
 {
 }
 
+const char *elementObj::implObj::label_theme_font() const
+{
+	return "label";
+}
+
 current_fontcollection elementObj::implObj::create_font(const font &props)
 {
 	return get_window_handler().create_font(props);

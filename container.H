@@ -222,13 +222,6 @@ public:
 
  public:
 
-	//! Theme font for labels in this container.
-
-	//! The default implementation returns "label".
-
-	virtual const char *label_theme_font() const;
-
-
 	//! This element wants to make sure that this part of it is visible.
 
 	//! Notifies the layout manager, then invokes

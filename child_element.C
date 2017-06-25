@@ -294,4 +294,9 @@ void child_elementObj::creating_focusable_element()
 	return container->get_element_impl().creating_focusable_element();
 }
 
+const char *child_elementObj::label_theme_font() const
+{
+	return container->get_element_impl().label_theme_font();
+}
+
 LIBCXXW_NAMESPACE_END

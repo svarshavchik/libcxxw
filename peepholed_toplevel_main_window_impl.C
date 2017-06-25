@@ -15,7 +15,7 @@ LIBCXXW_NAMESPACE_START
 
 peepholed_toplevel_main_windowObj::implObj
 ::implObj(const ref<containerObj::implObj> &parent_container)
-	: superclass_t(parent_container->label_theme_font(),
+	: superclass_t(parent_container->get_element_impl().label_theme_font(),
 		       parent_container)
 {
 }

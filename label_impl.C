@@ -56,7 +56,8 @@ labelObj::implObj::implObj(const ref<containerObj::implObj> &container,
 				       rgb::maximum/10,
 				       rgb::maximum/10)),
 				  container_element.create_theme_font
-				  (container->label_theme_font())},
+				  (container->get_element_impl()
+				   .label_theme_font())},
 			  text),
 		  "label@libcxx")
 {

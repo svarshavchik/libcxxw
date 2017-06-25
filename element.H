@@ -665,6 +665,15 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//
 	// Fonts, colors, text.
 
+
+	//! Theme font for labels in this container.
+
+	//! The default implementation returns "label".
+	//!
+	//! Overridden in child_elementObj and forwarded to the container.
+
+	virtual const char *label_theme_font() const;
+
 	//! Create a font for this display element.
 
 	//! Creates a non-standard font. This gets forwarded to

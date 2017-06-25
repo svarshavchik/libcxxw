@@ -240,6 +240,10 @@ class LIBCXX_HIDDEN child_elementObj : public elementObj::implObj {
 	//! Override creating_focusable_element().
 
 	void creating_focusable_element() override;
+
+	//! Override label_theme_font()
+
+	const char *label_theme_font() const override;
 };
 
 LIBCXXW_NAMESPACE_END
