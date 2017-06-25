@@ -10,6 +10,7 @@
 #include "richtext/richtextparagraph.H"
 #include "richtext.H"
 #include "assert_or_throw.H"
+#include "defaulttheme.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -164,7 +165,8 @@ bool paragraph_list::unwrap(IN_THREAD_ONLY)
 	return changed;
 }
 
-void paragraph_list::theme_updated(IN_THREAD_ONLY)
+void paragraph_list::theme_updated(IN_THREAD_ONLY,
+				   const defaulttheme &new_theme)
 {
 	size_t first_fragment_y_position=0;
 
@@ -179,7 +181,7 @@ void paragraph_list::theme_updated(IN_THREAD_ONLY)
 			 {
 				 fragment_list fragments{IN_THREAD, *this, *p};
 
-				 fragments.theme_was_updated=true;
+				 fragments.theme_was_updated=new_theme;
 			 }
 
 			 p->first_fragment_y_position=

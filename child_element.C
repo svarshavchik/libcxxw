@@ -159,14 +159,16 @@ void child_elementObj::initialize(IN_THREAD_ONLY)
 {
 	elementObj::implObj::initialize(IN_THREAD);
 	if (current_background_color(IN_THREAD))
-		current_background_color(IN_THREAD)->theme_updated(IN_THREAD);
+		current_background_color(IN_THREAD)->initialize(IN_THREAD);
 }
 
-void child_elementObj::theme_updated(IN_THREAD_ONLY)
+void child_elementObj::theme_updated(IN_THREAD_ONLY,
+				     const defaulttheme &new_theme)
 {
-	elementObj::implObj::theme_updated(IN_THREAD);
+	elementObj::implObj::theme_updated(IN_THREAD, new_theme);
 	if (current_background_color(IN_THREAD))
-		current_background_color(IN_THREAD)->theme_updated(IN_THREAD);
+		current_background_color(IN_THREAD)->theme_updated(IN_THREAD,
+								   new_theme);
 }
 
 void child_elementObj::remove_background_color(IN_THREAD_ONLY)

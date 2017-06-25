@@ -6,6 +6,7 @@
 #ifndef richtextstring_H
 #define richtextstring_H
 
+#include "defaultthemefwd.H"
 #include "richtext/richtextmetafwd.H"
 #include "fonts/freetypefontfwd.H"
 #include "connection_threadfwd.H"
@@ -258,7 +259,8 @@ class LIBCXX_HIDDEN richtextstring {
 	//! The current theme was updated.
 
 	//! Invoke all fonts' theme_updated().
-	void theme_updated(IN_THREAD_ONLY);
+	void theme_updated(IN_THREAD_ONLY,
+			   const defaulttheme &new_theme);
 
 	//! Modify rich text meta.
 

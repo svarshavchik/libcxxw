@@ -24,11 +24,12 @@ void icon_images_vectorObj::initialize(IN_THREAD_ONLY)
 	}
 }
 
-void icon_images_vectorObj::theme_updated(IN_THREAD_ONLY)
+void icon_images_vectorObj::theme_updated(IN_THREAD_ONLY,
+					  const defaulttheme &new_theme)
 {
 	for (auto &i:icon_images(IN_THREAD))
 	{
-		i=i->theme_updated(IN_THREAD);
+		i=i->theme_updated(IN_THREAD, new_theme);
 	}
 }
 

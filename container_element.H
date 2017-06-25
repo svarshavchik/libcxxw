@@ -97,10 +97,10 @@ void container_elementObj<element_impl>
 
 template<typename element_impl>
 void container_elementObj<element_impl>
-::theme_updated(IN_THREAD_ONLY)
+::theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme)
 {
-	element_impl::theme_updated(IN_THREAD);
-	containerObj::implObj::theme_updated(IN_THREAD);
+	element_impl::theme_updated(IN_THREAD, new_theme);
+	containerObj::implObj::theme_updated(IN_THREAD, new_theme);
 }
 
 //! Implement get_element_impl().

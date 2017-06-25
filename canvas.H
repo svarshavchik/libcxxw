@@ -47,7 +47,7 @@ public:
 	void initialize(IN_THREAD_ONLY) override;
 
 	//! Inherit from elementObj::implObj
-	void theme_updated(IN_THREAD_ONLY) override;
+	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme) override;
 
  private:
 	//! Recalculate my metrics

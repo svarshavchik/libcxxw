@@ -183,7 +183,8 @@ class LIBCXX_HIDDEN sxg_iconObj : public iconObj {
 
 	//! Check if a new theme is installed, if so create a replacement icon.
 
-	icon theme_updated(IN_THREAD_ONLY) override;
+	icon theme_updated(IN_THREAD_ONLY,
+			   const defaulttheme &new_theme) override;
 
 	icon resizemm(IN_THREAD_ONLY, double widthmm, double heightmm) override
 	{
@@ -384,6 +385,19 @@ static bool search_file(std::string &filename,
 			return true;
 		}
 
+		// Search for the icon in the default theme.
+
+		size_t p=theme->themedir.rfind('/');
+
+		if (p != std::string::npos)
+		{
+			n=theme->themedir.substr(0, p) + "/default/"+filename;
+			if (stat(n.c_str(), &stat_buf) == 0)
+			{
+				filename=n;
+				return true;
+			}
+		}
 	}
 
 	return false;
@@ -515,13 +529,11 @@ icon drawableObj::implObj
 }
 
 template<>
-icon sxg_iconObj<double>::theme_updated(IN_THREAD_ONLY)
+icon sxg_iconObj<double>::theme_updated(IN_THREAD_ONLY,
+					const defaulttheme &new_theme)
 {
-	auto theme= *current_theme_t::lock{current_sxg(IN_THREAD)
-					   ->screenref->impl
-					   ->current_theme};
 
-	if (theme == current_sxg(IN_THREAD)->theme)
+	if (new_theme == current_sxg(IN_THREAD)->theme)
 		return icon(this); // Unchanged
 
 	// All right, take it from the top.
@@ -537,7 +549,7 @@ icon sxg_iconObj<double>::theme_updated(IN_THREAD_ONLY)
 }
 
 template<>
-icon sxg_iconObj<dim_t>::theme_updated(IN_THREAD_ONLY)
+icon sxg_iconObj<dim_t>::theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme)
 {
 	auto theme= *current_theme_t::lock{current_sxg(IN_THREAD)
 					   ->screenref->impl

@@ -698,16 +698,16 @@ void elementObj::implObj::background_color_changed(IN_THREAD_ONLY)
 		       });
 }
 
-void elementObj::implObj::theme_updated(IN_THREAD_ONLY)
+void elementObj::implObj::theme_updated(IN_THREAD_ONLY,
+					const defaulttheme &new_theme)
 {
-	if (!data(IN_THREAD).inherited_visibility)
-		return;
-	schedule_redraw(IN_THREAD);
+	if (data(IN_THREAD).inherited_visibility)
+		schedule_redraw(IN_THREAD);
 
 	for_each_child(IN_THREAD, [&]
 		       (const element &e)
 		       {
-			       e->impl->theme_updated(IN_THREAD);
+			       e->impl->theme_updated(IN_THREAD, new_theme);
 		       });
 }
 

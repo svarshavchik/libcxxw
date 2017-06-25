@@ -5,6 +5,7 @@
 #ifndef iconobj_H
 #define iconobj_H
 
+#include "defaultthemefwd.H"
 #include "iconfwd.H"
 #include "icon_imagefwd.H"
 #include "connection_threadfwd.H"
@@ -44,7 +45,8 @@ public:
 	//! Display theme was updated.
 
 	//! The default implementation returns the same object.
-	virtual icon theme_updated(IN_THREAD_ONLY);
+	virtual icon theme_updated(IN_THREAD_ONLY,
+				   const defaulttheme &new_theme);
 
 	//! Resize this icon, if this is a resizable icon.
 	virtual icon resizemm(IN_THREAD_ONLY, double widthmm, double heightmm);

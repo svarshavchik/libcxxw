@@ -7,6 +7,7 @@
 
 #include "background_colorfwd.H"
 #include "connection_threadfwd.H"
+#include "defaultthemefwd.H"
 #include <x/obj.H>
 
 LIBCXXW_NAMESPACE_START
@@ -33,7 +34,10 @@ public:
 	background_color get(IN_THREAD_ONLY);
 
 	//! Update the background color
-	void theme_updated(IN_THREAD_ONLY);
+	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme);
+
+	//! Initialize after construction
+	void initialize(IN_THREAD_ONLY);
 
 	//! Destructor
 	~background_color_element_implObj();
@@ -79,7 +83,8 @@ class LIBCXX_HIDDEN background_color_1elementObj
 	void initialize(IN_THREAD_ONLY) override;
 
 	//! Recalculate the background color, after a theme change.
-	void theme_updated(IN_THREAD_ONLY) override;
+	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme)
+		override;
 };
 
 template<typename ...args> struct background_colors_element_types;

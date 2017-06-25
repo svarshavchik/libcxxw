@@ -18,14 +18,20 @@ void scrollbar_icon_set::initialize(IN_THREAD_ONLY)
 	handlebar_end_icon=handlebar_end_icon->initialize(IN_THREAD);
 }
 
-void scrollbar_icon_set::theme_updated(IN_THREAD_ONLY)
+void scrollbar_icon_set::theme_updated(IN_THREAD_ONLY,
+				       const defaulttheme &new_theme)
 {
-	scroll_low_icon=scroll_low_icon->theme_updated(IN_THREAD);
-	scroll_high_icon=scroll_high_icon->theme_updated(IN_THREAD);
+	scroll_low_icon=scroll_low_icon->theme_updated(IN_THREAD,
+						       new_theme);
+	scroll_high_icon=scroll_high_icon->theme_updated(IN_THREAD,
+							 new_theme);
 
-	handlebar_start_icon=handlebar_start_icon->theme_updated(IN_THREAD);
-	handlebar_icon=handlebar_icon->theme_updated(IN_THREAD);
-	handlebar_end_icon=handlebar_end_icon->theme_updated(IN_THREAD);
+	handlebar_start_icon=handlebar_start_icon->theme_updated(IN_THREAD,
+								 new_theme);
+	handlebar_icon=handlebar_icon->theme_updated(IN_THREAD,
+						     new_theme);
+	handlebar_end_icon=handlebar_end_icon->theme_updated(IN_THREAD,
+							     new_theme);
 }
 
 LIBCXXW_NAMESPACE_END

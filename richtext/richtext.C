@@ -125,11 +125,11 @@ richtextObj::get_metrics(IN_THREAD_ONLY, dim_t preferred_width, bool visible)
 	};
 }
 
-void richtextObj::theme_updated(IN_THREAD_ONLY)
+void richtextObj::theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme)
 {
 	impl_t::lock lock{IN_THREAD, impl};
 
-	(*lock)->theme_updated(IN_THREAD);
+	(*lock)->theme_updated(IN_THREAD, new_theme);
 }
 
 void richtextObj::full_redraw(IN_THREAD_ONLY,

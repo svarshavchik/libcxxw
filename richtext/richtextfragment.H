@@ -15,6 +15,7 @@
 #include <x/functional.H>
 #include <x/vector.H>
 #include "connection_threadfwd.H"
+#include "defaultthemefwd.H"
 #include "richtext/richtextmeta.H"
 #include "richtext/richtextstring.H"
 #include "richtext/richtextcursorlocationfwd.H"
@@ -200,7 +201,9 @@ public:
 	richtexthorizinfo_t horiz_info;
 
 	//! Current theme was updated. Fonts have been changed.
-	void theme_updated_called_by_fragment_list(IN_THREAD_ONLY);
+	void theme_updated_called_by_fragment_list(IN_THREAD_ONLY,
+						   const defaulttheme
+						   &new_theme);
 
  private:
 

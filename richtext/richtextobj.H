@@ -97,7 +97,7 @@ class LIBCXX_HIDDEN richtextObj : virtual public obj {
 
 	//! Forwarded to the implementation object.
 
-	void theme_updated(IN_THREAD_ONLY);
+	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme);
 
 	//! Set the entire contents of the richtext.
 

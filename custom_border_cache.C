@@ -131,10 +131,8 @@ class LIBCXX_HIDDEN custom_current_border_implObj
 
 	~custom_current_border_implObj()=default;
 
-	void theme_updated(IN_THREAD_ONLY)
+	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme)
 	{
-		current_theme_t::lock lock(screen->current_theme);
-
 		// This custom border object can be attached to multiple
 		// border display elements. Go through the motions of
 		// creating a new border object only the first time we're
@@ -142,10 +140,12 @@ class LIBCXX_HIDDEN custom_current_border_implObj
 
 		auto &t=current_theme(IN_THREAD);
 
-		if (*lock == t)
+		if (new_theme == t)
 			return;
 
-		t=*lock;
+		t=new_theme;
+
+		current_theme_t::lock lock{screen->current_theme};
 
 		border(IN_THREAD)=border_impl_from_info(screen, info, lock);
 	}

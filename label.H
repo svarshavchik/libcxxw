@@ -75,7 +75,7 @@ public:
 	//! Invoke the underlying text object's theme_updated().
 
 	//! When done, recalculate() our updated size.
-	void theme_updated(IN_THREAD_ONLY) override;
+	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme) override;
 
 	//! Invoke the underlying text object's do_draw().
 

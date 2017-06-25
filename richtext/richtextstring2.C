@@ -270,14 +270,15 @@ void richtextstring::compute_width(IN_THREAD_ONLY,
 	}
 }
 
-void richtextstring::theme_updated(IN_THREAD_ONLY)
+void richtextstring::theme_updated(IN_THREAD_ONLY,
+				   const defaulttheme &new_theme)
 {
 	for (const auto &m:meta)
 	{
-		m.second.getfont()->theme_updated(IN_THREAD);
-		m.second.textcolor->theme_updated(IN_THREAD);
+		m.second.getfont()->theme_updated(IN_THREAD, new_theme);
+		m.second.textcolor->theme_updated(IN_THREAD, new_theme);
 		if (!m.second.bg_color.null())
-			m.second.bg_color->theme_updated(IN_THREAD);
+			m.second.bg_color->theme_updated(IN_THREAD, new_theme);
 	}
 
 	// This is mostly to clear the cached resolved fonts:

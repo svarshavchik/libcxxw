@@ -19,12 +19,19 @@ void background_color_element_implObj::update(IN_THREAD_ONLY,
 					      const background_color &new_color)
 {
 	color=new_color;
-	color->theme_updated(IN_THREAD);
+	color->initialize(IN_THREAD);
 }
 
-void background_color_element_implObj::theme_updated(IN_THREAD_ONLY)
+void background_color_element_implObj::theme_updated(IN_THREAD_ONLY,
+						     const defaulttheme
+						     &new_theme)
 {
-	color->theme_updated(IN_THREAD);
+	color->theme_updated(IN_THREAD, new_theme);
+}
+
+void background_color_element_implObj::initialize(IN_THREAD_ONLY)
+{
+	color->initialize(IN_THREAD);
 }
 
 LIBCXXW_NAMESPACE_END

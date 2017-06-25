@@ -223,9 +223,10 @@ void editorObj::implObj::initialize(IN_THREAD_ONLY)
 	parent_peephole->recalculate(IN_THREAD, *this);
 }
 
-void editorObj::implObj::theme_updated(IN_THREAD_ONLY)
+void editorObj::implObj::theme_updated(IN_THREAD_ONLY,
+				       const defaulttheme &new_theme)
 {
-	superclass_t::theme_updated(IN_THREAD);
+	superclass_t::theme_updated(IN_THREAD, new_theme);
 	parent_peephole->recalculate(IN_THREAD, *this);
 }
 

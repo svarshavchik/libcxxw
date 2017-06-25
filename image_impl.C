@@ -71,9 +71,10 @@ void imageObj::implObj::do_draw(IN_THREAD_ONLY,
 				  di, di, clipped);
 }
 
-void imageObj::implObj::theme_updated(IN_THREAD_ONLY)
+void imageObj::implObj::theme_updated(IN_THREAD_ONLY,
+				      const defaulttheme &new_theme)
 {
-	auto new_icon=current_icon->theme_updated(IN_THREAD);
+	auto new_icon=current_icon->theme_updated(IN_THREAD, new_theme);
 
 	if (new_icon == current_icon)
 		return;

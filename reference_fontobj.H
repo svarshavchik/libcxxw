@@ -7,6 +7,7 @@
 
 #include "fonts/current_fontcollectionfwd.H"
 #include "connection_threadfwd.H"
+#include "defaultthemefwd.H"
 #include "x/w/elementobj.H"
 #include "x/w/types.H"
 #include <experimental/string_view>
@@ -48,6 +49,9 @@ public:
 	//! Destructor
 	~reference_fontObj();
 
+	//! Return my element.
+	virtual elementObj::implObj &font_element()=0;
+
 	//! The mixin's element has been initialized
 
 	//! Invokes theme_updated().
@@ -56,7 +60,7 @@ public:
 	//! The theme was updated.
 
 	//! Invokes the cached font's theme_updated().
-	void theme_updated(IN_THREAD_ONLY);
+	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme);
 };
 
 LIBCXXW_NAMESPACE_END

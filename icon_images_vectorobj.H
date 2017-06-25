@@ -36,7 +36,7 @@ public:
 
 	//! Reload all images after theme_updated().
 
-	void theme_updated(IN_THREAD_ONLY);
+	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme);
 };
 
 LIBCXXW_NAMESPACE_END

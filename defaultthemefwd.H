@@ -8,7 +8,6 @@
 #include <x/ptrfwd.H>
 #include <x/mpobj.H>
 #include "x/w/namespace.H"
-#include <string>
 
 LIBCXXW_NAMESPACE_START
 
@@ -22,6 +21,10 @@ class defaultthemeBase;
 //! A loaded application theme.
 
 typedef ref<defaultthemeObj, defaultthemeBase> defaulttheme;
+
+//! A nullable pointer reference to a loaded application theme.
+
+typedef ptr<defaultthemeObj, defaultthemeBase> defaultthemeptr;
 
 //! Current theme, mutex protected.
 

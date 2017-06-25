@@ -63,7 +63,7 @@ rectangle layoutmanagerObj::implObj::padded_position(IN_THREAD_ONLY,
 	return e_impl->data(IN_THREAD).current_position;
 }
 
-void layoutmanagerObj::implObj::theme_updated(IN_THREAD_ONLY)
+void layoutmanagerObj::implObj::theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme)
 {
 }
 

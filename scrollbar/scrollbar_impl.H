@@ -199,7 +199,7 @@ class LIBCXX_HIDDEN scrollbarObj::implObj : public focusable_elementObj<> {
 
 	//! theme_updated() all icons. Invoke recalculate_metrics().
 
-	void theme_updated(IN_THREAD_ONLY) override;
+	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme) override;
 
 	//! Scrollbar's size has been updated.
 

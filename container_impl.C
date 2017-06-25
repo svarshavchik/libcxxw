@@ -355,11 +355,13 @@ void containerObj::implObj::needs_recalculation(IN_THREAD_ONLY)
 		.insert(ref<implObj>(this));
 }
 
-void containerObj::implObj::theme_updated(IN_THREAD_ONLY)
+void containerObj::implObj::theme_updated(IN_THREAD_ONLY,
+					  const defaulttheme &new_theme)
 {
 	invoke_layoutmanager([&](const auto &manager)
 			     {
-				     manager->theme_updated(IN_THREAD);
+				     manager->theme_updated(IN_THREAD,
+							    new_theme);
 			     });
 }
 

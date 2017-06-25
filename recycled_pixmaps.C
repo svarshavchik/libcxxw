@@ -108,17 +108,26 @@ class LIBCXX_HIDDEN theme_background_colorObj : public background_colorObj {
 		return current_color;
 	}
 
-	void theme_updated(IN_THREAD_ONLY) override
-	{
-		current_theme_t::lock lock{screen->current_theme};
+	// Potential rare race condition, the theme changing after the
+	// background color object was created and before it is installed.
 
-		if (*lock==current_theme)
+	void initialize(IN_THREAD_ONLY) override
+	{
+		auto theme=*current_theme_t::lock{screen->current_theme};
+
+		theme_updated(IN_THREAD, theme);
+	}
+
+	void theme_updated(IN_THREAD_ONLY,
+			   const defaulttheme &new_theme) override
+	{
+		if (new_theme == current_theme)
 			return;
 
 		// Check the current theme color. Did it change?
 
-		auto new_rgb=(*lock)->get_theme_color(theme_color,
-						      current_rgb);
+		auto new_rgb=new_theme->get_theme_color(theme_color,
+							current_rgb);
 
 		if (current_rgb != new_rgb)
 		{
@@ -130,7 +139,7 @@ class LIBCXX_HIDDEN theme_background_colorObj : public background_colorObj {
 			current_rgb=new_rgb;
 		}
 
-		current_theme=*lock;
+		current_theme=new_theme;
 	}
 };
 
@@ -175,7 +184,12 @@ class LIBCXX_HIDDEN nonThemeBackgroundColorObj : public background_colorObj {
 		return fixed_color;
 	}
 
-	void theme_updated(IN_THREAD_ONLY) override
+	void initialize(IN_THREAD_ONLY) override
+	{
+	}
+
+	void theme_updated(IN_THREAD_ONLY,
+			   const defaulttheme &new_theme) override
 	{
 	}
 };

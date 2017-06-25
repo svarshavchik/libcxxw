@@ -147,7 +147,7 @@ void listitemlayoutmanagerObj::implObj
 	lei->update_current_position(IN_THREAD, {x, y, width, height});
 }
 
-void listitemlayoutmanagerObj::implObj::theme_updated(IN_THREAD_ONLY)
+void listitemlayoutmanagerObj::implObj::theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme)
 {
 	// themedims are owned by the parent container, which will be recalced
 	// first.

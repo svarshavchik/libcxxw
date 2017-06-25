@@ -74,7 +74,7 @@ public:
 
 	//! Create a new \ref fontcollection "font collection".
 
-	void theme_updated(IN_THREAD_ONLY);
+	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme);
 
  private:
 	virtual void theme_was_really_updated(IN_THREAD_ONLY);

@@ -157,7 +157,7 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 
 	//! Recalculate paddings.
 
-	void theme_updated(IN_THREAD_ONLY) override;
+	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme) override;
 
 	//! Return the display element's position with padding.
 

@@ -47,10 +47,12 @@ void icon_images_vector_elementObj<element_impl>::initialize(IN_THREAD_ONLY)
 //! Forwarded to the template superclass and the icon_images_vectorObj mixin.
 
 template<typename element_impl>
-void icon_images_vector_elementObj<element_impl>::theme_updated(IN_THREAD_ONLY)
+void icon_images_vector_elementObj<element_impl>
+::theme_updated(IN_THREAD_ONLY,
+		const defaulttheme &new_theme)
 {
-	element_impl::theme_updated(IN_THREAD);
-	icon_images_vectorObj::theme_updated(IN_THREAD);
+	element_impl::theme_updated(IN_THREAD, new_theme);
+	icon_images_vectorObj::theme_updated(IN_THREAD, new_theme);
 }
 
 LIBCXXW_NAMESPACE_END

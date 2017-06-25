@@ -74,7 +74,7 @@ class LIBCXX_HIDDEN editorObj::implObj
 
 	//! After the theme is updated, recalculate the peephole.
 
-	void theme_updated(IN_THREAD_ONLY) override;
+	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme) override;
 
 	//! Multiply columns by font's nominal width.
 

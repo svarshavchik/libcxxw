@@ -8,6 +8,7 @@
 #include "current_border_implfwd.H"
 #include "border_implfwd.H"
 #include "connection_threadfwd.H"
+#include "defaultthemefwd.H"
 #include <x/obj.H>
 
 LIBCXXW_NAMESPACE_START
@@ -38,7 +39,8 @@ class LIBCXX_HIDDEN current_border_implObj: virtual public obj {
 
 	//! The default implementation does nothing.
 
-	virtual void theme_updated(IN_THREAD_ONLY);
+	virtual void theme_updated(IN_THREAD_ONLY,
+				   const defaulttheme &new_theme);
 };
 
 LIBCXXW_NAMESPACE_END

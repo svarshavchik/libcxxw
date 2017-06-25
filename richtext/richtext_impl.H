@@ -284,7 +284,7 @@ public:
 	richtextstring get_as_richtext() const;
 
 	// Theme was updated.
-	void theme_updated(IN_THREAD_ONLY);
+	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme);
 };
 
 LIBCXXW_NAMESPACE_END

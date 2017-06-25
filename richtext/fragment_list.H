@@ -8,6 +8,7 @@
 
 #include "richtext/richtextfragment.H"
 #include "connection_threadfwd.H"
+#include "defaultthemefwd.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -87,7 +88,7 @@ class LIBCXX_HIDDEN fragment_list : public const_fragment_list {
 
 	//! Manually set in theme_updated().
 
-	bool theme_was_updated=false;
+	defaultthemeptr theme_was_updated;
 
 	//! Constructor
 	fragment_list(IN_THREAD_ONLY, paragraph_list &my_paragraphsArg,

@@ -63,19 +63,21 @@ class LIBCXX_HIDDEN straight_border_implObj
 
 	//! The screen's theme has been updated.
 
-	void theme_updated(IN_THREAD_ONLY) override
+	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme)
+		override
 	{
 		const auto &b=this->borders(IN_THREAD);
 
 		if (!b.border_1.null())
-			b.border_1->theme_updated(IN_THREAD);
+			b.border_1->theme_updated(IN_THREAD, new_theme);
 		if (!b.border_2.null())
-			b.border_2->theme_updated(IN_THREAD);
+			b.border_2->theme_updated(IN_THREAD, new_theme);
 		if (!b.border_default.null())
-			b.border_default->theme_updated(IN_THREAD);
+			b.border_default->theme_updated(IN_THREAD, new_theme);
 
 		compute_metrics(IN_THREAD);
-		straight_borderObj::implObj::theme_updated(IN_THREAD);
+		straight_borderObj::implObj::theme_updated(IN_THREAD,
+							   new_theme);
 	}
 
  private:

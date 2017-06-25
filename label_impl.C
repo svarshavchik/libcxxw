@@ -110,13 +110,14 @@ void labelObj::implObj::initialize(IN_THREAD_ONLY)
 	current_metrics->vert=metrics.second;
 }
 
-void labelObj::implObj::theme_updated(IN_THREAD_ONLY)
+void labelObj::implObj::theme_updated(IN_THREAD_ONLY,
+				      const defaulttheme &new_theme)
 {
-	text->theme_updated(IN_THREAD);
+	text->theme_updated(IN_THREAD, new_theme);
 	compute_preferred_width(IN_THREAD);
 	recalculate(IN_THREAD);
 
-	child_elementObj::theme_updated(IN_THREAD);
+	child_elementObj::theme_updated(IN_THREAD, new_theme);
 }
 
 void labelObj::implObj::process_updated_position(IN_THREAD_ONLY)

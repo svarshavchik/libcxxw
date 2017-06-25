@@ -134,7 +134,7 @@ class LIBCXX_HIDDEN layoutmanagerObj::implObj : virtual public obj {
 
 	//! The theme has changed
 
-	virtual void theme_updated(IN_THREAD_ONLY);
+	virtual void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme);
 
  protected:
 

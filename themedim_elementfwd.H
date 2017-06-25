@@ -53,7 +53,8 @@ public:
 	void initialize(IN_THREAD_ONLY) override;
 
 	//! Recalculate the dimension, after a theme change.
-	void theme_updated(IN_THREAD_ONLY) override;
+	void theme_updated(IN_THREAD_ONLY,
+			   const defaulttheme &new_theme) override;
 };
 
 //! Helper template used by themedim_elementObj

@@ -50,9 +50,11 @@ public:
 
 	~reference_font_elementObj();
 
+	elementObj::implObj &font_element() override;
+
 	void initialize(IN_THREAD_ONLY) override;
 
-	void theme_updated(IN_THREAD_ONLY) override;
+	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme) override;
 };
 
 LIBCXXW_NAMESPACE_END

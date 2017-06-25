@@ -9,6 +9,7 @@
 #include "richtext/richtextfragment.H"
 #include "richtext/richtextparagraph.H"
 #include "richtext/richtext_impl.H"
+#include "defaulttheme.H"
 #include <algorithm>
 
 LIBCXXW_NAMESPACE_START
@@ -114,11 +115,14 @@ fragment_list::~fragment_list()
 
 	if (theme_was_updated)
 	{
+		defaulttheme new_theme=theme_was_updated;
+
 		paragraph.fragments.for_fragments
 			([&]
 			 (const richtextfragment &f)
 			 {
-				 f->theme_updated_called_by_fragment_list(IN_THREAD);
+				 f->theme_updated_called_by_fragment_list
+					 (IN_THREAD, new_theme);
 			 });
 
 		recalculate_size();

@@ -40,7 +40,7 @@ public:
 		     const draw_info &di,
 		     const rectangle_set &areas) override;
 
-	void theme_updated(IN_THREAD_ONLY) override;
+	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme) override;
 
 	///////////////////////////////////////////////////////
 

@@ -10,6 +10,7 @@
 #include "x/w/generic_windowobj.H"
 #include "x/w/rectangle.H"
 #include "connection_threadfwd.H"
+#include "defaultthemefwd.H"
 #include "draw_infofwd.H"
 #include "elementfwd.H"
 #include <x/mpobj.H>
@@ -185,7 +186,7 @@ public:
 
 	//! Invoke layout manager's theme_updated() method.
 
-	void theme_updated(IN_THREAD_ONLY);
+	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme);
 	//////////////////////////////////////////////////////////////////////
 
 	//! Invoke a lambda for each child element.

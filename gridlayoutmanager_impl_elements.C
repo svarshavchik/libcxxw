@@ -95,7 +95,8 @@ void gridlayoutmanagerObj::implObj
 		b->impl->schedule_redraw(IN_THREAD);
 }
 
-void gridlayoutmanagerObj::implObj::theme_updated(IN_THREAD_ONLY)
+void gridlayoutmanagerObj::implObj::theme_updated(IN_THREAD_ONLY,
+						  const defaulttheme &new_theme)
 {
 	grid_map_t::lock lock(grid_map);
 
@@ -120,22 +121,28 @@ void gridlayoutmanagerObj::implObj::theme_updated(IN_THREAD_ONLY)
 			// our due diligence.
 
 			if (col->left_border)
-				col->left_border->theme_updated(IN_THREAD);
+				col->left_border->theme_updated(IN_THREAD,
+								new_theme);
 			if (col->right_border)
-				col->right_border->theme_updated(IN_THREAD);
+				col->right_border->theme_updated(IN_THREAD,
+								new_theme);
 			if (col->top_border)
-				col->top_border->theme_updated(IN_THREAD);
+				col->top_border->theme_updated(IN_THREAD,
+								new_theme);
 			if (col->bottom_border)
-				col->bottom_border->theme_updated(IN_THREAD);
+				col->bottom_border->theme_updated(IN_THREAD,
+								new_theme);
 		}
 
 	// Ditto
 	for (const auto &def: (*lock)->column_defaults)
 		if (def.second.default_border)
-			def.second.default_border->theme_updated(IN_THREAD);
+			def.second.default_border->theme_updated(IN_THREAD,
+								 new_theme);
 	for (const auto &def: (*lock)->row_defaults)
 		if (def.second.default_border)
-			def.second.default_border->theme_updated(IN_THREAD);
+			def.second.default_border->theme_updated(IN_THREAD,
+								 new_theme);
 
 	(*lock)->padding_recalculated();
 	(*lock)->borders_changed();

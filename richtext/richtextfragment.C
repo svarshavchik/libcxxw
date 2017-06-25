@@ -177,9 +177,11 @@ richtextfragmentObj::find_y_position(size_t y_position_requested)
 	return ret;
 }
 
-void richtextfragmentObj::theme_updated_called_by_fragment_list(IN_THREAD_ONLY)
+void richtextfragmentObj
+::theme_updated_called_by_fragment_list(IN_THREAD_ONLY,
+					const defaulttheme &new_theme)
 {
-	string.theme_updated(IN_THREAD);
+	string.theme_updated(IN_THREAD, new_theme);
 	load_glyphs_widths_kernings(IN_THREAD);
 	recalculate_size_called_by_fragment_list(IN_THREAD);
 	redraw_needed=true;

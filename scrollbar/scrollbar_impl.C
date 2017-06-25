@@ -102,12 +102,13 @@ void scrollbarObj::implObj::initialize(IN_THREAD_ONLY)
 	superclass_t::initialize(IN_THREAD);
 }
 
-void scrollbarObj::implObj::theme_updated(IN_THREAD_ONLY)
+void scrollbarObj::implObj::theme_updated(IN_THREAD_ONLY,
+					  const defaulttheme &new_theme)
 {
-	icon_set_1.theme_updated(IN_THREAD);
-	icon_set_2.theme_updated(IN_THREAD);
+	icon_set_1.theme_updated(IN_THREAD, new_theme);
+	icon_set_2.theme_updated(IN_THREAD, new_theme);
 	recalculate_metrics(IN_THREAD);
-	superclass_t::theme_updated(IN_THREAD);
+	superclass_t::theme_updated(IN_THREAD, new_theme);
 }
 
 void scrollbarObj::implObj::update_config(IN_THREAD_ONLY,

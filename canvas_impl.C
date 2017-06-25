@@ -39,10 +39,11 @@ void canvasObj::implObj::initialize(IN_THREAD_ONLY)
 	child_elementObj::initialize(IN_THREAD);
 }
 
-void canvasObj::implObj::theme_updated(IN_THREAD_ONLY)
+void canvasObj::implObj::theme_updated(IN_THREAD_ONLY,
+				       const defaulttheme &new_theme)
 {
 	recalculate(IN_THREAD);
-	child_elementObj::theme_updated(IN_THREAD);
+	child_elementObj::theme_updated(IN_THREAD, new_theme);
 }
 
 void canvasObj::implObj::recalculate(IN_THREAD_ONLY)

@@ -99,7 +99,7 @@ void corner_borderObj::implObj::initialize(IN_THREAD_ONLY)
 	compute_metrics(IN_THREAD);
 }
 
-void corner_borderObj::implObj::theme_updated(IN_THREAD_ONLY)
+void corner_borderObj::implObj::theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme)
 {
 	compute_metrics(IN_THREAD);
 }

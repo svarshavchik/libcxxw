@@ -37,7 +37,7 @@ struct LIBCXX_HIDDEN scrollbar_icon_set {
 	void initialize(IN_THREAD_ONLY);
 
 	//! Invoke all icons' theme_updated() method.
-	void theme_updated(IN_THREAD_ONLY);
+	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme);
 };
 
 LIBCXXW_NAMESPACE_END

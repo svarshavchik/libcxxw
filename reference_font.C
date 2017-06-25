@@ -7,6 +7,9 @@
 #include "generic_window_handler.H"
 #include "fonts/current_fontcollection.H"
 #include "fonts/fontcollection.H"
+#include "element_screen.H"
+#include "screen.H"
+#include "defaulttheme.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -26,12 +29,17 @@ reference_fontObj::~reference_fontObj()=default;
 
 void reference_fontObj::initialize(IN_THREAD_ONLY)
 {
-	theme_updated(IN_THREAD);
+	auto theme=*current_theme_t::lock{
+		font_element().get_screen()->impl->current_theme
+	};
+
+	theme_updated(IN_THREAD, theme);
 }
 
-void reference_fontObj::theme_updated(IN_THREAD_ONLY)
+void reference_fontObj::theme_updated(IN_THREAD_ONLY,
+				      const defaulttheme &new_theme)
 {
-	reference_font(IN_THREAD)->theme_updated(IN_THREAD);
+	reference_font(IN_THREAD)->theme_updated(IN_THREAD, new_theme);
 	font_nominal_width(IN_THREAD)=
 		reference_font(IN_THREAD)->fc(IN_THREAD)->nominal_width();
 	font_height(IN_THREAD)=

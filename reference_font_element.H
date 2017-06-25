@@ -48,6 +48,17 @@ template<typename element_impl, typename tag>
 reference_font_elementObj<element_impl, tag>
 ::~reference_font_elementObj()=default;
 
+//! Inherited from reference_fontObj
+
+//! Returns my attached element.
+
+template<typename element_impl, typename tag>
+elementObj::implObj &reference_font_elementObj<element_impl, tag>
+::font_element()
+{
+	return *this;
+}
+
 //! Inherited from elementObj::implObj
 
 //! Invokes the superclass, and the reference_fontObj::initialized().
@@ -72,10 +83,10 @@ void reference_font_elementObj<element_impl, tag>
 
 template<typename element_impl, typename tag>
 void reference_font_elementObj<element_impl, tag>
-::theme_updated(IN_THREAD_ONLY)
+::theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme)
 {
-	reference_font_element<tag>::theme_updated(IN_THREAD);
-	element_impl::theme_updated(IN_THREAD);
+	reference_font_element<tag>::theme_updated(IN_THREAD, new_theme);
+	element_impl::theme_updated(IN_THREAD, new_theme);
 }
 
 LIBCXXW_NAMESPACE_END

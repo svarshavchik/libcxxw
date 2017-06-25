@@ -16,7 +16,8 @@ current_border_implObj::current_border_implObj(const const_border_impl
 
 current_border_implObj::~current_border_implObj()=default;
 
-void current_border_implObj::theme_updated(IN_THREAD_ONLY)
+void current_border_implObj::theme_updated(IN_THREAD_ONLY,
+					   const defaulttheme &new_theme)
 {
 }
 

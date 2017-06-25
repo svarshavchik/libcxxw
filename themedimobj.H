@@ -7,6 +7,7 @@
 
 #include "themedimfwd.H"
 #include "connection_threadfwd.H"
+#include "defaultthemefwd.H"
 #include "x/w/screen.H"
 #include <string>
 
@@ -35,8 +36,12 @@ class LIBCXX_HIDDEN themedimObj : virtual public obj {
 	~themedimObj();
 
 	//! Recalculate padding.
+	void initialize(IN_THREAD_ONLY,
+			const ref<screenObj::implObj> &screen_impl);
+
+	//! Recalculate padding.
 	void theme_updated(IN_THREAD_ONLY,
-			   const ref<screenObj::implObj> &screen_impl);
+			   const defaulttheme &new_theme);
 };
 
 

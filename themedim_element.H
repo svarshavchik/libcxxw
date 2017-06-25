@@ -55,8 +55,8 @@ void themedim1_elementObj<element_impl, tag>
 ::initialize(IN_THREAD_ONLY)
 {
 	element_impl::initialize(IN_THREAD);
-	themedim_element<tag>::theme_updated(IN_THREAD,
-					     this->get_screen()->impl);
+	themedim_element<tag>::initialize(IN_THREAD,
+					  this->get_screen()->impl);
 }
 
 //! Inherited from elementObj::implObj
@@ -65,11 +65,10 @@ void themedim1_elementObj<element_impl, tag>
 
 template<typename element_impl, typename tag>
 void themedim1_elementObj<element_impl, tag>
-::theme_updated(IN_THREAD_ONLY)
+::theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme)
 {
-	element_impl::theme_updated(IN_THREAD);
-	themedim_element<tag>::theme_updated(IN_THREAD,
-					     this->get_screen()->impl);
+	element_impl::theme_updated(IN_THREAD, new_theme);
+	themedim_element<tag>::theme_updated(IN_THREAD, new_theme);
 }
 
 LIBCXXW_NAMESPACE_END

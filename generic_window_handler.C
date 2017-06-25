@@ -6,6 +6,7 @@
 #include "generic_window_handler.H"
 #include "connection_thread.H"
 #include "connectionfwd.H"
+#include "defaulttheme.H"
 #include "pictformat.H"
 #include "icon.H"
 #include "draw_info.H"
@@ -302,8 +303,12 @@ void generic_windowObj::handlerObj::theme_updated_event(IN_THREAD_ONLY)
 	// container_element_overrides_decl hijacks theme_updated(), so we
 	// just do this here.
 
-	theme_updated(IN_THREAD);
-	current_background_color(IN_THREAD)->theme_updated(IN_THREAD);
+	auto new_theme=*current_theme_t::lock{
+		get_screen()->impl->current_theme
+	};
+	theme_updated(IN_THREAD, new_theme);
+	current_background_color(IN_THREAD)->theme_updated(IN_THREAD,
+							   new_theme);
 }
 
 bool generic_windowObj::handlerObj::is_busy()

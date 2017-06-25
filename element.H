@@ -17,6 +17,7 @@
 #include "x/w/busyfwd.H"
 #include "x/w/focus.H"
 #include "connection_threadfwd.H"
+#include "defaultthemefwd.H"
 #include "elementfwd.H"
 #include "element_draw.H"
 #include "draw_infofwd.H"
@@ -619,7 +620,8 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! Invoke schedule_redraw(), then recursively invoke
 	//! theme_updated() (as long as we're visible, of course).
 
-	virtual void theme_updated(IN_THREAD_ONLY);
+	virtual void theme_updated(IN_THREAD_ONLY,
+				   const defaulttheme &new_theme);
 
 	//! Invoke initialize(), if necessary.
 

@@ -124,7 +124,7 @@ class LIBCXX_HIDDEN corner_borderObj::implObj
 	void initialize(IN_THREAD_ONLY) override;
 
 	//! The current theme has changed.
-	void theme_updated(IN_THREAD_ONLY) override;
+	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme) override;
 
 	//! Recalculate my metrics.
 	void compute_metrics(IN_THREAD_ONLY);

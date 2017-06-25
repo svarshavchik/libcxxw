@@ -73,7 +73,7 @@ class LIBCXX_HIDDEN listitemlayoutmanagerObj::implObj
 
 	//! Inherited from layoutmanagerObj::implObj
 
-	void theme_updated(IN_THREAD_ONLY) override;
+	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme) override;
 };
 
 LIBCXXW_NAMESPACE_END

@@ -46,7 +46,7 @@ template<typename element_impl, typename tag>
 void background_color_1elementObj<element_impl, tag>::initialize(IN_THREAD_ONLY)
 {
 	element_impl::initialize(IN_THREAD);
-	background_color_element<tag>::theme_updated(IN_THREAD);
+	background_color_element<tag>::initialize(IN_THREAD);
 }
 
 //! New theme
@@ -56,10 +56,10 @@ void background_color_1elementObj<element_impl, tag>::initialize(IN_THREAD_ONLY)
 
 template<typename element_impl, typename tag>
 void background_color_1elementObj<element_impl, tag>
-::theme_updated(IN_THREAD_ONLY)
+::theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme)
 {
-	element_impl::theme_updated(IN_THREAD);
-	background_color_element<tag>::theme_updated(IN_THREAD);
+	element_impl::theme_updated(IN_THREAD, new_theme);
+	background_color_element<tag>::theme_updated(IN_THREAD, new_theme);
 }
 
 LIBCXXW_NAMESPACE_END

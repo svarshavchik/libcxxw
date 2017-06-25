@@ -368,11 +368,12 @@ richtextstring richtextObj::implObj::get_as_richtext() const
 	return s;
 }
 
-void richtextObj::implObj::theme_updated(IN_THREAD_ONLY)
+void richtextObj::implObj::theme_updated(IN_THREAD_ONLY,
+					 const defaulttheme &new_theme)
 {
 	paragraph_list my_paragraphs(*this);
 
-	my_paragraphs.theme_updated(IN_THREAD);
+	my_paragraphs.theme_updated(IN_THREAD, new_theme);
 }
 
 

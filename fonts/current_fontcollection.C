@@ -42,16 +42,13 @@ current_fontcollectionObj
 
 current_fontcollectionObj::~current_fontcollectionObj()=default;
 
-void current_fontcollectionObj::theme_updated(IN_THREAD_ONLY)
+void current_fontcollectionObj::theme_updated(IN_THREAD_ONLY,
+					      const defaulttheme &new_theme)
 {
-	{
-		current_theme_t::lock lock{font_screen->impl->current_theme};
+	if (new_theme == font_theme)
+		return; // Hasn't changed.
 
-		if (*lock == font_theme)
-			return; // Hasn't changed.
-
-		font_theme=*lock;
-	}
+	font_theme=new_theme;
 	theme_was_really_updated(IN_THREAD);
 
 	fc(IN_THREAD)=create_fc(font_spec(IN_THREAD));

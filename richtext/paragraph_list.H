@@ -92,7 +92,7 @@ public:
 	//! Invoke all paragraphs's fragments' theme_updated().
 
 	//! Takes care of updating the Y position of everything.
-	void theme_updated(IN_THREAD_ONLY);
+	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme);
 };
 
 LIBCXXW_NAMESPACE_END
