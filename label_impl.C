@@ -166,8 +166,10 @@ void labelObj::implObj::rewrap_due_to_updated_position(IN_THREAD_ONLY)
 
 	if (text->word_wrap_width(IN_THREAD) ==
 	    data(IN_THREAD).current_position.width)
+	{
+		recalculate(IN_THREAD);
 		return;
-
+	}
 	// After rewrapping the text to the new width, we should reverse-
 	// engineer word_wrap_width, in millimeters, so if the theme gets
 	// updated we'll try our best to scale our current size accordingly.

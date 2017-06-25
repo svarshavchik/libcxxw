@@ -576,9 +576,11 @@ void generic_windowObj::handlerObj::configure_notify(IN_THREAD_ONLY,
 		if (*lock == r)
 			return;
 
+		if (lock->width != r.width ||
+		    lock->height != r.height)
+			has_exposed(IN_THREAD)=false; // Exposure event coming.
 		*lock=r;
 	}
-	has_exposed(IN_THREAD)=false; // Exposure event coming.
 
 	auto new_position=element_position(r);
 
