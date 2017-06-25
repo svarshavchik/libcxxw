@@ -110,7 +110,7 @@ void connection_infoObj
 				   error.addressof()));
 
 	if (error)
-		throw EXCEPTION(connectionObj::implObj::get_error(error));
+		throw EXCEPTION(connection_error(error));
 
 	response(value->type, value->format, value->bytes_after,
 		 xcb_get_property_value(value),

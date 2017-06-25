@@ -8,7 +8,7 @@
 
 #include "ewmh.H"
 #include "returned_pointer.H"
-#include "connection.H"
+#include "connectionfwd.H"
 
 LOG_CLASS_INIT(LIBCXX_NAMESPACE::w::ewmh);
 
@@ -29,7 +29,7 @@ ewmh::ewmh(xcb_connection_t *conn) : ewmh_available(false)
 	{
 		if (e)
 		{
-			LOG_ERROR(connectionObj::implObj::get_error(e));
+			LOG_ERROR(connection_error(e));
 		}
 		xcb_ewmh_connection_wipe(this);
 		return;
@@ -66,7 +66,7 @@ bool ewmh::get_workarea(size_t screen_number, rectangle &ret)
 		else
 		{
 			if (error)
-				throw EXCEPTION(connectionObj::implObj::get_error(error));
+				throw EXCEPTION(connection_error(error));
 		}
 	}
 
@@ -96,7 +96,7 @@ bool ewmh::get_workarea(size_t screen_number, rectangle &ret)
 	else
 	{
 		if (error)
-			throw EXCEPTION(connectionObj::implObj::get_error(error));
+			throw EXCEPTION(connection_error(error));
 	}
 
 	return true;
@@ -135,7 +135,7 @@ bool ewmh::get_frame_extents(dim_t &left,
 	}
 
 	if (error)
-		throw EXCEPTION(connectionObj::implObj::get_error(error));
+		throw EXCEPTION(connection_error(error));
 	return false;
 }
 

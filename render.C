@@ -7,7 +7,7 @@
 #include <x/exception.H>
 
 #include "render.H"
-#include "connection.H"
+#include "connectionfwd.H"
 #include "connection_info.H"
 #include "pictformat.H"
 
@@ -44,7 +44,7 @@ get_indexes(xcb_connection_t *conn,
 	if (!iv)
 	{
 		if (error)
-			throw EXCEPTION(connectionObj::implObj::get_error(error));
+			throw EXCEPTION(connection_error(error));
 
 		throw EXCEPTION("QueryPictIndexValus request failed");
 	}
@@ -87,7 +87,7 @@ render::render(const connection_info &info)
 	if (!render_pict_formats)
 	{
 		if (error)
-			throw EXCEPTION(connectionObj::implObj::get_error(error));
+			throw EXCEPTION(connection_error(error));
 
 		throw EXCEPTION("QueryPictFormats request failed");
 	}

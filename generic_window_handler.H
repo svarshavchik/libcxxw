@@ -26,6 +26,8 @@
 #include <list>
 #include <x/weakptr.H>
 #include <x/mpobj.H>
+#include <xcb/xcb_icccm.h>
+#include <x/functional.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -541,6 +543,20 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	void pasted_string(IN_THREAD_ONLY,
 			   const std::experimental::u32string_view &)
 		override;
+
+	// Retrieve WM_HINTS, invoke functor to update it.
+
+	typedef void update_wm_hints_t(xcb_icccm_wm_hints_t &);
+
+	template<typename functor_type>
+		void update_wm_hints(functor_type &&functor)
+	{
+		do_update_wm_hints(make_function<update_wm_hints_t>
+				   (std::forward<functor_type>(functor)));
+	}
+
+	void do_update_wm_hints(const function<update_wm_hints_t> &callback);
+
 };
 
 LIBCXXW_NAMESPACE_END

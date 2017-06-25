@@ -107,7 +107,7 @@ void connection_threadObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin)
 
 void connection_threadObj::report_error(const xcb_generic_error_t *e)
 {
-	LOG_ERROR(connectionObj::implObj::get_error(e));
+	LOG_ERROR(connection_error(e));
 }
 
 batch_queue connection_threadObj::get_batch_queue()

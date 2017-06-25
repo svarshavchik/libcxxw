@@ -71,6 +71,7 @@ libcxxw_la_SOURCES=\
 	configfile.H				    \
 	connection.C                                \
 	connection.H                                \
+	connectionfwd.H				    \
 	connection_info.C			    \
 	connection_info.H			    \
 	connection_infofwd.H			    \

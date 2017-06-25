@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "connectionfwd.H"
 #include "render.H"
 #include "ewmh.H"
 #include "keysyms.H"
@@ -118,10 +119,6 @@ class LIBCXX_HIDDEN connectionObj::implObj : virtual public obj {
 
 	//! Wrap everything up, call xcb_disconnect()
 	~implObj();
-
-	//! Return a brief identifier for a protocol error.
-
-	static std::string get_error(const xcb_generic_error_t *e);
 
 	//! Returns the X Input Method transport object for this connection.
 

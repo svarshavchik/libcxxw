@@ -3,7 +3,7 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
-#include "connection.H"
+#include "connectionfwd.H"
 #include "builtin_atoms.H"
 #include "returned_pointer.H"
 
@@ -63,7 +63,7 @@ builtin_atoms::builtin_atoms(xcb_connection_t *conn)
 		if (error)
 		{
 			errors << atoms[i].atom_name << ": " << error_sep
-			       << connectionObj::implObj::get_error(error);
+			       << connection_error(error);
 			error_sep="; ";
 		}
 		else

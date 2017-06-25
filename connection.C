@@ -239,7 +239,7 @@ connectionObj::implObj::~implObj()
 {
 }
 
-std::string connectionObj::implObj::get_error(const xcb_generic_error_t *e)
+std::string connection_error(const xcb_generic_error_t *e)
 {
 	std::ostringstream o;
 

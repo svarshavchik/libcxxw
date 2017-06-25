@@ -37,7 +37,7 @@ void window_handlerObj::convert_selection(IN_THREAD_ONLY, xcb_atom_t clipboard,
 
 	if (error)
 	{
-		LOG_ERROR(connectionObj::implObj::get_error(error));
+		LOG_ERROR(connection_error(error));
 		conversion_failed(IN_THREAD, clipboard, type, timestamp);
 		return;
 	}

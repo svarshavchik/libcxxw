@@ -6,7 +6,7 @@
 #include "libcxxw_config.h"
 #include "keysyms.H"
 #include "returned_pointer.H"
-#include "connection.H"
+#include "connectionfwd.H"
 #include <algorithm>
 #include <X11/keysym.h>
 
@@ -729,7 +729,7 @@ inline void keysyms
 				   e.addressof()));
 
 	if (e)
-		throw EXCEPTION(connectionObj::implObj::get_error(e));
+		throw EXCEPTION(connection_error(e));
 
 	auto keycodes_per_modifier=reply->keycodes_per_modifier;
 	auto raw_keycodes=xcb_get_modifier_mapping_keycodes(reply);

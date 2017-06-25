@@ -5,6 +5,7 @@
 #include "libcxxw_config.h"
 #include "generic_window_handler.H"
 #include "connection_thread.H"
+#include "connectionfwd.H"
 #include "pictformat.H"
 #include "icon.H"
 #include "draw_info.H"
@@ -21,7 +22,6 @@
 #include "x/w/key_event.H"
 #include "x/w/button_event.H"
 #include "x/w/values_and_mask.H"
-#include <xcb/xcb_icccm.h>
 #include <X11/keysym.h>
 #include "child_element.H"
 #include "hotspot.H"
@@ -992,6 +992,31 @@ void generic_windowObj::handlerObj::horizvert_updated(IN_THREAD_ONLY)
 				    id(),
 				    conn->info->atoms_info.wm_normal_hints,
 				    &hints);
+}
+
+void generic_windowObj::handlerObj
+::do_update_wm_hints(const function<update_wm_hints_t>  &callback)
+{
+	auto c=screenref->get_connection()->impl->info->conn;
+
+	returned_pointer<xcb_generic_error_t *> error;
+
+	auto return_value=return_pointer
+		(xcb_get_property_reply
+		 (c,
+		  xcb_icccm_get_wm_hints(c, id()),
+		  error.addressof()));
+
+	if (error)
+		throw EXCEPTION(connection_error(error));
+
+	xcb_icccm_wm_hints_t hints=xcb_icccm_wm_hints_t();
+
+	xcb_icccm_get_wm_hints_from_reply(&hints, return_value);
+
+	callback(hints);
+
+	xcb_icccm_set_wm_hints(c, id(), &hints);
 }
 
 ////////////////////////////////////////////////////////////////////
