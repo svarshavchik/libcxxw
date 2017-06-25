@@ -599,8 +599,16 @@ void generic_windowObj::handlerObj::configure_notify(IN_THREAD_ONLY,
 		*lock=r;
 	}
 
-	update_current_position(IN_THREAD,
-				element_position(r));
+	auto new_position=element_position(r);
+
+	if (data(IN_THREAD).current_position == new_position)
+	{
+		absolute_location_updated(IN_THREAD);
+	}
+	else
+	{
+		update_current_position(IN_THREAD, new_position);
+	}
 }
 
 void generic_windowObj::handlerObj::current_position_updated(IN_THREAD_ONLY)

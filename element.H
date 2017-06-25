@@ -286,6 +286,14 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	void update_current_position(IN_THREAD_ONLY,
 				     const rectangle &r);
 
+	//! The top level window's position changed, but not its size
+
+	//! So nothing has to be recalculated, however popups need to know
+	//! about this.
+	//!
+	//! Propagate absolute_location_updated() to all elements.
+	virtual void absolute_location_updated(IN_THREAD_ONLY);
+
 	//! This element's current_position has been updated.
 
 	//! Invoke schedule_update_position_processing(), then recursively

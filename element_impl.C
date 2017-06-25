@@ -348,6 +348,16 @@ void elementObj::implObj::current_position_updated(IN_THREAD_ONLY)
 		       });
 }
 
+void elementObj::implObj::absolute_location_updated(IN_THREAD_ONLY)
+{
+	for_each_child(IN_THREAD,
+		       [&]
+		       (const element &e)
+		       {
+			       e->impl->absolute_location_updated(IN_THREAD);
+		       });
+}
+
 void elementObj::implObj::schedule_update_position_processing(IN_THREAD_ONLY)
 {
 	IN_THREAD->insert_element_set(*IN_THREAD->element_position_updated
