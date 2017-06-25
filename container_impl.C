@@ -337,6 +337,17 @@ void containerObj::implObj::child_visibility_updated(IN_THREAD_ONLY,
 	get_element_impl().schedule_redraw(IN_THREAD);
 }
 
+void containerObj::implObj
+::tell_layout_manager_it_needs_recalculation(IN_THREAD_ONLY)
+{
+	invoke_layoutmanager
+		([&]
+		 (const auto &lm)
+		 {
+			 lm->needs_recalculation(IN_THREAD);
+		 });
+}
+
 void containerObj::implObj::needs_recalculation(IN_THREAD_ONLY)
 {
 	(*IN_THREAD->containers_2_recalculate(IN_THREAD))

@@ -177,6 +177,7 @@ static void foobar()
 
 
 #include "element_impl.C"
+#include "main_window_handler.C"
 #include "generic_window_handler.C"
 #include "gridlayoutmanager_impl.C"
 #include "gridlayoutmanager_impl_elements.C"

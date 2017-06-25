@@ -117,6 +117,14 @@ public:
 
 	void needs_recalculation(IN_THREAD_ONLY);
 
+	//! Invoke the layout manager's needs_recalculation().
+
+	//! Invokes the layout manager's virtual needs_recalculation(),
+	//! whose default implementation simply calls needs_recalculation()
+	//! here, but is also overridden by some layout managers.
+
+	void tell_layout_manager_it_needs_recalculation(IN_THREAD_ONLY);
+
 	/////////////////////////////////////////////////////////////////////
 	//
 	// The parent class that inherits from container and element must

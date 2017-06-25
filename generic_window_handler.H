@@ -57,6 +57,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! Current event mask.
 	xcb_event_mask_t current_events_thread_only;
 
+ protected:
 	//! Current position and dimensions
 
 	//! This is a mutex-protected object. ConfigureNotify event saves
@@ -69,7 +70,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! mutable, to be usable by the overridden const methods.
 
 	mutable mpobj<rectangle> current_position;
-
+ private:
 	//! The mask for drawing disabled elements.
 
 	icon disabled_mask_thread_only;
@@ -77,16 +78,6 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! Window's background color
 
 	background_color current_background_color_thread_only;
-
-	//! The first time the window is mapped, it's resized to its preferred size, first.
-
-	bool preferred_dimensions_set_thread_only=false;
-
-	//! Preferred width
-	dim_t preferred_width_thread_only;
-
-	//! Preferred height
-	dim_t preferred_height_thread_only;
 
 	//! Whether this window is currently receiving input focus
 
@@ -160,9 +151,6 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	THREAD_DATA_ONLY(current_events);
 	THREAD_DATA_ONLY(disabled_mask);
 	THREAD_DATA_ONLY(current_background_color);
-	THREAD_DATA_ONLY(preferred_dimensions_set);
-	THREAD_DATA_ONLY(preferred_width);
-	THREAD_DATA_ONLY(preferred_height);
 	THREAD_DATA_ONLY(has_focus);
 	THREAD_DATA_ONLY(frame_extents);
 
@@ -377,10 +365,6 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	void set_inherited_visibility(IN_THREAD_ONLY,
 				      inherited_visibility_info &info) override;
 
-	//! Set window size to preferred size before its visible for 1st time.
-
-	void request_visibility(IN_THREAD_ONLY, bool flag) override;
-
 	//! Whether this window is mapped.
 
 	bool is_mapped(IN_THREAD_ONLY) const
@@ -400,9 +384,11 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 	void update_frame_extents(IN_THREAD_ONLY);
 
-	//! Inherited from horizvertObj
+	//! Frame extents have changed.
 
-	void horizvert_updated(IN_THREAD_ONLY) override;
+	//! The default implementation does nothing.
+
+	virtual void frame_extents_updated(IN_THREAD_ONLY);
 
 	////////////////////////////////////////////////////////////////////
 	//
