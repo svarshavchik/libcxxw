@@ -6,7 +6,8 @@
 #include "generic_window.H"
 #include "generic_window_handler.H"
 #include "drawable.H"
-#include "x/w/screen.H"
+#include "screen.H"
+#include "connection_thread.H"
 #include <string>
 #include <courier-unicode.h>
 
@@ -22,7 +23,20 @@ generic_windowObj::generic_windowObj(const ref<implObj> &impl,
 {
 }
 
-generic_windowObj::~generic_windowObj()=default;
+generic_windowObj::~generic_windowObj()
+{
+	// Simulate what would happen if the generic window was in a container,
+	// and it's now been removed from it.
+
+	get_screen()->impl->thread->run_as
+		(RUN_AS,
+		 [handler=this->impl->handler]
+		 (IN_THREAD_ONLY)
+		 {
+			 handler->removed_from_container(IN_THREAD);
+		 });
+}
+
 
 void generic_windowObj::on_disconnect(const std::function<void ()> &callback)
 {

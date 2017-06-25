@@ -26,18 +26,7 @@ main_windowObj::implObj::implObj(const ref<handlerObj> &handler,
 {
 }
 
-main_windowObj::implObj::~implObj()
-{
-	// Simulate what would happen if the main window was in a container,
-	// and it's now been removed from it.
-
-	thread()->run_as(RUN_AS,
-			 [handler=this->handler]
-			 (IN_THREAD_ONLY)
-			 {
-				 handler->removed_from_container(IN_THREAD);
-			 });
-}
+main_windowObj::implObj::~implObj()=default;
 
 void main_windowObj::implObj::on_delete(const std::function<void ()> &callback)
 {
