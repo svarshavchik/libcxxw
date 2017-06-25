@@ -82,12 +82,16 @@ class LIBCXX_HIDDEN richtextObj : virtual public obj {
 
 	bool rewrap(IN_THREAD_ONLY, dim_t width);
 
+	//! Return the text object's current width
+	dim_t get_width(IN_THREAD_ONLY);
+
 	//! Return the text object's current metrics
 
 	//! Return the text object's current horizontal and vertical sizes.
 
 	std::pair<metrics::axis, metrics::axis>
-		get_metrics(IN_THREAD_ONLY, dim_t preferred_width);
+		get_metrics(IN_THREAD_ONLY, dim_t preferred_width,
+			    bool visible);
 
 	//! Theme has been updated
 

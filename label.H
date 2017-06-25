@@ -89,6 +89,14 @@ public:
 	void process_updated_position(IN_THREAD_ONLY)
 		override;
 
+	//! Override set_inherited_visibility()
+
+	//! Call the superclass, then rewrap_due_to_updated_position()
+
+	void set_inherited_visibility(IN_THREAD_ONLY,
+				      inherited_visibility_info
+				      &visibility_info) override;
+
  private:
 
 	//! Potentially re-wordwrap the label.

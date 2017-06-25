@@ -80,11 +80,17 @@ labelObj::implObj::~implObj()=default;
 void labelObj::implObj::compute_preferred_width(IN_THREAD_ONLY)
 {
 	auto screen=get_screen()->impl;
+	preferred_width=0;
+	if (word_wrap_widthmm(IN_THREAD) == 0)
+		return;
 
-	preferred_width=word_wrap_widthmm(IN_THREAD) == 0 ?
-		(dim_t)0: screen->compute_width
+	preferred_width=screen->compute_width
 		(current_theme_t::lock{screen->current_theme},
 		 word_wrap_widthmm(IN_THREAD));
+
+	rewrap(IN_THREAD);
+
+	preferred_width=text->get_width(IN_THREAD);
 }
 
 void labelObj::implObj::initialize(IN_THREAD_ONLY)
@@ -92,8 +98,6 @@ void labelObj::implObj::initialize(IN_THREAD_ONLY)
 	child_elementObj::initialize(IN_THREAD);
 
 	compute_preferred_width(IN_THREAD);
-
-	rewrap(IN_THREAD);
 
 	// We can now compute and set our initial metrics.
 
@@ -109,7 +113,6 @@ void labelObj::implObj::theme_updated(IN_THREAD_ONLY)
 {
 	text->theme_updated(IN_THREAD);
 	compute_preferred_width(IN_THREAD);
-	rewrap(IN_THREAD);
 	recalculate(IN_THREAD);
 
 	child_elementObj::theme_updated(IN_THREAD);
@@ -122,10 +125,42 @@ void labelObj::implObj::process_updated_position(IN_THREAD_ONLY)
 	rewrap_due_to_updated_position(IN_THREAD);
 }
 
+void labelObj::implObj::set_inherited_visibility(IN_THREAD_ONLY,
+						 inherited_visibility_info
+						 &visibility_info)
+{
+	child_elementObj::set_inherited_visibility(IN_THREAD, visibility_info);
+
+	// The label's metrics depend on the label's visibility. While the
+	// label is hidden its metrics are fixed. Once it is shown if it's
+	// a wrappable label its metrics will now reflect that.
+
+	rewrap_due_to_updated_position(IN_THREAD);
+}
+
 void labelObj::implObj::rewrap_due_to_updated_position(IN_THREAD_ONLY)
 {
 	if (word_wrap_widthmm(IN_THREAD) == 0)
 		return; // Not word wrapping.
+
+	initialize_if_needed(IN_THREAD); // Just make sure
+
+	// If we are not visible, just update the metrics.
+	//
+	// Do not rewrap the label according to the hidden display element's
+	// size. Top level containers are created with minimum size. This
+	// results in the layout manager initially attempting to resize its
+	// elements to their minimum size. Once all the metrics are set,
+	// the containers will keep recalculating themselves until they
+	// reach their preferred size. Recalculating the label based on its
+	// current width changes the label's metrics. This causes needless
+	// recalculation churn. Bypass it, and call recalculate().
+
+	if (!data(IN_THREAD).inherited_visibility)
+	{
+		recalculate(IN_THREAD);
+		return;
+	}
 
 	// If the width matches the rich text's current position, nothing
 	// must've changed.
@@ -156,7 +191,7 @@ bool labelObj::implObj::rewrap(IN_THREAD_ONLY)
 	if (word_wrap_widthmm(IN_THREAD) == 0)
 		return false;
 
-	return text->rewrap(IN_THREAD, data(IN_THREAD).current_position.width);
+	return text->rewrap(IN_THREAD, preferred_width);
 }
 
 void labelObj::implObj::do_draw(IN_THREAD_ONLY,
@@ -179,7 +214,8 @@ void labelObj::implObj::recalculate(IN_THREAD_ONLY)
 std::pair<metrics::axis, metrics::axis>
 labelObj::implObj::calculate_current_metrics(IN_THREAD_ONLY)
 {
-	return text->get_metrics(IN_THREAD, preferred_width);
+	return text->get_metrics(IN_THREAD, preferred_width,
+				 data(IN_THREAD).inherited_visibility);
 }
 
 LIBCXXW_NAMESPACE_END

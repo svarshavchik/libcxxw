@@ -251,7 +251,7 @@ bool editorObj::implObj::rewrap(IN_THREAD_ONLY)
 std::pair<metrics::axis, metrics::axis>
 editorObj::implObj::calculate_current_metrics(IN_THREAD_ONLY)
 {
-	auto metrics=text->get_metrics(IN_THREAD, preferred_width);
+	auto metrics=text->get_metrics(IN_THREAD, preferred_width, true);
 
 	// If we word-wrap, fixate to the word wrapping width. Otherwise
 	// get_metrics() uses the current width as the preferred width, so
