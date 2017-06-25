@@ -13,6 +13,7 @@
 #include "x/w/listlayoutmanager.H"
 #include "x/w/rgb.H"
 #include "messages.H"
+#include "defaulttheme.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -20,9 +21,13 @@ listcontainerObj::implObj::implObj(const ref<containerObj::implObj> &parent,
 				   const new_listlayoutmanager &style)
 	: listcontainer_impl_superclass_t
 	  (style.v_padding,
+	   &defaultthemeObj::get_theme_height_dim_t,
 	   style.left_padding,
+	   &defaultthemeObj::get_theme_width_dim_t,
 	   style.inner_padding,
+	   &defaultthemeObj::get_theme_width_dim_t,
 	   style.right_padding,
+	   &defaultthemeObj::get_theme_width_dim_t,
 
 	   // Initialize the background colors
 	   parent->get_element_impl()

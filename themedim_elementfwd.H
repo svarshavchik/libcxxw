@@ -42,7 +42,8 @@ public:
 
 	template<typename ...Args>
 	themedim1_elementObj(const std::string &dimname,
-			    Args && ...args);
+			     theme_width_or_height width_or_height,
+			     Args && ...args);
 
 	~themedim1_elementObj();
 

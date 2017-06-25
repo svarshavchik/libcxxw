@@ -95,8 +95,8 @@ void tooltip_handlerObj::recalculate_popup_position(IN_THREAD_ONLY,
 {
 	auto s=get_screen()->impl;
 
-	dim_t offset_x=s->get_theme_dim_t("tooltip_x_offset");
-	dim_t offset_y=s->get_theme_dim_t("tooltip_y_offset");
+	dim_t offset_x=s->get_theme_width_dim_t("tooltip_x_offset");
+	dim_t offset_y=s->get_theme_height_dim_t("tooltip_y_offset");
 
 	coord_t x=coord_t::truncate(pointer_x+offset_x);
 

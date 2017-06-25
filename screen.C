@@ -226,12 +226,20 @@ screen::base::visual_t screenObj::implObj
 //
 // Theme access
 
-dim_t screenObj::implObj::get_theme_dim_t(const std::experimental
-					  ::string_view &id)
+dim_t screenObj::implObj::get_theme_width_dim_t(const std::experimental
+						::string_view &id)
 {
 	current_theme_t::lock lock(current_theme);
 
-	return (*lock)->get_theme_dim_t(id);
+	return (*lock)->get_theme_width_dim_t(id);
+}
+
+dim_t screenObj::implObj::get_theme_height_dim_t(const std::experimental
+						 ::string_view &id)
+{
+	current_theme_t::lock lock(current_theme);
+
+	return (*lock)->get_theme_height_dim_t(id);
 }
 
 rgb screenObj::implObj::get_theme_color(const std::experimental::string_view &id)

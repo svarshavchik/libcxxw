@@ -26,16 +26,19 @@ themedim_element<tag>::~themedim_element()=default;
 
 //! Constructor
 
-//! The first parameter specifies the dimension's, the remaining
+//! The first parameter specifies the dimension's, the next either
+//! get_theme_height/width_dim_t, and the remaining
 //! parameters get forwarded to the superclass.
 
 template<typename element_impl, typename tag>
 template<typename ...Args>
 themedim1_elementObj<element_impl, tag>
 ::themedim1_elementObj(const std::string &dimname,
+		       theme_width_or_height width_or_height,
 		       Args && ...args)
 	: element_impl(std::forward<Args>(args)...),
-	  themedim_element<tag>(dimname, this->get_screen()->impl)
+	  themedim_element<tag>(dimname, this->get_screen()->impl,
+				width_or_height)
 {
 }
 

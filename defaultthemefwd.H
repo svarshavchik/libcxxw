@@ -7,7 +7,9 @@
 
 #include <x/ptrfwd.H>
 #include <x/mpobj.H>
-#include "x/w/namespace.H"
+#include "x/w/types.H"
+
+#include <experimental/string_view>
 
 LIBCXXW_NAMESPACE_START
 
@@ -35,33 +37,10 @@ typedef ptr<defaultthemeObj, defaultthemeBase> defaultthemeptr;
 
 typedef mpobj<defaulttheme> current_theme_t;
 
-#if 0
-class current_theme_t : public mpobj<defaulttheme> {
+//! Retrieve a width or a height theme dimension.
 
-public:
-	using mpobj<defaulttheme>::mpobj;
-
-	class lock : public mpobj<defaulttheme>::lock {
-
-	public:
-		static int counter;
-
-		lock(mpobj<defaulttheme> &l)
-			: mpobj<defaulttheme>::lock(((std::cout << "LOCK "
-						      << ++counter
-						      << std::endl), l))
-		{
-			if (counter == 144)
-				abort();
-		}
-
-		~lock()
-		{
-			std::cout << "UNLOCK" << std::endl;
-		}
-	};
-};
-#endif
+typedef dim_t (defaultthemeObj::*theme_width_or_height)
+	(const std::experimental::string_view &);
 
 LIBCXXW_NAMESPACE_END
 

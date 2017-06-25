@@ -10,6 +10,7 @@
 #include "defaultthemefwd.H"
 #include "x/w/screen.H"
 #include <string>
+#include <experimental/string_view>
 
 LIBCXXW_NAMESPACE_START
 
@@ -25,12 +26,16 @@ class LIBCXX_HIDDEN themedimObj : virtual public obj {
 	//! Padding value in pixels.
 	dim_t pixels_thread_only;
 
+	//! Whether the dimension is width or height based
+	const theme_width_or_height width_or_height;
+
  public:
 	THREAD_DATA_ONLY(pixels);
 
 	//! Constructor
 	themedimObj(const std::string &dimname,
-		    const ref<screenObj::implObj> &screen_impl);
+		    const ref<screenObj::implObj> &screen_impl,
+		    theme_width_or_height width_or_height);
 
 	//! Destructor
 	~themedimObj();

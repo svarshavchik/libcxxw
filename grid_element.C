@@ -9,6 +9,7 @@
 #include "metrics_grid_pos.H"
 #include "element.H"
 #include "screen.H"
+#include "defaulttheme.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -48,25 +49,21 @@ grid_elementObj::~grid_elementObj()=default;
 
 void grid_elementObj::calculate_padding(const grid_element_padding_lock &lock)
 {
-	left_padding=lock.my_screen->impl->compute_width(lock.theme_lock,
-							 left_paddingmm);
+	left_padding=(*lock.theme_lock)->compute_width(left_paddingmm);
 	dim_t total=dim_t::truncate(left_padding+
-				    lock.my_screen->impl
-				    ->compute_width(lock.theme_lock,
-						    right_paddingmm));
+				    (*lock.theme_lock)
+				    ->compute_width(right_paddingmm));
 
 	if (total == dim_t::infinite())
 		--total;
 
 	total_horiz_padding=total;
 
-	top_padding=lock.my_screen->impl->compute_height(lock.theme_lock,
-							 top_paddingmm);
+	top_padding=(*lock.theme_lock)->compute_height(top_paddingmm);
 
 	total=dim_t::truncate(top_padding+
-			      lock.my_screen->impl
-			      ->compute_height(lock.theme_lock,
-					       bottom_paddingmm));
+			      (*lock.theme_lock)
+			      ->compute_height(bottom_paddingmm));
 
 	if (total == dim_t::infinite())
 		--total;

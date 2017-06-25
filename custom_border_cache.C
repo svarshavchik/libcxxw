@@ -35,14 +35,14 @@ border_info screenObj::implObj
 
 	info.colors=mm.colors;
 
-	info.width=compute_width(lock, mm.width);
-	info.height=compute_height(lock, mm.height);
+	info.width=(*lock)->compute_width(mm.width);
+	info.height=(*lock)->compute_height(mm.height);
 
 	if (info.width == dim_t::infinite() || info.height == dim_t::infinite())
 		info.width=info.height=0;
 
-	auto radius_w=compute_width(lock, mm.radius);
-	auto radius_h=compute_height(lock, mm.radius);
+	auto radius_w=(*lock)->compute_width(mm.radius);
+	auto radius_h=(*lock)->compute_height(mm.radius);
 
 	if (radius_w == dim_t::infinite() ||
 	    radius_h == dim_t::infinite())
@@ -67,8 +67,8 @@ border_info screenObj::implObj
 
 	for (const auto &orig_dash:mm.dashes)
 	{
-		auto dash_w=compute_width(lock, orig_dash);
-		auto dash_h=compute_height(lock, orig_dash);
+		auto dash_w=(*lock)->compute_width(orig_dash);
+		auto dash_h=(*lock)->compute_height(orig_dash);
 
 		if (dash_w == dim_t::infinite() ||
 		    dash_h == dim_t::infinite())

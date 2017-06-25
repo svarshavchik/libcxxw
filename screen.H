@@ -206,7 +206,10 @@ class LIBCXX_HIDDEN screenObj::implObj
 	// Lock the current theme, and obtain the theme-specific data.
 
 	//! Retrieve theme dimension
-	dim_t get_theme_dim_t(const std::experimental::string_view &id);
+	dim_t get_theme_width_dim_t(const std::experimental::string_view &id);
+
+	//! Retrieve theme dimension
+	dim_t get_theme_height_dim_t(const std::experimental::string_view &id);
 
 	//! Retrieve theme color
 	rgb get_theme_color(const std::experimental::string_view &id);
@@ -245,14 +248,6 @@ class LIBCXX_HIDDEN screenObj::implObj
 	/////////////////////////////////////////////////////////////////////
 	//
 	// Compute a size in pixels given the size in millimeters.
-
-	//! Compute # of pixels from millimeters, for width
-
-	dim_t compute_width(const current_theme_t::lock &, double millimeters);
-
-	//! Compute # of pixels from millimeters, for height
-
-	dim_t compute_height(const current_theme_t::lock &, double millimeters);
 
 	//! Compute # of pixels from millimeters, for width
 

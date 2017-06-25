@@ -58,6 +58,9 @@ public:
 
  private:
 
+	//! My screen
+	const xcb_screen_t *screen;
+
 	//! Parsed dimensions
 	std::unordered_map<std::string, dim_t> dims;
 
@@ -121,7 +124,26 @@ public:
 			   &lookup);
 
 	//! Retrieve theme dimension
-	dim_t get_theme_dim_t(const std::experimental::string_view &id);
+
+	//! The given dimension is specified in the theme. The dimension
+	//! name may also be a numerical value, given as a literal string,
+	//! which is interpreted as millimeters.
+	dim_t get_theme_width_dim_t(const std::experimental::string_view &id);
+
+	//! Retrieve theme dimension
+
+	//! The given dimension is specified in the theme. The dimension
+	//! name may also be a numerical value, given as a literal string,
+	//! which is interpreted as millimeters.
+	dim_t get_theme_height_dim_t(const std::experimental::string_view &id);
+
+	//! Compute # of pixels from millimeters, for width
+
+	dim_t compute_width(double millimeters);
+
+	//! Compute # of pixels from millimeters, for height
+
+	dim_t compute_height(double millimeters);
 
 	//! Retrieve theme color
 	rgb get_theme_color(const std::experimental::string_view &id);

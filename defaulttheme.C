@@ -348,7 +348,8 @@ defaultthemeObj::defaultthemeObj(const xcb_screen_t *screen,
 	  h1mm(one_millimeter(screen->width_in_pixels,
 			      screen->width_in_millimeters, themescale)),
 	  v1mm(one_millimeter(screen->height_in_pixels,
-			      screen->height_in_millimeters, themescale))
+			      screen->height_in_millimeters, themescale)),
+	  screen(screen)
 {
 	// If we did not find the CXXWTHEME property, now is the time to
 	// set it.
@@ -979,16 +980,95 @@ void defaultthemeObj::load_borders(const xml::doc &config,
 
 /////////////////////////////////////////////////////////////////////////////
 
-dim_t defaultthemeObj::get_theme_dim_t(const std::experimental::string_view &id)
+dim_t defaultthemeObj::get_theme_width_dim_t(const std::experimental::string_view &id)
 {
 	// TODO: gcc 6.3.1, string_view support is incomplete.
 	auto iter=dims.find(std::string(id.begin(), id.end()));
 
 	if (iter == dims.end())
+	{
+		std::istringstream i(std::string(id.begin(), id.end())); // TODO?
+		double v;
+
+		i >> v;
+
+		if (i && i.get() == std::istringstream::traits_type::eof())
+			return compute_width(v);
+
 		throw EXCEPTION(gettextmsg(_("Theme size %1% does not exist"),
 					   id));
-
+	}
 	return iter->second;
+}
+
+dim_t defaultthemeObj::get_theme_height_dim_t(const std::experimental::string_view &id)
+{
+	// TODO: gcc 6.3.1, string_view support is incomplete.
+	auto iter=dims.find(std::string(id.begin(), id.end()));
+
+	if (iter == dims.end())
+	{
+		std::istringstream i(std::string(id.begin(), id.end())); // TODO?
+		double v;
+
+		i >> v;
+
+		if (i && i.get() == std::istringstream::traits_type::eof())
+			return compute_height(v);
+		throw EXCEPTION(gettextmsg(_("Theme size %1% does not exist"),
+					   id));
+	}
+	return iter->second;
+}
+
+dim_t defaultthemeObj::compute_width(double millimeters)
+{
+	if (std::isnan(millimeters))
+		return dim_t::infinite();
+
+	if (millimeters < 0)
+		millimeters= -millimeters;
+
+	auto scaled=std::round(themescale * millimeters *
+			       screen->width_in_pixels /
+			       screen->width_in_millimeters);
+
+	// The calculated value may be large, but it won't be infinite.
+	if (scaled > dim_t::infinite()-1)
+		scaled=dim_t::infinite()-1;
+
+	// If the number of millimeters is not 0, but small, make sure we'll
+	// calculated at least 1 pixel. The only way the calculated pixel
+	// count is 0 would be if millimeters was 0.
+	if (millimeters != 0 && scaled < 1)
+		scaled=1;
+
+	return dim_t::value_type(scaled);
+}
+
+dim_t defaultthemeObj::compute_height(double millimeters)
+{
+	if (std::isnan(millimeters))
+		return dim_t::infinite();
+
+	if (millimeters < 0)
+		millimeters= -millimeters;
+
+	auto scaled=std::round(themescale * millimeters *
+			       screen->height_in_pixels /
+			       screen->height_in_millimeters);
+
+	// The calculated value may be large, but it won't be infinite.
+	if (scaled > dim_t::infinite()-1)
+		scaled=dim_t::infinite()-1;
+
+	// If the number of millimeters is not 0, but small, make sure we'll
+	// calculated at least 1 pixel. The only way the calculated pixel
+	// count is 0 would be if millimeters was 0.
+	if (millimeters != 0 && scaled < 1)
+		scaled=1;
+
+	return dim_t::value_type(scaled);
 }
 
 rgb defaultthemeObj::get_theme_color(const std::experimental::string_view &id)

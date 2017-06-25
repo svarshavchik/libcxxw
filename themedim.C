@@ -10,17 +10,21 @@
 LIBCXXW_NAMESPACE_START
 
 static dim_t compute_dim(const auto &screen_impl,
-			 const std::string &dimname)
+			 const std::string &dimname,
+			 auto width_or_height)
 {
 	current_theme_t::lock lock{screen_impl->current_theme};
 
-	return (*lock)->get_theme_dim_t(dimname);
+	return ((**lock).*width_or_height)(dimname);
 }
 
 themedimObj::themedimObj(const std::string &dimname,
-			 const ref<screenObj::implObj> &screen_impl)
+			 const ref<screenObj::implObj> &screen_impl,
+			 theme_width_or_height width_or_height)
 	: dimname(dimname),
-	pixels_thread_only(compute_dim(screen_impl, dimname))
+	  pixels_thread_only(compute_dim(screen_impl, dimname,
+					 width_or_height)),
+	  width_or_height(width_or_height)
 {
 }
 
@@ -31,13 +35,13 @@ void themedimObj::initialize(IN_THREAD_ONLY,
 {
 	// Recalculate now we're in the connection thread.
 
-	pixels(IN_THREAD)=compute_dim(screen_impl, dimname);
+	pixels(IN_THREAD)=compute_dim(screen_impl, dimname, width_or_height);
 }
 
 void themedimObj::theme_updated(IN_THREAD_ONLY,
 				const defaulttheme &new_theme)
 {
-	pixels(IN_THREAD)=new_theme->get_theme_dim_t(dimname);
+	pixels(IN_THREAD)=((*new_theme).*width_or_height)(dimname);
 }
 
 LIBCXXW_NAMESPACE_END

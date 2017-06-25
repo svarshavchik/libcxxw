@@ -11,6 +11,7 @@
 #include "richtext/richtext_draw_info.H"
 #include "background_color.H"
 #include "messages.H"
+#include "defaulttheme.H"
 #include "x/w/factory.H"
 
 LIBCXXW_NAMESPACE_START
@@ -82,9 +83,8 @@ void labelObj::implObj::compute_preferred_width(IN_THREAD_ONLY)
 	if (word_wrap_widthmm(IN_THREAD) == 0)
 		return;
 
-	preferred_width=screen->compute_width
-		(current_theme_t::lock{screen->current_theme},
-		 word_wrap_widthmm(IN_THREAD));
+	preferred_width=(*current_theme_t::lock{screen->current_theme})
+		->compute_width(word_wrap_widthmm(IN_THREAD));
 
 	rewrap(IN_THREAD);
 
