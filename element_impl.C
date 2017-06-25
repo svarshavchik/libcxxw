@@ -649,11 +649,10 @@ void elementObj::implObj::remove_background_color()
 }
 
 void elementObj::implObj
-::set_background_color(const std::experimental::string_view &name,
-		       const rgb &default_value)
+::set_background_color(const std::experimental::string_view &name)
 {
 	set_background_color(get_screen()->impl
-			     ->create_background_color(name, default_value));
+			     ->create_background_color(name));
 }
 
 void elementObj::implObj
@@ -738,11 +737,9 @@ current_fontcollection elementObj::implObj
 }
 
 background_color elementObj::implObj
-::create_background_color(const std::experimental::string_view &color_name,
-			  const rgb &default_value)
+::create_background_color(const std::experimental::string_view &color_name)
 {
-	return get_screen()->impl->create_background_color(color_name,
-							   default_value);
+	return get_screen()->impl->create_background_color(color_name);
 }
 
 background_color elementObj::implObj::create_background_color(const rgb &color)

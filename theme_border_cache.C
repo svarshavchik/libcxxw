@@ -43,9 +43,7 @@ class LIBCXX_HIDDEN theme_current_border_implObj
 				     const std::string &name,
 				     current_theme_t::lock &&lock)
 
-		: current_border_implObj((*lock)
-					 ->get_theme_border(name,border_info())
-					 ),
+		: current_border_implObj((*lock)->get_theme_border(name)),
 		screen(screen),
 		name(name),
 		current_theme_thread_only(*lock)
@@ -68,8 +66,7 @@ class LIBCXX_HIDDEN theme_current_border_implObj
 
 		t=new_theme;
 
-		border(IN_THREAD)=
-			new_theme->get_theme_border(name, border(IN_THREAD));
+		border(IN_THREAD)=new_theme->get_theme_border(name);
 	}
 };
 

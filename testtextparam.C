@@ -32,8 +32,7 @@ void testtextparam(const auto &main_window)
 		main_window->impl->handler
 		->create_richtextstring( {main_window->get_screen()
 					->impl
-					->create_background_color("0%",
-								  {0, 0, 0}),
+					->create_background_color("0%"),
 					main_window->impl->handler
 					->create_theme_font("serif")},
 			param2);

@@ -32,7 +32,5 @@ typedef ref<background_colorObj> background_color;
 
 typedef ptr<background_colorObj> background_colorptr;
 
-#define DEFAULT_MAINWINDOW_BACKGROUND_COLOR rgb(0xCCCC, 0xCCCC, 0xCCCC)
-
 LIBCXXW_NAMESPACE_END
 #endif

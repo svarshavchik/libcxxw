@@ -68,10 +68,9 @@ void elementObj::hide()
 }
 
 void elementObj::set_background_color(const std::experimental::string_view
-				      &name,
-				      const rgb &default_value)
+				      &name)
 {
-	impl->set_background_color(name, default_value);
+	impl->set_background_color(name);
 }
 
 void elementObj::set_background_color(const const_picture &background_color)

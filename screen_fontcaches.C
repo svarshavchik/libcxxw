@@ -108,8 +108,7 @@ class LIBCXX_HIDDEN current_themefontcollectionObj
 				       const defaulttheme &font_theme)
 		: current_fontcollectionObj(font_screen, depth,
 					    font_theme->get_theme_font
-					    (font_name,
-					     font()),
+					    (font_name),
 					    font_theme),
 		font_name(font_name)
 		{
@@ -122,8 +121,7 @@ class LIBCXX_HIDDEN current_themefontcollectionObj
 	void theme_was_really_updated(IN_THREAD_ONLY) override
 	{
 		font_spec(IN_THREAD)=
-			font_theme->get_theme_font(font_name,
-						   font_spec(IN_THREAD));
+			font_theme->get_theme_font(font_name);
 	}
 };
 

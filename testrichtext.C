@@ -21,8 +21,7 @@ void testrichtext(const current_fontcollection &font1,
 {
 	auto thread_=w->get_screen()->impl->thread;
 
-	auto black=w->get_screen()->impl->create_background_color("0%",
-								  {0,0,0});
+	auto black=w->get_screen()->impl->create_background_color("0%");
 
 	richtextstring ustring{
 		U"Hello world\nHello\nworld\n",
@@ -96,8 +95,7 @@ void testsplit(const current_fontcollection &font1,
 {
 	auto thread_=w->get_screen()->impl->thread;
 
-	auto black=w->get_screen()->impl->create_background_color("0%",
-								  {0,0,0});
+	auto black=w->get_screen()->impl->create_background_color("0%");
 
 	richtextstring ustring{
 		U"A B C D E",
@@ -238,8 +236,7 @@ void testlink(const current_fontcollection &font1,
 	      const current_fontcollection &font2,
 	      const main_window &w)
 {
-	auto black=w->get_screen()->impl->create_background_color("0%",
-								  {0,0,0});
+	auto black=w->get_screen()->impl->create_background_color("0%");
 
 	richtextstring ustring{
 		U"AAAAAAAAAAAAAAA",
@@ -281,8 +278,7 @@ void testresolvedfonts(const current_fontcollection &font1,
 		       const main_window &w)
 {
 	auto thread_=w->get_screen()->impl->thread;
-	auto black=w->get_screen()->impl->create_background_color("0%",
-								  {0,0,0});
+	auto black=w->get_screen()->impl->create_background_color("0%");
 
 	richtextstring ustring{
 		U"0123456789",
@@ -441,7 +437,7 @@ int main(int argc, char **argv)
 					    });
 
 		auto font1=mw->impl->handler->create_theme_font("serif");
-		auto font2=mw->impl->handler->create_theme_font("sans serif");
+		auto font2=mw->impl->handler->create_theme_font("sans_serif");
 
 		testresolvedfonts(font1, font2, mw);
 		testrichtext(font1, font2, mw);

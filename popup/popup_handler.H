@@ -40,6 +40,10 @@ public:
 
 	void horizvert_updated(IN_THREAD_ONLY) override;
 
+	//! Implement theme_updated()
+	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme)
+		override;
+
 	//! Recalculate what my position should be.
 
 	//! r is set to the default popup position, which the subclass can

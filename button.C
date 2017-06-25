@@ -88,18 +88,9 @@ create_button_focusframe(const ref<buttonObj::implObj> &impl,
 	// the contents of the focusframecontainer.
 
 	auto ffi=button_focusframe
-		::create(impl->create_background_color("button_normal_color",
-						       rgb(rgb::maximum * .7,
-							   rgb::maximum * .7,
-							   rgb::maximum * .7)),
-			 impl->create_background_color("button_selected_color",
-						       rgb(rgb::maximum * .8,
-							   rgb::maximum * .8,
-							   rgb::maximum * .8)),
-			 impl->create_background_color("button_active_color",
-						       rgb(rgb::maximum,
-							   rgb::maximum,
-							   rgb::maximum)),
+		::create(impl->create_background_color("button_normal_color"),
+			 impl->create_background_color("button_selected_color"),
+			 impl->create_background_color("button_active_color"),
 			 glmi->container_impl,
 			 child_element_init_params{"focusframe@libcxx"});
 

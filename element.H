@@ -197,8 +197,7 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! If there's no background color of the given name, use the
 	//! default value.
 
-	void set_background_color(const std::experimental::string_view &name,
-				  const rgb &default_value);
+	void set_background_color(const std::experimental::string_view &name);
 
 	//! Use a custom background color for this display element.
 
@@ -707,8 +706,7 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! Shortcut for invoking the same screen method
 
 	background_color create_background_color(const std::experimental
-						 ::string_view &color_name,
-						 const rgb &default_value);
+						 ::string_view &color_name);
 
 	//! Shortcut for invoking the same screen method
 

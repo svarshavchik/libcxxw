@@ -22,8 +22,7 @@ void testrichtext1(const main_window &w,
 {
 	auto thread_=w->get_screen()->impl->thread;
 
-	auto black=w->get_screen()->impl->create_background_color("0%",
-								  {0,0,0});
+	auto black=w->get_screen()->impl->create_background_color("0%");
 
 	richtextstring ustring{
 		U"Helloworld ",
@@ -286,8 +285,7 @@ void testrichtext2(const main_window &w,
 {
 	auto thread_=w->get_screen()->impl->thread;
 
-	auto black=w->get_screen()->impl->create_background_color("0%",
-								  {0,0,0});
+	auto black=w->get_screen()->impl->create_background_color("0%");
 
 	const struct {
 		const char *orig;
@@ -399,8 +397,7 @@ void testrichtext3(const main_window &w,
 {
 	auto thread_=w->get_screen()->impl->thread;
 
-	auto black=w->get_screen()->impl->create_background_color("0%",
-								  {0,0,0});
+	auto black=w->get_screen()->impl->create_background_color("0%");
 
 	const struct {
 		size_t pos1, pos2;
@@ -596,8 +593,7 @@ void testrichtext4(const main_window &w,
 {
 	auto thread_=w->get_screen()->impl->thread;
 
-	auto black=w->get_screen()->impl->create_background_color("0%",
-								  {0,0,0});
+	auto black=w->get_screen()->impl->create_background_color("0%");
 
 	std::string test_string="12345 67890 ABCDEF\n" // 19 chars
 		"G\n"
@@ -672,8 +668,7 @@ void testrichtext5(const main_window &w,
 {
 	auto thread_=w->get_screen()->impl->thread;
 
-	auto black=w->get_screen()->impl->create_background_color("0%",
-								  {0,0,0});
+	auto black=w->get_screen()->impl->create_background_color("0%");
 
 	std::string test_string=
 		"The quick brown fox jumped over the lazy dog's tail.";
@@ -755,7 +750,7 @@ int main(int argc, char **argv)
 					    });
 
 		auto font1=mw->impl->handler->create_theme_font("serif");
-		auto font2=mw->impl->handler->create_theme_font("sans serif");
+		auto font2=mw->impl->handler->create_theme_font("sans_serif");
 
 		testrichtext1(mw, font1, font2);
 		testrichtext2(mw, font1);

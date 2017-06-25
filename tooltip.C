@@ -95,8 +95,8 @@ void tooltip_handlerObj::recalculate_popup_position(IN_THREAD_ONLY,
 {
 	auto s=get_screen()->impl;
 
-	dim_t offset_x=s->get_theme_dim_t("tooltip_x_offset", 8);
-	dim_t offset_y=s->get_theme_dim_t("tooltip_y_offset", 8);
+	dim_t offset_x=s->get_theme_dim_t("tooltip_x_offset");
+	dim_t offset_y=s->get_theme_dim_t("tooltip_y_offset");
 
 	coord_t x=coord_t::truncate(pointer_x+offset_x);
 
@@ -195,9 +195,7 @@ void tooltip_factory_impl::create(const function<void (const container &)>
 			    (const auto &container)
 			    {
 				    container->set_background_color
-					    ("tooltip_background_color",
-					     { rgb::maximum, rgb::maximum,
-							     rgb::maximum});
+					    ("tooltip_background_color");
 				    creator(container);
 			    }, layout_manager);
 

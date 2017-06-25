@@ -35,7 +35,7 @@ sxg_parserObj::create_text_picture(const picture_info &info,
 		if (p != fonts.end())
 			f=p->second;
 		else
-			f=theme->get_theme_font(t.font, f);
+			f=theme->get_theme_font(t.font);
 
 		if (f.scaled_size > 0)
 		{

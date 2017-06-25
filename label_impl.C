@@ -51,10 +51,7 @@ labelObj::implObj::implObj(const ref<containerObj::implObj> &container,
 	: implObj(container, alignment, initial_width,
 		  container_element.create_richtextstring
 		  ({container_element.create_background_color
-				  ("label_foreground_color",
-				   rgb(rgb::maximum/10,
-				       rgb::maximum/10,
-				       rgb::maximum/10)),
+				  ("label_foreground_color"),
 				  container_element.create_theme_font
 				  (container->get_element_impl()
 				   .label_theme_font())},

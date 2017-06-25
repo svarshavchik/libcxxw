@@ -227,7 +227,7 @@ richtextstring elementObj::implObj::create_richtextstring(richtextmeta font,
 			{
 				font.textcolor=screen_impl
 					->create_background_color
-					(iter->second, rgb());
+					(iter->second);
 				font.bg_color=background_colorptr();
 			}
 		}
@@ -251,7 +251,7 @@ richtextstring elementObj::implObj::create_richtextstring(richtextmeta font,
 			if (iter != t.theme_background_colors.end())
 				font.bg_color=screen_impl
 					->create_background_color
-					(iter->second, rgb());
+					(iter->second);
 		}
 
 		m.insert({p, font});

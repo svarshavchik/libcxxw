@@ -121,30 +121,20 @@ public:
 			   &lookup);
 
 	//! Retrieve theme dimension
-	dim_t get_theme_dim_t(const std::experimental::string_view &id,
-			      dim_t default_value);
+	dim_t get_theme_dim_t(const std::experimental::string_view &id);
 
 	//! Retrieve theme color
-	rgb get_theme_color(const std::experimental::string_view &id,
-			    const rgb &default_value);
+	rgb get_theme_color(const std::experimental::string_view &id);
 
 	//! Retrieve theme gradient
-	rgb::gradient_t get_theme_color_gradient(const std::experimental::string_view &id,
-						 const rgb::gradient_t
-						 &default_value);
+	rgb::gradient_t get_theme_color_gradient(const std::experimental::string_view &id);
 
 	//! Retrieve a theme border.
 	const_border_impl get_theme_border(const std::experimental::string_view
-					   &id,
-					   const border_info &default_value);
-	//! Retrieve a theme border.
-	const_border_impl get_theme_border(const std::experimental::string_view
-					   &id,
-					   const const_border_impl
-					   &default_value);
+					   &id);
+
 	//! Retrieve a theme font.
-	font get_theme_font(const std::string &id,
-			    const font &default_value);
+	font get_theme_font(const std::string &id);
 
 	/////////////////////////////////////////////////////////////////////
 	//

@@ -979,20 +979,19 @@ void defaultthemeObj::load_borders(const xml::doc &config,
 
 /////////////////////////////////////////////////////////////////////////////
 
-dim_t defaultthemeObj::get_theme_dim_t(const std::experimental::string_view &id,
-				       dim_t default_value)
+dim_t defaultthemeObj::get_theme_dim_t(const std::experimental::string_view &id)
 {
 	// TODO: gcc 6.3.1, string_view support is incomplete.
 	auto iter=dims.find(std::string(id.begin(), id.end()));
 
 	if (iter == dims.end())
-		return default_value;
+		throw EXCEPTION(gettextmsg(_("Theme size %1% does not exist"),
+					   id));
 
 	return iter->second;
 }
 
-rgb defaultthemeObj::get_theme_color(const std::experimental::string_view &id,
-				     const rgb &default_value)
+rgb defaultthemeObj::get_theme_color(const std::experimental::string_view &id)
 {
 	std::vector<std::string> ids;
 
@@ -1007,12 +1006,12 @@ rgb defaultthemeObj::get_theme_color(const std::experimental::string_view &id,
 			return iter->second;
 	}
 
-	return default_value;
+	throw EXCEPTION(gettextmsg(_("Theme color %1% does not exist"),
+				   id));
 }
 
 rgb::gradient_t
-defaultthemeObj::get_theme_color_gradient(const std::experimental::string_view &id,
-					  const rgb::gradient_t &default_value)
+defaultthemeObj::get_theme_color_gradient(const std::experimental::string_view &id)
 {
 	std::vector<std::string> ids;
 
@@ -1027,13 +1026,13 @@ defaultthemeObj::get_theme_color_gradient(const std::experimental::string_view &
 			return iter->second;
 	}
 
-	return default_value;
+	throw EXCEPTION(gettextmsg(_("Theme gradient %1% does not exist"),
+				   id));
 }
 
 
 const_border_impl
-defaultthemeObj::get_theme_border(const std::experimental::string_view &id,
-				  const border_info &default_value)
+defaultthemeObj::get_theme_border(const std::experimental::string_view &id)
 {
 	// TODO: gcc 6.3.1, string_view support is incomplete.
 	auto iter=borders.find(std::string(id.begin(), id.end()));
@@ -1041,20 +1040,8 @@ defaultthemeObj::get_theme_border(const std::experimental::string_view &id,
 	if (iter != borders.end())
 		return iter->second;
 
-	return border_impl::create(default_value);
-}
-
-const_border_impl
-defaultthemeObj::get_theme_border(const std::experimental::string_view &id,
-				  const const_border_impl &default_value)
-{
-	// TODO: gcc 6.3.1, string_view support is incomplete.
-	auto iter=borders.find(std::string(id.begin(), id.end()));
-
-	if (iter != borders.end())
-		return iter->second;
-
-	return default_value;
+	throw EXCEPTION(gettextmsg(_("Theme border %1% does not exist"),
+				   id));
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -1214,15 +1201,15 @@ void defaultthemeObj::do_load_fonts(const xml::doc::base::readlock &lock,
 	}
 }
 
-font defaultthemeObj::get_theme_font(const std::string &id,
-				     const font &default_value)
+font defaultthemeObj::get_theme_font(const std::string &id)
 {
 	auto iter=fonts.find(id);
 
 	if (iter != fonts.end())
 		return iter->second;
 
-	return default_value;
+	throw EXCEPTION(gettextmsg(_("Theme font %1% does not exist"),
+				   id));
 }
 
 //////////////////////////////////////////////////////////////////////////////

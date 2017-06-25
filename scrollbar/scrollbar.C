@@ -87,10 +87,7 @@ static scrollbar create_scrollbar(const ref<containerObj::implObj> &parent_conta
 
 	focusframefactory::create(sb)->created(e);
 
-	e->set_background_color("scrollbar_background_color",
-				 { rgb::maximum/10*3,
-						 rgb::maximum/10*3,
-						 rgb::maximum/10*3});
+	e->set_background_color("scrollbar_background_color");
 	e->show();
 
 	return sb;

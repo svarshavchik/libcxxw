@@ -122,12 +122,7 @@ new_listlayoutmanager::create(const ref<containerObj::implObj>
 		 "inputfocuson_border",
 		 0,
 		 focusable_container_impl->get_element_impl()
-		 .create_background_color(background_color,
-					  {
-						  rgb::maximum/10*8,
-						  rgb::maximum/10*8,
-						  rgb::maximum/10*8,
-					  }),
+		 .create_background_color(background_color),
 		 focusable_container_impl,
 		 [&]
 		 (const ref<containerObj::implObj> &peepholed_parent)

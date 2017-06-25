@@ -126,8 +126,7 @@ class LIBCXX_HIDDEN theme_background_colorObj : public background_colorObj {
 
 		// Check the current theme color. Did it change?
 
-		auto new_rgb=new_theme->get_theme_color(theme_color,
-							current_rgb);
+		auto new_rgb=new_theme->get_theme_color(theme_color);
 
 		if (current_rgb != new_rgb)
 		{
@@ -144,12 +143,11 @@ class LIBCXX_HIDDEN theme_background_colorObj : public background_colorObj {
 };
 
 background_color screenObj::implObj
-::create_background_color(const std::experimental::string_view &color_name,
-			  const rgb &default_value)
+::create_background_color(const std::experimental::string_view &color_name)
 {
 	std::string color_name_str{color_name};
 
-	auto current_rgb=get_theme_color(color_name, default_value);
+	auto current_rgb=get_theme_color(color_name);
 
 	return recycled_pixmaps_cache->theme_background_color_cache
 		->find_or_create

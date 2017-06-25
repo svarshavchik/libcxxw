@@ -41,7 +41,7 @@ create_initial_string(const ref<containerObj::implObj> &container,
 	auto &element=container->get_element_impl();
 
 	auto bg_color=element.create_background_color
-		("textedit_foreground_color",rgb(0, 0, 0));
+		("textedit_foreground_color");
 	auto font=element.create_theme_font("textedit");
 
 	text_param cpy=text;

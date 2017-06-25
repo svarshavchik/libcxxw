@@ -73,11 +73,7 @@ public:
 
 	//! Use a standard background color for this display element.
 
-	//! If there's no background color of the given name, use the
-	//! default value.
-
-	void set_background_color(const std::experimental::string_view &name,
-				  const rgb &default_value);
+	void set_background_color(const std::experimental::string_view &name);
 
 	//! Use a custom background color for this display element.
 

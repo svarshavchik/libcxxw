@@ -34,6 +34,14 @@ void popupObj::handlerObj::horizvert_updated(IN_THREAD_ONLY)
 	set_popup_position(IN_THREAD);
 }
 
+void popupObj::handlerObj::theme_updated(IN_THREAD_ONLY,
+					 const defaulttheme &new_theme)
+{
+	generic_windowObj::handlerObj::theme_updated(IN_THREAD, new_theme);
+
+	set_popup_position(IN_THREAD);
+}
+
 void popupObj::handlerObj::set_popup_position(IN_THREAD_ONLY)
 {
 	auto hv=get_horizvert(IN_THREAD);

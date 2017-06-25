@@ -227,29 +227,26 @@ screen::base::visual_t screenObj::implObj
 // Theme access
 
 dim_t screenObj::implObj::get_theme_dim_t(const std::experimental
-					  ::string_view &id,
-					  dim_t default_value)
+					  ::string_view &id)
 {
 	current_theme_t::lock lock(current_theme);
 
-	return (*lock)->get_theme_dim_t(id, default_value);
+	return (*lock)->get_theme_dim_t(id);
 }
 
-rgb screenObj::implObj::get_theme_color(const std::experimental::string_view &id,
-					const rgb &default_value)
+rgb screenObj::implObj::get_theme_color(const std::experimental::string_view &id)
 {
 	current_theme_t::lock lock(current_theme);
 
-	return (*lock)->get_theme_color(id, default_value);
+	return (*lock)->get_theme_color(id);
 }
 
 rgb::gradient_t screenObj::implObj
-::get_theme_color_gradient(const std::experimental::string_view &id,
-			   const rgb::gradient_t &default_value)
+::get_theme_color_gradient(const std::experimental::string_view &id)
 {
 	current_theme_t::lock lock(current_theme);
 
-	return (*lock)->get_theme_color_gradient(id, default_value);
+	return (*lock)->get_theme_color_gradient(id);
 }
 
 LIBCXXW_NAMESPACE_END

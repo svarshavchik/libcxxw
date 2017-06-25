@@ -76,8 +76,7 @@ factoryObj::create_input_field(const text_param &text,
 		 .2,
 		 container_impl->get_element_impl()
 		 .create_background_color
-		 ("textedit_background_color",
-		  {rgb::maximum, rgb::maximum, rgb::maximum}),
+		 ("textedit_background_color"),
 		 impl_mixin,
 		 make_function<make_peepholed_func_t>
 		 ([&]

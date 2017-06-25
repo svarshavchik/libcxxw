@@ -1063,15 +1063,17 @@ sxg_parserObj::color_info::color_info(const xml::doc::base::readlock &lock)
 
 rgb sxg_parserObj::color_info::get_color(const defaulttheme &theme) const
 {
-	rgb default_color{rgb::component_t(rgb::maximum * red),
+	if (theme_color.empty())
+	{
+		return {
+			rgb::component_t(rgb::maximum * red),
 			rgb::component_t(rgb::maximum * green),
 			rgb::component_t(rgb::maximum * blue),
-			rgb::component_t(rgb::maximum * alpha)};
+			rgb::component_t(rgb::maximum * alpha)
+				};
+	}
 
-	if (theme_color.empty())
-		return default_color;
-
-	auto color=theme->get_theme_color(theme_color, default_color);
+	auto color=theme->get_theme_color(theme_color);
 
 	auto red_value=color.r * red;
 	auto green_value=color.g * green;

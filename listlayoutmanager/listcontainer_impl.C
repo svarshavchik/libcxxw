@@ -26,26 +26,11 @@ listcontainerObj::implObj::implObj(const ref<containerObj::implObj> &parent,
 
 	   // Initialize the background colors
 	   parent->get_element_impl()
-	   .create_background_color(style.selected_color,
-				    rgb{
-					    rgb::maximum/10*9,
-					    rgb::maximum/10*9,
-					    rgb::maximum/10*9,
-				    }),
+	   .create_background_color(style.selected_color),
 	   parent->get_element_impl()
-	   .create_background_color(style.highlighted_color,
-				    rgb{
-					    rgb::maximum,
-					    rgb::maximum,
-					    rgb::maximum,
-				       }),
+	   .create_background_color(style.highlighted_color),
 	   parent->get_element_impl()
-	   .create_background_color(style.current_color,
-				    rgb{
-					    rgb::maximum/10*7,
-					    rgb::maximum/10*7,
-					    rgb::maximum/10*7,
-				       }),
+	   .create_background_color(style.current_color),
 	   parent)
 {
 	if (style.columns < 1)

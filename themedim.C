@@ -14,7 +14,7 @@ static dim_t compute_dim(const auto &screen_impl,
 {
 	current_theme_t::lock lock{screen_impl->current_theme};
 
-	return (*lock)->get_theme_dim_t(dimname, 0);
+	return (*lock)->get_theme_dim_t(dimname);
 }
 
 themedimObj::themedimObj(const std::string &dimname,
@@ -37,7 +37,7 @@ void themedimObj::initialize(IN_THREAD_ONLY,
 void themedimObj::theme_updated(IN_THREAD_ONLY,
 				const defaulttheme &new_theme)
 {
-	pixels(IN_THREAD)=new_theme->get_theme_dim_t(dimname, 0);
+	pixels(IN_THREAD)=new_theme->get_theme_dim_t(dimname);
 }
 
 LIBCXXW_NAMESPACE_END
