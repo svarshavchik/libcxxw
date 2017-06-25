@@ -67,9 +67,10 @@ class LIBCXX_HIDDEN connection_threadObj
 
 	//! Run something.
 
-	void run_something(msgqueue_auto &msgqueue,
+	bool run_something(msgqueue_auto &msgqueue,
 			   struct pollfd *topoll,
-			   size_t &npoll);
+			   size_t &npoll,
+			   int &poll_for);
 
 	//! Run an event received from the X server.
 
@@ -309,7 +310,6 @@ class LIBCXX_HIDDEN connection_threadObj
 
  private:
 	bool stop_received;
-	bool stopping_politely;
 
 	// Secondary queue for batched messages.
 

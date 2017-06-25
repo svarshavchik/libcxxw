@@ -98,15 +98,39 @@ void connection_threadObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin)
 	size_t n_poll=2;
 
 	stop_received=false;
-	stopping_politely=false;
 	disconnected_flag_thread_only=false;
 
 	do
 	{
 		try {
-			run_something(msgqueue, pfd, n_poll);
+			int poll_for;
+
+			if (!run_something(msgqueue, pfd, n_poll, poll_for))
+				// The connection thread needs to poll() ONLY
+				// if run_something() returned at the very
+				// end. All intermediate returns from
+				// run_something() mean: try again.
+				continue;
+
+			if (stop_received)
+				// Ok, no more work to do, and we were asked
+				// to politely stop.
+				continue;
+
+			if (poll(pfd, n_poll, poll_for) < 0)
+			{
+				if (errno != EINTR && errno != EAGAIN &&
+				    errno != EWOULDBLOCK)
+				{
+					LOG_FATAL("poll() failed");
+					continue;
+				}
+			}
+
+			if (pfd[0].revents & POLLIN)
+				msgqueue->getEventfd()->event();
 		} CATCH_EXCEPTIONS;
-	} while (!stopping_politely);
+	} while (!stop_received);
 }
 
 void connection_threadObj::report_error(const xcb_generic_error_t *e)

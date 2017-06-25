@@ -45,10 +45,11 @@ void connection_threadObj::dispatch_install_on_disconnect(const std::function<vo
 LOG_FUNC_SCOPE_DECL(LIBCXX_NAMESPACE::w::connection_threadObj::run_something,
 		    runLogger);
 
-void connection_threadObj
+bool connection_threadObj
 ::run_something(msgqueue_auto &msgqueue,
 		struct pollfd *topoll,
-		size_t &npoll)
+		size_t &npoll,
+		int &poll_for)
 {
 	connection_thread thread_(this);
 
@@ -60,7 +61,6 @@ void connection_threadObj
 	current_draw_info_cache_thread_only= &current_draw_info_cache;
 
 	// Assume we'll poll() indefinitely, unless there's a change in plans.
-	int poll_for;
 
 	auto batch_queue=get_batch_queue();
 	bool maybe_theres_something_in_batch_queue=false;
@@ -78,7 +78,7 @@ void connection_threadObj
 			// recalculation involves explicit redraws). Rather,
 			// return, and go back here, to create a new
 			// draw_info_cache.
-				return;
+				return false;
 
 		if (recalculate_containers(IN_THREAD))
 			continue;
@@ -140,7 +140,7 @@ void connection_threadObj
 
 				run_event(IN_THREAD, event);
 				if (!current_draw_info_cache.draw_info_cache.empty())
-					return; // Look above.
+					return false; // Look above.
 				continue;
 			}
 
@@ -151,7 +151,7 @@ void connection_threadObj
 		if (maybe_theres_something_in_batch_queue)
 			// Give the batch queue an opportunity to flush the
 			// batched jobs.
-			return;
+			return false;
 
 		if (redraw_elements(IN_THREAD))
 			// Don't bother checking draw_info_cache. It's unlikely
@@ -160,33 +160,13 @@ void connection_threadObj
 			// above. To be on the save side, return and go back
 			// here with a freshly wiped draw_info_cache, and
 			// take it from the top.
-			return;
+			return false;
 		break;
 	}
 
 	allow_events(IN_THREAD);
 	xcb_flush(info->conn);
-
-	// Ok, no more work to do, and we were asked to politely stop.
-	if (stop_received)
-	{
-		stopping_politely=true;
-		return;
-	}
-	// Ok, nothing else to do but poll().
-	LOG_TRACE("Polling");
-	if (poll(topoll, npoll, poll_for) < 0)
-	{
-		if (errno != EINTR && errno != EAGAIN &&
-		    errno != EWOULDBLOCK)
-		{
-			LOG_FATAL("poll() failed");
-			throw SYSEXCEPTION("poll");
-		}
-	}
-
-	if (topoll[0].revents & POLLIN)
-		msgqueue->getEventfd()->event();
+	return true;
 }
 
 // Insert a new callback
