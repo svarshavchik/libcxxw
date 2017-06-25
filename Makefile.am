@@ -528,6 +528,10 @@ libcxxw_la_SOURCES=\
 	windowobj.H				    \
 	window_handler.C			    \
 	window_handler.H			    \
+	xid_t.C					    \
+	xid_t.H					    \
+	xid_t_connection_thread.H		    \
+	xid_t_fwd.H				    \
 	xim/ximencoding.C			    \
 	xim/ximencoding.H			    \
 	xim/ximrequest.C			    \
@@ -545,10 +549,8 @@ libcxxw_la_SOURCES=\
 	xim/ximxtransportfwd.H			    \
 	xim/ximxtransport_impl.C		    \
 	xim/ximxtransport_impl.H		    \
-	xid_t.C					    \
-	xid_t.H					    \
-	xid_t_connection_thread.H		    \
-	xid_t_fwd.H				    \
+	xim_generic_window.C			    \
+	xim_generic_window.H			    \
         #
 
 XIM_AUTOGEN=xim/ximclient.inc.C xim/ximclient2.inc.C xim/ximclient.inc.H

@@ -8,11 +8,13 @@
 #include "x/w/main_window.H"
 #include "x/w/containerfwd.H"
 #include "generic_window.H"
+#include "xim_generic_window.H"
 
 LIBCXXW_NAMESPACE_START
 
 class LIBCXX_HIDDEN main_windowObj::implObj
-	: public generic_windowObj::implObj {
+	: public generic_windowObj::implObj,
+	  public xim_generic_windowObj {
 
  public:
 
