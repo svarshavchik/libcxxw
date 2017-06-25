@@ -404,6 +404,14 @@ libcxxw_la_SOURCES=\
 	pixmap.C				    \
 	pixmap.H				    \
 	pixmap_impl.C				    \
+	popup/popup.C				    \
+	popup/popup.H				    \
+	popup/popupfwd.H			    \
+	popup/popupobj.H			    \
+	popup/popup_handler.C			    \
+	popup/popup_handler.H			    \
+	popup/popup_impl.C			    \
+	popup/popup_impl.H			    \
 	radio_group.C				    \
 	radio_group.H				    \
 	radio_group_impl.C			    \
