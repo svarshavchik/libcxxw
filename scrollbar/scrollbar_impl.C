@@ -8,6 +8,7 @@
 #include "x/w/picture.H"
 #include "x/w/key_event.H"
 #include "x/w/button_event.H"
+#include "x/w/motion_event.H"
 #include "scrollbar/scrollbar_impl.H"
 #include "focus/focusable_element.H"
 #include "icon.H"
@@ -788,8 +789,8 @@ void scrollbarObj::implObj::abort_dragging(IN_THREAD_ONLY)
 	updated_value(IN_THREAD, conf.value, conf.value);
 }
 
-void scrollbarObj::implObj::motion_event(IN_THREAD_ONLY, coord_t x, coord_t y,
-					 const input_mask &mask)
+void scrollbarObj::implObj::report_motion_event(IN_THREAD_ONLY,
+						const motion_event &me)
 {
 	// Previous motion position.
 	rectangle r{data(IN_THREAD).last_motion_x,
@@ -797,13 +798,13 @@ void scrollbarObj::implObj::motion_event(IN_THREAD_ONLY, coord_t x, coord_t y,
 
 	auto prev_pointer_pos=r.*(orientation.major_coord);
 
-	superclass_t::motion_event(IN_THREAD, x, y, mask);
+	superclass_t::report_motion_event(IN_THREAD, me);
 
 	if (metrics.too_small || metrics.no_slider || !dragging)
 		return;
 
-	r.x=x;
-	r.y=y;
+	r.x=me.x;
+	r.y=me.y;
 
 	auto pointer_pos=r.*(orientation.major_coord);
 

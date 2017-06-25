@@ -22,6 +22,7 @@
 #include "xim/ximclient.H"
 #include "x/w/key_event.H"
 #include "x/w/button_event.H"
+#include "x/w/motion_event.H"
 #include "x/w/values_and_mask.H"
 #include <X11/keysym.h>
 #include "child_element.H"
@@ -512,8 +513,10 @@ void generic_windowObj::handlerObj
 
 	button_event be{event->state, keysyms, event->detail, buttonpress};
 
-	report_pointer_xy(IN_THREAD, be, event->event_x, event->event_y,
-			  was_grabbed);
+	motion_event me{be, motion_event_type::button_event,
+			event->event_x, event->event_y};
+
+	report_pointer_xy(IN_THREAD, me, was_grabbed);
 
 	// report_pointer_xy() might not always set
 	// most_recent_element_with_pointer(IN_THREAD).
@@ -689,7 +692,10 @@ void generic_windowObj::handlerObj
 
 	input_mask mask{event->state, keysyms};
 
-	report_pointer_xy(IN_THREAD, mask, event->event_x, event->event_y);
+	motion_event me{mask, motion_event_type::real_motion,
+			event->event_x, event->event_y};
+
+	report_pointer_xy(IN_THREAD, me);
 }
 
 void generic_windowObj::handlerObj
@@ -703,7 +709,9 @@ void generic_windowObj::handlerObj
 
 	input_mask mask{event->state, keysyms};
 
-	report_pointer_xy(IN_THREAD, mask, event->event_x, event->event_y);
+	motion_event me{mask, motion_event_type::enter_event,
+			event->event_x, event->event_y};
+	report_pointer_xy(IN_THREAD, me);
 }
 
 void generic_windowObj::handlerObj
@@ -724,18 +732,14 @@ void generic_windowObj::handlerObj
 
 void generic_windowObj::handlerObj
 ::report_pointer_xy(IN_THREAD_ONLY,
-		    const input_mask &mask,
-		    coord_t x,
-		    coord_t y)
+		    motion_event &me)
 {
-	report_pointer_xy(IN_THREAD, mask, x, y, grab_locked(IN_THREAD));
+	report_pointer_xy(IN_THREAD, me, grab_locked(IN_THREAD));
 }
 
 void generic_windowObj::handlerObj
 ::report_pointer_xy(IN_THREAD_ONLY,
-		    const input_mask &mask,
-		    coord_t x,
-		    coord_t y,
+		    motion_event &me,
 		    bool was_grabbed)
 {
 	auto g=most_recent_element_with_pointer(IN_THREAD);
@@ -760,16 +764,18 @@ void generic_windowObj::handlerObj
 	{
 		auto position=g->get_absolute_location(IN_THREAD);
 
-		g->motion_event(IN_THREAD,
-				coord_t::truncate((coord_squared_t::value_type)
-						  coord_t::value_type(x)
-						  -coord_t::value_type
-						  (position.x)),
-				coord_t::truncate((coord_squared_t::value_type)
-						  coord_t::value_type(y)
-						  -coord_t::value_type
-						  (position.y)),
-				mask);
+		// Compute coordinates directly.
+
+		me.x=coord_t::truncate((coord_squared_t::value_type)
+				       coord_t::value_type(me.x)
+				       -coord_t::value_type
+				       (position.x));
+		me.y=coord_t::truncate((coord_squared_t::value_type)
+				       coord_t::value_type(me.y)
+				       -coord_t::value_type
+				       (position.y));
+
+		g->report_motion_event(IN_THREAD, me);
 		return;
 	}
 	// Locate the lowermost visible element for the given position.
@@ -803,14 +809,14 @@ void generic_windowObj::handlerObj
 					  const auto &p=child->data(IN_THREAD)
 						  .current_position;
 
-					  if (!p.overlaps(x, y))
+					  if (!p.overlaps(me.x, me.y))
 						  return;
 
 					  found=true;
 					  e=child;
 
-					  x=coord_t::truncate(x-p.x);
-					  y=coord_t::truncate(y-p.y);
+					  me.x=coord_t::truncate(me.x-p.x);
+					  me.y=coord_t::truncate(me.y-p.y);
 				  });
 	} while (found);
 
@@ -818,7 +824,7 @@ void generic_windowObj::handlerObj
 
 	if (most_recent_element_with_pointer(IN_THREAD))
 		most_recent_element_with_pointer(IN_THREAD)
-			->motion_event(IN_THREAD, x, y, mask);
+			->report_motion_event(IN_THREAD, me);
 }
 
 void generic_windowObj::handlerObj

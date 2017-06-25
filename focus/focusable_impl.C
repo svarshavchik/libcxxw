@@ -5,6 +5,7 @@
 #include "libcxxw_config.h"
 #include "x/w/focusable.H"
 #include "x/w/button_event.H"
+#include "x/w/motion_event.H"
 #include "focus/focusable.H"
 #include "generic_window_handler.H"
 #include "child_element.H"
@@ -273,7 +274,12 @@ bool elementObj::implObj::process_button_event(IN_THREAD_ONLY,
 				 x=coord_t::truncate(x-itsoverthere.x);
 				 y=coord_t::truncate(y-itsoverthere.y);
 
-				 fe.motion_event(IN_THREAD, x, y, be);
+				 motion_event me{be,
+						 motion_event_type
+						 ::button_event,
+						 x, y};
+
+				 fe.report_motion_event(IN_THREAD, me);
 
 				 processed=fe
 					 .process_button_event(IN_THREAD,

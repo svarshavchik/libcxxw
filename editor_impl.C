@@ -24,6 +24,7 @@
 #include "xim/ximclient.H"
 #include "x/w/key_event.H"
 #include "x/w/button_event.H"
+#include "x/w/motion_event.H"
 #include <x/vector.H>
 #include <x/weakcapture.H>
 #include <X11/keysym.h>
@@ -627,16 +628,18 @@ bool editorObj::implObj::process_button_event(IN_THREAD_ONLY,
 	return superclass_t::process_button_event(IN_THREAD, be, timestamp);
 }
 
-void editorObj::implObj::motion_event(IN_THREAD_ONLY, coord_t x, coord_t y,
-				      const input_mask &mask)
+void editorObj::implObj::report_motion_event(IN_THREAD_ONLY,
+					     const motion_event &me)
 {
-	most_recent_x=x;
-	most_recent_y=y;
+	superclass_t::report_motion_event(IN_THREAD, me);
 
-	if (mask.buttons & 1)
+	most_recent_x=me.x;
+	most_recent_y=me.y;
+
+	if (me.mask.buttons & 1)
 	{
 		{
-			moving_cursor moving{IN_THREAD, *this, mask};
+			moving_cursor moving{IN_THREAD, *this, me.mask};
 			cursor->moveto(IN_THREAD, most_recent_x, most_recent_y);
 		}
 

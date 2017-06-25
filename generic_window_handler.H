@@ -245,17 +245,13 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! changes, accordingly.
 
 	void report_pointer_xy(IN_THREAD_ONLY,
-			       const input_mask &mask,
-			       coord_t x,
-			       coord_t y,
+			       motion_event &me,
 			       bool was_grabbed);
 
 	//! Use grab_locked() for was_grabbed in the overloaded method.
 
 	void report_pointer_xy(IN_THREAD_ONLY,
-			       const input_mask &mask,
-			       coord_t x,
-			       coord_t y);
+			       motion_event &me);
 
 	//! This is the element that should be receiving pointer events.
 

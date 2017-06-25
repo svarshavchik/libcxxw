@@ -12,6 +12,7 @@
 #include "background_color.H"
 #include "generic_window_handler.H"
 #include "x/w/picture.H"
+#include "x/w/motion_event.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -263,17 +264,17 @@ void child_elementObj::grab(IN_THREAD_ONLY)
 	get_window_handler().grab(IN_THREAD, ref<elementObj::implObj>(this));
 }
 
-void child_elementObj::motion_event(IN_THREAD_ONLY, coord_t x, coord_t y,
-				    const input_mask &mask)
+void child_elementObj::report_motion_event(IN_THREAD_ONLY,
+					   const motion_event &me)
 {
-	elementObj::implObj::motion_event(IN_THREAD, x, y, mask);
+	elementObj::implObj::report_motion_event(IN_THREAD, me);
 
-	container->get_element_impl()
-		.motion_event(IN_THREAD,
-			      coord_t::truncate(x + data(IN_THREAD)
-						.current_position.x),
-			      coord_t::truncate(y + data(IN_THREAD)
-						.current_position.y), mask);
+	auto cpy=me;
+
+	cpy.x=coord_t::truncate(me.x + data(IN_THREAD).current_position.x);
+	cpy.y=coord_t::truncate(me.y + data(IN_THREAD).current_position.y);
+
+	container->get_element_impl().report_motion_event(IN_THREAD, cpy);
 }
 
 void child_elementObj::ensure_visibility(IN_THREAD_ONLY, const rectangle &r)

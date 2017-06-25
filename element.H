@@ -13,6 +13,7 @@
 #include "x/w/scratch_bufferfwd.H"
 #include "x/w/input_mask.H"
 #include "x/w/button_eventfwd.H"
+#include "x/w/motion_eventfwd.H"
 #include "x/w/busyfwd.H"
 #include "x/w/focus.H"
 #include "connection_threadfwd.H"
@@ -879,8 +880,8 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! The pointer has moved.
 
 	//! The default implementation does nothing.
-	virtual void motion_event(IN_THREAD_ONLY, coord_t x, coord_t y,
-				  const input_mask &mask);
+	virtual void report_motion_event(IN_THREAD_ONLY, const motion_event &);
+
  private:
 
 	//! The most recent keyboard_focus() reported

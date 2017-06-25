@@ -17,6 +17,7 @@
 #include "grabbed_pointer.H"
 #include "x/w/element_state.H"
 #include "x/w/scratch_buffer.H"
+#include "x/w/motion_event.H"
 #include "x/callback_list.H"
 #include "element_screen.H"
 #include "focus/label_for.H"
@@ -873,11 +874,11 @@ bool elementObj::implObj::uses_input_method()
 	return false;
 }
 
-void elementObj::implObj::motion_event(IN_THREAD_ONLY, coord_t x, coord_t y,
-				       const input_mask &mask)
+void elementObj::implObj::report_motion_event(IN_THREAD_ONLY,
+					      const motion_event &me)
 {
-	data(IN_THREAD).last_motion_x=x;
-	data(IN_THREAD).last_motion_y=y;
+	data(IN_THREAD).last_motion_x=me.x;
+	data(IN_THREAD).last_motion_y=me.y;
 }
 
 void elementObj::implObj::ensure_visibility(IN_THREAD_ONLY, const rectangle &r)

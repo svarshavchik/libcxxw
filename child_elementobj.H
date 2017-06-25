@@ -128,11 +128,11 @@ class LIBCXX_HIDDEN child_elementObj : public elementObj::implObj {
 
 	//! Motion events
 
-	//! The motion event, after it's reported for this elemenbt,
+	//! The motion event, after it's reported for this element,
 	//! gets also reported for its parent display element.
 
-	void motion_event(IN_THREAD_ONLY, coord_t x, coord_t y,
-			  const input_mask &mask) override;
+	void report_motion_event(IN_THREAD_ONLY, const motion_event &)
+		override;
 
  protected:
 

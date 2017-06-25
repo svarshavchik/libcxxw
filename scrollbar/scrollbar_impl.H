@@ -227,8 +227,8 @@ class LIBCXX_HIDDEN scrollbarObj::implObj : public focusable_elementObj<> {
 
 	//! Process motion events.
 
-	void motion_event(IN_THREAD_ONLY, coord_t x, coord_t y,
-			  const input_mask &mask);
+	void report_motion_event(IN_THREAD_ONLY, const motion_event &)
+		override;
 
 	//! Process a focus change notification.
 

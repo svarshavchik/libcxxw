@@ -165,8 +165,8 @@ class LIBCXX_HIDDEN editorObj::implObj
 				  const button_event &be,
 				  xcb_timestamp_t timestamp) override;
 	//! Pointer motion event
-	void motion_event(IN_THREAD_ONLY, coord_t x, coord_t y,
-			  const input_mask &mask) override;
+	void report_motion_event(IN_THREAD_ONLY, const motion_event &)
+		override;
 
  private:
 	//! Most recently reported coordinates.
