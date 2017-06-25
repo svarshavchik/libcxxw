@@ -7,6 +7,7 @@
 #include "connection_thread.H"
 #include "draw_info.H"
 #include "layoutmanager.H"
+#include "batch_queue.H"
 #include "x/w/screen.H"
 #include "x/w/connection.H"
 
@@ -159,7 +160,7 @@ void main_windowObj::handlerObj::request_visibility(IN_THREAD_ONLY,
 			 // itself out too, so schedule another job to finally
 			 // nail this coffin shut.
 
-			 IN_THREAD->run_as
+			 IN_THREAD->get_batch_queue()->run_as
 				 (RUN_AS,
 				  [me]
 				  (IN_THREAD_ONLY)

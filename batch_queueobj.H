@@ -18,14 +18,9 @@ LIBCXXW_NAMESPACE_START
 
 class LIBCXX_HIDDEN batch_queueObj : virtual public obj {
 
-	class containers_2_recalculateObj;
+	//! Something was scheduled...
 
-	//! An internal container for all layoutmanagers that need recalcing.
-
-	typedef mpobj<ref<containers_2_recalculateObj>> c2r_t;
-
-	//! All layout managers that need recalcing.
-	c2r_t c2r;
+	mpobj<bool> something_scheduled;
 
  public:
 

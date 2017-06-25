@@ -29,6 +29,12 @@
     </param>
   </method>
 
+  <method name="execute_batched_jobs">
+    <comment>
+      //! Execute queued up batch jobs.
+    </comment>
+  </method>
+
   <method name="set_theme_changed_callback">
     <comment>
       //! Installs a callback that gets invoked when CXXWTHEME changes.

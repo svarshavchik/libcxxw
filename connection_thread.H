@@ -34,6 +34,7 @@ LIBCXXW_NAMESPACE_START
 class window_handlerObj;
 class xidObj;
 class containers_2_recalculate_map;
+class containers_2_batch_recalculate_set;
 
 //! The connection thread. Handles X server events. Does everything.
 class LIBCXX_HIDDEN connection_threadObj
@@ -314,9 +315,16 @@ class LIBCXX_HIDDEN connection_threadObj
 
 	active_queue_t batched_queue;
 
+	// batch_queue singleton.
+
 	mpobj<weakptr<batch_queueptr>> current_batch_queue;
 
+	// Containers queued up for batch recalculation
+
+	containers_2_batch_recalculate_set *containers_2_batch_recalculate_thread_only;
+
  public:
+	THREAD_DATA_ONLY(containers_2_batch_recalculate);
 
 	//! Same as run_as, but the job goes into the batch queue, instead.
 
@@ -329,11 +337,6 @@ class LIBCXX_HIDDEN connection_threadObj
 			     file, line,
 			     make_function<void (IN_THREAD_ONLY)>
 			     (std::forward<T>(func)));
-	}
-
-	void execute_batched_jobs()
-	{
-		process_events(batched_queue);
 	}
 
 	//! Return a batch_queue object, for batching jobs for the thread.

@@ -46,6 +46,8 @@ void connection_threadObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin)
 	element_set_t visibility_updated;
 	elements_to_redraw_set elements_to_redraw;
 	containers_2_recalculate_map containers_2_recalculate;
+	containers_2_batch_recalculate_set containers_2_batch_recalculate;
+
 	element_set_t element_position_updated;
 	scheduled_callbacks_t scheduled_callbacks=
 		scheduled_callbacks_t::create();
@@ -58,6 +60,8 @@ void connection_threadObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin)
 	exposed_rectangles_thread_only= &exposed_rectangles;
 	elements_to_redraw_thread_only= &elements_to_redraw;
 	containers_2_recalculate_thread_only= &containers_2_recalculate;
+	containers_2_batch_recalculate_thread_only=
+		&containers_2_batch_recalculate;
 	element_position_updated_thread_only= &element_position_updated;
 	scheduled_callbacks_thread_only= &scheduled_callbacks;
 	pending_incremental_updates_thread_only= &pending_incremental_updates;

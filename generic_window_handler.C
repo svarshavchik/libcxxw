@@ -292,6 +292,7 @@ void generic_windowObj::handlerObj::set_background_color(IN_THREAD_ONLY,
 void generic_windowObj::handlerObj::exposure_event(IN_THREAD_ONLY,
 						   const rectangle_set &areas)
 {
+	has_exposed(IN_THREAD)=true;
 	exposure_event_recursive(IN_THREAD, areas);
 }
 
@@ -558,6 +559,7 @@ void generic_windowObj::handlerObj::configure_notify(IN_THREAD_ONLY,
 
 		*lock=r;
 	}
+	has_exposed(IN_THREAD)=false; // Exposure event coming.
 
 	auto new_position=element_position(r);
 

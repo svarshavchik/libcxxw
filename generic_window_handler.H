@@ -84,6 +84,9 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 	bool has_focus_thread_only=false;
 
+	//! Whether this window has been exposed
+	bool has_exposed_thread_only=false;
+
 	//! Window manager's frame size and screen geometry.
 	struct frame_extents_t {
 
@@ -158,6 +161,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	THREAD_DATA_ONLY(has_focus);
 	THREAD_DATA_ONLY(frame_extents);
 	THREAD_DATA_ONLY(current_pointer_grab);
+	THREAD_DATA_ONLY(has_exposed);
 
 	//! Invoked after the handler gets installed.
 

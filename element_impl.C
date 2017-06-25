@@ -255,8 +255,7 @@ void elementObj::implObj::draw_after_visibility_updated(IN_THREAD_ONLY,
 
 void elementObj::implObj::schedule_redraw(IN_THREAD_ONLY)
 {
-	if (!get_window_handler().data(IN_THREAD).inherited_visibility)
-		// Top level window is not mapped, don't bother.
+	if (!get_window_handler().has_exposed(IN_THREAD))
 		return;
 
 	IN_THREAD->elements_to_redraw(IN_THREAD)->insert(elementimpl(this));

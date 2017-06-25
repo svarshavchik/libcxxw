@@ -676,15 +676,16 @@ runtestthemescale(const testmainwindowoptions &options)
 		 (const auto &what, const auto &ignore)
 		 mutable
 		 {
+			 if (first_time)
+			 {
+				 first_time=false;
+				 return;
+			 }
+
 			 std::cout << "Canvas: " << what << std::endl;
 			 if (what.shown &&
 			     what.state_update == what.current_state)
 			 {
-				 if (first_time)
-				 {
-					 first_time=false;
-					 return;
-				 }
 				 ccanvas->increment(what.current_position.width);
 			 }
 		 });
