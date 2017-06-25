@@ -14,7 +14,7 @@ incremental_selection_update_timeout(LIBCXX_NAMESPACE_STR
 				     "::w::incremental_selection_update_timeout"
 				     , hms(0, 5, 0));
 
-connection_threadObj::tick_clock_t::time_point
+tick_clock_t::time_point
 connection_threadObj::incremental_selection_update_info::next_incremental_update_timeout()
 {
 	return tick_clock_t::now()+std::chrono::duration_cast

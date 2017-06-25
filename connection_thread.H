@@ -27,7 +27,6 @@
 #include <unordered_set>
 #include <set>
 #include <atomic>
-#include <chrono>
 
 LIBCXXW_NAMESPACE_START
 
@@ -167,10 +166,6 @@ class LIBCXX_HIDDEN connection_threadObj
 
 	//! Process an element's position.
 	bool process_element_position_updated(IN_THREAD_ONLY);
-
-		//! A clock for regularly-scheduled callbacks.
-
-	typedef std::chrono::steady_clock tick_clock_t;
 
 	//! tick_clock_t's time_point.
 

@@ -6,6 +6,7 @@
 #define connection_threadfwd_h
 
 #include <x/ptrfwd.H>
+#include <chrono>
 #include "x/w/namespace.H"
 
 LIBCXXW_NAMESPACE_START
@@ -15,6 +16,10 @@ class connection_threadObj;
 typedef ref<connection_threadObj> connection_thread;
 
 typedef ptr<connection_threadObj> connection_threadptr;
+
+//! A clock for regularly-scheduled callbacks.
+
+typedef std::chrono::steady_clock tick_clock_t;
 
 /////////////////
 //
