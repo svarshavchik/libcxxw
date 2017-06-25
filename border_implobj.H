@@ -277,8 +277,6 @@ class LIBCXX_HIDDEN border_implObj: virtual public obj, public border_info {
 			       coord_t y,
 			       bool subtract_width,
 			       bool subtract_height,
-			       int16_t angle1,
-			       int16_t angle2,
 			       const grid_elementptr &element) const;
 
  public:

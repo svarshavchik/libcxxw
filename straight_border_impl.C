@@ -450,7 +450,7 @@ void straight_borderObj::implObj
 						 top_height);
 	}
 
-	if (borders(IN_THREAD).element_2 && top_height > 0)
+	if (borders(IN_THREAD).element_2 && bottom_height > 0)
 	{
 		auto &di=borders(IN_THREAD).element_2->grid_element->impl
 			->get_draw_info(IN_THREAD);
@@ -489,7 +489,7 @@ void straight_borderObj::implObj
 						 bg.area_rectangle.height);
 	}
 
-	if (borders(IN_THREAD).element_2 && left_width > 0)
+	if (borders(IN_THREAD).element_2 && right_width > 0)
 	{
 		auto &di=borders(IN_THREAD).element_2->grid_element->impl
 			->get_draw_info(IN_THREAD);

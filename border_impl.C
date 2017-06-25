@@ -593,8 +593,7 @@ void border_implObj::draw_cornertl(IN_THREAD_ONLY,
 		draw_round_corner(IN_THREAD,
 				  cdi.di,
 				  cdi.x, cdi.y,
-				  false, false,
-				  270 * 64, 90 * 64,
+				  true, true,
 				  elements.topleft);
 		return;
 	}
@@ -612,8 +611,7 @@ void border_implObj::draw_cornertr(IN_THREAD_ONLY,
 		draw_round_corner(IN_THREAD,
 				  cdi.di,
 				  cdi.x, cdi.y,
-				  true, false,
-				  180 * 64, 90 * 64,
+				  false, true,
 				  elements.topright);
 		return;
 	}
@@ -631,8 +629,7 @@ void border_implObj::draw_cornerbl(IN_THREAD_ONLY,
 		draw_round_corner(IN_THREAD,
 				  cdi.di,
 				  cdi.x, cdi.y,
-				  false, true,
-				  90 * 64, -90 * 64,
+				  true, false,
 				  elements.bottomleft);
 		return;
 	}
@@ -650,8 +647,7 @@ void border_implObj::draw_cornerbr(IN_THREAD_ONLY,
 		draw_round_corner(IN_THREAD,
 				  cdi.di,
 				  cdi.x, cdi.y,
-				  true, true,
-				  180 * 64, -90 * 64,
+				  false, false,
 				  elements.bottomright);
 		return;
 	}
@@ -667,6 +663,7 @@ void border_implObj::draw_square_corner(const draw_info &di,
 
 	gc::base::properties props;
 
+	props.foreground(1);
 	props.background(1);
 	props.function(gc::base::function::SET);
 	di.mask_gc->fill_rectangle(x, y,
@@ -675,65 +672,82 @@ void border_implObj::draw_square_corner(const draw_info &di,
 	composite_line(di, 0);
 }
 
-// The x & y coordinates we use specify the center of the arc.
-//
-// X protocol requests specify the arc as a bounding rectangle.
-//
-// Calculate the X protocol arc given the x/y center coordinates, and the
-// horizontal and vertical radius.
-
-static gc::base::arc compute_arc(coord_t x,
-				 coord_t y,
-				 dim_squared_t hradius,
-				 dim_squared_t vradius,
-				 int16_t angle1,
-				 int16_t angle2)
-{
-	x=coord_t::truncate(x-dim_squared_t::value_type(hradius));
-	y=coord_t::truncate(y-dim_squared_t::value_type(vradius));
-
-	// The bounding rectangle is twice the horizontal and vertical radius,
-	// but X protocol uses an inclusive bounding rectangle, hence the need
-	// to subtract 1.
-
-	dim_t h=dim_t::truncate(hradius*2-1);
-	dim_t v=dim_t::truncate(vradius*2-1);
-
-	return {x, y, h, v, angle1, angle2};
-}
-
 void border_implObj::draw_round_corner(IN_THREAD_ONLY,
 				       const draw_info &di,
 				       coord_t x,
 				       coord_t y,
-				       bool add_width,
-				       bool add_height,
-				       int16_t angle1,
-				       int16_t angle2,
+				       bool subtract_width,
+				       bool subtract_height,
 				       const grid_elementptr &element) const
 {
-	if (add_width)
-		x=coord_t::truncate(x+calculated_border_width);
-
-	if (add_height)
-		y=coord_t::truncate(y+calculated_border_height);
-
 	mask_gc_clear(di);
+
 	gc::base::properties props;
 
 	props.background(1);
+	props.foreground(1);
 	props.function(gc::base::function::SET);
 
-	// First, fill in the entire pie from the corner border.
+	// A rounded border is created by simply drawing a circle or an
+	// oval, and clipping the result.
+	//
+	// x & y are the starting coordinates for this border element, whose
+	// size is calculated_border_width x calculated_border_height.
+	//
+	// We start by clipping everything to the actual border element.
 
-	di.mask_gc->fill_arc(compute_arc(x, y,
-					 inner_hradius() + width+1,
-					 inner_vradius() + height+1,
-					 angle1,
-					 angle2), props);
+	props.clipmask({{x, y, calculated_border_width,
+					calculated_border_height}});
+
+	// Now, all we have to do is compute the radius of the circles/ovals,
+	// and draw them. If we draw at (x, y), we'll end up clipping the
+	// top-right quarter of the circle/ovals, forming the top-right border.
+	//
+	// By adjusting the (x, y) coordinates, we arrange to have the
+	// appropriate quarter of the circle/oval to fall into the clipped
+	// area:
+
+	if (subtract_width)
+		x=coord_t::truncate(x-calculated_border_width);
+
+	if (subtract_height)
+		y=coord_t::truncate(y-calculated_border_height);
+
+	// inner_hradius() and inner_vradius() translates to additional
+	// padding around the border. The border is formed from, essentially:
+	//
+	//  radius area    border width/height  radius area
+	//
+	// So, we simply add the inner radius to the X coordinates to get
+	// the top/right corner of the rectangle within which the circle/oval
+	// gets drawn.
+
+	x=coord_t::truncate(x+inner_hradius());
+	y=coord_t::truncate(y+inner_vradius());
+
+	// And there's an inner radius, we start by creating a mask for the
+	// innermost circle/oval that comprises the inner area of the rounded
+	// border. This will be filled in by the inner element's background
+	// color.
 
 	if (inner_hradius() > 0)
 	{
+		// Advance the (x, y) coordinate's by the border's size,
+		// to compute the rectangle that encompasses the circle/oval
+		// representing the inner side of the rounded border. The
+		// size of the rectangle is simply inner_radius*2.
+		//
+		// Looks like rectangle dimensions for drawing an arc
+		// enclose the actual rectangle, so we have to subtract 1.
+
+		coord_t inner_x = coord_t::truncate(x + width);
+		coord_t inner_y = coord_t::truncate(y + height);
+
+		di.mask_gc->fill_arc(inner_x, inner_y,
+				     inner_hradius()*2-1,
+				     inner_vradius()*2-1,
+				     0, 360*64, props);
+
 		// Before clearing the inner border, use this mask to
 		// fill the inner border with the element's background_color
 
@@ -755,28 +769,39 @@ void border_implObj::draw_round_corner(IN_THREAD_ONLY,
 				 xy.first, xy.second,
 				 0, 0,
 				 di.area_rectangle.width,
-				 di.area_rectangle.height);
+				 di.area_rectangle.height,
+				 render_pict_op::op_over);
 		}
-
-		// Now, clear the inner border.
-
-		props.function(gc::base::function::CLEAR);
-
-		di.mask_gc->fill_arc(compute_arc(x, y,
-						 inner_hradius()+dim_t{1},
-						 inner_vradius()+dim_t{1},
-						 angle1,
-						 angle2), props);
-
-		// Redraw the outer border, to make sure there's at least a
-		// 1-pixel rounded line.
-		props.function(gc::base::function::SET);
-		di.mask_gc->draw_arc(compute_arc(x, y,
-						 inner_hradius() + width,
-						 inner_vradius() + height,
-						 angle1,
-						 angle2), props);
 	}
+
+	// Ok, the size of the circle/oval for the rounded border is
+	// the inner radius plus border width times two. And we have to
+	// subtract 1 to make X11's gods happy.
+
+	dim_t outer_circle_w=
+		dim_t::truncate(inner_hradius()+width+width+inner_hradius()-1);
+	dim_t outer_circle_h=
+		dim_t::truncate(inner_vradius()+height+height+inner_vradius()-1);
+
+	// Use XOR to create a mask for the border itself. If there was
+	// an inner radius, this is going to clear the mask for the inner
+	// area of the border, leaving us with just the outline for the
+	// rounded line.
+
+	props.function(gc::base::function::XOR);
+
+	di.mask_gc->fill_arc(x, y,
+			     outer_circle_w, outer_circle_h,
+			     0, 360*64, props);
+
+#if 0
+	// Redraw the outer border, to make sure there's at least a
+	// 1-pixel rounded line.
+	props.function(gc::base::function::SET);
+
+	di.mask_gc->draw_arc(x, y, outer_circle_w, outer_circle_h,
+			     0, 360*64, props);
+#endif
 
 	composite_line(di, 0);
 }
@@ -842,14 +867,7 @@ void border_implObj::composite_line(const draw_info &di, size_t n) const
 				   // call.
 				   di.area_rectangle.width,
 				   di.area_rectangle.height,
-
-				   // Use ATOP composition. The picture buffer
-				   // is initially filled with the background
-				   // color. This allows an invisible border
-				   // by setting the border color's alpha
-				   // channel to 0.
-
-				   render_pict_op::op_atop);
+				   render_pict_op::op_over);
 }
 
 // We need to calculate the centerline of a vertical border.
