@@ -21,6 +21,7 @@
 #include "draw_infofwd.H"
 #include "draw_info_cachefwd.H"
 #include "background_colorfwd.H"
+#include "grabbed_pointerfwd.H"
 #include "metrics_horizvertobj.H"
 #include "focus/label_forfwd.H"
 #include "focus/label_forobj.H"
@@ -948,6 +949,14 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! forwards it to its parent container.
 
 	virtual void creating_focusable_element();
+
+	//! Grab the pointer for this element.
+
+	//! Returns a mcguffin if the pointer is not already grabbed by another
+	//! element, and the grab succeeds.
+
+	grabbed_pointerptr grab_pointer(IN_THREAD_ONLY);
+
 };
 
 LIBCXXW_NAMESPACE_END

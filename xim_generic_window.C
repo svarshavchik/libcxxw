@@ -8,6 +8,8 @@
 #include "xim/ximclient.H"
 #include "xim/ximxtransport.H"
 #include "xim/ximxtransport_impl.H"
+#include "x/w/screen.H"
+#include "x/w/connection.H"
 
 LIBCXXW_NAMESPACE_START
 

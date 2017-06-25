@@ -7,6 +7,8 @@
 #include "connection_thread.H"
 #include "draw_info.H"
 #include "layoutmanager.H"
+#include "x/w/screen.H"
+#include "x/w/connection.H"
 
 LIBCXXW_NAMESPACE_START
 

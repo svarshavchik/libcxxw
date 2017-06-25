@@ -56,10 +56,10 @@ public:
 	~screenObj() LIBCXX_HIDDEN;
 
 	//! The screen's connection
-	connection get_connection();
+	connection get_connection() LIBCXX_INLINE;
 
 	//! The screen's connection
-	const_connection get_connection() const;
+	const_connection get_connection() const LIBCXX_INLINE;
 
 	//! The connection mcguffin
 

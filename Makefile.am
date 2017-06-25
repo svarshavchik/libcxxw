@@ -228,6 +228,10 @@ libcxxw_la_SOURCES=\
 	generic_window_handler.C		    \
 	generic_window_handler.H		    \
 	generic_window_impl.C			    \
+	grabbed_pointer.C			    \
+	grabbed_pointer.H			    \
+	grabbed_pointerfwd.H			    \
+	grabbed_pointerobj.H			    \
 	grid_element.C				    \
 	grid_element.H				    \
 	grid_elementfwd.H			    \

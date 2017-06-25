@@ -14,6 +14,7 @@
 #include "icon.H"
 #include "icon_image.H"
 #include "background_color.H"
+#include "grabbed_pointer.H"
 #include "x/w/element_state.H"
 #include "x/w/scratch_buffer.H"
 #include "x/callback_list.H"

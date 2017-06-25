@@ -18,6 +18,7 @@
 #include "element_screen.H"
 #include "background_color.H"
 #include "focus/focusable.H"
+#include "grabbed_pointer.H"
 #include "xim/ximclient.H"
 #include "x/w/key_event.H"
 #include "x/w/button_event.H"
@@ -735,14 +736,29 @@ void generic_windowObj::handlerObj
 		    coord_t y,
 		    bool was_grabbed)
 {
-	if (was_grabbed &&
-	    most_recent_element_with_pointer(IN_THREAD))
+	auto g=most_recent_element_with_pointer(IN_THREAD);
+	// If was_grabbed, this element passively grabbed the pointer.
+	//
+	// We also need to check for active grabs, which take precedence:
+
+	auto pg=current_pointer_grab(IN_THREAD).getptr();
+
+	if (pg)
 	{
-		auto e=most_recent_element_with_pointer(IN_THREAD);
+		auto grabbing_element=pg->grabbing_element.getptr();
 
-		auto position=e->get_absolute_location(IN_THREAD);
+		if (grabbing_element)
+		{
+			g=grabbing_element;
+			was_grabbed=true;
+		}
+	}
 
-		e->motion_event(IN_THREAD,
+	if (was_grabbed && g)
+	{
+		auto position=g->get_absolute_location(IN_THREAD);
+
+		g->motion_event(IN_THREAD,
 				coord_t::truncate((coord_squared_t::value_type)
 						  coord_t::value_type(x)
 						  -coord_t::value_type
@@ -754,7 +770,7 @@ void generic_windowObj::handlerObj
 				mask);
 		return;
 	}
-	// Locate the lowermost visibile element for the given position.
+	// Locate the lowermost visible element for the given position.
 
 	ref<elementObj::implObj> e{this};
 

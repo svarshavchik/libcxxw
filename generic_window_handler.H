@@ -14,6 +14,7 @@
 #include "connection_threadfwd.H"
 #include "container_elementfwd.H"
 #include "hotspotfwd.H"
+#include "grabbed_pointerfwd.H"
 #include "x/w/pictformatfwd.H"
 #include "x/w/types.H"
 #include "x/w/focusablefwd.H"
@@ -105,6 +106,9 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 	frame_extents_t frame_extents_thread_only;
 
+	//! The current pointer grab.
+
+	weakptr<grabbed_pointerptr> current_pointer_grab_thread_only;
  public:
 
 	//! What I want for my initial event mask.
@@ -153,6 +157,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	THREAD_DATA_ONLY(current_background_color);
 	THREAD_DATA_ONLY(has_focus);
 	THREAD_DATA_ONLY(frame_extents);
+	THREAD_DATA_ONLY(current_pointer_grab);
 
 	//! Invoked after the handler gets installed.
 
@@ -546,7 +551,6 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	}
 
 	void do_update_wm_hints(const function<update_wm_hints_t> &callback);
-
 };
 
 LIBCXXW_NAMESPACE_END
