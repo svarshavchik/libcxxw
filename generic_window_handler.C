@@ -27,6 +27,8 @@
 #include "hotspot.H"
 #include "catch_exceptions.H"
 #include <x/property_value.H>
+#include <x/strtok.H>
+#include <x/chrcasecmp.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -882,6 +884,76 @@ void generic_windowObj::handlerObj::update_frame_extents(IN_THREAD_ONLY)
 
 void generic_windowObj::handlerObj::frame_extents_updated(IN_THREAD_ONLY)
 {
+}
+
+static const struct {
+	const char *n;
+	xcb_atom_t xcb_ewmh_connection_t::*atom;
+} window_type_atoms[]={
+	{"desktop", &xcb_ewmh_connection_t::_NET_WM_WINDOW_TYPE_DESKTOP},
+	{"dock", &xcb_ewmh_connection_t::_NET_WM_WINDOW_TYPE_DOCK},
+	{"toolbar", &xcb_ewmh_connection_t::_NET_WM_WINDOW_TYPE_TOOLBAR},
+	{"menu", &xcb_ewmh_connection_t::_NET_WM_WINDOW_TYPE_MENU},
+	{"utility", &xcb_ewmh_connection_t::_NET_WM_WINDOW_TYPE_UTILITY},
+	{"splash", &xcb_ewmh_connection_t::_NET_WM_WINDOW_TYPE_SPLASH},
+	{"dialog", &xcb_ewmh_connection_t::_NET_WM_WINDOW_TYPE_DIALOG},
+	{"dropdown_menu",
+	 &xcb_ewmh_connection_t::_NET_WM_WINDOW_TYPE_DROPDOWN_MENU},
+	{"popup_menu", &xcb_ewmh_connection_t::_NET_WM_WINDOW_TYPE_POPUP_MENU},
+	{"tooltip", &xcb_ewmh_connection_t::_NET_WM_WINDOW_TYPE_TOOLTIP},
+	{"notification",
+	 &xcb_ewmh_connection_t::_NET_WM_WINDOW_TYPE_NOTIFICATION},
+	{"combo", &xcb_ewmh_connection_t::_NET_WM_WINDOW_TYPE_COMBO},
+	{"dnd", &xcb_ewmh_connection_t::_NET_WM_WINDOW_TYPE_DND},
+	{"normal", &xcb_ewmh_connection_t::_NET_WM_WINDOW_TYPE_NORMAL},
+};
+
+void generic_windowObj::handlerObj::set_window_type(const std::string &s)
+{
+	IN_THREAD->run_as
+		(RUN_AS,
+		 [s,
+		  connection_impl=screenref->get_connection()->impl,
+		  me=ref<generic_windowObj::handlerObj>(this)]
+		 (IN_THREAD_ONLY)
+		 {
+			 mpobj<ewmh>::lock lock(connection_impl->ewmh_info);
+
+			 if (!lock->ewmh_available)
+				 return;
+
+			 std::vector<xcb_atom_t> atoms;
+
+			 xcb_ewmh_connection_t *ewmh_conn=&*lock;
+
+			 std::list<std::string> words;
+
+			 strtok_str(s, ", \t\r\n", words);
+
+			 for (auto &w:words)
+			 {
+				 std::transform(w.begin(), w.end(), w.begin(),
+						chrcasecmp::tolower);
+
+				 for (auto &a:window_type_atoms)
+				 {
+					 if (w == a.n)
+					 {
+						 atoms.push_back(ewmh_conn
+								 ->*a.atom);
+						 break;
+					 }
+				 }
+			 }
+
+			 if (atoms.empty())
+				 return;
+
+			 xcb_ewmh_set_wm_window_type(ewmh_conn,
+						     me->id(),
+						     atoms.size(),
+						     &atoms[0]);
+		 });
 }
 
 void generic_windowObj::handlerObj

@@ -390,6 +390,10 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 	virtual void frame_extents_updated(IN_THREAD_ONLY);
 
+	//! Set extended window manage hints for this window's type.
+
+	void set_window_type(const std::string &s);
+
 	////////////////////////////////////////////////////////////////////
 	//
 	// Inherited from drawableObj::implObj

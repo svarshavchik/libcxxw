@@ -65,6 +65,8 @@ main_window screenObj
 	auto handler=ref<main_windowObj::handlerObj>
 		::create(connref->impl->thread, screen(this));
 
+	handler->set_window_type("normal");
+
 	peepholed_toplevel_main_windowptr real_container;
 
 	// Create a top level peephole in the main_window.
