@@ -99,6 +99,31 @@ void elementObj::on_pointer_focus(const std::function<focus_callback_t> &callbac
 	impl->on_pointer_focus(callback);
 }
 
+void elementObj::create_custom_tooltip(const std::function<void
+				       (const tooltip_factory &)>
+				       &tooltip_factory) const
+{
+	get_screen()->impl->thread->run_as
+		(RUN_AS,
+		 [impl=this->impl, tooltip_factory]
+		 (IN_THREAD_ONLY)
+		 {
+			 impl->data(IN_THREAD).tooltip_factory=tooltip_factory;
+		 });
+}
+
+
+void elementObj::remove_tooltip() const
+{
+	get_screen()->impl->thread->run_as
+		(RUN_AS,
+		 [impl=this->impl]
+		 (IN_THREAD_ONLY)
+		 {
+			 impl->data(IN_THREAD).tooltip_factory=nullptr;
+		 });
+}
+
 x::ref<x::obj> elementObj::get_busy_mcguffin() const
 {
 	return busy_impl{*impl}.get_mcguffin();

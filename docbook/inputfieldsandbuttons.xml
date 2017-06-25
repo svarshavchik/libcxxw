@@ -150,6 +150,50 @@ See COPYING for distribution information.
     </section>
   </section>
 
+  <section id="tooltips">
+    <title>Tooltips</title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+subject_field->create_tooltip("A brief title");
+
+// ...
+
+text_field->create_tooltip("A brief message, a few lines long.", 30);</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      <link linkend="inputfieldsandbuttons"><filename>inputfieldsandbuttons.C</filename></link>
+      gives an example of creating tooltips.
+      A tooltip is a small popup window that appears when the pointer
+      gets positioned on top of a display element and doesn't move for a
+      few seconds. The tooltip popup appears next to the pointer and goes
+      away automatically when the pointer moves again.
+    </para>
+
+    <para>
+      Tooltip text should be small. The tooltip gets positioned above
+      and to the right of the pointer by default. If the pointer is near
+      the edge of the screen the tooltip may get repositioned so that its
+      entire contents are visible.
+    </para>
+
+    <para>
+      The first parameter to <methodname>create_tooltip</methodname>()
+      is actually a
+      <ulink url="&link-x--w--text-param;"><classname>&ns;::w::text_param</classname></ulink>
+      object.
+      This allows custom fonts and text colors for the tooltip. The
+      tooltip's background color is fixed by the current theme.
+      An optional second parameter specifies the tooltip's width in
+      millimeters. The tooltip's gext gets wordwrapped to fit within the
+      given width. The tooltip's text does not get word-wrapped otherwise,
+      but may contain <literal>'\n'</literal>s to introduce explicit
+      line breaks.
+    </para>
+  </section>
   <section id="buttons">
     <title>Buttons</title>
 

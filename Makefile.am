@@ -536,6 +536,7 @@ libcxxw_la_SOURCES=\
 	themedimobj.H				    \
 	themedim_element.H			    \
 	themedim_elementfwd.H			    \
+	tooltip.C				    \
 	windowobj.C				    \
 	windowobj.H				    \
 	window_handler.C			    \
@@ -606,6 +607,7 @@ INTERACTIVETESTPROGRAMS=\
 	testlabel					\
 	testscrollbar					\
 	testshowhide					\
+	testtooltip					\
 	testwordwrappablelabel				\
 	#
 
@@ -676,6 +678,11 @@ testshowhide_LDADD=libcxxw.la
 testtextparam_SOURCES=testtextparam.C
 testtextparam_LDADD=libcxxw.la
 testtextparam_LDFLAGS=-static $(STATICLINKFLAGS)
+
+$(call OPTIONS_GEN,testtooltip.H,testtooltip.xml)
+testtooltip_SOURCES=testtooltip.C testtooltip.H
+testtooltip_LDADD=libcxxw.la
+testtooltip_LDFLAGS=-static $(STATICLINKFLAGS)
 
 $(call OPTIONS_GEN,testmainwindowoptions.H,testmainwindowoptions.xml)
 
@@ -830,6 +837,8 @@ test:
 	./testmainwindow --themescale
 	./testmainwindow --themescale --nopadding
 	./testlabel
+	./testtooltip --width=25
+	./testtooltip --width=50
 
 .PHONY: rpm
 

@@ -1,0 +1,11 @@
+<optclass name="testtooltip_options">
+  <option>
+    <name>width</name>
+    <type>int</type>
+    <default>0</default>
+    <opt>w</opt>
+    <longopt>width</longopt>
+    <descr>Automated test option</descr>
+  </option>
+  <defaultoptions />
+</optclass>

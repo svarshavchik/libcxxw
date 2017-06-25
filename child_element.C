@@ -299,4 +299,16 @@ const char *child_elementObj::label_theme_font() const
 	return container->get_element_impl().label_theme_font();
 }
 
+void child_elementObj::schedule_tooltip_creation(IN_THREAD_ONLY)
+{
+	elementObj::implObj::schedule_tooltip_creation(IN_THREAD);
+	container->get_element_impl().schedule_tooltip_creation(IN_THREAD);
+}
+
+void child_elementObj::unschedule_tooltip_creation(IN_THREAD_ONLY)
+{
+	elementObj::implObj::unschedule_tooltip_creation(IN_THREAD);
+	container->get_element_impl().unschedule_tooltip_creation(IN_THREAD);
+}
+
 LIBCXXW_NAMESPACE_END

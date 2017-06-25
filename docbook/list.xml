@@ -159,7 +159,7 @@ new_list.selection_changed=[]
     <para>
       Setting <varname>selection_type</varname> to a lambda results in
       custom selection
-      <link linkend="callback">callback</link> lambda.
+      <link linkend="callbacks">callback</link> lambda.
       Clicking on an item executes the lambda,
       and the lambda has full control over which list items get selected
       or unselected. The <varname>selection_type</varname> lambda's parameters
@@ -170,7 +170,7 @@ new_list.selection_changed=[]
 
     <para>
       <varname>selection_changed</varname> is an optional
-      <link linkend="callback">callback</link> that gets invoked whenever
+      <link linkend="callbacks">callback</link> that gets invoked whenever
       any item in the list gets selected or unselected, individually.
       The callback's parameters specify which list item's selection status
       changed, and what its new status is.

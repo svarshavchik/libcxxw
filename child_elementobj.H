@@ -94,6 +94,21 @@ class LIBCXX_HIDDEN child_elementObj : public elementObj::implObj {
 	void set_background_color(IN_THREAD_ONLY,
 				  const background_color &) override;
 
+	//! Override schedule_tooltip_creation
+
+	//! This gets invoked for the element under the pointer. Propagate
+	//! this to its parent container, so that anything under the pointer
+	//! with a tooltip will schedule its creation.
+
+	void schedule_tooltip_creation(IN_THREAD_ONLY) override;
+
+	//! Override schedule_tooltip_creation
+
+	//! This gets invoked for the element under the pointer. Propagate
+	//! this to its parent container, so that anything under the pointer
+	//! with a tooltip will schedule its creation.
+	void unschedule_tooltip_creation(IN_THREAD_ONLY) override;
+
 	//! My visibility has changed.
 
 	//! If this element is not shown any more, have the container redraw

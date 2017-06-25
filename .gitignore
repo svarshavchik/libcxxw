@@ -52,5 +52,7 @@ suppressfile*
 /testscrollbar_metrics
 /testshowhide
 /testtextparam
+/testtooltip
+/testtooltip.H
 /m4
 /xml

@@ -18,10 +18,12 @@
 #include "x/w/element_state.H"
 #include "x/w/scratch_buffer.H"
 #include "x/w/motion_event.H"
+#include "x/w/tooltip.H"
 #include "x/callback_list.H"
 #include "element_screen.H"
 #include "focus/label_for.H"
 #include "fonts/current_fontcollection.H"
+#include "popup/popup.H"
 #include "catch_exceptions.H"
 #include <x/logger.H>
 
@@ -83,6 +85,7 @@ void elementObj::implObj::removed_from_container(IN_THREAD_ONLY)
 		return;
 
 	data(IN_THREAD).removed=true;
+	unschedule_tooltip_creation(IN_THREAD);
 	removed(IN_THREAD);
 	for_each_child(IN_THREAD,
 		       [&]
@@ -240,6 +243,8 @@ void elementObj::implObj
 {
 	// Offically update this element's "real" visibility.
 	data(IN_THREAD).inherited_visibility=info.flag;
+	if (!info.flag)
+		unschedule_tooltip_creation(IN_THREAD);
 }
 
 void elementObj::implObj::draw_after_visibility_updated(IN_THREAD_ONLY,
@@ -740,6 +745,12 @@ background_color elementObj::implObj
 							   default_value);
 }
 
+background_color elementObj::implObj::create_background_color(const rgb &color)
+{
+	return get_screen()->impl->create_background_color
+		(get_screen()->create_solid_color_picture(color));
+}
+
 bool elementObj::implObj::enabled(IN_THREAD_ONLY)
 {
 	// This element has been removed from the container.
@@ -793,6 +804,7 @@ void elementObj::implObj::report_keyboard_focus(IN_THREAD_ONLY,
 
 void elementObj::implObj::keyboard_focus(IN_THREAD_ONLY)
 {
+	unschedule_tooltip_creation(IN_THREAD);
 	invoke_keyboard_focus_callback(IN_THREAD);
 }
 
@@ -839,6 +851,7 @@ void elementObj::implObj::report_pointer_focus(IN_THREAD_ONLY,
 
 void elementObj::implObj::pointer_focus(IN_THREAD_ONLY)
 {
+	unschedule_tooltip_creation(IN_THREAD);
 	invoke_pointer_focus_callback(IN_THREAD);
 }
 
@@ -884,7 +897,19 @@ void elementObj::implObj::report_motion_event(IN_THREAD_ONLY,
 {
 	data(IN_THREAD).last_motion_x=me.x;
 	data(IN_THREAD).last_motion_y=me.y;
+
+	// If a tooltip is installed, uninstall it before scheduling the
+	// tooltip again.
+	if (me.type == motion_event_type::real_motion)
+	{
+		if (data(IN_THREAD).tooltip)
+			unschedule_tooltip_creation(IN_THREAD);
+
+		if (me.mask.ordinal() == 0)
+			schedule_tooltip_creation(IN_THREAD);
+	}
 }
+
 
 void elementObj::implObj::ensure_visibility(IN_THREAD_ONLY, const rectangle &r)
 {

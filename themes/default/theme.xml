@@ -207,7 +207,7 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
   </font>
 
   <font id="tooltip" from="sans_serif">
-    <point_size>10</point_size>
+    <point_size>12</point_size>
   </font>
 
   <font id="combobox" from="label" />
@@ -269,6 +269,23 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
   <border id="scrollbarfocusoff_border" from="inputfocusoff_border">
     <color>50%</color>
   </border>
+
+  <!-- Tooltips -->
+
+  <color id="tooltip_background_color" scale="90%" />
+
+  <!-- Border when an alpha channel is available -->
+  <border id="tooltip_rounded_border" from="thin_0%">
+    <hradius>1</hradius>
+    <vradius>1</vradius>
+  </border>
+
+  <!-- Border when an alpha channel is not available -->
+
+  <border id="tooltip_square_border" from="thin_0%" />
+
+  <dim id="tooltip_x_offset" axis="horiz">1</dim>
+  <dim id="tooltip_y_offset" axis="vert">1</dim>
 
   <!-- Selection lists -->
 

@@ -100,7 +100,11 @@ void create_mainwindow(const x::w::main_window &main_window,
 	// The input fields initial contents are empty, and it is size to
 	// be 30 columns.
 	auto subject_field=factory->valign(x::w::valign::middle)
-		.create_input_field({""}, {30});
+		.create_input_field("", {30});
+
+	// Give the subject field a tooltip.
+
+	subject_field->create_tooltip("A brief title");
 
 	// Save it in new_inputfields
 
@@ -119,10 +123,18 @@ void create_mainwindow(const x::w::main_window &main_window,
 	//
 	// Also, let's make the input field use a non-default, proportional
 	// font, and set its initial contents to "Hello".
+	//
+	// The first parameter to create_input_field() is an x::w::text_param
+	// that can specify the input field's font.
 
 	auto text_field=factory->create_input_field({"arial"_font,
 				"Hello,\n\n"},
 		{30, 4});
+
+	// The tooltip for the text field. Slightly longer tooltip, word
+	// wrap it to 30 mm width.
+
+	text_field->create_tooltip("A brief message, a few lines long.", 30);
 
 	// Save it in new_inputfields
 

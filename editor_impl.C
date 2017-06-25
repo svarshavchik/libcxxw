@@ -559,6 +559,9 @@ void editorObj::implObj::do_draw(IN_THREAD_ONLY,
 				 const draw_info &di,
 				 const rectangle_set &areas)
 {
+#ifdef EDITOR_DRAW
+	EDITOR_DRAW();
+#endif
 	text->full_redraw(IN_THREAD, *this,
 			     {selection_start(IN_THREAD), cursor},
 			  di, areas);

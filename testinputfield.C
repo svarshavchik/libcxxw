@@ -82,6 +82,8 @@ void testbutton()
 							 LIBCXX_NAMESPACE::w::rgb::maximum},
 						 "Hello world!"}, {30, 4});
 
+				 fields.second->create_tooltip("A brief message, a few lines long.", 30);
+
 				 factory=layout->append_row();
 
 				 auto b=factory->create_special_button_with_label({"Ok"},{'\n'});

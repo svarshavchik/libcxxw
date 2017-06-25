@@ -8,7 +8,9 @@
 #include <x/w/elementfwd.H>
 #include <x/w/screenfwd.H>
 #include <x/w/focusablefwd.H>
+#include <x/w/tooltipfwd.H>
 #include <x/w/element_statefwd.H>
+#include <x/w/text_paramfwd.H>
 #include <x/w/picturefwd.H>
 #include <x/w/rgbfwd.H>
 #include <x/w/busyfwd.H>
@@ -120,6 +122,27 @@ public:
 
 	//! Install a pointer focus callback.
 	void on_pointer_focus(const std::function<focus_callback_t> &callback);
+
+	//! Create a standard tooltip consisting of an unwrapped label.
+
+	void create_tooltip(const text_param &text);
+
+	//! Create a standard tooltip consisting of a word-wrapped text.
+
+	//! The specified width, in millimeters results in word-wrapped text.
+	void create_tooltip(const text_param &text,
+			    double widthmm);
+
+	//! Create a custom tooltip.
+
+	//! Installs a factory for the tooltip.
+	void create_custom_tooltip
+	(const std::function<void (const tooltip_factory &)>
+	 &tooltip_factory) const;
+
+
+	//! Remove the tooltip from this display element.
+	void remove_tooltip() const;
 };
 
 LIBCXXW_NAMESPACE_END

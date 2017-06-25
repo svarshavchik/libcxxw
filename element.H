@@ -27,8 +27,10 @@
 #include "focus/label_forfwd.H"
 #include "focus/label_forobj.H"
 #include "fonts/current_fontcollectionfwd.H"
+#include "popup/popupfwd.H"
 #include "x/w/key_eventfwd.H"
 #include "x/w/fontfwd.H"
+#include "x/w/tooltipfwd.H"
 #include <x/obj.H>
 #include <x/callback_list.H>
 #include <x/logger.H>
@@ -152,6 +154,18 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 		//! Most recently reported motion
 
 		coord_t last_motion_y=0;
+
+		//! This element's tooltip factory
+		std::function<void (const tooltip_factory &)> tooltip_factory;
+
+		//! This element's created tooltip
+		popupptr tooltip;
+
+		//! Scheduled tooltip creation
+		tick_clock_t::time_point tooltip_scheduled_creation;
+
+		//! Timer for the scheduled tooltip creation
+		ptr<obj> tooltip_scheduled_mcguffin;
 	};
 
 	//! For the connection thread's use, only.
@@ -629,8 +643,6 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 	//! After a display element gets added to a container, the layout
 	//! manager should invoke initialize() from the connection thread.
-	//!
-	//! The default implementation does nothing.
 
 	virtual void initialize(IN_THREAD_ONLY);
 
@@ -695,6 +707,10 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	background_color create_background_color(const std::experimental
 						 ::string_view &color_name,
 						 const rgb &default_value);
+
+	//! Shortcut for invoking the same screen method
+
+	background_color create_background_color(const rgb &color);
 
 	//! Create a \ref richtextstring "rich text string", based on a \ref text_param "text_param" and a default \ref richtextmeta "richtextmeta".
 
@@ -888,10 +904,25 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 	//! The pointer has moved.
 
-	//! The default implementation does nothing.
+	//! Log it, and if it's a real pointer movement trigger
+	//! tooltip processing, if appropriate.
 	virtual void report_motion_event(IN_THREAD_ONLY, const motion_event &);
 
+	//! If this element has a tooltip, schedule its creation
+	virtual void schedule_tooltip_creation(IN_THREAD_ONLY);
+
+	//! Left focus, etc...
+
+	//! Don't schedule its creation any more.
+	virtual void unschedule_tooltip_creation(IN_THREAD_ONLY);
+
  private:
+	//! Schedule a timer to check if the tooltip needs to be shown.
+	void schedule_tooltip_timer(IN_THREAD_ONLY,
+				    tick_clock_t::time_point now);
+
+	//! Check if the tooltip needs to be shown.
+	void check_tooltip_timer(IN_THREAD_ONLY);
 
 	//! The most recent keyboard_focus() reported
 	focus_change most_recent_keyboard_focus_change_thread_only=focus_change::lost;

@@ -400,8 +400,14 @@ void generic_windowObj::handlerObj
 	bool processed;
 
 	if (most_recent_keyboard_focus(IN_THREAD))
+	{
+		most_recent_keyboard_focus(IN_THREAD)
+			->get_focusable_element()
+			.unschedule_tooltip_creation(IN_THREAD);
+
 		processed=most_recent_keyboard_focus(IN_THREAD)->get_focusable_element()
 			.process_key_event(IN_THREAD, ke);
+	}
 	else
 		processed=process_key_event(IN_THREAD, ke);
 
@@ -521,14 +527,20 @@ void generic_windowObj::handlerObj
 	// report_pointer_xy() might not always set
 	// most_recent_element_with_pointer(IN_THREAD).
 
-	if (most_recent_element_with_pointer(IN_THREAD) &&
-	    !most_recent_element_with_pointer(IN_THREAD)
-	    ->process_button_event(IN_THREAD, be, event->time)
+	if (most_recent_element_with_pointer(IN_THREAD))
+	{
+		most_recent_element_with_pointer(IN_THREAD)
+			->unschedule_tooltip_creation(IN_THREAD);
 
-	    // Clicking pointer button 1 nowhere in particular removes keyboard
-	    // focus from anything that might have it, right now.
-	    && be.button == 1 && buttonpress)
-		unset_keyboard_focus(IN_THREAD);
+		if (!most_recent_element_with_pointer(IN_THREAD)
+		    ->process_button_event(IN_THREAD, be, event->time)
+
+		    // Clicking pointer button 1 nowhere in particular removes
+		    // keyboard
+		    // focus from anything that might have it, right now.
+		    && be.button == 1 && buttonpress)
+			unset_keyboard_focus(IN_THREAD);
+	}
 }
 
 void generic_windowObj::handlerObj::grab(IN_THREAD_ONLY,
