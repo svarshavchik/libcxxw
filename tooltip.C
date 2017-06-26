@@ -188,7 +188,10 @@ void tooltip_factory_impl::create(const function<void (const container &)>
 	else
 	{
 		f->border("tooltip_square_border");
-		f->padding(2); // TODO -- theme padding
+		f->left_padding("tooltip_square_padding_h");
+		f->right_padding("tooltip_square_padding_h");
+		f->top_padding("tooltip_square_padding_v");
+		f->bottom_padding("tooltip_square_padding_v");
 	}
 
 	f->create_container([&, this]
@@ -223,6 +226,7 @@ void elementObj::create_tooltip(const text_param &text)
 						 c->get_layoutmanager();
 
 					 auto f=l->append_row();
+					 f->padding(0);
 					 f->create_label(text);
 				 },
 				 new_gridlayoutmanager());
@@ -243,6 +247,7 @@ void elementObj::create_tooltip(const text_param &text,
 						 c->get_layoutmanager();
 
 					 auto f=l->append_row();
+					 f->padding(0);
 					 f->create_label(text, width);
 				 },
 				 new_gridlayoutmanager());

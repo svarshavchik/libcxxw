@@ -100,6 +100,7 @@ libcxxw_la_SOURCES=\
 	defaulttheme.H				    \
 	defaultthemefwd.H			    \
 	defaultthemeobj.H			    \
+	dimarg.C				    \
 	drawable.C				    \
 	drawable.H				    \
 	drawable_impl.C				    \

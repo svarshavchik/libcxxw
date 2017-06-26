@@ -120,50 +120,52 @@ gridfactoryObj &gridfactoryObj::bottom_border(const std::experimental::string_vi
 	return *this;
 }
 
-gridfactoryObj &gridfactoryObj::padding(double paddingmm)
+gridfactoryObj &gridfactoryObj::padding_set(const dimarg &padding)
 {
+	std::string s=padding;
+
 	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
 
-	lock->left_paddingmm=paddingmm;
-	lock->right_paddingmm=paddingmm;
-	lock->top_paddingmm=paddingmm;
-	lock->bottom_paddingmm=paddingmm;
+	lock->left_padding_set=s;
+	lock->right_padding_set=s;
+	lock->top_padding_set=s;
+	lock->bottom_padding_set=s;
 
 	return *this;
 }
 
-gridfactoryObj &gridfactoryObj::left_padding(double paddingmm)
+gridfactoryObj &gridfactoryObj::left_padding_set(const dimarg &padding)
 {
 	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
 
-	lock->left_paddingmm=paddingmm;
+	lock->left_padding_set=padding;
 
 	return *this;
 }
 
-gridfactoryObj &gridfactoryObj::right_padding(double paddingmm)
+gridfactoryObj &gridfactoryObj::right_padding_set(const dimarg &padding)
 {
 	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
 
-	lock->right_paddingmm=paddingmm;
+	lock->right_padding_set=padding;
 
 	return *this;
 }
 
-gridfactoryObj &gridfactoryObj::top_padding(double paddingmm)
+gridfactoryObj &gridfactoryObj::top_padding_set(const dimarg &padding)
 {
 	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
 
-	lock->top_paddingmm=paddingmm;
+	lock->top_padding_set=padding;
 
 	return *this;
 }
 
-gridfactoryObj &gridfactoryObj::bottom_padding(double paddingmm)
+gridfactoryObj &gridfactoryObj::bottom_padding_set(const dimarg &padding)
 {
 	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
 
-	lock->bottom_paddingmm=paddingmm;
+	lock->bottom_padding_set=padding;
 
 	return *this;
 }

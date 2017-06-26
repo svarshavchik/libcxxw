@@ -137,6 +137,10 @@
     <dash>.75</dash>
   </border>
 
+  <!-- grid padding -->
+
+  <dim id="grid_horiz_padding" axis="horiz">.5</dim>
+  <dim id="grid_vert_padding" axis="vert">.5</dim>
 
   <!--
       Button borders are size in units based on
@@ -280,6 +284,8 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
     <vradius>1</vradius>
   </border>
 
+  <dim id="tooltip_square_padding_h" axis="horiz">1</dim>
+  <dim id="tooltip_square_padding_v" axis="vert">1</dim>
   <!-- Border when an alpha channel is not available -->
 
   <border id="tooltip_square_border" from="thin_0%" />

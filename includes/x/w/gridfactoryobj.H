@@ -12,6 +12,7 @@
 #include <x/w/gridlayoutmanagerobj.H>
 #include <x/w/border_infomm.H>
 #include <x/w/alignment.H>
+#include <x/w/dimarg.H>
 #include <x/mpobj.H>
 #include <experimental/string_view>
 
@@ -102,23 +103,73 @@ class gridfactoryObj : public factoryObj {
 
 	//! Set new element's padding, first.
 
-	gridfactoryObj &padding(double paddingmm);
+	//! The padding can be specified as a theme setting, in form of a
+	//! string, or a \c double value, specifying the padding in
+	//! millimeters.
+	template<typename Arg>
+	inline gridfactoryObj &padding(Arg &&padding)
+	{
+		return padding_set(dimarg(std::forward<Arg>(padding)));
+	}
 
 	//! Set new element's padding, first.
 
-	gridfactoryObj &left_padding(double paddingmm);
+	//! The padding can be specified as a theme setting, in form of a
+	//! string, or a \c double value, specifying the padding in
+	//! millimeters.
+	template<typename Arg>
+	inline gridfactoryObj &left_padding(Arg &&padding)
+	{
+		return left_padding_set(dimarg(std::forward<Arg>(padding)));
+	}
 
 	//! Set new element's padding, first.
 
-	gridfactoryObj &right_padding(double paddingmm);
+	//! The padding can be specified as a theme setting, in form of a
+	//! string, or a \c double value, specifying the padding in
+	//! millimeters.
+	template<typename Arg>
+	inline gridfactoryObj &right_padding(Arg &&padding)
+	{
+		return right_padding_set(dimarg(std::forward<Arg>(padding)));
+	}
 
 	//! Set new element's padding, first.
 
-	gridfactoryObj &top_padding(double paddingmm);
+	//! The padding can be specified as a theme setting, in form of a
+	//! string, or a \c double value, specifying the padding in
+	//! millimeters.
+	template<typename Arg>
+	inline gridfactoryObj &top_padding(Arg &&padding)
+	{
+		return top_padding_set(dimarg(std::forward<Arg>(padding)));
+	}
 
 	//! Set new element's padding, first.
 
-	gridfactoryObj &bottom_padding(double paddingmm);
+	//! The padding can be specified as a theme setting, in form of a
+	//! string, or a \c double value, specifying the padding in
+	//! millimeters.
+	template<typename Arg>
+	inline gridfactoryObj &bottom_padding(Arg &&padding)
+	{
+		return bottom_padding_set(dimarg(std::forward<Arg>(padding)));
+	}
+
+	//! Implement padding()
+	gridfactoryObj &padding_set(const dimarg &padding);
+
+	//! Implement left_padding()
+	gridfactoryObj &left_padding_set(const dimarg &padding);
+
+	//! Implement right_padding()
+	gridfactoryObj &right_padding_set(const dimarg &padding);
+
+	//! Implement top_padding()
+	gridfactoryObj &top_padding_set(const dimarg &padding);
+
+	//! Implement bottom_padding()
+	gridfactoryObj &bottom_padding_set(const dimarg &padding);
 
 	//! When this display element is hidden, "remove" it from the grid.
 

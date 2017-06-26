@@ -49,16 +49,16 @@ struct new_grid_element_info {
 	current_border_implptr bottom_border;
 
 	//! Padding
-	double left_paddingmm=.5;
+	std::string left_padding_set;
 
 	//! Padding
-	double right_paddingmm=.5;
+	std::string right_padding_set;
 
 	//! Padding
-	double top_paddingmm=.5;
+	std::string top_padding_set;
 
 	//! Padding
-	double bottom_paddingmm=.5;
+	std::string bottom_padding_set;
 
 	//! Horizontal alignment
 	halign horizontal_alignment=halign::left;

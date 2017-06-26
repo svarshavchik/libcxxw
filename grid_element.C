@@ -17,7 +17,11 @@ new_grid_element_info
 ::new_grid_element_info(dim_t row,
 			dim_t col)
 	: row(row),
-	  col(col)
+	  col(col),
+	  left_padding_set("grid_horiz_padding"),
+	  right_padding_set(left_padding_set),
+	  top_padding_set("grid_vert_padding"),
+	  bottom_padding_set(top_padding_set)
 {
 }
 
@@ -50,19 +54,22 @@ void grid_elementObj::initialize(IN_THREAD_ONLY)
 
 void grid_elementObj::theme_updated(const defaulttheme &theme)
 {
-	left_padding=theme->compute_width(left_paddingmm);
-	dim_t total=dim_t::truncate(left_padding+
-				    theme->compute_width(right_paddingmm));
+	left_padding=theme->get_theme_width_dim_t(left_padding_set);
+	dim_t total=
+		dim_t::truncate(left_padding+
+				theme->get_theme_width_dim_t(right_padding_set))
+		;
 
 	if (total == dim_t::infinite())
 		--total;
 
 	total_horiz_padding=total;
 
-	top_padding=theme->compute_height(top_paddingmm);
+	top_padding=theme->get_theme_height_dim_t(top_padding_set);
 
 	total=dim_t::truncate(top_padding+
-			      theme->compute_height(bottom_paddingmm));
+			      theme->get_theme_height_dim_t(bottom_padding_set))
+		;
 
 	if (total == dim_t::infinite())
 		--total;
