@@ -84,23 +84,6 @@ struct new_grid_element_info {
 	~new_grid_element_info();
 };
 
-//! Lock acquired for calculating pixel padding dimensions.
-
-struct LIBCXX_HIDDEN grid_element_padding_lock {
-
-	//! Element's screen
-	const screen my_screen;
-
-	//! Acquired theme lock on the screen.
-	current_theme_t::lock theme_lock;
-
-	//! Constructor
-	grid_element_padding_lock(const screen &my_screen);
-
-	//! Destructor
-	~grid_element_padding_lock();
-};
-
 //! A \ref grid_element object.
 
 class LIBCXX_HIDDEN grid_elementObj
@@ -109,13 +92,17 @@ class LIBCXX_HIDDEN grid_elementObj
 	  virtual public obj {
 
  public:
+	THREAD_DATA_ONLY(initialized);
+
 	//! Constructor
 	grid_elementObj(const new_grid_element_info &info,
-			const element &grid_element,
-			const grid_element_padding_lock &lock);
+			const element &grid_element);
 
 	//! Destructor
 	~grid_elementObj();
+
+	//! Initialize this grid element in the connection thread.
+	void initialize(IN_THREAD_ONLY);
 
 	//! The element
 	const element grid_element;
@@ -124,6 +111,11 @@ class LIBCXX_HIDDEN grid_elementObj
 
 	const metrics::grid_pos pos;
 
+ private:
+	//! Whether this grid element has been initialized in the connection thread.
+	bool initialized_thread_only;
+
+ public:
 	//! Calculate this grid element's padding.
 
 	//! Converts _paddingmm to pixels. Sets left_padding and
@@ -132,7 +124,7 @@ class LIBCXX_HIDDEN grid_elementObj
 	//! at grid_element's axises, and the only thing that the grid
 	//! calculation cares about is the total padding in each axis).
 
-	void calculate_padding(const grid_element_padding_lock &lock);
+	void theme_updated(const defaulttheme &theme);
 
 	//! Return true if the element is visible, or if its space is reserved.
 
