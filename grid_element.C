@@ -26,44 +26,43 @@ new_grid_element_info
 
 new_grid_element_info::~new_grid_element_info()=default;
 
-
-grid_element_padding_lock::grid_element_padding_lock(const screen &my_screen)
-	: my_screen(my_screen),
-	  theme_lock(my_screen->impl->current_theme)
-{
-}
-
-grid_element_padding_lock::~grid_element_padding_lock()=default;
-
 grid_elementObj::grid_elementObj(const new_grid_element_info &info,
-				 const element &grid_element,
-				 const grid_element_padding_lock &lock)
+				 const element &grid_element)
 	: new_grid_element_info(info),
-	grid_element(grid_element),
-	pos(metrics::grid_pos::create())
+	  grid_element(grid_element),
+	  pos(metrics::grid_pos::create()),
+	  initialized_thread_only(false)
 {
-	calculate_padding(lock);
 }
 
 grid_elementObj::~grid_elementObj()=default;
 
-void grid_elementObj::calculate_padding(const grid_element_padding_lock &lock)
+void grid_elementObj::initialize(IN_THREAD_ONLY)
 {
-	left_padding=(*lock.theme_lock)->compute_width(left_paddingmm);
+	initialized(IN_THREAD)=true;
+
+	auto theme=*current_theme_t::lock{
+		grid_element->get_screen()->impl->current_theme
+	};
+
+	theme_updated(theme);
+}
+
+void grid_elementObj::theme_updated(const defaulttheme &theme)
+{
+	left_padding=theme->compute_width(left_paddingmm);
 	dim_t total=dim_t::truncate(left_padding+
-				    (*lock.theme_lock)
-				    ->compute_width(right_paddingmm));
+				    theme->compute_width(right_paddingmm));
 
 	if (total == dim_t::infinite())
 		--total;
 
 	total_horiz_padding=total;
 
-	top_padding=(*lock.theme_lock)->compute_height(top_paddingmm);
+	top_padding=theme->compute_height(top_paddingmm);
 
 	total=dim_t::truncate(top_padding+
-			      (*lock.theme_lock)
-			      ->compute_height(bottom_paddingmm));
+			      theme->compute_height(bottom_paddingmm));
 
 	if (total == dim_t::infinite())
 		--total;

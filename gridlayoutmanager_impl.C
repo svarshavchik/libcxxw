@@ -171,11 +171,7 @@ void gridlayoutmanagerObj::implObj
 
 	if (info.col > row.size())
 		throw EXCEPTION(_("Attempting to add a display element into a nonexistent column"));
-	auto elem=grid_element::create(info, new_element,
-				       grid_element_padding_lock{
-					       container_impl
-						       ->get_element_impl()
-						       .get_screen()});
+	auto elem=grid_element::create(info, new_element);
 
 	if (info.col >= row.size())
 		row.push_back(elem);

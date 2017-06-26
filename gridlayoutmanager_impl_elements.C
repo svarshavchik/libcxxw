@@ -100,15 +100,9 @@ void gridlayoutmanagerObj::implObj::theme_updated(IN_THREAD_ONLY,
 {
 	grid_map_t::lock lock(grid_map);
 
-	{
-		grid_element_padding_lock
-			padding_lock{container_impl->get_element_impl()
-				.get_screen()};
-
-		for (const auto &row:(*lock)->elements)
-			for (const auto &col:row)
-				col->calculate_padding(padding_lock);
-	}
+	for (const auto &row:(*lock)->elements)
+		for (const auto &col:row)
+			col->theme_updated(new_theme);
 
 	for (const auto &row:(*lock)->elements)
 		for (const auto &col:row)
@@ -537,6 +531,9 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(IN_THREAD_ONLY)
 	for (const auto &row:(*lock)->elements)
 		for (const auto &col:row)
 		{
+			if (!col->initialized(IN_THREAD))
+				col->initialize(IN_THREAD);
+
 			// We don't care about the keys. col is:
 			//
 			//       grid_element - the child element.
