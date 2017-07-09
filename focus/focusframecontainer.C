@@ -28,7 +28,10 @@ focusframecontainerObj::focusframecontainerObj(const ref<implObj> &impl,
 					       &focusable_impl,
 					       const char *off_border,
 					       const char *on_border)
-	: focusframecontainerObj(impl, focusable_impl,
+	: focusframecontainerObj(impl,
+				 ref<containerObj::implObj>
+				 (&impl->get_container_impl()),
+				 focusable_impl,
 				 new_focusframelayoutmanager{
 					 ref<focusframelayoutimplObj>
 						 ::create(impl, off_border,
@@ -42,12 +45,15 @@ focusframecontainerObj::focusframecontainerObj(const ref<implObj> &impl,
 // a ref to the grid layout manager subclass in it.
 
 focusframecontainerObj::focusframecontainerObj(const ref<implObj> &impl,
+					       const ref<containerObj::implObj>
+					       &container_impl,
 					       const ref<focusableImplObj>
 					       &focusable_impl,
 					       const new_focusframelayoutmanager
 					       &factory)
 
-	: containerObj(impl, factory.new_layoutmanager),
+	: containerObj(container_impl,
+		       factory.new_layoutmanager),
 	  focusableObj::ownerObj(focusable_impl),
 	  impl(impl)
 {
