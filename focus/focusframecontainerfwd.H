@@ -21,9 +21,8 @@ class focusframecontainerObj;
 //! from a generic container object, but its layout manager should not be
 //! accessed directly. The focus frame container takes care of the layout
 //! manager. get_focusable() returns the display element in the container.
-//! replace_focusable() installs another one.
 //!
-//! replace_focusable() returns a factory object which will install a
+//! set_focusable() returns a factory object which will install a
 //! new display element as the underlying new element.
 //!
 //! The focusframe "public" object does not really have to be created for

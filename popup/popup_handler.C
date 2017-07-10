@@ -154,21 +154,27 @@ void popupObj::handlerObj::set_inherited_visibility(IN_THREAD_ONLY,
 						    &visibility_info)
 {
 	if (!visibility_info.flag)
-	{
-		current_grab=NULL;
-		ungrab(IN_THREAD);
-	}
+		closing_popup(IN_THREAD);
 
 	generic_windowObj::handlerObj::set_inherited_visibility
 		(IN_THREAD, visibility_info);
 
 	if (visibility_info.flag)
-	{
-		current_grab=grab_pointer(IN_THREAD, elementimplptr());
+		popup_opened(IN_THREAD);
+}
 
-		if (current_grab)
-			current_grab->allow_events();
-	}
+void popupObj::handlerObj::popup_opened(IN_THREAD_ONLY)
+{
+	current_grab=grab_pointer(IN_THREAD, elementimplptr());
+
+	if (current_grab)
+		current_grab->allow_events();
+}
+
+void popupObj::handlerObj::closing_popup(IN_THREAD_ONLY)
+{
+	current_grab=NULL;
+	ungrab(IN_THREAD);
 }
 
 LIBCXXW_NAMESPACE_END

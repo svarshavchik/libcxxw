@@ -77,10 +77,14 @@ public:
 	//! from the server.
 	void configure_notify(IN_THREAD_ONLY, const rectangle &r) override;
 
+	//! Override button_press_event
+
+	//! Pressing a button outside of the popup hides it.
 	void button_press_event(IN_THREAD_ONLY,
 				const xcb_button_press_event_t *event)
 		override;
 
+	//! Perform any needed grab/pointer processing due to visibility change.
 	void set_inherited_visibility(IN_THREAD_ONLY,
 				      inherited_visibility_info
 				      &visibility_info)
@@ -88,7 +92,21 @@ public:
 
  private:
 
+	//! The pointer is grabbed while the popup is open.
 	grabbed_pointerptr current_grab;
+
+ public:
+
+	//! Perform processing after a popup is opened.
+
+	//! Grab the pointer.
+	virtual void popup_opened(IN_THREAD_ONLY);
+
+	//! The popup is about to be closed.
+
+	//! Release the pointer grab.
+
+	virtual void closing_popup(IN_THREAD_ONLY);
 };
 
 LIBCXXW_NAMESPACE_END

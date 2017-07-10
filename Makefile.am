@@ -71,6 +71,30 @@ libcxxw_la_SOURCES=\
 	child_element.H				    \
 	child_elementfwd.H			    \
 	child_elementobj.H			    \
+	combobox/combobox_button_impl.C		    \
+	combobox/combobox_button_impl.H		    \
+	combobox/combobox_button_implfwd.H	    \
+	combobox/custom_comboboxlayoutmanager.C	    \
+	combobox/custom_comboboxlayoutmanager.H	    \
+	combobox/custom_comboboxlayoutmanager_impl.C \
+	combobox/custom_combobox_container.C	    \
+	combobox/custom_combobox_container.H	    \
+	combobox/custom_combobox_container_impl.C   \
+	combobox/custom_combobox_container_impl.H   \
+	combobox/custom_combobox_containerfwd.H     \
+	combobox/custom_combobox_containerobj.H     \
+	combobox/custom_combobox_popup.C	    \
+	combobox/custom_combobox_popup.H	    \
+	combobox/custom_combobox_popupfwd.H	    \
+	combobox/custom_combobox_popupobj.H	    \
+	combobox/custom_combobox_popup_container.C  \
+	combobox/custom_combobox_popup_container.H  \
+	combobox/custom_combobox_popup_container_impl.C \
+	combobox/custom_combobox_popup_container_impl.H \
+	combobox/custom_combobox_popup_containerfwd.H \
+	combobox/custom_combobox_popup_containerobj.H \
+	combobox/custom_combobox_popup_layoutmanager.C \
+	combobox/custom_combobox_popup_layoutmanager.H \
 	configfile.C				    \
 	configfile.H				    \
 	connection.C                                \
@@ -429,6 +453,8 @@ libcxxw_la_SOURCES=\
 	popup/popup_attachedto_info.H		    \
 	popup/popup_attachedto_infofwd.H	    \
 	popup/popup_attachedto_infoobj.H	    \
+	popup/popup_autofocus.H			    \
+	popup/popup_autofocusfwd.H		    \
 	radio_group.C				    \
 	radio_group.H				    \
 	radio_group_impl.C			    \
@@ -624,6 +650,7 @@ TESTPROGRAMS=\
 
 INTERACTIVETESTPROGRAMS=\
 	testbutton					\
+	testcombobox					\
 	testimagebuttons			        \
 	testinputfield					\
 	testmainwindow					\
@@ -641,6 +668,10 @@ noinst_PROGRAMS=$(BUILT_TESTPROGRAMS) $(BUILT_INTERACTIVETESTPROGRAMS) genconsta
 testbutton_SOURCES=testbutton.C
 testbutton_LDADD=libcxxw.la
 testbutton_LDFLAGS=-static $(STATICLINKFLAGS)
+
+testcombobox_SOURCES=testcombobox.C
+testcombobox_LDADD=libcxxw.la
+testcombobox_LDFLAGS=-static $(STATICLINKFLAGS)
 
 testimagebuttons_SOURCES=testimagebuttons.C
 testimagebuttons_LDADD=libcxxw.la

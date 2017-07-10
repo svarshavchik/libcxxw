@@ -16,11 +16,10 @@
 #include "x/w/connection.H"
 #include "x/w/button.H"
 #include "x/w/canvas.H"
+#include "x/w/custom_comboboxlayoutmanager.H"
+#include "x/w/focusable_label.H"
 #include <string>
 #include <iostream>
-
-#include "scrollbar/scrollbar.H"
-#include "scrollbar/scrollbar_impl.H"
 
 using namespace LIBCXX_NAMESPACE;
 using namespace LIBCXX_NAMESPACE::w;
@@ -44,21 +43,8 @@ public:
 
 typedef ref<close_flagObj> close_flag_ref;
 
-class LIBCXX_HIDDEN my_scrollbarObj : public scrollbarObj::implObj {
 
-public:
-	using scrollbarObj::implObj::implObj;
-
-	void updated_value(IN_THREAD_ONLY,
-			   scroll_v_t value,
-			   scroll_v_t dragged_value) override
-	{
-		std::cout << value << " (" << dragged_value << ")"
-			  << std::endl;
-	}
-};
-
-void testbutton()
+void testcombobox()
 {
 	destroy_callback::base::guard guard;
 
@@ -71,29 +57,51 @@ void testbutton()
 				 gridlayoutmanager
 				     layout=main_window->get_layoutmanager();
 
+				 static const char *text[]={
+					 "Lorem ipsum",
+					 "dolor sit",
+					 "ament",
+					 "consectetur",
+					 "adipisicing",
+					 "elid set",
+					 "do",
+					 "eiusmod tempor",
+				 };
+
+				 new_custom_comboboxlayoutmanager clm
+				 {[] (const auto &factory)
+					 {
+						 factory->create_focusable_label
+							 ("");
+					 },
+				  [&]
+					  (const x::w::list_lock &lock,
+					   const x::w::listlayoutmanager
+					   &combobox_listlayoutmanager,
+					   size_t i,
+					   bool selected,
+					   x::w::focusable_label element,
+					   const x::w::element &popup_element,
+					   const x::w::busy &mcguffin) {
+					  if (selected)
+					  {
+						  element->update(text[i]);
+						  popup_element->hide();
+					  }
+				  }};
+
+
 				 auto factory=layout->append_row();
-				 factory->padding(0).halign(halign::center);
-				 factory->create_normal_button_with_label
-				 ({"Hello"});
 
-				 factory=layout->append_row();
-				 factory->padding(0);
-				 factory->create_canvas
-				 ([]
-				  (const auto &ignore) {}, {
-					 50, 50, 50}, {
-					 4, 4, 4});
+				 factory->create_focusable_container
+				 ([&]
+				  (const focusable_container &c) {
+					 x::w::custom_comboboxlayoutmanager
+						 lm=c->get_layoutmanager();
 
-				 factory=layout->append_row();
-				 factory->padding(0);
-				 factory->created_internally
-				 (create_horizontal_scrollbar(factory->container_impl, {
-						 100, 10, 45, 2},
-					 []
-					 (const auto &param) {
-						 return ref<my_scrollbarObj>
-							 ::create(param);
-					 }));
+					 for (const auto &t:text)
+						 lm->append_item(t);
+				 }, clm)->show();
 			 });
 
 	main_window->set_window_title("Hello world!");
@@ -115,13 +123,13 @@ void testbutton()
 
 	mpcobj<bool>::lock lock{close_flag->flag};
 
-	lock.wait_for(std::chrono::seconds{30}, [&] { return *lock; });
+	lock.wait([&] { return *lock; });
 }
 
 int main(int argc, char **argv)
 {
 	try {
-		testbutton();
+		testcombobox();
 	} catch (const exception &e)
 	{
 		e->caught();

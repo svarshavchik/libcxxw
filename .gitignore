@@ -36,6 +36,7 @@ stamp-h1
 suppressfile*
 /testbutton
 /testcollapse
+/testcombobox
 /testderivedaxis
 /testfocusable
 /testgrid
