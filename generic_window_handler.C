@@ -281,8 +281,7 @@ void generic_windowObj::handlerObj
 	else
 	{
 		xcb_unmap_window(IN_THREAD->info->conn, id());
-		grab_locked(IN_THREAD)=false;
-		release_grabs(IN_THREAD);
+		ungrab(IN_THREAD);
 		xcb_ungrab_key(IN_THREAD->info->conn,
 			       0,
 			       id(),
@@ -361,8 +360,7 @@ void generic_windowObj::handlerObj
 		  const xcb_key_press_event_t *event,
 		  uint16_t sequencehi)
 {
-	grab_locked(IN_THREAD)=false;
-	release_grabs(IN_THREAD); // Any previous grabs.
+	ungrab(IN_THREAD);
 
 	// We grab_button()ed and grab_key()ed.
 	// Make sure we'll release the grab, when the dust settles.
@@ -382,8 +380,7 @@ void generic_windowObj::handlerObj
 		    const xcb_key_release_event_t *event,
 		    uint16_t sequencehi)
 {
-	grab_locked(IN_THREAD)=false;
-	release_grabs(IN_THREAD); // Any previous grabs.
+	ungrab(IN_THREAD);
 	forward_key_event(IN_THREAD, event, sequencehi, false);
 }
 
@@ -514,8 +511,7 @@ void generic_windowObj::handlerObj
 ::button_press_event(IN_THREAD_ONLY,
 		     const xcb_button_press_event_t *event)
 {
-	grab_locked(IN_THREAD)=false;
-	release_grabs(IN_THREAD); // Any previous grabs.
+	ungrab(IN_THREAD);
 
 	// We grab_button()ed and grab_key()ed.
 	// Make sure we'll release the grab, when the dust settles.
@@ -539,8 +535,7 @@ void generic_windowObj::handlerObj
 	// current grab status for do_button_event(), so save it first.
 
 	bool was_grabbed=grab_locked(IN_THREAD);
-	grab_locked(IN_THREAD)=false;
-	release_grabs(IN_THREAD); // Any previous grabs.
+	ungrab(IN_THREAD);
 
 	do_button_event(IN_THREAD, event, false, was_grabbed);
 }
@@ -920,8 +915,7 @@ void generic_windowObj::handlerObj::removing_element(IN_THREAD_ONLY,
 
 	if (most_recent_element_with_pointer(IN_THREAD) == ei)
 	{
-		grab_locked(IN_THREAD)=false;
-		release_grabs(IN_THREAD);
+		ungrab(IN_THREAD);
 		pointer_focus_lost(IN_THREAD);
 	}
 }

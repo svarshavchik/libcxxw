@@ -67,6 +67,13 @@ void window_handlerObj::disconnected(IN_THREAD_ONLY)
 {
 }
 
+
+void window_handlerObj::ungrab(IN_THREAD_ONLY)
+{
+	grab_locked(IN_THREAD)=false;
+	release_grabs(IN_THREAD);
+}
+
 void window_handlerObj::release_grabs(IN_THREAD_ONLY)
 {
 	auto timestamp=grabbed_timestamp(IN_THREAD);

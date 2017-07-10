@@ -183,9 +183,7 @@ void connection_threadObj
 	auto window_id=handler->id();
 
 	//! If it's grabbed something, ungrab it.
-
-	handler->grab_locked(IN_THREAD)=false;
-	handler->release_grabs(IN_THREAD);
+	handler->ungrab(IN_THREAD);
 	window_handlers(IN_THREAD)->erase(window_id);
 	destroyed_xids(IN_THREAD)->insert({window_id,handler->xid_obj});
 }
