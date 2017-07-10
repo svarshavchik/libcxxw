@@ -81,9 +81,7 @@ bool hotspotObj::implObj::process_button_event(IN_THREAD_ONLY,
 		is_button1_down=be.press;
 		update(IN_THREAD);
 
-		if (be.press)
-			get_hotspot_focusable().set_focus_only(IN_THREAD);
-		else
+		if (!be.press)
 			activated(IN_THREAD);
 		return true;
 	}

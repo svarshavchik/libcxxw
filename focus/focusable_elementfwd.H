@@ -6,6 +6,8 @@
 #define focusable_elementfwd_h
 
 #include "focus/focusable.H"
+#include "x/w/button_eventfwd.H"
+#include <xcb/xproto.h>
 
 LIBCXXW_NAMESPACE_START
 
@@ -32,6 +34,10 @@ class LIBCXX_HIDDEN focusable_elementObj : public element_impl,
 	const child_elementObj &get_focusable_element() const override;
 
 	void creating_focusable_element() override;
+
+	bool process_button_event(IN_THREAD_ONLY,
+				  const button_event &be,
+				  xcb_timestamp_t timestamp) override;
 };
 
 

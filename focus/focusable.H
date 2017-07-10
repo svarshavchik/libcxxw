@@ -117,6 +117,9 @@ class LIBCXX_HIDDEN focusableImplObj : virtual public obj {
 	//! Set focus to this focusable element.
 
 	//! Sets the focus, but doesn't bother to call ensure_visibility().
+	//! Typically done in response to a button press, because unexpected
+	//! scrolling as a result of pressing a button would be a rather rude
+	//! thing to do.
 
 	void set_focus_only(IN_THREAD_ONLY);
 

@@ -6,6 +6,7 @@
 #define focusable_element_h
 
 #include "x/w/focusable.H"
+#include "x/w/button_event.H"
 #include "focus/focusable_elementfwd.H"
 
 LIBCXXW_NAMESPACE_START
@@ -53,6 +54,28 @@ template<typename element_impl>
 void focusable_elementObj<element_impl>::creating_focusable_element()
 {
 	this->creating_focusable_child_element();
+}
+
+//! Button 1 press set_focus_only().
+
+template<typename element_impl>
+bool focusable_elementObj<element_impl>
+::process_button_event(IN_THREAD_ONLY,
+		       const button_event &be,
+		       xcb_timestamp_t timestamp)
+{
+	bool flag=false;
+
+	if (be.button == 1 && be.press)
+	{
+		this->set_focus_only(IN_THREAD);
+		flag=true;
+	}
+
+	if (element_impl::process_button_event(IN_THREAD, be, timestamp))
+		flag=true;
+
+	return flag;
 }
 
 LIBCXXW_NAMESPACE_END

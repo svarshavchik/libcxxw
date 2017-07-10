@@ -656,12 +656,9 @@ bool scrollbarObj::implObj::process_button_event(IN_THREAD_ONLY,
 						 const button_event &be,
 						 xcb_timestamp_t timestamp)
 {
+	bool flag=superclass_t::process_button_event(IN_THREAD, be, timestamp);
 	if (be.button != 1)
-		return superclass_t::process_button_event(IN_THREAD, be,
-							  timestamp);
-
-	if (be.press)
-		set_focus_only(IN_THREAD);
+		return flag;
 
 	rectangle r;
 
