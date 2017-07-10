@@ -36,8 +36,7 @@ static void set_parent_window(const ref<generic_windowObj::handlerObj>
 }
 
 
-popupObj::implObj::implObj(IN_THREAD_ONLY,
-			   const ref<handlerObj> &handler,
+popupObj::implObj::implObj(const ref<handlerObj> &handler,
 			   const ref<generic_windowObj::handlerObj> &parent)
 	: generic_windowObj::implObj(handler),
 	  handler(handler)

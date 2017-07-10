@@ -166,8 +166,7 @@ void tooltip_factory_impl::create(const function<void (const container &)>
 					    popup_handler
 					    ->create_background_color
 					    (rgb{0, 0, 0, 0}));
-	auto popup_impl=ref<popupObj::implObj>::create(IN_THREAD,
-						       popup_handler,
+	auto popup_impl=ref<popupObj::implObj>::create(popup_handler,
 						       parent_window);
 
 

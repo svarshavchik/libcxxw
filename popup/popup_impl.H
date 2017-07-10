@@ -26,8 +26,7 @@ public:
 
 	//! Constructor
 
-	implObj(IN_THREAD_ONLY,
-		//! Popup handler
+	implObj(//! Popup handler
 		const ref<handlerObj> &handler,
 
 		//! Parent top level display element.
