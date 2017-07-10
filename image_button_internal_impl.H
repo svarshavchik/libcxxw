@@ -68,12 +68,6 @@ public:
 	//! Return the current icon number.
 
 	size_t get_image_number();
-
-	//! Overridden from hotspotObj::implObj
-
-	//! We do not use hotspot callbacks. Invoke set_image_number();
-
-	void activated(IN_THREAD_ONLY) override;
 };
 
 //! Create an image button internal implementation display element.

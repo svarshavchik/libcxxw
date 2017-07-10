@@ -35,11 +35,6 @@ image_button_internalObj::implObj
 
 image_button_internalObj::implObj::~implObj()=default;
 
-void image_button_internalObj::implObj::activated(IN_THREAD_ONLY)
-{
-	set_image_number(IN_THREAD, get_image_number() ? 0:1);
-}
-
 void image_button_internalObj::implObj::set_image_number(IN_THREAD_ONLY,
 							 size_t next_icon)
 {
@@ -76,11 +71,29 @@ size_t image_button_internalObj::implObj::get_image_number()
 // A regular image_button_internalObj::implObj instance correctly handles
 // checkbox semantics.
 
+class LIBCXX_HIDDEN checkbox_image_buttonObj :
+	public image_button_internalObj::implObj {
+
+ public:
+	using image_button_internalObj::implObj::implObj;
+
+	~checkbox_image_buttonObj()=default;
+
+		//! Overridden from hotspotObj::implObj
+
+	//! We do not use hotspot callbacks. Invoke set_image_number();
+
+	void activated(IN_THREAD_ONLY) override
+	{
+		set_image_number(IN_THREAD, get_image_number() ? 0:1);
+	}
+};
+
 ref<image_button_internalObj::implObj>
 create_checkbox_impl(const ref<containerObj::implObj> &container,
 		     const std::vector<icon> &icon_images)
 {
-	return ref<image_button_internalObj::implObj>::create(container, icon_images);
+	return ref<checkbox_image_buttonObj>::create(container, icon_images);
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -91,14 +104,14 @@ create_checkbox_impl(const ref<containerObj::implObj> &container,
 // image.
 
 class LIBCXX_HIDDEN radio_image_buttonObj :
-	public image_button_internalObj::implObj {
+	public checkbox_image_buttonObj {
  public:
 
 	//! Constructor
 	radio_image_buttonObj(const radio_group &group,
 			      const ref<containerObj::implObj> &container,
 			      const std::vector<icon> &icon_images)
-		: image_button_internalObj::implObj(container, icon_images),
+		: checkbox_image_buttonObj(container, icon_images),
 		group(group)
 		{
 		}
