@@ -23,11 +23,13 @@ create_peepholed_element_t(const ref<containerObj::implObj> &);
 
 layoutmanager
 create_peephole_toplevel_impl(const ref<containerObj::implObj> &toplevel,
+			      const char *border,
 			      const function<create_peepholed_element_t>
 			      &factory) LIBCXX_HIDDEN;
 
 template<typename create_peepholed_element_factory_t>
 auto create_peephole_toplevel(const ref<containerObj::implObj> &toplevel,
+			      const char *border,
 			      create_peepholed_element_factory_t
 			      &&element_factory)
 	LIBCXX_HIDDEN;
@@ -66,14 +68,20 @@ auto create_peephole_toplevel(const ref<containerObj::implObj> &toplevel,
 //! This layout manager should then be used to construct the public interface
 //! object for the top level display element, which is a container, with the
 //! constructed layout manager initializing the containerObj.
+//!
+//! The border parameter specifies an optional border around the toplevel
+//! window. nullptr is no border, the default for main windows and dialogs that
+//! have a window manager-managed border. The border is specified for popups.
 
 template<typename create_peepholed_element_factory_t>
 auto create_peephole_toplevel(const ref<containerObj::implObj> &toplevel,
+			      const char *border,
 			      create_peepholed_element_factory_t
 			      &&element_factory)
 {
 	return create_peephole_toplevel_impl
 		(toplevel,
+		 border,
 		 make_function<create_peepholed_element_t>
 		 (std::forward<create_peepholed_element_factory_t>
 		  (element_factory)));

@@ -73,6 +73,7 @@ main_window screenObj
 
 	auto lm=create_peephole_toplevel
 		(handler,
+		 nullptr,
 		 [&]
 		 (const ref<containerObj::implObj> &parent)
 		 {

@@ -48,6 +48,7 @@ class LIBCXX_HIDDEN toplevelpeephole_layoutmanagerObj
 
 layoutmanager
 create_peephole_toplevel_impl(const ref<containerObj::implObj> &toplevel,
+			      const char *border,
 			      const function<create_peepholed_element_t>
 			      &factory)
 {
@@ -98,14 +99,29 @@ create_peephole_toplevel_impl(const ref<containerObj::implObj> &toplevel,
 
 	auto row0_factory=toplevel_grid->append_row();
 	row0_factory->padding(0);
+	if (border)
+		row0_factory->border(border);
+
 	row0_factory->created_internally(peephole_element);
+
+	auto row1_factory=toplevel_grid->append_row();
+
+	if (border)
+	{
+		row0_factory->top_border(border);
+		row0_factory->right_border(border);
+		row0_factory->bottom_border(border);
+		row1_factory->left_border(border);
+		row1_factory->bottom_border(border);
+		row1_factory->right_border(border);
+	}
 
 	install_peephole_scrollbars(scrollbars.vertical_scrollbar,
 				    scrollbar_visibility::never,
 				    row0_factory,
 				    scrollbars.horizontal_scrollbar,
 				    scrollbar_visibility::never,
-				    toplevel_grid->append_row());
+				    row1_factory);
 
 	// Final misc details.
 	set_peephole_scrollbar_focus_order(scrollbars.horizontal_scrollbar,
