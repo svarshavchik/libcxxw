@@ -484,6 +484,9 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! No element has keyboard focus any more.
 	void unset_keyboard_focus(IN_THREAD_ONLY);
 
+	//! Set input focus to this window
+	virtual void set_input_focus(IN_THREAD_ONLY);
+
 	//! Paste a string from a clipboard.
 
 	//! Should only be called by an element that's receiving keyboard

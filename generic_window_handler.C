@@ -1207,4 +1207,10 @@ void generic_windowObj::handlerObj
 			.pasted(IN_THREAD, s);
 }
 
+void generic_windowObj::handlerObj::set_input_focus(IN_THREAD_ONLY)
+{
+	xcb_set_input_focus(conn()->conn, XCB_NONE, id(),
+			    IN_THREAD->timestamp(IN_THREAD));
+}
+
 LIBCXXW_NAMESPACE_END
