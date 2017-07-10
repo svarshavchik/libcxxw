@@ -202,6 +202,9 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 	rectangle get_absolute_location(IN_THREAD_ONLY) override;
 
+	//! Translate coordinates to screen coordinates.
+	void get_absolute_location_on_screen(rectangle &r);
+
 	//! Remove our own background color.
 
 	//! For top level windows, this simply sets their background color

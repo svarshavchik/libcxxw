@@ -44,8 +44,10 @@ window_handlerObj
 			  (dim_t::value_type)width,
 			  (dim_t::value_type)height,
 
-			  params.window_class == XCB_WINDOW_CLASS_INPUT_OUTPUT
-			  ? 2:0, // Border width
+			  0,
+			  // Border width. For non-WM controlled popups, this
+			  // seems to adjust visible popup window location!
+
 			  params.window_class,
 			  params.visual,
 			  params.events_and_mask.mask(),

@@ -204,6 +204,29 @@ rectangle generic_windowObj::handlerObj
 }
 
 void generic_windowObj::handlerObj
+::get_absolute_location_on_screen(rectangle &r)
+{
+	returned_pointer<xcb_generic_error_t *> error;
+
+	auto c=conn()->conn;
+
+	auto value=return_pointer(xcb_translate_coordinates_reply
+				  (c, xcb_translate_coordinates
+				   (c, id(), screenref->impl->xcb_screen->root,
+				    (coord_t::value_type)r.x,
+				    (coord_t::value_type)r.y),
+				   error.addressof()));
+
+	if (error)
+		throw EXCEPTION(connection_error(error));
+
+	r.x=value->dst_x;
+	r.y=value->dst_y;
+	// same_screen=value->same_screen;
+	// child_window=value->child;
+}
+
+void generic_windowObj::handlerObj
 ::draw_child_elements_after_visibility_updated(IN_THREAD_ONLY, bool flag)
 {
 }

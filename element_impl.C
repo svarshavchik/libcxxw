@@ -291,10 +291,7 @@ rectangle elementObj::implObj::get_absolute_location_on_screen(IN_THREAD_ONLY)
 {
 	auto r=get_absolute_location(IN_THREAD);
 
-	mpobj<rectangle>::lock lock{get_window_handler().current_position};
-
-	r.x=coord_t::truncate(r.x+lock->x);
-	r.y=coord_t::truncate(r.y+lock->y);
+	get_window_handler().get_absolute_location_on_screen(r);
 
 	return r;
 }
