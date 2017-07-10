@@ -38,7 +38,7 @@ icon iconObj::resizemm(IN_THREAD_ONLY, double widthmm, double heightmm)
 	return icon(this);
 }
 
-icon iconObj::resize(IN_THREAD_ONLY, dim_t w, dim_t h)
+icon iconObj::resize(IN_THREAD_ONLY, dim_t w, dim_t h, icon_scale scale)
 {
 	return icon(this);
 }

@@ -5,7 +5,9 @@
 #ifndef image_button_internalobj_h
 #define image_button_internalobj_h
 
+#include "icon_imagefwd.H"
 #include "image_button_internalfwd.H"
+#include "connection_threadfwd.H"
 #include "x/w/imageobj.H"
 #include "x/w/focusableobj.H"
 
@@ -32,6 +34,10 @@ public:
 	~image_button_internalObj() LIBCXX_HIDDEN;
 
 	ref<focusableImplObj> get_impl() const override;
+
+	//! Resize the icon images.
+	void resize(IN_THREAD_ONLY,
+		    dim_t w, dim_t h, icon_scale scale);
 };
 
 LIBCXXW_NAMESPACE_END

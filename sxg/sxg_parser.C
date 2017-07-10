@@ -3099,7 +3099,7 @@ dim_t sxg_parserObj::adjust_width(dim_t proposed_width, icon_scale scale) const
 {
 	dim_t r=divide(dim_t::value_type(proposed_width),
 		       dim_t::value_type(width_scale_factor()),
-		       icon_scale::nearest);
+		       scale);
 
 	if (r == 0)
 		r=1;
@@ -3112,7 +3112,7 @@ dim_t sxg_parserObj::adjust_height(dim_t proposed_height, icon_scale scale)
 {
 	dim_t r=divide(dim_t::value_type(proposed_height),
 		       dim_t::value_type(height_scale_factor()),
-		       icon_scale::nearest);
+		       scale);
 
 	if (r == 0)
 		r=1;
@@ -3144,24 +3144,60 @@ dim_t sxg_parserObj::height_for_mm(double h) const
 
 dim_t sxg_parserObj::height_for_width(dim_t width, icon_scale scale) const
 {
+	/*
+               default_width           width
+               -------------     =  ----------
+               default_height          x
+
+
+               x = default_height * width / default_width
+	*/
+
 	return adjust_height
 		(dim_t::truncate
 		 (std::round(divide(dim_squared_t::truncate(default_height()
 							    * width),
 				    dim_t::value_type(default_width()),
-				    icon_scale::nearest))),
-		 icon_scale::nearest);
+				    scale))),
+		 scale);
 }
 
 dim_t sxg_parserObj::width_for_height(dim_t height, icon_scale scale) const
 {
+	/*
+               default_width             x
+               -------------     =  ----------
+               default_height          height
+
+
+               x = height * default_width / default_height
+	*/
+
 	return adjust_width
 		(dim_t::truncate
 		 (std::round(divide(dim_squared_t::truncate(default_width()
 							    * height),
 				    dim_t::value_type(default_height()),
-				    icon_scale::nearest))),
-		 icon_scale::nearest);
+				    scale))),
+		 scale);
+}
+
+std::tuple<bool, rgb> sxg_parserObj::background_color(const defaulttheme &theme)
+	const
+{
+	bool flag=false;
+	rgb color;
+
+	auto iter=pictures.find("background");
+
+	if (iter != pictures.end() &&
+	    iter->second.type == picture_type_t::solid_color)
+	{
+		flag=true;
+		color=iter->second.color.get_color(theme);
+	}
+
+	return {flag, color};
 }
 
 LIBCXXW_NAMESPACE_END

@@ -323,6 +323,13 @@ See COPYING for distribution information.
       some small power of 2, with tolerable rounding artifacts.
     </para>
 
+    <para>
+      Defining a <link linkend="background"><quote>background</quote></link>
+      color makes it possible to scale the &sxg; image smaller, but
+      produce a final image with the requested size by filling the extra
+      padding with a background color.
+    </para>
+
     <section id="sxgscalingalgo">
       <title>Scaling algorithm</title>
 
@@ -872,6 +879,43 @@ See COPYING for distribution information.
       50% green intensity, with a label of <quote>orange</quote>.
     </para>
 
+    <section id="background">
+      <title>Defining a background color</title>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting><![CDATA[
+<sxg>
+
+  <!-- -->
+
+  <picture id="background">
+    <type>rgb</type>
+    <r>0</r>
+    <g>0</g>
+    <b>0</b>
+  </picture>
+
+  <!-- ... -->
+
+</sxg>
+]]></programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	A solid color picture with a name of <quote>background</quote> carries
+	a special meaning. It makes it possible to
+	<link linkend="sxgscaling">specify width and height scaling
+	  factors</link> but still support rendering an &sxg; image of
+	any size, by filling the extra padding with the background color.
+	The &sxg; image's size gets rounded down until its size is an
+	even multiple of its specified with and height factors. The final
+	image's size matches the desired size, with the rendered image centered
+	and the background color providing the few pixels' worth of padding
+	on the outside of the inmage.
+      </para>
+    </section>
     <section id="sxgthemecolors">
       <title>Using theme colors</title>
 

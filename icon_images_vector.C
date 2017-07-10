@@ -33,4 +33,11 @@ void icon_images_vectorObj::theme_updated(IN_THREAD_ONLY,
 	}
 }
 
+void icon_images_vectorObj::resize(IN_THREAD_ONLY, dim_t w, dim_t h,
+			      icon_scale scale)
+{
+	for (auto &i:icon_images(IN_THREAD))
+		i=i->resize(IN_THREAD, w, h, scale);
+}
+
 LIBCXXW_NAMESPACE_END

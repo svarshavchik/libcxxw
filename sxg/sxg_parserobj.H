@@ -118,6 +118,10 @@ class LIBCXX_HIDDEN sxg_parserObj : virtual public obj {
 		    std::pair<coord_t, coord_t>> &points)
 		const;
 
+	//! Whether this SXG image defines a background color.
+
+	std::tuple<bool, rgb> background_color(const defaulttheme &theme) const;
+
  private:
 
 	//! Nominal width

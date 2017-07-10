@@ -21,5 +21,12 @@ ref<focusableImplObj> image_button_internalObj::get_impl() const
 	return impl;
 }
 
+void image_button_internalObj::resize(IN_THREAD_ONLY,
+				      dim_t w, dim_t h,
+				      icon_scale scale)
+{
+	impl->resize(IN_THREAD, w, h, scale);
+	impl->set_image_number(IN_THREAD, impl->get_image_number());
+}
 
 LIBCXXW_NAMESPACE_END

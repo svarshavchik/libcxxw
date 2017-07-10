@@ -52,7 +52,8 @@ public:
 	virtual icon resizemm(IN_THREAD_ONLY, double widthmm, double heightmm);
 
 	//! Resize this icon, if this is a resizable icon.
-	virtual icon resize(IN_THREAD_ONLY, dim_t w, dim_t h);
+	virtual icon resize(IN_THREAD_ONLY, dim_t w, dim_t h,
+			    icon_scale scale);
 };
 
 LIBCXXW_NAMESPACE_END

@@ -31,7 +31,7 @@ imageObj::implObj::implObj(const ref<containerObj::implObj> &container,
 				   { {icon_width, icon_width, icon_width},
 					   {icon_height, icon_height,
 							   icon_height}}}),
-	  current_icon(initial_icon)
+	  current_icon_thread_only(initial_icon)
 {
 }
 
@@ -39,7 +39,7 @@ void imageObj::implObj::initialize(IN_THREAD_ONLY)
 {
 	// Theme might've been changed. Resynchronize.
 
-	current_icon=current_icon->initialize(IN_THREAD);
+	current_icon(IN_THREAD)=current_icon(IN_THREAD)->initialize(IN_THREAD);
 }
 
 void imageObj::implObj::do_draw(IN_THREAD_ONLY,
@@ -48,8 +48,8 @@ void imageObj::implObj::do_draw(IN_THREAD_ONLY,
 {
 	// We ignore areas for now, and just composite the entire icon picture.
 
-	auto w=current_icon->image->icon_pixmap->get_width();
-	auto h=current_icon->image->icon_pixmap->get_height();
+	auto w=current_icon(IN_THREAD)->image->icon_pixmap->get_width();
+	auto h=current_icon(IN_THREAD)->image->icon_pixmap->get_height();
 
 	clip_region_set clipped{IN_THREAD, di};
 
@@ -59,7 +59,8 @@ void imageObj::implObj::do_draw(IN_THREAD_ONLY,
 				   const auto &,
 				   const auto &)
 				  {
-					  pic->composite(current_icon->image
+					  pic->composite(this->current_icon
+							 (IN_THREAD)->image
 							 ->icon_picture,
 							 0, 0,
 							 0, 0,
@@ -74,9 +75,9 @@ void imageObj::implObj::do_draw(IN_THREAD_ONLY,
 void imageObj::implObj::theme_updated(IN_THREAD_ONLY,
 				      const defaulttheme &new_theme)
 {
-	auto new_icon=current_icon->theme_updated(IN_THREAD, new_theme);
+	auto new_icon=current_icon(IN_THREAD)->theme_updated(IN_THREAD, new_theme);
 
-	if (new_icon == current_icon)
+	if (new_icon == current_icon(IN_THREAD))
 		return;
 
 	set_icon(IN_THREAD, new_icon);
@@ -84,12 +85,12 @@ void imageObj::implObj::theme_updated(IN_THREAD_ONLY,
 
 void imageObj::implObj::set_icon(IN_THREAD_ONLY, const icon &new_icon)
 {
-	current_icon=new_icon->initialize(IN_THREAD);
+	current_icon(IN_THREAD)=new_icon->initialize(IN_THREAD);
 
 	// Update the metrics to reflect the new icon.
 
-	auto w=current_icon->image->icon_pixmap->get_width();
-	auto h=current_icon->image->icon_pixmap->get_height();
+	auto w=current_icon(IN_THREAD)->image->icon_pixmap->get_width();
+	auto h=current_icon(IN_THREAD)->image->icon_pixmap->get_height();
 
 	get_horizvert(IN_THREAD)->set_element_metrics(IN_THREAD,
 						      {w, w, w}, {h, h, h});

@@ -16,9 +16,10 @@ class LIBCXX_HIDDEN imageObj::implObj : public child_elementObj {
 
 	//! The currently shown image.
 
-	icon current_icon;
+	icon current_icon_thread_only;
 
 public:
+	THREAD_DATA_ONLY(current_icon);
 
 	//! Constructor
 	implObj(const ref<containerObj::implObj> &container,

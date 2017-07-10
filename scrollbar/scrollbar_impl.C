@@ -290,13 +290,15 @@ bool scrollbarObj::implObj::calculate_scrollbar_metrics(IN_THREAD_ONLY)
 			icon_set_1.handlebar_icon->resize
 			(IN_THREAD,
 			 current_position.width,
-			 current_position.height);
+			 current_position.height,
+			 icon_scale::nomore);
 
 		icon_set_2.handlebar_icon=
 			icon_set_2.handlebar_icon->resize
 			(IN_THREAD,
 			 current_position.width,
-			 current_position.height);
+			 current_position.height,
+			 icon_scale::nomore);
 
 		current_pixel=metrics.value_to_pixel(dragged_value);
 	}

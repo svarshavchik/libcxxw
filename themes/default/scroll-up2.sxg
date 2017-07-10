@@ -6,6 +6,11 @@
     <color>0%</color>
   </picture>
 
+  <picture id="background">
+    <type>rgb</type>
+    <color>0%</color>
+  </picture>
+
   <picture id="bg">
     <type>rgb</type>
     <color>80%</color>

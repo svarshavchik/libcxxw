@@ -7,6 +7,7 @@
 
 #include "iconfwd.H"
 #include "image.H"
+#include "icon_imagefwd.H"
 #include "connection_threadfwd.H"
 
 #include <vector>
@@ -37,6 +38,9 @@ public:
 	//! Reload all images after theme_updated().
 
 	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme);
+
+	//! Resize the images
+	void resize(IN_THREAD_ONLY, dim_t w, dim_t h, icon_scale scale);
 };
 
 LIBCXXW_NAMESPACE_END

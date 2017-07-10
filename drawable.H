@@ -10,6 +10,7 @@
 #include "x/w/picturefwd.H"
 #include "x/w/screenfwd.H"
 #include "iconfwd.H"
+#include "icon_imagefwd.H"
 #include "xid_t.H"
 
 #include <xcb/xproto.h>
@@ -114,7 +115,7 @@ class LIBCXX_HIDDEN drawableObj::implObj : virtual public obj {
 
 	icon create_icon(const std::experimental::string_view &name,
 			 render_repeat icon_repeat,
-			 dim_t w, dim_t h);
+			 dim_t w, dim_t h, icon_scale scale);
 
 	//! Create a vector of icons, with default dimensions.
 
