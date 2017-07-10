@@ -10,7 +10,7 @@
 #include "peephole/peephole_impl.H"
 #include "peephole/peephole_layoutmanager_impl.H"
 #include "focus/focusable.H"
-#include "focus/focusframecontainer_element.H"
+#include "focus/standard_focusframecontainer_element.H"
 #include "scrollbar/scrollbar.H"
 #include "container_element.H"
 #include "container_visible_element.H"
@@ -84,12 +84,6 @@ focusable_impl peepholed_focusableObj::implObj::get_impl(size_t n) const
 	return get_impl();
 }
 
-typedef nonrecursive_visibilityObj<focusframecontainer_elementObj<
-					   container_visible_elementObj<
-						   container_elementObj<
-							   child_elementObj>>>
-				   > focusframe_impl_t;
-
 std::tuple<ref<peepholed_focusableObj::implObj>, gridlayoutmanager>
 create_peepholed_focusable_with_frame_impl
 (const char *border,
@@ -115,10 +109,10 @@ create_peepholed_focusable_with_frame_impl
 
 	// Create the focusframe implementation object, first.
 
-	auto focusframecontainer_impl=ref<focusframe_impl_t>
-		::create(factory->container_impl,
-			 child_element_init_params{"focusframe@libcxx"},
-			 focusable_background_color);
+	auto focusframecontainer_impl=
+		create_standard_focusframe_container_element
+		(factory->container_impl,
+		 focusable_background_color);
 
 	// Now that the focusframe implementation object exists we can
 	// create the peepholed focusable element.

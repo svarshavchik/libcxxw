@@ -7,7 +7,7 @@
 #include "image_button_internal.H"
 #include "image_button_internal_impl.H"
 #include "focus/focusframecontainer.H"
-#include "focus/focusframecontainer_element.H"
+#include "focus/standard_focusframecontainer_element.H"
 #include "icon.H"
 #include "busy.H"
 #include "x/w/factory.H"
@@ -96,11 +96,6 @@ class LIBCXX_HIDDEN image_button_containerObj
 	~image_button_containerObj()=default;
 };
 
-// The implementation object for the focusframecontainer.
-
-typedef ref<focusframecontainer_elementObj<
-		    container_elementObj<child_elementObj>>> ff_impl_t;
-
 // The factory do_create_image_button invokes to contsruct the internal
 // implementation object.
 
@@ -135,9 +130,8 @@ do_create_image_button(const std::vector<std::experimental::string_view>
 	// This grid layout manager will contain a single focusframecontainer.
 
 	auto focus_frame_impl=
-		ff_impl_t::create(image_button_outer_container_impl,
-				  child_element_init_params{"focusframe@libcxx"}
-				  );
+		create_standard_focusframe_container_element
+		(image_button_outer_container_impl);
 
 	// Create an image_button_internal implementation object. Its
 	// container is the focusframecontainer.

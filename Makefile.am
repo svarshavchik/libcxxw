@@ -153,6 +153,8 @@ libcxxw_la_SOURCES=\
 	focus/label_for.H			    \
 	focus/label_forfwd.H			    \
 	focus/label_forobj.H			    \
+	focus/standard_focusframecontainer_element.C \
+	focus/standard_focusframecontainer_element.H \
 	fonts/composite_text_stream.C		    \
 	fonts/composite_text_stream.H		    \
 	fonts/composite_text_streamfwd.H	    \

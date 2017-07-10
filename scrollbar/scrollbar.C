@@ -10,7 +10,7 @@
 #include "nonrecursive_visibility.H"
 #include "focus/focusframefactory.H"
 #include "focus/focusframelayoutimpl.H"
-#include "focus/focusframecontainer_element.H"
+#include "focus/standard_focusframecontainer_element.H"
 #include "x/w/rgb.H"
 
 LIBCXXW_NAMESPACE_START
@@ -43,15 +43,8 @@ static scrollbar create_scrollbar(const ref<containerObj::implObj> &parent_conta
 	// created element. Hence the implementation object points to the
 	// factory's container.
 
-	typedef nonrecursive_visibilityObj
-		<focusframecontainer_elementObj
-		 <container_visible_elementObj<container_elementObj
-					       <child_elementObj>>>>
-		ffcontainer_impl_t;
-
-	auto ffcontainer_impl=ref<ffcontainer_impl_t>
-		::create(parent_container,
-			 child_element_init_params{"focusframe@libcxx"});
+	auto ffcontainer_impl=
+		create_standard_focusframe_container_element(parent_container);
 
 	// And this will be its layout manager.
 
