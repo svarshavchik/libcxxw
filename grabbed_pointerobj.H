@@ -6,6 +6,7 @@
 #define grabbed_pointerobj_h
 
 #include "x/w/elementobj.H"
+#include "elementfwd.H"
 #include "x/w/generic_windowobj.H"
 #include "connection_infofwd.H"
 #include "connection_threadfwd.H"
@@ -39,7 +40,9 @@ public:
 	const xcb_grab_status_t result;
 	//! Constructor
 	grabbed_pointerObj(IN_THREAD_ONLY,
-			   const ref<elementObj::implObj> &grabbing_element);
+			   const elementimplptr &grabbing_element,
+			   const ref<generic_windowObj::handlerObj>
+			   &grabbed_window);
 
 private:
 

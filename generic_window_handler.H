@@ -114,6 +114,9 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	weakptr<grabbed_pointerptr> current_pointer_grab_thread_only;
  public:
 
+	grabbed_pointerptr grab_pointer(IN_THREAD_ONLY,
+					const elementimplptr &grabbing_element);
+
 	//! What I want for my initial event mask.
 
 	static constexpr xcb_event_mask_t initial_event_mask()

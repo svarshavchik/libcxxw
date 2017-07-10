@@ -58,10 +58,11 @@ static xcb_grab_status_t do_grab(xcb_connection_t *c,
 }
 
 grabbed_pointerObj::grabbed_pointerObj(IN_THREAD_ONLY,
-				       const ref<elementObj::implObj>
-				       &grabbing_element)
+				       const elementimplptr &grabbing_element,
+				       const ref<generic_windowObj::handlerObj>
+				       &grabbed_window)
 	: grabbing_element{grabbing_element},
-	  grabbed_window(&grabbing_element->get_window_handler()),
+	  grabbed_window(grabbed_window),
 	  timestamp{IN_THREAD->timestamp(IN_THREAD)},
 	  result(do_grab(conn()->conn, false,
 			 grabbed_window->id(),
@@ -121,15 +122,21 @@ grabbed_pointerptr elementObj::implObj::grab_pointer(IN_THREAD_ONLY)
 	     data(IN_THREAD).removed)
 		return grabbed_pointerptr();
 
-	auto &window_grab=
-		get_window_handler().current_pointer_grab(IN_THREAD);
+	return get_window_handler().grab_pointer(IN_THREAD, ref<implObj>(this));
+}
+
+grabbed_pointerptr generic_windowObj::handlerObj
+::grab_pointer(IN_THREAD_ONLY, const elementimplptr &grabbing_element)
+{
+	auto &window_grab=current_pointer_grab(IN_THREAD);
 
 	auto p=window_grab.getptr();
 
 	if (p)
 		return grabbed_pointerptr(); // Another element grabbed.
 
-	auto gp=grabbed_pointer::create(IN_THREAD, ref<implObj>(this));
+	auto gp=grabbed_pointer::create(IN_THREAD, grabbing_element,
+					ref<handlerObj>(this));
 
 	if (!gp->succeeded())
 		return grabbed_pointerptr();
