@@ -9,6 +9,7 @@
 #include "element_screen.H"
 #include "screen.H"
 #include "connection_thread.H"
+#include "grabbed_pointer.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -129,6 +130,45 @@ void popupObj::handlerObj::configure_notify(IN_THREAD_ONLY,
 					    const rectangle &r)
 {
 	// Ignoring the ConfigureNotify event, see?
+}
+
+void popupObj::handlerObj::button_press_event(IN_THREAD_ONLY,
+					      const xcb_button_press_event_t
+					      *event)
+{
+	if (event->event_x < 0 || event->event_y < 0 ||
+	    (dim_t::truncate)(event->event_x)
+	    >= data(IN_THREAD).current_position.width ||
+	    (dim_t::truncate)(event->event_y)
+	    >= data(IN_THREAD).current_position.height)
+	{
+		request_visibility(IN_THREAD, false);
+		return;
+	}
+	generic_windowObj::handlerObj::button_press_event(IN_THREAD, event);
+
+}
+
+void popupObj::handlerObj::set_inherited_visibility(IN_THREAD_ONLY,
+						    inherited_visibility_info
+						    &visibility_info)
+{
+	if (!visibility_info.flag)
+	{
+		current_grab=NULL;
+		ungrab(IN_THREAD);
+	}
+
+	generic_windowObj::handlerObj::set_inherited_visibility
+		(IN_THREAD, visibility_info);
+
+	if (visibility_info.flag)
+	{
+		current_grab=grab_pointer(IN_THREAD, elementimplptr());
+
+		if (current_grab)
+			current_grab->allow_events();
+	}
 }
 
 LIBCXXW_NAMESPACE_END

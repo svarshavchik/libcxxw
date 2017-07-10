@@ -8,6 +8,7 @@
 #include "popup/popup.H"
 #include "generic_window_handler.H"
 #include "connection_threadfwd.H"
+#include "grabbed_pointerfwd.H"
 #include "x/w/rectangle.H"
 
 LIBCXXW_NAMESPACE_START
@@ -76,6 +77,18 @@ public:
 	//! from the server.
 	void configure_notify(IN_THREAD_ONLY, const rectangle &r) override;
 
+	void button_press_event(IN_THREAD_ONLY,
+				const xcb_button_press_event_t *event)
+		override;
+
+	void set_inherited_visibility(IN_THREAD_ONLY,
+				      inherited_visibility_info
+				      &visibility_info)
+		override;
+
+ private:
+
+	grabbed_pointerptr current_grab;
 };
 
 LIBCXXW_NAMESPACE_END
