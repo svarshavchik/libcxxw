@@ -12,6 +12,14 @@
 
 LIBCXXW_NAMESPACE_START
 
+//! Factory for the contents of a \ref focusframecontainer "focus frame container".
+
+//! This factory gets returned by get_focusable(). The focusframecontainer
+//! uses the grid layout manager internally. When a new display element
+//! gets created
+//! by this factory, all contents are remove()d from the underlying grid, then
+//! the new element is inserted into the grid.
+
 class LIBCXX_HIDDEN focusframefactoryObj : public factoryObj {
 
  public:

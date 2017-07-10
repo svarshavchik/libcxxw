@@ -62,6 +62,10 @@ libcxxw_la_SOURCES=\
 	canvas.H				    \
 	canvas.C				    \
 	canvas_impl.C				    \
+	capturefactory.C			    \
+	capturefactory.H			    \
+	capturefactoryfwd.H			    \
+	capturefactoryobj.H			    \
 	catch_exceptions.H			    \
 	child_element.C				    \
 	child_element.H				    \
