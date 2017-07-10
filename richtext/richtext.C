@@ -46,7 +46,7 @@ richtextObj::impl_t::lock::lock(IN_THREAD_ONLY,
 	(**this)->finish_initialization(IN_THREAD);
 }
 
-void richtextObj::set(IN_THREAD_ONLY, richtextstring &string)
+void richtextObj::set(IN_THREAD_ONLY, const richtextstring &string)
 {
 	impl_t::lock lock{IN_THREAD, impl};
 

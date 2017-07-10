@@ -9,6 +9,7 @@
 #include "x/w/text_param.H"
 #include "child_elementobj.H"
 #include "richtext/richtextfwd.H"
+#include "richtext/richtextmeta.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -37,6 +38,10 @@ public:
 
 	const richtext text;
 
+	//! Default meta that was used to create the rich text
+
+	const richtextmeta default_meta;
+
 	//! Constructor for a label element.
 
 	implObj(const ref<containerObj::implObj> &container,
@@ -53,6 +58,14 @@ public:
 		double initial_width,
 		elementObj::implObj &container_element);
 
+	//! Internal constructor
+	implObj(const ref<containerObj::implObj> &container,
+		const text_param &text,
+		const richtextmeta &default_meta,
+		halign alignment,
+		double initial_width,
+		elementObj::implObj &container_element);
+
  protected:
 	//! Constructor used by editor subclass.
 
@@ -60,10 +73,22 @@ public:
 		halign alignment,
 		double initial_width,
 		const richtextstring &string,
+		const richtextmeta &default_meta,
 		const char *element_id);
  public:
 	//! Destructor
 	~implObj();
+
+	//! Replace text
+
+	void update(const text_param &string);
+
+	//! Replace text
+
+	void update(IN_THREAD_ONLY, const text_param &string);
+
+	//! Text has been updated
+	void updated(IN_THREAD_ONLY);
 
 	////////////////////////////////////////////////////////////////////
 	//

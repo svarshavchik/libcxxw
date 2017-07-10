@@ -101,7 +101,7 @@ class LIBCXX_HIDDEN richtextObj : virtual public obj {
 
 	//! Set the entire contents of the richtext.
 
-	void set(IN_THREAD_ONLY, richtextstring &string);
+	void set(IN_THREAD_ONLY, const richtextstring &string);
 
 	//! Redraw this element fully.
 

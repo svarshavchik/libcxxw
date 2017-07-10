@@ -6,6 +6,7 @@
 #define x_w_labelobj_h
 
 #include <x/w/elementobj.H>
+#include <x/w/text_paramfwd.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -25,6 +26,10 @@ public:
 
 	//! Destructor
 	~labelObj() LIBCXX_HIDDEN;
+
+	//! Replace the label text.
+
+	void update(const text_param &string);
 };
 
 LIBCXXW_NAMESPACE_END

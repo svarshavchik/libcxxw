@@ -14,4 +14,9 @@ labelObj::labelObj(const ref<implObj> &impl) : elementObj(impl),
 
 labelObj::~labelObj()=default;
 
+void labelObj::update(const text_param &string)
+{
+	impl->update(string);
+}
+
 LIBCXXW_NAMESPACE_END

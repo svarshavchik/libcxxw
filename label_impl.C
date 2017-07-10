@@ -5,7 +5,9 @@
 #include "libcxxw_config.h"
 #include "label.H"
 #include "element_screen.H"
+#include "generic_window_handler.H"
 #include "screen.H"
+#include "connection_thread.H"
 #include "richtext/richtext.H"
 #include "richtext/richtextmeta.H"
 #include "richtext/richtext_draw_info.H"
@@ -49,14 +51,28 @@ labelObj::implObj::implObj(const ref<containerObj::implObj> &container,
 			   halign alignment,
 			   double initial_width,
 			   elementObj::implObj &container_element)
-	: implObj(container, alignment, initial_width,
-		  container_element.create_richtextstring
-		  ({container_element.create_background_color
+	: implObj(container, text,
+		  {container_element.create_background_color
 				  ("label_foreground_color"),
 				  container_element.create_theme_font
 				  (container->get_element_impl()
 				   .label_theme_font())},
-			  text),
+		  alignment,
+		  initial_width,
+		  container_element)
+{
+}
+
+labelObj::implObj::implObj(const ref<containerObj::implObj> &container,
+			   const text_param &text,
+			   const richtextmeta &default_meta,
+			   halign alignment,
+			   double initial_width,
+			   elementObj::implObj &container_element)
+	: implObj(container, alignment, initial_width,
+		  container_element.create_richtextstring
+		  (default_meta, text),
+		  default_meta,
 		  "label@libcxx")
 {
 }
@@ -65,16 +81,36 @@ labelObj::implObj::implObj(const ref<containerObj::implObj> &container,
 			   halign alignment,
 			   double initial_width,
 			   const richtextstring &string,
+			   const richtextmeta &default_meta,
 			   const char *element_id)
 	: child_elementObj(container, {element_id}),
 	  word_wrap_widthmm_thread_only(initial_width),
-	  text(richtext::create(string, alignment, 0))
+	  text(richtext::create(string, alignment, 0)),
+	  default_meta(default_meta)
 {
 	if (initial_width < 0)
 		throw EXCEPTION(_("Label width cannot be negative"));
 }
 
 labelObj::implObj::~implObj()=default;
+
+void labelObj::implObj::update(const text_param &string)
+{
+	get_window_handler().screenref->impl->thread->run_as(RUN_AS,
+		       [me=ref<implObj>(this), string]
+		       (IN_THREAD_ONLY)
+		       {
+			       me->update(IN_THREAD, string);
+		       });
+}
+
+void labelObj::implObj::update(IN_THREAD_ONLY, const text_param &string)
+{
+	text->set(IN_THREAD,
+		  create_richtextstring(default_meta, string));
+	updated(IN_THREAD);
+	schedule_redraw(IN_THREAD);
+}
 
 void labelObj::implObj::compute_preferred_width(IN_THREAD_ONLY)
 {
@@ -97,6 +133,11 @@ void labelObj::implObj::initialize(IN_THREAD_ONLY)
 
 	compute_preferred_width(IN_THREAD);
 
+	updated(IN_THREAD);
+}
+
+void labelObj::implObj::updated(IN_THREAD_ONLY)
+{
 	// We can now compute and set our initial metrics.
 
 	auto metrics=calculate_current_metrics(IN_THREAD);

@@ -12,8 +12,12 @@
 #include "focus/focusable_elementfwd.H"
 #include "editor_peephole_impl.H"
 #include "richtext/richtextiteratorfwd.H"
+#include "richtext/richtextstring.H"
+#include "richtext/richtextmeta.H"
 #include "x/w/input_field_config.H"
 #include "x/w/button_eventfwd.H"
+
+#include <tuple>
 
 LIBCXXW_NAMESPACE_START
 
@@ -89,7 +93,7 @@ class LIBCXX_HIDDEN editorObj::implObj
 	//! Internal constructor
 
 	implObj(const ref<editor_peephole_implObj> &parent_peephole,
-		richtextstring &&string,
+		std::tuple<richtextmeta, richtextstring> &&meta_and_string,
 		const input_field_config &config);
 
  public:

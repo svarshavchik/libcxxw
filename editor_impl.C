@@ -34,7 +34,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-static inline richtextstring
+static inline std::tuple<richtextmeta, richtextstring>
 create_initial_string(const ref<containerObj::implObj> &container,
 		      const text_param &text)
 {
@@ -48,12 +48,14 @@ create_initial_string(const ref<containerObj::implObj> &container,
 
 	cpy(" ");
 
-	auto string=element.create_richtextstring({bg_color, font}, cpy);
+	richtextmeta default_meta{bg_color, font};
+
+	auto string=element.create_richtextstring(default_meta, cpy);
 
 	if (string.get_meta().size() > 1)
 		throw EXCEPTION(_("Input text cannot contain embedded formatting."));
 
-	return string;
+	return {default_meta, string};
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -193,12 +195,15 @@ editorObj::implObj::implObj(const ref<editor_peephole_implObj> &parent_peephole,
 }
 
 editorObj::implObj::implObj(const ref<editor_peephole_implObj> &parent_peephole,
-			    richtextstring &&string,
+			    std::tuple<richtextmeta, richtextstring>
+			    &&meta_and_string,
 			    const input_field_config &config)
 	: superclass_t(// Capture the string's font.
-		       string.get_meta().at(0).second.getfont(),
+		       std::get<richtextstring>(meta_and_string)
+		       .get_meta().at(0).second.getfont(),
 		       parent_peephole, config.alignment, 0,
-		       std::move(string),
+		       std::get<richtextstring>(meta_and_string),
+		       std::get<richtextmeta>(meta_and_string),
 		       "textedit@libcxx"),
 	  cursor(this->text->end()),
 	  parent_peephole(parent_peephole),
