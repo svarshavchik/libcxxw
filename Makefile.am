@@ -131,6 +131,9 @@ libcxxw_la_SOURCES=\
 	factory.C				    \
 	gc.C					    \
 	focusable_container.C			    \
+	focusable_label.C			    \
+	focusable_label_impl.C			    \
+	focusable_label_impl.H			    \
 	focus/element_focusable.C		    \
 	focus/focusable.C			    \
 	focus/focusable.H			    \

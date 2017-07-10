@@ -19,6 +19,7 @@
 #include <x/w/text_paramfwd.H>
 #include <x/w/shortcutfwd.H>
 #include <x/w/labelfwd.H>
+#include <x/w/focusable_labelfwd.H>
 #include <x/w/buttonfwd.H>
 #include <x/w/input_fieldfwd.H>
 #include <x/w/imagefwd.H>
@@ -122,6 +123,11 @@ public:
 	label create_label(const text_param &text,
 			   double widthmm,
 			   halign alignment=halign::left);
+
+	//! Create a focusable label.
+
+	focusable_label create_focusable_label(const text_param &text,
+					       halign alignment=halign::left);
 
 	//! Create an button with a label, and a normal border.
 	button create_normal_button_with_label(const text_param &text,
