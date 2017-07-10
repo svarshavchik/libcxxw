@@ -162,6 +162,9 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 		//! This element's created tooltip
 		popupptr tooltip;
 
+		//! There's a popup attached to this element.
+		ptr<implObj> attached_popup;
+
 		//! Scheduled tooltip creation
 		tick_clock_t::time_point tooltip_scheduled_creation;
 

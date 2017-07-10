@@ -244,7 +244,14 @@ void elementObj::implObj
 	// Offically update this element's "real" visibility.
 	data(IN_THREAD).inherited_visibility=info.flag;
 	if (!info.flag)
+	{
 		unschedule_tooltip_creation(IN_THREAD);
+
+		// Also hide the popup.
+		if (data(IN_THREAD).attached_popup)
+			data(IN_THREAD).attached_popup
+				->request_visibility(IN_THREAD, false);
+	}
 }
 
 void elementObj::implObj::draw_after_visibility_updated(IN_THREAD_ONLY,
