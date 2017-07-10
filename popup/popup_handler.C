@@ -14,8 +14,10 @@ LIBCXXW_NAMESPACE_START
 
 popupObj::handlerObj::handlerObj(IN_THREAD_ONLY,
 				 const ref<generic_windowObj::handlerObj>
-				 &parent)
-	: generic_windowObj::handlerObj(IN_THREAD, parent->get_screen())
+				 &parent,
+				 size_t nesting_level)
+	: generic_windowObj::handlerObj(IN_THREAD, parent->get_screen(),
+					nesting_level)
 {
 	// We are hereby initialized
 

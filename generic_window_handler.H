@@ -143,10 +143,18 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 		//! The window's pictformat.
 
 		const_pictformat drawable_pictformat;
+
+		//! Normally the top-level window is nesting_level of 0.
+
+		//! But for a combo-box we'll use its parent's nesting as a
+		//! base, for optimum recalculation.
+
+		size_t nesting_level=0;
 	};
 
 	handlerObj(IN_THREAD_ONLY,
-		   const screen &me);
+		   const screen &me,
+		   size_t nesting_level=0);
 
  private:
 	handlerObj(IN_THREAD_ONLY,

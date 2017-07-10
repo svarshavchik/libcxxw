@@ -25,7 +25,8 @@ class LIBCXX_HIDDEN popupObj::handlerObj :
 
 public:
 	handlerObj(IN_THREAD_ONLY,
-		const ref<generic_windowObj::handlerObj> &parent);
+		   const ref<generic_windowObj::handlerObj> &parent,
+		   size_t nesting_level=0);
 	~handlerObj();
 
 	//! Override frame_extends_updated()
@@ -57,7 +58,7 @@ public:
 						dim_t screen_width,
 						dim_t screen_height)=0;
 
- private:
+ protected:
 
 	//! Call recalculate_popup_position(), then xcb_configure_window().
 

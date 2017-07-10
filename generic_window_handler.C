@@ -73,7 +73,8 @@ bool generic_windowObj::handlerObj::frame_extents_t
 //////////////////////////////////////////////////////////////////////////
 
 static inline generic_windowObj::handlerObj::constructor_params
-create_constructor_params(const screen &parent_screen)
+create_constructor_params(const screen &parent_screen,
+			  size_t nesting_level)
 {
 	rectangle dimensions={0, 0, 1, 1};
 
@@ -95,13 +96,16 @@ create_constructor_params(const screen &parent_screen)
 			parent_screen->impl->toplevelwindow_visual->impl->visual_id, // visual
 			vm, // events_and_mask
 		},
-		parent_screen->impl->toplevelwindow_pictformat
+		parent_screen->impl->toplevelwindow_pictformat,
+		nesting_level
 	};
 }
 
 generic_windowObj::handlerObj::handlerObj(IN_THREAD_ONLY,
-					  const screen &parent_screen)
-	: handlerObj(IN_THREAD, create_constructor_params(parent_screen))
+					  const screen &parent_screen,
+					  size_t nesting_level)
+	: handlerObj(IN_THREAD, create_constructor_params(parent_screen,
+							  nesting_level))
 {
 }
 
@@ -123,7 +127,7 @@ generic_windowObj::handlerObj
 					     ->id),
 
 	container_elementObj<elementObj::implObj>
-	(0,
+	(params.nesting_level,
 	 element_position(params.window_handler_params.initial_position),
 	 params.window_handler_params.screenref,
 	 params.drawable_pictformat,
