@@ -21,7 +21,6 @@
 #include "messages.H"
 #include "connection_thread.H"
 #include "generic_window_handler.H"
-#include "xim/ximclient.H"
 #include "x/w/key_event.H"
 #include "x/w/button_event.H"
 #include "x/w/motion_event.H"
@@ -593,18 +592,7 @@ void editorObj::implObj::scroll_cursor_into_view(IN_THREAD_ONLY)
 	auto pos=cursor->at(IN_THREAD).position;
 
 	ensure_visibility(IN_THREAD, pos);
-
-	auto loc=get_absolute_location(IN_THREAD);
-
-	pos.x=coord_t::truncate(pos.x+loc.x);
-	pos.y=coord_t::truncate(pos.y+loc.y);
-
-	get_window_handler().with_xim_client
-		([&]
-		 (auto &client)
-		 {
-			 client->current_cursor_position(IN_THREAD, pos);
-		 });
+	report_current_cursor_position(IN_THREAD, pos);
 }
 
 bool editorObj::implObj::process_button_event(IN_THREAD_ONLY,

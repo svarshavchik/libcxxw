@@ -23,6 +23,7 @@
 #include "element_screen.H"
 #include "focus/label_for.H"
 #include "fonts/current_fontcollection.H"
+#include "xim/ximclient.H"
 #include "popup/popup.H"
 #include "catch_exceptions.H"
 #include <x/logger.H>
@@ -891,6 +892,22 @@ bool elementObj::implObj::process_key_event(IN_THREAD_ONLY, const key_event &)
 bool elementObj::implObj::uses_input_method()
 {
 	return false;
+}
+
+void elementObj::implObj::report_current_cursor_position(IN_THREAD_ONLY,
+							 rectangle pos)
+{
+	auto loc=get_absolute_location(IN_THREAD);
+
+	pos.x=coord_t::truncate(pos.x+loc.x);
+	pos.y=coord_t::truncate(pos.y+loc.y);
+
+	get_window_handler().with_xim_client
+		([&]
+		 (auto &client)
+		 {
+			 client->current_cursor_position(IN_THREAD, pos);
+		 });
 }
 
 void elementObj::implObj::report_motion_event(IN_THREAD_ONLY,

@@ -879,6 +879,11 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 	virtual bool uses_input_method();
 
+	//! Current cursor position when this element uses_input_method().
+
+	//! Reports the current cursor position to the XIM server. Should
+	//! only be called when this element has keyboard focus.
+	void report_current_cursor_position(IN_THREAD_ONLY, rectangle pos);
 
 	//! process_button_event() calls grab() to grab the pointer.
 
