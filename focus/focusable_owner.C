@@ -19,8 +19,7 @@ focusableObj::ownerObj::ownerObj(const ref<focusableImplObj> &impl) : impl(impl)
 	// top level window's focusable_fields.
 
 	impl->get_focusable_element().get_screen()->impl->thread->run_as
-		(RUN_AS,
-		 [impl=this->impl]
+		([impl=this->impl]
 		 (IN_THREAD_ONLY)
 		 {
 			 impl->focusable_initialize(IN_THREAD);
@@ -36,8 +35,7 @@ focusableObj::ownerObj::~ownerObj()
 	// impl by reference, so the object is guaranteed to exist.
 
 	impl->get_focusable_element().get_screen()->impl->thread->run_as
-		(RUN_AS,
-		 [impl=this->impl]
+		([impl=this->impl]
 		 (IN_THREAD_ONLY)
 		 {
 			 impl->focusable_deinitialize(IN_THREAD);

@@ -7,7 +7,7 @@
 #include "main_window.H"
 #include "main_window_handler.H"
 #include "x/w/container.H"
-#include "connection_thread.H"
+#include "run_as.H"
 #include "connection_info.H"
 #include "connection.H"
 #include "element.H"
@@ -31,8 +31,7 @@ main_windowObj::implObj::~implObj()=default;
 
 void main_windowObj::implObj::on_delete(const std::function<void ()> &callback)
 {
-	thread()->run_as(RUN_AS,
-			 [handler=this->handler, callback]
+	thread()->run_as([handler=this->handler, callback]
 			 (IN_THREAD_ONLY)
 			 {
 				 handler->on_delete_callback(IN_THREAD)

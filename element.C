@@ -12,6 +12,7 @@
 #include "draw_info.H"
 #include "busy.H"
 #include "x/w/picture.H"
+#include "run_as.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -22,9 +23,8 @@ elementObj::elementObj(const ref<implObj> &impl)
 
 elementObj::~elementObj()
 {
-	get_screen()->impl->thread->run_as
-		(RUN_AS,
-		 [impl=this->impl]
+	impl->THREAD->run_as
+		([impl=this->impl]
 		 (IN_THREAD_ONLY)
 		 {
 			 impl->get_window_handler().removing_element(IN_THREAD,
@@ -102,9 +102,8 @@ void elementObj::create_custom_tooltip(const std::function<void
 				       (const tooltip_factory &)>
 				       &tooltip_factory) const
 {
-	get_screen()->impl->thread->run_as
-		(RUN_AS,
-		 [impl=this->impl, tooltip_factory]
+	impl->THREAD->run_as
+		([impl=this->impl, tooltip_factory]
 		 (IN_THREAD_ONLY)
 		 {
 			 impl->data(IN_THREAD).tooltip_factory=tooltip_factory;
@@ -114,9 +113,8 @@ void elementObj::create_custom_tooltip(const std::function<void
 
 void elementObj::remove_tooltip() const
 {
-	get_screen()->impl->thread->run_as
-		(RUN_AS,
-		 [impl=this->impl]
+	impl->THREAD->run_as
+		([impl=this->impl]
 		 (IN_THREAD_ONLY)
 		 {
 			 impl->data(IN_THREAD).tooltip_factory=nullptr;

@@ -38,8 +38,7 @@ ximxtransportObj::ximxtransportObj(const screen &s)
 ximxtransportObj::ximxtransportObj(const ref<implObj> &impl)
 	: impl(impl), window_owner(ref<windowObj>::create(impl))
 {
-	impl->thread()->run_as(RUN_AS,
-			       [impl]
+	impl->thread()->run_as([impl]
 			       (IN_THREAD_ONLY)
 			       {
 				       impl->connect(IN_THREAD);

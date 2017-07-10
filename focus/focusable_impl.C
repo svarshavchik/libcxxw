@@ -211,8 +211,7 @@ void elementObj::label_for(const focusable &f)
 
 
 	impl->get_window_handler().thread()->run_as
-		(RUN_AS,
-		 [me=element(this), f]
+		([me=element(this), f]
 		 (IN_THREAD_ONLY)
 		 {
 			 auto focusable_impl=f->get_impl();

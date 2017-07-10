@@ -162,8 +162,7 @@ void ximxtransportObj::implObj
 	connection_state_t::lock lock{connection_state};
 
 	thread()->run_as
-		(RUN_AS,
-		 [me=ref<implObj>(this), &logger]
+		([me=ref<implObj>(this), &logger]
 		 (IN_THREAD_ONLY)
 		 {
 			 if (skip_xim_disconnect.getValue())
@@ -190,8 +189,7 @@ void ximxtransportObj::implObj
 		// Something is wrong. Time for dire measures.
 
 		thread()->run_as
-			(RUN_AS,
-			 [me=ref<implObj>(this)]
+			([me=ref<implObj>(this)]
 			 (IN_THREAD_ONLY)
 			 {
 				 me->xim_disconnected(IN_THREAD);

@@ -17,6 +17,7 @@
 #include "defaulttheme.H"
 #include "x/w/factory.H"
 #include "x/w/label.H"
+#include "run_as.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -83,10 +84,8 @@ textlabelObj::implObj::~implObj()=default;
 
 void textlabelObj::implObj::update(const text_param &string)
 {
-	get_label_element_impl().
-		get_window_handler().screenref->impl->thread->run_as
-		(RUN_AS,
-		 [me=ref<implObj>(this), string]
+	get_label_element_impl().THREAD->run_as
+		([me=ref<implObj>(this), string]
 		 (IN_THREAD_ONLY)
 		 {
 			 me->update(IN_THREAD, string);

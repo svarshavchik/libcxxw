@@ -54,8 +54,7 @@ class LIBCXX_HIDDEN batch_queueObj : virtual public obj {
 	//! message, that processes the batch_queue.
 
 	template<typename functor>
-		void run_as(const char *file, int line,
-			    functor &&f);
+		void run_as(functor &&f);
 };
 
 LIBCXXW_NAMESPACE_END

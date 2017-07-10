@@ -491,6 +491,7 @@ libcxxw_la_SOURCES=\
 	richtext/richtextstring.C		    \
 	richtext/richtextstring.H		    \
 	richtext/richtextstring2.C		    \
+	run_as.H				    \
 	scratch_buffer.C			    \
 	scratch_buffer_impl.C			    \
 	scratch_buffer.H			    \

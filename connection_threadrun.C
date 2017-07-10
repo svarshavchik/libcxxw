@@ -279,12 +279,9 @@ int connection_threadObj::compute_poll_until(tick_clock_t::time_point now,
 }
 
 void connection_threadObj
-::dispatch_do_run_as(const char *file,
-		     int line,
-		     const x::function<void (IN_THREAD_ONLY)> &func)
+::dispatch_do_run_as(const x::function<void (IN_THREAD_ONLY)> &func)
 {
 	LOG_FUNC_SCOPE(runLogger);
-	LOG_DEBUG("Dispatching: " << file << "(" << line << ")");
 
 	// Make sure all changes in the main execution thread are
 	// committed by now. Although this should theoretically

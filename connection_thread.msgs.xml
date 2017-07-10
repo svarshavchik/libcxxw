@@ -19,12 +19,6 @@
       //! Run a closure in the connection thread
     </comment>
     <param>
-      <decl>const char *file</decl>
-    </param>
-    <param>
-      <decl>int line</decl>
-    </param>
-    <param>
       <decl>const x::function&lt;void (IN_THREAD_ONLY)> &amp;func</decl>
     </param>
   </method>

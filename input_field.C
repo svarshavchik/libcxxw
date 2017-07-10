@@ -138,8 +138,7 @@ void input_fieldObj::set(const std::experimental::u32string_view &str)
 	auto editor_impl=impl->editor_element->impl;
 
 	editor_impl->get_window_handler().thread()->run_as
-		(RUN_AS,
-		 [str=std::u32string{str}, editor_impl]
+		([str=std::u32string{str}, editor_impl]
 		 (IN_THREAD_ONLY)
 		 {
 			 editor_impl->set(IN_THREAD, str);

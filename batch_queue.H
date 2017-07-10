@@ -30,10 +30,9 @@ public:
 };
 
 template<typename functor>
-void batch_queueObj::run_as(const char *file, int line, functor &&f)
+void batch_queueObj::run_as(functor &&f)
 {
-	my_thread->run_as_batched(file, line,
-				  std::forward<functor>(f));
+	my_thread->run_as_batched(std::forward<functor>(f));
 
 	*mpobj<bool>::lock{something_scheduled}=true;
 }

@@ -184,8 +184,7 @@ button factoryObj::do_create_button(const char *theme_border,
 
 	static_cast<elementObj::implObj &>(*impl)
 		.get_window_handler().thread()->run_as
-		(RUN_AS,
-		 [shortcut_key,
+		([shortcut_key,
 		  hotspot_impl=ab->hotspotObj::impl]
 		 (IN_THREAD_ONLY)
 		 {

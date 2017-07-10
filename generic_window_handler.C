@@ -994,8 +994,7 @@ static const struct {
 void generic_windowObj::handlerObj::set_window_type(const std::string &s)
 {
 	IN_THREAD->run_as
-		(RUN_AS,
-		 [s,
+		([s,
 		  connection_impl=screenref->get_connection()->impl,
 		  me=ref<generic_windowObj::handlerObj>(this)]
 		 (IN_THREAD_ONLY)
@@ -1092,8 +1091,7 @@ void generic_windowObj::handlerObj
 ::set_window_title(const std::experimental::string_view &s)
 {
 	IN_THREAD->run_as
-		(RUN_AS,
-		 [title=std::string{s},
+		([title=std::string{s},
 		  connection_impl=screenref->get_connection()->impl,
 		  me=ref<generic_windowObj::handlerObj>(this)]
 		 (IN_THREAD_ONLY)

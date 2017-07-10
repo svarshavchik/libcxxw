@@ -137,7 +137,7 @@ static void foobar()
 			++lock->called_recalculate_with_true_flag;	\
 			if (lock->called_recalculate_with_true_flag == 2) \
 			{						\
-				IN_THREAD->run_as(RUN_AS,		\
+				IN_THREAD->run_as(\
 						  [me=ref<implObj>(this)] \
 						  (IN_THREAD_ONLY) {	\
 							  me->child_metrics_updated(IN_THREAD);	\
@@ -145,7 +145,7 @@ static void foobar()
 			}						\
 			if (lock->called_recalculate_with_true_flag == 5) \
 			{						\
-				IN_THREAD->run_as(RUN_AS,		\
+				IN_THREAD->run_as(\
 						  [me=ref<implObj>(this)] \
 						  (IN_THREAD_ONLY) {	\
 							  grid_map_t::lock \

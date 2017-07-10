@@ -109,8 +109,7 @@ void main_windowObj::handlerObj::request_visibility(IN_THREAD_ONLY,
 	// everything shakes down.
 
 	IN_THREAD->run_as
-		(RUN_AS,
-		 [me=ref<handlerObj>(this)]
+		([me=ref<handlerObj>(this)]
 		 (IN_THREAD_ONLY)
 		 {
 			 me->preferred_dimensions_set(IN_THREAD)=true;
@@ -161,8 +160,7 @@ void main_windowObj::handlerObj::request_visibility(IN_THREAD_ONLY,
 			 // nail this coffin shut.
 
 			 IN_THREAD->get_batch_queue()->run_as
-				 (RUN_AS,
-				  [me]
+				 ([me]
 				  (IN_THREAD_ONLY)
 				  {
 					  me->request_visibility(IN_THREAD,

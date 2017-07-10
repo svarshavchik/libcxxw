@@ -18,8 +18,7 @@ ximclientObj::~ximclientObj()=default;
 void ximclientObj::xim_client_register() noexcept
 {
 	client_window->thread()->run_as
-		(RUN_AS,
-		 [client_window=this->client_window, me=ximclient(this)]
+		([client_window=this->client_window, me=ximclient(this)]
 		 (IN_THREAD_ONLY)
 		 {
 			 client_window->ximclient_ptr=me;
@@ -30,8 +29,7 @@ void ximclientObj::xim_client_register() noexcept
 void ximclientObj::xim_client_deregister() noexcept
 {
 	client_window->thread()->run_as
-		(RUN_AS,
-		 [client_window=this->client_window, me=ximclient(this)]
+		([client_window=this->client_window, me=ximclient(this)]
 		 (IN_THREAD_ONLY)
 		 {
 			 client_window->ximclient_ptr=nullptr;

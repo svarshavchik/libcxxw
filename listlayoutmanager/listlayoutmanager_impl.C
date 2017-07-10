@@ -11,7 +11,7 @@
 #include "element_screen.H"
 #include "grid_map_info.H"
 #include "screen.H"
-#include "connection_thread.H"
+#include "run_as.H"
 #include "busy.H"
 #include "catch_exceptions.H"
 #include "x/w/listlayoutmanager.H"
@@ -319,9 +319,8 @@ void listlayoutmanagerObj::implObj::selected(const listlayoutmanager &me,
 	// Punt to the connection thread in order to update this element's
 	// appearance.
 
-	container_impl->get_element_impl().get_screen()->impl->thread
-		->run_as(RUN_AS,
-			 [c, me, selected_flag]
+	container_impl->get_element_impl().THREAD
+		->run_as([c, me, selected_flag]
 			 (IN_THREAD_ONLY)
 			 {
 				 list_lock lock{me};
@@ -400,9 +399,8 @@ void listlayoutmanagerObj::implObj
 
 	auto c=item_row.at(0)->grid_element;
 
-	container_impl->get_element_impl().get_screen()->impl->thread
-		->run_as(RUN_AS,
-			 [c, my_public_object, callback]
+	container_impl->get_element_impl().THREAD
+		->run_as([c, my_public_object, callback]
 			 (IN_THREAD_ONLY)
 			 {
 				 list_lock lock{my_public_object};
@@ -471,9 +469,8 @@ void listlayoutmanagerObj::implObj
 ::append_item(const listlayoutmanager &me,
 	      const listlayoutstyle::new_list_items_t &new_item)
 {
-	container_impl->get_element_impl().get_screen()->impl->thread
-		->run_as(RUN_AS,
-			 [=]
+	container_impl->get_element_impl().THREAD
+		->run_as([=]
 			 (IN_THREAD_ONLY)
 			 {
 				 grid_map_t::lock grid_lock{me->impl->grid_map};
@@ -577,9 +574,8 @@ void listlayoutmanagerObj::implObj
 void listlayoutmanagerObj::implObj
 ::remove_all_items(const listlayoutmanager &me)
 {
-	container_impl->get_element_impl().get_screen()->impl->thread
-		->run_as(RUN_AS,
-			 [=]
+	container_impl->get_element_impl().THREAD
+		->run_as([=]
 			 (IN_THREAD_ONLY)
 			 {
 				 me->impl->remove_all_items(IN_THREAD);

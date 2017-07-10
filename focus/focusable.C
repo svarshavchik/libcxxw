@@ -6,7 +6,7 @@
 #include "focus/focusable.H"
 #include "child_element.H"
 #include "generic_window_handler.H"
-#include "connection_thread.H"
+#include "run_as.H"
 #include "xid_t.H"
 #include "messages.H"
 
@@ -32,20 +32,19 @@ void focusableObj::set_enabled(bool flag)
 {
 	auto me=ref<focusableObj>(this);
 
-	get_impl()->get_focusable_element().get_window_handler()
-		.thread()->run_as(RUN_AS,
-				[=]
-				(IN_THREAD_ONLY)
-				{
-					// Enable or disable all real focusables
+	get_impl()->get_focusable_element().THREAD
+		->run_as([=]
+			 (IN_THREAD_ONLY)
+			 {
+				 // Enable or disable all real focusables
 
-					auto n=me->internal_impl_count();
+				 auto n=me->internal_impl_count();
 
-					for (size_t i=0; i<n; ++i)
-						me->get_impl(i)
-							->set_enabled(IN_THREAD,
-								      flag);
-				});
+				 for (size_t i=0; i<n; ++i)
+					 me->get_impl(i)
+						 ->set_enabled(IN_THREAD,
+							       flag);
+			 });
 }
 
 static auto sanity_check(const auto &impl1,
@@ -68,8 +67,7 @@ void focusableObj::get_focus_before(const focusable &other)
 	auto impl2=other->get_impl();
 
 	sanity_check(impl1, impl2)->run_as
-		(RUN_AS,
-		 [me=focusable(this), other]
+		([me=focusable(this), other]
 		 (IN_THREAD_ONLY)
 		 {
 			 auto b=other->get_impl(0);
@@ -92,8 +90,7 @@ void focusableObj::get_focus_after(const focusable &other)
 	auto impl2=other->get_impl();
 
 	sanity_check(impl1, impl2)->run_as
-		(RUN_AS,
-		 [me=focusable(this), other]
+		([me=focusable(this), other]
 		 (IN_THREAD_ONLY)
 		 {
 			 auto a=other->get_impl(other->internal_impl_count()-1);

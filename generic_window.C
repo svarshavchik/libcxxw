@@ -29,8 +29,7 @@ generic_windowObj::~generic_windowObj()
 	// and it's now been removed from it.
 
 	get_screen()->impl->thread->run_as
-		(RUN_AS,
-		 [handler=this->impl->handler]
+		([handler=this->impl->handler]
 		 (IN_THREAD_ONLY)
 		 {
 			 handler->removed_from_container(IN_THREAD);

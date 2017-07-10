@@ -253,10 +253,10 @@ class LIBCXX_HIDDEN connection_threadObj
 	// Invoke run_as() as follows, in order to execute a closure from
 	// the connection thread:
 	//
-	//    run_as(RUN_AS, [](IN_THREAD_ONLY) { ... });
+	//    run_as([](IN_THREAD_ONLY) { ... });
 
 	template<typename T>
-		void run_as(const char *file, int line, T &&func)
+		void run_as(T &&func)
 	{
 		// Make sure all changes in the main execution thread are
 		// committed by now. Although this should theoretically
@@ -264,8 +264,7 @@ class LIBCXX_HIDDEN connection_threadObj
 		// for the connection thread to see what it needs to see.
 		std::atomic_thread_fence(std::memory_order_release);
 
-		do_run_as(file, line,
-			  make_function<void (IN_THREAD_ONLY)>(std::forward<T>
+		do_run_as(make_function<void (IN_THREAD_ONLY)>(std::forward<T>
 							       (func)));
 	}
 
@@ -294,10 +293,6 @@ class LIBCXX_HIDDEN connection_threadObj
 				      const tick_clock_t::duration &timeout,
 				      const callback_functional_t &callback);
 
-	//! Macro for logging purpose
-
-#define RUN_AS	__FILE__, __LINE__
-
 	// Politely stop this thread, after processing all messages,
 	// and flushing all output.
 
@@ -324,12 +319,11 @@ class LIBCXX_HIDDEN connection_threadObj
 	//! Same as run_as, but the job goes into the batch queue, instead.
 
 	template<typename T>
-		void run_as_batched(const char *file, int line, T &&func)
+		void run_as_batched(T &&func)
 	{
 		sendeventaux(batched_queue,
 			     &connection_threadObj::dispatch_do_run_as,
 			     this,
-			     file, line,
 			     make_function<void (IN_THREAD_ONLY)>
 			     (std::forward<T>(func)));
 	}

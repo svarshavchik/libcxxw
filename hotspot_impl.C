@@ -13,7 +13,7 @@
 #include "x/w/busy.H"
 #include "focus/focusable_element.H"
 #include "generic_window_handler.H"
-#include "connection_thread.H"
+#include "run_as.H"
 #include "catch_exceptions.H"
 
 #include <x/mcguffinunordered_multimap.H>
@@ -117,9 +117,8 @@ void hotspotObj::implObj::temperature_changed(IN_THREAD_ONLY)
 
 void hotspotObj::implObj::on_activate(const hotspot_callback_t &new_callback)
 {
-	get_hotspot_element().get_screen()->impl->thread
-		->run_as(RUN_AS,
-			 [me=ref<implObj>(this), new_callback]
+	get_hotspot_element().THREAD
+		->run_as([me=ref<implObj>(this), new_callback]
 			 (IN_THREAD_ONLY)
 			 {
 				 me->on_activate(IN_THREAD, new_callback);

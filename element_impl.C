@@ -13,6 +13,7 @@
 #include "busy.H"
 #include "icon.H"
 #include "icon_image.H"
+#include "run_as.H"
 #include "background_color.H"
 #include "grabbed_pointer.H"
 #include "x/w/element_state.H"
@@ -33,8 +34,6 @@ LOG_CLASS_INIT(LIBCXX_NAMESPACE::w::elementObj::implObj);
 LIBCXXW_NAMESPACE_START
 
 // #define DEBUG_EXPOSURE_CALCULATIONS
-
-#define THREAD get_window_handler().screenref->impl->thread
 
 #define DO_NOT_DRAW (!data(IN_THREAD).inherited_visibility)
 
@@ -125,8 +124,7 @@ void elementObj::implObj::request_visibility(bool flag)
 	// all messages.
 
 	THREAD->get_batch_queue()->run_as
-		(RUN_AS,
-		 [flag, me=elementimpl(this)]
+		([flag, me=elementimpl(this)]
 		 (IN_THREAD_ONLY)
 		 {
 			 me->request_visibility(IN_THREAD, flag);
@@ -149,8 +147,7 @@ void elementObj::implObj::schedule_update_visibility(IN_THREAD_ONLY)
 void elementObj::implObj::request_visibility_recursive(bool flag)
 {
 	THREAD->get_batch_queue()->run_as
-		(RUN_AS,
-		 [flag, me=elementimpl(this)]
+		([flag, me=elementimpl(this)]
 		 (IN_THREAD_ONLY)
 		 {
 			 me->request_visibility_recursive(IN_THREAD, flag);
@@ -338,8 +335,7 @@ ref<obj> elementObj::implObj
 	// It's ok, create_mcguffin() can be safely used by any thread.
 	auto mcguffin=data_thread_only.update_handlers->create_mcguffin();
 
-	THREAD->run_as(RUN_AS,
-		       [mcguffin, handler,
+	THREAD->run_as([mcguffin, handler,
 			me=ref<elementObj::implObj>(this)]
 		       (IN_THREAD_ONLY)
 		       {
@@ -359,8 +355,7 @@ ref<obj> elementObj::implObj
 void elementObj::implObj::set_minimum_override(dim_t horiz_override,
 					       dim_t vert_override)
 {
-	THREAD->run_as(RUN_AS,
-		       [me=ref<elementObj::implObj>(this),
+	THREAD->run_as([me=ref<elementObj::implObj>(this),
 			horiz_override,
 			vert_override]
 		       (IN_THREAD_ONLY)
@@ -681,13 +676,11 @@ void elementObj::implObj::clear_to_color(IN_THREAD_ONLY,
 
 void elementObj::implObj::remove_background_color()
 {
-	get_screen()->impl->thread->get_batch_queue()
-		->run_as(RUN_AS,
-			 [impl=ref<implObj>(this)]
-			 (IN_THREAD_ONLY)
-			 {
-				 impl->remove_background_color(IN_THREAD);
-			 });
+	THREAD->run_as([impl=ref<implObj>(this)]
+		       (IN_THREAD_ONLY)
+		       {
+			       impl->remove_background_color(IN_THREAD);
+		       });
 }
 
 void elementObj::implObj
@@ -707,13 +700,11 @@ void elementObj::implObj
 void elementObj::implObj
 ::set_background_color(const background_color &c)
 {
-	get_screen()->impl->thread->get_batch_queue()
-		->run_as(RUN_AS,
-			 [impl=ref<implObj>(this), c]
-			 (IN_THREAD_ONLY)
-			 {
-				 impl->set_background_color(IN_THREAD, c);
-			 });
+	THREAD->run_as([impl=ref<implObj>(this), c]
+		       (IN_THREAD_ONLY)
+		       {
+			       impl->set_background_color(IN_THREAD, c);
+		       });
 }
 
 bool elementObj::implObj::has_own_background_color(IN_THREAD_ONLY)
@@ -811,8 +802,7 @@ void elementObj::implObj::on_keyboard_focus(const
 					    std::function<focus_callback_t>
 					    &callback)
 {
-	THREAD->run_as(RUN_AS,
-		       [me=ref<elementObj::implObj>(this), callback]
+	THREAD->run_as([me=ref<elementObj::implObj>(this), callback]
 		       (IN_THREAD_ONLY)
 		       {
 			       me->on_keyboard_focus(IN_THREAD, callback);
@@ -859,8 +849,7 @@ void elementObj::implObj::on_pointer_focus(const
 					    std::function<focus_callback_t>
 					    &callback)
 {
-	THREAD->run_as(RUN_AS,
-		       [me=ref<elementObj::implObj>(this), callback]
+	THREAD->run_as([me=ref<elementObj::implObj>(this), callback]
 		       (IN_THREAD_ONLY)
 		       {
 			       me->on_pointer_focus(IN_THREAD, callback);
@@ -924,8 +913,7 @@ bool in_focus(focus_change v)
 void elementObj::implObj
 ::on_key_event(const std::function<key_event_callback_t> &cb)
 {
-	THREAD->run_as(RUN_AS,
-		       [me=ref<elementObj::implObj>(this), cb]
+	THREAD->run_as([me=ref<elementObj::implObj>(this), cb]
 		       (IN_THREAD_ONLY)
 		       {
 			       me->on_key_event(IN_THREAD, cb);
@@ -1000,8 +988,7 @@ void elementObj::implObj::ensure_entire_visibility(IN_THREAD_ONLY)
 void elementObj::implObj
 ::on_input_text(const std::function<input_text_callback_t> &cb)
 {
-	THREAD->run_as(RUN_AS,
-		       [me=ref<elementObj::implObj>(this), cb]
+	THREAD->run_as([me=ref<elementObj::implObj>(this), cb]
 		       (IN_THREAD_ONLY)
 		       {
 			       me->on_input_text(IN_THREAD, cb);
