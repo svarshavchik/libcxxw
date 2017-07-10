@@ -78,6 +78,19 @@ bool focusable_elementObj<element_impl>
 	return flag;
 }
 
+//! Override set_inherited_visibility().
+
+//! If we are no longer visible, make sure we don't have keyboard focus.
+
+template<typename element_impl>
+void focusable_elementObj<element_impl>
+::set_inherited_visibility_flag(IN_THREAD_ONLY, bool flag)
+{
+	element_impl::set_inherited_visibility_flag(IN_THREAD, flag);
+	if (!flag)
+		this->unfocus(IN_THREAD);
+}
+
 LIBCXXW_NAMESPACE_END
 
 #endif

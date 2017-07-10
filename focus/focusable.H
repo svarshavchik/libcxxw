@@ -161,6 +161,10 @@ class LIBCXX_HIDDEN focusableImplObj : virtual public obj {
 	//! Throw an exception, can't do it.
 
 	void creating_focusable_child_element();
+
+
+	//! Make sure we do not have input focus
+	void unfocus(IN_THREAD_ONLY);
 };
 
 LIBCXXW_NAMESPACE_END

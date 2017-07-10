@@ -159,13 +159,18 @@ void focusableImplObj::set_enabled(IN_THREAD_ONLY, bool flag)
 			 });
 	}
 
-	if (flag)
-		return;
+	if (!flag)
+		unfocus(IN_THREAD);
+}
+
+void focusableImplObj::unfocus(IN_THREAD_ONLY)
+{
+	(void)GET_FOCUSABLE_FIELD_ITER();
 
 	auto ptr_impl=ptr<focusableImplObj>(this);
 
-	if (fe.get_window_handler().most_recent_keyboard_focus(IN_THREAD)
-	    != ptr_impl)
+	if (get_focusable_element().get_window_handler()
+	    .most_recent_keyboard_focus(IN_THREAD) != ptr_impl)
 		return;
 
 	next_focus(IN_THREAD);
@@ -356,6 +361,10 @@ void focusableImplObj::prev_focus(IN_THREAD_ONLY)
 
 void focusableImplObj::set_focus_only(IN_THREAD_ONLY)
 {
+	if (!in_focusable_fields(IN_THREAD))
+		throw EXCEPTION("Internal error: attempt to set focus to uninitialized"
+				<< objname());
+
 	get_focusable_element().get_window_handler()
 		.set_keyboard_focus_to(IN_THREAD, focusable_impl(this));
 }

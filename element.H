@@ -486,6 +486,11 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 					      inherited_visibility_info
 					      &visibility_info);
 
+	//! Ditto
+
+	//! Implement set_inherited_visibility flag.
+	virtual void set_inherited_visibility_flag(IN_THREAD_ONLY, bool);
+
 	//! Redraw this display element, after showing or hiding it.
 
 	//! visibility_updated() invokes it after it invokes

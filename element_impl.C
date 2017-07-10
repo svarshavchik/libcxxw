@@ -98,7 +98,6 @@ void elementObj::implObj::removed_from_container(IN_THREAD_ONLY)
 		return;
 
 	data(IN_THREAD).removed=true;
-	unschedule_tooltip_creation(IN_THREAD);
 	removed(IN_THREAD);
 	for_each_child(IN_THREAD,
 		       [&]
@@ -106,6 +105,7 @@ void elementObj::implObj::removed_from_container(IN_THREAD_ONLY)
 		       {
 			       e->impl->removed_from_container(IN_THREAD);
 		       });
+	set_inherited_visibility_flag(IN_THREAD, false);
 }
 
 void elementObj::implObj::removed(IN_THREAD_ONLY)
@@ -252,9 +252,15 @@ void elementObj::implObj
 ::set_inherited_visibility(IN_THREAD_ONLY,
 			   inherited_visibility_info &info)
 {
+	set_inherited_visibility_flag(IN_THREAD, info.flag);
+}
+
+void elementObj::implObj
+::set_inherited_visibility_flag(IN_THREAD_ONLY, bool flag)
+{
 	// Offically update this element's "real" visibility.
-	data(IN_THREAD).inherited_visibility=info.flag;
-	if (!info.flag)
+	data(IN_THREAD).inherited_visibility=flag;
+	if (!flag)
 	{
 		unschedule_tooltip_creation(IN_THREAD);
 
