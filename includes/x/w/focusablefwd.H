@@ -46,6 +46,51 @@ class focusableImplObj;
 //! the other display element's. This element replaces the other element in
 //! the current tabbing order, and the other display element tabbing order
 //! becomes after this element's tabbing order.
+//!
+//! \code
+//! #include <INSERT_LIBX_NAMESPACE/w/focus.H>
+//!
+//! f->on_keyboard_focus([]
+//!                      (const INSERT_LIBX_NAMESPACE::w::focus_change &f)
+//!                      {
+//!                         if (INSERT_LIBX_NAMESPACE::w::in_focus(f))
+//!                              // ...
+//!                         // ...
+//!                      });
+//!
+//! #include <INSERT_LIBX_NAMESPACE/w/key_event.H>
+//! f->on_key_event([]
+//!                      (const INSERT_LIBX_NAMESPACE::w::key_event &e)
+//!                      {
+//!                         // ...
+//!
+//!                         return true;
+//!                      });
+//! f->on_input_text([]
+//!                      (const std::u32string_view &s)
+//!                      {
+//!                         // ...
+//!
+//!                         return true;
+//!                      });
+//! \endcode
+//!
+//! on_keyboard_focus() installs a callback that reports the display element's
+//! focus change events. Immediately upon installation, the callback gets
+//! invoked to report the element's most recent focus change event, and gets
+//! invoke to report all future ones.
+//!
+//! Only one focus callback can be installed. Installing another keyboard
+//! focus change callback replaces any existing one.
+//!
+//! on_key_event() installs a callback that receives all
+//! \ref key_event "key press and release events" when the display element
+//! has input focus. on_input_text() installs a callback that receives any
+//! text entered via an X Input Method server. Both on_key_event() and
+//! on_input_text() callbacks should return \c true if the key event or the
+//! input text has been processed/consumed by the callback, and will not
+//! result in any further processing. Returning \c false results in the
+//! default processing for the respective key/text input.
 
 typedef ref<focusableObj> focusable;
 

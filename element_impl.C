@@ -42,6 +42,19 @@ void elementObj::implObj::data_thread_only_t::no_focus_callback(focus_change)
 {
 }
 
+bool elementObj::implObj::data_thread_only_t
+::no_key_event_callback(const key_event &)
+{
+	return false;
+}
+
+bool elementObj::implObj::data_thread_only_t
+::no_input_text_callback(const std::experimental
+			 ::u32string_view &)
+{
+	return false;
+}
+
 elementObj::implObj::implObj(size_t nesting_level,
 			     const rectangle &initial_position,
 			     const screen &my_screen,
@@ -884,9 +897,27 @@ bool in_focus(focus_change v)
 	return v != focus_change::lost && v != focus_change::child_lost;
 }
 
-bool elementObj::implObj::process_key_event(IN_THREAD_ONLY, const key_event &)
+void elementObj::implObj
+::on_key_event(const std::function<key_event_callback_t> &cb)
 {
-	return false;
+	THREAD->run_as(RUN_AS,
+		       [me=ref<elementObj::implObj>(this), cb]
+		       (IN_THREAD_ONLY)
+		       {
+			       me->on_key_event(IN_THREAD, cb);
+		       });
+}
+
+void elementObj::implObj
+::on_key_event(IN_THREAD_ONLY,
+	       const std::function<key_event_callback_t> &cb)
+{
+	data(IN_THREAD).on_key_event_callback=cb;
+}
+
+bool elementObj::implObj::process_key_event(IN_THREAD_ONLY, const key_event &e)
+{
+	return data(IN_THREAD).on_key_event_callback(e);
 }
 
 bool elementObj::implObj::uses_input_method()
@@ -940,10 +971,30 @@ void elementObj::implObj::ensure_entire_visibility(IN_THREAD_ONLY)
 				data(IN_THREAD).current_position.height});
 }
 
+	//! Install a new input text callback
+
+void elementObj::implObj
+::on_input_text(const std::function<input_text_callback_t> &cb)
+{
+	THREAD->run_as(RUN_AS,
+		       [me=ref<elementObj::implObj>(this), cb]
+		       (IN_THREAD_ONLY)
+		       {
+			       me->on_input_text(IN_THREAD, cb);
+		       });
+}
+
+void elementObj::implObj
+::on_input_text(IN_THREAD_ONLY,
+		const std::function<input_text_callback_t> &cb)
+{
+	data(IN_THREAD).on_input_text_callback=cb;
+}
+
 bool elementObj::implObj::pasted(IN_THREAD_ONLY,
 				 const std::experimental::u32string_view &str)
 {
-	return false;
+	return data(IN_THREAD).on_input_text_callback(str);
 }
 
 void elementObj::implObj::creating_focusable_element()

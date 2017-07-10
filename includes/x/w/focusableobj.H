@@ -6,6 +6,8 @@
 #define x_w_focusableobj_h
 
 #include <x/w/focusablefwd.H>
+#include <x/w/focus.H>
+#include <x/w/key_event.H>
 #include <x/obj.H>
 
 LIBCXXW_NAMESPACE_START
@@ -54,6 +56,23 @@ private:
 
 	//! \internal
 	virtual ref<focusableImplObj> get_impl(size_t) const LIBCXX_HIDDEN;
+
+public:
+	//! Install a new callback to report focus changes.
+
+	//! The callback gets invoked upon installation, reporting this
+	//! display element's current status.
+
+	void on_keyboard_focus(const std::function<focus_callback_t> &)
+		LIBCXX_PUBLIC;
+
+	//! Install a new callback to report key events.
+	void on_key_event(const std::function<key_event_callback_t> &)
+		LIBCXX_PUBLIC;
+
+	//! Install a new callback to report pasted text.
+	void on_input_text(const std::function<input_text_callback_t> &)
+		LIBCXX_PUBLIC;
 };
 
 LIBCXXW_NAMESPACE_END

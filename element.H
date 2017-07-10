@@ -144,6 +144,25 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 		static void no_focus_callback(focus_change);
 
+		//! Callback for reporting key events.
+
+		std::function<key_event_callback_t> on_key_event_callback=
+			no_key_event_callback;
+
+		//! Callback for reporting pasted text
+
+		std::function<input_text_callback_t> on_input_text_callback=
+			no_input_text_callback;
+
+		//! Default key event callback, does nothing.
+
+		static bool no_key_event_callback(const key_event &);
+
+		//! Default pasted text callback, does nothing.
+
+		static bool no_input_text_callback(const std::experimental
+						   ::u32string_view &);
+
 		//! Whether this element is a label for some focusable.
 
 		label_forptr label_for;
@@ -845,6 +864,24 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	void on_keyboard_focus(IN_THREAD_ONLY,
 			       const std::function<focus_callback_t> &callback);
 
+	//! Install a new key event callback
+
+	void on_key_event(const std::function<key_event_callback_t> &);
+
+	//! Install a new key event callback
+
+	void on_key_event(IN_THREAD_ONLY,
+			  const std::function<key_event_callback_t> &);
+
+	//! Install a new input text callback
+
+	void on_input_text(const std::function<input_text_callback_t> &);
+
+	//! Install a new input text callback
+
+	void on_input_text(IN_THREAD_ONLY,
+			   const std::function<input_text_callback_t> &);
+
  private:
 	//! Invoke the callback
 	void invoke_keyboard_focus_callback(IN_THREAD_ONLY);
@@ -854,7 +891,7 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! Returns true or false, indicating whether the key press or
 	//! release was consumed.
 	//!
-	//! The default implementation always returns false.
+	//! The default implementation invokes the installed callback.
 
 	virtual bool process_key_event(IN_THREAD_ONLY, const key_event &ke);
 
