@@ -14,6 +14,7 @@
 #include <x/w/picturefwd.H>
 #include <x/w/rgbfwd.H>
 #include <x/w/busyfwd.H>
+#include <x/w/types.H>
 #include <x/w/focus.H>
 #include <x/obj.H>
 
@@ -139,6 +140,29 @@ public:
 
 	//! Remove the tooltip from this display element.
 	void remove_tooltip() const;
+
+	//! Install minimum element size overrides.
+
+	//! Mostly for internal library use. Makes sure the display element's
+	//! size is at least as much as given.
+
+	void set_minimum_override(dim_t horiz_override,
+				  dim_t vert_override);
+
+	//! Install minimum element size overrides.
+
+	//! Mostly for internal library use. Makes sure the display element's
+	//! size is at least as much as given.
+
+	void set_minimum_override(const busy &busy_handle,
+				  dim_t horiz_override,
+				  dim_t vert_override);
+
+	//! Return the implementation object whose size should be overridden.
+
+	//! \internal
+
+	virtual ref<implObj> get_minimum_override_element_impl();
 };
 
 LIBCXXW_NAMESPACE_END

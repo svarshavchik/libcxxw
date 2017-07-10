@@ -44,6 +44,15 @@ namespace metrics {
 	class LIBCXX_HIDDEN horizvertObj : public horizvert_axi,
 					   virtual public obj {
 
+		//! Minimum horizontal size override
+		dim_t minimum_horiz_override=0;
+
+		//! Minimum vertical size override
+		dim_t minimum_vert_override=0;
+
+		//! Original, unoverridden axis.
+
+		horizvert_axi original_axis;
 	public:
 		/////////////////////////////////////////////////////////////
 		//
@@ -67,12 +76,39 @@ namespace metrics {
 					 const axis &new_horiz,
 					 const axis &new_vert)
 		{
-			if (horiz != new_horiz || vert != new_vert)
+			auto prev_horiz=horiz;
+			auto prev_vert=vert;
+
+			horiz=new_horiz;
+			vert=new_vert;
+
+			original_axis.horiz=new_horiz;
+			original_axis.vert=new_vert;
+
+			horiz.set_minimum(minimum_horiz_override);
+			vert.set_minimum(minimum_vert_override);
+
+			if (horiz != prev_horiz || vert != prev_vert)
 			{
-				horiz=new_horiz;
-				vert=new_vert;
 				horizvert_updated(IN_THREAD);
 			}
+		}
+
+		//! Install new minimum overrides
+
+		void set_minimum_override(IN_THREAD_ONLY,
+					  dim_t horiz_override,
+					  dim_t vert_override)
+		{
+			minimum_horiz_override=horiz_override;
+			minimum_vert_override=vert_override;
+
+			// Check if the metrics should be updated due to the
+			// new override.
+
+			set_element_metrics(IN_THREAD,
+					    original_axis.horiz,
+					    original_axis.vert);
 		}
 	};
 }

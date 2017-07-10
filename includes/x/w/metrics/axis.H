@@ -127,6 +127,18 @@ namespace metrics {
 			return !operator==(o);
 		}
 
+		//! Update minimum value
+		constexpr void set_minimum(dim_t p)
+		{
+			if (minimum_ < p)
+				minimum_=p;
+
+			if (preferred_ < minimum_)
+				preferred_=minimum_;
+			if (maximum_ < minimum_)
+				maximum_=minimum_;
+		}
+
 		//! Update preferred value
 
 		constexpr void set_preferred(dim_t p)

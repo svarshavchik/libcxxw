@@ -27,7 +27,8 @@ horizvert_axi::horizvert_axi(const axis &horiz,
 
 horizvertObj::horizvertObj()=default;
 
-horizvertObj::horizvertObj(const horizvert_axi &c): horizvert_axi(c)
+horizvertObj::horizvertObj(const horizvert_axi &c): horizvert_axi(c),
+						    original_axis(c)
 {
 }
 

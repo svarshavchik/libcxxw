@@ -289,6 +289,14 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	THREAD_DATA_ONLY(data);
 	THREAD_DATA_SUPERCLASS_ONLY(horizvertObj, get_horizvert);
 
+	//! Install minimum element size overrides.
+	void set_minimum_override(dim_t horiz_override, dim_t vert_override);
+
+	//! Install minimum element size overrides.
+	void set_minimum_override(IN_THREAD_ONLY,
+				  dim_t horiz_override,
+				  dim_t vert_override);
+
 	//! The container has removed this element.
 
 	//! Recursively invokes removed_from_container if this element itself

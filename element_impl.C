@@ -356,6 +356,30 @@ ref<obj> elementObj::implObj
 	return mcguffin;
 }
 
+void elementObj::implObj::set_minimum_override(dim_t horiz_override,
+					       dim_t vert_override)
+{
+	THREAD->run_as(RUN_AS,
+		       [me=ref<elementObj::implObj>(this),
+			horiz_override,
+			vert_override]
+		       (IN_THREAD_ONLY)
+		       {
+			       me->set_minimum_override(IN_THREAD,
+							horiz_override,
+							vert_override);
+		       });
+}
+
+void elementObj::implObj::set_minimum_override(IN_THREAD_ONLY,
+					       dim_t horiz_override,
+					       dim_t vert_override)
+{
+	get_horizvert(IN_THREAD)
+		->set_minimum_override(IN_THREAD,
+				       horiz_override, vert_override);
+}
+
 void elementObj::implObj::update_current_position(IN_THREAD_ONLY,
 						  const rectangle &r)
 {
