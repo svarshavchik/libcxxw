@@ -78,6 +78,7 @@ factoryObj::create_input_field(const text_param &text,
 		 .create_background_color
 		 ("textedit_background_color"),
 		 impl_mixin,
+		 peephole_style(),
 		 make_function<make_peepholed_func_t>
 		 ([&]
 		  (const auto &parent_container_impl)

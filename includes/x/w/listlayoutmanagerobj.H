@@ -18,7 +18,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-//! The grid layout manager
+//! The list layout manager
 
 //! \see listlayoutmanager
 

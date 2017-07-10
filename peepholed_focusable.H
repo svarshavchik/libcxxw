@@ -10,6 +10,7 @@
 #include "x/w/gridlayoutmanagerfwd.H"
 #include "x/w/scrollbarfwd.H"
 #include "scrollbar/scrollbarfwd.H"
+#include "peephole/peephole_style.H"
 #include "peephole/peepholefwd.H"
 #include "peephole/peepholedfwd.H"
 #include "peephole/peepholeobj.H"
@@ -37,16 +38,19 @@ typedef std::tuple<ref<peepholeObj::implObj>, peepholed,
 
 std::tuple<ref<peepholed_focusableObj::implObj>, gridlayoutmanager>
 create_peepholed_focusable_with_frame_impl(const char *border,
-			       const char *inputfocusoff_border,
-			       const char *inputfocuson_border,
-			       double focusable_padding,
-			       const background_color &focusable_background_color,
-			       const ref<containerObj::implObj>
-			       &parent_container,
-			       const function<make_peepholed_func_t>
-			       &make_peepholed,
-			       scrollbar_visibility horizontal_visibility,
-			       scrollbar_visibility vertical_visibility)
+					   const char *inputfocusoff_border,
+					   const char *inputfocuson_border,
+					   double focusable_padding,
+					   const background_color
+					   &focusable_background_color,
+					   const ref<containerObj::implObj>
+					   &parent_container,
+					   peephole_style style,
+
+					   const function<make_peepholed_func_t>
+					   &make_peepholed,
+					   scrollbar_visibility horizontal_visibility,
+					   scrollbar_visibility vertical_visibility)
 LIBCXX_HIDDEN;
 
 //! The default parent_container for created_peepholed_focusable_with_frame
@@ -119,6 +123,9 @@ create_peepholed_focusable_with_frame
  //! mixin.
  const ref<containerObj::implObj> &parent_container,
 
+ //! Peephole's style
+ peephole_style style,
+
  //! Factor for the peephole and the focusable.
  make_peepholed_t &&make_peepholed,
 
@@ -135,6 +142,7 @@ create_peepholed_focusable_with_frame
 		 focusable_padding,
 		 focusable_background_color,
 		 parent_container,
+		 style,
 		 make_function<make_peepholed_func_t>
 		 (std::forward<make_peepholed_t>(make_peepholed)),
 		 horizontal_visibility,

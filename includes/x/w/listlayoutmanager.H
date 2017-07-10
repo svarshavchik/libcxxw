@@ -6,6 +6,7 @@
 #define x_w_listlayoutmanager_h
 
 #include <x/w/new_focusable_layoutmanagerfwd.H>
+#include <x/w/alignment.H>
 #include <x/w/listlayoutmanagerfwd.H>
 #include <x/w/listlayoutmanagerobj.H>
 #include <x/w/layoutmanager.H>

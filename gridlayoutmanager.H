@@ -33,6 +33,11 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 	//! Destructor
 	~implObj();
 
+	//! Set requested column width.
+
+	//! \see gridlayoutmanager
+	void requested_col_width(size_t col, int percentage);
+
 	//! Create a gridfactory for me.
 
 	gridfactory create_gridfactory(//! The public layout manager object.

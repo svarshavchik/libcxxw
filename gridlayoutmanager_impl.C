@@ -29,6 +29,21 @@ gridlayoutmanagerObj::implObj
 
 gridlayoutmanagerObj::implObj::~implObj()=default;
 
+void gridlayoutmanagerObj::implObj
+::requested_col_width(size_t col, int percentage)
+{
+	if (percentage < 0)
+		percentage=0;
+
+	if (percentage > 100)
+		percentage=100;
+
+	grid_map_t::lock lock{grid_map};
+
+	(*lock)->column_defaults[col].axis_size=percentage;
+	(*lock)->padding_recalculated();
+}
+
 gridfactory gridlayoutmanagerObj::implObj
 ::create_gridfactory(layoutmanagerObj *public_object,
 		     size_t row, size_t col)

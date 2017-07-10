@@ -98,6 +98,7 @@ create_peepholed_focusable_with_frame_impl
  double focusable_padding,
  const background_color &focusable_background_color,
  const ref<containerObj::implObj> &parent_container,
+ peephole_style style,
  const function<make_peepholed_func_t> &make_peepholed,
  scrollbar_visibility horizontal_visibility,
  scrollbar_visibility vertical_visibility)
@@ -136,7 +137,9 @@ create_peepholed_focusable_with_frame_impl
 	auto scrollbars=create_peephole_scrollbars(parent_container);
 
 	auto layout_impl=ref<peepholeObj::layoutmanager_implObj>
-		::create(impl, editor,
+		::create(impl,
+			 style,
+			 editor,
 			 scrollbars,
 			 horizontal_visibility,
 			 vertical_visibility);
@@ -196,7 +199,8 @@ create_peepholed_focusable_with_frame_impl
 	auto factory2=grid->append_row();
 	factory2->border(border);
 
-	install_peephole_scrollbars(scrollbars.vertical_scrollbar,
+	install_peephole_scrollbars(l,
+				    scrollbars.vertical_scrollbar,
 				    vertical_visibility,
 				    factory,
 				    scrollbars.horizontal_scrollbar,

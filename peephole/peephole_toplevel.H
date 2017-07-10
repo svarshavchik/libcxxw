@@ -9,6 +9,7 @@
 #include "x/w/container.H"
 #include "x/w/layoutmanagerfwd.H"
 #include "peephole/peepholed_toplevelfwd.H"
+#include "peephole/peephole_style.H"
 
 #include <x/functional.H>
 
@@ -24,12 +25,14 @@ create_peepholed_element_t(const ref<containerObj::implObj> &);
 layoutmanager
 create_peephole_toplevel_impl(const ref<containerObj::implObj> &toplevel,
 			      const char *border,
+			      peephole_style style,
 			      const function<create_peepholed_element_t>
 			      &factory) LIBCXX_HIDDEN;
 
 template<typename create_peepholed_element_factory_t>
 auto create_peephole_toplevel(const ref<containerObj::implObj> &toplevel,
 			      const char *border,
+			      peephole_style style,
 			      create_peepholed_element_factory_t
 			      &&element_factory)
 	LIBCXX_HIDDEN;
@@ -43,7 +46,12 @@ auto create_peephole_toplevel(const ref<containerObj::implObj> &toplevel,
 //! The top level container's implementation object, a containerObj::implObj
 //! gets passed as the first parameter.
 //!
-//! The second parameter is a factory for the peepholed element.
+//! The next parameter specifies an optional border for the top level
+//! peephole.
+//!
+//! The next parameter specifies the top level peephole's style.
+//!
+//! The next parameter is a factory for the peepholed element.
 //! The factory receives a container implementation object, and creates
 //! a child element of the container, that also implements the peepholed
 //! mixin (a subclass of peepholed_toplevel_elementObj).
@@ -76,12 +84,14 @@ auto create_peephole_toplevel(const ref<containerObj::implObj> &toplevel,
 template<typename create_peepholed_element_factory_t>
 auto create_peephole_toplevel(const ref<containerObj::implObj> &toplevel,
 			      const char *border,
+			      peephole_style style,
 			      create_peepholed_element_factory_t
 			      &&element_factory)
 {
 	return create_peephole_toplevel_impl
 		(toplevel,
 		 border,
+		 style,
 		 make_function<create_peepholed_element_t>
 		 (std::forward<create_peepholed_element_factory_t>
 		  (element_factory)));

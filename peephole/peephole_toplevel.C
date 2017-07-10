@@ -30,6 +30,7 @@ class LIBCXX_HIDDEN toplevelpeephole_layoutmanagerObj
 	//! Constructor
 	toplevelpeephole_layoutmanagerObj
 		(const ref<containerObj::implObj> &container_impl,
+		 peephole_style style,
 		 const peepholed_toplevel &element_in_peephole,
 		 const peephole_scrollbars &scrollbars);
 
@@ -49,6 +50,7 @@ class LIBCXX_HIDDEN toplevelpeephole_layoutmanagerObj
 layoutmanager
 create_peephole_toplevel_impl(const ref<containerObj::implObj> &toplevel,
 			      const char *border,
+			      peephole_style style,
 			      const function<create_peepholed_element_t>
 			      &factory)
 {
@@ -85,6 +87,7 @@ create_peephole_toplevel_impl(const ref<containerObj::implObj> &toplevel,
 	auto peephole_layoutmanager=
 		ref<toplevelpeephole_layoutmanagerObj>::create
 		(peephole_impl,
+		 style,
 		 inner_container,
 		 scrollbars);
 
@@ -101,7 +104,7 @@ create_peephole_toplevel_impl(const ref<containerObj::implObj> &toplevel,
 	row0_factory->padding(0);
 	if (border)
 		row0_factory->border(border);
-
+	row0_factory->halign(style.h_alignment);
 	row0_factory->created_internally(peephole_element);
 
 	auto row1_factory=toplevel_grid->append_row();
@@ -116,7 +119,8 @@ create_peephole_toplevel_impl(const ref<containerObj::implObj> &toplevel,
 		row1_factory->right_border(border);
 	}
 
-	install_peephole_scrollbars(scrollbars.vertical_scrollbar,
+	install_peephole_scrollbars(toplevel_grid,
+				    scrollbars.vertical_scrollbar,
 				    scrollbar_visibility::never,
 				    row0_factory,
 				    scrollbars.horizontal_scrollbar,
@@ -137,9 +141,11 @@ create_peephole_toplevel_impl(const ref<containerObj::implObj> &toplevel,
 
 toplevelpeephole_layoutmanagerObj::toplevelpeephole_layoutmanagerObj
 (const ref<containerObj::implObj> &container_impl,
+ peephole_style style,
  const peepholed_toplevel &element_in_peephole,
  const peephole_scrollbars &scrollbars)
 	: peepholeObj::layoutmanager_implObj(container_impl,
+					     style,
 					     element_in_peephole,
 					     scrollbars,
 

@@ -81,6 +81,25 @@ public:
 			     grid_map_t::lock &lock,
 			     size_t i,
 			     bool is_highlighted) const=0;
+
+
+	//! Initialize the list layout manager
+
+	//! This is for combo-box peepholes, which are expanded to make them
+	//! the same width as the container they're attached to. The
+	//! drop-down list is always narrower that the main combo-box element
+	//! due to the presence of the drop-down button; so the peephole is
+	//! expanded horizontally to make everything nice and even.
+	//!
+	//! The drop-down list needs to carry its load, and make sure that the
+	//! list itself fills the expanded width of the peepholed element.
+	//!
+	//! Regular highlighted style adds extra width to column 0. Bulleted
+	//! lists use column 0 for the bullets, so the extra width goes to
+	//! column 1.
+
+	virtual void initialize(const ref<listlayoutmanagerObj::implObj> &l)
+		const=0;
 };
 
 //! List layout style

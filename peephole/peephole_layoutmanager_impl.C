@@ -99,13 +99,25 @@ create_peephole_scrollbars(const ref<containerObj::implObj> &container)
 	return {horizontal, vertical, horizontal_impl, vertical_impl};
 }
 
-void install_peephole_scrollbars(const scrollbar &vertical_scrollbar,
+void install_peephole_scrollbars(const gridlayoutmanager &lm,
+				 const scrollbar &vertical_scrollbar,
 				 scrollbar_visibility v_visibility,
 				 const gridfactory &row0_factory,
 				 const scrollbar &horizontal_scrollbar,
 				 scrollbar_visibility h_visibility,
 				 const gridfactory &row1_factory)
 {
+	// Take this opportunity to set the peephole itself, in (0, 0)
+	// to absorb any additional space given to the peephole.
+	//
+	// combo-box's popup peephole is stretched to make sure its width
+	// matches the combo-box's element's width, so this gets attribute
+	// to the peephole.
+	lm->requested_col_width(0, 100);
+	lm->requested_row_height(0, 100);
+
+	// Install the scrollbars, and have the grid layout manager not
+	// include them in the grid, when they are not visible.
 	row0_factory->remove_when_hidden(v_visibility !=
 					 scrollbar_visibility
 					 ::automatic_reserved)
@@ -168,12 +180,14 @@ peephole_scrollbars::~peephole_scrollbars()=default;
 
 peepholeObj::layoutmanager_implObj
 ::layoutmanager_implObj(const ref<containerObj::implObj> &container_impl,
+			peephole_style style,
 			const peepholed &element_in_peephole,
 
 			const peephole_scrollbars &scrollbars,
 			const scrollbar_visibility horizontal_scrollbar_visibility,
 			const scrollbar_visibility vertical_scrollbar_visibility)
 	: layoutmanagerObj::implObj(container_impl),
+	style(style),
 	element_in_peephole(element_in_peephole),
 	horizontal_scrollbar_visibility_thread_only(horizontal_scrollbar_visibility),
 	vertical_scrollbar_visibility_thread_only(vertical_scrollbar_visibility),
@@ -290,6 +304,12 @@ void peepholeObj::layoutmanager_implObj
 			element_horizvert->horiz.maximum(),
 			element_horizvert->vert.maximum()};
 
+	// Stretch the combo-box's peephole to fill its alloted width.
+	if (element_pos.width < current_position.width)
+	{
+		if (style.h_alignment == halign::fill)
+			element_pos.width=current_position.width;
+	}
 	// If the maximum requested size exceeds the peephole's size,
 	// truncate it down (this will also chop off the infinite() requested
 	// size.

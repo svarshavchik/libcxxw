@@ -7,9 +7,11 @@
 #define peephole_layoutmanager_impl_H
 
 #include "peephole/peepholeobj.H"
+#include "peephole/peephole_style.H"
 #include "layoutmanager.H"
 #include "scrollbar/scrollbarfwd.H"
 #include "peephole/peepholed_elementfwd.H"
+#include "x/w/gridlayoutmanagerfwd.H"
 #include "x/w/elementfwd.H"
 #include "x/w/scrollbar.H"
 #include "x/w/gridfactoryfwd.H"
@@ -43,7 +45,8 @@ create_peephole_scrollbars(const ref<containerObj::implObj> &container)
 //! grid layout's row #1 (which is empty), and officially install the
 //! scrollbars into the grid.
 
-void install_peephole_scrollbars(const scrollbar &vertical_scrollbar,
+void install_peephole_scrollbars(const gridlayoutmanager &lm,
+				 const scrollbar &vertical_scrollbar,
 				 scrollbar_visibility v_visibility,
 				 const gridfactory &row0_factory,
 				 const scrollbar &horizontal_scrollbar,
@@ -80,6 +83,9 @@ class LIBCXX_HIDDEN peepholeObj::layoutmanager_implObj
 
  public:
 	class scrollbar_implObj;
+
+	//! This peephole's style.
+	const peephole_style style;
 
 	//! The element in the peephole.
 
@@ -134,6 +140,7 @@ class LIBCXX_HIDDEN peepholeObj::layoutmanager_implObj
 
 	//! Constructor
 	layoutmanager_implObj(const ref<containerObj::implObj> &container_impl,
+			      peephole_style style,
 			      const peepholed &element_in_peephole,
 			      const peephole_scrollbars &scrollbars,
 			      const scrollbar_visibility horizontal_scrollbar_visibility,

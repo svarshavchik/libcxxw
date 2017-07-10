@@ -102,6 +102,9 @@ make_peepholed_list(const ref<peepholeObj::implObj> &peephole_parent,
 		(internal_listcontainer_impl,
 		 internal_listlayoutmanager_impl);
 
+	internal_listlayoutmanager_impl->style
+		.initialize(internal_listlayoutmanager_impl);
+
 	container->show();
 
 	return container;
@@ -124,6 +127,7 @@ new_listlayoutmanager::create(const ref<containerObj::implObj>
 		 focusable_container_impl->get_element_impl()
 		 .create_background_color(background_color),
 		 focusable_container_impl,
+		 peephole_style(),
 		 [&]
 		 (const ref<containerObj::implObj> &peepholed_parent)
 		 {

@@ -220,6 +220,12 @@ class LIBCXX_HIDDEN highlighted_list_style_impl
 		     listlayoutmanagerObj::implObj &layout_manager,
 		     grid_map_t::lock &lock, size_t i, bool is_highlighted)
 		const override;
+
+	void initialize(const ref<listlayoutmanagerObj::implObj> &l) const
+		override
+	{
+		l->requested_col_width(0, 100);
+	}
 };
 
 static const highlighted_list_style_impl highlighted_list_style_instance;
@@ -326,6 +332,12 @@ class LIBCXX_HIDDEN bulleted_list_style_impl
 		     listlayoutmanagerObj::implObj &layout_manager,
 		     grid_map_t::lock &lock, size_t i, bool is_highlighted)
 		const override;
+
+	void initialize(const ref<listlayoutmanagerObj::implObj> &l) const
+		override
+	{
+		l->requested_col_width(1, 100);
+	}
 };
 
 static const bulleted_list_style_impl bulleted_list_style_instance;

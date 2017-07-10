@@ -193,16 +193,7 @@ void gridlayoutmanagerObj::default_col_border(size_t col,
 
 void gridlayoutmanagerObj::requested_col_width(size_t col, int percentage)
 {
-	if (percentage < 0)
-		percentage=0;
-
-	if (percentage > 100)
-		percentage=100;
-
-	grid_map_t::lock lock{impl->grid_map};
-
-	(*lock)->column_defaults[col].axis_size=percentage;
-	(*lock)->padding_recalculated();
+	impl->requested_col_width(col, percentage);
 }
 
 void gridlayoutmanagerObj::remove_row_defaults(size_t row)
