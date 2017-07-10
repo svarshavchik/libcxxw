@@ -30,6 +30,12 @@ public:
 	//! My list layout manager.
 	const listlayoutmanager me;
 
+	//! The callback factory.
+
+	//! Retrieved from the listlayoutmanager by the constructor.
+	const std::function<list_item_status_change_callback_factory_t
+			    > callback_factory;
+
 	//! Constructor
 	listitemfactoryObj(const listlayoutmanager &me);
 

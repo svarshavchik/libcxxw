@@ -101,7 +101,7 @@ static inline void create_main_window(const x::w::main_window &main_window,
 		 bool is_selected,
 		 const x::w::busy &busy_mcguffin)
 		{
-			std::cout << "Item #" << item_number
+			std::cout << "selection_changed: item #" << item_number
 			<< (is_selected ? " is selected."
 			    : " is not selected.") << std::endl;
 		};
@@ -191,11 +191,60 @@ static inline void create_main_window(const x::w::main_window &main_window,
 	// needed.
 
 	insert_row->on_activate
-		([list_container]
+		([list_container, counter=0]
 		 (const x::w::busy &busy_mcguffin)
+		 mutable
 		 {
 			 x::w::listlayoutmanager l=
 				 list_container->get_layoutmanager();
+
+			 // An example of callbacks attached to list items.
+			 //
+			 // Install a callback factory into the list layout
+			 // manager.
+			 //
+			 // The callback factory gets invoked whenever a new
+			 // list item gets added, and returns a second callback.
+			 // The second callback gets invoked any time the new
+			 // list item gets selected or unselected.
+			 //
+			 // This on_activate() lambda captures a counter
+			 // variable, that gets initialized to 0.
+			 //
+			 // Install a callback_factory into the instantiated
+			 // listlayoutmanager, that captures the counter
+			 // by reference, and using it to number each item
+			 // created by this listlayoutmanager.
+			 //
+			 // Since callback_factory()s are attached to
+			 // each individual listlayoutmanager, this takes
+			 // effect only for list items created by this
+			 // on_activate() callback.
+
+
+			 l->callback_factory
+				 ([&]
+				  {
+					  // Return a callback for a new list
+					  // item being created.
+
+					  return [n=counter++]
+						  (x::w::list_lock &lock,
+						   size_t i,
+						   bool selected)
+					  {
+						  std::cout << "Item factory: "
+							  "item #"
+							    << n
+							    << (selected ?
+								" is":
+								" is not")
+							    << " selected at"
+							    << " position "
+							    << i
+							    << std::endl;
+					  };
+				  });
 
 			 l->insert_item(0, next_lorem_ipsum());
 

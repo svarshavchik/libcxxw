@@ -11,6 +11,8 @@
 #include <x/w/factoryfwd.H>
 #include <x/w/text_paramfwd.H>
 
+#include <x/mpobj.H>
+
 #include <vector>
 #include <initializer_list>
 
@@ -29,6 +31,40 @@ public:
 
 	//! Internal implementation object.
 	const ref<implObj> impl;
+
+	//! Thread-safe contained for new list item callback factory.
+
+	typedef mpobj<std::function<list_item_status_change_callback_factory_t>
+		      > callback_factory_container_t;
+
+	//! Current factory for new list items.
+
+	callback_factory_container_t callback_factory_container;
+
+	//! Set a callback factory for new list items.
+
+	template<typename callback>
+	inline void callback_factory(callback &&Callback)
+	{
+		callback_factory_container_t::lock
+			lock{callback_factory_container};
+
+		*lock=std::forward<callback>(Callback);
+	}
+
+	//! Set a callback factory for new list items.
+
+	inline auto callback_factory()
+	{
+		callback_factory_container_t::lock
+			lock{callback_factory_container};
+
+		return *lock;
+	}
+
+	//! Remove the current callback factory.
+
+	void remove_callback_factory();
 
 	//! Constructor
 	listlayoutmanagerObj(const ref<implObj> &impl) LIBCXX_HIDDEN;

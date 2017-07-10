@@ -347,6 +347,14 @@ void listlayoutmanagerObj::implObj::selected(const listlayoutmanager &me,
 						 ->get_element_impl()};
 
 				 try {
+					 if (c->status_change_callback)
+						 c->status_change_callback
+							 (lock,
+							  r,
+							  selected_flag);
+				 } CATCH_EXCEPTIONS;
+
+				 try {
 					 me->impl->selection_changed(IN_THREAD)
 						 (lock, me, r, selected_flag,
 						  yes_i_am);
@@ -469,11 +477,12 @@ void listlayoutmanagerObj::implObj
 			 {
 				 grid_map_t::lock grid_lock{me->impl->grid_map};
 
-				 me->impl->style.create_item(IN_THREAD,
-							     me->impl,
-							     append_row(&*me),
-							     me->queue,
-							     new_item);
+				 me->impl->style.create_item
+					 (IN_THREAD,
+					  me->impl,
+					  append_row(&*me),
+					  me->queue,
+					  new_item);
 			 });
 }
 

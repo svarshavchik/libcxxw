@@ -59,6 +59,42 @@ selection status until the internal execution thread officially updates it.
 The \c selection_changed callback, installed when the list was created,
 gets invoked when list items' selected status gets officially updated.
 
+\par List item callbacks
+
+\code
+l->callback_factory([]
+                    {
+                         return []
+                                (INSERT_LIBX_NAMESPACE::w::list_lock &lock,
+                                 size_t i,
+                                 bool flag)
+                                {
+                                     // ...
+                                };
+                     });
+
+l->remove_callback_factory();
+\endcode
+
+Each time a new list item is created by this list layout manager the
+callback_factory() gets called to get the new item's callback. This callback
+also gets invoked, but only for its list item, when it gets selected or
+unselected. The callback remains attached to its list item, after any other
+items are added or removed to the list.
+
+remove_callback_factory() removes the list layout manager's current callback
+factory. Until it gets removed, or by a replacement callback_factory(), the
+factory gets invoked for every new list item, and the returned lambda becomes
+the new item's callback.
+
+The list item callback receives, as parameters:
+
+- a list lock object.
+
+- the current index of the item, in the list.
+
+- an indication whether the item is now selected or unselected.
+
 \par Locking the list
 
 \code
@@ -291,6 +327,21 @@ void single_selection_type(list_lock &lock,
 void multiple_selection_type(list_lock &lock,
 			     const listlayoutmanager &layout_manager,
 			     size_t i);
+
+//! List item callback's signature
+
+//! The list item callback receives a lock object, the current index of the
+//! callback's list item, and whether the list item is currently selected.
+typedef void list_item_status_change_callback_t(list_lock &lock,
+						size_t i,
+						bool selected);
+
+//! A list item callback factory
+
+//! The factory gets called when a new list item gets created. The factory
+//! returns a callback for the new list item.
+typedef std::function<list_item_status_change_callback_t
+		      > list_item_status_change_callback_factory_t();
 
 LIBCXXW_NAMESPACE_END
 

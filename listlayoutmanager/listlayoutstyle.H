@@ -24,9 +24,16 @@ public:
 
 	//! The list layout manager creates a new factory for the new row in
 	//! the underlying list layout manager, and gives us a vector with
-	//! each element for each list item column.
+	//! each element for each list item column, and the status change
+	//! callback.
 
-	typedef std::vector<element> new_list_items_t;
+	struct new_list_items_t {
+
+		std::vector<element> elements;
+
+		std::function<list_item_status_change_callback_t
+			      > status_change_callback;
+	};
 
 	//! Creating a new item.
 
@@ -47,8 +54,8 @@ public:
 				 const batch_queue &queue,
 
 				 //! The new elements for the list item
-				 const new_list_items_t &new_list_items) const
-	=0;
+				 const new_list_items_t &new_list_items)
+		const=0;
 
 	//! Highlight the given list item.
 

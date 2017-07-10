@@ -52,7 +52,9 @@ See COPYING for distribution information.
        {
             &ns;::w::listlayoutmanager l=c->get_layoutmanager();
        },
-       new_list);</programlisting>
+       new_list);
+
+&ns;::w::listlayoutmanager llmanager=list->get_layoutmanager();</programlisting>
       </informalexample>
     </blockquote>
 
@@ -163,9 +165,10 @@ new_list.selection_changed=[]
       Clicking on an item executes the lambda,
       and the lambda has full control over which list items get selected
       or unselected. The <varname>selection_type</varname> lambda's parameters
-      are a list lock, the list layout manager instance, and the index of which
+      are a <link linkend="listlock">list lock</link>, the list layout manager
+      instance, and the index of which
       item was clicked on. The lambda is responsible for selecting or
-      unselecting the list's items.
+      unselecting the list's items, as it sees fit.
     </para>
 
     <para>
@@ -186,6 +189,93 @@ new_list.selection_changed=[]
 	needs.
       </para>
     </note>
+
+    <para>
+      An alternative approach involves attaching callbacks to individual
+      list items. A list item's callback gets invoked whenever the
+      list item gets
+      selected or unselected. Other items may be added or removed from the
+      list, but the callback stays with its original item, and gets invoked
+      only for its item.
+    </para>
+
+    <para>
+      Creating individual list item callbacks is a two-step process.
+      The first step involves using <methodname>callback_factory</methodname>()
+      to install a callback factory into the
+      <ulink url="&link-typedef-x--w-listlayoutmanager;"><classname>&ns;::w::listlayoutmanager</classname></ulink>:
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+llmanager-&gt;callback_factory(
+       []
+       {
+             return []
+                    (x::w::list_lock &amp;lock,
+                     size_t i,
+                     bool selected)
+                    {
+                    };
+       });</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      The reason for this approach is that new items get added to the
+      list by constructing and using a &factory;, and it's possible to use
+      the same factory to add multiple items to the list
+      (some overloaded <classname>&ns;::w::listlayoutmanager</classname>
+      methods create list items by themselves, but they all use this
+      process internally)
+      and the lambda given to
+      <methodname>callback_factory</methodname>() gets invoked for each
+      new list item.
+    </para>
+
+    <para>
+      The second step occurs when the
+      <methodname>callback_factory</methodname>()
+      lambda returns the actual callback for a new list item.
+      This lambda gets invoked whenever its item gets selected or unselected.
+      The lambda's parameters are:
+    </para>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  A <link linkend="listlock">list lock object</link>.
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  The item's current index in the list. The callback stays attached
+	  to its item, and the item's index gets adjusted whenever any
+	  preceding list items get added or removed.
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  Whether the callback's item is now selected or unselected.
+	</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>
+      Once installed,
+      <classname>&ns;::w::listlayoutmanager</classname>'s
+      item callback factory remains in place until it gets
+      removed by <methodname>remove_callback_factory</methodname>() or until
+      another factory gets installed, or until the
+      <classname>&ns;::w::listlayoutmanager</classname> goes out of scope
+      and gets destroyed.
+    </para>
+
+    <para>
+      <link linkend="list"><filename>listlayoutmanager.C</filename></link>
+      shows an example of attaching a list item callback to list items.
+    </para>
   </section>
 
   <section id="listlock">

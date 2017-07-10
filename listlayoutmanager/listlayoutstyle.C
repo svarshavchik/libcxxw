@@ -124,7 +124,9 @@ void listlayoutstyle_common
 		auto lmi=ref<listitemlayoutmanagerObj::implObj>
 			::create(item_c, item_e,
 				 l, r, v_padding);
-		auto c=listitemcontainer::create(item_c, lmi);
+		auto c=listitemcontainer::create
+			(item_c, lmi,
+			 new_list_items.status_change_callback);
 
 		lmi->needs_recalculation(queue);
 
@@ -194,7 +196,7 @@ class LIBCXX_HIDDEN highlighted_list_style_impl
 	size_t n_actual_elements(const new_list_items_t &new_list_items)
 		const override
 	{
-		return new_list_items.size();
+		return new_list_items.elements.size();
 	}
 
 	//! Implement get_element_n()
@@ -203,7 +205,7 @@ class LIBCXX_HIDDEN highlighted_list_style_impl
 			      const new_list_items_t &new_list_items,
 			      size_t i) const override
 	{
-		return new_list_items.at(i);
+		return new_list_items.elements.at(i);
 	}
 
 	//! Unhighlight the given list item.
@@ -285,7 +287,7 @@ class LIBCXX_HIDDEN bulleted_list_style_impl
 	size_t n_actual_elements(const new_list_items_t &new_list_items)
 		const override
 	{
-		return new_list_items.size()+1;
+		return new_list_items.elements.size()+1;
 	}
 
 	//! Implement get_element_n()
@@ -309,7 +311,7 @@ class LIBCXX_HIDDEN bulleted_list_style_impl
 			return element::create(impl);
 		}
 
-		return new_list_items.at(i-1);
+		return new_list_items.elements.at(i-1);
 	}
 
 	//! Unhighlight the given list item.

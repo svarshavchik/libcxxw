@@ -29,6 +29,14 @@ listlayoutmanagerObj::listlayoutmanagerObj(const ref<implObj> &impl)
 
 listlayoutmanagerObj::~listlayoutmanagerObj()=default;
 
+void listlayoutmanagerObj::remove_callback_factory()
+{
+	callback_factory_container_t::lock lock{callback_factory_container};
+
+	*lock=nullptr;
+}
+
+
 //! The factory returned by append_item()
 
 class LIBCXX_HIDDEN list_append_item_factoryObj : public listitemfactoryObj {
