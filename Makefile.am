@@ -511,6 +511,8 @@ libcxxw_la_SOURCES=\
 	scrollbar/scrollbar_metrics.C		    \
 	scrollbar/scrollbar_metrics.H		    \
 	shortcut.C				    \
+	singletonlayoutmanager.C		    \
+	singletonlayoutmanager.H		    \
 	selection/current_selection.C		    \
 	selection/current_selection.H		    \
 	selection/current_selectionfwd.H	    \
