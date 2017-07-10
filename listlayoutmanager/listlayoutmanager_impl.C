@@ -344,7 +344,8 @@ void listlayoutmanagerObj::implObj::selected(const listlayoutmanager &me,
 				 me->impl->refresh(IN_THREAD, lock, c);
 
 				 busy_impl yes_i_am{me->impl->container_impl
-						 ->get_element_impl()};
+						 ->get_element_impl(),
+						 IN_THREAD};
 
 				 try {
 					 if (c->status_change_callback)

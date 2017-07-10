@@ -125,7 +125,7 @@ void elementObj::remove_tooltip() const
 
 x::ref<x::obj> elementObj::get_busy_mcguffin() const
 {
-	return busy_impl{*impl}.get_mcguffin();
+	return impl->get_window_handler().get_busy_mcguffin();
 }
 
 std::ostream &operator<<(std::ostream &o, const element_state &s)

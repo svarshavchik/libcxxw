@@ -318,6 +318,9 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 	typedef mpobj<weakptr<ptr<obj>>> busy_mcguffin_t;
 
+	//! Construct the busy mcguffin.
+
+	ref<obj> get_busy_mcguffin();
 	//! Busy mcguffin.
 
 	busy_mcguffin_t busy_mcguffin;

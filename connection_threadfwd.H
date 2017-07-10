@@ -5,17 +5,10 @@
 #ifndef connection_threadfwd_h
 #define connection_threadfwd_h
 
-#include <x/ptrfwd.H>
+#include "x/w/connection_threadfwd.H"
 #include <chrono>
-#include "x/w/namespace.H"
 
 LIBCXXW_NAMESPACE_START
-
-class connection_threadObj;
-
-typedef ref<connection_threadObj> connection_thread;
-
-typedef ptr<connection_threadObj> connection_threadptr;
 
 //! A clock for regularly-scheduled callbacks.
 

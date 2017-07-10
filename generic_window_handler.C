@@ -337,6 +337,20 @@ void generic_windowObj::handlerObj::theme_updated_event(IN_THREAD_ONLY)
 							   new_theme);
 }
 
+ref<obj> generic_windowObj::handlerObj::get_busy_mcguffin()
+{
+	busy_mcguffin_t::lock lock{busy_mcguffin};
+
+	auto p=lock->getptr();
+
+	if (p) return p;
+
+	auto n=ref<obj>::create();
+
+	*lock=n;
+	return n;
+}
+
 bool generic_windowObj::handlerObj::is_busy()
 {
 	return !!busy_mcguffin_t::lock{busy_mcguffin}->getptr();

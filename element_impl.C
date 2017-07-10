@@ -350,7 +350,7 @@ ref<obj> elementObj::implObj
 			       handler->invoke(me->create_element_state
 					       (IN_THREAD,
 						element_state::current_state),
-					       busy_impl{*me});
+					       busy_impl{*me, IN_THREAD});
 		       });
 
 	return mcguffin;
@@ -431,7 +431,7 @@ void elementObj::implObj
 {
 	data(IN_THREAD).update_handlers->invoke(create_element_state
 						(IN_THREAD, reason),
-						busy_impl{*this});
+						busy_impl{*this, IN_THREAD});
 }
 
 clip_region_set::clip_region_set(IN_THREAD_ONLY,
