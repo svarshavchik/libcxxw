@@ -3,20 +3,18 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
-#include "label.H"
+#include "x/w/label.H"
+#include "textlabel.H"
 
 LIBCXXW_NAMESPACE_START
 
-labelObj::labelObj(const ref<implObj> &impl) : elementObj(impl),
-					       impl(impl)
+labelObj::labelObj(const ref<textlabelObj::implObj> &impl,
+		   const ref<elementObj::implObj> &element_impl)
+	: elementObj(element_impl),
+	  textlabelObj(impl)
 {
 }
 
 labelObj::~labelObj()=default;
-
-void labelObj::update(const text_param &string)
-{
-	impl->update(string);
-}
 
 LIBCXXW_NAMESPACE_END

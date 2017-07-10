@@ -12,8 +12,11 @@ LIBCXXW_NAMESPACE_START
 
 class labelObj;
 
-//! A text label.
+//! A text label display element.
 
+//! Multiply-inherits from \ref textlabel "textlabel" and
+//! \ref element "element" for a normal label display element.
+//!
 //! \code
 //! factory->create_label({"Hello world!"});
 //! \endcode

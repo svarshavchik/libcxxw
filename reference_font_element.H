@@ -69,7 +69,7 @@ void reference_font_elementObj<element_impl, tag>
 {
 	// Initialize the mixin first.
 	//
-	// labelObj::implObj calls preferred_width(), which is implemented
+	// textlabelObj::implObj calls preferred_width(), which is implemented
 	// in editor_implObj, which looks at the font's width, so the
 	// reference_font needs to be initialized before we go down the
 	// rabbit hole.

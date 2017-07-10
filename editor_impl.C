@@ -12,6 +12,7 @@
 #include "fonts/current_fontcollection.H"
 #include "fonts/fontcollection.H"
 #include "focus/focusable_element.H"
+#include "label_element.H"
 #include "richtext/richtext.H"
 #include "richtext/richtext_impl.H"
 #include "richtext/richtextiterator.H"

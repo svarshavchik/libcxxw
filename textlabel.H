@@ -2,20 +2,26 @@
 ** Copyright 2017 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
-#ifndef label_h
-#define label_h
+#ifndef textlabel_h
+#define textlabel_h
 
-#include "x/w/labelobj.H"
+#include "x/w/textlabelobj.H"
+#include "x/w/elementobj.H"
 #include "x/w/text_param.H"
-#include "child_elementobj.H"
+#include "x/w/alignment.H"
+#include "x/w/rectangle.H"
+#include "x/w/metrics/axis.H"
 #include "richtext/richtextfwd.H"
 #include "richtext/richtextmeta.H"
+#include "richtext/richtextstring.H"
+#include "draw_infofwd.H"
+#include "elementfwd.H"
 
 LIBCXXW_NAMESPACE_START
 
 //! Base class for a label implementation.
 
-class LIBCXX_HIDDEN labelObj::implObj : public child_elementObj {
+class LIBCXX_HIDDEN textlabelObj::implObj : virtual public obj {
 
 	//! Word wrapping width, in millimeters.
 
@@ -44,38 +50,28 @@ public:
 
 	//! Constructor for a label element.
 
-	implObj(const ref<containerObj::implObj> &container,
-		const text_param &text,
-		halign alignment,
-		double initial_width);
-
- private:
-	//! Internal constructor
-
-	implObj(const ref<containerObj::implObj> &container,
-		const text_param &text,
+	implObj(const text_param &text,
 		halign alignment,
 		double initial_width,
-		elementObj::implObj &container_element);
+		elementObj::implObj &element_impl);
 
 	//! Internal constructor
-	implObj(const ref<containerObj::implObj> &container,
-		const text_param &text,
+	implObj(const text_param &text,
 		const richtextmeta &default_meta,
 		halign alignment,
 		double initial_width,
-		elementObj::implObj &container_element);
+		elementObj::implObj &element_impl);
 
- protected:
 	//! Constructor used by editor subclass.
 
-	implObj(const ref<containerObj::implObj> &container,
-		halign alignment,
+	implObj(halign alignment,
 		double initial_width,
 		const richtextstring &string,
-		const richtextmeta &default_meta,
-		const char *element_id);
- public:
+		const richtextmeta &default_meta);
+
+	//! Return my element.
+	virtual elementObj::implObj &get_label_element_impl()=0;
+
 	//! Destructor
 	~implObj();
 
@@ -95,24 +91,23 @@ public:
 	// Inherited from elementObj::implObj
 
 	//! Calculate the metrics of the initial contents of this label.
-	void initialize(IN_THREAD_ONLY) override;
+	void initialize(IN_THREAD_ONLY);
 
 	//! Invoke the underlying text object's theme_updated().
 
 	//! When done, recalculate() our updated size.
-	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme) override;
+	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme);
 
 	//! Invoke the underlying text object's do_draw().
 
 	void do_draw(IN_THREAD_ONLY,
 		     const draw_info &di,
-		     const rectangle_set &areas) override;
+		     const rectangle_set &areas);
 
 	//! Override process_updated_position()
 
 	//! Call the superclass, then rewrap_due_to_updated_position().
-	void process_updated_position(IN_THREAD_ONLY)
-		override;
+	void process_updated_position(IN_THREAD_ONLY);
 
 	//! Override set_inherited_visibility()
 
@@ -120,7 +115,7 @@ public:
 
 	void set_inherited_visibility(IN_THREAD_ONLY,
 				      inherited_visibility_info
-				      &visibility_info) override;
+				      &visibility_info);
 
  private:
 

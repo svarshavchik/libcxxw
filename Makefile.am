@@ -297,9 +297,9 @@ libcxxw_la_SOURCES=\
 	keysyms.C				    \
 	keysyms.H				    \
 	key_event.C				    \
-	label.H					    \
 	label.C					    \
-	label_impl.C				    \
+	label_element.H				    \
+	label_elementfwd.H			    \
 	layoutmanager.C				    \
 	layoutmanager.H				    \
 	layoutmanager_impl.C			    \
@@ -529,6 +529,9 @@ libcxxw_la_SOURCES=\
 	straight_borderfwd.H			    \
 	straight_borderobj.H			    \
 	straight_border_impl.C			    \
+	textlabel.C				    \
+	textlabel.H				    \
+	textlabel_impl.C			    \
 	sxg/sxg_image.C				    \
 	sxg/sxg_image.H				    \
 	sxg/sxg_imagefwd.H			    \

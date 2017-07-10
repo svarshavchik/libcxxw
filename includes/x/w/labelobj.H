@@ -6,7 +6,7 @@
 #define x_w_labelobj_h
 
 #include <x/w/elementobj.H>
-#include <x/w/text_paramfwd.H>
+#include <x/w/textlabelobj.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -14,22 +14,15 @@ LIBCXXW_NAMESPACE_START
 
 //! \see label
 
-class labelObj : public elementObj {
+class labelObj : public elementObj, public textlabelObj {
 
 public:
-	class implObj;
-
-	const ref<implObj> impl;
-
 	//! Constructor
-	labelObj(const ref<implObj> &impl) LIBCXX_HIDDEN;
+	labelObj(const ref<textlabelObj::implObj> &impl,
+		 const ref<elementObj::implObj> &element_impl) LIBCXX_HIDDEN;
 
 	//! Destructor
 	~labelObj() LIBCXX_HIDDEN;
-
-	//! Replace the label text.
-
-	void update(const text_param &string);
 };
 
 LIBCXXW_NAMESPACE_END
