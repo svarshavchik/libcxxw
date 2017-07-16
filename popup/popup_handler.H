@@ -11,6 +11,8 @@
 #include "grabbed_pointerfwd.H"
 #include "x/w/rectangle.H"
 
+#include <x/weakptr.H>
+
 LIBCXXW_NAMESPACE_START
 
 //! Popup handler implementation object.
@@ -80,9 +82,10 @@ public:
 	//! Override button_press_event
 
 	//! Pressing a button outside of the popup hides it.
-	void button_press_event(IN_THREAD_ONLY,
-				const xcb_button_press_event_t *event)
-		override;
+	void do_button_event(IN_THREAD_ONLY,
+			     const xcb_button_release_event_t *event,
+			     const button_event &be,
+			     const motion_event &me) override;
 
 	//! Perform any needed grab/pointer processing due to visibility change.
 	void set_inherited_visibility(IN_THREAD_ONLY,
@@ -90,12 +93,23 @@ public:
 				      &visibility_info)
 		override;
 
+	//! Automatically advance input focus to first field, upon visibility.
+
+	void inherited_visibility_updated(IN_THREAD_ONLY,
+					  inherited_visibility_info &info)
+		override;
+
  private:
 
 	//! The pointer is grabbed while the popup is open.
 	grabbed_pointerptr current_grab;
 
+	//! The parent window, which is used for the pointer trab.
+
+	weakptr<ptr<generic_windowObj::handlerObj>> popup_parent_thread_only;
+
  public:
+	THREAD_DATA_ONLY(popup_parent);
 
 	//! Perform processing after a popup is opened.
 
@@ -107,6 +121,23 @@ public:
 	//! Release the pointer grab.
 
 	virtual void closing_popup(IN_THREAD_ONLY);
+
+	//! Override keep_passive_grab().
+
+	//! Forward to parent element, that grabbed the pointer for us.
+
+	bool keep_passive_grab(IN_THREAD_ONLY) override;
+
+	//! Override ungrab().
+
+	//! Forward to parent element, that grabbed the pointer for us.
+	void ungrab(IN_THREAD_ONLY) override;
+
+	//! Override process_key_event()
+
+	//! If the ESC key is pressed, close the combo-box popup.
+
+	bool process_key_event(IN_THREAD_ONLY, const key_event &ke);
 };
 
 LIBCXXW_NAMESPACE_END

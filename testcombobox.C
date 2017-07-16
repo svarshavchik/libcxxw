@@ -75,19 +75,14 @@ void testcombobox()
 							 ("");
 					 },
 				  [&]
-					  (const x::w::list_lock &lock,
-					   const x::w::listlayoutmanager
-					   &combobox_listlayoutmanager,
-					   size_t i,
-					   bool selected,
-					   x::w::focusable_label element,
-					   const x::w::element &popup_element,
-					   const x::w::busy &mcguffin) {
-					  if (selected)
-					  {
-						  element->update(text[i]);
-						  popup_element->hide();
-					  }
+					  (const auto &info) {
+					  if (!info.selected_flag)
+						  return;
+
+					  x::w::focusable_label item=
+						  info.current_selection;
+					  item->update(text[info.item_index]);
+					  info.popup_element->hide();
 				  }};
 
 

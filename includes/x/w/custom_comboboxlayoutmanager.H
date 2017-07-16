@@ -25,6 +25,35 @@ LIBCXXW_NAMESPACE_START
 typedef std::function<void (const factory &)
 		      > custom_combobox_selection_factory_t;
 
+//! Information passed to the \ref combobox_selection_changed_t "combo-box selection changed callback".
+
+struct LIBCXX_HIDDEN custom_combobox_selection_changed_info_t {
+
+	//! A lock on combo-box's underlying list
+	list_lock &lock;
+
+	//! The combo-box's underlying list layout manager
+	const listlayoutmanager &llm;
+
+	//! Which combo-box item has been selected or unselected
+	size_t item_index;
+
+	//! Whether the specified item has been selected or unselected.
+	bool selected_flag;
+
+	//! The item element that has been selected or unselected.
+	const element &current_selection;
+
+	//! The popup
+
+	//! The callback would typically want to hide() it, after recording
+	//! a new selection.
+	const element &popup_element;
+
+	//! Available mcguffin for blocking all further processing.
+	const busy &mcguffin;
+};
+
 //! Callback that gets invoked when a combo-box selection is made.
 
 //! The same callback as the list layout manager's selection changed
@@ -36,19 +65,32 @@ typedef std::function<void (const factory &)
 //! - popup_element: the internally created popup-element. The callback will
 //! typically want to hide()it after making the new selection.
 
-typedef std::function<void (list_lock &lock,
-			    const listlayoutmanager &llm,
-			    size_t item_index,
-			    bool selected_flag,
-			    const element &current_selection,
-			    const element &popup_element,
-			    const busy &mcguffin)
+typedef std::function<void (const custom_combobox_selection_changed_info_t &)
 		      > combobox_selection_changed_t;
 
-//! Create a custom combobox.
+/*!
 
-//! Passed to create_focusable_container() to create a focusable container
-//! with a \ref custom_comboboxlayoutmanager "custom combo-box layout manager".
+Create a custom combobox.
+
+Passed to create_focusable_container() to create a focusable container
+with a \ref custom_comboboxlayoutmanager "custom combo-box layout manager".
+
+\code
+INSERT_LIBX_NAMESPACE::w::new_custom_comboboxlayoutmanager cclm{
+    []
+    (const INSERT_LIBX_NAMESPACE::w::factory &f)
+    {
+    },
+    []
+    (const custom_combobox_selection_info_t &info)
+    {
+    }
+};
+
+\endcode
+
+*/
+
 class LIBCXX_HIDDEN new_custom_comboboxlayoutmanager
 	: public new_focusable_layoutmanager {
 
@@ -78,12 +120,16 @@ class LIBCXX_HIDDEN new_custom_comboboxlayoutmanager
 
 	focusable_container create(const ref<containerObj::implObj> &)
 		const override;
+
+ protected:
+
+	struct create_impl_info;
+
+	//! Internal constructor
+
+	virtual ref<custom_comboboxlayoutmanagerObj::implObj
+		    > create_impl(const create_impl_info &) const;
 };
-
-//! The default custom combo-box selection element factory.
-
-std::tuple<element, ref<focusableImplObj>
-	   > default_combobox_selection_factory(const factory &);
 
 LIBCXXW_NAMESPACE_END
 

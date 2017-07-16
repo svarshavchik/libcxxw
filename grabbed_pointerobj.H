@@ -21,7 +21,15 @@ LIBCXXW_NAMESPACE_START
 
 class LIBCXX_HIDDEN grabbed_pointerObj : virtual public obj {
 
-public:
+	//! This is a popup pointer grab
+
+	//! Which popup grabbed the pointer. Pointer events are redirected
+	//! to this popup.
+	weakptr<ptr<generic_windowObj::handlerObj>> grabbing_popup_thread_only;
+
+ public:
+	THREAD_DATA_ONLY(grabbing_popup);
+
 	//! The logger
 	LOG_CLASS_SCOPE;
 

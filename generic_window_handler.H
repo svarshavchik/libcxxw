@@ -214,6 +214,12 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! Translate coordinates to screen coordinates.
 	void get_absolute_location_on_screen(IN_THREAD_ONLY, rectangle &r);
 
+	//! Take local x/y coordinates, add root_[xy].
+	void add_root_xy(IN_THREAD_ONLY, coord_t &x, coord_t &y);
+
+	//! Take root x/y coordinates, subtract root_[xy].
+	void subtract_root_xy(IN_THREAD_ONLY, coord_t &x, coord_t &y);
+
 	//! Remove our own background color.
 
 	//! For top level windows, this simply sets their background color
@@ -231,6 +237,14 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! Process TAB/Shift TAB, do move the input focus.
 
 	bool process_key_event(IN_THREAD_ONLY, const key_event &ke) override;
+
+	//! Set default input focus.
+
+	//! If no element current has keyboard focus, set it to the first
+	//! focusable field. Returns true if a display element already has
+	//! input focus, or if one was found by set_default_focus().
+
+	bool set_default_focus(IN_THREAD_ONLY);
 
  private:
 	//! Most recent element where the pointer motion event went to.
@@ -263,15 +277,24 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 	//! And if it's a different element now, report_pointer_focus()
 	//! changes, accordingly.
+	//!
+	//! Returns which top level handler the pointer was reported to
+	//! (could be another one, that's actively grabbed the pointer).
 
-	void report_pointer_xy(IN_THREAD_ONLY,
-			       motion_event &me,
-			       bool was_grabbed);
+	ref<handlerObj> report_pointer_xy(IN_THREAD_ONLY,
+					  motion_event &me,
+					  bool was_grabbed);
 
 	//! Use grab_locked() for was_grabbed in the overloaded method.
 
-	void report_pointer_xy(IN_THREAD_ONLY,
-			       motion_event &me);
+	ref<handlerObj> report_pointer_xy(IN_THREAD_ONLY,
+					  motion_event &me);
+
+	//! Decided that this is the handler that the pointer should be reported to.
+	void report_pointer_xy_to_this_handler(IN_THREAD_ONLY,
+					       const grabbed_pointerptr &pg,
+					       motion_event &me,
+					       bool was_grabbed);
 
 	//! This is the element that should be receiving pointer events.
 
@@ -341,7 +364,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! An element's button_press_event() wishes to grab the pointer.
 
 	void grab(IN_THREAD_ONLY, const ref<elementObj::implObj> &e);
- private:
+ protected:
 
 	//! Forward key event to the X Input Method server.
 
@@ -358,21 +381,36 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 	//! Process a button press or release event.
 
-	//! Finds the display element under the pointer and invokes its
-	//! process_button_event(). If the button event does not get processed
-	//! and it is a button #1 press, the keyboard input focus gets removed
-	//! from the element that currently has the keyboard input focus.
+	//! Use grab_locked() for was_grabbed in the overloaded method.
+
+	void do_button_event(IN_THREAD_ONLY,
+			     const xcb_button_release_event_t *event,
+			     bool buttonpress);
+
+	//! Process a button press or release event.
+
+	//! Calls report_pointer_xy() to find the element under cursor,
+	//! and constructs a button_event.
 
 	void do_button_event(IN_THREAD_ONLY,
 			     const xcb_button_release_event_t *event,
 			     bool buttonpress,
 			     bool was_grabbed);
 
-	//! Use grab_locked() for was_grabbed in the overloaded method.
 
-	void do_button_event(IN_THREAD_ONLY,
-			     const xcb_button_release_event_t *event,
-			     bool buttonpress);
+	//! Process the button press or release element
+
+	//! Processes the button_event.
+	//!
+	//! Finds the display element under the pointer and invokes its
+	//! process_button_event(). If the button event does not get processed
+	//! and it is a button #1 press, the keyboard input focus gets removed
+	//! from the element that currently has the keyboard input focus.
+
+	virtual void do_button_event(IN_THREAD_ONLY,
+				     const xcb_button_release_event_t *event,
+				     const button_event &be,
+				     const motion_event &me);
 
 	//! The top level display element cannot grab. Throw an exception.
 

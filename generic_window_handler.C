@@ -211,6 +211,23 @@ void generic_windowObj::handlerObj
 }
 
 void generic_windowObj::handlerObj
+::add_root_xy(IN_THREAD_ONLY, coord_t &x, coord_t &y)
+{
+	x=coord_t::truncate(x + root_x(IN_THREAD));
+	y=coord_t::truncate(y + root_y(IN_THREAD));
+}
+
+void generic_windowObj::handlerObj
+::subtract_root_xy(IN_THREAD_ONLY, coord_t &x, coord_t &y)
+{
+	x=coord_t::truncate(coord_t::truncate(x) -
+			    coord_t::truncate(root_x(IN_THREAD)));
+
+	y=coord_t::truncate(coord_t::truncate(y) -
+			    coord_t::truncate(root_y(IN_THREAD)));
+}
+
+void generic_windowObj::handlerObj
 ::draw_child_elements_after_visibility_updated(IN_THREAD_ONLY, bool flag)
 {
 }
@@ -395,6 +412,22 @@ void generic_windowObj::handlerObj
 	if (forwarded)
 		return;
 
+	// Popup has grabbed pointer and keyboard input?
+
+	auto pg=current_pointer_grab(IN_THREAD).getptr();
+
+	if (pg)
+	{
+		auto grabbing_popup=pg->grabbing_popup(IN_THREAD).getptr();
+
+		if (grabbing_popup)
+		{
+			grabbing_popup->handle_key_event(IN_THREAD, event,
+							 keypress);
+			return;
+		}
+	}
+
 	handle_key_event(IN_THREAD, event, keypress);
 }
 
@@ -546,8 +579,16 @@ void generic_windowObj::handlerObj
 	motion_event me{be, motion_event_type::button_event,
 			event->event_x, event->event_y};
 
-	report_pointer_xy(IN_THREAD, me, was_grabbed);
+	report_pointer_xy(IN_THREAD, me, was_grabbed)
+		->do_button_event(IN_THREAD, event, be, me);
+}
 
+void generic_windowObj::handlerObj
+::do_button_event(IN_THREAD_ONLY,
+		  const xcb_button_release_event_t *event,
+		  const button_event &be,
+		  const motion_event &me)
+{
 	// report_pointer_xy() might not always set
 	// most_recent_element_with_pointer(IN_THREAD).
 
@@ -562,7 +603,7 @@ void generic_windowObj::handlerObj
 		    // Clicking pointer button 1 nowhere in particular removes
 		    // keyboard
 		    // focus from anything that might have it, right now.
-		    && be.button == 1 && buttonpress)
+		    && be.button == 1 && be.press)
 			unset_keyboard_focus(IN_THREAD);
 	}
 }
@@ -670,14 +711,22 @@ bool generic_windowObj::handlerObj::process_key_event(IN_THREAD_ONLY,
 			most_recent_keyboard_focus(IN_THREAD)->next_focus(IN_THREAD);
 			return true;
 		}
-
-		for (const auto &element:focusable_fields(IN_THREAD))
-			if (element->enabled(IN_THREAD))
-			{
-				element->set_focus_and_ensure_visibility(IN_THREAD);
-				return true;
-			}
+		return set_default_focus(IN_THREAD);
 	}
+	return false;
+}
+
+bool generic_windowObj::handlerObj::set_default_focus(IN_THREAD_ONLY)
+{
+	if (most_recent_keyboard_focus(IN_THREAD))
+		return true;
+
+	for (const auto &element:focusable_fields(IN_THREAD))
+		if (element->enabled(IN_THREAD))
+		{
+			element->set_focus_and_ensure_visibility(IN_THREAD);
+			return true;
+		}
 	return false;
 }
 
@@ -780,24 +829,57 @@ void generic_windowObj::handlerObj
 			.window_focus_change(IN_THREAD, flag);
 }
 
-void generic_windowObj::handlerObj
+ref<generic_windowObj::handlerObj> generic_windowObj::handlerObj
 ::report_pointer_xy(IN_THREAD_ONLY,
 		    motion_event &me)
 {
-	report_pointer_xy(IN_THREAD, me, grab_locked(IN_THREAD));
+	return report_pointer_xy(IN_THREAD, me, grab_locked(IN_THREAD));
 }
 
-void generic_windowObj::handlerObj
+ref<generic_windowObj::handlerObj> generic_windowObj::handlerObj
 ::report_pointer_xy(IN_THREAD_ONLY,
 		    motion_event &me,
 		    bool was_grabbed)
 {
-	auto g=most_recent_element_with_pointer(IN_THREAD);
-	// If was_grabbed, this element passively grabbed the pointer.
-	//
 	// We also need to check for active grabs, which take precedence:
 
 	auto pg=current_pointer_grab(IN_THREAD).getptr();
+
+	if (pg)
+	{
+		auto grabbing_popup=pg->grabbing_popup(IN_THREAD).getptr();
+
+		if (grabbing_popup)
+		{
+			// Translate the x/y coordinates
+
+			ref<generic_windowObj::handlerObj>
+				popupref{grabbing_popup};
+
+			add_root_xy(IN_THREAD, me.x, me.y);
+			popupref->subtract_root_xy(IN_THREAD, me.x, me.y);
+
+			popupref->report_pointer_xy_to_this_handler
+				(IN_THREAD, pg,
+				 me, was_grabbed);
+			return popupref;
+		}
+	}
+
+	report_pointer_xy_to_this_handler(IN_THREAD, pg,
+					  me, was_grabbed);
+	return ref<handlerObj>(this);
+}
+
+void generic_windowObj::handlerObj
+::report_pointer_xy_to_this_handler(IN_THREAD_ONLY,
+				    const grabbed_pointerptr &pg,
+				    motion_event &me,
+				    bool was_grabbed)
+{
+	auto g=most_recent_element_with_pointer(IN_THREAD);
+	// If was_grabbed, this element passively grabbed the pointer.
+	//
 
 	if (pg)
 	{

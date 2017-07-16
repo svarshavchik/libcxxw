@@ -4,7 +4,6 @@
 */
 #include "libcxxw_config.h"
 #include "combobox/custom_combobox_popup.H"
-#include "popup/popup_autofocus.H"
 
 LIBCXXW_NAMESPACE_START
 

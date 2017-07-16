@@ -10,6 +10,10 @@
 #include "screen.H"
 #include "connection_thread.H"
 #include "grabbed_pointer.H"
+#include "messages.H"
+#include "x/w/button_event.H"
+#include "x/w/motion_event.H"
+#include "x/w/key_event.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -18,7 +22,8 @@ popupObj::handlerObj::handlerObj(IN_THREAD_ONLY,
 				 &parent,
 				 size_t nesting_level)
 	: generic_windowObj::handlerObj(IN_THREAD, parent->get_screen(),
-					nesting_level)
+					nesting_level),
+	popup_parent_thread_only(parent)
 {
 	// We are hereby initialized
 
@@ -132,49 +137,115 @@ void popupObj::handlerObj::configure_notify(IN_THREAD_ONLY,
 	// Ignoring the ConfigureNotify event, see?
 }
 
-void popupObj::handlerObj::button_press_event(IN_THREAD_ONLY,
-					      const xcb_button_press_event_t
-					      *event)
+void popupObj::handlerObj::do_button_event(IN_THREAD_ONLY,
+					   const xcb_button_release_event_t *event,
+					   const button_event &be,
+					   const motion_event &me)
 {
-	if (event->event_x < 0 || event->event_y < 0 ||
-	    (dim_t::truncate)(event->event_x)
-	    >= data(IN_THREAD).current_position.width ||
-	    (dim_t::truncate)(event->event_y)
-	    >= data(IN_THREAD).current_position.height)
+	if (be.press &&
+	    (me.x < 0 || me.y < 0 ||
+	     (dim_t::truncate)(me.x)
+	     >= data(IN_THREAD).current_position.width ||
+	     (dim_t::truncate)(me.y)
+	     >= data(IN_THREAD).current_position.height))
 	{
 		request_visibility(IN_THREAD, false);
 		return;
 	}
-	generic_windowObj::handlerObj::button_press_event(IN_THREAD, event);
-
+	generic_windowObj::handlerObj::do_button_event(IN_THREAD, event, be,
+						       me);
 }
 
 void popupObj::handlerObj::set_inherited_visibility(IN_THREAD_ONLY,
 						    inherited_visibility_info
 						    &visibility_info)
 {
-	if (!visibility_info.flag)
-		closing_popup(IN_THREAD);
+
+	if (visibility_info.flag)
+		popup_opened(IN_THREAD);
 
 	generic_windowObj::handlerObj::set_inherited_visibility
 		(IN_THREAD, visibility_info);
 
-	if (visibility_info.flag)
-		popup_opened(IN_THREAD);
+	if (!visibility_info.flag)
+		closing_popup(IN_THREAD);
 }
 
 void popupObj::handlerObj::popup_opened(IN_THREAD_ONLY)
 {
-	current_grab=grab_pointer(IN_THREAD, elementimplptr());
+	auto p=popup_parent(IN_THREAD).getptr();
 
-	if (current_grab)
-		current_grab->allow_events();
+	if (p)
+	{
+		current_grab=p->grab_pointer(IN_THREAD, elementimplptr());
+
+		if (current_grab)
+		{
+			current_grab->grabbing_popup(IN_THREAD)=
+				ref<generic_windowObj::handlerObj>(this);
+			current_grab->allow_events();
+		}
+	}
+	else
+	{
+		LOG_ERROR("Popup parent does not exist");
+	}
 }
 
 void popupObj::handlerObj::closing_popup(IN_THREAD_ONLY)
 {
-	current_grab=NULL;
 	ungrab(IN_THREAD);
+	current_grab=NULL;
 }
+
+
+bool popupObj::handlerObj::keep_passive_grab(IN_THREAD_ONLY)
+{
+	auto p=popup_parent(IN_THREAD).getptr();
+
+	if (p)
+		return p->keep_passive_grab(IN_THREAD);
+
+	return generic_windowObj::handlerObj::keep_passive_grab(IN_THREAD);
+}
+
+void popupObj::handlerObj::ungrab(IN_THREAD_ONLY)
+{
+	auto p=popup_parent(IN_THREAD).getptr();
+
+	if (p)
+	{
+		p->ungrab(IN_THREAD);
+		return;
+	}
+
+	generic_windowObj::handlerObj::ungrab(IN_THREAD);
+}
+
+bool popupObj::handlerObj
+::process_key_event(IN_THREAD_ONLY, const key_event &ke)
+{
+	if (generic_windowObj::handlerObj::process_key_event(IN_THREAD, ke))
+		return true;
+
+	if (ke.keypress && ke.notspecial() && ke.unicode == '\e')
+	{
+		request_visibility(IN_THREAD, false);
+		return true;
+	}
+	return false;
+}
+
+void popupObj::handlerObj
+::inherited_visibility_updated(IN_THREAD_ONLY,
+			       inherited_visibility_info &info)
+{
+	generic_windowObj::handlerObj::inherited_visibility_updated(IN_THREAD,
+								    info);
+
+	if (info.flag)
+		set_default_focus(IN_THREAD);
+}
+
 
 LIBCXXW_NAMESPACE_END

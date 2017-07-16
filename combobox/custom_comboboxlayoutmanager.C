@@ -226,8 +226,7 @@ focusable_container new_custom_comboboxlayoutmanager
 			 popup_handler);
 
 	// And the layout manager.
-	auto lm=ref<custom_comboboxlayoutmanagerObj::implObj>
-		::create(combobox_container_impl, *this);
+	auto lm=create_impl({combobox_container_impl, *this});
 
 	auto glm=lm->create_gridlayoutmanager();
 
@@ -318,19 +317,26 @@ focusable_container new_custom_comboboxlayoutmanager
 					  (const auto &e,
 					   const auto &combobox_popup) {
 
-						 selection_changed(lock, llm,
-								   i, flag,
-								   e,
-								   combobox_popup,
-								   mcguffin);
+						 selection_changed
+						 ({
+							 lock, llm,
+								 i, flag,
+								 e,
+								 combobox_popup,
+								 mcguffin});
 					 });
 				 };
-
-			 popup_handler->parent_element_window(IN_THREAD)=
-				 parent_handler;
 		 });
 
 	return c;
+}
+
+ref<custom_comboboxlayoutmanagerObj::implObj
+    > new_custom_comboboxlayoutmanager::create_impl(const create_impl_info &i)
+	const
+{
+	return ref<custom_comboboxlayoutmanagerObj::implObj>
+		::create(i.container_impl, i.style);
 }
 
 LIBCXXW_NAMESPACE_END

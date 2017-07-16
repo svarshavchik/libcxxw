@@ -7,7 +7,6 @@
 
 #include "popup/popup_handler.H"
 #include "popup/popup_attachedto_handler.H"
-#include "popup/popup_autofocusfwd.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -16,11 +15,11 @@ LIBCXXW_NAMESPACE_START
 //! \see custom_combobox_popup
 
 class LIBCXX_HIDDEN custom_combobox_popupObj
-	: public popup_autofocusObj<popup_attachedto_handlerObj> {
+	: public popup_attachedto_handlerObj {
 
 	//! The superclass
 
-	typedef popup_autofocusObj<popup_attachedto_handlerObj> superclass_t;
+	typedef popup_attachedto_handlerObj superclass_t;
 public:
 
 	//! Constructor

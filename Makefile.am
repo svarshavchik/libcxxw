@@ -453,8 +453,6 @@ libcxxw_la_SOURCES=\
 	popup/popup_attachedto_info.H		    \
 	popup/popup_attachedto_infofwd.H	    \
 	popup/popup_attachedto_infoobj.H	    \
-	popup/popup_autofocus.H			    \
-	popup/popup_autofocusfwd.H		    \
 	radio_group.C				    \
 	radio_group.H				    \
 	radio_group_impl.C			    \

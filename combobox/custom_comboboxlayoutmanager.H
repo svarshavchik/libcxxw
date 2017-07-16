@@ -11,6 +11,15 @@
 
 LIBCXXW_NAMESPACE_START
 
+
+//! Arguments to custom_comboboxlayoutmanagerObj::implObj's constructor
+
+struct LIBCXX_HIDDEN new_custom_comboboxlayoutmanager::create_impl_info {
+
+	const ref<custom_combobox_containerObj::implObj> &container_impl;
+	const new_custom_comboboxlayoutmanager &style;
+};
+
 //! The custom combobox layout manager.
 
 //! The container uses the grid layout manager to position the
