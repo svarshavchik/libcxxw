@@ -67,6 +67,19 @@ void window_handlerObj::disconnected(IN_THREAD_ONLY)
 {
 }
 
+bool window_handlerObj::keep_passive_grab(IN_THREAD_ONLY)
+{
+	if (grabbed_timestamp(IN_THREAD) != XCB_CURRENT_TIME &&
+	    !grab_locked(IN_THREAD))
+	{
+		grab_locked(IN_THREAD)=true;
+		xcb_allow_events(IN_THREAD->info->conn,
+				 XCB_ALLOW_ASYNC_BOTH,
+				 grabbed_timestamp(IN_THREAD));
+		return true;
+	}
+	return false;
+}
 
 void window_handlerObj::ungrab(IN_THREAD_ONLY)
 {

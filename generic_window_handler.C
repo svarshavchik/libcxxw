@@ -571,15 +571,8 @@ void generic_windowObj::handlerObj::grab(IN_THREAD_ONLY,
 					 const ref<elementObj::implObj> &e)
 {
 	set_element_with_pointer(IN_THREAD, e);
-	if (most_recent_element_with_pointer(IN_THREAD) &&
-	    grabbed_timestamp(IN_THREAD) != XCB_CURRENT_TIME &&
-	    !grab_locked(IN_THREAD))
-	{
-		grab_locked(IN_THREAD)=true;
-		xcb_allow_events(IN_THREAD->info->conn,
-				 XCB_ALLOW_ASYNC_BOTH,
-				 grabbed_timestamp(IN_THREAD));
-	}
+	if (most_recent_element_with_pointer(IN_THREAD))
+		keep_passive_grab(IN_THREAD);
 }
 
 void generic_windowObj::handlerObj::grab(IN_THREAD_ONLY)

@@ -97,9 +97,17 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 
 	virtual void disconnected(IN_THREAD_ONLY);
 
+	//! Logically retain the passive grab.
+
+	//! This can only be called when there's a passive grab (i.e.
+	//! button or key press event). This sets grab_locked(), then
+	//! allowsevents.
+
+	virtual bool keep_passive_grab(IN_THREAD_ONLY);
+
 	//! Unlock the current grab, and release it.
 
-	void ungrab(IN_THREAD_ONLY);
+	virtual void ungrab(IN_THREAD_ONLY);
 
 	//! Release this handler's grabs, if there are any.
 
