@@ -315,7 +315,7 @@ rectangle elementObj::implObj::get_absolute_location_on_screen(IN_THREAD_ONLY)
 {
 	auto r=get_absolute_location(IN_THREAD);
 
-	get_window_handler().get_absolute_location_on_screen(r);
+	get_window_handler().get_absolute_location_on_screen(IN_THREAD, r);
 
 	return r;
 }

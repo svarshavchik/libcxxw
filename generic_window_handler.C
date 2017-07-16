@@ -204,26 +204,10 @@ rectangle generic_windowObj::handlerObj
 }
 
 void generic_windowObj::handlerObj
-::get_absolute_location_on_screen(rectangle &r)
+::get_absolute_location_on_screen(IN_THREAD_ONLY, rectangle &r)
 {
-	returned_pointer<xcb_generic_error_t *> error;
-
-	auto c=conn()->conn;
-
-	auto value=return_pointer(xcb_translate_coordinates_reply
-				  (c, xcb_translate_coordinates
-				   (c, id(), screenref->impl->xcb_screen->root,
-				    (coord_t::value_type)r.x,
-				    (coord_t::value_type)r.y),
-				   error.addressof()));
-
-	if (error)
-		throw EXCEPTION(connection_error(error));
-
-	r.x=value->dst_x;
-	r.y=value->dst_y;
-	// same_screen=value->same_screen;
-	// child_window=value->child;
+	r.x=coord_t::truncate(r.x + root_x(IN_THREAD));
+	r.y=coord_t::truncate(r.y + root_y(IN_THREAD));
 }
 
 void generic_windowObj::handlerObj
@@ -606,6 +590,25 @@ void generic_windowObj::handlerObj::grab(IN_THREAD_ONLY)
 void generic_windowObj::handlerObj::configure_notify(IN_THREAD_ONLY,
 						     const rectangle &r)
 {
+	returned_pointer<xcb_generic_error_t *> error;
+
+	auto c=conn()->conn;
+
+	auto value=return_pointer(xcb_translate_coordinates_reply
+				  (c, xcb_translate_coordinates
+				   (c, id(), screenref->impl->xcb_screen->root,
+				    0, 0),
+				   error.addressof()));
+
+	if (error)
+		throw EXCEPTION(connection_error(error));
+
+	root_x(IN_THREAD)=value->dst_x;
+	root_y(IN_THREAD)=value->dst_y;
+
+	// same_screen=value->same_screen;
+	// child_window=value->child;
+
 	{
 		mpobj<rectangle>::lock lock(current_position);
 

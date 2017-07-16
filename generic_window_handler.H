@@ -58,7 +58,13 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! Current event mask.
 	xcb_event_mask_t current_events_thread_only;
 
+	coord_t root_x_thread_only; //!< x coordinate on the root window
+	coord_t root_y_thread_only; //!< y coordinate on the root window
+
  public:
+	THREAD_DATA_ONLY(root_x);
+	THREAD_DATA_ONLY(root_y);
+
 	//! Current position and dimensions
 
 	//! This is a mutex-protected object. ConfigureNotify event saves
@@ -206,7 +212,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	rectangle get_absolute_location(IN_THREAD_ONLY) override;
 
 	//! Translate coordinates to screen coordinates.
-	void get_absolute_location_on_screen(rectangle &r);
+	void get_absolute_location_on_screen(IN_THREAD_ONLY, rectangle &r);
 
 	//! Remove our own background color.
 
