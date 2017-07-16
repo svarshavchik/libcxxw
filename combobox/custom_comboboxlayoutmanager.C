@@ -157,10 +157,19 @@ focusable_container new_custom_comboboxlayoutmanager
 			 parent->get_element_impl().nesting_level+3);
 
 	popup_handler->set_window_type("combo,popup_menu,dropdown_menu");
-	popup_handler->elementObj::implObj
-		::set_background_color("combobox_background_color");
 
 	new_listlayoutmanager style;
+
+	style.background_color="combobox_background_color";
+	style.selected_color="combobox_selected_color";
+	style.highlighted_color="combobox_highlighted_color";
+	style.current_color="combobox_current_color";
+
+	// We are not using new_listlayoutmanager::create(), we need to
+	// set the handler's background color ourselves.
+
+	popup_handler->elementObj::implObj
+		::set_background_color(style.background_color);
 
 	custom_combobox_popup_containerptr popup_containerptr;
 	ptr<custom_combobox_popup_layoutmanagerObj> popup_listlayoutmanagerptr;
@@ -216,9 +225,6 @@ focusable_container new_custom_comboboxlayoutmanager
 		::create(parent, popup_container,
 			 popup_handler);
 
-	combobox_container_impl->elementObj::implObj
-		::set_background_color("combobox_background_color");
-
 	// And the layout manager.
 	auto lm=ref<custom_comboboxlayoutmanagerObj::implObj>
 		::create(combobox_container_impl, *this);
@@ -229,10 +235,6 @@ focusable_container new_custom_comboboxlayoutmanager
 	// with the current selection element, and the button element.
 	auto f=glm->append_row();
 
-	f->padding(0);
-	f->border("combobox_border");
-	f->valign(valign::middle);
-
 	// Invoke the callback to construct the current selection element,
 	// which is automatically show()n.
 
@@ -242,6 +244,9 @@ focusable_container new_custom_comboboxlayoutmanager
 	selection_factory(capture_current_selection);
 
 	auto current_selection=capture_current_selection->get();
+
+	current_selection->impl
+		->set_background_color("combobox_background_color");
 
 	current_selection->show_all();
 
@@ -264,6 +269,9 @@ focusable_container new_custom_comboboxlayoutmanager
 
 	auto &ff=std::get<0>(ret);
 	auto &combobox_button=std::get<1>(ret);
+
+	ff->elementObj::impl
+		->set_background_color("combobox_background_color");
 
 	f->created_internally(ff);
 

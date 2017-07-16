@@ -315,6 +315,13 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
   <!-- Combo-boxes -->
 
   <border id="combobox_border" from="thin_0%" />
+
   <color id="combobox_background_color" scale="90%" />
+
+  <color id="combobox_selected_color" scale="80%" />
+
+  <color id="combobox_highlighted_color" scale="100%" />
+
+  <color id="combobox_current_color" scale="70%" />
 
 </theme>
