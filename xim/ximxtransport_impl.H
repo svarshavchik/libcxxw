@@ -48,10 +48,10 @@ class LIBCXX_HIDDEN ximxtransportObj::implObj
 	typedef mpcobj<connection_state_s> connection_state_t;
 
 	//! Current protocol version
-	uint32_t major_thread_only=0;
+	uint32_t proto_major_thread_only=0;
 
 	//! Current protocol version
-	uint32_t minor_thread_only=0;
+	uint32_t proto_minor_thread_only=0;
 
 	//! Current protocol version
 	uint32_t dividing_size_thread_only=0;
@@ -59,8 +59,8 @@ class LIBCXX_HIDDEN ximxtransportObj::implObj
 	// Buffer where the message being received is assembled.
 	std::vector<uint8_t> buffer;
  public:
-	THREAD_DATA_ONLY(major);
-	THREAD_DATA_ONLY(minor);
+	THREAD_DATA_ONLY(proto_major);
+	THREAD_DATA_ONLY(proto_minor);
 	THREAD_DATA_ONLY(dividing_size);
 
 	//! Current connection state

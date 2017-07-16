@@ -217,12 +217,12 @@ void ximxtransportObj::implObj
 	    event->format == 32)
 	{
 		owner(IN_THREAD)=event->data.data32[0];
-		major(IN_THREAD)=event->data.data32[1];
-		minor(IN_THREAD)=event->data.data32[2];
+		proto_major(IN_THREAD)=event->data.data32[1];
+		proto_minor(IN_THREAD)=event->data.data32[2];
 		dividing_size(IN_THREAD)=event->data.data32[3];
 
 		LOG_DEBUG("XCONNECT received: protocol "
-			  << major(IN_THREAD) << "." << minor(IN_THREAD)
+			  << proto_major(IN_THREAD) << "." << proto_minor(IN_THREAD)
 			  << ", maximum message length="
 			  << dividing_size(IN_THREAD));
 
@@ -378,7 +378,7 @@ void ximxtransportObj::implObj
 
 	auto conn=IN_THREAD->info->conn;
 
-	if (major(IN_THREAD) != 1 && n <= dividing_size(IN_THREAD))
+	if (proto_major(IN_THREAD) != 1 && n <= dividing_size(IN_THREAD))
 	{
 		LOG_TRACE("send: sending XCB_CLIENT_MESSAGE(_XIM_PROTOCOL)");
 		xcb_client_message_event_t message{};
@@ -398,7 +398,7 @@ void ximxtransportObj::implObj
 	// We can send the message via a property in any protocol except
 	// major 0, minor 1.
 
-	if (major(IN_THREAD) > 0 || minor(IN_THREAD) != 1)
+	if (proto_major(IN_THREAD) > 0 || proto_minor(IN_THREAD) != 1)
 	{
 		LOG_TRACE("send: setting _clientXXX property");
 		xcb_change_property(conn, XCB_PROP_MODE_APPEND,
@@ -412,7 +412,7 @@ void ximxtransportObj::implObj
 
 		// How we notify the server, that depends on the protocol.
 
-		if (major(IN_THREAD) > 0)
+		if (proto_major(IN_THREAD) > 0)
 		{
 			LOG_TRACE("send: notifying via PROPERTY_NOTIFY");
 			// Via PropertyNotify message.
