@@ -51,12 +51,8 @@ void listlayoutmanagerObj::implObj::pointer_focus(IN_THREAD_ONLY,
 
 	grid_map_t::lock lock{grid_map};
 
-	auto rc=lookup_row_col(lock, e);
+	auto [r, c]=lookup_row_col(lock, e);
 
-	// TODO: structured bindings
-
-	size_t r=std::get<0>(rc);
-	size_t c=std::get<1>(rc);
 
 	if (r == (size_t)-1)
 		return;
@@ -241,11 +237,9 @@ void listlayoutmanagerObj::implObj::refresh(IN_THREAD_ONLY,
 					    grid_map_t::lock &lock,
 					    const element &e)
 {
-	auto rc=lookup_row_col(lock, e->impl);
+	size_t r;
 
-	// TODO: structured bindings
-
-	size_t r=std::get<0>(rc);
+	std::tie(r, std::ignore)=lookup_row_col(lock, e->impl);
 
 	if (r == (size_t)-1)
 		return;
@@ -325,12 +319,11 @@ void listlayoutmanagerObj::implObj::selected(const listlayoutmanager &me,
 			 {
 				 list_lock lock{me};
 
-				 auto rc=me->impl->lookup_row_col(lock,
+				 size_t r;
+
+				 std::tie(r, std::ignore)=
+					 me->impl->lookup_row_col(lock,
 								  c->impl);
-
-				 // TODO: structured bindings
-
-				 size_t r=std::get<0>(rc);
 
 				 if (r == (size_t)-1)
 					 return;
@@ -405,12 +398,10 @@ void listlayoutmanagerObj::implObj
 			 {
 				 list_lock lock{my_public_object};
 
-				 auto rc=my_public_object->impl
+				 size_t r;
+
+				 std::tie(r, std::ignore)=my_public_object->impl
 					 ->lookup_row_col(lock, c->impl);
-
-				 // TODO: structured bindings
-
-				 size_t r=std::get<0>(rc);
 
 				 if (r == (size_t)-1)
 					 return;

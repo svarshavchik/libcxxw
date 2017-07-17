@@ -244,10 +244,10 @@ richtextiteratorObj::insert(IN_THREAD_ONLY,
 
 std::pair<richtextiterator, size_t>
 richtextiteratorObj::insert(IN_THREAD_ONLY,
-			    const std::experimental::u32string_view &new_string)
+			    const std::u32string_view &new_string)
 {
 	return insert(IN_THREAD,
-		      internal_insert_impl<std::experimental::u32string_view>
+		      internal_insert_impl<std::u32string_view>
 		      {new_string});
 }
 

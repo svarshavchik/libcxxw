@@ -10,7 +10,7 @@
 #include "defaultthemefwd.H"
 #include "x/w/screen.H"
 #include <string>
-#include <experimental/string_view>
+#include <string_view>
 
 LIBCXXW_NAMESPACE_START
 

@@ -26,7 +26,7 @@ class LIBCXX_INTERNAL connection_infoObj::connection_handle {
 	~connection_handle()=default;
 };
 
-connection_infoObj::connection_infoObj(const std::experimental::string_view &display)
+connection_infoObj::connection_infoObj(const std::string_view &display)
 	: connection_infoObj(connection_handle(std::string(display.begin(),
 							   display.end())))
 {

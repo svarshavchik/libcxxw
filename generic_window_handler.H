@@ -22,7 +22,7 @@
 #include "focus/focusablefwd.H"
 #include "fonts/current_fontcollectionfwd.H"
 #include "x/w/fontfwd.H"
-#include <experimental/string_view>
+#include <string_view>
 #include <courier-unicode.h>
 #include <list>
 #include <x/weakptr.H>
@@ -477,7 +477,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	dim_t get_height() const override;
 
 	//! Set window title
-	void set_window_title(const std::experimental::string_view &s);
+	void set_window_title(const std::string_view &s);
 
 	//! Create a non-theme font for a display element in this window.
 
@@ -493,7 +493,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 	//! Create a theme font for a display element in this window.
 
-	current_fontcollection create_theme_font(const std::experimental::string_view &font);
+	current_fontcollection create_theme_font(const std::string_view &font);
 
  private:
 	///////////////////////////////////////////////////////////////////
@@ -600,7 +600,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! This is also called to commit an string from the XIM server.
 
 	void pasted_string(IN_THREAD_ONLY,
-			   const std::experimental::u32string_view &)
+			   const std::u32string_view &)
 		override;
 
 	// Retrieve WM_HINTS, invoke functor to update it.

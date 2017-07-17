@@ -167,7 +167,7 @@ class LIBCXX_HIDDEN sxg_iconObj : public iconObj {
 
 	const icon_scale scale;
 	//! Constructor
-	sxg_iconObj(const std::experimental::string_view &name,
+	sxg_iconObj(const std::string_view &name,
 		    dim_type width,
 		    dim_type height,
 		    icon_scale scale,
@@ -228,8 +228,7 @@ static auto get_cached_sxg_image(const sxg_parser &sxg,
 				 dim_t h,
 				 dim_t preadjust_w,
 				 dim_t preadjust_h,
-				 bool has_background_color,
-				 rgb color)
+				 const std::optional<rgb> &background_color)
 {
 	// preadjust_[wh] is the original requested size of the rendered
 	// sxg image.
@@ -251,6 +250,7 @@ static auto get_cached_sxg_image(const sxg_parser &sxg,
 	if (preadjust_h < h)
 		preadjust_h=h;
 
+	bool has_background_color=background_color.has_value();
 	if ( !( (preadjust_w > w || preadjust_h > h) && has_background_color))
 	{
 		has_background_color=false;
@@ -290,7 +290,7 @@ static auto get_cached_sxg_image(const sxg_parser &sxg,
 				 picture->fill_rectangle({0, 0,
 							 preadjust_w,
 							 preadjust_h},
-					 color);
+					 background_color.value());
 
 				 coord_t offset_x=coord_t::truncate
 					 ((preadjust_w-w)/2);
@@ -317,7 +317,7 @@ static auto get_cached_sxg_image(const sxg_parser &sxg,
 		 });
 }
 
-static icon create_sxg_image(const std::experimental::string_view &name,
+static icon create_sxg_image(const std::string_view &name,
 			     drawableObj::implObj *drawable_impl,
 			     const sxg_parser &sxg,
 			     render_repeat repeat,
@@ -345,7 +345,7 @@ static icon create_sxg_image(const std::experimental::string_view &name,
 	}
 
 	auto image=get_cached_sxg_image(sxg, drawable_impl, repeat, w, h,
-					w, h, false, {});
+					w, h, std::optional<rgb>());
 
 	return ref<sxg_iconObj<double>>::create(name,
 						widthmm,
@@ -354,7 +354,7 @@ static icon create_sxg_image(const std::experimental::string_view &name,
 						sxg, image);
 }
 
-static icon create_sxg_image(const std::experimental::string_view &name,
+static icon create_sxg_image(const std::string_view &name,
 			     drawableObj::implObj
 			     *drawable_impl,
 			     const sxg_parser &sxg,
@@ -362,14 +362,11 @@ static icon create_sxg_image(const std::experimental::string_view &name,
 			     dim_t w, dim_t h,
 			     icon_scale scale)
 {
-	auto has_background_color=sxg->background_color
+	auto background_color=sxg->background_color
 		(*current_theme_t::lock{drawable_impl->get_screen()->impl
 				->current_theme});
-	// TODO: strucutured bindings (or variant)
-	bool has_color=std::get<0>(has_background_color);
-	rgb color=std::get<1>(has_background_color);
 
-	if (has_color)
+	if (background_color)
 		scale=icon_scale::nomore; // We can scale.
 
 	dim_t orig_w=w, orig_h=h;
@@ -394,7 +391,7 @@ static icon create_sxg_image(const std::experimental::string_view &name,
 	}
 
 	auto image=get_cached_sxg_image(sxg, drawable_impl, repeat, w, h,
-					orig_w, orig_h, has_color, color);
+					orig_w, orig_h, background_color);
 
 	return ref<sxg_iconObj<dim_t>>::create(name,
 					       w,
@@ -404,7 +401,7 @@ static icon create_sxg_image(const std::experimental::string_view &name,
 }
 
 static icon
-create_sxg_icon_from_filename_mm(const std::experimental
+create_sxg_icon_from_filename_mm(const std
 				 ::string_view &name,
 				 const std::string &filename,
 				 drawableObj::implObj *for_drawable,
@@ -427,7 +424,7 @@ create_sxg_icon_from_filename_mm(const std::experimental
 }
 
 static icon
-create_sxg_icon_from_filename(const std::experimental::string_view &name,
+create_sxg_icon_from_filename(const std::string_view &name,
 			      const std::string &filename,
 			      drawableObj::implObj *for_drawable,
 			      const screen &screenref,
@@ -451,7 +448,7 @@ create_sxg_icon_from_filename(const std::experimental::string_view &name,
 static const struct {
 	const char *extension;
 
-	icon (*create_mm)(const std::experimental::string_view &name,
+	icon (*create_mm)(const std::string_view &name,
 			  const std::string &filename,
 			  drawableObj::implObj *for_drawable,
 			  const screen &screenref,
@@ -460,7 +457,7 @@ static const struct {
 			  double widthmm,
 			  double heightmm);
 
-	icon (*create)(const std::experimental::string_view &name,
+	icon (*create)(const std::string_view &name,
 		       const std::string &filename,
 		       drawableObj::implObj *for_drawable,
 		       const screen &screenref,
@@ -509,7 +506,7 @@ static bool search_file(std::string &filename,
 }
 
 std::vector<icon> drawableObj::implObj
-::create_icon_vector(const std::vector<std::experimental::string_view> &images)
+::create_icon_vector(const std::vector<std::string_view> &images)
 {
 	std::vector<icon> icons;
 
@@ -523,7 +520,7 @@ std::vector<icon> drawableObj::implObj
 }
 
 icon drawableObj::implObj
-::create_icon_mm(const std::experimental::string_view &name,
+::create_icon_mm(const std::string_view &name,
 		 render_repeat icon_repeat,
 		 double widthmm,
 		 double heightmm)
@@ -580,7 +577,7 @@ icon drawableObj::implObj
 }
 
 icon drawableObj::implObj
-::create_icon(const std::experimental::string_view &name,
+::create_icon(const std::string_view &name,
 	      render_repeat icon_repeat,
 	      dim_t w, dim_t h, icon_scale scale)
 {

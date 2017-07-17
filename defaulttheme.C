@@ -980,14 +980,13 @@ void defaultthemeObj::load_borders(const xml::doc &config,
 
 /////////////////////////////////////////////////////////////////////////////
 
-dim_t defaultthemeObj::get_theme_width_dim_t(const std::experimental::string_view &id)
+dim_t defaultthemeObj::get_theme_width_dim_t(const std::string_view &id)
 {
-	// TODO: gcc 6.3.1, string_view support is incomplete.
-	auto iter=dims.find(std::string(id.begin(), id.end()));
+	auto iter=dims.find(std::string(id));
 
 	if (iter == dims.end())
 	{
-		std::istringstream i(std::string(id.begin(), id.end())); // TODO?
+		std::istringstream i{std::string(id)};
 		double v;
 
 		i >> v;
@@ -1001,14 +1000,13 @@ dim_t defaultthemeObj::get_theme_width_dim_t(const std::experimental::string_vie
 	return iter->second;
 }
 
-dim_t defaultthemeObj::get_theme_height_dim_t(const std::experimental::string_view &id)
+dim_t defaultthemeObj::get_theme_height_dim_t(const std::string_view &id)
 {
-	// TODO: gcc 6.3.1, string_view support is incomplete.
-	auto iter=dims.find(std::string(id.begin(), id.end()));
+	auto iter=dims.find(std::string(id));
 
 	if (iter == dims.end())
 	{
-		std::istringstream i(std::string(id.begin(), id.end())); // TODO?
+		std::istringstream i{std::string(id)};
 		double v;
 
 		i >> v;
@@ -1071,7 +1069,7 @@ dim_t defaultthemeObj::compute_height(double millimeters)
 	return dim_t::value_type(scaled);
 }
 
-rgb defaultthemeObj::get_theme_color(const std::experimental::string_view &id)
+rgb defaultthemeObj::get_theme_color(const std::string_view &id)
 {
 	std::vector<std::string> ids;
 
@@ -1091,7 +1089,7 @@ rgb defaultthemeObj::get_theme_color(const std::experimental::string_view &id)
 }
 
 rgb::gradient_t
-defaultthemeObj::get_theme_color_gradient(const std::experimental::string_view &id)
+defaultthemeObj::get_theme_color_gradient(const std::string_view &id)
 {
 	std::vector<std::string> ids;
 
@@ -1112,10 +1110,9 @@ defaultthemeObj::get_theme_color_gradient(const std::experimental::string_view &
 
 
 const_border_impl
-defaultthemeObj::get_theme_border(const std::experimental::string_view &id)
+defaultthemeObj::get_theme_border(const std::string_view &id)
 {
-	// TODO: gcc 6.3.1, string_view support is incomplete.
-	auto iter=borders.find(std::string(id.begin(), id.end()));
+	auto iter=borders.find(std::string(id));
 
 	if (iter != borders.end())
 		return iter->second;
@@ -1232,7 +1229,7 @@ void defaultthemeObj::do_load_fonts(const xml::doc::base::readlock &lock,
 			static const struct {
 				const char *name;
 				font &(font::*handler1)(const std::string &);
-				font &(font::*handler2)(const std::experimental::string_view &);
+				font &(font::*handler2)(const std::string_view &);
 			} string_values[]={
 				{ "family", &font::set_family, nullptr},
 				{ "foundry", &font::set_foundry, nullptr},

@@ -8,17 +8,17 @@
 #include <x/w/namespace.H>
 #include <string>
 #include <utility>
-#include <experimental/string_view>
+#include <string_view>
 #include <type_traits>
 
 LIBCXXW_NAMESPACE_START
 
 struct dimarg {
 
-	const std::experimental::string_view *string_arg;
+	const std::string_view *string_arg;
 	double double_arg;
 
-	inline dimarg(const std::experimental::string_view &string_arg)
+	inline dimarg(const std::string_view &string_arg)
 		: string_arg(&string_arg)
 	{
 	}

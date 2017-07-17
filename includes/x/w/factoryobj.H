@@ -29,7 +29,7 @@
 #include <x/obj.H>
 #include <x/functional.H>
 
-#include <experimental/string_view>
+#include <string_view>
 
 LIBCXXW_NAMESPACE_START
 
@@ -231,7 +231,7 @@ public:
 			   const input_field_config &config);
 
 	//! Create an image
-	image create_image_mm(const std::experimental::string_view &name,
+	image create_image_mm(const std::string_view &name,
 			      double widthmm=0,
 			      double heightmm=0,
 			      render_repeat=render_repeat::none);
@@ -240,14 +240,14 @@ public:
 	image_button create_checkbox();
 
 	//! Create a checkbox, with custom images.
-	image_button create_checkbox(const std::vector<std::experimental::string_view> &images);
+	image_button create_checkbox(const std::vector<std::string_view> &images);
 
 	//! Create a radio button
 	image_button create_radio(const radio_group &group);
 
 	//! Create a radio button, with custom images.
 	image_button create_radio(const radio_group &group,
-				  const std::vector<std::experimental::string_view> &images);
+				  const std::vector<std::string_view> &images);
 
 	//! Create a focusable container.
 

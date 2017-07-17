@@ -17,7 +17,7 @@
 
 #include <vector>
 #include <unordered_map>
-#include <experimental/string_view>
+#include <string_view>
 
 LIBCXXW_NAMESPACE_START
 
@@ -98,7 +98,7 @@ public:
 
 	//! Set the default border above this row.
 	void default_row_border(size_t row,
-				const std::experimental::string_view &name);
+				const std::string_view &name);
 
 	//! Set the requested row height.
 
@@ -111,7 +111,7 @@ public:
 
 	//! Set the default border to the left of this column
 	void default_col_border(size_t col,
-				const std::experimental::string_view &name);
+				const std::string_view &name);
 
 	//! Set the requested column width.
 

@@ -7,7 +7,7 @@
 #define x_w_font_H
 
 #include <string>
-#include <experimental/string_view>
+#include <string_view>
 #include <x/w/fontfwd.H>
 
 LIBCXXW_NAMESPACE_START
@@ -102,7 +102,7 @@ struct font {
 	}
 
 	//! Specifies weight as a character string
-	font &set_weight(const std::experimental::string_view &value);
+	font &set_weight(const std::string_view &value);
 
 	//////////////////////////////////////////////////////////////////////
 
@@ -123,7 +123,7 @@ struct font {
 	}
 
 	//! Specify slant as a character string
-	font &set_slant(const std::experimental::string_view &value);
+	font &set_slant(const std::string_view &value);
 
 	//////////////////////////////////////////////////////////////////////
 
@@ -146,7 +146,7 @@ struct font {
 	}
 
 	//! Specify width as a character string
-	font &set_width(const std::experimental::string_view &value);
+	font &set_width(const std::string_view &value);
 
 	///////////////////////////////////////////////////////////////////////
 
@@ -205,7 +205,7 @@ struct font {
 	}
 
 	//! Specify spacing as a character string
-	font &set_spacing(const std::experimental::string_view &value);
+	font &set_spacing(const std::string_view &value);
 
 	/////////////////////////////////////////////////////////////////////
 

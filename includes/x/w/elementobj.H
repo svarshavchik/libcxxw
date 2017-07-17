@@ -18,7 +18,7 @@
 #include <x/w/focus.H>
 #include <x/obj.H>
 
-#include <experimental/string_view>
+#include <string_view>
 #include <functional>
 
 LIBCXXW_NAMESPACE_START
@@ -74,7 +74,7 @@ public:
 
 	//! Use a standard background color for this display element.
 
-	void set_background_color(const std::experimental::string_view &name);
+	void set_background_color(const std::string_view &name);
 
 	//! Use a custom background color for this display element.
 

@@ -18,7 +18,7 @@ imageObj::imageObj(const ref<implObj> &impl)
 imageObj::~imageObj()=default;
 
 
-image factoryObj::create_image_mm(const std::experimental::string_view &name,
+image factoryObj::create_image_mm(const std::string_view &name,
 				  double widthmm,
 				  double heightmm,
 				  render_repeat repeat)

@@ -10,7 +10,7 @@
 #include "defaultthemefwd.H"
 #include "x/w/elementobj.H"
 #include "x/w/types.H"
-#include <experimental/string_view>
+#include <string_view>
 #include <x/obj.H>
 
 LIBCXXW_NAMESPACE_START
@@ -41,7 +41,7 @@ public:
 
 	//! Constructor
 	reference_fontObj(elementObj::implObj &e,
-			  const std::experimental::string_view &fontname);
+			  const std::string_view &fontname);
 
 	//! Constructor
 	reference_fontObj(const current_fontcollection &reference_font);

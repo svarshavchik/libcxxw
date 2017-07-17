@@ -7,7 +7,7 @@
 #define key_eventfwd_H
 
 #include <x/w/busyfwd.H>
-#include <experimental/string_view>
+#include <string_view>
 
 LIBCXXW_NAMESPACE_START
 
@@ -23,7 +23,7 @@ typedef bool key_event_callback_t(const key_event &);
 
 //! The callback returns true if it processed the pasted text.
 
-typedef bool input_text_callback_t(const std::experimental::u32string_view &);
+typedef bool input_text_callback_t(const std::u32string_view &);
 
 LIBCXXW_NAMESPACE_END
 #endif

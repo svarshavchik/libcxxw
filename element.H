@@ -36,7 +36,7 @@
 #include <x/callback_list.H>
 #include <x/logger.H>
 #include <x/functional.H>
-#include <experimental/string_view>
+#include <string_view>
 #include <xcb/xproto.h>
 
 #include <functional>
@@ -160,7 +160,7 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 		//! Default pasted text callback, does nothing.
 
-		static bool no_input_text_callback(const std::experimental
+		static bool no_input_text_callback(const std
 						   ::u32string_view &);
 
 		//! Whether this element is a label for some focusable.
@@ -219,7 +219,7 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! If there's no background color of the given name, use the
 	//! default value.
 
-	void set_background_color(const std::experimental::string_view &name);
+	void set_background_color(const std::string_view &name);
 
 	//! Use a custom background color for this display element.
 
@@ -736,11 +736,11 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! \ref generic_windowObj::handlerObj "window handler's"
 	//! create_theme_font().
 
-	current_fontcollection create_theme_font(const std::experimental::string_view &font);
+	current_fontcollection create_theme_font(const std::string_view &font);
 
 	//! Shortcut for invoking the same screen method
 
-	background_color create_background_color(const std::experimental
+	background_color create_background_color(const std
 						 ::string_view &color_name);
 
 	//! Shortcut for invoking the same screen method
@@ -1040,7 +1040,7 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! The default elementation returns false.
 
 	virtual bool pasted(IN_THREAD_ONLY,
-			    const std::experimental::u32string_view &str);
+			    const std::u32string_view &str);
 
 	//! Creating a focusable element in this container.
 

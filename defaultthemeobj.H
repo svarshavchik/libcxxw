@@ -22,7 +22,7 @@
 #include <string>
 #include <unordered_map>
 #include <xcb/xproto.h>
-#include <experimental/string_view>
+#include <string_view>
 
 LIBCXXW_NAMESPACE_START
 
@@ -128,14 +128,14 @@ public:
 	//! The given dimension is specified in the theme. The dimension
 	//! name may also be a numerical value, given as a literal string,
 	//! which is interpreted as millimeters.
-	dim_t get_theme_width_dim_t(const std::experimental::string_view &id);
+	dim_t get_theme_width_dim_t(const std::string_view &id);
 
 	//! Retrieve theme dimension
 
 	//! The given dimension is specified in the theme. The dimension
 	//! name may also be a numerical value, given as a literal string,
 	//! which is interpreted as millimeters.
-	dim_t get_theme_height_dim_t(const std::experimental::string_view &id);
+	dim_t get_theme_height_dim_t(const std::string_view &id);
 
 	//! Compute # of pixels from millimeters, for width
 
@@ -146,13 +146,13 @@ public:
 	dim_t compute_height(double millimeters);
 
 	//! Retrieve theme color
-	rgb get_theme_color(const std::experimental::string_view &id);
+	rgb get_theme_color(const std::string_view &id);
 
 	//! Retrieve theme gradient
-	rgb::gradient_t get_theme_color_gradient(const std::experimental::string_view &id);
+	rgb::gradient_t get_theme_color_gradient(const std::string_view &id);
 
 	//! Retrieve a theme border.
-	const_border_impl get_theme_border(const std::experimental::string_view
+	const_border_impl get_theme_border(const std::string_view
 					   &id);
 
 	//! Retrieve a theme font.

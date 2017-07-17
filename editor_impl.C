@@ -534,7 +534,7 @@ bool editorObj::implObj::uses_input_method()
 }
 
 bool editorObj::implObj::pasted(IN_THREAD_ONLY,
-				const std::experimental::u32string_view &str)
+				const std::u32string_view &str)
 {
 	insert(IN_THREAD, str);
 	scroll_cursor_into_view(IN_THREAD);
@@ -542,7 +542,7 @@ bool editorObj::implObj::pasted(IN_THREAD_ONLY,
 }
 
 void editorObj::implObj::insert(IN_THREAD_ONLY,
-				const std::experimental::u32string_view &str)
+				const std::u32string_view &str)
 {
 	unblink(IN_THREAD);
 

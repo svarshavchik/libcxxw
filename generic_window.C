@@ -42,12 +42,12 @@ void generic_windowObj::on_disconnect(const std::function<void ()> &callback)
 	get_screen()->get_connection()->on_disconnect(callback);
 }
 
-void generic_windowObj::set_window_title(const std::experimental::string_view &s)
+void generic_windowObj::set_window_title(const std::string_view &s)
 {
 	impl->handler->set_window_title(s);
 }
 
-void generic_windowObj::set_window_title(const std::experimental::u32string_view &s)
+void generic_windowObj::set_window_title(const std::u32string_view &s)
 {
 	std::string out_buf;
 	bool ignore;

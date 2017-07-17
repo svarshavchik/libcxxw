@@ -38,7 +38,7 @@ Stylesheet for transforming the XML in gridlayoutapi.xml
     <xsl:value-of select="type" />
     <xsl:text> </xsl:text>
     <xsl:value-of select="name" />
-    <xsl:text>_from_string(const std::experimental::string_view &amp;str)&#10;{&#10;    size_t n=sizeof(</xsl:text>
+    <xsl:text>_from_string(const std::string_view &amp;str)&#10;{&#10;    size_t n=sizeof(</xsl:text>
     <xsl:value-of select="name" />
     <xsl:text>_lookup_table)/sizeof(</xsl:text>
     <xsl:value-of select="name" />

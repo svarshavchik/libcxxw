@@ -21,19 +21,19 @@ shortcut::shortcut(char32_t unicode) : unicode(unicode), keysym(0)
 
 shortcut::operator bool() const { return unicode != 0 || keysym != 0; }
 
-shortcut::shortcut(const std::experimental::string_view &modifier,
+shortcut::shortcut(const std::string_view &modifier,
 		   char32_t unicode)
 	: input_mask(modifier), unicode(unicode), keysym(0)
 {
 }
 
-shortcut::shortcut(const std::experimental::string_view &string)
+shortcut::shortcut(const std::string_view &string)
 	: shortcut(string.rfind('-'), string)
 {
 }
 
 shortcut::shortcut(size_t dash_pos,
-		   const std::experimental::string_view &string)
+		   const std::string_view &string)
 	: input_mask(string.substr(0, dash_pos))
 {
 	if (dash_pos < string.size() && ++dash_pos < string.size())

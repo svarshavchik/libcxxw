@@ -143,7 +143,7 @@ void gridlayoutmanagerObj::default_row_border(size_t row,
 }
 
 void gridlayoutmanagerObj::default_row_border(size_t row,
-					      const std::experimental
+					      const std
 					      ::string_view &n)
 {
 	auto border_impl=impl->get_theme_border(n);
@@ -180,7 +180,7 @@ void gridlayoutmanagerObj::default_col_border(size_t col,
 }
 
 void gridlayoutmanagerObj::default_col_border(size_t col,
-					      const std::experimental
+					      const std
 					      ::string_view &n)
 {
 	auto border_impl=impl->get_theme_border(n);

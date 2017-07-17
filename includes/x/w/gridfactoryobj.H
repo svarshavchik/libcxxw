@@ -14,7 +14,7 @@
 #include <x/w/alignment.H>
 #include <x/w/dimarg.H>
 #include <x/mpobj.H>
-#include <experimental/string_view>
+#include <string_view>
 
 LIBCXXW_NAMESPACE_START
 
@@ -87,19 +87,19 @@ class gridfactoryObj : public factoryObj {
 	gridfactoryObj &bottom_border(const border_infomm &info);
 
 	//! Set new element's border, first.
-	gridfactoryObj &border(const std::experimental::string_view &id);
+	gridfactoryObj &border(const std::string_view &id);
 
 	//! Set new element's border, first.
-	gridfactoryObj &left_border(const std::experimental::string_view &id);
+	gridfactoryObj &left_border(const std::string_view &id);
 
 	//! Set new element's border, first.
-	gridfactoryObj &right_border(const std::experimental::string_view &id);
+	gridfactoryObj &right_border(const std::string_view &id);
 
 	//! Set new element's border, first.
-	gridfactoryObj &top_border(const std::experimental::string_view &id);
+	gridfactoryObj &top_border(const std::string_view &id);
 
 	//! Set new element's border, first.
-	gridfactoryObj &bottom_border(const std::experimental::string_view &id);
+	gridfactoryObj &bottom_border(const std::string_view &id);
 
 	//! Set new element's padding, first.
 

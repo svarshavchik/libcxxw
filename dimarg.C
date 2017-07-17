@@ -11,9 +11,7 @@ LIBCXXW_NAMESPACE_START
 dimarg::operator std::string() const
 {
 	if (string_arg)
-		return {string_arg->begin(), string_arg->end()};
-
-	// TODO: gcc 6.3.1 incomplete string_view support?
+		return std::string{*string_arg};
 
 	std::ostringstream o;
 

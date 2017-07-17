@@ -9,7 +9,7 @@
 #include <x/mpobj.H>
 #include "x/w/types.H"
 
-#include <experimental/string_view>
+#include <string_view>
 
 LIBCXXW_NAMESPACE_START
 
@@ -40,7 +40,7 @@ typedef mpobj<defaulttheme> current_theme_t;
 //! Retrieve a width or a height theme dimension.
 
 typedef dim_t (defaultthemeObj::*theme_width_or_height)
-	(const std::experimental::string_view &);
+	(const std::string_view &);
 
 LIBCXXW_NAMESPACE_END
 

@@ -29,6 +29,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <string>
+#include <optional>
 
 LIBCXXW_NAMESPACE_START;
 
@@ -120,7 +121,7 @@ class LIBCXX_HIDDEN sxg_parserObj : virtual public obj {
 
 	//! Whether this SXG image defines a background color.
 
-	std::tuple<bool, rgb> background_color(const defaulttheme &theme) const;
+	std::optional<rgb> background_color(const defaulttheme &theme) const;
 
  private:
 

@@ -119,7 +119,7 @@ new_listlayoutmanager::create(const ref<containerObj::implObj>
 
 	listcontainerptr internal_listcontainer;
 
-	auto ret=create_peepholed_focusable_with_frame
+	auto [peephole_info, lm]=create_peepholed_focusable_with_frame
 		("list_border",
 		 "inputfocusoff_border",
 		 "inputfocuson_border",
@@ -146,10 +146,6 @@ new_listlayoutmanager::create(const ref<containerObj::implObj>
 		 },
 		 scrollbar_visibility::never,
 		 vertical_scrollbar);
-
-	// TODO: structured bindings
-	auto &peephole_info=std::get<0>(ret);
-	auto &lm=std::get<1>(ret);
 
 	return ref<listObj>::create(internal_listcontainer, peephole_info,
 				    lm->impl);

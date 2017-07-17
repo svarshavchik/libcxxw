@@ -57,7 +57,7 @@ public:
 	//! The first parameter is a string that specifies a modifier.
 	//! see \ref input_mask "input_mask"'s constructor.
 
-	shortcut(const std::experimental::string_view &modifier,
+	shortcut(const std::string_view &modifier,
 		 char32_t unicode);
 
 	//! Specify a shortcut comprising of a function key.
@@ -68,12 +68,12 @@ public:
 	//! The specified string may also have a "modifier-" prefix, example:
 	//! "shift-F1".
 
-	shortcut(const std::experimental::string_view &string);
+	shortcut(const std::string_view &string);
 
 	//! Internal constructor
 
 	shortcut(size_t p,
-		 const std::experimental::string_view &string);
+		 const std::string_view &string);
 
 	//! Whether a key event matches this shortcut.
 	bool matches(const key_event &ke) const;

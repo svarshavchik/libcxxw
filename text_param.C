@@ -32,7 +32,7 @@ theme_color operator"" _color(const char *s, size_t l)
 
 text_decoration operator""_decoration(const char *s, size_t l)
 {
-	std::experimental::string_view n{s, l};
+	std::string_view n{s, l};
 
 	if (n == "underline")
 		return text_decoration::underline;
@@ -46,7 +46,7 @@ text_param::~text_param()=default;
 text_param::text_param(const text_param &)=default;
 text_param &text_param::operator=(const text_param &)=default;
 
-text_param &text_param::operator()(const std::experimental::string_view &s)
+text_param &text_param::operator()(const std::string_view &s)
 {
 	std::u32string out_buf;
 
@@ -57,7 +57,7 @@ text_param &text_param::operator()(const std::experimental::string_view &s)
 	return *this;
 }
 
-text_param &text_param::operator()(const std::experimental::u32string_view &s)
+text_param &text_param::operator()(const std::u32string_view &s)
 {
 	string.append(s.begin(), s.end());
 	return *this;

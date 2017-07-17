@@ -267,14 +267,14 @@ class LIBCXX_HIDDEN editorObj::implObj
 	//! Calls insert(), then scroll_cursor_into_view().
 
 	bool pasted(IN_THREAD_ONLY,
-		    const std::experimental::u32string_view &str) override;
+		    const std::u32string_view &str) override;
 
  private:
 
 	//! Insert text at current position.
 
 	void insert(IN_THREAD_ONLY,
-		    const std::experimental::u32string_view &str);
+		    const std::u32string_view &str);
 
 	//! Move cursor to the beginning of the text.
 	void to_begin(IN_THREAD_ONLY, const input_mask &mask);

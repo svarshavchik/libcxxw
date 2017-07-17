@@ -14,7 +14,7 @@
 #include "xid_t.H"
 
 #include <xcb/xproto.h>
-#include <experimental/string_view>
+#include <string_view>
 
 LIBCXXW_NAMESPACE_START
 
@@ -102,7 +102,7 @@ class LIBCXX_HIDDEN drawableObj::implObj : virtual public obj {
 	//! This drawable is used only to obtain the icon's pictformat, and
 	//! create_pixmap().
 
-	icon create_icon_mm(const std::experimental::string_view &name,
+	icon create_icon_mm(const std::string_view &name,
 			    render_repeat icon_repeat,
 			    double widthmm,
 			    double heightmm);
@@ -113,7 +113,7 @@ class LIBCXX_HIDDEN drawableObj::implObj : virtual public obj {
 	//! This drawable is used only to obtain the icon's pictformat, and
 	//! create_pixmap().
 
-	icon create_icon(const std::experimental::string_view &name,
+	icon create_icon(const std::string_view &name,
 			 render_repeat icon_repeat,
 			 dim_t w, dim_t h, icon_scale scale);
 
@@ -121,7 +121,7 @@ class LIBCXX_HIDDEN drawableObj::implObj : virtual public obj {
 
 	std::vector<icon>
 		create_icon_vector(const std::vector
-				   <std::experimental::string_view>
+				   <std::string_view>
 				   &images);
 };
 

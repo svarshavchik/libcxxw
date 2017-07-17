@@ -7,7 +7,7 @@
 
 #include "window_handler.H"
 #include <vector>
-#include <experimental/string_view>
+#include <string_view>
 #include <xcb/xproto.h>
 
 LIBCXXW_NAMESPACE_START

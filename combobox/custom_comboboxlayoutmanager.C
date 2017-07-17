@@ -261,13 +261,9 @@ focusable_container new_custom_comboboxlayoutmanager
 	f->halign(halign::fill);
 	f->valign(valign::fill);
 
-	auto ret=create_combobox_button(f->container_impl,
-					popup_handler);
-
-	// TODO: structured bindings
-
-	auto &ff=std::get<0>(ret);
-	auto &combobox_button=std::get<1>(ret);
+	const auto &[ff, combobox_button]=
+		create_combobox_button(f->container_impl,
+				       popup_handler);
 
 	ff->elementObj::impl
 		->set_background_color("combobox_background_color");

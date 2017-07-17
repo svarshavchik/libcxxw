@@ -48,7 +48,7 @@ bool elementObj::implObj::data_thread_only_t
 }
 
 bool elementObj::implObj::data_thread_only_t
-::no_input_text_callback(const std::experimental
+::no_input_text_callback(const std
 			 ::u32string_view &)
 {
 	return false;
@@ -690,7 +690,7 @@ void elementObj::implObj::remove_background_color()
 }
 
 void elementObj::implObj
-::set_background_color(const std::experimental::string_view &name)
+::set_background_color(const std::string_view &name)
 {
 	set_background_color(get_screen()->impl
 			     ->create_background_color(name));
@@ -770,13 +770,13 @@ current_fontcollection elementObj::implObj::create_font(const font &props)
 }
 
 current_fontcollection elementObj::implObj
-::create_theme_font(const std::experimental::string_view &font)
+::create_theme_font(const std::string_view &font)
 {
 	return get_window_handler().create_theme_font(font);
 }
 
 background_color elementObj::implObj
-::create_background_color(const std::experimental::string_view &color_name)
+::create_background_color(const std::string_view &color_name)
 {
 	return get_screen()->impl->create_background_color(color_name);
 }
@@ -1009,7 +1009,7 @@ void elementObj::implObj
 }
 
 bool elementObj::implObj::pasted(IN_THREAD_ONLY,
-				 const std::experimental::u32string_view &str)
+				 const std::u32string_view &str)
 {
 	return data(IN_THREAD).on_input_text_callback(str);
 }

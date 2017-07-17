@@ -143,7 +143,7 @@ class LIBCXX_HIDDEN theme_background_colorObj : public background_colorObj {
 };
 
 background_color screenObj::implObj
-::create_background_color(const std::experimental::string_view &color_name)
+::create_background_color(const std::string_view &color_name)
 {
 	std::string color_name_str{color_name};
 

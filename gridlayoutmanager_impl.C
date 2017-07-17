@@ -206,7 +206,7 @@ current_border_impl gridlayoutmanagerObj::implObj
 }
 
 current_border_impl gridlayoutmanagerObj::implObj
-::get_theme_border(const std::experimental::string_view &id)
+::get_theme_border(const std::string_view &id)
 {
 	return container_impl->get_window_handler().screenref
 		->impl->get_theme_border(id);

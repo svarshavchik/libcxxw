@@ -326,10 +326,10 @@ public:
 	}
 
 	//! Add more text.
-	text_param &operator()(const std::experimental::string_view &s);
+	text_param &operator()(const std::string_view &s);
 
 	//! Add more text.
-	text_param &operator()(const std::experimental::u32string_view &s);
+	text_param &operator()(const std::u32string_view &s);
 
 	//! Helper class to avoid ambiguous resolution failures.
 

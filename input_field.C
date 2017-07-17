@@ -69,7 +69,7 @@ factoryObj::create_input_field(const text_param &text,
 
 	editorptr created_editor;
 
-	auto elements=create_peepholed_focusable_with_frame
+	auto [peephole_info, lm]=create_peepholed_focusable_with_frame
 		("textedit_border",
 		 "inputfocusoff_border",
 		 "inputfocuson_border",
@@ -100,10 +100,6 @@ factoryObj::create_input_field(const text_param &text,
 		 scrollbar_visibility::never,
 		 config.vertical_scrollbar);
 
-	// TODO: structured bindings
-	auto &peephole_info=std::get<0>(elements);
-	auto &lm=std::get<1>(elements);
-
 	auto impl=ref<input_fieldObj::implObj>
 		::create(impl_mixin,
 			 created_editor);
@@ -127,13 +123,13 @@ std::string input_fieldObj::get() const
 						 unicode::utf_8).first;
 }
 
-void input_fieldObj::set(const std::experimental::string_view &str)
+void input_fieldObj::set(const std::string_view &str)
 {
 	set(unicode::iconvert::tou::convert(std::string{str},
 					    unicode::utf_8).first);
 }
 
-void input_fieldObj::set(const std::experimental::u32string_view &str)
+void input_fieldObj::set(const std::u32string_view &str)
 {
 	auto editor_impl=impl->editor_element->impl;
 

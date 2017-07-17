@@ -73,7 +73,7 @@ WEIGHTS
 
 struct LIBCXX_HIDDEN CHARMAP { const char *n; const int *ptr; };
 
-static int lookup(const struct CHARMAP *cm, const std::experimental::string_view &s)
+static int lookup(const struct CHARMAP *cm, const std::string_view &s)
 {
 	while (cm->n)
 	{
@@ -103,7 +103,7 @@ static const struct CHARMAP weights_str[] = {
 
 #undef DO
 
-font &font::set_weight(const std::experimental::string_view &value)
+font &font::set_weight(const std::string_view &value)
 {
 	LOOKUP(weights_str, value, set_weight);
 }
@@ -129,7 +129,7 @@ static const struct CHARMAP slants_str[] = {
 
 #undef DO
 
-font &font::set_slant(const std::experimental::string_view &value)
+font &font::set_slant(const std::string_view &value)
 {
 	LOOKUP(slants_str, value, set_slant);
 }
@@ -155,7 +155,7 @@ static const struct CHARMAP widths_str[] = {
 
 #undef DO
 
-font &font::set_width(const std::experimental::string_view &value)
+font &font::set_width(const std::string_view &value)
 {
 	LOOKUP(widths_str, value, set_width);
 }
@@ -177,7 +177,7 @@ static const struct CHARMAP spacings_str[] = {
 
 #undef DO
 
-font &font::set_spacing(const std::experimental::string_view &value)
+font &font::set_spacing(const std::string_view &value)
 {
 	LOOKUP(spacings_str, value, set_spacing);
 }

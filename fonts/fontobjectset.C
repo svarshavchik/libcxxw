@@ -24,7 +24,7 @@ objectsetObj::~objectsetObj()
 {
 }
 
-void objectsetObj::add(const std::experimental::string_view &s)
+void objectsetObj::add(const std::string_view &s)
 {
 	char buffer[s.size()+1];
 

@@ -10,7 +10,7 @@
 #include <x/w/pictformatfwd.H>
 #include <x/obj.H>
 #include <vector>
-#include <experimental/string_view>
+#include <string_view>
 
 #include <functional>
 
@@ -30,8 +30,8 @@ class connectionObj : virtual public obj {
 	const ref<implObj> impl;
 
 	//! Constructor
-	connectionObj(const std::experimental::string_view &display=
-		      std::experimental::string_view());
+	connectionObj(const std::string_view &display=
+		      std::string_view());
 
 	//! Destructor
 	~connectionObj() LIBCXX_HIDDEN;

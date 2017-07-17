@@ -25,7 +25,7 @@ std::string picture::base::render_pict_op_to_string(render_pict_op v)
 }
 
 render_pict_op
-picture::base::render_pict_op_from_string(const std::experimental::string_view &s)
+picture::base::render_pict_op_from_string(const std::string_view &s)
 {
 	return pic_render_pict_op_from_string(s);
 }
@@ -36,7 +36,7 @@ std::string picture::base::render_repeat_tostring(render_repeat v)
 }
 
 render_repeat picture::base
-::render_repeat_from_string(const std::experimental::string_view &s)
+::render_repeat_from_string(const std::string_view &s)
 {
 	return pic_render_repeat_from_string(s);
 }

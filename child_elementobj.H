@@ -251,7 +251,7 @@ class LIBCXX_HIDDEN child_elementObj : public elementObj::implObj {
 	//! Forwarded to the container, if not handled by the element.
 
 	bool pasted(IN_THREAD_ONLY,
-		    const std::experimental::u32string_view &str) override;
+		    const std::u32string_view &str) override;
 
 	//! Override creating_focusable_element().
 

@@ -37,66 +37,66 @@ std::string patternObj::unparse() const
 	return impl->unparse();
 }
 
-void patternObj::add_integer(const std::experimental::string_view &object, int val, bool append)
+void patternObj::add_integer(const std::string_view &object, int val, bool append)
 {
 	impl->add_integer(object, val, append);
 }
 
-void patternObj::add_double(const std::experimental::string_view &object, double val, bool append)
+void patternObj::add_double(const std::string_view &object, double val, bool append)
 {
 	impl->add_double(object, val, append);
 }
 
-void patternObj::add_bool(const std::experimental::string_view &object, bool val, bool append)
+void patternObj::add_bool(const std::string_view &object, bool val, bool append)
 {
 	impl->add_bool(object, val, append);
 }
 
-void patternObj::add_string(const std::experimental::string_view &object,
-			    const std::experimental::string_view &val,
+void patternObj::add_string(const std::string_view &object,
+			    const std::string_view &val,
 			    bool append)
 {
 	impl->add_string(object, val, append);
 }
 
-void patternObj::add_charset(const std::experimental::string_view &object,
+void patternObj::add_charset(const std::string_view &object,
 			     const const_charset &val, bool append)
 {
 	impl->add_charset(object, val, append);
 }
 
 
-bool patternObj::get_integer(const std::experimental::string_view &object, int &value,
+bool patternObj::get_integer(const std::string_view &object, int &value,
 			     size_t index) const
 {
 	return impl->get_integer(object, value, index);
 }
 
-bool patternObj::get_double(const std::experimental::string_view &object, double &value,
+bool patternObj::get_double(const std::string_view &object, double &value,
 			    size_t index) const
 {
 	return impl->get_double(object, value, index);
 }
 
-bool patternObj::get_bool(const std::experimental::string_view &object, bool &value,
+bool patternObj::get_bool(const std::string_view &object, bool &value,
 			  size_t index) const
 {
 	return impl->get_bool(object, value, index);
 }
 
-bool patternObj::get_string(const std::experimental::string_view &object, std::string &value,
+bool patternObj::get_string(const std::string_view &object, std::string &value,
 			    size_t index) const
 {
 	return impl->get_string(object, value, index);
 }
 
-bool patternObj::get_charset(const std::experimental::string_view &object,
+bool patternObj::get_charset(const std::string_view &object,
 			     const_charsetptr &value, size_t index) const
 {
 	return impl->get_charset(object, value, index);
 }
 
-bool patternObj::del(const std::experimental::string_view &object)
+bool patternObj::del(const std::string_view &object)
 {
 	return impl->del(object);
 }

@@ -95,7 +95,7 @@ class LIBCXX_HIDDEN connectionObj::implObj : virtual public obj {
 
 	//! Constructor, connect to the given display.
 
-	implObj(const std::experimental::string_view &display);
+	implObj(const std::string_view &display);
 
 	// A cache of individual fonts currently in use
 	mpobj<font_cache_t> font_cache;

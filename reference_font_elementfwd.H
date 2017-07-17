@@ -40,7 +40,7 @@ class reference_font_elementObj : public element_impl,
 public:
 
 	template<typename ...Args>
-	reference_font_elementObj(const std::experimental::string_view
+	reference_font_elementObj(const std::string_view
 				  &fontname,
 				  Args && ...args);
 

@@ -3182,22 +3182,18 @@ dim_t sxg_parserObj::width_for_height(dim_t height, icon_scale scale) const
 		 scale);
 }
 
-std::tuple<bool, rgb> sxg_parserObj::background_color(const defaulttheme &theme)
+std::optional <rgb> sxg_parserObj::background_color(const defaulttheme &theme)
 	const
 {
-	bool flag=false;
-	rgb color;
-
 	auto iter=pictures.find("background");
 
 	if (iter != pictures.end() &&
 	    iter->second.type == picture_type_t::solid_color)
 	{
-		flag=true;
-		color=iter->second.color.get_color(theme);
+		return iter->second.color.get_color(theme);
 	}
 
-	return {flag, color};
+	return {};
 }
 
 LIBCXXW_NAMESPACE_END

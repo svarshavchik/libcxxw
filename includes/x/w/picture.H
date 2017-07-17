@@ -9,7 +9,7 @@
 #include <x/w/pictureobj.H>
 #include <x/ref.H>
 
-#include <experimental/string_view>
+#include <string_view>
 
 LIBCXXW_NAMESPACE_START
 
@@ -45,7 +45,7 @@ public:
 
 	//! Convert operation value from string
 
-	static render_pict_op render_pict_op_from_string(const std::experimental::string_view &);
+	static render_pict_op render_pict_op_from_string(const std::string_view &);
 
 	//! Convert repeat value to string
 
@@ -53,7 +53,7 @@ public:
 
 	//! Convert repeat value from string
 
-	static render_repeat render_repeat_from_string(const std::experimental::string_view &);
+	static render_repeat render_repeat_from_string(const std::string_view &);
 
 };
 

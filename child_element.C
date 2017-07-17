@@ -285,7 +285,7 @@ void child_elementObj::ensure_visibility(IN_THREAD_ONLY, const rectangle &r)
 }
 
 bool child_elementObj::pasted(IN_THREAD_ONLY,
-			      const std::experimental::u32string_view &str)
+			      const std::u32string_view &str)
 {
 	return elementObj::implObj::pasted(IN_THREAD, str) ||
 		container->get_element_impl().pasted(IN_THREAD, str);

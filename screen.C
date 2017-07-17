@@ -226,7 +226,7 @@ screen::base::visual_t screenObj::implObj
 //
 // Theme access
 
-dim_t screenObj::implObj::get_theme_width_dim_t(const std::experimental
+dim_t screenObj::implObj::get_theme_width_dim_t(const std
 						::string_view &id)
 {
 	current_theme_t::lock lock(current_theme);
@@ -234,7 +234,7 @@ dim_t screenObj::implObj::get_theme_width_dim_t(const std::experimental
 	return (*lock)->get_theme_width_dim_t(id);
 }
 
-dim_t screenObj::implObj::get_theme_height_dim_t(const std::experimental
+dim_t screenObj::implObj::get_theme_height_dim_t(const std
 						 ::string_view &id)
 {
 	current_theme_t::lock lock(current_theme);
@@ -242,7 +242,7 @@ dim_t screenObj::implObj::get_theme_height_dim_t(const std::experimental
 	return (*lock)->get_theme_height_dim_t(id);
 }
 
-rgb screenObj::implObj::get_theme_color(const std::experimental::string_view &id)
+rgb screenObj::implObj::get_theme_color(const std::string_view &id)
 {
 	current_theme_t::lock lock(current_theme);
 
@@ -250,7 +250,7 @@ rgb screenObj::implObj::get_theme_color(const std::experimental::string_view &id
 }
 
 rgb::gradient_t screenObj::implObj
-::get_theme_color_gradient(const std::experimental::string_view &id)
+::get_theme_color_gradient(const std::string_view &id)
 {
 	current_theme_t::lock lock(current_theme);
 

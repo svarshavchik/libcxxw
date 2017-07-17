@@ -20,7 +20,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-connectionObj::connectionObj(const std::experimental::string_view &display)
+connectionObj::connectionObj(const std::string_view &display)
 	: impl(ref<implObj>::create(display))
 {
 }
@@ -58,7 +58,7 @@ const_pictformat connectionObj::find_alpha_pictformat_by_depth(depth_t d) const
 
 // The first step is to create the connection info handle.
 
-connectionObj::implObj::implObj(const std::experimental::string_view &display)
+connectionObj::implObj::implObj(const std::string_view &display)
 	: implObj(connection_info::create(display))
 {
 }

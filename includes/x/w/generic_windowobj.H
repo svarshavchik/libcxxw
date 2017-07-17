@@ -13,7 +13,7 @@
 #include <x/obj.H>
 #include <x/logger.H>
 
-#include <experimental/string_view>
+#include <string_view>
 
 LIBCXXW_NAMESPACE_START
 
@@ -45,10 +45,10 @@ public:
 	using drawableObj::get_screen;
 
 	//! Set the window's title
-	void set_window_title(const std::experimental::string_view &);
+	void set_window_title(const std::string_view &);
 
 	//! Set the window's title
-	void set_window_title(const std::experimental::u32string_view &);
+	void set_window_title(const std::u32string_view &);
 
 	//! Invoke this lambda if the server disconnects unexpectedly.
 

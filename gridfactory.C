@@ -74,7 +74,7 @@ gridfactoryObj &gridfactoryObj::bottom_border(const border_infomm &info)
 	return *this;
 }
 
-gridfactoryObj &gridfactoryObj::border(const std::experimental::string_view &id)
+gridfactoryObj &gridfactoryObj::border(const std::string_view &id)
 {
 	auto border_impl=gridlayout->get_theme_border(id);
 	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
@@ -84,7 +84,7 @@ gridfactoryObj &gridfactoryObj::border(const std::experimental::string_view &id)
 	return *this;
 }
 
-gridfactoryObj &gridfactoryObj::left_border(const std::experimental::string_view &id)
+gridfactoryObj &gridfactoryObj::left_border(const std::string_view &id)
 {
 	auto border_impl=gridlayout->get_theme_border(id);
 	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
@@ -93,7 +93,7 @@ gridfactoryObj &gridfactoryObj::left_border(const std::experimental::string_view
 	return *this;
 }
 
-gridfactoryObj &gridfactoryObj::right_border(const std::experimental::string_view &id)
+gridfactoryObj &gridfactoryObj::right_border(const std::string_view &id)
 {
 	auto border_impl=gridlayout->get_theme_border(id);
 	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
@@ -102,7 +102,7 @@ gridfactoryObj &gridfactoryObj::right_border(const std::experimental::string_vie
 	return *this;
 }
 
-gridfactoryObj &gridfactoryObj::top_border(const std::experimental::string_view &id)
+gridfactoryObj &gridfactoryObj::top_border(const std::string_view &id)
 {
 	auto border_impl=gridlayout->get_theme_border(id);
 	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
@@ -111,7 +111,7 @@ gridfactoryObj &gridfactoryObj::top_border(const std::experimental::string_view 
 	return *this;
 }
 
-gridfactoryObj &gridfactoryObj::bottom_border(const std::experimental::string_view &id)
+gridfactoryObj &gridfactoryObj::bottom_border(const std::string_view &id)
 {
 	auto border_impl=gridlayout->get_theme_border(id);
 	implObj::new_grid_element_t::lock lock(impl->new_grid_element);

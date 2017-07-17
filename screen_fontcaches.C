@@ -126,10 +126,9 @@ class LIBCXX_HIDDEN current_themefontcollectionObj
 };
 
 current_fontcollection generic_windowObj::handlerObj
-::create_theme_font(const std::experimental::string_view &font_name_sv)
+::create_theme_font(const std::string_view &font_name_sv)
 {
-	// TODO: gcc 6.3.1, string_view support is incomplete.
-	std::string font_name{font_name_sv.begin(), font_name_sv.end()};
+	std::string font_name{font_name_sv};
 
 	auto s=get_screen();
 	auto depth=font_alpha_depth();

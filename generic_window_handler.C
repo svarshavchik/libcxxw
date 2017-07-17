@@ -1160,7 +1160,7 @@ dim_t generic_windowObj::handlerObj::get_height() const
 }
 
 void generic_windowObj::handlerObj
-::set_window_title(const std::experimental::string_view &s)
+::set_window_title(const std::string_view &s)
 {
 	IN_THREAD->run_as
 		([title=std::string{s},
@@ -1278,7 +1278,7 @@ int generic_windowObj::handlerObj::converted(const char32_t *ptr, size_t cnt)
 }
 
 void generic_windowObj::handlerObj
-::pasted_string(IN_THREAD_ONLY, const std::experimental::u32string_view &s)
+::pasted_string(IN_THREAD_ONLY, const std::u32string_view &s)
 {
 	if (most_recent_keyboard_focus(IN_THREAD))
 		most_recent_keyboard_focus(IN_THREAD)->get_focusable_element()

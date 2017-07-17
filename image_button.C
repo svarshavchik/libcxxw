@@ -102,7 +102,7 @@ image_button_factory_t(const ref<containerObj::implObj> &,
 		       const std::vector<icon> &);
 
 static image_button
-do_create_image_button(const std::vector<std::experimental::string_view>
+do_create_image_button(const std::vector<std::string_view>
 		       &images,
 		       const function<image_button_factory_t> &img_impl_factory,
 		       factoryObj &f)
@@ -177,7 +177,7 @@ do_create_image_button(const std::vector<std::experimental::string_view>
 
 template<typename functor>
 static inline image_button
-create_image_button(const std::vector<std::experimental::string_view>
+create_image_button(const std::vector<std::string_view>
 		    &images,
 		    functor &&creator,
 		    factoryObj &f)
@@ -196,7 +196,7 @@ image_button factoryObj::create_checkbox()
 // Call create_image_button, using create_checkbox_impl() to create the
 // internal image button.
 
-image_button factoryObj::create_checkbox(const std::vector<std::experimental
+image_button factoryObj::create_checkbox(const std::vector<std
 					 ::string_view> &images)
 {
 	return create_image_button(images, create_checkbox_impl, *this);
@@ -211,7 +211,7 @@ image_button factoryObj::create_radio(const radio_group &group)
 // internal image button.
 
 image_button factoryObj::create_radio(const radio_group &group,
-				      const std::vector<std::experimental::string_view> &images)
+				      const std::vector<std::string_view> &images)
 {
 	return create_image_button(images,
 				   [&]

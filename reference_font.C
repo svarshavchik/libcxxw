@@ -14,7 +14,7 @@
 LIBCXXW_NAMESPACE_START
 
 reference_fontObj::reference_fontObj(elementObj::implObj &e,
-				     const std::experimental::string_view
+				     const std::string_view
 				     &fontname)
 	: reference_fontObj(e.get_window_handler().create_theme_font(fontname))
 {

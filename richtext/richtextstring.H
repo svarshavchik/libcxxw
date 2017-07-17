@@ -14,7 +14,7 @@
 #include <courier-unicode.h>
 #include <unordered_map>
 #include <x/functional.H>
-#include <experimental/string_view>
+#include <string_view>
 
 LIBCXXW_NAMESPACE_START
 
@@ -123,7 +123,7 @@ class LIBCXX_HIDDEN richtextstring {
 	//! Specifies the insert point, and another string.
 
 	void insert(size_t pos,
-		    const std::experimental::u32string_view &s);
+		    const std::u32string_view &s);
 
 	//! Insert another string into richtextstring
 
@@ -137,7 +137,7 @@ class LIBCXX_HIDDEN richtextstring {
 
 	//! Must call modified() also.
 	void do_insert(size_t pos,
-		       const std::experimental::u32string_view &s,
+		       const std::u32string_view &s,
 		       meta_t &new_meta);
  public:
 	//! Remove portions of this string.

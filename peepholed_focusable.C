@@ -117,13 +117,8 @@ create_peepholed_focusable_with_frame_impl
 	// Now that the focusframe implementation object exists we can
 	// create the peepholed focusable element.
 
-	auto ret=make_peepholed(focusframecontainer_impl);
-
-	// TODO: structured bindings
-	auto &impl=std::get<0>(ret);
-	auto &editor=std::get<1>(ret);
-	auto &focusable_element=std::get<2>(ret);
-	auto &focusable_element_impl=std::get<3>(ret);
+	auto [impl, editor, focusable_element,
+	      focusable_element_impl]=make_peepholed(focusframecontainer_impl);
 
 	// We can now create our layout manager, and give it the created
 	// editor.

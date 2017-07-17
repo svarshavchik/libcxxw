@@ -125,7 +125,7 @@ input_mask::operator std::string() const
 	return o.str();
 }
 
-input_mask::input_mask(const std::experimental::string_view &o)
+input_mask::input_mask(const std::string_view &o)
 {
 	std::list<std::string> words;
 

@@ -206,20 +206,20 @@ class LIBCXX_HIDDEN screenObj::implObj
 	// Lock the current theme, and obtain the theme-specific data.
 
 	//! Retrieve theme dimension
-	dim_t get_theme_width_dim_t(const std::experimental::string_view &id);
+	dim_t get_theme_width_dim_t(const std::string_view &id);
 
 	//! Retrieve theme dimension
-	dim_t get_theme_height_dim_t(const std::experimental::string_view &id);
+	dim_t get_theme_height_dim_t(const std::string_view &id);
 
 	//! Retrieve theme color
-	rgb get_theme_color(const std::experimental::string_view &id);
+	rgb get_theme_color(const std::string_view &id);
 
 	//! Retrieve theme gradient
-	rgb::gradient_t get_theme_color_gradient(const std::experimental::string_view &id);
+	rgb::gradient_t get_theme_color_gradient(const std::string_view &id);
 	//! Find or create a theme border
 
 	current_border_impl
-		get_theme_border(const std::experimental::string_view &id);
+		get_theme_border(const std::string_view &id);
 
 
 	//////////////////////////////////////////////////////////////////////
@@ -238,7 +238,7 @@ class LIBCXX_HIDDEN screenObj::implObj
 	//!
 	//! The returned object holds a reference to this screen object.
 
-	background_color create_background_color(const std::experimental
+	background_color create_background_color(const std
 						 ::string_view &color_name);
 
 	//! Return a non-theme background_color object.

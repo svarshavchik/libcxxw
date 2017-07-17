@@ -11,7 +11,7 @@
 #include <x/w/gcobj.H>
 #include <x/w/namespace.H>
 
-#include <experimental/string_view>
+#include <string_view>
 
 LIBCXXW_NAMESPACE_START
 
@@ -62,31 +62,31 @@ public:
 	static std::string function_to_string(function);
 
 	//! Convert a mode value from a string
-	static function function_from_string(const std::experimental::string_view &s);
+	static function function_from_string(const std::string_view &s);
 
 	//! Convert a line_style value to a string
 	static std::string line_style_to_string(line_style);
 
 	//! Convert a line_style value from a string
-	static line_style line_style_from_string(const std::experimental::string_view &s);
+	static line_style line_style_from_string(const std::string_view &s);
 
 	//! Convert a fill_arc_mode value to a string
 	static std::string fill_arc_mode_to_string(fill_arc_mode);
 
 	//! Convert a fill_arc_mode value from a string
-	static fill_arc_mode fill_arc_mode_from_string(const std::experimental::string_view &s);
+	static fill_arc_mode fill_arc_mode_from_string(const std::string_view &s);
 
 	//! Convert a cap_style value to a string
 	static std::string cap_style_to_string(cap_style);
 
 	//! Convert a cap_style value from a string
-	static cap_style cap_style_from_string(const std::experimental::string_view &s);
+	static cap_style cap_style_from_string(const std::string_view &s);
 
 	//! Convert a join_style value to a string
 	static std::string join_style_to_string(join_style);
 
 	//! Convert a join_style value from a string
-	static join_style join_style_from_string(const std::experimental::string_view &s);
+	static join_style join_style_from_string(const std::string_view &s);
 
 	//! Convenience typedef
 

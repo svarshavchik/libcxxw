@@ -8,7 +8,7 @@
 #include <string>
 #include <x/w/namespace.H>
 
-#include <experimental/string_view>
+#include <string_view>
 
 LIBCXXW_NAMESPACE_START
 
@@ -84,7 +84,7 @@ public:
 		   //! separating multiple words can be a comma, whitespace,
 		   //! "+", or "-" characters.
 
-		   const std::experimental::string_view &s);
+		   const std::string_view &s);
 
 	//! If this input mask has a modifier set, so must the other one.
 

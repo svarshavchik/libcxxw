@@ -9,7 +9,7 @@
 #include <x/ref.H>
 #include <x/obj.H>
 
-#include <experimental/string_view>
+#include <string_view>
 #include "fonts/fontcharsetfwd.H"
 #include "fonts/fontpatternfwd.H"
 #include "fonts/fontsortedlistfwd.H"
@@ -46,41 +46,41 @@ public:
 	std::string unparse() const;
 
 	//! Add a value to a pattern.
-	void add_integer(const std::experimental::string_view &object, int val, bool append=false);
+	void add_integer(const std::string_view &object, int val, bool append=false);
 	//! Add a value to a pattern.
-	void add_double(const std::experimental::string_view &object, double val, bool append=false);
+	void add_double(const std::string_view &object, double val, bool append=false);
 	//! Add a value to a pattern.
-	void add_bool(const std::experimental::string_view &object, bool val, bool append=false);
+	void add_bool(const std::string_view &object, bool val, bool append=false);
 	//! Add a value to a pattern.
-	void add_string(const std::experimental::string_view &object, const std::experimental::string_view &val,
+	void add_string(const std::string_view &object, const std::string_view &val,
 			bool append=false);
 	//! Add a value to a pattern.
-	void add_charset(const std::experimental::string_view &object, const const_charset &val,
+	void add_charset(const std::string_view &object, const const_charset &val,
 			 bool append=false);
 
 	//! Get a value.
-	bool get_integer(const std::experimental::string_view &object, int &value, size_t index=0)
+	bool get_integer(const std::string_view &object, int &value, size_t index=0)
 		const;
 	//! Get a value.
-	bool get_double(const std::experimental::string_view &object, double &value,
+	bool get_double(const std::string_view &object, double &value,
 			size_t index=0)
 		const;
 	//! Get a value.
-	bool get_bool(const std::experimental::string_view &object, bool &value, size_t index=0)
+	bool get_bool(const std::string_view &object, bool &value, size_t index=0)
 		const;
 	//! Get a value.
-	bool get_string(const std::experimental::string_view &object, std::string &value,
+	bool get_string(const std::string_view &object, std::string &value,
 			size_t index=0)
 		const;
 	//! Get a value.
-	bool get_charset(const std::experimental::string_view &object,
+	bool get_charset(const std::string_view &object,
 			 const_charsetptr &value, size_t index=0)
 		const;
 
 	//! Delete property
 
 	//! Bool return value indicates whether it existed.
-	bool del(const std::experimental::string_view &object);
+	bool del(const std::string_view &object);
 
 	//! Substitute default patterns parameters.
 	void substitute_matchpattern();

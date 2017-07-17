@@ -68,7 +68,7 @@ std::string patternObj::implObj::unparse() const
 	return s;
 }
 
-void patternObj::implObj::add_integer(const std::experimental::string_view &object, int val,
+void patternObj::implObj::add_integer(const std::string_view &object, int val,
 				      bool append)
 {
 	char object_name[object.size()+1];
@@ -82,7 +82,7 @@ void patternObj::implObj::add_integer(const std::experimental::string_view &obje
 	FcPatternAddInteger(*lock, object_name, val);
 }
 
-void patternObj::implObj::add_double(const std::experimental::string_view &object, double val,
+void patternObj::implObj::add_double(const std::string_view &object, double val,
 				     bool append)
 {
 	char object_name[object.size()+1];
@@ -96,7 +96,7 @@ void patternObj::implObj::add_double(const std::experimental::string_view &objec
 	FcPatternAddDouble(*lock, object_name, val);
 }
 
-void patternObj::implObj::add_bool(const std::experimental::string_view &object, bool val,
+void patternObj::implObj::add_bool(const std::string_view &object, bool val,
 				   bool append)
 {
 	char object_name[object.size()+1];
@@ -110,8 +110,8 @@ void patternObj::implObj::add_bool(const std::experimental::string_view &object,
 	FcPatternAddBool(*lock, object_name, val ? FcTrue:FcFalse);
 }
 
-void patternObj::implObj::add_string(const std::experimental::string_view &object,
-				     const std::experimental::string_view &val,
+void patternObj::implObj::add_string(const std::string_view &object,
+				     const std::string_view &val,
 				     bool append)
 {
 	char object_name[object.size()+1];
@@ -129,7 +129,7 @@ void patternObj::implObj::add_string(const std::experimental::string_view &objec
 	FcPatternAddString(*lock, object_name, val_buffer);
 }
 
-void patternObj::implObj::add_charset(const std::experimental::string_view &object,
+void patternObj::implObj::add_charset(const std::string_view &object,
 				      const const_charset &val, bool append)
 {
 	char object_name[object.size()+1];
@@ -147,7 +147,7 @@ void patternObj::implObj::add_charset(const std::experimental::string_view &obje
 }
 
 
-bool patternObj::implObj::get_integer(const std::experimental::string_view &object,
+bool patternObj::implObj::get_integer(const std::string_view &object,
 				      int &value,
 				      size_t index) const
 {
@@ -164,7 +164,7 @@ bool patternObj::implObj::get_integer(const std::experimental::string_view &obje
 	return true;
 }
 
-bool patternObj::implObj::get_double(const std::experimental::string_view &object, double &value,
+bool patternObj::implObj::get_double(const std::string_view &object, double &value,
 				     size_t index) const
 {
 	char object_name[object.size()+1];
@@ -180,7 +180,7 @@ bool patternObj::implObj::get_double(const std::experimental::string_view &objec
 	return true;
 }
 
-bool patternObj::implObj::get_bool(const std::experimental::string_view &object, bool &value,
+bool patternObj::implObj::get_bool(const std::string_view &object, bool &value,
 				   size_t index) const
 {
 	char object_name[object.size()+1];
@@ -198,7 +198,7 @@ bool patternObj::implObj::get_bool(const std::experimental::string_view &object,
 	return true;
 }
 
-bool patternObj::implObj::get_string(const std::experimental::string_view &object,
+bool patternObj::implObj::get_string(const std::string_view &object,
 				     std::string &value,
 				     size_t index) const
 {
@@ -236,7 +236,7 @@ class LIBCXX_HIDDEN patternCharsetObj : public charsetObj::implObj {
 	const ref<patternObj::implObj> pattern;
 };
 
-bool patternObj::implObj::get_charset(const std::experimental::string_view &object,
+bool patternObj::implObj::get_charset(const std::string_view &object,
 				      const_charsetptr &value, size_t index)
 {
 	char object_name[object.size()+1];
@@ -255,7 +255,7 @@ bool patternObj::implObj::get_charset(const std::experimental::string_view &obje
 	return true;
 }
 
-bool patternObj::implObj::del(const std::experimental::string_view &object)
+bool patternObj::implObj::del(const std::string_view &object)
 {
 	char object_name[object.size()+1];
 	std::copy(object.begin(), object.end(), object_name);

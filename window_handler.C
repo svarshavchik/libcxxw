@@ -310,7 +310,7 @@ void window_handlerObj
 
 void window_handlerObj::
 pasted_string(IN_THREAD_ONLY,
-	      const std::experimental::u32string_view &)
+	      const std::u32string_view &)
 {
 }
 

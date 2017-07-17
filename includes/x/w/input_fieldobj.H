@@ -43,10 +43,10 @@ public:
 	std::u32string get_unicode() const;
 
 	//! Set the contents of the input field.
-	void set(const std::experimental::string_view &str);
+	void set(const std::string_view &str);
 
 	//! Set the contents of the input field, as unicode.
-	void set(const std::experimental::u32string_view &str);
+	void set(const std::u32string_view &str);
 };
 
 LIBCXXW_NAMESPACE_END

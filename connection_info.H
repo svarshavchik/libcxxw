@@ -30,7 +30,7 @@ class LIBCXX_HIDDEN connection_infoObj : virtual public obj {
 
 	const builtin_atoms atoms_info;
 
-	connection_infoObj(const std::experimental::string_view &display);
+	connection_infoObj(const std::string_view &display);
 
 	connection_infoObj(connection_handle &&handle);
 

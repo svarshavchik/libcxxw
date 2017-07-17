@@ -22,7 +22,7 @@ reference_font_element<tag>::~reference_font_element()=default;
 template<typename element_impl, typename tag>
 template<typename ...Args>
 reference_font_elementObj<element_impl, tag>
-::reference_font_elementObj(const std::experimental::string_view &fontname,
+::reference_font_elementObj(const std::string_view &fontname,
 			    Args && ...args)
 	: element_impl(std::forward<Args>(args)...),
 	  reference_font_element<tag>(*this, fontname)

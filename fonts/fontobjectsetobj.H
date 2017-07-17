@@ -8,7 +8,7 @@
 
 #include <x/ref.H>
 #include <x/obj.H>
-#include <experimental/string_view>
+#include <string_view>
 
 LIBCXXW_NAMESPACE_START
 
@@ -35,7 +35,7 @@ public:
 
 	//! Add a string to an object set.
 
-	void add(const std::experimental::string_view &s);
+	void add(const std::string_view &s);
 };
 
 #if 0

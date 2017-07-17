@@ -71,7 +71,7 @@ class LIBCXX_HIDDEN theme_current_border_implObj
 };
 
 current_border_impl screenObj::implObj
-::get_theme_border(const std::experimental::string_view &name)
+::get_theme_border(const std::string_view &name)
 {
 	std::string name_s{name};
 

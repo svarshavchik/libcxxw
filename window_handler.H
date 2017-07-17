@@ -345,7 +345,7 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 
 	//! Called by the XIM server.
 	virtual void pasted_string(IN_THREAD_ONLY,
-				   const std::experimental::u32string_view &);
+				   const std::u32string_view &);
 };
 
 LIBCXXW_NAMESPACE_END
