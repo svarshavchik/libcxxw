@@ -8,6 +8,7 @@
 #include <x/w/new_focusable_layoutmanagerfwd.H>
 #include <x/w/custom_comboboxlayoutmanagerfwd.H>
 #include <x/w/custom_comboboxlayoutmanagerobj.H>
+#include <x/w/listlayoutmanager.H>
 #include <x/w/containerobj.H>
 #include <x/w/focusable_container.H>
 #include <x/w/factoryfwd.H>
@@ -22,18 +23,18 @@ LIBCXXW_NAMESPACE_START
 
 //! Signature for a custom combo-box selection factory.
 
-typedef std::function<void (const factory &)
+typedef std::function<focusable (const factory &)
 		      > custom_combobox_selection_factory_t;
 
-//! Information passed to the \ref combobox_selection_changed_t "combo-box selection changed callback".
+//! Information passed to the \ref custom_combobox_selection_changed_t "custom combo-box selection changed callback".
 
 struct LIBCXX_HIDDEN custom_combobox_selection_changed_info_t {
 
 	//! A lock on combo-box's underlying list
 	list_lock &lock;
 
-	//! The combo-box's underlying list layout manager
-	const listlayoutmanager &llm;
+	//! The layout manager
+	const custom_comboboxlayoutmanager &lm;
 
 	//! Which combo-box item has been selected or unselected
 	size_t item_index;
@@ -56,17 +57,8 @@ struct LIBCXX_HIDDEN custom_combobox_selection_changed_info_t {
 
 //! Callback that gets invoked when a combo-box selection is made.
 
-//! The same callback as the list layout manager's selection changed
-//! callback, with two additional parameters:
-//!
-//! - current_selection: additional element parameter which is the element
-//! that was created by the custom_combobox_selection_factory_t.
-//!
-//! - popup_element: the internally created popup-element. The callback will
-//! typically want to hide()it after making the new selection.
-
 typedef std::function<void (const custom_combobox_selection_changed_info_t &)
-		      > combobox_selection_changed_t;
+		      > custom_combobox_selection_changed_t;
 
 /*!
 
@@ -80,14 +72,27 @@ INSERT_LIBX_NAMESPACE::w::new_custom_comboboxlayoutmanager cclm{
     []
     (const INSERT_LIBX_NAMESPACE::w::factory &f)
     {
+        return f->create_focusable_label("");
     },
     []
     (const custom_combobox_selection_info_t &info)
     {
     }
 };
-
 \endcode
+
+The members/methods of this class are not thread-safe. It is intended that
+an execution thread constructs an instance of this class in automatic scope,
+then passes the class instance to create_focusable_container().
+
+The first argument to a constructor is a factory for creating a display
+element that represents the current selection in the combo-box. The callback
+must use the factory that it receives as a parameter to create exactly one
+display element.
+
+This current selection display element must be focusable, and the factory
+must return the focusable element as well, so for a basic, simple
+focusable element the element created by the factory gets returned.
 
 */
 
@@ -99,9 +104,14 @@ class LIBCXX_HIDDEN new_custom_comboboxlayoutmanager
 	//! Constructor
 	new_custom_comboboxlayoutmanager(const
 					 custom_combobox_selection_factory_t
+					 &selection_factory) LIBCXX_PUBLIC;
+
+	//! Constructor
+	new_custom_comboboxlayoutmanager(const
+					 custom_combobox_selection_factory_t
 					 &selection_factory,
 
-					 const combobox_selection_changed_t
+					 const custom_combobox_selection_changed_t
 					 &selection_changed) LIBCXX_PUBLIC;
 
 	//! Destructor
@@ -113,11 +123,11 @@ class LIBCXX_HIDDEN new_custom_comboboxlayoutmanager
 
 	//! Callback that gets invoked when the combo-box selection changes.
 
-	combobox_selection_changed_t selection_changed;
+	custom_combobox_selection_changed_t selection_changed;
 
-	//! \internal
 	//! Create the focusable container.
 
+	//! \internal
 	focusable_container create(const ref<containerObj::implObj> &)
 		const override;
 
@@ -127,8 +137,15 @@ class LIBCXX_HIDDEN new_custom_comboboxlayoutmanager
 
 	//! Internal constructor
 
+	//! \internal
 	virtual ref<custom_comboboxlayoutmanagerObj::implObj
 		    > create_impl(const create_impl_info &) const;
+
+	//! Return the selection_changed callback.
+
+	//! \internal
+	virtual custom_combobox_selection_changed_t get_selection_changed()
+		const;
 };
 
 LIBCXXW_NAMESPACE_END

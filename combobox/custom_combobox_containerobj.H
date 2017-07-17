@@ -30,6 +30,10 @@ public:
 	//! My layout manager.
 	const ref<custom_comboboxlayoutmanagerObj::implObj> layout_manager_impl;
 
+	//! The current selection focusable
+
+	const focusable current_selection_focusable;
+
 	//! The button to open/hide the popup.
 
 	const image_button_internal combobox_button;
@@ -42,6 +46,8 @@ public:
 	custom_combobox_containerObj(const ref<implObj> &impl,
 				     const ref<custom_comboboxlayoutmanagerObj
 				     ::implObj> &layout_manager_impl,
+				     const focusable
+				     &current_selection_focusable,
 				     const image_button_internal
 				     &combobox_button,
 				     const popup &popup_window) LIBCXX_HIDDEN;

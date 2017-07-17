@@ -16,7 +16,7 @@
 #include "x/w/connection.H"
 #include "x/w/button.H"
 #include "x/w/canvas.H"
-#include "x/w/custom_comboboxlayoutmanager.H"
+#include "x/w/standard_comboboxlayoutmanager.H"
 #include "x/w/focusable_label.H"
 #include <string>
 #include <iostream>
@@ -50,54 +50,47 @@ void testcombobox()
 
 	auto close_flag=close_flag_ref::create();
 
-	auto main_window=main_window
-		::create([&]
-			 (const auto &main_window)
-			 {
-				 gridlayoutmanager
-				     layout=main_window->get_layoutmanager();
+	x::w::focusable_containerptr combobox;
 
-				 static const char *text[]={
-					 "Lorem ipsum",
-					 "dolor sit",
-					 "ament",
-					 "consectetur",
-					 "adipisicing",
-					 "elid set",
-					 "do",
-					 "eiusmod tempor",
-				 };
+	auto main_window=main_window::create
+		([&]
+		 (const auto &main_window)
+		 {
+			 gridlayoutmanager layout{
+				 main_window->get_layoutmanager()
+			 };
 
-				 new_custom_comboboxlayoutmanager clm
-				 {[] (const auto &factory)
-					 {
-						 factory->create_focusable_label
-							 ("");
-					 },
-				  [&]
-					  (const auto &info) {
-					  if (!info.selected_flag)
-						  return;
+			 auto factory=layout->append_row();
 
-					  x::w::focusable_label item=
-						  info.current_selection;
-					  item->update(text[info.item_index]);
-					  info.popup_element->hide();
-				  }};
+			 new_standard_comboboxlayoutmanager sc{
+				 [] (const auto &info)
+				 {
+					 if (info.selected_flag)
+						 std::cout << "Selected item #"
+							   << info.item_index
+							   << std::endl;
+				 }
+			 };
 
+			 combobox=factory->create_focusable_container
+			 ([]
+			  (const auto &new_container) {
 
-				 auto factory=layout->append_row();
+				 standard_comboboxlayoutmanager lm=new_container
+					 ->get_layoutmanager();
 
-				 factory->create_focusable_container
-				 ([&]
-				  (const focusable_container &c) {
-					 x::w::custom_comboboxlayoutmanager
-						 lm=c->get_layoutmanager();
-
-					 for (const auto &t:text)
-						 lm->append_item(t);
-				 }, clm)->show();
-			 });
+				 lm->replace_all({
+						 "Lorem ipsum",
+							 "dolor sit",
+							 "ament",
+							 "consectetur",
+							 "adipisicing",
+							 "elid set",
+							 "do",
+							 "eiusmod tempor",
+							 });
+			 }, sc);
+		 });
 
 	main_window->set_window_title("Hello world!");
 
@@ -119,6 +112,17 @@ void testcombobox()
 	mpcobj<bool>::lock lock{close_flag->flag};
 
 	lock.wait([&] { return *lock; });
+
+	standard_comboboxlayoutmanager lm=combobox->get_layoutmanager();
+
+	auto n=lm->selected();
+
+	if (n)
+	{
+		size_t i=n.value();
+
+		std::cout << "Final selection: " << i << std::endl;
+	}
 }
 
 int main(int argc, char **argv)

@@ -119,8 +119,20 @@ create_combobox_button(const ref<containerObj::implObj> &parent_container,
 
 new_custom_comboboxlayoutmanager
 ::new_custom_comboboxlayoutmanager(const custom_combobox_selection_factory_t
+				   &selection_factory)
+	: new_custom_comboboxlayoutmanager
+	  (selection_factory,
+	   []
+	   (const auto &ignore)
+	   {
+	   })
+{
+}
+
+new_custom_comboboxlayoutmanager
+::new_custom_comboboxlayoutmanager(const custom_combobox_selection_factory_t
 				   &selection_factory,
-				   const combobox_selection_changed_t
+				   const custom_combobox_selection_changed_t
 				   &selection_changed)
 	: selection_factory(selection_factory),
 	  selection_changed(selection_changed)
@@ -128,6 +140,12 @@ new_custom_comboboxlayoutmanager
 }
 
 new_custom_comboboxlayoutmanager::~new_custom_comboboxlayoutmanager()=default;
+
+custom_combobox_selection_changed_t
+new_custom_comboboxlayoutmanager::get_selection_changed() const
+{
+	return selection_changed;
+}
 
 focusable_container new_custom_comboboxlayoutmanager
 ::create(const ref<containerObj::implObj> &parent) const
@@ -240,7 +258,7 @@ focusable_container new_custom_comboboxlayoutmanager
 	auto capture_current_selection=
 		capturefactory::create(combobox_container_impl);
 
-	selection_factory(capture_current_selection);
+	auto focusable_selection=selection_factory(capture_current_selection);
 
 	auto current_selection=capture_current_selection->get();
 
@@ -279,11 +297,12 @@ focusable_container new_custom_comboboxlayoutmanager
 
 	auto c=custom_combobox_container::create(combobox_container_impl,
 						 lm,
+						 focusable_selection,
 						 combobox_button,
 						 combobox_popup);
 
 	c->elementObj::impl->THREAD->run_as
-		([=, selection_changed=this->selection_changed]
+		([=, selection_changed=this->get_selection_changed()]
 		 (IN_THREAD_ONLY)
 		 {
 			 // Install:
@@ -301,9 +320,9 @@ focusable_container new_custom_comboboxlayoutmanager
 
 			 popup_listlayoutmanager->selection_changed(IN_THREAD)=
 				 [=, current_selection=make_weak_capture
-				  (current_selection, combobox_popup)]
+				  (current_selection, combobox_popup, lm)]
 				 (list_lock &lock,
-				  const listlayoutmanager &llm,
+				  const listlayoutmanager &ignore,
 				  size_t i,
 				  bool flag,
 				  const busy &mcguffin)
@@ -311,16 +330,16 @@ focusable_container new_custom_comboboxlayoutmanager
 					 current_selection.get
 					 ([&]
 					  (const auto &e,
-					   const auto &combobox_popup) {
-
-						 selection_changed
-						 ({
-							 lock, llm,
-								 i, flag,
-								 e,
-								 combobox_popup,
-								 mcguffin});
-					 });
+					   const auto &combobox_popup,
+					   const auto &lm)
+				 {
+					 selection_changed
+					 ({ lock, lm->create_public_object(),
+							 i, flag,
+							 e,
+							 combobox_popup,
+							 mcguffin});
+				 });
 				 };
 		 });
 

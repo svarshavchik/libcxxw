@@ -7,6 +7,7 @@
 
 #include <x/w/namespace.H>
 #include <x/ptrfwd.H>
+#include <functional>
 
 LIBCXXW_NAMESPACE_START
 

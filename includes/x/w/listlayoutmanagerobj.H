@@ -15,6 +15,7 @@
 
 #include <vector>
 #include <initializer_list>
+#include <optional>
 
 LIBCXXW_NAMESPACE_START
 
@@ -159,6 +160,16 @@ public:
 
 	//! Whether list item \#i is selected right now.
 	bool selected(grid_map_t::lock &lock, size_t i) const;
+
+	//! Return the currently selected item.
+
+	//! For convenience of a single_selection_type() list, returns
+	//! the index of the currently selected item.
+
+	std::optional<size_t> selected() const;
+
+	//! Return a list of all selected items.
+	std::vector<size_t> all_selected() const;
 
 	//! Select or unselect item \#i
 	void selected(size_t i, bool selected_flag);

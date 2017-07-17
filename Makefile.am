@@ -95,6 +95,9 @@ libcxxw_la_SOURCES=\
 	combobox/custom_combobox_popup_containerobj.H \
 	combobox/custom_combobox_popup_layoutmanager.C \
 	combobox/custom_combobox_popup_layoutmanager.H \
+	combobox/standard_comboboxlayoutmanager.C	    \
+	combobox/standard_comboboxlayoutmanager.H	    \
+	combobox/standard_comboboxlayoutmanager_impl.C \
 	configfile.C				    \
 	configfile.H				    \
 	connection.C                                \

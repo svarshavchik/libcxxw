@@ -45,8 +45,6 @@ public:
 
 	void get_focus_after(const focusable &other);
 
-private:
-
 	//! How many real internal focusable objects comprise this focusable.
 
 	//! \internal
@@ -57,7 +55,6 @@ private:
 	//! \internal
 	virtual ref<focusableImplObj> get_impl(size_t) const LIBCXX_HIDDEN;
 
-public:
 	//! Install a new callback to report focus changes.
 
 	//! The callback gets invoked upon installation, reporting this

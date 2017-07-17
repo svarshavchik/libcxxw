@@ -216,6 +216,31 @@ bool listlayoutmanagerObj::selected(grid_map_t::lock &lock, size_t i) const
 	return impl->selected(lock, i);
 }
 
+std::optional<size_t> listlayoutmanagerObj::selected() const
+{
+	auto v=all_selected();
+
+	if (v.empty())
+		return {};
+
+	return { v.at(0) };
+}
+
+std::vector<size_t> listlayoutmanagerObj::all_selected() const
+{
+	std::vector<size_t> v;
+
+	grid_map_t::lock lock{impl->grid_map};
+
+	size_t n=size(lock);
+
+	for (size_t i=0; i<n; ++i)
+		if (selected(lock, i))
+			v.push_back(i);
+
+	return v;
+}
+
 void listlayoutmanagerObj::selected(size_t i, bool selected_flag)
 {
 	grid_map_t::lock lock{impl->grid_map};
