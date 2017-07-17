@@ -122,6 +122,12 @@ class LIBCXX_HIDDEN hotspotObj::implObj : virtual public obj {
 
 	void on_activate(IN_THREAD_ONLY, const hotspot_callback_t &);
 
+	//! Whether hotspot should activate on this keypress.
+
+	//! The default implementation detects space and Enter.
+
+	virtual bool activate_on_key(const key_event &ke);
+
 	//! The hotspot has been activated.
 
 	//! The default implementation invokes callback().

@@ -51,6 +51,11 @@ class LIBCXX_HIDDEN combobox_button_implObj
 	//! show/hide the popup.
 
 	void activated(IN_THREAD_ONLY) override;
+
+	//! Override activate_on_key()
+
+	//! Also activate on cursot down.
+	bool activate_on_key(const key_event &ke) override;
 };
 
 LIBCXXW_NAMESPACE_END

@@ -4,6 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "combobox/combobox_button_impl.H"
+#include <X11/keysym.h>
 
 LIBCXXW_NAMESPACE_START
 
@@ -34,6 +35,12 @@ void combobox_button_implObj::activated(IN_THREAD_ONLY)
 				     .requested_visibility);
 
 	image_button_internalObj::implObj::activated(IN_THREAD);
+}
+
+bool combobox_button_implObj::activate_on_key(const key_event &ke)
+{
+	return image_button_internalObj::implObj::activate_on_key(ke)
+		|| ke.keysym == XK_Down || ke.keysym == XK_KP_Down;
 }
 
 LIBCXXW_NAMESPACE_END
