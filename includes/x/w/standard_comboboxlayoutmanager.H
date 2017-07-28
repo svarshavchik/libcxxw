@@ -32,6 +32,12 @@ struct LIBCXX_HIDDEN standard_combobox_selection_changed_info_t {
 	const busy &mcguffin;
 };
 
+/*!
+
+Callback that gets invoked when a standard combo-box's selection changes.
+
+*/
+
 typedef std::function<void (const standard_combobox_selection_changed_info_t &)
 		      > standard_combobox_selection_changed_t;
 
@@ -43,11 +49,7 @@ with a \ref standard_comboboxlayoutmanager "standard combo-box layout manager".
 \code
 INSERT_LIBX_NAMESPACE::w::new_standard_comboboxlayoutmanager cclm{
     []
-    (const INSERT_LIBX_NAMESPACE::w::factory &f)
-    {
-    },
-    []
-    (const standard_combobox_selection_info_t &info)
+    (const standard_combobox_selection_changed_info_t &info)
     {
     }
 };
@@ -65,7 +67,7 @@ class LIBCXX_HIDDEN new_standard_comboboxlayoutmanager
  public:
 
 	//! Constructor
-	new_standard_comboboxlayoutmanager();
+	new_standard_comboboxlayoutmanager() LIBCXX_PUBLIC;
 
 	//! Constructor
 	new_standard_comboboxlayoutmanager

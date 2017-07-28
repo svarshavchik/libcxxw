@@ -13,6 +13,7 @@
 #include "x/w/elementfwd.H"
 #include "x/w/screenfwd.H"
 #include "x/w/types.H"
+#include "x/w/grid_map_infofwd.H"
 
 #include <x/obj.H>
 
@@ -75,7 +76,8 @@ struct new_grid_element_info {
 
 	//! Constructor
 	new_grid_element_info(dim_t row,
-			      dim_t col);
+			      dim_t col,
+			      const ref<grid_map_infoObj> &grid_map);
 
 	//! Copy constructor
 	new_grid_element_info(const new_grid_element_info &);

@@ -100,6 +100,52 @@ elementptr e=gridlayout->get(row, col);
 get() returns the element at the given grid coordinates. A \c nullptr
 display element gets returned if no element exists at the given coordinates.
 
+\par Row and column defaults
+
+\code
+INSERT_LIBX_NAMESPACE::w::border_infomm new_border;
+
+gridlayout->default_row_border(0, new_border);
+gridlayout->default_row_border(0, "thin_0%");
+gridlayout->requested_row_height(0, 100);
+gridlayout->row_alignment(0, INSERT_LIBX_NAMESPACE::w::valign::middle);
+
+gridlayout->default_col_border(0, new_border);
+gridlayout->default_col_border(0, "thin_0%");
+gridlayout->requested_col_width(0, 100);
+gridlayout->col_alignment(0, INSERT_LIBX_NAMESPACE::w::halign::center);
+
+gridlayout->remove_row_defaults(0);
+gridlayout->remove_col_defaults(0);
+\endcode
+
+These methods define the default properties of rows and columns. Rows and
+columns are numbered, starting with row and column 0 in the top-left corner.
+
+default_row_border() sets the default border drawn above the given row.
+default_col_border() sets the default border drawn on the left side of the
+given column. \ref border_infomm "INSERT_LIBX_NAMESPACE::w::border_infomm"
+specifies the border; alternative the current theme's border gets specified
+by name.
+
+requested_row_height() and requested_col_width() sets the desired size of
+the row or the column, specified as a percentage between 0-100 of the
+overall grid's width or height. This is just a hint to the grid layout
+manager. If the grid's size exceeds its standard size, the additional real
+estate gets doled out to the rows and the columns according to their requested
+sizes.
+
+row_alignment() and col_alignment() specify the default alignment for the
+cells in the grid.
+
+remove_row_defaults() and remove_col_defaults() remove previously set defaults.
+
+\note
+
+row_alignment() and col_alignment() gets set before creating the
+cells in the given row or column. Once created, each individual cell's
+alignment gets fixed, and does not get affected by remove_row_defaults() and
+remove_col_defaults().
 
 */
 

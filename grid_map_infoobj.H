@@ -47,6 +47,10 @@ struct grid_map_column_defaults {
 
 	//! Default column width (percentage, negative means unspecified).
 	int axis_size=-1;
+
+	//! Default column alignment
+
+	halign horizontal_alignment=halign::left;
 };
 
 //! Default grid column info
@@ -78,6 +82,9 @@ struct grid_map_row_defaults {
 
 	//! Default row height (percentage, negative means unspecified).
 	int axis_size=-1;
+
+	//! Default vertical alignment
+	valign vertical_alignment=valign::top;
 };
 
 //! Mutex-protected container for elements in the grid.
@@ -154,7 +161,7 @@ public:
 
 	//! row defaults
 
-	std::unordered_map<metrics::grid_xy, grid_map_column_defaults> row_defaults;
+	std::unordered_map<metrics::grid_xy, grid_map_row_defaults> row_defaults;
 
  private:
 	//! Internal flag: element modification processing is needed.

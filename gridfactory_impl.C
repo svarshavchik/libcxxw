@@ -10,8 +10,9 @@
 
 LIBCXXW_NAMESPACE_START
 
-gridfactoryObj::implObj::implObj(dim_t row, dim_t col)
-	: new_grid_element{row, col}
+gridfactoryObj::implObj::implObj(dim_t row, dim_t col,
+				 const ref<grid_map_infoObj> &grid_map)
+	: new_grid_element{row, col, grid_map}
 {
 }
 

@@ -13,6 +13,7 @@
 #include <x/w/elementobj.H>
 #include <x/w/types.H>
 #include <x/w/border_infomm.H>
+#include <x/w/alignment.H>
 #include <x/refptr_hash.H>
 
 #include <vector>
@@ -106,6 +107,11 @@ public:
 	//! height of the grid.
 	void requested_row_height(size_t row, int percentage);
 
+	//! Set the default vertical alignment of elements in the row.
+
+	//! This must be set before creating elements in this row.
+	void row_alignment(size_t row, valign alignment);
+
 	//! Set the default border to the left of this column
 	void default_col_border(size_t col, const border_infomm &info);
 
@@ -118,6 +124,11 @@ public:
 	//! The column width is specified as a percentage, 0-100, of the total
 	//! width of the grid.
 	void requested_col_width(size_t col, int percentage);
+
+	//! Set the default horizontal alignment of elements in the column.
+
+	//! This must be set before creating elements in this column.
+	void col_alignment(size_t row, halign alignment);
 
 	//! Remove all custom row defaults.
 	void remove_row_defaults(size_t row);

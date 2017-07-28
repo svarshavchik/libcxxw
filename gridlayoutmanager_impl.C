@@ -48,10 +48,12 @@ gridfactory gridlayoutmanagerObj::implObj
 ::create_gridfactory(layoutmanagerObj *public_object,
 		     size_t row, size_t col)
 {
+	grid_map_t::lock lock{grid_map};
+
 	return gridfactory::create(layoutmanager{public_object},
 				   ref<implObj>(this),
 				   ref<gridfactoryObj::implObj>::create
-				   (row, col));
+				   (row, col, *lock));
 }
 
 gridfactory gridlayoutmanagerObj::implObj
@@ -194,7 +196,7 @@ void gridlayoutmanagerObj::implObj
 		row.insert(row.begin()+dim_t::value_type(info.col), elem);
 
 	// Reset the next element to defaults.
-	info=new_grid_element_info{info.row, info.col+1};
+	info=new_grid_element_info{info.row, info.col+1, *lock};
 	(*lock)->elements_have_been_modified();
 }
 

@@ -168,6 +168,13 @@ void gridlayoutmanagerObj::requested_row_height(size_t row, int percentage)
 	(*lock)->padding_recalculated();
 }
 
+void gridlayoutmanagerObj::row_alignment(size_t row, valign alignment)
+{
+	grid_map_t::lock lock{impl->grid_map};
+
+	(*lock)->row_defaults[row].vertical_alignment=alignment;
+}
+
 void gridlayoutmanagerObj::default_col_border(size_t col,
 					      const border_infomm &info)
 {
@@ -194,6 +201,13 @@ void gridlayoutmanagerObj::default_col_border(size_t col,
 void gridlayoutmanagerObj::requested_col_width(size_t col, int percentage)
 {
 	impl->requested_col_width(col, percentage);
+}
+
+void gridlayoutmanagerObj::col_alignment(size_t col, halign alignment)
+{
+	grid_map_t::lock lock{impl->grid_map};
+
+	(*lock)->column_defaults[col].horizontal_alignment=alignment;
 }
 
 void gridlayoutmanagerObj::remove_row_defaults(size_t row)

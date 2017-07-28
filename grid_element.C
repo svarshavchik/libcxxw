@@ -10,12 +10,14 @@
 #include "element.H"
 #include "screen.H"
 #include "defaulttheme.H"
+#include "grid_map_info.H"
 
 LIBCXXW_NAMESPACE_START
 
 new_grid_element_info
 ::new_grid_element_info(dim_t row,
-			dim_t col)
+			dim_t col,
+			const ref<grid_map_infoObj> &grid_map)
 	: row(row),
 	  col(col),
 	  left_padding_set("grid_horiz_padding"),
@@ -23,6 +25,17 @@ new_grid_element_info
 	  top_padding_set("grid_vert_padding"),
 	  bottom_padding_set(top_padding_set)
 {
+	auto row_default=grid_map->row_defaults
+		.find(metrics::grid_xy::truncate(row));
+
+	if (row_default != grid_map->row_defaults.end())
+		vertical_alignment=row_default->second.vertical_alignment;
+
+	auto col_default=grid_map->column_defaults
+		.find(metrics::grid_xy::truncate(col));
+
+	if (col_default != grid_map->column_defaults.end())
+		horizontal_alignment=col_default->second.horizontal_alignment;
 }
 
 new_grid_element_info
