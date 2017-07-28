@@ -60,7 +60,8 @@ class focusableImplObj;
 //!
 //! #include <INSERT_LIBX_NAMESPACE/w/key_event.H>
 //! f->on_key_event([]
-//!                      (const INSERT_LIBX_NAMESPACE::w::all_key_events_t &e)
+//!                      (const INSERT_LIBX_NAMESPACE::w::all_key_events_t &e,
+//!                       const busy &mcguffin)
 //!                      {
 //!                         // ...
 //!

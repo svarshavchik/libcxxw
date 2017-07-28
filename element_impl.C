@@ -42,7 +42,8 @@ void elementObj::implObj::data_thread_only_t::no_focus_callback(focus_change)
 }
 
 bool elementObj::implObj::data_thread_only_t
-::no_key_event_callback(const all_key_events_t &)
+::no_key_event_callback(const all_key_events_t &,
+			const busy &)
 {
 	return false;
 }
@@ -928,7 +929,9 @@ void elementObj::implObj
 
 bool elementObj::implObj::process_key_event(IN_THREAD_ONLY, const key_event &e)
 {
-	return data(IN_THREAD).on_key_event_callback(&e);
+	busy_impl mcguffin{*this, IN_THREAD};
+
+	return data(IN_THREAD).on_key_event_callback(&e, mcguffin);
 }
 
 bool elementObj::implObj::uses_input_method()
@@ -986,7 +989,8 @@ void elementObj::implObj::ensure_entire_visibility(IN_THREAD_ONLY)
 bool elementObj::implObj::pasted(IN_THREAD_ONLY,
 				 const std::u32string_view &str)
 {
-	return data(IN_THREAD).on_key_event_callback(&str);
+	busy_impl mcguffin{*this, IN_THREAD};
+	return data(IN_THREAD).on_key_event_callback(&str, mcguffin);
 }
 
 void elementObj::implObj::creating_focusable_element()

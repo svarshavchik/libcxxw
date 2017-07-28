@@ -17,6 +17,7 @@
 #include "peephole/peephole_toplevel.H"
 
 #include "x/w/focusable_container.H"
+#include "x/w/key_event.H"
 #include "image_button_internal.H"
 #include "icon_images_vector_element.H"
 #include "hotspot_element.H"
@@ -116,26 +117,90 @@ create_combobox_button(const ref<containerObj::implObj> &parent_container,
 }
 
 /////////////////////////////////////////////////////////////////////////////
+//
+// Internal object that collects keystrokes when the input focus is on the
+// current selection element, for the lookup callback.
+
+class LIBCXX_HIDDEN lookup_collectorObj : virtual public obj {
+
+ public:
+
+	std::u32string buffer;
+
+	lookup_collectorObj()=default;
+	~lookup_collectorObj()=default;
+
+	// Called to process a key event.
+
+	// Collect the key event into the buffer, and invoke the
+	// combo-box's search callback.
+	//
+	// This is always invoked from the connection thread.
+
+	inline bool process(const all_key_events_t &e,
+			    const custom_combobox_selection_search_t
+			    &search_func,
+			    const element &current_selection,
+			    const custom_comboboxlayoutmanager &lm,
+			    const busy &mcguffin)
+	{
+		size_t i=0;
+
+		list_lock lock{lm};
+
+		if (std::holds_alternative<const key_event *>(e))
+		{
+			auto &ke=*std::get<const key_event *>(e);
+
+			if (!ke.keypress || !ke.unicode ||
+			    !ke.notspecial())
+				return false;
+
+			if (ke.unicode == '\n')
+			{
+				// Get the current selection, and
+				// start the search on the next list item.
+
+				auto selected=lm->selected();
+
+				if (selected)
+				{
+					i=selected.value();
+					++i;
+				}
+			}
+			else
+			{
+				if (ke.unicode < ' ')
+				{
+					return false;
+				}
+				buffer.push_back(ke.unicode);
+			}
+		}
+		else if (std::holds_alternative<const std::u32string_view *>(e))
+		{
+			buffer += *std::get<const std::u32string_view *>(e);
+		}
+
+		search_func({lock, lm, buffer, i, current_selection, mcguffin});
+
+		return true;
+	}
+};
+
+typedef ref<lookup_collectorObj> lookup_collector;
+
+/////////////////////////////////////////////////////////////////////////////
 
 new_custom_comboboxlayoutmanager
 ::new_custom_comboboxlayoutmanager(const custom_combobox_selection_factory_t
 				   &selection_factory)
-	: new_custom_comboboxlayoutmanager
-	  (selection_factory,
-	   []
-	   (const auto &ignore)
-	   {
-	   })
-{
-}
-
-new_custom_comboboxlayoutmanager
-::new_custom_comboboxlayoutmanager(const custom_combobox_selection_factory_t
-				   &selection_factory,
-				   const custom_combobox_selection_changed_t
-				   &selection_changed)
 	: selection_factory(selection_factory),
-	  selection_changed(selection_changed)
+	  selection_changed([]
+			    (const auto &ignore)
+			    {
+			    })
 {
 }
 
@@ -301,8 +366,11 @@ focusable_container new_custom_comboboxlayoutmanager
 						 combobox_button,
 						 combobox_popup);
 
+	auto collector=lookup_collector::create();
+
 	c->elementObj::impl->THREAD->run_as
-		([=, selection_changed=this->get_selection_changed()]
+		([=, selection_changed=this->get_selection_changed(),
+		  selection_search=this->selection_search]
 		 (IN_THREAD_ONLY)
 		 {
 			 // Install:
@@ -341,6 +409,48 @@ focusable_container new_custom_comboboxlayoutmanager
 							 mcguffin});
 				 });
 				 };
+
+			 auto &focusable_element=focusable_selection
+				 ->get_impl()->get_focusable_element();
+
+			 // Clear the search string collector buffer when
+			 // the current selection focusable gains/loses
+			 // input focus (the search starts afresh).
+
+			 focusable_element
+				 .on_keyboard_focus
+				 (IN_THREAD,
+				  [collector]
+				  (const auto &ignore)
+				  {
+					  collector->buffer.clear();
+				  });
+
+			 // Install an on_key_event, to collect the typed in
+			 // text, and trigger a combo-box search.
+			 focusable_element.on_key_event
+				 (IN_THREAD, [collector,
+					      selection_search,
+					      c=make_weak_capture
+					      (current_selection, lm)]
+				  (const auto &key_event,
+				   const auto &mcguffin)
+				  {
+					  bool processed=false;
+					  c.get([&]
+						(const auto &current_selection,
+						 const auto &lm)
+						{
+							processed=collector
+								->process
+								(key_event,
+								 selection_search,
+								 current_selection,
+								 lm->create_public_object(),
+								 mcguffin);
+						});
+					  return processed;
+				  });
 		 });
 
 	return c;

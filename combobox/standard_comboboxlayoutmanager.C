@@ -7,6 +7,7 @@
 #include "x/w/focusable_label.H"
 #include "messages.H"
 #include <x/exception.H>
+#include <courier-unicode.h>
 
 LIBCXXW_NAMESPACE_START
 
@@ -98,6 +99,46 @@ new_standard_comboboxlayoutmanager::new_standard_comboboxlayoutmanager()
 		   return f->create_focusable_label("");
 	   })
 {
+	// Install callback to search items using whatever was typed into the
+	// current selection display element.
+
+	selection_search=
+		[]
+		(const auto &search_info)
+		{
+			standard_comboboxlayoutmanager lm=search_info.lm;
+
+			size_t n=lm->impl->text_items(search_info.lock).size();
+
+			if (n == 0)
+				return;
+
+			size_t search_size=search_info.text.size();
+
+			for (size_t i=0; i<n; ++i)
+			{
+				size_t j=(i+search_info.starting_index) % n;
+
+				const auto &string=lm->impl->text_items
+					(search_info.lock).at(j).string;
+
+				if (string.size() < search_size)
+					continue;
+
+				size_t l;
+
+				for (l=0; l<search_size; ++l)
+					if (unicode_lc(string[l]) !=
+					    unicode_lc(search_info.text[l]))
+						break;
+
+				if (l == search_size)
+				{
+					lm->autoselect(search_info.lock, j);
+					return;
+				}
+			}
+		};
 }
 
 new_standard_comboboxlayoutmanager

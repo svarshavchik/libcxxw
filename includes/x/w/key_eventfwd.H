@@ -29,7 +29,8 @@ typedef std::variant<const key_event *,
 
 //! The callback returns true if it processed the key event.
 
-typedef bool key_event_callback_t(const all_key_events_t &);
+typedef bool key_event_callback_t(const all_key_events_t &,
+				  const busy &mcguffin);
 
 LIBCXXW_NAMESPACE_END
 #endif
