@@ -66,10 +66,6 @@ public:
 	//! Install a new callback to report key events.
 	void on_key_event(const std::function<key_event_callback_t> &)
 		LIBCXX_PUBLIC;
-
-	//! Install a new callback to report pasted text.
-	void on_input_text(const std::function<input_text_callback_t> &)
-		LIBCXX_PUBLIC;
 };
 
 LIBCXXW_NAMESPACE_END

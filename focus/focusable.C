@@ -116,9 +116,4 @@ void focusableObj::on_key_event(const std::function<key_event_callback_t> &cb)
 	get_impl()->get_focusable_element().on_key_event(cb);
 }
 
-void focusableObj::on_input_text(const std::function<input_text_callback_t> &cb)
-{
-	get_impl()->get_focusable_element().on_input_text(cb);
-}
-
 LIBCXXW_NAMESPACE_END

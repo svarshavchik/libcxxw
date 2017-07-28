@@ -149,19 +149,10 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 		std::function<key_event_callback_t> on_key_event_callback=
 			no_key_event_callback;
 
-		//! Callback for reporting pasted text
-
-		std::function<input_text_callback_t> on_input_text_callback=
-			no_input_text_callback;
-
 		//! Default key event callback, does nothing.
 
-		static bool no_key_event_callback(const key_event &);
+		static bool no_key_event_callback(const all_key_events_t &);
 
-		//! Default pasted text callback, does nothing.
-
-		static bool no_input_text_callback(const std
-						   ::u32string_view &);
 
 		//! Whether this element is a label for some focusable.
 
@@ -886,14 +877,6 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	void on_key_event(IN_THREAD_ONLY,
 			  const std::function<key_event_callback_t> &);
 
-	//! Install a new input text callback
-
-	void on_input_text(const std::function<input_text_callback_t> &);
-
-	//! Install a new input text callback
-
-	void on_input_text(IN_THREAD_ONLY,
-			   const std::function<input_text_callback_t> &);
 
  private:
 	//! Invoke the callback

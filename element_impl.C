@@ -42,14 +42,7 @@ void elementObj::implObj::data_thread_only_t::no_focus_callback(focus_change)
 }
 
 bool elementObj::implObj::data_thread_only_t
-::no_key_event_callback(const key_event &)
-{
-	return false;
-}
-
-bool elementObj::implObj::data_thread_only_t
-::no_input_text_callback(const std
-			 ::u32string_view &)
+::no_key_event_callback(const all_key_events_t &)
 {
 	return false;
 }
@@ -935,7 +928,7 @@ void elementObj::implObj
 
 bool elementObj::implObj::process_key_event(IN_THREAD_ONLY, const key_event &e)
 {
-	return data(IN_THREAD).on_key_event_callback(e);
+	return data(IN_THREAD).on_key_event_callback(&e);
 }
 
 bool elementObj::implObj::uses_input_method()
@@ -989,29 +982,11 @@ void elementObj::implObj::ensure_entire_visibility(IN_THREAD_ONLY)
 				data(IN_THREAD).current_position.height});
 }
 
-	//! Install a new input text callback
-
-void elementObj::implObj
-::on_input_text(const std::function<input_text_callback_t> &cb)
-{
-	THREAD->run_as([me=ref<elementObj::implObj>(this), cb]
-		       (IN_THREAD_ONLY)
-		       {
-			       me->on_input_text(IN_THREAD, cb);
-		       });
-}
-
-void elementObj::implObj
-::on_input_text(IN_THREAD_ONLY,
-		const std::function<input_text_callback_t> &cb)
-{
-	data(IN_THREAD).on_input_text_callback=cb;
-}
 
 bool elementObj::implObj::pasted(IN_THREAD_ONLY,
 				 const std::u32string_view &str)
 {
-	return data(IN_THREAD).on_input_text_callback(str);
+	return data(IN_THREAD).on_key_event_callback(&str);
 }
 
 void elementObj::implObj::creating_focusable_element()

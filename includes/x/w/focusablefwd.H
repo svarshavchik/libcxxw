@@ -60,14 +60,7 @@ class focusableImplObj;
 //!
 //! #include <INSERT_LIBX_NAMESPACE/w/key_event.H>
 //! f->on_key_event([]
-//!                      (const INSERT_LIBX_NAMESPACE::w::key_event &e)
-//!                      {
-//!                         // ...
-//!
-//!                         return true;
-//!                      });
-//! f->on_input_text([]
-//!                      (const std::u32string_view &s)
+//!                      (const INSERT_LIBX_NAMESPACE::w::all_key_events_t &e)
 //!                      {
 //!                         // ...
 //!
@@ -83,12 +76,17 @@ class focusableImplObj;
 //! Only one focus callback can be installed. Installing another keyboard
 //! focus change callback replaces any existing one.
 //!
-//! on_key_event() installs a callback that receives all
-//! \ref key_event "key press and release events" when the display element
-//! has input focus. on_input_text() installs a callback that receives any
-//! text entered via an X Input Method server. Both on_key_event() and
-//! on_input_text() callbacks should return \c true if the key event or the
-//! input text has been processed/consumed by the callback, and will not
+//! on_key_event() installs a callback that receives key events. There are
+//! two possible key events: a
+//! \ref key_event "key press and release event", or
+//! text entered via an X Input Method server, that comes in as a
+//! \c std::u32string_view. The parameter to a callback is a
+//! \c std::variant of the two, defined as a
+//! \ref all_key_events_t "INSERT_LIBX_NAMESPACE::w::all_key_events_t".
+//! This callback gets invoked only when the display element
+//! has input focus. The
+//! on_key_event() callback should return \c true if the key event
+//! has been processed/consumed by the callback, and will not
 //! result in any further processing. Returning \c false results in the
 //! default processing for the respective key/text input.
 
