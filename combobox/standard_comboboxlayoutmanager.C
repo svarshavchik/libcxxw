@@ -110,8 +110,11 @@ new_standard_comboboxlayoutmanager::new_standard_comboboxlayoutmanager()
 
 			size_t n=lm->impl->text_items(search_info.lock).size();
 
-			if (n == 0)
+			if (search_info.text.size() == 0 || n == 0)
+			{
+				lm->unselect();
 				return;
+			}
 
 			size_t search_size=search_info.text.size();
 
@@ -159,15 +162,18 @@ custom_combobox_selection_changed_t new_standard_comboboxlayoutmanager
 		(const auto &info)
 	{
 		standard_comboboxlayoutmanager lm=info.lm;
+		x::w::focusable_label current_selection=info.current_selection;
 
 		if (info.selected_flag)
 		{
 			info.popup_element->hide();
-			x::w::focusable_label current_selection=
-				info.current_selection;
 			current_selection->update
 				(lm->impl->text_items(info.lock)
 				 .at(info.item_index));
+		}
+		else // Unselected.
+		{
+			current_selection->update("");
 		}
 		cb({info.lock, lm, info.item_index,
 					info.selected_flag,

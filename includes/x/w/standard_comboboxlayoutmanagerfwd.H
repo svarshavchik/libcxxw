@@ -19,19 +19,21 @@ that implements a standard combo-box containing plain text labels.
 
 Only methods in this class should be used to modify the contents of the
 combo-box. Do not use the methods from the inherited custom combo-box list
-layout manager, with one exception:
-a \ref list_lock "INSERT_LIBX_NAMESPACE::w::list_lock" may be instantiated
-in order to lock access to the combo-box's items.
+layout manager, except as noted.
 
 \code
 lm->append_item("Item");
 lm->insert_item(0, "Item");
 lm->remove_item(0);
+lm->replace_all({"Lorem","Ipsum"});
 \encode
 
 append_item() inserts a new item to the end of the combo-box's item list.
 insert_item() inserts a new item before an existing item.
 remove_item() removes an item.
+
+replace_all()'s parameter is a vector of text items, which replaces all
+existing items in the combo-box.
 
 \code
 size_t n=lm->size();
@@ -43,15 +45,29 @@ size() returns the number of items in the list, and item() returns the
 given item number.
 
 \code
+lm->autoselect(1);
+
 std::optional<size_t> n=lm->selected();
 
 if (n)
 {
     size_t i=n.value();
+    lm->unselect();
 }
 \endcode
 
 selected() returns the index of the currently-selected combo-box item.
+
+autoselect() and unselect() are inherited. autoselect() manually selects
+an item in the list, and unselect() unselects the existing combo-box
+selection.
+
+\code
+INSERT_LIBX_NAMESPACE::w::list_lock lock{lm};
+\endcode
+
+A \ref list_lock "INSERT_LIBX_NAMESPACE::w::list_lock" may be instantiated
+in order to lock access to the combo-box's items.
 
 */
 

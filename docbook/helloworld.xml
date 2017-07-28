@@ -94,7 +94,7 @@ make</programlisting>
       <title>Containers own references to the elements in the container</title>
       <para>
 	<classname>&ns;::w::main_window</classname> is a
-	container,
+	&container;,
 	a display element that contains other display elements.
 	Naturally, containers hold references on the elements in the
 	container. Removing an element from the container gets rid of the
@@ -208,8 +208,13 @@ make</programlisting>
       <title>Callbacks</title>
 
       <para>
+	A callback is a lambda or a callable object that &appshort;
+	executes in response to an event of some kind.
+      </para>
+
+      <para>
 	<link linkend="helloworld"><filename>helloworld.C</filename></link>,
-	installs two lambdas:
+	installs two callbacks:
 	the <function>on_disconnect</function>() lambda gets invoked if
 	the connection to the X server was unexpectedly disconnected; and
 	<classname>&ns;::w::main_window</classname>'s
@@ -409,8 +414,9 @@ while (!appdata->close_flag)
       <title>Creator lambdas</title>
 
       <para>
-	Creator lambdas initialize the contents of a new container.
-	A lambda gets passed as a parameter to a function or a method
+	Creator lambdas initialize the contents of a new display element,
+	including containers. For containers,
+	a lambda gets passed as a parameter to a function or a method
 	that creates a new container, like a
 	<link linkend="factory">factory</link>'s
 	<methodname>create_container</methodname>() or

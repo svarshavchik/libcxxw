@@ -182,6 +182,9 @@ public:
 
 	//! As if item \#i was clicked on.
 	void autoselect(grid_map_t::lock &lock, size_t i);
+
+	//! Unselect all selected items.
+	void unselect();
 };
 
 LIBCXXW_NAMESPACE_END

@@ -41,6 +41,8 @@ l->selected(item_number, true);
 
 l->autoselect(item_number);
 
+l->unselect();
+
 \endcode
 
 size() returns the number of elements in the list. selected(item_number)
@@ -50,6 +52,8 @@ selected(item_number, flag) selects or unselects the given item number.
 autoselect(item_number) produces the same results as if the given item
 number was clicked on, with a pointer, selecting/unselect any items
 according to the list's \ref new_listlayoutmanager "selection_type".
+
+unselect() unselects all currently selected items (if any).
 
 \note
 List selection gets updated by an internal execution thread. Calling

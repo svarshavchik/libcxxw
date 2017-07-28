@@ -61,7 +61,7 @@ static inline void create_main_window(const x::w::main_window &main_window)
 
 	combobox->show();
 
-	// Stash it away in main_window's appdata.
+	// Stash the combobox in main_window's appdata.
 
 	main_window->appdata=combobox;
 }

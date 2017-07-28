@@ -28,6 +28,8 @@
 
 #include <x/weakcapture.H>
 
+#include <X11/keysym.h>
+
 LIBCXXW_NAMESPACE_START
 
 custom_comboboxlayoutmanagerObj
@@ -152,30 +154,40 @@ class LIBCXX_HIDDEN lookup_collectorObj : virtual public obj {
 		{
 			auto &ke=*std::get<const key_event *>(e);
 
-			if (!ke.keypress || !ke.unicode ||
-			    !ke.notspecial())
+			if (!ke.notspecial() || !ke.keypress)
 				return false;
 
-			if (ke.unicode == '\n')
-			{
-				// Get the current selection, and
-				// start the search on the next list item.
+			switch (ke.keysym) {
+			case XK_Delete:
+			case XK_KP_Delete:
+				buffer.clear();
+				break;
+			default:
 
-				auto selected=lm->selected();
-
-				if (selected)
-				{
-					i=selected.value();
-					++i;
-				}
-			}
-			else
-			{
-				if (ke.unicode < ' ')
-				{
+				if (!ke.unicode)
 					return false;
+
+				if (ke.unicode == '\n')
+				{
+					// Get the current selection, and
+					// start the search on the next list item.
+
+					auto selected=lm->selected();
+
+					if (selected)
+					{
+						i=selected.value();
+						++i;
+					}
 				}
-				buffer.push_back(ke.unicode);
+				else
+				{
+					if (ke.unicode < ' ')
+					{
+						return false;
+					}
+					buffer.push_back(ke.unicode);
+				}
 			}
 		}
 		else if (std::holds_alternative<const std::u32string_view *>(e))

@@ -59,14 +59,19 @@ See COPYING for distribution information.
     </blockquote>
 
     <para>
-      The first parameter to a &factory;'s
+      A &factory;'s
+      <methodname>create_focusable_container</methodname>() creates
+      a &container; that's capable of handling input focus from the keyboard
+      or a pointer.
+      The first parameter to a
       <methodname>create_focusable_container</methodname>() is a
-      <link linkend="creator">creator lambda</link>. Passing a
+      &creator;.
+      Passing a
       <ulink url="&link-x--w--new-listlayoutmanager;"><classname>&ns;::w::new_listlayoutmanager</classname></ulink>
-      for the second parameter results in a <quote>selection list</quote>
-      implemented by a
-      <ulink url="&link-typedef-x--w-focusable-container;"><classname>&ns;::w::focusable_container</classname></ulink>
-      with a <methodname>get_layoutmanager</methodname>() that returns ax
+      for the second parameter results in a <quote>selection list</quote>.
+      The newly-created
+      <ulink url="&link-typedef-x--w-focusable-container;"><classname>&ns;::w::focusable_container</classname></ulink>'s
+      <methodname>get_layoutmanager</methodname>() returns an
       <ulink url="&link-typedef-x--w-listlayoutmanager;"><classname>&ns;::w::listlayoutmanager</classname></ulink>.
     </para>
 

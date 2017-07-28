@@ -11,9 +11,11 @@
 <!ENTITY sxg "<acronym>SXG</acronym>">
 <!ENTITY ns "x">
 <!ENTITY libcxx "<ulink url='/'>LibCXX</ulink>">
-<!ENTITY factory "<link linkend='layoutmanager'>factory</link>">
-
-
+<!ENTITY callback "<link linkend='callbacks'>callback</link>">
+<!ENTITY factory "<link linkend='factory'>factory</link>">
+<!ENTITY container "<link linkend='container'>container</link>">
+<!ENTITY layoutmanager "<link linkend='layoutmanager'>layout manager</link>">
+<!ENTITY creator "<link linkend='creator'>creator lambda</link>">
 <!ENTITY intro SYSTEM "intro.xml">
 <!ENTITY install SYSTEM "install.xml">
 <!ENTITY refobj "/refobj.html">
@@ -24,6 +26,7 @@
 <!ENTITY checkradio SYSTEM "checkradio.xml">
 <!ENTITY gridlayoutmanager SYSTEM "gridlayoutmanager.xml">
 <!ENTITY list SYSTEM "list.xml">
+<!ENTITY standard_combobox SYSTEM "standard_combobox.xml">
 <!ENTITY sxgdoc SYSTEM "sxg.xml">
 <!ENTITY connections_and_screens SYSTEM "connections_and_screens.xml">
 
@@ -55,6 +58,7 @@ See COPYING for distribution information.
     &checkradio;
     &gridlayoutmanager;
     &list;
+    &standard_combobox;
     &connections_and_screens;
   </part>
 

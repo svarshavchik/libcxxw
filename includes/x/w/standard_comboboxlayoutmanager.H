@@ -14,18 +14,27 @@ LIBCXXW_NAMESPACE_START
 
 //! Information passed to the \ref standard_combobox_selection_changed_t "standard combo-box selection changed callback".
 
+//! This callback gets invoked whenever a standard combo-box currently
+//! selectem item changes.
+
 struct LIBCXX_HIDDEN standard_combobox_selection_changed_info_t {
 
 	//! A lock on combo-box's underlying list
 	list_lock &lock;
 
-	//! The combo-box's underlying list layout manager
+	//! The combo-box's layout manager
 	const standard_comboboxlayoutmanager &lm;
 
 	//! Which combo-box item has been selected or unselected
 	size_t item_index;
 
 	//! Whether the specified item has been selected or unselected.
+
+	//! When a new combo-box item gets selected the callback may get
+	//! invoked twice: once specifying the previous item number,
+	//! with a \c selected_flag of \c false; and a second time with the
+	//! new \c item_index, and a \c selected_flag of \c true.
+
 	bool selected_flag;
 
 	//! Available mcguffin for blocking all further processing.
