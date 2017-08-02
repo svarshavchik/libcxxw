@@ -146,4 +146,18 @@ void input_fieldObj::on_change(const std::function<
 		 });
 }
 
+void input_fieldObj::on_autocomplete(const std::function<bool
+				     (input_autocomplete_info_t &)>
+				     &callback)
+{
+	auto editor_impl=impl->editor_element->impl;
+
+	editor_impl->get_window_handler().thread()->run_as
+		([callback, editor_impl]
+		 (IN_THREAD_ONLY)
+		 {
+			 editor_impl->on_autocomplete(IN_THREAD)=callback;
+		 });
+}
+
 LIBCXXW_NAMESPACE_END

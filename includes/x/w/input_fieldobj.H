@@ -48,6 +48,11 @@ public:
 
 	void on_change(const std::function<void(const input_change_info_t &)>&);
 
+	//! Install a callback that gets invoked to autocomplete typed in text.
+
+	void on_autocomplete(const std::function<bool
+			     (input_autocomplete_info_t &)> &);
+
 };
 
 LIBCXXW_NAMESPACE_END

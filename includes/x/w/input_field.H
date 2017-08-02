@@ -10,6 +10,7 @@
 #include <x/w/text_param.H>
 #include <x/w/input_field_config.H>
 #include <x/w/input_field_lock.H>
+#include <x/w/busy.H>
 
 #include <x/ref.H>
 

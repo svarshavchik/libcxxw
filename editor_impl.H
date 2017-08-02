@@ -97,8 +97,13 @@ class LIBCXX_HIDDEN editorObj::implObj
 
 	struct moving_cursor;
 
+	//! Callback
 	std::function< void(const input_change_info_t &)
 		       > on_change_thread_only;
+
+	//! Callback
+	std::function<bool(input_autocomplete_info_t &)
+		      > on_autocomplete_thread_only;
 
 	//! My parent peephole
 	const ref<editor_peephole_implObj> parent_peephole;
@@ -108,6 +113,7 @@ class LIBCXX_HIDDEN editorObj::implObj
 	THREAD_DATA_ONLY(primary_selection);
 	THREAD_DATA_ONLY(secondary_selection);
 	THREAD_DATA_ONLY(on_change);
+	THREAD_DATA_ONLY(on_autocomplete);
 
 	//! This editor's configuration.
 
@@ -352,6 +358,10 @@ class LIBCXX_HIDDEN editorObj::implObj
 	//! Set the current contents of the editor
 
 	void set(IN_THREAD_ONLY, const std::u32string &string);
+
+	//! Set the current contents of the editor
+	void set(IN_THREAD_ONLY, const std::u32string &string,
+		 size_t cursor_pos, size_t selection_pos);
 };
 
 LIBCXXW_NAMESPACE_END

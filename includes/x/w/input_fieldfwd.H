@@ -6,7 +6,9 @@
 #define x_w_input_fieldfwd_h
 
 #include <x/w/input_field_configfwd.H>
+#include <x/w/busyfwd.H>
 #include <x/ptrfwd.H>
+#include <string>
 
 LIBCXXW_NAMESPACE_START
 
@@ -53,6 +55,33 @@ class input_fieldObj;
 //! display elements, gets updated by an internal execution thread, which
 //! might be busy with other things, before focusing its attention on
 //! updating the input field's contents.
+//!
+//! \code
+//! f->on_change([]
+//!              (const INSERT_LIBX_NAMESPACE::w::input_change_info_t &)
+//!              {
+//!              });
+//!
+//! f->on_autocomplete([]
+//!               (const INSERT_LIBX_NAMESPACE::w::input_autocomplete_info_t &)
+//!               {
+//!                       return false;
+//!               });
+//! \endcode
+//!
+//! on_change() installs a callback that gets invoked whenever the
+//! contents of the input field change. The callback receives an
+//! \ref input_change_info_t "input_change_info_t" parameter describing the
+//! change.
+//!
+//!
+//! on_autocomplete() installs an additional callback that gets invoked
+//! whenever the contents of the input field change as a result of typing
+//! with the cursor at the end of the field. The callback receives a
+//! \ref input_autocomplete_info_t "input_autocomplete_info_t" parameter.
+//! Returning \c true from this callback results in the contents of the
+//! input field getting updated (this should result in an additional
+//! invocation of the on_change() callback).
 //!
 //! \see factory
 
@@ -113,6 +142,29 @@ struct input_change_info_t {
 	//! size of the replaced text.
 
 	size_t deleted;
+};
+
+//! Information passed to the input_field's on_autocomplete() callback.
+
+//! The usual autocomplete behavior is: the callback returns false if
+//! no autocomplete information is avaiable; or the callback sets
+//! \c selection_start to \c string.size() then replaces \c string
+//! with the autocompleted text.
+
+struct input_autocomplete_info_t {
+
+	//! String to autocomplete
+
+	//! The autocomplete() callback may update this \c string and
+	//! return \c true. The contents of the string completely replace
+	//! the existing contents of the input field.
+	std::u32string string;
+
+	//! Start of the autocompleted portion.
+	size_t selection_start;
+
+	//! Available \ref busy "busy" mcguffin, for callback's needs.
+	busy &mcguffin;
 };
 
 LIBCXXW_NAMESPACE_END

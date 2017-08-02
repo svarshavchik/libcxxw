@@ -9,6 +9,7 @@
 #include "reference_font_element.H"
 #include "screen.H"
 #include "draw_info.H"
+#include "busy.H"
 #include "fonts/current_fontcollection.H"
 #include "fonts/fontcollection.H"
 #include "focus/focusable_element.H"
@@ -117,7 +118,7 @@ struct LIBCXX_HIDDEN editorObj::implObj::moving_cursor {
 			{
 				// Remove the highlighted selection.
 
-				cursor_lock.cursor=richtextiteratorptr();
+				cursor_lock.cursor=nullptr;
 
 				me.draw_between(IN_THREAD, p, me.cursor);
 
@@ -218,6 +219,7 @@ editorObj::implObj::implObj(const ref<editor_peephole_implObj> &parent_peephole,
 		       "textedit@libcxx"),
 	  cursor(this->text->end()),
 	  on_change_thread_only( [](const auto &) {} ),
+	  on_autocomplete_thread_only([](const auto &) { return false; }),
 	  parent_peephole(parent_peephole),
 	  config(config)
 {
@@ -608,6 +610,29 @@ void editorObj::implObj::draw_changes(IN_THREAD_ONLY,
 	try {
 		on_change(IN_THREAD)({change_made, inserted, deleted});
 	} CATCH_EXCEPTIONS;
+
+	// Invoke the autocomplete callback if the conditions are right.
+
+	size_t s=size();
+
+	if (change_made != input_change_type::set &&
+	    s > 0 && cursor->pos() == s &&
+	    (!cursor_lock.cursor || cursor_lock.cursor->pos() == cursor->pos()))
+	{
+		busy_impl mcguffin{*this, IN_THREAD};
+
+		input_autocomplete_info_t info{get(), 0, mcguffin};
+
+		bool flag=false;
+
+		try {
+			flag=on_autocomplete(IN_THREAD)(info);
+		} CATCH_EXCEPTIONS;
+
+		if (flag)
+			set(IN_THREAD, info.string, info.string.size(),
+			    info.selection_start);
+	}
 }
 
 void editorObj::implObj::do_draw(IN_THREAD_ONLY,
@@ -1004,19 +1029,44 @@ editorObj::implObj::pos(selection_cursor_t::lock &cursor_lock)
 
 void editorObj::implObj::set(IN_THREAD_ONLY, const std::u32string &string)
 {
+	set(IN_THREAD, string, string.size(), string.size());
+}
+
+void editorObj::implObj::set(IN_THREAD_ONLY, const std::u32string &string,
+			     size_t cursor_pos, size_t selection_pos)
+{
+	size_t s=string.size();
+
+	if (cursor_pos > s)
+		cursor_pos=s;
+	if (selection_pos > s)
+		selection_pos=s;
+
 	selection_cursor_t::lock cursor_lock{*this};
 
-	input_mask dummy;
+	bool will_have_selection=cursor_pos != selection_pos;
 
-	moving_cursor moving{IN_THREAD, *this, dummy};
+	moving_cursor moving{IN_THREAD, *this, will_have_selection, false};
 
-	to_end(IN_THREAD, dummy);
+	cursor->swap(cursor->end());
 
 	size_t deleted=cursor->pos();
 
-	cursor_lock.cursor=cursor->begin();
-	delete_char_or_selection(IN_THREAD, dummy);
+	cursor->remove(IN_THREAD, cursor->begin());
+	remove_primary_selection(IN_THREAD);
 	cursor->insert(IN_THREAD, string);
+
+	cursor->swap(cursor->pos(cursor_pos));
+
+	if (will_have_selection)
+	{
+		cursor_lock.cursor=cursor->pos(selection_pos);
+	}
+	else
+	{
+		cursor_lock.cursor=nullptr;
+	}
+
 	recalculate(IN_THREAD);
 	draw_changes(IN_THREAD, cursor_lock,
 		     input_change_type::set, deleted, string.size());
