@@ -22,7 +22,7 @@ void factoryObj::created_internally(const element &e)
 {
 	ref<child_elementObj> impl=e->impl;
 
-	if (impl->container != container_impl)
+	if (impl->child_container != container_impl)
 		throw EXCEPTION(_("Internal error: child element added to the wrong container"));
 
 	created(e);

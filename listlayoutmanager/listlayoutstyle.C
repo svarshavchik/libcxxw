@@ -119,7 +119,7 @@ void listlayoutstyle_common
 		// listcontainer shoved a temporary container as the
 		// new element's container.
 
-		auto item_c=item_e_impl->container;
+		auto item_c=item_e_impl->child_container;
 
 		auto lmi=ref<listitemlayoutmanagerObj::implObj>
 			::create(item_c, item_e,

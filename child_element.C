@@ -16,35 +16,35 @@
 
 LIBCXXW_NAMESPACE_START
 
-child_elementObj::child_elementObj(const ref<containerObj::implObj> &container)
-	: child_elementObj(container, {})
+child_elementObj::child_elementObj(const ref<containerObj::implObj> &child_container)
+	: child_elementObj(child_container, {})
 {
 }
 
-child_elementObj::child_elementObj(const ref<containerObj::implObj> &container,
+child_elementObj::child_elementObj(const ref<containerObj::implObj> &child_container,
 				   const child_element_init_params &init_params)
-	: child_elementObj(container, init_params, background_colorptr())
+	: child_elementObj(child_container, init_params, background_colorptr())
 {
 }
 
-child_elementObj::child_elementObj(const ref<containerObj::implObj> &container,
+child_elementObj::child_elementObj(const ref<containerObj::implObj> &child_container,
 				   const child_element_init_params &init_params,
 				   const background_colorptr
 				   &initial_background_color)
-	: elementObj::implObj(container->get_element_impl()
+	: elementObj::implObj(child_container->get_element_impl()
 			      .nesting_level+1,
 			      {0, 0, 0, 0},
 			      // The container will position me later
 			      init_params.initial_metrics,
-			      container->get_window_handler()
+			      child_container->get_window_handler()
 			      .get_screen(),
-			      container->get_window_handler()
+			      child_container->get_window_handler()
 			      .drawable_pictformat,
 			      init_params.scratch_buffer_id.empty()
 			      ? "default@libcxx":init_params.scratch_buffer_id),
 	current_background_color_thread_only(initial_background_color),
-	container(init_params.container_override ? container
-		  : container->parent_for_new_child(container))
+	child_container(init_params.container_override ? child_container
+		  : child_container->parent_for_new_child(child_container))
 {
 }
 
@@ -52,26 +52,26 @@ child_elementObj::~child_elementObj()=default;
 
 generic_windowObj::handlerObj &child_elementObj::get_window_handler()
 {
-	return container->get_window_handler();
+	return child_container->get_window_handler();
 }
 
 const generic_windowObj::handlerObj &child_elementObj::get_window_handler()
 	const
 {
-	return container->get_window_handler();
+	return child_container->get_window_handler();
 }
 
 void child_elementObj::draw_after_visibility_updated(IN_THREAD_ONLY,
 						     bool flag)
 {
-	container->child_visibility_updated(IN_THREAD, flag);
+	child_container->child_visibility_updated(IN_THREAD, flag);
 	elementObj::implObj::draw_after_visibility_updated(IN_THREAD, flag);
 }
 
 void child_elementObj::process_updated_position(IN_THREAD_ONLY)
 {
 	elementObj::implObj::process_updated_position(IN_THREAD);
-	container->get_element_impl().schedule_redraw(IN_THREAD);
+	child_container->get_element_impl().schedule_redraw(IN_THREAD);
 }
 
 draw_info &child_elementObj::get_draw_info(IN_THREAD_ONLY)
@@ -97,7 +97,7 @@ draw_info &child_elementObj::get_draw_info(IN_THREAD_ONLY)
 
 	draw_info &di=
 		c.draw_info_cache.insert({e,
-					container->get_element_impl()
+					child_container->get_element_impl()
 					.get_draw_info(IN_THREAD)}).first
 		->second;
 
@@ -126,7 +126,7 @@ draw_info &child_elementObj::get_draw_info(IN_THREAD_ONLY)
 
 rectangle child_elementObj::get_absolute_location(IN_THREAD_ONLY)
 {
-	auto r=container->get_element_impl().get_absolute_location(IN_THREAD);
+	auto r=child_container->get_element_impl().get_absolute_location(IN_THREAD);
 
 	auto cpy=data(IN_THREAD).current_position;
 
@@ -137,7 +137,7 @@ rectangle child_elementObj::get_absolute_location(IN_THREAD_ONLY)
 
 void child_elementObj::visibility_updated(IN_THREAD_ONLY, bool flag)
 {
-	if (!container->get_element_impl()
+	if (!child_container->get_element_impl()
 	    .data(IN_THREAD).inherited_visibility)
 		flag=false;
 
@@ -147,7 +147,7 @@ void child_elementObj::visibility_updated(IN_THREAD_ONLY, bool flag)
 // When metrics are updated, notify my layout manager.
 void child_elementObj::horizvert_updated(IN_THREAD_ONLY)
 {
-	container->invoke_layoutmanager([&]
+	child_container->invoke_layoutmanager([&]
 					(const auto &manager)
 					{
 						manager->child_metrics_updated
@@ -178,7 +178,7 @@ void child_elementObj::remove_background_color(IN_THREAD_ONLY)
 
 	current_background_color(IN_THREAD)=nullptr;
 	background_color_changed(IN_THREAD);
-	container->child_background_color_changed(IN_THREAD,
+	child_container->child_background_color_changed(IN_THREAD,
 						  ref<elementObj::implObj>
 						  (this));
 }
@@ -191,7 +191,7 @@ void child_elementObj::set_background_color(IN_THREAD_ONLY,
 
 	current_background_color(IN_THREAD)=bgcolor;
 	background_color_changed(IN_THREAD);
-	container->child_background_color_changed(IN_THREAD,
+	child_container->child_background_color_changed(IN_THREAD,
 						  ref<elementObj::implObj>
 						  (this));
 }
@@ -202,7 +202,7 @@ void child_elementObj
 {
 	elementObj::implObj::set_inherited_visibility(IN_THREAD,
 						      visibility_info);
-	container->child_visibility_changed(IN_THREAD,
+	child_container->child_visibility_changed(IN_THREAD,
 					    visibility_info,
 					    elementimpl(this));
 }
@@ -229,19 +229,19 @@ void child_elementObj::prepare_draw_info(IN_THREAD_ONLY, draw_info &di)
 void child_elementObj::window_focus_change(IN_THREAD_ONLY, bool flag)
 {
 	elementObj::implObj::window_focus_change(IN_THREAD, flag);
-	container->get_element_impl().window_focus_change(IN_THREAD, flag);
+	child_container->get_element_impl().window_focus_change(IN_THREAD, flag);
 }
 
 bool child_elementObj::process_key_event(IN_THREAD_ONLY, const key_event &ke)
 {
 	return elementObj::implObj::process_key_event(IN_THREAD, ke)
-		|| container->get_element_impl()
+		|| child_container->get_element_impl()
 		.process_key_event(IN_THREAD, ke);
 }
 
 bool child_elementObj::enabled(IN_THREAD_ONLY)
 {
-	if (!container->get_element_impl().enabled(IN_THREAD))
+	if (!child_container->get_element_impl().enabled(IN_THREAD))
 		return false;
 
 	return elementObj::implObj::enabled(IN_THREAD);
@@ -254,7 +254,7 @@ bool child_elementObj::process_button_event(IN_THREAD_ONLY,
 	auto ret=elementObj::implObj::process_button_event(IN_THREAD, be,
 							   timestamp);
 
-	if (container->get_element_impl()
+	if (child_container->get_element_impl()
 	    .process_button_event(IN_THREAD, be, timestamp))
 		ret=true;
 
@@ -276,41 +276,41 @@ void child_elementObj::report_motion_event(IN_THREAD_ONLY,
 	cpy.x=coord_t::truncate(me.x + data(IN_THREAD).current_position.x);
 	cpy.y=coord_t::truncate(me.y + data(IN_THREAD).current_position.y);
 
-	container->get_element_impl().report_motion_event(IN_THREAD, cpy);
+	child_container->get_element_impl().report_motion_event(IN_THREAD, cpy);
 }
 
 void child_elementObj::ensure_visibility(IN_THREAD_ONLY, const rectangle &r)
 {
-	container->ensure_visibility(IN_THREAD, *this, r);
+	child_container->ensure_visibility(IN_THREAD, *this, r);
 }
 
 bool child_elementObj::pasted(IN_THREAD_ONLY,
 			      const std::u32string_view &str)
 {
 	return elementObj::implObj::pasted(IN_THREAD, str) ||
-		container->get_element_impl().pasted(IN_THREAD, str);
+		child_container->get_element_impl().pasted(IN_THREAD, str);
 }
 
 void child_elementObj::creating_focusable_element()
 {
-	return container->get_element_impl().creating_focusable_element();
+	return child_container->get_element_impl().creating_focusable_element();
 }
 
 const char *child_elementObj::label_theme_font() const
 {
-	return container->get_element_impl().label_theme_font();
+	return child_container->get_element_impl().label_theme_font();
 }
 
 void child_elementObj::schedule_tooltip_creation(IN_THREAD_ONLY)
 {
 	elementObj::implObj::schedule_tooltip_creation(IN_THREAD);
-	container->get_element_impl().schedule_tooltip_creation(IN_THREAD);
+	child_container->get_element_impl().schedule_tooltip_creation(IN_THREAD);
 }
 
 void child_elementObj::unschedule_tooltip_creation(IN_THREAD_ONLY)
 {
 	elementObj::implObj::unschedule_tooltip_creation(IN_THREAD);
-	container->get_element_impl().unschedule_tooltip_creation(IN_THREAD);
+	child_container->get_element_impl().unschedule_tooltip_creation(IN_THREAD);
 }
 
 LIBCXXW_NAMESPACE_END

@@ -43,7 +43,7 @@ class LIBCXX_HIDDEN child_elementObj : public elementObj::implObj {
 	THREAD_DATA_ONLY(current_background_color);
 
 	//! My parent element
-	const ref<containerObj::implObj> container;
+	const ref<containerObj::implObj> child_container;
 
 	//! Constructor.
 

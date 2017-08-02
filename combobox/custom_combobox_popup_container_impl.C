@@ -40,7 +40,7 @@ void custom_combobox_popup_containerObj::implObj
 	// to recalculate, so that the toplevelpeephole_layoutmanagerObj's
 	// recalculate() can update the vertical increment.
 
-	container->needs_recalculation(IN_THREAD);
+	child_container->needs_recalculation(IN_THREAD);
 	update_current_selection_metrics(IN_THREAD);
 }
 

@@ -27,7 +27,7 @@ void peepholed_toplevel_main_windowObj::implObj::initialize(IN_THREAD_ONLY)
 	superclass_t::initialize(IN_THREAD);
 	recalculate_metrics(IN_THREAD);
 
-	container->invoke_layoutmanager
+	child_container->invoke_layoutmanager
 		([&]
 		 (const auto &lm)
 		 {

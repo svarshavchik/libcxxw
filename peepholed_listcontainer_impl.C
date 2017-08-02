@@ -61,7 +61,7 @@ void peepholed_listcontainerObj::implObj
 
 	auto hv=get_horizvert(IN_THREAD);
 
-	container->get_element_impl().get_horizvert(IN_THREAD)
+	child_container->get_element_impl().get_horizvert(IN_THREAD)
 		->set_element_metrics(IN_THREAD,
 				      hv->horiz,
 				      {h, h, h});

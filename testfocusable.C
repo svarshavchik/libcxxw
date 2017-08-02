@@ -84,11 +84,11 @@ struct LIBCXX_NAMESPACE::w::elementObj::implObj :
 struct LIBCXX_NAMESPACE::w::child_elementObj
 	: public LIBCXX_NAMESPACE::w::elementObj::implObj {
 
-	LIBCXX_NAMESPACE::w::elementObj::implObj *container;
+	LIBCXX_NAMESPACE::w::elementObj::implObj *child_container;
 
 	child_elementObj(int id,
-			 LIBCXX_NAMESPACE::w::elementObj::implObj *container)
-		: elementObj::implObj(id), container(container) {}
+			 LIBCXX_NAMESPACE::w::elementObj::implObj *child_container)
+		: elementObj::implObj(id), child_container(child_container) {}
 
 	void requested_focus_to(IN_THREAD_ONLY,
 				const ptr<elementObj::implObj> &)

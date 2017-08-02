@@ -48,7 +48,7 @@ void canvasObj::implObj::theme_updated(IN_THREAD_ONLY,
 
 void canvasObj::implObj::recalculate(IN_THREAD_ONLY)
 {
-	auto screen=container->get_element_impl().get_screen()->impl;
+	auto screen=child_container->get_element_impl().get_screen()->impl;
 
 	get_horizvert(IN_THREAD)->set_element_metrics
 		(IN_THREAD,

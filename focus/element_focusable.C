@@ -85,8 +85,8 @@ void child_elementObj::requested_focus_to(IN_THREAD_ONLY,
 {
 	original_focus=false;
 
-	container->get_element_impl().requested_focus_to(IN_THREAD,
-							 focus_from);
+	child_container->get_element_impl().requested_focus_to(IN_THREAD,
+							       focus_from);
 	new_focus=true;
 }
 
@@ -107,7 +107,7 @@ void child_elementObj::requested_focus_from(IN_THREAD_ONLY)
 {
 	original_focus=true;
 	new_focus=false;
-	container->get_element_impl().requested_focus_from(IN_THREAD);
+	child_container->get_element_impl().requested_focus_from(IN_THREAD);
 }
 
 // Part 3:
@@ -160,10 +160,10 @@ void child_elementObj::do_leaving_focus(IN_THREAD_ONLY,
 
 	elementObj::implObj::do_leaving_focus(IN_THREAD, event, element,
 					      leaving_for, focus_reporter);
-	container->get_element_impl().do_leaving_focus(IN_THREAD, event,
-						       element,
-						       leaving_for,
-						       focus_reporter);
+	child_container->get_element_impl().do_leaving_focus(IN_THREAD, event,
+							     element,
+							     leaving_for,
+							     focus_reporter);
 }
 
 // Part 4: for each element starting with the top level display element,
@@ -189,10 +189,11 @@ void child_elementObj::do_entering_focus(IN_THREAD_ONLY,
 	// Recurse to parent first, before calling focus_gained(), so the
 	// display element that's receiving input focus gets called last.
 
-	container->get_element_impl().do_entering_focus(IN_THREAD,
-							focus_change::child_gained,
-							element, focus_from,
-							focus_reporter);
+	child_container->get_element_impl()
+		.do_entering_focus(IN_THREAD,
+				   focus_change::child_gained,
+				   element, focus_from,
+				   focus_reporter);
 	elementObj::implObj::do_entering_focus(IN_THREAD, event, element,
 					       focus_from, focus_reporter);
 }
@@ -237,7 +238,7 @@ void child_elementObj::focus_movement_complete(IN_THREAD_ONLY,
 	elementObj::implObj::focus_movement_complete(IN_THREAD,
 						     stop_at_original_focus,
 						     focus_reporter);
-	container->get_element_impl()
+	child_container->get_element_impl()
 		.focus_movement_complete(IN_THREAD,
 					 stop_at_original_focus,
 					 focus_reporter);

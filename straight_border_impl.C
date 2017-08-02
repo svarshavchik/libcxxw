@@ -300,7 +300,7 @@ straight_border straight_borderBase
 			return existing_border;
 	}
 	return create_horizontal_border(IN_THREAD,
-					existing_border->impl->container,
+					existing_border->impl->child_container,
 					element_above,
 					element_below,
 					default_border);
@@ -331,7 +331,7 @@ straight_border straight_borderBase
 		return existing_border;
 	}
 	return create_vertical_border(IN_THREAD,
-				      existing_border->impl->container,
+				      existing_border->impl->child_container,
 				      element_onleft,
 				      element_onright,
 				      default_border);

@@ -31,11 +31,19 @@ class containerObj;
 
 typedef ref<containerObj> container;
 
+//! A nullable pointer reference to a \ref container "container".
+
+typedef ptr<containerObj> containerptr;
+
 //! A constant container.
 
 //! \see container
 
 typedef const_ref<containerObj> const_container;
+
+//! A nullable pointer reference to a constant \ref container "container".
+
+typedef const_ptr<containerObj> const_containerptr;
 
 LIBCXXW_NAMESPACE_END
 
