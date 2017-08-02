@@ -16,17 +16,6 @@
 
 LIBCXXW_NAMESPACE_START
 
-//! Create the editor display element.
-
-//! \internal
-//!
-//! Constructs the \ref editor "editor display element" inside an
-//! \ref editor_container "editor peephole container".
-
-editor create_editor(const ref<editor_peephole_implObj> &parent_container,
-		     const text_param &initial_contents,
-		     const input_field_config &config) LIBCXX_HIDDEN;
-
 LIBCXXW_NAMESPACE_END
 
 #endif

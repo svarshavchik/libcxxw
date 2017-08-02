@@ -10,17 +10,6 @@
 
 LIBCXXW_NAMESPACE_START
 
-editor create_editor(const ref<editor_peephole_implObj> &parent_container,
-		     const text_param &initial_contents,
-		     const input_field_config &config)
-{
-	auto impl=ref<editorObj::implObj>::create(parent_container,
-						  initial_contents,
-						  config);
-
-	return editor::create(impl);
-}
-
 editorObj::editorObj(const ref<implObj> &impl)
 	: superclass_t(impl),
 	  impl(impl)
