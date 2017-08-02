@@ -291,8 +291,25 @@ void inputfieldsandbuttons()
 
 	// Retrieve each input_field, and get() its contents.
 
-	std::cout << "Subject: " << appdata->subject->get() << std::endl
-		  << std::endl << appdata->text->get();
+	// Each input_field must be locked, first:
+
+	x::w::input_lock subject_lock{appdata->subject};
+	x::w::input_lock text_lock{appdata->text};
+
+	std::cout << "Subject ("
+		  << subject_lock.size()
+		  << " character): " << subject_lock.get() << std::endl
+		  << std::endl << text_lock.get();
+
+	// Normally it's possible that a character gets typed after
+	// size() returns, and before get() gets called, hence the
+	// get() would return a shorter or a smaller string (let's ignore
+	// for the moment that size() returns unicode character count,
+	// and get() returns UTF-8).
+	//
+	// However, the input_lock blocks the internal library execution
+	// thread from accessing the contents of the field, so that can't
+	// happen.
 }
 
 int main(int argc, char **argv)

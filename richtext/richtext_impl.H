@@ -31,7 +31,7 @@ class richtext_insert_base;
 //! the public object. The IN_THREAD_ONLY is in addition to the
 //! general thread-safe requirement.
 
-class LIBCXX_HIDDEN richtextObj::implObj : virtual public obj {
+class LIBCXX_HIDDEN richtext_implObj : virtual public obj {
 
 public:
 
@@ -150,11 +150,11 @@ public:
 	halign alignment;
 
 	//! Constructor
-	implObj(//! Initial contents
-		const richtextstring &str,
+	richtext_implObj(//! Initial contents
+			 const richtextstring &str,
 
-		//! Alignment
-		halign alignmentArg);
+			 //! Alignment
+			 halign alignmentArg);
 
 	//! Replace existing contents by something else.
 
@@ -184,7 +184,7 @@ public:
 	void finish_initialization(IN_THREAD_ONLY);
 
 	//! Destructor
-	~implObj();
+	~richtext_implObj();
 
 	//! Minimum width of this text
 	dim_t minimum_width=0;

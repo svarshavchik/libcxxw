@@ -6,7 +6,9 @@
 #define x_w_input_fieldobj_h
 
 #include <x/w/peepholed_focusableobj.H>
+#include <x/w/input_fieldfwd.H>
 #include <string>
+#include <functional>
 
 LIBCXXW_NAMESPACE_START
 
@@ -36,17 +38,16 @@ public:
 	//! Destructor
 	~input_fieldObj() LIBCXX_HIDDEN;
 
-	//! Return the current contents of the input field.
-	std::string get() const;
-
-	//! Return the current contents of the input field, as unicode.
-	std::u32string get_unicode() const;
-
 	//! Set the contents of the input field.
 	void set(const std::string_view &str);
 
 	//! Set the contents of the input field, as unicode.
 	void set(const std::u32string_view &str);
+
+	//! Install a callback that gets invoked when the contents of the input field change.
+
+	void on_change(const std::function<void(const input_change_info_t &)>&);
+
 };
 
 LIBCXXW_NAMESPACE_END

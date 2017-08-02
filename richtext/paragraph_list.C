@@ -14,7 +14,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-paragraph_list::paragraph_list(richtextObj::implObj &textArg) : text(textArg)
+paragraph_list::paragraph_list(richtext_implObj &textArg) : text(textArg)
 {
 }
 

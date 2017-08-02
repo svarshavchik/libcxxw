@@ -24,14 +24,14 @@
 
 LIBCXXW_NAMESPACE_START
 
-richtextObj::implObj::implObj(const richtextstring &string,
+richtext_implObj::richtext_implObj(const richtextstring &string,
 			      halign alignmentArg)
 	: alignment(alignmentArg)
 {
 	do_set(string);
 }
 
-void richtextObj::implObj::set(IN_THREAD_ONLY, const richtextstring &string)
+void richtext_implObj::set(IN_THREAD_ONLY, const richtextstring &string)
 {
 	// If the existing rich text object has any cursor locations, make
 	// a copy of them.
@@ -120,7 +120,7 @@ void richtextObj::implObj::set(IN_THREAD_ONLY, const richtextstring &string)
 	restore_paragraphs_sentry.unguard();
 }
 
-void richtextObj::implObj::do_set(const richtextstring &string)
+void richtext_implObj::do_set(const richtextstring &string)
 {
 	paragraphs.clear();
 	num_chars=0;
@@ -178,7 +178,7 @@ void richtextObj::implObj::do_set(const richtextstring &string)
 	}
 }
 
-void richtextObj::implObj::finish_initialization(IN_THREAD_ONLY)
+void richtext_implObj::finish_initialization(IN_THREAD_ONLY)
 {
 	if (initialized)
 		return;
@@ -211,28 +211,28 @@ void richtextObj::implObj::finish_initialization(IN_THREAD_ONLY)
 	initialized=true;
 }
 
-richtextObj::implObj::~implObj()=default;
+richtext_implObj::~richtext_implObj()=default;
 
-void richtextObj::implObj::rich_text_paragraph_out_of_bounds()
+void richtext_implObj::rich_text_paragraph_out_of_bounds()
 {
 	throw EXCEPTION("Internal error: rich text paragraph out of bounds.");
 }
 
-bool richtextObj::implObj::rewrap(IN_THREAD_ONLY, dim_t width)
+bool richtext_implObj::rewrap(IN_THREAD_ONLY, dim_t width)
 {
 	paragraph_list my_paragraphs(*this);
 
 	return my_paragraphs.rewrap(IN_THREAD, width);
 }
 
-bool richtextObj::implObj::unwrap(IN_THREAD_ONLY)
+bool richtext_implObj::unwrap(IN_THREAD_ONLY)
 {
 	paragraph_list my_paragraphs(*this);
 
 	return my_paragraphs.unwrap(IN_THREAD);
 }
 
-size_t richtextObj::implObj::find_paragraph_for_pos(size_t &pos)
+size_t richtext_implObj::find_paragraph_for_pos(size_t &pos)
 {
 	auto p=paragraphs.find_paragraph_for_pos(pos);
 
@@ -248,7 +248,7 @@ size_t richtextObj::implObj::find_paragraph_for_pos(size_t &pos)
 	return p->my_paragraph_number;
 }
 
-richtextparagraph richtextObj::implObj::paragraphs_t::find_paragraph_for_pos(size_t n)
+richtextparagraph richtext_implObj::paragraphs_t::find_paragraph_for_pos(size_t n)
 {
 	auto iter=std::lower_bound(begin(), end(), n,
 				   []
@@ -263,13 +263,13 @@ richtextparagraph richtextObj::implObj::paragraphs_t::find_paragraph_for_pos(siz
 	return *--iter;
 }
 
-richtextfragmentptr richtextObj::implObj::find_fragment_for_y_position(size_t y_pos)
+richtextfragmentptr richtext_implObj::find_fragment_for_y_position(size_t y_pos)
 {
 	return paragraphs.find_fragment_for_y_position(y_pos);
 }
 
 richtextfragmentptr
-richtextObj::implObj::paragraphs_t::find_fragment_for_y_position(size_t y_pos)
+richtext_implObj::paragraphs_t::find_fragment_for_y_position(size_t y_pos)
 {
 	richtextfragmentptr ret;
 
@@ -323,7 +323,7 @@ richtextfragmentObj::fragments_t::find_fragment_for_y_position(size_t y_pos)
 	return ret;
 }
 
-richtextstring richtextObj::implObj::get_as_richtext() const
+richtextstring richtext_implObj::get_as_richtext() const
 {
 	// Size up our job, first.
 
@@ -368,7 +368,7 @@ richtextstring richtextObj::implObj::get_as_richtext() const
 	return s;
 }
 
-void richtextObj::implObj::theme_updated(IN_THREAD_ONLY,
+void richtext_implObj::theme_updated(IN_THREAD_ONLY,
 					 const defaulttheme &new_theme)
 {
 	paragraph_list my_paragraphs(*this);
@@ -377,7 +377,7 @@ void richtextObj::implObj::theme_updated(IN_THREAD_ONLY,
 }
 
 
-void richtextObj::implObj::rewrap_at_fragment(IN_THREAD_ONLY,
+void richtext_implObj::rewrap_at_fragment(IN_THREAD_ONLY,
 					      dim_t width,
 					      richtextfragmentObj *fragment,
 					      fragment_list &fragment_list_arg)
@@ -421,7 +421,7 @@ void richtextObj::implObj::rewrap_at_fragment(IN_THREAD_ONLY,
 		my_fragments.fragments_were_rewrapped();
 }
 
-size_t richtextObj::implObj::insert_at_location(IN_THREAD_ONLY,
+size_t richtext_implObj::insert_at_location(IN_THREAD_ONLY,
 						dim_t word_wrap_width,
 						const richtext_insert_base
 						&new_text)
@@ -480,10 +480,10 @@ size_t richtextObj::implObj::insert_at_location(IN_THREAD_ONLY,
 	return num_inserted;
 }
 
-void richtextObj::implObj::remove_at_location(IN_THREAD_ONLY,
-					      dim_t word_wrap_width,
-					      const richtextcursorlocation &ar,
-					      const richtextcursorlocation &br)
+void richtext_implObj::remove_at_location(IN_THREAD_ONLY,
+					  dim_t word_wrap_width,
+					  const richtextcursorlocation &ar,
+					  const richtextcursorlocation &br)
 {
 	const richtextcursorlocationObj *location_a=&*ar;
 	const richtextcursorlocationObj *location_b=&*br;

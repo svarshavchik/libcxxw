@@ -28,7 +28,7 @@ public:
 
 	//! My rich text.
 
-	richtextObj::implObj &text;
+	richtext_implObj &text;
 
  private:
 
@@ -45,7 +45,7 @@ public:
 	inline void recalculation_required() { size_changed=true; }
 
 	//! Constructor
-	paragraph_list(richtextObj::implObj &textArg);
+	paragraph_list(richtext_implObj &textArg);
 
 	//! Destructor
 

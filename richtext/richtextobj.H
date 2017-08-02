@@ -18,6 +18,7 @@
 #include "x/w/metrics/axis.H"
 #include "x/w/rectanglefwd.H"
 #include "x/w/drawablefwd.H"
+#include "x/w/input_field_lock.H"
 #include <x/obj.H>
 #include <x/mpobj.H>
 #include <x/functional.H>
@@ -31,26 +32,15 @@ class LIBCXX_HIDDEN richtextObj : virtual public obj {
 
  public:
 
-	class implObj;
-
- private:
 	//! The implementation object is mutex-protected.
 
-	class impl_t : public mpobj<ref<implObj>> {
+	class impl_t : public internal_richtext_impl_t {
 
 	public:
 
-		using mpobj::mpobj;
+		using internal_richtext_impl_t::internal_richtext_impl_t;
 
-		//! Read lock, on an honor system.
-		typedef mpobj<ref<implObj>>::lock read_only_lock;
-
-		//! IN_THREAD has full rights on the underlying object.
-		class lock : public read_only_lock {
-
-		public:
-			lock(IN_THREAD_ONLY, impl_t &);
-		};
+		class lock;
 	};
 
 	//! The implementation object.
@@ -70,7 +60,7 @@ class LIBCXX_HIDDEN richtextObj : virtual public obj {
 	THREAD_DATA_ONLY(word_wrap_width);
 
 	//! Constructor
-	richtextObj(const ref<implObj> &impl,
+	richtextObj(const ref<richtext_implObj> &impl,
 		    dim_t word_wrap_width);
 
 	//! Destructor
@@ -207,7 +197,7 @@ class LIBCXX_HIDDEN richtextObj : virtual public obj {
 	template<typename lambda>
 		auto read_only_lock(lambda &&l)
 	{
-		impl_t::read_only_lock lock{impl};
+		internal_richtext_impl_t::lock lock{impl};
 
 		return l(lock);
 	}
@@ -249,14 +239,14 @@ class LIBCXX_HIDDEN richtextObj : virtual public obj {
 
 	//! Calculate a location's position'
 
-	static size_t pos(const impl_t::read_only_lock &,
+	static size_t pos(const internal_richtext_impl_t::lock &,
 			  const richtextcursorlocation &);
 
 	//! Get text between two locations.
 
 	//! Invoked from richtextiterator->get() after a read_only_lock().
 
-	static void get(const impl_t::read_only_lock &,
+	static void get(const internal_richtext_impl_t::lock &,
 			richtextstring &,
 			const richtextcursorlocation &,
 			const richtextcursorlocation &);
@@ -264,13 +254,21 @@ class LIBCXX_HIDDEN richtextObj : virtual public obj {
  private:
 	//! Return an iterator to the given character # in the rich text.
 
-	richtextiterator at(impl_t::read_only_lock &lock, size_t npos);
+	richtextiterator at(internal_richtext_impl_t::lock &lock, size_t npos);
  public:
 	//! For testing purpose.
 
-	ref<implObj> debug_get_impl(IN_THREAD_ONLY);
+	ref<richtext_implObj> debug_get_impl(IN_THREAD_ONLY);
 };
 
+
+//! IN_THREAD has full rights on the underlying object.
+class richtextObj::impl_t::lock : public internal_richtext_impl_t::lock {
+
+
+public:
+	lock(IN_THREAD_ONLY, impl_t &);
+};
 
 LIBCXXW_NAMESPACE_END;
 #endif

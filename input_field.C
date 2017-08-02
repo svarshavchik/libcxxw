@@ -112,17 +112,6 @@ factoryObj::create_input_field(const text_param &text,
 	return input_field;
 }
 
-std::u32string input_fieldObj::get_unicode() const
-{
-	return impl->editor_element->impl->get();
-}
-
-std::string input_fieldObj::get() const
-{
-	return unicode::iconvert::fromu::convert(get_unicode(),
-						 unicode::utf_8).first;
-}
-
 void input_fieldObj::set(const std::string_view &str)
 {
 	set(unicode::iconvert::tou::convert(std::string{str},
@@ -138,6 +127,19 @@ void input_fieldObj::set(const std::u32string_view &str)
 		 (IN_THREAD_ONLY)
 		 {
 			 editor_impl->set(IN_THREAD, str);
+		 });
+}
+
+void input_fieldObj::on_change(const std::function<
+			       void(const input_change_info_t &)> &callback)
+{
+	auto editor_impl=impl->editor_element->impl;
+
+	editor_impl->get_window_handler().thread()->run_as
+		([callback, editor_impl]
+		 (IN_THREAD_ONLY)
+		 {
+			 editor_impl->on_change(IN_THREAD)=callback;
 		 });
 }
 

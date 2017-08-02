@@ -32,7 +32,7 @@ public:
 	//! my_paragraph_number is this paragraph's number in
 	//! my_richtext->paragraphs.
 
-	richtextObj::implObj *my_richtext=nullptr;
+	richtext_implObj *my_richtext=nullptr;
 
 	//! \see my_richtext
 	size_t my_paragraph_number=0;

@@ -72,6 +72,28 @@ void testbutton()
 
 				 fields.first=factory->create_input_field({""}, {30});
 
+				 fields.first->on_change
+				 ([]
+				  (const auto &what) {
+					 switch (what.type) {
+					 case LIBCXX_NAMESPACE::w::input_change_type::deleted:
+						 std::cout << "deleted ";
+						 break;
+					 case LIBCXX_NAMESPACE::w::input_change_type::inserted:
+						 std::cout << "inserted ";
+						 break;
+					 case LIBCXX_NAMESPACE::w::input_change_type::set:
+						 std::cout << "set ";
+						 break;
+					 }
+					 std::cout << " ["
+						   << what.deleted
+						   << "/"
+						   << what.inserted
+						   << "]" << std::endl;
+				 });
+
+
 				 factory=layout->append_row();
 
 				 fields.second=factory->halign(LIBCXXW_NAMESPACE::halign::right)
@@ -131,8 +153,18 @@ void testbutton()
 
 	appdata_t appdata=main_window->appdata;
 
-	std::cout << appdata->first->get() << std::endl;
-	std::cout << appdata->second->get() << std::endl;
+	LIBCXX_NAMESPACE::w::input_lock lock_first{appdata->first},
+		lock_second{appdata->second};
+
+	std::cout << lock_first.get() << std::endl;
+	std::cout << lock_second.get() << std::endl;
+
+	std::cout << lock_first.size() << std::endl;
+
+	auto [pos1, pos2]=lock_first.pos();
+
+	std::cout << "POS: [" << pos1 << ", " << pos2 << "]" << std::endl;
+
 	std::cout << "Done" << std::endl;
 }
 

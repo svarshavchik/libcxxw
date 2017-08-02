@@ -22,6 +22,7 @@
 #include "messages.H"
 #include "connection_thread.H"
 #include "generic_window_handler.H"
+#include "catch_exceptions.H"
 #include "x/w/key_event.H"
 #include "x/w/button_event.H"
 #include "x/w/motion_event.H"
@@ -97,26 +98,26 @@ struct LIBCXX_HIDDEN editorObj::implObj::moving_cursor {
 		      bool processing_clear)
 		: IN_THREAD(IN_THREAD), me(me), old_cursor(me.cursor->clone())
 	{
+		selection_cursor_t::lock cursor_lock{me};
+
 		// Make sure to turn off the blink, before
 		// starting a selection.
 		me.unblink(IN_THREAD);
 
 		if (selection_in_progress)
 		{
-			if (!me.selection_start(IN_THREAD))
-				me.selection_start(IN_THREAD)=
-					me.cursor->clone();
+			if (!cursor_lock.cursor)
+				cursor_lock.cursor=me.cursor->clone();
 		}
 		else
 		{
-			auto p=me.selection_start(IN_THREAD);
+			auto p=cursor_lock.cursor;
 
 			if (p)
 			{
 				// Remove the highlighted selection.
 
-				me.selection_start(IN_THREAD)=
-					richtextiteratorptr();
+				cursor_lock.cursor=richtextiteratorptr();
 
 				me.draw_between(IN_THREAD, p, me.cursor);
 
@@ -131,7 +132,7 @@ struct LIBCXX_HIDDEN editorObj::implObj::moving_cursor {
 			}
 		}
 
-		if (me.selection_start(IN_THREAD))
+		if (cursor_lock.cursor)
 			in_selection=true;
 	}
 
@@ -186,6 +187,16 @@ public:
 
 ////////////////////////////////////////////////////////////////////////////
 
+editorObj::implObj::selection_cursor_t::lock::lock(implObj &impl)
+	: internal_lock{impl.cursor->my_richtext->impl},
+	  cursor{impl.selection_cursor.cursor}
+{
+}
+
+editorObj::implObj::selection_cursor_t::lock::~lock()=default;
+
+////////////////////////////////////////////////////////////////////////////
+
 editorObj::implObj::implObj(const ref<editor_peephole_implObj> &parent_peephole,
 			    const text_param &text,
 			    const input_field_config &config)
@@ -206,6 +217,7 @@ editorObj::implObj::implObj(const ref<editor_peephole_implObj> &parent_peephole,
 		       std::get<richtextmeta>(meta_and_string),
 		       "textedit@libcxx"),
 	  cursor(this->text->end()),
+	  on_change_thread_only( [](const auto &) {} ),
 	  parent_peephole(parent_peephole),
 	  config(config)
 {
@@ -342,11 +354,13 @@ void editorObj::implObj::blink(IN_THREAD_ONLY)
 void editorObj::implObj::blink(IN_THREAD_ONLY,
 			       const richtextiterator &cursor)
 {
+	selection_cursor_t::lock cursor_lock{*this};
+
 	// We actually blink the cursor only when we are not showing a
 	// selection.
 
-	if ( (!selection_start(IN_THREAD)) ||
-	     selection_start(IN_THREAD)->compare(cursor) == 0)
+	if ( (!cursor_lock.cursor) ||
+	     cursor_lock.cursor->compare(cursor) == 0)
 	{
 		blinkon= !blinkon;
 
@@ -369,7 +383,7 @@ void editorObj::implObj::blink(IN_THREAD_ONLY,
 	current_position.width=at.position.width;
 	current_position.y=0;
 	text->redraw_whatsneeded(IN_THREAD, *this,
-				 {selection_start(IN_THREAD), cursor},
+				 {cursor_lock.cursor, cursor},
 				 get_draw_info(IN_THREAD),
 				 {current_position});
 }
@@ -453,9 +467,14 @@ bool editorObj::implObj::process_keypress(IN_THREAD_ONLY, const key_event &ke)
 	case XK_Delete:
 	case XK_KP_Delete:
 		unblink(IN_THREAD);
-		delete_char_or_selection(IN_THREAD, ke);
-		recalculate(IN_THREAD);
-		draw_changes(IN_THREAD);
+		{
+			selection_cursor_t::lock cursor_lock{*this};
+
+			size_t deleted=delete_char_or_selection(IN_THREAD, ke);
+			recalculate(IN_THREAD);
+			draw_changes(IN_THREAD, cursor_lock,
+				     input_change_type::deleted, deleted, 0);
+		}
 		blink(IN_THREAD);
 		return true;
 	case XK_Page_Up:
@@ -511,17 +530,26 @@ bool editorObj::implObj::process_keypress(IN_THREAD_ONLY, const key_event &ke)
 
 	if (ke.unicode == '\b')
 	{
+		selection_cursor_t::lock cursor_lock{*this};
+
 		unblink(IN_THREAD);
-		if (selection_start(IN_THREAD))
-			delete_selection(IN_THREAD);
+
+		size_t deleted;
+
+		if (cursor_lock.cursor)
+			deleted=delete_selection(IN_THREAD);
 		else
 		{
 			auto old=cursor->clone();
 			cursor->prev(IN_THREAD);
+
+			deleted=cursor->pos() == old->pos() ? 0:1;
+
 			cursor->remove(IN_THREAD, old);
 		}
 		recalculate(IN_THREAD);
-		draw_changes(IN_THREAD);
+		draw_changes(IN_THREAD, cursor_lock,
+			     input_change_type::deleted, deleted, 0);
 		blink(IN_THREAD);
 		return true;
 	}
@@ -544,21 +572,34 @@ bool editorObj::implObj::pasted(IN_THREAD_ONLY,
 void editorObj::implObj::insert(IN_THREAD_ONLY,
 				const std::u32string_view &str)
 {
+	selection_cursor_t::lock cursor_lock{*this};
+
 	unblink(IN_THREAD);
 
-	if (selection_start(IN_THREAD))
-		delete_selection(IN_THREAD);
+	size_t deleted=0;
+
+	if (cursor_lock.cursor)
+		deleted=delete_selection(IN_THREAD);
 	cursor->insert(IN_THREAD, str);
 	recalculate(IN_THREAD);
-	draw_changes(IN_THREAD);
+	draw_changes(IN_THREAD, cursor_lock,
+		     input_change_type::inserted, deleted, str.size());
 	blink(IN_THREAD);
 }
 
-void editorObj::implObj::draw_changes(IN_THREAD_ONLY)
+void editorObj::implObj::draw_changes(IN_THREAD_ONLY,
+				      selection_cursor_t::lock &cursor_lock,
+				      input_change_type change_made,
+				      size_t deleted,
+				      size_t inserted)
 {
 	text->redraw_whatsneeded(IN_THREAD, *this,
-				 {selection_start(IN_THREAD), cursor},
+				 {cursor_lock.cursor, cursor},
 				 get_draw_info(IN_THREAD));
+
+	try {
+		on_change(IN_THREAD)({change_made, inserted, deleted});
+	} CATCH_EXCEPTIONS;
 }
 
 void editorObj::implObj::do_draw(IN_THREAD_ONLY,
@@ -568,8 +609,10 @@ void editorObj::implObj::do_draw(IN_THREAD_ONLY,
 #ifdef EDITOR_DRAW
 	EDITOR_DRAW();
 #endif
+	selection_cursor_t::lock cursor_lock{*this};
+
 	text->full_redraw(IN_THREAD, *this,
-			     {selection_start(IN_THREAD), cursor},
+			     {cursor_lock.cursor, cursor},
 			  di, areas);
 }
 
@@ -577,9 +620,11 @@ void editorObj::implObj::draw_between(IN_THREAD_ONLY,
 				      const richtextiterator &a,
 				      const richtextiterator &b)
 {
+	selection_cursor_t::lock cursor_lock{*this};
+
 	text->redraw_between(IN_THREAD, *this,
 			     a, b,
-			     {selection_start(IN_THREAD), cursor},
+			     {cursor_lock.cursor, cursor},
 			     get_draw_info(IN_THREAD));
 }
 
@@ -778,29 +823,44 @@ ptr<current_selectionObj::convertedValueObj> editorObj::implObj::selectionObj
 		::create(type, 8, bytes);
 }
 
-void editorObj::implObj::delete_selection(IN_THREAD_ONLY)
+size_t editorObj::implObj::delete_selection(IN_THREAD_ONLY)
 {
-	cursor->remove(IN_THREAD, selection_start(IN_THREAD));
-	selection_start(IN_THREAD)=richtextiteratorptr();
+	selection_cursor_t::lock cursor_lock{*this};
+
+	size_t p1=cursor->pos();
+
+	size_t p2=cursor_lock.cursor->pos();
+
+	if (p1 > p2)
+		std::swap(p1, p2);
+
+	cursor->remove(IN_THREAD, cursor_lock.cursor);
+	cursor_lock.cursor=richtextiteratorptr();
 	remove_primary_selection(IN_THREAD);
+
+	return p2-p1;
 }
 
 editorObj::implObj::selection
 editorObj::implObj::create_selection(IN_THREAD_ONLY)
 {
+	selection_cursor_t::lock cursor_lock{*this};
+
 	return selection::create(get_screen()->impl->thread
 				 ->timestamp(IN_THREAD),
 				 ref<implObj>(this),
 				 cursor,
-				 selection_start(IN_THREAD));
+				 cursor_lock.cursor);
 }
 
 void editorObj::implObj::create_primary_selection(IN_THREAD_ONLY)
 {
-	if (!selection_start(IN_THREAD))
+	selection_cursor_t::lock cursor_lock{*this};
+
+	if (!cursor_lock.cursor)
 		return;
 
-	if (selection_start(IN_THREAD)->compare(cursor) == 0)
+	if (cursor_lock.cursor->compare(cursor) == 0)
 		return; // Nothing selected, really.
 	// Remove the previous one.
 
@@ -813,10 +873,12 @@ void editorObj::implObj::create_primary_selection(IN_THREAD_ONLY)
 
 void editorObj::implObj::create_secondary_selection(IN_THREAD_ONLY)
 {
-	if (!selection_start(IN_THREAD))
+	selection_cursor_t::lock cursor_lock{*this};
+
+	if (!cursor_lock.cursor)
 		return;
 
-	if (selection_start(IN_THREAD)->compare(cursor) == 0)
+	if (cursor_lock.cursor->compare(cursor) == 0)
 		return; // Nothing selected, really.
 	// Remove the previous one.
 
@@ -875,21 +937,26 @@ void editorObj::implObj::select_all(IN_THREAD_ONLY)
 	to_end(IN_THREAD, mask);
 }
 
-void editorObj::implObj::delete_char_or_selection(IN_THREAD_ONLY,
+size_t editorObj::implObj::delete_char_or_selection(IN_THREAD_ONLY,
 						  const input_mask &mask)
 {
-	if (selection_start(IN_THREAD))
+	selection_cursor_t::lock cursor_lock{*this};
+
+	if (cursor_lock.cursor)
 	{
 		if (mask.shift)
 			create_secondary_selection(IN_THREAD);
-		delete_selection(IN_THREAD);
+		return delete_selection(IN_THREAD);
 	}
-	else
-	{
-		auto clone=cursor->clone();
-		clone->next(IN_THREAD);
-		cursor->remove(IN_THREAD, clone);
-	}
+
+	auto clone=cursor->clone();
+	clone->next(IN_THREAD);
+
+	size_t p=cursor->pos() == clone->pos() ? 0:1;
+
+	cursor->remove(IN_THREAD, clone);
+
+	return p;
 }
 
 std::u32string editorObj::implObj::get()
@@ -897,18 +964,54 @@ std::u32string editorObj::implObj::get()
 	return cursor->begin()->get(cursor->end()).get_string();
 }
 
+size_t editorObj::implObj::size() const
+{
+	return cursor->my_richtext->read_only_lock
+		([]
+		 (const auto &impl)
+		 {
+			 return (*impl)->num_chars-1;
+		 });
+}
+
+std::tuple<size_t, size_t> editorObj::implObj::pos()
+{
+	selection_cursor_t::lock cursor_lock{*this};
+
+	return pos(cursor_lock);
+}
+
+std::tuple<size_t, size_t>
+editorObj::implObj::pos(selection_cursor_t::lock &cursor_lock)
+{
+	size_t p=cursor->pos();
+
+	size_t p2=p;
+
+	if (cursor_lock.cursor)
+		p2=cursor_lock.cursor->pos();
+
+	return {p, p2};
+}
+
 void editorObj::implObj::set(IN_THREAD_ONLY, const std::u32string &string)
 {
+	selection_cursor_t::lock cursor_lock{*this};
+
 	input_mask dummy;
 
 	moving_cursor moving{IN_THREAD, *this, dummy};
 
 	to_end(IN_THREAD, dummy);
-	selection_start(IN_THREAD)=cursor->begin();
+
+	size_t deleted=cursor->pos();
+
+	cursor_lock.cursor=cursor->begin();
 	delete_char_or_selection(IN_THREAD, dummy);
 	cursor->insert(IN_THREAD, string);
 	recalculate(IN_THREAD);
-	draw_changes(IN_THREAD);
+	draw_changes(IN_THREAD, cursor_lock,
+		     input_change_type::set, deleted, string.size());
 }
 
 LIBCXXW_NAMESPACE_END

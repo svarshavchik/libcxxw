@@ -24,11 +24,11 @@ richtext richtextBase::create(const richtextstring &string,
 			      halign alignment, dim_t initial_width)
 {
 	return ptrrefBase::objfactory<richtext>
-		::create(ref<richtextObj::implObj>
+		::create(ref<richtext_implObj>
 			 ::create(string, alignment), initial_width);
 }
 
-richtextObj::richtextObj(const ref<implObj> &impl,
+richtextObj::richtextObj(const ref<richtext_implObj> &impl,
 			 dim_t word_wrap_width)
 	: impl(impl),
 	  word_wrap_width_thread_only(word_wrap_width)
@@ -40,8 +40,8 @@ richtextObj::~richtextObj()=default;
 // We must make sure that finish_initialization() gets invoked after the
 // object gets constructed.
 
-richtextObj::impl_t::lock::lock(IN_THREAD_ONLY,
-				impl_t &me) : mpobj::lock(me)
+richtextObj::impl_t::lock::lock(IN_THREAD_ONLY, impl_t &me)
+	: internal_richtext_impl_t::lock(me)
 {
 	(**this)->finish_initialization(IN_THREAD);
 }
@@ -511,12 +511,12 @@ richtextiterator richtextObj::end()
 
 richtextiterator richtextObj::at(size_t npos)
 {
-	impl_t::read_only_lock lock{impl};
+	internal_richtext_impl_t::lock lock{impl};
 
 	return at(lock, npos);
 }
 
-richtextiterator richtextObj::at(impl_t::read_only_lock &lock, size_t npos)
+richtextiterator richtextObj::at(internal_richtext_impl_t::lock &lock, size_t npos)
 {
 	size_t n_paragraph=(*lock)->find_paragraph_for_pos(npos);
 
@@ -559,7 +559,7 @@ void richtextObj::remove_at_location(IN_THREAD_ONLY,
 					   a, b);
 }
 
-size_t richtextObj::pos(const impl_t::read_only_lock &lock,
+size_t richtextObj::pos(const internal_richtext_impl_t::lock &lock,
 			const richtextcursorlocation &l)
 {
 	assert_or_throw
@@ -572,7 +572,7 @@ size_t richtextObj::pos(const impl_t::read_only_lock &lock,
 		l->my_fragment->my_paragraph->first_char_n;
 }
 
-void richtextObj::get(const impl_t::read_only_lock &lock,
+void richtextObj::get(const internal_richtext_impl_t::lock &lock,
 		      richtextstring &str,
 		      const richtextcursorlocation &a,
 		      const richtextcursorlocation &b)
@@ -631,7 +631,7 @@ void richtextObj::get(const impl_t::read_only_lock &lock,
 		   {f->string, 0, location_b->get_offset()});
 }
 
-ref<richtextObj::implObj> richtextObj::debug_get_impl(IN_THREAD_ONLY)
+ref<richtext_implObj> richtextObj::debug_get_impl(IN_THREAD_ONLY)
 {
 	impl_t::lock lock{IN_THREAD, impl};
 

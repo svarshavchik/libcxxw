@@ -16,6 +16,7 @@
 #include "richtext/richtextstring.H"
 #include "richtext/richtextmeta.H"
 #include "x/w/input_field_config.H"
+#include "x/w/input_field_lock.H"
 #include "x/w/button_eventfwd.H"
 
 #include <tuple>
@@ -38,9 +39,43 @@ class LIBCXX_HIDDEN editorObj::implObj
 	//! The current cursor position.
 	const richtextiterator cursor;
 
+	//! A container for the current selection cursor.
+
+	//! A container for another richtextiterator cursor that marks the
+	//! start (or the end) of a selection, if there is one. The regular
+	//! cursor is the other end of the selection
+
+	class selection_cursor_t {
+
+		richtextiteratorptr cursor;
+
+	public:
+
+		//! Gain access to the selection cursor
+
+		class lock {
+
+			//! The lock on the underlying rich text object.
+
+			internal_richtext_impl_t::lock internal_lock;
+
+		public:
+
+			//! The cursor reference.
+
+			richtextiteratorptr &cursor;
+
+			//! Constructor
+			lock(implObj &impl);
+
+			//! Destructor
+			~lock();
+		};
+	};
+
 	//! Whether a selection is currently in effect.
 
-	richtextiteratorptr selection_start_thread_only;
+	selection_cursor_t selection_cursor;
 
 	//! Our subclass of current_selectionObj
 
@@ -62,14 +97,17 @@ class LIBCXX_HIDDEN editorObj::implObj
 
 	struct moving_cursor;
 
+	std::function< void(const input_change_info_t &)
+		       > on_change_thread_only;
+
 	//! My parent peephole
 	const ref<editor_peephole_implObj> parent_peephole;
 
  public:
 
-	THREAD_DATA_ONLY(selection_start);
 	THREAD_DATA_ONLY(primary_selection);
 	THREAD_DATA_ONLY(secondary_selection);
+	THREAD_DATA_ONLY(on_change);
 
 	//! This editor's configuration.
 
@@ -223,7 +261,11 @@ class LIBCXX_HIDDEN editorObj::implObj
 	void unblink(IN_THREAD_ONLY, const richtextiterator &cursor);
 
 	//! Draw changed text fragments.
-	void draw_changes(IN_THREAD_ONLY);
+	void draw_changes(IN_THREAD_ONLY,
+			  selection_cursor_t::lock &cursor_lock,
+			  input_change_type change_made,
+			  size_t deleted,
+			  size_t inserted);
 
 	//! Draw a fragment range.
 	void draw_between(IN_THREAD_ONLY,
@@ -245,7 +287,7 @@ class LIBCXX_HIDDEN editorObj::implObj
 	void set_focus_and_ensure_visibility(IN_THREAD_ONLY) override;
 
 	//! Delete the current selection
-	void delete_selection(IN_THREAD_ONLY);
+	size_t delete_selection(IN_THREAD_ONLY);
 
 	//! Create a new selection object.
 	selection create_selection(IN_THREAD_ONLY);
@@ -286,7 +328,7 @@ class LIBCXX_HIDDEN editorObj::implObj
 	void select_all(IN_THREAD_ONLY);
 
 	//! What happens when DEL is pressed.
-	void delete_char_or_selection(IN_THREAD_ONLY, const input_mask &mask);
+	size_t delete_char_or_selection(IN_THREAD_ONLY, const input_mask &mask);
 
  public:
 
@@ -294,6 +336,16 @@ class LIBCXX_HIDDEN editorObj::implObj
 
 	std::u32string get();
 
+	//! Return the size of the input field.
+	size_t size() const;
+
+	//! Return the current cursor position.
+	std::tuple<size_t, size_t> pos();
+
+ private:
+	//! Return the current cursor position.
+	std::tuple<size_t, size_t> pos(selection_cursor_t::lock &cursor_lock);
+ public:
 	//! Set the current contents of the editor
 
 	void set(IN_THREAD_ONLY, const std::u32string &string);

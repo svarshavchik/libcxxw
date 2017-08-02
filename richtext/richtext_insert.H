@@ -25,7 +25,7 @@ LIBCXXW_NAMESPACE_START
 //!
 //! richtext_insert_base gets constructed by richtextiteratorObj, which
 //! owns the richtextcursorlocation, and gets forwarded to
-//! richtextObj::implObj::insert_at_location(), which obtains the fragment
+//! richtext_implObj::insert_at_location(), which obtains the fragment
 //! from the richtextcursorlocation, whose insert() gets finally invoked.
 
 struct LIBCXX_HIDDEN richtext_insert_base {
