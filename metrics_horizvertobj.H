@@ -45,15 +45,18 @@ namespace metrics {
 					   virtual public obj {
 
 		//! Minimum horizontal size override
-		dim_t minimum_horiz_override=0;
+		dim_t minimum_horiz_override_thread_only=0;
 
 		//! Minimum vertical size override
-		dim_t minimum_vert_override=0;
+		dim_t minimum_vert_override_thread_only=0;
 
 		//! Original, unoverridden axis.
 
 		horizvert_axi original_axis;
 	public:
+		THREAD_DATA_ONLY(minimum_horiz_override);
+		THREAD_DATA_ONLY(minimum_vert_override);
+
 		/////////////////////////////////////////////////////////////
 		//
 		// NOTE: this entire object is IN_THREAD_ONLY
@@ -85,8 +88,8 @@ namespace metrics {
 			original_axis.horiz=new_horiz;
 			original_axis.vert=new_vert;
 
-			horiz.set_minimum(minimum_horiz_override);
-			vert.set_minimum(minimum_vert_override);
+			horiz.set_minimum(minimum_horiz_override(IN_THREAD));
+			vert.set_minimum(minimum_vert_override(IN_THREAD));
 
 			if (horiz != prev_horiz || vert != prev_vert)
 			{
@@ -100,8 +103,8 @@ namespace metrics {
 					  dim_t horiz_override,
 					  dim_t vert_override)
 		{
-			minimum_horiz_override=horiz_override;
-			minimum_vert_override=vert_override;
+			minimum_horiz_override(IN_THREAD)=horiz_override;
+			minimum_vert_override(IN_THREAD)=vert_override;
 
 			// Check if the metrics should be updated due to the
 			// new override.
