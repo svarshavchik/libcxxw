@@ -8,7 +8,6 @@
 #include "messages.H"
 #include <x/exception.H>
 #include <x/sentry.H>
-#include <courier-unicode.h>
 
 LIBCXXW_NAMESPACE_START
 
@@ -138,39 +137,19 @@ new_standard_comboboxlayoutmanager::new_standard_comboboxlayoutmanager()
 		{
 			standard_comboboxlayoutmanager lm=search_info.lm;
 
-			size_t n=lm->impl->text_items(search_info.lock).size();
-
-			if (search_info.text.size() == 0 || n == 0)
+			if (search_info.text.size() == 0)
 			{
 				lm->unselect();
 				return;
 			}
 
-			size_t search_size=search_info.text.size();
+			size_t found;
 
-			for (size_t i=0; i<n; ++i)
-			{
-				size_t j=(i+search_info.starting_index) % n;
-
-				const auto &string=lm->impl->text_items
-					(search_info.lock).at(j).string;
-
-				if (string.size() < search_size)
-					continue;
-
-				size_t l;
-
-				for (l=0; l<search_size; ++l)
-					if (unicode_lc(string[l]) !=
-					    unicode_lc(search_info.text[l]))
-						break;
-
-				if (l == search_size)
-				{
-					lm->autoselect(search_info.lock, j);
-					return;
-				}
-			}
+			if (lm->impl->search(search_info.lock,
+					     search_info.starting_index,
+					     search_info.text,
+					     found))
+				lm->autoselect(search_info.lock, found);
 		};
 }
 

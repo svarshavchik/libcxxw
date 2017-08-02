@@ -10,6 +10,7 @@
 #include "x/w/text_param.H"
 
 #include <vector>
+#include <string>
 
 LIBCXXW_NAMESPACE_START
 
@@ -44,6 +45,13 @@ class LIBCXX_HIDDEN standard_comboboxlayoutmanagerObj::implObj
 	//! Override create_public_object to create the standard_comboboxlayoutmanager.
 
 	layoutmanager create_public_object() override;
+
+	//! Search
+
+	bool search(grid_map_t::lock &lock,
+		    size_t starting_index,
+		    const std::u32string &text,
+		    size_t &found);
 };
 
 LIBCXXW_NAMESPACE_END
