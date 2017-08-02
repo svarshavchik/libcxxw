@@ -8,6 +8,7 @@
 #include <x/ref.H>
 #include <x/mpobj.H>
 #include <x/w/input_fieldfwd.H>
+#include <x/w/editable_comboboxlayoutmanagerfwd.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -66,6 +67,9 @@ class LIBCXX_HIDDEN input_lock : public internal_richtext_impl_t::lock {
 
 	//! Constructor
 	input_lock(const input_field &) LIBCXX_PUBLIC;
+
+	//! Constructor
+	input_lock(const editable_comboboxlayoutmanager &) LIBCXX_PUBLIC;
 
 	//! Destructor
 

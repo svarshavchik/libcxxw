@@ -22,6 +22,11 @@ custom_combobox_containerObj::implObj
 
 custom_combobox_containerObj::implObj::~implObj()=default;
 
+const char *custom_combobox_containerObj::implObj::label_theme_font() const
+{
+	return "combobox";
+}
+
 void custom_combobox_containerObj::implObj::initialize(IN_THREAD_ONLY)
 {
 	superclass_t::initialize(IN_THREAD);

@@ -146,6 +146,7 @@ void input_fieldObj::on_change(const std::function<
 		 });
 }
 
+
 void input_fieldObj::on_autocomplete(const std::function<bool
 				     (input_autocomplete_info_t &)>
 				     &callback)
@@ -158,6 +159,11 @@ void input_fieldObj::on_autocomplete(const std::function<bool
 		 {
 			 editor_impl->on_autocomplete(IN_THREAD)=callback;
 		 });
+}
+
+ref<elementObj::implObj> input_fieldObj::get_minimum_override_element_impl()
+{
+	return impl->editor_element->impl;
 }
 
 LIBCXXW_NAMESPACE_END

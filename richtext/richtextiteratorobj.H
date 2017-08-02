@@ -8,7 +8,7 @@
 
 #include "richtext/richtextiteratorfwd.H"
 #include "richtext/richtextfwd.H"
-#include "richtext/richtextcursorlocationfwd.H"
+#include "richtext/richtextcursorlocation.H"
 #include "richtext/richtextstring.H"
 #include "x/w/rectangle.H"
 #include <x/obj.H>

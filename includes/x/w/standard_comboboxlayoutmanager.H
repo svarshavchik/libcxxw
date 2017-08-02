@@ -20,10 +20,7 @@ LIBCXXW_NAMESPACE_START
 struct LIBCXX_HIDDEN standard_combobox_selection_changed_info_t {
 
 	//! A lock on combo-box's underlying list
-	list_lock &lock;
-
-	//! The combo-box's layout manager
-	const standard_comboboxlayoutmanager &lm;
+	standard_combobox_lock &lock;
 
 	//! Which combo-box item has been selected or unselected
 	size_t item_index;
@@ -103,6 +100,70 @@ class LIBCXX_HIDDEN new_standard_comboboxlayoutmanager
 	//! \internal
 	custom_combobox_selection_changed_t get_selection_changed()
 		const override;
+};
+
+//! Block all other threads from making changes to this combo-box.
+
+class const_standard_combobox_lock : public list_lock {
+
+protected:
+	// For internal use.
+
+	std::vector<text_param> &text_items() const;
+public:
+
+	friend class standard_comboboxlayoutmanagerObj;
+	friend class standard_comboboxlayoutmanagerObj::implObj;
+
+	const const_standard_comboboxlayoutmanager locked_layoutmanager;
+
+	//! Constructor
+	const_standard_combobox_lock(const const_standard_comboboxlayoutmanager &);
+
+	//! Destructor
+	~const_standard_combobox_lock();
+
+	//! How many items in the combo-box.
+	size_t size() const;
+
+	//! Return combo-box item.
+	text_param item(size_t i) const;
+};
+
+class standard_combobox_lock : public const_standard_combobox_lock {
+
+public:
+	friend class standard_comboboxlayoutmanagerObj;
+	friend class standard_comboboxlayoutmanagerObj::implObj;
+
+	const standard_comboboxlayoutmanager locked_layoutmanager;
+
+	//! Constructor
+	standard_combobox_lock(const standard_comboboxlayoutmanager &);
+
+	//! Destructor
+	~standard_combobox_lock();
+
+	//! Append a new item to the combo-box.
+
+	void append_item(const text_param &item);
+
+	//! Insert a new item to the combo-box before an existing item.
+	void insert_item(size_t i, const text_param &item);
+
+	//! Remove an item from the combo-box.
+	void remove_item(size_t i);
+
+	//! Replace all existing items in the combo-box.
+	void replace_all(const std::vector<text_param> &items);
+
+	//! Combo-box search.
+
+	//! Mostly for internal use.
+	bool search(size_t starting_index,
+		    const std::u32string &text,
+		    size_t &found,
+		    bool shortest_match) const LIBCXX_HIDDEN;
 };
 
 LIBCXXW_NAMESPACE_END

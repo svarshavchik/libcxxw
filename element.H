@@ -285,9 +285,9 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	void set_minimum_override(dim_t horiz_override, dim_t vert_override);
 
 	//! Install minimum element size overrides.
-	void set_minimum_override(IN_THREAD_ONLY,
-				  dim_t horiz_override,
-				  dim_t vert_override);
+	virtual void set_minimum_override(IN_THREAD_ONLY,
+					  dim_t horiz_override,
+					  dim_t vert_override);
 
 	//! The container has removed this element.
 

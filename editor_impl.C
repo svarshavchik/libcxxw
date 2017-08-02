@@ -256,17 +256,41 @@ void editorObj::implObj::compute_preferred_width(IN_THREAD_ONLY)
 
 dim_t editorObj::implObj::nominal_width(IN_THREAD_ONLY) const
 {
-	return dim_t::truncate(config.columns *
-			       (dim_t::value_type)
-			       font_nominal_width(IN_THREAD));
+	dim_t w=dim_t::truncate(config.columns *
+				(dim_t::value_type)
+				font_nominal_width(IN_THREAD));
+
+	auto &hv=*get_horizvert(IN_THREAD);
+
+	if (w < hv.minimum_horiz_override(IN_THREAD))
+		w=hv.minimum_horiz_override(IN_THREAD);
+
+	return w;
 }
 
 dim_t editorObj::implObj::nominal_height(IN_THREAD_ONLY) const
 {
 
-	return dim_t::truncate(config.rows *
-			       (dim_t::value_type)
-			       font_height(IN_THREAD));
+	dim_t h=dim_t::truncate(config.rows *
+				(dim_t::value_type)
+				font_height(IN_THREAD));
+
+	auto &hv=*get_horizvert(IN_THREAD);
+
+	if (h < hv.minimum_vert_override(IN_THREAD))
+		h=hv.minimum_vert_override(IN_THREAD);
+
+	return h;
+}
+
+void editorObj::implObj::set_minimum_override(IN_THREAD_ONLY,
+					      dim_t horiz_override,
+					      dim_t vert_override)
+{
+	superclass_t::set_minimum_override(IN_THREAD, horiz_override,
+					   vert_override);
+
+	parent_peephole->recalculate(IN_THREAD, *this);
 }
 
 bool editorObj::implObj::rewrap(IN_THREAD_ONLY)
@@ -544,19 +568,18 @@ bool editorObj::implObj::process_keypress(IN_THREAD_ONLY, const key_event &ke)
 
 		unblink(IN_THREAD);
 
-		size_t deleted;
+		size_t deleted=0;
 
 		if (cursor_lock.cursor)
 			deleted=delete_selection(IN_THREAD);
-		else
-		{
-			auto old=cursor->clone();
-			cursor->prev(IN_THREAD);
 
-			deleted=cursor->pos() == old->pos() ? 0:1;
+		auto old=cursor->clone();
+		cursor->prev(IN_THREAD);
 
-			cursor->remove(IN_THREAD, old);
-		}
+		deleted += (cursor->pos() == old->pos() ? 0:1);
+
+		cursor->remove(IN_THREAD, old);
+
 		recalculate(IN_THREAD);
 		draw_changes(IN_THREAD, cursor_lock,
 			     input_change_type::deleted, deleted, 0);

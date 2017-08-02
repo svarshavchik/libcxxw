@@ -95,6 +95,9 @@ libcxxw_la_SOURCES=\
 	combobox/custom_combobox_popup_containerobj.H \
 	combobox/custom_combobox_popup_layoutmanager.C \
 	combobox/custom_combobox_popup_layoutmanager.H \
+	combobox/editable_comboboxlayoutmanager.C	    \
+	combobox/editable_comboboxlayoutmanager.H	    \
+	combobox/editable_comboboxlayoutmanager_impl.C \
 	combobox/standard_comboboxlayoutmanager.C	    \
 	combobox/standard_comboboxlayoutmanager.H	    \
 	combobox/standard_comboboxlayoutmanager_impl.C \
@@ -670,7 +673,8 @@ testbutton_SOURCES=testbutton.C
 testbutton_LDADD=libcxxw.la
 testbutton_LDFLAGS=-static $(STATICLINKFLAGS)
 
-testcombobox_SOURCES=testcombobox.C
+$(call OPTIONS_GEN,testcombobox.inc.H,testcombobox.xml)
+testcombobox_SOURCES=testcombobox.C testcombobox.inc.H
 testcombobox_LDADD=libcxxw.la
 testcombobox_LDFLAGS=-static $(STATICLINKFLAGS)
 

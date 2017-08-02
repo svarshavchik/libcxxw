@@ -33,7 +33,6 @@ class input_fieldObj;
 //! set() specifies the new contents of the input field, in UTF-8.
 //! set_unicode() specifies the new contents as a unicode string.
 //!
-//!
 //! \code
 //! INSERT_LIBX_NAMESPACE::w::input_lock lock{f};
 //! \endcode
@@ -42,6 +41,9 @@ class input_fieldObj;
 //! blocks the internal library execution thread (and all other execution
 //! threads from accessing the
 //! \ref input_field "input_field", providing access to its contents).
+//!
+//! Once locked, \ref input_lock "input_lock" implements methods to
+//! retrieve the contents of the input field.
 //!
 //! An \c input_lock is not required to set() new contents of the text
 //! input field. The internal library execution thread actually updates
@@ -80,8 +82,7 @@ class input_fieldObj;
 //! with the cursor at the end of the field. The callback receives a
 //! \ref input_autocomplete_info_t "input_autocomplete_info_t" parameter.
 //! Returning \c true from this callback results in the contents of the
-//! input field getting updated (this should result in an additional
-//! invocation of the on_change() callback).
+//! input field getting updated.
 //!
 //! \see factory
 

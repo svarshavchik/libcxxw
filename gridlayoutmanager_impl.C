@@ -79,6 +79,7 @@ gridfactory gridlayoutmanagerObj::implObj
 		if ((*lock)->elements.size() < row)
 			throw EXCEPTION(_("Attempting to insert a row before a nonexistent row"));
 
+		(*lock)->elements_have_been_modified();
 		(*lock)->elements.emplace((*lock)->elements.begin()+row);
 	}
 

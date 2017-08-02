@@ -17,9 +17,13 @@
 #include "x/w/button.H"
 #include "x/w/canvas.H"
 #include "x/w/standard_comboboxlayoutmanager.H"
+#include "x/w/editable_comboboxlayoutmanager.H"
 #include "x/w/focusable_label.H"
+#include "x/w/input_field_lock.H"
 #include <string>
 #include <iostream>
+
+#include "testcombobox.inc.H"
 
 using namespace LIBCXX_NAMESPACE;
 using namespace LIBCXX_NAMESPACE::w;
@@ -77,7 +81,61 @@ static const char *moretext[]={
 	"laborum"
 };
 
-void testcombobox()
+focusable_container create_combobox(const factory &f,
+				    const new_custom_comboboxlayoutmanager &ncc)
+{
+	return f->create_focusable_container
+		([]
+		 (const auto &new_container) {
+
+			standard_comboboxlayoutmanager lm=new_container
+				->get_layoutmanager();
+
+			lm->replace_all({
+					"Lorem ipsum",
+						"dolor sit",
+						"ament",
+						"consectetur",
+						"adipisicing",
+						"elid set",
+						"do",
+						"eiusmod tempor",
+						});
+		}, ncc);
+}
+
+focusable_container create_editable_combobox(const factory &f)
+{
+	new_editable_comboboxlayoutmanager ec{
+		[] (const auto &info)
+		{
+			if (info.selected_flag)
+				std::cout << "Selected item #"
+					  << info.item_index
+					  << std::endl;
+		}
+	};
+
+	return create_combobox(f, ec);
+}
+
+focusable_container create_standard_combobox(const factory &f)
+{
+	new_standard_comboboxlayoutmanager sc{
+		[] (const auto &info)
+		{
+			if (info.selected_flag)
+				std::cout << "Selected item #"
+					  << info.item_index
+					  << std::endl;
+		}
+	};
+
+	return create_combobox(f, sc);
+}
+
+
+void testcombobox(const testcombobox_options &options)
 {
 	destroy_callback::base::guard guard;
 
@@ -95,34 +153,10 @@ void testcombobox()
 
 			 auto factory=layout->append_row();
 
-			 new_standard_comboboxlayoutmanager sc{
-				 [] (const auto &info)
-				 {
-					 if (info.selected_flag)
-						 std::cout << "Selected item #"
-							   << info.item_index
-							   << std::endl;
-				 }
-			 };
-
-			 combobox=factory->create_focusable_container
-			 ([]
-			  (const auto &new_container) {
-
-				 standard_comboboxlayoutmanager lm=new_container
-					 ->get_layoutmanager();
-
-				 lm->replace_all({
-						 "Lorem ipsum",
-							 "dolor sit",
-							 "ament",
-							 "consectetur",
-							 "adipisicing",
-							 "elid set",
-							 "do",
-							 "eiusmod tempor",
-							 });
-			 }, sc);
+			 if (options.editable->value)
+				 combobox=create_editable_combobox(factory);
+			 else
+				 combobox=create_standard_combobox(factory);
 
 			 factory=layout->append_row();
 
@@ -185,12 +219,25 @@ void testcombobox()
 
 		std::cout << "Final selection: " << i << std::endl;
 	}
+
+	if (options.editable->value)
+	{
+		editable_comboboxlayoutmanager lm=combobox->get_layoutmanager();
+
+		input_lock lock{lm};
+
+		std::cout << "Final selection: " << lock.get() << std::endl;
+	}
 }
 
 int main(int argc, char **argv)
 {
 	try {
-		testcombobox();
+		testcombobox_options options;
+
+		options.parse(argc, argv);
+
+		testcombobox(options);
 	} catch (const exception &e)
 	{
 		e->caught();

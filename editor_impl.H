@@ -134,6 +134,15 @@ class LIBCXX_HIDDEN editorObj::implObj
 	//! Multiple rows by font's height.
 	dim_t nominal_height(IN_THREAD_ONLY) const;
 
+	//! Override set_minimum_override()
+
+	//! Because nominal_width() and nominal_height() takes them into
+	//! account, we'll call parent_peephole->recalculate().
+
+	void set_minimum_override(IN_THREAD_ONLY,
+				  dim_t horiz_override,
+				  dim_t vert_override) override;
+
 	//! Contsructor
 	implObj(const ref<editor_peephole_implObj> &parent_peephole,
 		const text_param &text,

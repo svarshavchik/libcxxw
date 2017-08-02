@@ -7,6 +7,7 @@
 
 #include "x/w/standard_comboboxlayoutmanager.H"
 #include "combobox/custom_comboboxlayoutmanager.H"
+#include "listlayoutmanager/listlayoutmanager.H"
 #include "x/w/text_param.H"
 
 #include <vector>
@@ -29,10 +30,8 @@ class LIBCXX_HIDDEN standard_comboboxlayoutmanagerObj::implObj
  public:
 
 	//! The items are accessed only while holding a lock.
-	auto inline &text_items(grid_map_t::lock &lock)
-	{
-		return text_items_protected;
-	}
+	friend class standard_combobox_lock;
+	friend class const_standard_combobox_lock;
 
 	//! Constructor
 	implObj(const ref<custom_combobox_containerObj::implObj>
@@ -45,13 +44,6 @@ class LIBCXX_HIDDEN standard_comboboxlayoutmanagerObj::implObj
 	//! Override create_public_object to create the standard_comboboxlayoutmanager.
 
 	layoutmanager create_public_object() override;
-
-	//! Search
-
-	bool search(grid_map_t::lock &lock,
-		    size_t starting_index,
-		    const std::u32string &text,
-		    size_t &found);
 };
 
 LIBCXXW_NAMESPACE_END

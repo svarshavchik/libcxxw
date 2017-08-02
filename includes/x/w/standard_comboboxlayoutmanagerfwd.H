@@ -93,6 +93,7 @@ typedef const_ptr<standard_comboboxlayoutmanagerObj> const_standard_comboboxlayo
 
 class new_standard_comboboxlayoutmanager;
 
+class standard_combobox_lock;
 
 LIBCXXW_NAMESPACE_END
 

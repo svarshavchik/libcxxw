@@ -13,6 +13,7 @@
 #include <x/w/focusable_container.H>
 #include <x/w/factoryfwd.H>
 #include <x/w/element.H>
+#include <x/w/container.H>
 #include <x/w/focusable.H>
 #include <x/ref.H>
 
@@ -23,7 +24,8 @@ LIBCXXW_NAMESPACE_START
 
 //! Signature for a custom combo-box selection factory.
 
-typedef std::function<focusable (const factory &)
+typedef std::function<focusable (const factory &,
+				 const ref<layoutmanagerObj::implObj> &)
 		      > custom_combobox_selection_factory_t;
 
 //! Information passed to the \ref custom_combobox_selection_changed_t "custom combo-box selection changed callback".

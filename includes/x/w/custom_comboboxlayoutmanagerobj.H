@@ -8,6 +8,7 @@
 #include <x/w/custom_comboboxlayoutmanagerfwd.H>
 #include <x/w/listlayoutmanagerobj.H>
 #include <x/w/layoutmanagerobj.H>
+#include <x/w/elementfwd.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -30,6 +31,9 @@ public:
 
 	//! Destructor
 	~custom_comboboxlayoutmanagerObj() LIBCXX_HIDDEN;
+
+	//! Return the display element that represents the current selection.
+	element current_selection();
 };
 
 LIBCXXW_NAMESPACE_END

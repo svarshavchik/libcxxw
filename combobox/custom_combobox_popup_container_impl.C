@@ -19,6 +19,11 @@ custom_combobox_popup_containerObj::implObj
 
 custom_combobox_popup_containerObj::implObj::~implObj()=default;
 
+const char *custom_combobox_popup_containerObj::implObj::label_theme_font()
+	const
+{
+	return "combobox";
+}
 
 void custom_combobox_popup_containerObj::implObj
 ::horizvert_updated(IN_THREAD_ONLY)

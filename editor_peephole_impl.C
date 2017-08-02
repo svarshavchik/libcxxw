@@ -26,6 +26,9 @@ void editor_peephole_implObj::recalculate(IN_THREAD_ONLY,
 	if (width == dim_t::infinite())
 		--width;
 
+	if (height == dim_t::infinite())
+		--height;
+
 	get_horizvert(IN_THREAD)->set_element_metrics
 		(IN_THREAD,
 		 {width, width, width},

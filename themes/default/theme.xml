@@ -198,6 +198,10 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
     <point_size>12</point_size>
   </font>
 
+  <font id="combobox" from="sans_serif">
+    <point_size>12</point_size>
+  </font>
+
   <font id="menubar" from="sans_serif">
     <point_size>12</point_size>
   </font>

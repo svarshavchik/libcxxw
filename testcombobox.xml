@@ -1,0 +1,11 @@
+<optclass name="testcombobox_options">
+  <option>
+    <name>editable</name>
+    <type>bool</type>
+    <default>false</default>
+    <opt>e</opt>
+    <longopt>editable</longopt>
+    <descr>Editable combo-box</descr>
+  </option>
+  <defaultoptions />
+</optclass>

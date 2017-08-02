@@ -52,6 +52,14 @@ custom_comboboxlayoutmanagerObj
 
 custom_comboboxlayoutmanagerObj::~custom_comboboxlayoutmanagerObj()=default;
 
+element custom_comboboxlayoutmanagerObj::current_selection()
+{
+	// The current selection element is always position (0, 0)
+	// in the internally-managed grid.
+
+	return impl->get(0, 0);
+}
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // Combobox button.
@@ -335,7 +343,8 @@ focusable_container new_custom_comboboxlayoutmanager
 	auto capture_current_selection=
 		capturefactory::create(combobox_container_impl);
 
-	auto focusable_selection=selection_factory(capture_current_selection);
+	auto focusable_selection=
+		selection_factory(capture_current_selection, lm);
 
 	auto current_selection=capture_current_selection->get();
 
