@@ -20,18 +20,8 @@ editor_peephole_implObj::~editor_peephole_implObj()=default;
 void editor_peephole_implObj::recalculate(IN_THREAD_ONLY,
 					  editorObj::implObj &e)
 {
-	auto nominal_height=e.font_height(IN_THREAD);
-	auto nominal_width=e.font_nominal_width(IN_THREAD);
-
-	const auto &config=e.config;
-
-	dim_t height=dim_t::truncate
-		(config.rows*dim_t::value_type
-		 (nominal_height));
-
-	dim_t width=dim_t::truncate
-		(config.columns*dim_t::value_type
-		 (nominal_width));
+	dim_t height=e.nominal_height(IN_THREAD);
+	dim_t width=e.nominal_width(IN_THREAD);
 
 	if (width == dim_t::infinite())
 		--width;

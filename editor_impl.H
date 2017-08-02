@@ -125,6 +125,9 @@ class LIBCXX_HIDDEN editorObj::implObj
 
 	dim_t nominal_width(IN_THREAD_ONLY) const;
 
+	//! Multiple rows by font's height.
+	dim_t nominal_height(IN_THREAD_ONLY) const;
+
 	//! Contsructor
 	implObj(const ref<editor_peephole_implObj> &parent_peephole,
 		const text_param &text,

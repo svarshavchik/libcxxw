@@ -221,7 +221,7 @@ editorObj::implObj::implObj(const ref<editor_peephole_implObj> &parent_peephole,
 	  parent_peephole(parent_peephole),
 	  config(config)
 {
-	if (config.columns <= 2)
+	if (config.columns < 2)
 		throw EXCEPTION("Input fields must have at least two columns");
 
 	cursor->my_richtext->read_only_lock
@@ -257,6 +257,14 @@ dim_t editorObj::implObj::nominal_width(IN_THREAD_ONLY) const
 	return dim_t::truncate(config.columns *
 			       (dim_t::value_type)
 			       font_nominal_width(IN_THREAD));
+}
+
+dim_t editorObj::implObj::nominal_height(IN_THREAD_ONLY) const
+{
+
+	return dim_t::truncate(config.rows *
+			       (dim_t::value_type)
+			       font_height(IN_THREAD));
 }
 
 bool editorObj::implObj::rewrap(IN_THREAD_ONLY)
