@@ -366,6 +366,7 @@ void ximxtransportObj::implObj
 		 {
 			 state.x_disconnected=true;
 		 });
+	stop(IN_THREAD);
 }
 
 void ximxtransportObj::implObj

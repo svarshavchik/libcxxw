@@ -1171,10 +1171,12 @@ void ximserverObj::received_xim_forwarded_event(IN_THREAD_ONLY,
 				return;
 			}
 
-			c->second->client_window->handle_key_event
-				(IN_THREAD,
-				 &e,
-				 eventbuf[0] == KeyPress);
+			try {
+				c->second->client_window->handle_key_event
+					(IN_THREAD,
+					 &e,
+					 eventbuf[0] == KeyPress);
+			} CATCH_EXCEPTIONS;
 		}
 		break;
 	default:
