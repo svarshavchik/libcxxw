@@ -43,7 +43,11 @@ public:
 
 	//! Remove an item from the combo-box.
 
-	void remove_item(size_t i);
+	void remove_item(size_t i) override;
+
+	//! Override replace_all().
+
+	factory replace_all() override;
 
 	//! How many items in the combo-box.
 

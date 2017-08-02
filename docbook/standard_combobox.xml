@@ -64,7 +64,7 @@ See COPYING for distribution information.
       for the second parameter to a &factory;'s
       <methodname>create_focusable_container</methodname> results in a
       container with a
-      <ulink url="&link-typedef-x--w-standard-comboboxlayoutmanager;">&ns;::w:;standard_comboboxlayoutmanager</ulink>.
+      <ulink url="&link-typedef-x--w-standard-comboboxlayoutmanager;">&ns;::w::standard_comboboxlayoutmanager</ulink>.
       This is the &layoutmanager; that manages the combo-box.
     </para>
 
@@ -78,7 +78,7 @@ See COPYING for distribution information.
     </para>
 
     <para>
-      <ulink url="&link-typedef-x--w-standard-comboboxlayoutmanager;">&ns;::w:;standard_comboboxlayoutmanager</ulink>'s
+      <ulink url="&link-typedef-x--w-standard-comboboxlayoutmanager;">&ns;::w::standard_comboboxlayoutmanager</ulink>'s
       methods include
       <methodname>append_item</methodname>() and
       <methodname>insert_item</methodname>();
@@ -118,6 +118,12 @@ See COPYING for distribution information.
       calls it before closing its window, to show the final
       combo-box selection.
     </para>
+
+    <para>
+      Also available are <methodname>selected</methodname>()
+      and <methodname>size</methodname>(), inherited
+      from the underlying <link linkend="list">selection list</link>.
+    </para>
   </section>
 
   <section id="using_standard_combobox">
@@ -126,13 +132,14 @@ See COPYING for distribution information.
     <para>
       Clicking on the combo-box's button opens a popup listing the combo-box's
       items, and clicking on one selects this item, as expected.
-      &appshort;'s combo-box also offers full access with a keyboard.
+      Clicking on an item that's already selected will de-select it, as is
+      with a <link linkend="list">selection list</link>.
     </para>
-
     <para>
+      &appshort;'s combo-box also offers full access with a keyboard.
       Standard combo-boxes receive focus, and are tabbable. A combo-box's
       current selection element can be tabbed to. With the input
-      focus on the combo-box current selection, pressing the a key selects
+      focus on the combo-box current selection, pressing a key selects
       the first combo-box item that starts with the character. If more than
       one item matches, pressing another key selects the first combo-box
       item that starts with those two characters, and so on.
@@ -142,8 +149,7 @@ See COPYING for distribution information.
       <keycap>Enter</keycap> selects the next combo-box item that starts
       with the typed characters, if there's more than one.
       <keycap>Del</keycap> removes the currently selected item, making it
-      possible to select a different item by typing (there are no means
-      to remove the current selection with the mouse pointer).
+      possible to select a different item by typing.
     </para>
 
     <para>
@@ -154,7 +160,7 @@ See COPYING for distribution information.
       combo-box. At this point the <keycap>Cursor-Down</keycap> and
       <keycap>Cursor-Up</keycap> navigate the popup just like a
       <link linkend="list">selection list</link>; with
-      <keycap>Enter</keycap> selecting the highlighted item. Alternatively
+      <keycap>Enter</keycap> selecting the highlighted item.
       <keycap>Esc</keycap> closes the popup without making a new selection.
     </para>
   </section>

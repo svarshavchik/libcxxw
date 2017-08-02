@@ -7,6 +7,7 @@
 #include "x/w/focusable_label.H"
 #include "messages.H"
 #include <x/exception.H>
+#include <x/sentry.H>
 #include <courier-unicode.h>
 
 LIBCXXW_NAMESPACE_START
@@ -56,6 +57,7 @@ void standard_comboboxlayoutmanagerObj::remove_item(size_t i)
 
 	if (impl->text_items(lock).size() <= i)
 		nosuchitem(i);
+	custom_comboboxlayoutmanagerObj::remove_item(i);
 	impl->text_items(lock).erase(impl->text_items(lock).begin()+i);
 }
 
@@ -79,11 +81,39 @@ text_param standard_comboboxlayoutmanagerObj::item(size_t i) const
 void standard_comboboxlayoutmanagerObj
 ::replace_all(const std::vector<text_param> &items)
 {
+	// Try to do the right thing when an exception gets thrown.
+
+	auto s=make_sentry
+		([&, this]
+		 {
+			 this->replace_all();
+		 });
+
+	// However, manually call unselect() ourselves, and don't arm the
+	// sentry until everything is unselect, so the unselect() in
+	// the list layout manager does nothing. We'll invoke all unselection
+	// triggered callbacks before arming the sentry.
+
 	grid_map_t::lock lock{impl->grid_map};
 
-	listlayoutmanagerObj::replace_all(items);
+	unselect();
+
+	s.guard();
+	custom_comboboxlayoutmanagerObj::replace_all(items);
 
 	impl->text_items(lock)=items;
+	s.unguard();
+}
+
+factory standard_comboboxlayoutmanagerObj::replace_all()
+{
+	grid_map_t::lock lock{impl->grid_map};
+
+	auto f=custom_comboboxlayoutmanagerObj::replace_all();
+
+	impl->text_items(lock).clear();
+
+	return f;
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -164,9 +194,9 @@ custom_combobox_selection_changed_t new_standard_comboboxlayoutmanager
 		standard_comboboxlayoutmanager lm=info.lm;
 		x::w::focusable_label current_selection=info.current_selection;
 
+		info.popup_element->hide();
 		if (info.selected_flag)
 		{
-			info.popup_element->hide();
 			current_selection->update
 				(lm->impl->text_items(info.lock)
 				 .at(info.item_index));

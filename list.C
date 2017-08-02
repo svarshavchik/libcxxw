@@ -158,6 +158,14 @@ void single_selection_type(list_lock &lock,
 			   const listlayoutmanager &layout_manager,
 			   size_t i)
 {
+	// Selecting the sole selection is going to deselect it.
+
+	if (layout_manager->selected(lock, i))
+	{
+		layout_manager->selected(lock, i, false);
+		return;
+	}
+
 	for (auto n=layout_manager->size(); n > 0; )
 	{
 		--n;

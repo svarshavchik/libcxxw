@@ -43,6 +43,39 @@ public:
 
 typedef ref<close_flagObj> close_flag_ref;
 
+static const char *moretext[]={
+	"incididunt ut",
+	"labore et dolore",
+	"magna"
+	"aliqua",
+	"Ut enim ad",
+	"minim veniam",
+	"quis nostrud",
+	"exercitation"
+	"ullamco",
+	"laboris nisi",
+	"ut aliquip",
+	"ex ea",
+	"commodo consequat",
+	"Duis aute",
+	"irure dolor",
+	"in reprehenderit",
+	"in voluptate",
+	"velit"
+	"esse",
+	"cillum dolore",
+	"eu fugiat",
+	"nulla pariatur",
+	"Excepteur sint",
+	"occaecat cupidatat",
+	"non proident",
+	"sunt in",
+	"culpa qui",
+	"officia deserunt",
+	"mollit anim",
+	"id est"
+	"laborum"
+};
 
 void testcombobox()
 {
@@ -90,6 +123,35 @@ void testcombobox()
 							 "eiusmod tempor",
 							 });
 			 }, sc);
+
+			 factory=layout->append_row();
+
+			 factory->halign(halign::center)
+			 .create_normal_button_with_label("Append")
+			 ->on_activate([combobox, i=0](const auto &) mutable {
+					 standard_comboboxlayoutmanager lm=
+						 combobox->get_layoutmanager();
+
+					 lm->append_item(moretext[i]);
+
+					 i=(i+1) % (sizeof(moretext)/
+						    sizeof(moretext[0]));
+				 });
+
+			 			 factory=layout->append_row();
+
+			 factory->halign(halign::center)
+			 .create_normal_button_with_label("Delete")
+			 ->on_activate([combobox](const auto &) {
+					 standard_comboboxlayoutmanager lm=
+						 combobox->get_layoutmanager();
+
+					 if (lm->size() == 0)
+						 return;
+
+					 lm->remove_item(0);
+				 });
+
 		 });
 
 	main_window->set_window_title("Hello world!");

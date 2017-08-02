@@ -26,7 +26,7 @@ lm->append_item("Item");
 lm->insert_item(0, "Item");
 lm->remove_item(0);
 lm->replace_all({"Lorem","Ipsum"});
-\encode
+\endcode
 
 append_item() inserts a new item to the end of the combo-box's item list.
 insert_item() inserts a new item before an existing item.
@@ -39,7 +39,7 @@ existing items in the combo-box.
 size_t n=lm->size();
 
 INSERT_LIBX_NAMESPACE::w::text_param s=lm->item(0);
-\encode
+\endcode
 
 size() returns the number of items in the list, and item() returns the
 given item number.

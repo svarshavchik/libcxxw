@@ -138,6 +138,10 @@ class LIBCXX_HIDDEN list_replace_item_factoryObj : public listitemfactoryObj {
 
 factory listlayoutmanagerObj::replace_item(size_t item_number)
 {
+	grid_map_t::lock lock{impl->grid_map};
+
+	selected(lock, item_number, false);
+
 	return ref<list_replace_item_factoryObj>
 		::create(listlayoutmanager(this), item_number);
 }
@@ -153,6 +157,8 @@ void listlayoutmanagerObj::replace_item(size_t item_number,
 void listlayoutmanagerObj::remove_item(size_t item_number)
 {
 	grid_map_t::lock lock{impl->grid_map};
+
+	selected(lock, item_number, false);
 
 	impl->remove_item(listlayoutmanager(this), lock, item_number);
 }
@@ -178,6 +184,10 @@ class LIBCXX_HIDDEN list_replace_all_factoryObj
 
 factory listlayoutmanagerObj::replace_all()
 {
+	grid_map_t::lock lock{impl->grid_map};
+
+	unselect();
+
 	return ref<list_replace_all_factoryObj>
 		::create(listlayoutmanager(this));
 }

@@ -153,8 +153,10 @@ new_list.selection_changed=[]
     </blockquote>
 
     <para>
-      The default behavior of a selection list is that selecting a list item
+      The default behavior of a selection list is that selecting a
+      different list item
       automatically unselects the previously-selected list item.
+      Selecting the same list item again unselects it.
       Setting <varname>selection_type</varname>
       to <literal>&ns;::w::multiple_selection_type</literal> results
       in each list item getting selected and unselected individually.
@@ -195,12 +197,52 @@ new_list.selection_changed=[]
       </para>
     </note>
 
+    <blockquote>
+      <informalexample>
+	<programlisting>
+std::optional&lt;size_t&gt; selection=list->selected();
+if (selection)
+{
+     auto v=selection.value();
+}
+
+std::vector&lt;size_t&gt; all_selections=list->all_selected();
+
+if (lm->selected(1))
+{
+   // ...
+}</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      The <methodname>selected</methodname>() method makes an ad-hoc query
+      to retrieve the currently-selected item, if there is one.
+      This approach is suitable with single selection lists.
+      With <classname>&ns;::w::multiple_selection_type</classname> lists
+      <methodname>all_selected</methodname>() gives the list of all items
+      that are currently selected;
+      or an overloaded <methodname>selected</methodname>() takes a parameter
+      and returns an indication whether the given item is currently selected.
+    </para>
+
+    <para>
+      Given &appshort;'s multi-threaded nature, the internal library thread
+      can end up selecting or unselecting a list item at any time in response
+      to pointer or keyboard activity, so what's
+      <methodname>selected</methodname>() can change at any time.
+      Use a <link linkend="listlock">list lock</link> to freeze the contents
+      of the list, examine what's <methodname>selected</methodname>(), at
+      a given time, and perhaps add or remove items from the list while
+      blocking all other threads from accessing the list.
+    </para>
+
     <para>
       An alternative approach involves attaching callbacks to individual
       list items. A list item's callback gets invoked whenever the
       list item gets
       selected or unselected. Other items may be added or removed from the
-      list, but the callback stays with its original item, and gets invoked
+      list, but the callback stays with its paired item, and gets invoked
       only for its item.
     </para>
 

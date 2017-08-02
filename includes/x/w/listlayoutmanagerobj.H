@@ -136,10 +136,10 @@ public:
 			 const std::vector<text_param> &items);
 
 	//! Remove a list item
-	void remove_item(size_t item_number);
+	virtual void remove_item(size_t item_number);
 
 	//! Replace all list items
-	factory replace_all();
+	virtual factory replace_all();
 
 	//! Replace all list items
 
