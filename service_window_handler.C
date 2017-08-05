@@ -47,10 +47,18 @@ void service_window_handlerObj
 					   error.addressof()));
 
 		if (error)
+		{
+			LOG_DEBUG("XIM_SERVERS atom is not defined");
+			all_servers_tried(IN_THREAD);
 			return;
+		}
 
 		if (value->atom == XCB_NONE)
+		{
+			LOG_DEBUG("XIM_SERVERS atom is XCB_NONE");
+			all_servers_tried(IN_THREAD);
 			return;
+		}
 
 		LOG_DEBUG(service_name << " atom is defined");
 
