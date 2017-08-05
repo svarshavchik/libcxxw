@@ -14,6 +14,8 @@
 #include "peephole/peepholed_toplevel_element.H"
 #include "scrollbar/scrollbar.H"
 #include "scrollbar/scrollbar_impl.H"
+#include "current_border_impl.H"
+#include "border_impl.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -32,9 +34,12 @@ class LIBCXX_HIDDEN toplevelpeephole_layoutmanagerObj
 		(const ref<containerObj::implObj> &container_impl,
 		 peephole_style style,
 		 const peepholed_toplevel &element_in_peephole,
+		 const current_border_implptr &peephole_border,
 		 const peephole_scrollbars &scrollbars);
 
 	const peepholed_toplevel element_in_peephole;
+
+	const current_border_implptr peephole_border;
 
 	//! Destructor
 	~toplevelpeephole_layoutmanagerObj();
@@ -82,6 +87,19 @@ create_peephole_toplevel_impl(const ref<containerObj::implObj> &toplevel,
 	auto scrollbars=create_peephole_scrollbars(toplevel_grid->impl
 						   ->container_impl);
 
+	// Install everything into the toplevel_grid.
+
+	auto row0_factory=toplevel_grid->append_row();
+	row0_factory->padding(0);
+	if (border)
+		row0_factory->border(border);
+
+	// The peephole layoutmanager needs to know what border is in place,
+	// because that needs to be factored into calculations.
+	current_border_implptr border_impl=
+		gridfactoryObj::implObj::new_grid_element_t::lock{
+		row0_factory->impl->new_grid_element}->left_border;
+
 	// Create the peephole layoutmanager...
 
 	auto peephole_layoutmanager=
@@ -89,6 +107,7 @@ create_peephole_toplevel_impl(const ref<containerObj::implObj> &toplevel,
 		(peephole_impl,
 		 style,
 		 inner_container,
+		 border_impl,
 		 scrollbars);
 
 	peephole_layoutmanager->initialize_scrollbars();
@@ -98,12 +117,8 @@ create_peephole_toplevel_impl(const ref<containerObj::implObj> &toplevel,
 	auto peephole_element=peephole::create(peephole_impl,
 					       peephole_layoutmanager);
 
-	// Install everything into the toplevel_grid.
 
-	auto row0_factory=toplevel_grid->append_row();
-	row0_factory->padding(0);
-	if (border)
-		row0_factory->border(border);
+
 	row0_factory->halign(style.h_alignment);
 	row0_factory->created_internally(peephole_element);
 
@@ -143,6 +158,7 @@ toplevelpeephole_layoutmanagerObj::toplevelpeephole_layoutmanagerObj
 (const ref<containerObj::implObj> &container_impl,
  peephole_style style,
  const peepholed_toplevel &element_in_peephole,
+ const current_border_implptr &peephole_border,
  const peephole_scrollbars &scrollbars)
 	: peepholeObj::layoutmanager_implObj(container_impl,
 					     style,
@@ -153,7 +169,8 @@ toplevelpeephole_layoutmanagerObj::toplevelpeephole_layoutmanagerObj
 					     // scrollbars.
 					     scrollbar_visibility::never,
 					     scrollbar_visibility::never),
-	element_in_peephole(element_in_peephole)
+	element_in_peephole(element_in_peephole),
+	peephole_border(peephole_border)
 {
 }
 
@@ -171,14 +188,35 @@ void toplevelpeephole_layoutmanagerObj::recalculate(IN_THREAD_ONLY)
 	auto max_width=element_in_peephole->max_width(IN_THREAD);
 	auto max_height=element_in_peephole->max_height(IN_THREAD);
 
-	// Scrollbars' overhead.
-	auto vertical_scrollbar_width=
-		vertical_scrollbar_element->get_horizvert(IN_THREAD)
-		->horiz.minimum();
+	dim_t border_width=0;
+	dim_t border_height=0;
 
-	auto horizontal_scrollbar_height=
-		horizontal_scrollbar_element->get_horizvert(IN_THREAD)
-		->vert.minimum();
+	if (peephole_border)
+	{
+		auto b=peephole_border->border(IN_THREAD);
+
+		border_width=b->calculated_border_width;
+		border_height=b->calculated_border_height;
+	}
+
+	border_width=dim_t::truncate(border_width+border_width);
+	border_height=dim_t::truncate(border_height+border_height);
+
+	// Reduce max_width by our border's overhead.
+
+	max_width = border_width < max_width ? max_width-border_width:1;
+	max_height = border_height < max_height ? max_height-border_height:1;
+
+	// Scrollbars' overhead.
+	dim_t vertical_scrollbar_width=
+		 dim_t::truncate(vertical_scrollbar_element
+				 ->get_horizvert(IN_THREAD)
+				 ->horiz.minimum()+border_width);
+
+	dim_t horizontal_scrollbar_height=
+		dim_t::truncate(horizontal_scrollbar_element
+				->get_horizvert(IN_THREAD)
+				->vert.minimum()+border_height);
 
 	// Now, compute max_width/height less then scrollbars' overhead.
 
