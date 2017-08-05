@@ -20,7 +20,8 @@ class LIBCXX_HIDDEN main_windowObj::implObj
 
 	//! Constructor
 	implObj(const ref<handlerObj> &handler,
-		const container &peepholed_container);
+		const container &menu_and_app_container,
+		const container &app_container);
 
 	//! Destructor
 	~implObj();
@@ -30,17 +31,23 @@ class LIBCXX_HIDDEN main_windowObj::implObj
 
 	//! The container installed in the main window's peephole
 
+	//! The main window's peephole has a container with two elements,
+	//! a menu bar, which is a container with the menu bar layout manager,
+	//! and the app_container.
+
+	const container menu_and_app_container;
+
+	//! The container with the main window's specified layout manager.
+
 	//! The main window is the real top level container, but the requested
-	//! layout manager gets created for this container. The top level
-	//! main window uses a grid layout manager that has this peepholed
-	//! container.
+	//! layout manager gets created for this container.
 	//!
 	//! main_window overrides get_layout_impl() and returns the
-	//! peepholed_container's layout manager, making it look like it's
+	//! app_container's layout manager, making it look like it's
 	//! the layout manager for the top level main_window, but it's really
-	//! the layout manager for the peepholed container.
+	//! the layout manager for the app_container.
 
-	const container peepholed_container;
+	const container app_container;
 
 	//! Install a callback to invoke upon close.
 

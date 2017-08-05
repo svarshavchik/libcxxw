@@ -33,7 +33,8 @@ class LIBCXX_HIDDEN peepholed_toplevel_main_windowObj
 
 	//! Constructor
 	peepholed_toplevel_main_windowObj(const ref<implObj> &impl,
-					  const new_layoutmanager &factory);
+					  const ref<layoutmanagerObj::implObj>
+					  &layout_impl);
 
 	//! Destructor
 	~peepholed_toplevel_main_windowObj();

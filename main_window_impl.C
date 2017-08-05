@@ -19,11 +19,13 @@
 LIBCXXW_NAMESPACE_START
 
 main_windowObj::implObj::implObj(const ref<handlerObj> &handler,
-				 const container &peepholed_container)
+				 const container &menu_and_app_container,
+				 const container &app_container)
 	: generic_windowObj::implObj(handler),
 	xim_generic_windowObj(handler),
 	handler(handler),
-	peepholed_container(peepholed_container)
+	menu_and_app_container(menu_and_app_container),
+	app_container(app_container)
 {
 }
 

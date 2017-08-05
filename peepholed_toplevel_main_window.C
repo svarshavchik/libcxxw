@@ -13,9 +13,9 @@ LIBCXXW_NAMESPACE_START
 
 peepholed_toplevel_main_windowObj
 ::peepholed_toplevel_main_windowObj(const ref<implObj> &impl,
-				  const new_layoutmanager &layout_factory)
-	: toplevel_container_superclass_t(impl,
-					  layout_factory.create(impl)),
+				    const ref<layoutmanagerObj::implObj>
+				    &layout_impl)
+	: toplevel_container_superclass_t(impl, layout_impl),
 	  impl(impl)
 {
 }

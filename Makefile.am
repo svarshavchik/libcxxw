@@ -373,6 +373,9 @@ libcxxw_la_SOURCES=\
 	main_window_handler.C			    \
 	main_window_handler.H			    \
 	main_window_impl.C			    \
+	menu/menubarlayoutmanager.C		    \
+	menu/menubarlayoutmanager_impl.C	    \
+	menu/menubarlayoutmanager_impl.H	    \
 	messages.H				    \
 	metrics_axis.C				    \
 	metrics_axis.H				    \

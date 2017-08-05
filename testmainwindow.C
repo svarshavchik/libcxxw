@@ -88,7 +88,7 @@ sausage_factory_t sausages;
 
 #define IS_MAIN_GRID \
 	(container_impl->objname() == LIBCXX_NAMESPACE_STR	\
-	 "::w::peepholed_toplevel_main_windowObj::implObj")
+	 "::w::app_container_implObj")
 
 #define GRID_REBUILD_ELEMENTS() do {					\
 		if (!IS_MAIN_GRID) break;				\

@@ -11,11 +11,15 @@
 #include "x/w/picture.H"
 #include "x/w/screen.H"
 #include "x/w/gridlayoutmanager.H"
+#include "x/w/menubarlayoutmanager.H"
 #include "layoutmanager.H"
 #include "peephole/peephole_toplevel.H"
 #include "peephole/peepholed_toplevel_element.H"
 #include "peepholed_toplevel_main_window.H"
 #include "peepholed_toplevel_main_window_impl.H"
+#include "menu/menubarlayoutmanager_impl.H"
+#include "container_element.H"
+#include "always_visible.H"
 
 LOG_CLASS_INIT(LIBCXX_NAMESPACE::w::main_windowObj);
 
@@ -56,6 +60,81 @@ main_window screenObj
 	return do_create_mainwindow(f, new_gridlayoutmanager{});
 }
 
+class LIBCXX_HIDDEN app_container_implObj :
+	public always_visibleObj<container_elementObj<child_elementObj>> {
+
+	typedef always_visibleObj<container_elementObj<child_elementObj>
+				  > superclass_t;
+ public:
+	using superclass_t::superclass_t;
+
+	~app_container_implObj()=default;
+};
+
+static inline peepholed_toplevel
+init_containers(const ref<containerObj::implObj> &parent,
+		containerptr &menu_and_app_container,
+		containerptr &menubar_container,
+		containerptr &app_container,
+		const new_layoutmanager &layout_factory)
+{
+	// This is the element in a peephole. It's a container
+	// with two elements.
+
+	auto menu_and_app_impl=ref<peepholed_toplevel_main_windowObj::implObj>
+		::create(parent);
+
+	auto menu_and_app=peepholed_toplevel_main_window
+		::create(menu_and_app_impl,
+			 ref<gridlayoutmanagerObj::implObj>::create
+			 (menu_and_app_impl));
+
+	menu_and_app->show();
+
+	gridlayoutmanager glm=menu_and_app->get_layoutmanager();
+
+	// Create the first element, a container with the menubarlayoutmanager.
+
+	// Fill the menu bar horizontally across the entire window.
+	auto f=glm->append_row();
+	f->padding(0);
+	f->halign(halign::fill);
+
+	auto menubar_impl=ref<always_visibleObj<container_elementObj
+						<child_elementObj>>>
+		::create(menu_and_app_impl);
+	auto menubar=container::create(menubar_impl,
+				       ref<menubarlayoutmanagerObj::implObj>
+				       ::create(menubar_impl));
+
+	f->created_internally(menubar);
+
+	// The second element is the container with the app-requested
+	// layout manager.
+
+	f=glm->append_row();
+	f->padding(0);
+
+	// The top level main window should get sized based on the container's
+	// metrics, but if there's any extra space, it all goes there.
+	glm->requested_row_height(1, 100);
+
+	auto app_impl=ref<app_container_implObj>
+		::create(menu_and_app_impl);
+
+	auto layout_impl=layout_factory.create(app_impl);
+
+	auto app=container::create(app_impl, layout_impl);
+	f->created_internally(app);
+	app->show();
+
+	menu_and_app_container=menu_and_app;
+	menubar_container=menubar;
+	app_container=app;
+
+	return menu_and_app;
+}
+
 main_window screenObj
 ::do_create_mainwindow(const function<main_window_creator_t> &f,
 		       const new_layoutmanager &layout_factory)
@@ -67,7 +146,8 @@ main_window screenObj
 
 	handler->set_window_type("normal");
 
-	peepholed_toplevel_main_windowptr real_container;
+	containerptr menu_and_app_container,
+		menubar_container, app_container;
 
 	// Create a top level peephole in the main_window.
 
@@ -78,24 +158,17 @@ main_window screenObj
 		 [&]
 		 (const ref<containerObj::implObj> &parent)
 		 {
-			 // A toplevel_container_implObj is in the peephole,
-			 // and that's the container that will use the
-			 // requested layout_factory.
+			 auto c=init_containers(parent,
+						menu_and_app_container,
+						menubar_container,
+						app_container,
+						layout_factory);
 
-			 auto impl=ref<peepholed_toplevel_main_windowObj::implObj>
-			 ::create(parent);
-
-			 auto c=peepholed_toplevel_main_window
-			 ::create(impl, layout_factory);
-
-			 real_container=c;
-
-			 c->show();
 			 return c;
 		 });
 
 	auto window_impl=ref<main_windowObj::implObj>
-		::create(handler, real_container);
+		::create(handler, menu_and_app_container, app_container);
 
 	auto mw=ptrrefBase::objfactory<main_window>
 		::create(window_impl, lm->impl);
@@ -107,7 +180,7 @@ main_window screenObj
 
 ref<layoutmanagerObj::implObj> main_windowObj::get_layout_impl() const
 {
-	return impl->peepholed_container->get_layout_impl();
+	return impl->app_container->get_layout_impl();
 }
 
 LIBCXXW_NAMESPACE_END
