@@ -148,6 +148,124 @@ See COPYING for distribution information.
 	</varlistentry>
       </variablelist>
     </section>
+
+    <section id="input_field">
+      <title>Using <classname>&ns;::w::input_field</classname></title>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting>
+f->set("Hello world");
+
+f->on_change([]
+             (const &ns;::w::input_change_info_t &amp;info)
+             {
+             });
+
+f->on_autocomplete([]
+                  (&ns;::w::input_autocomplete_info_t &amp;info)
+                  {
+                        return false;
+                  });
+</programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	<methodname>set()</methodname> is overloaded for a
+	<classname>std::string</classname> (encoded in UTF-8), and a
+	<classname>std::u32string</classname>.
+	<methodname>on_change</methodname>() and
+	<methodname>on_autocomplete</methodname>() install
+	&callback;s.
+	These callbacks are mostly for use by
+	<link linkend="editable_combobox">combo-boxes</link>, but are
+	publicly documented.
+      </para>
+
+      <para>
+	<methodname>on_change</methodname>() installs a callback that gets
+	invoked anytime the contents of the input field get changed.
+	This callback receives a
+	<ulink url="&link-x--w--input-change-info-t;"><classname>&ns;;:w::input_change_info_t</classname></ulink>
+	parameter that provides some context for the change.
+      </para>
+
+      <para>
+	When the change to the input field results in more text getting
+	added to
+	the end of the field, the
+	<methodname>on_autocomplete</methodname>() callback also gets invoked.
+	This callback receives a reference to a
+	<ulink url="&link-x--w--input-autocomplete-info-t;"><classname>&ns;;:w::input_autocomplete_info_t</classname></ulink>
+	object.
+      </para>
+
+      <para>
+	The <methodname>on_autocomplete</methodname>() callback returns
+	<literal>false</literal> if the contents of the input field cannot
+	be auto-completed; otherwise the callback places the requisite
+	details into the
+	<classname>&ns;;:w::input_autocomplete_info_t</classname> parameter
+	and returns <literal>true</literal>.
+      </para>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting>
+x::w::input_lock lock{f};</programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	Constructing a
+	<ulink url="&link-x--w--input-lock;"><classname>&ns;::w::input_lock</classname></ulink>
+	has the unsurprising result of blocking other execution threads from
+	accessing the <classname>&ns;::w::input_field</classname> specified
+	by the parameter to
+	<classname>&ns;::w::input_lock</classname>'s constructor.
+	At that point,
+	<classname>&ns;::w::input_lock</classname>'s methods provide access
+	to the input field's current contents, and other metadata.
+      </para>
+
+      <note>
+	<para>
+	  <classname>&ns;::w::input_field</classname>'s
+	  <methodname>set</methodname>() method replaces the contents of
+	  the
+	  <classname>&ns;::w::input_field</classname>. Like all other
+	  display elements, the
+	  <classname>&ns;::w::input_field</classname> actually gets updated
+	  by &appshort;'s internal execution thread.
+	  <methodname>set</methodname>() does not get blocked directly by an
+	  <classname>&ns;::w::input_lock</classname>.
+	  All that <methodname>set</methodname>() does is send a message
+	  to the execution thread with the new contents of the input field.
+	</para>
+
+	<para>
+	  As with other locks,
+	  <classname>&ns;::w::input_lock</classname>s should not persist
+	  for a long time, and should get destroyed quickly;
+	  otherwise it'll likely end up blocking
+	  &appshort;'s internal execution thread, with the display appearing
+	  to freeze.
+	</para>
+
+	<para>
+	  This also means that acquiring an
+	  <classname>&ns;::w::input_lock</classname> immediately after
+	  a <methodname>set</methodname>() can still return the
+	  input field's former contents from
+	  <classname>&ns;::w::input_lock</classname>'s
+	  <methodname>get</methodname>(), if the
+	  <classname>&ns;::w::input_lock</classname> gets acquired before
+	  the internal execution thread gets the opportunity to update the
+	  input field's contents.
+	</para>
+      </note>
+    </section>
   </section>
 
   <section id="tooltips">

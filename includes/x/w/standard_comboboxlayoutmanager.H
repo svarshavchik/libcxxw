@@ -104,6 +104,10 @@ class LIBCXX_HIDDEN new_standard_comboboxlayoutmanager
 
 //! Block all other threads from making changes to this combo-box.
 
+//! A subclass of a \ref standard_combobox_lock "standard_combobox_lock"
+//! that's constructible from a \ref const_standard_comboboxlayoutmanager "const_standard_comboboxlayoutmanager"
+//! with size() and item() methods.
+
 class const_standard_combobox_lock : public list_lock {
 
 protected:
@@ -129,6 +133,8 @@ public:
 	//! Return combo-box item.
 	text_param item(size_t i) const;
 };
+
+//! Block all other threads from making changes to this combo-box.
 
 class standard_combobox_lock : public const_standard_combobox_lock {
 

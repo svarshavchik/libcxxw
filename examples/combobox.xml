@@ -1,0 +1,10 @@
+<optclass name="options">
+  <option>
+    <name>editable</name>
+    <type>bool</type>
+    <opt>e</opt>
+    <longopt>editable</longopt>
+    <descr>Create an editable combo-box</descr>
+  </option>
+  <defaultoptions />
+</optclass>

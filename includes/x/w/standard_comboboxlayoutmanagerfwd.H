@@ -63,10 +63,10 @@ an item in the list, and unselect() unselects the existing combo-box
 selection.
 
 \code
-INSERT_LIBX_NAMESPACE::w::list_lock lock{lm};
+INSERT_LIBX_NAMESPACE::w::standard_combobox_lock lock{lm};
 \endcode
 
-A \ref list_lock "INSERT_LIBX_NAMESPACE::w::list_lock" may be instantiated
+A \ref list_lock "INSERT_LIBX_NAMESPACE::w::standard_combobox_lock" may be instantiated
 in order to lock access to the combo-box's items.
 
 */

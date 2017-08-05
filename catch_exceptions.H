@@ -12,6 +12,10 @@
 	{							\
 		e->caught();					\
 	}							\
+	catch (const std::exception &e)				\
+	{							\
+		EXCEPTION(e.what())->caught();			\
+	}							\
 	catch(...)						\
 	{							\
 		LOG_ERROR("Unknown exception thrown");		\

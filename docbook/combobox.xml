@@ -1,0 +1,264 @@
+<!--
+
+Copyright 2017 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<chapter id="combobox">
+  <title>Standard and editable combo-boxes</title>
+
+  <mediaobject>
+    <imageobject>
+      <imagedata fileref="combobox.png" format="PNG"
+		 contentwidth="420px" contentdepth="254px" />
+    </imageobject>
+    <textobject>
+      <phrase>
+	A standard combo-box.
+      </phrase>
+    </textobject>
+    <caption>
+      <para>
+	A combo-box is an alternative to a <link linkend="list">selection
+	  list</link>. The vertical list gets replaced by a single label
+	with a button that opens a popup with the selection
+	list, and the combo-box label shows the selected list item.
+      </para>
+    </caption>
+  </mediaobject>
+
+  <blockquote>
+    <title><ulink url="examples/combobox.C">combobox.C</ulink></title>
+
+    <informalexample>
+      <programlisting><xi:include href="../examples/combobox.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <section id="standard_comboboxlayoutmanager">
+    <title>Creating a standard combo-box layout manager</title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+#include &lt;&ns;/w/focusable_container.H&gt;
+#include &lt;&ns;/w/standard_comboboxlayoutmanager.H&gt;
+
+&ns;::w::new_standard_comboboxlayoutmanager new_combobox;
+
+&ns;::w::focusable_container list=f->create_focusable_container(
+       []
+       (const &ns;::w::focusable_container &amp;c)
+       {
+            &ns;::w::standard_comboboxlayoutmanager l=c->get_layoutmanager();
+       },
+       new_combobox);
+
+&ns;::w::standard_comboboxlayoutmanager cbmanager=list->get_layoutmanager();</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      Passing a <ulink url="&link-x--w--new-standard-comboboxlayoutmanager;"><classname>&ns;::w::new_standard_comboboxlayoutmanager</classname></ulink>
+      for the second parameter to a &factory;'s
+      <methodname>create_focusable_container</methodname> results in a
+      container with a
+      <ulink url="&link-typedef-x--w-standard-comboboxlayoutmanager;"><classname>&ns;::w::standard_comboboxlayoutmanager</classname></ulink>.
+      This is the &layoutmanager; that manages the combo-box.
+    </para>
+
+    <para>
+      A standard combo-box consists of a popup with a vertical list of text
+      labels.
+      The combo-box itself consists of a label that receives input focus, and
+      a button on its right. Clicking on the button opens the combo-box's
+      popup with the combo-box's items.
+      Selecting one of the items sets the combo-box label to the item's text.
+      This is now the selected item.
+      Selecting another item replaces the previously-selected item.
+    </para>
+
+    <para>
+      <ulink url="&link-typedef-x--w-standard-comboboxlayoutmanager;">&ns;::w::standard_comboboxlayoutmanager</ulink>'s
+      methods include
+      <methodname>append_item</methodname>() and
+      <methodname>insert_item</methodname>();
+      also <methodname>remove_item</methodname>() and
+      <methodname>replace_all</methodname>().
+      These methods modify the contents of the combo-box.
+      <ulink url="examples/combobox.C"><filename>combobox.C</filename></ulink>
+      uses <methodname>replace_all</methodname>() in
+      <methodname>create_focusable_container</methodname>()'s
+      &creator; to set the initial contents of the combo-box.
+    </para>
+  </section>
+
+  <section id="standard_combobox_selection">
+    <title>Retrieving the current selection in the standard combo-box</title>
+
+    <para>
+      <ulink url="&link-x--w--new-standard-comboboxlayoutmanager;"><classname>&ns;::w::new_standard_comboboxlayoutmanager</classname></ulink>
+      inherits
+      <methodname>selected</methodname>()
+      and <methodname>size</methodname>() from the
+      <link linkend="list">list layout manager</link>, and also has an
+      option of installing a &callback;.
+    </para>
+
+    <para>
+      The combo-box's label shows the most recently selected combo-box
+      item. It gets sized automatically to be just big enough for the
+      longest item in the combo-box.
+      <ulink url="&link-x--w--new-standard-comboboxlayoutmanager;"><classname>&ns;::w::new_standard_comboboxlayoutmanager</classname></ulink>'s
+      constructor takes an optional &callback; parameter.
+      This callback gets invoked whenever a combo-box item gets
+      selected or deselected, and receives a
+      <ulink url="&link-x--w--standard-combobox-selection-changed-info-t;"><classname>&ns;::w::standard_combobox_selection_changed_info_t</classname></ulink>
+      parameter.
+    </para>
+
+    <para>
+      <ulink url="examples/combobox.C"><filename>combobox.C</filename></ulink>
+      installs a callback that logs <quote>Selected item #</quote>
+      whenever it changes.
+      <ulink url="&link-x--w--new-standard-comboboxlayoutmanager;"><classname>&ns;::w::new_standard_comboboxlayoutmanager</classname></ulink>'s
+      <methodname>selected</methodname>() method returns the currently
+      selected combo-box item (if there is one).
+      <ulink url="&link-x--w--new-standard-comboboxlayoutmanager;"><classname>&ns;::w::new_standard_comboboxlayoutmanager</classname></ulink>
+      calls it before closing its window, to show the final
+      combo-box selection.
+    </para>
+  </section>
+
+  <section id="using_standard_combobox">
+    <title>Using the standard combo-box with a pointer or a keyboard</title>
+
+    <para>
+      Clicking on the combo-box's button opens a popup listing the combo-box's
+      items, and clicking on one selects this item, as expected.
+      Clicking on an item that's already selected will de-select it, as is
+      with a <link linkend="list">selection list</link>.
+    </para>
+    <para>
+      &appshort;'s combo-box also offers full access with a keyboard.
+      Standard combo-boxes receive focus, and are tabbable. A combo-box's
+      label field can be tabbed to. With the input focus on the
+      the combo-box label field, pressing a key selects
+      the first combo-box item that starts with the character. If more than
+      one item matches, pressing another key selects the first combo-box
+      item that starts with those two characters, and so on.
+    </para>
+
+    <para>
+      <keycap>Enter</keycap> selects the next combo-box item that starts
+      with the typed characters, if there's more than one.
+      <keycap>Del</keycap> removes the currently selected item, making it
+      possible to select a different item by typing.
+    </para>
+
+    <para>
+      After tabbing the input focus to the combo-box's button,
+      <keycap>Enter</keycap> opens the combo-box popup. Pressing
+      <keycap>Enter</keycap> again closes it. With the combo-box popup
+      open, <keycap>Cursor-Down</keycap> highlights the first item in the
+      combo-box. At this point the <keycap>Cursor-Down</keycap> and
+      <keycap>Cursor-Up</keycap> navigate the popup just like a
+      <link linkend="list">selection list</link>; with
+      <keycap>Enter</keycap> selecting the highlighted item.
+      <keycap>Esc</keycap> closes the popup without making a new selection.
+    </para>
+  </section>
+
+  <section id="standard_combobox_lock">
+    <title>Locking the combo-box</title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+&ns;::w::standard_combobox_lock lock{cbmanager};
+
+size_t s=lock->size();
+&ns;::w::text_param s=lock->item(0);
+lock->remove_item(1);</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      As is the case with all of &appshort;'s display elements, an
+      internal execution thread takes care of processing display server
+      events and updating the combo-box.
+      Instantiating a <ulink url="&link-x--w--standard-combobox-lock;"><classname>&ns;::w::standard_combobox_lock</classname></ulink> acquires an internal
+      lock that blocks all other execution threads from accessing the
+      combo-box. Afterwards, <classname>&ns;::w::standard_combobox_lock</classname>'s
+      methods update the combo-box with a consistent snapshot of its
+      current contents, and state.
+    </para>
+  </section>
+
+  <section id="editable_combobox">
+    <title>Editable combo-boxes</title>
+
+    <para>
+      An editable combo-box replaces its label with an
+      <link linkend="inputfieldsandbuttons">input field</link>. Typing text
+      in the input field uses the combo-box's items to auto-complete the
+      typed text. It's also possible to type in something different, that
+      doesn't match any of the combo-box items. Running
+      <link linkend="combobox"><filename>combobox.C</filename></link> with
+      the <option>-e</option> option creates an editable combo-box instead
+      of a standard combo-box.
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+x::w::new_editable_comboboxlayoutmanager
+	nclm([]
+	     (const x::w::editable_combobox_selection_changed_info_t &amp;info)
+	     {
+                  // ...
+             });
+
+auto container=factory->create_focusable_container([]
+                                                  (const auto &amp;container)
+                                                  {
+                                                  }, nclm);
+// ...
+x::w::editable_comboboxlayoutmanager lm=container->get_layoutmanager();
+
+x::w::input_lock lock{lm};</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      Passing an <ulink url="&link-x--w--new-editable-comboboxlayoutmanager;"><classname>&ns;::w::new_editable_comboboxlayoutmanager</classname></ulink>
+      instead of a
+      <ulink url="&link-x--w--new-standard-comboboxlayoutmanager;"><classname>&ns;::w::new_standard_comboboxlayoutmanager</classname></ulink>
+      to <methodname>create_focusable_container</methodname>() constructs an
+      <classname>&ns;::w::focusable_container</classname> whose layout manager
+      is an
+      <ulink url="&link-typedef-x--w-editable-comboboxlayoutmanager;"><classname>&ns;:;w::editable_comboboxlayoutmanager</classname></ulink>.
+    </para>
+
+    <para>
+      <classname>&ns;:;w::editable_comboboxlayoutmanager</classname> is
+      a subclass of a
+      <ulink url="&link-x--w--new-standard-comboboxlayoutmanager;"><classname>&ns;::w::new_standard_comboboxlayoutmanager</classname></ulink>
+      and inherits all of its methods.
+      Additionally, an
+      <classname>&ns;:;w::editable_comboboxlayoutmanager</classname>
+      can be passed as a parameter to an
+      <link linkend="input_field"><classname>&ns;::w::input_lock</classname></link>'s
+      constructor in order to access the contents of combo-box's
+      <classname>&ns;::w::input_field</classname>.
+    </para>
+  </section>
+
+</chapter>
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "book" "chapter")
+End:
+-->

@@ -154,6 +154,9 @@ class LIBCXX_HIDDEN lookup_collectorObj : virtual public obj {
 			    const custom_comboboxlayoutmanager &lm,
 			    const busy &mcguffin)
 	{
+		if (!search_func)
+			return false;
+
 		size_t i=0;
 
 		list_lock lock{lm};

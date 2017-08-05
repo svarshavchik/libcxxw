@@ -10,6 +10,8 @@
 #include <x/w/main_window.H>
 #include <x/w/gridlayoutmanager.H>
 #include <x/w/standard_comboboxlayoutmanager.H>
+#include <x/w/editable_comboboxlayoutmanager.H>
+#include <x/w/input_field_lock.H>
 #include <x/w/focusable_container.H>
 #include <x/w/gridfactory.H>
 #include <x/w/label.H>
@@ -19,17 +21,12 @@
 #include <iostream>
 
 #include "close_flag.H"
+#include "combobox.H"
 
-static inline void create_main_window(const x::w::main_window &main_window)
+static inline auto
+create_standard_combobox(const x::w::factory &factory,
+			 void (*creator)(const x::w::focusable_container &))
 {
-	x::w::gridlayoutmanager layout=main_window->get_layoutmanager();
-
-	layout->row_alignment(0, x::w::valign::middle);
-
-	x::w::gridfactory factory=layout->append_row();
-
-	factory->create_label("Choose a day of the week:")->show();
-
 	x::w::new_standard_comboboxlayoutmanager
 		nclm([]
 		     (const x::w::standard_combobox_selection_changed_info_t &i)
@@ -42,10 +39,51 @@ static inline void create_main_window(const x::w::main_window &main_window)
 			     }
 		     });
 
-	auto combobox=factory->create_focusable_container
-		([]
+	return factory->create_focusable_container(creator, nclm);
+}
+
+static inline auto
+create_editable_combobox(const x::w::factory &factory,
+			 void (*creator)(const x::w::focusable_container &))
+{
+	x::w::new_editable_comboboxlayoutmanager
+		nclm([]
+		     (const x::w::editable_combobox_selection_changed_info_t &i)
+		     {
+			     if (i.selected_flag)
+			     {
+				     std::cout << "Selected item #"
+					       << i.item_index
+					       << std::endl;
+			     }
+		     });
+
+	return factory->create_focusable_container(creator, nclm);
+}
+
+static inline void create_main_window(const x::w::main_window &main_window,
+				      const options &opts)
+{
+	x::w::gridlayoutmanager layout=main_window->get_layoutmanager();
+
+	layout->row_alignment(0, x::w::valign::middle);
+
+	auto factory=layout->append_row();
+
+	factory->create_label("Choose a day of the week:")->show();
+
+	auto combobox=(opts.editable->value
+		       ? create_editable_combobox
+		       : create_standard_combobox)
+		(factory,
+		[]
 		 (const auto &container)
 		 {
+			 // An editable_comboboxlayoutmanager is a subclass of
+			 // standard_comboboxlayoutmanager, so with either the
+			 // standard or the editable combo-box we can use a
+			 // standard_comboboxlayoutmanager to initialize it.
+
 			 x::w::standard_comboboxlayoutmanager lm=
 				 container->get_layoutmanager();
 
@@ -56,8 +94,7 @@ static inline void create_main_window(const x::w::main_window &main_window)
 					  "Thursday",
 					  "Friday",
 					  "Saturday"});
-		 },
-		 nclm);
+		 });
 
 	combobox->show();
 
@@ -66,7 +103,7 @@ static inline void create_main_window(const x::w::main_window &main_window)
 	main_window->appdata=combobox;
 }
 
-void standard_combobox()
+void create_combobox(const options &opts)
 {
 	x::destroy_callback::base::guard guard;
 
@@ -76,10 +113,12 @@ void standard_combobox()
 		::create([&]
 			 (const auto &main_window)
 			 {
-				 create_main_window(main_window);
+				 create_main_window(main_window, opts);
 			 });
 
-	main_window->set_window_title("Standard combo-box");
+	main_window->set_window_title(opts.editable->value ?
+				      "Editable combo-box"
+				      : "Standard combo-box");
 
 	guard(main_window->connection_mcguffin());
 
@@ -102,6 +141,15 @@ void standard_combobox()
 
 	x::w::focusable_container combobox=main_window->appdata;
 
+	if (opts.editable->value)
+	{
+		x::w::editable_comboboxlayoutmanager lm=
+			combobox->get_layoutmanager();
+		x::w::input_lock lock{lm};
+
+		std::cout << "Final contents: " << lock.get() << std::endl;
+	}
+
 	x::w::standard_comboboxlayoutmanager lm=
 		combobox->get_layoutmanager();
 
@@ -114,7 +162,7 @@ void standard_combobox()
 	}
 	else
 	{
-		std::cout << "Nothing was selected."
+		std::cout << "No combo-box selection."
 			  << std::endl;
 	}
 }
@@ -122,7 +170,11 @@ void standard_combobox()
 int main(int argc, char **argv)
 {
 	try {
-		standard_combobox();
+		options opts;
+
+		opts.parse(argc, argv);
+
+		create_combobox(opts);
 	} catch (const x::exception &e)
 	{
 		e->caught();

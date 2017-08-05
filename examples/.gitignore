@@ -1,10 +1,11 @@
 /config.h
 /config.h.in
 /checkradio
+/combobox
+/combobox.H
 /gridlayoutmanager
 /helloworld
 /inputfieldsandbuttons
 /listlayoutmanager
 /listlayoutmanager.H
-/standard_combobox
 /wordwraplabel
