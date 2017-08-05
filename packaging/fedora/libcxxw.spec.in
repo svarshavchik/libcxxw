@@ -34,6 +34,7 @@ Group: Development/Libraries
 Summary: LIBCXXw development libraries
 Requires: %{name} = 0:%{version}-%{release}
 Requires: libcxxbase-devel
+Requires: libX11-devel
 
 %description devel
 This package installs files needed to develop applications that use LIBCXXw.

@@ -405,7 +405,7 @@ code path.
 	  <xsl:value-of select="type" />
 	  <xsl:text> length_</xsl:text>
 	  <xsl:value-of select="length" />
-	  <xsl:text>;&#10;</xsl:text>
+	  <xsl:text>{};&#10;</xsl:text>
 
 	  <xsl:text>    if (!</xsl:text>
 	  <xsl:value-of select="type" />
@@ -444,7 +444,7 @@ code path.
 	      <xsl:value-of select="list" />
 	      <xsl:text> &gt; 0) { </xsl:text>
 	      <xsl:value-of select="recvtype" />
-	      <xsl:text> v; if (!</xsl:text>
+	      <xsl:text> v{}; if (!</xsl:text>
 	      <xsl:value-of select="type" />
 	      <xsl:text>_received(IN_THREAD, data, data_size, v)) badmessage(IN_THREAD, "</xsl:text>
 	      <xsl:call-template name="badmessagename" />
@@ -491,10 +491,15 @@ code path.
       <xsl:value-of select="type" />
       <xsl:text> </xsl:text>
       <xsl:value-of select="name" />
-      <xsl:if test="default">
-	<xsl:text>=</xsl:text>
-	<xsl:value-of select="default" />
-      </xsl:if>
+      <xsl:choose>
+	<xsl:when test="default">
+	  <xsl:text>=</xsl:text>
+	  <xsl:value-of select="default" />
+	</xsl:when>
+	<xsl:otherwise>
+	  <xsl:text>{}</xsl:text>
+	</xsl:otherwise>
+      </xsl:choose>
       <xsl:text>;&#10;</xsl:text>
     </xsl:for-each>
 

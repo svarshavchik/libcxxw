@@ -794,6 +794,7 @@ ALL_DOCS=html/book.css html/.htaccess html/frame.js \
       $(DOCIMAGES)
 
 docs: $(ALL_DOCS) html/index.html
+	-chcon -R -t httpd_sys_content_t html/. 2>/dev/null || true
 
 DOCS_SRC = $(shell find includes -name '*.H' -print)
 
