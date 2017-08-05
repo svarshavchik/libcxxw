@@ -730,6 +730,27 @@ bool generic_windowObj::handlerObj::set_default_focus(IN_THREAD_ONLY)
 	return false;
 }
 
+void generic_windowObj::handlerObj::get_focus_first(IN_THREAD_ONLY,
+						    const focusable &f)
+{
+	auto b=focusable_fields(IN_THREAD).begin();
+
+	if (b == focusable_fields(IN_THREAD).end())
+		throw EXCEPTION("Internal error, there should be at least one focusable field.");
+
+	auto current_first=*b;
+
+	size_t n=f->internal_impl_count();
+
+	while (n)
+	{
+		auto i=f->get_impl(--n);
+
+		i->get_focus_before(IN_THREAD, current_first);
+		current_first=i;
+	}
+}
+
 void generic_windowObj::handlerObj::unset_keyboard_focus(IN_THREAD_ONLY)
 {
 	if (most_recent_keyboard_focus(IN_THREAD))

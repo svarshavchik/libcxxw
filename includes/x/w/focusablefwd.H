@@ -33,19 +33,32 @@ class focusableImplObj;
 //! f->get_focus_after(other);
 //!
 //! f->get_focus_before(other);
+//!
+//! f->get_focus_first();
+//!
+//! f->request_focus();
+//!
 //! \endcode
 //!
 //! The parameter to \c get_focus_after() and \c get_focus_before() is another
-//! focusable display element in the same window. These functions moves
+//! focusable display element in the same window. These functions move
 //! the tabbing order of this display lemeent.
 //!
 //! get_focus_after() sets this focusable element's tabbing order to be after
-//! the other display element's.
+//! the other display element's. When the other display element has input
+//! focus, TAB moves the focus to this focusable element, then whichever other
+//! element originally followed the other element in the tabbing order.
 //!
-//! get_focus_before() sets this focuable element's tabbing order to be before
+//! get_focus_before() sets this focusable element's tabbing order to be before
 //! the other display element's. This element replaces the other element in
 //! the current tabbing order, and the other display element tabbing order
 //! becomes after this element's tabbing order.
+//!
+//! get_focus_first() set this focusable element's tabbing order to be the
+//! first tabbable display element in its window.
+//!
+//! request_focus() moves the current keyboard focus to this focusable
+//! element, if it's enabled and visible.
 //!
 //! \code
 //! #include <INSERT_LIBX_NAMESPACE/w/focus.H>

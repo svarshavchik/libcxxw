@@ -246,6 +246,10 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 	bool set_default_focus(IN_THREAD_ONLY);
 
+	//! Set focusable element in the window.
+
+	void get_focus_first(IN_THREAD_ONLY, const focusable &f) override;
+
  private:
 	//! Most recent element where the pointer motion event went to.
 

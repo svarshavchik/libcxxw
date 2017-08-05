@@ -237,7 +237,7 @@ label->label_for(button);</programlisting>
 
     <para>
       <methodname>label_for</methodname>() designates its display element
-      as a <quote>label</quote> for the <quote>focusable</quote> element,
+      as a <quote>label</quote> for the &focusable; element,
       specified by its parameter.
       Invoking the display element's <methodname>label_for</methodname>()
       has the following results:
@@ -247,14 +247,14 @@ label->label_for(button);</programlisting>
       <listitem>
 	<para>
 	  Clicking on the label element results in the pointer click getting
-	  processed by the focusable element.
+	  processed by the &focusable; element.
 	</para>
       </listitem>
       <listitem>
 	<para>
 	  The label's visual appearance also matches the focusable's visual
 	  appearance when the focusable gets enabled
-	  or disabled by <methodname>set_enabled</methodname>().
+	  or disabled by its <methodname>set_enabled</methodname>() method.
 	</para>
       </listitem>
     </itemizedlist>

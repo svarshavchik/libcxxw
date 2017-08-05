@@ -106,6 +106,17 @@ void focusableObj::get_focus_after(const focusable &other)
 		 });
 }
 
+void focusableObj::get_focus_first()
+{
+	get_impl()->get_focusable_element().THREAD
+		->run_as([me=focusable(this)]
+			 (IN_THREAD_ONLY)
+			 {
+				 me->get_impl()->get_focusable_element()
+					 .get_focus_first(IN_THREAD, me);
+			 });
+}
+
 void focusableObj::on_keyboard_focus(const std::function<focus_callback_t> &cb)
 {
 	get_impl()->get_focusable_element().on_keyboard_focus(cb);
@@ -114,6 +125,23 @@ void focusableObj::on_keyboard_focus(const std::function<focus_callback_t> &cb)
 void focusableObj::on_key_event(const std::function<key_event_callback_t> &cb)
 {
 	get_impl()->get_focusable_element().on_key_event(cb);
+}
+
+void focusableObj::request_focus()
+{
+	get_impl()->get_focusable_element().THREAD
+		->run_as([me=focusable(this)]
+			 (IN_THREAD_ONLY)
+			 {
+				 auto impl=me->get_impl();
+
+				 if (!impl->get_focusable_element()
+				     .enabled(IN_THREAD))
+					 return;
+
+				 impl->set_focus_and_ensure_visibility
+					 (IN_THREAD);
+			 });
 }
 
 LIBCXXW_NAMESPACE_END

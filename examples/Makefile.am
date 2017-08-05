@@ -3,6 +3,7 @@
 noinst_PROGRAMS=\
 	checkradio				\
 	combobox				\
+	focusable				\
 	gridlayoutmanager			\
 	helloworld				\
 	inputfieldsandbuttons			\
@@ -15,6 +16,9 @@ checkradio_LDADD=-lcxxw -lcxx
 $(call OPTIONS_GEN,combobox.H,combobox.xml)
 combobox_SOURCES=combobox.C close_flag.H
 combobox_LDADD=-lcxxw -lcxx
+
+focusable_SOURCES=focusable.C
+focusable_LDADD=-lcxxw -lcxx
 
 $(call REFCOLLECTION_GEN,gridlayoutmanager.inc.H,gridlayoutmanager.xml)
 

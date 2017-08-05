@@ -45,6 +45,14 @@ public:
 
 	void get_focus_after(const focusable &other);
 
+	//! This focusable should be the first tabbable focusable.
+	void get_focus_first();
+
+	//! Request for keyboard focus to be moved to this element.
+
+	//! No action takes place if this focusable is disabled.
+	void request_focus();
+
 	//! How many real internal focusable objects comprise this focusable.
 
 	//! \internal

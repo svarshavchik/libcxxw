@@ -61,8 +61,7 @@ See COPYING for distribution information.
     <para>
       A &factory;'s
       <methodname>create_focusable_container</methodname>() creates
-      a &container; that's capable of handling input focus from the keyboard
-      or a pointer.
+      a &container; that processes &focusable; events.
       The first parameter to a
       <methodname>create_focusable_container</methodname>() is a
       &creator;.

@@ -1,0 +1,112 @@
+<!--
+
+Copyright 2017 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<chapter id="focusable">
+  <title>Using focusable fields</title>
+
+  <para>
+    <link linkend="inputfieldsandbuttons">Input fields and buttons</link>
+    are examples of focusable fields. Focusable fields process keyboard
+    events when they have keyboard input focus. There are two general
+    ways for a focusable field to gain input focus: by clicking on the field
+    with pointer button 1, or by using the <keycap>Tab</keycap> and
+    <keycap>Shift-Tab</keycap> keys.
+  </para>
+
+  <para>
+    A dashed frame gets typically drawn around the display element that
+    has keyboard input focus.
+    <keycap>Tab</keycap> moves the keyboard input focus to the next display
+    element, and
+    <keycap>Shift-Tab</keycap> moves the keyboard input focus to the
+    previous display element.
+  </para>
+
+  <para>
+    The tabbing order does not get determined by the display elements'
+    position, but rather their creation order. Focusable display elements
+    inherit from
+    <ulink url="&link-typedef-x--w-focusable;"><classname>&ns;::w::focusable</classname></ulink>
+    objects, which implement several methods:
+  </para>
+
+  <blockquote>
+    <title><ulink url="examples/focusable.C">focusable.C</ulink></title>
+
+    <informalexample>
+      <programlisting><xi:include href="../examples/focusable.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    <methodname>get_focus_after</methodname>(),
+    <methodname>get_focus_before</methodname>(), and
+    <methodname>get_focus_first</methodname>() moves the focusable element's
+    tabbing order to be after another focusable element, before another
+    focusable element, or the first focusable element in the window.
+  </para>
+
+  <para>
+    <methodname>set_enabled</methodname>() enables or disables a focusable
+    display element. Disabled focusable display elements do not respond to
+    pointer clicks, and tabbing the input focus skips them. Disabled
+    focusable display elements get drawn with a dithered mask that blends
+    them with the background color, making them appear faint compared to
+    enabled display elements.
+  </para>
+
+  <para>
+    <methodname>request_focus</methodname>() warps the keyboard input focus
+    to the given focusable, if it's enabled.
+    <methodname>request_focus</methodname>() gets ignored if the given
+    focusable element is not visible or if it is not enabled.
+  </para>
+
+  <para>
+    <methodname>on_keyboard_focus</methodname>() and
+    <methodname>on_key_event</methodname>() install &callback;s that
+    provide keyboard focus event feedback.
+  </para>
+
+  <para>
+    The <methodname>on_keyboard_focus</methodname>() callback gets invoked
+    whenever the focusable display element gains or loses keyboard input
+    focus. Additionally, the callback gets invoked upon installation to
+    report the focusable display element's current focus (which is typically
+    no input focus for newly-created display elements).
+    The <methodname>on_key_event</methodname>() callback gets invoked
+    when a key gets pressed or released, or when a unicode string gets
+    composed using the X Input Method server, while the focusable display
+    element receives input focus.
+  </para>
+
+  <para>
+    The <methodname>on_key_event</methodname>() callback must return
+    <literal>true</literal> if the callback recognized and processed the
+    key event. Returning <literal>false</literal> results in &app;'s default
+    action for the key event; but &app; calls the
+    <methodname>on_key_event</methodname>() callback only when the key event
+    results in no specific action by the focusable display element.
+  </para>
+
+  <para>
+    <filename>focusable.C</filename> installs an
+    <methodname>on_key_event</methodname>() callback into one of the input
+    buttons. This callback does not get called for
+    <keycap>Enter</keycap> and <keycap>Space</keycap> keys, but for all
+    other keys (that the X display server does not handle itself). This is
+    because <keycap>Enter</keycap> and <keycap>Space</keycap> keys have the
+    same effect as clicking the button with the pointer, and this specific
+    action takes precedence.
+  </para>
+</chapter>
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "book" "chapter")
+End:
+-->

@@ -187,6 +187,13 @@ class LIBCXX_HIDDEN child_elementObj : public elementObj::implObj {
 	void visibility_updated(IN_THREAD_ONLY, bool flag) override;
 
  public:
+
+	//! Input focus processing.
+
+	//! Forward to parent.
+
+	void get_focus_first(IN_THREAD_ONLY, const focusable &f) override;
+
 	//! Input focus processing.
 
 	//! See element_focusable.C

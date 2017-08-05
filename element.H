@@ -755,6 +755,11 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//
 	// Input focus handling
 
+	//! This element should be the first focusable element.
+	//! child_elementObj forwards it to its parent container; and this
+	//! is implemented in generic_windowObj::handlerObj.
+
+	virtual void get_focus_first(IN_THREAD_ONLY, const focusable &)=0;
 
 	//! Whether this element is enabled for focus processing.
 

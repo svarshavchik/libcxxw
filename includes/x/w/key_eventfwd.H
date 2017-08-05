@@ -20,7 +20,7 @@ class key_event;
 //! that's reported as a \ref key_event "INSERT_LIBX_NAMESPACE::w::key_event";
 //! and text entered via the X Input Method server, that comes in as a
 //! \c std::u32string_view. The key event callback may receive one or the
-//! other. Its argument is a variant of pointers to the possible events/
+//! other. Its argument is a variant of pointers to the possible events.
 
 typedef std::variant<const key_event *,
 		     const std::u32string_view *> all_key_events_t;

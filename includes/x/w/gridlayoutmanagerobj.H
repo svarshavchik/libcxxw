@@ -128,7 +128,7 @@ public:
 	//! Set the default horizontal alignment of elements in the column.
 
 	//! This must be set before creating elements in this column.
-	void col_alignment(size_t row, halign alignment);
+	void col_alignment(size_t col, halign alignment);
 
 	//! Remove all custom row defaults.
 	void remove_row_defaults(size_t row);
