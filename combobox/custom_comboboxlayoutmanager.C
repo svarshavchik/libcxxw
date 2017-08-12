@@ -6,15 +6,11 @@
 #include "combobox/custom_combobox_container_impl.H"
 #include "combobox/custom_comboboxlayoutmanager.H"
 #include "combobox/custom_combobox_popup_container_impl.H"
-#include "combobox/custom_combobox_popup_layoutmanager.H"
 #include "combobox/combobox_button_impl.H"
-#include "popup/popup_attachedto_info.H"
-#include "popup/popup_attachedto_handler.H"
-#include "popup/popup_impl.H"
+#include "peepholed_toplevel_listcontainer/create_popup.H"
 
 #include "focus/focusframecontainer_element.H"
 #include "focus/focusable_element.H"
-#include "peephole/peephole_toplevel.H"
 
 #include "x/w/focusable_container.H"
 #include "x/w/key_event.H"
@@ -239,30 +235,6 @@ focusable_container new_custom_comboboxlayoutmanager
 ::create(const ref<containerObj::implObj> &parent) const
 {
 	// Start by creating the popup first.
-	//
-	// First, the handler.
-
-	auto parent_handler=ref<generic_windowObj::handlerObj>
-		(&parent->get_window_handler());
-
-	auto attachedto_info=popup_attachedto_info::create
-		(rectangle{},
-		 attached_to::combobox_above_or_below);
-
-	auto popup_handler=ref<popup_attachedto_handlerObj>
-		::create(parent_handler, attachedto_info,
-			 // We're about to create the combobox container,
-			 // with nesting_level of parent+1
-			 //
-			 // The current selection element in the combox
-			 // container will be parent+2.
-			 //
-			 // Need to set the popup's nesting level to
-			 // parent+3, so that it gets recalculated after
-			 // the popup gets recalculated.
-			 parent->get_element_impl().nesting_level+3);
-
-	popup_handler->set_window_type("combo,popup_menu,dropdown_menu");
 
 	new_listlayoutmanager style;
 
@@ -271,58 +243,58 @@ focusable_container new_custom_comboboxlayoutmanager
 	style.highlighted_color="combobox_highlighted_color";
 	style.current_color="combobox_current_color";
 
-	// We are not using new_listlayoutmanager::create(), we need to
-	// set the handler's background color ourselves.
-
-	popup_handler->elementObj::implObj
-		::set_background_color(style.background_color);
-
 	custom_combobox_popup_containerptr popup_containerptr;
-	ptr<custom_combobox_popup_layoutmanagerObj> popup_listlayoutmanagerptr;
 
-	peephole_style combobox_peephole_style;
+	auto [combobox_popup, popup_handler]=
+		create_peepholed_toplevel_listcontainer_popup
+		({
+			ref<elementObj::implObj>(&parent->get_element_impl()),
+				"combo,popup_menu,dropdown_menu",
+				"combobox_border",
 
-	combobox_peephole_style.h_alignment=halign::fill;
-
-	// Create the popup's peephole, in case the popup is too big for the
-	// screen.
-	auto popup_toplevel_layoutmanager=create_peephole_toplevel
-		(popup_handler,
-		 "combobox_border",
-		 combobox_peephole_style,
-		[&]
+				// We're about to create the combobox container,
+				// with nesting_level of parent+1
+				//
+				// The current selection element in the combox
+				// container will be parent+2.
+				//
+				// Need to set the popup's nesting level to
+				// parent+3, so that it gets recalculated after
+				// the popup gets recalculated.
+				3,
+				attached_to::combobox_above_or_below,
+				style},
+		 [&]
 		 (const auto &peephole_container)
 		 {
 			 auto impl=ref<custom_combobox_popup_containerObj
 			 ::implObj>::create(peephole_container, style);
 
-			 auto popup_listlayoutmanager=
-			 ref<custom_combobox_popup_layoutmanagerObj>
-			 ::create(impl, style);
+			 return create_p_t_l_impl_ret_t{impl,
+					 ref<peepholed_toplevel_listcontainer_layoutmanager_implObj>
+					 ::create(impl, impl, style)
+					 };
 
-			 auto popup=custom_combobox_popup_container
+		 },
+
+		 [&]
+		 (const popup_attachedto_info &attachedto_info,
+		  const ref<custom_combobox_popup_containerObj::implObj> &impl,
+		  const ref<listlayoutmanagerObj::implObj> &layout_impl)
+		 {
+			 auto container=custom_combobox_popup_container
 			 ::create(impl,
-				  popup_listlayoutmanager,
+				  layout_impl,
 				  attachedto_info);
 
-			 popup->show();
-			 popup_containerptr=popup;
-			 popup_listlayoutmanagerptr=popup_listlayoutmanager;
+			 popup_containerptr=container;
 
-			 return popup;
+			 return container;
 		 });
 
-	// Now, finish creating the popup's implementation object, and the
-	// popup "public" object itself.
-	custom_combobox_popup_container popup_container=popup_containerptr;
-	ref<custom_combobox_popup_layoutmanagerObj> popup_listlayoutmanager=
-		popup_listlayoutmanagerptr;
-
-	auto popup_impl=ref<popupObj::implObj>::create(popup_handler,
-						       parent_handler);
-
-	auto combobox_popup=popup::create(popup_impl,
-					  popup_toplevel_layoutmanager->impl);
+        custom_combobox_popup_container popup_container=popup_containerptr;
+	ref<listlayoutmanagerObj::implObj>
+		popup_listlayoutmanager=combobox_popup->get_layout_impl();
 
 	// We can now start creating the combobox display element, starting
 	// with the container where everything goes.

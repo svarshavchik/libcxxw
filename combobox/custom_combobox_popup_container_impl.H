@@ -6,8 +6,7 @@
 #define custom_combobox_popup_container_impl_h
 
 #include "combobox/custom_combobox_popup_container.H"
-#include "listlayoutmanager/listcontainer_impl.H"
-#include "always_visiblefwd.H"
+#include "peepholed_toplevel_listcontainer/create_popup.H"
 #include "image_button_internalfwd.H"
 #include "x/w/elementfwd.H"
 #include <x/weakptr.H>
@@ -25,15 +24,11 @@ LIBCXXW_NAMESPACE_START
 //! current combo-box selection element, if there's one installed.
 
 class LIBCXX_HIDDEN custom_combobox_popup_containerObj::implObj
-	: public always_visibleObj<listcontainerObj::implObj> {
+	: public p_t_l_impl_t {
 
 	//! Alias
 
-	typedef always_visibleObj<listcontainerObj::implObj> superclass_t;
-
-	//! Current tallest row height
-
-	dim_t tallest_row_height_thread_only=1;
+	typedef p_t_l_impl_t superclass_t;
 
 	//! Set the current selection element's metrics.
 
@@ -46,7 +41,6 @@ class LIBCXX_HIDDEN custom_combobox_popup_containerObj::implObj
 	THREAD_DATA_ONLY(combobox_button);
 
  public:
-	THREAD_DATA_ONLY(tallest_row_height);
 
 	//! Constructor
 	implObj(const ref<containerObj::implObj> &parent,
@@ -67,10 +61,14 @@ class LIBCXX_HIDDEN custom_combobox_popup_containerObj::implObj
 
 	void horizvert_updated(IN_THREAD_ONLY) override;
 
-	//! The layout manager captures the tallest row's height, and calls me.
+	//! Override update_tallest_row_height()
 
-	void update_tallest_row_height(IN_THREAD_ONLY,
-				       dim_t new_tallest_height);
+	//! Inherited from peepholed_toplevel_listcontainer_impl_elementObj.
+	//! Invokes update_current_selection_metrics() if the tallest_row_height
+	//! changed.
+
+	bool update_tallest_row_height(IN_THREAD_ONLY,
+				       dim_t new_tallest_height) override;
 
 	//! Install a link to the current combobox selection element.
 

@@ -4,6 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "combobox/custom_combobox_popup_container_impl.H"
+#include "peepholed_toplevel_listcontainer/impl_element.H"
 #include "always_visible.H"
 #include "image_button_internal.H"
 #include "run_as.H"
@@ -32,21 +33,17 @@ void custom_combobox_popup_containerObj::implObj
 	update_current_selection_metrics(IN_THREAD);
 }
 
-void custom_combobox_popup_containerObj::implObj
+bool custom_combobox_popup_containerObj::implObj
 ::update_tallest_row_height(IN_THREAD_ONLY,
 			    dim_t new_tallest_height)
 {
-	if (tallest_row_height(IN_THREAD) == new_tallest_height)
-		return;
-	tallest_row_height(IN_THREAD)=new_tallest_height;
+	auto flag=superclass_t::update_tallest_row_height(IN_THREAD,
+							  new_tallest_height);
 
-	// The popup's vertical peephole scrollbar's increment is based on
-	// talltest_row_height, so we need to trigger our parent container's
-	// to recalculate, so that the toplevelpeephole_layoutmanagerObj's
-	// recalculate() can update the vertical increment.
+	if (flag)
+		update_current_selection_metrics(IN_THREAD);
 
-	child_container->needs_recalculation(IN_THREAD);
-	update_current_selection_metrics(IN_THREAD);
+	return flag;
 }
 
 void custom_combobox_popup_containerObj::implObj

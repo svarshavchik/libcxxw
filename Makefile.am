@@ -89,8 +89,6 @@ libcxxw_la_SOURCES=\
 	combobox/custom_combobox_popup_container_impl.H \
 	combobox/custom_combobox_popup_containerfwd.H \
 	combobox/custom_combobox_popup_containerobj.H \
-	combobox/custom_combobox_popup_layoutmanager.C \
-	combobox/custom_combobox_popup_layoutmanager.H \
 	combobox/editable_comboboxlayoutmanager.C	    \
 	combobox/editable_comboboxlayoutmanager.H	    \
 	combobox/editable_comboboxlayoutmanager_impl.C \
@@ -425,6 +423,16 @@ libcxxw_la_SOURCES=\
 	peephole/peepholed_toplevelobj.H	    \
 	peephole/peepholed_toplevel_element.H	    \
 	peephole/peepholed_toplevel_elementfwd.H    \
+	peepholed_toplevel_listcontainer/create_popup.C \
+	peepholed_toplevel_listcontainer/create_popup.H \
+	peepholed_toplevel_listcontainer/element.H  \
+	peepholed_toplevel_listcontainer/elementfwd.H \
+	peepholed_toplevel_listcontainer/impl.C	    \
+	peepholed_toplevel_listcontainer/impl.H	    \
+	peepholed_toplevel_listcontainer/impl_element.H \
+	peepholed_toplevel_listcontainer/impl_elementfwd.H \
+	peepholed_toplevel_listcontainer/layoutmanager_impl.C \
+	peepholed_toplevel_listcontainer/layoutmanager_impl.H \
 	peepholed_focusable.C			    \
 	peepholed_focusable.H			    \
 	peepholed_focusable_impl.H		    \

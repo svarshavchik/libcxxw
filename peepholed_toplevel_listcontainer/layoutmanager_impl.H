@@ -6,7 +6,7 @@
 #define custom_combobox_popup_layoutmanager_h
 
 #include "listlayoutmanager/listlayoutmanager.H"
-#include "combobox/custom_combobox_popup_containerobj.H"
+#include "peepholed_toplevel_listcontainer/impl.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -18,27 +18,28 @@ LIBCXXW_NAMESPACE_START
 //! current selection element (so that it's tall enough to show any
 //! combo-box selection).
 
-class LIBCXX_HIDDEN custom_combobox_popup_layoutmanagerObj
+class LIBCXX_HIDDEN peepholed_toplevel_listcontainer_layoutmanager_implObj
 	: public listlayoutmanagerObj::implObj {
 
  public:
 
 	//! My container
-	const ref<custom_combobox_popup_containerObj::implObj> container_impl;
+	const ref<peepholed_toplevel_listcontainer_implObj> container_impl;
 
 	//! Constructor
-	custom_combobox_popup_layoutmanagerObj
-		(const ref<custom_combobox_popup_containerObj::implObj>
-		 &container_impl,
+	peepholed_toplevel_listcontainer_layoutmanager_implObj
+		(const ref<peepholed_toplevel_listcontainer_implObj
+		 > &container_impl,
+		 const ref<listcontainerObj::implObj> &listcontainer_impl,
 		 const new_listlayoutmanager &style);
 
 	//! Destructor
-	~custom_combobox_popup_layoutmanagerObj();
+	~peepholed_toplevel_listcontainer_layoutmanager_implObj();
 
 	//! Override process_updated_position.
 
 	//! Determine the tallest row's height, and call
-	//! container_impl->
+	//! container_impl->update_tallest_row_height().
 	void process_updated_position(IN_THREAD_ONLY,
 				      const rectangle &position) override;
 
