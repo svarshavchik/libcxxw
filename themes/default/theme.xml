@@ -328,4 +328,23 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
 
   <color id="combobox_current_color" scale="70%" />
 
+  <!-- Menu bar -->
+
+  <color id="menubar_background_color" scale="80%" />
+  <color id="menu_background_color" scale="80%" />
+  <color id="menu_highlighted_color" scale="90%" />
+  <color id="menu_clicked_color" scale="100%" />
+
+  <border id="menu_inputfocusoff_border">
+    <color>transparent</color>
+    <width axis="horiz">.2</width>
+    <height axis="vert">.2</height>
+  </border>
+
+  <border id="menu_inputfocuson_border" from="menu_inputfocusoff_border">
+    <color>inputfocus_color1</color>
+    <color2>inputfocus_color2</color2>
+    <dash>.5</dash>
+  </border>
+
 </theme>

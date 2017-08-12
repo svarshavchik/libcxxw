@@ -70,18 +70,24 @@ void focusableObj::get_focus_before(const focusable &other)
 		([me=focusable(this), other]
 		 (IN_THREAD_ONLY)
 		 {
-			 auto b=other->get_impl(0);
-
-			 auto n=me->internal_impl_count();
-
-			 while (n)
-			 {
-				 auto i=me->get_impl(--n);
-
-				 i->get_focus_before(IN_THREAD, b);
-				 b=i;
-			 }
+			 get_focus_before_in_thread(IN_THREAD, me, other);
 		 });
+}
+
+void get_focus_before_in_thread(IN_THREAD_ONLY,	const focusable &me,
+				const focusable &other)
+{
+	auto b=other->get_impl(0);
+
+	auto n=me->internal_impl_count();
+
+	while (n)
+	{
+		auto i=me->get_impl(--n);
+
+		i->get_focus_before(IN_THREAD, b);
+		b=i;
+	}
 }
 
 void focusableObj::get_focus_after(const focusable &other)
@@ -93,17 +99,23 @@ void focusableObj::get_focus_after(const focusable &other)
 		([me=focusable(this), other]
 		 (IN_THREAD_ONLY)
 		 {
-			 auto a=other->get_impl(other->internal_impl_count()-1);
-
-			 auto n=me->internal_impl_count();
-			 for (size_t i=0; i<n; ++i)
-			 {
-				 auto impl=me->get_impl(i);
-
-				 impl->get_focus_after(IN_THREAD, a);
-				 a=impl;
-			 }
+			 get_focus_after_in_thread(IN_THREAD, me, other);
 		 });
+}
+
+void get_focus_after_in_thread(IN_THREAD_ONLY, const focusable &me,
+			       const focusable &other)
+{
+	auto a=other->get_impl(other->internal_impl_count()-1);
+
+	auto n=me->internal_impl_count();
+	for (size_t i=0; i<n; ++i)
+	{
+		auto impl=me->get_impl(i);
+
+		impl->get_focus_after(IN_THREAD, a);
+		a=impl;
+	}
 }
 
 void focusableObj::get_focus_first()

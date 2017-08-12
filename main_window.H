@@ -21,6 +21,7 @@ class LIBCXX_HIDDEN main_windowObj::implObj
 	//! Constructor
 	implObj(const ref<handlerObj> &handler,
 		const container &menu_and_app_container,
+		const container &menubar_container,
 		const container &app_container);
 
 	//! Destructor
@@ -36,6 +37,10 @@ class LIBCXX_HIDDEN main_windowObj::implObj
 	//! and the app_container.
 
 	const container menu_and_app_container;
+
+	//! The container with the menubar.
+
+	const container menubar_container;
 
 	//! The container with the main window's specified layout manager.
 

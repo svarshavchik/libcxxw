@@ -43,6 +43,7 @@ suppressfile*
 /testimagebuttons
 /testinputfield
 /testlabel
+/testmenu
 /testwordwrappablelabel
 /testmainwindow
 /testmainwindowoptions.H

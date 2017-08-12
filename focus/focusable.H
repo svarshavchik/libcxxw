@@ -167,6 +167,12 @@ class LIBCXX_HIDDEN focusableImplObj : virtual public obj {
 	void unfocus(IN_THREAD_ONLY);
 };
 
+void get_focus_before_in_thread(IN_THREAD_ONLY,	const focusable &me,
+				const focusable &other) LIBCXX_HIDDEN;
+
+void get_focus_after_in_thread(IN_THREAD_ONLY,	const focusable &me,
+				const focusable &other) LIBCXX_HIDDEN;
+
 LIBCXXW_NAMESPACE_END
 
 #endif

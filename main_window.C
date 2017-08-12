@@ -18,6 +18,7 @@
 #include "peepholed_toplevel_main_window.H"
 #include "peepholed_toplevel_main_window_impl.H"
 #include "menu/menubarlayoutmanager_impl.H"
+#include "menu/menubar_container_impl.H"
 #include "container_element.H"
 #include "always_visible.H"
 
@@ -100,12 +101,22 @@ init_containers(const ref<containerObj::implObj> &parent,
 	f->padding(0);
 	f->halign(halign::fill);
 
-	auto menubar_impl=ref<always_visibleObj<container_elementObj
-						<child_elementObj>>>
+	auto menubar_impl=ref<menubar_container_implObj>
 		::create(menu_and_app_impl);
+
+	menubar_impl->elementObj::implObj
+		::set_background_color("menubar_background_color");
 	auto menubar=container::create(menubar_impl,
 				       ref<menubarlayoutmanagerObj::implObj>
 				       ::create(menubar_impl));
+	f->remove_when_hidden(true);
+
+	menubarlayoutmanager mblm=menubar->get_layoutmanager();
+
+	{
+		menubar_lock lock{mblm};
+		mblm->impl->initialize(&*mblm, lock);
+	}
 
 	f->created_internally(menubar);
 
@@ -168,7 +179,8 @@ main_window screenObj
 		 });
 
 	auto window_impl=ref<main_windowObj::implObj>
-		::create(handler, menu_and_app_container, app_container);
+		::create(handler, menu_and_app_container,
+			 menubar_container, app_container);
 
 	auto mw=ptrrefBase::objfactory<main_window>
 		::create(window_impl, lm->impl);
@@ -181,6 +193,27 @@ main_window screenObj
 ref<layoutmanagerObj::implObj> main_windowObj::get_layout_impl() const
 {
 	return impl->app_container->get_layout_impl();
+}
+
+
+container main_windowObj::get_menubar()
+{
+	return impl->menubar_container;
+}
+
+const_container main_windowObj::get_menubar() const
+{
+	return impl->menubar_container;
+}
+
+menubarlayoutmanager main_windowObj::get_menubarlayoutmanager()
+{
+	return get_menubar()->get_layoutmanager();
+}
+
+const_menubarlayoutmanager main_windowObj::get_menubarlayoutmanager() const
+{
+	return get_menubar()->get_layoutmanager();
 }
 
 LIBCXXW_NAMESPACE_END

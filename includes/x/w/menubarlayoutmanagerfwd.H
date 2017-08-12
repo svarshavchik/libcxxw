@@ -38,6 +38,8 @@ typedef ptr<menubarlayoutmanagerObj> menubarlayoutmanagerptr;
 
 typedef const_ptr<menubarlayoutmanagerObj> const_menubarlayoutmanagerptr;
 
+class menu_bar_lock;
+
 LIBCXXW_NAMESPACE_END
 
 #endif

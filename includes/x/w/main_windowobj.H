@@ -8,6 +8,7 @@
 #include <x/w/main_windowfwd.H>
 #include <x/w/new_layoutmanagerfwd.H>
 #include <x/w/generic_windowobj.H>
+#include <x/w/menubarlayoutmanagerfwd.H>
 #include <x/obj.H>
 #include <x/logger.H>
 
@@ -36,6 +37,21 @@ public:
 
 	//! Destructor
 	~main_windowObj() LIBCXX_HIDDEN;
+
+	//! Return the layout manager for the menu bar.
+
+	menubarlayoutmanager get_menubarlayoutmanager();
+
+	//! Return the layout manager for the menu bar.
+
+	const_menubarlayoutmanager get_menubarlayoutmanager() const;
+
+	//! Return the menu bar itself.
+
+	container get_menubar();
+
+	//! Return the menu bar itself.
+	const_container get_menubar() const;
 
 	//! Install a callback that gets invoke when the window close button is clicked.
 

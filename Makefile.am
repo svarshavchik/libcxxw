@@ -371,6 +371,17 @@ libcxxw_la_SOURCES=\
 	main_window_handler.C			    \
 	main_window_handler.H			    \
 	main_window_impl.C			    \
+	menu/menu.C				    \
+	menu/menu_impl.C			    \
+	menu/menu_impl.H			    \
+	menu/menu_layoutmanager_impl.C		    \
+	menu/menu_layoutmanager_impl.H		    \
+	menu/menubar_container_impl.C		    \
+	menu/menubar_container_impl.H		    \
+	menu/menubar_container_implfwd.H	    \
+	menu/menubar_hotspot_impl.C		    \
+	menu/menubar_hotspot_implobj.H		    \
+	menu/menubarfactory.C			    \
 	menu/menubarlayoutmanager.C		    \
 	menu/menubarlayoutmanager_impl.C	    \
 	menu/menubarlayoutmanager_impl.H	    \
@@ -673,6 +684,7 @@ INTERACTIVETESTPROGRAMS=\
 	testimagebuttons			        \
 	testinputfield					\
 	testmainwindow					\
+	testmenu					\
 	testlabel					\
 	testscrollbar					\
 	testshowhide					\
@@ -721,6 +733,10 @@ testgrid_LDFLAGS=-static
 testlabel_SOURCES=testlabel.C
 testlabel_LDADD=libcxxw.la
 testlabel_LDFLAGS=$(TESTLINKTYPE)
+
+testmenu_SOURCES=testmenu.C
+testmenu_LDADD=libcxxw.la
+testmenu_LDFLAGS=$(TESTLINKTYPE)
 
 testwordwrappablelabel_SOURCES=testwordwrappablelabel.C
 testwordwrappablelabel_LDADD=libcxxw.la

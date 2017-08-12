@@ -6,7 +6,10 @@
 #define x_w_menubarlayoutmanagerobj_h
 
 #include <x/w/menubarlayoutmanagerfwd.H>
+#include <x/w/menubarfactoryfwd.H>
 #include <x/w/gridlayoutmanagerobj.H>
+#include <x/w/factoryfwd.H>
+#include <x/functional.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -27,6 +30,18 @@ public:
 
 	//! Destructor
 	~menubarlayoutmanagerObj() LIBCXX_HIDDEN;
+
+	menubarfactory append_menus();
+
+	menubarfactory insert_menus(size_t pos);
+
+	menubarfactory append_right_menus();
+
+	menubarfactory insert_right_menus(size_t pos);
+
+	void remove_menu(size_t pos);
+
+	void remove_menu_right(size_t pos);
 };
 
 LIBCXXW_NAMESPACE_END

@@ -10,6 +10,10 @@
 #include "reference_font_element.H"
 #include "layoutmanager.H"
 #include "always_visible.H"
+#include "gridlayoutmanager.H"
+#include "menu/menubarlayoutmanager_impl.H"
+#include "focus/focusable.H"
+#include "x/w/menu.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -61,6 +65,43 @@ void peepholed_toplevel_main_windowObj::implObj
 	auto &d=data(IN_THREAD);
 	d.max_width=dim_t::truncate(usable_workarea_width);
 	d.max_height=dim_t::truncate(usable_workarea_height);
+}
+
+void peepholed_toplevel_main_windowObj::implObj
+::get_focus_first(IN_THREAD_ONLY, const focusable &f)
+{
+	invoke_layoutmanager
+		([&]
+		 (const ref<gridlayoutmanagerObj::implObj> &glm)
+		 {
+			 auto e=glm->get(0, 0);
+
+			 if (!e)
+				 return;
+
+			 menubarlayoutmanager mblm=
+				 container(e)->get_layoutmanager();
+
+			 menubar_lock lock{mblm};
+
+			 size_t n=mblm->impl->cols(0);
+			 if (--n == 0)
+			 {
+				 // Nothing in the menu bar. Carry on.
+
+				 superclass_t::get_focus_first(IN_THREAD, f);
+				 return;
+			 }
+
+			 if (n == mblm->impl->info(lock).divider_pos)
+				 --n;
+
+			 menu m=mblm->impl->get(0, n);
+
+			 mblm->impl->fix_order(IN_THREAD, m);
+
+			 get_focus_after_in_thread(IN_THREAD, f, m);
+		 });
 }
 
 LIBCXXW_NAMESPACE_END

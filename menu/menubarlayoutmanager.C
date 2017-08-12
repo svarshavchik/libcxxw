@@ -4,9 +4,51 @@
 */
 #include "libcxxw_config.h"
 #include "x/w/menubarlayoutmanager.H"
+#include "x/w/menubarfactory.H"
+#include "menu/menu_impl.H"
 #include "menu/menubarlayoutmanager_impl.H"
+#include "menu/menubar_container_impl.H"
+#include "messages.H"
+#include "x/w/label.H"
+#include "generic_window_handler.H"
 
 LIBCXXW_NAMESPACE_START
+
+menubar_lock::menubar_lock(const menubarlayoutmanager &manager)
+	: grid_map_t::lock(manager->impl->grid_map),
+	manager(manager)
+{
+}
+
+menubar_lock::~menubar_lock()=default;
+
+size_t menubar_lock::menus() const
+{
+	return manager->impl->info(*this).divider_pos;
+}
+
+size_t menubar_lock::right_menus() const
+{
+	return manager->impl->cols(0)-menus()-1;
+}
+
+menu menubar_lock::get_menu(size_t n) const
+{
+	if (n >= menus())
+		throw EXCEPTION(_("Menu does not exist"));
+
+	return manager->impl->get(0, n);
+}
+
+menu menubar_lock::get_right_menu(size_t n) const
+{
+	if (n >= right_menus())
+		throw EXCEPTION(_("Menu does not exist"));
+
+	return manager->impl->get(0, menus()+1+n);
+}
+
+///////////////////////////////////////////////////////////////////////////
 
 menubarlayoutmanagerObj::menubarlayoutmanagerObj(const ref<implObj> &impl)
 	: layoutmanagerObj(impl), impl(impl)
@@ -14,5 +56,142 @@ menubarlayoutmanagerObj::menubarlayoutmanagerObj(const ref<implObj> &impl)
 }
 
 menubarlayoutmanagerObj::~menubarlayoutmanagerObj()=default;
+
+// Implement menubarfactoryObj::implObj.
+//
+// A template that implements do_add() by invoking a lambda.
+
+template<typename add_impl_t>
+class LIBCXX_HIDDEN menubarfactory_implObj : public menubarfactoryObj {
+
+ public:
+
+	menubarfactory_implObj(const menubarlayoutmanager &layout,
+			       add_impl_t &&impl)
+		: menubarfactoryObj(layout),
+		impl(std::move(impl))
+		{
+		}
+
+	~menubarfactory_implObj()=default;
+
+	add_impl_t impl;
+
+	menu do_add(const function<menu_creator_t> &callback) override
+	{
+		return impl(this->layout, callback);
+	}
+};
+
+template<typename add_impl_t>
+static auto create_menubarfactory(const menubarlayoutmanager &layout,
+				  add_impl_t &&arg)
+{
+	return ref<menubarfactory_implObj
+		   <typename std::remove_reference<add_impl_t>
+		    ::type>>::create(layout,
+				     std::forward<add_impl_t>(arg));
+
+}
+
+menubarfactory menubarlayoutmanagerObj::append_menus()
+{
+	return create_menubarfactory
+		(menubarlayoutmanager(this),
+		 []
+		 (const menubarlayoutmanager &lm,
+		  const auto &creator)
+		 {
+			 menubar_lock lock{lm};
+
+			 auto mb=lm->impl->add(&*lm,
+					       lm->impl->insert_columns
+					       (&*lm, 0, lm->impl->info(lock).divider_pos),
+					       creator,
+					       lock);
+
+			 ++lm->impl->info(lock).divider_pos;
+			 return mb;
+		 });
+}
+
+menubarfactory menubarlayoutmanagerObj::insert_menus(size_t pos)
+{
+	return create_menubarfactory
+		(menubarlayoutmanager(this),
+		 [pos]
+		 (const menubarlayoutmanager &lm,
+		  const auto &creator)
+		 mutable
+		 {
+			 menubar_lock lock{lm};
+
+			 if (pos > lm->impl->info(lock).divider_pos)
+				 throw EXCEPTION(_("Existing menu does not exist."));
+
+			 auto mb=lm->impl->add(&*lm,
+					       lm->impl->insert_columns(&*lm,
+									0, pos),
+					       creator, lock);
+
+			 ++lm->impl->info(lock).divider_pos;
+			 ++pos;
+
+			 return mb;
+		 });
+}
+
+menubarfactory menubarlayoutmanagerObj::append_right_menus()
+{
+	return create_menubarfactory
+		(menubarlayoutmanager(this),
+		 []
+		 (const menubarlayoutmanager &lm,
+		  const auto &creator)
+		 {
+			 menubar_lock lock{lm};
+
+			 return lm->impl->add(&*lm,
+					      lm->impl->append_columns(&*lm,
+								       0),
+					      creator, lock);
+		 });
+}
+
+menubarfactory menubarlayoutmanagerObj::insert_right_menus(size_t pos)
+{
+	return create_menubarfactory
+		(menubarlayoutmanager(this),
+		 [pos]
+		 (const menubarlayoutmanager &lm,
+		  const auto &creator)
+		 mutable
+		 {
+			 menubar_lock lock{lm};
+
+			 if (pos > lm->impl->cols(0)-lm->impl->info(lock).divider_pos)
+				 throw EXCEPTION(_("Existing menu does not exist."));
+
+			 auto mb=lm->impl->add(&*lm,
+					       lm->impl
+					       ->insert_columns(&*lm, 0,
+								lm->impl
+								->info(lock)
+								.divider_pos
+								+pos),
+					       creator, lock);
+			 ++pos;
+			 return mb;
+		 });
+}
+
+
+void menubarlayoutmanagerObj::remove_menu(size_t pos)
+{
+}
+
+void menubarlayoutmanagerObj::remove_menu_right(size_t pos)
+{
+}
 
 LIBCXXW_NAMESPACE_END
