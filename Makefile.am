@@ -464,6 +464,8 @@ libcxxw_la_SOURCES=\
 	popup/popup_attachedto_info.H		    \
 	popup/popup_attachedto_infofwd.H	    \
 	popup/popup_attachedto_infoobj.H	    \
+	popup/popup_showhide_element.H		    \
+	popup/popup_showhide_elementfwd.H	    \
 	radio_group.C				    \
 	radio_group.H				    \
 	radio_group_impl.C			    \

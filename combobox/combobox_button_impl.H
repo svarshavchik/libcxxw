@@ -6,6 +6,7 @@
 #define combobox_button_impl_h
 
 #include "combobox/combobox_button_implfwd.H"
+#include "popup/popup_showhide_elementfwd.H"
 #include "image_button_internal_impl.H"
 
 LIBCXXW_NAMESPACE_START
@@ -21,15 +22,12 @@ upon the hotspot temperature.
 */
 
 class LIBCXX_HIDDEN combobox_button_implObj
-	: public image_button_internalObj::implObj {
+	: public popup_showhide_elementObj<image_button_internalObj::implObj> {
+
+	typedef popup_showhide_elementObj<image_button_internalObj::implObj
+					  > superclass_t;
 
  public:
-	//! This is really a popup_attachedto_handlerObj.
-
-	//! But all we need is to show/hide it.
-
-	const ref<elementObj::implObj> popup_element_impl;
-
 	//! Constructor
 
 	combobox_button_implObj(const ref<containerObj::implObj> &container,
@@ -45,12 +43,6 @@ class LIBCXX_HIDDEN combobox_button_implObj
 	//! Show image 1 when the pointer button is down, else show image 0.
 
 	void temperature_changed(IN_THREAD_ONLY) override;
-
-	//! Override activated().
-
-	//! show/hide the popup.
-
-	void activated(IN_THREAD_ONLY) override;
 
 	//! Override activate_on_key()
 

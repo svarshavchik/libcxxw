@@ -4,6 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "combobox/combobox_button_impl.H"
+#include "popup/popup_showhide_element.H"
 #include <X11/keysym.h>
 
 LIBCXXW_NAMESPACE_START
@@ -12,8 +13,7 @@ combobox_button_implObj
 ::combobox_button_implObj(const ref<containerObj::implObj> &container,
 			  const std::vector<icon> &icon_images,
 			  const ref<elementObj::implObj> &popup_element_impl)
-	: image_button_internalObj::implObj(container, icon_images),
-	popup_element_impl(popup_element_impl)
+	: superclass_t(popup_element_impl, container, icon_images)
 {
 }
 
@@ -27,19 +27,9 @@ void combobox_button_implObj
 			 == temperature::hot ? 1:0);
 }
 
-void combobox_button_implObj::activated(IN_THREAD_ONLY)
-{
-	popup_element_impl
-		->request_visibility(IN_THREAD,
-				     !popup_element_impl->data(IN_THREAD)
-				     .requested_visibility);
-
-	image_button_internalObj::implObj::activated(IN_THREAD);
-}
-
 bool combobox_button_implObj::activate_on_key(const key_event &ke)
 {
-	return image_button_internalObj::implObj::activate_on_key(ke)
+	return superclass_t::activate_on_key(ke)
 		|| ke.keysym == XK_Down || ke.keysym == XK_KP_Down;
 }
 
