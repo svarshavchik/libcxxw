@@ -164,6 +164,10 @@ libcxxw_la_SOURCES=\
 	focusable_label.C			    \
 	focusable_label_impl.C			    \
 	focusable_label_impl.H			    \
+	focusable_owner_container.C		    \
+	focusable_owner_container.H		    \
+	focusable_owner_containerfwd.H		    \
+	focusable_owner_containerobj.H		    \
 	focus/element_focusable.C		    \
 	focus/focusable.C			    \
 	focus/focusable.H			    \
