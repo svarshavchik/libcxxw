@@ -83,10 +83,6 @@ libcxxw_la_SOURCES=\
 	combobox/custom_combobox_container_impl.H   \
 	combobox/custom_combobox_containerfwd.H     \
 	combobox/custom_combobox_containerobj.H     \
-	combobox/custom_combobox_popup.C	    \
-	combobox/custom_combobox_popup.H	    \
-	combobox/custom_combobox_popupfwd.H	    \
-	combobox/custom_combobox_popupobj.H	    \
 	combobox/custom_combobox_popup_container.C  \
 	combobox/custom_combobox_popup_container.H  \
 	combobox/custom_combobox_popup_container_impl.C \

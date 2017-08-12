@@ -5,11 +5,11 @@
 #include "libcxxw_config.h"
 #include "combobox/custom_combobox_container_impl.H"
 #include "combobox/custom_comboboxlayoutmanager.H"
-#include "combobox/custom_combobox_popup.H"
 #include "combobox/custom_combobox_popup_container_impl.H"
 #include "combobox/custom_combobox_popup_layoutmanager.H"
 #include "combobox/combobox_button_impl.H"
 #include "popup/popup_attachedto_info.H"
+#include "popup/popup_attachedto_handler.H"
 #include "popup/popup_impl.H"
 
 #include "focus/focusframecontainer_element.H"
@@ -74,7 +74,7 @@ typedef focusframecontainer_elementObj<container_elementObj<child_elementObj>
 
 static inline auto
 create_combobox_button(const ref<containerObj::implObj> &parent_container,
-		       const custom_combobox_popup &popup_handler)
+		       const auto &popup_handler)
 {
 	// The actual element that will go into this factory will be the
 	// focus frame, with the button inside it. First, construct
@@ -249,7 +249,7 @@ focusable_container new_custom_comboboxlayoutmanager
 		(rectangle{},
 		 attached_to::combobox_above_or_below);
 
-	auto popup_handler=custom_combobox_popup
+	auto popup_handler=ref<popup_attachedto_handlerObj>
 		::create(parent_handler, attachedto_info,
 			 // We're about to create the combobox container,
 			 // with nesting_level of parent+1
