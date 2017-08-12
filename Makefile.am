@@ -462,6 +462,8 @@ libcxxw_la_SOURCES=\
 	popup/popup_impl.H			    \
 	popup/popup_attachedto_handler.C	    \
 	popup/popup_attachedto_handler.H	    \
+	popup/popup_attachedto_handler_element.H    \
+	popup/popup_attachedto_handler_elementfwd.H \
 	popup/popup_attachedto_info.C		    \
 	popup/popup_attachedto_info.H		    \
 	popup/popup_attachedto_infofwd.H	    \
