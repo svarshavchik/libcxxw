@@ -86,6 +86,69 @@ gridfactory gridlayoutmanagerObj::implObj
 	return create_gridfactory(public_object, row, 0);
 }
 
+gridfactory gridlayoutmanagerObj::implObj::append_columns(layoutmanagerObj
+							  *public_object,
+							  size_t row)
+{
+	grid_map_t::lock lock(grid_map);
+
+	if ((*lock)->elements.size() <= row)
+		throw EXCEPTION(_("Attempting to add columns to a nonexistent row"));
+
+	size_t col=(*lock)->elements.at(row).size();
+
+	return create_gridfactory(public_object, row, col);
+}
+
+gridfactory gridlayoutmanagerObj::implObj::insert_columns(layoutmanagerObj
+							  *public_object,
+							  size_t row,
+							  size_t col)
+{
+	grid_map_t::lock lock(grid_map);
+
+	if ((*lock)->elements.size() <= row)
+		throw EXCEPTION(_("Attempting to add columns to a nonexistent row"));
+
+	size_t s=(*lock)->elements.at(row).size();
+
+	if (col >= s)
+	    throw EXCEPTION(_("Attempting to insert columns before a nonexistent column"));
+
+	return create_gridfactory(public_object, row, col);
+}
+
+size_t gridlayoutmanagerObj::implObj::rows()
+{
+	grid_map_t::lock lock{grid_map};
+
+	return (*lock)->elements.size();
+}
+
+size_t gridlayoutmanagerObj::implObj::cols(size_t row)
+{
+	grid_map_t::lock lock{grid_map};
+
+	if (row >= (*lock)->elements.size())
+		throw EXCEPTION(_("Attempting to get the number of columns in a nonexistent row"));
+
+	return (*lock)->elements.at(row).size();
+}
+
+void gridlayoutmanagerObj::implObj::row_alignment(size_t row, valign alignment)
+{
+	grid_map_t::lock lock{grid_map};
+
+	(*lock)->row_defaults[row].vertical_alignment=alignment;
+}
+
+void gridlayoutmanagerObj::implObj::col_alignment(size_t col, halign alignment)
+{
+	grid_map_t::lock lock{grid_map};
+
+	(*lock)->column_defaults[col].horizontal_alignment=alignment;
+}
+
 gridfactory gridlayoutmanagerObj::implObj
 ::replace_row(layoutmanagerObj *public_object, size_t row)
 {

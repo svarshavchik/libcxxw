@@ -56,11 +56,33 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 	//! Insert a row, then call create_gridfactory()
 	gridfactory insert_row(layoutmanagerObj *public_object, size_t row);
 
+	//! Append elements at the end of an existing row.
+	gridfactory append_columns(layoutmanagerObj *public_object,
+				   size_t row_number);
+
+	//! Insert elements before an existing element on an existing row.
+	gridfactory insert_columns(layoutmanagerObj *public_object,
+				   size_t row_number, size_t col_number);
+
 	//! Remove the entire row.
 	void remove_row(size_t row);
 
 	//! Remove everything.
 	void remove_all_rows(grid_map_t::lock &lock);
+
+	//! Set default row alignment.
+	void row_alignment(size_t row, valign alignment);
+
+	//! Set default column alignment
+	void col_alignment(size_t col, halign alignment);
+
+	//! How many rows there are here.
+	size_t rows();
+
+	//! How many defined cells there are in the given row.
+
+	//! This does not include spanned cells.
+	size_t cols(size_t row);
 
 	//! Remove all existing elements in the row, then call create_gridfactory()
 	gridfactory replace_row(layoutmanagerObj *public_object, size_t row);

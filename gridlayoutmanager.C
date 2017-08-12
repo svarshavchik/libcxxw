@@ -50,35 +50,12 @@ gridfactory gridlayoutmanagerObj::replace_row(size_t row)
 
 gridfactory gridlayoutmanagerObj::append_columns(size_t row)
 {
-	size_t col=({
-			grid_map_t::lock lock(impl->grid_map);
-
-			if ((*lock)->elements.size() <= row)
-				throw EXCEPTION(_("Attempting to add columns to a nonexistent row"));
-
-			(*lock)->elements.at(row).size();
-		});
-
-	return impl->create_gridfactory(this, row, col);
+	return impl->append_columns(this, row);
 }
 
 gridfactory gridlayoutmanagerObj::insert_columns(size_t row, size_t col)
 {
-	auto me=gridlayoutmanager(this);
-
-	size_t s=({
-			grid_map_t::lock lock(impl->grid_map);
-
-			if ((*lock)->elements.size() <= row)
-				throw EXCEPTION(_("Attempting to add columns to a nonexistent row"));
-
-			(*lock)->elements.at(row).size();
-		});
-
-	if (col >= s)
-	    throw EXCEPTION(_("Attempting to insert columns before a nonexistent column"));
-
-	return impl->create_gridfactory(this, row, col);
+	return impl->insert_columns(this, row, col);
 }
 
 void gridlayoutmanagerObj::remove()
@@ -111,19 +88,12 @@ void gridlayoutmanagerObj::remove_row(size_t row)
 
 size_t gridlayoutmanagerObj::rows()
 {
-	grid_map_t::lock lock{impl->grid_map};
-
-	return (*lock)->elements.size();
+	return impl->rows();
 }
 
 size_t gridlayoutmanagerObj::cols(size_t row)
 {
-	grid_map_t::lock lock{impl->grid_map};
-
-	if (row >= (*lock)->elements.size())
-		throw EXCEPTION(_("Attempting to get the number of columns in a nonexistent row"));
-
-	return (*lock)->elements.at(row).size();
+	return impl->cols(row);
 }
 
 elementptr gridlayoutmanagerObj::get(size_t row, size_t col) const
@@ -170,9 +140,7 @@ void gridlayoutmanagerObj::requested_row_height(size_t row, int percentage)
 
 void gridlayoutmanagerObj::row_alignment(size_t row, valign alignment)
 {
-	grid_map_t::lock lock{impl->grid_map};
-
-	(*lock)->row_defaults[row].vertical_alignment=alignment;
+	impl->row_alignment(row, alignment);
 }
 
 void gridlayoutmanagerObj::default_col_border(size_t col,
@@ -205,9 +173,7 @@ void gridlayoutmanagerObj::requested_col_width(size_t col, int percentage)
 
 void gridlayoutmanagerObj::col_alignment(size_t col, halign alignment)
 {
-	grid_map_t::lock lock{impl->grid_map};
-
-	(*lock)->column_defaults[col].horizontal_alignment=alignment;
+	impl->col_alignment(col, alignment);
 }
 
 void gridlayoutmanagerObj::remove_row_defaults(size_t row)
