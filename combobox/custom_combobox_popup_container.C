@@ -6,6 +6,7 @@
 #include "combobox/custom_combobox_popup_container_impl.H"
 #include "listlayoutmanager/listlayoutmanager.H"
 #include "popup/popup_attachedto_info.H"
+#include "peephole/peepholed_toplevel_element.H"
 #include "x/w/element.H"
 #include "screen.H"
 #include "grid_map_info.H"
@@ -20,7 +21,7 @@ custom_combobox_popup_containerObj
 				     ::implObj> &layout_impl,
 				     const popup_attachedto_info
 				     &attachedto_info)
-	: listcontainerObj(impl, layout_impl),
+	: superclass_t(impl, layout_impl),
 	  list_focusable_owner(ref<focusableObj::ownerObj>::create(impl)),
 	  impl(impl),
 	  layout_impl(layout_impl),
@@ -32,10 +33,9 @@ custom_combobox_popup_containerObj::~custom_combobox_popup_containerObj()
 =default;
 
 
-void custom_combobox_popup_containerObj::recalculate_metrics(IN_THREAD_ONLY)
+void custom_combobox_popup_containerObj
+::recalculate_peepholed_metrics(IN_THREAD_ONLY, const screen &s)
 {
-	auto s=get_screen();
-
 	max_width_value=attachedto_info->max_peephole_width(IN_THREAD, s);
 	max_height_value=attachedto_info->max_peephole_height(IN_THREAD, s);
 
@@ -57,11 +57,6 @@ dim_t custom_combobox_popup_containerObj::max_width(IN_THREAD_ONLY) const
 dim_t custom_combobox_popup_containerObj::max_height(IN_THREAD_ONLY) const
 {
 	return max_height_value;
-}
-
-element custom_combobox_popup_containerObj::get_element()
-{
-	return element(this);
 }
 
 dim_t custom_combobox_popup_containerObj::horizontal_increment(IN_THREAD_ONLY)

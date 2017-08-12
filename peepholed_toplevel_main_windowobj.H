@@ -43,7 +43,8 @@ class LIBCXX_HIDDEN peepholed_toplevel_main_windowObj
 
 	//! Implement recalculate_metrics().
 
-	void recalculate_metrics(IN_THREAD_ONLY) override;
+	void recalculate_peepholed_metrics(IN_THREAD_ONLY,
+					   const screen &my_screen) override;
 
 	//! Implement max_width()
 	dim_t max_width(IN_THREAD_ONLY) const override;

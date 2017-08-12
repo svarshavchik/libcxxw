@@ -22,7 +22,8 @@ peepholed_toplevel_main_windowObj
 
 peepholed_toplevel_main_windowObj::~peepholed_toplevel_main_windowObj()=default;
 
-void peepholed_toplevel_main_windowObj::recalculate_metrics(IN_THREAD_ONLY)
+void peepholed_toplevel_main_windowObj
+::recalculate_peepholed_metrics(IN_THREAD_ONLY, const screen &s)
 {
 	impl->recalculate_metrics(IN_THREAD);
 }

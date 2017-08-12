@@ -14,7 +14,7 @@ LIBCXXW_NAMESPACE_START
 //! Inherited from peepholed_toplevelObj.
 
 template<typename element_impl>
-element peepholed_toplevel_elementObj<element_impl>::get_element()
+element peepholed_toplevel_elementObj<element_impl>::get_peepholed_element()
 {
 	return element(this);
 }

@@ -218,7 +218,7 @@ void peepholeObj::layoutmanager_implObj
 ::do_for_each_child(IN_THREAD_ONLY,
 		    const function<void (const element &e)> &callback)
 {
-	callback(element_in_peephole->get_element());
+	callback(element_in_peephole->get_peepholed_element());
 }
 
 layoutmanager peepholeObj::layoutmanager_implObj::create_public_object()
@@ -279,7 +279,8 @@ void peepholeObj::layoutmanager_implObj::recalculate(IN_THREAD_ONLY)
 void peepholeObj::layoutmanager_implObj
 ::recalculate_with_requested_visibility(IN_THREAD_ONLY, bool flag)
 {
-	auto peephole_element_impl=element_in_peephole->get_element()->impl;
+	auto peephole_element_impl=
+		element_in_peephole->get_peepholed_element()->impl;
 
 	try {
 		peephole_element_impl->initialize_if_needed(IN_THREAD);
@@ -435,7 +436,8 @@ void peepholeObj::layoutmanager_implObj
 void peepholeObj::layoutmanager_implObj
 ::update_horizontal_scroll(IN_THREAD_ONLY, dim_t offset)
 {
-	auto peephole_element_impl=element_in_peephole->get_element()->impl;
+	auto peephole_element_impl=
+		element_in_peephole->get_peepholed_element()->impl;
 
 	auto cur_pos=peephole_element_impl->data(IN_THREAD).current_position;
 
@@ -448,7 +450,8 @@ void peepholeObj::layoutmanager_implObj
 void peepholeObj::layoutmanager_implObj
 ::update_vertical_scroll(IN_THREAD_ONLY, dim_t offset)
 {
-	auto peephole_element_impl=element_in_peephole->get_element()->impl;
+	auto peephole_element_impl=
+		element_in_peephole->get_peepholed_element()->impl;
 
 	auto cur_pos=peephole_element_impl->data(IN_THREAD).current_position;
 

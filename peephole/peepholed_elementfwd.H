@@ -24,7 +24,7 @@ class LIBCXX_HIDDEN peepholed_elementObj : public element_impl,
 public:
 	using element_impl::element_impl;
 
-	element get_element() override;
+	element get_peepholed_element() override;
 };
 
 //! A peepholed element

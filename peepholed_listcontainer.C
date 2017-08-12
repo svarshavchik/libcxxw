@@ -3,7 +3,7 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
-
+#include "peephole/peepholed_element.H"
 #include "peepholed_listcontainer_impl.H"
 #include "peepholed_listcontainer.H"
 #include "reference_font_element.H"
@@ -14,17 +14,12 @@ peepholed_listcontainerObj
 ::peepholed_listcontainerObj(const ref<implObj> &impl,
 			     const ref<listlayoutmanagerObj::implObj>
 			     &list_impl)
-	: listcontainerObj(impl, list_impl),
+	: superclass_t(impl, list_impl),
 	  impl(impl)
 {
 }
 
 peepholed_listcontainerObj::~peepholed_listcontainerObj()=default;
-
-element peepholed_listcontainerObj::get_element()
-{
-	return element(this);
-}
 
 dim_t peepholed_listcontainerObj::horizontal_increment(IN_THREAD_ONLY) const
 {

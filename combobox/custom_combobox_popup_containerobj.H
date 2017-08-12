@@ -8,6 +8,7 @@
 #include "combobox/custom_combobox_popup_containerfwd.H"
 #include "listlayoutmanager/listcontainerobj.H"
 #include "peephole/peepholed_toplevelobj.H"
+#include "peephole/peepholed_toplevel_elementfwd.H"
 #include "popup/popup_attachedto_infofwd.H"
 #include "x/w/listlayoutmanagerobj.H"
 #include "x/w/focusableownerobj.H"
@@ -22,8 +23,11 @@ LIBCXXW_NAMESPACE_START
 //! \see custom_combobox_popup_container
 
 class LIBCXX_HIDDEN custom_combobox_popup_containerObj
-	: public listcontainerObj,
-	  public peepholed_toplevelObj {
+	: public peepholed_toplevel_elementObj<listcontainerObj> {
+
+	//! Alias
+
+	typedef peepholed_toplevel_elementObj<listcontainerObj> superclass_t;
 
 	//! The implementation object is a focusable that needs an owner.
 
@@ -59,7 +63,9 @@ public:
 
 	//! Compute the values returned by max_width(), max_height(),
 	//! horizontal_increment() and vertical_increment().
-	void recalculate_metrics(IN_THREAD_ONLY) override;
+	void recalculate_peepholed_metrics(IN_THREAD_ONLY,
+					   const screen &my_screen)
+		override;
 
  private:
 	//! Calculated by recalculate_metrics()
@@ -74,9 +80,6 @@ public:
 
 	//! Inherited from peepholed_toplevelObj
 	dim_t max_height(IN_THREAD_ONLY) const override;
-
-	//! Inherited from peepholed_toplevelObj
-	element get_element() override;
 
 	//! Inherited from peepholed_toplevelObj
 	dim_t horizontal_increment(IN_THREAD_ONLY) const override;

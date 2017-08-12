@@ -28,7 +28,7 @@ class LIBCXX_HIDDEN peepholedObj : virtual public obj {
 
 	//! Return the peepholed element.
 
-	virtual element get_element()=0;
+	virtual element get_peepholed_element()=0;
 
 	//! Return the preferred horizontal increment
 	virtual dim_t horizontal_increment(IN_THREAD_ONLY) const=0;

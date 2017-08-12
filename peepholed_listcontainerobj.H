@@ -6,6 +6,7 @@
 #define peepholed_listcontainerobj_h
 
 #include "peepholed_listcontainerfwd.H"
+#include "peephole/peepholed_elementfwd.H"
 #include "listlayoutmanager/listcontainerobj.H"
 #include "peephole/peepholedobj.H"
 #include "connection_threadfwd.H"
@@ -19,10 +20,12 @@ LIBCXXW_NAMESPACE_START
 
 //! \see peepholed_listcontainer
 
-class LIBCXX_HIDDEN peepholed_listcontainerObj : public listcontainerObj,
-						 public peepholedObj {
+class LIBCXX_HIDDEN peepholed_listcontainerObj
+	: public peepholed_elementObj<listcontainerObj> {
 
+	//! Alias
 
+	typedef peepholed_elementObj<listcontainerObj> superclass_t;
  public:
 
 	class implObj;
@@ -37,9 +40,6 @@ class LIBCXX_HIDDEN peepholed_listcontainerObj : public listcontainerObj,
 
 	//! Destructor
 	~peepholed_listcontainerObj();
-
-	//! Inherited from peepholedObj
-	element get_element() override;
 
 	//! Inherited from peepholedObj
 	dim_t horizontal_increment(IN_THREAD_ONLY) const override;

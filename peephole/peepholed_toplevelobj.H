@@ -6,6 +6,7 @@
 #define peepholed_toplevelobj_h
 
 #include "peephole/peepholedobj.H"
+#include "x/w/screenfwd.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -33,9 +34,10 @@ class LIBCXX_HIDDEN peepholed_toplevelObj : public peepholedObj {
 	//! element changes size, or when the window manager frame extents
 	//! have changed.
 	//!
-	//! recalculate_metrics() gets invoked before invoking max_width()
-	//! and max_height().
-	virtual void recalculate_metrics(IN_THREAD_ONLY)=0;
+	//! recalculate_peepholed_metrics() gets invoked before invoking
+	//! max_width() and max_height().
+	virtual void recalculate_peepholed_metrics(IN_THREAD_ONLY,
+						   const screen &my_screen)=0;
 
 	//! Return the maximum width of the toplevel element.
 	virtual dim_t max_width(IN_THREAD_ONLY) const=0;

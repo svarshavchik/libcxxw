@@ -16,6 +16,7 @@
 #include "scrollbar/scrollbar_impl.H"
 #include "current_border_impl.H"
 #include "border_impl.H"
+#include "x/w/screen.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -179,10 +180,14 @@ toplevelpeephole_layoutmanagerObj::~toplevelpeephole_layoutmanagerObj()=default;
 void toplevelpeephole_layoutmanagerObj::recalculate(IN_THREAD_ONLY)
 {
 	// How big the element in the peephole wants to be.
-	auto peepholed_metrics=element_in_peephole->get_element()
+	auto peepholed_metrics=element_in_peephole->get_peepholed_element()
 		->impl->get_horizvert(IN_THREAD);
 
-	element_in_peephole->recalculate_metrics(IN_THREAD);
+	element_in_peephole
+		->recalculate_peepholed_metrics(IN_THREAD,
+						container_impl
+						->get_element_impl()
+						.get_screen());
 
 	// Maximum size of the peephole.
 	auto max_width=element_in_peephole->max_width(IN_THREAD);
