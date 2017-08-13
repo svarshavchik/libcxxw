@@ -17,6 +17,7 @@
 #include "current_border_impl.H"
 #include "border_impl.H"
 #include "x/w/screen.H"
+#include "element_screen.H"
 
 LIBCXXW_NAMESPACE_START
 

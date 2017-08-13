@@ -300,9 +300,24 @@ void listlayoutmanagerObj::implObj::selected(const listlayoutmanager &me,
 					     grid_map_t::lock &lock, size_t i,
 					     bool selected_flag)
 {
-	if (i >= (*lock)->elements.size())
-		return;
+	connection_thread_op(me, lock, i,
+			     [selected_flag]
+			     (implObj *impl,
+			      IN_THREAD_ONLY,
+			      const listlayoutmanager &me,
+			      list_lock &lock,
+			      size_t i)
+			     {
+				     impl->selected(IN_THREAD, me, lock, i,
+						    selected_flag);
+			     });
+}
 
+void listlayoutmanagerObj::implObj::selected(IN_THREAD_ONLY,
+					     const listlayoutmanager &me,
+					     grid_map_t::lock &lock, size_t i,
+					     bool selected_flag)
+{
 	auto &item_row=(*lock)->elements.at(i);
 
 	if (item_row.size() == 0) // Shouldn't happen
@@ -310,49 +325,27 @@ void listlayoutmanagerObj::implObj::selected(const listlayoutmanager &me,
 
 	listitemcontainer c=item_row.at(0)->grid_element;
 
-	// Punt to the connection thread in order to update this element's
-	// appearance.
 
-	container_impl->get_element_impl().THREAD
-		->run_as([c, me, selected_flag]
-			 (IN_THREAD_ONLY)
-			 {
-				 list_lock lock{me};
+	if (c->impl->selected() == selected_flag)
+		return; // Nothing to do
 
-				 size_t r;
+	c->impl->selected(selected_flag);
 
-				 std::tie(r, std::ignore)=
-					 me->impl->lookup_row_col(lock,
-								  c->impl);
+	refresh(IN_THREAD, lock, c);
 
-				 if (r == (size_t)-1)
-					 return;
+	busy_impl yes_i_am{container_impl->get_element_impl(),IN_THREAD};
+	list_lock real_lock{me};
 
-				 if (c->impl->selected() == selected_flag)
-					 return; // Nothing to do
+	try {
+		if (c->status_change_callback)
+			c->status_change_callback(real_lock, i,selected_flag);
 
-				 c->impl->selected(selected_flag);
+	} CATCH_EXCEPTIONS;
 
-				 me->impl->refresh(IN_THREAD, lock, c);
-
-				 busy_impl yes_i_am{me->impl->container_impl
-						 ->get_element_impl(),
-						 IN_THREAD};
-
-				 try {
-					 if (c->status_change_callback)
-						 c->status_change_callback
-							 (lock,
-							  r,
-							  selected_flag);
-				 } CATCH_EXCEPTIONS;
-
-				 try {
-					 me->impl->selection_changed(IN_THREAD)
-						 (lock, me, r, selected_flag,
-						  yes_i_am);
-				 } CATCH_EXCEPTIONS;
-			 });
+	try {
+		selection_changed(IN_THREAD)
+			(real_lock, me, i, selected_flag, yes_i_am);
+	} CATCH_EXCEPTIONS;
 }
 
 void listlayoutmanagerObj::implObj::autoselect(const listlayoutmanager &me,

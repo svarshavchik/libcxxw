@@ -142,6 +142,11 @@ class LIBCXX_HIDDEN listlayoutmanagerObj::implObj
 	void selected(const listlayoutmanager &me,
 		      grid_map_t::lock &lock, size_t i, bool selected_flag);
 
+	void selected(IN_THREAD_ONLY,
+		      const listlayoutmanager &me,
+		      grid_map_t::lock &lock, size_t i,
+		      bool selected_flag);
+
 	//! Autoselect, according to selection_type.
 
 	void autoselect(const listlayoutmanager &me,
