@@ -6,6 +6,7 @@
 #include "listlayoutmanager/listlayoutmanager.H"
 #include "listlayoutmanager/listcontainer_impl.H"
 #include "listlayoutmanager/listitemcontainer_impl.H"
+#include "listlayoutmanager/firstlistitemcontainer.H"
 #include "listlayoutmanager/listlayoutstyle.H"
 #include "themedim.H"
 #include "element_screen.H"
@@ -323,7 +324,7 @@ void listlayoutmanagerObj::implObj::selected(IN_THREAD_ONLY,
 	if (item_row.size() == 0) // Shouldn't happen
 		return;
 
-	listitemcontainer c=item_row.at(0)->grid_element;
+	firstlistitemcontainer c=item_row.at(0)->grid_element;
 
 
 	if (c->impl->selected() == selected_flag)

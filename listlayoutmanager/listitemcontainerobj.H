@@ -9,8 +9,6 @@
 #include "x/w/listlayoutmanagerfwd.H"
 #include "listlayoutmanager/listitemcontainerfwd.H"
 #include "listlayoutmanager/listitemlayoutmanagerobj.H"
-#include <x/obj.H>
-#include <x/mpobj.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -28,15 +26,9 @@ class LIBCXX_HIDDEN listitemcontainerObj : public containerObj {
 
 	const ref<implObj> impl;
 
-	//! Installed callback.
-	const std::function<list_item_status_change_callback_t
-			    > status_change_callback;
 	//! Constructor
 	listitemcontainerObj(const ref<implObj> &impl,
-			     const ref<listitemlayoutmanagerObj::implObj> &l,
-			     const std::function<
-			     list_item_status_change_callback_t
-			     > &status_change_callback);
+			     const ref<listitemlayoutmanagerObj::implObj> &l);
 
 
 	//! Destructor

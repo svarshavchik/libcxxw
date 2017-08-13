@@ -5,6 +5,7 @@
 #include "libcxxw_config.h"
 #include "listlayoutmanager/listcontainer_impl.H"
 #include "listlayoutmanager/listitemcontainer_impl.H"
+#include "listlayoutmanager/firstlistitemcontainer.H"
 #include "listlayoutmanager/listitemlayoutmanager_impl.H"
 #include "listlayoutmanager/listlayoutmanager.H"
 #include "listlayoutmanager/listlayoutstyle.H"
@@ -124,9 +125,11 @@ void listlayoutstyle_common
 		auto lmi=ref<listitemlayoutmanagerObj::implObj>
 			::create(item_c, item_e,
 				 l, r, v_padding);
-		auto c=listitemcontainer::create
-			(item_c, lmi,
-			 new_list_items.status_change_callback);
+		listitemcontainer c=
+			i == 0 ? (listitemcontainer)firstlistitemcontainer
+			::create(item_c, lmi,
+				 new_list_items.status_change_callback)
+			: listitemcontainer::create(item_c, lmi);
 
 		lmi->needs_recalculation(queue);
 

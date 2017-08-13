@@ -339,6 +339,10 @@ libcxxw_la_SOURCES=\
 	layoutmanager.H				    \
 	layoutmanager_impl.C			    \
 	list.C					    \
+	listlayoutmanager/firstlistitemcontainer.C  \
+	listlayoutmanager/firstlistitemcontainer.H  \
+	listlayoutmanager/firstlistitemcontainerfwd.H \
+	listlayoutmanager/firstlistitemcontainerobj.H \
 	listlayoutmanager/listcontainer.C	    \
 	listlayoutmanager/listcontainer.H	    \
 	listlayoutmanager/listcontainerfwd.H	    \
