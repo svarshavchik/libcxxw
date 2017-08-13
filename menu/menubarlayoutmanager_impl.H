@@ -65,6 +65,8 @@ class LIBCXX_HIDDEN menubarlayoutmanagerObj::implObj
 	menu add(menubarlayoutmanagerObj *public_object,
 		 const gridfactory &factory,
 		 const function<menubarfactoryObj::menu_creator_t> &creator,
+		 const function<menubarfactoryObj::menu_content_creator_t>
+		 &content_creator,
 		 menubar_lock &lock);
 
 	//! Fix tabbing order of a newly-added element.

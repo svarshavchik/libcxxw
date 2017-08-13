@@ -9,6 +9,7 @@
 #include "nonrecursive_visibilityfwd.H"
 #include "focus/focusframecontainer_elementfwd.H"
 #include "popup/popup_attachedto_handler_elementfwd.H"
+#include "popup/popupfwd.H"
 #include "container_elementfwd.H"
 #include "child_element.H"
 
@@ -35,8 +36,12 @@ class LIBCXX_HIDDEN menuObj::implObj :
  public:
 	THREAD_DATA_ONLY(tabbing_order_set);
 
+	//! The menu popup.
+	const popup menu_popup;
+
 	//! Constructor
-	implObj(const ref<popup_attachedto_handlerObj> &attachedto_handler,
+	implObj(const popup &menu_popup,
+		const ref<popup_attachedto_handlerObj> &attachedto_handler,
 		const ref<containerObj::implObj> &parent_container);
 
 	//! Destructor

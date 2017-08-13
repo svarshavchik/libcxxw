@@ -6,6 +6,7 @@
 #include "menu/menu_impl.H"
 #include "gridlayoutmanager.H"
 #include "focus/focusable.H"
+#include "popup/popup.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -29,6 +30,11 @@ ref<focusableImplObj> menuObj::get_impl() const
 				   });
 
 	return f_impl;
+}
+
+ref<layoutmanagerObj::implObj> menuObj::get_layout_impl() const
+{
+	return impl->menu_popup->get_layout_impl();
 }
 
 LIBCXXW_NAMESPACE_END

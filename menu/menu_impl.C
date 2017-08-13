@@ -11,11 +11,13 @@
 
 LIBCXXW_NAMESPACE_START
 
-menuObj::implObj::implObj(const ref<popup_attachedto_handlerObj>
+menuObj::implObj::implObj(const popup &menu_popup,
+			  const ref<popup_attachedto_handlerObj>
 			  &attachedto_handler,
 			  const ref<containerObj::implObj> &parent_container)
 	: superclass_t(attachedto_handler, parent_container,
-		       child_element_init_params{"menufocusframe@libcxx"})
+		       child_element_init_params{"menufocusframe@libcxx"}),
+	  menu_popup(menu_popup)
 {
 }
 

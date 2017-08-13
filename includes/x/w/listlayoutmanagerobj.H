@@ -14,7 +14,6 @@
 #include <x/mpobj.H>
 
 #include <vector>
-#include <initializer_list>
 #include <optional>
 
 LIBCXXW_NAMESPACE_START

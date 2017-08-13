@@ -378,8 +378,9 @@ libcxxw_la_SOURCES=\
 	menu/menu.C				    \
 	menu/menu_impl.C			    \
 	menu/menu_impl.H			    \
-	menu/menu_layoutmanager_impl.C		    \
-	menu/menu_layoutmanager_impl.H		    \
+	menu/menulayoutmanager.C		    \
+	menu/menulayoutmanager_impl.C		    \
+	menu/menulayoutmanager_impl.H		    \
 	menu/menubar_container_impl.C		    \
 	menu/menubar_container_impl.H		    \
 	menu/menubar_container_implfwd.H	    \

@@ -17,7 +17,9 @@
 #include "x/w/menubarlayoutmanager.H"
 #include "x/w/menubarfactory.H"
 #include "x/w/menu.H"
+#include "x/w/menulayoutmanager.H"
 #include "x/w/input_field.H"
+#include "x/w/label.H"
 #include <string>
 #include <iostream>
 
@@ -61,15 +63,27 @@ void testmenu()
 				 auto mb=main_window->get_menubarlayoutmanager();
 				 auto f=mb->append_menus();
 
-				 f->add_text("View");
+				 f->add([]
+					(const auto &factory) {
+						factory->create_label("View");
+					},
+					[]
+					(const auto &factory) {
+					});
 
 				 f=mb->insert_menus(0);
 
-				 f->add_text("File");
+				 f->add_text("File",
+					     []
+					     (const auto &factory) {
+					     });
 
 				 f=mb->append_right_menus();
 
-				 f->add_text("Help");
+				 f->add_text("Help",
+					     []
+					     (const auto &factory) {
+					     });
 
 				 main_window->get_menubar()->show();
 

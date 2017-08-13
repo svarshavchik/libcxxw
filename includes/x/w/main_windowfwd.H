@@ -43,6 +43,22 @@ class main_windowBase;
 //! lambda's parameter is the new main window.
 //!
 //! Main windows inherit from \ref generic_window "generic windows".
+//!
+//! \par Menu bar
+//!
+//! \code
+//! INSERT_LIBX_NAMESPACE::w::menubarlayoutmanager mb=w->get_menubarlayoutmanager();
+//!
+//! INSERT_LIBX_NAMESPACE::w::container c=w->get_menubar();
+//!
+//! c->show();
+//! \endcode
+//!
+//! The menu bar at the top of the main window is initially hidden.
+//! get_menubar() returns its \ref container "container", whose layout manager
+//! is \ref menubarlayoutmanager "INSERT_LIBX_NAMESPACE::w::menubarlayoutmanager".
+//! get_menubarlayoutmanager() is a equivalent to
+//! \c get_menubar()->get_layoutmanager().
 
 typedef ref<main_windowObj, main_windowBase> main_window;
 

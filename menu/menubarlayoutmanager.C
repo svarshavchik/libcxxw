@@ -77,9 +77,11 @@ class LIBCXX_HIDDEN menubarfactory_implObj : public menubarfactoryObj {
 
 	add_impl_t impl;
 
-	menu do_add(const function<menu_creator_t> &callback) override
+	menu do_add(const function<menu_creator_t> &callback,
+		    const function<menu_content_creator_t> &content_callback)
+		override
 	{
-		return impl(this->layout, callback);
+		return impl(this->layout, callback, content_callback);
 	}
 };
 
@@ -100,7 +102,8 @@ menubarfactory menubarlayoutmanagerObj::append_menus()
 		(menubarlayoutmanager(this),
 		 []
 		 (const menubarlayoutmanager &lm,
-		  const auto &creator)
+		  const auto &creator,
+		  const auto &content_creator)
 		 {
 			 menubar_lock lock{lm};
 
@@ -108,6 +111,7 @@ menubarfactory menubarlayoutmanagerObj::append_menus()
 					       lm->impl->insert_columns
 					       (&*lm, 0, lm->impl->info(lock).divider_pos),
 					       creator,
+					       content_creator,
 					       lock);
 
 			 ++lm->impl->info(lock).divider_pos;
@@ -121,7 +125,8 @@ menubarfactory menubarlayoutmanagerObj::insert_menus(size_t pos)
 		(menubarlayoutmanager(this),
 		 [pos]
 		 (const menubarlayoutmanager &lm,
-		  const auto &creator)
+		  const auto &creator,
+		  const auto &content_creator)
 		 mutable
 		 {
 			 menubar_lock lock{lm};
@@ -132,7 +137,7 @@ menubarfactory menubarlayoutmanagerObj::insert_menus(size_t pos)
 			 auto mb=lm->impl->add(&*lm,
 					       lm->impl->insert_columns(&*lm,
 									0, pos),
-					       creator, lock);
+					       creator, content_creator, lock);
 
 			 ++lm->impl->info(lock).divider_pos;
 			 ++pos;
@@ -147,14 +152,15 @@ menubarfactory menubarlayoutmanagerObj::append_right_menus()
 		(menubarlayoutmanager(this),
 		 []
 		 (const menubarlayoutmanager &lm,
-		  const auto &creator)
+		  const auto &creator,
+		  const auto &content_creator)
 		 {
 			 menubar_lock lock{lm};
 
 			 return lm->impl->add(&*lm,
 					      lm->impl->append_columns(&*lm,
 								       0),
-					      creator, lock);
+					      creator, content_creator, lock);
 		 });
 }
 
@@ -164,7 +170,8 @@ menubarfactory menubarlayoutmanagerObj::insert_right_menus(size_t pos)
 		(menubarlayoutmanager(this),
 		 [pos]
 		 (const menubarlayoutmanager &lm,
-		  const auto &creator)
+		  const auto &creator,
+		  const auto &content_creator)
 		 mutable
 		 {
 			 menubar_lock lock{lm};
@@ -179,7 +186,7 @@ menubarfactory menubarlayoutmanagerObj::insert_right_menus(size_t pos)
 								->info(lock)
 								.divider_pos
 								+pos),
-					       creator, lock);
+					       creator, content_creator, lock);
 			 ++pos;
 			 return mb;
 		 });

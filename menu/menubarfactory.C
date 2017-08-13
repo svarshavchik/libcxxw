@@ -17,12 +17,15 @@ menubarfactoryObj::menubarfactoryObj(const menubarlayoutmanager &layout)
 
 menubarfactoryObj::~menubarfactoryObj()=default;
 
-menu menubarfactoryObj::add_text(const text_param &t)
+menu menubarfactoryObj::do_add_text(const text_param &t,
+				    const function<menu_content_creator_t> &cf)
 {
-	return add([&](const auto &f)
-	    {
-		    f->create_label(t);
-	    });
+	return do_add(make_function<menu_creator_t>
+		      ([&](const auto &f)
+		       {
+			       f->create_label(t);
+		       }),
+		      cf);
 }
 
 LIBCXXW_NAMESPACE_END

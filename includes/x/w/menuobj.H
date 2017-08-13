@@ -32,6 +32,12 @@ public:
 	//! Return the internal focusable object.
 	ref<focusableImplObj> get_impl() const override LIBCXX_HIDDEN;
 
+	//! Override get_layout_impl()
+
+	//! Returns the layout manager for the underlying popup.
+
+	ref<layoutmanagerObj::implObj> get_layout_impl() const override
+		LIBCXX_HIDDEN;
 };
 
 LIBCXXW_NAMESPACE_END

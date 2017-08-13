@@ -8,6 +8,7 @@
 #include <x/w/menubarfactoryfwd.H>
 #include <x/w/menubarfactoryobj.H>
 #include <x/w/text_param.H>
+#include <x/w/menulayoutmanager.H>
 #include <x/ref.H>
 
 LIBCXXW_NAMESPACE_START

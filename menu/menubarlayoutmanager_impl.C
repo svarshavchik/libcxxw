@@ -7,7 +7,7 @@
 #include "menu/menubar_container_impl.H"
 #include "menu/menubar_hotspot_implobj.H"
 #include "menu/menu_impl.H"
-#include "menu/menu_layoutmanager_impl.H"
+#include "menu/menulayoutmanager_impl.H"
 #include "peepholed_toplevel_listcontainer/create_popup.H"
 #include "container.H"
 #include "grid_map_info.H"
@@ -51,6 +51,8 @@ menu menubarlayoutmanagerObj::implObj
 ::add(menubarlayoutmanagerObj *public_object,
       const gridfactory &factory,
       const function<menubarfactoryObj::menu_creator_t> &creator,
+      const function<menubarfactoryObj::menu_content_creator_t>
+      &content_creator,
       menubar_lock &lock)
 {
 	// Start by creating the popup first.
@@ -79,7 +81,8 @@ menu menubarlayoutmanagerObj::implObj
 					::create(peephole_container, style);
 
 				return create_p_t_l_impl_ret_t{impl,
-						ref<menu_layoutmanager_implObj>
+						ref<menulayoutmanagerObj
+						    ::implObj>
 						::create(impl, impl, style)
 						};
 			},
@@ -88,12 +91,17 @@ menu menubarlayoutmanagerObj::implObj
 			 const ref<p_t_l_impl_t> &impl,
 			 const ref<listlayoutmanagerObj::implObj> &layout_impl)
 			{
-				return ref<p_t_l_t>::create(attachedto_info,
+				auto c=ref<p_t_l_t>::create(attachedto_info,
 							    impl, impl,
 							    layout_impl);
+
+				content_creator(layout_impl
+						->create_public_object());
+
+				return c;
 			});
 
-	auto menu_impl=ref<menuObj::implObj>::create(popup_handler,
+	auto menu_impl=ref<menuObj::implObj>::create(menu_popup, popup_handler,
 						     container_impl);
 
 	auto ff_impl=ref<focusframelayoutimplObj>
