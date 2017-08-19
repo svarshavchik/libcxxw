@@ -97,11 +97,12 @@ struct LIBCXX_HIDDEN themedims_element_types<base, arg1, arg2, args...> {
 //! them as themedim_element<X>::pixels,
 //! themedim_element<Y>::pixels.
 //!
-//! The first parameter to the constructor gets forwarded to themedimObj's
-//! constructor, the remaining parameters get forwarded to the base class.
-//!
-//! When using multiple tags, each leading parameter gets forwarded to each
-//! mixin, in turn.
+//! Each themedimObj takes the leading two parameters to the constructor.
+//! That is, if the template results in two themedimObj superclasses, the first
+//! four parameters initialize them. In each pair of parameters, the
+//! first one is the name of the theme dimension, and the second parameter
+//! is either &defaultthemeObj::get_theme_width_dim_t or
+//! &defaultthemeObj::get_theme_height_dim_t.
 //!
 //! If optional parameters are not specified, a single void template
 //! parameter gets used to mix in a single dimension.
