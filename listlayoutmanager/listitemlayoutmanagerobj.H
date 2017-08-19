@@ -7,6 +7,7 @@
 
 #include "x/w/layoutmanagerobj.H"
 #include "listlayoutmanager/listitemlayoutmanagerfwd.H"
+#include "singletonlayoutmanagerobj.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -14,7 +15,7 @@ LIBCXXW_NAMESPACE_START
 
 //! \see listitemlayoutmanager
 
-class LIBCXX_HIDDEN listitemlayoutmanagerObj : public layoutmanagerObj {
+class LIBCXX_HIDDEN listitemlayoutmanagerObj : public singletonlayoutmanagerObj {
 
 public:
 	class implObj;

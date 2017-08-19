@@ -8,7 +8,7 @@
 LIBCXXW_NAMESPACE_START
 
 listitemlayoutmanagerObj::listitemlayoutmanagerObj(const ref<implObj> &impl)
-	: layoutmanagerObj(impl),
+	: singletonlayoutmanagerObj(impl),
 	  impl(impl)
 {
 }

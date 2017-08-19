@@ -18,7 +18,7 @@ listitemlayoutmanagerObj::implObj
 	  const themedim &left_padding,
 	  const themedim &right_padding,
 	  const themedim &v_padding)
-	: singletonlayoutmanagerObj(container_impl, initial_element),
+	: singletonlayoutmanagerObj::implObj(container_impl, initial_element),
 	left_padding(left_padding),
 	right_padding(right_padding),
 	v_padding(v_padding)

@@ -8,7 +8,7 @@
 #include "listlayoutmanager/listitemlayoutmanager.H"
 #include "themedimfwd.H"
 #include "connection_threadfwd.H"
-#include "singletonlayoutmanager.H"
+#include "singletonlayoutmanager_impl.H"
 #include "x/w/elementfwd.H"
 #include "x/w/elementobj.H"
 
@@ -19,7 +19,7 @@ LIBCXXW_NAMESPACE_START
 //! \see listlayoutmanager
 
 class LIBCXX_HIDDEN listitemlayoutmanagerObj::implObj
-	: public singletonlayoutmanagerObj {
+	: public singletonlayoutmanagerObj::implObj {
 
 	//! Horizontal padding.
 	const themedim left_padding;
