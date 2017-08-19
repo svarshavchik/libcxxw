@@ -3,13 +3,16 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
+#include "listlayoutmanager/listitemcontainer.H"
 #include "menu/menubarlayoutmanager_impl.H"
 #include "menu/menubar_container_impl.H"
 #include "menu/menubar_hotspot_implobj.H"
 #include "menu/menu_impl.H"
 #include "menu/menulayoutmanager_impl.H"
+#include "menu/menuitemextrainfo.H"
 #include "peepholed_toplevel_listcontainer/create_popup.H"
 #include "container.H"
+#include "label_theme_font_element.H"
 #include "grid_map_info.H"
 #include "x/w/gridfactory.H"
 #include "x/w/canvas.H"
@@ -20,6 +23,9 @@
 #include "focusable_owner_container.H"
 #include "generic_window_handler.H"
 #include "run_as.H"
+#include "catch_exceptions.H"
+#include <x/visitor.H>
+#include <x/mp.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -59,9 +65,12 @@ menu menubarlayoutmanagerObj::implObj
 
 	new_listlayoutmanager style{bulleted_list};
 
-	style.background_color="menu_background_color";
-	style.selected_color="menu_clicked_color";
-	style.highlighted_color="menu_highlighted_color";
+	style.background_color="menu_popup_background_color";
+	style.current_color="menu_popup_highlighted_color";
+	style.highlighted_color="menu_popup_clicked_color";
+	style.columns=2;
+
+	style.selection_type=&menuitem_selected;
 
 	auto &e=container_impl->get_element_impl();
 
@@ -70,15 +79,17 @@ menu menubarlayoutmanagerObj::implObj
 		({
 			ref<elementObj::implObj>(&e),
 				"dropdown_menu,popup_menu",
-				"menu_inputfocusoff_border",
+				"menu_popup_border",
 				1,
 				attached_to::combobox_above_or_below,
 				style},
 			[&]
 			(const auto &peephole_container)
 			{
-				auto impl=ref<p_t_l_impl_t>
-					::create(peephole_container, style);
+				auto impl=ref<label_theme_font_elementObj<
+				p_t_l_impl_t>>
+				::create("menu_font",
+					 peephole_container, style);
 
 				return create_p_t_l_impl_ret_t{impl,
 						ref<menulayoutmanagerObj
@@ -193,4 +204,38 @@ void menubarlayoutmanagerObj::implObj::fix_order(IN_THREAD_ONLY,
 						       new_element);
 }
 
+void menubarlayoutmanagerObj::implObj
+::menuitem_selected(list_lock &lock,
+		    const listlayoutmanager &lm,
+		    size_t i,
+		    const busy &mcguffin)
+{
+	// Column 1 is the extra_info we're looking for.
+
+	listitemcontainer lic=lm->item(i, 1);
+
+	menuitemextrainfo extrainfo=lic->get();
+
+	auto type=extrainfo->menuitem_type.get();
+
+	std::visit(visitor{
+			[&](const menuitem_plain &pl)
+			{
+				if (pl.is_option)
+					multiple_selection_type(lock, lm,
+								i,
+								mcguffin);
+
+				if (pl.on_activate)
+					try {
+						pl.on_activate
+							({
+								lock, lm, i,
+								lm->selected(lock, i),
+								mcguffin
+							});
+					} CATCH_EXCEPTIONS;
+			}
+		}, static_cast<const menuitem_type_t &>(*type));
+}
 LIBCXXW_NAMESPACE_END

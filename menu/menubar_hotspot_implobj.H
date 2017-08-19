@@ -9,16 +9,19 @@
 #include "container_elementfwd.H"
 #include "child_element.H"
 #include "popup/popupfwd.H"
+#include "popup/popup_showhide_elementfwd.H"
 #include "background_colorfwd.H"
 
 LIBCXXW_NAMESPACE_START
 
 class LIBCXX_HIDDEN menubar_hotspot_implObj
-	: public hotspot_bgcolor_elementObj<container_elementObj
-					    <child_elementObj>> {
+	: public popup_showhide_elementObj<
+	hotspot_bgcolor_elementObj<container_elementObj
+				   <child_elementObj>>> {
 
-	typedef hotspot_bgcolor_elementObj<container_elementObj
-					   <child_elementObj>> superclass_t;
+	typedef popup_showhide_elementObj<
+		hotspot_bgcolor_elementObj<container_elementObj
+					   <child_elementObj>>> superclass_t;
 
  public:
 	const popup menu_popup;

@@ -42,6 +42,25 @@ public:
 
 typedef LIBCXX_NAMESPACE::ref<close_flagObj> close_flag_ref;
 
+void file_menu(const LIBCXX_NAMESPACE::w::menulayoutmanager &m)
+{
+	LIBCXX_NAMESPACE::w::menuitem_plain file_new_type;
+
+	file_new_type.menuitem_shortcut={"Alt", 'N'};
+	file_new_type.on_activate=[]
+		(const LIBCXX_NAMESPACE::w::menuitem_activation_info &ignore)
+		{
+			std::cout << "File->New selected" << std::endl;
+		};
+
+	m->append_menu_item(file_new_type, "New");
+
+	m->append_menu_item(std::vector<std::tuple<LIBCXX_NAMESPACE::w::menuitem_type_t,
+			    LIBCXX_NAMESPACE::w::text_param>>{ { LIBCXX_NAMESPACE::w::menuitem_type_t{}, "Open"}});
+
+	m->append_menu_item(std::vector<LIBCXX_NAMESPACE::w::text_param>{"Close"});
+
+}
 
 void testmenu()
 {
@@ -76,6 +95,7 @@ void testmenu()
 				 f->add_text("File",
 					     []
 					     (const auto &factory) {
+						     file_menu(factory);
 					     });
 
 				 f=mb->append_right_menus();

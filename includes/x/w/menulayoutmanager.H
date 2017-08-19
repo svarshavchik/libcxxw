@@ -7,9 +7,47 @@
 
 #include <x/w/menulayoutmanagerfwd.H>
 #include <x/w/menulayoutmanagerobj.H>
+#include <x/w/shortcut.H>
 #include <x/ref.H>
 
 LIBCXXW_NAMESPACE_START
+
+struct menuitem_activation_info {
+
+	//! Lock on the menu.
+	menu_lock &lock;
+
+	//! The menu layout manager
+	menulayoutmanager layoutmanager;
+
+	//! The current index of the activated item.
+	size_t i;
+
+	//! Whether the activated item has a bullet next to it.
+
+	//! Only used when is_option is set.
+	bool selected;
+
+	//! The busy mcguffin.
+
+	const busy &mcguffin;
+};
+
+//! This is an ordinary menu item
+
+//! One of the possible \ref menuitem_type_t "menuitem_type_t"s.
+
+struct menuitem_plain {
+
+	//! Whether this menu item has an option bullet next to it.
+	bool is_option=false;
+
+	//! Callback invoked when the menu item gets selected.
+	std::function<void (const menuitem_activation_info &)> on_activate;
+
+	//! Optional shortcut for the menu item.
+	shortcut menuitem_shortcut;
+};
 
 LIBCXXW_NAMESPACE_END
 

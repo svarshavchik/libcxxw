@@ -75,6 +75,17 @@ class LIBCXX_HIDDEN menubarlayoutmanagerObj::implObj
 	//! ones tabbed into.
 
 	void fix_order(IN_THREAD_ONLY, const menu &new_element);
+
+	//! A menu item selection has been made.
+
+	//! This is used as the selection_type called for the underlying
+	//! list. This gets called when a menu item has been selected/clicked
+	//! on.
+
+	static void menuitem_selected(list_lock &lock,
+				      const listlayoutmanager &lm,
+				      size_t i,
+				      const busy &mcguffin);
 };
 
 LIBCXXW_NAMESPACE_END

@@ -335,6 +335,10 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
   <color id="menu_highlighted_color" scale="90%" />
   <color id="menu_clicked_color" scale="100%" />
 
+  <color id="menu_popup_background_color" scale="90%" />
+  <color id="menu_popup_highlighted_color" scale="80%" />
+  <color id="menu_popup_clicked_color" scale="100%" />
+
   <border id="menu_inputfocusoff_border">
     <color>transparent</color>
     <width axis="horiz">.2</width>
@@ -347,4 +351,20 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
     <dash>.5</dash>
   </border>
 
+  <border id="menu_popup_border">
+    <color>inputfocus_color1</color>
+    <width axis="horiz">.5</width>
+    <height axis="vert">.5</height>
+  </border>
+
+  <dim id="menu_shortcut_padding" axis="horiz">5</dim>
+
+  <font id="menu_font" from="serif">
+    <point_size>12</point_size>
+  </font>
+
+  <font id="menu_shortcut_font" from="sans_serif">
+    <weight>bold</weight>
+    <point_size>10</point_size>
+  </font>
 </theme>

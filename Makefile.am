@@ -339,6 +339,8 @@ libcxxw_la_SOURCES=\
 	label.C					    \
 	label_element.H				    \
 	label_elementfwd.H			    \
+	label_theme_font_element.H		    \
+	label_theme_font_elementfwd.H		    \
 	layoutmanager.C				    \
 	layoutmanager.H				    \
 	layoutmanager_impl.C			    \
@@ -382,6 +384,15 @@ libcxxw_la_SOURCES=\
 	menu/menu.C				    \
 	menu/menu_impl.C			    \
 	menu/menu_impl.H			    \
+	menu/menufactory.C			    \
+	menu/menuitemextrainfo.C		    \
+	menu/menuitemextrainfo.H		    \
+	menu/menuitemextrainfofwd.H		    \
+	menu/menuitemextrainfoobj.H		    \
+	menu/menuitemextrainfo_impl.C		    \
+	menu/menuitemextrainfo_impl.H		    \
+	menu/menulistitemfactory.C		    \
+	menu/menulistitemfactory.H		    \
 	menu/menulayoutmanager.C		    \
 	menu/menulayoutmanager_impl.C		    \
 	menu/menulayoutmanager_impl.H		    \

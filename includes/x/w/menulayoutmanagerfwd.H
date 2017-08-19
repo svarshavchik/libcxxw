@@ -6,7 +6,9 @@
 #define x_w_menulayoutmanagerfwd_h
 
 #include <x/w/namespace.H>
+#include <x/w/listlayoutmanagerfwd.H>
 #include <x/ptrfwd.H>
+#include <variant>
 
 LIBCXXW_NAMESPACE_START
 
@@ -38,6 +40,17 @@ typedef ptr<menulayoutmanagerObj> menulayoutmanagerptr;
 //! \see menulayoutmanager
 
 typedef const_ptr<menulayoutmanagerObj> const_menulayoutmanagerptr;
+
+struct menuitem_plain;
+
+//! The menu item type
+
+typedef std::variant<menuitem_plain> menuitem_type_t;
+
+
+//! Menus use the same lock as lists, for now.
+
+typedef list_lock menu_lock;
 
 LIBCXXW_NAMESPACE_END
 
