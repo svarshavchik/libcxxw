@@ -124,6 +124,17 @@ public:
 			   double widthmm,
 			   halign alignment=halign::left);
 
+	//! Create a label
+
+	//! \internal
+
+	static label create_label_internal(const text_param &text,
+					   double widthmm,
+					   halign alignment,
+					   const ref<containerObj::implObj>
+					   &container_impl)
+		LIBCXX_HIDDEN;
+
 	//! Create a focusable label.
 
 	focusable_label create_focusable_label(const text_param &text,
