@@ -160,8 +160,11 @@ public:
 	//! Remove an item from the combo-box.
 	void remove_item(size_t i);
 
+	//! Replace an item from the combo-box.
+	void replace_item(size_t i, const text_param &item);
+
 	//! Replace all existing items in the combo-box.
-	void replace_all(const std::vector<text_param> &items);
+	void replace_all_items(const std::vector<text_param> &items);
 
 	//! Combo-box search.
 

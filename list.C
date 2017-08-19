@@ -156,7 +156,8 @@ new_listlayoutmanager::create(const ref<containerObj::implObj>
 
 void single_selection_type(list_lock &lock,
 			   const listlayoutmanager &layout_manager,
-			   size_t i)
+			   size_t i,
+			   const busy &mcguffin)
 {
 	// Selecting the sole selection is going to deselect it.
 
@@ -179,7 +180,8 @@ void single_selection_type(list_lock &lock,
 
 void multiple_selection_type(list_lock &lock,
 			     const listlayoutmanager &layout_manager,
-			     size_t i)
+			     size_t i,
+			     const busy &mcguffin)
 {
 	layout_manager->selected(lock, i,
 				 !layout_manager->selected(lock, i));

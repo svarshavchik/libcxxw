@@ -15,6 +15,8 @@
 #include <x/w/gridfactory.H>
 #include <x/w/button.H>
 #include <x/w/focusable.H>
+
+#include <x/visitor.H>
 #include <string>
 #include <iostream>
 
@@ -95,11 +97,9 @@ void create_mainwindow(const x::w::main_window &main_window)
 		 (const x::w::all_key_events_t &ke,
 		  const x::w::busy &mcguffin)
 		 {
-			 if (std::holds_alternative<const x::w::key_event *>(ke))
-			 {
-				 auto keptr=std::get<const x::w::key_event *>
-					 (ke);
-
+			 std::visit(x::visitor{
+			     [](const x::w::key_event *keptr)
+                             {
 				 std::cout << (keptr->keypress
 					       ? "press ":"release ");
 				 if (keptr->unicode)
@@ -108,14 +108,12 @@ void create_mainwindow(const x::w::main_window &main_window)
 					 std::cout << "keysym "
 						   << keptr->keysym;
 				 std::cout << std::endl;
-			 }
-
-			 if (std::holds_alternative<const std::u32string_view *>
-			     (ke))
-			 {
+			     },
+			     [](const std::u32string_view *keptr)
+			     {
 				 // Buttons don't receive pasted unicode text,
 				 // this is for demo purposes.
-			 }
+			     }}, ke);
 
 			 return false;
 		 });

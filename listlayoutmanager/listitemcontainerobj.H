@@ -33,6 +33,10 @@ class LIBCXX_HIDDEN listitemcontainerObj : public containerObj {
 
 	//! Destructor
 	~listitemcontainerObj();
+
+	//! The element in the container
+
+	element get();
 };
 
 LIBCXXW_NAMESPACE_END

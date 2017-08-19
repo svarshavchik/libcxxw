@@ -17,8 +17,10 @@
 #include <x/w/label.H>
 #include <x/w/screen.H>
 #include <x/w/connection.H>
+#include <x/w/button.H>
 #include <string>
 #include <iostream>
+#include <sstream>
 
 #include "close_flag.H"
 #include "combobox.H"
@@ -61,6 +63,12 @@ create_editable_combobox(const x::w::factory &factory,
 	return factory->create_focusable_container(creator, nclm);
 }
 
+std::vector<x::w::text_param> days_of_week()
+{
+	return {"Sunday", "Monday", "Tuesday",	"Wednesday",
+			"Thursday", "Friday", "Saturday"};
+}
+
 static inline void create_main_window(const x::w::main_window &main_window,
 				      const options &opts)
 {
@@ -70,7 +78,7 @@ static inline void create_main_window(const x::w::main_window &main_window,
 
 	auto factory=layout->append_row();
 
-	factory->create_label("Choose a day of the week:")->show();
+	factory->create_label("Days of the week (or else):")->show();
 
 	auto combobox=(opts.editable->value
 		       ? create_editable_combobox
@@ -87,16 +95,106 @@ static inline void create_main_window(const x::w::main_window &main_window,
 			 x::w::standard_comboboxlayoutmanager lm=
 				 container->get_layoutmanager();
 
-			 lm->replace_all({"Sunday",
-					  "Monday",
-					  "Tuesday",
-					  "Wednesday",
-					  "Thursday",
-					  "Friday",
-					  "Saturday"});
+			 lm->replace_all_items(days_of_week());
 		 });
 
 	combobox->show();
+
+	// Combo-box layout manager inherits methods from the underlying
+	// list layout manager, like append_item(). Create a button that
+	// calls append_item().
+
+	auto button=layout->append_row()->colspan(2)
+		.create_special_button_with_label("Append row");
+
+	button->on_activate([=, counter=0]
+			    (const x::w::busy &ignore)
+			    mutable
+			    {
+				    std::ostringstream o;
+
+				    o << "Append " << ++counter << std::endl;
+
+				    x::w::standard_comboboxlayoutmanager lm=
+					    combobox->get_layoutmanager();
+
+				    lm->append_item(o.str());
+			    });
+	button->show();
+
+	// Same deal for insert_item().
+
+	button=layout->append_row()->colspan(2)
+		.create_special_button_with_label("Insert row");
+
+	button->on_activate([=, counter=0]
+			    (const x::w::busy &ignore)
+			    mutable
+			    {
+				    std::ostringstream o;
+
+				    o << "Insert " << ++counter << std::endl;
+
+				    x::w::standard_comboboxlayoutmanager lm=
+					    combobox->get_layoutmanager();
+
+				    lm->insert_item(0, o.str());
+			    });
+	button->show();
+
+	// Same deal for replace_item(), delete_item(), and size():
+
+	button=layout->append_row()->colspan(2)
+		.create_special_button_with_label("Replace row");
+
+	button->on_activate([=, counter=0]
+			    (const x::w::busy &ignore)
+			    mutable
+			    {
+				    x::w::standard_comboboxlayoutmanager lm=
+					    combobox->get_layoutmanager();
+
+				    if (lm->size() == 0)
+					    return;
+
+				    std::ostringstream o;
+
+				    o << "Replace " << ++counter << std::endl;
+
+				    lm->replace_item(0, o.str());
+			    });
+	button->show();
+
+	button=layout->append_row()->colspan(2)
+		.create_special_button_with_label("Delete row");
+
+	button->on_activate([=, counter=0]
+			    (const x::w::busy &ignore)
+			    mutable
+			    {
+				    x::w::standard_comboboxlayoutmanager lm=
+					    combobox->get_layoutmanager();
+
+				    if (lm->size() == 0)
+					    return;
+
+				    lm->remove_item(0);
+			    });
+	button->show();
+
+	button=layout->append_row()->colspan(2)
+		.create_special_button_with_label("Reset");
+
+	button->on_activate([=, counter=0]
+			    (const x::w::busy &ignore)
+			    mutable
+			    {
+				    x::w::standard_comboboxlayoutmanager lm=
+					    combobox->get_layoutmanager();
+
+				    lm->replace_all_items(days_of_week());
+			    });
+	button->show();
 
 	// Stash the combobox in main_window's appdata.
 

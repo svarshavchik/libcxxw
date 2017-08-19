@@ -331,7 +331,7 @@ static inline void create_main_window(const x::w::main_window &main_window,
 			 // takes a vector of text_params, specifying the
 			 // new items for the list:
 			 //
-			 l->replace_all({ next_lorem_ipsum(), next_lorem_ipsum()});
+			 l->replace_all_items({ next_lorem_ipsum(), next_lorem_ipsum()});
 			 // Without any parameters replace_all() removes
 			 // all existing items from the list and returns
 			 // a factory for creating new list items.

@@ -54,7 +54,8 @@ class LIBCXX_HIDDEN new_listlayoutmanager : public new_focusable_layoutmanager {
 	//! each item in the list is selected or unselected individually and
 	//! more than one item can be selected in the list, at the same time.
 
-	std::function<void (list_lock &, const listlayoutmanager &, size_t)
+	std::function<void (list_lock &, const listlayoutmanager &, size_t,
+			    const busy &)
 		      > selection_type;
 
 	//! Callback when list selection changes.

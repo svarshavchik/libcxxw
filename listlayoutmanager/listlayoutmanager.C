@@ -36,27 +36,11 @@ void listlayoutmanagerObj::remove_callback_factory()
 	*lock=nullptr;
 }
 
-
-//! The factory returned by append_item()
-
-class LIBCXX_HIDDEN list_append_item_factoryObj : public listitemfactoryObj {
- public:
-
-	using listitemfactoryObj::listitemfactoryObj;
-
-	//! Forward create_item() to the append_item() implementation.
-
-	void create_item(const listlayoutstyle::new_list_items_t &new_item)
-		override
-	{
-		me->impl->append_item(me, new_item);
-	}
-};
-
 factory listlayoutmanagerObj::append_item()
 {
-	return ref<list_append_item_factoryObj>
-		::create(listlayoutmanager(this));
+	return ref<implObj::append_factoryObj<factoryObj, listitemfactoryObj>>
+		::create(listlayoutmanager(this),
+			 impl->container_impl);
 }
 
 void listlayoutmanagerObj::append_item(const std::vector<text_param> &items)
@@ -67,37 +51,11 @@ void listlayoutmanagerObj::append_item(const std::vector<text_param> &items)
 		f->create_label(s);
 }
 
-//! The factory returned by insert_item()
-
-class LIBCXX_HIDDEN list_insert_item_factoryObj : public listitemfactoryObj {
- public:
-
-	size_t row_number;
-	grid_map_t::lock lock;
-
-	//! Constructor
-
-	list_insert_item_factoryObj(const listlayoutmanager &l,
-				    size_t row_number)
-		: listitemfactoryObj(l),
-		row_number(row_number),
-		lock(l->impl->grid_map)
-		{
-		}
-
-	//! Forward create_item() to the insert_item() implementation.
-
-	void create_item(const listlayoutstyle::new_list_items_t &new_item)
-		override
-	{
-		me->impl->insert_item(me, lock, new_item, row_number++);
-	}
-};
-
 factory listlayoutmanagerObj::insert_item(size_t item_number)
 {
-	return ref<list_insert_item_factoryObj>
-		::create(listlayoutmanager(this), item_number);
+	return ref<implObj::insert_factoryObj<factoryObj, listitemfactoryObj>>
+		::create(listlayoutmanager(this), item_number,
+			 impl->container_impl);
 }
 
 void listlayoutmanagerObj::insert_item(size_t item_number,
@@ -109,41 +67,11 @@ void listlayoutmanagerObj::insert_item(size_t item_number,
 		f->create_label(s);
 }
 
-//! The factory returned by replace_item()
-
-class LIBCXX_HIDDEN list_replace_item_factoryObj : public listitemfactoryObj {
- public:
-
-	size_t row_number;
-	grid_map_t::lock lock;
-
-	//! Constructor
-
-	list_replace_item_factoryObj(const listlayoutmanager &l,
-				     size_t row_number)
-		: listitemfactoryObj(l),
-		row_number(row_number),
-		lock(l->impl->grid_map)
-		{
-		}
-
-	//! Forward create_item() to the replace_item() implementation.
-
-	void create_item(const listlayoutstyle::new_list_items_t &new_item)
-		override
-	{
-		me->impl->replace_item(me, lock, new_item, row_number++);
-	}
-};
-
 factory listlayoutmanagerObj::replace_item(size_t item_number)
 {
-	grid_map_t::lock lock{impl->grid_map};
-
-	selected(lock, item_number, false);
-
-	return ref<list_replace_item_factoryObj>
-		::create(listlayoutmanager(this), item_number);
+	return ref<implObj::replace_factoryObj<factoryObj, listitemfactoryObj>>
+		::create(listlayoutmanager(this), item_number,
+			 impl->container_impl);
 }
 
 void listlayoutmanagerObj::replace_item(size_t item_number,
@@ -163,38 +91,17 @@ void listlayoutmanagerObj::remove_item(size_t item_number)
 	impl->remove_item(listlayoutmanager(this), lock, item_number);
 }
 
-//! The factory returned by replace_all()
-
-class LIBCXX_HIDDEN list_replace_all_factoryObj
-	: public list_append_item_factoryObj {
-
-	grid_map_t::lock lock;
-
- public:
-
-	list_replace_all_factoryObj(const listlayoutmanager &l)
-		: list_append_item_factoryObj(l),
-		lock{l->impl->grid_map}
-	{
-		l->impl->remove_all_items(me);
-	}
-
-	~list_replace_all_factoryObj() = default;
-};
-
-factory listlayoutmanagerObj::replace_all()
+factory listlayoutmanagerObj::replace_all_items()
 {
-	grid_map_t::lock lock{impl->grid_map};
-
-	unselect();
-
-	return ref<list_replace_all_factoryObj>
-		::create(listlayoutmanager(this));
+	return ref<implObj::replace_all_factoryObj<factoryObj,
+						   listitemfactoryObj>>
+		::create(listlayoutmanager(this), impl->container_impl);
 }
 
-void listlayoutmanagerObj::replace_all(const std::vector<text_param> &items)
+void listlayoutmanagerObj::replace_all_items(const std::vector<text_param>
+					     &items)
 {
-	auto f=replace_all();
+	auto f=replace_all_items();
 
 	for (const auto &item:items)
 		f->create_label(item);

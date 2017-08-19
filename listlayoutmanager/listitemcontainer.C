@@ -18,4 +18,21 @@ listitemcontainerObj
 
 listitemcontainerObj::~listitemcontainerObj()=default;
 
+element listitemcontainerObj::get()
+{
+	elementptr e;
+
+	impl->invoke_layoutmanager
+		([&]
+		 (const ref<listitemlayoutmanagerObj::implObj> &l)
+		 {
+			 e=*listitemlayoutmanagerObj::implObj
+				 ::current_element_t::lock{
+				 l->current_element
+			 };
+		 });
+
+	return e;
+}
+
 LIBCXXW_NAMESPACE_END

@@ -172,8 +172,9 @@ new_list.selection_changed=[]
       and the lambda has full control over which list items get selected
       or unselected. The <varname>selection_type</varname> lambda's parameters
       are a <link linkend="listlock">list lock</link>, the list layout manager
-      instance, and the index of which
-      item was clicked on. The lambda is responsible for selecting or
+      instance, the index of which
+      item was clicked on, and the <classname>busy</classname> mcguffin. The
+      lambda is responsible for selecting or
       unselecting the list's items, as it sees fit.
     </para>
 

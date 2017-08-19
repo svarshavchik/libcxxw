@@ -30,8 +30,7 @@ class LIBCXX_HIDDEN listlayoutstyle_common : public listlayoutstyle {
 
 	//! Implement create_item()
 
-	void create_item(IN_THREAD_ONLY,
-			 const ref<listlayoutmanagerObj::implObj> &lilm,
+	void create_item(const ref<listlayoutmanagerObj::implObj> &lilm,
 			 const gridfactory &underlying_factory,
 			 const batch_queue &queue,
 			 const new_list_items_t &new_list_items) const override;
@@ -75,8 +74,7 @@ class LIBCXX_HIDDEN listlayoutstyle_common : public listlayoutstyle {
 };
 
 void listlayoutstyle_common
-::create_item(IN_THREAD_ONLY,
-	      const ref<listlayoutmanagerObj::implObj> &lilm,
+::create_item(const ref<listlayoutmanagerObj::implObj> &lilm,
 	      const gridfactory &underlying_factory,
 	      const batch_queue &queue,
 	      const new_list_items_t &new_list_items) const

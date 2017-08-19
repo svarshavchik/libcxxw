@@ -9,6 +9,7 @@
 #include <x/w/grid_map_infofwd.H>
 #include <x/w/layoutmanagerobj.H>
 #include <x/w/factoryfwd.H>
+#include <x/w/factoryobj.H>
 #include <x/w/text_paramfwd.H>
 
 #include <x/mpobj.H>
@@ -73,7 +74,7 @@ public:
 	~listlayoutmanagerObj() LIBCXX_HIDDEN;
 
 	//! Append a new list item.
-	factory append_item();
+	virtual factory append_item();
 
 	//! Append a new list item
 
@@ -89,10 +90,10 @@ public:
 	//! Append a new list item
 
 	//! \overload
-	void append_item(const std::vector<text_param> &items);
+	virtual void append_item(const std::vector<text_param> &items);
 
 	//! Insert a new list item.
-	factory insert_item(size_t item_number);
+	virtual factory insert_item(size_t item_number);
 
 	//! Insert a new list item
 
@@ -109,11 +110,11 @@ public:
 	//! Insert a new list item
 
 	//! \overload
-	void insert_item(size_t item_number,
-			 const std::vector<text_param> &items);
+	virtual void insert_item(size_t item_number,
+				 const std::vector<text_param> &items);
 
 	//! Replace a list item.
-	factory replace_item(size_t item_number);
+	virtual factory replace_item(size_t item_number);
 
 	//! Replace a list item
 
@@ -131,19 +132,20 @@ public:
 
 	//! \overload
 
-	void replace_item(size_t item_number,
-			 const std::vector<text_param> &items);
+	virtual void replace_item(size_t item_number,
+				  const std::vector<text_param> &items);
 
 	//! Remove a list item
 	virtual void remove_item(size_t item_number);
 
 	//! Replace all list items
-	virtual factory replace_all();
+
+	virtual factory replace_all_items();
 
 	//! Replace all list items
 
 	//! \overload
-	void replace_all(const std::vector<text_param> &items);
+	virtual void replace_all_items(const std::vector<text_param> &items);
 
 	///////////////////////////////////////////////////////////////
 

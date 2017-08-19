@@ -23,7 +23,7 @@
 #include "run_as.H"
 
 #include <x/weakcapture.H>
-
+#include <x/visitor.H>
 #include <X11/keysym.h>
 
 LIBCXXW_NAMESPACE_START
@@ -157,24 +157,23 @@ class LIBCXX_HIDDEN lookup_collectorObj : virtual public obj {
 
 		list_lock lock{lm};
 
-		if (std::holds_alternative<const key_event *>(e))
-		{
-			auto &ke=*std::get<const key_event *>(e);
-
-			if (!ke.notspecial() || !ke.keypress)
+		if (!std::visit(visitor{
+		    [&](const key_event *ke)
+		    {
+			if (!ke->notspecial() || !ke->keypress)
 				return false;
 
-			switch (ke.keysym) {
+			switch (ke->keysym) {
 			case XK_Delete:
 			case XK_KP_Delete:
 				buffer.clear();
 				break;
 			default:
 
-				if (!ke.unicode)
+				if (!ke->unicode)
 					return false;
 
-				if (ke.unicode == '\n')
+				if (ke->unicode == '\n')
 				{
 					// Get the current selection, and
 					// start the search on the next list item.
@@ -189,17 +188,23 @@ class LIBCXX_HIDDEN lookup_collectorObj : virtual public obj {
 				}
 				else
 				{
-					if (ke.unicode < ' ')
+					if (ke->unicode < ' ')
 					{
 						return false;
 					}
-					buffer.push_back(ke.unicode);
+					buffer.push_back(ke->unicode);
 				}
 			}
-		}
-		else if (std::holds_alternative<const std::u32string_view *>(e))
+			return true;
+		    },
+		    [&](const std::u32string_view *str)
+		    {
+			    buffer += *str;
+			    return true;
+		    }
+				}, e))
 		{
-			buffer += *std::get<const std::u32string_view *>(e);
+			return false;
 		}
 
 		search_func({lock, lm, buffer, i, current_selection, mcguffin});
@@ -382,7 +387,10 @@ focusable_container new_custom_comboboxlayoutmanager
 			 combobox_container_impl->data(IN_THREAD)
 				 .attached_popup=popup_handler;
 
-			 popup_listlayoutmanager->selection_changed(IN_THREAD)=
+			 grid_map_t::lock lock{
+				 popup_listlayoutmanager->grid_map};
+
+			 popup_listlayoutmanager->selection_changed(lock)=
 				 [=, current_selection=make_weak_capture
 				  (current_selection, combobox_popup, lm)]
 				 (list_lock &lock,

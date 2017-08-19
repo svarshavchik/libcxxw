@@ -16,14 +16,13 @@ LIBCXXW_NAMESPACE_START
 
 listitemfactoryObj
 ::listitemfactoryObj(const listlayoutmanager &me)
-	: factoryObj(me->impl->container_impl),
-	  me(me)
+	: me(me)
 {
 }
 
 listitemfactoryObj::~listitemfactoryObj()=default;
 
-void listitemfactoryObj::created(const element &e)
+void listitemfactoryObj::created_element(const element &e)
 {
 	new_list_items_t::lock lock{new_list_items};
 

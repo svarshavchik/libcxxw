@@ -33,31 +33,49 @@ public:
 	//! Destructor
 	~standard_comboboxlayoutmanagerObj() LIBCXX_HIDDEN;
 
+	using custom_comboboxlayoutmanagerObj::append_item;
+
+	//! Not implemented.
+	factory append_item() override;
+
 	//! Append a new item to the combo-box.
 
-	void append_item(const text_param &item);
+	void append_item(const std::vector<text_param> &items) override;
+
+	using custom_comboboxlayoutmanagerObj::insert_item;
+
+	//! Not implemented.
+	factory insert_item(size_t) override;
 
 	//! Insert a new item to the combo-box before an existing item.
 
-	void insert_item(size_t i, const text_param &item);
+	void insert_item(size_t i, const std::vector<text_param> &items)
+		override;
 
 	//! Remove an item from the combo-box.
 
 	void remove_item(size_t i) override;
 
+	//! Not implemented.
+	factory replace_item(size_t item_number) override;
+
+	using custom_comboboxlayoutmanagerObj::replace_item;
+
+	//! Replace an item.
+
+	void replace_item(size_t item_number,
+			  const std::vector<text_param> &items) override;
+
 	//! Override replace_all().
 
-	factory replace_all() override;
+	void replace_all_items(const std::vector<text_param> &items) override;
 
-	//! How many items in the combo-box.
+	//! Not implemented.
 
-	size_t size() const;
+	factory replace_all_items() override;
 
 	//! Return combo-box item.
 	text_param item(size_t i) const;
-
-	//! Replace all existing items in the combo-box.
-	void replace_all(const std::vector<text_param> &items);
 };
 
 LIBCXXW_NAMESPACE_END

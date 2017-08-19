@@ -9,6 +9,7 @@
 #include "x/w/listlayoutmanagerobj.H"
 #include "x/w/elementfwd.H"
 #include "x/w/batch_queuefwd.H"
+#include "x/w/gridfactoryfwd.H"
 #include <vector>
 #include "connection_threadfwd.H"
 
@@ -43,8 +44,7 @@ public:
 	//! We are expected to construct a container for each item that uses a
 	//! listitemlayoutmanager.
 
-	virtual void create_item(IN_THREAD_ONLY,
-				 //! The list item layout manager
+	virtual void create_item(//! The list item layout manager
 				 const ref<listlayoutmanagerObj::implObj> &lilm,
 
 				 //! The grid factory, for creating the new item

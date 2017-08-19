@@ -5,8 +5,6 @@
 #ifndef listitemfactoryobj_h
 #define listitemfactoryobj_h
 
-#include "x/w/factoryobj.H"
-#include "x/w/gridfactoryfwd.H"
 #include "x/w/listlayoutmanager.H"
 #include "listlayoutmanager/listitemfactoryfwd.H"
 #include "listlayoutmanager/listlayoutstyle.H"
@@ -16,7 +14,8 @@ LIBCXXW_NAMESPACE_START
 //! The factory object for the list layout manager
 
 //! \see listitemfactory
-class LIBCXX_HIDDEN listitemfactoryObj : public factoryObj {
+
+class LIBCXX_HIDDEN listitemfactoryObj : virtual public obj {
 
 	//! Mutex-protected container for the elements for the new list item
 
@@ -30,12 +29,6 @@ public:
 	//! My list layout manager.
 	const listlayoutmanager me;
 
-	//! The callback factory.
-
-	//! Retrieved from the listlayoutmanager by the constructor.
-	const std::function<list_item_status_change_callback_factory_t
-			    > callback_factory;
-
 	//! Constructor
 	listitemfactoryObj(const listlayoutmanager &me);
 
@@ -44,7 +37,7 @@ public:
 
 	//! New element for the new list item was created.
 
-	void created(const element &e) override;
+	void created_element(const element &e);
 
 	//! Create a new item from these elements.
 

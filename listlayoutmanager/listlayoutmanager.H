@@ -7,6 +7,7 @@
 
 #include "x/w/listlayoutmanager.H"
 #include "x/w/hotspotfwd.H"
+#include "x/w/factoryfwd.H"
 #include "gridlayoutmanager.H"
 #include "listlayoutmanager/listcontainer.H"
 #include "listlayoutmanager/listlayoutstyle.H"
@@ -29,21 +30,42 @@ class LIBCXX_HIDDEN listlayoutmanagerObj::implObj
 
 	//! Keep track of which row is currently highlighted.
 
-	size_t currently_highlighted_row=-1;
+	size_t currently_highlighted_row_=-1;
 
 	//! We also keep track of the individual column too
 
-	//! We highlight all columns in the row, but we track of each individual
-	//! column whose focus is being reported as such.
+	//! We highlight all columns in the row, but we track of each
+	//! individual column whose focus is being reported as such.
 
-	size_t currently_highlighted_col=-1;
+	size_t currently_highlighted_col_=-1;
 
 	//! Which row was highlighted via keyboard focus.
-	size_t previously_highlighted_keyboard_focus_row=-1;
+	size_t previously_highlighted_keyboard_focus_row_=-1;
 
 	//! Most recently reported hotspot temperature
-	temperature current_temperature=temperature::cold;
+	temperature current_temperature_=temperature::cold;
 
+
+	inline size_t &highlighted_row(grid_map_t::lock &)
+	{
+		return currently_highlighted_row_;
+	};
+
+
+	inline size_t &highlighted_col(grid_map_t::lock &)
+	{
+		return currently_highlighted_col_;
+	};
+
+	inline size_t &highlighted_keyboard_focus_row(grid_map_t::lock &)
+	{
+		return previously_highlighted_keyboard_focus_row_;
+	}
+
+	temperature &current_temperature(grid_map_t::lock &)
+	{
+		return current_temperature_;
+	}
  public:
 	//! Parent container
 
@@ -58,16 +80,170 @@ class LIBCXX_HIDDEN listlayoutmanagerObj::implObj
  private:
 	//! Selection type
 	std::function<void (list_lock &, const listlayoutmanager &,
-			    size_t)
+			    size_t,
+			    const x::w::busy &)
 		      > selection_type_thread_only;
 
 	std::function<void (list_lock &, const listlayoutmanager &,
 			    size_t, bool, const x::w::busy &)
-		      > selection_changed_thread_only;
+		      > selection_changed_;
  public:
+	inline auto &selection_changed(grid_map_t::lock &)
+	{
+		return selection_changed_;
+	};
+
+	//! The factory returned by append_list_item_factory()
+
+	template<typename superclass_t,
+		 typename listitemfactory_t>
+		class append_factoryObj : public superclass_t,
+					  public listitemfactory_t {
+	public:
+
+		template<typename ...Args>
+		append_factoryObj(const listlayoutmanager &me,
+				  Args && ...args)
+			: superclass_t(std::forward<Args>(args)...),
+			  listitemfactory_t(me)
+		{
+		}
+
+		//! Destructor
+		~append_factoryObj()=default;
+
+		//! Override factoryObj::created()
+		void created(const element &e) override
+		{
+			listitemfactory_t::created_element(e);
+		}
+
+		//! Forward create_item() to the append_item() implementation.
+
+		void create_item(const listlayoutstyle::new_list_items_t
+				 &new_item)
+			override
+		{
+			this->me->impl->append_item(this->me, new_item);
+		}
+	};
+
+	//! The factory returned by insert_list_item_factory().
+
+	template<typename superclass_t, typename listitemfactory_t>
+		class insert_factoryObj : public superclass_t,
+					  public listitemfactory_t {
+	public:
+
+		size_t row_number;
+		grid_map_t::lock lock;
+
+		//! Constructor
+
+		template<typename ...Args>
+		insert_factoryObj(const listlayoutmanager &me,
+				  size_t row_number,
+				  Args && ...args)
+			: superclass_t(std::forward<Args>(args)...),
+			  listitemfactory_t(me),
+			  row_number(row_number),
+			  lock(me->impl->grid_map)
+		{
+		}
+
+		//! Destructor
+
+		~insert_factoryObj()=default;
+
+		//! Override factoryObj::created()
+		void created(const element &e) override
+		{
+			listitemfactory_t::created_element(e);
+		}
+
+		//! Forward create_item() to the insert_item() implementation.
+
+		void create_item(const listlayoutstyle::new_list_items_t
+				 &new_item)
+			override
+		{
+			this->me->impl->insert_item(this->me, lock, new_item,
+						    row_number++);
+		}
+	};
+
+	//! The factory returned by replace_list_item_factory().
+
+	template<typename superclass_t, typename listitemfactory_t>
+		class replace_factoryObj : public superclass_t,
+					   public listitemfactory_t {
+	public:
+
+		size_t row_number;
+		grid_map_t::lock lock;
+
+		//! Constructor
+		template<typename ...Args>
+		replace_factoryObj(const listlayoutmanager &me,
+				   size_t row_number,
+				   Args && ...args)
+			: superclass_t(std::forward<Args>(args)...),
+			  listitemfactory_t(me),
+			  row_number(row_number),
+			  lock(me->impl->grid_map)
+		{
+			me->selected(lock, row_number, false);
+		}
+
+		//! Destructor
+		~replace_factoryObj()=default;
+
+		//! Override factoryObj::created()
+		void created(const element &e) override
+		{
+			listitemfactory_t::created_element(e);
+		}
+
+		//! Forward create_item() to the replace_item() implementation.
+
+		void create_item(const listlayoutstyle::new_list_items_t
+				 &new_item)
+			override
+		{
+			this->me->impl->replace_item(this->me, lock, new_item,
+						     row_number++);
+		}
+	};
+
+	//! The factory returned by replace_all_list_items_factory().
+
+	template<typename superclass_t, typename listitemfactory_t>
+		class replace_all_factoryObj
+			: public append_factoryObj<superclass_t,
+						   listitemfactory_t> {
+
+		grid_map_t::lock lock;
+
+	public:
+
+		//! Constructor
+		template<typename ...Args>
+		replace_all_factoryObj(const listlayoutmanager &me,
+				       Args && ...args)
+			: append_factoryObj<superclass_t,
+					    listitemfactory_t
+					    >(me, std::forward<Args>(args)...),
+			lock{me->impl->grid_map}
+		{
+			me->unselect();
+			me->impl->remove_all_items(me);
+		}
+
+		//! Destructor
+		~replace_all_factoryObj() = default;
+	};
 
 	THREAD_DATA_ONLY(selection_type);
-	THREAD_DATA_ONLY(selection_changed);
 
 	//! Constructor
 	implObj(const ref<listcontainerObj::implObj> &container_impl,
@@ -142,11 +318,6 @@ class LIBCXX_HIDDEN listlayoutmanagerObj::implObj
 	void selected(const listlayoutmanager &me,
 		      grid_map_t::lock &lock, size_t i, bool selected_flag);
 
-	void selected(IN_THREAD_ONLY,
-		      const listlayoutmanager &me,
-		      grid_map_t::lock &lock, size_t i,
-		      bool selected_flag);
-
 	//! Autoselect, according to selection_type.
 
 	void autoselect(const listlayoutmanager &me,
@@ -219,26 +390,6 @@ class LIBCXX_HIDDEN listlayoutmanagerObj::implObj
 
 	void autoselect(IN_THREAD_ONLY, const listlayoutmanager &me,
 			list_lock &lock, size_t item_number);
-
-	//! Remove an item
-
-	void remove_item(IN_THREAD_ONLY, const listlayoutmanager &me,
-			 list_lock &lock, size_t item_number);
-
-	//! Insert an item
-
-	void insert_item(IN_THREAD_ONLY, const listlayoutmanager &me,
-			 list_lock &lock, size_t item_number,
-			 const listlayoutstyle::new_list_items_t &new_item);
-
-	//! Replace an item
-
-	void replace_item(IN_THREAD_ONLY, const listlayoutmanager &me,
-			 list_lock &lock, size_t item_number,
-			 const listlayoutstyle::new_list_items_t &new_item);
-
-	//! Called from the public object to remove all existing items in the list.
-	void remove_all_items(IN_THREAD_ONLY);
 };
 
 LIBCXXW_NAMESPACE_END

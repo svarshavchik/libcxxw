@@ -6,6 +6,7 @@
 #define x_w_listlayoutmanagerfwd_h
 
 #include <x/w/namespace.H>
+#include <x/w/busyfwd.H>
 #include <x/ptrfwd.H>
 #include <functional>
 
@@ -324,14 +325,16 @@ extern const listlayoutstyle &bulleted_list;
 
 void single_selection_type(list_lock &lock,
 			   const listlayoutmanager &layout_manager,
-			   size_t i);
+			   size_t i,
+			   const busy &mcguffin);
 
 //! Multiple selection list.
 
 //! Multiple list items may be selected at any time.
 void multiple_selection_type(list_lock &lock,
 			     const listlayoutmanager &layout_manager,
-			     size_t i);
+			     size_t i,
+			     const busy &mcguffin);
 
 //! List item callback's signature
 
