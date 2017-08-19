@@ -4,6 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "generic_window_handler.H"
+#include "all_opened_popups.H"
 #include "connection_thread.H"
 #include "connectionfwd.H"
 #include "defaulttheme.H"
@@ -103,14 +104,17 @@ create_constructor_params(const screen &parent_screen,
 
 generic_windowObj::handlerObj::handlerObj(IN_THREAD_ONLY,
 					  const screen &parent_screen,
+					  const all_opened_popups &opened_popups,
 					  size_t nesting_level)
-	: handlerObj(IN_THREAD, create_constructor_params(parent_screen,
-							  nesting_level))
+	: handlerObj(IN_THREAD, opened_popups,
+		     create_constructor_params(parent_screen,
+					       nesting_level))
 {
 }
 
 generic_windowObj::handlerObj
 ::handlerObj(IN_THREAD_ONLY,
+	     const all_opened_popups &opened_popups,
 	     const constructor_params &params)
 	: // This sets up the xcb_window_t
 	  window_handlerObj(IN_THREAD,
@@ -136,6 +140,7 @@ generic_windowObj::handlerObj
 				   params.window_handler_params
 				   .events_and_mask.m.at(XCB_CW_EVENT_MASK)),
 	current_position(params.window_handler_params.initial_position),
+	opened_popups(opened_popups),
 	disabled_mask_thread_only(create_icon_mm("disabled_mask",
 						 render_repeat::normal,
 						 0, 0)),

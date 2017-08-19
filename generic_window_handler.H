@@ -7,6 +7,7 @@
 
 #include "window_handler.H"
 #include "generic_window.H"
+#include "all_opened_popupsfwd.H"
 #include "drawable.H"
 #include "picture.H"
 #include "iconfwd.H"
@@ -77,6 +78,10 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! mutable, to be usable by the overridden const methods.
 
 	mutable mpobj<rectangle> current_position;
+
+	//! Keep track of opened popups.
+
+	const all_opened_popups opened_popups;
  private:
 	//! The mask for drawing disabled elements.
 
@@ -161,12 +166,17 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 		size_t nesting_level=0;
 	};
 
+	//! Constructor
 	handlerObj(IN_THREAD_ONLY,
 		   const screen &me,
-		   size_t nesting_level=0);
+		   const all_opened_popups &opened_popups,
+		   size_t nesting_level);
 
  private:
+
+	//! Internal constructor
 	handlerObj(IN_THREAD_ONLY,
+		   const all_opened_popups &opened_popups,
 		   const constructor_params &params);
  public:
 	//! Destructor

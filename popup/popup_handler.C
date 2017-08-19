@@ -11,6 +11,7 @@
 #include "connection_thread.H"
 #include "grabbed_pointer.H"
 #include "messages.H"
+#include "all_opened_popups.H"
 #include "x/w/button_event.H"
 #include "x/w/motion_event.H"
 #include "x/w/key_event.H"
@@ -22,6 +23,7 @@ popupObj::handlerObj::handlerObj(IN_THREAD_ONLY,
 				 &parent,
 				 size_t nesting_level)
 	: generic_windowObj::handlerObj(IN_THREAD, parent->get_screen(),
+					parent->opened_popups,
 					nesting_level),
 	popup_parent_thread_only(parent)
 {

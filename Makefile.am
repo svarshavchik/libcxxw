@@ -23,6 +23,10 @@ libcxxw_la_LIBADD=-lcxx
 libcxxw_la_LDFLAGS=$(STATICLINKFLAGS)
 
 libcxxw_la_SOURCES=\
+	all_opened_popups.C			    \
+	all_opened_popups.H			    \
+	all_opened_popupsfwd.H			    \
+	all_opened_popupsobj.H			    \
 	always_visible.H			    \
 	always_visiblefwd.H			    \
 	assert_or_throw.C			    \
