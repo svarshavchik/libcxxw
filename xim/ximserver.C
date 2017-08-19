@@ -328,7 +328,6 @@ static void set_preedit_position(const auto &ic_attributes_by_name,
 
 void ximserverObj::badmessage(IN_THREAD_ONLY, const char *message)
 {
-	stop(IN_THREAD);
 	xim_disconnected(IN_THREAD);
 
 	throw EXCEPTION(gettextmsg(_("Received truncated %1% message"),
@@ -392,7 +391,6 @@ void ximserverObj::received_xim_connect_reply(IN_THREAD_ONLY,
 	{
 		LOG_ERROR("Unsupported X Input Method protocol: "
 			  << major << "." << minor);
-		stop(IN_THREAD);
 		xim_disconnected(IN_THREAD);
 		return;
 	}
@@ -506,7 +504,6 @@ void ximserverObj
 	if (iter == im_attributes_by_name(IN_THREAD).end())
 	{
 		LOG_ERROR("XIM server does not have the queryInputStyle attribute");
-		stop(IN_THREAD);
 		xim_disconnected(IN_THREAD);
 		return;
 	}
@@ -577,6 +574,9 @@ void ximserverObj::received_xim_get_im_values_reply(IN_THREAD_ONLY,
 	// Connection negotiation complete.
 
 	fully_connected=true;
+	if (shutdown_requested)
+		shutdown(IN_THREAD);
+
 	xim_fully_connected(IN_THREAD);
 
 	// If requests have pent up, we can start sending them.
@@ -607,6 +607,11 @@ void ximserverObj::received_xim_get_im_values_reply(IN_THREAD_ONLY,
 
 void ximserverObj::shutdown(IN_THREAD_ONLY)
 {
+	shutdown_requested=true;
+
+	if (!fully_connected)
+		return;
+
 	add_request(IN_THREAD,
 		    ximrequest::create("shut down"),
 		    []
@@ -655,7 +660,6 @@ void ximserverObj::received_xim_disconnect_reply(IN_THREAD_ONLY)
 {
 	LOG_DEBUG("XIM_DISCONNECT reply");
 
-	stop(IN_THREAD);
 	xim_disconnected(IN_THREAD);
 }
 
@@ -1403,7 +1407,6 @@ void ximserverObj::received_xim_error(IN_THREAD_ONLY,
 		// The connection has not completed, so it must be
 		// broken.
 
-		stop(IN_THREAD);
 		xim_disconnected(IN_THREAD);
 		return;
 	}

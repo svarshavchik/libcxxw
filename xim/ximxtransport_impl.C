@@ -42,7 +42,6 @@ void ximxtransportObj::implObj::connect(IN_THREAD_ONLY)
 	}
 
 	const char * const attributes[]={"TRANSPORT", "LOCALES", nullptr};
-
 	connect_service(IN_THREAD, "XIM_SERVERS", attributes);
 }
 

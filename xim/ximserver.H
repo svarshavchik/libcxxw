@@ -270,6 +270,9 @@ public:
 	//! Server fully connected
 	bool fully_connected=false;
 
+	//! Whether a disconnect has been requested.
+	bool shutdown_requested=false;
+
 	//! All active input contexts
 	std::unordered_map<xim_ic_t, ximclient> input_contexts;
 
