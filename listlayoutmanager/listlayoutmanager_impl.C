@@ -15,6 +15,7 @@
 #include "run_as.H"
 #include "busy.H"
 #include "catch_exceptions.H"
+#include "messages.H"
 #include "x/w/listlayoutmanager.H"
 #include "x/w/key_event.H"
 #include <X11/keysym.h>
@@ -576,6 +577,16 @@ void listlayoutmanagerObj::implObj::remove_all_items(IN_THREAD_ONLY)
 	currently_highlighted_row=-1;
 	currently_highlighted_col=-1;
 	previously_highlighted_keyboard_focus_row= -1;
+}
+
+element listlayoutmanagerObj::implObj::item(size_t item_number, size_t column)
+{
+	auto e=get(item_number, style.physical_column(column));
+
+	if (!e)
+		throw EXCEPTION(_("List item does not exist"));
+
+	return e;
 }
 
 LIBCXXW_NAMESPACE_END

@@ -288,4 +288,10 @@ void listlayoutmanagerObj::autoselect(grid_map_t::lock &lock, size_t i)
 	return impl->autoselect(listlayoutmanager(this), lock, i);
 }
 
+
+element listlayoutmanagerObj::item(size_t item_number, size_t column)
+{
+	return impl->item(item_number, column);
+}
+
 LIBCXXW_NAMESPACE_END

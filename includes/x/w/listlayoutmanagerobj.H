@@ -184,6 +184,9 @@ public:
 
 	//! Unselect all selected items.
 	void unselect();
+
+	//! Return the item element.
+	element item(size_t item_number, size_t column=0);
 };
 
 LIBCXXW_NAMESPACE_END

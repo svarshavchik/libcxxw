@@ -229,6 +229,11 @@ class LIBCXX_HIDDEN highlighted_list_style_impl
 	{
 		l->requested_col_width(0, 100);
 	}
+
+	size_t physical_column(size_t logical_column) const override
+	{
+		return logical_column;
+	}
 };
 
 static const highlighted_list_style_impl highlighted_list_style_instance;
@@ -340,6 +345,11 @@ class LIBCXX_HIDDEN bulleted_list_style_impl
 		override
 	{
 		l->requested_col_width(1, 100);
+	}
+
+	size_t physical_column(size_t logical_column) const override
+	{
+		return logical_column+1;
 	}
 };
 

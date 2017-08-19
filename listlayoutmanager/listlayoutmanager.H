@@ -178,7 +178,10 @@ class LIBCXX_HIDDEN listlayoutmanagerObj::implObj
 	//! Called from the public object to remove all existing items in the list.
 	void remove_all_items(const listlayoutmanager &me);
 
- private:
+	//! Return the given item.
+	element item(size_t item_number, size_t column=0);
+
+	private:
 
 	//! Callback used by connection_thread_op_t
 

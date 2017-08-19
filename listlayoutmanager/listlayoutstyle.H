@@ -100,6 +100,14 @@ public:
 
 	virtual void initialize(const ref<listlayoutmanagerObj::implObj> &l)
 		const=0;
+
+	//! Map a logical column into a physical column.
+
+	//! For the highlighted style they're one and the same.
+	//! The bulleted style reserves column 0 for the bullet, so the
+	//! logical columns get shifted over by one.
+
+	virtual size_t physical_column(size_t logical_column) const=0;
 };
 
 //! List layout style
