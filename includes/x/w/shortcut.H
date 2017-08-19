@@ -77,6 +77,10 @@ public:
 
 	//! Whether a key event matches this shortcut.
 	bool matches(const key_event &ke) const;
+
+	//! Description of this shortcut, as a unicode string.
+
+	operator std::u32string() const;
 };
 
 LIBCXXW_NAMESPACE_END

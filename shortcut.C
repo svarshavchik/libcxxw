@@ -86,4 +86,38 @@ bool shortcut::matches(const key_event &ke) const
 	return same_shortcut_modifiers(ke);
 }
 
+shortcut::operator std::u32string() const
+{
+	std::u32string s;
+
+	if (ordinal())
+	{
+		auto mask=input_mask::operator std::string();
+
+		s.insert(s.end(), mask.begin(), mask.end());
+
+		s.push_back('-');
+	}
+
+	if (unicode)
+	{
+		s.push_back(unicode);
+	}
+	else
+	{
+		if (keysym < XK_F1 || keysym > XK_F35)
+			throw EXCEPTION(_("No description available for the shortcut"));
+
+		std::ostringstream o;
+
+		o << 'F' << (keysym-XK_F1+1);
+
+		std::string f=o.str();
+
+		s.insert(s.end(), f.begin(), f.end());
+	}
+
+	return s;
+}
+
 LIBCXXW_NAMESPACE_END

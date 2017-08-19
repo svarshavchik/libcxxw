@@ -57,51 +57,51 @@ input_mask::operator std::string() const
 
 	if (shift)
 	{
-		o << sep << "shift";
+		o << sep << "Shift";
 		sep=", ";
 	}
 
 	if (lock)
 	{
-		o << sep << "lock";
+		o << sep << "Lock";
 		sep=", ";
 	}
 
 	if (ctrl)
 	{
-		o << sep << "ctrl";
+		o << sep << "Ctrl";
 		sep=", ";
 	}
 
 	if (num_lock)
 	{
-		o << sep << "num_lock";
+		o << sep << "Num_Lock";
 		sep=", ";
 	}
 	if (alt)
 	{
-		o << sep << "alt";
+		o << sep << "Alt";
 		sep=", ";
 	}
 	if (meta)
 	{
-		o << sep << "meta";
+		o << sep << "Meta";
 		sep=", ";
 	}
 	if (super)
 	{
-		o << sep << "super";
+		o << sep << "Super";
 		sep=", ";
 	}
 	if (hyper)
 	{
-		o << sep << "hyper";
+		o << sep << "Hyper";
 		sep=", ";
 	}
 
 	if (mode_switch)
 	{
-		o << sep << "mode_switch";
+		o << sep << "Mode_switch";
 		sep=", ";
 	}
 
@@ -113,7 +113,7 @@ input_mask::operator std::string() const
 		++n;
 		if (b & 1)
 		{
-			o << sep << "button" << n;
+			o << sep << "Button" << n;
 			sep=", ";
 		}
 		b >>= 1;
