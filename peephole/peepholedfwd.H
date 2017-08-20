@@ -19,6 +19,10 @@ class peepholedObj;
 
 typedef ref<peepholedObj> peepholed;
 
+//! A nullable pointer reference to the peepholed element.
+
+typedef ptr<peepholedObj> peepholedptr;
+
 LIBCXXW_NAMESPACE_END
 
 #endif

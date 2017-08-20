@@ -70,19 +70,20 @@ factoryObj::create_input_field(const text_param &text,
 	editorptr created_editor;
 
 	auto [peephole_info, lm]=create_peepholed_focusable_with_frame
-		("textedit_border",
-		 "inputfocusoff_border",
-		 "inputfocuson_border",
-		 .2,
-		 container_impl->get_element_impl()
-		 .create_background_color
-		 ("textedit_background_color"),
-		 impl_mixin,
-		 peephole_style(),
-		 make_function<make_peepholed_func_t>
-		 ([&]
-		  (const auto &parent_container_impl)
-		{
+		({"textedit_border",
+				"inputfocusoff_border",
+				"inputfocuson_border",
+				.2,
+				container_impl->get_element_impl()
+				.create_background_color
+				("textedit_background_color"),
+				impl_mixin,
+				peephole_style(),
+				scrollbar_visibility::never,
+				config.vertical_scrollbar},
+		 [&]
+		 (const auto &parent_container_impl)
+		 {
 			auto peephole_impl=ref<editor_peephole_implObj>
 			::create(parent_container_impl);
 
@@ -99,9 +100,7 @@ factoryObj::create_input_field(const text_param &text,
 			e->show();
 
 			return std::make_tuple(peephole_impl, e, e, e->impl);
-		}),
-		 scrollbar_visibility::never,
-		 config.vertical_scrollbar);
+		 });
 
 	auto impl=ref<input_fieldObj::implObj>
 		::create(impl_mixin,

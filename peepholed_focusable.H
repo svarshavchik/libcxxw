@@ -34,23 +34,48 @@ typedef std::tuple<ref<peepholeObj::implObj>, peepholed,
 							 ref<containerObj
 							 ::implObj> &);
 
+//! Non type-erased parameters to create_peepholed_focusable_with_frame()
+
+struct LIBCXX_HIDDEN create_peepholed_focusable_args_t {
+	//! The border around the focus frame and scrollbars.
+	const char *border;
+	//! Focus off border
+	const char *inputfocusoff_border;
+	//! Focus on border
+	const char *inputfocuson_border;
+	//! Padding between the scrollbar and the peephole.
+	double focusable_padding;
+
+	//! Focusable's background color.
+
+	//! This actually sets the background color for
+	//! the focus frame, with the peephole and the
+	//! the focusable element inheriting it.
+	const background_color &focusable_background_color;
+
+	//! The implementation object of the new display element under construction.
+
+	//! This implementation object should inherit from the
+	//! nonrecursive_visibility mixin.
+	const ref<containerObj::implObj> &parent_container;
+
+	//! Peephole's style
+	peephole_style style;
+
+	//! Initial scrollbar visibility.
+	scrollbar_visibility horizontal_visibility;
+
+	//! Initial scrollbar visibility.
+	scrollbar_visibility vertical_visibility;
+};
+
 //! Type-erased implementation of \ref create_peepholed_focusable_with_frame "create_peepholed_focusable_with_frame()".
 
 std::tuple<ref<peepholed_focusableObj::implObj>, gridlayoutmanager>
-create_peepholed_focusable_with_frame_impl(const char *border,
-					   const char *inputfocusoff_border,
-					   const char *inputfocuson_border,
-					   double focusable_padding,
-					   const background_color
-					   &focusable_background_color,
-					   const ref<containerObj::implObj>
-					   &parent_container,
-					   peephole_style style,
-
+create_peepholed_focusable_with_frame_impl(const
+					   create_peepholed_focusable_args_t &,
 					   const function<make_peepholed_func_t>
-					   &make_peepholed,
-					   scrollbar_visibility horizontal_visibility,
-					   scrollbar_visibility vertical_visibility)
+					   &make_peepholed)
 LIBCXX_HIDDEN;
 
 //! The default parent_container for created_peepholed_focusable_with_frame
@@ -101,52 +126,14 @@ typedef nonrecursive_visibilityObj<container_elementObj<child_elementObj>
 template<typename make_peepholed_t>
 inline std::tuple<ref<peepholed_focusableObj::implObj>, gridlayoutmanager>
 create_peepholed_focusable_with_frame
-(//! The border around the focus frame and scrollbars.
- const char *border,
- //! Focus off border
- const char *inputfocusoff_border,
- //! Focus on border
- const char *inputfocuson_border,
- //! Padding between the scrollbar and the peephole.
- double focusable_padding,
-
- //! Focusable's background color.
-
- //! This actually sets the background color for
- //! the focus frame, with the peephole and the
- //! the focusable element inheriting it.
- const background_color &focusable_background_color,
-
- //! The implementation object of the new display element under construction.
-
- //! This implementation object should inherit from the nonrecursive_visibility
- //! mixin.
- const ref<containerObj::implObj> &parent_container,
-
- //! Peephole's style
- peephole_style style,
-
+(const create_peepholed_focusable_args_t &args,
  //! Factor for the peephole and the focusable.
- make_peepholed_t &&make_peepholed,
-
- //! Initial scrollbar visibility.
- scrollbar_visibility horizontal_visibility,
-
- //! Initial scrollbar visibility.
- scrollbar_visibility vertical_visibility)
+ make_peepholed_t &&make_peepholed)
 {
 	return create_peepholed_focusable_with_frame_impl
-		(border,
-		 inputfocusoff_border,
-		 inputfocuson_border,
-		 focusable_padding,
-		 focusable_background_color,
-		 parent_container,
-		 style,
+		(args,
 		 make_function<make_peepholed_func_t>
-		 (std::forward<make_peepholed_t>(make_peepholed)),
-		 horizontal_visibility,
-		 vertical_visibility);
+		 (std::forward<make_peepholed_t>(make_peepholed)));
 }
 
 LIBCXXW_NAMESPACE_END

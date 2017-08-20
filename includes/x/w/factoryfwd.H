@@ -277,11 +277,23 @@ create_radio() creates a new radio button.
 
 typedef ref<factoryObj> factory;
 
-//! A constant generic window handler
+//! A nullable pointer refereance to a factory.
+
+//! \see factory
+
+typedef ptr<factoryObj> factoryptr;
+
+//! A constant factory
 
 //! \see factory
 
 typedef const_ref<factoryObj> const_factory;
+
+//! A nullable pointer refereance to a constant factory.
+
+//! \see factory
+
+typedef const_ptr<factoryObj> const_factoryptr;
 
 LIBCXXW_NAMESPACE_END
 

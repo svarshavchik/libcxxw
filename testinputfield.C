@@ -102,7 +102,10 @@ void testbutton()
 						 LIBCXX_NAMESPACE::w::rgb{
 						 0, 0,
 							 LIBCXX_NAMESPACE::w::rgb::maximum},
-						 "Hello world!"}, {30, 4});
+						 "Hello world!"}, {30, 4,
+						 LIBCXX_NAMESPACE::w::
+						 scrollbar_visibility::
+						 automatic_reserved});
 
 				 fields.second->create_tooltip("A brief message, a few lines long.", 30);
 

@@ -17,6 +17,7 @@
 #include "gridlayoutmanager.H"
 #include "x/w/factory.H"
 #include "x/w/gridfactory.H"
+#include <x/refptr_traits.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -86,52 +87,74 @@ focusable_impl peepholed_focusableObj::implObj::get_impl(size_t n) const
 
 std::tuple<ref<peepholed_focusableObj::implObj>, gridlayoutmanager>
 create_peepholed_focusable_with_frame_impl
-(const char *border,
- const char *inputfocusoff_border,
- const char *inputfocuson_border,
- double focusable_padding,
- const background_color &focusable_background_color,
- const ref<containerObj::implObj> &parent_container,
- peephole_style style,
- const function<make_peepholed_func_t> &make_peepholed,
- scrollbar_visibility horizontal_visibility,
- scrollbar_visibility vertical_visibility)
+(const create_peepholed_focusable_args_t &args,
+ const function<make_peepholed_func_t> &make_peepholed)
 {
 	auto grid_impl=
 		ref<gridlayoutmanagerObj::implObj>
-		::create(parent_container);
+		::create(args.parent_container);
 
 	auto grid=grid_impl->create_gridlayoutmanager();
 
 	auto factory=grid->append_row();
 
-	factory->padding(0).border(border);
+	factory->padding(0);
 
-	// Create the focusframe implementation object, first.
+	ptr<peepholeObj::implObj> impl;
+	peepholedptr peepholed_element;
+	focusableptr focusable_element;
+	focusable_implptr focusable_element_impl;
+	factoryptr ff_factory;
 
-	auto focusframecontainer_impl=
-		create_standard_focusframe_container_element
-		(factory->container_impl,
-		 focusable_background_color);
+	refptr_traits<standard_focusframecontainer_element_t>
+		::ptr_t focusframecontainer_impl;
 
-	// Now that the focusframe implementation object exists we can
-	// create the peepholed focusable element.
+	factory->create_container
+		([&]
+		 (const auto &new_container)
+		 {
+			 gridlayoutmanager new_container_glm=
+				 new_container->get_layoutmanager();
 
-	auto [impl, editor, focusable_element,
-	      focusable_element_impl]=make_peepholed(focusframecontainer_impl);
+			 auto new_container_factory=
+				 new_container_glm->append_row();
+
+			 new_container_factory->padding(0);
+			 new_container_factory->border(args.border);
+
+			 ff_factory=new_container_factory;
+
+			 // Create the focusframe implementation object, first.
+
+			 auto focusframe_impl_ret=
+				 create_standard_focusframe_container_element
+				 (new_container->impl,
+				  args.focusable_background_color);
+
+			 // Now that the focusframe implementation object
+			 // exists we can create the peepholed focusable
+			 // element.
+
+			 std::tie(impl, peepholed_element, focusable_element,
+				  focusable_element_impl)=
+				 make_peepholed(focusframe_impl_ret);
+
+			 focusframecontainer_impl=focusframe_impl_ret;
+		 },
+		 new_gridlayoutmanager())->show();
 
 	// We can now create our layout manager, and give it the created
-	// editor.
+	// peepholed_element.
 
-	auto scrollbars=create_peephole_scrollbars(parent_container);
+	auto scrollbars=create_peephole_scrollbars(args.parent_container);
 
 	auto layout_impl=ref<peepholeObj::layoutmanager_implObj>
 		::create(impl,
-			 style,
-			 editor,
+			 args.style,
+			 peepholed_element,
 			 scrollbars,
-			 horizontal_visibility,
-			 vertical_visibility);
+			 args.horizontal_visibility,
+			 args.vertical_visibility);
 
 	layout_impl->initialize_scrollbars();
 
@@ -151,8 +174,8 @@ create_peepholed_focusable_with_frame_impl
 	auto ff=focusframecontainer
 		::create(focusframecontainer_impl,
 			 focusable_element_impl,
-			 inputfocusoff_border,
-			 inputfocuson_border);
+			 args.inputfocusoff_border,
+			 args.inputfocuson_border);
 
 	// Make sure that the the focusframe and the scrollbars use the
 	// correct tabbing order.
@@ -174,26 +197,20 @@ create_peepholed_focusable_with_frame_impl
 	gridlayoutmanager l=ff->get_layoutmanager();
 
 	peephole_container->show();
-	l->append_row()->padding(focusable_padding)
+	l->append_row()->padding(args.focusable_padding)
 		.created_internally(peephole_container);
 	ff->show();
 
-	factory->padding(0).created_internally(ff);
-
-	// Before letting install_peephole_scrollbars() finish the job,
-	// let's prime the cells with the right border.
-
-	factory->border(border);
+	ff_factory->created_internally(ff);
 
 	auto factory2=grid->append_row();
-	factory2->border(border);
 
 	install_peephole_scrollbars(l,
 				    scrollbars.vertical_scrollbar,
-				    vertical_visibility,
+				    args.vertical_visibility,
 				    factory,
 				    scrollbars.horizontal_scrollbar,
-				    horizontal_visibility,
+				    args.horizontal_visibility,
 				    factory2);
 
 	return {ref<peepholed_focusableObj::implObj>

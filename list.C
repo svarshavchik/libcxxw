@@ -120,14 +120,16 @@ new_listlayoutmanager::create(const ref<containerObj::implObj>
 	listcontainerptr internal_listcontainer;
 
 	auto [peephole_info, lm]=create_peepholed_focusable_with_frame
-		("list_border",
-		 "inputfocusoff_border",
-		 "inputfocuson_border",
-		 0,
-		 focusable_container_impl->get_element_impl()
-		 .create_background_color(background_color),
-		 focusable_container_impl,
-		 peephole_style(),
+		({"list_border",
+				"inputfocusoff_border",
+				"inputfocuson_border",
+				0,
+				focusable_container_impl->get_element_impl()
+				.create_background_color(background_color),
+				focusable_container_impl,
+				peephole_style(),
+				scrollbar_visibility::never,
+				vertical_scrollbar},
 		 [&]
 		 (const ref<containerObj::implObj> &peepholed_parent)
 		 {
@@ -143,9 +145,7 @@ new_listlayoutmanager::create(const ref<containerObj::implObj>
 						container,
 						container,
 						container->impl);
-		 },
-		 scrollbar_visibility::never,
-		 vertical_scrollbar);
+		 });
 
 	return ref<listObj>::create(internal_listcontainer, peephole_info,
 				    lm->impl);
