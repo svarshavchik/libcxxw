@@ -70,6 +70,10 @@ void peepholed_toplevel_main_windowObj::implObj
 void peepholed_toplevel_main_windowObj::implObj
 ::get_focus_first(IN_THREAD_ONLY, const focusable &f)
 {
+	// Even though this element wants to be the first one in the tabbing
+	// order, we rudely refuse its request, and set it to be the first
+	// in the tabbing order after the window's menu bar.
+
 	invoke_layoutmanager
 		([&]
 		 (const ref<gridlayoutmanagerObj::implObj> &glm)
@@ -93,11 +97,20 @@ void peepholed_toplevel_main_windowObj::implObj
 				 return;
 			 }
 
-			 if (n == mblm->impl->info(lock).divider_pos)
-				 --n;
+			 // The last element in the menu bar can be the
+			 // divider, if so look at the element before it.
+
+			 if (n == mblm->impl->info(lock).divider_pos &&
+			     n-- == 0)
+			 {
+				 superclass_t::get_focus_first(IN_THREAD, f);
+			 }
 
 			 menu m=mblm->impl->get(0, n);
 
+			 // We need to make sure that, first, this element's
+			 // tabbing order is correct, then the new element's
+			 // tabbing order will be after it.
 			 mblm->impl->fix_order(IN_THREAD, m);
 
 			 get_focus_after_in_thread(IN_THREAD, f, m);

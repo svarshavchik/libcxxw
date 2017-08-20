@@ -5,6 +5,7 @@
 #include "libcxxw_config.h"
 #include "x/w/canvas.H"
 #include "x/w/gridfactory.H"
+#include "focus/focusable.H"
 #include "peephole/peephole_layoutmanager_impl.H"
 #include "peephole/peepholed_element.H"
 #include "scrollbar/scrollbar_impl.H"
@@ -154,6 +155,18 @@ void set_peephole_scrollbar_focus_order(const focusable &horizontal_scrollbar,
 					const focusable &vertical_scrollbar)
 {
 	horizontal_scrollbar->get_focus_after(vertical_scrollbar);
+}
+
+void set_top_level_peephole_scrollbar_focus_order
+(IN_THREAD_ONLY,
+ focusableImplObj &new_element,
+ const focusable &horizontal_scrollbar,
+ const focusable &vertical_scrollbar)
+{
+	get_focus_impl_after_in_thread(IN_THREAD, vertical_scrollbar,
+				       ref(&new_element));
+	get_focus_after_in_thread(IN_THREAD, horizontal_scrollbar,
+				  vertical_scrollbar);
 }
 
 peephole_scrollbars

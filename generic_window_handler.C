@@ -733,6 +733,11 @@ bool generic_windowObj::handlerObj::set_default_focus(IN_THREAD_ONLY)
 	return false;
 }
 
+void generic_windowObj::handlerObj
+::focusable_initialized(IN_THREAD_ONLY, focusableImplObj &fimpl)
+{
+}
+
 void generic_windowObj::handlerObj::get_focus_first(IN_THREAD_ONLY,
 						    const focusable &f)
 {

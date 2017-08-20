@@ -272,6 +272,13 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 	void get_focus_first(IN_THREAD_ONLY, const focusable &f) override;
 
+	//! Override focusable_initialized
+
+	//! The default implementation does nothing.
+
+	void focusable_initialized(IN_THREAD_ONLY,
+				   focusableImplObj &fimpl) override;
+
  private:
 	//! Most recent popup where the pointer motion event went to.
 	weakptr<ptr<handlerObj>> most_recent_popup_with_pointer_thread_only;

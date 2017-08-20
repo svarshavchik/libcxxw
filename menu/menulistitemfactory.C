@@ -27,6 +27,16 @@ void menulistitemfactoryObj::created_element(const element &e)
 
 	listitemfactoryObj::created_element(e);
 
+	// If we created all but the last element, time to insert our extra
+	// info.
+
+	{
+		new_list_items_t::lock lock{new_list_items};
+
+		if (lock->elements.size() + 1 < me->impl->columns)
+			return;
+	}
+
 	auto impl=ref<menuitemextrainfoObj::implObj>::create
 		(me->impl->container_impl);
 

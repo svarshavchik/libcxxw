@@ -54,6 +54,55 @@ class LIBCXX_HIDDEN toplevelpeephole_layoutmanagerObj
 	void recalculate(IN_THREAD_ONLY) override;
 };
 
+//! Implementation object for the top level peephole element.
+
+//! Intercepts new_focusable() calls, so that the scrollbars always are last
+//! in the tabbing order.
+
+class LIBCXX_HIDDEN peephole_toplevel_implObj
+	: public always_visibleObj<peepholeObj::implObj> {
+
+	typedef always_visibleObj<peepholeObj::implObj> superclass_t;
+
+ public:
+
+	//! The top level peephole's horizontal scrollbar
+
+	//! This peephole is not a parent or a child of the scrollbar,
+	//! so capturing this reference is ok.
+	const scrollbar horizontal_scrollbar;
+
+	//! The top level peephole's vertical scrollbar.
+
+	//! This peephole is not a parent or a child of the scrollbar,
+	//! so capturing this reference is ok.
+	const scrollbar vertical_scrollbar;
+
+	peephole_toplevel_implObj(const ref<containerObj::implObj> &parent,
+				  const scrollbar &horizontal_scrollbar,
+				  const scrollbar &vertical_scrollbar)
+		: superclass_t(parent),
+		horizontal_scrollbar(horizontal_scrollbar),
+		vertical_scrollbar(vertical_scrollbar)
+		{
+		}
+
+	~peephole_toplevel_implObj()=default;
+
+	//! Override focusable_initialized()
+
+	void focusable_initialized(IN_THREAD_ONLY,
+				   focusableImplObj &fimpl) override
+	{
+		set_top_level_peephole_scrollbar_focus_order
+			(IN_THREAD,
+			 fimpl,
+			 horizontal_scrollbar,
+			 vertical_scrollbar);
+	}
+
+};
+
 layoutmanager
 create_peephole_toplevel_impl(const ref<containerObj::implObj> &toplevel,
 			      const char *border,
@@ -68,6 +117,12 @@ create_peephole_toplevel_impl(const ref<containerObj::implObj> &toplevel,
 
 	auto toplevel_grid=toplevel_impl->create_gridlayoutmanager();
 
+	// Create the scrollbars, they'll also be child elements
+	// of the toplevel_grid.
+
+	auto scrollbars=create_peephole_scrollbars(toplevel_grid->impl
+						   ->container_impl);
+
 	// The toplevel_grid will have a peephole as its child element,
 	// and the scrollbars, but we'll get around to them later.
 	//
@@ -76,18 +131,14 @@ create_peephole_toplevel_impl(const ref<containerObj::implObj> &toplevel,
 	// This peephole element will be always_visible.
 
 	auto peephole_impl=
-		ref<always_visibleObj<peepholeObj::implObj>>::create(toplevel);
+		ref<peephole_toplevel_implObj>::create(toplevel,
+						       scrollbars.horizontal_scrollbar,
+						       scrollbars.vertical_scrollbar);
 
 	// Now the fake top level element that we wanted to create originally,
 	// it'll be a child element of the peephole.
 
 	auto inner_container=factory(peephole_impl);
-
-	// Now we can create the scrollbars, they'll also be child elements
-	// of the toplevel_grid.
-
-	auto scrollbars=create_peephole_scrollbars(toplevel_grid->impl
-						   ->container_impl);
 
 	// Install everything into the toplevel_grid.
 

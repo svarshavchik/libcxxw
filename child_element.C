@@ -288,6 +288,13 @@ bool child_elementObj::pasted(IN_THREAD_ONLY,
 		child_container->get_element_impl().pasted(IN_THREAD, str);
 }
 
+void child_elementObj::focusable_initialized(IN_THREAD_ONLY,
+					     focusableImplObj &fimpl)
+{
+	child_container->get_element_impl().focusable_initialized(IN_THREAD,
+								  fimpl);
+}
+
 void child_elementObj::get_focus_first(IN_THREAD_ONLY, const focusable &f)
 {
 	child_container->get_element_impl().get_focus_first(IN_THREAD, f);

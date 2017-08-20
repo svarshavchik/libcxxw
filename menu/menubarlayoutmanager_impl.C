@@ -22,6 +22,7 @@
 #include "background_color.H"
 #include "focusable_owner_container.H"
 #include "generic_window_handler.H"
+#include "all_opened_popups.H"
 #include "run_as.H"
 #include "catch_exceptions.H"
 #include <x/visitor.H>
@@ -170,6 +171,12 @@ void menubarlayoutmanagerObj::implObj::fix_order(IN_THREAD_ONLY,
 	if (new_element->impl->tabbing_order_set(IN_THREAD))
 		return; // Already did this one.
 
+	// We must make sure the tabbing order for the menu bar's items
+	// remains sane -- that the menu bars are always tabbed to first, then
+	// whatever else is in the window. peepholed_toplevel_mainwindow
+	// overrides get_focus_first() and makes sure that other focusable
+	// elements won't get ahead of us.
+
 	grid_map_t::lock lock{grid_map};
 
 	const auto &lookup=(*lock)->get_lookup_table();
@@ -189,7 +196,9 @@ void menubarlayoutmanagerObj::implObj::fix_order(IN_THREAD_ONLY,
 		{
 			menu previous=get(0, col);
 
-			// Make sure this one's tabbing order is set.
+			// It won't do us any good if the previous menu item's
+			// tabbing order is not set correctly yet, so make
+			// sure that it is, first.
 
 			fix_order(IN_THREAD, previous);
 
@@ -199,6 +208,8 @@ void menubarlayoutmanagerObj::implObj::fix_order(IN_THREAD_ONLY,
 			return;
 		}
 	}
+
+	// This must be first menu bar item.
 
 	new_element->elementObj::impl
 		->get_window_handler().get_focus_first(IN_THREAD,
@@ -211,9 +222,9 @@ void menubarlayoutmanagerObj::implObj
 		    size_t i,
 		    const busy &mcguffin)
 {
-	// Column 1 is the extra_info we're looking for.
+	// Last column is the extra_info we're looking for.
 
-	listitemcontainer lic=lm->item(i, 1);
+	listitemcontainer lic=lm->item(i, lm->impl->columns-1);
 
 	menuitemextrainfo extrainfo=lic->get();
 
@@ -222,10 +233,33 @@ void menubarlayoutmanagerObj::implObj
 	std::visit(visitor{
 			[&](const menuitem_plain &pl)
 			{
+				// Have multiple_selection_type take care
+				// of flipping an option on and off. It knows
+				// how to do it.
+
 				if (pl.is_option)
 					multiple_selection_type(lock, lm,
 								i,
 								mcguffin);
+
+				// Our job is to make arrangements to close
+				// all menu popups, now that the menu selection
+				// has been made...
+				auto e=elementimpl(&lm->impl->container_impl
+						   ->get_element_impl());
+
+				(*e).THREAD->run_as
+					([e]
+					 (IN_THREAD_ONLY)
+					 {
+						 e->get_window_handler()
+							 .opened_popups
+							 ->close_all_menu_popups
+							 (IN_THREAD);
+					 });
+
+				// And invoke the installed on-activate()
+				// callback.
 
 				if (pl.on_activate)
 					try {

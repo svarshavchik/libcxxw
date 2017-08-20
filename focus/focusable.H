@@ -173,6 +173,9 @@ void get_focus_before_in_thread(IN_THREAD_ONLY,	const focusable &me,
 void get_focus_after_in_thread(IN_THREAD_ONLY,	const focusable &me,
 				const focusable &other) LIBCXX_HIDDEN;
 
+void get_focus_impl_after_in_thread(IN_THREAD_ONLY, const focusable &me,
+				    ref<focusableImplObj> a) LIBCXX_HIDDEN;
+
 LIBCXXW_NAMESPACE_END
 
 #endif

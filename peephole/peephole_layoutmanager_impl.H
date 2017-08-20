@@ -74,6 +74,19 @@ void set_peephole_scrollbar_focus_order(const focusable &horizontal_scrollbar,
 					const focusable &vertical_scrollbar)
 	LIBCXX_HIDDEN;
 
+//! Set correct focus order for a focusable element in a peephole.
+
+//! A new focusable element has been created, as the last focusable element
+//! in the tabbing order. Reorder the top level peephole's scrollbars to
+//! follow the new focusable element in the tabbing order, so that the
+//! top level peephole's scrollbars get always tabbed to last.
+
+void set_top_level_peephole_scrollbar_focus_order
+(IN_THREAD_ONLY,
+ focusableImplObj &new_element,
+ const focusable &horizontal_scrollbar,
+ const focusable &vertical_scrollbar) LIBCXX_HIDDEN;
+
 //! \ref peephole "peephole" implementation object.
 
 class LIBCXX_HIDDEN peepholeObj::layoutmanager_implObj

@@ -41,12 +41,16 @@ void focusableImplObj::focusable_initialize(IN_THREAD_ONLY)
 		throw EXCEPTION("Internal element: multiply-linked focusable: "
 				<< objname());
 
+	auto &e=get_focusable_element();
+
 	focusable_fields_iter(IN_THREAD)=
 		focusable_fields(IN_THREAD).insert
-		(get_focusable_element().initial_focusable_fields_insert_pos(IN_THREAD),
+		(e.initial_focusable_fields_insert_pos(IN_THREAD),
 		 ref<focusableImplObj>(this));
 
 	in_focusable_fields(IN_THREAD)=true;
+
+	e.focusable_initialized(IN_THREAD, *this);
 }
 
 focusable_fields_t::iterator

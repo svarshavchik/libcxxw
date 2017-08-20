@@ -755,6 +755,23 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//
 	// Input focus handling
 
+	//! A new focusable element was initialized.
+
+	//! A new focusable element always gets created as the last element
+	//! in the tabbing order.
+	//!
+	//! Overriden by child_elementObj, forwarding this call to its
+	//! parent element.
+	//! Overriden in peephole_toplevel, to enforce that the top level
+	//! peephole's scrollbars are always last in the tabbing order,
+	//! repositioning this one's.
+	//!
+	//! Overriden in generic_windowObj::handlerObj, which ends up
+	//! handling either top level windows without peepholes (tooltips),
+	//! or the scrollbars themselves.
+	virtual void focusable_initialized(IN_THREAD_ONLY,
+					   focusableImplObj &fimpl)=0;
+
 	//! This element should be the first focusable element.
 	//! child_elementObj forwards it to its parent container; and this
 	//! is implemented in generic_windowObj::handlerObj.

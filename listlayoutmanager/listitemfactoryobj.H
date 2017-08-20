@@ -17,6 +17,7 @@ LIBCXXW_NAMESPACE_START
 
 class LIBCXX_HIDDEN listitemfactoryObj : virtual public obj {
 
+ protected:
 	//! Mutex-protected container for the elements for the new list item
 
 	typedef mpobj<listlayoutstyle::new_list_items_t> new_list_items_t;

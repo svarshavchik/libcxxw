@@ -106,8 +106,15 @@ void focusableObj::get_focus_after(const focusable &other)
 void get_focus_after_in_thread(IN_THREAD_ONLY, const focusable &me,
 			       const focusable &other)
 {
-	auto a=other->get_impl(other->internal_impl_count()-1);
+	get_focus_impl_after_in_thread
+		(IN_THREAD,
+		 me,
+		 other->get_impl(other->internal_impl_count()-1));
+}
 
+void get_focus_impl_after_in_thread(IN_THREAD_ONLY, const focusable &me,
+				    ref<focusableImplObj> a)
+{
 	auto n=me->internal_impl_count();
 	for (size_t i=0; i<n; ++i)
 	{
