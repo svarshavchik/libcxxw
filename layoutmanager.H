@@ -154,6 +154,10 @@ class LIBCXX_HIDDEN layoutmanagerObj::implObj : virtual public obj {
 	virtual void ensure_visibility(IN_THREAD_ONLY,
 				       elementObj::implObj &e,
 				       const rectangle &r);
+
+	//! Invoke request_visibility_recursive() for each child.
+
+	virtual void request_visibility_recursive(IN_THREAD_ONLY, bool);
 };
 
 LIBCXXW_NAMESPACE_END

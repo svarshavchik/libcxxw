@@ -9,6 +9,7 @@
 #include "peephole/peepholed.H"
 #include "peephole/peephole_impl.H"
 #include "peephole/peephole_layoutmanager_impl.H"
+#include "peephole/peephole_gridlayoutmanagerobj.H"
 #include "focus/focusable.H"
 #include "focus/standard_focusframecontainer_element.H"
 #include "scrollbar/scrollbar.H"
@@ -91,7 +92,7 @@ create_peepholed_focusable_with_frame_impl
  const function<make_peepholed_func_t> &make_peepholed)
 {
 	auto grid_impl=
-		ref<gridlayoutmanagerObj::implObj>
+		ref<peephole_gridlayoutmanagerObj>
 		::create(args.parent_container);
 
 	auto grid=grid_impl->create_gridlayoutmanager();

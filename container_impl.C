@@ -297,14 +297,7 @@ void containerObj::implObj::request_child_visibility_recursive(IN_THREAD_ONLY,
 		([&]
 		 (const auto &manager)
 		 {
-			 manager->for_each_child
-				 (IN_THREAD,
-				  [&]
-				  (const element &e)
-				  {
-					  e->impl->request_visibility_recursive
-						  (IN_THREAD, flag);
-				  });
+			 manager->request_visibility_recursive(IN_THREAD, flag);
 		 });
 }
 

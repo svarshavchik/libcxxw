@@ -5,7 +5,7 @@
 #ifndef peephole_toplevel_gridlayoutmanagerobj_h
 #define peephole_toplevel_gridlayoutmanagerobj_h
 
-#include "gridlayoutmanager.H"
+#include "peephole/peephole_gridlayoutmanagerobj.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -14,11 +14,11 @@ LIBCXXW_NAMESPACE_START
 //! \see peephole_toplevel_gridlayoutmanager
 
 class LIBCXX_HIDDEN peephole_toplevel_gridlayoutmanagerObj
-	: public gridlayoutmanagerObj::implObj {
+	: public peephole_gridlayoutmanagerObj {
 
  public:
 
-	using gridlayoutmanagerObj::implObj::implObj;
+	using peephole_gridlayoutmanagerObj::peephole_gridlayoutmanagerObj;
 
 	//! Override needs_recalculation().
 

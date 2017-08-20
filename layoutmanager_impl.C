@@ -71,4 +71,17 @@ void layoutmanagerObj::implObj::ensure_visibility(IN_THREAD_ONLY,
 {
 }
 
+void layoutmanagerObj::implObj::request_visibility_recursive(IN_THREAD_ONLY,
+							     bool flag)
+{
+	for_each_child
+		(IN_THREAD,
+		 [&]
+		 (const element &e)
+		 {
+			 e->impl->request_visibility_recursive
+				 (IN_THREAD, flag);
+		 });
+}
+
 LIBCXXW_NAMESPACE_END

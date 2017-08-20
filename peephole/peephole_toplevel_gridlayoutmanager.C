@@ -12,11 +12,12 @@ LIBCXXW_NAMESPACE_START
 
 void peephole_toplevel_gridlayoutmanagerObj::needs_recalculation(IN_THREAD_ONLY)
 {
-	gridlayoutmanagerObj::implObj::needs_recalculation(IN_THREAD);
+	peephole_gridlayoutmanagerObj::needs_recalculation(IN_THREAD);
+
 
 	container peephole_container=get(0, 0);
 
-	peephole_container->impl->invoke_layoutmanager
+	get_peephole_container()->impl->invoke_layoutmanager
 		([&]
 		 (const auto &lm)
 		 {
