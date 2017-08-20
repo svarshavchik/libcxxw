@@ -109,14 +109,6 @@ class LIBCXX_HIDDEN child_elementObj : public elementObj::implObj {
 	//! with a tooltip will schedule its creation.
 	void unschedule_tooltip_creation(IN_THREAD_ONLY) override;
 
-	//! My visibility has changed.
-
-	//! If this element is not shown any more, have the container redraw
-	//! itself.
-
-	void draw_after_visibility_updated(IN_THREAD_ONLY,
-					   bool flag) override;
-
 	//! Forward the call to the container.
 	void window_focus_change(IN_THREAD_ONLY, bool flag) override;
 

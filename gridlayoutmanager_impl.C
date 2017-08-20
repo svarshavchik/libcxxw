@@ -288,7 +288,6 @@ void gridlayoutmanagerObj::implObj
 
 void gridlayoutmanagerObj::implObj
 ::child_visibility_changed(IN_THREAD_ONLY,
-			   struct inherited_visibility_info &info,
 			   const elementimpl &child)
 {
 	grid_map_t::lock lock(grid_map);
@@ -320,13 +319,8 @@ void gridlayoutmanagerObj::implObj
 		// element (if there is any) to reflect the presence/absence
 		// of the child element's background color, which is used for
 		// the padding when the child element is visible.
-		//
-		// No need to redraw when the visibility change is the result of
-		// mapping the top level window. The forthcoming exposure events
-		// will take care of this.
 
-		if (!info.do_not_redraw)
-			redraw_child_borders_and_padding(IN_THREAD, child);
+		redraw_child_borders_and_padding(IN_THREAD, child);
 	}
 }
 

@@ -122,7 +122,6 @@ class LIBCXX_HIDDEN layoutmanagerObj::implObj : virtual public obj {
 	//! A child element's visibility has changed
 
 	virtual void child_visibility_changed(IN_THREAD_ONLY,
-					      struct inherited_visibility_info &info,
 					      const elementimpl &child);
 
 	//! Return the child element position that includes any container-provided padding.

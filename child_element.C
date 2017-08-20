@@ -61,13 +61,6 @@ const generic_windowObj::handlerObj &child_elementObj::get_window_handler()
 	return child_container->get_window_handler();
 }
 
-void child_elementObj::draw_after_visibility_updated(IN_THREAD_ONLY,
-						     bool flag)
-{
-	child_container->child_visibility_updated(IN_THREAD, flag);
-	elementObj::implObj::draw_after_visibility_updated(IN_THREAD, flag);
-}
-
 void child_elementObj::process_updated_position(IN_THREAD_ONLY)
 {
 	elementObj::implObj::process_updated_position(IN_THREAD);
@@ -200,11 +193,15 @@ void child_elementObj
 ::set_inherited_visibility(IN_THREAD_ONLY,
 			   inherited_visibility_info &visibility_info)
 {
+	bool current_flag=data(IN_THREAD).inherited_visibility;
+	bool new_flag=visibility_info.flag;
+
 	elementObj::implObj::set_inherited_visibility(IN_THREAD,
 						      visibility_info);
-	child_container->child_visibility_changed(IN_THREAD,
-					    visibility_info,
-					    elementimpl(this));
+
+	if (current_flag != new_flag)
+		child_container->child_visibility_updated(IN_THREAD,
+							  elementimpl(this));
 }
 
 bool child_elementObj::has_own_background_color(IN_THREAD_ONLY)

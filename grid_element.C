@@ -91,7 +91,7 @@ void grid_elementObj::theme_updated(const defaulttheme &theme)
 
 bool grid_elementObj::takes_up_space(IN_THREAD_ONLY) const
 {
-	return grid_element->impl->data(IN_THREAD).inherited_visibility ||
+	return grid_element->impl->data(IN_THREAD).requested_visibility ||
 		!remove_when_hidden;
 }
 

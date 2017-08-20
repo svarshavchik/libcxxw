@@ -519,18 +519,13 @@ void elementObj::implObj::draw(IN_THREAD_ONLY,
 			       const draw_info &di,
 			       const rectangle_set &areas)
 {
-	if (areas.empty())
+	if (areas.empty() || di.element_viewport.empty())
 		return; // Don't bother.
 
-	if (data(IN_THREAD).inherited_visibility)
-	{
-		do_draw(IN_THREAD, di, areas);
-		return;
-	}
-	else
-	{
+	if (DO_NOT_DRAW)
 		clear_to_color(IN_THREAD, di, areas);
-	}
+	else
+		do_draw(IN_THREAD, di, areas);
 }
 
 void elementObj::implObj::do_draw(IN_THREAD_ONLY,
@@ -563,9 +558,6 @@ void elementObj::implObj
 			       const scratch_buffer &buffer)
 {
 	if (di.no_viewport())
-		return;
-
-	if (DO_NOT_DRAW)
 		return;
 
 	buffer->get
@@ -650,9 +642,6 @@ void elementObj::implObj::clear_to_color(IN_THREAD_ONLY,
 					 const draw_info &background_color_di,
 					 const rectangle_set &areas)
 {
-	if (DO_NOT_DRAW)
-		return;
-
 #ifdef CLEAR_TO_COLOR_LOG
 	CLEAR_TO_COLOR_LOG();
 #endif

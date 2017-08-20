@@ -112,7 +112,8 @@ public:
 
 	//! A child element became visible or not visible.
 
-	void child_visibility_updated(IN_THREAD_ONLY, bool flag);
+	void child_visibility_updated(IN_THREAD_ONLY,
+				      const elementimpl &);
 
 	//! Add this container to containers_2_recalculate
 
@@ -212,11 +213,6 @@ public:
 	void child_background_color_changed(IN_THREAD_ONLY,
 					    const elementimpl &child);
 
-	//! Child element's visibility has changed.
-
-	void child_visibility_changed(IN_THREAD_ONLY,
-				      inherited_visibility_info &info,
-				      const elementimpl &child);
  private:
 	void propagate_inherited_visibility(IN_THREAD_ONLY,
 					    inherited_visibility_info &info);
