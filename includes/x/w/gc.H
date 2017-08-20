@@ -19,7 +19,7 @@ LIBCXXW_NAMESPACE_START
 
 //! Refer to this class as \c INSERT_LIBX_NAMESPACE::w::gc::base
 
-class gcBase : public ptrrefBase {
+class gcBase : public ptrref_base {
 public:
 	//! Convenience typedef
 

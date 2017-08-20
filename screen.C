@@ -70,7 +70,7 @@ screen screenBase::create(const connection &conn, size_t n)
 	if (n >= conn->impl->screens.size())
 		throw EXCEPTION(_("Requested screen does not exist"));
 
-	return ptrrefBase::objfactory<screen>::create(conn->impl->screens
+	return ptrref_base::objfactory<screen>::create(conn->impl->screens
 						      .at(n), conn);
 }
 

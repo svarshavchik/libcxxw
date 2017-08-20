@@ -15,7 +15,7 @@ LIBCXXW_NAMESPACE_START
 
 //! Base class of \ref picture "pictures".
 
-class pictureBase : public ptrrefBase {
+class pictureBase : public ptrref_base {
 
 public:
 

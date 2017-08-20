@@ -15,7 +15,7 @@ LIBCXXW_NAMESPACE_START
 
 //! Refer to this class as \c INSERT_LIBX_NAMESPACE::w::generic_window::base
 
-class generic_windowBase : public ptrrefBase {
+class generic_windowBase : public ptrref_base {
 };
 
 LIBCXXW_NAMESPACE_END

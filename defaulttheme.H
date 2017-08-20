@@ -15,7 +15,7 @@ LIBCXXW_NAMESPACE_START
 
 //! Refer to this class as \c INSERT_LIBX_NAMESPACE::w::defaulttheme::base
 
-class defaultthemeBase : public ptrrefBase {
+class defaultthemeBase : public ptrref_base {
 
 public:
 

@@ -19,7 +19,7 @@ LIBCXXW_NAMESPACE_START
 
 //! Refer to this class as \c INSERT_LIBX_NAMESPACE::w::connection::base
 
-class connectionBase : public ptrrefBase {
+class connectionBase : public ptrref_base {
 
 public:
 	//! Values returned from available_themes()

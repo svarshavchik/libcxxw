@@ -209,7 +209,7 @@ straight_border straight_borderBase
 
 			 default_border);
 
-	return ptrrefBase::objfactory<straight_border>::create(impl);
+	return ptrref_base::objfactory<straight_border>::create(impl);
 }
 
 // Vertical border implementation
@@ -268,7 +268,7 @@ straight_border straight_borderBase
 
 			 default_border);
 
-	return ptrrefBase::objfactory<straight_border>::create(impl);
+	return ptrref_base::objfactory<straight_border>::create(impl);
 }
 
 // We have an existing horizontal or a vertical border that lives where

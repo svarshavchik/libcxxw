@@ -17,7 +17,7 @@ LIBCXXW_NAMESPACE_START
 
 //! Refer to this class as \c INSERT_LIBX_NAMESPACE::w::freetypefont::base
 
-class freetypefontBase : public ptrrefBase {
+class freetypefontBase : public ptrref_base {
 public:
 
 };

@@ -182,7 +182,7 @@ main_window screenObj
 		::create(handler, menu_and_app_container,
 			 menubar_container, app_container);
 
-	auto mw=ptrrefBase::objfactory<main_window>
+	auto mw=ptrref_base::objfactory<main_window>
 		::create(window_impl, lm->impl);
 
 	f(mw);

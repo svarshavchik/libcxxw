@@ -15,7 +15,7 @@ LIBCXXW_NAMESPACE_START
 
 //! Refer to this class as \c LIBCXX_NAMESPACE::w::border_impl_base.
 
-class border_impl_base : public ptrrefBase {
+class border_impl_base : public ptrref_base {
 
 public:
 	//! typedef alias

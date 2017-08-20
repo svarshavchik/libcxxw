@@ -25,7 +25,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class LIBCXX_HIDDEN ximserverBase : public ptrrefBase {
+class LIBCXX_HIDDEN ximserverBase : public ptrref_base {
 };
 
 //! An XIM attribute value
