@@ -8,6 +8,7 @@
 #include "popup/popup_attachedto_infofwd.H"
 #include "popup/popup_handler.H"
 #include "connection_threadfwd.H"
+#include "all_opened_popups.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -22,23 +23,53 @@ class LIBCXX_HIDDEN popup_attachedto_handlerObj : public popupObj::handlerObj {
 
 	const popup_attachedto_info attachedto_info;
 
+	//! Signature for an opened_popup report.
+
+	typedef ref<obj> (all_opened_popupsObj::*opened_popup_t)
+		(IN_THREAD_ONLY, const ref<popupObj::handlerObj> &);
+
+	//! Signature for an closed_popup report.
+
+	typedef void (all_opened_popupsObj::*closed_popup_t)
+		(IN_THREAD_ONLY, const popupObj::handlerObj &);
+
+	//! Which all_opened_popupsObj method we report our visibility to.
+
+	const opened_popup_t opened_popup;
+
+	//! Which all_opened_popupsObj method we report our visibility to.
+
+	const closed_popup_t closed_popup;
  public:
 	//! Constructor
 	popup_attachedto_handlerObj
-		(const ref<generic_windowObj::handlerObj> &parent,
+		(opened_popup_t opened_popup,
+		 closed_popup_t closed_popup,
+		 const ref<generic_windowObj::handlerObj> &parent,
 		 const popup_attachedto_info &attachedto_info,
-		 size_t nesting_level=0);
+		 size_t nesting_level);
 
 	//! Destructor
 	~popup_attachedto_handlerObj();
 
+	//! Report the updated position of the element we are attached to.
+
 	void update_attachedto_element_position(IN_THREAD_ONLY,
 						const rectangle &new_position);
+
+	//! Implement recalculate_popup_position().
 
 	void recalculate_popup_position(IN_THREAD_ONLY,
 					rectangle &r,
 					dim_t screen_width,
 					dim_t screen_height) override;
+
+ private:
+	//! Implement get_opened_mcguffin().
+	ref<obj> get_opened_mcguffin(IN_THREAD_ONLY) override;
+
+	//! Implement released_opened_mcguffin().
+	void released_opened_mcguffin(IN_THREAD_ONLY) override;
 };
 
 LIBCXXW_NAMESPACE_END

@@ -164,29 +164,55 @@ void popupObj::handlerObj::set_inherited_visibility(IN_THREAD_ONLY,
 {
 
 	if (visibility_info.flag)
+	{
 		popup_opened(IN_THREAD);
+		opened_mcguffin=get_opened_mcguffin(IN_THREAD);
+	}
 
 	generic_windowObj::handlerObj::set_inherited_visibility
 		(IN_THREAD, visibility_info);
 
 	if (!visibility_info.flag)
+	{
+		opened_mcguffin=nullptr;
+		released_opened_mcguffin(IN_THREAD);
 		closing_popup(IN_THREAD);
+	}
 }
 
-void popupObj::handlerObj::popup_opened(IN_THREAD_ONLY)
+ptr<generic_windowObj::handlerObj>
+popupObj::handlerObj::get_popup_parent(IN_THREAD_ONLY)
 {
 	auto p=popup_parent(IN_THREAD).getptr();
 
 	if (p)
-	{
-		current_grab=p->grab_pointer(IN_THREAD, elementimplptr());
+		p=p->get_popup_parent(IN_THREAD);
 
-		if (current_grab)
-		{
-			current_grab->grabbing_popup(IN_THREAD)=
-				ref<generic_windowObj::handlerObj>(this);
-			current_grab->allow_events();
-		}
+	return p;
+}
+
+grabbed_pointerptr popupObj::handlerObj::grab_pointer(IN_THREAD_ONLY,
+						      const elementimplptr &i)
+{
+	auto p=get_popup_parent(IN_THREAD);
+
+	if (!p)
+		return grabbed_pointerptr();
+
+	return p->grab_pointer(IN_THREAD, i);
+}
+
+void popupObj::handlerObj::popup_opened(IN_THREAD_ONLY)
+{
+	auto p=get_popup_parent(IN_THREAD);
+
+	if (p)
+	{
+		auto mcguffin=p->grab_pointer(IN_THREAD, elementimplptr());
+
+		current_grab=mcguffin;
+		if (mcguffin)
+			mcguffin->allow_events(IN_THREAD);
 	}
 	else
 	{

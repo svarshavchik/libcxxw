@@ -17,6 +17,7 @@
 #include "peepholed_toplevel_listcontainer/layoutmanager_impl.H"
 #include "peephole/peepholed_toplevel_element.H"
 #include "element.H"
+#include "all_opened_popups.H"
 
 #include <x/functional.H>
 
@@ -65,6 +66,21 @@ typedef ref<p_t_l_t> create_p_t_l_t(const popup_attachedto_info
 				    const ref<p_t_l_impl_t> &,
 				    const ref<listlayoutmanagerObj::implObj> &);
 
+
+//! The type that specifies what kind of a popup it is.
+
+typedef std::tuple<
+	ref<obj> (all_opened_popupsObj::*)(IN_THREAD_ONLY,
+					   const ref<popupObj::handlerObj> &),
+
+	void (all_opened_popupsObj::*)(IN_THREAD_ONLY,
+				       const popupObj::handlerObj &)
+	> popup_type_t;
+
+popup_type_t create_combobox_popup() LIBCXX_HIDDEN;
+
+popup_type_t create_menu_popup() LIBCXX_HIDDEN;
+
 //! Non-factory parameters to create_peepholed_toplevel_listcontainer_popup().
 
 struct LIBCXX_HIDDEN create_peepholed_toplevel_listcontainer_popup_args {
@@ -94,6 +110,13 @@ struct LIBCXX_HIDDEN create_peepholed_toplevel_listcontainer_popup_args {
 	//! How the popup gets attached to the parent_element.
 	attached_to attached_to_style;
 
+	//! Popup type
+
+	//! This is set to either \c create_combobox_popup or
+	//! \c create_menu_popup.
+
+	popup_type_t (*popup_type)();
+
 	//! The style of the list container.
 	const new_listlayoutmanager &list_style;
 };
@@ -117,6 +140,20 @@ do_create_peepholed_toplevel_listcontainer_popup
 (const create_peepholed_toplevel_listcontainer_popup_args &args,
  const function<create_p_t_l_impl_t> &,
  const function<create_p_t_l_t> &) LIBCXX_HIDDEN;
+
+//! \ref create_peepholed_toplevel_listcontainer_popup_args "popup_factory option".
+
+ref<popup_attachedto_handlerObj
+    > create_combobox_popup(const ref<generic_windowObj::handlerObj> &,
+			    const popup_attachedto_info &,
+			    size_t) LIBCXX_HIDDEN;
+
+//! \ref create_peepholed_toplevel_listcontainer_popup_args "popup_factory option".
+
+ref<popup_attachedto_handlerObj
+    > create_menu_popup(const ref<generic_windowObj::handlerObj> &,
+			const popup_attachedto_info &,
+			size_t) LIBCXX_HIDDEN;
 
 //! Construct an attached popup with a \ref listlayoutmanager "list layout manager".
 

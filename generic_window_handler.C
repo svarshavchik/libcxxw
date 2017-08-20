@@ -423,20 +423,14 @@ void generic_windowObj::handlerObj
 
 	if (pg)
 	{
-		auto grabbing_popup=pg->grabbing_popup(IN_THREAD).getptr();
-
-		if (grabbing_popup)
-		{
-			grabbing_popup->handle_key_event(IN_THREAD, event,
-							 keypress);
+		if (opened_popups->handle_key_event(IN_THREAD, event, keypress))
 			return;
-		}
 	}
 
 	handle_key_event(IN_THREAD, event, keypress);
 }
 
-void generic_windowObj::handlerObj
+bool generic_windowObj::handlerObj
 ::handle_key_event(IN_THREAD_ONLY,
 		   const xcb_key_release_event_t *event,
 		   bool keypress)
@@ -477,7 +471,7 @@ void generic_windowObj::handlerObj
 
 	// Check for shortcuts, as the last resort
 	if (processed)
-		return;
+		return true;
 
 	auto shortcuts=shortcut_lookup(IN_THREAD).equal_range(ke.unicode);
 
@@ -526,7 +520,9 @@ void generic_windowObj::handlerObj
 		try {
 			best_shortcut->activated(IN_THREAD);
 		} CATCH_EXCEPTIONS;
+		processed=true;
 	}
+	return processed;
 }
 
 void generic_windowObj::handlerObj
@@ -727,11 +723,13 @@ bool generic_windowObj::handlerObj::set_default_focus(IN_THREAD_ONLY)
 		return true;
 
 	for (const auto &element:focusable_fields(IN_THREAD))
+	{
 		if (element->enabled(IN_THREAD))
 		{
 			element->set_focus_and_ensure_visibility(IN_THREAD);
 			return true;
 		}
+	}
 	return false;
 }
 
@@ -862,6 +860,12 @@ ref<generic_windowObj::handlerObj> generic_windowObj::handlerObj
 	return report_pointer_xy(IN_THREAD, me, grab_locked(IN_THREAD));
 }
 
+ptr<generic_windowObj::handlerObj>
+generic_windowObj::handlerObj::get_popup_parent(IN_THREAD_ONLY)
+{
+	return ptr<generic_windowObj::handlerObj>(this);
+}
+
 ref<generic_windowObj::handlerObj> generic_windowObj::handlerObj
 ::report_pointer_xy(IN_THREAD_ONLY,
 		    motion_event &me,
@@ -873,22 +877,79 @@ ref<generic_windowObj::handlerObj> generic_windowObj::handlerObj
 
 	if (pg)
 	{
-		auto grabbing_popup=pg->grabbing_popup(IN_THREAD).getptr();
+		// Did an element grab the pointer?
 
-		if (grabbing_popup)
+		auto grabbing_element=pg->get_grab_element(IN_THREAD);
+
+		if (grabbing_element)
 		{
-			// Translate the x/y coordinates
-
-			ref<generic_windowObj::handlerObj>
-				popupref{grabbing_popup};
+			// Ok, make sure that motion event coordinates
+			// get translated to the element's actual top level
+			// window or popup.
+			ref<handlerObj>
+				grabbed_element_window{&grabbing_element
+					->get_window_handler()};
 
 			add_root_xy(IN_THREAD, me.x, me.y);
-			popupref->subtract_root_xy(IN_THREAD, me.x, me.y);
+			grabbed_element_window
+				->subtract_root_xy(IN_THREAD, me.x, me.y);
 
-			popupref->report_pointer_xy_to_this_handler
-				(IN_THREAD, pg,
-				 me, was_grabbed);
-			return popupref;
+			if (grabbed_element_window != ref<handlerObj>(this))
+				was_grabbed=grabbed_element_window
+					->grab_locked(IN_THREAD);
+
+			grabbed_element_window
+				->report_pointer_xy_to_this_handler
+				(IN_THREAD, pg, me, was_grabbed);
+			return grabbed_element_window;
+		}
+
+		auto popup=most_recent_popup_with_pointer(IN_THREAD).getptr();
+		auto new_popup=opened_popups->find_popup_for_xy(IN_THREAD, me);
+
+		// If we previously reported a motion event to a popup see if
+		// we can report the new motion event to the same popup.
+
+		if (popup)
+		{
+			auto me2=me;
+
+			add_root_xy(IN_THREAD, me2.x, me2.y);
+			popup->subtract_root_xy(IN_THREAD, me2.x, me2.y);
+
+			if (new_popup && new_popup != popup)
+			{
+				// No, a new popup superceded it. We still
+				// need to simulate reporting an out of bounds
+				// motion event to that popup.
+
+				me2.x= -1;
+				me2.y= -1;
+			}
+
+			bool remained_inside=me2.x >= 0 && me2.y >= 0
+				&& dim_t::truncate(me2.x) < popup->get_width()
+				&& dim_t::truncate(me2.y) < popup->get_height();
+
+			popup->report_pointer_xy_to_this_handler
+				(IN_THREAD,
+				 pg,
+				 me2,
+				 was_grabbed);
+
+			if (remained_inside)
+				return popup; // This is where we reported this.
+		}
+
+		if (new_popup)
+		{
+			add_root_xy(IN_THREAD, me.x, me.y);
+			new_popup->subtract_root_xy(IN_THREAD, me.x, me.y);
+			most_recent_popup_with_pointer(IN_THREAD).getptr()
+				=new_popup;
+			new_popup->report_pointer_xy_to_this_handler
+				(IN_THREAD, pg, me, was_grabbed);
+			return new_popup;
 		}
 	}
 
@@ -904,19 +965,6 @@ void generic_windowObj::handlerObj
 				    bool was_grabbed)
 {
 	auto g=most_recent_element_with_pointer(IN_THREAD);
-	// If was_grabbed, this element passively grabbed the pointer.
-	//
-
-	if (pg)
-	{
-		auto grabbing_element=pg->grabbing_element.getptr();
-
-		if (grabbing_element)
-		{
-			g=grabbing_element;
-			was_grabbed=true;
-		}
-	}
 
 	if (was_grabbed && g)
 	{

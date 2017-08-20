@@ -82,6 +82,15 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! Keep track of opened popups.
 
 	const all_opened_popups opened_popups;
+
+	//! Return the popup's parent's main window.
+
+	//! Implemented by returning this. Overridden in popup_handler.
+	//!
+	//! Because popupObj::handlerObj maintains a weak reference on its
+	//! parent, it's possible that a null pointer gets returned.
+
+	virtual ptr<handlerObj> get_popup_parent(IN_THREAD_ONLY);
  private:
 	//! The mask for drawing disabled elements.
 
@@ -125,8 +134,11 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	weakptr<grabbed_pointerptr> current_pointer_grab_thread_only;
  public:
 
-	grabbed_pointerptr grab_pointer(IN_THREAD_ONLY,
-					const elementimplptr &grabbing_element);
+	//! Attempt to grab a pointer on behalf of an element.
+
+	//! A null grabbing_element indicates a popup grabbing the pointer.
+	virtual grabbed_pointerptr grab_pointer(IN_THREAD_ONLY,
+						const elementimplptr &);
 
 	//! What I want for my initial event mask.
 
@@ -261,11 +273,15 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	void get_focus_first(IN_THREAD_ONLY, const focusable &f) override;
 
  private:
+	//! Most recent popup where the pointer motion event went to.
+	weakptr<ptr<handlerObj>> most_recent_popup_with_pointer_thread_only;
+
 	//! Most recent element where the pointer motion event went to.
 
 	ptr<elementObj::implObj> most_recent_element_with_pointer_thread_only;
 
  public:
+	THREAD_DATA_ONLY(most_recent_popup_with_pointer);
 	THREAD_DATA_ONLY(most_recent_element_with_pointer);
 
 	//! Process pointer motion event.
@@ -378,6 +394,8 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! An element's button_press_event() wishes to grab the pointer.
 
 	void grab(IN_THREAD_ONLY, const ref<elementObj::implObj> &e);
+
+	friend class all_opened_popupsObj;
  protected:
 
 	//! Forward key event to the X Input Method server.
@@ -389,7 +407,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 			       bool keypress);
 
 	//! Process a key press or release event.
-	void handle_key_event(IN_THREAD_ONLY,
+	bool handle_key_event(IN_THREAD_ONLY,
 			      const xcb_key_release_event_t *event,
 			      bool keypress) override;
 

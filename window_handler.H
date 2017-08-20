@@ -160,7 +160,7 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 	//! Process a key press or release event.
 
 	//! Invoked by XIM server when a forwarded key event is received.
-	virtual void handle_key_event(IN_THREAD_ONLY,
+	virtual bool handle_key_event(IN_THREAD_ONLY,
 				      const xcb_key_release_event_t *event,
 				      bool keypress);
 

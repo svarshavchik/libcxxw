@@ -11,6 +11,7 @@
 #include "popup/popup_attachedto_handler.H"
 #include "popup/popup_impl.H"
 #include "listlayoutmanager/listcontainer_impl.H"
+#include "all_opened_popups.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -45,6 +46,18 @@ class LIBCXX_HIDDEN peepholed_toplevel_listcontainer_popupObj
 	}
 };
 
+popup_type_t create_combobox_popup()
+{
+	return {&all_opened_popupsObj::opening_combobox_popup,
+			&all_opened_popupsObj::closing_combobox_popup};
+}
+
+popup_type_t create_menu_popup()
+{
+	return {&all_opened_popupsObj::opening_menu_popup,
+			&all_opened_popupsObj::closing_menu_popup};
+}
+
 create_p_t_l_popup_ret_t
 do_create_peepholed_toplevel_listcontainer_popup
 (const create_peepholed_toplevel_listcontainer_popup_args &args,
@@ -59,8 +72,12 @@ do_create_peepholed_toplevel_listcontainer_popup
 	auto attachedto_info=popup_attachedto_info::create
 		(rectangle{}, args.attached_to_style);
 
+	auto popup_type=(*args.popup_type)();
+
 	auto popup_handler=ref<popup_attachedto_handlerObj>
-		::create(parent_handler, attachedto_info,
+		::create(std::get<0>(popup_type),
+			 std::get<1>(popup_type),
+			 parent_handler, attachedto_info,
 			 args.parent_element->nesting_level+
 			 args.extra_nesting_level);
 

@@ -140,10 +140,11 @@ void window_handlerObj::key_press_event(IN_THREAD_ONLY,
 {
 }
 
-void window_handlerObj::handle_key_event(IN_THREAD_ONLY,
+bool window_handlerObj::handle_key_event(IN_THREAD_ONLY,
 					 const xcb_key_release_event_t *event,
 					 bool keypress)
 {
+	return false;
 }
 
 void window_handlerObj::key_release_event(IN_THREAD_ONLY,

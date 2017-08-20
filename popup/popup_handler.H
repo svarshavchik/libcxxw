@@ -102,11 +102,35 @@ public:
  private:
 
 	//! The pointer is grabbed while the popup is open.
-	grabbed_pointerptr current_grab;
+	ptr<obj> current_grab;
 
 	//! The parent window, which is used for the pointer trab.
 
 	weakptr<ptr<generic_windowObj::handlerObj>> popup_parent_thread_only;
+
+	//! Return the popup's parent main window.
+
+	ptr<generic_windowObj::handlerObj> get_popup_parent(IN_THREAD_ONLY);
+
+	//! Mcguffin for a visible popup.
+
+	//! This is returned by get_opened_mcguffin().
+
+	ptr<obj> opened_mcguffin;
+
+	//! Obtain a mcguffin for an opened, visible popup.
+
+	//! The subclass must implement it by invoking the appropriate
+	//! method in all_opened_popups, and returning the mcguffin.
+
+	virtual ref<obj> get_opened_mcguffin(IN_THREAD_ONLY)=0;
+
+	//! We just released the opened_mcguffin
+
+	//! Because we're no longer visible.
+	//! The subclass must implement it by invoking the appropriate
+	//! method in all_opened_popups.
+	virtual void released_opened_mcguffin(IN_THREAD_ONLY)=0;
 
  public:
 	THREAD_DATA_ONLY(popup_parent);
@@ -132,6 +156,12 @@ public:
 
 	//! Forward to parent element, that grabbed the pointer for us.
 	void ungrab(IN_THREAD_ONLY) override;
+
+	//! Override grab_pointer().
+
+	//! Forwarded to parent element.
+	grabbed_pointerptr grab_pointer(IN_THREAD_ONLY,
+					const elementimplptr &) override;
 
 	//! Override process_key_event()
 

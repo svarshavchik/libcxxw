@@ -45,12 +45,12 @@ class LIBCXX_HIDDEN tooltip_handlerObj : public popupObj::handlerObj {
 	const coord_t pointer_y;
 
 	//! The pointer is actively grabbed while the tooltip is shown.
-	const grabbed_pointer grab;
+	const ref<obj> grab;
 
 	//! Constructor
 	tooltip_handlerObj(IN_THREAD_ONLY,
 			   const ref<generic_windowObj::handlerObj> &parent,
-			   const grabbed_pointer &grab,
+			   const ref<obj> &grab,
 			   coord_t pointer_x,
 			   coord_t pointer_y);
 
@@ -68,6 +68,16 @@ class LIBCXX_HIDDEN tooltip_handlerObj : public popupObj::handlerObj {
 		return "tooltip";
 	}
 
+	ref<obj> get_opened_mcguffin(IN_THREAD_ONLY) override
+	{
+		return ref<obj>::create(); // Dummy stub.
+	}
+
+	void released_opened_mcguffin(IN_THREAD_ONLY) override
+	{
+		// Dummy stub
+	}
+
 #ifdef TOOLTIP_HANDLER_EXTRA_METHODS
 	TOOLTIP_HANDLER_EXTRA_METHODS
 #endif
@@ -76,7 +86,7 @@ class LIBCXX_HIDDEN tooltip_handlerObj : public popupObj::handlerObj {
 tooltip_handlerObj::tooltip_handlerObj(IN_THREAD_ONLY,
 				       const ref<generic_windowObj::handlerObj>
 				       &parent,
-				       const grabbed_pointer &grab,
+				       const ref<obj> &grab,
 				       coord_t pointer_x,
 				       coord_t pointer_y)
 	: superclass_t(IN_THREAD, parent),
@@ -207,7 +217,7 @@ void tooltip_factory_impl::create(const function<void (const container &)>
 
 	// Now that the tooltip is visible, allow pointer events going
 	// forward.
-	grab->allow_events();
+	grab->allow_events(IN_THREAD);
 }
 
 ///////////////////////////////////////////////////////////////////////////

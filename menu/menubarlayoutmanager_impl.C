@@ -82,6 +82,7 @@ menu menubarlayoutmanagerObj::implObj
 				"menu_popup_border",
 				1,
 				attached_to::combobox_above_or_below,
+				create_menu_popup,
 				style},
 			[&]
 			(const auto &peephole_container)

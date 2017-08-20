@@ -11,11 +11,15 @@
 LIBCXXW_NAMESPACE_START
 
 popup_attachedto_handlerObj
-::popup_attachedto_handlerObj(const ref<generic_windowObj::handlerObj> &parent,
+::popup_attachedto_handlerObj(opened_popup_t opened_popup,
+			      closed_popup_t closed_popup,
+			      const ref<generic_windowObj::handlerObj> &parent,
 			      const popup_attachedto_info &attachedto_info,
 			      size_t nesting_level)
 	: popupObj::handlerObj(parent->thread(), parent, nesting_level),
-	attachedto_info(attachedto_info)
+	attachedto_info(attachedto_info),
+	opened_popup(opened_popup),
+	closed_popup(closed_popup)
 {
 }
 
@@ -105,6 +109,18 @@ void popup_attachedto_handlerObj
 		if (r.width < attachedto_element_position.width)
 			r.width=attachedto_element_position.width;
 	}
+}
+
+ref<obj> popup_attachedto_handlerObj::get_opened_mcguffin(IN_THREAD_ONLY)
+{
+	return ((*opened_popups).*opened_popup)(IN_THREAD,
+						ref<popupObj::handlerObj>(this)
+						);
+}
+
+void popup_attachedto_handlerObj::released_opened_mcguffin(IN_THREAD_ONLY)
+{
+	((*opened_popups).*closed_popup)(IN_THREAD, *this);
 }
 
 LIBCXXW_NAMESPACE_END
