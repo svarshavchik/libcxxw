@@ -20,6 +20,7 @@
 #include "x/w/editable_comboboxlayoutmanager.H"
 #include "x/w/focusable_label.H"
 #include "x/w/input_field_lock.H"
+#include "x/w/shortcut.H"
 #include <string>
 #include <iostream>
 
@@ -161,7 +162,7 @@ void testcombobox(const testcombobox_options &options)
 			 factory=layout->append_row();
 
 			 factory->halign(halign::center)
-			 .create_normal_button_with_label("Append")
+			 .create_normal_button_with_label({"Append"},{"Alt", 'A'})
 			 ->on_activate([combobox, i=0](const auto &) mutable {
 					 standard_comboboxlayoutmanager lm=
 						 combobox->get_layoutmanager();
@@ -170,6 +171,7 @@ void testcombobox(const testcombobox_options &options)
 
 					 i=(i+1) % (sizeof(moretext)/
 						    sizeof(moretext[0]));
+					 std::cout << "Appended" << std::endl;
 				 });
 
 			 			 factory=layout->append_row();

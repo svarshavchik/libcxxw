@@ -46,7 +46,9 @@ size_t image_buttonObj::get_value() const
 
 void image_buttonObj::set_value(size_t n)
 {
-	impl->button->impl->get_window_handler().IN_THREAD->run_as
+	elementimpl e=impl->button->impl;
+
+	e->get_window_handler().IN_THREAD->run_as
 		([impl=this->impl, n]
 		 (IN_THREAD_ONLY)
 		 {
@@ -57,7 +59,10 @@ void image_buttonObj::set_value(size_t n)
 void image_buttonObj::on_activate(const image_button_callback_t &callback)
 {
 	LOG_FUNC_SCOPE(image_log);
-	impl->button->impl->get_window_handler().IN_THREAD->run_as
+
+	elementimpl e=impl->button->impl;
+
+	e->get_window_handler().IN_THREAD->run_as
 		([&, impl=this->impl, callback]
 		 (IN_THREAD_ONLY)
 		 {

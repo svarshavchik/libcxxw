@@ -12,6 +12,7 @@
 #include "x/w/key_eventfwd.H"
 #include "x/w/focus.H"
 #include "focus/focusable_elementfwd.H"
+#include "shortcut/shortcut_activation_elementfwd.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -26,12 +27,18 @@ LIBCXXW_NAMESPACE_START
 
 template<typename element_impl=child_elementObj>
 class LIBCXX_HIDDEN hotspot_elementObj
-	: public focusable_elementObj<element_impl>,
+	: public shortcut_activation_elementObj<focusable_elementObj
+						<element_impl>>,
 	  public hotspotObj::implObj {
+
+	typedef focusable_elementObj<element_impl> nonshortcut_superclass_t;
+
+	typedef shortcut_activation_elementObj<nonshortcut_superclass_t
+					       > superclass_t;
 
  public:
 
-	using focusable_elementObj<element_impl>::focusable_elementObj;
+	using superclass_t::superclass_t;
 
 	~hotspot_elementObj();
 
@@ -51,6 +58,11 @@ class LIBCXX_HIDDEN hotspot_elementObj
 	bool process_button_event(IN_THREAD_ONLY,
 				  const button_event &be,
 				  xcb_timestamp_t timestamp) override;
+
+	void install_shortcut(const shortcut &,
+			      const activated_in_thread &) override;
+
+	void uninstall_shortcut() override;
 };
 
 

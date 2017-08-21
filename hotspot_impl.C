@@ -32,11 +32,6 @@ hotspotObj::implObj::implObj()
 
 hotspotObj::implObj::~implObj()=default;
 
-void hotspotObj::implObj::hotspot_deinitialize(IN_THREAD_ONLY)
-{
-	set_shortcut(IN_THREAD, shortcut());
-}
-
 void hotspotObj::implObj::keyboard_focus(IN_THREAD_ONLY)
 {
 	if (!get_hotspot_element().current_keyboard_focus(IN_THREAD))
@@ -148,20 +143,17 @@ void hotspotObj::implObj::activated(IN_THREAD_ONLY)
 	} CATCH_EXCEPTIONS;
 }
 
+bool hotspotObj::implObj::enabled(IN_THREAD_ONLY)
+{
+	return get_hotspot_focusable().focusable_enabled(IN_THREAD);
+}
+
 void hotspotObj::implObj::set_shortcut(IN_THREAD_ONLY, const shortcut &sc)
 {
-	auto &h=get_hotspot_element().get_window_handler();
-
-	if (hotspot_shortcut) // Existing shortcut
-		h.shortcut_lookup(IN_THREAD).erase(installed_hotspot_iter);
-
 	if (sc)
-	{
-		installed_hotspot_iter=h.shortcut_lookup(IN_THREAD)
-			.insert({sc.unicode, ref<implObj>(this)});
-	}
-
-	hotspot_shortcut=sc;
+		install_shortcut(sc, activated_in_thread(this));
+	else
+		uninstall_shortcut();
 }
 
 LIBCXXW_NAMESPACE_END

@@ -29,10 +29,12 @@
 #include <X11/keysym.h>
 #include "child_element.H"
 #include "hotspot.H"
+#include "shortcut/installed_shortcut.H"
 #include "catch_exceptions.H"
 #include <x/property_value.H>
 #include <x/strtok.H>
 #include <x/chrcasecmp.H>
+#include <courier-unicode.h>
 
 LIBCXXW_NAMESPACE_START
 
@@ -470,30 +472,17 @@ bool generic_windowObj::handlerObj
 		processed=process_key_event(IN_THREAD, ke);
 
 	// Check for shortcuts, as the last resort
+
 	if (processed)
 		return true;
 
-	auto shortcuts=shortcut_lookup(IN_THREAD).equal_range(ke.unicode);
+	installed_shortcutptr best_shortcut;
 
-	while (shortcuts.first != shortcuts.second)
+	if (keypress)
 	{
-		auto best_shortcut=shortcuts.first->second;
+		mpobj<shortcut_lookup_t>::lock lock{installed_shortcuts};
 
-		++shortcuts.first;
-
-		if (!best_shortcut->get_hotspot_focusable()
-		    .focusable_enabled(IN_THREAD)
-		    ||
-		    !best_shortcut->get_shortcut(IN_THREAD).matches(ke))
-			continue;
-
-		// If there are shortcuts for both shift-Foo and
-		// shift-ctrl-Foo, make sure that shift-ctrl-Foo matches
-		// the right shortcut.
-
-		auto best_ordinal=
-			best_shortcut->get_shortcut(IN_THREAD)
-			.ordinal();
+		auto shortcuts=lock->equal_range(unicode_lc(ke.unicode));
 
 		while (shortcuts.first != shortcuts.second)
 		{
@@ -501,22 +490,52 @@ bool generic_windowObj::handlerObj
 
 			++shortcuts.first;
 
-			if (!p->get_hotspot_focusable()
-			    .focusable_enabled(IN_THREAD)
+			// Find the first shortcut that's enabled and matches
+			// the key.
+
+			if (!p->enabled(IN_THREAD)
 			    ||
-			    !p->get_shortcut(IN_THREAD).matches(ke))
+			    !p->installed_shortcut(IN_THREAD).matches(ke))
 				continue;
 
-			auto ordinal=p->get_shortcut(IN_THREAD)
-				.ordinal();
+			// If there are shortcuts for both shift-Foo and
+			// shift-ctrl-Foo, make sure that shift-ctrl-Foo matches
+			// the right shortcut.
 
-			if (ordinal < best_ordinal)
-				continue;
+			auto best_ordinal=
+				p->installed_shortcut(IN_THREAD).ordinal();
 
 			best_shortcut=p;
-			best_ordinal=ordinal;
-		}
 
+			// If there are any other shortcuts that also match,
+			// keep only the best ordinal.
+
+			while (shortcuts.first != shortcuts.second)
+			{
+				p=shortcuts.first->second;
+
+				++shortcuts.first;
+
+				if (!p->enabled(IN_THREAD)
+				    ||
+				    !p->installed_shortcut(IN_THREAD)
+				    .matches(ke))
+					continue;
+
+				auto ordinal=p->installed_shortcut(IN_THREAD)
+					.ordinal();
+
+				if (ordinal < best_ordinal)
+					continue;
+
+				best_shortcut=p;
+				best_ordinal=ordinal;
+			}
+		}
+	}
+
+	if (best_shortcut)
+	{
 		try {
 			best_shortcut->activated(IN_THREAD);
 		} CATCH_EXCEPTIONS;

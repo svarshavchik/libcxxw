@@ -23,6 +23,10 @@ libcxxw_la_LIBADD=-lcxx
 libcxxw_la_LDFLAGS=$(STATICLINKFLAGS)
 
 libcxxw_la_SOURCES=\
+	activated_in_thread.C			    \
+	activated_in_thread.H			    \
+	activated_in_threadfwd.H		    \
+	activated_in_threadobj.H		    \
 	all_opened_popups.C			    \
 	all_opened_popups.H			    \
 	all_opened_popupsfwd.H			    \
@@ -291,7 +295,6 @@ libcxxw_la_SOURCES=\
 	gridlayoutmanager_impl_elements.H	    \
 	hotspot.C				    \
 	hotspot.H				    \
-	hotspotfwd.H				    \
 	hotspot_bgcolor.C			    \
 	hotspot_bgcolor.H			    \
 	hotspot_bgcolor_element.H		    \
@@ -392,7 +395,7 @@ libcxxw_la_SOURCES=\
 	menu/menuitemextrainfo_impl.C		    \
 	menu/menuitemextrainfo_impl.H		    \
 	menu/menulistitemfactory.C		    \
-	menu/menulistitemfactory.H		    \
+	menu/menulistitemfactoryobj.H		    \
 	menu/menulayoutmanager.C		    \
 	menu/menulayoutmanager_impl.C		    \
 	menu/menulayoutmanager_impl.H		    \
@@ -600,6 +603,14 @@ libcxxw_la_SOURCES=\
 	scrollbar/scrollbar_metrics.C		    \
 	scrollbar/scrollbar_metrics.H		    \
 	shortcut.C				    \
+	shortcut/installed_shortcut.C		    \
+	shortcut/installed_shortcut.H		    \
+	shortcut/installed_shortcutfwd.H	    \
+	shortcut/installed_shortcutobj.H	    \
+	shortcut/shortcut_activation_element.H	    \
+	shortcut/shortcut_activation_elementfwd.H   \
+	shortcut/shortcut_activation_element_impl.C \
+	shortcut/shortcut_activation_element_impl.H \
 	singletonlayoutmanager.C		    \
 	singletonlayoutmanager.H		    \
 	singletonlayoutmanagerfwd.H		    \

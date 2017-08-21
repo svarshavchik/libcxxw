@@ -9,6 +9,7 @@
 #include "x/w/button_event.H"
 #include "hotspot_elementfwd.H"
 #include "focus/focusable_element.H"
+#include "shortcut/shortcut_activation_element.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -57,7 +58,7 @@ const focusableImplObj &hotspot_elementObj<element_impl>
 template<typename element_impl>
 void hotspot_elementObj<element_impl>::keyboard_focus(IN_THREAD_ONLY)
 {
-	focusable_elementObj<element_impl>::keyboard_focus(IN_THREAD);
+	superclass_t::keyboard_focus(IN_THREAD);
 	hotspotObj::implObj::keyboard_focus(IN_THREAD);
 }
 
@@ -68,7 +69,7 @@ void hotspot_elementObj<element_impl>::keyboard_focus(IN_THREAD_ONLY)
 template<typename element_impl>
 void hotspot_elementObj<element_impl>::pointer_focus(IN_THREAD_ONLY)
 {
-	focusable_elementObj<element_impl>::pointer_focus(IN_THREAD);
+	superclass_t::pointer_focus(IN_THREAD);
 	hotspotObj::implObj::pointer_focus(IN_THREAD);
 }
 
@@ -82,8 +83,7 @@ bool hotspot_elementObj<element_impl>
 {
 	return hotspotObj::implObj::process_key_event(IN_THREAD, ke)
 		||
-		focusable_elementObj<element_impl>
-		::process_key_event(IN_THREAD, ke);
+		superclass_t::process_key_event(IN_THREAD, ke);
 }
 
 //! Implement process_button_event(), inherited from elementObj::implObj
@@ -96,14 +96,35 @@ bool hotspot_elementObj<element_impl>
 		       const button_event &be,
 		       xcb_timestamp_t timestamp)
 {
-	auto ret=focusable_elementObj<element_impl>
-		::process_button_event(IN_THREAD, be, timestamp);
+	auto ret=superclass_t::process_button_event(IN_THREAD, be, timestamp);
 
 	if (hotspotObj::implObj::process_button_event(IN_THREAD, be,
 						      timestamp))
 		ret=true;
 
 	return ret;
+}
+
+//! Implement install_shortcut(), inherited from hotspotObj::implObj.
+
+//! Forward it to the shortcut_activation_elementObj mixin.
+
+template<typename element_impl>
+void hotspot_elementObj<element_impl>
+::install_shortcut(const shortcut &new_shortcut,
+		   const activated_in_thread &what_to_activate)
+{
+	superclass_t::install_shortcut(new_shortcut, what_to_activate);
+}
+
+//! Implement uninstall_shortcut(), inherited from hotspotObj::implObj.
+
+//! Forward it to the shortcut_activation_elementObj mixin.
+
+template<typename element_impl>
+void hotspot_elementObj<element_impl>::uninstall_shortcut()
+{
+	superclass_t::uninstall_shortcut();
 }
 
 LIBCXXW_NAMESPACE_END

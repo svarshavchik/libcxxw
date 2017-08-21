@@ -169,13 +169,13 @@ void create_mainwindow(const x::w::main_window &main_window,
 
 			 // Next to it is a "Reset" button, with an
 			 // underlined "R", with an "Alt"-R shortcut.
-			 // Note that "R" has to be specified in lowercase.
+			 // "R" can be specified in upper or lowercase.
 
 			 auto reset=factory->create_normal_button_with_label
 				 ({"underline"_decoration,
 				   "R",
 				   "no"_decoration,
-				   "eset"}, {"Alt",'r'});
+				   "eset"}, {"Alt",'R'});
 
 			 // Add empty space here, between the buttons.
 			 // By default, create_canvas() creates a canvas

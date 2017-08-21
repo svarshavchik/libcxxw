@@ -15,15 +15,7 @@ hotspotObj::hotspotObj(const ref<implObj> &impl) : impl(impl)
 {
 }
 
-hotspotObj::~hotspotObj()
-{
-	impl->get_hotspot_element().THREAD->run_as
-		([impl=this->impl]
-		 (IN_THREAD_ONLY)
-		 {
-			 impl->hotspot_deinitialize(IN_THREAD);
-		 });
-}
+hotspotObj::~hotspotObj()=default;
 
 void hotspotObj::on_activate(const hotspot_callback_t &callback)
 {

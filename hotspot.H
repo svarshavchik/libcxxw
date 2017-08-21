@@ -5,7 +5,7 @@
 #ifndef hotspot_h
 #define hotspot_h
 
-#include "hotspotfwd.H"
+#include "x/w/hotspotobj.H"
 #include "x/w/elementobj.H"
 #include "x/w/input_mask.H"
 #include "x/w/focusablefwd.H"
@@ -13,9 +13,10 @@
 #include "x/w/button_eventfwd.H"
 #include "x/w/shortcut.H"
 #include "x/w/focus.H"
+#include "x/w/generic_windowobj.H"
 #include "focus/focusable_elementfwd.H"
 #include "connection_threadfwd.H"
-
+#include "activated_in_threadobj.H"
 #include <xcb/xproto.h>
 
 LIBCXXW_NAMESPACE_START
@@ -27,7 +28,8 @@ class child_elementObj;
 //! The hotspot_elementObj template inherits from this class and a subclass
 //! of child_elementObj, and implements get_hotspot_element().
 
-class LIBCXX_HIDDEN hotspotObj::implObj : virtual public obj {
+class LIBCXX_HIDDEN hotspotObj::implObj
+	: public activated_in_threadObj {
 
 	//! Current hotspot temperature.
 
@@ -52,38 +54,39 @@ class LIBCXX_HIDDEN hotspotObj::implObj : virtual public obj {
 	//! Destructor
 	~implObj();
 
-	//! Invoked from the public object's destructor
-
-	//! Uninstalls any currently-installed shortcut
-	void hotspot_deinitialize(IN_THREAD_ONLY);
-
-	//! Must be implement in the subclass.
+	//! Must be implemented in the subclass.
 
 	//! Returns this hotspot's focusable.
 	//! \see hotspot_element
 
 	virtual focusableImplObj &get_hotspot_focusable()=0;
 
-	//! Must be implement in the subclass.
+	//! Must be implemented in the subclass.
 
 	//! Returns this hotspot's focusable.
 	//! \see hotspot_element
 
 	virtual const focusableImplObj &get_hotspot_focusable() const=0;
 
-	//! Must be implement in the subclass.
+	//! Must be implemented in the subclass.
 
 	//! Returns this hotspot's focusable's element.
 	//! \see hotspot_element
 
 	virtual child_elementObj &get_hotspot_element()=0;
 
-	//! Must be implement in the subclass.
+	//! Must be implemented in the subclass.
 
 	//! Returns this hotspot's focusable's element.
 	//! \see hotspot_element
 
 	virtual const child_elementObj &get_hotspot_element() const=0;
+
+	//! Implement get_window_handler().
+
+	//! Implements in terms of get_hotspot_element();
+
+	generic_windowObj::handlerObj &get_window_handler();
 
 	//! Update hotspot temperature due to keyboard focus change.
 
@@ -102,6 +105,7 @@ class LIBCXX_HIDDEN hotspotObj::implObj : virtual public obj {
 	bool process_button_event(IN_THREAD_ONLY,
 				  const button_event &be,
 				  xcb_timestamp_t timestamp);
+
  private:
 
 	//! Update the current temperature
@@ -132,29 +136,22 @@ class LIBCXX_HIDDEN hotspotObj::implObj : virtual public obj {
 
 	//! The default implementation invokes callback().
 
-	virtual void activated(IN_THREAD_ONLY);
+	void activated(IN_THREAD_ONLY) override;
 
- private:
+	//! Implement enabled().
 
-	//! The shortcut for this hotspot
-	shortcut hotspot_shortcut;
+	//! Implemented by forwarding it to the focusable.
 
-	//! When shortcut is non-empty, it's installed a shortcut_lookup_t.
-
-	shortcut_lookup_t::iterator installed_hotspot_iter;
-
- public:
+	bool enabled(IN_THREAD_ONLY) override;
 
 	//! Set the keyboard shortcut for this hotspot.
 
 	void set_shortcut(IN_THREAD_ONLY, const shortcut &);
 
-	//! Get the keyboard shortcut.
+	virtual void install_shortcut(const shortcut &,
+				      const activated_in_thread &)=0;
 
-	inline const shortcut &get_shortcut(IN_THREAD_ONLY)
-	{
-		return hotspot_shortcut;
-	}
+	virtual void uninstall_shortcut()=0;
 };
 
 LIBCXXW_NAMESPACE_END

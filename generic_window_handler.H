@@ -14,7 +14,7 @@
 #include "background_colorfwd.H"
 #include "connection_threadfwd.H"
 #include "container_elementfwd.H"
-#include "hotspotfwd.H"
+#include "shortcut/installed_shortcutfwd.H"
 #include "grabbed_pointerfwd.H"
 #include "x/w/pictformatfwd.H"
 #include "x/w/types.H"
@@ -552,14 +552,14 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! Current field that's receiving input focus.
 	ptr<focusableImplObj> most_recent_keyboard_focus_thread_only;
 
-	//! Look up focusables that installed a shortcut.
-
-	shortcut_lookup_t shortcut_lookup_thread_only;
-
  public:
+
+	//! Look up installed shortcuts
+
+	mpobj<shortcut_lookup_t> installed_shortcuts;
+
 	THREAD_DATA_ONLY(focusable_fields);
 	THREAD_DATA_ONLY(most_recent_keyboard_focus);
-	THREAD_DATA_ONLY(shortcut_lookup);
 
 	//! Move the current keyboard focus to another element.
 	void set_keyboard_focus_to(IN_THREAD_ONLY, const focusable_impl &f);
