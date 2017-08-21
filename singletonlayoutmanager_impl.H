@@ -8,6 +8,7 @@
 #include "layoutmanager.H"
 #include "singletonlayoutmanagerobj.H"
 #include <x/mpobj.H>
+#include <vector>
 
 LIBCXXW_NAMESPACE_START
 
@@ -17,9 +18,15 @@ class LIBCXX_HIDDEN singletonlayoutmanagerObj::implObj :
 	public layoutmanagerObj::implObj {
 
  public:
-	//! The container for the current element.
+	//! The container for the current element, and/or new elements.
 
-	typedef mpobj<elementptr> current_element_t;
+	//! If the vector is empty, there's no element in the singleton
+	//! container. if the vector contains one element, that's the
+	//! element in the singleton container. The singleton factory
+	//! appends the new element, and exits, and when the layout
+	//! manager recalculates, it ditches all, except the last element.
+
+	typedef mpobj<std::vector<element>> current_element_t;
 
 	//! The current element.
 
@@ -46,7 +53,7 @@ class LIBCXX_HIDDEN singletonlayoutmanagerObj::implObj :
 	//! Return list_element's implementation object.
 
 	//! Invoking initialize_if_needed()
-	ptr<elementObj::implObj> get_list_element_impl(IN_THREAD_ONLY);
+	elementimplptr get_list_element_impl(IN_THREAD_ONLY);
 
  public:
 	//! Left margin padding.

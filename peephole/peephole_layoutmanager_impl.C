@@ -295,9 +295,7 @@ void peepholeObj::layoutmanager_implObj
 	auto peephole_element_impl=
 		element_in_peephole->get_peepholed_element()->impl;
 
-	try {
-		peephole_element_impl->initialize_if_needed(IN_THREAD);
-	} CATCH_EXCEPTIONS;
+	peephole_element_impl->initialize_if_needed(IN_THREAD);
 
 	auto &current_position=container_impl->get_element_impl()
 		.data(IN_THREAD).current_position;

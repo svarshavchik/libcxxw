@@ -26,10 +26,12 @@ element listitemcontainerObj::get()
 		([&]
 		 (const ref<listitemlayoutmanagerObj::implObj> &l)
 		 {
-			 e=*listitemlayoutmanagerObj::implObj
-				 ::current_element_t::lock{
-				 l->current_element
-			 };
+			 listitemlayoutmanagerObj::implObj
+				 ::current_element_t::lock
+				 lock{l->current_element};
+
+			 if (!lock->empty())
+				 e=lock->at(0);
 		 });
 
 	return e;

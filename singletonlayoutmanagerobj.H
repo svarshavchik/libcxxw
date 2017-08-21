@@ -7,6 +7,7 @@
 
 #include "singletonlayoutmanagerfwd.H"
 #include "x/w/layoutmanagerobj.H"
+#include "x/w/factoryfwd.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -14,7 +15,7 @@ LIBCXXW_NAMESPACE_START
 
 //! \see singletonlayoutmanager
 
-class singletonlayoutmanagerObj : public layoutmanagerObj {
+class LIBCXX_HIDDEN singletonlayoutmanagerObj : public layoutmanagerObj {
 
 public:
 	class implObj;
@@ -27,6 +28,11 @@ public:
 
 	//! Destructor
 	~singletonlayoutmanagerObj() LIBCXX_HIDDEN;
+
+
+	//! Return a factory for replacing the singleton element.
+
+	factory replace();
 };
 
 LIBCXXW_NAMESPACE_END

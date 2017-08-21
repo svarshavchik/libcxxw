@@ -757,10 +757,8 @@ void gridlayoutmanagerObj::implObj::initialize_new_elements(IN_THREAD_ONLY)
 	{
 		for (const auto &element:grid_elements(IN_THREAD)->all_elements)
 		{
-			try {
-				element.child_element->impl
-					->initialize_if_needed(IN_THREAD);
-			} CATCH_EXCEPTIONS;
+			element.child_element->impl
+				->initialize_if_needed(IN_THREAD);
 		}
 
 		// initialize_new_elements() was invoked only if
@@ -791,10 +789,8 @@ void gridlayoutmanagerObj::implObj
 			for (const auto &col:row)
 			{
 				all_elements.insert(col->grid_element);
-				try {
-					col->grid_element->impl
-						->initialize_if_needed(IN_THREAD);
-				} CATCH_EXCEPTIONS;
+				col->grid_element->impl
+					->initialize_if_needed(IN_THREAD);
 
 				// And pass them to the callback.
 				callback(col->grid_element);

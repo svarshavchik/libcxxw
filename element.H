@@ -664,9 +664,15 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 		// so reschedule this.
 
 		schedule_update_visibility(IN_THREAD);
-		initialize(IN_THREAD);
+		initialize_or_log_exception(IN_THREAD);
 	}
 
+ private:
+	//! Invoke initialize()
+
+	void initialize_or_log_exception(IN_THREAD_ONLY);
+
+ protected:
 	//! Initialize this display element.
 
 	//! After a display element gets added to a container, the layout
@@ -680,7 +686,7 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	{
 		return data(IN_THREAD).initialized;
 	}
-
+ public:
 	//! Invoke a lambda for each child element.
 
 	template<typename functor_type>

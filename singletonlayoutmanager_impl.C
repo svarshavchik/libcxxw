@@ -14,7 +14,8 @@ singletonlayoutmanagerObj::implObj
 ::implObj(const ref<containerObj::implObj> &container_impl,
 	  const elementptr &initial_element)
 	: layoutmanagerObj::implObj(container_impl),
-	current_element(initial_element)
+	current_element(&initial_element,
+			(initial_element ? &initial_element+1:&initial_element))
 {
 }
 
@@ -29,10 +30,12 @@ void singletonlayoutmanagerObj::implObj
 ::do_for_each_child(IN_THREAD_ONLY,
 		    const function<void (const element &e)> &callback)
 {
-	auto e=*current_element_t::lock{current_element};
+	current_element_t::lock lock{current_element};
 
-	if (e)
-		callback(e);
+	if (lock->empty())
+		return;
+
+	callback(lock->at(0));
 }
 
 dim_t singletonlayoutmanagerObj::implObj::get_left_padding(IN_THREAD_ONLY)
@@ -55,21 +58,44 @@ dim_t singletonlayoutmanagerObj::implObj::get_bottom_padding(IN_THREAD_ONLY)
 	return 0;
 }
 
-ptr<elementObj::implObj> singletonlayoutmanagerObj::implObj
+elementimplptr singletonlayoutmanagerObj::implObj
 ::get_list_element_impl(IN_THREAD_ONLY)
 {
-	auto e=*current_element_t::lock{current_element};
+	std::vector<element> all_elements;
 
-	if (!e)
-		return ptr<elementObj::implObj>();
+	// Grab the all_elements vector. If it has more than one element,
+	// the current display element in the singleton is being replaced.
+	// While we're holding the lock, leave the last element in
+	// current_element. We'll clean everything up after releasing the
+	// lock.
 
-	auto list_impl=e->impl;
+	{
+		current_element_t::lock lock{current_element};
 
-	try {
-		list_impl->initialize_if_needed(IN_THREAD);
-	} CATCH_EXCEPTIONS;
+		all_elements=*lock;
 
-	return list_impl;
+		if (lock->size() > 1)
+			lock->erase(lock->begin(), --lock->end());
+	}
+
+	if (all_elements.empty())
+		return elementimplptr();
+
+	// The last element in the vector is the official, remaining
+	// element in the singleton. Make sure that everything is done
+	// by the book.
+
+	auto e=--all_elements.end();
+
+	for (auto b=all_elements.begin(); b != e; ++b)
+	{
+		(*b)->impl->initialize_if_needed(IN_THREAD);
+		(*b)->impl->removed_from_container(IN_THREAD);
+	}
+
+	(*e)->impl->initialize_if_needed(IN_THREAD);
+
+	return (*e)->impl;
 }
 
 void singletonlayoutmanagerObj::implObj::recalculate(IN_THREAD_ONLY)

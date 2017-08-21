@@ -732,6 +732,13 @@ void elementObj::implObj::theme_updated(IN_THREAD_ONLY,
 		       });
 }
 
+void elementObj::implObj::initialize_or_log_exception(IN_THREAD_ONLY)
+{
+	try {
+		initialize(IN_THREAD);
+	} CATCH_EXCEPTIONS;
+}
+
 void elementObj::implObj::initialize(IN_THREAD_ONLY)
 {
 }
