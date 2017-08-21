@@ -23,7 +23,7 @@ focusableImplObj::focusableImplObj()
 
 focusableImplObj::~focusableImplObj()=default;
 
-bool focusableImplObj::enabled(IN_THREAD_ONLY)
+bool focusableImplObj::focusable_enabled(IN_THREAD_ONLY)
 {
 	return get_focusable_element().enabled(IN_THREAD);
 }
@@ -197,7 +197,7 @@ bool elementObj::implObj
 			  const auto &focusable)
 			 {
 				 focusable_enabled=
-					 focusable->enabled(IN_THREAD);
+					 focusable->focusable_enabled(IN_THREAD);
 			 });
 
 		if (!focusable_enabled)
@@ -313,7 +313,7 @@ void focusableImplObj::next_focus(IN_THREAD_ONLY,
 
 	while (starting_iter != ff.end())
 	{
-		if ((*starting_iter)->enabled(IN_THREAD))
+		if ((*starting_iter)->focusable_enabled(IN_THREAD))
 		{
 			switch_focus(IN_THREAD, *starting_iter);
 			return;
@@ -323,7 +323,7 @@ void focusableImplObj::next_focus(IN_THREAD_ONLY,
 
 	for (starting_iter=ff.begin(); starting_iter != ff.end();
 	     ++starting_iter)
-		if ((*starting_iter)->enabled(IN_THREAD))
+		if ((*starting_iter)->focusable_enabled(IN_THREAD))
 		{
 			switch_focus(IN_THREAD, *starting_iter);
 			return;
@@ -342,7 +342,7 @@ void focusableImplObj::prev_focus(IN_THREAD_ONLY)
 	while (iter != ff.begin())
 	{
 		--iter;
-		if ((*iter)->enabled(IN_THREAD))
+		if ((*iter)->focusable_enabled(IN_THREAD))
 		{
 			switch_focus(IN_THREAD, *iter);
 			return;
@@ -352,7 +352,7 @@ void focusableImplObj::prev_focus(IN_THREAD_ONLY)
 	for (iter=ff.end(); iter != ff.begin(); )
 	{
 		--iter;
-		if ((*iter)->enabled(IN_THREAD))
+		if ((*iter)->focusable_enabled(IN_THREAD))
 		{
 			switch_focus(IN_THREAD, *iter);
 			return;
