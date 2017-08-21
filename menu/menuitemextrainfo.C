@@ -82,4 +82,20 @@ menuitemextrainfoObj::menuitemextrainfoObj(const ref<implObj> &impl,
 
 menuitemextrainfoObj::~menuitemextrainfoObj()=default;
 
+void menuitemextrainfoObj::update(const menuitem_type_t &new_type)
+{
+	singletonlayoutmanager layout_manager=get_layoutmanager();
+
+	auto f=layout_manager->replace();
+	auto new_element=element_for(containerObj::impl, new_type);
+
+	menuitem_type.update
+		([&]
+		 (auto &type)
+		 {
+			 f->created_internally(new_element);
+			 type=new_type;
+		 });
+}
+
 LIBCXXW_NAMESPACE_END

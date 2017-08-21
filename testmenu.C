@@ -60,6 +60,26 @@ void file_menu(const LIBCXX_NAMESPACE::w::menulayoutmanager &m)
 
 	m->append_menu_item(std::vector<LIBCXX_NAMESPACE::w::text_param>{"Close"});
 
+	LIBCXX_NAMESPACE::w::menuitem_plain file_open_type;
+
+	file_open_type.menuitem_shortcut={"Alt", 'O'};
+	file_open_type.on_activate=[]
+		(const LIBCXX_NAMESPACE::w::menuitem_activation_info &ignore)
+		{
+			std::cout << "File->Open selected" << std::endl;
+		};
+
+	m->update(1, file_open_type);
+
+	LIBCXX_NAMESPACE::w::menuitem_plain file_close_type;
+
+	file_close_type.on_activate=[]
+		(const LIBCXX_NAMESPACE::w::menuitem_activation_info &ignore)
+		{
+			std::cout << "File->Close selected" << std::endl;
+		};
+
+	m->update(2, file_close_type);
 }
 
 void testmenu()

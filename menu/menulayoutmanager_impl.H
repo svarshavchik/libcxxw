@@ -7,6 +7,7 @@
 
 #include "peepholed_toplevel_listcontainer/layoutmanager_impl.H"
 #include "x/w/menulayoutmanagerobj.H"
+#include "menu/menuitemextrainfofwd.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -32,6 +33,13 @@ class LIBCXX_HIDDEN menulayoutmanagerObj::implObj
 	//! Create a menulayoutmanager object.
 
 	layoutmanager create_public_object() override;
+
+	//! Retrieve an item's menuitemextrainfo
+
+	//! It's in the last column.
+	//! Shared logic.
+	static menuitemextrainfo get_extrainfo(listlayoutmanagerObj &lm,
+					       size_t item_number);
 };
 
 LIBCXXW_NAMESPACE_END

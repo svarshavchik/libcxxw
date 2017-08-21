@@ -224,9 +224,7 @@ void menubarlayoutmanagerObj::implObj
 {
 	// Last column is the extra_info we're looking for.
 
-	listitemcontainer lic=lm->item(i, lm->impl->columns-1);
-
-	menuitemextrainfo extrainfo=lic->get();
+	auto extrainfo=menulayoutmanagerObj::implObj::get_extrainfo(*lm, i);
 
 	auto type=extrainfo->menuitem_type.get();
 

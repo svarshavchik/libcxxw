@@ -38,6 +38,10 @@ public:
 
 	//! Destructor
 	~menuitemextrainfoObj() LIBCXX_HIDDEN;
+
+	//! Update the extra info, and element.
+
+	void update(const menuitem_type_t &new_type);
 };
 
 LIBCXXW_NAMESPACE_END

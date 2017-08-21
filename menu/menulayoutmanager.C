@@ -6,6 +6,7 @@
 #include "container.H"
 #include "menu/menulayoutmanager_impl.H"
 #include "menu/menulistitemfactoryobj.H"
+#include "menu/menuitemextrainfo.H"
 #include "x/w/menufactory.H"
 #include "x/w/label.H"
 
@@ -147,6 +148,14 @@ menufactory menulayoutmanagerObj::replace_all_menu_items()
 void menulayoutmanagerObj::do_replace_all_menu_items(const text_items_t &v)
 {
 	create_menu_items(replace_all_menu_items(), v);
+}
+
+void menulayoutmanagerObj::update(size_t item_number,
+				  const menuitem_type_t &new_type)
+{
+	auto extrainfo=implObj::get_extrainfo(*this, item_number);
+
+	extrainfo->update(new_type);
 }
 
 LIBCXXW_NAMESPACE_END

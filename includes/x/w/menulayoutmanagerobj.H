@@ -153,10 +153,6 @@ public:
 
 	void do_insert_menu_item(size_t item_number, const text_items_t &v);
 
-
-
-
-
 	//! Override replace_item().
 
 	//! Invoke replace_menu_item().
@@ -241,6 +237,10 @@ public:
 	//! \internal
 
 	void do_replace_all_menu_items(const text_items_t &v);
+
+	//! Change an existing menu item's shortcut.
+	void update(size_t item_number,
+		    const menuitem_type_t &new_type);
 };
 
 LIBCXXW_NAMESPACE_END
