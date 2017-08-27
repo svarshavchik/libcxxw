@@ -17,6 +17,7 @@
 #include "corner_borderfwd.H"
 #include "connection_threadfwd.H"
 #include "scratch_and_mask_buffer_drawfwd.H"
+#include <string_view>
 
 LIBCXXW_NAMESPACE_START
 
@@ -24,7 +25,7 @@ LIBCXXW_NAMESPACE_START
 
 //! Refer to this class as \c INSERT_LIBX_NAMESPACE::w::straight_border::base
 
-class straight_borderBase {
+class LIBCXX_HIDDEN straight_borderBase {
 
 public:
 
@@ -35,6 +36,14 @@ public:
 	//! Create a vertical border
 
 	static straight_border_factory_t create_vertical_border;
+
+	//! Create a separator for list or menu items.
+
+	//! It's a border element.
+
+	static straight_border
+		create_horizontal_separator(const ref<containerObj::implObj> &,
+					    const std::string_view &);
 
 	//! Update a horizontal border
 
@@ -94,7 +103,8 @@ class LIBCXX_HIDDEN straight_borderObj::implObj
 		const current_border_implptr &border1,
 		const grid_elementptr &element_2,
 		const current_border_implptr &border2,
-		const current_border_implptr &border_default);
+		const current_border_implptr &border_default,
+		bool is_internal_border);
  private:
 	implObj(const ref<containerObj::implObj> &container,
 		const metrics::horizvert_axi &initial_metrics,
@@ -104,7 +114,8 @@ class LIBCXX_HIDDEN straight_borderObj::implObj
 		const current_border_implptr &border1,
 		const grid_elementptr &element_2,
 		const current_border_implptr &border2,
-		const current_border_implptr &border_default);
+		const current_border_implptr &border_default,
+		bool is_internal_border);
  public:
 	//! Destructor
 	~implObj();
