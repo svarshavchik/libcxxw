@@ -196,6 +196,21 @@ elementptr gridlayoutmanagerObj::implObj::get(size_t row, size_t col)
 	return elementptr();
 }
 
+std::optional<std::tuple<size_t, size_t>>
+gridlayoutmanagerObj::implObj::lookup_row_col(const ref<elementObj::implObj> &e)
+{
+	grid_map_t::lock lock{grid_map};
+
+	const auto &lookup_table=(*lock)->get_lookup_table();
+
+	auto iter=lookup_table.find(e);
+
+	if (iter != lookup_table.end())
+		return std::tuple{iter->second->row, iter->second->col};
+
+	return {};
+}
+
 void gridlayoutmanagerObj::implObj::recalculate(IN_THREAD_ONLY)
 {
 	// Not all recalculation is the result of inserting or removing

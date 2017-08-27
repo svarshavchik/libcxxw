@@ -7,6 +7,7 @@
 #include "listlayoutmanager/listitemfactoryobj.H"
 #include "listlayoutmanager/listcontainer_impl.H"
 #include "x/w/label.H"
+#include "run_as.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -215,6 +216,40 @@ void listlayoutmanagerObj::autoselect(grid_map_t::lock &lock, size_t i)
 	return impl->autoselect(listlayoutmanager(this), lock, i);
 }
 
+bool listlayoutmanagerObj::enabled(size_t i) const
+{
+	grid_map_t::lock lock{impl->grid_map};
+
+	return impl->enabled(lock, i);
+}
+
+void listlayoutmanagerObj::enabled(size_t i, bool flag)
+{
+	grid_map_t::lock lock{impl->grid_map};
+
+	auto e=impl->get(i, 0);
+
+	if (!e)
+		return;
+
+	impl->container_impl->get_element_impl().THREAD->run_as
+		([e, me=listlayoutmanager(this), flag]
+		 (IN_THREAD_ONLY)
+		 {
+			 grid_map_t::lock lock{me->impl->grid_map};
+
+			 auto looked_up=me->impl->lookup_row_col(e->impl);
+
+			 if (!looked_up)
+				 return;
+
+			 size_t row;
+
+			 std::tie(row, std::ignore)=looked_up.value();
+
+			 me->impl->enabled(IN_THREAD, lock, row, flag);
+		 });
+}
 
 element listlayoutmanagerObj::item(size_t item_number, size_t column)
 {

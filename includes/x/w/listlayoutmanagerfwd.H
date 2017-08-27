@@ -207,6 +207,22 @@ need to formally create a factory, a separator counts as a list item.
 A list with two regular items, a separator, and two more items has a
 size() of 5.
 
+\par Enabling and disabling list items
+
+\code
+if (l->enabled(4))
+    l->enabled(4, false);
+\endcode
+
+This disables list item #4. Disabled list items cannot be selected with
+the pointer or keyboard.
+
+\note
+List item status gets updated by the library's internal execution thread.
+Enabling or disabling an item sends a message to the execution thread, so
+immediately calling \c enabled() after changing the item's status may still
+report that the item's status did not change.
+
 \par Lists with multiple columns.
 
 Overloaded bulk methods must be used with multiple column lists.

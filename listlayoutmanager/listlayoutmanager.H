@@ -290,13 +290,6 @@ class LIBCXX_HIDDEN listlayoutmanagerObj::implObj
 					  const ref<child_elementObj>
 					  &item_impl);
  private:
-	//! Look up which row and column this element is in.
-
-	//! Returns [row, col] if the element was found.
-
-	std::optional<std::tuple<size_t, size_t>>
-		lookup_row_col(grid_map_t::lock &lock,
-			       const ref<elementObj::implObj> &e);
 
 	//! Refresh the visual representation of a list item.
 
@@ -405,9 +398,12 @@ class LIBCXX_HIDDEN listlayoutmanagerObj::implObj
 	void autoselect(IN_THREAD_ONLY, const listlayoutmanager &me,
 			list_lock &lock, size_t item_number);
 
-
 	//! Whether this list item is enabled
 	static bool enabled(grid_map_t::lock &, size_t);
+
+	//! Enable/disable list item.
+
+	void enabled(IN_THREAD_ONLY, grid_map_t::lock &, size_t, bool);
 };
 
 LIBCXXW_NAMESPACE_END

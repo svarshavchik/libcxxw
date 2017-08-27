@@ -186,7 +186,7 @@ bool standard_combobox_lock::search(size_t starting_index,
 			if (unicode_lc(string[l]) != unicode_lc(text[l]))
 				break;
 
-		if (l == search_size)
+		if (l == search_size && locked_layoutmanager->enabled(i))
 		{
 			if (!was_found || was_found_size > string.size())
 			{

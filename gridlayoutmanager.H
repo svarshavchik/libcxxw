@@ -16,6 +16,7 @@
 #include "grid_elementobj.H"
 #include <x/vector.H>
 #include <tuple>
+#include <utility>
 #include <string_view>
 
 LIBCXXW_NAMESPACE_START
@@ -106,6 +107,14 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 
 	//! Get the display element at the given location.
 	elementptr get(size_t row, size_t col);
+
+	//! Look up which row and column this element is in.
+
+	//! Returns [row, col] if the element was found.
+
+	std::optional<std::tuple<size_t, size_t>>
+		lookup_row_col(const ref<elementObj::implObj> &e);
+
  protected:
 	/////////////////////////////////////////////////////////////////////
 	//

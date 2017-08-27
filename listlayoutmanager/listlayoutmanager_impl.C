@@ -50,7 +50,7 @@ void listlayoutmanagerObj::implObj::pointer_focus(IN_THREAD_ONLY,
 
 	grid_map_t::lock lock{grid_map};
 
-	auto looked_up=lookup_row_col(lock, e);
+	auto looked_up=lookup_row_col(e);
 
 	if (!looked_up)
 		return;
@@ -263,7 +263,7 @@ void listlayoutmanagerObj::implObj::refresh(IN_THREAD_ONLY,
 					    grid_map_t::lock &lock,
 					    const element &e)
 {
-	auto looked_up=lookup_row_col(lock, e->impl);
+	auto looked_up=lookup_row_col(e->impl);
 
 	if (!looked_up)
 		return;
@@ -281,8 +281,7 @@ listlayoutmanagerObj::implObj::lookup_item(grid_map_t::lock &lock,
 					   const ref<child_elementObj>
 					   &item_impl)
 {
-	auto looked_up=lookup_row_col(lock,
-				      ref(&item_impl->child_container
+	auto looked_up=lookup_row_col(ref(&item_impl->child_container
 					  ->get_element_impl()));
 
 	if (!looked_up)
@@ -293,21 +292,6 @@ listlayoutmanagerObj::implObj::lookup_item(grid_map_t::lock &lock,
 	std::tie(r, std::ignore)=looked_up.value();
 
 	return r;
-}
-
-std::optional<std::tuple<size_t, size_t>>
-listlayoutmanagerObj::implObj::lookup_row_col(grid_map_t::lock &lock,
-					      const ref<elementObj::implObj>
-					      &e)
-{
-	const auto &lookup_table=(*lock)->get_lookup_table();
-
-	auto iter=lookup_table.find(e);
-
-	if (iter != lookup_table.end())
-		return std::tuple{iter->second->row, iter->second->col};
-
-	return {};
 }
 
 void listlayoutmanagerObj::implObj
@@ -355,6 +339,36 @@ bool listlayoutmanagerObj::implObj::enabled(grid_map_t::lock &lock, size_t i)
 	listitemcontainer c=item_row.at(0)->grid_element;
 
 	return c->impl->selectable() && c->impl->enabled();
+}
+
+void listlayoutmanagerObj::implObj::enabled(IN_THREAD_ONLY,
+					    grid_map_t::lock &lock, size_t i,
+					    bool flag)
+{
+	if (i >= (*lock)->elements.size())
+		return;
+
+	auto &item_row=(*lock)->elements.at(i);
+
+	auto n=item_row.size();
+
+	if (n == 0) // Shouldn't happen
+		return;
+
+	listitemcontainer c=item_row.at(0)->grid_element;
+
+	c->impl->enabled(flag);
+
+	if (!flag)
+	{
+		if (highlighted_row(lock) == i)
+			unhighlight_current_row(IN_THREAD, lock);
+		if (highlighted_keyboard_focus_row(lock) == i)
+			highlighted_keyboard_focus_row(lock)=-1;
+	}
+
+	for (const auto &e:item_row)
+		e->grid_element->impl->schedule_redraw(IN_THREAD);
 }
 
 void listlayoutmanagerObj::implObj::selected(const listlayoutmanager &me,
@@ -449,7 +463,7 @@ void listlayoutmanagerObj::implObj
 			 {
 				 list_lock lock{my_public_object};
 				 auto looked_up=my_public_object->impl
-					 ->lookup_row_col(lock, c->impl);
+					 ->lookup_row_col(c->impl);
 
 				 if (!looked_up)
 					 return;

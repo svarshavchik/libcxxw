@@ -198,6 +198,14 @@ public:
 
 	//! Return the item element.
 	element item(size_t item_number, size_t column=0);
+
+	//! Whether the given list item is enabled().
+
+	bool enabled(size_t i) const;
+
+	//! Enable or disable the list item.
+
+	void enabled(size_t i, bool flag);
 };
 
 LIBCXXW_NAMESPACE_END

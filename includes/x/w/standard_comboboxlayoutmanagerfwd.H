@@ -80,6 +80,11 @@ INSERT_LIBX_NAMESPACE::w::standard_combobox_lock lock{lm};
 A \ref list_lock "INSERT_LIBX_NAMESPACE::w::standard_combobox_lock" may be instantiated
 in order to lock access to the combo-box's items.
 
+\par Enabling and disabling list items.
+
+Standard combo-boxes inherit the \c enabled() method from the underlying
+list layout manager, in order to enable or disabling individual list items.
+
 */
 
 typedef ref<standard_comboboxlayoutmanagerObj> standard_comboboxlayoutmanager;

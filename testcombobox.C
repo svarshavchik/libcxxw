@@ -210,6 +210,17 @@ void testcombobox(const testcombobox_options &options)
 					 lm->insert_separator(0);
 				 });
 
+			 factory=layout->append_row();
+
+			 factory->halign(halign::center)
+			 .create_normal_button_with_label({"Disable/Enable 1st item"})
+			 ->on_activate([combobox](const auto &) {
+					 standard_comboboxlayoutmanager lm=
+						 combobox->get_layoutmanager();
+
+					 lm->enabled(0, !lm->enabled(0));
+				 });
+
 		 });
 
 	main_window->set_window_title("Hello world!");
