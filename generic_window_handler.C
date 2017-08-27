@@ -929,17 +929,17 @@ ref<generic_windowObj::handlerObj> generic_windowObj::handlerObj
 			return grabbed_element_window;
 		}
 
+		auto me2=me;
+
+		add_root_xy(IN_THREAD, me2.x, me2.y);
 		auto popup=most_recent_popup_with_pointer(IN_THREAD).getptr();
-		auto new_popup=handler_data->find_popup_for_xy(IN_THREAD, me);
+		auto new_popup=handler_data->find_popup_for_xy(IN_THREAD, me2);
 
 		// If we previously reported a motion event to a popup see if
 		// we can report the new motion event to the same popup.
 
 		if (popup)
 		{
-			auto me2=me;
-
-			add_root_xy(IN_THREAD, me2.x, me2.y);
 			popup->subtract_root_xy(IN_THREAD, me2.x, me2.y);
 
 			if (new_popup && new_popup != popup)
@@ -976,6 +976,9 @@ ref<generic_windowObj::handlerObj> generic_windowObj::handlerObj
 				(IN_THREAD, pg, me, was_grabbed);
 			return new_popup;
 		}
+		// Clicking outside of all menus closes them.
+		else if (me.type == motion_event_type::button_event)
+			handler_data->close_all_menu_popups(IN_THREAD);
 	}
 
 	report_pointer_xy_to_this_handler(IN_THREAD, pg,

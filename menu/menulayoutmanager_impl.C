@@ -27,14 +27,18 @@ layoutmanager menulayoutmanagerObj::implObj::create_public_object()
 	return menulayoutmanager::create(ref<implObj>(this));
 }
 
-
-menuitemextrainfo menulayoutmanagerObj::implObj
-::get_extrainfo(listlayoutmanagerObj &lm,
+menuitemextrainfoptr menulayoutmanagerObj::implObj
+::get_extrainfo(const listlayoutmanager &lm,
 		size_t item_number)
 {
+	list_lock lock{lm};
+
+	if (lm->impl->cols(item_number) != lm->impl->columns+1)
+		return menuitemextrainfoptr(); // Probably a separator.
+
 	// Last column is the extra_info we're looking for.
 
-	listitemcontainer lic=lm.item(item_number, lm.impl->columns-1);
+	listitemcontainer lic=lm->item(item_number, lm->impl->columns-1);
 
 	return lic->get();
 }

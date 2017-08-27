@@ -38,8 +38,11 @@ class LIBCXX_HIDDEN menulayoutmanagerObj::implObj
 
 	//! It's in the last column.
 	//! Shared logic.
-	static menuitemextrainfo get_extrainfo(listlayoutmanagerObj &lm,
-					       size_t item_number);
+	//!
+	//! Returns a nullptr if the given item is not an actual item
+	//! (it's a separator).
+	static menuitemextrainfoptr get_extrainfo(const listlayoutmanager &lm,
+						  size_t item_number);
 };
 
 LIBCXXW_NAMESPACE_END
