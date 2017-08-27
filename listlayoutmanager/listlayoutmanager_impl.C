@@ -255,6 +255,25 @@ void listlayoutmanagerObj::implObj::refresh(IN_THREAD_ONLY,
 		      highlighted_row(lock) == r);
 }
 
+std::optional<size_t>
+listlayoutmanagerObj::implObj::lookup_item(grid_map_t::lock &lock,
+					   const ref<child_elementObj>
+					   &item_impl)
+{
+	auto looked_up=lookup_row_col(lock,
+				      ref(&item_impl->child_container
+					  ->get_element_impl()));
+
+	if (!looked_up)
+		return {};
+
+	size_t r;
+
+	std::tie(r, std::ignore)=looked_up.value();
+
+	return r;
+}
+
 std::optional<std::tuple<size_t, size_t>>
 listlayoutmanagerObj::implObj::lookup_row_col(grid_map_t::lock &lock,
 					      const ref<elementObj::implObj>

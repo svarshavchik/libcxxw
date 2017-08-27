@@ -278,6 +278,17 @@ class LIBCXX_HIDDEN listlayoutmanagerObj::implObj
 	void activated(IN_THREAD_ONLY,
 		       const listlayoutmanager &my_public_object);
 
+	//! Look up the number of an alleged list item.
+
+	//! Because the layout manager pulls a switcheroo, and wraps
+	//! each item in a listitemcontainer, we need to look up its parent
+	//! element, instead.
+	//!
+	//! We get the implementation object of what someone believes to be
+	//! an item in the list, and return its current index.
+	std::optional<size_t> lookup_item(grid_map_t::lock &lock,
+					  const ref<child_elementObj>
+					  &item_impl);
  private:
 	//! Look up which row and column this element is in.
 
@@ -355,7 +366,7 @@ class LIBCXX_HIDDEN listlayoutmanagerObj::implObj
 	//! Return the given item.
 	element item(size_t item_number, size_t column=0);
 
-	private:
+ private:
 
 	//! Callback used by connection_thread_op_t
 
@@ -388,7 +399,7 @@ class LIBCXX_HIDDEN listlayoutmanagerObj::implObj
 				  grid_map_t::lock &lock, size_t i,
 				  const std::function<connection_thread_op_t>
 				  &callback);
-
+ public:
 	//! Autoselect, according to selection_type.
 
 	void autoselect(IN_THREAD_ONLY, const listlayoutmanager &me,

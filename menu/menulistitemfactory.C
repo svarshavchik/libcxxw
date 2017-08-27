@@ -40,8 +40,10 @@ void menulistitemfactoryObj::created_element(const element &e)
 	auto impl=ref<menuitemextrainfoObj::implObj>::create
 		(me->impl->container_impl);
 
-	listitemfactoryObj::created_element
-		(menuitemextrainfo::create(impl, *lock));
+	auto new_item=menuitemextrainfo::create(impl, *lock);
+
+	new_item->update_shortcut(*lock);
+	listitemfactoryObj::created_element(new_item);
 
 	*lock=menuitem_type_t{}; // Reset for the next menu item.
 }

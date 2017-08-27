@@ -5,6 +5,7 @@
 #ifndef menuitemextrainfoobj_h
 #define menuitemextrainfoobj_h
 
+#include "activated_in_threadobj.H"
 #include "menu/menuitemextrainfofwd.H"
 #include "x/w/containerobj.H"
 #include "x/w/elementfwd.H"
@@ -18,7 +19,8 @@ LIBCXXW_NAMESPACE_START
 
 //! \see menuitemextrainfo
 
-class menuitemextrainfoObj : public containerObj {
+class menuitemextrainfoObj : public containerObj,
+			     public activated_in_threadObj {
 
 public:
 	class implObj;
@@ -39,9 +41,34 @@ public:
 	//! Destructor
 	~menuitemextrainfoObj() LIBCXX_HIDDEN;
 
+	//! After construction, update the installed shortcut.
+
+	//! After construction this must be called to install the initial
+	//! shortcut, if any. update() takes care of invoking it for updates.
+
+	void update_shortcut(const menuitem_type_t &new_type);
+
 	//! Update the extra info, and element.
 
 	void update(const menuitem_type_t &new_type);
+
+	//! Inherited from activated_in_threadObj
+
+	//! We expect our parent container element to be the list layout
+	//! layout manager.
+
+	void activated(IN_THREAD_ONLY) override;
+
+	//! Inherited from activated_in_threadObj
+
+	//! We handle it here, and report us as enabled based on
+	//! the element's enabled flag only. We are not going to
+	//! forward this to child_elementObj, which will then kick
+	//! it upstairs, and when the menu popup is closed it's considered
+	//! to be disabled. Obviously we want the shortcut to be active
+	//! even when the menu is not open.
+
+	bool enabled(IN_THREAD_ONLY) override;
 };
 
 LIBCXXW_NAMESPACE_END
