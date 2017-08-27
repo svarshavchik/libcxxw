@@ -113,14 +113,14 @@ void popup_attachedto_handlerObj
 
 ref<obj> popup_attachedto_handlerObj::get_opened_mcguffin(IN_THREAD_ONLY)
 {
-	return ((*opened_popups).*opened_popup)(IN_THREAD,
-						ref<popupObj::handlerObj>(this)
-						);
+	return ((*handler_data).*opened_popup)(IN_THREAD,
+					       ref<popupObj::handlerObj>(this)
+					       );
 }
 
 void popup_attachedto_handlerObj::released_opened_mcguffin(IN_THREAD_ONLY)
 {
-	((*opened_popups).*closed_popup)(IN_THREAD, *this);
+	((*handler_data).*closed_popup)(IN_THREAD, *this);
 }
 
 LIBCXXW_NAMESPACE_END

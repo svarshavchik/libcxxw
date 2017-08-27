@@ -2,11 +2,11 @@
 ** Copyright 2017 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
-#ifndef all_opened_popups_h
-#define all_opened_popups_h
+#ifndef shared_handler_data_h
+#define shared_handler_data_h
 
-#include "all_opened_popupsfwd.H"
-#include "all_opened_popupsobj.H"
+#include "shared_handler_datafwd.H"
+#include "shared_handler_dataobj.H"
 #include <x/ref.H>
 
 LIBCXXW_NAMESPACE_START

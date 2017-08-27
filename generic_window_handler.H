@@ -7,7 +7,7 @@
 
 #include "window_handler.H"
 #include "generic_window.H"
-#include "all_opened_popupsfwd.H"
+#include "shared_handler_datafwd.H"
 #include "drawable.H"
 #include "picture.H"
 #include "iconfwd.H"
@@ -79,9 +79,9 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 	mutable mpobj<rectangle> current_position;
 
-	//! Keep track of opened popups.
+	//! Keep track of opened popups and shortcuts.
 
-	const all_opened_popups opened_popups;
+	const shared_handler_data handler_data;
 
 	//! Return the popup's parent's main window.
 
@@ -181,14 +181,14 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! Constructor
 	handlerObj(IN_THREAD_ONLY,
 		   const screen &me,
-		   const all_opened_popups &opened_popups,
+		   const shared_handler_data &handler_data,
 		   size_t nesting_level);
 
  private:
 
 	//! Internal constructor
 	handlerObj(IN_THREAD_ONLY,
-		   const all_opened_popups &opened_popups,
+		   const shared_handler_data &handler_data,
 		   const constructor_params &params);
  public:
 	//! Destructor
@@ -402,7 +402,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 	void grab(IN_THREAD_ONLY, const ref<elementObj::implObj> &e);
 
-	friend class all_opened_popupsObj;
+	friend class shared_handler_dataObj;
  protected:
 
 	//! Forward key event to the X Input Method server.

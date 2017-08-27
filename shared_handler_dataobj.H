@@ -2,10 +2,10 @@
 ** Copyright 2017 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
-#ifndef all_opened_popupsobj_h
-#define all_opened_popupsobj_h
+#ifndef shared_handler_dataobj_h
+#define shared_handler_dataobj_h
 
-#include "all_opened_popupsfwd.H"
+#include "shared_handler_datafwd.H"
 #include "popup/popup_handler.H"
 #include "connection_threadfwd.H"
 #include "x/w/generic_windowobj.H"
@@ -22,9 +22,9 @@ LIBCXXW_NAMESPACE_START
 
 //! Implementation object.
 
-//! \see all_opened_popups
+//! \see shared_handler_data
 
-class LIBCXX_HIDDEN all_opened_popupsObj : virtual public obj {
+class LIBCXX_HIDDEN shared_handler_dataObj : virtual public obj {
 
 	class handler_mcguffinObj;
 
@@ -52,10 +52,10 @@ class LIBCXX_HIDDEN all_opened_popupsObj : virtual public obj {
 				    opened_menu_popups_t::base::iterator);
 public:
 	//! Constructor
-	all_opened_popupsObj() LIBCXX_HIDDEN;
+	shared_handler_dataObj() LIBCXX_HIDDEN;
 
 	//! Destructor
-	~all_opened_popupsObj() LIBCXX_HIDDEN;
+	~shared_handler_dataObj() LIBCXX_HIDDEN;
 
 	//! A new combo-box popup is being opened.
 

@@ -17,7 +17,7 @@
 #include "peepholed_toplevel_listcontainer/layoutmanager_impl.H"
 #include "peephole/peepholed_toplevel_element.H"
 #include "element.H"
-#include "all_opened_popups.H"
+#include "shared_handler_data.H"
 
 #include <x/functional.H>
 
@@ -70,11 +70,11 @@ typedef ref<p_t_l_t> create_p_t_l_t(const popup_attachedto_info
 //! The type that specifies what kind of a popup it is.
 
 typedef std::tuple<
-	ref<obj> (all_opened_popupsObj::*)(IN_THREAD_ONLY,
+	ref<obj> (shared_handler_dataObj::*)(IN_THREAD_ONLY,
 					   const ref<popupObj::handlerObj> &),
 
-	void (all_opened_popupsObj::*)(IN_THREAD_ONLY,
-				       const popupObj::handlerObj &)
+	void (shared_handler_dataObj::*)(IN_THREAD_ONLY,
+					 const popupObj::handlerObj &)
 	> popup_type_t;
 
 popup_type_t create_combobox_popup() LIBCXX_HIDDEN;

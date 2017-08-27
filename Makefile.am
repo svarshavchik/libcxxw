@@ -27,10 +27,6 @@ libcxxw_la_SOURCES=\
 	activated_in_thread.H			    \
 	activated_in_threadfwd.H		    \
 	activated_in_threadobj.H		    \
-	all_opened_popups.C			    \
-	all_opened_popups.H			    \
-	all_opened_popupsfwd.H			    \
-	all_opened_popupsobj.H			    \
 	always_visible.H			    \
 	always_visiblefwd.H			    \
 	assert_or_throw.C			    \
@@ -602,6 +598,10 @@ libcxxw_la_SOURCES=\
 	scrollbar/scrollbar_impl.H		    \
 	scrollbar/scrollbar_metrics.C		    \
 	scrollbar/scrollbar_metrics.H		    \
+	shared_handler_data.C			    \
+	shared_handler_data.H			    \
+	shared_handler_datafwd.H		    \
+	shared_handler_dataobj.H		    \
 	shortcut.C				    \
 	shortcut/installed_shortcut.C		    \
 	shortcut/installed_shortcut.H		    \

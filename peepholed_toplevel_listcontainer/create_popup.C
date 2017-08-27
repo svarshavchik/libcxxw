@@ -11,7 +11,7 @@
 #include "popup/popup_attachedto_handler.H"
 #include "popup/popup_impl.H"
 #include "listlayoutmanager/listcontainer_impl.H"
-#include "all_opened_popups.H"
+#include "shared_handler_data.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -48,14 +48,14 @@ class LIBCXX_HIDDEN peepholed_toplevel_listcontainer_popupObj
 
 popup_type_t create_combobox_popup()
 {
-	return {&all_opened_popupsObj::opening_combobox_popup,
-			&all_opened_popupsObj::closing_combobox_popup};
+	return {&shared_handler_dataObj::opening_combobox_popup,
+			&shared_handler_dataObj::closing_combobox_popup};
 }
 
 popup_type_t create_menu_popup()
 {
-	return {&all_opened_popupsObj::opening_menu_popup,
-			&all_opened_popupsObj::closing_menu_popup};
+	return {&shared_handler_dataObj::opening_menu_popup,
+			&shared_handler_dataObj::closing_menu_popup};
 }
 
 create_p_t_l_popup_ret_t

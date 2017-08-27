@@ -22,7 +22,7 @@
 #include "background_color.H"
 #include "focusable_owner_container.H"
 #include "generic_window_handler.H"
-#include "all_opened_popups.H"
+#include "shared_handler_data.H"
 #include "run_as.H"
 #include "catch_exceptions.H"
 #include <x/visitor.H>
@@ -251,7 +251,7 @@ void menubarlayoutmanagerObj::implObj
 					 (IN_THREAD_ONLY)
 					 {
 						 e->get_window_handler()
-							 .opened_popups
+							 .handler_data
 							 ->close_all_menu_popups
 							 (IN_THREAD);
 					 });

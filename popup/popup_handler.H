@@ -121,7 +121,7 @@ public:
 	//! Obtain a mcguffin for an opened, visible popup.
 
 	//! The subclass must implement it by invoking the appropriate
-	//! method in all_opened_popups, and returning the mcguffin.
+	//! method in shared_handler_data, and returning the mcguffin.
 
 	virtual ref<obj> get_opened_mcguffin(IN_THREAD_ONLY)=0;
 
@@ -129,7 +129,7 @@ public:
 
 	//! Because we're no longer visible.
 	//! The subclass must implement it by invoking the appropriate
-	//! method in all_opened_popups.
+	//! method in shared_handler_data.
 	virtual void released_opened_mcguffin(IN_THREAD_ONLY)=0;
 
  public:

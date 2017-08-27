@@ -3,13 +3,13 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
-#include "all_opened_popups.H"
+#include "shared_handler_data.H"
 #include "popup/popup.H"
 #include "generic_window_handler.H"
 
 LIBCXXW_NAMESPACE_START
 
-class all_opened_popupsObj::handler_mcguffinObj : virtual public obj {
+class shared_handler_dataObj::handler_mcguffinObj : virtual public obj {
 
 public:
 	weakptr<ptr<popupObj::handlerObj>> handler;
@@ -30,15 +30,15 @@ public:
 	}
 };
 
-all_opened_popupsObj::all_opened_popupsObj()
+shared_handler_dataObj::shared_handler_dataObj()
 	: opened_menu_popups(opened_menu_popups_t::create())
 {
 }
 
-all_opened_popupsObj::~all_opened_popupsObj()=default;
+shared_handler_dataObj::~shared_handler_dataObj()=default;
 
 
-ref<obj> all_opened_popupsObj
+ref<obj> shared_handler_dataObj
 ::opening_combobox_popup(IN_THREAD_ONLY,
 			 const ref<popupObj::handlerObj> &popup)
 {
@@ -51,13 +51,13 @@ ref<obj> all_opened_popupsObj
 	return mcguffin;
 }
 
-void all_opened_popupsObj
+void shared_handler_dataObj
 ::closing_combobox_popup(IN_THREAD_ONLY,
 			 const popupObj::handlerObj &popup)
 {
 }
 
-void all_opened_popupsObj::close_combobox_popup(IN_THREAD_ONLY)
+void shared_handler_dataObj::close_combobox_popup(IN_THREAD_ONLY)
 {
 	auto p=opened_combobox_popup.getptr();
 
@@ -65,7 +65,7 @@ void all_opened_popupsObj::close_combobox_popup(IN_THREAD_ONLY)
 		p->hide(IN_THREAD);
 }
 
-void all_opened_popupsObj
+void shared_handler_dataObj
 ::hide_menu_popups_until(IN_THREAD_ONLY,
 			 opened_menu_popups_t::base::iterator iter)
 {
@@ -78,7 +78,7 @@ void all_opened_popupsObj
 	}
 }
 
-ref<obj> all_opened_popupsObj
+ref<obj> shared_handler_dataObj
 ::opening_menu_popup(IN_THREAD_ONLY,
 		     const ref<popupObj::handlerObj> &popup)
 {
@@ -96,7 +96,7 @@ ref<obj> all_opened_popupsObj
 	return mcguffin;
 }
 
-void all_opened_popupsObj
+void shared_handler_dataObj
 ::closing_menu_popup(IN_THREAD_ONLY,
 		     const popupObj::handlerObj &popup)
 {
@@ -104,12 +104,12 @@ void all_opened_popupsObj
 			       ->lower_bound(popup.nesting_level));
 }
 
-void all_opened_popupsObj::close_all_menu_popups(IN_THREAD_ONLY)
+void shared_handler_dataObj::close_all_menu_popups(IN_THREAD_ONLY)
 {
 	hide_menu_popups_until(IN_THREAD, opened_menu_popups->end());
 }
 
-bool all_opened_popupsObj
+bool shared_handler_dataObj
 ::handle_key_event(IN_THREAD_ONLY,
 		   const xcb_key_release_event_t *event,
 		   bool keypress)
@@ -153,7 +153,7 @@ bool all_opened_popupsObj
 }
 
 ptr<generic_windowObj::handlerObj>
-all_opened_popupsObj::find_popup_for_xy(IN_THREAD_ONLY,
+shared_handler_dataObj::find_popup_for_xy(IN_THREAD_ONLY,
 					const motion_event &me)
 {
 	// If there's a combo-box popup, all motion events go there.

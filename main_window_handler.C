@@ -7,7 +7,7 @@
 #include "connection_thread.H"
 #include "draw_info.H"
 #include "layoutmanager.H"
-#include "all_opened_popups.H"
+#include "shared_handler_data.H"
 #include "batch_queue.H"
 #include "x/w/screen.H"
 #include "x/w/connection.H"
@@ -17,7 +17,7 @@ LIBCXXW_NAMESPACE_START
 main_windowObj::handlerObj::handlerObj(IN_THREAD_ONLY,
 				       const screen &parent_screen)
 	: generic_windowObj::handlerObj(IN_THREAD, parent_screen,
-					all_opened_popups::create(),
+					shared_handler_data::create(),
 					0),
 	on_delete_callback_thread_only([] {})
 {

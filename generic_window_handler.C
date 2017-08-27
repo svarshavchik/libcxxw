@@ -4,7 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "generic_window_handler.H"
-#include "all_opened_popups.H"
+#include "shared_handler_data.H"
 #include "connection_thread.H"
 #include "connectionfwd.H"
 #include "defaulttheme.H"
@@ -106,9 +106,9 @@ create_constructor_params(const screen &parent_screen,
 
 generic_windowObj::handlerObj::handlerObj(IN_THREAD_ONLY,
 					  const screen &parent_screen,
-					  const all_opened_popups &opened_popups,
+					  const shared_handler_data &handler_data,
 					  size_t nesting_level)
-	: handlerObj(IN_THREAD, opened_popups,
+	: handlerObj(IN_THREAD, handler_data,
 		     create_constructor_params(parent_screen,
 					       nesting_level))
 {
@@ -116,7 +116,7 @@ generic_windowObj::handlerObj::handlerObj(IN_THREAD_ONLY,
 
 generic_windowObj::handlerObj
 ::handlerObj(IN_THREAD_ONLY,
-	     const all_opened_popups &opened_popups,
+	     const shared_handler_data &handler_data,
 	     const constructor_params &params)
 	: // This sets up the xcb_window_t
 	  window_handlerObj(IN_THREAD,
@@ -142,7 +142,7 @@ generic_windowObj::handlerObj
 				   params.window_handler_params
 				   .events_and_mask.m.at(XCB_CW_EVENT_MASK)),
 	current_position(params.window_handler_params.initial_position),
-	opened_popups(opened_popups),
+	handler_data(handler_data),
 	disabled_mask_thread_only(create_icon_mm("disabled_mask",
 						 render_repeat::normal,
 						 0, 0)),
@@ -425,7 +425,7 @@ void generic_windowObj::handlerObj
 
 	if (pg)
 	{
-		if (opened_popups->handle_key_event(IN_THREAD, event, keypress))
+		if (handler_data->handle_key_event(IN_THREAD, event, keypress))
 			return;
 	}
 
@@ -929,7 +929,7 @@ ref<generic_windowObj::handlerObj> generic_windowObj::handlerObj
 		}
 
 		auto popup=most_recent_popup_with_pointer(IN_THREAD).getptr();
-		auto new_popup=opened_popups->find_popup_for_xy(IN_THREAD, me);
+		auto new_popup=handler_data->find_popup_for_xy(IN_THREAD, me);
 
 		// If we previously reported a motion event to a popup see if
 		// we can report the new motion event to the same popup.
