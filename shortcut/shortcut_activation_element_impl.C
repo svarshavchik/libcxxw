@@ -3,6 +3,7 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
+#include "shared_handler_data.H"
 #include "shortcut/shortcut_activation_element_impl.H"
 #include "activated_in_thread.H"
 #include "shortcut/installed_shortcut.H"
@@ -26,7 +27,8 @@ void shortcut_activation_element_implObj
 	auto is=installed_shortcut::create(new_shortcut, what_to_activate);
 
 	mpobj<shortcut_lookup_t>::lock
-		lock{shortcut_window_handler().installed_shortcuts};
+		lock{shortcut_window_handler().handler_data
+			->installed_shortcuts};
 
 	current_shortcut_iter=lock->insert({unicode_lc(new_shortcut.unicode),
 				is});
@@ -39,7 +41,8 @@ void shortcut_activation_element_implObj::uninstall_shortcut()
 		return;
 
 	mpobj<shortcut_lookup_t>::lock
-		lock{shortcut_window_handler().installed_shortcuts};
+		lock{shortcut_window_handler().handler_data
+			->installed_shortcuts};
 
 	lock->erase(current_shortcut_iter);
 	current_shortcut=nullptr;

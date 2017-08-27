@@ -6,6 +6,7 @@
 #include "shared_handler_data.H"
 #include "popup/popup.H"
 #include "generic_window_handler.H"
+#include "shortcut/installed_shortcut.H"
 
 LIBCXXW_NAMESPACE_START
 

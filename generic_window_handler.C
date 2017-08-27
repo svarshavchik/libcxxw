@@ -480,7 +480,8 @@ bool generic_windowObj::handlerObj
 
 	if (keypress)
 	{
-		mpobj<shortcut_lookup_t>::lock lock{installed_shortcuts};
+		mpobj<shortcut_lookup_t>::lock
+			lock{handler_data->installed_shortcuts};
 
 		auto shortcuts=lock->equal_range(unicode_lc(ke.unicode));
 

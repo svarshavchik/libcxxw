@@ -25,6 +25,11 @@ This object gets created and inserted into the main window handler object
 (generic_windowObj::handlerObj), then gets linked to each popup handler object
 created from that window, so that all popups have access to it.
 
+Keeps track of all installed shortcuts from the main window and all popups.
+
+So that a shortcut for a menu item will activate it, even when the menu item
+is closed.
+
 */
 
 typedef ref<shared_handler_dataObj> shared_handler_data;

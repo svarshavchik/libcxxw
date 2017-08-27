@@ -8,15 +8,15 @@
 #include "shared_handler_datafwd.H"
 #include "popup/popup_handler.H"
 #include "connection_threadfwd.H"
+#include "shortcut/installed_shortcutfwd.H"
 #include "x/w/generic_windowobj.H"
 #include "x/w/motion_event.H"
 
 #include <x/weaklist.H>
 #include <x/weakptr.H>
 #include <x/weakmultimap.H>
+#include <x/mpobj.H>
 #include <xcb/xproto.h>
-
-#include <optional>
 
 LIBCXXW_NAMESPACE_START
 
@@ -103,6 +103,10 @@ public:
 
 	ptr<generic_windowObj::handlerObj>
 		find_popup_for_xy(IN_THREAD_ONLY, const motion_event &);
+
+	//! Look up installed shortcuts
+
+	mpobj<shortcut_lookup_t> installed_shortcuts;
 };
 
 LIBCXXW_NAMESPACE_END

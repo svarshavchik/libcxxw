@@ -14,7 +14,6 @@
 #include "background_colorfwd.H"
 #include "connection_threadfwd.H"
 #include "container_elementfwd.H"
-#include "shortcut/installed_shortcutfwd.H"
 #include "grabbed_pointerfwd.H"
 #include "x/w/pictformatfwd.H"
 #include "x/w/types.H"
@@ -553,10 +552,6 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	ptr<focusableImplObj> most_recent_keyboard_focus_thread_only;
 
  public:
-
-	//! Look up installed shortcuts
-
-	mpobj<shortcut_lookup_t> installed_shortcuts;
 
 	THREAD_DATA_ONLY(focusable_fields);
 	THREAD_DATA_ONLY(most_recent_keyboard_focus);
