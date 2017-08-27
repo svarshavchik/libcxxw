@@ -54,11 +54,12 @@ void listlayoutmanagerObj::implObj::pointer_focus(IN_THREAD_ONLY,
 
 	grid_map_t::lock lock{grid_map};
 
-	auto [r, c]=lookup_row_col(lock, e);
+	auto looked_up=lookup_row_col(lock, e);
 
-
-	if (r == (size_t)-1)
+	if (!looked_up)
 		return;
+
+	auto [r, c] = looked_up.value();
 
 	highlighted_keyboard_focus_row(lock)= -1;
 
@@ -241,18 +242,20 @@ void listlayoutmanagerObj::implObj::refresh(IN_THREAD_ONLY,
 					    grid_map_t::lock &lock,
 					    const element &e)
 {
+	auto looked_up=lookup_row_col(lock, e->impl);
+
+	if (!looked_up)
+		return;
+
 	size_t r;
 
-	std::tie(r, std::ignore)=lookup_row_col(lock, e->impl);
-
-	if (r == (size_t)-1)
-		return;
+	std::tie(r, std::ignore)=looked_up.value();
 
 	style.refresh(IN_THREAD, *this, lock, r,
 		      highlighted_row(lock) == r);
 }
 
-std::tuple<size_t, size_t>
+std::optional<std::tuple<size_t, size_t>>
 listlayoutmanagerObj::implObj::lookup_row_col(grid_map_t::lock &lock,
 					      const ref<elementObj::implObj>
 					      &e)
@@ -262,9 +265,9 @@ listlayoutmanagerObj::implObj::lookup_row_col(grid_map_t::lock &lock,
 	auto iter=lookup_table.find(e);
 
 	if (iter != lookup_table.end())
-		return {iter->second->row, iter->second->col};
+		return std::tuple{iter->second->row, iter->second->col};
 
-	return {-1, -1};
+	return {};
 }
 
 void listlayoutmanagerObj::implObj
@@ -389,14 +392,15 @@ void listlayoutmanagerObj::implObj
 			 (IN_THREAD_ONLY)
 			 {
 				 list_lock lock{my_public_object};
+				 auto looked_up=my_public_object->impl
+					 ->lookup_row_col(lock, c->impl);
+
+				 if (!looked_up)
+					 return;
 
 				 size_t r;
 
-				 std::tie(r, std::ignore)=my_public_object->impl
-					 ->lookup_row_col(lock, c->impl);
-
-				 if (r == (size_t)-1)
-					 return;
+				 std::tie(r, std::ignore)=looked_up.value();
 
 				 callback(&*my_public_object->impl, IN_THREAD,
 					  my_public_object, lock, r);

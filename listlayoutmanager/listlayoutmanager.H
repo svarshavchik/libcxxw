@@ -16,6 +16,7 @@
 #include <x/functional.H>
 
 #include <tuple>
+#include <optional>
 
 LIBCXXW_NAMESPACE_START
 
@@ -280,7 +281,9 @@ class LIBCXX_HIDDEN listlayoutmanagerObj::implObj
  private:
 	//! Look up which row and column this element is in.
 
-	std::tuple<size_t, size_t>
+	//! Returns [row, col] if the element was found.
+
+	std::optional<std::tuple<size_t, size_t>>
 		lookup_row_col(grid_map_t::lock &lock,
 			       const ref<elementObj::implObj> &e);
 
