@@ -190,6 +190,23 @@ Overloads of append_item(), insert_item(), and replace_item() insert multiple
 list items in one operation. Multiple items may be specified either as
 variadic parameters, or a vector of \ref text_param "text_param"s.
 
+\par Separators
+
+\code
+l->append_separator();
+
+l->insert_separator(0);
+
+l->replace_separator(0);
+\endcode
+
+A list separator is a thin horizontal line that visually separates groups
+of item in the list. These methods add a new list separator. And although
+they do not have a
+need to formally create a factory, a separator counts as a list item.
+A list with two regular items, a separator, and two more items has a
+size() of 5.
+
 \par Lists with multiple columns.
 
 Overloaded bulk methods must be used with multiple column lists.

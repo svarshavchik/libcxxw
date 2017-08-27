@@ -5,7 +5,6 @@
 #include "libcxxw_config.h"
 #include "listlayoutmanager/listcontainer_impl.H"
 #include "listlayoutmanager/listitemcontainer_impl.H"
-#include "listlayoutmanager/firstlistitemcontainer.H"
 #include "listlayoutmanager/listitemlayoutmanager_impl.H"
 #include "listlayoutmanager/listlayoutmanager.H"
 #include "listlayoutmanager/listlayoutstyle.H"
@@ -15,6 +14,7 @@
 #include "grid_map_info.H"
 #include "background_color.H"
 #include "background_color_element.H"
+#include "straight_border.H"
 #include "icon_images_vector_element.H"
 #include "icon.H"
 #include "image.H"
@@ -35,12 +35,46 @@ class LIBCXX_HIDDEN listlayoutstyle_common : public listlayoutstyle {
 			 const batch_queue &queue,
 			 const new_list_items_t &new_list_items) const override;
 
+	void create_separator(const ref<listlayoutmanagerObj::implObj> &lilm,
+			      const gridfactory &underlying_factory,
+			      const batch_queue &queue) const override;
+
+ private:
+	template<typename functor>
+		inline void create_item_or_separator
+		(const ref<listlayoutmanagerObj::implObj> &lilm,
+		 size_t n,
+		 const gridfactory &underlying_factory,
+		 functor &&get_element,
+		 const batch_queue &queue,
+		 const std::function <list_item_status_change_callback_t>
+		 &status_change_callback) const
+	{
+		do_create_item_or_separator(lilm, n, underlying_factory,
+					    make_function
+					    <element (size_t)>
+					    (std::forward<functor>
+					     (get_element)),
+					    queue,
+					    status_change_callback);
+	}
+
+	void do_create_item_or_separator
+		(const ref<listlayoutmanagerObj::implObj> &lilm,
+		 size_t n,
+		 const gridfactory &underlying_factory,
+		 const function<element (size_t)> &get_element,
+		 const batch_queue &queue,
+		 const std::function <list_item_status_change_callback_t>
+		 &status_change_callback) const;
+
+ public:
 	//! Called by create_item()
 
 	//! Number of actual elements to create. It's new_list_items.size()
 	//! for a highlighted list, and one more for a checked list.
 
-	virtual size_t n_actual_elements(const new_list_items_t &new_list_items)
+	virtual size_t n_actual_elements(const ref<listlayoutmanagerObj::implObj> &lilm)
 		const =0;
 
 	//! Called by create_item()
@@ -79,8 +113,60 @@ void listlayoutstyle_common
 	      const batch_queue &queue,
 	      const new_list_items_t &new_list_items) const
 {
-	size_t n=n_actual_elements(new_list_items);
+	create_item_or_separator
+		(lilm,
+		 n_actual_elements(lilm),
+		 underlying_factory,
+		 [&, this]
+		 (size_t i)
+		 {
+			 return this->get_element_n(underlying_factory,
+						    new_list_items, i);
+		 },
+		 queue,
+		 new_list_items.status_change_callback);
+}
 
+void listlayoutstyle_common
+::create_separator(const ref<listlayoutmanagerObj::implObj> &lilm,
+		   const gridfactory &underlying_factory,
+		   const batch_queue &queue) const
+{
+	create_item_or_separator
+		(lilm,
+		 1,
+		 underlying_factory,
+		 [&]
+		 (size_t i)
+		 {
+			 auto container_impl=underlying_factory->container_impl;
+
+			 auto b=straight_border::base
+				 ::create_horizontal_separator
+				 (container_impl, "list_separator_border");
+
+			 ref<listitemcontainerObj::implObj>
+				 c=b->impl->child_container;
+
+			 c->get_shared_state()->state=
+				 listitem_sharedstateObj::state_t::unavailable;
+
+			 return b;
+		 },
+		 queue,
+		 std::function<list_item_status_change_callback_t>());
+}
+
+void listlayoutstyle_common
+::do_create_item_or_separator(const ref<listlayoutmanagerObj::implObj> &lilm,
+			      size_t n_elements,
+			      const gridfactory &underlying_factory,
+			      const function<element (size_t)> &get_element,
+			      const batch_queue &queue,
+			      const std::function
+			      <list_item_status_change_callback_t>
+			      &status_change_callback) const
+{
 	auto container_impl=lilm->container_impl;
 
 	auto v_padding=
@@ -96,6 +182,8 @@ void listlayoutstyle_common
 		static_cast<themedim_element<listcontainer_dim_right> &>
 		(*container_impl).getref();
 
+	listitemcontainerptr first_listitem;
+
 	// For each new_list_item:
 	//
 	// 1) Create the listitemlayoutmanager implementation object.
@@ -104,14 +192,13 @@ void listlayoutstyle_common
 	//
 	// 3) Pass it to the underlying_factory.
 
-	for (size_t i=0; i<n; i++)
+	for (size_t i=0; i<n_elements; ++i)
 	{
 		auto l=i == 0 ? left_padding:inner_padding;
-		auto r=i+1 == lilm->columns ?
+		auto r=i+1 == n_elements ?
 			right_padding:inner_padding;
 
-		auto item_e=get_element_n(underlying_factory,
-					  new_list_items, i);
+		auto item_e=get_element(i);
 
 		ref<child_elementObj> item_e_impl=item_e->impl;
 
@@ -123,11 +210,21 @@ void listlayoutstyle_common
 		auto lmi=ref<listitemlayoutmanagerObj::implObj>
 			::create(item_c, item_e,
 				 l, r, v_padding);
-		listitemcontainer c=
-			i == 0 ? (listitemcontainer)firstlistitemcontainer
-			::create(item_c, lmi,
-				 new_list_items.status_change_callback)
-			: listitemcontainer::create(item_c, lmi);
+
+		auto c=listitemcontainer::create(item_c, lmi);
+
+		// Put the same sharedstate object into all elements.
+
+		if (!first_listitem)
+		{
+			first_listitem=c;
+
+			c->impl->set_status_change_callback
+				(status_change_callback);
+		}
+		else
+			c->impl->set_shared_state
+				(first_listitem->impl->get_shared_state());
 
 		lmi->needs_recalculation(queue);
 
@@ -138,6 +235,17 @@ void listlayoutstyle_common
 		underlying_factory->padding(0);
 		underlying_factory->halign(halign::fill);
 		underlying_factory->valign(valign::fill);
+
+		// For an ordinary list item, n_elements == n_actual_elements
+		// so each one will always span one column.
+		//
+		// When we're creating the last item, if we've gotten fewer
+		// n_elements this must be a separator item that's colspan-ed
+		// across the entire table.
+		if (i+1 >= n_elements)
+		{
+			underlying_factory->colspan(n_actual_elements(lilm)-i);
+		}
 		underlying_factory->created_internally(c);
 	}
 }
@@ -193,11 +301,10 @@ class LIBCXX_HIDDEN highlighted_list_style_impl
  public:
 
 	//! Implement n_actual_elements()
-
-	size_t n_actual_elements(const new_list_items_t &new_list_items)
+	size_t n_actual_elements(const ref<listlayoutmanagerObj::implObj> &lilm)
 		const override
 	{
-		return new_list_items.elements.size();
+		return lilm->columns;
 	}
 
 	//! Implement get_element_n()
@@ -296,10 +403,10 @@ class LIBCXX_HIDDEN bulleted_list_style_impl
 
 	//! Implement n_actual_elements()
 
-	size_t n_actual_elements(const new_list_items_t &new_list_items)
+	size_t n_actual_elements(const ref<listlayoutmanagerObj::implObj> &lilm)
 		const override
 	{
-		return new_list_items.elements.size()+1;
+		return lilm->columns+1;
 	}
 
 	//! Implement get_element_n()

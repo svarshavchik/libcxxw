@@ -16,7 +16,10 @@ class custom_comboboxlayoutmanagerObj;
 
 The layout manager for a \ref new_custom_comboboxlayoutmanager "custom combo-box".
 
-Currently this is just a \ref listlayoutmanager "list layout manager".
+This is just a \ref listlayoutmanager "list layout manager" with
+a current_selection() method that returns the display elemet for the currently
+selected combo-box item.
+
 Modifying the underlying list ends up modifying the combo-box items.
 
 */

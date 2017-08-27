@@ -17,9 +17,9 @@ class standard_comboboxlayoutmanagerObj;
 A subclass of a \ref custom_comboboxlayoutmanager "custom combo-box layout manager"
 that implements a standard combo-box containing plain text labels.
 
-Only methods in this class should be used to modify the contents of the
+Use only the methods documented here to modify the contents of the
 combo-box. Do not use the methods from the inherited custom combo-box list
-layout manager, except as noted.
+layout manager, and the underlying list layout manager, except as noted.
 
 \code
 lm->append_item("Item");
@@ -43,6 +43,17 @@ INSERT_LIBX_NAMESPACE::w::text_param s=lm->item(0);
 
 size() returns the number of items in the list, and item() returns the
 given item number.
+
+\code
+l->append_separator();
+
+l->insert_separator(0);
+
+l->replace_separator(0);
+\endcode
+
+These methods, inherited from the underlying
+\ref listlayoutmanager "list layout manager", add a separator item.
 
 \code
 lm->autoselect(1);

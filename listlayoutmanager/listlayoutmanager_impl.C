@@ -6,7 +6,6 @@
 #include "listlayoutmanager/listlayoutmanager.H"
 #include "listlayoutmanager/listcontainer_impl.H"
 #include "listlayoutmanager/listitemcontainer_impl.H"
-#include "listlayoutmanager/firstlistitemcontainer.H"
 #include "listlayoutmanager/listlayoutstyle.H"
 #include "x/w/factory.H"
 #include "themedim.H"
@@ -46,9 +45,6 @@ void listlayoutmanagerObj::implObj::pointer_focus(IN_THREAD_ONLY,
 						  const ref<elementObj::implObj>
 						  &e)
 {
-	if (!e->enabled(IN_THREAD))
-		return;
-
 	auto focus_report=e->most_recent_pointer_focus_change(IN_THREAD);
 	bool flag=in_focus(focus_report);
 
@@ -71,7 +67,12 @@ void listlayoutmanagerObj::implObj::pointer_focus(IN_THREAD_ONLY,
 		return;
 	}
 
-	if (r != highlighted_row(lock))
+	if (!enabled(lock, r))
+	{
+		// Pointer is over a disabled list item.
+		unhighlight_current_row(IN_THREAD, lock);
+	}
+	else if (r != highlighted_row(lock))
 	{
 		unhighlight_current_row(IN_THREAD, lock);
 		highlighted_row(lock)=r;
@@ -148,12 +149,22 @@ bool listlayoutmanagerObj::implObj::process_key_event(IN_THREAD_ONLY,
 		{
 			if (i > 0)
 			{
-				unhighlight_current_row(IN_THREAD, lock);
-				highlighted_row(lock)= i-1;
-				highlighted_keyboard_focus_row(lock)=i-1;
+				while (i)
+				{
+					--i;
+					if (!enabled(lock, i))
+						continue;
 
-				highlight_current_row(IN_THREAD, lock);
-				ensure_current_row_is_visible(IN_THREAD, lock);
+					unhighlight_current_row(IN_THREAD,
+								lock);
+					highlighted_row(lock)=i;
+					highlighted_keyboard_focus_row(lock)=i;
+
+					highlight_current_row(IN_THREAD, lock);
+					ensure_current_row_is_visible(IN_THREAD,
+								      lock);
+					break;
+				}
 			}
 		}
 		return true;
@@ -167,9 +178,19 @@ bool listlayoutmanagerObj::implObj::process_key_event(IN_THREAD_ONLY,
 		}
 		else
 		{
-			if (++i >= s)
-				return true;
+			++i;
 		}
+
+		while (1)
+		{
+			if (i >= s)
+				return true;
+
+			if (enabled(lock, i))
+				break;
+			++i;
+		}
+
 		unhighlight_current_row(IN_THREAD, lock);
 		highlighted_row(lock)=i;
 		highlighted_keyboard_focus_row(lock)=i;
@@ -321,6 +342,21 @@ bool listlayoutmanagerObj::implObj::selected(grid_map_t::lock &lock, size_t i)
 	return c->impl->selected();
 }
 
+bool listlayoutmanagerObj::implObj::enabled(grid_map_t::lock &lock, size_t i)
+{
+	if (i >= (*lock)->elements.size())
+		return false;
+
+	auto &item_row=(*lock)->elements.at(i);
+
+	if (item_row.size() == 0) // Shouldn't happen
+		return false;
+
+	listitemcontainer c=item_row.at(0)->grid_element;
+
+	return c->impl->selectable() && c->impl->enabled();
+}
+
 void listlayoutmanagerObj::implObj::selected(const listlayoutmanager &me,
 					     grid_map_t::lock &lock, size_t i,
 					     bool selected_flag)
@@ -333,7 +369,7 @@ void listlayoutmanagerObj::implObj::selected(const listlayoutmanager &me,
 	if (item_row.size() == 0) // Shouldn't happen
 		return;
 
-	firstlistitemcontainer c=item_row.at(0)->grid_element;
+	listitemcontainer c=item_row.at(0)->grid_element;
 
 	if (c->impl->selected() == selected_flag)
 		return; // Nothing to do
@@ -350,13 +386,14 @@ void listlayoutmanagerObj::implObj::selected(const listlayoutmanager &me,
 			  me->impl->refresh(IN_THREAD, real_lock, c);
 		  });
 
+	auto callback=c->impl->get_status_change_callback();
 
 	busy_impl yes_i_am{container_impl->get_element_impl(), t};
 	list_lock real_lock{me};
 
 	try {
-		if (c->status_change_callback)
-			c->status_change_callback(real_lock, i,selected_flag);
+		if (callback)
+			callback(real_lock, i, selected_flag);
 
 	} CATCH_EXCEPTIONS;
 
@@ -506,12 +543,6 @@ void listlayoutmanagerObj::implObj
 	       const listlayoutstyle::new_list_items_t &new_item,
 	       size_t i)
 {
-	if (i >= (*lock)->elements.size())
-	{
-		append_item(me, new_item);
-		return;
-	}
-
 	auto f=replace_row(&*me, i);
 
 	style.create_item(me->impl,

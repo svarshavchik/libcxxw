@@ -147,6 +147,15 @@ public:
 	//! \overload
 	virtual void replace_all_items(const std::vector<text_param> &items);
 
+	//! Append a separator line.
+	virtual void append_separator();
+
+	//! Insert a separator line.
+	virtual void insert_separator(size_t item_number);
+
+	//! Replace an existing column with a separator line.
+	virtual void replace_separator(size_t item_number);
+
 	///////////////////////////////////////////////////////////////
 
 	//! Number of items in the list

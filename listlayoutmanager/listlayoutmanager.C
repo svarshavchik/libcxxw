@@ -106,6 +106,26 @@ void listlayoutmanagerObj::replace_all_items(const std::vector<text_param>
 	for (const auto &item:items)
 		f->create_label(item);
 }
+void listlayoutmanagerObj::append_separator()
+{
+	impl->style.create_separator(impl,
+				     impl->append_row(this),
+				     queue);
+}
+
+void listlayoutmanagerObj::insert_separator(size_t item_number)
+{
+	impl->style.create_separator(impl,
+				     impl->insert_row(this, item_number),
+				     queue);
+}
+
+void listlayoutmanagerObj::replace_separator(size_t item_number)
+{
+	impl->style.create_separator(impl,
+				     impl->replace_row(this, item_number),
+				     queue);
+}
 
 ////////////////////////////////////////////////////////////////////////////
 

@@ -57,6 +57,20 @@ public:
 				 const new_list_items_t &new_list_items)
 		const=0;
 
+	//! Create a visual separator.
+
+	//! This counts as one item in the list.
+	virtual void create_separator(//! The list item layout manager
+				      const ref<listlayoutmanagerObj::implObj> &lilm,
+
+				      //! The grid factory, for creating the new item
+				      const gridfactory &underlying_factory,
+
+				      //! Queue for queueing recalculations
+				      const batch_queue &queue)
+		const=0;
+
+
 	//! Highlight the given list item.
 
 	virtual void highlight(IN_THREAD_ONLY,

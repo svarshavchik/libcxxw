@@ -12,6 +12,8 @@ LIBCXXW_NAMESPACE_START
 
 class listitemcontainerObj;
 
+struct listitem_sharedstateObj;
+
 //! A container that uses the listitemlayoutmanager.
 
 //! The actual element that gets added to a grid container that pinch-hits

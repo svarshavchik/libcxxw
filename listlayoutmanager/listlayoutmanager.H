@@ -404,6 +404,10 @@ class LIBCXX_HIDDEN listlayoutmanagerObj::implObj
 
 	void autoselect(IN_THREAD_ONLY, const listlayoutmanager &me,
 			list_lock &lock, size_t item_number);
+
+
+	//! Whether this list item is enabled
+	static bool enabled(grid_map_t::lock &, size_t);
 };
 
 LIBCXXW_NAMESPACE_END

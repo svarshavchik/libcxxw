@@ -174,7 +174,7 @@ void testcombobox(const testcombobox_options &options)
 					 std::cout << "Appended" << std::endl;
 				 });
 
-			 			 factory=layout->append_row();
+			 factory=layout->append_row();
 
 			 factory->halign(halign::center)
 			 .create_normal_button_with_label("Delete")
@@ -186,6 +186,28 @@ void testcombobox(const testcombobox_options &options)
 						 return;
 
 					 lm->remove_item(0);
+				 });
+
+			 factory=layout->append_row();
+
+			 factory->halign(halign::center)
+			 .create_normal_button_with_label({"Append Separator"})
+			 ->on_activate([combobox](const auto &) {
+					 standard_comboboxlayoutmanager lm=
+						 combobox->get_layoutmanager();
+
+					 lm->append_separator();
+				 });
+
+			 factory=layout->append_row();
+
+			 factory->halign(halign::center)
+			 .create_normal_button_with_label({"Insert Separator"})
+			 ->on_activate([combobox](const auto &) {
+					 standard_comboboxlayoutmanager lm=
+						 combobox->get_layoutmanager();
+
+					 lm->insert_separator(0);
 				 });
 
 		 });

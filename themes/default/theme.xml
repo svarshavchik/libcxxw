@@ -306,6 +306,12 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
 
   <border id="list_border" from="thin_0%" />
 
+  <border id="list_separator_border" from="thin_0%">
+    <color>0%</color>
+    <color2>50%</color2>
+    <dash axis="horiz">1</dash>
+  </border>
+
   <color id="list_label_color" scale="10%" />
 
   <color id="list_background_color" scale="100%" />
