@@ -13,10 +13,12 @@
 #include "listlayoutmanager/listlayoutstyle.H"
 #include "listlayoutmanager/listitemfactoryfwd.H"
 #include "listlayoutmanager/listitemfactoryobj.H"
+#include "listlayoutmanager/listitemcontainerfwd.H"
 #include <x/functional.H>
 
 #include <tuple>
 #include <optional>
+#include <utility>
 
 LIBCXXW_NAMESPACE_START
 
@@ -270,6 +272,9 @@ class LIBCXX_HIDDEN listlayoutmanagerObj::implObj
 	//! I just lost or gained keyboard focus.
 	void keyboard_focus(IN_THREAD_ONLY, bool flag);
 
+	//! I just become visible or invisible.
+	void inherited_visibility_updated(IN_THREAD_ONLY, bool) override;
+
 	//! Process cursor down/up events.
 	bool process_key_event(IN_THREAD_ONLY, const key_event &ke);
 
@@ -290,6 +295,11 @@ class LIBCXX_HIDDEN listlayoutmanagerObj::implObj
 					  const ref<child_elementObj>
 					  &item_impl);
  private:
+
+	//! Locate a given item's listitemcontainer, if the item exists.
+
+	static listitemcontainerptr get_listitemcontainer(grid_map_t::lock &l,
+							  size_t i);
 
 	//! Refresh the visual representation of a list item.
 

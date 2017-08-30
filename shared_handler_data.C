@@ -38,6 +38,11 @@ shared_handler_dataObj::shared_handler_dataObj()
 
 shared_handler_dataObj::~shared_handler_dataObj()=default;
 
+void shared_handler_dataObj::set_toplevel_handler(const ref<generic_windowObj
+						  ::handlerObj> &h)
+{
+	toplevel_handler=h;
+}
 
 ref<obj> shared_handler_dataObj
 ::opening_combobox_popup(IN_THREAD_ONLY,
@@ -108,6 +113,9 @@ void shared_handler_dataObj
 void shared_handler_dataObj::close_all_menu_popups(IN_THREAD_ONLY)
 {
 	hide_menu_popups_until(IN_THREAD, opened_menu_popups->end());
+	auto h=toplevel_handler.getptr();
+	if (h)
+		h->unset_keyboard_focus(IN_THREAD);
 }
 
 bool shared_handler_dataObj

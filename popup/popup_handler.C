@@ -177,6 +177,7 @@ void popupObj::handlerObj::set_inherited_visibility(IN_THREAD_ONLY,
 		opened_mcguffin=nullptr;
 		released_opened_mcguffin(IN_THREAD);
 		closing_popup(IN_THREAD);
+		unset_keyboard_focus(IN_THREAD);
 	}
 }
 

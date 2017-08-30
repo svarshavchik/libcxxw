@@ -55,6 +55,11 @@ void layoutmanagerObj::implObj
 {
 }
 
+void layoutmanagerObj::implObj
+::inherited_visibility_updated(IN_THREAD_ONLY, bool)
+{
+}
+
 rectangle layoutmanagerObj::implObj::padded_position(IN_THREAD_ONLY,
 						     const elementimpl &e_impl)
 {

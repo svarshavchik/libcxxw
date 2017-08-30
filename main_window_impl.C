@@ -6,6 +6,7 @@
 #include "impl_connection_thread.H"
 #include "main_window.H"
 #include "main_window_handler.H"
+#include "shared_handler_data.H"
 #include "x/w/container.H"
 #include "run_as.H"
 #include "connection_info.H"
@@ -29,6 +30,7 @@ main_windowObj::implObj::implObj(const ref<handlerObj> &handler,
 	menubar_container(menubar_container),
 	app_container(app_container)
 {
+	handler->handler_data->set_toplevel_handler(handler);
 }
 
 main_windowObj::implObj::~implObj()=default;

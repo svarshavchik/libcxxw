@@ -216,6 +216,14 @@ void containerObj::implObj
 
 	get_element_impl().do_inherited_visibility_updated(IN_THREAD, info);
 
+	invoke_layoutmanager
+		([&]
+		 (const auto &manager)
+		 {
+			 manager->inherited_visibility_updated(IN_THREAD,
+							       info.flag);
+		 });
+
 	if (info.flag)
 		propagate_inherited_visibility(IN_THREAD, info);
 }

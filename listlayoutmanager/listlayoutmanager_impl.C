@@ -67,7 +67,9 @@ void listlayoutmanagerObj::implObj::pointer_focus(IN_THREAD_ONLY,
 		return;
 	}
 
-	if (!enabled(lock, r))
+	if (!enabled(lock, r)
+	    || !container_impl->get_element_impl().data(IN_THREAD)
+	    .inherited_visibility)
 	{
 		// Pointer is over a disabled list item.
 		unhighlight_current_row(IN_THREAD, lock);
@@ -201,6 +203,28 @@ bool listlayoutmanagerObj::implObj::process_key_event(IN_THREAD_ONLY,
 	return false;
 }
 
+void listlayoutmanagerObj::implObj
+::inherited_visibility_updated(IN_THREAD_ONLY, bool flag)
+{
+	// If this is a popup that's just been closed, unhighlight the current
+	// selection, so when the popup comes back up we don't confusingly
+	// show the same row.
+
+	if (!flag)
+	{
+		grid_map_t::lock lock{grid_map};
+
+		unhighlight_current_row(IN_THREAD, lock);
+
+		// This call to unhighlight_current_row() may not clear
+		// highlighted_keyboard_focus_row, and we need to.
+		//
+		// Keyboard unfocus only clears highlight_current_row, and if
+		// it gets reported first, we have to do this here:
+		highlighted_keyboard_focus_row(lock)= -1;
+	}
+}
+
 void listlayoutmanagerObj::implObj::unhighlight_current_row(IN_THREAD_ONLY,
 							    grid_map_t::lock &lock)
 {
@@ -317,35 +341,34 @@ size_t listlayoutmanagerObj::implObj::size(grid_map_t::lock &lock) const
 	return (*lock)->elements.size();
 }
 
+listitemcontainerptr listlayoutmanagerObj::implObj
+::get_listitemcontainer(grid_map_t::lock &l, size_t i)
+{
+	listitemcontainerptr c;
+
+	if (i < (*l)->elements.size())
+	{
+		auto &item_row=(*l)->elements.at(i);
+
+		if (item_row.size() > 0) // Shouldn't happen
+			c=(*--item_row.end())->grid_element;
+	}
+	return c;
+}
+
 bool listlayoutmanagerObj::implObj::selected(grid_map_t::lock &lock, size_t i)
 	const
 {
-	if (i >= (*lock)->elements.size())
-		return false;
+	auto c=get_listitemcontainer(lock, i);
 
-	auto &item_row=(*lock)->elements.at(i);
-
-	if (item_row.size() == 0) // Shouldn't happen
-		return false;
-
-	listitemcontainer c=item_row.at(0)->grid_element;
-
-	return c->impl->selected();
+	return c ? c->impl->selected():false;
 }
 
 bool listlayoutmanagerObj::implObj::enabled(grid_map_t::lock &lock, size_t i)
 {
-	if (i >= (*lock)->elements.size())
-		return false;
+	auto c=get_listitemcontainer(lock, i);
 
-	auto &item_row=(*lock)->elements.at(i);
-
-	if (item_row.size() == 0) // Shouldn't happen
-		return false;
-
-	listitemcontainer c=item_row.at(0)->grid_element;
-
-	return c->impl->selectable() && c->impl->enabled();
+	return c && c->impl->selectable() && c->impl->enabled();
 }
 
 void listlayoutmanagerObj::implObj::enabled(IN_THREAD_ONLY,
@@ -357,9 +380,7 @@ void listlayoutmanagerObj::implObj::enabled(IN_THREAD_ONLY,
 
 	auto &item_row=(*lock)->elements.at(i);
 
-	auto n=item_row.size();
-
-	if (n == 0) // Shouldn't happen
+	if (item_row.empty())
 		return;
 
 	listitemcontainer c=item_row.at(0)->grid_element;
@@ -382,15 +403,10 @@ void listlayoutmanagerObj::implObj::selected(const listlayoutmanager &me,
 					     grid_map_t::lock &lock, size_t i,
 					     bool selected_flag)
 {
-	if (i >= (*lock)->elements.size())
+	auto c=get_listitemcontainer(lock, i);
+
+	if (!c)
 		return;
-
-	auto &item_row=(*lock)->elements.at(i);
-
-	if (item_row.size() == 0) // Shouldn't happen
-		return;
-
-	listitemcontainer c=item_row.at(0)->grid_element;
 
 	if (c->impl->selected() == selected_flag)
 		return; // Nothing to do
@@ -449,20 +465,15 @@ void listlayoutmanagerObj::implObj
 		       grid_map_t::lock &lock, size_t i,
 		       const std::function<connection_thread_op_t> &callback)
 {
-	if (i >= (*lock)->elements.size())
-		return;
+	auto c=get_listitemcontainer(lock, i);
 
-	auto &item_row=(*lock)->elements.at(i);
-
-	if (item_row.size() == 0) // Shouldn't happen
+	if (!c)
 		return;
 
 	// The item number can change, when the connection thread runs.
 	//
 	// So what we do is capture the list item, then in the connection
 	// thread look up the item number again, and roll with it.
-
-	auto c=item_row.at(0)->grid_element;
 
 	container_impl->get_element_impl().THREAD
 		->run_as([c, my_public_object, callback]

@@ -124,6 +124,10 @@ class LIBCXX_HIDDEN layoutmanagerObj::implObj : virtual public obj {
 	virtual void child_visibility_changed(IN_THREAD_ONLY,
 					      const elementimpl &child);
 
+	//! The container's visibility has changed
+
+	virtual void inherited_visibility_updated(IN_THREAD_ONLY, bool);
+
 	//! Return the child element position that includes any container-provided padding.
 
 	//! The default implementation returns the same rectangle as the
