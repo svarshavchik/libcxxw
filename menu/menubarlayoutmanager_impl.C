@@ -232,7 +232,7 @@ void menubarlayoutmanagerObj::implObj
 	auto type=extrainfo->menuitem_type.get();
 
 	std::visit(visitor{
-			[&](const menuitem_plain &pl)
+			[&](const created_menuitem_plain &pl)
 			{
 				// Have multiple_selection_type take care
 				// of flipping an option on and off. It knows
@@ -272,6 +272,6 @@ void menubarlayoutmanagerObj::implObj
 							});
 					} CATCH_EXCEPTIONS;
 			}
-		}, static_cast<const menuitem_type_t &>(*type));
+		}, static_cast<const created_menuitem_type_t &>(*type));
 }
 LIBCXXW_NAMESPACE_END

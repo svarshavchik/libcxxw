@@ -47,7 +47,6 @@ struct menuitem_plain;
 
 typedef std::variant<menuitem_plain> menuitem_type_t;
 
-
 //! Menus use the same lock as lists, for now.
 
 typedef list_lock menu_lock;

@@ -5,8 +5,10 @@
 #ifndef x_w_menuitemextrainfofwd_h
 #define x_w_menuitemextrainfofwd_h
 
-#include <x/w/namespace.H>
+#include "x/w/namespace.H"
+#include "x/w/menulayoutmanagerfwd.H"
 #include <x/ptrfwd.H>
+#include <utility>
 
 LIBCXXW_NAMESPACE_START
 
@@ -37,11 +39,13 @@ typedef const_ref<menuitemextrainfoObj> const_menuitemextrainfo;
 
 typedef ptr<menuitemextrainfoObj> menuitemextrainfoptr;
 
-//! A nullable pointer reference to a const \ref menuitemextrainfo "menu item metadata".
+//! A created plain menu item.
 
-//! \see menuitemextrainfo
+struct created_menuitem_plain;
 
-typedef const_ptr<menuitemextrainfoObj> const_menuitemextrainfoptr;
+//! The type of a created menu item.
+
+typedef std::variant<created_menuitem_plain> created_menuitem_type_t;
 
 LIBCXXW_NAMESPACE_END
 

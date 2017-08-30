@@ -16,6 +16,14 @@
 
 LIBCXXW_NAMESPACE_START
 
+struct LIBCXX_HIDDEN construct_created_type_t {
+
+	created_menuitem_type_t operator()(const menuitem_plain &p)
+	{
+		return created_menuitem_plain{p};
+	}
+};
+
 // Construct the element for the given menuitem_type.
 
 static element element_for(const ref<menuitemextrainfoObj::implObj>
@@ -76,7 +84,8 @@ menuitemextrainfoObj::menuitemextrainfoObj(const ref<implObj> &impl,
 		       ref<menuitemextrainfo_layoutmanager_implObj>
 		       ::create(impl, element_for(impl, menuitem_type))),
 	  impl(impl),
-	  menuitem_type(menuitem_type)
+	  menuitem_type(std::visit(construct_created_type_t{},
+				   menuitem_type))
 {
 	// Need to trigger the recalculation
 	get_layout_impl()->create_public_object();
@@ -153,7 +162,9 @@ void menuitemextrainfoObj::update(const menuitem_type_t &new_type)
 		 (auto &type)
 		 {
 			 f->created_internally(new_element);
-			 type=new_type;
+
+			 type=std::visit(construct_created_type_t{},
+					 new_type);
 		 });
 	update_shortcut(new_type);
 }

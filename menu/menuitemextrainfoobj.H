@@ -31,7 +31,7 @@ public:
 
 	//! The type of this menu item.
 
-	mp<menuitem_type_t> menuitem_type;
+	mp<created_menuitem_type_t> menuitem_type;
 
 	//! Constructor
 	menuitemextrainfoObj(const ref<implObj> &impl,
