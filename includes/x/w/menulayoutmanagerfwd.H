@@ -42,10 +42,13 @@ typedef ptr<menulayoutmanagerObj> menulayoutmanagerptr;
 typedef const_ptr<menulayoutmanagerObj> const_menulayoutmanagerptr;
 
 struct menuitem_plain;
+struct menuitem_submenu;
 
 //! The menu item type
 
-typedef std::variant<menuitem_plain> menuitem_type_t;
+//! The default menu item type is menuitem_plain.
+
+typedef std::variant<menuitem_plain, menuitem_submenu> menuitem_type_t;
 
 //! Menus use the same lock as lists, for now.
 

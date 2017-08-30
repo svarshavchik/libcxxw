@@ -11,6 +11,7 @@
 LIBCXXW_NAMESPACE_START
 
 class popupObj;
+class popup_attachedto_handlerObj;
 
 //! A popup.
 

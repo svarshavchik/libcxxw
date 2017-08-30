@@ -7,6 +7,7 @@
 
 #include "menu/menuitemextrainfofwd.H"
 #include "menu/menuitemextrainfoobj.H"
+#include "popup/popupfwd.H"
 #include "x/w/menulayoutmanager.H"
 #include <x/ref.H>
 
@@ -28,6 +29,23 @@ struct LIBCXX_HIDDEN created_menuitem_plain {
 		on_activate(t.on_activate)
 		{
 		}
+};
+
+//! A created submenu item.
+
+struct LIBCXX_HIDDEN created_menuitem_submenu {
+
+	//! Constructor
+	created_menuitem_submenu(const menuitem_submenu &,
+				 const popup &submenu_popup,
+				 const ref<popup_attachedto_handlerObj>
+				 &submenu_popup_handler);
+
+	//! The submenu popup
+	popup submenu_popup;
+
+	//! Submenu popup's handler.
+	ref<popup_attachedto_handlerObj> submenu_popup_handler;
 };
 
 LIBCXXW_NAMESPACE_END

@@ -1,0 +1,217 @@
+<?xml version="1.0"?>
+
+<sxg xmlns:xi="http://www.w3.org/2003/XInclude">
+  <width>30</width>
+  <height>30</height>
+
+  <widthmm>5</widthmm>
+  <heightmm>5</heightmm>
+
+  <widthfactor>5</widthfactor>
+  <heightfactor>5</heightfactor>
+
+
+  <picture id="chevron_outline">
+    <type>rgb</type>
+    <color>30%</color>
+  </picture>
+
+  <picture id="chevron_fill">
+    <type>rgb</type>
+    <color>0%</color>
+  </picture>
+
+  <pixmap id="mask">
+    <size>scaled</size>
+    <width>35</width>
+    <height>35</height>
+    <gc id="mask_gc" />
+  </pixmap>
+
+  <render id="main">
+    <tristrip>
+      <op>over</op>
+      <mask>mask</mask>
+      <src>chevron_outline</src>
+      <point>
+	<x>15</x>
+	<y>5</y>
+      </point>
+      <point>
+	<x>20</x>
+	<y>5</y>
+      </point>
+      <point>
+	<x>20</x>
+	<y>15.5</y>
+      </point>
+      <point>
+	<x>25</x>
+	<y>15.5</y>
+      </point>
+      <point>
+	<x>20</x>
+	<y>26</y>
+      </point>
+    </tristrip>
+
+    <tristrip>
+      <op>over</op>
+      <mask>mask</mask>
+      <src>chevron_outline</src>
+      <point>
+	<x>25</x>
+	<y>15.5</y>
+      </point>
+      <point>
+	<x>20</x>
+	<y>15.5</y>
+      </point>
+      <point>
+	<x>20</x>
+	<y>26</y>
+      </point>
+      <point>
+	<x>15</x>
+	<y>26</y>
+      </point>
+    </tristrip>
+
+    <tristrip>
+      <op>over</op>
+      <mask>mask</mask>
+      <src>chevron_outline</src>
+      <point>
+	<x>5</x>
+	<y>5</y>
+      </point>
+      <point>
+	<x>10</x>
+	<y>5</y>
+      </point>
+      <point>
+	<x>10</x>
+	<y>15.5</y>
+      </point>
+      <point>
+	<x>15</x>
+	<y>15.5</y>
+      </point>
+      <point>
+	<x>10</x>
+	<y>26</y>
+      </point>
+    </tristrip>
+
+    <tristrip>
+      <op>over</op>
+      <mask>mask</mask>
+      <src>chevron_outline</src>
+      <point>
+	<x>15</x>
+	<y>15.5</y>
+      </point>
+      <point>
+	<x>10</x>
+	<y>15.5</y>
+      </point>
+      <point>
+	<x>10</x>
+	<y>26</y>
+      </point>
+      <point>
+	<x>5</x>
+	<y>26</y>
+      </point>
+    </tristrip>
+  </render>
+
+  <gc id="mask_gc">
+
+    <function>set</function>
+    <line_width>2</line_width>
+
+    <line>
+      <point>
+	<x>17.5</x>
+	<y>5</y>
+      </point>
+
+      <point>
+	<x>22.5</x>
+	<y>15.5</y>
+      </point>
+
+      <point>
+	<x>17.5</x>
+	<y>26</y>
+      </point>
+    </line>
+
+    <line>
+      <point>
+	<x>7.5</x>
+	<y>5</y>
+      </point>
+
+      <point>
+	<x>12.5</x>
+	<y>15.5</y>
+      </point>
+
+      <point>
+	<x>7.5</x>
+	<y>26</y>
+      </point>
+    </line>
+
+    <function>clear</function>
+    <line_width>5</line_width>
+
+    <line>
+      <point>
+	<x>5</x>
+	<y>5</y>
+      </point>
+
+      <point>
+	<x>30</x>
+	<y>5</y>
+      </point>
+    </line>
+
+    <line>
+      <point>
+	<x>5</x>
+	<y>26</y>
+      </point>
+
+      <point>
+	<x>30</x>
+	<y>26</y>
+      </point>
+    </line>
+  </gc>
+
+  <render id="main">
+    <composite>
+      <op>over</op>
+
+      <y>0</y>
+      <x>0</x>
+      <width>30</width>
+      <height>30</height>
+      <mask>
+	<pixmap>mask</pixmap>
+	<y>0</y>
+	<x>0</x>
+      </mask>
+
+      <src>
+	<picture>chevron_fill</picture>
+	<y>0</y>
+	<x>0</x>
+      </src>
+    </composite>
+  </render>
+</sxg>

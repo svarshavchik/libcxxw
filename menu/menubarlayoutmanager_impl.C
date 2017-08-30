@@ -54,16 +54,13 @@ void menubarlayoutmanagerObj::implObj::initialize(menubarlayoutmanagerObj
 	f->create_canvas();
 }
 
-menu menubarlayoutmanagerObj::implObj
-::add(menubarlayoutmanagerObj *public_object,
-      const gridfactory &factory,
-      const function<menubarfactoryObj::menu_creator_t> &creator,
-      const function<menubarfactoryObj::menu_content_creator_t>
-      &content_creator,
-      menubar_lock &lock)
+std::tuple<popup, ref<popup_attachedto_handlerObj> >
+menubarlayoutmanagerObj::implObj
+::do_create_popup_menu(const elementimpl &e,
+		       const function<void (const menulayoutmanager
+					    &)> &creator,
+		       attached_to attached_to_how)
 {
-	// Start by creating the popup first.
-
 	new_listlayoutmanager style{bulleted_list};
 
 	style.background_color="menu_popup_background_color";
@@ -73,16 +70,12 @@ menu menubarlayoutmanagerObj::implObj
 
 	style.selection_type=&menuitem_selected;
 
-	auto &e=container_impl->get_element_impl();
-
-	auto [menu_popup, popup_handler]=
-		create_peepholed_toplevel_listcontainer_popup
+	return create_peepholed_toplevel_listcontainer_popup
 		({
-			ref<elementObj::implObj>(&e),
-				"dropdown_menu,popup_menu",
+			e, "dropdown_menu,popup_menu",
 				"menu_popup_border",
-				1,
-				attached_to::combobox_above_or_below,
+				0,
+				attached_to_how,
 				create_menu_popup,
 				style},
 			[&]
@@ -108,11 +101,27 @@ menu menubarlayoutmanagerObj::implObj
 							    impl, impl,
 							    layout_impl);
 
-				content_creator(layout_impl
-						->create_public_object());
+				creator(layout_impl->create_public_object());
 
 				return c;
 			});
+}
+
+menu menubarlayoutmanagerObj::implObj
+::add(menubarlayoutmanagerObj *public_object,
+      const gridfactory &factory,
+      const function<menubarfactoryObj::menu_creator_t> &creator,
+      const function<menubarfactoryObj::menu_content_creator_t>
+      &content_creator,
+      menubar_lock &lock)
+{
+	// Start by creating the popup first.
+
+	auto &e=container_impl->get_element_impl();
+
+	auto [menu_popup, popup_handler]=
+		do_create_popup_menu(ref(&e), content_creator,
+				     attached_to::combobox_above_or_below);
 
 	auto menu_impl=ref<menuObj::implObj>::create(menu_popup, popup_handler,
 						     container_impl);
@@ -271,6 +280,11 @@ void menubarlayoutmanagerObj::implObj
 								mcguffin
 							});
 					} CATCH_EXCEPTIONS;
+			},
+			[&](const created_menuitem_submenu &pl)
+			{
+				pl.submenu_popup->elementObj::impl
+					->toggle_visibility();
 			}
 		}, static_cast<const created_menuitem_type_t &>(*type));
 }

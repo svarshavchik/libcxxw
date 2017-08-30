@@ -19,8 +19,8 @@ LIBCXXW_NAMESPACE_START
 
 //! \see menuitemextrainfo
 
-class menuitemextrainfoObj : public containerObj,
-			     public activated_in_threadObj {
+class LIBCXX_HIDDEN menuitemextrainfoObj : public containerObj,
+					   public activated_in_threadObj {
 
 public:
 	class implObj;
@@ -35,11 +35,16 @@ public:
 
 	//! Constructor
 	menuitemextrainfoObj(const ref<implObj> &impl,
-			     const menuitem_type_t &menuitem_type)
-		LIBCXX_HIDDEN;
+			     const menuitem_type_t &menuitem_type);
 
+ private:
+	menuitemextrainfoObj(const ref<implObj> &impl,
+			     const menuitem_type_t &menuitem_type,
+			     const created_menuitem_type_t
+			     &created_menuitem_type);
+ public:
 	//! Destructor
-	~menuitemextrainfoObj() LIBCXX_HIDDEN;
+	~menuitemextrainfoObj();
 
 	//! After construction, update the installed shortcut.
 

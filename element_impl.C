@@ -106,6 +106,16 @@ void elementObj::implObj::removed(IN_THREAD_ONLY)
 {
 }
 
+void elementObj::implObj::toggle_visibility()
+{
+	THREAD->get_batch_queue()
+		->run_as([me=ref(this)]
+			 (IN_THREAD_ONLY)
+			 {
+				 me->toggle_visibility(IN_THREAD);
+			 });
+}
+
 void elementObj::implObj::request_visibility(bool flag)
 {
 	// Set requested_visibility, make sure this is done in the connection
@@ -123,6 +133,12 @@ void elementObj::implObj::request_visibility(bool flag)
 		 {
 			 me->request_visibility(IN_THREAD, flag);
 		 });
+}
+
+void elementObj::implObj::toggle_visibility(IN_THREAD_ONLY)
+{
+	request_visibility(IN_THREAD,
+			   !data(IN_THREAD).requested_visibility);
 }
 
 void elementObj::implObj::request_visibility(IN_THREAD_ONLY, bool flag)

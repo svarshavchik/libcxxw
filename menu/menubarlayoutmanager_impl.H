@@ -10,8 +10,12 @@
 #include "x/w/gridfactoryfwd.H"
 #include "gridlayoutmanager.H"
 #include "menu/menubar_container_implfwd.H"
+#include "popup/popupfwd.H"
+#include "popup/popup_attachedto_handler.H"
 
 #include <x/mpobj.H>
+#include <x/functional.H>
+#include <tuple>
 
 LIBCXXW_NAMESPACE_START
 
@@ -86,6 +90,34 @@ class LIBCXX_HIDDEN menubarlayoutmanagerObj::implObj
 				      const listlayoutmanager &lm,
 				      size_t i,
 				      const busy &mcguffin);
+
+	//! Create a popup menu and its attachment handler.
+
+	//! Shared code by the menubar layout manager, to create a new menu
+	//! popup and also by the menu layout manager, to create a submenu
+	//! popup.
+
+	template<typename creator_t>
+	static inline auto create_popup_menu(const elementimpl &e,
+					     creator_t &&creator,
+					     attached_to attached_to_how)
+	{
+		return do_create_popup_menu(e,
+					    make_function<void
+					    (const menulayoutmanager &)>
+					    (std::forward<creator_t>(creator)),
+					    attached_to_how);
+	}
+
+	//! Create a popup menu and its attachment handler.
+
+	static std::tuple<popup, ref<popup_attachedto_handlerObj> >
+		do_create_popup_menu(const elementimpl &e,
+				     const function<void (const
+							  menulayoutmanager &)>
+				     &creator,
+				     attached_to attached_to_how);
+
 };
 
 LIBCXXW_NAMESPACE_END

@@ -43,9 +43,14 @@ typedef ptr<menuitemextrainfoObj> menuitemextrainfoptr;
 
 struct created_menuitem_plain;
 
+//! A created submenu item.
+
+struct created_menuitem_submenu;
+
 //! The type of a created menu item.
 
-typedef std::variant<created_menuitem_plain> created_menuitem_type_t;
+typedef std::variant<created_menuitem_submenu,
+		     created_menuitem_plain> created_menuitem_type_t;
 
 LIBCXXW_NAMESPACE_END
 

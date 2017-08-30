@@ -59,7 +59,7 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 // **** use get_horizvert() to access it. ****
 					  private metrics::horizvertObj {
 
- protected:
+ public:
 	LOG_CLASS_SCOPE;
  private:
 
@@ -389,6 +389,10 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 	void request_visibility(bool flag);
 
+	//! Show or hide() this display element.
+
+	void toggle_visibility();
+
 	//! show() or hide() this display element.
 
 	//! Executed in the connection thread.
@@ -400,6 +404,11 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! width, first.
 
 	virtual void request_visibility(IN_THREAD_ONLY, bool flag);
+
+	//! show() or hide() this display element.
+
+	//! Executed in the connection thread.
+	void toggle_visibility(IN_THREAD_ONLY);
 
 	//! Schedule update_visibility() to be invoke by the connection thread.
 

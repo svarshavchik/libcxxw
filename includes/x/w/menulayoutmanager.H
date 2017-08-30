@@ -49,6 +49,17 @@ struct menuitem_plain {
 	shortcut menuitem_shortcut;
 };
 
+//! This is a menu item entry for a sub menu.
+
+//! One of the possible \ref menuitem_type_t "menuitem_type_t"s.
+
+struct menuitem_submenu {
+
+	//! Callback invoked to create the submenu.
+
+	std::function<void (const menulayoutmanager &)> creator;
+};
+
 LIBCXXW_NAMESPACE_END
 
 #endif

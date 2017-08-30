@@ -21,6 +21,7 @@
 #include "x/w/label.H"
 #include <string>
 #include <iostream>
+#include <sstream>
 
 class close_flagObj : public LIBCXX_NAMESPACE::obj {
 
@@ -92,8 +93,34 @@ void file_menu(const LIBCXX_NAMESPACE::w::menulayoutmanager &m,
 			l->enabled(view_options_item,
 				   !l->enabled(view_options_item));
 		};
+
+	LIBCXX_NAMESPACE::w::menuitem_submenu file_recent_type;
+
+	file_recent_type.creator=
+		[](const LIBCXX_NAMESPACE::w::menulayoutmanager &recent_menu)
+		{
+			for (size_t i=1; i <= 4; ++i)
+			{
+				LIBCXX_NAMESPACE::w::menuitem_plain recent;
+
+				std::ostringstream o;
+
+				o << "Recent submenu #" << i;
+
+				auto s=o.str();
+
+				recent.on_activate=[s]
+				(const auto &ignore) {
+					std::cout << s << std::endl;
+				};
+
+				recent_menu->append_menu_item(recent, s);
+			}
+		};
+
 	m->append_menu_item("",
 			    file_toggle_options_type, "Toggle Options",
+			    file_recent_type, "Recent",
 			    "Quit");
 
 	LIBCXX_NAMESPACE::w::menuitem_plain file_quit_type;
@@ -103,7 +130,7 @@ void file_menu(const LIBCXX_NAMESPACE::w::menulayoutmanager &m,
 		{
 			std::cout << "File->Quit selected" << std::endl;
 		};
-	m->update(5, file_quit_type);
+	m->update(6, file_quit_type);
 }
 
 LIBCXX_NAMESPACE::w::element view_menu(const LIBCXX_NAMESPACE::w::menulayoutmanager &m)
