@@ -6,6 +6,7 @@
 #define x_w_menuobj_h
 
 #include <x/w/menufwd.H>
+#include <x/w/menulayoutmanagerfwd.H>
 #include <x/w/focusable_containerobj.H>
 LIBCXXW_NAMESPACE_START
 
@@ -38,6 +39,12 @@ public:
 
 	ref<layoutmanagerObj::implObj> get_layout_impl() const override
 		LIBCXX_HIDDEN;
+
+	//! Return this menu's layout manager.
+	menulayoutmanager get_layoutmanager();
+
+	//! Return this menu's layout manager.
+	const_menulayoutmanager get_layoutmanager() const;
 };
 
 LIBCXXW_NAMESPACE_END

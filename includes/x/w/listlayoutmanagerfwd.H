@@ -210,6 +210,28 @@ Enabling or disabling an item sends a message to the execution thread, so
 immediately calling \c enabled() after changing the item's status may still
 report that the item's status did not change.
 
+\code
+INSERT_LIBX_NAMESPACE::w::list_lock lock{l};
+
+// ...
+
+INSERT_LIBX_NAMESPACE::w::element i=l->item(4);
+
+// ...
+
+l->enabled(i, true);
+\endcode
+
+item() returns an opaque \ref element "element object" representing the
+given list item. Elsewhere, the saved item object reference may be passed
+instead of a list item, to enabled(), referencing the same list item
+even if its now at a different position in the list as the result of
+adding or removing other list items.
+
+\note
+The returned \ref element "element"'s methods should not be directly invoked.
+The list layout manager is responsible for managing the items in the list.
+
 \par Lists with multiple columns.
 
 Overloaded bulk methods must be used with multiple column lists.

@@ -239,11 +239,35 @@ void listlayoutmanagerObj::autoselect(grid_map_t::lock &lock, size_t i)
 	return impl->autoselect(listlayoutmanager(this), lock, i);
 }
 
+bool listlayoutmanagerObj::enabled(const element &e) const
+{
+	grid_map_t::lock lock{impl->grid_map};
+
+	auto exists=impl->lookup_row_col(lock, e->impl);
+
+	if (!exists)
+		return false;
+
+	return impl->enabled(lock, std::get<0>(exists.value()));
+}
+
 bool listlayoutmanagerObj::enabled(size_t i) const
 {
 	grid_map_t::lock lock{impl->grid_map};
 
 	return impl->enabled(lock, i);
+}
+
+void listlayoutmanagerObj::enabled(const element &e, bool flag)
+{
+	grid_map_t::lock lock{impl->grid_map};
+
+	auto exists=impl->lookup_row_col(lock, e->impl);
+
+	if (!exists)
+		return;
+
+	enabled(std::get<0>(exists.value()), flag);
 }
 
 void listlayoutmanagerObj::enabled(size_t i, bool flag)

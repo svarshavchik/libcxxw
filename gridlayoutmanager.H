@@ -115,6 +115,13 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 	std::optional<std::tuple<size_t, size_t>>
 		lookup_row_col(const ref<elementObj::implObj> &e);
 
+	//! Look up which row and column this element is in.
+
+	//! Returns [row, col] if the element was found.
+
+	static std::optional<std::tuple<size_t, size_t>>
+		lookup_row_col(grid_map_t::lock &lock,
+			       const ref<elementObj::implObj> &e);
  protected:
 	/////////////////////////////////////////////////////////////////////
 	//

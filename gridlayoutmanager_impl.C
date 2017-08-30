@@ -201,6 +201,13 @@ gridlayoutmanagerObj::implObj::lookup_row_col(const ref<elementObj::implObj> &e)
 {
 	grid_map_t::lock lock{grid_map};
 
+	return lookup_row_col(lock, e);
+}
+
+std::optional<std::tuple<size_t, size_t>>
+gridlayoutmanagerObj::implObj::lookup_row_col(grid_map_t::lock &lock,
+					      const ref<elementObj::implObj> &e)
+{
 	const auto &lookup_table=(*lock)->get_lookup_table();
 
 	auto iter=lookup_table.find(e);

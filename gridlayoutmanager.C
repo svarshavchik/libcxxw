@@ -101,6 +101,12 @@ elementptr gridlayoutmanagerObj::get(size_t row, size_t col) const
 	return impl->get(row, col);
 }
 
+std::optional<std::tuple<size_t, size_t>>
+gridlayoutmanagerObj::lookup_row_col(grid_map_t::lock &l, const element &e)
+{
+	return implObj::lookup_row_col(l, e);
+}
+
 void gridlayoutmanagerObj::default_row_border(size_t row,
 					      const border_infomm &info)
 {

@@ -8,7 +8,6 @@
 #include <x/destroy_callback.H>
 #include <x/ref.H>
 #include <x/obj.H>
-
 #include "x/w/main_window.H"
 #include "x/w/gridlayoutmanager.H"
 #include "x/w/gridfactory.H"
@@ -42,7 +41,9 @@ public:
 
 typedef LIBCXX_NAMESPACE::ref<close_flagObj> close_flag_ref;
 
-void file_menu(const LIBCXX_NAMESPACE::w::menulayoutmanager &m)
+void file_menu(const LIBCXX_NAMESPACE::w::menulayoutmanager &m,
+	       const LIBCXX_NAMESPACE::w::menu &view_menu,
+	       const LIBCXX_NAMESPACE::w::element &view_options_item)
 {
 	LIBCXX_NAMESPACE::w::menuitem_plain file_new_type;
 
@@ -81,7 +82,19 @@ void file_menu(const LIBCXX_NAMESPACE::w::menulayoutmanager &m)
 
 	m->update(2, file_close_type);
 
-	m->append_menu_item("", "Quit");
+	LIBCXX_NAMESPACE::w::menuitem_plain file_toggle_options_type;
+
+	file_toggle_options_type.on_activate=[=]
+		(const LIBCXX_NAMESPACE::w::menuitem_activation_info &ignore)
+		{
+			auto l=view_menu->get_layoutmanager();
+
+			l->enabled(view_options_item,
+				   !l->enabled(view_options_item));
+		};
+	m->append_menu_item("",
+			    file_toggle_options_type, "Toggle Options",
+			    "Quit");
 
 	LIBCXX_NAMESPACE::w::menuitem_plain file_quit_type;
 
@@ -90,10 +103,10 @@ void file_menu(const LIBCXX_NAMESPACE::w::menulayoutmanager &m)
 		{
 			std::cout << "File->Quit selected" << std::endl;
 		};
-	m->update(4, file_quit_type);
+	m->update(5, file_quit_type);
 }
 
-void view_menu(const LIBCXX_NAMESPACE::w::menulayoutmanager &m)
+LIBCXX_NAMESPACE::w::element view_menu(const LIBCXX_NAMESPACE::w::menulayoutmanager &m)
 {
 	LIBCXX_NAMESPACE::w::menuitem_plain tools_menu_type;
 
@@ -101,7 +114,7 @@ void view_menu(const LIBCXX_NAMESPACE::w::menulayoutmanager &m)
 	tools_menu_type.on_activate=[]
 		(const LIBCXX_NAMESPACE::w::menuitem_activation_info &info)
 		{
-			std::cout << "View->Toos: " << info.selected
+			std::cout << "View->Tools: " << info.selected
 			<< std::endl;
 		};
 
@@ -117,6 +130,8 @@ void view_menu(const LIBCXX_NAMESPACE::w::menulayoutmanager &m)
 
 	m->replace_all_menu_items(tools_menu_type, "Tools",
 				  options_menu_type, "Options");
+
+	return m->item(1);
 }
 
 void testmenu()
@@ -139,21 +154,25 @@ void testmenu()
 				 auto mb=main_window->get_menubarlayoutmanager();
 				 auto f=mb->append_menus();
 
-				 f->add([]
+				 LIBCXX_NAMESPACE::w::elementptr options_menu_item;
+
+				 LIBCXX_NAMESPACE::w::menu view_m=f->add([]
 					(const auto &factory) {
 						factory->create_label("View");
 					},
-					[]
+					[&]
 					(const auto &factory) {
-						view_menu(factory);
+						options_menu_item=view_menu(factory);
 					});
 
 				 f=mb->insert_menus(0);
 
 				 f->add_text("File",
-					     []
+					     [&]
 					     (const auto &factory) {
-						     file_menu(factory);
+						     file_menu(factory,
+							       view_m,
+							       options_menu_item);
 					     });
 
 				 f=mb->append_right_menus();

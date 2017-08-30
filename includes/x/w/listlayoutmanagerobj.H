@@ -194,9 +194,17 @@ public:
 
 	bool enabled(size_t i) const;
 
+	//! Whether the given list item is enabled().
+
+	bool enabled(const element &e) const;
+
 	//! Enable or disable the list item.
 
 	void enabled(size_t i, bool flag);
+
+	//! Enable or disable the list item.
+
+	void enabled(const element &e, bool flag);
 
 	//! Add a text item, (or a separator row).
 

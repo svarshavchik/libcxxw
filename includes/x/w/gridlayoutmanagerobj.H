@@ -94,6 +94,15 @@ public:
 	//! The column does not count spanned cells.
 	elementptr get(size_t row, size_t col) const;
 
+	//! Find the row and column of the specified element.
+
+	//! Returns a tuple with the given element's row and column, if the
+	//! element exists in the grid.
+
+	static std::optional<std::tuple<size_t, size_t>
+			     > lookup_row_col(grid_map_t::lock &,
+					      const element &);
+
 	//! Set the default border above this row.
 	void default_row_border(size_t row, const border_infomm &info);
 
