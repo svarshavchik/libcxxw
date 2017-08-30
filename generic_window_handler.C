@@ -463,7 +463,7 @@ bool generic_windowObj::handlerObj
 	{
 		most_recent_keyboard_focus(IN_THREAD)
 			->get_focusable_element()
-			.unschedule_tooltip_creation(IN_THREAD);
+			.unschedule_hover_action(IN_THREAD);
 
 		processed=most_recent_keyboard_focus(IN_THREAD)->get_focusable_element()
 			.process_key_event(IN_THREAD, ke);
@@ -616,7 +616,7 @@ void generic_windowObj::handlerObj
 	if (most_recent_element_with_pointer(IN_THREAD))
 	{
 		most_recent_element_with_pointer(IN_THREAD)
-			->unschedule_tooltip_creation(IN_THREAD);
+			->unschedule_hover_action(IN_THREAD);
 
 		if (!most_recent_element_with_pointer(IN_THREAD)
 		    ->process_button_event(IN_THREAD, be, event->time)

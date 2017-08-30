@@ -40,6 +40,7 @@
 #include <xcb/xproto.h>
 
 #include <functional>
+#include <chrono>
 
 LIBCXXW_NAMESPACE_START
 
@@ -177,10 +178,10 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 		ptr<implObj> attached_popup;
 
 		//! Scheduled tooltip creation
-		tick_clock_t::time_point tooltip_scheduled_creation;
+		tick_clock_t::time_point hover_scheduled_creation;
 
 		//! Timer for the scheduled tooltip creation
-		ptr<obj> tooltip_scheduled_mcguffin;
+		ptr<obj> hover_scheduled_mcguffin;
 	};
 
 	//! For the connection thread's use, only.
@@ -984,24 +985,75 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! The pointer has moved.
 
 	//! Log it, and if it's a real pointer movement trigger
-	//! tooltip processing, if appropriate.
+	//! hover processing, if appropriate.
 	virtual void report_motion_event(IN_THREAD_ONLY, const motion_event &);
 
-	//! If this element has a tooltip, schedule its creation
-	virtual void schedule_tooltip_creation(IN_THREAD_ONLY);
+	//! If this element has a hover action, schedule it.
+
+	//! If hover_action_delay() returns a non-0 delay, make sure that
+	//! something will look at it, after the prescribed interval
+	//! expires.
+	//!
+	//! Overriden in child_elementObj, which invokes this and also
+	//! invokes its container schedule_hover_action().
+	virtual void schedule_hover_action(IN_THREAD_ONLY);
 
 	//! Left focus, etc...
 
-	//! Don't schedule its creation any more.
-	virtual void unschedule_tooltip_creation(IN_THREAD_ONLY);
+	//! Don't schedule the hover action any more.
+	//!
+	//! Overriden in child_elementObj, which invokes this and also
+	//! invokes its container unschedule_hover_action().
+	virtual void unschedule_hover_action(IN_THREAD_ONLY);
+
+	//! If this element takes action on a hover delay, return the delay.
+
+	//! A display element that implements a hover-triggered action
+	//! implements hover_action_delay() together with hover_action()
+	//! and hover_cancel().
+	//!
+	//! Returns 0 if this display element does not have a hover-triggered
+	//! action, at the moment, otherwise the delay before the action
+	//! takes place.
+	//!
+	//! The default implementation returns the tooltip delay
+	//! configuration setting if this element has a tooltip factory
+	//! installed, else returns 0.
+
+	virtual std::chrono::milliseconds hover_action_delay(IN_THREAD_ONLY);
+
+	//! The pointer has hovered over this element, so do something.
+
+	//! A display element that implements a hover-triggered action
+	//! implements hover_action_delay() together with hover_action()
+	//! and hover_cancel().
+	//!
+	//! Only gets invoked when hover_action_delay() returned a non-0
+	//! interval, which is now elapsed.
+	//!
+	//! The default implementation shows the tooltip.
+	virtual void hover_action(IN_THREAD_ONLY);
+
+	//! Cancel the hover-triggered action.
+
+	//! A display element that implements a hover-triggered action
+	//! implements hover_action_delay() together with hover_action()
+	//! and hover_cancel().
+	//!
+	//! Gets invoked by unschedule_hover_action().
+	//!
+	//! The default implementation removes the tooltip, if one is
+	//! currently shown.
+	//! interval, which is now elapsed.
+	virtual void hover_cancel(IN_THREAD_ONLY);
 
  private:
 	//! Schedule a timer to check if the tooltip needs to be shown.
-	void schedule_tooltip_timer(IN_THREAD_ONLY,
+	void schedule_hover_timer(IN_THREAD_ONLY,
 				    tick_clock_t::time_point now);
 
 	//! Check if the tooltip needs to be shown.
-	void check_tooltip_timer(IN_THREAD_ONLY);
+	void check_hover_timer(IN_THREAD_ONLY);
 
 	//! The most recent keyboard_focus() reported
 	focus_change most_recent_keyboard_focus_change_thread_only=focus_change::lost;

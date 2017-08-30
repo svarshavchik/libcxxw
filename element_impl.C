@@ -28,6 +28,7 @@
 #include "popup/popup.H"
 #include "catch_exceptions.H"
 #include <x/logger.H>
+#include <x/weakcapture.H>
 
 LOG_CLASS_INIT(LIBCXX_NAMESPACE::w::elementObj::implObj);
 
@@ -272,7 +273,7 @@ void elementObj::implObj
 	data(IN_THREAD).inherited_visibility=flag;
 	if (!flag)
 	{
-		unschedule_tooltip_creation(IN_THREAD);
+		unschedule_hover_action(IN_THREAD);
 
 		// Also hide the popup.
 		if (data(IN_THREAD).attached_popup)
@@ -845,7 +846,7 @@ void elementObj::implObj::report_keyboard_focus(IN_THREAD_ONLY,
 
 void elementObj::implObj::keyboard_focus(IN_THREAD_ONLY)
 {
-	unschedule_tooltip_creation(IN_THREAD);
+	unschedule_hover_action(IN_THREAD);
 	invoke_keyboard_focus_callback(IN_THREAD);
 }
 
@@ -891,7 +892,7 @@ void elementObj::implObj::report_pointer_focus(IN_THREAD_ONLY,
 
 void elementObj::implObj::pointer_focus(IN_THREAD_ONLY)
 {
-	unschedule_tooltip_creation(IN_THREAD);
+	unschedule_hover_action(IN_THREAD);
 	invoke_pointer_focus_callback(IN_THREAD);
 }
 
@@ -977,14 +978,83 @@ void elementObj::implObj::report_motion_event(IN_THREAD_ONLY,
 	// tooltip again.
 	if (me.type == motion_event_type::real_motion)
 	{
-		if (data(IN_THREAD).tooltip)
-			unschedule_tooltip_creation(IN_THREAD);
+		unschedule_hover_action(IN_THREAD);
 
 		if (me.mask.ordinal() == 0)
-			schedule_tooltip_creation(IN_THREAD);
+			schedule_hover_action(IN_THREAD);
 	}
 }
 
+void elementObj::implObj::schedule_hover_action(IN_THREAD_ONLY)
+{
+	auto &d=data(IN_THREAD);
+
+	auto initial_delay=hover_action_delay(IN_THREAD);
+
+	if (initial_delay == std::chrono::milliseconds{0})
+		return;
+
+	auto now=tick_clock_t::now();
+
+	d.hover_scheduled_creation=now+initial_delay;
+
+	if (d.hover_scheduled_mcguffin)
+		return; // Timer already set.
+
+	schedule_hover_timer(IN_THREAD, now);
+}
+
+void elementObj::implObj::schedule_hover_timer(IN_THREAD_ONLY,
+						 tick_clock_t::time_point now)
+{
+	data(IN_THREAD).hover_scheduled_mcguffin=IN_THREAD->schedule_callback
+		(IN_THREAD,
+		 now < data(IN_THREAD).hover_scheduled_creation
+		 ? data(IN_THREAD).hover_scheduled_creation - now
+		 : ++tick_clock_t::duration::zero(),
+		 [me=make_weak_capture(ref<implObj>(this))]
+		 (IN_THREAD_ONLY)
+		 {
+			 me.get([&]
+				(const auto &me) {
+					me->check_hover_timer(IN_THREAD);
+				});
+		 });
+}
+
+void elementObj::implObj::check_hover_timer(IN_THREAD_ONLY)
+{
+	// The timer to show the tooltip gets scheduled on a motion event.
+	// For optimal performance the timer does not get rescheduled with
+	// every event. Rather we save the hover_scheduled_creation time,
+	// and now that the timer expired we'll check if the
+	// hover_scheduled_creation time was reset, then try again.
+
+	auto now=tick_clock_t::now();
+
+	auto &d=data(IN_THREAD);
+	d.hover_scheduled_mcguffin=nullptr; // Clear the expired mcguffin.
+
+	// Recheck things.
+
+	if (hover_action_delay(IN_THREAD) == std::chrono::milliseconds{0})
+		return;
+
+	if (now < d.hover_scheduled_creation)
+	{
+		schedule_hover_timer(IN_THREAD, now);
+		return; // Reschedule me.
+	}
+
+	hover_action(IN_THREAD);
+}
+
+void elementObj::implObj::unschedule_hover_action(IN_THREAD_ONLY)
+{
+	data(IN_THREAD).hover_scheduled_mcguffin=nullptr;
+
+	hover_cancel(IN_THREAD);
+}
 
 void elementObj::implObj::ensure_visibility(IN_THREAD_ONLY, const rectangle &r)
 {

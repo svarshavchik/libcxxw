@@ -51,7 +51,7 @@ bool autotest=false;
 		if (autotest && !flag)				\
 		{						\
 			flag=true;				\
-			schedule_tooltip_creation(IN_THREAD);	\
+			schedule_hover_action(IN_THREAD);	\
 		}						\
 	} while(0)
 

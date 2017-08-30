@@ -94,20 +94,20 @@ class LIBCXX_HIDDEN child_elementObj : public elementObj::implObj {
 	void set_background_color(IN_THREAD_ONLY,
 				  const background_color &) override;
 
-	//! Override schedule_tooltip_creation
+	//! Override schedule_hover_action
 
 	//! This gets invoked for the element under the pointer. Propagate
 	//! this to its parent container, so that anything under the pointer
 	//! with a tooltip will schedule its creation.
 
-	void schedule_tooltip_creation(IN_THREAD_ONLY) override;
+	void schedule_hover_action(IN_THREAD_ONLY) override;
 
-	//! Override schedule_tooltip_creation
+	//! Override schedule_hover_action
 
 	//! This gets invoked for the element under the pointer. Propagate
 	//! this to its parent container, so that anything under the pointer
 	//! with a tooltip will schedule its creation.
-	void unschedule_tooltip_creation(IN_THREAD_ONLY) override;
+	void unschedule_hover_action(IN_THREAD_ONLY) override;
 
 	//! Forward the call to the container.
 	void window_focus_change(IN_THREAD_ONLY, bool flag) override;

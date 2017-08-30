@@ -20,7 +20,6 @@
 #include "x/w/gridfactory.H"
 #include "background_color.H"
 #include <x/property_value.H>
-#include <x/weakcapture.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -263,87 +262,36 @@ void elementObj::create_tooltip(const text_param &text,
 		 });
 }
 
-void elementObj::implObj::schedule_tooltip_creation(IN_THREAD_ONLY)
+std::chrono::milliseconds
+elementObj::implObj::hover_action_delay(IN_THREAD_ONLY)
 {
 	auto &d=data(IN_THREAD);
 
 	if (!d.tooltip_factory)
-		return; // No tooltip for this element.
+		// No tooltip for this element.
+		return std::chrono::milliseconds{0};
 
 	if (d.tooltip)
-		return; // Tooltip already created.
+		// Tooltip already created.
+		return std::chrono::milliseconds{0};
 
-	auto initial_delay=std::chrono::milliseconds(tooltip_delay.getValue());
-
-	auto now=tick_clock_t::now();
-
-	d.tooltip_scheduled_creation=now+initial_delay;
-
-	if (d.tooltip_scheduled_mcguffin)
-		return; // Timer already set.
-
-	schedule_tooltip_timer(IN_THREAD, now);
+	return std::chrono::milliseconds(tooltip_delay.getValue());
 }
 
-void elementObj::implObj::schedule_tooltip_timer(IN_THREAD_ONLY,
-						 tick_clock_t::time_point now)
+void elementObj::implObj::hover_action(IN_THREAD_ONLY)
 {
-	data(IN_THREAD).tooltip_scheduled_mcguffin=IN_THREAD->schedule_callback
-		(IN_THREAD,
-		 now < data(IN_THREAD).tooltip_scheduled_creation
-		 ? data(IN_THREAD).tooltip_scheduled_creation - now
-		 : ++tick_clock_t::duration::zero(),
-		 [me=make_weak_capture(ref<implObj>(this))]
-		 (IN_THREAD_ONLY)
-		 {
-			 me.get([&]
-				(const auto &me) {
-					me->check_tooltip_timer(IN_THREAD);
-				});
-		 });
+	tooltip_factory_impl create_a_tooltip(IN_THREAD, ref(this));
+
+	data(IN_THREAD).tooltip_factory(create_a_tooltip);
 }
 
-void elementObj::implObj::check_tooltip_timer(IN_THREAD_ONLY)
-{
-	// The timer to show the tooltip gets scheduled on a motion event.
-	// For optimal performance the timer does not get rescheduled with
-	// every event. Rather we save the tooltip_scheduled_creation time,
-	// and now that the timer expired we'll check if the
-	// tooltip_scheduled_creation time was reset, then try again.
-
-	auto now=tick_clock_t::now();
-
-	auto &d=data(IN_THREAD);
-	d.tooltip_scheduled_mcguffin=nullptr; // Clear the expired mcguffin.
-
-	// Recheck things.
-
-	if (!d.tooltip_factory)
-		return; // No tooltip for this element, any more.
-
-	if (d.tooltip)
-		return; // Tooltip already created, how?
-
-	if (now < d.tooltip_scheduled_creation)
-	{
-		schedule_tooltip_timer(IN_THREAD, now);
-		return; // Reschedule me.
-	}
-
-	tooltip_factory_impl create_a_tooltip(IN_THREAD,
-					      ref<implObj>(this));
-
-	d.tooltip_factory(create_a_tooltip);
-}
-
-void elementObj::implObj::unschedule_tooltip_creation(IN_THREAD_ONLY)
+void elementObj::implObj::hover_cancel(IN_THREAD_ONLY)
 {
 	// Cancel the pending tooltip. If it's already shown, discard it.
 	// And discard the timer's mcguffin, if we were getting set to do it.
 
 	data(IN_THREAD).tooltip=nullptr;
-	data(IN_THREAD).tooltip_scheduled_mcguffin=nullptr;
-}
 
+}
 
 LIBCXXW_NAMESPACE_END
