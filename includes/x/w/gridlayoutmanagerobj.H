@@ -28,10 +28,6 @@ LIBCXXW_NAMESPACE_START
 
 class gridlayoutmanagerObj : public layoutmanagerObj {
 
-	//! An internal lock.
-
-	grid_map_t::lock lock;
-
 public:
 	friend class gridfactoryObj;
 
