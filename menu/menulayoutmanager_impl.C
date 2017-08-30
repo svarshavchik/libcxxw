@@ -38,9 +38,7 @@ menuitemextrainfoptr menulayoutmanagerObj::implObj
 
 	// Last column is the extra_info we're looking for.
 
-	listitemcontainer lic=lm->item(item_number, lm->impl->columns-1);
-
-	return lic->get();
+	return lm->item(item_number, lm->impl->columns-1);
 }
 
 LIBCXXW_NAMESPACE_END

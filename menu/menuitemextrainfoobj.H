@@ -7,6 +7,7 @@
 
 #include "activated_in_threadobj.H"
 #include "menu/menuitemextrainfofwd.H"
+#include "popup/popupfwd.H"
 #include "x/w/containerobj.H"
 #include "x/w/elementfwd.H"
 #include "x/w/menulayoutmanagerfwd.H"
@@ -74,6 +75,9 @@ public:
 	//! even when the menu is not open.
 
 	bool enabled(IN_THREAD_ONLY) override;
+
+	//! Whether there's a submenu.
+	popupptr submenu();
 };
 
 LIBCXXW_NAMESPACE_END

@@ -7,6 +7,7 @@
 #include "menu/menuitemextrainfo_impl.H"
 #include "menu/menubarlayoutmanager_impl.H"
 #include "popup/popup_attachedto_handler_element.H"
+#include "popup/popup.H"
 #include "singletonlayoutmanager_impl.H"
 #include "x/w/element.H"
 #include "x/w/factory.H"
@@ -255,6 +256,16 @@ void menuitemextrainfoObj::update(const menuitem_type_t &new_type)
 			 type=new_created_menuitem_type;
 		 });
 	update_shortcut(new_type);
+}
+
+popupptr menuitemextrainfoObj::submenu()
+{
+	auto t=menuitem_type.get();
+
+	if (std::holds_alternative<created_menuitem_submenu>(*t))
+		return std::get<created_menuitem_submenu>(*t).submenu_popup;
+
+	return {};
 }
 
 LIBCXXW_NAMESPACE_END

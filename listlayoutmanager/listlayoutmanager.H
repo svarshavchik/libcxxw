@@ -297,6 +297,12 @@ class LIBCXX_HIDDEN listlayoutmanagerObj::implObj
 	//! visual appearance accordingly.
 	void refresh(IN_THREAD_ONLY, grid_map_t::lock &lock, const element &e);
 
+ public:
+	//! Return the currently highlighted row.
+
+	size_t get_highlighted_row();
+
+ private:
 	//! If currently_highlighted_row, unhighlight it.
 
 	void unhighlight_current_row(IN_THREAD_ONLY,

@@ -250,6 +250,13 @@ void listlayoutmanagerObj::implObj::temperature_changed(IN_THREAD_ONLY)
 	highlight_current_row(IN_THREAD, lock);
 }
 
+size_t listlayoutmanagerObj::implObj::get_highlighted_row()
+{
+	grid_map_t::lock lock{grid_map};
+
+	return highlighted_row(lock);
+}
+
 void listlayoutmanagerObj::implObj::highlight_current_row(IN_THREAD_ONLY,
 							  grid_map_t::lock &lock)
 {
@@ -584,12 +591,13 @@ void listlayoutmanagerObj::implObj
 
 element listlayoutmanagerObj::implObj::item(size_t item_number, size_t column)
 {
-	auto e=get(item_number, style.physical_column(column));
+	listitemcontainerptr c=get(item_number, style.physical_column(column));
 
-	if (!e)
+	if (!c)
 		throw EXCEPTION(_("List item does not exist"));
 
-	return e;
+
+	return c->get();
 }
 
 LIBCXXW_NAMESPACE_END

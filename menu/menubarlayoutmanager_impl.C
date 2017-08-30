@@ -4,6 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "listlayoutmanager/listitemcontainer.H"
+#include "popup/popup.H"
 #include "menu/menubarlayoutmanager_impl.H"
 #include "menu/menubar_container_impl.H"
 #include "menu/menubar_hotspot_implobj.H"
@@ -30,6 +31,9 @@
 
 LIBCXXW_NAMESPACE_START
 
+static property::value<unsigned>
+menupopup_delay(LIBCXX_NAMESPACE_STR "::w::menupopup_delay", 500);
+
 menubarlayoutmanagerObj::implObj::implObj(const ref<menubar_container_implObj>
 					  &container_impl)
 	: gridlayoutmanagerObj::implObj(container_impl),
@@ -53,6 +57,76 @@ void menubarlayoutmanagerObj::implObj::initialize(menubarlayoutmanagerObj
 	row_alignment(0, valign::middle);
 	f->create_canvas();
 }
+
+// The container implementation object for the menu list.
+
+// Constructed by do_create_popup_menu().
+//
+// Implements automatically showing the submenu (if there is one), when
+// hovering over the menu item.
+
+class LIBCXX_HIDDEN peepholed_menulistcontainer_implObj
+	: public label_theme_font_elementObj<p_t_l_impl_t> {
+
+	typedef label_theme_font_elementObj<p_t_l_impl_t> superclass_t;
+
+ public:
+
+	using superclass_t::superclass_t;
+
+	void unschedule_hover_action(IN_THREAD_ONLY) override
+	{
+	}
+
+ private:
+
+	popupptr current_submenu_popup()
+	{
+		popupptr p;
+
+		invoke_layoutmanager
+			([&]
+			 (const ref<listlayoutmanagerObj::implObj> &llm)
+			 {
+				 grid_map_t::lock lock{llm->grid_map};
+
+				 size_t r=llm->get_highlighted_row();
+
+				 if (r == (size_t)-1)
+					 return;
+
+				 if (!llm->enabled(lock, r))
+					 return;
+
+				 listitemcontainer
+					 c=llm->get(r, llm->cols(r)-1);
+
+				 menuitemextrainfo e=c->get();
+
+				 p=e->submenu();
+			 });
+
+		return p;
+	}
+ public:
+	std::chrono::milliseconds hover_action_delay(IN_THREAD_ONLY) override
+	{
+		unsigned delay=0;
+
+		if (current_submenu_popup())
+			delay=menupopup_delay.getValue();
+
+		return std::chrono::milliseconds{delay};
+	}
+
+	void hover_action(IN_THREAD_ONLY) override
+	{
+		auto p=current_submenu_popup();
+		if (p)
+			p->elementObj::impl->request_visibility(IN_THREAD,
+								true);
+	}
+};
 
 std::tuple<popup, ref<popup_attachedto_handlerObj> >
 menubarlayoutmanagerObj::implObj
@@ -81,10 +155,10 @@ menubarlayoutmanagerObj::implObj
 			[&]
 			(const auto &peephole_container)
 			{
-				auto impl=ref<label_theme_font_elementObj<
-				p_t_l_impl_t>>
-				::create("menu_font",
-					 peephole_container, style);
+				auto impl=ref
+					<peepholed_menulistcontainer_implObj>
+					::create("menu_font",
+						 peephole_container, style);
 
 				return create_p_t_l_impl_ret_t{impl,
 						ref<menulayoutmanagerObj
