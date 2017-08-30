@@ -80,6 +80,43 @@ void file_menu(const LIBCXX_NAMESPACE::w::menulayoutmanager &m)
 		};
 
 	m->update(2, file_close_type);
+
+	m->append_menu_item("", "Quit");
+
+	LIBCXX_NAMESPACE::w::menuitem_plain file_quit_type;
+
+	file_quit_type.on_activate=[]
+		(const LIBCXX_NAMESPACE::w::menuitem_activation_info &ignore)
+		{
+			std::cout << "File->Quit selected" << std::endl;
+		};
+	m->update(4, file_quit_type);
+}
+
+void view_menu(const LIBCXX_NAMESPACE::w::menulayoutmanager &m)
+{
+	LIBCXX_NAMESPACE::w::menuitem_plain tools_menu_type;
+
+	tools_menu_type.is_option=true;
+	tools_menu_type.on_activate=[]
+		(const LIBCXX_NAMESPACE::w::menuitem_activation_info &info)
+		{
+			std::cout << "View->Toos: " << info.selected
+			<< std::endl;
+		};
+
+	LIBCXX_NAMESPACE::w::menuitem_plain options_menu_type;
+
+	options_menu_type.is_option=true;
+	options_menu_type.on_activate=[]
+		(const LIBCXX_NAMESPACE::w::menuitem_activation_info &info)
+		{
+			std::cout << "View->Options: " << info.selected
+			<< std::endl;
+		};
+
+	m->replace_all_menu_items(tools_menu_type, "Tools",
+				  options_menu_type, "Options");
 }
 
 void testmenu()
@@ -108,6 +145,7 @@ void testmenu()
 					},
 					[]
 					(const auto &factory) {
+						view_menu(factory);
 					});
 
 				 f=mb->insert_menus(0);

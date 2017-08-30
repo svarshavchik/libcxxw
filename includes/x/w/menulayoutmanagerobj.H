@@ -78,6 +78,17 @@ public:
 		collect_text_items(vec, std::forward<Args>(args)...);
 	}
 
+	//! Common variadic function for inserting plain text menu items.
+
+	template<typename ...Args>
+	inline void collect_text_items(text_items_t &vec,
+				       const text_param &s,
+				       Args && ...args)
+	{
+		vec.emplace_back(menuitem_plain{}, s);
+		collect_text_items(vec, std::forward<Args>(args)...);
+	}
+
 	//! Override append_item().
 
 	//! Invoke append_menu_item().

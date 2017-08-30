@@ -36,19 +36,6 @@ class LIBCXX_HIDDEN menulayoutfactoryObj : public factory_t {
 	}
 };
 
-// Creating plain label menu items eventually boils down to a
-// menufactory and a vector of new menu items and their types.
-
-static void create_menu_items(const menufactory &f,
-			      const menulayoutmanagerObj::text_items_t &v)
-{
-	for (const auto &s:v)
-	{
-		f->set_type(std::get<menuitem_type_t>(s));
-		f->create_label(std::get<text_param>(s));
-	}
-}
-
 factory menulayoutmanagerObj::append_item()
 {
 	return append_menu_item();
@@ -70,7 +57,13 @@ menufactory menulayoutmanagerObj::append_menu_item()
 
 void menulayoutmanagerObj::do_append_menu_item(const text_items_t &v)
 {
-	create_menu_items(append_menu_item(), v);
+	auto f=append_menu_item();
+
+	for (const auto &s:v)
+	{
+		f->set_type(std::get<menuitem_type_t>(s));
+		append_text_or_separator(f, std::get<text_param>(s));
+	}
 }
 
 factory menulayoutmanagerObj::insert_item(size_t item_number)
@@ -96,7 +89,15 @@ menufactory menulayoutmanagerObj::insert_menu_item(size_t item_number)
 void menulayoutmanagerObj::do_insert_menu_item(size_t item_number,
 					       const text_items_t &v)
 {
-	create_menu_items(insert_menu_item(item_number), v);
+	auto f=insert_menu_item(item_number);
+
+	for (const auto &s:v)
+	{
+		f->set_type(std::get<menuitem_type_t>(s));
+		insert_text_or_separator(item_number++,
+					 f,
+					 std::get<text_param>(s));
+	}
 }
 
 factory menulayoutmanagerObj::replace_item(size_t item_number)
@@ -122,7 +123,15 @@ menufactory menulayoutmanagerObj::replace_menu_item(size_t item_number)
 void menulayoutmanagerObj::do_replace_menu_item(size_t item_number,
 						const text_items_t &v)
 {
-	create_menu_items(replace_menu_item(item_number), v);
+	auto f=replace_menu_item(item_number);
+
+	for (const auto &s:v)
+	{
+		f->set_type(std::get<menuitem_type_t>(s));
+
+		replace_text_or_separator(item_number++, f,
+					  std::get<text_param>(s));
+	}
 }
 
 
@@ -147,7 +156,13 @@ menufactory menulayoutmanagerObj::replace_all_menu_items()
 
 void menulayoutmanagerObj::do_replace_all_menu_items(const text_items_t &v)
 {
-	create_menu_items(replace_all_menu_items(), v);
+	auto f=replace_all_menu_items();
+
+	for (const auto &s:v)
+	{
+		f->set_type(std::get<menuitem_type_t>(s));
+		append_text_or_separator(f, std::get<text_param>(s));
+	}
 }
 
 void menulayoutmanagerObj::update(size_t item_number,
