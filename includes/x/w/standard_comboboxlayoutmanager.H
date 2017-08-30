@@ -173,15 +173,6 @@ public:
 		    const std::u32string &text,
 		    size_t &found,
 		    bool shortest_match) const LIBCXX_HIDDEN;
-
-	//! Append a separator line.
-	void append_separator();
-
-	//! Insert a separator line.
-	void insert_separator(size_t item_number);
-
-	//! Replace an existing column with a separator line.
-	void replace_separator(size_t item_number);
 };
 
 LIBCXXW_NAMESPACE_END

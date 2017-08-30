@@ -161,6 +161,10 @@ append_item() returns a factory which appends the new item to the end of
 the list. Using the same factory to create another display element
 appends another item to the end of the list.
 
+\note
+An empty list item text string creates a thin horizontal separator divider
+that's designed to visually separate multiple group of items in the list.
+
 Using the same factory to create another display
 element insert another item after the first one, shifting the existing
 items again.
@@ -189,23 +193,6 @@ l->replace_item(0, items);
 Overloads of append_item(), insert_item(), and replace_item() insert multiple
 list items in one operation. Multiple items may be specified either as
 variadic parameters, or a vector of \ref text_param "text_param"s.
-
-\par Separators
-
-\code
-l->append_separator();
-
-l->insert_separator(0);
-
-l->replace_separator(0);
-\endcode
-
-A list separator is a thin horizontal line that visually separates groups
-of item in the list. These methods add a new list separator. And although
-they do not have a
-need to formally create a factory, a separator counts as a list item.
-A list with two regular items, a separator, and two more items has a
-size() of 5.
 
 \par Enabling and disabling list items
 
@@ -283,7 +270,10 @@ generic \ref factory "factory", for creating any non-focusable display
 element to serve as a list item.
 
 Adding a text item to a list is exactly equivalent to creating a factory,
-then using create_label().
+then using create_label(), except that an empty text string creates
+a horizontal divider row. create_label("") creates a verbatim empty list
+item. Only append_item(), insert_item(), and replace_item() create
+horizontal dividers instead of empty list items.
 
 For lists with multiple columns, the factory gets used to create the requisite
 number of display elements, which become a single list item.

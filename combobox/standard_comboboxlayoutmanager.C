@@ -55,14 +55,8 @@ standard_combobox_lock::~standard_combobox_lock()=default;
 void standard_combobox_lock::append_item(const text_param &item)
 {
 	auto f=locked_layoutmanager->listlayoutmanagerObj::append_item();
-	f->create_label(item);
+	locked_layoutmanager->append_text_or_separator(f, item);
 	text_items().push_back(item);
-}
-
-void standard_combobox_lock::append_separator()
-{
-	locked_layoutmanager->listlayoutmanagerObj::append_separator();
-	text_items().push_back({});
 }
 
 void standard_combobox_lock::insert_item(size_t i, const text_param &item)
@@ -73,21 +67,8 @@ void standard_combobox_lock::insert_item(size_t i, const text_param &item)
 		nosuchitem(i);
 
 	auto f=locked_layoutmanager->listlayoutmanagerObj::insert_item(i);
-	f->create_label(item);
+	locked_layoutmanager->insert_text_or_separator(i, f, item);
 	ti.insert(ti.begin()+i, item);
-}
-
-void standard_combobox_lock::insert_separator(size_t item_number)
-{
-	auto &ti=text_items();
-
-	if (ti.size() < item_number)
-		nosuchitem(item_number);
-
-	locked_layoutmanager->listlayoutmanagerObj
-		::insert_separator(item_number);
-
-	ti.insert(ti.begin()+item_number, {});
 }
 
 void standard_combobox_lock::replace_item(size_t i,
@@ -99,22 +80,9 @@ void standard_combobox_lock::replace_item(size_t i,
 		nosuchitem(i);
 
 	auto f=locked_layoutmanager->listlayoutmanagerObj::replace_item(i);
-	f->create_label(item);
+	locked_layoutmanager->insert_text_or_separator(i, f, item);
 	ti.at(i)=item;
 }
-
-void standard_combobox_lock::replace_separator(size_t item_number)
-{
-	auto &ti=text_items();
-
-	if (ti.size() < item_number)
-		nosuchitem(item_number);
-
-	locked_layoutmanager->listlayoutmanagerObj
-		::replace_separator(item_number);
-	ti.at(item_number)={};
-}
-
 
 void standard_combobox_lock::remove_item(size_t i)
 {
@@ -151,7 +119,7 @@ void standard_combobox_lock::replace_all_items(const std::vector<text_param>
 		->listlayoutmanagerObj::replace_all_items();
 
 	for (const auto &item:items)
-		f->create_label(item);
+		locked_layoutmanager->append_text_or_separator(f, item);
 
 	text_items()=items;
 	s.unguard();
@@ -234,27 +202,6 @@ void standard_comboboxlayoutmanagerObj
 
 	for (const auto &item:items)
 		lock.append_item(item);
-}
-
-void standard_comboboxlayoutmanagerObj::append_separator()
-{
-	standard_combobox_lock lock{standard_comboboxlayoutmanager(this)};
-
-	lock.append_separator();
-}
-
-void standard_comboboxlayoutmanagerObj::insert_separator(size_t item_number)
-{
-	standard_combobox_lock lock{standard_comboboxlayoutmanager(this)};
-
-	lock.insert_separator(item_number);
-}
-
-void standard_comboboxlayoutmanagerObj::replace_separator(size_t item_number)
-{
-	standard_combobox_lock lock{standard_comboboxlayoutmanager(this)};
-
-	lock.replace_separator(item_number);
 }
 
 void standard_comboboxlayoutmanagerObj

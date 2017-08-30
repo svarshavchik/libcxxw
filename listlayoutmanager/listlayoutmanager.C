@@ -49,7 +49,20 @@ void listlayoutmanagerObj::append_item(const std::vector<text_param> &items)
 	auto f=append_item();
 
 	for (const auto &s:items)
-		f->create_label(s);
+		append_text_or_separator(f, s);
+}
+
+void listlayoutmanagerObj::append_text_or_separator(const factory &f,
+						    const text_param &t)
+{
+	if (t.string.empty())
+	{
+		impl->style.create_separator(impl,
+					     impl->append_row(this),
+					     queue);
+		return;
+	}
+	f->create_label(t);
 }
 
 factory listlayoutmanagerObj::insert_item(size_t item_number)
@@ -65,7 +78,22 @@ void listlayoutmanagerObj::insert_item(size_t item_number,
 	auto f=insert_item(item_number);
 
 	for (const auto &s:items)
-		f->create_label(s);
+		insert_text_or_separator(item_number++, f, s);
+}
+
+void listlayoutmanagerObj::insert_text_or_separator(size_t item_number,
+						    const factory &f,
+						    const text_param &t)
+{
+	if (t.string.empty())
+	{
+		impl->style.create_separator(impl,
+					     impl->insert_row(this,
+							      item_number),
+					     queue);
+		return;
+	}
+	f->create_label(t);
 }
 
 factory listlayoutmanagerObj::replace_item(size_t item_number)
@@ -81,8 +109,24 @@ void listlayoutmanagerObj::replace_item(size_t item_number,
 	auto f=replace_item(item_number);
 
 	for (const auto &s:items)
-		f->create_label(s);
+		replace_text_or_separator(item_number, f, s);
 }
+
+void listlayoutmanagerObj::replace_text_or_separator(size_t item_number,
+						     const factory &f,
+						     const text_param &t)
+{
+	if (t.string.empty())
+	{
+		impl->style.create_separator(impl,
+					     impl->replace_row(this,
+							       item_number),
+					     queue);
+		return;
+	}
+	f->create_label(t);
+}
+
 void listlayoutmanagerObj::remove_item(size_t item_number)
 {
 	grid_map_t::lock lock{impl->grid_map};
@@ -105,29 +149,8 @@ void listlayoutmanagerObj::replace_all_items(const std::vector<text_param>
 	auto f=replace_all_items();
 
 	for (const auto &item:items)
-		f->create_label(item);
+		append_text_or_separator(f, item);
 }
-void listlayoutmanagerObj::append_separator()
-{
-	impl->style.create_separator(impl,
-				     impl->append_row(this),
-				     queue);
-}
-
-void listlayoutmanagerObj::insert_separator(size_t item_number)
-{
-	impl->style.create_separator(impl,
-				     impl->insert_row(this, item_number),
-				     queue);
-}
-
-void listlayoutmanagerObj::replace_separator(size_t item_number)
-{
-	impl->style.create_separator(impl,
-				     impl->replace_row(this, item_number),
-				     queue);
-}
-
 ////////////////////////////////////////////////////////////////////////////
 
 size_t listlayoutmanagerObj::size() const

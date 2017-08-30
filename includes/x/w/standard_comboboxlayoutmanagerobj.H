@@ -76,15 +76,6 @@ public:
 
 	//! Return combo-box item.
 	text_param item(size_t i) const;
-
-	//! Append a separator line.
-	void append_separator() override;
-
-	//! Insert a separator line.
-	void insert_separator(size_t item_number) override;
-
-	//! Replace an existing column with a separator line.
-	void replace_separator(size_t item_number) override;
 };
 
 LIBCXXW_NAMESPACE_END

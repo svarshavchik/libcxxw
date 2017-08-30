@@ -35,6 +35,9 @@ remove_item() removes an item.
 replace_all()'s parameter is a vector of text items, which replaces all
 existing items in the combo-box.
 
+Like with the underlying list layout manager, empty text strings create
+horizontal dividers.
+
 \code
 size_t n=lm->size();
 
@@ -43,17 +46,6 @@ INSERT_LIBX_NAMESPACE::w::text_param s=lm->item(0);
 
 size() returns the number of items in the list, and item() returns the
 given item number.
-
-\code
-l->append_separator();
-
-l->insert_separator(0);
-
-l->replace_separator(0);
-\endcode
-
-These methods, inherited from the underlying
-\ref listlayoutmanager "list layout manager", add a separator item.
 
 \code
 lm->autoselect(1);

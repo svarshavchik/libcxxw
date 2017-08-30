@@ -147,15 +147,6 @@ public:
 	//! \overload
 	virtual void replace_all_items(const std::vector<text_param> &items);
 
-	//! Append a separator line.
-	virtual void append_separator();
-
-	//! Insert a separator line.
-	virtual void insert_separator(size_t item_number);
-
-	//! Replace an existing column with a separator line.
-	virtual void replace_separator(size_t item_number);
-
 	///////////////////////////////////////////////////////////////
 
 	//! Number of items in the list
@@ -206,6 +197,26 @@ public:
 	//! Enable or disable the list item.
 
 	void enabled(size_t i, bool flag);
+
+	//! Add a text item, (or a separator row).
+
+	//! \internal
+	void append_text_or_separator(const factory &f,
+				      const text_param &t) LIBCXX_HIDDEN;
+
+	//! Add a text item, (or a separator row).
+
+	//! \internal
+	void insert_text_or_separator(size_t item_number,
+				      const factory &f,
+				      const text_param &t) LIBCXX_HIDDEN;
+
+	//! Add a text item, (or a separator row).
+
+	//! \internal
+	void replace_text_or_separator(size_t item_number,
+				       const factory &f,
+				       const text_param &t) LIBCXX_HIDDEN;
 };
 
 LIBCXXW_NAMESPACE_END

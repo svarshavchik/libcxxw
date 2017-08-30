@@ -196,7 +196,7 @@ void testcombobox(const testcombobox_options &options)
 					 standard_comboboxlayoutmanager lm=
 						 combobox->get_layoutmanager();
 
-					 lm->append_separator();
+					 lm->append_item("");
 				 });
 
 			 factory=layout->append_row();
@@ -207,7 +207,7 @@ void testcombobox(const testcombobox_options &options)
 					 standard_comboboxlayoutmanager lm=
 						 combobox->get_layoutmanager();
 
-					 lm->insert_separator(0);
+					 lm->insert_item(0, "");
 				 });
 
 			 factory=layout->append_row();
