@@ -243,12 +243,12 @@ bool listlayoutmanagerObj::enabled(const element &e) const
 {
 	grid_map_t::lock lock{impl->grid_map};
 
-	auto exists=impl->lookup_row_col(lock, e->impl);
+	auto exists=impl->lookup_item(lock, e->impl);
 
 	if (!exists)
 		return false;
 
-	return impl->enabled(lock, std::get<0>(exists.value()));
+	return impl->enabled(lock, exists.value());
 }
 
 bool listlayoutmanagerObj::enabled(size_t i) const
@@ -262,12 +262,12 @@ void listlayoutmanagerObj::enabled(const element &e, bool flag)
 {
 	grid_map_t::lock lock{impl->grid_map};
 
-	auto exists=impl->lookup_row_col(lock, e->impl);
+	auto exists=impl->lookup_item(lock, e->impl);
 
 	if (!exists)
 		return;
 
-	enabled(std::get<0>(exists.value()), flag);
+	enabled(exists.value(), flag);
 }
 
 void listlayoutmanagerObj::enabled(size_t i, bool flag)

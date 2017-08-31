@@ -991,7 +991,7 @@ void gridlayoutmanagerObj::implObj
 		{
 			element_position.height -= padding.total_vert_padding;
 			element_position.y = coord_t::truncate
-				(element_position.y+padding.left_padding);
+				(element_position.y+padding.top_padding);
 		}
 
 		// If the total size of the element's rows and columns
