@@ -65,6 +65,9 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 	gridfactory insert_columns(layoutmanagerObj *public_object,
 				   size_t row_number, size_t col_number);
 
+	//! Remove a specific element.
+	static void remove(grid_map_t::lock &lock, size_t row, size_t col);
+
 	//! Remove the entire row.
 	void remove_row(size_t row);
 

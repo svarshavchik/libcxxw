@@ -44,6 +44,24 @@ to the end of the right-aligned section.
 insert_right_menus() returns a factory that adds new
 menus before an existing menu in the right-aligned section.
 
+\code
+mb->remove_menu(0);
+
+mb->remove_right_menu(0);
+
+\endcode
+
+remove_menu() and remove_right_menu() remove an existing menu from the
+corresponding section of the menu bar.
+
+\code
+INSERT_LIBX_NAMESPACE::w::menubar_lock lock{mb};
+\endcode
+
+A \ref menubar_lock "menubar lock" acquires a lock on the underlying menu bar,
+blocking access by other threads, obtaining a consistent snapshot of the
+menu bar's contents.
+
 */
 
 typedef ref<menubarlayoutmanagerObj> menubarlayoutmanager;

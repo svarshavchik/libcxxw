@@ -8,6 +8,7 @@
 #include <x/destroy_callback.H>
 #include <x/ref.H>
 #include <x/obj.H>
+#include <x/weakcapture.H>
 #include "x/w/main_window.H"
 #include "x/w/gridlayoutmanager.H"
 #include "x/w/gridfactory.H"
@@ -42,7 +43,52 @@ public:
 
 typedef LIBCXX_NAMESPACE::ref<close_flagObj> close_flag_ref;
 
-void file_menu(const LIBCXX_NAMESPACE::w::menulayoutmanager &m,
+void remove_help_menu(const LIBCXX_NAMESPACE::w::main_window &main_window)
+{
+	auto lm=main_window->get_menubarlayoutmanager();
+
+	LIBCXX_NAMESPACE::w::menubar_lock lock{lm};
+
+	if (lock.right_menus())
+		lm->remove_right_menu(0);
+}
+
+void remove_view_menu(const LIBCXX_NAMESPACE::w::main_window &main_window)
+{
+	auto lm=main_window->get_menubarlayoutmanager();
+
+	LIBCXX_NAMESPACE::w::menubar_lock lock{lm};
+
+	if (lock.menus() > 1)
+		lm->remove_menu(1);
+}
+
+void add_recent(const LIBCXX_NAMESPACE::w::main_window &main_window,
+		int n)
+{
+	auto lm=main_window->get_menubarlayoutmanager();
+
+	std::ostringstream o;
+
+	o << "Recent submenu #" << n;
+
+	auto s=o.str();
+
+	LIBCXX_NAMESPACE::w::menubar_lock lock{lm};
+
+	lock.get_menu(0)->get_layoutmanager()->get_item_layoutmanager(5)
+		->append_menu_item
+		(LIBCXX_NAMESPACE::w::menuitem_plain{
+			[s](const auto &ignore)
+			{
+				std::cout << s << std::endl;
+			}
+		}, s);
+}
+
+
+void file_menu(const LIBCXX_NAMESPACE::w::main_window &main_window,
+	       const LIBCXX_NAMESPACE::w::menulayoutmanager &m,
 	       const LIBCXX_NAMESPACE::w::menu &view_menu,
 	       const LIBCXX_NAMESPACE::w::element &view_options_item)
 {
@@ -131,6 +177,37 @@ void file_menu(const LIBCXX_NAMESPACE::w::menulayoutmanager &m,
 			std::cout << "File->Quit selected" << std::endl;
 		};
 	m->update(6, file_quit_type);
+
+	m->append_menu_item(LIBCXX_NAMESPACE::w::menuitem_plain{
+			[main_window=LIBCXX_NAMESPACE::make_weak_capture(main_window)](const auto &ignore)
+			{
+				main_window.get([]
+						(const auto &main_window)
+						{
+							remove_help_menu(main_window);
+						});
+			}}, "Remove Help menu",
+		LIBCXX_NAMESPACE::w::menuitem_plain{
+			[main_window=LIBCXX_NAMESPACE::make_weak_capture(main_window)](const auto &ignore)
+			{
+				main_window.get([]
+						(const auto &main_window)
+						{
+							remove_view_menu(main_window);
+						});
+			}}, "Remove View menu",
+
+		LIBCXX_NAMESPACE::w::menuitem_plain{
+			[i=4, main_window=LIBCXX_NAMESPACE::make_weak_capture(main_window)](const auto &ignore)
+				mutable
+			{
+				main_window.get([&]
+						(const auto &main_window)
+						{
+							add_recent(main_window, ++i);
+						});
+			}}, "Add to recent submenu");
+
 }
 
 LIBCXX_NAMESPACE::w::element view_menu(const LIBCXX_NAMESPACE::w::menulayoutmanager &m)
@@ -197,7 +274,8 @@ void testmenu()
 				 f->add_text("File",
 					     [&]
 					     (const auto &factory) {
-						     file_menu(factory,
+						     file_menu(main_window,
+							       factory,
 							       view_m,
 							       options_menu_item);
 					     });

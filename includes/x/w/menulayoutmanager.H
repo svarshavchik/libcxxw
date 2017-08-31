@@ -12,6 +12,8 @@
 
 LIBCXXW_NAMESPACE_START
 
+//! Parameter passed to menu items' on_activated() callback.
+
 struct menuitem_activation_info {
 
 	//! Lock on the menu.
@@ -39,11 +41,11 @@ struct menuitem_activation_info {
 
 struct menuitem_plain {
 
-	//! Whether this menu item has an option bullet next to it.
-	bool is_option=false;
-
 	//! Callback invoked when the menu item gets selected.
 	std::function<void (const menuitem_activation_info &)> on_activate;
+
+	//! Whether this menu item has an option bullet next to it.
+	bool is_option=false;
 
 	//! Optional shortcut for the menu item.
 	shortcut menuitem_shortcut;

@@ -69,16 +69,7 @@ void gridlayoutmanagerObj::remove(size_t row, size_t col)
 {
 	grid_map_t::lock lock{impl->grid_map};
 
-	if (row < (*lock)->elements.size())
-	{
-		auto &r=(*lock)->elements.at(row);
-
-		if (col < r.size())
-		{
-			r.erase(r.begin()+col);
-			(*lock)->elements_have_been_modified();
-		}
-	}
+	impl->remove(lock, row, col);
 }
 
 void gridlayoutmanagerObj::remove_row(size_t row)

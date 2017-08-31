@@ -4,6 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "container.H"
+#include "popup/popup.H"
 #include "menu/menulayoutmanager_impl.H"
 #include "menu/menulistitemfactoryobj.H"
 #include "menu/menuitemextrainfo.H"
@@ -173,6 +174,23 @@ void menulayoutmanagerObj::update(size_t item_number,
 
 	if (extrainfo)
 		extrainfo->update(new_type);
+}
+
+menulayoutmanagerptr menulayoutmanagerObj::get_item_layoutmanager(size_t i)
+{
+	menulayoutmanagerptr l;
+
+	auto extrainfo=impl->get_extrainfo(listlayoutmanager(this), i);
+
+	if (extrainfo)
+	{
+		auto t=extrainfo->submenu();
+
+		if (t)
+			l=t->get_layoutmanager();
+	}
+
+	return l;
 }
 
 LIBCXXW_NAMESPACE_END

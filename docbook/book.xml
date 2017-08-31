@@ -29,6 +29,7 @@
 <!ENTITY gridlayoutmanager SYSTEM "gridlayoutmanager.xml">
 <!ENTITY list SYSTEM "list.xml">
 <!ENTITY combobox SYSTEM "combobox.xml">
+<!ENTITY menu SYSTEM "menu.xml">
 <!ENTITY sxgdoc SYSTEM "sxg.xml">
 <!ENTITY connections_and_screens SYSTEM "connections_and_screens.xml">
 
@@ -62,6 +63,7 @@ See COPYING for distribution information.
     &gridlayoutmanager;
     &list;
     &combobox;
+    &menu;
     &connections_and_screens;
   </part>
 

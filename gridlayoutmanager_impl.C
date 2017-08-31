@@ -171,6 +171,22 @@ void gridlayoutmanagerObj::implObj::remove_all_rows(grid_map_t::lock &lock)
 	(*lock)->elements_have_been_modified();
 }
 
+void gridlayoutmanagerObj::implObj::remove(grid_map_t::lock &lock,
+					   size_t row,
+					   size_t col)
+{
+	if (row < (*lock)->elements.size())
+	{
+		auto &r=(*lock)->elements.at(row);
+
+		if (col < r.size())
+		{
+			r.erase(r.begin()+col);
+			(*lock)->elements_have_been_modified();
+		}
+	}
+}
+
 void gridlayoutmanagerObj::implObj::remove_row(size_t row)
 {
 	grid_map_t::lock lock{grid_map};

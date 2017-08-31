@@ -243,7 +243,7 @@ public:
 		do_replace_all_menu_items(vec);
 	}
 
-	//! Replace_All a new menu item
+	//! Replace all existing menu items.
 
 	//! \internal
 
@@ -252,6 +252,10 @@ public:
 	//! Change an existing menu item's shortcut.
 	void update(size_t item_number,
 		    const menuitem_type_t &new_type);
+
+	//! Return an existing menu item's submenu layoutmanager.
+
+	menulayoutmanagerptr get_item_layoutmanager(size_t i);
 };
 
 LIBCXXW_NAMESPACE_END

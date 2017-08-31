@@ -31,17 +31,27 @@ public:
 	//! Destructor
 	~menubarlayoutmanagerObj() LIBCXX_HIDDEN;
 
+	//! Append new menus.
+
 	menubarfactory append_menus();
+
+	//! Insert new menus before an existing menu.
 
 	menubarfactory insert_menus(size_t pos);
 
+	//! Append new menus on the right edge of the menu bar.
 	menubarfactory append_right_menus();
 
+	//! Insert new menus before an existing menu on the right edge of th emenu bar.
 	menubarfactory insert_right_menus(size_t pos);
+
+	//! Remove the specified menu from the menu bar.
 
 	void remove_menu(size_t pos);
 
-	void remove_menu_right(size_t pos);
+	//! Remove the specified menu from the right edge of the menu bar.
+
+	void remove_right_menu(size_t pos);
 };
 
 LIBCXXW_NAMESPACE_END

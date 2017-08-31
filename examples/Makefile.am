@@ -8,6 +8,7 @@ noinst_PROGRAMS=\
 	helloworld				\
 	inputfieldsandbuttons			\
 	listlayoutmanager			\
+	menu					\
 	wordwraplabel
 
 checkradio_SOURCES=checkradio.C close_flag.H
@@ -36,6 +37,9 @@ inputfieldsandbuttons_LDADD=-lcxxw -lcxx
 $(call OPTIONS_GEN,listlayoutmanager.H,listlayoutmanager.xml)
 listlayoutmanager_SOURCES=listlayoutmanager.C close_flag.H
 listlayoutmanager_LDADD=-lcxxw -lcxx
+
+menu_SOURCES=menu.C close_flag.H
+menu_LDADD=-lcxxw -lcxx
 
 wordwraplabel_SOURCES=wordwraplabel.C close_flag.H
 wordwraplabel_LDADD=-lcxxw -lcxx

@@ -11,6 +11,7 @@
 #include "messages.H"
 #include "x/w/label.H"
 #include "generic_window_handler.H"
+#include "messages.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -195,10 +196,26 @@ menubarfactory menubarlayoutmanagerObj::insert_right_menus(size_t pos)
 
 void menubarlayoutmanagerObj::remove_menu(size_t pos)
 {
+	menubar_lock lock{menubarlayoutmanager(this)};
+
+	if (lock.menus() <= pos)
+		throw EXCEPTION(gettextmsg(_("Menu #%1% does not exist"),
+					   pos));
+
+	impl->remove(lock, 0, pos);
+
+	--impl->info(lock).divider_pos;
 }
 
-void menubarlayoutmanagerObj::remove_menu_right(size_t pos)
+void menubarlayoutmanagerObj::remove_right_menu(size_t pos)
 {
+	menubar_lock lock{menubarlayoutmanager(this)};
+
+	if (lock.right_menus() <= pos)
+		throw EXCEPTION(gettextmsg(_("Menu #%1% does not exist"),
+					   pos));
+
+	impl->remove(lock, 0, impl->info(lock).divider_pos+1+pos);
 }
 
 LIBCXXW_NAMESPACE_END

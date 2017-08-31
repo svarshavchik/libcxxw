@@ -1,0 +1,383 @@
+<!--
+
+Copyright 2017 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<chapter id="menu">
+  <title>Menus</title>
+
+  <mediaobject>
+    <imageobject>
+      <imagedata fileref="menu.png" format="PNG"
+		 contentwidth="384px" contentdepth="252px" />
+    </imageobject>
+    <textobject>
+      <phrase>
+	Menus
+      </phrase>
+    </textobject>
+    <caption>
+      <para>
+	<ulink url="&link-typedef-x--w-main-window;">Main windows</ulink>
+	may have an optional menu bar at the top. The menu bar is not
+	visible by default, and <methodname>show_all</methodname>() will
+	not make it visible. The menu bar requires explicit steps to
+	construct it and make it visible.
+      </para>
+
+      <para>
+	<methodname>get_menubarlayoutmanager</methodname>()
+	returns an
+	<ulink url="&link-typedef-x--w-menubarlayoutmanager;"><classname>&ns;::w::menubarlayoutmanager</classname></ulink>,
+	a &layoutmanager; to create its contents. Once created,
+	<methodname>get_menubar</methodname>() returns a
+	&container; that represents that menu bar, with a
+	<methodname>show</methodname>() method that makes it visible.
+	The typical approach to create a fully fleshed out main window:
+      </para>
+
+      <itemizedlist>
+	<listitem>
+	  <para>
+	    Use <methodname>get_menubarlayoutmanager</methodname>()
+	    to get the menu bar's layout manager.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Use the layout manager's
+	    <methodname>append_menus</methodname>(),
+	    <methodname>insert_menus</methodname>(),
+	    <methodname>append_right_menus</methodname>() and
+	    <methodname>insert_right_menus</methodname>() to construct
+	    the main window's menus. These methods return
+	    a
+	    <ulink url="&link-typedef-x--w-menubarfactory;"><classname>&ns;::w::menubarfactory</classname></ulink>
+	    for creating new menus.
+	  </para>
+	</listitem>
+	<listitem>
+	  <para>
+	    Create the rest of the display elements in the main window
+	    normally. This can be done before or after the menu.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Use <methodname>get_menubar</methodname>() to return the
+	    menu bar's container
+	    (<methodname>get_menubarlayoutmanager</methodname>() is
+	    equivalent to
+	    <literal>get_menubar()->get_layoutmanager()</literal>) and
+	    <methodname>show</methodname>() it.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    <methodname>show_all</methodname>()/<methodname>show</methodname>()
+	    the main window:
+	  </para>
+	</listitem>
+      </itemizedlist>
+    </caption>
+  </mediaobject>
+
+  <blockquote>
+    <title><ulink url="examples/menu.C">menu.C</ulink></title>
+
+    <informalexample>
+      <programlisting><xi:include href="../examples/menu.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    Unlike regular display elements in the main window, display elements
+    that make up the menu bar and its menus should not be
+    <methodname>show</methodname>()n, except for
+    <methodname>show</methodname>()ing the menu bar itself.
+    <ulink url="&link-typedef-x--w-menubarlayoutmanager;"><classname>&ns;::w::menubarlayoutmanager</classname></ulink>'s
+    method that create menus take a creator callback that gets invoked
+    to create the menus. The callback receives a
+    <ulink url="&link-typedef-x--w-menulayoutmanager;"><classname>&ns;::w::menulayoutmanager</classname></ulink>
+    parameter, a &layoutmanager; for the new menu that the callback uses
+    to create the new menu's items. The layout managers will take care of
+    showing and hiding all the menu items, when needed.
+  </para>
+
+  <section id="menubarlayoutmanager">
+    <title>The menu bar layout manager</title>
+
+    <para>
+      <ulink url="&link-typedef-x--w-main-window;"><classname>&ns;::w::main_window</classname></ulink>'s
+      <methodname>get_menubar</methodname>() method returns a &container; with a
+      <ulink url="&link-typedef-x--w-menubarlayoutmanager;"><classname>&ns;::w::menubarlayoutmanager</classname></ulink>
+      &layoutmanager;, that represents the main window's menu bar, which
+      gets <methodname>show</methodname>()n after its menus get created.
+      <methodname>get_menubarlayoutmanager</methodname>() is
+      equivalent to
+      <literal>get_menubar()->get_layoutmanager()</literal>.</para>
+
+    <para>
+      <methodname>append_menus</methodname>() returns a
+      <ulink url="&link-typedef-x--w-menubarfactory;"><classname>&ns;::w::menubarfactory</classname></ulink>
+      that adds new menus to the menu bar.
+      <methodname>insert_menus</methodname>() returns a factory that
+      inserts new menus before an existing menu in the menu bar.
+      <methodname>remove_menu</methodname>() removes an existing menu from
+      the menu bar.
+    </para>
+
+    <para>
+      As part of creating a new menu, the
+      <classname>&ns;::w::menubarfactory</classname> uses a callback that
+      takes a
+      <classname><ulink url="&link-typedef-x--w-menulayoutmanager;"><classname>&ns;::w::menulayoutmanager</classname></ulink></classname>
+      parameter to create the individual items for the new menu.
+      The factory also returns the
+      <ulink url="&link-typedef-x--w-menu;"><classname>&ns;::w::menu</classname></ulink>
+      that represents the new menu in the menu bar.
+    </para>
+
+    <para>
+      Constructing a
+      <ulink url="&link-x--w--menubar-lock;"><classname>&ns;::w::menubar_lock</classname></ulink>
+      blocks the menu bar from other execution thread, at which point
+      its <methodname>get_menu</methodname>() returns the
+      <classname>&ns;::w::menu</classname> elements.
+    </para>
+
+    <para>
+      The menu bar has a second section that's aligned against the right
+      margin, the typical location for a <quote>Help</quote> menu.
+      <methodname>append_right_menus</methodname>(),
+      <methodname>insert_right_menus</methodname>() and
+      <methodname>remove_right_menu</methodname>() are equivalent
+      <classname>&ns;::w::menubarfactory</classname> methods for the
+      second section (with <methodname>get_right_menu</methodname>() picking
+      up the slack in the
+      <classname>&ns;:w::menubar_lock</classname>.
+    </para>
+  </section>
+
+  <section id="menulayoutmanager">
+    <title>The menu layout manager</title>
+
+    <para>
+      An <ulink url="&link-typedef-x--w-menulayoutmanager;"><classname>&ns;::w::menulayoutmanager</classname></ulink>
+      is a &layoutmanager; for
+      <ulink url="&link-typedef-x--w-menu;"><classname>&ns;::w::menu</classname></ulink>
+      in the menu bar, and for sub-menus of its menu items.
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+&ns;::w::menuitem_plain file_new_type;
+
+file_new_type.menuitem_shortcut={"Alt", 'N'};
+
+file_new_type.on_activate=[]
+	(const &ns;::w::menuitem_activation_info &ns;ignore)
+	{
+	};
+
+m-&gt;append_menu_item(file_new_type, "New");</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      <classname>&ns;::w::menulayoutmanager</classname>'s
+      <methodname>append_menu_item</methodname>(),
+      <methodname>insert_menu_item</methodname>(),
+      <methodname>replace_menu_item</methodname>(), and
+      <methodname>replace_all_menu_items</methodname>() methods
+      generally parallel the
+      similarly-named methods of the <link linkend="list">list layout
+	manager</link>, and take a
+      variadic list of the following parameters:
+    </para>
+
+    <variablelist>
+      <varlistentry>
+	<term><ulink url="&link-typedef-x--w-menuitem-type-t;"><classname>&ns;::w::menuitem_type_t</classname></ulink></term>
+	<listitem>
+	  <para>
+	    A <classname>std::variant</classname> that specifies the type
+	    of the menu item to create next. If not specified, the next
+	    menu item is a
+	    <classname>&ns;::w::menuitem_plain</classname>. An explicitly
+	    specified type applies to the next created menu item only,
+	    and gets reset to the default
+	    <classname>&ns;::w::menuitem_plain</classname> unless another
+	    <classname>&ns;::w::menuitem_type_t</classname>
+	    follows in the variadic parameter list.
+	  </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term><link linkend="labels"><classname>&ns;::w::text_param</classname></link></term>
+	<listitem>
+	  <para>
+	    A literal text string or an explicit
+	    <classname>&ns;::w::text_param</classname> object creates a new
+	    menu item. An empty text string creates a horizontal divider
+	    line that visually separates groups of menu items.
+	  </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term><classname>std::vector&lt;std::tuple&lt;&ns;::w::menuitem_type_t,&ns;::w::text_param&gt;&gt;</classname></term>
+	<listitem>
+	  <para>
+	    A vector of new menu items, specifying each new menu item's
+	    <classname>&ns;::w::menuitem_type_t</classname>
+	    and <classname>&ns;::w::text_param&gt;</classname>.
+	  </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term><classname>std::vector&lt;&ns;::w::text_param&gt;</classname></term>
+	<listitem>
+	  <para>
+	    A vector new menu items, each one a default
+	    <classname>&ns;::w::menuitem_plain</classname>.
+	  </para>
+	</listitem>
+      </varlistentry>
+    </variablelist>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+&ns;:menuitem_plain file_open_type;
+
+file_open_type.menuitem_shortcut={"Alt", 'O'};
+
+m->update(1, file_open_type);</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      <methodname>update</methodname>() changes an existing menu item's
+      <classname>&ns;::w::menuitem_type_t</classname>. Instead of explicitly
+      giving each new menu items'
+      <classname>&ns;::w::menuitem_type_t</classname>
+      as they get created, it's possible to create all new menu items at once
+      (as an explicit list of strings, or a plain
+    <classname>std::vector</classname>,
+    and then use <methodname>update</methodname>() to set each create item's
+    <classname>&ns;::w::menuitem_type_t</classname>
+    </para>
+  </section>
+
+  <section id="menuitemtype">
+    <title>Menu item types</title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+&ns;::w::menuitem_plain tools_menu_type;
+
+tools_menu_type.on_activate=[]
+    (const x::w::menuitem_activation_info &amp;info)
+    {
+    };
+tools_menu_type.is_option=true;
+tools_menu_type.menuitem_shortcut={"Alt", 'O'};</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      <ulink url="&link-x--w--menuitem-plain;"><classname>&ns;::w::menuitem_plain</classname></ulink>
+      creates regular menu items. Its <varname>on_activate</varname> member
+      specifies the &callback; that gets invoked when the menu item gets
+      selected. The callback's
+      <ulink url="&link-x--w--menuitem-activation-info;"><classname>&ns;::w::menuitem_activation_info</classname></ulink>
+      parameter provides additional information regarding the callback's
+      activation.
+    </para>
+
+    <para>
+      When <varname>is_option</varname> is <literal>true</literal>
+      selecting the menu item also toggles on and off the presence of a
+      bullet next to the item, in addition to
+      executing the callback. This visually
+      marks the menu item as <quote>selected</quote>, or enabled, in some
+      way.
+      <varname>menuitem_shortcut</varname> specifies an optional keyboard
+      <ulink url="&link-x--w--shortcut;"><classname>&ns;:;w::shortcut</classname></ulink>
+      that activates the menu item.
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+&ns;::w::menuitem_submenu file_recent_type;
+
+file_recent_type.creator=
+    []
+    (const &ns;::w::menulayoutmanager &amp;submenu_layoutmanager)
+    {
+    };</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      <ulink url="&link-x--w--menuitem-submenu;"><classname>&ns;::w::menuitem_submenu</classname></ulink>
+      creates a new menu item that opens a sub-menu.
+      Its <varname>creator</varname> callback gets executed to define
+      the sub-menu's item. A
+      <classname>&ns;::w::menulayoutmanager</classname> parameter for the
+      sub-menu gets passed to the callback, and the callback uses
+      <link linkend="menulayoutmanager">menu layout manager's methods</link>
+      to create the sub-menu's items.
+    </para>
+  </section>
+
+  <section id="menuopenclose">
+    <title>Opening and closing menus, selecting menu items, using the mouse pointer or the keyboard</title>
+
+    <para>
+      Clicking on a title of a menu in the menu bar opens that menu.
+      Clicking on a plain menu item selects and activates it.
+      Moving the pointer on top of a menu item with a submenu, then
+      pausing, opens the menu item's submenu.
+    </para>
+
+    <para>
+      &appshort;'s menus are fully keyboard-accessible. The menu titles
+      in the menu bar are tabbable. Their tabbing order always precede any
+      tabbable display elements in the main window.
+      <keycap>Enter</keycap> with a menu title receiving input focus opens
+      the submenu.
+      <keycap>Esc</keycap> closes the opened menu. Up and down cursor
+      keys navigate the menu's items, with
+      <keycap>Enter</keycap> either selecting the highlighted menu item or
+      opening its sub-menu.
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+l->enabled(4, false);</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      A disabled menu item is not selectable via the pointer or the keyboard.
+      Disabled menu items get drawn with a dithered, faint,
+      appearance.
+    </para>
+  </section>
+</chapter>
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "book" "chapter")
+End:
+-->
