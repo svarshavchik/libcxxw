@@ -302,6 +302,15 @@ void elementObj::implObj::schedule_redraw(IN_THREAD_ONLY)
 	IN_THREAD->elements_to_redraw(IN_THREAD)->insert(elementimpl(this));
 }
 
+void elementObj::implObj::schedule_redraw_recursively()
+{
+	THREAD->run_as([me=ref(this)]
+		       (IN_THREAD_ONLY)
+		       {
+			       me->schedule_redraw_recursively(IN_THREAD);
+		       });
+}
+
 void elementObj::implObj::schedule_redraw_recursively(IN_THREAD_ONLY)
 {
 	schedule_redraw(IN_THREAD);
@@ -353,7 +362,7 @@ ref<obj> elementObj::implObj
 	auto mcguffin=data_thread_only.update_handlers->create_mcguffin();
 
 	THREAD->run_as([mcguffin, handler,
-			me=ref<elementObj::implObj>(this)]
+			me=ref(this)]
 		       (IN_THREAD_ONLY)
 		       {
 			       // Install the new handler in the connection
@@ -372,7 +381,7 @@ ref<obj> elementObj::implObj
 void elementObj::implObj::set_minimum_override(dim_t horiz_override,
 					       dim_t vert_override)
 {
-	THREAD->run_as([me=ref<elementObj::implObj>(this),
+	THREAD->run_as([me=ref(this),
 			horiz_override,
 			vert_override]
 		       (IN_THREAD_ONLY)
@@ -620,12 +629,12 @@ void elementObj::implObj
 	cpy.x = coord_t::truncate(cpy.x + di.absolute_location.x);
 	cpy.y = coord_t::truncate(cpy.y + di.absolute_location.y);
 
+	auto &wh=get_window_handler();
+
 	if (draw_to_window_picture_as_disabled(IN_THREAD))
 	{
 		// Disabled element rendering -- dither in the main window's
 		// background color.
-
-		auto &wh=get_window_handler();
 
 		auto &di=wh.get_draw_info(IN_THREAD);
 
@@ -640,6 +649,20 @@ void elementObj::implObj
 					  cpy.width, cpy.height,
 					  render_pict_op::op_over);
 	}
+
+	// If there's a busy mcguffin outstanding, and composition is available,
+	// draw a shade on top of us.
+
+	if (wh.is_busy() && wh.drawable_pictformat->alpha_depth > 0)
+	{
+		contents->composite(wh.shaded_color(IN_THREAD)
+				    ->get_current_color(IN_THREAD),
+				    cpy.x,
+				    cpy.y,
+				    {0, 0, cpy.width, cpy.height},
+				    render_pict_op::op_atop);
+	}
+
 	di.window_picture->composite(contents->impl,
 				     0, 0,
 				     cpy);
@@ -815,7 +838,7 @@ void elementObj::implObj::on_keyboard_focus(const
 					    std::function<focus_callback_t>
 					    &callback)
 {
-	THREAD->run_as([me=ref<elementObj::implObj>(this), callback]
+	THREAD->run_as([me=ref(this), callback]
 		       (IN_THREAD_ONLY)
 		       {
 			       me->on_keyboard_focus(IN_THREAD, callback);
@@ -862,7 +885,7 @@ void elementObj::implObj::on_pointer_focus(const
 					    std::function<focus_callback_t>
 					    &callback)
 {
-	THREAD->run_as([me=ref<elementObj::implObj>(this), callback]
+	THREAD->run_as([me=ref(this), callback]
 		       (IN_THREAD_ONLY)
 		       {
 			       me->on_pointer_focus(IN_THREAD, callback);
@@ -926,7 +949,7 @@ bool in_focus(focus_change v)
 void elementObj::implObj
 ::on_key_event(const std::function<key_event_callback_t> &cb)
 {
-	THREAD->run_as([me=ref<elementObj::implObj>(this), cb]
+	THREAD->run_as([me=ref(this), cb]
 		       (IN_THREAD_ONLY)
 		       {
 			       me->on_key_event(IN_THREAD, cb);

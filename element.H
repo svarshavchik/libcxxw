@@ -538,6 +538,10 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 	//! schedule_redraw() this one, and all child elements.
 
+	void schedule_redraw_recursively();
+
+	//! schedule_redraw() this one, and all child elements.
+
 	void schedule_redraw_recursively(IN_THREAD_ONLY);
 
 	//! Forcibly redraw this display element

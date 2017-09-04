@@ -154,6 +154,9 @@ generic_windowObj::handlerObj
 					     (params.window_handler_params
 					      .screenref,
 					      params.background_color)),
+	shaded_color_thread_only(default_background_color
+				 (params.window_handler_params.screenref,
+				  "modal_shade")),
 	frame_extents_thread_only(params.window_handler_params.screenref
 				  ->get_workarea())
 {
@@ -348,7 +351,26 @@ void generic_windowObj::handlerObj::theme_updated_event(IN_THREAD_ONLY)
 	theme_updated(IN_THREAD, new_theme);
 	current_background_color(IN_THREAD)->theme_updated(IN_THREAD,
 							   new_theme);
+	shaded_color(IN_THREAD)->theme_updated(IN_THREAD, new_theme);
 }
+
+
+class LIBCXX_HIDDEN i_am_busyObj : virtual public obj {
+
+ public:
+	const ref<generic_windowObj::handlerObj> handler;
+
+	i_am_busyObj(const ref<generic_windowObj::handlerObj> &handler)
+		: handler(handler)
+	{
+	}
+
+	~i_am_busyObj()
+	{
+		handler->schedule_redraw_recursively();
+	}
+};
+
 
 ref<obj> generic_windowObj::handlerObj::get_busy_mcguffin()
 {
@@ -358,9 +380,10 @@ ref<obj> generic_windowObj::handlerObj::get_busy_mcguffin()
 
 	if (p) return p;
 
-	auto n=ref<obj>::create();
+	auto n=ref<i_am_busyObj>::create(ref(this));
 
 	*lock=n;
+	schedule_redraw_recursively();
 	return n;
 }
 

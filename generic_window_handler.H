@@ -102,6 +102,9 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 	background_color current_background_color_thread_only;
 
+	//! Window's shade color
+	background_color shaded_color_thread_only;
+
 	//! Whether this window is currently receiving input focus
 
 	bool has_focus_thread_only=false;
@@ -203,6 +206,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	THREAD_DATA_ONLY(current_events);
 	THREAD_DATA_ONLY(disabled_mask);
 	THREAD_DATA_ONLY(current_background_color);
+	THREAD_DATA_ONLY(shaded_color);
 	THREAD_DATA_ONLY(has_focus);
 	THREAD_DATA_ONLY(frame_extents);
 	THREAD_DATA_ONLY(current_pointer_grab);
