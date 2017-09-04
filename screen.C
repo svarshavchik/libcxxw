@@ -137,6 +137,16 @@ dim_t screenObj::height_in_millimeters() const
 	return impl->height_in_millimeters();
 }
 
+const std::unordered_set<std::string> &screenObj::supported() const
+{
+	return impl->supported;
+}
+
+bool screenObj::supported(const std::string_view &name) const
+{
+	return impl->supported.find(name) != impl->supported.end();
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
 screenObj::implObj::toplevelwindow_colormapObj
@@ -164,6 +174,7 @@ screenObj::implObj::implObj(const xcb_screen_t *xcb_screen,
 			    size_t screen_number,
 			    const render &render_info,
 			    const vector<const_ref<depthObj>> &screen_depths,
+			    const std::unordered_set<std::string> &supported,
 			    const defaulttheme &current_theme,
 			    const screen::base::visual_t &toplevelwindow_visual,
 			    const const_pictformat &toplevelwindow_pictformat,
@@ -178,6 +189,7 @@ screenObj::implObj::implObj(const xcb_screen_t *xcb_screen,
 					   toplevelwindow_visual->impl
 					   ->visual_id)),
 	  screen_depths(screen_depths),
+	  supported(supported),
 	  current_theme(current_theme),
 	  fc(fontconfig::create()),
 	  ft(freetype::create()),

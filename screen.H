@@ -32,6 +32,7 @@
 #include <xcb/xcb.h>
 #include <cmath>
 #include <string>
+#include <unordered_set>
 
 LIBCXXW_NAMESPACE_START
 
@@ -83,6 +84,9 @@ class LIBCXX_HIDDEN screenObj::implObj
 
 	//! Same screen_depths as the public object.
 	const vector<const_ref<depthObj>> screen_depths;
+
+	//! Supported protocols
+	const std::unordered_set<std::string> supported;
 
 	//! The current theme for this screen.
 	current_theme_t current_theme;
@@ -147,6 +151,7 @@ class LIBCXX_HIDDEN screenObj::implObj
 		size_t screen_number,
 		const render &render_info,
 		const vector<const_ref<depthObj>> &screen_depths,
+		const std::unordered_set<std::string> &supported,
 		const defaulttheme &current_theme,
 		const screen::base::visual_t &toplevelwindow_visual,
 		const const_pictformat &toplevelwindow_pictformat,

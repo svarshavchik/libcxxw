@@ -14,6 +14,7 @@
 #include <x/destroy_callback.H>
 #include <iostream>
 #include <iomanip>
+#include <algorithm>
 
 LOG_FUNC_SCOPE_DECL("cxxw", cxxwLog);
 
@@ -124,6 +125,17 @@ static void displayscreen()
 			  << s->height_in_millimeters().n << "mm"
 			  << std::endl;
 
+		std::vector<std::string> supported{s->supported().begin(),
+				s->supported().end()};
+
+		std::sort(supported.begin(), supported.end());
+
+		std::cout << _("    Supported hints:");
+
+		for (const auto &s:supported)
+			std::cout << " " << s;
+		std::cout << std::endl;
+
 		std::cout << x::gettextmsg(_("    Workarea: %1%"),
 					   s->get_workarea()) << std::endl;
 
@@ -136,7 +148,7 @@ static void displayscreen()
 			for (const auto &v:screen_depth->visuals)
 			{
 				std::cout << "      "
-					  << x::gettextmsg(_("Visual %1%, %2% bits, %3% colormap size, %4% red %5%, green %6%, blue %7%%8%"),
+					  << x::gettextmsg(_("        Visual %1%, %2% bits, %3% colormap size, %4% red %5%, green %6%, blue %7%%8%"),
 							   (int)v->visual_class_type,
 							   (int)v->bits_per_rgb,
 							   v->colormap_entries,

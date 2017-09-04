@@ -104,6 +104,9 @@ bool ewmh::get_workarea(size_t screen_number, rectangle &ret)
 
 void ewmh::request_frame_extents(size_t screen_number, xcb_window_t window_id)
 {
+	if (!ewmh_available)
+		return;
+
 	xcb_ewmh_request_frame_extents(this,
 				       screen_number,
 				       window_id);
@@ -115,6 +118,9 @@ bool ewmh::get_frame_extents(dim_t &left,
 			     dim_t &bottom,
 			     xcb_window_t window_id)
 {
+	if (!ewmh_available)
+		return false;
+
 	LOG_DEBUG("Requesting frame extents");
 
 	returned_pointer<xcb_generic_error_t *> error;
@@ -137,6 +143,29 @@ bool ewmh::get_frame_extents(dim_t &left,
 	if (error)
 		throw EXCEPTION(connection_error(error));
 	return false;
+}
+
+std::unordered_set<xcb_atom_t> ewmh::get_supported(size_t screen_number)
+{
+	std::unordered_set<xcb_atom_t> atoms;
+
+	if (ewmh_available)
+	{
+		returned_pointer<xcb_generic_error_t *> error;
+		xcb_ewmh_get_atoms_reply_t reply{};
+		if (xcb_ewmh_get_supported_reply
+		    (this, xcb_ewmh_get_supported(this, screen_number),
+		     &reply, error.addressof()))
+		{
+			atoms.insert(reply.atoms, reply.atoms+reply.atoms_len);
+			xcb_ewmh_get_atoms_reply_wipe(&reply);
+		}
+
+		if (error)
+			throw EXCEPTION(connection_error(error));
+	}
+
+	return atoms;
 }
 
 LIBCXXW_NAMESPACE_END

@@ -9,6 +9,7 @@
 #include "x/w/namespace.H"
 #include "x/w/rectangle.H"
 #include <x/logger.H>
+#include <unordered_set>
 
 LIBCXXW_NAMESPACE_START
 
@@ -55,6 +56,10 @@ class LIBCXX_HIDDEN ewmh : public xcb_ewmh_connection_t {
 			       dim_t &top,
 			       dim_t &bottom,
 			       xcb_window_t window_id);
+
+	//! Return _NET_SUPPORTED atoms.
+
+	std::unordered_set<xcb_atom_t> get_supported(size_t screen_number);
 };
 
 LIBCXXW_NAMESPACE_END

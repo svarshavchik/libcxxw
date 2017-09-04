@@ -81,6 +81,7 @@ connectionObj::implObj::implObj(const connection_info &info)
 static inline std::vector<ref<screenObj::implObj>>
 get_screens(const connection_thread &thread,
 	    const render &render_info,
+	    mpobj<ewmh> &ewmh_info,
 	    const xcb_setup_t *setup)
 {
 	std::vector<ref<screenObj::implObj>> v;
@@ -148,12 +149,26 @@ get_screens(const connection_thread &thread,
 				break;
 		}
 
+		std::unordered_set<std::string> supported;
+
+		{
+			mpobj<ewmh>::lock lock{ewmh_info};
+
+			auto supported_atoms=lock->get_supported(screen_number);
+
+			for (auto a:supported_atoms)
+				supported.insert(thread->info
+						 ->get_atom_name(a));
+
+		}
+
 		auto new_theme=defaulttheme::create(xcb_screen, theme_config);
 
 		auto s=ref<screenObj::implObj>::create(xcb_screen,
 						       screen_number++,
 						       render_info,
 						       screen_depths,
+						       supported,
 						       new_theme,
 						       root_visual,
 						       root_pictformat,
@@ -223,7 +238,7 @@ connectionObj::implObj::implObj(const connection_info &info,
 	  keysyms_info_thread_only(info->conn),
 	  setup(*setup),
 	  thread(thread),
-	  screens(get_screens(thread, render_info, setup)),
+	  screens(get_screens(thread, render_info, ewmh_info, setup)),
 	  font_cache(font_cache_t::create()),
 	  sorted_font_cache(sorted_font_cache_t::create())
 {

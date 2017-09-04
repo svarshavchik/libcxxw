@@ -18,6 +18,10 @@
 #include <x/vectorfwd.H>
 #include <x/functional.H>
 
+#include <unordered_set>
+#include <string>
+#include <string_view>
+
 LIBCXXW_NAMESPACE_START
 
 //! A screen on the display server.
@@ -74,6 +78,12 @@ public:
 	dim_t width_in_millimeters() const;
 	//! Screen metrics
 	dim_t height_in_millimeters() const;
+
+	//! Supported extended window manager protocols
+	const std::unordered_set<std::string> &supported() const;
+
+	//! Whether the given protocol is supported
+	bool supported(const std::string_view &) const;
 
 	//! Return the screen's work area.
 
