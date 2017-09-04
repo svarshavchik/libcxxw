@@ -357,6 +357,7 @@ void gridlayoutmanager()
 
 	main_window->on_delete
 		([close_flag]
+		 (const x::w::busy &ignore)
 		 {
 			 close_flag->close();
 		 });

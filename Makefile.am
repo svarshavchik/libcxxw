@@ -294,6 +294,9 @@ libcxxw_la_SOURCES=\
 	gridlayoutmanager_impl.C		    \
 	gridlayoutmanager_impl_elements.C	    \
 	gridlayoutmanager_impl_elements.H	    \
+	gridtemplate.C			            \
+	gridtemplate.H				    \
+	gridtemplatefwd.H			    \
 	hotspot.C				    \
 	hotspot.H				    \
 	hotspot_bgcolor.C			    \
@@ -695,6 +698,7 @@ $(call OPTIONS_GEN,cxxwoptions.H,cxxwoptions.xml)
 
 EXTRA_DIST = config.rpath m4/ChangeLog COPYING \
 	pic_constants.xml gc_constants.xml constants.xsl \
+	parseapiconfig.xsl gridlayoutapi.xml \
 	xim/xim.xml xim/xim.xsl \
 	packaging/fedora/libcxxw.spec \
         examples/configure.ac \
@@ -820,6 +824,7 @@ testmainwindow_LDFLAGS=-static $(STATICLINKFLAGS)
 
 BUILT_SOURCES=includes/x/w/constants_inc.H \
 	$(XIM_AUTOGEN) \
+	gridlayoutapi.inc.C \
 	gc_constants.inc.C pic_constants.inc.C
 
 CLEANFILES = $(shell cd $(srcdir) && echo *.inc.[CH]) $(XIM_AUTOGEN)
@@ -847,6 +852,10 @@ xim/ximclient.inc.C: xim/xim.xml xim/xim.xsl
 xim/ximclient2.inc.C: xim/xim.xml xim/xim.xsl
 	xsltproc --stringparam mode received-switch $(srcdir)/xim/xim.xsl $(srcdir)/xim/xim.xml >xim/ximclient2.inc.C.tmp
 	mv -f xim/ximclient2.inc.C.tmp xim/ximclient2.inc.C
+
+gridlayoutapi.inc.C: gridlayoutapi.xml parseapiconfig.xsl
+	xsltproc $(srcdir)/parseapiconfig.xsl $(srcdir)/gridlayoutapi.xml >gridlayoutapi.inc.C.tmp
+	mv -f gridlayoutapi.inc.C.tmp gridlayoutapi.inc.C
 
 genconstants_SOURCES=genconstants.C
 

@@ -12,6 +12,9 @@
 #include "drawable.H"
 #include "messages.H"
 #include "border_impl.H"
+#include "x/w/gridlayoutmanager.H"
+#include "x/w/gridfactory.H"
+#include "gridtemplate.H"
 #include <x/property_value.H>
 #include <x/chrcasecmp.H>
 #include <x/strtok.H>
@@ -374,6 +377,8 @@ void defaultthemeObj::load(const config &theme_config,
 			load_color_gradients(config);
 			load_borders(config, screen);
 			load_fonts(config);
+			load_layouts(config);
+			load_factories(config);
 		}
 	} catch (const exception &e)
 	{
@@ -1290,5 +1295,273 @@ font defaultthemeObj::get_theme_font(const std::string &id)
 }
 
 //////////////////////////////////////////////////////////////////////////////
+
+
+static std::string single_value(const xml::doc::base::readlock &lock,
+				const char *element,
+				const char *parent)
+{
+	auto v=lock->clone();
+
+	auto xpath=v->get_xpath(element);
+
+	if (xpath->count() != 1)
+		throw EXCEPTION(gettextmsg(_("<%1%> must contain exactly one <%2%>"),
+					   parent, element));
+
+	xpath->to_node(1);
+	return v->get_text();
+}
+
+static std::string optional_value(const xml::doc::base::readlock &lock,
+				  const char *element,
+				  const char *parent)
+{
+	auto v=lock->clone();
+
+	auto xpath=v->get_xpath(element);
+
+	size_t n=xpath->count();
+
+	if (n > 1)
+		throw EXCEPTION(gettextmsg(_("<%1%> cannot have more than one <%2%>"),
+					   parent, element));
+
+	if (!n) return {};
+
+	xpath->to_node(1);
+	return v->get_text();
+}
+
+static std::string lowercase_single_value(const xml::doc::base::readlock &lock,
+					  const char *element,
+					  const char *xpath)
+{
+	std::string s=single_value(lock, element, xpath);
+
+	std::transform(s.begin(), s.end(), s.begin(), chrcasecmp::tolower);
+
+	return s;
+}
+
+static bool single_value_exists(const xml::doc::base::readlock &lock,
+				const char *element)
+{
+	auto v=lock->clone();
+
+	auto xpath=v->get_xpath(element);
+
+	return xpath->count() == 1;
+}
+
+template<typename to_value_t>
+static to_value_t to_value(const std::string &value,
+			   const char *element)
+{
+	to_value_t v;
+
+	std::istringstream i(value);
+
+	i >> v;
+
+	if (i.fail())
+		throw EXCEPTION(gettextmsg(_("Cannot convert the value of <%1%>"
+					     ), element));
+	return v;
+}
+
+inline static dim_t to_dim_t(const xml::doc::base::readlock &lock,
+			     const char *element, const char *parent)
+{
+	return to_value<dim_t>(single_value(lock, element, parent), element);
+}
+
+inline static size_t to_size_t(const xml::doc::base::readlock &lock,
+			       const char *element, const char *parent)
+{
+	return to_value<size_t>(single_value(lock, element, parent), element);
+}
+
+inline static int to_percentage_t(const xml::doc::base::readlock &lock,
+				  const char *element, const char *parent)
+{
+	int v=to_value<int>(single_value(lock, element, parent), element);
+
+	if (v < 0 || v > 100)
+		throw EXCEPTION(gettextmsg(_("Value of <%1%> is not 0-100"
+					     ), element));
+
+	return v;
+}
+
+static halign to_halign_value(const xml::doc::base::readlock &lock,
+			      const char *element, const char *parent)
+{
+	auto value=single_value(lock, element, parent);
+
+	std::transform(value.begin(), value.end(), value.begin(),
+		       chrcasecmp::tolower);
+
+	halign v;
+
+	if (value == "left")
+	{
+		v=halign::left;
+	}
+	else if (value == "centered")
+	{
+		v=halign::center;
+	}
+	else if (value == "right")
+	{
+		v=halign::right;
+	}
+	else if (value == "fill")
+	{
+		v=halign::fill;
+	}
+	else
+		throw EXCEPTION(gettextmsg(_("\"%1%\" is not a valid setting for <%2%>"),
+					   value, element));
+
+	return v;
+}
+
+static valign to_valign_value(const xml::doc::base::readlock &lock,
+			      const char *element, const char *parent)
+{
+	auto value=single_value(lock, element, parent);
+
+	std::transform(value.begin(), value.end(), value.begin(),
+		       chrcasecmp::tolower);
+
+	valign v;
+
+	if (value == "top")
+	{
+		v=valign::top;
+	}
+	else if (value == "middle")
+	{
+		v=valign::middle;
+	}
+	else if (value == "bottom")
+	{
+		v=valign::bottom;
+	}
+	else if (value == "fill")
+	{
+		v=valign::fill;
+	}
+	else
+		throw EXCEPTION(gettextmsg(_("\"%1%\" is not a valid setting for <%2%>"),
+					   value, element));
+
+	return v;
+}
+
+#include "gridlayoutapi.inc.C"
+
+void defaultthemeObj::load_layouts(const xml::doc &config)
+{
+	auto lock=config->readlock();
+
+	if (!lock->get_root())
+		return;
+
+	auto xpath=lock->get_xpath("/theme/layout");
+
+	size_t count=xpath->count();
+
+	for (size_t i=0; i<count; ++i)
+	{
+		xpath->to_node(i+1);
+
+		auto id=lock->get_any_attribute("id");
+
+		if (id.empty())
+			throw EXCEPTION(_("no id specified for layout"));
+
+		gridlayout_parseconfig(lock, layouts[id]);
+	}
+}
+
+void defaultthemeObj::load_factories(const xml::doc &config)
+{
+	auto lock=config->readlock();
+
+	if (!lock->get_root())
+		return;
+
+	auto xpath=lock->get_xpath("/theme/factory");
+
+	size_t count=xpath->count();
+
+	for (size_t i=0; i<count; ++i)
+	{
+		xpath->to_node(i+1);
+
+		auto id=lock->get_any_attribute("id");
+
+		if (id.empty())
+			throw EXCEPTION(_("no id specified for factory"));
+
+		gridfactory_parseconfig(lock, factories[id]);
+	}
+}
+
+void defaultthemeObj::layout_append_row(const gridlayoutmanager &glm,
+					const gridtemplate *elements,
+					const std::string &name)
+{
+	auto iter=factories.find(name);
+
+	if (iter == factories.end())
+		throw EXCEPTION
+			(gettextmsg
+			 (_("Did not find definition of \"%1%\" in the theme"),
+			  name));
+
+	auto f=glm->append_row();
+	auto me=defaulttheme(this);
+
+	for (const auto &c:iter->second)
+		c(f, elements, me);
+}
+
+void defaultthemeObj::layout_insert(const gridfactory &f,
+				    const gridtemplate *elements,
+				    const std::string &name,
+				    const std::string &background_color)
+{
+	f->create_container([&, this]
+			    (const auto &new_container)
+			    {
+				    gridlayoutmanager glm=
+					    new_container->get_layoutmanager();
+				    if (!background_color.empty())
+					    new_container->set_background_color
+						    (background_color);
+
+				    this->layout_insert(glm, elements, name);
+			    },
+			    new_gridlayoutmanager{});
+}
+
+void defaultthemeObj::layout_insert(const gridlayoutmanager &glm,
+				    const gridtemplate *elements,
+				    const std::string &name)
+{
+	auto iter=layouts.find(name);
+
+	if (iter == layouts.end())
+		throw EXCEPTION(gettextmsg(_("Layout %1% not defined."),
+					   name));
+
+	auto me=defaulttheme(this);
+
+	for (const auto &c:iter->second)
+		c(glm, elements, me);
+}
 
 LIBCXXW_NAMESPACE_END

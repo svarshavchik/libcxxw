@@ -190,6 +190,7 @@ void testimagebuttons()
 
 	main_window->on_delete
 		([close_flag]
+		 (const auto &ignore)
 		 {
 			 close_flag->close();
 		 });

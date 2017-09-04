@@ -99,6 +99,10 @@
     <color>0%</color>
   </border>
 
+  <border id="thick_50%" from="thick">
+    <color>50%</color>
+  </border>
+
   <border id="thin_dashed_0%">
     <width axis="horiz">.4</width>
     <height axis="vert">.4</height>
@@ -376,6 +380,354 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
 
   <!-- Dialogs -->
 
-  <color id="dialog_background" scale="80%" />
+  <color id="dialog_background" scale="90%" />
 
+  <!-- A dialog with a single "Ok" button -->
+
+  <dim id="dialog-v-padding" axis="vert">4</dim>
+  <dim id="dialog-h-padding" axis="vert">4</dim>
+
+  <layout id="ok-dialog">
+    <valign>
+      <row>0</row>
+      <valign>middle</valign>
+    </valign>
+
+    <valign>
+      <row>1</row>
+      <valign>middle</valign>
+    </valign>
+
+    <append_row>
+      <name>icon-and-message</name>
+    </append_row>
+
+    <append_row>
+      <name>ok-button-container</name>
+    </append_row>
+  </layout>
+
+  <factory id="icon-and-message">
+    <padding>
+      <side>top</side>
+      <padding>dialog-v-padding</padding>
+    </padding>
+
+    <padding>
+      <side>bottom</side>
+      <padding>dialog-v-padding</padding>
+    </padding>
+
+    <padding>
+      <side>left</side>
+      <padding>dialog-h-padding</padding>
+    </padding>
+
+    <padding>
+      <side>right</side>
+      <padding>dialog-h-padding</padding>
+    </padding>
+
+    <border>
+      <side>bottom</side>
+      <border>thick_50%</border>
+    </border>
+
+    <element>
+      <name>icon</name>
+    </element>
+
+    <padding>
+      <side>top</side>
+      <padding>dialog-v-padding</padding>
+    </padding>
+
+    <padding>
+      <side>bottom</side>
+      <padding>dialog-v-padding</padding>
+    </padding>
+
+    <padding>
+      <side>right</side>
+      <padding>dialog-h-padding</padding>
+    </padding>
+
+    <border>
+      <side>bottom</side>
+      <border>thick_50%</border>
+    </border>
+
+    <element>
+      <name>message</name>
+    </element>
+  </factory>
+
+  <factory id="ok-button-container">
+    <padding>
+      <side>left</side>
+      <padding>0</padding>
+    </padding>
+
+    <padding>
+      <side>right</side>
+      <padding>0</padding>
+    </padding>
+
+    <padding>
+      <side>top</side>
+      <padding>0</padding>
+    </padding>
+
+    <padding>
+      <side>bottom</side>
+      <padding>0</padding>
+    </padding>
+
+    <colspan>
+      <columns>2</columns>
+    </colspan>
+    <halign>
+      <halign>right</halign>
+    </halign>
+
+    <include>
+      <name>ok-button-row</name>
+      <background_color>75%</background_color>
+    </include>
+  </factory>
+
+  <layout id="ok-button-row">
+    <append_row>
+      <name>ok-button</name>
+    </append_row>
+  </layout>
+
+  <factory id="ok-button">
+    <element>
+      <name>filler</name>
+    </element>
+
+    <padding>
+      <side>right</side>
+      <padding>dialog-h-padding</padding>
+    </padding>
+
+    <element>
+      <name>ok</name>
+    </element>
+  </factory>
+
+  <!-- A dialog with "Ok" and "Cancel" buttons -->
+
+  <layout id="ok-cancel-dialog">
+    <valign>
+      <row>0</row>
+      <valign>middle</valign>
+    </valign>
+
+    <valign>
+      <row>1</row>
+      <valign>middle</valign>
+    </valign>
+
+    <append_row>
+      <name>icon-and-message</name>
+    </append_row>
+
+    <append_row>
+      <name>ok-cancel-button-container</name>
+    </append_row>
+  </layout>
+
+  <factory id="ok-cancel-button-container">
+    <padding>
+      <side>left</side>
+      <padding>0</padding>
+    </padding>
+
+    <padding>
+      <side>right</side>
+      <padding>0</padding>
+    </padding>
+
+    <padding>
+      <side>top</side>
+      <padding>0</padding>
+    </padding>
+
+    <padding>
+      <side>bottom</side>
+      <padding>0</padding>
+    </padding>
+
+    <colspan>
+      <columns>2</columns>
+    </colspan>
+    <halign>
+      <halign>fill</halign>
+    </halign>
+
+    <include>
+      <name>ok-cancel-button-row</name>
+      <background_color>75%</background_color>
+    </include>
+  </factory>
+
+  <layout id="ok-cancel-button-row">
+    <append_row>
+      <name>ok-cancel-button</name>
+    </append_row>
+  </layout>
+
+  <factory id="ok-cancel-button">
+    <padding>
+      <side>left</side>
+      <padding>dialog-h-padding</padding>
+    </padding>
+
+    <element>
+      <name>cancel</name>
+    </element>
+
+    <element>
+      <name>filler</name>
+    </element>
+
+    <padding>
+      <side>right</side>
+      <padding>dialog-h-padding</padding>
+    </padding>
+
+    <element>
+      <name>ok</name>
+    </element>
+  </factory>
+
+  <!-- A dialog with an input field -->
+
+  <layout id="input-dialog">
+    <valign>
+      <row>0</row>
+      <valign>middle</valign>
+    </valign>
+
+    <valign>
+      <row>1</row>
+      <valign>middle</valign>
+    </valign>
+
+    <append_row>
+      <name>icon-and-input-container</name>
+    </append_row>
+
+    <append_row>
+      <name>ok-cancel-button-container</name>
+    </append_row>
+  </layout>
+
+  <factory id="icon-and-input-container">
+    <padding>
+      <side>top</side>
+      <padding>dialog-v-padding</padding>
+    </padding>
+
+    <padding>
+      <side>bottom</side>
+      <padding>dialog-v-padding</padding>
+    </padding>
+
+    <padding>
+      <side>left</side>
+      <padding>dialog-h-padding</padding>
+    </padding>
+
+    <padding>
+      <side>right</side>
+      <padding>dialog-h-padding</padding>
+    </padding>
+
+    <border>
+      <side>bottom</side>
+      <border>thick_50%</border>
+    </border>
+
+    <element>
+      <name>icon</name>
+    </element>
+
+    <padding>
+      <side>top</side>
+      <padding>dialog-v-padding</padding>
+    </padding>
+
+    <padding>
+      <side>bottom</side>
+      <padding>dialog-v-padding</padding>
+    </padding>
+
+    <padding>
+      <side>right</side>
+      <padding>dialog-h-padding</padding>
+    </padding>
+
+    <border>
+      <side>bottom</side>
+      <border>thick_50%</border>
+    </border>
+
+    <include>
+      <name>label-and-input-container</name>
+    </include>
+  </factory>
+
+  <layout id="label-and-input-container">
+    <valign>
+      <row>0</row>
+      <valign>top</valign>
+    </valign>
+
+    <append_row>
+      <name>label-and-input</name>
+    </append_row>
+  </layout>
+
+  <factory id="label-and-input">
+    <padding>
+      <side>top</side>
+      <padding>0</padding>
+    </padding>
+
+    <padding>
+      <side>left</side>
+      <padding>0</padding>
+    </padding>
+
+    <padding>
+      <side>bottom</side>
+      <padding>0</padding>
+    </padding>
+
+    <element>
+      <name>label</name>
+    </element>
+
+    <padding>
+      <side>top</side>
+      <padding>0</padding>
+    </padding>
+
+    <padding>
+      <side>right</side>
+      <padding>0</padding>
+    </padding>
+
+    <padding>
+      <side>bottom</side>
+      <padding>0</padding>
+    </padding>
+
+    <element>
+      <name>input</name>
+    </element>
+  </factory>
 </theme>

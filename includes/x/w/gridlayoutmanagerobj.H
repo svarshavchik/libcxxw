@@ -20,6 +20,8 @@
 #include <vector>
 #include <unordered_map>
 #include <string_view>
+#include <string>
+#include <functional>
 
 LIBCXXW_NAMESPACE_START
 
@@ -189,6 +191,14 @@ public:
 
 	//! Remove all custom column defaults.
 	void remove_col_defaults(size_t col);
+
+	//! Create the contents from a predefined theme template.
+
+	//! This is used by create_standard_dialog().
+
+	void create(const std::string_view &name,
+		    std::unordered_map<std::string,
+		    std::function<void (const gridfactory &)>> &&elements);
 };
 
 LIBCXXW_NAMESPACE_END

@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+
+<sxg xmlns:xi="http://www.w3.org/2003/XInclude">
+  <width>64</width>
+  <height>64</height>
+
+  <widthmm>12</widthmm>
+  <heightmm>12</heightmm>
+
+  <picture id="fill">
+    <type>rgb</type>
+    <color>0%</color>
+  </picture>
+
+  <pixmap id="mask">
+    <size>scaled</size>
+    <width>64</width>
+    <height>64</height>
+    <gc id="mask_gc" />
+  </pixmap>
+
+  <font id="question_mark_font" from="label">
+    <scaled_size>.8</scaled_size>
+  </font>
+
+  <picture id="question_mark">
+    <type>text</type>
+
+    <font>question_mark_font</font>
+    <rgb>
+      <color>0%</color>
+    </rgb>
+    <text>?</text>
+
+  </picture>
+
+  <gc id="mask_gc">
+
+    <function>set</function>
+
+    <line_width>3</line_width>
+
+    <line>
+      <point>
+	<x>1</x>
+	<y>1</y>
+      </point>
+      <point>
+	<x>62</x>
+	<y>1</y>
+      </point>
+      <point>
+	<x>62</x>
+	<y>62</y>
+      </point>
+      <point>
+	<x>1</x>
+	<y>62</y>
+      </point>
+      <point>
+	<x>1</x>
+	<y>1</y>
+      </point>
+    </line>
+  </gc>
+
+  <render id="main">
+    <fill>
+      <op>over</op>
+      <color>80%</color>
+      <rectangle>
+	<x>0</x>
+	<y>0</y>
+	<width>64</width>
+	<height>64</height>
+      </rectangle>
+    </fill>
+
+    <composite>
+      <op>over</op>
+
+      <x>0</x>
+      <y>0</y>
+      <width>64</width>
+      <height>64</height>
+      <mask>
+	<pixmap>mask</pixmap>
+	<x>0</x>
+	<y>0</y>
+      </mask>
+
+      <src>
+	<picture>fill</picture>
+	<x>0</x>
+	<y>0</y>
+      </src>
+    </composite>
+
+    <composite>
+      <op>atop</op>
+
+      <x>32</x>
+      <y>32</y>
+
+      <srcsize />
+
+      <halign>centered</halign>
+      <valign>middle</valign>
+
+      <src>
+	<picture>question_mark</picture>
+      </src>
+    </composite>
+  </render>
+</sxg>

@@ -834,6 +834,25 @@ bool gridlayoutmanagerObj::implObj::elementsObj
 		metrics::calculate_grid_vert_metrics(all_elements,
 						     do_not_expand_borders);
 
+#if 0
+
+	bool has_canvas=false;
+
+	for (const auto &e:all_elements)
+		if (e.child_element->impl->objname() == "x::w::canvasObj::implObj")
+			has_canvas=true;
+
+	if (has_canvas)
+	{
+		std::cout << "METRICS:" << std::endl;
+
+		for (const auto &m:new_horiz_metrics)
+			std::cout << "   " << m.first
+				  << "=" << m.second
+				  << std::endl;
+	}
+#endif
+
 	if (!flag && (horiz_metrics != new_horiz_metrics ||
 		      vert_metrics != new_vert_metrics))
 	{

@@ -11,6 +11,7 @@
 #include "batch_queue.H"
 #include "x/w/screen.H"
 #include "x/w/connection.H"
+#include "busy.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -21,7 +22,7 @@ main_windowObj::handlerObj::handlerObj(IN_THREAD_ONLY,
 					background_color,
 					shared_handler_data::create(),
 					0),
-	on_delete_callback_thread_only([] {})
+	on_delete_callback_thread_only([](const auto &ignore) {})
 {
 	// The top level window is not a child element in a container,
 	// so it is, hereby, initialized!
@@ -65,7 +66,9 @@ void main_windowObj::handlerObj
 			if (is_busy())
 				return;
 
-			on_delete_callback(IN_THREAD)();
+			busy_impl yes_i_am{*this, IN_THREAD};
+
+			on_delete_callback(IN_THREAD)(yes_i_am);
 			return;
 		}
 	}

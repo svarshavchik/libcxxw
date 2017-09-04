@@ -67,7 +67,7 @@ class LIBCXX_HIDDEN main_windowObj::implObj
 
 	//! Install a callback to invoke upon close.
 
-	void on_delete(const std::function<void ()> &callback);
+	void on_delete(const std::function<void (const busy &)> &callback);
 };
 
 //! Factory used by create_main_window_impl().

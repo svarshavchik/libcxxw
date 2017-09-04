@@ -88,6 +88,14 @@ make</programlisting>
 	<classname>&ns;::ref</classname> goes out of scope and gets destroyed
 	the display element gets destroyed and removed.
       </para>
+
+      <para>
+	Dialogs <link linkend="dialogs">own a reference</link> to the
+	main window or the dialog that created them. All references to
+	all dialogs from
+	a main window must go out of scope and get destroyed, before the
+	main window can be destroyed.
+      </para>
     </section>
 
     <section id="containerrefs">
@@ -265,7 +273,7 @@ make</programlisting>
 	    <function>on_delete</function>()
 	    lambda callback captures the <classname>close_flag</classname>
 	    by value.
-	    Clicking <quote>Close</quote> results in the lambda acquiring
+	    Clicking the window's close button results in the lambda acquiring
 	    the mutex, setting the flag, and signaling the condition
 	    variable.
 	  </para>
@@ -287,8 +295,8 @@ make</programlisting>
 	<title>Special rules for captured references in callbacks</title>
 
 	<para>
-	  It's explained in <xref linkend="containerrefs" />
-	  how containers own references to all elements in the container.
+	  As explained in <xref linkend="containerrefs" />,
+	  containers own references to all elements in the container.
 	  It is possible to attach additional application data to
 	  any display element, including containers; and
 	  <xref linkend="appdata" /> explains that the attached
@@ -302,8 +310,9 @@ make</programlisting>
 	</para>
 
 	<para>
-	  References captured by lambdas tha are used as callbacks have
-	  additional restrictions. Capturing a parent or a child element
+	  References captured by lambdas that are used as callbacks have
+	  more restrictions. Capturing
+	  <emphasis>either</emphasis> a parent or a child element
 	  results in an internal circular reference.
 	  Capturing a reference to an element not in the parent or the
 	  child element hierarchy is fine.
@@ -312,7 +321,7 @@ make</programlisting>
 	<para>
 	  There are several ways to correctly capture references to other
 	  display elements for use in callbacks. One way is to use
-	  weak capture, see <xref linkend="callbackweakcaptures" />
+	  weak captures, see <xref linkend="callbackweakcaptures" />
 	  in <xref linkend="gridlayoutmanager" /> for
 	  an example.
 	  Another design pattern is for callbacks to capture a
@@ -324,6 +333,7 @@ make</programlisting>
 	  <informalexample>
 	    <programlisting><![CDATA[
 main_window->on_delete([queue]
+    (const x::w::busy &amp;ignore)
     {
         queue->message([]
             (const x::w::main_window &main_window, const appdata_t &appdata)

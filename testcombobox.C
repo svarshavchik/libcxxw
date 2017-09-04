@@ -234,6 +234,7 @@ void testcombobox(const testcombobox_options &options)
 
 	main_window->on_delete
 		([close_flag]
+		 (const auto &ignore)
 		 {
 			 close_flag->close();
 		 });

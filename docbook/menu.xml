@@ -80,10 +80,15 @@ See COPYING for distribution information.
 	<listitem>
 	  <para>
 	    <methodname>show_all</methodname>()/<methodname>show</methodname>()
-	    the main window:
+	    the main window.
 	  </para>
 	</listitem>
       </itemizedlist>
+
+      <para>
+	<filename>menu.C</filename> demonstrates how to create menus
+	and <link linkend="dialogs">dialogs</link>:
+      </para>
     </caption>
   </mediaobject>
 

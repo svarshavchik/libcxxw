@@ -1,0 +1,143 @@
+<?xml version="1.0"?>
+
+<!-- Exclamation mark inside a diamond -->
+
+<sxg xmlns:xi="http://www.w3.org/2003/XInclude">
+  <width>5</width>
+  <height>5</height>
+
+  <widthmm>12</widthmm>
+  <heightmm>12</heightmm>
+
+  <widthfactor>5</widthfactor>
+  <heightfactor>5</heightfactor>
+
+  <picture id="border">
+    <type>rgb</type>
+    <color>0%</color>
+  </picture>
+
+  <picture id="fill">
+    <type>rgb</type>
+    <color>80%</color>
+  </picture>
+
+  <pixmap id="mask">
+    <size>scaled</size>
+    <width>5</width>
+    <height>5</height>
+    <gc id="mask_gc" />
+  </pixmap>
+
+  <font id="exclamation_mark_font" from="mono">
+    <scaled_size>.7</scaled_size>
+  </font>
+
+  <picture id="exclamation_mark">
+    <type>text</type>
+
+    <font>exclamation_mark_font</font>
+    <rgb>
+      <color>0%</color>
+    </rgb>
+    <text>!</text>
+
+  </picture>
+
+  <gc id="mask_gc">
+
+    <function>set</function>
+
+    <line_width>.2</line_width>
+
+    <line>
+      <point>
+	<x>2</x>
+	<y>0</y>
+      </point>
+      <point>
+	<x>4</x>
+	<y>2</y>
+      </point>
+      <point>
+	<x>2</x>
+	<y>4</y>
+      </point>
+      <point>
+	<x>0</x>
+	<y>2</y>
+      </point>
+      <point>
+	<x>2</x>
+	<y>0</y>
+      </point>
+    </line>
+  </gc>
+
+  <render id="main">
+    <trifan>
+      <op>over</op>
+      <src>fill</src>
+      <point>
+	<x>2</x>
+	<y>2</y>
+      </point>
+      <point>
+	<x>2</x>
+	<y>0</y>
+      </point>
+      <point>
+	<x>4</x>
+	<y>2</y>
+      </point>
+      <point>
+	<x>2</x>
+	<y>4</y>
+      </point>
+      <point>
+	<x>0</x>
+	<y>2</y>
+      </point>
+      <point>
+	<x>2</x>
+	<y>0</y>
+      </point>
+    </trifan>
+
+    <composite>
+      <op>over</op>
+
+      <x>0</x>
+      <y>0</y>
+      <width>5</width>
+      <height>5</height>
+      <mask>
+	<pixmap>mask</pixmap>
+	<x>0</x>
+	<y>0</y>
+      </mask>
+
+      <src>
+	<picture>border</picture>
+	<x>0</x>
+	<y>0</y>
+      </src>
+    </composite>
+
+    <composite>
+      <op>over</op>
+
+      <x>2.4</x>
+      <y>2.5</y>
+
+      <srcsize />
+
+      <halign>centered</halign>
+      <valign>middle</valign>
+
+      <src>
+	<picture>exclamation_mark</picture>
+      </src>
+    </composite>
+  </render>
+</sxg>

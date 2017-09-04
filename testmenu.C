@@ -49,8 +49,78 @@ class app_dialogsObj : virtual public LIBCXX_NAMESPACE::obj {
 
 public:
 
-	LIBCXX_NAMESPACE::w::dialogptr help_about;
+	LIBCXX_NAMESPACE::w::dialog help_question;
+	LIBCXX_NAMESPACE::w::dialog help_about;
+
+	app_dialogsObj(const LIBCXX_NAMESPACE::w::main_window &main_window);
+
+	static LIBCXX_NAMESPACE::w::dialog create_help_question(const LIBCXX_NAMESPACE::w::main_window &main_window);
+
+	static LIBCXX_NAMESPACE::w::dialog create_help_about(const LIBCXX_NAMESPACE::w::main_window &main_window);
 };
+
+
+app_dialogsObj::app_dialogsObj(const LIBCXX_NAMESPACE::w::main_window &main_window)
+	: help_question(create_help_question(main_window)),
+	  help_about(create_help_about(main_window))
+{
+}
+
+LIBCXX_NAMESPACE::w::dialog
+app_dialogsObj::create_help_question(const LIBCXX_NAMESPACE::w::main_window &main_window)
+{
+	auto d=main_window->create_input_dialog
+		("question",
+		 []
+		 (const auto &factory)
+		 {
+			 factory->create_label("What is your name?");
+		 },
+		 "", // Initial text
+		 {}, // input_field_config
+		 []
+		 (const auto &input_field, const auto &ignore)
+		 {
+			 LIBCXX_NAMESPACE::w::input_lock lock{input_field};
+
+			 std::cout << "Your name is " << lock.get()<< std::endl;
+		 },
+		 []
+		 (const auto &ignore)
+		 {
+			 std::cout << "Never mind!" << std::endl;
+		 },
+		 true);
+	d->set_window_title("Hello!");
+
+	return d;
+}
+
+LIBCXX_NAMESPACE::w::dialog
+app_dialogsObj::create_help_about(const LIBCXX_NAMESPACE::w::main_window &main_window)
+{
+	auto d=main_window->create_ok_cancel_dialog
+		("alert",
+		 []
+		 (const auto &factory)
+		 {
+			 factory->create_label("Help -> About!");
+		 },
+		 []
+		 (const auto &ignore)
+		 {
+			 std::cout << "Help -> About Ok!" << std::endl;
+		 },
+		 []
+		 (const auto &ignore)
+		 {
+			 std::cout << "Help -> About Cancel!" << std::endl;
+		 },
+		 true);
+	d->set_window_title("Help/About");
+
+	return d;
+}
 
 typedef LIBCXX_NAMESPACE::singletonptr<app_dialogsObj> app_dialogs;
 
@@ -250,63 +320,36 @@ LIBCXX_NAMESPACE::w::element view_menu(const LIBCXX_NAMESPACE::w::menulayoutmana
 	return m->item(1);
 }
 
-void help_about_dialog(const LIBCXX_NAMESPACE::w::dialog &dialog,
-		       const LIBCXX_NAMESPACE::w::gridlayoutmanager &dialog_lm)
-{
-	dialog->on_delete([]
-			  {
-				  app_dialogs all_app_dialogs;
-
-				  if (all_app_dialogs)
-					  all_app_dialogs->help_about=nullptr;
-			  });
-
-	dialog->set_window_title("Help/About");
-	auto f=dialog_lm->append_row();
-	f->padding(30);
-	f->create_label("This is a dialog");
-}
-
-void help_about(const LIBCXX_NAMESPACE::w::main_window &main_window)
-{
-	app_dialogs all_app_dialogs;
-
-	if (!all_app_dialogs)
-		return;
-
-	auto d=main_window->create_dialog
-		([&]
-		 (const auto &dialog)
-		 {
-			 LIBCXX_NAMESPACE::w::gridlayoutmanager lm=dialog->get_layoutmanager();
-
-			 help_about_dialog(dialog, dialog->get_layoutmanager());
-		 },
-		 LIBCXX_NAMESPACE::w::new_gridlayoutmanager{},
-		 true);
-
-	all_app_dialogs->help_about=d;
-
-	d->show_all();
-}
 
 void help_menu(const LIBCXX_NAMESPACE::w::main_window &main_window,
 	       const LIBCXX_NAMESPACE::w::menulayoutmanager &m)
 {
-	LIBCXX_NAMESPACE::w::menuitem_plain about;
+	LIBCXX_NAMESPACE::w::menuitem_plain question;
 
-	about.on_activate=[main_window=LIBCXX_NAMESPACE::make_weak_capture
-			   (main_window)]
+	question.on_activate=[]
 		(const LIBCXX_NAMESPACE::w::menuitem_activation_info &info)
 		{
-			main_window.get
-			([]
-			 (const auto &main_window) {
-				help_about(main_window);
-			});
+			app_dialogs all_app_dialogs;
+
+			if (all_app_dialogs)
+				all_app_dialogs->help_question->show_all();
 		};
 
-	m->append_menu_item(about, "About");
+	LIBCXX_NAMESPACE::w::menuitem_plain about;
+
+	about.menuitem_shortcut={"F1"};
+
+	about.on_activate=[]
+		(const LIBCXX_NAMESPACE::w::menuitem_activation_info &info)
+		{
+			app_dialogs all_app_dialogs;
+
+			if (all_app_dialogs)
+				all_app_dialogs->help_about->show_all();
+		};
+
+	m->append_menu_item(question, "Question",
+			    about, "About");
 }
 
 void testmenu()
@@ -314,8 +357,6 @@ void testmenu()
 	LIBCXX_NAMESPACE::destroy_callback::base::guard guard;
 
 	auto close_flag=close_flag_ref::create();
-
-	app_dialogs all_app_dialogs{LIBCXX_NAMESPACE::ref<app_dialogsObj>::create()};
 
 	auto main_window=LIBCXX_NAMESPACE::w::main_window
 		::create([]
@@ -375,6 +416,11 @@ void testmenu()
 
 	guard(main_window->connection_mcguffin());
 
+	app_dialogs all_app_dialogs{
+		LIBCXX_NAMESPACE::ref<app_dialogsObj>::create(main_window)
+			};
+
+
 	main_window->on_disconnect([]
 				   {
 					   exit(1);
@@ -382,6 +428,7 @@ void testmenu()
 
 	main_window->on_delete
 		([close_flag]
+		 (const auto &ignore)
 		 {
 			 close_flag->close();
 		 });

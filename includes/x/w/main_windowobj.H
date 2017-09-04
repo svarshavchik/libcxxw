@@ -10,13 +10,22 @@
 #include <x/w/generic_windowobj.H>
 #include <x/w/menubarlayoutmanagerfwd.H>
 #include <x/w/gridlayoutmanagerfwd.H>
+#include <x/w/gridfactoryfwd.H>
 #include <x/w/dialogfwd.H>
 #include <x/w/new_layoutmanagerfwd.H>
+#include <x/w/text_paramfwd.H>
+#include <x/w/busyfwd.H>
+#include <x/w/input_field_configfwd.H>
+#include <x/w/input_fieldfwd.H>
 #include <x/obj.H>
 #include <x/logger.H>
 #include <x/functional.H>
 
 #include <utility>
+#include <unordered_map>
+#include <string_view>
+#include <string>
+#include <functional>
 
 LIBCXXW_NAMESPACE_START
 
@@ -61,7 +70,7 @@ public:
 
 	//! Install a callback that gets invoke when the window close button is clicked.
 
-	void on_delete(const std::function<void ()> &callback);
+	void on_delete(const std::function<void (const busy &)> &callback);
 
 private:
 
@@ -92,6 +101,97 @@ public:
 				const new_layoutmanager &layout_factory,
 				bool modal)
 		LIBCXX_PUBLIC;
+
+	//! Create a standard dialog.
+	dialog create_standard_dialog(const std::string_view &name,
+				      bool modal=false,
+				      std::unordered_map<std::string,
+				      std::function<void (const gridfactory &)>>
+				      &&elements={});
+
+	//! Create a standard dialog.
+	dialog create_standard_dialog(const std::string_view &name,
+				      bool modal,
+				      const std::unordered_map<std::string,
+				      std::function<void (const gridfactory &)>>
+				      &elements);
+
+	//! Create an OK dialog
+
+	dialog create_ok_dialog(const std::string_view &icon,
+				const std::function<void (const gridfactory &)>
+				&content_factory,
+				const std::function<void (const busy &)>
+				&ok_action,
+				bool modal=false);
+
+	//! Create an OK dialog
+
+	dialog create_ok_dialog(const std::string_view &icon,
+				const std::function<void (const gridfactory &)>
+				&content_factory,
+				const std::function<void (const busy &)>
+				&ok_action,
+				const text_param &ok_label,
+				bool modal=false);
+
+	//! Create an OK or CANCEL dialog
+
+	dialog
+	create_ok_cancel_dialog(const std::string_view &icon,
+				const std::function<void (const gridfactory &)>
+				&content_factory,
+				const std::function<void (const busy &)>
+				&ok_action,
+				const std::function<void (const busy &)>
+				&cancel_action,
+				bool modal=false);
+
+	//! Create an OK or CANCEL dialog
+
+	dialog
+	create_ok_cancel_dialog(const std::string_view &icon,
+				const std::function<void (const gridfactory &)>
+				&content_factory,
+				const std::function<void (const busy &)>
+				&ok_action,
+				const std::function<void (const busy &)>
+				&cancel_action,
+				const text_param &ok_label,
+				const text_param &cancel_label,
+				bool modal=false);
+
+	//! Create a dialog with an input field.
+
+	dialog
+	create_input_dialog(const std::string_view &icon,
+			    const std::function<void (const gridfactory &)>
+			    &label_factory,
+			    const text_param &initial_text,
+			    const input_field_config &config,
+			    const std::function<void (const input_field &,
+						      const busy &)>
+			    &ok_action,
+			    const std::function<void (const busy &)>
+			    &cancel_action,
+			    bool modal=false);
+
+	//! Create a dialog with an input field.
+
+	dialog
+	create_input_dialog(const std::string_view &icon,
+			    const std::function<void (const gridfactory &)>
+			    &label_factory,
+			    const text_param &initial_text,
+			    const input_field_config &config,
+			    const std::function<void (const input_field &,
+						      const busy &)>
+			    &ok_action,
+			    const std::function<void (const busy &)>
+			    &cancel_action,
+			    const text_param &ok_label,
+			    const text_param &cancel_label,
+			    bool modal=false);
 };
 
 LIBCXXW_NAMESPACE_END

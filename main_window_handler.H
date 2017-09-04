@@ -8,6 +8,7 @@
 #include "generic_window_handler.H"
 #include "main_window.H"
 #include "connection_threadfwd.H"
+#include "x/w/busyfwd.H"
 #include <xcb/xcb_icccm.h>
 
 LIBCXXW_NAMESPACE_START
@@ -21,7 +22,7 @@ LIBCXXW_NAMESPACE_START
 class LIBCXX_HIDDEN main_windowObj::handlerObj :
 	public generic_windowObj::handlerObj {
 
-	std::function<void ()> on_delete_callback_thread_only;
+	std::function<void (const busy &)> on_delete_callback_thread_only;
 
  public:
 

@@ -1,0 +1,631 @@
+<!--
+
+Copyright 2017 Double Precision, Inc.
+See COPYING for distribution information.
+
+XML-based definition of a template-driven object initialization,
+used mostly to generate predefined grid layouts.
+
+Transformed by the "parseapiconfig.xsl" stylesheet.
+
+The top level element is <api>.
+
+<api> contains a list of <parser>s.
+
+Each <parser>'s <objectname> robo-generates a
+
+[objectname]_parser()
+
+[objectname]_parser()'s first parameter is
+
+const xml::doc::base::readlock &lock
+
+It's second parameter is a reference to a std::vector of
+
+std::function<void (const [parameter]/[type] &)>, using each <parameter>'s
+<type>.
+
+If there are any <other_parameter>'s, each one gives any additional parameter's
+declared as <other_parameter>'s
+<type> <name>
+
+The body of the function iterates over lock's child elements, and for each
+child element, a new value is appended to the vector that's passed as the
+second argument.
+
+The new value is obtained by calling
+
+<objectname>_parser()
+
+which is also robo-generated. Its robo-generated code checks each element's
+name against:
+
+1. Each <function>'s <name>:
+
+auto name=lock->name();  // lock is the original lock's child element.
+
+if (name == "<function>'s <name>"
+
+Then, if the <function> has any <condition>'s:
+
+    &&
+
+If <condition> has an <exists>:
+
+       single_value_exists(lock, "<exist>'s contents")
+
+Otherwise
+
+       lowercase_single_value(lock, "<condition>'s <name>")
+                             == "<condition>'s <value>"
+
+    )
+{
+     // Parameter code
+
+     return [=]
+         ( // List of top level parameters)
+         {
+
+            <object>-><invoke>( // Forward list
+                                       // List of values
+                                     );
+         });
+}
+
+If the <function> has <noforward>, the forward list is omitted.
+
+If the <function>'s <parameter> has a <scalar>, instead of the auto value,
+which was not declared, the substitute text in <scalar>
+
+2. If none of the <function>s match, an exception is thrown. The order
+of <function>s is the order of the attempted matches.
+
+
+For each matched function:
+
+Parameter code:
+
+For each one of the <function>'s <parameter>s, generates:
+
+auto <name>_value=<type>(lock, "<name>", "<function>'s <name>");
+
+Does not generate anything if <parameter> has a <scalar>.
+
+List of top level's parameters:
+
+For each <parser>'s <parameter>:
+      const <type> &<name>
+
+Forward list:
+
+For each <parser>'s <forward>:
+      <forward>'s text
+
+List of values:
+
+      The list of the auto values that were declared.
+
+Additionally, a parseconfig wrapper also gets robogenerated:
+
+static void [objectname]_parseconfig(const xml::doc::base::readlock &lock,
+             std::vector<callback type> &config,
+             [list of each other_parameter/type other_parameter/name]
+	     )
+{
+    config.reserve(config.size()+lock->get_child_element_count());
+
+    if (lock->get_first_element_child())
+        do
+        {
+            config.push_back([objectname]_parser(lock, [other_parameters]));
+        } while (lock->get_next_element_sibling());
+}
+
+-->
+
+<api>
+  <parser>
+    <objectname>defaultthemeObj::gridlayout</objectname>
+
+    <parameter>
+      <type>gridlayoutmanager</type>
+      <name>layout</name>
+    </parameter>
+
+    <parameter>
+      <type>gridtemplate *</type>
+      <name>elements</name>
+    </parameter>
+
+    <parameter>
+      <type>defaulttheme</type>
+      <name>theme</name>
+    </parameter>
+
+    <!-- grid_halign -->
+
+    <function>
+      <name>halign</name>
+      <invoke>col_alignment</invoke>
+
+      <object>layout</object>
+
+      <parameter>
+	<name>col</name>
+	<type>to_size_t</type>
+      </parameter>
+
+      <parameter>
+	<name>halign</name>
+	<type>to_halign_value</type>
+      </parameter>
+    </function>
+
+    <!-- grid_valign -->
+
+    <function>
+      <name>valign</name>
+      <invoke>row_alignment</invoke>
+
+      <object>layout</object>
+
+      <parameter>
+	<name>row</name>
+	<type>to_size_t</type>
+      </parameter>
+
+      <parameter>
+	<name>valign</name>
+	<type>to_valign_value</type>
+      </parameter>
+    </function>
+
+    <!-- padding -->
+
+    <function>
+      <name>padding</name>
+      <invoke>col_left_padding</invoke>
+
+      <condition>
+	<name>side</name>
+	<value>left</value>
+      </condition>
+
+      <object>layout</object>
+
+      <parameter>
+	<name>col</name>
+	<type>to_size_t</type>
+      </parameter>
+
+      <parameter>
+	<name>padding</name>
+	<type>single_value</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>padding</name>
+      <invoke>col_right_padding</invoke>
+
+      <condition>
+	<name>side</name>
+	<value>right</value>
+      </condition>
+
+      <object>layout</object>
+
+      <parameter>
+	<name>col</name>
+	<type>to_size_t</type>
+      </parameter>
+
+      <parameter>
+	<name>padding</name>
+	<type>single_value</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>padding</name>
+      <invoke>row_top_padding</invoke>
+
+      <condition>
+	<name>side</name>
+	<value>top</value>
+      </condition>
+
+      <object>layout</object>
+
+      <parameter>
+	<name>row</name>
+	<type>to_size_t</type>
+      </parameter>
+
+      <parameter>
+	<name>padding</name>
+	<type>single_value</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>padding</name>
+      <invoke>row_bottom_padding</invoke>
+
+      <condition>
+	<name>side</name>
+	<value>bottom</value>
+      </condition>
+
+      <object>layout</object>
+
+      <parameter>
+	<name>row</name>
+	<type>to_size_t</type>
+      </parameter>
+
+      <parameter>
+	<name>padding</name>
+	<type>single_value</type>
+      </parameter>
+    </function>
+
+    <!-- border -->
+
+    <function>
+      <name>default_col_border</name>
+      <invoke>default_col_border</invoke>
+
+      <object>layout</object>
+
+      <parameter>
+	<name>col</name>
+	<type>to_size_t</type>
+      </parameter>
+
+      <parameter>
+	<name>border</name>
+	<type>single_value</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>default_row_border</name>
+      <invoke>default_row_border</invoke>
+
+      <object>layout</object>
+
+      <parameter>
+	<name>col</name>
+	<type>to_size_t</type>
+      </parameter>
+
+      <parameter>
+	<name>border</name>
+	<type>single_value</type>
+      </parameter>
+    </function>
+
+    <!-- percent -->
+
+    <function>
+      <name>percent</name>
+      <invoke>requested_col_width</invoke>
+
+      <condition>
+	<exists>col</exists>
+      </condition>
+
+      <object>layout</object>
+
+      <parameter>
+	<name>col</name>
+	<type>to_size_t</type>
+      </parameter>
+
+      <parameter>
+	<name>percentage</name>
+	<type>to_percentage_t</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>percent</name>
+      <invoke>requested_row_height</invoke>
+
+      <condition>
+	<exists>row</exists>
+      </condition>
+
+      <object>layout</object>
+
+      <parameter>
+	<name>row</name>
+	<type>to_size_t</type>
+      </parameter>
+
+      <parameter>
+	<name>percentage</name>
+	<type>to_percentage_t</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>append_row</name>
+      <invoke>layout_append_row</invoke>
+      <object>theme</object>
+
+      <parameter>
+	<scalar>layout</scalar>
+      </parameter>
+
+      <parameter>
+	<scalar>elements</scalar>
+      </parameter>
+
+      <parameter>
+	<name>name</name>
+	<type>single_value</type>
+      </parameter>
+    </function>
+  </parser>
+
+  <parser>
+    <objectname>defaultthemeObj::gridfactory</objectname>
+
+    <parameter>
+      <type>gridfactory</type>
+      <name>factory</name>
+    </parameter>
+
+    <parameter>
+      <type>gridtemplate *</type>
+      <name>elements</name>
+    </parameter>
+
+    <parameter>
+      <type>defaulttheme</type>
+      <name>theme</name>
+    </parameter>
+
+    <!-- halign -->
+
+    <function>
+      <name>halign</name>
+      <invoke>halign</invoke>
+
+      <object>factory</object>
+
+      <parameter>
+	<name>halign</name>
+	<type>to_halign_value</type>
+      </parameter>
+    </function>
+
+    <!-- valign -->
+
+    <function>
+      <name>valign</name>
+      <invoke>valign</invoke>
+
+      <object>factory</object>
+
+      <parameter>
+	<name>valign</name>
+	<type>to_valign_value</type>
+      </parameter>
+    </function>
+
+    <!-- padding -->
+
+    <function>
+      <name>padding</name>
+      <invoke>left_padding</invoke>
+
+      <condition>
+	<name>side</name>
+	<value>left</value>
+      </condition>
+
+      <object>factory</object>
+
+      <parameter>
+	<name>padding</name>
+	<type>single_value</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>padding</name>
+      <invoke>right_padding</invoke>
+
+      <condition>
+	<name>side</name>
+	<value>right</value>
+      </condition>
+
+      <object>factory</object>
+
+      <parameter>
+	<name>padding</name>
+	<type>single_value</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>padding</name>
+      <invoke>top_padding</invoke>
+
+      <condition>
+	<name>side</name>
+	<value>top</value>
+      </condition>
+
+      <object>factory</object>
+
+      <parameter>
+	<name>padding</name>
+	<type>single_value</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>padding</name>
+      <invoke>bottom_padding</invoke>
+
+      <condition>
+	<name>side</name>
+	<value>bottom</value>
+      </condition>
+
+      <object>factory</object>
+
+      <parameter>
+	<name>padding</name>
+	<type>single_value</type>
+      </parameter>
+    </function>
+
+    <!-- colspan -->
+
+    <function>
+      <name>colspan</name>
+      <invoke>colspan</invoke>
+      <object>factory</object>
+
+      <parameter>
+	<name>columns</name>
+	<type>to_size_t</type>
+      </parameter>
+    </function>
+
+    <!-- rowspan -->
+
+    <function>
+      <name>rowspan</name>
+      <invoke>rowspan</invoke>
+      <object>factory</object>
+
+      <parameter>
+	<name>rows</name>
+	<type>to_size_t</type>
+      </parameter>
+    </function>
+
+    <!-- border -->
+
+    <function>
+      <name>border</name>
+      <invoke>left_border</invoke>
+
+      <condition>
+	<name>side</name>
+	<value>left</value>
+      </condition>
+
+      <object>factory</object>
+
+      <parameter>
+	<name>border</name>
+	<type>single_value</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>border</name>
+      <invoke>right_border</invoke>
+
+      <condition>
+	<name>side</name>
+	<value>right</value>
+      </condition>
+
+      <object>factory</object>
+
+      <parameter>
+	<name>border</name>
+	<type>single_value</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>border</name>
+      <invoke>top_border</invoke>
+
+      <condition>
+	<name>side</name>
+	<value>top</value>
+      </condition>
+
+      <object>factory</object>
+
+      <parameter>
+	<name>border</name>
+	<type>single_value</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>border</name>
+      <invoke>bottom_border</invoke>
+
+      <condition>
+	<name>side</name>
+	<value>bottom</value>
+      </condition>
+
+      <object>factory</object>
+
+      <parameter>
+	<name>border</name>
+	<type>single_value</type>
+      </parameter>
+    </function>
+
+    <!-- element -->
+
+    <function>
+      <name>element</name>
+
+      <invoke>generate</invoke>
+
+      <object>elements</object>
+
+      <parameter>
+	<scalar>factory</scalar>
+      </parameter>
+
+      <parameter>
+	<type>single_value</type>
+	<name>name</name>
+      </parameter>
+    </function>
+
+    <!-- include -->
+
+    <function>
+      <name>include</name>
+      <invoke>layout_insert</invoke>
+      <object>theme</object>
+
+      <parameter>
+	<scalar>factory</scalar>
+      </parameter>
+
+      <parameter>
+	<scalar>elements</scalar>
+      </parameter>
+
+      <parameter>
+	<type>single_value</type>
+	<name>name</name>
+      </parameter>
+
+      <parameter>
+	<type>optional_value</type>
+	<name>background_color</name>
+      </parameter>
+    </function>
+  </parser>
+</api>

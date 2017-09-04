@@ -32,7 +32,8 @@ main_windowObj::implObj::implObj(const main_window_impl_args &args)
 
 main_windowObj::implObj::~implObj()=default;
 
-void main_windowObj::implObj::on_delete(const std::function<void ()> &callback)
+void main_windowObj::implObj::on_delete(const std::function<void
+					(const busy &)> &callback)
 {
 	thread()->run_as([handler=this->handler, callback]
 			 (IN_THREAD_ONLY)

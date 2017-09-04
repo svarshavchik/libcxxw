@@ -1,0 +1,413 @@
+<!--
+
+Copyright 2017 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<chapter id="dialogs">
+  <title>Dialogs</title>
+
+  <mediaobject>
+    <imageobject>
+      <imagedata fileref="dialogs.png" format="PNG"
+		 contentwidth="700px" contentdepth="156px" />
+    </imageobject>
+    <textobject>
+      <phrase>
+	Dialogs
+      </phrase>
+    </textobject>
+    <caption>
+      <para>
+	<filename>menu.C</filename> from <xref linkend="menu" />
+	also demonstrates how to create dialogs. Dialogs are stand-alone,
+	top level windows, represented by
+	<ulink url="&link-typedef-x--w-dialog;"><classname>&ns;::w::dialog</classname></ulink>
+	objects.
+      </para>
+    </caption>
+  </mediaobject>
+
+  <para>
+    A <ulink url="&link-typedef-x--w-dialog;"><classname>&ns;::w::dialog</classname></ulink>
+    is similar to a <link linkend="concepts"><classname>&ns;::w::main_window</classname></link>.
+    While <classname>&ns;::w::main_window</classname>s
+    are created by themselves,
+    <classname>&ns;::w::dialog</classname>s are created by one of the methods
+    from an existing
+    <classname>&ns;::w::main_window</classname> or another
+    <classname>&ns;::w::dialog</classname> (which is a subclass of a
+    <classname>&ns;::w::main_window</classname> and inherits all of its
+    methods):
+  </para>
+
+  <para>
+    Several methods create dialogs with a standard,
+    theme-defined layout:
+  </para>
+
+  <variablelist>
+    <varlistentry>
+      <term><methodname>create_ok_dialog</methodname>()</term>
+      <listitem>
+	<para>
+	  A standard dialog with an <quote>Ok</quote> button.
+	</para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term><methodname>create_ok_cancel_dialog</methodname>()</term>
+      <listitem>
+	<para>
+	  A standard dialog with <quote>Ok</quote> and
+	  <quote>Cancel</quote> buttons.
+	</para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term><methodname>create_input_dialog</methodname>()</term>
+      <listitem>
+	<para>
+	  A standard dialog with <quote>Ok</quote> and
+	  <quote>Cancel</quote> buttons, and an
+	  <link linkend="inputfields"><classname>&ns;::w::input_field</classname></link>.
+	</para>
+      </listitem>
+    </varlistentry>
+  </variablelist>
+  <para>
+    The first parameter to these methods is the name of a small icon
+    displayed on the left side of the dialog. Currently, the possible
+    names are:
+    <quote>alert</quote>, <quote>stop</quote>, and <quote>message</quote>.
+    The remaining parameters vary, and include:
+  </para>
+
+  <itemizedlist>
+    <listitem>
+      <para>
+	A &callback; that receives a &factory; for creating the contents
+	of the dialog. This factory callback must create exactly one
+	display element. Dialogs typically contain brief messages, created
+	with <methodname>create_label</methodname>(), but may contain
+	arbitrary display elements. This is done by having the
+	factory callback create a &container; and then creating the
+	display elements in the new container.
+      </para>
+
+      <para>
+	<methodname>create_input_field</methodname>()'s factory callback
+	creates the display element that appears to the left of the
+	input field.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+	&callback;s that get invoked when <quote>Ok</quote> or
+	<quote>Cancel</quote> buttons are pressed.
+	<methodname>create_input_field</methodname>()'s
+	<quote>Ok</quote> callback receives an additional parameter with
+	the <classname>&ns;::input_field</classname>.
+      </para>
+    </listitem>
+
+    <listitem>
+      <para>
+	Additional parameters for
+	<methodname>create_input_field</methodname>(): the initial
+	contents of the input field, and its
+	<classname>&ns;::w::input_field_config</classname> (the
+	same parameters as the ones that get passed to
+	<link linkend="inputfields"><methodname>create_input_field</methodname></link>().
+      </para>
+    </listitem>
+
+    <listitem>
+      <para>
+	Optional <ulink url="&link-x--w--text-param;"><classname>&ns;::w::text_params</classname></ulink>s
+	that override the label for the
+	<quote>Ok</quote> and
+	<quote>Cancel</quote> buttons.
+      </para>
+    </listitem>
+
+    <listitem>
+      <para>
+	An optional <classname>bool</classname> that specifies whether the
+	new dialog is modal.
+      </para>
+    </listitem>
+  </itemizedlist>
+
+  <para>
+    Invoking a created dialog's
+    <methodname>show_all</methodname>() method makes it visible.
+    The buttons in dialogs created by standard methods automatically
+    <methodname>hide</methodname>() themselves before
+    invoking the callbacks.
+    Depending on the window manager, the dialogs may have a title and
+    a close button, like a normal application window.
+    <link linkend="menu"><filename>menu.C</filename></link> uses
+    <methodname>set_window_title</methodname>() to give its dialogs a
+    reasonable title, in that case. A close button, if present, results
+    in the same action as the <quote>Cancel</quote> button
+    (or just the <quote>Ok</quote> button in
+    <methodname>create_ok_dialog</methodname>()'s case).
+  </para>
+
+  <section id="modaldialogs">
+    <title>Modal dialogs</title>
+
+    <para>
+      A modal dialog temporarily disables its main application window
+      while the modal dialog is visible. All keyboard and pointer events
+      get ignored by the main application window if at least one of its
+      modal dialogs is visible. Hiding (or completely destroying) all of
+      its modal dialogs restores normal keyboard and pointer event
+      processing.
+      On most display servers the main application window gets a visible
+      shade overlayed on top of its contents to indicate that it's disabled
+      by an active modal dialog.
+    </para>
+
+    <para>
+      Modeless dialogs have no effect on the dialog's main window. Both
+      the dialog itself and the main window continue to process keyborad
+      and pointer events normally, all the time.
+    </para>
+
+    <para>
+      A modal dialog created from another dialog disables only the dialog
+      its created from, and has no effect on the main window.
+      Modal dialogs block keyboard and pointer events
+      only from the immediate window or the dialog they get created from.
+    </para>
+  </section>
+
+  <section id="dialogrefs">
+    <title>Dialogs own a reference on their creator</title>
+
+    <para>
+      A <link linkend="concepts">fundamental concept</link> of the &app;
+      is that all its objects are reference-counted objects. All references
+      to the object must go out of scope and get destroyed before the
+      underlying objects' destructors get automatically invoked;
+      and all main windows must be destroyed in order for the library
+      to properly clean up and disconnect from the display server.
+    </para>
+
+    <para>
+      In main windows, container elements
+      <link linkend="containerrefs">own references to the
+	display elements in the container</link>. Although dialogs are
+      created from their parent main window, it is the dialog that owns
+      a reference to the main window (or another dialog) that created it,
+      and not the other way around.
+    </para>
+
+    <para>
+      Understanding the relationship between the dialogs and their
+      main windows is important. Because dialogs own references to their
+      parent window, explicitly attaching a dialog to its parent main
+      window, perhaps
+      <link linkend="appdata">in its <varname>appdata</varname></link>,
+      results in a circular reference.
+      There are two basic approaches to implementing dialogs:
+    </para>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  Create all dialogs when <function>main</function>() initializes
+	  the application. Instantiate the dialogs like main window objects,
+	  in automatic scope, so that they properly get destroyed. A dialog
+	  can be shown and hidden more than once, so its certainly doable
+	  to create it once, and show it every time it's needed.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Dialogs are typically shown in response to some event, like
+	  selecting a menu item or pressing a button, that invokes a
+	  &callback;, so a new dialog object can be created in the callback,
+	  every time, and <methodname>show_all</methodname>()-d.
+	</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>
+      <function>main</function>() typically lives far away from wherever the
+      menu item's or the button's callback exists. It is possible to have
+      <function>main</function>() put a pointer to the dialogs, or the dialog
+      objects themselves, into
+      <literal>static</literal> scope;
+      but this is difficult to manage correctly due to &appshort;'s fundamental
+      object scoping and lifetime rules. It's simpler to keep top level main
+      windows and dialogs in automatic scope. &libcxx;'s weak pointers
+      are one possible, but an awkward, solution.
+    </para>
+
+    <para>
+      The &callback; that gets invoked in response to a menu item selection,
+      or a button press, gets executed by the library's internal thread that
+      handles all X display events. The callback can't just create the
+      dialog and/or make it visible and then wait until the dialog is closed.
+      This is because
+      no X display events get processed until the callback itself returns.
+    </para>
+
+    <para>
+      One possible solution to managing the dialogs correctly, and following
+      all the object scoping and lifetime rules, is a message queue-based
+      application design.
+    </para>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  The application creates a
+	  <ulink url="/msgdispatcher.html">message dispatcher</ulink> and
+	  starts its execution thread.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  The message dispatcher's execution thread creates all display
+	  elements and dialogs in its execution thread's automatic scope.
+	  All callbacks capture the message dispatcher object by value.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Callbacks send a message to the dispatcher thread, to make dialogs
+	  visible, or perform any other activity.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  When the main window's close button gets pressed, or any other
+	  action occurs that requests a shutdown, the message dispatcher
+	  thread stops, destroying all the objects in its automatic scope.
+	  Everything gets unwound.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  The <function>main</function>() function waits for the message
+	  dispatcher to stop, then terminates itself.
+	</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>
+      Another, possibly simpler approach is to
+      <link linkend="dialogsingletonptr">&libcxx;'s <classname>&ns;::singletonptr</classname>s</link>.
+    </para>
+  </section>
+
+  <section id="dialogsingletonptr">
+    <title>Using <classname>&ns;::singletonptr</classname> to implement dialogs</title>
+
+    <para>
+      <link linkend="menu"><filename>menu.C</filename></link> gives an
+      example of using &appshort;'s <classname>&ns;::singletonptr</classname>
+      to correctly handle &appshort;'s
+      <link linkend="concepts">object scope and lifetime rules</link>.
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+class display_elementsObj : virtual public &ns;::obj {
+
+// ...
+};
+
+typedef &ns;::singletonptr&lt;display_elementsObj&gt; display_elements_t;
+
+display_elements_t display_elements{ /* ... */ };</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      <filename>menu.C</filename> stores the dialogs in an object that
+      gets placed into a <classname>&ns;::singletonptr</classname>.
+      The <classname>&ns;::singletonptr</classname> gets constructed
+      and initialized in automatic scope in the main function that
+      waits for the main window's close button before returning and
+      destroying the singleton and the main window object.
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+    help_question_type.on_activate=[]
+        (const x::w::menuitem_activation_info &amp;ignore)
+        {
+            display_elements_t display_elements;
+
+            if (display_elements)
+                display_elements->question_dialog-&gt;show_all();
+        };
+	</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      All that a menu item's callback needs to do is to construct the same
+      singleton in its own automatic scope, then access the dialog in there
+      and <methodname>show_all</methodname>() it, without breaking any
+      rules.
+    </para>
+  </section>
+
+  <section id="customdialogs">
+    <title>Custom dialogs</title>
+
+    <para>
+      Standard dialogs created by
+      <methodname>create_ok_dialog</methodname>(),
+      <methodname>create_ok_cancel_dialog</methodname>(), and other methods,
+      use a predetermined layout, and content, specified by the current
+      display theme. <methodname>create_dialog</methodname>() creates a
+      completely empty dialog, ready to be filled with its content:
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+#include &lt;&ns;/w/dialog.H&gt;
+#include &lt;&ns;/w/gridlayoutmanager.H&gt;
+
+&ns;::w::dialog d=mw-&gt;create_dialog
+    ([]
+     (const &ns;::w::dialog &amp;d)
+     {
+           &ns;::w::gridlayoutmanager lm=d-&gt;get_layoutmanager();
+
+           // ...
+     },
+     &ns;::w::new_gridlayoutmanager{},
+     true);</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      The first parameter is the dialog's &creator;.
+      The second parameter specifies the dialog's &layoutmanager;.
+      The third optional parameter specifies whether the new dialog is modal.
+    </para>
+  </section>
+</chapter>
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "book" "chapter")
+End:
+-->

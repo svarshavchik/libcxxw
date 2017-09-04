@@ -29,14 +29,18 @@ LIBCXXW_NAMESPACE_START
 //!
 //! The execution thread may continue to invoke other callbacks that are
 //! unrelated to keyboard or button activity, and those callbacks can also
-//! get_mcguffin(). This will return another reference to the same mcguffin,
+//! get_mcguffin(). This returns another reference to the same mcguffin,
 //! and all references must go out of scope before the mcguffin gets destroyed.
 //!
 //! The pointer and button activity is blocked only for the top level
 //! application window from which the mcguffin was obtained. Each top level
 //! application window has its own individual busy mcguffin.
 //!
-//! Any display element's get_mcguffin() method can be used to obtain a
+//! During mcguffin's existence, the top level application window gets drawn
+//! with a dark shade (depending on the theme and the display's capabilities)
+//! indicating that the application window is not processing events.
+//!
+//! Any display element's get_mcguffin() method also obtains the
 //! busy mcguffin, independently.
 //!
 //! This object also serves as a reference handle to the internal

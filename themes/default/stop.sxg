@@ -1,0 +1,129 @@
+<?xml version="1.0"?>
+
+<!-- Lame "stop" sign -->
+
+<sxg xmlns:xi="http://www.w3.org/2003/XInclude">
+  <width>64</width>
+  <height>64</height>
+
+  <widthmm>12</widthmm>
+  <heightmm>12</heightmm>
+
+  <widthfactor>2</widthfactor>
+  <heightfactor>2</heightfactor>
+
+  <picture id="border">
+    <type>rgb</type>
+    <color>0%</color>
+  </picture>
+
+  <picture id="fill">
+    <type>rgb</type>
+    <color>80%</color>
+  </picture>
+
+  <pixmap id="mask">
+    <size>scaled</size>
+    <width>64</width>
+    <height>64</height>
+    <gc id="mask_gc" />
+  </pixmap>
+
+  <gc id="mask_gc">
+
+    <function>set</function>
+
+    <fill_arc_mode>pie_slice</fill_arc_mode>
+
+    <arcs>
+      <fill/>
+      <arc>
+	<x>2</x>
+	<y>2</y>
+	<width>60</width>
+	<height>60</height>
+	<angle1>0</angle1>
+	<angle2>360</angle2>
+      </arc>
+    </arcs>
+  </gc>
+
+  <render id="main">
+
+    <composite>
+      <op>over</op>
+
+      <x>0</x>
+      <y>0</y>
+      <width>64</width>
+      <height>64</height>
+
+      <src>
+	<picture>fill</picture>
+	<x>0</x>
+	<y>0</y>
+      </src>
+
+      <mask>
+	<pixmap>mask</pixmap>
+	<x>0</x>
+	<y>0</y>
+      </mask>
+    </composite>
+  </render>
+
+  <gc id="mask_gc">
+
+    <function>clear</function>
+    <fill>
+      <x>0</x>
+      <y>0</y>
+      <width>64</width>
+      <height>64</height>
+    </fill>
+
+    <function>set</function>
+    <line_width>3</line_width>
+
+    <arcs>
+      <arc>
+	<x>2</x>
+	<y>2</y>
+	<width>60</width>
+	<height>60</height>
+	<angle1>0</angle1>
+	<angle2>360</angle2>
+      </arc>
+    </arcs>
+
+    <fill>
+      <x>12</x>
+      <y>29</y>
+      <width>40</width>
+      <height>6</height>
+    </fill>
+  </gc>
+  <render id="main">
+
+    <composite>
+      <op>over</op>
+
+      <x>0</x>
+      <y>0</y>
+      <width>64</width>
+      <height>64</height>
+
+      <src>
+	<picture>border</picture>
+	<x>0</x>
+	<y>0</y>
+      </src>
+
+      <mask>
+	<pixmap>mask</pixmap>
+	<x>0</x>
+	<y>0</y>
+      </mask>
+    </composite>
+  </render>
+</sxg>

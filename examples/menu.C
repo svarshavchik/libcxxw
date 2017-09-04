@@ -8,6 +8,7 @@
 #include <x/destroy_callback.H>
 #include <x/ref.H>
 #include <x/obj.H>
+#include <x/singletonptr.H>
 #include <x/w/main_window.H>
 #include <x/w/gridlayoutmanager.H>
 #include <x/w/gridfactory.H>
@@ -18,6 +19,10 @@
 #include <x/w/menu.H>
 #include <x/w/menulayoutmanager.H>
 #include <x/w/label.H>
+#include <x/w/text_param_literals.H>
+#include <x/w/font_literals.H>
+#include <x/w/dialog.H>
+#include <x/w/input_field.H>
 #include <string>
 #include <iostream>
 #include <sstream>
@@ -25,6 +30,30 @@
 #include "close_flag.H"
 
 void testmenu();
+
+// Object used with x::singletonptr:
+
+class display_elementsObj : virtual public x::obj {
+
+public:
+
+	//! The constructed help/about dialog.
+
+	const x::w::dialog question_dialog;
+
+	//! The constructed help/about dialog.
+
+	const x::w::dialog about_dialog;
+
+	display_elementsObj(const x::w::dialog &question_dialog,
+			    const x::w::dialog &about_dialog)
+		: question_dialog(question_dialog),
+		  about_dialog(about_dialog)
+	{
+	}
+};
+
+typedef x::singletonptr<display_elementsObj> display_elements_t;
 
 int main(int argc, char **argv)
 {
@@ -40,6 +69,10 @@ int main(int argc, char **argv)
 
 void create_mainwindow(const x::w::main_window &);
 
+x::w::dialog create_help_question(const x::w::main_window &);
+
+x::w::dialog create_help_about(const x::w::main_window &);
+
 void testmenu()
 {
 	x::destroy_callback::base::guard guard;
@@ -52,6 +85,32 @@ void testmenu()
 
 	guard(main_window->connection_mcguffin());
 
+	// Use x::singletonptr to make the help dialogs conveniently
+	// available to the callback.
+	//
+	// Dialogs own the reference to their parent window, so we need to
+	// be careful to construct the x::singletonptr after the guard().
+	//
+	// The dialogs own reference to their main_window, so this makes
+	// sure that the dialogs get destroyed first, releasing their reference
+	// on the main_window before the guard() waits on the connection
+	// mcguffin to be destroyed.
+	//
+	// This constructs the display_elements object in automatic scope.
+	// It exists until testmenu() returns, at which point it gets
+	// destroyed, and gets destroyed before the guard waits for the
+	// connection mcguffin.
+	//
+	// In the meantime, their menu item activation handlers simply
+	// default-construct this display_elements_t in their automatic scope,
+	// and obtain the dialog objects for the purpose of showing them.
+
+	display_elements_t display_elements{
+		x::ref<display_elementsObj>
+			::create(create_help_question(main_window),
+				 create_help_about(main_window))
+			};
+
 	main_window->on_disconnect([]
 				   {
 					   exit(1);
@@ -59,6 +118,7 @@ void testmenu()
 
 	main_window->on_delete
 		([close_flag]
+		 (const x::w::busy &ignore)
 		 {
 			 close_flag->close();
 		 });
@@ -70,9 +130,12 @@ void testmenu()
 }
 
 x::w::element view_menu(const x::w::menulayoutmanager &);
+
 void file_menu(const x::w::menulayoutmanager &,
 	       const x::w::menu &,
 	       const x::w::element &);
+
+void help_menu(const x::w::menulayoutmanager &);
 
 void create_mainwindow(const x::w::main_window &main_window)
 {
@@ -145,6 +208,7 @@ void create_mainwindow(const x::w::main_window &main_window)
 	f->add_text("Help",
 		    []
 		    (const auto &factory) {
+			    help_menu(factory);
 		    });
 
 	// show_all() on the x::w::main_window ignores the menu bar. After
@@ -330,4 +394,132 @@ x::w::element view_menu(const x::w::menulayoutmanager &m)
 				  options_menu_type, "Options");
 
 	return m->item(1);
+}
+
+void help_menu(const x::w::menulayoutmanager &m)
+{
+	// Make the dialogs visible.
+	//
+	// The singleton pointer was constructed in testmenu(),
+	// above.
+
+	x::w::menuitem_plain help_question_type;
+
+	help_question_type.on_activate=[]
+		(const x::w::menuitem_activation_info &ignore)
+		{
+			display_elements_t display_elements;
+
+			if (display_elements)
+				display_elements->question_dialog->show_all();
+		};
+
+	x::w::menuitem_plain help_about_type;
+
+	help_about_type.menuitem_shortcut={"F1"};
+
+	help_about_type.on_activate=[]
+		(const x::w::menuitem_activation_info &ignore)
+		{
+			display_elements_t display_elements;
+
+			if (display_elements)
+				display_elements->about_dialog->show_all();
+		};
+
+	m->append_menu_item(help_question_type, "Question",
+			    help_about_type, "About");
+}
+
+x::w::dialog create_help_about(const x::w::main_window &main_window)
+{
+	// Use some non-default colors for variety. The dialog is drawn
+	// using the current theme, and we can't modify everything, so this
+	// may not look good in all themes. That's fine.
+
+	x::w::rgb light_yellow{
+		x::w::rgb::maximum,
+			x::w::rgb::maximum,
+			(x::w::rgb::component_t)
+			(x::w::rgb::maximum * .75)};
+
+	auto d=main_window->create_ok_dialog
+		("alert",
+		 []
+		 (const x::w::gridfactory &f)
+		 {
+			 x::w::rgb blue{0, 0, x::w::rgb::maximum},
+
+				 black{};
+
+			 f->create_label
+				 ({
+					 blue,
+					 "underline"_decoration,
+					 "serif; point_size=24; weight=bold"_font,
+
+					 "Lorem ipsum\n",
+
+					 "no"_decoration,
+					 "sans serif; point_size=12"_font,
+					 black,
+
+		"dolor sit amet, consectetur adipisicing elit, "
+		"sed do eiusmod tempor incididunt ut labore et dolore mana "
+		"aliqua. Ut enim ad minim veniam, quis nostrud exercitation "
+		"ullamco laboris nisi ut aliquip ex ea commodo consequat. "
+		"Duis aute irure dolor in reprehenderit in voluptate velit "
+		"esse cillum dolore eu fugiat nulla pariatur. "
+		"Excepteur sint occaecat cupidatat non proident, "
+		"sunt in culpa qui officia deserunt mollit anim id est "
+		"laborum."
+						 },
+					 100.0);
+		 },
+		 []
+		 (const x::w::busy &)
+		 {
+			 std::cout << "Help/About closed!" << std::endl;
+		 },
+		 // Modal dialog:
+		 true);
+
+	d->set_background_color(d->create_solid_color_picture(light_yellow));
+
+	d->set_window_title("About myself");
+	return d;
+}
+
+x::w::dialog create_help_question(const x::w::main_window &main_window)
+{
+	auto d=main_window->create_input_dialog
+		("question",
+		 []
+		 (const x::w::gridfactory &f)
+		 {
+			 f->create_label("What is your name?");
+		 },
+
+		 // Same parameters as create_input_field(), the initial
+		 // contents, and input_field_config
+		 "",
+		 {},
+		 []
+		 (const x::w::input_field &f,
+		  const x::w::busy &)
+		 {
+			 x::w::input_lock lock{f};
+
+			 std::cout << "Your name: " << lock.get() << std::endl;
+		 },
+		 []
+		 (const x::w::busy &)
+		 {
+			 std::cout << "How rude..." << std::endl;
+		 },
+		 // Modal dialog:
+		 true);
+
+	d->set_window_title("Hello!");
+	return d;
 }

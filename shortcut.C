@@ -27,8 +27,18 @@ shortcut::shortcut(const std::string_view &modifier,
 {
 }
 
+static inline size_t last_dash(const std::string_view &string)
+{
+	auto last_dash=string.rfind('-');
+
+	if (last_dash == string.npos)
+		last_dash=0;
+
+	return last_dash;
+}
+
 shortcut::shortcut(const std::string_view &string)
-	: shortcut(string.rfind('-'), string)
+	: shortcut(last_dash(string), string)
 {
 }
 
@@ -36,7 +46,10 @@ shortcut::shortcut(size_t dash_pos,
 		   const std::string_view &string)
 	: input_mask(string.substr(0, dash_pos))
 {
-	if (dash_pos < string.size() && ++dash_pos < string.size())
+	if (dash_pos < string.size() && string[dash_pos] == '-')
+		++dash_pos;
+
+	if (dash_pos < string.size())
 	{
 		auto key=string.substr(dash_pos);
 
@@ -51,6 +64,7 @@ shortcut::shortcut(size_t dash_pos,
 			if (!i.fail() && n >= 1 && n <= 35)
 			{
 				keysym=XK_F1-1+n;
+				unicode=0;
 				return;
 			}
 		}

@@ -70,10 +70,12 @@ public:
 
 	shortcut(const std::string_view &string);
 
+private:
 	//! Internal constructor
 
 	shortcut(size_t p,
 		 const std::string_view &string);
+public:
 
 	//! Whether a key event matches this shortcut.
 	bool matches(const key_event &ke) const;

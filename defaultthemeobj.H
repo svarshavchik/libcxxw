@@ -15,9 +15,12 @@
 #include "x/w/screenfwd.H"
 #include "x/w/screenobj.H"
 #include "x/w/pictformatfwd.H"
+#include "x/w/gridlayoutmanagerfwd.H"
+#include "x/w/gridfactoryfwd.H"
 #include "connection_threadfwd.H"
 #include "defaultthemefwd.H"
 #include "border_implfwd.H"
+#include "gridtemplatefwd.H"
 
 #include <string>
 #include <unordered_map>
@@ -76,6 +79,27 @@ public:
 	//! Fonts
 	std::unordered_map<std::string, font> fonts;
 
+	//! Type-erased layout generator.
+
+	typedef std::function<void (const gridlayoutmanager &,
+				    const gridtemplate * &,
+				    const defaulttheme &)> layout_generator_t;
+
+	//! Layouts
+
+	std::unordered_map<std::string, std::vector<layout_generator_t>
+			   > layouts;
+
+	//! Type-erased factory generator.
+
+	typedef std::function<void (const gridfactory &,
+				    const gridtemplate * &,
+				    const defaulttheme &)> factory_generator_t;
+
+	//! Factories
+	std::unordered_map<std::string,
+			   std::vector<factory_generator_t>> factories;
+
 	//! Parse dimensions from the configuration file.
 	void load_dims(const xml::doc &config);
 
@@ -89,7 +113,32 @@ public:
 	void load_borders(const xml::doc &config,
 			  const ref<screenObj::implObj> &screen);
 
+	//! Parse fonts from the configuration file
 	void load_fonts(const xml::doc &config);
+
+	//! Parse layouts from the configuration file
+	void load_layouts(const xml::doc &config);
+
+	//! Parse elements from the configuration file
+	void load_factories(const xml::doc &config);
+
+	//! Stylesheet-generated parsing code.
+	static layout_generator_t
+		gridlayout_parser(const xml::doc::base::readlock &lock);
+
+	//! Stylesheet-generated parsing code.
+	static void
+		gridlayout_parseconfig(const xml::doc::base::readlock &lock,
+				       std::vector<layout_generator_t> &);
+
+	//! Stylesheet-generated parsing code.
+	static factory_generator_t
+		gridfactory_parser(const xml::doc::base::readlock &lock);
+
+	//! Stylesheet-generated parsing code.
+	static void
+		gridfactory_parseconfig(const xml::doc::base::readlock &lock,
+					std::vector<factory_generator_t> &);
 
  public:
 
@@ -206,6 +255,25 @@ public:
 		  const ref<screenObj::implObj> &screen);
 
 	~defaultthemeObj();
+
+ private:
+
+	//! Add a new row to the grid layout manager.
+	void layout_append_row(const gridlayoutmanager &,
+			       const gridtemplate *,
+			       const std::string &);
+
+	//! Insert another template
+
+	void layout_insert(const gridfactory &,
+			   const gridtemplate *,
+			   const std::string &,
+			   const std::string &);
+ public:
+	//! Insert a theme template
+	void layout_insert(const gridlayoutmanager &glm,
+			   const gridtemplate *elements,
+			   const std::string &name);
 };
 
 LIBCXXW_NAMESPACE_END
