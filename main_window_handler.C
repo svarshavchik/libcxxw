@@ -62,6 +62,9 @@ void main_windowObj::handlerObj
 		if (event->data.data32[0] ==
 		    IN_THREAD->info->atoms_info.wm_delete_window)
 		{
+			if (is_busy())
+				return;
+
 			on_delete_callback(IN_THREAD)();
 			return;
 		}

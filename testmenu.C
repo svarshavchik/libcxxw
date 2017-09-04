@@ -9,6 +9,7 @@
 #include <x/ref.H>
 #include <x/obj.H>
 #include <x/weakcapture.H>
+#include <x/singletonptr.H>
 #include "x/w/main_window.H"
 #include "x/w/gridlayoutmanager.H"
 #include "x/w/gridfactory.H"
@@ -20,6 +21,7 @@
 #include "x/w/menulayoutmanager.H"
 #include "x/w/input_field.H"
 #include "x/w/label.H"
+#include "x/w/dialog.H"
 #include <string>
 #include <iostream>
 #include <sstream>
@@ -42,6 +44,16 @@ public:
 };
 
 typedef LIBCXX_NAMESPACE::ref<close_flagObj> close_flag_ref;
+
+class app_dialogsObj : virtual public LIBCXX_NAMESPACE::obj {
+
+public:
+
+	LIBCXX_NAMESPACE::w::dialogptr help_about;
+};
+
+typedef LIBCXX_NAMESPACE::singletonptr<app_dialogsObj> app_dialogs;
+
 
 void remove_help_menu(const LIBCXX_NAMESPACE::w::main_window &main_window)
 {
@@ -238,11 +250,72 @@ LIBCXX_NAMESPACE::w::element view_menu(const LIBCXX_NAMESPACE::w::menulayoutmana
 	return m->item(1);
 }
 
+void help_about_dialog(const LIBCXX_NAMESPACE::w::dialog &dialog,
+		       const LIBCXX_NAMESPACE::w::gridlayoutmanager &dialog_lm)
+{
+	dialog->on_delete([]
+			  {
+				  app_dialogs all_app_dialogs;
+
+				  if (all_app_dialogs)
+					  all_app_dialogs->help_about=nullptr;
+			  });
+
+	dialog->set_window_title("Help/About");
+	auto f=dialog_lm->append_row();
+	f->padding(30);
+	f->create_label("This is a dialog");
+}
+
+void help_about(const LIBCXX_NAMESPACE::w::main_window &main_window)
+{
+	app_dialogs all_app_dialogs;
+
+	if (!all_app_dialogs)
+		return;
+
+	auto d=main_window->create_dialog
+		([&]
+		 (const auto &dialog)
+		 {
+			 LIBCXX_NAMESPACE::w::gridlayoutmanager lm=dialog->get_layoutmanager();
+
+			 help_about_dialog(dialog, dialog->get_layoutmanager());
+		 },
+		 LIBCXX_NAMESPACE::w::new_gridlayoutmanager{},
+		 true);
+
+	all_app_dialogs->help_about=d;
+
+	d->show_all();
+}
+
+void help_menu(const LIBCXX_NAMESPACE::w::main_window &main_window,
+	       const LIBCXX_NAMESPACE::w::menulayoutmanager &m)
+{
+	LIBCXX_NAMESPACE::w::menuitem_plain about;
+
+	about.on_activate=[main_window=LIBCXX_NAMESPACE::make_weak_capture
+			   (main_window)]
+		(const LIBCXX_NAMESPACE::w::menuitem_activation_info &info)
+		{
+			main_window.get
+			([]
+			 (const auto &main_window) {
+				help_about(main_window);
+			});
+		};
+
+	m->append_menu_item(about, "About");
+}
+
 void testmenu()
 {
 	LIBCXX_NAMESPACE::destroy_callback::base::guard guard;
 
 	auto close_flag=close_flag_ref::create();
+
+	app_dialogs all_app_dialogs{LIBCXX_NAMESPACE::ref<app_dialogsObj>::create()};
 
 	auto main_window=LIBCXX_NAMESPACE::w::main_window
 		::create([]
@@ -283,8 +356,10 @@ void testmenu()
 				 f=mb->append_right_menus();
 
 				 f->add_text("Help",
-					     []
+					     [&]
 					     (const auto &factory) {
+						     help_menu(main_window,
+							       factory);
 					     });
 
 				 main_window->get_menubar()->show();

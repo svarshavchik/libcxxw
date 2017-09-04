@@ -7,7 +7,7 @@
 
 #include <x/w/main_windowfwd.H>
 #include <x/w/main_windowobj.H>
-#include <x/w/new_layoutmanagerfwd.H>
+#include <x/w/gridlayoutmanager.H>
 #include <x/ref.H>
 #include <x/functional.H>
 

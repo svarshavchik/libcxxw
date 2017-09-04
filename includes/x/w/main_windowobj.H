@@ -9,8 +9,14 @@
 #include <x/w/new_layoutmanagerfwd.H>
 #include <x/w/generic_windowobj.H>
 #include <x/w/menubarlayoutmanagerfwd.H>
+#include <x/w/gridlayoutmanagerfwd.H>
+#include <x/w/dialogfwd.H>
+#include <x/w/new_layoutmanagerfwd.H>
 #include <x/obj.H>
 #include <x/logger.H>
+#include <x/functional.H>
+
+#include <utility>
 
 LIBCXXW_NAMESPACE_START
 
@@ -62,6 +68,30 @@ private:
 	//! Inherited from containerObj
 
 	ref<layoutmanagerObj::implObj> get_layout_impl() const override;
+
+public:
+	//! Creator for create_mainwindow()
+
+	typedef void dialog_creator_t(const dialog &);
+
+	//! Create a generic dialog.
+
+	template<typename functor>
+	dialog create_dialog(functor &&f,
+			     const new_layoutmanager &l=new_gridlayoutmanager(),
+			     bool modal=false)
+	{
+		return do_create_dialog(make_function<dialog_creator_t>
+					(std::forward<functor>(f)),
+					l, modal);
+	}
+
+	//! Type-erased create_dialog().
+
+	dialog do_create_dialog(const function<dialog_creator_t> &creator,
+				const new_layoutmanager &layout_factory,
+				bool modal)
+		LIBCXX_PUBLIC;
 };
 
 LIBCXXW_NAMESPACE_END

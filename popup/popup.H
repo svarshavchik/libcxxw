@@ -8,8 +8,12 @@
 #include "popup/popupfwd.H"
 #include "popup/popupobj.H"
 #include <x/ref.H>
+#include <xcb/xproto.h>
 
 LIBCXXW_NAMESPACE_START
+
+void set_parent_window_of(const ref<generic_windowObj::handlerObj> &handler,
+			  xcb_window_t parent_window_id) LIBCXX_HIDDEN;
 
 LIBCXXW_NAMESPACE_END
 

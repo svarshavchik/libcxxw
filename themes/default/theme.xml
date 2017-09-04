@@ -373,4 +373,9 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
     <weight>bold</weight>
     <point_size>10</point_size>
   </font>
+
+  <!-- Dialogs -->
+
+  <color id="dialog_background" scale="80%" />
+
 </theme>

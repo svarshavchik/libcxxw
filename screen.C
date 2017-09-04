@@ -144,7 +144,8 @@ const std::unordered_set<std::string> &screenObj::supported() const
 
 bool screenObj::supported(const std::string_view &name) const
 {
-	return impl->supported.find(name) != impl->supported.end();
+	return impl->supported.find({name.begin(), name.end()})
+		!= impl->supported.end();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

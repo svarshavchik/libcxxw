@@ -132,6 +132,11 @@ libcxxw_la_SOURCES=\
 	defaulttheme.H				    \
 	defaultthemefwd.H			    \
 	defaultthemeobj.H			    \
+	dialog.C				    \
+	dialog_impl.C				    \
+	dialog_impl.H				    \
+	dialog_handler.C			    \
+	dialog_handler.H			    \
 	dimarg.C				    \
 	drawable.C				    \
 	drawable.H				    \

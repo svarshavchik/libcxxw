@@ -157,6 +157,8 @@ typedef ref<gridlayoutmanagerObj> gridlayoutmanager;
 
 typedef const_ref<gridlayoutmanagerObj> const_gridlayoutmanager;
 
+class LIBCXX_HIDDEN new_gridlayoutmanager;
+
 LIBCXXW_NAMESPACE_END
 
 #endif

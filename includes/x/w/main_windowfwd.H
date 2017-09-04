@@ -59,6 +59,28 @@ class main_windowBase;
 //! is \ref menubarlayoutmanager "INSERT_LIBX_NAMESPACE::w::menubarlayoutmanager".
 //! get_menubarlayoutmanager() is a equivalent to
 //! \c get_menubar()->get_layoutmanager().
+//!
+//! \par Dialogs
+//!
+//! \code
+//! INSERT_LIBX_NAMESPACE::w::dialog d=w->create_dialog([]
+//!      (const INSERT_LIBX_NAMESPACE::w::dialog &f)
+//!      {
+//!      });
+//! \endcode
+//!
+//! Creates a dialog. The dialog needs to be show()n. The second optional
+//! parameter specifies the new dialog's layout manager, and defaults to
+//! \ref new_gridlayoutmanager "INSERT_LIBX_NAMESPACE::w::new_gridlayoutmanager".
+//! The third optional parameter is a \bool flag. Setting it to \c true
+//! creates a modal dialog. While a modal dialog is visible, the parent
+//! window or dialog ignores all pointer and button events, and gets visibly
+//! shaded accordingly.
+//!
+//! Normally, parent display elements in a window own child elements they
+//! contain. Dialogs own their parent windows. Do not store dialogs directly
+//! or indirectly in the parent window's \c appdata, or any display element,
+//! as this creates a circular reference.
 
 typedef ref<main_windowObj, main_windowBase> main_window;
 
