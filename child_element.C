@@ -201,7 +201,8 @@ void child_elementObj
 
 	if (current_flag != new_flag)
 		child_container->child_visibility_updated(IN_THREAD,
-							  elementimpl(this));
+							  elementimpl(this),
+							  visibility_info);
 }
 
 bool child_elementObj::has_own_background_color(IN_THREAD_ONLY)

@@ -122,7 +122,8 @@ class LIBCXX_HIDDEN layoutmanagerObj::implObj : virtual public obj {
 	//! A child element's visibility has changed
 
 	virtual void child_visibility_changed(IN_THREAD_ONLY,
-					      const elementimpl &child);
+					      const elementimpl &child,
+					      inherited_visibility_info &info);
 
 	//! The container's visibility has changed
 

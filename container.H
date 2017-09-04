@@ -113,7 +113,8 @@ public:
 	//! A child element became visible or not visible.
 
 	void child_visibility_updated(IN_THREAD_ONLY,
-				      const elementimpl &);
+				      const elementimpl &,
+				      inherited_visibility_info &);
 
 	//! Add this container to containers_2_recalculate
 

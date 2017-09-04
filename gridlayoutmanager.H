@@ -207,7 +207,8 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 
 	//! Redraw the borders around the child element.
 	void child_visibility_changed(IN_THREAD_ONLY,
-				      const elementimpl &child) override;
+				      const elementimpl &child,
+				      inherited_visibility_info &info) override;
  private:
 	//! Redraw the borders around the child element.
 

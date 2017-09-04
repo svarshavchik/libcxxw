@@ -358,7 +358,8 @@ void gridlayoutmanagerObj::implObj
 
 void gridlayoutmanagerObj::implObj
 ::child_visibility_changed(IN_THREAD_ONLY,
-			   const elementimpl &child)
+			   const elementimpl &child,
+			   inherited_visibility_info &info)
 {
 	grid_map_t::lock lock(grid_map);
 
@@ -390,7 +391,8 @@ void gridlayoutmanagerObj::implObj
 		// of the child element's background color, which is used for
 		// the padding when the child element is visible.
 
-		redraw_child_borders_and_padding(IN_THREAD, child);
+		if (!info.do_not_redraw)
+			redraw_child_borders_and_padding(IN_THREAD, child);
 	}
 }
 
