@@ -70,17 +70,46 @@ void main_windowObj::handlerObj
 
 void main_windowObj::handlerObj::horizvert_updated(IN_THREAD_ONLY)
 {
+	auto p=get_horizvert(IN_THREAD);
+
+	preferred_width(IN_THREAD)=p->horiz.preferred();
+	preferred_height(IN_THREAD)=p->vert.preferred();
+
+	if (data(IN_THREAD).inherited_visibility)
+		update_size_hints(IN_THREAD);
+}
+
+void main_windowObj::handlerObj
+::set_inherited_visibility(IN_THREAD_ONLY,
+			   inherited_visibility_info &visibility_info)
+{
+	if (visibility_info.flag)
+		update_size_hints(IN_THREAD);
+
+	generic_windowObj::handlerObj
+		::set_inherited_visibility(IN_THREAD, visibility_info);
+}
+
+void main_windowObj::handlerObj::update_size_hints(IN_THREAD_ONLY)
+{
+	auto hints=compute_size_hints(IN_THREAD);
+
 	auto conn=screenref->get_connection()->impl;
 
+	xcb_icccm_set_wm_size_hints(conn->info->conn,
+				    id(),
+				    conn->info->atoms_info.wm_normal_hints,
+				    &hints);
+}
+
+xcb_size_hints_t main_windowObj::handlerObj::compute_size_hints(IN_THREAD_ONLY)
+{
 	auto p=get_horizvert(IN_THREAD);
 
 	auto minimum_width=p->horiz.minimum();
 	auto minimum_height=p->vert.minimum();
 	auto new_preferred_width=p->horiz.preferred();
 	auto new_preferred_height=p->vert.preferred();
-
-	preferred_width(IN_THREAD)=new_preferred_width;
-	preferred_height(IN_THREAD)=new_preferred_height;
 
 	xcb_size_hints_t hints=xcb_size_hints_t();
 
@@ -94,10 +123,7 @@ void main_windowObj::handlerObj::horizvert_updated(IN_THREAD_ONLY)
 					  (dim_t::value_type)p->horiz.maximum(),
 					  (dim_t::value_type)p->vert.maximum());
 
-	xcb_icccm_set_wm_size_hints(conn->info->conn,
-				    id(),
-				    conn->info->atoms_info.wm_normal_hints,
-				    &hints);
+	return hints;
 }
 
 void main_windowObj::handlerObj::request_visibility(IN_THREAD_ONLY,
