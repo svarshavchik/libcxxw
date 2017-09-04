@@ -3021,8 +3021,8 @@ void sxg_parserObj::render(const picture &p,
 					 info.pixels_per_mm_w,
 					 info.pixels_per_mm_h);
 
-			auto p_w=dim_t::truncate(scale.x_pixel(width));
-			auto p_h=dim_t::truncate(scale.y_pixel(height));
+			auto p_w=dim_t::truncate(scale.x_pixel(width, scale_info::beginning));
+			auto p_h=dim_t::truncate(scale.y_pixel(height, scale_info::beginning));
 
 			auto new_pixmap=d->create_pixmap(p_w, p_h);
 

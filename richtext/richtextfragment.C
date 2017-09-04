@@ -768,7 +768,7 @@ inline void richtextfragmentObj
 
 	xcb_render_util_composite_text
 		(range_info.info.scratch_buffer->impl->picture_conn()->conn,
-		 XCB_RENDER_PICT_OP_ATOP,
+		 XCB_RENDER_PICT_OP_OVER,
 		 color_impl->picture_id(),
 		 range_info.info.scratch_buffer->impl->picture_id(),
 		 XCB_NONE,
