@@ -972,7 +972,7 @@ void gridlayoutmanagerObj::implObj
 		auto hv=element->impl->get_horizvert(IN_THREAD);
 
 		auto element_position=
-			elements.compute_element_position(child);
+			elements.compute_element_position(child.pos);
 
 		// Adjust for the element's requested padding. Reduce
 		// the computed position by the element's stated padding,
@@ -1105,22 +1105,20 @@ rectangle gridlayoutmanagerObj::implObj
 
 	auto ge=(*lock)->elements.at(iter->second->row).at(iter->second->col);
 
-	ret.x=coord_t::truncate(ret.x-ge->left_padding);
-	ret.y=coord_t::truncate(ret.y-ge->top_padding);
+	if (!ge->initialized(IN_THREAD) ||
+	    !ge->takes_up_space(IN_THREAD))
+		return ret;
 
-	ret.width=dim_t::truncate(ret.width+ge->total_horiz_padding);
-	ret.height=dim_t::truncate(ret.height+ge->total_vert_padding);
-
-	return ret;
+	return grid_elements(IN_THREAD)->compute_element_position(ge->pos);
 }
 
 rectangle gridlayoutmanagerObj::implObj::elementsObj
-::compute_element_position(const pos_axis &child)
+::compute_element_position(const metrics::grid_pos &pos)
 {
 	// Find the element's first and last row and column.
 
-	const auto &horiz_pos=child.pos->horiz_pos;
-	const auto &vert_pos=child.pos->vert_pos;
+	const auto &horiz_pos=pos->horiz_pos;
+	const auto &vert_pos=pos->vert_pos;
 
 	auto h_start=horiz_sizes.find(horiz_pos.start);
 	auto h_end=horiz_sizes.find(horiz_pos.end);

@@ -217,7 +217,7 @@ public:
 
 	//! Now that everything's calculate, compute an element's position
 
-	rectangle compute_element_position(const pos_axis &child);
+	rectangle compute_element_position(const metrics::grid_pos &child);
 };
 
 LIBCXXW_NAMESPACE_END
