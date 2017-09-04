@@ -51,6 +51,12 @@ struct grid_map_column_defaults {
 	//! Default column alignment
 
 	halign horizontal_alignment=halign::left;
+
+	//! Default column padding
+	std::string left_padding_set="grid_horiz_padding";
+
+	//! Default column padding
+	std::string right_padding_set="grid_horiz_padding";
 };
 
 //! Default grid column info
@@ -85,6 +91,12 @@ struct grid_map_row_defaults {
 
 	//! Default vertical alignment
 	valign vertical_alignment=valign::top;
+
+	//! Default row padding
+	std::string top_padding_set="grid_vert_padding";
+
+	//! Default row padding
+	std::string bottom_padding_set="grid_vert_padding";
 };
 
 //! Mutex-protected container for elements in the grid.

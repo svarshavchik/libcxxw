@@ -109,11 +109,15 @@ gridlayout->default_row_border(0, new_border);
 gridlayout->default_row_border(0, "thin_0%");
 gridlayout->requested_row_height(0, 100);
 gridlayout->row_alignment(0, INSERT_LIBX_NAMESPACE::w::valign::middle);
+gridlayout->default_top_padding(0, 2.0);
+gridlayout->default_bottom_padding(0, 2.0);
 
 gridlayout->default_col_border(0, new_border);
 gridlayout->default_col_border(0, "thin_0%");
 gridlayout->requested_col_width(0, 100);
 gridlayout->col_alignment(0, INSERT_LIBX_NAMESPACE::w::halign::center);
+gridlayout->default_left_padding(0, 2.0);
+gridlayout->default_right_padding(0, 2.0);
 
 gridlayout->remove_row_defaults(0);
 gridlayout->remove_col_defaults(0);
@@ -138,7 +142,9 @@ sizes.
 row_alignment() and col_alignment() specify the default alignment for the
 cells in the grid.
 
-remove_row_defaults() and remove_col_defaults() remove previously set defaults.
+default_top_padding(), default_bottom_padding(), default_left_padding() and
+default_right_padding() set the default padding for the specified row or
+column.
 
 \note
 

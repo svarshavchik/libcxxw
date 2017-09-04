@@ -77,8 +77,24 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 	//! Set default row alignment.
 	void row_alignment(size_t row, valign alignment);
 
-	//! Set default column alignment
+	//! Set default column alignment.
 	void col_alignment(size_t col, halign alignment);
+
+	//! Set default padding.
+	void row_top_padding_set(size_t row,
+			     const dimarg &padding);
+
+	//! Set default padding.
+	void row_bottom_padding_set(size_t row,
+				const dimarg &padding);
+
+	//! Set default padding.
+	void col_left_padding_set(size_t col,
+			      const dimarg &padding);
+
+	//! Set default padding.
+	void col_right_padding_set(size_t col,
+			       const dimarg &padding);
 
 	//! How many rows there are here.
 	size_t rows();

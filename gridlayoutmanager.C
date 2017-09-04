@@ -140,6 +140,18 @@ void gridlayoutmanagerObj::row_alignment(size_t row, valign alignment)
 	impl->row_alignment(row, alignment);
 }
 
+void gridlayoutmanagerObj::row_top_padding_set(size_t row,
+					       const dimarg &padding)
+{
+	impl->row_top_padding_set(row, padding);
+}
+
+void gridlayoutmanagerObj::row_bottom_padding_set(size_t row,
+						  const dimarg &padding)
+{
+	impl->row_bottom_padding_set(row, padding);
+}
+
 void gridlayoutmanagerObj::default_col_border(size_t col,
 					      const border_infomm &info)
 {
@@ -171,6 +183,18 @@ void gridlayoutmanagerObj::requested_col_width(size_t col, int percentage)
 void gridlayoutmanagerObj::col_alignment(size_t col, halign alignment)
 {
 	impl->col_alignment(col, alignment);
+}
+
+void gridlayoutmanagerObj::col_left_padding_set(size_t col,
+						const dimarg &padding)
+{
+	impl->col_left_padding_set(col, padding);
+}
+
+void gridlayoutmanagerObj::col_right_padding_set(size_t col,
+						 const dimarg &padding)
+{
+	impl->col_right_padding_set(col, padding);
 }
 
 void gridlayoutmanagerObj::remove_row_defaults(size_t row)

@@ -29,13 +29,21 @@ new_grid_element_info
 		.find(metrics::grid_xy::truncate(row));
 
 	if (row_default != grid_map->row_defaults.end())
+	{
 		vertical_alignment=row_default->second.vertical_alignment;
+		top_padding_set=row_default->second.top_padding_set;
+		bottom_padding_set=row_default->second.bottom_padding_set;
+	}
 
 	auto col_default=grid_map->column_defaults
 		.find(metrics::grid_xy::truncate(col));
 
 	if (col_default != grid_map->column_defaults.end())
+	{
 		horizontal_alignment=col_default->second.horizontal_alignment;
+		left_padding_set=col_default->second.left_padding_set;
+		right_padding_set=col_default->second.right_padding_set;
+	}
 }
 
 new_grid_element_info

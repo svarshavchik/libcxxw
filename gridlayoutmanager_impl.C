@@ -149,6 +149,38 @@ void gridlayoutmanagerObj::implObj::col_alignment(size_t col, halign alignment)
 	(*lock)->column_defaults[col].horizontal_alignment=alignment;
 }
 
+void gridlayoutmanagerObj::implObj::row_top_padding_set(size_t row,
+							const dimarg &padding)
+{
+	grid_map_t::lock lock{grid_map};
+
+	(*lock)->row_defaults[row].top_padding_set=padding;
+}
+
+void gridlayoutmanagerObj::implObj::row_bottom_padding_set(size_t row,
+							   const dimarg &padding)
+{
+	grid_map_t::lock lock{grid_map};
+
+	(*lock)->row_defaults[row].bottom_padding_set=padding;
+}
+
+void gridlayoutmanagerObj::implObj::col_left_padding_set(size_t col,
+							 const dimarg &padding)
+{
+	grid_map_t::lock lock{grid_map};
+
+	(*lock)->column_defaults[col].left_padding_set=padding;
+}
+
+void gridlayoutmanagerObj::implObj::col_right_padding_set(size_t col,
+							  const dimarg &padding)
+{
+	grid_map_t::lock lock{grid_map};
+
+	(*lock)->column_defaults[col].right_padding_set=padding;
+}
+
 gridfactory gridlayoutmanagerObj::implObj
 ::replace_row(layoutmanagerObj *public_object, size_t row)
 {
