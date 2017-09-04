@@ -21,8 +21,10 @@ LIBCXXW_NAMESPACE_START
 popupObj::handlerObj::handlerObj(IN_THREAD_ONLY,
 				 const ref<generic_windowObj::handlerObj>
 				 &parent,
+				 const char *background_color,
 				 size_t nesting_level)
 	: generic_windowObj::handlerObj(IN_THREAD, parent->get_screen(),
+					background_color,
 					parent->handler_data,
 					nesting_level),
 	popup_parent_thread_only(parent)

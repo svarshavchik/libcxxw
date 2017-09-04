@@ -146,17 +146,11 @@ init_containers(const ref<containerObj::implObj> &parent,
 	return menu_and_app;
 }
 
-main_window screenObj
-::do_create_mainwindow(const function<main_window_creator_t> &f,
-		       const new_layoutmanager &layout_factory)
+std::tuple<ref<main_windowObj::implObj>, layoutmanager>
+do_create_main_window_impl(const ref<main_windowObj::handlerObj> &handler,
+			   const new_layoutmanager &layout_factory,
+			   const function<make_window_impl_factory_t> &factory)
 {
-	auto queue=connref->impl->thread->get_batch_queue();
-
-	auto handler=ref<main_windowObj::handlerObj>
-		::create(connref->impl->thread, screen(this));
-
-	handler->set_window_type("normal");
-
 	containerptr menu_and_app_container,
 		menubar_container, app_container;
 
@@ -178,9 +172,33 @@ main_window screenObj
 			 return c;
 		 });
 
-	auto window_impl=ref<main_windowObj::implObj>
-		::create(handler, menu_and_app_container,
-			 menubar_container, app_container);
+	auto window_impl=factory(main_window_impl_args{
+			handler, menu_and_app_container,
+				menubar_container, app_container});
+	return {window_impl, lm};
+}
+
+main_window screenObj
+::do_create_mainwindow(const function<main_window_creator_t> &f,
+		       const new_layoutmanager &layout_factory)
+{
+	// Keep a batch queue in scope for the duration of the creation,
+	// so everything gets buffered up.
+
+	auto queue=connref->impl->thread->get_batch_queue();
+
+	auto handler=ref<main_windowObj::handlerObj>
+		::create(connref->impl->thread, screen(this),
+			 "mainwindow_background");
+
+	handler->set_window_type("normal");
+
+	auto [window_impl, lm]=create_main_window_impl
+		(handler, layout_factory,
+		 [](const auto &args)
+		 {
+			 return ref<main_windowObj::implObj>::create(args);
+		 });
 
 	auto mw=ptrref_base::objfactory<main_window>
 		::create(window_impl, lm->impl);

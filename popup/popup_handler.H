@@ -29,6 +29,7 @@ class LIBCXX_HIDDEN popupObj::handlerObj :
 public:
 	handlerObj(IN_THREAD_ONLY,
 		   const ref<generic_windowObj::handlerObj> &parent,
+		   const char *background_color,
 		   size_t nesting_level=0);
 	~handlerObj();
 

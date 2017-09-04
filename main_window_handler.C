@@ -15,8 +15,10 @@
 LIBCXXW_NAMESPACE_START
 
 main_windowObj::handlerObj::handlerObj(IN_THREAD_ONLY,
-				       const screen &parent_screen)
+				       const screen &parent_screen,
+				       const char *background_color)
 	: generic_windowObj::handlerObj(IN_THREAD, parent_screen,
+					background_color,
 					shared_handler_data::create(),
 					0),
 	on_delete_callback_thread_only([] {})

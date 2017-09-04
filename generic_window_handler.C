@@ -50,10 +50,10 @@ static rectangle element_position(const rectangle &r)
 	return cpy;
 }
 
-static background_color default_background_color(const screen &s)
+static background_color default_background_color(const screen &s,
+						 const char *color)
 {
-	return s->impl
-		->create_background_color("mainwindow_background");
+	return s->impl->create_background_color(color);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -77,6 +77,7 @@ bool generic_windowObj::handlerObj::frame_extents_t
 
 static inline generic_windowObj::handlerObj::constructor_params
 create_constructor_params(const screen &parent_screen,
+			  const char *background_color,
 			  size_t nesting_level)
 {
 	rectangle dimensions={0, 0, 1, 1};
@@ -100,16 +101,18 @@ create_constructor_params(const screen &parent_screen,
 			vm, // events_and_mask
 		},
 		parent_screen->impl->toplevelwindow_pictformat,
-		nesting_level
+		nesting_level,
+		background_color
 	};
 }
 
 generic_windowObj::handlerObj::handlerObj(IN_THREAD_ONLY,
 					  const screen &parent_screen,
+					  const char *background_color,
 					  const shared_handler_data &handler_data,
 					  size_t nesting_level)
 	: handlerObj(IN_THREAD, handler_data,
-		     create_constructor_params(parent_screen,
+		     create_constructor_params(parent_screen, background_color,
 					       nesting_level))
 {
 }
@@ -146,9 +149,11 @@ generic_windowObj::handlerObj
 	disabled_mask_thread_only(create_icon_mm("disabled_mask",
 						 render_repeat::normal,
 						 0, 0)),
+	original_background_color(params.background_color),
 	current_background_color_thread_only(default_background_color
 					     (params.window_handler_params
-					      .screenref)),
+					      .screenref,
+					      params.background_color)),
 	frame_extents_thread_only(params.window_handler_params.screenref
 				  ->get_workarea())
 {
@@ -308,7 +313,8 @@ void generic_windowObj::handlerObj
 void generic_windowObj::handlerObj::remove_background_color(IN_THREAD_ONLY)
 {
 	current_background_color(IN_THREAD)=
-		default_background_color(get_screen());
+		default_background_color(get_screen(),
+					 original_background_color.c_str());
 	background_color_changed(IN_THREAD);
 }
 

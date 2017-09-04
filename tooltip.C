@@ -49,6 +49,7 @@ class LIBCXX_HIDDEN tooltip_handlerObj : public popupObj::handlerObj {
 	//! Constructor
 	tooltip_handlerObj(IN_THREAD_ONLY,
 			   const ref<generic_windowObj::handlerObj> &parent,
+			   const char *background_color,
 			   const ref<obj> &grab,
 			   coord_t pointer_x,
 			   coord_t pointer_y);
@@ -85,10 +86,11 @@ class LIBCXX_HIDDEN tooltip_handlerObj : public popupObj::handlerObj {
 tooltip_handlerObj::tooltip_handlerObj(IN_THREAD_ONLY,
 				       const ref<generic_windowObj::handlerObj>
 				       &parent,
+				       const char *background_color,
 				       const ref<obj> &grab,
 				       coord_t pointer_x,
 				       coord_t pointer_y)
-	: superclass_t(IN_THREAD, parent),
+	: superclass_t(IN_THREAD, parent, background_color),
 	pointer_x(pointer_x),
 	pointer_y(pointer_y),
 	grab(grab)
@@ -163,7 +165,8 @@ void tooltip_factory_impl::create(const function<void (const container &)>
 		return; // Didn't grab the pointer.
 
 	auto popup_handler=ref<tooltip_handlerObj>::create
-		(IN_THREAD, parent_window, grab,
+		(IN_THREAD, parent_window, "transparent",
+		 grab,
 		 coord_t::truncate(parent_element->data(IN_THREAD)
 				   .last_motion_x
 				   + parent_element_absolute_location.x),
@@ -171,10 +174,6 @@ void tooltip_factory_impl::create(const function<void (const container &)>
 				   .last_motion_y
 				   + parent_element_absolute_location.y));
 
-	popup_handler->set_background_color(IN_THREAD,
-					    popup_handler
-					    ->create_background_color
-					    (rgb{0, 0, 0, 0}));
 	auto popup_impl=ref<popupObj::implObj>::create(popup_handler,
 						       parent_window);
 

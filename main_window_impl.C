@@ -19,16 +19,13 @@
 
 LIBCXXW_NAMESPACE_START
 
-main_windowObj::implObj::implObj(const ref<handlerObj> &handler,
-				 const container &menu_and_app_container,
-				 const container &menubar_container,
-				 const container &app_container)
-	: generic_windowObj::implObj(handler),
-	xim_generic_windowObj(handler),
-	handler(handler),
-	menu_and_app_container(menu_and_app_container),
-	menubar_container(menubar_container),
-	app_container(app_container)
+main_windowObj::implObj::implObj(const main_window_impl_args &args)
+	: generic_windowObj::implObj(args.handler),
+	xim_generic_windowObj(args.handler),
+	handler(args.handler),
+	menu_and_app_container(args.menu_and_app_container),
+	menubar_container(args.menubar_container),
+	app_container(args.app_container)
 {
 	handler->handler_data->set_toplevel_handler(handler);
 }

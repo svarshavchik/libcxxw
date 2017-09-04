@@ -43,11 +43,9 @@ public:
 
 	const vector<const_ref<depthObj>> screen_depths;
 
-private:
 	//! Screen's connection
 	const connection connref;
 
-public:
 	//! Constructor
 	screenObj(const ref<implObj> &impl,
 		  const connection &conn) LIBCXX_HIDDEN;

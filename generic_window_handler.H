@@ -95,6 +95,9 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 	icon disabled_mask_thread_only;
 
+	//! Default background color name
+	const std::string original_background_color;
+
 	//! Window's background color
 
 	background_color current_background_color_thread_only;
@@ -175,11 +178,15 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 		//! base, for optimum recalculation.
 
 		size_t nesting_level=0;
+
+		//! Background color
+		const char *background_color;
 	};
 
 	//! Constructor
 	handlerObj(IN_THREAD_ONLY,
 		   const screen &me,
+		   const char *background_color,
 		   const shared_handler_data &handler_data,
 		   size_t nesting_level);
 

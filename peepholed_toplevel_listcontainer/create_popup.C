@@ -77,17 +77,13 @@ do_create_peepholed_toplevel_listcontainer_popup
 	auto popup_handler=ref<popup_attachedto_handlerObj>
 		::create(std::get<0>(popup_type),
 			 std::get<1>(popup_type),
-			 parent_handler, attachedto_info,
+			 parent_handler,
+			 args.list_style.background_color.c_str(),
+			 attachedto_info,
 			 args.parent_element->nesting_level+
 			 args.extra_nesting_level);
 
 	popup_handler->set_window_type(args.popup_window_type);
-
-	// We are not using new_listlayoutmanager::create(), we need to
-	// set the handler's background color ourselves.
-
-	popup_handler->elementObj::implObj
-		::set_background_color(args.list_style.background_color);
 
 	ptr<peepholed_toplevel_listcontainer_layoutmanager_implObj
 	    > popup_listlayoutmanagerptr;

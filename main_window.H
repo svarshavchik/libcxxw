@@ -7,10 +7,24 @@
 
 #include "x/w/main_window.H"
 #include "x/w/containerfwd.H"
+#include "x/w/layoutmanagerfwd.H"
 #include "generic_window.H"
 #include "xim_generic_window.H"
 
+#include <functional>
+
 LIBCXXW_NAMESPACE_START
+
+//! Parameters to main_windowObj::implObj's constructor.
+
+struct LIBCXX_HIDDEN main_window_impl_args {
+	ref<main_windowObj::handlerObj> handler;
+	container menu_and_app_container;
+	container menubar_container;
+	container app_container;
+};
+
+//! Main application window implementation object.
 
 class LIBCXX_HIDDEN main_windowObj::implObj
 	: public generic_windowObj::implObj,
@@ -19,10 +33,7 @@ class LIBCXX_HIDDEN main_windowObj::implObj
  public:
 
 	//! Constructor
-	implObj(const ref<handlerObj> &handler,
-		const container &menu_and_app_container,
-		const container &menubar_container,
-		const container &app_container);
+	implObj(const main_window_impl_args &args);
 
 	//! Destructor
 	~implObj();
@@ -58,6 +69,37 @@ class LIBCXX_HIDDEN main_windowObj::implObj
 
 	void on_delete(const std::function<void ()> &callback);
 };
+
+//! Factory used by create_main_window_impl().
+
+typedef ref<main_windowObj::implObj
+	    > make_window_impl_factory_t(const main_window_impl_args &);
+
+//! Helper for constructing a new main_windowObj::implObj.
+
+//! The requested layout manager for the top level window actually gets
+//! shoved into the main window's peephole that gets created. Returns
+//! the real layout manager for the top level window.
+
+template<typename functor>
+inline std::tuple<ref<main_windowObj::implObj>, layoutmanager>
+create_main_window_impl(const ref<main_windowObj::handlerObj> &handler,
+			const new_layoutmanager &layout_factory,
+			functor &&f)
+{
+	return do_create_main_window_impl
+		(handler, layout_factory,
+		 make_function<make_window_impl_factory_t>
+		 (std::forward<functor>(f)));
+}
+
+//! Type-erased create_main_window_impl().
+
+std::tuple<ref<main_windowObj::implObj>, layoutmanager>
+do_create_main_window_impl(const ref<main_windowObj::handlerObj> &handler,
+			   const new_layoutmanager &layout_factory,
+			   const function<make_window_impl_factory_t> &factory)
+	LIBCXX_HIDDEN;
 
 LIBCXXW_NAMESPACE_END
 
