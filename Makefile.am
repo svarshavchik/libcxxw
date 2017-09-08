@@ -319,6 +319,8 @@ libcxxw_la_SOURCES=\
 	icon_image.H				    \
 	icon_imagefwd.H				    \
 	icon_imageobj.H				    \
+	icon_images_set_element.H		    \
+	icon_images_set_elementfwd.H		    \
 	icon_images_vector.C			    \
 	icon_images_vectorobj.H			    \
 	icon_images_vector_element.H		    \
@@ -596,7 +598,6 @@ libcxxw_la_SOURCES=\
 	scrollbar/scrollbar.H			    \
 	scrollbar/scrollbarfwd.H		    \
 	scrollbar/scrollbarobj.H		    \
-	scrollbar/scrollbar_icon_set.C		    \
 	scrollbar/scrollbar_icon_set.H		    \
 	scrollbar/scrollbar_impl.C		    \
 	scrollbar/scrollbar_impl.H		    \

@@ -9,36 +9,66 @@
 #include "iconfwd.H"
 #include "iconobj.H"
 #include "connection_threadfwd.H"
+#include "icon_images_set_elementfwd.H"
 
 LIBCXXW_NAMESPACE_START
 
-//! A set of icons for a \ref scrollbar "scrollbar".
+//! Tags for scrollbar's icons.
 
-struct LIBCXX_HIDDEN scrollbar_icon_set {
-
- public:
-
+template<typename set_type>
+struct LIBCXX_HIDDEN scrollbar_icons_tags {
 	//! Scroll in the low direction button.
-	icon scroll_low_icon;
+	struct low;
 
 	//! Scroll in the high direction button.
-	icon scroll_high_icon;
+	struct high;
 
 	//! Starting part of the slider handlebar.
-	icon handlebar_start_icon;
+	struct handlebar_start;
 
 	//! The middle part of the slider handlebra.
-	icon handlebar_icon;
+	struct handlebar;
 
 	//! The end part of the slider handlebar.
-	icon handlebar_end_icon;
-
-	//! Invoke all icons' initialize() method.
-	void initialize(IN_THREAD_ONLY);
-
-	//! Invoke all icons' theme_updated() method.
-	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme);
+	struct handlebar_end;
 };
+
+//! Regular icons
+struct LIBCXX_HIDDEN scrollbar_normal;
+
+//! Button down/click icons
+struct LIBCXX_HIDDEN scrollbar_pressed;
+
+//! Parameter to icon_images_set constructor for scrollbars.
+typedef std::tuple<icon,icon,icon,icon,icon,
+		   icon,icon,icon,icon,icon> scrollbar_icons_tuple_t;
+
+#define scrollbar_icon_tuple_t_get(n)		\
+		std::get<0>(n),			\
+		std::get<1>(n),			\
+		std::get<2>(n),			\
+		std::get<3>(n),			\
+		std::get<4>(n),			\
+		std::get<5>(n),			\
+		std::get<6>(n),			\
+		std::get<7>(n),			\
+		std::get<8>(n),			\
+		std::get<9>(n)
+
+//! Typedef alias for inheriting all scrollbar icons.
+template<typename element_impl>
+using scrollbar_icon_images_set_t=icon_images_set_elementObj
+	<element_impl,
+	 scrollbar_icons_tags<scrollbar_normal>::low,
+	 scrollbar_icons_tags<scrollbar_normal>::high,
+	 scrollbar_icons_tags<scrollbar_normal>::handlebar_start,
+	 scrollbar_icons_tags<scrollbar_normal>::handlebar,
+	 scrollbar_icons_tags<scrollbar_normal>::handlebar_end,
+	 scrollbar_icons_tags<scrollbar_pressed>::low,
+	 scrollbar_icons_tags<scrollbar_pressed>::high,
+	 scrollbar_icons_tags<scrollbar_pressed>::handlebar_start,
+	 scrollbar_icons_tags<scrollbar_pressed>::handlebar,
+	 scrollbar_icons_tags<scrollbar_pressed>::handlebar_end>;
 
 LIBCXXW_NAMESPACE_END
 

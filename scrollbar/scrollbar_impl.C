@@ -13,11 +13,18 @@
 #include "focus/focusable_element.H"
 #include "icon.H"
 #include "icon_image.H"
+#include "icon_images_set_element.H"
 #include "metrics_horizvertobj.H"
 #include "catch_exceptions.H"
 #include <X11/keysym.h>
 
 LIBCXXW_NAMESPACE_START
+
+#define ICONTAG(group,tag) icon_1tag<scrollbar_icons_tags<group>::tag>
+#define ICON(group,tag) (ICONTAG(group, tag)::tagged_icon(IN_THREAD))
+
+#define NORMAL(tag) ICON(scrollbar_normal,tag)
+#define PRESSED(tag) ICON(scrollbar_pressed,tag)
 
 // Configure the scrollbar for a horizontal or vertical orientation
 
@@ -65,14 +72,28 @@ const scrollbar_orientation vertical_scrollbar={
 };
 
 scrollbarObj::implObj::implObj(const scrollbar_impl_init_params &init_params)
-	: superclass_t(init_params.container,
-		       {init_params.orientation.scratch_buffer_id}),
+	: superclass_t(scrollbar_icon_tuple_t_get(init_params.icons),
+		       init_params.container,
+		       child_element_init_params{init_params.orientation
+				       .scratch_buffer_id}),
 	  orientation(init_params.orientation),
-	  icon_set_1(init_params.icon_set_1),
-	  icon_set_2(init_params.icon_set_2),
 	  conf(init_params.conf)
 {
 	validate_conf();
+}
+
+scrollbarObj::implObj
+::scrollbar_icon_set scrollbarObj::implObj::normal_icons(IN_THREAD_ONLY)
+{
+	return {NORMAL(low), NORMAL(high), NORMAL(handlebar_start),
+			NORMAL(handlebar), NORMAL(handlebar_end)};
+}
+
+scrollbarObj::implObj
+::scrollbar_icon_set scrollbarObj::implObj::pressed_icons(IN_THREAD_ONLY)
+{
+	return {PRESSED(low), PRESSED(high), PRESSED(handlebar_start),
+			PRESSED(handlebar), PRESSED(handlebar_end)};
 }
 
 void scrollbarObj::implObj::validate_conf()
@@ -95,20 +116,16 @@ scrollbarObj::implObj::~implObj()=default;
 
 void scrollbarObj::implObj::initialize(IN_THREAD_ONLY)
 {
-	icon_set_1.initialize(IN_THREAD);
-	icon_set_2.initialize(IN_THREAD);
+	superclass_t::initialize(IN_THREAD);
 	recalculate_metrics(IN_THREAD);
 	calculate_scrollbar_metrics(IN_THREAD);
-	superclass_t::initialize(IN_THREAD);
 }
 
 void scrollbarObj::implObj::theme_updated(IN_THREAD_ONLY,
 					  const defaulttheme &new_theme)
 {
-	icon_set_1.theme_updated(IN_THREAD, new_theme);
-	icon_set_2.theme_updated(IN_THREAD, new_theme);
-	recalculate_metrics(IN_THREAD);
 	superclass_t::theme_updated(IN_THREAD, new_theme);
+	recalculate_metrics(IN_THREAD);
 }
 
 void scrollbarObj::implObj::update_config(IN_THREAD_ONLY,
@@ -161,52 +178,52 @@ dim_t scrollbarObj::implObj::current_position_minor_size(IN_THREAD_ONLY) const
 	return minor_size(data(IN_THREAD).current_position);
 }
 
-dim_t scrollbarObj::implObj::scroll_low_size() const
+dim_t scrollbarObj::implObj::scroll_low_size(IN_THREAD_ONLY) const
 {
-	return major_icon_size(icon_set_1.scroll_low_icon);
+	return major_icon_size(NORMAL(low));
 }
 
-dim_t scrollbarObj::implObj::scroll_high_size() const
+dim_t scrollbarObj::implObj::scroll_high_size(IN_THREAD_ONLY) const
 {
-	return major_icon_size(icon_set_1.scroll_high_icon);
+	return major_icon_size(NORMAL(high));
 }
 
 coord_t scrollbarObj::implObj::scroll_high_position(IN_THREAD_ONLY) const
 {
 	return coord_t::truncate(data(IN_THREAD).current_position
 				 .*(orientation.major_size)-
-				 scroll_high_size());
+				 scroll_high_size(IN_THREAD));
 }
 
 dim_t scrollbarObj::implObj::slider_size(IN_THREAD_ONLY) const
 {
 	return data(IN_THREAD).current_position
 		.*(orientation.major_size)
-		- scroll_low_size()
-		- scroll_high_size();
+		- scroll_low_size(IN_THREAD)
+		- scroll_high_size(IN_THREAD);
 }
 
-dim_t scrollbarObj::implObj::handlebar_start_size() const
+dim_t scrollbarObj::implObj::handlebar_start_size(IN_THREAD_ONLY) const
 {
-	return major_icon_size(icon_set_1.handlebar_start_icon);
+	return major_icon_size(NORMAL(handlebar_start));
 }
 
-dim_t scrollbarObj::implObj::handlebar_size() const
+dim_t scrollbarObj::implObj::handlebar_size(IN_THREAD_ONLY) const
 {
-	return major_icon_size(icon_set_1.handlebar_icon);
+	return major_icon_size(NORMAL(handlebar));
 }
 
-dim_t scrollbarObj::implObj::handlebar_end_size() const
+dim_t scrollbarObj::implObj::handlebar_end_size(IN_THREAD_ONLY) const
 {
-	return major_icon_size(icon_set_1.handlebar_end_icon);
+	return major_icon_size(NORMAL(handlebar_end));
 }
 
 void scrollbarObj::implObj::recalculate_metrics(IN_THREAD_ONLY)
 {
-	// Use scroll_low_icon's size to fix the height of the horizontal
+	// Use low's size to fix the height of the horizontal
 	// scrollbar and the width of the vertical scrollbar.
 
-	auto minor_size=minor_icon_size(icon_set_1.scroll_low_icon);
+	auto minor_size=minor_icon_size(NORMAL(low));
 
 	metrics::horizvert_axi new_metrics={
 		{0, 0, dim_t::infinite()},
@@ -267,34 +284,33 @@ bool scrollbarObj::implObj::calculate_scrollbar_metrics(IN_THREAD_ONLY)
 
 	// Recalculate metrics based on current size.
 
-	metrics.calculate(dim_t::truncate(scroll_low_size()),
-			  dim_t::truncate(scroll_high_size()),
+	metrics.calculate(dim_t::truncate(scroll_low_size(IN_THREAD)),
+			  dim_t::truncate(scroll_high_size(IN_THREAD)),
 			  dim_t::truncate(conf.range),
 			  dim_t::truncate(conf.page_size),
 			  dim_t::truncate(current_position
 					  .*(orientation.major_size)),
 			  dim_squared_t::truncate
-			  (handlebar_start_size()+handlebar_end_size()+1));
+			  (handlebar_start_size(IN_THREAD)
+			   +handlebar_end_size(IN_THREAD)+1));
 
-	// If the size is big enough for the slider, resize the handlebar_icon
+	// If the size is big enough for the slider, resize the handlebar
 	// accordingly.
 	if (!metrics.no_slider)
 	{
 		current_position.*(orientation.major_size)=
 			dim_t::truncate
 			(metrics.handlebar_pixel_size-
-			 scroll_v_t::truncate(handlebar_start_size())-
-			 scroll_v_t::truncate(handlebar_end_size()));
+			 scroll_v_t::truncate(handlebar_start_size(IN_THREAD))-
+			 scroll_v_t::truncate(handlebar_end_size(IN_THREAD)));
 
-		icon_set_1.handlebar_icon=
-			icon_set_1.handlebar_icon->resize
+		ICONTAG(scrollbar_normal, handlebar)::resize
 			(IN_THREAD,
 			 current_position.width,
 			 current_position.height,
 			 icon_scale::nomore);
 
-		icon_set_2.handlebar_icon=
-			icon_set_2.handlebar_icon->resize
+		ICONTAG(scrollbar_pressed, handlebar)::resize
 			(IN_THREAD,
 			 current_position.width,
 			 current_position.height,
@@ -335,7 +351,8 @@ void scrollbarObj::implObj::do_draw(IN_THREAD_ONLY,
 			 this->do_draw_slider(IN_THREAD,
 					      picture,
 					      dim_t::truncate
-					      (this->scroll_low_size()));
+					      (this->scroll_low_size(IN_THREAD)
+					       ));
 		 },
 		 {0, 0, data(IN_THREAD).current_position.width,
 				 data(IN_THREAD).current_position.height},
@@ -356,7 +373,7 @@ void scrollbarObj::implObj::draw_scroll_low(IN_THREAD_ONLY)
 	r.x=0;
 	r.y=0;
 
-	r.*(orientation.major_size)=scroll_low_size();
+	r.*(orientation.major_size)=scroll_low_size(IN_THREAD);
 
 	draw_using_scratch_buffer
 		(IN_THREAD,
@@ -377,7 +394,7 @@ void scrollbarObj::implObj::do_draw_scroll_low(IN_THREAD_ONLY,
 	if (metrics.too_small)
 		return;
 	do_draw_icon(IN_THREAD, buffer,
-		     &scrollbar_icon_set::scroll_low_icon,
+		     &scrollbar_icon_set::low,
 		     scroll_low_pressed,
 		     0);
 }
@@ -397,7 +414,7 @@ void scrollbarObj::implObj::draw_scroll_high(IN_THREAD_ONLY)
 	r.y=0;
 
 	r.*(orientation.major_coord)=scroll_high_position(IN_THREAD);
-	r.*(orientation.major_size)=scroll_high_size();
+	r.*(orientation.major_size)=scroll_high_size(IN_THREAD);
 
 	draw_using_scratch_buffer
 		(IN_THREAD,
@@ -419,7 +436,7 @@ void scrollbarObj::implObj::do_draw_scroll_high(IN_THREAD_ONLY,
 	if (metrics.too_small)
 		return;
 	do_draw_icon(IN_THREAD, buffer,
-		     &scrollbar_icon_set::scroll_high_icon,
+		     &scrollbar_icon_set::high,
 		     scroll_high_pressed,
 		     coordinate);
 }
@@ -438,7 +455,7 @@ void scrollbarObj::implObj::draw_slider(IN_THREAD_ONLY)
 	r.x=0;
 	r.y=0;
 
-	r.*(orientation.major_coord)=coord_t::truncate(scroll_low_size());
+	r.*(orientation.major_coord)=coord_t::truncate(scroll_low_size(IN_THREAD));
 	r.*(orientation.major_size)=slider_size(IN_THREAD);
 
 	draw_using_scratch_buffer
@@ -465,15 +482,15 @@ void scrollbarObj::implObj::do_draw_slider(IN_THREAD_ONLY,
 	auto s=current_pixel+coord_t::truncate(coordinate);
 
 	auto c=do_draw_icon(IN_THREAD, buffer,
-			    &scrollbar_icon_set::handlebar_start_icon,
+			    &scrollbar_icon_set::handlebar_start,
 			    handlebar_pressed, coord_t::truncate(s));
 
 	c=do_draw_icon(IN_THREAD, buffer,
-		       &scrollbar_icon_set::handlebar_icon,
+		       &scrollbar_icon_set::handlebar,
 		       handlebar_pressed, c);
 
 	do_draw_icon(IN_THREAD, buffer,
-		     &scrollbar_icon_set::handlebar_end_icon,
+		     &scrollbar_icon_set::handlebar_end,
 		     handlebar_pressed, c);
 }
 
@@ -483,7 +500,8 @@ coord_t scrollbarObj::implObj::do_draw_icon(IN_THREAD_ONLY,
 					    bool pressed,
 					    coord_t major_coord)
 {
-	auto &icon=pressed ? icon_set_2.*which_icon:icon_set_1.*which_icon;
+	auto group=pressed ? pressed_icons(IN_THREAD):normal_icons(IN_THREAD);
+	auto &icon=group.*which_icon;
 
 	const auto &p=icon->image;
 
@@ -756,7 +774,8 @@ bool scrollbarObj::implObj::process_button_event(IN_THREAD_ONLY,
 	{
 		if (clicked_pixel_value < 0 ||
 		    dim_squared_t::truncate(clicked_pixel_value) <
-		    dim_squared_t::truncate(current_pixel) + scroll_low_size())
+		    dim_squared_t::truncate(current_pixel) +
+		    scroll_low_size(IN_THREAD))
 		{
 			page_up(IN_THREAD);
 			return true;
@@ -764,7 +783,8 @@ bool scrollbarObj::implObj::process_button_event(IN_THREAD_ONLY,
 
 		if (clicked_pixel_value >= 0 &&
 		    dim_squared_t::truncate(clicked_pixel_value) >
-		    dim_squared_t::truncate(current_pixel) + scroll_low_size()
+		    dim_squared_t::truncate(current_pixel) +
+		    scroll_low_size(IN_THREAD)
 		    + dim_squared_t::truncate(metrics.handlebar_pixel_size))
 		{
 			page_down(IN_THREAD);
@@ -840,7 +860,7 @@ void scrollbarObj::implObj::report_motion_event(IN_THREAD_ONLY,
 
 	auto v=metrics.pixel_to_value
 		(coord_t::truncate
-		 (pointer_pos+scroll_low_size()+
+		 (pointer_pos+scroll_low_size(IN_THREAD)+
 		  scroll_v_t::truncate(metrics.handlebar_pixel_size/2)));
 
 

@@ -12,7 +12,7 @@ LIBCXXW_NAMESPACE_START
 
 //! Constructor
 
-//! The first parameters gets forwarded to the icon_images_vectorObj mixin.
+//! The first parameters gets forwarded to the icon_images_vector mixin.
 //! The remaining parameters get forwarded to the template superclass.
 
 template<typename element_impl>
@@ -21,7 +21,7 @@ icon_images_vector_elementObj<element_impl>
 ::icon_images_vector_elementObj(const std::vector<icon> &icons,
 				Args && ...args)
 	: element_impl(std::forward<Args>(args)...),
-	  icon_images_vectorObj(icons)
+	  icon_images_vector(icons)
 {
 }
 
@@ -33,18 +33,18 @@ icon_images_vector_elementObj<element_impl>::icon_images_vector_elementObj()
 
 //! Override initialize().
 
-//! Forwarded to the template superclass and the icon_images_vectorObj mixin.
+//! Forwarded to the template superclass and the icon_images_vector mixin.
 
 template<typename element_impl>
 void icon_images_vector_elementObj<element_impl>::initialize(IN_THREAD_ONLY)
 {
 	element_impl::initialize(IN_THREAD);
-	icon_images_vectorObj::initialize(IN_THREAD);
+	icon_images_vector::initialize(IN_THREAD);
 }
 
 //! Override theme_updated().
 
-//! Forwarded to the template superclass and the icon_images_vectorObj mixin.
+//! Forwarded to the template superclass and the icon_images_vector mixin.
 
 template<typename element_impl>
 void icon_images_vector_elementObj<element_impl>
@@ -52,7 +52,7 @@ void icon_images_vector_elementObj<element_impl>
 		const defaulttheme &new_theme)
 {
 	element_impl::theme_updated(IN_THREAD, new_theme);
-	icon_images_vectorObj::theme_updated(IN_THREAD, new_theme);
+	icon_images_vector::theme_updated(IN_THREAD, new_theme);
 }
 
 LIBCXXW_NAMESPACE_END

@@ -31,8 +31,8 @@ scrollbarObj::~scrollbarObj()=default;
 static scrollbar create_scrollbar(const ref<containerObj::implObj> &parent_container,
 				  const scrollbar_config &conf,
 				  const scrollbar_orientation &orientation,
-				  const scrollbar_icon_set &icon_set_1,
-				  const scrollbar_icon_set &icon_set_2,
+				  const auto &icon_set_1,
+				  const auto &icon_set_2,
 				  const function<scrollbar_impl_constructor>
 				  &create_impl)
 {
@@ -61,8 +61,8 @@ static scrollbar create_scrollbar(const ref<containerObj::implObj> &parent_conta
 	auto scrollbar_impl=
 		create_impl(scrollbar_impl_init_params{ffcontainer_impl,
 					orientation,
-					icon_set_1,
-					icon_set_2,
+					std::tuple_cat(icon_set_1,
+						       icon_set_2),
 					conf});
 
 	// We are now ready to construct the elements.
@@ -88,7 +88,7 @@ static scrollbar create_scrollbar(const ref<containerObj::implObj> &parent_conta
 
 // Construct one of the two icon sets for the scrollbar to render.
 
-static scrollbar_icon_set
+static auto
 create_scrollbar_icon_set(drawableObj::implObj &drawable,
 			  const char *scroll_low,
 			  const char *scroll_high,
@@ -101,7 +101,7 @@ create_scrollbar_icon_set(drawableObj::implObj &drawable,
 	std::string scrollbar{"scrollbar-"};
 	std::string knob{"scrollbar-knob-"};
 
-	return {
+	return std::tuple{
 		drawable.create_icon_mm(scroll + scroll_low + suffix,
 					render_repeat::none, 0, 0),
 		drawable.create_icon_mm(scroll + scroll_high + suffix,

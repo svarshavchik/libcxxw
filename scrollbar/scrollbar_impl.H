@@ -10,6 +10,7 @@
 #include "scrollbar/scrollbar.H"
 #include "scrollbar/scrollbar_icon_set.H"
 #include "scrollbar/scrollbar_metrics.H"
+#include "icon_images_set_elementfwd.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -21,28 +22,41 @@ LIBCXXW_NAMESPACE_START
 struct LIBCXX_HIDDEN scrollbar_impl_init_params {
 	const ref<containerObj::implObj> &container;
 	const scrollbar_orientation &orientation;
-	const scrollbar_icon_set &icon_set_1;
-	const scrollbar_icon_set &icon_set_2;
+	const scrollbar_icons_tuple_t &icons;
 	const scrollbar_config &conf;
 };
 
 //! Scrollbar implementation object.
 
-class LIBCXX_HIDDEN scrollbarObj::implObj : public focusable_elementObj<> {
+class LIBCXX_HIDDEN scrollbarObj::implObj :
+	public scrollbar_icon_images_set_t<focusable_elementObj<>> {
+
+	//! Normal or pressed icons.
+
+	struct LIBCXX_HIDDEN scrollbar_icon_set {
+		icon low;
+		icon high;
+		icon handlebar_start;
+		icon handlebar;
+		icon handlebar_end;
+	};
+
+	//! Return the normal icons.
+
+	scrollbar_icon_set normal_icons(IN_THREAD_ONLY);
+
+	//! Return the pressed icons.
+
+	scrollbar_icon_set pressed_icons(IN_THREAD_ONLY);
 
 	//! My superclass
 
-	typedef focusable_elementObj<> superclass_t;
+	typedef scrollbar_icon_images_set_t<focusable_elementObj<>
+					    > superclass_t;
 
 	//! Specifies whether this is a horizontal or a vertical scrollbar
 
 	const scrollbar_orientation &orientation;
-
-	//! Regular icons
-	scrollbar_icon_set icon_set_1;
-
-	//! Button down/click icons
-	scrollbar_icon_set icon_set_2;
 
 	//! Return the major dimension
 
@@ -137,10 +151,10 @@ class LIBCXX_HIDDEN scrollbarObj::implObj : public focusable_elementObj<> {
 	scroll_v_t drag_start_current_pixel=0;
 
 	//! The current major size of the scroll_low button.
-	dim_t scroll_low_size() const;
+	dim_t scroll_low_size(IN_THREAD_ONLY) const;
 
 	//! The current major size of the scroll_high button.
-	dim_t scroll_high_size() const;
+	dim_t scroll_high_size(IN_THREAD_ONLY) const;
 
 	//! The scroll_high button's drawing position.
 	coord_t scroll_high_position(IN_THREAD_ONLY) const;
@@ -149,13 +163,13 @@ class LIBCXX_HIDDEN scrollbarObj::implObj : public focusable_elementObj<> {
 	dim_t slider_size(IN_THREAD_ONLY) const;
 
 	//! The current major size of the handlebar start image.
-	dim_t handlebar_start_size() const;
+	dim_t handlebar_start_size(IN_THREAD_ONLY) const;
 
 	//! The current major size of the handlebar image.
-	dim_t handlebar_size() const;
+	dim_t handlebar_size(IN_THREAD_ONLY) const;
 
 	//! The current major size of the handlebar end image.
-	dim_t handlebar_end_size() const;
+	dim_t handlebar_end_size(IN_THREAD_ONLY) const;
 
 	//! Advance slider towards 0.
 

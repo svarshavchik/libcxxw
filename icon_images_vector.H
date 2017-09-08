@@ -2,8 +2,8 @@
 ** Copyright 2017 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
-#ifndef icon_images_vectorobj_h
-#define icon_images_vectorobj_h
+#ifndef icon_images_vector_h
+#define icon_images_vector_h
 
 #include "iconfwd.H"
 #include "image.H"
@@ -11,13 +11,12 @@
 #include "connection_threadfwd.H"
 
 #include <vector>
-#include <x/obj.H>
 
 LIBCXXW_NAMESPACE_START
 
 //! A mixin with a std::vector of icons.
 
-class LIBCXX_HIDDEN icon_images_vectorObj : virtual public obj {
+class LIBCXX_HIDDEN icon_images_vector {
 
 	//! All images this image_button_internal cycles through.
 	std::vector<icon> icon_images_thread_only;
@@ -26,10 +25,10 @@ public:
 	THREAD_DATA_ONLY(icon_images);
 
 	//! Constructor
-	icon_images_vectorObj(const std::vector<icon> &icon_images);
+	icon_images_vector(const std::vector<icon> &icon_images);
 
 	//! Destructor
-	~icon_images_vectorObj();
+	~icon_images_vector();
 
 	//! initialize() all images.
 
