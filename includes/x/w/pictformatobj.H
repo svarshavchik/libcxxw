@@ -81,6 +81,20 @@ public:
 	//! Check if another pictformat has the same RGB components.
 
 	bool rgb_compatible(const const_pictformat &format) const;
+
+	// Search available_pictformats for all pictformats compatible
+	// with the given one.
+	//
+	// This is typically used to select a pictformat for a top level
+	// window. The screen's root window is an rgb window, and this is
+	// going to find all pictformats that are rgb_compatible() with the
+	// root window's
+
+	std::list<const_pictformat> compatible_pictformats() const;
+
+	//! Given a pictformat, return a compatible pictformat with an alpha channel.
+
+	const_pictformat compatible_pictformat_with_alpha_channel() const;
 };
 
 #if 0

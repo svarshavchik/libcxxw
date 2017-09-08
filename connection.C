@@ -115,17 +115,9 @@ get_screens(const connection_thread &thread,
 
 		auto root_visual=screenObj::implObj::root_visual(xcb_screen,
 								 screen_depths);
-		auto root_pictformat=root_visual->render_format;
 
-		auto compatible_pictformats=
-			render_info.compatible_pictformats(root_pictformat);
-
-		for (const auto &candidate:compatible_pictformats)
-		{
-			if (candidate->alpha_depth
-			    > root_pictformat->alpha_depth)
-				root_pictformat=candidate;
-		}
+		auto root_pictformat=root_visual->render_format
+			->compatible_pictformat_with_alpha_channel();
 
 		bool found=false;
 		for (const auto &depth: *screen_depths)

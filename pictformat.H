@@ -7,7 +7,7 @@
 
 #include "x/w/pictformat.H"
 #include "connection_info.H"
-
+#include <x/weaklist.H>
 #include <xcb/xcb.h>
 #include <xcb/render.h>
 
@@ -17,6 +17,8 @@ namespace LIBCXX_NAMESPACE {
 	}
 }
 #endif
+
+typedef weaklist<pictformatObj> available_pictformats_t;
 
 //! Pictformat implementation object.
 class LIBCXX_HIDDEN pictformatObj::implObj : virtual public obj {
@@ -30,9 +32,16 @@ class LIBCXX_HIDDEN pictformatObj::implObj : virtual public obj {
 
 	const xcb_render_pictformat_t id;
 
+	//! Constructor
 	implObj(const connection_info &info,
+		const available_pictformats_t &available_pictformats,
 		xcb_render_pictformat_t idArg);
+
+	//! Destructor
 	~implObj();
+
+	//! Available pictformats
+	const available_pictformats_t available_pictformats;
 };
 
 // Temporary structure used to distribute error values in rgb to indexed

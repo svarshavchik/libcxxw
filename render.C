@@ -94,6 +94,9 @@ render::render(const connection_info &info)
 
 	auto i=xcb_render_query_pict_formats_formats_iterator(render_pict_formats);
 
+	available_pictformats_t weak_available_pictformats=
+		available_pictformats_t::create();
+
 	while (i.rem)
 	{
 		auto p=i.data;
@@ -115,10 +118,12 @@ render::render(const connection_info &info)
 			.alpha_mask=p->direct.alpha_mask,
 		};
 
-		auto pf=const_pictformat::create(s, ref<pictformatObj::implObj>
-						 ::create(info, p->id),
-						 get_indexes(info->conn,
-							     s, p->id));
+		auto pf=const_pictformat::create
+			(s, ref<pictformatObj::implObj>
+			 ::create(info, weak_available_pictformats, p->id),
+			 get_indexes(info->conn, s, p->id));
+
+		weak_available_pictformats->push_back(pf);
 
 		available_pictformats.insert({p->id, pf});
 
@@ -212,23 +217,6 @@ render::find_standard_format(xcb_pict_standard_t s) const
 	if (iter == available_pictformats.end())
 		throw EXCEPTION("Standard rendering format cache lookup failure");
 	return iter->second;
-}
-
-std::list<const_pictformat>
-render::compatible_pictformats(const const_pictformat &format)	const
-{
-	std::list<const_pictformat> formats;
-
-	for (const auto &f:available_pictformats)
-	{
-		if (f.second->impl->id == format->impl->id)
-			continue;
-
-		if (f.second->rgb_compatible(format))
-			formats.push_back(f.second);
-	}
-
-	return formats;
 }
 
 LIBCXXW_NAMESPACE_END
