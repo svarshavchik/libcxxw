@@ -18,6 +18,7 @@
 #include "xid_t.H"
 #include "element_screen.H"
 #include "background_color.H"
+#include "cursor_pointer.H"
 #include "focus/focusable.H"
 #include "grabbed_pointer.H"
 #include "xim/ximclient.H"
@@ -1040,6 +1041,7 @@ void generic_windowObj::handlerObj
 	{
 		auto old=most_recent_element_with_pointer(IN_THREAD);
 		most_recent_element_with_pointer(IN_THREAD)=e;
+		update_displayed_cursor_pointer(IN_THREAD);
 
 		e->request_focus(IN_THREAD, old,
 				 &elementObj::implObj::report_pointer_focus);
@@ -1072,6 +1074,7 @@ void generic_windowObj::handlerObj::pointer_focus_lost(IN_THREAD_ONLY)
 		return;
 
 	most_recent_element_with_pointer(IN_THREAD)=nullptr;
+	update_displayed_cursor_pointer(IN_THREAD);
 	cpy->lose_focus(IN_THREAD,
 			&elementObj::implObj::report_pointer_focus);
 }
@@ -1352,6 +1355,44 @@ void generic_windowObj::handlerObj::set_input_focus(IN_THREAD_ONLY)
 {
 	xcb_set_input_focus(conn()->conn, XCB_NONE, id(),
 			    IN_THREAD->timestamp(IN_THREAD));
+}
+
+
+void generic_windowObj::handlerObj
+::update_displayed_cursor_pointer(IN_THREAD_ONLY)
+{
+	cursor_pointerptr pointer_that_should_be_displayed;
+
+	if (most_recent_element_with_pointer(IN_THREAD))
+	{
+		pointer_that_should_be_displayed=
+			most_recent_element_with_pointer(IN_THREAD)
+			->get_cursor_pointer(IN_THREAD);
+	}
+
+	xcb_cursor_t xcb_cursor_t_that_should_be_displayed=XCB_NONE;
+	if (pointer_that_should_be_displayed)
+		xcb_cursor_t_that_should_be_displayed=
+			pointer_that_should_be_displayed->cursor_id();
+
+	xcb_cursor_t xcb_cursor_t_being_displayed=XCB_NONE;
+	if (displayed_cursor_pointer)
+		xcb_cursor_t_being_displayed=
+			displayed_cursor_pointer->cursor_id();
+
+	if (xcb_cursor_t_that_should_be_displayed ==
+	    xcb_cursor_t_being_displayed)
+		return;
+
+	displayed_cursor_pointer=pointer_that_should_be_displayed;
+
+	values_and_mask change_notify{XCB_CW_CURSOR,
+			xcb_cursor_t_that_should_be_displayed};
+
+	xcb_change_window_attributes(IN_THREAD->info->conn,
+				     id(),
+				     change_notify.mask(),
+				     change_notify.values().data());
 }
 
 LIBCXXW_NAMESPACE_END

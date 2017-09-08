@@ -15,6 +15,7 @@
 #include "connection_threadfwd.H"
 #include "container_elementfwd.H"
 #include "grabbed_pointerfwd.H"
+#include "cursor_pointerfwd.H"
 
 #include "x/w/pictformatfwd.H"
 #include "x/w/types.H"
@@ -660,6 +661,18 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	}
 
 	void do_update_wm_hints(const function<update_wm_hints_t> &callback);
+
+ private:
+	//! Which cursor pointer we're currently displaying.
+
+	cursor_pointerptr displayed_cursor_pointer;
+
+ public:
+	//! Figure out which cursor pointer this window should be displaying.
+
+	//! Set XCB_CW_CURSOR accordingly.
+	void update_displayed_cursor_pointer(IN_THREAD_ONLY);
+
 };
 
 LIBCXXW_NAMESPACE_END

@@ -251,6 +251,13 @@ class LIBCXX_HIDDEN child_elementObj : public background_color_elementObj<
 	//! Override label_theme_font()
 
 	const char *label_theme_font() const override;
+
+	//! Override get_cursor_pointer().
+
+	//! If this element does not have a set cursor pointer,
+	//! the call is forwarded to the parent.
+
+	cursor_pointerptr get_cursor_pointer(IN_THREAD_ONLY) override;
 };
 
 LIBCXXW_NAMESPACE_END

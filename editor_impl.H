@@ -8,6 +8,7 @@
 #include "editorobj.H"
 #include "textlabel.H"
 #include "label_elementfwd.H"
+#include "cursor_pointer_elementfwd.H"
 #include "reference_font_elementfwd.H"
 #include "fonts/current_fontcollectionfwd.H"
 #include "focus/focusable_elementfwd.H"
@@ -24,14 +25,16 @@
 LIBCXXW_NAMESPACE_START
 
 class LIBCXX_HIDDEN editorObj::implObj
-	: public reference_font_elementObj<focusable_elementObj
-					   <label_elementObj<child_elementObj>
-					    >> {
+	: public cursor_pointer_elementObj<reference_font_elementObj
+					   <focusable_elementObj
+					    <label_elementObj<child_elementObj>
+					     >>> {
 
 	//! My superclass alias.
-	typedef reference_font_elementObj<focusable_elementObj
-					  <label_elementObj<child_elementObj>>
-					  > superclass_t;
+	typedef cursor_pointer_elementObj<reference_font_elementObj
+					  <focusable_elementObj
+					   <label_elementObj<child_elementObj>>
+					   >> superclass_t;
 
 	//! Mcguffin for the scheduled cursor blink callback.
 	ptr<obj> blinking;

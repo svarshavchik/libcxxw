@@ -24,6 +24,7 @@
 #include "draw_info_cachefwd.H"
 #include "background_colorfwd.H"
 #include "grabbed_pointerfwd.H"
+#include "cursor_pointerfwd.H"
 #include "metrics_horizvertobj.H"
 #include "focus/label_forfwd.H"
 #include "focus/label_forobj.H"
@@ -167,6 +168,9 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 		//! Most recently reported motion
 
 		coord_t last_motion_y=0;
+
+		//! This element's current cursor pointer, if there is one.
+		cursor_pointerptr pointer;
 
 		//! This element's tooltip factory
 		std::function<void (const tooltip_factory &)> tooltip_factory;
@@ -1133,6 +1137,18 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 	grabbed_pointerptr grab_pointer(IN_THREAD_ONLY);
 
+	//! The the mouse pointer pursor.
+	void set_cursor_pointer(IN_THREAD_ONLY, const cursor_pointer &);
+
+	//! Remove the mouse pointer cursor,
+	void remove_cursor_pointer(IN_THREAD_ONLY);
+
+	//! Retrieve the cursor pointer for this element.
+
+	//! Overridden in child_elementObj. If this element does not have a
+	//! set cursor pointer, call get_container_cursor_pointer().
+
+	virtual cursor_pointerptr get_cursor_pointer(IN_THREAD_ONLY);
 };
 
 LIBCXXW_NAMESPACE_END

@@ -34,6 +34,19 @@ class LIBCXX_HIDDEN editor_peephole_implObj
 				  const button_event &be,
 				  xcb_timestamp_t timestamp);
 
+	//! Override report_motion_event().
+
+	//! Remove the cursor pointer on any motion event. The key event
+	//! in editor_implObj installs an invisible cursor pointer, in order
+	//! to hide it. And we remove it.
+	//!
+	//! Its our job to remove the cursor pointer because the pointer may
+	//! not actually be on top of the editor implementation objcet, which
+	//! is a glorified label object that may not cover the entire peephole.
+
+	void report_motion_event(IN_THREAD_ONLY,
+				 const motion_event &me) override;
+
 	//! Compute updated metrics.
 
 	//! Invoke from the editor element, when its metrics have changed.

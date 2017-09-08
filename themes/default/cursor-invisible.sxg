@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+
+<sxg xmlns:xi="http://www.w3.org/2003/XInclude">
+
+  <width>1</width>
+  <height>1</height>
+  <widthmm>1</widthmm>
+  <heightmm>1</heightmm>
+
+  <location id="hotspot">
+    <x>0</x>
+    <y>0</y>
+  </location>
+
+</sxg>

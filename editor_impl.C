@@ -6,6 +6,7 @@
 #include "editor.H"
 #include "editor_impl.H"
 #include "element_screen.H"
+#include "cursor_pointer_element.H"
 #include "reference_font_element.H"
 #include "screen.H"
 #include "draw_info.H"
@@ -23,6 +24,7 @@
 #include "messages.H"
 #include "connection_thread.H"
 #include "generic_window_handler.H"
+#include "icon.H"
 #include "catch_exceptions.H"
 #include "x/w/key_event.H"
 #include "x/w/button_event.H"
@@ -210,7 +212,12 @@ editorObj::implObj::implObj(const ref<editor_peephole_implObj> &parent_peephole,
 			    std::tuple<richtextmeta, richtextstring>
 			    &&meta_and_string,
 			    const input_field_config &config)
-	: superclass_t(// Capture the string's font.
+	: superclass_t(// Invisible pointer cursor
+		       parent_peephole->get_element_impl().get_window_handler()
+		       .create_icon_mm("cursor-invisible",
+				       render_repeat::none, 0, 0)
+		       ->create_cursor(),
+		       // Capture the string's font.
 		       std::get<richtextstring>(meta_and_string)
 		       .get_meta().at(0).second.getfont(),
 		       parent_peephole, config.alignment, 0,
@@ -424,6 +431,15 @@ void editorObj::implObj::blink(IN_THREAD_ONLY,
 
 bool editorObj::implObj::process_key_event(IN_THREAD_ONLY, const key_event &ke)
 {
+	// Hide the pointer by installing the invisible pointer, here.
+
+	// The peephole's report_motion_event() restores the default pointer.
+
+	if (ke.keypress)
+		parent_peephole->get_element_impl()
+			.set_cursor_pointer(IN_THREAD,
+					    tagged_cursor_pointer(IN_THREAD));
+
 	if (ke.keypress && ke.notspecial())
 	{
 		if (process_keypress(IN_THREAD, ke))
@@ -731,6 +747,8 @@ void editorObj::implObj::report_motion_event(IN_THREAD_ONLY,
 					     const motion_event &me)
 {
 	superclass_t::report_motion_event(IN_THREAD, me);
+
+	// If we're hiding the pointer, remove it.
 
 	most_recent_x=me.x;
 	most_recent_y=me.y;

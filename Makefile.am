@@ -133,6 +133,8 @@ libcxxw_la_SOURCES=\
 	cursor_pointer_cache.H			    \
 	cursor_pointer_cachefwd.H		    \
 	cursor_pointer_cacheobj.H		    \
+	cursor_pointer_element.H		    \
+	cursor_pointer_elementfwd.H		    \
 	custom_border_cache.C			    \
 	custom_border_cache.H			    \
 	custom_border_cachefwd.H		    \

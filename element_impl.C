@@ -13,6 +13,7 @@
 #include "busy.H"
 #include "icon.H"
 #include "icon_image.H"
+#include "cursor_pointer.H"
 #include "run_as.H"
 #include "background_color.H"
 #include "grabbed_pointer.H"
@@ -1107,6 +1108,32 @@ bool elementObj::implObj::pasted(IN_THREAD_ONLY,
 
 void elementObj::implObj::creating_focusable_element()
 {
+}
+
+//////////////////////////////////////////////////////////////////////////////
+
+void elementObj::implObj::set_cursor_pointer(IN_THREAD_ONLY,
+					     const cursor_pointer &p)
+{
+	if (data(IN_THREAD).pointer != p)
+	{
+		data(IN_THREAD).pointer=p;
+		get_window_handler().update_displayed_cursor_pointer(IN_THREAD);
+	}
+}
+
+void elementObj::implObj::remove_cursor_pointer(IN_THREAD_ONLY)
+{
+	if (data(IN_THREAD).pointer)
+	{
+		data(IN_THREAD).pointer=nullptr;
+		get_window_handler().update_displayed_cursor_pointer(IN_THREAD);
+	}
+}
+
+cursor_pointerptr elementObj::implObj::get_cursor_pointer(IN_THREAD_ONLY)
+{
+	return data(IN_THREAD).pointer;
 }
 
 LIBCXXW_NAMESPACE_END

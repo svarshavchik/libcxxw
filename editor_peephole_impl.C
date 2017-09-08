@@ -51,4 +51,12 @@ bool editor_peephole_implObj::process_button_event(IN_THREAD_ONLY,
 	return true;
 }
 
+void editor_peephole_implObj::report_motion_event(IN_THREAD_ONLY,
+						  const motion_event &me)
+{
+	// If we're hiding the pointer, remove it.
+	remove_cursor_pointer(IN_THREAD);
+	peepholeObj::implObj::report_motion_event(IN_THREAD, me);
+}
+
 LIBCXXW_NAMESPACE_END
