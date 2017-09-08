@@ -9,6 +9,7 @@
 #include "iconfwd.H"
 #include "icon_imagefwd.H"
 #include "connection_threadfwd.H"
+#include "cursor_pointerfwd.H"
 #include <x/obj.H>
 
 LIBCXXW_NAMESPACE_START;
@@ -54,6 +55,10 @@ public:
 	//! Resize this icon, if this is a resizable icon.
 	virtual icon resize(IN_THREAD_ONLY, dim_t w, dim_t h,
 			    icon_scale scale);
+
+	//! Create a cursor pointer from this icon.
+
+	cursor_pointer create_cursor();
 };
 
 LIBCXXW_NAMESPACE_END

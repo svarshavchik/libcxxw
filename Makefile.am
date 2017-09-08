@@ -49,6 +49,8 @@ libcxxw_la_SOURCES=\
 	border_info.H				    \
 	border_infofwd.H			    \
 	border_infomm.C				    \
+	builtin_atoms.C				    \
+	builtin_atoms.H				    \
 	busy.H					    \
 	busy.C					    \
 	button.C				    \
@@ -60,8 +62,6 @@ libcxxw_la_SOURCES=\
 	corner_borderfwd.H			    \
 	corner_borderobj.H			    \
 	corner_border_impl.C			    \
-	builtin_atoms.C				    \
-	builtin_atoms.H				    \
 	calculate_borders.H			    \
 	canvas.H				    \
 	canvas.C				    \
@@ -125,6 +125,14 @@ libcxxw_la_SOURCES=\
 	current_border_impl.H			    \
 	current_border_implfwd.H		    \
 	current_border_implobj.H		    \
+	cursor_pointer.C			    \
+	cursor_pointer.H			    \
+	cursor_pointerfwd.H			    \
+	cursor_pointerobj.H			    \
+	cursor_pointer_cache.C			    \
+	cursor_pointer_cache.H			    \
+	cursor_pointer_cachefwd.H		    \
+	cursor_pointer_cacheobj.H		    \
 	custom_border_cache.C			    \
 	custom_border_cache.H			    \
 	custom_border_cachefwd.H		    \

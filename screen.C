@@ -19,6 +19,7 @@
 #include "fonts/fontconfig.H"
 #include "fonts/freetype.H"
 #include "icon_cache.H"
+#include "cursor_pointer_cache.H"
 #include <x/mpobj.H>
 #include <x/weakptr.H>
 #include <x/refptr_traits.H>
@@ -199,7 +200,8 @@ screenObj::implObj::implObj(const xcb_screen_t *xcb_screen,
 	  custom_borders(custom_border_cache::create()),
 	  theme_borders(theme_border_cache::create()),
 	  fontcaches(screen_fontcaches::create()),
-	  iconcaches(icon_cache::create())
+	  iconcaches(icon_cache::create()),
+	  cursor_pointercaches(cursor_pointer_cache::create())
 {
 }
 

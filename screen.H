@@ -27,6 +27,7 @@
 #include "fonts/fontconfigfwd.H"
 #include "fonts/freetypefwd.H"
 #include "icon_cachefwd.H"
+#include "cursor_pointer_cachefwd.H"
 #include <x/logger.H>
 #include <x/vector.H>
 #include <xcb/xcb.h>
@@ -134,6 +135,9 @@ class LIBCXX_HIDDEN screenObj::implObj
 	//! Loaded icons for this screen.
 
 	const icon_cache iconcaches;
+
+	//! Loaded pointers for this screen.
+	const cursor_pointer_cache cursor_pointercaches;
 
 	///////////////////////////////////////////////////////////////////
 	//
