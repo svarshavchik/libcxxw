@@ -15,7 +15,6 @@
 #include "container_element.H"
 #include "layoutmanager.H"
 #include "screen.H"
-#include "screen_depthinfo.H"
 #include "xid_t.H"
 #include "element_screen.H"
 #include "background_color.H"
@@ -50,12 +49,6 @@ static rectangle element_position(const rectangle &r)
 	return cpy;
 }
 
-static background_color default_background_color(const screen &s,
-						 const char *color)
-{
-	return s->impl->create_background_color(color);
-}
-
 //////////////////////////////////////////////////////////////////////////
 
 
@@ -74,48 +67,6 @@ bool generic_windowObj::handlerObj::frame_extents_t
 }
 
 //////////////////////////////////////////////////////////////////////////
-
-static inline generic_windowObj::handlerObj::constructor_params
-create_constructor_params(const screen &parent_screen,
-			  const char *background_color,
-			  size_t nesting_level)
-{
-	rectangle dimensions={0, 0, 1, 1};
-
-	values_and_mask vm(XCB_CW_EVENT_MASK,
-			   (uint32_t)
-			   generic_windowObj::handlerObj::initial_event_mask(),
-			   XCB_CW_COLORMAP,
-			   parent_screen->impl->toplevelwindow_colormap->id(),
-			   XCB_CW_BORDER_PIXEL,
-			   parent_screen->impl->xcb_screen->black_pixel);
-
-	return {
-		{
-			parent_screen,
-			parent_screen->impl->xcb_screen->root, // parent
-			parent_screen->impl->toplevelwindow_pictformat->depth, // depth
-			dimensions, // initial_position
-			XCB_WINDOW_CLASS_INPUT_OUTPUT, // window_class
-			parent_screen->impl->toplevelwindow_visual->impl->visual_id, // visual
-			vm, // events_and_mask
-		},
-		parent_screen->impl->toplevelwindow_pictformat,
-		nesting_level,
-		background_color
-	};
-}
-
-generic_windowObj::handlerObj::handlerObj(IN_THREAD_ONLY,
-					  const screen &parent_screen,
-					  const char *background_color,
-					  const shared_handler_data &handler_data,
-					  size_t nesting_level)
-	: handlerObj(IN_THREAD, handler_data,
-		     create_constructor_params(parent_screen, background_color,
-					       nesting_level))
-{
-}
 
 generic_windowObj::handlerObj
 ::handlerObj(IN_THREAD_ONLY,
@@ -146,17 +97,7 @@ generic_windowObj::handlerObj
 				   .events_and_mask.m.at(XCB_CW_EVENT_MASK)),
 	current_position(params.window_handler_params.initial_position),
 	handler_data(handler_data),
-	disabled_mask_thread_only(create_icon_mm("disabled_mask",
-						 render_repeat::normal,
-						 0, 0)),
 	original_background_color(params.background_color),
-	current_background_color_thread_only(default_background_color
-					     (params.window_handler_params
-					      .screenref,
-					      params.background_color)),
-	shaded_color_thread_only(default_background_color
-				 (params.window_handler_params.screenref,
-				  "modal_shade")),
 	frame_extents_thread_only(params.window_handler_params.screenref
 				  ->get_workarea())
 {
@@ -268,10 +209,6 @@ void generic_windowObj::handlerObj
 #ifdef MAP_LOG
 		MAP_LOG();
 #endif
-		// First convenient time to initialize the icon, as per
-		// the contract.
-		disabled_mask(IN_THREAD)=
-			disabled_mask(IN_THREAD)->initialize(IN_THREAD);
 		if (!disable_grabs.getValue())
 		{
 			xcb_grab_button(IN_THREAD->info->conn,
@@ -322,18 +259,9 @@ void generic_windowObj::handlerObj
 
 void generic_windowObj::handlerObj::remove_background_color(IN_THREAD_ONLY)
 {
-	current_background_color(IN_THREAD)=
-		default_background_color(get_screen(),
-					 original_background_color.c_str());
-	background_color_changed(IN_THREAD);
-}
-
-void generic_windowObj::handlerObj::set_background_color(IN_THREAD_ONLY,
-							 const background_color
-							 &c)
-{
-	current_background_color(IN_THREAD)=c;
-	background_color_changed(IN_THREAD);
+	set_background_color(IN_THREAD,
+			     screenref->impl->create_background_color
+			     (original_background_color));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -356,9 +284,6 @@ void generic_windowObj::handlerObj::theme_updated_event(IN_THREAD_ONLY)
 		get_screen()->impl->current_theme
 	};
 	theme_updated(IN_THREAD, new_theme);
-	current_background_color(IN_THREAD)->theme_updated(IN_THREAD,
-							   new_theme);
-	shaded_color(IN_THREAD)->theme_updated(IN_THREAD, new_theme);
 }
 
 

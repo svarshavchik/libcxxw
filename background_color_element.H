@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-inline background_color background_color_element_implObj::get(IN_THREAD_ONLY)
+inline background_colorptr background_color_element_implObj::get(IN_THREAD_ONLY)
 {
 	return color;
 }
@@ -27,7 +27,7 @@ background_color_element<tag>::~background_color_element()=default;
 template<typename element_impl, typename tag>
 template<typename ...Args>
 inline background_color_1elementObj<element_impl, tag>
-::background_color_1elementObj(const background_color &color,
+::background_color_1elementObj(const background_colorptr &color,
 			       Args && ...args)
 	: background_color_element<tag>(color),
 	element_impl(std::forward<Args>(args)...)

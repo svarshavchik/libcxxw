@@ -5,7 +5,7 @@
 #ifndef main_window_handler_h
 #define main_window_handler_h
 
-#include "generic_window_handler.H"
+#include "generic_window_handler_resources.H"
 #include "main_window.H"
 #include "connection_threadfwd.H"
 #include "x/w/busyfwd.H"
@@ -20,7 +20,7 @@ LIBCXXW_NAMESPACE_START
 //! this handler is responsible for that.
 
 class LIBCXX_HIDDEN main_windowObj::handlerObj :
-	public generic_windowObj::handlerObj {
+	public generic_windowObj::handlerObj::resourcesObj {
 
 	std::function<void (const busy &)> on_delete_callback_thread_only;
 

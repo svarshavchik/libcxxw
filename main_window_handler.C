@@ -9,6 +9,7 @@
 #include "layoutmanager.H"
 #include "shared_handler_data.H"
 #include "batch_queue.H"
+#include "icon.H"
 #include "x/w/screen.H"
 #include "x/w/connection.H"
 #include "busy.H"
@@ -18,10 +19,11 @@ LIBCXXW_NAMESPACE_START
 main_windowObj::handlerObj::handlerObj(IN_THREAD_ONLY,
 				       const screen &parent_screen,
 				       const char *background_color)
-	: generic_windowObj::handlerObj(IN_THREAD, parent_screen,
-					background_color,
-					shared_handler_data::create(),
-					0),
+	: generic_windowObj::handlerObj
+	::resourcesObj(IN_THREAD, parent_screen,
+		       background_color,
+		       shared_handler_data::create(),
+		       0),
 	on_delete_callback_thread_only([](const auto &ignore) {})
 {
 	// Set WM_PROTOCOLS to WM_DELETE_WINDOW -- we handle the window
@@ -200,6 +202,5 @@ void main_windowObj::handlerObj::frame_extents_updated(IN_THREAD_ONLY)
 	containerObj::implObj::tell_layout_manager_it_needs_recalculation
 		(IN_THREAD);
 }
-
 
 LIBCXXW_NAMESPACE_END

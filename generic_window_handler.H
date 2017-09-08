@@ -15,6 +15,7 @@
 #include "connection_threadfwd.H"
 #include "container_elementfwd.H"
 #include "grabbed_pointerfwd.H"
+
 #include "x/w/pictformatfwd.H"
 #include "x/w/types.H"
 #include "x/w/focusablefwd.H"
@@ -37,6 +38,15 @@ LIBCXXW_NAMESPACE_START
 //! Note that this class doesn't handle xcb_create_window and
 //! xcb_destroy_window. An implementation class that holds a reference on
 //! this handler is responsible for that.
+//!
+//! This is an (indirect) superclass of main windows and popups.
+//! main_windowObj::handlerObj and popupObj::handlerObj does not
+//! inherit from this handlerObj directly, but from its resourceObj.
+//!
+//! This is because the handler needs to construct some resources that require
+//! the handlerObj to already be constructed. This is done by having
+//! resourcesObj handle the initialization of the resources after the
+//! handlerObj is constructed, and that's what gets inheried from.
 
 class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
@@ -62,6 +72,8 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	coord_t root_y_thread_only; //!< y coordinate on the root window
 
  public:
+	class resourcesObj;
+
 	THREAD_DATA_ONLY(root_x);
 	THREAD_DATA_ONLY(root_y);
 
@@ -91,19 +103,8 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 	virtual ptr<handlerObj> get_popup_parent(IN_THREAD_ONLY);
  private:
-	//! The mask for drawing disabled elements.
-
-	icon disabled_mask_thread_only;
-
 	//! Default background color name
 	const std::string original_background_color;
-
-	//! Window's background color
-
-	background_color current_background_color_thread_only;
-
-	//! Window's shade color
-	background_color shaded_color_thread_only;
 
 	//! Whether this window is currently receiving input focus
 
@@ -180,20 +181,13 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 		//! But for a combo-box we'll use its parent's nesting as a
 		//! base, for optimum recalculation.
 
-		size_t nesting_level=0;
+		size_t nesting_level;
 
 		//! Background color
 		const char *background_color;
 	};
 
-	//! Constructor
-	handlerObj(IN_THREAD_ONLY,
-		   const screen &me,
-		   const char *background_color,
-		   const shared_handler_data &handler_data,
-		   size_t nesting_level);
-
- private:
+ protected:
 
 	//! Internal constructor
 	handlerObj(IN_THREAD_ONLY,
@@ -203,10 +197,21 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! Destructor
 	~handlerObj();
 
+	//! Resources implemented in resourcesObj.
+
+	virtual const icon disabled_mask(IN_THREAD_ONLY)=0;
+
+	// Resources implemented in resourcesObj
+	virtual const background_color current_background_color(IN_THREAD_ONLY)=0;
+
+	// Resources implemented in resourcesObj
+	virtual void set_background_color(IN_THREAD_ONLY,
+					  const background_color &)=0;
+
+	// Resources implemented in resourcesObj
+	virtual const background_color shaded_color(IN_THREAD_ONLY)=0;
+
 	THREAD_DATA_ONLY(current_events);
-	THREAD_DATA_ONLY(disabled_mask);
-	THREAD_DATA_ONLY(current_background_color);
-	THREAD_DATA_ONLY(shaded_color);
 	THREAD_DATA_ONLY(has_focus);
 	THREAD_DATA_ONLY(frame_extents);
 	THREAD_DATA_ONLY(current_pointer_grab);
@@ -258,11 +263,6 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! to the default background color.
 
 	void remove_background_color(IN_THREAD_ONLY) override;
-
-	//! Use its own background color.
-
-	void set_background_color(IN_THREAD_ONLY,
-				  const background_color &) override;
 
 	void current_position_updated(IN_THREAD_ONLY) override;
 

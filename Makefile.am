@@ -272,6 +272,8 @@ libcxxw_la_SOURCES=\
 	gc_impl.C				    \
 	generic_window.C			    \
 	generic_window.H			    \
+	generic_window_handler_resources.C	    \
+	generic_window_handler_resources.H	    \
 	generic_window_handler.C		    \
 	generic_window_handler.H		    \
 	generic_window_impl.C			    \

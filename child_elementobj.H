@@ -7,7 +7,7 @@
 
 #include "element.H"
 #include "container.H"
-#include "background_colorfwd.H"
+#include "background_color_elementfwd.H"
 #include "connection_threadfwd.H"
 #include "focus/focusablefwd.H"
 #include "x/w/metrics/axis.H"
@@ -31,16 +31,11 @@ struct LIBCXX_HIDDEN child_element_init_params {
 
 //! An element that has a parent element.
 
-class LIBCXX_HIDDEN child_elementObj : public elementObj::implObj {
+class LIBCXX_HIDDEN child_elementObj : public background_color_elementObj<
+	elementObj::implObj> {
 
- private:
-	//! This display element's background color
-
-	background_colorptr current_background_color_thread_only;
-
+	typedef background_color_elementObj<elementObj::implObj> superclass_t;
  public:
-
-	THREAD_DATA_ONLY(current_background_color);
 
 	//! My parent element
 	const ref<containerObj::implObj> child_container;
@@ -142,14 +137,6 @@ class LIBCXX_HIDDEN child_elementObj : public elementObj::implObj {
 		override;
 
  protected:
-
-	//! Override initialize()
-	void initialize(IN_THREAD_ONLY) override;
-
-	//! Update the theme-dependendent background color, then call the parent.
-
-	void theme_updated(IN_THREAD_ONLY,
-			   const defaulttheme &new_theme) override;
 
 	//! Changed visibility mean a change to the background color.
 

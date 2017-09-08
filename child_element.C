@@ -11,6 +11,7 @@
 #include "layoutmanager.H"
 #include "background_color.H"
 #include "generic_window_handler.H"
+#include "background_color_element.H"
 #include "x/w/picture.H"
 #include "x/w/motion_event.H"
 
@@ -31,9 +32,10 @@ child_elementObj::child_elementObj(const ref<containerObj::implObj> &child_conta
 				   const child_element_init_params &init_params,
 				   const background_colorptr
 				   &initial_background_color)
-	: elementObj::implObj(child_container->get_element_impl()
+	: superclass_t(initial_background_color,
+		       child_container->get_element_impl()
 			      .nesting_level+1,
-			      {0, 0, 0, 0},
+			      rectangle{0, 0, 0, 0},
 			      // The container will position me later
 			      init_params.initial_metrics,
 			      child_container->get_window_handler()
@@ -42,7 +44,6 @@ child_elementObj::child_elementObj(const ref<containerObj::implObj> &child_conta
 			      .drawable_pictformat,
 			      init_params.scratch_buffer_id.empty()
 			      ? "default@libcxx":init_params.scratch_buffer_id),
-	current_background_color_thread_only(initial_background_color),
 	child_container(init_params.container_override ? child_container
 		  : child_container->parent_for_new_child(child_container))
 {
@@ -148,28 +149,13 @@ void child_elementObj::horizvert_updated(IN_THREAD_ONLY)
 					});
 }
 
-void child_elementObj::initialize(IN_THREAD_ONLY)
-{
-	elementObj::implObj::initialize(IN_THREAD);
-	if (current_background_color(IN_THREAD))
-		current_background_color(IN_THREAD)->initialize(IN_THREAD);
-}
-
-void child_elementObj::theme_updated(IN_THREAD_ONLY,
-				     const defaulttheme &new_theme)
-{
-	elementObj::implObj::theme_updated(IN_THREAD, new_theme);
-	if (current_background_color(IN_THREAD))
-		current_background_color(IN_THREAD)->theme_updated(IN_THREAD,
-								   new_theme);
-}
-
 void child_elementObj::remove_background_color(IN_THREAD_ONLY)
 {
-	if (!current_background_color(IN_THREAD))
+	if (!background_color_element_implObj::get(IN_THREAD))
 		return; // no-op
 
-	current_background_color(IN_THREAD)=nullptr;
+	background_color_element_implObj::update(IN_THREAD,
+						 background_colorptr());
 	background_color_changed(IN_THREAD);
 	child_container->child_background_color_changed(IN_THREAD,
 						  ref<elementObj::implObj>
@@ -179,10 +165,10 @@ void child_elementObj::remove_background_color(IN_THREAD_ONLY)
 void child_elementObj::set_background_color(IN_THREAD_ONLY,
 					    const background_color &bgcolor)
 {
-	if (current_background_color(IN_THREAD) == bgcolor)
+	if (background_color_element_implObj::get(IN_THREAD) == bgcolor)
 		return; // noop
 
-	current_background_color(IN_THREAD)=bgcolor;
+	background_color_element_implObj::update(IN_THREAD, bgcolor);
 	background_color_changed(IN_THREAD);
 	child_container->child_background_color_changed(IN_THREAD,
 						  ref<elementObj::implObj>
@@ -207,19 +193,20 @@ void child_elementObj
 
 bool child_elementObj::has_own_background_color(IN_THREAD_ONLY)
 {
-	return !current_background_color(IN_THREAD).null();
+	return background_color_element_implObj::get(IN_THREAD) ? true:false;
 }
 
 void child_elementObj::prepare_draw_info(IN_THREAD_ONLY, draw_info &di)
 {
-	if (current_background_color(IN_THREAD).null())
+	auto bg=background_color_element_implObj::get(IN_THREAD);
+
+	if (!bg)
 		return;
 
 	if (!data(IN_THREAD).inherited_visibility)
 		return; // None, use parent background.
 
-	di.window_background=current_background_color(IN_THREAD)
-		->get_current_color(IN_THREAD)->impl;
+	di.window_background=bg->get_current_color(IN_THREAD)->impl;
 	di.background_x=di.absolute_location.x;
 	di.background_y=di.absolute_location.y;
 }

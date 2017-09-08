@@ -6,7 +6,7 @@
 #define popup_handler_h
 
 #include "popup/popup.H"
-#include "generic_window_handler.H"
+#include "generic_window_handler_resources.H"
 #include "connection_threadfwd.H"
 #include "grabbed_pointerfwd.H"
 #include "x/w/rectangle.H"
@@ -24,7 +24,7 @@ LIBCXXW_NAMESPACE_START
 //! \see popup
 
 class LIBCXX_HIDDEN popupObj::handlerObj :
-	public generic_windowObj::handlerObj {
+	public generic_windowObj::handlerObj::resourcesObj {
 
 public:
 	handlerObj(IN_THREAD_ONLY,
