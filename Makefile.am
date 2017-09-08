@@ -637,10 +637,6 @@ libcxxw_la_SOURCES=\
 	textlabel.C				    \
 	textlabel.H				    \
 	textlabel_impl.C			    \
-	sxg/sxg_image.C				    \
-	sxg/sxg_image.H				    \
-	sxg/sxg_imagefwd.H			    \
-	sxg/sxg_imageobj.H			    \
 	sxg/sxg_parser.C			    \
 	sxg/sxg_parser.H			    \
 	sxg/sxg_parserfwd.H			    \

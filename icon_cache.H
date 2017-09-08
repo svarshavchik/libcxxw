@@ -10,7 +10,6 @@
 #include "icon_cachefwd.H"
 #include "icon_cacheobj.H"
 #include "sxg/sxg_parser.H"
-#include "sxg/sxg_image.H"
 #include <x/weakunordered_multimap.H>
 
 LIBCXXW_NAMESPACE_START

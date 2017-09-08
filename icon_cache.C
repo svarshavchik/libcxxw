@@ -5,13 +5,13 @@
 
 #include "libcxxw_config.h"
 #include "icon_cache.H"
-#include "sxg/sxg_image.H"
 #include "sxg/sxg_parser.H"
 #include "defaulttheme.H"
 #include "screen.H"
 #include "pixmap.H"
 #include "drawable.H"
 #include "icon.H"
+#include "icon_image.H"
 #include "x/w/picture.H"
 #include <x/refptr_hash.H>
 #include <x/number_hash.H>
@@ -147,7 +147,7 @@ class LIBCXX_HIDDEN sxg_iconObj : public iconObj {
 
 	//! The image created from the object
 
-	const_sxg_image current_image_thread_only;
+	const_icon_image current_image_thread_only;
 
  public:
 
@@ -172,7 +172,7 @@ class LIBCXX_HIDDEN sxg_iconObj : public iconObj {
 		    dim_type height,
 		    icon_scale scale,
 		    const sxg_parser &orig_sxg,
-		    const const_sxg_image &orig_sxg_image)
+		    const const_icon_image &orig_sxg_image)
 		: iconObj(orig_sxg_image),
 		current_sxg_thread_only(orig_sxg),
 		current_image_thread_only(orig_sxg_image),
@@ -270,11 +270,12 @@ static auto get_cached_sxg_image(const sxg_parser &sxg,
 								  preadjust_h);
 			 auto picture=pixmap->create_picture();
 
-			 auto ri=sxg_image::create(picture, pixmap, repeat);
+			 std::unordered_map<std::string,
+					    std::pair<coord_t, coord_t>> points;
 
 			 if (!has_background_color)
 			 {
-				 sxg->render(picture, pixmap, ri->points);
+				 sxg->render(picture, pixmap, points);
 			 }
 			 else
 			 {
@@ -285,7 +286,7 @@ static auto get_cached_sxg_image(const sxg_parser &sxg,
 					 temp_pixmap->create_picture();
 
 				 sxg->render(temp_picture, temp_pixmap,
-					     ri->points);
+					     points);
 
 				 picture->fill_rectangle({0, 0,
 							 preadjust_w,
@@ -305,7 +306,7 @@ static auto get_cached_sxg_image(const sxg_parser &sxg,
 
 				 // Also adjust the points.
 
-				 for (auto &p:ri->points)
+				 for (auto &p:points)
 				 {
 					 p.second.first=coord_t::truncate
 						 (p.second.first+offset_x);
@@ -313,7 +314,8 @@ static auto get_cached_sxg_image(const sxg_parser &sxg,
 						 (p.second.second+offset_y);
 				 }
 			 }
-			 return ri;
+			 return icon_image::create(picture, pixmap, repeat,
+						   points);
 		 });
 }
 

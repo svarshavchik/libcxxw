@@ -6,7 +6,6 @@
 #define sxg_parserobj_H
 
 #include "sxg/sxg_parserfwd.H"
-#include "sxg/sxg_imagefwd.H"
 #include "defaultthemefwd.H"
 #include "icon_imagefwd.H"
 #include "x/w/screenfwd.H"

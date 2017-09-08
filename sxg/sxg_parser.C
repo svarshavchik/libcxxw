@@ -5,7 +5,6 @@
 
 #include "libcxxw_config.h"
 #include "sxg/sxg_parser.H"
-#include "sxg/sxg_image.H"
 #include <x/xml/doc.H>
 #include <x/exception.H>
 #include <x/chrcasecmp.H>

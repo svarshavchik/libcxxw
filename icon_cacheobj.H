@@ -10,7 +10,6 @@
 #include "iconobj.H"
 #include "sxg/sxg_parserfwd.H"
 #include "sxg/sxg_parserobj.H"
-#include "sxg/sxg_imagefwd.H"
 #include <x/weakunordered_multimapfwd.H>
 
 LIBCXXW_NAMESPACE_START;
@@ -56,7 +55,7 @@ class LIBCXX_HIDDEN icon_cacheObj : virtual public obj {
 	//! Type of the cache of rendered images.
 
 	typedef weakunordered_multimap<sxg_image_cache_key,
-				       sxg_imageObj,
+				       icon_imageObj,
 				       sxg_image_cache_key_hash>
 		sxg_image_cache_t;
 
