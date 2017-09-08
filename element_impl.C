@@ -89,6 +89,10 @@ elementObj::implObj::~implObj()=default;
 
 void elementObj::implObj::removed_from_container(IN_THREAD_ONLY)
 {
+	// Who knows, maybe we haven't bee initialized yet?
+
+	initialize_if_needed(IN_THREAD);
+
 	if (data(IN_THREAD).removed)
 		return;
 
@@ -173,6 +177,9 @@ void elementObj::implObj::request_visibility_recursive(IN_THREAD_ONLY,
 
 void elementObj::implObj::update_visibility(IN_THREAD_ONLY)
 {
+	// Ignore visibility updates until such time we are
+	// initialize_if_needed().
+
 	if (!initialized(IN_THREAD))
 		return;
 

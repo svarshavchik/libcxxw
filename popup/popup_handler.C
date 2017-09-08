@@ -29,9 +29,6 @@ popupObj::handlerObj::handlerObj(IN_THREAD_ONLY,
 					nesting_level),
 	popup_parent_thread_only(parent)
 {
-	// We are hereby initialized
-
-	data(IN_THREAD).initialized=true;
 }
 
 popupObj::handlerObj::~handlerObj()=default;

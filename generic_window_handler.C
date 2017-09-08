@@ -166,10 +166,17 @@ generic_windowObj::handlerObj::~handlerObj()=default;
 
 void generic_windowObj::handlerObj::installed(IN_THREAD_ONLY)
 {
-	mpobj<ewmh>::lock lock(screenref->get_connection()
-			       ->impl->ewmh_info);
+	{
+		mpobj<ewmh>::lock lock{screenref->get_connection()
+				->impl->ewmh_info};
 
-	lock->request_frame_extents(screenref->impl->screen_number, id());
+		lock->request_frame_extents(screenref->impl->screen_number, id());
+	}
+
+	// The top level window is not a child element in a container,
+	// so it is, hereby, initialized!
+
+	initialize_if_needed(IN_THREAD);
 }
 
 ////////////////////////////////////////////////////////////////////

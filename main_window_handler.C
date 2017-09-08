@@ -24,18 +24,6 @@ main_windowObj::handlerObj::handlerObj(IN_THREAD_ONLY,
 					0),
 	on_delete_callback_thread_only([](const auto &ignore) {})
 {
-	// The top level window is not a child element in a container,
-	// so it is, hereby, initialized!
-	//
-	// We cannot go through the proper channels, i.e. initialize_if_needed()
-	// because it calls schedule_update_visibility() in order to
-	// kick-start and held visibility changes. However we CANNOT
-	// do that, yet. We can't even do this outside of the constructor,
-	// since schedule_update_visibility pokes connection thread-only
-	// containers, and we are NOT in the connection thread.
-
-	data(IN_THREAD).initialized=true;
-
 	// Set WM_PROTOCOLS to WM_DELETE_WINDOW -- we handle the window
 	// close request ourselves.
 
