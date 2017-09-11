@@ -11,7 +11,7 @@
 #include "richtext/richtext_insert.H"
 #include "richtext/fragment_list.H"
 #include "richtext/paragraph_list.H"
-#include "richtext/richtextmetalink.H"
+#include "x/w/text_hotspot.H"
 #include "fonts/freetypefont.H"
 #include "fonts/composite_text_stream.H"
 #include "screen.H"
@@ -808,12 +808,6 @@ inline void richtextfragmentObj
 
 		richtextmeta markup=*range_info.font_info;
 
-		if (!range_info.font_info->link.null() &&
-		    range_info.font_info->link ==
-		    range_info.info.highlight_link)
-			range_info.font_info->link
-				->override_text_markup(markup);
-
 		auto color_impl=markup.textcolor
 			->get_current_color(IN_THREAD)->impl;
 		coord_t color_x=range_info.xpos;
@@ -1107,19 +1101,6 @@ void richtextfragmentObj::render(IN_THREAD_ONLY,
 	}
 
 	redraw_needed=false;
-}
-
-bool richtextfragmentObj::has_link(const richtextmetalinkptr &link)
-{
-	if (link.null())
-		return false;
-
-	for (const auto &m:string.get_meta())
-	{
-		if (m.second.link == link)
-			return true;
-	}
-	return false;
 }
 
 ////////////////////////////////////////////////////////////////////////////

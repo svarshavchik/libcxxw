@@ -334,7 +334,7 @@ libcxxw_la_SOURCES=\
 	icon_images_set_element.H		    \
 	icon_images_set_elementfwd.H		    \
 	icon_images_vector.C			    \
-	icon_images_vectorobj.H			    \
+	icon_images_vector.H			    \
 	icon_images_vector_element.H		    \
 	icon_images_vector_elementfwd.H		    \
 	image.C					    \
@@ -572,16 +572,13 @@ libcxxw_la_SOURCES=\
 	richtext/richtextmeta.C			    \
 	richtext/richtextmeta.H			    \
 	richtext/richtextmetafwd.H		    \
-	richtext/richtextmetalink.C		    \
-	richtext/richtextmetalink.H		    \
-	richtext/richtextmetalinkfwd.H		    \
-	richtext/richtextmetalinkobj.H		    \
 	richtext/richtextparagraph.C		    \
 	richtext/richtextparagraph.H		    \
 	richtext/richtextparagraphfwd.H		    \
 	richtext/richtextstring.C		    \
 	richtext/richtextstring.H		    \
 	richtext/richtextstring2.C		    \
+	richtext/text_hotspot.C			    \
 	run_as.H				    \
 	scratch_buffer.C			    \
 	scratch_buffer_impl.C			    \

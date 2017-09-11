@@ -71,6 +71,8 @@ generic_windowObj::handlerObj::resourcesObj
 {
 }
 
+generic_windowObj::handlerObj::resourcesObj::~resourcesObj()=default;
+
 const icon generic_windowObj::handlerObj::resourcesObj
 ::disabled_mask(IN_THREAD_ONLY)
 {

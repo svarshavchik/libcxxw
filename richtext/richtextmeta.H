@@ -8,7 +8,7 @@
 
 #include "x/w/rgb.H"
 #include "richtext/richtextmetafwd.H"
-#include "richtext/richtextmetalinkfwd.H"
+#include "x/w/text_hotspotfwd.H"
 #include "fonts/current_fontcollection.H"
 #include "background_colorfwd.H"
 #include "x/w/namespace.H"
@@ -43,7 +43,7 @@ public:
 	richtextmeta &operator=(const richtextmeta &);
 
 	//! Some kind of a link associated with this metadata
-	richtextmetalinkptr link;
+	text_hotspotptr link;
 
 	//! Color
 

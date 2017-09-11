@@ -382,11 +382,6 @@ public:
 	//! Compute starting X position of the rendered fragment.
 	coord_t first_xpos(IN_THREAD_ONLY) const;
 
-	//! Check if this fragment that has metadata for the given link
-
-	//! Always returns \c false if link is a null pointer.
-
-	bool has_link(const richtextmetalinkptr &link);
  private:
 
 	//! We may sometimes need to overlay richtextmeta with something

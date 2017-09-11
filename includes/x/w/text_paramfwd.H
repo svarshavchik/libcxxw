@@ -7,10 +7,21 @@
 #define x_w_text_paramfwd_H
 
 #include <x/w/namespace.H>
+#include <x/w/button_eventfwd.H>
+#include <x/w/focus.H>
+#include <variant>
 
 LIBCXXW_NAMESPACE_START
 
 class text_param;
+
+//! The event that invoked a \ref text_hotspot "text link callback."
+
+//! The callback gets invoked for a button event, or for a
+//! focus::gained and focus::lost event, indicating that the pointer moved
+//! into or out of this text section.
+
+typedef std::variant<button_event, focus_change> text_event_t;
 
 LIBCXXW_NAMESPACE_END
 

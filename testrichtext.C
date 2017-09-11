@@ -1,7 +1,6 @@
 #include "libcxxw_config.h"
 #include "richtext/richtext.H"
 #include "richtext/richtextparagraph.H"
-#include "richtext/richtextmetalink.H"
 #include "richtext/fragment_list.H"
 #include "richtext/paragraph_list.H"
 #include "background_color.H"

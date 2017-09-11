@@ -8,7 +8,6 @@
 
 #include "richtext/richtextfragment.H"
 #include "richtext/richtextmeta.H"
-#include "richtext/richtextmetalinkfwd.H"
 #include "x/w/picturefwd.H"
 #include "draw_infofwd.H"
 
@@ -63,9 +62,6 @@ struct richtextfragmentObj::render_info {
 
 	//! Used by richtexteditorwindow to highlight selected text
 	size_t selection_end=0;
-
-	//! Link to highlight
-	richtextmetalinkptr highlight_link;
 };
 
 //! Additional info for render_range

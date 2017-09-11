@@ -8,7 +8,6 @@
 #include "x/w/drawable.H"
 #include "richtext/richtext_impl.H"
 #include "richtext/richtextparagraph.H"
-#include "richtext/richtextmetalink.H"
 #include "richtext/richtextfragment.H"
 #include "richtext/richtextfragment_render.H"
 #include "richtext/richtextiterator.H"

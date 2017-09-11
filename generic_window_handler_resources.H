@@ -38,6 +38,9 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj::resourcesObj
 		     const shared_handler_data &handler_data,
 		     size_t nesting_level);
 
+	//! Destructor
+	~resourcesObj();
+
 	//! Implemented disabled_mask()
 
 	const icon disabled_mask(IN_THREAD_ONLY) override;
