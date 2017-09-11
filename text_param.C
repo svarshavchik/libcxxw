@@ -14,6 +14,7 @@
 #include "x/w/picture.H"
 #include "richtext/richtextmeta.H"
 #include "richtext/richtextstring.H"
+#include "x/w/text_hotspot.H"
 #include <courier-unicode.h>
 
 LIBCXXW_NAMESPACE_START
@@ -135,12 +136,30 @@ text_param &text_param::operator()(const text_decoration d)
 	return *this;
 }
 
+text_param &text_param::operator()(const text_hotspot &h)
+{
+	if (!hotspots.insert({string.size(), h}).second)
+		throw EXCEPTION(_("Duplicate text_hotspot specification"));
+
+	return *this;
+}
+
+text_param &text_param::operator()(std::nullptr_t)
+{
+	if (hotspots.empty() || hotspots.find(string.size()) != hotspots.end()
+	    || !hotspots.insert({string.size(), text_hotspotptr()}).second)
+		throw EXCEPTION(_("Invalid text_hotspot specification"));
+
+	return *this;
+}
+
 ///////////////////////////////////////////////////////////////////////////
 //
 // Convert text_param into a richtextstring.
 
 richtextstring elementObj::implObj::create_richtextstring(richtextmeta font,
-							  const text_param &t)
+							  const text_param &t,
+							  bool allow_links)
 {
 	// Compute all offsets into the richtextstring where fonts or colors
 	// change.
@@ -162,6 +181,12 @@ richtextstring elementObj::implObj::create_richtextstring(richtextmeta font,
 	for (const auto &p:t.decorations)
 		all_positions.insert(p.first);
 
+	for (const auto &p:t.hotspots)
+		all_positions.insert(p.first);
+
+	if (!t.hotspots.empty())
+		if (!allow_links)
+			throw EXCEPTION(_("Links are not allowed in this text."));
 	// Now iterate over them, in order, to create the unordered_map for
 	// richtextstring's constructor.
 	std::unordered_map<size_t, richtextmeta> m;
@@ -252,6 +277,13 @@ richtextstring elementObj::implObj::create_richtextstring(richtextmeta font,
 				font.bg_color=screen_impl
 					->create_background_color
 					(iter->second);
+		}
+
+		{
+			auto iter=t.hotspots.find(p);
+
+			if (iter != t.hotspots.end())
+				font.link=iter->second;
 		}
 
 		m.insert({p, font});

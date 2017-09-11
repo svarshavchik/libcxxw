@@ -13,6 +13,7 @@
 #include <x/w/theme_color.H>
 #include <x/w/screenfwd.H>
 #include <x/w/text_paramfwd.H>
+#include <x/w/text_hotspotfwd.H>
 #include <string>
 #include <unordered_map>
 #include <utility>
@@ -290,6 +291,10 @@ public:
 
 	std::unordered_map<size_t, text_decoration> decorations;
 
+	//! Hotspots for the text string being built.
+
+	std::unordered_map<size_t, text_hotspotptr> hotspots;
+
 	//! Default constructor
 	text_param();
 
@@ -363,6 +368,12 @@ public:
 
 	//! Use this decoration for all text going forward.
 	text_param &operator()(const text_decoration);
+
+	//! Hotspot for the following text.
+	text_param &operator()(const text_hotspot &);
+
+	//! End of hotspot.
+	text_param &operator()(std::nullptr_t);
 
 	//! Variadic list of parameters to the \c () operator.
 

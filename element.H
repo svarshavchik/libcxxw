@@ -770,9 +770,12 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//!
 	//! font specifies the initial font and color, if not explicitly
 	//! specified in the text_param.
-
+	//!
+	//! Unless allow_links is true, a specified text link throws an
+	//! exception.
 	richtextstring create_richtextstring(richtextmeta font,
-					     const text_param &t);
+					     const text_param &t,
+					     bool allow_links=false);
 
 
 	//////////////////////////////////////////////////////////////////
