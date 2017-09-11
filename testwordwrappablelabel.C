@@ -19,6 +19,7 @@
 #include "x/w/screen.H"
 #include "x/w/connection.H"
 #include "x/w/text_hotspot.H"
+#include "x/w/input_field.H"
 #include <string>
 #include <iostream>
 
@@ -62,6 +63,13 @@ public:
 
 	LIBCXX_NAMESPACE::w::text_param operator()(const LIBCXX_NAMESPACE::w::button_event &e) const
 	{
+		std::cout << "Button event!" << std::endl;
+		return {};
+	}
+
+	LIBCXX_NAMESPACE::w::text_param operator()(const LIBCXX_NAMESPACE::w::key_event &e) const
+	{
+		std::cout << "Key event!" << std::endl;
 		return {};
 	}
 };
@@ -154,6 +162,8 @@ void testlabel()
 				     layout->append_row();
 
 				 initialize_label(factory);
+
+				 layout->append_row()->create_input_field("");
 			 });
 
 	main_window->set_window_title("Hello world!");

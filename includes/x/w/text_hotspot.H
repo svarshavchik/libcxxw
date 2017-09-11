@@ -10,6 +10,7 @@
 #include <x/w/text_hotspotobj.H>
 #include <x/w/text_param.H>
 #include <x/w/button_event.H>
+#include <x/w/key_event.H>
 #include <x/ref.H>
 
 LIBCXXW_NAMESPACE_START

@@ -22,6 +22,7 @@
 #include "x/w/motion_event.H"
 #include "x/w/button_event.H"
 #include "run_as.H"
+#include <X11/keysym.h>
 
 LIBCXXW_NAMESPACE_START
 
@@ -334,13 +335,103 @@ bool textlabelObj::implObj::process_button_event(IN_THREAD_ONLY,
 						 const button_event &be,
 						 xcb_timestamp_t timestamp)
 {
-	return false;
+	if (!hotspot_highlighted(IN_THREAD))
+		return false;
+	link_update(IN_THREAD, hotspot_highlighted(IN_THREAD), be);
+	return true;
 }
 
 bool textlabelObj::implObj::process_key_event(IN_THREAD_ONLY,
 					      const key_event &ke)
 {
-	return false;
+	if (hotspot_info(IN_THREAD).empty())
+		return false;
+
+	text_hotspotptr next_link;
+
+	if (ke.unicode == '\t')
+	{
+		if (!ke.keypress)
+			return true;
+
+		if (hotspot_highlighted(IN_THREAD))
+		{
+			auto iter=hotspot_info(IN_THREAD)
+				.find(hotspot_highlighted(IN_THREAD));
+
+			if (iter == hotspot_info(IN_THREAD).end())
+			{
+				const auto &logger=elementObj::implObj::logger;
+				LOG_ERROR("Internal error: cannot locate hotspot");
+			}
+			else
+			{
+				auto iter2=
+					ordered_hotspots.find(iter->second.n+1);
+				if (iter2 != ordered_hotspots.end())
+					next_link=iter2->second;
+			}
+		}
+		else
+		{
+			auto iter2=ordered_hotspots.find(0);
+			if (iter2 != ordered_hotspots.end())
+				next_link=iter2->second;
+		}
+	}
+	else if (ke.keysym == XK_ISO_Left_Tab)
+	{
+		if (!ke.keypress)
+			return true;
+
+		if (hotspot_highlighted(IN_THREAD))
+		{
+			auto iter=hotspot_info(IN_THREAD)
+				.find(hotspot_highlighted(IN_THREAD));
+
+			if (iter == hotspot_info(IN_THREAD).end())
+			{
+				const auto &logger=elementObj::implObj::logger;
+				LOG_ERROR("Internal error: cannot locate hotspot");
+			}
+			else if (iter->second.n)
+			{
+				auto iter2=
+					ordered_hotspots.find(iter->second.n-1);
+				if (iter2 != ordered_hotspots.end())
+					next_link=iter2->second;
+			}
+		}
+		else
+		{
+			auto iter2=ordered_hotspots
+				.find(hotspot_info(IN_THREAD).size()-1);
+			if (iter2 != ordered_hotspots.end())
+				next_link=iter2->second;
+		}
+	}
+	else if (ke.unicode == '\n' || ke.unicode == ' ')
+	{
+		if (!ke.keypress)
+			return true;
+
+		if (hotspot_highlighted(IN_THREAD))
+		{
+			link_update(IN_THREAD, hotspot_highlighted(IN_THREAD),
+				    ke);
+			return true;
+		}
+	}
+	else return false;
+
+	hotspot_unhighlight(IN_THREAD);
+
+	if (!next_link)
+		return false;
+
+	hotspot_highlighted(IN_THREAD)=next_link;
+	link_update(IN_THREAD, next_link, focus_change::gained);
+	return true;
 }
 
 void textlabelObj::implObj::report_motion_event(IN_THREAD_ONLY,

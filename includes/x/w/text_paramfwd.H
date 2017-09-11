@@ -8,6 +8,7 @@
 
 #include <x/w/namespace.H>
 #include <x/w/button_eventfwd.H>
+#include <x/w/key_eventfwd.H>
 #include <x/w/focus.H>
 #include <variant>
 
@@ -20,8 +21,11 @@ class text_param;
 //! The callback gets invoked for a button event, or for a
 //! focus::gained and focus::lost event, indicating that the pointer moved
 //! into or out of this text section.
+//!
+//! The callback also gets invoked for a key event, when the link is
+//! activated by a key press.
 
-typedef std::variant<button_event, focus_change> text_event_t;
+typedef std::variant<button_event, key_event, focus_change> text_event_t;
 
 LIBCXXW_NAMESPACE_END
 
