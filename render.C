@@ -118,7 +118,7 @@ render::render(const connection_info &info)
 			.alpha_mask=p->direct.alpha_mask,
 		};
 
-		auto pf=const_pictformat::create
+		auto pf=pictformat::create
 			(s, ref<pictformatObj::implObj>
 			 ::create(info, weak_available_pictformats, p->id),
 			 get_indexes(info->conn, s, p->id));
