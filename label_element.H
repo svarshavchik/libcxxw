@@ -91,6 +91,43 @@ void label_elementObj<element_impl>
 							visibility_info);
 }
 
+template<typename element_impl>
+bool label_elementObj<element_impl>
+::process_button_event(IN_THREAD_ONLY,
+		       const button_event &be,
+		       xcb_timestamp_t timestamp)
+{
+	return textlabelObj::implObj::process_button_event(IN_THREAD, be,
+							   timestamp)
+		||
+		element_impl::process_button_event(IN_THREAD, be, timestamp);
+}
+
+template<typename element_impl>
+bool label_elementObj<element_impl>
+::process_key_event(IN_THREAD_ONLY, const key_event &ke)
+{
+	return textlabelObj::implObj::process_key_event(IN_THREAD, ke)
+		||
+		element_impl::process_key_event(IN_THREAD, ke);
+}
+
+template<typename element_impl>
+void label_elementObj<element_impl>
+::report_motion_event(IN_THREAD_ONLY, const motion_event &me)
+{
+	element_impl::report_motion_event(IN_THREAD, me);
+	textlabelObj::implObj::report_motion_event(IN_THREAD, me);
+}
+
+template<typename element_impl>
+void label_elementObj<element_impl>
+::pointer_focus(IN_THREAD_ONLY)
+{
+	element_impl::pointer_focus(IN_THREAD);
+	textlabelObj::implObj::pointer_focus(IN_THREAD);
+}
+
 LIBCXXW_NAMESPACE_END
 
 #endif

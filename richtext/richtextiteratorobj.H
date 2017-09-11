@@ -11,6 +11,7 @@
 #include "richtext/richtextcursorlocation.H"
 #include "richtext/richtextstring.H"
 #include "x/w/rectangle.H"
+#include "x/w/text_hotspot.H"
 #include <x/obj.H>
 #include <string_view>
 
@@ -107,13 +108,18 @@ class LIBCXX_HIDDEN richtextiteratorObj : virtual public obj {
 	void page_down(IN_THREAD_ONLY, dim_t height);
 
 	//! Move to the given coordinates
-	void moveto(IN_THREAD_ONLY, coord_t x, coord_t y);
+
+	//! Returns false if the x coordinate is outside of the rendered
+	//! text, true otherwise. The iterator gets positioned on the
+	//! nearest character for the X coordinate, in all cases.
+	bool moveto(IN_THREAD_ONLY, coord_t x, coord_t y);
 
 	//! What the at() returns.
 
 	struct at_info {
 		rectangle position; //!< Where the character is drawn.
 		char32_t character; //!< The character at the iterator
+		text_hotspotptr link; //!< The hotspot at the iterator
 	};
 
 	//! What's at this iterator's location

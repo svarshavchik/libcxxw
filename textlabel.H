@@ -11,6 +11,9 @@
 #include "x/w/alignment.H"
 #include "x/w/rectangle.H"
 #include "x/w/metrics/axis.H"
+#include "x/w/key_eventfwd.H"
+#include "x/w/motion_eventfwd.H"
+#include "x/w/button_eventfwd.H"
 #include "richtext/richtextfwd.H"
 #include "richtext/richtextmeta.H"
 #include "richtext/richtextstring.H"
@@ -20,6 +23,7 @@
 
 #include <x/refptr_hash.H>
 #include <unordered_map>
+#include <xcb/xproto.h>
 
 LIBCXXW_NAMESPACE_START
 
@@ -46,8 +50,14 @@ class LIBCXX_HIDDEN textlabelObj::implObj : virtual public obj {
 	//! Info about each links.
 
 	struct link_info {
+		//! Where the link starts
 		richtextiterator link_start;
+
+		//! Where the link ends
 		richtextiterator link_end;
+
+		//! The hotspots get numbered, in order to create ordered_hotspots
+		size_t n;
 	};
 
 	//! The container for the links in the text.
@@ -56,13 +66,29 @@ class LIBCXX_HIDDEN textlabelObj::implObj : virtual public obj {
  private:
 	//! The links in the text.
 	hotspot_info_t hotspot_info_thread_only;
+
+	//! Currently highlighted link.
+	text_hotspotptr hotspot_highlighted_thread_only;
+
+	//! Container for hotspots kept in appearance order.
+	typedef std::unordered_map<size_t, text_hotspot>
+		ordered_hotspots_t;
+
+	//! Hotspots in appearance order.
+	ordered_hotspots_t ordered_hotspots;
+
  public:
 	THREAD_DATA_ONLY(word_wrap_widthmm);
 	THREAD_DATA_ONLY(hotspot_info);
+	THREAD_DATA_ONLY(hotspot_highlighted);
 
 	//! The text in the label.
 
 	const richtext text;
+
+	//! A cursor we use to determine whether the pointer is in a hotspot.
+
+	const richtextiterator hotspot_cursor;
 
 	//! Default meta that was used to create the rich text
 
@@ -188,6 +214,31 @@ class LIBCXX_HIDDEN textlabelObj::implObj : virtual public obj {
 
 	virtual std::pair<metrics::axis, metrics::axis>
 		calculate_current_metrics(IN_THREAD_ONLY);
+
+
+ public:
+	//! Detect clicks over hotspots.
+
+	bool process_button_event(IN_THREAD_ONLY,
+				  const button_event &be,
+				  xcb_timestamp_t timestamp);
+
+	//! Keyboard navigation over hotspots.
+	bool process_key_event(IN_THREAD_ONLY, const key_event &ke);
+
+	//! Detect pointer movement over hotspots.
+	void report_motion_event(IN_THREAD_ONLY, const motion_event &me);
+
+	//! If no longer have pointer focus, disable any active hotspots.
+	void pointer_focus(IN_THREAD_ONLY);
+
+ private:
+	//! Unhighlight any currently-highlighted hotspots.
+	void hotspot_unhighlight(IN_THREAD_ONLY);
+
+	//! Invoke the link event, and possibly update the label accordingly.
+	void link_update(IN_THREAD_ONLY, const text_hotspot &link,
+			 const text_event_t &event_type);
 };
 
 LIBCXXW_NAMESPACE_END

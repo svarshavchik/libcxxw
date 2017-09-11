@@ -130,6 +130,10 @@ private:
 	//! Compute the offsets() array.
 
 	void compute_offsets();
+
+	//! Largest x value, calculated by compute_offsets().
+	dim_t largest_x;
+
 public:
 
 	//! Find the character that's at horizontal position x_pos
@@ -141,6 +145,12 @@ public:
 	//! Returns the starting position for character #x.
 
 	dim_t x_pos(size_t n);
+
+	//! Return the sum total of widths and kernings
+
+	//! ... except for kerning 0
+
+	dim_t width();
 };
 
 LIBCXXW_NAMESPACE_END

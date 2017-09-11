@@ -181,6 +181,16 @@ richtextstring::meta_upper_bound_by_pos(meta_t &meta, size_t p)
 				compare_meta_by_pos());
 }
 
+richtextmeta richtextstring::meta_at(size_t p)
+{
+	auto iter=meta_upper_bound_by_pos(meta, p);
+
+	if (iter == meta.begin())
+		throw EXCEPTION("Internal error: iterator not found in meta_at()");
+
+	return (--iter)->second;
+}
+
 richtextstring::meta_t::iterator richtextstring::duplicate(size_t pos)
 {
 	assert_or_throw(pos <= string.size(),

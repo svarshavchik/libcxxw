@@ -83,8 +83,8 @@ void richtexthorizinfo_t::compute_offsets()
 			"Internal error, text fragment widths/kernings metadata not consistent");
 	offsets.reserve(n);
 
+	largest_x=0;
 	dim_t x=0;
-	dim_t largest_x=0;
 
 	for (auto i=n*0; i<n; ++i)
 	{
@@ -99,6 +99,9 @@ void richtexthorizinfo_t::compute_offsets()
 		x=dim_t::truncate(x+widths[i]);
 	}
 	offsets_valid=true;
+
+	if (x > largest_x)
+		largest_x=x;
 }
 
 size_t richtexthorizinfo_t::find_x_pos(dim_t xpos)
@@ -134,5 +137,10 @@ dim_t richtexthorizinfo_t::x_pos(size_t i)
 	return offsets[i].second;
 }
 
+dim_t richtexthorizinfo_t::width()
+{
+	compute_offsets();
+	return largest_x;
+}
 
 LIBCXXW_NAMESPACE_END

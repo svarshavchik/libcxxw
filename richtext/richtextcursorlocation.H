@@ -205,7 +205,11 @@ class LIBCXX_HIDDEN richtextcursorlocationObj : virtual public obj {
 	void page_down(IN_THREAD_ONLY, dim_t height);
 
 	//! Move to the given coordinates
-	void moveto(IN_THREAD_ONLY, coord_t x, coord_t y);
+
+	//! Returns true if the X coordinate lies within the fragment.
+	//! If it is outside the fragment, the location is moved to the first
+	//! or the last character.
+	bool moveto(IN_THREAD_ONLY, coord_t x, coord_t y);
 
 	//! richtextfragment inserted nchars at offset #pos, with extra_width pixels
 

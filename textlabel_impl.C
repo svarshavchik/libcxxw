@@ -18,6 +18,9 @@
 #include "x/w/factory.H"
 #include "x/w/label.H"
 #include "x/w/text_hotspot.H"
+#include "x/w/key_event.H"
+#include "x/w/motion_event.H"
+#include "x/w/button_event.H"
 #include "run_as.H"
 
 LIBCXXW_NAMESPACE_START
@@ -77,6 +80,8 @@ create_hotspot_info(richtextstring &s, const richtext &t)
 
 	auto b=m.begin(), e=m.end();
 
+	size_t counter=0;
+
 	while (b != e)
 	{
 		if (!b->second.link)
@@ -94,11 +99,23 @@ create_hotspot_info(richtextstring &s, const richtext &t)
 		}
 
 		info.insert({p->second.link, {t->at(p->first),
-						t->at(b->first)}});
+						t->at(b->first), counter++}});
 	}
 	return info;
 }
 
+// After create_hotspot_info() comes rebuild_ordered_hotspots.
+
+static auto rebuild_ordered_hotspots(const auto &hotspot_info)
+{
+	std::unordered_map<size_t, text_hotspot> m;
+
+	for (const auto &h:hotspot_info)
+		m.insert({h.second.n, h.first});
+	return m;
+}
+
+// Order hotspots by their appearance order.
 textlabelObj::implObj::implObj(const text_param &text,
 			       const richtextmeta &default_meta,
 			       halign alignment,
@@ -131,7 +148,9 @@ textlabelObj::implObj::implObj(halign alignment,
 			       bool allow_links)
 	: word_wrap_widthmm_thread_only(initial_width),
 	  hotspot_info_thread_only(create_hotspot_info(string, text)),
+	  ordered_hotspots(rebuild_ordered_hotspots(hotspot_info_thread_only)),
 	  text(text),
+	  hotspot_cursor(text->begin()),
 	  default_meta(default_meta),
 	  allow_links(allow_links)
 {
@@ -161,6 +180,8 @@ void textlabelObj::implObj::update(IN_THREAD_ONLY, const text_param &string)
 	text->set(IN_THREAD, s);
 
 	hotspot_info(IN_THREAD)=create_hotspot_info(s, text);
+	ordered_hotspots=rebuild_ordered_hotspots(hotspot_info(IN_THREAD));
+	hotspot_highlighted(IN_THREAD)=nullptr;
 	updated(IN_THREAD);
 	get_label_element_impl().schedule_redraw(IN_THREAD);
 }
@@ -307,6 +328,97 @@ textlabelObj::implObj::calculate_current_metrics(IN_THREAD_ONLY)
 	return text->get_metrics(IN_THREAD, preferred_width,
 				 get_label_element_impl()
 				 .data(IN_THREAD).inherited_visibility);
+}
+
+bool textlabelObj::implObj::process_button_event(IN_THREAD_ONLY,
+						 const button_event &be,
+						 xcb_timestamp_t timestamp)
+{
+	return false;
+}
+
+bool textlabelObj::implObj::process_key_event(IN_THREAD_ONLY,
+					      const key_event &ke)
+{
+	return false;
+}
+
+void textlabelObj::implObj::report_motion_event(IN_THREAD_ONLY,
+						const motion_event &me)
+{
+	if (hotspot_info(IN_THREAD).empty())
+		return; // Shortcut
+
+	bool flag=hotspot_cursor->moveto(IN_THREAD, me.x, me.y);
+
+	auto link=hotspot_cursor->at(IN_THREAD).link;
+
+	if (!link || !flag)
+	{
+		hotspot_unhighlight(IN_THREAD);
+		return;
+	}
+
+	if (link == hotspot_highlighted(IN_THREAD))
+		return;
+
+	hotspot_unhighlight(IN_THREAD);
+	hotspot_highlighted(IN_THREAD)=link;
+
+	link_update(IN_THREAD, link, focus_change::gained);
+}
+
+void textlabelObj::implObj::pointer_focus(IN_THREAD_ONLY)
+{
+	if (!get_label_element_impl().current_pointer_focus(IN_THREAD))
+		hotspot_unhighlight(IN_THREAD);
+}
+
+void textlabelObj::implObj::hotspot_unhighlight(IN_THREAD_ONLY)
+{
+	if (!hotspot_highlighted(IN_THREAD))
+		return;
+
+	text_hotspot old_link=hotspot_highlighted(IN_THREAD);
+	hotspot_highlighted(IN_THREAD)=nullptr;
+
+	link_update(IN_THREAD, old_link, focus_change::lost);
+}
+
+void textlabelObj::implObj::link_update(IN_THREAD_ONLY,
+					const text_hotspot &link,
+					const text_event_t &event_type)
+{
+	auto replacement_text=link->event(event_type);
+
+	if (replacement_text.string.empty())
+		return;
+
+	// Hotspot callback provided replacement text.
+
+	auto &e=get_label_element_impl();
+
+	auto iter=hotspot_info(IN_THREAD).find(link);
+
+	if (iter == hotspot_info(IN_THREAD).end())
+	{
+		const auto &logger=e.logger;
+		LOG_ERROR("Internal error: cannot locate hotspot");
+		return;
+	}
+
+	replacement_text.hotspots.clear(); // Too bad, so sad.
+	replacement_text.hotspots.insert({0, link});
+
+	iter->second.link_start->replace(IN_THREAD, iter->second.link_end,
+					 e.create_richtextstring
+					 (default_meta, replacement_text,
+					  true));
+	updated(IN_THREAD);
+
+	text->redraw_whatsneeded(IN_THREAD, e,
+				 {},
+				 e.get_draw_info(IN_THREAD));
 }
 
 LIBCXXW_NAMESPACE_END

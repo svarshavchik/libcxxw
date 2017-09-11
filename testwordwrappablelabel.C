@@ -11,12 +11,14 @@
 
 #include "x/w/main_window.H"
 #include "x/w/label.H"
+#include "x/w/focusable_label.H"
 #include "x/w/gridlayoutmanager.H"
 #include "x/w/gridfactory.H"
 #include "x/w/text_param_literals.H"
 #include "x/w/font_literals.H"
 #include "x/w/screen.H"
 #include "x/w/connection.H"
+#include "x/w/text_hotspot.H"
 #include <string>
 #include <iostream>
 
@@ -39,6 +41,31 @@ public:
 
 typedef LIBCXX_NAMESPACE::ref<close_flagObj> close_flag_ref;
 
+struct hotspot_processor {
+
+public:
+
+	LIBCXX_NAMESPACE::w::text_param normal, highlighted;
+
+	LIBCXX_NAMESPACE::w::text_param operator()(const LIBCXX_NAMESPACE::w::focus_change &e) const
+	{
+		switch (e) {
+		case LIBCXX_NAMESPACE::w::focus_change::gained:
+			return highlighted;
+		case LIBCXX_NAMESPACE::w::focus_change::lost:
+			return normal;
+		default:
+			break;
+		}
+		return {};
+	}
+
+	LIBCXX_NAMESPACE::w::text_param operator()(const LIBCXX_NAMESPACE::w::button_event &e) const
+	{
+		return {};
+	}
+};
+
 static void initialize_label(const LIBCXX_NAMESPACE::w::factory &factory)
 {
 	LIBCXX_NAMESPACE::w::rgb blue{0, 0, LIBCXX_NAMESPACE::w::rgb::maximum};
@@ -47,12 +74,51 @@ static void initialize_label(const LIBCXX_NAMESPACE::w::factory &factory)
 			LIBCXX_NAMESPACE::w::rgb::maximum/4*3, LIBCXX_NAMESPACE::w::rgb::maximum};
 	LIBCXX_NAMESPACE::w::rgb black;
 
-	factory->create_label
+	auto hotspot1=LIBCXX_NAMESPACE::w::text_hotspot
+		::create([processor=hotspot_processor{
+					{
+						"label_title"_theme_font,
+						blue,
+						"underline"_decoration,
+						"Lorem ipsum\n",
+					},
+					{
+						"label_title"_theme_font,
+						blue,
+						lightblue,
+						"underline"_decoration,
+						"Lorem ipsum\n",
+					}
+				}]
+			(const auto &e)
+			{
+				return std::visit(processor, e);
+			});
+
+	auto hotspot2=LIBCXX_NAMESPACE::w::text_hotspot
+		::create([processor=hotspot_processor{
+					{
+						"laborum."
+					},
+					{
+						black,
+						lightblue,
+						"laborum."
+					},
+				}]
+			(const auto &e)
+			{
+				return std::visit(processor, e);
+			});
+
+	factory->create_focusable_label
 		({
+			hotspot1,
 			"label_title"_theme_font,
 			 blue,
 			"underline"_decoration,
 			"Lorem ipsum\n",
+			nullptr,
 			"no"_decoration,
 			"label"_theme_font,
 			black, lightblue,
@@ -65,7 +131,8 @@ static void initialize_label(const LIBCXX_NAMESPACE::w::factory &factory)
 			"Duis aute irure dolor in reprehenderit in voluptate velit "
 			"esse cillum dolore eu fugiat nulla pariatur. "
 			"Excepteur sint occaecat cupidatat non proident, "
-			"sunt in culpa qui officia deserunt mollit anim id est "
+			"sunt in culpa qui officia deserunt mollit anim id est ",
+			hotspot2,
 			"laborum."
 		  },
 			{100, LIBCXX_NAMESPACE::w::halign::center});

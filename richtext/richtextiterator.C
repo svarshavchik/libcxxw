@@ -156,14 +156,15 @@ void richtextiteratorObj::page_down(IN_THREAD_ONLY, dim_t height)
 				 });
 }
 
-void richtextiteratorObj::moveto(IN_THREAD_ONLY, coord_t x, coord_t y)
+bool richtextiteratorObj::moveto(IN_THREAD_ONLY, coord_t x, coord_t y)
 {
-	my_richtext->thread_lock(IN_THREAD,
-				 [&, this]
-				 (IN_THREAD_ONLY, const auto &lock)
-				 {
-					 my_location->moveto(IN_THREAD, x, y);
-				 });
+	return my_richtext->thread_lock
+		(IN_THREAD,
+		 [&, this]
+		 (IN_THREAD_ONLY, const auto &lock)
+		 {
+			return my_location->moveto(IN_THREAD, x, y);
+		 });
 }
 
 void richtextiteratorObj::end_of_line()
@@ -415,7 +416,9 @@ richtextiteratorObj::at_info richtextiteratorObj::at(IN_THREAD_ONLY) const
 					 f->horiz_info.width(o),
 					 f->height()
 				 },
-					 f->string.get_string().at(o)};
+					 f->string.get_string().at(o),
+					 f->string.meta_at(o).link
+						 };
 		 });
 }
 

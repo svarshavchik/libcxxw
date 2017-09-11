@@ -156,6 +156,9 @@ class LIBCXX_HIDDEN richtextstring {
 	//! Return the size of the string.
 	inline size_t size() const { return string.size(); }
 
+	//! Return metadata for the given offset.
+	richtextmeta meta_at(size_t p);
+
  private:
 
 	//! A container for resolved fonts.

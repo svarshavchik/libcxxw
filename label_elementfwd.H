@@ -81,6 +81,29 @@ public:
 				      inherited_visibility_info
 				      &visibility_info) override;
 
+	//! Override process_buton_event().
+
+	//! Detect clicks over hotspots.
+
+	bool process_button_event(IN_THREAD_ONLY,
+				  const button_event &be,
+				  xcb_timestamp_t timestamp) override;
+
+	//! Override process_key_event()
+
+	//! Keyboard navigation over hotspots.
+	bool process_key_event(IN_THREAD_ONLY, const key_event &ke) override;
+
+	//! Override report_motion-event
+
+	//! Detect pointer movement over hotspots.
+	void report_motion_event(IN_THREAD_ONLY, const motion_event &)
+		override;
+
+	//! Override pointer_focus()
+
+	//! If no longer have pointer focus, disable any active hotspots.
+	void pointer_focus(IN_THREAD_ONLY) override;
 };
 
 LIBCXXW_NAMESPACE_END

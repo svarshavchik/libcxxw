@@ -915,6 +915,14 @@ coord_t richtextfragmentObj::first_xpos(IN_THREAD_ONLY) const
 	return 0;
 }
 
+dim_t richtextfragmentObj::x_width(IN_THREAD_ONLY)
+{
+	assert_or_throw(my_paragraph && my_paragraph->my_richtext,
+			"Internal error: fragment not linked.");
+
+	return horiz_info.width();
+}
+
 void richtextfragmentObj::render(IN_THREAD_ONLY,
 				 const render_info &info)
 {

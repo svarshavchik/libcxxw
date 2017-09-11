@@ -393,7 +393,7 @@ void richtextcursorlocationObj::page_down(IN_THREAD_ONLY, dim_t height)
 	set_targeted_horiz_pos(IN_THREAD, targeted_horiz_pos);
 }
 
-void richtextcursorlocationObj::moveto(IN_THREAD_ONLY, coord_t x, coord_t y)
+bool richtextcursorlocationObj::moveto(IN_THREAD_ONLY, coord_t x, coord_t y)
 {
 	// We expect that the requested x/y coordinates will be near this
 	// existing location; so we just search.
@@ -429,9 +429,17 @@ void richtextcursorlocationObj::moveto(IN_THREAD_ONLY, coord_t x, coord_t y)
 	}
 	initialize(f, 0);
 
-	if (x < 0)
-		x=0;
-	set_targeted_horiz_pos(IN_THREAD, dim_t::truncate(x));
+	auto first_xpos=f->first_xpos(IN_THREAD);
+
+	auto adjusted_x=dim_t::truncate(x-first_xpos);
+
+	if (x < first_xpos)
+		adjusted_x=0;
+
+	set_targeted_horiz_pos(IN_THREAD, adjusted_x);
+
+	return x >= first_xpos &&
+		dim_t::truncate(adjusted_x) < f->x_width(IN_THREAD);
 }
 
 void richtextcursorlocationObj::start_of_line()

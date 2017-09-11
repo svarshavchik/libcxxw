@@ -382,6 +382,8 @@ public:
 	//! Compute starting X position of the rendered fragment.
 	coord_t first_xpos(IN_THREAD_ONLY) const;
 
+	//! Return the width of the fragment in pixels.
+	dim_t x_width(IN_THREAD_ONLY);
  private:
 
 	//! We may sometimes need to overlay richtextmeta with something
