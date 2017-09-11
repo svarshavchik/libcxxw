@@ -15,10 +15,11 @@ label_elementObj<element_impl>
 ::label_elementObj(const ref<containerObj::implObj> &parent_container,
 		   const text_param &text,
 		   halign alignment,
-		   double initial_width)
+		   double initial_width,
+		   bool allow_links)
 	: element_impl(parent_container,
 		       child_element_init_params{"label@libcxx"}),
-	  textlabelObj::implObj(text, alignment, initial_width,
+	  textlabelObj::implObj(text, alignment, initial_width, allow_links,
 				parent_container->get_element_impl())
 {
 }
@@ -28,12 +29,14 @@ label_elementObj<element_impl>
 ::label_elementObj(const ref<containerObj::implObj> &parent_container,
 		   halign alignment,
 		   double initial_width,
-		   const richtextstring &string,
+		   richtextstring &&string,
 		   const richtextmeta &default_meta,
+		   bool allow_links,
 		   const char *element_id)
 	: element_impl(parent_container,
 		       child_element_init_params{element_id}),
-	  textlabelObj::implObj(alignment, initial_width, string, default_meta)
+	  textlabelObj::implObj(alignment, initial_width,
+				std::move(string), default_meta, allow_links)
 {
 }
 

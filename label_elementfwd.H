@@ -29,15 +29,17 @@ public:
 	label_elementObj(const ref<containerObj::implObj> &parent_container,
 			 const text_param &text,
 			 halign alignment,
-			 double initial_width);
+			 double initial_width,
+			 bool allow_links);
 
 	//! Constructor used by the editor subclass.
 
 	label_elementObj(const ref<containerObj::implObj> &container,
 			 halign alignment,
 			 double initial_width,
-			 const richtextstring &string,
+			 richtextstring &&string,
 			 const richtextmeta &default_meta,
+			 bool allow_links,
 			 const char *element_id);
 
 	//! Destructor

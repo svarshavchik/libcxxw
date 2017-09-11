@@ -14,8 +14,12 @@
 #include "richtext/richtextfwd.H"
 #include "richtext/richtextmeta.H"
 #include "richtext/richtextstring.H"
+#include "richtext/richtextiteratorfwd.H"
 #include "draw_infofwd.H"
 #include "elementfwd.H"
+
+#include <x/refptr_hash.H>
+#include <unordered_map>
 
 LIBCXXW_NAMESPACE_START
 
@@ -37,8 +41,24 @@ class LIBCXX_HIDDEN textlabelObj::implObj : virtual public obj {
 	//! Compute preferred_width
 
 	virtual void compute_preferred_width(IN_THREAD_ONLY);
-public:
+
+ public:
+	//! Info about each links.
+
+	struct link_info {
+		richtextiterator link_start;
+		richtextiterator link_end;
+	};
+
+	//! The container for the links in the text.
+	typedef std::unordered_map<text_hotspot, link_info> hotspot_info_t;
+
+ private:
+	//! The links in the text.
+	hotspot_info_t hotspot_info_thread_only;
+ public:
 	THREAD_DATA_ONLY(word_wrap_widthmm);
+	THREAD_DATA_ONLY(hotspot_info);
 
 	//! The text in the label.
 
@@ -53,6 +73,7 @@ public:
 	implObj(const text_param &text,
 		halign alignment,
 		double initial_width,
+		bool allow_links,
 		elementObj::implObj &element_impl);
 
 	//! Internal constructor
@@ -60,14 +81,31 @@ public:
 		const richtextmeta &default_meta,
 		halign alignment,
 		double initial_width,
+		bool allow_links,
 		elementObj::implObj &element_impl);
 
 	//! Constructor used by editor subclass.
 
 	implObj(halign alignment,
 		double initial_width,
-		const richtextstring &string,
-		const richtextmeta &default_meta);
+		richtextstring &&string,
+		const richtextmeta &default_meta,
+		bool allow_links);
+
+ private:
+	//! Internal constructor
+
+	implObj(halign alignment,
+		double initial_width,
+		richtextstring &&string,
+		const richtext &text,
+		const richtextmeta &default_meta,
+		bool allow_links);
+
+ public:
+	//! Whether links are allowed
+
+	const bool allow_links=false;
 
 	//! Return my element.
 	virtual elementObj::implObj &get_label_element_impl()=0;

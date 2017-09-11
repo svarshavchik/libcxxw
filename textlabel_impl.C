@@ -17,6 +17,7 @@
 #include "defaulttheme.H"
 #include "x/w/factory.H"
 #include "x/w/label.H"
+#include "x/w/text_hotspot.H"
 #include "run_as.H"
 
 LIBCXXW_NAMESPACE_START
@@ -45,7 +46,7 @@ label factoryObj::create_label_internal(const text_param &text,
 					&container_impl)
 {
 	auto label_impl=ref<label_elementObj<child_elementObj>>
-		::create(container_impl, text, alignment, widthmm);
+		::create(container_impl, text, alignment, widthmm, false);
 
 	return label::create(label_impl, label_impl);
 }
@@ -53,6 +54,7 @@ label factoryObj::create_label_internal(const text_param &text,
 textlabelObj::implObj::implObj(const text_param &text,
 			       halign alignment,
 			       double initial_width,
+			       bool allow_links,
 			       elementObj::implObj &element_impl)
 	: implObj(text,
 		  {element_impl.create_background_color
@@ -61,29 +63,77 @@ textlabelObj::implObj::implObj(const text_param &text,
 				  (element_impl.label_theme_font())},
 		  alignment,
 		  initial_width,
+		  allow_links,
 		  element_impl)
 {
+}
+
+static textlabelObj::implObj::hotspot_info_t
+create_hotspot_info(richtextstring &s, const richtext &t)
+{
+	textlabelObj::implObj::hotspot_info_t info;
+
+	const auto &m=s.get_meta();
+
+	auto b=m.begin(), e=m.end();
+
+	while (b != e)
+	{
+		if (!b->second.link)
+		{
+			++b;
+			continue;
+		}
+
+		auto p=b;
+
+		while (b->second.link == p->second.link)
+		{
+			if (++b == e)
+				throw EXCEPTION("Internal error: cannot find end of link");
+		}
+
+		info.insert({p->second.link, {t->at(p->first),
+						t->at(b->first)}});
+	}
+	return info;
 }
 
 textlabelObj::implObj::implObj(const text_param &text,
 			       const richtextmeta &default_meta,
 			       halign alignment,
 			       double initial_width,
+			       bool allow_links,
 			       elementObj::implObj &element_impl)
 	: implObj(alignment, initial_width,
 		  element_impl.create_richtextstring
-		  (default_meta, text),
-		  default_meta)
+		  (default_meta, text, allow_links),
+		  default_meta, allow_links)
 {
 }
 
 textlabelObj::implObj::implObj(halign alignment,
 			       double initial_width,
-			       const richtextstring &string,
-			       const richtextmeta &default_meta)
+			       richtextstring &&string,
+			       const richtextmeta &default_meta,
+			       bool allow_links)
+	: implObj(alignment, initial_width, std::move(string),
+		  richtext::create(string, alignment, 0),
+		  default_meta, allow_links)
+{
+}
+
+textlabelObj::implObj::implObj(halign alignment,
+			       double initial_width,
+			       richtextstring &&string,
+			       const richtext &text,
+			       const richtextmeta &default_meta,
+			       bool allow_links)
 	: word_wrap_widthmm_thread_only(initial_width),
-	  text(richtext::create(string, alignment, 0)),
-	  default_meta(default_meta)
+	  hotspot_info_thread_only(create_hotspot_info(string, text)),
+	  text(text),
+	  default_meta(default_meta),
+	  allow_links(allow_links)
 {
 	if (initial_width < 0)
 		throw EXCEPTION(_("Label width cannot be negative"));
@@ -103,9 +153,11 @@ void textlabelObj::implObj::update(const text_param &string)
 
 void textlabelObj::implObj::update(IN_THREAD_ONLY, const text_param &string)
 {
-	text->set(IN_THREAD,
-		  get_label_element_impl()
-		  .create_richtextstring(default_meta, string));
+	auto s=get_label_element_impl()
+		.create_richtextstring(default_meta, string, allow_links);
+	text->set(IN_THREAD, s);
+
+	hotspot_info(IN_THREAD)=create_hotspot_info(s, text);
 	updated(IN_THREAD);
 	get_label_element_impl().schedule_redraw(IN_THREAD);
 }

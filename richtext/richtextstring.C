@@ -15,10 +15,14 @@ LIBCXXW_NAMESPACE_START
 
 richtextstring::richtextstring(const std::u32string &string,
 			       const std::unordered_map<size_t,
-			       richtextmeta> &meta)
+			       richtextmeta> &meta,
+			       bool append_null_byte)
 	: string(string), meta(meta.begin(), meta.end())
 {
-	sort_and_validate(this->meta, string.size());
+	if (append_null_byte)
+		this->string.push_back(0);
+
+	sort_and_validate(this->meta, this->string.size());
 	modified();
 }
 

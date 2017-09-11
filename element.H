@@ -773,7 +773,7 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//!
 	//! Unless allow_links is true, a specified text link throws an
 	//! exception.
-	richtextstring create_richtextstring(richtextmeta font,
+	richtextstring create_richtextstring(const richtextmeta &default_font,
 					     const text_param &t,
 					     bool allow_links=false);
 

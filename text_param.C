@@ -157,10 +157,13 @@ text_param &text_param::operator()(std::nullptr_t)
 //
 // Convert text_param into a richtextstring.
 
-richtextstring elementObj::implObj::create_richtextstring(richtextmeta font,
-							  const text_param &t,
-							  bool allow_links)
+richtextstring elementObj::implObj
+::create_richtextstring(const richtextmeta &default_font,
+			const text_param &t,
+			bool allow_links)
 {
+	richtextmeta font=default_font;
+
 	// Compute all offsets into the richtextstring where fonts or colors
 	// change.
 
@@ -185,23 +188,27 @@ richtextstring elementObj::implObj::create_richtextstring(richtextmeta font,
 		all_positions.insert(p.first);
 
 	if (!t.hotspots.empty())
+	{
 		if (!allow_links)
 			throw EXCEPTION(_("Links are not allowed in this text."));
+	}
+
+	// We always have something at offset 0 if the string is not empty.
+
+	if (t.string.size() > 0)
+		all_positions.insert(0);
+
+	if (allow_links)
+		all_positions.insert(t.string.size());
+
 	// Now iterate over them, in order, to create the unordered_map for
 	// richtextstring's constructor.
 	std::unordered_map<size_t, richtextmeta> m;
-
-	bool inserted_default=false;
 
 	auto screen_impl=get_screen()->impl;
 
 	for (const auto &p:all_positions)
 	{
-		// If there is no initial font/color, insert one automatically.
-		if (p > 0 && !inserted_default)
-			m.insert({0, font});
-		inserted_default=true;
-
 		{
 			auto iter=t.decorations.find(p);
 
@@ -289,13 +296,13 @@ richtextstring elementObj::implObj::create_richtextstring(richtextmeta font,
 		m.insert({p, font});
 	}
 
-	// If there were no font/color specifications, at all, and the string
-	// is not empty, insert the default one.
+	if (allow_links)
+		// richtextstring's constructor inserts a \0 here.
+		// We made sure that all_positions includes t.string.size(),
+		// above.
+		m.find(t.string.size())->second=default_font;
 
-	if (!inserted_default && !t.string.empty())
-		m.insert({0, font});
-
-	return {t.string, m};
+	return {t.string, m, allow_links};
 }
 
 LIBCXXW_NAMESPACE_END

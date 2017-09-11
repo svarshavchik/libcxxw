@@ -38,9 +38,8 @@
 
 LIBCXXW_NAMESPACE_START
 
-static inline std::tuple<richtextmeta, richtextstring>
-create_initial_string(const ref<containerObj::implObj> &container,
-		      const text_param &text)
+static inline richtextmeta create_default_meta(const ref<containerObj::implObj>
+&container)
 {
 	auto &element=container->get_element_impl();
 
@@ -48,18 +47,26 @@ create_initial_string(const ref<containerObj::implObj> &container,
 		("textedit_foreground_color");
 	auto font=element.create_theme_font("textedit");
 
+	return {bg_color, font};
+}
+
+static inline richtextstring
+create_initial_string(const ref<containerObj::implObj> &container,
+		      const richtextmeta &default_meta,
+		      const text_param &text)
+{
+	auto &element=container->get_element_impl();
+
 	text_param cpy=text;
 
 	cpy(" ");
-
-	richtextmeta default_meta{bg_color, font};
 
 	auto string=element.create_richtextstring(default_meta, cpy);
 
 	if (string.get_meta().size() > 1)
 		throw EXCEPTION(_("Input text cannot contain embedded formatting."));
 
-	return {default_meta, string};
+	return string;
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -204,25 +211,36 @@ editorObj::implObj::implObj(const ref<editor_peephole_implObj> &parent_peephole,
 			    const text_param &text,
 			    const input_field_config &config)
 	: implObj(parent_peephole,
-		  create_initial_string(parent_peephole, text), config)
+		  text,
+		  config,
+		  create_default_meta(parent_peephole))
 {
 }
 
 editorObj::implObj::implObj(const ref<editor_peephole_implObj> &parent_peephole,
-			    std::tuple<richtextmeta, richtextstring>
-			    &&meta_and_string,
-			    const input_field_config &config)
+			    const text_param &text,
+			    const input_field_config &config,
+			    const richtextmeta &default_meta)
+	: implObj(parent_peephole, config, default_meta,
+		  create_initial_string(parent_peephole, default_meta, text))
+{
+}
+
+editorObj::implObj::implObj(const ref<editor_peephole_implObj> &parent_peephole,
+			    const input_field_config &config,
+			    const richtextmeta &default_meta,
+			    richtextstring &&string)
 	: superclass_t(// Invisible pointer cursor
 		       parent_peephole->get_element_impl().get_window_handler()
 		       .create_icon_mm("cursor-invisible",
 				       render_repeat::none, 0, 0)
 		       ->create_cursor(),
 		       // Capture the string's font.
-		       std::get<richtextstring>(meta_and_string)
-		       .get_meta().at(0).second.getfont(),
+		       string.get_meta().at(0).second.getfont(),
 		       parent_peephole, config.alignment, 0,
-		       std::get<richtextstring>(meta_and_string),
-		       std::get<richtextmeta>(meta_and_string),
+		       std::move(string),
+		       default_meta,
+		       allow_links,
 		       "textedit@libcxx"),
 	  cursor(this->text->end()),
 	  on_change_thread_only( [](const auto &) {} ),

@@ -13,7 +13,7 @@ focusable_labelObj::implObj
 ::implObj(const ref<containerObj::implObj> &container,
 	  const text_param &text,
 	  halign alignment)
-	: superclass_t(container, text, alignment, 0)
+	: superclass_t(container, text, alignment, 0, true)
 {
 }
 

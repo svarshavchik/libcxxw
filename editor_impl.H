@@ -153,10 +153,16 @@ class LIBCXX_HIDDEN editorObj::implObj
 
  private:
 	//! Internal constructor
-
 	implObj(const ref<editor_peephole_implObj> &parent_peephole,
-		std::tuple<richtextmeta, richtextstring> &&meta_and_string,
-		const input_field_config &config);
+		const text_param &text,
+		const input_field_config &config,
+		const richtextmeta &default_meta);
+
+	//! Internal constructor
+	implObj(const ref<editor_peephole_implObj> &parent_peephole,
+		const input_field_config &config,
+		const richtextmeta &default_meta,
+		richtextstring &&string);
 
  public:
 	//! Destructor

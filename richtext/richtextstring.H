@@ -107,7 +107,8 @@ class LIBCXX_HIDDEN richtextstring {
 	//! Initializes the richtextstring from the given string and metadata.
 
 	richtextstring(const std::u32string &string,
-		       const std::unordered_map<size_t, richtextmeta> &meta);
+		       const std::unordered_map<size_t, richtextmeta> &meta,
+		       bool append_null_byte=false);
 
 	//! Construct from a substring.
 
