@@ -12,6 +12,8 @@ LIBCXXW_NAMESPACE_START
 
 class focusable_labelObj;
 
+struct focusable_label_config;
+
 /*! A label that processes input focus.
 
 A subclass of a \ref label "label" that has a focus frame and offers

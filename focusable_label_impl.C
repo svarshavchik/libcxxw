@@ -12,8 +12,9 @@ LIBCXXW_NAMESPACE_START
 focusable_labelObj::implObj
 ::implObj(const ref<containerObj::implObj> &container,
 	  const text_param &text,
+	  double widthmm,
 	  halign alignment)
-	: superclass_t(container, text, alignment, 0, true)
+	: superclass_t(container, text, alignment, widthmm, true)
 {
 }
 

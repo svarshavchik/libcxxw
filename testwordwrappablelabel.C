@@ -68,7 +68,7 @@ static void initialize_label(const LIBCXX_NAMESPACE::w::factory &factory)
 			"sunt in culpa qui officia deserunt mollit anim id est "
 			"laborum."
 		  },
-			100, LIBCXX_NAMESPACE::w::halign::center);
+			{100, LIBCXX_NAMESPACE::w::halign::center});
 }
 
 void testlabel()

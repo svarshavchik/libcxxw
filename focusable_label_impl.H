@@ -29,6 +29,7 @@ class LIBCXX_HIDDEN focusable_labelObj::implObj
 
 	implObj(const ref<containerObj::implObj> &container,
 		const text_param &text,
+		double widthmm,
 		halign alignment);
 
 	//! Destructor

@@ -137,8 +137,12 @@ public:
 
 	//! Create a focusable label.
 
+	focusable_label create_focusable_label(const text_param &text);
+
+	//! Create a focusable label.
+
 	focusable_label create_focusable_label(const text_param &text,
-					       halign alignment=halign::left);
+					       const focusable_label_config &);
 
 	//! Create an button with a label, and a normal border.
 	button create_normal_button_with_label(const text_param &text,

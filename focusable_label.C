@@ -14,22 +14,33 @@
 
 LIBCXXW_NAMESPACE_START
 
+const char focusable_label_config::default_off_border[]="inputfocusoff_border";
+
+const char focusable_label_config::default_on_border[]="inputfocuson_border";
+
 focusable_label factoryObj
-::create_focusable_label(const text_param &text, halign alignment)
+::create_focusable_label(const text_param &text)
+{
+	return create_focusable_label(text, focusable_label_config{});
+}
+
+focusable_label factoryObj
+::create_focusable_label(const text_param &text,
+			 const focusable_label_config &config)
 {
 	auto ff=create_standard_focusframe_container_element(container_impl);
 
 	auto ffl=ref<focusframelayoutimplObj>
 		::create(ff,
-			 "inputfocusoff_border",
-			 "inputfocuson_border");
+			 config.off_border,
+			 config.on_border);
 
 	auto glm=ffl->create_gridlayoutmanager();
 
 	auto gf=glm->append_row();
 
 	auto focusable_label_impl=ref<focusable_labelObj::implObj>
-		::create(ff, text, alignment);
+		::create(ff, text, config.widthmm, config.alignment);
 
 	auto l=label::create(focusable_label_impl, focusable_label_impl);
 
