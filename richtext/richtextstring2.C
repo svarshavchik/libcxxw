@@ -102,6 +102,44 @@ void richtextstring::compute_width(IN_THREAD_ONLY,
 		      0, string.size());
 }
 
+// A stripped down iterator, suitable for passing to iterating templates,
+// that replaced all characters except \0 with the password character, if one
+// is specified.
+
+struct LIBCXX_HIDDEN compute_width_iterator {
+
+	const char32_t *p;
+	char32_t password_char;
+
+	inline char32_t operator*() const
+	{
+		return *p == 0 || password_char == 0 ? *p:password_char;
+	}
+
+	inline auto operator++()
+	{
+		++p;
+		return *this;
+	}
+
+	inline auto operator++(int)
+	{
+		auto cpy= *this;
+		++p;
+		return cpy;
+	}
+
+	inline auto operator==(const compute_width_iterator &o)
+	{
+		return p == o.p;
+	}
+
+	inline auto operator!=(const compute_width_iterator &o)
+	{
+		return p != o.p;
+	}
+};
+
 void richtextstring::compute_width(IN_THREAD_ONLY,
 				   richtextstring *previous_string,
 				   char32_t unprintable_char,
@@ -213,21 +251,8 @@ void richtextstring::compute_width(IN_THREAD_ONLY,
 		if (end_char > end_skip)
 			end_char=end_skip;
 
-		auto sb=str+start_char;
-		auto se=str+end_char;
-
-		// How many characters we expect to update.
-		size_t n=end_char-start_char;
-
-		// Pull a switcheroo. If we're using a password_char,
-		// feed just that character to load_glyphs(), and we'll
-		// multiply the result like a rabbit.
-
-		if (password_char)
-		{
-			sb=&password_char;
-			se=sb+1;
-		}
+		compute_width_iterator sb{str+start_char, password_char};
+		compute_width_iterator se{str+end_char, password_char};
 
 		b->second->load_glyphs(sb, se, unprintable_char);
 
@@ -237,33 +262,20 @@ void richtextstring::compute_width(IN_THREAD_ONLY,
 			 (dim_t w,
 			  int16_t kerning)
 			 {
-				 // If we're NOT doing a password_char
-				 // switcheroo, these metrics are for a single
-				 // character.
-				 if (password_char == 0)
-					 n=1;
+				 // Update the metrics ONLY for
+				 // characters in the [skip, end_skip)
+				 // range.
+				 //
+				 // We asserted that end_skip is
+				 // less than the size of the vectors.
 
-				 // But if we're doing a password_char, then
-				 // these metrics are for n characters.
-
-				 while (n)
+				 if (start_char >= skip &&
+				     start_char < end_skip)
 				 {
-					 // Update the metrics ONLY for
-					 // characters in the [skip, end_skip)
-					 // range.
-					 //
-					 // We asserted that end_skip is
-					 // less than the size of the vectors.
-
-					 if (start_char >= skip &&
-					     start_char < end_skip)
-					 {
-						 widths[start_char]=w;
-						 kernings[start_char]=kerning;
-					 }
-					 --n;
-					 ++start_char;
+					 widths[start_char]=w;
+					 kernings[start_char]=kerning;
 				 }
+				 ++start_char;
 				 return true;
 			 }, previous_char, unprintable_char);
 		previous_char=0;

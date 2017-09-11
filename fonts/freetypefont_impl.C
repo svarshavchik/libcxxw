@@ -17,6 +17,8 @@
 #include FT_BITMAP_H
 
 #define UNPRINTABLE(c) ((c) < 32)
+#define REPLACE_WITH_PRINTABLE(c,unprintable_char) \
+	((c) ? (unprintable_char):0)
 
 LOG_CLASS_INIT(LIBCXX_NAMESPACE::w::freetypefontObj::implObj);
 
@@ -136,7 +138,7 @@ void freetypefontObj::implObj
 
 		if (UNPRINTABLE(c))
 		{
-			c=unprintable_char;
+			c=REPLACE_WITH_PRINTABLE(c,unprintable_char);
 
 			if (UNPRINTABLE(c))
 				continue;
@@ -288,7 +290,7 @@ void freetypefontObj::implObj
 
 		if (UNPRINTABLE(c))
 		{
-			c=unprintable_char;
+			c=REPLACE_WITH_PRINTABLE(c, unprintable_char);
 
 			if (UNPRINTABLE(c))
 			{
@@ -361,7 +363,7 @@ void freetypefontObj::implObj::do_glyphs_width(const function<bool ()> &more,
 
 		if (UNPRINTABLE(c))
 		{
-			c=unprintable_char;
+			c=REPLACE_WITH_PRINTABLE(c,unprintable_char);
 
 			if (UNPRINTABLE(c))
 			{
