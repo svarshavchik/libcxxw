@@ -131,14 +131,29 @@ class LIBCXX_HIDDEN richtextiteratorObj : virtual public obj {
 	//! inserted text, and the number of inserted paragraphs, see
 	//! richtextfragmentObj::insert().
 
-	std::pair<richtextiterator, size_t>
-		insert(IN_THREAD_ONLY, const richtextstring &string);
+	richtextiterator insert(IN_THREAD_ONLY, const richtextstring &string);
 
 	//! \overload
 
-	std::pair<richtextiterator, size_t>
-		insert(IN_THREAD_ONLY, const std::u32string_view
-		       &string);
+	richtextiterator insert(IN_THREAD_ONLY,
+				const std::u32string_view &string);
+
+	//! Replace text.
+
+	//! Like insert(), except replaces the text between this iterator
+	//! and another one with new text. This iterator becomes the
+	//! iterator to the end of the inserted text, returning the
+	//! iterator
+
+	void replace(IN_THREAD_ONLY,
+		     const const_richtextiterator &other,
+		     const richtextstring &string) const;
+
+	//! \overload
+
+	void replace(IN_THREAD_ONLY,
+		     const const_richtextiterator &other,
+		     const std::u32string_view &string) const;
 
  private:
 	class internal_insert;
@@ -146,8 +161,29 @@ class LIBCXX_HIDDEN richtextiteratorObj : virtual public obj {
 
 	//! Internal implementation of insert().
 
-	std::pair<richtextiterator, size_t>
-		insert(IN_THREAD_ONLY, const internal_insert &string);
+	richtextiterator insert(IN_THREAD_ONLY, const internal_insert &string);
+
+	struct insert_lock;
+
+	//! Internal implementation of insert()
+
+	richtextiterator insert(IN_THREAD_ONLY,
+				struct insert_lock &lock_wrapper,
+				const internal_insert &string);
+
+	//! Internal implementation of replace()
+
+	void replace(IN_THREAD_ONLY,
+		     const const_richtextiterator &other,
+		     const internal_insert &string) const;
+
+	//! Internal implementation of replace()
+
+	void replace(IN_THREAD_ONLY,
+		     struct insert_lock &lock_wrapper,
+		     const const_richtextiterator &other,
+		     const internal_insert &string) const;
+
  public:
 
 	//! Remove characters between this iterator and the other one

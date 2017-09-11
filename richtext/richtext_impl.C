@@ -421,15 +421,26 @@ void richtext_implObj::rewrap_at_fragment(IN_THREAD_ONLY,
 		my_fragments.fragments_were_rewrapped();
 }
 
-size_t richtext_implObj::insert_at_location(IN_THREAD_ONLY,
-						dim_t word_wrap_width,
-						const richtext_insert_base
-						&new_text)
+void richtext_implObj::insert_at_location(IN_THREAD_ONLY,
+					  dim_t word_wrap_width,
+					  const richtext_insert_base
+					  &new_text)
+{
+	paragraph_list my_paragraphs{*this};
+
+	insert_at_location(IN_THREAD, my_paragraphs, word_wrap_width, new_text,
+			   make_function<void ()>([] {}));
+}
+
+void richtext_implObj::insert_at_location(IN_THREAD_ONLY,
+					  paragraph_list &my_paragraphs,
+					  dim_t word_wrap_width,
+					  const richtext_insert_base
+					  &new_text,
+					  const function<void ()> &after_insert)
 {
 	assert_or_throw(new_text.fragment(),
 			"Internal error: null my_fragment in insert()");
-
-	paragraph_list my_paragraphs{*this};
 
 	// Start by inserting the text. insert() returns the number of
 	// inserted paragraph breaks.
@@ -438,6 +449,8 @@ size_t richtext_implObj::insert_at_location(IN_THREAD_ONLY,
 		new_text.fragment()->insert(IN_THREAD,
 					    my_paragraphs,
 					    new_text);
+
+	after_insert();
 
 	if (word_wrap_width > 0)
 	{
@@ -476,46 +489,89 @@ size_t richtext_implObj::insert_at_location(IN_THREAD_ONLY,
 				   word_wrap_width,
 				   orig_fragment, my_fragments);
 	}
-
-	return num_inserted;
 }
+
+struct LIBCXX_HIDDEN richtext_implObj::remove_info {
+
+	const richtextcursorlocationObj *location_a;
+	const richtextcursorlocationObj *location_b;
+
+	std::ptrdiff_t diff;
+
+	remove_info(const richtextcursorlocation &ar,
+		    const richtextcursorlocation &br)
+		: location_a(&*ar), location_b(&*br),
+		diff(location_a->compare(*location_b))
+		{
+
+			if (diff > 0)
+			{
+				location_b=&*ar;
+				location_a=&*br;
+			}
+			else
+			{
+				diff= -diff;
+			}
+		}
+};
 
 void richtext_implObj::remove_at_location(IN_THREAD_ONLY,
 					  dim_t word_wrap_width,
 					  const richtextcursorlocation &ar,
 					  const richtextcursorlocation &br)
 {
-	const richtextcursorlocationObj *location_a=&*ar;
-	const richtextcursorlocationObj *location_b=&*br;
+	remove_info info{ar, br};
 
-	auto diff=location_a->compare(*location_b);
-
-	if (diff == 0)
+	if (info.diff == 0)
 		return; // Too easy
 
-	// Make sure we go from a to b.
+	paragraph_list my_paragraphs{*this};
 
-	if (diff > 0)
-	{
-		location_b=&*ar;
-		location_a=&*br;
-	}
-	else
-	{
-		diff= -diff;
-	}
+	remove_at_location(IN_THREAD, info, my_paragraphs,
+			   word_wrap_width);
+}
 
-	assert_or_throw(location_a->my_fragment &&
-			location_b->my_fragment,
-			"uninitialized fragments in remove_between()");
-
-	auto fragment_a=location_a->my_fragment;
-	auto fragment_b=location_b->my_fragment;
+void richtext_implObj
+::replace_at_location(IN_THREAD_ONLY,
+		      dim_t word_wrap_width,
+		      const richtext_insert_base &new_text,
+		      const richtextcursorlocation &remove_from,
+		      const richtextcursorlocation &remove_to)
+{
+	remove_info info{remove_from, remove_to};
 
 	paragraph_list my_paragraphs{*this};
+
+	insert_at_location(IN_THREAD, my_paragraphs, word_wrap_width,
+			   new_text,
+			   make_function<void ()>
+			   ([&, this]
+			    {
+				    if (info.diff != 0)
+					    remove_at_location(IN_THREAD, info,
+							       my_paragraphs,
+							       0);
+			    }));
+}
+
+void richtext_implObj::remove_at_location(IN_THREAD_ONLY,
+					  const remove_info &info,
+					  paragraph_list &my_paragraphs,
+					  dim_t word_wrap_width)
+{
+	assert_or_throw(info.location_a->my_fragment &&
+			info.location_b->my_fragment,
+			"uninitialized fragments in remove_between()");
+
+	auto fragment_a=info.location_a->my_fragment;
+	auto fragment_b=info.location_b->my_fragment;
+
 	fragment_list fragment_a_list(IN_THREAD,
 				      my_paragraphs,
 				      *fragment_a->my_paragraph);
+
+	auto diff=info.diff;
 
 	if (diff > 1)
 	{
@@ -550,15 +606,14 @@ void richtext_implObj::remove_at_location(IN_THREAD_ONLY,
 		my_paragraphs.recalculation_required();
 	}
 
-	fragment_a->remove(IN_THREAD, location_a->get_offset(),
-			   location_b->get_offset()-
-			   location_a->get_offset(),
+	fragment_a->remove(IN_THREAD, info.location_a->get_offset(),
+			   info.location_b->get_offset()-
+			   info.location_a->get_offset(),
 			   fragment_a_list);
 
 	if (word_wrap_width > 0)
 		rewrap_at_fragment(IN_THREAD, word_wrap_width,
 				   fragment_a, fragment_a_list);
 }
-
 
 LIBCXXW_NAMESPACE_END

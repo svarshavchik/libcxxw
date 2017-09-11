@@ -248,11 +248,10 @@ public:
 	//! locking everything down tightly, and supplying us with the
 	//! word_wrap_width.
 
-	size_t insert_at_location(IN_THREAD_ONLY,
-				  dim_t word_wrap_width,
-				  const richtext_insert_base &new_text);
+	void insert_at_location(IN_THREAD_ONLY,
+				dim_t word_wrap_width,
+				const richtext_insert_base &new_text);
 
- public:
 	//! Remove content between two cursors.
 
 	//! Invoked from the public object's remove_at_location(), after
@@ -263,6 +262,33 @@ public:
 				const richtextcursorlocation &a,
 				const richtextcursorlocation &b);
 
+	//! Combine replace and insert at location, together.
+
+	void replace_at_location(IN_THREAD_ONLY,
+				 dim_t word_wrap_width,
+				 const richtext_insert_base &new_text,
+				 const richtextcursorlocation &remove_from,
+				 const richtextcursorlocation &remove_to);
+
+ private:
+
+	struct remove_info;
+
+	//! Common code shared by remove_at_location() and replace_at_location().
+
+	void remove_at_location(IN_THREAD_ONLY,
+				const remove_info &,
+				paragraph_list &,
+				dim_t);
+	//! Common code shared by remove_at_location() and replace_at_location().
+
+	void insert_at_location(IN_THREAD_ONLY,
+				paragraph_list &my_paragraphs,
+				dim_t word_wrap_width,
+				const richtext_insert_base &new_text,
+				const function<void ()> &after_insert);
+
+ public:
 	// Locate the paragraph containing character #pos
 
 	// Updates pos to reflect the position of the character in the

@@ -2,7 +2,6 @@
 #include "richtext/richtext.H"
 #include "richtext/richtextparagraph.H"
 #include "richtext/richtextmetalink.H"
-#include "richtext/richtextmetalinkcollection.H"
 #include "richtext/fragment_list.H"
 #include "richtext/paragraph_list.H"
 #include "background_color.H"
@@ -219,60 +218,6 @@ void testsplit(const current_fontcollection &font1,
 	}
 }
 
-class linkObj : public richtextmetalinkObj {
-
-public:
-
-	linkObj()=default;
-	~linkObj()=default;
-	void override_text_markup(richtextmeta &markup) const override {}
-
-	void event(enum event_t) const override {}
-};
-
-typedef LIBCXX_NAMESPACE::ref<linkObj> my_link;
-
-void testlink(const current_fontcollection &font1,
-	      const current_fontcollection &font2,
-	      const main_window &w)
-{
-	auto black=w->get_screen()->impl->create_background_color("0%");
-
-	richtextstring ustring{
-		U"AAAAAAAAAAAAAAA",
-		{
-			{0, {black, font1}},
-			{10, {black, font2}},
-		}};
-
-	auto f=richtextmetalinkcollection::create();
-
-	f->emplace_back(0, 5, my_link::create());
-
-	f->emplace_back(8, 4, my_link::create());
-
-	f->emplace_back(13, 2, my_link::create());
-
-	f->apply(ustring);
-
-	std::ostringstream o;
-
-	for (const auto &e: ustring.get_meta())
-	{
-		o << e.first << ' ' << (e.second.getfont() == font1 ? "1":"2")
-		  << ' ' << e.second.link.null() << ';';
-	}
-
-	if (o.str() !=
-	    "0 1 0;"
-	    "5 1 1;"
-	    "8 1 0;"
-	    "10 2 0;"
-	    "12 2 1;"
-	    "13 2 0;")
-		throw EXCEPTION("textlink() failed: " << o.str());
-}
-
 void testresolvedfonts(const current_fontcollection &font1,
 		       const current_fontcollection &font2,
 		       const main_window &w)
@@ -442,7 +387,6 @@ int main(int argc, char **argv)
 		testresolvedfonts(font1, font2, mw);
 		testrichtext(font1, font2, mw);
 		testsplit(font1, font2, mw);
-		testlink(font1, font2, mw);
 	} catch (const LIBCXX_NAMESPACE::exception &e)
 	{
 		std::cerr << e << std::endl;

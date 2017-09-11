@@ -219,13 +219,10 @@ class LIBCXX_HIDDEN richtextObj : virtual public obj {
 	//! Invoked from richtextiterator->insert() after a thread_lock().
 	//! Passes a richtextcursorlocation that must have the
 	//! do_not_adjust_in_insert flag set.
-	//!
-	//! See richtextfragmentObj::insert() for the description of the
-	//! return value.
 
-	size_t insert_at_location(IN_THREAD_ONLY,
-				  impl_t::lock &lock,
-				  const richtext_insert_base &new_text);
+	void insert_at_location(IN_THREAD_ONLY,
+				impl_t::lock &lock,
+				const richtext_insert_base &new_text);
 
 
 	//! Remove text.
@@ -236,6 +233,14 @@ class LIBCXX_HIDDEN richtextObj : virtual public obj {
 				impl_t::lock &lock,
 				const richtextcursorlocation &a,
 				const richtextcursorlocation &b);
+
+	//! Combine remove with insert.
+
+	void replace_at_location(IN_THREAD_ONLY,
+				 impl_t::lock &lock,
+				 const richtext_insert_base &new_text,
+				 const richtextcursorlocation &remove_from,
+				 const richtextcursorlocation &remove_to);
 
 	//! Calculate a location's position'
 

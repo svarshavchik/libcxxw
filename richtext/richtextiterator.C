@@ -8,7 +8,7 @@
 #include "richtext/richtext.H"
 #include "richtext/richtext_insert.H"
 #include "richtext/richtextcursorlocation.H"
-
+#include "messages.H"
 #include <utility>
 LIBCXXW_NAMESPACE_START
 
@@ -190,7 +190,7 @@ void richtextiteratorObj::end_of_line()
 //
 // insert_callback_func defines the signature for this.
 
-typedef size_t insert_callback_func(const richtext_insert_base &);
+typedef void insert_callback_func(const richtext_insert_base &);
 
 // The next level of type-erase takes a richtextcursorlocation, and
 // invokes a type-erased function which takes the insert_callback_func as
@@ -201,7 +201,7 @@ typedef size_t insert_callback_func(const richtext_insert_base &);
 struct LIBCXX_HIDDEN richtextiteratorObj::internal_insert {
 
 
-	virtual size_t
+	virtual void
 		operator()( const richtextcursorlocation &l,
 			    const function< insert_callback_func > &) const=0;
 };
@@ -223,18 +223,18 @@ class LIBCXX_HIDDEN richtextiteratorObj::internal_insert_impl
 
 	internal_insert_impl(const type &s) : s{s} {}
 
-	size_t operator()( const richtextcursorlocation &l,
-			   const function< insert_callback_func> &f)
+	void operator()( const richtextcursorlocation &l,
+			 const function< insert_callback_func> &f)
 		const override
 	{
-		return f( richtext_insert<type>(l, s) );
+		f( richtext_insert<type>(l, s) );
 	}
 };
 
 // We have now reduced insert()s to constructing an internal_insert
 // subclass, and invoking the private function.
 
-std::pair<richtextiterator, size_t>
+richtextiterator
 richtextiteratorObj::insert(IN_THREAD_ONLY,
 			    const richtextstring &new_string)
 {
@@ -242,53 +242,83 @@ richtextiteratorObj::insert(IN_THREAD_ONLY,
 		      internal_insert_impl<richtextstring>{new_string});
 }
 
-std::pair<richtextiterator, size_t>
-richtextiteratorObj::insert(IN_THREAD_ONLY,
-			    const std::u32string_view &new_string)
+richtextiterator richtextiteratorObj::insert(IN_THREAD_ONLY,
+					     const std::u32string_view
+					     &new_string)
 {
 	return insert(IN_THREAD,
 		      internal_insert_impl<std::u32string_view>
 		      {new_string});
 }
 
+void richtextiteratorObj::replace(IN_THREAD_ONLY,
+				  const const_richtextiterator &other,
+				  const richtextstring &new_string) const
+{
+	replace(IN_THREAD,
+		other,
+		internal_insert_impl<richtextstring>{new_string});
+}
+
+void richtextiteratorObj::replace(IN_THREAD_ONLY,
+				  const const_richtextiterator &other,
+				  const std::u32string_view &new_string) const
+{
+	replace(IN_THREAD,
+		other,
+		internal_insert_impl<std::u32string_view>
+		{new_string});
+}
+
 // This handles the common insert() code. The type of the inserted string
 // is effectively type-erased in the new_string.
 
-std::pair<richtextiterator, size_t>
-richtextiteratorObj::insert(IN_THREAD_ONLY,
-			    const internal_insert &new_string)
+struct LIBCXX_HIDDEN richtextiteratorObj::insert_lock {
+
+	richtextObj::impl_t::lock &lock;
+};
+
+richtextiterator richtextiteratorObj::insert(IN_THREAD_ONLY,
+					     const internal_insert &new_string)
 {
 	return my_richtext->thread_lock
 		(IN_THREAD,
 		 [&, this]
 		 (IN_THREAD_ONLY, auto &lock)
 		 {
-			 auto orig=richtextiterator::create(*this);
+			 insert_lock wrapper{lock};
 
-			 // Clone the insert position, and tell the insert
-			 // code not to adjust it, temporarily.
-
-			 orig->my_location->do_not_adjust_in_insert=true;
-
-			 // We now type-erase the insert_callback_func
-			 // to complete the process of constructing the
-			 // appropriate insert_richtext subclass, and
-			 // invoking insert_at_location().
-
-			 auto n=new_string
-				 (orig->my_location,
-				  make_function<insert_callback_func>
-				  ([&, this]
-				   (const richtext_insert_base &s) {
-					  return this->my_richtext
-					  ->insert_at_location
-					  (IN_THREAD, lock, s);
-				 }));
-
-			 orig->my_location->do_not_adjust_in_insert=false;
-
-			 return std::make_pair(orig, n);
+			 return this->insert(IN_THREAD, wrapper, new_string);
 		 });
+}
+
+richtextiterator richtextiteratorObj::insert(IN_THREAD_ONLY,
+					     struct insert_lock &wrapper,
+					     const internal_insert &new_string)
+{
+	auto orig=richtextiterator::create(*this);
+
+	// Clone the insert position, and tell the insert
+	// code not to adjust it, temporarily.
+
+	orig->my_location->do_not_adjust_in_insert=true;
+
+	// We now type-erase the insert_callback_func
+	// to complete the process of constructing the
+	// appropriate insert_richtext subclass, and
+	// invoking insert_at_location().
+
+	new_string(orig->my_location,
+		   make_function<insert_callback_func>
+		   ([&, this]
+		    (const richtext_insert_base &s) {
+			   this->my_richtext->insert_at_location
+				   (IN_THREAD, wrapper.lock, s);
+		   }));
+
+	orig->my_location->do_not_adjust_in_insert=false;
+
+	return orig;
 }
 
 void richtextiteratorObj::remove(IN_THREAD_ONLY,
@@ -306,6 +336,61 @@ void richtextiteratorObj::remove(IN_THREAD_ONLY,
 							 my_location,
 							 other->my_location);
 		 });
+}
+
+void richtextiteratorObj::replace(IN_THREAD_ONLY,
+				  const const_richtextiterator &other,
+				  const internal_insert &new_string) const
+{
+	auto c=compare(other);
+
+	if (c == 0)
+		throw EXCEPTION(_("Cannot replace empty text, sorry."));
+
+	if (c > 0)
+	{
+		other->replace(IN_THREAD, const_richtextiterator(this),
+			       new_string);
+		return;
+	}
+
+	my_richtext->thread_lock
+		(IN_THREAD,
+		 [&, this]
+		 (IN_THREAD_ONLY, auto &lock)
+		 {
+			 insert_lock wrapper{lock};
+
+			 this->replace(IN_THREAD, wrapper,
+				       other, new_string);
+		 });
+}
+
+void richtextiteratorObj::replace(IN_THREAD_ONLY,
+				  struct insert_lock &wrapper,
+				  const const_richtextiterator &other,
+				  const internal_insert &new_string) const
+{
+	auto orig=const_richtextiterator::create(*other);
+
+	// Clone the end of the insert position, and tell the insert
+	// code not to adjust it, temporarily.
+
+	orig->my_location->do_not_adjust_in_insert=true;
+
+	// We now type-erase the insert_callback_func
+	// to complete the process of constructing the
+	// appropriate insert_richtext subclass, and
+	// invoking insert_at_location().
+
+	new_string(orig->my_location,
+		   make_function<insert_callback_func>
+		   ([&, this]
+		    (const richtext_insert_base &s) {
+			   this->my_richtext->replace_at_location
+				   (IN_THREAD, wrapper.lock, s,
+				    this->my_location, orig->my_location);
+		   }));
 }
 
 richtextiteratorObj::at_info richtextiteratorObj::at(IN_THREAD_ONLY) const

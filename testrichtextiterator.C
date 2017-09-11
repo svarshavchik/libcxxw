@@ -2,7 +2,6 @@
 #include "richtext/richtext.H"
 #include "richtext/richtextiterator.H"
 #include "richtext/richtextmetalink.H"
-#include "richtext/richtextmetalinkcollection.H"
 #include "richtext/richtextiterator.H"
 #include "richtext/fragment_list.H"
 #include "richtext/paragraph_list.H"
@@ -92,7 +91,7 @@ void testrichtext1(const main_window &w,
 			{
 				{0, {black, font2}}
 			}
-		}).first;
+		});
 
 	assert_or_throw(o->debug_get_location()->my_fragment->my_paragraph
 			->num_chars == 6,
@@ -380,7 +379,7 @@ void testrichtext2(const main_window &w,
 				"before insert, unexpected cursor position's"
 				" value");
 
-		auto o=b->insert(IN_THREAD, ustring).first;
+		auto o=b->insert(IN_THREAD, ustring);
 
 		orig.insert(orig.begin()+test.insert_pos,
 			    insert_string.begin(),
@@ -712,11 +711,65 @@ void testrichtext5(const main_window &w,
 		validate_richtext(IN_THREAD, richtext, shouldbe,
 				  "testrichtext5, after insert");
 
-		insert_pos->remove(IN_THREAD, before_insert.first);
+		insert_pos->remove(IN_THREAD, before_insert);
 
 		validate_richtext(IN_THREAD, richtext, test_string,
 				  "testrichtext5, after remove");
 	}
+}
+
+void testrichtext6(const main_window &w,
+		   const current_fontcollection &font1,
+		   const current_fontcollection &font2)
+{
+	auto thread_=w->get_screen()->impl->thread;
+
+	auto black=w->get_screen()->impl->create_background_color("0%");
+
+	richtextstring ustring{
+		U"Hello---world ",
+		{
+			{0, {black, font1}},
+		}};
+
+	auto richtext=richtext::create(ustring, halign::left, 0);
+
+	auto b=richtext->at(5);
+	auto e=richtext->at(8);
+
+	ustring={
+		U" ",
+		{
+			{0, {black, font2}},
+		}};
+
+	e->replace(IN_THREAD, b, ustring);
+
+	validate_richtext(IN_THREAD, richtext, "Hello world ", "replace()");
+
+	if (b->at(IN_THREAD).character != ' ')
+		throw EXCEPTION("Beginning iterator changed");
+	if (e->at(IN_THREAD).character != 'w')
+		throw EXCEPTION("Ending iterator changed");
+
+	auto s=b->get(e);
+
+	if (s.get_string() != U" " ||
+	    s.get_meta() != std::vector<std::pair<size_t, richtextmeta>>{
+		    {0, {black, font2}}
+	    })
+		throw EXCEPTION("Return value from replace()");
+
+	s=b->begin()->get(b->end());
+
+	if (s.get_string() != U"Hello world" ||
+	    s.get_meta() != std::vector<std::pair<size_t, richtextmeta>>{
+		    {0, {black, font1}},
+		    {5, {black, font2}},
+		    {6, {black, font1}}
+	    })
+		throw EXCEPTION("Entire text after replace()");
+
 }
 
 int main(int argc, char **argv)
@@ -757,6 +810,7 @@ int main(int argc, char **argv)
 		testrichtext3(mw, font1);
 		testrichtext4(mw, font1);
 		testrichtext5(mw, font2);
+		testrichtext6(mw, font1, font2);
 	} catch (const LIBCXX_NAMESPACE::exception &e)
 	{
 		std::cerr << e << std::endl;

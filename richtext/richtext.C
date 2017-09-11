@@ -540,13 +540,13 @@ richtextiterator richtextObj::at(internal_richtext_impl_t::lock &lock, size_t np
 					npos);
 }
 
-size_t richtextObj::insert_at_location(IN_THREAD_ONLY,
+void richtextObj::insert_at_location(IN_THREAD_ONLY,
 				       impl_t::lock &lock,
 				       const richtext_insert_base &new_text)
 {
-	return (*lock)->insert_at_location(IN_THREAD,
-					   word_wrap_width(IN_THREAD),
-					   new_text);
+	(*lock)->insert_at_location(IN_THREAD,
+				    word_wrap_width(IN_THREAD),
+				    new_text);
 }
 
 void richtextObj::remove_at_location(IN_THREAD_ONLY,
@@ -557,6 +557,17 @@ void richtextObj::remove_at_location(IN_THREAD_ONLY,
 	return (*lock)->remove_at_location(IN_THREAD,
 					   word_wrap_width(IN_THREAD),
 					   a, b);
+}
+
+void richtextObj::replace_at_location(IN_THREAD_ONLY,
+				      impl_t::lock &lock,
+				      const richtext_insert_base &new_text,
+				      const richtextcursorlocation &remove_from,
+				      const richtextcursorlocation &remove_to)
+{
+	return (*lock)->replace_at_location(IN_THREAD,
+					    word_wrap_width(IN_THREAD),
+					    new_text, remove_from, remove_to);
 }
 
 size_t richtextObj::pos(const internal_richtext_impl_t::lock &lock,

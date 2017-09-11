@@ -576,10 +576,6 @@ libcxxw_la_SOURCES=\
 	richtext/richtextmetalink.H		    \
 	richtext/richtextmetalinkfwd.H		    \
 	richtext/richtextmetalinkobj.H		    \
-	richtext/richtextmetalinkcollection.C	    \
-	richtext/richtextmetalinkcollection.H	    \
-	richtext/richtextmetalinkcollectionfwd.H    \
-	richtext/richtextmetalinkcollectionobj.H    \
 	richtext/richtextparagraph.C		    \
 	richtext/richtextparagraph.H		    \
 	richtext/richtextparagraphfwd.H		    \
