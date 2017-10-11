@@ -719,7 +719,7 @@ bool scrollbarObj::implObj::process_button_event(IN_THREAD_ONLY,
 			if (within_boundaries)
 			{
 				auto clicked_pixel_value=
-					coord_t::truncate(r.*(orientation
+					scroll_v_t::truncate(r.*(orientation
 							      .major_coord));
 				auto what=metrics.pixel_to_value
 					(clicked_pixel_value);
@@ -755,7 +755,7 @@ bool scrollbarObj::implObj::process_button_event(IN_THREAD_ONLY,
 	// Figure out what was pressed.
 
 	auto clicked_pixel_value=
-			coord_t::truncate(r.*(orientation.major_coord));
+			scroll_v_t::truncate(r.*(orientation.major_coord));
 	auto what=metrics.pixel_to_value(clicked_pixel_value);
 
 	if (what.lo)
@@ -859,7 +859,7 @@ void scrollbarObj::implObj::report_motion_event(IN_THREAD_ONLY,
 	// handlebar's size, then see what it says.
 
 	auto v=metrics.pixel_to_value
-		(coord_t::truncate
+		(scroll_v_t::truncate
 		 (pointer_pos+scroll_low_size(IN_THREAD)+
 		  scroll_v_t::truncate(metrics.handlebar_pixel_size/2)));
 
