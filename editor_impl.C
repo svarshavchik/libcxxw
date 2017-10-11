@@ -240,7 +240,7 @@ editorObj::implObj::implObj(const ref<editor_peephole_implObj> &parent_peephole,
 		       parent_peephole, config.alignment, 0,
 		       std::move(string),
 		       default_meta,
-		       allow_links,
+		       false,
 		       "textedit@libcxx"),
 	  cursor(this->text->end()),
 	  on_change_thread_only( [](const auto &) {} ),
@@ -277,6 +277,7 @@ void editorObj::implObj::theme_updated(IN_THREAD_ONLY,
 void editorObj::implObj::compute_preferred_width(IN_THREAD_ONLY)
 {
 	preferred_width=config.oneline() ? 0:nominal_width(IN_THREAD);
+	rewrap(IN_THREAD);
 }
 
 dim_t editorObj::implObj::nominal_width(IN_THREAD_ONLY) const

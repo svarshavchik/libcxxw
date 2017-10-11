@@ -172,7 +172,7 @@ create_peephole_toplevel_impl(const ref<containerObj::implObj> &toplevel,
 
 
 
-	row0_factory->halign(style.h_alignment);
+	row0_factory->halign(halign::fill);
 	row0_factory->created_internally(peephole_element);
 
 	auto row1_factory=toplevel_grid->append_row();

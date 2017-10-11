@@ -319,8 +319,7 @@ void peepholeObj::layoutmanager_implObj
 	// Stretch the combo-box's peephole to fill its alloted width.
 	if (element_pos.width < current_position.width)
 	{
-		if (style.h_alignment == halign::fill)
-			element_pos.width=current_position.width;
+		element_pos.width=current_position.width;
 	}
 	// If the maximum requested size exceeds the peephole's size,
 	// truncate it down (this will also chop off the infinite() requested
