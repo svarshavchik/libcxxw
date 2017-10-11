@@ -1,0 +1,7 @@
+<class name="filedircontentsObj::implObj">
+  <method name="next_chunk">
+    <comment>
+      //! Send the next chunk of the initial contents of the monitored directory.
+    </comment>
+  </method>
+</class>

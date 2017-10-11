@@ -1,6 +1,7 @@
 /*.bz2
 /*.gz
 *.inc.[CH]
+*.msgs.H
 INSTALL
 Makefile
 Makefile.in
@@ -14,7 +15,6 @@ config.sub
 configure
 /ABOUT-NLS
 /compile
-/connection_thread.msgs.H
 /cxxw
 /cxxwoptions.H
 /depcomp
@@ -38,6 +38,7 @@ suppressfile*
 /testcollapse
 /testcombobox
 /testderivedaxis
+/testfiledircontents
 /testfocusable
 /testgrid
 /testimagebuttons

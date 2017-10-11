@@ -148,6 +148,16 @@ libcxxw_la_SOURCES=\
 	dialog_handler.C			    \
 	dialog_handler.H			    \
 	dimarg.C				    \
+	dirlisting/filedircontents.C		    \
+	dirlisting/filedircontents.H		    \
+	dirlisting/filedircontentsfwd.H		    \
+	dirlisting/filedircontentsobj.H		    \
+	dirlisting/filedircontents_impl.C	    \
+	dirlisting/filedircontents_impl.H	    \
+	dirlisting/filedir_file.C		    \
+	dirlisting/filedir_file.H		    \
+	dirlisting/filedir_filefwd.H		    \
+	dirlisting/filedir_fileobj.H		    \
 	drawable.C				    \
 	drawable.H				    \
 	drawable_impl.C				    \
@@ -710,9 +720,12 @@ EXTRA_DIST = config.rpath m4/ChangeLog COPYING \
 
 $(call THREADMSGDISPATCHER_GEN,connection_thread.msgs.H, connection_thread.msgs.xml)
 
+$(call THREADMSGDISPATCHER_GEN,dirlisting/filedircontents_impl.msgs.H,dirlisting/filedircontents_impl.msgs.xml)
+
 TESTPROGRAMS=\
 	testcollapse					\
 	testderivedaxis					\
+	testfiledircontents				\
 	testfocusable					\
 	testgrid					\
 	testrichtextstring				\
@@ -766,6 +779,10 @@ testcollapse_LDFLAGS=-static
 testderivedaxis_SOURCES=testderivedaxis.C
 testderivedaxis_LDADD=libcxxw.la
 testderivedaxis_LDFLAGS=$(TESTLINKTYPE)
+
+testfiledircontents_SOURCES=testfiledircontents.C
+testfiledircontents_LDADD=libcxxw.la
+testfiledircontents_LDFLAGS=-static $(STATICLINKFLAGS)
 
 testfocusable_SOURCES=testfocusable.C
 testfocusable_LDADD=-lcxx
