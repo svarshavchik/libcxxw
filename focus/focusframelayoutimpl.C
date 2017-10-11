@@ -24,6 +24,10 @@ focusframelayoutimplObj
 		       ->get_theme_border(on_border))
 
 {
+	requested_col_width(0, 100);
+	requested_row_height(0, 100);
+	col_alignment(0, halign::fill);
+	row_alignment(0, valign::fill);
 }
 
 focusframelayoutimplObj::~focusframelayoutimplObj()=default;

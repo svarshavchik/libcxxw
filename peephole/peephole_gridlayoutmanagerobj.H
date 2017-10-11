@@ -20,7 +20,9 @@ class LIBCXX_HIDDEN peephole_gridlayoutmanagerObj
 
  public:
 
-	using gridlayoutmanagerObj::implObj::implObj;
+	//! Constructor
+	peephole_gridlayoutmanagerObj(const ref<containerObj::implObj>
+				      &container_impl);
 
 	//! Return the peephole container.
 

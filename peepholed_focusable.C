@@ -123,6 +123,13 @@ create_peepholed_focusable_with_frame_impl
 			 new_container_factory->padding(0);
 			 new_container_factory->border(args.border);
 
+			 // The focus frame carries the same treatment.
+			 // it gets 100% of its space, and is filled.
+			 new_container_glm->requested_col_width(0, 100);
+			 new_container_glm->requested_row_height(0, 100);
+			 new_container_factory->halign(halign::fill);
+			 new_container_factory->valign(valign::fill);
+
 			 ff_factory=new_container_factory;
 
 			 // Create the focusframe implementation object, first.

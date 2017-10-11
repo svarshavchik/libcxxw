@@ -161,7 +161,7 @@ void testcombobox(const testcombobox_options &options)
 
 			 factory=layout->append_row();
 
-			 factory->halign(halign::center)
+			 factory->halign(halign::fill)
 			 .create_normal_button_with_label({"Append"},{"Alt", 'A'})
 			 ->on_activate([combobox, i=0](const auto &) mutable {
 					 standard_comboboxlayoutmanager lm=
@@ -176,7 +176,7 @@ void testcombobox(const testcombobox_options &options)
 
 			 factory=layout->append_row();
 
-			 factory->halign(halign::center)
+			 factory->halign(halign::fill)
 			 .create_normal_button_with_label("Delete")
 			 ->on_activate([combobox](const auto &) {
 					 standard_comboboxlayoutmanager lm=
