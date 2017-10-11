@@ -13,7 +13,6 @@
 LIBCXXW_NAMESPACE_START
 
 class richtextObj;
-class richtextBase;
 
 //! A list of text paragraphs.
 
@@ -26,7 +25,7 @@ class richtextBase;
 //! current contents of the rich text. This is required in order to finish
 //! construction of this object.
 
-typedef ref<richtextObj, richtextBase> richtext;
+typedef ref<richtextObj> richtext;
 
 LIBCXXW_NAMESPACE_END
 

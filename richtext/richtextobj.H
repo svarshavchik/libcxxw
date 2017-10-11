@@ -60,6 +60,11 @@ class LIBCXX_HIDDEN richtextObj : virtual public obj {
 	THREAD_DATA_ONLY(word_wrap_width);
 
 	//! Constructor
+	richtextObj(const richtextstring &string,
+		    halign alignment,
+		    dim_t word_wrap_width);
+
+	//! Constructor
 	richtextObj(const ref<richtext_implObj> &impl,
 		    dim_t word_wrap_width);
 

@@ -14,27 +14,6 @@
 
 LIBCXXW_NAMESPACE_START
 
-class richtextBase {
-
-public:
-
-	static richtext create(const richtextstring &string,
-			       halign alignment, dim_t initial_width);
-
-	template<typename ref_type>
-	class objfactory {
-
-	public:
-		static inline ref_type create(const richtextstring &string,
-					      halign alignment,
-					      dim_t initial_width)
-		{
-			return richtextBase::create(string, alignment,
-						    initial_width);
-		}
-	};
-};
-
 LIBCXXW_NAMESPACE_END
 
 #endif

@@ -189,8 +189,7 @@ void textlabelObj::implObj::update(IN_THREAD_ONLY, const text_param &string)
 
 void textlabelObj::implObj::compute_preferred_width(IN_THREAD_ONLY)
 {
-	auto screen=get_label_element_impl()
-		.get_screen()->impl;
+	auto screen=get_label_element_impl().get_screen()->impl;
 	preferred_width=0;
 	if (word_wrap_widthmm(IN_THREAD) == 0)
 		return;
@@ -205,6 +204,10 @@ void textlabelObj::implObj::compute_preferred_width(IN_THREAD_ONLY)
 
 void textlabelObj::implObj::initialize(IN_THREAD_ONLY)
 {
+	auto screen=get_label_element_impl().get_screen()->impl;
+	auto current_theme=*current_theme_t::lock{screen->current_theme};
+	text->theme_updated(IN_THREAD, current_theme);
+
 	compute_preferred_width(IN_THREAD);
 
 	updated(IN_THREAD);

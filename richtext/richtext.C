@@ -19,12 +19,11 @@
 
 LIBCXXW_NAMESPACE_START
 
-richtext richtextBase::create(const richtextstring &string,
-			      halign alignment, dim_t initial_width)
+richtextObj::richtextObj(const richtextstring &string,
+			 halign alignment, dim_t initial_width)
+	: richtextObj(ref<richtext_implObj>
+		      ::create(string, alignment), initial_width)
 {
-	return ptrref_base::objfactory<richtext>
-		::create(ref<richtext_implObj>
-			 ::create(string, alignment), initial_width);
 }
 
 richtextObj::richtextObj(const ref<richtext_implObj> &impl,
