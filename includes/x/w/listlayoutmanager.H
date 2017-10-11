@@ -17,6 +17,7 @@
 #include <x/w/busyfwd.H>
 #include <string>
 #include <functional>
+#include <unordered_map>
 
 LIBCXXW_NAMESPACE_START
 
@@ -81,6 +82,15 @@ class LIBCXX_HIDDEN new_listlayoutmanager : public new_focusable_layoutmanager {
 	//! This is not the number of character, but the number of
 	//! elements in each list item. The default is 1.
 	size_t columns;
+
+	//! Relative width of columns.
+
+	//! If the selection list is filled horizontally, inside its parent
+	//! grid layout manager, the additional space goes to these columns.
+	std::unordered_map<size_t, int> requested_col_widths;
+
+	//! Alignment of all columns.
+	std::unordered_map<size_t, halign> col_alignments;
 
 	//! Padding above and below each list item
 	std::string v_padding;

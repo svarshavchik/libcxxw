@@ -105,6 +105,14 @@ make_peepholed_list(const ref<peepholeObj::implObj> &peephole_parent,
 	internal_listlayoutmanager_impl->style
 		.initialize(internal_listlayoutmanager_impl);
 
+	for (const auto &rw:style.requested_col_widths)
+		internal_listlayoutmanager_impl
+			->requested_col_width(rw.first, rw.second);
+
+	for (const auto &a:style.col_alignments)
+		internal_listlayoutmanager_impl
+			->col_alignment(a.first, a.second);
+
 	container->show();
 
 	return container;
