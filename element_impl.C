@@ -262,7 +262,7 @@ void elementObj::implObj
 	// Notify handlers that we just shown or hidden this element.
 
 	invoke_element_state_updates(IN_THREAD,
-				     data(IN_THREAD).requested_visibility
+				     info.flag
 				     ? element_state::after_showing
 				     : element_state::after_hiding);
 }
@@ -473,7 +473,12 @@ element_state elementObj::implObj
 
 	return element_state{
 		element_state_for,
-		current_data.actual_visibility,
+			// We send this update any time inherited visibility
+			// changes, see do_inherited_visibility_updated().
+		current_data.inherited_visibility,
+			// We send this update any time current_position
+			// changes. update_current_position() calls
+			// notify_updated_position().
 		current_data.current_position
 			};
 }
