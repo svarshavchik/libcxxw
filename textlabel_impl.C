@@ -146,14 +146,15 @@ textlabelObj::implObj::implObj(halign alignment,
 			       richtextstring &&string,
 			       const richtext &text,
 			       const richtextmeta &default_meta,
-			       bool allow_links)
+			       bool allow_links_param)
 	: word_wrap_widthmm_thread_only(initial_width),
 	  hotspot_info_thread_only(create_hotspot_info(string, text)),
 	  ordered_hotspots(rebuild_ordered_hotspots(hotspot_info_thread_only)),
 	  text(text),
-	  hotspot_cursor(text->begin()),
+	  hotspot_cursor(allow_links_param ? (richtextiteratorptr)text->begin()
+			 : richtextiteratorptr{}),
 	  default_meta(default_meta),
-	  allow_links(allow_links)
+	  allow_links(allow_links_param)
 {
 	if (std::isnan(initial_width))
 		initial_width=0;
@@ -440,7 +441,7 @@ bool textlabelObj::implObj::process_key_event(IN_THREAD_ONLY,
 void textlabelObj::implObj::report_motion_event(IN_THREAD_ONLY,
 						const motion_event &me)
 {
-	if (hotspot_info(IN_THREAD).empty())
+	if (hotspot_info(IN_THREAD).empty() || !hotspot_cursor)
 		return; // Shortcut
 
 	bool flag=hotspot_cursor->moveto(IN_THREAD, me.x, me.y);

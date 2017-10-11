@@ -88,7 +88,7 @@ class LIBCXX_HIDDEN textlabelObj::implObj : virtual public obj {
 
 	//! A cursor we use to determine whether the pointer is in a hotspot.
 
-	const richtextiterator hotspot_cursor;
+	const richtextiteratorptr hotspot_cursor;
 
 	//! Default meta that was used to create the rich text
 
