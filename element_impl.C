@@ -697,7 +697,22 @@ void elementObj::implObj::clear_to_color(IN_THREAD_ONLY,
 	CLEAR_TO_COLOR_LOG();
 #endif
 
-	for (const auto &area:areas)
+	// Take the viewport, and mask out the areas we're clearing.
+	// If we have a large element inside a peephole, this avoids us having
+	// to allocate a huge scratch buffer, with most of it being unused.
+
+	rectangle_set absareas;
+
+	for (auto area:di.element_viewport)
+	{
+		area.x = coord_t::truncate(area.x-di.absolute_location.x);
+		area.y = coord_t::truncate(area.y-di.absolute_location.y);
+		absareas.insert(area);
+	}
+
+	absareas=intersect(absareas, areas);
+
+	for (const auto &area : absareas)
 	{
 #ifdef CLEAR_TO_COLOR_RECT
 		CLEAR_TO_COLOR_RECT();
