@@ -44,6 +44,21 @@ void gridlayoutmanagerObj::implObj
 	(*lock)->padding_recalculated();
 }
 
+void gridlayoutmanagerObj::implObj
+::requested_row_height(size_t row, int percentage)
+{
+	if (percentage < 0)
+		percentage=0;
+
+	if (percentage > 100)
+		percentage=100;
+
+	grid_map_t::lock lock{grid_map};
+
+	(*lock)->row_defaults[row].axis_size=percentage;
+	(*lock)->padding_recalculated();
+}
+
 gridfactory gridlayoutmanagerObj::implObj
 ::create_gridfactory(layoutmanagerObj *public_object,
 		     size_t row, size_t col)

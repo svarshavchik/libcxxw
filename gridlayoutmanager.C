@@ -123,16 +123,7 @@ void gridlayoutmanagerObj::default_row_border(size_t row,
 
 void gridlayoutmanagerObj::requested_row_height(size_t row, int percentage)
 {
-	if (percentage < 0)
-		percentage=0;
-
-	if (percentage > 100)
-		percentage=100;
-
-	grid_map_t::lock lock{impl->grid_map};
-
-	(*lock)->row_defaults[row].axis_size=percentage;
-	(*lock)->padding_recalculated();
+	impl->requested_row_height(row, percentage);
 }
 
 void gridlayoutmanagerObj::row_alignment(size_t row, valign alignment)

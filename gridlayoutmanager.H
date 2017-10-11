@@ -39,6 +39,11 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 	//! \see gridlayoutmanager
 	void requested_col_width(size_t col, int percentage);
 
+	//! Set requested row height.
+
+	//! \see gridlayoutmanager
+	void requested_row_height(size_t row, int percentage);
+
 	//! Create a gridfactory for me.
 
 	gridfactory create_gridfactory(//! The public layout manager object.
