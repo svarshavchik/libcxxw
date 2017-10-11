@@ -8,6 +8,7 @@
 #include "x/w/listlayoutmanager.H"
 #include "listlayoutmanager/listcontainer_impl.H"
 #include "listlayoutmanager/listlayoutmanager.H"
+#include "listlayoutmanager/listcontainer_dim_element.H"
 #include "popup/popup.H"
 #include "popup/popup_attachedto_info.H"
 #include "popup/popup_attachedto_handler.H"
@@ -30,7 +31,7 @@ LIBCXXW_NAMESPACE_START
 
 typedef always_visibleObj<
 	peepholed_toplevel_listcontainer_impl_elementObj<
-		listcontainerObj::implObj>
+		listcontainer_dim_elementObj<listcontainerObj::implObj>>
 	> p_t_l_impl_t;
 
 //! Typedef alias.

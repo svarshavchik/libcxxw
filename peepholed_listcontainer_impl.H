@@ -7,6 +7,7 @@
 
 #include "peepholed_listcontainerobj.H"
 #include "listlayoutmanager/listcontainer_impl.H"
+#include "listlayoutmanager/listcontainer_dim_elementfwd.H"
 #include "reference_font_elementfwd.H"
 #include "x/w/containerobj.H"
 #include "x/w/listlayoutmanagerfwd.H"
@@ -18,10 +19,12 @@ LIBCXXW_NAMESPACE_START
 //! \see peepholed_listcontainer
 
 class LIBCXX_HIDDEN peepholed_listcontainerObj::implObj
-	: public reference_font_elementObj<listcontainerObj::implObj> {
+	: public reference_font_elementObj<listcontainer_dim_elementObj
+					   <listcontainerObj::implObj>> {
 
 	//! The superclass
-	typedef reference_font_elementObj<listcontainerObj::implObj
+	typedef reference_font_elementObj<listcontainer_dim_elementObj
+					  <listcontainerObj::implObj>
 					  > superclass_t;
 
  public:

@@ -5,6 +5,7 @@
 #include "libcxxw_config.h"
 
 #include "peepholed_listcontainer_impl.H"
+#include "listlayoutmanager/listcontainer_dim_element.H"
 #include "reference_font_element.H"
 #include "x/w/listlayoutmanager.H"
 
@@ -20,7 +21,7 @@ const char *peepholed_listcontainerObj::implObj::label_theme_font() const
 peepholed_listcontainerObj::implObj
 ::implObj(const ref<containerObj::implObj> &parent,
 	  const new_listlayoutmanager &style)
-	: superclass_t(default_list_font, parent, style),
+	: superclass_t(default_list_font, style, parent, style),
 	  rows(style.rows)
 {
 }

@@ -169,18 +169,10 @@ void listlayoutstyle_common
 {
 	auto container_impl=lilm->container_impl;
 
-	auto v_padding=
-		static_cast<themedim_element<listcontainer_dim_v> &>
-		(*container_impl).getref();
-	auto left_padding=
-		static_cast<themedim_element<listcontainer_dim_left> &>
-		(*container_impl).getref();
-	auto inner_padding=
-		static_cast<themedim_element<listcontainer_dim_inner> &>
-		(*container_impl).getref();
-	auto right_padding=
-		static_cast<themedim_element<listcontainer_dim_right> &>
-		(*container_impl).getref();
+	auto v_padding=container_impl->list_v_padding();
+	auto left_padding=container_impl->list_left_padding();
+	auto inner_padding=container_impl->list_inner_padding();
+	auto right_padding=container_impl->list_right_padding();
 
 	listitemcontainerptr first_listitem;
 

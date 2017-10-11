@@ -8,20 +8,15 @@
 #include "listcontainer.H"
 #include "child_element.H"
 #include "container_elementfwd.H"
-#include "themedim_elementfwd.H"
 #include "hotspot_elementfwd.H"
 #include "background_color_elementfwd.H"
+#include "themedimfwd.H"
 #include "x/w/listlayoutmanagerfwd.H"
 #include "x/w/focus.H"
 #include "x/w/elementfwd.H"
 #include "focus/focusable.H"
 
 LIBCXXW_NAMESPACE_START
-
-struct listcontainer_dim_v;
-struct listcontainer_dim_left;
-struct listcontainer_dim_inner;
-struct listcontainer_dim_right;
 
 struct listcontainer_selected_color;
 struct listcontainer_highlighted_color;
@@ -32,18 +27,12 @@ struct listcontainer_current_color;
 //! The list container implementation object stores a mixin with
 //! theme-based dimensions which set the list items' style, and list colors.
 
-typedef themedim_elementObj<background_color_elementObj<
-				    hotspot_elementObj
+typedef background_color_elementObj<hotspot_elementObj
 				    <container_elementObj<child_elementObj>>,
 				    listcontainer_selected_color,
 				    listcontainer_highlighted_color,
 				    listcontainer_current_color
-				    >,
-			    listcontainer_dim_v,
-			    listcontainer_dim_left,
-			    listcontainer_dim_inner,
-			    listcontainer_dim_right
-			    > listcontainer_impl_superclass_t;
+				    > listcontainer_impl_superclass_t;
 
 //! List container implementation object.
 
@@ -96,6 +85,19 @@ class LIBCXX_HIDDEN listcontainerObj::implObj :
 
 	//! Handle cursor down/up
 	bool process_key_event(IN_THREAD_ONLY, const key_event &ke) override;
+
+
+	//! Implemented in the subclass.
+	virtual themedim list_v_padding()=0;
+
+	//! Implemented in the subclass.
+	virtual themedim list_left_padding()=0;
+
+	//! Implemented in the subclass.
+	virtual themedim list_right_padding()=0;
+	//! Implemented in the subclass.
+
+	virtual themedim list_inner_padding()=0;
 };
 
 LIBCXXW_NAMESPACE_END

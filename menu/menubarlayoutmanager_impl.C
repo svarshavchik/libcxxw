@@ -158,6 +158,7 @@ menubarlayoutmanagerObj::implObj
 				auto impl=ref
 					<peepholed_menulistcontainer_implObj>
 					::create("menu_font",
+						 style,
 						 peephole_container, style);
 
 				return create_p_t_l_impl_ret_t{impl,

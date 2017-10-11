@@ -8,7 +8,6 @@
 #include "listlayoutmanager/listlayoutmanager.H"
 #include "hotspot_element.H"
 #include "container_element.H"
-#include "themedim_element.H"
 #include "background_color_element.H"
 #include "x/w/listlayoutmanager.H"
 #include "x/w/rgb.H"
@@ -20,14 +19,7 @@ LIBCXXW_NAMESPACE_START
 listcontainerObj::implObj::implObj(const ref<containerObj::implObj> &parent,
 				   const new_listlayoutmanager &style)
 	: listcontainer_impl_superclass_t
-	  (style.v_padding,
-	   &defaultthemeObj::get_theme_height_dim_t,
-	   style.left_padding,
-	   &defaultthemeObj::get_theme_width_dim_t,
-	   style.inner_padding,
-	   &defaultthemeObj::get_theme_width_dim_t,
-	   style.right_padding,
-	   &defaultthemeObj::get_theme_width_dim_t,
+	  (
 
 	   // Initialize the background colors
 	   parent->get_element_impl()
