@@ -97,10 +97,10 @@ void gcObj::implObj::change_gc_locked(const gcObj::properties &props)
 		for (const auto &rectangle:props.current_cliprects)
 		{
 			xcb_rectangles[i++]= xcb_rectangle_t({
-				.x=(coord_t::value_type)rectangle.x,
-				.y=(coord_t::value_type)rectangle.y,
-				.width=(dim_t::value_type)rectangle.width,
-				.height=(dim_t::value_type)rectangle.height
+				.x=xcoord_t::truncate(rectangle.x),
+				.y=xcoord_t::truncate(rectangle.y),
+				.width=xdim_t::truncate(rectangle.width),
+				.height=xdim_t::truncate(rectangle.height)
 			});
 		}
 		xcb_set_clip_rectangles(conn(),

@@ -62,33 +62,42 @@ public:
 
 	//! Dimension is infinite/not specified
 
-	static inline constexpr uint16_t infinite()
+	static inline constexpr uint32_t infinite()
 	{
-		return (uint16_t)-1;
+		return (uint32_t)-1;
 	}
 };
 
+class xdim_tag;
 class dim_tag;
 class dim_squared_tag;
+class xcoord_tag;
 class coord_tag;
 class coord_squared_tag;
 class depth_tag;
 
-//! The unit type for dimensions: width or height
+//! A dimension (size) in the X protocol is a 16 bit value.
+typedef number<uint16_t, xdim_tag> xdim_t;
 
-typedef number<uint16_t, dim_tag, dim_base> dim_t;
+//! An X protocol coordinate is a 16 bit value.
+
+typedef number<int16_t, xcoord_tag> xcoord_t;
+
+//! Internal unit type for dimensions: width or height
+
+typedef number<uint32_t, dim_tag, dim_base> dim_t;
 
 //! The unit type that can accomodate dim_t squared
 
-typedef number<uint32_t, dim_squared_tag, types_base> dim_squared_t;
+typedef number<uint64_t, dim_squared_tag, types_base> dim_squared_t;
 
-//! The unit type for positions: x and y coordinates
+//! Internal unit type for positions: x and y coordinates
 
-typedef number<int16_t, coord_tag, types_base> coord_t;
+typedef number<int32_t, coord_tag, types_base> coord_t;
 
 //! The unit type that can accomodate coord_t + dim_t
 
-typedef number<int32_t, coord_squared_tag, types_base> coord_squared_t;
+typedef number<int64_t, coord_squared_tag, types_base> coord_squared_t;
 
 //! The unit type for bit depth of windows, drawables...
 typedef number<uint8_t, depth_tag> depth_t;

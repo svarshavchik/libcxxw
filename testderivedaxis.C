@@ -292,7 +292,7 @@ int main()
 
 		checkspread("spread3",
 			    50,
-			    {dim_t::infinite()-1+60, false},
+			    {(uint64_t)dim_t::infinite()-1+60, false},
 			    10, 20, dim_t::infinite()-1,
 			    40, 50, 60);
 

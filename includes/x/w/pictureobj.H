@@ -148,7 +148,7 @@ public:
 
 		//! Constructor
 		inline fixedprec(const coord_t &c)
-			: integer{coord_t::value_type(c)}, fraction{0}
+			: integer{xcoord_t::truncate(c)}, fraction{0}
 		{
 		}
 

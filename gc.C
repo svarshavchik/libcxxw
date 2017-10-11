@@ -286,11 +286,11 @@ void gcObj::fill_rectangles(const rectangle_set &rectangles,
 	for (const auto &rectangle:rectangles)
 	{
 		xcb_rectangles[i++]= xcb_rectangle_t({
-				.x=(coord_t::value_type)rectangle.x,
-					.y=(coord_t::value_type)rectangle.y,
-					.width=(dim_t::value_type)rectangle.width,
-					.height=(dim_t::value_type)rectangle.height
-						});
+				.x=xcoord_t::truncate(rectangle.x),
+				.y=xcoord_t::truncate(rectangle.y),
+				.width=xdim_t::truncate(rectangle.width),
+				.height=xdim_t::truncate(rectangle.height)
+					});
 	}
 
 	// Make sure noone changes gc until we finish drawing
@@ -321,10 +321,10 @@ void gcObj::segments(const std::vector<line> &linesArg,
 	for (const auto &line:linesArg)
 	{
 		xcb_segments[i++]=xcb_segment_t{
-			(coord_t::value_type)line.x1,
-			(coord_t::value_type)line.y1,
-			(coord_t::value_type)line.x2,
-			(coord_t::value_type)line.y2};
+			xcoord_t::truncate(line.x1),
+			xcoord_t::truncate(line.y1),
+			xcoord_t::truncate(line.x2),
+			xcoord_t::truncate(line.y2)};
 	}
 
 	// Make sure noone changes gc until we finish drawing
@@ -354,8 +354,8 @@ void gcObj::lines(const polyline *line,
 
 	for (size_t i=0; i<nlines; ++i)
 		xcb_points[i] = xcb_point_t{
-			(coord_t::value_type)line[i].x,
-			(coord_t::value_type)line[i].y};
+			xcoord_t::truncate(line[i].x),
+			xcoord_t::truncate(line[i].y)};
 
 	// Make sure noone changes gc until we finish drawing
 
@@ -376,10 +376,10 @@ static void convert(const gcObj::arc *arcs, size_t n_arcs,
 	for (size_t i=0; i<n_arcs; ++i)
 	{
 		*buf=xcb_arc_t({
-				.x=(coord_t::value_type)arcs[i].x,
-				.y=(coord_t::value_type)arcs[i].y,
-				.width=(dim_t::value_type)arcs[i].width,
-				.height=(dim_t::value_type)arcs[i].height,
+				.x=xcoord_t::truncate(arcs[i].x),
+				.y=xcoord_t::truncate(arcs[i].y),
+				.width=xdim_t::truncate(arcs[i].width),
+				.height=xdim_t::truncate(arcs[i].height),
 				.angle1=arcs[i].angle1,
 				.angle2=arcs[i].angle2,
 					});

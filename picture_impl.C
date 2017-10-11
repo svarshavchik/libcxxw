@@ -30,10 +30,10 @@ static void to_xcb_rectangles(std::vector<xcb_rectangle_t> &v,
 
 	for (const auto &r : rectangles)
 	{
-		v.push_back({(coord_t::value_type)r.x,
-					(coord_t::value_type)r.y,
-					(dim_t::value_type)r.width,
-					(dim_t::value_type)r.height});
+		v.push_back({xcoord_t::truncate(r.x),
+					xcoord_t::truncate(r.y),
+					xdim_t::truncate(r.width),
+					xdim_t::truncate(r.height)});
 	}
 }
 
@@ -64,8 +64,8 @@ void pictureObj::implObj::set_clip_rectangles(const rectangle_set &clipregion,
 
 	xcb_render_set_picture_clip_rectangles(picture_conn()->conn,
 					       picture_id(),
-					       (coord_t::value_type)x,
-					       (coord_t::value_type)y,
+					       xcoord_t::truncate(x),
+					       xcoord_t::truncate(y),
 					       v.size(),
 					       v.data());
 }
@@ -92,13 +92,13 @@ void pictureObj::implObj::composite(const const_picture_internal &src,
 			     src->picture_id(),
 			     XCB_NONE,
 			     picture_id(),
-			     (coord_t::value_type)src_x,
-			     (coord_t::value_type)src_y,
+			     xcoord_t::truncate(src_x),
+			     xcoord_t::truncate(src_y),
 			     0, 0,
-			     (coord_t::value_type)dst_x,
-			     (coord_t::value_type)dst_y,
-			     (dim_t::value_type)width,
-			     (dim_t::value_type)height);
+			     xcoord_t::truncate(dst_x),
+			     xcoord_t::truncate(dst_y),
+			     xdim_t::truncate(width),
+			     xdim_t::truncate(height));
 }
 
 void pictureObj::implObj::composite(const const_picture_internal &src,
@@ -118,14 +118,14 @@ void pictureObj::implObj::composite(const const_picture_internal &src,
 			     src->picture_id(),
 			     mask->picture_id(),
 			     picture_id(),
-			     (coord_t::value_type)src_x,
-			     (coord_t::value_type)src_y,
-			     (coord_t::value_type)mask_x,
-			     (coord_t::value_type)mask_y,
-			     (coord_t::value_type)dst_x,
-			     (coord_t::value_type)dst_y,
-			     (dim_t::value_type)width,
-			     (dim_t::value_type)height);
+			     xcoord_t::truncate(src_x),
+			     xcoord_t::truncate(src_y),
+			     xcoord_t::truncate(mask_x),
+			     xcoord_t::truncate(mask_y),
+			     xcoord_t::truncate(dst_x),
+			     xcoord_t::truncate(dst_y),
+			     xdim_t::truncate(width),
+			     xdim_t::truncate(height));
 }
 
 void pictureObj::implObj::fill_tri_strip(const point *points,
@@ -214,10 +214,10 @@ void pictureObj::implObj::fill_rectangles(const rectangle *rectangles,
 
 	for (size_t i=0; i<n; ++i)
 		rects[i]=xcb_rectangle_t({
-				.x=coord_t::truncate(rectangles[i].x),
-				.y=coord_t::truncate(rectangles[i].y),
-				.width=dim_t::truncate(rectangles[i].width),
-				.height=dim_t::truncate(rectangles[i].height),
+				.x=xcoord_t::truncate(rectangles[i].x),
+				.y=xcoord_t::truncate(rectangles[i].y),
+				.width=xdim_t::truncate(rectangles[i].width),
+				.height=xdim_t::truncate(rectangles[i].height),
 					});
 
 	xcb_render_fill_rectangles(picture_conn()->conn,
