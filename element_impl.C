@@ -43,6 +43,12 @@ void elementObj::implObj::data_thread_only_t::no_focus_callback(focus_change)
 {
 }
 
+void elementObj::implObj::data_thread_only_t
+::no_element_state_callback(const element_state &,
+			    const busy &)
+{
+}
+
 bool elementObj::implObj::data_thread_only_t
 ::no_key_event_callback(const all_key_events_t &,
 			const busy &)
@@ -363,27 +369,19 @@ void elementObj::implObj::explicit_redraw(IN_THREAD_ONLY, draw_info_cache &c)
 	draw(IN_THREAD, di, di.entire_area());
 }
 
-ref<obj> elementObj::implObj
-::do_on_state_update(const element_state_update_handler_t &handler)
+void elementObj::implObj
+::on_state_update(const std::function<element_state_callback_t> &cb)
 {
-	// It's ok, create_mcguffin() can be safely used by any thread.
-	auto mcguffin=data_thread_only.update_handlers->create_mcguffin();
-
-	THREAD->run_as([mcguffin, handler,
-			me=ref(this)]
+	THREAD->run_as([cb, me=ref(this)]
 		       (IN_THREAD_ONLY)
 		       {
-			       // Install the new handler in the connection
-			       // thread, then send it the current_state
-			       mcguffin->install(handler);
+			       me->data(IN_THREAD).element_state_callback=cb;
 
-			       handler->invoke(me->create_element_state
-					       (IN_THREAD,
-						element_state::current_state),
-					       busy_impl{*me, IN_THREAD});
+			       cb(me->create_element_state
+				  (IN_THREAD,
+				   element_state::current_state),
+				  busy_impl{*me, IN_THREAD});
 		       });
-
-	return mcguffin;
 }
 
 void elementObj::implObj::set_minimum_override(dim_t horiz_override,
@@ -487,9 +485,9 @@ void elementObj::implObj
 ::invoke_element_state_updates(IN_THREAD_ONLY,
 			       element_state::state_update_t reason)
 {
-	data(IN_THREAD).update_handlers->invoke(create_element_state
-						(IN_THREAD, reason),
-						busy_impl{*this, IN_THREAD});
+	data(IN_THREAD).element_state_callback
+		(create_element_state(IN_THREAD, reason),
+		 busy_impl{*this, IN_THREAD});
 }
 
 clip_region_set::clip_region_set(IN_THREAD_ONLY,

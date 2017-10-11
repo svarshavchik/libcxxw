@@ -91,18 +91,7 @@ public:
 	void remove_background_color();
 
 	//! Install a state update callback.
-
-	template<typename functor_type>
-	ref<obj> on_state_update(functor_type &&functor)
-	{
-		return do_on_state_update(element_state_update_handler_t
-					  ::create(std::forward<functor_type>
-						   (functor)));
-	}
-
-	//! Install a state update callback.
-
-	ref<obj> do_on_state_update(const element_state_update_handler_t &);
+	void on_state_update(const std::function<element_state_callback_t> &);
 
 	//! Return the mcguffin for this display element's connection.
 

@@ -272,7 +272,7 @@ auto runteststate(testmainwindowoptions &options,
 
 	countstateupdate c=countstateupdate::create();
 
-	auto mcguffin=main_window->on_state_update
+	main_window->on_state_update
 		([c]
 		 (const auto &what, const auto &ignore)
 		 {
@@ -656,7 +656,7 @@ runtestthemescale(const testmainwindowoptions &options)
 
 	countsizeupdate cmain=countsizeupdate::create();
 
-	auto mainmcguffin=main_window->on_state_update
+	main_window->on_state_update
 		([cmain]
 		 (const auto &what, const auto &ignore)
 		 {
@@ -669,8 +669,7 @@ runtestthemescale(const testmainwindowoptions &options)
 
 	countsizeupdate ccanvas=countsizeupdate::create();
 
-	auto canvasmcguffin=
-		LIBCXX_NAMESPACE::w::element(main_window->appdata)
+	LIBCXX_NAMESPACE::w::element(main_window->appdata)
 		->on_state_update
 		([ccanvas, first_time=true]
 		 (const auto &what, const auto &ignore)

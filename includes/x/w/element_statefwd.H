@@ -7,9 +7,8 @@
 
 #include <x/w/namespace.H>
 #include <x/w/busy.H>
-#include <x/functionalrefptrfwd.H>
 #include <iostream>
-
+#include <functional>
 LIBCXXW_NAMESPACE_START
 
 struct element_state;
@@ -18,8 +17,7 @@ std::ostream &operator<<(std::ostream &o, const element_state &);
 
 //! Callback type for updates to the \ref element_state "element_state".
 
-typedef functionref<void (const element_state &,
-			  const busy &)> element_state_update_handler_t;
+typedef void element_state_callback_t(const element_state &, const busy &);
 
 LIBCXXW_NAMESPACE_END
 

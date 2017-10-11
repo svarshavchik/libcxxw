@@ -34,7 +34,6 @@
 #include "x/w/fontfwd.H"
 #include "x/w/tooltipfwd.H"
 #include <x/obj.H>
-#include <x/callback_list.H>
 #include <x/logger.H>
 #include <x/functional.H>
 #include <string_view>
@@ -124,13 +123,9 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 		bool enabled=true;
 
-		//! State update handlers
-
-		callback_list<void (const element_state &,
-				    const busy &)> update_handlers=
-			callback_list<void (const element_state &,
-					    const busy &)>::create();
-
+		//! State update callback
+		std::function<element_state_callback_t> element_state_callback=
+			no_element_state_callback;
 
 		//! Pointer focus callback
 
@@ -145,6 +140,11 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 		//! Default pointer and keyboard callback, does nothing.
 
 		static void no_focus_callback(focus_change);
+
+		//! Default element state callback, does nothing.
+
+		static void no_element_state_callback(const element_state &,
+						     const busy &);
 
 		//! Callback for reporting key events.
 
@@ -309,16 +309,7 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	virtual void removed(IN_THREAD_ONLY);
 
 	//! Install a state update callback.
-	template<typename functor_type>
-	ref<obj> on_state_update(functor_type &&functor)
-	{
-		return do_on_state_update(element_state_update_handler_t
-					  ::create(std::forward<functor_type>
-						   (functor)));
-	}
-
-	//! Install a state update callback.
-	ref<obj> do_on_state_update(const element_state_update_handler_t &);
+	void on_state_update(const std::function<element_state_callback_t> &cb);
 
 	//! Somebody wishes to inform us of our new current_position
 

@@ -88,9 +88,10 @@ const_picture elementObj::create_solid_color_picture(const rgb &color) const
 	return impl->get_screen()->create_solid_color_picture(color);
 }
 
-ref<obj> elementObj::do_on_state_update(const element_state_update_handler_t &h)
+void elementObj::on_state_update(const std::function<element_state_callback_t
+				 > &cb)
 {
-	return impl->do_on_state_update(h);
+	impl->on_state_update(cb);
 }
 
 void elementObj::on_pointer_focus(const std::function<focus_callback_t> &callback)

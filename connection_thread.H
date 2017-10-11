@@ -15,7 +15,7 @@
 #include <x/threadmsgdispatcher.H>
 #include <x/logger.H>
 #include <x/functional.H>
-#include <x/functionalrefptrfwd.H>
+#include <x/functionalrefptr.H>
 #include <x/mcguffinmultimapfwd.H>
 #include <x/mcguffincontainerobj.H>
 #include <x/mpobj.H>
