@@ -161,6 +161,8 @@ bool connection_threadObj
 			// here with a freshly wiped draw_info_cache, and
 			// take it from the top.
 			return false;
+		if (run_idle(IN_THREAD))
+			return false;
 		break;
 	}
 
@@ -291,6 +293,20 @@ void connection_threadObj
 	std::atomic_thread_fence(std::memory_order_acquire);
 
 	func(connection_thread(this));
+}
+
+bool connection_threadObj::run_idle(IN_THREAD_ONLY)
+{
+	if (idle_callbacks(IN_THREAD)->empty())
+		return false;
+
+	auto f=idle_callbacks(IN_THREAD)->front();
+	idle_callbacks(IN_THREAD)->pop_front();
+
+	try {
+		f(IN_THREAD);
+	} CATCH_EXCEPTIONS;
+	return true;
 }
 
 LIBCXXW_NAMESPACE_END

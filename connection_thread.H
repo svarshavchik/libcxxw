@@ -26,6 +26,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <set>
+#include <deque>
 #include <atomic>
 
 LIBCXXW_NAMESPACE_START
@@ -190,6 +191,12 @@ class LIBCXX_HIDDEN connection_threadObj
 	//! Pending incremental selection updates we're sending.
 
 	incremental_selection_update_info *pending_incremental_updates_thread_only;
+
+	typedef std::deque<std::function<void (IN_THREAD_ONLY)>
+			   > idle_callbacks_t;
+
+	idle_callbacks_t *idle_callbacks_thread_only;
+
 	//! Check for any scheduled callbacks, and invoke them.
 
 	bool invoke_scheduled_callbacks(IN_THREAD_ONLY, int &);
@@ -202,6 +209,10 @@ class LIBCXX_HIDDEN connection_threadObj
 
 	void handle_incremental_update(IN_THREAD_ONLY,
 				       const xcb_property_notify_event_t *);
+
+	//! Look for something in idle_callbacks to run, instead of sleeping.
+
+	bool run_idle(IN_THREAD_ONLY);
 
 	//! Compute timeout parameter for poll().
 
@@ -243,6 +254,7 @@ class LIBCXX_HIDDEN connection_threadObj
 	THREAD_DATA_ONLY(current_draw_info_cache);
 	THREAD_DATA_ONLY(scheduled_callbacks);
 	THREAD_DATA_ONLY(pending_incremental_updates);
+	THREAD_DATA_ONLY(idle_callbacks);
 
 #include "connection_thread.msgs.H"
 
