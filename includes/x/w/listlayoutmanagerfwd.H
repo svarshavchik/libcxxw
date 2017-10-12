@@ -363,6 +363,18 @@ extern const layout_style_t &highlighted_list;
 
 extern const layout_style_t &bulleted_list;
 
+//! A text-only list
+
+//! Use a \ref textlistlayoutmanager instead of \c listlayoutmanager..
+
+extern const layout_style_t &text_list;
+
+//! A text-only list
+
+//! Use a \ref textlistlayoutmanager instead of \c listlayoutmanager..
+
+extern const layout_style_t &bulleted_text_list;
+
 //! Single selection list.
 
 //! Default selection list type specified by the

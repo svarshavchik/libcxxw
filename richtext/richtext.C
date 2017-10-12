@@ -186,6 +186,15 @@ void richtextObj::redraw_whatsneeded(IN_THREAD_ONLY,
 	     false, draw_bounds);
 }
 
+void richtextObj::text_width(const std::optional<dim_t> &s)
+{
+	read_only_lock([&]
+		       (const auto &impl)
+		       {
+			       (*impl)->text_width=s;
+		       });
+}
+
 void richtextObj::redraw_between(IN_THREAD_ONLY,
 				 element_drawObj &element,
 				 const richtextiterator &a,
@@ -342,8 +351,12 @@ void richtextObj::draw(IN_THREAD_ONLY,
 						 di.window_background,
 						 di.background_x,
 						 di.background_y,
-						 di.absolute_location.x,
-						 di.absolute_location.y,
+						 coord_t::truncate
+						 (di.absolute_location.x +
+						  draw_bounds.position_x),
+						 coord_t::truncate
+						 (di.absolute_location.y +
+						  draw_bounds.position_y),
 
 						 draw_bounds.draw_bounds.width,
 						 dim_t::truncate(draw_bounds.draw_bounds.x),
@@ -378,8 +391,12 @@ void richtextObj::draw(IN_THREAD_ONLY,
 				 scratch_height=scratch_pixmap->get_height();
 
 			 },
-			 rectangle{draw_bounds.draw_bounds.x,
-					 coord_t::truncate(y_position),
+			 rectangle{coord_t::truncate(draw_bounds.draw_bounds.x +
+						     draw_bounds.position_x),
+					 coord_t::truncate(coord_t::truncate
+							   (y_position) +
+							   draw_bounds
+							   .position_y),
 					 draw_bounds.draw_bounds.width,
 					 height},
 			 di, di,
@@ -419,7 +436,11 @@ void richtextObj::draw(IN_THREAD_ONLY,
 				 y=dim_t::truncate(y + scratch_height);
 				 scratch_height=scratch_pixmap->get_height();
 			 },
-			 rectangle{0, y, di.absolute_location.width,
+			 rectangle{draw_bounds.position_x,
+					 coord_t::truncate(y +
+							   draw_bounds
+							   .position_y),
+					 di.absolute_location.width,
 					 scratch_height},
 			 di, di,
 			 clipped);

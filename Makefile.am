@@ -662,6 +662,31 @@ libcxxw_la_SOURCES=\
 	textlabel.C				    \
 	textlabel.H				    \
 	textlabel_impl.C			    \
+	textlistlayoutmanager/textlist.C	    \
+	textlistlayoutmanager/textlist.H	    \
+	textlistlayoutmanager/textlistfwd.H	    \
+	textlistlayoutmanager/textlistobj.H	    \
+	textlistlayoutmanager/textlist_impl.C	    \
+	textlistlayoutmanager/textlist_impl.H	    \
+	textlistlayoutmanager/textlist_cell.H	    \
+	textlistlayoutmanager/textlist_cellfwd.H    \
+	textlistlayoutmanager/textlist_cellobj.H    \
+	textlistlayoutmanager/textlist_cellimage.C  \
+	textlistlayoutmanager/textlist_cellimage.H  \
+	textlistlayoutmanager/textlist_cellimagefwd.H \
+	textlistlayoutmanager/textlist_cellimageobj.H \
+	textlistlayoutmanager/textlist_celltext.C   \
+	textlistlayoutmanager/textlist_celltext.H   \
+	textlistlayoutmanager/textlist_celltextfwd.H  \
+	textlistlayoutmanager/textlist_celltextobj.H  \
+	textlistlayoutmanager/textlist_container_impl.C \
+	textlistlayoutmanager/textlist_container_impl.H \
+	textlistlayoutmanager/textlistlayoutstyle_impl.H \
+	textlistlayoutmanager/textlistlayoutstyle_implfwd.H \
+	textlistlayoutmanager/textlistlayoutstyle.C \
+	textlistlayoutmanager/textlistlayoutmanager.C \
+	textlistlayoutmanager/textlistlayoutmanager_impl.C \
+	textlistlayoutmanager/textlistlayoutmanager_impl.H \
 	sxg/sxg_parser.C			    \
 	sxg/sxg_parser.H			    \
 	sxg/sxg_parserfwd.H			    \
@@ -737,6 +762,7 @@ TESTPROGRAMS=\
 	testfiledircontents				\
 	testfocusable					\
 	testgrid					\
+	testlist					\
 	testrichtextstring				\
 	testrichtext					\
 	testrichtextiterator				\
@@ -803,6 +829,10 @@ testgrid_LDFLAGS=-static
 testlabel_SOURCES=testlabel.C
 testlabel_LDADD=libcxxw.la
 testlabel_LDFLAGS=$(TESTLINKTYPE)
+
+testlist_SOURCES=testlist.C
+testlist_LDADD=libcxxw.la
+testlist_LDFLAGS=$(TESTLINKTYPE)
 
 testmenu_SOURCES=testmenu.C
 testmenu_LDADD=libcxxw.la

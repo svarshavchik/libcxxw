@@ -3,6 +3,7 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
+#include "includes/x/w/textlistlayoutmanager.H"
 #include "listlayoutmanager/listlayoutmanager.H"
 #include "listlayoutmanager/listitemfactoryobj.H"
 #include "listlayoutmanager/listcontainer_impl.H"
@@ -11,16 +12,21 @@
 
 LIBCXXW_NAMESPACE_START
 
-list_lock::list_lock(const const_listlayoutmanager &manager)
-	: list_lock(manager->impl->grid_map)
+list_lock::list_lock(const listlayoutmanagerObj &manager)
+	: list_lock(manager.impl->grid_map)
 {
 }
 
-list_lock::list_lock(grid_map_t &map) : grid_map_t::lock{map}
+list_lock::list_lock(grid_map_t &map) : variant_lock_t{map}
 {
 }
 
 list_lock::~list_lock()=default;
+
+list_lock::operator grid_map_t::lock &()
+{
+	return std::get<grid_map_t::lock>(*this);
+}
 
 listlayoutmanagerObj::listlayoutmanagerObj(const ref<implObj> &impl)
 	: layoutmanagerObj(impl),

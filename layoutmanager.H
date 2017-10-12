@@ -108,7 +108,7 @@ class LIBCXX_HIDDEN layoutmanagerObj::implObj : virtual public obj {
 
 	//! The container's position has been updated.
 
-	//! The container should, if necessary, recalculated and update
+	//! The container should, if necessary, recalculate and update
 	//! the child elements' positions.
 
 	virtual void process_updated_position(IN_THREAD_ONLY,
@@ -116,17 +116,20 @@ class LIBCXX_HIDDEN layoutmanagerObj::implObj : virtual public obj {
 
 	//! A child element's background color has changed
 
+	//! The default implementation does nothing
 	virtual void child_background_color_changed(IN_THREAD_ONLY,
 						    const elementimpl &child);
 
 	//! A child element's visibility has changed
 
+	//! The default implementation does nothing
 	virtual void child_visibility_changed(IN_THREAD_ONLY,
 					      const elementimpl &child,
 					      inherited_visibility_info &info);
 
 	//! The container's visibility has changed
 
+	//! The default implementation does nothing
 	virtual void inherited_visibility_updated(IN_THREAD_ONLY, bool);
 
 	//! Return the child element position that includes any container-provided padding.

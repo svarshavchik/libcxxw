@@ -7,6 +7,7 @@
 
 #include <x/w/new_focusable_layoutmanagerfwd.H>
 #include <x/w/alignment.H>
+#include <x/w/textlistlayoutmanagerfwd.H>
 #include <x/w/listlayoutmanagerfwd.H>
 #include <x/w/listlayoutmanagerobj.H>
 #include <x/w/listlayoutmanagerbase.H>
@@ -15,9 +16,12 @@
 #include <x/w/grid_map_infofwd.H>
 #include <x/w/text_param.H>
 #include <x/ref.H>
+#include <x/refptr_traits.H>
 #include <x/w/busyfwd.H>
 #include <string>
 #include <functional>
+#include <variant>
+#include <tuple>
 #include <unordered_map>
 
 LIBCXXW_NAMESPACE_START
@@ -155,18 +159,44 @@ class LIBCXX_HIDDEN new_listlayoutmanager : public new_focusable_layoutmanager {
 
 //! Blocks modifications to the contents of the list.
 
-class list_lock : public grid_map_t::lock {
+class list_lock : public std::variant<grid_map_t::lock,
+				      std::tuple<listimpl_info_lock_t,
+						 const_textlistlayoutmanager>> {
+
+	typedef std::tuple<listimpl_info_lock_t,
+			   const_textlistlayoutmanager> textlist_tuple_t;
+
+	//! Superclass
+
+	typedef std::variant<grid_map_t::lock, textlist_tuple_t> variant_lock_t;
 
 public:
 
+	//! Disambiguating constructor
+	template<typename ref_or_ptr, typename=
+		 typename refptr_traits<ref_or_ptr>::obj_t>
+	inline list_lock(const ref_or_ptr &manager)
+		: list_lock(*manager)
+	{
+	}
+
 	//! Constructor
-	list_lock(const const_listlayoutmanager &manager);
+	list_lock(const listlayoutmanagerObj &manager);
 
 	//! Constructor
 	list_lock(grid_map_t &map);
 
+	//! Constructor
+	list_lock(const textlistlayoutmanagerObj &manager);
+
 	//! Destructor
 	~list_lock();
+
+	//! Return the underlying lock.
+	operator grid_map_t::lock &();
+
+	//! Return the underlying lock
+	operator listimpl_info_lock_t &();
 };
 
 LIBCXXW_NAMESPACE_END

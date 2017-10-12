@@ -900,6 +900,9 @@ coord_t richtextfragmentObj::first_xpos(IN_THREAD_ONLY) const
 	auto richtext=my_paragraph->my_richtext;
 	auto text_width=richtext->width();
 
+	if (richtext->text_width)
+		text_width=richtext->text_width.value();
+
 	if (width < text_width)
 	{
 		auto pad=dim_t::value_type(text_width-width);
@@ -911,7 +914,17 @@ coord_t richtextfragmentObj::first_xpos(IN_THREAD_ONLY) const
 		if (alignment == halign::right)
 			return coord_t::truncate(pad);
 	}
+	else
+	{
+		auto extra=-coord_squared_t::truncate(width - text_width);
+		auto alignment=richtext->alignment;
 
+		if (alignment == halign::center)
+			return coord_t::truncate(extra/2);
+
+		if (alignment == halign::right)
+			return coord_t::truncate(extra);
+	}
 	return 0;
 }
 

@@ -23,6 +23,7 @@
 #include <x/obj.H>
 #include <x/mpobj.H>
 #include <x/functional.H>
+#include <utility>
 
 LIBCXXW_NAMESPACE_START
 
@@ -159,6 +160,18 @@ class LIBCXX_HIDDEN richtextObj : virtual public obj {
 			    const richtextiterator &,
 			    const richtext_draw_info &,
 			    const draw_info &);
+
+	//! Set logical text width
+
+	//! If unset, the logical text width is always the same as the actual
+	//! text width. The logical text width is used by the
+	//! textlistlayoutmanager to position a text cell, so that if it is
+	//! right-aligned, it gets rendered flush to the right margin of its
+	//! column, since right-alignment based on the actual text width is
+	//! not going to accomplish anything useful.
+
+	void text_width(const std::optional<dim_t> &s);
+
  private:
 	//! Draw the text
 

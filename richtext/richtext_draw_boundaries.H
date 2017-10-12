@@ -40,6 +40,24 @@ struct LIBCXX_HIDDEN richtext_draw_boundaries {
 	{
 		return draw_bounds.width == 0 || draw_bounds.height == 0;
 	}
+
+	//! The entire element is not entirely for the label to draw.
+
+	//! The text list layout manager places multiple labels in its
+	//! display element, and calls position() to specify where this
+	//! particular label gets drawn.
+	//!
+	//! Computes the intersection of limits+position, then subtracts
+	//! position.x/position.y setting draw_bounds. Now, draw_bounds is
+	//! with respect to position.
+	//!
+	//! Saves position.x and position.y in position_x and position_y.
+
+	void position_at(const rectangle &);
+
+	coord_t position_x=0;
+
+	coord_t position_y=0;
 };
 
 LIBCXXW_NAMESPACE_END;

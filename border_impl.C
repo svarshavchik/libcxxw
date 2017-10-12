@@ -352,6 +352,11 @@ bool border_implObj::no_vertical_border(const draw_info &di) const
 		|| (di.area_rectangle.width < calculated_border_width);
 }
 
+void border_implObj::draw_horizontal(const draw_info &di) const
+{
+	draw_horizontal(di, grid_elementptr(), grid_elementptr());
+}
+
 void border_implObj::draw_horizontal(const draw_info &di,
 				     const grid_elementptr &top_element,
 				     const grid_elementptr &bottom_element) const

@@ -65,7 +65,8 @@ public:
 
 	void do_get(dim_t minimum_width,
 		    dim_t minimum_height,
-		    const function<void (const picture &, const pixmap &)> &);
+		    const function<void (const picture &, const pixmap &,
+					 const gc & )> &);
 
 	//! Retrieve the cached picture
 

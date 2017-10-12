@@ -195,6 +195,9 @@ public:
 	//! Computed maximum width of this text if each paragraph was one line.
 	dim_t real_maximum_width=0;
 
+	//! Optional logical text width. Used in first_xpos().
+	std::optional<dim_t> text_width;
+
 	//! Computed height of tallest fragment
 
 	dim_t height_of_tallest_fragment=0;

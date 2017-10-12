@@ -133,6 +133,9 @@ class LIBCXX_HIDDEN border_implObj: virtual public obj, public border_info {
 		coord_t area_y;
 	};
 
+	//! Draw a horizontal border
+	void draw_horizontal(//! Information needed to draw the border
+			     const draw_info &di) const;
 
 	//! Draw a horizontal border
 
