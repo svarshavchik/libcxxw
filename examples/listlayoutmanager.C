@@ -95,8 +95,7 @@ static inline void create_main_window(const x::w::main_window &main_window,
 
 	new_list.selection_changed=
 		[]
-		(x::w::list_lock &lock,
-		 const x::w::listlayoutmanager &list,
+		(const x::w::listlayoutmanager &list,
 		 size_t item_number,
 		 bool is_selected,
 		 const x::w::busy &busy_mcguffin)

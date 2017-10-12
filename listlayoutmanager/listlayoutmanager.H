@@ -82,12 +82,12 @@ class LIBCXX_HIDDEN listlayoutmanagerObj::implObj
 
  private:
 	//! Selection type
-	std::function<void (list_lock &, const listlayoutmanager &,
+	std::function<void (const listlayoutmanager &,
 			    size_t,
 			    const x::w::busy &)
 		      > selection_type_thread_only;
 
-	std::function<void (list_lock &, const listlayoutmanager &,
+	std::function<void (const listlayoutmanager &,
 			    size_t, bool, const x::w::busy &)
 		      > selection_changed_;
  public:

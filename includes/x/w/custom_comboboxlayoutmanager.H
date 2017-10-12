@@ -32,9 +32,6 @@ typedef std::function<focusable (const factory &,
 
 struct LIBCXX_HIDDEN custom_combobox_selection_changed_info_t {
 
-	//! A lock on combo-box's underlying list
-	list_lock &lock;
-
 	//! The layout manager
 	const custom_comboboxlayoutmanager &lm;
 

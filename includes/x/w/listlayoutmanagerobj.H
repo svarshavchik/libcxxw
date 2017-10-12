@@ -6,6 +6,7 @@
 #define x_w_listlayoutmanagerobj_h
 
 #include <x/w/listlayoutmanagerfwd.H>
+#include <x/w/listlayoutmanagerbaseobj.H>
 #include <x/w/grid_map_infofwd.H>
 #include <x/w/layoutmanagerobj.H>
 #include <x/w/factoryfwd.H>
@@ -15,7 +16,6 @@
 #include <x/mpobj.H>
 
 #include <vector>
-#include <optional>
 
 LIBCXXW_NAMESPACE_START
 
@@ -23,7 +23,8 @@ LIBCXXW_NAMESPACE_START
 
 //! \see listlayoutmanager
 
-class listlayoutmanagerObj : public layoutmanagerObj {
+class listlayoutmanagerObj : public layoutmanagerObj,
+			     public listlayoutmanagerbaseObj {
 
 public:
 	friend class gridfactoryObj;
@@ -33,45 +34,13 @@ public:
 	//! Internal implementation object.
 	const ref<implObj> impl;
 
-	//! Thread-safe contained for new list item callback factory.
-
-	typedef mpobj<std::function<list_item_status_change_callback_factory_t>
-		      > callback_factory_container_t;
-
-	//! Current factory for new list items.
-
-	callback_factory_container_t callback_factory_container;
-
-	//! Set a callback factory for new list items.
-
-	template<typename callback>
-	inline void callback_factory(callback &&Callback)
-	{
-		callback_factory_container_t::lock
-			lock{callback_factory_container};
-
-		*lock=std::forward<callback>(Callback);
-	}
-
-	//! Set a callback factory for new list items.
-
-	inline auto callback_factory()
-	{
-		callback_factory_container_t::lock
-			lock{callback_factory_container};
-
-		return *lock;
-	}
-
-	//! Remove the current callback factory.
-
-	void remove_callback_factory();
-
 	//! Constructor
 	listlayoutmanagerObj(const ref<implObj> &impl) LIBCXX_HIDDEN;
 
 	//! Destructor
 	~listlayoutmanagerObj() LIBCXX_HIDDEN;
+
+	using listlayoutmanagerbaseObj::append_item;
 
 	//! Append a new list item.
 	virtual factory append_item();
@@ -79,18 +48,9 @@ public:
 	//! Append a new list item
 
 	//! \overload
-	template<typename ...Args>
-	void append_item(const text_param &text, Args && ...args)
-	{
-		std::vector<text_param>
-			items{text, std::forward<Args>(args)...};
-		append_item(items);
-	}
+	void append_item(const std::vector<text_param> &items) override;
 
-	//! Append a new list item
-
-	//! \overload
-	virtual void append_item(const std::vector<text_param> &items);
+	using listlayoutmanagerbaseObj::insert_item;
 
 	//! Insert a new list item.
 	virtual factory insert_item(size_t item_number);
@@ -98,45 +58,26 @@ public:
 	//! Insert a new list item
 
 	//! \overload
-	template<typename ...Args>
 	void insert_item(size_t item_number,
-			 const text_param &text, Args && ...args)
-	{
-		std::vector<text_param>
-			items{text, std::forward<Args>(args)...};
-		insert_item(item_number, items);
-	}
-
-	//! Insert a new list item
-
-	//! \overload
-	virtual void insert_item(size_t item_number,
-				 const std::vector<text_param> &items);
+			 const std::vector<text_param> &items) override;
 
 	//! Replace a list item.
 	virtual factory replace_item(size_t item_number);
 
+
+	using listlayoutmanagerbaseObj::replace_item;
+
 	//! Replace a list item
 
 	//! \overload
-	template<typename ...Args>
+
 	void replace_item(size_t item_number,
-			  const text_param &text, Args && ...args)
-	{
-		std::vector<text_param>
-			items{text, std::forward<Args>(args)...};
-		replace_item(item_number, items);
-	}
-
-	//! Replace a list item
-
-	//! \overload
-
-	virtual void replace_item(size_t item_number,
-				  const std::vector<text_param> &items);
+			  const std::vector<text_param> &items) override;
 
 	//! Remove a list item
-	virtual void remove_item(size_t item_number);
+	void remove_item(size_t item_number) override;
+
+	using listlayoutmanagerbaseObj::replace_all_items;
 
 	//! Replace all list items
 
@@ -145,19 +86,19 @@ public:
 	//! Replace all list items
 
 	//! \overload
-	virtual void replace_all_items(const std::vector<text_param> &items);
+	void replace_all_items(const std::vector<text_param> &items) override;
 
 	///////////////////////////////////////////////////////////////
 
 	//! Number of items in the list
 
-	size_t size() const;
+	size_t size() const override;
 
 	//! Number of items in the list
 	size_t size(grid_map_t::lock &lock) const;
 
 	//! Whether list item \#i is selected right now.
-	bool selected(size_t i) const;
+	bool selected(size_t i) const override;
 
 	//! Whether list item \#i is selected right now.
 	bool selected(grid_map_t::lock &lock, size_t i) const;
@@ -167,32 +108,32 @@ public:
 	//! For convenience of a single_selection_type() list, returns
 	//! the index of the currently selected item.
 
-	std::optional<size_t> selected() const;
+	std::optional<size_t> selected() const override;
 
 	//! Return a list of all selected items.
-	std::vector<size_t> all_selected() const;
+	std::vector<size_t> all_selected() const override;
 
 	//! Select or unselect item \#i
-	void selected(size_t i, bool selected_flag);
+	void selected(size_t i, bool selected_flag) override;
 
 	//! Select or unselect item \#i
 	void selected(grid_map_t::lock &lock, size_t i, bool selected_flag);
 
 	//! As if item \#i was clicked on.
-	void autoselect(size_t i);
+	void autoselect(size_t i) override;
 
 	//! As if item \#i was clicked on.
 	void autoselect(grid_map_t::lock &lock, size_t i);
 
 	//! Unselect all selected items.
-	void unselect();
+	void unselect() override;
 
 	//! Return the item element.
 	element item(size_t item_number, size_t column=0);
 
 	//! Whether the given list item is enabled().
 
-	bool enabled(size_t i) const;
+	bool enabled(size_t i) const override;
 
 	//! Whether the given list item is enabled().
 
@@ -200,7 +141,7 @@ public:
 
 	//! Enable or disable the list item.
 
-	void enabled(size_t i, bool flag);
+	void enabled(size_t i, bool flag) override;
 
 	//! Enable or disable the list item.
 

@@ -437,7 +437,7 @@ void listlayoutmanagerObj::implObj::selected(const listlayoutmanager &me,
 
 	try {
 		selection_changed(real_lock)
-			(real_lock, me, i, selected_flag, yes_i_am);
+			(me, i, selected_flag, yes_i_am);
 	} CATCH_EXCEPTIONS;
 }
 
@@ -457,7 +457,7 @@ void listlayoutmanagerObj::implObj::autoselect(IN_THREAD_ONLY,
 		busy_impl yes_i_am{container_impl->get_element_impl(),
 				IN_THREAD};
 
-		selection_type(IN_THREAD)(lock, me, i, yes_i_am);
+		selection_type(IN_THREAD)(me, i, yes_i_am);
 	} CATCH_EXCEPTIONS;
 }
 

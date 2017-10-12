@@ -396,8 +396,7 @@ focusable_container new_custom_comboboxlayoutmanager
 			 popup_listlayoutmanager->selection_changed(lock)=
 				 [=, current_selection=make_weak_capture
 				  (current_selection, combobox_popup, lm)]
-				 (list_lock &lock,
-				  const listlayoutmanager &ignore,
+				 (const listlayoutmanager &ignore,
 				  size_t i,
 				  bool flag,
 				  const busy &mcguffin)
@@ -409,7 +408,7 @@ focusable_container new_custom_comboboxlayoutmanager
 					   const auto &lm)
 				 {
 					 selection_changed
-					 ({ lock, lm->create_public_object(),
+					 ({ lm->create_public_object(),
 							 i, flag,
 							 e,
 							 combobox_popup,

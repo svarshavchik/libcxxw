@@ -55,7 +55,7 @@ class LIBCXX_HIDDEN listObj : public peepholed_focusableObj {
 
 ///////////////////////////////////////////////////////////
 
-static void default_selection_changed(list_lock &, const listlayoutmanager &,
+static void default_selection_changed(const listlayoutmanagerbase &,
 				      size_t, bool, const busy &)
 {
 }
@@ -131,37 +131,27 @@ new_listlayoutmanager::create(const ref<containerObj::implObj>
 ////////////////////////////////////////////////////////////////////////////
 
 
-void single_selection_type(list_lock &lock,
-			   const listlayoutmanager &layout_manager,
+void single_selection_type(const listlayoutmanagerbase &layout_manager,
 			   size_t i,
 			   const busy &mcguffin)
 {
 	// Selecting the sole selection is going to deselect it.
 
-	if (layout_manager->selected(lock, i))
+	if (layout_manager->selected(i))
 	{
-		layout_manager->selected(lock, i, false);
+		layout_manager->selected(i, false);
 		return;
 	}
 
-	for (auto n=layout_manager->size(); n > 0; )
-	{
-		--n;
-
-		if (n != i)
-			layout_manager->selected(lock, n, false);
-	}
-
-	layout_manager->selected(lock, i, true);
+	layout_manager->unselect();
+	layout_manager->selected(i, true);
 }
 
-void multiple_selection_type(list_lock &lock,
-			     const listlayoutmanager &layout_manager,
+void multiple_selection_type(const listlayoutmanagerbase &layout_manager,
 			     size_t i,
 			     const busy &mcguffin)
 {
-	layout_manager->selected(lock, i,
-				 !layout_manager->selected(lock, i));
+	layout_manager->selected(i, !layout_manager->selected(i));
 }
 
 LIBCXXW_NAMESPACE_END

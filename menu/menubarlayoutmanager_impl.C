@@ -304,11 +304,13 @@ void menubarlayoutmanagerObj::implObj::fix_order(IN_THREAD_ONLY,
 }
 
 void menubarlayoutmanagerObj::implObj
-::menuitem_selected(list_lock &lock,
-		    const listlayoutmanager &lm,
+::menuitem_selected(const listlayoutmanagerbase &lmbase,
 		    size_t i,
 		    const busy &mcguffin)
 {
+	listlayoutmanager lm{lmbase};
+	list_lock lock{lm};
+
 	// Last column is the extra_info we're looking for.
 
 	auto extrainfo=menulayoutmanagerObj::implObj::get_extrainfo(lm, i);
@@ -326,7 +328,7 @@ void menubarlayoutmanagerObj::implObj
 				// how to do it.
 
 				if (pl.is_option)
-					multiple_selection_type(lock, lm,
+					multiple_selection_type(lm,
 								i,
 								mcguffin);
 

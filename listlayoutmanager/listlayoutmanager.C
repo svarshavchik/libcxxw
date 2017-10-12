@@ -30,13 +30,6 @@ listlayoutmanagerObj::listlayoutmanagerObj(const ref<implObj> &impl)
 
 listlayoutmanagerObj::~listlayoutmanagerObj()=default;
 
-void listlayoutmanagerObj::remove_callback_factory()
-{
-	callback_factory_container_t::lock lock{callback_factory_container};
-
-	*lock=nullptr;
-}
-
 factory listlayoutmanagerObj::append_item()
 {
 	return ref<implObj::append_factoryObj<factoryObj, listitemfactoryObj>>

@@ -133,15 +133,13 @@ new_list.rows=6;
 new_list.selection_type=&ns;::w::multiple_selection_type;
 
 new_list.selection_type=[]
-       (&ns;::w::list_lock &amp; lock,
-        const &ns;::w::listlayoutmanager &amp; l,
+       (const &ns;::w::listlayoutmanagerbase &amp; l,
         size_t item_number)
        {
        };
 
 new_list.selection_changed=[]
-       (&ns;::w::list_lock &amp; lock,
-        const &ns;::w::listlayoutmanager &amp; l,
+       (const &ns;::w::listlayoutmanagerbase &amp; l,
         size_t item_number,
         bool is_selected,
         const &ns;::w::busy &amp;busy_mcguffin)
@@ -171,8 +169,8 @@ new_list.selection_changed=[]
       Clicking on an item executes the lambda,
       and the lambda has full control over which list items get selected
       or unselected. The <varname>selection_type</varname> lambda's parameters
-      are a <link linkend="listlock">list lock</link>, the list layout manager
-      instance, the index of which
+      are: the list layout manager, given as a
+      <ulink url="&link-typedef-x--w-listlayoutmanagerbase;"><classname>&ns;::w::listlayoutmanagerbase</classname></ulink>, the index of which
       item was clicked on, and the <classname>busy</classname> mcguffin. The
       lambda is responsible for selecting or
       unselecting the list's items, as it sees fit.
@@ -194,6 +192,16 @@ new_list.selection_changed=[]
 	The callbacks conveniently receive their list layout manager
 	as one of their parameters, which should take care of most of their
 	needs.
+      </para>
+    </note>
+
+    <note>
+      <para>
+	The library obtains an <link linkend="listlock">internal lock</link>
+	on the underlying list, that's held for the duration of the callback;
+	and the callback must acquire its own lock, if it needs one. In any
+	case, the underlying list is locked for the duration of the callback,
+	and cannot be accessed by other execution threads.
       </para>
     </note>
 
@@ -338,9 +346,9 @@ llmanager-&gt;callback_factory(
     <para>
       The library's internal execution thread invokes all
       <link linkend="listcallbacks">list callbacks</link>.
-      These callbacks receive a list lock as one of their parameters, and the
+      These callbacks, if needed, may construct their own independent
       <ulink url="&link-x--w--list-lock;"><classname>&ns;::w::list_lock</classname></ulink>
-      is constructible independently, by passing a
+      by passing a
       <ulink url="&link-typedef-x--w-listlayoutmanager;"><classname>&ns;::w::listlayoutmanager</classname></ulink>
       to its constructor.
     </para>
@@ -352,7 +360,7 @@ llmanager-&gt;callback_factory(
       execution thread, making a consistent snapshot of the list's
       items, and blocking the library's execution thread from changing the
       list items' selection status in the interim. Similarly the callbacks
-      invoked by the internal execution threads acquire a list lock to
+      invoked by the internal execution threads can acquire a list lock to
       prevent the application from accessing the lists' items while they're
       being modified.
     </para>

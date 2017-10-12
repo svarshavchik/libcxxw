@@ -9,6 +9,7 @@
 #include <x/w/alignment.H>
 #include <x/w/listlayoutmanagerfwd.H>
 #include <x/w/listlayoutmanagerobj.H>
+#include <x/w/listlayoutmanagerbase.H>
 #include <x/w/layoutmanager.H>
 #include <x/w/scrollbar.H>
 #include <x/w/grid_map_infofwd.H>
@@ -55,7 +56,7 @@ class LIBCXX_HIDDEN new_listlayoutmanager : public new_focusable_layoutmanager {
 	//! each item in the list is selected or unselected individually and
 	//! more than one item can be selected in the list, at the same time.
 
-	std::function<void (list_lock &, const listlayoutmanager &, size_t,
+	std::function<void (const listlayoutmanagerbase &, size_t,
 			    const busy &)
 		      > selection_type;
 
@@ -66,7 +67,7 @@ class LIBCXX_HIDDEN new_listlayoutmanager : public new_focusable_layoutmanager {
 	//! This callback cannot strongly capture the list display element
 	//! or any of its parent display elements.
 
-	std::function<void (list_lock &, const listlayoutmanager &,
+	std::function<void (const listlayoutmanagerbase &,
 			    size_t, bool, const busy &)
 		      > selection_changed;
 

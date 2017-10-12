@@ -7,6 +7,7 @@
 
 #include <x/w/namespace.H>
 #include <x/w/busyfwd.H>
+#include <x/w/listlayoutmanagerbasefwd.H>
 #include <x/ptrfwd.H>
 #include <functional>
 
@@ -368,33 +369,16 @@ extern const layout_style_t &bulleted_list;
 //!
 //! Only one list item may be selected at any time.
 
-void single_selection_type(list_lock &lock,
-			   const listlayoutmanager &layout_manager,
+void single_selection_type(const listlayoutmanagerbase &layout_manager,
 			   size_t i,
 			   const busy &mcguffin);
 
 //! Multiple selection list.
 
 //! Multiple list items may be selected at any time.
-void multiple_selection_type(list_lock &lock,
-			     const listlayoutmanager &layout_manager,
+void multiple_selection_type(const listlayoutmanagerbase &layout_manager,
 			     size_t i,
 			     const busy &mcguffin);
-
-//! List item callback's signature
-
-//! The list item callback receives a lock object, the current index of the
-//! callback's list item, and whether the list item is currently selected.
-typedef void list_item_status_change_callback_t(list_lock &lock,
-						size_t i,
-						bool selected);
-
-//! A list item callback factory
-
-//! The factory gets called when a new list item gets created. The factory
-//! returns a callback for the new list item.
-typedef std::function<list_item_status_change_callback_t
-		      > list_item_status_change_callback_factory_t();
 
 LIBCXXW_NAMESPACE_END
 
