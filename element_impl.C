@@ -354,6 +354,13 @@ rectangle elementObj::implObj::get_absolute_location_on_screen(IN_THREAD_ONLY)
 	return r;
 }
 
+bool elementObj::implObj::redraw_scheduled(IN_THREAD_ONLY)
+{
+	auto elements_to_redraw=IN_THREAD->elements_to_redraw(IN_THREAD);
+
+	return elements_to_redraw->find(ref(this)) != elements_to_redraw->end();
+}
+
 void elementObj::implObj::explicit_redraw(IN_THREAD_ONLY, draw_info_cache &c)
 {
 	// Remove myself from the connection thread's list.

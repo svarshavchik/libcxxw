@@ -66,11 +66,7 @@ void gridlayoutmanagerObj::implObj
 	if (!container_element_impl.data(IN_THREAD).inherited_visibility)
 		return; // This container is not visible, don't bother.
 
-	auto elements_to_redraw=
-		IN_THREAD->elements_to_redraw(IN_THREAD);
-
-	if (elements_to_redraw->find(ref(&container_element_impl))
-	    != elements_to_redraw->end())
+	if (container_element_impl.redraw_scheduled(IN_THREAD))
 		return; // This container is scheduled for redrawing anyway.
 
 	// Clear any padding around the element to its background color,

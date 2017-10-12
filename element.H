@@ -539,6 +539,10 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 	void schedule_redraw_recursively(IN_THREAD_ONLY);
 
+	//! Whether this element is scheduled for redrawing
+
+	bool redraw_scheduled(IN_THREAD_ONLY);
+
 	//! Forcibly redraw this display element
 
 	//! If this display element is not visible, calls clear_to_color().
