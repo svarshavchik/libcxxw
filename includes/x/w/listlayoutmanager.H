@@ -22,6 +22,22 @@
 
 LIBCXXW_NAMESPACE_START
 
+//! selection_type callback.
+
+//! \see new_listlayoutmanager
+
+typedef std::function<void (const listlayoutmanagerbase &, size_t,
+				    const busy &)
+		      > list_selection_type_cb_t;
+
+//! selection_changed callback.
+
+//! \see new_listlayoutmanager
+
+typedef std::function<void (const listlayoutmanagerbase &,
+			    size_t, bool, const busy &)
+		      > list_selection_changed_cb_t;
+
 //! Create a new container with a \ref listlayoutmanager "list layout manager".
 
 //! This parameter gets passed to a \ref factory "factory"'s
@@ -56,9 +72,7 @@ class LIBCXX_HIDDEN new_listlayoutmanager : public new_focusable_layoutmanager {
 	//! each item in the list is selected or unselected individually and
 	//! more than one item can be selected in the list, at the same time.
 
-	std::function<void (const listlayoutmanagerbase &, size_t,
-			    const busy &)
-		      > selection_type;
+	list_selection_type_cb_t selection_type;
 
 	//! Callback when list selection changes.
 
@@ -67,9 +81,7 @@ class LIBCXX_HIDDEN new_listlayoutmanager : public new_focusable_layoutmanager {
 	//! This callback cannot strongly capture the list display element
 	//! or any of its parent display elements.
 
-	std::function<void (const listlayoutmanagerbase &,
-			    size_t, bool, const busy &)
-		      > selection_changed;
+	list_selection_changed_cb_t selection_changed;
 
 	//! Number of rows in the list.
 

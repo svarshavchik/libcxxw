@@ -82,14 +82,11 @@ class LIBCXX_HIDDEN listlayoutmanagerObj::implObj
 
  private:
 	//! Selection type
-	std::function<void (const listlayoutmanager &,
-			    size_t,
-			    const x::w::busy &)
-		      > selection_type_thread_only;
+	list_selection_type_cb_t selection_type_thread_only;
 
-	std::function<void (const listlayoutmanager &,
-			    size_t, bool, const x::w::busy &)
-		      > selection_changed_;
+	//! Selection changed callback
+	list_selection_changed_cb_t selection_changed_;
+
  public:
 	inline auto &selection_changed(grid_map_t::lock &)
 	{
