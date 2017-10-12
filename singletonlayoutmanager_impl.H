@@ -17,7 +17,6 @@ LIBCXXW_NAMESPACE_START
 class LIBCXX_HIDDEN singletonlayoutmanagerObj::implObj :
 	public layoutmanagerObj::implObj {
 
- public:
 	//! The container for the current element, and/or new elements.
 
 	//! If the vector is empty, there's no element in the singleton
@@ -32,6 +31,7 @@ class LIBCXX_HIDDEN singletonlayoutmanagerObj::implObj :
 
 	current_element_t current_element;
 
+ public:
 	//! Constructor
 	implObj(const ref<containerObj::implObj> &container_impl,
 		const elementptr &initial_element);
@@ -49,6 +49,12 @@ class LIBCXX_HIDDEN singletonlayoutmanagerObj::implObj :
 			       const function<void (const element &e)> &)
 		override;
 
+	//! New element, replace the existing one.
+	void created(const element &e);
+
+	//! Return the existing element.
+
+	elementptr get();
  private:
 	//! Return list_element's implementation object.
 

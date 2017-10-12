@@ -30,12 +30,18 @@ void singletonlayoutmanagerObj::implObj
 ::do_for_each_child(IN_THREAD_ONLY,
 		    const function<void (const element &e)> &callback)
 {
-	current_element_t::lock lock{current_element};
+	auto c=({
+			current_element_t::lock lock{current_element};
 
-	if (lock->empty())
-		return;
+			if (lock->empty())
+				return;
 
-	callback(lock->at(0));
+			lock->at(0);
+		});
+
+	c->impl->initialize_if_needed(IN_THREAD);
+
+	callback(c);
 }
 
 dim_t singletonlayoutmanagerObj::implObj::get_left_padding(IN_THREAD_ONLY)
@@ -56,6 +62,23 @@ dim_t singletonlayoutmanagerObj::implObj::get_top_padding(IN_THREAD_ONLY)
 dim_t singletonlayoutmanagerObj::implObj::get_bottom_padding(IN_THREAD_ONLY)
 {
 	return 0;
+}
+
+void singletonlayoutmanagerObj::implObj::created(const element &e)
+{
+	current_element_t::lock lock{current_element};
+
+	lock->push_back(e);
+}
+
+elementptr singletonlayoutmanagerObj::implObj::get()
+{
+	current_element_t::lock lock{current_element};
+
+	if (!lock->empty())
+		return lock->at(0);
+
+	return {};
 }
 
 elementimplptr singletonlayoutmanagerObj::implObj

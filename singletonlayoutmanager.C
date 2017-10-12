@@ -31,10 +31,7 @@ class LIBCXX_HIDDEN replace_singleton_factoryObj : public factoryObj {
 
 	void created(const element &e) override
 	{
-		singletonlayoutmanagerObj::implObj::current_element_t::lock
-			lock{layout_manager->impl->current_element};
-
-		lock->push_back(e);
+		layout_manager->impl->created(e);
 	}
 };
 
