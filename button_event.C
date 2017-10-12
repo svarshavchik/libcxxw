@@ -10,10 +10,12 @@ LIBCXXW_NAMESPACE_START
 button_event::button_event(uint16_t SETofKEYBUTMASK,
 			   const keysyms &k,
 			   int button,
-			   bool press)
+			   bool press,
+			   unsigned click_count)
 	: input_mask{SETofKEYBUTMASK, k},
 	  button{button},
-	  press{press}
+	  press{press},
+	  click_count{click_count}
 {
 }
 

@@ -41,6 +41,9 @@ LIBCXXW_NAMESPACE_START
 static property::value<bool> disable_grabs(LIBCXX_NAMESPACE_STR
 					   "::w::disable_grab", false);
 
+static property::value<unsigned> double_click(LIBCXX_NAMESPACE_STR
+					      "::w::double_click", 1000);
+
 static rectangle element_position(const rectangle &r)
 {
 	auto cpy=r;
@@ -513,6 +516,25 @@ void generic_windowObj::handlerObj
 {
 	ungrab(IN_THREAD);
 
+	auto click_time=std::chrono::steady_clock::now();
+
+	if (previous_click_time)
+	{
+		auto cutoff=previous_click_time.value() +
+			std::chrono::milliseconds(double_click.getValue());
+
+		if (click_time < cutoff)
+			++click_count;
+		else
+			click_count=1;
+	}
+	else
+	{
+		click_count=1;
+	}
+
+	previous_click_time=click_time;
+
 	// We grab_button()ed and grab_key()ed.
 	// Make sure we'll release the grab, when the dust settles.
 
@@ -557,7 +579,8 @@ void generic_windowObj::handlerObj
 	auto &keysyms=
 		get_screen()->get_connection()->impl->keysyms_info(IN_THREAD);
 
-	button_event be{event->state, keysyms, event->detail, buttonpress};
+	button_event be{event->state, keysyms, event->detail, buttonpress,
+			click_count};
 
 	motion_event me{be, motion_event_type::button_event,
 			event->event_x, event->event_y};

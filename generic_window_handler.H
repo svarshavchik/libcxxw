@@ -32,6 +32,9 @@
 #include <xcb/xcb_icccm.h>
 #include <x/functional.H>
 
+#include <chrono>
+#include <optional>
+
 LIBCXXW_NAMESPACE_START
 
 //! Common logic for generic input/output windows.
@@ -390,6 +393,16 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	void button_press_event(IN_THREAD_ONLY,
 				const xcb_button_press_event_t *event) override;
 
+ private:
+	//! The last button press event timestamp.
+
+	std::optional<std::chrono::time_point<std::chrono::steady_clock>
+		      > previous_click_time;
+
+	//! Counts double, triple, etc... clicks
+	unsigned click_count=0;
+
+ public:
 	//! Button release event
 	void button_release_event(IN_THREAD_ONLY,
 				  const xcb_button_release_event_t *event) override;

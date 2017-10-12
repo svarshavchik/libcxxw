@@ -22,13 +22,15 @@ public:
 	//! Constructor
 	button_event(uint16_t SETofKEYBUTMASK, const keysyms &k,
 		     int button,
-		     bool press);
+		     bool press,
+		     unsigned click_count);
 
 	//! Destructor
 	~button_event();
 
 	int button; //!< Pointer button number
 	bool press; //!< Press or release
+	unsigned click_count; //!< Consecutive click counter
 
 	bool redirected=false; //!< Internal flag, don't touch.
 };
