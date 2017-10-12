@@ -14,6 +14,7 @@
 #include "richtext/richtextcursorlocation.H"
 #include "richtext/richtext_insertfwd.H"
 #include "richtext/richtext_draw_infofwd.H"
+#include "richtext/richtext_draw_boundariesfwd.H"
 #include "x/w/types.H"
 #include "x/w/metrics/axis.H"
 #include "x/w/rectanglefwd.H"
@@ -108,6 +109,18 @@ class LIBCXX_HIDDEN richtextObj : virtual public obj {
 			 const draw_info &,
 			 const rectangle_set &);
 
+	//! Redraw this element fully.
+
+	//! This is used by the rich text layout manager that positions
+	//! multiple text elements inside its element. It supplies a custom
+	//! richtext_draw_boundaries.
+
+	void full_redraw(IN_THREAD_ONLY,
+			 element_drawObj &,
+			 const richtext_draw_info &,
+			 const draw_info &,
+			 const richtext_draw_boundaries &);
+
 	//! Redraw only the fragments that need redrawing.
 
 	//! Invoked after the text is modified.
@@ -137,6 +150,9 @@ class LIBCXX_HIDDEN richtextObj : virtual public obj {
 
 	//! Redraw a fragment range.
 
+	//! This is used by the editor element, as such this takes care of
+	//! constructing richtext_draw_boundaries that assumes that the
+	//! text label is the entire display element (it is).
 	void redraw_between(IN_THREAD_ONLY,
 			    element_drawObj &,
 			    const richtextiterator &,
@@ -172,8 +188,7 @@ class LIBCXX_HIDDEN richtextObj : virtual public obj {
 		  bool clear_padding,
 
 		  //! Which areas to redraw
-		  const rectangle_set &areas
-		  );
+		  const richtext_draw_boundaries &draw_bounds);
  public:
 	//! Return an iterator to the first character of the rich text.
 

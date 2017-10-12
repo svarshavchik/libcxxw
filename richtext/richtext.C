@@ -13,6 +13,7 @@
 #include "richtext/richtextiterator.H"
 #include "richtext/richtextcursorlocation.H"
 #include "richtext/richtext_draw_info.H"
+#include "richtext/richtext_draw_boundaries.H"
 #include "draw_info.H"
 #include "element_draw.H"
 #include "screen.H"
@@ -136,6 +137,17 @@ void richtextObj::full_redraw(IN_THREAD_ONLY,
 			      const draw_info &di,
 			      const rectangle_set &areas)
 {
+	richtext_draw_boundaries draw_bounds{di, areas};
+
+	full_redraw(IN_THREAD, element, rdi, di, draw_bounds);
+}
+
+void richtextObj::full_redraw(IN_THREAD_ONLY,
+			      element_drawObj &element,
+			      const richtext_draw_info &rdi,
+			      const draw_info &di,
+			      const richtext_draw_boundaries &draw_bounds)
+{
 	draw(IN_THREAD, element, rdi, di,
 	     make_function<bool (richtextfragmentObj *)>
 	     ([]
@@ -143,7 +155,7 @@ void richtextObj::full_redraw(IN_THREAD_ONLY,
 	      {
 		      return true;
 	      }),
-	     true, areas);
+	     true, draw_bounds);
 }
 
 void richtextObj::redraw_whatsneeded(IN_THREAD_ONLY,
@@ -160,6 +172,8 @@ void richtextObj::redraw_whatsneeded(IN_THREAD_ONLY,
 				     const draw_info &di,
 				     const rectangle_set &areas)
 {
+	richtext_draw_boundaries draw_bounds{di, areas};
+
 	draw(IN_THREAD, element, rdi, di,
 	     make_function<bool (richtextfragmentObj *)>
 	     ([]
@@ -169,7 +183,7 @@ void richtextObj::redraw_whatsneeded(IN_THREAD_ONLY,
 		      f->redraw_needed=false;
 		      return flag;
 	      }),
-	     false, areas);
+	     false, draw_bounds);
 }
 
 void richtextObj::redraw_between(IN_THREAD_ONLY,
@@ -186,6 +200,8 @@ void richtextObj::redraw_between(IN_THREAD_ONLY,
 	bool first=true;
 	size_t a_index=0;
 	size_t b_index=0;
+
+	richtext_draw_boundaries draw_bounds{di, di.entire_area()};
 
 	draw(IN_THREAD, element, rdi, di,
 	     make_function<bool (richtextfragmentObj *)>
@@ -216,7 +232,7 @@ void richtextObj::redraw_between(IN_THREAD_ONLY,
 		      return ( a_index <= i && i <= b_index );
 	      }),
 	     false,
-	     di.entire_area());
+	     draw_bounds);
 }
 
 void richtextObj::draw(IN_THREAD_ONLY,
@@ -225,45 +241,13 @@ void richtextObj::draw(IN_THREAD_ONLY,
 		       const draw_info &di,
 		       const function<bool (richtextfragmentObj *)> &redraw_fragment,
 		       bool clear_padding,
-		       const rectangle_set &areas)
+		       const richtext_draw_boundaries &draw_bounds)
 {
-	// Do only the bare minimum of work. We are told to draw only the
-	// given areas.
+	if (draw_bounds.nothing_to_draw())
+		return;
 
-	// First, translate element_view from absolute window coordinates
-	// to relative element coordinates. Compute the intersection with
-	// the given areas. If the result is empty, draw nothing.
-	//
-	// Otherwise we compute the bounding rectangle and draw only the
-	// fragments that fall within the boundaries. of the bounding
-	// rectangle.
-	auto draw_bounds=bounds
-		(({
-				std::vector<rectangle>
-					rects{di.element_viewport.begin(),
-						di.element_viewport.end()
-						};
-
-				for (auto &r:rects)
-				{
-					r.x=coord_t::truncate
-						(r.x-di.absolute_location.x);
-					r.y=coord_t::truncate
-						(r.y-di.absolute_location.y);
-				}
-
-				auto what_to_draw=
-					intersect(rectangle_set{rects.begin(),
-								rects.end()},
-						areas);
-
-				if (what_to_draw.empty())
-					return;
-
-				what_to_draw;
-			}));
-
-	assert_or_throw(draw_bounds.x >= 0 && draw_bounds.y >= 0,
+	assert_or_throw(draw_bounds.draw_bounds.x >= 0 &&
+			draw_bounds.draw_bounds.y >= 0,
 			"Bounding rectangle cannot start on a negative coordinate");
 	impl_t::lock lock{IN_THREAD, impl};
 
@@ -273,8 +257,8 @@ void richtextObj::draw(IN_THREAD_ONLY,
 
 	if (!(*lock)->paragraphs.empty())
 	{
-		size_t y_pos=draw_bounds.y < 0 ? 0:
-			(coord_t::value_type)(draw_bounds.y);
+		size_t y_pos=draw_bounds.draw_bounds.y < 0 ? 0:
+			(coord_t::value_type)(draw_bounds.draw_bounds.y);
 
 		auto frag=(*lock)->find_fragment_for_y_position(y_pos);
 
@@ -290,9 +274,9 @@ void richtextObj::draw(IN_THREAD_ONLY,
 	// It's unlikely, but possible that the container gave us
 	// more height than we'll actually draw. Keep track of the ending
 	// y coordinate that was rendered.
-	coord_t y=draw_bounds.y;
+	coord_t y=draw_bounds.draw_bounds.y;
 
-	auto ending_y_position=draw_bounds.y + draw_bounds.height;
+	auto ending_y_position=draw_bounds.draw_bounds.y + draw_bounds.draw_bounds.height;
 
 	// Determine if there's a current selection.
 
@@ -359,8 +343,8 @@ void richtextObj::draw(IN_THREAD_ONLY,
 						 di.absolute_location.x,
 						 di.absolute_location.y,
 
-						 draw_bounds.width,
-						 dim_t::truncate(draw_bounds.x),
+						 draw_bounds.draw_bounds.width,
+						 dim_t::truncate(draw_bounds.draw_bounds.x),
 						 };
 
 				 // If we're drawing a selection, figure out
@@ -392,8 +376,10 @@ void richtextObj::draw(IN_THREAD_ONLY,
 				 scratch_height=scratch_pixmap->get_height();
 
 			 },
-			 rectangle{draw_bounds.x, coord_t::truncate(y_position),
-					 draw_bounds.width, height},
+			 rectangle{draw_bounds.draw_bounds.x,
+					 coord_t::truncate(y_position),
+					 draw_bounds.draw_bounds.width,
+					 height},
 			 di, di,
 			 clipped);
 	}
