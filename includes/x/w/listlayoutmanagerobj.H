@@ -97,6 +97,8 @@ public:
 	//! Number of items in the list
 	size_t size(grid_map_t::lock &lock) const;
 
+	using listlayoutmanagerbaseObj::selected;
+
 	//! Whether list item \#i is selected right now.
 	bool selected(size_t i) const override;
 
@@ -114,15 +116,29 @@ public:
 	std::vector<size_t> all_selected() const override;
 
 	//! Select or unselect item \#i
-	void selected(size_t i, bool selected_flag) override;
+	void selected(size_t i, bool selected_flag,
+		      const callback_trigger_t &trigger) override;
+
+	//! Select or unselect item \#i
+	void selected(grid_map_t::lock &lock, size_t i, bool selected_flag,
+		      const callback_trigger_t &trigger);
 
 	//! Select or unselect item \#i
 	void selected(grid_map_t::lock &lock, size_t i, bool selected_flag);
 
-	//! As if item \#i was clicked on.
-	void autoselect(size_t i) override;
+	using listlayoutmanagerbaseObj::autoselect;
 
 	//! As if item \#i was clicked on.
+	void autoselect(size_t i,
+			const callback_trigger_t &trigger) override;
+
+	//! As if item \#i was clicked on.
+	void autoselect(grid_map_t::lock &lock, size_t i,
+			const callback_trigger_t &trigger);
+
+	//! As if item \#i was clicked on.
+
+	//! \overload
 	void autoselect(grid_map_t::lock &lock, size_t i);
 
 	//! Unselect all selected items.

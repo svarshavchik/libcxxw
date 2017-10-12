@@ -45,7 +45,8 @@ class LIBCXX_HIDDEN hotspot_bgcolorObj::implObj : virtual public obj {
 
 	//! The subclass must override this in hotspotObj::implObj,
 	//! and invoke this method.
-	void temperature_changed(IN_THREAD_ONLY);
+	void temperature_changed(IN_THREAD_ONLY,
+				 const callback_trigger_t &trigger);
 };
 
 LIBCXXW_NAMESPACE_END

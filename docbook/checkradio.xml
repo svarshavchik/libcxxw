@@ -148,8 +148,14 @@ size_t n=button->get_state();</programlisting>
       <informalexample>
 	<programlisting>
 button->on_activate([]
-                    (bool first_time, size_t value, const x::w::busy &amp;mcguffin)
+                    (size_t value,
+                     const x::w::callback_trigger_t &amp;trigger,
+                     const x::w::busy &amp;mcguffin)
                     {
+                        if (trigger.index() == x::w::callback_trigger_initial)
+                        {
+                               .. ,,,
+                        }
                     });</programlisting>
       </informalexample>
     </blockquote>
@@ -158,12 +164,12 @@ button->on_activate([]
       The lambda gets executed whenever the button changes its value.
       The lambda also gets executed immediately after it gets installed,
       and receives the checkbox's current state as the
-      <varname>value</varname>. Its first <classname>bool</classname>
-      parameter is a flag that specifies that this is the initial
-      checkbox value. The first time the lambda gets invoked the
-      <classname>bool</classname> flag is <literal>true</literal>.
-      All subsequent calls, whenever the button changes state, have the
-      <classname>bool</classname> flag set to <literal>false</literal>.
+      <varname>value</varname>. Its <varname>trigger</varname> parameter
+      indicates the reason for lambda's execution.
+      <ulink url="&link-typedef-x--w-callback-trigger-t;"><classname>&ns;::w::callback_trigger_t</classname></ulink>
+      is a <classname>std::variant</classname> and the initial invocation
+      of the variant specifies
+      <classname>x::w::callback_trigger_initial</classname>.
     </para>
 
     <note>
@@ -179,15 +185,16 @@ button->on_activate([]
     <para>
       Only one callback can be installed at a time. Installing a second
       callback replaces the first one, and the second callback also gets
-      executed with the <varname>first_time</varname> flag set to
-      <literal>true</literal>. Since callback execution and installation
-      is asynchronous, it's possible for the first callback to be executed
+      executed with the <varname>trigger</varname> indicating its initial
+      invocation. Since callback execution and installation
+      is asynchronous, it's possible for the first callback to get executed
       one last time after
-      <methodname>on_activate</methodname>() gets called to install a
-      replacement callback, if the internal execution thread already started
-      processing a button click. The first callback never gets called after
-      the initial execution of the second callback; this is a confirmation
-      that the callback has been replaced.
+      <methodname>on_activate</methodname>() gets called to install its
+      replacement callback. This happens
+      if the internal execution thread already started processing a button
+      click. In all cases the first callback never gets called after
+      the initial execution of the second callback; so this is a confirmation
+      that the callback is replaced.
     </para>
 
     <para>

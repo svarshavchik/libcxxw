@@ -56,31 +56,36 @@ void create_mainwindow(const x::w::main_window &main_window)
 	// a reference to another button, which is neither its parent or child.
 
 	button2->on_activate([=]
-			     (const x::w::busy &mcguffin)
+			     (const x::w::callback_trigger_t &trigger,
+			      const x::w::busy &mcguffin)
 			     {
 				     button1->set_enabled(false);
 			     });
 
 	button3->on_activate([=]
-			     (const x::w::busy &mcguffin)
+			     (const x::w::callback_trigger_t &trigger,
+			      const x::w::busy &mcguffin)
 			     {
 				     button1->set_enabled(true);
 			     });
 
 	button4->on_activate([=]
-			     (const x::w::busy &mcguffin)
+			     (const x::w::callback_trigger_t &trigger,
+			      const x::w::busy &mcguffin)
 			     {
 				     button2->get_focus_before(button1);
 			     });
 
 	button5->on_activate([=]
-			     (const x::w::busy &mcguffin)
+			     (const x::w::callback_trigger_t &trigger,
+			      const x::w::busy &mcguffin)
 			     {
 				     button3->get_focus_after(button2);
 			     });
 
 	button6->on_activate([=]
-			     (const x::w::busy &mcguffin)
+			     (const x::w::callback_trigger_t &trigger,
+			      const x::w::busy &mcguffin)
 			     {
 				     button1->get_focus_first();
 			     });
@@ -119,7 +124,8 @@ void create_mainwindow(const x::w::main_window &main_window)
 		 });
 
 	button7->on_activate([=]
-			     (const x::w::busy &mcguffin)
+			     (const x::w::callback_trigger_t &trigger,
+			      const x::w::busy &mcguffin)
 			     {
 				     button1->request_focus();
 			     });

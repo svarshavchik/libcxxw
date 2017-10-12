@@ -17,12 +17,13 @@ installed_shortcutObj
 
 installed_shortcutObj::~installed_shortcutObj()=default;
 
-void installed_shortcutObj::activated(IN_THREAD_ONLY)
+void installed_shortcutObj::activated(IN_THREAD_ONLY,
+				      const callback_trigger_t &trigger)
 {
 	auto p=activate.getptr();
 
 	if (p)
-		p->activated(IN_THREAD);
+		p->activated(IN_THREAD, trigger);
 }
 
 bool installed_shortcutObj::enabled(IN_THREAD_ONLY)

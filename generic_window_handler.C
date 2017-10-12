@@ -503,7 +503,7 @@ bool generic_windowObj::handlerObj
 	if (best_shortcut)
 	{
 		try {
-			best_shortcut->activated(IN_THREAD);
+			best_shortcut->activated(IN_THREAD, &ke);
 		} CATCH_EXCEPTIONS;
 		processed=true;
 	}

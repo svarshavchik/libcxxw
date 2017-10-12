@@ -206,30 +206,45 @@ void listlayoutmanagerObj::unselect()
 			selected(lock, i, false);
 }
 
-void listlayoutmanagerObj::selected(size_t i, bool selected_flag)
+void listlayoutmanagerObj::selected(size_t i, bool selected_flag,
+				    const callback_trigger_t &trigger)
 {
 	grid_map_t::lock lock{impl->grid_map};
 
-	selected(lock, i, selected_flag);
+	selected(lock, i, selected_flag, trigger);
 }
 
 void listlayoutmanagerObj::selected(grid_map_t::lock &lock, size_t i,
 				    bool selected_flag)
 {
-	return impl->selected(listlayoutmanager(this),
-			      lock, i, selected_flag);
+	selected(lock, i, selected_flag, {});
 }
 
-void listlayoutmanagerObj::autoselect(size_t i)
+void listlayoutmanagerObj::selected(grid_map_t::lock &lock, size_t i,
+				    bool selected_flag,
+				    const callback_trigger_t &trigger)
+{
+	return impl->selected(listlayoutmanager(this),
+			      lock, i, selected_flag, trigger);
+}
+
+void listlayoutmanagerObj::autoselect(size_t i,
+				      const callback_trigger_t &trigger)
 {
 	grid_map_t::lock lock{impl->grid_map};
 
-	autoselect(lock, i);
+	autoselect(lock, i, trigger);
+}
+
+void listlayoutmanagerObj::autoselect(grid_map_t::lock &lock, size_t i,
+				      const callback_trigger_t &trigger)
+{
+	impl->autoselect(listlayoutmanager(this), lock, i, trigger);
 }
 
 void listlayoutmanagerObj::autoselect(grid_map_t::lock &lock, size_t i)
 {
-	return impl->autoselect(listlayoutmanager(this), lock, i);
+	autoselect(lock, i, {});
 }
 
 bool listlayoutmanagerObj::enabled(const element &e) const

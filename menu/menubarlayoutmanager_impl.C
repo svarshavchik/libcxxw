@@ -306,6 +306,7 @@ void menubarlayoutmanagerObj::implObj::fix_order(IN_THREAD_ONLY,
 void menubarlayoutmanagerObj::implObj
 ::menuitem_selected(const listlayoutmanagerbase &lmbase,
 		    size_t i,
+		    const callback_trigger_t &trigger,
 		    const busy &mcguffin)
 {
 	listlayoutmanager lm{lmbase};
@@ -330,6 +331,7 @@ void menubarlayoutmanagerObj::implObj
 				if (pl.is_option)
 					multiple_selection_type(lm,
 								i,
+								trigger,
 								mcguffin);
 
 				// Our job is to make arrangements to close

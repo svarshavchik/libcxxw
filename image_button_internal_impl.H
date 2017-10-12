@@ -55,7 +55,9 @@ public:
 	//!
 	//! The default implementation calls do_set_image_number().
 
-	virtual void set_image_number(IN_THREAD_ONLY, size_t);
+	virtual void set_image_number(IN_THREAD_ONLY,
+				      const callback_trigger_t &trigger,
+				      size_t);
 
 	//! Actually update the current image number.
 

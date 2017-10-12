@@ -254,7 +254,8 @@ void listlayoutmanagerObj::implObj
 	e.at(0)->grid_element->impl->ensure_entire_visibility(IN_THREAD);
 }
 
-void listlayoutmanagerObj::implObj::temperature_changed(IN_THREAD_ONLY)
+void listlayoutmanagerObj::implObj::temperature_changed(IN_THREAD_ONLY,
+							const callback_trigger_t &trigger)
 {
 	auto new_temperature=container_impl->hotspot_temperature(IN_THREAD);
 
@@ -328,13 +329,14 @@ listlayoutmanagerObj::implObj::lookup_item(grid_map_t::lock &lock,
 
 void listlayoutmanagerObj::implObj
 ::activated(IN_THREAD_ONLY,
-	    const listlayoutmanager &my_public_object)
+	    const listlayoutmanager &my_public_object,
+	    const callback_trigger_t &trigger)
 {
 	list_lock lock{my_public_object};
 
 	if (highlighted_row(lock) != (size_t)-1)
 		autoselect(IN_THREAD, my_public_object, lock,
-			   highlighted_row(lock));
+			   highlighted_row(lock), trigger);
 }
 
 size_t listlayoutmanagerObj::implObj::size(grid_map_t::lock &lock) const
@@ -402,7 +404,8 @@ void listlayoutmanagerObj::implObj::enabled(IN_THREAD_ONLY,
 
 void listlayoutmanagerObj::implObj::selected(const listlayoutmanager &me,
 					     grid_map_t::lock &lock, size_t i,
-					     bool selected_flag)
+					     bool selected_flag,
+					     const callback_trigger_t &trigger)
 {
 	auto c=get_listitemcontainer(lock, i);
 
@@ -437,26 +440,39 @@ void listlayoutmanagerObj::implObj::selected(const listlayoutmanager &me,
 
 	try {
 		selection_changed(real_lock)
-			(me, i, selected_flag, yes_i_am);
+			(me, i, selected_flag, trigger, yes_i_am);
 	} CATCH_EXCEPTIONS;
 }
 
 void listlayoutmanagerObj::implObj::autoselect(const listlayoutmanager &me,
-					       grid_map_t::lock &lock, size_t i)
+					       grid_map_t::lock &lock, size_t i,
+					       const callback_trigger_t
+					       &trigger)
 {
-	connection_thread_method_t callback=&implObj::autoselect;
+	connection_thread_op(me, lock, i,
+			     [trigger]
+			     (implObj *ptr,
+			      IN_THREAD_ONLY,
+			      const listlayoutmanager &me,
+			      list_lock &lock,
+			      size_t i)
+			     {
+				     ptr->autoselect(IN_THREAD, me, lock, i,
+						    trigger);
+			     });
 
-	connection_thread_op(me, lock, i, callback);
 }
 
 void listlayoutmanagerObj::implObj::autoselect(IN_THREAD_ONLY,
 					       const listlayoutmanager &me,
-					       list_lock &lock, size_t i)
+					       list_lock &lock, size_t i,
+					       const callback_trigger_t
+					       &trigger)
 {
 	try {
 		busy_impl yes_i_am{container_impl->get_element_impl()};
 
-		selection_type(IN_THREAD)(me, i, yes_i_am);
+		selection_type(IN_THREAD)(me, i, trigger, yes_i_am);
 	} CATCH_EXCEPTIONS;
 }
 

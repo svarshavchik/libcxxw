@@ -43,7 +43,7 @@ template<typename element_impl>
 void hotspot_bgcolor_elementObj<element_impl>::initialize(IN_THREAD_ONLY)
 {
 	hotspot_elementObj<element_impl>::initialize(IN_THREAD);
-	hotspot_bgcolorObj::implObj::temperature_changed(IN_THREAD);
+	hotspot_bgcolorObj::implObj::temperature_changed(IN_THREAD, {});
 }
 
 //! Override temperature_changed() from hotspotObj::implObj.
@@ -53,10 +53,11 @@ void hotspot_bgcolor_elementObj<element_impl>::initialize(IN_THREAD_ONLY)
 
 template<typename element_impl>
 void hotspot_bgcolor_elementObj<element_impl>
-::temperature_changed(IN_THREAD_ONLY)
+::temperature_changed(IN_THREAD_ONLY,
+		      const callback_trigger_t &trigger)
 {
-	hotspot_elementObj<element_impl>::temperature_changed(IN_THREAD);
-	hotspot_bgcolorObj::implObj::temperature_changed(IN_THREAD);
+	hotspot_elementObj<element_impl>::temperature_changed(IN_THREAD, trigger);
+	hotspot_bgcolorObj::implObj::temperature_changed(IN_THREAD, trigger);
 }
 
 //! Implement cold_color().

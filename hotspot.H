@@ -110,13 +110,15 @@ class LIBCXX_HIDDEN hotspotObj::implObj
 
 	//! Update the current temperature
 
-	void update(IN_THREAD_ONLY);
+	void update(IN_THREAD_ONLY,
+		    const callback_trigger_t &trigger);
 
  public:
 
 	//! Hotspot's temperature has changed.
 
-	virtual void temperature_changed(IN_THREAD_ONLY);
+	virtual void temperature_changed(IN_THREAD_ONLY,
+					 const callback_trigger_t &trigger);
 
 	//! Install a new callback.
 
@@ -136,7 +138,7 @@ class LIBCXX_HIDDEN hotspotObj::implObj
 
 	//! The default implementation invokes callback().
 
-	void activated(IN_THREAD_ONLY) override;
+	void activated(IN_THREAD_ONLY, const callback_trigger_t &) override;
 
 	//! Implement enabled().
 

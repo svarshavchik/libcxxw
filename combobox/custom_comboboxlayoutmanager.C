@@ -399,6 +399,7 @@ focusable_container new_custom_comboboxlayoutmanager
 				 (const listlayoutmanager &ignore,
 				  size_t i,
 				  bool flag,
+				  const callback_trigger_t &trigger,
 				  const busy &mcguffin)
 				 {
 					 current_selection.get

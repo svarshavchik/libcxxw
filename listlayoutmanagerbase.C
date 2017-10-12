@@ -4,6 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "x/w/listlayoutmanagerbase.H"
+#include "x/w/listlayoutmanager.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -29,6 +30,16 @@ listlayoutmanagerbaseObj::next_callback()
 		cb=(*lock)();
 
 	return cb;
+}
+
+void listlayoutmanagerbaseObj::selected(size_t i, bool selected_flag)
+{
+	selected(i, selected_flag, {});
+}
+
+void listlayoutmanagerbaseObj::autoselect(size_t i)
+{
+	autoselect(i, {});
 }
 
 LIBCXXW_NAMESPACE_END

@@ -6,6 +6,7 @@
 #define popup_showhide_elementfwd_h
 
 #include "element.H"
+#include "x/w/hotspotfwd.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -30,7 +31,8 @@ public:
 
 	~popup_showhide_elementObj();
 
-	void activated(IN_THREAD_ONLY) override;
+	void activated(IN_THREAD_ONLY,
+		       const callback_trigger_t &trigger) override;
 };
 
 LIBCXXW_NAMESPACE_END

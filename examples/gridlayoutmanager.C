@@ -280,7 +280,7 @@ inline void create_mainwindow(const x::w::main_window &main_window)
 
 	my_appdata->insert_column->on_activate
 		([main_window=x::make_weak_capture(main_window), counter=0]
-		 (const auto &busy)
+		 (const x::w::callback_trigger_t &trigger, const auto &busy)
 		 mutable
 		 {
 			 main_window.get
@@ -294,7 +294,7 @@ inline void create_mainwindow(const x::w::main_window &main_window)
 
 	my_appdata->remove_column->on_activate
 		([main_window=x::make_weak_capture(main_window)]
-		 (const auto &busy)
+		 (const x::w::callback_trigger_t &trigger, const auto &busy)
 		 {
 			 main_window.get
 				 ([&]
@@ -306,7 +306,7 @@ inline void create_mainwindow(const x::w::main_window &main_window)
 
 	my_appdata->insert_row->on_activate
 		([main_window=x::make_weak_capture(main_window), counter=0]
-		 (const auto &busy)
+		 (const x::w::callback_trigger_t &trigger, const auto &busy)
 		 mutable
 		 {
 			 main_window.get
@@ -320,7 +320,7 @@ inline void create_mainwindow(const x::w::main_window &main_window)
 
 	my_appdata->remove_row->on_activate
 		([main_window=x::make_weak_capture(main_window), counter=0]
-		 (const auto &busy)
+		 (const x::w::callback_trigger_t &trigger, const auto &busy)
 		 mutable
 		 {
 			 main_window.get

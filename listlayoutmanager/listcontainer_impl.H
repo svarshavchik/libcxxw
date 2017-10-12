@@ -71,10 +71,11 @@ class LIBCXX_HIDDEN listcontainerObj::implObj :
 	void pointer_focus(IN_THREAD_ONLY, const ref<elementObj::implObj> &e);
 
 	//! Override temperature_changed
-	void temperature_changed(IN_THREAD_ONLY) override;
+	void temperature_changed(IN_THREAD_ONLY,
+				 const callback_trigger_t &trigger) override;
 
 	//! Clicked.
-	void activated(IN_THREAD_ONLY) override;
+	void activated(IN_THREAD_ONLY, const callback_trigger_t &) override;
 
 	//! Override set_focus_and_ensure_visibility()
 

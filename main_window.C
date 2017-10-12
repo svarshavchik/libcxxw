@@ -347,7 +347,7 @@ static void hide_and_invoke_when_activated(const auto &d,
 					   const auto &action)
 {
 	button->on_activate([d=make_weak_capture(d), action]
-			    (const busy &yes_i_am)
+			    (const auto &ignore, const busy &yes_i_am)
 			    {
 				    hide_and_invoke(d, yes_i_am, action);
 			    });

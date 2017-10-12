@@ -247,7 +247,7 @@ layout->remove_col_defaults(col);
 	<programlisting>
 button-&gt;on_activate
     ([main_window=&ns;::make_weak_capture(main_window)]
-     (const auto &amp;ignore)
+     (const &ns;::w::callback_trigger_t &amp;trigger, const auto &amp;ignore)
      {
           main_winow.get([&amp;]
                          (const auto &amp;main_window)

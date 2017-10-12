@@ -7,6 +7,7 @@
 
 #include <x/w/namespace.H>
 #include <x/w/busyfwd.H>
+#include <x/w/callback_triggerfwd.H>
 #include <x/ptrfwd.H>
 #include <functional>
 
@@ -16,7 +17,9 @@ class image_buttonObj;
 
 //! Signature for an image_button activation function.
 
-typedef std::function<void (bool, size_t, const busy &)> image_button_callback_t;
+typedef std::function<void (size_t,
+			    const callback_trigger_t &,
+			    const busy &)> image_button_callback_t;
 
 //! A simple button that display a different image when it changes state.
 
@@ -30,8 +33,13 @@ typedef std::function<void (bool, size_t, const busy &)> image_button_callback_t
 //! image_button->set_value(1);
 //!
 //! image_button->on_activate([]
-//!                           (bool initial, size_t value, const LIBCXX_NAMESPACE::w::busy &busy_mcguffin)
+//!                           (size_t value,
+//!                            const LIBCXX_NAMESPACE::w::callback_trigger_t &trigger,
+//!                            const LIBCXX_NAMESPACE::w::busy &busy_mcguffin)
 //!                           {
+//!                                  if (trigger.index() == LIBCXX_NAMESPACE::w::callback_trigger_initial)
+//!                                  {
+//!                                  }
 //!                           });
 //! \endcode
 //!
@@ -60,8 +68,9 @@ typedef std::function<void (bool, size_t, const busy &)> image_button_callback_t
 //! installed callback.
 //!
 //! A newly installed callback always gets invoked immediately with
-//! the \c initial parameter set to true, and the image button's
-//! current state value. All subsequent invocations pass \c false for the flag
+//! the \c trigger parameter specifying the \c LIBCXX_NAMESPACE::w::callback_trigger_initial
+//! as the reason for the callback.
+//! All subsequent invocations pass a different reason,
 //! and give the checkbox's or the radio button's new state value. The
 //! callbacks get invoked whether the checkbox's or the radio button's state
 //! gets clicked on, or directly via \c set_value().

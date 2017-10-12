@@ -72,12 +72,13 @@ static void create_mainwindow(const LIBCXX_NAMESPACE::w::main_window &main_windo
 			checkbox->set_value(2);
 
 		checkbox->on_activate([day_of_week]
-				      (bool first_time, size_t flag,
+				      (size_t flag,
+				       const auto &trigger,
 				       const auto &ignore)
 				      {
-					      if (first_time)
+					      if (trigger.index() ==
+						  LIBCXX_NAMESPACE::w::callback_trigger_initial)
 						      return;
-
 					      std::cout << day_of_week
 							<< ": "
 							<< (flag ? "":"not ")
@@ -107,10 +108,12 @@ static void create_mainwindow(const LIBCXX_NAMESPACE::w::main_window &main_windo
 	saturday->set_enabled(false);
 
 	train->on_activate([saturday, sunday]
-			   (bool first_time, size_t flag,
+			   (size_t flag,
+			    const auto &trigger,
 			    const auto &ignore)
 			   {
-				   if (first_time)
+				   if (trigger.index() ==
+				       LIBCXX_NAMESPACE::w::callback_trigger_initial)
 					   return;
 
 				   std::cout << "Train: "
@@ -127,17 +130,19 @@ static void create_mainwindow(const LIBCXX_NAMESPACE::w::main_window &main_windo
 		bus=factory->valign(LIBCXX_NAMESPACE::w::valign::middle)
 		.create_radio(group);
 	bus->on_activate([]
-			   (bool first_time, size_t flag,
-			    const auto &ignore)
-			   {
-				   if (first_time)
-					   return;
+			 (size_t flag,
+			  const auto &trigger,
+			  const auto &ignore)
+			 {
+				 if (trigger.index() ==
+				     LIBCXX_NAMESPACE::w::callback_trigger_initial)
+					 return;
 
-				   std::cout << "Bus: "
-					     << (flag ? "":"not ")
-					     << "checked"
-					     << std::endl;
-			   });
+				 std::cout << "Bus: "
+					   << (flag ? "":"not ")
+					   << "checked"
+					   << std::endl;
+			 });
 
 	factory->create_label({"Bus"});
 
@@ -146,10 +151,12 @@ static void create_mainwindow(const LIBCXX_NAMESPACE::w::main_window &main_windo
 		drive=factory->valign(LIBCXX_NAMESPACE::w::valign::middle)
 		.create_radio(group);
 	drive->on_activate([]
-			   (bool first_time, size_t flag,
+			   (size_t flag,
+			    const auto &trigger,
 			    const auto &ignore)
 			   {
-				   if (first_time)
+				   if (trigger.index() ==
+				       LIBCXX_NAMESPACE::w::callback_trigger_initial)
 					   return;
 
 				   std::cout << "Drive: "

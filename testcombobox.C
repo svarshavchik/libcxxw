@@ -163,7 +163,8 @@ void testcombobox(const testcombobox_options &options)
 
 			 factory->halign(halign::fill)
 			 .create_normal_button_with_label({"Append"},{"Alt", 'A'})
-			 ->on_activate([combobox, i=0](const auto &) mutable {
+			 ->on_activate([combobox, i=0](const auto &,
+						       const auto &) mutable {
 					 standard_comboboxlayoutmanager lm=
 						 combobox->get_layoutmanager();
 
@@ -178,7 +179,7 @@ void testcombobox(const testcombobox_options &options)
 
 			 factory->halign(halign::fill)
 			 .create_normal_button_with_label("Delete")
-			 ->on_activate([combobox](const auto &) {
+			 ->on_activate([combobox](const auto &, const auto &) {
 					 standard_comboboxlayoutmanager lm=
 						 combobox->get_layoutmanager();
 
@@ -192,7 +193,7 @@ void testcombobox(const testcombobox_options &options)
 
 			 factory->halign(halign::center)
 			 .create_normal_button_with_label({"Append Separator"})
-			 ->on_activate([combobox](const auto &) {
+			 ->on_activate([combobox](const auto &, const auto &) {
 					 standard_comboboxlayoutmanager lm=
 						 combobox->get_layoutmanager();
 
@@ -203,7 +204,7 @@ void testcombobox(const testcombobox_options &options)
 
 			 factory->halign(halign::center)
 			 .create_normal_button_with_label({"Insert Separator"})
-			 ->on_activate([combobox](const auto &) {
+			 ->on_activate([combobox](const auto &, const auto &) {
 					 standard_comboboxlayoutmanager lm=
 						 combobox->get_layoutmanager();
 
@@ -214,7 +215,7 @@ void testcombobox(const testcombobox_options &options)
 
 			 factory->halign(halign::center)
 			 .create_normal_button_with_label({"Disable/Enable 1st item"})
-			 ->on_activate([combobox](const auto &) {
+			 ->on_activate([combobox](const auto &, const auto &) {
 					 standard_comboboxlayoutmanager lm=
 						 combobox->get_layoutmanager();
 

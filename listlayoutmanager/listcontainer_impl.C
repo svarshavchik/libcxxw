@@ -59,18 +59,21 @@ void listcontainerObj::implObj
 			     });
 }
 
-void listcontainerObj::implObj::temperature_changed(IN_THREAD_ONLY)
+void listcontainerObj::implObj::temperature_changed(IN_THREAD_ONLY,
+						    const callback_trigger_t &trigger)
 {
 	invoke_layoutmanager([&]
 			     (const ref<listlayoutmanagerObj::implObj> &lilm)
 			     {
-				     lilm->temperature_changed(IN_THREAD);
+				     lilm->temperature_changed(IN_THREAD,
+							       trigger);
 			     });
 }
 
-void listcontainerObj::implObj::activated(IN_THREAD_ONLY)
+void listcontainerObj::implObj::activated(IN_THREAD_ONLY,
+					  const callback_trigger_t &trigger)
 {
-	listcontainer_impl_superclass_t::activated(IN_THREAD);
+	listcontainer_impl_superclass_t::activated(IN_THREAD, trigger);
 
 	listlayoutmanagerptr llmptr;
 
@@ -85,7 +88,7 @@ void listcontainerObj::implObj::activated(IN_THREAD_ONLY)
 
 	listlayoutmanager llm=llmptr;
 
-	llm->impl->activated(IN_THREAD, llm);
+	llm->impl->activated(IN_THREAD, llm, trigger);
 }
 
 bool listcontainerObj::implObj::process_key_event(IN_THREAD_ONLY,

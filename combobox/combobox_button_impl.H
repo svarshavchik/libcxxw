@@ -42,7 +42,8 @@ class LIBCXX_HIDDEN combobox_button_implObj
 
 	//! Show image 1 when the pointer button is down, else show image 0.
 
-	void temperature_changed(IN_THREAD_ONLY) override;
+	void temperature_changed(IN_THREAD_ONLY,
+				 const callback_trigger_t &trigger) override;
 
 	//! Override activate_on_key()
 

@@ -40,7 +40,8 @@ public:
 	//! Implement activated().
 
 	//! Forwarded to the real activate().
-	void activated(IN_THREAD_ONLY) override;
+	void activated(IN_THREAD_ONLY,
+		       const callback_trigger_t &trigger) override;
 
 	//! Implement enabled().
 

@@ -20,9 +20,11 @@ combobox_button_implObj
 combobox_button_implObj::~combobox_button_implObj()=default;
 
 void combobox_button_implObj
-::temperature_changed(IN_THREAD_ONLY)
+::temperature_changed(IN_THREAD_ONLY,
+		      const callback_trigger_t &trigger)
 {
 	set_image_number(IN_THREAD,
+			 trigger,
 			 hotspot_temperature(IN_THREAD)
 			 == temperature::hot ? 1:0);
 }

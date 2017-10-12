@@ -7,6 +7,7 @@
 
 #include "activated_in_threadfwd.H"
 #include "connection_threadfwd.H"
+#include "x/w/hotspotfwd.H"
 #include <x/obj.H>
 
 LIBCXXW_NAMESPACE_START
@@ -26,7 +27,7 @@ public:
 	~activated_in_threadObj();
 
 	//! I've been "activated".
-	virtual void activated(IN_THREAD_ONLY)=0;
+	virtual void activated(IN_THREAD_ONLY, const callback_trigger_t &)=0;
 
 	//! I am enabled.
 	virtual bool enabled(IN_THREAD_ONLY)=0;

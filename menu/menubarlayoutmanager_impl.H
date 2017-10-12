@@ -88,6 +88,7 @@ class LIBCXX_HIDDEN menubarlayoutmanagerObj::implObj
 
 	static void menuitem_selected(const listlayoutmanagerbase &lm,
 				      size_t i,
+				      const callback_trigger_t &trigger,
 				      const busy &mcguffin);
 
 	//! Create a popup menu and its attachment handler.

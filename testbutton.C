@@ -57,7 +57,7 @@ void testbutton()
 				 factory->create_normal_button_with_label
 				 ({"Hello"})->on_activate
 				 ([]
-				  (const auto &) {
+				  (const auto &, const auto &) {
 					 std::cout << "Hello!" << std::endl;
 				 });
 
@@ -65,7 +65,7 @@ void testbutton()
 				 factory->create_special_button_with_label
 				 ({"World"})->on_activate
 				 ([]
-				  (const auto &) {
+				  (const auto &, const auto &) {
 					 std::cout << "World!" << std::endl;
 				 });
 			 });

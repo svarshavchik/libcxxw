@@ -7,6 +7,7 @@
 
 #include <x/w/namespace.H>
 #include <x/w/busyfwd.H>
+#include <x/w/callback_triggerfwd.H>
 #include <x/w/listlayoutmanagerbasefwd.H>
 #include <x/ptrfwd.H>
 #include <functional>
@@ -371,14 +372,16 @@ extern const layout_style_t &bulleted_list;
 
 void single_selection_type(const listlayoutmanagerbase &layout_manager,
 			   size_t i,
-			   const busy &mcguffin);
+			   const callback_trigger_t &trigger,
+			   const busy &mcguffin) LIBCXX_PUBLIC;
 
 //! Multiple selection list.
 
 //! Multiple list items may be selected at any time.
 void multiple_selection_type(const listlayoutmanagerbase &layout_manager,
 			     size_t i,
-			     const busy &mcguffin);
+			     const callback_trigger_t &trigger,
+			     const busy &mcguffin) LIBCXX_PUBLIC;
 
 LIBCXXW_NAMESPACE_END
 

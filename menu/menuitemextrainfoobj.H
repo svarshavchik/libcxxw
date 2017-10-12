@@ -63,7 +63,8 @@ public:
 	//! We expect our parent container element to be the list layout
 	//! layout manager.
 
-	void activated(IN_THREAD_ONLY) override;
+	void activated(IN_THREAD_ONLY,
+		       const callback_trigger_t &trigger) override;
 
 	//! Inherited from activated_in_threadObj
 

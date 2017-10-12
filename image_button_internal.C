@@ -5,6 +5,8 @@
 #include "libcxxw_config.h"
 #include "image_button_internal_impl.H"
 #include "image.H"
+#include "x/w/button_event.H"
+#include "x/w/key_event.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -26,7 +28,7 @@ void image_button_internalObj::resize(IN_THREAD_ONLY,
 				      icon_scale scale)
 {
 	impl->resize(IN_THREAD, w, h, scale);
-	impl->set_image_number(IN_THREAD, impl->get_image_number());
+	impl->set_image_number(IN_THREAD, {}, impl->get_image_number());
 }
 
 LIBCXXW_NAMESPACE_END

@@ -108,7 +108,8 @@ static inline void create_main_window(const x::w::main_window &main_window,
 		.create_special_button_with_label("Append row");
 
 	button->on_activate([=, counter=0]
-			    (const x::w::busy &ignore)
+			    (const x::w::callback_trigger_t &trigger,
+			     const x::w::busy &ignore)
 			    mutable
 			    {
 				    std::ostringstream o;
@@ -128,7 +129,8 @@ static inline void create_main_window(const x::w::main_window &main_window,
 		.create_special_button_with_label("Insert row");
 
 	button->on_activate([=, counter=0]
-			    (const x::w::busy &ignore)
+			    (const x::w::callback_trigger_t &trigger,
+			     const x::w::busy &ignore)
 			    mutable
 			    {
 				    std::ostringstream o;
@@ -148,7 +150,8 @@ static inline void create_main_window(const x::w::main_window &main_window,
 		.create_special_button_with_label("Replace row");
 
 	button->on_activate([=, counter=0]
-			    (const x::w::busy &ignore)
+			    (const x::w::callback_trigger_t &trigger,
+			     const x::w::busy &ignore)
 			    mutable
 			    {
 				    x::w::standard_comboboxlayoutmanager lm=
@@ -169,7 +172,8 @@ static inline void create_main_window(const x::w::main_window &main_window,
 		.create_special_button_with_label("Delete row");
 
 	button->on_activate([=, counter=0]
-			    (const x::w::busy &ignore)
+			    (const x::w::callback_trigger_t &trigger,
+			     const x::w::busy &ignore)
 			    mutable
 			    {
 				    x::w::standard_comboboxlayoutmanager lm=
@@ -186,7 +190,8 @@ static inline void create_main_window(const x::w::main_window &main_window,
 		.create_special_button_with_label("Reset");
 
 	button->on_activate([=, counter=0]
-			    (const x::w::busy &ignore)
+			    (const x::w::callback_trigger_t &trigger,
+			     const x::w::busy &ignore)
 			    mutable
 			    {
 				    x::w::standard_comboboxlayoutmanager lm=

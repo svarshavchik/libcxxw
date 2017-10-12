@@ -27,7 +27,8 @@ LIBCXXW_NAMESPACE_START
 //! \see new_listlayoutmanager
 
 typedef std::function<void (const listlayoutmanagerbase &, size_t,
-				    const busy &)
+			    const callback_trigger_t &,
+			    const busy &)
 		      > list_selection_type_cb_t;
 
 //! selection_changed callback.
@@ -35,7 +36,9 @@ typedef std::function<void (const listlayoutmanagerbase &, size_t,
 //! \see new_listlayoutmanager
 
 typedef std::function<void (const listlayoutmanagerbase &,
-			    size_t, bool, const busy &)
+			    size_t, bool,
+			    const callback_trigger_t &,
+			    const busy &)
 		      > list_selection_changed_cb_t;
 
 //! Create a new container with a \ref listlayoutmanager "list layout manager".

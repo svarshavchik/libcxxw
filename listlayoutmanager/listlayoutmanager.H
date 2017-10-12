@@ -265,7 +265,8 @@ class LIBCXX_HIDDEN listlayoutmanagerObj::implObj
 	//! List container's hotspot temperature changed
 
 	//! Indicates that the pointer button was pressed or released.
-	void temperature_changed(IN_THREAD_ONLY);
+	void temperature_changed(IN_THREAD_ONLY,
+				 const callback_trigger_t &trigger);
 
 	//! I just lost or gained keyboard focus.
 	void keyboard_focus(IN_THREAD_ONLY, bool flag);
@@ -279,7 +280,8 @@ class LIBCXX_HIDDEN listlayoutmanagerObj::implObj
 	//! An list item has been selected.
 
 	void activated(IN_THREAD_ONLY,
-		       const listlayoutmanager &my_public_object);
+		       const listlayoutmanager &my_public_object,
+		       const callback_trigger_t &trigger);
 
 	//! Look up the number of an alleged list item.
 
@@ -337,12 +339,14 @@ class LIBCXX_HIDDEN listlayoutmanagerObj::implObj
 
 	//! Select or unselect item #i
 	void selected(const listlayoutmanager &me,
-		      grid_map_t::lock &lock, size_t i, bool selected_flag);
+		      grid_map_t::lock &lock, size_t i, bool selected_flag,
+		      const callback_trigger_t &trigger);
 
 	//! Autoselect, according to selection_type.
 
 	void autoselect(const listlayoutmanager &me,
-			grid_map_t::lock &lock, size_t i);
+			grid_map_t::lock &lock, size_t i,
+			const callback_trigger_t &trigger);
 
 	//! Remove an item
 	void remove_item(const listlayoutmanager &me,
@@ -410,7 +414,8 @@ class LIBCXX_HIDDEN listlayoutmanagerObj::implObj
 	//! Autoselect, according to selection_type.
 
 	void autoselect(IN_THREAD_ONLY, const listlayoutmanager &me,
-			list_lock &lock, size_t item_number);
+			list_lock &lock, size_t item_number,
+			const callback_trigger_t &trigger);
 
 	//! Whether this list item is enabled
 	static bool enabled(grid_map_t::lock &, size_t);

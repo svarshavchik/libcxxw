@@ -194,7 +194,8 @@ void menuitemextrainfoObj::update_shortcut(const menuitem_type_t &new_type)
 		}, new_type);
 }
 
-void menuitemextrainfoObj::activated(IN_THREAD_ONLY)
+void menuitemextrainfoObj::activated(IN_THREAD_ONLY,
+				     const callback_trigger_t &trigger)
 {
 	// Our parent container must be using the list layout manager.
 
@@ -226,7 +227,7 @@ void menuitemextrainfoObj::activated(IN_THREAD_ONLY)
 		->autoselect(IN_THREAD,
 			     parent_container_layout_manager,
 			     lock,
-			     looked_up.value());
+			     looked_up.value(), trigger);
 }
 
 bool menuitemextrainfoObj::enabled(IN_THREAD_ONLY)

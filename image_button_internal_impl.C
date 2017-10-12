@@ -29,13 +29,15 @@ image_button_internalObj::implObj
 	: superclass_t(icon_images, container,
 		       get_first_icon_image(icon_images)),
 	  current_image(0),
-	  current_callback_thread_only([](bool, size_t, const auto &) {})
+	  current_callback_thread_only([](size_t, const auto &,
+					  const auto &) {})
 {
 }
 
 image_button_internalObj::implObj::~implObj()=default;
 
 void image_button_internalObj::implObj::set_image_number(IN_THREAD_ONLY,
+							 const callback_trigger_t &trigger,
 							 size_t next_icon)
 {
 	auto p=get_image_number();
@@ -46,7 +48,7 @@ void image_button_internalObj::implObj::set_image_number(IN_THREAD_ONLY,
 
 	if (p != n)
 		try {
-			current_callback(IN_THREAD)(false, n,
+			current_callback(IN_THREAD)(n, trigger,
 						    busy_impl{*this});
 		} CATCH_EXCEPTIONS;
 }
@@ -84,9 +86,10 @@ class LIBCXX_HIDDEN checkbox_image_buttonObj :
 
 	//! We do not use hotspot callbacks. Invoke set_image_number();
 
-	void activated(IN_THREAD_ONLY) override
+	void activated(IN_THREAD_ONLY, const callback_trigger_t &trigger)
+		override
 	{
-		set_image_number(IN_THREAD, get_image_number() ? 0:1);
+		set_image_number(IN_THREAD, trigger, get_image_number() ? 0:1);
 	}
 };
 
@@ -129,7 +132,9 @@ class LIBCXX_HIDDEN radio_image_buttonObj :
 	//! activated() calls it, as well as the public object's set_value().
 	//! This way, the same radio button logic gets used for both.
 
-	void set_image_number(IN_THREAD_ONLY, size_t) override;
+	void set_image_number(IN_THREAD_ONLY,
+			      const callback_trigger_t &trigger,
+			      size_t) override;
 };
 
 ref<image_button_internalObj::implObj>
@@ -145,7 +150,9 @@ create_radio_impl(const radio_group &group,
 	return r;
 }
 
-void radio_image_buttonObj::set_image_number(IN_THREAD_ONLY, size_t n)
+void radio_image_buttonObj::set_image_number(IN_THREAD_ONLY,
+					     const callback_trigger_t &trigger,
+					     size_t n)
 {
 	n %= icon_images(IN_THREAD).size();
 
@@ -195,12 +202,13 @@ void radio_image_buttonObj::set_image_number(IN_THREAD_ONLY, size_t n)
 
 	for (const auto &cb:callbacks)
 		try {
-			cb(false, 0, i_am_busy);
+			cb(0, trigger, i_am_busy);
 		} CATCH_EXCEPTIONS;
 
 	if (n != p)
 		try {
-			current_callback(IN_THREAD)(false, n, i_am_busy);
+			current_callback(IN_THREAD)(n, trigger,
+						    i_am_busy);
 		} CATCH_EXCEPTIONS;
 }
 

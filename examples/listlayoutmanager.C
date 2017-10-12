@@ -98,6 +98,7 @@ static inline void create_main_window(const x::w::main_window &main_window,
 		(const x::w::listlayoutmanager &list,
 		 size_t item_number,
 		 bool is_selected,
+		 const x::w::callback_trigger_t &trigger,
 		 const x::w::busy &busy_mcguffin)
 		{
 			std::cout << "selection_changed: item #" << item_number
@@ -191,7 +192,8 @@ static inline void create_main_window(const x::w::main_window &main_window,
 
 	insert_row->on_activate
 		([list_container, counter=0]
-		 (const x::w::busy &busy_mcguffin)
+		 (const x::w::callback_trigger_t &trigger,
+		  const x::w::busy &busy_mcguffin)
 		 mutable
 		 {
 			 x::w::listlayoutmanager l=
@@ -253,7 +255,8 @@ static inline void create_main_window(const x::w::main_window &main_window,
 
 	append_row->on_activate
 		([list_container]
-		 (const x::w::busy &busy_mcguffin)
+		 (const x::w::callback_trigger_t &trigger,
+		  const x::w::busy &busy_mcguffin)
 		 {
 			 x::w::listlayoutmanager l=
 				 list_container->get_layoutmanager();
@@ -290,7 +293,8 @@ static inline void create_main_window(const x::w::main_window &main_window,
 
 	remove_row->on_activate
 		([list_container]
-		 (const x::w::busy &busy_mcguffin)
+		 (const x::w::callback_trigger_t &trigger,
+		  const x::w::busy &busy_mcguffin)
 		 {
 			 x::w::listlayoutmanager l=
 				 list_container->get_layoutmanager();
@@ -302,7 +306,8 @@ static inline void create_main_window(const x::w::main_window &main_window,
 
 	replace_row->on_activate
 		([list_container]
-		 (const x::w::busy &busy_mcguffin)
+		 (const x::w::callback_trigger_t &trigger,
+		  const x::w::busy &busy_mcguffin)
 		 {
 			 x::w::listlayoutmanager l=
 				 list_container->get_layoutmanager();
@@ -319,7 +324,8 @@ static inline void create_main_window(const x::w::main_window &main_window,
 
 	reset->on_activate
 		([list_container]
-		 (const x::w::busy &busy_mcguffin)
+		 (const x::w::callback_trigger_t &trigger,
+		  const x::w::busy &busy_mcguffin)
 		 {
 			 x::w::listlayoutmanager l=
 				 list_container->get_layoutmanager();
@@ -338,7 +344,8 @@ static inline void create_main_window(const x::w::main_window &main_window,
 
 	show_me->on_activate
 		([list_container]
-		 (const x::w::busy &busy_mcguffin)
+		 (const x::w::callback_trigger_t &trigger,
+		  const x::w::busy &busy_mcguffin)
 		 {
 			 x::w::listlayoutmanager l=
 				 list_container->get_layoutmanager();

@@ -11,6 +11,8 @@
 #include "icon.H"
 #include "busy.H"
 #include "x/w/factory.H"
+#include "x/w/button_event.H"
+#include "x/w/key_event.H"
 #include "container_element.H"
 #include "gridlayoutmanager.H"
 #include "nonrecursive_visibility.H"
@@ -52,7 +54,8 @@ void image_buttonObj::set_value(size_t n)
 		([impl=this->impl, n]
 		 (IN_THREAD_ONLY)
 		 {
-			 impl->button->impl->set_image_number(IN_THREAD, n);
+			 impl->button->impl->set_image_number(IN_THREAD,
+							      {}, n);
 		 });
 }
 
@@ -71,7 +74,8 @@ void image_buttonObj::on_activate(const image_button_callback_t &callback)
 			 i->current_callback(IN_THREAD)=callback;
 
 			 try {
-				 callback(true, i->get_image_number(),
+				 callback(i->get_image_number(),
+					  initial{},
 					  busy_impl{*i});
 			 } CATCH_EXCEPTIONS;
 		 });

@@ -6,6 +6,7 @@
 #define x_w_listlayoutmanagerbaseobj_h
 
 #include <x/w/listlayoutmanagerbasefwd.H>
+#include <x/w/listlayoutmanagerfwd.H>
 #include <x/w/text_paramfwd.H>
 #include <x/obj.H>
 #include <x/mpobj.H>
@@ -141,10 +142,24 @@ public:
 	virtual std::vector<size_t> all_selected() const=0;
 
 	//! Select or unselect item \#i
-	virtual void selected(size_t i, bool selected_flag)=0;
+	virtual void selected(size_t i, bool selected_flag,
+			      const callback_trigger_t &trigger)=0;
 	//! As if item \#i was clicked on.
 
-	virtual void autoselect(size_t i)=0;
+	virtual void autoselect(size_t i,
+				const callback_trigger_t &trigger)=0;
+
+	//! Shortcut
+
+	//! Invoke selected() with the default trigger.
+	//! \overload
+	void selected(size_t i, bool selected_flag);
+
+	//! Shortcut
+
+	//! Invoke autoselect() with the default trigger.
+	//! \overload
+	void autoselect(size_t i);
 
 	//! Unselect all selected items.
 	virtual void unselect()=0;

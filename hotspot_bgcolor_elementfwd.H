@@ -48,7 +48,8 @@ class LIBCXX_HIDDEN hotspot_bgcolor_elementObj
 
 	void initialize(IN_THREAD_ONLY) override;
 
-	void temperature_changed(IN_THREAD_ONLY) override;
+	void temperature_changed(IN_THREAD_ONLY,
+				 const callback_trigger_t &trigger) override;
 
 	background_color cold_color(IN_THREAD_ONLY) override;
 

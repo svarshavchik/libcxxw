@@ -20,7 +20,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-static void no_callback(const busy &ignore)
+static void no_callback(const callback_trigger_t &, const busy &)
 {
 }
 
@@ -37,7 +37,7 @@ void hotspotObj::implObj::keyboard_focus(IN_THREAD_ONLY)
 	if (!get_hotspot_element().current_keyboard_focus(IN_THREAD))
 		is_key_down=false;
 
-	update(IN_THREAD);
+	update(IN_THREAD, {});
 }
 
 void hotspotObj::implObj::pointer_focus(IN_THREAD_ONLY)
@@ -45,7 +45,7 @@ void hotspotObj::implObj::pointer_focus(IN_THREAD_ONLY)
 	if (!get_hotspot_element().current_pointer_focus(IN_THREAD))
 		is_button1_down=false;
 
-	update(IN_THREAD);
+	update(IN_THREAD, {});
 }
 
 bool hotspotObj::implObj::process_key_event(IN_THREAD_ONLY, const key_event &ke)
@@ -55,10 +55,10 @@ bool hotspotObj::implObj::process_key_event(IN_THREAD_ONLY, const key_event &ke)
 		bool activated_flag=!ke.keypress && is_key_down;
 
 		is_key_down=ke.keypress;
-		update(IN_THREAD);
+		update(IN_THREAD, &ke);
 
 		if (activated_flag)
-			activated(IN_THREAD);
+			activated(IN_THREAD, &ke);
 		return true;
 	}
 	return false;
@@ -79,17 +79,18 @@ bool hotspotObj::implObj::process_button_event(IN_THREAD_ONLY,
 			return true; // Could be due to enter/leave. Ignore.
 
 		is_button1_down=be.press;
-		update(IN_THREAD);
+		update(IN_THREAD, &be);
 
 		if (!be.press)
-			activated(IN_THREAD);
+			activated(IN_THREAD, &be);
 		return true;
 	}
 
 	return false;
 }
 
-void hotspotObj::implObj::update(IN_THREAD_ONLY)
+void hotspotObj::implObj::update(IN_THREAD_ONLY,
+				 const callback_trigger_t &trigger)
 {
 	temperature new_temperature=temperature::cold;
 
@@ -108,10 +109,11 @@ void hotspotObj::implObj::update(IN_THREAD_ONLY)
 		return;
 
 	hotspot_temperature(IN_THREAD)=new_temperature;
-	temperature_changed(IN_THREAD);
+	temperature_changed(IN_THREAD, trigger);
 }
 
-void hotspotObj::implObj::temperature_changed(IN_THREAD_ONLY)
+void hotspotObj::implObj::temperature_changed(IN_THREAD_ONLY,
+					      const callback_trigger_t &trigger)
 {
 }
 
@@ -133,12 +135,13 @@ void hotspotObj::implObj::on_activate(IN_THREAD_ONLY,
 
 LOG_FUNC_SCOPE_DECL(LIBCXXW_NAMESPACE::hotspot, hotspot_log);
 
-void hotspotObj::implObj::activated(IN_THREAD_ONLY)
+void hotspotObj::implObj::activated(IN_THREAD_ONLY,
+				    const callback_trigger_t &trigger)
 {
 	LOG_FUNC_SCOPE(hotspot_log);
 
 	try {
-		callback(IN_THREAD)(busy_impl{get_hotspot_element()});
+		callback(IN_THREAD)(trigger, busy_impl{get_hotspot_element()});
 	} CATCH_EXCEPTIONS;
 }
 

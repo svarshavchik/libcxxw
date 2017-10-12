@@ -66,10 +66,12 @@ void create_mainwindow(const x::w::main_window &main_window,
 		// Install a callback that gets invoked whenever the checkbox
 		// changes state.
 		checkbox->on_activate([day_of_week]
-				      (bool first_time, size_t flag,
+				      (size_t flag,
+				       const x::w::callback_trigger_t &trigger,
 				       const auto &ignore)
 				      {
-					      if (first_time)
+					      if (trigger.index() ==
+						  x::w::callback_trigger_initial)
 						      return;
 
 					      std::cout << day_of_week
@@ -119,10 +121,12 @@ void create_mainwindow(const x::w::main_window &main_window,
 	// which will ...
 
 	train->on_activate([saturday, sunday]
-			   (bool first_time, size_t flag,
-			    const auto &ignore)
+			   (size_t flag,
+			    const x::w::callback_trigger_t &trigger,
+			    const auto &ignore2)
 			   {
-				   if (first_time)
+				   if (trigger.index() ==
+				       x::w::callback_trigger_initial)
 					   return;
 
 				   std::cout << "Train: "
@@ -163,10 +167,12 @@ void create_mainwindow(const x::w::main_window &main_window,
 	x::w::image_button bus=factory->valign(x::w::valign::middle)
 		.create_radio(group);
 	bus->on_activate([]
-			 (bool first_time, size_t flag,
+			 (size_t flag,
+			  const x::w::callback_trigger_t &trigger,
 			  const auto &ignore)
 			 {
-				 if (first_time)
+				 if (trigger.index() ==
+				     x::w::callback_trigger_initial)
 					 return;
 
 				 std::cout << "Bus: "
@@ -183,10 +189,12 @@ void create_mainwindow(const x::w::main_window &main_window,
 	x::w::image_button drive=factory->valign(x::w::valign::middle)
 		.create_radio(group);
 	drive->on_activate([]
-			   (bool first_time, size_t flag,
+			   (size_t flag,
+			    const x::w::callback_trigger_t &trigger,
 			    const auto &ignore)
 			   {
-				   if (first_time)
+				   if (trigger.index() ==
+				       x::w::callback_trigger_initial)
 					   return;
 
 				   std::cout << "Drive: "
