@@ -39,6 +39,12 @@ public:
 	clip_region_set(const clip_region_set &)=delete;
 
 	clip_region_set &operator=(const clip_region_set &)=delete;
+
+	//! For drawing as disabled.
+
+	//! If set, draw_using_scratch_buffer draws as disabled, even if the
+	//! element is not disabled.
+	bool draw_as_disabled=false;
 };
 
 //! Scratch buffer-based element draw interface.

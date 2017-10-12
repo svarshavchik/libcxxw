@@ -22,11 +22,16 @@ LIBCXXW_NAMESPACE_START
 //! selection_start, which may be null, and the current cursor for
 //! selection_end, which is never null. Hence, when selection_start is not
 //! null, there's a selected area to draw.
+//!
+//! The draw_as_disabled flag, if set, draws the label as if it was disabled.
+//! This is used by textlistlayoutmanager, which simulates individual
+//! disabled list items.
 
 struct LIBCXX_HIDDEN richtext_draw_info {
 
 	richtextiteratorptr selection_start;
 	richtextiteratorptr selection_end;
+	bool draw_as_disabled=false;
 };
 
 LIBCXXW_NAMESPACE_END;

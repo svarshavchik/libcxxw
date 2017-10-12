@@ -649,7 +649,8 @@ void elementObj::implObj
 
 	auto &wh=get_window_handler();
 
-	if (draw_to_window_picture_as_disabled(IN_THREAD))
+	if (draw_to_window_picture_as_disabled(IN_THREAD) ||
+	    set.draw_as_disabled)
 	{
 		// Disabled element rendering -- dither in the main window's
 		// background color.

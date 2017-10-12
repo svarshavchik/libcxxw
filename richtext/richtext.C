@@ -253,6 +253,8 @@ void richtextObj::draw(IN_THREAD_ONLY,
 
 	clip_region_set clipped{IN_THREAD, di};
 
+	clipped.draw_as_disabled=rdi.draw_as_disabled;
+
 	richtextfragmentObj *f=nullptr;
 
 	if (!(*lock)->paragraphs.empty())
