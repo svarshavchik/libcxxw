@@ -13,6 +13,7 @@
 #include "peephole/peephole_impl.H"
 #include "peepholed_focusable.H"
 #include "peepholed_listcontainer_impl.H"
+#include "peepholed_listcontainer_impl_element.H"
 #include "background_color.H"
 #include "container.H"
 #include "reference_font_element.H"
@@ -37,9 +38,9 @@ class LIBCXX_HIDDEN listObj : public peepholed_focusableObj {
 
  public:
 
-	const listcontainer internal_listcontainer;
+	const container internal_listcontainer;
 
-	listObj(const listcontainer &internal_listcontainer,
+	listObj(const container &internal_listcontainer,
 		const ref<peepholed_focusableObj::implObj> &impl,
 		const ref<layoutmanagerObj::implObj> &layout_impl)
 		: peepholed_focusableObj(impl, layout_impl),
@@ -91,8 +92,9 @@ make_peepholed_list(const ref<peepholeObj::implObj> &peephole_parent,
 		    const new_listlayoutmanager &style)
 {
 	auto internal_listcontainer_impl=
-		ref<peepholed_listcontainerObj::implObj>
-		::create(peephole_parent, style);
+		ref<peepholed_listcontainer_impl_elementObj
+		    <listcontainerObj::implObj>>
+		::create(style, peephole_parent, style);
 
 	auto internal_listlayoutmanager_impl=
 		ref<listlayoutmanagerObj::implObj>::create
@@ -100,6 +102,8 @@ make_peepholed_list(const ref<peepholeObj::implObj> &peephole_parent,
 
 	auto container=peepholed_listcontainer::create
 		(internal_listcontainer_impl,
+		 internal_listcontainer_impl,
+		 internal_listcontainer_impl,
 		 internal_listlayoutmanager_impl);
 
 	internal_listlayoutmanager_impl->style

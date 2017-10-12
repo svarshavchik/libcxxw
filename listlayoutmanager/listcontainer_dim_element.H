@@ -40,7 +40,8 @@ listcontainer_dim_elementObj<element_impl>::~listcontainer_dim_elementObj()
 //! Return the vertical padding themedim
 
 template<typename element_impl>
-themedim listcontainer_dim_elementObj<element_impl>::list_v_padding()
+const_themedim listcontainer_dim_elementObj<element_impl>::list_v_padding()
+	const
 {
 	return themedim_element<listcontainer_dim_v>::getref();
 }
@@ -48,7 +49,8 @@ themedim listcontainer_dim_elementObj<element_impl>::list_v_padding()
 //! Return the left padding themedim
 
 template<typename element_impl>
-themedim listcontainer_dim_elementObj<element_impl>::list_left_padding()
+const_themedim listcontainer_dim_elementObj<element_impl>::list_left_padding()
+	const
 {
 	return themedim_element<listcontainer_dim_left>::getref();
 }
@@ -56,7 +58,8 @@ themedim listcontainer_dim_elementObj<element_impl>::list_left_padding()
 //! Return the right padding themedim
 
 template<typename element_impl>
-themedim listcontainer_dim_elementObj<element_impl>::list_right_padding()
+const_themedim listcontainer_dim_elementObj<element_impl>::list_right_padding()
+	const
 {
 	return themedim_element<listcontainer_dim_right>::getref();
 }
@@ -64,7 +67,8 @@ themedim listcontainer_dim_elementObj<element_impl>::list_right_padding()
 //! Return the inner padding themedim
 
 template<typename element_impl>
-themedim listcontainer_dim_elementObj<element_impl>::list_inner_padding()
+const_themedim listcontainer_dim_elementObj<element_impl>::list_inner_padding()
+	const
 {
 	return themedim_element<listcontainer_dim_inner>::getref();
 }

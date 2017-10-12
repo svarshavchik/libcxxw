@@ -22,21 +22,21 @@ class LIBCXX_HIDDEN listitemlayoutmanagerObj::implObj
 	: public singletonlayoutmanagerObj::implObj {
 
 	//! Horizontal padding.
-	const themedim left_padding;
+	const const_themedim left_padding;
 
 	//! Horizontal padding.
-	const themedim right_padding;
+	const const_themedim right_padding;
 
 	//! Top and bottom padding
-	const themedim v_padding;
+	const const_themedim v_padding;
 
  public:
 	//! Constructor
 	implObj(const ref<containerObj::implObj> &container_impl,
 		const element &initial_element,
-		const themedim &left_padding,
-		const themedim &right_padding,
-		const themedim &v_padding);
+		const const_themedim &left_padding,
+		const const_themedim &right_padding,
+		const const_themedim &v_padding);
 
 	//! Destructor
 	~implObj();

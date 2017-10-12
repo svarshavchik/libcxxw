@@ -88,16 +88,16 @@ class LIBCXX_HIDDEN listcontainerObj::implObj :
 
 
 	//! Implemented in the subclass.
-	virtual themedim list_v_padding()=0;
+	virtual const_themedim list_v_padding() const=0;
 
 	//! Implemented in the subclass.
-	virtual themedim list_left_padding()=0;
+	virtual const_themedim list_left_padding() const=0;
 
 	//! Implemented in the subclass.
-	virtual themedim list_right_padding()=0;
+	virtual const_themedim list_right_padding() const=0;
 	//! Implemented in the subclass.
 
-	virtual themedim list_inner_padding()=0;
+	virtual const_themedim list_inner_padding() const=0;
 };
 
 LIBCXXW_NAMESPACE_END

@@ -20,10 +20,11 @@ class LIBCXX_HIDDEN listcontainerObj : public focusable_containerObj {
 	class implObj;
 
 	//! Internal implementation object.
-	const ref<implObj> impl;
+	const ref<focusableImplObj> focusable_impl;
 
 	//! Constructor
-	listcontainerObj(const ref<implObj> &impl,
+	listcontainerObj(const ref<focusableImplObj> &focusable_impl,
+			 const ref<containerObj::implObj> &container_impl,
 			 const ref<listlayoutmanagerObj::implObj> &list_impl);
 
 	//! Destructor

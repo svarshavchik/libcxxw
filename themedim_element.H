@@ -11,14 +11,14 @@
 
 LIBCXXW_NAMESPACE_START
 
-//! Convenience function
-
-//! \code
-//! static_cast<themedim_element<tag> &>(*ref).ref();
-//! \endcode
-
 template<typename tag>
 inline themedim themedim_element<tag>::getref() { return themedim(this); }
+
+template<typename tag>
+inline const_themedim themedim_element<tag>::getref() const
+{
+	return const_themedim(this);
+}
 
 //! Destructor
 template<typename tag>

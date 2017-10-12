@@ -173,7 +173,7 @@ menubarlayoutmanagerObj::implObj
 			 const ref<listlayoutmanagerObj::implObj> &layout_impl)
 			{
 				auto c=ref<p_t_l_t>::create(attachedto_info,
-							    impl, impl,
+							    impl, impl, impl,
 							    layout_impl);
 
 				creator(layout_impl->create_public_object());

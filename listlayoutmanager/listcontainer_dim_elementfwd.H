@@ -54,13 +54,13 @@ class LIBCXX_HIDDEN listcontainer_dim_elementObj :
 
 	~listcontainer_dim_elementObj();
 
-	themedim list_v_padding() override;
+	const_themedim list_v_padding() const override;
 
-	themedim list_left_padding() override;
+	const_themedim list_left_padding() const override;
 
-	themedim list_right_padding() override;
+	const_themedim list_right_padding() const override;
 
-	themedim list_inner_padding() override;
+	const_themedim list_inner_padding() const override;
 };
 
 LIBCXXW_NAMESPACE_END

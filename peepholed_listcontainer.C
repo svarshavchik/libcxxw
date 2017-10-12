@@ -12,9 +12,11 @@ LIBCXXW_NAMESPACE_START
 
 peepholed_listcontainerObj
 ::peepholed_listcontainerObj(const ref<implObj> &impl,
+			     const ref<focusableImplObj> &focusable_impl,
+			     const ref<containerObj::implObj> &container_impl,
 			     const ref<listlayoutmanagerObj::implObj>
 			     &list_impl)
-	: superclass_t(impl, list_impl),
+	: superclass_t(focusable_impl, container_impl, list_impl),
 	  impl(impl)
 {
 }
@@ -23,7 +25,7 @@ peepholed_listcontainerObj::~peepholed_listcontainerObj()=default;
 
 dim_t peepholed_listcontainerObj::horizontal_increment(IN_THREAD_ONLY) const
 {
-	return impl->reference_font_element<>::font_nominal_width(IN_THREAD);
+	return impl->list_reference_font().font_nominal_width(IN_THREAD);
 }
 
 dim_t peepholed_listcontainerObj::vertical_increment(IN_THREAD_ONLY) const

@@ -28,6 +28,13 @@ public:
 	//! for that dimension.
 
 	themedim getref();
+
+	//! A helper for obtaining a reference to this dimension
+
+	//! obj.themedim_element<tag>.getref() returns a \c themedim
+	//! for that dimension.
+
+	const_themedim getref() const;
 };
 
 //! One themedim_element instance mixin.

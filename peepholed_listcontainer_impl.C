@@ -5,24 +5,18 @@
 #include "libcxxw_config.h"
 
 #include "peepholed_listcontainer_impl.H"
-#include "listlayoutmanager/listcontainer_dim_element.H"
-#include "reference_font_element.H"
 #include "x/w/listlayoutmanager.H"
+#include "reference_font_element.H"
+#include "themedim.H"
+#include "child_element.H"
 
 LIBCXXW_NAMESPACE_START
 
-static const char default_list_font[]="list";
-
-const char *peepholed_listcontainerObj::implObj::label_theme_font() const
-{
-	return default_list_font;
-}
+const char peepholed_listcontainerObj::implObj::default_list_font[]="list";
 
 peepholed_listcontainerObj::implObj
-::implObj(const ref<containerObj::implObj> &parent,
-	  const new_listlayoutmanager &style)
-	: superclass_t(default_list_font, style, parent, style),
-	  rows(style.rows)
+::implObj(const new_listlayoutmanager &style)
+	: rows(style.rows)
 {
 }
 
@@ -30,25 +24,27 @@ peepholed_listcontainerObj::implObj::~implObj()=default;
 
 void peepholed_listcontainerObj::implObj::initialize(IN_THREAD_ONLY)
 {
-	superclass_t::initialize(IN_THREAD);
 	update_peephole_metrics(IN_THREAD);
 }
 
 void peepholed_listcontainerObj::implObj
 ::horizvert_updated(IN_THREAD_ONLY)
 {
-	superclass_t::horizvert_updated(IN_THREAD);
 	update_peephole_metrics(IN_THREAD);
 }
 
 dim_t peepholed_listcontainerObj::implObj::rowsize(IN_THREAD_ONLY) const
 {
 	return dim_t::truncate
-		(reference_font_element<>::font_height(IN_THREAD)
-		 + themedim_element<listcontainer_dim_v>
-		 ::pixels(IN_THREAD)
-		 + themedim_element<listcontainer_dim_v>
-		 ::pixels(IN_THREAD));
+		(list_reference_font().font_height(IN_THREAD)
+		 + list_v_padding()->pixels(IN_THREAD)
+		 + list_v_padding()->pixels(IN_THREAD));
+}
+
+void peepholed_listcontainerObj::implObj
+::theme_updated(IN_THREAD_ONLY,
+		const defaulttheme &new_theme)
+{
 }
 
 void peepholed_listcontainerObj::implObj
@@ -60,9 +56,9 @@ void peepholed_listcontainerObj::implObj
 	//! We keep our horizontal metrics, and override the vertical
 	//! metrics to the fixed height.
 
-	auto hv=get_horizvert(IN_THREAD);
+	auto hv=get_child_elementObj().get_horizvert(IN_THREAD);
 
-	child_container->get_element_impl().get_horizvert(IN_THREAD)
+	get_child_elementObj().child_container->get_element_impl().get_horizvert(IN_THREAD)
 		->set_element_metrics(IN_THREAD,
 				      hv->horiz,
 				      {h, h, h});

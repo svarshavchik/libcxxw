@@ -15,9 +15,9 @@ LIBCXXW_NAMESPACE_START
 listitemlayoutmanagerObj::implObj
 ::implObj(const ref<containerObj::implObj> &container_impl,
 	  const element &initial_element,
-	  const themedim &left_padding,
-	  const themedim &right_padding,
-	  const themedim &v_padding)
+	  const const_themedim &left_padding,
+	  const const_themedim &right_padding,
+	  const const_themedim &v_padding)
 	: singletonlayoutmanagerObj::implObj(container_impl, initial_element),
 	left_padding(left_padding),
 	right_padding(right_padding),

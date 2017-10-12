@@ -17,7 +17,7 @@ custom_combobox_popup_containerObj
 				     ::implObj> &layout_impl,
 				     const popup_attachedto_info
 				     &attachedto_info)
-	: superclass_t(attachedto_info, impl, impl, layout_impl),
+	: superclass_t(attachedto_info, impl, impl, impl, layout_impl),
 	  impl(impl),
 	  layout_impl(layout_impl)
 {

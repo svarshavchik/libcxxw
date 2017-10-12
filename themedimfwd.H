@@ -22,6 +22,10 @@ class themedimObj;
 
 typedef ref<themedimObj> themedim;
 
+//! A constant \ref themedim "theme specified dimension".
+
+typedef const_ref<themedimObj> const_themedim;
+
 LIBCXXW_NAMESPACE_END
 
 #endif
