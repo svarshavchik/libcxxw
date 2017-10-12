@@ -10,6 +10,8 @@
 #include "x/w/elementfwd.H"
 #include "x/w/batch_queuefwd.H"
 #include "x/w/gridfactoryfwd.H"
+#include "peepholed_listcontainerfwd.H"
+#include "layout_style.H"
 #include <vector>
 #include "connection_threadfwd.H"
 
@@ -17,7 +19,7 @@ LIBCXXW_NAMESPACE_START
 
 //! Implements a particular list layout manager style.
 
-class listlayoutstyle {
+class listlayoutstyle : public layout_style_t {
 
 public:
 
@@ -96,25 +98,6 @@ public:
 			     size_t i,
 			     bool is_highlighted) const=0;
 
-
-	//! Initialize the list layout manager
-
-	//! This is for combo-box peepholes, which are expanded to make them
-	//! the same width as the container they're attached to. The
-	//! drop-down list is always narrower that the main combo-box element
-	//! due to the presence of the drop-down button; so the peephole is
-	//! expanded horizontally to make everything nice and even.
-	//!
-	//! The drop-down list needs to carry its load, and make sure that the
-	//! list itself fills the expanded width of the peepholed element.
-	//!
-	//! Regular highlighted style adds extra width to column 0. Bulleted
-	//! lists use column 0 for the bullets, so the extra width goes to
-	//! column 1.
-
-	virtual void initialize(const ref<listlayoutmanagerObj::implObj> &l)
-		const=0;
-
 	//! Map a logical column into a physical column.
 
 	//! For the highlighted style they're one and the same.
@@ -123,6 +106,9 @@ public:
 
 	virtual size_t physical_column(size_t logical_column) const=0;
 };
+
+extern const listlayoutstyle &highlighted_list_style;
+extern const listlayoutstyle &bulleted_list_style;
 
 //! List layout style
 LIBCXXW_NAMESPACE_END

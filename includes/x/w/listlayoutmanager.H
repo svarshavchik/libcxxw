@@ -41,7 +41,7 @@ class LIBCXX_HIDDEN new_listlayoutmanager : public new_focusable_layoutmanager {
  public:
 
 	//! Style of the new list.
-	const listlayoutstyle &layout_style;
+	const layout_style_t &layout_style;
 
 	//! Single or multiple selection
 
@@ -122,7 +122,7 @@ class LIBCXX_HIDDEN new_listlayoutmanager : public new_focusable_layoutmanager {
 	std::string current_color;
 
 	//! Constructor
-	new_listlayoutmanager(const listlayoutstyle &v=highlighted_list)
+	new_listlayoutmanager(const layout_style_t &v=highlighted_list)
 		LIBCXX_PUBLIC;
 
 	//! Destructor

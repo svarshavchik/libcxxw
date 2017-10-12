@@ -347,7 +347,7 @@ typedef ptr<listlayoutmanagerObj> listlayoutmanagerptr;
 
 typedef const_ptr<listlayoutmanagerObj> const_listlayoutmanagerptr;
 
-class listlayoutstyle;
+class layout_style_t;
 
 class new_listlayoutmanager;
 
@@ -355,11 +355,11 @@ class list_lock;
 
 //! The list highlights items to indicate they're selected
 
-extern const listlayoutstyle &highlighted_list;
+extern const layout_style_t &highlighted_list;
 
 //! A bullet is to the left of each selected item
 
-extern const listlayoutstyle &bulleted_list;
+extern const layout_style_t &bulleted_list;
 
 //! Single selection list.
 

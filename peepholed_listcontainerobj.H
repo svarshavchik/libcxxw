@@ -10,7 +10,7 @@
 #include "listlayoutmanager/listcontainerobj.H"
 #include "peephole/peepholedobj.H"
 #include "connection_threadfwd.H"
-#include "x/w/listlayoutmanagerobj.H"
+#include "x/w/layoutmanagerobj.H"
 #include "x/w/elementfwd.H"
 #include "x/w/types.H"
 
@@ -37,7 +37,7 @@ class LIBCXX_HIDDEN peepholed_listcontainerObj
 	peepholed_listcontainerObj(const ref<implObj> &impl,
 				   const ref<focusableImplObj> &focusable_impl,
 				   const ref<containerObj::implObj> &container_impl,
-				   const ref<listlayoutmanagerObj::implObj>
+				   const ref<layoutmanagerObj::implObj>
 				   &list_impl);
 
 	//! Destructor

@@ -25,7 +25,8 @@ class LIBCXX_HIDDEN menulayoutmanagerObj::implObj
 	implObj(const ref<peepholed_toplevel_listcontainer_implObj>
 		&container_impl,
 		const ref<listcontainerObj::implObj> &listcontainer_impl,
-		const new_listlayoutmanager &style);
+		const new_listlayoutmanager &style,
+		const listlayoutstyle &list_style);
 
 	//! Destructor
 	~implObj();

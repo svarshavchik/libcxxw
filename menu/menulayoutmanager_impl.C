@@ -14,9 +14,10 @@ LIBCXXW_NAMESPACE_START
 menulayoutmanagerObj::implObj
 ::implObj(const ref<peepholed_toplevel_listcontainer_implObj> &container_impl,
 	  const ref<listcontainerObj::implObj> &listcontainer_impl,
-	  const new_listlayoutmanager &style)
+	  const new_listlayoutmanager &style,
+	  const listlayoutstyle &list_style)
 	: peepholed_toplevel_listcontainer_layoutmanager_implObj
-	  (container_impl, listcontainer_impl, style)
+	  (container_impl, listcontainer_impl, style, list_style)
 {
 }
 

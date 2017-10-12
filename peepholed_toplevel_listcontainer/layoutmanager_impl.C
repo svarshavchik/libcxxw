@@ -12,8 +12,10 @@ peepholed_toplevel_listcontainer_layoutmanager_implObj
 ::peepholed_toplevel_listcontainer_layoutmanager_implObj
 (const ref<peepholed_toplevel_listcontainer_implObj> &container_impl,
  const ref<listcontainerObj::implObj> &listcontainer_impl,
- const new_listlayoutmanager &style)
-	: listlayoutmanagerObj::implObj(listcontainer_impl, style),
+ const new_listlayoutmanager &style,
+ const listlayoutstyle &list_style)
+	: listlayoutmanagerObj::implObj(listcontainer_impl, style,
+					list_style),
 	container_impl(container_impl)
 {
 }

@@ -14,8 +14,7 @@ peepholed_listcontainerObj
 ::peepholed_listcontainerObj(const ref<implObj> &impl,
 			     const ref<focusableImplObj> &focusable_impl,
 			     const ref<containerObj::implObj> &container_impl,
-			     const ref<listlayoutmanagerObj::implObj>
-			     &list_impl)
+			     const ref<layoutmanagerObj::implObj> &list_impl)
 	: superclass_t(focusable_impl, container_impl, list_impl),
 	  impl(impl)
 {

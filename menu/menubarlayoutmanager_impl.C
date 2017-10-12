@@ -135,7 +135,9 @@ menubarlayoutmanagerObj::implObj
 					    &)> &creator,
 		       attached_to attached_to_how)
 {
-	new_listlayoutmanager style{bulleted_list};
+	const auto &menu_list_style=bulleted_list_style;
+
+	new_listlayoutmanager style{menu_list_style};
 
 	style.background_color="menu_popup_background_color";
 	style.current_color="menu_popup_highlighted_color";
@@ -164,7 +166,8 @@ menubarlayoutmanagerObj::implObj
 				return create_p_t_l_impl_ret_t{impl,
 						ref<menulayoutmanagerObj
 						    ::implObj>
-						::create(impl, impl, style)
+						::create(impl, impl, style,
+							 menu_list_style)
 						};
 			},
 			[&]

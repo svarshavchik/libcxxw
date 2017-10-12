@@ -24,10 +24,11 @@ LIBCXXW_NAMESPACE_START
 
 listlayoutmanagerObj::implObj
 ::implObj(const ref<listcontainerObj::implObj> &container_impl,
-	  const new_listlayoutmanager &style)
+	  const new_listlayoutmanager &style,
+	  const listlayoutstyle &list_style)
 	: gridlayoutmanagerObj::implObj(container_impl),
 	container_impl(container_impl),
-	style(style.layout_style),
+	style(list_style),
 	columns(style.columns),
 	selection_type_thread_only(style.selection_type),
 	selection_changed_(style.selection_changed)

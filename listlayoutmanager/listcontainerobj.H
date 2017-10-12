@@ -7,7 +7,6 @@
 
 #include "listlayoutmanager/listcontainerfwd.H"
 #include "x/w/focusable_containerobj.H"
-#include "x/w/listlayoutmanagerobj.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -25,7 +24,7 @@ class LIBCXX_HIDDEN listcontainerObj : public focusable_containerObj {
 	//! Constructor
 	listcontainerObj(const ref<focusableImplObj> &focusable_impl,
 			 const ref<containerObj::implObj> &container_impl,
-			 const ref<listlayoutmanagerObj::implObj> &list_impl);
+			 const ref<layoutmanagerObj::implObj> &list_impl);
 
 	//! Destructor
 	~listcontainerObj();

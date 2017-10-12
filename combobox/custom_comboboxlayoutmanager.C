@@ -240,8 +240,9 @@ focusable_container new_custom_comboboxlayoutmanager
 ::create(const ref<containerObj::implObj> &parent) const
 {
 	// Start by creating the popup first.
+	const listlayoutstyle &popup_list_style=highlighted_list_style;
 
-	new_listlayoutmanager style;
+	new_listlayoutmanager style{popup_list_style};
 
 	style.background_color="combobox_background_color";
 	style.selected_color="combobox_selected_color";
@@ -278,7 +279,8 @@ focusable_container new_custom_comboboxlayoutmanager
 
 			 return create_p_t_l_impl_ret_t{impl,
 					 ref<peepholed_toplevel_listcontainer_layoutmanager_implObj>
-					 ::create(impl, impl, style)
+					 ::create(impl, impl, style,
+						  popup_list_style)
 					 };
 
 		 },

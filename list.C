@@ -7,13 +7,10 @@
 #include "x/w/peepholed_focusableobj.H"
 #include "x/w/rgb.H"
 #include "listlayoutmanager/listlayoutmanager.H"
-#include "listlayoutmanager/listcontainer_impl.H"
 #include "focus/focusable.H"
 #include "peephole/peepholed.H"
 #include "peephole/peephole_impl.H"
 #include "peepholed_focusable.H"
-#include "peepholed_listcontainer_impl.H"
-#include "peepholed_listcontainer_impl_element.H"
 #include "background_color.H"
 #include "container.H"
 #include "reference_font_element.H"
@@ -64,7 +61,7 @@ static void default_selection_changed(list_lock &, const listlayoutmanager &,
 }
 
 new_listlayoutmanager
-::new_listlayoutmanager(const listlayoutstyle &layout_style)
+::new_listlayoutmanager(const layout_style_t &layout_style)
 	: layout_style(layout_style),
 	  selection_type(single_selection_type),
 	  selection_changed(default_selection_changed),
@@ -84,44 +81,6 @@ new_listlayoutmanager
 
 new_listlayoutmanager::~new_listlayoutmanager()=default;
 
-// Builder for the peepholed list container. Factored out from
-// do_create_list() for readability.
-
-static inline listcontainer
-make_peepholed_list(const ref<peepholeObj::implObj> &peephole_parent,
-		    const new_listlayoutmanager &style)
-{
-	auto internal_listcontainer_impl=
-		ref<peepholed_listcontainer_impl_elementObj
-		    <listcontainerObj::implObj>>
-		::create(style, peephole_parent, style);
-
-	auto internal_listlayoutmanager_impl=
-		ref<listlayoutmanagerObj::implObj>::create
-		(internal_listcontainer_impl, style);
-
-	auto container=peepholed_listcontainer::create
-		(internal_listcontainer_impl,
-		 internal_listcontainer_impl,
-		 internal_listcontainer_impl,
-		 internal_listlayoutmanager_impl);
-
-	internal_listlayoutmanager_impl->style
-		.initialize(internal_listlayoutmanager_impl);
-
-	for (const auto &rw:style.requested_col_widths)
-		internal_listlayoutmanager_impl
-			->requested_col_width(rw.first, rw.second);
-
-	for (const auto &a:style.col_alignments)
-		internal_listlayoutmanager_impl
-			->col_alignment(a.first, a.second);
-
-	container->show();
-
-	return container;
-}
-
 focusable_container
 new_listlayoutmanager::create(const ref<containerObj::implObj>
 			      &parent_container) const
@@ -129,7 +88,7 @@ new_listlayoutmanager::create(const ref<containerObj::implObj>
 	auto focusable_container_impl=
 		ref<peepholed_container_impl_t>::create(parent_container);
 
-	listcontainerptr internal_listcontainer;
+	containerptr internal_listcontainer;
 
 	auto [peephole_info, lm]=create_peepholed_focusable_with_frame
 		({"list_border",
@@ -142,21 +101,27 @@ new_listlayoutmanager::create(const ref<containerObj::implObj>
 				peephole_style(),
 				scrollbar_visibility::never,
 				vertical_scrollbar},
-		 [&]
+		 [&, this]
 		 (const ref<containerObj::implObj> &peepholed_parent)
 		 {
 			 auto peephole_impl=ref<peepholeObj::implObj>
 			 ::create(peepholed_parent);
 
-			 auto container=make_peepholed_list(peephole_impl,
-							    *this);
+			 auto [container_element,
+			       peepholed_element,
+			       focusable_element,
+			       focusable_element_impl
+			       ]=this->layout_style.create(peephole_impl,
+							   *this);
 
-			 internal_listcontainer=container;
+			 container_element->show();
+
+			 internal_listcontainer=container_element;
 
 			 return std::make_tuple(peephole_impl,
-						container,
-						container,
-						container->impl);
+						peepholed_element,
+						focusable_element,
+						focusable_element_impl);
 		 });
 
 	return ref<listObj>::create(internal_listcontainer, peephole_info,

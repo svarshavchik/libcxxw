@@ -4,14 +4,13 @@
 */
 #include "libcxxw_config.h"
 #include "listlayoutmanager/listcontainer.H"
-#include "listlayoutmanager/listlayoutmanager.H"
 #include "listcontainer_impl.H"
 
 LIBCXXW_NAMESPACE_START
 
 listcontainerObj::listcontainerObj(const ref<focusableImplObj> &focusable_impl,
 				   const ref<containerObj::implObj> &container_impl,
-				   const ref<listlayoutmanagerObj::implObj>
+				   const ref<layoutmanagerObj::implObj>
 				   &list_impl)
 	: focusable_containerObj(container_impl, list_impl),
 	  focusable_impl(focusable_impl)

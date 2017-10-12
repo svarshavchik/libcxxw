@@ -19,6 +19,9 @@
 #include "icon.H"
 #include "image.H"
 #include "generic_window_handler.H"
+#include "peephole/peephole_impl.H"
+#include "peepholed_listcontainer_impl.H"
+#include "peepholed_listcontainer_impl_element.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -105,6 +108,47 @@ class LIBCXX_HIDDEN listlayoutstyle_common : public listlayoutstyle {
 	static void remove_background_color(IN_THREAD_ONLY,
 					    grid_map_t::lock &lock,
 					    size_t row_number);
+
+	//! Create a peepholed list container, with this style.
+
+	std::tuple<container, peepholed, focusable, focusable_impl>
+		create(const ref<peepholeObj::implObj> &peephole_parent,
+		       const new_listlayoutmanager &style) const override
+	{
+		auto internal_listcontainer_impl=
+			ref<peepholed_listcontainer_impl_elementObj
+			    <listcontainerObj::implObj>>
+			::create(style, peephole_parent, style);
+
+		auto internal_listlayoutmanager_impl=
+			ref<listlayoutmanagerObj::implObj>::create
+			(internal_listcontainer_impl, style, *this);
+
+		auto container=peepholed_listcontainer::create
+			(internal_listcontainer_impl,
+			 internal_listcontainer_impl,
+			 internal_listcontainer_impl,
+			 internal_listlayoutmanager_impl);
+
+		initialize(internal_listlayoutmanager_impl);
+
+		for (const auto &rw:style.requested_col_widths)
+			internal_listlayoutmanager_impl
+				->requested_col_width(rw.first, rw.second);
+
+		for (const auto &a:style.col_alignments)
+			internal_listlayoutmanager_impl
+				->col_alignment(a.first, a.second);
+
+		return {container,
+				container, container,
+				container->focusable_impl};
+	}
+
+	//! Sub-style specific initialization.
+
+	virtual void initialize(const ref<listlayoutmanagerObj::implObj> &l)
+		const=0;
 };
 
 void listlayoutstyle_common
@@ -335,7 +379,8 @@ class LIBCXX_HIDDEN highlighted_list_style_impl
 
 static const highlighted_list_style_impl highlighted_list_style_instance;
 
-const listlayoutstyle &highlighted_list=highlighted_list_style_instance;
+const layout_style_t &highlighted_list=highlighted_list_style_instance;
+const listlayoutstyle &highlighted_list_style=highlighted_list_style_instance;
 
 void highlighted_list_style_impl
 ::unhighlight(IN_THREAD_ONLY,
@@ -438,8 +483,8 @@ class LIBCXX_HIDDEN bulleted_list_style_impl
 		     grid_map_t::lock &lock, size_t i, bool is_highlighted)
 		const override;
 
-	void initialize(const ref<listlayoutmanagerObj::implObj> &l) const
-		override
+	virtual void initialize(const ref<listlayoutmanagerObj::implObj> &l)
+		const
 	{
 		l->requested_col_width(1, 100);
 	}
@@ -452,7 +497,8 @@ class LIBCXX_HIDDEN bulleted_list_style_impl
 
 static const bulleted_list_style_impl bulleted_list_style_instance;
 
-const listlayoutstyle &bulleted_list=bulleted_list_style_instance;
+const layout_style_t &bulleted_list=bulleted_list_style_instance;
+const listlayoutstyle &bulleted_list_style=bulleted_list_style_instance;
 
 void bulleted_list_style_impl
 ::unhighlight(IN_THREAD_ONLY,
