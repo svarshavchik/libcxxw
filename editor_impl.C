@@ -677,7 +677,7 @@ void editorObj::implObj::draw_changes(IN_THREAD_ONLY,
 	    s > 0 && cursor->pos() == s &&
 	    (!cursor_lock.cursor || cursor_lock.cursor->pos() == cursor->pos()))
 	{
-		busy_impl mcguffin{*this, IN_THREAD};
+		busy_impl mcguffin{*this};
 
 		input_autocomplete_info_t info{get(), 0, mcguffin};
 

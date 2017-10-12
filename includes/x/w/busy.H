@@ -42,24 +42,15 @@ LIBCXXW_NAMESPACE_START
 //!
 //! Any display element's get_mcguffin() method also obtains the
 //! busy mcguffin, independently.
-//!
-//! This object also serves as a reference handle to the internal
-//! connection thread. Several public object methods require a busy handle
-//! as one of their parameters. Since a reference to the busy object is
-//! only passed to a callback from the internal library execution thread this
-//! ensures that only the callbacks can invoke those methods.
 
 class busy {
 
 public:
 	//! Constructor
-	busy(const connection_thread &thread) LIBCXX_HIDDEN;
+	busy() LIBCXX_HIDDEN;
 
 	//! Destructor
 	virtual ~busy() LIBCXX_HIDDEN;
-
-	//! Internal connection thread.
-	const connection_thread thread;
 
 	//! Copy constructor is deleted.
 	busy(const busy &)=delete;

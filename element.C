@@ -132,21 +132,6 @@ ref<elementObj::implObj> elementObj::get_minimum_override_element_impl()
 	return impl;
 }
 
-void elementObj::set_minimum_override(dim_t horiz_override, dim_t vert_override)
-{
-	get_minimum_override_element_impl()
-		->set_minimum_override(horiz_override, vert_override);
-}
-
-void elementObj::set_minimum_override(const busy &busy_handle,
-				      dim_t horiz_override,
-				      dim_t vert_override)
-{
-	get_minimum_override_element_impl()
-		->set_minimum_override(busy_handle.thread,
-				       horiz_override, vert_override);
-}
-
 std::ostream &operator<<(std::ostream &o, const element_state &s)
 {
 	return o << "state update: " << (int)s.state_update

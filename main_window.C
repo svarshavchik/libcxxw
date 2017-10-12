@@ -336,10 +336,6 @@ static void hide_and_invoke(const auto &d,
 	      (const auto &d)
 	      {
 		      d->hide();
-
-		      busy_impl still_busy{d->impl->handler->parent_handler,
-				      yes_i_am.thread};
-
 		      action(yes_i_am);
 	      });
 }

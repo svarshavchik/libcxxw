@@ -23,18 +23,17 @@ class LIBCXX_HIDDEN busy_impl : public busy {
 	const ref<generic_windowObj::handlerObj> w;
 
 	//! Constructor
-	busy_impl(elementObj::implObj &i, const connection_thread &thread);
+	busy_impl(elementObj::implObj &i);
 
 	//! Constructor
-	busy_impl(const ref<generic_windowObj::handlerObj> &w,
-		  const connection_thread &thread);
+	busy_impl(const ref<generic_windowObj::handlerObj> &w);
 
 	//! Destructor
 	~busy_impl();
 
 	//! Acquire the underlying mcguffin, blocking pointer and keyboard
 	//! activity
-	x::ref<x::obj> get_mcguffin() const;
+	x::ref<x::obj> get_mcguffin() const override;
 };
 
 LIBCXXW_NAMESPACE_END

@@ -138,8 +138,7 @@ void hotspotObj::implObj::activated(IN_THREAD_ONLY)
 	LOG_FUNC_SCOPE(hotspot_log);
 
 	try {
-		callback(IN_THREAD)(busy_impl{get_hotspot_element(),
-					IN_THREAD});
+		callback(IN_THREAD)(busy_impl{get_hotspot_element()});
 	} CATCH_EXCEPTIONS;
 }
 

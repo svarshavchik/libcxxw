@@ -130,23 +130,6 @@ public:
 	//! Remove the tooltip from this display element.
 	void remove_tooltip() const;
 
-	//! Install minimum element size overrides.
-
-	//! Mostly for internal library use. Makes sure the display element's
-	//! size is at least as much as given.
-
-	void set_minimum_override(dim_t horiz_override,
-				  dim_t vert_override);
-
-	//! Install minimum element size overrides.
-
-	//! Mostly for internal library use. Makes sure the display element's
-	//! size is at least as much as given.
-
-	void set_minimum_override(const busy &busy_handle,
-				  dim_t horiz_override,
-				  dim_t vert_override);
-
 	//! Return the implementation object whose size should be overridden.
 
 	//! \internal

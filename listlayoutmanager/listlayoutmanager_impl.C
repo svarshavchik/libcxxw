@@ -426,7 +426,7 @@ void listlayoutmanagerObj::implObj::selected(const listlayoutmanager &me,
 
 	auto callback=c->impl->get_status_change_callback();
 
-	busy_impl yes_i_am{container_impl->get_element_impl(), t};
+	busy_impl yes_i_am{container_impl->get_element_impl()};
 	list_lock real_lock{me};
 
 	try {
@@ -454,8 +454,7 @@ void listlayoutmanagerObj::implObj::autoselect(IN_THREAD_ONLY,
 					       list_lock &lock, size_t i)
 {
 	try {
-		busy_impl yes_i_am{container_impl->get_element_impl(),
-				IN_THREAD};
+		busy_impl yes_i_am{container_impl->get_element_impl()};
 
 		selection_type(IN_THREAD)(me, i, yes_i_am);
 	} CATCH_EXCEPTIONS;

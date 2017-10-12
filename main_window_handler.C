@@ -56,7 +56,7 @@ void main_windowObj::handlerObj
 			if (is_busy())
 				return;
 
-			busy_impl yes_i_am{*this, IN_THREAD};
+			busy_impl yes_i_am{*this};
 
 			on_delete_callback(IN_THREAD)(yes_i_am);
 			return;

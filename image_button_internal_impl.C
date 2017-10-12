@@ -47,7 +47,7 @@ void image_button_internalObj::implObj::set_image_number(IN_THREAD_ONLY,
 	if (p != n)
 		try {
 			current_callback(IN_THREAD)(false, n,
-						    busy_impl{*this,IN_THREAD});
+						    busy_impl{*this});
 		} CATCH_EXCEPTIONS;
 }
 
@@ -191,7 +191,7 @@ void radio_image_buttonObj::set_image_number(IN_THREAD_ONLY, size_t n)
 	if (n != p)
 		do_set_image_number(IN_THREAD, n);
 
-	busy_impl i_am_busy{*this, IN_THREAD};
+	busy_impl i_am_busy{*this};
 
 	for (const auto &cb:callbacks)
 		try {

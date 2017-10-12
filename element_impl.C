@@ -387,7 +387,7 @@ void elementObj::implObj
 			       cb(me->create_element_state
 				  (IN_THREAD,
 				   element_state::current_state),
-				  busy_impl{*me, IN_THREAD});
+				  busy_impl{*me});
 		       });
 }
 
@@ -494,7 +494,7 @@ void elementObj::implObj
 {
 	data(IN_THREAD).element_state_callback
 		(create_element_state(IN_THREAD, reason),
-		 busy_impl{*this, IN_THREAD});
+		 busy_impl{*this});
 }
 
 clip_region_set::clip_region_set(IN_THREAD_ONLY,
@@ -998,7 +998,7 @@ void elementObj::implObj
 
 bool elementObj::implObj::process_key_event(IN_THREAD_ONLY, const key_event &e)
 {
-	busy_impl mcguffin{*this, IN_THREAD};
+	busy_impl mcguffin{*this};
 
 	return data(IN_THREAD).on_key_event_callback(&e, mcguffin);
 }
@@ -1127,7 +1127,7 @@ void elementObj::implObj::ensure_entire_visibility(IN_THREAD_ONLY)
 bool elementObj::implObj::pasted(IN_THREAD_ONLY,
 				 const std::u32string_view &str)
 {
-	busy_impl mcguffin{*this, IN_THREAD};
+	busy_impl mcguffin{*this};
 	return data(IN_THREAD).on_key_event_callback(&str, mcguffin);
 }
 
