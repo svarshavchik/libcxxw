@@ -48,7 +48,7 @@ public:
 
 	LIBCXX_NAMESPACE::w::text_param normal, highlighted;
 
-	LIBCXX_NAMESPACE::w::text_param operator()(const LIBCXX_NAMESPACE::w::focus_change &e) const
+	LIBCXX_NAMESPACE::w::text_param operator()(const LIBCXX_NAMESPACE::w::focus_change e) const
 	{
 		switch (e) {
 		case LIBCXX_NAMESPACE::w::focus_change::gained:
@@ -61,17 +61,19 @@ public:
 		return {};
 	}
 
-	LIBCXX_NAMESPACE::w::text_param operator()(const LIBCXX_NAMESPACE::w::button_event &e) const
+	LIBCXX_NAMESPACE::w::text_param operator()(const LIBCXX_NAMESPACE::w::button_event *e) const
 	{
 		std::cout << "Button event!" << std::endl;
 		return {};
 	}
 
-	LIBCXX_NAMESPACE::w::text_param operator()(const LIBCXX_NAMESPACE::w::key_event &e) const
+	LIBCXX_NAMESPACE::w::text_param operator()(const LIBCXX_NAMESPACE::w::key_event *e) const
 	{
 		std::cout << "Key event!" << std::endl;
 		return {};
 	}
+
+
 };
 
 static void initialize_label(const LIBCXX_NAMESPACE::w::factory &factory)

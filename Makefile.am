@@ -16,7 +16,7 @@ bin_PROGRAMS=cxxw
 
 CPPFLAGS += -I$(top_srcdir)/includes -I./includes -I$(top_srcdir) -I. \
             -DPKGDATADIR='"$(pkgdatadir)"'
-CXXFLAGS += -fvisibility-inlines-hidden
+CXXFLAGS += -fvisibility-inlines-hidden $(if $(PROFILE),-pg)
 
 libcxxw_la_LIBADD=-lcxx
 
@@ -154,6 +154,12 @@ libcxxw_la_SOURCES=\
 	dirlisting/filedircontentsobj.H		    \
 	dirlisting/filedircontents_impl.C	    \
 	dirlisting/filedircontents_impl.H	    \
+	dirlisting/filedirlist_manager.C	    \
+	dirlisting/filedirlist_manager.H	    \
+	dirlisting/filedirlist_managerfwd.H	    \
+	dirlisting/filedirlist_managerobj.H	    \
+	dirlisting/filedirlist_manager_impl.C	    \
+	dirlisting/filedirlist_manager_impl.H	    \
 	dirlisting/filedir_file.C		    \
 	dirlisting/filedir_file.H		    \
 	dirlisting/filedir_filefwd.H		    \

@@ -20,6 +20,8 @@
 #include "x/w/text_param.H"
 #include "x/w/canvas.H"
 #include "x/w/input_field.H"
+#include "x/w/file_dialog_config.H"
+#include "dirlisting/filedirlist_manager.H"
 #include "layoutmanager.H"
 #include "peephole/peephole_toplevel.H"
 #include "peephole/peepholed_toplevel_element.H"
@@ -32,6 +34,13 @@
 #include "dialog_handler.H"
 #include "always_visible.H"
 #include <x/weakcapture.H>
+#include <x/fd.H>
+#include <x/visitor.H>
+#include <courier-unicode.h>
+#include <algorithm>
+#include "x/w/label.H"
+#include "x/w/focusable_label.H"
+#include "x/w/text_hotspot.H"
 
 LOG_CLASS_INIT(LIBCXX_NAMESPACE::w::main_windowObj);
 
@@ -517,6 +526,298 @@ dialog main_windowObj
 		 });
 	hide_and_invoke_when_activated(d, cancel_button, cancel_action);
 	hide_and_invoke_when_closed(d, cancel_action);
+
+	return d;
+}
+
+// All the elements in the file dialog. In one easy place for all callbacks
+// to reference.
+
+class LIBCXX_HIDDEN file_dialog_elementsObj : virtual public obj {
+
+
+ public:
+
+	buttonptr ok_button;
+	focusable_labelptr directory_field;
+	input_fieldptr filename_field;
+	filedirlist_managerptr directory_contents_list;
+
+	void clicked(size_t n,
+		     const callback_trigger_t &trigger)
+	{
+		if (std::holds_alternative<const button_event *>(trigger)
+		    &&
+		    !button_clicked(*std::get<const button_event *>(trigger)))
+			return;
+
+		auto e=directory_contents_list->at(n);
+
+		if (S_ISDIR(e.st.st_mode))
+		{
+			chdir(e.name);
+		}
+	}
+
+	static bool button_clicked(const button_event &be)
+	{
+		return !be.press && be.button == 1 && be.click_count == 2;
+	}
+
+	text_param create_dirlabel(const std::string &);
+
+ private:
+
+	void create_hotspot(text_param &t,
+			    const std::string &name,
+			    const std::string &path);
+
+	text_param hotspot_activated(const text_event_t &event,
+				     const std::string &name,
+				     const std::string &path);
+
+	void chdir(const std::string &path);
+};
+
+text_param file_dialog_elementsObj
+::create_dirlabel(const std::string &s)
+{
+	text_param t;
+
+	if (s.empty())
+		return t; // Shouldn't happen.
+
+	// Truncate the shown filename.
+	auto b=s.begin();
+	auto e=s.end();
+
+	auto p=(e-b) < 40 ? b:e-40;
+
+	// Make sure p points at a slash.
+
+	p=std::find(p, e, '/');
+
+	if (p == e)
+		while (p > b && *--p != '/')
+			;
+
+	// Now make sure there's at least one more slash, so that 'p'
+	// points to at least two directory components, that we'll show.
+
+	auto slash=std::find(p+1, e, '/');
+
+	if (slash == e)
+	{
+		while (p > b)
+			if (*--p == '/')
+				break;
+	}
+
+	// p now points either to an intermediate / separator, or to the
+	// leading /. It's always a slash, here.
+
+	if (p > b)
+	{
+		t(".../");
+	}
+	else
+	{
+		create_hotspot(t, "/", "/"); // Root directory
+	}
+
+	++p;
+
+	while (p != e)
+	{
+		auto q=p;
+
+		p=std::find(p, e, '/');
+
+		create_hotspot(t, {q, p}, {b, p});
+
+		// Terminate the hotspot. We do this here, instead of inside
+		// create_hotspot(), because another hotspot immediately
+		// follows the leading "/".
+
+		t(nullptr);
+
+		if (p != e)
+		{
+			// Not done yet.
+			t("/");
+			++p;
+		}
+	}
+
+	return t;
+}
+
+// Create a hotspot for a component of the directory path.
+
+void file_dialog_elementsObj::create_hotspot(text_param &t,
+					     const std::string &name,
+					     const std::string &path)
+{
+	t(text_hotspot::create
+	  ([name, path,
+	    me=make_weak_capture(ref(this))]
+	   (const text_event_t &event)
+	   {
+		   text_param t;
+
+		   me.get([&]
+			  (const auto &me)
+			  {
+				  t=me->hotspot_activated(event, name, path);
+			  });
+		   return t;
+	   }));
+
+	t(name);
+}
+
+// Hotspot for a directory component has been activated. Figure out the
+// course of action.
+
+text_param file_dialog_elementsObj::hotspot_activated(const text_event_t &event,
+						      const std::string &name,
+						      const std::string &path)
+{
+	return std::visit(visitor {
+			[&, this](focus_change e)
+			{
+				text_param t;
+
+				if (e==focus_change::gained)
+				{
+					t(theme_color{"filedir_highlight_fg"});
+					t(theme_color{"filedir_highlight_bg"});
+				}
+				t(name);
+				return t;
+			},
+			[&, this](const button_event *b)
+			{
+				if (button_clicked(*b))
+					this->chdir(path);
+				return text_param{};
+			},
+			[&, this](const key_event *)
+			{
+				this->chdir(path);
+				return text_param{};
+			}},
+		event);
+}
+
+void file_dialog_elementsObj::chdir(const std::string &path)
+{
+	filename_field->set("");
+	directory_field->update(create_dirlabel(path));
+	directory_contents_list->chdir(path);
+}
+
+// Factored out for readability. Creates the directory contents list.
+
+static inline void
+create_directory_contents_list(const ref<file_dialog_elementsObj> &elements,
+			       const std::string &directory,
+			       const factory &f)
+{
+	elements->directory_contents_list=
+		filedirlist_manager::create
+		(f, directory,
+		 [elements=make_weak_capture(elements)]
+		 (size_t n,
+		  const callback_trigger_t &trigger,
+		  const busy &)
+		 {
+			 elements.get([&]
+				      (const auto &e) {
+					      e->clicked(n, trigger);
+				      });
+		 });
+}
+
+dialog main_windowObj::create_file_dialog(const file_dialog_config &,
+					  bool modal)
+{
+	input_field_config filename_field_config{60};
+	buttonptr cancel_button;
+
+	std::string directory=fd::base::realpath(".");
+
+	auto elements=ref<file_dialog_elementsObj>::create();
+
+	auto d=create_standard_dialog("file-dialog", modal, {
+			{"file-input-label",
+					[&]
+					(const auto &factory)
+					{
+						factory->create_label("File:");
+					}},
+			{"file-input-field",
+					[&]
+					(const auto &factory)
+					{
+						elements->filename_field=factory
+							->create_input_field
+							("",
+							 filename_field_config);
+					}},
+			{"directory-label",
+					[&]
+					(const auto &factory)
+					{
+						factory->create_label("Directory:");
+					}},
+			{"directory-field",
+					[&]
+					(const auto &factory)
+					{
+						elements->directory_field=
+							factory
+							->create_focusable_label
+							(elements
+							 ->create_dirlabel
+							 (directory));
+					}},
+			{"directory-contents-list",
+					[&]
+					(const auto &factory)
+					{
+						create_directory_contents_list
+							(elements,
+							 directory,
+							 factory);
+					}},
+			{"ok", create_ok_button("Ok", elements->ok_button,
+						'\n')},
+			{"filler", create_filler()},
+			{"cancel", create_cancel_button("Cancel",
+							cancel_button,
+							'\e')}
+		});
+
+	hide_and_invoke_when_activated
+		(d, elements->ok_button,
+		 [] // A convenient place to stash away a strong ref.
+		 (const auto &busy)
+		 {
+		 });
+	hide_and_invoke_when_activated(d, cancel_button,
+				       [elements]
+				       // A convenient place to stash away
+				       // a strong ref.
+				       (const auto &busy)
+				       {
+				       });
+
+	hide_and_invoke_when_closed(d,
+				    []
+				    (const auto &busy)
+				    {
+				    });
 
 	return d;
 }

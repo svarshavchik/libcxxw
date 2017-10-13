@@ -25,7 +25,9 @@ class text_param;
 //! The callback also gets invoked for a key event, when the link is
 //! activated by a key press.
 
-typedef std::variant<button_event, key_event, focus_change> text_event_t;
+typedef std::variant<const button_event *,
+		     const key_event *,
+		     focus_change> text_event_t;
 
 LIBCXXW_NAMESPACE_END
 

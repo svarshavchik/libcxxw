@@ -341,7 +341,7 @@ bool textlabelObj::implObj::process_button_event(IN_THREAD_ONLY,
 {
 	if (!hotspot_highlighted(IN_THREAD))
 		return false;
-	link_update(IN_THREAD, hotspot_highlighted(IN_THREAD), be);
+	link_update(IN_THREAD, hotspot_highlighted(IN_THREAD), &be);
 	return true;
 }
 
@@ -422,7 +422,7 @@ bool textlabelObj::implObj::process_key_event(IN_THREAD_ONLY,
 		if (hotspot_highlighted(IN_THREAD))
 		{
 			link_update(IN_THREAD, hotspot_highlighted(IN_THREAD),
-				    ke);
+				    &ke);
 			return true;
 		}
 	}

@@ -650,12 +650,12 @@ void textlistObj::implObj::do_draw(IN_THREAD_ONLY,
 	{
 		if (!lock->row_redraw_needed)
 			return;
-
-		if (redraw_scheduled(IN_THREAD))
-			return; // Don't bother.
 	}
 
 	lock->row_redraw_needed=false;
+
+	if (redraw_scheduled(IN_THREAD))
+		return; // Don't bother.
 
 	if (bounds.nothing_to_draw())
 	{
@@ -726,9 +726,6 @@ void textlistObj::implObj::redraw_rows(IN_THREAD_ONLY,
 				       size_t row_number2,
 				       bool make_sure_row2_is_visible)
 {
-	if (redraw_scheduled(IN_THREAD))
-		return; // Don't bother.
-
 	const auto &di=get_draw_info(IN_THREAD);
 
 	richtext_draw_boundaries bounds{di, di.entire_area()};
@@ -754,11 +751,14 @@ rectangle textlistObj::implObj::do_draw_row(IN_THREAD_ONLY,
 
 	if (r.row_type == r.separator)
 	{
-		clip_region_set clip{IN_THREAD, di};
-
 		rectangle border_rect{
 			0, r.y, di.absolute_location.width,
 				r.height};
+
+		if (redraw_scheduled(IN_THREAD))
+			return border_rect;
+
+		clip_region_set clip{IN_THREAD, di};
 
 		draw_using_scratch_buffer
 			(IN_THREAD,
