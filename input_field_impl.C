@@ -27,10 +27,10 @@ input_fieldObj::implObj::~implObj()=default;
 
 /////////////////////////////////////////////////////////////////////////
 
-input_lock::input_lock(const input_field &my_input_field)
-	: internal_richtext_impl_t::lock(my_input_field->impl->editor_element
+input_lock::input_lock(const input_fieldObj &my_input_field)
+	: internal_richtext_impl_t::lock(my_input_field.impl->editor_element
 					 ->impl->text->impl),
-	  my_input_field(my_input_field)
+	my_input_field(const_input_field{&my_input_field})
 {
 }
 

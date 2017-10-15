@@ -56,6 +56,14 @@ element custom_comboboxlayoutmanagerObj::current_selection()
 	return impl->get(0, 0);
 }
 
+const_element custom_comboboxlayoutmanagerObj::current_selection() const
+{
+	// The current selection element is always position (0, 0)
+	// in the internally-managed grid.
+
+	return impl->get(0, 0);
+}
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // Combobox button.

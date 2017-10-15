@@ -34,6 +34,9 @@ public:
 
 	//! Return the display element that represents the current selection.
 	element current_selection();
+
+	//! Return the display element that represents the current selection.
+	const_element current_selection() const;
 };
 
 LIBCXXW_NAMESPACE_END

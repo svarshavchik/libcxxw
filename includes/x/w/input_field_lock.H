@@ -7,6 +7,7 @@
 
 #include <x/ref.H>
 #include <x/mpobj.H>
+#include <x/refptr_traits.H>
 #include <x/w/input_fieldfwd.H>
 #include <x/w/editable_comboboxlayoutmanagerfwd.H>
 
@@ -63,13 +64,20 @@ class LIBCXX_HIDDEN input_lock : public internal_richtext_impl_t::lock {
 
 	//! Hold a reference on the input field
 
-	const input_field my_input_field;
+	const const_input_field my_input_field;
 
 	//! Constructor
-	input_lock(const input_field &) LIBCXX_PUBLIC;
+	template<typename ref_type,
+		 typename=typename refptr_traits<ref_type>::base_t>
+		inline input_lock(const ref_type &r) : input_lock(*r)
+	{
+	}
 
 	//! Constructor
-	input_lock(const editable_comboboxlayoutmanager &) LIBCXX_PUBLIC;
+	input_lock(const input_fieldObj &) LIBCXX_PUBLIC;
+
+	//! Constructor
+	input_lock(const editable_comboboxlayoutmanagerObj &) LIBCXX_PUBLIC;
 
 	//! Destructor
 

@@ -24,8 +24,8 @@ editable_comboboxlayoutmanagerObj
 
 editable_comboboxlayoutmanagerObj::~editable_comboboxlayoutmanagerObj()=default;
 
-input_lock::input_lock(const editable_comboboxlayoutmanager &e)
-	: input_lock(input_field(e->current_selection()))
+input_lock::input_lock(const editable_comboboxlayoutmanagerObj &e)
+	: input_lock(const_input_field(e.current_selection()))
 {
 }
 
