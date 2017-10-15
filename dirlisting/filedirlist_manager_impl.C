@@ -299,6 +299,14 @@ void filedirlist_managerObj::implObj::chdir(const std::string &directory)
 
 }
 
+std::string filedirlist_managerObj::implObj::pwd()
+{
+	protected_info_t::direct_lock lock{*this};
+
+	return lock->directory;
+}
+
+
 void filedirlist_managerObj::implObj::start()
 {
 	protected_info_t::lock lock{*this};

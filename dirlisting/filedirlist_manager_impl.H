@@ -181,6 +181,9 @@ class LIBCXX_HIDDEN filedirlist_managerObj::implObj : virtual public obj {
 	//! Change directories.
 	void chdir(const std::string &directory);
 
+	//! Return the current directory.
+	std::string pwd();
+
  private:
 
 	//! Invoked by the internal execution thread. Updates the contents of the tracked directory.

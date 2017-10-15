@@ -29,4 +29,9 @@ void filedirlist_managerObj::chdir(const std::string &directory)
 	impl->chdir(directory);
 }
 
+std::string filedirlist_managerObj::pwd() const
+{
+	return impl->pwd();
+}
+
 LIBCXXW_NAMESPACE_END

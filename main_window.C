@@ -20,6 +20,7 @@
 #include "x/w/text_param.H"
 #include "x/w/canvas.H"
 #include "x/w/input_field.H"
+#include "x/w/input_field_lock.H"
 #include "x/w/file_dialog_config.H"
 #include "dirlisting/filedirlist_manager.H"
 #include "layoutmanager.H"
@@ -36,11 +37,14 @@
 #include <x/weakcapture.H>
 #include <x/fd.H>
 #include <x/visitor.H>
+#include <x/fileattr.H>
 #include <courier-unicode.h>
 #include <algorithm>
 #include "x/w/label.H"
 #include "x/w/focusable_label.H"
 #include "x/w/text_hotspot.H"
+
+#include <sys/stat.h>
 
 LOG_CLASS_INIT(LIBCXX_NAMESPACE::w::main_windowObj);
 
@@ -543,6 +547,8 @@ class LIBCXX_HIDDEN file_dialog_elementsObj : virtual public obj {
 	input_fieldptr filename_field;
 	filedirlist_managerptr directory_contents_list;
 
+	// A directory entry was clicked on.
+
 	void clicked(size_t n,
 		     const callback_trigger_t &trigger)
 	{
@@ -559,12 +565,46 @@ class LIBCXX_HIDDEN file_dialog_elementsObj : virtual public obj {
 		}
 	}
 
+	// We take action whenever button 1 gets double-clicked.
+
 	static bool button_clicked(const button_event &be)
 	{
 		return !be.press && be.button == 1 && be.click_count == 2;
 	}
 
+	// Show this in the directory field.
+
 	text_param create_dirlabel(const std::string &);
+
+	// Enter pressed in the filename field.
+
+	void enter_key()
+	{
+		auto filename=input_lock{filename_field}.get();
+
+		if (filename.empty())
+			return;
+
+		if (filename.substr(0, 1) != "/")
+			filename=directory_contents_list->pwd()
+				+ "/" + filename;
+
+		struct ::stat st{};
+
+		try {
+			st=*fileattr::create(filename, false)->stat();
+		} catch (...)
+		{
+		}
+
+		if (S_ISDIR(st.st_mode))
+		{
+			if (access(filename.c_str(), R_OK) == 0)
+			{
+				chdir(fd::base::realpath(filename));
+			}
+		}
+	}
 
  private:
 
@@ -739,10 +779,43 @@ create_directory_contents_list(const ref<file_dialog_elementsObj> &elements,
 		 });
 }
 
+// Factored out for readability. Creates the filename input field
+static inline void create_file_input_field(const ref<file_dialog_elementsObj>
+					   &elements,
+					   const factory &f)
+{
+	input_field_config filename_field_config{60};
+
+	auto field=f->create_input_field("", filename_field_config);
+
+	elements->filename_field=field;
+	field->on_key_event([elements=make_weak_capture(elements)]
+			    (const auto &event,
+			     const auto &busy_mcguffin)
+			    {
+				    if (!std::holds_alternative
+					<const key_event *>(event))
+					    return false;
+
+				    const auto &ke=*
+					    std::get<const key_event *>(event);
+
+				    if (!ke.keypress ||
+					ke.unicode != '\n')
+					    return false;
+
+				    elements.get([&]
+						 (const auto &elements)
+						 {
+							 elements->enter_key();
+						 });
+				    return true;
+			    });
+}
+
 dialog main_windowObj::create_file_dialog(const file_dialog_config &,
 					  bool modal)
 {
-	input_field_config filename_field_config{60};
 	buttonptr cancel_button;
 
 	std::string directory=fd::base::realpath(".");
@@ -760,10 +833,9 @@ dialog main_windowObj::create_file_dialog(const file_dialog_config &,
 					[&]
 					(const auto &factory)
 					{
-						elements->filename_field=factory
-							->create_input_field
-							("",
-							 filename_field_config);
+						create_file_input_field
+							(elements,
+							 factory);
 					}},
 			{"directory-label",
 					[&]
@@ -792,7 +864,7 @@ dialog main_windowObj::create_file_dialog(const file_dialog_config &,
 							 factory);
 					}},
 			{"ok", create_ok_button("Ok", elements->ok_button,
-						'\n')},
+						0)},
 			{"filler", create_filler()},
 			{"cancel", create_cancel_button("Cancel",
 							cancel_button,

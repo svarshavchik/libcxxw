@@ -40,6 +40,9 @@ class LIBCXX_HIDDEN filedirlist_managerObj : virtual public obj {
 	//! Switch the display element to a different directory.
 
 	void chdir(const std::string &directory);
+
+	//! Return the current directory
+	std::string pwd() const;
 };
 
 LIBCXXW_NAMESPACE_END
