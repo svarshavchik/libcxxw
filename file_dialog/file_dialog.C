@@ -21,6 +21,7 @@ file_dialog_config
 	: ok_action{ok_action},
 	  cancel_action{cancel_action},
 	  type{type},
+	  initial_directory{"."},
 	  access_denied_message(type == file_dialog_type::new_file
 				? _("You do not have permissions to overwrite "
 				    "\"%1%\"")

@@ -371,9 +371,9 @@ struct LIBCXX_HIDDEN file_dialogObj::init_args {
 
 	std::string directory;
 
-	init_args()
+	init_args(const std::string &directory)
+		: directory{fd::base::realpath(directory)}
 	{
-		directory=fd::base::realpath(".");
 	}
 
 	~init_args()=default;
@@ -448,7 +448,7 @@ standard_dialog_elements_t file_dialogObj::init_args
 
 file_dialogObj::file_dialogObj(const dialog_args &args,
 			       const file_dialog_config &conf)
-	: file_dialogObj(args, conf, init_args{})
+	: file_dialogObj(args, conf, init_args{conf.initial_directory})
 {
 }
 

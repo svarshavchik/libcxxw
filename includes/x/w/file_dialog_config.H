@@ -39,6 +39,10 @@ struct file_dialog_config {
 			   file_dialog_type type=file_dialog_type::existing_file
 			   );
 
+	//! Initial directory displayed in the file dialog.
+
+	std::string initial_directory;
+
 	//! Message shown when access to the file is denied.
 	std::string access_denied_message;
 
