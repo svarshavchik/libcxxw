@@ -142,6 +142,7 @@ libcxxw_la_SOURCES=\
 	defaulttheme.H				    \
 	defaultthemefwd.H			    \
 	defaultthemeobj.H			    \
+	dialog.H				    \
 	dialog.C				    \
 	dialog_impl.C				    \
 	dialog_impl.H				    \
@@ -189,6 +190,9 @@ libcxxw_la_SOURCES=\
 	ewmh.H					    \
 	factory.C				    \
 	gc.C					    \
+	file_dialog/file_dialog.C		    \
+	file_dialog/file_dialog_impl.C		    \
+	file_dialog/file_dialog_impl.H		    \
 	focusable_container.C			    \
 	focusable_label.C			    \
 	focusable_label_impl.C			    \

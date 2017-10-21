@@ -1,0 +1,72 @@
+/*
+** Copyright 2017 Double Precision, Inc.
+** See COPYING for distribution information.
+*/
+#ifndef x_w_file_dialogfwd_h
+#define x_w_file_dialogfwd_h
+
+#include <x/w/namespace.H>
+#include <x/ptrfwd.H>
+
+LIBCXXW_NAMESPACE_START
+
+class file_dialogObj;
+
+/*! A file open/create dialog.
+
+\code
+INSERT_LIBX_NAMESPACE:w::main_window mw;
+
+// ...
+
+INSERT_LIBX_NAMESPACE::w::file_dialog_config c;
+
+INSERT_LIBX_NAMESPACE::w::file_dialog fd=mw->create_file_dialog(c);
+
+// ...
+
+fd->the_dialog()->set_window_title("Pick a file");
+
+fd->the_dialog()->show_all();
+
+\endcode
+
+This object gets returned by \ref main_window "create_file_dialog",
+representing a simple dialog for browsing folders, and choosing a file to
+create or open.
+
+The complexity of the task at hand means that a plain \ref dialog "dialog"
+object is not sufficient. The file dialog is represented by a discrete
+\c file_dialog object.
+
+the_dialog() returns the dialog display element, for directly invoking its
+methods, such as set_window_title() and show_all(). create_file_dialog()
+constructs the complete dialog and all of the individual display elements
+that make it up; requiring a call to show_all() to make all of that visible.
+
+
+*/
+
+typedef ref<file_dialogObj> file_dialog;
+
+//! A constant \ref file_dialog "WHATITIS".
+
+//! \see file_dialog
+
+typedef const_ref<file_dialogObj> const_file_dialog;
+
+//! A nullable pointer reference to a \ref file_dialog "WHATITIS".
+
+//! \see file_dialog
+
+typedef ptr<file_dialogObj> file_dialogptr;
+
+//! A nullable pointer reference to a const \ref file_dialog "WHATITIS".
+
+//! \see file_dialog
+
+typedef const_ptr<file_dialogObj> const_file_dialogptr;
+
+LIBCXXW_NAMESPACE_END
+
+#endif

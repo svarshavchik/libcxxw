@@ -8,6 +8,8 @@
 #include "x/w/main_window.H"
 #include "x/w/containerfwd.H"
 #include "x/w/layoutmanagerfwd.H"
+#include "x/w/buttonfwd.H"
+#include "x/w/text_paramfwd.H"
 #include "generic_window.H"
 #include "xim_generic_window.H"
 

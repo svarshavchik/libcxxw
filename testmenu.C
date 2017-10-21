@@ -22,6 +22,7 @@
 #include "x/w/input_field.H"
 #include "x/w/label.H"
 #include "x/w/dialog.H"
+#include "x/w/file_dialog.H"
 #include "x/w/file_dialog_config.H"
 #include <string>
 #include <iostream>
@@ -52,7 +53,7 @@ public:
 
 	LIBCXX_NAMESPACE::w::dialog help_question;
 	LIBCXX_NAMESPACE::w::dialog help_about;
-	LIBCXX_NAMESPACE::w::dialog file_open;
+	LIBCXX_NAMESPACE::w::file_dialog file_open;
 
 	app_dialogsObj(const LIBCXX_NAMESPACE::w::main_window &main_window);
 
@@ -60,7 +61,7 @@ public:
 
 	static LIBCXX_NAMESPACE::w::dialog create_help_about(const LIBCXX_NAMESPACE::w::main_window &main_window);
 
-	static LIBCXX_NAMESPACE::w::dialog create_file_open(const LIBCXX_NAMESPACE::w::main_window &main_window);
+	static LIBCXX_NAMESPACE::w::file_dialog create_file_open(const LIBCXX_NAMESPACE::w::main_window &main_window);
 };
 
 
@@ -127,14 +128,14 @@ app_dialogsObj::create_help_about(const LIBCXX_NAMESPACE::w::main_window &main_w
 	return d;
 }
 
-LIBCXX_NAMESPACE::w::dialog
+LIBCXX_NAMESPACE::w::file_dialog
 app_dialogsObj::create_file_open(const LIBCXX_NAMESPACE::w::main_window &main_window)
 {
 	LIBCXX_NAMESPACE::w::file_dialog_config config;
 
 	auto d=main_window->create_file_dialog(config, true);
 
-	d->set_window_title("Open File");
+	d->the_dialog()->set_window_title("Open File");
 
 	return d;
 }
@@ -200,7 +201,8 @@ void file_menu(const LIBCXX_NAMESPACE::w::main_window &main_window,
 			app_dialogs all_app_dialogs;
 
 			if (all_app_dialogs)
-				all_app_dialogs->file_open->show_all();
+				all_app_dialogs->file_open->the_dialog()
+					->show_all();
 		};
 
 	m->append_menu_item(file_new_type, "New");
@@ -219,7 +221,8 @@ void file_menu(const LIBCXX_NAMESPACE::w::main_window &main_window,
 			app_dialogs all_app_dialogs;
 
 			if (all_app_dialogs)
-				all_app_dialogs->file_open->show_all();
+				all_app_dialogs->file_open->the_dialog()
+					->show_all();
 		};
 
 	m->update(1, file_open_type);

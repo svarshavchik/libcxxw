@@ -17,6 +17,7 @@
 #include <x/w/busyfwd.H>
 #include <x/w/input_field_configfwd.H>
 #include <x/w/input_fieldfwd.H>
+#include <x/w/file_dialogfwd.H>
 #include <x/w/file_dialog_configfwd.H>
 #include <x/obj.H>
 #include <x/logger.H>
@@ -195,7 +196,8 @@ public:
 			    bool modal=false);
 
 	//! Create a file dialog
-	dialog create_file_dialog(const file_dialog_config &, bool modal=false);
+	file_dialog create_file_dialog(const file_dialog_config &,
+				       bool modal=false);
 };
 
 LIBCXXW_NAMESPACE_END
