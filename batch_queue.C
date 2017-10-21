@@ -32,12 +32,12 @@ void batch_queueObj
 					  ->containers.insert(c);
 			  });
 
-	*mpobj<bool>::lock{something_scheduled}=true;
+	something_scheduled=true;
 }
 
 batch_queueObj::~batch_queueObj()
 {
-	if (*mpobj<bool>::lock{something_scheduled})
+	if (something_scheduled.get())
 		my_thread->execute_batched_jobs();
 }
 

@@ -34,7 +34,7 @@ void batch_queueObj::run_as(functor &&f)
 {
 	my_thread->run_as_batched(std::forward<functor>(f));
 
-	*mpobj<bool>::lock{something_scheduled}=true;
+	something_scheduled=true;
 }
 
 LIBCXXW_NAMESPACE_END
