@@ -18,7 +18,7 @@ textlistlayoutmanagerObj::~textlistlayoutmanagerObj()=default;
 
 void textlistlayoutmanagerObj::remove_item(size_t item_number)
 {
-	impl->textlist_element->impl->remove_row(item_number);
+	impl->textlist_element->impl->remove_row(ref(this), item_number);
 }
 
 void textlistlayoutmanagerObj::append_item(const std::vector<text_param> &items)

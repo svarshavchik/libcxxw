@@ -218,7 +218,8 @@ class LIBCXX_HIDDEN textlistObj::implObj :
 	const std::unordered_map<size_t, halign> col_alignments;
 
 	//! Remove a row.
-	void remove_row(size_t row_number);
+	void remove_row(const textlistlayoutmanager &ll,
+			size_t row_number);
 
 	//! Add rows to the end.
 	void append_rows(const textlistlayoutmanager &ll,
@@ -326,6 +327,18 @@ class LIBCXX_HIDDEN textlistObj::implObj :
 		     const rectangle_set &areas,
 		     bool only_whats_needed);
 
+	//! Unselect all rows, after acquiring a lock.
+
+	//! Returns true if at least one row was unselected, and
+	//! schedule_row_redraw() must be called.
+	//!
+	//! unselect() is also called from remove_rows(), which is going
+	//! to nuke everything from high orbit, and doesn't need to call
+	//! schedule_row_redraw().
+
+	bool unselect(const textlistlayoutmanager &,
+		      list_lock &);
+
  public:
 	//! Our text data.
 	listimpl_info_t textlist_info;
@@ -376,7 +389,8 @@ class LIBCXX_HIDDEN textlistObj::implObj :
 
 	//! Remove the given rows.
 
-	void remove_rows(listimpl_info_t::lock &lock,
+	void remove_rows(const textlistlayoutmanager &ll,
+			 listimpl_info_t::lock &lock,
 			 size_t row_number,
 			 size_t count);
 
@@ -384,7 +398,8 @@ class LIBCXX_HIDDEN textlistObj::implObj :
 
 	//! Unlink the rows' cells from column_widths
 
-	void removing_rows(listimpl_info_t::lock &lock,
+	void removing_rows(const textlistlayoutmanager &ll,
+			   listimpl_info_t::lock &lock,
 			   size_t row,
 			   size_t count);
 

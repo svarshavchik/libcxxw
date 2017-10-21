@@ -135,11 +135,14 @@ textlistObj::implObj::implObj(const ref<textlist_container_implObj>
 
 textlistObj::implObj::~implObj()=default;
 
-void textlistObj::implObj::remove_row(size_t row_number)
+void textlistObj::implObj::remove_row(const textlistlayoutmanager &lm,
+				      size_t row_number)
 {
-	listimpl_info_t::lock lock{textlist_info};
+	list_lock lock{lm};
 
-	remove_rows(lock, row_number, 1);
+	listimpl_info_t::lock &l{lock};
+
+	remove_rows(lm, l, row_number, 1);
 }
 
 void textlistObj::implObj::append_rows(const textlistlayoutmanager &lm,
@@ -231,21 +234,21 @@ void textlistObj::implObj::replace_rows(const textlistlayoutmanager &lm,
 	size_t n=items.size() / columns;
 
 	if (row_number > lock->row_infos.size())
-		removing_rows(lock, row_number, n); // Throw the exception
+		removing_rows(lm, lock, row_number, n); // Throw the exception
 
 	if (n >= lock->row_infos.size()-row_number)
 	{
 		// Edge case, replacing rows at the end. Do this via
 		// remove+insert.
 
-		remove_rows(lock, row_number,
+		remove_rows(lm, lock, row_number,
 			    lock->row_infos.size()-row_number);
 		insert_rows(lm, ll, lock->row_infos.size(), texts);
 		return;
 	}
 
 	// The existing rows are officially being removed.
-	removing_rows(lock, row_number, n);
+	removing_rows(lm, lock, row_number, n);
 
 	// With the booking out of the way, we simply replace the rows and
 	// cells.
@@ -278,6 +281,8 @@ void textlistObj::implObj::replace_all_rows(const textlistlayoutmanager &lm,
 
 	list_lock ll{lm};
 
+	unselect(lm, ll);
+
 	listimpl_info_t::lock &lock=ll;
 
 	current_element(lock)={};
@@ -292,11 +297,12 @@ void textlistObj::implObj::replace_all_rows(const textlistlayoutmanager &lm,
 	insert_rows(lm, ll, 0, texts);
 }
 
-void textlistObj::implObj::remove_rows(listimpl_info_t::lock &lock,
+void textlistObj::implObj::remove_rows(const textlistlayoutmanager &lm,
+				       listimpl_info_t::lock &lock,
 				       size_t row_number,
 				       size_t count)
 {
-	removing_rows(lock, row_number, count);
+	removing_rows(lm, lock, row_number, count);
 
 	lock->row_infos.erase(lock->row_infos.begin()+row_number,
 			      lock->row_infos.begin()+row_number+count);
@@ -306,10 +312,35 @@ void textlistObj::implObj::remove_rows(listimpl_info_t::lock &lock,
 }
 
 void textlistObj::implObj
-::removing_rows(listimpl_info_t::lock &lock,
+::removing_rows(const textlistlayoutmanager &lm,
+		listimpl_info_t::lock &lock,
 		size_t row,
 		size_t count)
 {
+	// Before we proceed with the removal we must unselect anything
+	// that's selected in this range.
+	//
+	// If the given range is invalid, we'll throw the exception below,
+	// but for now we can ignore this.
+	//
+	// removing_rows() gets invoked at the start of an operation
+	// that ultimately removes the rows. Because the unselection invokes
+	// an app callback, a rude app callback can try and make additional
+	// modifications to the contents of the list. We do this up-front,
+	// here, before we get down to the business of removing the rows,
+	// so the list is still in a valid state by the time we're done.
+
+	for (size_t i=0; i<count; ++i)
+	{
+		if (row+i >= lock->row_infos.size())
+			break;
+
+		auto &r=lock->row_infos.at(row+i);
+
+		if (r.selected)
+			selected(lm, row+i, false, {});
+	}
+
 	if (row > lock->row_infos.size() ||
 	    lock->row_infos.size() - row < count)
 		throw EXCEPTION(_("The range of rows to remove or replace is not valid."));
@@ -1231,11 +1262,13 @@ void textlistObj::implObj::selected(const textlistlayoutmanager &lm,
 	r.selected=selected_flag;
 	r.redraw_needed=true;
 
-	list_style.selected_changed(&lock->cells.at(i*columns),
-				    selected_flag);
-	schedule_row_redraw(lock);
+	try {
+		list_style.selected_changed(&lock->cells.at(i*columns),
+					    selected_flag);
+	} CATCH_EXCEPTIONS;
 
 	notify_callbacks(lm, ll, r, i, selected_flag, trigger);
+	schedule_row_redraw(lock);
 }
 
 void textlistObj::implObj::notify_callbacks(const textlistlayoutmanager &lm,
@@ -1356,32 +1389,45 @@ std::vector<size_t> textlistObj::implObj::all_selected()
 
 void textlistObj::implObj::unselect(const textlistlayoutmanager &lm)
 {
+	list_lock ll{lm};
+
+	if (unselect(lm, ll))
+		schedule_row_redraw(ll);
+}
+
+bool textlistObj::implObj::unselect(const textlistlayoutmanager &lm,
+				    list_lock &ll)
+{
 	bool unselected=false;
 
-	list_lock ll{lm};
 	listimpl_info_t::lock &lock=ll;
 
 	callback_trigger_t internal;
 
-	size_t i=0;
+	// We are going to invoke app-provided callbacks.
+	// A rude app can use the callback to modify this list, so do this
+	// safely.
 
-	for (auto &r:lock->row_infos)
+	for (size_t i=0; i < lock->row_infos.size(); ++i)
 	{
+		auto &r=lock->row_infos.at(i);
+
 		if (r.selected)
 		{
 			r.selected=false;
 			r.redraw_needed=true;
 
-			list_style.selected_changed(&lock->cells.at(i*columns),
-						    false);
+			try {
+				list_style.selected_changed
+					(&lock->cells.at(i*columns),
+					 false);
+			} CATCH_EXCEPTIONS;
 			unselected=true;
 			notify_callbacks(lm, ll, r, i, false, internal);
 		}
-		++i;
 	}
 
-	if (unselected)
-		schedule_row_redraw(lock);
+	return unselected;
 }
 
 LIBCXXW_NAMESPACE_END
