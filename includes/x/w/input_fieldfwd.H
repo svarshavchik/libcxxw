@@ -143,6 +143,9 @@ struct input_change_info_t {
 	//! size of the replaced text.
 
 	size_t deleted;
+
+	//! How many unicode characters there are now.
+	size_t size;
 };
 
 //! Information passed to the input_field's on_autocomplete() callback.

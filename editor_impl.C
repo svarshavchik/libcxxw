@@ -666,7 +666,8 @@ void editorObj::implObj::draw_changes(IN_THREAD_ONLY,
 				 get_draw_info(IN_THREAD));
 
 	try {
-		on_change(IN_THREAD)({change_made, inserted, deleted});
+		on_change(IN_THREAD)({change_made, inserted, deleted,
+					size()});
 	} CATCH_EXCEPTIONS;
 
 	// Invoke the autocomplete callback if the conditions are right.
