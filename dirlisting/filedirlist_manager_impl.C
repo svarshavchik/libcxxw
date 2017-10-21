@@ -186,11 +186,11 @@ void filedirlist_managerObj::implObj::update(const const_filedir_file &files)
 
 		std::string fullname=prefix + f.name;
 
-		try {
-			st=*fileattr::create(fullname, false)->stat();
-			stat_succeeded=true;
-		} catch (...)
+		auto fullname_st=fileattr::create(fullname, false)->try_stat();
+		if (fullname_st)
 		{
+			st=*fullname_st;
+			stat_succeeded=true;
 		}
 
 		bool enabled=true;

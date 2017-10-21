@@ -120,15 +120,9 @@ void file_dialogObj::implObj::enter_key(const busy &mcguffin)
 		filename=directory_contents_list->pwd()
 			+ "/" + filename;
 
-	struct ::stat st{};
+	auto filename_st=fileattr::create(filename, false)->try_stat();
 
-	try {
-		st=*fileattr::create(filename, false)->stat();
-	} catch (...)
-	{
-	}
-
-	if (S_ISDIR(st.st_mode))
+	if (filename_st && S_ISDIR(filename_st->st_mode))
 	{
 		if (access(filename.c_str(), R_OK) == 0)
 		{
