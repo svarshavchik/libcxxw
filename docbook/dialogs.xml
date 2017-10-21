@@ -30,11 +30,11 @@ See COPYING for distribution information.
   </mediaobject>
 
   <para>
-    A <ulink url="&link-typedef-x--w-dialog;"><classname>&ns;::w::dialog</classname></ulink>
-    is similar to a <link linkend="concepts"><classname>&ns;::w::main_window</classname></link>.
+    An <ulink url="&link-typedef-x--w-dialog;"><classname>&ns;::w::dialog</classname></ulink>
+    is similar to an <link linkend="concepts"><classname>&ns;::w::main_window</classname></link>.
     While <classname>&ns;::w::main_window</classname>s
-    are created by themselves,
-    <classname>&ns;::w::dialog</classname>s are created by one of the methods
+    get created by themselves,
+    <classname>&ns;::w::dialog</classname>s get created by one of the methods
     from an existing
     <classname>&ns;::w::main_window</classname> or another
     <classname>&ns;::w::dialog</classname> (which is a subclass of a
@@ -76,10 +76,38 @@ See COPYING for distribution information.
       </listitem>
     </varlistentry>
   </variablelist>
+
   <para>
-    The first parameter to these methods is the name of a small icon
+    The first parameter to these methods is a dialog identifier, which
+    is a <classname>std::string</classname>, and serves as an identifying
+    label.
+    Each
+    <classname>&ns;::w::main_window</classname> (or a
+    <classname>&ns;::w::dialog</classname>_)can create more than one dialog,
+    as long as each dialog has a unique identifier label.
+    Creating another dialog with the same identifier label replaces
+    the existing dialog with that label.
+  </para>
+
+  <para>
+    Dialog identifiers are opaque, unique labels. For future use, dialog
+    identifier labels should use the following naming conventions.
+    Applications should use identifier labels formatted as Internet
+    hostnames or E-mail addresses, using domain names that belong to the
+    application. An application developed by
+    <literal>example.com</literal>
+    can use <quote>dialog1@example.com</quote>, or
+    <quote>confirmation@app1.example.com</quote>, as an example.
+    <quote>@libcxx</quote> labels are reserved for &appshort;'s use.
+  </para>
+
+  <para>
+    The next parameter to
+    <methodname>create_ok_dialog</methodname>(), or
+    <methodname>create_ok_cancel_dialog</methodname>() and others,
+    is the name of a small icon
     displayed on the left side of the dialog. Currently, the possible
-    names are:
+    choices are:
     <quote>alert</quote>, <quote>stop</quote>, and <quote>message</quote>.
     The remaining parameters vary, and include:
   </para>
@@ -186,7 +214,9 @@ See COPYING for distribution information.
   </section>
 
   <section id="dialogrefs">
-    <title>Dialogs own a reference on their creator</title>
+    <title>The creating <classname>x::w::main_window</classname> (or
+      a <classname>x::w::main_window</classname>) owns references on its
+      dialogs</title>
 
     <para>
       A <link linkend="concepts">fundamental concept</link> of the &app;
@@ -200,170 +230,75 @@ See COPYING for distribution information.
     <para>
       In main windows, container elements
       <link linkend="containerrefs">own references to the
-	display elements in the container</link>. Although dialogs are
-      created from their parent main window, it is the dialog that owns
-      a reference to the main window (or another dialog) that created it,
-      and not the other way around.
-    </para>
-
-    <para>
-      Understanding the relationship between the dialogs and their
-      main windows is important. Because dialogs own references to their
-      parent window, explicitly attaching a dialog to its parent main
-      window, perhaps
-      <link linkend="appdata">in its <varname>appdata</varname></link>,
-      results in a circular reference.
-      There are two basic approaches to implementing dialogs:
-    </para>
-
-    <itemizedlist>
-      <listitem>
-	<para>
-	  Create all dialogs when <function>main</function>() initializes
-	  the application. Instantiate the dialogs like main window objects,
-	  in automatic scope, so that they properly get destroyed. A dialog
-	  can be shown and hidden more than once, so its certainly doable
-	  to create it once, and show it every time it's needed.
-	</para>
-      </listitem>
-
-      <listitem>
-	<para>
-	  Dialogs are typically shown in response to some event, like
-	  selecting a menu item or pressing a button, that invokes a
-	  &callback;, so a new dialog object can be created in the callback,
-	  every time, and <methodname>show_all</methodname>()-d.
-	</para>
-      </listitem>
-    </itemizedlist>
-
-    <para>
-      <function>main</function>() typically lives far away from wherever the
-      menu item's or the button's callback exists. It is possible to have
-      <function>main</function>() put a pointer to the dialogs, or the dialog
-      objects themselves, into
-      <literal>static</literal> scope;
-      but this is difficult to manage correctly due to &appshort;'s fundamental
-      object scoping and lifetime rules. It's simpler to keep top level main
-      windows and dialogs in automatic scope. &libcxx;'s weak pointers
-      are one possible, but an awkward, solution.
-    </para>
-
-    <para>
-      The &callback; that gets invoked in response to a menu item selection,
-      or a button press, gets executed by the library's internal thread that
-      handles all X display events. The callback can't just create the
-      dialog and/or make it visible and then wait until the dialog is closed.
-      This is because
-      no X display events get processed until the callback itself returns.
-    </para>
-
-    <para>
-      One possible solution to managing the dialogs correctly, and following
-      all the object scoping and lifetime rules, is a message queue-based
-      application design.
-    </para>
-
-    <itemizedlist>
-      <listitem>
-	<para>
-	  The application creates a
-	  <ulink url="/msgdispatcher.html">message dispatcher</ulink> and
-	  starts its execution thread.
-	</para>
-      </listitem>
-
-      <listitem>
-	<para>
-	  The message dispatcher's execution thread creates all display
-	  elements and dialogs in its execution thread's automatic scope.
-	  All callbacks capture the message dispatcher object by value.
-	</para>
-      </listitem>
-
-      <listitem>
-	<para>
-	  Callbacks send a message to the dispatcher thread, to make dialogs
-	  visible, or perform any other activity.
-	</para>
-      </listitem>
-
-      <listitem>
-	<para>
-	  When the main window's close button gets pressed, or any other
-	  action occurs that requests a shutdown, the message dispatcher
-	  thread stops, destroying all the objects in its automatic scope.
-	  Everything gets unwound.
-	</para>
-      </listitem>
-
-      <listitem>
-	<para>
-	  The <function>main</function>() function waits for the message
-	  dispatcher to stop, then terminates itself.
-	</para>
-      </listitem>
-    </itemizedlist>
-
-    <para>
-      Another, possibly simpler approach is to
-      <link linkend="dialogsingletonptr">&libcxx;'s <classname>&ns;::singletonptr</classname>s</link>.
-    </para>
-  </section>
-
-  <section id="dialogsingletonptr">
-    <title>Using <classname>&ns;::singletonptr</classname> to implement dialogs</title>
-
-    <para>
-      <link linkend="menu"><filename>menu.C</filename></link> gives an
-      example of using &appshort;'s <classname>&ns;::singletonptr</classname>
-      to correctly handle &appshort;'s
-      <link linkend="concepts">object scope and lifetime rules</link>.
+	display elements in the container</link>. This applies to dialogs
+      too. Their parent main window (or their parent dialog) owns a reference
+      on all of its dialogs.
     </para>
 
     <blockquote>
       <informalexample>
 	<programlisting>
-class display_elementsObj : virtual public &ns;::obj {
-
-// ...
-};
-
-typedef &ns;::singletonptr&lt;display_elementsObj&gt; display_elements_t;
-
-display_elements_t display_elements{ /* ... */ };</programlisting>
+std::unordered_set&lt;std::string&gt; dialogs=main_window->dialogs();</programlisting>
       </informalexample>
     </blockquote>
 
     <para>
-      <filename>menu.C</filename> stores the dialogs in an object that
-      gets placed into a <classname>&ns;::singletonptr</classname>.
-      The <classname>&ns;::singletonptr</classname> gets constructed
-      and initialized in automatic scope in the main function that
-      waits for the main window's close button before returning and
-      destroying the singleton and the main window object.
+       <filename>menu.C</filename>
+       gives an example of using <methodname>dialogs</methodname>(), which
+       returns all identifier labels for all dialogs that the
+       <classname>&ns;::w::main_window</classname> (or the
+       <classname>&ns;::w::dialog</classname>) owns.
     </para>
 
     <blockquote>
       <informalexample>
 	<programlisting>
-    help_question_type.on_activate=[]
-        (const x::w::menuitem_activation_info &amp;ignore)
-        {
-            display_elements_t display_elements;
-
-            if (display_elements)
-                display_elements->question_dialog-&gt;show_all();
-        };
-	</programlisting>
+help_question_type.on_activate=
+    [main_window=x::make_weak_capture(main_window)]
+    (const x::w::menuitem_activation_info &amp;ignore)
+    {
+         main_window.get([&amp;]
+                         (const auto &amp;main_window) {
+                             main_window-&gt;get_dialog
+                                ("help_question")->show_all();
+                         });
+    };</programlisting>
       </informalexample>
     </blockquote>
 
     <para>
-      All that a menu item's callback needs to do is to construct the same
-      singleton in its own automatic scope, then access the dialog in there
-      and <methodname>show_all</methodname>() it, without breaking any
-      rules.
+      <filename>menu.C</filename> creates several dialogs, like
+      <quote>help_question</quote>, for a main window with a menu which
+      open the various dialogs.
+      <methodname>get_dialog</methodname>() takes a dialog identifier and
+      returns the previously-created dialog with that identifier label.
+      The &callback;s that get installed for each menu item use it to
+      locate the appropriate dialog, and make it visible.
+    </para>
+
+    <para>
+      The dialog's button merely hide their dialog, they don't destroy it,
+      since their parent main window owns a reference to its dialogs. As
+      such, when the menu item gets selected again it simply
+      <methodname>show_all</methodname>()s the same dialog, making it
+      visible again.
+    </para>
+
+    <para>
+      The only way to permanently destroy a dialog is by using
+      <methodname>remove_dialog</methodname>(); and because the parent
+      main window owns references on its dialogs, if the main window's last
+      reference goes out of scope and it gets destroyed (as part of normal
+      application termination), its dialogs get destroyed too.
+    </para>
+
+    <para>
+      This also means that, as shown in the above example, &callback;'s
+      must capture only weak reference to their parent main window (or
+      parent dialog), because the main window (or the parent dialog)
+      owns (directly or indirectly) references to all elements in the
+      main window (or the dialog), including the menu item with the callback,
+      so the weak capture is required to avoid a circular reference.
     </para>
   </section>
 
@@ -386,7 +321,8 @@ display_elements_t display_elements{ /* ... */ };</programlisting>
 #include &lt;&ns;/w/gridlayoutmanager.H&gt;
 
 &ns;::w::dialog d=mw-&gt;create_dialog
-    ([]
+    ("dialog_id",
+     []
      (const &ns;::w::dialog &amp;d)
      {
            &ns;::w::gridlayoutmanager lm=d-&gt;get_layoutmanager();

@@ -7,6 +7,7 @@
 
 #include <x/w/file_dialogfwd.H>
 #include <x/w/dialogfwd.H>
+#include <x/w/dialogobj.H>
 #include <x/obj.H>
 
 LIBCXXW_NAMESPACE_START
@@ -15,27 +16,36 @@ LIBCXXW_NAMESPACE_START
 
 //! \see file_dialog
 
-class file_dialogObj : virtual public obj {
+class file_dialogObj : public dialogObj {
 
+	struct init_args;
 public:
 	class implObj;
 
 	//! Internal implementation object.
 	const ref<implObj> impl;
 
-	//! Constructor
-	file_dialogObj(const ref<implObj> &impl) LIBCXX_HIDDEN;
+	//! Constructor, phase 1.
 
+	file_dialogObj(const dialog_args &args,
+		       const file_dialog_config &conf)
+		LIBCXX_HIDDEN;
+
+	//! Constructor, phase 2.
+	void constructor(const dialog_args &args,
+			 const file_dialog_config &conf)
+		LIBCXX_HIDDEN;
+
+private:
+	//! Internal constructor
+	file_dialogObj(const dialog_args &d_args,
+		       const file_dialog_config &conf,
+		       init_args &&)
+		LIBCXX_HIDDEN;
+
+public:
 	//! Destructor
 	~file_dialogObj() LIBCXX_HIDDEN;
-
-	//! Return the actual file dialog.
-
-	dialog the_dialog();
-
-	//! Return the actual file dialog.
-
-	const_dialog the_dialog() const;
 };
 
 LIBCXXW_NAMESPACE_END

@@ -15,6 +15,7 @@
 #include <x/mpobj.H>
 
 #include <string>
+#include <unistd.h>
 
 LIBCXXW_NAMESPACE_START
 
@@ -25,6 +26,26 @@ LIBCXXW_NAMESPACE_START
 class LIBCXX_HIDDEN filedirlist_managerObj::implObj : virtual public obj {
 
  public:
+
+	//! Separate container for the currently-installed callback.
+
+	//! This gets captured by the custom selection_type callback for
+	//! the internal directory contents list, and is also referenced by
+	//! current_selected, in order to implement set_selected_callback().
+
+	struct current_selected_callbackObj : virtual public obj {
+
+		mpobj<std::function<filedirlist_selected_callback_t>
+		      > current_callback;
+
+		current_selected_callbackObj();
+	};
+
+	//! Currently selected callback.
+
+	//! Initialized to a no-op. Must be updated by set_selected_callback().
+
+	const ref<current_selected_callbackObj> current_selected;
 
 	//! The list display element.
 
@@ -158,7 +179,10 @@ class LIBCXX_HIDDEN filedirlist_managerObj::implObj : virtual public obj {
 
 	implObj(const factory &f,
 		const std::string &initial_directory,
-		const std::function<filedirlist_selected_callback_t> &callback);
+		int access_mode);
+
+	//! R_OK or W_OK
+	const int access_mode;
 
 	//! Constructor, phase 2.
 
@@ -168,11 +192,15 @@ class LIBCXX_HIDDEN filedirlist_managerObj::implObj : virtual public obj {
 
 	void constructor(const factory &f,
 			 const std::string &,
-			 const std::function<
-			 filedirlist_selected_callback_t> &);
+			 int);
 
 	//! Destructor
 	~implObj();
+
+	//! Install the callback that gets invoked when a directory item is selected.
+
+	void set_selected_callback(const std::function<
+				   filedirlist_selected_callback_t> &);
 
 	//! Retrieve directory contents.
 

@@ -11,6 +11,13 @@
 
 LIBCXXW_NAMESPACE_START
 
+//! Parameters to \ref dialogObj "dialog public object's constructor".
+
+struct dialog_args {
+	ref<dialogObj::implObj> impl;
+	ref<layoutmanagerObj::implObj> layout_impl;
+};
+
 LIBCXXW_NAMESPACE_END
 
 #endif

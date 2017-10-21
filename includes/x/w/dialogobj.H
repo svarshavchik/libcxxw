@@ -7,6 +7,7 @@
 
 #include <x/w/dialogfwd.H>
 #include <x/w/main_windowobj.H>
+#include <string_view>
 
 LIBCXXW_NAMESPACE_START
 
@@ -23,14 +24,22 @@ public:
 	//! Internal implementation object.
 	const ref<implObj> impl;
 
-	//! Parent main window or dialog.
-
-	const main_window parent;
-
 	//! Constructor
-	dialogObj(const main_window &parent,
-		  const ref<implObj> &impl,
-		  const ref<layoutmanagerObj::implObj> &lm) LIBCXX_HIDDEN;
+	dialogObj(const dialog_args &) LIBCXX_PUBLIC;
+
+	//! Constructor for a standard theme-specified dialog.
+
+	//! \internal
+	dialogObj(const dialog_args &,
+		  const std::string_view &,
+		  const standard_dialog_elements_t &) LIBCXX_HIDDEN;
+
+	//! Constructor for a standard theme-specified dialog.
+
+	//! \internal
+	dialogObj(const dialog_args &,
+		  const std::string_view &,
+		  standard_dialog_elements_t &&) LIBCXX_HIDDEN;
 
 	//! Destructor
 	~dialogObj() LIBCXX_HIDDEN;

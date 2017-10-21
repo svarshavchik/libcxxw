@@ -77,6 +77,7 @@ app_dialogsObj::create_help_question(const LIBCXX_NAMESPACE::w::main_window &mai
 {
 	auto d=main_window->create_input_dialog
 		("question",
+		 "question",
 		 []
 		 (const auto &factory)
 		 {
@@ -107,6 +108,7 @@ app_dialogsObj::create_help_about(const LIBCXX_NAMESPACE::w::main_window &main_w
 {
 	auto d=main_window->create_ok_cancel_dialog
 		("alert",
+		 "alert",
 		 []
 		 (const auto &factory)
 		 {
@@ -131,11 +133,25 @@ app_dialogsObj::create_help_about(const LIBCXX_NAMESPACE::w::main_window &main_w
 LIBCXX_NAMESPACE::w::file_dialog
 app_dialogsObj::create_file_open(const LIBCXX_NAMESPACE::w::main_window &main_window)
 {
-	LIBCXX_NAMESPACE::w::file_dialog_config config;
+	LIBCXX_NAMESPACE::w::file_dialog_config config{
+		[](const auto &d,
+		   const std::string &name,
+		   const auto &busy_mcguffin)
+		{
+			std::cout << "File open selected: "
+				  << name
+				  << std::endl;
+			d->hide();
+		},
+		[](const auto &busy_mcguffin)
+		{
+			std::cout << "File open cancelled" << std::endl;
+		}
+	};
 
-	auto d=main_window->create_file_dialog(config, true);
+	auto d=main_window->create_file_dialog("file_open", config, true);
 
-	d->the_dialog()->set_window_title("Open File");
+	d->set_window_title("Open File");
 
 	return d;
 }
@@ -201,8 +217,7 @@ void file_menu(const LIBCXX_NAMESPACE::w::main_window &main_window,
 			app_dialogs all_app_dialogs;
 
 			if (all_app_dialogs)
-				all_app_dialogs->file_open->the_dialog()
-					->show_all();
+				all_app_dialogs->file_open->show_all();
 		};
 
 	m->append_menu_item(file_new_type, "New");
@@ -221,8 +236,7 @@ void file_menu(const LIBCXX_NAMESPACE::w::main_window &main_window,
 			app_dialogs all_app_dialogs;
 
 			if (all_app_dialogs)
-				all_app_dialogs->file_open->the_dialog()
-					->show_all();
+				all_app_dialogs->file_open->show_all();
 		};
 
 	m->update(1, file_open_type);

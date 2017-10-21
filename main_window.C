@@ -15,7 +15,6 @@
 #include "x/w/gridlayoutmanager.H"
 #include "x/w/menubarlayoutmanager.H"
 #include "dialog.H"
-#include "dialog.H"
 #include "x/w/image.H"
 #include "x/w/button.H"
 #include "x/w/text_param.H"
@@ -250,37 +249,6 @@ const_menubarlayoutmanager main_windowObj::get_menubarlayoutmanager() const
 
 /////////////////////////////////////////////////////////////////////////////
 
-dialog main_windowObj::create_standard_dialog(const std::string_view &name,
-					      bool modal,
-					      const std::unordered_map
-					      <std::string,
-					      std::function<void (const
-								  gridfactory &)
-					      >> &elements)
-{
-	return create_standard_dialog(name, modal, std::move(elements));
-}
-
-dialog main_windowObj::create_standard_dialog(const std::string_view &name,
-					      bool modal,
-					      std::unordered_map<std::string,
-					      std::function<void (const
-								  gridfactory
-								  &)>>
-					      &&elements)
-{
-	return create_dialog
-		([&]
-		 (const auto &d)
-		 {
-			 gridlayoutmanager glm=d->get_layoutmanager();
-
-			 glm->create(name, std::move(elements));
-		 },
-		 new_gridlayoutmanager{},
-		 modal);
-}
-
 // Return a factory that inserts an icon into a theme template.
 
 static auto icon_element(const std::string_view &icon)
@@ -367,19 +335,22 @@ void hide_and_invoke_when_closed(const dialog &d,
 }
 
 dialog main_windowObj
-::create_ok_dialog(const std::string_view &icon,
+::create_ok_dialog(const std::string_view &dialog_id,
+		   const std::string_view &icon,
 		   const std::function<void (const gridfactory &)>
 		   &content_factory,
 		   const std::function<void (const busy &)>
 		   &ok_action,
 		   bool modal)
 {
-	return create_ok_dialog(icon, content_factory, ok_action,
+	return create_ok_dialog(dialog_id,
+				icon, content_factory, ok_action,
 				_("Ok"), modal);
 }
 
 dialog main_windowObj
-::create_ok_dialog(const std::string_view &icon,
+::create_ok_dialog(const std::string_view &dialog_id,
+		   const std::string_view &icon,
 		   const std::function<void (const gridfactory &)>
 		   &content_factory,
 		   const std::function<void (const busy &)>
@@ -389,20 +360,33 @@ dialog main_windowObj
 {
 	buttonptr ok_button;
 
-	auto d=create_standard_dialog("ok-dialog", modal, {
-			{"icon", icon_element(icon)},
-			{"message", content_factory},
+	auto d=create_dialog
+		(dialog_id,
+		 [&]
+		 (const dialog_args &args)
+		 {
+			 return dialog::create
+			 (args, "ok-dialog", standard_dialog_elements_t{
+				 {"icon", icon_element(icon)},
+				 {"message", content_factory},
 
-				// Still need to add a filler element to the
-				// container row, so that the container's
-				// horizontal metrics are open-ended.
-				// Otherwise the fixed container row metrics
-				// will constrain the width of wrappable
-				// labels used for the message.
+					 // Still need to add a filler
+					 // element to the container
+					 // row, so that the container's
+					 // horizontal metrics are
+					 // open-ended.
+					 //
+					 // Otherwise the fixed
+					 // container row metrics
+					 // will constrain the width
+					 // of wrappable labels used
+					 // for the message.
 
-			{"filler", dialog_filler()},
-			{"ok", dialog_ok_button(ok_label, ok_button, '\n')}
-		});
+				 {"filler", dialog_filler()},
+				 {"ok", dialog_ok_button(ok_label, ok_button, '\n')}
+			 });
+		 },
+		 modal);
 
 	hide_and_invoke_when_activated(d, ok_button, ok_action);
 	hide_and_invoke_when_closed(d, ok_action);
@@ -411,7 +395,8 @@ dialog main_windowObj
 }
 
 dialog main_windowObj
-::create_ok_cancel_dialog(const std::string_view &icon,
+::create_ok_cancel_dialog(const std::string_view &dialog_id,
+			  const std::string_view &icon,
 			  const std::function<void (const gridfactory &)>
 			  &content_factory,
 			  const std::function<void (const busy &)>
@@ -420,14 +405,16 @@ dialog main_windowObj
 			  &cancel_action,
 			  bool modal)
 {
-	return create_ok_cancel_dialog(icon, content_factory, ok_action,
+	return create_ok_cancel_dialog(dialog_id,
+				       icon, content_factory, ok_action,
 				       cancel_action,
 				       _("Ok"),
 				       _("Cancel"), modal);
 }
 
 dialog main_windowObj
-::create_ok_cancel_dialog(const std::string_view &icon,
+::create_ok_cancel_dialog(const std::string_view &dialog_id,
+			  const std::string_view &icon,
 			  const std::function<void (const gridfactory &)>
 			  &content_factory,
 			  const std::function<void (const busy &)>
@@ -441,14 +428,25 @@ dialog main_windowObj
 	buttonptr ok_button;
 	buttonptr cancel_button;
 
-	auto d=create_standard_dialog("ok-cancel-dialog", modal, {
-			{"icon", icon_element(icon)},
-			{"message", content_factory},
-			{"ok", dialog_ok_button(ok_label, ok_button, '\n')},
-			{"filler", dialog_filler()},
-			{"cancel", dialog_cancel_button(cancel_label,
-							cancel_button, '\e')}
-		});
+	auto d=create_dialog
+		(dialog_id,
+		 [&]
+		 (const dialog_args &args)
+		 {
+			 return dialog::create
+			 (args, "ok-cancel-dialog", standard_dialog_elements_t{
+				 {"icon", icon_element(icon)},
+				 {"message", content_factory},
+				 {"ok", dialog_ok_button(ok_label,
+							 ok_button,
+							 '\n')},
+				 {"filler", dialog_filler()},
+				 {"cancel", dialog_cancel_button
+						 (cancel_label,
+						  cancel_button, '\e')}
+			 });
+		 },
+		 modal);
 
 	hide_and_invoke_when_activated(d, ok_button, ok_action);
 	hide_and_invoke_when_activated(d, cancel_button, cancel_action);
@@ -458,7 +456,8 @@ dialog main_windowObj
 }
 
 dialog main_windowObj
-::create_input_dialog(const std::string_view &icon,
+::create_input_dialog(const std::string_view &dialog_id,
+		      const std::string_view &icon,
 		      const std::function<void (const gridfactory &)>
 		      &label_factory,
 		      const text_param &initial_text,
@@ -470,7 +469,8 @@ dialog main_windowObj
 		      &cancel_action,
 		      bool modal)
 {
-	return create_input_dialog(icon, label_factory,
+	return create_input_dialog(dialog_id,
+				   icon, label_factory,
 				   initial_text, config,
 				   ok_action,
 				   cancel_action,
@@ -479,7 +479,8 @@ dialog main_windowObj
 }
 
 dialog main_windowObj
-::create_input_dialog(const std::string_view &icon,
+::create_input_dialog(const std::string_view &dialog_id,
+		      const std::string_view &icon,
 		      const std::function<void (const gridfactory &)>
 		      &label_factory,
 		      const text_param &initial_text,
@@ -495,19 +496,31 @@ dialog main_windowObj
 	buttonptr cancel_button;
 	input_fieldptr field;
 
-	auto d=create_standard_dialog("input-dialog", modal, {
-			{"icon", icon_element(icon)},
-			{"label", label_factory},
-			{"input", [&](const auto &factory)
-				{
-					field=factory->create_input_field
-						(initial_text, config);
-				}},
-			{"ok", dialog_ok_button(ok_label, ok_button, '\n')},
-			{"filler", dialog_filler()},
-			{"cancel", dialog_cancel_button(cancel_label,
-							cancel_button, '\e')}
-		});
+	auto d=create_dialog
+		(dialog_id,
+		 [&]
+		 (const dialog_args &args)
+		 {
+			 return dialog::create
+			 (args, "input-dialog", standard_dialog_elements_t{
+				 {"icon", icon_element(icon)},
+				 {"label", label_factory},
+				 {"input", [&](const auto &factory)
+					 {
+						 field=factory
+							 ->create_input_field
+							 (initial_text,
+							  config);
+					 }},
+				 {"ok", dialog_ok_button(ok_label,
+							 ok_button,
+							 '\n')},
+				 {"filler", dialog_filler()},
+				 {"cancel", dialog_cancel_button
+						 (cancel_label,
+						  cancel_button, '\e')}
+			 });
+		 }, modal);
 
 	hide_and_invoke_when_activated
 		(d, ok_button,

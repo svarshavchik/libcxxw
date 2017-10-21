@@ -379,7 +379,7 @@ void elementObj::implObj::explicit_redraw(IN_THREAD_ONLY, draw_info_cache &c)
 void elementObj::implObj
 ::on_state_update(const std::function<element_state_callback_t> &cb)
 {
-	THREAD->run_as([cb, me=ref(this)]
+	THREAD->get_batch_queue()->run_as([cb, me=ref(this)]
 		       (IN_THREAD_ONLY)
 		       {
 			       me->data(IN_THREAD).element_state_callback=cb;

@@ -23,100 +23,150 @@
 #include <x/weakcapture.H>
 #include <courier-unicode.h>
 #include <algorithm>
-
+#include <errno.h>
 #include <sys/stat.h>
 
 LIBCXXW_NAMESPACE_START
 
-// All the elements in the file dialog. In one easy place for all callbacks
-// to reference.
 
-class LIBCXX_HIDDEN file_dialogObj::implObj::elementsObj : virtual public obj {
+file_dialogObj::implObj
+::implObj(const focusable_label &directory_field,
+	  const input_field &filename_field,
+	  const filedirlist_manager &directory_contents_list,
+	  const button &ok_button,
+	  const button &cancel_button,
+	  const std::function<void (const file_dialog &,
+				    const std::string &, const busy &)
+	  > &ok_action,
+	  file_dialog_type type,
+	  const std::string &access_denied_message,
+	  const std::string &access_denied_title)
+	: directory_field(directory_field),
+	  filename_field(filename_field),
+	  directory_contents_list(directory_contents_list),
+	  ok_button(ok_button),
+	  cancel_button(cancel_button),
+	  ok_action(ok_action),
+	  type(type),
+	  access_denied_message(access_denied_message),
+	  access_denied_title(access_denied_title)
+{
+}
 
+file_dialogObj::implObj::~implObj()=default;
 
- public:
+void file_dialogObj::implObj::clicked(size_t n,
+				      const callback_trigger_t &trigger,
+				      const busy &mcguffin)
+{
+	auto e=directory_contents_list->at(n);
 
-	buttonptr ok_button;
-	buttonptr cancel_button;
-	focusable_labelptr directory_field;
-	input_fieldptr filename_field;
-	filedirlist_managerptr directory_contents_list;
+	bool autoselect_file=true;
 
-	// A directory entry was clicked on.
-
-	void clicked(size_t n,
-		     const callback_trigger_t &trigger)
+	if (std::holds_alternative<const button_event *>(trigger))
 	{
-		if (std::holds_alternative<const button_event *>(trigger)
-		    &&
-		    !button_clicked(*std::get<const button_event *>(trigger)))
-			return;
+		auto be=std::get<const button_event *>(trigger);
 
-		auto e=directory_contents_list->at(n);
+		if (!button_clicked(*be))
+			return; // Wrong button.
 
-		if (S_ISDIR(e.st.st_mode))
+		// Single click sets the input field.
+
+		if (!S_ISDIR(e.st.st_mode)) // But only for a file
 		{
-			chdir(e.name);
+			auto p=e.name.rfind('/');
+
+			if (p == std::string::npos)
+				p=0;
+			else
+				++p;
+
+			filename_field->set(e.name.substr(p));
+
+			if (be->click_count != 2)
+				autoselect_file=false;
 		}
 	}
 
-	// We take action whenever button 1 gets double-clicked.
-
-	static bool button_clicked(const button_event &be)
+	if (S_ISDIR(e.st.st_mode))
 	{
-		return !be.press && be.button == 1 && be.click_count == 2;
+		chdir(e.name);
+	}
+	else
+	{
+		// We require a double-click to auto-select a file.
+		//
+		// This means that we always call selected() unless:
+		// a) this is a button click, b) click count is not 2.
+
+		if (autoselect_file)
+			selected(e.name, mcguffin);
+	}
+}
+
+bool file_dialogObj::implObj::button_clicked(const button_event &be)
+{
+	return !be.press && be.button == 1;
+}
+
+void file_dialogObj::implObj::enter_key(const busy &mcguffin)
+{
+	auto filename=input_lock{filename_field}.get();
+
+	if (filename.empty())
+		return;
+
+	if (filename.substr(0, 1) != "/")
+		filename=directory_contents_list->pwd()
+			+ "/" + filename;
+
+	struct ::stat st{};
+
+	try {
+		st=*fileattr::create(filename, false)->stat();
+	} catch (...)
+	{
 	}
 
-	// Show this in the directory field.
-
-	text_param create_dirlabel(const std::string &);
-
-	// Enter pressed in the filename field.
-
-	void enter_key()
+	if (S_ISDIR(st.st_mode))
 	{
-		auto filename=input_lock{filename_field}.get();
-
-		if (filename.empty())
-			return;
-
-		if (filename.substr(0, 1) != "/")
-			filename=directory_contents_list->pwd()
-				+ "/" + filename;
-
-		struct ::stat st{};
-
-		try {
-			st=*fileattr::create(filename, false)->stat();
-		} catch (...)
+		if (access(filename.c_str(), R_OK) == 0)
 		{
-		}
-
-		if (S_ISDIR(st.st_mode))
-		{
-			if (access(filename.c_str(), R_OK) == 0)
-			{
-				chdir(fd::base::realpath(filename));
-			}
+			chdir(filename);
 		}
 	}
+	else
+	{
+		selected(filename, mcguffin);
+	}
+}
 
- private:
+void file_dialogObj::implObj::selected(const std::string &filename,
+				       const busy &mcguffin)
+{
+	auto d=the_file_dialog.getptr();
 
-	void create_hotspot(text_param &t,
-			    const std::string &name,
-			    const std::string &path);
+	if (!d)
+		return;
 
-	text_param hotspot_activated(const text_event_t &event,
-				     const std::string &name,
-				     const std::string &path);
+	switch (type) {
+	case file_dialog_type::existing_file:
+		if (access(filename.c_str(), R_OK) == 0)
+			break;
+		error_dialog(d, filename);
+		return;
+	case file_dialog_type::new_file:
+		if (access(filename.c_str(), W_OK) == 0)
+			break;
+		if (errno == ENOENT)
+			break;
+		error_dialog(d, filename);
+		return;
+	}
+	ok_action(d, filename, mcguffin);
+}
 
-	void chdir(const std::string &path);
-};
-
-typedef file_dialogObj::implObj::elementsObj elementsObj;
-
-text_param elementsObj::create_dirlabel(const std::string &s)
+text_param file_dialogObj::implObj::create_dirlabel(const std::string &s)
 {
 	text_param t;
 
@@ -190,9 +240,9 @@ text_param elementsObj::create_dirlabel(const std::string &s)
 
 // Create a hotspot for a component of the directory path.
 
-void elementsObj::create_hotspot(text_param &t,
-				 const std::string &name,
-				 const std::string &path)
+void file_dialogObj::implObj::create_hotspot(text_param &t,
+					     const std::string &name,
+					     const std::string &path)
 {
 	t(text_hotspot::create
 	  ([name, path,
@@ -215,9 +265,10 @@ void elementsObj::create_hotspot(text_param &t,
 // Hotspot for a directory component has been activated. Figure out the
 // course of action.
 
-text_param elementsObj::hotspot_activated(const text_event_t &event,
-					  const std::string &name,
-					  const std::string &path)
+text_param file_dialogObj::implObj
+::hotspot_activated(const text_event_t &event,
+		    const std::string &name,
+		    const std::string &path)
 {
 	return std::visit(visitor {
 			[&, this](focus_change e)
@@ -246,158 +297,283 @@ text_param elementsObj::hotspot_activated(const text_event_t &event,
 		event);
 }
 
-void elementsObj::chdir(const std::string &path)
+void file_dialogObj::implObj::chdir(const std::string &path)
 {
+	auto realpath=fd::base::realpath(path);
 	filename_field->set("");
-	directory_field->update(create_dirlabel(path));
-	directory_contents_list->chdir(path);
+	directory_field->update(create_dirlabel(realpath));
+	directory_contents_list->chdir(realpath);
 }
 
-// Factored out for readability. Creates the directory contents list.
-
-static inline void
-create_directory_contents_list(const ref<elementsObj> &elements,
-			       const std::string &directory,
-			       const factory &f)
+void file_dialogObj::implObj::error_dialog(const file_dialog &the_file_dialog,
+					   const std::string &filename)
 {
-	elements->directory_contents_list=
-		filedirlist_manager::create
-		(f, directory,
-		 [elements=make_weak_capture(elements)]
-		 (size_t n,
-		  const callback_trigger_t &trigger,
-		  const busy &)
+	size_t p=filename.rfind('/');
+
+	if (p == std::string::npos)
+		p=0;
+	else
+		++p;
+
+	auto d=the_file_dialog->create_ok_dialog
+		("error@libcxx", "alert",
+		 [name=filename.substr(p),
+		  access_denied_message=this->access_denied_message]
+		 (const auto &f)
 		 {
-			 elements.get([&]
-				      (const auto &e) {
-					      e->clicked(n, trigger);
-				      });
-		 });
+			 f->create_label(gettextmsg(access_denied_message,
+						    name),
+					 100.00, halign::center);
+		 },
+		 the_file_dialog->destroy_when_closed("error@libcxx"),
+		 true);
+	d->set_window_title(access_denied_title);
+	d->show_all();
 }
 
 // Factored out for readability. Creates the filename input field
-static inline void create_file_input_field(const ref<elementsObj>
-					   &elements,
-					   const factory &f)
+static inline input_field create_file_input_field(const factory &f)
 {
 	input_field_config filename_field_config{60};
 
-	auto field=f->create_input_field("", filename_field_config);
+	return f->create_input_field("", filename_field_config);
 
-	elements->filename_field=field;
-	field->on_key_event([elements=make_weak_capture(elements)]
-			    (const auto &event,
-			     const auto &busy_mcguffin)
-			    {
-				    if (!std::holds_alternative
-					<const key_event *>(event))
-					    return false;
-
-				    const auto &ke=*
-					    std::get<const key_event *>(event);
-
-				    if (!ke.keypress ||
-					ke.unicode != '\n')
-					    return false;
-
-				    elements.get([&]
-						 (const auto &elements)
-						 {
-							 elements->enter_key();
-						 });
-				    return true;
-			    });
 }
 
-file_dialog main_windowObj::create_file_dialog(const file_dialog_config &,
-					       bool modal)
+file_dialog main_windowObj
+::create_file_dialog(const std::string_view &dialog_id,
+		     const file_dialog_config &conf,
+		     bool modal)
 {
-	std::string directory=fd::base::realpath(".");
+	return create_dialog(dialog_id,
+			     [&]
+			     (const dialog_args &args)
+			     {
+				     return file_dialog::create(args, conf);
+			     },
+			     modal);
+}
 
-	auto elements=ref<elementsObj>::create();
+//! Internal constructor arguments
 
-	auto d=create_standard_dialog("file-dialog", modal, {
-			{"file-input-label",
-					[&]
-					(const auto &factory)
-					{
-						factory->create_label("File:");
-					}},
-			{"file-input-field",
-					[&]
-					(const auto &factory)
-					{
+//! Temporary object that gets created by the public constructor before
+//! calling the internal constructor.
+//!
+//! Provides a place to store the dialog's display elements that get created
+//! by the dialogObj superclass, before actually constructing the file_dialog.
+struct LIBCXX_HIDDEN file_dialogObj::init_args {
+
+	input_fieldptr filename_field;
+	focusable_labelptr directory_field;
+	filedirlist_managerptr directory_contents_list;
+	buttonptr ok_button;
+	buttonptr cancel_button;
+
+	std::string directory;
+
+	init_args()
+	{
+		directory=fd::base::realpath(".");
+	}
+
+	~init_args()=default;
+
+	standard_dialog_elements_t
+		create_elements(const file_dialog_config &conf);
+};
+
+// Create the factories for the theme-specified display elements.
+
+// This gets passed to the internal constructor for the dialogObj
+// superclass.
+standard_dialog_elements_t file_dialogObj::init_args
+::create_elements(const file_dialog_config &conf)
+{
+	return {
+		{"file-input-label",
+				[&]
+				(const auto &factory)
+				{
+					factory->create_label("File:");
+				}},
+		{"file-input-field",
+				[&, this]
+				(const auto &factory)
+				{
+					filename_field=
 						create_file_input_field
-							(elements,
-							 factory);
-					}},
-			{"directory-label",
-					[&]
-					(const auto &factory)
-					{
-						factory->create_label("Directory:");
-					}},
-			{"directory-field",
-					[&]
-					(const auto &factory)
-					{
-						elements->directory_field=
-							factory
-							->create_focusable_label
-							(elements
-							 ->create_dirlabel
-							 (directory));
-					}},
-			{"directory-contents-list",
-					[&]
-					(const auto &factory)
-					{
-						create_directory_contents_list
-							(elements,
+						(factory);
+				}},
+		{"directory-label",
+				[&]
+				(const auto &factory)
+				{
+					factory->create_label("Directory:");
+				}},
+		{"directory-field",
+				[&, this]
+				(const auto &factory)
+				{
+					directory_field=factory
+						->create_focusable_label
+						("");
+				}},
+		{"directory-contents-list",
+				[&, this]
+				(const auto &factory)
+				{
+					int access_mode=conf.type ==
+						file_dialog_type
+						::new_file ? W_OK:R_OK;
+
+					directory_contents_list=
+						filedirlist_manager
+						::create(factory,
 							 directory,
-							 factory);
-					}},
-			{"ok", dialog_ok_button("Ok", elements->ok_button,
-						0)},
-			{"filler", dialog_filler()},
-			{"cancel", dialog_cancel_button("Cancel",
-							elements->cancel_button,
-							'\e')}
-		});
+							 access_mode);
+				}},
+		{"ok", dialog_ok_button("Ok", ok_button, 0)},
+		{"filler", dialog_filler()},
+		{"cancel", dialog_cancel_button("Cancel",
+						cancel_button,
+						'\e')}
+	};
+}
 
-	hide_and_invoke_when_activated
-		(d, elements->ok_button,
-		 []
-		 (const auto &busy)
-		 {
-		 });
+//////////////////////////////////////////////////////////////////////////
 
-	hide_and_invoke_when_activated(d, elements->cancel_button,
-				       []
+// Construction
+
+// Step 1: construct the temporary init_args object.
+
+file_dialogObj::file_dialogObj(const dialog_args &args,
+			       const file_dialog_config &conf)
+	: file_dialogObj(args, conf, init_args{})
+{
+}
+
+// Step 2: construct the dialogObj superclass
+file_dialogObj::file_dialogObj(const dialog_args &d_args,
+			       const file_dialog_config &conf,
+			       init_args &&args)
+	: dialogObj(d_args, "file-dialog", args.create_elements(conf)),
+
+	  // The superclass's constructor runs the theme-specified template
+	  // and invokes standard_dialog_elements_t's callback that construct
+	  // each display element.
+	  //
+	  // When the dialogObj's superclass is constructed, these display
+	  // elements are ready, and we can create the implementation object.
+
+	impl(ref<implObj>::create(args.directory_field,
+				  args.filename_field,
+				  args.directory_contents_list,
+				  args.ok_button,
+				  args.cancel_button,
+				  conf.ok_action,
+				  conf.type,
+				  conf.access_denied_message,
+				  conf.access_denied_title))
+{
+}
+
+// Step 3: Phase 2 of the constructor. Set up all the callbacks.
+void file_dialogObj::constructor(const dialog_args &args,
+				 const file_dialog_config &conf)
+{
+	auto d=dialog{this};
+
+	// Need to tell the implementation object who we are.
+
+	impl->the_file_dialog=d;
+
+	// The cancel button, and the window close button, invokes the
+	// cancel_action, as usual.
+	hide_and_invoke_when_activated(d, impl->cancel_button,
+				       [cancel_action=conf.cancel_action]
 				       (const auto &busy)
 				       {
+					       cancel_action(busy);
 				       });
 
 	hide_and_invoke_when_closed(d,
-				    []
+				    [cancel_action=conf.cancel_action]
 				    (const auto &busy)
 				    {
+					    cancel_action(busy);
 				    });
 
-	auto impl=ref<file_dialogObj::implObj>::create(elements, d);
+	// The "Ok" button is initially disabled.
+	//
+	// Enable it when the filename_field is not empty.
+	impl->ok_button->set_enabled(false);
 
-	return file_dialog::create(impl);
+	impl->filename_field
+		->on_change([ok_button=impl->ok_button]
+			    (const auto &info)
+			    {
+				    ok_button->set_enabled(info.size > 0);
+			    });
+
+	// Set up the clicked() callback, clicking on a directory entry.
+
+	impl->directory_contents_list->set_selected_callback
+		([impl=make_weak_capture(impl)]
+		 (size_t n,
+		  const callback_trigger_t &trigger,
+		  const busy &mcguffin)
+		 {
+			 impl.get([&]
+				  (const auto &impl) {
+					  impl->clicked(n, trigger, mcguffin);
+				  });
+		 });
+
+	// Set up a callback that invokes enter().
+
+	impl->filename_field->on_key_event
+		([impl=make_weak_capture(impl)]
+		 (const auto &event,
+		  const auto &busy_mcguffin)
+		 {
+			 if (!std::holds_alternative<const key_event *>(event))
+				 return false;
+
+			 const auto &ke=*
+				 std::get<const key_event *>(event);
+
+			 if (!ke.keypress ||
+			     ke.unicode != '\n')
+				 return false;
+
+			 impl.get([&]
+				      (const auto &elements)
+				      {
+					      elements->enter_key
+						      (busy_mcguffin)
+						      ;
+				      });
+			 return true;
+		 });
+
+	// The initial path displayed by the current directory label.
+
+	impl->directory_field->update
+		(impl->create_dirlabel(impl->directory_contents_list->pwd()));
+
+	// Set up the Ok button to act like the Enter key.
+	impl->ok_button->on_activate
+		([impl=make_weak_capture(impl)]
+		 (const auto &trigger, const auto &busy)
+		 {
+			 impl.get([&]
+				  (const auto &elements)
+				  {
+					  elements->enter_key(busy);
+				  });
+		 });
 }
 
-//////////////////////////////////////////////////////////////////////////////
-
-file_dialogObj::implObj::implObj(const ref<elementsObj> &elements,
-				 const dialog &the_dialog)
-	: elements{elements}, the_dialog{the_dialog}
-{
-}
-
-file_dialogObj::implObj::~implObj()=default;
-
+file_dialogObj::~file_dialogObj()=default;
 
 LIBCXXW_NAMESPACE_END

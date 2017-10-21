@@ -25,13 +25,22 @@ class LIBCXX_HIDDEN filedirlist_managerObj : virtual public obj {
 	const ref<implObj> impl;
 
 	//! Constructor
+
+	//! Constructor takes a factory wheere it creates the display element,
+	//! the initial directory for browsing, and R_OK or W_OK, indicating
+	//! whether this is to open an existing file or write/create a file.
+
 	filedirlist_managerObj(const factory &f,
 			       const std::string &initial_directory,
-			       const std::function
-			       <filedirlist_selected_callback_t> &callback);
+			       int access_mode);
 
 	//! Destructor
 	~filedirlist_managerObj();
+
+	//! Install a new callback that gets invoked when a selection is made.
+
+	void set_selected_callback(const std::function
+				   <filedirlist_selected_callback_t> &);
 
 	//! Return the filename at the given position.
 

@@ -6,12 +6,47 @@
 #define x_w_file_dialog_config_h
 
 #include <x/w/file_dialog_configfwd.H>
+#include <x/w/file_dialogfwd.H>
+#include <x/w/text_param.H>
+#include <x/w/busy.H>
+#include <functional>
 
 LIBCXXW_NAMESPACE_START
+
+enum class file_dialog_type { new_file, existing_file };
 
 //! The configuration of a file dialog.
 
 struct file_dialog_config {
+
+	//! A particular file was selected by the dialog.
+
+	std::function<void (const file_dialog &,
+			    const std::string &, const busy &)> ok_action;
+
+	//! The dialog was canceled.
+	std::function<void (const busy &)> cancel_action;
+
+	//! File dialog's semantics.
+	file_dialog_type type=file_dialog_type::existing_file;
+
+	//! Constructor
+	file_dialog_config(const std::function<void (const file_dialog &d,
+						     const std::string &,
+						     const busy &)> &ok_action,
+			   const std::function<void (const busy &)
+			   > &cancel_action,
+			   file_dialog_type type=file_dialog_type::existing_file
+			   );
+
+	//! Message shown when access to the file is denied.
+	std::string access_denied_message;
+
+	//! Title of the access denied dialog.
+	std::string access_denied_title;
+
+	//! Destructor
+	~file_dialog_config();
 };
 
 LIBCXXW_NAMESPACE_END

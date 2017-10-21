@@ -21,13 +21,22 @@
 
 LIBCXXW_NAMESPACE_START
 
+filedirlist_managerObj::implObj::current_selected_callbackObj
+::current_selected_callbackObj()
+	: current_callback([]
+			   (size_t,
+			    const callback_trigger_t &,
+			    const busy &)
+			   {
+			   })
+{
+}
+
 //! Create an internal display element that shows the contents of a directory.
 
 static inline auto create_filedir_list(const factory &f,
 				       const std::string &initial_directory,
-				       const std::function
-				       <filedirlist_selected_callback_t>
-				       &callback)
+				       const auto &current_selected)
 {
 	new_listlayoutmanager nlm{text_list};
 
@@ -40,13 +49,14 @@ static inline auto create_filedir_list(const factory &f,
 	// The rightmost column, file size, is right-aligned.
 	nlm.col_alignments.emplace(2, halign::right);
 
-	nlm.selection_type=[callback]
+	nlm.selection_type=[current_selected]
 		(const listlayoutmanagerbase &ignore,
 		 size_t n,
 		 const callback_trigger_t &trigger,
 		 const busy &mcguffin)
 		{
-			callback(n, trigger, mcguffin);
+			current_selected->current_callback.get()
+			(n, trigger, mcguffin);
 		};
 	return f->create_focusable_container([]
 					     (const auto &ignore)
@@ -57,10 +67,12 @@ static inline auto create_filedir_list(const factory &f,
 
 filedirlist_managerObj::implObj
 ::implObj(const factory &f,
-	  const std::string &initial_directory,
-	  const std::function<filedirlist_selected_callback_t> &callback)
-	: filedir_list(create_filedir_list(f, initial_directory, callback)),
-	  info(info_t{initial_directory, ref<obj>::create()})
+	  const std::string &initial_directory, int access_mode)
+	: current_selected(ref<current_selected_callbackObj>::create()),
+	  filedir_list(create_filedir_list(f, initial_directory,
+					   current_selected)),
+	  info(info_t{initial_directory, ref<obj>::create()}),
+	  access_mode(access_mode)
 {
 }
 
@@ -68,8 +80,7 @@ filedirlist_managerObj::implObj::~implObj()=default;
 
 void filedirlist_managerObj::implObj::constructor(const factory &,
 						  const std::string &,
-						  const std::function
-						  <filedirlist_selected_callback_t> &)
+						  int)
 {
 	// When the list becomes visible, start the thread to populate
 	// its contents. When the list is no longer visible, stop the thread.
@@ -87,6 +98,12 @@ void filedirlist_managerObj::implObj::constructor(const factory &,
 						me->stop();
 				});
 		 });
+}
+
+void filedirlist_managerObj::implObj
+::set_selected_callback(const std::function<filedirlist_selected_callback_t> &c)
+{
+	current_selected->current_callback=c;
 }
 
 // Sort the contents of the directory. Any subdirectories come first, then
@@ -220,6 +237,8 @@ void filedirlist_managerObj::implObj::update(const const_filedir_file &files)
 					(fmtsize(st.st_size),
 					 unicode::utf_8,
 					 size_uc);
+				if (access(fullname.c_str(), access_mode))
+					enabled=false;
 			}
 		}
 

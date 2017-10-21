@@ -6,6 +6,20 @@
 #define file_dialog_impl_h
 
 #include "x/w/file_dialog.H"
+#include "x/w/focusable_labelfwd.H"
+#include "x/w/input_fieldfwd.H"
+#include "x/w/buttonfwd.H"
+#include "x/w/busyfwd.H"
+#include "x/w/file_dialog_config.H"
+#include "x/w/callback_triggerfwd.H"
+#include "x/w/button_eventfwd.H"
+#include "x/w/text_paramfwd.H"
+
+#include "dirlisting/filedirlist_managerfwd.H"
+
+#include <x/weakptr.H>
+#include <string>
+#include <functional>
 
 LIBCXXW_NAMESPACE_START
 
@@ -13,19 +27,118 @@ LIBCXXW_NAMESPACE_START
 
 class LIBCXX_HIDDEN file_dialogObj::implObj : virtual public obj {
 
+
  public:
-	class elementsObj;
 
-	const ref<elementsObj> elements;
+	//! The label with the current directory's path components.
+	const focusable_label directory_field;
 
-	const dialog the_dialog;
+	//! Filename input field
+
+	const input_field filename_field;
+
+	//! Manager for the directory contents.
+	const filedirlist_manager directory_contents_list;
+
+	//! "Ok" button
+	const button ok_button;
+
+	//! "Cancel" button
+	const button cancel_button;
+
+	//! "Ok" callback.
+	const std::function<void (const file_dialog &,
+				  const std::string &, const busy &)
+			    > ok_action;
+
+	//! The semantics of this file dialog.
+	const file_dialog_type type;
+
+	//! Message shown when access to the file is denied.
+	const std::string access_denied_message;
+
+	//! Title of the access denied dialog.
+	const std::string access_denied_title;
 
 	//! Constructor
-	implObj(const ref<elementsObj> &elements,
-		const dialog &the_dialog);
+	implObj(const focusable_label &directory_field,
+		const input_field &filename_field,
+		const filedirlist_manager &directory_contents_list,
+		const button &ok_button,
+		const button &cancel_button,
+		const std::function<void (const file_dialog &,
+					  const std::string &, const busy &)
+		> &ok_action,
+		file_dialog_type type,
+		const std::string &access_denied_message,
+		const std::string &access_denied_title);
 
 	//! Destructor
 	~implObj();
+
+	//! My public object. Referenced by callbacks.
+	weakptr<file_dialogptr> the_file_dialog;
+
+	// A directory entry was clicked on.
+
+	void clicked(size_t n,
+		     const callback_trigger_t &trigger,
+		     const busy &mcguffin);
+
+	// We take action whenever button 1 gets clicked.
+
+	static bool button_clicked(const button_event &be);
+
+	// Show this in the directory field.
+
+	text_param create_dirlabel(const std::string &);
+
+	// Enter pressed in the filename field.
+
+	void enter_key(const busy &mcguffin);
+
+	//! Existing contents of the directory was selected, or typed in.
+
+	//! Perform the appropriate action, depending on the file dialog type.
+	void selected(const std::string &filename,
+		      const busy &mcguffin);
+
+ private:
+
+	//! Used by create-dirlabel().
+
+	//! Initialized the passed-in text_param with a clickable hotspot
+	//! labeled by the given directory name. When clicked,
+	//! hotspot_activated() gets called.
+
+	void create_hotspot(text_param &t,
+			    const std::string &name,
+			    const std::string &path);
+
+	//! Callback that gets invoked when a directory component gets clicked.
+
+	//! If the activation event is a focus change, returns highlighted
+	//! or unhighlighted replacement text, for the hotspot. Invokes
+	//! chdir() for an actual click.
+
+	text_param hotspot_activated(const text_event_t &event,
+				     const std::string &name,
+				     const std::string &path);
+
+	//! Switch to another directory.
+
+	//! Notifies the file directory manager. Updates the
+	//! directory_field.
+
+	void chdir(const std::string &path);
+
+	//! Invoked to pop up an error dialog.
+
+	//! If the file is not readable, or writable, depending on the
+	//! file dialog's semantics.
+
+	void error_dialog(const file_dialog &the_file_dialog,
+			  const std::string &filename);
 };
 
 LIBCXXW_NAMESPACE_END

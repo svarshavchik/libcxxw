@@ -6,7 +6,12 @@
 #define x_w_dialogfwd_h
 
 #include <x/w/namespace.H>
+#include <x/w/gridfactoryfwd.H>
 #include <x/ptrfwd.H>
+
+#include <unordered_map>
+#include <string>
+#include <functional>
 
 LIBCXXW_NAMESPACE_START
 
@@ -37,6 +42,17 @@ typedef ptr<dialogObj> dialogptr;
 //! \see dialog
 
 typedef const_ptr<dialogObj> const_dialogptr;
+
+struct dialog_args;
+
+//! Standard dialog factories
+
+//! An internal data structure that represents all factories for a particular
+//! theme-specified dialog.
+
+typedef std::unordered_map<std::string,
+			   std::function<void (const gridfactory &)>
+			   > standard_dialog_elements_t;
 
 LIBCXXW_NAMESPACE_END
 

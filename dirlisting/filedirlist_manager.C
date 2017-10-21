@@ -10,14 +10,18 @@ LIBCXXW_NAMESPACE_START
 filedirlist_managerObj::filedirlist_managerObj(const factory &f,
 					       const std::string
 					       &initial_directory,
-					       const std::function
-					       <filedirlist_selected_callback_t>
-					       &callback)
-	: impl(ref<implObj>::create(f, initial_directory, callback))
+					       int access_mode)
+	: impl(ref<implObj>::create(f, initial_directory, access_mode))
 {
 }
 
 filedirlist_managerObj::~filedirlist_managerObj()=default;
+
+void filedirlist_managerObj
+::set_selected_callback(const std::function<filedirlist_selected_callback_t> &c)
+{
+	impl->set_selected_callback(c);
+}
 
 filedirlist_entry filedirlist_managerObj::at(size_t n)
 {

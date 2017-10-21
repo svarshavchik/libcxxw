@@ -10,10 +10,13 @@
 #include "x/w/layoutmanagerfwd.H"
 #include "x/w/buttonfwd.H"
 #include "x/w/text_paramfwd.H"
+#include "x/w/dialogfwd.H"
 #include "generic_window.H"
 #include "xim_generic_window.H"
 
 #include <functional>
+#include <unordered_map>
+#include <string>
 
 LIBCXXW_NAMESPACE_START
 
@@ -70,6 +73,12 @@ class LIBCXX_HIDDEN main_windowObj::implObj
 	//! Install a callback to invoke upon close.
 
 	void on_delete(const std::function<void (const busy &)> &callback);
+
+	//! Container for this main window's dialogs.
+
+	typedef mpobj<std::unordered_map<std::string, dialog>> all_dialogs_t;
+
+	all_dialogs_t all_dialogs;
 };
 
 //! Factory used by create_main_window_impl().

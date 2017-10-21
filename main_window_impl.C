@@ -8,6 +8,7 @@
 #include "main_window_handler.H"
 #include "shared_handler_data.H"
 #include "x/w/container.H"
+#include "x/w/dialog.H"
 #include "run_as.H"
 #include "connection_info.H"
 #include "connection.H"
