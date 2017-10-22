@@ -26,7 +26,6 @@
 #include "x/w/button_event.H"
 #include "x/w/motion_event.H"
 #include "x/w/values_and_mask.H"
-#include <X11/keysym.h>
 #include "child_element.H"
 #include "hotspot.H"
 #include "shortcut/installed_shortcut.H"
@@ -681,13 +680,7 @@ void generic_windowObj::handlerObj::current_position_updated(IN_THREAD_ONLY)
 bool generic_windowObj::handlerObj::process_key_event(IN_THREAD_ONLY,
 						      const key_event &ke)
 {
-	if (!ke.keypress)
-		return false;
-
-	if (!ke.notspecial())
-		return false;
-
-	if (ke.keysym == XK_ISO_Left_Tab)
+	if (prev_key_pressed(ke))
 	{
 		if (most_recent_keyboard_focus(IN_THREAD))
 		{
@@ -710,7 +703,7 @@ bool generic_windowObj::handlerObj::process_key_event(IN_THREAD_ONLY,
 		}
 	}
 
-	if (ke.unicode == '\t')
+	if (next_key_pressed(ke))
 	{
 		if (most_recent_keyboard_focus(IN_THREAD))
 		{

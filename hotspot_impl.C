@@ -50,7 +50,7 @@ void hotspotObj::implObj::pointer_focus(IN_THREAD_ONLY)
 
 bool hotspotObj::implObj::process_key_event(IN_THREAD_ONLY, const key_event &ke)
 {
-	if (ke.notspecial() && activate_on_key(ke))
+	if (activate_on_key(ke))
 	{
 		bool activated_flag=!ke.keypress && is_key_down;
 
@@ -66,7 +66,7 @@ bool hotspotObj::implObj::process_key_event(IN_THREAD_ONLY, const key_event &ke)
 
 bool hotspotObj::implObj::activate_on_key(const key_event &ke)
 {
-	return (ke.unicode == ' ' || ke.unicode == '\n');
+	return select_key(ke);
 }
 
 bool hotspotObj::implObj::process_button_event(IN_THREAD_ONLY,

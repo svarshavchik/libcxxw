@@ -9,6 +9,7 @@
 #include "run_as.H"
 #include "xid_t.H"
 #include "messages.H"
+#include <X11/keysym.h>
 
 LIBCXXW_NAMESPACE_START
 
@@ -17,6 +18,63 @@ focusableObj::focusableObj()
 }
 
 focusableObj::~focusableObj()=default;
+
+bool next_key_pressed(const key_event &ke)
+{
+	return ke.keypress && next_key(ke);
+}
+
+bool next_key(const key_event &ke)
+{
+	return ke.notspecial() && ke.unicode == '\t';
+}
+
+bool prev_key_pressed(const key_event &ke)
+{
+	return ke.keypress && prev_key(ke);
+}
+
+bool prev_key(const key_event &ke)
+{
+	return ke.notspecial() && ke.keysym == XK_ISO_Left_Tab;
+}
+
+bool next_page_key_pressed(const key_event &ke)
+{
+	return ke.keypress && next_page_key(ke);
+}
+
+bool next_page_key(const key_event &ke)
+{
+	return ke.notspecial() &&
+		(ke.keysym == XK_Page_Down || ke.keysym == XK_KP_Page_Down);
+}
+
+bool prev_page_key_pressed(const key_event &ke)
+{
+	return ke.keypress && prev_page_key(ke);
+}
+
+bool prev_page_key(const key_event &ke)
+{
+	return ke.notspecial() &&
+		(ke.keysym == XK_Page_Up || ke.keysym == XK_KP_Page_Up);
+}
+
+bool select_key_pressed(const key_event &ke)
+{
+	return ke.keypress && select_key(ke);
+}
+
+bool select_key(const key_event &ke)
+{
+	if (ke.notspecial())
+	{
+		if (ke.unicode == '\n' || ke.unicode == ' ')
+			return true;
+	}
+	return false;
+}
 
 size_t focusableObj::internal_impl_count() const
 {

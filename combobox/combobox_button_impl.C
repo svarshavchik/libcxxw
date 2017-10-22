@@ -32,7 +32,8 @@ void combobox_button_implObj
 bool combobox_button_implObj::activate_on_key(const key_event &ke)
 {
 	return superclass_t::activate_on_key(ke)
-		|| ke.keysym == XK_Down || ke.keysym == XK_KP_Down;
+		|| (ke.notspecial() &&
+		    (ke.keysym == XK_Down || ke.keysym == XK_KP_Down));
 }
 
 LIBCXXW_NAMESPACE_END

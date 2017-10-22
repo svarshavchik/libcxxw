@@ -989,7 +989,7 @@ bool textlistObj::implObj::process_key_event(IN_THREAD_ONLY,
 	if (lock->row_infos.empty())
 		return false;
 
-	if (ke.unicode == ' ' || ke.unicode == '\n')
+	if (select_key(key))
 	{
 		if (!ke.keypress)
 		{
@@ -1009,7 +1009,7 @@ bool textlistObj::implObj::process_key_event(IN_THREAD_ONLY,
 		return true;
 	}
 
-	if (!ke.keypress)
+	if (!ke.notspecial())
 		return false;
 
 	if (lock->row_infos.size() == 0)
@@ -1020,6 +1020,8 @@ bool textlistObj::implObj::process_key_event(IN_THREAD_ONLY,
 	switch (ke.keysym) {
 	case XK_Up:
 	case XK_KP_Up:
+		if (!ke.keypress)
+			return true;
 		{
 			auto r=move_up_by(lock, 1);
 
@@ -1031,6 +1033,8 @@ bool textlistObj::implObj::process_key_event(IN_THREAD_ONLY,
 		break;
 	case XK_Down:
 	case XK_KP_Down:
+		if (!ke.keypress)
+			return true;
 		{
 			auto r=move_down_by(lock, 1);
 
@@ -1042,6 +1046,8 @@ bool textlistObj::implObj::process_key_event(IN_THREAD_ONLY,
 		break;
 	case XK_Page_Up:
 	case XK_KP_Page_Up:
+		if (!ke.keypress)
+			return true;
 		{
 			auto r=move_up_by(lock, rows);
 
@@ -1053,6 +1059,8 @@ bool textlistObj::implObj::process_key_event(IN_THREAD_ONLY,
 		break;
 	case XK_Page_Down:
 	case XK_KP_Page_Down:
+		if (!ke.keypress)
+			return true;
 		{
 			auto r=move_down_by(lock, rows);
 

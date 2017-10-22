@@ -17,6 +17,43 @@ LIBCXXW_NAMESPACE_START
 
 class child_elementObj;
 
+//! Return true if this key event is for advancing focus to the next field.
+
+bool next_key(const key_event &) LIBCXX_HIDDEN;
+
+//! Return true if keypress, and next_key().
+
+bool next_key_pressed(const key_event &) LIBCXX_HIDDEN;
+
+//! Return true if this key event is for advancing focus to the previous field.
+
+bool prev_key(const key_event &) LIBCXX_HIDDEN;
+
+//! Return true if keypress, and prev_key().
+
+bool prev_key_pressed(const key_event &) LIBCXX_HIDDEN;
+
+//! Return true if this key event is for advancing focus to the next page.
+
+bool next_page_key(const key_event &) LIBCXX_HIDDEN;
+
+//! Return true if keypress, and next_page_key().
+bool next_page_key_pressed(const key_event &) LIBCXX_HIDDEN;
+
+//! Return true if this key event is for advancing focus to the previous page.
+
+bool prev_page_key(const key_event &) LIBCXX_HIDDEN;
+
+//! Return true if keypress, and prev_page_key().
+bool prev_page_key_pressed(const key_event &) LIBCXX_HIDDEN;
+
+//! Return true if this key event is for selecting something.
+
+bool select_key(const key_event &) LIBCXX_HIDDEN;
+
+//! Return true if keypress, and select_key().
+bool select_key_pressed(const key_event &) LIBCXX_HIDDEN;
+
 //! Focusable field implementation object.
 
 //! The focusable_elementObj template inherits from this class and a subclass

@@ -12,6 +12,7 @@
 #include "richtext/richtext.H"
 #include "richtext/richtextmeta.H"
 #include "richtext/richtext_draw_info.H"
+#include "focus/focusable.H"
 #include "background_color.H"
 #include "messages.H"
 #include "defaulttheme.H"
@@ -353,11 +354,8 @@ bool textlabelObj::implObj::process_key_event(IN_THREAD_ONLY,
 
 	text_hotspotptr next_link;
 
-	if (ke.unicode == '\t')
+	if (next_key_pressed(ke))
 	{
-		if (!ke.keypress)
-			return true;
-
 		if (hotspot_highlighted(IN_THREAD))
 		{
 			auto iter=hotspot_info(IN_THREAD)
@@ -383,11 +381,8 @@ bool textlabelObj::implObj::process_key_event(IN_THREAD_ONLY,
 				next_link=iter2->second;
 		}
 	}
-	else if (ke.keysym == XK_ISO_Left_Tab)
+	else if (prev_key_pressed(ke))
 	{
-		if (!ke.keypress)
-			return true;
-
 		if (hotspot_highlighted(IN_THREAD))
 		{
 			auto iter=hotspot_info(IN_THREAD)
@@ -414,11 +409,8 @@ bool textlabelObj::implObj::process_key_event(IN_THREAD_ONLY,
 				next_link=iter2->second;
 		}
 	}
-	else if (ke.unicode == '\n' || ke.unicode == ' ')
+	else if (select_key_pressed(ke))
 	{
-		if (!ke.keypress)
-			return true;
-
 		if (hotspot_highlighted(IN_THREAD))
 		{
 			link_update(IN_THREAD, hotspot_highlighted(IN_THREAD),
