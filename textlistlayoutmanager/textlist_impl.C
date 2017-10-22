@@ -48,6 +48,37 @@ list_lock::operator listimpl_info_t::lock &()
 
 ////////////////////////////////////////////////////////////////////////////
 
+// The connection thread uses this to lock the list information. This
+// enforces that recalculate() must be called if the list was modified,
+// before working with it.
+//
+// This is not bulletproof, but should be good enough. We need to make sure
+// that IN_THREAd we always instantiate this textlist_info_lock, instead of
+// listimpl_info_t::lock.
+
+struct textlistObj::implObj::textlist_info_lock
+	: public listimpl_info_t::lock {
+
+public:
+
+	// Whether the list was modified, before we were constructed.
+
+	const bool was_modified;
+
+	// The construct checks row_infos.modified, and if so calls
+	// recalculate().
+
+	textlist_info_lock(IN_THREAD_ONLY, implObj &me)
+		: listimpl_info_t::lock{me.textlist_info},
+		was_modified{ listimpl_info_t::lock::operator->()
+				->row_infos.modified}
+	{
+		if (was_modified)
+			me.recalculate(IN_THREAD, *this);
+	}
+
+	~textlist_info_lock()=default;
+};
 
 ////////////////////////////////////////////////////////////////////////////
 void list_row_info_t::default_status_change_callback(list_lock &, size_t, bool)
@@ -192,7 +223,7 @@ void textlistObj::implObj::insert_rows(const textlistlayoutmanager &lm,
 
 	// We can now insert them.
 	lock->row_infos.insert(lock->row_infos.begin() + row_number,
-			       rows, {});
+			       rows, list_row_info_t{});
 
 	std::for_each(lock->row_infos.begin() + row_number,
 		      lock->row_infos.begin() + row_number + rows,
@@ -207,7 +238,6 @@ void textlistObj::implObj::insert_rows(const textlistlayoutmanager &lm,
 
 	// Everything must be recalculated and redrawn.
 
-	lock->recalculation_needed=true;
 	lock->full_redraw_needed=true;
 
 	// If a current element was selected on or after the insertion point,
@@ -264,12 +294,15 @@ void textlistObj::implObj::replace_rows(const textlistlayoutmanager &lm,
 			      return r;
 		      });
 
+	// Need to explicitly set modified, since std::generate is going
+	// to bypass our carefully drafted contract.
+	lock->row_infos.modified=true;
+
 	std::copy(texts.begin(), texts.end(),
 		  lock->cells.begin()+row_number*columns);
 
 	// Recalculate and redraw everything.
 
-	lock->recalculation_needed=true;
 	lock->full_redraw_needed=true;
 }
 
@@ -373,18 +406,12 @@ void textlistObj::implObj
 			++cellp;
 		}
 	}
-	lock->recalculation_needed=true;
 	lock->full_redraw_needed=true;
 }
 
 void textlistObj::implObj::recalculate(IN_THREAD_ONLY)
 {
-	listimpl_info_t::lock lock{textlist_info};
-
-	if (!lock->recalculation_needed)
-		return;
-
-	recalculate(IN_THREAD, lock);
+	textlist_info_lock lock{IN_THREAD, *this};
 }
 
 void textlistObj::implObj::calculate_column_widths(IN_THREAD_ONLY,
@@ -540,7 +567,7 @@ void textlistObj::implObj::recalculate(IN_THREAD_ONLY,
 	dim_t width=lock->total_column_width;
 	dim_t height=dim_t::truncate(y);
 
-	lock->recalculation_needed=false;
+	lock->row_infos.modified=false;
 	get_horizvert(IN_THREAD)
 		->set_element_metrics(IN_THREAD,
 				      { width, width, width},
@@ -637,14 +664,12 @@ void textlistObj::implObj::calculate_column_poswidths(IN_THREAD_ONLY,
 void textlistObj::implObj::process_updated_position(IN_THREAD_ONLY)
 {
 	{
-		listimpl_info_t::lock lock{textlist_info};
+		textlist_info_lock lock{IN_THREAD, *this};
 
-		// If full recalculation is needed to that. Otherwise the only
+		// If full recalculation was done, that's it. Otherwise the only
 		// thing we need to do is to calculate_column_poswidths;
 
-		if (lock->recalculation_needed)
-			recalculate(IN_THREAD, lock);
-		else
+		if (!lock.was_modified)
 			calculate_column_poswidths(IN_THREAD, lock);
 	}
 
@@ -672,10 +697,7 @@ void textlistObj::implObj::do_draw(IN_THREAD_ONLY,
 {
 	richtext_draw_boundaries bounds{di, areas};
 
-	listimpl_info_t::lock lock{textlist_info};
-
-	if (lock->recalculation_needed)
-		recalculate(IN_THREAD, lock);
+	textlist_info_lock lock{IN_THREAD, *this};
 
 	if (only_whats_needed)
 	{
@@ -694,7 +716,7 @@ void textlistObj::implObj::do_draw(IN_THREAD_ONLY,
 		return;
 	}
 
-	if (lock->recalculation_needed || lock->full_redraw_needed)
+	if (lock->full_redraw_needed)
 		// Something else must be reponsible for rescheduling us later.
 		return;
 
@@ -932,10 +954,7 @@ void textlistObj::implObj::report_motion_event(IN_THREAD_ONLY,
 	if (me.y < 0) // Shouldn't happen.
 		return;
 
-	listimpl_info_t::lock lock{textlist_info};
-
-	if (lock->recalculation_needed)
-		recalculate(IN_THREAD, lock);
+	textlist_info_lock lock{IN_THREAD, *this};
 
 	if (current_element(lock))
 	{
@@ -971,10 +990,7 @@ void textlistObj::implObj::report_motion_event(IN_THREAD_ONLY,
 bool textlistObj::implObj::process_key_event(IN_THREAD_ONLY,
 					     const key_event &ke)
 {
-	listimpl_info_t::lock lock{textlist_info};
-
-	if (lock->recalculation_needed)
-		recalculate(IN_THREAD, lock);
+	textlist_info_lock lock{IN_THREAD, *this};
 
 	if (process_key_event(IN_THREAD, ke, lock))
 		return true;
@@ -989,7 +1005,7 @@ bool textlistObj::implObj::process_key_event(IN_THREAD_ONLY,
 	if (lock->row_infos.empty())
 		return false;
 
-	if (select_key(key))
+	if (select_key(ke))
 	{
 		if (!ke.keypress)
 		{
@@ -1143,10 +1159,7 @@ bool textlistObj::implObj::process_button_event(IN_THREAD_ONLY,
 
 	if (be.button == 1)
 	{
-		listimpl_info_t::lock lock{textlist_info};
-
-		if (lock->recalculation_needed)
-			recalculate(IN_THREAD, lock);
+		textlist_info_lock lock{IN_THREAD, *this};
 
 		if (current_element(lock))
 		{
@@ -1167,10 +1180,7 @@ void textlistObj::implObj::pointer_focus(IN_THREAD_ONLY)
 {
 	superclass_t::pointer_focus(IN_THREAD);
 
-	listimpl_info_t::lock lock{textlist_info};
-
-	if (lock->recalculation_needed)
-		recalculate(IN_THREAD, lock);
+	textlist_info_lock lock{IN_THREAD, *this};
 
 	if (!current_pointer_focus(IN_THREAD))
 		unset_current_element(IN_THREAD, lock);
@@ -1180,10 +1190,7 @@ void textlistObj::implObj::keyboard_focus(IN_THREAD_ONLY)
 {
 	superclass_t::keyboard_focus(IN_THREAD);
 
-	listimpl_info_t::lock lock{textlist_info};
-
-	if (lock->recalculation_needed)
-		recalculate(IN_THREAD, lock);
+	textlist_info_lock lock{IN_THREAD, *this};
 
 	if (!current_keyboard_focus(IN_THREAD))
 		unset_current_element(IN_THREAD, lock);

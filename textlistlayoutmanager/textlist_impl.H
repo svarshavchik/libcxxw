@@ -27,6 +27,7 @@
 #include <set>
 #include <vector>
 #include <optional>
+#include <utility>
 
 LIBCXXW_NAMESPACE_START
 
@@ -92,6 +93,56 @@ struct LIBCXX_HIDDEN list_row_info_t {
 	static void default_status_change_callback(list_lock &, size_t, bool);
 };
 
+//! A vector of list_row_info_t structures
+
+//! Privately inherits from std::vector, and imports its methods publicly,
+//! but overrides the methods that modify the vector to also set a modified
+//! flag.
+//!
+//! This works in conjunction with textlist_info_lock to automatically
+//! call recalculate() when the list is locked in the connection thread.
+
+struct LIBCXX_HIDDEN list_row_info_vector :
+	private std::vector<list_row_info_t> {
+
+ public:
+	using std::vector<list_row_info_t>::begin;
+	using std::vector<list_row_info_t>::end;
+	using std::vector<list_row_info_t>::at;
+	using std::vector<list_row_info_t>::size;
+	using std::vector<list_row_info_t>::empty;
+	using std::vector<list_row_info_t>::reserve;
+
+	//! This vector was modified.
+
+	//! Instantiating a textlist_info_lock will invoke recalculate().
+
+	bool modified=false;
+
+	//! Vector insert(), and set the \c modified flag
+	template<typename ...Args> auto inline insert(Args && ...args)
+	{
+		modified=true;
+		return std::vector<list_row_info_t>::insert
+			(std::forward<Args>(args)...);
+	}
+
+	//! Vector erase(), and set the \c modified flag
+	template<typename ...Args> auto inline erase(Args && ...args)
+	{
+		modified=true;
+		return std::vector<list_row_info_t>::erase
+			(std::forward<Args>(args)...);
+	}
+
+	//! Vector clear(), and set the \c modified flag
+
+	void clear()
+	{
+		modified=true;
+		std::vector<list_row_info_t>::clear();
+	}
+};
 
 //! Mutex-protected information stored in the \ref textlist "textlist".
 
@@ -126,13 +177,10 @@ struct LIBCXX_HIDDEN listimpl_info_s {
 	std::vector<std::pair<coord_t, dim_t>> columns_poswidths;
 
 	//! The rows
-	std::vector<list_row_info_t> row_infos;
+	list_row_info_vector row_infos;
 
 	//! The text, stored in row-major format.
 	std::vector<textlist_cell> cells;
-
-	//! Whether something has truly been added or removed.
-	bool recalculation_needed=false;
 
 	//! Whether we need to redraw ourselves, after recalculating.
 	bool full_redraw_needed=false;
@@ -342,6 +390,18 @@ class LIBCXX_HIDDEN textlistObj::implObj :
  public:
 	//! Our text data.
 	listimpl_info_t textlist_info;
+
+ private:
+
+	//! A mutex lock on textlist_info
+
+	//! listimpl_info_t is an mpobj. This is a subclass of
+	//! listimpl_info_t::lock that acquires the lock, then checks
+	//! if list_row_info_vector.modified if set, then if so calls
+	//! recalculate().
+
+	struct textlist_info_lock;
+ public:
 
 	//! Scratch buffer for drawing separators
 	const scratch_buffer scratch_buffer_for_separator;
