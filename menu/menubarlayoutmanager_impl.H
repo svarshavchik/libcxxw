@@ -7,6 +7,7 @@
 
 #include "x/w/menubarlayoutmanager.H"
 #include "x/w/menubarfactoryobj.H"
+#include "x/w/textlistlayoutmanager.H"
 #include "x/w/gridfactoryfwd.H"
 #include "gridlayoutmanager.H"
 #include "menu/menubar_container_implfwd.H"
@@ -97,6 +98,7 @@ class LIBCXX_HIDDEN menubarlayoutmanagerObj::implObj
 	//! popup and also by the menu layout manager, to create a submenu
 	//! popup.
 
+
 	template<typename creator_t>
 	static inline auto create_popup_menu(const elementimpl &e,
 					     creator_t &&creator,
@@ -104,7 +106,7 @@ class LIBCXX_HIDDEN menubarlayoutmanagerObj::implObj
 	{
 		return do_create_popup_menu(e,
 					    make_function<void
-					    (const menulayoutmanager &)>
+					    (const textlistlayoutmanager &)>
 					    (std::forward<creator_t>(creator)),
 					    attached_to_how);
 	}
@@ -114,7 +116,7 @@ class LIBCXX_HIDDEN menubarlayoutmanagerObj::implObj
 	static std::tuple<popup, ref<popup_attachedto_handlerObj> >
 		do_create_popup_menu(const elementimpl &e,
 				     const function<void (const
-							  menulayoutmanager &)>
+							  textlistlayoutmanager &)>
 				     &creator,
 				     attached_to attached_to_how);
 

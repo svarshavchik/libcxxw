@@ -34,7 +34,7 @@ class LIBCXX_HIDDEN peepholed_toplevel_listcontainer_impl_elementObj :
 
 	//! Implement listcontainer_element().
 
-	listcontainerObj::implObj &listcontainer_element() override;
+	child_elementObj &listcontainer_element() override;
 };
 
 LIBCXXW_NAMESPACE_END

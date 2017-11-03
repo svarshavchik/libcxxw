@@ -115,6 +115,9 @@ public:
 	//! Enable or disable the list item.
 
 	void enabled(size_t i, bool flag) override;
+
+	//! Return an existing menu item's submenu layoutmanager.
+	textlistlayoutmanagerptr get_item_layoutmanager(size_t i);
 };
 
 LIBCXXW_NAMESPACE_END

@@ -18,7 +18,7 @@
 #include "x/w/menubarlayoutmanager.H"
 #include "x/w/menubarfactory.H"
 #include "x/w/menu.H"
-#include "x/w/menulayoutmanager.H"
+#include "x/w/textlistlayoutmanager.H"
 #include "x/w/input_field.H"
 #include "x/w/label.H"
 #include "x/w/dialog.H"
@@ -193,134 +193,114 @@ void add_recent(const LIBCXX_NAMESPACE::w::main_window &main_window,
 	LIBCXX_NAMESPACE::w::menubar_lock lock{lm};
 
 	lock.get_menu(0)->get_layoutmanager()->get_item_layoutmanager(5)
-		->append_menu_item
-		(LIBCXX_NAMESPACE::w::menuitem_plain{
-			[s](const auto &ignore)
+		->append_item
+		({LIBCXX_NAMESPACE::w::list_item_param{
+				[s](auto &list_lock, size_t,
+				    bool)
 			{
-				std::cout << s << std::endl;
-			}
-		}, s);
+				std::cout << "YAY:" << s << std::endl;
+			}},
+				LIBCXX_NAMESPACE::w::list_item_param{s}});
 }
 
 
 void file_menu(const LIBCXX_NAMESPACE::w::main_window &main_window,
-	       const LIBCXX_NAMESPACE::w::menulayoutmanager &m,
+	       const LIBCXX_NAMESPACE::w::textlistlayoutmanager &m,
 	       const LIBCXX_NAMESPACE::w::menu &view_menu,
-	       const LIBCXX_NAMESPACE::w::element &view_options_item)
+	       size_t view_options_item)
 {
-	LIBCXX_NAMESPACE::w::menuitem_plain file_new_type;
+	m->append_item(std::vector<LIBCXX_NAMESPACE::w::list_item_param>{{
+			LIBCXX_NAMESPACE::w::shortcut{"Alt", 'N'},
 
-	file_new_type.menuitem_shortcut={"Alt", 'N'};
-	file_new_type.on_activate=[]
-		(const LIBCXX_NAMESPACE::w::menuitem_activation_info &ignore)
-		{
-			app_dialogs all_app_dialogs;
-
-			if (all_app_dialogs)
-				all_app_dialogs->file_open->show_all();
-		};
-
-	m->append_menu_item(file_new_type, "New");
-
-	m->append_menu_item(std::vector<std::tuple<LIBCXX_NAMESPACE::w::menuitem_type_t,
-			    LIBCXX_NAMESPACE::w::text_param>>{ { LIBCXX_NAMESPACE::w::menuitem_type_t{}, "Open"}});
-
-	m->append_menu_item(std::vector<LIBCXX_NAMESPACE::w::text_param>{"Close"});
-
-	LIBCXX_NAMESPACE::w::menuitem_plain file_open_type;
-
-	file_open_type.menuitem_shortcut={"Alt", 'O'};
-	file_open_type.on_activate=[]
-		(const LIBCXX_NAMESPACE::w::menuitem_activation_info &ignore)
-		{
-			app_dialogs all_app_dialogs;
-
-			if (all_app_dialogs)
-				all_app_dialogs->file_open->show_all();
-		};
-
-	m->update(1, file_open_type);
-
-	LIBCXX_NAMESPACE::w::menuitem_plain file_close_type;
-
-	file_close_type.on_activate=[]
-		(const LIBCXX_NAMESPACE::w::menuitem_activation_info &ignore)
-		{
-			std::cout << "File->Close selected" << std::endl;
-		};
-
-	m->update(2, file_close_type);
-
-	LIBCXX_NAMESPACE::w::menuitem_plain file_toggle_options_type;
-
-	file_toggle_options_type.on_activate=[=]
-		(const LIBCXX_NAMESPACE::w::menuitem_activation_info &ignore)
-		{
-			auto l=view_menu->get_layoutmanager();
-
-			l->enabled(view_options_item,
-				   !l->enabled(view_options_item));
-		};
-
-	LIBCXX_NAMESPACE::w::menuitem_submenu file_recent_type;
-
-	file_recent_type.creator=
-		[](const LIBCXX_NAMESPACE::w::menulayoutmanager &recent_menu)
-		{
-			for (size_t i=1; i <= 4; ++i)
+			[](auto &list_lock, size_t, bool)
 			{
-				LIBCXX_NAMESPACE::w::menuitem_plain recent;
+				app_dialogs all_app_dialogs;
 
-				std::ostringstream o;
+				if (all_app_dialogs)
+					all_app_dialogs->file_open->show_all();
+			},
+			"New",
+			LIBCXX_NAMESPACE::w::shortcut{"Alt", 'O'},
+			[](auto &list_lock, size_t, bool)
+			{
+				app_dialogs all_app_dialogs;
 
-				o << "Recent submenu #" << i;
+				if (all_app_dialogs)
+					all_app_dialogs->file_open->show_all();
+			},
+			"Open",
+			[](auto &list_lock, size_t, bool)
+			{
+				std::cout << "File->Close selected"
+					  << std::endl;
+			},
+			"Close",
 
-				auto s=o.str();
+			LIBCXX_NAMESPACE::w::separator{},
 
-				recent.on_activate=[s]
-				(const auto &ignore) {
-					std::cout << s << std::endl;
-				};
+			[=](auto &list_lock, size_t, bool)
+			{
+				auto l=view_menu->get_layoutmanager();
 
-				recent_menu->append_menu_item(recent, s);
-			}
-		};
+				l->enabled(view_options_item,
+					   !l->enabled(view_options_item));
+			},
 
-	m->append_menu_item("",
-			    file_toggle_options_type, "Toggle Options",
-			    file_recent_type, "Recent",
-			    "Quit");
+			"Toggle Options",
 
-	LIBCXX_NAMESPACE::w::menuitem_plain file_quit_type;
+			LIBCXX_NAMESPACE::w::submenu{
+				[](const LIBCXX_NAMESPACE::w::textlistlayoutmanager
+				   &recent_menu)
+				{
+					for (size_t i=1; i <= 4; ++i)
+					{
+						std::ostringstream o;
 
-	file_quit_type.on_activate=[]
-		(const LIBCXX_NAMESPACE::w::menuitem_activation_info &ignore)
-		{
-			std::cout << "File->Quit selected" << std::endl;
-		};
-	m->update(6, file_quit_type);
+						o << "Recent submenu #" << i;
 
-	m->append_menu_item(LIBCXX_NAMESPACE::w::menuitem_plain{
-			[main_window=LIBCXX_NAMESPACE::make_weak_capture(main_window)](const auto &ignore)
+						auto s=o.str();
+
+						recent_menu->append_item
+							({LIBCXX_NAMESPACE::w::list_item_param{
+									[s](const auto &list_lock,
+									    size_t, bool)
+									{
+										std::cout << s
+											  << std::endl;
+									}
+								}, LIBCXX_NAMESPACE::w::list_item_param{
+							 s}});
+					}
+				}},
+			"Recent",
+			[=](auto &list_lock, size_t, bool)
+			{
+				std::cout << "File->Quit selected" << std::endl;
+			},
+			"Quit",
+			[main_window=LIBCXX_NAMESPACE::make_weak_capture(main_window)]
+				(auto &list_lock, size_t, bool)
 			{
 				main_window.get([]
 						(const auto &main_window)
 						{
 							remove_help_menu(main_window);
 						});
-			}}, "Remove Help menu",
-		LIBCXX_NAMESPACE::w::menuitem_plain{
-			[main_window=LIBCXX_NAMESPACE::make_weak_capture(main_window)](const auto &ignore)
+			},
+			"Remove Help menu",
+			[main_window=LIBCXX_NAMESPACE::make_weak_capture(main_window)]
+				(auto &list_lock, size_t, bool)
 			{
 				main_window.get([]
 						(const auto &main_window)
 						{
 							remove_view_menu(main_window);
 						});
-			}}, "Remove View menu",
+			},
+			"Remove View menu",
 
-		LIBCXX_NAMESPACE::w::menuitem_plain{
-			[i=4, main_window=LIBCXX_NAMESPACE::make_weak_capture(main_window)](const auto &ignore)
+			[i=4, main_window=LIBCXX_NAMESPACE::make_weak_capture(main_window)]
+				(auto &list_lock, size_t, bool)
 				mutable
 			{
 				main_window.get([&]
@@ -328,68 +308,60 @@ void file_menu(const LIBCXX_NAMESPACE::w::main_window &main_window,
 						{
 							add_recent(main_window, ++i);
 						});
-			}}, "Add to recent submenu");
-
+			},
+			"Add to recent submenu"}});
 }
 
-LIBCXX_NAMESPACE::w::element view_menu(const LIBCXX_NAMESPACE::w::menulayoutmanager &m)
+size_t view_menu(const LIBCXX_NAMESPACE::w::textlistlayoutmanager &m)
 {
-	LIBCXX_NAMESPACE::w::menuitem_plain tools_menu_type;
+	m->replace_all_items(std::vector<LIBCXX_NAMESPACE::w::list_item_param>{{
 
-	tools_menu_type.is_option=true;
-	tools_menu_type.on_activate=[]
-		(const LIBCXX_NAMESPACE::w::menuitem_activation_info &info)
+		LIBCXX_NAMESPACE::w::menuoption{},
+		[](auto &list_lock, size_t, bool selected)
 		{
-			std::cout << "View->Tools: " << info.selected
-			<< std::endl;
-		};
+			std::cout << "View->Tools: " << selected
+				  << std::endl;
+		},
 
-	LIBCXX_NAMESPACE::w::menuitem_plain options_menu_type;
+		"Tools",
 
-	options_menu_type.is_option=true;
-	options_menu_type.on_activate=[]
-		(const LIBCXX_NAMESPACE::w::menuitem_activation_info &info)
+		LIBCXX_NAMESPACE::w::menuoption{},
+		[](auto &list_lock, size_t, bool selected)
 		{
-			std::cout << "View->Options: " << info.selected
-			<< std::endl;
-		};
+			std::cout << "View->Options: " << selected
+				  << std::endl;
+		},
+		"Options"
+			}});
 
-	m->replace_all_menu_items(tools_menu_type, "Tools",
-				  options_menu_type, "Options");
-
-	return m->item(1);
+	return m->size()-1;
 }
 
 
 void help_menu(const LIBCXX_NAMESPACE::w::main_window &main_window,
-	       const LIBCXX_NAMESPACE::w::menulayoutmanager &m)
+	       const LIBCXX_NAMESPACE::w::textlistlayoutmanager &m)
 {
-	LIBCXX_NAMESPACE::w::menuitem_plain question;
+	m->insert_item(0, std::vector<LIBCXX_NAMESPACE::w::list_item_param>{{
+		       [](auto &list_lock, size_t, bool selected)
+		       {
+			       app_dialogs all_app_dialogs;
 
-	question.on_activate=[]
-		(const LIBCXX_NAMESPACE::w::menuitem_activation_info &info)
-		{
-			app_dialogs all_app_dialogs;
+			       if (all_app_dialogs)
+				       all_app_dialogs->help_question->show_all();
+		       },
+		       "Question",
 
-			if (all_app_dialogs)
-				all_app_dialogs->help_question->show_all();
-		};
+		       LIBCXX_NAMESPACE::w::shortcut{"F1"},
 
-	LIBCXX_NAMESPACE::w::menuitem_plain about;
+		       [](auto &list_lock, size_t, bool selected)
+		       {
+			       app_dialogs all_app_dialogs;
 
-	about.menuitem_shortcut={"F1"};
-
-	about.on_activate=[]
-		(const LIBCXX_NAMESPACE::w::menuitem_activation_info &info)
-		{
-			app_dialogs all_app_dialogs;
-
-			if (all_app_dialogs)
-				all_app_dialogs->help_about->show_all();
-		};
-
-	m->append_menu_item(question, "Question",
-			    about, "About");
+			       if (all_app_dialogs)
+				       all_app_dialogs->help_about->show_all();
+		       },
+		       "About"
+			       }});
 }
 
 void testmenu()
@@ -412,7 +384,7 @@ void testmenu()
 				 auto mb=main_window->get_menubarlayoutmanager();
 				 auto f=mb->append_menus();
 
-				 LIBCXX_NAMESPACE::w::elementptr options_menu_item;
+				 size_t options_menu_item;
 
 				 LIBCXX_NAMESPACE::w::menu view_m=f->add([]
 					(const auto &factory) {

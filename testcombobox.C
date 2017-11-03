@@ -92,15 +92,15 @@ focusable_container create_combobox(const factory &f,
 			standard_comboboxlayoutmanager lm=new_container
 				->get_layoutmanager();
 
-			lm->replace_all_items({
-					"Lorem ipsum",
-						"dolor sit",
-						"ament",
-						"consectetur",
-						"adipisicing",
-						"elid set",
-						"do",
-						"eiusmod tempor",
+			lm->replace_all_items(std::vector<list_item_param>{
+					{"Lorem ipsum"},
+					{"dolor sit"},
+					{"ament"},
+					{"consectetur"},
+					{"adipisicing"},
+					{"elid set"},
+					{"do"},
+					{"eiusmod tempor"},
 						});
 		}, ncc);
 }
@@ -197,7 +197,7 @@ void testcombobox(const testcombobox_options &options)
 					 standard_comboboxlayoutmanager lm=
 						 combobox->get_layoutmanager();
 
-					 lm->append_item("");
+					 lm->append_item({LIBCXX_NAMESPACE::w::separator{}});
 				 });
 
 			 factory=layout->append_row();
@@ -208,7 +208,7 @@ void testcombobox(const testcombobox_options &options)
 					 standard_comboboxlayoutmanager lm=
 						 combobox->get_layoutmanager();
 
-					 lm->insert_item(0, "");
+					 lm->insert_item(0, {LIBCXX_NAMESPACE::w::separator{}});
 				 });
 
 			 factory=layout->append_row();

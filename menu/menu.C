@@ -4,7 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "menu/menu_impl.H"
-#include "x/w/menulayoutmanager.H"
+#include "x/w/textlistlayoutmanager.H"
 #include "gridlayoutmanager.H"
 #include "focus/focusable.H"
 #include "popup/popup.H"
@@ -38,12 +38,12 @@ ref<layoutmanagerObj::implObj> menuObj::get_layout_impl() const
 	return impl->menu_popup->get_layout_impl();
 }
 
-menulayoutmanager menuObj::get_layoutmanager()
+textlistlayoutmanager menuObj::get_layoutmanager()
 {
 	return focusable_containerObj::get_layoutmanager();
 }
 
-const_menulayoutmanager menuObj::get_layoutmanager() const
+const_textlistlayoutmanager menuObj::get_layoutmanager() const
 {
 	return focusable_containerObj::get_layoutmanager();
 }

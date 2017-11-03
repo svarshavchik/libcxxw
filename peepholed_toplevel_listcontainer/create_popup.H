@@ -5,9 +5,6 @@
 #ifndef peepholed_toplevel_listcontainer_create_popup_h
 #define peepholed_toplevel_listcontainer_create_popup_h
 
-#include "x/w/listlayoutmanager.H"
-#include "listlayoutmanager/listcontainer_impl.H"
-#include "listlayoutmanager/listlayoutmanager.H"
 #include "listlayoutmanager/listcontainer_dim_element.H"
 #include "popup/popup.H"
 #include "popup/popup_attachedto_info.H"
@@ -31,7 +28,7 @@ LIBCXXW_NAMESPACE_START
 
 typedef always_visibleObj<
 	peepholed_toplevel_listcontainer_impl_elementObj<
-		listcontainer_dim_elementObj<listcontainerObj::implObj>>
+		listcontainer_dim_elementObj<textlist_container_implObj>>
 	> p_t_l_impl_t;
 
 //! Typedef alias.
@@ -40,7 +37,7 @@ typedef always_visibleObj<
 //! the list layout manager's container.
 
 typedef peepholed_toplevel_listcontainer_elementObj<
-	peepholed_toplevel_elementObj<listcontainerObj>> p_t_l_t;
+	peepholed_toplevel_elementObj<containerObj>> p_t_l_t;
 
 //! Return value from the create_p_t_l_impl_t callback.
 
@@ -63,10 +60,10 @@ typedef create_p_t_l_impl_ret_t create_p_t_l_impl_t(const ref<containerObj
 //! construct the list layout manager container object.
 
 typedef ref<p_t_l_t> create_p_t_l_t(const popup_attachedto_info
-				    &attachedto_info,
-				    const ref<p_t_l_impl_t> &,
-				    const ref<listlayoutmanagerObj::implObj> &);
-
+				      &attachedto_info,
+				      const ref<p_t_l_impl_t> &,
+				      const ref<textlistlayoutmanagerObj
+				      ::implObj> &);
 
 //! The type that specifies what kind of a popup it is.
 
@@ -136,6 +133,7 @@ create_peepholed_toplevel_listcontainer_popup
 	LIBCXX_HIDDEN;
 
 //! Type-erased create_peepholed_toplevel_listcontainer_popup().
+
 create_p_t_l_popup_ret_t
 do_create_peepholed_toplevel_listcontainer_popup
 (const create_peepholed_toplevel_listcontainer_popup_args &args,
@@ -181,7 +179,7 @@ ref<popup_attachedto_handlerObj
 //! supplies this parameter and the same \c new_listlayoutmanager parameter.
 //!
 //! The second value in the tuple is a reference to a
-//! subclass of a peepholed_toplevel_listcontainer_layoutmanager_implObj,
+//! subclass of a peepholed_toplevel_listcontainer_layoutmanager_implObj,o
 //! the list layout manager. The
 //! peepholed_toplevel_listcontainer_layoutmanager_implObj is constructed by
 //! passing the tuple's first value as the first two parameters to its

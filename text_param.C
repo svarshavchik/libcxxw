@@ -45,7 +45,10 @@ text_param::text_param()=default;
 text_param::~text_param()=default;
 
 text_param::text_param(const text_param &)=default;
+text_param::text_param(text_param &&)=default;
+
 text_param &text_param::operator=(const text_param &)=default;
+text_param &text_param::operator=(text_param &&)=default;
 
 text_param &text_param::operator()(const std::string_view &s)
 {

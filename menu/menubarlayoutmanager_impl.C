@@ -3,14 +3,13 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
-#include "listlayoutmanager/listitemcontainer.H"
+#include "textlistlayoutmanager/textlistlayoutstyle_implfwd.H"
+#include "textlistlayoutmanager/textlist_impl.H"
 #include "popup/popup.H"
 #include "menu/menubarlayoutmanager_impl.H"
 #include "menu/menubar_container_impl.H"
 #include "menu/menubar_hotspot_implobj.H"
 #include "menu/menu_impl.H"
-#include "menu/menulayoutmanager_impl.H"
-#include "menu/menuitemextrainfo.H"
 #include "peepholed_toplevel_listcontainer/create_popup.H"
 #include "container.H"
 #include "label_theme_font_element.H"
@@ -58,91 +57,33 @@ void menubarlayoutmanagerObj::implObj::initialize(menubarlayoutmanagerObj
 	f->create_canvas();
 }
 
-// The container implementation object for the menu list.
-
-// Constructed by do_create_popup_menu().
-//
-// Implements automatically showing the submenu (if there is one), when
-// hovering over the menu item.
-
-class LIBCXX_HIDDEN peepholed_menulistcontainer_implObj
-	: public label_theme_font_elementObj<p_t_l_impl_t> {
-
-	typedef label_theme_font_elementObj<p_t_l_impl_t> superclass_t;
+class LIBCXX_HIDDEN popup_menu_listObj : public p_t_l_impl_t {
 
  public:
 
-	using superclass_t::superclass_t;
+	using  p_t_l_impl_t::p_t_l_impl_t;
 
-	void unschedule_hover_action(IN_THREAD_ONLY) override
+	const char *label_theme_font() const override
 	{
-	}
-
- private:
-
-	popupptr current_submenu_popup()
-	{
-		popupptr p;
-
-		invoke_layoutmanager
-			([&]
-			 (const ref<listlayoutmanagerObj::implObj> &llm)
-			 {
-				 grid_map_t::lock lock{llm->grid_map};
-
-				 size_t r=llm->get_highlighted_row();
-
-				 if (r == (size_t)-1)
-					 return;
-
-				 if (!llm->enabled(lock, r))
-					 return;
-
-				 listitemcontainer
-					 c=llm->get(r, llm->cols(r)-1);
-
-				 menuitemextrainfo e=c->get();
-
-				 p=e->submenu();
-			 });
-
-		return p;
-	}
- public:
-	std::chrono::milliseconds hover_action_delay(IN_THREAD_ONLY) override
-	{
-		unsigned delay=0;
-
-		if (current_submenu_popup())
-			delay=menupopup_delay.getValue();
-
-		return std::chrono::milliseconds{delay};
-	}
-
-	void hover_action(IN_THREAD_ONLY) override
-	{
-		auto p=current_submenu_popup();
-		if (p)
-			p->elementObj::impl->request_visibility(IN_THREAD,
-								true);
+		return "menu_font";
 	}
 };
 
 std::tuple<popup, ref<popup_attachedto_handlerObj> >
 menubarlayoutmanagerObj::implObj
 ::do_create_popup_menu(const elementimpl &e,
-		       const function<void (const menulayoutmanager
+		       const function<void (const textlistlayoutmanager
 					    &)> &creator,
 		       attached_to attached_to_how)
 {
-	const auto &menu_list_style=bulleted_list_style;
+	const auto &menu_list_style=int_menu_list_style;
 
-	new_listlayoutmanager style{menu_list_style};
+	new_listlayoutmanager style{bulleted_text_list};
 
 	style.background_color="menu_popup_background_color";
 	style.current_color="menu_popup_highlighted_color";
 	style.highlighted_color="menu_popup_clicked_color";
-	style.columns=2;
+	style.columns=1;
 
 	style.selection_type=&menuitem_selected;
 
@@ -158,26 +99,33 @@ menubarlayoutmanagerObj::implObj
 			(const auto &peephole_container)
 			{
 				auto impl=ref
-					<peepholed_menulistcontainer_implObj>
-					::create("menu_font",
-						 style,
-						 peephole_container, style);
+					<popup_menu_listObj>
+					::create(style,
+						 peephole_container);
+
+				auto textlist_impl=ref<textlistObj::implObj>
+					::create(impl, style,
+						 menu_list_style);
 
 				return create_p_t_l_impl_ret_t{impl,
-						ref<menulayoutmanagerObj
-						    ::implObj>
-						::create(impl, impl, style,
-							 menu_list_style)
+						ref<peepholed_toplevel_listcontainer_layoutmanager_implObj>
+						::create(impl,
+							 textlist::create
+							 (textlist_impl))
 						};
 			},
 			[&]
 			(const popup_attachedto_info &attachedto_info,
 			 const ref<p_t_l_impl_t> &impl,
-			 const ref<listlayoutmanagerObj::implObj> &layout_impl)
+			 const ref<textlistlayoutmanagerObj::implObj> &layout_impl)
 			{
 				auto c=ref<p_t_l_t>::create(attachedto_info,
-							    impl, impl, impl,
-							    layout_impl);
+							     impl,
+							     layout_impl
+							     ->textlist_element
+							     ->impl,
+							     impl,
+							     layout_impl);
 
 				creator(layout_impl->create_public_object());
 
@@ -309,65 +257,11 @@ void menubarlayoutmanagerObj::implObj
 		    const callback_trigger_t &trigger,
 		    const busy &mcguffin)
 {
-	listlayoutmanager lm{lmbase};
-	list_lock lock{lm};
+	textlistlayoutmanager lm{lmbase};
 
-	// Last column is the extra_info we're looking for.
-
-	auto extrainfo=menulayoutmanagerObj::implObj::get_extrainfo(lm, i);
-
-	if (!extrainfo)
-		return;
-
-	auto type=extrainfo->menuitem_type.get();
-
-	std::visit(visitor{
-			[&](const created_menuitem_plain &pl)
-			{
-				// Have multiple_selection_type take care
-				// of flipping an option on and off. It knows
-				// how to do it.
-
-				if (pl.is_option)
-					multiple_selection_type(lm,
-								i,
-								trigger,
-								mcguffin);
-
-				// Our job is to make arrangements to close
-				// all menu popups, now that the menu selection
-				// has been made...
-				auto e=elementimpl(&lm->impl->container_impl
-						   ->get_element_impl());
-
-				(*e).THREAD->run_as
-					([e]
-					 (IN_THREAD_ONLY)
-					 {
-						 e->get_window_handler()
-							 .handler_data
-							 ->close_all_menu_popups
-							 (IN_THREAD);
-					 });
-
-				// And invoke the installed on-activate()
-				// callback.
-
-				if (pl.on_activate)
-					try {
-						pl.on_activate
-							({
-								lock, lm, i,
-								lm->selected(lock, i),
-								mcguffin
-							});
-					} CATCH_EXCEPTIONS;
-			},
-			[&](const created_menuitem_submenu &pl)
-			{
-				pl.submenu_popup->elementObj::impl
-					->toggle_visibility();
-			}
-		}, static_cast<const created_menuitem_type_t &>(*type));
+	lm->impl->textlist_element->impl->menuitem_selected(lm,
+							    i,
+							    trigger,
+							    mcguffin);
 }
 LIBCXXW_NAMESPACE_END

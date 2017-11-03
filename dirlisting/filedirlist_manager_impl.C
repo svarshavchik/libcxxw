@@ -6,7 +6,6 @@
 #include "dirlisting/filedirlist_manager_impl.H"
 #include "dirlisting/filedircontents.H"
 #include "dirlisting/filedir_file.H"
-#include "listlayoutmanager/listlayoutmanager.H"
 #include "container_element.H"
 #include "run_as.H"
 #include "batch_queue.H"

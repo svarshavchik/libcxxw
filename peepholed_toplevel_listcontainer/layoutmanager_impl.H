@@ -5,7 +5,7 @@
 #ifndef custom_combobox_popup_layoutmanager_h
 #define custom_combobox_popup_layoutmanager_h
 
-#include "listlayoutmanager/listlayoutmanager.H"
+#include "textlistlayoutmanager/textlistlayoutmanager_impl.H"
 #include "peepholed_toplevel_listcontainer/impl.H"
 
 LIBCXXW_NAMESPACE_START
@@ -19,7 +19,7 @@ LIBCXXW_NAMESPACE_START
 //! combo-box selection).
 
 class LIBCXX_HIDDEN peepholed_toplevel_listcontainer_layoutmanager_implObj
-	: public listlayoutmanagerObj::implObj {
+	: public textlistlayoutmanagerObj::implObj {
 
  public:
 
@@ -30,20 +30,15 @@ class LIBCXX_HIDDEN peepholed_toplevel_listcontainer_layoutmanager_implObj
 	peepholed_toplevel_listcontainer_layoutmanager_implObj
 		(const ref<peepholed_toplevel_listcontainer_implObj
 		 > &container_impl,
-		 const ref<listcontainerObj::implObj> &listcontainer_impl,
-		 const new_listlayoutmanager &style,
-		 const listlayoutstyle &list_style);
+#if 0
+		 const ref<containerObj::implObj> &listcontainer_impl,
+#endif
+		 const textlist &textlist_element);
 
 	//! Destructor
 	~peepholed_toplevel_listcontainer_layoutmanager_implObj();
 
-	//! Override process_updated_position.
-
-	//! Determine the tallest row's height, and call
-	//! container_impl->update_tallest_row_height().
-	void process_updated_position(IN_THREAD_ONLY,
-				      const rectangle &position) override;
-
+	void update_tallest_row_height(IN_THREAD_ONLY, dim_t v) override;
 };
 
 LIBCXXW_NAMESPACE_END

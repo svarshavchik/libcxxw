@@ -7,7 +7,7 @@
 
 #include <x/w/menubarfactoryfwd.H>
 #include <x/w/menubarlayoutmanagerfwd.H>
-#include <x/w/menulayoutmanager.H>
+#include <x/w/textlistlayoutmanagerfwd.H>
 #include <x/w/text_paramfwd.H>
 #include <x/w/menufwd.H>
 #include <x/functional.H>
@@ -36,7 +36,7 @@ public:
 
 	//! Menu content creator callback signature.
 
-	typedef void menu_content_creator_t(const menulayoutmanager &);
+	typedef void menu_content_creator_t(const textlistlayoutmanager &);
 
 	//! Add a menubar item.
 

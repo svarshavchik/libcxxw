@@ -5,8 +5,17 @@
 #include "libcxxw_config.h"
 #include "textlistlayoutmanager/textlistlayoutmanager_impl.H"
 #include "textlistlayoutmanager/textlist_impl.H"
+#include <type_traits>
 
 LIBCXXW_NAMESPACE_START
+
+list_item_param::~list_item_param()=default;
+
+list_item_param::list_item_param(const list_item_param &)=default;
+list_item_param::list_item_param(list_item_param &&)=default;
+
+list_item_param &list_item_param::operator=(const list_item_param &)=default;
+list_item_param &list_item_param::operator=(list_item_param &&)=default;
 
 textlistlayoutmanagerObj::textlistlayoutmanagerObj(const ref<implObj> &impl)
 	: layoutmanagerObj(impl),
@@ -123,6 +132,12 @@ bool textlistlayoutmanagerObj::enabled(size_t i) const
 void textlistlayoutmanagerObj::enabled(size_t i, bool flag)
 {
 	impl->textlist_element->impl->enabled(i, flag);
+}
+
+textlistlayoutmanagerptr
+textlistlayoutmanagerObj::get_item_layoutmanager(size_t i)
+{
+	return impl->textlist_element->impl->get_item_layoutmanager(i);
 }
 
 LIBCXXW_NAMESPACE_END

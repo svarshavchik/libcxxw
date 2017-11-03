@@ -23,6 +23,7 @@
 #include "x/w/types.H"
 #include "richtext/richtextfwd.H"
 #include "richtext/richtext_draw_boundariesfwd.H"
+#include "richtext/richtextmeta.H"
 #include <x/mpobj.H>
 #include <unordered_map>
 #include <set>
@@ -35,6 +36,7 @@ LIBCXXW_NAMESPACE_START
 struct listcontainer_selected_color;
 struct listcontainer_highlighted_color;
 struct listcontainer_current_color;
+struct textlist_rowinfo;
 
 //! Container that keeps track of minimum columns widths.
 
@@ -154,10 +156,6 @@ struct LIBCXX_HIDDEN listimpl_info_s {
 
 	std::vector<dim_t> calculated_column_widths;
 
-	//! The sum total of calculated_column_widths
-
-	dim_t total_column_width;
-
 	//! Starting position and width of each column.
 
 	//! Scaled to current element width, factoring in the padding.
@@ -221,7 +219,14 @@ class LIBCXX_HIDDEN textlistObj::implObj :
 		const screen &container_screen,
 		const textlistlayout_style_impl &list_style);
 
+	//! Tallest row height
+
+	//! Statistics kept by recalculate().
+	dim_t tallest_row_height_thread_only;
+
  public:
+	THREAD_DATA_ONLY(tallest_row_height);
+
 	//! Destructor
 	~implObj();
 
@@ -261,19 +266,41 @@ class LIBCXX_HIDDEN textlistObj::implObj :
 	void append_rows(const textlistlayoutmanager &ll,
 			 const std::vector<list_item_param> &items);
 
+	//! Add rows to the end.
+	void append_rows(const textlistlayoutmanager &lm,
+			 const std::vector<textlist_cell> &texts,
+			 const std::vector<textlist_rowinfo> &meta);
+
 	//! Insert rows.
 	void insert_rows(const textlistlayoutmanager &ll,
 			 size_t row_number,
 			 const std::vector<list_item_param> &items);
+
+	//! Insert rows.
+	void insert_rows(const textlistlayoutmanager &ll,
+			 size_t row_number,
+			 const std::vector<textlist_cell> &texts,
+			 const std::vector<textlist_rowinfo> &meta);
 
 	//! Replace rows.
 	void replace_rows(const textlistlayoutmanager &ll,
 			  size_t row_number,
 			  const std::vector<list_item_param> &items);
 
+	//! Replace rows.
+	void replace_rows(const textlistlayoutmanager &ll,
+			  size_t row_number,
+			  const std::vector<textlist_cell> &texts,
+			  const std::vector<textlist_rowinfo> &meta);
+
 	//! Replace all rows.
 	void replace_all_rows(const textlistlayoutmanager &ll,
 			      const std::vector<list_item_param> &items);
+
+	//! Replace all rows.
+	void replace_all_rows(const textlistlayoutmanager &ll,
+			      const std::vector<textlist_cell> &texts,
+			      const std::vector<textlist_rowinfo> &meta);
 
 	//! Recalculate after a theme update.
 
@@ -324,6 +351,23 @@ class LIBCXX_HIDDEN textlistObj::implObj :
 	void selected(const textlistlayoutmanager &, size_t, bool,
 		      const callback_trigger_t &);
 
+	//! Invoked from the layout manager.
+	void menuitem_selected(const textlistlayoutmanager &, size_t,
+			       const callback_trigger_t &,
+			       const busy &);
+ private:
+
+	//! Common internal selection processing.
+
+	//! \internal
+	void selected_common(const textlistlayoutmanager &,
+			     list_lock &,
+			     listimpl_info_t::lock &,
+			     size_t,
+			     bool,
+			     const callback_trigger_t &);
+
+ public:
 	//! Number of items in the list
 
 	size_t size();
@@ -423,6 +467,12 @@ class LIBCXX_HIDDEN textlistObj::implObj :
 	//! Precreate an icon that we might need.
 	const icon bullet2;
 
+	//! Default label metadata for list item element.
+	const richtextmeta itemlabel_meta;
+
+	//! Default metadata for list element.
+	const richtextmeta itemshortcut_meta;
+
  private:
 	//! Schedule running redraw_needed_rows() in the connection thread.
 
@@ -453,7 +503,8 @@ class LIBCXX_HIDDEN textlistObj::implObj :
 	void insert_rows(const textlistlayoutmanager &ll,
 			 list_lock &lock,
 			 size_t row_number,
-			 const std::vector<textlist_cell> &texts);
+			 const std::vector<textlist_cell> &texts,
+			 const std::vector<textlist_rowinfo> &meta);
 
 	//! Remove the given rows.
 
@@ -482,8 +533,8 @@ class LIBCXX_HIDDEN textlistObj::implObj :
 
 	//! Based on calculated_column_widths and padding. Returns total
 	//! width.
-	void calculate_column_poswidths(IN_THREAD_ONLY, listimpl_info_t::lock
-					&lock);
+	dim_t calculate_column_poswidths(IN_THREAD_ONLY, listimpl_info_t::lock
+					 &lock);
 
 	//! Draw an individual row.
 	rectangle do_draw_row(IN_THREAD_ONLY,
@@ -555,6 +606,29 @@ class LIBCXX_HIDDEN textlistObj::implObj :
 			      size_t,
 			      bool,
 			      const callback_trigger_t &);
+
+	//! Invoke callbacks after list item's selection status changed.
+	void notify_callbacks(const textlistlayoutmanager &,
+			      list_lock &,
+			      const list_row_info_t &,
+			      size_t,
+			      bool,
+			      const callback_trigger_t &,
+			      const busy &);
+ public:
+
+	//! Override hover_action_delay.
+
+	//! Checks if the currently highlighted list item has a popup.
+	std::chrono::milliseconds hover_action_delay(IN_THREAD_ONLY) override;
+
+	//! Override hover_action().
+
+	//! Display the popup for the currently highlighted list item.
+	void hover_action(IN_THREAD_ONLY) override;
+
+	//! Return an existing menu item's submenu layoutmanager.
+	textlistlayoutmanagerptr get_item_layoutmanager(size_t i);
 };
 
 LIBCXXW_NAMESPACE_END

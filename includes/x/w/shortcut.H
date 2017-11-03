@@ -41,7 +41,7 @@ public:
 
 	//! Return \c false for a default constructor.
 
-	operator bool() const;
+	explicit operator bool() const;
 
 	//! Operator
 	bool operator!() const { return operator bool() == false; }

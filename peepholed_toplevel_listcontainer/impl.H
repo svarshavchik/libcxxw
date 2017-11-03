@@ -8,7 +8,8 @@
 #include "child_elementfwd.H"
 #include "connection_threadfwd.H"
 #include "x/w/types.H"
-#include "listlayoutmanager/listcontainerobj.H"
+#include "child_element.H"
+#include "focus/focusable.H"
 #include <x/obj.H>
 
 LIBCXXW_NAMESPACE_START
@@ -46,10 +47,9 @@ class LIBCXX_HIDDEN peepholed_toplevel_listcontainer_implObj
 	virtual bool update_tallest_row_height(IN_THREAD_ONLY,
 					       dim_t new_tallest_height);
 
-	//! Return the child_elementObj this mixin implementation is a part of.w
+	//! Return the child_elementObj this mixin implementation is a part of.
 
-	virtual listcontainerObj::implObj &listcontainer_element()=0;
-
+	virtual child_elementObj &listcontainer_element()=0;
 };
 
 LIBCXXW_NAMESPACE_END

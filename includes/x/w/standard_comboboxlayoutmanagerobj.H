@@ -19,6 +19,9 @@ class standard_comboboxlayoutmanagerObj
 	: public custom_comboboxlayoutmanagerObj {
 
 public:
+	//! Alias
+	typedef custom_comboboxlayoutmanagerObj superclass_t;
+
 	class implObj;
 
 	//! Internal implementation object.
@@ -26,7 +29,7 @@ public:
 
 	//! Constructor
 	standard_comboboxlayoutmanagerObj(const ref<implObj> &impl,
-					  const ref<listlayoutmanagerObj
+					  const ref<textlistlayoutmanagerObj
 					  ::implObj>
 					  &list_layout_impl) LIBCXX_HIDDEN;
 
@@ -35,44 +38,33 @@ public:
 
 	using custom_comboboxlayoutmanagerObj::append_item;
 
-	//! Not implemented.
-	factory append_item() override;
-
 	//! Append a new item to the combo-box.
 
-	void append_item(const std::vector<text_param> &items) override;
+	void append_item(const std::vector<list_item_param> &items) override;
 
 	using custom_comboboxlayoutmanagerObj::insert_item;
 
-	//! Not implemented.
-	factory insert_item(size_t) override;
-
 	//! Insert a new item to the combo-box before an existing item.
 
-	void insert_item(size_t i, const std::vector<text_param> &items)
+	void insert_item(size_t i, const std::vector<list_item_param> &items)
 		override;
 
 	//! Remove an item from the combo-box.
 
 	void remove_item(size_t i) override;
 
-	//! Not implemented.
-	factory replace_item(size_t item_number) override;
-
 	using custom_comboboxlayoutmanagerObj::replace_item;
 
 	//! Replace an item.
 
 	void replace_item(size_t item_number,
-			  const std::vector<text_param> &items) override;
+			  const std::vector<list_item_param> &items) override;
+
+	using custom_comboboxlayoutmanagerObj::replace_all_items;
 
 	//! Override replace_all().
 
-	void replace_all_items(const std::vector<text_param> &items) override;
-
-	//! Not implemented.
-
-	factory replace_all_items() override;
+	void replace_all_items(const std::vector<list_item_param> &items) override;
 
 	//! Return combo-box item.
 	text_param item(size_t i) const;

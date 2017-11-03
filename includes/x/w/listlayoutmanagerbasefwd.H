@@ -9,6 +9,7 @@
 #include <x/w/shortcutfwd.H>
 #include <x/ptrfwd.H>
 #include <functional>
+#include <type_traits>
 
 LIBCXXW_NAMESPACE_START
 
@@ -51,6 +52,16 @@ typedef const_ptr<listlayoutmanagerbaseObj> const_listlayoutmanagerbaseptr;
 typedef void list_item_status_change_callback_t(list_lock &lock,
 						size_t i,
 						bool selected);
+
+typedef std::function<list_item_status_change_callback_t
+		      > list_item_status_change_callback;
+
+template<typename callback>
+using is_list_item_status_change_callback=
+	std::is_same<std::void_t<
+			     decltype(std::declval<callback &&>()
+				      (std::declval<list_lock &>(), 0, false))>,
+		     void>;
 
 //! A list item callback factory
 

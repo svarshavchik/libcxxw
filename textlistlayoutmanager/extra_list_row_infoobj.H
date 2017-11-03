@@ -6,15 +6,20 @@
 #define x_w_extra_list_row_infoobj_h
 
 #include "textlistlayoutmanager/extra_list_row_infofwd.H"
+#include "popup/popupfwd.H"
 #include "connection_threadfwd.H"
+#include "textlistlayoutstyle_impl.H"
 #include "x/w/listlayoutmanagerbasefwd.H"
 #include "x/w/textlistlayoutmanagerfwd.H"
 #include "x/w/shortcutfwd.H"
+#include "x/w/rectangle.H"
 #include <x/obj.H>
 
 #include <functional>
 
 LIBCXXW_NAMESPACE_START
+
+struct textlist_rowinfo;
 
 //! Implementation object.
 
@@ -55,9 +60,10 @@ class LIBCXX_HIDDEN extra_list_row_infoObj : virtual public obj {
 	//! This item can be selected via keyboard or pointer
 	bool enabled() const;
 
-	//! Set a shortcut for this list item.
-	void set_shortcut(const textlistlayoutmanager &lm,
-			  const shortcut &);
+	//! Initialize this row's metadata.
+
+	void set_meta(const textlistlayoutmanager &lm,
+		      const textlist_rowinfo &meta);
 
 	//! This item's status change callback.
 
@@ -67,6 +73,47 @@ class LIBCXX_HIDDEN extra_list_row_infoObj : virtual public obj {
 	//! Default no-op status_change_callback.
 
 	static void default_status_change_callback(list_lock &, size_t, bool);
+
+ private:
+
+	//! Optional information associated with a menu_item.
+	menu_item_t menu_item;
+
+ public:
+
+	//! Whether this list item has a popup.
+
+	bool has_submenu() const
+	{
+		return std::holds_alternative<menu_item_submenu>(menu_item);
+	}
+
+	//! Whether this list item is an option
+
+	bool is_option() const
+	{
+		return std::holds_alternative<menu_item_option>(menu_item);
+	}
+
+	//! Display the popup.
+
+	//! The parameter specifies the absolute location of the item's row
+	//! in screen coordinates.
+	//!
+	//! Invokes current_popup_attachedto_handler's
+	//! update_attachedto_element_position(), then show_alls() the popup.
+
+	void show_submenu(IN_THREAD_ONLY, const rectangle &);
+
+	//! Hide or display the popup
+
+	//! Like show_submenu(), but toggles the visibility.
+
+	void toggle_submenu(IN_THREAD_ONLY, const rectangle &);
+
+	//! Return the submenu's layoutmanager.
+
+	textlistlayoutmanager submenu_layoutmanager();
 };
 
 LIBCXXW_NAMESPACE_END

@@ -15,7 +15,7 @@ class custom_combobox_popup_containerObj;
 /*! The combo-box popup container.
 
 The container with a list layout manager, comprising the list of items
-in the combobox's popup.
+in the combo-box's popup.
 
 */
 

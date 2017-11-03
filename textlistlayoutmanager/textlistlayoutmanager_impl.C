@@ -28,6 +28,9 @@ void textlistlayoutmanagerObj::implObj::recalculate(IN_THREAD_ONLY)
 {
 	textlist_element->impl->recalculate(IN_THREAD);
 	singletonlayoutmanagerObj::implObj::recalculate(IN_THREAD);
+
+	update_tallest_row_height(IN_THREAD, textlist_element->impl
+				  ->tallest_row_height(IN_THREAD));
 }
 
 void textlistlayoutmanagerObj::implObj::child_metrics_updated(IN_THREAD_ONLY)
@@ -47,6 +50,20 @@ void textlistlayoutmanagerObj::implObj
 	// ... and then size the child element to match our size.
 	textlist_element->impl->update_current_position(IN_THREAD, {
 			0, 0, position.width, position.height});
+}
+
+void textlistlayoutmanagerObj::implObj
+::theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme)
+{
+	singletonlayoutmanagerObj::implObj::theme_updated(IN_THREAD, new_theme);
+
+	update_tallest_row_height(IN_THREAD, textlist_element->impl
+				  ->tallest_row_height(IN_THREAD));
+}
+
+void textlistlayoutmanagerObj::implObj
+::update_tallest_row_height(IN_THREAD_ONLY, dim_t v)
+{
 }
 
 LIBCXXW_NAMESPACE_END

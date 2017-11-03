@@ -27,12 +27,12 @@ class LIBCXX_HIDDEN peepholed_toplevel_listcontainer_popupObj
 
  public:
 
-	const ref<listlayoutmanagerObj::implObj> listlayout_impl;
+	const ref<textlistlayoutmanagerObj::implObj> listlayout_impl;
 
 	peepholed_toplevel_listcontainer_popupObj
 		(const ref<implObj> &impl,
 		 const ref<layoutmanagerObj::implObj> &layout,
-		 const ref<listlayoutmanagerObj::implObj> &listlayout_impl)
+		 const ref<textlistlayoutmanagerObj::implObj> &listlayout_impl)
 		: popupObj(impl, layout),
 		listlayout_impl(listlayout_impl)
 		{

@@ -26,15 +26,17 @@ class LIBCXX_HIDDEN custom_combobox_popup_containerObj : public p_t_l_t {
 public:
 	class implObj;
 
+	//! Internal implementation object.
+
 	const ref<implObj> impl;
 
 	//! The combo-box popup container uses the list layout manager.
 
-	const ref<listlayoutmanagerObj::implObj> layout_impl;
+	const ref<textlistlayoutmanagerObj::implObj> layout_impl;
 
 	//! Constructor
 	custom_combobox_popup_containerObj(const ref<implObj> &impl,
-					   const ref<listlayoutmanagerObj
+					   const ref<textlistlayoutmanagerObj
 					   ::implObj> &layout_impl,
 					   const popup_attachedto_info
 					   &attachedto_info)

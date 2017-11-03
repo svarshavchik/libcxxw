@@ -7,6 +7,8 @@
 #include "textlistlayoutmanager/textlistlayoutstyle_impl.H"
 #include "textlistlayoutmanager/textlistlayoutmanager_impl.H"
 #include "textlistlayoutmanager/textlist_cell.H"
+#include "popup/popup.H"
+#include "popup/popup_attachedto_handler.H"
 #include "focus/focusable_element.H"
 #include "background_color_element.H"
 #include "current_border_impl.H"
@@ -34,17 +36,17 @@
 
 LIBCXXW_NAMESPACE_START
 
+static property::value<unsigned>
+listitempopup_delay(LIBCXX_NAMESPACE_STR "::w::listitempopup_delay", 500);
+
 list_lock::list_lock(const textlistlayoutmanagerObj &manager)
-	: variant_lock_t{std::in_place_type_t<textlist_tuple_t>{},
-		manager.impl->textlist_element->impl->textlist_info, &manager}
+	: listimpl_info_lock_t{manager.impl->textlist_element->impl
+		->textlist_info},
+	  layout_manager{&manager}
 {
 }
 
-list_lock::operator listimpl_info_t::lock &()
-{
-	return std::get<listimpl_info_t::lock>
-		(std::get<textlist_tuple_t>(*this));
-}
+list_lock::~list_lock()=default;
 
 ////////////////////////////////////////////////////////////////////////////
 
@@ -123,7 +125,13 @@ textlistObj::implObj::implObj(const ref<textlist_container_implObj>
 	  bullet1(container_element_impl.get_window_handler()
 		  .create_icon_mm("bullet1", render_repeat::none, 0, 0)),
 	  bullet2(container_element_impl.get_window_handler()
-		  .create_icon_mm("bullet2", render_repeat::none, 0, 0))
+		  .create_icon_mm("bullet2", render_repeat::none, 0, 0)),
+
+	  itemlabel_meta{create_background_color("label_foreground_color"),
+		create_theme_font(label_theme_font())},
+	  itemshortcut_meta{create_background_color("label_foreground_color"),
+			  create_theme_font("menu_shortcut")}
+
 {
 	// Some sanity checks.
 
@@ -169,14 +177,25 @@ void textlistObj::implObj::append_rows(const textlistlayoutmanager &lm,
 				       const std::vector<list_item_param>
 				       &items)
 {
-	auto texts=list_style.create_cells(items, *this);
+	std::vector<textlist_cell> texts;
+	std::vector<textlist_rowinfo> meta;
 
+	list_style.create_cells(items, *this, texts, meta);
+
+	append_rows(lm, texts, meta);
+}
+
+void textlistObj::implObj::append_rows(const textlistlayoutmanager &lm,
+				       const std::vector<textlist_cell> &texts,
+				       const std::vector<textlist_rowinfo> &meta
+				       )
+{
 	list_lock lock{lm};
 
 	listimpl_info_t::lock &l{lock};
 
 	// Implement by calling insert at the end of the list.
-	insert_rows(lm, lock, l->row_infos.size(), texts);
+	insert_rows(lm, lock, l->row_infos.size(), texts, meta);
 }
 
 void textlistObj::implObj::insert_rows(const textlistlayoutmanager &lm,
@@ -184,18 +203,33 @@ void textlistObj::implObj::insert_rows(const textlistlayoutmanager &lm,
 				       const std::vector<list_item_param>
 				       &items)
 {
-	auto texts=list_style.create_cells(items, *this);
+	std::vector<textlist_cell> texts;
+	std::vector<textlist_rowinfo> meta;
 
+	list_style.create_cells(items, *this, texts, meta);
+
+	insert_rows(lm, row_number, texts, meta);
+}
+
+void textlistObj::implObj::insert_rows(const textlistlayoutmanager &lm,
+				       size_t row_number,
+				       const std::vector<textlist_cell> &texts,
+				       const std::vector<textlist_rowinfo> &meta
+				       )
+{
 	list_lock lock{lm};
 
-	insert_rows(lm, lock, row_number, texts);
+	insert_rows(lm, lock, row_number, texts, meta);
 }
 
 void textlistObj::implObj::insert_rows(const textlistlayoutmanager &lm,
 				       list_lock &ll,
 				       size_t row_number,
 				       const std::vector<textlist_cell>
-				       &texts)
+				       &texts,
+				       const std::vector<textlist_rowinfo>
+				       &meta)
+
 {
 	listimpl_info_t::lock &lock=ll;
 
@@ -215,6 +249,7 @@ void textlistObj::implObj::insert_rows(const textlistlayoutmanager &lm,
 			       rows, list_row_info_t{});
 
 	bool first_one=true;
+	size_t row_num=0;
 
 	std::for_each(lock->row_infos.begin() + row_number,
 		      lock->row_infos.begin() + row_number + rows,
@@ -227,10 +262,8 @@ void textlistObj::implObj::insert_rows(const textlistlayoutmanager &lm,
 			      if (!first_one)
 				      iter.extra=extra_list_row_info::create();
 			      first_one=false;
-			      iter.extra->status_change_callback=
-				      lm->next_callback();
-			      iter.extra->set_shortcut(lm,
-						       lm->next_shortcut());
+
+			      iter.extra->set_meta(lm, meta.at(row_num++));
 		      });
 
 	lock->cells.insert(lock->cells.begin() + row_number * columns,
@@ -255,13 +288,26 @@ void textlistObj::implObj::replace_rows(const textlistlayoutmanager &lm,
 					const std::vector<list_item_param>
 					&items)
 {
-	auto texts=list_style.create_cells(items, *this);
+	std::vector<textlist_cell> texts;
+	std::vector<textlist_rowinfo> meta;
 
+	list_style.create_cells(items, *this, texts, meta);
+
+	replace_rows(lm, row_number, texts, meta);
+}
+
+void textlistObj::implObj::replace_rows(const textlistlayoutmanager &lm,
+					size_t row_number,
+					const std::vector<textlist_cell>
+					&texts,
+					const std::vector<textlist_rowinfo>
+					&meta)
+{
 	list_lock ll{lm};
 
 	listimpl_info_t::lock &lock=ll;
 
-	size_t n=items.size() / columns;
+	size_t n=texts.size() / columns;
 
 	if (row_number > lock->row_infos.size())
 		removing_rows(lm, lock, row_number, n); // Throw the exception
@@ -273,7 +319,7 @@ void textlistObj::implObj::replace_rows(const textlistlayoutmanager &lm,
 
 		remove_rows(lm, lock, row_number,
 			    lock->row_infos.size()-row_number);
-		insert_rows(lm, ll, lock->row_infos.size(), texts);
+		insert_rows(lm, ll, lock->row_infos.size(), texts, meta);
 		return;
 	}
 
@@ -283,16 +329,15 @@ void textlistObj::implObj::replace_rows(const textlistlayoutmanager &lm,
 	// With the booking out of the way, we simply replace the rows and
 	// cells.
 
+	size_t row_num=0;
+
 	std::generate(lock->row_infos.begin()+row_number,
 		      lock->row_infos.begin()+row_number+n,
 		      [&]
 		      {
 			      list_row_info_t r;
 
-			      r.extra->status_change_callback=
-				      lm->next_callback();
-			      r.extra->set_shortcut(lm,
-						    lm->next_shortcut());
+			      r.extra->set_meta(lm, meta.at(row_num++));
 
 			      return r;
 		      });
@@ -313,8 +358,20 @@ void textlistObj::implObj::replace_all_rows(const textlistlayoutmanager &lm,
 					    const std::vector<list_item_param>
 					    &items)
 {
-	auto texts=list_style.create_cells(items, *this);
+	std::vector<textlist_cell> texts;
+	std::vector<textlist_rowinfo> meta;
 
+	list_style.create_cells(items, *this, texts, meta);
+
+	replace_all_rows(lm, texts, meta);
+}
+
+void textlistObj::implObj::replace_all_rows(const textlistlayoutmanager &lm,
+					    const std::vector<textlist_cell>
+					    &texts,
+					    const std::vector<textlist_rowinfo>
+					    &meta)
+{
 	list_lock ll{lm};
 
 	unselect(lm, ll);
@@ -330,7 +387,7 @@ void textlistObj::implObj::replace_all_rows(const textlistlayoutmanager &lm,
 	lock->cells.clear();
 	for (auto &column_widths:lock->column_widths)
 		column_widths.clear();
-	insert_rows(lm, ll, 0, texts);
+	insert_rows(lm, ll, 0, texts, meta);
 }
 
 void textlistObj::implObj::remove_rows(const textlistlayoutmanager &lm,
@@ -423,7 +480,6 @@ void textlistObj::implObj::calculate_column_widths(IN_THREAD_ONLY,
 	lock->calculated_column_widths.clear();
 
 	lock->calculated_column_widths.reserve(columns);
-	lock->total_column_width=0;
 
 	for (auto &column_widths:lock->column_widths)
 	{
@@ -433,12 +489,7 @@ void textlistObj::implObj::calculate_column_widths(IN_THREAD_ONLY,
 			maximum_width=*column_widths.begin();
 
 		lock->calculated_column_widths.push_back(maximum_width);
-		lock->total_column_width=
-			dim_t::truncate(lock->total_column_width+maximum_width);
 	}
-
-	if (lock->total_column_width==dim_t::infinite())
-		lock->total_column_width=dim_t::infinite()-1;
 }
 
 void textlistObj::implObj::initialize(IN_THREAD_ONLY)
@@ -452,6 +503,7 @@ void textlistObj::implObj::initialize(IN_THREAD_ONLY)
 
 	recalculate_with_new_theme(IN_THREAD, lock);
 	superclass_t::initialize(IN_THREAD);
+	request_visibility(IN_THREAD, true);
 }
 
 void textlistObj::implObj::theme_updated(IN_THREAD_ONLY,
@@ -501,6 +553,8 @@ void textlistObj::implObj::recalculate(IN_THREAD_ONLY,
 
 	auto screen=get_screen()->impl;
 	auto current_theme=*current_theme_t::lock{screen->current_theme};
+
+	tallest_row_height(IN_THREAD)=0;
 
 	for (size_t i=0; i<n; ++i, ++row)
 	{
@@ -561,14 +615,20 @@ void textlistObj::implObj::recalculate(IN_THREAD_ONLY,
 					->calculated_border_height;
 			}
 		}
+		coord_t old_y=y;
+
 		y=coord_t::truncate(y+row->height);
 		y=coord_t::truncate(y+v_padding_times_two);
+
+		dim_t total_height=dim_t::truncate(y-old_y);
+
+		if (total_height > tallest_row_height(IN_THREAD))
+			tallest_row_height(IN_THREAD)=total_height;
 	}
 
 	calculate_column_widths(IN_THREAD, lock);
-	calculate_column_poswidths(IN_THREAD, lock);
 
-	dim_t width=lock->total_column_width;
+	dim_t width=calculate_column_poswidths(IN_THREAD, lock);
 	dim_t height=dim_t::truncate(y);
 
 	lock->row_infos.modified=false;
@@ -576,6 +636,7 @@ void textlistObj::implObj::recalculate(IN_THREAD_ONLY,
 		->set_element_metrics(IN_THREAD,
 				      { width, width, width},
 				      { height, height, height});
+
 	if (lock->full_redraw_needed)
 	{
 		lock->full_redraw_needed=false;
@@ -583,7 +644,7 @@ void textlistObj::implObj::recalculate(IN_THREAD_ONLY,
 	}
 }
 
-void textlistObj::implObj::calculate_column_poswidths(IN_THREAD_ONLY,
+dim_t textlistObj::implObj::calculate_column_poswidths(IN_THREAD_ONLY,
 						       listimpl_info_t::lock
 						       &lock)
 {
@@ -613,6 +674,11 @@ void textlistObj::implObj::calculate_column_poswidths(IN_THREAD_ONLY,
 	final_width=dim_t::truncate(final_width
 				    + textlist_container->list_right_padding()
 				    ->pixels(IN_THREAD));
+
+
+	auto total_column_width=final_width;
+	if (total_column_width==dim_t::infinite())
+		total_column_width=dim_t::infinite()-1;
 
 	// If the list is wider than final_width, distribute the additional
 	// real estate according to requested_col_widths
@@ -663,6 +729,8 @@ void textlistObj::implObj::calculate_column_poswidths(IN_THREAD_ONLY,
 			coord_offset=dim_t::truncate(coord_offset+extra);
 		}
 	}
+
+	return total_column_width;
 }
 
 void textlistObj::implObj::process_updated_position(IN_THREAD_ONLY)
@@ -1273,6 +1341,83 @@ void textlistObj::implObj::selected(const textlistlayoutmanager &lm,
 	if (i >= lock->row_infos.size())
 		throw EXCEPTION(gettextmsg(_("Row %1% does not exist"), i));
 
+	selected_common(lm, ll, lock, i, selected_flag, trigger);
+}
+
+void textlistObj::implObj::menuitem_selected(const textlistlayoutmanager &lm,
+					     size_t i,
+					     const callback_trigger_t &trigger,
+					     const busy &mcguffin)
+{
+	list_lock ll{lm};
+
+	listimpl_info_t::lock &lock=ll;
+
+	if (i >= lock->row_infos.size())
+		throw EXCEPTION(gettextmsg(_("Row %1% does not exist"), i));
+
+	auto &row=lock->row_infos.at(i);
+
+	if (row.extra->has_submenu())
+	{
+		// TODO -- figure out how to do this better.
+		//
+		// Need to postpone accessing row location until we're
+		// IN_THREAD
+
+		this->THREAD->run_as
+			([e=ref(this),
+			  y=row.y,
+			  height=row.height,
+			  extra=row.extra]
+			 (IN_THREAD_ONLY)
+			 {
+				 auto r=e->get_absolute_location(IN_THREAD);
+
+				 r.y = coord_t::truncate(r.y+y);
+				 r.height=height;
+
+				 e->get_window_handler()
+					 .get_absolute_location_on_screen
+					 (IN_THREAD, r);
+
+				 extra->toggle_submenu(IN_THREAD, r);
+			 });
+		return;
+	}
+
+	if (row.extra->is_option())
+	{
+		selected_common(lm, ll, lock, i,
+				!row.extra->selected,
+				trigger);
+	}
+	else
+	{
+		notify_callbacks(lm, ll, row, i, row.extra->selected,
+				 trigger, mcguffin);
+	}
+
+	// Our job is to make arrangements to close
+	// all menu popups, now that the menu selection
+	// has been made...
+
+	this->THREAD->run_as
+		([e=ref(this)]
+		 (IN_THREAD_ONLY)
+		 {
+			 e->get_window_handler().handler_data
+				 ->close_all_menu_popups(IN_THREAD);
+		 });
+}
+
+void textlistObj::implObj::selected_common(const textlistlayoutmanager &lm,
+					   list_lock &ll,
+					   listimpl_info_t::lock &lock,
+					   size_t i,
+					   bool selected_flag,
+					   const callback_trigger_t &trigger)
+{
 	auto &r=lock->row_infos.at(i);
 
 	if (r.extra->selected == selected_flag)
@@ -1297,6 +1442,20 @@ void textlistObj::implObj::notify_callbacks(const textlistlayoutmanager &lm,
 					    bool selected_flag,
 					    const callback_trigger_t &trigger)
 {
+	busy_impl yes_i_am{*this};
+
+	notify_callbacks(lm, ll, r, i, selected_flag, trigger, yes_i_am);
+}
+
+void textlistObj::implObj::notify_callbacks(const textlistlayoutmanager &lm,
+					    list_lock &ll,
+					    const list_row_info_t &r,
+					    size_t i,
+					    bool selected_flag,
+					    const callback_trigger_t &trigger,
+					    const busy &mcguffin)
+{
+
 	listimpl_info_t::lock &lock=ll;
 
 	if (r.extra->status_change_callback)
@@ -1304,10 +1463,9 @@ void textlistObj::implObj::notify_callbacks(const textlistlayoutmanager &lm,
 			r.extra->status_change_callback(ll, i, selected_flag);
 		} CATCH_EXCEPTIONS;
 
-	busy_impl yes_i_am{*this};
 	try {
 		lock->selection_changed(lm, i, selected_flag, trigger,
-					yes_i_am);
+					mcguffin);
 	} CATCH_EXCEPTIONS;
 }
 
@@ -1448,6 +1606,57 @@ bool textlistObj::implObj::unselect(const textlistlayoutmanager &lm,
 	}
 
 	return unselected;
+}
+
+std::chrono::milliseconds textlistObj::implObj
+::hover_action_delay(IN_THREAD_ONLY)
+{
+	textlist_info_lock lock{IN_THREAD, *this};
+
+	if (current_element(lock))
+	{
+		auto &row=lock->row_infos.at(current_element(lock).value());
+
+		if (row.extra->has_submenu())
+			return std::chrono::milliseconds(listitempopup_delay
+							 .getValue());
+	}
+	return std::chrono::milliseconds{0};
+}
+
+void textlistObj::implObj::hover_action(IN_THREAD_ONLY)
+{
+	textlist_info_lock lock{IN_THREAD, *this};
+
+	if (!current_element(lock))
+		return;
+
+	auto &row=lock->row_infos.at(current_element(lock).value());
+
+	auto r=get_absolute_location(IN_THREAD);
+
+	r.y = coord_t::truncate(r.y+row.y);
+	r.height=row.height;
+
+	get_window_handler().get_absolute_location_on_screen(IN_THREAD, r);
+	row.extra->show_submenu(IN_THREAD, r);
+}
+
+textlistlayoutmanagerptr textlistObj::implObj::get_item_layoutmanager(size_t i)
+{
+	textlistlayoutmanagerptr ptr;
+
+	listimpl_info_t::lock lock{textlist_info};
+
+	if (i < lock->row_infos.size())
+	{
+		auto extra=lock->row_infos.at(i).extra;
+
+		if (extra->has_submenu())
+			ptr=extra->submenu_layoutmanager();
+	}
+
+	return ptr;
 }
 
 LIBCXXW_NAMESPACE_END

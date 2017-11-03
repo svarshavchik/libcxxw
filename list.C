@@ -3,10 +3,12 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
+#include "x/w/listlayoutmanager.H"
 #include "x/w/focusable_container.H"
 #include "x/w/peepholed_focusableobj.H"
 #include "x/w/rgb.H"
-#include "listlayoutmanager/listlayoutmanager.H"
+#include "layout_style.H"
+#include "gridlayoutmanager.H"
 #include "focus/focusable.H"
 #include "peephole/peepholed.H"
 #include "peephole/peephole_impl.H"

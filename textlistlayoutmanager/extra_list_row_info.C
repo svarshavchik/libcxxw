@@ -6,6 +6,9 @@
 #include "textlistlayoutmanager/textlist_impl.H"
 #include "textlistlayoutmanager/extra_list_row_info.H"
 #include "textlistlayoutmanager/textlistlayoutmanager_impl.H"
+#include "textlistlayoutmanager/textlistlayoutstyle_impl.H"
+#include "popup/popup.H"
+#include "popup/popup_attachedto_handler.H"
 #include "shortcut/shortcut_activation_element_impl.H"
 #include "activated_in_thread.H"
 #include "generic_window_handler.H"
@@ -150,12 +153,17 @@ bool extra_list_row_infoObj::enabled() const
 	return row_type == list_row_type_t::enabled;
 }
 
-void extra_list_row_infoObj::set_shortcut(const textlistlayoutmanager &lm,
-					  const shortcut &sc)
+void extra_list_row_infoObj::set_meta(const textlistlayoutmanager &lm,
+				      const textlist_rowinfo &meta)
 {
-	auto extra=ref(this);
+	if (meta.listitem_callback)
+		status_change_callback= *meta.listitem_callback;
+	else
+		status_change_callback=default_status_change_callback;
 
-	if (!sc)
+	menu_item=meta.menu_item;
+
+	if (!meta.listitem_shortcut || !*meta.listitem_shortcut)
 	{
 		if (current_shortcut)
 		{
@@ -165,11 +173,51 @@ void extra_list_row_infoObj::set_shortcut(const textlistlayoutmanager &lm,
 		return;
 	}
 
+	auto extra=ref(this);
+
 	if (!current_shortcut)
 		current_shortcut=shortcut_impl::create(lm, extra);
 
 	// Our destructor explicitly calls uninstall_shortcut().
-	current_shortcut->install_shortcut(sc, current_shortcut);
+	current_shortcut->install_shortcut(*meta.listitem_shortcut,
+					   current_shortcut);
+}
+
+void extra_list_row_infoObj::show_submenu(IN_THREAD_ONLY, const rectangle &r)
+{
+	if (!has_submenu())
+		return;
+
+	auto &popup=std::get<menu_item_submenu>(menu_item);
+
+	popup.submenu_popup_handler
+		->update_attachedto_element_position(IN_THREAD, r);
+	popup.submenu_popup->show_all();
+}
+
+void extra_list_row_infoObj::toggle_submenu(IN_THREAD_ONLY, const rectangle &r)
+{
+	if (!has_submenu())
+		return;
+
+	auto &popup=std::get<menu_item_submenu>(menu_item);
+
+	popup.submenu_popup_handler
+		->update_attachedto_element_position(IN_THREAD, r);
+
+	if (popup.submenu_popup->elementObj::impl->data(IN_THREAD)
+	    .requested_visibility)
+		popup.submenu_popup->elementObj::impl
+			->request_visibility(IN_THREAD, false);
+	else
+		popup.submenu_popup->elementObj::impl
+			->request_visibility_recursive(IN_THREAD, true);
+}
+
+textlistlayoutmanager extra_list_row_infoObj::submenu_layoutmanager()
+{
+	return std::get<menu_item_submenu>(menu_item).submenu_popup
+		->get_layoutmanager();
 }
 
 LIBCXXW_NAMESPACE_END

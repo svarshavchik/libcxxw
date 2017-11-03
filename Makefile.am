@@ -396,27 +396,6 @@ libcxxw_la_SOURCES=\
 	listlayoutmanager/listcontainer_impl.H	    \
 	listlayoutmanager/listcontainer_dim_element.H \
 	listlayoutmanager/listcontainer_dim_elementfwd.H \
-	listlayoutmanager/listitemcontainer.C	    \
-	listlayoutmanager/listitemcontainer.H	    \
-	listlayoutmanager/listitemcontainerfwd.H    \
-	listlayoutmanager/listitemcontainerobj.H    \
-	listlayoutmanager/listitemcontainer_impl.C  \
-	listlayoutmanager/listitemcontainer_impl.H  \
-	listlayoutmanager/listitemfactory.C	    \
-	listlayoutmanager/listitemfactory.H	    \
-	listlayoutmanager/listitemfactoryfwd.H	    \
-	listlayoutmanager/listitemfactoryobj.H	    \
-	listlayoutmanager/listitemlayoutmanager.C   \
-	listlayoutmanager/listitemlayoutmanager.H   \
-	listlayoutmanager/listitemlayoutmanagerfwd.H   \
-	listlayoutmanager/listitemlayoutmanagerobj.H   \
-	listlayoutmanager/listitemlayoutmanager_impl.C \
-	listlayoutmanager/listitemlayoutmanager_impl.H \
-	listlayoutmanager/listlayoutmanager.C	    \
-	listlayoutmanager/listlayoutmanager.H	    \
-	listlayoutmanager/listlayoutmanager_impl.C  \
-	listlayoutmanager/listlayoutstyle.C	    \
-	listlayoutmanager/listlayoutstyle.H	    \
 	main_window.C				    \
 	main_window.H				    \
 	main_window_handler.C			    \
@@ -425,18 +404,6 @@ libcxxw_la_SOURCES=\
 	menu/menu.C				    \
 	menu/menu_impl.C			    \
 	menu/menu_impl.H			    \
-	menu/menufactory.C			    \
-	menu/menuitemextrainfo.C		    \
-	menu/menuitemextrainfo.H		    \
-	menu/menuitemextrainfofwd.H		    \
-	menu/menuitemextrainfoobj.H		    \
-	menu/menuitemextrainfo_impl.C		    \
-	menu/menuitemextrainfo_impl.H		    \
-	menu/menulistitemfactory.C		    \
-	menu/menulistitemfactoryobj.H		    \
-	menu/menulayoutmanager.C		    \
-	menu/menulayoutmanager_impl.C		    \
-	menu/menulayoutmanager_impl.H		    \
 	menu/menubar_container_impl.C		    \
 	menu/menubar_container_impl.H		    \
 	menu/menubar_container_implfwd.H	    \
@@ -676,6 +643,7 @@ libcxxw_la_SOURCES=\
 	textlistlayoutmanager/extra_list_row_info.H \
 	textlistlayoutmanager/extra_list_row_infofwd.H \
 	textlistlayoutmanager/extra_list_row_infoobj.H \
+	textlistlayoutmanager/menu_item.H	    \
 	textlistlayoutmanager/textlist.C	    \
 	textlistlayoutmanager/textlist.H	    \
 	textlistlayoutmanager/textlistfwd.H	    \

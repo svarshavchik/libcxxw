@@ -6,6 +6,7 @@
 #define x_w_textlistlayoutstyle_impl_h
 
 #include "textlistlayoutmanager/textlistlayoutstyle_implfwd.H"
+#include "textlistlayoutmanager/menu_item.H"
 #include "textlistlayoutmanager/textlist_impl.H"
 #include "layout_style.H"
 #include "draw_infofwd.H"
@@ -13,11 +14,23 @@
 #include "x/w/containerfwd.H"
 #include "x/w/focusablefwd.H"
 #include "x/w/text_paramfwd.H"
+#include "x/w/textlistlayoutmanager.H"
 #include "focus/focusablefwd.H"
 #include "connection_threadfwd.H"
 #include <vector>
+#include <x/functional.H>
 
 LIBCXXW_NAMESPACE_START
+
+
+//! Metadata for each list item returned by \ref textlistlayout_style_impl "create_newcell()
+
+struct LIBCXX_HIDDEN textlist_rowinfo {
+	const shortcut                         *listitem_shortcut=nullptr;
+	const list_item_status_change_callback *listitem_callback=nullptr;
+
+	menu_item_t menu_item;
+};
 
 //! The \ref textlistlayoutmanager "textlistlayoutmanager" style.
 
@@ -75,12 +88,29 @@ class LIBCXX_HIDDEN textlistlayout_style_impl : public layout_style_t {
 
 	//! Create internal cell elements based on the list_item_params.
 
+	//! The newcells and rowmeta parameters must refer to empty vectors.
+	//! create_cells() populates them.
+	//!
 	//! Mostly a straightforward conversion, for a highlighted list.
 	//! The bulleted list style covertly inserts a bullet cell on every
 	//! row.
-	std::vector<textlist_cell>
-		create_cells(const std::vector<list_item_param> &t,
-			     textlistObj::implObj &textlist_element)
+	//!
+	//! The created cells are placed into newcells.
+	//!
+	//! A record gets placed into rowmeta for each list item.
+	//!
+	//! The size of newcells will be the number of rowmeta records
+	//! multiplied by the number of real columns in the list.
+	//!
+	//! The pointers from rowmeta point back to the list_item_param
+	//! vector.
+	//!
+
+	void create_cells(const std::vector<list_item_param> &t,
+			  textlistObj::implObj &textlist_element,
+
+			  std::vector<textlist_cell> &newcells,
+			  std::vector<textlist_rowinfo> &rowmeta)
 		const;
 
 	//! Callback indicating that a list item has changed.
@@ -91,10 +121,15 @@ class LIBCXX_HIDDEN textlistlayout_style_impl : public layout_style_t {
 				      bool selected_flag) const=0;
  private:
 
-	//! How many extra columns there are.
+	//! How many extra leading columns there are.
 
 	//! Called by create_cells() to figure out what it's doing.
 	virtual size_t extra_leading_columns() const=0;
+
+	//! How many extra trailing columns there are.
+
+	//! Called by create_cells() to figure out what it's doing.
+	virtual size_t extra_trailing_columns() const=0;
 
 	//! Create a leading column cell.
 
@@ -104,6 +139,55 @@ class LIBCXX_HIDDEN textlistlayout_style_impl : public layout_style_t {
 						    &textlist_element,
 						    size_t column_number)
 		const=0;
+
+	//! Create a trailing column cell.
+
+	//! Called by create_cells() to figure out what it's doing.
+
+	virtual textlist_cell create_trailing_column(textlistObj::implObj
+						     &textlist_element,
+						     size_t column_number,
+						     const textlist_rowinfo &)
+		const=0;
+
+	//! Helper function for converting a list_item_param.
+
+	//! Processes the next list_item_param. Invokes item_callback if
+	//! it specifies new cell content. Invokes separator_callback for a
+	//! separator.
+	//!
+	//! Otherwise updates next_rowinfo.
+
+	template<typename Item_callback,
+		 typename Separator_callback> void process_list_item_param
+		(const list_item_param &item,
+		 textlistObj::implObj &textlist_element,
+		 halign alignment,
+		 textlist_rowinfo &next_rowinfo,
+		 Item_callback &&item_callback,
+		 Separator_callback &&separator_callback) const
+	{
+		do_process_list_item_param(item, textlist_element,
+					   alignment,
+					   next_rowinfo,
+					   make_function
+					   <void (const textlist_cell &)>
+					   (std::forward<Item_callback>
+					    (item_callback)),
+					   make_function<void ()>
+					   (std::forward<Separator_callback>
+					    (separator_callback)));
+
+	}
+
+	//! Type-erased process_list_item_param().
+	void do_process_list_item_param
+		(const list_item_param::variant_t &,
+		 textlistObj::implObj &,
+		 halign,
+		 textlist_rowinfo &,
+		 const function<void (const textlist_cell &)> &,
+		 const function<void ()> &) const;
 };
 
 LIBCXXW_NAMESPACE_END

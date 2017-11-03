@@ -57,6 +57,16 @@ class LIBCXX_HIDDEN textlistlayoutmanagerObj::implObj
 	void process_updated_position(IN_THREAD_ONLY,
 				      const rectangle &position) override;
 
+	//! Implement theme_updated().
+
+	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme)
+		override;
+
+	//! Report the tallest row height.
+
+	//! Used to size the combo-box current element. The default
+	//! implementation does nothing.
+	virtual void update_tallest_row_height(IN_THREAD_ONLY, dim_t);
 };
 
 LIBCXXW_NAMESPACE_END

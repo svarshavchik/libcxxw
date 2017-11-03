@@ -81,7 +81,8 @@ void testlist2(const textlistlayoutmanager &tlm)
 	// [8, 0, 1]
 	// [9, 1, 1]
 	// [10, 2, 1]
-	tlm->replace_all_items({"I", "J", "K"});
+	tlm->replace_all_items(std::vector<LIBCXX_NAMESPACE::w::list_item_param
+			       >{{"I", "J", "K"}});
 	tlm->selected(0, true, {});
 	tlm->selected(1, true, {});
 	tlm->selected(2, true, {});

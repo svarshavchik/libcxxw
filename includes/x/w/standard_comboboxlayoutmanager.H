@@ -151,20 +151,28 @@ public:
 	~standard_combobox_lock();
 
 	//! Append a new item to the combo-box.
+	void append_item(const list_item_param &item);
 
-	void append_item(const text_param &item);
+	//! Append new items to the combo-box.
+	void append_items(const std::vector<list_item_param> &items);
 
 	//! Insert a new item to the combo-box before an existing item.
-	void insert_item(size_t i, const text_param &item);
+	void insert_item(size_t i, const list_item_param &item);
+
+	//! Insert a new item to the combo-box before an existing item.
+	void insert_items(size_t i, const std::vector<list_item_param> &items);
 
 	//! Remove an item from the combo-box.
 	void remove_item(size_t i);
 
-	//! Replace an item from the combo-box.
-	void replace_item(size_t i, const text_param &item);
+	//! Replace an item in the combo-box.
+	void replace_item(size_t i, const list_item_param &item);
+
+	//! Replace items in the combo-box.
+	void replace_items(size_t i, const std::vector<list_item_param> &items);
 
 	//! Replace all existing items in the combo-box.
-	void replace_all_items(const std::vector<text_param> &items);
+	void replace_all_items(const std::vector<list_item_param> &items);
 
 	//! Combo-box search.
 

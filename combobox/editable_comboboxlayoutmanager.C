@@ -9,13 +9,11 @@
 #include "container.H"
 #include <x/weakcapture.H>
 
-#include "listlayoutmanager/listlayoutmanager.H"
-
 LIBCXXW_NAMESPACE_START
 
 editable_comboboxlayoutmanagerObj
 ::editable_comboboxlayoutmanagerObj(const ref<implObj> &impl,
-				    const ref<listlayoutmanagerObj::implObj>
+				    const ref<textlistlayoutmanagerObj::implObj>
 				    &list_layout_impl)
 	: standard_comboboxlayoutmanagerObj(impl, list_layout_impl),
 	  impl(impl)
@@ -31,9 +29,21 @@ input_lock::input_lock(const editable_comboboxlayoutmanagerObj &e)
 
 ///////////////////////////////////////////////////////////////////////////
 
-static inline bool autocomplete(auto &layoutmanager_impl,
+static inline bool autocomplete(const auto &container_impl,
 				auto &autocomplete_info)
 {
+	ptr<layoutmanagerObj::implObj> layoutmanager_impl;
+
+	container_impl->invoke_layoutmanager
+		([&]
+		 (const auto &lm_impl)
+		 {
+			 layoutmanager_impl=lm_impl;
+		 });
+
+	if (!layoutmanager_impl)
+		return false;
+
 	editable_comboboxlayoutmanager
 		lm=layoutmanager_impl->create_public_object();
 
@@ -47,8 +57,8 @@ static inline bool autocomplete(auto &layoutmanager_impl,
 			autocomplete_info.string.size();
 		autocomplete_info.string=lock.item(found).string;
 
-		if (!lm->selected(lock, found))
-			lm->autoselect(lock, found);
+		if (!lm->selected(found))
+			lm->autoselect(found, initial{});
 		return true;
 	}
 	lm->unselect();
@@ -59,32 +69,29 @@ new_editable_comboboxlayoutmanager
 ::new_editable_comboboxlayoutmanager()
 	: new_custom_comboboxlayoutmanager
 	  ([]
-	   (const auto &f,
-	    const auto &popup_layoutmanager)
+	   (const auto &f)
 	   {
 		   // Make sure input field's default font matches the
 		   // labels'.
 
 		   auto input_field=f->create_input_field
-			   ({theme_font({popup_layoutmanager->
-							   container_impl
-							   ->get_element_impl()
+			   ({theme_font({f->container_impl->get_element_impl()
 							   .label_theme_font()
 							   })
 					   }, {2});
 
 		   input_field->on_autocomplete
-			   ([popup_layoutmanager=make_weak_capture(popup_layoutmanager)]
+			   ([container_impl=make_weak_capture(f->container_impl)]
 			    (auto &autocomplete_info) {
 
 				   bool flag=false;
 
-				   popup_layoutmanager
+				   container_impl
 					   .get([&]
-						(const auto &lm)
+						(const auto &ci)
 						{
 							flag=autocomplete
-								(lm,
+								(ci,
 								 autocomplete_info);
 						});
 				   return flag;
@@ -120,16 +127,19 @@ custom_combobox_selection_changed_t new_editable_comboboxlayoutmanager
 		info.popup_element->hide();
 		if (info.selected_flag)
 		{
-			// If something is already selected, don't touch it.
+			// initial trigger variant is specified when the
+			// combo-box gets selected in autocomplete(). Don't
+			// overwrite the input field, autocomplete() will
+			// take care of it for us.
 
-			input_lock i_lock{current_selection};
+			if (!std::holds_alternative<initial>(info.trigger))
+			{
+				input_lock i_lock{current_selection};
 
-			auto [pos1, pos2]=i_lock.pos();
-
-			if (pos1 == pos2)
 				current_selection->set(lock.item
 						       (info.item_index)
 						       .string);
+			}
 		}
 		else // Unselected.
 		{

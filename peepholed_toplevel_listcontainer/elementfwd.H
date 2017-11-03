@@ -36,6 +36,9 @@ LIBCXXW_NAMESPACE_START
 //! implementation object, a reference to a
 //! \ref peepholed_toplevel_listcontainer_implObj "peepholed_toplevel_listcontainer_implObj".
 //!
+//! The third parameter is the focusable object representing the focusable
+//! list in the container.
+//!
 //! The remaining constructor parameters get
 //! forwarded to the superclass's constructor.
 
@@ -72,6 +75,7 @@ public:
 	(const popup_attachedto_info &attachedto_info,
 	 const ref<peepholed_toplevel_listcontainer_implObj
 	 > &toplevel_listcontainer_impl,
+	 const ref<focusableImplObj> &focusable_impl,
 	 Args && ...args);
 
 	~peepholed_toplevel_listcontainer_elementObj();

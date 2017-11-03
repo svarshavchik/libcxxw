@@ -9,6 +9,7 @@
 #include <x/w/custom_comboboxlayoutmanagerfwd.H>
 #include <x/w/custom_comboboxlayoutmanagerobj.H>
 #include <x/w/listlayoutmanager.H>
+#include <x/w/textlistlayoutmanager.H>
 #include <x/w/containerobj.H>
 #include <x/w/focusable_container.H>
 #include <x/w/factoryfwd.H>
@@ -24,8 +25,7 @@ LIBCXXW_NAMESPACE_START
 
 //! Signature for a custom combo-box selection factory.
 
-typedef std::function<focusable (const factory &,
-				 const ref<layoutmanagerObj::implObj> &)
+typedef std::function<focusable (const factory &)
 		      > custom_combobox_selection_factory_t;
 
 //! Information passed to the \ref custom_combobox_selection_changed_t "custom combo-box selection changed callback".
@@ -49,6 +49,9 @@ struct LIBCXX_HIDDEN custom_combobox_selection_changed_info_t {
 	//! The callback would typically want to hide() it, after recording
 	//! a new selection.
 	const element &popup_element;
+
+	//! The trigger
+	const callback_trigger_t &trigger;
 
 	//! Available mcguffin for blocking all further processing.
 	const busy &mcguffin;

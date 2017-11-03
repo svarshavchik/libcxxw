@@ -52,9 +52,14 @@ constexpr size_t callback_trigger_button_event=2;
 
 //! \ref callback_trigger_t "callback_trigger_t" initial invocation.
 
-//! std::variant index used only with \ref image_button "image button"s, and
-//! indicates the callback's initial invocation.
-
+//! std::variant index used in the following circumstances:
+//!
+//! - with \ref image_button "image button"s, indicating the callback's
+//!   initial invocation.
+//!
+//! - internal use by \ref editable_comboboxlayoutmanager "editable combo-boxes"
+//!   indicating that the combo-box selection was made by auto-completion.
+//!
 constexpr size_t callback_trigger_initial=3;
 
 LIBCXXW_NAMESPACE_END

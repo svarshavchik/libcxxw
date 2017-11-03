@@ -16,8 +16,16 @@ LIBCXXW_NAMESPACE_START
 
 //! Internal implementation object.
 
-//! The implementation object is given to
-//! create_peephole_toplevel() and, as such, implements always_visible.
+//! Constructed by new_custom_comboboxlayoutmanager::create() in its
+//! call to create_peepholed_toplevel_listcontainer_popup().
+//!
+//! It inherits from p_t_l_impl_t, and is returned by the first callback
+//! that create_peepholed_toplevel_listcontainer_popup() passes to
+//! create_popup().
+//!
+//! It is also passed to the constructor of
+//! peepholed_toplevel_listcontainer_layoutmanager_implObj, the second value
+//! returned by the same callback.
 //!
 //! Combines its automatically-computed width, and layout manager-provided
 //! tallest combo-box popup item's height to derive the metrics for the

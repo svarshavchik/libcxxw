@@ -6,7 +6,7 @@
 #define peepholed_listcontainer_impl_h
 
 #include "peepholed_listcontainerobj.H"
-#include "x/w/listlayoutmanagerfwd.H"
+#include "x/w/textlistlayoutmanagerfwd.H"
 #include "x/w/containerobj.H"
 #include "reference_font_elementfwd.H"
 #include "themedimfwd.H"
