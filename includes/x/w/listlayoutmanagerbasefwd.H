@@ -6,6 +6,7 @@
 #define x_w_listlayoutmanagerbasefwd_h
 
 #include <x/w/namespace.H>
+#include <x/w/shortcutfwd.H>
 #include <x/ptrfwd.H>
 #include <functional>
 
@@ -54,10 +55,18 @@ typedef void list_item_status_change_callback_t(list_lock &lock,
 //! A list item callback factory
 
 //! The factory gets called when a new list item gets created. The factory
-//! returns a callback for the new list item.
+//! returns a callback for the new list item, that gets invoked whenever the
+//! new list item's status changed.
+
 typedef std::function<list_item_status_change_callback_t
 		      > list_item_status_change_callback_factory_t();
 
+//! A shortcut factory.
+
+//! The factory gets called when a new list item gets created. The factory
+//! returns a shortcut for the new list item.
+
+typedef std::function<shortcut ()> shortcut_factory_t;
 
 LIBCXXW_NAMESPACE_END
 

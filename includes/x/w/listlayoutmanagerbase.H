@@ -8,6 +8,7 @@
 #include <x/w/listlayoutmanagerbasefwd.H>
 #include <x/w/listlayoutmanagerbaseobj.H>
 #include <x/w/text_param.H>
+#include <x/w/shortcut.H>
 #include <x/ref.H>
 
 LIBCXXW_NAMESPACE_START

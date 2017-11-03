@@ -53,32 +53,24 @@ list_lock::operator listimpl_info_t::lock &()
 // before working with it.
 //
 // This is not bulletproof, but should be good enough. We need to make sure
-// that IN_THREAd we always instantiate this textlist_info_lock, instead of
+// that IN_THREAD we always instantiate this textlist_info_lock, instead of
 // listimpl_info_t::lock.
 
-struct textlistObj::implObj::textlist_info_lock
-	: public listimpl_info_t::lock {
 
-public:
+// The construct checks row_infos.modified, and if so calls
+// recalculate().
 
-	// Whether the list was modified, before we were constructed.
+textlistObj::implObj::textlist_info_lock
+::textlist_info_lock(IN_THREAD_ONLY, implObj &me)
+	: listimpl_info_t::lock{me.textlist_info},
+	was_modified{ listimpl_info_t::lock::operator->()
+			->row_infos.modified}
+{
+	if (was_modified)
+		me.recalculate(IN_THREAD, *this);
+}
 
-	const bool was_modified;
-
-	// The construct checks row_infos.modified, and if so calls
-	// recalculate().
-
-	textlist_info_lock(IN_THREAD_ONLY, implObj &me)
-		: listimpl_info_t::lock{me.textlist_info},
-		was_modified{ listimpl_info_t::lock::operator->()
-				->row_infos.modified}
-	{
-		if (was_modified)
-			me.recalculate(IN_THREAD, *this);
-	}
-
-	~textlist_info_lock()=default;
-};
+textlistObj::implObj::textlist_info_lock::~textlist_info_lock()=default;
 
 ////////////////////////////////////////////////////////////////////////////
 
@@ -237,6 +229,8 @@ void textlistObj::implObj::insert_rows(const textlistlayoutmanager &lm,
 			      first_one=false;
 			      iter.extra->status_change_callback=
 				      lm->next_callback();
+			      iter.extra->set_shortcut(lm,
+						       lm->next_shortcut());
 		      });
 
 	lock->cells.insert(lock->cells.begin() + row_number * columns,
@@ -297,6 +291,8 @@ void textlistObj::implObj::replace_rows(const textlistlayoutmanager &lm,
 
 			      r.extra->status_change_callback=
 				      lm->next_callback();
+			      r.extra->set_shortcut(lm,
+						    lm->next_shortcut());
 
 			      return r;
 		      });

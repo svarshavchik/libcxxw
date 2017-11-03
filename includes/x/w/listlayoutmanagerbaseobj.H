@@ -27,8 +27,8 @@ public:
 
 	//! Thread-safe contained for new list item callback factory.
 
-	typedef mpobj<std::function<list_item_status_change_callback_factory_t>
-		      > callback_factory_container_t;
+	typedef mpobj<std::function<list_item_status_change_callback_factory_t>,
+		      std::recursive_mutex> callback_factory_container_t;
 
 	//! Current factory for new list items.
 
@@ -37,22 +37,16 @@ public:
 	//! Set a callback factory for new list items.
 
 	template<typename callback>
-	inline void callback_factory(callback &&Callback)
+	inline void callback_factory(callback &&cb)
 	{
-		callback_factory_container_t::lock
-			lock{callback_factory_container};
-
-		*lock=std::forward<callback>(Callback);
+		this->callback_factory_container=cb;
 	}
 
 	//! Set a callback factory for new list items.
 
 	inline auto callback_factory()
 	{
-		callback_factory_container_t::lock
-			lock{callback_factory_container};
-
-		return *lock;
+		return callback_factory_container.get();
 	}
 
 	//! Remove the current callback factory.
@@ -61,6 +55,35 @@ public:
 
 	//! Return the next callback.
 	std::function<list_item_status_change_callback_t> next_callback();
+
+	//! Thread-safe contained for new list item shortcut factory.
+
+	typedef mpobj<shortcut_factory_t,
+		      std::recursive_mutex> shortcut_factory_container_t;
+
+	//! New list item shortcut factory.
+	shortcut_factory_container_t shortcut_factory_container;
+
+	//! Set a shortcut factory for new list items.
+
+	template<typename callback>
+	inline void shortcut_factory(callback &&cb)
+	{
+		this->shortcut_factory_container=cb;
+	}
+
+	//! Set a callback factory for new list items.
+
+	inline auto shortcut_factory()
+	{
+		return this->shortcut_factory_container.get();
+	}
+
+	//! Remove the current shortcut factory.
+	void remove_shortcut_factory();
+
+	//! Return the next shortcut.
+	shortcut next_shortcut();
 
 	//! Constructor
 	listlayoutmanagerbaseObj() LIBCXX_HIDDEN;

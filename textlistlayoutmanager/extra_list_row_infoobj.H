@@ -8,7 +8,8 @@
 #include "textlistlayoutmanager/extra_list_row_infofwd.H"
 #include "connection_threadfwd.H"
 #include "x/w/listlayoutmanagerbasefwd.H"
-
+#include "x/w/textlistlayoutmanagerfwd.H"
+#include "x/w/shortcutfwd.H"
 #include <x/obj.H>
 
 #include <functional>
@@ -21,6 +22,16 @@ LIBCXXW_NAMESPACE_START
 
 class LIBCXX_HIDDEN extra_list_row_infoObj : virtual public obj {
 
+	class shortcut_implObj;
+
+	typedef ref<shortcut_implObj> shortcut_impl;
+
+	typedef ptr<shortcut_implObj> shortcut_implptr;
+
+	//! An optional, installed shortcut for this list item.
+
+	shortcut_implptr current_shortcut;
+
 	//! My row number.
 
 	//! This get updated in recalculate().
@@ -28,6 +39,12 @@ class LIBCXX_HIDDEN extra_list_row_infoObj : virtual public obj {
 
  public:
 	THREAD_DATA_ONLY(current_row_number);
+
+	//! Constructor
+	extra_list_row_infoObj();
+
+	//! Destructor
+	~extra_list_row_infoObj();
 
 	//! Row type
 	list_row_type_t row_type=list_row_type_t::enabled;
@@ -37,6 +54,10 @@ class LIBCXX_HIDDEN extra_list_row_infoObj : virtual public obj {
 
 	//! This item can be selected via keyboard or pointer
 	bool enabled() const;
+
+	//! Set a shortcut for this list item.
+	void set_shortcut(const textlistlayoutmanager &lm,
+			  const shortcut &);
 
 	//! This item's status change callback.
 

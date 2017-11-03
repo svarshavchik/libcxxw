@@ -19,6 +19,13 @@ void listlayoutmanagerbaseObj::remove_callback_factory()
 	*lock=nullptr;
 }
 
+void listlayoutmanagerbaseObj::remove_shortcut_factory()
+{
+	shortcut_factory_container_t::lock lock{shortcut_factory_container};
+
+	*lock=nullptr;
+}
+
 std::function<list_item_status_change_callback_t>
 listlayoutmanagerbaseObj::next_callback()
 {
@@ -30,6 +37,18 @@ listlayoutmanagerbaseObj::next_callback()
 		cb=(*lock)();
 
 	return cb;
+}
+
+shortcut listlayoutmanagerbaseObj::next_shortcut()
+{
+	shortcut sc;
+
+	shortcut_factory_container_t::lock lock{shortcut_factory_container};
+
+	if (*lock)
+		sc=(*lock)();
+
+	return sc;
 }
 
 void listlayoutmanagerbaseObj::selected(size_t i, bool selected_flag)

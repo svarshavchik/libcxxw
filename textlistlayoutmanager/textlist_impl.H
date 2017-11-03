@@ -379,6 +379,8 @@ class LIBCXX_HIDDEN textlistObj::implObj :
 	//! Our text data.
 	listimpl_info_t textlist_info;
 
+	friend class extra_list_row_infoObj;
+
  private:
 
 	//! A mutex lock on textlist_info
@@ -388,7 +390,25 @@ class LIBCXX_HIDDEN textlistObj::implObj :
 	//! if list_row_info_vector.modified if set, then if so calls
 	//! recalculate().
 
-	struct textlist_info_lock;
+	struct textlist_info_lock
+		: public listimpl_info_t::lock {
+
+	public:
+
+		// Whether the list was modified, before we were constructed.
+
+		const bool was_modified;
+
+		// The construct checks row_infos.modified, and if so calls
+		// recalculate().
+
+		textlist_info_lock(IN_THREAD_ONLY, implObj &me);
+
+		//! Destructor
+
+		~textlist_info_lock();
+	};
+
  public:
 
 	//! Scratch buffer for drawing separators
