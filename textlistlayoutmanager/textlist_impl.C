@@ -81,9 +81,6 @@ public:
 };
 
 ////////////////////////////////////////////////////////////////////////////
-void list_row_info_t::default_status_change_callback(list_lock &, size_t, bool)
-{
-}
 
 textlistObj::implObj::implObj(const ref<textlist_container_implObj>
 			      &textlist_container,
@@ -225,12 +222,21 @@ void textlistObj::implObj::insert_rows(const textlistlayoutmanager &lm,
 	lock->row_infos.insert(lock->row_infos.begin() + row_number,
 			       rows, list_row_info_t{});
 
+	bool first_one=true;
+
 	std::for_each(lock->row_infos.begin() + row_number,
 		      lock->row_infos.begin() + row_number + rows,
 		      [&]
 		      (auto &iter)
 		      {
-			      iter.status_change_callback=lm->next_callback();
+			      // Each insert()ed list_row_info points to the
+			      // the same extra object, we can fix this here.
+
+			      if (!first_one)
+				      iter.extra=extra_list_row_info::create();
+			      first_one=false;
+			      iter.extra->status_change_callback=
+				      lm->next_callback();
 		      });
 
 	lock->cells.insert(lock->cells.begin() + row_number * columns,
@@ -289,7 +295,8 @@ void textlistObj::implObj::replace_rows(const textlistlayoutmanager &lm,
 		      {
 			      list_row_info_t r;
 
-			      r.status_change_callback=lm->next_callback();
+			      r.extra->status_change_callback=
+				      lm->next_callback();
 
 			      return r;
 		      });
@@ -370,7 +377,7 @@ void textlistObj::implObj
 
 		auto &r=lock->row_infos.at(row+i);
 
-		if (r.selected)
+		if (r.extra->selected)
 			selected(lm, row+i, false, {});
 	}
 
@@ -502,6 +509,7 @@ void textlistObj::implObj::recalculate(IN_THREAD_ONLY,
 	for (size_t i=0; i<n; ++i, ++row)
 	{
 		row->y=y;
+		row->extra->current_row_number(IN_THREAD)=i;
 
 		if (!row->size_computed)
 		{
@@ -552,7 +560,7 @@ void textlistObj::implObj::recalculate(IN_THREAD_ONLY,
 			{
 				// This row becomes a separator line.
 
-				row->row_type=row->separator;
+				row->extra->row_type=list_row_type_t::separator;
 				row->height=separator_border->border(IN_THREAD)
 					->calculated_border_height;
 			}
@@ -802,7 +810,7 @@ rectangle textlistObj::implObj::do_draw_row(IN_THREAD_ONLY,
 
 	r.redraw_needed=false;
 
-	if (r.row_type == r.separator)
+	if (r.extra->row_type == list_row_type_t::separator)
 	{
 		rectangle border_rect{
 			0, r.y, di.absolute_location.width,
@@ -871,7 +879,7 @@ rectangle textlistObj::implObj::do_draw_row(IN_THREAD_ONLY,
 				   make_sure_row_is_visible);
 	}
 
-	if (r.selected)
+	if (r.extra->selected)
 	{
 		auto cpy=di;
 
@@ -931,7 +939,7 @@ rectangle textlistObj::implObj::do_draw_row(IN_THREAD_ONLY,
 		drawn_columns.insert(rc);
 
 		(*cell)->cell_redraw(IN_THREAD, *this, di,
-				     r.row_type == r.disabled,
+				     r.extra->row_type == list_row_type_t::disabled,
 				     bounds);
 
 		++cell;
@@ -981,7 +989,7 @@ void textlistObj::implObj::report_motion_event(IN_THREAD_ONLY,
 
 	if (me.y >= iter->y &&
 	    me.y < coord_t::truncate(iter->y+iter->height) &&
-	    iter->selectable())
+	    iter->extra->enabled())
 		set_current_element(IN_THREAD, lock, iter-b, false);
 	else
 		unset_current_element(IN_THREAD, lock);
@@ -1110,7 +1118,7 @@ textlistObj::implObj::move_up_by(listimpl_info_t::lock &lock,
 	else
 		next_row=0;
 
-	while (!lock->row_infos.at(next_row).selectable())
+	while (!lock->row_infos.at(next_row).extra->enabled())
 	{
 		if (next_row == 0)
 			return {};
@@ -1139,7 +1147,7 @@ textlistObj::implObj::move_down_by(listimpl_info_t::lock &lock,
 		if (next_row >= lock->row_infos.size())
 			return {};
 
-		if (lock->row_infos.at(next_row).selectable())
+		if (lock->row_infos.at(next_row).extra->enabled())
 			break;
 
 		++next_row;
@@ -1271,10 +1279,10 @@ void textlistObj::implObj::selected(const textlistlayoutmanager &lm,
 
 	auto &r=lock->row_infos.at(i);
 
-	if (r.selected == selected_flag)
+	if (r.extra->selected == selected_flag)
 		return;
 
-	r.selected=selected_flag;
+	r.extra->selected=selected_flag;
 	r.redraw_needed=true;
 
 	try {
@@ -1295,9 +1303,9 @@ void textlistObj::implObj::notify_callbacks(const textlistlayoutmanager &lm,
 {
 	listimpl_info_t::lock &lock=ll;
 
-	if (r.status_change_callback)
+	if (r.extra->status_change_callback)
 		try {
-			r.status_change_callback(ll, i, selected_flag);
+			r.extra->status_change_callback(ll, i, selected_flag);
 		} CATCH_EXCEPTIONS;
 
 	busy_impl yes_i_am{*this};
@@ -1314,7 +1322,7 @@ bool textlistObj::implObj::enabled(size_t i)
 	if (i >= lock->row_infos.size())
 		throw EXCEPTION(gettextmsg(_("Row %1% does not exist"), i));
 
-	return lock->row_infos.at(i).row_type == list_row_info_t::enabled;
+	return lock->row_infos.at(i).extra->enabled();
 }
 
 void textlistObj::implObj::enabled(size_t i, bool flag)
@@ -1326,15 +1334,16 @@ void textlistObj::implObj::enabled(size_t i, bool flag)
 
 	auto &r=lock->row_infos.at(i);
 
-	if (r.row_type != r.enabled && r.row_type != r.disabled)
+	if (r.extra->row_type != list_row_type_t::enabled &&
+	    r.extra->row_type != list_row_type_t::disabled)
 		return; // Don't touch separators.
 
-	auto new_type=flag ? r.enabled:r.disabled;
+	auto new_type=flag ? list_row_type_t::enabled:list_row_type_t::disabled;
 
-	if (r.row_type == new_type)
+	if (r.extra->row_type == new_type)
 		return;
 
-	r.row_type=new_type;
+	r.extra->row_type=new_type;
 	r.redraw_needed=true;
 
 	schedule_row_redraw(lock);
@@ -1365,7 +1374,7 @@ bool textlistObj::implObj::selected(size_t i)
 {
 	listimpl_info_t::lock lock{textlist_info};
 
-	return i < lock->row_infos.size() && lock->row_infos.at(i).selected;
+	return i < lock->row_infos.size() && lock->row_infos.at(i).extra->selected;
 }
 
 std::optional<size_t> textlistObj::implObj::selected()
@@ -1376,7 +1385,7 @@ std::optional<size_t> textlistObj::implObj::selected()
 
 	for (const auto &r:lock->row_infos)
 	{
-		if (r.selected)
+		if (r.extra->selected)
 			return i;
 		++i;
 	}
@@ -1394,7 +1403,7 @@ std::vector<size_t> textlistObj::implObj::all_selected()
 
 	for (const auto &r:lock->row_infos)
 	{
-		if (r.selected)
+		if (r.extra->selected)
 			all.push_back(i);
 		++i;
 	}
@@ -1427,9 +1436,9 @@ bool textlistObj::implObj::unselect(const textlistlayoutmanager &lm,
 	{
 		auto &r=lock->row_infos.at(i);
 
-		if (r.selected)
+		if (r.extra->selected)
 		{
-			r.selected=false;
+			r.extra->selected=false;
 			r.redraw_needed=true;
 
 			try {

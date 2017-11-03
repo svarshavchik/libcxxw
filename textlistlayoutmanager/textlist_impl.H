@@ -8,6 +8,7 @@
 #include "textlistlayoutmanager/textlist.H"
 #include "textlistlayoutmanager/textlistlayoutstyle_implfwd.H"
 #include "textlistlayoutmanager/textlist_cellfwd.H"
+#include "textlistlayoutmanager/extra_list_row_info.H"
 #include "focus/focusable_elementfwd.H"
 #include "background_color_elementfwd.H"
 #include "iconfwd.H"
@@ -50,8 +51,13 @@ typedef std::multiset<dim_t, std::greater<dim_t>> list_column_widths_t;
 
 //! Each row in a container with a \ref textlistlayoutmanager "textlistlayoutmanager".
 
-
 struct LIBCXX_HIDDEN list_row_info_t {
+
+	//! Height of this row.
+	dim_t height;
+
+	//! This row's position.
+	coord_t y;
 
 	//! Whether this row's height, and column widths, are computed.
 
@@ -62,35 +68,17 @@ struct LIBCXX_HIDDEN list_row_info_t {
 	//! This also indicates whether column_iterator was initialized.
 	bool size_computed=false;
 
-	//! Height of this row.
-	dim_t height;
-
-	//! This row's position.
-	coord_t y;
-
-	//! Row type
-	enum { enabled, disabled, separator } row_type=enabled;
-
-	//! Row is selected
-	bool selected=false;
-
 	//! Needs to be redrawn.
 
 	//! This is set after enabled or selected is changed
 	bool redraw_needed=false;
 
-	//! This item can be selected via keyboard or pointer
+	//! Extra information about this row.
 
-	bool selectable() const { return row_type == enabled; }
+	//! Stored in discrete object, so that the object remains in place
+	//! if rows are added or removed from the list.
 
-	//! This item's status change callback.
-
-	std::function<list_item_status_change_callback_t
-		      > status_change_callback=default_status_change_callback;
-
-	//! Default no-op status_change_callback.
-
-	static void default_status_change_callback(list_lock &, size_t, bool);
+	extra_list_row_info extra=extra_list_row_info::create();
 };
 
 //! A vector of list_row_info_t structures

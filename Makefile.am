@@ -672,6 +672,10 @@ libcxxw_la_SOURCES=\
 	textlabel.C				    \
 	textlabel.H				    \
 	textlabel_impl.C			    \
+	textlistlayoutmanager/extra_list_row_info.C \
+	textlistlayoutmanager/extra_list_row_info.H \
+	textlistlayoutmanager/extra_list_row_infofwd.H \
+	textlistlayoutmanager/extra_list_row_infoobj.H \
 	textlistlayoutmanager/textlist.C	    \
 	textlistlayoutmanager/textlist.H	    \
 	textlistlayoutmanager/textlistfwd.H	    \
