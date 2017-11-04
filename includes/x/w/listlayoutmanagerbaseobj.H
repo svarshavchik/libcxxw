@@ -6,7 +6,7 @@
 #define x_w_listlayoutmanagerbaseobj_h
 
 #include <x/w/listlayoutmanagerbasefwd.H>
-#include <x/w/listlayoutmanagerfwd.H>
+#include <x/w/callback_triggerfwd.H>
 #include <x/w/text_paramfwd.H>
 #include <x/obj.H>
 #include <x/mpobj.H>
