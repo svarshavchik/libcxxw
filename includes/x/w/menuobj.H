@@ -6,7 +6,7 @@
 #define x_w_menuobj_h
 
 #include <x/w/menufwd.H>
-#include <x/w/textlistlayoutmanagerfwd.H>
+#include <x/w/listlayoutmanagerfwd.H>
 #include <x/w/focusable_containerobj.H>
 LIBCXXW_NAMESPACE_START
 
@@ -41,10 +41,10 @@ public:
 		LIBCXX_HIDDEN;
 
 	//! Return this menu's layout manager.
-	textlistlayoutmanager get_layoutmanager();
+	listlayoutmanager get_layoutmanager();
 
 	//! Return this menu's layout manager.
-	const_textlistlayoutmanager get_layoutmanager() const;
+	const_listlayoutmanager get_layoutmanager() const;
 };
 
 LIBCXXW_NAMESPACE_END

@@ -13,7 +13,7 @@
 #include "x/w/gridlayoutmanager.H"
 #include "x/w/gridfactory.H"
 #include "x/w/listlayoutmanager.H"
-#include "x/w/textlistlayoutmanager.H"
+#include "x/w/listlayoutmanager.H"
 
 #include <vector>
 #include <sstream>
@@ -22,7 +22,7 @@ using namespace LIBCXX_NAMESPACE::w;
 
 std::vector<std::tuple<size_t, size_t, bool>> invocations;
 
-void testlist2(const textlistlayoutmanager &tlm)
+void testlist2(const listlayoutmanager &tlm)
 {
 	tlm->callback_factory([counter=0]
 			      ()
@@ -127,7 +127,7 @@ void testlist()
 				 gridfactory factory=
 				     layout->append_row();
 
-				 new_listlayoutmanager nlm{text_list};
+				 new_listlayoutmanager nlm{highlighted_list};
 
 				 factory->create_focusable_container
 				 ([]

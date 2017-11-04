@@ -24,7 +24,7 @@ LIBCXXW_NAMESPACE_START
 //! null, there's a selected area to draw.
 //!
 //! The draw_as_disabled flag, if set, draws the label as if it was disabled.
-//! This is used by textlistlayoutmanager, which simulates individual
+//! This is used by listlayoutmanager, which simulates individual
 //! disabled list items.
 
 struct LIBCXX_HIDDEN richtext_draw_info {

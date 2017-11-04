@@ -8,8 +8,8 @@
 #include "combobox/custom_combobox_popup_container_impl.H"
 #include "combobox/combobox_button_impl.H"
 #include "peepholed_toplevel_listcontainer/create_popup.H"
-#include "textlistlayoutmanager/textlist_impl.H"
-#include "textlistlayoutmanager/textlistlayoutstyle_impl.H"
+#include "listlayoutmanager/list_element_impl.H"
+#include "listlayoutmanager/listlayoutstyle_impl.H"
 
 #include "focus/focusframecontainer_element.H"
 #include "focus/focusable_element.H"
@@ -32,7 +32,7 @@ LIBCXXW_NAMESPACE_START
 
 custom_comboboxlayoutmanagerObj
 ::custom_comboboxlayoutmanagerObj(const ref<implObj> &impl,
-				  const ref<textlistlayoutmanagerObj::implObj>
+				  const ref<listlayoutmanagerObj::implObj>
 				  &list_layout_impl)
 	// Surprise! Our implementation object is attached to the combobox
 	// container, but our superclass is a listlayoutmanager whose
@@ -43,7 +43,7 @@ custom_comboboxlayoutmanagerObj
 	// combobox popup, so naturally when we go out of scope and get
 	// destroyed it'll be the popup's container that'll get tickled for
 	// recalculation.
-	: textlistlayoutmanagerObj(list_layout_impl),
+	: listlayoutmanagerObj(list_layout_impl),
 	  impl(impl)
 {
 }
@@ -250,9 +250,8 @@ focusable_container new_custom_comboboxlayoutmanager
 ::create(const ref<containerObj::implObj> &parent) const
 {
 	// Start by creating the popup first.
-	const auto &popup_list_style=int_highlighted_list_style;
 
-	new_listlayoutmanager style{popup_list_style};
+	new_listlayoutmanager style{highlighted_list};
 
 	style.background_color="combobox_background_color";
 	style.selected_color="combobox_selected_color";
@@ -287,13 +286,13 @@ focusable_container new_custom_comboboxlayoutmanager
 			 auto impl=ref<custom_combobox_popup_containerObj
 			 ::implObj>::create(peephole_container, style);
 
-			 auto textlist_impl=ref<textlistObj::implObj>
-			 ::create(impl, style, popup_list_style);
+			 auto textlist_impl=ref<list_elementObj::implObj>
+			 ::create(impl, style);
 
 			 return create_p_t_l_impl_ret_t{impl,
 					 ref<peepholed_toplevel_listcontainer_layoutmanager_implObj>
 					 ::create(impl,
-						  textlist::create
+						  list_element::create
 						  (textlist_impl)
 						  )
 					 };
@@ -303,7 +302,7 @@ focusable_container new_custom_comboboxlayoutmanager
 		 [&]
 		 (const popup_attachedto_info &attachedto_info,
 		  const ref<custom_combobox_popup_containerObj::implObj> &impl,
-		  const ref<textlistlayoutmanagerObj::implObj> &layout_impl)
+		  const ref<listlayoutmanagerObj::implObj> &layout_impl)
 		 {
 			 auto container=custom_combobox_popup_container
 			 ::create(impl,
@@ -316,7 +315,7 @@ focusable_container new_custom_comboboxlayoutmanager
 		 });
 
         custom_combobox_popup_container popup_container=popup_containerptr;
-	ref<textlistlayoutmanagerObj::implObj>
+	ref<listlayoutmanagerObj::implObj>
 		popup_listlayoutmanager=combobox_popup->get_layout_impl();
 
 	// We can now start creating the combobox display element, starting
@@ -405,7 +404,7 @@ focusable_container new_custom_comboboxlayoutmanager
 				 .attached_popup=popup_handler;
 
 			 listimpl_info_t::lock lock{
-				 popup_listlayoutmanager->textlist_element
+				 popup_listlayoutmanager->list_element_singleton
 					 ->impl->textlist_info};
 
 			 lock->selection_changed=

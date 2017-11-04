@@ -25,7 +25,7 @@ public:
 
 	//! Constructor
 	editable_comboboxlayoutmanagerObj(const ref<implObj> &impl,
-					  const ref<textlistlayoutmanagerObj
+					  const ref<listlayoutmanagerObj
 					  ::implObj>
 					  &list_layout_impl)
 		LIBCXX_HIDDEN;

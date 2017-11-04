@@ -9,7 +9,6 @@
 #include <x/w/custom_comboboxlayoutmanagerfwd.H>
 #include <x/w/custom_comboboxlayoutmanagerobj.H>
 #include <x/w/listlayoutmanager.H>
-#include <x/w/textlistlayoutmanager.H>
 #include <x/w/containerobj.H>
 #include <x/w/focusable_container.H>
 #include <x/w/factoryfwd.H>

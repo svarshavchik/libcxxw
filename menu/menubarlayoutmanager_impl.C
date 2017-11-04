@@ -3,8 +3,8 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
-#include "textlistlayoutmanager/textlistlayoutstyle_implfwd.H"
-#include "textlistlayoutmanager/textlist_impl.H"
+#include "listlayoutmanager/listlayoutstyle_implfwd.H"
+#include "listlayoutmanager/list_element_impl.H"
 #include "popup/popup.H"
 #include "menu/menubarlayoutmanager_impl.H"
 #include "menu/menubar_container_impl.H"
@@ -72,13 +72,11 @@ class LIBCXX_HIDDEN popup_menu_listObj : public p_t_l_impl_t {
 std::tuple<popup, ref<popup_attachedto_handlerObj> >
 menubarlayoutmanagerObj::implObj
 ::do_create_popup_menu(const elementimpl &e,
-		       const function<void (const textlistlayoutmanager
+		       const function<void (const listlayoutmanager
 					    &)> &creator,
 		       attached_to attached_to_how)
 {
-	const auto &menu_list_style=int_menu_list_style;
-
-	new_listlayoutmanager style{bulleted_text_list};
+	new_listlayoutmanager style{menu_list};
 
 	style.background_color="menu_popup_background_color";
 	style.current_color="menu_popup_highlighted_color";
@@ -103,29 +101,28 @@ menubarlayoutmanagerObj::implObj
 					::create(style,
 						 peephole_container);
 
-				auto textlist_impl=ref<textlistObj::implObj>
-					::create(impl, style,
-						 menu_list_style);
+				auto textlist_impl=ref<list_elementObj::implObj>
+					::create(impl, style);
 
 				return create_p_t_l_impl_ret_t{impl,
 						ref<peepholed_toplevel_listcontainer_layoutmanager_implObj>
 						::create(impl,
-							 textlist::create
+							 list_element::create
 							 (textlist_impl))
 						};
 			},
 			[&]
 			(const popup_attachedto_info &attachedto_info,
 			 const ref<p_t_l_impl_t> &impl,
-			 const ref<textlistlayoutmanagerObj::implObj> &layout_impl)
+			 const ref<listlayoutmanagerObj::implObj> &layout_impl)
 			{
-				auto c=ref<p_t_l_t>::create(attachedto_info,
-							     impl,
-							     layout_impl
-							     ->textlist_element
-							     ->impl,
-							     impl,
-							     layout_impl);
+				auto c=ref<p_t_l_t>::create
+					(attachedto_info,
+					 impl,
+					 layout_impl->list_element_singleton
+					 ->impl,
+					 impl,
+					 layout_impl);
 
 				creator(layout_impl->create_public_object());
 
@@ -257,11 +254,11 @@ void menubarlayoutmanagerObj::implObj
 		    const callback_trigger_t &trigger,
 		    const busy &mcguffin)
 {
-	textlistlayoutmanager lm{lmbase};
+	listlayoutmanager lm{lmbase};
 
-	lm->impl->textlist_element->impl->menuitem_selected(lm,
-							    i,
-							    trigger,
-							    mcguffin);
+	lm->impl->list_element_singleton->impl->menuitem_selected(lm,
+								  i,
+								  trigger,
+								  mcguffin);
 }
 LIBCXXW_NAMESPACE_END

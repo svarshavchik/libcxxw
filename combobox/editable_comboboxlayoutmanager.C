@@ -13,7 +13,7 @@ LIBCXXW_NAMESPACE_START
 
 editable_comboboxlayoutmanagerObj
 ::editable_comboboxlayoutmanagerObj(const ref<implObj> &impl,
-				    const ref<textlistlayoutmanagerObj::implObj>
+				    const ref<listlayoutmanagerObj::implObj>
 				    &list_layout_impl)
 	: standard_comboboxlayoutmanagerObj(impl, list_layout_impl),
 	  impl(impl)

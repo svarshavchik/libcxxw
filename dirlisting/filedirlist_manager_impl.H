@@ -8,7 +8,6 @@
 #include "dirlisting/filedirlist_manager.H"
 #include "dirlisting/filedircontentsfwd.H"
 #include "dirlisting/filedir_filefwd.H"
-#include "x/w/textlistlayoutmanager.H"
 #include "x/w/listlayoutmanager.H"
 #include "x/w/container.H"
 #include "x/w/factory.H"
@@ -53,7 +52,7 @@ class LIBCXX_HIDDEN filedirlist_managerObj::implObj : virtual public obj {
 
 	//! Return filedir_list's layout manager.
 
-	inline textlistlayoutmanager get_layoutmanager()
+	inline listlayoutmanager get_layoutmanager()
 	{
 		return filedir_list->get_layoutmanager();
 	}
@@ -128,13 +127,13 @@ class LIBCXX_HIDDEN filedirlist_managerObj::implObj : virtual public obj {
 		struct lock_listbase {
 
 			//! The available list layout manager.
-			textlistlayoutmanager lm;
+			listlayoutmanager lm;
 
 			//! The list lock, which got here first.
 			list_lock ll;
 
 			//! Constructor
-			lock_listbase(const textlistlayoutmanager &lm)
+			lock_listbase(const listlayoutmanager &lm)
 				: lm{lm}, ll{lm}
 			{
 			}

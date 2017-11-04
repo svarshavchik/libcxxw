@@ -6,7 +6,7 @@
 #define x_w_custom_comboboxlayoutmanagerobj_h
 
 #include <x/w/custom_comboboxlayoutmanagerfwd.H>
-#include <x/w/textlistlayoutmanagerobj.H>
+#include <x/w/listlayoutmanagerobj.H>
 #include <x/w/layoutmanagerobj.H>
 #include <x/w/elementfwd.H>
 
@@ -16,7 +16,7 @@ LIBCXXW_NAMESPACE_START
 
 //! \see custom_comboboxlayoutmanager
 
-class custom_comboboxlayoutmanagerObj : public textlistlayoutmanagerObj {
+class custom_comboboxlayoutmanagerObj : public listlayoutmanagerObj {
 
 public:
 	class implObj;
@@ -26,7 +26,7 @@ public:
 
 	//! Constructor
 	custom_comboboxlayoutmanagerObj(const ref<implObj> &impl,
-					const ref<textlistlayoutmanagerObj
+					const ref<listlayoutmanagerObj
 					::implObj>
 					&list_layout_impl) LIBCXX_HIDDEN;
 

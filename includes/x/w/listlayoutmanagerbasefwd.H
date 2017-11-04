@@ -16,10 +16,10 @@ LIBCXXW_NAMESPACE_START
 class listlayoutmanagerbaseObj;
 class list_lock;
 
-/*! Common methods shared by listlayoutmanager and textlistlayoutmanager.
+/*! Common methods shared by listlayoutmanager and listlayoutmanager.
 
 Functions for adding text items to a list layout manager. That's all that
-textlistlayoutmanager does. listlayoutmanager also has function for adding
+listlayoutmanager does. listlayoutmanager also has function for adding
 any non-focusable display element.
 
 */

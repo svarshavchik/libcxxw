@@ -388,6 +388,29 @@ libcxxw_la_SOURCES=\
 	layout_style.H				    \
 	list.C					    \
 	listlayoutmanagerbase.C			    \
+	listlayoutmanager/extra_list_row_info.C	    \
+	listlayoutmanager/extra_list_row_info.H	    \
+	listlayoutmanager/extra_list_row_infofwd.H  \
+	listlayoutmanager/extra_list_row_infoobj.H  \
+	listlayoutmanager/list_cell.H		    \
+	listlayoutmanager/list_cellfwd.H	    \
+	listlayoutmanager/list_cellobj.H	    \
+	listlayoutmanager/list_cellimage.C	    \
+	listlayoutmanager/list_cellimage.H	    \
+	listlayoutmanager/list_cellimagefwd.H	    \
+	listlayoutmanager/list_cellimageobj.H	    \
+	listlayoutmanager/list_celltext.C	    \
+	listlayoutmanager/list_celltext.H	    \
+	listlayoutmanager/list_celltextfwd.H	    \
+	listlayoutmanager/list_celltextobj.H	    \
+	listlayoutmanager/list_container_impl.C     \
+	listlayoutmanager/list_container_impl.H     \
+	listlayoutmanager/list_element.C	    \
+	listlayoutmanager/list_element.H	    \
+	listlayoutmanager/list_elementfwd.H	    \
+	listlayoutmanager/list_elementobj.H	    \
+	listlayoutmanager/list_element_impl.C	    \
+	listlayoutmanager/list_element_impl.H	    \
 	listlayoutmanager/listcontainer.C	    \
 	listlayoutmanager/listcontainer.H	    \
 	listlayoutmanager/listcontainerfwd.H	    \
@@ -396,6 +419,13 @@ libcxxw_la_SOURCES=\
 	listlayoutmanager/listcontainer_impl.H	    \
 	listlayoutmanager/listcontainer_dim_element.H \
 	listlayoutmanager/listcontainer_dim_elementfwd.H \
+	listlayoutmanager/listlayoutmanager.C \
+	listlayoutmanager/listlayoutmanager_impl.C \
+	listlayoutmanager/listlayoutmanager_impl.H \
+	listlayoutmanager/listlayoutstyle_impl.H \
+	listlayoutmanager/listlayoutstyle_implfwd.H \
+	listlayoutmanager/listlayoutstyle.C \
+	listlayoutmanager/menu_item.H		    \
 	main_window.C				    \
 	main_window.H				    \
 	main_window_handler.C			    \
@@ -639,36 +669,6 @@ libcxxw_la_SOURCES=\
 	textlabel.C				    \
 	textlabel.H				    \
 	textlabel_impl.C			    \
-	textlistlayoutmanager/extra_list_row_info.C \
-	textlistlayoutmanager/extra_list_row_info.H \
-	textlistlayoutmanager/extra_list_row_infofwd.H \
-	textlistlayoutmanager/extra_list_row_infoobj.H \
-	textlistlayoutmanager/menu_item.H	    \
-	textlistlayoutmanager/textlist.C	    \
-	textlistlayoutmanager/textlist.H	    \
-	textlistlayoutmanager/textlistfwd.H	    \
-	textlistlayoutmanager/textlistobj.H	    \
-	textlistlayoutmanager/textlist_impl.C	    \
-	textlistlayoutmanager/textlist_impl.H	    \
-	textlistlayoutmanager/textlist_cell.H	    \
-	textlistlayoutmanager/textlist_cellfwd.H    \
-	textlistlayoutmanager/textlist_cellobj.H    \
-	textlistlayoutmanager/textlist_cellimage.C  \
-	textlistlayoutmanager/textlist_cellimage.H  \
-	textlistlayoutmanager/textlist_cellimagefwd.H \
-	textlistlayoutmanager/textlist_cellimageobj.H \
-	textlistlayoutmanager/textlist_celltext.C   \
-	textlistlayoutmanager/textlist_celltext.H   \
-	textlistlayoutmanager/textlist_celltextfwd.H  \
-	textlistlayoutmanager/textlist_celltextobj.H  \
-	textlistlayoutmanager/textlist_container_impl.C \
-	textlistlayoutmanager/textlist_container_impl.H \
-	textlistlayoutmanager/textlistlayoutstyle_impl.H \
-	textlistlayoutmanager/textlistlayoutstyle_implfwd.H \
-	textlistlayoutmanager/textlistlayoutstyle.C \
-	textlistlayoutmanager/textlistlayoutmanager.C \
-	textlistlayoutmanager/textlistlayoutmanager_impl.C \
-	textlistlayoutmanager/textlistlayoutmanager_impl.H \
 	sxg/sxg_parser.C			    \
 	sxg/sxg_parser.H			    \
 	sxg/sxg_parserfwd.H			    \

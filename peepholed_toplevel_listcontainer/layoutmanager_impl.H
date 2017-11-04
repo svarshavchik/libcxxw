@@ -5,7 +5,7 @@
 #ifndef custom_combobox_popup_layoutmanager_h
 #define custom_combobox_popup_layoutmanager_h
 
-#include "textlistlayoutmanager/textlistlayoutmanager_impl.H"
+#include "listlayoutmanager/listlayoutmanager_impl.H"
 #include "peepholed_toplevel_listcontainer/impl.H"
 
 LIBCXXW_NAMESPACE_START
@@ -19,7 +19,7 @@ LIBCXXW_NAMESPACE_START
 //! combo-box selection).
 
 class LIBCXX_HIDDEN peepholed_toplevel_listcontainer_layoutmanager_implObj
-	: public textlistlayoutmanagerObj::implObj {
+	: public listlayoutmanagerObj::implObj {
 
  public:
 
@@ -30,10 +30,7 @@ class LIBCXX_HIDDEN peepholed_toplevel_listcontainer_layoutmanager_implObj
 	peepholed_toplevel_listcontainer_layoutmanager_implObj
 		(const ref<peepholed_toplevel_listcontainer_implObj
 		 > &container_impl,
-#if 0
-		 const ref<containerObj::implObj> &listcontainer_impl,
-#endif
-		 const textlist &textlist_element);
+		 const list_element &list_element_instance);
 
 	//! Destructor
 	~peepholed_toplevel_listcontainer_layoutmanager_implObj();

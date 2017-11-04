@@ -240,7 +240,7 @@ bool standard_combobox_lock::search(size_t starting_index,
 
 standard_comboboxlayoutmanagerObj
 ::standard_comboboxlayoutmanagerObj(const ref<implObj> &impl,
-				    const ref<textlistlayoutmanagerObj::implObj>
+				    const ref<listlayoutmanagerObj::implObj>
 				    &list_layout_impl)
 	: custom_comboboxlayoutmanagerObj(impl, list_layout_impl),
 	  impl(impl)

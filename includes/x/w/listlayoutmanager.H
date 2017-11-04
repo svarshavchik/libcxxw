@@ -5,14 +5,17 @@
 #ifndef x_w_listlayoutmanager_h
 #define x_w_listlayoutmanager_h
 
+#include <x/w/listlayoutmanagerfwd.H>
+#include <x/w/listlayoutmanagerobj.H>
 #include <x/w/new_focusable_layoutmanagerfwd.H>
 #include <x/w/alignment.H>
-#include <x/w/textlistlayoutmanagerfwd.H>
 #include <x/w/listlayoutmanagerbase.H>
 #include <x/w/layoutmanager.H>
 #include <x/w/scrollbar.H>
 #include <x/w/grid_map_infofwd.H>
 #include <x/w/text_param.H>
+#include <x/w/image_param.H>
+#include <x/w/shortcut.H>
 #include <x/ref.H>
 #include <x/refptr_traits.H>
 #include <x/w/busyfwd.H>
@@ -62,7 +65,7 @@ class LIBCXX_HIDDEN new_listlayoutmanager : public new_focusable_layoutmanager {
  public:
 
 	//! Style of the new list.
-	const layout_style_t &layout_style;
+	const listlayoutstyle_impl &list_style;
 
 	//! Single or multiple selection
 
@@ -139,7 +142,8 @@ class LIBCXX_HIDDEN new_listlayoutmanager : public new_focusable_layoutmanager {
 	std::string current_color;
 
 	//! Constructor
-	new_listlayoutmanager(const layout_style_t &v=text_list)
+	new_listlayoutmanager(const listlayoutstyle_impl &list_style
+			      =highlighted_list)
 		LIBCXX_PUBLIC;
 
 	//! Destructor
@@ -160,7 +164,7 @@ class list_lock : public listimpl_info_lock_t {
 
 public:
 
-	const const_textlistlayoutmanager layout_manager;
+	const const_listlayoutmanager layout_manager;
 
 	//! Disambiguating constructor
 	template<typename ref_or_ptr, typename=
@@ -171,10 +175,44 @@ public:
 	}
 
 	//! Constructor
-	list_lock(const textlistlayoutmanagerObj &manager);
+	list_lock(const listlayoutmanagerObj &manager);
 
 	//! Destructor
 	~list_lock();
+};
+
+struct list_item_param : public list_item_param_base {
+
+	using list_item_param_base::list_item_param_base;
+
+	typedef list_item_param_base variant_t;
+
+	template<typename Arg1, typename ...Args,
+		 typename=std::void_t<text_param_constructible
+				      <Arg1, Args...>>>
+	list_item_param(Arg1 &&arg1,
+			Args && ...args)
+		: list_item_param_base{text_param{std::forward<Arg1>(arg1),
+				std::forward<Args>(args)...}}
+	{
+	}
+
+	template<typename Arg1, typename=
+		 std::enable_if<is_list_item_status_change_callback<Arg1>
+				::value>>
+	list_item_param(Arg1 &&arg1)
+		: list_item_param_base{list_item_status_change_callback{
+			std::forward<Arg1>(arg1)}}
+	{
+	}
+
+	~list_item_param();
+
+	list_item_param(const list_item_param &);
+	list_item_param(list_item_param &&);
+
+	list_item_param &operator=(const list_item_param &);
+	list_item_param &operator=(list_item_param &&);
 };
 
 LIBCXXW_NAMESPACE_END

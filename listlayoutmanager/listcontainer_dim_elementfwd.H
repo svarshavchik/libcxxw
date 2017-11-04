@@ -20,7 +20,7 @@ struct listcontainer_dim_right;
 
 //! List padding dimension mixin.
 
-//! The template parameter is a subclass of elementObj::implObj that
+//! The template parameter is a subclass of list_container_implObj, that
 //! defines list_v_padding(), list_left_padding(), list_right_padding(),
 //! and list_inner_padding() virtual methods. This mixin implements them.
 //!

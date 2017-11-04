@@ -37,7 +37,7 @@ static inline auto create_filedir_list(const factory &f,
 				       const std::string &initial_directory,
 				       const auto &current_selected)
 {
-	new_listlayoutmanager nlm{text_list};
+	new_listlayoutmanager nlm{highlighted_list};
 
 	nlm.columns=3;
 	nlm.rows=10;

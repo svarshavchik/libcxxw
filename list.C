@@ -7,7 +7,7 @@
 #include "x/w/focusable_container.H"
 #include "x/w/peepholed_focusableobj.H"
 #include "x/w/rgb.H"
-#include "layout_style.H"
+#include "listlayoutmanager/listlayoutstyle_impl.H"
 #include "gridlayoutmanager.H"
 #include "focus/focusable.H"
 #include "peephole/peepholed.H"
@@ -65,8 +65,8 @@ static void default_selection_changed(const listlayoutmanagerbase &,
 }
 
 new_listlayoutmanager
-::new_listlayoutmanager(const layout_style_t &layout_style)
-	: layout_style(layout_style),
+::new_listlayoutmanager(const listlayoutstyle_impl &list_style)
+	: list_style(list_style),
 	  selection_type(single_selection_type),
 	  selection_changed(default_selection_changed),
 	  rows(4),
@@ -115,8 +115,7 @@ new_listlayoutmanager::create(const ref<containerObj::implObj>
 			       peepholed_element,
 			       focusable_element,
 			       focusable_element_impl
-			       ]=this->layout_style.create(peephole_impl,
-							   *this);
+			       ]=this->list_style.create(peephole_impl, *this);
 
 			 container_element->show();
 

@@ -18,7 +18,7 @@
 #include "x/w/menubarlayoutmanager.H"
 #include "x/w/menubarfactory.H"
 #include "x/w/menu.H"
-#include "x/w/textlistlayoutmanager.H"
+#include "x/w/listlayoutmanager.H"
 #include "x/w/input_field.H"
 #include "x/w/label.H"
 #include "x/w/dialog.H"
@@ -205,7 +205,7 @@ void add_recent(const LIBCXX_NAMESPACE::w::main_window &main_window,
 
 
 void file_menu(const LIBCXX_NAMESPACE::w::main_window &main_window,
-	       const LIBCXX_NAMESPACE::w::textlistlayoutmanager &m,
+	       const LIBCXX_NAMESPACE::w::listlayoutmanager &m,
 	       const LIBCXX_NAMESPACE::w::menu &view_menu,
 	       size_t view_options_item)
 {
@@ -249,7 +249,7 @@ void file_menu(const LIBCXX_NAMESPACE::w::main_window &main_window,
 			"Toggle Options",
 
 			LIBCXX_NAMESPACE::w::submenu{
-				[](const LIBCXX_NAMESPACE::w::textlistlayoutmanager
+				[](const LIBCXX_NAMESPACE::w::listlayoutmanager
 				   &recent_menu)
 				{
 					for (size_t i=1; i <= 4; ++i)
@@ -312,7 +312,7 @@ void file_menu(const LIBCXX_NAMESPACE::w::main_window &main_window,
 			"Add to recent submenu"}});
 }
 
-size_t view_menu(const LIBCXX_NAMESPACE::w::textlistlayoutmanager &m)
+size_t view_menu(const LIBCXX_NAMESPACE::w::listlayoutmanager &m)
 {
 	m->replace_all_items(std::vector<LIBCXX_NAMESPACE::w::list_item_param>{{
 
@@ -339,7 +339,7 @@ size_t view_menu(const LIBCXX_NAMESPACE::w::textlistlayoutmanager &m)
 
 
 void help_menu(const LIBCXX_NAMESPACE::w::main_window &main_window,
-	       const LIBCXX_NAMESPACE::w::textlistlayoutmanager &m)
+	       const LIBCXX_NAMESPACE::w::listlayoutmanager &m)
 {
 	m->insert_item(0, std::vector<LIBCXX_NAMESPACE::w::list_item_param>{{
 		       [](auto &list_lock, size_t, bool selected)

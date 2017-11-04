@@ -20,7 +20,7 @@ struct image_param : public std::string {
 
 //! "foo"_image specifies an image icon to be used in a list.
 
-//! Passed to \ref textlistlayoutmanager "textlistlayoutmanager"'s
+//! Passed to \ref listlayoutmanager "listlayoutmanager"'s
 //! insert_item(), and append_item(), to indicate an image list item.
 
 inline image_param operator"" _image(const char *p, size_t n)

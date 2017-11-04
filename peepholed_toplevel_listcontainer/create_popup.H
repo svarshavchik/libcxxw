@@ -28,7 +28,7 @@ LIBCXXW_NAMESPACE_START
 
 typedef always_visibleObj<
 	peepholed_toplevel_listcontainer_impl_elementObj<
-		listcontainer_dim_elementObj<textlist_container_implObj>>
+		listcontainer_dim_elementObj<list_container_implObj>>
 	> p_t_l_impl_t;
 
 //! Typedef alias.
@@ -62,7 +62,7 @@ typedef create_p_t_l_impl_ret_t create_p_t_l_impl_t(const ref<containerObj
 typedef ref<p_t_l_t> create_p_t_l_t(const popup_attachedto_info
 				      &attachedto_info,
 				      const ref<p_t_l_impl_t> &,
-				      const ref<textlistlayoutmanagerObj
+				      const ref<listlayoutmanagerObj
 				      ::implObj> &);
 
 //! The type that specifies what kind of a popup it is.

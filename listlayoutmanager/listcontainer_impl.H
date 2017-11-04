@@ -11,7 +11,7 @@
 #include "hotspot_elementfwd.H"
 #include "background_color_elementfwd.H"
 #include "themedimfwd.H"
-#include "x/w/textlistlayoutmanagerfwd.H"
+#include "x/w/listlayoutmanagerfwd.H"
 #include "x/w/focus.H"
 #include "x/w/elementfwd.H"
 #include "focus/focusable.H"

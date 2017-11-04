@@ -165,7 +165,7 @@ class LIBCXX_HIDDEN richtextObj : virtual public obj {
 
 	//! If unset, the logical text width is always the same as the actual
 	//! text width. The logical text width is used by the
-	//! textlistlayoutmanager to position a text cell, so that if it is
+	//! listlayoutmanager to position a text cell, so that if it is
 	//! right-aligned, it gets rendered flush to the right margin of its
 	//! column, since right-alignment based on the actual text width is
 	//! not going to accomplish anything useful.
