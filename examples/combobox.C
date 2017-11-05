@@ -101,8 +101,8 @@ static inline void create_main_window(const x::w::main_window &main_window,
 	combobox->show();
 
 	// Combo-box layout manager inherits methods from the underlying
-	// list layout manager, like append_item(). Create a button that
-	// calls append_item().
+	// list layout manager, like append_items(). Create a button that
+	// calls append_items().
 
 	auto button=layout->append_row()->colspan(2)
 		.create_special_button_with_label("Append row");
@@ -119,11 +119,11 @@ static inline void create_main_window(const x::w::main_window &main_window,
 				    x::w::standard_comboboxlayoutmanager lm=
 					    combobox->get_layoutmanager();
 
-				    lm->append_item(o.str());
+				    lm->append_items(o.str());
 			    });
 	button->show();
 
-	// Same deal for insert_item().
+	// Same deal for insert_items().
 
 	button=layout->append_row()->colspan(2)
 		.create_special_button_with_label("Insert row");
@@ -140,11 +140,11 @@ static inline void create_main_window(const x::w::main_window &main_window,
 				    x::w::standard_comboboxlayoutmanager lm=
 					    combobox->get_layoutmanager();
 
-				    lm->insert_item(0, o.str());
+				    lm->insert_items(0, o.str());
 			    });
 	button->show();
 
-	// Same deal for replace_item(), delete_item(), and size():
+	// Same deal for replace_items(), delete_item(), and size():
 
 	button=layout->append_row()->colspan(2)
 		.create_special_button_with_label("Replace row");
@@ -164,7 +164,7 @@ static inline void create_main_window(const x::w::main_window &main_window,
 
 				    o << "Replace " << ++counter << std::endl;
 
-				    lm->replace_item(0, o.str());
+				    lm->replace_items(0, o.str());
 			    });
 	button->show();
 

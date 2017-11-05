@@ -1359,18 +1359,29 @@ void list_elementObj::implObj
 
 	if (row.extra->has_submenu())
 	{
-		// TODO -- figure out how to do this better.
-		//
 		// Need to postpone accessing row location until we're
 		// IN_THREAD
 
 		this->THREAD->run_as
 			([e=ref(this),
-			  y=row.y,
-			  height=row.height,
 			  extra=row.extra]
 			 (IN_THREAD_ONLY)
 			 {
+				 textlist_info_lock lock{IN_THREAD, *e};
+
+				 auto i=extra->current_row_number(IN_THREAD);
+
+				 if (i >= lock->row_infos.size())
+					 return;
+
+				 const auto &row=lock->row_infos.at(i);
+
+				 if (row.extra != extra)
+					 return;
+
+				 auto y=row.y;
+				 auto height=row.height;
+
 				 auto r=e->get_absolute_location(IN_THREAD);
 
 				 r.y = coord_t::truncate(r.y+y);
@@ -1460,14 +1471,16 @@ void list_elementObj::implObj
 
 	listimpl_info_t::lock &lock=ll;
 
+	list_item_status_info_t info{
+		lm, ll, i, selected_flag, trigger, mcguffin};
+
 	if (r.extra->status_change_callback)
 		try {
-			r.extra->status_change_callback(ll, i, selected_flag);
+			r.extra->status_change_callback(info);
 		} CATCH_EXCEPTIONS;
 
 	try {
-		lock->selection_changed(lm, i, selected_flag, trigger,
-					mcguffin);
+		lock->selection_changed(info);
 	} CATCH_EXCEPTIONS;
 }
 

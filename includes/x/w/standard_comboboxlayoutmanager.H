@@ -22,20 +22,10 @@ struct LIBCXX_HIDDEN standard_combobox_selection_changed_info_t {
 	//! A lock on combo-box's underlying list
 	standard_combobox_lock &lock;
 
-	//! Which combo-box item has been selected or unselected
-	size_t item_index;
+	//! Selected item status metadata
 
-	//! Whether the specified item has been selected or unselected.
-
-	//! When a new combo-box item gets selected the callback may get
-	//! invoked twice: once specifying the previous item number,
-	//! with a \c selected_flag of \c false; and a second time with the
-	//! new \c item_index, and a \c selected_flag of \c true.
-
-	bool selected_flag;
-
-	//! Available mcguffin for blocking all further processing.
-	const busy &mcguffin;
+	//! Information from the underlying item selection.
+	const list_item_status_info_t &list_item_status_info;
 };
 
 /*!
@@ -151,13 +141,13 @@ public:
 	~standard_combobox_lock();
 
 	//! Append a new item to the combo-box.
-	void append_item(const list_item_param &item);
+	void append_items(const list_item_param &item);
 
 	//! Append new items to the combo-box.
 	void append_items(const std::vector<list_item_param> &items);
 
 	//! Insert a new item to the combo-box before an existing item.
-	void insert_item(size_t i, const list_item_param &item);
+	void insert_items(size_t i, const list_item_param &item);
 
 	//! Insert a new item to the combo-box before an existing item.
 	void insert_items(size_t i, const std::vector<list_item_param> &items);
@@ -166,7 +156,7 @@ public:
 	void remove_item(size_t i);
 
 	//! Replace an item in the combo-box.
-	void replace_item(size_t i, const list_item_param &item);
+	void replace_items(size_t i, const list_item_param &item);
 
 	//! Replace items in the combo-box.
 	void replace_items(size_t i, const std::vector<list_item_param> &items);

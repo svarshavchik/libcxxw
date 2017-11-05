@@ -30,57 +30,31 @@ void listlayoutmanagerObj::remove_item(size_t item_number)
 	impl->list_element_singleton->impl->remove_row(ref(this), item_number);
 }
 
-void listlayoutmanagerObj::append_item(const std::vector<text_param> &items)
-{
-	append_item(std::vector<list_item_param>(items.begin(), items.end()));
-}
-
-void listlayoutmanagerObj::append_item(const std::vector<list_item_param>
-					   &items)
+void listlayoutmanagerObj::append_items(const std::vector<list_item_param>
+				       &items)
 {
 	impl->list_element_singleton->impl->append_rows(ref(this), items);
 }
 
-void listlayoutmanagerObj::insert_item(size_t item_number,
-					   const std::vector<text_param> &items)
-{
-	insert_item(item_number,
-		    std::vector<list_item_param>(items.begin(), items.end()));
-}
-
-void listlayoutmanagerObj::insert_item(size_t item_number,
-					   const std::vector<list_item_param>
-					   &items)
+void listlayoutmanagerObj::insert_items(size_t item_number,
+				       const std::vector<list_item_param>
+				       &items)
 {
 	impl->list_element_singleton->impl->insert_rows(ref(this),
 						  item_number, items);
 }
 
-void listlayoutmanagerObj::replace_item(size_t item_number,
-					    const std::vector<text_param> &items)
-{
-	replace_item(item_number,
-		     std::vector<list_item_param>(items.begin(), items.end()));
-}
-
-void listlayoutmanagerObj::replace_item(size_t item_number,
-					    const std::vector<list_item_param>
-					    &items)
+void listlayoutmanagerObj::replace_items(size_t item_number,
+					const std::vector<list_item_param>
+					&items)
 {
 	impl->list_element_singleton->impl->replace_rows(ref(this),
 						   item_number, items);
 }
 
-void listlayoutmanagerObj::replace_all_items(const std::vector<text_param>
-						 &items)
-{
-	replace_all_items(std::vector<list_item_param>(items.begin(),
-						       items.end()));
-}
-
 void listlayoutmanagerObj::replace_all_items(const
-						 std::vector<list_item_param>
-						 &items)
+					     std::vector<list_item_param>
+					     &items)
 {
 	impl->list_element_singleton->impl->replace_all_rows(ref(this),
 						       items);
@@ -107,14 +81,19 @@ std::vector<size_t> listlayoutmanagerObj::all_selected() const
 }
 
 void listlayoutmanagerObj::selected(size_t i, bool selected_flag,
-					const callback_trigger_t &trigger)
+				    const callback_trigger_t &trigger)
 {
 	impl->list_element_singleton->impl->selected(ref(this), i, selected_flag,
 					       trigger);
 }
 
+void listlayoutmanagerObj::autoselect(size_t i)
+{
+	autoselect(i, {});
+}
+
 void listlayoutmanagerObj::autoselect(size_t i,
-					  const callback_trigger_t &trigger)
+				      const callback_trigger_t &trigger)
 {
 	impl->list_element_singleton->impl->autoselect(ref(this), i, trigger);
 }

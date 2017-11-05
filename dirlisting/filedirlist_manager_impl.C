@@ -49,7 +49,7 @@ static inline auto create_filedir_list(const factory &f,
 	nlm.col_alignments.emplace(2, halign::right);
 
 	nlm.selection_type=[current_selected]
-		(const listlayoutmanagerbase &ignore,
+		(const listlayoutmanager &ignore,
 		 size_t n,
 		 const callback_trigger_t &trigger,
 		 const busy &mcguffin)
@@ -264,12 +264,13 @@ void filedirlist_managerObj::implObj::update(const const_filedir_file &files)
 
 		if (found)
 		{
-			lock.lm->replace_item(pos, filename, filedate,
-					      filesize);
+			lock.lm->replace_items(pos, {filename, filedate,
+						filesize});
 		}
 		else
 		{
-			lock.lm->insert_item(pos, filename, filedate, filesize);
+			lock.lm->insert_items(pos, {filename, filedate,
+						filesize});
 		}
 		lock.lm->enabled(pos, enabled);
 	}
@@ -393,17 +394,13 @@ void filedirlist_managerObj::implObj::stop()
 void filedirlist_managerObj::implObj::stop(protected_info_t::lock &lock)
 {
 	lock->current_filedircontents=nullptr;
-
-	// TODO:
-	lock.lm->replace_all_items(std::vector<text_param>{});
-
+	lock.lm->replace_all_items({});
 	lock->entries.clear();
 }
 
 void filedirlist_managerObj::implObj::start_new(protected_info_t::lock &lock)
 {
-	// TODO:
-	lock.lm->replace_all_items(std::vector<text_param>{});
+	lock.lm->replace_all_items({});
 
 	lock->entries.clear();
 

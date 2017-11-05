@@ -24,20 +24,18 @@ std::vector<std::tuple<size_t, size_t, bool>> invocations;
 
 void testlist2(const listlayoutmanager &tlm)
 {
-	tlm->callback_factory([counter=0]
-			      ()
-			      mutable
-			      {
-				      return [this_counter=counter++]
-					      (list_lock &lock,
-					       size_t i,
-					       bool selected)
-				      {
-					      invocations.emplace_back
-						      (this_counter, i,
-						       selected);
-				      };
-			      });
+	auto callback_factory=[counter=0]
+		()
+		mutable
+		{
+			return [this_counter=counter++]
+			(const auto &info)
+			{
+				invocations.emplace_back(this_counter,
+							 info.item_number,
+							 info.selected);
+			};
+		};
 
 	// [0, 0, 1]
 	// [1, 1, 1]
@@ -46,7 +44,9 @@ void testlist2(const listlayoutmanager &tlm)
 	// [1, 1, 0]
 	// [2, 2, 0]
 
-	tlm->append_item("A", "B", "C");
+	tlm->append_items({callback_factory(), "A",
+				callback_factory(), "B",
+				callback_factory(), "C"});
 	tlm->selected(0, true, {});
 	tlm->selected(1, true, {});
 	tlm->selected(2, true, {});
@@ -62,11 +62,14 @@ void testlist2(const listlayoutmanager &tlm)
 	// [5, 2, 1]
 	// [2, 3, 1]
 
-	tlm->replace_item(0, "D", "E");
+	tlm->replace_items(0,
+			   {callback_factory(), "D",
+					   callback_factory(), "E"});
 	tlm->selected(0, true, {});
 	tlm->selected(1, true, {});
 
-	tlm->insert_item(2, "F");
+	tlm->insert_items(2, {
+			callback_factory(), "F"});
 	tlm->selected(2, true, {});
 	tlm->selected(3, true, {});
 
@@ -74,15 +77,18 @@ void testlist2(const listlayoutmanager &tlm)
 	// [7, 3, 1]
 
 	tlm->remove_item(0);
-	tlm->replace_item(2, "G", "H");
+	tlm->replace_items(2, { callback_factory(), "G",
+				callback_factory(), "H"
+				});
 	tlm->selected(2, true, {});
 	tlm->selected(3, true, {});
 
 	// [8, 0, 1]
 	// [9, 1, 1]
 	// [10, 2, 1]
-	tlm->replace_all_items(std::vector<LIBCXX_NAMESPACE::w::list_item_param
-			       >{{"I", "J", "K"}});
+	tlm->replace_all_items({callback_factory(), "I",
+				callback_factory(), "J",
+				callback_factory(), "K"});
 	tlm->selected(0, true, {});
 	tlm->selected(1, true, {});
 	tlm->selected(2, true, {});

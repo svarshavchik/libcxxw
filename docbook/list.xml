@@ -170,7 +170,7 @@ new_list.selection_changed=[]
       and the lambda has full control over which list items get selected
       or unselected. The <varname>selection_type</varname> lambda's parameters
       are: the list layout manager, given as a
-      <ulink url="&link-typedef-x--w-listlayoutmanagerbase;"><classname>&ns;::w::listlayoutmanagerbase</classname></ulink>, the index of which
+      <ulink url="&link-typedef-x--w-listlayoutmanager;"><classname>&ns;::w::listlayoutmanager</classname></ulink>, the index of which
       item was clicked on, and the <classname>busy</classname> mcguffin. The
       lambda is responsible for selecting or
       unselecting the list's items, as it sees fit.

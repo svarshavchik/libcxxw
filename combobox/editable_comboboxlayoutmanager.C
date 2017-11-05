@@ -125,20 +125,22 @@ custom_combobox_selection_changed_t new_editable_comboboxlayoutmanager
 		standard_combobox_lock lock{lm};
 
 		info.popup_element->hide();
-		if (info.selected_flag)
+		if (info.list_item_status_info.selected)
 		{
 			// initial trigger variant is specified when the
 			// combo-box gets selected in autocomplete(). Don't
 			// overwrite the input field, autocomplete() will
 			// take care of it for us.
 
-			if (!std::holds_alternative<initial>(info.trigger))
+			if (!std::holds_alternative<initial>
+			    (info.list_item_status_info.trigger))
 			{
 				input_lock i_lock{current_selection};
 
-				current_selection->set(lock.item
-						       (info.item_index)
-						       .string);
+				current_selection
+					->set(lock.item
+					      (info.list_item_status_info
+					       .item_number).string);
 			}
 		}
 		else // Unselected.
@@ -146,13 +148,13 @@ custom_combobox_selection_changed_t new_editable_comboboxlayoutmanager
 			input_lock i_lock{current_selection};
 
 			if (i_lock.get_unicode() ==
-			    lock.item(info.item_index).string)
+			    lock.item(info.list_item_status_info.item_number)
+			    .string)
 			{
 				current_selection->set("");
 			}
 		}
-		cb({lock, lm, info.item_index, info.selected_flag,
-					info.mcguffin});
+		cb({lock, lm, info.list_item_status_info});
 	};
 }
 

@@ -143,8 +143,8 @@ extra_list_row_infoObj::~extra_list_row_infoObj()
 		current_shortcut->uninstall_shortcut();
 }
 
-void extra_list_row_infoObj::default_status_change_callback(list_lock &, size_t,
-							    bool)
+void extra_list_row_infoObj
+::default_status_change_callback(const list_item_status_info_t &)
 {
 }
 

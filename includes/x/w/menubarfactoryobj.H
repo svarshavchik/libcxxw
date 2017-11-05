@@ -46,7 +46,7 @@ public:
 	//! to construct the new menubar item.
 	//!
 	//! The second parameter is the creator for the menu's contents,
-	//! that receives a \ref menulayoutmanager "menu layout manager"
+	//! that receives a \ref listlayoutmanager "list layout manager"
 	//! as its parameter.
 
 	template<typename functor, typename content_functor>

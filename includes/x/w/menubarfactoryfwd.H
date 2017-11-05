@@ -22,13 +22,13 @@ factory->add([]
              {
              },
              []
-             (const INSERT_LIBX_NAMESPACE::w::menulayoutmanager &m)
+             (const INSERT_LIBX_NAMESPACE::w::listlayoutmanager &m)
              {
              });
 
 factory->add_text("File",
                   []
-                  (const INSERT_LIBX_NAMESPACE::w::menulayoutmanager &m)
+                  (const INSERT_LIBX_NAMESPACE::w::listlayoutmanager &m)
                   {
                   });
 \endcode
@@ -46,7 +46,7 @@ may be created using the factory, and it gets automatically show()n.
 
 The second parameter is the creator callback for the menu's contents.
 The creator callback receives an
-\ref menulayoutmanager "INSERT_LIBX_NAMESPACE::w::menulayoutmanager"
+\ref listlayoutmanager "INSERT_LIBX_NAMESPACE::w::listlayoutmanager"
 parameter, which it should use to populate the new menu.
 
 */

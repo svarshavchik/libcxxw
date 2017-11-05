@@ -9,7 +9,6 @@
 #include <x/w/listlayoutmanagerobj.H>
 #include <x/w/new_focusable_layoutmanagerfwd.H>
 #include <x/w/alignment.H>
-#include <x/w/listlayoutmanagerbase.H>
 #include <x/w/layoutmanager.H>
 #include <x/w/scrollbar.H>
 #include <x/w/grid_map_infofwd.H>
@@ -30,7 +29,7 @@ LIBCXXW_NAMESPACE_START
 
 //! \see new_listlayoutmanager
 
-typedef std::function<void (const listlayoutmanagerbase &, size_t,
+typedef std::function<void (const listlayoutmanager &, size_t,
 			    const callback_trigger_t &,
 			    const busy &)
 		      > list_selection_type_cb_t;
@@ -39,10 +38,7 @@ typedef std::function<void (const listlayoutmanagerbase &, size_t,
 
 //! \see new_listlayoutmanager
 
-typedef std::function<void (const listlayoutmanagerbase &,
-			    size_t, bool,
-			    const callback_trigger_t &,
-			    const busy &)
+typedef std::function<void (const list_item_status_info_t &)
 		      > list_selection_changed_cb_t;
 
 //! Create a new container with a \ref listlayoutmanager "list layout manager".
@@ -181,11 +177,28 @@ public:
 	~list_lock();
 };
 
+//! New list item parameter.
+
+//! Various list layout manager methods that
+//! create new list items specified as a \c std::vector of this class.
+//!
+//! This class (inherits from) a \c std::variant that takes several possible
+//! values.
+//!
+//! \see listlayoutmanager.
+
 struct list_item_param : public list_item_param_base {
 
 	using list_item_param_base::list_item_param_base;
 
+	//! Base variant class.
+
 	typedef list_item_param_base variant_t;
+
+	//! Constructor overload for a \ref text_param "INSERT_LIBX_NAMESPACE::w::text_param"
+
+	//! Helps with constructing the variant class as a
+	//! \ref text_param "text_param".
 
 	template<typename Arg1, typename ...Args,
 		 typename=std::void_t<text_param_constructible
@@ -197,6 +210,11 @@ struct list_item_param : public list_item_param_base {
 	{
 	}
 
+	//! Constructor overload for a \ref list_item_status_change_callback "INSERT_LIBX_NAMESPACE::w::list_item_status_change_callback"
+
+	//! Helps with constructing the variant class as a
+	//! \ref list_item_status_change_callback "list_item_status_change_callback".
+
 	template<typename Arg1, typename=
 		 std::enable_if<is_list_item_status_change_callback<Arg1>
 				::value>>
@@ -206,12 +224,19 @@ struct list_item_param : public list_item_param_base {
 	{
 	}
 
+	//! Destructor
 	~list_item_param();
 
+	//! Copy constructor
 	list_item_param(const list_item_param &);
+
+	//! Move constructor
 	list_item_param(list_item_param &&);
 
+	//! Assignment operator
 	list_item_param &operator=(const list_item_param &);
+
+	//! Move assignment operator
 	list_item_param &operator=(list_item_param &&);
 };
 

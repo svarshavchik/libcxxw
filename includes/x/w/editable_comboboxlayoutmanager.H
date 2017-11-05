@@ -24,20 +24,10 @@ struct LIBCXX_HIDDEN editable_combobox_selection_changed_info_t {
 	//! The combo-box's layout manager
 	const editable_comboboxlayoutmanager &lm;
 
-	//! Which combo-box item has been selected or unselected
-	size_t item_index;
+	//! Selected item status metadata
 
-	//! Whether the specified item has been selected or unselected.
-
-	//! When a new combo-box item gets selected the callback may get
-	//! invoked twice: once specifying the previous item number,
-	//! with a \c selected_flag of \c false; and a second time with the
-	//! new \c item_index, and a \c selected_flag of \c true.
-
-	bool selected_flag;
-
-	//! Available mcguffin for blocking all further processing.
-	const busy &mcguffin;
+	//! Information from the underlying item selection.
+	const list_item_status_info_t &list_item_status_info;
 };
 
 /*!

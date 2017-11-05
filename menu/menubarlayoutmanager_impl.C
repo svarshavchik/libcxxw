@@ -249,7 +249,7 @@ void menubarlayoutmanagerObj::implObj::fix_order(IN_THREAD_ONLY,
 }
 
 void menubarlayoutmanagerObj::implObj
-::menuitem_selected(const listlayoutmanagerbase &lmbase,
+::menuitem_selected(const listlayoutmanager &lmbase,
 		    size_t i,
 		    const callback_trigger_t &trigger,
 		    const busy &mcguffin)

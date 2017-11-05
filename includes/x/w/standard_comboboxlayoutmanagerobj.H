@@ -36,28 +36,28 @@ public:
 	//! Destructor
 	~standard_comboboxlayoutmanagerObj() LIBCXX_HIDDEN;
 
-	using custom_comboboxlayoutmanagerObj::append_item;
+	using custom_comboboxlayoutmanagerObj::append_items;
 
 	//! Append a new item to the combo-box.
 
-	void append_item(const std::vector<list_item_param> &items) override;
+	void append_items(const std::vector<list_item_param> &items) override;
 
-	using custom_comboboxlayoutmanagerObj::insert_item;
+	using custom_comboboxlayoutmanagerObj::insert_items;
 
 	//! Insert a new item to the combo-box before an existing item.
 
-	void insert_item(size_t i, const std::vector<list_item_param> &items)
+	void insert_items(size_t i, const std::vector<list_item_param> &items)
 		override;
 
 	//! Remove an item from the combo-box.
 
 	void remove_item(size_t i) override;
 
-	using custom_comboboxlayoutmanagerObj::replace_item;
+	using custom_comboboxlayoutmanagerObj::replace_items;
 
 	//! Replace an item.
 
-	void replace_item(size_t item_number,
+	void replace_items(size_t item_number,
 			  const std::vector<list_item_param> &items) override;
 
 	using custom_comboboxlayoutmanagerObj::replace_all_items;

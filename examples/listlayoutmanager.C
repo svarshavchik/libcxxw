@@ -117,13 +117,13 @@ static inline void create_main_window(const x::w::main_window &main_window,
 
 			 // Initialize with two items in the list.
 
-			 l->append_item(next_lorem_ipsum());
+			 l->append_items(next_lorem_ipsum());
 
-			 // append_item() is overloaded, and can take a vector
+			 // append_items() is overloaded, and can take a vector
 			 // to insert multiple items at once:
 
 			 std::vector<x::w::text_param> items={next_lorem_ipsum()};
-			 l->append_item(items);
+			 l->append_items(items);
 		 },
 		 new_list);
 	list_container->show();
@@ -247,9 +247,9 @@ static inline void create_main_window(const x::w::main_window &main_window,
 					  };
 				  });
 
-			 l->insert_item(0, next_lorem_ipsum());
+			 l->insert_items(0, next_lorem_ipsum());
 
-			 // insert_item(), like append_item() is overloaded
+			 // insert_items(), like append_items() is overloaded
 			 // to take a vector of items to insert at once.
 		 });
 
@@ -261,34 +261,34 @@ static inline void create_main_window(const x::w::main_window &main_window,
 			 x::w::listlayoutmanager l=
 				 list_container->get_layoutmanager();
 
-			 // insert_item() and append_item() can insert an
+			 // insert_items() and append_items() can insert an
 			 // arbitrary display element.
 			 //
-			 // append_item() and insert_item(item_numbers) returns
+			 // append_items() and insert_items(item_numbers) returns
 			 // a generic factory that can be used to insert
 			 // any non-focusable display element as a list item.
 			 //
 			 // Inserting a text string (or a text_param) is
 			 // really a wrapper for create_label().
 			 //
-			 // insert_item(0, next_lorem_ipsum());
+			 // insert_items(0, next_lorem_ipsum());
 			 //
 			 // is exactly equivalent to:
 			 //
-			 // l->insert_item(0)->create_label(next_lorem_ipsum());
+			 // l->insert_items(0)->create_label(next_lorem_ipsum());
 			 //
 			 // Here's an example of using the factory overload:
 
-			 x::w::factory f=l->append_item();
+			 x::w::factory f=l->append_items();
 
-			 // Also insert_item(item_number). Then:
+			 // Also insert_items(item_number). Then:
 
 			 f->create_label(next_lorem_ipsum());
 
 			 // Another f->create_label(next_lorem_ipsum()) will
 			 // insert another item.
 			 //
-			 // The insert_item() overload works the same way.
+			 // The insert_items() overload works the same way.
 		 });
 
 	remove_row->on_activate
@@ -315,11 +315,11 @@ static inline void create_main_window(const x::w::main_window &main_window,
 			 if (l->size() == 0)
 				 return;
 
-			 // replace_item() works like insert_item(), except
+			 // replace_items() works like insert_items(), except
 			 // that the existing item gets removed. It has the
-			 // same overloads as append_item() and insert_item().
+			 // same overloads as append_items() and insert_items().
 
-			 l->replace_item(0, next_lorem_ipsum());
+			 l->replace_items(0, next_lorem_ipsum());
 		 });
 
 	reset->on_activate

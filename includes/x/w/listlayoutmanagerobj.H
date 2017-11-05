@@ -6,7 +6,6 @@
 #define x_w_listlayoutmanagerobj_h
 
 #include <x/w/listlayoutmanagerfwd.H>
-#include <x/w/listlayoutmanagerbaseobj.H>
 #include <x/w/layoutmanagerobj.H>
 
 LIBCXXW_NAMESPACE_START
@@ -16,7 +15,7 @@ LIBCXXW_NAMESPACE_START
 //! \see listlayoutmanager
 
 class listlayoutmanagerObj : public layoutmanagerObj,
-				 public listlayoutmanagerbaseObj {
+			     virtual public obj {
 
 public:
 	class implObj;
@@ -31,45 +30,21 @@ public:
 	~listlayoutmanagerObj() LIBCXX_HIDDEN;
 
 	//! Remove a list item
-	void remove_item(size_t item_number) override;
-
-	using listlayoutmanagerbaseObj::append_item;
+	virtual void remove_item(size_t item_number);
 
 	//! Append new list items.
 
-	void append_item(const std::vector<text_param> &items) override;
-
-	//! Append new list items.
-
-	virtual void append_item(const std::vector<list_item_param> &items);
-
-	using listlayoutmanagerbaseObj::insert_item;
+	virtual void append_items(const std::vector<list_item_param> &items);
 
 	//! Insert new list items.
 
-	void insert_item(size_t item_number,
-			 const std::vector<text_param> &items) override;
-
-	//! Insert new list items.
-
-	virtual void insert_item(size_t item_number,
+	virtual void insert_items(size_t item_number,
 				 const std::vector<list_item_param> &items);
 
-	using listlayoutmanagerbaseObj::replace_item;
-
 	//! Replace list items.
 
-	void replace_item(size_t item_number,
-			  const std::vector<text_param> &items) override;
-
-	//! Replace list items.
-
-	virtual void replace_item(size_t item_number,
+	virtual void replace_items(size_t item_number,
 				  const std::vector<list_item_param> &items);
-
-	//! Replace all list items.
-
-	void replace_all_items(const std::vector<text_param> &items) override;
 
 	//! Replace all list items.
 
@@ -78,43 +53,52 @@ public:
 
 	//! Number of items in the list
 
-	size_t size() const override;
+	size_t size() const;
 
 	//! Whether list item \#i is selected right now.
-	bool selected(size_t i) const override;
+	bool selected(size_t i) const;
 
 	//! Return the currently selected item.
 
 	//! For convenience of a single_selection_type() list, returns
 	//! the index of the currently selected item.
 
-	std::optional<size_t> selected() const override;
+	std::optional<size_t> selected() const;
 
 	//! Return a list of all selected items.
-	std::vector<size_t> all_selected() const override;
+	std::vector<size_t> all_selected() const;
 
 	//! Select or unselect item \#i
 	void selected(size_t i, bool selected_flag,
-		      const callback_trigger_t &trigger) override;
+		      const callback_trigger_t &trigger);
 
-	using listlayoutmanagerbaseObj::selected;
+	//! Shortcut
+
+	//! Invoke selected() with the default trigger.
+	//! \overload
+
+	void selected(size_t i, bool selected_flag);
 
 	//! As if item \#i was clicked on.
 
 	void autoselect(size_t i,
-			const callback_trigger_t &trigger) override;
-	using listlayoutmanagerbaseObj::autoselect;
+			const callback_trigger_t &trigger);
+	//! Shortcut
+
+	//! Invoke autoselect() with the default trigger.
+	//! \overload
+	void autoselect(size_t i);
 
 	//! Unselect all selected items.
-	void unselect() override;
+	void unselect();
 
 	//! Whether the given list item is enabled().
 
-	bool enabled(size_t i) const override;
+	bool enabled(size_t i) const;
 
 	//! Enable or disable the list item.
 
-	void enabled(size_t i, bool flag) override;
+	void enabled(size_t i, bool flag);
 
 	//! Return an existing menu item's submenu layoutmanager.
 	listlayoutmanagerptr get_item_layoutmanager(size_t i);

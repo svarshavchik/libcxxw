@@ -57,10 +57,7 @@ class LIBCXX_HIDDEN listObj : public peepholed_focusableObj {
 
 ///////////////////////////////////////////////////////////
 
-static void default_selection_changed(const listlayoutmanagerbase &,
-				      size_t, bool,
-				      const callback_trigger_t &trigger,
-				      const busy &)
+static void default_selection_changed(const list_item_status_info_t &ignore)
 {
 }
 
@@ -134,7 +131,7 @@ new_listlayoutmanager::create(const ref<containerObj::implObj>
 ////////////////////////////////////////////////////////////////////////////
 
 
-void single_selection_type(const listlayoutmanagerbase &layout_manager,
+void single_selection_type(const listlayoutmanager &layout_manager,
 			   size_t i,
 			   const callback_trigger_t &trigger,
 			   const busy &mcguffin)
@@ -151,7 +148,7 @@ void single_selection_type(const listlayoutmanagerbase &layout_manager,
 	layout_manager->selected(i, true, trigger);
 }
 
-void multiple_selection_type(const listlayoutmanagerbase &layout_manager,
+void multiple_selection_type(const listlayoutmanager &layout_manager,
 			     size_t i,
 			     const callback_trigger_t &trigger,
 			     const busy &mcguffin)

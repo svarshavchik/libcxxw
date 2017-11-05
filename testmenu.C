@@ -193,14 +193,13 @@ void add_recent(const LIBCXX_NAMESPACE::w::main_window &main_window,
 	LIBCXX_NAMESPACE::w::menubar_lock lock{lm};
 
 	lock.get_menu(0)->get_layoutmanager()->get_item_layoutmanager(5)
-		->append_item
-		({LIBCXX_NAMESPACE::w::list_item_param{
-				[s](auto &list_lock, size_t,
-				    bool)
+		->append_items
+		({
+			[s](const auto &info)
 			{
 				std::cout << "YAY:" << s << std::endl;
-			}},
-				LIBCXX_NAMESPACE::w::list_item_param{s}});
+			},
+			LIBCXX_NAMESPACE::w::list_item_param{s}});
 }
 
 
@@ -209,10 +208,10 @@ void file_menu(const LIBCXX_NAMESPACE::w::main_window &main_window,
 	       const LIBCXX_NAMESPACE::w::menu &view_menu,
 	       size_t view_options_item)
 {
-	m->append_item(std::vector<LIBCXX_NAMESPACE::w::list_item_param>{{
+	m->append_items({
 			LIBCXX_NAMESPACE::w::shortcut{"Alt", 'N'},
 
-			[](auto &list_lock, size_t, bool)
+			[](const auto &ignore)
 			{
 				app_dialogs all_app_dialogs;
 
@@ -221,7 +220,7 @@ void file_menu(const LIBCXX_NAMESPACE::w::main_window &main_window,
 			},
 			"New",
 			LIBCXX_NAMESPACE::w::shortcut{"Alt", 'O'},
-			[](auto &list_lock, size_t, bool)
+			[](const auto &ignore)
 			{
 				app_dialogs all_app_dialogs;
 
@@ -229,7 +228,7 @@ void file_menu(const LIBCXX_NAMESPACE::w::main_window &main_window,
 					all_app_dialogs->file_open->show_all();
 			},
 			"Open",
-			[](auto &list_lock, size_t, bool)
+			[](const auto &ignore)
 			{
 				std::cout << "File->Close selected"
 					  << std::endl;
@@ -238,7 +237,7 @@ void file_menu(const LIBCXX_NAMESPACE::w::main_window &main_window,
 
 			LIBCXX_NAMESPACE::w::separator{},
 
-			[=](auto &list_lock, size_t, bool)
+			[=](const auto &ignore)
 			{
 				auto l=view_menu->get_layoutmanager();
 
@@ -260,10 +259,9 @@ void file_menu(const LIBCXX_NAMESPACE::w::main_window &main_window,
 
 						auto s=o.str();
 
-						recent_menu->append_item
+						recent_menu->append_items
 							({LIBCXX_NAMESPACE::w::list_item_param{
-									[s](const auto &list_lock,
-									    size_t, bool)
+									[s](const auto &)
 									{
 										std::cout << s
 											  << std::endl;
@@ -273,13 +271,13 @@ void file_menu(const LIBCXX_NAMESPACE::w::main_window &main_window,
 					}
 				}},
 			"Recent",
-			[=](auto &list_lock, size_t, bool)
+				[=](const auto &ignore)
 			{
 				std::cout << "File->Quit selected" << std::endl;
 			},
 			"Quit",
 			[main_window=LIBCXX_NAMESPACE::make_weak_capture(main_window)]
-				(auto &list_lock, size_t, bool)
+				(const auto &ignore)
 			{
 				main_window.get([]
 						(const auto &main_window)
@@ -289,7 +287,7 @@ void file_menu(const LIBCXX_NAMESPACE::w::main_window &main_window,
 			},
 			"Remove Help menu",
 			[main_window=LIBCXX_NAMESPACE::make_weak_capture(main_window)]
-				(auto &list_lock, size_t, bool)
+				(const auto &ignore)
 			{
 				main_window.get([]
 						(const auto &main_window)
@@ -300,7 +298,7 @@ void file_menu(const LIBCXX_NAMESPACE::w::main_window &main_window,
 			"Remove View menu",
 
 			[i=4, main_window=LIBCXX_NAMESPACE::make_weak_capture(main_window)]
-				(auto &list_lock, size_t, bool)
+				(const auto &ignore)
 				mutable
 			{
 				main_window.get([&]
@@ -309,30 +307,29 @@ void file_menu(const LIBCXX_NAMESPACE::w::main_window &main_window,
 							add_recent(main_window, ++i);
 						});
 			},
-			"Add to recent submenu"}});
+			"Add to recent submenu"});
 }
 
 size_t view_menu(const LIBCXX_NAMESPACE::w::listlayoutmanager &m)
 {
-	m->replace_all_items(std::vector<LIBCXX_NAMESPACE::w::list_item_param>{{
-
+	m->replace_all_items({
 		LIBCXX_NAMESPACE::w::menuoption{},
-		[](auto &list_lock, size_t, bool selected)
+		[](const auto &info)
 		{
-			std::cout << "View->Tools: " << selected
+			std::cout << "View->Tools: " << info.selected
 				  << std::endl;
 		},
 
 		"Tools",
 
 		LIBCXX_NAMESPACE::w::menuoption{},
-		[](auto &list_lock, size_t, bool selected)
+		[](const auto &info)
 		{
-			std::cout << "View->Options: " << selected
+			std::cout << "View->Options: " << info.selected
 				  << std::endl;
 		},
 		"Options"
-			}});
+			});
 
 	return m->size()-1;
 }
@@ -341,8 +338,8 @@ size_t view_menu(const LIBCXX_NAMESPACE::w::listlayoutmanager &m)
 void help_menu(const LIBCXX_NAMESPACE::w::main_window &main_window,
 	       const LIBCXX_NAMESPACE::w::listlayoutmanager &m)
 {
-	m->insert_item(0, std::vector<LIBCXX_NAMESPACE::w::list_item_param>{{
-		       [](auto &list_lock, size_t, bool selected)
+	m->insert_items(0, {
+		       [](const auto &ignore)
 		       {
 			       app_dialogs all_app_dialogs;
 
@@ -353,7 +350,7 @@ void help_menu(const LIBCXX_NAMESPACE::w::main_window &main_window,
 
 		       LIBCXX_NAMESPACE::w::shortcut{"F1"},
 
-		       [](auto &list_lock, size_t, bool selected)
+		       [](const auto &ignore)
 		       {
 			       app_dialogs all_app_dialogs;
 
@@ -361,7 +358,7 @@ void help_menu(const LIBCXX_NAMESPACE::w::main_window &main_window,
 				       all_app_dialogs->help_about->show_all();
 		       },
 		       "About"
-			       }});
+			       });
 }
 
 void testmenu()

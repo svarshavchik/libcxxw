@@ -34,12 +34,6 @@ struct LIBCXX_HIDDEN custom_combobox_selection_changed_info_t {
 	//! The layout manager
 	const custom_comboboxlayoutmanager &lm;
 
-	//! Which combo-box item has been selected or unselected
-	size_t item_index;
-
-	//! Whether the specified item has been selected or unselected.
-	bool selected_flag;
-
 	//! The item element that has been selected or unselected.
 	const element &current_selection;
 
@@ -49,11 +43,10 @@ struct LIBCXX_HIDDEN custom_combobox_selection_changed_info_t {
 	//! a new selection.
 	const element &popup_element;
 
-	//! The trigger
-	const callback_trigger_t &trigger;
+	//! Selected item status metadata
 
-	//! Available mcguffin for blocking all further processing.
-	const busy &mcguffin;
+	//! Information from the underlying item selection.
+	const list_item_status_info_t &list_item_status_info;
 };
 
 //! Callback that gets invoked when a combo-box selection is made.

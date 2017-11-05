@@ -15,11 +15,12 @@ class menuObj;
 /*! A menu button in a \ref menubarlayoutmanager "menu bar".
 
 \code
-INSERT_LIBX_NAMESPACE::w::menulayoutmanager l=m->get_layoutmanager();
+INSERT_LIBX_NAMESPACE::w::listlayoutmanager l=m->get_layoutmanager();
 \endcode
 
 This display element represents a menu in a menu bar, a container
-with \ref menulayoutmanager "menu layout manager".
+with \ref listlayoutmanager "list layout manager" that manages the items
+in the menu.
 
 */
 

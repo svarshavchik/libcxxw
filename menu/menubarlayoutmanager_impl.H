@@ -87,7 +87,7 @@ class LIBCXX_HIDDEN menubarlayoutmanagerObj::implObj
 	//! list. This gets called when a menu item has been selected/clicked
 	//! on.
 
-	static void menuitem_selected(const listlayoutmanagerbase &lm,
+	static void menuitem_selected(const listlayoutmanager &lm,
 				      size_t i,
 				      const callback_trigger_t &trigger,
 				      const busy &mcguffin);

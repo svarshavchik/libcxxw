@@ -22,14 +22,14 @@ combo-box. Do not use the methods from the inherited custom combo-box list
 layout manager, and the underlying list layout manager, except as noted.
 
 \code
-lm->append_item("Item");
-lm->insert_item(0, "Item");
+lm->append_items("Item");
+lm->insert_items(0, "Item");
 lm->remove_item(0);
 lm->replace_all({"Lorem","Ipsum"});
 \endcode
 
-append_item() inserts a new item to the end of the combo-box's item list.
-insert_item() inserts a new item before an existing item.
+append_items() inserts a new item to the end of the combo-box's item list.
+insert_items() inserts a new item before an existing item.
 remove_item() removes an item.
 
 replace_all()'s parameter is a vector of text items, which replaces all

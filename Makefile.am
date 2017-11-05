@@ -387,7 +387,6 @@ libcxxw_la_SOURCES=\
 	layoutmanager_impl.C			    \
 	layout_style.H				    \
 	list.C					    \
-	listlayoutmanagerbase.C			    \
 	listlayoutmanager/extra_list_row_info.C	    \
 	listlayoutmanager/extra_list_row_info.H	    \
 	listlayoutmanager/extra_list_row_infofwd.H  \

@@ -80,7 +80,7 @@ static std::vector<text_param> to_text_param(const std::vector<list_item_param>
 	return ret;
 }
 
-void standard_combobox_lock::append_item(const list_item_param &item)
+void standard_combobox_lock::append_items(const list_item_param &item)
 {
 	append_items({item});
 }
@@ -102,11 +102,11 @@ void standard_combobox_lock::append_items(const std::vector<list_item_param>
 	ti.insert(ti.end(), t.begin(), t.end());
 
 	s.guard();
-	locked_layoutmanager->superclass_t::append_item(items);
+	locked_layoutmanager->superclass_t::append_items(items);
 	s.unguard();
 }
 
-void standard_combobox_lock::insert_item(size_t i, const list_item_param &item)
+void standard_combobox_lock::insert_items(size_t i, const list_item_param &item)
 {
 	insert_items(i, {item});
 }
@@ -130,11 +130,11 @@ void standard_combobox_lock::insert_items(size_t i,
 	ti.insert(ti.begin()+i, t.begin(), t.end());
 
 	s.guard();
-	locked_layoutmanager->superclass_t::insert_item(i, items);
+	locked_layoutmanager->superclass_t::insert_items(i, items);
 	s.unguard();
 }
 
-void standard_combobox_lock::replace_item(size_t i,
+void standard_combobox_lock::replace_items(size_t i,
 					  const list_item_param &item)
 {
 	replace_items(i, {item});
@@ -151,7 +151,7 @@ void standard_combobox_lock::replace_items(size_t i,
 	if (ti.size() < i || ti.size()-i < t.size())
 		nosuchitem(i);
 
-	locked_layoutmanager->superclass_t::replace_item(i, items);
+	locked_layoutmanager->superclass_t::replace_items(i, items);
 
 	std::copy(t.begin(), t.end(), ti.begin()+i);
 }
@@ -255,7 +255,7 @@ static void nosuchitem(size_t i)
 }
 
 void standard_comboboxlayoutmanagerObj
-::append_item(const std::vector<list_item_param> &items)
+::append_items(const std::vector<list_item_param> &items)
 {
 	standard_combobox_lock lock{standard_comboboxlayoutmanager(this)};
 
@@ -263,7 +263,7 @@ void standard_comboboxlayoutmanagerObj
 }
 
 void standard_comboboxlayoutmanagerObj
-::insert_item(size_t i,
+::insert_items(size_t i,
 	      const std::vector<list_item_param> &items)
 {
 	standard_combobox_lock lock{standard_comboboxlayoutmanager(this)};
@@ -272,7 +272,7 @@ void standard_comboboxlayoutmanagerObj
 }
 
 void standard_comboboxlayoutmanagerObj
-::replace_item(size_t i,
+::replace_items(size_t i,
 	       const std::vector<list_item_param> &items)
 {
 	standard_combobox_lock lock{standard_comboboxlayoutmanager(this)};
@@ -368,17 +368,17 @@ custom_combobox_selection_changed_t new_standard_comboboxlayoutmanager
 		standard_combobox_lock lock{lm};
 
 		info.popup_element->hide();
-		if (info.selected_flag)
+		if (info.list_item_status_info.selected)
 		{
 			current_selection->update
-				(lock.item(info.item_index));
+				(lock.item(info.list_item_status_info
+					   .item_number));
 		}
 		else // Unselected.
 		{
 			current_selection->update("");
 		}
-		cb({lock, info.item_index, info.selected_flag,
-					info.mcguffin});
+		cb({lock, info.list_item_status_info});
 	};
 }
 

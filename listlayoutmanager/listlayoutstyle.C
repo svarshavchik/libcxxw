@@ -266,7 +266,6 @@ listlayoutstyle_impl::create_cells(const std::vector<list_item_param> &t,
 		throw EXCEPTION(_("Row metadata must be specified before "
 				  "the row data."));
 
-	// TODO:
 	if (rowmeta.size() * textlist_element.columns != newcells.size())
 		throw EXCEPTION(_("I suck at logic."));
 }

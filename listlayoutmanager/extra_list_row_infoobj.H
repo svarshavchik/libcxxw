@@ -9,7 +9,6 @@
 #include "popup/popupfwd.H"
 #include "connection_threadfwd.H"
 #include "listlayoutmanager/listlayoutstyle_impl.H"
-#include "x/w/listlayoutmanagerbasefwd.H"
 #include "x/w/listlayoutmanagerfwd.H"
 #include "x/w/shortcutfwd.H"
 #include "x/w/rectangle.H"
@@ -72,7 +71,8 @@ class LIBCXX_HIDDEN extra_list_row_infoObj : virtual public obj {
 
 	//! Default no-op status_change_callback.
 
-	static void default_status_change_callback(list_lock &, size_t, bool);
+	static void default_status_change_callback(const
+						   list_item_status_info_t &);
 
  private:
 

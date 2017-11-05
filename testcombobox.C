@@ -110,9 +110,9 @@ focusable_container create_editable_combobox(const factory &f)
 	new_editable_comboboxlayoutmanager ec{
 		[] (const auto &info)
 		{
-			if (info.selected_flag)
+			if (info.list_item_status_info.selected)
 				std::cout << "Selected item #"
-					  << info.item_index
+					  << info.list_item_status_info.item_number
 					  << std::endl;
 		}
 	};
@@ -125,9 +125,10 @@ focusable_container create_standard_combobox(const factory &f)
 	new_standard_comboboxlayoutmanager sc{
 		[] (const auto &info)
 		{
-			if (info.selected_flag)
+			if (info.list_item_status_info.selected)
 				std::cout << "Selected item #"
-					  << info.item_index
+					  << info.list_item_status_info
+					.item_number
 					  << std::endl;
 		}
 	};
@@ -168,7 +169,7 @@ void testcombobox(const testcombobox_options &options)
 					 standard_comboboxlayoutmanager lm=
 						 combobox->get_layoutmanager();
 
-					 lm->append_item(moretext[i]);
+					 lm->append_items({moretext[i]});
 
 					 i=(i+1) % (sizeof(moretext)/
 						    sizeof(moretext[0]));
@@ -197,7 +198,7 @@ void testcombobox(const testcombobox_options &options)
 					 standard_comboboxlayoutmanager lm=
 						 combobox->get_layoutmanager();
 
-					 lm->append_item({LIBCXX_NAMESPACE::w::separator{}});
+					 lm->append_items({LIBCXX_NAMESPACE::w::separator{}});
 				 });
 
 			 factory=layout->append_row();
@@ -208,7 +209,7 @@ void testcombobox(const testcombobox_options &options)
 					 standard_comboboxlayoutmanager lm=
 						 combobox->get_layoutmanager();
 
-					 lm->insert_item(0, {LIBCXX_NAMESPACE::w::separator{}});
+					 lm->insert_items(0, {LIBCXX_NAMESPACE::w::separator{}});
 				 });
 
 			 factory=layout->append_row();
