@@ -29,6 +29,15 @@
 
 LIBCXXW_NAMESPACE_START
 
+void textlist_rowinfo::setting_menu_item()
+{
+	if (std::holds_alternative<std::monostate>(menu_item))
+		return;
+
+	throw EXCEPTION(_("Cannot specify duplicate or conflicting list item "
+			  "attributes"));
+}
+
 std::tuple<container, peepholed, focusable, focusable_impl>
 listlayoutstyle_impl
 ::create(const ref<peepholeObj::implObj> &peephole_parent,
@@ -94,11 +103,13 @@ listlayoutstyle_impl::create_cells(const std::vector<list_item_param> &t,
 				[&](const list_item_status_change_callback &cb)
 				{
 				},
-				[&](const menuoption &mo)
+				[this](const menuoption &mo)
 				{
+					menu_attribute_requested();
 				},
-				[&](const submenu &sm)
+				[this](const submenu &sm)
 				{
+					menu_attribute_requested();
 				},
 				[&](const separator &)
 				{
@@ -160,6 +171,18 @@ listlayoutstyle_impl::create_cells(const std::vector<list_item_param> &t,
 			 [&, this]
 			 (const auto &new_cell)
 			 {
+				 if (std::holds_alternative<menu_item_submenu>
+				     (next_rowinfo.menu_item))
+				 {
+					 if (next_rowinfo.listitem_shortcut ||
+					     next_rowinfo.listitem_callback)
+						 throw EXCEPTION
+							 (_("Cannot specify "
+							    "shortcuts or "
+							    "callbacks for "
+							    "sub-menus"));
+				 }
+
 				 bool first_column=
 					 (c % textlist_element.columns) == 0;
 
@@ -283,18 +306,31 @@ void listlayoutstyle_impl::do_process_list_item_param
 		   {
 			   [&](const shortcut &sc)
 			   {
+				   if (next_rowinfo.listitem_shortcut)
+					   throw EXCEPTION
+						   (_("Cannot specify multiple "
+						      "shorcuts for list items")
+						    );
+
 				   next_rowinfo.listitem_shortcut=&sc;
 			   },
 			   [&](const list_item_status_change_callback &cb)
 			   {
+				   if (next_rowinfo.listitem_callback)
+					   throw EXCEPTION
+						   (_("Cannot specify multiple "
+						      "callbacks for list "
+						      "items"));
 				   next_rowinfo.listitem_callback=&cb;
 			   },
 			   [&](const menuoption &mo)
 			   {
+				   next_rowinfo.setting_menu_item();
 				   next_rowinfo.menu_item=menu_item_option{};
 			   },
 			   [&](const submenu &sm)
 			   {
+				   next_rowinfo.setting_menu_item();
 				   auto ret=menubarlayoutmanagerObj::implObj
 					   ::create_popup_menu
 					   (elementimpl(&textlist_element),
@@ -337,6 +373,12 @@ void listlayoutstyle_impl::do_process_list_item_param
 				   separator_callback();
 			   }
 		   }, item);
+}
+
+void listlayoutstyle_impl::menu_attribute_requested() const
+{
+	throw EXCEPTION(_("menuoption and submenu attributes are allowed "
+			  "only in menus"));
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -567,6 +609,10 @@ class LIBCXX_HIDDEN menu_list_style_impl
 					       .itemshortcut_meta, s);
 
 		return list_celltext::create(rt, halign::left, 0);
+	}
+
+	void menu_attribute_requested() const
+	{
 	}
 };
 

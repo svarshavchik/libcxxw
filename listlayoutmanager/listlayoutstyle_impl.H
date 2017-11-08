@@ -31,6 +31,8 @@ struct LIBCXX_HIDDEN textlist_rowinfo {
 	const list_item_status_change_callback *listitem_callback=nullptr;
 
 	menu_item_t menu_item;
+
+	void setting_menu_item();
 };
 
 //! Specifies the style of the list created by a \ref new_listlayoutmanager.
@@ -126,6 +128,10 @@ class LIBCXX_HIDDEN listlayoutstyle_impl {
 	virtual void selected_changed(list_cell *row,
 				      bool selected_flag) const=0;
  private:
+
+	//! Whether a menuoption or a submenu can be separated.
+
+	virtual void menu_attribute_requested() const;
 
 	//! How many extra leading columns there are.
 
