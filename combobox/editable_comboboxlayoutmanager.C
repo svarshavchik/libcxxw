@@ -98,7 +98,8 @@ new_editable_comboboxlayoutmanager
 			   });
 
 		   return input_field;
-	   })
+	   }),
+	  selection_changed{ [](const auto &ignore) {}}
 {
 }
 
@@ -116,7 +117,7 @@ new_editable_comboboxlayoutmanager::~new_editable_comboboxlayoutmanager()
 custom_combobox_selection_changed_t new_editable_comboboxlayoutmanager
 ::get_selection_changed() const
 {
-	return [cb=this->selection_changed]
+	return []
 		(const auto &info)
 	{
 		editable_comboboxlayoutmanager lm=info.lm;
@@ -154,7 +155,9 @@ custom_combobox_selection_changed_t new_editable_comboboxlayoutmanager
 				current_selection->set("");
 			}
 		}
-		cb({lock, info.list_item_status_info, lm});
+
+		lm->impl->selection_changed.get()
+			({lock, info.list_item_status_info, lm});
 	};
 }
 
@@ -163,7 +166,7 @@ new_editable_comboboxlayoutmanager
 ::create_impl(const create_impl_info &i) const
 {
 	return ref<editable_comboboxlayoutmanagerObj::implObj>
-		::create(i.container_impl, i.style);
+		::create(i.container_impl, *this);
 }
 
 LIBCXXW_NAMESPACE_END

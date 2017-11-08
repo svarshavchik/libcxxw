@@ -17,7 +17,6 @@ LIBCXXW_NAMESPACE_START
 struct LIBCXX_HIDDEN new_custom_comboboxlayoutmanager::create_impl_info {
 
 	const ref<custom_combobox_containerObj::implObj> &container_impl;
-	const new_custom_comboboxlayoutmanager &style;
 };
 
 //! The custom combobox layout manager.
@@ -32,6 +31,9 @@ class LIBCXX_HIDDEN custom_comboboxlayoutmanagerObj::implObj
 	//! Parent container
 
 	const ref<custom_combobox_containerObj::implObj> container_impl;
+
+	//! Current selection callback.
+	mpobj<custom_combobox_selection_changed_t> selection_changed;
 
 	//! Constructor
 	implObj(const ref<custom_combobox_containerObj::implObj>

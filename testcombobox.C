@@ -92,7 +92,7 @@ focusable_container create_combobox(const factory &f,
 			standard_comboboxlayoutmanager lm=new_container
 				->get_layoutmanager();
 
-			lm->replace_all_items(std::vector<list_item_param>{
+			lm->replace_all_items({
 					{"Lorem ipsum"},
 					{"dolor sit"},
 					{"ament"},

@@ -179,6 +179,7 @@ class LIBCXX_HIDDEN new_custom_comboboxlayoutmanager
 	virtual ref<custom_comboboxlayoutmanagerObj::implObj
 		    > create_impl(const create_impl_info &) const;
 
+ public:
 	//! Return the selection_changed callback.
 
 	//! \internal

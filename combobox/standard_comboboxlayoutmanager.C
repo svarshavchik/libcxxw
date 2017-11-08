@@ -319,7 +319,8 @@ new_standard_comboboxlayoutmanager::new_standard_comboboxlayoutmanager()
 	   (const auto &f)
 	   {
 		   return f->create_focusable_label("");
-	   })
+	   }),
+	  selection_changed{[](const auto &) {}}
 {
 	// Install callback to search items using whatever was typed into the
 	// current selection display element.
@@ -364,7 +365,7 @@ new_standard_comboboxlayoutmanager
 custom_combobox_selection_changed_t new_standard_comboboxlayoutmanager
 ::get_selection_changed() const
 {
-	return [cb=this->selection_changed]
+	return []
 		(const auto &info)
 	{
 		standard_comboboxlayoutmanager lm=info.lm;
@@ -383,7 +384,9 @@ custom_combobox_selection_changed_t new_standard_comboboxlayoutmanager
 		{
 			current_selection->update("");
 		}
-		cb({lock, info.list_item_status_info});
+
+		lm->impl->selection_changed.get()
+			({lock, info.list_item_status_info});
 	};
 }
 
@@ -392,7 +395,8 @@ new_standard_comboboxlayoutmanager
 ::create_impl(const create_impl_info &i) const
 {
 	return ref<standard_comboboxlayoutmanagerObj::implObj>
-		::create(i.container_impl, i.style);
+		::create(i.container_impl, *this,
+			 selection_changed);
 }
 
 LIBCXXW_NAMESPACE_END

@@ -326,7 +326,7 @@ focusable_container new_custom_comboboxlayoutmanager
 			 popup_handler);
 
 	// And the layout manager.
-	auto lm=create_impl({combobox_container_impl, *this});
+	auto lm=create_impl({combobox_container_impl});
 
 	auto glm=lm->create_gridlayoutmanager();
 
@@ -390,8 +390,6 @@ focusable_container new_custom_comboboxlayoutmanager
 	// weakly-captured to avoid a circular reference).
 
 	{
-		auto selection_changed=this->get_selection_changed();
-
 		listimpl_info_t::lock lock{
 			popup_listlayoutmanager->list_element_singleton
 				->impl->textlist_info};
@@ -407,7 +405,7 @@ focusable_container new_custom_comboboxlayoutmanager
 				  const auto &combobox_popup,
 				  const auto &lm)
 			{
-				selection_changed
+				lm->selection_changed.get()
 				({ lm->create_public_object(),
 						e,
 						combobox_popup,
@@ -483,7 +481,7 @@ ref<custom_comboboxlayoutmanagerObj::implObj
 	const
 {
 	return ref<custom_comboboxlayoutmanagerObj::implObj>
-		::create(i.container_impl, i.style);
+		::create(i.container_impl, *this);
 }
 
 LIBCXXW_NAMESPACE_END

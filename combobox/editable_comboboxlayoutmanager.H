@@ -7,6 +7,7 @@
 
 #include "x/w/editable_comboboxlayoutmanager.H"
 #include "combobox/standard_comboboxlayoutmanager.H"
+#include <x/mpobj.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -19,10 +20,14 @@ class LIBCXX_HIDDEN editable_comboboxlayoutmanagerObj::implObj
 	//! Constructor
 	implObj(const ref<custom_combobox_containerObj::implObj>
 		&container_impl,
-		const new_custom_comboboxlayoutmanager &style);
+		const new_editable_comboboxlayoutmanager &style);
 
 	//! Destructor
 	~implObj();
+
+	//! Current selection_changed callback
+
+	mpobj<editable_combobox_selection_changed_t> selection_changed;
 
 	//! Override create_public_object to create the editable_comboboxlayoutmanager.
 

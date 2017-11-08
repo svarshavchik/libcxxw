@@ -11,8 +11,10 @@ LIBCXXW_NAMESPACE_START
 
 standard_comboboxlayoutmanagerObj::implObj
 ::implObj(const ref<custom_combobox_containerObj::implObj> &container_impl,
-	  const new_custom_comboboxlayoutmanager &style)
-	: custom_comboboxlayoutmanagerObj::implObj(container_impl, style)
+	  const new_custom_comboboxlayoutmanager &style,
+	  const standard_combobox_selection_changed_t &selection_changed)
+	: custom_comboboxlayoutmanagerObj::implObj(container_impl, style),
+	selection_changed{selection_changed}
 {
 }
 

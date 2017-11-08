@@ -9,6 +9,7 @@
 #include "combobox/custom_comboboxlayoutmanager.H"
 #include "x/w/text_param.H"
 
+#include <x/mpobj.H>
 #include <vector>
 #include <string>
 
@@ -28,6 +29,9 @@ class LIBCXX_HIDDEN standard_comboboxlayoutmanagerObj::implObj
 
  public:
 
+	//! Current selection changed callback.
+	mpobj<standard_combobox_selection_changed_t> selection_changed;
+
 	//! The items are accessed only while holding a lock.
 	friend class standard_combobox_lock;
 	friend class const_standard_combobox_lock;
@@ -35,7 +39,8 @@ class LIBCXX_HIDDEN standard_comboboxlayoutmanagerObj::implObj
 	//! Constructor
 	implObj(const ref<custom_combobox_containerObj::implObj>
 		&container_impl,
-		const new_custom_comboboxlayoutmanager &style);
+		const new_custom_comboboxlayoutmanager &style,
+		const standard_combobox_selection_changed_t &selection_changed);
 
 	//! Destructor
 	~implObj();

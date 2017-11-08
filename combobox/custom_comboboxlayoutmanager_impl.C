@@ -14,7 +14,8 @@ custom_comboboxlayoutmanagerObj::implObj
 ::implObj(const ref<custom_combobox_containerObj::implObj> &container_impl,
 	  const new_custom_comboboxlayoutmanager &style)
 	: gridlayoutmanagerObj::implObj(container_impl),
-	container_impl(container_impl)
+	container_impl(container_impl),
+	selection_changed(style.get_selection_changed())
 {
 }
 
