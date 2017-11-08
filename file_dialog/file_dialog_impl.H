@@ -147,8 +147,13 @@ class LIBCXX_HIDDEN file_dialogObj::implObj : virtual public obj {
 	//! If the file is not readable, or writable, depending on the
 	//! file dialog's semantics.
 
-	void error_dialog(const file_dialog &the_file_dialog,
-			  const std::string &filename);
+	void access_denied(const file_dialog &the_file_dialog,
+			   const std::string &error_message,
+			   const std::string &filename);
+
+	static void error_dialog(const file_dialog &the_file_dialog,
+				 const std::string &message,
+				 const std::string &title);
 };
 
 LIBCXXW_NAMESPACE_END

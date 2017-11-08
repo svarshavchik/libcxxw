@@ -129,7 +129,7 @@ void file_dialogObj::implObj::enter_key(const busy &mcguffin)
 
 	if (filename_st && S_ISDIR(filename_st->st_mode))
 	{
-		if (access(filename.c_str(), R_OK) == 0)
+		if (access(filename.c_str(), (R_OK|X_OK)) == 0)
 		{
 			chdir(filename);
 		}
@@ -148,18 +148,35 @@ void file_dialogObj::implObj::selected(const std::string &filename,
 	if (!d)
 		return;
 
+	size_t p=filename.rfind('/');
+
+	if (p == std::string::npos)
+		p=0;
+	else
+		++p;
+
+	auto dir=filename.substr(0, p);
+
 	switch (type) {
 	case file_dialog_type::existing_file:
 		if (access(filename.c_str(), R_OK) == 0)
 			break;
-		error_dialog(d, filename);
+		access_denied(d, access_denied_message, filename);
 		return;
-	case file_dialog_type::new_file:
+
+	case file_dialog_type::write_file:
 		if (access(filename.c_str(), W_OK) == 0)
 			break;
 		if (errno == ENOENT)
 			break;
-		error_dialog(d, filename);
+
+		access_denied(d, access_denied_message, filename);
+		return;
+
+	case file_dialog_type::create_file:
+		if (access(dir.c_str(), W_OK) == 0)
+			break;
+		access_denied(d, access_denied_message, filename);
 		return;
 	}
 	ok_action(d, filename, mcguffin);
@@ -309,8 +326,9 @@ void file_dialogObj::implObj::chfilter(const pcre &filter)
 	directory_contents_list->chfilter(filter);
 }
 
-void file_dialogObj::implObj::error_dialog(const file_dialog &the_file_dialog,
-					   const std::string &filename)
+void file_dialogObj::implObj::access_denied(const file_dialog &the_file_dialog,
+					    const std::string &msg,
+					    const std::string &filename)
 {
 	size_t p=filename.rfind('/');
 
@@ -319,20 +337,26 @@ void file_dialogObj::implObj::error_dialog(const file_dialog &the_file_dialog,
 	else
 		++p;
 
+	error_dialog(the_file_dialog,
+		     gettextmsg(msg, filename.substr(p)),
+		     access_denied_title);
+}
+
+void file_dialogObj::implObj::error_dialog(const file_dialog &the_file_dialog,
+					   const std::string &error_message,
+					   const std::string &title)
+{
 	auto d=the_file_dialog->dialog_window->create_ok_dialog
 		("error@libcxx", "alert",
-		 [name=filename.substr(p),
-		  access_denied_message=this->access_denied_message]
+		 [error_message]
 		 (const auto &f)
 		 {
-			 f->create_label(gettextmsg(access_denied_message,
-						    name),
-					 100.00, halign::center);
+			 f->create_label(error_message, 100.00, halign::center);
 		 },
 		 the_file_dialog->dialog_window
 		 ->destroy_when_closed("error@libcxx"),
 		 true);
-	d->dialog_window->set_window_title(access_denied_title);
+	d->dialog_window->set_window_title(title);
 	d->dialog_window->show_all();
 }
 
@@ -454,15 +478,11 @@ standard_dialog_elements_t file_dialogObj::init_args
 				[&, this]
 				(const auto &factory)
 				{
-					int access_mode=conf.type ==
-						file_dialog_type
-						::new_file ? W_OK:R_OK;
-
 					directory_contents_list=
 						filedirlist_manager
 						::create(factory,
 							 directory,
-							 access_mode);
+							 conf.type);
 				}},
 		{"ok", dialog_ok_button("Ok", ok_button, 0)},
 		{"filler", dialog_filler()},

@@ -14,7 +14,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-enum class file_dialog_type { new_file, existing_file };
+enum class file_dialog_type { existing_file, write_file, create_file };
 
 //! The configuration of a file dialog.
 

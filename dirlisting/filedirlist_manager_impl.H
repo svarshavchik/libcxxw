@@ -11,6 +11,7 @@
 #include "x/w/listlayoutmanager.H"
 #include "x/w/container.H"
 #include "x/w/factory.H"
+#include "x/w/file_dialog_config.H"
 #include <x/mpobj.H>
 #include <x/pcrefwd.H>
 
@@ -183,10 +184,14 @@ class LIBCXX_HIDDEN filedirlist_managerObj::implObj : virtual public obj {
 
 	implObj(const factory &f,
 		const std::string &initial_directory,
-		int access_mode);
+		file_dialog_type type);
 
-	//! R_OK or W_OK
-	const int access_mode;
+	//! Semantics of access permissions
+
+	const file_dialog_type type;
+
+	//! Whether the directory is writable
+	const bool writable;
 
 	//! Constructor, phase 2.
 
@@ -196,7 +201,7 @@ class LIBCXX_HIDDEN filedirlist_managerObj::implObj : virtual public obj {
 
 	void constructor(const factory &f,
 			 const std::string &,
-			 int);
+			 file_dialog_type type);
 
 	//! Destructor
 	~implObj();

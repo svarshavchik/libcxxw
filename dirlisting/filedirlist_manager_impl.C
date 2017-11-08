@@ -67,13 +67,15 @@ static inline auto create_filedir_list(const factory &f,
 
 filedirlist_managerObj::implObj
 ::implObj(const factory &f,
-	  const std::string &initial_directory, int access_mode)
+	  const std::string &initial_directory,
+	  file_dialog_type type)
 	: current_selected(ref<current_selected_callbackObj>::create()),
 	  filedir_list(create_filedir_list(f, initial_directory,
 					   current_selected)),
 	  info(info_t{initial_directory, pcre::create("."),
 				  ref<obj>::create()}),
-	  access_mode(access_mode)
+	  type(type),
+	  writable(access(initial_directory.c_str(), W_OK) == 0)
 {
 }
 
@@ -81,7 +83,7 @@ filedirlist_managerObj::implObj::~implObj()=default;
 
 void filedirlist_managerObj::implObj::constructor(const factory &,
 						  const std::string &,
-						  int)
+						  file_dialog_type)
 {
 	// When the list becomes visible, start the thread to populate
 	// its contents. When the list is no longer visible, stop the thread.
@@ -233,7 +235,7 @@ void filedirlist_managerObj::implObj::update(const const_filedir_file &files)
 			if (S_ISDIR(st.st_mode))
 			{
 				name_uc.push_back('/');
-				if (access(fullname.c_str(), X_OK))
+				if (access(fullname.c_str(), (R_OK|X_OK)))
 					enabled=false;
 			}
 			else
@@ -242,8 +244,20 @@ void filedirlist_managerObj::implObj::update(const const_filedir_file &files)
 					(fmtsize(st.st_size),
 					 unicode::utf_8,
 					 size_uc);
-				if (access(fullname.c_str(), access_mode))
-					enabled=false;
+
+				switch (type) {
+				case file_dialog_type::existing_file:
+					if (access(fullname.c_str(), R_OK))
+						enabled=false;
+					break;
+				case file_dialog_type::write_file:
+					if (access(fullname.c_str(), W_OK))
+						enabled=false;
+					break;
+				case file_dialog_type::create_file:
+					enabled=writable;
+					break;
+				}
 			}
 		}
 
