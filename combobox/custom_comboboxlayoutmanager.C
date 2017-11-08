@@ -383,10 +383,43 @@ focusable_container new_custom_comboboxlayoutmanager
 						 combobox_button,
 						 combobox_popup);
 
+
+	// Install The combo-box popup's list layout manager
+	// selection_changed callback, to forward to the
+	// combo-box selection_changed callback (must be
+	// weakly-captured to avoid a circular reference).
+
+	{
+		auto selection_changed=this->get_selection_changed();
+
+		listimpl_info_t::lock lock{
+			popup_listlayoutmanager->list_element_singleton
+				->impl->textlist_info};
+
+		lock->selection_changed=
+			[=, current_selection=make_weak_capture
+			 (current_selection, combobox_popup, lm)]
+			(const auto &info)
+			{
+				current_selection.get
+				([&]
+				 (const auto &e,
+				  const auto &combobox_popup,
+				  const auto &lm)
+			{
+				selection_changed
+				({ lm->create_public_object(),
+						e,
+						combobox_popup,
+						info});
+			});
+			};
+	}
+
 	auto collector=lookup_collector::create();
 
 	c->elementObj::impl->THREAD->run_as
-		([=, selection_changed=this->get_selection_changed(),
+		([=,
 		  selection_search=this->selection_search]
 		 (IN_THREAD_ONLY)
 		 {
@@ -394,37 +427,10 @@ focusable_container new_custom_comboboxlayoutmanager
 
 			 // 1. The popup handler as the combobox container's
 			 // attached_popup.
-			 //
-			 // 2. The combo-box popup's list layout manager
-			 // selection_changed callback, to forward to the
-			 // combo-box selection_changed callback (must be
-			 // weakly-captured to avoid a circular reference).
 
 			 combobox_container_impl->data(IN_THREAD)
 				 .attached_popup=popup_handler;
 
-			 listimpl_info_t::lock lock{
-				 popup_listlayoutmanager->list_element_singleton
-					 ->impl->textlist_info};
-
-			 lock->selection_changed=
-				 [=, current_selection=make_weak_capture
-				  (current_selection, combobox_popup, lm)]
-				 (const auto &info)
-				 {
-					 current_selection.get
-					 ([&]
-					  (const auto &e,
-					   const auto &combobox_popup,
-					   const auto &lm)
-				 {
-					 selection_changed
-					 ({ lm->create_public_object(),
-							 e,
-							 combobox_popup,
-							 info});
-				 });
-				 };
 
 			 auto &focusable_element=focusable_selection
 				 ->get_impl()->get_focusable_element();
