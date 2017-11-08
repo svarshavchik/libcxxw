@@ -85,25 +85,25 @@ static inline void create_main_window(const x::w::main_window &main_window,
 	if (opts.rows->isSet())
 		new_list.rows=opts.rows->value;
 
-	// The selection_changed() callback gets executed whenever a
-	// list item changes state.
+
+	// An optional callback that gets invoked whenever a list item gets
+	// selected or unselected.
 	//
 	// NOTE: the usual rules apply: the callback cannot strongly capture
 	// a reference to its display element (this includes the list layout
 	// manager, which gets conveniently passed to the callback as a
 	// parameter, if it wants it), or any of its parent display elements.
 
+
 	new_list.selection_changed=
 		[]
-		(const x::w::listlayoutmanager &list,
-		 size_t item_number,
-		 bool is_selected,
-		 const x::w::callback_trigger_t &trigger,
-		 const x::w::busy &busy_mcguffin)
+		(const x::w::list_item_status_info_t &info)
 		{
-			std::cout << "selection_changed: item #" << item_number
-			<< (is_selected ? " is selected."
-			    : " is not selected.") << std::endl;
+			std::cout << "Item #" << info.item_number << " was ";
+
+			std::cout << (info.selected ? "selected":"unselected");
+
+			std::cout << std::endl;
 		};
 
 	x::w::focusable_container list_container=
@@ -115,15 +115,26 @@ static inline void create_main_window(const x::w::main_window &main_window,
 
 			 x::w::listlayoutmanager l=list_container->get_layoutmanager();
 
-			 // Initialize with two items in the list.
+			 // append_items()'s parameter is a
+			 // std::vector<x::w::list_item_param>.
+			 //
+			 // list_item_param is (derived from) a std::variant,
+			 // and can be constructed from a literal character
+			 // string.
 
-			 l->append_items(next_lorem_ipsum());
+			 l->append_items({next_lorem_ipsum()});
 
-			 // append_items() is overloaded, and can take a vector
-			 // to insert multiple items at once:
+			 // list_item_param can be constructed with an
+			 // explicit text_param too, in order to use
+			 // custom colors or fonts, for the given item.
+			 // The resulting list may not show the number of
+			 // rows requested in the new_listlayoutmanager.
+			 // The resulting list height is sized based on the
+			 // default font's height.
 
-			 std::vector<x::w::text_param> items={next_lorem_ipsum()};
-			 l->append_items(items);
+			 l->append_items({
+					 x::w::text_param{next_lorem_ipsum()}
+				 });
 		 },
 		 new_list);
 	list_container->show();
@@ -199,58 +210,37 @@ static inline void create_main_window(const x::w::main_window &main_window,
 			 x::w::listlayoutmanager l=
 				 list_container->get_layoutmanager();
 
-			 // An example of callbacks attached to list items.
+			 // insert_items() inserts new items before an
+			 // existing list item.
 			 //
-			 // Install a callback factory into the list layout
-			 // manager.
+			 // An example of attaching a selection_changed
+			 // callback to an individual list item by specifying
+			 // it in the x::w::list_item_param.
 			 //
-			 // The callback factory gets invoked whenever a new
-			 // list item gets added, and returns a second callback.
-			 // The second callback gets invoked any time the new
-			 // list item gets selected or unselected.
+			 // This insert_row() on_activated callback captured
+			 // counter by value. Use this to count the number of
+			 // new list items that get created here.
 			 //
-			 // This on_activate() lambda captures a counter
-			 // variable, that gets initialized to 0.
-			 //
-			 // Install a callback_factory into the instantiated
-			 // listlayoutmanager, that captures the counter
-			 // by reference, and using it to number each item
-			 // created by this listlayoutmanager.
-			 //
-			 // Since callback_factory()s are attached to
-			 // each individual listlayoutmanager, this takes
-			 // effect only for list items created by this
-			 // on_activate() callback.
+			 l->insert_items
+				 (0, {
+					 [counter]
+					 (const x::w::list_item_status_info_t
+					  &info)
+					 {
+						 std::cout << "Item factory: "
+							 "item #"
+							   << counter
+							   << (info.selected ?
+							       " is":
+							       " is not")
+							   << " selected at"
+							   << " position "
+							   << info.item_number
+							   << std::endl;
+					 },
 
-
-			 l->callback_factory
-				 ([&]
-				  {
-					  // Return a callback for a new list
-					  // item being created.
-
-					  return [n=counter++]
-						  (x::w::list_lock &lock,
-						   size_t i,
-						   bool selected)
-					  {
-						  std::cout << "Item factory: "
-							  "item #"
-							    << n
-							    << (selected ?
-								" is":
-								" is not")
-							    << " selected at"
-							    << " position "
-							    << i
-							    << std::endl;
-					  };
-				  });
-
-			 l->insert_items(0, next_lorem_ipsum());
-
-			 // insert_items(), like append_items() is overloaded
-			 // to take a vector of items to insert at once.
+					 next_lorem_ipsum()
+				 });
 		 });
 
 	append_row->on_activate
@@ -261,34 +251,16 @@ static inline void create_main_window(const x::w::main_window &main_window,
 			 x::w::listlayoutmanager l=
 				 list_container->get_layoutmanager();
 
-			 // insert_items() and append_items() can insert an
-			 // arbitrary display element.
+			 // insert_items() and append_items() take
+			 // a std::vector of list_item_param-s as parameters.
 			 //
-			 // append_items() and insert_items(item_numbers) returns
-			 // a generic factory that can be used to insert
-			 // any non-focusable display element as a list item.
+			 // Each list_item_param is constructible with either
+			 // an explicit x::w::text_param, or with a
+			 // std::string (UTF-8) or std::u32string (unicode).
 			 //
-			 // Inserting a text string (or a text_param) is
-			 // really a wrapper for create_label().
-			 //
-			 // insert_items(0, next_lorem_ipsum());
-			 //
-			 // is exactly equivalent to:
-			 //
-			 // l->insert_items(0)->create_label(next_lorem_ipsum());
-			 //
-			 // Here's an example of using the factory overload:
+			 // A plain const char pointer will work as well.
 
-			 x::w::factory f=l->append_items();
-
-			 // Also insert_items(item_number). Then:
-
-			 f->create_label(next_lorem_ipsum());
-
-			 // Another f->create_label(next_lorem_ipsum()) will
-			 // insert another item.
-			 //
-			 // The insert_items() overload works the same way.
+			 l->append_items({next_lorem_ipsum()});
 		 });
 
 	remove_row->on_activate
@@ -298,6 +270,9 @@ static inline void create_main_window(const x::w::main_window &main_window,
 		 {
 			 x::w::listlayoutmanager l=
 				 list_container->get_layoutmanager();
+
+			 // If the list is non-empty, remove the first list
+			 // item.
 
 			 if (l->size() == 0)
 				 return;
@@ -316,10 +291,9 @@ static inline void create_main_window(const x::w::main_window &main_window,
 				 return;
 
 			 // replace_items() works like insert_items(), except
-			 // that the existing item gets removed. It has the
-			 // same overloads as append_items() and insert_items().
+			 // that the existing item gets removed.
 
-			 l->replace_items(0, next_lorem_ipsum());
+			 l->replace_items(0, {next_lorem_ipsum()});
 		 });
 
 	reset->on_activate
@@ -332,14 +306,12 @@ static inline void create_main_window(const x::w::main_window &main_window,
 
 			 lorem_ipsum_idx=(size_t)-1;
 
-			 // Two overloads of replace_all(). One that
-			 // takes a vector of text_params, specifying the
-			 // new items for the list:
+			 // replace_all_items() is equivalent to removing
+			 // all items from the list, then append_items().
+			 //
+			 // This effectively sets the new list of items.
 			 //
 			 l->replace_all_items({ next_lorem_ipsum(), next_lorem_ipsum()});
-			 // Without any parameters replace_all() removes
-			 // all existing items from the list and returns
-			 // a factory for creating new list items.
 		 });
 
 	show_me->on_activate

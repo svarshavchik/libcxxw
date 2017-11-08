@@ -7,7 +7,7 @@
 
 #include <x/w/editable_comboboxlayoutmanagerfwd.H>
 #include <x/w/editable_comboboxlayoutmanagerobj.H>
-#include <x/w/custom_comboboxlayoutmanager.H>
+#include <x/w/standard_comboboxlayoutmanager.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -16,18 +16,11 @@ LIBCXXW_NAMESPACE_START
 //! This callback gets invoked whenever an editable combo-box currently
 //! selectem item changes as a result of its popup selection.
 
-struct LIBCXX_HIDDEN editable_combobox_selection_changed_info_t {
-
-	//! A lock on combo-box's underlying list
-	standard_combobox_lock &lock;
+struct LIBCXX_HIDDEN editable_combobox_selection_changed_info_t
+	: public standard_combobox_selection_changed_info_t {
 
 	//! The combo-box's layout manager
 	const editable_comboboxlayoutmanager &lm;
-
-	//! Selected item status metadata
-
-	//! Information from the underlying item selection.
-	const list_item_status_info_t &list_item_status_info;
 };
 
 /*!

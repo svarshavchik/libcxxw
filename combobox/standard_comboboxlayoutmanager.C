@@ -52,6 +52,11 @@ standard_combobox_lock
 
 standard_combobox_lock::~standard_combobox_lock()=default;
 
+// Take the passed in vector of list_item_params.
+//
+// Only text_params, and separators are acceptable. That's why this is the
+// standard combo-box.
+
 static std::vector<text_param> to_text_param(const std::vector<list_item_param>
 					     &items)
 {

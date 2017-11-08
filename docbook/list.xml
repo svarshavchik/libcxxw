@@ -116,7 +116,8 @@ new_list.rows=6;
       <ulink url="&link-x--w--new-listlayoutmanager;"><classname>&ns;::w::new_listlayoutmanager</classname></ulink>'s
       constructor's optional parameter to
       <literal>&ns;::w::bulleted_list</literal> reserves some room to the left
-      of each item, and draws a bullet there next to the selected item.
+      of each item, and draws a bullet there next to each item when it's
+      selected.
       <ulink url="examples/listlayoutmanager.C"><filename>listlayoutmanager.C</filename></ulink>'s
       <option>--bullets</option> option does that.
     </para>
@@ -139,10 +140,7 @@ new_list.selection_type=[]
        };
 
 new_list.selection_changed=[]
-       (const &ns;::w::listlayoutmanagerbase &amp; l,
-        size_t item_number,
-        bool is_selected,
-        const &ns;::w::busy &amp;busy_mcguffin)
+       (const &ns;::w::list_item_status_info_t &amp;info)
        {
        };
 	</programlisting>
@@ -180,8 +178,14 @@ new_list.selection_changed=[]
       <varname>selection_changed</varname> is an optional
       <link linkend="callbacks">callback</link> that gets invoked whenever
       any item in the list gets selected or unselected, individually.
-      The callback's parameters specify which list item's selection status
-      changed, and what its new status is.
+      The callback's
+      <ulink url="&link-x--w--list-item-status-info-t;"><classname>&ns;::w::list_item_status_info_t</classname></ulink>
+      reports which item was changed, and its new status is.
+      Each individual list item can also have its own individual callback
+      that gets invoked only when that item's status changes. This is invoked
+      in addition to the list-wide <varname>selection_changed</varname>
+      callback. This is used in <link linkend="menu">menus</link>, but
+      may also be used in selection lists as well.
     </para>
 
     <note>
@@ -253,84 +257,123 @@ if (lm->selected(1))
       list, but the callback stays with its paired item, and gets invoked
       only for its item.
     </para>
+  </section>
+
+  <section id="listitemenable">
+    <title>Enabling and disabling list items</title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+bool flag=llmanager->enabled(2);
+
+llmanager->enabled(2, !flag);</programlisting>
+      </informalexample>
+    </blockquote>
 
     <para>
-      Creating individual list item callbacks is a two-step process.
-      The first step involves using <methodname>callback_factory</methodname>()
-      to install a callback factory into the
+      Disabling a list item prevents it from being selected with the mouse
+      pointer or the keyboard. Keyboard navigation skips over disabled
+      list items, and clicking on a disabled list item with the mouse pointer
+      has no effect.
+    </para>
+
+    <note>
+      <para>
+	<methodname>selected</methodname>() provides the means for manually
+	selecting or unselecting list items, whether they're enabled or
+	disabled.
+      </para>
+    </note>
+  </section>
+  <section id="listitemmethods">
+    <title>Modifying the contents of a list</title>
+
+    <para>
+      The
       <ulink url="&link-typedef-x--w-listlayoutmanager;"><classname>&ns;::w::listlayoutmanager</classname></ulink>:
+      does not manage discrete display elements, but a vertical list of text
+      labels in <link linkend="list">selection lists</link>,
+      <link linkend="combobox">combo-boxes</link>, and
+      <link linkend="menu">menus</link>.
+      The &itemmethods; items add new items to the list, combo-box, or a menu,
+      whatever the case may be. These methods receive
+      a <classname>std::vector</classname> containing the new list items.
+    </para>
+
+    <para>
+      This vector contains
+      <ulink url="&link-x--w--list-item-param;"><classname>&ns;::w::list_item_param</classname></ulink>s.
+      <ulink url="&link-x--w--list-item-param;"><classname>&ns;::w::list_item_param</classname></ulink>
+      is a (subclass-of a) <classname>std::variant</classname>.
     </para>
 
     <blockquote>
       <informalexample>
 	<programlisting>
-llmanager-&gt;callback_factory(
-       []
-       {
-             return []
-                    (x::w::list_lock &amp;lock,
-                     size_t i,
-                     bool selected)
-                    {
-                    };
-       });</programlisting>
+llmanager->append_items(
+    {
+        "Lorem",
+        "Ipsum",
+        &ns;::w::separator{},
+        "Dolor sit amet"
+    });</programlisting>
       </informalexample>
     </blockquote>
 
     <para>
-      The reason for this approach is that new items get added to the
-      list by constructing and using a &factory;, and it's possible to use
-      the same factory to add multiple items to the list
-      (some overloaded <classname>&ns;::w::listlayoutmanager</classname>
-      methods create list items by themselves, but they all use this
-      process internally)
-      and the lambda given to
-      <methodname>callback_factory</methodname>() gets invoked for each
-      new list item.
-    </para>
-
-    <para>
-      The second step occurs when the
-      <methodname>callback_factory</methodname>()
-      lambda returns the actual callback for a new list item.
-      This lambda gets invoked whenever its item gets selected or unselected.
-      The lambda's parameters are:
+      This is an example of passing a
+      <classname>std::vector&lt;&ns;::w::list_item_param&gt;</classname>
+      to <methodname>append_items</methodname>(), adding new items to the list.
+      The basic values of <classname>&ns;::w::list_item_param</classname>
+      are:
     </para>
 
     <itemizedlist>
       <listitem>
 	<para>
-	  A <link linkend="listlock">list lock object</link>.
+	  A UTF-8 <classname>std::string</classname> or a unicode
+	  <classname>std::u32string</classname>.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  A constructed <ulink url="&link-x--w--text-param;"><classname>&ns;::w::text_param</classname></ulink>
+	  label, specifying custom fonts and colors, instead of the default
+	  list font.
 	</para>
       </listitem>
       <listitem>
 	<para>
-	  The item's current index in the list. The callback stays attached
-	  to its item, and the item's index gets adjusted whenever any
-	  preceding list items get added or removed.
-	</para>
-      </listitem>
-      <listitem>
-	<para>
-	  Whether the callback's item is now selected or unselected.
+	  A <classname>&ns;::w::separator</classname> value visually draws
+	  a separator value between groups of list items.
 	</para>
       </listitem>
     </itemizedlist>
 
     <para>
-      Once installed,
-      <classname>&ns;::w::listlayoutmanager</classname>'s
-      item callback factory remains in place until it gets
-      removed by <methodname>remove_callback_factory</methodname>() or until
-      another factory gets installed, or until the
-      <classname>&ns;::w::listlayoutmanager</classname> goes out of scope
-      and gets destroyed.
+      All items in a selection list are numbered starting with 0, and get
+      automatically renumbered whenever list items get added or removed from
+      the list.
+      Each list item is specified by its current item number,
+      when using
+      <methodname>selected</methodname>(),
+      <methodname>enabled</methodname>(), and other list methods.
+      A <classname>&ns;::w::separator</classname> is a discrete list item,
+      and merits an item number of its own, in that regard.
+      The above example creates items #0 through #3, if the selection list
+      was empty.
     </para>
 
-    <para>
-      <link linkend="list"><filename>listlayoutmanager.C</filename></link>
-      shows an example of attaching a list item callback to list items.
-    </para>
+    <note>
+      <para>
+	The height of the selection list gets specified as the number of list
+	rows. The actual height gets computed using the default list label
+	font. Using custom fonts and separators results in a selection list
+	with rows of varying height.
+      </para>
+    </note>
   </section>
 
   <section id="listlock">

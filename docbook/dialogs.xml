@@ -43,7 +43,7 @@ See COPYING for distribution information.
   </para>
 
   <para>
-    Several methods create dialogs with a standard,
+    The following methods create dialogs with a standard,
     theme-defined layout:
   </para>
 
@@ -83,7 +83,7 @@ See COPYING for distribution information.
     label.
     Each
     <classname>&ns;::w::main_window</classname> (or a
-    <classname>&ns;::w::dialog</classname>_)can create more than one dialog,
+    <classname>&ns;::w::dialog</classname>) can create more than one dialog,
     as long as each dialog has a unique identifier label.
     Creating another dialog with the same identifier label replaces
     the existing dialog with that label.
@@ -172,7 +172,7 @@ See COPYING for distribution information.
     Invoking a created dialog's
     <methodname>show_all</methodname>() method makes it visible.
     The buttons in dialogs created by standard methods automatically
-    <methodname>hide</methodname>() themselves before
+    <methodname>hide</methodname>() their dialog before
     invoking the callbacks.
     Depending on the window manager, the dialogs may have a title and
     a close button, like a normal application window.
@@ -194,8 +194,8 @@ See COPYING for distribution information.
       modal dialogs is visible. Hiding (or completely destroying) all of
       its modal dialogs restores normal keyboard and pointer event
       processing.
-      On most display servers the main application window gets a visible
-      shade overlayed on top of its contents to indicate that it's disabled
+      On most display servers the main application window is visibly
+      dimmed, or shown in washed-out colors to indicate that it's disabled
       by an active modal dialog.
     </para>
 
@@ -214,9 +214,16 @@ See COPYING for distribution information.
   </section>
 
   <section id="dialogrefs">
-    <title>The creating <classname>x::w::main_window</classname> (or
-      a <classname>x::w::main_window</classname>) owns references on its
+    <title>The created <classname>&ns;::w::main_window</classname>
+      owns references on its
       dialogs</title>
+
+    <para>
+      Because an <classname>&ns;::w::dialog</classname> can create its own
+      dialogs, this applies recursively. A created
+      <classname>&ns;::w::dialog</classname>
+      owns references on its own dialogs, too.
+    </para>
 
     <para>
       A <link linkend="concepts">fundamental concept</link> of the &app;
@@ -253,16 +260,18 @@ std::unordered_set&lt;std::string&gt; dialogs=main_window->dialogs();</programli
     <blockquote>
       <informalexample>
 	<programlisting>
-help_question_type.on_activate=
-    [main_window=x::make_weak_capture(main_window)]
-    (const x::w::menuitem_activation_info &amp;ignore)
-    {
-         main_window.get([&amp;]
-                         (const auto &amp;main_window) {
-                             main_window-&gt;get_dialog
-                                ("help_question")->show_all();
-                         });
-    };</programlisting>
+m->append_items
+        ({
+            [main_window=x::make_weak_capture(main_window)]
+            (const &ns;::w::list_item_status_info_t &amp;ignore)
+            {
+                main_window.get
+                    ([&amp;]
+                     (const auto &amp;main_window) {
+                        main_window->get_dialog("help_question")->show_all();
+                    });
+            },
+            "Question",</programlisting>
       </informalexample>
     </blockquote>
 
@@ -277,7 +286,7 @@ help_question_type.on_activate=
     </para>
 
     <para>
-      The dialog's button merely hide their dialog, they don't destroy it,
+      The dialog's buttons merely hide their dialog, they don't destroy it,
       since their parent main window owns a reference to its dialogs. As
       such, when the menu item gets selected again it simply
       <methodname>show_all</methodname>()s the same dialog, making it

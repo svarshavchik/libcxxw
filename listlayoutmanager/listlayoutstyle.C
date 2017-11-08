@@ -44,7 +44,7 @@ listlayoutstyle_impl
 	// its public object.
 
 	auto t_impl=ref<list_elementObj::implObj>
-		::create(internal_listcontainer_impl, *this);
+		::create(internal_listcontainer_impl, style);
 
 	auto t=list_element::create(t_impl);
 

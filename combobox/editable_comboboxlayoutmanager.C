@@ -154,7 +154,7 @@ custom_combobox_selection_changed_t new_editable_comboboxlayoutmanager
 				current_selection->set("");
 			}
 		}
-		cb({lock, lm, info.list_item_status_info});
+		cb({lock, info.list_item_status_info, lm});
 	};
 }
 

@@ -29,17 +29,22 @@ static inline auto
 create_standard_combobox(const x::w::factory &factory,
 			 void (*creator)(const x::w::focusable_container &))
 {
-	x::w::new_standard_comboboxlayoutmanager
-		nclm([]
-		     (const x::w::standard_combobox_selection_changed_info_t &i)
-		     {
-			     if (i.selected_flag)
-			     {
-				     std::cout << "Selected item #"
-					       << i.item_index
-					       << std::endl;
-			     }
-		     });
+
+	x::w::new_standard_comboboxlayoutmanager nclm{
+
+		// Default callback that gets invoked whenever any combobox
+		// list item gets selected or unselected.
+
+		[]
+		(const x::w::standard_combobox_selection_changed_info_t &i)
+		{
+			if (!i.list_item_status_info.selected)
+				return;
+
+			std::cout << "Selected item #"
+				  << i.list_item_status_info.item_number
+				  << std::endl;
+		}};
 
 	return factory->create_focusable_container(creator, nclm);
 }
@@ -48,22 +53,30 @@ static inline auto
 create_editable_combobox(const x::w::factory &factory,
 			 void (*creator)(const x::w::focusable_container &))
 {
-	x::w::new_editable_comboboxlayoutmanager
-		nclm([]
-		     (const x::w::editable_combobox_selection_changed_info_t &i)
-		     {
-			     if (i.selected_flag)
-			     {
-				     std::cout << "Selected item #"
-					       << i.item_index
-					       << std::endl;
-			     }
-		     });
+	x::w::new_editable_comboboxlayoutmanager nclm{
+
+		// Default callback that gets invoked whenever any combobox
+		// list item gets selected or unselected.
+
+		[]
+		(const x::w::editable_combobox_selection_changed_info_t &i)
+		{
+			if (!i.list_item_status_info.selected)
+				return;
+
+			std::cout << "Selected item #"
+				  << i.list_item_status_info.item_number
+				  << std::endl;
+		}};
 
 	return factory->create_focusable_container(creator, nclm);
 }
 
-std::vector<x::w::text_param> days_of_week()
+// append_items(), insert_items(), et. al., take a vector of list_items_params
+// as a parameter. We can simply prepare the list of items in advance, like
+// this, and pass it.
+
+std::vector<x::w::list_item_param> days_of_week()
 {
 	return {"Sunday", "Monday", "Tuesday",	"Wednesday",
 			"Thursday", "Friday", "Saturday"};
@@ -79,6 +92,10 @@ static inline void create_main_window(const x::w::main_window &main_window,
 	auto factory=layout->append_row();
 
 	factory->create_label("Days of the week (or else):")->show();
+
+	// Note that whether it's an editable or the standard combo-box,
+	// it's still the same focusable container object. The only
+	// immediate difference is the layout manager.
 
 	auto combobox=(opts.editable->value
 		       ? create_editable_combobox
@@ -119,7 +136,7 @@ static inline void create_main_window(const x::w::main_window &main_window,
 				    x::w::standard_comboboxlayoutmanager lm=
 					    combobox->get_layoutmanager();
 
-				    lm->append_items(o.str());
+				    lm->append_items({o.str()});
 			    });
 	button->show();
 
@@ -140,7 +157,7 @@ static inline void create_main_window(const x::w::main_window &main_window,
 				    x::w::standard_comboboxlayoutmanager lm=
 					    combobox->get_layoutmanager();
 
-				    lm->insert_items(0, o.str());
+				    lm->insert_items(0, {o.str()});
 			    });
 	button->show();
 
@@ -164,7 +181,7 @@ static inline void create_main_window(const x::w::main_window &main_window,
 
 				    o << "Replace " << ++counter << std::endl;
 
-				    lm->replace_items(0, o.str());
+				    lm->replace_items(0, {o.str()});
 			    });
 	button->show();
 
@@ -244,6 +261,10 @@ void create_combobox(const options &opts)
 	lock.wait([&] { return *lock; });
 
 	x::w::focusable_container combobox=main_window->appdata;
+
+	// For an editable combobox, the layout manager can be used to
+	// construct an input_lock, providing access to the contents of the
+	// input field.
 
 	if (opts.editable->value)
 	{

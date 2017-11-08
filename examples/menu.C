@@ -17,7 +17,7 @@
 #include <x/w/menubarlayoutmanager.H>
 #include <x/w/menubarfactory.H>
 #include <x/w/menu.H>
-#include <x/w/menulayoutmanager.H>
+#include <x/w/listlayoutmanager.H>
 #include <x/w/label.H>
 #include <x/w/text_param_literals.H>
 #include <x/w/font_literals.H>
@@ -45,7 +45,8 @@ int main(int argc, char **argv)
 	return 0;
 }
 
-void create_mainwindow(const x::w::main_window &);
+void create_mainwindow(const x::w::main_window &,
+		       const close_flag_ref &);
 
 void create_help_question(const x::w::main_window &);
 
@@ -57,7 +58,12 @@ void testmenu()
 
 	auto close_flag=close_flag_ref::create();
 
-	auto main_window=x::w::main_window::create(create_mainwindow);
+	auto main_window=x::w::main_window::create
+		([&]
+		 (const auto &new_mainwindow)
+		 {
+			 create_mainwindow(new_mainwindow, close_flag);
+		 });
 
 	main_window->set_window_title("Menus!");
 
@@ -100,16 +106,18 @@ void testmenu()
 	lock.wait([&] { return *lock; });
 }
 
-x::w::element view_menu(const x::w::menulayoutmanager &);
+size_t view_menu(const x::w::listlayoutmanager &);
 
-void file_menu(const x::w::menulayoutmanager &,
+void file_menu(const x::w::listlayoutmanager &,
+	       const close_flag_ref &,
 	       const x::w::menu &,
-	       const x::w::element &);
+	       size_t);
 
 void help_menu(const x::w::main_window &,
-	       const x::w::menulayoutmanager &);
+	       const x::w::listlayoutmanager &);
 
-void create_mainwindow(const x::w::main_window &main_window)
+void create_mainwindow(const x::w::main_window &main_window,
+		       const close_flag_ref &close_flag)
 {
 	// Make the window wider than the menu bar, so there's some empty
 	// space between the left menus and the right Help menu.
@@ -127,7 +135,7 @@ void create_mainwindow(const x::w::main_window &main_window)
 	// Create the "View" menu first.
 	x::w::menubarfactory f=mb->append_menus();
 
-	x::w::elementptr options_menu_item;
+	size_t options_menu_item;
 
 	// add() is a low-level way to create dropdown menus. The menu's
 	// title is typically a simple text label, but it doesn't have to be,
@@ -137,7 +145,7 @@ void create_mainwindow(const x::w::main_window &main_window)
 	// add_text() is equivalent to using add() and using create_label()
 	// to construct a plain text title.
 	//
-	// The second callback gets a menu layout manager parameter, and is
+	// The second callback gets a list layout manager parameter, and is
 	// responsible for creating the contents of the new popup menu.
 
 	x::w::menu view_m=f->add([]
@@ -145,7 +153,7 @@ void create_mainwindow(const x::w::main_window &main_window)
 					 factory->create_label("View");
 				 },
 				 [&]
-				 (const x::w::menulayoutmanager &l) {
+				 (const x::w::listlayoutmanager &l) {
 
 					 // Call view_menu() to create the View
 					 // menu. It returns the element of the
@@ -164,6 +172,7 @@ void create_mainwindow(const x::w::main_window &main_window)
 		    [&]
 		    (const auto &factory) {
 			    file_menu(factory,
+				      close_flag,
 				      view_m,
 				      options_menu_item);
 		    });
@@ -203,212 +212,165 @@ void create_mainwindow(const x::w::main_window &main_window)
 	std::cout << lock.right_menus() << " menus on the right side" << std::endl;
 }
 
-void file_menu(const x::w::menulayoutmanager &m,
+void file_menu(const x::w::listlayoutmanager &m,
+	       const close_flag_ref &close_flag,
 	       const x::w::menu &view_menu,
-	       const x::w::element &view_options_item)
+	       size_t view_options_item_number)
 {
-	// A plain, garden-variety menu item. This is one possible value of a
-	// x:;w::menuitem_type_t variant.
+	// Populate the "File" menu.
 
-	x::w::menuitem_plain file_new_type;
+	// Each menu item name is preceded by an optional x::w::shortcut
+	// specifying a keyboard shortcut for the menu item, and a
+	// callback that gets invoked whenever the menu item gets selected
+	// (using the pointer, or the keyboard).
 
-	// Here's its optional keyboard x::w::shortcut
-	file_new_type.menuitem_shortcut={"Alt", 'N'};
-
-	// Here's what happens when this menu is selected.
-	file_new_type.on_activate=[]
-		(const x::w::menuitem_activation_info &ignore)
-		{
-			std::cout << "File->New selected" << std::endl;
-		};
-
-	// Append a new menu item to the end of the menu. Specify its
-	// x::w::menu_item_type_t and its text label.
-	m->append_menu_item(file_new_type, "New");
-
-	// append_menu_item() is overloaded. It can take a vector
-	// of x::w::menu_item_type, and x::w::text_param tuples, to add
-	// a bunch of menu items at once.
-	m->append_menu_item(std::vector<std::tuple<x::w::menuitem_type_t,
-			    x::w::text_param>>{ { x::w::menuitem_type_t{}, "Open"}});
-
-	// Or a vector of just x::w::text_params. The new menu items default
-	// to x::w::menuitem_plain.
-	m->append_menu_item(std::vector<x::w::text_param>{"Close"});
-
-	// update() modifies the type of an existing menu item (but not its
-	// label). Use update() to modify the "Open" menu item that was
-	// added above. This can be done to change its shortcut or
-	// activation callback.
-	x::w::menuitem_plain file_open_type;
-
-	file_open_type.menuitem_shortcut={"Alt", 'O'};
-	file_open_type.on_activate=[]
-		(const x::w::menuitem_activation_info &ignore)
-		{
-			std::cout << "File->Open selected" << std::endl;
-		};
-
-	m->update(1, file_open_type);
-
-	// Ditto for close().
-
-	x::w::menuitem_plain file_close_type;
-
-	file_close_type.on_activate=[]
-		(const x::w::menuitem_activation_info &ignore)
-		{
-			std::cout << "File->Close selected" << std::endl;
-		};
-
-	m->update(2, file_close_type);
-
-	// append_menu_items() is also overloaded to take a variadic list
-	// of parameters, as an alternative to a vector parameter. Prepare
-	// some more menu items. "Toggle Options" disables or enables the
-	// "Options" item in the "View" menu. A menu layout manager's
-	// enabled() method disables/enables menu items. Disabled menu items
-	// get drawn with a dithered, faint, style and cannot be selected.
-
-	x::w::menuitem_plain file_toggle_options_type;
-
-	file_toggle_options_type.on_activate=[=]
-		(const x::w::menuitem_activation_info &ignore)
-		{
-			auto l=view_menu->get_layoutmanager();
-
-			l->enabled(view_options_item,
-				   !l->enabled(view_options_item));
-			std::cout << "Enabled: "
-			<< l->enabled(view_options_item) << std::endl;
-		};
-
-	// And a "Recent" submenu. x::w::menuitem_submenu menuitem type
-	// (instead of x::w::menuitem_plain) specifies a menu item with a
-	// submenu.
-
-	x::w::menuitem_submenu file_recent_type;
-
-	// The submenu must have a creator callback. This callback gets
-	// a menu layout manager for the submenu, and is responsible for
-	// populating it. The "Recent" submenu has four entries:
-
-	file_recent_type.creator=
-		[](const x::w::menulayoutmanager &recent_menu)
-		{
-			for (size_t i=1; i <= 4; ++i)
+	m->append_items
+		({
+			// "New", "Open", AND "Close"
+			x::w::shortcut{"Alt", 'N'},
+			[]
+			(const auto &info)
 			{
-				x::w::menuitem_plain recent;
+				std::cout << "File->New selected" << std::endl;
+			},
+			"New",
 
-				std::ostringstream o;
+			x::w::shortcut{"Alt", 'O'},
+			[]
+			(const auto &info)
+			{
+				std::cout << "File->Open selected" << std::endl;
+			},
+			"Open",
 
-				o << "Recent submenu #" << i;
+			x::w::shortcut{"Alt", 'C'},
+			[]
+			(const auto &info)
+			{
+				std::cout << "File->Close selected" << std::endl;
+			},
+			"Close",
 
-				auto s=o.str();
+			// A separator line
 
-				recent.on_activate=[s]
-				(const auto &ignore) {
-					std::cout << s << std::endl;
-				};
+			x::w::separator{},
 
-				recent_menu->append_menu_item(recent, s);
-			}
-		};
+			// "Toggle Options" enables or disables the
+		        // "Options" item in the "View" menu.
 
-	// The variadic parameter list, to create the "Toggle Options",
-	// "Recent", and "Quit" menu items. An empty menu item string
-	// creates a thin horizontal divider line that visually separates
-	// groups of menu items.
-	m->append_menu_item("",
-			    file_toggle_options_type, "Toggle Options",
-			    file_recent_type, "Recent",
-			    "Quit");
+			x::w::shortcut{"Alt", 'T'},
+			[=]
+			(const auto &info)
+			{
+				auto l=view_menu->get_layoutmanager();
 
-	x::w::menuitem_plain file_quit_type;
+				l->enabled(view_options_item_number,
+					   !l->enabled(view_options_item_number));
+				std::cout << "\"Options\" is now enabled: "
+					  << l->enabled(view_options_item_number) << std::endl;
+			},
+			"Toggle Options",
 
-	file_quit_type.on_activate=[]
-		(const x::w::menuitem_activation_info &ignore)
-		{
-			std::cout << "File->Quit selected" << std::endl;
-		};
-	m->update(6, file_quit_type);
+		        // The "Recent submenu".
+			//
+			// x::w::submenu wraps a creator for the submenu.
+		        // The creator receives the list layout manager for the
+			// new submenu.
+
+			x::w::submenu{
+				[](const x::w::listlayoutmanager &recent_menu)
+				{
+					for (size_t i=1; i <= 4; ++i)
+					{
+						std::ostringstream o;
+
+						o << "Recent submenu #" << i;
+
+						auto s=o.str();
+
+						recent_menu->append_items
+							({[=]
+							  (const auto &ignore)
+							  {
+								  std::cout << s
+									    << std::endl;
+							  },
+							  s});
+					}
+				}},
+			"Recent",
+
+			x::w::shortcut{"Alt", 'Q'},
+			[close_flag]
+			(const auto &info)
+			{
+				std::cout << "File->Quit selected" << std::endl;
+				close_flag->close();
+			},
+			"Quit"
+		});
 }
 
-x::w::element view_menu(const x::w::menulayoutmanager &m)
+size_t view_menu(const x::w::listlayoutmanager &m)
 {
-	x::w::menuitem_plain tools_menu_type;
+	// menuoption specifies an option item. Selecting the item shows or
+	// hides a mark (typically a bullet) next to the item, indicating
+	// whether the option is selected or unselected.
+	m->append_items
+		({
+			x::w::menuoption{},
+			[]
+			(const x::w::list_item_status_info_t &info)
+			{
+				std::cout << "View->Tools: " << info.selected
+					  << std::endl;
+			},
+			"Tools",
 
-	tools_menu_type.is_option=true;
-	tools_menu_type.on_activate=[]
-		(const x::w::menuitem_activation_info &info)
-		{
-			std::cout << "View->Tools: " << info.selected
-			<< std::endl;
-		};
-
-	x::w::menuitem_plain options_menu_type;
-
-	// Setting an is_option for a x::w::menuitem_plain makes a "selectable"
-	// menu item. In addition to invoking on_activate(), selecting the
-	// item adds or removes a bullet next to the menu item.
-
-	options_menu_type.is_option=true;
-	options_menu_type.on_activate=[]
-		(const x::w::menuitem_activation_info &info)
-		{
-			std::cout << "View->Options: " << info.selected
-			<< std::endl;
-		};
-
-	// An example of using replace_all_menu_items() to remove any and
-	// all existing menu items, and then replace them with new items.
-	m->replace_all_menu_items(tools_menu_type, "Tools",
-				  options_menu_type, "Options");
-
-	return m->item(1);
+			x::w::menuoption{},
+			[]
+			(const x::w::list_item_status_info_t &info)
+			{
+				std::cout << "View->Options: " << info.selected
+					  << std::endl;
+			},
+			"Options",
+		});
+	return 1;
 }
 
 void help_menu(const x::w::main_window &main_window,
-	       const x::w::menulayoutmanager &m)
+	       const x::w::listlayoutmanager &m)
 {
-	// Make the dialogs visible.
-	//
-	// The singleton pointer was constructed in testmenu(),
-	// above.
 
-	x::w::menuitem_plain help_question_type;
+	m->append_items
+		({
+			[main_window=x::make_weak_capture(main_window)]
+			(const auto &ignore)
+			{
+				main_window.get
+					([&]
+					 (const auto &main_window) {
 
-	help_question_type.on_activate=
-		[main_window=x::make_weak_capture(main_window)]
-		(const x::w::menuitem_activation_info &ignore)
-		{
-			main_window.get(
-			     [&]
-			     (const auto &main_window) {
+						main_window->get_dialog
+							("help_question")->show_all();
+					});
+			},
+			"Question",
 
-				     main_window->get_dialog
-				         ("help_question")->show_all();
-			     });
-		};
-
-	x::w::menuitem_plain help_about_type;
-
-	help_about_type.menuitem_shortcut={"F1"};
-
-	help_about_type.on_activate=
-		[main_window=x::make_weak_capture(main_window)]
-		(const x::w::menuitem_activation_info &ignore)
-		{
-			main_window.get(
-			     [&]
-			     (const auto &main_window) {
-				     main_window->get_dialog
-					("help_about")->show_all();
-			     });
-		};
-
-	m->append_menu_item(help_question_type, "Question",
-			    help_about_type, "About");
+			x::w::shortcut{"F1"},
+			[main_window=x::make_weak_capture(main_window)]
+			(const auto &ignore)
+			{
+				main_window.get
+					([&]
+					 (const auto &main_window) {
+						main_window->get_dialog
+							("help_about")->show_all();
+					});
+			},
+			"About",
+		});
 }
 
 void create_help_about(const x::w::main_window &main_window)

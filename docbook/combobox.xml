@@ -80,30 +80,44 @@ See COPYING for distribution information.
     </para>
 
     <para>
-      <ulink url="&link-typedef-x--w-standard-comboboxlayoutmanager;">&ns;::w::standard_comboboxlayoutmanager</ulink>'s
-      methods include
-      <methodname>append_item</methodname>() and
-      <methodname>insert_item</methodname>();
-      also <methodname>remove_item</methodname>() and
-      <methodname>replace_all</methodname>().
+      <ulink url="&link-typedef-x--w-standard-comboboxlayoutmanager;">&ns;::w::standard_comboboxlayoutmanager</ulink>
+      is a subclass of the
+      <link linkend="list">list layout manager</link>, and inherits its
+      &allitemmethods; methods.
       These methods modify the contents of the combo-box.
       <ulink url="examples/combobox.C"><filename>combobox.C</filename></ulink>
-      uses <methodname>replace_all</methodname>() in
+      calls <methodname>replace_all_items</methodname>() in
       <methodname>create_focusable_container</methodname>()'s
       &creator; to set the initial contents of the combo-box.
     </para>
   </section>
 
   <section id="standard_combobox_selection">
-    <title>Retrieving the current selection in the standard combo-box</title>
+    <title>Retrieving the standard combo-box's current selection</title>
 
     <para>
       <ulink url="&link-x--w--new-standard-comboboxlayoutmanager;"><classname>&ns;::w::new_standard_comboboxlayoutmanager</classname></ulink>
       inherits
       <methodname>selected</methodname>()
       and <methodname>size</methodname>() from the
-      <link linkend="list">list layout manager</link>, and also has an
-      option of installing a &callback;.
+      <link linkend="list">list layout manager</link>:
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+size_t s=cbmanager->size();
+
+std::optional&lt;size_t&gt; current_value=cbmanager->selected();</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      <methodname>selected</methodname>() indicates the currently selected
+      standard combo-box item, if there is one.
+      <link linkend="combobox"><filename>combobox.C</filename></link> shows
+      how to use the alternative option of installing a &callback;
+      that gets invoked to report each combo-box selection change.
     </para>
 
     <para>
@@ -113,7 +127,8 @@ See COPYING for distribution information.
       <ulink url="&link-x--w--new-standard-comboboxlayoutmanager;"><classname>&ns;::w::new_standard_comboboxlayoutmanager</classname></ulink>'s
       constructor takes an optional &callback; parameter.
       This callback gets invoked whenever a combo-box item gets
-      selected or deselected, and receives a
+      selected or deselected, in addition to updating the combo-box's label.
+      The callback receives a
       <ulink url="&link-x--w--standard-combobox-selection-changed-info-t;"><classname>&ns;::w::standard_combobox_selection_changed_info_t</classname></ulink>
       parameter.
     </para>
@@ -200,7 +215,7 @@ lock->remove_item(1);</programlisting>
     <title>Editable combo-boxes</title>
 
     <para>
-      An editable combo-box replaces its label with an
+      An editable combo-box replaces the label with an
       <link linkend="inputfieldsandbuttons">input field</link>. Typing text
       in the input field uses the combo-box's items to auto-complete the
       typed text. It's also possible to type in something different, that
