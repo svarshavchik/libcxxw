@@ -7,6 +7,7 @@
 
 #include <x/w/namespace.H>
 #include <x/ptrfwd.H>
+#include <functional>
 
 LIBCXXW_NAMESPACE_START
 
@@ -102,6 +103,17 @@ typedef const_ptr<standard_comboboxlayoutmanagerObj> const_standard_comboboxlayo
 class new_standard_comboboxlayoutmanager;
 
 class standard_combobox_lock;
+
+struct standard_combobox_selection_changed_info_t;
+
+/*!
+
+Callback that gets invoked when a standard combo-box's selection changes.
+
+*/
+
+typedef std::function<void (const standard_combobox_selection_changed_info_t &)
+		      > standard_combobox_selection_changed_t;
 
 LIBCXXW_NAMESPACE_END
 

@@ -32,6 +32,9 @@ public:
 
 	//! Destructor
 	~editable_comboboxlayoutmanagerObj() LIBCXX_HIDDEN;
+
+	//! Install a new selection changed callback.
+	void selection_changed(const editable_combobox_selection_changed_t &);
 };
 
 LIBCXXW_NAMESPACE_END

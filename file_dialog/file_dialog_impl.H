@@ -7,6 +7,7 @@
 
 #include "x/w/file_dialog.H"
 #include "x/w/focusable_labelfwd.H"
+#include "x/w/focusable_containerfwd.H"
 #include "x/w/input_fieldfwd.H"
 #include "x/w/buttonfwd.H"
 #include "x/w/busyfwd.H"
@@ -17,6 +18,7 @@
 
 #include "dirlisting/filedirlist_managerfwd.H"
 
+#include <x/pcrefwd.H>
 #include <x/weakptr.H>
 #include <string>
 #include <functional>
@@ -36,6 +38,10 @@ class LIBCXX_HIDDEN file_dialogObj::implObj : virtual public obj {
 	//! Filename input field
 
 	const input_field filename_field;
+
+	//! File pattern field filter
+
+	const focusable_container filter_field;
 
 	//! Manager for the directory contents.
 	const filedirlist_manager directory_contents_list;
@@ -63,6 +69,7 @@ class LIBCXX_HIDDEN file_dialogObj::implObj : virtual public obj {
 	//! Constructor
 	implObj(const focusable_label &directory_field,
 		const input_field &filename_field,
+		const focusable_container &filter_field,
 		const filedirlist_manager &directory_contents_list,
 		const button &ok_button,
 		const button &cancel_button,
@@ -131,6 +138,9 @@ class LIBCXX_HIDDEN file_dialogObj::implObj : virtual public obj {
 	//! directory_field.
 
 	void chdir(const std::string &path);
+
+	//! Switch to another filter.
+	void chfilter(const pcre &filter);
 
 	//! Invoked to pop up an error dialog.
 

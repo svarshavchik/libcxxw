@@ -7,6 +7,7 @@
 #include "dirlisting/filedirlist_manager.H"
 #include "main_window.H"
 #include "dialog.H"
+#include "messages.H"
 #include "x/w/input_field.H"
 #include "x/w/input_field_lock.H"
 #include "x/w/file_dialog_config.H"
@@ -17,9 +18,11 @@
 #include "x/w/text_param.H"
 #include "x/w/gridfactory.H"
 #include "x/w/gridlayoutmanager.H"
+#include "x/w/standard_comboboxlayoutmanager.H"
 #include <x/fd.H>
 #include <x/visitor.H>
 #include <x/fileattr.H>
+#include <x/pcre.H>
 #include <x/weakcapture.H>
 #include <courier-unicode.h>
 #include <algorithm>
@@ -32,6 +35,7 @@ LIBCXXW_NAMESPACE_START
 file_dialogObj::implObj
 ::implObj(const focusable_label &directory_field,
 	  const input_field &filename_field,
+	  const focusable_container &filter_field,
 	  const filedirlist_manager &directory_contents_list,
 	  const button &ok_button,
 	  const button &cancel_button,
@@ -43,6 +47,7 @@ file_dialogObj::implObj
 	  const std::string &access_denied_title)
 	: directory_field(directory_field),
 	  filename_field(filename_field),
+	  filter_field(filter_field),
 	  directory_contents_list(directory_contents_list),
 	  ok_button(ok_button),
 	  cancel_button(cancel_button),
@@ -299,6 +304,11 @@ void file_dialogObj::implObj::chdir(const std::string &path)
 	directory_contents_list->chdir(realpath);
 }
 
+void file_dialogObj::implObj::chfilter(const pcre &filter)
+{
+	directory_contents_list->chfilter(filter);
+}
+
 void file_dialogObj::implObj::error_dialog(const file_dialog &the_file_dialog,
 					   const std::string &filename)
 {
@@ -335,6 +345,34 @@ static inline input_field create_file_input_field(const factory &f)
 
 }
 
+// Factored out for readability. Creates the filename input field
+static inline focusable_container create_filter_field(const factory &f,
+						      const file_dialog_config
+						      &conf)
+{
+	return f->create_focusable_container
+		([&]
+		 (const auto &new_container)
+		 {
+			 standard_comboboxlayoutmanager lm=new_container
+				 ->get_layoutmanager();
+
+			 std::vector<list_item_param> list;
+
+			 list.reserve(conf.filename_filters.size());
+
+			 for (const auto &f:conf.filename_filters)
+			 {
+				 list.push_back(std::get<text_param>(f));
+			 }
+
+			 lm->replace_all_items(list);
+
+		 },
+		 new_standard_comboboxlayoutmanager{}
+		 );
+}
+
 //! Internal constructor arguments
 
 //! Temporary object that gets created by the public constructor before
@@ -346,6 +384,7 @@ struct LIBCXX_HIDDEN file_dialogObj::init_args {
 
 	input_fieldptr filename_field;
 	focusable_labelptr directory_field;
+	focusable_containerptr filter_field;
 	filedirlist_managerptr directory_contents_list;
 	buttonptr ok_button;
 	buttonptr cancel_button;
@@ -396,6 +435,20 @@ standard_dialog_elements_t file_dialogObj::init_args
 					directory_field=factory
 						->create_focusable_label
 						("");
+				}},
+		{"filter-label",
+				[&]
+				(const auto &factory)
+				{
+					factory->create_label("Files:");
+				}},
+		{"filter-field",
+				[&, this]
+				(const auto &factory)
+				{
+					filter_field=
+						create_filter_field(factory,
+								    conf);
 				}},
 		{"directory-contents-list",
 				[&, this]
@@ -453,6 +506,7 @@ file_dialogObj::file_dialogObj(const dialog_args &d_args,
 	: dialogObj(d_args),
 	  impl(ref<implObj>::create(args.directory_field,
 				    args.filename_field,
+				    args.filter_field,
 				    args.directory_contents_list,
 				    args.ok_button,
 				    args.cancel_button,
@@ -461,6 +515,21 @@ file_dialogObj::file_dialogObj(const dialog_args &d_args,
 				    conf.access_denied_message,
 				    conf.access_denied_title))
 {
+}
+
+// Convert conf.filename_filters to pcre objects.
+
+// Factored out for readability.
+
+static inline auto create_pcre_filters(const auto &filename_filters)
+{
+	std::vector<pcre> filters;
+
+	filters.reserve(filename_filters.size());
+	for (const auto &f:filename_filters)
+		filters.push_back(pcre::create(std::get<std::string>(f)));
+
+	return filters;
 }
 
 // Phase 2 of the constructor. Set up all the callbacks.
@@ -501,6 +570,39 @@ void file_dialogObj::constructor(const dialog_args &d_args,
 			    {
 				    ok_button->set_enabled(info.size > 0);
 			    });
+
+	// Set up the callback to reread the directory when the field
+	// combo-box changes.
+
+
+	{
+		standard_comboboxlayoutmanager lm=impl->filter_field
+			->get_layoutmanager();
+
+		if (lm->size() <= conf.initial_filename_filter)
+			throw EXCEPTION(_("Invalid initial_filename_filter"));
+
+		// Callback to invoke manager->chfilter() whenever the filename
+		// filter combobox dropdown changes.
+
+		lm->selection_changed
+			([filters=create_pcre_filters(conf.filename_filters),
+			  manager=impl->directory_contents_list]
+			 (const auto &info)
+			 {
+				 if (!info.list_item_status_info.selected)
+					 return;
+
+				 auto i=info.list_item_status_info.item_number;
+
+				 manager->chfilter(filters.at(i));
+			 });
+
+		// This will invoke the newly-installed callback, indirectly
+		// initializing the initial filename filter.
+
+		lm->autoselect(conf.initial_filename_filter);
+	}
 
 	// Set up the clicked() callback, clicking on a directory entry.
 

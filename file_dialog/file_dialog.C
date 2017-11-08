@@ -22,6 +22,7 @@ file_dialog_config
 	  cancel_action{cancel_action},
 	  type{type},
 	  initial_directory{"."},
+	  filename_filters{ { _("All files"), "." }},
 	  access_denied_message(type == file_dialog_type::new_file
 				? _("You do not have permissions to overwrite "
 				    "\"%1%\"")

@@ -390,6 +390,12 @@ custom_combobox_selection_changed_t new_standard_comboboxlayoutmanager
 	};
 }
 
+void standard_comboboxlayoutmanagerObj
+::selection_changed(const standard_combobox_selection_changed_t &cb)
+{
+	impl->selection_changed=cb;
+}
+
 ref<custom_comboboxlayoutmanagerObj::implObj>
 new_standard_comboboxlayoutmanager
 ::create_impl(const create_impl_info &i) const

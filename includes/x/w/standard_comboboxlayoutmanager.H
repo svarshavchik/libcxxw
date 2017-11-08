@@ -28,15 +28,6 @@ struct LIBCXX_HIDDEN standard_combobox_selection_changed_info_t {
 	const list_item_status_info_t &list_item_status_info;
 };
 
-/*!
-
-Callback that gets invoked when a standard combo-box's selection changes.
-
-*/
-
-typedef std::function<void (const standard_combobox_selection_changed_info_t &)
-		      > standard_combobox_selection_changed_t;
-
 /*! Create a standard combobox.
 
 Passed to create_focusable_container() to create a focusable container

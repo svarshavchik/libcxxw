@@ -38,6 +38,9 @@ public:
 
 	//! Return the display element that represents the current selection.
 	const_element current_selection() const;
+
+	//! Install a new selection changed callback.
+	void selection_changed(const custom_combobox_selection_changed_t &);
 };
 
 LIBCXXW_NAMESPACE_END

@@ -739,17 +739,26 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
       <valign>middle</valign>
     </valign>
 
+    <append_row>
+      <name>file-input-row</name>
+    </append_row>
+
     <valign>
       <row>1</row>
       <valign>middle</valign>
     </valign>
 
     <append_row>
-      <name>file-input-row</name>
+      <name>directory-label-row</name>
     </append_row>
 
+    <valign>
+      <row>2</row>
+      <valign>middle</valign>
+    </valign>
+
     <append_row>
-      <name>directory-label-row</name>
+      <name>filter-row</name>
     </append_row>
 
     <append_row>
@@ -797,6 +806,10 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
       <padding>dialog-h-padding</padding>
     </padding>
 
+    <halign>
+      <halign>right</halign>
+    </halign>
+
     <element>
       <name>directory-label</name>
     </element>
@@ -808,6 +821,29 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
 
     <element>
       <name>directory-field</name>
+    </element>
+  </factory>
+  <factory id="filter-row">
+    <padding>
+      <side>left</side>
+      <padding>dialog-h-padding</padding>
+    </padding>
+
+    <halign>
+      <halign>right</halign>
+    </halign>
+
+    <element>
+      <name>filter-label</name>
+    </element>
+
+    <padding>
+      <side>right</side>
+      <padding>dialog-h-padding</padding>
+    </padding>
+
+    <element>
+      <name>filter-field</name>
     </element>
   </factory>
 

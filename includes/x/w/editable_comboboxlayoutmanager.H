@@ -23,15 +23,6 @@ struct LIBCXX_HIDDEN editable_combobox_selection_changed_info_t
 	const editable_comboboxlayoutmanager &lm;
 };
 
-/*!
-
-Callback that gets invoked when an editable combo-box's selection changes.
-
-*/
-
-typedef std::function<void (const editable_combobox_selection_changed_info_t &)
-		      > editable_combobox_selection_changed_t;
-
 /*! Create an editable combobox.
 
 Passed to create_focusable_container() to create a focusable container

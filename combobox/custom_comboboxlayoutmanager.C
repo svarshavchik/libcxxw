@@ -476,6 +476,12 @@ focusable_container new_custom_comboboxlayoutmanager
 	return c;
 }
 
+void custom_comboboxlayoutmanagerObj
+::selection_changed(const custom_combobox_selection_changed_t &cb)
+{
+	impl->selection_changed=cb;
+}
+
 ref<custom_comboboxlayoutmanagerObj::implObj
     > new_custom_comboboxlayoutmanager::create_impl(const create_impl_info &i)
 	const

@@ -150,6 +150,12 @@ app_dialogsObj::create_file_open(const LIBCXX_NAMESPACE::w::main_window &main_wi
 		}
 	};
 
+	config.filename_filters.emplace_back
+		("Text files", "\\.txt$");
+	config.filename_filters.emplace_back
+		("Image files", "\\.(gif|png|jpg)$");
+	config.initial_filename_filter=1;
+
 	auto d=main_window->create_file_dialog("file_open", config, true);
 
 	d->dialog_window->set_window_title("Open File");

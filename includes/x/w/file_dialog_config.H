@@ -10,6 +10,7 @@
 #include <x/w/text_param.H>
 #include <x/w/busy.H>
 #include <functional>
+#include <tuple>
 
 LIBCXXW_NAMESPACE_START
 
@@ -42,6 +43,18 @@ struct file_dialog_config {
 	//! Initial directory displayed in the file dialog.
 
 	std::string initial_directory;
+
+	//! Filename filters.
+
+	//! A vector of tuples: the label for the filename filter, and the
+	//! filename filter itself. The filename filter is a regular
+	//! expression.
+
+	std::vector<std::tuple<text_param, std::string>> filename_filters;
+
+	//! Initial filename filter index.
+
+	size_t initial_filename_filter=0;
 
 	//! Message shown when access to the file is denied.
 	std::string access_denied_message;

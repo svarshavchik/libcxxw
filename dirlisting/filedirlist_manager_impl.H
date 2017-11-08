@@ -12,6 +12,7 @@
 #include "x/w/container.H"
 #include "x/w/factory.H"
 #include <x/mpobj.H>
+#include <x/pcrefwd.H>
 
 #include <string>
 #include <unistd.h>
@@ -63,6 +64,10 @@ class LIBCXX_HIDDEN filedirlist_managerObj::implObj : virtual public obj {
 
 		//! The actual name of the directory.
 		std::string directory;
+
+		//! Current filename filter pattern
+
+		pcre filename_filter;
 
 		//! Internal execution thread's mcguffin.
 
@@ -207,6 +212,9 @@ class LIBCXX_HIDDEN filedirlist_managerObj::implObj : virtual public obj {
 
 	//! Change directories.
 	void chdir(const std::string &directory);
+
+	//! Change filename filters.
+	void chfilter(const pcre &filter);
 
 	//! Return the current directory.
 	std::string pwd();

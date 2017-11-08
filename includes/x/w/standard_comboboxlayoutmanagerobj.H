@@ -68,6 +68,10 @@ public:
 
 	//! Return combo-box item.
 	text_param item(size_t i) const;
+
+	//! Install a new selection changed callback.
+	void selection_changed(const standard_combobox_selection_changed_t &);
+
 };
 
 LIBCXXW_NAMESPACE_END

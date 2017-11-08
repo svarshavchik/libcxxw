@@ -7,6 +7,7 @@
 
 #include <x/w/namespace.H>
 #include <x/ptrfwd.H>
+#include <functional>
 
 LIBCXXW_NAMESPACE_START
 
@@ -41,6 +42,17 @@ typedef ptr<editable_comboboxlayoutmanagerObj> editable_comboboxlayoutmanagerptr
 //! \see editable_comboboxlayoutmanager
 
 typedef const_ptr<editable_comboboxlayoutmanagerObj> const_editable_comboboxlayoutmanagerptr;
+
+struct editable_combobox_selection_changed_info_t;
+
+/*!
+
+Callback that gets invoked when an editable combo-box's selection changes.
+
+*/
+
+typedef std::function<void (const editable_combobox_selection_changed_info_t &)
+		      > editable_combobox_selection_changed_t;
 
 LIBCXXW_NAMESPACE_END
 

@@ -7,6 +7,7 @@
 
 #include "dirlisting/filedirlist_managerfwd.H"
 #include "x/w/factory.H"
+#include <x/pcrefwd.H>
 #include <string>
 #include <functional>
 
@@ -49,6 +50,9 @@ class LIBCXX_HIDDEN filedirlist_managerObj : virtual public obj {
 	//! Switch the display element to a different directory.
 
 	void chdir(const std::string &directory);
+
+	//! Change filename filters.
+	void chfilter(const pcre &filter);
 
 	//! Return the current directory
 	std::string pwd() const;

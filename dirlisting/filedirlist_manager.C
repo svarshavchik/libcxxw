@@ -33,6 +33,11 @@ void filedirlist_managerObj::chdir(const std::string &directory)
 	impl->chdir(directory);
 }
 
+void filedirlist_managerObj::chfilter(const pcre &filter)
+{
+	impl->chfilter(filter);
+}
+
 std::string filedirlist_managerObj::pwd() const
 {
 	return impl->pwd();

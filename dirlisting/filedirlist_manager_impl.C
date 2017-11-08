@@ -16,6 +16,7 @@
 #include <x/fileattr.H>
 #include <x/ymdhms.H>
 #include <x/fmtsize.H>
+#include <x/pcre.H>
 #include <sys/stat.h>
 
 LIBCXXW_NAMESPACE_START
@@ -70,7 +71,8 @@ filedirlist_managerObj::implObj
 	: current_selected(ref<current_selected_callbackObj>::create()),
 	  filedir_list(create_filedir_list(f, initial_directory,
 					   current_selected)),
-	  info(info_t{initial_directory, ref<obj>::create()}),
+	  info(info_t{initial_directory, pcre::create("."),
+				  ref<obj>::create()}),
 	  access_mode(access_mode)
 {
 }
@@ -190,6 +192,10 @@ void filedirlist_managerObj::implObj::update(const const_filedir_file &files)
 		{
 			st=*fullname_st;
 			stat_succeeded=true;
+
+			if (!S_ISDIR(st.st_mode) &&
+			    !lock->filename_filter->match(f.name))
+				continue;
 		}
 
 		bool enabled=true;
@@ -314,6 +320,31 @@ void filedirlist_managerObj::implObj::chdir(const std::string &directory)
 	      (auto &lock)
 	      {
 		      lock->directory=directory;
+	      });
+
+}
+
+void filedirlist_managerObj::implObj::chfilter(const pcre &filter)
+{
+	protected_info_t::lock lock{*this};
+
+	if (!lock->current_filedircontents)
+		// The element is not visible, just update the directory.
+	{
+		lock->filename_filter=filter;
+		return;
+	}
+
+	// Stop the current execution thread, make arrangements to start
+	// another one.
+
+	stop(lock);
+
+	start(lock,
+	      [filter]
+	      (auto &lock)
+	      {
+		      lock->filename_filter=filter;
 	      });
 
 }
