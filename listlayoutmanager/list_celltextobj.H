@@ -16,9 +16,6 @@ LIBCXXW_NAMESPACE_START
 struct LIBCXX_HIDDEN list_celltextObj : public list_cellObj,
 					    public richtextObj {
 
-	//! Calculate in advance.
-	const bool is_empty;
-
 	//! Constructor
 	list_celltextObj(const richtextstring &string,
 			     halign alignment,
@@ -44,8 +41,8 @@ struct LIBCXX_HIDDEN list_celltextObj : public list_cellObj,
 	void cell_theme_updated(IN_THREAD_ONLY,
 				const defaulttheme &initial_theme) override;
 
-	//! Implement cell_is_empty().
-	bool cell_is_empty() override;
+	//! Implement cell_is_separator().
+	bool cell_is_separator() override;
 };
 
 LIBCXXW_NAMESPACE_END

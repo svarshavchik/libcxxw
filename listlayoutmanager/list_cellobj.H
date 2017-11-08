@@ -49,7 +49,7 @@ struct LIBCXX_HIDDEN list_cellObj : virtual public obj {
 
 	//! If all cells in an item are "empty", the
 	//! \ref "listlayoutmanager" draws a separator border.
-	virtual bool cell_is_empty()=0;
+	virtual bool cell_is_separator()=0;
 };
 
 LIBCXXW_NAMESPACE_END

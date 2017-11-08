@@ -569,7 +569,7 @@ void list_elementObj::implObj::recalculate(IN_THREAD_ONLY,
 			auto calculated_column_width=
 				lock->calculated_column_widths.begin();
 
-			bool entirely_empty=true;
+			bool is_separator=false;
 
 			for (auto &column_widths:lock->column_widths)
 			{
@@ -588,8 +588,13 @@ void list_elementObj::implObj::recalculate(IN_THREAD_ONLY,
 					 data(IN_THREAD)
 					 .inherited_visibility);
 
-				if (! (*cell_iter)->cell_is_empty())
-					entirely_empty=false;
+				// If this is a separator row we still need
+				// to go through the motion and visit event
+				// cell, in order to initialize the column
+				// separators.
+
+				if ((*cell_iter)->cell_is_separator())
+					is_separator=true;
 
 				(*cell_iter)->column_iterator=
 					column_widths.insert(horiz.preferred());
@@ -602,7 +607,7 @@ void list_elementObj::implObj::recalculate(IN_THREAD_ONLY,
 			}
 			row->size_computed=true;
 
-			if (entirely_empty)
+			if (is_separator)
 			{
 				// This row becomes a separator line.
 

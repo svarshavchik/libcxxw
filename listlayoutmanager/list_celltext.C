@@ -11,27 +11,25 @@ LIBCXXW_NAMESPACE_START
 
 
 list_celltextObj::list_celltextObj(const richtextstring &string,
-					   halign alignment,
-					   dim_t word_wrap_width)
-	: richtextObj(string, alignment, word_wrap_width),
-	  is_empty(string.get_string().empty())
+				   halign alignment,
+				   dim_t word_wrap_width)
+	: richtextObj(string, alignment, word_wrap_width)
 {
 }
 
 std::pair<metrics::axis, metrics::axis>
 list_celltextObj::cell_get_metrics(IN_THREAD_ONLY, dim_t preferred_width,
-				       bool visible)
+				   bool visible)
 {
 	return get_metrics(IN_THREAD, preferred_width, visible);
 }
 
 
 void list_celltextObj::cell_redraw(IN_THREAD_ONLY,
-				       element_drawObj &draw,
-				       const draw_info &di,
-				       bool draw_as_disabled,
-				       const richtext_draw_boundaries
-				       &boundaries)
+				   element_drawObj &draw,
+				   const draw_info &di,
+				   bool draw_as_disabled,
+				   const richtext_draw_boundaries &boundaries)
 {
 	richtext_draw_info rdi;
 
@@ -42,20 +40,20 @@ void list_celltextObj::cell_redraw(IN_THREAD_ONLY,
 }
 
 void list_celltextObj::cell_initialize(IN_THREAD_ONLY,
-					   const defaulttheme &initial_theme)
+				       const defaulttheme &initial_theme)
 {
 	theme_updated(IN_THREAD, initial_theme);
 }
 
 void list_celltextObj::cell_theme_updated(IN_THREAD_ONLY,
-					      const defaulttheme &initial_theme)
+					  const defaulttheme &initial_theme)
 {
 	theme_updated(IN_THREAD, initial_theme);
 }
 
-bool list_celltextObj::cell_is_empty()
+bool list_celltextObj::cell_is_separator()
 {
-	return is_empty;
+	return false;
 }
 
 LIBCXXW_NAMESPACE_END

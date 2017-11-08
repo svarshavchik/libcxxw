@@ -397,6 +397,10 @@ libcxxw_la_SOURCES=\
 	listlayoutmanager/list_cellimage.H	    \
 	listlayoutmanager/list_cellimagefwd.H	    \
 	listlayoutmanager/list_cellimageobj.H	    \
+	listlayoutmanager/list_cellseparator.C	    \
+	listlayoutmanager/list_cellseparator.H	    \
+	listlayoutmanager/list_cellseparatorfwd.H   \
+	listlayoutmanager/list_cellseparatorobj.H   \
 	listlayoutmanager/list_celltext.C	    \
 	listlayoutmanager/list_celltext.H	    \
 	listlayoutmanager/list_celltextfwd.H	    \

@@ -10,6 +10,7 @@
 #include "listlayoutmanager/list_element_impl.H"
 #include "listlayoutmanager/list_celltext.H"
 #include "listlayoutmanager/list_cellimage.H"
+#include "listlayoutmanager/list_cellseparator.H"
 #include "listlayoutmanager/listlayoutmanager_impl.H"
 #include "listlayoutmanager/list_container_impl.H"
 #include "listlayoutmanager/list_cell.H"
@@ -199,17 +200,17 @@ listlayoutstyle_impl::create_cells(const std::vector<list_item_param> &t,
 							   "separator element")
 							 );
 
-				 auto empty_str=textlist_element
-					 .create_richtextstring
-					 (textlist_element.itemlabel_meta, "");
-				 auto empty_cell=
-					 list_celltext::create(empty_str,
-								   halign::left,
-								   0);
+				 // We must push a separator object for each
+				 // column. We cannot just link the same object
+				 // into all columns. The logic dealing with
+				 // column_iterators expects each cell in each
+				 // column to be a discrete object, for
+				 // recording the column_iterator.
 
 				 for (size_t i=0; i<textlist_element.columns;
 				      ++i)
-					 newcells.push_back(empty_cell);
+					 newcells.push_back
+						 (list_cellseparator::create());
 
 				 // next_rowinfo should be clean
 				 rowmeta.push_back(next_rowinfo);

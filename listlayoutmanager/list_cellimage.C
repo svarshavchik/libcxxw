@@ -121,7 +121,7 @@ void list_cellimageObj::cell_theme_updated(IN_THREAD_ONLY,
 	theme_updated(IN_THREAD, new_theme);
 }
 
-bool list_cellimageObj::cell_is_empty()
+bool list_cellimageObj::cell_is_separator()
 {
 	return false;
 }
