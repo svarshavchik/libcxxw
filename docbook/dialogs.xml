@@ -31,19 +31,39 @@ See COPYING for distribution information.
 
   <para>
     An <ulink url="&link-typedef-x--w-dialog;"><classname>&ns;::w::dialog</classname></ulink>
-    is similar to an <link linkend="concepts"><classname>&ns;::w::main_window</classname></link>.
-    While <classname>&ns;::w::main_window</classname>s
+    is similar to an <link linkend="concepts"><classname>&ns;::w::main_window</classname></link>,
+    except that it doesn't have <link linkend="menu">menus</link> and some
+    window managers may not draw a title bar for the dialog. In most other
+    respects a dialog is the same as a main window, and one of its public
+    class members is a:
+  </para>
+
+  <blockquote>
+    <informalexample>
+      <programlisting>
+const &ns;::w::main_window dialog_window;</programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    So, <quote>dialog->dialog_window->show_all()</quote> shows the dialog, and
+    <quote>dialog->dialog_window->show_all()</quote> hides it.
+  </para>
+
+  <para>
+    Another difference between dialogs and main windows is
+    while <classname>&ns;::w::main_window</classname>s
     get created by themselves,
     <classname>&ns;::w::dialog</classname>s get created by one of the methods
     from an existing
     <classname>&ns;::w::main_window</classname> or another
-    <classname>&ns;::w::dialog</classname> (which is a subclass of a
-    <classname>&ns;::w::main_window</classname> and inherits all of its
-    methods):
+    <classname>&ns;::w::dialog</classname> (by accessing its
+    <varname>dialog_window</varname>).
   </para>
 
   <para>
-    The following methods create dialogs with a standard,
+    The following <classname>&ns;::w::main_window</classname>
+    methods create dialogs with a standard,
     theme-defined layout:
   </para>
 
@@ -52,7 +72,9 @@ See COPYING for distribution information.
       <term><methodname>create_ok_dialog</methodname>()</term>
       <listitem>
 	<para>
-	  A standard dialog with an <quote>Ok</quote> button.
+	  <methodname>create_ok_dialog</methodname>() returns a new
+	  <ulink url="&link-typedef-x--w-dialog;"><classname>&ns;::w::dialog</classname></ulink>
+	  with an icon, a text label, and an <quote>Ok</quote> button.
 	</para>
       </listitem>
     </varlistentry>
@@ -60,7 +82,9 @@ See COPYING for distribution information.
       <term><methodname>create_ok_cancel_dialog</methodname>()</term>
       <listitem>
 	<para>
-	  A standard dialog with <quote>Ok</quote> and
+	  <methodname>create_ok_cancel_dialog</methodname>() returns a new
+	  <ulink url="&link-typedef-x--w-dialog;"><classname>&ns;::w::dialog</classname></ulink>
+	  with an icon, a text label, and <quote>Ok</quote> and
 	  <quote>Cancel</quote> buttons.
 	</para>
       </listitem>
@@ -69,120 +93,155 @@ See COPYING for distribution information.
       <term><methodname>create_input_dialog</methodname>()</term>
       <listitem>
 	<para>
-	  A standard dialog with <quote>Ok</quote> and
-	  <quote>Cancel</quote> buttons, and an
-	  <link linkend="inputfields"><classname>&ns;::w::input_field</classname></link>.
+	  <methodname>create_input_dialog</methodname>() returns a new
+	  <ulink url="&link-typedef-x--w-input-dialog;"><classname>&ns;::w::input_dialog</classname></ulink>
+	  with an icon, a text label, an
+	  <link linkend="inputfields"><classname>&ns;::w::input_field</classname></link>,
+	  and
+	  <quote>Ok</quote> and
+	  <quote>Cancel</quote> buttons.
+
 	</para>
       </listitem>
     </varlistentry>
   </variablelist>
 
-  <para>
-    The first parameter to these methods is a dialog identifier, which
-    is a <classname>std::string</classname>, and serves as an identifying
-    label.
-    Each
-    <classname>&ns;::w::main_window</classname> (or a
-    <classname>&ns;::w::dialog</classname>) can create more than one dialog,
-    as long as each dialog has a unique identifier label.
-    Creating another dialog with the same identifier label replaces
-    the existing dialog with that label.
-  </para>
+  <section id="dialogidentifiers">
+    <title>Dialog identifiers</title>
 
-  <para>
-    Dialog identifiers are opaque, unique labels. For future use, dialog
-    identifier labels should use the following naming conventions.
-    Applications should use identifier labels formatted as Internet
-    hostnames or E-mail addresses, using domain names that belong to the
-    application. An application developed by
-    <literal>example.com</literal>
-    can use <quote>dialog1@example.com</quote>, or
-    <quote>confirmation@app1.example.com</quote>, as an example.
-    <quote>@libcxx</quote> labels are reserved for &appshort;'s use.
-  </para>
+    <para>
+      These methods have several common parameters.
+      The first parameter is a dialog identifier, which
+      is a <classname>std::string</classname>, and serves as an identifying
+      label.
+      Each
+      <classname>&ns;::w::main_window</classname> (or a
+      <classname>&ns;::w::dialog</classname>) can create many dialogs
+      as long as each dialog has a unique identifier label.
+      Creating another dialog with the same identifier label replaces
+      the existing dialog with that label.
+    </para>
 
-  <para>
-    The next parameter to
-    <methodname>create_ok_dialog</methodname>(), or
-    <methodname>create_ok_cancel_dialog</methodname>() and others,
-    is the name of a small icon
-    displayed on the left side of the dialog. Currently, the possible
-    choices are:
-    <quote>alert</quote>, <quote>stop</quote>, and <quote>message</quote>.
-    The remaining parameters vary, and include:
-  </para>
+    <para>
+      Dialog identifiers are opaque, unique labels. For future use, dialog
+      identifier labels should use the following naming conventions.
+      Applications should use identifier labels formatted as Internet
+      hostnames or E-mail addresses using domain names that belong to the
+      application. An application developed by
+      <literal>example.com</literal>
+      can use <quote>dialog1@example.com</quote>, or
+      <quote>confirmation@app1.example.com</quote>, as an example.
+      <quote>@libcxx</quote> labels are reserved for &appshort;'s use.
+    </para>
+  </section>
 
-  <itemizedlist>
-    <listitem>
-      <para>
-	A &callback; that receives a &factory; for creating the contents
-	of the dialog. This factory callback must create exactly one
-	display element. Dialogs typically contain brief messages, created
-	with <methodname>create_label</methodname>(), but may contain
-	arbitrary display elements. This is done by having the
-	factory callback create a &container; and then creating the
-	display elements in the new container.
-      </para>
+  <section id="dialogparameters">
+    <title>Other dialog creation parameters</title>
 
-      <para>
-	<methodname>create_input_field</methodname>()'s factory callback
-	creates the display element that appears to the left of the
-	input field.
-      </para>
-    </listitem>
-    <listitem>
-      <para>
-	&callback;s that get invoked when <quote>Ok</quote> or
-	<quote>Cancel</quote> buttons are pressed.
-	<methodname>create_input_field</methodname>()'s
-	<quote>Ok</quote> callback receives an additional parameter with
-	the <classname>&ns;::input_field</classname>.
-      </para>
-    </listitem>
+    <para>
+      The next common parameter for
+      <methodname>create_ok_dialog</methodname>(), or
+      <methodname>create_ok_cancel_dialog</methodname>() and others,
+      is the name of a small icon
+      displayed on the left side of the dialog. Currently, the possible
+      choices are:
+      <quote>alert</quote>, <quote>stop</quote>, and <quote>message</quote>.
+      The remaining parameters vary, and include:
+    </para>
 
-    <listitem>
-      <para>
-	Additional parameters for
-	<methodname>create_input_field</methodname>(): the initial
-	contents of the input field, and its
-	<classname>&ns;::w::input_field_config</classname> (the
-	same parameters as the ones that get passed to
-	<link linkend="inputfields"><methodname>create_input_field</methodname></link>().
-      </para>
-    </listitem>
+    <itemizedlist>
+      <listitem>
+	<para>
+	  A &callback; that receives a &factory; for creating the contents
+	  of the dialog. This factory callback must create exactly one
+	  display element. Dialogs typically contain brief messages, created
+	  with <methodname>create_label</methodname>(), but may contain
+	  arbitrary display elements. This is done by having the
+	  factory callback create a &container; and then creating the
+	  display elements in the new container.
+	</para>
 
-    <listitem>
-      <para>
-	Optional <ulink url="&link-x--w--text-param;"><classname>&ns;::w::text_params</classname></ulink>s
-	that override the label for the
-	<quote>Ok</quote> and
-	<quote>Cancel</quote> buttons.
-      </para>
-    </listitem>
+	<para>
+	  <methodname>create_input_field</methodname>()'s factory callback
+	  creates the display element that appears to the left of the
+	  input field.
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  &callback;s that get invoked when <quote>Ok</quote> or
+	  <quote>Cancel</quote> buttons are pressed.
+	  <methodname>create_input_field</methodname>()'s
+	  <quote>Ok</quote> callback receives an additional parameter with
+	  the <classname>&ns;::input_field</classname>.
+	</para>
+      </listitem>
 
-    <listitem>
-      <para>
-	An optional <classname>bool</classname> that specifies whether the
-	new dialog is modal.
-      </para>
-    </listitem>
-  </itemizedlist>
+      <listitem>
+	<para>
+	  Additional parameters for
+	  <methodname>create_input_field</methodname>(): the initial
+	  contents of the input field, and its
+	  <classname>&ns;::w::input_field_config</classname> (the
+	  same parameters as the ones that get passed to
+	  <link linkend="inputfields"><methodname>create_input_field</methodname></link>().
+	</para>
+      </listitem>
 
-  <para>
-    Invoking a created dialog's
-    <methodname>show_all</methodname>() method makes it visible.
-    The buttons in dialogs created by standard methods automatically
-    <methodname>hide</methodname>() their dialog before
-    invoking the callbacks.
-    Depending on the window manager, the dialogs may have a title and
-    a close button, like a normal application window.
-    <link linkend="menu"><filename>menu.C</filename></link> uses
-    <methodname>set_window_title</methodname>() to give its dialogs a
-    reasonable title, in that case. A close button, if present, results
-    in the same action as the <quote>Cancel</quote> button
-    (or just the <quote>Ok</quote> button in
-    <methodname>create_ok_dialog</methodname>()'s case).
-  </para>
+      <listitem>
+	<para>
+	  Optional <ulink url="&link-x--w--text-param;"><classname>&ns;::w::text_params</classname></ulink>s
+	  that override the label for the
+	  <quote>Ok</quote> and
+	  <quote>Cancel</quote> buttons.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  An optional <classname>bool</classname> that specifies whether the
+	  new dialog is modal.
+	</para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
+  <section id="dialogshow">
+    <title>Showing and hiding dialogs</title>
+
+    <para>
+      <methodname>create_ok_dialog</methodname>(), or
+      <methodname>create_ok_cancel_dialog</methodname>() and others,
+      create a new dialog. New dialogs are not visible by default, and must
+      be shown like a main window. This is done simply by using its
+      <varname>dialog_window</varname> class member:
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+d->dialog_window->set_window_title("Error message");
+
+d->dialog_window->show_all();</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      Invoking a created dialog's
+      <methodname>show_all</methodname>() method makes it visible.
+      The buttons in dialogs created by standard methods automatically
+      <methodname>hide</methodname>() their dialog before
+      invoking the callbacks.
+      Depending on the window manager, the dialogs may have a title and
+      a close button, like a normal application window.
+      <link linkend="menu"><filename>menu.C</filename></link> uses
+      <methodname>set_window_title</methodname>() to give its dialogs a
+      reasonable title, in that case. A close button, if present, results
+      in the same action as the <quote>Cancel</quote> button
+      (or just the <quote>Ok</quote> button in
+      <methodname>create_ok_dialog</methodname>()'s case).
+    </para>
+  </section>
 
   <section id="modaldialogs">
     <title>Modal dialogs</title>
@@ -219,7 +278,7 @@ See COPYING for distribution information.
       dialogs</title>
 
     <para>
-      Because an <classname>&ns;::w::dialog</classname> can create its own
+      Because <classname>&ns;::w::dialog</classname>s may create their own
       dialogs, this applies recursively. A created
       <classname>&ns;::w::dialog</classname>
       owns references on its own dialogs, too.
@@ -268,7 +327,7 @@ m->append_items
                 main_window.get
                     ([&amp;]
                      (const auto &amp;main_window) {
-                        main_window->get_dialog("help_question")->show_all();
+                        main_window->get_dialog("help_question")->dialog_window->show_all();
                     });
             },
             "Question",</programlisting>
@@ -302,7 +361,7 @@ m->append_items
     </para>
 
     <para>
-      This also means that, as shown in the above example, &callback;'s
+      This also means that, as shown in the above example, &callback;s
       must capture only weak reference to their parent main window (or
       parent dialog), because the main window (or the parent dialog)
       owns (directly or indirectly) references to all elements in the
@@ -319,8 +378,10 @@ m->append_items
       <methodname>create_ok_dialog</methodname>(),
       <methodname>create_ok_cancel_dialog</methodname>(), and other methods,
       use a predetermined layout, and content, specified by the current
-      display theme. <methodname>create_dialog</methodname>() creates a
-      completely empty dialog, ready to be filled with its content:
+      display theme.
+      There are two ways to create a custom dialog.
+      <methodname>create_dialog</methodname>() creates a
+      completely empty dialog, using a &creator;:
     </para>
 
     <blockquote>
@@ -338,15 +399,96 @@ m->append_items
 
            // ...
      },
-     &ns;::w::new_gridlayoutmanager{},
-     true);</programlisting>
+     true,
+     &ns;::w::new_gridlayoutmanager{});</programlisting>
       </informalexample>
     </blockquote>
 
     <para>
-      The first parameter is the dialog's &creator;.
+      <methodname>create_dialog</methodname>()'s
+      first parameter is the dialog's &creator;.
       The second parameter specifies the dialog's &layoutmanager;.
       The third optional parameter specifies whether the new dialog is modal.
+    </para>
+
+    <para>
+      There's also a second, more complicated approach, that allows
+      creating a custom subclass of <classname>&ns;::w::dialogObj</classname>
+      (<classname>&ns;::w::dialog</classname>'s underlying reference-counted
+      object). This is the mechanism that creates
+      <ulink url="&link-typedef-x--w-input-dialog;"><classname>&ns;::w::input_dialog</classname></ulink>s, summarized as follows:
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+class custom_dialogObj : public &ns;::w::dialogObj {
+
+public:
+
+    //! Constructor
+    custom_dialogObj(const &ns;::w::dialog_args &amp;)
+          : &ns;::w::dialogObj(args)
+    {
+         auto main_window=this->dialog_window;
+
+         // etc...
+    }
+
+    //! Destructor
+    ~custom_dialogObj()=default;
+};
+
+typedef &ns;::ref&lt;custom_dialogObj&gt; custom_dialog;
+
+// ...
+auto new_custom_dialog=mw->create_custom_dialog(
+     "new_dialog@example.com",
+     []
+     (const auto &amp;args)
+     {
+          return custom_dialog::create(args);
+     },
+     true, // modal
+     &ns;::w::new_gridlayoutmanager{});
+	</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      <methodname>create_custom_dialog</methodname>()'s first parameter is
+      the new dialog's identifier. It's second parameter is a callable object
+      that receives a
+      <classname>&ns;::w::dialog_args</classname> parameter, and returns a
+      reference to a reference to a subclass of a
+      <classname>&ns;::w::dialog</classname>;
+      <methodname>create_custom_dialog</methodname>() returns what the
+      callable object itself returns. The remaining parameters are the new
+      dialog's modal flag, and its &layoutmanager;.
+    </para>
+
+    <para>
+      A custom dialog class inherits from
+      <classname>&ns;::w::dialogObj</classname>, whose constructor takes
+      a reference to the <classname>&ns;::w::dialog_args</classname>.
+      The custom callable object is typically a lambda that forwards the
+      <classname>&ns;::w::dialog_args</classname> to the custom dialog
+      class's constructor, together with any other parameters.
+    </para>
+
+    <para>
+      The constructor forwards the
+      <classname>&ns;::w::dialog_args</classname>
+      to its <classname>&ns;::w::dialogObj</classname> superclass.
+      The custom dialog class's constructor can, at this point, use the
+      <varname>dialog_window</varname> to create the new dialog's
+      display elements, and to store them into the custom dialog class itself,
+      for easy access. This is how
+      <methodname>create_input_dialog</methodname>()
+      assembles a new
+      <ulink url="&link-typedef-x--w-input-dialog;"><classname>&ns;::w::input_dialog</classname></ulink>
+      with its
+      <varname>input_dialog_field</varname> class member.
     </para>
   </section>
 </chapter>

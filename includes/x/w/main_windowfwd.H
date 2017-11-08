@@ -83,9 +83,13 @@ INSERT_LIBX_NAMESPACE::w::dialog d=w->create_dialog("dialog_id@example.com",
      (const INSERT_LIBX_NAMESPACE::w::dialog &f)
      {
      });
+
+// ...
+
+d->dialog_window->show_all();
 \endcode
 
-Creates a custom dialog. The dialog needs to be show_all()ed, to make
+Creates a generic dialog. The dialog needs to be show_all()ed, to make
 it visible by showing all of the dialog's display elements. The first
 parameter is a unique identifier for the new dialog. All dialogs created
 by the same main window must have unique identifiers. Identifiers ending
@@ -109,10 +113,17 @@ The 4th parameter specifies the new dialog's layout manager, and defaults to
 
 \code
 INSERT_LIBX_NAMESPACE::w::dialog d=w->create_ok_dialog(
-    // Dialog identifier
+    // Dialog identifier label
+    //
+    // All dialogs must have unique labels in the parent windows or dialogs.
+    // Different parent main window or parent dialogs can use the same labels.
+    // For future use, identifier labels should be formatted as Internet
+    // hostnames or E-mail addresses using domain names that belong to
+    // the application.
+
     "lorem_ipsum@example.com",
 
-    // Icon
+    // Use this icon for this dialog.
     "alert",
 
     // The featured display element.
@@ -122,7 +133,7 @@ INSERT_LIBX_NAMESPACE::w::dialog d=w->create_ok_dialog(
          factory->create_label("Lorem ipsum");
     },
 
-    // Callback when the dialog gets closed.
+    // The callback when the dialog gets closed.
     []
     (const INSERT_LIBX_NAMESPACE::w::busy &ignore)
     {
@@ -130,7 +141,7 @@ INSERT_LIBX_NAMESPACE::w::dialog d=w->create_ok_dialog(
     }, true);
 
 INSERT_LIBX_NAMESPACE::w::dialog d=w->create_ok_cancel_dialog(
-    // Dialog identifier
+    // Dialog identifier label
     "dolores@example.com",
 
     // Icon
@@ -153,7 +164,7 @@ INSERT_LIBX_NAMESPACE::w::dialog d=w->create_ok_cancel_dialog(
     true);
 \endcode
 
-create_ok_dialog() creates a dialog with only an "Ok" button.
+create_ok_dialog() creates a \ref dialog "dialog" with only an "Ok" button.
 create_ok_cancel_dialog() creates a dialog with "Ok" and "Cancel" buttons.
 Selecting either button hide()s the dialog and invokes the corresponding
 callback lambda.
@@ -167,7 +178,7 @@ The last optional parameter specifies whether the created dialog is
 modal.
 
 \code
-INSERT_LIBX_NAMESPACE::w::dialog d=main_window->create_input_dialog
+INSERT_LIBX_NAMESPACE::w::input_dialog d=main_window->create_input_dialog
       (// Identifier label
        "help_question@example.com",
 
@@ -214,7 +225,9 @@ INSERT_LIBX_NAMESPACE::w::dialog d=main_window->create_input_dialog
        true);
 \endcode
 
-create_input_field() constructs a dialog with a \ref input_field "input field".
+create_input_dialog() constructs an
+dialog with a \ref input_field "input field", returning an
+\ref input_dialog "INSERT_LIBX_NAMESPACE::w::input_dialog".
 
 \par Managing existing dialogs.
 

@@ -17,22 +17,23 @@
 
 LIBCXXW_NAMESPACE_START
 
-// Most existing users of a standard_dialog_elements_t constructor should
+// Most existing users of a standard_dialog_elements_t should
 // be passing in an rvalue ref that gets moved into glm->create(), but if
 // we get something other than an rvalue ref, delegate this to the proper
 // constructor.
 
-dialogObj::dialogObj(const dialog_args &args,
-		     const std::string_view &name,
-		     const standard_dialog_elements_t &standard_elements)
-	: dialogObj(args, name, (standard_dialog_elements_t)(standard_elements))
+void main_windowObj::initialize_theme_dialog(const std::string_view &name,
+					     const standard_dialog_elements_t
+					     &standard_elements)
 {
+	initialize_theme_dialog(name,
+				(standard_dialog_elements_t)(standard_elements))
+		;
 }
 
-dialogObj::dialogObj(const dialog_args &args,
-		     const std::string_view &name,
-		     standard_dialog_elements_t &&standard_elements)
-	: dialogObj(args)
+void main_windowObj::initialize_theme_dialog(const std::string_view &name,
+					     standard_dialog_elements_t
+					     &&standard_elements)
 {
 	gridlayoutmanager glm=get_layoutmanager();
 
@@ -40,7 +41,7 @@ dialogObj::dialogObj(const dialog_args &args,
 }
 
 dialogObj::dialogObj(const dialog_args &args)
-	: main_windowObj(args.impl, args.layout_impl), impl(args.impl)
+	: impl{args.impl}, dialog_window{args.dialog_window}
 {
 }
 
@@ -54,15 +55,16 @@ dialog main_windowObj
 		   const new_layoutmanager &layout_factory,
 		   bool modal)
 {
-	return create_dialog(dialog_id,
-			     [&]
-			     (const dialog_args &args)
-			     {
-				     const dialog d=dialog::create(args);
+	return create_custom_dialog
+		(dialog_id,
+		 [&]
+		 (const dialog_args &args)
+		 {
+			 auto d=dialog::create(args);
 
-				     creator(d);
-				     return d;
-			     });
+			 creator(d);
+			 return d;
+		 });
 }
 
 void main_windowObj::do_create_dialog(const std::string_view &dialog_id,
@@ -102,7 +104,10 @@ void main_windowObj::do_create_dialog(const std::string_view &dialog_id,
 
 	ref<dialogObj::implObj> ref_dialog_impl{dialog_impl};
 
-	auto d=creator(dialog_args{ref_dialog_impl, lm->impl});
+	auto mw=ptrref_base::objfactory<main_window>
+		::create(ref_dialog_impl, lm->impl);
+
+	auto d=creator(dialog_args{ref_dialog_impl, mw});
 
 	std::string dialog_ids{dialog_id.begin(), dialog_id.end()};
 

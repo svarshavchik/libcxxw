@@ -18,8 +18,9 @@ LIBCXXW_NAMESPACE_START
 
 class file_dialogObj : public dialogObj {
 
-	struct init_args;
 public:
+	struct init_args;
+
 	class implObj;
 
 	//! Internal implementation object.
@@ -27,23 +28,17 @@ public:
 
 	//! Constructor, phase 1.
 
-	file_dialogObj(const dialog_args &args,
-		       const file_dialog_config &conf)
+	file_dialogObj(const dialog_args &d_args,
+		       const file_dialog_config &conf,
+		       const init_args &args)
 		LIBCXX_HIDDEN;
 
 	//! Constructor, phase 2.
-	void constructor(const dialog_args &args,
-			 const file_dialog_config &conf)
+	void constructor(const dialog_args &d_args,
+			 const file_dialog_config &conf,
+			 const init_args &args)
 		LIBCXX_HIDDEN;
 
-private:
-	//! Internal constructor
-	file_dialogObj(const dialog_args &d_args,
-		       const file_dialog_config &conf,
-		       init_args &&)
-		LIBCXX_HIDDEN;
-
-public:
 	//! Destructor
 	~file_dialogObj() LIBCXX_HIDDEN;
 };

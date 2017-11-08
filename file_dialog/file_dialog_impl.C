@@ -309,7 +309,7 @@ void file_dialogObj::implObj::error_dialog(const file_dialog &the_file_dialog,
 	else
 		++p;
 
-	auto d=the_file_dialog->create_ok_dialog
+	auto d=the_file_dialog->dialog_window->create_ok_dialog
 		("error@libcxx", "alert",
 		 [name=filename.substr(p),
 		  access_denied_message=this->access_denied_message]
@@ -319,10 +319,11 @@ void file_dialogObj::implObj::error_dialog(const file_dialog &the_file_dialog,
 						    name),
 					 100.00, halign::center);
 		 },
-		 the_file_dialog->destroy_when_closed("error@libcxx"),
+		 the_file_dialog->dialog_window
+		 ->destroy_when_closed("error@libcxx"),
 		 true);
-	d->set_window_title(access_denied_title);
-	d->show_all();
+	d->dialog_window->set_window_title(access_denied_title);
+	d->dialog_window->show_all();
 }
 
 // Factored out for readability. Creates the filename input field
@@ -332,20 +333,6 @@ static inline input_field create_file_input_field(const factory &f)
 
 	return f->create_input_field("", filename_field_config);
 
-}
-
-file_dialog main_windowObj
-::create_file_dialog(const std::string_view &dialog_id,
-		     const file_dialog_config &conf,
-		     bool modal)
-{
-	return create_dialog(dialog_id,
-			     [&]
-			     (const dialog_args &args)
-			     {
-				     return file_dialog::create(args, conf);
-			     },
-			     modal);
 }
 
 //! Internal constructor arguments
@@ -378,8 +365,6 @@ struct LIBCXX_HIDDEN file_dialogObj::init_args {
 
 // Create the factories for the theme-specified display elements.
 
-// This gets passed to the internal constructor for the dialogObj
-// superclass.
 standard_dialog_elements_t file_dialogObj::init_args
 ::create_elements(const file_dialog_config &conf)
 {
@@ -434,46 +419,54 @@ standard_dialog_elements_t file_dialogObj::init_args
 	};
 }
 
+file_dialog main_windowObj
+::create_file_dialog(const std::string_view &dialog_id,
+		     const file_dialog_config &conf,
+		     bool modal)
+{
+	return create_custom_dialog
+		(dialog_id,
+		 [&]
+		 (const dialog_args &args)
+		 {
+			 file_dialogObj::init_args init_args{
+				 conf.initial_directory};
+
+			 args.dialog_window->initialize_theme_dialog
+				 ("file-dialog",
+				  init_args.create_elements(conf));
+
+			 return file_dialog::create(args,
+						    conf,
+						    init_args);
+		 },
+		 modal);
+}
+
 //////////////////////////////////////////////////////////////////////////
 
 // Construction
 
-// Step 1: construct the temporary init_args object.
-
-file_dialogObj::file_dialogObj(const dialog_args &args,
-			       const file_dialog_config &conf)
-	: file_dialogObj(args, conf, init_args{conf.initial_directory})
-{
-}
-
-// Step 2: construct the dialogObj superclass
 file_dialogObj::file_dialogObj(const dialog_args &d_args,
 			       const file_dialog_config &conf,
-			       init_args &&args)
-	: dialogObj(d_args, "file-dialog", args.create_elements(conf)),
-
-	  // The superclass's constructor runs the theme-specified template
-	  // and invokes standard_dialog_elements_t's callback that construct
-	  // each display element.
-	  //
-	  // When the dialogObj's superclass is constructed, these display
-	  // elements are ready, and we can create the implementation object.
-
-	impl(ref<implObj>::create(args.directory_field,
-				  args.filename_field,
-				  args.directory_contents_list,
-				  args.ok_button,
-				  args.cancel_button,
-				  conf.ok_action,
-				  conf.type,
-				  conf.access_denied_message,
-				  conf.access_denied_title))
+			       const init_args &args)
+	: dialogObj(d_args),
+	  impl(ref<implObj>::create(args.directory_field,
+				    args.filename_field,
+				    args.directory_contents_list,
+				    args.ok_button,
+				    args.cancel_button,
+				    conf.ok_action,
+				    conf.type,
+				    conf.access_denied_message,
+				    conf.access_denied_title))
 {
 }
 
-// Step 3: Phase 2 of the constructor. Set up all the callbacks.
-void file_dialogObj::constructor(const dialog_args &args,
-				 const file_dialog_config &conf)
+// Phase 2 of the constructor. Set up all the callbacks.
+void file_dialogObj::constructor(const dialog_args &d_args,
+				 const file_dialog_config &conf,
+				 const init_args &args)
 {
 	auto d=dialog{this};
 

@@ -22,6 +22,7 @@
 #include "x/w/input_field.H"
 #include "x/w/label.H"
 #include "x/w/dialog.H"
+#include "x/w/input_dialog.H"
 #include "x/w/file_dialog.H"
 #include "x/w/file_dialog_config.H"
 #include <string>
@@ -51,13 +52,13 @@ class app_dialogsObj : virtual public LIBCXX_NAMESPACE::obj {
 
 public:
 
-	LIBCXX_NAMESPACE::w::dialog help_question;
+	LIBCXX_NAMESPACE::w::input_dialog help_question;
 	LIBCXX_NAMESPACE::w::dialog help_about;
 	LIBCXX_NAMESPACE::w::file_dialog file_open;
 
 	app_dialogsObj(const LIBCXX_NAMESPACE::w::main_window &main_window);
 
-	static LIBCXX_NAMESPACE::w::dialog create_help_question(const LIBCXX_NAMESPACE::w::main_window &main_window);
+	static LIBCXX_NAMESPACE::w::input_dialog create_help_question(const LIBCXX_NAMESPACE::w::main_window &main_window);
 
 	static LIBCXX_NAMESPACE::w::dialog create_help_about(const LIBCXX_NAMESPACE::w::main_window &main_window);
 
@@ -72,7 +73,7 @@ app_dialogsObj::app_dialogsObj(const LIBCXX_NAMESPACE::w::main_window &main_wind
 {
 }
 
-LIBCXX_NAMESPACE::w::dialog
+LIBCXX_NAMESPACE::w::input_dialog
 app_dialogsObj::create_help_question(const LIBCXX_NAMESPACE::w::main_window &main_window)
 {
 	auto d=main_window->create_input_dialog
@@ -98,7 +99,7 @@ app_dialogsObj::create_help_question(const LIBCXX_NAMESPACE::w::main_window &mai
 			 std::cout << "Never mind!" << std::endl;
 		 },
 		 true);
-	d->set_window_title("Hello!");
+	d->dialog_window->set_window_title("Hello!");
 
 	return d;
 }
@@ -125,7 +126,7 @@ app_dialogsObj::create_help_about(const LIBCXX_NAMESPACE::w::main_window &main_w
 			 std::cout << "Help -> About Cancel!" << std::endl;
 		 },
 		 true);
-	d->set_window_title("Help/About");
+	d->dialog_window->set_window_title("Help/About");
 
 	return d;
 }
@@ -141,7 +142,7 @@ app_dialogsObj::create_file_open(const LIBCXX_NAMESPACE::w::main_window &main_wi
 			std::cout << "File open selected: "
 				  << name
 				  << std::endl;
-			d->hide();
+			d->dialog_window->hide();
 		},
 		[](const auto &busy_mcguffin)
 		{
@@ -151,7 +152,7 @@ app_dialogsObj::create_file_open(const LIBCXX_NAMESPACE::w::main_window &main_wi
 
 	auto d=main_window->create_file_dialog("file_open", config, true);
 
-	d->set_window_title("Open File");
+	d->dialog_window->set_window_title("Open File");
 
 	return d;
 }
@@ -216,7 +217,8 @@ void file_menu(const LIBCXX_NAMESPACE::w::main_window &main_window,
 				app_dialogs all_app_dialogs;
 
 				if (all_app_dialogs)
-					all_app_dialogs->file_open->show_all();
+					all_app_dialogs->file_open
+						->dialog_window->show_all();
 			},
 			"New",
 			LIBCXX_NAMESPACE::w::shortcut{"Alt", 'O'},
@@ -225,7 +227,8 @@ void file_menu(const LIBCXX_NAMESPACE::w::main_window &main_window,
 				app_dialogs all_app_dialogs;
 
 				if (all_app_dialogs)
-					all_app_dialogs->file_open->show_all();
+					all_app_dialogs->file_open
+						->dialog_window->show_all();
 			},
 			"Open",
 			[](const auto &ignore)
@@ -344,7 +347,13 @@ void help_menu(const LIBCXX_NAMESPACE::w::main_window &main_window,
 			       app_dialogs all_app_dialogs;
 
 			       if (all_app_dialogs)
-				       all_app_dialogs->help_question->show_all();
+			       {
+				       all_app_dialogs->help_question
+					       ->input_dialog_field
+					       ->set("");
+				       all_app_dialogs->help_question
+					       ->dialog_window->show_all();
+			       }
 		       },
 		       "Question",
 
@@ -355,7 +364,8 @@ void help_menu(const LIBCXX_NAMESPACE::w::main_window &main_window,
 			       app_dialogs all_app_dialogs;
 
 			       if (all_app_dialogs)
-				       all_app_dialogs->help_about->show_all();
+				       all_app_dialogs->help_about
+					       ->dialog_window->show_all();
 		       },
 		       "About"
 			       });

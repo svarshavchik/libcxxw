@@ -22,6 +22,7 @@
 #include <x/w/text_param_literals.H>
 #include <x/w/font_literals.H>
 #include <x/w/dialog.H>
+#include <x/w/input_dialog.H>
 #include <x/w/input_field.H>
 #include <string>
 #include <vector>
@@ -339,6 +340,29 @@ size_t view_menu(const x::w::listlayoutmanager &m)
 	return 1;
 }
 
+// Factored out for readability. Invoked by "Help->Question" menu item.
+//
+
+static inline void help_question(const x::w::main_window &main_window)
+{
+	// This is an x::w::input_dialog ref, a sub-ref of x::w::dialog.
+	//
+	// get_dialog() returns an x::w::dialog, so we need to explicitly
+	// convert the ref.
+
+	x::w::input_dialog help_question=
+		main_window->get_dialog("help_question");
+
+	// Before showing the dialog, clear the input field's existing
+	// contents, if any. We keep show()ing the same dialog object,
+	// so get rid of anything the previous showing of the dialog put
+	// in there.
+
+	help_question->input_dialog_field->set("");
+
+	help_question->dialog_window->show_all();
+}
+
 void help_menu(const x::w::main_window &main_window,
 	       const x::w::listlayoutmanager &m)
 {
@@ -351,9 +375,7 @@ void help_menu(const x::w::main_window &main_window,
 				main_window.get
 					([&]
 					 (const auto &main_window) {
-
-						main_window->get_dialog
-							("help_question")->show_all();
+						help_question(main_window);
 					});
 			},
 			"Question",
@@ -366,7 +388,9 @@ void help_menu(const x::w::main_window &main_window,
 					([&]
 					 (const auto &main_window) {
 						main_window->get_dialog
-							("help_about")->show_all();
+							("help_about")
+							->dialog_window
+							->show_all();
 					});
 			},
 			"About",
@@ -427,14 +451,16 @@ void create_help_about(const x::w::main_window &main_window)
 		 // Modal dialog:
 		 true);
 
-	d->set_background_color(d->create_solid_color_picture(light_yellow));
+	auto w=d->dialog_window;
 
-	d->set_window_title("About myself");
+	w->set_background_color(w->create_solid_color_picture(light_yellow));
+
+	w->set_window_title("About myself");
 }
 
 void create_help_question(const x::w::main_window &main_window)
 {
-	x::w::dialog d=main_window->create_input_dialog
+	x::w::input_dialog d=main_window->create_input_dialog
 		("help_question",
 		 "question",
 		 []
@@ -463,5 +489,5 @@ void create_help_question(const x::w::main_window &main_window)
 		 // Modal dialog:
 		 true);
 
-	d->set_window_title("Hello!");
+	d->dialog_window->set_window_title("Hello!");
 }

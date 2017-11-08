@@ -370,6 +370,7 @@ libcxxw_la_SOURCES=\
 	image_button_internal_impl.H		    \
 	image_button_internal_impl.C		    \
 	impl_connection_thread.H		    \
+	input_dialog.C				    \
 	input_field.H				    \
 	input_field.C				    \
 	input_field_impl.C			    \

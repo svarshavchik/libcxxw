@@ -29,6 +29,7 @@
 #include "menu/menubarlayoutmanager_impl.H"
 #include "menu/menubar_container_impl.H"
 #include "container_element.H"
+#include "x/w/input_dialog.H"
 #include "dialog_impl.H"
 #include "dialog_handler.H"
 #include "always_visible.H"
@@ -302,7 +303,7 @@ void hide_and_invoke(const captured_dialog_t &d,
 	d.get([&]
 	      (const auto &d)
 	      {
-		      d->hide();
+		      d->dialog_window->hide();
 		      action(yes_i_am);
 	      });
 }
@@ -327,11 +328,12 @@ void hide_and_invoke_when_closed(const dialog &d,
 				 const std::function
 				 <void (const busy &)> &action)
 {
-	d->on_delete([d=make_weak_capture(d), action]
-		     (const busy &yes_i_am)
-		     {
-			     hide_and_invoke(d, yes_i_am, action);
-		     });
+	d->dialog_window->on_delete([d=make_weak_capture(d), action]
+				    (const busy &yes_i_am)
+				    {
+					    hide_and_invoke(d, yes_i_am,
+							    action);
+				    });
 }
 
 dialog main_windowObj
@@ -363,10 +365,11 @@ dialog main_windowObj
 	auto d=create_dialog
 		(dialog_id,
 		 [&]
-		 (const dialog_args &args)
+		 (const dialog &d)
 		 {
-			 return dialog::create
-			 (args, "ok-dialog", standard_dialog_elements_t{
+			 d->dialog_window->initialize_theme_dialog
+			 ("ok-dialog",
+			  standard_dialog_elements_t{
 				 {"icon", icon_element(icon)},
 				 {"message", content_factory},
 
@@ -431,10 +434,10 @@ dialog main_windowObj
 	auto d=create_dialog
 		(dialog_id,
 		 [&]
-		 (const dialog_args &args)
+		 (const dialog &d)
 		 {
-			 return dialog::create
-			 (args, "ok-cancel-dialog", standard_dialog_elements_t{
+			 d->dialog_window->initialize_theme_dialog
+			 ("ok-cancel-dialog", standard_dialog_elements_t{
 				 {"icon", icon_element(icon)},
 				 {"message", content_factory},
 				 {"ok", dialog_ok_button(ok_label,
@@ -455,7 +458,7 @@ dialog main_windowObj
 	return d;
 }
 
-dialog main_windowObj
+input_dialog main_windowObj
 ::create_input_dialog(const std::string_view &dialog_id,
 		      const std::string_view &icon,
 		      const std::function<void (const gridfactory &)>
@@ -478,7 +481,7 @@ dialog main_windowObj
 				   _("Cancel"), modal);
 }
 
-dialog main_windowObj
+input_dialog main_windowObj
 ::create_input_dialog(const std::string_view &dialog_id,
 		      const std::string_view &icon,
 		      const std::function<void (const gridfactory &)>
@@ -496,13 +499,15 @@ dialog main_windowObj
 	buttonptr cancel_button;
 	input_fieldptr field;
 
-	auto d=create_dialog
+	input_dialogptr new_input_dialog;
+
+	auto d=create_custom_dialog
 		(dialog_id,
 		 [&]
-		 (const dialog_args &args)
+		 (const auto &args)
 		 {
-			 return dialog::create
-			 (args, "input-dialog", standard_dialog_elements_t{
+			 args.dialog_window->initialize_theme_dialog
+			 ("input-dialog", standard_dialog_elements_t{
 				 {"icon", icon_element(icon)},
 				 {"label", label_factory},
 				 {"input", [&](const auto &factory)
@@ -520,6 +525,13 @@ dialog main_windowObj
 						 (cancel_label,
 						  cancel_button, '\e')}
 			 });
+
+			 auto id=input_dialog::create(args, field);
+
+			 new_input_dialog=id;
+
+			 return id;
+
 		 }, modal);
 
 	hide_and_invoke_when_activated
@@ -532,7 +544,7 @@ dialog main_windowObj
 	hide_and_invoke_when_activated(d, cancel_button, cancel_action);
 	hide_and_invoke_when_closed(d, cancel_action);
 
-	return d;
+	return new_input_dialog;
 }
 
 LIBCXXW_NAMESPACE_END

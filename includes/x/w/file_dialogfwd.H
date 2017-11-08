@@ -6,6 +6,7 @@
 #define x_w_file_dialogfwd_h
 
 #include <x/w/namespace.H>
+#include <x/w/file_dialog_configfwd.H>
 #include <x/ptrfwd.H>
 
 LIBCXXW_NAMESPACE_START

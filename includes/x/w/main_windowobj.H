@@ -12,6 +12,7 @@
 #include <x/w/gridlayoutmanagerfwd.H>
 #include <x/w/gridfactoryfwd.H>
 #include <x/w/dialogfwd.H>
+#include <x/w/input_dialogfwd.H>
 #include <x/w/new_layoutmanagerfwd.H>
 #include <x/w/text_paramfwd.H>
 #include <x/w/busyfwd.H>
@@ -32,53 +33,6 @@
 #include <functional>
 
 LIBCXXW_NAMESPACE_START
-
-//! What kind of a creator functor gets passed to \ref main_window "create_dialog"().
-
-//! The parameter is one of two different kinds of functors -- a standard
-//! functor that takes a created \ref dialog "INSERT_LIBX_NAMESPACE::w::dialog"
-//! object, and creates its contents, or a custom creator that takes an
-//! opaque \c dialog_args parameter, and uses it to construct a custom subclass
-//! of \ref dialogObj "dialogObj", and then create its contents.
-//!
-//! The member \c type is a \ref dialog_creator_type "dialog_creator_type".
-
-enum class dialog_creator_type { standard_creator, custom_creator };
-
-//! Classify the parameter to create_dialog().
-
-//! The template defines the member type which is a
-//! \ref dialog_creator_type "dialog_creator_type".
-
-template<typename functor, typename=void> struct classify_dialog_creator_type;
-
-//! Classify the parameter to create_dialog().
-
-//! Specialization that sets the \c type member to
-//! \ref dialog_creator_type "standard_creator".
-
-template<typename functor>
-struct classify_dialog_creator_type<
-	functor, std::void_t<decltype(std::declval<functor &&>()
-				      (std::declval<const dialog &>()))>> {
-
-	static constexpr dialog_creator_type type=
-		dialog_creator_type::standard_creator;
-};
-
-//! Classify the parameter to create_dialog().
-
-//! Specialization that sets the \c type member to
-//! \ref dialog_creator_type "custom_creator".
-
-template<typename functor>
-struct classify_dialog_creator_type<
-	functor, std::void_t<decltype(std::declval<functor &&>()
-				      (std::declval<const dialog_args &>()))>> {
-
-	static constexpr dialog_creator_type type=
-		dialog_creator_type::custom_creator;
-};
 
 //! Main application window.
 
@@ -103,6 +57,20 @@ public:
 
 	//! Destructor
 	~main_windowObj() LIBCXX_HIDDEN;
+
+	//! Constructor for a standard theme-specified dialog.
+
+	//! \internal
+	void initialize_theme_dialog(const std::string_view &,
+				     const standard_dialog_elements_t &)
+		LIBCXX_HIDDEN;
+
+	//! Constructor for a standard theme-specified dialog.
+
+	//! \internal
+	void initialize_theme_dialog(const std::string_view &,
+				     standard_dialog_elements_t &&)
+		LIBCXX_HIDDEN;
 
 	//! Return the layout manager for the menu bar.
 
@@ -134,7 +102,7 @@ public:
 
 	typedef dialog external_dialog_creator_t(const dialog_args &);
 
-	//! Create a dialog.
+	//! Create an empty dialog.
 
 	template<typename dialog_creator>
 	auto create_dialog(const std::string_view &dialog_id,
@@ -142,39 +110,38 @@ public:
 			   bool modal=false,
 			   const new_layoutmanager &l=new_gridlayoutmanager{})
 	{
-		if constexpr (classify_dialog_creator_type<
-			      std::remove_reference_t<dialog_creator>>::type ==
-			      dialog_creator_type::standard_creator)
-		{
-			return do_create_dialog
-				(dialog_id,
-				 make_function<void (const dialog &)>
-				 (std::forward<dialog_creator>(f)),
+		return do_create_dialog
+			(dialog_id,
+			 make_function<void (const dialog &)>
+			 (std::forward<dialog_creator>(f)),
+			 l, modal);
+	}
+
+	template<typename dialog_creator>
+	auto create_custom_dialog(const std::string_view &dialog_id,
+				  dialog_creator &&f,
+				  bool modal=false,
+				  const new_layoutmanager &l=new_gridlayoutmanager{})
+	{
+		typedef decltype(f( std::declval<const dialog_args &>())
+				 ) f_ret;
+
+		typename refptr_traits<f_ret>::ptr_t retptr;
+
+		do_create_dialog(dialog_id,
+				 make_function<external_dialog_creator_t>
+				 ([&]
+				  (const dialog_args &args)
+				  {
+					  auto r=f(args);
+
+					  retptr=r;
+
+					  return r;
+				  }),
 				 l, modal);
-		}
-		else
-		{
-			typedef decltype(f( std::declval<const dialog_args &>())
-					 ) f_ret;
 
-			typename refptr_traits<f_ret>::ptr_t retptr;
-
-			do_create_dialog(dialog_id,
-					 make_function<external_dialog_creator_t
-					 >
-					 ([&]
-					  (const dialog_args &args)
-					  {
-						  auto r=f(args);
-
-						  retptr=r;
-
-						  return r;
-					  }),
-					 l, modal);
-
-			return f_ret{retptr};
-		}
+		return f_ret{retptr};
 	}
 
 	//! Type-erased create_dialog().
@@ -184,7 +151,7 @@ public:
 				const new_layoutmanager &layout_factory,
 				bool modal);
 
-	//! Type-erased create_dialog().
+	//! Type-erased create_custom_dialog().
 
 	void do_create_dialog(const std::string_view &dialog_id,
 			      const function<external_dialog_creator_t>
@@ -253,7 +220,7 @@ public:
 
 	//! Create a dialog with an input field.
 
-	dialog
+	input_dialog
 	create_input_dialog(const std::string_view &dialog_id,
 			    const std::string_view &icon,
 			    const std::function<void (const gridfactory &)>
@@ -269,7 +236,7 @@ public:
 
 	//! Create a dialog with an input field.
 
-	dialog
+	input_dialog
 	create_input_dialog(const std::string_view &dialog_id,
 			    const std::string_view &icon,
 			    const std::function<void (const gridfactory &)>
@@ -292,9 +259,12 @@ public:
 
 	//! Construct a callback that calls remove_dialog().
 
-	//! This can be specified as an ok or cancel callback, with
+	//! This method is called on the parent window/dialog object.
+	//! The returned lambda
+	//! can be specified as an ok or cancel callback, with
 	//! create_ok_dialog() or create_ok_cancel_dialog(). The invoked
-	//! callback invokes remove_dialog() in order to remove the dialog
+	//! callback invokes parent window/dialog's remove_dialog()
+	//! in order to remove the dialog
 	//! automatically after it's closed.
 
 	std::function<void (const busy &)

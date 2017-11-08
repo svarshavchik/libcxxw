@@ -15,7 +15,7 @@ LIBCXXW_NAMESPACE_START
 
 struct dialog_args {
 	ref<dialogObj::implObj> impl;
-	ref<layoutmanagerObj::implObj> layout_impl;
+	main_window dialog_window;
 };
 
 LIBCXXW_NAMESPACE_END
