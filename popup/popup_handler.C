@@ -145,7 +145,7 @@ void popupObj::handlerObj::do_button_event(IN_THREAD_ONLY,
 					   const button_event &be,
 					   const motion_event &me)
 {
-	if (be.press &&
+	if (activate_for(be) &&
 	    (me.x < 0 || me.y < 0 ||
 	     (dim_t::truncate)(me.x)
 	     >= data(IN_THREAD).current_position.width ||

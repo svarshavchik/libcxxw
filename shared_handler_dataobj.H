@@ -106,6 +106,19 @@ public:
 			      const xcb_key_release_event_t *event,
 			      bool keypress);
 
+	//! The window handler takes care of button events, just an FYI.
+
+	//! We'll invoke, ourselves, ungrab_pointer for everything else.
+	//! This way when a button press opens a popup, when the button
+	//! release gets processed we'll unhighlight the button in the original
+	//! window.
+
+	void reporting_button_event_to
+		(IN_THREAD_ONLY,
+		 const ref<generic_windowObj::handlerObj> &from,
+		 const ref<generic_windowObj::handlerObj> &to,
+		 const button_event &);
+
 	//! Find a popup to report a pointer event to.
 
 	//! Given a motion event with x/y coordinates relative to the root

@@ -24,6 +24,8 @@
 #include <x/w/dialog.H>
 #include <x/w/input_dialog.H>
 #include <x/w/input_field.H>
+#include <x/w/file_dialog.H>
+#include <x/w/file_dialog_config.H>
 #include <string>
 #include <vector>
 #include <algorithm>
@@ -53,6 +55,10 @@ void create_help_question(const x::w::main_window &);
 
 void create_help_about(const x::w::main_window &);
 
+void create_file_new(const x::w::main_window &);
+
+void create_file_open(const x::w::main_window &);
+
 void testmenu()
 {
 	x::destroy_callback::base::guard guard;
@@ -72,6 +78,8 @@ void testmenu()
 
 	create_help_question(main_window);
 	create_help_about(main_window);
+	create_file_new(main_window);
+	create_file_open(main_window);
 
 	// Now that the dialog are created, here's an example of
 	// enumerating existing dialogs:
@@ -109,7 +117,8 @@ void testmenu()
 
 size_t view_menu(const x::w::listlayoutmanager &);
 
-void file_menu(const x::w::listlayoutmanager &,
+void file_menu(const x::w::main_window &,
+	       const x::w::listlayoutmanager &,
 	       const close_flag_ref &,
 	       const x::w::menu &,
 	       size_t);
@@ -172,7 +181,8 @@ void create_mainwindow(const x::w::main_window &main_window,
 	f->add_text("File",
 		    [&]
 		    (const auto &factory) {
-			    file_menu(factory,
+			    file_menu(main_window,
+				      factory,
 				      close_flag,
 				      view_m,
 				      options_menu_item);
@@ -213,7 +223,27 @@ void create_mainwindow(const x::w::main_window &main_window,
 	std::cout << lock.right_menus() << " menus on the right side" << std::endl;
 }
 
-void file_menu(const x::w::listlayoutmanager &m,
+// Factored out for readability.
+//
+// Open one of the file dialogs.
+
+static inline void open_file_dialog(const x::w::main_window &main_window,
+				    const char *dialog_name)
+{
+	// get_dialog() returns an x::w::dialog. In this case, it's always
+	// an x::w::file_dialog
+
+	x::w::file_dialog d=main_window->get_dialog(dialog_name);
+
+	// Before opening the dialog, each time, reset it to show the
+	// current directory, by default.
+	d->chdir(".");
+
+	d->dialog_window->show_all();
+}
+
+void file_menu(const x::w::main_window &main_window,
+	       const x::w::listlayoutmanager &m,
 	       const close_flag_ref &close_flag,
 	       const x::w::menu &view_menu,
 	       size_t view_options_item_number)
@@ -229,18 +259,29 @@ void file_menu(const x::w::listlayoutmanager &m,
 		({
 			// "New", "Open", AND "Close"
 			x::w::shortcut{"Alt", 'N'},
-			[]
+			[main_window=x::make_weak_capture(main_window)]
 			(const auto &info)
 			{
-				std::cout << "File->New selected" << std::endl;
+				main_window.get
+					([]
+					 (const auto &main_window)
+					 {
+						 open_file_dialog(main_window,
+								  "file_new@example.libcxx");
+					 });
 			},
 			"New",
-
 			x::w::shortcut{"Alt", 'O'},
-			[]
+			[main_window=x::make_weak_capture(main_window)]
 			(const auto &info)
 			{
-				std::cout << "File->Open selected" << std::endl;
+				main_window.get
+					([]
+					 (const auto &main_window)
+					 {
+						 open_file_dialog(main_window,
+								  "file_open@example.libcxx");
+					 });
 			},
 			"Open",
 
@@ -351,7 +392,7 @@ static inline void help_question(const x::w::main_window &main_window)
 	// convert the ref.
 
 	x::w::input_dialog help_question=
-		main_window->get_dialog("help_question");
+		main_window->get_dialog("help_question@example.libcxx");
 
 	// Before showing the dialog, clear the input field's existing
 	// contents, if any. We keep show()ing the same dialog object,
@@ -388,7 +429,7 @@ void help_menu(const x::w::main_window &main_window,
 					([&]
 					 (const auto &main_window) {
 						main_window->get_dialog
-							("help_about")
+							("help_about@example.libcxx")
 							->dialog_window
 							->show_all();
 					});
@@ -410,7 +451,7 @@ void create_help_about(const x::w::main_window &main_window)
 			(x::w::rgb::maximum * .75)};
 
 	x::w::dialog d=main_window->create_ok_dialog
-		("help_about",
+		("help_about@example.libcxx",
 		 "alert",
 		 []
 		 (const x::w::gridfactory &f)
@@ -461,7 +502,7 @@ void create_help_about(const x::w::main_window &main_window)
 void create_help_question(const x::w::main_window &main_window)
 {
 	x::w::input_dialog d=main_window->create_input_dialog
-		("help_question",
+		("help_question@example.libcxx",
 		 "question",
 		 []
 		 (const x::w::gridfactory &f)
@@ -490,4 +531,98 @@ void create_help_question(const x::w::main_window &main_window)
 		 true);
 
 	d->dialog_window->set_window_title("Hello!");
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+// Initialize filename_filters in the flie_dialog_config structure
+//
+// These are the options for the "Files" dropdown list that selects
+// which files to show.
+//
+// Each filename filter consists of the label, that shows up in the
+// combo-box, and a regular expression. Note this is not a filename
+// pattern, but a regular expression. This uses the PCRE library.
+//
+// The patterns get typically anchored with a trailing $, for typical
+// patterns based on the file extension.
+//
+// The file_dialog_config structure's constructor initializes filename_filters
+// with a single entry for "All files", "*". Additional filters can be appended
+// before or after it. The "Files" dropdown list shows the filename_filters
+// in order.
+
+void set_filename_filters(x::w::file_dialog_config &config)
+{
+	config.filename_filters.emplace_back
+		("Source code", "\\.(c|C|h|H|cpp|CPP|hpp|HPP)$");
+	config.filename_filters.emplace_back
+		("Text files", "\\.txt$");
+	config.filename_filters.emplace_back
+		("Image files", "\\.(gif|png|jpg)$");
+
+	// The initial default filename filter. With "*" existing by default,
+	// we'll show *.txt files first.
+
+	config.initial_filename_filter=1;
+}
+
+void create_file_open(const x::w::main_window &main_window)
+{
+	x::w::file_dialog_config
+		config{
+		[](const auto &fd, const std::string &filename,
+		   const x::w::busy &mcguffin)
+		{
+			std::cout << "File->Open: " << filename << std::endl;
+
+			// The dialog is not closed by default, but that's
+			// ok because we have a convenient ref here.
+
+			fd->dialog_window->hide();
+		},
+		[](const x::w::busy &mcguffin)
+		{
+			std::cout << "File->Open: closed" << std::endl;
+		},
+		x::w::file_dialog_type::existing_file};
+
+	set_filename_filters(config);
+
+	x::w::file_dialog d=main_window->create_file_dialog
+		("file_open@example.libcxx",
+		 config,
+		 true);
+
+	d->dialog_window->set_window_title("Open File");
+}
+
+void create_file_new(const x::w::main_window &main_window)
+{
+	x::w::file_dialog_config
+		config{
+		[](const auto &fd, const std::string &filename,
+		   const x::w::busy &mcguffin)
+		{
+			std::cout << "File->New: " << filename << std::endl;
+
+			// The dialog is not closed by default, but that's
+			// ok because we have a convenient ref here.
+
+			fd->dialog_window->hide();
+		},
+		[](const x::w::busy &mcguffin)
+		{
+			std::cout << "File->New: closed" << std::endl;
+		},
+		x::w::file_dialog_type::create_file};
+
+	set_filename_filters(config);
+
+	x::w::file_dialog d=main_window->create_file_dialog
+		("file_new@example.libcxx",
+		 config,
+		 true);
+
+	d->dialog_window->set_window_title("Create File");
 }

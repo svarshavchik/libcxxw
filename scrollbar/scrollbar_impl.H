@@ -270,6 +270,12 @@ class LIBCXX_HIDDEN scrollbarObj::implObj :
 	void update_config(IN_THREAD_ONLY,
 			   const scrollbar_config &new_config);
  private:
+	//! Release the handlebar, if it's pressed.
+
+	//! Called when processing a key event, to make sure the handlebar
+	//! state is released, if somehow a key event is received in the
+	//! middle of dragging.
+	void abort_handlebar(IN_THREAD_ONLY);
 
 	//! Clean up after an aborted drag.
 

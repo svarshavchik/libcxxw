@@ -15,6 +15,7 @@ LIBCXXW_NAMESPACE_START
 enum class motion_event_type {
 	real_motion,
 	button_event,
+	button_action_event,
 	enter_event,
 };
 

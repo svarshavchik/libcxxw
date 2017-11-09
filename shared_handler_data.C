@@ -7,6 +7,7 @@
 #include "popup/popup.H"
 #include "generic_window_handler.H"
 #include "shortcut/installed_shortcut.H"
+#include "x/w/button_event.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -159,6 +160,40 @@ bool shared_handler_dataObj
 			return true;
 	}
 	return false;
+}
+
+void shared_handler_dataObj
+::reporting_button_event_to(IN_THREAD_ONLY,
+			    const ref<generic_windowObj::handlerObj> &from,
+			    const ref<generic_windowObj::handlerObj> &to,
+			    const button_event &be)
+{
+	if (be.press)
+		return;
+
+	if (from == to)
+		return;
+
+	from->pointer_focus_lost(IN_THREAD);
+
+	for (auto &b:*opened_menu_popups)
+	{
+		auto popup=b.second.getptr();
+
+		if (!popup)
+			continue;
+
+		ptr<generic_windowObj::handlerObj>
+			handler=popup->handler.getptr();
+
+		if (!handler)
+			continue;
+
+		if (handler == to)
+			continue;
+
+		from->pointer_focus_lost(IN_THREAD);
+	}
 }
 
 ptr<generic_windowObj::handlerObj>

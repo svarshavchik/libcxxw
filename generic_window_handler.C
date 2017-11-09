@@ -442,7 +442,7 @@ bool generic_windowObj::handlerObj
 
 	installed_shortcutptr best_shortcut;
 
-	if (keypress)
+	if (activate_for(ke))
 	{
 		mpobj<shortcut_lookup_t>::lock
 			lock{handler_data->installed_shortcuts};
@@ -539,10 +539,6 @@ void generic_windowObj::handlerObj
 
 	grabbed_timestamp(IN_THREAD)=event->time;
 
-	if (is_busy())
-		// We're busy now. Since we're grabbing all key presses this
-		// can only be checked now, after the grab processing.
-		return;
 	do_button_event(IN_THREAD, event, true);
 }
 
@@ -581,11 +577,20 @@ void generic_windowObj::handlerObj
 	button_event be{event->state, keysyms, event->detail, buttonpress,
 			click_count};
 
-	motion_event me{be, motion_event_type::button_event,
+	motion_event me{be, (activate_for(be)
+			     ? motion_event_type::button_action_event
+			     : motion_event_type::button_event),
 			event->event_x, event->event_y};
 
-	report_pointer_xy(IN_THREAD, me, was_grabbed)
-		->do_button_event(IN_THREAD, event, be, me);
+	auto report_to=report_pointer_xy(IN_THREAD, me, was_grabbed);
+
+	if (report_to->is_busy())
+		return;
+
+	handler_data->reporting_button_event_to(IN_THREAD, ref(this),
+						report_to, be);
+
+	report_to->do_button_event(IN_THREAD, event, be, me);
 }
 
 void generic_windowObj::handlerObj
@@ -955,7 +960,7 @@ ref<generic_windowObj::handlerObj> generic_windowObj::handlerObj
 			return new_popup;
 		}
 		// Clicking outside of all menus closes them.
-		else if (me.type == motion_event_type::button_event)
+		else if (me.type == motion_event_type::button_action_event)
 			handler_data->close_all_menu_popups(IN_THREAD);
 	}
 
@@ -971,6 +976,12 @@ void generic_windowObj::handlerObj
 				    bool was_grabbed)
 {
 	auto g=most_recent_element_with_pointer(IN_THREAD);
+
+	if (is_busy())
+	{
+		pointer_focus_lost(IN_THREAD);
+		return;
+	}
 
 	if (was_grabbed && g)
 	{

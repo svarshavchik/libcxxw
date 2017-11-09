@@ -525,91 +525,71 @@ bool scrollbarObj::implObj::process_key_event(IN_THREAD_ONLY,
 {
 	switch (ke.keysym) {
 	case XK_Left:
-	case XK_KP_Left:
-	case XK_Right:
-	case XK_KP_Right:
-	case XK_Up:
-	case XK_KP_Up:
-	case XK_Down:
-	case XK_KP_Down:
-
-		// Common processing. The main switch loop below ends up
-		// handling only a valid key release, for these keys.
-
-		if (ke.keypress)
-		{
-			if (!handlebar_pressed)
-			{
-				handlebar_pressed=true;
-				draw_slider(IN_THREAD);
-			}
-			return true;
-		}
-		else
-		{
-			if (!handlebar_pressed)
-				return true;
-			handlebar_pressed=false;
-		}
-	}
-
-	switch (ke.keysym) {
-	case XK_Left:
 	case XK_Up:
 	case XK_KP_Left:
 	case XK_KP_Up:
-		to_low(IN_THREAD, ke);
-		return true;
+		abort_handlebar(IN_THREAD);
+		if (scroll_low_pressed == ke.keypress)
+			break;
+
+		scroll_low_pressed=ke.keypress;
+		draw_scroll_low(IN_THREAD);
+
+		if (!activate_for(ke))
+			to_low(IN_THREAD, ke);
+		break;
 
 	case XK_Right:
 	case XK_KP_Right:
 	case XK_Down:
 	case XK_KP_Down:
-		to_high(IN_THREAD, ke);
-		return true;
+		abort_handlebar(IN_THREAD);
+		if (scroll_high_pressed == ke.keypress)
+			break;
 
+		scroll_high_pressed=ke.keypress;
+		draw_scroll_high(IN_THREAD);
+
+		if (!activate_for(ke))
+			to_high(IN_THREAD, ke);
+		break;
 	case XK_Page_Up:
 	case XK_KP_Page_Up:
-		if (ke.keypress)
-		{
-			if (!scroll_low_pressed)
-			{
-				scroll_low_pressed=true;
-				draw_scroll_low(IN_THREAD);
-			}
-		}
-		else
-		{
-			if (scroll_low_pressed)
-			{
-				scroll_low_pressed=false;
-				draw_scroll_low(IN_THREAD);
-				page_up(IN_THREAD);
-			}
-		}
-		return true;
+		abort_handlebar(IN_THREAD);
+		if (scroll_low_pressed == ke.keypress)
+			break;
+
+		scroll_low_pressed=ke.keypress;
+		draw_scroll_low(IN_THREAD);
+
+		if (!activate_for(ke))
+			page_up(IN_THREAD);
+		break;
 	case XK_Page_Down:
 	case XK_KP_Page_Down:
-		if (ke.keypress)
-		{
-			if (!scroll_high_pressed)
-			{
-				scroll_high_pressed=true;
-				draw_scroll_high(IN_THREAD);
-			}
-		}
-		else
-		{
-			if (scroll_high_pressed)
-			{
-				scroll_high_pressed=false;
-				draw_scroll_high(IN_THREAD);
-				page_down(IN_THREAD);
-			}
-		}
-		return true;
+		abort_handlebar(IN_THREAD);
+		if (scroll_high_pressed == ke.keypress)
+			break;
+
+		scroll_high_pressed=ke.keypress;
+		draw_scroll_high(IN_THREAD);
+
+		if (!activate_for(ke))
+			page_down(IN_THREAD);
+		break;
+	default:
+		return superclass_t::process_key_event(IN_THREAD, ke);
 	}
-	return superclass_t::process_key_event(IN_THREAD, ke);
+	return true;
+}
+
+void scrollbarObj::implObj::abort_handlebar(IN_THREAD_ONLY)
+{
+	if (handlebar_pressed)
+	{
+		handlebar_pressed=false;
+		draw_slider(IN_THREAD);
+	}
 }
 
 bool scrollbarObj::implObj::to_low(IN_THREAD_ONLY,
@@ -698,20 +678,24 @@ bool scrollbarObj::implObj::process_button_event(IN_THREAD_ONLY,
 
 	bool was_dragging=dragging;
 	dragging=false;
-	if (scroll_low_pressed)
-	{
-		scroll_low_pressed=false;
-		draw_scroll_low(IN_THREAD);
-	}
-
-	if (scroll_high_pressed)
-	{
-		scroll_high_pressed=false;
-		draw_scroll_high(IN_THREAD);
-	}
 
 	if (handlebar_pressed)
 	{
+		// Shouldn't have scroll states as pressed, but if so,
+		// un-press them.
+
+		if (scroll_low_pressed)
+		{
+			scroll_low_pressed=false;
+			draw_scroll_low(IN_THREAD);
+		}
+
+		if (scroll_high_pressed)
+		{
+			scroll_high_pressed=false;
+			draw_scroll_high(IN_THREAD);
+		}
+
 		handlebar_pressed=false;
 
 		if (!be.press)
@@ -746,11 +730,8 @@ bool scrollbarObj::implObj::process_button_event(IN_THREAD_ONLY,
 			}
 		}
 		draw_slider(IN_THREAD);
-	}
-
-	// If this is a button release, we're done.
-	if (!be.press)
 		return true;
+	}
 
 	// Figure out what was pressed.
 
@@ -760,24 +741,49 @@ bool scrollbarObj::implObj::process_button_event(IN_THREAD_ONLY,
 
 	if (what.lo)
 	{
-		scroll_low_pressed=true;
-		to_low(IN_THREAD, be);
+		if (scroll_low_pressed == be.press)
+			return true;
+
+		scroll_low_pressed=be.press;
+
+		if (activate_for(be) && to_low(IN_THREAD, be))
+			return true;
+
 		draw_scroll_low(IN_THREAD);
 	}
 	else if (what.hi)
 	{
-		scroll_high_pressed=true;
-		to_high(IN_THREAD, be);
+		if (scroll_high_pressed == be.press)
+			return true;
+
+		scroll_high_pressed=be.press;
+
+		if (activate_for(be) && to_high(IN_THREAD, be))
+			return true;
+
 		draw_scroll_high(IN_THREAD);
 	}
 	else
 	{
+		if (scroll_low_pressed)
+		{
+			scroll_low_pressed=false;
+			draw_scroll_low(IN_THREAD);
+		}
+
+		if (scroll_high_pressed)
+		{
+			scroll_high_pressed=false;
+			draw_scroll_high(IN_THREAD);
+		}
+
 		if (clicked_pixel_value < 0 ||
 		    dim_squared_t::truncate(clicked_pixel_value) <
 		    dim_squared_t::truncate(current_pixel) +
 		    scroll_low_size(IN_THREAD))
 		{
-			page_up(IN_THREAD);
+			if (activate_for(be))
+				page_up(IN_THREAD);
 			return true;
 		}
 
@@ -787,11 +793,16 @@ bool scrollbarObj::implObj::process_button_event(IN_THREAD_ONLY,
 		    scroll_low_size(IN_THREAD)
 		    + dim_squared_t::truncate(metrics.handlebar_pixel_size))
 		{
-			page_down(IN_THREAD);
+			if (activate_for(be))
+				page_down(IN_THREAD);
 			return true;
 		}
-		handlebar_pressed=true;
-		dragging=true;
+		handlebar_pressed=be.press;
+		dragging=be.press;
+
+		if (!be.press)
+			return true;
+
 		drag_start=clicked_pixel_value;
 		drag_start_current_pixel=current_pixel;
 		dragged_value=conf.value;

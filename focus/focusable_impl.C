@@ -283,7 +283,10 @@ bool elementObj::implObj::process_button_event(IN_THREAD_ONLY,
 				 y=coord_t::truncate(y-itsoverthere.y);
 
 				 motion_event me{be,
-						 motion_event_type
+						 activate_for(be)
+						 ? motion_event_type
+						 ::button_action_event
+						 : motion_event_type
 						 ::button_event,
 						 x, y};
 

@@ -7,6 +7,7 @@
 #include "dirlisting/filedirlist_manager.H"
 #include "main_window.H"
 #include "dialog.H"
+#include "element.H"
 #include "messages.H"
 #include "x/w/input_field.H"
 #include "x/w/input_field_lock.H"
@@ -111,7 +112,7 @@ void file_dialogObj::implObj::clicked(size_t n,
 
 bool file_dialogObj::implObj::button_clicked(const button_event &be)
 {
-	return !be.press && be.button == 1;
+	return filename_field->elementObj::impl->activate_for(be) && be.button == 1;
 }
 
 void file_dialogObj::implObj::enter_key(const busy &mcguffin)
@@ -651,13 +652,17 @@ void file_dialogObj::constructor(const dialog_args &d_args,
 			 const auto &ke=*
 				 std::get<const key_event *>(event);
 
-			 if (!ke.keypress ||
-			     ke.unicode != '\n')
+			 if (ke.unicode != '\n')
 				 return false;
 
 			 impl.get([&]
 				      (const auto &elements)
 				      {
+					      if (!elements->filename_field
+						  ->elementObj::impl
+						  ->activate_for(ke))
+						      return;
+
 					      elements->enter_key
 						      (busy_mcguffin)
 						      ;
@@ -684,5 +689,10 @@ void file_dialogObj::constructor(const dialog_args &d_args,
 }
 
 file_dialogObj::~file_dialogObj()=default;
+
+void file_dialogObj::chdir(const std::string &path)
+{
+	impl->chdir(path);
+}
 
 LIBCXXW_NAMESPACE_END

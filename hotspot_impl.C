@@ -52,12 +52,13 @@ bool hotspotObj::implObj::process_key_event(IN_THREAD_ONLY, const key_event &ke)
 {
 	if (activate_on_key(ke))
 	{
-		bool activated_flag=!ke.keypress && is_key_down;
+		bool potential_activation=ke.keypress != is_key_down;
 
 		is_key_down=ke.keypress;
 		update(IN_THREAD, &ke);
 
-		if (activated_flag)
+		if (potential_activation &&
+		    get_hotspot_element().activate_for(ke))
 			activated(IN_THREAD, &ke);
 		return true;
 	}
@@ -81,7 +82,7 @@ bool hotspotObj::implObj::process_button_event(IN_THREAD_ONLY,
 		is_button1_down=be.press;
 		update(IN_THREAD, &be);
 
-		if (!be.press)
+		if (get_hotspot_element().activate_for(be))
 			activated(IN_THREAD, &be);
 		return true;
 	}

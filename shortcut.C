@@ -74,10 +74,6 @@ shortcut::shortcut(size_t dash_pos,
 
 bool shortcut::matches(const key_event &ke) const
 {
-	// Must be a keypress.
-	if (!ke.keypress)
-		return false;
-
 	// Case-insensitive comparison, for plain characters.
 
 	if (unicode)

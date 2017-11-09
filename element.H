@@ -936,6 +936,20 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 	virtual bool process_key_event(IN_THREAD_ONLY, const key_event &ke);
 
+	//! When keyboard-bound action should be taken.
+
+	//! On a key press, or key release.
+	//! TODO: make it theme-based
+
+	bool activate_for(const key_event &ke) const;
+
+	//! When button-bound action should be taken.
+
+	//! On a key press, or key release.
+	//! TODO: make it theme-based
+
+	bool activate_for(const button_event &ke) const;
+
 	//! Here come the buttons.
 
 	//! Returns true or false, indicating when the button press or

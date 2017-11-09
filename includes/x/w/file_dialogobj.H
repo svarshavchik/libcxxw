@@ -41,6 +41,11 @@ public:
 
 	//! Destructor
 	~file_dialogObj() LIBCXX_HIDDEN;
+
+	//! Switch directories.
+
+	//! Typically used before show()ing the file dialog.
+	void chdir(const std::string &path);
 };
 
 LIBCXXW_NAMESPACE_END

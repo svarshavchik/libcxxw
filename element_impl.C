@@ -20,6 +20,8 @@
 #include "x/w/element_state.H"
 #include "x/w/scratch_buffer.H"
 #include "x/w/motion_event.H"
+#include "x/w/key_event.H"
+#include "x/w/button_event.H"
 #include "x/w/tooltip.H"
 #include "x/callback_list.H"
 #include "element_screen.H"
@@ -155,6 +157,9 @@ void elementObj::implObj::toggle_visibility(IN_THREAD_ONLY)
 
 void elementObj::implObj::request_visibility(IN_THREAD_ONLY, bool flag)
 {
+	if (data(IN_THREAD).requested_visibility == flag)
+		return;
+
 	data(IN_THREAD).requested_visibility=flag;
 
 	schedule_update_visibility(IN_THREAD);
@@ -995,6 +1000,16 @@ void elementObj::implObj
 	       const std::function<key_event_callback_t> &cb)
 {
 	data(IN_THREAD).on_key_event_callback=cb;
+}
+
+bool elementObj::implObj::activate_for(const key_event &ke) const
+{
+	return ke.keypress;
+}
+
+bool elementObj::implObj::activate_for(const button_event &be) const
+{
+	return be.press;
 }
 
 bool elementObj::implObj::process_key_event(IN_THREAD_ONLY, const key_event &e)

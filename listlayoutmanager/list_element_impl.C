@@ -1081,20 +1081,31 @@ bool list_elementObj::implObj::process_key_event(IN_THREAD_ONLY,
 
 	if (select_key(ke))
 	{
+		bool changed=false;
+
 		if (!ke.keypress)
 		{
+			if (!is_key_or_button_down)
+				changed=true;
+
 			is_key_or_button_down=false;
 		}
 		else
 		{
 			if (current_element(lock))
+			{
+				if (!is_key_or_button_down)
+					changed=true;
+
 				is_key_or_button_down=true;
+			}
 		}
 
 		if (current_element(lock))
 			redraw_rows(IN_THREAD, lock,
 				    current_element(lock).value());
-		if (!is_key_or_button_down)
+
+		if (current_element(lock) && changed && activate_for(ke))
 			click(IN_THREAD, lock, &ke);
 		return true;
 	}
@@ -1107,11 +1118,12 @@ bool list_elementObj::implObj::process_key_event(IN_THREAD_ONLY,
 
 	size_t next_row;
 
+	if (!activate_for(ke))
+		return false;
+
 	switch (ke.keysym) {
 	case XK_Up:
 	case XK_KP_Up:
-		if (!ke.keypress)
-			return true;
 		{
 			auto r=move_up_by(lock, 1);
 
@@ -1123,8 +1135,6 @@ bool list_elementObj::implObj::process_key_event(IN_THREAD_ONLY,
 		break;
 	case XK_Down:
 	case XK_KP_Down:
-		if (!ke.keypress)
-			return true;
 		{
 			auto r=move_down_by(lock, 1);
 
@@ -1136,8 +1146,6 @@ bool list_elementObj::implObj::process_key_event(IN_THREAD_ONLY,
 		break;
 	case XK_Page_Up:
 	case XK_KP_Page_Up:
-		if (!ke.keypress)
-			return true;
 		{
 			auto r=move_up_by(lock, rows);
 
@@ -1149,8 +1157,6 @@ bool list_elementObj::implObj::process_key_event(IN_THREAD_ONLY,
 		break;
 	case XK_Page_Down:
 	case XK_KP_Page_Down:
-		if (!ke.keypress)
-			return true;
 		{
 			auto r=move_down_by(lock, rows);
 
@@ -1237,11 +1243,14 @@ bool list_elementObj::implObj::process_button_event(IN_THREAD_ONLY,
 
 		if (current_element(lock))
 		{
+			bool potential_action=
+				is_key_or_button_down != be.press;
+
 			is_key_or_button_down=be.press;
 			redraw_rows(IN_THREAD, lock,
 				    current_element(lock).value());
 
-			if (!is_key_or_button_down)
+			if (potential_action && activate_for(be))
 				click(IN_THREAD, lock, &be);
 
 			flag=true;
@@ -1257,7 +1266,10 @@ void list_elementObj::implObj::pointer_focus(IN_THREAD_ONLY)
 	textlist_info_lock lock{IN_THREAD, *this};
 
 	if (!current_pointer_focus(IN_THREAD))
+	{
 		unset_current_element(IN_THREAD, lock);
+		current_keyed_element(lock).reset();
+	}
 }
 
 void list_elementObj::implObj::keyboard_focus(IN_THREAD_ONLY)
@@ -1267,7 +1279,10 @@ void list_elementObj::implObj::keyboard_focus(IN_THREAD_ONLY)
 	textlist_info_lock lock{IN_THREAD, *this};
 
 	if (!current_keyboard_focus(IN_THREAD))
+	{
 		unset_current_element(IN_THREAD, lock);
+		current_keyed_element(lock).reset();
+	}
 }
 
 void list_elementObj::implObj::unset_current_element(IN_THREAD_ONLY,

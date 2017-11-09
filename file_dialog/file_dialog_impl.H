@@ -94,7 +94,7 @@ class LIBCXX_HIDDEN file_dialogObj::implObj : virtual public obj {
 
 	// We take action whenever button 1 gets clicked.
 
-	static bool button_clicked(const button_event &be);
+	bool button_clicked(const button_event &be);
 
 	// Show this in the directory field.
 
@@ -131,14 +131,14 @@ class LIBCXX_HIDDEN file_dialogObj::implObj : virtual public obj {
 	text_param hotspot_activated(const text_event_t &event,
 				     const std::string &name,
 				     const std::string &path);
-
+ public:
 	//! Switch to another directory.
 
 	//! Notifies the file directory manager. Updates the
 	//! directory_field.
 
 	void chdir(const std::string &path);
-
+ private:
 	//! Switch to another filter.
 	void chfilter(const pcre &filter);
 
