@@ -37,58 +37,127 @@ void testlist2(const listlayoutmanager &tlm)
 			};
 		};
 
+	// A (0)
+	// B (1)
+	// C (2)
+	tlm->append_items({callback_factory(), "A",
+				callback_factory(), "B",
+				callback_factory(), "C"});
+
+	// A (0) *
+	// B (1) *
+	// C (2) *
 	// [0, 0, 1]
 	// [1, 1, 1]
 	// [2, 2, 1]
+	tlm->selected(0, true, {});
+	tlm->selected(1, true, {});
+	tlm->selected(2, true, {});
+
+	// NO-OP
+	tlm->selected(0, true, {});
+	tlm->selected(1, true, {});
+	tlm->selected(2, true, {});
+
+
+	// A (0)
+	// B (1)
+	// C (2)
+
 	// [0, 0, 0]
 	// [1, 1, 0]
 	// [2, 2, 0]
 
-	tlm->append_items({callback_factory(), "A",
-				callback_factory(), "B",
-				callback_factory(), "C"});
-	tlm->selected(0, true, {});
-	tlm->selected(1, true, {});
-	tlm->selected(2, true, {});
-	tlm->selected(0, true, {});
-	tlm->selected(1, true, {});
-	tlm->selected(2, true, {});
-
-	tlm->unselect();
 	tlm->unselect();
 
-	// [3, 0, 1]
-	// [4, 1, 1]
-	// [5, 2, 1]
-	// [2, 3, 1]
+	tlm->unselect();
 
+	// D (3)
+	// E (4)
+	// C (2)
 	tlm->replace_items(0,
 			   {callback_factory(), "D",
 					   callback_factory(), "E"});
+
+	// D (3) *
+	// E (4) *
+	// C (2)
+
+	// [3, 0, 1]
+	// [4, 1, 1]
+
 	tlm->selected(0, true, {});
 	tlm->selected(1, true, {});
 
+	// D (3) *
+	// E (4) *
+	// F (5)
+	// C (2)
 	tlm->insert_items(2, {
 			callback_factory(), "F"});
+
+
+	// D (3) *
+	// E (4) *
+	// F (5) *
+	// C (2) *
+
+	// [5, 2, 1]
+	// [2, 3, 1]
+
 	tlm->selected(2, true, {});
 	tlm->selected(3, true, {});
+
+	// E (4) *
+	// F (5) *
+	// C (2) *
+
+	// [3, 0, 0]
+	tlm->remove_item(0);
+
+
+	// E (4) *
+	// F (5) *
+	// G (6)
+	// H (7)
+
+	// [2, 2, 0]
+
+	tlm->replace_items(2, { callback_factory(), "G",
+				callback_factory(), "H"
+				});
+
+	// E (4) *
+	// F (5) *
+	// G (6) *
+	// H (7) *
 
 	// [6, 2, 1]
 	// [7, 3, 1]
 
-	tlm->remove_item(0);
-	tlm->replace_items(2, { callback_factory(), "G",
-				callback_factory(), "H"
-				});
 	tlm->selected(2, true, {});
 	tlm->selected(3, true, {});
+
+	// I (8)
+	// J (9)
+	// K (10)
+
+	// [4, 0, 0]
+	// [5, 1, 0]
+	// [6, 2, 0]
+	// [7, 3, 0]
+
+	tlm->replace_all_items({callback_factory(), "I",
+				callback_factory(), "J",
+				callback_factory(), "K"});
+
+	// I (8) *
+	// J (9) *
+	// K (10) *
 
 	// [8, 0, 1]
 	// [9, 1, 1]
 	// [10, 2, 1]
-	tlm->replace_all_items({callback_factory(), "I",
-				callback_factory(), "J",
-				callback_factory(), "K"});
 	tlm->selected(0, true, {});
 	tlm->selected(1, true, {});
 	tlm->selected(2, true, {});
@@ -114,8 +183,14 @@ void testlist2(const listlayoutmanager &tlm)
 	    "[4, 1, 1]\n"
 	    "[5, 2, 1]\n"
 	    "[2, 3, 1]\n"
+	    "[3, 0, 0]\n"
+	    "[2, 2, 0]\n"
 	    "[6, 2, 1]\n"
 	    "[7, 3, 1]\n"
+	    "[4, 0, 0]\n"
+	    "[5, 1, 0]\n"
+	    "[6, 2, 0]\n"
+	    "[7, 3, 0]\n"
 	    "[8, 0, 1]\n"
 	    "[9, 1, 1]\n"
 	    "[10, 2, 1]\n")
