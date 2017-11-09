@@ -386,11 +386,17 @@ dialog main_windowObj
 					 // for the message.
 
 				 {"filler", dialog_filler()},
-				 {"ok", dialog_ok_button(ok_label, ok_button, '\n')}
+				 {"ok", dialog_ok_button(ok_label, ok_button, '\e')}
 			 });
 		 },
 		 modal);
 
+	// Ok button's shortcut is ESC. autofocus() th einput on the Ok
+	// button. "Enter" will activate the "Ok" button, closing the popup.
+	// Esc will activate the button via the shortcut, also closing
+	// the popup.
+
+	ok_button->autofocus(true);
 	hide_and_invoke_when_activated(d, ok_button, ok_action);
 	hide_and_invoke_when_closed(d, ok_action);
 

@@ -192,9 +192,12 @@ class LIBCXX_HIDDEN connection_threadObj
 
 	incremental_selection_update_info *pending_incremental_updates_thread_only;
 
+	//! idle callbacks are executed last, just before flushing X events.
+
 	typedef std::deque<std::function<void (IN_THREAD_ONLY)>
 			   > idle_callbacks_t;
 
+	//! Pending idle callbacks.
 	idle_callbacks_t *idle_callbacks_thread_only;
 
 	//! Check for any scheduled callbacks, and invoke them.

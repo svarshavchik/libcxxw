@@ -221,4 +221,8 @@ void focusableObj::request_focus()
 			 });
 }
 
+void focusableObj::autofocus(bool flag)
+{
+	get_impl()->autofocus=flag;
+}
 LIBCXXW_NAMESPACE_END

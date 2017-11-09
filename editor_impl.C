@@ -215,6 +215,9 @@ editorObj::implObj::implObj(const ref<editor_peephole_implObj> &parent_peephole,
 		  config,
 		  create_default_meta(parent_peephole))
 {
+	// The first input field in a window gets focus when its shown.
+
+	autofocus=true;
 }
 
 editorObj::implObj::implObj(const ref<editor_peephole_implObj> &parent_peephole,

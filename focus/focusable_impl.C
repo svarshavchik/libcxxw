@@ -17,7 +17,8 @@ LIBCXXW_NAMESPACE_START
 
 focusableImplObj::focusableImplObj()
 	: in_focusable_fields_thread_only(false),
-	  my_labels_thread_only(my_labels_t::create())
+	  my_labels_thread_only(my_labels_t::create()),
+	  autofocus(false)
 {
 }
 

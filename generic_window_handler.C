@@ -33,6 +33,7 @@
 #include <x/property_value.H>
 #include <x/strtok.H>
 #include <x/chrcasecmp.H>
+#include <x/weakcapture.H>
 #include <courier-unicode.h>
 
 LIBCXXW_NAMESPACE_START
@@ -240,6 +241,26 @@ void generic_windowObj::handlerObj
 		}
 		xcb_map_window(IN_THREAD->info->conn, id());
 		visibility_info.do_not_redraw=true;
+
+		// Need to delay call to mapped() until the connection thread
+		// is completely idle. Recursive call to request_visibility()
+		// may get short-circuited in update_visibility() bailing out
+		// if !initialized, that gets rescheduled after some pending
+		// connection thread callback finally initializes the display
+		// element, so in order for mapped() to work, we need to make
+		// sure all of this settles down before mapped().
+
+		IN_THREAD->idle_callbacks(IN_THREAD)
+			->push_back([me=make_weak_capture(ref(this))]
+				    (IN_THREAD_ONLY)
+				    {
+					    me.get([&]
+						   (const auto &me)
+						   {
+							   me->mapped(IN_THREAD)
+								   ;
+						   });
+				    });
 	}
 	else
 	{
@@ -258,6 +279,26 @@ void generic_windowObj::handlerObj
 
 	elementObj::implObj::set_inherited_visibility(IN_THREAD,
 						      visibility_info);
+}
+
+void generic_windowObj::handlerObj::mapped(IN_THREAD_ONLY)
+{
+	for (auto b=focusable_fields(IN_THREAD).begin(),
+		     e=focusable_fields(IN_THREAD).end();
+	     b != e;)
+	{
+		--e;
+		const auto &element=*e;
+
+		if (!element->focusable_enabled(IN_THREAD))
+			continue;
+
+		if (!element->autofocus.get())
+			continue;
+
+		element->set_focus_and_ensure_visibility(IN_THREAD);
+		break;
+	}
 }
 
 void generic_windowObj::handlerObj::remove_background_color(IN_THREAD_ONLY)

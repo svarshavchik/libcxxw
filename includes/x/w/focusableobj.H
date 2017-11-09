@@ -74,6 +74,16 @@ public:
 	//! Install a new callback to report key events.
 	void on_key_event(const std::function<key_event_callback_t> &)
 		LIBCXX_PUBLIC;
+
+	//! Give this element the initial input focus
+
+	//! After the window/dialog opens, the input focus is placed into
+	//! the first element with autofocus set.
+	//!
+	//! autofocus is set by default in input_fields only. Some specific
+	//! dialogs may set autofocus for their own fields/
+
+	void autofocus(bool);
 };
 
 LIBCXXW_NAMESPACE_END

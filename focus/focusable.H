@@ -93,6 +93,10 @@ class LIBCXX_HIDDEN focusableImplObj : virtual public obj {
 	THREAD_DATA_ONLY(in_focusable_fields);
 	THREAD_DATA_ONLY(my_labels);
 
+	//! Candidate for receiving focus automatically when shown.
+
+	mpobj<bool> autofocus;
+
 	//! Constructor
 	focusableImplObj();
 

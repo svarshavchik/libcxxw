@@ -103,6 +103,16 @@ class focusableImplObj;
 //! has been processed/consumed by the callback, and will not
 //! result in any further processing. Returning \c false results in the
 //! default processing for the respective key/text input.
+//!
+//! \code
+//! f->autofocus(true);
+//! \endcode
+//!
+//! autofocus() sets whether the display element is eligible for automatically
+//! getting the keyboard focus when its main window gets shown. The first
+//! display element with autofocus gets the keyboard focus.
+//!
+//! The default autofocus() setting depends on the display element.
 
 typedef ref<focusableObj> focusable;
 

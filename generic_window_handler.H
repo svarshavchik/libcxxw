@@ -276,7 +276,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 	//! Set default input focus.
 
-	//! If no element current has keyboard focus, set it to the first
+	//! If no element currently has keyboard focus, set it to the first
 	//! focusable field. Returns true if a display element already has
 	//! input focus, or if one was found by set_default_focus().
 
@@ -493,6 +493,10 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 	void set_inherited_visibility(IN_THREAD_ONLY,
 				      inherited_visibility_info &info) override;
+
+	//! This window, and all its elements, have been mapped.
+
+	void mapped(IN_THREAD_ONLY);
 
 	//! Whether this window is mapped.
 
