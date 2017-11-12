@@ -214,10 +214,6 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
     <point_size>16</point_size>
   </font>
 
-  <font id="progressbar" from="serif">
-    <point_size>16</point_size>
-  </font>
-
   <font id="tooltip" from="sans_serif">
     <point_size>12</point_size>
   </font>
@@ -377,6 +373,33 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
     <weight>bold</weight>
     <point_size>10</point_size>
   </font>
+
+  <!-- Progress bar -->
+
+  <border id="progressbar" from="thick_dashed_0%">
+    <color>10%</color>
+    <color2>30%</color2>
+    <hradius>.1</hradius>
+    <vradius>.1</vradius>
+  </border>
+
+  <dim id="progressbar" axis="horiz">100</dim>
+
+  <font id="progressbar" from="serif">
+    <point_size>16</point_size>
+  </font>
+
+  <color id="progressbar_foreground_color" scale="10%" />
+  <color id="progressbar_background_color" scale="100%" />
+
+  <color id="progressbar_value_0_color" scale="0%" />
+  <color id="progressbar_value_100_color" scale="70%" />
+
+  <color_gradient id="progressbar">
+    <color value="0">progressbar_value_0_color</color>
+    <color value="1">progressbar_value_100_color</color>
+    <color value="2">progressbar_value_100_color</color>
+  </color_gradient>
 
   <!-- Dialogs -->
 

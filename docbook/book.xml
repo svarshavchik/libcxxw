@@ -35,6 +35,7 @@
 <!ENTITY combobox SYSTEM "combobox.xml">
 <!ENTITY menu SYSTEM "menu.xml">
 <!ENTITY dialogs SYSTEM "dialogs.xml">
+<!ENTITY progressbar SYSTEM "progressbar.xml">
 <!ENTITY sxgdoc SYSTEM "sxg.xml">
 <!ENTITY connections_and_screens SYSTEM "connections_and_screens.xml">
 %entity-list;
@@ -67,6 +68,7 @@ See COPYING for distribution information.
     &combobox;
     &menu;
     &dialogs;
+    &progressbar;
     &connections_and_screens;
   </part>
 

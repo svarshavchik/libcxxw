@@ -26,7 +26,7 @@ void create_mainwindow(const x::w::main_window &main_window)
 	x::w::rgb light_yellow{
 		x::w::rgb::maximum,
 		x::w::rgb::maximum,
-		(x::w::rgb::component_t)(x::w::rgb::maximum * .75)},
+		(x::w::rgb_component_t)(x::w::rgb::maximum * .75)},
 
 		blue{0, 0, x::w::rgb::maximum},
 

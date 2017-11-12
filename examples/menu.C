@@ -3,6 +3,7 @@
 ** See COPYING for distribution information.
 */
 
+#include "config.h"
 #include <x/mpobj.H>
 #include <x/exception.H>
 #include <x/destroy_callback.H>
@@ -12,8 +13,6 @@
 #include <x/w/main_window.H>
 #include <x/w/gridlayoutmanager.H>
 #include <x/w/gridfactory.H>
-#include <x/w/screen.H>
-#include <x/w/connection.H>
 #include <x/w/menubarlayoutmanager.H>
 #include <x/w/menubarfactory.H>
 #include <x/w/menu.H>
@@ -447,7 +446,7 @@ void create_help_about(const x::w::main_window &main_window)
 	x::w::rgb light_yellow{
 		x::w::rgb::maximum,
 			x::w::rgb::maximum,
-			(x::w::rgb::component_t)
+			(x::w::rgb_component_t)
 			(x::w::rgb::maximum * .75)};
 
 	x::w::dialog d=main_window->create_ok_dialog

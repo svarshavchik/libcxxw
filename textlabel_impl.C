@@ -314,6 +314,9 @@ void textlabelObj::implObj::do_draw(IN_THREAD_ONLY,
 				const draw_info &di,
 				const rectangle_set &areas)
 {
+#ifdef TEST_TEXTLABEL_DRAW
+	TEST_TEXTLABEL_DRAW();
+#endif
 	text->full_redraw(IN_THREAD, get_label_element_impl(), {}, di, areas);
 }
 

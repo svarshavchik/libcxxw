@@ -145,11 +145,11 @@ std::pair<coord_t, coord_t> draw_info::background_xy_to(coord_t x,
 							coord_t offset_x,
 							coord_t offset_y) const
 {
-	coord_squared_t::value_type x2=coord_t::value_type(background_x)
-		- coord_t::value_type(x);
+	coord_squared_t::value_type x2=coord_t::value_type(x)
+		- coord_t::value_type(background_x);
 
-	coord_squared_t::value_type y2=coord_t::value_type(background_y)
-		- coord_t::value_type(y);
+	coord_squared_t::value_type y2=coord_t::value_type(y)
+		- coord_t::value_type(background_y);
 
 	x2 += coord_t::value_type(offset_x);
 	y2 += coord_t::value_type(offset_y);

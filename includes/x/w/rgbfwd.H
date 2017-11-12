@@ -13,19 +13,24 @@
 #include <x/w/namespace.H>
 #include <variant>
 #include <string>
-#include <map>
+#include <cstdint>
+#include <unordered_map>
 
 LIBCXXW_NAMESPACE_START
 
 class rgb;
 
+//! Value type for RGB components
+
+typedef uint16_t rgb_component_t;
+
 //! A gradient involving multiple colors
 
-//! The std::map must have a value for key 0. The highest
+//! The map must have a value for key 0. The highest
 //! key in the map defines the ending rgb color. The rgb at
 //! position \#i defines the rgb color for that value.
 
-typedef std::map<unsigned, rgb> rgb_gradient;
+typedef std::unordered_map<size_t, rgb> rgb_gradient;
 
 //! A color can be specified as either a literal rgb value, or a theme color
 

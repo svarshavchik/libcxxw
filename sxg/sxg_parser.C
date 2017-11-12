@@ -1065,10 +1065,10 @@ rgb sxg_parserObj::color_info::get_color(const defaulttheme &theme) const
 	if (theme_color.empty())
 	{
 		return {
-			rgb::component_t(rgb::maximum * red),
-			rgb::component_t(rgb::maximum * green),
-			rgb::component_t(rgb::maximum * blue),
-			rgb::component_t(rgb::maximum * alpha)
+			rgb_component_t(rgb::maximum * red),
+			rgb_component_t(rgb::maximum * green),
+			rgb_component_t(rgb::maximum * blue),
+			rgb_component_t(rgb::maximum * alpha)
 				};
 	}
 
@@ -1088,10 +1088,10 @@ rgb sxg_parserObj::color_info::get_color(const defaulttheme &theme) const
 	if (alpha_value > rgb::maximum)
 		alpha_value=rgb::maximum;
 
-	return rgb{rgb::component_t(red_value),
-			rgb::component_t(green_value),
-			rgb::component_t(blue_value),
-			rgb::component_t(alpha_value)};
+	return rgb{rgb_component_t(red_value),
+			rgb_component_t(green_value),
+			rgb_component_t(blue_value),
+			rgb_component_t(alpha_value)};
 }
 
 // Parse all <font> elements. Hijack theme code to do all the work for us.

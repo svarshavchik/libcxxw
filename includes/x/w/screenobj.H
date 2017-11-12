@@ -102,6 +102,14 @@ public:
 
 	const_picture create_solid_color_picture(const rgb &color) const;
 
+	//! Create a linear gradient picture object.
+
+	const_picture create_linear_gradient_picture(const rgb_gradient &g,
+						     coord_t x1,
+						     coord_t y1,
+						     coord_t x2,
+						     coord_t y2);
+
 	//! Create a new top level window, using the mainwindowlayout layout manager
 
 	template<typename functor>

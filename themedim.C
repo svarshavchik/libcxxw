@@ -22,7 +22,7 @@ themedimObj::themedimObj(const dim_arg &dimname,
 			 const ref<screenObj::implObj> &screen_impl,
 			 theme_width_or_height width_or_height)
 	: dimname(dimname),
-	  pixels_thread_only(compute_dim(screen_impl, dimname,
+	  pixels_thread_only(compute_dim(screen_impl, this->dimname,
 					 width_or_height)),
 	  width_or_height(width_or_height)
 {

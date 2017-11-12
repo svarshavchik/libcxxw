@@ -210,6 +210,8 @@ class LIBCXX_HIDDEN pictureObj::implObj::fromDrawableObj
 	~fromDrawableObj();
 };
 
+void valid_gradient(const rgb_gradient &) LIBCXX_HIDDEN;
+
 #define picture_included 1
 #include "xid_t_connection_thread.H"
 

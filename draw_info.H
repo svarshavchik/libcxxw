@@ -66,7 +66,8 @@ struct draw_info {
 
 	//! Translate background coordinates relative to another set of coords.
 
-	//! Essentially subtract x/y from background_x and background_y.
+	//! Essentially background_x and background_y from
+	//! absolute_location.[xy]
 	//!
 	//! Optional offset is added to the resulting xy
 

@@ -12,7 +12,12 @@
 
 LIBCXXW_NAMESPACE_START
 
-class background_colorObj : virtual public obj {
+//! An abstract handle for a "background colors".
+
+//! A background color is just a picture. This abstracts away the picture
+//! object, and implements initialize() and theme_updated().
+
+class LIBCXX_HIDDEN background_colorObj : virtual public obj {
 
 public:
 	background_colorObj();

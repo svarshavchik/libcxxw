@@ -273,6 +273,43 @@ INSERT_LIBX_NAMESPACE::w::image_button checkbox=factory->create_radio(group);
 A \ref radio_group "radio_group" object gets created in advance.
 create_radio() creates a new radio button.
 
+\par Progress bars
+
+\code
+#include <INSERT_LIBX_NAMESPACE/w/progressbar.H>
+
+INSERT_LIBX_NAMESPACE::w::progressbar_config config;
+
+INSERT_LIBX_NAMESPACE::w::progressbar pb=factory->create_progressbar(
+    []
+    (const INSERT_LIBX_NAMESPACE::w::progressbar &pb)
+    {
+        INSERT_LIBX_NAMESPACE::w::gridlayoutmanager glm=pb->get_layoutmanager();
+
+        // ...
+    },
+    config,
+    INSERT_LIBX_NAMESPACE::w::new_gridlayoutmanager{});
+\endcode
+
+create_progressbar() creates an
+\ref progressbar "INSERT_LIBX_NAMESPACE::w::progressbar"
+which is a horizontal swath that's meant to visually indicate the
+progress of an ongoing process. The horizontal swath has a colored
+striped that moves from its left margin to its right margin, to indicate
+the progress of an operation.
+
+The progress bar is a container with a layout manager, that's meant to
+position an additional descriptive label inside the progress bar.
+The first parameter is an initializer lambda that creates the contents
+of the progress bar. The remaining parameters are optional:
+
+- an \ref progressbar_config "INSERT_LIBX_NAMESPACE::w::progressbar_config"
+for customizing the progress bar's appearance.
+
+- the third parameter sets the progress bar's layout manager, and defaults
+to \ref new_gridlayoutmanager "INSERT_LIBX_NAMESPACE::w::new_gridlayoutmanager".
+
 */
 
 typedef ref<factoryObj> factory;

@@ -12,6 +12,7 @@
 #include "drawable.H"
 #include "messages.H"
 #include "border_impl.H"
+#include "picture.H"
 #include "x/w/gridlayoutmanager.H"
 #include "x/w/gridfactory.H"
 #include "gridtemplate.H"
@@ -780,8 +781,7 @@ void defaultthemeObj::load_color_gradients(const xml::doc &config)
 				throw EXCEPTION(gettextmsg(_("Duplicate value %1% specified for color gradient id=%1%"), v, id));
 		}
 
-		if (new_gradient.find(0) == new_gradient.end())
-			throw EXCEPTION(gettextmsg(_("Gradient value 0 not specified for color gradient id=%1%"), id));
+		valid_gradient(new_gradient);
 
 		color_gradients.insert({id, new_gradient});
 	}
@@ -1102,7 +1102,7 @@ rgb defaultthemeObj::get_theme_color(const color_arg &color) const
 }
 
 rgb_gradient
-defaultthemeObj::get_theme_color_gradient(const rgb_gradient_arg &arg)
+defaultthemeObj::get_theme_color_gradient(const rgb_gradient_arg &arg) const
 {
 	return std::visit(visitor{
 			[](const rgb_gradient &g) { return g; },

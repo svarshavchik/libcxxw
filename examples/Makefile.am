@@ -8,6 +8,7 @@ noinst_PROGRAMS=\
 	helloworld				\
 	inputfieldsandbuttons			\
 	listlayoutmanager			\
+	progressbar				\
 	menu					\
 	wordwraplabel
 
@@ -40,6 +41,9 @@ listlayoutmanager_LDADD=-lcxxw -lcxx
 
 menu_SOURCES=menu.C close_flag.H
 menu_LDADD=-lcxxw -lcxx
+
+progressbar_SOURCES=progressbar.C close_flag.H
+progressbar_LDADD=-lcxxw -lcxx
 
 wordwraplabel_SOURCES=wordwraplabel.C close_flag.H
 wordwraplabel_LDADD=-lcxxw -lcxx

@@ -46,6 +46,7 @@ suppressfile*
 /testlabel
 /testlist
 /testmenu
+/testprogressbar
 /testwordwrappablelabel
 /testmainwindow
 /testmainwindowoptions.H

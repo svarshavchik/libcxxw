@@ -17,8 +17,6 @@
 #include <x/w/gridfactory.H>
 #include <x/w/button.H>
 #include <x/w/label.H>
-#include <x/w/screen.H>
-#include <x/w/connection.H>
 #include <string>
 #include <iostream>
 

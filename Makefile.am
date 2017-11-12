@@ -549,6 +549,14 @@ libcxxw_la_SOURCES=\
 	popup/popup_attachedto_infoobj.H	    \
 	popup/popup_showhide_element.H		    \
 	popup/popup_showhide_elementfwd.H	    \
+	progressbar.C				    \
+	progressbar_handler.C			    \
+	progressbar_handler.H			    \
+	progressbar_impl.C			    \
+	progressbar_impl.H			    \
+	progressbar_slider.C			    \
+	progressbar_slider.H			    \
+	progressbar_sliderfwd.H			    \
 	radio_group.C				    \
 	radio_group.H				    \
 	radio_group_impl.C			    \
@@ -567,7 +575,6 @@ libcxxw_la_SOURCES=\
 	render.C				    \
 	render.H				    \
 	returned_pointer.H			    \
-	rgb.C					    \
 	richtext/fragment_list.C		    \
 	richtext/fragment_list.H		    \
 	richtext/paragraph_list.C		    \
@@ -686,6 +693,8 @@ libcxxw_la_SOURCES=\
 	themedimobj.H				    \
 	themedim_element.H			    \
 	themedim_elementfwd.H			    \
+	themedim_element_minoverride.H		    \
+	themedim_element_minoverridefwd.H	    \
 	tooltip.C				    \
 	windowobj.C				    \
 	windowobj.H				    \
@@ -762,6 +771,7 @@ INTERACTIVETESTPROGRAMS=\
 	testmainwindow					\
 	testmenu					\
 	testlabel					\
+	testprogressbar					\
 	testscrollbar					\
 	testshowhide					\
 	testtooltip					\
@@ -822,6 +832,10 @@ testmenu_SOURCES=testmenu.C
 testmenu_LDADD=libcxxw.la
 testmenu_LDFLAGS=$(TESTLINKTYPE)
 
+testprogressbar_SOURCES=testprogressbar.C
+testprogressbar_LDADD=libcxxw.la
+testprogressbar_LDFLAGS=-static $(STATICLINKFLAGS)
+
 testwordwrappablelabel_SOURCES=testwordwrappablelabel.C
 testwordwrappablelabel_LDADD=libcxxw.la
 testwordwrappablelabel_LDFLAGS=-static $(STATICLINKFLAGS)
@@ -869,7 +883,9 @@ BUILT_SOURCES=includes/x/w/constants_inc.H \
 	gridlayoutapi.inc.C \
 	gc_constants.inc.C pic_constants.inc.C
 
-CLEANFILES = $(shell cd $(srcdir) && echo *.inc.[CH]) $(XIM_AUTOGEN)
+CLEANFILES = gridlayoutapi.inc.C \
+	gc_constants.inc.C pic_constants.inc.C \
+        $(XIM_AUTOGEN)
 
 includes/x/w/constants_inc.H: genconstants
 	./genconstants >$@.tmp
@@ -1019,6 +1035,7 @@ test:
 	./testlabel
 	./testtooltip --width=25
 	./testtooltip --width=50
+	./testprogressbar
 
 .PHONY: rpm
 

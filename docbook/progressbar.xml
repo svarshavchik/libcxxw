@@ -1,0 +1,91 @@
+<!--
+
+Copyright 2017 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<chapter id="progressbar">
+  <title>Progress bars</title>
+
+  <mediaobject>
+    <imageobject>
+      <imagedata fileref="progressbar.png" format="PNG"
+		 contentwidth="412px" contentdepth="74px" />
+    </imageobject>
+    <textobject>
+      <phrase>
+	Progress bar
+      </phrase>
+    </textobject>
+    <caption>
+      <para>
+	An
+	<ulink url="&link-typedef-x--w-progressbar;"><classname>&ns;::w::progressbar</classname></ulink>
+	is a special-purpose &container; with a &layoutmanager;, the
+	<link linkend="gridlayoutmanager">grid layout manager</link> by default.
+	It is expected that the contents of this display element report
+	an outgoing progress of some sort of a multi-step process; typically
+	with a brief, compact <link linkend="labels">label</link>.
+      </para>
+
+      <para>
+	The progress bar itself draws a sliding swath of color, starting
+	from the left margin, and growing until it reaches the right margin,
+	indicating the completion of the process.
+      </para>
+    </caption>
+  </mediaobject>
+
+  <blockquote>
+    <title><ulink url="examples/progressbar.C">progressbar.C</ulink></title>
+
+    <informalexample>
+      <programlisting><xi:include href="../examples/progressbar.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    <filename>progressbar.C</filename> uses
+    a &factory;'s <methodname>create_progressbar</methodname>()'s to
+    create a new progress bar, then creates a label inside it.
+    <filename>progressbar.C</filename> then proceeds to count from 0 to 100.
+    At each step, <filename>progressbar.C</filename> updates the label's
+    text to read <quote>n%</quote>, and calls the progress bar's
+    <methodname>update</methodname>() method to draw the progress bar's
+    slider.
+  </para>
+
+  <para>
+    <methodname>update</methodname>() takes two integer values, and an
+    optional closure. The total <quote>progress</quote> of the progress bar
+    ranges from 0 to <varname>maximum_value</varname> (the 2nd parameter
+    to <methodname>update</methodname>()) with <varname>value</varname>
+    (the 1st parameter) indicating the current level of progress.
+  </para>
+
+  <para>
+    Essentially, <methodname>update</methodname>() draws the slider from
+    the left margin and up to <literal>value/maximum_value</literal> of
+    the progress bar's width. Both the <varname>value</varname> and
+    <varname>maximum_value</varname> are updated by the same
+    <methodname>update</methodname>(), and each update may specify a
+    different <methodname>maximum_value</methodname>, and a higher or
+    a lower <methodname>value</methodname>. The progress bar's slider
+    simply gets moved to the recalculated position.
+    A value of 0 does not show the slider at all, and slider covers the
+    entire width of the progress bar when both values are equal.
+  </para>
+
+  <para>
+    <filename>progressbar.C</filename> also gives an example of using
+    the third, optional, <methodname>update</methodname>() parameter,
+    for optimization purposes.
+  </para>
+</chapter>
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "book" "chapter")
+End:
+-->

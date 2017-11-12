@@ -7,13 +7,30 @@
 #include "pictformat.H"
 #include "xid_t.H"
 #include "connection_thread.H"
+#include "x/w/rgbfwd.H"
+#include "screen.H"
+#include "messages.H"
+
+#include <x/functional.H>
+#include <vector>
+#include <algorithm>
+#include <cmath>
 
 LIBCXXW_NAMESPACE_START
 
-#define TOVALUE(v) (((int32_t)v.integer << 16) | v.fraction)
-#define POINT(p) { TOVALUE(p.x), TOVALUE(p.y) }
+inline static constexpr xcb_render_fixed_t
+to_fixed(const pictureObj::fixedprec &f)
+{
+	return (((xcb_render_fixed_t)f.integer << 16) | f.fraction);
+}
 
-inline xcb_render_color_t to_xcb(const rgb &rgb)
+inline static constexpr xcb_render_pointfix_t
+to_pointfix(const pictureObj::point &p)
+{
+	return { to_fixed(p.x), to_fixed(p.y) };
+}
+
+inline static constexpr xcb_render_color_t to_color(const rgb &rgb)
 {
 	return xcb_render_color_t({
 			.red=rgb.r,
@@ -165,7 +182,7 @@ void pictureObj::implObj::do_fill_tri_strip(const point *points,
 	xcb_render_pointfix_t strip[n_points];
 
 	for (size_t i=0; i<n_points; ++i)
-		strip[i]=xcb_render_pointfix_t(POINT(points[i]));
+		strip[i]=xcb_render_pointfix_t(to_pointfix(points[i]));
 
 	xcb_render_tri_strip(picture_conn()->conn,
 			     (uint8_t)op,
@@ -223,7 +240,7 @@ void pictureObj::implObj::fill_rectangles(const rectangle *rectangles,
 	xcb_render_fill_rectangles(picture_conn()->conn,
 				   (uint8_t)op,
 				   picture_id(),
-				   to_xcb(color),
+				   to_color(color),
 				   n,
 				   &rects[0]);
 }
@@ -263,12 +280,9 @@ void pictureObj::implObj::do_fill_triangles(const std::set<triangle> &triangles,
 
 	for (const auto &t:triangles)
 	{
-#define TOVALUE(v) (((int32_t)v.integer << 16) | v.fraction)
-#define POINT(p) { TOVALUE(p.x), TOVALUE(p.y) }
-
-		tris.push_back(xcb_render_triangle_t({POINT(t.p1),
-						POINT(t.p2),
-						POINT(t.p3)}));
+		tris.push_back(xcb_render_triangle_t({to_pointfix(t.p1),
+						to_pointfix(t.p2),
+						to_pointfix(t.p3)}));
 	}
 
 	xcb_render_triangles(picture_conn()->conn,
@@ -318,7 +332,7 @@ void pictureObj::implObj::do_fill_tri_fan(const point *points,
 	xcb_render_pointfix_t fan[n_points];
 
 	for (size_t i=0; i<n_points; ++i)
-		fan[i]=xcb_render_pointfix_t(POINT(points[i]));
+		fan[i]=xcb_render_pointfix_t(to_pointfix(points[i]));
 
 	xcb_render_tri_fan(picture_conn()->conn,
 			   (uint8_t)op,
@@ -351,6 +365,194 @@ pictureObj::implObj::fromDrawableObj
 pictureObj::implObj::fromDrawableObj::~fromDrawableObj()
 {
 	xcb_render_free_picture(picture_conn()->conn, picture_id());
+}
+
+///////////////////////////////////////////////////////////////////////////
+
+// Quick and dirty conversion of an rgb_gradient tuples into two RENDER-
+// friendly arrays: namely a list of FIXED stops and COLORs
+//
+// The callback function gets invoked with three parameters: pointers to
+// xcb_render_fixed_t and xcb_render_color_t buffers, and the number of
+// values in both buffers.
+//
+// The callback is guaranteed to be invoked, n is guaranteed to be at least 2,
+// the first xcb_render_fixed_t is guaranteed to be 0, and the last one us
+// guaranteed to be 1. In the cases where the input is garbage, we just make
+// things up.
+
+typedef void normalized_gradient_callback_t(const xcb_render_fixed_t *,
+					    const xcb_render_color_t *,
+					    size_t);
+
+static void
+do_gradient_normalize(const rgb_gradient &gradient,
+		      const function<normalized_gradient_callback_t> &callback)
+{
+	auto n=gradient.size();
+
+	if (n == 0)
+	{
+		// First GIGO edge case:
+
+		xcb_render_fixed_t stops[2]={0, to_fixed({1,0})};
+		xcb_render_color_t colors[2]={to_color({}), to_color({})};
+
+		callback(stops, colors, 2);
+		return;
+	}
+
+	// Second edge case. The returned buffer should be at least 2.
+
+	std::pair<rgb_gradient::key_type, rgb_gradient::mapped_type>
+		gradients[n == 1 ? 2:n];
+
+	xcb_render_fixed_t stops[n == 1 ? 2:n];
+	xcb_render_color_t colors[n == 1 ? 2:n];
+
+	std::copy(gradient.begin(), gradient.end(), gradients);
+
+	if (n == 1)
+	{
+		gradients[1]=gradients[0];
+		++n;
+	}
+
+	// The first order of business is to sort the array by the size_t.
+
+	std::sort(gradients, gradients+n,
+		  []
+		  (const auto &a, const auto &b)
+		  {
+			  return a.first < b.first;
+		  });
+
+	gradients[0].first=0;
+
+	if (gradients[n-1].first == 0)
+		gradients[n-1].first=1;
+
+	double one=gradients[n-1].first;
+
+	uint16_t last=0; // The previous fraction of the FIXEDPREC stop.
+
+	size_t j=0; // Output index into the stops+colors array.
+
+	size_t i;
+
+	// Note that, above, we ensured that n is at least 2, and
+	// gradients[0].first is always 0.
+
+	for (i=0; i+1<n; ++i)
+	{
+		pictureObj::fixedprec
+			fp{0, (uint16_t)std::floor((gradients[i].first/one)
+						   * (uint16_t)-1)};
+
+		if (i > 0)
+		{
+			// Since the previous fraction was "last", fp.fraction
+			// must be more than that.
+			//
+			// When we end up scaling multiple large size_t values
+			// to the same FIXEDPREC fraction, what we will end up
+			// doing is incrementing, by one, each individual
+			// value.
+			//
+			// But, if we reached the uint16_t limit, we have no
+			// choice but to drop the last set of values.
+			//
+			// Note that we are not iterating until the last value,
+			// so we will always emit the 1 value, below.
+
+			if (last == (uint16_t)~0)
+				continue;
+
+			if (fp.fraction <= last)
+			{
+				fp.fraction=last;
+				++fp.fraction;
+			}
+		}
+
+		// Make sure the FIXEDPREC fraction is monotonously increasing.
+		last=fp.fraction;
+
+		stops[j]=to_fixed(fp);
+		colors[j]=to_color(gradients[i].second);
+		++j;
+	}
+
+	// The last one is always at position 1.0
+
+	pictureObj::fixedprec v{1,0};
+
+	stops[j]=to_fixed(v);
+	colors[j]=to_color(gradients[i].second);
+	++j;
+
+	callback(stops, colors, j);
+}
+
+template<typename functor>
+static void gradient_normalize(const rgb_gradient &gradient,
+			       functor &&f)
+{
+	do_gradient_normalize(gradient,
+			      make_function<normalized_gradient_callback_t>
+			      (std::forward<functor>(f)));
+}
+
+//! Create a linear gradient picture
+
+class LIBCXX_HIDDEN linearGradientPictureImplObj : public pictureObj::implObj {
+
+ public:
+	linearGradientPictureImplObj(const connection_thread &thread,
+				     const rgb_gradient &gradient,
+				     const pictureObj::point &p1,
+				     const pictureObj::point &p2)
+		: pictureObj::implObj(thread)
+	{
+		gradient_normalize(gradient,
+				   [&, this]
+				   (auto stops,
+				    auto colors,
+				    size_t n)
+				   {
+					   xcb_render_create_linear_gradient
+						   (picture_conn()->conn,
+						    picture_id(),
+						    to_pointfix(p1),
+						    to_pointfix(p2),
+						    n,
+						    stops, colors);
+				   });
+	}
+
+	~linearGradientPictureImplObj()
+	{
+		xcb_render_free_picture(picture_conn()->conn, picture_id());
+	}
+};
+
+const_picture screenObj::create_linear_gradient_picture(const rgb_gradient &g,
+							coord_t x1,
+							coord_t y1,
+							coord_t x2,
+							coord_t y2)
+{
+	auto picture_impl=ref<linearGradientPictureImplObj>::create
+		(impl->thread, g, pictureObj::point{x1, y1},
+		 pictureObj::point{x2, y2});
+
+	return picture::create(picture_impl);
+}
+
+void valid_gradient(const rgb_gradient &gradient)
+{
+	if (gradient.find(0) == gradient.end())
+		throw EXCEPTION(_("Invalid gradient specification"));
 }
 
 LIBCXXW_NAMESPACE_END

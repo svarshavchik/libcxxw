@@ -284,7 +284,7 @@ const &ns;::w::main_window dialog_window;</programlisting>
 
     <para>
       The third optional parameter defaults to
-      <link linkend="&link-enum-x--w-file-dialog-type;"><literal>&ns;::w::file_dialog_type::existing_file</literal></link>.
+      <ulink url="&link-enum-x--w-file-dialog-type;"><literal>&ns;::w::file_dialog_type::existing_file</literal></ulink>.
     </para>
 
     <blockquote>

@@ -26,6 +26,7 @@
 #include <x/w/image_buttonfwd.H>
 #include <x/w/radio_groupfwd.H>
 #include <x/w/focusable_containerfwd.H>
+#include <x/w/progressbarfwd.H>
 #include <x/obj.H>
 #include <x/functional.H>
 
@@ -285,6 +286,41 @@ public:
 				       &)> &creator,
 				      const new_focusable_layoutmanager
 				      &layout_manager) LIBCXX_PUBLIC;
+
+	//! Create a progress bar
+
+	template<typename functor>
+	inline progressbar create_progressbar(functor &&creator)
+	{
+		return create_progressbar(std::forward<functor>(creator), {});
+	}
+
+	//! Create a progress bar
+
+	template<typename functor, typename ...Args>
+	inline progressbar create_progressbar(functor &&creator,
+					      const progressbar_config &config,
+					      Args && ...args)
+	{
+		return do_create_progressbar(make_function<void
+					     (const progressbar &)>
+					     (creator),
+					     config,
+					     std::forward<Args>(args)...);
+	}
+
+	//! Create a progress bar
+	progressbar do_create_progressbar(const function<void
+					  (const progressbar &)> &,
+					  const progressbar_config &config)
+		LIBCXX_PUBLIC;
+
+	//! Create a progress bar
+	progressbar do_create_progressbar(const function<void
+					  (const progressbar &)> &,
+					  const progressbar_config &config,
+					  const new_layoutmanager
+					  &layout_manager) LIBCXX_PUBLIC;
 };
 
 LIBCXXW_NAMESPACE_END

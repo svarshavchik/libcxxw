@@ -199,7 +199,8 @@ public:
 	rgb get_theme_color(const color_arg &color) const;
 
 	//! Retrieve theme gradient
-	rgb_gradient get_theme_color_gradient(const rgb_gradient_arg &arg);
+	rgb_gradient get_theme_color_gradient(const rgb_gradient_arg &arg)
+		const;
 
 	//! Retrieve a theme border.
 	const_border_impl get_theme_border(const std::string_view
