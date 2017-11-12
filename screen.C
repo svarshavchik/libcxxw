@@ -246,10 +246,10 @@ rgb screenObj::implObj::get_theme_color(const color_arg &theme_color)
 	return current_theme.get()->get_theme_color(theme_color);
 }
 
-rgb::gradient_t screenObj::implObj
-::get_theme_color_gradient(const std::string_view &id)
+rgb_gradient screenObj::implObj::get_theme_color_gradient(const rgb_gradient_arg
+							  &arg)
 {
-	return current_theme.get()->get_theme_color_gradient(id);
+	return current_theme.get()->get_theme_color_gradient(arg);
 }
 
 LIBCXXW_NAMESPACE_END

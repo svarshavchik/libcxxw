@@ -20,7 +20,7 @@ rgb rgb::gradient(const rgb &other, component_t i, component_t n) const
 }
 
 
-rgb rgb::gradient(const gradient_t &g, size_t i, size_t n)
+rgb rgb::gradient(const rgb_gradient &g, size_t i, size_t n)
 {
 	if (g.find(0) == g.end())
 		throw EXCEPTION(_("Color #0 must be specified for a gradient"));

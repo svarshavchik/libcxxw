@@ -755,13 +755,13 @@ void defaultthemeObj::load_color_gradients(const xml::doc &config)
 
 		size_t n_colors=all_colors->count();
 
-		rgb::gradient_t new_gradient;
+		rgb_gradient new_gradient;
 
 		for (size_t i=0; i<n_colors; ++i)
 		{
 			all_colors->to_node(i+1);
 
-			rgb::gradient_t::key_type v=0;
+			rgb_gradient::key_type v=0;
 
 			std::istringstream s(color->get_any_attribute("value"));
 
@@ -781,7 +781,7 @@ void defaultthemeObj::load_color_gradients(const xml::doc &config)
 		}
 
 		if (new_gradient.find(0) == new_gradient.end())
-			throw EXCEPTION(gettextmsg(_("Gradient value 0 specified for color gradient id=%1%"), id));
+			throw EXCEPTION(gettextmsg(_("Gradient value 0 not specified for color gradient id=%1%"), id));
 
 		color_gradients.insert({id, new_gradient});
 	}
@@ -1101,24 +1101,31 @@ rgb defaultthemeObj::get_theme_color(const color_arg &color) const
 			}}, color);
 }
 
-rgb::gradient_t
-defaultthemeObj::get_theme_color_gradient(const std::string_view &id)
+rgb_gradient
+defaultthemeObj::get_theme_color_gradient(const rgb_gradient_arg &arg)
 {
-	std::vector<std::string> ids;
+	return std::visit(visitor{
+			[](const rgb_gradient &g) { return g; },
+			[this](const std::string &id)
+			{
+				std::vector<std::string> ids;
 
-	if (!id.empty())
-		strtok_str(id, ", \r\t\n", ids);
+				if (!id.empty())
+					strtok_str(id, ", \r\t\n", ids);
 
-	for (const auto &try_id:ids)
-	{
-		auto iter=color_gradients.find(try_id);
+				for (const auto &try_id:ids)
+				{
+					auto iter=color_gradients.find(try_id);
 
-		if (iter != color_gradients.end())
-			return iter->second;
-	}
+					if (iter != color_gradients.end())
+						return iter->second;
+				}
 
-	throw EXCEPTION(gettextmsg(_("Theme gradient %1% does not exist"),
-				   id));
+				throw EXCEPTION
+					(gettextmsg
+					 (_("Theme gradient %1% "
+					    "does not exist"), id));
+			}}, arg);
 }
 
 

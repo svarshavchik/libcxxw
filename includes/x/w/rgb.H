@@ -9,7 +9,6 @@
 #include <x/w/rgbfwd.H>
 #include <x/w/namespace.H>
 #include <cstdint>
-#include <map>
 #include <stdlib.h>
 
 LIBCXXW_NAMESPACE_START
@@ -82,14 +81,6 @@ public:
 	//! When i=n returns other.
 	rgb gradient(const rgb &other, component_t i, component_t n) const;
 
-	//! A gradient involving multiple colors
-
-	//! The std::map must have a value for key 0. The highest
-	//! key in the map defines the ending rgb color. The rgb at
-	//! position \#i defines the rgb color for that value.
-
-	typedef std::map<unsigned, rgb> gradient_t;
-
 	//! Compute multiple gradient.
 
 	//! Returns the ith color in a gradient of n colors across a gradient
@@ -99,7 +90,7 @@ public:
 	//! When i=n returns gradient_t[k] where k is the maximum value in
 	//! gradient_t.
 
-	static rgb gradient(const gradient_t &g, size_t i, size_t n);
+	static rgb gradient(const rgb_gradient &g, size_t i, size_t n);
 };
 
 LIBCXXW_NAMESPACE_END

@@ -72,7 +72,7 @@ public:
 	std::unordered_map<std::string, rgb> colors;
 
 	//! Parsed gradients
-	std::unordered_map<std::string, rgb::gradient_t> color_gradients;
+	std::unordered_map<std::string, rgb_gradient> color_gradients;
 
 	//! Borders
 	std::unordered_map<std::string, const_border_impl> borders;
@@ -199,7 +199,7 @@ public:
 	rgb get_theme_color(const color_arg &color) const;
 
 	//! Retrieve theme gradient
-	rgb::gradient_t get_theme_color_gradient(const std::string_view &id);
+	rgb_gradient get_theme_color_gradient(const rgb_gradient_arg &arg);
 
 	//! Retrieve a theme border.
 	const_border_impl get_theme_border(const std::string_view
