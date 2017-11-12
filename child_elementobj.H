@@ -12,6 +12,7 @@
 #include "focus/focusablefwd.H"
 #include "x/w/metrics/axis.H"
 #include "x/w/picturefwd.H"
+#include "x/w/rgbfwd.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -248,6 +249,10 @@ class LIBCXX_HIDDEN child_elementObj : public background_color_elementObj<
 	//! Override label_theme_font()
 
 	const char *label_theme_font() const override;
+
+	//! Override label_theme_color()
+
+	color_arg label_theme_color() const override;
 
 	//! Override get_cursor_pointer().
 

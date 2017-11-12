@@ -16,7 +16,7 @@
 #include "x/w/motion_eventfwd.H"
 #include "x/w/busyfwd.H"
 #include "x/w/focus.H"
-#include "x/w/rgb.H"
+#include "x/w/rgbfwd.H"
 #include "connection_threadfwd.H"
 #include "defaultthemefwd.H"
 #include "elementfwd.H"
@@ -733,6 +733,14 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! Overridden in child_elementObj and forwarded to the container.
 
 	virtual const char *label_theme_font() const;
+
+	//! Foreground color for labels in this container.
+
+	//! The default implementation returns "label_foreground_color".
+	//!
+	//! Overridden in child_elementObj and forwarded to the container.
+
+	virtual color_arg label_theme_color() const;
 
 	//! Create a font for this display element.
 

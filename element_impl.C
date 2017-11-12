@@ -833,6 +833,11 @@ const char *elementObj::implObj::label_theme_font() const
 	return "label";
 }
 
+color_arg elementObj::implObj::label_theme_color() const
+{
+	return "label_foreground_color";
+}
+
 current_fontcollection elementObj::implObj::create_font(const font &props)
 {
 	return get_window_handler().create_font(props);

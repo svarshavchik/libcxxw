@@ -21,6 +21,7 @@
 #include "x/w/types.H"
 #include "x/w/focusablefwd.H"
 #include "x/w/busy.H"
+#include "x/w/rgb.H"
 #include "focus/focusablefwd.H"
 #include "fonts/current_fontcollectionfwd.H"
 #include "x/w/fontfwd.H"

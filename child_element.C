@@ -15,6 +15,7 @@
 #include "cursor_pointer.H"
 #include "x/w/picture.H"
 #include "x/w/motion_event.H"
+#include "x/w/rgb.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -296,6 +297,11 @@ void child_elementObj::creating_focusable_element()
 const char *child_elementObj::label_theme_font() const
 {
 	return child_container->get_element_impl().label_theme_font();
+}
+
+color_arg child_elementObj::label_theme_color() const
+{
+	return child_container->get_element_impl().label_theme_color();
 }
 
 void child_elementObj::schedule_hover_action(IN_THREAD_ONLY)
