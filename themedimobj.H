@@ -9,6 +9,7 @@
 #include "connection_threadfwd.H"
 #include "defaultthemefwd.H"
 #include "x/w/screen.H"
+#include "x/w/dim_arg.H"
 #include <string>
 #include <string_view>
 
@@ -21,7 +22,7 @@ LIBCXXW_NAMESPACE_START
 class LIBCXX_HIDDEN themedimObj : virtual public obj {
 
 	//! The name of the dimension
-	const std::string dimname;
+	const dim_arg dimname;
 
 	//! Padding value in pixels.
 	dim_t pixels_thread_only;
@@ -33,7 +34,7 @@ class LIBCXX_HIDDEN themedimObj : virtual public obj {
 	THREAD_DATA_ONLY(pixels);
 
 	//! Constructor
-	themedimObj(const std::string &dimname,
+	themedimObj(const dim_arg &dimname,
 		    const ref<screenObj::implObj> &screen_impl,
 		    theme_width_or_height width_or_height);
 

@@ -33,7 +33,7 @@ themedim_element<tag>::~themedim_element()=default;
 template<typename element_impl, typename tag>
 template<typename ...Args>
 themedim1_elementObj<element_impl, tag>
-::themedim1_elementObj(const std::string &dimname,
+::themedim1_elementObj(const dim_arg &dimname,
 		       theme_width_or_height width_or_height,
 		       Args && ...args)
 	: element_impl(std::forward<Args>(args)...),

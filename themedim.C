@@ -10,7 +10,7 @@
 LIBCXXW_NAMESPACE_START
 
 static dim_t compute_dim(const auto &screen_impl,
-			 const std::string &dimname,
+			 const dim_arg &dimname,
 			 auto width_or_height)
 {
 	current_theme_t::lock lock{screen_impl->current_theme};
@@ -18,7 +18,7 @@ static dim_t compute_dim(const auto &screen_impl,
 	return ((**lock).*width_or_height)(dimname);
 }
 
-themedimObj::themedimObj(const std::string &dimname,
+themedimObj::themedimObj(const dim_arg &dimname,
 			 const ref<screenObj::implObj> &screen_impl,
 			 theme_width_or_height width_or_height)
 	: dimname(dimname),

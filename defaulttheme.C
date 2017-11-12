@@ -21,7 +21,7 @@
 #include <x/join.H>
 #include <x/glob.H>
 #include <x/xml/doc.H>
-
+#include <x/visitor.H>
 #include <sstream>
 #include <cmath>
 #include <algorithm>
@@ -985,43 +985,44 @@ void defaultthemeObj::load_borders(const xml::doc &config,
 
 /////////////////////////////////////////////////////////////////////////////
 
-dim_t defaultthemeObj::get_theme_width_dim_t(const std::string_view &id)
+dim_t defaultthemeObj::get_theme_width_dim_t(const dim_arg &id)
 {
-	auto iter=dims.find(std::string(id));
+	return std::visit(visitor{
+			[this](double v)
+			{
+				return compute_height(v);
+			},
+			[&](const std::string &id)
+			{
+				auto iter=dims.find(id);
 
-	if (iter == dims.end())
-	{
-		std::istringstream i{std::string(id)};
-		double v;
-
-		i >> v;
-
-		if (i && i.get() == std::istringstream::traits_type::eof())
-			return compute_width(v);
-
-		throw EXCEPTION(gettextmsg(_("Theme size %1% does not exist"),
-					   id));
-	}
-	return iter->second;
+				if (iter == dims.end())
+					throw EXCEPTION
+						(gettextmsg
+						 (_("Size %1% does not exist"),
+						  id));
+				return iter->second;
+			}}, id);
 }
 
-dim_t defaultthemeObj::get_theme_height_dim_t(const std::string_view &id)
+dim_t defaultthemeObj::get_theme_height_dim_t(const dim_arg &id)
 {
-	auto iter=dims.find(std::string(id));
+	return std::visit(visitor{
+			[this](double v)
+			{
+				return compute_height(v);
+			},
+			[&](const std::string &id)
+			{
+				auto iter=dims.find(id);
 
-	if (iter == dims.end())
-	{
-		std::istringstream i{std::string(id)};
-		double v;
-
-		i >> v;
-
-		if (i && i.get() == std::istringstream::traits_type::eof())
-			return compute_height(v);
-		throw EXCEPTION(gettextmsg(_("Theme size %1% does not exist"),
-					   id));
-	}
-	return iter->second;
+				if (iter == dims.end())
+					throw EXCEPTION
+						(gettextmsg
+						 (_("Size %1% does not exist"),
+						  id));
+				return iter->second;
+			}}, id);
 }
 
 dim_t defaultthemeObj::compute_width(double millimeters)

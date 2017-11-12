@@ -165,7 +165,7 @@ void gridlayoutmanagerObj::implObj::col_alignment(size_t col, halign alignment)
 }
 
 void gridlayoutmanagerObj::implObj::row_top_padding_set(size_t row,
-							const dimarg &padding)
+							const dim_arg &padding)
 {
 	grid_map_t::lock lock{grid_map};
 
@@ -173,7 +173,7 @@ void gridlayoutmanagerObj::implObj::row_top_padding_set(size_t row,
 }
 
 void gridlayoutmanagerObj::implObj::row_bottom_padding_set(size_t row,
-							   const dimarg &padding)
+							   const dim_arg &padding)
 {
 	grid_map_t::lock lock{grid_map};
 
@@ -181,7 +181,7 @@ void gridlayoutmanagerObj::implObj::row_bottom_padding_set(size_t row,
 }
 
 void gridlayoutmanagerObj::implObj::col_left_padding_set(size_t col,
-							 const dimarg &padding)
+							 const dim_arg &padding)
 {
 	grid_map_t::lock lock{grid_map};
 
@@ -189,7 +189,7 @@ void gridlayoutmanagerObj::implObj::col_left_padding_set(size_t col,
 }
 
 void gridlayoutmanagerObj::implObj::col_right_padding_set(size_t col,
-							  const dimarg &padding)
+							  const dim_arg &padding)
 {
 	grid_map_t::lock lock{grid_map};
 

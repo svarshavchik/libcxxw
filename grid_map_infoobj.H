@@ -7,6 +7,7 @@
 
 #include "x/w/namespace.H"
 #include "x/w/grid_map_infofwd.H"
+#include "x/w/dim_arg.H"
 #include "elementfwd.H"
 #include "grid_elementfwd.H"
 #include "current_border_implfwd.H"
@@ -53,10 +54,10 @@ struct grid_map_column_defaults {
 	halign horizontal_alignment=halign::left;
 
 	//! Default column padding
-	std::string left_padding_set="grid_horiz_padding";
+	dim_arg left_padding_set{"grid_horiz_padding"};
 
 	//! Default column padding
-	std::string right_padding_set="grid_horiz_padding";
+	dim_arg right_padding_set{"grid_horiz_padding"};
 };
 
 //! Default grid column info
@@ -93,10 +94,10 @@ struct grid_map_row_defaults {
 	valign vertical_alignment=valign::top;
 
 	//! Default row padding
-	std::string top_padding_set="grid_vert_padding";
+	dim_arg top_padding_set{"grid_vert_padding"};
 
 	//! Default row padding
-	std::string bottom_padding_set="grid_vert_padding";
+	dim_arg bottom_padding_set{"grid_vert_padding"};
 };
 
 //! Mutex-protected container for elements in the grid.

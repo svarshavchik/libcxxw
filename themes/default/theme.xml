@@ -465,22 +465,22 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
   <factory id="ok-button-container">
     <padding>
       <side>left</side>
-      <padding>0</padding>
+      <padding>no-padding</padding>
     </padding>
 
     <padding>
       <side>right</side>
-      <padding>0</padding>
+      <padding>no-padding</padding>
     </padding>
 
     <padding>
       <side>top</side>
-      <padding>0</padding>
+      <padding>no-padding</padding>
     </padding>
 
     <padding>
       <side>bottom</side>
-      <padding>0</padding>
+      <padding>no-padding</padding>
     </padding>
 
     <colspan>
@@ -542,22 +542,22 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
   <factory id="ok-cancel-button-container">
     <padding>
       <side>left</side>
-      <padding>0</padding>
+      <padding>no-padding</padding>
     </padding>
 
     <padding>
       <side>right</side>
-      <padding>0</padding>
+      <padding>no-padding</padding>
     </padding>
 
     <padding>
       <side>top</side>
-      <padding>0</padding>
+      <padding>no-padding</padding>
     </padding>
 
     <padding>
       <side>bottom</side>
-      <padding>0</padding>
+      <padding>no-padding</padding>
     </padding>
 
     <colspan>
@@ -694,17 +694,17 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
   <factory id="label-and-input">
     <padding>
       <side>top</side>
-      <padding>0</padding>
+      <padding>no-padding</padding>
     </padding>
 
     <padding>
       <side>left</side>
-      <padding>0</padding>
+      <padding>no-padding</padding>
     </padding>
 
     <padding>
       <side>bottom</side>
-      <padding>0</padding>
+      <padding>no-padding</padding>
     </padding>
 
     <element>
@@ -713,17 +713,17 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
 
     <padding>
       <side>top</side>
-      <padding>0</padding>
+      <padding>no-padding</padding>
     </padding>
 
     <padding>
       <side>right</side>
-      <padding>0</padding>
+      <padding>no-padding</padding>
     </padding>
 
     <padding>
       <side>bottom</side>
-      <padding>0</padding>
+      <padding>no-padding</padding>
     </padding>
 
     <element>

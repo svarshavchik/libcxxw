@@ -48,7 +48,7 @@ class LIBCXX_HIDDEN themedim1_elementObj : public element_impl,
 public:
 
 	template<typename ...Args>
-	themedim1_elementObj(const std::string &dimname,
+	themedim1_elementObj(const dim_arg &dimname,
 			     theme_width_or_height width_or_height,
 			     Args && ...args);
 

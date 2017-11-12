@@ -14,7 +14,7 @@
 #include <x/w/types.H>
 #include <x/w/border_infomm.H>
 #include <x/w/alignment.H>
-#include <x/w/dimarg.H>
+#include <x/w/dim_arg.H>
 #include <x/refptr_hash.H>
 
 #include <vector>
@@ -126,7 +126,7 @@ public:
 	template<typename Arg>
 	inline void row_top_padding(size_t row, Arg &&arg)
 	{
-		row_top_padding_set(row, dimarg(std::forward<Arg>(arg)));
+		row_top_padding_set(row, dim_arg(std::forward<Arg>(arg)));
 	}
 
 	//! Set the default padding for the given row.
@@ -135,7 +135,7 @@ public:
 	template<typename Arg>
 	inline void row_bottom_padding(size_t row, Arg &&arg)
 	{
-		row_top_padding_set(row, dimarg(std::forward<Arg>(arg)));
+		row_top_padding_set(row, dim_arg(std::forward<Arg>(arg)));
 	}
 
 	//! Set the default border to the left of this column
@@ -162,7 +162,7 @@ public:
 	template<typename Arg>
 	inline void col_left_padding(size_t col, Arg &&arg)
 	{
-		col_left_padding_set(col, dimarg(std::forward<Arg>(arg)));
+		col_left_padding_set(col, dim_arg(std::forward<Arg>(arg)));
 	}
 
 	//! Set the default padding for the given column.
@@ -171,20 +171,20 @@ public:
 	template<typename Arg>
 	inline void col_right_padding(size_t col, Arg &&arg)
 	{
-		col_right_padding_set(col, dimarg(std::forward<Arg>(arg)));
+		col_right_padding_set(col, dim_arg(std::forward<Arg>(arg)));
 	}
 
 	//! Set padding, specified in millimeters or as a theme dimension name.
-	void row_top_padding_set(size_t row, const dimarg &padding);
+	void row_top_padding_set(size_t row, const dim_arg &padding);
 
 	//! Set padding, specified in millimeters or as a theme dimension name.
-	void row_bottom_padding_set(size_t row, const dimarg &padding);
+	void row_bottom_padding_set(size_t row, const dim_arg &padding);
 
 	//! Set padding, specified in millimeters or as a theme dimension name.
-	void col_left_padding_set(size_t col, const dimarg &padding);
+	void col_left_padding_set(size_t col, const dim_arg &padding);
 
 	//! Set padding, specified in millimeters or as a theme dimension name.
-	void col_right_padding_set(size_t col, const dimarg &padding);
+	void col_right_padding_set(size_t col, const dim_arg &padding);
 
 	//! Remove all custom row defaults.
 	void remove_row_defaults(size_t row);

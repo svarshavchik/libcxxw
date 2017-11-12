@@ -12,7 +12,7 @@
 #include <x/w/gridlayoutmanagerobj.H>
 #include <x/w/border_infomm.H>
 #include <x/w/alignment.H>
-#include <x/w/dimarg.H>
+#include <x/w/dim_arg.H>
 #include <x/mpobj.H>
 #include <string_view>
 
@@ -109,7 +109,7 @@ class gridfactoryObj : public factoryObj {
 	template<typename Arg>
 	inline gridfactoryObj &padding(Arg &&padding)
 	{
-		return padding_set(dimarg(std::forward<Arg>(padding)));
+		return padding_set(dim_arg(std::forward<Arg>(padding)));
 	}
 
 	//! Set new element's padding, first.
@@ -120,7 +120,7 @@ class gridfactoryObj : public factoryObj {
 	template<typename Arg>
 	inline gridfactoryObj &left_padding(Arg &&padding)
 	{
-		return left_padding_set(dimarg(std::forward<Arg>(padding)));
+		return left_padding_set(dim_arg(std::forward<Arg>(padding)));
 	}
 
 	//! Set new element's padding, first.
@@ -131,7 +131,7 @@ class gridfactoryObj : public factoryObj {
 	template<typename Arg>
 	inline gridfactoryObj &right_padding(Arg &&padding)
 	{
-		return right_padding_set(dimarg(std::forward<Arg>(padding)));
+		return right_padding_set(dim_arg(std::forward<Arg>(padding)));
 	}
 
 	//! Set new element's padding, first.
@@ -142,7 +142,7 @@ class gridfactoryObj : public factoryObj {
 	template<typename Arg>
 	inline gridfactoryObj &top_padding(Arg &&padding)
 	{
-		return top_padding_set(dimarg(std::forward<Arg>(padding)));
+		return top_padding_set(dim_arg(std::forward<Arg>(padding)));
 	}
 
 	//! Set new element's padding, first.
@@ -153,23 +153,23 @@ class gridfactoryObj : public factoryObj {
 	template<typename Arg>
 	inline gridfactoryObj &bottom_padding(Arg &&padding)
 	{
-		return bottom_padding_set(dimarg(std::forward<Arg>(padding)));
+		return bottom_padding_set(dim_arg(std::forward<Arg>(padding)));
 	}
 
 	//! Implement padding()
-	gridfactoryObj &padding_set(const dimarg &padding);
+	gridfactoryObj &padding_set(const dim_arg &padding);
 
 	//! Implement left_padding()
-	gridfactoryObj &left_padding_set(const dimarg &padding);
+	gridfactoryObj &left_padding_set(const dim_arg &padding);
 
 	//! Implement right_padding()
-	gridfactoryObj &right_padding_set(const dimarg &padding);
+	gridfactoryObj &right_padding_set(const dim_arg &padding);
 
 	//! Implement top_padding()
-	gridfactoryObj &top_padding_set(const dimarg &padding);
+	gridfactoryObj &top_padding_set(const dim_arg &padding);
 
 	//! Implement bottom_padding()
-	gridfactoryObj &bottom_padding_set(const dimarg &padding);
+	gridfactoryObj &bottom_padding_set(const dim_arg &padding);
 
 	//! When this display element is hidden, "remove" it from the grid.
 

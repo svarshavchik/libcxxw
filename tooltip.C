@@ -17,6 +17,7 @@
 #include "x/w/pictformat.H"
 #include "gridlayoutmanager.H"
 #include "grabbed_pointer.H"
+#include "defaulttheme.H"
 #include "x/w/gridfactory.H"
 #include "background_color.H"
 #include <x/property_value.H>
@@ -106,8 +107,10 @@ void tooltip_handlerObj::recalculate_popup_position(IN_THREAD_ONLY,
 {
 	auto s=get_screen()->impl;
 
-	dim_t offset_x=s->get_theme_width_dim_t("tooltip_x_offset");
-	dim_t offset_y=s->get_theme_height_dim_t("tooltip_y_offset");
+	auto current_theme=s->current_theme.get();
+
+	dim_t offset_x=current_theme->get_theme_width_dim_t("tooltip_x_offset");
+	dim_t offset_y=current_theme->get_theme_height_dim_t("tooltip_y_offset");
 
 	coord_t x=coord_t::truncate(pointer_x+offset_x);
 

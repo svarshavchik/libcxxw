@@ -148,7 +148,6 @@ libcxxw_la_SOURCES=\
 	dialog_impl.H				    \
 	dialog_handler.C			    \
 	dialog_handler.H			    \
-	dimarg.C				    \
 	dirlisting/filedircontents.C		    \
 	dirlisting/filedircontents.H		    \
 	dirlisting/filedircontentsfwd.H		    \

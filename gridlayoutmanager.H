@@ -87,19 +87,19 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 
 	//! Set default padding.
 	void row_top_padding_set(size_t row,
-			     const dimarg &padding);
+			     const dim_arg &padding);
 
 	//! Set default padding.
 	void row_bottom_padding_set(size_t row,
-				const dimarg &padding);
+				const dim_arg &padding);
 
 	//! Set default padding.
 	void col_left_padding_set(size_t col,
-			      const dimarg &padding);
+			      const dim_arg &padding);
 
 	//! Set default padding.
 	void col_right_padding_set(size_t col,
-			       const dimarg &padding);
+			       const dim_arg &padding);
 
 	//! How many rows there are here.
 	size_t rows();

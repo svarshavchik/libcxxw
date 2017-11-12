@@ -17,6 +17,7 @@
 #include "x/w/pictformatfwd.H"
 #include "x/w/gridlayoutmanagerfwd.H"
 #include "x/w/gridfactoryfwd.H"
+#include "x/w/dim_arg.H"
 #include "connection_threadfwd.H"
 #include "defaultthemefwd.H"
 #include "border_implfwd.H"
@@ -177,14 +178,14 @@ public:
 	//! The given dimension is specified in the theme. The dimension
 	//! name may also be a numerical value, given as a literal string,
 	//! which is interpreted as millimeters.
-	dim_t get_theme_width_dim_t(const std::string_view &id);
+	dim_t get_theme_width_dim_t(const dim_arg &id);
 
 	//! Retrieve theme dimension
 
 	//! The given dimension is specified in the theme. The dimension
 	//! name may also be a numerical value, given as a literal string,
 	//! which is interpreted as millimeters.
-	dim_t get_theme_height_dim_t(const std::string_view &id);
+	dim_t get_theme_height_dim_t(const dim_arg &id);
 
 	//! Compute # of pixels from millimeters, for width
 

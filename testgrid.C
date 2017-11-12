@@ -4,7 +4,7 @@
 #include "metrics_grid_axisrange.H"
 #include "metrics_grid_pos.H"
 #include "rectangle.H"
-#include "x/w/dimarg.H"
+#include "x/w/dim_arg.H"
 
 #include <sstream>
 
@@ -617,40 +617,11 @@ void testrectangleset()
 		throw EXCEPTION("bounds() failed");
 }
 
-std::string call_foo(const dimarg &arg)
-{
-	return arg;
-}
-
-template<typename Arg>
-std::string foo(Arg &&arg)
-{
-	return call_foo(dimarg(std::forward<Arg>(arg)));
-}
-
-void testdimarg()
-{
-	if (foo("bar") != "bar")
-		throw EXCEPTION("dimarg const char * conversion failed");
-
-	std::string bar="baz";
-
-	if (foo(bar) != "baz")
-		throw EXCEPTION("dimarg std::string conversion failed");
-
-	if (foo(2) != "2")
-		throw EXCEPTION("dimarg int conversion failed");
-
-	if (foo(2.5) != "2.5")
-		throw EXCEPTION("dimarg double conversion failed");
-}
-
 int main()
 {
 	try {
 		testrectangleset();
 		testgrid();
-		testdimarg();
 	} catch (const exception &e)
 	{
 		e->caught();

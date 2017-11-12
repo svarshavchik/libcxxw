@@ -214,12 +214,6 @@ class LIBCXX_HIDDEN screenObj::implObj
 	//
 	// Lock the current theme, and obtain the theme-specific data.
 
-	//! Retrieve theme dimension
-	dim_t get_theme_width_dim_t(const std::string_view &id);
-
-	//! Retrieve theme dimension
-	dim_t get_theme_height_dim_t(const std::string_view &id);
-
 	//! Retrieve theme color
 	rgb get_theme_color(const std::string_view &id);
 

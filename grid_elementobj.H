@@ -14,6 +14,7 @@
 #include "x/w/screenfwd.H"
 #include "x/w/types.H"
 #include "x/w/grid_map_infofwd.H"
+#include "x/w/dim_arg.H"
 
 #include <x/obj.H>
 
@@ -50,16 +51,16 @@ struct new_grid_element_info {
 	current_border_implptr bottom_border;
 
 	//! Padding
-	std::string left_padding_set;
+	dim_arg left_padding_set;
 
 	//! Padding
-	std::string right_padding_set;
+	dim_arg right_padding_set;
 
 	//! Padding
-	std::string top_padding_set;
+	dim_arg top_padding_set;
 
 	//! Padding
-	std::string bottom_padding_set;
+	dim_arg bottom_padding_set;
 
 	//! Horizontal alignment
 	halign horizontal_alignment=halign::left;
