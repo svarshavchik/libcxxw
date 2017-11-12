@@ -17,6 +17,7 @@
 #include "x/w/text_hotspot.H"
 #include "x/w/button.H"
 #include "x/w/text_param.H"
+#include "x/w/text_param_literals.H"
 #include "x/w/gridfactory.H"
 #include "x/w/gridlayoutmanager.H"
 #include "x/w/standard_comboboxlayoutmanager.H"
@@ -169,7 +170,10 @@ void file_dialogObj::implObj::selected(const std::string &filename,
 		if (access(filename.c_str(), W_OK) == 0)
 			break;
 		if (errno == ENOENT)
-			break;
+		{
+			if (access(dir.c_str(), W_OK) == 0)
+				break;
+		}
 
 		access_denied(d, access_denied_message, filename);
 		return;
@@ -186,6 +190,8 @@ void file_dialogObj::implObj::selected(const std::string &filename,
 text_param file_dialogObj::implObj::create_dirlabel(const std::string &s)
 {
 	text_param t;
+
+	t( "filedir_directoryfont"_theme_font );
 
 	if (s.empty())
 		return t; // Shouldn't happen.
@@ -291,6 +297,8 @@ text_param file_dialogObj::implObj
 			[&, this](focus_change e)
 			{
 				text_param t;
+
+				t( "filedir_directoryfont"_theme_font );
 
 				if (e==focus_change::gained)
 				{

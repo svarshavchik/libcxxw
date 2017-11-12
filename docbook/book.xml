@@ -19,6 +19,8 @@
 <!ENTITY creator "<link linkend='creator'>creator lambda</link>">
 <!ENTITY itemmethods "<link linkend='listitemmethods'><methodname>append_items</methodname>(), <methodname>insert_items</methodname>(), <methodname>replace_items</methodname>(), and <methodname>replace_all_items</methodname>()</link>">
 <!ENTITY allitemmethods "<link linkend='listitemmethods'><methodname>append_items</methodname>(), <methodname>insert_items</methodname>(), <methodname>replace_items</methodname>(), <methodname>replace_all_items</methodname>() and <methodname>remove_item</methodname>()</link>">
+<!ENTITY dialogid "<link linkend='dialogidentifiers'>dialog identifier</link>">
+
 <!ENTITY intro SYSTEM "intro.xml">
 <!ENTITY install SYSTEM "install.xml">
 <!ENTITY refobj "/refobj.html">

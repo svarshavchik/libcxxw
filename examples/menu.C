@@ -571,7 +571,8 @@ void create_file_open(const x::w::main_window &main_window)
 {
 	x::w::file_dialog_config
 		config{
-		[](const auto &fd, const std::string &filename,
+		[](const x::w::file_dialog &fd,
+		   const std::string &filename,
 		   const x::w::busy &mcguffin)
 		{
 			std::cout << "File->Open: " << filename << std::endl;

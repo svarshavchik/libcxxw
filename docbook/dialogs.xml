@@ -104,6 +104,18 @@ const &ns;::w::main_window dialog_window;</programlisting>
 	</para>
       </listitem>
     </varlistentry>
+
+    <varlistentry>
+      <term><methodname>create_file_dialog</methodname>()</term>
+      <listitem>
+	<para>
+	  <methodname>create_file_dialog</methodname>() returns a new
+	  <ulink url="&link-typedef-x--w-file-dialog;"><classname>&ns;::w::file_dialog</classname></ulink>
+	  which implements a basic interface for
+	  <link linkend="filedialog">selecting a file to open or create</link>.
+	</para>
+      </listitem>
+    </varlistentry>
   </variablelist>
 
   <section id="dialogidentifiers">
@@ -206,14 +218,156 @@ const &ns;::w::main_window dialog_window;</programlisting>
     </itemizedlist>
   </section>
 
+  <section id="filedialog">
+    <title>File dialogs</title>
+
+    <mediaobject>
+      <imageobject>
+	<imagedata fileref="file_dialog.png" format="PNG"
+		   contentwidth="738px" contentdepth="393px" />
+      </imageobject>
+      <textobject>
+	<phrase>
+	  File
+	</phrase>
+      </textobject>
+      <caption>
+	<para>
+	  <filename>menu.C</filename> from <xref linkend="menu" />
+	  gives an example of presenting a file dialog, a basic interface for
+	  opening or creating a file.
+	  Main window's <methodname>create_file_dialog</methodname>
+	  returns a new
+	  <ulink url="&link-typedef-x--w-file-dialog;"><classname>&ns;::w::file_dialog</classname></ulink>
+	  object.
+	  <filename>menu.C</filename> creates two file dialogs, for its
+	  <quote>File/New</quote> and <quote>File/Close</quote> menu
+	  options.
+	</para>
+      </caption>
+    </mediaobject>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+    &ns;::w::file_dialog_config config{
+            [](const &ns;::w::file_dialog &amp;fd,
+               const std::string &amp;filename,
+               const &ns;::w::busy &amp;mcguffin)
+            {
+               fd->dialog_window->hide();
+            },
+            [](const &ns;::w::busy &amp;mcguffin)
+            {
+            },
+            &ns;::w::file_dialog_type::create_file
+        };</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      <ulink url="&link-x--w--file-dialog-config;"><classname>&ns;::w::file_dialog_config</classname></ulink>
+      configures a new dialog.
+      Its first two parameters are callable objects. The first one gets
+      executed when a filename gets selected by the dialog, in one of two
+      ways: typing in the filename manually followed by
+      <quote>Enter</quote>, or clicking the <quote>Ok</quote> button;
+      or double-clicking on an existing file in the list of shown files.
+      The dialog does not get automatically closed, but the first parameter
+      to the lambda is the <classname>&ns;::w::file_dialog</classname>,
+      in case it should be <methodname>hide</methodname>()-en.
+      The second lambda gets executed if the file dialog gets closed for
+      any other reason (<quote>Cancel</quote> button, <keycap>Esc</keycap>,
+      or using the dialog window's close button, if one is provided by the
+      window manager).
+    </para>
+
+    <para>
+      The third optional parameter defaults to
+      <link linkend="&link-enum-x--w-file-dialog-type;"><literal>&ns;::w::file_dialog_type::existing_file</literal></link>.
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+    config.filename_filters.emplace_back("Text files", "\\.txt$");
+    config.filename_filters.emplace_back("Image files", "\\.(gif|png|jpg)$");
+    config.initial_filename_filter=1;</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      The first field in the file dialog is an
+      <link linkend="inputfields">input field</link> for typing in a filename
+      directly.
+      Below it is the name of the current directory displayed by the file
+      dialog. Each component in the directory's name is clickable, and
+      shows the list of files and subdirectories below it.
+      A <link linkend="combobox">combo-box</link>
+      with filename filters appears between the current directory's
+      name, and the contents of the directory. This limits the
+      list of files shown below to only the filenames that match the
+      filename filter pattern.
+    </para>
+
+    <para>
+      <classname>&ns;::w::file_dialog_config</classname>'s
+      <varname>filename_filters</varname> sets the list of filename filters
+      shown in the combo-box. This <classname>std::vector</classname> defaults
+      to one entry: <quote>All files</quote>, for all files in the directory.
+      Each entry in the vector consists of:
+    </para>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  The label shown in the combo-box, a
+	  <ulink url="&link-x--w--text-param;"><classname>&ns;::w::text_params</classname></ulink>,
+	  or a plain text string.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  The regular expression that a filename must match, in order to
+	  be visible. Note that this is a regular expression, and not a simple
+	  filename pattern.
+	</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>
+      The above example adds two more filters to the vector, and sets
+      the <varname>initial_filename_filter</varname>, that's shown initially
+      when the dialog opens, to <quote>Text files</quote>
+      (index #0 is the default <quote>All files</quote> option).
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+	  x::w::file_dialog d=main_window->create_file_dialog(
+                "file_open@example.libcxx", config, true);</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      <methodname>create_file_dialog</methodname>()'s first parameter is
+      the new &dialogid;. The second parameter is the initialized
+      <classname>&ns;::w::file_dialog_config</classname>. The third
+      optional parameter specifies whether the new file dialog
+      is <link linkend="modaldialogs">modal</link>.
+    </para>
+  </section>
+
   <section id="dialogshow">
     <title>Showing and hiding dialogs</title>
 
     <para>
       <methodname>create_ok_dialog</methodname>(), or
-      <methodname>create_ok_cancel_dialog</methodname>() and others,
-      create a new dialog. New dialogs are not visible by default, and must
-      be shown like a main window. This is done simply by using its
+      <methodname>create_ok_cancel_dialog</methodname>() and the rest,
+      create new dialogs. New dialogs are not visible by default, they must
+      be shown like main windows. This is done simply by using its
       <varname>dialog_window</varname> class member:
     </para>
 
@@ -227,11 +381,11 @@ d->dialog_window->show_all();</programlisting>
     </blockquote>
 
     <para>
-      Invoking a created dialog's
-      <methodname>show_all</methodname>() method makes it visible.
+      Invoking a dialog window's
+      <methodname>show_all</methodname>() method makes the dialog visible.
       The buttons in dialogs created by standard methods automatically
       <methodname>hide</methodname>() their dialog before
-      invoking the callbacks.
+      invoking the callbacks, except as noted.
       Depending on the window manager, the dialogs may have a title and
       a close button, like a normal application window.
       <link linkend="menu"><filename>menu.C</filename></link> uses
@@ -273,16 +427,17 @@ d->dialog_window->show_all();</programlisting>
   </section>
 
   <section id="dialogrefs">
-    <title>The created <classname>&ns;::w::main_window</classname>
-      owns references on its
-      dialogs</title>
+    <title><classname>&ns;::w::main_window</classname>s
+      own references on their dialogs</title>
 
-    <para>
-      Because <classname>&ns;::w::dialog</classname>s may create their own
-      dialogs, this applies recursively. A created
-      <classname>&ns;::w::dialog</classname>
-      owns references on its own dialogs, too.
-    </para>
+    <note>
+      <para>
+	<classname>&ns;::w::dialog</classname>s can create their own
+	dialogs, and this applies recursively also.
+	<classname>&ns;::w::dialog</classname>s
+	own references on their own dialogs, too.
+      </para>
+    </note>
 
     <para>
       A <link linkend="concepts">fundamental concept</link> of the &app;
@@ -311,7 +466,7 @@ std::unordered_set&lt;std::string&gt; dialogs=main_window->dialogs();</programli
     <para>
        <filename>menu.C</filename>
        gives an example of using <methodname>dialogs</methodname>(), which
-       returns all identifier labels for all dialogs that the
+       returns all identifiers for all dialogs that the
        <classname>&ns;::w::main_window</classname> (or the
        <classname>&ns;::w::dialog</classname>) owns.
     </para>
@@ -338,8 +493,8 @@ m->append_items
       <filename>menu.C</filename> creates several dialogs, like
       <quote>help_question</quote>, for a main window with a menu which
       open the various dialogs.
-      <methodname>get_dialog</methodname>() takes a dialog identifier and
-      returns the previously-created dialog with that identifier label.
+      <methodname>get_dialog</methodname>() takes a &dialogid; and
+      returns the previously-created dialog with this identifier.
       The &callback;s that get installed for each menu item use it to
       locate the appropriate dialog, and make it visible.
     </para>
@@ -457,7 +612,7 @@ auto new_custom_dialog=mw->create_custom_dialog(
 
     <para>
       <methodname>create_custom_dialog</methodname>()'s first parameter is
-      the new dialog's identifier. It's second parameter is a callable object
+      the new &dialogid;. It's second parameter is a callable object
       that receives a
       <classname>&ns;::w::dialog_args</classname> parameter, and returns a
       reference to a reference to a subclass of a

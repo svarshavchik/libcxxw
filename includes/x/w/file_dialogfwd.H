@@ -13,7 +13,7 @@ LIBCXXW_NAMESPACE_START
 
 class file_dialogObj;
 
-/*! A file open/create dialog.
+/*! \anchor file_dialog A file open/create dialog.
 
 \code
 INSERT_LIBX_NAMESPACE:w::main_window mw;
@@ -50,19 +50,19 @@ that make it up; requiring a call to show_all() to make all of that visible.
 
 typedef ref<file_dialogObj> file_dialog;
 
-//! A constant \ref file_dialog "WHATITIS".
+//! A constant \ref file_dialog "file dialog".
 
 //! \see file_dialog
 
 typedef const_ref<file_dialogObj> const_file_dialog;
 
-//! A nullable pointer reference to a \ref file_dialog "WHATITIS".
+//! A nullable pointer reference to a \ref file_dialog "file dialog".
 
 //! \see file_dialog
 
 typedef ptr<file_dialogObj> file_dialogptr;
 
-//! A nullable pointer reference to a const \ref file_dialog "WHATITIS".
+//! A nullable pointer reference to a const \ref file_dialog "file dialog".
 
 //! \see file_dialog
 

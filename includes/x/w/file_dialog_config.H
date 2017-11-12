@@ -14,7 +14,28 @@
 
 LIBCXXW_NAMESPACE_START
 
-enum class file_dialog_type { existing_file, write_file, create_file };
+//! Sets the behavior of a \ref file_dialog "file dialog" after selecting a file.
+
+enum class file_dialog_type {
+
+	//! The selected file must exist and must be readable.
+	//!
+	//! Otherwise an error message gets shown.
+
+	existing_file,
+
+	//! If the selected file exists, it must be writable; if the
+	//! selected file does not exist its directory must be writable.
+	//!
+	//! Otherwise an error message gets shown.
+
+	write_file,
+
+	//! The selected file's directory must be writable, the
+	//! permissions of any existing file are ignored.
+	//!
+	//! Otherwise an error message gets shown.
+	create_file };
 
 //! The configuration of a file dialog.
 
