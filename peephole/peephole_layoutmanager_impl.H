@@ -129,6 +129,14 @@ class LIBCXX_HIDDEN peepholeObj::layoutmanager_implObj
 	//! The internal implementation object for the vertical scrollbar
 	const ref<scrollbar_implObj> vertical_scrollbar;
 
+	//! Scrollwheel action.
+
+	void vert_scroll_low(IN_THREAD_ONLY, const input_mask &);
+
+	//! Scrollwheel action.
+
+	void vert_scroll_high(IN_THREAD_ONLY, const input_mask &);
+
  protected:
 
 	//! The horizontal scrollbar display element

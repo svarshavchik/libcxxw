@@ -171,6 +171,7 @@ class LIBCXX_HIDDEN scrollbarObj::implObj :
 	//! The current major size of the handlebar end image.
 	dim_t handlebar_end_size(IN_THREAD_ONLY) const;
 
+ public:
 	//! Advance slider towards 0.
 
 	//! Returns true if the slider was moved and redrawn.
@@ -191,7 +192,6 @@ class LIBCXX_HIDDEN scrollbarObj::implObj :
 	//! Returns true if the slider was moved and redrawn.
 	bool page_down(IN_THREAD_ONLY);
 
- public:
 	//! Internal constructor
 
 	implObj(const scrollbar_impl_init_params &init_params);

@@ -219,6 +219,18 @@ void peepholeObj::layoutmanager_implObj::initialize_scrollbars()
 	vertical_scrollbar->my_layoutmanager=me;
 }
 
+void peepholeObj::layoutmanager_implObj::vert_scroll_low(IN_THREAD_ONLY,
+							 const input_mask &m)
+{
+	vertical_scrollbar->to_low(IN_THREAD, m);
+}
+
+void peepholeObj::layoutmanager_implObj::vert_scroll_high(IN_THREAD_ONLY,
+							  const input_mask &m)
+{
+	vertical_scrollbar->to_high(IN_THREAD, m);
+}
+
 peepholeObj::layoutmanager_implObj::~layoutmanager_implObj()=default;
 
 void peepholeObj::layoutmanager_implObj
@@ -481,12 +493,6 @@ void peepholeObj::layoutmanager_implObj
 		   dim_t peephole_size,
 		   dim_t increment)
 {
-	if (visibility == scrollbar_visibility::never)
-	{
-		visibility_element->request_visibility(IN_THREAD, false);
-		return;
-	}
-
 	scrollbar_config new_config;
 
 	new_config.range=scroll_v_t::truncate(size);
@@ -503,7 +509,16 @@ void peepholeObj::layoutmanager_implObj
 
 	scrollbar->update_config(IN_THREAD, new_config);
 
-	if (visibility == scrollbar_visibility::always)
+	// Even when we're not visible we must still religiously do the above
+	// and update_config(), so that the scrollbar configuration reflects
+	// reality. Scroll wheel-initiated scrolling (pointer button 4/5)
+	// may initiate scrolling even when this vertical scrollbar is not
+	// visible, and if it's not visible because there's nothing to scroll,
+	// the scrollbar metrics should reflect that.
+
+	if (visibility == scrollbar_visibility::never)
+		visibility_element->request_visibility(IN_THREAD, false);
+	else if (visibility == scrollbar_visibility::always)
 		visibility_element->request_visibility(IN_THREAD, true);
 	else
 		visibility_element->request_visibility(IN_THREAD,
