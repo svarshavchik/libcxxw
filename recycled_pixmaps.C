@@ -8,6 +8,7 @@
 #include "background_color.H"
 #include "screen.H"
 #include "x/w/pictformat.H"
+#include "x/w/rgb_hash.H"
 #include "pixmap.H"
 #include "defaulttheme.H"
 #include "picture.H"
@@ -77,27 +78,36 @@ scratch_buffer screenObj::implObj
 
 class LIBCXX_HIDDEN theme_background_colorObj : public background_colorObj {
 
-	const std::string theme_color;
+	const color_arg theme_color;
 	const ref<screenObj::implObj> screen;
-
-	rgb current_rgb;
-	const_picture current_color;
-
 	defaulttheme current_theme;
+
+	static background_color
+		get_nontheme_background_color(const color_arg &theme_color,
+					      const ref<screenObj::implObj> &s,
+					      const defaulttheme &theme)
+	{
+		auto rgb=theme->get_theme_color(theme_color);
+		auto p=s->create_solid_color_picture(rgb);
+
+		return s->create_background_color(p);
+	}
+
+	background_color nontheme_background_color;
 
  public:
 
 	// The constructor gets initializes with the current background color
 
-	theme_background_colorObj(const std::string &theme_color,
-				  const rgb &current_rgb,
-				  const const_picture &current_picture,
+	theme_background_colorObj(const color_arg &theme_color,
 				  const ref<screenObj::implObj> &screen)
 		: theme_color(theme_color),
 		screen(screen),
-		current_rgb(current_rgb),
-		current_color(current_picture),
-		current_theme(*current_theme_t::lock(screen->current_theme))
+		current_theme(screen->current_theme.get()),
+		nontheme_background_color
+		(get_nontheme_background_color(theme_color,
+					       screen,
+					       current_theme))
 		{
 		}
 
@@ -105,7 +115,7 @@ class LIBCXX_HIDDEN theme_background_colorObj : public background_colorObj {
 
 	const_picture get_current_color(IN_THREAD_ONLY) override
 	{
-		return current_color;
+		return nontheme_background_color->get_current_color(IN_THREAD);
 	}
 
 	// Potential rare race condition, the theme changing after the
@@ -113,9 +123,7 @@ class LIBCXX_HIDDEN theme_background_colorObj : public background_colorObj {
 
 	void initialize(IN_THREAD_ONLY) override
 	{
-		auto theme=*current_theme_t::lock{screen->current_theme};
-
-		theme_updated(IN_THREAD, theme);
+		theme_updated(IN_THREAD, screen->current_theme.get());
 	}
 
 	void theme_updated(IN_THREAD_ONLY,
@@ -124,42 +132,25 @@ class LIBCXX_HIDDEN theme_background_colorObj : public background_colorObj {
 		if (new_theme == current_theme)
 			return;
 
-		// Check the current theme color. Did it change?
-
-		auto new_rgb=new_theme->get_theme_color(theme_color);
-
-		if (current_rgb != new_rgb)
-		{
-			// Create a new color.
-
-			current_color=screen->create_solid_color_picture
-				(new_rgb);
-
-			current_rgb=new_rgb;
-		}
-
 		current_theme=new_theme;
+
+		nontheme_background_color=
+			get_nontheme_background_color(theme_color,
+						      screen,
+						      current_theme);
 	}
 };
 
 background_color screenObj::implObj
-::create_background_color(const std::string_view &color_name)
+::create_background_color(const color_arg &color_name)
 {
-	std::string color_name_str{color_name};
-
-	auto current_rgb=get_theme_color(color_name);
-
 	return recycled_pixmaps_cache->theme_background_color_cache
 		->find_or_create
-		(color_name_str,
+		(color_name,
 		 [&,this]
 		 {
 			 return ref<theme_background_colorObj>
-				 ::create(color_name_str,
-					  current_rgb,
-					  this->create_solid_color_picture
-					  (current_rgb),
-					  ref<screenObj::implObj>(this));
+				 ::create(color_name, ref(this));
 		 });
 }
 

@@ -241,19 +241,15 @@ screen::base::visual_t screenObj::implObj
 //
 // Theme access
 
-rgb screenObj::implObj::get_theme_color(const std::string_view &id)
+rgb screenObj::implObj::get_theme_color(const color_arg &theme_color)
 {
-	current_theme_t::lock lock(current_theme);
-
-	return (*lock)->get_theme_color(id);
+	return current_theme.get()->get_theme_color(theme_color);
 }
 
 rgb::gradient_t screenObj::implObj
 ::get_theme_color_gradient(const std::string_view &id)
 {
-	current_theme_t::lock lock(current_theme);
-
-	return (*lock)->get_theme_color_gradient(id);
+	return current_theme.get()->get_theme_color_gradient(id);
 }
 
 LIBCXXW_NAMESPACE_END

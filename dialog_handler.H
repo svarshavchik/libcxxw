@@ -6,6 +6,7 @@
 #define dialog_handler_h
 
 #include "x/w/dialogobj.H"
+#include "x/w/rgbfwd.H"
 #include "main_window_handler.H"
 #include "connection_threadfwd.H"
 
@@ -33,7 +34,7 @@ class LIBCXX_HIDDEN dialogObj::handlerObj : public main_windowObj::handlerObj {
 
 	handlerObj(IN_THREAD_ONLY,
 		   const ref<generic_windowObj::handlerObj> &parent_handler,
-		   const char *background_color,
+		   const color_arg &background_color,
 		   bool modal);
 
 	//! Override set_inherited_visibility()

@@ -74,7 +74,7 @@ public:
 
 	//! Use a standard background color for this display element.
 
-	void set_background_color(const std::string_view &name);
+	void set_background_color(const color_arg &name);
 
 	//! Use a custom background color for this display element.
 

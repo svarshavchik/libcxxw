@@ -14,7 +14,7 @@ popup_attachedto_handlerObj
 ::popup_attachedto_handlerObj(opened_popup_t opened_popup,
 			      closed_popup_t closed_popup,
 			      const ref<generic_windowObj::handlerObj> &parent,
-			      const char *background_color,
+			      const color_arg &background_color,
 			      const popup_attachedto_info &attachedto_info,
 			      size_t nesting_level)
 	: popupObj::handlerObj(parent->thread(), parent, background_color,

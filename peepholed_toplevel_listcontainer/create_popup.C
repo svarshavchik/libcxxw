@@ -78,7 +78,7 @@ do_create_peepholed_toplevel_listcontainer_popup
 		::create(std::get<0>(popup_type),
 			 std::get<1>(popup_type),
 			 parent_handler,
-			 args.list_style.background_color.c_str(),
+			 args.list_style.background_color,
 			 attachedto_info,
 			 args.parent_element->nesting_level+
 			 args.extra_nesting_level);

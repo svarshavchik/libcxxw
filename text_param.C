@@ -95,14 +95,11 @@ text_param &text_param::operator()(const rgb &c)
 {
 	auto s=string.size();
 
-	if (colors.find(s) == colors.end() &&
-	    theme_colors.find(s) == theme_colors.end())
+	if (colors.find(s) == colors.end())
 		colors.insert({s, c});
 	else
 	{
-		if (background_colors.find(s) != background_colors.end() ||
-		    theme_background_colors.find(s) !=
-		    theme_background_colors.end())
+		if (background_colors.find(s) != background_colors.end())
 			throw EXCEPTION(gettextmsg("Duplicate color specification."));
 		background_colors.insert({s, c});
 	}
@@ -113,16 +110,13 @@ text_param &text_param::operator()(const theme_color &c)
 {
 	auto s=string.size();
 
-	if (colors.find(s) == colors.end() &&
-	    theme_colors.find(s) == theme_colors.end())
-		theme_colors.insert({s, c.name});
+	if (colors.find(s) == colors.end())
+		colors.insert({s, c.name});
 	else
 	{
-		if (background_colors.find(s) != background_colors.end() ||
-		    theme_background_colors.find(s) !=
-		    theme_background_colors.end())
+		if (background_colors.find(s) != background_colors.end())
 			throw EXCEPTION(gettextmsg("Duplicate color specification."));
-		theme_background_colors.insert({s, c.name});
+		background_colors.insert({s, c.name});
 	}
 	return *this;
 }
@@ -179,10 +173,6 @@ richtextstring elementObj::implObj
 	for (const auto &p:t.colors)
 		all_positions.insert(p.first);
 	for (const auto &p:t.background_colors)
-		all_positions.insert(p.first);
-	for (const auto &p:t.theme_colors)
-		all_positions.insert(p.first);
-	for (const auto &p:t.theme_background_colors)
 		all_positions.insert(p.first);
 	for (const auto &p:t.decorations)
 		all_positions.insert(p.first);
@@ -249,24 +239,10 @@ richtextstring elementObj::implObj
 			{
 				font.textcolor=screen_impl
 					->create_background_color
-					(screen_impl->create_solid_color_picture
-					 (iter->second));
-				font.bg_color=background_colorptr();
-			}
-		}
-
-		{
-			auto iter=t.theme_colors.find(p);
-
-			if (iter != t.theme_colors.end())
-			{
-				font.textcolor=screen_impl
-					->create_background_color
 					(iter->second);
 				font.bg_color=background_colorptr();
 			}
 		}
-
 
 		{
 			auto iter=t.background_colors.find(p);
@@ -275,18 +251,8 @@ richtextstring elementObj::implObj
 			{
 				font.bg_color=screen_impl
 					->create_background_color
-					(screen_impl->create_solid_color_picture
-					 (iter->second));
-			}
-		}
-
-		{
-			auto iter=t.theme_background_colors.find(p);
-
-			if (iter != t.theme_background_colors.end())
-				font.bg_color=screen_impl
-					->create_background_color
 					(iter->second);
+			}
 		}
 
 		{

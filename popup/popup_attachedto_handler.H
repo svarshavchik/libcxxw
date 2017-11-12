@@ -9,6 +9,7 @@
 #include "popup/popup_handler.H"
 #include "connection_threadfwd.H"
 #include "shared_handler_data.H"
+#include "x/w/rgbfwd.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -46,7 +47,7 @@ class LIBCXX_HIDDEN popup_attachedto_handlerObj : public popupObj::handlerObj {
 		(opened_popup_t opened_popup,
 		 closed_popup_t closed_popup,
 		 const ref<generic_windowObj::handlerObj> &parent,
-		 const char *background_color,
+		 const color_arg &background_color,
 		 const popup_attachedto_info &attachedto_info,
 		 size_t nesting_level);
 

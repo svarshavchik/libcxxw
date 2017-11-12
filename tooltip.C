@@ -50,7 +50,7 @@ class LIBCXX_HIDDEN tooltip_handlerObj : public popupObj::handlerObj {
 	//! Constructor
 	tooltip_handlerObj(IN_THREAD_ONLY,
 			   const ref<generic_windowObj::handlerObj> &parent,
-			   const char *background_color,
+			   const color_arg &background_color,
 			   const ref<obj> &grab,
 			   coord_t pointer_x,
 			   coord_t pointer_y);
@@ -87,7 +87,7 @@ class LIBCXX_HIDDEN tooltip_handlerObj : public popupObj::handlerObj {
 tooltip_handlerObj::tooltip_handlerObj(IN_THREAD_ONLY,
 				       const ref<generic_windowObj::handlerObj>
 				       &parent,
-				       const char *background_color,
+				       const color_arg &background_color,
 				       const ref<obj> &grab,
 				       coord_t pointer_x,
 				       coord_t pointer_y)

@@ -18,7 +18,7 @@ LIBCXXW_NAMESPACE_START
 
 main_windowObj::handlerObj::handlerObj(IN_THREAD_ONLY,
 				       const screen &parent_screen,
-				       const char *background_color)
+				       const color_arg &background_color)
 	: generic_windowObj::handlerObj
 	::resourcesObj(IN_THREAD, parent_screen,
 		       background_color,

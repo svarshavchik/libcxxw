@@ -267,27 +267,14 @@ public:
 	//!
 	//! Do not touch, use \c operator() exclusively.
 
-	std::unordered_map<size_t, rgb> colors;
-	//! Colors for the text string being built.
-
-	//! \internal
-	//!
-	//! Do not touch, use \c operator() exclusively.
-	std::unordered_map<size_t, rgb> background_colors;
+	std::unordered_map<size_t, color_arg> colors;
 
 	//! Colors for the text string being built.
 
 	//! \internal
 	//!
 	//! Do not touch, use \c operator() exclusively.
-	std::unordered_map<size_t, std::string> theme_colors;
-
-	//! Colors for the text string being built.
-
-	//! \internal
-	//!
-	//! Do not touch, use \c operator() exclusively.
-	std::unordered_map<size_t, std::string> theme_background_colors;
+	std::unordered_map<size_t, color_arg> background_colors;
 
 	//! Decorations for the text string being built.
 

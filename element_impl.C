@@ -752,10 +752,10 @@ void elementObj::implObj::remove_background_color()
 }
 
 void elementObj::implObj
-::set_background_color(const std::string_view &name)
+::set_background_color(const color_arg &theme_color)
 {
 	set_background_color(get_screen()->impl
-			     ->create_background_color(name));
+			     ->create_background_color(theme_color));
 }
 
 void elementObj::implObj
@@ -845,15 +845,9 @@ current_fontcollection elementObj::implObj
 }
 
 background_color elementObj::implObj
-::create_background_color(const std::string_view &color_name)
+::create_background_color(const color_arg &color_name)
 {
 	return get_screen()->impl->create_background_color(color_name);
-}
-
-background_color elementObj::implObj::create_background_color(const rgb &color)
-{
-	return get_screen()->impl->create_background_color
-		(get_screen()->create_solid_color_picture(color));
 }
 
 bool elementObj::implObj::enabled(IN_THREAD_ONLY)

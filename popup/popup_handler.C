@@ -22,7 +22,7 @@ LIBCXXW_NAMESPACE_START
 popupObj::handlerObj::handlerObj(IN_THREAD_ONLY,
 				 const ref<generic_windowObj::handlerObj>
 				 &parent,
-				 const char *background_color,
+				 const color_arg &background_color,
 				 size_t nesting_level)
 	: generic_windowObj::handlerObj
 	::resourcesObj(IN_THREAD, parent->get_screen(),

@@ -1075,23 +1075,30 @@ dim_t defaultthemeObj::compute_height(double millimeters)
 	return dim_t::value_type(scaled);
 }
 
-rgb defaultthemeObj::get_theme_color(const std::string_view &id)
+rgb defaultthemeObj::get_theme_color(const color_arg &color) const
 {
-	std::vector<std::string> ids;
+	return std::visit(visitor{
+			[](const rgb &color) { return color; },
+			[this](const std::string &id)
+			{
+				std::vector<std::string> ids;
 
-	if (!id.empty())
-		strtok_str(id, ", \r\t\n", ids);
+				if (!id.empty())
+					strtok_str(id, ", \r\t\n", ids);
 
-	for (const auto &try_id:ids)
-	{
-		auto iter=colors.find(try_id);
+				for (const auto &try_id:ids)
+				{
+					auto iter=colors.find(try_id);
 
-		if (iter != colors.end())
-			return iter->second;
-	}
+					if (iter != colors.end())
+						return iter->second;
+				}
 
-	throw EXCEPTION(gettextmsg(_("Theme color %1% does not exist"),
-				   id));
+				throw EXCEPTION
+					(gettextmsg
+					 (_("Theme color %1% does not exist"),
+					  id));
+			}}, color);
 }
 
 rgb::gradient_t

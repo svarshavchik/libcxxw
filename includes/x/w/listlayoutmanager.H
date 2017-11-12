@@ -15,6 +15,7 @@
 #include <x/w/text_param.H>
 #include <x/w/image_param.H>
 #include <x/w/shortcut.H>
+#include <x/w/rgb.H>
 #include <x/ref.H>
 #include <x/refptr_traits.H>
 #include <x/w/busyfwd.H>
@@ -124,18 +125,18 @@ class LIBCXX_HIDDEN new_listlayoutmanager : public new_focusable_layoutmanager {
 	scrollbar_visibility vertical_scrollbar;
 
 	//! Background color
-	std::string background_color;
+	color_arg background_color;
 
 	//! Selected color
 
 	//! Used only by a \c INSERT_LIBX_NAMESPACE::w::highlighted_list.
-	std::string selected_color;
+	color_arg selected_color;
 
 	//! Highlighted color
-	std::string highlighted_color;
+	color_arg highlighted_color;
 
 	//! Currently selected color
-	std::string current_color;
+	color_arg current_color;
 
 	//! Constructor
 	new_listlayoutmanager(const listlayoutstyle_impl &list_style

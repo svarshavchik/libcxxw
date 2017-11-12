@@ -196,7 +196,7 @@ public:
 	dim_t compute_height(double millimeters);
 
 	//! Retrieve theme color
-	rgb get_theme_color(const std::string_view &id);
+	rgb get_theme_color(const color_arg &color) const;
 
 	//! Retrieve theme gradient
 	rgb::gradient_t get_theme_color_gradient(const std::string_view &id);

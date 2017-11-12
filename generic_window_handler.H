@@ -108,7 +108,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	virtual ptr<handlerObj> get_popup_parent(IN_THREAD_ONLY);
  private:
 	//! Default background color name
-	const std::string original_background_color;
+	const color_arg original_background_color;
 
 	//! Whether this window is currently receiving input focus
 
@@ -188,7 +188,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 		size_t nesting_level;
 
 		//! Background color
-		const char *background_color;
+		color_arg background_color;
 	};
 
  protected:

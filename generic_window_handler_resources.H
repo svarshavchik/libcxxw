@@ -8,6 +8,7 @@
 #include "generic_window_handler.H"
 #include "icon_images_set_elementfwd.H"
 #include "background_color_elementfwd.H"
+#include "x/w/rgb.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -34,7 +35,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj::resourcesObj
 
 	resourcesObj(IN_THREAD_ONLY,
 		     const screen &me,
-		     const char *background_color,
+		     const color_arg &background_color,
 		     const shared_handler_data &handler_data,
 		     size_t nesting_level);
 

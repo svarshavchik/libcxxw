@@ -11,7 +11,7 @@ LIBCXXW_NAMESPACE_START
 dialogObj::handlerObj::handlerObj(IN_THREAD_ONLY,
 				  const ref<generic_windowObj
 				  ::handlerObj> &parent_handler,
-				  const char *background_color,
+				  const color_arg &background_color,
 				  bool modal)
 	: main_windowObj::handlerObj(IN_THREAD, parent_handler->get_screen(),
 				     background_color),

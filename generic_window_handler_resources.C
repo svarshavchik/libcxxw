@@ -12,14 +12,14 @@
 LIBCXXW_NAMESPACE_START
 
 static background_color default_background_color(const screen &s,
-						 const char *color)
+						 const color_arg &color)
 {
 	return s->impl->create_background_color(color);
 }
 
 static inline generic_windowObj::handlerObj::constructor_params
 create_constructor_params(const screen &parent_screen,
-			  const char *background_color,
+			  const color_arg &background_color,
 			  size_t nesting_level)
 {
 	rectangle dimensions={0, 0, 1, 1};
@@ -43,7 +43,7 @@ create_constructor_params(const screen &parent_screen,
 			vm, // events_and_mask
 		},
 		parent_screen->impl->toplevelwindow_pictformat,
-	        nesting_level,
+		nesting_level,
 		background_color
 	};
 }
@@ -51,7 +51,7 @@ create_constructor_params(const screen &parent_screen,
 generic_windowObj::handlerObj::resourcesObj
 ::resourcesObj(IN_THREAD_ONLY,
 	       const screen &parent_screen,
-	       const char *background_color,
+	       const color_arg &background_color,
 	       const shared_handler_data &handler_data,
 	       size_t nesting_level)
 	: generic_window_handler_and_resources_t

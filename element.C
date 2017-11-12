@@ -67,8 +67,7 @@ void elementObj::hide()
 	impl->request_visibility(false);
 }
 
-void elementObj::set_background_color(const std::string_view
-				      &name)
+void elementObj::set_background_color(const color_arg &name)
 {
 	impl->set_background_color(name);
 }

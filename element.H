@@ -16,6 +16,7 @@
 #include "x/w/motion_eventfwd.H"
 #include "x/w/busyfwd.H"
 #include "x/w/focus.H"
+#include "x/w/rgb.H"
 #include "connection_threadfwd.H"
 #include "defaultthemefwd.H"
 #include "elementfwd.H"
@@ -216,7 +217,7 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! If there's no background color of the given name, use the
 	//! default value.
 
-	void set_background_color(const std::string_view &name);
+	void set_background_color(const color_arg &theme_color);
 
 	//! Use a custom background color for this display element.
 
@@ -751,12 +752,7 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 	//! Shortcut for invoking the same screen method
 
-	background_color create_background_color(const std
-						 ::string_view &color_name);
-
-	//! Shortcut for invoking the same screen method
-
-	background_color create_background_color(const rgb &color);
+	background_color create_background_color(const color_arg &color_name);
 
 	//! Create a \ref richtextstring "rich text string", based on a \ref text_param "text_param" and a default \ref richtextmeta "richtextmeta".
 

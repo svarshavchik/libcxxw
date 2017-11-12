@@ -10,6 +10,7 @@
 #include "x/w/pictformatfwd.H"
 #include "x/w/scratch_bufferfwd.H"
 #include "x/w/picturefwd.H"
+#include "x/w/rgb.H"
 #include <x/obj.H>
 #include <x/weakunordered_multimapfwd.H>
 #include <string>
@@ -60,7 +61,7 @@ public:
 
 	//! Container for a cache of theme background colors
 
-	typedef weakunordered_multimap<std::string, background_colorObj>
+	typedef weakunordered_multimap<color_arg, background_colorObj>
 		theme_background_color_cache_t;
 
 	theme_background_color_cache_t theme_background_color_cache;
