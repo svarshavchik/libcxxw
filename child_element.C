@@ -45,8 +45,7 @@ child_elementObj::child_elementObj(const ref<containerObj::implObj> &child_conta
 			      .drawable_pictformat,
 			      init_params.scratch_buffer_id.empty()
 			      ? "default@libcxx":init_params.scratch_buffer_id),
-	child_container(init_params.container_override ? child_container
-		  : child_container->parent_for_new_child(child_container))
+	  child_container(child_container)
 {
 }
 

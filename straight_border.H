@@ -37,14 +37,6 @@ public:
 
 	static straight_border_factory_t create_vertical_border;
 
-	//! Create a separator for list or menu items.
-
-	//! It's a border element.
-
-	static straight_border
-		create_horizontal_separator(const ref<containerObj::implObj> &,
-					    const std::string_view &);
-
 	//! Update a horizontal border
 
 	//! When updating a grid's borders, we can optimize things a bit,
@@ -103,8 +95,7 @@ class LIBCXX_HIDDEN straight_borderObj::implObj
 		const current_border_implptr &border1,
 		const grid_elementptr &element_2,
 		const current_border_implptr &border2,
-		const current_border_implptr &border_default,
-		bool is_internal_border);
+		const current_border_implptr &border_default);
  private:
 	implObj(const ref<containerObj::implObj> &container,
 		const metrics::horizvert_axi &initial_metrics,
@@ -114,8 +105,7 @@ class LIBCXX_HIDDEN straight_borderObj::implObj
 		const current_border_implptr &border1,
 		const grid_elementptr &element_2,
 		const current_border_implptr &border2,
-		const current_border_implptr &border_default,
-		bool is_internal_border);
+		const current_border_implptr &border_default);
  public:
 	//! Destructor
 	~implObj();

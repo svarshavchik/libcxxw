@@ -24,9 +24,6 @@ struct LIBCXX_HIDDEN child_element_init_params {
 
 	//! Element's initial metrics
 	metrics::horizvert_axi initial_metrics;
-
-	//! Do not invoke container's parent_for_new_child()
-	bool container_override=false;
 };
 
 //! An element that has a parent element.

@@ -169,8 +169,7 @@ class LIBCXX_HIDDEN horizontal_straight_borderObj : public horizontal_impl {
 				      const current_border_implptr &border1,
 				      const grid_elementptr &element_2,
 				      const current_border_implptr &border2,
-				      const current_border_implptr &border_default,
-				      bool is_internal_border)
+				      const current_border_implptr &border_default)
 		: horizontal_impl(c,
 				  metrics::horizvert_axi(),
 				  "horiz-border@libcxx",
@@ -178,8 +177,7 @@ class LIBCXX_HIDDEN horizontal_straight_borderObj : public horizontal_impl {
 				  border1,
 				  element_2,
 				  border2,
-				  border_default,
-				  is_internal_border)
+				  border_default)
 	{
 	}
 
@@ -210,29 +208,10 @@ straight_border straight_borderBase
 			 .get_border(IN_THREAD,
 				     &grid_elementObj::top_border),
 
-			 default_border, true);
+			 default_border);
 
 	return ptrref_base::objfactory<straight_border>::create(impl);
 }
-
-straight_border straight_borderBase
-::create_horizontal_separator(const ref<containerObj::implObj> &container_impl,
-			      const std::string_view &border_id)
-{
-	auto impl=ref<horizontal_straight_borderObj>
-		::create(container_impl,
-
-			 grid_elementptr(),
-			 current_border_implptr(),
-			 grid_elementptr(),
-			 current_border_implptr(),
-			 container_impl->get_window_handler().screenref
-			 ->impl->get_theme_border(border_id), false);
-
-	return ptrref_base::objfactory<straight_border>::create(impl);
-}
-
-
 
 // Vertical border implementation
 typedef straight_border_implObj<
@@ -252,8 +231,7 @@ class LIBCXX_HIDDEN vertical_straight_borderObj : public vertical_impl {
 				    const current_border_implptr &border1,
 				    const grid_elementptr &element_2,
 				    const current_border_implptr &border2,
-				    const current_border_implptr &border_default,
-				    bool is_internal_border)
+				    const current_border_implptr &border_default)
 		: vertical_impl(c,
 				metrics::horizvert_axi(),
 				"vert-border@libcxx",
@@ -261,8 +239,7 @@ class LIBCXX_HIDDEN vertical_straight_borderObj : public vertical_impl {
 				border1,
 				element_2,
 				border2,
-				border_default,
-				is_internal_border)
+				border_default)
 	{
 	}
 
@@ -290,7 +267,7 @@ straight_border straight_borderBase
 			 element_onright
 			 .get_border(IN_THREAD, &grid_elementObj::left_border),
 
-			 default_border, true);
+			 default_border);
 
 	return ptrref_base::objfactory<straight_border>::create(impl);
 }
@@ -369,26 +346,12 @@ straight_borderObj::implObj
 	  const current_border_implptr &border1,
 	  const grid_elementptr &element_2,
 	  const current_border_implptr &border2,
-	  const current_border_implptr &border_default,
-	  bool is_internal_border)
+	  const current_border_implptr &border_default)
 	: implObj(container, initial_metrics,
 		  scratch_buffer_label,
 		  container->get_window_handler(),
-		  element_1, border1, element_2, border2, border_default,
-		  is_internal_border)
+		  element_1, border1, element_2, border2, border_default)
 {
-}
-
-static inline child_element_init_params
-straight_border_child_init_params(const std::string &label,
-				  const metrics::horizvert_axi &initial_metrics,
-				  bool is_internal_border)
-{
-	child_element_init_params p{label, initial_metrics};
-
-	p.container_override=is_internal_border;
-
-	return p;
 }
 
 straight_borderObj::implObj
@@ -400,16 +363,13 @@ straight_borderObj::implObj
 	  const current_border_implptr &border1,
 	  const grid_elementptr &element_2,
 	  const current_border_implptr &border2,
-	  const current_border_implptr &border_default,
-	  bool is_internal_border)
+	  const current_border_implptr &border_default)
 	: scratch_and_mask_buffer_draw<child_elementObj>
 	(std::string("mask-")+scratch_buffer_label,
 	 h.get_width()/10+1,
 	 h.get_height()/10+1, container,
-	 straight_border_child_init_params(std::string("area-")
-					   +scratch_buffer_label,
-					   initial_metrics,
-					   is_internal_border)),
+	 child_element_init_params{std::string("area-")+scratch_buffer_label,
+			initial_metrics}),
 	borders_thread_only{element_1, border1, element_2, border2,
 		border_default}
 {

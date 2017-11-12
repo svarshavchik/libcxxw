@@ -53,14 +53,6 @@ corner_borderObj::implObj
 {
 }
 
-static inline child_element_init_params corner_border_child_init_params()
-{
-	child_element_init_params p{"corner@libcxx"};
-
-	p.container_override=true;
-
-	return p;
-}
 
 corner_borderObj::implObj
 ::implObj(const ref<containerObj::implObj> &container,
@@ -69,7 +61,7 @@ corner_borderObj::implObj
 	("cornermask@libcxx",
 	 h.get_width()/20+1,
 	 h.get_height()/20+1, container,
-	 corner_border_child_init_params())
+	 child_element_init_params{"corner@libcxx"})
 {
 }
 
