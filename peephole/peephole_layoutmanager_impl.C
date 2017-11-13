@@ -11,6 +11,7 @@
 #include "scrollbar/scrollbar_impl.H"
 #include "catch_exceptions.H"
 #include "container.H"
+#include "run_as.H"
 
 LOG_CLASS_INIT(LIBCXX_NAMESPACE::w::peepholeObj::layoutmanager_implObj)
 LIBCXX_HIDDEN;
@@ -18,9 +19,21 @@ LIBCXX_HIDDEN;
 LIBCXXW_NAMESPACE_START
 
 //////////////////////////////////////////////////////////////////////////////
+//
+// An intermediate object used by scrollbars' update callback.
+//
+// When the peephole scrollbar gets dragged, the scrollbar's update
+// callback invokes update_value().
+//
+// The constructor stores either update_horizontal_scrollbar() or
+// update_vertical_scroll() in update_func, so the callback value gets passed
+// there.
+//
+// This is constructed before the layout manager, and the link to the layout
+// manager must be a weak reference, to avoid circular references.
 
-class peepholeObj::layoutmanager_implObj::scrollbar_implObj
-	: public scrollbarObj::implObj {
+class peepholeObj::layoutmanager_implObj::callbackObj
+	: virtual public obj {
 
 public:
 	typedef void (layoutmanager_implObj::*update_func_t)(IN_THREAD_ONLY,
@@ -30,71 +43,73 @@ public:
 	const update_func_t update_func;
 
 	// Need to find my layout manager.
-	weakptr<ptr<layoutmanager_implObj>> my_layoutmanager;
+	typedef mpobj<weakptr<ptr<layoutmanager_implObj>>> my_layoutmanager_t;
+
+	my_layoutmanager_t my_layoutmanager;
 
 	// Constructor
-	scrollbar_implObj(const auto &init_params,
-			  update_func_t update_func)
-		: scrollbarObj::implObj(init_params),
-		update_func(update_func)
+	callbackObj(update_func_t update_func)
+		: update_func(update_func)
 	{
 	}
 
-	// Scrollbar has been dragged.
-	void updated_value(IN_THREAD_ONLY,
-			   scroll_v_t value,
-			   scroll_v_t dragged_value) override
+	inline auto get_layoutmanager()
 	{
-		auto p=my_layoutmanager.getptr();
+		my_layoutmanager_t::lock lock{my_layoutmanager};
 
-		if (p)
-			((*p).*update_func)(IN_THREAD,
-					    dim_t::truncate(dragged_value));
+		return lock->getptr();
+	}
+
+	// Scrollbar has been dragged.
+	//
+	// TODO: this always gets invoked in the connection thread, as such
+	// run_as() is not really needed.
+
+	inline void updated_value(const auto &config)
+	{
+		auto p=get_layoutmanager();
+
+		if (!p)
+			return;
+
+		p->container_impl->get_element_impl().THREAD
+			->run_as([p, update_func=this->update_func,
+				  v=dim_t::truncate(config.dragged_value)]
+				 (IN_THREAD_ONLY)
+				 {
+					 ((*p).*update_func)(IN_THREAD, v);
+				 });
 	}
 };
 
 peephole_scrollbars
 create_peephole_scrollbars(const ref<containerObj::implObj> &container)
 {
-	// The scrollbar implementation object is scrollbar_implObj.
-	// We'll capture both the implementation object, and the display
-	// element, which will be the one that's shown or hidden.
 
-	ptr<peepholeObj::layoutmanager_implObj::scrollbar_implObj>
-		horizontal_impl, vertical_impl;
+	auto horizontal_impl=
+		ref<peepholeObj::layoutmanager_implObj::callbackObj>
+		::create(&peepholeObj::layoutmanager_implObj
+			 ::update_horizontal_scroll);
 
-	auto horizontal=create_horizontal_scrollbar
+	auto vertical_impl=
+		ref<peepholeObj::layoutmanager_implObj::callbackObj>
+		::create(&peepholeObj::layoutmanager_implObj
+			 ::update_vertical_scroll);
+
+	auto horizontal=do_create_h_scrollbar
 		(container, scrollbar_config(),
-		 [&]
-		 (const auto &init_params)
+		 [=]
+		 (const auto &config)
 		 {
-			 auto impl=ref<peepholeObj::layoutmanager_implObj
-			 ::scrollbar_implObj>::create(init_params,
-						      &peepholeObj
-						      ::layoutmanager_implObj
-						      ::update_horizontal_scroll
-						      );
-
-			 horizontal_impl=impl;
-
-			 return impl;
+			 horizontal_impl->updated_value(config);
 		 });
 
-	auto vertical=create_vertical_scrollbar
+	auto vertical=do_create_v_scrollbar
 		(container, scrollbar_config(),
-		 [&]
-		 (const auto &init_params)
+		 [=]
+		 (const auto &config)
 		 {
-			 auto impl=ref<peepholeObj::layoutmanager_implObj
-			 ::scrollbar_implObj>::create(init_params,
-						      &peepholeObj
-						      ::layoutmanager_implObj
-						      ::update_vertical_scroll
-						      );
-
-			 vertical_impl=impl;
-
-			 return impl;
+			 vertical_impl->updated_value(config);
 		 });
 
 	return {horizontal, vertical, horizontal_impl, vertical_impl};
@@ -173,13 +188,13 @@ peephole_scrollbars
 ::peephole_scrollbars(const scrollbar &horizontal_scrollbar,
 		      const scrollbar &vertical_scrollbar,
 		      const ref<peepholeObj::layoutmanager_implObj
-		      ::scrollbar_implObj> &horizontal_scrollbar_impl,
+		      ::callbackObj> &h_callback,
 		      const ref<peepholeObj::layoutmanager_implObj
-		      ::scrollbar_implObj> &vertical_scrollbar_impl)
+		      ::callbackObj> &v_callback)
 	: horizontal_scrollbar(horizontal_scrollbar),
 	  vertical_scrollbar(vertical_scrollbar),
-	  horizontal_scrollbar_impl(horizontal_scrollbar_impl),
-	  vertical_scrollbar_impl(vertical_scrollbar_impl)
+	  h_callback(h_callback),
+	  v_callback(v_callback)
 {
 }
 
@@ -202,10 +217,12 @@ peepholeObj::layoutmanager_implObj
 	: layoutmanagerObj::implObj(container_impl),
 	style(style),
 	element_in_peephole(element_in_peephole),
+	h_scrollbar(scrollbars.horizontal_scrollbar),
+	v_scrollbar(scrollbars.vertical_scrollbar),
 	horizontal_scrollbar_visibility_thread_only(horizontal_scrollbar_visibility),
 	vertical_scrollbar_visibility_thread_only(vertical_scrollbar_visibility),
-	horizontal_scrollbar(scrollbars.horizontal_scrollbar_impl),
-	vertical_scrollbar(scrollbars.vertical_scrollbar_impl),
+	h_callback(scrollbars.h_callback),
+	v_callback(scrollbars.v_callback),
 	horizontal_scrollbar_element(scrollbars.horizontal_scrollbar->elementObj::impl),
 	vertical_scrollbar_element(scrollbars.vertical_scrollbar->elementObj::impl)
 {
@@ -213,22 +230,22 @@ peepholeObj::layoutmanager_implObj
 
 void peepholeObj::layoutmanager_implObj::initialize_scrollbars()
 {
-	auto me=ref<layoutmanager_implObj>(this);
+	auto me=ref(this);
 
-	horizontal_scrollbar->my_layoutmanager=me;
-	vertical_scrollbar->my_layoutmanager=me;
+	h_callback->my_layoutmanager=me;
+	v_callback->my_layoutmanager=me;
 }
 
 void peepholeObj::layoutmanager_implObj::vert_scroll_low(IN_THREAD_ONLY,
 							 const input_mask &m)
 {
-	vertical_scrollbar->to_low(IN_THREAD, m);
+	v_scrollbar->impl->to_low(IN_THREAD, m);
 }
 
 void peepholeObj::layoutmanager_implObj::vert_scroll_high(IN_THREAD_ONLY,
 							  const input_mask &m)
 {
-	vertical_scrollbar->to_high(IN_THREAD, m);
+	v_scrollbar->impl->to_high(IN_THREAD, m);
 }
 
 peepholeObj::layoutmanager_implObj::~layoutmanager_implObj()=default;
@@ -439,7 +456,7 @@ void peepholeObj::layoutmanager_implObj
 						       element_pos);
 
 	update_scrollbar(IN_THREAD,
-			 horizontal_scrollbar,
+			 h_scrollbar->impl,
 			 horizontal_scrollbar_element,
 			 horizontal_scrollbar_visibility(IN_THREAD),
 			 element_pos.x, element_pos.width,
@@ -447,7 +464,7 @@ void peepholeObj::layoutmanager_implObj
 			 element_in_peephole->horizontal_increment(IN_THREAD));
 
 	update_scrollbar(IN_THREAD,
-			 vertical_scrollbar,
+			 v_scrollbar->impl,
 			 vertical_scrollbar_element,
 			 vertical_scrollbar_visibility(IN_THREAD),
 			 element_pos.y, element_pos.height,
@@ -485,7 +502,7 @@ void peepholeObj::layoutmanager_implObj
 
 void peepholeObj::layoutmanager_implObj
 ::update_scrollbar(IN_THREAD_ONLY,
-		   const ref<scrollbar_implObj> &scrollbar,
+		   const ref<scrollbarObj::implObj> &scrollbar,
 		   const elementimpl &visibility_element,
 		   const scrollbar_visibility visibility,
 		   coord_t pos,

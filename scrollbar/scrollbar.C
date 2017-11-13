@@ -33,8 +33,7 @@ static scrollbar create_scrollbar(const ref<containerObj::implObj> &parent_conta
 				  const scrollbar_orientation &orientation,
 				  const auto &icon_set_1,
 				  const auto &icon_set_2,
-				  const function<scrollbar_impl_constructor>
-				  &create_impl)
+				  const scrollbar_cb_t &callback)
 {
 	// Create a container for the focus frame around the scrollbar.
 	//
@@ -59,7 +58,9 @@ static scrollbar create_scrollbar(const ref<containerObj::implObj> &parent_conta
 	// object's container is ffcontainer_impl.
 
 	auto scrollbar_impl=
-		create_impl(scrollbar_impl_init_params{ffcontainer_impl,
+		ref<scrollbarObj::implObj>
+		::create(scrollbar_impl_init_params{ffcontainer_impl,
+					callback,
 					orientation,
 					std::tuple_cat(icon_set_1,
 						       icon_set_2),
@@ -115,10 +116,10 @@ create_scrollbar_icon_set(drawableObj::implObj &drawable,
 	};
 }
 
-scrollbar do_create_h_scrollbar(const ref<containerObj::implObj> &parent_container,
-				const scrollbar_config &conf,
-				const function<scrollbar_impl_constructor>
-				&create_impl)
+scrollbar
+do_create_h_scrollbar(const ref<containerObj::implObj> &parent_container,
+		      const scrollbar_config &conf,
+		      const scrollbar_cb_t &callback)
 {
 	auto &window_handler=parent_container->get_window_handler();
 
@@ -132,13 +133,13 @@ scrollbar do_create_h_scrollbar(const ref<containerObj::implObj> &parent_contain
 				(window_handler,
 				 "left", "right",
 				 "left", "horiz", "right", "2"),
-				create_impl);
+				callback);
 }
 
-scrollbar do_create_v_scrollbar(const ref<containerObj::implObj> &parent_container,
-				const scrollbar_config &conf,
-				const function<scrollbar_impl_constructor>
-				&create_impl)
+scrollbar
+do_create_v_scrollbar(const ref<containerObj::implObj> &parent_container,
+		      const scrollbar_config &conf,
+		      const scrollbar_cb_t &callback)
 {
 	auto &window_handler=parent_container->get_window_handler();
 
@@ -152,7 +153,7 @@ scrollbar do_create_v_scrollbar(const ref<containerObj::implObj> &parent_contain
 				(window_handler,
 				 "up", "down",
 				 "top", "vert", "bottom", "2"),
-				create_impl);
+				callback);
 }
 
 LIBCXXW_NAMESPACE_END

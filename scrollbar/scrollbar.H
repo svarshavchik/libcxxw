@@ -12,8 +12,42 @@
 #include <x/functional.H>
 
 #include "x/w/containerobj.H"
+#include "x/w/callback_triggerfwd.H"
+#include "x/w/busyfwd.H"
+#include <functional>
 
 LIBCXXW_NAMESPACE_START
+
+//! Information passed to scrollbar callbacks.
+
+//! When dragging the scrollbar by its handle, the official value
+//! of the scrollbar changes only when the scrollbar handle gets
+//! released. \c dragged_value reflects the value of the scrollbar
+//! as its being dragged, while \c value remains unchanged.
+//!
+//! The callback has two options for processing scrollbar callback events:
+//!
+//! - handle only events when value and dragged_value are the same. This
+//! results in the callback not responding while the scrollbar is
+//! dragging, until the scrollbar's handle gets released.
+//!
+//! - handle all events, and always used dragged_value. This results in
+//! the callback responding to the scrollbar while it's dragged, and to all
+//! other events that update the scrollbar position.
+
+struct LIBCXX_HIDDEN scrollbar_info_t {
+
+	scroll_v_t::value_type value;
+
+	scroll_v_t::value_type dragged_value;
+
+	const callback_trigger_t &trigger;
+
+	const busy &mcguffin;
+};
+
+//! Callback that reports the scrollbar's updated values.
+typedef std::function<void (const scrollbar_info_t &)> scrollbar_cb_t;
 
 //! Scrollbar's initial configuration.
 
@@ -23,13 +57,13 @@ struct scrollbar_config {
 
 	//! The range of the scrollbar's value.
 
-	scroll_v_t range=0;
+	scroll_v_t range=1;
 
 	//! Scrollbar page size.
 
 	//! This translates to the size of the scrollbar's handle. Must be
 	//! at least 1.
-	scroll_v_t page_size=0;
+	scroll_v_t page_size=1;
 
 	//! The current value of the scrollbar.
 
@@ -41,7 +75,7 @@ struct scrollbar_config {
 	//! Increment size.
 
 	//! How much the scrollbar's up and down buttons adjust its value
-	scroll_v_t increment=0;
+	scroll_v_t increment=1;
 
 	//! Comparison operator.
 	bool operator==(const scrollbar_config &o) const
@@ -53,69 +87,31 @@ struct scrollbar_config {
 	}
 };
 
-struct scrollbar_impl_init_params;
-
-//! The signature for the factory for the scrollbar implementation object.
-
-//! The callback gets passed to create_horizontal_scrollbar() or
-//! create_vertical_scrollbar. The callback's job is to create() a subclass of
-//! scrollbarObj::implObj and return it. The callback gets the
-//! initialization parameters for scrollbarObj::implObj that simply need to
-//! be forwarded to its consructor.
-
-typedef ref<scrollbarObj::implObj>
-scrollbar_impl_constructor(const scrollbar_impl_init_params &);
-
-//! Implement create_horizontal_scrollbar().
-
-scrollbar do_create_h_scrollbar(const ref<containerObj::implObj> &parent_container,
-				const scrollbar_config &conf,
-				const function<scrollbar_impl_constructor>
-				&create_impl) LIBCXX_HIDDEN;
-
-//! Implement create_vertical_scrollbar().
-
-scrollbar do_create_v_scrollbar(const ref<containerObj::implObj> &parent_container,
-				const scrollbar_config &conf,
-				const function<scrollbar_impl_constructor>
-				&create_impl) LIBCXX_HIDDEN;
-
 //! Create a horizontal scrollbar.
 
-//! To do that, we need a factory, that expects this scrollbar to be created
-//! as its element, a \ref scrollbar_config "scrollbar_config", and a
-//! \ref scrollbar_impl_constructor "factory for the scrollbar
-//! implementation object".
+//! To do that, we need the scrollbar's parent container,
+//! a \ref scrollbar_config "scrollbar_config", and the scrollbar's
+//! initial callback.
 //!
 //! This only creates the scrollbar element linked to the parent_container.
 //! It is the caller's responsibility to, at some point, add it to the
 //! parent using created_internally().
 
-template<typename impl_factory_t>
-inline scrollbar create_horizontal_scrollbar(const ref<containerObj::implObj> &parent_container,
-					     const scrollbar_config &conf,
-					     impl_factory_t &&impl_factory)
-{
-	return do_create_h_scrollbar(parent_container, conf,
-				     make_function<scrollbar_impl_constructor>
-				     (std::forward<impl_factory_t>(impl_factory)
-				      ));
-}
+scrollbar do_create_h_scrollbar(const ref<containerObj::implObj>
+				&parent_container,
+				const scrollbar_config &conf,
+				const scrollbar_cb_t &callback)
+	LIBCXX_HIDDEN;
 
 //! Create a vertical scrollbar.
 
 //! Like create_horizontal_scrollbar(), but makes a vertical one.
 
-template<typename impl_factory_t>
-inline scrollbar create_vertical_scrollbar(const ref<containerObj::implObj> &parent_container,
-					   const scrollbar_config &conf,
-					   impl_factory_t &&impl_factory)
-{
-	return do_create_v_scrollbar(parent_container, conf,
-				     make_function<scrollbar_impl_constructor>
-				     (std::forward<impl_factory_t>(impl_factory)
-				      ));
-}
+scrollbar do_create_v_scrollbar(const ref<containerObj::implObj>
+				&parent_container,
+				const scrollbar_config &conf,
+				const scrollbar_cb_t &callback)
+	LIBCXX_HIDDEN;
 
 LIBCXXW_NAMESPACE_END
 

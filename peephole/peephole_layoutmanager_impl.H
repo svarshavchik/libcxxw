@@ -10,6 +10,7 @@
 #include "peephole/peephole_style.H"
 #include "layoutmanager.H"
 #include "scrollbar/scrollbarfwd.H"
+#include "scrollbar/scrollbarobj.H"
 #include "peephole/peepholed_elementfwd.H"
 #include "x/w/gridlayoutmanagerfwd.H"
 #include "x/w/elementfwd.H"
@@ -95,7 +96,7 @@ class LIBCXX_HIDDEN peepholeObj::layoutmanager_implObj
 	LOG_CLASS_SCOPE;
 
  public:
-	class scrollbar_implObj;
+	class callbackObj;
 
 	//! This peephole's style.
 	const peephole_style style;
@@ -112,6 +113,12 @@ class LIBCXX_HIDDEN peepholeObj::layoutmanager_implObj
 	void initialize_scrollbars();
 
  private:
+	//! The horizontal scrollbar element
+	const scrollbar h_scrollbar;
+
+	//! The vertical scrollbar lement
+	const scrollbar v_scrollbar;
+
 	//! Horizontal scrollbar configuration
 
 	scrollbar_visibility horizontal_scrollbar_visibility_thread_only;
@@ -123,11 +130,11 @@ class LIBCXX_HIDDEN peepholeObj::layoutmanager_implObj
 	THREAD_DATA_ONLY(horizontal_scrollbar_visibility);
 	THREAD_DATA_ONLY(vertical_scrollbar_visibility);
 
-	//! The internal implementation object for the horizontal scrollbar
-	const ref<scrollbar_implObj> horizontal_scrollbar;
+	//! An internal implementation object used by the scrollbar callback.
+	const ref<callbackObj> h_callback;
 
-	//! The internal implementation object for the vertical scrollbar
-	const ref<scrollbar_implObj> vertical_scrollbar;
+	//! An internal implementation object used by the scrollbar callback.
+	const ref<callbackObj> v_callback;
 
 	//! Scrollwheel action.
 
@@ -228,7 +235,7 @@ class LIBCXX_HIDDEN peepholeObj::layoutmanager_implObj
 	//! Update the given scrollbar after recalculation.
 
 	void update_scrollbar(IN_THREAD_ONLY,
-			      const ref<scrollbar_implObj> &scrollbar,
+			      const ref<scrollbarObj::implObj> &scrollbar,
 			      const elementimpl &visibility_element,
 			      const scrollbar_visibility visibility,
 			      coord_t pos,
@@ -251,23 +258,21 @@ struct LIBCXX_HIDDEN peephole_scrollbars {
 
 	const scrollbar vertical_scrollbar;
 
-	//! Horizontal scrollbar's implementation object.
+	//! Horizontal scrollbar's callback object.
 
-	const ref<peepholeObj::layoutmanager_implObj
-		  ::scrollbar_implObj> horizontal_scrollbar_impl;
+	const ref<peepholeObj::layoutmanager_implObj::callbackObj> h_callback;
 
-	//! Vertical scrollbar's implementation object.
+	//! Vertical scrollbar's callback object.
 
-	const ref<peepholeObj::layoutmanager_implObj
-		  ::scrollbar_implObj> vertical_scrollbar_impl;
+	const ref<peepholeObj::layoutmanager_implObj::callbackObj> v_callback;
 
 	//! Constructor
 	peephole_scrollbars(const scrollbar &horizontal_scrollbar,
 			    const scrollbar &vertical_scrollbar,
 			    const ref<peepholeObj::layoutmanager_implObj
-			    ::scrollbar_implObj> &horizontal_scrollbar_impl,
+			    ::callbackObj> &h_callback,
 			    const ref<peepholeObj::layoutmanager_implObj
-			    ::scrollbar_implObj> &vertical_scrollbar_impl);
+			    ::callbackObj> &v_callback);
 
 	//! Copy constructor
 	peephole_scrollbars(const peephole_scrollbars &);

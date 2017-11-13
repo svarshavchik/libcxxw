@@ -9,12 +9,16 @@
 #include "x/w/key_event.H"
 #include "x/w/button_event.H"
 #include "x/w/motion_event.H"
+#include "x/w/callback_trigger.H"
+#include "busy.H"
 #include "scrollbar/scrollbar_impl.H"
 #include "focus/focusable_element.H"
 #include "icon.H"
 #include "icon_image.H"
 #include "icon_images_set_element.H"
 #include "metrics_horizvertobj.H"
+#include "catch_exceptions.H"
+#include "run_as.H"
 #include "catch_exceptions.H"
 #include <X11/keysym.h>
 
@@ -77,9 +81,10 @@ scrollbarObj::implObj::implObj(const scrollbar_impl_init_params &init_params)
 		       child_element_init_params{init_params.orientation
 				       .scratch_buffer_id}),
 	  orientation(init_params.orientation),
-	  conf(init_params.conf)
+	  state_thread_only(init_params.conf),
+	  updated_value(init_params.callback)
 {
-	validate_conf();
+	validate_conf(THREAD);
 }
 
 scrollbarObj::implObj
@@ -96,20 +101,22 @@ scrollbarObj::implObj
 			PRESSED(handlebar), PRESSED(handlebar_end)};
 }
 
-void scrollbarObj::implObj::validate_conf()
+void scrollbarObj::implObj::validate_conf(IN_THREAD_ONLY)
 {
-	if (conf.range <= 0)
-		conf.range=1;
+	if (state(IN_THREAD).range <= 0)
+		state(IN_THREAD).range=1;
 
-	if (conf.page_size == 0)
-		conf.page_size=1;
+	if (state(IN_THREAD).page_size == 0)
+		state(IN_THREAD).page_size=1;
 
-	if (conf.page_size > conf.range)
-		conf.page_size=conf.range;
+	if (state(IN_THREAD).page_size > state(IN_THREAD).range)
+		state(IN_THREAD).page_size=state(IN_THREAD).range;
 
-	if (conf.value > conf.range-conf.page_size)
-		conf.value=conf.range-conf.page_size;
-	dragged_value=conf.value;
+	if (state(IN_THREAD).value > state(IN_THREAD).range-state(IN_THREAD).page_size)
+		state(IN_THREAD).value=state(IN_THREAD).range-state(IN_THREAD).page_size;
+	dragged_value=state(IN_THREAD).value;
+
+	status=state(IN_THREAD);
 }
 
 scrollbarObj::implObj::~implObj()=default;
@@ -131,14 +138,16 @@ void scrollbarObj::implObj::theme_updated(IN_THREAD_ONLY,
 void scrollbarObj::implObj::update_config(IN_THREAD_ONLY,
 					  const scrollbar_config &new_config)
 {
-	if (new_config == conf)
+	if (new_config == state(IN_THREAD))
 		return;
 
 	reset_state(IN_THREAD);
-	conf=new_config;
-	validate_conf();
+	state(IN_THREAD)=new_config;
+	validate_conf(IN_THREAD);
 	calculate_scrollbar_metrics(IN_THREAD);
 	draw_slider(IN_THREAD);
+	report_updated_value(IN_THREAD, state(IN_THREAD).value,
+			     state(IN_THREAD).value);
 }
 
 dim_t scrollbarObj::implObj::major_size(const rectangle &r) const
@@ -286,8 +295,8 @@ bool scrollbarObj::implObj::calculate_scrollbar_metrics(IN_THREAD_ONLY)
 
 	metrics.calculate(dim_t::truncate(scroll_low_size(IN_THREAD)),
 			  dim_t::truncate(scroll_high_size(IN_THREAD)),
-			  dim_t::truncate(conf.range),
-			  dim_t::truncate(conf.page_size),
+			  dim_t::truncate(state(IN_THREAD).range),
+			  dim_t::truncate(state(IN_THREAD).page_size),
 			  dim_t::truncate(current_position
 					  .*(orientation.major_size)),
 			  dim_squared_t::truncate
@@ -595,11 +604,11 @@ void scrollbarObj::implObj::abort_handlebar(IN_THREAD_ONLY)
 bool scrollbarObj::implObj::to_low(IN_THREAD_ONLY,
 				   const input_mask &mask)
 {
-	if (conf.value > 0)
+	if (state(IN_THREAD).value > 0)
 	{
-		conf.value=mask.ctrl ? conf.value-1
-			: conf.value < conf.increment
-				       ? 0:conf.value-conf.increment;
+		state(IN_THREAD).value=mask.ctrl ? state(IN_THREAD).value-1
+			: state(IN_THREAD).value < state(IN_THREAD).increment
+				       ? 0:state(IN_THREAD).value-state(IN_THREAD).increment;
 		updated_value_no_drag(IN_THREAD);
 		return true;
 	}
@@ -609,13 +618,13 @@ bool scrollbarObj::implObj::to_low(IN_THREAD_ONLY,
 bool scrollbarObj::implObj::to_high(IN_THREAD_ONLY,
 				    const input_mask &mask)
 {
-	if (conf.value < conf.range-conf.page_size)
+	if (state(IN_THREAD).value < state(IN_THREAD).range-state(IN_THREAD).page_size)
 	{
-		conf.value=mask.ctrl ? conf.value+1
-			: conf.value+conf.increment;
+		state(IN_THREAD).value=mask.ctrl ? state(IN_THREAD).value+1
+			: state(IN_THREAD).value+state(IN_THREAD).increment;
 
-		if (conf.value > conf.range-conf.page_size)
-			conf.value=conf.range-conf.page_size;
+		if (state(IN_THREAD).value > state(IN_THREAD).range-state(IN_THREAD).page_size)
+			state(IN_THREAD).value=state(IN_THREAD).range-state(IN_THREAD).page_size;
 
 		updated_value_no_drag(IN_THREAD);
 		return true;
@@ -625,11 +634,11 @@ bool scrollbarObj::implObj::to_high(IN_THREAD_ONLY,
 
 bool scrollbarObj::implObj::page_up(IN_THREAD_ONLY)
 {
-	if (conf.value > 0)
+	if (state(IN_THREAD).value > 0)
 	{
-		conf.value=conf.value <
-			conf.page_size ? 0:
-			conf.value - conf.page_size;
+		state(IN_THREAD).value=state(IN_THREAD).value <
+			state(IN_THREAD).page_size ? 0:
+			state(IN_THREAD).value - state(IN_THREAD).page_size;
 		updated_value_no_drag(IN_THREAD);
 		return true;
 	}
@@ -638,14 +647,14 @@ bool scrollbarObj::implObj::page_up(IN_THREAD_ONLY)
 
 bool scrollbarObj::implObj::page_down(IN_THREAD_ONLY)
 {
-	if (conf.value < conf.range-conf.page_size)
+	if (state(IN_THREAD).value < state(IN_THREAD).range-state(IN_THREAD).page_size)
 	{
-		conf.value += conf.page_size;
+		state(IN_THREAD).value += state(IN_THREAD).page_size;
 
-		if (conf.value >
-		    conf.range-conf.page_size)
-			conf.value=conf.range-
-				conf.page_size;
+		if (state(IN_THREAD).value >
+		    state(IN_THREAD).range-state(IN_THREAD).page_size)
+			state(IN_THREAD).value=state(IN_THREAD).range-
+				state(IN_THREAD).page_size;
 		updated_value_no_drag(IN_THREAD);
 		return true;
 	}
@@ -711,12 +720,14 @@ bool scrollbarObj::implObj::process_button_event(IN_THREAD_ONLY,
 				if (!what.lo && !what.hi && was_dragging)
 					// Finished dragging
 				{
-					if (dragged_value != conf.value)
+					if (dragged_value != state(IN_THREAD).value)
 					{
-						conf.value=dragged_value;
-						updated_value(IN_THREAD,
-							      conf.value,
-							      conf.value);
+						state(IN_THREAD).value=dragged_value;
+						report_updated_value
+							(IN_THREAD,
+							 state(IN_THREAD).value,
+							 state(IN_THREAD).value)
+							;
 					}
 				}
 			}
@@ -725,7 +736,7 @@ bool scrollbarObj::implObj::process_button_event(IN_THREAD_ONLY,
 				// Drag released with pointer outside of the
 				// slider.
 				if (was_dragging &&
-				    dragged_value != conf.value)
+				    dragged_value != state(IN_THREAD).value)
 					abort_dragging(IN_THREAD);
 			}
 		}
@@ -805,7 +816,7 @@ bool scrollbarObj::implObj::process_button_event(IN_THREAD_ONLY,
 
 		drag_start=clicked_pixel_value;
 		drag_start_current_pixel=current_pixel;
-		dragged_value=conf.value;
+		dragged_value=state(IN_THREAD).value;
 		draw_slider(IN_THREAD);
 		grab(IN_THREAD);
 	}
@@ -815,9 +826,10 @@ bool scrollbarObj::implObj::process_button_event(IN_THREAD_ONLY,
 
 void scrollbarObj::implObj::abort_dragging(IN_THREAD_ONLY)
 {
-	dragged_value=conf.value;
+	dragged_value=state(IN_THREAD).value;
 	current_pixel=drag_start_current_pixel;
-	updated_value(IN_THREAD, conf.value, conf.value);
+	report_updated_value(IN_THREAD, state(IN_THREAD).value,
+			     state(IN_THREAD).value);
 }
 
 void scrollbarObj::implObj::report_motion_event(IN_THREAD_ONLY,
@@ -886,7 +898,7 @@ void scrollbarObj::implObj::report_motion_event(IN_THREAD_ONLY,
 			dim_t::truncate(slider_size(IN_THREAD)-
 					dim_t::truncate(metrics
 							.handlebar_pixel_size));
-		v.value=conf.range-conf.page_size;
+		v.value=state(IN_THREAD).range-state(IN_THREAD).page_size;
 	}
 
 	auto old_value=dragged_value;
@@ -909,7 +921,8 @@ void scrollbarObj::implObj::report_motion_event(IN_THREAD_ONLY,
 	}
 
 	if (old_value != dragged_value)
-		updated_value(IN_THREAD, conf.value, dragged_value);
+		report_updated_value(IN_THREAD, state(IN_THREAD).value,
+				     dragged_value);
 }
 
 void scrollbarObj::implObj::keyboard_focus(IN_THREAD_ONLY)
@@ -926,11 +939,31 @@ void scrollbarObj::implObj::keyboard_focus(IN_THREAD_ONLY)
 
 void scrollbarObj::implObj::updated_value_no_drag(IN_THREAD_ONLY)
 {
-	current_pixel=metrics.value_to_pixel(conf.value);
-	dragged_value=conf.value;
+	current_pixel=metrics.value_to_pixel(state(IN_THREAD).value);
+	dragged_value=state(IN_THREAD).value;
 
 	draw_slider(IN_THREAD);
-	updated_value(IN_THREAD, conf.value, dragged_value);
+	report_updated_value(IN_THREAD, state(IN_THREAD).value, dragged_value);
+}
+
+void scrollbarObj::implObj::report_updated_value(IN_THREAD_ONLY,
+						 scroll_v_t value,
+						 scroll_v_t dragged_value)
+{
+	updated_value_t::lock lock{updated_value};
+
+	auto &f=*lock;
+
+	if (!f)
+		return;
+
+	try {
+		f(scrollbar_info_t{(scroll_v_t::value_type)value,
+					(scroll_v_t::value_type)dragged_value,
+					callback_trigger_t{},
+					busy_impl{*this},
+					});
+	} CATCH_EXCEPTIONS;
 }
 
 LIBCXXW_NAMESPACE_END

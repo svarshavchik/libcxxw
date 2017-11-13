@@ -6,16 +6,11 @@
 #define scrollbar_metrics_h
 
 #include "x/w/namespace.H"
-#include <x/number.H>
-#include <cstdint>
+#include "scrollbar/scrollbarfwd.H"
 
 LIBCXXW_NAMESPACE_START
 
-struct scroll_v_tag;
 struct scroll_squared_v_tag;
-
-//! Data type for scrollbar values
-typedef number<uint32_t, scroll_v_tag> scroll_v_t;
 
 //! A larger data type used when calculating scrollbar values.
 typedef number<uint64_t, scroll_squared_v_tag> scroll_squared_v_t;

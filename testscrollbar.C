@@ -44,19 +44,11 @@ public:
 
 typedef ref<close_flagObj> close_flag_ref;
 
-class LIBCXX_HIDDEN my_scrollbarObj : public scrollbarObj::implObj {
-
-public:
-	using scrollbarObj::implObj::implObj;
-
-	void updated_value(IN_THREAD_ONLY,
-			   scroll_v_t value,
-			   scroll_v_t dragged_value) override
-	{
-		std::cout << value << " (" << dragged_value << ")"
-			  << std::endl;
-	}
-};
+static inline void updated_value(const auto &info)
+{
+	std::cout << info.value << " (" << info.dragged_value << ")"
+		  << std::endl;
+}
 
 void testbutton()
 {
@@ -87,13 +79,14 @@ void testbutton()
 				 factory=layout->append_row();
 				 factory->padding(0);
 				 factory->created_internally
-				 (create_horizontal_scrollbar(factory->container_impl, {
-						 100, 10, 45, 2},
-					 []
-					 (const auto &param) {
-						 return ref<my_scrollbarObj>
-							 ::create(param);
-					 }));
+				 (do_create_h_scrollbar
+				  (factory->container_impl,
+				   {
+					   100, 10, 45, 2},
+				   []
+				   (const auto &scrollbar_info) {
+					   updated_value(scrollbar_info);
+				   }));
 			 });
 
 	main_window->set_window_title("Hello world!");

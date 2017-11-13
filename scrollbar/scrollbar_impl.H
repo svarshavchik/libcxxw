@@ -11,6 +11,7 @@
 #include "scrollbar/scrollbar_icon_set.H"
 #include "scrollbar/scrollbar_metrics.H"
 #include "icon_images_set_elementfwd.H"
+#include <x/mpobj.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -21,6 +22,7 @@ LIBCXXW_NAMESPACE_START
 
 struct LIBCXX_HIDDEN scrollbar_impl_init_params {
 	const ref<containerObj::implObj> &container;
+	const scrollbar_cb_t &callback;
 	const scrollbar_orientation &orientation;
 	const scrollbar_icons_tuple_t &icons;
 	const scrollbar_config &conf;
@@ -104,8 +106,8 @@ class LIBCXX_HIDDEN scrollbarObj::implObj :
 
 	dim_t current_position_minor_size(IN_THREAD_ONLY) const;
 
-	//! Current scrollbar configuration
-	scrollbar_config conf;
+	//! Current, internal scrollbar configuration
+	scrollbar_config state_thread_only;
 
 	//! Current scrollbar drag value
 
@@ -114,7 +116,7 @@ class LIBCXX_HIDDEN scrollbarObj::implObj :
 	//! This is normally same as conf.value, except when dragging.
 
 	//! Sanity-check the values in conf().
-	void validate_conf();
+	void validate_conf(IN_THREAD_ONLY);
 
 	//! Current metrics for the parts of the scrollbar.
 	scrollbar_metrics metrics;
@@ -172,6 +174,15 @@ class LIBCXX_HIDDEN scrollbarObj::implObj :
 	dim_t handlebar_end_size(IN_THREAD_ONLY) const;
 
  public:
+	THREAD_DATA_ONLY(state);
+
+	//! Public scrollbar status
+
+	//! status gets updated from "state", which is considered to be
+	//! internal, and is accessible only by the connection thread.
+
+	mpobj<scrollbar_config> status;
+
 	//! Advance slider towards 0.
 
 	//! Returns true if the slider was moved and redrawn.
@@ -198,6 +209,10 @@ class LIBCXX_HIDDEN scrollbarObj::implObj :
 
 	//! Destructor
 	~implObj();
+
+	typedef mpobj<scrollbar_cb_t, std::recursive_mutex> updated_value_t;
+
+	updated_value_t updated_value;
 
 	////////////////////////////////////////////////////////////////////
 	//
@@ -229,15 +244,15 @@ class LIBCXX_HIDDEN scrollbarObj::implObj :
 	//! for it.
 	void do_draw(IN_THREAD_ONLY,
 		     const draw_info &di,
-		     const rectangle_set &areas);
+		     const rectangle_set &areas) override;
 
 	//! Process key events.
-	bool process_key_event(IN_THREAD_ONLY, const key_event &ke);
+	bool process_key_event(IN_THREAD_ONLY, const key_event &ke) override;
 
 	//! Process button events.
 	bool process_button_event(IN_THREAD_ONLY,
 				  const button_event &be,
-				  xcb_timestamp_t timestamp);
+				  xcb_timestamp_t timestamp) override;
 
 	//! Process motion events.
 
@@ -249,18 +264,6 @@ class LIBCXX_HIDDEN scrollbarObj::implObj :
 	void keyboard_focus(IN_THREAD_ONLY) override;
 
 	//////////////////////////////////////////////////////////////////
-
-	//! The value of the scrollbar has changed.
-
-	//! When dragging the scrollbar by its handle, the official value
-	//! of the scrollbar changes only when the scrollbar handle gets
-	//! released. \c drag_value reflects the value of the scrollbar
-	//! as its being dragged, while \c value remains unchanged.
-	//!
-	//! The default implementation does nothing, overridden in a subclass.
-	virtual void updated_value(IN_THREAD_ONLY,
-				   scroll_v_t value,
-				   scroll_v_t dragged_value)=0;
 
 	//! Manually update the scrollbar's configuration.
 
@@ -290,6 +293,12 @@ class LIBCXX_HIDDEN scrollbarObj::implObj :
 	//! updated_value().
 
 	void updated_value_no_drag(IN_THREAD_ONLY);
+
+	//! Invoke the callback
+
+	void report_updated_value(IN_THREAD_ONLY,
+				  scroll_v_t value,
+				  scroll_v_t dragged_value);
 
 	//! Compute and set the scrollbar display element's metrics.
 
