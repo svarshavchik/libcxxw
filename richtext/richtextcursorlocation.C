@@ -131,7 +131,8 @@ inline void richtextcursorlocationObj::leftby1(IN_THREAD_ONLY)
 
 	position.cached_horiz_pos=
 		dim_t::truncate
-		(my_fragment->horiz_info.x_pos(--position.offset));
+		(my_fragment->horiz_info.x_pos(--position.offset)
+		 + my_fragment->first_xpos(IN_THREAD));
 	new_targeted_horiz_pos(IN_THREAD);
 }
 
@@ -139,7 +140,8 @@ inline void richtextcursorlocationObj::rightby1(IN_THREAD_ONLY)
 {
 	position.cached_horiz_pos=
 		dim_t::truncate
-		(my_fragment->horiz_info.x_pos(++position.offset));
+		(my_fragment->horiz_info.x_pos(++position.offset)
+		 + my_fragment->first_xpos(IN_THREAD));
 	new_targeted_horiz_pos(IN_THREAD);
 }
 

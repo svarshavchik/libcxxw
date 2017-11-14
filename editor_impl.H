@@ -199,8 +199,11 @@ class LIBCXX_HIDDEN editorObj::implObj
 
 	//! Override rewrap_due_to_updated_position().
 
-	//! The editor doesn't rewrap in response to resizing. The editor
-	//! sets the metrics, and that's the final word on it.
+	//! The editor doesn't rewrap in response to resizing. Instead, the
+	//! editor sets the metrics, and sets richtext->minimum_width_override
+	//! so that if the editing element is centered or right-aligned,
+	//! the rich text object renders it to the full width of the
+	//! display element.
 
 	void rewrap_due_to_updated_position(IN_THREAD_ONLY) override;
 

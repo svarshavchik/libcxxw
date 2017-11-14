@@ -16,6 +16,7 @@
 #include <x/vectorfwd.H>
 
 #include <unordered_map>
+#include <algorithm>
 #include <courier-unicode.h>
 
 LIBCXXW_NAMESPACE_START
@@ -186,6 +187,10 @@ public:
 	//! Destructor
 	~richtext_implObj();
 
+	//! Used by the editor to stretch width() to the width of the input window
+
+	dim_t minimum_width_override=0;
+
 	//! Minimum width of this text
 	dim_t minimum_width=0;
 
@@ -206,14 +211,17 @@ public:
 
 	dim_t width() const
 	{
-		return minimum_width > real_width ? minimum_width:real_width;
+		return std::max(std::max(minimum_width_override,
+					 minimum_width),
+					 real_width);
 	}
 
 	//! Return real_maximum_width or minimum_width, if not wrapped.
 	dim_t maximum_width_if_not_wrapped() const
 	{
-		return minimum_width > real_maximum_width
-			? minimum_width:real_maximum_width;
+		return std::max(std::max(minimum_width_override,
+					 minimum_width),
+				real_maximum_width);
 	}
 
 	//! Computed height of this text  above the baseline of the last text paragraph

@@ -350,6 +350,14 @@ editorObj::implObj::calculate_current_metrics(IN_THREAD_ONLY)
 
 void editorObj::implObj::rewrap_due_to_updated_position(IN_THREAD_ONLY)
 {
+	text->thread_lock(IN_THREAD,
+			  [&, this]
+			  (IN_THREAD_ONLY, const auto &impl)
+			  {
+				  (*impl)->minimum_width_override=
+					  data(IN_THREAD).current_position
+					  .width;
+			  });
 }
 
 void editorObj::implObj::keyboard_focus(IN_THREAD_ONLY)
