@@ -11,7 +11,9 @@
 #include "focus/focusframefactory.H"
 #include "focus/focusframelayoutimpl.H"
 #include "focus/standard_focusframecontainer_element.H"
+#include "run_as.H"
 #include "x/w/rgb.H"
+#include "x/w/factory.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -26,6 +28,51 @@ scrollbarObj::scrollbarObj(const ref<implObj> &impl,
 
 scrollbarObj::~scrollbarObj()=default;
 
+void scrollbarObj::set(scroll_v_t value)
+{
+	impl->THREAD->run_as([impl=this->impl, value]
+			     (IN_THREAD_ONLY)
+			     {
+				     auto new_state=impl->state(IN_THREAD);
+
+				     new_state.value=value;
+
+				     impl->reconfigure(IN_THREAD, new_state);
+			     });
+}
+
+scroll_v_t::value_type scrollbarObj::get_value() const
+{
+	auto v=impl->current_value.get();
+
+	return (scroll_v_t::value_type)std::get<0>(v);
+}
+
+scroll_v_t::value_type scrollbarObj::get_dragged_value() const
+{
+	auto v=impl->current_value.get();
+
+	return (scroll_v_t::value_type)std::get<0>(v);
+}
+
+void scrollbarObj::reconfigure(const scrollbar_config &new_state)
+{
+	impl->THREAD->run_as([impl=this->impl, new_state]
+			     (IN_THREAD_ONLY)
+			     {
+				     impl->reconfigure(IN_THREAD, new_state);
+			     });
+}
+
+void scrollbarObj::on_update(const scrollbar_cb_t &callback)
+{
+	impl->THREAD->run_as([impl=this->impl, callback]
+			     (IN_THREAD_ONLY)
+			     {
+				     impl->update_callback(IN_THREAD, callback);
+			     });
+}
+
 // Construct a vertical or a horizontal scrollbar.
 
 static scrollbar create_scrollbar(const ref<containerObj::implObj> &parent_container,
@@ -33,6 +80,7 @@ static scrollbar create_scrollbar(const ref<containerObj::implObj> &parent_conta
 				  const scrollbar_orientation &orientation,
 				  const auto &icon_set_1,
 				  const auto &icon_set_2,
+				  const dim_arg &minimum_size,
 				  const scrollbar_cb_t &callback)
 {
 	// Create a container for the focus frame around the scrollbar.
@@ -64,7 +112,8 @@ static scrollbar create_scrollbar(const ref<containerObj::implObj> &parent_conta
 					orientation,
 					std::tuple_cat(icon_set_1,
 						       icon_set_2),
-					conf});
+					conf,
+					minimum_size});
 
 	// We are now ready to construct the elements.
 	//
@@ -119,6 +168,7 @@ create_scrollbar_icon_set(drawableObj::implObj &drawable,
 scrollbar
 do_create_h_scrollbar(const ref<containerObj::implObj> &parent_container,
 		      const scrollbar_config &conf,
+		      const dim_arg &minimum_size,
 		      const scrollbar_cb_t &callback)
 {
 	auto &window_handler=parent_container->get_window_handler();
@@ -133,12 +183,14 @@ do_create_h_scrollbar(const ref<containerObj::implObj> &parent_container,
 				(window_handler,
 				 "left", "right",
 				 "left", "horiz", "right", "2"),
+				minimum_size,
 				callback);
 }
 
 scrollbar
 do_create_v_scrollbar(const ref<containerObj::implObj> &parent_container,
 		      const scrollbar_config &conf,
+		      const dim_arg &minimum_size,
 		      const scrollbar_cb_t &callback)
 {
 	auto &window_handler=parent_container->get_window_handler();
@@ -153,7 +205,36 @@ do_create_v_scrollbar(const ref<containerObj::implObj> &parent_container,
 				(window_handler,
 				 "up", "down",
 				 "top", "vert", "bottom", "2"),
+				minimum_size,
 				callback);
+}
+
+scrollbar factoryObj
+::create_horizontal_scrollbar(const scrollbar_config &config,
+			      const scrollbar_cb_t &callback,
+			      dim_arg minimum_size)
+{
+	auto sb=do_create_h_scrollbar(container_impl,
+				      config,
+				      minimum_size,
+				      callback);
+
+	created_internally(sb);
+	return sb;
+}
+
+scrollbar factoryObj
+::create_vertical_scrollbar(const scrollbar_config &config,
+			    const scrollbar_cb_t &callback,
+			    dim_arg minimum_size)
+{
+	auto sb=do_create_v_scrollbar(container_impl,
+				      config,
+				      minimum_size,
+				      callback);
+
+	created_internally(sb);
+	return sb;
 }
 
 LIBCXXW_NAMESPACE_END

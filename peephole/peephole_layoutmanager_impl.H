@@ -9,8 +9,6 @@
 #include "peephole/peepholeobj.H"
 #include "peephole/peephole_style.H"
 #include "layoutmanager.H"
-#include "scrollbar/scrollbarfwd.H"
-#include "scrollbar/scrollbarobj.H"
 #include "peephole/peepholed_elementfwd.H"
 #include "x/w/gridlayoutmanagerfwd.H"
 #include "x/w/elementfwd.H"

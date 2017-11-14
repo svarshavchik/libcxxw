@@ -6,7 +6,7 @@
 #define scrollbar_metrics_h
 
 #include "x/w/namespace.H"
-#include "scrollbar/scrollbarfwd.H"
+#include "x/w/scrollbarfwd.H"
 
 LIBCXXW_NAMESPACE_START
 

@@ -97,7 +97,8 @@ create_peephole_scrollbars(const ref<containerObj::implObj> &container)
 			 ::update_vertical_scroll);
 
 	auto horizontal=do_create_h_scrollbar
-		(container, scrollbar_config(),
+		(container, scrollbar_config{},
+		 0,
 		 [=]
 		 (const auto &config)
 		 {
@@ -105,7 +106,8 @@ create_peephole_scrollbars(const ref<containerObj::implObj> &container)
 		 });
 
 	auto vertical=do_create_v_scrollbar
-		(container, scrollbar_config(),
+		(container, scrollbar_config{},
+		 0,
 		 [=]
 		 (const auto &config)
 		 {
@@ -524,7 +526,7 @@ void peepholeObj::layoutmanager_implObj
 		new_config.value=0;
 	}
 
-	scrollbar->update_config(IN_THREAD, new_config);
+	scrollbar->reconfigure(IN_THREAD, new_config);
 
 	// Even when we're not visible we must still religiously do the above
 	// and update_config(), so that the scrollbar configuration reflects

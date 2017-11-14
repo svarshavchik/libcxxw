@@ -5,10 +5,10 @@
 #ifndef peepholed_focusable_impl_h
 #define peepholed_focusable_impl_h
 
-#include "scrollbar/scrollbarfwd.H"
 #include "focus/focusablefwd.H"
 #include "x/w/peepholed_focusableobj.H"
 #include "x/w/focusablefwd.H"
+#include "x/w/scrollbarfwd.H"
 #include <x/obj.H>
 
 LIBCXXW_NAMESPACE_START

@@ -6,13 +6,13 @@
 #define input_field_h
 
 #include "x/w/input_fieldobj.H"
+#include "x/w/scrollbarfwd.H"
 #include "container_elementfwd.H"
 #include "child_elementobj.H"
 #include "editorfwd.H"
 #include "nonrecursive_visibilityfwd.H"
 #include "focus/focusframecontainerfwd.H"
 #include "peepholed_focusable.H"
-#include "scrollbar/scrollbarfwd.H"
 
 LIBCXXW_NAMESPACE_START
 

@@ -9,7 +9,6 @@
 #include "x/w/containerobj.H"
 #include "x/w/gridlayoutmanagerfwd.H"
 #include "x/w/scrollbarfwd.H"
-#include "scrollbar/scrollbarfwd.H"
 #include "peephole/peephole_style.H"
 #include "peephole/peepholefwd.H"
 #include "peephole/peepholedfwd.H"

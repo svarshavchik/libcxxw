@@ -27,6 +27,8 @@
 #include <x/w/radio_groupfwd.H>
 #include <x/w/focusable_containerfwd.H>
 #include <x/w/progressbarfwd.H>
+#include <x/w/scrollbarfwd.H>
+#include <x/w/dim_arg.H>
 #include <x/obj.H>
 #include <x/functional.H>
 
@@ -321,6 +323,26 @@ public:
 					  const progressbar_config &config,
 					  const new_layoutmanager
 					  &layout_manager) LIBCXX_PUBLIC;
+
+	//! Create a horizontal scrollbar
+	scrollbar create_horizontal_scrollbar(const scrollbar_config &config);
+
+	//! Create a horizontal scrollbar
+
+	//! \overload
+	scrollbar create_horizontal_scrollbar(const scrollbar_config &config,
+					      const scrollbar_cb_t &callback,
+					      dim_arg minimum_size=0);
+
+	//! Create a vertical scrollbar
+	scrollbar create_vertical_scrollbar(const scrollbar_config &config);
+
+	//! Create a vertical scrollbar
+
+	//! \overload
+	scrollbar create_vertical_scrollbar(const scrollbar_config &config,
+					    const scrollbar_cb_t &callback,
+					    dim_arg minimum_size=0);
 };
 
 LIBCXXW_NAMESPACE_END

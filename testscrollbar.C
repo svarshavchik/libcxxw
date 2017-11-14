@@ -16,11 +16,9 @@
 #include "x/w/connection.H"
 #include "x/w/button.H"
 #include "x/w/canvas.H"
+#include "x/w/scrollbar.H"
 #include <string>
 #include <iostream>
-
-#include "scrollbar/scrollbar.H"
-#include "scrollbar/scrollbar_impl.H"
 
 using namespace LIBCXX_NAMESPACE;
 using namespace LIBCXX_NAMESPACE::w;
@@ -64,29 +62,13 @@ void testbutton()
 				     layout=main_window->get_layoutmanager();
 
 				 auto factory=layout->append_row();
-				 factory->padding(0).halign(halign::center);
-				 factory->create_normal_button_with_label
-				 ({"Hello"});
-
-				 factory=layout->append_row();
 				 factory->padding(0);
-				 factory->create_canvas
-				 ([]
-				  (const auto &ignore) {}, {
-					 50, 50, 50}, {
-					 4, 4, 4});
-
-				 factory=layout->append_row();
-				 factory->padding(0);
-				 factory->created_internally
-				 (do_create_h_scrollbar
-				  (factory->container_impl,
-				   {
-					   100, 10, 45, 2},
+				 factory->create_horizontal_scrollbar
+				 ({100, 10, 2, 45},
 				   []
 				   (const auto &scrollbar_info) {
 					   updated_value(scrollbar_info);
-				   }));
+				   }, 100);
 			 });
 
 	main_window->set_window_title("Hello world!");

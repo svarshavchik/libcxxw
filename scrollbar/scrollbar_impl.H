@@ -7,13 +7,49 @@
 
 #include "focus/focusable_elementfwd.H"
 #include "child_element.H"
-#include "scrollbar/scrollbar.H"
 #include "scrollbar/scrollbar_icon_set.H"
 #include "scrollbar/scrollbar_metrics.H"
 #include "icon_images_set_elementfwd.H"
+#include "themedim_element_minoverridefwd.H"
+#include "x/w/scrollbar.H"
+#include "x/w/dim_arg.H"
 #include <x/mpobj.H>
 
 LIBCXXW_NAMESPACE_START
+
+struct scrollbar_orientation;
+
+extern const scrollbar_orientation horizontal_scrollbar LIBCXX_HIDDEN;
+
+extern const scrollbar_orientation vertical_scrollbar LIBCXX_HIDDEN;
+
+//! Create a horizontal scrollbar.
+
+//! To do that, we need the scrollbar's parent container,
+//! a \ref scrollbar_config "scrollbar_config", and the scrollbar's
+//! initial callback.
+//!
+//! This only creates the scrollbar element linked to the parent_container.
+//! It is the caller's responsibility to, at some point, add it to the
+//! parent using created_internally().
+
+scrollbar do_create_h_scrollbar(const ref<containerObj::implObj>
+				&parent_container,
+				const scrollbar_config &conf,
+				const dim_arg &minimum_size,
+				const scrollbar_cb_t &callback)
+	LIBCXX_HIDDEN;
+
+//! Create a vertical scrollbar.
+
+//! Like create_horizontal_scrollbar(), but makes a vertical one.
+
+scrollbar do_create_v_scrollbar(const ref<containerObj::implObj>
+				&parent_container,
+				const scrollbar_config &conf,
+				const dim_arg &minimum_size,
+				const scrollbar_cb_t &callback)
+	LIBCXX_HIDDEN;
 
 //! Parameters for scrollbarObj::implObj's constructor
 
@@ -26,12 +62,14 @@ struct LIBCXX_HIDDEN scrollbar_impl_init_params {
 	const scrollbar_orientation &orientation;
 	const scrollbar_icons_tuple_t &icons;
 	const scrollbar_config &conf;
+	const dim_arg &minimum_size;
 };
 
 //! Scrollbar implementation object.
 
 class LIBCXX_HIDDEN scrollbarObj::implObj :
-	public scrollbar_icon_images_set_t<focusable_elementObj<>> {
+	public themedim_element_minoverrideObj<
+	scrollbar_icon_images_set_t<focusable_elementObj<>>> {
 
 	//! Normal or pressed icons.
 
@@ -53,8 +91,9 @@ class LIBCXX_HIDDEN scrollbarObj::implObj :
 
 	//! My superclass
 
-	typedef scrollbar_icon_images_set_t<focusable_elementObj<>
-					    > superclass_t;
+	typedef themedim_element_minoverrideObj<
+		scrollbar_icon_images_set_t<focusable_elementObj<>
+					    >> superclass_t;
 
 	//! Specifies whether this is a horizontal or a vertical scrollbar
 
@@ -108,6 +147,9 @@ class LIBCXX_HIDDEN scrollbarObj::implObj :
 
 	//! Current, internal scrollbar configuration
 	scrollbar_config state_thread_only;
+
+	//! Current callback
+	scrollbar_cb_t updated_value_thread_only;
 
 	//! Current scrollbar drag value
 
@@ -175,6 +217,7 @@ class LIBCXX_HIDDEN scrollbarObj::implObj :
 
  public:
 	THREAD_DATA_ONLY(state);
+	THREAD_DATA_ONLY(updated_value);
 
 	//! Public scrollbar status
 
@@ -209,10 +252,6 @@ class LIBCXX_HIDDEN scrollbarObj::implObj :
 
 	//! Destructor
 	~implObj();
-
-	typedef mpobj<scrollbar_cb_t, std::recursive_mutex> updated_value_t;
-
-	updated_value_t updated_value;
 
 	////////////////////////////////////////////////////////////////////
 	//
@@ -270,8 +309,13 @@ class LIBCXX_HIDDEN scrollbarObj::implObj :
 	//! This updates the scrollbar's configuration. The updated_value()
 	//! callback does not get invoked.
 
-	void update_config(IN_THREAD_ONLY,
-			   const scrollbar_config &new_config);
+	void reconfigure(IN_THREAD_ONLY,
+			 const scrollbar_config &new_config);
+
+	//! Update the callback
+
+	void update_callback(IN_THREAD_ONLY,
+			     const scrollbar_cb_t &);
  private:
 	//! Release the handlebar, if it's pressed.
 
@@ -294,12 +338,27 @@ class LIBCXX_HIDDEN scrollbarObj::implObj :
 
 	void updated_value_no_drag(IN_THREAD_ONLY);
 
+	//! Invoke the callback if the values are different than previous values
+
+	void report_changed_values(IN_THREAD_ONLY,
+				   scroll_v_t value,
+				   scroll_v_t dragged_value);
+
 	//! Invoke the callback
 
-	void report_updated_value(IN_THREAD_ONLY,
-				  scroll_v_t value,
-				  scroll_v_t dragged_value);
+	void report_current_values(IN_THREAD_ONLY,
+				   scroll_v_t value,
+				   scroll_v_t dragged_value);
+ public:
+	//! Mutex-protected container for the current value of the scrollbar
 
+	typedef mpobj<std::tuple<scroll_v_t, scroll_v_t>> current_value_t;
+
+	//! report_updated_value() saves its values here.
+
+	current_value_t current_value;
+
+ private:
 	//! Compute and set the scrollbar display element's metrics.
 
 	//! The height of the horizontal scrollbar and the width of the

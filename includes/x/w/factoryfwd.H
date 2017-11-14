@@ -310,6 +310,41 @@ for customizing the progress bar's appearance.
 - the third parameter sets the progress bar's layout manager, and defaults
 to \ref new_gridlayoutmanager "INSERT_LIBX_NAMESPACE::w::new_gridlayoutmanager".
 
+\par Scroll bars
+
+The factory automatically supplies standard scroll-bars to display elements
+that use them. create_horizontal_scrollbar() and create_vertical_scrollbar()
+create an independent scroll-bar, a convenient user interface for
+specifying an integer value in a consecutive range.
+
+\code
+#include <INSERT_LIBX_NAMESPACE/w/scrollbar.H>
+
+INSERT_LIBX_NAMESPACE::w::scrollbar_config config;
+
+config.range=110;
+config.page_size=10;
+config.increment=5;
+
+INSERT_LIBX_NAMESPACE::w::scrollbar sb=factory->create_horizontal_scrollbar(
+    config,
+    []
+    (const INSERT_LIBX_NAMESPACE::w::scrollbar_info_t &info)
+    {
+
+    },
+    50);
+\endcode
+
+The first parameter is the new scrollbar's
+\ref scrollbar_config "configuration".
+The remaining parameters are optional. The second parameter is the scroll-bar's
+initial callback that gets executed whenever the scrollbar's value changes.
+The third parameter sets the minimum size of the scroll-bar,
+in millimeters. The scroll-bar's actual size may be also adjusted by its
+layout manager. Irrespective of the scroll-bar's ultimate size, the reported
+scroll-bar values get scaled to its configured range and page size.
+
 */
 
 typedef ref<factoryObj> factory;

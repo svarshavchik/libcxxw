@@ -12,11 +12,11 @@
 #include "peephole/peephole_toplevel_gridlayoutmanager.H"
 #include "peephole/peephole_layoutmanager_impl.H"
 #include "peephole/peepholed_toplevel_element.H"
-#include "scrollbar/scrollbar.H"
 #include "scrollbar/scrollbar_impl.H"
 #include "current_border_impl.H"
 #include "border_impl.H"
 #include "x/w/screen.H"
+#include "x/w/scrollbar.H"
 #include "element_screen.H"
 
 LIBCXXW_NAMESPACE_START

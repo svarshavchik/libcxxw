@@ -16,6 +16,7 @@
 #include "icon.H"
 #include "icon_image.H"
 #include "icon_images_set_element.H"
+#include "themedim_element_minoverride.H"
 #include "metrics_horizvertobj.H"
 #include "catch_exceptions.H"
 #include "run_as.H"
@@ -55,6 +56,12 @@ struct scrollbar_orientation {
 
 	// y for horizontal scrollbar, x for vertical scorllbars
 	coord_t rectangle::*minor_coord;
+
+	// Use minimum_size to override the minimum width of the element.
+	bool minimum_width;
+
+	// Use minimum_size to override the minimum height of the element.
+	bool minimum_height;
 };
 
 const scrollbar_orientation horizontal_scrollbar={
@@ -64,6 +71,8 @@ const scrollbar_orientation horizontal_scrollbar={
 	&rectangle::height,
 	&rectangle::x,
 	&rectangle::y,
+	true,
+	false,
 };
 
 const scrollbar_orientation vertical_scrollbar={
@@ -73,16 +82,25 @@ const scrollbar_orientation vertical_scrollbar={
 	&rectangle::width,
 	&rectangle::y,
 	&rectangle::x,
+	false,
+	true,
 };
 
 scrollbarObj::implObj::implObj(const scrollbar_impl_init_params &init_params)
-	: superclass_t(scrollbar_icon_tuple_t_get(init_params.icons),
+	: superclass_t((init_params.orientation.minimum_width
+			? init_params.minimum_size:dim_arg(0)),
+		       (init_params.orientation.minimum_height
+			? init_params.minimum_size:dim_arg(0)),
+
+		       scrollbar_icon_tuple_t_get(init_params.icons),
 		       init_params.container,
 		       child_element_init_params{init_params.orientation
 				       .scratch_buffer_id}),
 	  orientation(init_params.orientation),
 	  state_thread_only(init_params.conf),
-	  updated_value(init_params.callback)
+	  updated_value_thread_only(init_params.callback),
+	  current_value(std::tuple{init_params.conf.value,
+				  init_params.conf.value})
 {
 	validate_conf(THREAD);
 }
@@ -135,8 +153,8 @@ void scrollbarObj::implObj::theme_updated(IN_THREAD_ONLY,
 	recalculate_metrics(IN_THREAD);
 }
 
-void scrollbarObj::implObj::update_config(IN_THREAD_ONLY,
-					  const scrollbar_config &new_config)
+void scrollbarObj::implObj::reconfigure(IN_THREAD_ONLY,
+					const scrollbar_config &new_config)
 {
 	if (new_config == state(IN_THREAD))
 		return;
@@ -146,8 +164,8 @@ void scrollbarObj::implObj::update_config(IN_THREAD_ONLY,
 	validate_conf(IN_THREAD);
 	calculate_scrollbar_metrics(IN_THREAD);
 	draw_slider(IN_THREAD);
-	report_updated_value(IN_THREAD, state(IN_THREAD).value,
-			     state(IN_THREAD).value);
+	report_changed_values(IN_THREAD, state(IN_THREAD).value,
+			      state(IN_THREAD).value);
 }
 
 dim_t scrollbarObj::implObj::major_size(const rectangle &r) const
@@ -723,7 +741,7 @@ bool scrollbarObj::implObj::process_button_event(IN_THREAD_ONLY,
 					if (dragged_value != state(IN_THREAD).value)
 					{
 						state(IN_THREAD).value=dragged_value;
-						report_updated_value
+						report_changed_values
 							(IN_THREAD,
 							 state(IN_THREAD).value,
 							 state(IN_THREAD).value)
@@ -828,7 +846,7 @@ void scrollbarObj::implObj::abort_dragging(IN_THREAD_ONLY)
 {
 	dragged_value=state(IN_THREAD).value;
 	current_pixel=drag_start_current_pixel;
-	report_updated_value(IN_THREAD, state(IN_THREAD).value,
+	report_changed_values(IN_THREAD, state(IN_THREAD).value,
 			     state(IN_THREAD).value);
 }
 
@@ -921,7 +939,7 @@ void scrollbarObj::implObj::report_motion_event(IN_THREAD_ONLY,
 	}
 
 	if (old_value != dragged_value)
-		report_updated_value(IN_THREAD, state(IN_THREAD).value,
+		report_changed_values(IN_THREAD, state(IN_THREAD).value,
 				     dragged_value);
 }
 
@@ -943,26 +961,51 @@ void scrollbarObj::implObj::updated_value_no_drag(IN_THREAD_ONLY)
 	dragged_value=state(IN_THREAD).value;
 
 	draw_slider(IN_THREAD);
-	report_updated_value(IN_THREAD, state(IN_THREAD).value, dragged_value);
+	report_changed_values(IN_THREAD, state(IN_THREAD).value, dragged_value);
 }
 
-void scrollbarObj::implObj::report_updated_value(IN_THREAD_ONLY,
-						 scroll_v_t value,
-						 scroll_v_t dragged_value)
+void scrollbarObj::implObj::update_callback(IN_THREAD_ONLY,
+					    const scrollbar_cb_t &callback)
 {
-	updated_value_t::lock lock{updated_value};
+	updated_value(IN_THREAD)=callback;
 
-	auto &f=*lock;
+	auto v=current_value.get();
 
-	if (!f)
+	report_current_values(IN_THREAD, std::get<0>(v), std::get<1>(v));
+}
+
+void scrollbarObj::implObj::report_changed_values(IN_THREAD_ONLY,
+						  scroll_v_t value,
+						  scroll_v_t dragged_value)
+{
+	std::tuple new_values{value, dragged_value};
+
+	{
+		current_value_t::lock lock{current_value};
+
+		if (*lock == new_values)
+			return;
+
+		*lock=new_values;
+	}
+
+	report_current_values(IN_THREAD, value, dragged_value);
+}
+
+void scrollbarObj::implObj::report_current_values(IN_THREAD_ONLY,
+						  scroll_v_t value,
+						  scroll_v_t dragged_value)
+{
+	if (!updated_value(IN_THREAD))
 		return;
 
 	try {
-		f(scrollbar_info_t{(scroll_v_t::value_type)value,
+		updated_value(IN_THREAD)
+			(scrollbar_info_t{(scroll_v_t::value_type)value,
 					(scroll_v_t::value_type)dragged_value,
 					callback_trigger_t{},
-					busy_impl{*this},
-					});
+					busy_impl{*this}
+			});
 	} CATCH_EXCEPTIONS;
 }
 

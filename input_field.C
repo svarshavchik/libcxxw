@@ -6,7 +6,6 @@
 #include "editor.H"
 #include "editor_impl.H"
 #include "input_field.H"
-#include "scrollbar/scrollbar.H"
 #include "background_color.H"
 #include "container_element.H"
 #include "nonrecursive_visibility.H"
@@ -20,6 +19,7 @@
 #include "x/w/input_field.H"
 #include "x/w/input_field_config.H"
 #include "x/w/text_param.H"
+#include "x/w/scrollbar.H"
 #include "gridlayoutmanager.H"
 #include "x/w/factory.H"
 #include <courier-unicode.h>

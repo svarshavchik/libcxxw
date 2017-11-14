@@ -635,9 +635,6 @@ libcxxw_la_SOURCES=\
 	screen_solidcolorpictures.H		    \
 	screen_solidcolorpicturesfwd.H		    \
 	scrollbar/scrollbar.C			    \
-	scrollbar/scrollbar.H			    \
-	scrollbar/scrollbarfwd.H		    \
-	scrollbar/scrollbarobj.H		    \
 	scrollbar/scrollbar_icon_set.H		    \
 	scrollbar/scrollbar_impl.C		    \
 	scrollbar/scrollbar_impl.H		    \

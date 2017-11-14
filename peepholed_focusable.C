@@ -12,12 +12,12 @@
 #include "peephole/peephole_gridlayoutmanagerobj.H"
 #include "focus/focusable.H"
 #include "focus/standard_focusframecontainer_element.H"
-#include "scrollbar/scrollbar.H"
 #include "container_element.H"
 #include "container_visible_element.H"
 #include "gridlayoutmanager.H"
 #include "x/w/factory.H"
 #include "x/w/gridfactory.H"
+#include "x/w/scrollbar.H"
 #include <x/refptr_traits.H>
 
 LIBCXXW_NAMESPACE_START
