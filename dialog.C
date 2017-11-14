@@ -142,11 +142,14 @@ std::function<void (const busy &)
 		dialog_id=std::string{dialog_id.begin(),
 				      dialog_id.end()}](const busy &)
 	{
-		me.get([&]
-		       (const auto &me)
-		       {
-			       me->remove_dialog(dialog_id);
-		       });
+		auto got=me.get();
+
+		if (got)
+		{
+			auto &[me]=*got;
+
+			me->remove_dialog(dialog_id);
+		}
 	};
 }
 

@@ -300,12 +300,15 @@ void hide_and_invoke(const captured_dialog_t &d,
 		     const std::function
 		     <void (const busy &)>  &action)
 {
-	d.get([&]
-	      (const auto &d)
-	      {
-		      d->dialog_window->hide();
-		      action(yes_i_am);
-	      });
+	auto got=d.get();
+
+	if (got)
+	{
+		auto &[d]=*got;
+
+		d->dialog_window->hide();
+		action(yes_i_am);
+	}
 }
 
 // When a theme dialog's button is pressed, hide and invoke the callback.

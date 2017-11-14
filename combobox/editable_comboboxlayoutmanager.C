@@ -86,14 +86,14 @@ new_editable_comboboxlayoutmanager
 
 				   bool flag=false;
 
-				   container_impl
-					   .get([&]
-						(const auto &ci)
-						{
-							flag=autocomplete
-								(ci,
-								 autocomplete_info);
-						});
+				   auto got=container_impl.get();
+
+				   if (got)
+				   {
+					   auto & [ci]=*got;
+					   flag=autocomplete(ci,
+							     autocomplete_info);
+				   }
 				   return flag;
 			   });
 

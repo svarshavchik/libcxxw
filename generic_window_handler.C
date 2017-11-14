@@ -254,12 +254,14 @@ void generic_windowObj::handlerObj
 			->push_back([me=make_weak_capture(ref(this))]
 				    (IN_THREAD_ONLY)
 				    {
-					    me.get([&]
-						   (const auto &me)
-						   {
-							   me->mapped(IN_THREAD)
-								   ;
-						   });
+					    auto got=me.get();
+
+					    if (!got)
+						    return;
+
+					    auto &[me]=*got;
+
+					    me->mapped(IN_THREAD);
 				    });
 	}
 	else

@@ -274,11 +274,14 @@ void file_dialogObj::implObj::create_hotspot(text_param &t,
 	   {
 		   text_param t;
 
-		   me.get([&]
-			  (const auto &me)
-			  {
-				  t=me->hotspot_activated(event, name, path);
-			  });
+		   auto got=me.get();
+
+		   if (got)
+		   {
+			   auto &[me]=*got;
+
+			   t=me->hotspot_activated(event, name, path);
+		   }
 		   return t;
 	   }));
 
@@ -641,10 +644,14 @@ void file_dialogObj::constructor(const dialog_args &d_args,
 		  const callback_trigger_t &trigger,
 		  const busy &mcguffin)
 		 {
-			 impl.get([&]
-				  (const auto &impl) {
-					  impl->clicked(n, trigger, mcguffin);
-				  });
+			 auto got=impl.get();
+
+			 if (got)
+			 {
+				 auto &[impl]=*got;
+
+				 impl->clicked(n, trigger, mcguffin);
+			 }
 		 });
 
 	// Set up a callback that invokes enter().
@@ -663,18 +670,18 @@ void file_dialogObj::constructor(const dialog_args &d_args,
 			 if (ke.unicode != '\n')
 				 return false;
 
-			 impl.get([&]
-				      (const auto &elements)
-				      {
-					      if (!elements->filename_field
-						  ->elementObj::impl
-						  ->activate_for(ke))
-						      return;
+			 auto got=impl.get();
 
-					      elements->enter_key
-						      (busy_mcguffin)
-						      ;
-				      });
+			 if (got)
+			 {
+				 auto &[elements]=*got;
+
+				 if (elements->filename_field
+				     ->elementObj::impl
+				     ->activate_for(ke))
+					 elements->enter_key(busy_mcguffin);
+			 }
+
 			 return true;
 		 });
 
@@ -688,11 +695,14 @@ void file_dialogObj::constructor(const dialog_args &d_args,
 		([impl=make_weak_capture(impl)]
 		 (const auto &trigger, const auto &busy)
 		 {
-			 impl.get([&]
-				  (const auto &elements)
-				  {
-					  elements->enter_key(busy);
-				  });
+			 auto got=impl.get();
+
+			 if (got)
+			 {
+				 auto &[elements]=*got;
+
+				 elements->enter_key(busy);
+			 }
 		 });
 }
 

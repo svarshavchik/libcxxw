@@ -399,18 +399,18 @@ focusable_container new_custom_comboboxlayoutmanager
 			 (current_selection, combobox_popup, lm)]
 			(const auto &info)
 			{
-				current_selection.get
-				([&]
-				 (const auto &e,
-				  const auto &combobox_popup,
-				  const auto &lm)
-			{
+				auto got=current_selection.get();
+
+				if (!got)
+					return;
+
+				auto &[e, combobox_popup, lm]=*got;
+
 				lm->selection_changed.get()
 				({ lm->create_public_object(),
 						e,
 						combobox_popup,
 						info});
-			});
 			};
 	}
 
@@ -457,18 +457,21 @@ focusable_container new_custom_comboboxlayoutmanager
 				   const auto &mcguffin)
 				  {
 					  bool processed=false;
-					  c.get([&]
-						(const auto &current_selection,
-						 const auto &lm)
-						{
-							processed=collector
-								->process
-								(key_event,
-								 selection_search,
-								 current_selection,
-								 lm->create_public_object(),
-								 mcguffin);
-						});
+
+					  auto got=c.get();
+
+					  if (got)
+					  {
+						  auto &[current_selection, lm]=
+							  *got;
+
+						  processed=collector->process
+							  (key_event,
+							   selection_search,
+							   current_selection,
+							   lm->create_public_object(),
+							   mcguffin);
+					  }
 					  return processed;
 				  });
 		 });

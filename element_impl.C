@@ -1086,10 +1086,14 @@ void elementObj::implObj::schedule_hover_timer(IN_THREAD_ONLY,
 		 [me=make_weak_capture(ref<implObj>(this))]
 		 (IN_THREAD_ONLY)
 		 {
-			 me.get([&]
-				(const auto &me) {
-					me->check_hover_timer(IN_THREAD);
-				});
+			 auto got=me.get();
+
+			 if (got)
+			 {
+				 auto &[me]=*got;
+
+				 me->check_hover_timer(IN_THREAD);
+			 }
 		 });
 }
 

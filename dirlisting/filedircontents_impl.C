@@ -182,11 +182,14 @@ void filedircontentsObj::implObj::dispatch_next_chunk()
 
 	c->files->ondestroy([impl=make_weak_capture(ref(this))]
 			    {
-				    impl.get([]
-					     (const auto &impl)
-					     {
-						     impl->next_chunk();
-					     });
+				    auto got=impl.get();
+
+				    if (got)
+				    {
+					    auto &[impl]=*got;
+
+					    impl->next_chunk();
+				    }
 			    });
 
 	try {

@@ -288,21 +288,27 @@ void file_menu(const LIBCXX_NAMESPACE::w::main_window &main_window,
 			[main_window=LIBCXX_NAMESPACE::make_weak_capture(main_window)]
 				(const auto &ignore)
 			{
-				main_window.get([]
-						(const auto &main_window)
-						{
-							remove_help_menu(main_window);
-						});
+				auto got=main_window.get();
+
+				if (got)
+				{
+					auto &[main_window]=*got;
+
+					remove_help_menu(main_window);
+				}
 			},
 			"Remove Help menu",
 			[main_window=LIBCXX_NAMESPACE::make_weak_capture(main_window)]
 				(const auto &ignore)
 			{
-				main_window.get([]
-						(const auto &main_window)
-						{
-							remove_view_menu(main_window);
-						});
+				auto got=main_window.get();
+
+				if (got)
+				{
+					auto &[main_window]=*got;
+
+					remove_view_menu(main_window);
+				}
 			},
 			"Remove View menu",
 
@@ -310,11 +316,14 @@ void file_menu(const LIBCXX_NAMESPACE::w::main_window &main_window,
 				(const auto &ignore)
 				mutable
 			{
-				main_window.get([&]
-						(const auto &main_window)
-						{
-							add_recent(main_window, ++i);
-						});
+				auto got=main_window.get();
+
+				if (got)
+				{
+					auto &[main_window]=*got;
+
+					add_recent(main_window, ++i);
+				}
 			},
 			"Add to recent submenu"});
 }

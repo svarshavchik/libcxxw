@@ -92,14 +92,17 @@ void filedirlist_managerObj::implObj::constructor(const factory &,
 		([me=make_weak_capture(ref(this))]
 		 (const auto &state, const auto &busy)
 		 {
-			 me.get([&]
-				(const auto &me)
-				{
-					if (state.shown)
-						me->start();
-					else
-						me->stop();
-				});
+			 auto got=me.get();
+
+			 if (got)
+			 {
+				 auto &[me]=*got;
+
+				 if (state.shown)
+					 me->start();
+				 else
+					 me->stop();
+			 }
 		 });
 }
 
@@ -405,26 +408,29 @@ void filedirlist_managerObj::implObj::start(protected_info_t::lock &lock,
 		([new_mcguffin, me=make_weak_capture(ref(this)),
 		  prepare]
 		 {
-			 me.get([&]
-				(const auto &me)
-				{
-					// Let's make sure that the new
-					// callback_mcguffin that was originally
-					// create is still there. If not,
-					// start() must've been called again.
-					// That's ok, just go away quietly.
+			 auto got=me.get();
 
-					protected_info_t::lock lock{*me};
+			 if (got)
+			 {
+				 auto &[me]=*got;
 
-					if (lock->callback_mcguffin !=
-					    new_mcguffin)
-						return;
+				 // Let's make sure that the new
+				 // callback_mcguffin that was originally
+				 // create is still there. If not,
+				 // start() must've been called again.
+				 // That's ok, just go away quietly.
 
-					// If so, we're all set.
+				 protected_info_t::lock lock{*me};
 
-					prepare(lock);
-					me->start_new(lock);
-				});
+				 if (lock->callback_mcguffin !=
+				     new_mcguffin)
+					 return;
+
+				 // If so, we're all set.
+
+				 prepare(lock);
+				 me->start_new(lock);
+			 }
 		 });
 }
 
@@ -456,10 +462,14 @@ void filedirlist_managerObj::implObj::start_new(protected_info_t::lock &lock)
 		  me=make_weak_capture(ref(this))]
 		 (const const_filedir_file &f)
 		 {
-			 me.get([&]
-				(const auto &me) {
-					me->update(f);
-				});
+			 auto got=me.get();
+
+			 if (got)
+			 {
+				 auto &[me]=*got;
+
+				 me->update(f);
+			 }
 		 });
 }
 

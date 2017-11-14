@@ -398,10 +398,14 @@ void editorObj::implObj::schedule_blink(IN_THREAD_ONLY)
 		 [me=make_weak_capture(ref<implObj>(this))]
 		 (IN_THREAD_ONLY)
 		 {
-			 me.get([&]
-				(const auto &me) {
-					me->blink(IN_THREAD);
-				});
+			 auto got=me.get();
+
+			 if (got)
+			 {
+				 auto &[me]=*got;
+
+				 me->blink(IN_THREAD);
+			 }
 		 });
 }
 
@@ -806,10 +810,13 @@ void editorObj::implObj::start_scrolling(IN_THREAD_ONLY)
 		 [me=make_weak_capture(ref<implObj>(this))]
 		 (IN_THREAD_ONLY)
 		 {
-			 me.get([&]
-				(const auto &me) {
-					me->scroll(IN_THREAD);
-				});
+			 auto got=me.get();
+
+			 if (got)
+			 {
+				 auto & [me]=*got;
+				 me->scroll(IN_THREAD);
+			 }
 		 });
 }
 
