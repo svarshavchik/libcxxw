@@ -325,24 +325,28 @@ public:
 					  &layout_manager) LIBCXX_PUBLIC;
 
 	//! Create a horizontal scrollbar
-	scrollbar create_horizontal_scrollbar(const scrollbar_config &config);
+	scrollbar create_horizontal_scrollbar(const scrollbar_config &config)
+		LIBCXX_PUBLIC;
 
 	//! Create a horizontal scrollbar
 
 	//! \overload
 	scrollbar create_horizontal_scrollbar(const scrollbar_config &config,
 					      const scrollbar_cb_t &callback,
-					      dim_arg minimum_size=0);
+					      dim_arg minimum_size=0)
+		LIBCXX_PUBLIC;
 
 	//! Create a vertical scrollbar
-	scrollbar create_vertical_scrollbar(const scrollbar_config &config);
+	scrollbar create_vertical_scrollbar(const scrollbar_config &config)
+		LIBCXX_PUBLIC;
 
 	//! Create a vertical scrollbar
 
 	//! \overload
 	scrollbar create_vertical_scrollbar(const scrollbar_config &config,
 					    const scrollbar_cb_t &callback,
-					    dim_arg minimum_size=0);
+					    dim_arg minimum_size=0)
+		LIBCXX_PUBLIC;
 };
 
 LIBCXXW_NAMESPACE_END

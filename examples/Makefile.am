@@ -8,8 +8,9 @@ noinst_PROGRAMS=\
 	helloworld				\
 	inputfieldsandbuttons			\
 	listlayoutmanager			\
-	progressbar				\
 	menu					\
+	progressbar				\
+	scrollbar				\
 	wordwraplabel
 
 checkradio_SOURCES=checkradio.C close_flag.H
@@ -44,6 +45,9 @@ menu_LDADD=-lcxxw -lcxx
 
 progressbar_SOURCES=progressbar.C close_flag.H
 progressbar_LDADD=-lcxxw -lcxx
+
+scrollbar_SOURCES=scrollbar.C close_flag.H
+scrollbar_LDADD=-lcxxw -lcxx
 
 wordwraplabel_SOURCES=wordwraplabel.C close_flag.H
 wordwraplabel_LDADD=-lcxxw -lcxx
