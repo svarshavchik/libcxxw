@@ -28,6 +28,7 @@
 #include <set>
 #include <deque>
 #include <atomic>
+#include <optional>
 
 LIBCXXW_NAMESPACE_START
 
@@ -131,14 +132,6 @@ class LIBCXX_HIDDEN connection_threadObj
 
 	std::unordered_map<uint32_t, ref<xidObj>> *destroyed_xids_thread_only;
 
-	//! Collecting exposure rectangles.
-
-	//! They get collected until
-	//! a received expose event indicates count=0, then the exposure
-	//! event gets processed
-
-	rectangle_set *exposed_rectangles_thread_only;
-
 	//! A container for elements that need to be redrawn.
 
 	typedef std::unordered_set<ref<elementObj::implObj>
@@ -230,7 +223,11 @@ class LIBCXX_HIDDEN connection_threadObj
 
 	//! And when there's nothing else to do, just before waiting for
 	//! events, check for any established grabs, and grab them.
-	void allow_events(IN_THREAD_ONLY);
+	//!
+	//! Also, if we buffered any configure and/or exposure events,
+	//! process them.
+
+	bool release_grabs_and_process_buffered_events(IN_THREAD_ONLY);
 
 	//! on_disconnect() callback
 
@@ -369,11 +366,8 @@ class LIBCXX_HIDDEN connection_threadObj
 				      const ref<window_handlerObj> &handler);
 
  private:
-	//! Whether a MOTION_NOTIFY_EVENT has been buffered;
-	bool motion_event_is_buffered=false;
-
-	//! The buffered motion event
-	xcb_motion_notify_event_t buffered_motion_event;
+	//! Whether a MOTION_NOTIFY_EVENT has been buffered.
+	std::optional<xcb_motion_notify_event_t> buffered_motion_event;
 
 	//! We try to buffer up MOTION_EVENTs until they stop coming.
 

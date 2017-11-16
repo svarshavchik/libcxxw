@@ -166,7 +166,9 @@ bool connection_threadObj
 		break;
 	}
 
-	allow_events(IN_THREAD);
+	if (release_grabs_and_process_buffered_events(IN_THREAD))
+		return false;
+
 	xcb_flush(info->conn);
 	return true;
 }

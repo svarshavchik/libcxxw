@@ -314,11 +314,10 @@ void generic_windowObj::handlerObj::remove_background_color(IN_THREAD_ONLY)
 //
 // Inherited from window_handler
 
-void generic_windowObj::handlerObj::exposure_event(IN_THREAD_ONLY,
-						   const rectangle_set &areas)
+void generic_windowObj::handlerObj::process_collected_exposures(IN_THREAD_ONLY)
 {
 	has_exposed(IN_THREAD)=true;
-	exposure_event_recursive(IN_THREAD, areas);
+	exposure_event_recursive(IN_THREAD, exposed_rectangles(IN_THREAD));
 }
 
 void generic_windowObj::handlerObj::theme_updated_event(IN_THREAD_ONLY)
@@ -674,8 +673,32 @@ void generic_windowObj::handlerObj::grab(IN_THREAD_ONLY)
 	throw EXCEPTION("Internal error: called grab() on the top level window.");
 }
 
-void generic_windowObj::handlerObj::configure_notify(IN_THREAD_ONLY,
-						     const rectangle &r)
+void generic_windowObj::handlerObj::configure_notify_received(IN_THREAD_ONLY,
+							      const rectangle
+							      &r)
+{
+	mpobj<rectangle>::lock lock(current_position);
+
+	if (*lock == r)
+		return;
+
+	if (lock->width != r.width ||
+	    lock->height != r.height)
+	{
+		// Exposure event coming. We use the default bit-gravity of
+		// Forget, meaning that we should always get EXPOSURE events
+		// after a size change.
+		has_exposed(IN_THREAD)=false;
+
+		// And we can throw away all accumulated exposure rectangles
+		// because we are guaranteed to get new ones.
+		exposed_rectangles(IN_THREAD).clear();
+	}
+	*lock=r;
+}
+
+void generic_windowObj::handlerObj::process_configure_notify(IN_THREAD_ONLY,
+							     const rectangle &r)
 {
 	returned_pointer<xcb_generic_error_t *> error;
 
@@ -695,18 +718,6 @@ void generic_windowObj::handlerObj::configure_notify(IN_THREAD_ONLY,
 
 	// same_screen=value->same_screen;
 	// child_window=value->child;
-
-	{
-		mpobj<rectangle>::lock lock(current_position);
-
-		if (*lock == r)
-			return;
-
-		if (lock->width != r.width ||
-		    lock->height != r.height)
-			has_exposed(IN_THREAD)=false; // Exposure event coming.
-		*lock=r;
-	}
 
 	auto new_position=element_position(r);
 

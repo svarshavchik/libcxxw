@@ -115,8 +115,13 @@ void window_handlerObj::change_property(IN_THREAD_ONLY,
 			    type, format, data_len, data);
 }
 
-void window_handlerObj::configure_notify(IN_THREAD_ONLY,
-					 const rectangle &)
+void window_handlerObj::configure_notify_received(IN_THREAD_ONLY,
+						  const rectangle &)
+{
+}
+
+void window_handlerObj::process_configure_notify(IN_THREAD_ONLY,
+						 const rectangle &)
 {
 }
 
@@ -125,8 +130,7 @@ void window_handlerObj::client_message_event(IN_THREAD_ONLY,
 {
 }
 
-void window_handlerObj::exposure_event(IN_THREAD_ONLY,
-				       const rectangle_set &)
+void window_handlerObj::process_collected_exposures(IN_THREAD_ONLY)
 {
 }
 

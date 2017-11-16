@@ -375,8 +375,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 	//! Implement the exposure event.
 
-	void exposure_event(IN_THREAD_ONLY,
-			    const rectangle_set &areas) override;
+	void process_collected_exposures(IN_THREAD_ONLY) override;
 
 	//! Theme update notification.
 	void theme_updated_event(IN_THREAD_ONLY) override;
@@ -506,10 +505,15 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 		return data(IN_THREAD).inherited_visibility;
 	}
 
-	//! Update the displayed window's element's current_position
+	//! Implement configure_notify_received().
 
-	void configure_notify(IN_THREAD_ONLY,
-			      const rectangle &) override;
+	void configure_notify_received(IN_THREAD_ONLY, const rectangle &r)
+		override;
+
+	//! Implement process_configure_notify().
+
+	void process_configure_notify(IN_THREAD_ONLY, const rectangle &r)
+		override;
 
 	//! Update frame extents
 

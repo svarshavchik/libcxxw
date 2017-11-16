@@ -9,7 +9,6 @@
 #include "xid_t.H"
 #include "catch_exceptions.H"
 #include <xcb/xproto.h>
-#include <x/sentry.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -115,10 +114,9 @@ void connection_threadObj::run_event(IN_THREAD_ONLY,
 			// motion_notify event that needs to see the light of
 			// day.
 
-			if (motion_event_is_buffered &&
-			    buffered_motion_event.event != msg->event)
+			if (buffered_motion_event &&
+			    buffered_motion_event->event != msg->event)
 				process_buffered_motion_event(IN_THREAD);
-			motion_event_is_buffered=true;
 			buffered_motion_event=*msg;
 		}
 		return;
@@ -164,15 +162,24 @@ void connection_threadObj::run_event(IN_THREAD_ONLY,
 	case XCB_CONFIGURE_NOTIFY:
 		{
 			GET_MSG(configure_notify_event);
+
 			FIND_HANDLER(window);
-			DISPATCH_HANDLER(configure_notify,
-					 (IN_THREAD,
-					 {
-						 msg->x,
-						 msg->y,
-						 msg->width,
-						 msg->height
-					 }));
+
+			// We save and buffer the ConfigureNotify event in
+			// each window. We buffer them because resizing the
+			// window can generate a bunch of these, and we want
+			// to delay actually processing them until we drain
+			// all the messages from the server. However, since
+			// the windows' bit-gravity is NONE, we expect that
+			// each ConfigureNotify to a different size is going
+			// to generate Exposure. This gets handled in
+			// configure_notify_received(), so we have to
+			// call it.
+
+			rectangle r{msg->x, msg->y, msg->width, msg->height};
+			iter->second->pending_configure_notify_event(IN_THREAD)=
+				r;
+			iter->second->configure_notify_received(IN_THREAD, r);
 		}
 		return;
 	case XCB_PROPERTY_NOTIFY:
@@ -269,27 +276,11 @@ void connection_threadObj::run_event(IN_THREAD_ONLY,
 			// into a generic rectangle, which can have negative
 			// cordinates; hence rectangle's X & Y are signed.
 
-			exposed_rectangles_thread_only
-				->insert({msg->x, msg->y, msg->width,
+			iter->second->exposed_rectangles(IN_THREAD)
+				.insert({msg->x, msg->y, msg->width,
 							msg->height});
-
-			if (msg->count)
-				return; // More exposure events coming.
-
-			// Just clear the set of rectangles when we leave this
-			// scope.
-
-			auto sentry=
-				make_sentry([s=this->exposed_rectangles_thread_only]
-					    {
-						    s->clear();
-					    });
-
-			sentry.guard();
-			iter->second->exposure_event
-				(IN_THREAD,
-				 *exposed_rectangles_thread_only);
-
+			iter->second->exposed_rectangles_complete(IN_THREAD)=
+				msg->count == 0;
 		}
 		return;
 	};
@@ -297,18 +288,18 @@ void connection_threadObj::run_event(IN_THREAD_ONLY,
 
 bool connection_threadObj::process_buffered_motion_event(IN_THREAD_ONLY)
 {
-	if (!motion_event_is_buffered)
+	if (!buffered_motion_event)
 		return false;
 
 	// Actually process the motion event. For real, this time.
 
-	motion_event_is_buffered=false;
-	auto msg= &buffered_motion_event;
+	auto msg= *buffered_motion_event;
+	buffered_motion_event.reset();
 
-	auto iter=window_handlers_thread_only->find(msg->event);
+	auto iter=window_handlers_thread_only->find(msg.event);
 	if (iter == window_handlers_thread_only->end()) return false;
 
-	iter->second->pointer_motion_event(IN_THREAD, msg);
+	iter->second->pointer_motion_event(IN_THREAD, &msg);
 	return true;
 }
 

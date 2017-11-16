@@ -74,11 +74,19 @@ public:
 
  public:
 
-	//! Override configure_notify()
+	//! Override process_configure_notify()
 
 	//! We manage our own size, and ignore ConfigureNotify messages
 	//! from the server.
-	void configure_notify(IN_THREAD_ONLY, const rectangle &r) override;
+	void process_configure_notify(IN_THREAD_ONLY,
+				      const rectangle &) override;
+
+	//! Override configure_notify_received()
+
+	//! We manage our own size, and ignore ConfigureNotify messages
+	//! from the server.
+	void configure_notify_received(IN_THREAD_ONLY,
+				      const rectangle &) override;
 
 	//! Override button_press_event
 

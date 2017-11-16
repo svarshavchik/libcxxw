@@ -15,6 +15,7 @@
 #include <x/logger.H>
 #include <xcb/xcb.h>
 #include <unordered_map>
+#include <optional>
 
 LIBCXXW_NAMESPACE_START
 
@@ -55,11 +56,37 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 
 	std::unordered_map<xcb_atom_t,
 			   current_selection> selections_thread_only;
+
+	//! Exposed rectangles.
+
+	//! connection_thread collects Exposure events here, then calls
+	//! process_collected_exposures() after all exposure events got
+	//! buffered.
+
+	rectangle_set exposed_rectangles_thread_only;
+
+	//! Count on the most recent Exposure event was 0
+
+	//! Updated by connection_thread, which uses it, as part of its
+	//! loop, to determine when to call process_colletced_exposures().
+	bool exposed_rectangles_complete_thread_only=false;
+
+	//! Most recently received ConfigureNotify event, if there is one.
+
+	//! This is for connection_thread's use. It records the particulars
+	//! of the ConfigureNotify event here. configure_notify_received()
+	//! and process_configure_notify()
+
+	std::optional<rectangle> pending_configure_notify_event_thread_only;
+
  public:
 
 	THREAD_DATA_ONLY(grabbed_timestamp);
 	THREAD_DATA_ONLY(grab_locked);
 	THREAD_DATA_ONLY(selections);
+	THREAD_DATA_ONLY(exposed_rectangles);
+	THREAD_DATA_ONLY(exposed_rectangles_complete);
+	THREAD_DATA_ONLY(pending_configure_notify_event);
 
 	//! My screen
 	const screen screenref;
@@ -131,12 +158,9 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 	virtual void client_message_event(IN_THREAD_ONLY,
 					  const xcb_client_message_event_t *);
 
-	//! Exposure event
+	//! Connection thread wants us to process the collected exposures.
 
-	//! The implementor is free to trash the rectangle set.
-
-	virtual void exposure_event(IN_THREAD_ONLY,
-				    const rectangle_set &);
+	virtual void process_collected_exposures(IN_THREAD_ONLY);
 
 	//! A new theme has been installed
 
@@ -144,8 +168,35 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 
 	//! Configure notification
 
-	virtual void configure_notify(IN_THREAD_ONLY,
-				      const rectangle &);
+	//! Do not process the configure notification just yet. The
+	//! connection thread will invoke process_configure_notify().
+	virtual void configure_notify_received(IN_THREAD_ONLY,
+					       const rectangle &);
+
+	//! Process most recent configure notification
+
+	//! The connection thread may invoke configure_notify_received()
+	//! multiple times before process_configure_notify(), for efficiency.
+	//!
+	//! process_configure_notify() is typically expensive, and while a
+	//! window is being resized this allows optimization of
+	//! ConfigureNotify message processing. The cheap stuff goes into
+	//! configure_notify_received(), which gets called for every
+	//! ConfigureNotify event, and this should take little time.
+	//!
+	//! The expensive work goes into process_configure_notify().
+	//! Exposure events follow configure notifications. The default
+	//! window bit gravity of FORGET means that exposure events
+	//! always follow a configure notify with a size change.
+	//!
+	//! connection_thread buffers Exposure and ConfigureNotify events.
+	//! After the message queue from the X servers gets drained, if there
+	//! was at least one ConfigureNotify event received and buffered,
+	//! process_configure_notify() gets called where all expensive work,
+	//! that results from a resized window, occurs.
+
+	virtual void process_configure_notify(IN_THREAD_ONLY,
+					      const rectangle &);
 
 	//! Key press event
 	virtual void key_press_event(IN_THREAD_ONLY,

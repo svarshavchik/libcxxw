@@ -14,6 +14,7 @@
 #include "selection/incremental_selection_updates.H"
 #include <x/functionalrefptr.H>
 #include <x/mcguffinmultimap.H>
+#include <x/sentry.H>
 
 LOG_CLASS_INIT(LIBCXX_NAMESPACE::w::connection_threadObj);
 
@@ -41,7 +42,6 @@ void connection_threadObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin)
 	std::unordered_map<xcb_window_t,
 			   ref<window_handlerObj>> window_handlers;
 	std::unordered_map<uint32_t, ref<xidObj>> destroyed_xids;
-	rectangle_set exposed_rectangles;
 
 	element_set_t visibility_updated;
 	elements_to_redraw_set elements_to_redraw;
@@ -58,7 +58,6 @@ void connection_threadObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin)
 
 	window_handlers_thread_only= &window_handlers;
 	destroyed_xids_thread_only= &destroyed_xids;
-	exposed_rectangles_thread_only= &exposed_rectangles;
 	elements_to_redraw_thread_only= &elements_to_redraw;
 	containers_2_recalculate_thread_only= &containers_2_recalculate;
 	containers_2_batch_recalculate_thread_only=
@@ -158,10 +157,69 @@ batch_queue connection_threadObj::get_batch_queue()
 	return new_batch_queue;
 }
 
-void connection_threadObj::allow_events(IN_THREAD_ONLY)
+bool connection_threadObj
+::release_grabs_and_process_buffered_events(IN_THREAD_ONLY)
 {
+	bool flag=false;
+
 	for (const auto &window_handler:*window_handlers(IN_THREAD))
-		window_handler.second->release_grabs(IN_THREAD);
+	{
+		bool processed_buffered_event=false;
+
+		auto &w=*window_handler.second;
+
+		// We get ConfigureNotify, followed by Exposure events, which
+		// we buffer up.
+		//
+		// Now, it's time to pay the piper, and dispatch these events
+		// to the windows, and we do ConfigureNotify first, then
+		// Exposure, in the same order.
+
+		if (w.pending_configure_notify_event(IN_THREAD))
+		{
+			// One or more ConfigureNotify events were received.
+
+			try {
+				w.process_configure_notify
+					(IN_THREAD,
+					 *w.pending_configure_notify_event
+					 (IN_THREAD));
+			} CATCH_EXCEPTIONS;
+
+			w.pending_configure_notify_event(IN_THREAD).reset();
+
+			processed_buffered_event=true;
+		}
+
+		if (!w.exposed_rectangles(IN_THREAD).empty() &&
+		    w.exposed_rectangles_complete(IN_THREAD))
+		{
+			// Exposure events were received, and the last one
+			// had a 0 count.
+
+			try {
+				w.process_collected_exposures(IN_THREAD);
+			} CATCH_EXCEPTIONS;
+
+			w.exposed_rectangles(IN_THREAD).clear();
+			processed_buffered_event=true;
+		}
+
+		if (processed_buffered_event)
+		{
+			// In case ConfigureNotify resulted in more events
+			// happening, we don't want to release all the grabs
+			// just yet.
+
+			flag=true;
+			continue;
+		}
+
+		// At this point, all window activity has ceased, so any
+		// grabs can be released.
+		w.release_grabs(IN_THREAD);
+	}
+	return flag;
 }
 
 void connection_threadObj
