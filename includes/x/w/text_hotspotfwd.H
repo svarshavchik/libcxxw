@@ -24,7 +24,7 @@ class text_hotspotObj;
 //!                                          []
 //!                                          (const INSERT_LIBX_NAMESPACE::w::text_event_t &e)
 //!                                          {
-//!                                              LIBCXX_NAMESPACE::w::text_param ret;
+//!                                              INSERT_LIBX_NAMESPACE::w::text_param ret;
 //!
 //!                                              return ret;
 //!                                          });

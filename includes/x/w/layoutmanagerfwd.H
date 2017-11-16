@@ -19,6 +19,10 @@ class layoutmanagerObj;
 //! layout manager, which can be:
 //!
 //! - \ref gridlayoutmanager "The grid layout manager"
+//! - \ref listlayoutmanager "The list layout manager"
+//! - \ref menubarlayoutmanager "The menu bar layout manager"
+//! - \ref standard_comboboxlayoutmanager "The standard combo-box layout manager"
+//! - \ref editable_comboboxlayoutmanager "The editable combo-box layout manager"
 //!
 //! The layout manager returned by get_layoutmanager() typically acquires
 //! an internal lock on the container. The lock gets released when all

@@ -59,7 +59,7 @@ static inline void insert_column(const appdata &my_appdata,
 		? l->append_row()
 		: l->insert_columns(0, 0);
 
-	factory->create_label({o.str()})->show();
+	factory->create_label(o.str())->show();
 	update_button_state(my_appdata);
 }
 
@@ -104,10 +104,12 @@ static inline void insert_row(const appdata &my_appdata,
 
 	auto factory=l->insert_row(0);
 
-	auto checkbox=factory->valign(x::w::valign::middle).create_checkbox();
-	auto label=factory->valign(x::w::valign::middle).create_label({o.str()});
-
-	label->label_for(checkbox);
+	auto checkbox=
+		factory->create_checkbox([&]
+					 (const auto &factory)
+					 {
+						 factory->create_label(o.str()) ->show();
+					 });
 
 	// One last detail before we can show. The tabbing order of focusable
 	// fields is the order they're created in, irrespective of their
@@ -131,7 +133,6 @@ static inline void insert_row(const appdata &my_appdata,
 	}
 
 	checkbox->show();
-	label->show();
 	update_button_state(my_appdata);
 }
 
@@ -205,28 +206,10 @@ inline void create_mainwindow(const x::w::main_window &main_window)
 				   },
 				   x::w::new_gridlayoutmanager());
 
-	// The vertical container in the middle part will have rows containing
-	// a checkbox and its label. The top part and the bottom part will
-	// be much wider. The main window's grid layout manager will size
-	// all parts to the same width, and the grid layout manager for the
-	// nested container in the middle part will attempt to spread apart
-	// its two columns evenly, across, its horizontal space.
-	//
-	// This will look bad. Use requested_col_width() to instruct
-	// vertical_container's grid layout manager that column #1 should
-	// take up 100% of the container's width. That, of course, will never
-	// happen, since there will also be a column with a checkbox, on each
-	// row, so the grid layout manager will try its best to do this,
-	// and end up using all remaining horizontal width for column #1,
-	// so its label gets left aligned and appear right next to the
-	// checkbox in column #0.
 	fields.vertical_container=layout->append_row()->create_container
 		([]
 		 (const auto &container)
 		 {
-			 x::w::gridlayoutmanager layout=container->get_layoutmanager();
-
-			 layout->requested_col_width(1, 100);
 		 },
 		 x::w::new_gridlayoutmanager());
 

@@ -80,7 +80,7 @@ INSERT_LIBX_NAMESPACE::w::container new_container=
                           (const auto &new_container)
                           {
                                 // Initializer lambda
-                          }, LIBCXX_NAMESPACE::w::new_gridlayoutmanager());
+                          }, INSERT_LIBX_NAMESPACE::w::new_gridlayoutmanager());
 \endcode
 
 create_container() creates a new element that is, itself, another container.
@@ -97,15 +97,15 @@ parameter, the new \ref container "INSERT_LIBX_NAMESPACE::w::container" and
 The second parameter specifies the layout manager for the new container.
 It can be one of:
 
-- \ref new_gridlayoutmanager "LIBCXX_NAMESPACE::w::new_gridlayoutmanager":
+- \ref new_gridlayoutmanager "INSERT_LIBX_NAMESPACE::w::new_gridlayoutmanager":
 the new container uses the \ref gridlayoutmanager "grid layout manager".
 
 \code
 #include <INSERT_LIBX_NAMESPACE/w/focusable_container.H>
 #include <INSERT_LIBX_NAMESPACE/w/listlayoutmanager.H>
 
-LIBCXX_NAMESPACE::w::new_listlayoutmanager list_style{
-    LIBCXX_NAMESPACE::w::highlighted_list
+INSERT_LIBX_NAMESPACE::w::new_listlayoutmanager list_style{
+    INSERT_LIBX_NAMESPACE::w::highlighted_list
 };
 
 INSERT_LIBX_NAMESPACE::w::focusable_container new_container=
@@ -120,7 +120,7 @@ create_focusable_container() is similar to create_container(), but
 creates a container that handles input focus. Its second parameter can be one
 of:
 
-- \ref new_listlayoutmanager "LIBCXX_NAMESPACE::w::new_listlayoutmanager":
+- \ref new_listlayoutmanager "INSERT_LIBX_NAMESPACE::w::new_listlayoutmanager":
 the new container uses the \ref listlayoutmanager "list layout manager".
 This creates a selection list.
 
@@ -256,7 +256,12 @@ This creates a display element that shows an image.
 \code
 #include <INSERT_LIBX_NAMESPACE/w/image_button.H>
 
-INSERT_LIBX_NAMESPACE::w::image_button checkbox=factory->create_checkbox();
+INSERT_LIBX_NAMESPACE::w::image_button
+    checkbox=factory->create_checkbox([]
+                                      (const x::w::factory &f)
+                                      {
+                                           f->create_label("Check me!")->show();
+                                      });
 \endcode
 
 create_checkbox() creates a simple checkbox display element.
@@ -267,7 +272,13 @@ create_checkbox() creates a simple checkbox display element.
 
 auto group=INSERT_LIBX_NAMESPACE::w::radio_group::create();
 
-INSERT_LIBX_NAMESPACE::w::image_button checkbox=factory->create_radio(group);
+INSERT_LIBX_NAMESPACE::w::image_button
+     button=factory->create_radio(group,
+                                  []
+                                  (const x::w::factory &f)
+                                  {
+                                       f->create_label("Good choice!")->show();
+                                  });
 \endcode
 
 A \ref radio_group "radio_group" object gets created in advance.

@@ -11,7 +11,7 @@
 
 namespace std {
 
-	//! Specialization of \c std::hash for \c LIBCXX_NAMESPACE::w::hash
+	//! Specialization of \c std::hash for \c INSERT_LIBX_NAMESPACE::w::hash
 
 	template<>
 	struct LIBCXX_HIDDEN hash<LIBCXX_NAMESPACE::w::font>

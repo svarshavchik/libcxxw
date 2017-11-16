@@ -20,7 +20,7 @@ See COPYING for distribution information.
     </textobject>
     <caption>
       <para>
-	The following program creates a window with some checkboxes and
+	This example creates a window with some checkboxes and
 	radio buttons.
       </para>
     </caption>
@@ -41,9 +41,13 @@ See COPYING for distribution information.
       A &factory;'s
       <methodname>create_checkbox</methodname>() and
       <methodname>create_radio</methodname>() and methods return an
-      <ulink url="&link-typedef-x--w-image-button;"><classname>&ns;::w::image_button</classname></ulink>.
-      Creating a radio button requires an
-      <ulink url="&link-typedef-x--w-radio-group;"><classname>&ns;::w::radio_group</classname></ulink>.
+      <ulink url="&link-typedef-x--w-image-button;"><classname>&ns;::w::image_button</classname></ulink>,
+      which is a &focusable;.
+      Creating a radio button requires creating a
+      <ulink url="&link-typedef-x--w-radio-group;"><classname>&ns;::w::radio_group</classname></ulink>
+      separately, and passing it as the first parameter
+      to <methodname>create_radio</methodname>() when creating a radio
+      button for that radio button group.
       Radio buttons in the same radio button group are mutually exclusive
       with each other.
       The application has no further
@@ -52,6 +56,157 @@ See COPYING for distribution information.
       after creating all the radio buttons. Each radio button maintains
       its own internal link with the radio group object.
     </para>
+
+    <section id="button_labeling">
+      <title>Button labels</title>
+
+      <para>
+	Traditionally, a brief text label appears next to each
+	<classname>&ns;::w::image_button</classname>.
+	The first parameter to <methodname>create_checkbox</methodname>()
+	and the second parameter to <methodname>create_radio</methodname>()
+	is a closure, or a callable object. The callable object
+	receives one parameter: a &factory; that the closure should use
+	to create one display element.
+      </para>
+
+      <para>
+	The traditional <classname>&ns;::w::image_button</classname>
+	label is, well, a <link linkend="labels">label
+	  created by <methodname>create_label</methodname>()</link> but it
+	can be any display element.
+	This sets the checkbox's, or the radio button's initial label.
+	An existing
+	<ulink url="&link-typedef-x--w-image-button;"><classname>&ns;::w::image_button</classname></ulink>'s
+	<methodname>update_label</methodname>() method replaces its
+	existing label using the same approach.
+	<filename>checkradio.C</filename> gives an example of updating
+	one of the radio button's labels when the radio button gets selected
+	and de-selected:
+      </para>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting>
+void set_train_label(const x::w::factory &amp;f, bool is_selected)
+{
+    f->create_label(is_selected ? "Train (with weekends)":"Train")->show();
+}
+
+// ...
+
+train->update_label([selected]
+                    (const x::w::factory &amp;f)
+                    {
+                        set_train_label(f, selected);
+                    });
+}</programlisting>
+	</informalexample>
+      </blockquote>
+
+      <note>
+	<para>
+	  The label, like any other display element, must be
+	  <methodname>show</methodname>()n to be visible.
+	</para>
+      </note>
+    </section>
+
+    <section id="customcheckboxlabels">
+      <title>Customizing <classname>&ns;::w::image_button</classname> labels</title>
+
+      <para>
+	It is possible to use <methodname>create_label</methodname>() to
+	construct a lengthy, word-wrapped label for an
+	<classname>&ns;::w::image_button</classname>,
+	which appears immediately after it.
+	By default, the button and its following label are vertically
+	centered with respect to each other. This may not look very well
+	with tall labels.
+      </para>
+
+      <para>
+	Specifying the last, optional parameter to
+	<methodname>create_checkbox</methodname>() and
+	<methodname>create_radio</methodname>() adjusts their
+	<ulink url="&link-enum-x--w-valign;">vertical alignment</ulink>.
+	Note that the button and its label is a single display element,
+	in the button's &container;.
+      </para>
+
+      <para>
+	It's always possible to create a label separately, as a discrete
+	display element: the factory parameter to
+	<methodname>create_checkbox</methodname>() and
+	<methodname>create_radio</methodname>() is optional. Without it,
+	this results in a
+	<classname>&ns;::w::image_button</classname> all by itself, a small,
+	clickable button. It's presumed that the label display element
+	gets created independently, as a discrete display element of its own.
+      </para>
+
+      <para>
+	Only <quote>inert</quote> display elements that do not directly
+	respond to pointer clicks on their own can have their
+	<methodname>label_for</methodname>() method used, and the parameter
+	must be a &focusable;:
+      </para>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting>
+bottom_label->label_for(train);</programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	<filename>checkradio.C</filename> creates a
+	<varname>bottom_label</varname>, an ordinary
+	<link linkend="labels">label</link>.
+	<methodname>label_for</methodname>()'s parameter is any
+	&focusable;, like our
+	<classname>&ns;::w::image_button</classname>.
+	<methodname>label_for</methodname>() specifies that a pointer click
+	on its object's display element (the display element whose
+	<methodname>label_for</methodname>()) has the same effect as
+	a pointer click on the parameter display element.
+      </para>
+
+      <para>
+	In this case, clicking on the <varname>bottom_label</varname> has
+	the same effect as click on the <varname>train</varname> radio
+	button.
+      </para>
+
+      <para>
+	<methodname>label_for</methodname>() designates its display element
+	as a <quote>label</quote> for the &focusable; element,
+	specified by its parameter.
+	Invoking the display element's <methodname>label_for</methodname>()
+	has the following results:
+      </para>
+
+      <itemizedlist>
+	<listitem>
+	  <para>
+	    Clicking on the label element results in the pointer click getting
+	    processed by the &focusable; element.
+	  </para>
+	</listitem>
+	<listitem>
+	  <para>
+	    The label's visual appearance also matches the focusable's visual
+	    appearance when the focusable gets enabled
+	    or disabled by its <methodname>set_enabled</methodname>() method.
+	  </para>
+	</listitem>
+      </itemizedlist>
+
+      <para>
+	It is possible to define two or more labels for the same focusable;
+	but a given label can be a label for only one focusable.
+      </para>
+    </section>
   </section>
 
   <section id="checkradio_setstate">
@@ -204,71 +359,6 @@ button->on_activate([]
       results in callbacks for both the previously set and the newly set
       radio button getting invoked, in turn, reporting the change to the
       value of the previous radio button and the newly set one.
-    </para>
-  </section>
-
-  <section id="checkradio_label">
-    <title>Checkbox and radio button labels</title>
-
-    <para>
-      Clicking on a checkbox or a radio button changes its state.
-      <link linkend="checkradio"><filename>checkradio.C</filename></link>
-      implements a traditional user interface design of putting a
-      text label next to each checkbox and radio button.
-    </para>
-
-    <para>
-      Intuitively, one expects to click on the label to set the button's
-      state too, in addition to moving the pointer directly on top of the
-      button and clicking it. However, the label is its own, independent,
-      <link linkend="labels"><classname>&ns;::w::label</classname></link>
-      display element.
-    </para>
-
-    <blockquote>
-      <informalexample>
-	<programlisting>
-label->label_for(button);</programlisting>
-      </informalexample>
-    </blockquote>
-
-    <para>
-      <link linkend="checkradio"><filename>checkradio.C</filename></link>
-      shows an example of using <methodname>label_for</methodname>().
-      Only <quote>inert</quote> display elements that do not directly
-      respond to pointer clicks can have their
-      <methodname>label_for</methodname>() method used, and the parameter
-      must be a second display element that does respond to pointer button
-      clicks.
-    </para>
-
-    <para>
-      <methodname>label_for</methodname>() designates its display element
-      as a <quote>label</quote> for the &focusable; element,
-      specified by its parameter.
-      Invoking the display element's <methodname>label_for</methodname>()
-      has the following results:
-    </para>
-
-    <itemizedlist>
-      <listitem>
-	<para>
-	  Clicking on the label element results in the pointer click getting
-	  processed by the &focusable; element.
-	</para>
-      </listitem>
-      <listitem>
-	<para>
-	  The label's visual appearance also matches the focusable's visual
-	  appearance when the focusable gets enabled
-	  or disabled by its <methodname>set_enabled</methodname>() method.
-	</para>
-      </listitem>
-    </itemizedlist>
-
-    <para>
-      It is possible to define two or more labels for the same focusable;
-      but a given label can be a label for only one focusable.
     </para>
   </section>
 </chapter>

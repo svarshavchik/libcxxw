@@ -11,7 +11,7 @@ See COPYING for distribution information.
   <para>
     The following example show how to use additional features of the
     grid layout manager, introduced in previous chapters.
-    It also shows a design pattern for properly capturing object references
+    It also shows a design pattern for correctly capturing object references
     for <link linkend="callbacks">callbacks</link>.
   </para>
 
@@ -108,8 +108,8 @@ See COPYING for distribution information.
       <ulink url="examples/gridlayoutmanager.C">gridlayoutmanager.C</ulink>'s
       window is divided into three parts, the top part that contains a
       varying number of columns; the middle part containing rows with
-      two columns: a checkbox and its label; and the bottom part, a row
-      of buttons.
+      one column, a <link linkend="checkradio">checkbox</link>;
+      and the bottom part, a row of four buttons.
     </para>
 
     <para>
@@ -123,11 +123,15 @@ See COPYING for distribution information.
     </para>
 
     <para>
-      Prior chapters also showed examples with button rows that used this
-      approach.
+      This is what's really going on with <link linkend="checkradio">checkboxes
+	and radio buttons</link>. Each image button is an internal
+      grid with one row: an internal element for the actual image button, and an
+      optional display element, and the optional
+      <ulink url="&link-enum-x--w-valign;"><classname>&ns;::w::valign</classname></ulink>
+      parameter controls the row's vertical alignment.
       <ulink url="examples/gridlayoutmanager.C">gridlayoutmanager.C</ulink>
-      takes this approach even further, with the main window's
-      grid layout manager containing only other nested containers, with
+      explicitly does this, with the main window's
+      grid layout manager containing other nested containers, with
       their own grid layout managers.
     </para>
   </section>
@@ -145,7 +149,7 @@ layout->requested_col_width(1, 100);</programlisting>
     </blockquote>
 
     <para>
-      When a nested container is sized to be wider than its natural
+      When a nested container gets sized to be wider than its natural
       width, the nested container's grid layout manager attempts to
       expand all the columns' width evenly, to fill in the extra space.
       <methodname>requested_col_width</methodname>(<replaceable>col</replaceable>,
@@ -157,40 +161,17 @@ layout->requested_col_width(1, 100);</programlisting>
     </para>
 
     <para>
-      If there's extra width available, the grid layout manager will attempt
+      If there's extra width available, the grid layout manager attempts
       to use the extra space to grow the columns to their requested size.
-      The grid layout manager never makes column shorter than their minimum
+      The grid layout manager never makes columns shorter than their minimum
       size.
+      For example,
       <quote>requested_col_width(1, 100);</quote> requests 100% of the
       total width for column #1. Of course, the grid also has column #0,
       and perhaps other columns. They have to take up some of the horizontal
       real estate. The end game is that column #1 takes whatever extra space
       there's left. Requesting 100% for a column is a roundabout way
-      of putting all extra space into the given column
-    </para>
-
-    <para>
-      In
-      <ulink url="examples/gridlayoutmanager.C">gridlayoutmanager.C</ulink>,
-      the nested container in the middle part of the window has two columns.
-      In each row column #0 has a checkbox, and column #1 has its label.
-      The top and the bottom parts of the window are much wider, but the
-      main window's grid layout manager lines up all the nested containers
-      in a single column, so the middle part's container ends up being
-      much wider than it needs to be.
-    </para>
-
-    <para>
-      That container, with a checkbox and a label in each row, tries to
-      use the extra space evenly for both columns. Having the checkbox
-      on the left side of the window and its label in the center of the
-      window, and a bunch of extra space between the two is not the right
-      result. The solution is a
-      <quote>requested_col_width(1, 100)</quote>. The column with the
-      checkbox is only as wide as it needs to be. All the extra space
-      goes into column #1, with the label. With the label aligned against
-      its cell's left margin, it appears naturally, right next to its
-      checkbox.
+      of making the column use all its extra space.
     </para>
 
     <para>
@@ -274,12 +255,16 @@ button-&gt;on_activate
 
     <para>
       The solution is to use <function>&ns;::make_weak_capture</function>(),
-      from the core &libcxx; classes, to construct a weak pointer.
-      When the callback executes the weak pointer <methodname>get</methodname>()
-      converted to a regular reference, ready to use.
+      from the core &libcxx; classes, to capture a
+      <quote>weak</quote> pointer.
+      The callback attempts to <methodname>get</methodname>() a regular
+      reference from it, and proceeds with its business if this succeeds.
+
       If the callback happens to execute while the main window is getting
       destroyed, and the top level <varname>main_window</varname> no longer
-      exists, <methodname>get</methodname>() does nothing.
+      exists, <methodname>get</methodname>() fails to recover a strong
+      reference, and the callback bails out, and lets the execution thread
+      finish cleaning things up.
     </para>
 
     <para>
@@ -289,7 +274,7 @@ button-&gt;on_activate
       doesn't actually need to do this. Each button's action affects only
       other display elements that are neither its parent or child display
       element; <filename>gridlayoutmanager.C</filename> uses weak captures
-      as an example of this design pattern.
+      only to give an example of using this design pattern.
     </para>
   </section>
 </chapter>

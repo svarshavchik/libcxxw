@@ -13,7 +13,7 @@ See COPYING for distribution information.
       <programlisting>
 #include &lt;x/w/label.H&gt;
 
-&ns;::w::label s=factory-&gt;create_label({"Hello world"});
+&ns;::w::label s=factory-&gt;create_label("Hello world");
       </programlisting>
     </informalexample>
   </blockquote>
@@ -23,9 +23,10 @@ See COPYING for distribution information.
     element, a
     <ulink url="&link-typedef-x--w-label;"><classname>&ns;::w::label</classname></ulink>,
     that displays text. The first parameter to
-    <methodname>create_label</methodname>() is a
+    <methodname>create_label</methodname>() is actually a
     <ulink url="&link-x--w--text-param;"><classname>&ns;::w::text_param</classname></ulink>
-    object, which gives the label's text, and colors.
+    object. An explicitly-constructed <classname>&ns;::w::text_param</classname>
+    gives the ability of using custom fonts and colors for the new label.
     Labels use a default font and color, if not specified in the
     <classname>&ns;::w::text_param</classname>.
   </para>
@@ -70,6 +71,7 @@ See COPYING for distribution information.
     a wider size that it needs, due to other elements in the container, and
     the alignment setting will then govern how the text gets padded.
   </para>
+
 </chapter>
 <!--
 Local Variables:

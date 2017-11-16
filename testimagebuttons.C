@@ -8,6 +8,7 @@
 #include <x/destroy_callback.H>
 #include <x/ref.H>
 #include <x/obj.H>
+#include <x/weakcapture.H>
 
 #include "x/w/main_window.H"
 #include "x/w/image_button.H"
@@ -40,6 +41,12 @@ public:
 
 typedef LIBCXX_NAMESPACE::ref<close_flagObj> close_flag_ref;
 
+static void set_train_label(const LIBCXX_NAMESPACE::w::factory &f,
+			    bool selected)
+{
+	f->create_label(selected ? "Train (with weekends)":"Train")->show();
+}
+
 static void create_mainwindow(const LIBCXX_NAMESPACE::w::main_window &main_window)
 {
 	LIBCXX_NAMESPACE::w::gridlayoutmanager layout=main_window->get_layoutmanager();
@@ -64,9 +71,16 @@ static void create_mainwindow(const LIBCXX_NAMESPACE::w::main_window &main_windo
 		LIBCXX_NAMESPACE::w::gridfactory factory=
 			layout->append_row();
 
+		factory->right_padding(3);
+
 		LIBCXX_NAMESPACE::w::image_button checkbox=
 			factory->valign(LIBCXX_NAMESPACE::w::valign::middle)
-			.create_checkbox();
+			.create_checkbox([&]
+					 (const auto &factory)
+					 {
+						 factory->create_label
+						 (day_of_week)->show();
+					 });
 
 		if (n > 1 && n < 7)
 			checkbox->set_value(2);
@@ -86,18 +100,20 @@ static void create_mainwindow(const LIBCXX_NAMESPACE::w::main_window &main_windo
 							<< std::endl;
 				      });
 		days_of_week_checkboxes.push_back(checkbox);
-		auto label=factory->right_padding(3)
-			.create_label({day_of_week});
-
-		label->label_for(checkbox);
 	}
 
 	LIBCXX_NAMESPACE::w::radio_group group=LIBCXX_NAMESPACE::w::radio_group::create();
 
 	auto factory=layout->append_columns(0);
+
 	LIBCXX_NAMESPACE::w::image_button
 		train=factory->valign(LIBCXX_NAMESPACE::w::valign::middle)
-		.create_radio(group);
+		.create_radio(group,
+			      []
+			      (const auto &factory)
+			      {
+				      set_train_label(factory, true);
+			      });
 
 	train->set_value(1);
 
@@ -107,7 +123,7 @@ static void create_mainwindow(const LIBCXX_NAMESPACE::w::main_window &main_windo
 	sunday->set_enabled(false);
 	saturday->set_enabled(false);
 
-	train->on_activate([saturday, sunday]
+	train->on_activate([saturday, sunday, train=LIBCXX_NAMESPACE::make_weak_capture(train)]
 			   (size_t flag,
 			    const auto &trigger,
 			    const auto &ignore)
@@ -122,13 +138,33 @@ static void create_mainwindow(const LIBCXX_NAMESPACE::w::main_window &main_windo
 					     << std::endl;
 				   sunday->set_enabled(!flag);
 				   saturday->set_enabled(!flag);
+
+				   auto got=train.get();
+
+				   if (got)
+				   {
+					   auto &[train]=*got;
+
+					   train->update_label
+						   ([&]
+						    (const LIBCXX_NAMESPACE::w::factory &f)
+						    {
+							    set_train_label(f,
+									    flag>0);
+						    });
+				   }
 			   });
-	factory->create_label({"Train"});
 
 	factory=layout->append_columns(1);
 	LIBCXX_NAMESPACE::w::image_button
 		bus=factory->valign(LIBCXX_NAMESPACE::w::valign::middle)
-		.create_radio(group);
+		.create_radio(group,
+			      []
+			      (const auto &factory)
+			      {
+				      factory->create_label("Bus");
+			      });
+
 	bus->on_activate([]
 			 (size_t flag,
 			  const auto &trigger,
@@ -144,12 +180,16 @@ static void create_mainwindow(const LIBCXX_NAMESPACE::w::main_window &main_windo
 					   << std::endl;
 			 });
 
-	factory->create_label({"Bus"});
-
 	factory=layout->append_columns(2);
 	LIBCXX_NAMESPACE::w::image_button
 		drive=factory->valign(LIBCXX_NAMESPACE::w::valign::middle)
-		.create_radio(group);
+		.create_radio(group,
+			      []
+			      (const auto &factory)
+			      {
+				      factory->create_label("Drive");
+			      });
+
 	drive->on_activate([]
 			   (size_t flag,
 			    const auto &trigger,
@@ -164,11 +204,9 @@ static void create_mainwindow(const LIBCXX_NAMESPACE::w::main_window &main_windo
 					     << "checked"
 					     << std::endl;
 			   });
-	factory->create_label({"Drive"});
 
 	for (size_t i=3; i<7; ++i)
-		layout->append_columns(i)->colspan(2)
-			.create_canvas();
+		layout->append_columns(i)->create_canvas();
 
 	// layout->default_col_border(2, "thick_dashed_0%");
 }

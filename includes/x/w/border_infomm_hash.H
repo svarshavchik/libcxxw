@@ -11,11 +11,11 @@
 
 namespace std {
 
-	//! Specialization of \c std::hash for \c LIBCXX_NAMESPACE::w::border_infomm
+	//! Specialization of \c std::hash for \c INSERT_LIBX_NAMESPACE::w::border_infomm
 	template<>
 	struct hash<LIBCXX_NAMESPACE::w::border_infomm> {
 
-		//! Calculate a hash for a \c LIBCXX_NAMESPACE::w::border_infomm
+		//! Calculate a hash for a \c INSERT_LIBX_NAMESPACE::w::border_infomm
 		size_t operator()(const LIBCXX_NAMESPACE::w::border_infomm &b)
 			const noexcept
 		{

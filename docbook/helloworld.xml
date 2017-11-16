@@ -508,10 +508,82 @@ while (!appdata->close_flag)
 	manager is arranges the display elements in the container.
 	A container's <methodname>get_layoutmanager</methodname>() method
 	returns a
-	<ulink url="&link-typedef-x--w-layoutmanager;"><classname>&ns;::w::layoutmanager</classname></ulink>.
-	There are several layout managers that are derived from a
-	<classname>&ns;::w::layoutmanager</classname>.
+	<ulink url="&link-typedef-x--w-layoutmanager;"><classname>&ns;::w::layoutmanager</classname></ulink>,
+	which is just a reference to a base layout manager class.
+	There are several layout managers that get derived from a
+	<classname>&ns;::w::layoutmanager</classname>'s base class:
       </para>
+
+      <variablelist>
+	<varlistentry>
+	  <term>
+	    <link linkend="gridlayoutmanager"><classname>&ns;::w::gridlayoutmanager</classname></link>
+	  </term>
+	  <listitem>
+	    <para>
+	      The default, generic layout manager that positions its display
+	      elements in a rectangular grid, or a table, with optional
+	      borders.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>
+	    <link linkend="menu"><classname>&ns;::w::menubarlayoutmanager</classname></link>
+	  </term>
+	  <listitem>
+	    <para>
+	      Each display element in this container represents a title
+	      in the main application window's menu bar.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>
+	    <link linkend="list"><classname>&ns;::w::listlayoutmanager</classname></link>
+	  </term>
+	  <listitem>
+	    <para>
+	      A crafty impostor that is not a really true layout manager.
+	      It doesn't contain discrete display elements, but plain
+	      text strings.
+	      The list layout manager is available for selection lists,
+	      and it also gets called into duty for
+	      <link linkend="menulayoutmanager">pop-up menus</link>, and
+	      serves as a the base class for
+	      <link linkend="combo">combo-boxes</link>.
+	    </para>
+
+	    <para>
+	      The list layout manager is designed for handling relative large
+	      numbers of list entries far more efficiently than if each one
+	      was an official <link linkend="labels">label display
+		element</link>. The grid layout manager, for example, needs
+	      to figure out how to position each display element according
+	      to how many columns and rows it spans and figure out how to draw
+	      each cell's borders, if it has any. The list layout manager,
+	      on the other hand, has a single list of labels to draw vertically,
+	      a much simpler task.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>
+	    <link linkend="combobox"><classname>&ns;::w::standard_comboboxlayoutmanager</classname> and <classname>&ns;::w::editable_comboboxlayoutmanager</classname></link>
+	  </term>
+	  <listitem>
+	    <para>
+	      These layout manager leverage the list layout manager to quickly
+	      deal with the list of choices shown in the combo-box's pop-up,
+	      and also deal with the display element that represents the
+	      current selection in the combo-box.
+	    </para>
+	  </listitem>
+	</varlistentry>
+      </variablelist>
 
       <para>
 	The actual layout manager gets specified when creating the container,
@@ -562,7 +634,7 @@ x::w::label l=f->create_label("Hello world");</programlisting>
 	A <ulink url="&link-typedef-x--w-factory;"><classname>&ns;::w::factory</classname></ulink>
 	creates new display elements. The factory comes from the layout manager,
 	and the process for obtaining a factory is specific to each layout
-	manager.
+	manager (except for the bare list layout manager, which is an impostor).
 	<link linkend="helloworld"><filename>helloworld.C</filename></link>
 	calls its grid layout manager's
 	<methodname>append_row</methodname>() method, which returns a
@@ -583,7 +655,7 @@ x::w::label l=f->create_label("Hello world");</programlisting>
       <title>Exceptions</title>
 
       <para>
-	Fatal errors in &app; get reported by throwing an
+	Fatal errors in the &app; get reported by throwing an
 	<ulink url="/exceptions"><classname>&ns;::exception</classname></ulink>
 	&libcxx; object.
 	<link linkend="helloworld"><filename>helloworld.C</filename></link>

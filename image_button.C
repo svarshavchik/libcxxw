@@ -15,7 +15,6 @@
 #include "x/w/key_event.H"
 #include "container_element.H"
 #include "gridlayoutmanager.H"
-#include "nonrecursive_visibility.H"
 #include "container_visible_element.H"
 #include "messages.H"
 #include "generic_window_handler.H"
@@ -80,13 +79,27 @@ void image_buttonObj::on_activate(const image_button_callback_t &callback)
 			 } CATCH_EXCEPTIONS;
 		 });
 }
+
+void image_buttonObj::do_update_label(const function<void (const factory &)> &f)
+{
+	gridlayoutmanager glm=get_layoutmanager();
+
+	glm->remove(0, 1);
+	auto factory=glm->append_columns(0);
+
+	factory->top_padding(0);
+	factory->bottom_padding(0);
+	factory->right_padding(0);
+
+	f(factory);
+}
+
 ///////////////////////////////////////////////////////////////////////////
 //
 // This is the container implementation button for the image_buttonObj's
 // container superclass.
-typedef container_visible_elementObj<nonrecursive_visibilityObj
-				     <container_elementObj<child_elementObj>>
-				     > image_button_container_superclass_t;
+typedef container_visible_elementObj<container_elementObj<child_elementObj>
+				     >image_button_container_superclass_t;
 
 class LIBCXX_HIDDEN image_button_containerObj
 	: public image_button_container_superclass_t {
@@ -101,6 +114,35 @@ class LIBCXX_HIDDEN image_button_containerObj
 	}
 
 	~image_button_containerObj()=default;
+
+	//! Override request_visibility_recursive
+
+	//! Forward recursive visibility to the label element, if there is one.
+	//!
+	//! We're going to show() the internal image button focus frame
+	//! and the internal image button element, so it's always technically
+	//! visible, so a mere show() on the image button will reveal
+	//! everything.
+
+	void request_visibility_recursive(IN_THREAD_ONLY, bool flag)
+		override
+	{
+		request_visibility(IN_THREAD, flag);
+
+		invoke_layoutmanager
+			([&]
+			 (const ref<gridlayoutmanagerObj::implObj> &glm)
+			 {
+				 auto e=glm->get(0, 1);
+
+				 if (!e)
+					 return;
+
+				 e->impl->request_visibility_recursive
+					 (IN_THREAD, flag);
+			 });
+	}
+
 };
 
 // The factory do_create_image_button invokes to contsruct the internal
@@ -114,7 +156,10 @@ static image_button
 do_create_image_button(const std::vector<std::string_view>
 		       &images,
 		       const function<image_button_factory_t> &img_impl_factory,
-		       factoryObj &f)
+		       factoryObj &f,
+		       valign alignment,
+
+		       const function<void (const factory &)> &label_factory)
 {
 	if (images.empty())
 		throw EXCEPTION(_("Attempt to create an image button without any images."));
@@ -133,6 +178,11 @@ do_create_image_button(const std::vector<std::string_view>
 		::create(image_button_outer_container_impl);
 
 	auto glm=image_button_outer_container_layout->create_gridlayoutmanager();
+
+	glm->row_alignment(0, alignment);
+
+	// If there's going to be a label, it gets all extra space.
+	glm->requested_col_width(1, 100);
 
 	// This grid layout manager will contain a single focusframecontainer.
 
@@ -181,46 +231,105 @@ do_create_image_button(const std::vector<std::string_view>
 				    image_button_outer_container_layout);
 
 	f.created_internally(b);
+
+	// The internal grid layout manager does not introduce any of its own
+	// padding, but keep the left padding, to separate the image button
+	// from its label.
+
+	button_factory->top_padding(0);
+	button_factory->bottom_padding(0);
+	button_factory->right_padding(0);
+	label_factory(button_factory);
+
+	b->label_for(b);
 	return b;
 }
 
-template<typename functor>
+template<typename functor1>
 static inline image_button
 create_image_button(const std::vector<std::string_view>
 		    &images,
-		    functor &&creator,
-		    factoryObj &f)
+		    functor1 &&creator,
+		    factoryObj &f,
+		    valign alignment,
+		    const function<void (const factory &)> &label_factory)
 {
 	return do_create_image_button(images,
 				      make_function<image_button_factory_t>
-				      (std::forward<functor>(creator)),
-				      f);
+				      (std::forward<functor1>(creator)),
+				      f, alignment,
+				      label_factory);
 }
 
-image_button factoryObj::create_checkbox()
+image_button factoryObj::create_checkbox(valign alignment)
 {
-	return create_checkbox({"checkbox1", "checkbox2", "checkbox3"});
+	return create_checkbox([](const auto &) {}, alignment);
+}
+
+image_button factoryObj::do_create_checkbox(const function<factory_creator_t>
+					    &label_factory,
+					    valign alignment)
+{
+
+	return do_create_checkbox(label_factory,
+				  {"checkbox1", "checkbox2", "checkbox3"},
+				  alignment);
 }
 
 // Call create_image_button, using create_checkbox_impl() to create the
 // internal image button.
 
-image_button factoryObj::create_checkbox(const std::vector<std
-					 ::string_view> &images)
+image_button factoryObj::create_checkbox(const std::vector<std::string_view>
+					 &images,
+					 valign alignment)
 {
-	return create_image_button(images, create_checkbox_impl, *this);
+	return create_checkbox([](const factory &){}, images, alignment);
 }
 
-image_button factoryObj::create_radio(const radio_group &group)
+image_button factoryObj::do_create_checkbox(const function<factory_creator_t>
+					    &label_factory,
+					    const std::vector<std::string_view>
+					    &images,
+					    valign alignment)
 {
-	return create_radio(group, {"radio1", "radio2"});
+
+	return create_image_button(images, create_checkbox_impl, *this,
+				   alignment, label_factory);
+}
+
+image_button factoryObj::create_radio(const radio_group &group,
+				      valign alignment)
+{
+	return create_radio(group, [](const auto &){}, alignment);
+}
+
+image_button factoryObj::do_create_radio(const radio_group &group,
+					 const function<factory_creator_t>
+					 &label_creator,
+					 valign alignment)
+{
+
+	return do_create_radio(group, label_creator,
+			       {"radio1", "radio2"}, alignment);
 }
 
 // Call create_image_button, using create_radio_impl() to create the
 // internal image button.
 
 image_button factoryObj::create_radio(const radio_group &group,
-				      const std::vector<std::string_view> &images)
+				      const std::vector<std::string_view>
+				      &images,
+				      valign alignment)
+{
+	return create_radio(group, [](const auto &) {}, images, alignment);
+}
+
+image_button factoryObj::do_create_radio(const radio_group &group,
+					 const function<factory_creator_t>
+					 &label_creator,
+					 const std::vector<std::string_view>
+					 &images,
+					 valign alignment)
 {
 	return create_image_button(images,
 				   [&]
@@ -230,7 +339,7 @@ image_button factoryObj::create_radio(const radio_group &group,
 					   return create_radio_impl(group,
 								    container,
 								    images);
-				   }, *this);
+				   }, *this, alignment, label_creator);
 }
 
 LIBCXXW_NAMESPACE_END

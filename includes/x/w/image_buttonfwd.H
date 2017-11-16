@@ -27,6 +27,39 @@ typedef std::function<void (size_t,
 //! from a \ref factory "factory"'s create_checkbox() or create_radio()
 //! method.
 //!
+//! create_checkbox() and create_radio() take the same parameters, except
+//! that create_radio() takes an additional, initial parameter:
+//! a \ref radio_group "INSERT_LIBX_NAMESPACE::w::radio_group" object, an
+//! opaque object that links all radio buttons into a single group. The
+//! common parameters are:
+//!
+//! - an optional \ref factory "factory object" for creating the button's
+//! label, the description of the button that appears next to it.
+//!
+//! - a \c std::vector<std::string_view> that specifies custom images
+//! for a checkbox or a radio button that uses custom graphics. Each
+//! string names a file with an image for the corresponding state. The default
+//! value for this parameter creates three images for checkboxes: set, unset
+//! and intermediate. Radio buttons have two default image/states:
+//! selected and unselected.
+//!
+//! - a \ref valign "vertical alignment setting".
+//!
+//! Each parameter is individually optional (the initial
+//! \ref radio_group "INSERT_LIBX_NAMESPACE::w::radio_group" parameter
+//! to create_radio() is mandatory, and appears before these three parameters)
+//! but these parameters must appear in the given order (this is done with
+//! some aggressive overloading).
+//!
+//! A sole factory parameter is the usual case. The factory is expected to
+//! create a single display element, typically a \ref label "label", that
+//! appears next to the button's image. Without a factory-created label,
+//! the button image appears by itself, unadorned.
+//!
+//! Internally, the \c INSERT_LIBX_NAMESPACE::w::image_button is a one-row
+//! \ref gridlayoutmanager "grid", with the actual image button display
+//! element, and an optional label.
+//!
 //! \code
 //! size_t v=image_button->get_value();
 //!
@@ -34,10 +67,10 @@ typedef std::function<void (size_t,
 //!
 //! image_button->on_activate([]
 //!                           (size_t value,
-//!                            const LIBCXX_NAMESPACE::w::callback_trigger_t &trigger,
-//!                            const LIBCXX_NAMESPACE::w::busy &busy_mcguffin)
+//!                            const INSERT_LIBX_NAMESPACE::w::callback_trigger_t &trigger,
+//!                            const INSERT_LIBX_NAMESPACE::w::busy &busy_mcguffin)
 //!                           {
-//!                                  if (trigger.index() == LIBCXX_NAMESPACE::w::callback_trigger_initial)
+//!                                  if (trigger.index() == INSERT_LIBX_NAMESPACE::w::callback_trigger_initial)
 //!                                  {
 //!                                  }
 //!                           });
@@ -68,7 +101,7 @@ typedef std::function<void (size_t,
 //! installed callback.
 //!
 //! A newly installed callback always gets invoked immediately with
-//! the \c trigger parameter specifying the \c LIBCXX_NAMESPACE::w::callback_trigger_initial
+//! the \c trigger parameter specifying the \c INSERT_LIBX_NAMESPACE::w::callback_trigger_initial
 //! as the reason for the callback.
 //! All subsequent invocations pass a different reason,
 //! and give the checkbox's or the radio button's new state value. The

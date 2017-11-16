@@ -14,6 +14,7 @@
 <!ENTITY callback "<link linkend='callbacks'>callback</link>">
 <!ENTITY focusable "<link linkend='focusable'>focusable</link>">
 <!ENTITY factory "<link linkend='factory'>factory</link>">
+<!ENTITY factory "<link linkend='focusable'>focusable</link>">
 <!ENTITY container "<link linkend='container'>container</link>">
 <!ENTITY layoutmanager "<link linkend='layoutmanager'>layout manager</link>">
 <!ENTITY creator "<link linkend='creator'>creator lambda</link>">

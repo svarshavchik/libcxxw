@@ -25,12 +25,12 @@ size_t cols=gridlayout->cols(2);
 
 \c rows() returns the number of rows in the grid.
 \c cols() returns the number of cells in the given row. The cell count
-does not include spanned cell location in the row. If a cell from an earlier
-row spans into this row it does not get counted. If a cell spans multiple
-columns on this row it gets counted only once.
+does not include cells that span that row. A cell from an earlier
+row that spans into this row does not get included in the count.
+A cell in the row spans multiple columns in this row gets counted only once.
 
-Pedantically, \c cols() returns the number of top-left corners of cells in
-this row. Cells whose top-left corner are in the given row are number,
+Pedantically, \c cols() returns how many cells have their top-left ocrner
+in this row. Cells whose top-left corner are in the given row get numbered,
 consecutively, starting with cell #0.
 
 \code

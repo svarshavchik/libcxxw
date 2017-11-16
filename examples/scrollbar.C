@@ -118,31 +118,17 @@ void initialize_volume_control(const x::w::main_window &main_window)
 
 	auto vi=volume_info::create();
 
-	x::w::image_buttonptr checkbox;
-
-	factory->padding(0);
-	auto container=
-		factory->create_container([&]
-					  (const auto &container)
-					  {
-						  x::w::gridlayoutmanager glm=
-						  container->get_layoutmanager();
-
-						  glm->row_alignment(0, x::w::valign::middle);
-						  x::w::gridfactory f=glm->append_row();
-
-						  checkbox=f->create_checkbox();
-
-						  f->create_label("Volume has decimal points");
-					  },
-					  x::w::new_gridlayoutmanager{});
-
-	container->label_for(checkbox);
+	x::w::image_button checkbox=
+		factory->create_checkbox([]
+					 (const auto &f)
+					 {
+						 f->create_label("Volume has decimal points");
+					 });
 
 	factory=layout->append_row();
 	// Create an input_field, with a '%' immediately afterwards. Center it
-	// because the scrollbar will be below it, and wider. To do this
-	// we'll create an inner container for it.
+	// because the scrollbar will be below it, and wider. For doing this,
+	// we'll create an inner container, that's centered.
 
 	factory->halign(x::w::halign::center);
 

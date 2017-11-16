@@ -34,7 +34,7 @@ typedef std::function<void (const scrollbar_info_t &)> scrollbar_cb_t;
 \code
 sb->set(4);
 
-LIBCXX_NAMESPACE::w::scrollbar_config config;
+INSERT_LIBX_NAMESPACE::w::scrollbar_config config;
 
 config.range=110;
 config.page_size=10;
@@ -64,7 +64,7 @@ calling get_value() or get_dragged_value() after set() or reconfigure() may
 still return the previous value of the scroll-bar if the internal execution
 thread did not yet process the message.
 
-\para Scrollbar configuration
+\par Scrollbar configuration
 
 An \ref scrollbar_config "INSERT_LIBX_NAMESPACE::w::scrollbar_config"
 specifies the range of the potential scroll-bar values. The visual position

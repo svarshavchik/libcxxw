@@ -8,6 +8,8 @@
 #include <x/w/image_buttonfwd.H>
 #include <x/w/containerobj.H>
 #include <x/w/focusableobj.H>
+#include <x/w/factoryfwd.H>
+#include <x/functional.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -55,6 +57,19 @@ public:
 	//! Install a new activation callback.
 
 	void on_activate(const image_button_callback_t &callback);
+
+	//! Replace the label element next to the image button.
+
+	template<typename functor>
+	void update_label(functor &&f)
+	{
+		do_update_label(make_function<void (const factory &)>
+				(std::forward<functor>(f)));
+	}
+
+	//! Type-erased update_label()
+
+	void do_update_label(const function<void (const factory &)> &);
 };
 
 LIBCXXW_NAMESPACE_END

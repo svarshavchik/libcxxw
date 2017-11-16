@@ -29,14 +29,19 @@ class list_lock;
 
 The list layout manager arranges its contents in a vertical list
 and implements a selection list. Each item in the list is on its own row.
-Moving the pointer over the item and selects it or unselects it; or unselects
-any other item that was selected previously, this depends on
+Moving the pointer over the item and clicking it selects it or unselects it;
+or unselects any other item that was selected previously, this depends on
 the \ref new_listlayoutmanager "new_listlayoutmanager".
 
 The list layout manager can also be tabbed to. With the keyboard focus in the
 selection list "Cursor-Down" highlights each item in the list starting with
 the first one, "Cursor-Up" highlights the previous item in the list, and
 "Enter" selects or unselects the list item.
+
+The list layout manager also serves as the underlying layout manager for
+pop-up menus and the list of options for a combo-box; in which case selecting
+a list item results in the action that corresponding to selecting the
+menu item, or the combo-box option item.
 
 \code
 #include <INSERT_LIBX_NAMESPACE/w/listlayoutmanager.H>
@@ -60,17 +65,21 @@ l->unselect();
 size() returns the number of elements in the list. selected(item_number)
 indicates whether list item \#item_number is currently selected.
 
-selected(item_number, flag) manually selects or unselects the given item
-number. Normally each list item gets selected or unselected with the
-pointer or keyboard. This manually changes an individual list item's
-status to either the selected or the unselected status.
-
 autoselect(item_number) produces the same results as if the given item
 number was clicked on with a pointer or the keyboard,
 selecting/unselecting any items
 according to the list's \ref new_listlayoutmanager "selection_type".
 
+selected(item_number, flag) manually selects or unselects the given item
+number. Normally each list item gets selected or unselected with the
+pointer or keyboard. This manually changes an individual list item's
+status to either the selected or the unselected status.
+
 unselect() unselects all currently selected items (if any).
+
+With one exception, select() and unselect() should not be used with
+menus or combo-boxes, only with generic containers that use this layout
+manager. The exception: menu items that are selectable menu options.
 
 \note
 List selection gets updated by an internal execution thread. Calling

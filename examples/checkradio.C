@@ -17,12 +17,66 @@
 #include <x/w/container.H>
 #include <x/w/image_button.H>
 #include <x/w/radio_group.H>
+#include <x/weakcapture.H>
 
 #include <vector>
 #include <tuple>
 #include <string>
 
 typedef std::vector<std::tuple<std::string, x::w::image_button>> buttons_t;
+
+// The radio button for "Train" has a different label depending on whether
+// the "Train" radio button is selected, or not.
+//
+// This is called from the radio button's callback, to update the radio
+// button's label, and from create_radio(), to set the radio button's
+// initial label. Both instances have a factory that's used to create the
+// actual label, so this works out nicely.
+
+void set_train_label(const x::w::factory &f, bool is_selected)
+{
+	f->create_label(is_selected ? "Train (with weekends)":"Train")
+
+		// Once everything gets created, it's show_all()ed. But when
+		// this is called to update the radio button's label, it is
+		// our responsibility to show() the new display element.
+		->show();
+}
+
+// Factored out for readability. This is the main part of the callback for
+// the "Train" radio button, that's installed below.
+
+void train_radio_callback(const x::w::image_button &train,
+
+			  // Whether the radio button is now selected.
+			  bool selected,
+
+			  // The two checkboxes:
+
+			  const x::w::image_button &saturday,
+			  const x::w::image_button &sunday)
+{
+	std::cout << "Train: "
+		  << (selected ? "":"not ")
+		  << "checked"
+		  << std::endl;
+
+	// ... enable and disable the sunday and
+	// saturday checkboxes.
+	//
+
+	sunday->set_enabled(!selected);
+	saturday->set_enabled(!selected);
+
+	// And update the label for the "Train"
+	// radio button.
+
+	train->update_label([selected]
+			    (const x::w::factory &f)
+			    {
+				    set_train_label(f, selected);
+			    });
+}
 
 // This is the creator lambda, that gets passed to create_mainwindow() below,
 // factored out for readability.
@@ -56,7 +110,16 @@ void create_mainwindow(const x::w::main_window &main_window,
 		x::w::gridfactory factory=layout->append_row();
 
 		x::w::image_button checkbox=
-			factory->valign(x::w::valign::middle).create_checkbox();
+			// Add some padding to provide some separation from the
+			// second set of columns with radio buttons, that
+			// we'll add below.
+			factory->right_padding(3)
+			.create_checkbox([&]
+					 (const x::w::factory &label_factory)
+					 {
+						 label_factory->create_label(day_of_week);
+					 });
+
 
 		// Set Monday through Friday checkboxes to value #2,
 		// "indeterminate" state.
@@ -82,15 +145,6 @@ void create_mainwindow(const x::w::main_window &main_window,
 				      });
 		days_of_week_checkboxes.push_back(checkbox);
 
-		// Add some padding to provide some separation from the
-		// second set of columns with radio buttons, that we'll add
-		// below.
-
-		auto label=factory->right_padding(3)
-			.create_label({day_of_week});
-
-		label->label_for(checkbox);
-
 		buttons.push_back({day_of_week, checkbox});
 	}
 
@@ -100,9 +154,16 @@ void create_mainwindow(const x::w::main_window &main_window,
 	// Append more columns to row #0.
 	auto factory=layout->append_columns(0);
 
-	// Create a radio button
-	x::w::image_button train=factory->valign(x::w::valign::middle)
-		.create_radio(group);
+	// Create the "Train" button, initially set.
+
+	x::w::image_button train=
+		factory->create_radio(group,
+				      []
+				      (const x::w::factory &f)
+				      {
+					      // And the "set" label.
+					      set_train_label(f, true);
+				      });
 
 	// Set this radio button.
 	train->set_value(1);
@@ -118,54 +179,64 @@ void create_mainwindow(const x::w::main_window &main_window,
 	saturday->set_enabled(false);
 
 	// Install an on_activate() callback for the "Train" radio button,
-	// which will ...
+	//
+	// Note that this callback captures
+	// references to the saturday and sunday display elements.
+	//
+	// Since all of these display elements are
+	// in the same main window and neither one
+	// is the parent of the other, when the
+	// main window gets destroyed, it drops its
+	// references on all these elements,
+	// including the "train" checkbox, whose
+	// callback has these captures. The
+	// "train" element, and its callback, get
+	// destroyed, destroying the captured
+	// references too, allowing these display
+	// elements to be destroyed as well.
+	//
+	// However, the callback also needs to capture a reference to its own
+	// display element, and this obviously needs to be a weak reference.
 
-	train->on_activate([saturday, sunday]
+	train->on_activate([saturday, sunday,
+			    train=x::make_weak_capture(train)]
 			   (size_t flag,
 			    const x::w::callback_trigger_t &trigger,
 			    const auto &ignore2)
 			   {
+				   // Ignore this for the initial callback.
+
 				   if (trigger.index() ==
 				       x::w::callback_trigger_initial)
 					   return;
 
-				   std::cout << "Train: "
-					     << (flag ? "":"not ")
-					     << "checked"
-					     << std::endl;
+				   // Recover the weak reference.
 
-				   // ... enable and disable the sunday and
-				   // saturday checkboxes.
-				   //
-				   // Note that this callback captures
-				   // references to these display elements.
-				   //
-				   // Since all of these display elements are
-				   // in the same main window and neither one
-				   // is the parent of the other, when the
-				   // main window gets destroyed, it drops its
-				   // references on all these elements,
-				   // including the "train" checkbox, whose
-				   // callback has these two captures. The
-				   // "train" element, and its callback, get
-				   // destroyed, destroying the captured
-				   // references too, allowing these display
-				   // elements to be destroyed as well.
+				   auto got_ref=train.get();
 
-				   sunday->set_enabled(!flag);
-				   saturday->set_enabled(!flag);
+				   if (!got_ref)
+					   return;
+
+				   auto & [train]= *got_ref;
+
+				   // Now, run the main logic of this callback.
+				   train_radio_callback(train, flag > 0,
+							saturday, sunday);
 			   });
-
-	// Label this radio button.
-	factory->create_label({"Train"})->label_for(train);
 
 	// Append more columns to row #1.
 
 	factory=layout->append_columns(1);
 
 	// Create a "bus" radio button and label.
-	x::w::image_button bus=factory->valign(x::w::valign::middle)
-		.create_radio(group);
+	x::w::image_button bus=
+		factory->create_radio(group,
+				      []
+				      (const x::w::factory &f)
+				      {
+					      f->create_label("Bus");
+				      });
+
 	bus->on_activate([]
 			 (size_t flag,
 			  const x::w::callback_trigger_t &trigger,
@@ -181,13 +252,17 @@ void create_mainwindow(const x::w::main_window &main_window,
 					   << std::endl;
 			 });
 
-	factory->create_label({"Bus"})->label_for(bus);
-
 	// Append more column to row #2
 
 	factory=layout->append_columns(2);
-	x::w::image_button drive=factory->valign(x::w::valign::middle)
-		.create_radio(group);
+	x::w::image_button drive=
+		factory->create_radio(group,
+				      []
+				      (const x::w::factory &f)
+				      {
+					      f->create_label("Drive");
+				      });
+
 	drive->on_activate([]
 			   (size_t flag,
 			    const x::w::callback_trigger_t &trigger,
@@ -202,7 +277,6 @@ void create_mainwindow(const x::w::main_window &main_window,
 					     << "checked"
 					     << std::endl;
 			   });
-	factory->create_label({"Drive"})->label_for(drive);
 
 	// We create two more columns in rows 0 through 2. Grids should have
 	// the same number of columns in each row, so what we'll do is use
@@ -211,8 +285,24 @@ void create_mainwindow(const x::w::main_window &main_window,
 	// that are taken up by the radio buttons.
 
 	for (size_t i=3; i<7; ++i)
-		layout->append_columns(i)->colspan(2)
-			.create_canvas();
+		layout->append_columns(i)->create_canvas();
+
+	factory=layout->append_row();
+
+	// A single element in the last row, spanning both columns, and
+	// with some extra spacing above it.
+
+	factory->colspan(2).top_padding(4);
+
+	auto bottom_label=factory->create_label("Click here to take the train");
+
+	// A separate display element that's considered to be an independent
+	// "label" for a checkbox or a radio button. Clicking on this label
+	// is equivalent to clicking on the "Train" radio button.
+	//
+	// The parameter to label_for must be a focusable display element.
+
+	bottom_label->label_for(train);
 }
 
 void checkradio()
