@@ -283,25 +283,28 @@ inline void create_mainwindow(const x::w::main_window &main_window)
 		 (const x::w::callback_trigger_t &trigger, const auto &busy)
 		 mutable
 		 {
-			 main_window.get
-				 ([&]
-				  (const auto &main_window)
-				  {
-					  insert_column(main_window->appdata,
-							++counter);
-				  });
+			 auto got=main_window.get();
+
+			 if (got)
+			 {
+				 auto& [main_window]= *got;
+
+				 insert_column(main_window->appdata, ++counter);
+			 }
 		 });
 
 	my_appdata->remove_column->on_activate
 		([main_window=x::make_weak_capture(main_window)]
 		 (const x::w::callback_trigger_t &trigger, const auto &busy)
 		 {
-			 main_window.get
-				 ([&]
-				  (const auto &main_window)
-				  {
-					  remove_column(main_window->appdata);
-				  });
+			 auto got=main_window.get();
+
+			 if (got)
+			 {
+				 auto& [main_window]= *got;
+
+				 remove_column(main_window->appdata);
+			 }
 		 });
 
 	my_appdata->insert_row->on_activate
@@ -309,13 +312,14 @@ inline void create_mainwindow(const x::w::main_window &main_window)
 		 (const x::w::callback_trigger_t &trigger, const auto &busy)
 		 mutable
 		 {
-			 main_window.get
-				 ([&]
-				  (const auto &main_window)
-				  {
-					  insert_row(main_window->appdata,
-						     ++counter);
-				  });
+			 auto got=main_window.get();
+
+			 if (got)
+			 {
+				 auto& [main_window]= *got;
+
+				 insert_row(main_window->appdata, ++counter);
+			 }
 		 });
 
 	my_appdata->remove_row->on_activate
@@ -323,12 +327,14 @@ inline void create_mainwindow(const x::w::main_window &main_window)
 		 (const x::w::callback_trigger_t &trigger, const auto &busy)
 		 mutable
 		 {
-			 main_window.get
-				 ([&]
-				  (const auto &main_window)
-				  {
-					  remove_row(main_window->appdata);
-				  });
+			 auto got=main_window.get();
+
+			 if (got)
+			 {
+				 auto& [main_window]= *got;
+
+				 remove_row(main_window->appdata);
+			 }
 		 });
 
 	update_button_state(my_appdata); // Initial button state.

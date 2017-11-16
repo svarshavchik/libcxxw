@@ -261,26 +261,30 @@ void file_menu(const x::w::main_window &main_window,
 			[main_window=x::make_weak_capture(main_window)]
 			(const auto &info)
 			{
-				main_window.get
-					([]
-					 (const auto &main_window)
-					 {
-						 open_file_dialog(main_window,
-								  "file_new@example.libcxx");
-					 });
+				auto got=main_window.get();
+
+				if (got)
+				{
+					auto & [main_window]=*got;
+
+					open_file_dialog(main_window,
+							 "file_new@example.libcxx");
+				}
 			},
 			"New",
 			x::w::shortcut{"Alt", 'O'},
 			[main_window=x::make_weak_capture(main_window)]
 			(const auto &info)
 			{
-				main_window.get
-					([]
-					 (const auto &main_window)
-					 {
-						 open_file_dialog(main_window,
-								  "file_open@example.libcxx");
-					 });
+				auto got=main_window.get();
+
+				if (got)
+				{
+					auto & [main_window]=*got;
+
+					open_file_dialog(main_window,
+							 "file_open@example.libcxx");
+				}
 			},
 			"Open",
 
@@ -412,11 +416,14 @@ void help_menu(const x::w::main_window &main_window,
 			[main_window=x::make_weak_capture(main_window)]
 			(const auto &ignore)
 			{
-				main_window.get
-					([&]
-					 (const auto &main_window) {
-						help_question(main_window);
-					});
+				auto got=main_window.get();
+
+				if (got)
+				{
+					auto & [main_window]=*got;
+
+					help_question(main_window);
+				}
 			},
 			"Question",
 
@@ -424,14 +431,17 @@ void help_menu(const x::w::main_window &main_window,
 			[main_window=x::make_weak_capture(main_window)]
 			(const auto &ignore)
 			{
-				main_window.get
-					([&]
-					 (const auto &main_window) {
-						main_window->get_dialog
-							("help_about@example.libcxx")
-							->dialog_window
-							->show_all();
-					});
+				auto got=main_window.get();
+
+				if (got)
+				{
+					auto & [main_window]=*got;
+
+					main_window->get_dialog
+						("help_about@example.libcxx")
+						->dialog_window
+						->show_all();
+				}
 			},
 			"About",
 		});

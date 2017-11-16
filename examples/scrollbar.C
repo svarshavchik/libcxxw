@@ -202,15 +202,17 @@ void initialize_volume_control(const x::w::main_window &main_window)
 					  if (ke->unicode != '\n')
 						  return false;
 
-					  fields.get([&]
-						     (const auto &sb,
-						      const auto &input_field,
-						      const auto &main_window)
-						     {
-							     vi->set_volume(input_field,
-									    sb,
-									    main_window);
-						     });
+					  auto got=fields.get();
+
+					  if (got)
+					  {
+						  auto & [sb, input_field,
+							  main_window] = *got;
+
+						  vi->set_volume(input_field,
+								 sb,
+								 main_window);
+					  }
 
 					  return true;
 				  });
@@ -224,13 +226,14 @@ void initialize_volume_control(const x::w::main_window &main_window)
 			      {
 				      vi->use_decimals=state > 0;
 
-				      fields.get([&]
-						 (const auto &sb,
-						  const auto &input_field)
-						 {
-							 vi->set_decimals(input_field,
-									  sb);
-						     });
+				      auto got=fields.get();
+
+				      if (got)
+				      {
+					      auto &[sb, input_field]=*got;
+
+					      vi->set_decimals(input_field, sb);
+				      }
 
 			      });
 }
