@@ -7,6 +7,7 @@
 #include "singletonlayoutmanager.H"
 #include "catch_exceptions.H"
 #include "container.H"
+#include "child_element.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -17,6 +18,12 @@ singletonlayoutmanagerObj::implObj
 	current_element(&initial_element,
 			(initial_element ? &initial_element+1:&initial_element))
 {
+	if (initial_element &&
+	    ref<child_elementObj>(initial_element->impl)->child_container !=
+	    container_impl)
+		throw EXCEPTION("Internal error: initial element for the "
+				"singleton layout manager belongs to a "
+				"different container");
 }
 
 singletonlayoutmanagerObj::implObj::~implObj()=default;
@@ -170,6 +177,11 @@ void singletonlayoutmanagerObj::implObj
 ::process_updated_position(IN_THREAD_ONLY,
 			   const rectangle &position)
 {
+	// If our own width/height is 0, don't bother updating the element's
+	// position. This is used by the switch layout manager to hide us.
+	if (position.width == 0 || position.height == 0)
+		return;
+
 	auto lei=get_list_element_impl(IN_THREAD);
 
 	if (!lei)

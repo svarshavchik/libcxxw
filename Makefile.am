@@ -672,6 +672,12 @@ libcxxw_la_SOURCES=\
 	straight_borderfwd.H			    \
 	straight_borderobj.H			    \
 	straight_border_impl.C			    \
+	switchfactory.C				    \
+	switchfactory_impl.C			    \
+	switchfactory_impl.H			    \
+	switchlayoutmanager.C			    \
+	switchlayoutmanager_impl.C		    \
+	switchlayoutmanager_impl.H		    \
 	textlabel.C				    \
 	textlabel.H				    \
 	textlabel_impl.C			    \
@@ -771,6 +777,7 @@ INTERACTIVETESTPROGRAMS=\
 	testprogressbar					\
 	testscrollbar					\
 	testshowhide					\
+	testswitch					\
 	testtooltip					\
 	testwordwrappablelabel				\
 	#
@@ -859,6 +866,10 @@ testscrollbar_metrics_LDFLAGS=-static $(STATICLINKFLAGS)
 $(call REFCOLLECTION_GEN,testshowhide.inc.H,testshowhide.xml)
 testshowhide_SOURCES=testshowhide.C
 testshowhide_LDADD=libcxxw.la
+
+testswitch_SOURCES=testswitch.C
+testswitch_LDADD=libcxxw.la
+testswitch_LDFLAGS=$(TESTLINKTYPE)
 
 testtextparam_SOURCES=testtextparam.C
 testtextparam_LDADD=libcxxw.la

@@ -1,0 +1,287 @@
+/*
+** Copyright 2017 Double Precision, Inc.
+** See COPYING for distribution information.
+*/
+
+#include "libcxxw_config.h"
+#include <x/mpobj.H>
+#include <x/exception.H>
+#include <x/destroy_callback.H>
+#include <x/ref.H>
+#include <x/obj.H>
+
+#include "x/w/main_window.H"
+#include "x/w/gridlayoutmanager.H"
+#include "x/w/gridfactory.H"
+#include "x/w/switchlayoutmanager.H"
+#include "x/w/switchfactory.H"
+#include "x/w/label.H"
+#include "x/w/button.H"
+#include "x/w/input_field.H"
+#include "x/w/input_field_config.H"
+#include "x/w/canvas.H"
+
+#include <iostream>
+
+class close_flagObj : public LIBCXX_NAMESPACE::obj {
+
+public:
+	LIBCXX_NAMESPACE::mpcobj<bool> flag;
+
+	close_flagObj() : flag{false} {}
+	~close_flagObj()=default;
+
+	void close()
+	{
+		LIBCXX_NAMESPACE::mpcobj<bool>::lock lock{flag};
+
+		*lock=true;
+		lock.notify_all();
+	}
+};
+
+typedef LIBCXX_NAMESPACE::ref<close_flagObj> close_flag_ref;
+
+auto name_tab(const LIBCXX_NAMESPACE::w::gridlayoutmanager &glm)
+{
+	auto f=glm->append_row();
+
+	f->halign(LIBCXX_NAMESPACE::w::halign::right)
+		.create_label("First name:");
+
+	LIBCXX_NAMESPACE::w::input_field_config config;
+
+	config.autoselect=true;
+
+	auto firstname=f->create_input_field("", config);
+
+	f=glm->append_row();
+
+	f->halign(LIBCXX_NAMESPACE::w::halign::right)
+		.create_label("Last name:");
+	f->create_input_field("", config);
+
+	return firstname;
+}
+
+auto address_tab(const LIBCXX_NAMESPACE::w::gridlayoutmanager &glm)
+{
+	auto f=glm->append_row();
+
+	f->halign(LIBCXX_NAMESPACE::w::halign::right)
+		.create_label("Address:");
+
+	LIBCXX_NAMESPACE::w::input_field_config config;
+
+	config.autoselect=true;
+
+	auto address1=f->colspan(5).create_input_field("", config);
+
+	f=glm->append_row();
+
+	f->create_canvas();
+
+	f->colspan(5).create_input_field("", config); // address2
+
+	f=glm->append_row();
+
+	f->halign(LIBCXX_NAMESPACE::w::halign::right)
+		.create_label("City:");
+
+	config.columns=20;
+
+	f->create_input_field("", config);
+
+	f->create_label("State:");
+
+	config.columns=3;
+
+	f->create_input_field("", config);
+
+	f->create_label("Zip:");
+
+	config.columns=11;
+
+	f->create_input_field("", config);
+
+	return address1;
+}
+
+auto phone_tab(const LIBCXX_NAMESPACE::w::gridlayoutmanager &glm)
+{
+	auto f=glm->append_row();
+
+	f->create_label("Phone:");
+
+	LIBCXX_NAMESPACE::w::input_field_config config;
+
+	config.autoselect=true;
+
+	return f->create_input_field("", config);
+}
+
+static auto create_switch(const LIBCXX_NAMESPACE::w::switchlayoutmanager &sl)
+{
+	LIBCXX_NAMESPACE::w::switchfactory sf=sl->append();
+
+	LIBCXX_NAMESPACE::w::input_fieldptr address1;
+
+	sf->halign(LIBCXX_NAMESPACE::w::halign::left)
+		.valign(LIBCXX_NAMESPACE::w::valign::top)
+		.create_container
+		([&]
+		 (const auto &container)
+		 {
+			 address1=address_tab(container->get_layoutmanager());
+		 },
+		 LIBCXX_NAMESPACE::w::new_gridlayoutmanager{});
+
+	LIBCXX_NAMESPACE::w::input_fieldptr phone;
+
+	sf->create_container
+		([&]
+		 (const auto &container)
+		 {
+			 phone=phone_tab(container->get_layoutmanager());
+		 },
+		 LIBCXX_NAMESPACE::w::new_gridlayoutmanager{});
+
+	LIBCXX_NAMESPACE::w::input_fieldptr firstname;
+
+	sf=sl->insert(0);
+
+	sf->halign(LIBCXX_NAMESPACE::w::halign::left)
+		.valign(LIBCXX_NAMESPACE::w::valign::top)
+		.create_container
+		([&]
+		 (const auto &container)
+		 {
+			 firstname=name_tab(container->get_layoutmanager());
+		 },
+		 LIBCXX_NAMESPACE::w::new_gridlayoutmanager{});
+
+	sl->switch_to(0);
+
+	LIBCXX_NAMESPACE::w::switch_lock lock{sl};
+
+	size_t n=sl->size();
+	std::cout << n << " elements:" << std::endl;
+
+	for (size_t i=0; i<n; ++i)
+		std::cout << sl->get(i)->objname() << std::endl;
+
+	return std::tuple{firstname, address1, phone};
+}
+
+static void create_mainwindow(const LIBCXX_NAMESPACE::w::main_window &mw)
+{
+	LIBCXX_NAMESPACE::w::gridlayoutmanager glm=mw->get_layoutmanager();
+
+	auto gf=glm->append_row();
+
+	LIBCXX_NAMESPACE::w::input_fieldptr
+		firstname, address1, phone;
+
+	auto sw=gf->colspan(4).halign(LIBCXX_NAMESPACE::w::halign::center).create_container
+		([&]
+		 (const auto &s)
+		 {
+			 LIBCXX_NAMESPACE::w::switchlayoutmanager sl=s->get_layoutmanager();
+
+			 std::tie(firstname, address1, phone)=create_switch(sl);
+		 },
+		 LIBCXX_NAMESPACE::w::new_switchlayoutmanager{});
+
+	gf=glm->append_row();
+
+	auto name_button=gf->create_normal_button_with_label("Name");
+	auto address_button=gf->create_normal_button_with_label("Address");
+	auto phone_button=gf->create_normal_button_with_label("Phone");
+	auto clear_button=gf->create_normal_button_with_label("Clear");
+
+	name_button->on_activate([=]
+				 (const auto &trigger, const auto &busy)
+				 {
+					 LIBCXX_NAMESPACE::w::switchlayoutmanager sl=
+						 sw->get_layoutmanager();
+
+					 sl->switch_to(0);
+					 firstname->request_focus();
+				 });
+
+	address_button->on_activate([=]
+				    (const auto &trigger, const auto &busy)
+				    {
+					    LIBCXX_NAMESPACE::w::switchlayoutmanager sl=
+						    sw->get_layoutmanager();
+
+					    sl->switch_to(1);
+					    address1->request_focus();
+				    });
+
+	phone_button->on_activate([=]
+				  (const auto &trigger, const auto &busy)
+				  {
+					  LIBCXX_NAMESPACE::w::switchlayoutmanager sl=
+						  sw->get_layoutmanager();
+
+					  sl->switch_to(2);
+					  phone->request_focus();
+				  });
+
+	clear_button->on_activate([=]
+				  (const auto &trigger, const auto &busy)
+				  {
+					  LIBCXX_NAMESPACE::w::switchlayoutmanager sl=
+						  sw->get_layoutmanager();
+
+					  sl->switch_off();
+				  });
+}
+
+void testswitch()
+{
+	LIBCXX_NAMESPACE::destroy_callback::base::guard guard;
+
+	auto close_flag=close_flag_ref::create();
+
+	auto mw=LIBCXX_NAMESPACE::w::main_window::create([]
+							 (const auto &mw)
+							 {
+								 create_mainwindow(mw);
+							 });
+
+	mw->set_window_title("Switch!");
+	mw->show_all();
+
+	guard(mw->connection_mcguffin());
+
+	mw->on_disconnect([]
+			  {
+				  exit(1);
+			  });
+
+	mw->on_delete([close_flag]
+		      (const auto &ignore)
+		      {
+			      close_flag->close();
+		      });
+
+	mw->show();
+
+	LIBCXX_NAMESPACE::mpcobj<bool>::lock lock{close_flag->flag};
+
+	lock.wait([&] { return *lock; });
+}
+
+int main(int argc, char **argv)
+{
+	try {
+		testswitch();
+	} catch (const LIBCXX_NAMESPACE::exception &e)
+	{
+		e->caught();
+		exit(1);
+	}
+	return 0;
+}

@@ -1,3 +1,4 @@
+#include "libcxxw_config.h"
 #include <iostream>
 #include <sstream>
 #include <x/exception.H>

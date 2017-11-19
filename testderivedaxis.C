@@ -3,6 +3,7 @@
 ** See COPYING for distribution information.
 */
 
+#include "libcxxw_config.h"
 #include <x/exception.H>
 #include <iostream>
 #include <vector>

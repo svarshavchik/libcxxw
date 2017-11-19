@@ -213,6 +213,12 @@ void focusableObj::request_focus()
 {
 	auto impl=get_impl();
 
+	// If request_focus() is invoked after using the layout manager to
+	// change something in the container, the request_focus() action
+	// may depend on the results of the layout manager changes. Therefore
+	// we must schedule this to be batch-executed, after the batch job
+	// finishes.
+
 	impl->get_focusable_element().THREAD
 		->get_batch_queue()
 		->run_as([impl]

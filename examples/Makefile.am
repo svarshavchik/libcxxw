@@ -11,6 +11,7 @@ noinst_PROGRAMS=\
 	menu					\
 	progressbar				\
 	scrollbar				\
+	switchlayoutmanager			\
 	wordwraplabel
 
 checkradio_SOURCES=checkradio.C close_flag.H
@@ -20,12 +21,12 @@ $(call OPTIONS_GEN,combobox.H,combobox.xml)
 combobox_SOURCES=combobox.C close_flag.H
 combobox_LDADD=-lcxxw -lcxx
 
-focusable_SOURCES=focusable.C
+focusable_SOURCES=focusable.C close_flag.H
 focusable_LDADD=-lcxxw -lcxx
 
 $(call REFCOLLECTION_GEN,gridlayoutmanager.inc.H,gridlayoutmanager.xml)
 
-gridlayoutmanager_SOURCES=gridlayoutmanager.C
+gridlayoutmanager_SOURCES=gridlayoutmanager.C close_flag.H
 gridlayoutmanager_LDADD=-lcxxw -lcxx
 
 helloworld_SOURCES=helloworld.C close_flag.H
@@ -48,6 +49,9 @@ progressbar_LDADD=-lcxxw -lcxx
 
 scrollbar_SOURCES=scrollbar.C close_flag.H
 scrollbar_LDADD=-lcxxw -lcxx
+
+switchlayoutmanager_SOURCES=switchlayoutmanager.C close_flag.H
+switchlayoutmanager_LDADD=-lcxxw -lcxx
 
 wordwraplabel_SOURCES=wordwraplabel.C close_flag.H
 wordwraplabel_LDADD=-lcxxw -lcxx

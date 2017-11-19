@@ -29,9 +29,9 @@ public:
 	//! Destructor
 	~new_gridlayoutmanager() LIBCXX_PUBLIC;
 
-	//! \internal
 	//! Create a container with the grid layout manager.
 
+	//! \internal
 	ref<layoutmanagerObj::implObj>
 		create(const ref<containerObj::implObj> &) const override;
 };

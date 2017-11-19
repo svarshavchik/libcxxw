@@ -1,3 +1,4 @@
+#include "libcxxw_config.h"
 #include "metrics_grid.H"
 #include <x/exception.H>
 #include "metrics_horizvert.H"

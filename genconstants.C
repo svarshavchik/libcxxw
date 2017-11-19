@@ -1,3 +1,4 @@
+#include "libcxxw_config.h"
 #include <iostream>
 
 #include <xcb/xcb.h>

@@ -56,6 +56,7 @@ suppressfile*
 /testscrollbar
 /testscrollbar_metrics
 /testshowhide
+/testswitch
 /testtextparam
 /testtooltip
 /testtooltip.H

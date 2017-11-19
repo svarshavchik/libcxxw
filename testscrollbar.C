@@ -3,6 +3,7 @@
 ** See COPYING for distribution information.
 */
 
+#include "libcxxw_config.h"
 #include <x/mpobj.H>
 #include <x/exception.H>
 #include <x/destroy_callback.H>

@@ -1,0 +1,117 @@
+<!--
+
+Copyright 2017 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<chapter id="switchlayoutmanager">
+  <title>The switch layout manager</title>
+
+  <mediaobject>
+    <imageobject>
+      <imagedata fileref="switchlayoutmanager.png" format="PNG"
+		 contentwidth="571px" contentdepth="185px" />
+    </imageobject>
+    <textobject>
+      <phrase>
+	The switch layout manager
+      </phrase>
+    </textobject>
+    <caption>
+      <para>
+	The
+	<ulink url="&link-typedef-x--w-switchlayoutmanager;"><classname>&ns;::w::switchlayoutmanager</classname></ulink>
+	shows one of the elements in its container at any given time.
+	Switching the visibility to a different element makes it visible,
+	and hides the currently-visible element.
+      </para>
+    </caption>
+  </mediaobject>
+
+  <para>
+    The following example creates a container with the switch layout manager.
+    Each element in the switch layout manager is itself a &container; with
+    several <link linkend="inputfieldsandbuttons">input fields</link>;
+    and the buttons below the switch layout manager's container switch
+    visibility to the corresponding element in the switched container.
+  </para>
+
+  <para>
+    In this manner, each button makes a separate set of input fields
+    visible because each individual element in the switched container is
+    a whole container:
+  </para>
+  <blockquote>
+    <title><ulink url="examples/switchlayoutmanager.C">switchlayoutmanager.C</ulink></title>
+
+    <informalexample>
+      <programlisting><xi:include href="../examples/switchlayoutmanager.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    The switch layout manager automatically numbers the list of elements in the
+    container consecutively, starting with element #0.
+    <methodname>append</methodname>() returns a
+    <ulink url="&link-typedef-x--w-switchfactory;"><classname>&ns;::w::switchfactory</classname></ulink>
+    that adds new elements to the end of the list;
+    <methodname>insert</methodname>() adds new elements before an existing
+    element. <methodname>remove</methodname>() removes an existing element
+    from the list.
+  </para>
+
+  <para>
+    <methodname>size</methodname>() returns the number of elements in the
+    container. <methodname>switch_to</methodname>() makes the specified
+    element, identified by its number, visible.
+    <methodname>switch_off</methodname>() switches off the visibility of the
+    currently visible element but does not make any other element visible.
+    The container becomes visibly empty.
+    <methodname>switched</methodname>() returns an indication which element
+    number, if there is one, is visible at the moment.
+  </para>
+
+  <note>
+    <para>
+      Each element created by the
+      <ulink url="&link-typedef-x--w-switchfactory;"><classname>&ns;::w::switchfactory</classname></ulink>
+      must be <methodname>show</methodname>()n in order for it to be visible,
+      just like every element in every other kind of a container.
+      This is orthogonal to switching the visibility between the alternative
+      elements. All display elements have to be <methodname>show</methodname>()n
+      and the switch layout manager arranges them to be visible, on demand.
+    </para>
+
+    <para>
+      This is because, in general, in order for an individual display
+      element to
+      appear, not only that display element has to be
+      <methodname>show</methodname>()n, but also its container, and every
+      of their collective parent containers in their window. After all,
+      <methodname>hide</methodname>()ing a container makes it invisible
+      together with everything in the container.
+      <methodname>show_all</methodname>() and
+      <methodname>hide_all</methodname>() recursively show or hide
+      the specified display element and all other elements it contains (if
+      it is a container).
+    </para>
+
+    <para>
+      The switch layout manager leverages this generic design to switch
+      the visibility of its display elements. The switch layout manager
+      sets up an internal container, that it manages itself, for each
+      individual element added to the switched container. The switch
+      layout manager controls the visibility of the internal containers
+      in order to implement its functionality; and each element added
+      to the switch layout manager still needs to be
+      <methodname>show</methodname>()n, on its own merits.
+    </para>
+  </note>
+</chapter>
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "book" "chapter")
+End:
+-->

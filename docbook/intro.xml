@@ -249,7 +249,9 @@ See COPYING for distribution information.
 
       <para>
 	As such, application's callbacks should safely capture anything they
-	need by value. &libcxx;'s reference-counted objects (which are,
+	need by value (subject to <link linkend="callbackrefs">restrictions
+	  on creating circular references</link>).
+	&libcxx;'s reference-counted objects (which are,
 	incidentally, are used to build the &app; itself) are an excellent
 	suggestion. The callback and the main application coordinate their
 	mutual dependency through some refernece-counted object. After both
