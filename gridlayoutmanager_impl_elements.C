@@ -1022,9 +1022,10 @@ void gridlayoutmanagerObj::implObj
 		// element accordingly. width and height,
 		// so the element does not get resized.
 
-		if (hv->horiz.maximum() != dim_t::infinite())
-		{
-			dim_t max_width=hv->horiz.maximum();
+		dim_t max_width=hv->horiz.maximum();
+
+		if (max_width == dim_t::infinite())
+			max_width=element_position.width;
 
 			if (max_width < element_position.width)
 			{
@@ -1049,11 +1050,11 @@ void gridlayoutmanagerObj::implObj
 					element_position.x.truncate
 					(element_position.x+padding);
 			}
-		}
 
-		if (hv->vert.maximum() != dim_t::infinite())
-		{
-			dim_t max_height=hv->vert.maximum();
+		dim_t max_height=hv->vert.maximum();
+
+		if (max_height == dim_t::infinite())
+			max_height=element_position.height;
 
 			if (max_height < element_position.height)
 			{
@@ -1078,8 +1079,6 @@ void gridlayoutmanagerObj::implObj
 					element_position.y.truncate
 					(element_position.y+padding);
 			}
-
-		}
 
 		element->impl->update_current_position(IN_THREAD,
 						       element_position);
