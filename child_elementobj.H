@@ -230,11 +230,6 @@ class LIBCXX_HIDDEN child_elementObj : public background_color_elementObj<
 
  public:
 
-	//! Used by focusableImplObj to find the insert position in focusable_fields
-
-	virtual focusable_fields_t::iterator
-		initial_focusable_fields_insert_pos(IN_THREAD_ONLY);
-
 	//! Received pasted text.
 
 	//! Forwarded to the container, if not handled by the element.

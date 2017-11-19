@@ -9,9 +9,14 @@
 #include "run_as.H"
 #include "xid_t.H"
 #include "messages.H"
+#include "batch_queue.H"
 #include <X11/keysym.h>
 
+#include <x/logger.H>
+
 LIBCXXW_NAMESPACE_START
+
+LOG_FUNC_SCOPE_DECL(LIBCXX_NAMESPACE::w::focusable, focusable_log);
 
 focusableObj::focusableObj()
 {
@@ -206,15 +211,21 @@ void focusableObj::on_key_event(const std::function<key_event_callback_t> &cb)
 
 void focusableObj::request_focus()
 {
-	get_impl()->get_focusable_element().THREAD
-		->run_as([me=focusable(this)]
+	auto impl=get_impl();
+
+	impl->get_focusable_element().THREAD
+		->get_batch_queue()
+		->run_as([impl]
 			 (IN_THREAD_ONLY)
 			 {
-				 auto impl=me->get_impl();
+				 LOG_FUNC_SCOPE(focusable_log);
 
 				 if (!impl->get_focusable_element()
 				     .enabled(IN_THREAD))
+				 {
+					 LOG_ERROR("Cannot set focus to requested display element");
 					 return;
+				 }
 
 				 impl->set_focus_and_ensure_visibility
 					 (IN_THREAD);

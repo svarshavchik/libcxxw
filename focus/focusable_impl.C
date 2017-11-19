@@ -44,21 +44,14 @@ void focusableImplObj::focusable_initialize(IN_THREAD_ONLY)
 
 	auto &e=get_focusable_element();
 
-	focusable_fields_iter(IN_THREAD)=
-		focusable_fields(IN_THREAD).insert
-		(e.initial_focusable_fields_insert_pos(IN_THREAD),
-		 ref<focusableImplObj>(this));
+	auto &ff=focusable_fields(IN_THREAD);
+
+	focusable_fields_iter(IN_THREAD)=ff.insert(ff.end(),
+						   ref<focusableImplObj>(this));
 
 	in_focusable_fields(IN_THREAD)=true;
 
 	e.focusable_initialized(IN_THREAD, *this);
-}
-
-focusable_fields_t::iterator
-child_elementObj::initial_focusable_fields_insert_pos(IN_THREAD_ONLY)
-{
-	return get_window_handler()
-		.focusable_fields(IN_THREAD).end();
 }
 
 void focusableImplObj::focusable_deinitialize(IN_THREAD_ONLY)

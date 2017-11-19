@@ -285,13 +285,8 @@ void generic_windowObj::handlerObj
 
 void generic_windowObj::handlerObj::mapped(IN_THREAD_ONLY)
 {
-	for (auto b=focusable_fields(IN_THREAD).begin(),
-		     e=focusable_fields(IN_THREAD).end();
-	     b != e;)
+	for (const auto &element:focusable_fields(IN_THREAD))
 	{
-		--e;
-		const auto &element=*e;
-
 		if (!element->focusable_enabled(IN_THREAD))
 			continue;
 
