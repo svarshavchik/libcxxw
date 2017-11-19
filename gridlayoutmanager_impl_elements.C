@@ -1027,58 +1027,27 @@ void gridlayoutmanagerObj::implObj
 		if (max_width == dim_t::infinite())
 			max_width=element_position.width;
 
-			if (max_width < element_position.width)
-			{
-				dim_t padding=0;
-
-				switch (child.horizontal_alignment) {
-				case halign::left:
-					break;
-				case halign::center:
-					padding=(element_position.width - max_width) / 2;
-					break;
-				case halign::right:
-					padding=(element_position.width - max_width);
-					break;
-				case halign::fill:
-					max_width=element_position.width;
-					break;
-				}
-				element_position.width=max_width;
-
-				element_position.x=
-					element_position.x.truncate
-					(element_position.x+padding);
-			}
-
 		dim_t max_height=hv->vert.maximum();
 
 		if (max_height == dim_t::infinite())
 			max_height=element_position.height;
 
-			if (max_height < element_position.height)
-			{
-				dim_t padding=0;
+		auto aligned=metrics::align(element_position.width,
+					    element_position.height,
+					    max_width,
+					    max_height,
+					    child.horizontal_alignment,
+					    child.vertical_alignment);
 
-				switch (child.vertical_alignment) {
-				case valign::top:
-					break;
-				case valign::middle:
-					padding=(element_position.height - max_height) / 2;
-					break;
-				case valign::bottom:
-					padding=(element_position.height - max_height);
-					break;
-				case valign::fill:
-					max_height=element_position.height;
-					break;
-				}
+		element_position.x=
+			element_position.x.truncate
+			(element_position.x+aligned.x);
+		element_position.y=
+			element_position.y.truncate
+			(element_position.y+aligned.y);
 
-				element_position.height=max_height;
-				element_position.y=
-					element_position.y.truncate
-					(element_position.y+padding);
-			}
+		element_position.width=aligned.width;
+		element_position.height=aligned.height;
 
 		element->impl->update_current_position(IN_THREAD,
 						       element_position);
