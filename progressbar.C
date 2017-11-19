@@ -70,7 +70,7 @@ progressbar factoryObj
 	// progressbar_handler -> progressbar_lm -> pb
 
 	auto progressbar_handler=ref<progressbarObj::handlerObj>
-		::create(container_impl, config);
+		::create(get_container_impl(), config);
 
 	auto progressbar_lm=
 		ref<gridlayoutmanagerObj::implObj>::create(progressbar_handler);

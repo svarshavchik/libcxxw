@@ -168,7 +168,7 @@ button factoryObj::do_create_button(const char *theme_border,
 				    const function<factory_creator_t> &f,
 				    const shortcut &shortcut_key)
 {
-	auto impl=ref<buttonObj::implObj>::create(container_impl);
+	auto impl=ref<buttonObj::implObj>::create(get_container_impl());
 
 	auto ab=button::create(impl,
 			       create_button_focusframe

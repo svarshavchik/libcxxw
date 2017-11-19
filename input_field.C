@@ -65,7 +65,7 @@ factoryObj::create_input_field(const text_param &text,
 	// basically a grid container.
 
 	auto impl_mixin=input_fieldObj::implObj::impl_mixin
-		::create(container_impl);
+		::create(get_container_impl());
 
 	editorptr created_editor;
 
@@ -74,7 +74,7 @@ factoryObj::create_input_field(const text_param &text,
 				"inputfocusoff_border",
 				"inputfocuson_border",
 				.2,
-				container_impl->get_element_impl()
+				get_element_impl()
 				.create_background_color
 				("textedit_background_color"),
 				impl_mixin,

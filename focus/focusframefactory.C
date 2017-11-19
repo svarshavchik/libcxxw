@@ -4,18 +4,29 @@
 */
 #include "libcxxw_config.h"
 #include "focus/focusframefactory.H"
+#include "layoutmanager.H"
+#include "container.H"
 #include "x/w/gridlayoutmanager.H"
 #include "x/w/gridfactory.H"
 
 LIBCXXW_NAMESPACE_START
 
 focusframefactoryObj::focusframefactoryObj(const container &ffc)
-	: factoryObj(ffc->impl),
-	  glm(ffc->get_layoutmanager())
+	: glm(ffc->get_layoutmanager())
 {
 }
 
 focusframefactoryObj::~focusframefactoryObj()=default;
+
+ref<containerObj::implObj> focusframefactoryObj::get_container_impl()
+{
+	return glm->layoutmanagerObj::impl->container_impl;
+}
+
+elementObj::implObj &focusframefactoryObj::get_element_impl()
+{
+	return glm->layoutmanagerObj::impl->container_impl->get_element_impl();
+}
 
 void focusframefactoryObj::created(const element &e)
 {

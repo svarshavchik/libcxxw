@@ -31,6 +31,15 @@ class LIBCXX_HIDDEN focusframefactoryObj : public factoryObj {
 	void created(const element &e) override;
 
 	~focusframefactoryObj();
+
+	//! Return the container for a new element.
+
+	virtual ref<containerObj::implObj> get_container_impl();
+
+	//! Return the container's element.
+
+	virtual elementObj::implObj &get_element_impl();
+
 };
 
 typedef ref<focusframefactoryObj> focusframefactory;

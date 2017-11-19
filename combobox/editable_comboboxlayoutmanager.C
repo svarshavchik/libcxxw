@@ -75,13 +75,13 @@ new_editable_comboboxlayoutmanager
 		   // labels'.
 
 		   auto input_field=f->create_input_field
-			   ({theme_font({f->container_impl->get_element_impl()
+			   ({theme_font({f->get_element_impl()
 							   .label_theme_font()
 							   })
 					   }, {2});
 
 		   input_field->on_autocomplete
-			   ([container_impl=make_weak_capture(f->container_impl)]
+			   ([container_impl=make_weak_capture(f->get_container_impl())]
 			    (auto &autocomplete_info) {
 
 				   bool flag=false;

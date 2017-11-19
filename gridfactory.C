@@ -16,8 +16,7 @@ LIBCXXW_NAMESPACE_START
 gridfactoryObj::gridfactoryObj(const layoutmanager &layout,
 			       const ref<gridlayoutmanagerObj::implObj> &gridlayout,
 			       const ref<implObj> &impl)
-	: factoryObj(layout->impl->container_impl),
-	  layout(layout),
+	: layout(layout),
 	  gridlayout(gridlayout),
 	  lock(gridlayout->grid_map),
 	  impl(impl)
@@ -25,6 +24,16 @@ gridfactoryObj::gridfactoryObj(const layoutmanager &layout,
 }
 
 gridfactoryObj::~gridfactoryObj()=default;
+
+ref<containerObj::implObj> gridfactoryObj::get_container_impl()
+{
+	return layout->impl->container_impl;
+}
+
+elementObj::implObj &gridfactoryObj::get_element_impl()
+{
+	return layout->impl->container_impl->get_element_impl();
+}
 
 // Save new element's borders somewhere safe...
 

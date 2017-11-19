@@ -6,15 +6,27 @@
 #include "capturefactory.H"
 #include "x/w/element.H"
 #include "messages.H"
+#include "container.H"
 
 LIBCXXW_NAMESPACE_START
 
 capturefactoryObj::capturefactoryObj(const ref<containerObj::implObj>
 				     &container_impl)
-	: factoryObj(container_impl)
+	: container_impl(container_impl)
 {
 }
+
 capturefactoryObj::~capturefactoryObj()=default;
+
+ref<containerObj::implObj> capturefactoryObj::get_container_impl()
+{
+	return container_impl;
+}
+
+elementObj::implObj &capturefactoryObj::get_element_impl()
+{
+	return container_impl->get_element_impl();
+}
 
 void capturefactoryObj::created(const element &e)
 {

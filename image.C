@@ -23,6 +23,8 @@ image factoryObj::create_image_mm(const std::string_view &name,
 				  double heightmm,
 				  render_repeat repeat)
 {
+	auto container_impl=get_container_impl();
+
 	auto icon=container_impl->get_window_handler()
 		.create_icon_mm(name, repeat, widthmm, heightmm);
 

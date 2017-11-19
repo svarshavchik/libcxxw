@@ -371,7 +371,7 @@ focusable_container new_custom_comboboxlayoutmanager
 	f->valign(valign::fill);
 
 	const auto &[ff, combobox_button]=
-		create_combobox_button(f->container_impl,
+		create_combobox_button(f->get_container_impl(),
 				       popup_handler);
 
 	ff->elementObj::impl

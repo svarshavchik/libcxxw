@@ -50,6 +50,14 @@ class gridfactoryObj : public factoryObj {
 	//! Destructor
 	~gridfactoryObj() LIBCXX_HIDDEN;
 
+	//! Implement get_container_impl()
+
+	ref<containerObj::implObj> get_container_impl() override LIBCXX_HIDDEN;
+
+	//! Return get_element_impl()
+
+	elementObj::implObj &get_element_impl() override LIBCXX_HIDDEN;
+
 	//! Set new element's width
 
 	gridfactoryObj &colspan(size_t);

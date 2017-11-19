@@ -30,7 +30,7 @@ canvas factoryObj::do_create_canvas(const function<void (const canvas &)>
 				    const metrics::mmaxis &horiz,
 				    const metrics::mmaxis &vert)
 {
-	auto canvas_impl=ref<canvasObj::implObj>::create(container_impl,
+	auto canvas_impl=ref<canvasObj::implObj>::create(get_container_impl(),
 							 horiz,
 							 vert);
 

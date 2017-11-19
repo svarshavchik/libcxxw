@@ -164,14 +164,14 @@ do_create_image_button(const std::vector<std::string_view>
 	if (images.empty())
 		throw EXCEPTION(_("Attempt to create an image button without any images."));
 
-	auto icons=f.container_impl->get_window_handler()
+	auto icons=f.get_element_impl().get_window_handler()
 		.create_icon_vector(images);
 
 	// Create an image_button_containerObj, a container with a grid
 	// layout manager.
 
 	auto image_button_outer_container_impl=
-		ref<image_button_containerObj>::create(f.container_impl);
+		ref<image_button_containerObj>::create(f.get_container_impl());
 
 	auto image_button_outer_container_layout=
 		ref<gridlayoutmanagerObj::implObj>

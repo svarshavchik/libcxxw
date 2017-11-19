@@ -11,18 +11,20 @@
 
 LIBCXXW_NAMESPACE_START
 
-factoryObj::factoryObj(const ref<containerObj::implObj> &container_impl)
-	: container_impl(container_impl)
-{
-}
+factoryObj::factoryObj()=default;
 
 factoryObj::~factoryObj()=default;
+
+ref<containerObj::implObj> factoryObj::last_container_impl()
+{
+	return get_container_impl();
+}
 
 void factoryObj::created_internally(const element &e)
 {
 	ref<child_elementObj> impl=e->impl;
 
-	if (impl->child_container != container_impl)
+	if (impl->child_container != last_container_impl())
 		throw EXCEPTION(_("Internal error: child element added to the wrong container"));
 
 	created(e);

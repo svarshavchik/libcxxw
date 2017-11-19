@@ -214,7 +214,7 @@ scrollbar factoryObj
 			      const scrollbar_cb_t &callback,
 			      dim_arg minimum_size)
 {
-	auto sb=do_create_h_scrollbar(container_impl,
+	auto sb=do_create_h_scrollbar(get_container_impl(),
 				      config,
 				      minimum_size,
 				      callback);
@@ -228,7 +228,7 @@ scrollbar factoryObj
 			    const scrollbar_cb_t &callback,
 			    dim_arg minimum_size)
 {
-	auto sb=do_create_v_scrollbar(container_impl,
+	auto sb=do_create_v_scrollbar(get_container_impl(),
 				      config,
 				      minimum_size,
 				      callback);

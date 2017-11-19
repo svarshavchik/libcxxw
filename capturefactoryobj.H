@@ -24,6 +24,7 @@ class LIBCXX_HIDDEN capturefactoryObj : public factoryObj {
 	//! The capture element.
 	capture_element_t capture_element;
 
+	const ref<containerObj::implObj> container_impl;
  public:
 
 	//! Constructor
@@ -31,6 +32,14 @@ class LIBCXX_HIDDEN capturefactoryObj : public factoryObj {
 
 	//! Destructor
 	~capturefactoryObj();
+
+	//! Implement get_container_impl()
+
+	ref<containerObj::implObj> get_container_impl() override;
+
+	//! Return get_element_impl()
+
+	elementObj::implObj &get_element_impl() override;
 
 	//! An element was created.
 	void created(const element &) override;

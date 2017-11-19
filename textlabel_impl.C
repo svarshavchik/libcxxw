@@ -37,23 +37,14 @@ label factoryObj::create_label(const text_param &text,
 			       double widthmm,
 			       halign alignment)
 {
-	auto l=create_label_internal(text, widthmm, alignment, container_impl);
+	auto label_impl=ref<label_elementObj<child_elementObj>>
+		::create(get_container_impl(), text, alignment, widthmm, false);
+
+	auto l=label::create(label_impl, label_impl);
 
 	created(l);
 
 	return l;
-}
-
-label factoryObj::create_label_internal(const text_param &text,
-					double widthmm,
-					halign alignment,
-					const ref<containerObj::implObj>
-					&container_impl)
-{
-	auto label_impl=ref<label_elementObj<child_elementObj>>
-		::create(container_impl, text, alignment, widthmm, false);
-
-	return label::create(label_impl, label_impl);
 }
 
 textlabelObj::implObj::implObj(const text_param &text,

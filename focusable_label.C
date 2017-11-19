@@ -28,7 +28,7 @@ focusable_label factoryObj
 ::create_focusable_label(const text_param &text,
 			 const focusable_label_config &config)
 {
-	auto ff=create_standard_focusframe_container_element(container_impl);
+	auto ff=create_standard_focusframe_container_element(get_container_impl());
 
 	auto ffl=ref<focusframelayoutimplObj>
 		::create(ff,

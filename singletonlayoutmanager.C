@@ -5,6 +5,8 @@
 #include "libcxxw_config.h"
 #include "singletonlayoutmanager.H"
 #include "singletonlayoutmanager_impl.H"
+#include "layoutmanager.H"
+#include "container.H"
 #include "x/w/factory.H"
 
 LIBCXXW_NAMESPACE_START
@@ -24,8 +26,7 @@ class LIBCXX_HIDDEN replace_singleton_factoryObj : public factoryObj {
 
 	replace_singleton_factoryObj(const singletonlayoutmanager
 				     &layout_manager)
-		: factoryObj(layout_manager->impl->container_impl),
-		layout_manager(layout_manager)
+		: layout_manager(layout_manager)
 		{
 		}
 
@@ -33,6 +34,21 @@ class LIBCXX_HIDDEN replace_singleton_factoryObj : public factoryObj {
 	{
 		layout_manager->impl->created(e);
 	}
+
+	//! Return the container for a new element.
+
+	ref<containerObj::implObj> get_container_impl()
+	{
+		return layout_manager->impl->container_impl;
+	}
+
+	//! Return the container's element.
+
+	elementObj::implObj &get_element_impl()
+	{
+		return layout_manager->impl->container_impl->get_element_impl();
+	}
+
 };
 
 factory singletonlayoutmanagerObj::replace()

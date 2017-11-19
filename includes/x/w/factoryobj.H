@@ -45,9 +45,31 @@ class factoryObj : virtual public obj {
 
 public:
 
-	//! This factory is for the given container.
+	//! Creating a new element, return its parent container implementation object.
 
-	const ref<containerObj::implObj> container_impl;
+	//! \internal
+
+	virtual ref<containerObj::implObj> get_container_impl() LIBCXX_HIDDEN=0;
+
+	//! Return the container's element implementation object.
+
+	//! This is used for ancillary purposes, such as constructing
+	//! theme-related metadata.
+	//!
+	//! \internal
+
+	virtual elementObj::implObj &get_element_impl() LIBCXX_HIDDEN=0;
+
+	//! Return parent container implementation object of newly created element.
+
+	//! Used for an internal sanity check. The default implementation
+	//! calls get_container_impl(). A factory that creates a new container
+	//! for each new display element returns the same return value as the
+	//! last call to get_container_impl().
+	//!
+	//! \internal.
+
+	virtual ref<containerObj::implObj> last_container_impl() LIBCXX_HIDDEN;
 
 	//! An internal call to create().
 
@@ -56,15 +78,14 @@ public:
 private:
 	//! Invoked by factory's methods, after creating a new element.
 
-	virtual void created(const element &)=0;
+	virtual void created(const element &) LIBCXX_HIDDEN=0;
 public:
 	//! A creator that takes a factory parameter.
 
 	typedef void factory_creator_t(const factory &);
 
 	//! Constructor
-	factoryObj(const ref<containerObj::implObj> &container_impl)
-		LIBCXX_HIDDEN;
+	factoryObj() LIBCXX_HIDDEN;
 
 	//! Destructor
 	~factoryObj() LIBCXX_HIDDEN;
@@ -127,17 +148,6 @@ public:
 	label create_label(const text_param &text,
 			   double widthmm,
 			   halign alignment=halign::left);
-
-	//! Create a label
-
-	//! \internal
-
-	static label create_label_internal(const text_param &text,
-					   double widthmm,
-					   halign alignment,
-					   const ref<containerObj::implObj>
-					   &container_impl)
-		LIBCXX_HIDDEN;
 
 	//! Create a focusable label.
 

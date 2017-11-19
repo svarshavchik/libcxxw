@@ -6,6 +6,7 @@
 #include "x/w/focusable_container.H"
 #include "x/w/new_focusable_layoutmanagerfwd.H"
 #include "x/w/factory.H"
+#include "container.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -20,7 +21,7 @@ factoryObj::do_create_focusable_container(const function<void
 					  const new_focusable_layoutmanager
 					  &layout_manager)
 {
-	auto c=layout_manager.create(container_impl);
+	auto c=layout_manager.create(get_container_impl());
 	creator(c);
 	created(c);
 	return c;

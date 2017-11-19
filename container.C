@@ -45,7 +45,7 @@ container factoryObj
 ::do_create_container(const function<void (const container &)> &creator,
 		      const new_layoutmanager &layout_manager)
 {
-	auto c=layout_manager.create(container_impl, creator);
+	auto c=layout_manager.create(get_container_impl(), creator);
 	created(c);
 	return c;
 }
