@@ -24,6 +24,13 @@ struct input_field_config {
 	//! Number of rows
 	size_t rows=1;
 
+	//! Auto-select when focus is gained.
+
+	//! Whether the input field should automatically select its entire
+	//! contents, when it gains input focus.
+
+	bool autoselect=false;
+
 	//! When to show the vertical scrollbar
 
 	scrollbar_visibility vertical_scrollbar=scrollbar_visibility::never;

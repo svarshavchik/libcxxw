@@ -70,7 +70,7 @@ void testbutton()
 				 LIBCXX_NAMESPACE::w::gridfactory factory=
 				 layout->append_row();
 
-				 fields.first=factory->create_input_field({""}, {30});
+				 fields.first=factory->create_input_field({""}, {30, 1, true});
 
 				 fields.first->on_change
 				 ([]
@@ -103,6 +103,7 @@ void testbutton()
 						 0, 0,
 							 LIBCXX_NAMESPACE::w::rgb::maximum},
 						 "Hello world!"}, {30, 4,
+						 false,
 						 LIBCXX_NAMESPACE::w::
 						 scrollbar_visibility::
 						 automatic_reserved});

@@ -111,6 +111,13 @@ class LIBCXX_HIDDEN editorObj::implObj
 	//! My parent peephole
 	const ref<editor_peephole_implObj> parent_peephole;
 
+	//! Whether we just autoselect-ed the entire contents of the field
+
+	//! Set when input focus is gained, and the whole thing is selected.
+	//! Cleared by a button event or any processed key event.
+
+	bool autoselected=false;
+
  public:
 
 	THREAD_DATA_ONLY(primary_selection);

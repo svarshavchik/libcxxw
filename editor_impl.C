@@ -365,6 +365,19 @@ void editorObj::implObj::keyboard_focus(IN_THREAD_ONLY)
 	superclass_t::keyboard_focus(IN_THREAD);
 
 	blink_if_has_focus(IN_THREAD);
+
+	if (config.autoselect)
+	{
+		if (current_keyboard_focus(IN_THREAD))
+		{
+			select_all(IN_THREAD);
+			autoselected=true;
+		}
+		else if (autoselected)
+		{
+			moving_cursor moving{IN_THREAD, *this, false, false};
+		}
+	}
 }
 
 void editorObj::implObj::window_focus_change(IN_THREAD_ONLY, bool flag)
@@ -478,6 +491,7 @@ bool editorObj::implObj::process_key_event(IN_THREAD_ONLY, const key_event &ke)
 	{
 		if (process_keypress(IN_THREAD, ke))
 		{
+			autoselected=false;
 			scroll_cursor_into_view(IN_THREAD);
 			return true;
 		}
@@ -752,6 +766,8 @@ bool editorObj::implObj::process_button_event(IN_THREAD_ONLY,
 					      const button_event &be,
 					      xcb_timestamp_t timestamp)
 {
+	autoselected=false;
+
 	if (be.press && (be.button == 1 || be.button == 2))
 	{
 		moving_cursor moving{IN_THREAD, *this, be};
