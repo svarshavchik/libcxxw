@@ -34,18 +34,23 @@ LIBCXXW_NAMESPACE_START
 
 struct LIBCXX_HIDDEN scrollbar_info_t {
 
+	//! The current value, ignoring any dragging going on.
 	scroll_v_t::value_type value;
+
+	//! The current value being dragged. Same as value when not dragging.
 
 	scroll_v_t::value_type dragged_value;
 
+	//! Why the trigger got invoked.
 	const callback_trigger_t &trigger;
 
+	//! Busy mcguffin.
 	const busy &mcguffin;
 };
 
 //! Scrollbar's initial configuration.
 
-//! This is specified when creating a new scrollbar, or when updating it.
+//! This is specified when creating a new scrollbar, or when reconfigure()ing it.
 
 struct scrollbar_config {
 
@@ -81,7 +86,7 @@ struct scrollbar_config {
 	}
 };
 
-//! When a scrollbar should be shown
+//! When a scrollbar should be shown by display elements that manage their own scrollbars.
 
 //! - never: never show the scrollbar
 //!

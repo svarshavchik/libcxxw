@@ -53,6 +53,7 @@ void elementObj::implObj::data_thread_only_t
 
 bool elementObj::implObj::data_thread_only_t
 ::no_key_event_callback(const all_key_events_t &,
+			bool,
 			const busy &)
 {
 	return false;
@@ -1015,7 +1016,9 @@ bool elementObj::implObj::process_key_event(IN_THREAD_ONLY, const key_event &e)
 {
 	busy_impl mcguffin{*this};
 
-	return data(IN_THREAD).on_key_event_callback(&e, mcguffin);
+	return data(IN_THREAD).on_key_event_callback(&e,
+						     activate_for(e),
+						     mcguffin);
 }
 
 bool elementObj::implObj::uses_input_method()
@@ -1147,7 +1150,7 @@ bool elementObj::implObj::pasted(IN_THREAD_ONLY,
 				 const std::u32string_view &str)
 {
 	busy_impl mcguffin{*this};
-	return data(IN_THREAD).on_key_event_callback(&str, mcguffin);
+	return data(IN_THREAD).on_key_event_callback(&str, true, mcguffin);
 }
 
 void elementObj::implObj::creating_focusable_element()

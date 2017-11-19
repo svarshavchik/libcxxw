@@ -154,6 +154,7 @@ class LIBCXX_HIDDEN lookup_collectorObj : virtual public obj {
 	// This is always invoked from the connection thread.
 
 	inline bool process(const all_key_events_t &e,
+			    bool activated,
 			    const custom_combobox_selection_search_t
 			    &search_func,
 			    const element &current_selection,
@@ -170,13 +171,14 @@ class LIBCXX_HIDDEN lookup_collectorObj : virtual public obj {
 		if (!std::visit(visitor{
 		    [&](const key_event *ke)
 		    {
-			if (!ke->notspecial() || !ke->keypress)
+			if (!ke->notspecial())
 				return false;
 
 			switch (ke->keysym) {
 			case XK_Delete:
 			case XK_KP_Delete:
-				buffer.clear();
+				if (activated)
+					buffer.clear();
 				break;
 			default:
 
@@ -185,6 +187,8 @@ class LIBCXX_HIDDEN lookup_collectorObj : virtual public obj {
 
 				if (ke->unicode == '\n')
 				{
+					if (!activated)
+						break;
 					// Get the current selection, and
 					// start the search on the next list item.
 
@@ -202,6 +206,8 @@ class LIBCXX_HIDDEN lookup_collectorObj : virtual public obj {
 					{
 						return false;
 					}
+					if (!activated)
+						break;
 					buffer.push_back(ke->unicode);
 				}
 			}
@@ -216,6 +222,9 @@ class LIBCXX_HIDDEN lookup_collectorObj : virtual public obj {
 		{
 			return false;
 		}
+
+		if (!activated)
+			return true;
 
 		search_func({lock, lm, buffer, i, current_selection, mcguffin});
 
@@ -454,6 +463,7 @@ focusable_container new_custom_comboboxlayoutmanager
 					      c=make_weak_capture
 					      (current_selection, lm)]
 				  (const auto &key_event,
+				   bool activated,
 				   const auto &mcguffin)
 				  {
 					  bool processed=false;
@@ -467,6 +477,7 @@ focusable_container new_custom_comboboxlayoutmanager
 
 						  processed=collector->process
 							  (key_event,
+							   activated,
 							   selection_search,
 							   current_selection,
 							   lm->create_public_object(),

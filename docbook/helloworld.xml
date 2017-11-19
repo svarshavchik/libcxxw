@@ -553,7 +553,7 @@ while (!appdata->close_flag)
 	      and it also gets called into duty for
 	      <link linkend="menulayoutmanager">pop-up menus</link>, and
 	      serves as a the base class for
-	      <link linkend="combo">combo-boxes</link>.
+	      <link linkend="combobox">combo-boxes</link>.
 	    </para>
 
 	    <para>

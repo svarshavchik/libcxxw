@@ -1,0 +1,128 @@
+<!--
+
+Copyright 2017 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<chapter id="scrollbar">
+  <title>Scroll-bars</title>
+
+  <mediaobject>
+    <imageobject>
+      <imagedata fileref="scrollbar.png" format="PNG"
+		 contentwidth="302px" contentdepth="112px" />
+    </imageobject>
+    <textobject>
+      <phrase>
+	Scroll-bar
+      </phrase>
+    </textobject>
+    <caption>
+      <para>
+	Display elements with scrolling, like multi-line
+	<link linkend="inputfieldsandbuttons">input fields</link> take
+	care of providing their own scroll-bars.
+	But scroll-bars are also convenient for setting a value in some
+	specified range.
+	A &factory;'s <methodname>create_horizontal_scrollbar</methodname>()
+	and <methodname>create_vertical_scrollbar</methodname>() methods
+	create a new, stand-alone
+	<ulink url="&link-typedef-x--w-scrollbar;"><classname>&ns;::w::scrollbar</classname></ulink>
+	that's not linked to any other display element.
+      </para>
+    </caption>
+  </mediaobject>
+
+  <para>
+    <filename>scrollbar.C</filename> creates a scroll-bar below a
+    <link linkend="checkradio">checkbox</link> and an
+    <link linkend="inputfieldsandbuttons">input field</link>.
+    The scroll-bar supposedly controls a volume value of some sort, which
+    can be set to a range of 0 through 11.
+    As the scroll-bar's value gets adjusted, the input field above it
+    reflects the updated volume value. A new value can be explicitly typed
+    into the input field, and this manually moves the scrollbar.
+    The checkbox enables specifying the volume value with one decimal point,
+    as 0.0 through 11.0.
+  </para>
+
+  <blockquote>
+    <title><ulink url="examples/scrollbar.C">scrollbar.C</ulink></title>
+
+    <informalexample>
+      <programlisting><xi:include href="../examples/scrollbar.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <section id="createscrollbars">
+    <title>Creating and configuring scroll-bars</title>
+
+    <para>
+      <filename>scrollbar.C</filename> uses
+      a &factory;'s <methodname>create_horizontal_scrollbar</methodname>()'s to
+      create a new scroll-bar, and shows some examples of using it.
+      An <ulink url="&link-x--w--scrollbar-config;"><classname>&ns;::w::scrollbar_config</classname></ulink>
+      specifies scroll-bar's configuration, and passed to
+      <methodname>create_horizontal_scrollbar</methodname>() or
+      <methodname>create_vertical_scrollbar</methodname>().
+      An existing scroll-bar's <methodname>reconfigure</methodname>() method
+      updates its configuration.
+      <methodname>create_horizontal_scrollbar</methodname>() and
+      <methodname>create_vertical_scrollbar</methodname>()'s optional
+      second parameter specifies the scroll-bar's initial
+      &callback; that gets executed to report changes to the scroll-bar's
+      position. An optional third parameter specifies its minimum size,
+      in millimeters.
+      The scroll-bar's &layoutmanager; typically sizes the scroll-bar to
+      fit within its assigned cell, and this value instructs the layout
+      manager what the minimum size should be.
+      If <filename>scrollbar.C</filename> does not specify its scrollbar's
+      width, it would end up taking the size of the short label above it.
+      As such, the scroll-bar's minimum width is slightly larger, and
+      the <filename>scrollbar.C</filename> creates a larger window on account
+      of that.
+    </para>
+  </section>
+
+  <section id="scrollbarvalues">
+    <title>Scroll-bar's current value</title>
+
+    <para>
+      The scroll-bar's &callback; gets executed whenever the scroll-bar's
+      value changes. This is the preferred way to obtain its current value.
+      <filename>scrollbar.C</filename> installs a callback that puts the
+      new scroll-bar value into the input-field above it.
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+uint32_t v=sb->get_value();
+
+uint32_t v=sb->get_dragged_value();</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      <methodname>get_value</methodname>() and
+      <methodname>get_dragged_value</methodname>() poll the scroll-bar's
+      current values and return them. The values can change at any time,
+      a callback is the more reliably way to keep tabs on it.
+      <methodname>set</methodname>() explicitly sets the scroll-bar's new
+      value. <link linkend="scrollbar"><filename>scrollbar.C</filename></link>
+      uses this to update the scroll-bar when it's
+      <quote>decimal points</quote> setting changes. The shown logical
+      value gets updated in the example's input field by the scroll-bar's
+      callback. <methodname>set</methodname>() updates the scroll-bar, which
+      causes its callback to get executed, to report the scroll-bar's new
+      value.
+    </para>
+  </section>
+</chapter>
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "book" "chapter")
+End:
+-->

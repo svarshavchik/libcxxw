@@ -74,6 +74,7 @@ class focusableImplObj;
 //! #include <INSERT_LIBX_NAMESPACE/w/key_event.H>
 //! f->on_key_event([]
 //!                      (const INSERT_LIBX_NAMESPACE::w::all_key_events_t &e,
+//!                       bool activated,
 //!                       const busy &mcguffin)
 //!                      {
 //!                         // ...
@@ -103,6 +104,16 @@ class focusableImplObj;
 //! has been processed/consumed by the callback, and will not
 //! result in any further processing. Returning \c false results in the
 //! default processing for the respective key/text input.
+//!
+//! The second \c bool parameter specifies whether this key event is
+//! considered to be an "activation" of that key. Key event callbacks get
+//! executed for both key press and release events, as specified in the
+//! \ref key_event "INSERT_LIBX_NAMESPACE::w::key_event". This flag gets set
+//! based on whether the key press, or the release, is considered to be
+//! "activating", that is, whether a corresponding action associated with the
+//! key should take places. This flag gets set either for a key press or the
+//! release, depending on the display element. The flag is always set for
+//! a pasted \c std::u32string_view.
 //!
 //! \code
 //! f->autofocus(true);

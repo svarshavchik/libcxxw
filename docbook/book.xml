@@ -37,6 +37,7 @@
 <!ENTITY menu SYSTEM "menu.xml">
 <!ENTITY dialogs SYSTEM "dialogs.xml">
 <!ENTITY progressbar SYSTEM "progressbar.xml">
+<!ENTITY scrollbar SYSTEM "scrollbar.xml">
 <!ENTITY sxgdoc SYSTEM "sxg.xml">
 <!ENTITY connections_and_screens SYSTEM "connections_and_screens.xml">
 %entity-list;
@@ -70,6 +71,7 @@ See COPYING for distribution information.
     &menu;
     &dialogs;
     &progressbar;
+    &scrollbar;
     &connections_and_screens;
   </part>
 

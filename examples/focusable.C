@@ -100,8 +100,30 @@ void create_mainwindow(const x::w::main_window &main_window)
 	button6->on_key_event
 		([]
 		 (const x::w::all_key_events_t &ke,
+		  bool activated,
 		  const x::w::busy &mcguffin)
 		 {
+			 // We get both key press and release events. The
+			 // "activated" flag indicates whether the library
+			 // would normally act on this key event, based on
+			 // whether it is a press or a release.
+			 //
+			 // When a display element responds to a particular
+			 // key, it should do so only when "activated" is set.
+			 //
+			 // If the display element responds to a particular
+			 // key, the callback should return true whether or not
+			 // activated is set (but take no action if activated
+			 // is not set). If the display element does not
+			 // recognize the key combination, the display element
+			 // should return false.
+			 //
+			 // The activated flag always gets set for pasted
+			 // unicode text from the X input method manager.
+
+			 if (activated)
+				 std::cout << "activated: ";
+
 			 std::visit(x::visitor{
 			     [](const x::w::key_event *keptr)
                              {
@@ -116,9 +138,13 @@ void create_mainwindow(const x::w::main_window &main_window)
 			     },
 			     [](const std::u32string_view *keptr)
 			     {
-				 // Buttons don't receive pasted unicode text,
+				 // Buttons don't receive pasted unicode text
+				 // from the X input method manager.
 				 // this is for demo purposes.
 			     }}, ke);
+
+			 // This callback takes no action on anything, it just
+			 // dumps its parameters, so we always return false.
 
 			 return false;
 		 });

@@ -523,6 +523,39 @@ m->append_items
       main window (or the dialog), including the menu item with the callback,
       so the weak capture is required to avoid a circular reference.
     </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+auto d=main_window->create_ok_dialog("example@libcxx",
+                            "alert",
+                            []
+                            (const x::w::factory &amp;f)
+                            {
+                                 f->create_label("Bad input");
+                            },
+
+                            main_window->destroy_when_closed("example@libcxx"),
+                            true);</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      <methodname>destroy_when_closed()</methodname> returns a closure that's
+      suitable for an <quote>Ok</quote> or <quote>Cancel</quote> button's
+      callback (except for <methodname>create_input_field</methodname>()'s
+      <quote>Ok</quote> callback that takes an additional parameter).
+      When it gets invoked the specified dialog gets
+      <methodname>remove_dialog</methodname>(). This example
+      calls <varname>main_window</varname>'s
+      <methodname>destroy_when_closed</methodname>(). The returned closure
+      invokes <varname>main_window</varname>'s
+      <methodname>remove_dialog</methodname>("example@libcxx")
+      (using a weak reference, for the reasons previously stated)
+      and this
+      get installed as this new dialog's callback. Thusly, the dialog ends
+      up removing itself, as a result of <quote>Ok</quote> getting pressed.
+    </para>
   </section>
 
   <section id="customdialogs">

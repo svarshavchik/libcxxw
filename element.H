@@ -155,7 +155,8 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 		//! Default key event callback, does nothing.
 
 		static bool no_key_event_callback(const all_key_events_t &,
-			const busy &);
+						  bool,
+						  const busy &);
 
 
 		//! Whether this element is a label for some focusable.

@@ -28,8 +28,16 @@ typedef std::variant<const key_event *,
 //! Callbacks for reporting key events.
 
 //! The callback returns true if it processed the key event.
+//!
+//! The first parameter is the key event, an actual keypress or pasted
+//! text from the X input method manager.
+//!
+//! The second parameter indicates whether the key press or release is
+//! considered to be "activation" of that key. This parameter is always
+//! set to "true" for pasted X input method manager text.
 
 typedef bool key_event_callback_t(const all_key_events_t &,
+				  bool,
 				  const busy &mcguffin);
 
 LIBCXXW_NAMESPACE_END

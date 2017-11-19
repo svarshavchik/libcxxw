@@ -659,6 +659,7 @@ void file_dialogObj::constructor(const dialog_args &d_args,
 	impl->filename_field->on_key_event
 		([impl=make_weak_capture(impl)]
 		 (const auto &event,
+		  bool activated,
 		  const auto &busy_mcguffin)
 		 {
 			 if (!std::holds_alternative<const key_event *>(event))
@@ -669,6 +670,8 @@ void file_dialogObj::constructor(const dialog_args &d_args,
 
 			 if (ke.unicode != '\n')
 				 return false;
+			 if (!activated)
+				 return true;
 
 			 auto got=impl.get();
 

@@ -98,6 +98,23 @@ public:
 				return;
 			}
 		}
+
+		// Bad input. Show an error dialog.
+
+		auto d=main_window
+			->create_ok_dialog("example@libcxx",
+					   "alert",
+					   []
+					   (const x::w::factory &f)
+					   {
+						   f->create_label("Bad input");
+					   },
+
+					   main_window->destroy_when_closed("example@libcxx"),
+					   true);
+
+		d->dialog_window->set_window_title("Error");
+		d->dialog_window->show_all();
 	}
 
 	void set_decimals(const x::w::input_field &input_field,
@@ -174,12 +191,19 @@ void initialize_volume_control(const x::w::main_window &main_window)
 						     // 75 millimeters wide.
 						     75);
 
+	// Add a key event to the input field, for the Enter key, to set the
+	// manually typed-in value as the explicit value.
+
 	input_field->on_key_event([vi,
 				   fields=x::make_weak_capture(sb, input_field,
 							       main_window)]
 				  (const auto &why,
+				   bool activated,
 				   const auto &ignore)
 				  {
+					  // Verify that that a key_event gets
+					  // passed in.
+
 					  if (!std::holds_alternative<const x::w::key_event *>(why))
 						  return false;
 
@@ -187,6 +211,9 @@ void initialize_volume_control(const x::w::main_window &main_window)
 
 					  if (ke->unicode != '\n')
 						  return false;
+
+					  if (!activated)
+						  return true;
 
 					  auto got=fields.get();
 
