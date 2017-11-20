@@ -31,7 +31,7 @@ void scratch_buffer_draw_impl::get_scratch_buffer(IN_THREAD_ONLY,
 			di.absolute_location.width,
 			di.absolute_location.height};
 
-	clip_region_set clip{IN_THREAD, di};
+	clip_region_set clip{IN_THREAD, element.get_window_handler(), di};
 
 	element.draw_using_scratch_buffer
 		(IN_THREAD,

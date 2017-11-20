@@ -12,6 +12,7 @@
 #include "x/w/gcfwd.H"
 #include "x/w/rectanglefwd.H"
 #include "x/w/scratch_bufferfwd.H"
+#include "x/w/generic_windowobj.H"
 #include "draw_infofwd.H"
 #include <x/functional.H>
 #include <x/obj.H>
@@ -34,6 +35,7 @@ public:
 	//! Constructor - install clip mask for drawing.
 
 	clip_region_set(IN_THREAD_ONLY,
+			generic_windowObj::handlerObj &,
 			const draw_info &di);
 
 	clip_region_set(const clip_region_set &)=delete;
@@ -58,6 +60,13 @@ public:
 class element_drawObj : virtual public obj {
 
 public:
+
+	//! Return my window
+
+	virtual generic_windowObj::handlerObj &get_window_handler()=0;
+
+	//! Return my window
+	virtual const generic_windowObj::handlerObj &get_window_handler() const=0;
 
 	//! Signature of draw_using_scratch_buffer()'s callback.
 	typedef void scratch_buffer_draw_func_t(const picture &,

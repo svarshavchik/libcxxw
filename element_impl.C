@@ -529,9 +529,12 @@ void elementObj::implObj
 }
 
 clip_region_set::clip_region_set(IN_THREAD_ONLY,
-				  const draw_info &di)
+				 generic_windowObj::handlerObj &h,
+				 const draw_info &di)
 {
-	di.window_picture->set_clip_rectangles(di.element_viewport);
+	// Our window inherits from pictureObj::implObj.
+
+	h.set_clip_rectangles(di.element_viewport);
 }
 
 void elementObj::implObj::exposure_event_recursive(IN_THREAD_ONLY,
@@ -709,16 +712,15 @@ void elementObj::implObj
 				    render_pict_op::op_atop);
 	}
 
-	di.window_picture->composite(contents->impl,
-				     0, 0,
-				     cpy);
+	// generic_window_handler inherits from pictureObj::implObj
+	wh.composite(contents->impl, 0, 0, cpy);
 }
 void elementObj::implObj::clear_to_color(IN_THREAD_ONLY,
 					 const draw_info &di,
 					 const rectangle_set &areas)
 {
 	clear_to_color(IN_THREAD,
-		       clip_region_set(IN_THREAD, di),
+		       clip_region_set(IN_THREAD, get_window_handler(), di),
 		       di, di, areas);
 }
 

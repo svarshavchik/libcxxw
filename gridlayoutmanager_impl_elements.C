@@ -75,7 +75,9 @@ void gridlayoutmanagerObj::implObj
 	{
 		const draw_info &di=container_element_impl
 			.get_draw_info(IN_THREAD);
-		clip_region_set clip{IN_THREAD,  di};
+		clip_region_set clip{IN_THREAD,
+				container_element_impl.get_window_handler(),
+				di};
 		rectangle_set dummy;
 
 		container_clear_padding(IN_THREAD,

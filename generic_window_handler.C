@@ -153,7 +153,6 @@ draw_info &generic_windowObj::handlerObj::get_draw_info(IN_THREAD_ONLY)
 	auto &viewport=data(IN_THREAD).current_position;
 
 	return c.draw_info_cache.insert({e, {
-			picture_internal(this),
 			viewport,
 			{viewport}, // No parent, everything is visible.
 			current_background_color(IN_THREAD)

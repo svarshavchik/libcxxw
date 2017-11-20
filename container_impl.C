@@ -137,7 +137,7 @@ void containerObj::implObj::do_draw(IN_THREAD_ONLY,
 
 	rectangle_set child_areas;
 
-	clip_region_set clip{IN_THREAD, di};
+	clip_region_set clip{IN_THREAD, element_impl.get_window_handler(), di};
 
 	invoke_layoutmanager
 		([&]

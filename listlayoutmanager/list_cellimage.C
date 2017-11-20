@@ -51,7 +51,7 @@ void list_cellimageObj::cell_redraw(IN_THREAD_ONLY,
 					const richtext_draw_boundaries
 					&boundaries)
 {
-	clip_region_set clip{IN_THREAD, di};
+	clip_region_set clip{IN_THREAD, draw.get_window_handler(), di};
 
 	clip.draw_as_disabled=draw_as_disabled;
 

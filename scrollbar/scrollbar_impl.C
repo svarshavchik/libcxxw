@@ -359,7 +359,7 @@ void scrollbarObj::implObj::do_draw(IN_THREAD_ONLY,
 {
 	// We just draw the entire universe.
 
-	clip_region_set clipped{IN_THREAD, di};
+	clip_region_set clipped{IN_THREAD, get_window_handler(), di};
 
 	draw_using_scratch_buffer
 		(IN_THREAD,
@@ -393,7 +393,7 @@ void scrollbarObj::implObj::draw_scroll_low(IN_THREAD_ONLY)
 
 	auto &di=get_draw_info(IN_THREAD);
 
-	clip_region_set clipped{IN_THREAD, di};
+	clip_region_set clipped{IN_THREAD, get_window_handler(), di};
 
 	rectangle r=data(IN_THREAD).current_position;
 
@@ -433,7 +433,7 @@ void scrollbarObj::implObj::draw_scroll_high(IN_THREAD_ONLY)
 
 	auto &di=get_draw_info(IN_THREAD);
 
-	clip_region_set clipped{IN_THREAD, di};
+	clip_region_set clipped{IN_THREAD, get_window_handler(), di};
 
 	rectangle r=data(IN_THREAD).current_position;
 
@@ -475,7 +475,7 @@ void scrollbarObj::implObj::draw_slider(IN_THREAD_ONLY)
 
 	auto &di=get_draw_info(IN_THREAD);
 
-	clip_region_set clipped{IN_THREAD, di};
+	clip_region_set clipped{IN_THREAD, get_window_handler(), di};
 
 	rectangle r=data(IN_THREAD).current_position;
 

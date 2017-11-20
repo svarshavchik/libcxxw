@@ -15,9 +15,6 @@ LIBCXXW_NAMESPACE_START
 //! Information that's needed to draw an element.
 
 struct draw_info {
-	//! The element is drawn in this window.
-	picture_internal window_picture;
-
 	//! The display element's position in the window
 
 	//! This is, essentially, the sum of x/y coordinates of all elements
@@ -85,6 +82,23 @@ struct draw_info {
 						     coord_t y,
 						     coord_t offset_x=0,
 						     coord_t offset_y=0) const;
+
+	//! Comparison operator
+
+	inline bool operator==(const draw_info &o) const
+	{
+		return absolute_location == o.absolute_location &&
+			element_viewport == o.element_viewport &&
+			window_background == o.window_background &&
+			background_x == o.background_x &&
+			background_y == o.background_y;
+	}
+
+	//! Comparison operator
+	inline bool operator!=(const draw_info &o) const
+	{
+		return !operator==(o);
+	}
 };
 
 LIBCXXW_NAMESPACE_END

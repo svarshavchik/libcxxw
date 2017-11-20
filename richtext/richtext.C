@@ -260,7 +260,7 @@ void richtextObj::draw(IN_THREAD_ONLY,
 			"Bounding rectangle cannot start on a negative coordinate");
 	impl_t::lock lock{IN_THREAD, impl};
 
-	clip_region_set clipped{IN_THREAD, di};
+	clip_region_set clipped{IN_THREAD, element.get_window_handler(), di};
 
 	clipped.draw_as_disabled=rdi.draw_as_disabled;
 

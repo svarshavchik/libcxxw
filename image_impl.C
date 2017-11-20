@@ -51,7 +51,7 @@ void imageObj::implObj::do_draw(IN_THREAD_ONLY,
 	auto w=current_icon(IN_THREAD)->image->icon_pixmap->get_width();
 	auto h=current_icon(IN_THREAD)->image->icon_pixmap->get_height();
 
-	clip_region_set clipped{IN_THREAD, di};
+	clip_region_set clipped{IN_THREAD, get_window_handler(), di};
 
 	draw_using_scratch_buffer(IN_THREAD,
 				  [&, this]

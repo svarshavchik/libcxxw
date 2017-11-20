@@ -884,7 +884,7 @@ rectangle list_elementObj::implObj::do_draw_row(IN_THREAD_ONLY,
 		if (redraw_scheduled(IN_THREAD))
 			return border_rect;
 
-		clip_region_set clip{IN_THREAD, di};
+		clip_region_set clip{IN_THREAD, get_window_handler(), di};
 
 		draw_using_scratch_buffer
 			(IN_THREAD,
