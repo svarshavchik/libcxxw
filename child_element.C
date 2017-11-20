@@ -5,7 +5,6 @@
 #include "libcxxw_config.h"
 #include "child_element.H"
 #include "draw_info.H"
-#include "draw_info_cache.H"
 #include "connection_thread.H"
 #include "container.H"
 #include "layoutmanager.H"
@@ -71,30 +70,34 @@ void child_elementObj::process_updated_position(IN_THREAD_ONLY)
 
 draw_info &child_elementObj::get_draw_info(IN_THREAD_ONLY)
 {
-	auto &c=*IN_THREAD->current_draw_info_cache(IN_THREAD);
-	auto e=ref<elementObj::implObj>(this);
-
-	auto iter=c.draw_info_cache.find(e);
-
-	if (iter != c.draw_info_cache.end())
+	if (data(IN_THREAD).cached_draw_info)
 	{
+		auto &di=*data(IN_THREAD).cached_draw_info;
+
 		// Between the the time schedule_redraw() was called, we
 		// could've been removed from my container. Recalculation
 		// has higher priority than drawing, so we should no longer
 		// scribble over our window after we've been removed.
 
 		if (data(IN_THREAD).removed)
-			iter->second.element_viewport.clear();
-		return iter->second;
+			di.element_viewport.clear();
+		return di;
 	}
 
+	return get_draw_info_from_scratch(IN_THREAD);
+}
+
+draw_info &child_elementObj::get_draw_info_from_scratch(IN_THREAD_ONLY)
+{
 	// Start by copying the parent to the child
 
-	draw_info &di=
-		c.draw_info_cache.insert({e,
-					child_container->get_element_impl()
-					.get_draw_info(IN_THREAD)}).first
-		->second;
+	// This means that if an element has a cached_draw_info, the parent
+	// container should have one too.
+
+	data(IN_THREAD).cached_draw_info=child_container->get_element_impl()
+		.get_draw_info(IN_THREAD);
+
+	draw_info &di=*data(IN_THREAD).cached_draw_info;
 
 	// Add this parent's x/y coordinates to current_position, calculating
 	// the new absolute_location

@@ -146,8 +146,11 @@ class LIBCXX_HIDDEN child_elementObj : public background_color_elementObj<
 
 	bool has_own_background_color(IN_THREAD_ONLY) override;
 
-	//! Invoke parent_element->draw_info(), and update the results.
+	//! Implement get_draw_info()
 	draw_info &get_draw_info(IN_THREAD_ONLY) override;
+
+	//! Implement get_draw_info_from_scratch()
+	draw_info &get_draw_info_from_scratch(IN_THREAD_ONLY) override;
 
 	//! Invoke parent_element->get_absolute_location(), and add my x/y
 	rectangle get_absolute_location(IN_THREAD_ONLY) override;

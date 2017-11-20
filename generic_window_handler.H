@@ -238,13 +238,16 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! Return myself.
 	const generic_windowObj::handlerObj &get_window_handler() const override;
 
-	//! Construct a draw_info for drawing into the requested viewport.
-
-	//! Give ourselves away as the picture to draw info, and use
-	//! our declared background color.
+	//! Implement get_draw_info().
 
 	draw_info &get_draw_info(IN_THREAD_ONLY)
 		override;
+
+	//! Implement get_draw_info() from scratch.
+
+	//! Use our declared background color.
+
+	draw_info &get_draw_info_from_scratch(IN_THREAD_ONLY) override;
 
 	//! Override get_absolute_location().
 

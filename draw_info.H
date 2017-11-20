@@ -14,7 +14,33 @@ LIBCXXW_NAMESPACE_START
 
 //! Information that's needed to draw an element.
 
+//! This is based on: the element's position, its background color,
+//! with the background color depending on its inherited_visibility
+//! (which determines whether to use the element's defined backround color
+//! or the parent element's background color).
+//!
+//! invalidate_cached_draw_info() gets invoked whenever any of those three
+//! factors changes.
+
 struct draw_info {
+
+	//! Comparison operator
+
+	inline bool operator==(const draw_info &o) const
+	{
+		return absolute_location == o.absolute_location &&
+			element_viewport == o.element_viewport &&
+			window_background == o.window_background &&
+			background_x == o.background_x &&
+			background_y == o.background_y;
+	}
+
+	//! Comparison operator
+	inline bool operator!=(const draw_info &o) const
+	{
+		return !operator==(o);
+	}
+
 	//! The display element's position in the window
 
 	//! This is, essentially, the sum of x/y coordinates of all elements
@@ -82,23 +108,6 @@ struct draw_info {
 						     coord_t y,
 						     coord_t offset_x=0,
 						     coord_t offset_y=0) const;
-
-	//! Comparison operator
-
-	inline bool operator==(const draw_info &o) const
-	{
-		return absolute_location == o.absolute_location &&
-			element_viewport == o.element_viewport &&
-			window_background == o.window_background &&
-			background_x == o.background_x &&
-			background_y == o.background_y;
-	}
-
-	//! Comparison operator
-	inline bool operator!=(const draw_info &o) const
-	{
-		return !operator==(o);
-	}
 };
 
 LIBCXXW_NAMESPACE_END

@@ -315,7 +315,14 @@ void elementObj::implObj
 ::set_inherited_visibility_flag(IN_THREAD_ONLY, bool flag)
 {
 	// Offically update this element's "real" visibility.
+
 	data(IN_THREAD).inherited_visibility=flag;
+
+	// inherited_visibility gets factored into the contents of
+	// cached_draw_info, so this is no longer valid.
+	invalidate_cached_draw_info(IN_THREAD,
+				    draw_info_invalidation_reason
+				    ::something_changed);
 	if (!flag)
 	{
 		unschedule_hover_action(IN_THREAD);
@@ -337,6 +344,47 @@ void elementObj::implObj::draw_after_visibility_updated(IN_THREAD_ONLY,
 	//
 	// Otherwise we call schedule_redraw().
 	schedule_redraw(IN_THREAD);
+}
+
+void elementObj::implObj
+::invalidate_cached_draw_info(IN_THREAD_ONLY,
+			      draw_info_invalidation_reason reason)
+{
+	if (!data(IN_THREAD).cached_draw_info)
+		// Any child elements should not have anything cached either
+		// get_draw_info_from_scratch() calls the parent element's
+		// get_draw_info(), so iff an element has a cached draw_info,
+		// its parent container should have one too.
+		return;
+
+	if (reason == draw_info_invalidation_reason::something_changed)
+	{
+		auto previous_di=data(IN_THREAD).cached_draw_info;
+
+		auto &new_di=get_draw_info_from_scratch(IN_THREAD);
+
+		if (new_di == previous_di)
+			return; // Nothing really changed.
+	}
+	else
+	{
+		// If something_changed, we went through the hassle to
+		// get_draw_info_from_scratch, so we might as well keep it,
+		// and just do a recursive_invalidation.
+		//
+		// Otherwise, we are simply nuking the stale stuff, here.
+		data(IN_THREAD).cached_draw_info.reset();
+	}
+
+	for_each_child(IN_THREAD,
+		       [&]
+		       (const element &e)
+		       {
+			       e->impl->invalidate_cached_draw_info
+				       (IN_THREAD,
+					draw_info_invalidation_reason
+					::recursive_invalidation);
+		       });
 }
 
 void elementObj::implObj::schedule_redraw(IN_THREAD_ONLY)
@@ -392,7 +440,7 @@ bool elementObj::implObj::redraw_scheduled(IN_THREAD_ONLY)
 	return elements_to_redraw->find(ref(this)) != elements_to_redraw->end();
 }
 
-void elementObj::implObj::explicit_redraw(IN_THREAD_ONLY, draw_info_cache &c)
+void elementObj::implObj::explicit_redraw(IN_THREAD_ONLY)
 {
 	// Remove myself from the connection thread's list.
 
@@ -493,6 +541,13 @@ void elementObj::implObj::schedule_update_position_processing(IN_THREAD_ONLY)
 void elementObj::implObj::process_updated_position(IN_THREAD_ONLY)
 {
 	schedule_redraw(IN_THREAD);
+
+	// Position gets factored into cached_draw_info, so this may no
+	// longer be valid.
+	invalidate_cached_draw_info(IN_THREAD,
+				    draw_info_invalidation_reason
+				    ::something_changed);
+
 }
 
 void elementObj::implObj::notify_updated_position(IN_THREAD_ONLY)
@@ -679,8 +734,9 @@ void elementObj::implObj
 
 	auto &wh=get_window_handler();
 
-	if (draw_to_window_picture_as_disabled(IN_THREAD) ||
-	    set.draw_as_disabled)
+	if ((draw_to_window_picture_as_disabled(IN_THREAD) ||
+	     set.draw_as_disabled) &&
+	    data(IN_THREAD).inherited_visibility)
 	{
 		// Disabled element rendering -- dither in the main window's
 		// background color.
@@ -807,9 +863,23 @@ bool elementObj::implObj::has_own_background_color(IN_THREAD_ONLY)
 void elementObj::implObj::background_color_changed(IN_THREAD_ONLY)
 {
 	if (!data(IN_THREAD).inherited_visibility)
+	{
+		// We shouldn't be drawing this, just make sure all the
+		// cached draw_infos are flushed down the drain.
+
+		invalidate_cached_draw_info(IN_THREAD,
+					    draw_info_invalidation_reason
+					    ::recursive_invalidation);
 		return;
+	}
 
 	schedule_redraw(IN_THREAD);
+
+	// background color factors into the cached_draw_info, so
+	// something_changed.
+	invalidate_cached_draw_info(IN_THREAD,
+				    draw_info_invalidation_reason
+				    ::something_changed);
 
 	for_each_child(IN_THREAD, [&]
 		       (const element &e)

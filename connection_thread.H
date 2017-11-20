@@ -10,7 +10,6 @@
 #include "x/w/batch_queuefwd.H"
 #include "elementfwd.H"
 #include "connection_info.H"
-#include "draw_info_cachefwd.H"
 #include "x/w/rectangle.H"
 #include <x/threadmsgdispatcher.H>
 #include <x/logger.H>
@@ -239,10 +238,6 @@ class LIBCXX_HIDDEN connection_threadObj
 	//! Event processing
 	void recycle_xid(uint32_t xid);
 
-	//! Current draw_info cache object.
-
-	draw_info_cache *current_draw_info_cache_thread_only;
-
  public:
 	THREAD_DATA_ONLY(root_window);
 	THREAD_DATA_ONLY(window_handlers);
@@ -251,7 +246,6 @@ class LIBCXX_HIDDEN connection_threadObj
 	THREAD_DATA_ONLY(elements_to_redraw);
 	THREAD_DATA_ONLY(containers_2_recalculate);
 	THREAD_DATA_ONLY(element_position_updated);
-	THREAD_DATA_ONLY(current_draw_info_cache);
 	THREAD_DATA_ONLY(scheduled_callbacks);
 	THREAD_DATA_ONLY(pending_incremental_updates);
 	THREAD_DATA_ONLY(idle_callbacks);

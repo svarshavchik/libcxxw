@@ -8,7 +8,6 @@
 #include "returned_pointer.H"
 #include "catch_exceptions.H"
 #include "window_handler.H"
-#include "draw_info_cache.H"
 #include "batch_queue.H"
 #include <x/sysexception.H>
 #include <x/functionalrefptr.H>
@@ -55,11 +54,6 @@ bool connection_threadObj
 
 	LOG_FUNC_SCOPE(runLogger);
 
-	// Construct a draw_info_cache that will persistent throughout all
-	// callbacks.
-	draw_info_cache current_draw_info_cache;
-	current_draw_info_cache_thread_only= &current_draw_info_cache;
-
 	// Assume we'll poll() indefinitely, unless there's a change in plans.
 
 	auto batch_queue=get_batch_queue();
@@ -68,17 +62,6 @@ bool connection_threadObj
 	for ( ; ; maybe_theres_something_in_batch_queue=true)
 	{
 		poll_for= -1;
-
-		if (!current_draw_info_cache.draw_info_cache.empty())
-			// Something must've used the draw cache.
-			// Don't potentially execute something again
-			// that might use the stale cached draw_info
-			// data. It might be rendered moot by
-			// recalculate_containers() (and some containers'
-			// recalculation involves explicit redraws). Rather,
-			// return, and go back here, to create a new
-			// draw_info_cache.
-				return false;
 
 		if (recalculate_containers(IN_THREAD))
 			continue;
@@ -139,8 +122,6 @@ bool connection_threadObj
 					      ? " (SendEvent)":""));
 
 				run_event(IN_THREAD, event);
-				if (!current_draw_info_cache.draw_info_cache.empty())
-					return false; // Look above.
 				continue;
 			}
 
@@ -154,13 +135,8 @@ bool connection_threadObj
 			return false;
 
 		if (redraw_elements(IN_THREAD))
-			// Don't bother checking draw_info_cache. It's unlikely
-			// that redraw_elements() did anything that might
-			// generate recalculation or processing activity,
-			// above. To be on the save side, return and go back
-			// here with a freshly wiped draw_info_cache, and
-			// take it from the top.
-			return false;
+			continue;
+
 		if (run_idle(IN_THREAD))
 			return false;
 		break;

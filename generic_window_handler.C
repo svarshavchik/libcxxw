@@ -11,7 +11,6 @@
 #include "pictformat.H"
 #include "icon.H"
 #include "draw_info.H"
-#include "draw_info_cache.H"
 #include "container_element.H"
 #include "layoutmanager.H"
 #include "screen.H"
@@ -142,17 +141,17 @@ generic_windowObj::handlerObj::get_window_handler() const
 
 draw_info &generic_windowObj::handlerObj::get_draw_info(IN_THREAD_ONLY)
 {
-	auto &c=*IN_THREAD->current_draw_info_cache(IN_THREAD);
-	auto e=ref<elementObj::implObj>(this);
+	if (data(IN_THREAD).cached_draw_info)
+		return *data(IN_THREAD).cached_draw_info;
 
-	auto iter=c.draw_info_cache.find(e);
+	return get_draw_info_from_scratch(IN_THREAD);
+}
 
-	if (iter != c.draw_info_cache.end())
-		return iter->second;
-
+draw_info &generic_windowObj::handlerObj::get_draw_info_from_scratch(IN_THREAD_ONLY)
+{
 	auto &viewport=data(IN_THREAD).current_position;
 
-	return c.draw_info_cache.insert({e, {
+	return *(data(IN_THREAD).cached_draw_info={
 			viewport,
 			{viewport}, // No parent, everything is visible.
 			current_background_color(IN_THREAD)
@@ -160,7 +159,8 @@ draw_info &generic_windowObj::handlerObj::get_draw_info(IN_THREAD_ONLY)
 				->impl,
 			0,
 			0,
-	       }}).first->second;
+				});
+
 }
 
 rectangle generic_windowObj::handlerObj

@@ -21,8 +21,7 @@
 #include "defaultthemefwd.H"
 #include "elementfwd.H"
 #include "element_draw.H"
-#include "draw_infofwd.H"
-#include "draw_info_cachefwd.H"
+#include "draw_info.H"
 #include "background_colorfwd.H"
 #include "grabbed_pointerfwd.H"
 #include "cursor_pointerfwd.H"
@@ -74,6 +73,17 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 		//! The X & Y coordinates are relative to parent's
 
 		rectangle current_position;
+
+		//! Cached draw_info
+
+		//! get_draw_info() retrieves the cached draw_info, or
+		//! calls get_draw_info_from_scratch().
+		//!
+		//! invalidate_cached_draw_info() gets called whenever
+		//! the cached draw info may no longer be valid for this
+		//! element.
+
+		std::optional<draw_info> cached_draw_info;
 
 		////////////////////////////////////////////////////////////
 		//
@@ -522,12 +532,35 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 						   bool flag);
 
 
-	//! Calculate draw_info for this element.
+	//! Return the cached_draw_info for this element.
 
-	//! If it's not cached already, calculate it and cache, return a
-	//! reference to the cached draw_info.
+	//! Call get_draw_info_from_scratch() if it does not exist.
 
 	virtual draw_info &get_draw_info(IN_THREAD_ONLY)=0;
+
+	//! Calculate draw_info for this element.
+
+	virtual draw_info &get_draw_info_from_scratch(IN_THREAD_ONLY)=0;
+
+	//! Why invalidate_cached_draw_info() was called.
+
+	enum class draw_info_invalidation_reason {
+
+		//! Something that factored into cached_draw_info for this
+		//! element might've changed.
+		something_changed,
+
+		//! Something definitely changed, remove any cached_draw_info.
+		recursive_invalidation
+	};
+
+	//! The cached_draw_info is no longer valid.
+
+	//! Something that factors into draw_info's contents has changed,
+	//! so if it is cached make sure it is still valid.
+
+	void invalidate_cached_draw_info(IN_THREAD_ONLY,
+					 draw_info_invalidation_reason);
 
 	//! We don't need the full draw_info, just the absolute location.
 
@@ -558,7 +591,7 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! Otherwise calls draw() (which then has to call do_draw(), because
 	//! the element is visible).
 
-	void explicit_redraw(IN_THREAD_ONLY, draw_info_cache &);
+	void explicit_redraw(IN_THREAD_ONLY);
 
 	//! Exposure event handling.
 
