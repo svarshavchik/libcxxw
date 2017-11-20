@@ -509,10 +509,6 @@ clip_region_set::clip_region_set(IN_THREAD_ONLY,
 	di.window_picture->set_clip_rectangles(di.element_viewport);
 }
 
-void elementObj::implObj::prepare_draw_info(IN_THREAD_ONLY, draw_info &)
-{
-}
-
 void elementObj::implObj::exposure_event_recursive(IN_THREAD_ONLY,
 						   const rectangle_set &areas)
 {

@@ -520,15 +520,6 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! We need get_absolute_location() for the screen!
 	rectangle get_absolute_location_on_screen(IN_THREAD_ONLY);
 
-	//! Prepare draw_info before draw() gets called.
-
-	//! The default implementation does nothing. child_elementObj
-	//! overrides and sets the display element's custom background color,
-	//! if any.
-
-	virtual void prepare_draw_info(IN_THREAD_ONLY,
-				       draw_info &);
-
 	//! Schedule the connection thread to invoke explicit_redraw().
 
 	void schedule_redraw(IN_THREAD_ONLY);

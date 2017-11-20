@@ -152,10 +152,6 @@ class LIBCXX_HIDDEN child_elementObj : public background_color_elementObj<
 	//! Invoke parent_element->get_absolute_location(), and add my x/y
 	rectangle get_absolute_location(IN_THREAD_ONLY) override;
 
-	//! Set this child element's background color
-	void prepare_draw_info(IN_THREAD_ONLY,
-			       draw_info &) override;
-
 	//! update_visibility() invokes this callback.
 
 	//! This element's inherited visibility is visible only if

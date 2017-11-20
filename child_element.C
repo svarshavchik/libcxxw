@@ -114,7 +114,17 @@ draw_info &child_elementObj::get_draw_info(IN_THREAD_ONLY)
 
 	di.absolute_location=cpy;
 
-	prepare_draw_info(IN_THREAD, di);
+	// Figure out the background color.
+
+	auto bg=background_color_element_implObj::get(IN_THREAD);
+
+	if (bg && data(IN_THREAD).inherited_visibility)
+		// If we're not visible, we use the parent background
+	{
+		di.window_background=bg->get_current_color(IN_THREAD)->impl;
+		di.background_x=di.absolute_location.x;
+		di.background_y=di.absolute_location.y;
+	}
 
 	return di;
 }
@@ -195,21 +205,6 @@ void child_elementObj
 bool child_elementObj::has_own_background_color(IN_THREAD_ONLY)
 {
 	return background_color_element_implObj::get(IN_THREAD) ? true:false;
-}
-
-void child_elementObj::prepare_draw_info(IN_THREAD_ONLY, draw_info &di)
-{
-	auto bg=background_color_element_implObj::get(IN_THREAD);
-
-	if (!bg)
-		return;
-
-	if (!data(IN_THREAD).inherited_visibility)
-		return; // None, use parent background.
-
-	di.window_background=bg->get_current_color(IN_THREAD)->impl;
-	di.background_x=di.absolute_location.x;
-	di.background_y=di.absolute_location.y;
 }
 
 void child_elementObj::window_focus_change(IN_THREAD_ONLY, bool flag)
