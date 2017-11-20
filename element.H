@@ -298,6 +298,22 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 	//! The container has removed this element.
 
+	//! Invoked from elementObj's destructor.
+	//! Runs removed_from_container() IN_THREAD.
+
+	void removed_from_container();
+
+	//! Set by remove_from_container(), which is only called in destructor.
+
+	//! Prevents the overhead from scheduling the message to the connection
+	//! thread twice, because removed_from_container() is also called
+	//! in connectionObj's destructor.
+
+	bool removed_from_container_was_called_in_destructor=false;
+
+	//! The container has removed this element.
+
+	//! Executed in the connection thread.
 	//! Recursively invokes removed_from_container if this element itself
 	//! is a container.
 	//!

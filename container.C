@@ -23,6 +23,26 @@ containerObj::containerObj(const ref<implObj> &impl,
 
 containerObj::~containerObj()
 {
+	// We want to call removed_from_container() before
+	// uninstall_layoutmanager() and before ~elementObj() gets called,
+	// so that the message to the connection thread for this parent
+	// container gets sent, and processed first, recursively flagging
+	// all elements in the container as being removed.
+	//
+	// uninstalling layoutmanager is going to destroy all the child
+	// elements, stored in the layout manager implementation object,
+	// invoking their destructors, sending their messages to
+	// remove_from_container() themselves, individually. It is far
+	// more efficient for the message from the container to be processed
+	// first, recursively setting the removed flag on everything.
+	//
+	// When the container has focusable elements, this ends up flagging
+	// all of them as removed, so the focus ends up being transferred
+	// one time, to whatever available focusable element still exists,
+	// rather than ping-ponging from one element being removed to the
+	// next one, before it gets flagged for removal.
+
+	elementObj::impl->removed_from_container();
 	impl->uninstall_layoutmanager();
 }
 

@@ -23,19 +23,7 @@ generic_windowObj::generic_windowObj(const ref<implObj> &impl,
 {
 }
 
-generic_windowObj::~generic_windowObj()
-{
-	// Simulate what would happen if the generic window was in a container,
-	// and it's now been removed from it.
-
-	get_screen()->impl->thread->run_as
-		([handler=this->impl->handler]
-		 (IN_THREAD_ONLY)
-		 {
-			 handler->removed_from_container(IN_THREAD);
-		 });
-}
-
+generic_windowObj::~generic_windowObj()=default;
 
 void generic_windowObj::on_disconnect(const std::function<void ()> &callback)
 {

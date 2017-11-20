@@ -15,8 +15,7 @@ singletonlayoutmanagerObj::implObj
 ::implObj(const ref<containerObj::implObj> &container_impl,
 	  const elementptr &initial_element)
 	: layoutmanagerObj::implObj(container_impl),
-	current_element(&initial_element,
-			(initial_element ? &initial_element+1:&initial_element))
+	current_element(initial_element)
 {
 	if (initial_element &&
 	    ref<child_elementObj>(initial_element->impl)->child_container !=
@@ -37,14 +36,10 @@ void singletonlayoutmanagerObj::implObj
 ::do_for_each_child(IN_THREAD_ONLY,
 		    const function<void (const element &e)> &callback)
 {
-	auto c=({
-			current_element_t::lock lock{current_element};
+	auto c=current_element.get();
 
-			if (lock->empty())
-				return;
-
-			lock->at(0);
-		});
+	if (!c)
+		return;
 
 	c->impl->initialize_if_needed(IN_THREAD);
 
@@ -73,59 +68,23 @@ dim_t singletonlayoutmanagerObj::implObj::get_bottom_padding(IN_THREAD_ONLY)
 
 void singletonlayoutmanagerObj::implObj::created(const element &e)
 {
-	current_element_t::lock lock{current_element};
-
-	lock->push_back(e);
+	current_element=e;
 }
 
 elementptr singletonlayoutmanagerObj::implObj::get()
 {
-	current_element_t::lock lock{current_element};
-
-	if (!lock->empty())
-		return lock->at(0);
-
-	return {};
+	return current_element.get();
 }
 
 elementimplptr singletonlayoutmanagerObj::implObj
 ::get_list_element_impl(IN_THREAD_ONLY)
 {
-	std::vector<element> all_elements;
+	auto e=get();
 
-	// Grab the all_elements vector. If it has more than one element,
-	// the current display element in the singleton is being replaced.
-	// While we're holding the lock, leave the last element in
-	// current_element. We'll clean everything up after releasing the
-	// lock.
-
-	{
-		current_element_t::lock lock{current_element};
-
-		all_elements=*lock;
-
-		if (lock->size() > 1)
-			lock->erase(lock->begin(), --lock->end());
-	}
-
-	if (all_elements.empty())
+	if (!e)
 		return elementimplptr();
 
-	// The last element in the vector is the official, remaining
-	// element in the singleton. Make sure that everything is done
-	// by the book.
-
-	auto e=--all_elements.end();
-
-	for (auto b=all_elements.begin(); b != e; ++b)
-	{
-		(*b)->impl->initialize_if_needed(IN_THREAD);
-		(*b)->impl->removed_from_container(IN_THREAD);
-	}
-
-	(*e)->impl->initialize_if_needed(IN_THREAD);
-
-	return (*e)->impl;
+	return e->impl;
 }
 
 void singletonlayoutmanagerObj::implObj::recalculate(IN_THREAD_ONLY)

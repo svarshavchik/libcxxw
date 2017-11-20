@@ -356,9 +356,12 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
  public:
 	//! An element is being removed.
 
+	//! Invoked by removed_from_container().
+	//!
 	//! This takes care of making sure the element is not pointed to from
 	//! most_recent_element_with_pointer.
-	void removing_element(IN_THREAD_ONLY, const ref<elementObj::implObj> &);
+	void removing_element_from_window(IN_THREAD_ONLY,
+					  const ref<elementObj::implObj> &);
  private:
 
 	//! Remove pointer reporting

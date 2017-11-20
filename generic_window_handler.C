@@ -1124,14 +1124,10 @@ void generic_windowObj::handlerObj
 	}
 }
 
-void generic_windowObj::handlerObj::removing_element(IN_THREAD_ONLY,
-						     const ref<elementObj
-						     ::implObj> &ei)
+void generic_windowObj::handlerObj
+::removing_element_from_window(IN_THREAD_ONLY,
+			       const ref<elementObj::implObj> &ei)
 {
-	// The container should've done this, but we'll do it just in case,
-	// too...
-	ei->removed_from_container(IN_THREAD);
-
 	if (most_recent_element_with_pointer(IN_THREAD) == ei)
 	{
 		ungrab(IN_THREAD);

@@ -521,14 +521,6 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(IN_THREAD_ONLY)
 
 	std::vector<elementsObj::pos_axis> &all_elements=ge->all_elements;
 
-	// Copy all our current elements into old_elements, so we can
-	// determine which ones have been removed.
-
-	std::unordered_set<element> old_elements;
-
-	for (const auto &element:all_elements)
-		old_elements.insert(element.child_element);
-
 	all_elements.clear();
 	all_elements.reserve(total_size);
 
@@ -612,16 +604,6 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(IN_THREAD_ONLY)
 #ifdef GRID_REBUILD_ELEMENTS_DONE
 	GRID_REBUILD_ELEMENTS_DONE();
 #endif
-	// Did we remove something from the grid?
-
-	// Remove everything from old_elements that's now in all_elements.
-	// We're getting rid of anything that's left in old_elements.
-
-	for (const auto &element:all_elements)
-		old_elements.erase(element.child_element);
-
-	for (const auto &e:old_elements)
-		e->impl->removed_from_container(IN_THREAD);
 
 	return true;
 }

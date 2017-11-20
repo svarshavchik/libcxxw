@@ -19,13 +19,7 @@ class LIBCXX_HIDDEN singletonlayoutmanagerObj::implObj :
 
 	//! The container for the current element, and/or new elements.
 
-	//! If the vector is empty, there's no element in the singleton
-	//! container. if the vector contains one element, that's the
-	//! element in the singleton container. The singleton factory
-	//! appends the new element, and exits, and when the layout
-	//! manager recalculates, it ditches all, except the last element.
-
-	typedef mpobj<std::vector<element>> current_element_t;
+	typedef mpobj<elementptr> current_element_t;
 
 	//! The current element.
 

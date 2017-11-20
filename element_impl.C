@@ -95,11 +95,33 @@ elementObj::implObj::implObj(size_t nesting_level,
 {
 }
 
-elementObj::implObj::~implObj()=default;
+elementObj::implObj::~implObj()
+{
+	if (data_thread_only.removed)
+		return;
+
+	LOG_ERROR("removed_from_container() was not called for a "
+		  << objname());
+}
+
+void elementObj::implObj::removed_from_container()
+{
+	if (removed_from_container_was_called_in_destructor)
+		return;
+
+	removed_from_container_was_called_in_destructor=true;
+
+	THREAD->run_as
+		([impl=ref(this)]
+		 (IN_THREAD_ONLY)
+		 {
+			 impl->removed_from_container(IN_THREAD);
+		 });
+}
 
 void elementObj::implObj::removed_from_container(IN_THREAD_ONLY)
 {
-	// Who knows, maybe we haven't bee initialized yet?
+	// Who knows, maybe we haven't been initialized yet?
 
 	initialize_if_needed(IN_THREAD);
 
@@ -115,6 +137,9 @@ void elementObj::implObj::removed_from_container(IN_THREAD_ONLY)
 			       e->impl->removed_from_container(IN_THREAD);
 		       });
 	set_inherited_visibility_flag(IN_THREAD, false);
+
+	get_window_handler().removing_element_from_window(IN_THREAD,
+							  ref(this));
 }
 
 void elementObj::implObj::removed(IN_THREAD_ONLY)

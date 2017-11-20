@@ -23,13 +23,7 @@ elementObj::elementObj(const ref<implObj> &impl)
 
 elementObj::~elementObj()
 {
-	impl->THREAD->run_as
-		([impl=this->impl]
-		 (IN_THREAD_ONLY)
-		 {
-			 impl->get_window_handler().removing_element(IN_THREAD,
-								     impl);
-		 });
+	impl->removed_from_container();
 }
 
 ref<obj> elementObj::connection_mcguffin() const
