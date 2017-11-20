@@ -867,9 +867,10 @@ $(call REFCOLLECTION_GEN,testshowhide.inc.H,testshowhide.xml)
 testshowhide_SOURCES=testshowhide.C
 testshowhide_LDADD=libcxxw.la
 
+$(call OPTIONS_GEN,testswitch.inc.H,testswitch.xml)
 testswitch_SOURCES=testswitch.C
 testswitch_LDADD=libcxxw.la
-testswitch_LDFLAGS=$(TESTLINKTYPE)
+testswitch_LDFLAGS=-static $(STATICLINKFLAGS)
 
 testtextparam_SOURCES=testtextparam.C
 testtextparam_LDADD=libcxxw.la
@@ -1025,7 +1026,7 @@ EXTRA_DIST += $(patsubst $(srcdir)/%,%,$(all_theme_source_files)) \
 	themes/cxxwtheme.properties
 
 check-am:
-	@test -n "$(BUILT_TESTPROGRAMS)" || exit 0; for p in $(BUILT_TESTPROGRAMS); do echo $$p; ./$$p --set-property x::w::themes=$(srcdir)/themes || exit 1; done
+	@test -n "$(BUILT_TESTPROGRAMS)" || exit 0; for p in $(BUILT_TESTPROGRAMS); do echo $$p; ./$$p; done
 
 test:
 	./testmainwindow --state
@@ -1044,6 +1045,7 @@ test:
 	./testtooltip --width=25
 	./testtooltip --width=50
 	./testprogressbar
+	./testswitch --testfocus
 
 .PHONY: rpm
 

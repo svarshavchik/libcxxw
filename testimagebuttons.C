@@ -267,6 +267,9 @@ void testimagebuttons()
 int main(int argc, char **argv)
 {
 	try {
+		LIBCXX_NAMESPACE::property
+			::load_property(LIBCXX_NAMESPACE_STR "::themes",
+					"themes", true, true);
 		testimagebuttons();
 	} catch (const LIBCXX_NAMESPACE::exception &e)
 	{

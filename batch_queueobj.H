@@ -10,6 +10,7 @@
 #include "connection_threadfwd.H"
 #include <x/mpobj.H>
 #include <x/ptrfwd.H>
+#include <x/logger.H>
 #include <x/obj.H>
 
 LIBCXXW_NAMESPACE_START
@@ -17,6 +18,9 @@ LIBCXXW_NAMESPACE_START
 //! An element that has a parent element.
 
 class LIBCXX_HIDDEN batch_queueObj : virtual public obj {
+
+	//! My logger
+	LOG_CLASS_SCOPE;
 
 	//! Something was scheduled...
 

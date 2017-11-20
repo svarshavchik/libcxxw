@@ -189,6 +189,9 @@ void testprogressbar()
 int main(int argc, char **argv)
 {
 	try {
+		LIBCXX_NAMESPACE::property
+			::load_property(LIBCXX_NAMESPACE_STR "::themes",
+					"themes", true, true);
 		testprogressbar();
 		if (slider_counter.get() != 1)
 			throw EXCEPTION("Progress bar gradient was created "

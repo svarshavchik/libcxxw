@@ -1017,20 +1017,25 @@ void gridlayoutmanagerObj::implObj
 				(element_position.y+padding.top_padding);
 		}
 
-		// If the total size of the element's rows and columns
-		// exceeds the elements maximum metric, position the
-		// element accordingly. width and height,
-		// so the element does not get resized.
+		// Take this element's maximum metrics. If they're larger
+		// than the alloted element-position, reduce them.
+		// At this point we expect the grid to always give us at
+		// least as much room as as the minimums.
+		//
+		// Note that dim_t::infinite will always be bigger than
+		// the element_position.
 
 		dim_t max_width=hv->horiz.maximum();
-
-		if (max_width == dim_t::infinite())
-			max_width=element_position.width;
-
 		dim_t max_height=hv->vert.maximum();
 
-		if (max_height == dim_t::infinite())
+		if (max_width > element_position.width)
+			max_width=element_position.width;
+
+		if (max_height > element_position.height)
 			max_height=element_position.height;
+
+		// And if max_width and max_height is smaller than
+		// element_position, then align() the element accordingly.
 
 		auto aligned=metrics::align(element_position.width,
 					    element_position.height,

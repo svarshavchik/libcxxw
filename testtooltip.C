@@ -188,6 +188,9 @@ void testtooltip(int width)
 int main(int argc, char **argv)
 {
 	try {
+		LIBCXX_NAMESPACE::property
+			::load_property(LIBCXX_NAMESPACE_STR "::themes",
+					"themes", true, true);
 		LIBCXX_NAMESPACE::property::load_property
 			(LIBCXX_NAMESPACE_STR "::w::tooltip_delay",
 			 "500", true, true);

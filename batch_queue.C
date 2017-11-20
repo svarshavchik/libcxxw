@@ -8,6 +8,8 @@
 #include "layoutmanager.H"
 #include "container.H"
 
+LOG_CLASS_INIT(LIBCXX_NAMESPACE::w::batch_queueObj);
+
 LIBCXXW_NAMESPACE_START
 
 containers_2_batch_recalculate_set::containers_2_batch_recalculate_set()
@@ -19,6 +21,7 @@ containers_2_batch_recalculate_set::~containers_2_batch_recalculate_set()
 batch_queueObj::batch_queueObj(const connection_thread &my_thread)
 	: something_scheduled{false}, my_thread(my_thread)
 {
+	LOG_DEBUG("Created " << this);
 }
 
 void batch_queueObj
@@ -37,6 +40,7 @@ void batch_queueObj
 
 batch_queueObj::~batch_queueObj()
 {
+	LOG_DEBUG("Destroyed " << this);
 	if (something_scheduled.get())
 		my_thread->execute_batched_jobs();
 }

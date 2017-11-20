@@ -272,6 +272,9 @@ void testcombobox(const testcombobox_options &options)
 int main(int argc, char **argv)
 {
 	try {
+		LIBCXX_NAMESPACE::property
+			::load_property(LIBCXX_NAMESPACE_STR "::themes",
+					"themes", true, true);
 		testcombobox_options options;
 
 		options.parse(argc, argv);

@@ -3,6 +3,7 @@
 #include <sstream>
 #include <x/exception.H>
 #include <x/ref.H>
+#include <x/property_properties.H>
 #include "calculate_borders.H"
 #include <vector>
 #include <map>
@@ -239,6 +240,9 @@ void test1()
 int main()
 {
 	try {
+		LIBCXX_NAMESPACE::property
+			::load_property(LIBCXX_NAMESPACE_STR "::themes",
+					"themes", true, true);
 		test1();
 	} catch (const LIBCXX_NAMESPACE::exception &e)
 	{

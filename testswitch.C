@@ -23,6 +23,27 @@
 
 #include <iostream>
 
+#include "editor_impl.H"
+
+static LIBCXX_NAMESPACE::w::editorObj::implObj *editor_impl_constructed;
+static LIBCXX_NAMESPACE::w::editorObj::implObj *editor_impl_with_focus;
+
+static LIBCXX_NAMESPACE::w::editorObj::implObj *editor_impl_name;
+static LIBCXX_NAMESPACE::w::editorObj::implObj *editor_impl_address;
+
+#define EDITOR_CONSTRUCTOR_DEBUG() do {		\
+		editor_impl_constructed=this;	\
+	} while(0)
+
+#define EDITOR_FOCUS_DEBUG() do {			\
+		if (current_keyboard_focus(IN_THREAD))	\
+			editor_impl_with_focus=this;	\
+	} while (0)
+
+#include "editor_impl.C"
+
+#include "testswitch.inc.H"
+
 class close_flagObj : public LIBCXX_NAMESPACE::obj {
 
 public:
@@ -55,6 +76,8 @@ auto name_tab(const LIBCXX_NAMESPACE::w::gridlayoutmanager &glm)
 
 	auto firstname=f->create_input_field("", config);
 
+	editor_impl_name=editor_impl_constructed;
+
 	f=glm->append_row();
 
 	f->halign(LIBCXX_NAMESPACE::w::halign::right)
@@ -76,6 +99,8 @@ auto address_tab(const LIBCXX_NAMESPACE::w::gridlayoutmanager &glm)
 	config.autoselect=true;
 
 	auto address1=f->colspan(5).create_input_field("", config);
+
+	editor_impl_address=editor_impl_constructed;
 
 	f=glm->append_row();
 
@@ -239,7 +264,7 @@ static void create_mainwindow(const LIBCXX_NAMESPACE::w::main_window &mw)
 				  });
 }
 
-void testswitch()
+void testswitch(const testswitch_options &options)
 {
 	LIBCXX_NAMESPACE::destroy_callback::base::guard guard;
 
@@ -269,6 +294,49 @@ void testswitch()
 
 	mw->show();
 
+	if (!editor_impl_name || !editor_impl_address)
+	{
+		throw EXCEPTION("EDITOR_CONSTRUCTOR_DEBUG didn't execute");
+	}
+
+	if (options.testfocus->isSet())
+	{
+		LIBCXX_NAMESPACE::mpcobj<bool>::lock lock{close_flag->flag};
+
+		lock.wait_for(std::chrono::seconds(2), [&] { return *lock; });
+
+		if (editor_impl_with_focus != editor_impl_name)
+			throw EXCEPTION("Initial focus failed");
+
+		{
+			LIBCXX_NAMESPACE::w::gridlayoutmanager
+				glm=mw->get_layoutmanager();
+
+			LIBCXX_NAMESPACE::w::container swc=glm->get(0, 0);
+
+
+			LIBCXX_NAMESPACE::w::switchlayoutmanager sw=
+				swc->get_layoutmanager();
+
+			LIBCXX_NAMESPACE::w::container ac=sw->get(1);
+
+			LIBCXX_NAMESPACE::w::gridlayoutmanager ag=
+				ac->get_layoutmanager();
+
+			LIBCXX_NAMESPACE::w::input_field address1=
+				ag->get(0, 1);
+
+			sw->switch_to(1);
+			address1->request_focus();
+		}
+
+		lock.wait_for(std::chrono::seconds(2), [&] { return *lock; });
+		if (editor_impl_with_focus != editor_impl_address)
+			throw EXCEPTION("Focus switch failed");
+		return;
+	}
+
+
 	LIBCXX_NAMESPACE::mpcobj<bool>::lock lock{close_flag->flag};
 
 	lock.wait([&] { return *lock; });
@@ -277,7 +345,14 @@ void testswitch()
 int main(int argc, char **argv)
 {
 	try {
-		testswitch();
+		LIBCXX_NAMESPACE::property
+			::load_property(LIBCXX_NAMESPACE_STR "::themes",
+					"themes", true, true);
+		testswitch_options options;
+
+		options.parse(argc, argv);
+
+		testswitch(options);
 	} catch (const LIBCXX_NAMESPACE::exception &e)
 	{
 		e->caught();

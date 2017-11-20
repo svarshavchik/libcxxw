@@ -251,6 +251,10 @@ editorObj::implObj::implObj(const ref<editor_peephole_implObj> &parent_peephole,
 	  parent_peephole(parent_peephole),
 	  config(config)
 {
+
+#ifdef EDITOR_CONSTRUCTOR_DEBUG
+	EDITOR_CONSTRUCTOR_DEBUG();
+#endif
 	if (config.columns < 2)
 		throw EXCEPTION("Input fields must have at least two columns");
 
@@ -365,6 +369,10 @@ void editorObj::implObj::keyboard_focus(IN_THREAD_ONLY)
 	superclass_t::keyboard_focus(IN_THREAD);
 
 	blink_if_has_focus(IN_THREAD);
+
+#ifdef EDITOR_FOCUS_DEBUG
+	EDITOR_FOCUS_DEBUG();
+#endif
 
 	if (config.autoselect)
 	{

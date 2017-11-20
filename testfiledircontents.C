@@ -295,6 +295,9 @@ void testfiledircontents()
 int main()
 {
 	try {
+		LIBCXX_NAMESPACE::property
+			::load_property(LIBCXX_NAMESPACE_STR "::themes",
+					"themes", true, true);
 		testfiledircontents();
 		dir::base::rmrf("testfiledircontents.dir");
 	} catch (const exception &e)

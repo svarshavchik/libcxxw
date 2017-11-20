@@ -49,7 +49,7 @@ static inline void updated_value(const auto &info)
 		  << std::endl;
 }
 
-void testbutton()
+void testscrollbar()
 {
 	destroy_callback::base::guard guard;
 
@@ -98,7 +98,10 @@ void testbutton()
 int main(int argc, char **argv)
 {
 	try {
-		testbutton();
+		LIBCXX_NAMESPACE::property
+			::load_property(LIBCXX_NAMESPACE_STR "::themes",
+					"themes", true, true);
+		testscrollbar();
 	} catch (const exception &e)
 	{
 		e->caught();

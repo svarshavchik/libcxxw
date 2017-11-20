@@ -1,5 +1,6 @@
 #include "libcxxw_config.h"
 #include <x/exception.H>
+#include <x/property_properties.H>
 
 #include "x/w/focus.H"
 #include <vector>
@@ -295,6 +296,9 @@ void testfocusable()
 int main()
 {
 	try {
+		LIBCXX_NAMESPACE::property
+			::load_property(LIBCXX_NAMESPACE_STR "::themes",
+					"themes", true, true);
 		testfocusable();
 	} catch (const exception &e)
 	{
