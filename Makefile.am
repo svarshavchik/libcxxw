@@ -475,6 +475,8 @@ libcxxw_la_SOURCES=\
 	peephole/peephole_impl.H		    \
 	peephole/peephole_layoutmanager_impl.C	    \
 	peephole/peephole_layoutmanager_impl.H	    \
+	peephole/peephole_layoutmanager_impl_scrollbars.C \
+	peephole/peephole_layoutmanager_impl_scrollbars.H \
 	peephole/peephole_style.H		    \
 	peephole/peephole_toplevel.C		    \
 	peephole/peephole_toplevel.H		    \

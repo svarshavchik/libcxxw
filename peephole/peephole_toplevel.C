@@ -10,7 +10,7 @@
 #include "peephole/peephole.H"
 #include "peephole/peephole_impl.H"
 #include "peephole/peephole_toplevel_gridlayoutmanager.H"
-#include "peephole/peephole_layoutmanager_impl.H"
+#include "peephole/peephole_layoutmanager_impl_scrollbars.H"
 #include "peephole/peepholed_toplevel_element.H"
 #include "scrollbar/scrollbar_impl.H"
 #include "current_border_impl.H"
@@ -27,7 +27,7 @@ LIBCXXW_NAMESPACE_START
 //! metrics, and keeps an eye on the element's metrics.
 
 class LIBCXX_HIDDEN toplevelpeephole_layoutmanagerObj
-	: public peepholeObj::layoutmanager_implObj {
+	: public peepholeObj::layoutmanager_implObj::scrollbarsObj {
 
  public:
 
@@ -210,15 +210,16 @@ toplevelpeephole_layoutmanagerObj::toplevelpeephole_layoutmanagerObj
  const peepholed_toplevel &element_in_peephole,
  const current_border_implptr &peephole_border,
  const peephole_scrollbars &scrollbars)
-	: peepholeObj::layoutmanager_implObj(container_impl,
-					     style,
-					     element_in_peephole,
-					     scrollbars,
+	: peepholeObj::layoutmanager_implObj
+	::scrollbarsObj(container_impl,
+			style,
+			element_in_peephole,
+			scrollbars,
 
-					     // Opening bid: do not show the
-					     // scrollbars.
-					     scrollbar_visibility::never,
-					     scrollbar_visibility::never),
+			// Opening bid: do not show the
+			// scrollbars.
+			scrollbar_visibility::never,
+			scrollbar_visibility::never),
 	element_in_peephole(element_in_peephole),
 	peephole_border(peephole_border)
 {
@@ -361,7 +362,8 @@ void toplevelpeephole_layoutmanagerObj::recalculate(IN_THREAD_ONLY)
 				      {h_minimum, h_preferred, h_maximum},
 				      {v_minimum, v_preferred, v_maximum});
 
-	peepholeObj::layoutmanager_implObj::recalculate(IN_THREAD);
+	peepholeObj::layoutmanager_implObj::scrollbarsObj
+		::recalculate(IN_THREAD);
 }
 
 LIBCXXW_NAMESPACE_END

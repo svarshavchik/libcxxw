@@ -8,7 +8,7 @@
 #include "peephole/peephole.H"
 #include "peephole/peepholed.H"
 #include "peephole/peephole_impl.H"
-#include "peephole/peephole_layoutmanager_impl.H"
+#include "peephole/peephole_layoutmanager_impl_scrollbars.H"
 #include "peephole/peephole_gridlayoutmanagerobj.H"
 #include "focus/focusable.H"
 #include "focus/standard_focusframecontainer_element.H"
@@ -156,7 +156,7 @@ create_peepholed_focusable_with_frame_impl
 
 	auto scrollbars=create_peephole_scrollbars(args.parent_container);
 
-	auto layout_impl=ref<peepholeObj::layoutmanager_implObj>
+	auto layout_impl=ref<peepholeObj::layoutmanager_implObj::scrollbarsObj>
 		::create(impl,
 			 args.style,
 			 peepholed_element,

@@ -16,28 +16,20 @@ bool peepholeObj::implObj::process_button_event(IN_THREAD_ONLY,
 						const button_event &be,
 						xcb_timestamp_t timestamp)
 {
-	if (be.button == 4 || be.button == 5)
-	{
-		if (!activate_for(be))
-			return true;
+	bool processed=false;
 
-		invoke_layoutmanager
-			([&]
-			 (const ref<peepholeObj::layoutmanager_implObj> &lm)
-			 {
-				 if (be.button == 4)
-					 lm->vert_scroll_low(IN_THREAD, be);
-				 else
-					 lm->vert_scroll_high(IN_THREAD, be);
-			 });
+	invoke_layoutmanager
+		([&]
+		 (const ref<peepholeObj::layoutmanager_implObj> &lm)
+		 {
+			 processed=lm->process_button_event(IN_THREAD, be,
+							    timestamp);
+		 });
 
-		return true;
-	}
-
-	if (superclass_t::process_button_event(IN_THREAD, be, timestamp))
+	if (processed)
 		return true;
 
-	return false;
+	return superclass_t::process_button_event(IN_THREAD, be, timestamp);
 }
 
 LIBCXXW_NAMESPACE_END
