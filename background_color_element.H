@@ -29,8 +29,23 @@ template<typename ...Args>
 inline background_color_1elementObj<element_impl, tag>
 ::background_color_1elementObj(const background_colorptr &color,
 			       Args && ...args)
-	: background_color_element<tag>(color),
-	element_impl(std::forward<Args>(args)...)
+	: element_impl(std::forward<Args>(args)...),
+	  background_color_element<tag>(color)
+{
+}
+
+//! Constructor
+
+//! The first parameter is the initial background_color, the remaining
+//! parameters get forwarded to the parent class's constructor.
+
+template<typename element_impl, typename tag>
+template<typename ...Args>
+inline background_color_1elementObj<element_impl, tag>
+::background_color_1elementObj(const color_arg &color,
+			       Args && ...args)
+	: element_impl(std::forward<Args>(args)...),
+	  background_color_element<tag>(this->create_background_color(color))
 {
 }
 
@@ -45,8 +60,8 @@ background_color_1elementObj<element_impl, tag>::~background_color_1elementObj()
 template<typename element_impl, typename tag>
 void background_color_1elementObj<element_impl, tag>::initialize(IN_THREAD_ONLY)
 {
-	element_impl::initialize(IN_THREAD);
 	background_color_element<tag>::initialize(IN_THREAD);
+	element_impl::initialize(IN_THREAD);
 }
 
 //! New theme
@@ -58,8 +73,8 @@ template<typename element_impl, typename tag>
 void background_color_1elementObj<element_impl, tag>
 ::theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme)
 {
-	element_impl::theme_updated(IN_THREAD, new_theme);
 	background_color_element<tag>::theme_updated(IN_THREAD, new_theme);
+	element_impl::theme_updated(IN_THREAD, new_theme);
 }
 
 LIBCXXW_NAMESPACE_END

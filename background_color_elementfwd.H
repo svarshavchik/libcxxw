@@ -8,6 +8,7 @@
 #include "background_colorfwd.H"
 #include "connection_threadfwd.H"
 #include "defaultthemefwd.H"
+#include "x/w/rgb.H"
 #include <x/obj.H>
 
 LIBCXXW_NAMESPACE_START
@@ -63,14 +64,22 @@ class LIBCXX_HIDDEN background_color_element
 
 template<typename element_impl, typename tag=void>
 class LIBCXX_HIDDEN background_color_1elementObj
-	: public background_color_element<tag>,
-	  public element_impl {
+	: public element_impl,
+	  public background_color_element<tag> {
 
  public:
 	//! Constructor
 
 	template<typename ...Args>
 		background_color_1elementObj(const background_colorptr &color,
+					     Args && ...args);
+
+	//! Constructor
+
+	//! Uses the already-constructed element_impl superclass to
+	//! create_background_color()
+	template<typename ...Args>
+		background_color_1elementObj(const color_arg &color,
 					     Args && ...args);
 
 	//! Destructor
