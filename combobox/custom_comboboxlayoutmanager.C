@@ -87,7 +87,9 @@ create_combobox_button(const ref<containerObj::implObj> &parent_container,
 	// the focus frame implementation object.
 
 	auto cbfc=ref<combobox_button_focusframe_container_t>
-		::create(parent_container,
+		::create("inputfocusoff_border",
+			 "inputfocuson_border",
+			 parent_container,
 			 child_element_init_params{"focusframe@libcxx"});
 
 	// The focus frame implementation object is the parent of the
@@ -108,9 +110,7 @@ create_combobox_button(const ref<containerObj::implObj> &parent_container,
 
 	// We can now create the focusframe public object.
 
-	auto ff=focusframecontainer::create(cbfc, image_button_internal_impl,
-					    "inputfocusoff_border",
-					    "inputfocuson_border");
+	auto ff=focusframecontainer::create(cbfc, image_button_internal_impl);
 
 	// The focus frame's factory, where the focusable element, the
 	// image button, gets created.

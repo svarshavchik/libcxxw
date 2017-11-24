@@ -10,7 +10,7 @@
 #include <x/w/factoryobj.H>
 #include <x/w/gridlayoutmanagerfwd.H>
 #include <x/w/gridlayoutmanagerobj.H>
-#include <x/w/border_infomm.H>
+#include <x/w/border_arg.H>
 #include <x/w/alignment.H>
 #include <x/w/dim_arg.H>
 #include <x/mpobj.H>
@@ -76,38 +76,23 @@ class gridfactoryObj : public factoryObj {
 
 	//! Set new element's border, first.
 
-	gridfactoryObj &border(const border_infomm &info);
+	gridfactoryObj &border(const border_arg &arg);
 
 	//! Set new element's border, first.
 
-	gridfactoryObj &left_border(const border_infomm &info);
+	gridfactoryObj &left_border(const border_arg &arg);
 
 	//! Set new element's border, first.
 
-	gridfactoryObj &right_border(const border_infomm &info);
+	gridfactoryObj &right_border(const border_arg &arg);
 
 	//! Set new element's border, first.
 
-	gridfactoryObj &top_border(const border_infomm &info);
+	gridfactoryObj &top_border(const border_arg &arg);
 
 	//! Set new element's border, first.
 
-	gridfactoryObj &bottom_border(const border_infomm &info);
-
-	//! Set new element's border, first.
-	gridfactoryObj &border(const std::string_view &id);
-
-	//! Set new element's border, first.
-	gridfactoryObj &left_border(const std::string_view &id);
-
-	//! Set new element's border, first.
-	gridfactoryObj &right_border(const std::string_view &id);
-
-	//! Set new element's border, first.
-	gridfactoryObj &top_border(const std::string_view &id);
-
-	//! Set new element's border, first.
-	gridfactoryObj &bottom_border(const std::string_view &id);
+	gridfactoryObj &bottom_border(const border_arg &arg);
 
 	//! Set new element's padding, first.
 

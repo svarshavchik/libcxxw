@@ -38,6 +38,7 @@ gridfactory->padding(2.5).create_label({"Hello world!"});
 \par Borders and padding
 
 \code
+
 INSERT_LIBX_NAMESPACE::w::border_infomm new_border;
 
 gridfactory->border(new_border);
@@ -60,7 +61,8 @@ methods specify its border and the padding.
 border() and padding() set the border and the padding for all four sides,
 or they can be set individually.
 
-A border gets specified as a \ref border_infomm "INSERT_LIBX_NAMESPACE::w::border_infomm".
+A custom border gets specified as a
+\ref border_infomm "INSERT_LIBX_NAMESPACE::w::border_infomm".
 The padding gets specified in millimeters.
 
 \code
@@ -71,8 +73,9 @@ gridfactory->top_border("inputfocuson_border");
 gridfactory->bottom_border("inputfocuson_border");
 \endcode
 
-A border defined in the current theme can also be specified, alternatively.
-This is mostly for the library's internal use.
+Alternatively, a border gets specified by name.
+This references a border definition
+taken from the current theme. This is mostly for the library's internal use.
 
 \par Spanning and alignment
 

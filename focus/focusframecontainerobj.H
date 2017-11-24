@@ -32,9 +32,7 @@ public:
 
 	//! Constructor
 	focusframecontainerObj(const ref<implObj> &impl,
-			       const ref<focusableImplObj> &focusable_impl,
-			       const char *off_border,
-			       const char *on_border)
+			       const ref<focusableImplObj> &focusable_impl)
 		LIBCXX_HIDDEN;
 
 	//! Internal constructor

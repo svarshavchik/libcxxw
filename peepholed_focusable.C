@@ -107,7 +107,7 @@ create_peepholed_focusable_with_frame_impl
 	focusable_implptr focusable_element_impl;
 	factoryptr ff_factory;
 
-	refptr_traits<standard_focusframecontainer_element_t>
+	refptr_traits<always_visible_focusframe_t>
 		::ptr_t focusframecontainer_impl;
 
 	factory->create_container
@@ -135,8 +135,10 @@ create_peepholed_focusable_with_frame_impl
 			 // Create the focusframe implementation object, first.
 
 			 auto focusframe_impl_ret=
-				 create_standard_focusframe_container_element
+				 create_always_visible_focusframe
 				 (new_container->impl,
+				  args.inputfocusoff_border,
+				  args.inputfocuson_border,
 				  args.focusable_background_color);
 
 			 // Now that the focusframe implementation object
@@ -181,9 +183,7 @@ create_peepholed_focusable_with_frame_impl
 
 	auto ff=focusframecontainer
 		::create(focusframecontainer_impl,
-			 focusable_element_impl,
-			 args.inputfocusoff_border,
-			 args.inputfocuson_border);
+			 focusable_element_impl);
 
 	// Make sure that the the focusframe and the scrollbars use the
 	// correct tabbing order.

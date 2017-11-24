@@ -37,9 +37,9 @@ elementObj::implObj &gridfactoryObj::get_element_impl()
 
 // Save new element's borders somewhere safe...
 
-gridfactoryObj &gridfactoryObj::border(const border_infomm &info)
+gridfactoryObj &gridfactoryObj::border(const border_arg &arg)
 {
-	auto border_impl=gridlayout->get_custom_border(info);
+	auto border_impl=gridlayout->get_current_border(arg);
 	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
 
 	lock->left_border=lock->right_border=lock->top_border=
@@ -47,82 +47,36 @@ gridfactoryObj &gridfactoryObj::border(const border_infomm &info)
 	return *this;
 }
 
-gridfactoryObj &gridfactoryObj::left_border(const border_infomm &info)
+gridfactoryObj &gridfactoryObj::left_border(const border_arg &arg)
 {
-	auto border_impl=gridlayout->get_custom_border(info);
+	auto border_impl=gridlayout->get_current_border(arg);
 	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
 
 	lock->left_border=border_impl;
 	return *this;
 }
 
-gridfactoryObj &gridfactoryObj::right_border(const border_infomm &info)
+gridfactoryObj &gridfactoryObj::right_border(const border_arg &arg)
 {
-	auto border_impl=gridlayout->get_custom_border(info);
+	auto border_impl=gridlayout->get_current_border(arg);
 	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
 
 	lock->right_border=border_impl;
 	return *this;
 }
 
-gridfactoryObj &gridfactoryObj::top_border(const border_infomm &info)
+gridfactoryObj &gridfactoryObj::top_border(const border_arg &arg)
 {
-	auto border_impl=gridlayout->get_custom_border(info);
+	auto border_impl=gridlayout->get_current_border(arg);
 	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
 
 	lock->top_border=border_impl;
 	return *this;
 }
 
-gridfactoryObj &gridfactoryObj::bottom_border(const border_infomm &info)
+gridfactoryObj &gridfactoryObj::bottom_border(const border_arg &arg)
 {
-	auto border_impl=gridlayout->get_custom_border(info);
-	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
-
-	lock->bottom_border=border_impl;
-	return *this;
-}
-
-gridfactoryObj &gridfactoryObj::border(const std::string_view &id)
-{
-	auto border_impl=gridlayout->get_theme_border(id);
-	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
-
-	lock->left_border=lock->right_border=lock->top_border=
-		lock->bottom_border=border_impl;
-	return *this;
-}
-
-gridfactoryObj &gridfactoryObj::left_border(const std::string_view &id)
-{
-	auto border_impl=gridlayout->get_theme_border(id);
-	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
-
-	lock->left_border=border_impl;
-	return *this;
-}
-
-gridfactoryObj &gridfactoryObj::right_border(const std::string_view &id)
-{
-	auto border_impl=gridlayout->get_theme_border(id);
-	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
-
-	lock->right_border=border_impl;
-	return *this;
-}
-
-gridfactoryObj &gridfactoryObj::top_border(const std::string_view &id)
-{
-	auto border_impl=gridlayout->get_theme_border(id);
-	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
-
-	lock->top_border=border_impl;
-	return *this;
-}
-
-gridfactoryObj &gridfactoryObj::bottom_border(const std::string_view &id)
-{
-	auto border_impl=gridlayout->get_theme_border(id);
+	auto border_impl=gridlayout->get_current_border(arg);
 	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
 
 	lock->bottom_border=border_impl;

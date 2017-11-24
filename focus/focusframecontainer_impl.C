@@ -30,6 +30,10 @@ void focusframecontainerObj::implObj
 void focusframecontainerObj::implObj
 ::update_focusframe(IN_THREAD_ONLY)
 {
+	// The focus frame gets updated by overriding
+	// gridlayoutmanagerObj::implObj's rebuild_element_start(). So what
+	// we need to do is to pretend that the grid's elements were modified.
+
 	get_container_impl().invoke_layoutmanager
 		([&]
 		 (const ref<gridlayoutmanagerObj::implObj> &manager)

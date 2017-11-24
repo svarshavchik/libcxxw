@@ -91,12 +91,12 @@ create_button_focusframe(const ref<buttonObj::implObj> &impl,
 		::create(impl->create_background_color("button_normal_color"),
 			 impl->create_background_color("button_selected_color"),
 			 impl->create_background_color("button_active_color"),
+			 "inputfocusoff_border",
+			 "inputfocuson_border",
 			 glmi->container_impl,
 			 child_element_init_params{"focusframe@libcxx"});
 
-	auto ff=focusframecontainer::create(ffi, ffi,
-					    "inputfocusoff_border",
-					    "inputfocuson_border");
+	auto ff=focusframecontainer::create(ffi, ffi);
 
 	// Call the application-provided creator to populate the contents
 	// of the button.

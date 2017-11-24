@@ -91,14 +91,15 @@ static scrollbar create_scrollbar(const ref<containerObj::implObj> &parent_conta
 	// factory's container.
 
 	auto ffcontainer_impl=
-		create_standard_focusframe_container_element(parent_container);
+		create_always_visible_focusframe
+		(parent_container,
+		 "scrollbarfocusoff_border",
+		 "inputfocuson_border");
 
 	// And this will be its layout manager.
 
 	auto fflayout=ref<focusframelayoutimplObj>
-		::create(ffcontainer_impl,
-			 "scrollbarfocusoff_border",
-			 "inputfocuson_border");
+		::create(ffcontainer_impl);
 
 	// The focus frame will manage the actual scrollbar element. Create
 	// the implementation object. Since the focus-framed element will

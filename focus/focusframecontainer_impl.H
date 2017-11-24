@@ -9,6 +9,7 @@
 #include "x/w/elementobj.H"
 #include "x/w/focus.H"
 #include "focus/focusframecontainerobj.H"
+#include "current_border_implfwd.H"
 #include "connection_threadfwd.H"
 
 LIBCXXW_NAMESPACE_START
@@ -32,6 +33,14 @@ class LIBCXX_HIDDEN focusframecontainerObj::implObj : virtual public obj {
 	//! Implemented by the mixin template, to return my container.
 
 	virtual const containerObj::implObj &get_container_impl() const=0;
+
+	//! Implemented by the mixin template, to return my focusoff border.
+
+	virtual current_border_impl get_focusoff_border() const=0;
+
+	//! Implemented by the mixin template, to return my focuson border.
+
+	virtual current_border_impl get_focuson_border() const=0;
 
 	//! Trigger a container rebuild, in order to update the focus frame.
 

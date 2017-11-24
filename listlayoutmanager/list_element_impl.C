@@ -11,7 +11,7 @@
 #include "popup/popup_attachedto_handler.H"
 #include "focus/focusable_element.H"
 #include "background_color_element.H"
-#include "current_border_impl.H"
+#include "themeborder_element.H"
 #include "border_impl.H"
 #include "icon.H"
 #include "richtext/richtext.H"
@@ -105,6 +105,7 @@ list_elementObj::implObj::implObj(const ref<list_container_implObj>
 		       .create_background_color(style.highlighted_color),
 		       container_element_impl
 		       .create_background_color(style.current_color),
+		       "list_separator_border",
 		       textlist_container),
 	  textlist_container(textlist_container),
 	  list_style(style.list_style),
@@ -117,8 +118,6 @@ list_elementObj::implObj::implObj(const ref<list_container_implObj>
 					container_screen
 					->find_alpha_pictformat_by_depth(1),
 					0, 0)),
-	  separator_border(container_screen->impl
-			   ->get_theme_border("list_separator_border")),
 	  bullet1(container_element_impl.get_window_handler()
 		  .create_icon_mm("bullet1", render_repeat::none, 0, 0)),
 	  bullet2(container_element_impl.get_window_handler()
@@ -490,29 +489,24 @@ void list_elementObj::implObj
 
 void list_elementObj::implObj::initialize(IN_THREAD_ONLY)
 {
-	auto screen=get_screen()->impl;
-	auto current_theme=*current_theme_t::lock{screen->current_theme};
+	superclass_t::initialize(IN_THREAD);
 
 	listimpl_info_t::lock lock{textlist_info};
 
-	separator_border->theme_updated(IN_THREAD, current_theme);
-
 	recalculate_with_new_theme(IN_THREAD, lock);
-	superclass_t::initialize(IN_THREAD);
 	request_visibility(IN_THREAD, true);
 }
 
 void list_elementObj::implObj::theme_updated(IN_THREAD_ONLY,
 					     const defaulttheme &new_theme)
 {
+	superclass_t::theme_updated(IN_THREAD, new_theme);
 	listimpl_info_t::lock lock{textlist_info};
 
 	for (const auto &cell:lock->cells)
 		cell->cell_theme_updated(IN_THREAD, new_theme);
 
-	separator_border->theme_updated(IN_THREAD, new_theme);
 	recalculate_with_new_theme(IN_THREAD, lock);
-	superclass_t::theme_updated(IN_THREAD, new_theme);
 }
 
 void list_elementObj::implObj::recalculate_with_new_theme(IN_THREAD_ONLY,
@@ -612,7 +606,7 @@ void list_elementObj::implObj::recalculate(IN_THREAD_ONLY,
 				// This row becomes a separator line.
 
 				row->extra->row_type=list_row_type_t::separator;
-				row->height=separator_border->border(IN_THREAD)
+				row->height=current_border->border(IN_THREAD)
 					->calculated_border_height;
 			}
 		}
@@ -911,7 +905,8 @@ rectangle list_elementObj::implObj::do_draw_row(IN_THREAD_ONLY,
 							       mask_gc,
 							       di.absolute_location.x,
 							       di.absolute_location.y};
-						       separator_border->border
+						       current_border
+							       ->border
 							       (IN_THREAD)
 							       ->draw_horizontal
 							       (bdi);

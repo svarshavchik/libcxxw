@@ -10,7 +10,7 @@
 #include "x/w/picturefwd.H"
 #include "x/w/pictformatfwd.H"
 #include "x/w/scratch_bufferfwd.H"
-#include "x/w/border_infommfwd.H"
+#include "x/w/border_arg.H"
 #include "recycled_pixmapsfwd.H"
 #include "x/w/rgb.H"
 #include "x/w/metrics/mmaxisfwd.H"
@@ -21,8 +21,7 @@
 #include "screen_solidcolorpicturesfwd.H"
 #include "screen_fontcachesfwd.H"
 #include "border_implfwd.H"
-#include "custom_border_cachefwd.H"
-#include "theme_border_cachefwd.H"
+#include "border_cachefwd.H"
 #include "xid_t.H"
 #include "fonts/fontconfigfwd.H"
 #include "fonts/freetypefwd.H"
@@ -116,13 +115,7 @@ class LIBCXX_HIDDEN screenObj::implObj
 
 	//! Used by get_custom_border().
 
-	const custom_border_cache custom_borders;
-
-	//! The theme border cache.
-
-	//! Used by get_theme_border().
-
-	const theme_border_cache theme_borders;
+	const border_cache screen_border_cache;
 
  public:
 
@@ -221,10 +214,6 @@ class LIBCXX_HIDDEN screenObj::implObj
 	rgb_gradient get_theme_color_gradient(const rgb_gradient_arg &arg);
 	//! Find or create a theme border
 
-	current_border_impl
-		get_theme_border(const std::string_view &id);
-
-
 	//////////////////////////////////////////////////////////////////////
 	//
 	// Colors
@@ -263,17 +252,9 @@ class LIBCXX_HIDDEN screenObj::implObj
 
 	double compute_widthmm(const current_theme_t::lock &, dim_t pixels);
 
-	//! Convert border_infomm to border_info
-	border_info convert_to_border_info(const border_infomm &mm);
-
-
-	//! Convert border_infomm to border_info
-	border_info convert_to_border_info(const current_theme_t::lock &lock,
-					   const border_infomm &mm);
-
 	//! Find or create a custom border.
 
-	current_border_impl get_custom_border(const border_infomm &);
+	current_border_impl get_cached_border(const border_arg &);
 
 	/////////////////////////////////////////////////////////////////////
 	//

@@ -9,34 +9,88 @@
 #include "container_elementfwd.H"
 #include "container_visible_elementfwd.H"
 #include "nonrecursive_visibilityfwd.H"
+#include "always_visiblefwd.H"
 #include "child_element.H"
 #include "background_colorfwd.H"
+#include "x/w/border_arg.H"
 #include <x/ref.H>
 
 LIBCXXW_NAMESPACE_START
 
-//! A typical implementation of a focusframecontainer mixin.
+//! A typical implementation of a focusframecontainer always_visibleObj mixin.
+
+typedef ref<always_visibleObj<focusframecontainer_elementObj<
+				      container_visible_elementObj<
+					      container_elementObj<
+						      child_elementObj>
+					      >>>
+	    > always_visible_focusframe_t;
+
+//! A typical implementation of a focusframecontainer nonrecursive_visibilityObj mixin.
 
 typedef ref<nonrecursive_visibilityObj<focusframecontainer_elementObj<
 					       container_visible_elementObj<
 						       container_elementObj<
 							       child_elementObj>
 						       >>>
-	    > standard_focusframecontainer_element_t;
+	    > nonrecursive_visibility_focusframe_t;
 
-//! Create a standard focusframe container.
+//! Create an always_visibleObj focus frame.
 
-standard_focusframecontainer_element_t
-create_standard_focusframe_container_element(const ref<containerObj::
-					     implObj> &parent_container)
+always_visible_focusframe_t
+create_always_visible_focusframe(const ref<containerObj::implObj>
+				 &parent_container)
 	LIBCXX_HIDDEN;
 
-standard_focusframecontainer_element_t
-create_standard_focusframe_container_element(const ref<containerObj::
-					     implObj> &parent_container,
-					     const background_colorptr
-					     &focusable_background_color)
+//! Create an always_visibleObj focus frame.
+
+always_visible_focusframe_t
+create_always_visible_focusframe(const ref<containerObj::implObj>
+				 &parent_container,
+				 const border_arg &focusoff_border,
+				 const border_arg &focuson_border)
 	LIBCXX_HIDDEN;
+
+//! Create an always_visibleObj focus frame.
+
+always_visible_focusframe_t
+create_always_visible_focusframe(const ref<containerObj::implObj>
+				 &parent_container,
+				 const border_arg &focusoff_border,
+				 const border_arg &focuson_border,
+				 const background_colorptr
+				 &focusable_background_color)
+	LIBCXX_HIDDEN;
+
+
+
+//! Create an nonrecursive_visibilityObj focus frame.
+
+nonrecursive_visibility_focusframe_t
+create_nonrecursive_visibility_focusframe(const ref<containerObj::implObj>
+					  &parent_container)
+	LIBCXX_HIDDEN;
+
+//! Create an nonrecursive_visibilityObj focus frame.
+
+nonrecursive_visibility_focusframe_t
+create_nonrecursive_visibility_focusframe(const ref<containerObj::implObj>
+					  &parent_container,
+					  const border_arg &focusoff_border,
+					  const border_arg &focuson_border)
+	LIBCXX_HIDDEN;
+
+//! Create an nonrecursive_visibilityObj focus frame.
+
+nonrecursive_visibility_focusframe_t
+create_nonrecursive_visibility_focusframe(const ref<containerObj::implObj>
+					  &parent_container,
+					  const border_arg &focusoff_border,
+					  const border_arg &focuson_border,
+					  const background_colorptr
+					  &focusable_background_color)
+	LIBCXX_HIDDEN;
+
 
 LIBCXXW_NAMESPACE_END
 

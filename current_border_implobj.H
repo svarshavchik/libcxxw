@@ -9,6 +9,8 @@
 #include "border_implfwd.H"
 #include "connection_threadfwd.H"
 #include "defaultthemefwd.H"
+#include "x/w/border_arg.H"
+#include "x/w/screenobj.H"
 #include <x/obj.H>
 
 LIBCXXW_NAMESPACE_START
@@ -19,7 +21,15 @@ LIBCXXW_NAMESPACE_START
 
 class LIBCXX_HIDDEN current_border_implObj: virtual public obj {
 
- protected:
+	//! My screen.
+	const ref<screenObj::implObj> screen;
+
+	//! The border argument specification.
+	const border_arg arg;
+
+	//! Screen's current theme.
+
+	defaulttheme current_theme_thread_only;
 
 	//! Current border.
 
@@ -27,20 +37,30 @@ class LIBCXX_HIDDEN current_border_implObj: virtual public obj {
 
  public:
 
+	THREAD_DATA_ONLY(current_theme);
 	THREAD_DATA_ONLY(border);
 
 	//! Constructor
-	current_border_implObj(const const_border_impl &initial_border);
+	current_border_implObj(const ref<screenObj::implObj> &screen,
+			       const border_arg &arg);
 
+ private:
+
+	//! Internal constructor
+	current_border_implObj(const ref<screenObj::implObj> &screen,
+			       const border_arg &arg,
+			       const current_theme_t::lock &lock);
+
+ public:
 	//! Destructor
 	~current_border_implObj();
 
 	//! The current theme has been updated.
 
-	//! The default implementation does nothing.
+	//! Check if the border has changed, and update it.
 
-	virtual void theme_updated(IN_THREAD_ONLY,
-				   const defaulttheme &new_theme);
+	void theme_updated(IN_THREAD_ONLY,
+			   const defaulttheme &new_theme);
 };
 
 LIBCXXW_NAMESPACE_END

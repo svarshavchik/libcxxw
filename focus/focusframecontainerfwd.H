@@ -15,7 +15,7 @@ class focusframecontainerObj;
 //! A focus frame container.
 
 //! A container that draws a focus frame around
-//! another display element.
+//! another display element, using focusframelayoutimplObj.
 //!
 //! This is mostly an internal object. The focus frame container is derived
 //! from a generic container object, but its layout manager should not be
@@ -35,9 +35,10 @@ class focusframecontainerObj;
 //! The contents of the container are user-replaceable, and cannot be
 //! focusable objects.
 //!
-//! 2) The focusframecontainer_element mix is combined with a non-container
+//! 2) The focusframecontainer_element mix is combined with a container with a
 //! focusable element, and some other public object that's set as the
-//! focusable owner.
+//! focusable owner. The focusframelayoutimplObj layout manager must be used
+//! as the focusframecontainerObj::implObj's container.
 
 typedef ref<focusframecontainerObj> focusframecontainer;
 

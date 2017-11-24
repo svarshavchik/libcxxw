@@ -129,7 +129,7 @@ columns are numbered, starting with row and column 0 in the top-left corner.
 default_row_border() sets the default border drawn above the given row.
 default_col_border() sets the default border drawn on the left side of the
 given column. \ref border_infomm "INSERT_LIBX_NAMESPACE::w::border_infomm"
-specifies the border; alternative the current theme's border gets specified
+specifies the border; alternatively the current theme's border gets specified
 by name.
 
 requested_row_height() and requested_col_width() sets the desired size of

@@ -14,8 +14,7 @@
 #include "screen_fontcaches.H"
 #include "recycled_pixmaps.H"
 #include "border_impl.H"
-#include "custom_border_cache.H"
-#include "theme_border_cache.H"
+#include "border_cache.H"
 #include "fonts/fontconfig.H"
 #include "fonts/freetype.H"
 #include "icon_cache.H"
@@ -197,8 +196,7 @@ screenObj::implObj::implObj(const xcb_screen_t *xcb_screen,
 	  ft(freetype::create()),
 	  solid_color_picture_cache(screen_solidcolorpictures::create()),
 	  recycled_pixmaps_cache(recycled_pixmaps::create()),
-	  custom_borders(custom_border_cache::create()),
-	  theme_borders(theme_border_cache::create()),
+	  screen_border_cache(border_cache::create()),
 	  fontcaches(screen_fontcaches::create()),
 	  iconcaches(icon_cache::create()),
 	  cursor_pointercaches(cursor_pointer_cache::create())

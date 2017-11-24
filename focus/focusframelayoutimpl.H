@@ -6,11 +6,22 @@
 #define focusframelayoutimpl_h
 
 #include "focus/focusframelayoutimplfwd.H"
+#include "focus/focusframecontainerobj.H"
 #include "gridlayoutmanager.H"
 #include "current_border_implfwd.H"
+#include "themeborder_elementfwd.H"
 #include "x/w/containerobj.H"
 
 LIBCXXW_NAMESPACE_START
+
+struct LIBCXX_HIDDEN focusoff_border_tag;
+struct LIBCXX_HIDDEN focuson_border_tag;
+
+template<typename element_impl>
+using focusframe_container_and_borderObj=
+	themeborder_elementObj<element_impl,
+			       focusoff_border_tag,
+			       focuson_border_tag>;
 
 //! Subclass of gridlayoutmanager implementation used by the focusframecontainer
 
@@ -22,18 +33,11 @@ class LIBCXX_HIDDEN focusframelayoutimplObj
 
 
  public:
-
-	//! Border we insert around the element.
-	const current_border_impl focusoff_border;
-
-	//! Border we insert around the element.
-	const current_border_impl focuson_border;
+	//! My container.
+	const ref<focusframecontainerObj::implObj> container_impl;
 
 	//! Constructor
-	focusframelayoutimplObj(const ref<containerObj::implObj>
-				&container_impl,
-				const char *off_border,
-				const char *on_border);
+	focusframelayoutimplObj(const ref<focusframecontainerObj::implObj> &);
 
 	//! Destructor
 	~focusframelayoutimplObj();

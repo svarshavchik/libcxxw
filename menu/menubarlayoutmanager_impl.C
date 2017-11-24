@@ -146,13 +146,15 @@ menu menubarlayoutmanagerObj::implObj
 		do_create_popup_menu(ref(&e), content_creator,
 				     attached_to::combobox_above_or_below);
 
-	auto menu_impl=ref<menuObj::implObj>::create(menu_popup, popup_handler,
-						     container_impl);
+	auto menu_impl=ref<menuObj::implObj>
+		::create(menu_popup,
+			 "menu_inputfocusoff_border",
+			 "menu_inputfocuson_border",
+			 popup_handler,
+			 container_impl);
 
 	auto ff_impl=ref<focusframelayoutimplObj>
-		::create(menu_impl,
-			 "menu_inputfocusoff_border",
-			 "menu_inputfocuson_border");
+		::create(menu_impl);
 
 	auto ff_factory=ff_impl->create_gridlayoutmanager()->append_row();
 	ff_factory->padding(0);

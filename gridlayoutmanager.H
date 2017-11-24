@@ -167,11 +167,7 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 
 	//! Construct a new border object.
 
-	current_border_impl get_custom_border(const border_infomm &info);
-
-	//! Construct a new border object.
-
-	current_border_impl get_theme_border(const std::string_view &id);
+	current_border_impl get_current_border(const border_arg &arg);
 
  private:
 

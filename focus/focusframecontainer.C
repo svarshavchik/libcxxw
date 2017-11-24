@@ -10,6 +10,7 @@
 #include "focus/focusframelayoutimpl.H"
 #include "container.H"
 #include "gridlayoutmanager.H"
+#include "current_border_impl.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -25,17 +26,13 @@ struct LIBCXX_HIDDEN focusframecontainerObj::new_focusframelayoutmanager {
 
 focusframecontainerObj::focusframecontainerObj(const ref<implObj> &impl,
 					       const ref<focusableImplObj>
-					       &focusable_impl,
-					       const char *off_border,
-					       const char *on_border)
+					       &focusable_impl)
 	: focusframecontainerObj(impl,
-				 ref<containerObj::implObj>
-				 (&impl->get_container_impl()),
+				 ref(&impl->get_container_impl()),
 				 focusable_impl,
 				 new_focusframelayoutmanager{
-					 ref<focusframelayoutimplObj>
-						 ::create(impl, off_border,
-							  on_border)})
+					 ref<focusframelayoutimplObj>::create
+						 (impl)})
 {
 }
 

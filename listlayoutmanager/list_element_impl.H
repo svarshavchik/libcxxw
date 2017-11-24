@@ -13,8 +13,8 @@
 #include "focus/focusable_elementfwd.H"
 #include "background_color_elementfwd.H"
 #include "iconfwd.H"
-#include "current_border_implfwd.H"
 #include "child_element.H"
+#include "themeborder_elementfwd.H"
 #include "x/w/alignment.H"
 #include "x/w/listlayoutmanager.H"
 #include "x/w/text_paramfwd.H"
@@ -181,8 +181,9 @@ struct LIBCXX_HIDDEN listimpl_info_s {
 //! \see list_element
 
 class LIBCXX_HIDDEN list_elementObj::implObj :
-	public background_color_elementObj<focusable_elementObj
-					   <child_elementObj>,
+	public background_color_elementObj<themeborder_elementObj
+					   <focusable_elementObj
+					    <child_elementObj>>,
 					   listcontainer_selected_color,
 					   listcontainer_highlighted_color,
 					   listcontainer_current_color> {
@@ -194,8 +195,9 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 	const ref<list_container_implObj> textlist_container;
 
 	//! Alias
-	typedef background_color_elementObj<focusable_elementObj
-					   <child_elementObj>,
+	typedef background_color_elementObj<themeborder_elementObj
+					    <focusable_elementObj
+					     <child_elementObj>>,
 					   listcontainer_selected_color,
 					   listcontainer_highlighted_color,
 					   listcontainer_current_color
@@ -457,9 +459,6 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 
 	//! Scratch buffer for drawing separators
 	const scratch_buffer scratch_buffer_for_separator;
-
-	//! Border that represents the separator
-	const current_border_impl separator_border;
 
 	//! Precreate an icon that we might need.
 	const icon bullet1;

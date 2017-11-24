@@ -41,6 +41,9 @@ libcxxw_la_SOURCES=\
 	batch_queue.C				    \
 	batch_queue.H				    \
 	batch_queueobj.H			    \
+	border_cache.C				    \
+	border_cache.H				    \
+	border_cachefwd.H			    \
 	border_impl.C				    \
 	border_impl.H				    \
 	border_implfwd.H			    \
@@ -135,9 +138,6 @@ libcxxw_la_SOURCES=\
 	cursor_pointer_cacheobj.H		    \
 	cursor_pointer_element.H		    \
 	cursor_pointer_elementfwd.H		    \
-	custom_border_cache.C			    \
-	custom_border_cache.H			    \
-	custom_border_cachefwd.H		    \
 	defaulttheme.C				    \
 	defaulttheme.H				    \
 	defaultthemefwd.H			    \
@@ -687,9 +687,10 @@ libcxxw_la_SOURCES=\
 	sxg/sxg_parserobj.H			    \
 	sxg/sxg_parser_text.C			    \
 	text_param.C				    \
-	theme_border_cache.C			    \
-	theme_border_cache.H			    \
-	theme_border_cachefwd.H			    \
+	themeborder_element.H			    \
+	themeborder_elementfwd.H		    \
+	themeborder_element_impl.C		    \
+	themeborder_element_impl.H		    \
 	themedim.C				    \
 	themedim.H				    \
 	themedimfwd.H				    \

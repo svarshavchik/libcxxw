@@ -12,7 +12,7 @@
 #include <x/w/elementfwd.H>
 #include <x/w/elementobj.H>
 #include <x/w/types.H>
-#include <x/w/border_infomm.H>
+#include <x/w/border_arg.H>
 #include <x/w/alignment.H>
 #include <x/w/dim_arg.H>
 #include <x/refptr_hash.H>
@@ -103,11 +103,7 @@ public:
 					      const element &);
 
 	//! Set the default border above this row.
-	void default_row_border(size_t row, const border_infomm &info);
-
-	//! Set the default border above this row.
-	void default_row_border(size_t row,
-				const std::string_view &name);
+	void default_row_border(size_t row, const border_arg &arg);
 
 	//! Set the requested row height.
 
@@ -139,11 +135,7 @@ public:
 	}
 
 	//! Set the default border to the left of this column
-	void default_col_border(size_t col, const border_infomm &info);
-
-	//! Set the default border to the left of this column
-	void default_col_border(size_t col,
-				const std::string_view &name);
+	void default_col_border(size_t col, const border_arg &arg);
 
 	//! Set the requested column width.
 

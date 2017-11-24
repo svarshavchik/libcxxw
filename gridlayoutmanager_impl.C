@@ -351,17 +351,10 @@ void gridlayoutmanagerObj::implObj
 }
 
 current_border_impl gridlayoutmanagerObj::implObj
-::get_custom_border(const border_infomm &info)
+::get_current_border(const border_arg &arg)
 {
 	return container_impl->get_window_handler().screenref
-		->impl->get_custom_border(info);
-}
-
-current_border_impl gridlayoutmanagerObj::implObj
-::get_theme_border(const std::string_view &id)
-{
-	return container_impl->get_window_handler().screenref
-		->impl->get_theme_border(id);
+		->impl->get_cached_border(arg);
 }
 
 void gridlayoutmanagerObj::implObj

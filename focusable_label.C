@@ -28,12 +28,12 @@ focusable_label factoryObj
 ::create_focusable_label(const text_param &text,
 			 const focusable_label_config &config)
 {
-	auto ff=create_standard_focusframe_container_element(get_container_impl());
+	auto ff=create_nonrecursive_visibility_focusframe
+		(get_container_impl(),
+		 config.off_border,
+		 config.on_border);
 
-	auto ffl=ref<focusframelayoutimplObj>
-		::create(ff,
-			 config.off_border,
-			 config.on_border);
+	auto ffl=ref<focusframelayoutimplObj>::create(ff);
 
 	auto glm=ffl->create_gridlayoutmanager();
 

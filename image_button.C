@@ -187,8 +187,10 @@ do_create_image_button(const std::vector<std::string_view>
 	// This grid layout manager will contain a single focusframecontainer.
 
 	auto focus_frame_impl=
-		create_standard_focusframe_container_element
-		(image_button_outer_container_impl);
+		create_always_visible_focusframe
+		(image_button_outer_container_impl,
+		 "thin_inputfocusoff_border",
+		 "thin_inputfocuson_border");
 
 	// Create an image_button_internal implementation object. Its
 	// container is the focusframecontainer.
@@ -202,9 +204,7 @@ do_create_image_button(const std::vector<std::string_view>
 	// image_button_internalObj as its focusable implementation object.
 
 	auto focus_frame=focusframecontainer::create(focus_frame_impl,
-						     ibii,
-						     "thin_inputfocusoff_border",
-						     "thin_inputfocuson_border");
+						     ibii);
 
 	// And "create" the image_button_internal inside the focusframe.
 
@@ -223,7 +223,6 @@ do_create_image_button(const std::vector<std::string_view>
 
 	auto button_factory=glm->append_row();
 	button_factory->padding(0).created_internally(focus_frame);
-	focus_frame->show();
 
 	auto impl=ref<image_buttonObj::implObj>::create(ibi);
 

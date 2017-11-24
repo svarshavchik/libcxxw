@@ -14,7 +14,7 @@ LIBCXXW_NAMESPACE_START
 //! A border of an element in a grid.
 
 //! The \ref gridlayoutmanager "grid layout manager" draws borders around
-//! each grid element. This class specifies the grid element's border.
+//! each grid element. This class specifies a custom grid element border.
 //!
 //! Borders of adjacent elements get collapsed together, with the "better"
 //! border ending up on top, and ruling the roost.
