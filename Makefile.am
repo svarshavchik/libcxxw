@@ -41,6 +41,30 @@ libcxxw_la_SOURCES=\
 	batch_queue.C				    \
 	batch_queue.H				    \
 	batch_queueobj.H			    \
+	booklayoutmanager/bookgridlayoutmanager.C   \
+	booklayoutmanager/bookgridlayoutmanager.H   \
+	booklayoutmanager/booklayoutmanager.C       \
+	booklayoutmanager/booklayoutmanager_impl.C  \
+	booklayoutmanager/booklayoutmanager_impl.H  \
+	booklayoutmanager/bookpagefactory_impl.C    \
+	booklayoutmanager/pagetab.C		    \
+	booklayoutmanager/pagetab.H		    \
+	booklayoutmanager/pagetab_impl.C	    \
+	booklayoutmanager/pagetab_impl.H	    \
+	booklayoutmanager/pagetabfwd.H		    \
+	booklayoutmanager/pagetabobj.H		    \
+	booklayoutmanager/pagetabgridcontainer.C \
+	booklayoutmanager/pagetabgridcontainer.H \
+	booklayoutmanager/pagetabgridcontainerfwd.H \
+	booklayoutmanager/pagetabgridcontainerobj.H \
+	booklayoutmanager/pagetabgridlayoutmanager.C \
+	booklayoutmanager/pagetabgridlayoutmanager.H \
+	booklayoutmanager/pagetabgridlayoutmanager_impl.C \
+	booklayoutmanager/pagetabgridlayoutmanager_impl.H \
+	booklayoutmanager/pagetabgridlayoutmanagerfwd.H \
+	booklayoutmanager/pagetabgridlayoutmanagerobj.H \
+	booklayoutmanager/pagetabsingletonlayoutmanager_impl.C \
+	booklayoutmanager/pagetabsingletonlayoutmanager_implobj.H \
 	border_cache.C				    \
 	border_cache.H				    \
 	border_cachefwd.H			    \
@@ -768,6 +792,7 @@ TESTPROGRAMS=\
 	#
 
 INTERACTIVETESTPROGRAMS=\
+	testbook					\
 	testbutton					\
 	testcombobox					\
 	testimagebuttons			        \
@@ -786,6 +811,10 @@ INTERACTIVETESTPROGRAMS=\
 EXTRA_PROGRAMS=$(TESTPROGRAMS) $(INTERACTIVETESTPROGRAMS)
 
 noinst_PROGRAMS=$(BUILT_TESTPROGRAMS) $(BUILT_INTERACTIVETESTPROGRAMS) genconstants
+
+testbook_SOURCES=testbook.C
+testbook_LDADD=libcxxw.la
+testbook_LDFLAGS=-static $(STATICLINKFLAGS)
 
 testbutton_SOURCES=testbutton.C
 testbutton_LDADD=libcxxw.la

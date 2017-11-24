@@ -53,7 +53,10 @@ struct grid_map_t : public mpobj<ref<grid_map_infoObj>, std::recursive_mutex> {
 	};
 };
 #else
+
+//! Internal structure used by the \ref gridlayoutmanager "grid layout manager".
 typedef mpobj<ref<grid_map_infoObj>, std::recursive_mutex> grid_map_t;
+
 #endif
 
 LIBCXXW_NAMESPACE_END

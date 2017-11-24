@@ -401,6 +401,20 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
     <color value="2">progressbar_value_100_color</color>
   </color_gradient>
 
+  <!-- Books -->
+
+  <dim id="book_tab_h_padding" axis="horiz">1</dim>
+  <dim id="book_tab_v_padding" axis="horiz">1</dim>
+  <color id="book_tab_inactive_color" scale="50%" />
+  <color id="book_tab_active_color" scale="70%" />
+  <color id="book_tab_warm_color" scale="80%" />
+  <color id="book_tab_hot_color" scale="100%" />
+
+  <border id="book_tab_border" from="thin_0%">
+    <hradius>.5</hradius>
+    <vradius>.5</vradius>
+  </border>
+
   <!-- Dialogs -->
 
   <color id="dialog_background" scale="90%" />
@@ -919,5 +933,4 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
   <font id="filedir_filesize" from="mono">
     <point_size>12</point_size>
   </font>
-
 </theme>
