@@ -69,6 +69,8 @@ factoryObj::create_input_field(const text_param &text,
 
 	editorptr created_editor;
 
+	peephole_style input_field_peephole_style{halign::fill};
+
 	auto [peephole_info, lm]=create_peepholed_focusable_with_frame
 		({"textedit_border",
 				"inputfocusoff_border",
@@ -78,7 +80,7 @@ factoryObj::create_input_field(const text_param &text,
 				.create_background_color
 				("textedit_background_color"),
 				impl_mixin,
-				peephole_style(),
+				input_field_peephole_style,
 				scrollbar_visibility::never,
 				config.vertical_scrollbar},
 		 [&]

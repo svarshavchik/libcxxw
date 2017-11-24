@@ -5,6 +5,7 @@
 #include "libcxxw_config.h"
 #include "peephole/peephole_layoutmanager_impl.H"
 #include "peephole/peepholed_element.H"
+#include "metrics_horizvert.H"
 #include "catch_exceptions.H"
 #include "container.H"
 #include "run_as.H"
@@ -136,11 +137,6 @@ void peepholeObj::layoutmanager_implObj
 			element_horizvert->horiz.maximum(),
 			element_horizvert->vert.maximum()};
 
-	// Stretch the combo-box's peephole to fill its alloted width.
-	if (element_pos.width < current_position.width)
-	{
-		element_pos.width=current_position.width;
-	}
 	// If the maximum requested size exceeds the peephole's size,
 	// truncate it down (this will also chop off the infinite() requested
 	// size.
@@ -242,9 +238,44 @@ void peepholeObj::layoutmanager_implObj
 	if (element_pos.y < min_scroll_y)
 		element_pos.y=min_scroll_y;
 
+	auto aligned_position=metrics::align(current_position.width,
+					     current_position.height,
+					     element_pos.width,
+					     element_pos.height,
+					     style.horizontal_alignment,
+					     style.vertical_alignment);
+
+	// We pay attention to what align() tells us only if the
+	// peepholed element is smaller. Otherwise, we control the position.
+
+	if (element_pos.width < current_position.width)
+	{
+		element_pos.x=aligned_position.x;
+		element_pos.width=aligned_position.width;
+	}
+
+	if (element_pos.height < current_position.height)
+	{
+		element_pos.y=aligned_position.y;
+		element_pos.height=aligned_position.height;
+	}
+
 	LOG_DEBUG("Positioning element to: " << element_pos);
 	peephole_element_impl->update_current_position(IN_THREAD,
 						       element_pos);
+
+	// update_scrollbars expects to see only NEGATIVE x and y positions,
+	// which is how we normally scroll. But if the element is smaller than
+	// the peephole, then align() will result in positive x and y
+	// coordinates, here.
+	//
+	// The alignment is our own doing, so hide it from update_scrollbars()
+
+	if (element_pos.x > 0)
+		element_pos.x=0;
+
+	if (element_pos.y > 0)
+		element_pos.y=0;
 	update_scrollbars(IN_THREAD, element_pos, current_position);
 }
 

@@ -88,12 +88,14 @@ do_create_peepholed_toplevel_listcontainer_popup
 	ptr<peepholed_toplevel_listcontainer_layoutmanager_implObj
 	    > popup_listlayoutmanagerptr;
 
+	peephole_style popup_peephole_style{halign::fill};
+
 	// Create the popup's peephole, in case the popup is too big for the
 	// screen.
 	auto popup_toplevel_layoutmanager=create_peephole_toplevel
 		(popup_handler,
 		 args.popup_border,
-		 {},
+		 popup_peephole_style,
 		[&]
 		 (const auto &peephole_container)
 		 {

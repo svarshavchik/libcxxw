@@ -91,6 +91,8 @@ new_listlayoutmanager::create(const ref<containerObj::implObj>
 
 	containerptr internal_listcontainer;
 
+	peephole_style list_peephole_style{halign::fill};
+
 	auto [peephole_info, lm]=create_peepholed_focusable_with_frame
 		({"list_border",
 				"inputfocusoff_border",
@@ -99,7 +101,7 @@ new_listlayoutmanager::create(const ref<containerObj::implObj>
 				focusable_container_impl->get_element_impl()
 				.create_background_color(background_color),
 				focusable_container_impl,
-				peephole_style(),
+				list_peephole_style,
 				scrollbar_visibility::never,
 				vertical_scrollbar},
 		 [&, this]

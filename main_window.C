@@ -170,10 +170,12 @@ do_create_main_window_impl(const ref<main_windowObj::handlerObj> &handler,
 
 	// Create a top level peephole in the main_window.
 
+	peephole_style main_window_peephole_style{halign::fill};
+
 	auto lm=create_peephole_toplevel
 		(handler,
 		 nullptr,
-		 peephole_style(),
+		 main_window_peephole_style,
 		 [&]
 		 (const ref<containerObj::implObj> &parent)
 		 {
