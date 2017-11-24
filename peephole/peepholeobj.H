@@ -7,6 +7,7 @@
 
 #include "peephole/peepholefwd.H"
 #include "x/w/containerobj.H"
+#include "x/w/elementfwd.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -30,6 +31,10 @@ class LIBCXX_HIDDEN peepholeObj : public containerObj {
 
 	//! Destructor
 	~peepholeObj();
+
+	//! Return the element in the peephole.
+
+	element get_peepholed() const;
 };
 
 LIBCXXW_NAMESPACE_END

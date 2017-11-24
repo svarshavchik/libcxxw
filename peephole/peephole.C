@@ -6,6 +6,7 @@
 #include "peephole/peephole_impl.H"
 #include "peephole/peephole_layoutmanager_impl.H"
 #include "peephole/peephole.H"
+#include "x/w/element.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -16,5 +17,18 @@ peepholeObj::peepholeObj(const ref<implObj> &impl,
 }
 
 peepholeObj::~peepholeObj()=default;
+
+element peepholeObj::get_peepholed() const
+{
+	ptr<peepholeObj::layoutmanager_implObj> peephole_lm_impl;
+
+	impl->invoke_layoutmanager([&]
+				   (const auto &lm_impl)
+				   {
+					   peephole_lm_impl=lm_impl;
+				   });
+
+	return peephole_lm_impl->element_in_peephole;
+}
 
 LIBCXXW_NAMESPACE_END
