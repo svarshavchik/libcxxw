@@ -8,6 +8,7 @@
 #include "background_color.H"
 #include "x/w/factory.H"
 #include "x/w/label.H"
+#include "x/w/border_arg.H"
 #include "container_element.H"
 #include "container_visible_element.H"
 #include "hotspot_bgcolor_element.H"
@@ -69,7 +70,7 @@ typedef factoryObj::factory_creator_t factory_creator_t;
 
 static buttonObj::internal_construction_info
 create_button_focusframe(const ref<buttonObj::implObj> &impl,
-			 const char *border,
+			 const border_arg &border,
 			 const function<factory_creator_t> &f)
 {
 	// Create the grid layout manager that the button uses
@@ -164,7 +165,7 @@ button factoryObj::do_create_special_button(const function<factory_creator_t>&f,
 	return do_create_button("special_button_border", f, sk);
 }
 
-button factoryObj::do_create_button(const char *theme_border,
+button factoryObj::do_create_button(const border_arg &theme_border,
 				    const function<factory_creator_t> &f,
 				    const shortcut &shortcut_key)
 {
@@ -232,7 +233,7 @@ factoryObj::create_special_button_with_label(const text_param &text,
 }
 
 button
-factoryObj::create_button_with_label(const char *theme_border,
+factoryObj::create_button_with_label(const border_arg &theme_border,
 				     const text_param &text,
 				     const shortcut &shortcut_key,
 				     halign alignment)

@@ -14,7 +14,7 @@
 #include <x/w/canvasfwd.H>
 #include <x/w/metrics/axis.H>
 #include <x/w/metrics/mmaxisfwd.H>
-#include <x/w/border_infommfwd.H>
+#include <x/w/border_argfwd.H>
 #include <x/w/alignment.H>
 #include <x/w/text_paramfwd.H>
 #include <x/w/shortcutfwd.H>
@@ -238,12 +238,12 @@ public:
 					const shortcut &);
 
 	//! Helper for creating buttons.
-	button do_create_button(const char *,
+	button do_create_button(const border_arg &,
 				const function<factory_creator_t> &,
 				const shortcut &);
 
 	//! Helper for creating buttons.
-	button create_button_with_label(const char *theme_border,
+	button create_button_with_label(const border_arg &theme_border,
 					const text_param &text,
 					const shortcut &shortcut_key,
 					halign alignment=halign::left);

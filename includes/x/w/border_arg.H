@@ -6,15 +6,10 @@
 #ifndef x_w_border_arg_H
 #define x_w_border_arg_H
 
+#include <x/w/border_argfwd.H>
 #include <x/w/border_infomm.H>
-#include <string>
-#include <variant>
 
 LIBCXXW_NAMESPACE_START
-
-//! A border can be specified as either a border_infomm, or a theme border.
-
-typedef std::variant<border_infomm, std::string> border_arg;
 
 LIBCXXW_NAMESPACE_END
 
