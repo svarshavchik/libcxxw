@@ -5,7 +5,7 @@
 #ifndef x_w_border_infomm_h
 #define x_w_border_infomm_h
 
-#include <x/w/picture.H>
+#include <x/w/rgb.H>
 #include <x/w/border_infommfwd.H>
 #include <vector>
 
@@ -37,7 +37,7 @@ struct border_infomm {
 
 	//! Typically 1 color, but maybe two.
 
-	std::vector<const_picture> colors;
+	std::vector<color_arg> colors;
 
 	//! Border width in millimeters
 	double width=0;

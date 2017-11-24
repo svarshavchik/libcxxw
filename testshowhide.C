@@ -17,6 +17,7 @@
 #include "x/w/screen.H"
 #include "x/w/connection.H"
 #include "x/w/button.H"
+#include "x/w/picture.H"
 #include <string>
 #include <iostream>
 
@@ -61,7 +62,7 @@ void testshowhide()
 
 			 border_infomm my_border;
 
-			 my_border.colors.push_back(main_window->create_solid_color_picture({0, 0, 0}));
+			 my_border.colors.push_back(rgb{0,0,0});
 			 my_border.width=.5;
 			 my_border.height=.5;
 

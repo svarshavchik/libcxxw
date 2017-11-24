@@ -33,7 +33,13 @@ border_info screenObj::implObj
 {
 	border_info info;
 
-	info.colors=mm.colors;
+	info.colors.reserve(mm.colors.size());
+
+	for (const auto &c:mm.colors)
+	{
+		auto p=create_solid_color_picture((*lock)->get_theme_color(c));
+		info.colors.push_back(p);
+	}
 
 	info.width=(*lock)->compute_width(mm.width);
 	info.height=(*lock)->compute_height(mm.height);

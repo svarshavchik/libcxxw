@@ -7,6 +7,7 @@
 #define x_w_border_infommhash_H
 
 #include <x/w/border_infomm.H>
+#include <x/w/rgb_hash.H>
 #include <x/refptr_hash.H>
 
 namespace std {
@@ -27,10 +28,10 @@ namespace std {
 
 			size_t h=s;
 
-			hash<LIBCXX_NAMESPACE::w::const_picture> pic_hash;
+			std::hash<LIBCXX_NAMESPACE::w::color_arg> color_hash;
 
 			for (const auto &color:b.colors)
-				h += pic_hash(color);
+				h += color_hash(color);
 
 			return h;
 		}
