@@ -10,8 +10,9 @@
 #include "x/w/alignment.H"
 #include "layoutmanager.H"
 #include <optional>
-
+#include <unordered_map>
 #include <x/mpobj.H>
+#include <x/refptr_hash.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -43,6 +44,10 @@ struct LIBCXX_HIDDEN switch_layout_info_s {
 	//! Current elements being switched.
 	std::vector<switch_element_info> elements;
 
+	//! Look up the_element's index.
+
+	std::unordered_map<element, size_t> element_index;
+
 	//! Which element is visible now.
 	std::optional<size_t> current_element;
 };
@@ -72,6 +77,10 @@ class LIBCXX_HIDDEN switchlayoutmanagerObj::implObj
 	//! Remove an element.
 	void remove(size_t);
 
+ private:
+	//! Update element_index, after append/insert/remove.
+	void rebuild_index(switch_layout_info_t::lock &lock);
+ public:
 	//! Implement do_for_each_child()
 
 	void do_for_each_child(IN_THREAD_ONLY,

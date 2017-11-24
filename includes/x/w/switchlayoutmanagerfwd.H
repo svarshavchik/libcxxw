@@ -39,7 +39,7 @@ visible element disappear.
 
 INSERT_LIBX_NAMESPACE::w::switchfactory factory=layout_manager->append();
 
-factory->create_label("Hello world")->show();
+auto label=factory->create_label("Hello world")->show();
 
 INSERT_LIBX_NAMESPACE::w::switchfactory factory=layout_manager->insert(0);
 
@@ -59,7 +59,11 @@ Each display element in the switched container must still be show()n
 in order to be visible when its turn comes to shine, even though
 the switch layout manager only makes one of them visible, at a time.
 
+lookup() returns the current index of the given element.
+
 \code
+std::optional<size_t> layout_manager->lookup(label);
+
 layout_manager->switch_to(layout_manager->size()-1);
 
 layout_manager->switch_off();
@@ -71,6 +75,10 @@ INSERT_LIBX_NAMESPACE::w::element e=layout_manager->get(0);
 \endcode
 
 size() returns the number of elements in the switched container.
+lookup() returns the index of the given element. lookup() returns nothing
+if the given element is not in the container: you looked up some other
+element.
+
 switch_to() makes the given element number (the elements are numbered starting
 with 0) visible, and makes the currently-visible element, if there is one,
 disappear.

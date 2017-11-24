@@ -32,7 +32,10 @@ void switchlayoutmanagerObj::implObj::append(const switch_element_info &e)
 {
 	switch_layout_info_t::lock lock{info};
 
+	if (!lock->element_index.insert({e.the_element, 0}).second)
+		throw EXCEPTION("Internal error: inconsistent element_index");
 	lock->elements.push_back(e);
+	rebuild_index(lock);
 }
 
 void switchlayoutmanagerObj::implObj::insert(size_t p,
@@ -44,7 +47,12 @@ void switchlayoutmanagerObj::implObj::insert(size_t p,
 		throw EXCEPTION(gettextmsg(_("There are only %1% switchable"
 					     " elements"),
 					   lock->elements.size()));
+
+	if (!lock->element_index.insert({e.the_element, 0}).second)
+		throw EXCEPTION("Internal error: inconsistent element_index");
+
 	lock->elements.insert(lock->elements.begin()+p, e);
+	rebuild_index(lock);
 
 	// Update current_element, if needed.
 
@@ -69,7 +77,12 @@ void switchlayoutmanagerObj::implObj::remove(size_t n)
 					     " elements"),
 					   lock->elements.size()));
 
-	lock->elements.erase(lock->elements.begin()+n);
+	auto iter=lock->elements.begin()+n;
+
+	lock->element_index.erase(iter->the_element);
+
+	lock->elements.erase(iter);
+	rebuild_index(lock);
 
 	// Update current_element, intelligently.
 
@@ -87,6 +100,15 @@ void switchlayoutmanagerObj::implObj::remove(size_t n)
 	    // Removed element was the last one
 	    *lock->current_element >= lock->elements.size())
 		--*lock->current_element;
+}
+
+void switchlayoutmanagerObj::implObj
+::rebuild_index(switch_layout_info_t::lock &lock)
+{
+	size_t i=0;
+
+	for (const auto &info:lock->elements)
+		lock->element_index.at(info.the_element)=i++;
 }
 
 void switchlayoutmanagerObj::implObj

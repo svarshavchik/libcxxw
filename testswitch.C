@@ -151,7 +151,7 @@ static auto create_switch(const LIBCXX_NAMESPACE::w::switchlayoutmanager &sl)
 
 	LIBCXX_NAMESPACE::w::input_fieldptr address1;
 
-	sf->halign(LIBCXX_NAMESPACE::w::halign::left)
+	auto element1=sf->halign(LIBCXX_NAMESPACE::w::halign::left)
 		.valign(LIBCXX_NAMESPACE::w::valign::top)
 		.create_container
 		([&]
@@ -163,7 +163,7 @@ static auto create_switch(const LIBCXX_NAMESPACE::w::switchlayoutmanager &sl)
 
 	LIBCXX_NAMESPACE::w::input_fieldptr phone;
 
-	sf->create_container
+	auto element2=sf->create_container
 		([&]
 		 (const auto &container)
 		 {
@@ -175,7 +175,7 @@ static auto create_switch(const LIBCXX_NAMESPACE::w::switchlayoutmanager &sl)
 
 	sf=sl->insert(0);
 
-	sf->halign(LIBCXX_NAMESPACE::w::halign::left)
+	auto element0=sf->halign(LIBCXX_NAMESPACE::w::halign::left)
 		.valign(LIBCXX_NAMESPACE::w::valign::top)
 		.create_container
 		([&]
@@ -195,6 +195,11 @@ static auto create_switch(const LIBCXX_NAMESPACE::w::switchlayoutmanager &sl)
 	for (size_t i=0; i<n; ++i)
 		std::cout << sl->get(i)->objname() << std::endl;
 
+	std::cout << sl->lookup(element0).value() << " "
+		  << sl->lookup(element1).value() << " "
+		  << sl->lookup(element2).value()
+		  << (sl->lookup(address1) ? " Huh?":" Ok")
+		  << std::endl;
 	return std::tuple{firstname, address1, phone};
 }
 

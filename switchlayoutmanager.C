@@ -97,6 +97,21 @@ element switchlayoutmanagerObj::get(size_t n) const
 	return lock->elements.at(n).the_element;
 }
 
+
+std::optional<size_t> switchlayoutmanagerObj::lookup(const element &e) const
+{
+	std::optional<size_t> ret;
+
+	switch_layout_info_t::lock lock{impl->info};
+
+	auto iter=lock->element_index.find(e);
+
+	if (iter != lock->element_index.end())
+		ret=iter->second;
+
+	return ret;
+}
+
 std::optional<size_t> switchlayoutmanagerObj::switched() const
 {
 	switch_layout_info_t::lock lock{impl->info};

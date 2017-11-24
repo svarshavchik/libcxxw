@@ -10,6 +10,8 @@
 #include <x/w/elementfwd.H>
 #include <x/w/layoutmanagerobj.H>
 
+#include <optional>
+
 LIBCXXW_NAMESPACE_START
 
 //! Implementation object.
@@ -41,6 +43,9 @@ public:
 
 	//! How many elements there are in the list.
 	size_t size() const;
+
+	//! Look up the element's current index position.
+	std::optional<size_t> lookup(const element &) const;
 
 	//! Return the specified element.
 	element get(size_t) const;
