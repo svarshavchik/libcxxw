@@ -12,7 +12,7 @@ LIBCXXW_NAMESPACE_START
 //! The actual layout manager for a container with a \ref booklayoutmanager "booklayoutmanager"
 
 //! The container uses the grid layout manager to position the pane, that
-//! uses the switch layout manager, and the arrows and the peephole with
+//! uses the page layout manager, and the arrows and the peephole with
 //! the book tabs on the first row.
 
 

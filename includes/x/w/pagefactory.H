@@ -2,11 +2,11 @@
 ** Copyright 2017 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
-#ifndef x_w_switchfactory_h
-#define x_w_switchfactory_h
+#ifndef x_w_pagefactory_h
+#define x_w_pagefactory_h
 
-#include <x/w/switchfactoryfwd.H>
-#include <x/w/switchfactoryobj.H>
+#include <x/w/pagefactoryfwd.H>
+#include <x/w/pagefactoryobj.H>
 #include <x/w/factory.H>
 
 LIBCXXW_NAMESPACE_START

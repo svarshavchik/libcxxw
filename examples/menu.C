@@ -503,7 +503,7 @@ void create_help_about(const x::w::main_window &main_window)
 
 	auto w=d->dialog_window;
 
-	w->set_background_color(w->create_solid_color_picture(light_yellow));
+	w->set_background_color(light_yellow);
 
 	w->set_window_title("About myself");
 }

@@ -1,4 +1,4 @@
-<optclass name="testswitch_options">
+<optclass name="testpage_options">
   <option>
     <name>testfocus</name>
     <type>bool</type>

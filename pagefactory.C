@@ -4,7 +4,7 @@
 */
 
 #include "libcxxw_config.h"
-#include "switchfactory_impl.H"
+#include "pagefactory_impl.H"
 #include "container_element.H"
 #include "always_visible.H"
 #include "child_element.H"
@@ -12,23 +12,23 @@
 
 LIBCXXW_NAMESPACE_START
 
-switchfactoryObj::switchfactoryObj(const ref<implObj> &impl)
+pagefactoryObj::pagefactoryObj(const ref<implObj> &impl)
 	: impl(impl)
 {
 }
 
-switchfactoryObj::~switchfactoryObj()=default;
+pagefactoryObj::~pagefactoryObj()=default;
 
-ref<containerObj::implObj> switchfactoryObj::get_container_impl()
+ref<containerObj::implObj> pagefactoryObj::get_container_impl()
 {
 	// Pull a switcheroo that creates a new container that uses the
 	// singleton layout manager. This is what gets added to the
-	// switched container, and the switchlayoutmanager does its thing
+	// switched container, and the pagelayoutmanager does its thing
 	// by controlling this new container's visibility.
 	//
 	// The actual element being created goes into this new container,
 	// and the container gets added to the switched container. In this
-	// manner, switch layout manager does its job without affecting
+	// manner, the page layout manager does its job without affecting
 	// the explicit visibilit of the created display element.
 	//
 	// Use the always_visible mixin, so that recursive show/hide_all()s
@@ -44,24 +44,24 @@ ref<containerObj::implObj> switchfactoryObj::get_container_impl()
 	return container_impl;
 }
 
-elementObj::implObj &switchfactoryObj::get_element_impl()
+elementObj::implObj &pagefactoryObj::get_element_impl()
 {
 	return impl->lm->layoutmanagerObj::impl->container_impl
 		->get_element_impl();
 }
 
-ref<containerObj::implObj> switchfactoryObj::last_container_impl()
+ref<containerObj::implObj> pagefactoryObj::last_container_impl()
 {
 	implObj::info_t::lock lock{impl->info};
 
 	if (!lock->prev_container_impl)
 		throw EXCEPTION("Internal error: unexpected call to "
-				"switchfactoryObj::last_container_impl()");
+				"pagefactoryObj::last_container_impl()");
 
 	return lock->prev_container_impl;
 }
 
-switchfactoryObj &switchfactoryObj::halign(LIBCXXW_NAMESPACE::halign a)
+pagefactoryObj &pagefactoryObj::halign(LIBCXXW_NAMESPACE::halign a)
 {
 	implObj::info_t::lock lock{impl->info};
 
@@ -70,7 +70,7 @@ switchfactoryObj &switchfactoryObj::halign(LIBCXXW_NAMESPACE::halign a)
 	return *this;
 }
 
-switchfactoryObj &switchfactoryObj::valign(LIBCXXW_NAMESPACE::valign a)
+pagefactoryObj &pagefactoryObj::valign(LIBCXXW_NAMESPACE::valign a)
 {
 	implObj::info_t::lock lock{impl->info};
 
@@ -79,13 +79,13 @@ switchfactoryObj &switchfactoryObj::valign(LIBCXXW_NAMESPACE::valign a)
 	return *this;
 }
 
-void switchfactoryObj::created(const element &e)
+void pagefactoryObj::created(const element &e)
 {
 	implObj::info_t::lock lock{impl->info};
 
 	if (!lock->prev_container_impl)
 		throw EXCEPTION("Internal error: unexpected call to "
-				"switchfactoryObj::created()");
+				"pagefactoryObj::created()");
 
 	// Make sure that any thrown exception, after construction of the
 	// container object, destroys the implementation object too.

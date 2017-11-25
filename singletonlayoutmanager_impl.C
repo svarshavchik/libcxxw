@@ -137,7 +137,7 @@ void singletonlayoutmanagerObj::implObj
 			   const rectangle &position)
 {
 	// If our own width/height is 0, don't bother updating the element's
-	// position. This is used by the switch layout manager to hide us.
+	// position. This is used by the page layout manager to hide us.
 	if (position.width == 0 || position.height == 0)
 		return;
 

@@ -3,31 +3,31 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
-#include "switchlayoutmanager_impl.H"
-#include "switchfactory_impl.H"
+#include "pagelayoutmanager_impl.H"
+#include "pagefactory_impl.H"
 #include "messages.H"
 #include "batch_queue.H"
 
 LIBCXXW_NAMESPACE_START
 
-switch_lock::switch_lock(const switchlayoutmanager &lm)
+page_lock::page_lock(const pagelayoutmanager &lm)
 	: lock{lm->impl->info}
 {
 }
 
-switch_lock::~switch_lock()=default;
+page_lock::~page_lock()=default;
 
-switchlayoutmanagerObj::switchlayoutmanagerObj(const ref<implObj> &impl)
+pagelayoutmanagerObj::pagelayoutmanagerObj(const ref<implObj> &impl)
 	: layoutmanagerObj(impl),
 	  impl(impl)
 {
 }
 
-switchlayoutmanagerObj::~switchlayoutmanagerObj()=default;
+pagelayoutmanagerObj::~pagelayoutmanagerObj()=default;
 
 //////////////////////////////////////////////////////////////////////////////
 
-class LIBCXX_HIDDEN switchfactoryObj::implObj::appendObj : public implObj {
+class LIBCXX_HIDDEN pagefactoryObj::implObj::appendObj : public implObj {
 
 public:
 
@@ -39,15 +39,15 @@ public:
 	}
 };
 
-switchfactory switchlayoutmanagerObj::append()
+pagefactory pagelayoutmanagerObj::append()
 {
-	return switchfactory::create
-		(ref<switchfactoryObj::implObj::appendObj>::create(ref(this)));
+	return pagefactory::create
+		(ref<pagefactoryObj::implObj::appendObj>::create(ref(this)));
 }
 
 //////////////////////////////////////////////////////////////////////////////
 
-class LIBCXX_HIDDEN switchfactoryObj::implObj::insertObj : public implObj {
+class LIBCXX_HIDDEN pagefactoryObj::implObj::insertObj : public implObj {
 
 public:
 
@@ -64,30 +64,30 @@ public:
 	}
 };
 
-switchfactory switchlayoutmanagerObj::insert(size_t n)
+pagefactory pagelayoutmanagerObj::insert(size_t n)
 {
-	auto f=ref<switchfactoryObj::implObj::insertObj>::create(ref(this));
+	auto f=ref<pagefactoryObj::implObj::insertObj>::create(ref(this));
 
 	f->n=n;
 
-	return switchfactory::create(f);
+	return pagefactory::create(f);
 }
 
-void switchlayoutmanagerObj::remove(size_t i)
+void pagelayoutmanagerObj::remove(size_t i)
 {
 	impl->remove(i);
 }
 
-size_t switchlayoutmanagerObj::size() const
+size_t pagelayoutmanagerObj::size() const
 {
-	switch_layout_info_t::lock lock{impl->info};
+	page_layout_info_t::lock lock{impl->info};
 
 	return lock->elements.size();
 }
 
-element switchlayoutmanagerObj::get(size_t n) const
+element pagelayoutmanagerObj::get(size_t n) const
 {
-	switch_layout_info_t::lock lock{impl->info};
+	page_layout_info_t::lock lock{impl->info};
 
 	if (n >= lock->elements.size())
 		throw EXCEPTION(gettextmsg(_("There are only %1% switchable"
@@ -98,11 +98,11 @@ element switchlayoutmanagerObj::get(size_t n) const
 }
 
 
-std::optional<size_t> switchlayoutmanagerObj::lookup(const element &e) const
+std::optional<size_t> pagelayoutmanagerObj::lookup(const element &e) const
 {
 	std::optional<size_t> ret;
 
-	switch_layout_info_t::lock lock{impl->info};
+	page_layout_info_t::lock lock{impl->info};
 
 	auto iter=lock->element_index.find(e);
 
@@ -112,16 +112,16 @@ std::optional<size_t> switchlayoutmanagerObj::lookup(const element &e) const
 	return ret;
 }
 
-std::optional<size_t> switchlayoutmanagerObj::switched() const
+std::optional<size_t> pagelayoutmanagerObj::opened() const
 {
-	switch_layout_info_t::lock lock{impl->info};
+	page_layout_info_t::lock lock{impl->info};
 
 	return lock->current_element;
 }
 
-void switchlayoutmanagerObj::switch_to(size_t n)
+void pagelayoutmanagerObj::open(size_t n)
 {
-	switch_layout_info_t::lock lock{impl->info};
+	page_layout_info_t::lock lock{impl->info};
 
 	if (lock->elements.size() <= n)
 		throw EXCEPTION(gettextmsg(_("There are only %1% switchable"
@@ -130,12 +130,12 @@ void switchlayoutmanagerObj::switch_to(size_t n)
 	lock->current_element=n;
 }
 
-void switchlayoutmanagerObj::switch_off()
+void pagelayoutmanagerObj::close()
 {
 	queue->run_as([impl=this->impl]
 		      (IN_THREAD_ONLY)
 		      {
-			      switch_layout_info_t::lock lock{impl->info};
+			      page_layout_info_t::lock lock{impl->info};
 
 			      lock->current_element.reset();
 			      impl->needs_recalculation(IN_THREAD);

@@ -13,8 +13,8 @@
 #include <x/w/main_window.H>
 #include <x/w/gridlayoutmanager.H>
 #include <x/w/gridfactory.H>
-#include <x/w/switchlayoutmanager.H>
-#include <x/w/switchfactory.H>
+#include <x/w/pagelayoutmanager.H>
+#include <x/w/pagefactory.H>
 #include <x/w/label.H>
 #include <x/w/text_param_literals.H>
 #include <x/w/button.H>
@@ -135,44 +135,43 @@ static x::w::input_field phone_tab(const x::w::gridlayoutmanager &glm)
 }
 
 /*
-** Creator lambda for the switch layout manager, factored out of
+** Creator lambda for the page layout manager, factored out of
 ** create_mainwindow() for readability.
 **
 ** Returns a tuple of three x::w::input_field-s, the first x::w::input_field
-** on each of the three containers that get added to the switch layout
+** on each of the three containers that get added to the page layout
 ** manager.
 */
-static auto create_switch(const x::w::switchlayoutmanager &sl)
+static auto create_page(const x::w::pagelayoutmanager &pl)
 {
 	/*
 	** append() returns a factory that appends new elements to the
-	** switch container.
+	** page container.
 	*/
-	x::w::switchfactory sf=sl->append();
+	x::w::pagefactory sf=pl->append();
 
 	x::w::input_fieldptr address1;
 
 	/*
-	** The switch layout manager sizes its container to be big enough
+	** The page layout manager sizes its container to be big enough
 	** to accomodate the widest and the tallest element in the
-	** switched container, and by default all other elements get
-	** centered in the switched container.
+	** paged container, and by default all other elements get
+	** centered in the paged container.
 	**
 	** halign() and valign() optional methods specify a different
 	** alignment for the next element added by the factory.
 	**
-	** We add three elements to the switched container. Each one of the
+	** We add three elements to the paged container. Each one of the
 	** elements is itself a container of display elements. Since each
 	** container is viewed as one individual display element, by the
-	** switch layout manager, this ends up creating three groups of
-	** elements and the switch layout manager switches each group out
-	** as a whole.
+	** page layout manager, this ends up creating three groups of
+	** elements, as three pages.
 	**
 	** Like all display elements, they must be show()n to be visible,
 	** so we digilently use show_all() to show the new containers, and
 	** all of the individual display elements in each created container.
 	**
-	** The fact that the switch layout manager makes each element
+	** The fact that the page layout manager makes each element
 	** individually visible, or not, is orthogonal. Each display element
 	** must still be explicitly show()n. We can leave out these
 	** show_all()s here, and simply show_all() the entire main window,
@@ -190,7 +189,7 @@ static auto create_switch(const x::w::switchlayoutmanager &sl)
 		->show_all();
 
 	/*
-	** Use the same append() factory to add another one to the switch
+	** Use the same append() factory to add another one to the page
 	** layout manager.
 	*/
 
@@ -209,12 +208,12 @@ static auto create_switch(const x::w::switchlayoutmanager &sl)
 
 	/*
 	** insert() returns a factory that inserts new elements before an
-	** existing element in the switch layout manager. So the following
-	** actually ends up inserting element #0 in the switch layout manager,
-	** and afterit gets inserted, the above two containers become
+	** existing element in the page layout manager. So the following
+	** actually ends up inserting element #0 in the page layout manager,
+	** and after it gets inserted, the above two containers become
 	** elements #1 and elements #2.
 	*/
-	sf=sl->insert(0);
+	sf=pl->insert(0);
 
 	sf->halign(x::w::halign::left).valign(x::w::valign::top)
 		.create_container
@@ -227,10 +226,10 @@ static auto create_switch(const x::w::switchlayoutmanager &sl)
 		->show_all();
 
 	/*
-	** The initial state of the switched container: make element #0
+	** The initial state of the paged container: make element #0
 	** visible.
 	*/
-	sl->switch_to(0);
+	pl->open(0);
 
 	return std::tuple{firstname, address1, phone};
 }
@@ -249,22 +248,22 @@ static void create_mainwindow(const x::w::main_window &mw)
 
 	/*
 	** On the first row we create our container with a
-	** new_switchlayoutmanager.
+	** new_pagelayoutmanager.
 	**
 	** The second row contains four buttons, so this container spans
 	** four columns. In the event this container is smaller than the
 	** four buttons (unlikely), it gets centered.
 	*/
 
-	auto sw=gf->colspan(4).halign(x::w::halign::center).create_container
+	auto pg=gf->colspan(4).halign(x::w::halign::center).create_container
 		([&]
 		 (const auto &s)
 		 {
-			 x::w::switchlayoutmanager sl=s->get_layoutmanager();
+			 x::w::pagelayoutmanager pl=s->get_layoutmanager();
 
-			 std::tie(firstname, address1, phone)=create_switch(sl);
+			 std::tie(firstname, address1, phone)=create_page(pl);
 		 },
-		 x::w::new_switchlayoutmanager{});
+		 x::w::new_pagelayoutmanager{});
 
 	/*
 	** Create four buttons on the last row.
@@ -298,17 +297,16 @@ static void create_mainwindow(const x::w::main_window &mw)
 		 {"Alt", 'C'});
 
 	/*
-	** The first three buttons switch_to the corresponding container,
-	** then request_focus() to the first input field in the switched-to
-	** container.
+	** The first three buttons open the corresponding page,
+	** then request_focus() to the first input field in the page.
 	**
-	** Note that the callbacks capture by value the switch container,
+	** Note that the callbacks capture by value the paged container
 	** and the input field.
 	**
-	** The callbacks cannot capture the switchlayoutmanager itself, they
-	** must capture the container, by value, and use get_layoutmanager()
-	** when needed. Although layout manager typically do not acquire
-	** locks on internal objects, for the duration of their existence,
+	** The callbacks cannot capture the pagelayoutmanager itself, they
+	** capture the container by value, and use get_layoutmanager()
+	** when needed. Although layout managers typically do not acquire
+	** locks on internal objects for the duration of their existence,
 	** instantiated layout managers enable buffering of internal
 	** processing. For efficiency, the library's internal execution thread
 	** delays processing of changes to individual display elements'
@@ -317,11 +315,11 @@ static void create_mainwindow(const x::w::main_window &mw)
 	**
 	** Capturing the layout manager by value will effectively block
 	** this processing and make the display appear to freeze. For that
-	** reason, always capture the container, and acquire its layout
+	** reason, always capture the container and acquire its layout
 	** manager when needed.
 	**
-	** Neither the switched container, nor any of the display elements
-	** in the switched container, such as the captured input_fields,
+	** Neither the paged container, nor any of the display elements
+	** in the paged container, such as the captured input_fields,
 	** are parent or child elements of these buttons, so capturing them
 	** by value does not create a circular reference. Only display
 	** elements that are immediate parent OR child elements cannot be
@@ -331,53 +329,53 @@ static void create_mainwindow(const x::w::main_window &mw)
 	name_button->on_activate([=]
 				 (const auto &trigger, const auto &busy)
 				 {
-					 x::w::switchlayoutmanager sl=
-						 sw->get_layoutmanager();
+					 x::w::pagelayoutmanager pl=
+						 pg->get_layoutmanager();
 
-					 sl->switch_to(0);
+					 pl->open(0);
 					 firstname->request_focus();
 				 });
 
 	address_button->on_activate([=]
 				    (const auto &trigger, const auto &busy)
 				    {
-					    x::w::switchlayoutmanager sl=
-						    sw->get_layoutmanager();
+					    x::w::pagelayoutmanager pl=
+						    pg->get_layoutmanager();
 
-					    sl->switch_to(1);
+					    pl->open(1);
 					    address1->request_focus();
 				    });
 
 	phone_button->on_activate([=]
 				  (const auto &trigger, const auto &busy)
 				  {
-					  x::w::switchlayoutmanager sl=
-						  sw->get_layoutmanager();
+					  x::w::pagelayoutmanager pl=
+						  pg->get_layoutmanager();
 
-					  sl->switch_to(2);
+					  pl->open(2);
 					  phone->request_focus();
 				  });
 
 	/*
-	** For the last four buttons, we just switch_off() everything.
+	** For the last four buttons, we just close() everything.
 	*/
 
 	clear_button->on_activate([=]
 				  (const auto &trigger, const auto &busy)
 				  {
-					  x::w::switchlayoutmanager sl=
-						  sw->get_layoutmanager();
+					  x::w::pagelayoutmanager pl=
+						  pg->get_layoutmanager();
 
-					  sl->switch_off();
+					  pl->close();
 				  });
 	name_button->show();
 	address_button->show();
 	phone_button->show();
 	clear_button->show();
-	sw->show();
+	pg->show();
 }
 
-void testswitch()
+void testpage()
 {
 	x::destroy_callback::base::guard guard;
 
@@ -389,7 +387,7 @@ void testswitch()
 						  create_mainwindow(mw);
 					  });
 
-	mw->set_window_title("Switch!");
+	mw->set_window_title("Page!");
 
 	guard(mw->connection_mcguffin());
 
@@ -414,7 +412,7 @@ void testswitch()
 int main(int argc, char **argv)
 {
 	try {
-		testswitch();
+		testpage();
 	} catch (const x::exception &e)
 	{
 		e->caught();

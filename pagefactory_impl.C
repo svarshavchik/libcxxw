@@ -3,16 +3,16 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
-#include "switchfactory_impl.H"
+#include "pagefactory_impl.H"
 #include "container.H"
 
 LIBCXXW_NAMESPACE_START
 
-switchfactoryObj::implObj::implObj(const switchlayoutmanager &lm)
+pagefactoryObj::implObj::implObj(const pagelayoutmanager &lm)
 	: lm(lm)
 {
 }
 
-switchfactoryObj::implObj::~implObj()=default;
+pagefactoryObj::implObj::~implObj()=default;
 
 LIBCXXW_NAMESPACE_END

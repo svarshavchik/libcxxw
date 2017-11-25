@@ -2,11 +2,11 @@
 ** Copyright 2017 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
-#ifndef x_w_switchlayoutmanagerobj_h
-#define x_w_switchlayoutmanagerobj_h
+#ifndef x_w_pagelayoutmanagerobj_h
+#define x_w_pagelayoutmanagerobj_h
 
-#include <x/w/switchlayoutmanagerfwd.H>
-#include <x/w/switchfactoryfwd.H>
+#include <x/w/pagelayoutmanagerfwd.H>
+#include <x/w/pagefactoryfwd.H>
 #include <x/w/elementfwd.H>
 #include <x/w/layoutmanagerobj.H>
 
@@ -16,9 +16,9 @@ LIBCXXW_NAMESPACE_START
 
 //! Implementation object.
 
-//! \see switchlayoutmanager
+//! \see pagelayoutmanager
 
-class switchlayoutmanagerObj : public layoutmanagerObj {
+class pagelayoutmanagerObj : public layoutmanagerObj {
 
 public:
 	class implObj;
@@ -27,16 +27,16 @@ public:
 	const ref<implObj> impl;
 
 	//! Constructor
-	switchlayoutmanagerObj(const ref<implObj> &impl) LIBCXX_HIDDEN;
+	pagelayoutmanagerObj(const ref<implObj> &impl) LIBCXX_HIDDEN;
 
 	//! Destructor
-	~switchlayoutmanagerObj() LIBCXX_HIDDEN;
+	~pagelayoutmanagerObj() LIBCXX_HIDDEN;
 
 	//! Append new elements
-	switchfactory append();
+	pagefactory append();
 
 	//! Insert elements before an existing one.
-	switchfactory insert(size_t);
+	pagefactory insert(size_t);
 
 	//! Remove an element.
 	void remove(size_t);
@@ -50,15 +50,15 @@ public:
 	//! Return the specified element.
 	element get(size_t) const;
 
-	//! Return the currently switched-to element, if there is one.
+	//! Return the currently opened- element, if there is one.
 
-	std::optional<size_t> switched() const;
+	std::optional<size_t> opened() const;
 
 	//! Switch to the given element.
-	void switch_to(size_t);
+	void open(size_t);
 
 	//! Un-switch, don't show any element.
-	void switch_off();
+	void close();
 };
 
 LIBCXXW_NAMESPACE_END

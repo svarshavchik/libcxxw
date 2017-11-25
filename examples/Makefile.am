@@ -11,7 +11,7 @@ noinst_PROGRAMS=\
 	menu					\
 	progressbar				\
 	scrollbar				\
-	switchlayoutmanager			\
+	pagelayoutmanager			\
 	wordwraplabel
 
 checkradio_SOURCES=checkradio.C close_flag.H
@@ -50,8 +50,8 @@ progressbar_LDADD=-lcxxw -lcxx
 scrollbar_SOURCES=scrollbar.C close_flag.H
 scrollbar_LDADD=-lcxxw -lcxx
 
-switchlayoutmanager_SOURCES=switchlayoutmanager.C close_flag.H
-switchlayoutmanager_LDADD=-lcxxw -lcxx
+pagelayoutmanager_SOURCES=pagelayoutmanager.C close_flag.H
+pagelayoutmanager_LDADD=-lcxxw -lcxx
 
 wordwraplabel_SOURCES=wordwraplabel.C close_flag.H
 wordwraplabel_LDADD=-lcxxw -lcxx

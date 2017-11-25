@@ -51,7 +51,7 @@ controls which page is currently visible, like all other display elements,
 they have to be shown in order to actually become visible when the page
 gets shown.
 
-\see switchlayoutmanager
+\see pagelayoutmanager
 
 */
 

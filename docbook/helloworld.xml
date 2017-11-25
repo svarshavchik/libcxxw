@@ -583,6 +583,29 @@ while (!appdata->close_flag)
 	    </para>
 	  </listitem>
 	</varlistentry>
+
+	<varlistentry>
+	  <term>
+	    <link linkend="pagelayoutmanager"><classname>&ns;::w::pagelayoutmanager</classname></link>
+	  </term>
+	  <listitem>
+	    <para>
+	      Treats its display element as virtual <quote>pages</quote>,
+	      with the container showing one of its pages.
+	      <quote>Opening</quote> a different
+	      page element replaces the current page's display element with
+	      the new element.
+	    </para>
+
+	    <para>
+	      Each one of page layout manager's display elements is typically
+	      a &container; of its own, with a collection of individual
+	      display elements. In this manner, each collection of
+	      display elements forms a virtual page, and the layout manager's
+	      methods make one of its pages visible.
+	    </para>
+	  </listitem>
+	</varlistentry>
       </variablelist>
 
       <para>

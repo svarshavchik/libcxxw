@@ -22,8 +22,8 @@
 #include "capturefactory.H"
 #include "run_as.H"
 #include "x/w/gridlayoutmanager.H"
-#include "x/w/switchlayoutmanager.H"
-#include "x/w/switchfactory.H"
+#include "x/w/pagelayoutmanager.H"
+#include "x/w/pagefactory.H"
 #include "x/w/container.H"
 #include "x/w/element.H"
 #include "x/w/bookpagefactory.H"
@@ -45,11 +45,11 @@ booklayoutmanagerObj
 
 booklayoutmanagerObj::~booklayoutmanagerObj()=default;
 
-// The internal switchlayoutmanager is the authoritative source for our pages.
+// The internal pagelayoutmanager is the authoritative source for our pages.
 
 size_t booklayoutmanagerObj::pages() const
 {
-	return impl->book_switchlayoutmanager->size();
+	return impl->book_pagelayoutmanager->size();
 }
 
 void booklayoutmanagerObj::open(size_t n) const
@@ -58,7 +58,7 @@ void booklayoutmanagerObj::open(size_t n) const
 
 	// Remember which page is currently open.
 
-	auto opened=impl->book_switchlayoutmanager->switched();
+	auto opened=impl->book_pagelayoutmanager->opened();
 
 	pagetabptr previous_page;
 
@@ -69,7 +69,7 @@ void booklayoutmanagerObj::open(size_t n) const
 	// The official switch to the new page can be done immediately, but
 	// need to punt the tab visual update to the connection thread.
 
-	impl->book_switchlayoutmanager->switch_to(n);
+	impl->book_pagelayoutmanager->open(n);
 	impl->book_switchcontainer->elementObj::impl->THREAD
 		->run_as([previous_page, next_page]
 			 (IN_THREAD_ONLY)
@@ -93,14 +93,14 @@ void booklayoutmanagerObj::close() const
 {
 	book_lock lock{ const_ref(this) };
 
-	auto opened=impl->book_switchlayoutmanager->switched();
+	auto opened=impl->book_pagelayoutmanager->opened();
 
 	pagetabptr previous_page;
 
 	if (opened)
 		previous_page=impl->get_pagetab(*opened);
 
-	impl->book_switchlayoutmanager->switch_off();
+	impl->book_pagelayoutmanager->close();
 
 	// We can officially close the book immediately, but we
 	// have to punt the tab visual update to the connection thread.
@@ -119,7 +119,7 @@ void booklayoutmanagerObj::close() const
 
 element booklayoutmanagerObj::get_page(size_t n) const
 {
-	return impl->book_switchlayoutmanager->get(n);
+	return impl->book_pagelayoutmanager->get(n);
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -133,7 +133,7 @@ class LIBCXX_HIDDEN bookpagefactory_implObj : public bookpagefactoryObj {
 	// These are accessed only while holding a lock
 
 	const booklayoutmanager layout_manager;
-	const switchfactory book_switchfactory;
+	const pagefactory book_pagefactory;
 
 	// The tab factory is accessed only while a lock is being held.
 
@@ -147,10 +147,10 @@ class LIBCXX_HIDDEN bookpagefactory_implObj : public bookpagefactoryObj {
  public:
 
 	bookpagefactory_implObj(const booklayoutmanager &layout_manager,
-				const switchfactory &book_switchfactory,
+				const pagefactory &book_pagefactory,
 				const gridfactory &book_tabfactory)
 		: layout_manager{layout_manager},
-		book_switchfactory{book_switchfactory},
+		book_pagefactory{book_pagefactory},
 		book_tabfactory_under_lock{book_tabfactory}
 	{
 	}
@@ -159,13 +159,13 @@ class LIBCXX_HIDDEN bookpagefactory_implObj : public bookpagefactoryObj {
 
 	bookpagefactoryObj &halign(LIBCXXW_NAMESPACE::halign a) override
 	{
-		book_switchfactory->halign(a);
+		book_pagefactory->halign(a);
 		return *this;
 	}
 
 	bookpagefactoryObj &valign(LIBCXXW_NAMESPACE::valign a) override
 	{
-		book_switchfactory->valign(a);
+		book_pagefactory->valign(a);
 		return *this;
 	}
 };
@@ -180,7 +180,7 @@ static inline void tab_activate(const booklayoutmanager &layout_manager,
 {
 	book_lock lock{layout_manager};
 
-	auto index=layout_manager->impl->book_switchlayoutmanager
+	auto index=layout_manager->impl->book_pagelayoutmanager
 		->lookup(activated_page);
 
 	if (!index)
@@ -200,7 +200,7 @@ static inline void tab_activate(const booklayoutmanager &layout_manager,
 static
 auto create_new_tab(const gridfactory &gridfactory,
 		    const booklayoutmanager &layout_manager,
-		    const switchfactory &book_switchfactory,
+		    const pagefactory &book_pagefactory,
 		    const function<void (const factory &,
 					 const factory &)> &tab_factory)
 {
@@ -267,7 +267,7 @@ auto create_new_tab(const gridfactory &gridfactory,
 	// Obtain the initial contents of the actual tab label.
 	auto tab_capture_factory=capturefactory::create(impl);
 	auto page_capture_factory=
-		capturefactory::create(book_switchfactory
+		capturefactory::create(book_pagefactory
 				       ->get_container_impl());
 	tab_factory(tab_capture_factory, page_capture_factory);
 
@@ -337,11 +337,11 @@ class LIBCXX_HIDDEN append_bookpagefactoryObj
  public:
 
 	// The constructor prepares the two internal append factories for
-	// the internal switchlayoutmanager, and the tab grid layoutmanager.
+	// the internal pagelayoutmanager, and the tab grid layoutmanager.
 
 	append_bookpagefactoryObj(const booklayoutmanager &layout_manager)
 		: bookpagefactory_implObj{layout_manager,
-			layout_manager->impl->book_switchlayoutmanager
+			layout_manager->impl->book_pagelayoutmanager
 			->append(),
 			layout_manager->impl->book_pagetabgridlayoutmanager
 			->append_columns(0)}
@@ -367,11 +367,11 @@ class LIBCXX_HIDDEN insert_bookpagefactoryObj
  public:
 
 	// The constructor prepares the two internal insert factories for
-	// the internal switchlayoutmanager, and the tab grid layoutmanager.
+	// the internal pagelayoutmanager, and the tab grid layoutmanager.
 	insert_bookpagefactoryObj(const booklayoutmanager &layout_manager,
 				  size_t page_number)
 		: bookpagefactory_implObj{layout_manager,
-			layout_manager->impl->book_switchlayoutmanager
+			layout_manager->impl->book_pagelayoutmanager
 			->insert(page_number),
 			layout_manager->impl->book_pagetabgridlayoutmanager
 			->insert_columns(0, page_number)},
@@ -400,12 +400,12 @@ void append_bookpagefactoryObj
 
 	auto [tab_element, hotspot_element, page_element]=
 		create_new_tab(book_tabfactory(lock),
-			       layout_manager, book_switchfactory, f);
+			       layout_manager, book_pagefactory, f);
 
 	install_activate_callback(layout_manager, hotspot_element,
 				  page_element);
 	book_tabfactory(lock)->created_internally(tab_element);
-	book_switchfactory->created_internally(page_element);
+	book_pagefactory->created_internally(page_element);
 }
 
 bookpagefactory booklayoutmanagerObj::insert(size_t page_number)
@@ -420,12 +420,12 @@ void insert_bookpagefactoryObj
 
 	auto [tab_element, hotspot_element, page_element]=
 		create_new_tab(book_tabfactory(lock),
-			       layout_manager, book_switchfactory, f);
+			       layout_manager, book_pagefactory, f);
 
 	install_activate_callback(layout_manager, hotspot_element,
 				  page_element);
 	book_tabfactory(lock)->created_internally(tab_element);
-	book_switchfactory->created_internally(page_element);
+	book_pagefactory->created_internally(page_element);
 
 	++page_number;
 }
@@ -527,7 +527,7 @@ new_booklayoutmanager::create(const ref<containerObj::implObj> &c) const
 
 	factory->created_internally(my_peephole);
 
-	// The internal switchlayoutmanager goes into the next row.
+	// The internal pagelayoutmanager goes into the next row.
 
 	factory=gridlm->append_row();
 
@@ -537,7 +537,7 @@ new_booklayoutmanager::create(const ref<containerObj::implObj> &c) const
 
 	current_page_container_impl->request_visibility(true);
 
-	auto page_lm_impl=new_switchlayoutmanager{}
+	auto page_lm_impl=new_pagelayoutmanager{}
 	    .create(current_page_container_impl);
 
 	auto current_page_container=

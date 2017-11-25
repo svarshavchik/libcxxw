@@ -30,8 +30,8 @@ auto container=factory->create_container
 
 \ref new_booklayoutmanager "INSERT_LIBX_NAMESPACE::w::new_booklayoutmanager"
 creates a container with the book layoutmanager, which is an enhanced version
-of the \ref switchlayoutmanager "switch layout manager". Like
-the \c switchlayoutmanager, the book layout manager arranges its elements
+of the \ref pagelayoutmanager "page layout manager". Like
+the \c pagelayoutmanager, the book layout manager arranges its elements
 in individual pages, with one page visible at a time. On top of that,
 the book layout manager adds a row of tabs above the currently shown page,
 one tab for each page in the book; and clicking on a page's tab opens that
@@ -69,7 +69,7 @@ append() returns a \ref bookpagefactory "factory" that adds new pages to
 the book after all existing pages.
 insert() returns a \ref bookpagefactory "factory" that adds new pages to
 the book before an existing page, and remove() removes a page from the book.
-Like the switch layout manager, all pages in the book get automatically
+Like the page layout manager, all pages in the book get automatically
 numbered, starting with 0 for the first page; and the pages get automatically
 renumbered when pages get added or removed from the book.
 

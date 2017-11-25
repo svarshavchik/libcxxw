@@ -3,7 +3,7 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
-#include "switchlayoutmanager_impl.H"
+#include "pagelayoutmanager_impl.H"
 #include "container_impl.H"
 #include "metrics_horizvert.H"
 #include "x/w/metrics/derivedaxis.H"
@@ -11,26 +11,26 @@
 
 LIBCXXW_NAMESPACE_START
 
-new_switchlayoutmanager::new_switchlayoutmanager()=default;
+new_pagelayoutmanager::new_pagelayoutmanager()=default;
 
-new_switchlayoutmanager::~new_switchlayoutmanager()=default;
+new_pagelayoutmanager::~new_pagelayoutmanager()=default;
 
 ref<layoutmanagerObj::implObj>
-new_switchlayoutmanager::create(const ref<containerObj::implObj> &c) const
+new_pagelayoutmanager::create(const ref<containerObj::implObj> &c) const
 {
-	return ref<switchlayoutmanagerObj::implObj>::create(c);
+	return ref<pagelayoutmanagerObj::implObj>::create(c);
 }
 
-switchlayoutmanagerObj::implObj::implObj(const ref<containerObj::implObj> &c)
+pagelayoutmanagerObj::implObj::implObj(const ref<containerObj::implObj> &c)
 	: layoutmanagerObj::implObj(c)
 {
 }
 
-switchlayoutmanagerObj::implObj::~implObj()=default;
+pagelayoutmanagerObj::implObj::~implObj()=default;
 
-void switchlayoutmanagerObj::implObj::append(const switch_element_info &e)
+void pagelayoutmanagerObj::implObj::append(const switch_element_info &e)
 {
-	switch_layout_info_t::lock lock{info};
+	page_layout_info_t::lock lock{info};
 
 	if (!lock->element_index.insert({e.the_element, 0}).second)
 		throw EXCEPTION("Internal error: inconsistent element_index");
@@ -38,10 +38,10 @@ void switchlayoutmanagerObj::implObj::append(const switch_element_info &e)
 	rebuild_index(lock);
 }
 
-void switchlayoutmanagerObj::implObj::insert(size_t p,
+void pagelayoutmanagerObj::implObj::insert(size_t p,
 					     const switch_element_info &e)
 {
-	switch_layout_info_t::lock lock{info};
+	page_layout_info_t::lock lock{info};
 
 	if (p > lock->elements.size())
 		throw EXCEPTION(gettextmsg(_("There are only %1% switchable"
@@ -68,9 +68,9 @@ void switchlayoutmanagerObj::implObj::insert(size_t p,
 	}
 }
 
-void switchlayoutmanagerObj::implObj::remove(size_t n)
+void pagelayoutmanagerObj::implObj::remove(size_t n)
 {
-	switch_layout_info_t::lock lock{info};
+	page_layout_info_t::lock lock{info};
 
 	if (n >= lock->elements.size())
 		throw EXCEPTION(gettextmsg(_("There are only %1% switchable"
@@ -102,8 +102,8 @@ void switchlayoutmanagerObj::implObj::remove(size_t n)
 		--*lock->current_element;
 }
 
-void switchlayoutmanagerObj::implObj
-::rebuild_index(switch_layout_info_t::lock &lock)
+void pagelayoutmanagerObj::implObj
+::rebuild_index(page_layout_info_t::lock &lock)
 {
 	size_t i=0;
 
@@ -111,32 +111,32 @@ void switchlayoutmanagerObj::implObj
 		lock->element_index.at(info.the_element)=i++;
 }
 
-void switchlayoutmanagerObj::implObj
+void pagelayoutmanagerObj::implObj
 ::do_for_each_child(IN_THREAD_ONLY,
 		    const function<void(const element &)> &callback)
 {
-	switch_layout_info_t::lock lock{info};
+	page_layout_info_t::lock lock{info};
 
 	for (const auto &e:lock->elements)
 		callback(e.the_container);
 }
 
-layoutmanager switchlayoutmanagerObj::implObj::create_public_object()
+layoutmanager pagelayoutmanagerObj::implObj::create_public_object()
 {
-	return switchlayoutmanager::create(ref(this));
+	return pagelayoutmanager::create(ref(this));
 }
 
-void switchlayoutmanagerObj::implObj::recalculate(IN_THREAD_ONLY)
+void pagelayoutmanagerObj::implObj::recalculate(IN_THREAD_ONLY)
 {
 	process_updated_position(IN_THREAD, container_impl->get_element_impl()
 				 .data(IN_THREAD).current_position);
 }
 
-void switchlayoutmanagerObj::implObj
+void pagelayoutmanagerObj::implObj
 ::process_updated_position(IN_THREAD_ONLY,
 			   const rectangle &position)
 {
-	switch_layout_info_t::lock lock{info};
+	page_layout_info_t::lock lock{info};
 
 	// Sanity check.
 

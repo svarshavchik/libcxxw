@@ -696,12 +696,12 @@ libcxxw_la_SOURCES=\
 	straight_borderfwd.H			    \
 	straight_borderobj.H			    \
 	straight_border_impl.C			    \
-	switchfactory.C				    \
-	switchfactory_impl.C			    \
-	switchfactory_impl.H			    \
-	switchlayoutmanager.C			    \
-	switchlayoutmanager_impl.C		    \
-	switchlayoutmanager_impl.H		    \
+	pagefactory.C				    \
+	pagefactory_impl.C			    \
+	pagefactory_impl.H			    \
+	pagelayoutmanager.C			    \
+	pagelayoutmanager_impl.C		    \
+	pagelayoutmanager_impl.H		    \
 	textlabel.C				    \
 	textlabel.H				    \
 	textlabel_impl.C			    \
@@ -803,7 +803,7 @@ INTERACTIVETESTPROGRAMS=\
 	testprogressbar					\
 	testscrollbar					\
 	testshowhide					\
-	testswitch					\
+	testpage					\
 	testtooltip					\
 	testwordwrappablelabel				\
 	#
@@ -897,10 +897,10 @@ $(call REFCOLLECTION_GEN,testshowhide.inc.H,testshowhide.xml)
 testshowhide_SOURCES=testshowhide.C
 testshowhide_LDADD=libcxxw.la
 
-$(call OPTIONS_GEN,testswitch.inc.H,testswitch.xml)
-testswitch_SOURCES=testswitch.C
-testswitch_LDADD=libcxxw.la
-testswitch_LDFLAGS=-static $(STATICLINKFLAGS)
+$(call OPTIONS_GEN,testpage.inc.H,testpage.xml)
+testpage_SOURCES=testpage.C
+testpage_LDADD=libcxxw.la
+testpage_LDFLAGS=-static $(STATICLINKFLAGS)
 
 testtextparam_SOURCES=testtextparam.C
 testtextparam_LDADD=libcxxw.la
@@ -1075,7 +1075,7 @@ test:
 	./testtooltip --width=25
 	./testtooltip --width=50
 	./testprogressbar
-	./testswitch --testfocus
+	./testpage --testfocus
 
 .PHONY: rpm
 

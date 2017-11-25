@@ -32,8 +32,7 @@ void create_mainwindow(const x::w::main_window &main_window)
 
 		black{};
 
-	main_window->set_background_color
-		(main_window->create_solid_color_picture(light_yellow));
+	main_window->set_background_color(light_yellow);
 
 	x::w::gridlayoutmanager
 		layout=main_window->get_layoutmanager();

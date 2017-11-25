@@ -2,13 +2,13 @@
 ** Copyright 2017 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
-#ifndef switchfactory_impl_h
-#define switchfactory_impl_h
+#ifndef pagefactory_impl_h
+#define pagefactory_impl_h
 
-#include "x/w/switchfactory.H"
+#include "x/w/pagefactory.H"
 #include "x/w/containerfwd.H"
 #include "x/w/alignment.H"
-#include "switchlayoutmanager_impl.H"
+#include "pagelayoutmanager_impl.H"
 #include <x/mpobj.H>
 #include <optional>
 
@@ -16,7 +16,7 @@ LIBCXXW_NAMESPACE_START
 
 //! Internal implementation object.
 
-class LIBCXX_HIDDEN switchfactoryObj::implObj : virtual public obj {
+class LIBCXX_HIDDEN pagefactoryObj::implObj : virtual public obj {
 
  public:
 
@@ -25,10 +25,10 @@ class LIBCXX_HIDDEN switchfactoryObj::implObj : virtual public obj {
 
 	//! My layout manager
 
-	const switchlayoutmanager lm;
+	const pagelayoutmanager lm;
 
 	//! Constructor
-	implObj(const switchlayoutmanager &);
+	implObj(const pagelayoutmanager &);
 
 	//! Destructor
 	~implObj();

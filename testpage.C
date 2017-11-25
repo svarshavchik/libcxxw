@@ -13,8 +13,8 @@
 #include "x/w/main_window.H"
 #include "x/w/gridlayoutmanager.H"
 #include "x/w/gridfactory.H"
-#include "x/w/switchlayoutmanager.H"
-#include "x/w/switchfactory.H"
+#include "x/w/pagelayoutmanager.H"
+#include "x/w/pagefactory.H"
 #include "x/w/label.H"
 #include "x/w/button.H"
 #include "x/w/input_field.H"
@@ -42,7 +42,7 @@ static LIBCXX_NAMESPACE::w::editorObj::implObj *editor_impl_address;
 
 #include "editor_impl.C"
 
-#include "testswitch.inc.H"
+#include "testpage.inc.H"
 
 class close_flagObj : public LIBCXX_NAMESPACE::obj {
 
@@ -145,9 +145,9 @@ auto phone_tab(const LIBCXX_NAMESPACE::w::gridlayoutmanager &glm)
 	return f->create_input_field("", config);
 }
 
-static auto create_switch(const LIBCXX_NAMESPACE::w::switchlayoutmanager &sl)
+static auto create_page(const LIBCXX_NAMESPACE::w::pagelayoutmanager &sl)
 {
-	LIBCXX_NAMESPACE::w::switchfactory sf=sl->append();
+	LIBCXX_NAMESPACE::w::pagefactory sf=sl->append();
 
 	LIBCXX_NAMESPACE::w::input_fieldptr address1;
 
@@ -185,9 +185,9 @@ static auto create_switch(const LIBCXX_NAMESPACE::w::switchlayoutmanager &sl)
 		 },
 		 LIBCXX_NAMESPACE::w::new_gridlayoutmanager{});
 
-	sl->switch_to(0);
+	sl->open(0);
 
-	LIBCXX_NAMESPACE::w::switch_lock lock{sl};
+	LIBCXX_NAMESPACE::w::page_lock lock{sl};
 
 	size_t n=sl->size();
 	std::cout << n << " elements:" << std::endl;
@@ -216,11 +216,11 @@ static void create_mainwindow(const LIBCXX_NAMESPACE::w::main_window &mw)
 		([&]
 		 (const auto &s)
 		 {
-			 LIBCXX_NAMESPACE::w::switchlayoutmanager sl=s->get_layoutmanager();
+			 LIBCXX_NAMESPACE::w::pagelayoutmanager sl=s->get_layoutmanager();
 
-			 std::tie(firstname, address1, phone)=create_switch(sl);
+			 std::tie(firstname, address1, phone)=create_page(sl);
 		 },
-		 LIBCXX_NAMESPACE::w::new_switchlayoutmanager{});
+		 LIBCXX_NAMESPACE::w::new_pagelayoutmanager{});
 
 	gf=glm->append_row();
 
@@ -232,44 +232,44 @@ static void create_mainwindow(const LIBCXX_NAMESPACE::w::main_window &mw)
 	name_button->on_activate([=]
 				 (const auto &trigger, const auto &busy)
 				 {
-					 LIBCXX_NAMESPACE::w::switchlayoutmanager sl=
+					 LIBCXX_NAMESPACE::w::pagelayoutmanager sl=
 						 sw->get_layoutmanager();
 
-					 sl->switch_to(0);
+					 sl->open(0);
 					 firstname->request_focus();
 				 });
 
 	address_button->on_activate([=]
 				    (const auto &trigger, const auto &busy)
 				    {
-					    LIBCXX_NAMESPACE::w::switchlayoutmanager sl=
+					    LIBCXX_NAMESPACE::w::pagelayoutmanager sl=
 						    sw->get_layoutmanager();
 
-					    sl->switch_to(1);
+					    sl->open(1);
 					    address1->request_focus();
 				    });
 
 	phone_button->on_activate([=]
 				  (const auto &trigger, const auto &busy)
 				  {
-					  LIBCXX_NAMESPACE::w::switchlayoutmanager sl=
+					  LIBCXX_NAMESPACE::w::pagelayoutmanager sl=
 						  sw->get_layoutmanager();
 
-					  sl->switch_to(2);
+					  sl->open(2);
 					  phone->request_focus();
 				  });
 
 	clear_button->on_activate([=]
 				  (const auto &trigger, const auto &busy)
 				  {
-					  LIBCXX_NAMESPACE::w::switchlayoutmanager sl=
+					  LIBCXX_NAMESPACE::w::pagelayoutmanager sl=
 						  sw->get_layoutmanager();
 
-					  sl->switch_off();
+					  sl->close();
 				  });
 }
 
-void testswitch(const testswitch_options &options)
+void testpage(const testpage_options &options)
 {
 	LIBCXX_NAMESPACE::destroy_callback::base::guard guard;
 
@@ -281,7 +281,7 @@ void testswitch(const testswitch_options &options)
 								 create_mainwindow(mw);
 							 });
 
-	mw->set_window_title("Switch!");
+	mw->set_window_title("Page!");
 	mw->show_all();
 
 	guard(mw->connection_mcguffin());
@@ -320,7 +320,7 @@ void testswitch(const testswitch_options &options)
 			LIBCXX_NAMESPACE::w::container swc=glm->get(0, 0);
 
 
-			LIBCXX_NAMESPACE::w::switchlayoutmanager sw=
+			LIBCXX_NAMESPACE::w::pagelayoutmanager sw=
 				swc->get_layoutmanager();
 
 			LIBCXX_NAMESPACE::w::container ac=sw->get(1);
@@ -331,7 +331,7 @@ void testswitch(const testswitch_options &options)
 			LIBCXX_NAMESPACE::w::input_field address1=
 				ag->get(0, 1);
 
-			sw->switch_to(1);
+			sw->open(1);
 			address1->request_focus();
 		}
 
@@ -353,11 +353,11 @@ int main(int argc, char **argv)
 		LIBCXX_NAMESPACE::property
 			::load_property(LIBCXX_NAMESPACE_STR "::themes",
 					"themes", true, true);
-		testswitch_options options;
+		testpage_options options;
 
 		options.parse(argc, argv);
 
-		testswitch(options);
+		testpage(options);
 	} catch (const LIBCXX_NAMESPACE::exception &e)
 	{
 		e->caught();

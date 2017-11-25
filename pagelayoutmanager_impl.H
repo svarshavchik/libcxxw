@@ -2,10 +2,10 @@
 ** Copyright 2017 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
-#ifndef switchlayoutmanager_impl_h
-#define switchlayoutmanager_impl_h
+#ifndef pagelayoutmanager_impl_h
+#define pagelayoutmanager_impl_h
 
-#include "x/w/switchlayoutmanager.H"
+#include "x/w/pagelayoutmanager.H"
 #include "x/w/containerfwd.H"
 #include "x/w/alignment.H"
 #include "layoutmanager.H"
@@ -16,7 +16,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-//! An element controlled by the \ref switchlayoutmanager "switchlayoutmanager".
+//! An element controlled by the \ref pagelayoutmanager "pagelayoutmanager".
 
 struct LIBCXX_HIDDEN switch_element_info {
 
@@ -37,9 +37,9 @@ struct LIBCXX_HIDDEN switch_element_info {
 	valign vertical_alignment;
 };
 
-//! Mutex-protected metadata used by the \ref switchlayoutmanager "switchlayoutmanager".
+//! Mutex-protected metadata used by the \ref pagelayoutmanager "pagelayoutmanager".
 
-struct LIBCXX_HIDDEN switch_layout_info_s {
+struct LIBCXX_HIDDEN page_layout_info_s {
 
 	//! Current elements being switched.
 	std::vector<switch_element_info> elements;
@@ -54,13 +54,13 @@ struct LIBCXX_HIDDEN switch_layout_info_s {
 
 //! Internal implementation object.
 
-class LIBCXX_HIDDEN switchlayoutmanagerObj::implObj
+class LIBCXX_HIDDEN pagelayoutmanagerObj::implObj
 	: public layoutmanagerObj::implObj {
 
  public:
 
 	//! Mutex-protected metadata.
-	switch_layout_info_t info;
+	page_layout_info_t info;
 
 	//! Constructor
 	implObj(const ref<containerObj::implObj> &container_impl);
@@ -79,7 +79,7 @@ class LIBCXX_HIDDEN switchlayoutmanagerObj::implObj
 
  private:
 	//! Update element_index, after append/insert/remove.
-	void rebuild_index(switch_layout_info_t::lock &lock);
+	void rebuild_index(page_layout_info_t::lock &lock);
  public:
 	//! Implement do_for_each_child()
 

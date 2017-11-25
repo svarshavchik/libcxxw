@@ -51,13 +51,13 @@ suppressfile*
 /testwordwrappablelabel
 /testmainwindow
 /testmainwindowoptions.H
+/testpage
 /testrichtext
 /testrichtextstring
 /testrichtextiterator
 /testscrollbar
 /testscrollbar_metrics
 /testshowhide
-/testswitch
 /testtextparam
 /testtooltip
 /testtooltip.H

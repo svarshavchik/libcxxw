@@ -9,7 +9,7 @@
 #include "peephole/peephole.H"
 #include "peephole/peephole_layoutmanager_impl.H"
 
-#include "x/w/switchlayoutmanager.H"
+#include "x/w/pagelayoutmanager.H"
 #include "x/w/container.H"
 
 LIBCXXW_NAMESPACE_START
@@ -20,7 +20,7 @@ booklayoutmanagerObj::implObj
 
 	  // This stuff lives in known grid positions.
 	  book_switchcontainer{impl->get(1,0)},
-	  book_switchlayoutmanager{book_switchcontainer->get_layoutmanager()},
+	  book_pagelayoutmanager{book_switchcontainer->get_layoutmanager()},
 	  book_pagetabgrid{container(peephole(impl->get(0, 1))
 				     ->get_peepholed())},
 	  book_pagetabgridlayoutmanager{book_pagetabgrid->get_layoutmanager()}
