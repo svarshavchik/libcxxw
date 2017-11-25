@@ -39,16 +39,11 @@ ref<focusableImplObj> peepholed_focusableObj::get_impl() const
 
 // The input field has three focusable fields inside it.
 
-size_t peepholed_focusableObj::internal_impl_count() const
+void peepholed_focusableObj
+::do_get_impl(const function<internal_focusable_cb> &cb) const
 {
-	return impl->internal_impl_count();
+	impl->do_get_impl(cb);
 }
-
-ref<focusableImplObj> peepholed_focusableObj::get_impl(size_t n) const
-{
-	return impl->get_impl();
-}
-
 
 peepholed_focusableObj::implObj
 ::implObj(const focusable &peepholed_element,
@@ -67,23 +62,15 @@ ref<focusableImplObj> peepholed_focusableObj::implObj::get_impl() const
 	return peepholed_element->get_impl();
 }
 
-size_t peepholed_focusableObj::implObj::internal_impl_count() const
-{
-	return 3;
-}
-
-focusable_impl peepholed_focusableObj::implObj::get_impl(size_t n) const
+void peepholed_focusableObj::implObj
+::do_get_impl(const function<internal_focusable_cb> &cb) const
 {
 	// Note that the resulting order corresponds to the
 	// order that's initially set by set_peephole_scrollbar_focus_order().
 
-	if (n == 1)
-		return vertical_scrollbar->get_impl();
-
-	if (n == 2)
-		return horizontal_scrollbar->get_impl();
-
-	return get_impl();
+	process_focusable_impls(cb, get_impl(),
+				vertical_scrollbar->get_impl(),
+				horizontal_scrollbar->get_impl());
 }
 
 std::tuple<ref<peepholed_focusableObj::implObj>, gridlayoutmanager>

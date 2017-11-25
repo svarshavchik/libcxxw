@@ -31,22 +31,40 @@ custom_combobox_containerObj::~custom_combobox_containerObj()=default;
 
 // This is a composite focusable, the current selection focusable, and the
 // focusable combo-box button.
+
 ref<focusableImplObj> custom_combobox_containerObj::get_impl() const
 {
 	return current_selection_focusable->get_impl();
 }
 
-size_t custom_combobox_containerObj::internal_impl_count() const
+void custom_combobox_containerObj
+::do_get_impl(const function<internal_focusable_cb> &cb) const
 {
-	return 1+current_selection_focusable->internal_impl_count();
-}
+	// Obtain the current selection's focusable implementation, tack
+	// on combobox_button's focusable at the end, and return it as the
+	// composite list.
 
-ref<focusableImplObj> custom_combobox_containerObj::get_impl(size_t n) const
-{
-	if (n < current_selection_focusable->internal_impl_count())
-		return current_selection_focusable->get_impl(n);
+	current_selection_focusable->get_impl
+		([&]
+		 (const auto &current_selection_group)
+		 {
+			 std::vector<ref<focusableImplObj>> composite;
 
-	return combobox_button->impl;
+			 composite.reserve(current_selection_group
+					   .internal_impl_count+1);
+			 composite.insert(composite.end(),
+					  current_selection_group.impls,
+					  current_selection_group.impls+
+					  current_selection_group
+					  .internal_impl_count);
+			 composite.push_back(combobox_button->impl);
+
+			 internal_focusable_group composite_group{
+				 composite.size(),
+					 &composite.at(0)};
+
+			 cb(composite_group);
+		 });
 }
 
 LIBCXXW_NAMESPACE_END

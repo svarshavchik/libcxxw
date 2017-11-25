@@ -10,7 +10,8 @@
 #include "focus/focusablefwd.H"
 #include "focus/label_forfwd.H"
 #include "connection_threadfwd.H"
-
+#include <array>
+#include <utility>
 #include <x/weaklist.H>
 
 LIBCXXW_NAMESPACE_START
@@ -215,7 +216,38 @@ void get_focus_after_in_thread(IN_THREAD_ONLY,	const focusable &me,
 				const focusable &other) LIBCXX_HIDDEN;
 
 void get_focus_impl_after_in_thread(IN_THREAD_ONLY, const focusable &me,
-				    ref<focusableImplObj> a) LIBCXX_HIDDEN;
+				    const ref<focusableImplObj> &a)
+	LIBCXX_HIDDEN;
+
+//! focusableObj::do_get_impl() constructs this object and invokes the
+//! callback.
+
+struct LIBCXX_HIDDEN internal_focusable_group {
+
+	//! How many internal focusables there are in this group.
+	size_t internal_impl_count;
+
+	//! Pointer to an array of intenral_impl_count focusable implementation objects.
+	ref<focusableImplObj> *impls;
+};
+
+//! Fixed list of focusable elements in a single group.
+
+//! This is used by an focusableObj::do_get_impl() implementation to
+//! invoke its callback, passing it a fixed list of focusable implementation
+//! objects.
+
+template<typename ...Args>
+inline void process_focusable_impls(const function<internal_focusable_cb> &cb,
+				    Args && ...args)
+{
+	std::array<ref<focusableImplObj>, sizeof...(Args)> impls={
+		std::forward<Args>(args)...};
+
+	internal_focusable_group group{impls.size(), &impls[0]};
+
+	cb(group);
+}
 
 LIBCXXW_NAMESPACE_END
 

@@ -797,17 +797,30 @@ void generic_windowObj::handlerObj::get_focus_first(IN_THREAD_ONLY,
 	if (b == focusable_fields(IN_THREAD).end())
 		throw EXCEPTION("Internal error, there should be at least one focusable field.");
 
-	auto current_first=*b;
+	// Take the first focusable in focusable_fields.
+	//
+	// Starting with the last focusable in f's focusable group,
+	// and ending with the first one:
+	//
+	// It gets focus before the first focusable_field, then we iterate,
+	// setting "it" to the focusable field we just moved up front.
 
-	size_t n=f->internal_impl_count();
+	f->get_impl([&]
+		    (const auto &f_group)
+		    {
+			    auto current_first=*b;
 
-	while (n)
-	{
-		auto i=f->get_impl(--n);
+			    size_t n=f_group.internal_impl_count;
 
-		i->get_focus_before(IN_THREAD, current_first);
-		current_first=i;
-	}
+			    while (n)
+			    {
+				    auto i=f_group.impls[--n];
+
+				    i->get_focus_before(IN_THREAD,
+							current_first);
+				    current_first=i;
+			    }
+		    });
 }
 
 void generic_windowObj::handlerObj::unset_keyboard_focus(IN_THREAD_ONLY)

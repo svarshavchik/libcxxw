@@ -9,8 +9,17 @@
 #include <x/w/focus.H>
 #include <x/w/key_event.H>
 #include <x/obj.H>
+#include <x/functional.H>
 
 LIBCXXW_NAMESPACE_START
+
+//! Internal group of focusable fields treated as a single focusable unit.
+
+struct LIBCXX_HIDDEN internal_focusable_group;
+
+//! Callback for processing internal_focusable_group.
+
+typedef void internal_focusable_cb(const internal_focusable_group &);
 
 //! Methods common to all display elements that can receive input focus.
 
@@ -53,15 +62,24 @@ public:
 	//! No action takes place if this focusable is disabled.
 	void request_focus();
 
-	//! How many real internal focusable objects comprise this focusable.
+	//! Return the set of real internal focusable element implementations.
 
 	//! \internal
-	virtual size_t internal_impl_count() const LIBCXX_HIDDEN;
+	//!
+	//! A focusable can actually comprise of multiple internal
+	//! focusable implementations. This assembles a list of focusable
+	//! elements that comprise this "master" focusable element, and
+	//! arranges them in consecutive focus order, invoking the callback
+	//! and passing this information.
 
-	//! Retrieve an internal focusable object.
+	template<typename functor>
+	void get_impl(functor &&f) const LIBCXX_HIDDEN;
+
+	//! Type-erased get_impl().
 
 	//! \internal
-	virtual ref<focusableImplObj> get_impl(size_t) const LIBCXX_HIDDEN;
+	virtual void do_get_impl(const function<internal_focusable_cb> &)
+		const LIBCXX_HIDDEN;
 
 	//! Install a new callback to report focus changes.
 
@@ -85,6 +103,13 @@ public:
 
 	void autofocus(bool);
 };
+
+template<typename functor>
+inline void focusableObj::get_impl(functor &&f) const
+{
+	do_get_impl(make_function<internal_focusable_cb>
+		    (std::forward<functor>(f)));
+}
 
 LIBCXXW_NAMESPACE_END
 

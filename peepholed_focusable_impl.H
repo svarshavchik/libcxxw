@@ -45,11 +45,7 @@ class LIBCXX_HIDDEN peepholed_focusableObj::implObj : virtual public obj {
 
 	//! Implement the display element's method inherited from focusableObj.
 
-	size_t internal_impl_count() const;
-
-	//! Implement the display element's method inherited from focusableObj.
-
-	focusable_impl get_impl(size_t n) const;
+	void do_get_impl(const function<internal_focusable_cb> &) const;
 };
 
 LIBCXXW_NAMESPACE_END

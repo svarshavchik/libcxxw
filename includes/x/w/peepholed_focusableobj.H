@@ -41,14 +41,8 @@ public:
 private:
 
 	//! Inherited from focusableObj
-
-	//! \internal
-	size_t internal_impl_count() const override LIBCXX_HIDDEN;
-
-	//! Inherited from focusableObj
-
-	//! \internal
-	ref<focusableImplObj> get_impl(size_t) const override LIBCXX_HIDDEN;
+	void do_get_impl(const function<internal_focusable_cb> &)
+		const override LIBCXX_HIDDEN;
 };
 
 LIBCXXW_NAMESPACE_END
