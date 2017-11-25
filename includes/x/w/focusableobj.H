@@ -54,6 +54,12 @@ public:
 
 	void get_focus_after(const focusable &other);
 
+	//! These focusables should be tabbed to after me.
+	void get_focus_after_me(const std::vector<focusable> &others);
+
+	//! These focusables should be tabbed to before me.
+	void get_focus_before_me(const std::vector<focusable> &others);
+
 	//! This focusable should be the first tabbable focusable.
 	void get_focus_first();
 

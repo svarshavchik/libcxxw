@@ -20,9 +20,6 @@ The layout manager for a \ref new_custom_comboboxlayoutmanager "custom combo-box
 This is just a \ref listlayoutmanager "list layout manager" with
 a current_selection() method that returns the display elemet for the currently
 selected combo-box item.
-
-Modifying the underlying list ends up modifying the combo-box items.
-
 */
 
 typedef ref<custom_comboboxlayoutmanagerObj> custom_comboboxlayoutmanager;

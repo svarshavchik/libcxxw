@@ -112,8 +112,8 @@ void focusableObj::set_enabled(bool flag)
 			 });
 }
 
-static auto sanity_check(const auto &impl1,
-			 const auto &impl2)
+static auto sanity_check(const ref<focusableImplObj> &impl1,
+			 const ref<focusableImplObj> &impl2)
 {
 	auto h1=ref<generic_windowObj::handlerObj>
 		(&impl1->get_focusable_element().get_window_handler());
@@ -122,6 +122,25 @@ static auto sanity_check(const auto &impl1,
 
 	if (h1 != h2)
 		throw EXCEPTION(_("Cannot specify focus order between elements from different top level windows"));
+
+	return h1->thread();
+}
+
+static auto sanity_check(const ref<focusableImplObj> &impl1,
+			 const std::vector<focusable> &focusables)
+{
+	auto h1=ref<generic_windowObj::handlerObj>
+		(&impl1->get_focusable_element().get_window_handler());
+
+	for (const auto &f:focusables)
+	{
+		auto h2=ref<generic_windowObj::handlerObj>
+			(&f->get_impl()->get_focusable_element()
+			 .get_window_handler());
+
+		if (h1 != h2)
+			throw EXCEPTION(_("Cannot specify focus order between elements from different top level windows"));
+	}
 
 	return h1->thread();
 }
@@ -305,6 +324,32 @@ void focusableObj::get_focus_first()
 			 });
 }
 
+void focusableObj::get_focus_after_me(const std::vector<focusable> &others)
+{
+	sanity_check(get_impl(), others)->run_as
+		([me=focusable(this), others]
+		 (IN_THREAD_ONLY)
+		 mutable
+		 {
+			 for (const auto &f:others)
+			 {
+				 get_focus_after_in_thread(IN_THREAD, f, me);
+				 me=f;
+			 }
+		 });
+}
+
+void focusableObj::get_focus_before_me(const std::vector<focusable> &others)
+{
+	sanity_check(get_impl(), others)->run_as
+		([me=focusable(this), others]
+		 (IN_THREAD_ONLY)
+		 {
+			 for (const auto &f:others)
+				 get_focus_before_in_thread(IN_THREAD, f, me);
+		 });
+}
+
 void focusableObj::on_keyboard_focus(const std::function<focus_callback_t> &cb)
 {
 	get_impl()->get_focusable_element().on_keyboard_focus(cb);
@@ -348,4 +393,30 @@ void focusableObj::autofocus(bool flag)
 {
 	get_impl()->autofocus=flag;
 }
+
+void process_focusable_impls_from_focusables
+(const function<internal_focusable_cb> &cb,
+ const std::vector<focusable> &v)
+{
+	std::vector<ref<focusableImplObj>> i;
+
+	for (const auto &f:v)
+	{
+		f->get_impl
+			([&]
+			 (const auto &internal_group)
+			 {
+				 i.reserve(i.size()
+					   +internal_group.internal_impl_count);
+				 i.insert(i.end(),
+					  internal_group.impls,
+					  internal_group.impls
+					  +internal_group.internal_impl_count);
+			 });
+	}
+
+	internal_focusable_group g{i.size(), &i.at(0)};
+	cb(g);
+}
+
 LIBCXXW_NAMESPACE_END

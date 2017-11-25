@@ -100,6 +100,9 @@ It can be one of:
 - \ref new_gridlayoutmanager "INSERT_LIBX_NAMESPACE::w::new_gridlayoutmanager":
 the new container uses the \ref gridlayoutmanager "grid layout manager".
 
+- \ref new_pagelayoutmanager "INSERT_LIBX_NAMESPACE::w::new_pagelayoutmanager":
+the new container uses the \ref pagelayoutmanager "page layout manager".
+
 \code
 #include <INSERT_LIBX_NAMESPACE/w/focusable_container.H>
 #include <INSERT_LIBX_NAMESPACE/w/listlayoutmanager.H>
@@ -123,6 +126,15 @@ of:
 - \ref new_listlayoutmanager "INSERT_LIBX_NAMESPACE::w::new_listlayoutmanager":
 the new container uses the \ref listlayoutmanager "list layout manager".
 This creates a selection list.
+
+- \ref new_custom_comboboxlayoutmanager "INSERT_LIBX_NAMESPACE::w::new_custom_comboboxlayoutmanager": the new container uses the
+\ref custom_comboboxlayoutmanager "custom combo-box layout manager".
+
+- \ref new_standard_comboboxlayoutmanager "INSERT_LIBX_NAMESPACE::w::new_standard_comboboxlayoutmanager": the new container uses the
+\ref standard_comboboxlayoutmanager "standard combo-box layout manager".
+
+- \ref new_editable_comboboxlayoutmanager "INSERT_LIBX_NAMESPACE::w::new_editable_comboboxlayoutmanager": the new container uses the
+\ref editable_comboboxlayoutmanager "editable combo-box layout manager".
 
 \par Labels
 

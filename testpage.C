@@ -189,7 +189,7 @@ static auto create_page(const LIBCXX_NAMESPACE::w::pagelayoutmanager &sl)
 
 	LIBCXX_NAMESPACE::w::page_lock lock{sl};
 
-	size_t n=sl->size();
+	size_t n=sl->pages();
 	std::cout << n << " elements:" << std::endl;
 
 	for (size_t i=0; i<n; ++i)
@@ -228,6 +228,9 @@ static void create_mainwindow(const LIBCXX_NAMESPACE::w::main_window &mw)
 	auto address_button=gf->create_normal_button_with_label("Address");
 	auto phone_button=gf->create_normal_button_with_label("Phone");
 	auto clear_button=gf->create_normal_button_with_label("Clear");
+
+	clear_button->get_focus_before_me({name_button, address_button,
+				phone_button});
 
 	name_button->on_activate([=]
 				 (const auto &trigger, const auto &busy)

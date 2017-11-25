@@ -195,7 +195,7 @@ static void create_mainwindow(const LIBCXX_NAMESPACE::w::main_window &mw)
 
 	auto gf=glm->append_row();
 
-	auto sw=gf->create_container
+	auto sw=gf->create_focusable_container
 		([&]
 		 (const auto &s)
 		 {

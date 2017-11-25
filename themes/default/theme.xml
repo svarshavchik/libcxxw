@@ -415,6 +415,8 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
     <vradius>.5</vradius>
   </border>
 
+  <dim id="book_scroll_height" axis="vert">10</dim>
+
   <!-- Dialogs -->
 
   <color id="dialog_background" scale="90%" />

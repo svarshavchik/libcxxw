@@ -41,8 +41,8 @@ public:
 	//! Remove an element.
 	void remove(size_t);
 
-	//! How many elements there are in the list.
-	size_t size() const;
+	//! How many pages there are right now.
+	size_t pages() const;
 
 	//! Look up the element's current index position.
 	std::optional<size_t> lookup(const element &) const;

@@ -128,6 +128,16 @@ callback gets invoked when a combo-box item is selected or unselected.
 The selection_search callback gets invoked when the keyboard focus is on the
 current selection focusable and text is typed.
 
+This layout manager provides the ability to implement a combo-box with
+custom functionality, a custom current selection element, and the code
+to manually update it when a combo-box selection gets made.
+
+\ref new_standard_comboboxlayoutmanager "INSERT_LIBX_NAMESPACE::w::new_standard_comboboxlayoutmanager"
+and
+\ref new_editable_comboboxlayoutmanager "INSERT_LIBX_NAMESPACE::w::new_editable_comboboxlayoutmanager"
+provide layout managers that implement a more conventional combo-box display
+element.
+
 */
 
 class LIBCXX_HIDDEN new_custom_comboboxlayoutmanager

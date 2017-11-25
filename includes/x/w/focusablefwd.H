@@ -1,4 +1,4 @@
-/*
+\/*
 ** Copyright 2017 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
@@ -38,24 +38,48 @@ class focusableImplObj;
 //!
 //! f->request_focus();
 //!
+//! f->get_focus_after_me({other1, other2, other3});
+//!
+//! f->get_focus_before_me({other1, other2, other3});
+//!
 //! \endcode
 //!
 //! The parameter to \c get_focus_after() and \c get_focus_before() is another
 //! focusable display element in the same window. These functions move
-//! the tabbing order of this display lemeent.
+//! the tabbing order of this display element.
 //!
 //! get_focus_after() sets this focusable element's tabbing order to be after
-//! the other display element's. When the other display element has input
-//! focus, TAB moves the focus to this focusable element, then whichever other
-//! element originally followed the other element in the tabbing order.
+//! the other display element's. When the other focusable has input
+//! focus, TAB moves the focus to this focusable, then whichever other
+//! element originally followed the other element in the tabbing order. In
+//! other words, other's tabbing order with respect to all other elements does
+//! not change, except that this focusable now gets tabbed to after this one,
+//! instead of its original tabbing order.
 //!
 //! get_focus_before() sets this focusable element's tabbing order to be before
-//! the other display element's. This element replaces the other element in
-//! the current tabbing order, and the other display element tabbing order
-//! becomes after this element's tabbing order.
+//! the other display element's. The other focusable's tabbing order with
+//! respect
+//! to all other elements does not change, except that a TAB from the previous
+//! focusable in the tabbing order first goes to this focusable, than the other
+//! one.
 //!
-//! get_focus_first() set this focusable element's tabbing order to be the
+//! get_focus_first() moves this focusable element's tabbing order to be the
 //! first tabbable display element in its window.
+//!
+//! get_focus_after_me() and get_focus_before_me() efficiently rearranges the
+//! tabbing order of multiple display elements. The second parameter is a
+//! \c std::vector of focusable objects. These methods do not change this
+//! focusable's tabbing order with respect to other focusables. They change
+//! the tabbing order of the focusables that get passed in the vector.
+//!
+//! get_focus_after_me() sets their tabbing order to follow this element's
+//! position in the tabbing order, in order of appearance in the vector.
+//! get_focus_before_me() sets the tabbing order to precede this element's
+//! position in the tabbing order (TAB-ing from the last element in the vector
+//! lands on this focusable).
+//!
+//! The behavior of having duplicate focusables in the vector, or having this
+//! focusable in the vector too, is unspecified.
 //!
 //! request_focus() moves the current keyboard focus to this focusable
 //! element, if it's enabled and visible.

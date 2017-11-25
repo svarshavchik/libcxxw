@@ -305,25 +305,29 @@ static void create_mainwindow(const x::w::main_window &mw)
 	**
 	** The callbacks cannot capture the pagelayoutmanager itself, they
 	** capture the container by value, and use get_layoutmanager()
-	** when needed. Although layout managers typically do not acquire
-	** locks on internal objects for the duration of their existence,
-	** instantiated layout managers enable buffering of internal
-	** processing. For efficiency, the library's internal execution thread
-	** delays processing of changes to individual display elements'
-	** position, visibility, and other attributes, while any layout
-	** manager is instantiated.
+	** when needed. Most layout managers acquire a lock on their container,
+	** that may block the internal library execution thread from
+	** updating the display, and all instantiated layout managers
+	** enable buffering of internal processing. For efficiency, the
+	** library's internal execution thread skips updating the individual
+	** display elemnts' position, visibility, and other attributes, while
+	** any layout manager is instantiated. All accumulated changes get
+	** processed in one batch after all layout manager objects go out of
+	** scope and get destroyed.
 	**
-	** Capturing the layout manager by value will effectively block
-	** this processing and make the display appear to freeze. For that
-	** reason, always capture the container and acquire its layout
-	** manager when needed.
+	** Capturing the layout manager by value effectively keeps the
+	** layout manager in existence while the callback closure is
+	** install. This blocks processing and make the display appear to
+	** freeze. For that reason, always capture the container (when a
+	** circular reference won't be created, and use a weak capture
+	** otherwise) then get_layoutmanager() only when needed.
 	**
-	** Neither the paged container, nor any of the display elements
-	** in the paged container, such as the captured input_fields,
-	** are parent or child elements of these buttons, so capturing them
+	** Neither the paged container -- nor any of the display elements
+	** in the paged container, such as the captured input_fields --
+	** are a parent or child element of these buttons, so capturing them
 	** by value does not create a circular reference. Only display
 	** elements that are immediate parent OR child elements cannot be
-	** captured by value without creating a circular reference.
+	** captured by value without creating an internal circular reference.
 	*/
 
 	name_button->on_activate([=]
@@ -357,7 +361,7 @@ static void create_mainwindow(const x::w::main_window &mw)
 				  });
 
 	/*
-	** For the last four buttons, we just close() everything.
+	** For the fourth button, we just close() everything.
 	*/
 
 	clear_button->on_activate([=]

@@ -239,6 +239,10 @@ struct LIBCXX_HIDDEN internal_focusable_group {
 
 template<typename ...Args>
 inline void process_focusable_impls(const function<internal_focusable_cb> &cb,
+				    Args && ...args) LIBCXX_HIDDEN;
+
+template<typename ...Args>
+inline void process_focusable_impls(const function<internal_focusable_cb> &cb,
 				    Args && ...args)
 {
 	std::array<ref<focusableImplObj>, sizeof...(Args)> impls={
@@ -248,6 +252,16 @@ inline void process_focusable_impls(const function<internal_focusable_cb> &cb,
 
 	cb(group);
 }
+
+//! Take a vector of focusables, extract their implementations, invoke the callback.
+
+//! Note, this individually grabs all impls from do_get_impl(), and returns
+//! from it. Handle with care. Make sure all locks are in place.
+
+void process_focusable_impls_from_focusables
+(const function<internal_focusable_cb> &cb,
+ const std::vector<focusable> &v)
+	LIBCXX_HIDDEN;
 
 LIBCXXW_NAMESPACE_END
 

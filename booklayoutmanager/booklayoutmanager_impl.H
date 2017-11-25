@@ -7,9 +7,12 @@
 
 #include "x/w/booklayoutmanager.H"
 #include "x/w/pagelayoutmanagerfwd.H"
+#include "x/w/focusable.H"
 #include "booklayoutmanager/bookgridlayoutmanager.H"
 #include "booklayoutmanager/pagetabgridlayoutmanagerfwd.H"
 #include "booklayoutmanager/pagetabfwd.H"
+#include "image_button.H"
+#include <vector>
 
 LIBCXXW_NAMESPACE_START
 
@@ -30,9 +33,17 @@ class LIBCXX_HIDDEN booklayoutmanagerObj::implObj : virtual public obj {
 
 	const ref<bookgridlayoutmanagerObj> impl;
 
+	//! The left scroll button;
+
+	const image_button left_scrollbutton;
+
+	//! The right scroll button;
+
+	const image_button right_scrollbutton;
+
 	//! The container with the underlying pagelayoutmanager
 
-	const container book_switchcontainer;
+	const container book_pagecontainer;
 
 	//! The underlying pagelayoutmanager
 
@@ -55,6 +66,19 @@ class LIBCXX_HIDDEN booklayoutmanagerObj::implObj : virtual public obj {
 	//! Return the given pagetag
 
 	pagetabptr get_pagetab(size_t) const;
+
+	//! Return all the focusables
+
+	//! Returns the left scroll button, the tabs, and the right scroll
+	//! button.
+	//!
+	//! A book_lock must be instantatiated first. The parameter is
+	//! ignored, this is contract enforcement.
+	std::vector<focusable> get_focusables(grid_map_t::lock &) const;
+
+	//! After a new tab is added, we need to rebuild the focusable order.
+
+	void rebuild_focusables(grid_map_t::lock &) const;
 };
 
 LIBCXXW_NAMESPACE_END

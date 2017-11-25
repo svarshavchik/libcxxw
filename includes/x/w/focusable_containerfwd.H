@@ -17,8 +17,8 @@ class focusable_containerObj;
 //! Base class for display elements that multiply-inherit from a
 //! \ref container "container" and a \ref focusable "focusable".
 //!
-//! These display elements are treated as individual display elements,
-//! but provide a layout manager-based means to modify their contents.
+//! Use the \ref factory "factory"'s create_focusable_container() to
+//! create these display elements, instead of create_container().
 
 typedef ref<focusable_containerObj> focusable_container;
 

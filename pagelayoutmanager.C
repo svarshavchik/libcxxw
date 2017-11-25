@@ -78,7 +78,7 @@ void pagelayoutmanagerObj::remove(size_t i)
 	impl->remove(i);
 }
 
-size_t pagelayoutmanagerObj::size() const
+size_t pagelayoutmanagerObj::pages() const
 {
 	page_layout_info_t::lock lock{impl->info};
 

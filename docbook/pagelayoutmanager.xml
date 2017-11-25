@@ -70,12 +70,12 @@ See COPYING for distribution information.
   </para>
 
   <para>
-    <methodname>size</methodname>() returns the number of elements in the
+    <methodname>pages</methodname>() returns the number of page elements in the
     container. <methodname>open</methodname>() makes the specified
-    element, identified by its number, visible.
+    element page, identified by its number, visible.
     <methodname>close</methodname>() hides the current page, but does not
     make any other page visible.
-    The container becomes entirely empty.
+    The container becomes visibly empty.
     <methodname>opened</methodname>() returns an indication which page
     is open, if there is an open page.
   </para>

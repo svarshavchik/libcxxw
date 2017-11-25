@@ -405,7 +405,7 @@ while (!appdata->close_flag)
 	<ulink url="&link-typedef-x--w-main-window;"><classname>&ns;::w::main_window</classname></ulink>
 	is an example of a container.
 	A container is a display element which contains other display
-	elements.
+	elements, and a &layoutmanager; that controls them.
 	<link linkend="helloworld"><filename>helloworld.C</filename></link>
 	creates a
 	<classname>&ns;::w::main_window</classname> that has a
@@ -510,7 +510,7 @@ while (!appdata->close_flag)
 	returns a
 	<ulink url="&link-typedef-x--w-layoutmanager;"><classname>&ns;::w::layoutmanager</classname></ulink>,
 	which is just a reference to a base layout manager class.
-	There are several layout managers that get derived from a
+	There are several layout managers that get derived from an
 	<classname>&ns;::w::layoutmanager</classname>'s base class:
       </para>
 
@@ -590,8 +590,8 @@ while (!appdata->close_flag)
 	  </term>
 	  <listitem>
 	    <para>
-	      Treats its display element as virtual <quote>pages</quote>,
-	      with the container showing one of its pages.
+	      Treats its display elements as virtual <quote>pages</quote>,
+	      and showing one page at a time.
 	      <quote>Opening</quote> a different
 	      page element replaces the current page's display element with
 	      the new element.
@@ -633,7 +633,8 @@ while (!appdata->close_flag)
 	<para>
 	  For this reason, the application should not store, or stash away,
 	  the layout manager object, but use it only long enough to effect
-	  changes to the container. The internal lock blocks the
+	  changes to the container, or examine its contents.
+	  The internal lock blocks the
 	  <link linkend="connthread">connection thread</link>, until the
 	  lock gets released, and all changes made to the container, through
 	  the layout manager, take effect.
@@ -672,6 +673,19 @@ x::w::label l=f->create_label("Hello world");</programlisting>
 	with additional methods that set each new element's borders, padding
 	and alignment.
       </para>
+
+      <note>
+	<para>
+	  Factories are products of layout managers, and maintain an internal
+	  reference on their layout manager. Everything that's been said
+	  about layout managers apply to factories as well: the factory
+	  object should be used only long enough to manufacture new
+	  display elements; then they should go out of scope and get
+	  destroyed, releasing their internal reference to their layout
+	  manager, and releasing the indirect reference on their container,
+	  unblocking it.
+	</para>
+      </note>
     </section>
 
     <section id="exception">

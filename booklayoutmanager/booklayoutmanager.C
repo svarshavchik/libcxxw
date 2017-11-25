@@ -15,12 +15,16 @@
 #include "peephole/peephole_style.H"
 #include "peephole/peephole_layoutmanager_impl.H"
 #include "layoutmanager.H"
+#include "image_button.H"
+#include "image_button_internal_impl.H"
+#include "icon.H"
 #include "container_element.H"
 #include "container_visible_element.H"
 #include "child_element.H"
 #include "always_visible.H"
 #include "capturefactory.H"
 #include "run_as.H"
+#include "generic_window_handler.H"
 #include "x/w/gridlayoutmanager.H"
 #include "x/w/pagelayoutmanager.H"
 #include "x/w/pagefactory.H"
@@ -30,6 +34,8 @@
 #include "x/w/canvas.H"
 
 #include <x/weakcapture.H>
+
+#include <vector>
 
 LIBCXXW_NAMESPACE_START
 
@@ -49,7 +55,12 @@ booklayoutmanagerObj::~booklayoutmanagerObj()=default;
 
 size_t booklayoutmanagerObj::pages() const
 {
-	return impl->book_pagelayoutmanager->size();
+	return impl->book_pagelayoutmanager->pages();
+}
+
+std::optional<size_t> booklayoutmanagerObj::opened() const
+{
+	return impl->book_pagelayoutmanager->opened();
 }
 
 void booklayoutmanagerObj::open(size_t n) const
@@ -70,7 +81,7 @@ void booklayoutmanagerObj::open(size_t n) const
 	// need to punt the tab visual update to the connection thread.
 
 	impl->book_pagelayoutmanager->open(n);
-	impl->book_switchcontainer->elementObj::impl->THREAD
+	impl->book_pagecontainer->elementObj::impl->THREAD
 		->run_as([previous_page, next_page]
 			 (IN_THREAD_ONLY)
 			 {
@@ -108,7 +119,7 @@ void booklayoutmanagerObj::close() const
 	if (!previous_page)
 		return;
 
-	impl->book_switchcontainer->elementObj::impl->THREAD
+	impl->book_pagecontainer->elementObj::impl->THREAD
 		->run_as([previous_page]
 			 (IN_THREAD_ONLY)
 			 {
@@ -406,6 +417,7 @@ void append_bookpagefactoryObj
 				  page_element);
 	book_tabfactory(lock)->created_internally(tab_element);
 	book_pagefactory->created_internally(page_element);
+	layout_manager->impl->rebuild_focusables(lock);
 }
 
 bookpagefactory booklayoutmanagerObj::insert(size_t page_number)
@@ -428,15 +440,15 @@ void insert_bookpagefactoryObj
 	book_pagefactory->created_internally(page_element);
 
 	++page_number;
+	layout_manager->impl->rebuild_focusables(lock);
 }
 
 //////////////////////////////////////////////////////////////////////////////
+//
+// Creating a new book. Need to create some glue classes for that.
 
-new_booklayoutmanager::new_booklayoutmanager()=default;
-
-new_booklayoutmanager::~new_booklayoutmanager()=default;
-
-// The peepholed page tab container.
+// First, the page tab strip which goes into a peephole, and thusly it must
+// be a peepholed_elementObj. Otherwise, it's an ordinary container.
 
 class LIBCXX_HIDDEN pagetabpeepholed_containerObj
 	: public peepholed_elementObj<containerObj> {
@@ -454,26 +466,137 @@ class LIBCXX_HIDDEN pagetabpeepholed_containerObj
 	dim_t vertical_increment(IN_THREAD_ONLY) const override { return 0; }
 };
 
-ref<layoutmanagerObj::implObj>
-new_booklayoutmanager::create(const ref<containerObj::implObj> &c) const
+// Glue together the buttons on the the sides of the tab strip peephole,
+// which we will use with create_image_button().
+
+class LIBCXX_HIDDEN book_tab_imagebuttonObj
+	: public image_button_internalObj::implObj {
+
+ public:
+
+	using image_button_internalObj::implObj::implObj;
+
+	~book_tab_imagebuttonObj()=default;
+
+	//! Override temperature_changed()
+
+	//! Flash the scroll icons when clicking on them.
+
+	void temperature_changed(IN_THREAD_ONLY,
+				 const callback_trigger_t &trigger) override
+	{
+		image_button_internalObj::implObj::temperature_changed
+			(IN_THREAD, trigger);
+
+		set_image_number(IN_THREAD,
+				 trigger,
+				 hotspot_temperature(IN_THREAD)
+				 == temperature::hot ? 1:0);
+	}
+};
+
+// And we need to implement our focusable_container.
+
+class LIBCXX_HIDDEN book_focusable_containerObj
+	: public focusable_containerObj {
+
+ public:
+	using focusable_containerObj::focusable_containerObj;
+
+	~book_focusable_containerObj()=default;
+
+	ref<focusableImplObj> get_impl() const override
+	{
+		ptr<focusableImplObj> p;
+
+		containerObj::impl->invoke_layoutmanager
+			([&]
+			 (const ref<gridlayoutmanagerObj::implObj> &g)
+			 {
+				 p=g->get(0, 0);
+			 });
+
+		return p;
+	}
+
+	void do_get_impl(const function<internal_focusable_cb> &cb) const
+		override
+	{
+		const_booklayoutmanager lm=get_layoutmanager();
+
+		book_lock lock{lm};
+
+		auto focusables=lm->impl->get_focusables(lock);
+
+		process_focusable_impls_from_focusables(cb, focusables);
+	}
+};
+
+new_booklayoutmanager::new_booklayoutmanager()=default;
+
+new_booklayoutmanager::~new_booklayoutmanager()=default;
+
+focusable_container
+new_booklayoutmanager::create(const ref<containerObj::implObj> &parent) const
 {
+	// Our container implementation is nothing special.
+
+	ref<containerObj::implObj> c=
+		ref<container_elementObj<child_elementObj>>::create(parent);
+
 	// Create the our gridlayoutmanager subclass, the real layout manager
 	// for this container.
 
 	auto grid=ref<bookgridlayoutmanagerObj>::create(c);
 
-	// Need to construct the contents of the grid.
+	// Start building the contents of the grid.
 
 	auto gridlm=grid->create_gridlayoutmanager();
 
 	auto factory=gridlm->append_row();
 
-	// Placeholders for the images.
+	// Left scroll image button.
 
-	factory->padding(0).create_canvas([](const auto &){}, {0,0,0},{0,0,0});
-	factory->padding(0).create_canvas([](const auto &){}, {0,0,0},{0,0,0});
+	auto &wh=c->get_window_handler();
 
-	factory=gridlm->insert_columns(0, 1);
+	factory->padding(0);
+
+	// We will not use image button callbacks, instead we'll hook into
+	// the activation callbacks.
+
+	ptr<book_tab_imagebuttonObj> left_scroll_impl,
+		right_scroll_impl;
+
+	auto left_scroll=create_image_button
+		(true,
+		 [&]
+		 (const auto &container_impl)
+		 {
+			 // Use our scalable icons, and make them
+			 // book_scroll_height tall.
+
+			 auto impl=ref<book_tab_imagebuttonObj>::create
+				 (container_impl,
+				  std::vector<icon>{
+					  wh.create_icon_mm
+						  ("scroll-left1",
+						   render_repeat::none,
+						   0,
+						   "book_scroll_height"),
+					  wh.create_icon_mm
+						  ("scroll-left2",
+						   render_repeat::none,
+						   0,
+						   "book_scroll_height"),
+						  });
+
+			 left_scroll_impl=impl;
+
+			 return impl;
+		 }, *factory, valign::bottom,
+		 [](const auto &ignore){});
+
+	left_scroll->show();
 
 	////////////////////////////////////////////////////////////////////
 	//
@@ -527,6 +650,122 @@ new_booklayoutmanager::create(const ref<containerObj::implObj> &c) const
 
 	factory->created_internally(my_peephole);
 
+	// It's time for the right scroll button.
+
+	auto right_scroll=create_image_button
+		(true,
+		 [&]
+		 (const auto &container_impl)
+		 {
+			 auto impl=ref<book_tab_imagebuttonObj>::create
+				 (container_impl,
+				  std::vector<icon>{
+					  wh.create_icon_mm
+						  ("scroll-right1",
+						   render_repeat::none,
+						   0,
+						   "book_scroll_height"),
+					  wh.create_icon_mm
+						  ("scroll-right2",
+						   render_repeat::none,
+						   0,
+						   "book_scroll_height"),
+						  });
+
+			 right_scroll_impl=impl;
+
+			 return impl;
+		 }, *factory, valign::bottom,
+		 [](const auto &ignore){});
+
+	right_scroll->show();
+
+	// It's very nice for an image_button to provide callbacks that
+	// report when its image changes. But what we really need to do is
+	// install callbacks for its internal hotspot, that gets clicked on.
+
+	left_scroll_impl->on_activate
+		([c=make_weak_capture(c)]
+		 (const auto &trigger,
+		  const auto &mcguffin)
+		 {
+			 auto got=c.get();
+
+			 if (!got)
+				 return;
+
+			 auto &[c]=*got;
+
+			 c->invoke_layoutmanager
+				 ([]
+				  (const auto &lm_impl)
+				  {
+					  booklayoutmanager lm=
+						  lm_impl->create_public_object();
+					  book_lock lock{lm};
+
+					  auto n=lm->pages();
+
+					  if (n == 0)
+						  return;
+
+					  size_t next;
+
+					  auto current=lm->opened();
+
+					  if (current)
+						  next=*current;
+					  else
+						  next=n;
+
+					  if (next == 0)
+						  return;
+
+					  lm->open(--next);
+				  });
+		 });
+
+	right_scroll_impl->on_activate
+		([c=make_weak_capture(c)]
+		 (const auto &trigger,
+		  const auto &mcguffin)
+		 {
+			 auto got=c.get();
+
+			 if (!got)
+				 return;
+
+			 auto &[c]=*got;
+
+			 c->invoke_layoutmanager
+				 ([]
+				  (const auto &lm_impl)
+				  {
+					  booklayoutmanager lm=
+						  lm_impl->create_public_object();
+					  book_lock lock{lm};
+
+					  auto n=lm->pages();
+
+					  if (n == 0)
+						  return;
+
+					  size_t next;
+
+					  auto current=lm->opened();
+
+					  if (current)
+						  next=*current+1;
+					  else
+						  next=0;
+
+					  if (next >= n)
+						  return;
+
+					  lm->open(next);
+				  });
+		 });
+
 	// The internal pagelayoutmanager goes into the next row.
 
 	factory=gridlm->append_row();
@@ -547,7 +786,7 @@ new_booklayoutmanager::create(const ref<containerObj::implObj> &c) const
 	factory->colspan(3);
 	factory->created_internally(current_page_container);
 
-	return grid;
+	return ref<book_focusable_containerObj>::create(c, grid);
 }
 
 //////////////////////////////////////////////////////////////////////////////

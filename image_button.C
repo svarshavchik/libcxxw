@@ -106,10 +106,14 @@ class LIBCXX_HIDDEN image_button_containerObj
 
  public:
 
-	image_button_containerObj(const ref<containerObj::implObj>
+	const bool disable_recursive_visibility;
+
+	image_button_containerObj(bool disable_recursive_visibility,
+				  const ref<containerObj::implObj>
 				  &parent_container)
 		: image_button_container_superclass_t(parent_container,
-						      {"focusframe@libcxx"})
+						      {"focusframe@libcxx"}),
+		disable_recursive_visibility{disable_recursive_visibility}
 	{
 	}
 
@@ -127,6 +131,9 @@ class LIBCXX_HIDDEN image_button_containerObj
 	void request_visibility_recursive(IN_THREAD_ONLY, bool flag)
 		override
 	{
+		if (disable_recursive_visibility)
+			return;
+
 		request_visibility(IN_THREAD, flag);
 
 		invoke_layoutmanager
@@ -148,30 +155,22 @@ class LIBCXX_HIDDEN image_button_containerObj
 // The factory do_create_image_button invokes to contsruct the internal
 // implementation object.
 
-typedef ref<image_button_internalObj::implObj>
-image_button_factory_t(const ref<containerObj::implObj> &,
-		       const std::vector<icon> &);
-
-static image_button
-do_create_image_button(const std::vector<std::string_view>
-		       &images,
-		       const function<image_button_factory_t> &img_impl_factory,
+image_button
+do_create_image_button(bool disable_recursive_visibility,
+		       const function<image_button_internal_factory_t>
+		       &img_impl_factory,
 		       factoryObj &f,
 		       valign alignment,
 
 		       const function<void (const factory &)> &label_factory)
 {
-	if (images.empty())
-		throw EXCEPTION(_("Attempt to create an image button without any images."));
-
-	auto icons=f.get_element_impl().get_window_handler()
-		.create_icon_vector(images);
-
 	// Create an image_button_containerObj, a container with a grid
 	// layout manager.
 
 	auto image_button_outer_container_impl=
-		ref<image_button_containerObj>::create(f.get_container_impl());
+		ref<image_button_containerObj>
+		::create(disable_recursive_visibility,
+			 f.get_container_impl());
 
 	auto image_button_outer_container_layout=
 		ref<gridlayoutmanagerObj::implObj>
@@ -195,7 +194,7 @@ do_create_image_button(const std::vector<std::string_view>
 	// Create an image_button_internal implementation object. Its
 	// container is the focusframecontainer.
 
-	auto ibii=img_impl_factory(focus_frame_impl, icons);
+	auto ibii=img_impl_factory(focus_frame_impl);
 
 	// And create the image_button_internal "public" object.
 	auto ibi=image_button_internal::create(ibii);
@@ -244,22 +243,6 @@ do_create_image_button(const std::vector<std::string_view>
 	return b;
 }
 
-template<typename functor1>
-static inline image_button
-create_image_button(const std::vector<std::string_view>
-		    &images,
-		    functor1 &&creator,
-		    factoryObj &f,
-		    valign alignment,
-		    const function<void (const factory &)> &label_factory)
-{
-	return do_create_image_button(images,
-				      make_function<image_button_factory_t>
-				      (std::forward<functor1>(creator)),
-				      f, alignment,
-				      label_factory);
-}
-
 image_button factoryObj::create_checkbox(valign alignment)
 {
 	return create_checkbox([](const auto &) {}, alignment);
@@ -291,9 +274,21 @@ image_button factoryObj::do_create_checkbox(const function<factory_creator_t>
 					    &images,
 					    valign alignment)
 {
+	auto icons=get_element_impl().get_window_handler()
+		.create_icon_vector(images);
 
-	return create_image_button(images, create_checkbox_impl, *this,
-				   alignment, label_factory);
+	if (icons.empty())
+		throw EXCEPTION(_("Attempt to create a checkbox without any images."));
+
+	return create_image_button_with_label_factory
+		(false,
+		 [&]
+		 (const auto &container)
+		 {
+			 return create_checkbox_impl(container, icons);
+		 },
+		 *this,
+		 alignment, label_factory);
 }
 
 image_button factoryObj::create_radio(const radio_group &group,
@@ -330,15 +325,22 @@ image_button factoryObj::do_create_radio(const radio_group &group,
 					 &images,
 					 valign alignment)
 {
-	return create_image_button(images,
-				   [&]
-				   (const auto &container,
-				    const auto &images)
-				   {
-					   return create_radio_impl(group,
-								    container,
-								    images);
-				   }, *this, alignment, label_creator);
+	auto icons=get_element_impl().get_window_handler()
+		.create_icon_vector(images);
+
+	if (icons.empty())
+		throw EXCEPTION(_("Attempt to create a radio button without any images."));
+
+
+	return create_image_button_with_label_factory
+		(false,
+		 [&]
+		 (const auto &container)
+		 {
+			 return create_radio_impl(group,
+						  container,
+						  icons);
+		 }, *this, alignment, label_creator);
 }
 
 LIBCXXW_NAMESPACE_END
