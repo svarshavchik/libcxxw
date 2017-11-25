@@ -9,6 +9,7 @@
 #include "x/w/pictformatfwd.H"
 #include "x/w/picturefwd.H"
 #include "x/w/screenfwd.H"
+#include "x/w/dim_arg.H"
 #include "iconfwd.H"
 #include "icon_imagefwd.H"
 #include "xid_t.H"
@@ -104,8 +105,8 @@ class LIBCXX_HIDDEN drawableObj::implObj : virtual public obj {
 
 	icon create_icon_mm(const std::string_view &name,
 			    render_repeat icon_repeat,
-			    double widthmm,
-			    double heightmm);
+			    const dim_arg &width_arg,
+			    const dim_arg &height_arg);
 
 	//! Create an icon, with dimensions specified in pixels
 

@@ -10,6 +10,7 @@
 #include "icon_imagefwd.H"
 #include "connection_threadfwd.H"
 #include "cursor_pointerfwd.H"
+#include "x/w/dim_arg.H"
 #include <x/obj.H>
 
 LIBCXXW_NAMESPACE_START;
@@ -50,7 +51,9 @@ public:
 				   const defaulttheme &new_theme);
 
 	//! Resize this icon, if this is a resizable icon.
-	virtual icon resizemm(IN_THREAD_ONLY, double widthmm, double heightmm);
+	virtual icon resizemm(IN_THREAD_ONLY,
+			      const dim_arg &width_arg,
+			      const dim_arg &height_arg);
 
 	//! Resize this icon, if this is a resizable icon.
 	virtual icon resize(IN_THREAD_ONLY, dim_t w, dim_t h,

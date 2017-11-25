@@ -20,9 +20,8 @@ iconObj::~iconObj()=default;
 
 icon iconObj::initialize(IN_THREAD_ONLY)
 {
-	auto theme=*current_theme_t::lock{
-		image->icon_pixmap->impl->get_screen()->impl->current_theme
-	};
+	auto theme=image->icon_pixmap->impl->get_screen()->impl
+		->current_theme.get();
 
 	return theme_updated(IN_THREAD, theme);
 }
@@ -33,7 +32,9 @@ icon iconObj::theme_updated(IN_THREAD_ONLY,
 	return icon(this);
 }
 
-icon iconObj::resizemm(IN_THREAD_ONLY, double widthmm, double heightmm)
+icon iconObj::resizemm(IN_THREAD_ONLY,
+		       const dim_arg &,
+		       const dim_arg &)
 {
 	return icon(this);
 }
