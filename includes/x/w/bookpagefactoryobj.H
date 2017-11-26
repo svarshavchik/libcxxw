@@ -9,6 +9,7 @@
 #include <x/w/bookpagefactoryfwd.H>
 #include <x/w/factoryfwd.H>
 #include <x/w/alignment.H>
+#include <x/w/shortcutfwd.H>
 #include <x/functional.H>
 #include <x/obj.H>
 
@@ -39,6 +40,17 @@ public:
 		return *this;
 	}
 
+	//! Add another page to the book, with a shortcut.
+
+	template<typename functor>
+	inline auto &add(functor &&f, const shortcut &s)
+	{
+		do_add(make_function<void (const factory &, const factory &)>
+		       (std::forward<functor>(f)), s);
+
+		return *this;
+	}
+
 	//! Set next page's alignment
 
 	virtual bookpagefactoryObj &halign(LIBCXXW_NAMESPACE::halign)=0;
@@ -49,8 +61,13 @@ public:
 
 	//! Type-erased add().
 
+	void do_add(const function<void (const factory &,
+					 const factory &)> &f);
+	//! Type-erased add().
+
 	virtual void do_add(const function<void (const factory &,
-						 const factory &)> &f)=0;
+						 const factory &)> &f,
+			    const shortcut &sc)=0;
 };
 
 LIBCXXW_NAMESPACE_END

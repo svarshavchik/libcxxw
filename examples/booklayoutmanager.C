@@ -1,0 +1,333 @@
+/*
+** Copyright 2017 Double Precision, Inc.
+** See COPYING for distribution information.
+*/
+
+#include "config.h"
+#include <x/mpobj.H>
+#include <x/exception.H>
+#include <x/destroy_callback.H>
+#include <x/ref.H>
+#include <x/obj.H>
+
+#include <x/w/main_window.H>
+#include <x/w/gridlayoutmanager.H>
+#include <x/w/gridfactory.H>
+#include <x/w/booklayoutmanager.H>
+#include <x/w/bookpagefactory.H>
+#include <x/w/label.H>
+#include <x/w/text_param_literals.H>
+#include <x/w/button.H>
+#include <x/w/input_field.H>
+#include <x/w/input_field_config.H>
+#include <x/w/canvas.H>
+
+#include <iostream>
+#include "close_flag.H"
+
+/*
+** Create:
+**
+**    First name: _____________________________
+**     Last name: _____________________________
+**
+** Returns the "first name" x::w::input_field
+*/
+
+static void name_tab(const x::w::gridlayoutmanager &glm)
+{
+	auto f=glm->append_row();
+
+	f->halign(x::w::halign::right).create_label("First name:");
+
+	x::w::input_field_config config;
+
+	config.autoselect=true;
+
+	f->create_input_field("", config);
+
+	f=glm->append_row();
+
+	f->halign(x::w::halign::right).create_label("Last name:");
+	f->create_input_field("", config);
+}
+
+/*
+** Create:
+**
+**    Address: _____________________________
+**             _____________________________
+**       City: ______ State: ___ Zip: ________
+
+** Returns the first "Address" x::w::input_field
+*/
+
+static void address_tab(const x::w::gridlayoutmanager &glm)
+{
+	auto f=glm->append_row();
+
+	f->halign(x::w::halign::right).create_label("Address:");
+
+	x::w::input_field_config config;
+
+	config.autoselect=true;
+
+	// There are six elements on the last row of the grid, so we
+	// need to make the address input fields span 5 columns (the
+	// label takes the first column)
+
+	f->colspan(5).create_input_field("", config);
+
+	f=glm->append_row();
+
+	// No label for the 2nd address field, put an empty canvas in there.
+	f->create_canvas();
+
+	f->colspan(5).create_input_field("", config); // address2
+
+	f=glm->append_row();
+
+	f->halign(x::w::halign::right).create_label("City:");
+
+	config.columns=20;
+
+	f->create_input_field("", config);
+
+	// No alignment is typically needed for State: and Zip: labels,
+	// but just in case a theme makes the two big input fields wider
+	// than the four elements, and the grid stretches the elements in
+	// last row to align everything up, this will make things look
+	// better.
+	f->halign(x::w::halign::right).create_label("State:");
+
+	config.columns=3;
+
+	f->create_input_field("", config);
+
+	f->halign(x::w::halign::right).create_label("Zip:");
+
+	config.columns=11;
+
+	f->create_input_field("", config);
+}
+
+/*
+**    Phone: _______________________
+**
+** Returns the phone x::w::input_field
+*/
+
+static void phone_tab(const x::w::gridlayoutmanager &glm)
+{
+	auto f=glm->append_row();
+
+	f->create_label("Phone:");
+
+	x::w::input_field_config config;
+
+	config.autoselect=true;
+
+	f->create_input_field("", config);
+}
+
+/*
+** Creator lambda for the book layout manager, factored out of
+** create_mainwindow() for readability.
+**
+** Returns a tuple of three x::w::input_field-s, the first x::w::input_field
+** on each of the three containers that get added to the book layout
+** manager.
+*/
+static void create_book(const x::w::booklayoutmanager &pl)
+{
+	/*
+	** append() returns a factory that appends new pages to the book.
+	*/
+	x::w::bookpagefactory new_page=pl->append();
+
+	/*
+	** The book layout manager is an extended version of the page
+	** layout manager, and halign() and valign() serves the same
+	** purpose as they do with the page layout manager.
+	**
+	** The major difference between page layout manager's pagefactory
+	** and book layout manager's bookpagefactory is that
+	** new pages get created by add(), and callback closure gets
+	** passed two factories, one for the page's tab, and one for the
+	** page itself.
+	*/
+
+	new_page->halign(x::w::halign::left).valign(x::w::valign::top)
+		.add([&]
+		     (const x::w::factory &tab_factory,
+		      const x::w::factory &page_factory)
+		     {
+			     // The callback closure must use both the
+			     // tab and the page factory to create the
+			     // new page's and the page itself.
+			     //
+			     // The tab is typically a label.
+			     //
+			     tab_factory->create_label
+				     ({
+					     "underline"_decoration,
+					     "A",
+					     "no"_decoration,
+					     "ddress"})->show();
+
+			     auto container=page_factory->create_container
+				     ([]
+				      (const auto &container)
+				      {
+					      address_tab(container->get_layoutmanager());
+				      },
+				      x::w::new_gridlayoutmanager{});
+
+			     container->show_all();
+		     },
+
+
+		     // The third parameter to add() is optional, and specifies
+		     // an x::shortcut for this page.
+
+		     {"Alt", 'A'}
+		     );
+
+	/*
+	** Like the pagefactory, the same bookpagefactory can be used to
+	** add multiple pages.
+	*/
+
+	new_page->add([&]
+		      (const x::w::factory &tab_factory,
+		       const x::w::factory &page_factory)
+		      {
+			      tab_factory->create_label
+				      ({
+					      "underline"_decoration,
+					      "P",
+					      "no"_decoration,
+					      "hone"})->show();
+			      page_factory->create_container
+				      ([&]
+				       (const auto &container)
+				       {
+					       phone_tab(container->get_layoutmanager());
+				       },
+				       x::w::new_gridlayoutmanager{})
+				      ->show_all();
+		      },
+		      {"Alt", 'P'});
+
+	/*
+	** And, similar to the pagefactory, the insert() method adds new
+	** pages before an existing page.
+	*/
+	new_page=pl->insert(0);
+
+
+	new_page->halign(x::w::halign::left).valign(x::w::valign::top)
+		.add([&]
+		     (const x::w::factory &tab_factory,
+		      const x::w::factory &page_factory)
+		     {
+			     tab_factory->create_label
+				     ({
+					     "underline"_decoration,
+					     "N",
+					     "no"_decoration,
+					     "ame"})->show();
+			     page_factory->create_container
+				     ([&]
+				      (const auto &container)
+				      {
+					      name_tab(container->get_layoutmanager());
+				      },
+				      x::w::new_gridlayoutmanager{})
+				     ->show_all();
+		     },
+		     {"Alt", 'N'});
+
+	/*
+	** The initial state of the paged container: make element #0
+	** visible.
+	*/
+	pl->open(0);
+}
+
+/*
+** The main_window creator lambda, factored out for readability.
+*/
+static void create_mainwindow(const x::w::main_window &mw)
+{
+	x::w::gridlayoutmanager glm=mw->get_layoutmanager();
+
+	auto gf=glm->append_row();
+
+	/*
+	** On the first row we create a focusable container using a
+	** new_booklayoutmanager.
+	**
+	** Book layout manager's containers must be created with
+	** create_focusable_container(), because the book layout manager
+	** takes care of some focusable elements.
+	*/
+
+	auto book=gf->create_focusable_container
+		([&]
+		 (const auto &s)
+		 {
+			 x::w::booklayoutmanager pl=s->get_layoutmanager();
+
+			 create_book(pl);
+		 },
+		 x::w::new_booklayoutmanager{});
+
+	book->show();
+}
+
+void testbook()
+{
+	x::destroy_callback::base::guard guard;
+
+	auto close_flag=close_flag_ref::create();
+
+	auto mw=x::w::main_window::create([]
+					  (const auto &mw)
+					  {
+						  create_mainwindow(mw);
+					  });
+
+	mw->set_window_title("Book!");
+
+	guard(mw->connection_mcguffin());
+
+	mw->on_disconnect([]
+			  {
+				  exit(1);
+			  });
+
+	mw->on_delete([close_flag]
+		      (const auto &ignore)
+		      {
+			      close_flag->close();
+		      });
+
+	mw->show();
+
+	x::mpcobj<bool>::lock lock{close_flag->flag};
+
+	lock.wait([&] { return *lock; });
+}
+
+int main(int argc, char **argv)
+{
+	try {
+		testbook();
+	} catch (const x::exception &e)
+	{
+		e->caught();
+		exit(1);
+	}
+	return 0;
+}

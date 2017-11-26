@@ -228,10 +228,6 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
     <weight>bold</weight>
   </font>
 
-  <font id="notebook_ribbon_label" from="label">
-    <point_size>16</point_size>
-  </font>
-
   <font id="dialog_label" from="serif">
     <point_size>16</point_size>
   </font>
@@ -409,6 +405,9 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
   <color id="book_tab_active_color" scale="70%" />
   <color id="book_tab_warm_color" scale="80%" />
   <color id="book_tab_hot_color" scale="100%" />
+
+  <color id="page_background" scale="80%" />
+  <border id="page_border" from="thin_0%" />
 
   <border id="book_tab_border" from="thin_0%">
     <hradius>.5</hradius>

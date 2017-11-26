@@ -65,24 +65,32 @@ std::optional<size_t> booklayoutmanagerObj::opened() const
 
 void booklayoutmanagerObj::open(size_t n) const
 {
-	book_lock lock{ const_ref(this) };
+	implObj::open(const_ref(this), n, true);
+}
+
+void booklayoutmanagerObj
+::implObj::open(const const_booklayoutmanager &blm, size_t n,
+		bool ensure_visibility)
+{
+
+	book_lock lock{blm};
 
 	// Remember which page is currently open.
 
-	auto opened=impl->book_pagelayoutmanager->opened();
+	auto opened=blm->impl->book_pagelayoutmanager->opened();
 
 	pagetabptr previous_page;
 
 	if (opened)
-		previous_page=impl->get_pagetab(*opened);
-	pagetab next_page=impl->get_pagetab(n);
+		previous_page=blm->impl->get_pagetab(*opened);
+	pagetab next_page=blm->impl->get_pagetab(n);
 
 	// The official switch to the new page can be done immediately, but
 	// need to punt the tab visual update to the connection thread.
 
-	impl->book_pagelayoutmanager->open(n);
-	impl->book_pagecontainer->elementObj::impl->THREAD
-		->run_as([previous_page, next_page]
+	blm->impl->book_pagelayoutmanager->open(n);
+	blm->impl->book_pagecontainer->elementObj::impl->THREAD
+		->run_as([previous_page, next_page, ensure_visibility]
 			 (IN_THREAD_ONLY)
 			 {
 				 if (previous_page)
@@ -94,6 +102,9 @@ void booklayoutmanagerObj::open(size_t n) const
 						 ->set_active(IN_THREAD, false);
 				 }
 				 next_page->impl->set_active(IN_THREAD, true);
+
+				 if (!ensure_visibility)
+					 return;
 				 next_page->elementObj::impl
 					 ->ensure_entire_visibility(IN_THREAD);
 			 });
@@ -187,7 +198,8 @@ class LIBCXX_HIDDEN bookpagefactory_implObj : public bookpagefactoryObj {
 // callback that gets executed when a tab is selected by pointer or keyboard.
 
 static inline void tab_activate(const booklayoutmanager &layout_manager,
-				const element &activated_page)
+				const element &activated_page,
+				const callback_trigger_t &trigger)
 {
 	book_lock lock{layout_manager};
 
@@ -197,7 +209,11 @@ static inline void tab_activate(const booklayoutmanager &layout_manager,
 	if (!index)
 		return;
 
-	layout_manager->open(*index);
+	booklayoutmanagerObj::implObj::open(layout_manager,
+					    *index,
+					    std::holds_alternative
+					    <const button_event *>(trigger)
+					    ? false:true);
 }
 
 // Helper for populating a new tab's structure.
@@ -213,7 +229,8 @@ auto create_new_tab(const gridfactory &gridfactory,
 		    const booklayoutmanager &layout_manager,
 		    const pagefactory &book_pagefactory,
 		    const function<void (const factory &,
-					 const factory &)> &tab_factory)
+					 const factory &)> &tab_factory,
+		    const shortcut &sc)
 {
 	// All elements in the tab strip have no padding, and take up the
 	// full height of the tab strip.
@@ -266,13 +283,14 @@ auto create_new_tab(const gridfactory &gridfactory,
 	// Finish initialize the impl in the connection thread.
 	//
 	// It is always_visibleObj, and the initial background color needs
-	// to be set.
+	// to be set. Also, install the shortcut.
 	impl->get_element_impl().THREAD
-		->run_as([impl]
+		->run_as([impl, sc]
 			 (IN_THREAD_ONLY)
 			 {
 				 impl->request_visibility(IN_THREAD, true);
 				 impl->set_active(IN_THREAD, false);
+				 impl->set_shortcut(IN_THREAD, sc);
 			 });
 
 	// Obtain the initial contents of the actual tab label.
@@ -332,7 +350,8 @@ void install_activate_callback(const booklayoutmanager &layout_manager,
 					  tab_activate
 						  (lm_impl
 						   ->create_public_object(),
-						   new_page);
+						   new_page,
+						   trigger);
 				  });
 		 });
 }
@@ -364,7 +383,8 @@ class LIBCXX_HIDDEN append_bookpagefactoryObj
 
 	//! Implement add()
 	void do_add(const function<void (const factory &,
-					 const factory &)> &factory)
+					 const factory &)> &factory,
+		    const shortcut &sc)
 		override;
 };
 
@@ -395,7 +415,8 @@ class LIBCXX_HIDDEN insert_bookpagefactoryObj
 
 	//! Implement add().
 	void do_add(const function<void (const factory &,
-					 const factory &)> &factory)
+					 const factory &)> &factory,
+		    const shortcut &sc)
 		override;
 };
 
@@ -405,13 +426,14 @@ bookpagefactory booklayoutmanagerObj::append()
 }
 
 void append_bookpagefactoryObj
-::do_add(const function<void (const factory &, const factory &)> &f)
+::do_add(const function<void (const factory &, const factory &)> &f,
+	 const shortcut &sc)
 {
 	grid_map_t::lock lock{layout_manager->impl->impl->grid_map};
 
 	auto [tab_element, hotspot_element, page_element]=
 		create_new_tab(book_tabfactory(lock),
-			       layout_manager, book_pagefactory, f);
+			       layout_manager, book_pagefactory, f, sc);
 
 	install_activate_callback(layout_manager, hotspot_element,
 				  page_element);
@@ -426,13 +448,14 @@ bookpagefactory booklayoutmanagerObj::insert(size_t page_number)
 }
 
 void insert_bookpagefactoryObj
-::do_add(const function<void (const factory &, const factory &)> &f)
+::do_add(const function<void (const factory &, const factory &)> &f,
+	 const shortcut &sc)
 {
 	grid_map_t::lock lock{layout_manager->impl->impl->grid_map};
 
 	auto [tab_element, hotspot_element, page_element]=
 		create_new_tab(book_tabfactory(lock),
-			       layout_manager, book_pagefactory, f);
+			       layout_manager, book_pagefactory, f, sc);
 
 	install_activate_callback(layout_manager, hotspot_element,
 				  page_element);
@@ -532,7 +555,11 @@ class LIBCXX_HIDDEN book_focusable_containerObj
 	}
 };
 
-new_booklayoutmanager::new_booklayoutmanager()=default;
+new_booklayoutmanager::new_booklayoutmanager()
+	: background_color{"page_background"},
+	  border{"page_border"}
+{
+}
 
 new_booklayoutmanager::~new_booklayoutmanager()=default;
 
@@ -559,7 +586,9 @@ new_booklayoutmanager::create(const ref<containerObj::implObj> &parent) const
 
 	auto &wh=c->get_window_handler();
 
-	factory->padding(0);
+	gridlm->row_alignment(0, valign::bottom);
+	gridlm->requested_row_height(1, 100);
+	factory->padding(0).border(border);
 
 	// We will not use image button callbacks, instead we'll hook into
 	// the activation callbacks.
@@ -596,13 +625,14 @@ new_booklayoutmanager::create(const ref<containerObj::implObj> &parent) const
 		 }, *factory, valign::bottom,
 		 [](const auto &ignore){});
 
+	left_scroll->set_background_color(background_color);
 	left_scroll->show();
 
 	////////////////////////////////////////////////////////////////////
 	//
 	// The page tab element is, first and foremost, a peephole.
 
-	factory->padding(0).valign(valign::bottom).halign(halign::fill);
+	factory->padding(0).halign(halign::fill);
 
 	auto peephole_impl=
 		ref<always_visibleObj<peepholeObj::implObj>>
@@ -638,10 +668,14 @@ new_booklayoutmanager::create(const ref<containerObj::implObj> &parent) const
 	// We can now create the peephole layoutmanager for the
 	// peephole_container_impl;
 
+	peephole_style style;
+
+	style.scroll=peephole_scroll::centered;
+
 	auto peephole_lm=
 		ref<peepholeObj::layoutmanager_implObj>::create
 		(peephole_impl,
-		 peephole_style{},
+		 style,
 		 pagetab_container);
 
 	// And the peephole.
@@ -651,6 +685,8 @@ new_booklayoutmanager::create(const ref<containerObj::implObj> &parent) const
 	factory->created_internally(my_peephole);
 
 	// It's time for the right scroll button.
+
+	factory->padding(0).border(border);
 
 	auto right_scroll=create_image_button
 		(true,
@@ -678,6 +714,7 @@ new_booklayoutmanager::create(const ref<containerObj::implObj> &parent) const
 		 }, *factory, valign::bottom,
 		 [](const auto &ignore){});
 
+	right_scroll->set_background_color(background_color);
 	right_scroll->show();
 
 	// It's very nice for an image_button to provide callbacks that
@@ -784,7 +821,9 @@ new_booklayoutmanager::create(const ref<containerObj::implObj> &parent) const
 				  page_lm_impl);
 
 	factory->colspan(3);
+	factory->border(border);
 	factory->created_internally(current_page_container);
+	current_page_container->set_background_color(background_color);
 
 	return ref<book_focusable_containerObj>::create(c, grid);
 }

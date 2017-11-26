@@ -20,8 +20,11 @@
 #include "x/w/input_field.H"
 #include "x/w/input_field_config.H"
 #include "x/w/canvas.H"
+#include "x/w/text_param_literals.H"
+#include "x/w/font.H"
 
 #include <iostream>
+#include <sstream>
 
 class close_flagObj : public LIBCXX_NAMESPACE::obj {
 
@@ -178,6 +181,29 @@ static void create_book(const LIBCXX_NAMESPACE::w::booklayoutmanager &sl)
 				 LIBCXX_NAMESPACE::w::new_gridlayoutmanager{});
 		});
 
+	sf=sl->append();
+
+	for (int i=0; i<6; i++)
+	{
+		sf->add([i]
+			(const auto &tab_factory,
+			 const auto &page_factory)
+			{
+				std::ostringstream o;
+
+				o << "Page " << i+1;
+
+				std::string s=o.str();
+
+				tab_factory->create_label(s);
+
+				page_factory->create_label
+					({LIBCXX_NAMESPACE::w::font{
+							"sans serif",
+								36},
+							s});
+			});
+	}
 	sl->open(0);
 
 	LIBCXX_NAMESPACE::w::book_lock lock{sl};
@@ -194,7 +220,23 @@ static void create_mainwindow(const LIBCXX_NAMESPACE::w::main_window &mw)
 	LIBCXX_NAMESPACE::w::gridlayoutmanager glm=mw->get_layoutmanager();
 
 	auto gf=glm->append_row();
+#if 0
+	gf->padding(0);
+	gf->left_border("book_tab_border");
+	gf->right_border("book_tab_border");
+	gf->top_border("book_tab_border");
 
+	gf->create_label("Label!");
+
+	gf=glm->append_row();
+
+	gf->create_canvas([](const auto &){},
+			  {50, 50, 50}, {10, 10, 10})
+		->set_background_color(x::w::rgb{});
+
+	if (0)
+		create_book(gf);
+#else
 	auto sw=gf->create_focusable_container
 		([&]
 		 (const auto &s)
@@ -204,6 +246,7 @@ static void create_mainwindow(const LIBCXX_NAMESPACE::w::main_window &mw)
 			 create_book(sl);
 		 },
 		 LIBCXX_NAMESPACE::w::new_booklayoutmanager{});
+#endif
 }
 
 void testbook()

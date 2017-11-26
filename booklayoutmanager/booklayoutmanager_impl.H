@@ -79,6 +79,12 @@ class LIBCXX_HIDDEN booklayoutmanagerObj::implObj : virtual public obj {
 	//! After a new tab is added, we need to rebuild the focusable order.
 
 	void rebuild_focusables(grid_map_t::lock &) const;
+
+	//! Open a page.
+
+	static void open(const const_booklayoutmanager &blm, size_t n,
+			 bool ensure_visibility);
+
 };
 
 LIBCXXW_NAMESPACE_END

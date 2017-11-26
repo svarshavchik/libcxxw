@@ -284,6 +284,8 @@ void generic_windowObj::handlerObj
 
 void generic_windowObj::handlerObj::mapped(IN_THREAD_ONLY)
 {
+	// Find the first element with autofocus(), and make it so.
+
 	for (const auto &element:focusable_fields(IN_THREAD))
 	{
 		if (!element->focusable_enabled(IN_THREAD))

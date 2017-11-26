@@ -11,6 +11,8 @@
 #include <x/w/layoutmanager.H>
 #include <x/w/element.H>
 #include <x/w/grid_map_infofwd.H>
+#include <x/w/rgb.H>
+#include <x/w/border_arg.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -29,6 +31,12 @@ class LIBCXX_HIDDEN new_booklayoutmanager
 
 	//! Destructor
 	~new_booklayoutmanager() LIBCXX_PUBLIC;
+
+	//! Page background color;
+	color_arg background_color;
+
+	//! Border
+	border_arg border;
 
 	//! Create a container with the book layout manager.
 

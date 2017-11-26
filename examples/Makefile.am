@@ -1,6 +1,7 @@
 @LIBCXX_AM@
 
 noinst_PROGRAMS=\
+	booklayoutmanager			\
 	checkradio				\
 	combobox				\
 	focusable				\
@@ -13,6 +14,9 @@ noinst_PROGRAMS=\
 	scrollbar				\
 	pagelayoutmanager			\
 	wordwraplabel
+
+booklayoutmanager_SOURCES=booklayoutmanager.C close_flag.H
+booklayoutmanager_LDADD=-lcxxw -lcxx
 
 checkradio_SOURCES=checkradio.C close_flag.H
 checkradio_LDADD=-lcxxw -lcxx
