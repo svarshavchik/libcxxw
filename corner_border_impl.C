@@ -124,6 +124,7 @@ void corner_borderObj::implObj::compute_metrics(IN_THREAD_ONLY)
 	// together.
 	dim_t width;
 	dim_t height;
+	size_t n_borders=0;
 
 	for (const auto &b:all_borders)
 	{
@@ -139,12 +140,28 @@ void corner_borderObj::implObj::compute_metrics(IN_THREAD_ONLY)
 
 		if (current_border->calculated_border_height > height)
 			height=current_border->calculated_border_height;
+
+		++n_borders;
+	}
+
+	metrics::axis h{width, width, width};
+	metrics::axis v{height, height, height};
+
+	/*
+	** Plan B for when one border enters a corner area, part 1.
+	**
+	** If we're lucky, the grid layout manager will not allocate any
+	** space to this row or column. Otherwise, we'll do part 2.
+	*/
+
+	if (n_borders == 1)
+	{
+		h={0, 0, 0};
+		v={0, 0, 0};
 	}
 
 	get_horizvert(IN_THREAD)
-		->set_element_metrics(IN_THREAD,
-				      {width, width, width},
-				      {height, height, height});
+		->set_element_metrics(IN_THREAD, h, v);
 
 	// cached_draw_info needs to be recomputed now.
 	cached_draw_info.reset();
@@ -405,6 +422,62 @@ corner_borderObj::implObj::cached_draw_info_s
 				     bottom,
 				     stubs);
 
+#if 0
+	struct debug_info {
+		const char *name;
+		straight_borderptr b;
+	} d[]={ {"top", elements.fromtop_border},
+		{"bottom", elements.frombottom_border},
+		{"left", elements.fromleft_border},
+		{"right", elements.fromright_border}};
+
+	for (const auto &dd:d)
+	{
+		if (!dd.b)
+			continue;
+
+		const auto &b=dd.b->impl->best_border(IN_THREAD);
+
+		if (!b)
+			continue;
+
+		const border_info &bb=*b->border(IN_THREAD);
+
+		std::cout << dd.name << ": "
+			  << bb.width << "x" << bb.height
+			  << ", hradius=" << bb.hradius
+			  << ", vradius=" << bb.vradius
+			  << std::endl;
+	}
+
+	std::cout << "SIZE: " << stubs.size() << std::endl;
+#endif
+
+	/*
+	** Plan B for when one border enters a corner area, part 2.
+	**
+	** If we have a lonely stub, and no corners, just extend the stub
+	** to the other side, in case there's something "solid" there.
+	**
+	** If there's another stub, from any other edge, they'll meet in the
+	** middle. If there's another corner joining the two of the other
+	** edges, it's something weird, so we'll just keep on truckin'.
+	*/
+
+	if (stubs.size() == 1 && corners.empty())
+	{
+		auto first=*stubs.begin();
+
+		int &val=std::get<int>(first);
+
+		if (val & (left|right))
+			val ^= (left|right);
+		else
+			val ^= (top|bottom);
+
+		stubs.push_back(first);
+	}
+
 	auto sorter=[]
 		(const auto &a, const auto &b)
 		{
@@ -435,6 +508,9 @@ corner_borderObj::implObj::cached_draw_info_s
 }
 
 //////////////////////////////////////////////////////////////////////////////
+//
+// Examine two borders that meet in a corner. If they're the same border,
+// they can be drawn as a corner.
 
 void corner_borderObj::implObj::surrounding_elements_and_borders
 ::get_same_border(IN_THREAD_ONLY,
@@ -448,20 +524,21 @@ void corner_borderObj::implObj::surrounding_elements_and_borders
 	auto &b1=(*this).*border1;
 	auto &b2=(*this).*border2;
 
-	if (b1 || b2)
-	{
-		if (!b1 || !b2)
-			return; // Different borders.
+	// Do we have two borders here?
+	if (!b1 || !b2)
+		return;
 
-		if (b1->impl->best_border(IN_THREAD) !=
-		    b2->impl->best_border(IN_THREAD))
-			return; // Different borders.
+	auto best1=b1->impl->best_border(IN_THREAD);
+	auto best2=b2->impl->best_border(IN_THREAD);
 
-		pick_border(IN_THREAD, border1,
-			    which_corners,
-			    borders);
-	}
+	// Are they the same?
+	if (best1 != best2)
+		return; // Different borders.
 
+	if (!best1)
+		return; // Same borders, but both of them are zippo.
+
+	borders.emplace_back(best1->border(IN_THREAD), which_corners);
 	flags &= mask;
 }
 
