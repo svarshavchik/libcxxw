@@ -89,11 +89,13 @@ void corner_borderObj::implObj::updated(IN_THREAD_ONLY)
 void corner_borderObj::implObj::initialize(IN_THREAD_ONLY)
 {
 	compute_metrics(IN_THREAD);
+	superclass_t::initialize(IN_THREAD);
 }
 
 void corner_borderObj::implObj::theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme)
 {
 	compute_metrics(IN_THREAD);
+	superclass_t::theme_updated(IN_THREAD, new_theme);
 }
 
 void corner_borderObj::implObj::compute_metrics(IN_THREAD_ONLY)
@@ -143,6 +145,9 @@ void corner_borderObj::implObj::compute_metrics(IN_THREAD_ONLY)
 		->set_element_metrics(IN_THREAD,
 				      {width, width, width},
 				      {height, height, height});
+
+	// cached_draw_info needs to be recomputed now.
+	cached_draw_info.reset();
 }
 
 void corner_borderObj::implObj::do_draw(IN_THREAD_ONLY,
@@ -167,16 +172,9 @@ void corner_borderObj::implObj::do_draw(IN_THREAD_ONLY,
 
 	auto &elements=surrounding_elements(IN_THREAD);
 
-	// Start handling all possibilities...
+	auto &info=get_cached_draw_info(IN_THREAD);
 
-	// Possibility #1: same border everywhere.
-
-	if (elements.fromtop_border ==
-	    elements.frombottom_border &&
-	    elements.fromtop_border ==
-	    elements.fromleft_border &&
-	    elements.fromtop_border ==
-	    elements.fromright_border)
+	if (info.same_border_everywhere)
 	{
 		if (!elements.fromtop_border)
 			return; // The "same border" is no border.
@@ -202,6 +200,129 @@ void corner_borderObj::implObj::do_draw(IN_THREAD_ONLY,
 		return;
 	}
 
+	dim_t leftwidth=area_entire_rect.width/2;
+	dim_t rightwidth=area_entire_rect.width - leftwidth;
+	dim_t topheight=area_entire_rect.height/2;
+	dim_t bottomheight=area_entire_rect.height - topheight;
+
+	// Now, for the corners where we won't call draw_corner(), take care
+	// of filling that corner with the correposnding element's background
+	// color ourselves, here.
+
+	if ((info.all_corners & border_impl::base::cornertl())
+	    && elements.topleft)
+	{
+		auto &e_draw_info=elements.topleft->grid_element->impl
+			->get_draw_info(IN_THREAD);
+
+		auto xy=e_draw_info.background_xy_to(di);
+
+		area_picture->impl->composite(e_draw_info.window_background,
+					      xy.first,
+					      xy.second,
+					      0, 0,
+					      leftwidth,
+					      topheight);
+	}
+
+	if ((info.all_corners & border_impl::base::cornertr())
+	    && elements.topright)
+	{
+		auto &e_draw_info=elements.topright->grid_element->impl
+			->get_draw_info(IN_THREAD);
+
+		auto xy=e_draw_info.background_xy_to(di,
+						     coord_t::truncate(leftwidth),
+						     0);
+
+		area_picture->impl->composite(e_draw_info.window_background,
+					      xy.first,
+					      xy.second,
+					      coord_t::truncate(leftwidth), 0,
+					      rightwidth,
+					      topheight);
+	}
+
+
+	if ((info.all_corners & border_impl::base::cornerbl())
+	    && elements.bottomleft)
+	{
+		auto &e_draw_info=elements.bottomleft->grid_element->impl
+			->get_draw_info(IN_THREAD);
+
+		auto xy=e_draw_info.background_xy_to(di,
+						     0,
+						     coord_t::truncate(topheight));
+
+		area_picture->impl->composite(e_draw_info.window_background,
+					      xy.first,
+					      xy.second,
+					      0,
+					      coord_t::truncate(topheight),
+					      leftwidth,
+					      bottomheight);
+	}
+
+	if ((info.all_corners & border_impl::base::cornerbr())
+	    && elements.bottomright)
+	{
+		auto &e_draw_info=elements.bottomright->grid_element->impl
+			->get_draw_info(IN_THREAD);
+
+		auto xy=e_draw_info.background_xy_to(di,
+						     coord_t::truncate(leftwidth),
+						     coord_t::truncate(topheight));
+
+		area_picture->impl->composite(e_draw_info.window_background,
+					      xy.first,
+					      xy.second,
+					      coord_t::truncate(leftwidth),
+					      coord_t::truncate(topheight),
+					      rightwidth,
+					      bottomheight);
+	}
+
+	for (const auto &b:info.stubs)
+	{
+#ifdef DRAW_STUB_BORDER
+		DRAW_STUB_BORDER();
+#endif
+		std::get<0>(b)->draw_stubs(border_draw_info, std::get<1>(b));
+	}
+
+	for (const auto &b:info.corners)
+	{
+		std::get<0>(b)->draw_corner(IN_THREAD,
+					    border_draw_info, std::get<1>(b),
+					    elements);
+	}
+}
+
+corner_borderObj::implObj::cached_draw_info_s
+&corner_borderObj::implObj::get_cached_draw_info(IN_THREAD_ONLY)
+{
+	if (cached_draw_info)
+		return *cached_draw_info;
+
+	auto &info=cached_draw_info.emplace();
+
+	auto &elements=surrounding_elements(IN_THREAD);
+
+	// Start handling all possibilities...
+
+	// Possibility #1: same border everywhere.
+
+	if (elements.fromtop_border ==
+	    elements.frombottom_border &&
+	    elements.fromtop_border ==
+	    elements.fromleft_border &&
+	    elements.fromtop_border ==
+	    elements.fromright_border)
+	{
+		info.same_border_everywhere=true;
+		return info;
+	}
+
 	// Compare adjacent borders, if they're the same we can use that
 	// border to draw that particular corner.
 	//
@@ -215,8 +336,9 @@ void corner_borderObj::implObj::do_draw(IN_THREAD_ONLY,
 	//
 	// What would be left would be the stubs to draw.
 
-	std::vector<std::tuple<const_border_impl, int>> corners;
-	std::vector<std::tuple<const_border_impl, int>> stubs;
+	auto &corners=info.corners;
+	auto &stubs=info.stubs;
+
 	corners.reserve(3);
 	stubs.reserve(3);
 
@@ -297,114 +419,19 @@ void corner_borderObj::implObj::do_draw(IN_THREAD_ONLY,
 	// in the corners vector. That corner's background color will get
 	// taken care of by draw_corner(), when we call it below.
 
-	int all_corners=border_impl::base::cornertl() |
+	info.all_corners=border_impl::base::cornertl() |
 		border_impl::base::cornertr() |
 		border_impl::base::cornerbl() |
 		border_impl::base::cornerbr();
 
 	for (const auto &b:corners)
-		all_corners &= ~std::get<1>(b);
-
-	dim_t leftwidth=area_entire_rect.width/2;
-	dim_t rightwidth=area_entire_rect.width - leftwidth;
-	dim_t topheight=area_entire_rect.height/2;
-	dim_t bottomheight=area_entire_rect.height - topheight;
-
-	// Now, for the corners where we won't call draw_corner(), take care
-	// of filling that corner with the correposnding element's background
-	// color ourselves, here.
-
-	if ((all_corners & border_impl::base::cornertl())
-	    && elements.topleft)
-	{
-		auto &e_draw_info=elements.topleft->grid_element->impl
-			->get_draw_info(IN_THREAD);
-
-		auto xy=e_draw_info.background_xy_to(di);
-
-		area_picture->impl->composite(e_draw_info.window_background,
-					      xy.first,
-					      xy.second,
-					      0, 0,
-					      leftwidth,
-					      topheight);
-	}
-
-	if ((all_corners & border_impl::base::cornertr())
-	    && elements.topright)
-	{
-		auto &e_draw_info=elements.topright->grid_element->impl
-			->get_draw_info(IN_THREAD);
-
-		auto xy=e_draw_info.background_xy_to(di,
-						     coord_t::truncate(leftwidth),
-						     0);
-
-		area_picture->impl->composite(e_draw_info.window_background,
-					      xy.first,
-					      xy.second,
-					      coord_t::truncate(leftwidth), 0,
-					      rightwidth,
-					      topheight);
-	}
-
-
-	if ((all_corners & border_impl::base::cornerbl())
-	    && elements.bottomleft)
-	{
-		auto &e_draw_info=elements.bottomleft->grid_element->impl
-			->get_draw_info(IN_THREAD);
-
-		auto xy=e_draw_info.background_xy_to(di,
-						     0,
-						     coord_t::truncate(topheight));
-
-		area_picture->impl->composite(e_draw_info.window_background,
-					      xy.first,
-					      xy.second,
-					      0,
-					      coord_t::truncate(topheight),
-					      leftwidth,
-					      bottomheight);
-	}
-
-	if ((all_corners & border_impl::base::cornerbr())
-	    && elements.bottomright)
-	{
-		auto &e_draw_info=elements.bottomright->grid_element->impl
-			->get_draw_info(IN_THREAD);
-
-		auto xy=e_draw_info.background_xy_to(di,
-						     coord_t::truncate(leftwidth),
-						     coord_t::truncate(topheight));
-
-		area_picture->impl->composite(e_draw_info.window_background,
-					      xy.first,
-					      xy.second,
-					      coord_t::truncate(leftwidth),
-					      coord_t::truncate(topheight),
-					      rightwidth,
-					      bottomheight);
-	}
+		info.all_corners &= ~std::get<1>(b);
 
 	// Draw corners according to their relative "importantness".
 	std::sort(stubs.begin(), stubs.end(), sorter);
 	std::sort(corners.begin(), corners.end(), sorter);
 
-	for (const auto &b:stubs)
-	{
-#ifdef DRAW_STUB_BORDER
-		DRAW_STUB_BORDER();
-#endif
-		std::get<0>(b)->draw_stubs(border_draw_info, std::get<1>(b));
-	}
-
-	for (const auto &b:corners)
-	{
-		std::get<0>(b)->draw_corner(IN_THREAD,
-					    border_draw_info, std::get<1>(b),
-					    elements);
-	}
+	return info;
 }
 
 //////////////////////////////////////////////////////////////////////////////

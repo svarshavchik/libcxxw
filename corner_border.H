@@ -16,10 +16,18 @@
 #include "generic_window_handler.H"
 #include "connection_threadfwd.H"
 
+#include <vector>
+#include <tuple>
+#include <optional>
+
 LIBCXXW_NAMESPACE_START
 
 class LIBCXX_HIDDEN corner_borderObj::implObj
 	: public scratch_and_mask_buffer_draw<child_elementObj> {
+
+	//! Alias
+
+	typedef scratch_and_mask_buffer_draw<child_elementObj> superclass_t;
 
  public:
 	//! Metadata: the elements and the straight borders that surround me.
@@ -99,6 +107,23 @@ class LIBCXX_HIDDEN corner_borderObj::implObj
 	//! unchanged.
 
 	surrounding_elements_and_borders old_surrounding_elements_thread_only;
+
+	//! Information that needs to be computed for drawing the corner border.
+
+	//! Smartly cache this data, so the logic runs only when needed.
+	struct cached_draw_info_s {
+		bool same_border_everywhere=false;
+		int all_corners=0;
+		std::vector<std::tuple<const_border_impl, int>> corners;
+		std::vector<std::tuple<const_border_impl, int>> stubs;
+	};
+
+	//! Currently cached draw info.
+	std::optional<cached_draw_info_s> cached_draw_info;
+
+	//! If the cached draw info is cached, return it, else compute it.
+
+	cached_draw_info_s &get_cached_draw_info(IN_THREAD_ONLY);
 
  public:
 
