@@ -65,6 +65,21 @@ void peepholeObj::layoutmanager_implObj
 		    elementObj::implObj &e,
 		    const rectangle &r)
 {
+	if (r.x < 0 || r.y < 0
+	    || dim_t::truncate(r.x+r.width)
+	    > e.data(IN_THREAD).current_position.width
+	    || dim_t::truncate(r.y+r.height)
+	    > e.data(IN_THREAD).current_position.height)
+	{
+		LOG_ERROR("Invalid ensure_visibility() request from "
+			  << e.objname()
+			  << ": " << r
+			  << ", its size is "
+			  << e.data(IN_THREAD).current_position.width
+			  << "x"
+			  << e.data(IN_THREAD).current_position.height);
+	}
+
 	requested_visibility=r;
 	recalculate_with_requested_visibility(IN_THREAD, true);
 }
@@ -108,6 +123,52 @@ static void adjust_for_visibility(rectangle &element_pos,
 void peepholeObj::layoutmanager_implObj::recalculate(IN_THREAD_ONLY)
 {
 	recalculate_with_requested_visibility(IN_THREAD, false);
+}
+
+// Used when peephole_scroll::centered
+//
+// The element in the peephole requested visible for pos through pos+size,
+// and the peephole's size is peephole_size.
+//
+// Just before we call adjust_for_visibility_dim, we do this for
+// (requested_visibility.x, requested_visibility.width, element_pos.width,
+//  current_position.width)
+// and
+// (requested_visibility.y, requested_visibility.height, element_pos.height,
+//  current_position.height).
+//
+// So what we do is simply adjust the requested visibility to have the real
+// visibility centered inside it, and make the requested visibility equal to
+// current_position's size, so adjusted_visibility ends up scrolling the
+// peephole to this precise position.
+
+static void center_visibility_at(coord_t &requested_pos,
+				 dim_t &requested_size,
+				 dim_t element_size,
+				 dim_t peephole_size)
+{
+	if (requested_size >= peephole_size)
+		return; // We can't fit the whole thing, anyway.
+
+	if (peephole_size >= element_size)
+		return; // Edge case, no work here.
+
+	// Half the "extra space", and subtract it from requested_pos, but
+	// stop at zero.
+
+	auto shift_by=(peephole_size - requested_size)/2;
+
+	if (requested_pos < coord_t::truncate(shift_by))
+		requested_pos=0;
+	else
+		requested_pos=coord_t::truncate(requested_pos-shift_by);
+
+	requested_size=peephole_size;
+
+	// We know that peephole_size < element_size, see above.
+
+	if (requested_pos > coord_t::truncate(element_size-peephole_size))
+		requested_pos=coord_t::truncate(element_size-peephole_size);
 }
 
 void peepholeObj::layoutmanager_implObj
@@ -196,27 +257,37 @@ void peepholeObj::layoutmanager_implObj
 
 	if (flag)
 	{
-		adjust_for_visibility(element_pos, current_position,
-				      requested_visibility.x+
-				      requested_visibility.width,
-				      requested_visibility.y+
-				      requested_visibility.height
-				      );
+		rectangle adjust_for=requested_visibility;
+
+		if (style.scroll == peephole_scroll::centered)
+		{
+			center_visibility_at(adjust_for.x, adjust_for.width,
+					     element_pos.width,
+					     current_position.width);
+			center_visibility_at(adjust_for.y, adjust_for.height,
+					     element_pos.height,
+					     current_position.height);
+		}
 
 		adjust_for_visibility(element_pos, current_position,
-				      requested_visibility.x+dim_t{0},
-				      requested_visibility.y+
-				      requested_visibility.height
-				      );
+				      adjust_for.x+
+				      adjust_for.width,
+				      adjust_for.y+
+				      adjust_for.height);
 
 		adjust_for_visibility(element_pos, current_position,
-				      requested_visibility.x+
-				      requested_visibility.width,
-				      requested_visibility.y+dim_t{0});
+				      adjust_for.x+dim_t{0},
+				      adjust_for.y+
+				      adjust_for.height);
 
 		adjust_for_visibility(element_pos, current_position,
-				      requested_visibility.x+dim_t{0},
-				      requested_visibility.y+dim_t{0});
+				      adjust_for.x+
+				      adjust_for.width,
+				      adjust_for.y+dim_t{0});
+
+		adjust_for_visibility(element_pos, current_position,
+				      adjust_for.x+dim_t{0},
+				      adjust_for.y+dim_t{0});
 	}
 
 	LOG_DEBUG("Element's requested visibility: " << requested_visibility
