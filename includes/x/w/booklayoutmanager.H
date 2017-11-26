@@ -13,6 +13,7 @@
 #include <x/w/grid_map_infofwd.H>
 #include <x/w/rgb.H>
 #include <x/w/border_arg.H>
+#include <x/w/callback_triggerfwd.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -61,6 +62,30 @@ public:
 
 	//! Destructor
 	~book_lock();
+};
+
+//! Parameters passed to a book layout manager's on_opened() callback.
+
+//! \see booklayoutmanager
+
+struct LIBCXX_PUBLIC book_status_info_t {
+
+	//! The lock on the book layout manager.
+
+	//! The layout manager itself can be fished out of the lock.
+
+	const book_lock &lock;
+
+	//! Which page of the book is now open.
+
+	size_t opened;
+
+	//! Why it was opened
+
+	const callback_trigger_t &trigger;
+
+	//! A busy mcguffin, if needed.
+	const busy &mcguffin;
 };
 
 LIBCXXW_NAMESPACE_END

@@ -1,0 +1,230 @@
+<!--
+
+Copyright 2017 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<chapter id="booklayoutmanager">
+  <title>The book layout manager</title>
+
+  <mediaobject>
+    <imageobject>
+      <imagedata fileref="booklayoutmanager.png" format="PNG"
+		 contentwidth="579px" contentdepth="181px" />
+    </imageobject>
+    <textobject>
+      <phrase>
+	The book layout manager
+      </phrase>
+    </textobject>
+    <caption>
+      <para>
+	The
+	<ulink url="&link-typedef-x--w-booklayoutmanager;"><classname>&ns;::w::booklayoutmanager</classname></ulink>
+	extends the <link linkend="pagelayoutmanager">page layout manager</link>
+	by creating a horizontal strip of "tabs" above the paged
+	container, containing one tab for each page. Clicking on a
+	page's tab automatically opens the tab's page.
+      </para>
+    </caption>
+  </mediaobject>
+
+  <para>
+    The following example is a modified version of
+    <filename>pagelayoutmanager</filename> that uses the book layout manager.
+    The code that creates a button to make each page visible gets removed.
+    The book layout manager does that:
+  </para>
+
+  <blockquote>
+    <title><ulink url="examples/booklayoutmanager.C">booklayoutmanager.C</ulink></title>
+
+    <informalexample>
+      <programlisting><xi:include href="../examples/booklayoutmanager.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    The book layout manager has a slightly different process for creating
+    new pages.
+    Both the page layout manager and the book layout manager have
+    <methodname>append</methodname>() and
+    <methodname>insert</methodname>() methods.
+    <ulink url="&link-typedef-x--w-pagelayoutmanager;"><classname>&ns;::w::pagelayoutmanager</classname></ulink>'s
+    <methodname>append</methodname>() and
+    <methodname>insert</methodname>() methods return a &factory; that
+    directly creates display elements,
+    with each display element becoming a new page.
+    <ulink url="&link-typedef-x--w-booklayoutmanager;"><classname>&ns;::w::booklayoutmanager</classname></ulink>'s
+    <methodname>append</methodname>() and
+    <methodname>insert</methodname>() methods return a meta-factory object.
+  </para>
+
+  <section id="bookpagefactory">
+    <title>The book page factory</title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+&ns;::w::bookpagefactory new_page=layout_manager->append();
+
+new_page->add([]
+	      (const &ns;::w::factory &amp;tab_factory,
+	       const &ns;::w::factory &amp;page_factory)
+              {
+
+              },
+              {"Alt", 'X'});</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      <ulink url="&link-typedef-x--w-booklayoutmanager;"><classname>&ns;::w::booklayoutmanager</classname></ulink>'s
+      <methodname>append</methodname> and
+      <methodname>insert</methodname> methods return an
+      <ulink url="&link-typedef-x--w-bookpagefactory;"><classname>&ns;::w::bookpagefactory</classname></ulink>
+      which is an intermediate object, and not a factory itself.
+      Each call to
+      <classname>&ns;::w::bookpagefactory</classname>'s
+      <methodname>add</methodname>() method creates a new page.
+      <methodname>add</methodname>() takes a closure, or a callable object, as
+      a parameter parameter. This closure gets invoked passing two
+      <classname>&ns;::w::factory</classname> parameters: a factory for the
+      new page's tab, and a factory for the new page's actual display element.
+    </para>
+
+    <para>
+      The closure must use both of these factories to create exactly one display
+      element by each factory. The closure can create the
+      two display elements in either order.
+      They become, respectively, the new page's tab
+      at the top of the book's container, and the new page element.
+    </para>
+
+    <para>
+      An optional second parameter to
+      <methodname>add</methodname>() is a keyboard
+      <ulink url="&link-x--w--shortcut;"><classname>&ns;::w::shortcut</classname></ulink>
+      for opening the corresponding page.
+    </para>
+  </section>
+
+  <section id="bookonopened">
+    <title>The <methodname>on_opened</methodname> callback</title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+    	pl->on_opened
+		([]
+		 (const x::w::book_status_info_t &amp;info)
+		 {
+                     // ...
+	         });</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      <methodname>on_opened</methodname>() installs a &callback; that
+      gets executed whenever the book layout manager makes a new page
+      visible. The callback's
+      <ulink url="&link-x--w--book-status-info-t;"><classname>&ns;::w::book_status_info_t</classname></ulink>
+      parameter provides additional information: which page was opened
+      and why.
+    </para>
+  </section>
+
+  <section id="booklayoutmanagerappdata">
+    <title>An <varname>appdata</varname> example</title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+// When creating a page container:
+
+container->appdata=f->create_input_field("", config);
+
+// ...
+
+pl->on_opened([]
+     (const &ns;::w::book_status_info_t &amp;info)
+     {
+             size_t n=info.opened;
+
+             auto page=info.lock.layout_manager->get_page(n);
+             x::w::input_field f=page->appdata;
+             f->request_focus();
+     });</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      <link linkend="booklayoutmanager"><filename>booklayoutmanager.C</filename></link>
+      gives another example of
+      <link linkend="appdata">using <varname>appdata</varname></link>.
+
+      <link linkend="booklayoutmanager"><filename>booklayoutmanager.C</filename></link>
+      puts the first
+      <classname>&ns;::w::input_field</classname> into the
+2      <varname>app</varname> of each page's
+      <classname>&ns;::w::container</classname> element.
+    </para>
+
+    <para>
+      The <link linkend="bookonopened"><methodname>on_opened</methodname></link>
+      callback only needs to fetch the opened page's element.
+      <methodname>get_page</methodname>()
+      returns the
+      <ulink url="&link-typedef-x--w-element;"><classname>&ns;::w::element</classname></ulink>
+      base class references.
+      The callback grabs the
+      <classname>&ns;::w::input_field</classname> from the
+      <varname>appdata</varname>, and put keyboard input focus into
+      the input field every time one of the pages gets opened.
+    </para>
+
+    <para>
+      As explained in <xref linkend="appdata" />,
+      parent containers hold internal references to all objects in the
+      container, and in this manner
+      <filename>booklayoutmanager.C</filename> also does the same itself,
+      storing
+      a reference to an <classname>&ns;::w::input_field</classname> in
+      its parent container that comprises a page in the book.
+    </para>
+
+    <note>
+      <para>
+	The requirements explained in <xref linkend="callbackrefs" /> do
+	not apply here.
+	<link linkend="booklayoutmanager"><filename>booklayoutmanager.C</filename></link>'s
+	<methodname>on_opened</methodname> callback does not capture any
+	references, and only uses its parameters to retrieve the newly-opened
+	page.
+      </para>
+
+      <para>
+	The reference stored in each container's <varname>appdata</varname>
+	is not associated with any callback. It's just an ordinary
+	reference pointer for an object. The reference pointer to a child
+	object gets stored in each parent, like &appshort; normally does;
+	and once the parent container gets removed, its references to its
+	child display elements also get removed.
+      </para>
+
+      <para>
+	Only storing a reference to a parent display element, in its child's
+	<varname>appdata</varname>,
+	creates a circular reference because of the internal reference from
+	the container to each child display elements.
+      </para>
+    </note>
+  </section>
+</chapter>
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "book" "chapter")
+End:
+-->

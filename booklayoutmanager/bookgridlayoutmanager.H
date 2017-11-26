@@ -6,6 +6,8 @@
 #define bookgridlayoutmanager_impl_h
 
 #include "gridlayoutmanager.H"
+#include "x/w/booklayoutmanager.H"
+#include <x/mpobj.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -19,6 +21,9 @@ LIBCXXW_NAMESPACE_START
 class LIBCXX_HIDDEN bookgridlayoutmanagerObj
 	: public gridlayoutmanagerObj::implObj {
 
+
+	std::function<void (const book_status_info_t &)> callback_under_lock;
+
  public:
 	//! Constructor
 	bookgridlayoutmanagerObj(const ref<containerObj::implObj> &);
@@ -30,6 +35,13 @@ class LIBCXX_HIDDEN bookgridlayoutmanagerObj
 
 	//! Returns a booklayoutmanager
 	layoutmanager create_public_object() override;
+
+	//! The callback, accessible only while holding a lock.
+
+	inline auto &callback(book_lock &)
+	{
+		return callback_under_lock;
+	}
 };
 
 LIBCXXW_NAMESPACE_END

@@ -6,18 +6,20 @@
 #define x_w_booklayoutmanagerfwd_h
 
 #include <x/w/namespace.H>
+#include <x/w/busyfwd.H>
 #include <x/mpobj.H>
 #include <x/ptrfwd.H>
 
 LIBCXXW_NAMESPACE_START
 
 class booklayoutmanagerObj;
+struct book_status_info_t;
 
 /*! The book layout manager.
 
 \code
 
-auto container=factory->create_container
+auto container=factory->create_focusable_container
     ([]
      (const INSERT_LIBX_NAMESPACE::w::container &c)
      {
@@ -77,6 +79,18 @@ pages() returns the number of pages in the book. open() makes another page
 visible instead of the current one. close() closes the currently visible
 page without showing any other page from the book. opened() indicates which
 page is currently open.
+
+\code
+book->on_opened([]
+                (const INSERT_LIBX_NAMESPACE::w::book_status_info_t &info)
+                {
+                     size_t n=info.opened;
+                });
+\endcode
+
+on_opened() installs a callback that gets executed whenever the book
+layout manager opens a new page, either as a result of selecting one of
+the tabs, or by a call to open().
 
 */
 

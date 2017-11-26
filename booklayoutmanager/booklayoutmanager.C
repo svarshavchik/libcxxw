@@ -23,7 +23,9 @@
 #include "child_element.H"
 #include "always_visible.H"
 #include "capturefactory.H"
+#include "busy.H"
 #include "run_as.H"
+#include "catch_exceptions.H"
 #include "generic_window_handler.H"
 #include "x/w/gridlayoutmanager.H"
 #include "x/w/pagelayoutmanager.H"
@@ -32,6 +34,7 @@
 #include "x/w/element.H"
 #include "x/w/bookpagefactory.H"
 #include "x/w/canvas.H"
+#include "x/w/callback_trigger.H"
 
 #include <x/weakcapture.H>
 
@@ -63,15 +66,25 @@ std::optional<size_t> booklayoutmanagerObj::opened() const
 	return impl->book_pagelayoutmanager->opened();
 }
 
-void booklayoutmanagerObj::open(size_t n) const
+void booklayoutmanagerObj
+::on_opened(const std::function<void (const book_status_info_t &)> &cb)
 {
-	implObj::open(const_ref(this), n, true);
+	book_lock lock{ref(this)};
+
+	lock.layout_manager->impl->impl->callback(lock)=cb;
+}
+
+void booklayoutmanagerObj::open(size_t n)
+{
+	implObj::open(ref(this), n, {});
 }
 
 void booklayoutmanagerObj
-::implObj::open(const const_booklayoutmanager &blm, size_t n,
-		bool ensure_visibility)
+::implObj::open(const booklayoutmanager &blm, size_t n,
+		const callback_trigger_t &trigger)
 {
+	// Hijack the logger for LOG_ERROR
+	const auto &logger=elementObj::implObj::logger;
 
 	book_lock lock{blm};
 
@@ -89,8 +102,17 @@ void booklayoutmanagerObj
 	// need to punt the tab visual update to the connection thread.
 
 	blm->impl->book_pagelayoutmanager->open(n);
+
 	blm->impl->book_pagecontainer->elementObj::impl->THREAD
-		->run_as([previous_page, next_page, ensure_visibility]
+		->run_as([previous_page, next_page,
+
+			  // Make sure to scroll the opened tab into the view
+			  // (the center of the peephole), unless it was a
+			  // button click. Yanking the tab into the center
+			  // of the peephole, just after clicking on it,
+			  // is rather rude.
+			  ensure_visibility=trigger.index() ==
+			  callback_trigger_button_event ? false:true]
 			 (IN_THREAD_ONLY)
 			 {
 				 if (previous_page)
@@ -109,11 +131,20 @@ void booklayoutmanagerObj
 					 ->ensure_entire_visibility(IN_THREAD);
 			 });
 
+	try {
+		auto &cb=lock.layout_manager->impl->impl->callback(lock);
+
+		if (cb)
+			cb({lock, n, trigger,
+			    busy_impl{lock.layout_manager
+						->impl->impl->container_impl
+						->get_element_impl()}});
+	} CATCH_EXCEPTIONS;
 }
 
-void booklayoutmanagerObj::close() const
+void booklayoutmanagerObj::close()
 {
-	book_lock lock{ const_ref(this) };
+	book_lock lock{ ref(this) };
 
 	auto opened=impl->book_pagelayoutmanager->opened();
 
@@ -211,9 +242,7 @@ static inline void tab_activate(const booklayoutmanager &layout_manager,
 
 	booklayoutmanagerObj::implObj::open(layout_manager,
 					    *index,
-					    std::holds_alternative
-					    <const button_event *>(trigger)
-					    ? false:true);
+					    trigger);
 }
 
 // Helper for populating a new tab's structure.

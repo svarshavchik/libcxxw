@@ -9,6 +9,7 @@
 #include <x/w/layoutmanagerobj.H>
 #include <x/w/bookpagefactoryfwd.H>
 #include <x/w/elementfwd.H>
+#include <functional>
 
 LIBCXXW_NAMESPACE_START
 
@@ -40,16 +41,19 @@ public:
 	size_t pages() const;
 
 	//! Open the book to the given page.
-	void open(size_t) const;
+	void open(size_t);
 
 	//! Close the book, don't show any pages.
-	void close() const;
+	void close();
 
 	//! Which page is currently open.
 	std::optional<size_t> opened() const;
 
 	//! Return the specified page element.
 	element get_page(size_t) const;
+
+	//! Install a new callback
+	void on_opened(const std::function<void (const book_status_info_t &)>&);
 };
 
 LIBCXXW_NAMESPACE_END

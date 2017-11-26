@@ -136,6 +136,9 @@ This creates a selection list.
 - \ref new_editable_comboboxlayoutmanager "INSERT_LIBX_NAMESPACE::w::new_editable_comboboxlayoutmanager": the new container uses the
 \ref editable_comboboxlayoutmanager "editable combo-box layout manager".
 
+- \ref new_booklayoutmanager "INSERT_LIBX_NAMESPACE::w::new_booklayoutmanager":
+the new container uses the \ref booklayoutmanager "book layout manager".
+
 \par Labels
 
 \code

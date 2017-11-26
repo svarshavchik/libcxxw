@@ -587,6 +587,11 @@ typedef &ns;::ref&lt;appdataObj&gt; appdata_t;</programlisting>
       With some care, it's possible to use
       <ulink url="/weakptr.html">weak pointers</ulink>, though.
     </para>
+
+    <para>
+      See <xref linkend="booklayoutmanager" /> for another
+      example of using <varname>appdata</varname>.
+    </para>
   </section>
 </chapter>
 <!--

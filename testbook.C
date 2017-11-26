@@ -206,6 +206,28 @@ static void create_book(const LIBCXX_NAMESPACE::w::booklayoutmanager &sl)
 	}
 	sl->open(0);
 
+	sl->on_opened
+		([]
+		 (const auto &info)
+		 {
+			 auto n=info.opened;
+
+			 auto e=info.lock.layout_manager->get_page(n);
+
+			 if (!e->template isa<LIBCXX_NAMESPACE::w::container>())
+				 return;
+
+			 LIBCXX_NAMESPACE::w::container page=e;
+
+			 LIBCXX_NAMESPACE::w::gridlayoutmanager
+				 glm=page->get_layoutmanager();
+
+			 LIBCXX_NAMESPACE::w::input_field
+				 f=glm->get(0, 1);
+
+			 f->request_focus();
+		 });
+
 	LIBCXX_NAMESPACE::w::book_lock lock{sl};
 
 	size_t n=sl->pages();
@@ -237,7 +259,7 @@ static void create_mainwindow(const LIBCXX_NAMESPACE::w::main_window &mw)
 	if (0)
 		create_book(gf);
 #else
-	auto sw=gf->create_focusable_container
+	gf->create_focusable_container
 		([&]
 		 (const auto &s)
 		 {

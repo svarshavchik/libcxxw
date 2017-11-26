@@ -148,7 +148,7 @@ static auto create_page(const x::w::pagelayoutmanager &pl)
 	** append() returns a factory that appends new elements to the
 	** page container.
 	*/
-	x::w::pagefactory sf=pl->append();
+	x::w::pagefactory new_page=pl->append();
 
 	x::w::input_fieldptr address1;
 
@@ -178,7 +178,7 @@ static auto create_page(const x::w::pagelayoutmanager &pl)
 	** after everything gets constructed. That's also acceptable.
 	*/
 
-	sf->halign(x::w::halign::left).valign(x::w::valign::top)
+	new_page->halign(x::w::halign::left).valign(x::w::valign::top)
 		.create_container
 		([&]
 		 (const auto &container)
@@ -195,7 +195,7 @@ static auto create_page(const x::w::pagelayoutmanager &pl)
 
 	x::w::input_fieldptr phone;
 
-	sf->create_container
+	new_page->create_container
 		([&]
 		 (const auto &container)
 		 {
@@ -213,9 +213,9 @@ static auto create_page(const x::w::pagelayoutmanager &pl)
 	** and after it gets inserted, the above two containers become
 	** elements #1 and elements #2.
 	*/
-	sf=pl->insert(0);
+	new_page=pl->insert(0);
 
-	sf->halign(x::w::halign::left).valign(x::w::valign::top)
+	new_page->halign(x::w::halign::left).valign(x::w::valign::top)
 		.create_container
 		([&]
 		 (const auto &container)

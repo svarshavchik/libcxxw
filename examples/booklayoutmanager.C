@@ -34,8 +34,10 @@
 ** Returns the "first name" x::w::input_field
 */
 
-static void name_tab(const x::w::gridlayoutmanager &glm)
+static void name_tab(const x::w::container &container)
 {
+	x::w::gridlayoutmanager glm=container->get_layoutmanager();
+
 	auto f=glm->append_row();
 
 	f->halign(x::w::halign::right).create_label("First name:");
@@ -44,7 +46,25 @@ static void name_tab(const x::w::gridlayoutmanager &glm)
 
 	config.autoselect=true;
 
-	f->create_input_field("", config);
+	// The first focusable field on this page. Store it in the container's
+	// appdata, for convenient access later.
+	//
+	// The new input field is a child element of the container. Only
+	// callbacks that get attached to display elements are restricted
+	// from capturing references to any parent or child elements, because
+	// this creates a circular reference.
+	//
+	// Container own references to the elements in the container. Here,
+	// we store a reference to the input field, in its container. This is
+	// fine. When the container goes out of scope and gets destroyed, this
+	// reference goes away as well.
+	//
+	// Every display element has an appdata x::ptr, that the library does
+	// not use otherwise, and is available for applications to attach
+	// x::ptrs or x::refs to reference-counted objects that are derived
+	// from x::obj, and constructed with create().
+
+	container->appdata=f->create_input_field("", config);
 
 	f=glm->append_row();
 
@@ -62,8 +82,10 @@ static void name_tab(const x::w::gridlayoutmanager &glm)
 ** Returns the first "Address" x::w::input_field
 */
 
-static void address_tab(const x::w::gridlayoutmanager &glm)
+static void address_tab(const x::w::container &container)
 {
+	x::w::gridlayoutmanager glm=container->get_layoutmanager();
+
 	auto f=glm->append_row();
 
 	f->halign(x::w::halign::right).create_label("Address:");
@@ -76,7 +98,7 @@ static void address_tab(const x::w::gridlayoutmanager &glm)
 	// need to make the address input fields span 5 columns (the
 	// label takes the first column)
 
-	f->colspan(5).create_input_field("", config);
+	container->appdata=f->colspan(5).create_input_field("", config);
 
 	f=glm->append_row();
 
@@ -117,8 +139,10 @@ static void address_tab(const x::w::gridlayoutmanager &glm)
 ** Returns the phone x::w::input_field
 */
 
-static void phone_tab(const x::w::gridlayoutmanager &glm)
+static void phone_tab(const x::w::container &container)
 {
+	x::w::gridlayoutmanager glm=container->get_layoutmanager();
+
 	auto f=glm->append_row();
 
 	f->create_label("Phone:");
@@ -127,7 +151,7 @@ static void phone_tab(const x::w::gridlayoutmanager &glm)
 
 	config.autoselect=true;
 
-	f->create_input_field("", config);
+	container->appdata=f->create_input_field("", config);
 }
 
 /*
@@ -179,7 +203,7 @@ static void create_book(const x::w::booklayoutmanager &pl)
 				     ([]
 				      (const auto &container)
 				      {
-					      address_tab(container->get_layoutmanager());
+					      address_tab(container);
 				      },
 				      x::w::new_gridlayoutmanager{});
 
@@ -212,7 +236,7 @@ static void create_book(const x::w::booklayoutmanager &pl)
 				      ([&]
 				       (const auto &container)
 				       {
-					       phone_tab(container->get_layoutmanager());
+					       phone_tab(container);
 				       },
 				       x::w::new_gridlayoutmanager{})
 				      ->show_all();
@@ -224,7 +248,6 @@ static void create_book(const x::w::booklayoutmanager &pl)
 	** pages before an existing page.
 	*/
 	new_page=pl->insert(0);
-
 
 	new_page->halign(x::w::halign::left).valign(x::w::valign::top)
 		.add([&]
@@ -241,7 +264,7 @@ static void create_book(const x::w::booklayoutmanager &pl)
 				     ([&]
 				      (const auto &container)
 				      {
-					      name_tab(container->get_layoutmanager());
+					      name_tab(container);
 				      },
 				      x::w::new_gridlayoutmanager{})
 				     ->show_all();
@@ -253,6 +276,36 @@ static void create_book(const x::w::booklayoutmanager &pl)
 	** visible.
 	*/
 	pl->open(0);
+
+	/*
+	** The on_opened callback gets invoked whenever a new page gets
+	** opened. We pointedly install it after the call to open(0), and
+	** not before. At this point the entire window is not visible yet,
+	** so attempting to move the input focus won't accomplish anything
+	** useful.
+	*/
+
+	pl->on_opened
+		([]
+		 (const x::w::book_status_info_t &info)
+		 {
+			 // Page number that was opened.
+
+			 size_t n=info.opened;
+
+			 auto page=info.lock.layout_manager->get_page(n);
+
+			 // In name_tab(), address_tab(), and phone_tab(),
+			 // we stashed away the first input field on each
+			 // page here.
+
+			 x::w::input_field f=page->appdata;
+
+			 // So, after each page gets opened, we automatically
+			 // move keyboard input focus here.
+
+			 f->request_focus();
+		 });
 }
 
 /*

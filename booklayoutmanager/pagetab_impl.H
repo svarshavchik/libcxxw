@@ -62,6 +62,12 @@ class LIBCXX_HIDDEN pagetabObj::implObj : public always_visibleObj<
 	//! Destructor
 	~implObj();
 
+	//! Override label_theme_font.
+
+	//! Default label font is "book_tab_font".
+
+	const char *label_theme_font() const override;
+
 	//! Set the inactive or the active background color.
 
 	//! If it is active, ensure_entire_visibility().

@@ -47,7 +47,7 @@ public:
 	//! Look up the element's current index position.
 	std::optional<size_t> lookup(const element &) const;
 
-	//! Return the specified element.
+	//! Return the specified page element.
 	element get(size_t) const;
 
 	//! Return the currently opened- element, if there is one.

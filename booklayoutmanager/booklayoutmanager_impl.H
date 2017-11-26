@@ -8,6 +8,7 @@
 #include "x/w/booklayoutmanager.H"
 #include "x/w/pagelayoutmanagerfwd.H"
 #include "x/w/focusable.H"
+#include "x/w/callback_triggerfwd.H"
 #include "booklayoutmanager/bookgridlayoutmanager.H"
 #include "booklayoutmanager/pagetabgridlayoutmanagerfwd.H"
 #include "booklayoutmanager/pagetabfwd.H"
@@ -82,8 +83,8 @@ class LIBCXX_HIDDEN booklayoutmanagerObj::implObj : virtual public obj {
 
 	//! Open a page.
 
-	static void open(const const_booklayoutmanager &blm, size_t n,
-			 bool ensure_visibility);
+	static void open(const booklayoutmanager &blm, size_t n,
+			 const callback_trigger_t &trigger);
 
 };
 

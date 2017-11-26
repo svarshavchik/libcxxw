@@ -33,6 +33,7 @@
 <!ENTITY checkradio SYSTEM "checkradio.xml">
 <!ENTITY gridlayoutmanager SYSTEM "gridlayoutmanager.xml">
 <!ENTITY pagelayoutmanager SYSTEM "pagelayoutmanager.xml">
+<!ENTITY booklayoutmanager SYSTEM "booklayoutmanager.xml">
 <!ENTITY list SYSTEM "list.xml">
 <!ENTITY combobox SYSTEM "combobox.xml">
 <!ENTITY menu SYSTEM "menu.xml">
@@ -68,6 +69,7 @@ See COPYING for distribution information.
     &checkradio;
     &gridlayoutmanager;
     &pagelayoutmanager;
+    &booklayoutmanager;
     &list;
     &combobox;
     &menu;

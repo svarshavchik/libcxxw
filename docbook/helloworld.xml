@@ -606,6 +606,19 @@ while (!appdata->close_flag)
 	    </para>
 	  </listitem>
 	</varlistentry>
+
+	<varlistentry>
+	  <term>
+	    <link linkend="booklayoutmanager"><classname>&ns;::w::booklayoutmanager</classname></link>
+	  </term>
+	  <listitem>
+	    <para>
+	      The book layout manager extends the page layout manager by
+	      providing a tab strip above the paged container that contains
+	      a clickable tab that opens each page.
+	    </para>
+	  </listitem>
+	</varlistentry>
       </variablelist>
 
       <para>

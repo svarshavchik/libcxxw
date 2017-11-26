@@ -32,7 +32,7 @@ factory->halign(LIBCXX_NAMESPACE:w::halign::left)
             });
 \endcode
 
-When a book's pages have different sizes, the smaller pages get cenetered
+When a book's pages have different sizes, the smaller pages get centered
 in the larger book by default. add() can be called more than once, adding
 multiple pages to the book at a time. halign() and valign() overrides the
 alignment only for the next add()ed page.
@@ -42,16 +42,16 @@ object receives two parameters, two factories. The first factory is for
 creating the page's tab, which is typically a \ref label "label", but can
 be any non-focusable display element; even a container with multiple
 elements (although big tabs won't look very pretty). The second factory
-creates the contents of the new page.
+creates the new page element.
 
 The closure must invoke both of the factories exactly once, using each
 factory to create one display element. Like all other display elements,
 both new elements must be show()n. Even though the book layout manager
 controls which page is currently visible, like all other display elements,
-they have to be shown in order to actually become visible when the page
+they have to be shown, in order to actually become visible when the page
 gets shown.
 
-\see pagelayoutmanager
+\see booklayoutmanager
 
 */
 
