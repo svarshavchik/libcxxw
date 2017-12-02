@@ -17,8 +17,13 @@ imageObj::imageObj(const ref<implObj> &impl)
 
 imageObj::~imageObj()=default;
 
+image factoryObj::create_image(const std::string &name,
+			       render_repeat repeat)
+{
+	return create_image(name, 0, 0, repeat);
+}
 
-image factoryObj::create_image(const std::string_view &name,
+image factoryObj::create_image(const std::string &name,
 			       const dim_arg &width,
 			       const dim_arg &height,
 			       render_repeat repeat)

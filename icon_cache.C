@@ -11,6 +11,7 @@
 #include "pixmap.H"
 #include "drawable.H"
 #include "icon.H"
+#include "themeiconobj.H"
 #include "icon_image.H"
 #include "x/w/picture.H"
 #include <x/refptr_hash.H>
@@ -164,66 +165,42 @@ icon_cacheObj::~icon_cacheObj()=default;
 //! An SXG-based icon.
 
 template<typename dim_type>
-class LIBCXX_HIDDEN sxg_iconObj : public iconObj {
-
-	//! The parsed SXG object.
-	sxg_parser      current_sxg_thread_only;
-
-	//! The image created from the object
-
-	const_icon_image current_image_thread_only;
+class LIBCXX_HIDDEN sxg_iconObj : public themeiconObj<dim_type> {
 
  public:
 
-	THREAD_DATA_ONLY(current_sxg);
-	THREAD_DATA_ONLY(current_image);
+	//! The parsed SXG image
 
-	//! Name
-	const std::string name;
+	const sxg_parser      parsed_sxg;
 
-	//! Original requested width in millimeters
-	const dim_type width;
-
-	//! Original requested height in millimeters
-	const dim_type height;
-
-	//! Original scaling hint
-
-	const icon_scale scale;
 	//! Constructor
-	sxg_iconObj(const std::string_view &name,
+	sxg_iconObj(const std::string &name,
 		    const dim_type &width,
 		    const dim_type &height,
 		    icon_scale scale,
 		    const sxg_parser &orig_sxg,
 		    const const_icon_image &orig_sxg_image)
-		: iconObj(orig_sxg_image),
-		current_sxg_thread_only(orig_sxg),
-		current_image_thread_only(orig_sxg_image),
-		name(name),
-		width(width),
-		height(height),
-		scale(scale)
+		: themeiconObj<dim_type>(name,
+					 orig_sxg->theme,
+					 width,
+					 height,
+					 scale,
+					 orig_sxg_image),
+		parsed_sxg{orig_sxg}
 		{
 		}
 
 	//! Destructor
 	~sxg_iconObj()=default;
 
-	//! Check if a new theme is installed, if so create a replacement icon.
-
-	icon theme_updated(IN_THREAD_ONLY,
-			   const defaulttheme &new_theme) override;
-
 	icon resizemm(IN_THREAD_ONLY,
 		      const dim_arg &width_arg, const dim_arg &height_arg)
 		override
 	{
-		return create_sxg_image(name,
-					&*current_image(IN_THREAD)
-					->icon_pixmap->impl,
-					current_sxg(IN_THREAD),
-					current_image(IN_THREAD)->repeat,
+		return create_sxg_image(this->name,
+					&*this->image->icon_pixmap->impl,
+					parsed_sxg,
+					this->image->repeat,
 					width_arg,
 					height_arg);
 	}
@@ -231,11 +208,10 @@ class LIBCXX_HIDDEN sxg_iconObj : public iconObj {
 	icon resize(IN_THREAD_ONLY, dim_t w, dim_t h,
 		      icon_scale scale) override
 	{
-		return create_sxg_image(name,
-					&*current_image(IN_THREAD)
-					->icon_pixmap->impl,
-					current_sxg(IN_THREAD),
-					current_image(IN_THREAD)->repeat,
+		return create_sxg_image(this->name,
+					&*this->image->icon_pixmap->impl,
+					parsed_sxg,
+					this->image->repeat,
 					w,
 					h, scale);
 	}
@@ -344,7 +320,7 @@ static auto get_cached_sxg_image(const sxg_parser &sxg,
 		 });
 }
 
-static icon create_sxg_image(const std::string_view &name,
+static icon create_sxg_image(const std::string &name,
 			     drawableObj::implObj *drawable_impl,
 			     const sxg_parser &sxg,
 			     render_repeat repeat,
@@ -378,7 +354,7 @@ static icon create_sxg_image(const std::string_view &name,
 
 	return drawable_impl->get_screen()->impl->iconcaches->sxg_icon_cache
 		->find_or_create
-		({std::string{name}, image, std::tuple{width_arg, height_arg},
+		({name, image, std::tuple{width_arg, height_arg},
 				repeat, icon_scale::nearest},
 		 [&]
 		{
@@ -391,7 +367,7 @@ static icon create_sxg_image(const std::string_view &name,
 		});
 }
 
-static icon create_sxg_image(const std::string_view &name,
+static icon create_sxg_image(const std::string &name,
 			     drawableObj::implObj
 			     *drawable_impl,
 			     const sxg_parser &sxg,
@@ -431,7 +407,7 @@ static icon create_sxg_image(const std::string_view &name,
 
 	return drawable_impl->get_screen()->impl->iconcaches->sxg_icon_cache
 		->find_or_create
-		({std::string{name}, image, std::tuple{w, h}, repeat, scale},
+		({name, image, std::tuple{w, h}, repeat, scale},
 		 [&]
 		 {
 			 return ref<sxg_iconObj<dim_t>>::create(name,
@@ -443,7 +419,7 @@ static icon create_sxg_image(const std::string_view &name,
 }
 
 static icon
-create_sxg_icon_from_filename(const std::string_view &name,
+create_sxg_icon_from_filename(const std::string &name,
 			      const std::string &filename,
 			      drawableObj::implObj *for_drawable,
 			      const screen &screenref,
@@ -465,7 +441,7 @@ create_sxg_icon_from_filename(const std::string_view &name,
 }
 
 static icon
-create_sxg_icon_from_filename_pixels(const std::string_view &name,
+create_sxg_icon_from_filename_pixels(const std::string &name,
 				     const std::string &filename,
 				     drawableObj::implObj *for_drawable,
 				     const screen &screenref,
@@ -489,7 +465,7 @@ create_sxg_icon_from_filename_pixels(const std::string_view &name,
 static const struct LIBCXX_HIDDEN extension_info{
 	const char *extension;
 
-	icon (*create)(const std::string_view &name,
+	icon (*create)(const std::string &name,
 		       const std::string &filename,
 		       drawableObj::implObj *for_drawable,
 		       const screen &screenref,
@@ -498,7 +474,7 @@ static const struct LIBCXX_HIDDEN extension_info{
 		       const dim_arg &width_arg,
 		       const dim_arg &height_arg);
 
-	icon (*create_pixels)(const std::string_view &name,
+	icon (*create_pixels)(const std::string &name,
 			      const std::string &filename,
 			      drawableObj::implObj *for_drawable,
 			      const screen &screenref,
@@ -617,7 +593,7 @@ static void search_extension(const std::string_view &name,
 }
 
 std::vector<icon> drawableObj::implObj
-::create_icon_vector(const std::vector<std::string_view> &images)
+::create_icon_vector(const std::vector<std::string> &images)
 {
 	std::vector<icon> icons;
 
@@ -631,7 +607,7 @@ std::vector<icon> drawableObj::implObj
 }
 
 icon drawableObj::implObj
-::create_icon(const std::string_view &name,
+::create_icon(const std::string &name,
 	      render_repeat icon_repeat,
 	      const dim_arg &width_arg,
 	      const dim_arg &height_arg)
@@ -654,7 +630,7 @@ icon drawableObj::implObj
 }
 
 icon drawableObj::implObj
-::create_icon_pixels(const std::string_view &name,
+::create_icon_pixels(const std::string &name,
 		     render_repeat icon_repeat,
 		     dim_t w, dim_t h, icon_scale scale)
 {
@@ -673,47 +649,6 @@ icon drawableObj::implObj
 			 });
 
 	return i;
-}
-
-template<>
-icon sxg_iconObj<dim_arg>::theme_updated(IN_THREAD_ONLY,
-					 const defaulttheme &new_theme)
-{
-
-	if (new_theme == current_sxg(IN_THREAD)->theme)
-		return icon(this); // Unchanged
-
-	// All right, take it from the top.
-	auto icon=image->icon_pixmap->impl
-		->create_icon(name,
-			      image->repeat,
-			      width,
-			      height);
-
-	// We technically need to call initialize(), hopefully a mere
-	// formality.
-	return icon->initialize(IN_THREAD);
-}
-
-template<>
-icon sxg_iconObj<dim_t>::theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme)
-{
-	auto theme= *current_theme_t::lock{current_sxg(IN_THREAD)
-					   ->screenref->impl
-					   ->current_theme};
-
-	if (theme == current_sxg(IN_THREAD)->theme)
-		return icon(this); // Unchanged
-
-	// All right, take it from the top.
-	auto icon=image->icon_pixmap->impl
-		->create_icon_pixels(name,
-				     image->repeat,
-				     width, height, scale);
-
-	// We technically need to call initialize(), hopefully a mere
-	// formality.
-	return icon->initialize(IN_THREAD);
 }
 
 template icon sxg_iconObj<dim_arg>::resizemm(IN_THREAD_ONLY,

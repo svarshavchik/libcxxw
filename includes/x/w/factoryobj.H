@@ -32,7 +32,6 @@
 #include <x/obj.H>
 #include <x/functional.H>
 
-#include <string_view>
 #include <utility>
 
 LIBCXXW_NAMESPACE_START
@@ -259,9 +258,19 @@ public:
 	create_input_field(const text_param &text,
 			   const input_field_config &config);
 
-	//! Create an image
-	image create_image(const std::string_view &name,
-			   const dim_arg &width=0,
+	//! Create a display element that shows an image.
+	image create_image(const std::string &name,
+			   render_repeat=render_repeat::none);
+
+	//! Create a display element that shows an image.
+
+	//! "name" specifies a scalable SXG image, that's sized as specified.
+	//!
+	//! Either the width or the height may be given as 0, which computes
+	//! the size to preserve the image's aspect ratio.
+
+	image create_image(const std::string &name,
+			   const dim_arg &width,
 			   const dim_arg &height=0,
 			   render_repeat=render_repeat::none);
 
@@ -269,7 +278,7 @@ public:
 	image_button create_checkbox(valign=valign::middle);
 
 	//! Create a checkbox, with custom images
-	image_button create_checkbox(const std::vector<std::string_view> &,
+	image_button create_checkbox(const std::vector<std::string> &,
 				     valign=valign::middle);
 
 	//! Create a checkbox with a label factory
@@ -288,7 +297,7 @@ public:
 		 typename sfinae=decltype(std::declval<functor &&>()
 					  (std::declval<const factory &>()))>
 	image_button create_checkbox(functor &&f,
-				     const std::vector<std::string_view> &i,
+				     const std::vector<std::string> &i,
 				     valign align=valign::middle)
 	{
 		return do_create_checkbox(make_function<factory_creator_t>
@@ -302,7 +311,7 @@ public:
 
 	//! Create a radio button, with custom images
 	image_button create_radio(const radio_group &group,
-				  const std::vector<std::string_view> &images,
+				  const std::vector<std::string> &images,
 				  valign=valign::middle);
 
 	//! Create a radio button with a label
@@ -325,7 +334,7 @@ public:
 					  (std::declval<const factory &>()))>
 	image_button create_radio(const radio_group &group,
 				  functor &&f,
-				  const std::vector<std::string_view> &images,
+				  const std::vector<std::string> &images,
 				  valign align=valign::middle)
 	{
 		return do_create_radio(group,
@@ -341,7 +350,7 @@ public:
 
 	//! Type-erased create_checkbox().
 	image_button do_create_checkbox(const function<factory_creator_t>&,
-					const std::vector<std::string_view> &,
+					const std::vector<std::string> &,
 					valign);
 
 	//! Type-erased create_radio().
@@ -352,7 +361,7 @@ public:
 	//! Type-erased create_radio().
 	image_button do_create_radio(const radio_group &,
 				     const function<factory_creator_t>&,
-				     const std::vector<std::string_view> &,
+				     const std::vector<std::string> &,
 				     valign);
 
 	//! Create a focusable container.

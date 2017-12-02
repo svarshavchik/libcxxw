@@ -261,7 +261,7 @@ image_button factoryObj::do_create_checkbox(const function<factory_creator_t>
 // Call create_image_button, using create_checkbox_impl() to create the
 // internal image button.
 
-image_button factoryObj::create_checkbox(const std::vector<std::string_view>
+image_button factoryObj::create_checkbox(const std::vector<std::string>
 					 &images,
 					 valign alignment)
 {
@@ -270,7 +270,7 @@ image_button factoryObj::create_checkbox(const std::vector<std::string_view>
 
 image_button factoryObj::do_create_checkbox(const function<factory_creator_t>
 					    &label_factory,
-					    const std::vector<std::string_view>
+					    const std::vector<std::string>
 					    &images,
 					    valign alignment)
 {
@@ -311,7 +311,7 @@ image_button factoryObj::do_create_radio(const radio_group &group,
 // internal image button.
 
 image_button factoryObj::create_radio(const radio_group &group,
-				      const std::vector<std::string_view>
+				      const std::vector<std::string>
 				      &images,
 				      valign alignment)
 {
@@ -321,7 +321,7 @@ image_button factoryObj::create_radio(const radio_group &group,
 image_button factoryObj::do_create_radio(const radio_group &group,
 					 const function<factory_creator_t>
 					 &label_creator,
-					 const std::vector<std::string_view>
+					 const std::vector<std::string>
 					 &images,
 					 valign alignment)
 {

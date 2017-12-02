@@ -254,7 +254,7 @@ const_menubarlayoutmanager main_windowObj::get_menubarlayoutmanager() const
 
 // Return a factory that inserts an icon into a theme template.
 
-static auto icon_element(const std::string_view &icon)
+static auto icon_element(const std::string &icon)
 {
 	return std::function<void (const gridfactory &)>
 		([=](const gridfactory &f)
@@ -343,7 +343,7 @@ void hide_and_invoke_when_closed(const dialog &d,
 
 dialog main_windowObj
 ::create_ok_dialog(const std::string_view &dialog_id,
-		   const std::string_view &icon,
+		   const std::string &icon,
 		   const std::function<void (const gridfactory &)>
 		   &content_factory,
 		   const std::function<void (const busy &)>
@@ -357,7 +357,7 @@ dialog main_windowObj
 
 dialog main_windowObj
 ::create_ok_dialog(const std::string_view &dialog_id,
-		   const std::string_view &icon,
+		   const std::string &icon,
 		   const std::function<void (const gridfactory &)>
 		   &content_factory,
 		   const std::function<void (const busy &)>
@@ -410,7 +410,7 @@ dialog main_windowObj
 
 dialog main_windowObj
 ::create_ok_cancel_dialog(const std::string_view &dialog_id,
-			  const std::string_view &icon,
+			  const std::string &icon,
 			  const std::function<void (const gridfactory &)>
 			  &content_factory,
 			  const std::function<void (const busy &)>
@@ -428,7 +428,7 @@ dialog main_windowObj
 
 dialog main_windowObj
 ::create_ok_cancel_dialog(const std::string_view &dialog_id,
-			  const std::string_view &icon,
+			  const std::string &icon,
 			  const std::function<void (const gridfactory &)>
 			  &content_factory,
 			  const std::function<void (const busy &)>
@@ -471,7 +471,7 @@ dialog main_windowObj
 
 input_dialog main_windowObj
 ::create_input_dialog(const std::string_view &dialog_id,
-		      const std::string_view &icon,
+		      const std::string &icon,
 		      const std::function<void (const gridfactory &)>
 		      &label_factory,
 		      const text_param &initial_text,
@@ -494,7 +494,7 @@ input_dialog main_windowObj
 
 input_dialog main_windowObj
 ::create_input_dialog(const std::string_view &dialog_id,
-		      const std::string_view &icon,
+		      const std::string &icon,
 		      const std::function<void (const gridfactory &)>
 		      &label_factory,
 		      const text_param &initial_text,

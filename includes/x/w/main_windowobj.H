@@ -172,7 +172,7 @@ public:
 	//! Create an OK dialog
 
 	dialog create_ok_dialog(const std::string_view &dialog_id,
-				const std::string_view &icon,
+				const std::string &icon,
 				const std::function<void (const gridfactory &)>
 				&content_factory,
 				const std::function<void (const busy &)>
@@ -182,7 +182,7 @@ public:
 	//! Create an OK dialog
 
 	dialog create_ok_dialog(const std::string_view &dialog_id,
-				const std::string_view &icon,
+				const std::string &icon,
 				const std::function<void (const gridfactory &)>
 				&content_factory,
 				const std::function<void (const busy &)>
@@ -194,7 +194,7 @@ public:
 
 	dialog
 	create_ok_cancel_dialog(const std::string_view &dialog_id,
-				const std::string_view &icon,
+				const std::string &icon,
 				const std::function<void (const gridfactory &)>
 				&content_factory,
 				const std::function<void (const busy &)>
@@ -207,7 +207,7 @@ public:
 
 	dialog
 	create_ok_cancel_dialog(const std::string_view &dialog_id,
-				const std::string_view &icon,
+				const std::string &icon,
 				const std::function<void (const gridfactory &)>
 				&content_factory,
 				const std::function<void (const busy &)>
@@ -222,7 +222,7 @@ public:
 
 	input_dialog
 	create_input_dialog(const std::string_view &dialog_id,
-			    const std::string_view &icon,
+			    const std::string &icon,
 			    const std::function<void (const gridfactory &)>
 			    &label_factory,
 			    const text_param &initial_text,
@@ -238,7 +238,7 @@ public:
 
 	input_dialog
 	create_input_dialog(const std::string_view &dialog_id,
-			    const std::string_view &icon,
+			    const std::string &icon,
 			    const std::function<void (const gridfactory &)>
 			    &label_factory,
 			    const text_param &initial_text,

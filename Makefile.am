@@ -724,6 +724,8 @@ libcxxw_la_SOURCES=\
 	themedim_elementfwd.H			    \
 	themedim_element_minoverride.H		    \
 	themedim_element_minoverridefwd.H	    \
+	themeiconobj.H				    \
+	themeicon.C				    \
 	tooltip.C				    \
 	windowobj.C				    \
 	windowobj.H				    \
