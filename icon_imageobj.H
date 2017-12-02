@@ -51,7 +51,7 @@ public:
 		      //! The SXG image may define certain points. The
 		      //! locations of predefined points are stored here.
 		      const std::unordered_map<std::string,
-		      std::pair<coord_t, coord_t>> &points);
+		      std::pair<coord_t, coord_t>> &points={});
 
 	//! Destructor
 	~icon_imageObj();

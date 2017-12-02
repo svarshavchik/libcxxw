@@ -11,7 +11,7 @@ See COPYING for distribution information.
   <mediaobject>
     <imageobject>
       <imagedata fileref="helloworld.png" format="PNG"
-		 contentwidth="452px" contentdepth="165px" />
+		 contentwidth="452px" contentdepth="472px" />
     </imageobject>
     <textobject>
       <phrase>
@@ -87,14 +87,6 @@ make</programlisting>
 	the main window, or any other display object. When its
 	<classname>&ns;::ref</classname> goes out of scope and gets destroyed
 	the display element gets destroyed and removed.
-      </para>
-
-      <para>
-	Dialogs <link linkend="dialogs">own a reference</link> to the
-	main window or the dialog that created them. All references to
-	all dialogs from
-	a main window must go out of scope and get destroyed, before the
-	main window can be destroyed.
       </para>
     </section>
 
@@ -505,7 +497,7 @@ while (!appdata->close_flag)
 	A container is a display element that contains other display elements.
 	The main application window is a container.
 	Each container has a <quote>layout manager</quote>. The layout
-	manager is arranges the display elements in the container.
+	manager arranges the display elements in the container.
 	A container's <methodname>get_layoutmanager</methodname>() method
 	returns a
 	<ulink url="&link-typedef-x--w-layoutmanager;"><classname>&ns;::w::layoutmanager</classname></ulink>,
@@ -563,7 +555,8 @@ while (!appdata->close_flag)
 		element</link>. The grid layout manager, for example, needs
 	      to figure out how to position each display element according
 	      to how many columns and rows it spans and figure out how to draw
-	      each cell's borders, if it has any. The list layout manager,
+	      each cell's borders, if it has any. It's quite a bit of work.
+	      The list layout manager,
 	      on the other hand, has a single list of labels to draw vertically,
 	      a much simpler task.
 	    </para>
@@ -598,6 +591,8 @@ while (!appdata->close_flag)
 	    </para>
 
 	    <para>
+	      All elements in this container technically exist, all the time,
+	      but only one of the elements is visible at any given time.
 	      Each one of page layout manager's display elements is typically
 	      a &container; of its own, with a collection of individual
 	      display elements. In this manner, each collection of
@@ -614,8 +609,9 @@ while (!appdata->close_flag)
 	  <listitem>
 	    <para>
 	      The book layout manager extends the page layout manager by
-	      providing a tab strip above the paged container that contains
-	      a clickable tab that opens each page.
+	      supplying clickable buttons for each page, that get drawn as
+	      tabs in a horizontal strip above the paged container. Clicking
+	      on each button tab opens the corresponding page (in the book).
 	    </para>
 	  </listitem>
 	</varlistentry>
@@ -634,10 +630,11 @@ while (!appdata->close_flag)
       <note>
 	<para>
 	  The layout manager object returned from
-	  <methodname>get_layoutmanager</methodname>() holds an internal
-	  lock on the container.
-	  Like all other &app; objects, this is a reference-counted object.
-	  The internal lock gets released
+	  <methodname>get_layoutmanager</methodname>() holds several
+	  internal locks.
+	  Like all other &app; objects, this is a
+	  <link linkend="refobjelements">reference-counted object</link>.
+	  The internal locks get released
 	  when the application finishes using the layout manager, and the
 	  last reference to the underlying object goes out of scope and
 	  it gets destroyed.
@@ -647,10 +644,23 @@ while (!appdata->close_flag)
 	  For this reason, the application should not store, or stash away,
 	  the layout manager object, but use it only long enough to effect
 	  changes to the container, or examine its contents.
-	  The internal lock blocks the
+	  The internal locks block the
 	  <link linkend="connthread">connection thread</link>, until the
 	  lock gets released, and all changes made to the container, through
-	  the layout manager, take effect.
+	  the layout manager, take effect. Depending on the layout manager
+	  the internal locks may also block other execution thread from
+	  accessing the elements in the container.
+	</para>
+
+	<para>
+	  Retrieving the layout manager, and acquiring any required locks is
+	  not cheap, and the application should optimize its access to the
+	  layout manager. For the reasons explained the application should
+	  not store or stash away the layout manager, persistently; but it
+	  should not retrieve it over and over again, to make each individual
+	  change to the container. The optimal use pattern is to retrieve
+	  the layout manager and make use of it to effect all changes to
+	  the container, at once.
 	</para>
       </note>
     </section>
@@ -668,7 +678,7 @@ x::w::label l=f->create_label("Hello world");</programlisting>
       </blockquote>
 
       <para>
-	A <ulink url="&link-typedef-x--w-factory;"><classname>&ns;::w::factory</classname></ulink>
+	An <ulink url="&link-typedef-x--w-factory;"><classname>&ns;::w::factory</classname></ulink>
 	creates new display elements. The factory comes from the layout manager,
 	and the process for obtaining a factory is specific to each layout
 	manager (except for the bare list layout manager, which is an impostor).

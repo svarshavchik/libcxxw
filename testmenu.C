@@ -26,6 +26,7 @@
 #include "x/w/input_dialog.H"
 #include "x/w/file_dialog.H"
 #include "x/w/file_dialog_config.H"
+#include "x/w/image.H"
 #include <string>
 #include <iostream>
 #include <sstream>
@@ -402,7 +403,7 @@ void testmenu()
 				 LIBCXX_NAMESPACE::w::gridfactory factory=
 				     layout->append_row();
 
-				 auto input_field=factory->create_input_field("");
+				 factory->create_image("docbook/menu.png");
 
 				 auto mb=main_window->get_menubarlayoutmanager();
 				 auto f=mb->append_menus();
@@ -444,7 +445,6 @@ void testmenu()
 
 				 std::cout << lock.menus() << std::endl;
 				 std::cout << lock.right_menus() << std::endl;
-				 input_field->get_focus_first();
 			 });
 
 	main_window->set_window_title("Hello world!");

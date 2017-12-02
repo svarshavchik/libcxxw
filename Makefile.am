@@ -9,7 +9,7 @@ configure: libtool
 libtool: $(LIBTOOL_DEPS)
 	$(SHELL) ./config.status libtool
 
-STATICLINKFLAGS=-Wl,-lcourier-unicode -Wl,-lpthread @LIBCXXW_LIBS@ -pthread
+STATICLINKFLAGS=-Wl,-ljpeg -Wl,-lgif -Wl,-lcourier-unicode -Wl,-lpthread @LIBCXXW_LIBS@ -pthread
 
 lib_LTLIBRARIES=libcxxw.la
 bin_PROGRAMS=cxxw
@@ -556,6 +556,8 @@ libcxxw_la_SOURCES=\
 	pixmap.C				    \
 	pixmap.H				    \
 	pixmap_impl.C				    \
+	pixmap_loader.C				    \
+	pixmap_loader.H				    \
 	popup/popup.C				    \
 	popup/popup.H				    \
 	popup/popupfwd.H			    \
@@ -726,6 +728,8 @@ libcxxw_la_SOURCES=\
 	themedim_element_minoverridefwd.H	    \
 	themeiconobj.H				    \
 	themeicon.C				    \
+	themeiconpixmapobj.H			    \
+	themeiconpixmap.C			    \
 	tooltip.C				    \
 	windowobj.C				    \
 	windowobj.H				    \
@@ -961,7 +965,7 @@ genconstants_SOURCES=genconstants.C
 
 if HAVE_DOCS
 
-DOCIMAGES=$(patsubst docbook/%,html/%,$(wildcard docbook/*.gif) $(wildcard docbook/*.png))
+DOCIMAGES=$(patsubst docbook/%,html/%,$(wildcard docbook/*.gif) $(wildcard docbook/*.jpg) $(wildcard docbook/*.png))
 
 define install_docimage
 html/$(1): html/index.html docbook/$(1)

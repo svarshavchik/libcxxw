@@ -12,7 +12,7 @@
 
 namespace std {
 
-	//! Specialization of \c std::hash for \c INSERT_LIBX_NAMESPACE::w::hash
+	//! Specialization of \c std::hash for \c INSERT_LIBX_NAMESPACE::w::rgb
 	template<>
 	struct hash<LIBCXX_NAMESPACE::w::rgb> {
 

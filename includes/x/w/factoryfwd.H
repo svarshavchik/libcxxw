@@ -19,17 +19,17 @@ A factory object is created by a \ref layoutmanager "layout manager".
 Depending on the layout manager, the same factory object can be used
 to repetitively create multiple display elements; or a factory object
 can be used for creating no more than one element, with unspecified
-results if the factory object gets reused.
+results (a thrown exception is typical) if the factory object gets reused.
 
 \par Initializer lambdas
 
 The factory provides various methods to create different kinds of
 display elements. Each method returns the newly-created display element,
-and most methods' first argument is a "initializer lambda".
+and some methods' first argument is a "initializer lambda".
 
 The initializer lambda gets invoked just before the factory method
 finishes
-creating a new element, and the parameter to the lambda is the newly-
+creating the new element, and the parameter to the lambda is the newly-
 created element. The lambda's job is to finalize any needed
 initialization of the new display element. This results in optimal
 performance. The new display element's container integrates the new
@@ -261,10 +261,12 @@ text input field, and various other properties.
 \code
 #include <INSERT_LIBX_NAMESPACE/w/image.H>
 
-INSERT_LIBX_NAMESPACE::w::image image=factory->create_image_mm("image1.png");
+INSERT_LIBX_NAMESPACE::w::image image=factory->create_image("image1.gif");
 \endcode
 
-This creates a display element that shows an image.
+This creates an
+\ref image "INSERT_LIBX_NAMESPACE::w::image" that shows an image loaded
+from a file.
 
 \par Checkboxes and radio buttons.
 

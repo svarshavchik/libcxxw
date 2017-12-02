@@ -10,6 +10,7 @@
 #include "iconobj.H"
 #include "sxg/sxg_parserfwd.H"
 #include "sxg/sxg_parserobj.H"
+#include "x/w/pixmapfwd.H"
 #include <x/weakunordered_multimapfwd.H>
 
 LIBCXXW_NAMESPACE_START;
@@ -30,6 +31,57 @@ class LIBCXX_HIDDEN icon_cacheObj : virtual public obj {
 
 	//! Destructor
 	~icon_cacheObj();
+
+	////////////////////////////////////////////////////////////////////
+	//
+	// Cache the results of searching for filenames.
+
+	struct extension_cache_key_t;
+	struct extension_cache_key_t_hash;
+	class cached_filename_infoObj;
+
+	//! Container for a cache of searched icon names, and filenames.
+
+	typedef weakunordered_multimap<extension_cache_key_t,
+				       cached_filename_infoObj,
+				       extension_cache_key_t_hash
+				       > extension_cache_t;
+
+	//! Cached of searchied icon names, and the located filenames.
+
+	const extension_cache_t extension_cache;
+
+	////////////////////////////////////////////////////////////////////
+	//
+	// Cache of loaded gif, jpeg, png image files.
+	struct pixmap_cache_key_t;
+	struct pixmap_cache_key_t_hash;
+
+	class pixmap_and_pictureObj;
+
+	//! Container for the pixmap cache.
+	typedef weakunordered_multimap<pixmap_cache_key_t,
+				       pixmap_and_pictureObj,
+				       pixmap_cache_key_t_hash> pixmap_cache_t;
+
+	//! The pixmap cache.
+
+	const pixmap_cache_t pixmap_cache;
+
+	// Cache of icons for loaded gif, jpeg, png image pixmaps.
+
+	struct pixmap_icon_cache_key_t;
+	struct pixmap_icon_cache_key_t_hash;
+
+	//! Container for the pixmap icon cache.
+	typedef weakunordered_multimap<pixmap_icon_cache_key_t,
+				       iconObj,
+				       pixmap_icon_cache_key_t_hash
+				       > pixmap_icon_cache_t;
+
+	//! The pixmap_icon cache.
+
+	const pixmap_icon_cache_t pixmap_icon_cache;
 
 	////////////////////////////////////////////////////////////////////
 	//

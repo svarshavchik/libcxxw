@@ -36,8 +36,10 @@ typedef std::function<void (size_t,
 //! - an optional \ref factory "factory object" for creating the button's
 //! label, the description of the button that appears next to it.
 //!
-//! - a \c std::vector<std::string_view> that specifies custom images
-//! for a checkbox or a radio button that uses custom graphics. Each
+//! - a \c std::vector<std::string> that specifies custom images
+//! for a checkbox or a radio button that uses custom graphics.
+//! See \ref image "INSERT_LIBX_NAMESPACE::w::image" for more information.
+//! Each
 //! string names a file with an image for the corresponding state. The default
 //! value for this parameter creates three images for checkboxes: set, unset
 //! and intermediate. Radio buttons have two default image/states:

@@ -17,21 +17,19 @@ imageObj::imageObj(const ref<implObj> &impl)
 
 imageObj::~imageObj()=default;
 
-image factoryObj::create_image(const std::string &name,
-			       render_repeat repeat)
+image factoryObj::create_image(const std::string &name)
 {
-	return create_image(name, 0, 0, repeat);
+	return create_image(name, 0, 0);
 }
 
 image factoryObj::create_image(const std::string &name,
 			       const dim_arg &width,
-			       const dim_arg &height,
-			       render_repeat repeat)
+			       const dim_arg &height)
 {
 	auto container_impl=get_container_impl();
 
 	auto icon=container_impl->get_window_handler()
-		.create_icon(name, repeat, width, height);
+		.create_icon(name, render_repeat::none, width, height);
 
 	auto impl=ref<imageObj::implObj>::create(container_impl, icon);
 

@@ -15,6 +15,7 @@
 #include <x/w/label.H>
 #include <x/w/text_param_literals.H>
 #include <x/w/font_literals.H>
+#include <x/w/image.H>
 #include <string>
 #include <iostream>
 
@@ -52,9 +53,15 @@ void testlabel()
 				 x::w::gridlayoutmanager
 				     layout=main_window->get_layoutmanager();
 
+				 // Center the display elements in column #0,
+				 // the first (and the only) column in the grid
+				 // that's about to get created.
+
+				 layout->col_alignment(0, x::w::halign::center);
+
 				 // The grid is currently empty. Append a
 				 // new row to the grid, and return a factory
-				 // that will create new elements in the
+				 // that creates new elements in the new
 				 // grid row.
 				 x::w::gridfactory factory=
 				     layout->append_row();
@@ -79,6 +86,14 @@ void testlabel()
 					 // values are not used by the label
 					 // display element).
 					 x::w::halign::center);
+
+				 // Create a factory for the second row.
+				 factory=layout->append_row();
+
+				 // Also pad the new element
+				 factory->padding(8);
+				 // Create an image element.
+				 factory->create_image("dandelion-flower.jpg");
 			 },
 
 			 // Our main window will use the grid layout manager...
@@ -103,8 +118,8 @@ void testlabel()
 	// orderly on_Delete() does, will also work.
 	//
 	// _exit() is for emergencies. Can't use exit() because the library
-	// will try to wait for the execution thread to finish, but it'll
-	// still be running (but doing nothing of importance).
+	// will try to wait for its internal execution thread to finish, but
+	// it'll still be running (but doing nothing of importance).
 
 	main_window->on_disconnect([]
 				   {

@@ -259,8 +259,7 @@ public:
 			   const input_field_config &config);
 
 	//! Create a display element that shows an image.
-	image create_image(const std::string &name,
-			   render_repeat=render_repeat::none);
+	image create_image(const std::string &name);
 
 	//! Create a display element that shows an image.
 
@@ -271,8 +270,7 @@ public:
 
 	image create_image(const std::string &name,
 			   const dim_arg &width,
-			   const dim_arg &height=0,
-			   render_repeat=render_repeat::none);
+			   const dim_arg &height);
 
 	//! Create a checkbox
 	image_button create_checkbox(valign=valign::middle);
