@@ -17,11 +17,36 @@
 #include <x/number_hash.H>
 #include <x/weakunordered_multimap.H>
 #include <x/functional.H>
+#include <x/visitor.H>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
 LIBCXXW_NAMESPACE_START
+
+// Compute a hash of icon sizes given as either dim_args, or dim_t (pixel
+// counts).
+
+static size_t hash_icon_size(const std::variant<std::tuple<dim_arg, dim_arg>,
+			     std::tuple<dim_t, dim_t>> &size)
+{
+	return std::visit(visitor{
+			[]
+			(const std::tuple<dim_arg, dim_arg> &t)
+			{
+				std::hash<dim_arg> h;
+
+				return h(std::get<0>(t)) * 65536 +
+					h(std::get<1>(t));
+			},
+			[]
+			(const std::tuple<dim_t, dim_t> &t)
+			{
+				return ((size_t)(dim_t::value_type)
+					std::get<0>(t)) * 65536 +
+					(dim_t::value_type)std::get<1>(t);
+			}}, size);
+}
 
 struct icon_cacheObj::sxg_cache_key_t {
 
@@ -89,39 +114,37 @@ struct icon_cacheObj::sxg_image_cache_key_hash
 
 //////////////////////////////////////////////////////////////////////////
 
-struct icon_cacheObj::mm_image_cache_key {
 
-	std::string      filename;
-	defaulttheme     theme;
-	const_pictformat image_pictformat;
-	render_repeat    repeat;
-	double           widthmm;
-	double           heightmm;
+// SXG-based icons are cached according to the following key.
 
-	bool operator==(const mm_image_cache_key &o) const
+struct icon_cacheObj::sxg_icon_cache_key {
+
+	std::string	name;
+	icon_image	image;
+	std::variant<std::tuple<dim_arg, dim_arg>,
+		     std::tuple<dim_t, dim_t>> size;
+	render_repeat repeat;
+	icon_scale scale;
+
+	bool operator==(const sxg_icon_cache_key &o) const
 	{
-		return filename == o.filename &&
-			theme == o.theme &&
-			image_pictformat == o.image_pictformat &&
+		return name == o.name &&
+			image == o.image &&
+			size == o.size &&
 			repeat == o.repeat &&
-			widthmm == o.widthmm &&
-			heightmm == o.heightmm;
+			scale == o.scale;
 	}
 };
 
-struct icon_cacheObj::mm_image_cache_key_hash
-	: public std::hash<std::string>,
-	  public std::hash<defaulttheme>,
-	  public std::hash<const_pictformat> {
+struct icon_cacheObj::sxg_icon_cache_key_hash {
 
-	size_t operator()(const mm_image_cache_key &k) const
+	size_t operator()(const sxg_icon_cache_key &k) const
 	{
-		return (std::hash<defaulttheme>::operator()(k.theme) +
-			std::hash<const_pictformat>::operator()
-			(k.image_pictformat)) ^
-			(std::hash<std::string>::operator()(k.filename) +
-			 (size_t)k.repeat + (((size_t)k.widthmm) << 4)
-			 + (((size_t)k.heightmm) << 12));
+		return std::hash<std::string>()(k.name) +
+			std::hash<icon_image>()(k.image) +
+			hash_icon_size(k.size) +
+			(size_t)k.repeat * 16 +
+			(size_t)k.scale;
 	}
 };
 
@@ -130,7 +153,7 @@ struct icon_cacheObj::mm_image_cache_key_hash
 icon_cacheObj::icon_cacheObj()
 	: sxg_parser_cache{sxg_parser_cache_t::create()},
 	  sxg_image_cache(sxg_image_cache_t::create()),
-	  mm_image_cache(mm_image_cache_t::create())
+	  sxg_icon_cache(sxg_icon_cache_t::create())
 {
 }
 
@@ -353,11 +376,19 @@ static icon create_sxg_image(const std::string_view &name,
 	auto image=get_cached_sxg_image(sxg, drawable_impl, repeat, w, h,
 					w, h, std::optional<rgb>());
 
-	return ref<sxg_iconObj<dim_arg>>::create(name,
-						 width_arg,
-						 height_arg,
-						 icon_scale::nearest,
-						 sxg, image);
+	return drawable_impl->get_screen()->impl->iconcaches->sxg_icon_cache
+		->find_or_create
+		({std::string{name}, image, std::tuple{width_arg, height_arg},
+				repeat, icon_scale::nearest},
+		 [&]
+		{
+			return ref<sxg_iconObj<dim_arg>>
+				::create(name,
+					 width_arg,
+					 height_arg,
+					 icon_scale::nearest,
+					 sxg, image);
+		});
 }
 
 static icon create_sxg_image(const std::string_view &name,
@@ -398,11 +429,17 @@ static icon create_sxg_image(const std::string_view &name,
 	auto image=get_cached_sxg_image(sxg, drawable_impl, repeat, w, h,
 					orig_w, orig_h, background_color);
 
-	return ref<sxg_iconObj<dim_t>>::create(name,
-					       w,
-					       h,
-					       scale,
-					       sxg, image);
+	return drawable_impl->get_screen()->impl->iconcaches->sxg_icon_cache
+		->find_or_create
+		({std::string{name}, image, std::tuple{w, h}, repeat, scale},
+		 [&]
+		 {
+			 return ref<sxg_iconObj<dim_t>>::create(name,
+								w,
+								h,
+								scale,
+								sxg, image);
+		 });
 }
 
 static icon

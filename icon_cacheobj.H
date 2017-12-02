@@ -64,20 +64,20 @@ class LIBCXX_HIDDEN icon_cacheObj : virtual public obj {
 
 	////////////////////////////////////////////////////////////////
 	//
-	// Images whose size is specified in millimeters.
+	// SXG icon cache.
 
-	struct mm_image_cache_key;
-	struct mm_image_cache_key_hash;
+	struct sxg_icon_cache_key;
+	struct sxg_icon_cache_key_hash;
 
-	//! Type of the cache of rendered images.
+	//! Type of the cache of SXG icons.
 
-	typedef weakunordered_multimap<mm_image_cache_key,
+	typedef weakunordered_multimap<sxg_icon_cache_key,
 				       iconObj,
-				       mm_image_cache_key_hash>
-		mm_image_cache_t;
+				       sxg_icon_cache_key_hash>
+		sxg_icon_cache_t;
 
-	//! Cache of rendered images.
-	const mm_image_cache_t mm_image_cache;
+	//! Cache of rendered SXG icons.
+	const sxg_icon_cache_t sxg_icon_cache;
 
 };
 
