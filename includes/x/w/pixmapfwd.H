@@ -15,7 +15,9 @@ LIBCXXW_NAMESPACE_START
 
 class pixmapObj;
 
-//! A pixmap
+//! A Pixmap object.
+
+//! This is a wrapper for the X protocol's Pixmap object.
 
 typedef ref<pixmapObj> pixmap;
 

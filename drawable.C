@@ -28,6 +28,11 @@ picture drawableObj::create_picture()
 	return impl->create_picture();
 }
 
+const_picture drawableObj::create_picture() const
+{
+	return impl->create_picture();
+}
+
 screen drawableObj::get_screen()
 {
 	return impl->get_screen();
@@ -40,6 +45,7 @@ const_screen drawableObj::get_screen() const
 
 pixmap drawableObj::create_pixmap(dim_t width,
 				  dim_t height)
+	const
 {
 	return impl->create_pixmap(width, height);
 }
@@ -47,6 +53,7 @@ pixmap drawableObj::create_pixmap(dim_t width,
 pixmap drawableObj::create_pixmap(dim_t width,
 				  dim_t height,
 				  const const_pictformat &drawable_pictformat)
+	const
 {
 	return impl->create_pixmap(width, height, drawable_pictformat);
 }
@@ -54,6 +61,7 @@ pixmap drawableObj::create_pixmap(dim_t width,
 pixmap drawableObj::create_pixmap(dim_t width,
 				  dim_t height,
 				  depth_t depth)
+	const
 {
 	return impl->create_pixmap(width, height, depth);
 }

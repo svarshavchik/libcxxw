@@ -21,11 +21,11 @@ class LIBCXX_HIDDEN icon_imageObj : virtual public obj {
 
 public:
 
-	//! The icon's picture
-	const const_picture icon_picture;
-
 	//! The icon's pixmap
 	const const_pixmap  icon_pixmap;
+
+	//! Cached picture
+	const const_picture icon_picture;
 
 	//! The icon's REPEAT render setting.
 	const render_repeat repeat;
@@ -34,8 +34,7 @@ public:
 
 	//! The constructor sets and saves the REPEAT render setting for this
 	//! icon.
-	icon_imageObj(const picture &icon_picture,
-		      const pixmap &icon_pixmap,
+	icon_imageObj(const const_pixmap &icon_pixmap,
 		      render_repeat repeat);
 
 	//! Destructor

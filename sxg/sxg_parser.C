@@ -3035,7 +3035,7 @@ pixmap_points_of_interest_t sxg_parserObj::render_points(dim_t w, dim_t h) const
 			      info.pixels_per_mm_w,
 			      info.pixels_per_mm_h);
 
-	std::unordered_map<std::string, std::pair<coord_t, coord_t>> points;
+	pixmap_points_of_interest_t points;
 
 	// Return predefined points to caller.
 

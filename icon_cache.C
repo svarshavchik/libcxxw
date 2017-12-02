@@ -60,25 +60,6 @@ struct LIBCXX_HIDDEN extension_info{
 			      dim_t w, dim_t h, icon_scale scale);
 };
 
-// For icons loaded from stock image files (jpg, gif, png), they get loaded
-// directly into a pixmap, then we cache both the pixmap and its
-// create_picture().
-
-class icon_cacheObj::pixmap_and_pictureObj : virtual public obj {
-public:
-
-	const pixmap cached_pixmap;
-	const picture cached_picture;
-
-	pixmap_and_pictureObj(const pixmap &cached_pixmap)
-		: cached_pixmap{cached_pixmap},
-		  cached_picture{cached_pixmap->create_picture()}
-	{
-	}
-
-	~pixmap_and_pictureObj()=default;
-};
-
 // The first step is to take the icon's name, and search for it, trying
 // different exensions until we find the icon's file. The resulting filename
 // and type is cached in the extension_cache.
@@ -176,7 +157,7 @@ struct icon_cacheObj::pixmap_cache_key_t_hash
 
 struct icon_cacheObj::pixmap_icon_cache_key_t {
 	std::string name;
-	ref<icon_cacheObj::pixmap_and_pictureObj> pixmap_and_picture;
+	ref<pixmapObj::implObj> underlying_pixmap;
 	std::variant<std::tuple<dim_arg, dim_arg>,
 		     std::tuple<dim_t, dim_t>> requested_size;
 	render_repeat repeat;
@@ -185,7 +166,7 @@ struct icon_cacheObj::pixmap_icon_cache_key_t {
 	bool operator==(const pixmap_icon_cache_key_t &o) const
 	{
 		return name == o.name &&
-			pixmap_and_picture == o.pixmap_and_picture &&
+			underlying_pixmap == o.underlying_pixmap &&
 			requested_size == o.requested_size &&
 			repeat == o.repeat &&
 			scale == o.scale;
@@ -194,13 +175,13 @@ struct icon_cacheObj::pixmap_icon_cache_key_t {
 
 struct icon_cacheObj::pixmap_icon_cache_key_t_hash
 	: public std::hash<std::string>,
-	  public std::hash<ref<icon_cacheObj::pixmap_and_pictureObj>>
+	  public std::hash<ref<pixmapObj::implObj>>
 {
 	size_t operator()(const pixmap_icon_cache_key_t &k) const noexcept
 	{
 		return std::hash<std::string>::operator()(k.name) +
-			std::hash<ref<icon_cacheObj::pixmap_and_pictureObj>>
-			::operator()(k.pixmap_and_picture) +
+			std::hash<ref<pixmapObj::implObj>>
+			::operator()(k.underlying_pixmap) +
 			hash_icon_size(k.requested_size) +
 			(size_t)k.repeat * 16 +
 			(size_t)k.scale;
@@ -272,50 +253,12 @@ struct icon_cacheObj::sxg_image_cache_key_hash
 
 //////////////////////////////////////////////////////////////////////////
 
-
-// SXG-based icons are cached according to the following key.
-
-struct icon_cacheObj::sxg_icon_cache_key {
-
-	std::string	name;
-	icon_image	image;
-	std::variant<std::tuple<dim_arg, dim_arg>,
-		     std::tuple<dim_t, dim_t>> size;
-	render_repeat repeat;
-	icon_scale scale;
-
-	inline bool operator==(const sxg_icon_cache_key &o) const
-	{
-		return name == o.name &&
-			image == o.image &&
-			size == o.size &&
-			repeat == o.repeat &&
-			scale == o.scale;
-	}
-};
-
-struct icon_cacheObj::sxg_icon_cache_key_hash {
-
-	size_t operator()(const sxg_icon_cache_key &k) const noexcept
-	{
-		return std::hash<std::string>()(k.name) +
-			std::hash<icon_image>()(k.image) +
-			hash_icon_size(k.size) +
-			(size_t)k.repeat * 16 +
-			(size_t)k.scale;
-	}
-};
-
-//////////////////////////////////////////////////////////////////////////
-
 icon_cacheObj::icon_cacheObj()
 	: extension_cache(extension_cache_t::create()),
 	  pixmap_cache(pixmap_cache_t::create()),
-	  pixmap_icon_cache(pixmap_icon_cache_t::create()),
 	  sxg_parser_cache{sxg_parser_cache_t::create()},
 	  sxg_image_cache(sxg_image_cache_t::create()),
-	  sxg_icon_cache(sxg_icon_cache_t::create())
-
+	  pixmap_icon_cache(pixmap_icon_cache_t::create())
 {
 }
 
@@ -323,60 +266,6 @@ icon_cacheObj::~icon_cacheObj()=default;
 
 ///////////////////////////////////////////////////////////////////////
 
-//! An SXG-based icon.
-
-template<typename dim_type>
-class LIBCXX_HIDDEN sxg_iconObj : public themeiconObj<dim_type> {
-
- public:
-
-	//! The parsed SXG image
-
-	const sxg_parser      parsed_sxg;
-
-	//! Constructor
-	sxg_iconObj(const std::string &name,
-		    const dim_type &width,
-		    const dim_type &height,
-		    icon_scale scale,
-		    const sxg_parser &orig_sxg,
-		    const const_icon_image &orig_sxg_image)
-		: themeiconObj<dim_type>(name,
-					 orig_sxg->theme,
-					 width,
-					 height,
-					 scale,
-					 orig_sxg_image),
-		parsed_sxg{orig_sxg}
-		{
-		}
-
-	//! Destructor
-	~sxg_iconObj()=default;
-
-	icon resizemm(IN_THREAD_ONLY,
-		      const dim_arg &width_arg, const dim_arg &height_arg)
-		override
-	{
-		return create_sxg_image(this->name,
-					&*this->image->icon_pixmap->impl,
-					parsed_sxg,
-					this->image->repeat,
-					width_arg,
-					height_arg);
-	}
-
-	icon resize(IN_THREAD_ONLY, dim_t w, dim_t h,
-		      icon_scale scale) override
-	{
-		return create_sxg_image(this->name,
-					&*this->image->icon_pixmap->impl,
-					parsed_sxg,
-					this->image->repeat,
-					w,
-					h, scale);
-	}
-};
 
 //! Here's a parsed SXG image, the drawable it's for, and its dimensions.
 
@@ -483,11 +372,15 @@ static auto get_cached_sxg_image(const sxg_parser &sxg,
 						 (p.second.second+offset_y);
 				 }
 			 }
-			 return icon_image::create(picture, pixmap, repeat);
+
+			 // Time to discard the temporary pixmap public object
+			 // that was used to build the pixmap.
+
+			 return pixmap->impl;
 		 });
 }
 
-static icon create_sxg_image(const std::string &name,
+static auto create_sxg_image(const std::string &name,
 			     drawableObj::implObj *drawable_impl,
 			     const sxg_parser &sxg,
 			     render_repeat repeat,
@@ -516,25 +409,11 @@ static icon create_sxg_image(const std::string &name,
 			h=sxg->height_for_width(w, icon_scale::nearest);
 	}
 
-	auto image=get_cached_sxg_image(sxg, drawable_impl, repeat, w, h,
-					w, h, std::optional<rgb>());
-
-	return drawable_impl->get_screen()->impl->iconcaches->sxg_icon_cache
-		->find_or_create
-		({name, image, std::tuple{width_arg, height_arg},
-				repeat, icon_scale::nearest},
-		 [&]
-		{
-			return ref<sxg_iconObj<dim_arg>>
-				::create(name,
-					 width_arg,
-					 height_arg,
-					 icon_scale::nearest,
-					 sxg, image);
-		});
+	return get_cached_sxg_image(sxg, drawable_impl, repeat, w, h,
+				    w, h, std::optional<rgb>());
 }
 
-static icon create_sxg_image(const std::string &name,
+static auto create_sxg_image(const std::string &name,
 			     drawableObj::implObj
 			     *drawable_impl,
 			     const sxg_parser &sxg,
@@ -568,20 +447,68 @@ static icon create_sxg_image(const std::string &name,
 			orig_h=h=sxg->height_for_width(w, icon_scale::nearest);
 	}
 
-	auto image=get_cached_sxg_image(sxg, drawable_impl, repeat, w, h,
-					orig_w, orig_h, background_color);
+	return get_cached_sxg_image(sxg, drawable_impl, repeat,
+				    w, h,
+				    orig_w, orig_h,
+				    background_color);
+}
 
-	return drawable_impl->get_screen()->impl->iconcaches->sxg_icon_cache
-		->find_or_create
-		({name, image, std::tuple{w, h}, repeat, scale},
-		 [&]
-		 {
-			 return ref<sxg_iconObj<dim_t>>::create(name,
-								w,
-								h,
-								scale,
-								sxg, image);
-		 });
+////////////////////////////////////////////////////////////////////////////////
+
+
+class LIBCXX_HIDDEN icon_pixmap_implObj : public pixmapObj {
+
+ public:
+
+	icon_pixmap_implObj(const ref<implObj> &pixmap_impl,
+			    render_repeat repeat)
+		: pixmapObj{pixmap_impl},
+		icon_picture{pixmap_impl->create_picture()}
+		{
+			icon_picture->repeat(repeat);
+		}
+
+	~icon_pixmap_implObj()=default;
+
+	const picture icon_picture;
+
+	const_picture create_picture() const override
+	{
+		return icon_picture;
+	}
+};
+
+// Load the cached icon for the given icon pixmap, and attributes.
+// If it's not cached, we create a new icon and cache it.
+
+template<typename dim_type>
+static icon get_cached_image(const std::string &name,
+			     const ref<pixmapObj::implObj> &underlying_pixmap,
+			     const dim_type &width,
+			     const dim_type &height,
+			     render_repeat repeat,
+			     icon_scale scale)
+{
+	auto screen_impl=underlying_pixmap->get_screen()->impl;
+
+	return screen_impl->iconcaches->pixmap_icon_cache->find_or_create
+		({name, underlying_pixmap,
+				std::tuple{width, height}, repeat, scale},
+			[&]
+			{
+				auto pixmap=ref<icon_pixmap_implObj>
+					::create(underlying_pixmap, repeat);
+
+
+				return ref<themeiconpixmapObj<dim_type>>
+					::create(name,
+						 screen_impl->current_theme
+						 .get(),
+						 width, height, scale,
+						 icon_image::create
+						 (pixmap,
+						  repeat));
+			});
 }
 
 static icon
@@ -603,8 +530,12 @@ create_sxg_icon_from_filename(const std::string &name,
 						   theme);
 		 });
 
-        return create_sxg_image(name, for_drawable, sxg, icon_repeat,
-				width_arg, height_arg);
+        auto pixmap_impl=create_sxg_image(name, for_drawable, sxg, icon_repeat,
+					  width_arg, height_arg);
+
+	return get_cached_image(name, pixmap_impl,
+				width_arg, height_arg, icon_repeat,
+				icon_scale::nearest);
 }
 
 static icon
@@ -626,7 +557,12 @@ create_sxg_icon_from_filename_pixels(const std::string &name,
 						   theme);
 		 });
 
-        return create_sxg_image(name, for_drawable, sxg, icon_repeat, w, h,
+        auto pixmap_impl=create_sxg_image(name, for_drawable, sxg, icon_repeat,
+					  w, h,
+					  scale);
+
+	return get_cached_image(name, pixmap_impl,
+				w, h, icon_repeat,
 				scale);
 }
 
@@ -708,7 +644,7 @@ static void jpeg_error_output (j_common_ptr cinfo)
 #define OVERFLOW_CHK(x) ((x) < 0 || (x) > (decltype(x))(((uint16_t)~0) >> 1))
 
 // Construct a pixmap from a .jpg file.
-static pixmap
+static ref<pixmapObj::implObj>
 create_pixmap_from_jpg(const std::string &filename,
 		       drawableObj::implObj *for_drawable)
 {
@@ -789,7 +725,7 @@ create_pixmap_from_jpg(const std::string &filename,
 		throw EXCEPTION(client_data.error_message);
 
 	loader.flush();
-	return pixmap;
+	return pixmap->impl;
 }
 
 extern "C" {
@@ -844,7 +780,7 @@ extern "C" {
 	}
 };
 
-static pixmap
+static ref<pixmapObj::implObj>
 create_pixmap_from_gif(const std::string &filename,
 		       drawableObj::implObj *for_drawable)
 {
@@ -925,7 +861,7 @@ create_pixmap_from_gif(const std::string &filename,
 			++raster;
 		}
 	loader.flush();
-	return pixmap;
+	return pixmap->impl;
 }
 
 //! RAII wrapper for png_image.
@@ -959,7 +895,7 @@ class LIBCXX_HIDDEN png_open {
 	}
 };
 
-static pixmap
+static ref<pixmapObj::implObj>
 create_pixmap_from_png(const std::string &filename,
 		       drawableObj::implObj *for_drawable)
 {
@@ -1001,7 +937,7 @@ create_pixmap_from_png(const std::string &filename,
 		}
 	loader.flush();
 
-	return pixmap;
+	return pixmap->impl;
 }
 
 // Load a cached pixmap from the pixmap_cache, if nothing's cached invoke
@@ -1009,48 +945,18 @@ create_pixmap_from_png(const std::string &filename,
 
 static auto get_cached_pixmap(const cached_filename_info &filename,
 			      drawableObj::implObj *for_drawable,
-			      pixmap (*load_pixmap)(const std::string &,
-						    drawableObj::implObj *))
+			      ref<pixmapObj::implObj> (*load_pixmap)
+			      (const std::string &,
+			       drawableObj::implObj *))
 {
 	return for_drawable->get_screen()->impl->iconcaches->pixmap_cache
 		->find_or_create
 		({filename, for_drawable->drawable_pictformat},
 		 [&]
 		 {
-			 return ref<icon_cacheObj::pixmap_and_pictureObj>
-				 ::create((*load_pixmap)(filename->filename,
-							 for_drawable));
+			 return (*load_pixmap)(filename->filename,
+					       for_drawable);
 		 });
-}
-
-// Load the cached icon for the given icon pixmap, and attributes.
-// If it's not cached, we create a new icon and cache it.
-
-template<typename dim_type>
-static icon get_cached_image(const std::string &name,
-			     const ref<icon_cacheObj::pixmap_and_pictureObj>
-			     &pp,
-			     const dim_type &width,
-			     const dim_type &height,
-			     render_repeat repeat,
-			     icon_scale scale)
-{
-	auto screen_impl=pp->cached_pixmap->impl->get_screen()->impl;
-
-	return screen_impl->iconcaches->pixmap_icon_cache->find_or_create
-		({name, pp, std::tuple{width, height}, repeat, scale},
-			[&]
-			{
-				return ref<themeiconpixmapObj<dim_type>>
-					::create(name,
-						 screen_impl->current_theme
-						 .get(),
-						 width, height, scale,
-						 icon_image::create
-						 (pp->cached_picture,
-						  pp->cached_pixmap,
-						  repeat));
-			});
 }
 
 // Load a jpg into an icon object.
@@ -1319,14 +1225,5 @@ icon drawableObj::implObj
 		(name, cached_filename,this, screen, theme,
 		 icon_repeat, w, h, scale);
 }
-
-template icon sxg_iconObj<dim_arg>::resizemm(IN_THREAD_ONLY,
-					     const dim_arg &, const dim_arg &);
-template icon sxg_iconObj<dim_arg>::resize(IN_THREAD_ONLY, dim_t, dim_t,
-					  icon_scale scale);
-template icon sxg_iconObj<dim_t>::resizemm(IN_THREAD_ONLY,
-					   const dim_arg &, const dim_arg &);
-template icon sxg_iconObj<dim_t>::resize(IN_THREAD_ONLY, dim_t, dim_t,
-					 icon_scale scale);
 
 LIBCXXW_NAMESPACE_END

@@ -26,7 +26,6 @@
 #include <x/obj.H>
 #include <x/xml/doc.H>
 #include <x/vector.H>
-#include <unordered_map>
 #include <unordered_set>
 #include <string>
 #include <optional>
