@@ -31,6 +31,12 @@ class LIBCXX_HIDDEN pixmapObj::implObj : public xidObj,
 
 	~implObj();
 
+	//! Points of interest in this pixmap.
+
+	//! Set in icon_cache.C when the pixmap is created from an SXG file,
+	//! and not modified after the fact.
+	pixmap_points_of_interest_t points_of_interest;
+
 	////////////////////////////////////////////////////////////////////
 	//
 	// Inherited from drawableObj::implObj

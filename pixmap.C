@@ -11,7 +11,8 @@ LIBCXXW_NAMESPACE_START
 
 pixmapObj::pixmapObj(const ref<implObj> &impl)
 	: drawableObj(impl),
-	  impl(impl)
+	  impl(impl),
+	  points_of_interest(impl->points_of_interest)
 {
 }
 

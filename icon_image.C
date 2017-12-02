@@ -11,13 +11,10 @@ LIBCXXW_NAMESPACE_START
 
 icon_imageObj::icon_imageObj(const picture &icon_pictureArg,
 			     const pixmap &icon_pixmap,
-			     render_repeat repeat,
-			     const std::unordered_map<std::string,
-			     std::pair<coord_t, coord_t>> &points)
+			     render_repeat repeat)
 	: icon_picture(icon_pictureArg),
 	  icon_pixmap(icon_pixmap),
-	  repeat(repeat),
-	  points(points)
+	  repeat(repeat)
 {
 	icon_pictureArg->repeat(repeat);
 }

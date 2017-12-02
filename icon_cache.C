@@ -430,14 +430,22 @@ static auto get_cached_sxg_image(const sxg_parser &sxg,
 		 {
 			 auto pixmap=drawable_impl->create_pixmap(preadjust_w,
 								  preadjust_h);
-			 auto picture=pixmap->create_picture();
 
-			 std::unordered_map<std::string,
-					    std::pair<coord_t, coord_t>> points;
+			 // Compute points in the image. render_points()
+			 // needs to know the size of the pixmap that render()
+			 // will receive.
+
+			 pixmap->impl->points_of_interest=
+				 has_background_color
+				 ? sxg->render_points(w, h)
+				 : sxg->render_points(preadjust_w,
+						      preadjust_h);
+
+			 auto picture=pixmap->create_picture();
 
 			 if (!has_background_color)
 			 {
-				 sxg->render(picture, pixmap, points);
+				 sxg->render(picture, pixmap);
 			 }
 			 else
 			 {
@@ -447,8 +455,7 @@ static auto get_cached_sxg_image(const sxg_parser &sxg,
 				 auto temp_picture=
 					 temp_pixmap->create_picture();
 
-				 sxg->render(temp_picture, temp_pixmap,
-					     points);
+				 sxg->render(temp_picture, temp_pixmap);
 
 				 picture->fill_rectangle({0, 0,
 							 preadjust_w,
@@ -468,7 +475,7 @@ static auto get_cached_sxg_image(const sxg_parser &sxg,
 
 				 // Also adjust the points.
 
-				 for (auto &p:points)
+				 for (auto &p:pixmap->impl->points_of_interest)
 				 {
 					 p.second.first=coord_t::truncate
 						 (p.second.first+offset_x);
@@ -476,8 +483,7 @@ static auto get_cached_sxg_image(const sxg_parser &sxg,
 						 (p.second.second+offset_y);
 				 }
 			 }
-			 return icon_image::create(picture, pixmap, repeat,
-						   points);
+			 return icon_image::create(picture, pixmap, repeat);
 		 });
 }
 
@@ -536,8 +542,7 @@ static icon create_sxg_image(const std::string &name,
 			     dim_t w, dim_t h,
 			     icon_scale scale)
 {
-	auto background_color=sxg->background_color
-		(drawable_impl->get_screen()->impl->current_theme.get());
+	auto background_color=sxg->background_color();
 
 	if (background_color)
 		scale=icon_scale::nomore; // We can scale.

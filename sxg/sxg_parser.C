@@ -324,9 +324,21 @@ sxg_parserObj::render_execute_info
 {
 }
 
-sxg_parserObj::execution_info::execution_info(const sxg_parserObj &sxg_parser_refArg)
+sxg_parserObj::execution_info
+::execution_info(const sxg_parserObj &sxg_parser_refArg,
+		 dim_t w, dim_t h)
 	: sxg_parser_ref(sxg_parser_refArg)
 {
+		// Compute scaling factors
+
+	scale_w=(double)dim_t::value_type(w)/
+		dim_t::value_type(sxg_parser_ref.nominal_width);
+	scale_h=(double)dim_t::value_type(h)/
+		dim_t::value_type(sxg_parser_ref.nominal_height);
+
+	pixels_per_mm_w=sxg_parser_ref.pixels_per_mm_w();
+
+	pixels_per_mm_h=sxg_parser_ref.pixels_per_mm_h();
 }
 
 const_picture sxg_parserObj::execution_info::source_picture(const std::string &n)
@@ -2884,50 +2896,17 @@ double sxg_parserObj::pixels_per_mm_h() const
 }
 
 void sxg_parserObj::render(const picture &p,
-			   const drawable &d,
-			   std::unordered_map<std::string,
-			   std::pair<coord_t, coord_t>> &points) const
+			   const drawable &d) const
 {
-	execution_info info(*this);
+	execution_info info{*this, d->get_width(), d->get_height()};
 
 	// Start by clearing the picture
 
 	p->fill_rectangle({0, 0, d->get_width(), d->get_height()},
 			  rgb(0, 0, 0, 0));
 
-	// Compute scaling factors
-
-	info.scale_w=(double)dim_t::value_type(d->get_width())/
-		dim_t::value_type(nominal_width);
-	info.scale_h=(double)dim_t::value_type(d->get_height())/
-		dim_t::value_type(nominal_height);
-
-	info.pixels_per_mm_w=pixels_per_mm_w();
-
-	info.pixels_per_mm_h=pixels_per_mm_h();
-
 	info.pictures.insert({"main",
 			{p, d, size_type_t::scaled}});
-
-	{
-		scale_info main_scale(size_type_t::scaled,
-				      info.scale_w,
-				      info.scale_h,
-				      info.pixels_per_mm_w,
-				      info.pixels_per_mm_h);
-
-		// Return predefined points to caller.
-
-		for (const auto &p:this->points.points)
-		{
-			auto x_pixel=main_scale.x_pixel(p.second.first);
-			auto y_pixel=main_scale.y_pixel(p.second.second);
-
-			points.insert(std::make_pair(p.first,
-						     std::make_pair
-						     (x_pixel, y_pixel)));
-		}
-	}
 
 	// Create all pixmaps
 
@@ -3043,6 +3022,34 @@ void sxg_parserObj::render(const picture &p,
 
 	for (const auto &op:operations)
 		op->execute(info);
+}
+
+pixmap_points_of_interest_t sxg_parserObj::render_points(dim_t w, dim_t h) const
+{
+	execution_info info{*this, w, h};
+
+	// This will be main picture's scale, when rendered.
+	scale_info main_scale(size_type_t::scaled,
+			      info.scale_w,
+			      info.scale_h,
+			      info.pixels_per_mm_w,
+			      info.pixels_per_mm_h);
+
+	std::unordered_map<std::string, std::pair<coord_t, coord_t>> points;
+
+	// Return predefined points to caller.
+
+	for (const auto &p:this->points.points)
+	{
+		auto x_pixel=main_scale.x_pixel(p.second.first);
+		auto y_pixel=main_scale.y_pixel(p.second.second);
+
+		points.insert(std::make_pair(p.first,
+					     std::make_pair
+					     (x_pixel, y_pixel)));
+	}
+
+	return points;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -3181,7 +3188,7 @@ dim_t sxg_parserObj::width_for_height(dim_t height, icon_scale scale) const
 		 scale);
 }
 
-std::optional <rgb> sxg_parserObj::background_color(const defaulttheme &theme)
+std::optional <rgb> sxg_parserObj::background_color()
 	const
 {
 	auto iter=pictures.find("background");

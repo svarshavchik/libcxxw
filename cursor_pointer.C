@@ -21,7 +21,8 @@ cursor_pointerObj::cursor_pointerObj(const icon &cursor_pointer_icon)
 		 ->impl->thread),
 	  cursor_pointer_icon(cursor_pointer_icon)
 {
-	const auto &points=cursor_pointer_icon->image->points;
+	const auto &points=cursor_pointer_icon->image
+		->icon_pixmap->points_of_interest;
 
 	coord_t x{}, y{};
 

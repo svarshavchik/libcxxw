@@ -24,6 +24,10 @@ public:
 
 	const ref<implObj> impl;
 
+	//! Points of interest in this pixmap.
+
+	const pixmap_points_of_interest_t &points_of_interest;
+
 	//! Constructor
 	pixmapObj(const ref<implObj> &impl) LIBCXX_HIDDEN;
 

@@ -12,6 +12,7 @@
 #include "x/w/fontfwd.H"
 #include "x/w/gcfwd.H"
 #include "x/w/pixmapfwd.H"
+#include "x/w/pixmapobj.H"
 #include "x/w/picturefwd.H"
 #include "x/w/pictureobj.H"
 #include "x/w/drawablefwd.H"
@@ -99,7 +100,13 @@ class LIBCXX_HIDDEN sxg_parserObj : virtual public obj {
 	//! Given the height, return a width that preserved the aspect ratio.
 	dim_t width_for_height(dim_t height, icon_scale scale) const;
 
-	//! Draw this SXG into a picture.
+	//! Return any predefined point in the SXG image, when rendered.
+
+	//! Given the scaled dimensions of the drawable that render()
+	//! receives, return any predefined points in the image.
+	//! The SXG image may define certain points. Return the
+	//! locations of predefined points.
+	pixmap_points_of_interest_t render_points(dim_t, dim_t) const;
 
 	void render(
 		    //! This PICTURE is cleared to a transparent color, then
@@ -108,19 +115,12 @@ class LIBCXX_HIDDEN sxg_parserObj : virtual public obj {
 		    const picture &p,
 
 		    //! The PICTURE's drawable.
-		    const drawable &d,
-
-		    //! Predefined points in the SXG image.
-
-		    //! The SXG image may define certain points. The
-		    //! locations of predefined points are stored here.
-		    std::unordered_map<std::string,
-		    std::pair<coord_t, coord_t>> &points)
+		    const drawable &d)
 		const;
 
 	//! Whether this SXG image defines a background color.
 
-	std::optional<rgb> background_color(const defaulttheme &theme) const;
+	std::optional<rgb> background_color() const;
 
  private:
 
@@ -484,7 +484,8 @@ class LIBCXX_HIDDEN sxg_parserObj : virtual public obj {
 		std::unordered_map<std::string, pixmap> pixmaps;
 
 		//! Constructor
-		execution_info(const sxg_parserObj &sxg_parser_refArg);
+		execution_info(const sxg_parserObj &sxg_parser_refArg,
+			       dim_t w, dim_t h);
 
 	};
 
