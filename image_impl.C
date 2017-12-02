@@ -29,17 +29,19 @@ imageObj::implObj::implObj(const ref<containerObj::implObj> &container,
 	: child_elementObj(container,
 			   {"image@libcxx",
 				   { {icon_width, icon_width, icon_width},
-					   {icon_height, icon_height,
-							   icon_height}}}),
+					   {icon_height, icon_height,							   icon_height}}}),
 	  current_icon_thread_only(initial_icon)
 {
 }
 
 void imageObj::implObj::initialize(IN_THREAD_ONLY)
 {
-	// Theme might've been changed. Resynchronize.
+	auto new_icon=current_icon(IN_THREAD)->initialize(IN_THREAD);
 
-	current_icon(IN_THREAD)=current_icon(IN_THREAD)->initialize(IN_THREAD);
+	if (new_icon == current_icon(IN_THREAD))
+		return;
+
+	set_icon(IN_THREAD, new_icon);
 }
 
 void imageObj::implObj::do_draw(IN_THREAD_ONLY,

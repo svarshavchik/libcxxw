@@ -636,12 +636,12 @@ new_booklayoutmanager::create(const ref<containerObj::implObj> &parent) const
 			 auto impl=ref<book_tab_imagebuttonObj>::create
 				 (container_impl,
 				  std::vector<icon>{
-					  wh.create_icon_mm
+					  wh.create_icon
 						  ("scroll-left1",
 						   render_repeat::none,
 						   0,
 						   "book_scroll_height"),
-					  wh.create_icon_mm
+					  wh.create_icon
 						  ("scroll-left2",
 						   render_repeat::none,
 						   0,
@@ -725,12 +725,12 @@ new_booklayoutmanager::create(const ref<containerObj::implObj> &parent) const
 			 auto impl=ref<book_tab_imagebuttonObj>::create
 				 (container_impl,
 				  std::vector<icon>{
-					  wh.create_icon_mm
+					  wh.create_icon
 						  ("scroll-right1",
 						   render_repeat::none,
 						   0,
 						   "book_scroll_height"),
-					  wh.create_icon_mm
+					  wh.create_icon
 						  ("scroll-right2",
 						   render_repeat::none,
 						   0,

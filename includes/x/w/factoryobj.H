@@ -260,10 +260,10 @@ public:
 			   const input_field_config &config);
 
 	//! Create an image
-	image create_image_mm(const std::string_view &name,
-			      double widthmm=0,
-			      double heightmm=0,
-			      render_repeat=render_repeat::none);
+	image create_image(const std::string_view &name,
+			   const dim_arg &width=0,
+			   const dim_arg &height=0,
+			   render_repeat=render_repeat::none);
 
 	//! Create a checkbox
 	image_button create_checkbox(valign=valign::middle);

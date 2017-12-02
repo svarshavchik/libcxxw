@@ -259,7 +259,7 @@ static auto icon_element(const std::string_view &icon)
 	return std::function<void (const gridfactory &)>
 		([=](const gridfactory &f)
 		 {
-			 f->create_image_mm(icon);
+			 f->create_image(icon);
 		 });
 }
 

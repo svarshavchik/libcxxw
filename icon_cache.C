@@ -516,17 +516,17 @@ std::vector<icon> drawableObj::implObj
 	icons.reserve(images.size());
 
 	for (const auto &name:images)
-		icons.push_back(create_icon_mm(name, render_repeat::none,
-					       0, 0));
+		icons.push_back(create_icon(name, render_repeat::none,
+					    0, 0));
 
 	return icons;
 }
 
 icon drawableObj::implObj
-::create_icon_mm(const std::string_view &name,
-		 render_repeat icon_repeat,
-		 const dim_arg &width_arg,
-		 const dim_arg &height_arg)
+::create_icon(const std::string_view &name,
+	      render_repeat icon_repeat,
+	      const dim_arg &width_arg,
+	      const dim_arg &height_arg)
 {
 	auto screen=get_screen();
 	auto theme=*current_theme_t::lock{screen->impl->current_theme};
@@ -580,9 +580,9 @@ icon drawableObj::implObj
 }
 
 icon drawableObj::implObj
-::create_icon(const std::string_view &name,
-	      render_repeat icon_repeat,
-	      dim_t w, dim_t h, icon_scale scale)
+::create_icon_pixels(const std::string_view &name,
+		     render_repeat icon_repeat,
+		     dim_t w, dim_t h, icon_scale scale)
 {
 	auto screen=get_screen();
 	auto theme=*current_theme_t::lock{screen->impl->current_theme};
@@ -643,10 +643,10 @@ icon sxg_iconObj<dim_arg>::theme_updated(IN_THREAD_ONLY,
 
 	// All right, take it from the top.
 	auto icon=image->icon_pixmap->impl
-		->create_icon_mm(name,
-				 image->repeat,
-				 width,
-				 height);
+		->create_icon(name,
+			      image->repeat,
+			      width,
+			      height);
 
 	// We technically need to call initialize(), hopefully a mere
 	// formality.
@@ -665,9 +665,9 @@ icon sxg_iconObj<dim_t>::theme_updated(IN_THREAD_ONLY, const defaulttheme &new_t
 
 	// All right, take it from the top.
 	auto icon=image->icon_pixmap->impl
-		->create_icon(name,
-			      image->repeat,
-			      width, height, scale);
+		->create_icon_pixels(name,
+				     image->repeat,
+				     width, height, scale);
 
 	// We technically need to call initialize(), hopefully a mere
 	// formality.

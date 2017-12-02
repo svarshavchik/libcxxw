@@ -153,17 +153,17 @@ create_scrollbar_icon_set(drawableObj::implObj &drawable,
 	std::string knob{"scrollbar-knob-"};
 
 	return std::tuple{
-		drawable.create_icon_mm(scroll + scroll_low + suffix,
-					render_repeat::none, 0, 0),
-		drawable.create_icon_mm(scroll + scroll_high + suffix,
-					render_repeat::none, 0, 0),
-		drawable.create_icon_mm(knob + start + suffix,
-					render_repeat::none, 0, 0),
-		drawable.create_icon_mm(scrollbar + handle + suffix,
-					render_repeat::none, 0, 0),
-		drawable.create_icon_mm(knob + end + suffix,
-					render_repeat::none, 0, 0),
-	};
+		drawable.create_icon(scroll + scroll_low + suffix,
+				     render_repeat::none, 0, 0),
+			drawable.create_icon(scroll + scroll_high + suffix,
+					     render_repeat::none, 0, 0),
+			drawable.create_icon(knob + start + suffix,
+					     render_repeat::none, 0, 0),
+			drawable.create_icon(scrollbar + handle + suffix,
+					     render_repeat::none, 0, 0),
+			drawable.create_icon(knob + end + suffix,
+					     render_repeat::none, 0, 0),
+			};
 }
 
 scrollbar

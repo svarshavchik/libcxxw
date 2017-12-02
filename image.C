@@ -18,15 +18,15 @@ imageObj::imageObj(const ref<implObj> &impl)
 imageObj::~imageObj()=default;
 
 
-image factoryObj::create_image_mm(const std::string_view &name,
-				  double widthmm,
-				  double heightmm,
-				  render_repeat repeat)
+image factoryObj::create_image(const std::string_view &name,
+			       const dim_arg &width,
+			       const dim_arg &height,
+			       render_repeat repeat)
 {
 	auto container_impl=get_container_impl();
 
 	auto icon=container_impl->get_window_handler()
-		.create_icon_mm(name, repeat, widthmm, heightmm);
+		.create_icon(name, repeat, width, height);
 
 	auto impl=ref<imageObj::implObj>::create(container_impl, icon);
 

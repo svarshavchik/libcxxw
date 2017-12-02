@@ -97,10 +97,12 @@ create_combobox_button(const ref<containerObj::implObj> &parent_container,
 
 	auto &d=cbfc->get_element_impl().get_window_handler();
 
-	auto icon1=d.create_icon("scroll-down1", render_repeat::none, 0, 0,
-				 icon_scale::nomore);
-	auto icon2=d.create_icon("scroll-down2", render_repeat::none, 0, 0,
-				 icon_scale::nomore);
+	auto icon1=d.create_icon_pixels("scroll-down1", render_repeat::none,
+					0, 0,
+					icon_scale::nomore);
+	auto icon2=d.create_icon_pixels("scroll-down2", render_repeat::none,
+					0, 0,
+					icon_scale::nomore);
 
 	auto image_button_internal_impl=
 		ref<combobox_button_implObj>
