@@ -72,8 +72,7 @@ void testshowhide()
 
 			 auto button1=factory->border(my_border).remove_when_hidden().create_normal_button_with_label({"Button 1"});
 			 auto button2=factory->border(my_border).create_normal_button_with_label({"Button 2"});
-			 auto yellow=button1->create_solid_color_picture
-			 ({rgb::maximum, rgb::maximum, 0});
+			 rgb yellow{rgb::maximum, rgb::maximum, 0};
 
 			 button1->set_background_color(yellow);
 			 button2->set_background_color(yellow);

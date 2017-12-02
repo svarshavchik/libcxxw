@@ -234,8 +234,7 @@ auto wait_until_clear(int current_number_of_calls)
 
 void set_filler_color(const LIBCXX_NAMESPACE::w::element &e)
 {
-	e->set_background_color(e->get_screen()
-				->create_solid_color_picture({0, 0, 0}));
+	e->set_background_color(LIBCXX_NAMESPACE::w::rgb{0, 0, 0});
 }
 
 auto runteststate(testmainwindowoptions &options,

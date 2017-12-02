@@ -66,19 +66,9 @@ void elementObj::set_background_color(const color_arg &name)
 	impl->set_background_color(name);
 }
 
-void elementObj::set_background_color(const const_picture &background_color)
-{
-	impl->set_background_color(background_color);
-}
-
 void elementObj::remove_background_color()
 {
 	impl->remove_background_color();
-}
-
-const_picture elementObj::create_solid_color_picture(const rgb &color) const
-{
-	return impl->get_screen()->create_solid_color_picture(color);
 }
 
 void elementObj::on_state_update(const std::function<element_state_callback_t

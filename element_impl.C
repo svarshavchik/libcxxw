@@ -839,13 +839,6 @@ void elementObj::implObj
 }
 
 void elementObj::implObj
-::set_background_color(const const_picture &background_color)
-{
-	set_background_color(get_screen()->impl
-			     ->create_background_color(background_color));
-}
-
-void elementObj::implObj
 ::set_background_color(const background_color &c)
 {
 	THREAD->run_as([impl=ref<implObj>(this), c]

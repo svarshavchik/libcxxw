@@ -230,10 +230,6 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 	void set_background_color(const color_arg &theme_color);
 
-	//! Use a custom background color for this display element.
-
-	void set_background_color(const const_picture &background_color);
-
 	//! Set the background color.
 
 	//! Schedules the virtual method to be invoked by the connection thread.

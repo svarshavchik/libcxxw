@@ -39,21 +39,17 @@ class elementObj;
 //! in this one (this display element is a \ref container "container").
 //!
 //! \code
-//! auto p=e->create_solid_color_picture(INSERT_LIBX_NAMESPACE::w::rgb(INSERT_LIBX_NAMESPACE::w::rgb::maximum(), 0, 0));
+//! auto p=e->set_background_color(INSERT_LIBX_NAMESPACE::w::rgb(INSERT_LIBX_NAMESPACE::w::rgb::maximum(), 0, 0));
 //!
-//! e->set_background_color(p);
-//!
-//! e->set_background_color("action_color1", INSERT_LIBX_NAMESPACE::w::rgb(INSERT_LIBX_NAMESPACE::w::rgb::maximum(), 0, 0));
+//! e->set_background_color("action_color1");
 //!
 //! e->remove_background_color();
 //! \endcode
 //!
-//! create_solid_color_picture() returns a RENDER picture object. See the
-//! RENDER protocol specification for more information. set_background_color()
-//! sets this element's background to the specified picture. Alternatively,
-//! set_background_color() is overloaded to take a color name from the default
-//! theme, with an explicit \ref rgb "INSERT_LIBX_NAMESPACE::rgb" as the
-//! default.
+//! set_background_color() sets this element's background to an
+//! \ref rgb "INSERT_LIBX_NAMESPACE::rgb"-specified color, or to a theme
+//! color of the given name. remove_background_color() removes the element's
+//! existing background color, reverting it to the default one.
 //!
 //! \code
 //! INSERT_LIBX_NAMESPACE::ref<INSERT_LIBX_NAMESPACE::obj> mcguffin=element->get_busy_mcguffin();
