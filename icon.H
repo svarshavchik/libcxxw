@@ -9,6 +9,7 @@
 #include <x/ref.H>
 #include "iconfwd.H"
 #include "iconobj.H"
+#include "pixmap_with_picturefwd.H"
 
 LIBCXXW_NAMESPACE_START
 

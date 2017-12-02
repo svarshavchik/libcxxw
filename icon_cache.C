@@ -8,12 +8,11 @@
 #include "sxg/sxg_parser.H"
 #include "defaulttheme.H"
 #include "screen.H"
-#include "pixmap.H"
+#include "pixmap_with_picture.H"
 #include "drawable.H"
 #include "icon.H"
 #include "themeiconobj.H"
 #include "themeiconpixmapobj.H"
-#include "icon_image.H"
 #include "pixmap_loader.H"
 #include "x/w/picture.H"
 #include <x/refptr_hash.H>
@@ -455,29 +454,6 @@ static auto create_sxg_image(const std::string &name,
 
 ////////////////////////////////////////////////////////////////////////////////
 
-
-class LIBCXX_HIDDEN icon_pixmap_implObj : public pixmapObj {
-
- public:
-
-	icon_pixmap_implObj(const ref<implObj> &pixmap_impl,
-			    render_repeat repeat)
-		: pixmapObj{pixmap_impl},
-		icon_picture{pixmap_impl->create_picture()}
-		{
-			icon_picture->repeat(repeat);
-		}
-
-	~icon_pixmap_implObj()=default;
-
-	const picture icon_picture;
-
-	const_picture create_picture() const override
-	{
-		return icon_picture;
-	}
-};
-
 // Load the cached icon for the given icon pixmap, and attributes.
 // If it's not cached, we create a new icon and cache it.
 
@@ -496,18 +472,15 @@ static icon get_cached_image(const std::string &name,
 				std::tuple{width, height}, repeat, scale},
 			[&]
 			{
-				auto pixmap=ref<icon_pixmap_implObj>
+				auto pixmap=pixmap_with_picture
 					::create(underlying_pixmap, repeat);
-
 
 				return ref<themeiconpixmapObj<dim_type>>
 					::create(name,
 						 screen_impl->current_theme
 						 .get(),
 						 width, height, scale,
-						 icon_image::create
-						 (pixmap,
-						  repeat));
+						 pixmap);
 			});
 }
 

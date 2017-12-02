@@ -5,7 +5,7 @@
 #ifndef image_button_internalobj_h
 #define image_button_internalobj_h
 
-#include "icon_imagefwd.H"
+#include "iconfwd.H"
 #include "image_button_internalfwd.H"
 #include "connection_threadfwd.H"
 #include "x/w/imageobj.H"

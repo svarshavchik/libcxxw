@@ -43,6 +43,14 @@ typedef const_ref<iconObj> const_icon;
 
 typedef const_ptr<iconObj> const_iconptr;
 
+//! How to scale an icon.
+
+//! Scale the icon size as close to the requested size as possible,
+//! to be at least as big as the requested size, or not bigger than
+//! the requested size.
+
+enum class icon_scale { nearest, atleast, nomore};
+
 LIBCXXW_NAMESPACE_END
 
 #endif

@@ -5,7 +5,7 @@
 #include "libcxxw_config.h"
 #include "cursor_pointer.H"
 #include "icon.H"
-#include "icon_image.H"
+#include "pixmap_with_picture.H"
 #include "defaulttheme.H"
 #include "screen.H"
 #include "cursor_pointer_cache.H"
@@ -17,12 +17,11 @@
 LIBCXXW_NAMESPACE_START
 
 cursor_pointerObj::cursor_pointerObj(const icon &cursor_pointer_icon)
-	: xidObj(cursor_pointer_icon->image->icon_pixmap->impl->screenref
-		 ->impl->thread),
+	: xidObj(cursor_pointer_icon->image->impl->screenref->impl->thread),
 	  cursor_pointer_icon(cursor_pointer_icon)
 {
 	const auto &points=cursor_pointer_icon->image
-		->icon_pixmap->points_of_interest;
+		->points_of_interest;
 
 	coord_t x{}, y{};
 
@@ -45,7 +44,7 @@ cursor_pointerObj::~cursor_pointerObj()
 
 cursor_pointer cursor_pointerObj::initialize(IN_THREAD_ONLY)
 {
-	return cursor_pointer_icon->image->icon_pixmap->impl->screenref->impl
+	return cursor_pointer_icon->image->impl->screenref->impl
 		->cursor_pointercaches
 		->create_cursor_pointer(cursor_pointer_icon
 					->initialize(IN_THREAD));
@@ -54,14 +53,14 @@ cursor_pointer cursor_pointerObj::initialize(IN_THREAD_ONLY)
 icon cursor_pointerObj::theme_updated(IN_THREAD_ONLY,
 				      const defaulttheme &new_theme)
 {
-	return cursor_pointer_icon->image->icon_pixmap->impl->screenref->impl
+	return cursor_pointer_icon->image->impl->screenref->impl
 		->cursor_pointercaches
 		->create_cursor_pointer(theme_updated(IN_THREAD, new_theme));
 }
 
 cursor_pointer iconObj::create_cursor()
 {
-	return image->icon_pixmap->impl->screenref->impl->cursor_pointercaches
+	return image->impl->screenref->impl->cursor_pointercaches
 		->create_cursor_pointer(icon(this));
 }
 

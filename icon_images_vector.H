@@ -6,10 +6,8 @@
 #define icon_images_vector_h
 
 #include "iconfwd.H"
-#include "image.H"
-#include "icon_imagefwd.H"
 #include "connection_threadfwd.H"
-
+#include "defaultthemefwd.H"
 #include <vector>
 
 LIBCXXW_NAMESPACE_START

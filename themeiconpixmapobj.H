@@ -6,7 +6,6 @@
 #define themeiconpixmapobj_H
 
 #include "themeiconobj.H"
-#include <string>
 
 LIBCXXW_NAMESPACE_START;
 

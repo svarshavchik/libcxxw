@@ -7,7 +7,7 @@
 
 #include "sxg/sxg_parserfwd.H"
 #include "defaultthemefwd.H"
-#include "icon_imagefwd.H"
+#include "iconfwd.H"
 #include "x/w/screenfwd.H"
 #include "x/w/fontfwd.H"
 #include "x/w/gcfwd.H"

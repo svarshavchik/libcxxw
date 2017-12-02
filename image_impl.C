@@ -5,18 +5,18 @@
 #include "libcxxw_config.h"
 #include "image.H"
 #include "icon.H"
-#include "icon_image.H"
 
 #include "x/w/pixmap.H"
 #include "x/w/picture.H"
+#include "pixmap_with_picture.H"
 
 LIBCXXW_NAMESPACE_START
 
 imageObj::implObj::implObj(const ref<containerObj::implObj> &container,
 		 const icon &initial_icon)
 	: implObj(container, initial_icon,
-		  initial_icon->image->icon_pixmap->get_width(),
-		  initial_icon->image->icon_pixmap->get_height(),
+		  initial_icon->image->get_width(),
+		  initial_icon->image->get_height(),
 		  "image@libcxx")
 {
 }
@@ -50,8 +50,8 @@ void imageObj::implObj::do_draw(IN_THREAD_ONLY,
 {
 	// We ignore areas for now, and just composite the entire icon picture.
 
-	auto w=current_icon(IN_THREAD)->image->icon_pixmap->get_width();
-	auto h=current_icon(IN_THREAD)->image->icon_pixmap->get_height();
+	auto w=current_icon(IN_THREAD)->image->get_width();
+	auto h=current_icon(IN_THREAD)->image->get_height();
 
 	clip_region_set clipped{IN_THREAD, get_window_handler(), di};
 
@@ -91,8 +91,8 @@ void imageObj::implObj::set_icon(IN_THREAD_ONLY, const icon &new_icon)
 
 	// Update the metrics to reflect the new icon.
 
-	auto w=current_icon(IN_THREAD)->image->icon_pixmap->get_width();
-	auto h=current_icon(IN_THREAD)->image->icon_pixmap->get_height();
+	auto w=current_icon(IN_THREAD)->image->get_width();
+	auto h=current_icon(IN_THREAD)->image->get_height();
 
 	get_horizvert(IN_THREAD)->set_element_metrics(IN_THREAD,
 						      {w, w, w}, {h, h, h});

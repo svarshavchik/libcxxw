@@ -11,7 +11,6 @@
 #include "x/w/screenfwd.H"
 #include "x/w/dim_arg.H"
 #include "iconfwd.H"
-#include "icon_imagefwd.H"
 #include "xid_t.H"
 
 #include <xcb/xproto.h>

@@ -6,8 +6,8 @@
 #include "listlayoutmanager/list_cellimage.H"
 #include "richtext/richtext_draw_boundaries.H"
 #include "icon.H"
-#include "icon_image.H"
 #include "icon_images_vector.H"
+#include "pixmap_with_picture.H"
 #include "x/w/pixmap.H"
 #include "x/w/picture.H"
 
@@ -29,7 +29,7 @@ list_cellimageObj::cell_get_metrics(IN_THREAD_ONLY, dim_t preferred_width,
 
 	for (const auto &image:icon_images(IN_THREAD))
 	{
-		auto pm=image->image->icon_pixmap;
+		auto pm=image->image;
 
 		auto iw=pm->get_width();
 		auto ih=pm->get_height();
@@ -70,7 +70,7 @@ void list_cellimageObj::cell_redraw(IN_THREAD_ONLY,
 			 auto image=this->icon_images(IN_THREAD)
 				 .at(*mpobj<size_t>::lock{this->n});
 
-			 auto pm=image->image->icon_pixmap;
+			 auto pm=image->image;
 
 			 auto w=pm->get_width();
 			 auto h=pm->get_height();

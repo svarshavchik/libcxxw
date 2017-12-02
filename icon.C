@@ -4,14 +4,14 @@
 */
 #include "libcxxw_config.h"
 #include "icon.H"
-#include "icon_image.H"
+#include "pixmap_with_picture.H"
 #include "pixmap.H"
 #include "defaulttheme.H"
 #include "screen.H"
 
 LIBCXXW_NAMESPACE_START
 
-iconObj::iconObj(const const_icon_image &image)
+iconObj::iconObj(const pixmap_with_picture &image)
 	: image(image)
 {
 }
@@ -20,8 +20,7 @@ iconObj::~iconObj()=default;
 
 icon iconObj::initialize(IN_THREAD_ONLY)
 {
-	auto theme=image->icon_pixmap->impl->get_screen()->impl
-		->current_theme.get();
+	auto theme=image->impl->get_screen()->impl->current_theme.get();
 
 	return theme_updated(IN_THREAD, theme);
 }

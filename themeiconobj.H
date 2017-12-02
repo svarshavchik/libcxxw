@@ -7,7 +7,7 @@
 
 #include "iconobj.H"
 #include "defaultthemefwd.H"
-
+#include "pixmap_with_picturefwd.H"
 #include <string>
 
 LIBCXXW_NAMESPACE_START;
@@ -46,7 +46,7 @@ class LIBCXX_HIDDEN themeiconObj : public iconObj {
 		     const dim_type &width,
 		     const dim_type &height,
 		     icon_scale scale,
-		     const const_icon_image &image);
+		     const pixmap_with_picture &pixmap);
 
 	//! Destructor
 	~themeiconObj();

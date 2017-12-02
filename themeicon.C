@@ -5,8 +5,8 @@
 #include "libcxxw_config.h"
 #include "themeiconobj.H"
 #include "defaulttheme.H"
-#include "icon_image.H"
 #include "pixmap.H"
+#include "pixmap_with_picture.H"
 #include "screen.H"
 #include "x/w/dim_arg.H"
 
@@ -18,7 +18,7 @@ themeiconObj<dim_type>::themeiconObj(const std::string &name,
 				     const dim_type &width,
 				     const dim_type &height,
 				     icon_scale scale,
-				     const const_icon_image &image)
+				     const pixmap_with_picture &image)
 	: iconObj(image),
 	  name(name),
 	  theme(theme),
@@ -34,7 +34,7 @@ themeiconObj<dim_type>::~themeiconObj()=default;
 template<>
 icon themeiconObj<dim_arg>::initialize(IN_THREAD_ONLY)
 {
-	auto drawable=image->icon_pixmap->impl;
+	auto drawable=image->impl;
 
 	auto current_theme=drawable->get_screen()->impl->current_theme.get();
 
@@ -51,14 +51,14 @@ icon themeiconObj<dim_arg>::theme_updated(IN_THREAD_ONLY,
 	if (new_theme == theme)
 		return icon(this);
 
-	return image->icon_pixmap->impl
+	return image->impl
 		->create_icon(name, image->repeat, width, height);
 }
 
 template<>
 icon themeiconObj<dim_t>::initialize(IN_THREAD_ONLY)
 {
-	auto drawable=image->icon_pixmap->impl;
+	auto drawable=image->impl;
 
 	auto current_theme=drawable->get_screen()->impl->current_theme.get();
 
@@ -76,7 +76,7 @@ icon themeiconObj<dim_t>::theme_updated(IN_THREAD_ONLY,
 	if (new_theme == theme)
 		return icon(this);
 
-	return image->icon_pixmap->impl
+	return image->impl
 		->create_icon_pixels(name, image->repeat, width, height, scale);
 }
 

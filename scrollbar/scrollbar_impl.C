@@ -14,7 +14,7 @@
 #include "scrollbar/scrollbar_impl.H"
 #include "focus/focusable_element.H"
 #include "icon.H"
-#include "icon_image.H"
+#include "pixmap_with_picture.H"
 #include "icon_images_set_element.H"
 #include "themedim_element_minoverride.H"
 #include "metrics_horizvertobj.H"
@@ -181,8 +181,8 @@ dim_t scrollbarObj::implObj::minor_size(const rectangle &r) const
 rectangle scrollbarObj::implObj::icon_size(const icon &i)
 {
 	return {0, 0,
-			i->image->icon_pixmap->get_width(),
-			i->image->icon_pixmap->get_height()};
+			i->image->get_width(),
+			i->image->get_height()};
 }
 
 dim_t scrollbarObj::implObj::major_icon_size(const icon &i) const
@@ -532,8 +532,7 @@ coord_t scrollbarObj::implObj::do_draw_icon(IN_THREAD_ONLY,
 
 	const auto &p=icon->image;
 
-	rectangle r{0, 0, p->icon_pixmap->get_width(),
-			p->icon_pixmap->get_height()};
+	rectangle r{0, 0, p->get_width(), p->get_height()};
 
 	r.*(orientation.major_coord)=major_coord;
 

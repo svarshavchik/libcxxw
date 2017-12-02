@@ -369,10 +369,6 @@ libcxxw_la_SOURCES=\
 	icon_cache.H				    \
 	icon_cachefwd.H				    \
 	icon_cacheobj.H				    \
-	icon_image.C				    \
-	icon_image.H				    \
-	icon_imagefwd.H				    \
-	icon_imageobj.H				    \
 	icon_images_set_element.H		    \
 	icon_images_set_elementfwd.H		    \
 	icon_images_vector.C			    \
@@ -558,6 +554,10 @@ libcxxw_la_SOURCES=\
 	pixmap_impl.C				    \
 	pixmap_loader.C				    \
 	pixmap_loader.H				    \
+	pixmap_with_picture.C			    \
+	pixmap_with_picture.H			    \
+	pixmap_with_picturefwd.H		    \
+	pixmap_with_pictureobj.H		    \
 	popup/popup.C				    \
 	popup/popup.H				    \
 	popup/popupfwd.H			    \

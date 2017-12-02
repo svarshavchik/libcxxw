@@ -7,7 +7,7 @@
 
 #include "defaultthemefwd.H"
 #include "iconfwd.H"
-#include "icon_imagefwd.H"
+#include "pixmap_with_picturefwd.H"
 #include "connection_threadfwd.H"
 #include "cursor_pointerfwd.H"
 #include "x/w/dim_arg.H"
@@ -21,13 +21,13 @@ class LIBCXX_HIDDEN iconObj : virtual public obj {
 
 public:
 
-	//! The loaded image.
+	//! The loaded pixmap.
 
-	const const_icon_image image;
+	const pixmap_with_picture image;
 
 	//! Constructor
 
-	iconObj(const const_icon_image &image);
+	iconObj(const pixmap_with_picture &image);
 
 	//! Destructor
 

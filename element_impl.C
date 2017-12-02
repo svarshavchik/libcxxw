@@ -12,7 +12,7 @@
 #include "draw_info.H"
 #include "busy.H"
 #include "icon.H"
-#include "icon_image.H"
+#include "pixmap_with_picture.H"
 #include "cursor_pointer.H"
 #include "run_as.H"
 #include "background_color.H"

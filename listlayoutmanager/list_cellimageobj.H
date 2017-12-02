@@ -8,7 +8,6 @@
 #include "listlayoutmanager/list_cellimagefwd.H"
 #include "listlayoutmanager/list_cellobj.H"
 #include "iconfwd.H"
-#include "icon_imagefwd.H"
 #include "icon_images_vector.H"
 #include "connection_threadfwd.H"
 
