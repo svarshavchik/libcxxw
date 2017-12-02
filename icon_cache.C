@@ -16,6 +16,7 @@
 #include <x/refptr_hash.H>
 #include <x/number_hash.H>
 #include <x/weakunordered_multimap.H>
+#include <x/functional.H>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -405,14 +406,14 @@ static icon create_sxg_image(const std::string_view &name,
 }
 
 static icon
-create_sxg_icon_from_filename_mm(const std::string_view &name,
-				 const std::string &filename,
-				 drawableObj::implObj *for_drawable,
-				 const screen &screenref,
-				 const defaulttheme &theme,
-				 render_repeat icon_repeat,
-				 const dim_arg &width_arg,
-				 const dim_arg &height_arg)
+create_sxg_icon_from_filename(const std::string_view &name,
+			      const std::string &filename,
+			      drawableObj::implObj *for_drawable,
+			      const screen &screenref,
+			      const defaulttheme &theme,
+			      render_repeat icon_repeat,
+			      const dim_arg &width_arg,
+			      const dim_arg &height_arg)
 {
 	auto sxg=screenref->impl->iconcaches->sxg_parser_cache->find_or_create
 		({filename, theme},
@@ -427,14 +428,14 @@ create_sxg_icon_from_filename_mm(const std::string_view &name,
 }
 
 static icon
-create_sxg_icon_from_filename(const std::string_view &name,
-			      const std::string &filename,
-			      drawableObj::implObj *for_drawable,
-			      const screen &screenref,
-			      const defaulttheme &theme,
-			      render_repeat icon_repeat,
-			      dim_t w, dim_t h,
-			      icon_scale scale)
+create_sxg_icon_from_filename_pixels(const std::string_view &name,
+				     const std::string &filename,
+				     drawableObj::implObj *for_drawable,
+				     const screen &screenref,
+				     const defaulttheme &theme,
+				     render_repeat icon_repeat,
+				     dim_t w, dim_t h,
+				     icon_scale scale)
 {
 	auto sxg=screenref->impl->iconcaches->sxg_parser_cache->find_or_create
 		({filename, theme},
@@ -448,17 +449,8 @@ create_sxg_icon_from_filename(const std::string_view &name,
 				scale);
 }
 
-static const struct {
+static const struct LIBCXX_HIDDEN extension_info{
 	const char *extension;
-
-	icon (*create_mm)(const std::string_view &name,
-			  const std::string &filename,
-			  drawableObj::implObj *for_drawable,
-			  const screen &screenref,
-			  const defaulttheme &theme,
-			  render_repeat icon_repeat,
-			  const dim_arg &width_arg,
-			  const dim_arg &height_arg);
 
 	icon (*create)(const std::string_view &name,
 		       const std::string &filename,
@@ -466,11 +458,22 @@ static const struct {
 		       const screen &screenref,
 		       const defaulttheme &theme,
 		       render_repeat icon_repeat,
-		       dim_t w, dim_t h, icon_scale scale);
+		       const dim_arg &width_arg,
+		       const dim_arg &height_arg);
+
+	icon (*create_pixels)(const std::string_view &name,
+			      const std::string &filename,
+			      drawableObj::implObj *for_drawable,
+			      const screen &screenref,
+			      const defaulttheme &theme,
+			      render_repeat icon_repeat,
+			      dim_t w, dim_t h, icon_scale scale);
 } extensions[]={
-	{".sxg", &create_sxg_icon_from_filename_mm,
-	 &create_sxg_icon_from_filename},
+	{".sxg", &create_sxg_icon_from_filename,
+	 &create_sxg_icon_from_filename_pixels},
 };
+
+// Verify that the given file exists.
 
 static bool search_file(std::string &filename,
 			const defaulttheme &theme)
@@ -508,6 +511,74 @@ static bool search_file(std::string &filename,
 	return false;
 }
 
+// Figure out the image format of a file by its extension. If no extension
+// is given, try each extension we know about.
+
+static void do_search_ext(const std::string_view &name,
+			  const defaulttheme &theme,
+			  const function<void (const std::string &,
+					       const extension_info &)> &cb)
+{
+	size_t p=name.rfind('/');
+
+	if (p == name.npos)
+		p=0;
+	p=name.find('.', p);
+
+	bool found_extension=false;
+
+	for (const auto &filetype:extensions)
+	{
+		if (p != name.npos)
+		{
+			// Extension exists in the filename. Simply
+			// skip until we find this extension in the extensions
+			// list.
+
+			if (name.substr(p) == filetype.extension)
+			{
+				std::string n{name};
+
+				found_extension=true;
+
+				if (!search_file(n, theme))
+					break;
+
+				cb(n, filetype);
+				return;
+			}
+			continue;
+		}
+
+		// No extension. Append each extension until we find the file.
+		std::string n{name};
+
+		n += filetype.extension;
+
+		if (!search_file(n, theme))
+			continue;
+
+		cb(n, filetype);
+		return;
+	}
+
+	if (p != name.npos && !found_extension)
+		throw EXCEPTION("Unsupported file format: " << name);
+
+	throw EXCEPTION(name << " not found");
+}
+
+template<typename functor>
+static void search_extension(const std::string_view &name,
+			     const defaulttheme &theme,
+			     functor &&f)
+{
+	do_search_ext(name, theme,
+		      make_function<void (const std::string &,
+					  const extension_info &)>
+		      (std::forward<functor>(f)));
+}
+
 std::vector<icon> drawableObj::implObj
 ::create_icon_vector(const std::vector<std::string_view> &images)
 {
@@ -531,52 +602,18 @@ icon drawableObj::implObj
 	auto screen=get_screen();
 	auto theme=*current_theme_t::lock{screen->impl->current_theme};
 
-	size_t p=name.rfind('/');
+	iconptr i;
 
-	if (p == name.npos)
-		p=0;
-	p=name.find('.', p);
-
-	bool found_extension=false;
-
-	for (const auto &filetype:extensions)
-	{
-		if (p != name.npos)
-		{
-			if (name.substr(p) == filetype.extension)
-			{
-				std::string n{name};
-
-				found_extension=true;
-
-				if (!search_file(n, theme))
-					break;
-
-				return (*filetype.create_mm)
-					(name, n, this, screen, theme,
-					 icon_repeat,
-					 width_arg, height_arg);
-			}
-			continue;
-		}
-
-		std::string n{name};
-
-		n += filetype.extension;
-
-		if (!search_file(n, theme))
-			continue;
-
-		return (*filetype.create_mm)
-			(name, n, this, screen, theme,
-			 icon_repeat,
-			 width_arg, height_arg);
-	}
-
-	if (p != name.npos && !found_extension)
-		throw EXCEPTION("Unsupported file format: " << name);
-
-	throw EXCEPTION(name << " not found");
+	search_extension(name, theme,
+			 [&, this]
+			 (const auto &n, const auto &filetype)
+			 {
+				 i=(*filetype.create)
+					 (name, n, this, screen, theme,
+					  icon_repeat,
+					  width_arg, height_arg);
+			 });
+	return i;
 }
 
 icon drawableObj::implObj
@@ -587,50 +624,18 @@ icon drawableObj::implObj
 	auto screen=get_screen();
 	auto theme=*current_theme_t::lock{screen->impl->current_theme};
 
-	size_t p=name.rfind('/');
+	iconptr i;
 
-	if (p == name.npos)
-		p=0;
-	p=name.find('.', p);
+	search_extension(name, theme,
+			 [&, this]
+			 (const auto &n, const auto &filetype)
+			 {
+				 i=(*filetype.create_pixels)
+					 (name, n, this, screen, theme,
+					  icon_repeat, w, h, scale);
+			 });
 
-	bool found_extension=false;
-
-	for (const auto &filetype:extensions)
-	{
-		if (p != name.npos)
-		{
-			if (name.substr(p) == filetype.extension)
-			{
-				std::string n{name};
-
-				found_extension=true;
-
-				if (!search_file(n, theme))
-					break;
-
-				return (*filetype.create)
-					(name, n, this, screen, theme,
-					 icon_repeat, w, h, scale);
-			}
-			continue;
-		}
-
-		std::string n{name};
-
-		n += filetype.extension;
-
-		if (!search_file(n, theme))
-			continue;
-
-		return (*filetype.create)
-			(name, n, this, screen, theme,
-			 icon_repeat, w, h, scale);
-	}
-
-	if (p != name.npos && !found_extension)
-		throw EXCEPTION("Unsupported file format: " << name);
-
-	throw EXCEPTION(name << " not found");
+	return i;
 }
 
 template<>
