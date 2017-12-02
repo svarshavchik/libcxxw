@@ -7,6 +7,7 @@
 
 #include "defaultthemefwd.H"
 #include "icon_cachefwd.H"
+#include "pixmap_with_picturefwd.H"
 #include "iconobj.H"
 #include "sxg/sxg_parserfwd.H"
 #include "sxg/sxg_parserobj.H"
@@ -57,30 +58,31 @@ class LIBCXX_HIDDEN icon_cacheObj : virtual public obj {
 	// Cache of gif, jpeg, and png files that are loaded into x
 	// pixmapObj::implObj.
 
-	struct pixmap_cache_key_t;
-	struct pixmap_cache_key_t_hash;
+	struct std_fmt_pixmap_cache_key_t;
+	struct std_fmt_pixmap_cache_key_t_hash;
 
 	//! Container for the pixmap cache.
-	typedef weakunordered_multimap<pixmap_cache_key_t,
+	typedef weakunordered_multimap<std_fmt_pixmap_cache_key_t,
 				       pixmapObj::implObj,
-				       pixmap_cache_key_t_hash> pixmap_cache_t;
+				       std_fmt_pixmap_cache_key_t_hash
+				       > std_fmt_pixmap_cache_t;
 
 	//! The pixmap cache.
 
-	const pixmap_cache_t pixmap_cache;
+	const std_fmt_pixmap_cache_t std_fmt_pixmap_cache;
 
 	////////////////////////////////////////////////////////////////////
 	//
 	// SXG icons
 
-	struct sxg_cache_key_t;
-	struct sxg_cache_key_t_hash;
+	struct sxg_parser_cache_key_t;
+	struct sxg_parser_cache_key_t_hash;
 
 	//! Container for the SXG parser cache.
 
-	typedef weakunordered_multimap<sxg_cache_key_t,
+	typedef weakunordered_multimap<sxg_parser_cache_key_t,
 				       sxg_parserObj,
-				       sxg_cache_key_t_hash>
+				       sxg_parser_cache_key_t_hash>
 		sxg_parser_cache_t;
 
 	const sxg_parser_cache_t sxg_parser_cache;
@@ -90,22 +92,38 @@ class LIBCXX_HIDDEN icon_cacheObj : virtual public obj {
 	// Cache of SXG files scaled to a particular size, and rendered
 	// into a pixmapObj::implObj.
 
-	struct sxg_image_cache_key;
-	struct sxg_image_cache_key_hash;
+	struct sxg_pixmap_cache_key;
+	struct sxg_pixmap_cache_key_hash;
 
 	//! Type of the cache of rendered images.
 
-	typedef weakunordered_multimap<sxg_image_cache_key,
+	typedef weakunordered_multimap<sxg_pixmap_cache_key,
 				       pixmapObj::implObj,
-				       sxg_image_cache_key_hash>
-		sxg_image_cache_t;
+				       sxg_pixmap_cache_key_hash>
+		sxg_pixmap_cache_t;
 
 	//! Cache of rendered images.
-	const sxg_image_cache_t sxg_image_cache;
+	const sxg_pixmap_cache_t sxg_pixmap_cache;
 
+	///////////////////////////////////////////////////////////////////
+	//
+	// Cache of picture_with_pixmaps for all loaded image types
 
+	struct pixmap_with_picture_cache_key;
+	struct pixmap_with_picture_cache_key_hash;
 
-	// Cache of icons for loaded gif, jpeg, png image pixmaps.
+	//! Tpe of the cache for loaded pixmap_with_pictures.
+
+	typedef weakunordered_multimap<pixmap_with_picture_cache_key,
+				       pixmap_with_pictureObj,
+				       pixmap_with_picture_cache_key_hash>
+		pixmap_with_picture_cache_t;
+
+	//! Cache of loaded pixmap_with_pictures.
+
+	const pixmap_with_picture_cache_t pixmap_with_picture_cache;
+
+	// Cache of icons created from pixmap_with_pictures
 
 	struct pixmap_icon_cache_key_t;
 	struct pixmap_icon_cache_key_t_hash;

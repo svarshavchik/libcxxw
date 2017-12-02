@@ -3059,6 +3059,9 @@ sxg_parserObj::sxg_parserObj(const std::string &filename,
 			     const defaulttheme &theme)
 	: screenref(screenref), theme(theme)
 {
+#ifdef SXG_PARSER_CONSTRUCTOR_TEST
+	SXG_PARSER_CONSTRUCTOR_TEST();
+#endif
 	auto config=xml::doc::create(filename, "nonet xinclude");
 
 	auto root=config->readlock();

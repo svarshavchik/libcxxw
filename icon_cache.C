@@ -38,27 +38,53 @@ typedef ref<icon_cacheObj::cached_filename_infoObj> cached_filename_info;
 //
 // Two create functions: icon size specified as dim_args, and as dim_ts.
 
+typedef ref<pixmapObj::implObj
+	    > dim_arg_loader(const std::string &name,
+			     const cached_filename_info &filename,
+			     drawableObj::implObj *for_drawable,
+			     const screen &screenref,
+			     const defaulttheme &theme,
+			     const dim_arg &width_arg,
+			     const dim_arg &height_arg);
+
+typedef ref<pixmapObj::implObj
+	    > dim_t_loader(const std::string &name,
+			   const cached_filename_info &filename,
+			   drawableObj::implObj *for_drawable,
+			   const screen &screenref,
+			   const defaulttheme &theme,
+			   dim_t w, dim_t h, icon_scale scale);
+
 struct LIBCXX_HIDDEN extension_info{
 	const char *extension;
 
-	icon (*create)(const std::string &name,
-		       const cached_filename_info &filename,
-		       drawableObj::implObj *for_drawable,
-		       const screen &screenref,
-		       const defaulttheme &theme,
-		       render_repeat icon_repeat,
-		       const dim_arg &width_arg,
-		       const dim_arg &height_arg);
-
-	icon (*create_pixels)(const std::string &name,
-			      const cached_filename_info &filename,
-			      drawableObj::implObj *for_drawable,
-			      const screen &screenref,
-			      const defaulttheme &theme,
-			      render_repeat icon_repeat,
-			      dim_t w, dim_t h, icon_scale scale);
+	dim_arg_loader *create;
+	dim_t_loader *create_pixels;
 };
 
+static dim_arg_loader create_sxg_icon_from_filename,
+	create_jpg_icon_from_filename,
+	create_gif_icon_from_filename,
+	create_png_icon_from_filename;
+
+static dim_t_loader create_sxg_icon_from_filename_pixels,
+	create_jpg_icon_from_filename_pixels,
+	create_gif_icon_from_filename_pixels,
+	create_png_icon_from_filename_pixels;
+
+static const struct extension_info extensions[]={
+	{".sxg", &create_sxg_icon_from_filename,
+	 &create_sxg_icon_from_filename_pixels},
+	{".jpg", &create_jpg_icon_from_filename,
+	 &create_jpg_icon_from_filename_pixels},
+	{".gif", &create_gif_icon_from_filename,
+	 &create_gif_icon_from_filename_pixels},
+	{".png", &create_png_icon_from_filename,
+	 &create_png_icon_from_filename_pixels},
+};
+
+////////////////////////////////////////////////////////////////////////////
+//
 // The first step is to take the icon's name, and search for it, trying
 // different exensions until we find the icon's file. The resulting filename
 // and type is cached in the extension_cache.
@@ -84,7 +110,7 @@ struct icon_cacheObj::extension_cache_key_t {
 	std::string name;
 	defaulttheme theme;
 
-	inline bool operator==(const extension_cache_key_t &o) const
+	inline bool operator==(const extension_cache_key_t &o) const noexcept
 	{
 		return name==o.name && theme==o.theme;
 	}
@@ -102,8 +128,235 @@ struct icon_cacheObj::extension_cache_key_t_hash
 	};
 };
 
-// Compute a hash of icon sizes given as either dim_args, or dim_t (pixel
-// counts).
+
+// Verify that the given file exists.
+
+static bool search_file(std::string &filename,
+			const defaulttheme &theme)
+{
+	struct stat stat_buf;
+
+	if (stat(filename.c_str(), &stat_buf) == 0)
+		return true;
+
+	if (filename.find('/') == filename.npos)
+	{
+		std::string n=theme->themedir + "/" + filename;
+
+		if (stat(n.c_str(), &stat_buf) == 0)
+		{
+			filename=n;
+			return true;
+		}
+
+		// Search for the icon in the default theme.
+
+		size_t p=theme->themedir.rfind('/');
+
+		if (p != std::string::npos)
+		{
+			n=theme->themedir.substr(0, p) + "/default/"+filename;
+			if (stat(n.c_str(), &stat_buf) == 0)
+			{
+				filename=n;
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+// Figure out the image format of a file by its extension. If no extension
+// is given, try each extension we know about.
+
+static inline auto search_extension(const std::string_view &name,
+				    const defaulttheme &theme)
+{
+	size_t p=name.rfind('/');
+
+	if (p == name.npos)
+		p=0;
+	p=name.find('.', p);
+
+	bool found_extension=false;
+
+	for (const auto &filetype:extensions)
+	{
+		if (p != name.npos)
+		{
+			// Extension exists in the filename. Simply
+			// skip until we find this extension in the extensions
+			// list.
+
+			if (name.substr(p) == filetype.extension)
+			{
+				std::string n{name};
+
+				found_extension=true;
+
+				if (!search_file(n, theme))
+					break;
+
+				return std::tuple{n, &filetype};
+			}
+			continue;
+		}
+
+		// No extension. Append each extension until we find the file.
+		std::string n{name};
+
+		n += filetype.extension;
+
+		if (!search_file(n, theme))
+			continue;
+
+		return std::tuple{n, &filetype};
+	}
+
+	if (p != name.npos && !found_extension)
+		throw EXCEPTION("Unsupported file format: " << name);
+
+	throw EXCEPTION(name << " not found");
+}
+
+static auto search_extension_cached(const screen &s,
+				    const std::string &name,
+				    const defaulttheme &theme)
+{
+	return s->impl->iconcaches->extension_cache->find_or_create
+		({name, theme},
+		 [&]
+		 {
+			 auto [n, filetype]=search_extension(name, theme);
+
+			 return cached_filename_info::create(n, *filetype);
+		 });
+}
+
+////////////////////////////////////////////////////////////////////////////
+//
+// And once the filename is determined, if it's a stock image file, it
+// gets loaded into a pixmap, which gets cached. The pixmap is based on the
+// filename, and pixmap's pictformat.
+//
+// We do not scale jpg/gif/png images, they get loaded in their native size,
+// so this cache needs to be keyed only on the filename, and the pictformat.
+
+struct icon_cacheObj::std_fmt_pixmap_cache_key_t {
+
+	cached_filename_info filename;
+	const_pictformat pixmap_pictformat;
+
+	inline bool operator==(const std_fmt_pixmap_cache_key_t &o)
+		const noexcept
+	{
+		return filename == o.filename &&
+			pixmap_pictformat == o.pixmap_pictformat;
+	}
+};
+
+struct icon_cacheObj::std_fmt_pixmap_cache_key_t_hash
+	: public std::hash<cached_filename_info>,
+	  public std::hash<const_pictformat> {
+
+	size_t operator()(const std_fmt_pixmap_cache_key_t &k) const noexcept
+	{
+		return std::hash<cached_filename_info>::operator()(k.filename) +
+			std::hash<const_pictformat>::operator()
+			(k.pixmap_pictformat);
+	}
+};
+
+
+// Load a cached pixmap from the std_fmt_pixmap_cache, if nothing's cached invoke
+// the load_pixmap() and cache it.
+
+static auto get_cached_pixmap(const cached_filename_info &filename,
+			      drawableObj::implObj *for_drawable,
+			      ref<pixmapObj::implObj> (*load_pixmap)
+			      (const std::string &,
+			       drawableObj::implObj *))
+{
+	return for_drawable->get_screen()->impl->iconcaches->std_fmt_pixmap_cache
+		->find_or_create
+		({filename, for_drawable->drawable_pictformat},
+		 [&]
+		 {
+			 return (*load_pixmap)(filename->filename,
+					       for_drawable);
+		 });
+}
+
+//////////////////////////////////////////////////////////////////////
+//
+// Once a pixmapObj::implObj is loaded with the icon's image, using
+// a particular pictformat, it gets used to construct a pixmap_with_picture
+// with a picture for that pictformat, and a particular render_repeat.
+//
+// This pixmap_with_picture gets cached, based on the pixmapObj::implObj,
+// and render_repeat. The cache key does not need to include the pictformat,
+// since a different pixmapObj::implObj gets created for different pictformats,
+// if needed.
+
+// The next caching layer is a cache of pixmap_with_pictures.
+
+struct icon_cacheObj::pixmap_with_picture_cache_key {
+
+	ref<pixmapObj::implObj> pixmap_impl;
+	render_repeat repeat;
+
+	inline bool operator==(const pixmap_with_picture_cache_key &o)
+		const noexcept
+	{
+		return pixmap_impl == o.pixmap_impl && repeat == o.repeat;
+	}
+};
+
+struct icon_cacheObj::pixmap_with_picture_cache_key_hash
+	: public std::hash<ref<pixmapObj::implObj>> {
+
+	inline size_t operator()(const pixmap_with_picture_cache_key &k)
+		const noexcept
+	{
+		return std::hash<ref<pixmapObj::implObj>>::operator()
+			(k.pixmap_impl) +
+			(size_t)k.repeat;
+	}
+};
+
+
+// Given a pixmapObj::implObj, construct and cache a picture with the given
+// render_repeat.
+
+static pixmap_with_picture
+create_cached_pixmap_with_picture(const screen &screenref,
+				  const ref<pixmapObj::implObj> &pixmap_impl,
+				  render_repeat repeat)
+{
+	return screenref->impl->iconcaches
+		->pixmap_with_picture_cache->find_or_create
+		({pixmap_impl, repeat},
+		 [&]
+		 {
+			 // pixmap_with_picture is a const_ref.
+			 //
+			 // weakunordered_multimap needs to see a ref here.
+			 //
+			 // We use a ref, and simply return a
+			 // pixmap_with_picture.
+			 return refptr_traits<pixmap_with_picture>::ref_t
+				 ::create(pixmap_impl, repeat);
+		 });
+}
+
+///////////////////////////////////////////////////////////////////////////
+//
+// Once a pixmap_with_picture gets cached, the final caching layer is
+// a cache of the resulting icon object.
+
+// Common code to compute a hash for width or height specified as either
+// dim_args or dim_ts, that's used by several caches.
 
 static size_t hash_icon_size(const std::variant<std::tuple<dim_arg, dim_arg>,
 			     std::tuple<dim_t, dim_t>> &size)
@@ -126,145 +379,132 @@ static size_t hash_icon_size(const std::variant<std::tuple<dim_arg, dim_arg>,
 			}}, size);
 }
 
-// And once the filename is determined, if it's a stock image file, it
-// gets loaded into a pixmap, which gets cached. The pixmap is based on the
-// filename, and pixmap's pictformat.
-
-struct icon_cacheObj::pixmap_cache_key_t {
-
-	cached_filename_info filename;
-	const_pictformat pixmap_pictformat;
-
-	inline bool operator==(const pixmap_cache_key_t &o) const
-	{
-		return filename == o.filename &&
-			pixmap_pictformat == o.pixmap_pictformat;
-	}
-};
-
-struct icon_cacheObj::pixmap_cache_key_t_hash
-	: public std::hash<cached_filename_info>,
-	  public std::hash<const_pictformat> {
-
-	size_t operator()(const pixmap_cache_key_t &k) const noexcept
-	{
-		return std::hash<cached_filename_info>::operator()(k.filename) +
-			std::hash<const_pictformat>::operator()
-			(k.pixmap_pictformat);
-	}
-};
+// The icons gets cached based on the icon's pixmap_with_picture, the
+// original icon name that was requested, the requested size of the icon,
+// and the requested size's scaling algorithm.
 
 struct icon_cacheObj::pixmap_icon_cache_key_t {
 	std::string name;
-	ref<pixmapObj::implObj> underlying_pixmap;
+	pixmap_with_picture cached_pixmap_with_picture;
 	std::variant<std::tuple<dim_arg, dim_arg>,
 		     std::tuple<dim_t, dim_t>> requested_size;
-	render_repeat repeat;
 	icon_scale scale;
 
-	bool operator==(const pixmap_icon_cache_key_t &o) const
+	bool operator==(const pixmap_icon_cache_key_t &o) const noexcept
 	{
 		return name == o.name &&
-			underlying_pixmap == o.underlying_pixmap &&
+			cached_pixmap_with_picture
+			== o.cached_pixmap_with_picture &&
 			requested_size == o.requested_size &&
-			repeat == o.repeat &&
 			scale == o.scale;
 	}
 };
 
 struct icon_cacheObj::pixmap_icon_cache_key_t_hash
 	: public std::hash<std::string>,
-	  public std::hash<ref<pixmapObj::implObj>>
+	  public std::hash<pixmap_with_picture>
 {
 	size_t operator()(const pixmap_icon_cache_key_t &k) const noexcept
 	{
 		return std::hash<std::string>::operator()(k.name) +
-			std::hash<ref<pixmapObj::implObj>>
-			::operator()(k.underlying_pixmap) +
+			std::hash<pixmap_with_picture>
+			::operator()(k.cached_pixmap_with_picture) +
 			hash_icon_size(k.requested_size) +
-			(size_t)k.repeat * 16 +
 			(size_t)k.scale;
 	}
 };
 
-// If the filename is an SXG file, the parsed SXG contents, of that SXG flie,
-// are cached.
+// Load the cached icon for the given icon pixmap, and attributes.
+// If it's not cached, we create a new icon and cache it.
+
+template<typename dim_type>
+static icon get_cached_icon(const std::string &name,
+			    const defaulttheme &theme,
+			    const pixmap_with_picture &cached_p_with_p,
+			    const dim_type &width,
+			    const dim_type &height,
+			    icon_scale scale)
+{
+	auto screen_impl=cached_p_with_p->get_screen()->impl;
+
+	return screen_impl->iconcaches->pixmap_icon_cache->find_or_create
+		({name, cached_p_with_p,
+				std::tuple{width, height}, scale},
+			[&]
+			{
+				return ref<themeiconpixmapObj<dim_type>>
+					::create(name,
+						 theme,
+						 width, height, scale,
+						 cached_p_with_p);
+			});
+}
+
+//////////////////////////////////////////////////////////////////////////////
+//
+// SXG icons.
+//
+// If the filename is an SXG file, two caches get involved. The first
+// cache caches the parsedcontents of the SXG file.
 //
 // Note that even though the SXG file is theme based, cached_filename_info's
 // hash key incorporates the defaulttheme already, so we don't need to include
 // it in sxg's cache key.
 
-struct icon_cacheObj::sxg_cache_key_t {
+struct icon_cacheObj::sxg_parser_cache_key_t {
 
-	cached_filename_info filename;
+	cached_filename_info    filename;
 
 	//! Comparison operator
-	inline bool operator==(const sxg_cache_key_t &o) const
+	inline bool operator==(const sxg_parser_cache_key_t &o) const noexcept
 	{
 		return filename == o.filename;
 	}
 
 };
 
-struct icon_cacheObj::sxg_cache_key_t_hash
+struct icon_cacheObj::sxg_parser_cache_key_t_hash
 	: public std::hash<cached_filename_info> {
 
-	inline size_t operator()(const sxg_cache_key_t &k) const noexcept
+	inline size_t operator()(const sxg_parser_cache_key_t &k) const noexcept
 	{
 		return std::hash<cached_filename_info>::operator()(k.filename);
 	};
 };
 
-// SXG images are cached by the following parameters:
+// The second cache is the cache of the rendered pixmapObj::implObj.
+// The cache is keyed by the cached parser, the pictformat, and the dimensions
+// of the scaled SXG image.
 
-struct icon_cacheObj::sxg_image_cache_key {
+struct icon_cacheObj::sxg_pixmap_cache_key {
 	sxg_parser          sxg_image;
 	const_pictformat    drawable_pictformat;
-	render_repeat       repeat;
 	dim_t               width;
 	dim_t               height;
 
-	inline bool operator==(const sxg_image_cache_key &o) const
+	inline bool operator==(const sxg_pixmap_cache_key &o) const noexcept
 	{
 		return sxg_image == o.sxg_image &&
 			drawable_pictformat == o.drawable_pictformat &&
-			repeat == o.repeat &&
 			width == o.width &&
 			height == o.height;
 	}
 };
 
-struct icon_cacheObj::sxg_image_cache_key_hash
+struct icon_cacheObj::sxg_pixmap_cache_key_hash
 	: public std::hash<const_pictformat>,
 	  public std::hash<sxg_parser>,
 	  public std::hash<dim_t> {
 
-	inline size_t operator()(const sxg_image_cache_key &k) const noexcept
+	inline size_t operator()(const sxg_pixmap_cache_key &k) const noexcept
 	{
 		return (std::hash<const_pictformat>::operator()
 			(k.drawable_pictformat) +
 			std::hash<sxg_parser>::operator()(k.sxg_image))
-			^ (size_t)k.repeat
 			^ (std::hash<dim_t>::operator()(k.width) << 16)
 			^ (std::hash<dim_t>::operator()(k.height) << 4);
 	}
 };
-
-//////////////////////////////////////////////////////////////////////////
-
-icon_cacheObj::icon_cacheObj()
-	: extension_cache(extension_cache_t::create()),
-	  pixmap_cache(pixmap_cache_t::create()),
-	  sxg_parser_cache{sxg_parser_cache_t::create()},
-	  sxg_image_cache(sxg_image_cache_t::create()),
-	  pixmap_icon_cache(pixmap_icon_cache_t::create())
-{
-}
-
-icon_cacheObj::~icon_cacheObj()=default;
-
-///////////////////////////////////////////////////////////////////////
-
 
 //! Here's a parsed SXG image, the drawable it's for, and its dimensions.
 
@@ -273,7 +513,6 @@ icon_cacheObj::~icon_cacheObj()=default;
 
 static auto get_cached_sxg_image(const sxg_parser &sxg,
 				 drawableObj::implObj *drawable_impl,
-				 render_repeat repeat,
 				 dim_t w,
 				 dim_t h,
 				 dim_t preadjust_w,
@@ -311,8 +550,8 @@ static auto get_cached_sxg_image(const sxg_parser &sxg,
 	// At this point: creating a (preadjust_w, preadjust_h) picture.
 
 	return sxg->screenref->impl->iconcaches
-		->sxg_image_cache->find_or_create
-		({sxg, drawable_impl->drawable_pictformat, repeat,
+		->sxg_pixmap_cache->find_or_create
+		({sxg, drawable_impl->drawable_pictformat,
 				preadjust_w, preadjust_h},
 		 [&]
 		 {
@@ -382,7 +621,6 @@ static auto get_cached_sxg_image(const sxg_parser &sxg,
 static auto create_sxg_image(const std::string &name,
 			     drawableObj::implObj *drawable_impl,
 			     const sxg_parser &sxg,
-			     render_repeat repeat,
 			     const dim_arg &width_arg,
 			     const dim_arg &height_arg)
 {
@@ -408,7 +646,7 @@ static auto create_sxg_image(const std::string &name,
 			h=sxg->height_for_width(w, icon_scale::nearest);
 	}
 
-	return get_cached_sxg_image(sxg, drawable_impl, repeat, w, h,
+	return get_cached_sxg_image(sxg, drawable_impl, w, h,
 				    w, h, std::optional<rgb>());
 }
 
@@ -416,7 +654,6 @@ static auto create_sxg_image(const std::string &name,
 			     drawableObj::implObj
 			     *drawable_impl,
 			     const sxg_parser &sxg,
-			     render_repeat repeat,
 			     dim_t w, dim_t h,
 			     icon_scale scale)
 {
@@ -446,7 +683,7 @@ static auto create_sxg_image(const std::string &name,
 			orig_h=h=sxg->height_for_width(w, icon_scale::nearest);
 	}
 
-	return get_cached_sxg_image(sxg, drawable_impl, repeat,
+	return get_cached_sxg_image(sxg, drawable_impl,
 				    w, h,
 				    orig_w, orig_h,
 				    background_color);
@@ -454,43 +691,12 @@ static auto create_sxg_image(const std::string &name,
 
 ////////////////////////////////////////////////////////////////////////////////
 
-// Load the cached icon for the given icon pixmap, and attributes.
-// If it's not cached, we create a new icon and cache it.
-
-template<typename dim_type>
-static icon get_cached_image(const std::string &name,
-			     const ref<pixmapObj::implObj> &underlying_pixmap,
-			     const dim_type &width,
-			     const dim_type &height,
-			     render_repeat repeat,
-			     icon_scale scale)
-{
-	auto screen_impl=underlying_pixmap->get_screen()->impl;
-
-	return screen_impl->iconcaches->pixmap_icon_cache->find_or_create
-		({name, underlying_pixmap,
-				std::tuple{width, height}, repeat, scale},
-			[&]
-			{
-				auto pixmap=pixmap_with_picture
-					::create(underlying_pixmap, repeat);
-
-				return ref<themeiconpixmapObj<dim_type>>
-					::create(name,
-						 screen_impl->current_theme
-						 .get(),
-						 width, height, scale,
-						 pixmap);
-			});
-}
-
-static icon
+static ref<pixmapObj::implObj>
 create_sxg_icon_from_filename(const std::string &name,
 			      const cached_filename_info &filename,
 			      drawableObj::implObj *for_drawable,
 			      const screen &screenref,
 			      const defaulttheme &theme,
-			      render_repeat icon_repeat,
 			      const dim_arg &width_arg,
 			      const dim_arg &height_arg)
 {
@@ -503,21 +709,16 @@ create_sxg_icon_from_filename(const std::string &name,
 						   theme);
 		 });
 
-        auto pixmap_impl=create_sxg_image(name, for_drawable, sxg, icon_repeat,
-					  width_arg, height_arg);
-
-	return get_cached_image(name, pixmap_impl,
-				width_arg, height_arg, icon_repeat,
-				icon_scale::nearest);
+        return create_sxg_image(name, for_drawable, sxg,
+				width_arg, height_arg);
 }
 
-static icon
+static ref<pixmapObj::implObj>
 create_sxg_icon_from_filename_pixels(const std::string &name,
 				     const cached_filename_info &filename,
 				     drawableObj::implObj *for_drawable,
 				     const screen &screenref,
 				     const defaulttheme &theme,
-				     render_repeat icon_repeat,
 				     dim_t w, dim_t h,
 				     icon_scale scale)
 {
@@ -530,12 +731,8 @@ create_sxg_icon_from_filename_pixels(const std::string &name,
 						   theme);
 		 });
 
-        auto pixmap_impl=create_sxg_image(name, for_drawable, sxg, icon_repeat,
-					  w, h,
-					  scale);
-
-	return get_cached_image(name, pixmap_impl,
-				w, h, icon_repeat,
+        return create_sxg_image(name, for_drawable, sxg,
+				w, h,
 				scale);
 }
 
@@ -913,244 +1110,88 @@ create_pixmap_from_png(const std::string &filename,
 	return pixmap->impl;
 }
 
-// Load a cached pixmap from the pixmap_cache, if nothing's cached invoke
-// the load_pixmap() and cache it.
-
-static auto get_cached_pixmap(const cached_filename_info &filename,
-			      drawableObj::implObj *for_drawable,
-			      ref<pixmapObj::implObj> (*load_pixmap)
-			      (const std::string &,
-			       drawableObj::implObj *))
-{
-	return for_drawable->get_screen()->impl->iconcaches->pixmap_cache
-		->find_or_create
-		({filename, for_drawable->drawable_pictformat},
-		 [&]
-		 {
-			 return (*load_pixmap)(filename->filename,
-					       for_drawable);
-		 });
-}
-
 // Load a jpg into an icon object.
 
-static icon
+static ref<pixmapObj::implObj>
 create_jpg_icon_from_filename_pixels(const std::string &name,
 				     const cached_filename_info &filename,
 				     drawableObj::implObj *for_drawable,
 				     const screen &screenref,
 				     const defaulttheme &theme,
-				     render_repeat icon_repeat,
 				     dim_t w, dim_t h,
 				     icon_scale scale)
 {
-	return get_cached_image(name,
-				get_cached_pixmap(filename, for_drawable,
-						  create_pixmap_from_jpg),
-				w, h, icon_repeat, scale);
+	return get_cached_pixmap(filename, for_drawable,
+				 create_pixmap_from_jpg);
 }
 
-static icon
+static ref<pixmapObj::implObj>
 create_jpg_icon_from_filename(const std::string &name,
 			      const cached_filename_info &filename,
 			      drawableObj::implObj *for_drawable,
 			      const screen &screenref,
 			      const defaulttheme &theme,
-			      render_repeat icon_repeat,
 			      const dim_arg &width_arg,
 			      const dim_arg &height_arg)
 {
-	return get_cached_image(name,
-				get_cached_pixmap(filename, for_drawable,
-						  create_pixmap_from_jpg),
-				width_arg, height_arg, icon_repeat,
-				icon_scale::nearest);
+	return get_cached_pixmap(filename, for_drawable,
+				 create_pixmap_from_jpg);
 }
 
 // Load a gif into an icon object.
 
-static icon
+static ref<pixmapObj::implObj>
 create_gif_icon_from_filename_pixels(const std::string &name,
 				     const cached_filename_info &filename,
 				     drawableObj::implObj *for_drawable,
 				     const screen &screenref,
 				     const defaulttheme &theme,
-				     render_repeat icon_repeat,
 				     dim_t w, dim_t h,
 				     icon_scale scale)
 {
-	return get_cached_image(name,
-				get_cached_pixmap(filename, for_drawable,
-						  create_pixmap_from_gif),
-				w, h, icon_repeat, scale);
+	return get_cached_pixmap(filename, for_drawable,
+				 create_pixmap_from_gif);
 }
 
-static icon
+static ref<pixmapObj::implObj>
 create_gif_icon_from_filename(const std::string &name,
 			      const cached_filename_info &filename,
 			      drawableObj::implObj *for_drawable,
 			      const screen &screenref,
 			      const defaulttheme &theme,
-			      render_repeat icon_repeat,
 			      const dim_arg &width_arg,
 			      const dim_arg &height_arg)
 {
-	return get_cached_image(name,
-				get_cached_pixmap(filename, for_drawable,
-						  create_pixmap_from_gif),
-				width_arg, height_arg, icon_repeat,
-				icon_scale::nearest);
+	return get_cached_pixmap(filename, for_drawable,
+				 create_pixmap_from_gif);
 }
 
 // Load a png into an icon object.
 
-static icon
+static ref<pixmapObj::implObj>
 create_png_icon_from_filename_pixels(const std::string &name,
 				     const cached_filename_info &filename,
 				     drawableObj::implObj *for_drawable,
 				     const screen &screenref,
 				     const defaulttheme &theme,
-				     render_repeat icon_repeat,
 				     dim_t w, dim_t h,
 				     icon_scale scale)
 {
-	return get_cached_image(name,
-				get_cached_pixmap(filename, for_drawable,
-						  create_pixmap_from_png),
-				w, h, icon_repeat, scale);
+	return get_cached_pixmap(filename, for_drawable,
+				 create_pixmap_from_png);
 }
 
-static icon
+static ref<pixmapObj::implObj>
 create_png_icon_from_filename(const std::string &name,
 			      const cached_filename_info &filename,
 			      drawableObj::implObj *for_drawable,
 			      const screen &screenref,
 			      const defaulttheme &theme,
-			      render_repeat icon_repeat,
 			      const dim_arg &width_arg,
 			      const dim_arg &height_arg)
 {
-	return get_cached_image(name,
-				get_cached_pixmap(filename, for_drawable,
-						  create_pixmap_from_png),
-				width_arg, height_arg, icon_repeat,
-				icon_scale::nearest);
-}
-
-static const struct extension_info extensions[]={
-	{".sxg", &create_sxg_icon_from_filename,
-	 &create_sxg_icon_from_filename_pixels},
-	{".jpg", &create_jpg_icon_from_filename,
-	 &create_jpg_icon_from_filename_pixels},
-	{".gif", &create_gif_icon_from_filename,
-	 &create_gif_icon_from_filename_pixels},
-	{".png", &create_png_icon_from_filename,
-	 &create_png_icon_from_filename_pixels},
-};
-
-// Verify that the given file exists.
-
-static bool search_file(std::string &filename,
-			const defaulttheme &theme)
-{
-	struct stat stat_buf;
-
-	if (stat(filename.c_str(), &stat_buf) == 0)
-		return true;
-
-	if (filename.find('/') == filename.npos)
-	{
-		std::string n=theme->themedir + "/" + filename;
-
-		if (stat(n.c_str(), &stat_buf) == 0)
-		{
-			filename=n;
-			return true;
-		}
-
-		// Search for the icon in the default theme.
-
-		size_t p=theme->themedir.rfind('/');
-
-		if (p != std::string::npos)
-		{
-			n=theme->themedir.substr(0, p) + "/default/"+filename;
-			if (stat(n.c_str(), &stat_buf) == 0)
-			{
-				filename=n;
-				return true;
-			}
-		}
-	}
-
-	return false;
-}
-
-// Figure out the image format of a file by its extension. If no extension
-// is given, try each extension we know about.
-
-static inline auto search_extension(const std::string_view &name,
-				    const defaulttheme &theme)
-{
-	size_t p=name.rfind('/');
-
-	if (p == name.npos)
-		p=0;
-	p=name.find('.', p);
-
-	bool found_extension=false;
-
-	for (const auto &filetype:extensions)
-	{
-		if (p != name.npos)
-		{
-			// Extension exists in the filename. Simply
-			// skip until we find this extension in the extensions
-			// list.
-
-			if (name.substr(p) == filetype.extension)
-			{
-				std::string n{name};
-
-				found_extension=true;
-
-				if (!search_file(n, theme))
-					break;
-
-				return std::tuple{n, &filetype};
-			}
-			continue;
-		}
-
-		// No extension. Append each extension until we find the file.
-		std::string n{name};
-
-		n += filetype.extension;
-
-		if (!search_file(n, theme))
-			continue;
-
-		return std::tuple{n, &filetype};
-	}
-
-	if (p != name.npos && !found_extension)
-		throw EXCEPTION("Unsupported file format: " << name);
-
-	throw EXCEPTION(name << " not found");
-}
-
-static auto search_extension_cached(const screen &s,
-				    const std::string &name,
-				    const defaulttheme &theme)
-{
-	return s->impl->iconcaches->extension_cache->find_or_create
-		({name, theme},
-		 [&]
-		 {
-			 auto [n, filetype]=search_extension(name, theme);
-
-			 return cached_filename_info::create(n, *filetype);
-		 });
+	return get_cached_pixmap(filename, for_drawable,
+				 create_pixmap_from_png);
 }
 
 std::vector<icon> drawableObj::implObj
@@ -1178,10 +1219,17 @@ icon drawableObj::implObj
 
 	auto cached_filename=search_extension_cached(screen, name, theme);
 
-	return (*cached_filename->info.create)
+	auto pixmap_impl=(*cached_filename->info.create)
 		(name, cached_filename, this, screen, theme,
-		 icon_repeat,
 		 width_arg, height_arg);
+
+	auto cached_pixmap_with_picture=
+		create_cached_pixmap_with_picture(screen, pixmap_impl,
+						  icon_repeat);
+
+	return get_cached_icon(name, theme, cached_pixmap_with_picture,
+			       width_arg, height_arg,
+			       icon_scale::nearest);
 }
 
 icon drawableObj::implObj
@@ -1194,9 +1242,32 @@ icon drawableObj::implObj
 
 	auto cached_filename=search_extension_cached(screen, name, theme);
 
-	return (*cached_filename->info.create_pixels)
-		(name, cached_filename,this, screen, theme,
-		 icon_repeat, w, h, scale);
+	auto pixmap_impl=(*cached_filename->info.create_pixels)
+		(name, cached_filename, this, screen, theme,
+		 w, h, scale);
+	auto cached_pixmap_with_picture=
+		create_cached_pixmap_with_picture(screen, pixmap_impl,
+						  icon_repeat);
+
+	return get_cached_icon(name, theme, cached_pixmap_with_picture,
+			       w, h,
+			       scale);
+
 }
+//////////////////////////////////////////////////////////////////////////
+
+icon_cacheObj::icon_cacheObj()
+	: extension_cache{extension_cache_t::create()},
+	  std_fmt_pixmap_cache{std_fmt_pixmap_cache_t::create()},
+	  sxg_parser_cache{sxg_parser_cache_t::create()},
+	  sxg_pixmap_cache{sxg_pixmap_cache_t::create()},
+	  pixmap_with_picture_cache{pixmap_with_picture_cache_t::create()},
+	  pixmap_icon_cache{pixmap_icon_cache_t::create()}
+{
+}
+
+icon_cacheObj::~icon_cacheObj()=default;
+
+///////////////////////////////////////////////////////////////////////
 
 LIBCXXW_NAMESPACE_END

@@ -22,8 +22,16 @@
 #include "x/w/canvas.H"
 
 #include <iostream>
+#include <unordered_map>
+
+static std::unordered_map<std::string, size_t> filenames_loaded;
+
+#define SXG_PARSER_CONSTRUCTOR_TEST() do {\
+		++filenames_loaded[filename];				\
+	} while (0)
 
 #include "editor_impl.H"
+#include "sxg/sxg_parser.C"
 
 static LIBCXX_NAMESPACE::w::editorObj::implObj *editor_impl_constructed;
 static LIBCXX_NAMESPACE::w::editorObj::implObj *editor_impl_with_focus;
@@ -341,13 +349,21 @@ void testpage(const testpage_options &options)
 		lock.wait_for(std::chrono::seconds(2), [&] { return *lock; });
 		if (editor_impl_with_focus != editor_impl_address)
 			throw EXCEPTION("Focus switch failed");
-		return;
+	}
+	else
+	{
+		LIBCXX_NAMESPACE::mpcobj<bool>::lock lock{close_flag->flag};
+
+		lock.wait([&] { return *lock; });
 	}
 
-
-	LIBCXX_NAMESPACE::mpcobj<bool>::lock lock{close_flag->flag};
-
-	lock.wait([&] { return *lock; });
+	for (const auto &loaded:filenames_loaded)
+	{
+		std::cout << loaded.first << " was loaded." << std::endl;
+		if (loaded.second != 1)
+			throw EXCEPTION(loaded.first << " was loaded " <<
+					loaded.second << " times");
+	}
 }
 
 int main(int argc, char **argv)
