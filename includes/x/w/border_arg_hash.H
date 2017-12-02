@@ -15,26 +15,11 @@ namespace std {
 	//! Specialization of \c std::hash for \c INSERT_LIBX_NAMESPACE::w::border_arg
 
 	template<>
-	struct hash<LIBCXX_NAMESPACE::w::border_arg> {
+	struct hash<LIBCXX_NAMESPACE::w::border_arg>
+		: public hash<LIBCXX_NAMESPACE::w::border_infomm> {
 
 		size_t operator()(const LIBCXX_NAMESPACE::w::border_arg &a)
-			const
-		{
-			return visit(LIBCXX_NAMESPACE::visitor{
-					[]
-					(const LIBCXX_NAMESPACE::w
-							::border_infomm &m)
-					{
-						return hash<LIBCXX_NAMESPACE::w
-							    ::border_infomm>
-							()(m);
-					},
-					[]
-					(const string &s)
-					{
-						return hash<string>()(s);
-					}}, a);
-		}
+			const noexcept;
 	};
 }
 #endif

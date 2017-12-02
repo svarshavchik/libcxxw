@@ -350,6 +350,7 @@ libcxxw_la_SOURCES=\
 	gridtemplate.C			            \
 	gridtemplate.H				    \
 	gridtemplatefwd.H			    \
+	hash.C					    \
 	hotspot.C				    \
 	hotspot.H				    \
 	hotspot_bgcolor.C			    \
