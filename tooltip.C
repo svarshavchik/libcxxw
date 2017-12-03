@@ -69,6 +69,16 @@ class LIBCXX_HIDDEN tooltip_handlerObj : public popupObj::handlerObj {
 		return "tooltip";
 	}
 
+
+	//! Override default_wm_class_instance()
+
+	//! Returns "tooltip".
+
+	const char *default_wm_class_instance() const
+	{
+		return "tooltip";
+	}
+
 	ref<obj> get_opened_mcguffin(IN_THREAD_ONLY) override
 	{
 		return ref<obj>::create(); // Dummy stub.
@@ -96,6 +106,7 @@ tooltip_handlerObj::tooltip_handlerObj(IN_THREAD_ONLY,
 	pointer_y(pointer_y),
 	grab(grab)
 {
+	wm_class_resource(IN_THREAD)=parent->wm_class_resource(IN_THREAD);
 }
 
 tooltip_handlerObj::~tooltip_handlerObj()=default;

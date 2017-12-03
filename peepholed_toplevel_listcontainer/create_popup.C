@@ -77,6 +77,7 @@ do_create_peepholed_toplevel_listcontainer_popup
 	auto popup_handler=ref<popup_attachedto_handlerObj>
 		::create(std::get<0>(popup_type),
 			 std::get<1>(popup_type),
+			 args.popup_wm_class_instance,
 			 parent_handler,
 			 args.list_style.background_color,
 			 attachedto_info,

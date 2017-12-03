@@ -32,6 +32,11 @@ class LIBCXX_HIDDEN main_windowObj::handlerObj :
 	//! Whether an icon was set.
 	bool wm_icon_set_thread_only=false;
 
+	//! Override default_wm_class_instance()
+
+	//! This is a "main".
+	const char *default_wm_class_instance() const override;
+
  public:
 
 	THREAD_DATA_ONLY(on_delete_callback);

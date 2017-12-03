@@ -33,6 +33,7 @@
 #include <x/strtok.H>
 #include <x/chrcasecmp.H>
 #include <x/weakcapture.H>
+#include <x/pidinfo.H>
 #include <courier-unicode.h>
 
 LIBCXXW_NAMESPACE_START
@@ -238,6 +239,45 @@ void generic_windowObj::handlerObj
 				     XCB_GRAB_MODE_SYNC,
 				     XCB_GRAB_MODE_SYNC);
 		}
+
+		// Set WM_CLASS before mapping the window.
+
+		if (wm_class_resource(IN_THREAD).empty())
+			wm_class_resource(IN_THREAD)=
+				default_wm_class_resource(IN_THREAD);
+
+		if (wm_class_instance(IN_THREAD).empty())
+			wm_class_instance(IN_THREAD)=
+				default_wm_class_instance();
+
+		{
+			std::vector<char> instance_resource;
+
+			instance_resource.reserve(wm_class_instance(IN_THREAD)
+						  .size()+
+						  wm_class_resource(IN_THREAD)
+						  .size()+2);
+
+			instance_resource.insert(instance_resource.end(),
+						 wm_class_instance(IN_THREAD)
+						 .begin(),
+						 wm_class_instance(IN_THREAD)
+						 .end());
+			instance_resource.push_back(0);
+
+			instance_resource.insert(instance_resource.end(),
+						 wm_class_resource(IN_THREAD)
+						 .begin(),
+						 wm_class_resource(IN_THREAD)
+						 .end());
+			instance_resource.push_back(0);
+
+			xcb_icccm_set_wm_class(IN_THREAD->info->conn,
+					       id(),
+					       instance_resource.size(),
+					       &*instance_resource.begin());
+		}
+
 		xcb_map_window(IN_THREAD->info->conn, id());
 		visibility_info.do_not_redraw=true;
 
@@ -280,6 +320,18 @@ void generic_windowObj::handlerObj
 
 	elementObj::implObj::set_inherited_visibility(IN_THREAD,
 						      visibility_info);
+}
+
+std::string
+generic_windowObj::handlerObj::default_wm_class_resource(IN_THREAD_ONLY)
+{
+	auto n=exename();
+
+	size_t p=n.rfind('/');
+
+	if (p != n.npos)
+		n=n.substr(++p);
+	return n;
 }
 
 void generic_windowObj::handlerObj::mapped(IN_THREAD_ONLY)

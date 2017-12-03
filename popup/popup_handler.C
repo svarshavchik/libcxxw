@@ -24,8 +24,7 @@ popupObj::handlerObj::handlerObj(IN_THREAD_ONLY,
 				 &parent,
 				 const color_arg &background_color,
 				 size_t nesting_level)
-	: generic_windowObj::handlerObj
-	::resourcesObj(IN_THREAD, parent->get_screen(),
+	: superclass_t(IN_THREAD, parent->get_screen(),
 		       background_color,
 		       parent->handler_data,
 		       nesting_level),
@@ -188,6 +187,22 @@ void popupObj::handlerObj::set_inherited_visibility(IN_THREAD_ONLY,
 		closing_popup(IN_THREAD);
 		unset_keyboard_focus(IN_THREAD);
 	}
+}
+
+std::string popupObj::handlerObj::default_wm_class_resource(IN_THREAD_ONLY)
+{
+	auto p=popup_parent(IN_THREAD).getptr();
+
+	if (p)
+	{
+		auto &parent=*p;
+
+		if (parent.wm_class_resource(IN_THREAD).empty())
+			return parent.default_wm_class_resource(IN_THREAD);
+
+		return parent.wm_class_resource(IN_THREAD);
+	}
+	return superclass_t::default_wm_class_resource(IN_THREAD);
 }
 
 ptr<generic_windowObj::handlerObj>

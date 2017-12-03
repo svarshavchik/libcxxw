@@ -365,6 +365,8 @@ void testlistlayoutmanager(const options &opts)
 			 });
 
 	main_window->set_window_title("List layout manager");
+	main_window->set_window_class("main",
+				      "listlayoutmanager@examples.w.libcxx.com");
 
 	guard(main_window->connection_mcguffin());
 

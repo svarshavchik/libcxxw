@@ -237,6 +237,8 @@ void create_combobox(const options &opts)
 	main_window->set_window_title(opts.editable->value ?
 				      "Editable combo-box"
 				      : "Standard combo-box");
+	main_window->set_window_class("main",
+				      "combobox@examples.w.libcxx.com");
 
 	guard(main_window->connection_mcguffin());
 

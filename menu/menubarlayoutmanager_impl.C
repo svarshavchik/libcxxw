@@ -88,6 +88,7 @@ menubarlayoutmanagerObj::implObj
 	return create_peepholed_toplevel_listcontainer_popup
 		({
 			e, "dropdown_menu,popup_menu",
+				"menu",
 				"menu_popup_border",
 				0,
 				attached_to_how,

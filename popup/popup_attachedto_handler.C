@@ -13,6 +13,7 @@ LIBCXXW_NAMESPACE_START
 popup_attachedto_handlerObj
 ::popup_attachedto_handlerObj(opened_popup_t opened_popup,
 			      closed_popup_t closed_popup,
+			      const char *wm_class_instance,
 			      const ref<generic_windowObj::handlerObj> &parent,
 			      const color_arg &background_color,
 			      const popup_attachedto_info &attachedto_info,
@@ -21,11 +22,17 @@ popup_attachedto_handlerObj
 			       nesting_level),
 	attachedto_info(attachedto_info),
 	opened_popup(opened_popup),
-	closed_popup(closed_popup)
+	closed_popup(closed_popup),
+	wm_class_instance(wm_class_instance)
 {
 }
 
 popup_attachedto_handlerObj::~popup_attachedto_handlerObj()=default;
+
+const char *popup_attachedto_handlerObj::default_wm_class_instance() const
+{
+	return wm_class_instance;
+}
 
 void popup_attachedto_handlerObj
 ::update_attachedto_element_position(IN_THREAD_ONLY,

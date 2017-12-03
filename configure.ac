@@ -7,6 +7,7 @@ AC_CONFIG_SRCDIR([connection.C])
 AC_CONFIG_HEADERS([libcxxw_config.h])
 AM_INIT_AUTOMAKE([dist-bzip2 foreign -Wno-portability])
 AM_GNU_GETTEXT([external])
+AM_SILENT_RULES([yes])
 
 LT_INIT
 # Checks for programs.

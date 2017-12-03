@@ -26,6 +26,9 @@ LIBCXXW_NAMESPACE_START
 class LIBCXX_HIDDEN popupObj::handlerObj :
 	public generic_windowObj::handlerObj::resourcesObj {
 
+	//! Alias
+	typedef generic_windowObj::handlerObj::resourcesObj superclass_t;
+
 public:
 	handlerObj(IN_THREAD_ONLY,
 		   const ref<generic_windowObj::handlerObj> &parent,
@@ -113,9 +116,15 @@ public:
 	//! The pointer is grabbed while the popup is open.
 	ptr<obj> current_grab;
 
-	//! The parent window, which is used for the pointer trab.
+	//! The parent window, which is used for the pointer grab.
 
 	weakptr<ptr<generic_windowObj::handlerObj>> popup_parent_thread_only;
+
+	//! Override default_wm_class_resource().
+
+	//! Look to the popup parent's.
+
+	std::string default_wm_class_resource(IN_THREAD_ONLY) override;
 
 	//! Return the popup's parent main window.
 

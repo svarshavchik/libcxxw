@@ -76,11 +76,29 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	coord_t root_x_thread_only; //!< x coordinate on the root window
 	coord_t root_y_thread_only; //!< y coordinate on the root window
 
+	//! What we will put into WM_CLASS
+	std::string wm_class_instance_thread_only;
+
+	//! What we will put into WM_CLASS
+	std::string wm_class_resource_thread_only;
+
+	//! The default value for the instance
+	virtual const char *default_wm_class_instance() const=0;
+
  public:
+
+	//! The default value for the resource.
+
+	//! The default implementation grabs exename.
+
+	virtual std::string default_wm_class_resource(IN_THREAD_ONLY);
+
 	class resourcesObj;
 
 	THREAD_DATA_ONLY(root_x);
 	THREAD_DATA_ONLY(root_y);
+	THREAD_DATA_ONLY(wm_class_instance);
+	THREAD_DATA_ONLY(wm_class_resource);
 
 	//! Current position and dimensions
 

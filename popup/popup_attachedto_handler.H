@@ -41,11 +41,22 @@ class LIBCXX_HIDDEN popup_attachedto_handlerObj : public popupObj::handlerObj {
 	//! Which shared_handler_dataObj method we report our visibility to.
 
 	const closed_popup_t closed_popup;
+
+	//! What WM_CLASS instance this is
+
+	const char * const wm_class_instance;
+
+	//! Override default_wm_class_instance()
+
+	//! Returns wm_class_instance.
+	const char *default_wm_class_instance() const override;
+
  public:
 	//! Constructor
 	popup_attachedto_handlerObj
 		(opened_popup_t opened_popup,
 		 closed_popup_t closed_popup,
+		 const char *wm_class_instance,
 		 const ref<generic_windowObj::handlerObj> &parent,
 		 const color_arg &background_color,
 		 const popup_attachedto_info &attachedto_info,

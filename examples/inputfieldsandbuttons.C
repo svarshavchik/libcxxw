@@ -276,7 +276,8 @@ void inputfieldsandbuttons()
 	guard(main_window->connection_mcguffin());
 
 	main_window->set_window_title("Enter a message");
-
+	main_window->set_window_class("main",
+				      "inputfieldsandbuttons@examples.w.libcxx.com");
 	main_window->on_delete
 		([close_flag]
 		 (const x::w::busy &ignore)

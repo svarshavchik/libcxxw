@@ -448,6 +448,7 @@ void testmenu()
 			 });
 
 	main_window->set_window_title("Hello world!");
+	main_window->set_window_class("main", "testmenu@examples.w.libcxx.com");
 
 	guard(main_window->connection_mcguffin());
 

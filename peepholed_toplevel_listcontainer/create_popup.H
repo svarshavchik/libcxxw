@@ -96,6 +96,9 @@ struct LIBCXX_HIDDEN create_peepholed_toplevel_listcontainer_popup_args {
 	//! The popup's window type.
 	const char *popup_window_type;
 
+	//! The popup's window class instance.
+	const char *popup_wm_class_instance;
+
 	//! The popup's border.
 	const char *popup_border;
 

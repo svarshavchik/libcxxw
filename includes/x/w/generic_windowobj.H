@@ -50,6 +50,10 @@ public:
 	//! Set the window's title
 	void set_window_title(const std::u32string_view &);
 
+	//! Set the window's class
+	void set_window_class(const std::string_view &instance,
+			      const std::string_view &resource);
+
 	//! Invoke this lambda if the server disconnects unexpectedly.
 
 	//! \see connection

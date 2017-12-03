@@ -22,6 +22,11 @@ dialogObj::handlerObj::handlerObj(IN_THREAD_ONLY,
 
 dialogObj::handlerObj::~handlerObj()=default;
 
+const char *dialogObj::handlerObj::default_wm_class_instance() const
+{
+	return "dialog";
+}
+
 bool dialogObj::handlerObj::handle_our_own_placement()
 {
 	return !get_screen()->supported("_NET_WM_FULL_PLACEMENT");
@@ -113,6 +118,14 @@ xcb_size_hints_t dialogObj::handlerObj::compute_size_hints(IN_THREAD_ONLY)
 		hints.flags |= XCB_ICCCM_SIZE_HINT_P_POSITION;
 
 	return hints;
+}
+
+std::string dialogObj::handlerObj::default_wm_class_resource(IN_THREAD_ONLY)
+{
+	if (parent_handler->wm_class_resource(IN_THREAD).empty())
+		return parent_handler->default_wm_class_resource(IN_THREAD);
+
+	return parent_handler->wm_class_resource(IN_THREAD);
 }
 
 LIBCXXW_NAMESPACE_END

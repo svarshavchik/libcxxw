@@ -341,6 +341,8 @@ void gridlayoutmanager()
 	guard(main_window->connection_mcguffin());
 
 	main_window->set_window_title("Grid Layout Manager");
+	main_window->set_window_class("main",
+				      "gridlayoutmanager@examples.w.libcxx.com");
 
 	auto close_flag=close_flag_ref::create();
 

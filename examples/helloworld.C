@@ -135,6 +135,13 @@ void testlabel()
 	// Set our title.
 	main_window->set_window_title("Hello world!");
 
+	// Set the window manager class instance and resource identifiers.
+	// This sets the internal WM_CLASS window property that some window
+	// managers use for window-specific settings.
+
+	main_window->set_window_class("main",
+				      "helloworld@examples.w.libcxx.com");
+
 	// Install a callback lambda that the connection thread invokes when
 	// it gets a "close window" message from the display server.
 	main_window->on_delete

@@ -276,6 +276,7 @@ focusable_container new_custom_comboboxlayoutmanager
 		({
 			ref<elementObj::implObj>(&parent->get_element_impl()),
 				"combo,popup_menu,dropdown_menu",
+				"combobox",
 				"combobox_border",
 
 				// We're about to create the combobox container,

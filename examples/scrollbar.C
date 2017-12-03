@@ -114,6 +114,8 @@ public:
 					   true);
 
 		d->dialog_window->set_window_title("Error");
+		main_window->set_window_class("main",
+					      "scrollbar@examples.w.libcxx.com");
 		d->dialog_window->show_all();
 	}
 

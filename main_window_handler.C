@@ -49,6 +49,11 @@ main_windowObj::handlerObj::handlerObj(IN_THREAD_ONLY,
 
 main_windowObj::handlerObj::~handlerObj()=default;
 
+const char *main_windowObj::handlerObj ::default_wm_class_instance() const
+{
+	return "main";
+}
+
 void main_windowObj::handlerObj
 ::client_message_event(IN_THREAD_ONLY,
 		       const xcb_client_message_event_t *event)

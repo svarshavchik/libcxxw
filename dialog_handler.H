@@ -20,6 +20,11 @@ class LIBCXX_HIDDEN dialogObj::handlerObj : public main_windowObj::handlerObj {
 
 	ptr<obj> acquired_busy_mcguffin_thread_only;
 
+	//! Override default_wm_class_instance()
+
+	//! This is a "dialog".
+	const char *default_wm_class_instance() const override;
+
  public:
 	THREAD_DATA_ONLY(acquired_busy_mcguffin);
 
@@ -53,6 +58,12 @@ class LIBCXX_HIDDEN dialogObj::handlerObj : public main_windowObj::handlerObj {
 	//! hint (and set_inherited_visibility() will calculate what it is).
 
 	xcb_size_hints_t compute_size_hints(IN_THREAD_ONLY) override;
+
+	//! Override default_wm_class_resource().
+
+	//! Use the same one as the parent, by default.
+
+	std::string default_wm_class_resource(IN_THREAD_ONLY) override;
 
  private:
 

@@ -352,6 +352,8 @@ void testbook()
 					  });
 
 	mw->set_window_title("Book!");
+	mw->set_window_class("main",
+			     "book@examples.w.libcxx.com");
 
 	guard(mw->connection_mcguffin());
 
