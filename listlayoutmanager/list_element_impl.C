@@ -114,7 +114,7 @@ list_elementObj::implObj::implObj(const ref<list_container_implObj>
 	  requested_col_widths(list_style.actual_col_widths(style)),
 	  col_alignments(list_style.actual_col_alignments(style)),
 	  scratch_buffer_for_separator(container_screen->create_scratch_buffer
-				       ("list_separator_scratch@libcxx",
+				       ("list_separator_scratch@libcxx.com",
 					container_screen
 					->find_alpha_pictformat_by_depth(1),
 					0, 0)),

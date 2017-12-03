@@ -95,7 +95,7 @@ create_button_focusframe(const ref<buttonObj::implObj> &impl,
 			 "inputfocusoff_border",
 			 "inputfocuson_border",
 			 glmi->container_impl,
-			 child_element_init_params{"focusframe@libcxx"});
+			 child_element_init_params{"focusframe@libcxx.com"});
 
 	auto ff=focusframecontainer::create(ffi, ffi);
 

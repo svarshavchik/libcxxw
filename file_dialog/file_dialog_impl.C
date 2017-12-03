@@ -359,14 +359,14 @@ void file_dialogObj::implObj::error_dialog(const file_dialog &the_file_dialog,
 					   const std::string &title)
 {
 	auto d=the_file_dialog->dialog_window->create_ok_dialog
-		("error@libcxx", "alert",
+		("error@libcxx.com", "alert",
 		 [error_message]
 		 (const auto &f)
 		 {
 			 f->create_label(error_message, 100.00, halign::center);
 		 },
 		 the_file_dialog->dialog_window
-		 ->destroy_when_closed("error@libcxx"),
+		 ->destroy_when_closed("error@libcxx.com"),
 		 true);
 	d->dialog_window->set_window_title(title);
 	d->dialog_window->show_all();

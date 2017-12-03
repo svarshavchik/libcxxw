@@ -18,7 +18,7 @@ label_elementObj<element_impl>
 		   double initial_width,
 		   bool allow_links)
 	: element_impl(parent_container,
-		       child_element_init_params{"label@libcxx"}),
+		       child_element_init_params{"label@libcxx.com"}),
 	  textlabelObj::implObj(text, alignment, initial_width, allow_links,
 				parent_container->get_element_impl())
 {

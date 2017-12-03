@@ -143,7 +143,8 @@ const &ns;::w::main_window dialog_window;</programlisting>
       <literal>example.com</literal>
       can use <quote>dialog1@example.com</quote>, or
       <quote>confirmation@app1.example.com</quote>, as an example.
-      <quote>@libcxx</quote> labels are reserved for &appshort;'s use.
+      &appshort;'s internal dialog identifiers use
+      <quote>@libcxx.com</quote> to avoid applicaiton conflicts.
     </para>
   </section>
 
@@ -527,7 +528,7 @@ m->append_items
     <blockquote>
       <informalexample>
 	<programlisting>
-auto d=main_window->create_ok_dialog("example@libcxx",
+auto d=main_window->create_ok_dialog("example@libcxx.com",
                             "alert",
                             []
                             (const x::w::factory &amp;f)
@@ -535,7 +536,7 @@ auto d=main_window->create_ok_dialog("example@libcxx",
                                  f->create_label("Bad input");
                             },
 
-                            main_window->destroy_when_closed("example@libcxx"),
+                            main_window->destroy_when_closed("example@libcxx.com"),
                             true);</programlisting>
       </informalexample>
     </blockquote>
@@ -550,7 +551,7 @@ auto d=main_window->create_ok_dialog("example@libcxx",
       calls <varname>main_window</varname>'s
       <methodname>destroy_when_closed</methodname>(). The returned closure
       invokes <varname>main_window</varname>'s
-      <methodname>remove_dialog</methodname>("example@libcxx")
+      <methodname>remove_dialog</methodname>("example@libcxx.com")
       (using a weak reference, for the reasons previously stated)
       and this
       get installed as this new dialog's callback. Thusly, the dialog ends

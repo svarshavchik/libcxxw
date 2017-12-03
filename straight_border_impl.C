@@ -172,7 +172,7 @@ class LIBCXX_HIDDEN horizontal_straight_borderObj : public horizontal_impl {
 				      const current_border_implptr &border_default)
 		: horizontal_impl(c,
 				  metrics::horizvert_axi(),
-				  "horiz-border@libcxx",
+				  "horiz-border@libcxx.com",
 				  element_1,
 				  border1,
 				  element_2,
@@ -234,7 +234,7 @@ class LIBCXX_HIDDEN vertical_straight_borderObj : public vertical_impl {
 				    const current_border_implptr &border_default)
 		: vertical_impl(c,
 				metrics::horizvert_axi(),
-				"vert-border@libcxx",
+				"vert-border@libcxx.com",
 				element_1,
 				border1,
 				element_2,

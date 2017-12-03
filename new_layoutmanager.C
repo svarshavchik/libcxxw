@@ -19,7 +19,7 @@ container new_layoutmanager
 	 const function<void(const container &)> &creator) const
 {
 	auto impl=ref<container_elementObj<child_elementObj>>
-		::create(parent,child_element_init_params{"background@libcxx"});
+		::create(parent,child_element_init_params{"background@libcxx.com"});
 
 	auto c=container::create(impl, create(impl));
 	creator(c);

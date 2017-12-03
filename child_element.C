@@ -44,7 +44,7 @@ child_elementObj::child_elementObj(const ref<containerObj::implObj> &child_conta
 			      child_container->get_window_handler()
 			      .drawable_pictformat,
 			      init_params.scratch_buffer_id.empty()
-			      ? "default@libcxx":init_params.scratch_buffer_id),
+			      ? "default@libcxx.com":init_params.scratch_buffer_id),
 	  child_container(child_container)
 {
 }

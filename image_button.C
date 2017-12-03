@@ -112,7 +112,7 @@ class LIBCXX_HIDDEN image_button_containerObj
 				  const ref<containerObj::implObj>
 				  &parent_container)
 		: image_button_container_superclass_t(parent_container,
-						      {"focusframe@libcxx"}),
+						      {"focusframe@libcxx.com"}),
 		disable_recursive_visibility{disable_recursive_visibility}
 	{
 	}

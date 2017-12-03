@@ -102,7 +102,7 @@ public:
 		// Bad input. Show an error dialog.
 
 		auto d=main_window
-			->create_ok_dialog("example@libcxx",
+			->create_ok_dialog("example@libcxx.com",
 					   "alert",
 					   []
 					   (const x::w::factory &f)
@@ -110,7 +110,7 @@ public:
 						   f->create_label("Bad input");
 					   },
 
-					   main_window->destroy_when_closed("example@libcxx"),
+					   main_window->destroy_when_closed("example@libcxx.com"),
 					   true);
 
 		d->dialog_window->set_window_title("Error");

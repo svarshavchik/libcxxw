@@ -65,7 +65,7 @@ struct scrollbar_orientation {
 };
 
 const scrollbar_orientation horizontal_scrollbar={
-	"horiz_scrollbar@libcxx",
+	"horiz_scrollbar@libcxx.com",
 	&metrics::horizvert_axi::vert,
 	&rectangle::width,
 	&rectangle::height,
@@ -76,7 +76,7 @@ const scrollbar_orientation horizontal_scrollbar={
 };
 
 const scrollbar_orientation vertical_scrollbar={
-	"vert_scrollbar@libcxx",
+	"vert_scrollbar@libcxx.com",
 	&metrics::horizvert_axi::horiz,
 	&rectangle::height,
 	&rectangle::width,

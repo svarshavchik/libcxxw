@@ -46,7 +46,7 @@ create_always_visible_focusframe(const ref<containerObj::implObj>
 		::create(focusoff_border,
 			 focuson_border,
 			 parent_container,
-			 child_element_init_params{"focusframe@libcxx"},
+			 child_element_init_params{"focusframe@libcxx.com"},
 			 focusable_background_color);
 
 	e->request_visibility(true);
@@ -87,7 +87,7 @@ create_nonrecursive_visibility_focusframe(const ref<containerObj::implObj>
 		::create(focusoff_border,
 			 focuson_border,
 			 parent_container,
-			 child_element_init_params{"focusframe@libcxx"},
+			 child_element_init_params{"focusframe@libcxx.com"},
 			 focusable_background_color);
 
 	e->request_visibility(true);

@@ -121,8 +121,10 @@ d->dialog_window->show_all();
 Creates a generic dialog. The dialog needs to be show_all()ed, to make
 it visible by showing all of the dialog's display elements. The first
 parameter is a unique identifier for the new dialog. All dialogs created
-by the same main window must have unique identifiers. Identifiers ending
-in "@libcxx" are reserved for library's internal use.
+by the same main window must have unique identifiers. By convention,
+unique dialog identifiers are based on Internet domain names, either
+"unique.example.com", or "unique@example.com", where "example.com" is
+an Internet domain registered by the application.
 
 The second parameter is the new dialog's creator, a lambda that gets
 called just before

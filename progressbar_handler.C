@@ -16,7 +16,7 @@ progressbarObj::handlerObj::handlerObj(const ref<containerObj::implObj>
 				       const progressbar_config &config)
 	: superclass_t{config.minimum_width, 0,
 		parent_container,
-		child_element_init_params{"progressbar@libcxx"}},
+		child_element_init_params{"progressbar@libcxx.com"}},
 	  foreground_color{config.foreground_color}
 {
 }

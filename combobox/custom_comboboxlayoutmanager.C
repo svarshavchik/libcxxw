@@ -90,7 +90,7 @@ create_combobox_button(const ref<containerObj::implObj> &parent_container,
 		::create("inputfocusoff_border",
 			 "inputfocuson_border",
 			 parent_container,
-			 child_element_init_params{"focusframe@libcxx"});
+			 child_element_init_params{"focusframe@libcxx.com"});
 
 	// The focus frame implementation object is the parent of the
 	// combobox button. Create its implementatio n button.
