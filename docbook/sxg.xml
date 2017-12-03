@@ -6,7 +6,7 @@ See COPYING for distribution information.
 -->
 
 <appendix id="sxg">
-  <title>Scalable X protocol Graphics</title>
+  <title>Scalable X Graphics</title>
 
   <para>
     &sxg; is an <acronym>XML</acronym>-based file format.
@@ -91,14 +91,15 @@ See COPYING for distribution information.
 
 	<para>
 	  The above example specifies that this &sxg; file gives drawing
-	  instructions on a canvas that's virtual
-	  16 pixels across, and 16 virtual pixels tall.
+	  instructions on a canvas that's 16 virtual pixels across,
+	  and 16 virtual pixels tall.
 	  The X and Y coordinates, therefore, range from 0 to 15. Coordinate
 	  (0, 0) is the top left corner.
 	</para>
 
 	<para>
-	  &app; scales the coordinates in the &sxg; to the
+	  &app; computes the &sxg;'s image actual size, in pixels,
+	  then scales the coordinates in the &sxg; file to the
 	  displayed image's actual size. For example, if &app; needs to scale
 	  the above
 	  image to a 32x32 icon, all coordinates in the &sxg; file
@@ -989,8 +990,8 @@ See COPYING for distribution information.
 	elements.
 	The
 	<tag class='element'>location</tag> element assigns a label identifier
-	to a coordinate, that can referenced in each rendering element,
-	anywhere where
+	to a coordinate, and the location gets referenced in rendering
+	element	anywhere where
 	<tag class='element'>x</tag> and
 	<tag class='element'>y</tag> must be specified.
 	By assigning a location label to all key coordinates, it makes it

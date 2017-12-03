@@ -36,9 +36,9 @@ public:
 	//! Deleted copy constructor
 	pixmap_loader(const pixmap_loader &)=delete;
 
-	pixmap_loader &operator=(const pixmap_loader &)=delete;
-
 	//! Deleted assignment operator
+
+	pixmap_loader &operator=(const pixmap_loader &)=delete;
 
 private:
 

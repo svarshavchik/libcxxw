@@ -8,6 +8,7 @@
 #include "generic_window_handler_resources.H"
 #include "main_window.H"
 #include "connection_threadfwd.H"
+#include "icon_images_vector_elementfwd.H"
 #include "x/w/busyfwd.H"
 #include <xcb/xcb_icccm.h>
 
@@ -20,14 +21,23 @@ LIBCXXW_NAMESPACE_START
 //! this handler is responsible for that.
 
 class LIBCXX_HIDDEN main_windowObj::handlerObj :
-	public generic_windowObj::handlerObj::resourcesObj {
+	public icon_images_vector_elementObj<
+	generic_windowObj::handlerObj::resourcesObj> {
+
+	typedef icon_images_vector_elementObj<
+		generic_windowObj::handlerObj::resourcesObj> superclass_t;
 
 	std::function<void (const busy &)> on_delete_callback_thread_only;
+
+	//! Whether an icon was set.
+	bool wm_icon_set_thread_only=false;
 
  public:
 
 	THREAD_DATA_ONLY(on_delete_callback);
+	THREAD_DATA_ONLY(wm_icon_set);
 
+	//! Constructor
 	handlerObj(IN_THREAD_ONLY, const screen &parent_screen,
 		   const color_arg &background_color);
 
@@ -86,7 +96,36 @@ class LIBCXX_HIDDEN main_windowObj::handlerObj :
 	//! Preferred height
 	dim_t preferred_height_thread_only;
 
+	//! Update the _NET_WM_ICON property
+
+	void update_net_wm_icon(IN_THREAD_ONLY,
+				const std::vector<icon> &icon_images);
+
  public:
+
+	//! Install new icons.
+	void install_window_theme_icon(const std::vector<std::tuple<std::string,
+				       dim_t, dim_t>> &icons);
+
+	//! Install new icons.
+	void install_window_icon(const std::vector<std::tuple<std::string,
+				 dim_t, dim_t>> &icons);
+
+	//! Install new icons.
+	void install_window_theme_icon(IN_THREAD_ONLY,
+				       const std::vector<icon> &icons);
+
+	//! Install new icons.
+	std::vector<icon> install_window_icon(IN_THREAD_ONLY,
+					      const std::vector<icon> &icons);
+
+	//! Override theme_updated.
+
+	//! Invoke update_net_wm_icon();
+
+	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme)
+		override;
+
 	THREAD_DATA_ONLY(preferred_dimensions_set);
 	THREAD_DATA_ONLY(preferred_width);
 	THREAD_DATA_ONLY(preferred_height);

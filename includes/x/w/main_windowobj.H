@@ -16,6 +16,7 @@
 #include <x/w/new_layoutmanagerfwd.H>
 #include <x/w/text_paramfwd.H>
 #include <x/w/busyfwd.H>
+#include <x/w/types.H>
 #include <x/w/input_field_configfwd.H>
 #include <x/w/input_fieldfwd.H>
 #include <x/w/file_dialogfwd.H>
@@ -57,6 +58,20 @@ public:
 
 	//! Destructor
 	~main_windowObj() LIBCXX_HIDDEN;
+
+	//! Install a window icon.
+	void install_window_icon(const std::vector<std::string> &);
+
+	//! Install a window icon.
+	void install_window_icon(const std::vector<std::tuple
+				 <std::string, dim_t, dim_t>> &);
+
+	//! Install a window icon.
+	void install_window_theme_icon(const std::vector<std::string> &);
+
+	//! Install a window icon.
+	void install_window_theme_icon(const std::vector<std::tuple
+				       <std::string, dim_t, dim_t>> &);
 
 	//! Constructor for a standard theme-specified dialog.
 

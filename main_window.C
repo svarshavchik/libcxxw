@@ -54,6 +54,39 @@ void main_windowObj::on_delete(const std::function<void (const busy &)
 	impl->on_delete(callback);
 }
 
+void main_windowObj::install_window_icon(const std::vector<std::string> &a)
+{
+	std::vector<std::tuple<std::string, dim_t, dim_t>> cpy;
+
+	cpy.reserve(a.size());
+	for (const auto &n:a)
+		cpy.emplace_back(n, 0, 0);
+	install_window_icon(cpy);
+}
+
+void main_windowObj::install_window_icon(const std::vector<std::tuple
+					 <std::string, dim_t, dim_t>> &a)
+{
+	impl->handler->install_window_icon(a);
+}
+
+void main_windowObj::install_window_theme_icon(const std::vector<std::string>
+					       &a)
+{
+	std::vector<std::tuple<std::string, dim_t, dim_t>> cpy;
+
+	cpy.reserve(a.size());
+	for (const auto &n:a)
+		cpy.emplace_back(n, 0, 0);
+	install_window_theme_icon(cpy);
+}
+
+void main_windowObj::install_window_theme_icon(const std::vector<std::tuple
+					       <std::string, dim_t, dim_t>> &a)
+{
+	impl->handler->install_window_theme_icon(a);
+}
+
 //////////////////////////////////////////////////////////////////////////////
 //
 // Create a default main window

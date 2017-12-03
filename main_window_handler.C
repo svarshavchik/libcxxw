@@ -10,17 +10,22 @@
 #include "shared_handler_data.H"
 #include "batch_queue.H"
 #include "icon.H"
+#include "icon_images_vector_element.H"
+#include "pixmap_extractor.H"
+#include "pixmap_with_picture.H"
+#include "screen.H"
 #include "x/w/screen.H"
 #include "x/w/connection.H"
 #include "busy.H"
+#include "catch_exceptions.H"
 
 LIBCXXW_NAMESPACE_START
 
 main_windowObj::handlerObj::handlerObj(IN_THREAD_ONLY,
 				       const screen &parent_screen,
 				       const color_arg &background_color)
-	: generic_windowObj::handlerObj
-	::resourcesObj(IN_THREAD, parent_screen,
+	: superclass_t({},
+		       IN_THREAD, parent_screen,
 		       background_color,
 		       shared_handler_data::create(),
 		       0),
@@ -75,12 +80,45 @@ void main_windowObj::handlerObj::horizvert_updated(IN_THREAD_ONLY)
 		update_size_hints(IN_THREAD);
 }
 
+static std::vector<icon> create_icons(drawableObj::implObj &me,
+				      const std::vector<std::tuple<std::string,
+				      dim_t, dim_t>> &icons)
+{
+	std::vector<icon> v;
+
+	v.reserve(icons.size());
+
+	for (const auto &i:icons)
+		v.push_back(me.create_icon_pixels(std::get<0>(i),
+						  render_repeat::none,
+						  std::get<1>(i),
+						  std::get<2>(i),
+						  icon_scale::nomore));
+	return v;
+}
+
 void main_windowObj::handlerObj
 ::set_inherited_visibility(IN_THREAD_ONLY,
 			   inherited_visibility_info &visibility_info)
 {
 	if (visibility_info.flag)
+	{
+		// If an icon was not set yet, set the default one.
+
+		if (!wm_icon_set(IN_THREAD))
+			try {
+				install_window_theme_icon
+					(IN_THREAD,
+					 create_icons
+					 (*this, {
+						 {"mainwindow-icon", 16, 16},
+						 {"mainwindow-icon", 24, 24},
+						 {"mainwindow-icon", 32, 32},
+						 {"mainwindow-icon", 48, 48}
+					 }));
+			} CATCH_EXCEPTIONS;
 		update_size_hints(IN_THREAD);
+	}
 
 	generic_windowObj::handlerObj
 		::set_inherited_visibility(IN_THREAD, visibility_info);
@@ -201,6 +239,107 @@ void main_windowObj::handlerObj::frame_extents_updated(IN_THREAD_ONLY)
 	generic_windowObj::handlerObj::frame_extents_updated(IN_THREAD);
 	containerObj::implObj::tell_layout_manager_it_needs_recalculation
 		(IN_THREAD);
+}
+
+///////////////////////////////////////////////////////////////////////////
+//
+// NET_WM_ICON
+
+void main_windowObj::handlerObj
+::install_window_theme_icon(const std::vector<std::tuple<std::string,
+			    dim_t, dim_t>> &icons)
+{
+	screenref->impl->thread->run_as
+		([v=create_icons(*this, icons), me=ref(this)]
+		 (IN_THREAD_ONLY)
+		 {
+			 me->install_window_theme_icon(IN_THREAD, v);
+		 });
+}
+
+void main_windowObj::handlerObj
+::install_window_icon(const std::vector<std::tuple<std::string,
+		      dim_t, dim_t>> &icons)
+{
+	screenref->impl->thread->run_as
+		([v=create_icons(*this, icons), me=ref(this)]
+		 (IN_THREAD_ONLY)
+		 {
+			 me->install_window_icon(IN_THREAD, v);
+		 });
+}
+
+void main_windowObj::handlerObj
+::install_window_theme_icon(IN_THREAD_ONLY, const std::vector<icon> &icons)
+{
+	icon_images(IN_THREAD)=install_window_icon(IN_THREAD, icons);
+}
+
+std::vector<icon> main_windowObj::handlerObj
+::install_window_icon(IN_THREAD_ONLY, const std::vector<icon> &icons)
+{
+	// Need to finish initializing the icons.
+
+	auto cpy=icons;
+
+	for (auto &i:cpy)
+		i=i->initialize(IN_THREAD);
+
+	update_net_wm_icon(IN_THREAD, cpy);
+
+	wm_icon_set(IN_THREAD)=true;
+
+	return cpy;
+}
+
+void main_windowObj::handlerObj
+::theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme)
+{
+	superclass_t::theme_updated(IN_THREAD, new_theme);
+	update_net_wm_icon(IN_THREAD, icon_images(IN_THREAD));
+}
+
+void main_windowObj::handlerObj
+::update_net_wm_icon(IN_THREAD_ONLY,
+		     const std::vector<icon> &icon_images)
+{
+	if (icon_images.empty())
+		return;
+
+	std::vector<uint32_t> raw_data;
+	size_t total_size=0;
+
+	for (const auto &i:icon_images)
+		total_size += 2 + (dim_squared_t::value_type)
+			(i->image->get_width()*i->image->get_height());
+
+	raw_data.reserve(total_size);
+
+	for (const auto &i:icon_images)
+	{
+		pixmap_extractor extract{i->image};
+
+		raw_data.push_back((dim_t::value_type)extract.width);
+		raw_data.push_back((dim_t::value_type)extract.height);
+
+		for (dim_t y=0; y<extract.height; y++)
+			for (dim_t x=0; x<extract.width; x++)
+			{
+				auto pixel=extract.get_rgb(x, y);
+
+#define CHANNEL(x) ((uint32_t)((pixel.x) >> ( (sizeof(rgb_component_t)-1)*8)))
+
+				raw_data.push_back((CHANNEL(a) << 24)
+						   |
+						   (CHANNEL(r) << 16)
+						   |
+						   (CHANNEL(g) << 8)
+						   |
+						   CHANNEL(b));
+			}
+	}
+
+	screenref->get_connection()->impl->set_wm_icon(id(), raw_data);
 }
 
 LIBCXXW_NAMESPACE_END

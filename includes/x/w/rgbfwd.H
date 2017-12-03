@@ -24,6 +24,10 @@ class rgb;
 
 typedef uint16_t rgb_component_t;
 
+//! Value type that can be used for scaling rgb components.
+
+typedef uint32_t rgb_component_squared_t;
+
 //! A gradient involving multiple colors
 
 //! The map must have a value for key 0. The highest

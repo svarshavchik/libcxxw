@@ -60,6 +60,10 @@ class LIBCXX_HIDDEN ewmh : public xcb_ewmh_connection_t {
 	//! Return _NET_SUPPORTED atoms.
 
 	std::unordered_set<xcb_atom_t> get_supported(size_t screen_number);
+
+	//! Set window manager icon.
+	void set_wm_icon(xcb_window_t wid,
+			 const std::vector<uint32_t> &raw_data);
 };
 
 LIBCXXW_NAMESPACE_END

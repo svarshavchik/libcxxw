@@ -168,4 +168,15 @@ std::unordered_set<xcb_atom_t> ewmh::get_supported(size_t screen_number)
 	return atoms;
 }
 
+void ewmh::set_wm_icon(xcb_window_t wid,
+		       const std::vector<uint32_t> &raw_data)
+{
+	if (!ewmh_available)
+		return;
+
+	xcb_ewmh_set_wm_icon(this, XCB_PROP_MODE_REPLACE, wid,
+			     raw_data.size(),
+			     const_cast<uint32_t *>(&raw_data[0]));
+}
+
 LIBCXXW_NAMESPACE_END

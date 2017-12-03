@@ -1,0 +1,217 @@
+<?xml version="1.0"?>
+
+<sxg>
+
+  <width>16</width>
+  <height>16</height>
+
+  <widthmm>4</widthmm>
+  <heightmm>4</heightmm>
+
+  <widthfactor>2</widthfactor>
+  <heightfactor>2</heightfactor>
+
+  <picture id="outline">
+    <type>rgb</type>
+    <color>0%</color>
+  </picture>
+
+  <picture id="outline2">
+    <type>rgb</type>
+    <color>30%</color>
+  </picture>
+
+  <picture id="titlebar">
+    <type>rgb</type>
+    <color>50%</color>
+  </picture>
+
+  <picture id="background">
+    <type>rgb</type>
+    <color>transparent</color>
+  </picture>
+
+  <picture id="window_background">
+    <type>rgb</type>
+    <color>100%</color>
+  </picture>
+
+  <font id="logo" from="label">
+    <scaled_size>.4</scaled_size>
+    <weight>bold</weight>
+  </font>
+
+  <picture id="logo">
+    <type>text</type>
+
+    <font>logo</font>
+    <rgb>
+      <color>0%</color>
+    </rgb>
+    <text>CXX</text>
+
+  </picture>
+
+  <pixmap id="mask">
+    <size>scaled</size>
+    <width>16</width>
+    <height>16</height>
+    <mask />
+    <gc id="inner_gc" />
+  </pixmap>
+
+  <gc id="inner_gc">
+    <function>set</function>
+    <clear />
+  </gc>
+
+  <render id="main">
+    <composite>
+      <op>over</op>
+      <mask>
+	<pixmap>mask</pixmap>
+      </mask>
+      <src>
+	<picture>window_background</picture>
+      </src>
+      <width>16</width>
+      <height>16</height>
+    </composite>
+  </render>
+
+  <gc id="inner_gc">
+    <function>clear</function>
+    <clear />
+
+    <function>set</function>
+
+    <fill>
+      <x>0</x>
+      <y>0</y>
+      <width>16</width>
+      <height>4</height>
+    </fill>
+  </gc>
+
+  <render id="main">
+    <composite>
+      <op>over</op>
+      <mask>
+	<pixmap>mask</pixmap>
+      </mask>
+      <src>
+	<picture>titlebar</picture>
+      </src>
+      <width>16</width>
+      <height>16</height>
+    </composite>
+  </render>
+
+  <gc id="inner_gc">
+    <function>clear</function>
+    <clear />
+
+    <function>set</function>
+
+    <fill>
+      <x>1</x>
+      <y>1</y>
+      <width>14</width>
+      <height>1</height>
+    </fill>
+
+    <fill>
+      <x>1</x>
+      <y>1</y>
+      <width>1</width>
+      <height>14</height>
+    </fill>
+
+    <fill>
+      <x>15</x>
+      <y>15</y>
+      <width>-1</width>
+      <height>-14</height>
+    </fill>
+
+    <fill>
+      <x>15</x>
+      <y>15</y>
+      <width>-14</width>
+      <height>-1</height>
+    </fill>
+  </gc>
+
+  <render id="main">
+    <composite>
+      <op>over</op>
+      <mask>
+	<pixmap>mask</pixmap>
+      </mask>
+      <src>
+	<picture>outline2</picture>
+      </src>
+      <width>16</width>
+      <height>16</height>
+    </composite>
+  </render>
+
+  <gc id="inner_gc">
+    <function>clear</function>
+    <clear />
+
+    <function>set</function>
+    <fill>
+      <x>0</x>
+      <y>0</y>
+      <width>16</width>
+      <height>1</height>
+    </fill>
+    <fill>
+      <x>0</x>
+      <y>0</y>
+      <width>1</width>
+      <height>16</height>
+    </fill>
+    <fill>
+      <x>16</x>
+      <y>16</y>
+      <width>-1</width>
+      <height>-16</height>
+    </fill>
+
+    <fill>
+      <x>16</x>
+      <y>16</y>
+      <width>-16</width>
+      <height>-1</height>
+    </fill>
+  </gc>
+
+  <render id="main">
+    <composite>
+      <op>over</op>
+      <mask>
+	<pixmap>mask</pixmap>
+      </mask>
+      <src>
+	<picture>outline</picture>
+      </src>
+      <width>16</width>
+      <height>16</height>
+    </composite>
+
+    <composite>
+      <op>over</op>
+      <x>8</x>
+      <y>8</y>
+      <srcsize />
+      <halign>centered</halign>
+      <valign>middle</valign>
+
+      <src>
+	<picture>logo</picture>
+      </src>
+    </composite>
+    </render>
+</sxg>

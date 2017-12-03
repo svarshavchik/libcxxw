@@ -307,4 +307,12 @@ ximxtransport connectionObj::implObj::get_ximxtransport(const connection &conn)
 	return new_xim;
 }
 
+void connectionObj::implObj::set_wm_icon(xcb_window_t wid,
+					 const std::vector<uint32_t> &raw_data)
+{
+	mpobj<ewmh>::lock lock{ewmh_info};
+
+	lock->set_wm_icon(wid, raw_data);
+}
+
 LIBCXXW_NAMESPACE_END

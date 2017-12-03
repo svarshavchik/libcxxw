@@ -129,6 +129,11 @@ class LIBCXX_HIDDEN connectionObj::implObj : virtual public obj {
 	//! parameter to get_ximxtransport().
 
 	ximxtransport get_ximxtransport(const connection &conn);
+
+	//! Set window manager's icon.
+
+	void set_wm_icon(xcb_window_t wid,
+			 const std::vector<uint32_t> &raw_data);
 };
 
 LIBCXXW_NAMESPACE_END

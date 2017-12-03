@@ -560,13 +560,20 @@ void sxg_parserObj::get_width_height(const xml::doc::base::readlock &parent,
 // Additionally, if after scaling the width or height becomes 0, adjust it to
 // 1.
 
-template<typename dim_type,
-	 typename orig_dim_type>
-static void adjust_x_y_width_height(coord_t &rx, coord_t &ry,
-				    dim_type &rw, dim_type &rh,
-				    orig_dim_type width,
-				    orig_dim_type height)
+rectangle sxg_parserObj::adjust_x_y_width_height(const xy_t &x,
+						 const xy_t &y,
+						 double width, double height,
+						 const scale_info &scale)
 {
+	auto x1=coord_t::truncate(scale.x_pixel(x, scale_info::beginning));
+	auto y1=coord_t::truncate(scale.y_pixel(y, scale_info::beginning));
+
+	auto rw=coord_squared_t::truncate(scale.x_pixel(x+width,
+							scale_info::beginning))
+		- x1;
+	auto rh=coord_squared_t::truncate(scale.y_pixel(y+height,
+							scale_info::beginning))
+		- y1;
 
 	// Adjust 0 width or height. Adjust it to 1 or -1, depending on the
 	// sign of the original dimension.
@@ -577,44 +584,20 @@ static void adjust_x_y_width_height(coord_t &rx, coord_t &ry,
 	if (rh == 0)
 		rh += height > 0 ? 1:-1;
 
-	// And now fix the negative dimension accordingly.
-	if (rw < 0)
+	if (width < 0)
 	{
-		rx = coord_t::truncate(rx + rw);
+		x1 += rw;
 		rw = -rw;
 	}
 
-	if (rh < 0)
+	if (height < 0)
 	{
-		ry = coord_t::truncate(ry + rh);
+		y1 += rh;
 		rh = -rh;
 	}
-}
 
-// Specialization for scaled width or height expressed as dim_t which
-// is an unsigned value
-
-template<typename orig_dim_type>
-static void adjust_x_y_width_height(coord_t &rx, coord_t &ry,
-				    dim_t &rw, dim_t &rh,
-				    orig_dim_type width,
-				    orig_dim_type height)
-{
-	if (rw == 0)
-	{
-		rw=1;
-
-		if (width < 0)
-			rx=coord_t::truncate(rx-1);
-	}
-
-	if (rh == 0)
-	{
-		rh=1;
-
-		if (height < 0)
-			ry=coord_t::truncate(ry-1);
-	}
+	return { coord_t::truncate(x1), coord_t::truncate(y1),
+			dim_t::truncate(rw), dim_t::truncate(rh) };
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1463,25 +1446,11 @@ sxg_parserObj::parse_gc_fill(const xml::doc::base::readlock &lock)
 			 if (width == 0 || height == 0)
 				 return;
 
-			 auto x1=info.scale.x_pixel(x,
-						    scale_info::beginning);
-			 auto rw=dim_t::truncate
-				 (info.scale.x_pixel(x+width,
-						     scale_info::beginning)-x1);
+			 auto r=adjust_x_y_width_height(x, y, width, height,
+							info.scale);
 
-			 auto y1=info.scale.y_pixel(y,
-						    scale_info::beginning);
-			 auto rh=dim_t::truncate
-				 (info.scale.y_pixel(y+height,
-						     scale_info::beginning)-y1);
-
-			 adjust_x_y_width_height(x1, y1,
-						 rw, rh,
-						 width, height);
-
-			 info.context->fill_rectangle(x1, y1,
-						      rw,
-						      rh,
+			 info.context->fill_rectangle(r.x, r.y,
+						      r.width, r.height,
 						      info.props);
 		 });
 }
@@ -1898,35 +1867,21 @@ sxg_parserObj::parse_gc_arcs(const xml::doc::base::readlock &lock)
 				 return;
 
 			 gc::base::arc arcs[arc_info.size()];
+
 			 size_t i=0;
 
 			 for (const auto &arc:arc_info)
 			 {
-				 auto &gc_arc=arcs[i];
+				 auto &gc_arc=arcs[i++];
 
-				 gc_arc.x=info.scale
-					 .x_pixel(arc.x);
-				 gc_arc.y=info.scale
-					 .y_pixel(arc.y);
+				 auto r=adjust_x_y_width_height(arc.x,
+								arc.y,
+								arc.width,
+								arc.height,
+								info.scale);
 
-				 auto w=dim_t::truncate
-					 (info.scale
-					  .x_pixel(arc.x+arc.width)
-					  - gc_arc.x);
-
-				 auto h=dim_t::truncate
-					 (info.scale
-					  .y_pixel(arc.y+arc.height)
-					  - gc_arc.y);
-
-				 adjust_x_y_width_height(gc_arc.x,
-							 gc_arc.y,
-							 w, h,
-							 arc.width,
-							 arc.height);
-
-				 if (w == 0 || h == 0)
-					 continue;
+				 gc_arc.x=r.x;
+				 gc_arc.y=r.y;
 
 				 /*
 				   The X protocol appears to specify the
@@ -1936,18 +1891,19 @@ sxg_parserObj::parse_gc_arcs(const xml::doc::base::readlock &lock)
 				   Make this adjustment.
 				  */
 
-				 gc_arc.width=w-1;
-				 gc_arc.height=h-1;
+				 gc_arc.width=dim_t::truncate(r.width)-1;
+				 gc_arc.height=dim_t::truncate(r.height)-1;
 
 				 gc_arc.angle1=arc.angle1;
 				 gc_arc.angle2=arc.angle2;
-				 ++i;
 			 }
 
 			 if (fill_flag)
-				 info.context->fill_arcs(arcs, i, info.props);
+				 info.context->fill_arcs(arcs, arc_info.size(),
+							 info.props);
 			 else
-				 info.context->draw_arcs(arcs, i, info.props);
+				 info.context->draw_arcs(arcs, arc_info.size(),
+							 info.props);
 		 });
 }
 
@@ -2132,6 +2088,12 @@ sxg_parserObj::parse_render_composite(const xml::doc::base::readlock &render_ele
 
 	bool has_xy=optional_xy(render_element, points, x, y);
 
+	if (!has_xy)
+	{
+		x=0;
+		y=0;
+	}
+
 	if (has_value(render_element, "srcsize"))
 		srcsize=true;
 	else
@@ -2155,7 +2117,6 @@ sxg_parserObj::parse_render_composite(const xml::doc::base::readlock &render_ele
 					  "pixmap",
 					  mask_picture, mask_x,
 					  mask_y);
-
 	return make_execute_render
 		([=]
 		 (const render_execute_info &info)
@@ -2163,83 +2124,71 @@ sxg_parserObj::parse_render_composite(const xml::doc::base::readlock &render_ele
 			 auto src=info.info.source_picture(src_picture);
 			 auto src_scale=info.info.source_scale(src_picture);
 
-			 auto x_scaled=
-				 info.scale.x_pixel(x, scale_info::beginning);
-			 auto y_scaled=
-				 info.scale.y_pixel(y, scale_info::beginning);
+			 rectangle dst;
 
-			 if (!has_xy)
-				 x_scaled=y_scaled=0;
-
-			 auto src_x_scaled=
-				 src_scale.x_pixel(src_x, scale_info::beginning);
-			 auto src_y_scaled=
-				 src_scale.y_pixel(src_y, scale_info::beginning);
-
-			 dim_t width_scaled, height_scaled;
-			 dim_t width_copy2, height_copy2;
-
-			 if (!has_src)
-				 src_x_scaled=src_y_scaled=0;
+			 coord_t src_scaled_x;
+			 coord_t src_scaled_y;
 
 			 if (srcsize)
 			 {
+				 dst.x=info.scale
+					 .x_pixel(x, scale_info::beginning);
+				 dst.y=info.scale
+					 .y_pixel(y, scale_info::beginning);
+				 src_scaled_x=src_scale
+					 .x_pixel(src_x,
+						  scale_info::beginning);
+				 src_scaled_y=src_scale
+					 .y_pixel(src_y,
+						  scale_info::beginning);
 				 auto d=std::get<drawable>
 					 (info.info.dest_picture(src_picture));
 
-				 width_scaled=d->get_width();
-				 height_scaled=d->get_height();
-
-				 width_copy2=width_scaled;
-				 height_copy2=height_scaled;
+				 dst.width=d->get_width();
+				 dst.height=d->get_height();
 			 }
 			 else
 			 {
-				 width_scaled=dim_t::truncate
-					 (info.scale.x_pixel(x+width,
-							     scale_info::beginning)
-					  -x_scaled);
-				 height_scaled=dim_t::truncate
-					 (info.scale.y_pixel(y+height,
-							     scale_info::beginning)
-					  -y_scaled);
+				 dst=adjust_x_y_width_height(x, y,
+							     width, height,
+							     info.scale);
 
-				 auto width_copy=width_scaled;
-				 auto height_copy=height_scaled;
-				 width_copy2=width_scaled;
-				 height_copy2=height_scaled;
 
-				 adjust_x_y_width_height(src_x_scaled,
-							 src_y_scaled,
-							 width_scaled,
-							 height_scaled,
-							 width,
-							 height);
+				 auto copy=adjust_x_y_width_height(src_x, src_y,
+								   0, 0,
+								   src_scale);
 
-				 adjust_x_y_width_height(x_scaled,
-							 y_scaled,
-							 width_copy,
-							 height_copy,
-							 width,
-							 height);
+				 if (width < 0)
+					 copy.x=coord_t::truncate(copy.x-
+								  dst.width);
+				 if (height < 0)
+					 copy.y=coord_t::truncate(copy.y-
+								  dst.height);
+				 src_scaled_x=copy.x;
+				 src_scaled_y=copy.y;
+			 }
 
+			 if (!has_src)
+			 {
+				 src_scaled_x=0;
+				 src_scaled_y=0;
 			 }
 
 			 if (halign_value == halign::right)
-				 x_scaled = coord_t::truncate
-					 (x_scaled - width_scaled);
+				 dst.x = coord_t::truncate
+					 (dst.x - dst.width);
 
 			 if (halign_value == halign::center)
-				 x_scaled = coord_t::truncate
-					 (x_scaled - width_scaled/2);
+				 dst.x = coord_t::truncate
+					 (dst.x - dst.width/2);
 
 			 if (valign_value == valign::bottom)
-				 y_scaled = coord_t::truncate
-					 (y_scaled - height_scaled);
+				 dst.y = coord_t::truncate
+					 (dst.y - dst.height);
 
 			 if (valign_value == valign::middle)
-				 y_scaled = coord_t::truncate
-					 (y_scaled - height_scaled/2);
+				 dst.y = coord_t::truncate
+					 (dst.y - dst.height/2);
 
 			 if (!mask_picture.empty())
 			 {
@@ -2249,44 +2198,45 @@ sxg_parserObj::parse_render_composite(const xml::doc::base::readlock &render_ele
 				 auto mask_scale=info.info
 					 .source_scale(mask_picture);
 
-				 auto mask_x_scaled=
-					 mask_scale.x_pixel(mask_x,
-							    scale_info::beginning);
-				 auto mask_y_scaled=
-					 mask_scale.y_pixel(mask_y,
-							    scale_info::beginning);
+				 auto mask_scaled=
+					 adjust_x_y_width_height(mask_x,
+								 mask_y,
+								 0, 0,
+								 mask_scale);
+
+				 if (width < 0)
+					 mask_scaled.x=coord_t::truncate
+						 (mask_scaled.x-dst.width);
+				 if (height < 0)
+					 mask_scaled.y=coord_t::truncate
+						 (mask_scaled.y-dst.height);
 
 				 if (!has_maskxy)
-					 mask_x_scaled=mask_y_scaled=0;
+					 mask_scaled.x=mask_scaled.y=0;
 
-				 adjust_x_y_width_height(mask_x_scaled,
-							 mask_y_scaled,
-							 width_copy2,
-							 height_copy2,
-							 width,
-							 height);
-
-				 info.dest_picture->composite(src, mask,
-							      src_x_scaled,
-							      src_y_scaled,
-							      mask_x_scaled,
-							      mask_y_scaled,
-							      x_scaled,
-							      y_scaled,
-							      width_scaled,
-							      height_scaled,
-							      op);
+				 info.dest_picture->composite
+					 (src, mask,
+					  src_scaled_x,
+					  src_scaled_y,
+					  mask_scaled.x,
+					  mask_scaled.y,
+					  dst.x,
+					  dst.y,
+					  dst.width,
+					  dst.height,
+					  op);
 			 }
 			 else
 			 {
-				 info.dest_picture->composite(src,
-							      src_x_scaled,
-							      src_y_scaled,
-							      x_scaled,
-							      y_scaled,
-							      width_scaled,
-							      height_scaled,
-							      op);
+				 info.dest_picture->composite
+					 (src,
+					  src_scaled_x,
+					  src_scaled_y,
+					  dst.x,
+					  dst.y,
+					  dst.width,
+					  dst.height,
+					  op);
 			 }
 		 });
 }

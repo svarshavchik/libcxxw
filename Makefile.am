@@ -552,6 +552,8 @@ libcxxw_la_SOURCES=\
 	pixmap.C				    \
 	pixmap.H				    \
 	pixmap_impl.C				    \
+	pixmap_extractor.C			    \
+	pixmap_extractor.H			    \
 	pixmap_loader.C				    \
 	pixmap_loader.H				    \
 	pixmap_with_picture.C			    \
