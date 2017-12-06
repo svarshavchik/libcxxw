@@ -91,7 +91,7 @@ static scrollbar create_scrollbar(const ref<containerObj::implObj> &parent_conta
 	// factory's container.
 
 	auto ffcontainer_impl=
-		create_always_visible_focusframe
+		create_nonrecursive_visibility_focusframe
 		(parent_container,
 		 "scrollbarfocusoff_border",
 		 "inputfocuson_border");

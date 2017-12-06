@@ -190,12 +190,6 @@ class LIBCXX_HIDDEN editorObj::implObj
 	//! We compute it directly from font and columns.
 	void compute_preferred_width(IN_THREAD_ONLY) override;
 
-	//! Override rewrap().
-
-	//! Rewrap according to the preferred width.
-
-	bool rewrap(IN_THREAD_ONLY) override;
-
 	//! Override calculate_current_metrics().
 
 	//! The editor is not resizable, so we adjust the text's

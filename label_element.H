@@ -80,15 +80,13 @@ void label_elementObj<element_impl>
 	textlabelObj::implObj::process_updated_position(IN_THREAD);
 }
 
-
 template<typename element_impl>
 void label_elementObj<element_impl>
-::set_inherited_visibility(IN_THREAD_ONLY,
-			   inherited_visibility_info &visibility_info)
+::update_current_position(IN_THREAD_ONLY,
+			  const rectangle &r)
 {
-	element_impl::set_inherited_visibility(IN_THREAD, visibility_info);
-	textlabelObj::implObj::set_inherited_visibility(IN_THREAD,
-							visibility_info);
+	element_impl::update_current_position(IN_THREAD, r);
+	textlabelObj::implObj::position_set(IN_THREAD);
 }
 
 template<typename element_impl>

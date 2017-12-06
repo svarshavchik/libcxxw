@@ -578,9 +578,7 @@ void list_elementObj::implObj::recalculate(IN_THREAD_ONLY,
 				auto [horiz, vert]=(*cell_iter)
 					->cell_get_metrics
 					(IN_THREAD,
-					 preferred_width,
-					 data(IN_THREAD)
-					 .inherited_visibility);
+					 preferred_width);
 
 				// If this is a separator row we still need
 				// to go through the motion and visit event

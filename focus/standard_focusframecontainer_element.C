@@ -90,8 +90,6 @@ create_nonrecursive_visibility_focusframe(const ref<containerObj::implObj>
 			 child_element_init_params{"focusframe@libcxx.com"},
 			 focusable_background_color);
 
-	e->request_visibility(true);
-
 	return e;
 }
 

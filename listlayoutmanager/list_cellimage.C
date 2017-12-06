@@ -20,8 +20,7 @@ list_cellimageObj::list_cellimageObj(const std::vector<icon> &images,
 }
 
 std::pair<metrics::axis, metrics::axis>
-list_cellimageObj::cell_get_metrics(IN_THREAD_ONLY, dim_t preferred_width,
-					bool visible)
+list_cellimageObj::cell_get_metrics(IN_THREAD_ONLY, dim_t preferred_width)
 {
 	// Derive the metrics from the largest icon we have.
 

@@ -55,6 +55,9 @@ void richtextObj::set(IN_THREAD_ONLY, const richtextstring &string)
 bool richtextObj::rewrap(IN_THREAD_ONLY,
 			 dim_t width)
 {
+	if (word_wrap_width(IN_THREAD) == width)
+		return false;
+
 	impl_t::lock lock{IN_THREAD, impl};
 
 	word_wrap_width(IN_THREAD)=width;
@@ -71,7 +74,7 @@ dim_t richtextObj::get_width(IN_THREAD_ONLY)
 }
 
 std::pair<metrics::axis, metrics::axis>
-richtextObj::get_metrics(IN_THREAD_ONLY, dim_t preferred_width, bool visible)
+richtextObj::get_metrics(IN_THREAD_ONLY, dim_t preferred_width)
 {
 	impl_t::lock lock{IN_THREAD, impl};
 
@@ -110,12 +113,6 @@ richtextObj::get_metrics(IN_THREAD_ONLY, dim_t preferred_width, bool visible)
 
 		if (width > max_width)
 			width=max_width;
-
-		// Even if the text is wrappable, if it's not visible we don't
-		// do any of the above, so the resulting metrics, returned
-		// below, specify a fixed width.
-		if (!visible)
-			min_width=width=max_width=preferred_width;
 	}
 
 	return {
@@ -451,15 +448,13 @@ void richtextObj::draw(IN_THREAD_ONLY,
 std::tuple<pixmap, picture> richtextObj::create(IN_THREAD_ONLY,
 						const drawable &for_drawable)
 {
-	auto metrics=get_metrics(IN_THREAD, 0, false);
+	impl_t::lock lock{IN_THREAD, impl};
 
-	auto width=metrics.first.preferred();
-	auto height=metrics.second.preferred();
+	dim_t width= dim_t::truncate((*lock)->width());
+	dim_t height= dim_t::truncate((*lock)->height());
 
 	auto pixmap=for_drawable->create_pixmap(width, height);
 	auto p=pixmap->create_picture();
-
-	impl_t::lock lock{IN_THREAD, impl};
 
 	dim_t largest_height=1;
 

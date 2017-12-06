@@ -833,8 +833,8 @@ bool gridlayoutmanagerObj::implObj::elementsObj
 	}
 #endif
 
-	if (!flag && (horiz_metrics != new_horiz_metrics ||
-		      vert_metrics != new_vert_metrics))
+	if (horiz_metrics != new_horiz_metrics ||
+	    vert_metrics != new_vert_metrics)
 	{
 		flag=true;
 	}

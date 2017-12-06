@@ -11,8 +11,7 @@ LIBCXXW_NAMESPACE_START
 list_cellseparatorObj::list_cellseparatorObj()=default;
 
 std::pair<metrics::axis, metrics::axis>
-list_cellseparatorObj::cell_get_metrics(IN_THREAD_ONLY, dim_t preferred_width,
-					bool visible)
+list_cellseparatorObj::cell_get_metrics(IN_THREAD_ONLY, dim_t preferred_width)
 {
 	return {{},{}};
 }

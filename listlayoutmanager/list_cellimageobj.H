@@ -34,8 +34,8 @@ struct LIBCXX_HIDDEN list_cellimageObj : public list_cellObj,
 
 	//! Implement cell_get_metrics().
 	std::pair<metrics::axis, metrics::axis>
-		cell_get_metrics(IN_THREAD_ONLY, dim_t preferred_width,
-				 bool visible) override;
+		cell_get_metrics(IN_THREAD_ONLY, dim_t preferred_width)
+		override;
 
 	//! Implement cell_redraw().
 	void cell_redraw(IN_THREAD_ONLY,

@@ -284,7 +284,6 @@ void editorObj::implObj::theme_updated(IN_THREAD_ONLY,
 void editorObj::implObj::compute_preferred_width(IN_THREAD_ONLY)
 {
 	preferred_width=config.oneline() ? 0:nominal_width(IN_THREAD);
-	rewrap(IN_THREAD);
 }
 
 dim_t editorObj::implObj::nominal_width(IN_THREAD_ONLY) const
@@ -326,18 +325,10 @@ void editorObj::implObj::set_minimum_override(IN_THREAD_ONLY,
 	parent_peephole->recalculate(IN_THREAD, *this);
 }
 
-bool editorObj::implObj::rewrap(IN_THREAD_ONLY)
-{
-	if (preferred_width == 0)
-		return false;
-
-	return text->rewrap(IN_THREAD, preferred_width);
-}
-
 std::pair<metrics::axis, metrics::axis>
 editorObj::implObj::calculate_current_metrics(IN_THREAD_ONLY)
 {
-	auto metrics=text->get_metrics(IN_THREAD, preferred_width, true);
+	auto metrics=text->get_metrics(IN_THREAD, preferred_width);
 
 	// If we word-wrap, fixate to the word wrapping width. Otherwise
 	// get_metrics() uses the current width as the preferred width, so
@@ -354,6 +345,7 @@ editorObj::implObj::calculate_current_metrics(IN_THREAD_ONLY)
 
 void editorObj::implObj::rewrap_due_to_updated_position(IN_THREAD_ONLY)
 {
+	initialize_if_needed(IN_THREAD);
 	text->thread_lock(IN_THREAD,
 			  [&, this]
 			  (IN_THREAD_ONLY, const auto &impl)
@@ -362,6 +354,8 @@ void editorObj::implObj::rewrap_due_to_updated_position(IN_THREAD_ONLY)
 					  data(IN_THREAD).current_position
 					  .width;
 			  });
+
+	text->rewrap(IN_THREAD, preferred_width);
 }
 
 void editorObj::implObj::keyboard_focus(IN_THREAD_ONLY)

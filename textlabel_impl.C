@@ -169,6 +169,7 @@ void textlabelObj::implObj::update(const text_param &string)
 
 void textlabelObj::implObj::update(IN_THREAD_ONLY, const text_param &string)
 {
+	get_label_element_impl().initialize_if_needed(IN_THREAD);
 	auto s=get_label_element_impl()
 		.create_richtextstring(default_meta, string, allow_links);
 	text->set(IN_THREAD, s);
@@ -183,22 +184,15 @@ void textlabelObj::implObj::update(IN_THREAD_ONLY, const text_param &string)
 void textlabelObj::implObj::compute_preferred_width(IN_THREAD_ONLY)
 {
 	auto screen=get_label_element_impl().get_screen()->impl;
-	preferred_width=0;
-	if (word_wrap_widthmm(IN_THREAD) == 0)
-		return;
 
-	preferred_width=(*current_theme_t::lock{screen->current_theme})
+	preferred_width=screen->current_theme.get()
 		->compute_width(word_wrap_widthmm(IN_THREAD));
-
-	rewrap(IN_THREAD);
-
-	preferred_width=text->get_width(IN_THREAD);
 }
 
 void textlabelObj::implObj::initialize(IN_THREAD_ONLY)
 {
 	auto screen=get_label_element_impl().get_screen()->impl;
-	auto current_theme=*current_theme_t::lock{screen->current_theme};
+	auto current_theme=screen->current_theme.get();
 	text->theme_updated(IN_THREAD, current_theme);
 
 	compute_preferred_width(IN_THREAD);
@@ -208,13 +202,11 @@ void textlabelObj::implObj::initialize(IN_THREAD_ONLY)
 
 void textlabelObj::implObj::updated(IN_THREAD_ONLY)
 {
+	rewrap_due_to_updated_position(IN_THREAD);
+
 	// We can now compute and set our initial metrics.
 
-	auto metrics=calculate_current_metrics(IN_THREAD);
-
-	get_label_element_impl().get_horizvert(IN_THREAD)
-		->set_element_metrics(IN_THREAD,
-				      metrics.first, metrics.second);
+	recalculate(IN_THREAD);
 }
 
 void textlabelObj::implObj::theme_updated(IN_THREAD_ONLY,
@@ -222,7 +214,23 @@ void textlabelObj::implObj::theme_updated(IN_THREAD_ONLY,
 {
 	text->theme_updated(IN_THREAD, new_theme);
 	compute_preferred_width(IN_THREAD);
-	recalculate(IN_THREAD);
+	updated(IN_THREAD);
+}
+
+void textlabelObj::implObj::position_set(IN_THREAD_ONLY)
+{
+	if (position_set_flag)
+		return;
+
+	// We avoided expensive rewrapping until the container sets our
+	// initial position, at which point we can wrap everything to our
+	// actual width.
+
+	position_set_flag=true;
+	if (preferred_width == 0)
+		return;
+
+	rewrap_due_to_updated_position(IN_THREAD);
 }
 
 void textlabelObj::implObj::process_updated_position(IN_THREAD_ONLY)
@@ -230,75 +238,27 @@ void textlabelObj::implObj::process_updated_position(IN_THREAD_ONLY)
 	rewrap_due_to_updated_position(IN_THREAD);
 }
 
-void textlabelObj::implObj::set_inherited_visibility(IN_THREAD_ONLY,
-						 inherited_visibility_info
-						 &visibility_info)
-{
-	// The label's metrics depend on the label's visibility. While the
-	// label is hidden its metrics are fixed. Once it is shown if it's
-	// a wrappable label its metrics will now reflect that.
-
-	rewrap_due_to_updated_position(IN_THREAD);
-}
-
 void textlabelObj::implObj::rewrap_due_to_updated_position(IN_THREAD_ONLY)
 {
-	if (word_wrap_widthmm(IN_THREAD) == 0)
+	if (preferred_width == 0)
+	{
+		text->rewrap(IN_THREAD, 0);
+		recalculate(IN_THREAD);
 		return; // Not word wrapping.
+	}
 
 	auto &element_impl=get_label_element_impl();
 	element_impl.initialize_if_needed(IN_THREAD); // Just make sure
 
-	// If we are not visible, just update the metrics.
-	//
-	// Do not rewrap the label according to the hidden display element's
-	// size. Top level containers are created with minimum size. This
-	// results in the layout manager initially attempting to resize its
-	// elements to their minimum size. Once all the metrics are set,
-	// the containers will keep recalculating themselves until they
-	// reach their preferred size. Recalculating the label based on its
-	// current width changes the label's metrics. This causes needless
-	// recalculation churn. Bypass it, and call recalculate().
+	auto rewrap_to=element_impl.data(IN_THREAD).current_position.width;
 
-	if (!element_impl.data(IN_THREAD).inherited_visibility)
-	{
-		recalculate(IN_THREAD);
-		return;
-	}
+	if (!position_set_flag)
+		rewrap_to=preferred_width;
 
-	// If the width matches the rich text's current position, nothing
-	// must've changed.
-
-	if (text->word_wrap_width(IN_THREAD) ==
-	    element_impl.data(IN_THREAD).current_position.width)
-	{
-		recalculate(IN_THREAD);
-		return;
-	}
-	// After rewrapping the text to the new width, we should reverse-
-	// engineer word_wrap_width, in millimeters, so if the theme gets
-	// updated we'll try our best to scale our current size accordingly.
-
-	text->rewrap(IN_THREAD,
-		     element_impl.data(IN_THREAD).current_position.width);
-
-	auto screen=element_impl.get_screen()->impl;
-
-	word_wrap_widthmm(IN_THREAD)=
-		screen->compute_widthmm
-		(current_theme_t::lock{screen->current_theme},
-		 text->word_wrap_width(IN_THREAD));
+	text->rewrap(IN_THREAD, rewrap_to);
 
 	// And we should now update our metrics, accordingly.
 	recalculate(IN_THREAD);
-}
-
-bool textlabelObj::implObj::rewrap(IN_THREAD_ONLY)
-{
-	if (word_wrap_widthmm(IN_THREAD) == 0)
-		return false;
-
-	return text->rewrap(IN_THREAD, preferred_width);
 }
 
 void textlabelObj::implObj::do_draw(IN_THREAD_ONLY,
@@ -315,6 +275,13 @@ void textlabelObj::implObj::recalculate(IN_THREAD_ONLY)
 {
 	auto metrics=calculate_current_metrics(IN_THREAD);
 
+	if (!position_set_flag)
+	{
+		metrics.first={metrics.first.preferred(),
+			       metrics.first.preferred(),
+			       metrics.first.preferred()};
+	}
+
 	get_label_element_impl()
 		.get_horizvert(IN_THREAD)->set_element_metrics
 		(IN_THREAD,
@@ -325,9 +292,7 @@ void textlabelObj::implObj::recalculate(IN_THREAD_ONLY)
 std::pair<metrics::axis, metrics::axis>
 textlabelObj::implObj::calculate_current_metrics(IN_THREAD_ONLY)
 {
-	return text->get_metrics(IN_THREAD, preferred_width,
-				 get_label_element_impl()
-				 .data(IN_THREAD).inherited_visibility);
+	return text->get_metrics(IN_THREAD, preferred_width);
 }
 
 bool textlabelObj::implObj::process_button_event(IN_THREAD_ONLY,

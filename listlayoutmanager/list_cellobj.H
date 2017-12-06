@@ -27,8 +27,7 @@ struct LIBCXX_HIDDEN list_cellObj : virtual public obj {
 
 	//! Return this cell's metrics.
 	virtual std::pair<metrics::axis, metrics::axis>
-		cell_get_metrics(IN_THREAD_ONLY, dim_t preferred_width,
-			    bool visible)=0;
+		cell_get_metrics(IN_THREAD_ONLY, dim_t preferred_width)=0;
 
 	//! Draw this cell's contents.
 	virtual void cell_redraw(IN_THREAD_ONLY,

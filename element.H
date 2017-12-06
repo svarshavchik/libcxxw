@@ -337,12 +337,15 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 	//! Somebody wishes to inform us of our new current_position
 
+	//! Invoked by a layout manager, to update one of it's elements'
+	//! position.
+	//!
 	//! If the given rectangle is different than the existing current
 	//! position, update it, and call notify_updated_position()
 	//! and current_position_updated().
 
-	void update_current_position(IN_THREAD_ONLY,
-				     const rectangle &r);
+	virtual void update_current_position(IN_THREAD_ONLY,
+					     const rectangle &r);
 
 	//! The top level window's position changed, but not its size
 

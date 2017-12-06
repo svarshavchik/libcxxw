@@ -170,33 +170,31 @@ class LIBCXX_HIDDEN textlabelObj::implObj : virtual public obj {
 
 	//! Override process_updated_position()
 
-	//! Call the superclass, then rewrap_due_to_updated_position().
+	//! The label's position has changed.
+
 	void process_updated_position(IN_THREAD_ONLY);
 
-	//! Override set_inherited_visibility()
+	//! The layout manager has set our position.
 
-	//! Call the superclass, then rewrap_due_to_updated_position()
+	//! Word-wrappable labels fix their metrics to their preferred
+	//! width and height, until their layout manager positions it
+	//! accordingly, then the fixed metrics get unfrozen, and the metrics
+	//! then indicate the word-wrappability of the label.
 
-	void set_inherited_visibility(IN_THREAD_ONLY,
-				      inherited_visibility_info
-				      &visibility_info);
-
+	void position_set(IN_THREAD_ONLY);
  private:
+
+	//! Whether the label's position has been set at least once.
+
+	bool position_set_flag=false;
 
 	//! Potentially re-wordwrap the label.
 
 	//! After a label is resized we will need to re-wordwrap it, perhaps.
 	//!
-	//! Overriden in editor_impl, which uses fixed metrics, and does not
-	//! do a resize.
+	//! Overriden in editor_impl.
 
 	virtual void rewrap_due_to_updated_position(IN_THREAD_ONLY);
-
-	//! Rewrap text to word_wrap_width
-
-	//! Overridden in editor_impl to rewrap according to preferred_width.
-
-	virtual bool rewrap(IN_THREAD_ONLY);
 
  protected:
 	//! Recalculate and update our metrics.

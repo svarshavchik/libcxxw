@@ -18,10 +18,9 @@ list_celltextObj::list_celltextObj(const richtextstring &string,
 }
 
 std::pair<metrics::axis, metrics::axis>
-list_celltextObj::cell_get_metrics(IN_THREAD_ONLY, dim_t preferred_width,
-				   bool visible)
+list_celltextObj::cell_get_metrics(IN_THREAD_ONLY, dim_t preferred_width)
 {
-	return get_metrics(IN_THREAD, preferred_width, visible);
+	return get_metrics(IN_THREAD, preferred_width);
 }
 
 

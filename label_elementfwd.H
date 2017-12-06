@@ -73,13 +73,12 @@ public:
 	void process_updated_position(IN_THREAD_ONLY)
 		override;
 
-	//! Override set_inherited_visibility()
+	//! Override update_current_position().
 
-	//! Call the superclass, then rewrap_due_to_updated_position()
-
-	void set_inherited_visibility(IN_THREAD_ONLY,
-				      inherited_visibility_info
-				      &visibility_info) override;
+	//! Call the superclass, then invoke call position_set(), to
+	//! indicate that the layout manager has set the label's position.
+	void update_current_position(IN_THREAD_ONLY,
+				     const rectangle &r) override;
 
 	//! Override process_buton_event().
 
