@@ -112,9 +112,14 @@ void richtextcursorlocationObj
 
 	position.horiz_pos_is_valid=true;
 
+	auto h=dim_t::truncate(targeted_horiz_pos);
+
+	auto first_xpos=dim_t::truncate(my_fragment->first_xpos(IN_THREAD));
+
+	h=h<first_xpos ? 0:h-first_xpos;
+
 	position.offset=
-		my_fragment->horiz_info.find_x_pos(dim_t::truncate
-						   (targeted_horiz_pos));
+		my_fragment->horiz_info.find_x_pos(h);
 	position.cached_horiz_pos=dim_squared_t::truncate
 		(my_fragment->horiz_info.x_pos(position.offset)
 		 + my_fragment->first_xpos(IN_THREAD));
