@@ -660,6 +660,7 @@ libcxxw_la_SOURCES=\
 	screen_fontcaches.C			    \
 	screen_fontcaches.H			    \
 	screen_fontcachesfwd.H			    \
+	screen_positions.C			    \
 	screen_solidcolorpictures.C		    \
 	screen_solidcolorpictures.H		    \
 	screen_solidcolorpicturesfwd.H		    \
@@ -879,6 +880,7 @@ testprogressbar_SOURCES=testprogressbar.C
 testprogressbar_LDADD=libcxxw.la
 testprogressbar_LDFLAGS=-static $(STATICLINKFLAGS)
 
+$(call OPTIONS_GEN,testwordwrappablelabel.inc.H,testwordwrappablelabel.xml)
 testwordwrappablelabel_SOURCES=testwordwrappablelabel.C
 testwordwrappablelabel_LDADD=libcxxw.la
 testwordwrappablelabel_LDFLAGS=-static $(STATICLINKFLAGS)
@@ -1085,6 +1087,7 @@ test:
 	./testtooltip --width=50
 	./testprogressbar
 	./testpage --testfocus
+	./testwordwrappablelabel --testmetrics
 
 .PHONY: rpm
 

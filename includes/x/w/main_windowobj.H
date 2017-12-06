@@ -284,6 +284,12 @@ public:
 
 	std::function<void (const busy &)
 		      > destroy_when_closed(const std::string_view &);
+
+	//! Get current screen position
+	rectangle get_screen_position() const;
+
+	//! Set the suggested screen position
+	void set_screen_position(const rectangle &);
 };
 
 LIBCXXW_NAMESPACE_END

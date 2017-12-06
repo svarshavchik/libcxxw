@@ -124,7 +124,11 @@ void main_windowObj::handlerObj
 			} CATCH_EXCEPTIONS;
 		update_size_hints(IN_THREAD);
 	}
-
+	else
+	{
+		// Time for suggestions is over.
+		suggested_position(IN_THREAD).reset();
+	}
 	generic_windowObj::handlerObj
 		::set_inherited_visibility(IN_THREAD, visibility_info);
 }
@@ -132,13 +136,34 @@ void main_windowObj::handlerObj
 void main_windowObj::handlerObj::update_size_hints(IN_THREAD_ONLY)
 {
 	auto hints=compute_size_hints(IN_THREAD);
+	{
+#ifdef MAINWINDOW_HINTS_DEBUG
+		MAINWINDOW_HINTS_DEBUG();
+#endif
+	}
 
 	auto conn=screenref->get_connection()->impl;
 
+	// Before making ourselves visible, if we have a suggested position
+	// explicitly send it via ConfigureWindow(). Apparently the hints
+	// are not enough for XFCE.
+
+	if (!data(IN_THREAD).inherited_visibility &&
+	    (hints.flags & XCB_ICCCM_SIZE_HINT_US_POSITION))
+	{
+		values_and_mask configure_window_vals
+			(XCB_CONFIG_WINDOW_X, hints.x,
+			 XCB_CONFIG_WINDOW_Y, hints.y);
+
+		xcb_configure_window(IN_THREAD->info->conn, id(),
+				     configure_window_vals.mask(),
+				     configure_window_vals.values().data());
+	}
 	xcb_icccm_set_wm_size_hints(conn->info->conn,
 				    id(),
 				    conn->info->atoms_info.wm_normal_hints,
 				    &hints);
+
 }
 
 xcb_size_hints_t main_windowObj::handlerObj::compute_size_hints(IN_THREAD_ONLY)
@@ -147,17 +172,80 @@ xcb_size_hints_t main_windowObj::handlerObj::compute_size_hints(IN_THREAD_ONLY)
 
 	auto minimum_width=p->horiz.minimum();
 	auto minimum_height=p->vert.minimum();
+#if 0
 	auto new_preferred_width=p->horiz.preferred();
 	auto new_preferred_height=p->vert.preferred();
-
+#endif
 	xcb_size_hints_t hints=xcb_size_hints_t();
 
+	// set_screen_position() was used to set the suggested position.
+	if (suggested_position(IN_THREAD))
+	{
+		auto width=suggested_position(IN_THREAD)->width;
+		auto height=suggested_position(IN_THREAD)->height;
+
+		// Bounds check the width and the height against our metrics.
+
+		if (width < minimum_width)
+			width=minimum_width;
+
+		if (height < minimum_height)
+			height=minimum_height;
+
+		if (width > p->horiz.maximum())
+			width=p->horiz.maximum();
+
+		if (height > p->vert.maximum())
+			height=p->horiz.maximum();
+
+		// Now, make sure that x and y fits inside the workarea.
+
+		auto x=suggested_position(IN_THREAD)->x;
+		auto y=suggested_position(IN_THREAD)->y;
+
+		auto &workarea=frame_extents(IN_THREAD).workarea;
+
+		coord_t min_x=coord_t::truncate(workarea.x+
+						frame_extents(IN_THREAD).left);
+		coord_t min_y=coord_t::truncate(workarea.y+
+						frame_extents(IN_THREAD).top);
+		coord_t max_x=coord_t::truncate(workarea.width-
+						frame_extents(IN_THREAD).right);
+		coord_t max_y=coord_t::truncate(workarea.height-
+						frame_extents(IN_THREAD).bottom)
+			;
+		max_x=coord_t::truncate(max_x-width);
+		max_y=coord_t::truncate(max_y-height);
+
+		if (x > max_x)
+			x=max_x;
+		if (y > max_y)
+			y=max_y;
+
+		if (x < min_x)
+			x=min_x;
+		if (y < min_y)
+			y=min_y;
+
+		xcb_icccm_size_hints_set_position(&hints, 1,
+						  coord_t::truncate(x),
+						  coord_t::truncate(y));
+		xcb_icccm_size_hints_set_size(&hints, 1,
+					      dim_t::truncate(width),
+					      dim_t::truncate(height));
+
+		xcb_icccm_size_hints_set_win_gravity(&hints,
+						     XCB_GRAVITY_STATIC);
+	}
 	xcb_icccm_size_hints_set_min_size(&hints,
 					  (dim_t::value_type)minimum_width,
 					  (dim_t::value_type)minimum_height);
+
+#if 0
 	xcb_icccm_size_hints_set_base_size(&hints,
 					   (dim_t::value_type)new_preferred_width,
 					   (dim_t::value_type)new_preferred_height);
+#endif
 	xcb_icccm_size_hints_set_max_size(&hints,
 					  (dim_t::value_type)p->horiz.maximum(),
 					  (dim_t::value_type)p->vert.maximum());
@@ -166,7 +254,7 @@ xcb_size_hints_t main_windowObj::handlerObj::compute_size_hints(IN_THREAD_ONLY)
 }
 
 void main_windowObj::handlerObj::request_visibility(IN_THREAD_ONLY,
-						       bool flag)
+						    bool flag)
 {
 	if (!flag || preferred_dimensions_set(IN_THREAD))
 	{
@@ -184,25 +272,34 @@ void main_windowObj::handlerObj::request_visibility(IN_THREAD_ONLY,
 		 {
 			 me->preferred_dimensions_set(IN_THREAD)=true;
 
+			 auto w=me->preferred_width(IN_THREAD);
+			 auto h=me->preferred_height(IN_THREAD);
+
+			 // If we have a suggested window size, use that
+			 // instead.
+
+			 auto hints=me->compute_size_hints(IN_THREAD);
+
+			 if (hints.flags & XCB_ICCCM_SIZE_HINT_US_POSITION)
+			 {
+				 w=dim_t::truncate(hints.width);
+				 h=dim_t::truncate(hints.height);
+			 }
+
 			 // An X server will report a BadValue for a window
 			 // of size (0,0). Our metrics can compute such
 			 // a preferred size, as an edge case. So, we deal
 			 // with it.
 
-			 auto w=me->preferred_width(IN_THREAD);
-			 auto h=me->preferred_height(IN_THREAD);
-
-			 if (w == 0 || h == 0)
-				 w=h=1;
-
 			 values_and_mask configure_window_vals
 				 (XCB_CONFIG_WINDOW_WIDTH,
-				  (dim_t::value_type)w,
+				  (w == 0 || h == 0 ? 1
+				   : (dim_t::value_type)w),
 
 				  XCB_CONFIG_WINDOW_HEIGHT,
-				  (dim_t::value_type)h);
+				  (w == 0 || h == 0 ? 1
+				   : (dim_t::value_type)h));
 
-				 ;
 #ifdef REQUEST_VISIBILITY_LOG
 			 REQUEST_VISIBILITY_LOG(me->preferred_width(IN_THREAD),
 						me->preferred_height(IN_THREAD)
@@ -220,8 +317,8 @@ void main_windowObj::handlerObj::request_visibility(IN_THREAD_ONLY,
 
 			 auto r=*mpobj<rectangle>::lock(me->current_position);
 
-			 r.width=me->preferred_width(IN_THREAD);
-			 r.height=me->preferred_height(IN_THREAD);
+			 r.width=w;
+			 r.height=h;
 
 			 me->process_configure_notify(IN_THREAD, r);
 

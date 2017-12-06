@@ -49,7 +49,7 @@ See COPYING for distribution information.
     <methodname>get_focus_first</methodname>() moves the focusable element's
     tabbing order to be after another focusable element, before another
     focusable element, or the first focusable element in the window after
-    the <link "menu">window's menu</link>, if it has one; or the first
+    the <link linkend="menu">window's menu</link>, if it has one; or the first
     focusable element in windows without menu bars.
   </para>
 

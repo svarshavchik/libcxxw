@@ -9,6 +9,7 @@
 #include <x/destroy_callback.H>
 #include <x/ref.H>
 #include <x/obj.H>
+#include <x/config.H>
 
 #include "x/w/main_window.H"
 #include "x/w/label.H"
@@ -21,8 +22,19 @@
 #include "x/w/connection.H"
 #include "x/w/text_hotspot.H"
 #include "x/w/input_field.H"
+#include "testwordwrappablelabel.inc.H"
 #include <string>
 #include <iostream>
+
+static int mainwindow_hints_update_counter=0;
+
+#define MAINWINDOW_HINTS_DEBUG()					\
+	do {								\
+		std::cout << "MAIN: " << hints.width			\
+			  << "/" << hints.height << std::endl;		\
+		++mainwindow_hints_update_counter;			\
+	} while(0)
+#include "main_window_handler.C"
 
 class close_flagObj : public LIBCXX_NAMESPACE::obj {
 
@@ -149,16 +161,25 @@ static void initialize_label(const LIBCXX_NAMESPACE::w::factory &factory)
 			{100, LIBCXX_NAMESPACE::w::halign::center});
 }
 
-void testlabel()
+void testlabel(const testwordwrappablelabel_options &options)
 {
+	auto configfile=
+		LIBCXX_NAMESPACE::configdir("testwordwrappablelabel@libcxx.com") + "/windows";
+
 	LIBCXX_NAMESPACE::destroy_callback::base::guard guard;
 
 	auto close_flag=close_flag_ref::create();
 
 	auto main_window=LIBCXX_NAMESPACE::w::main_window
-		::create([]
+		::create([&]
 			 (const auto &main_window)
 			 {
+				 auto pos=LIBCXX_NAMESPACE::w::load_screen_positions(configfile);
+
+				 auto main_window_pos=pos.find("main");
+
+				 if (main_window_pos != pos.end())
+					 main_window->set_screen_position(main_window_pos->second);
 				 LIBCXX_NAMESPACE::w::gridlayoutmanager
 				     layout=main_window->get_layoutmanager();
 				 LIBCXX_NAMESPACE::w::gridfactory factory=
@@ -166,7 +187,8 @@ void testlabel()
 
 				 initialize_label(factory);
 
-				 layout->append_row()->create_input_field("");
+				 if (options.testmetrics->value)
+					 layout->append_row()->create_input_field("");
 			 });
 
 	main_window->set_window_title("Hello world!");
@@ -203,7 +225,26 @@ void testlabel()
 				    (i % 2) ? 100:200);
 	}
 #endif
-	lock.wait([&] { return *lock; });
+	if (options.testmetrics->value)
+	{
+		lock.wait_for(std::chrono::seconds(4),
+			      [&]
+			      {
+				      return *lock;
+			      });
+
+		if (mainwindow_hints_update_counter != 1)
+			throw EXCEPTION("Set hints more than once.");
+	}
+	else
+	{
+		lock.wait([&] { return *lock; });
+	}
+
+	LIBCXX_NAMESPACE::w::screen_positions_t pos;
+
+	pos.emplace("main", main_window->get_screen_position());
+	LIBCXX_NAMESPACE::w::save_screen_positions(configfile, pos);
 }
 
 int main(int argc, char **argv)
@@ -213,7 +254,11 @@ int main(int argc, char **argv)
 			::load_property(LIBCXX_NAMESPACE_STR "::themes",
 					"themes", true, true);
 
-		testlabel();
+		testwordwrappablelabel_options options;
+
+		options.parse(argc, argv);
+
+		testlabel(options);
 	} catch (const LIBCXX_NAMESPACE::exception &e)
 	{
 		e->caught();

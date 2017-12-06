@@ -8,6 +8,7 @@
 
 #include <x/exception.H>
 #include <x/destroy_callback.H>
+#include <x/config.H>
 
 #include <x/w/main_window.H>
 #include <x/w/gridlayoutmanager.H>
@@ -75,6 +76,30 @@ void wordwrap()
 
 	auto main_window=x::w::main_window::create(create_mainwindow);
 
+	// Configuration filename where we save the window's position.
+
+	std::string configfile=
+		x::configdir("wordwraplabel@examples.w.libcxx.com")
+		+ "/windows";
+
+	// Load the saved window position.
+	//
+	// x::w::screen_positions_t is a container, a std::unordered_map.
+	// The key is a std::string, the value is an x::w::rectangle, that
+	// gets passed directly to set_screen_position(). This is really
+	// "set_suggested_screen_position()", and can be used only before
+	// showing the main window for the first time.
+
+	{
+		x::w::screen_positions_t pos=
+			x::w::load_screen_positions(configfile);
+
+		auto iter=pos.find("main");
+
+		if (iter != pos.end())
+			main_window->set_screen_position(iter->second);
+	}
+
 	main_window->on_disconnect([]
 				   {
 					   _exit(1);
@@ -94,6 +119,19 @@ void wordwrap()
 	main_window->show_all();
 
 	close_flag->wait();
+
+	// And save the window's final position, so that it get be used the
+	// next time this program runs.
+	//
+	// x::w::screen_positions_t is a container, a std::unordered_map,
+	// making it possible to save multiple windows' positions, using
+	// application-assigned std::string keys as window identifiers.
+
+	x::w::screen_positions_t pos;
+
+	pos.emplace("main", main_window->get_screen_position());
+
+	x::w::save_screen_positions(configfile, pos);
 }
 
 int main(int argc, char **argv)

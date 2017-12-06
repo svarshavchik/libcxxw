@@ -73,6 +73,13 @@ class LIBCXX_HIDDEN main_windowObj::handlerObj :
 
 	void update_size_hints(IN_THREAD_ONLY);
 
+ private:
+	//! Recommended screen position for this window.
+
+	std::optional<rectangle> suggested_position_thread_only;
+ public:
+	THREAD_DATA_ONLY(suggested_position);
+
 	//! Translate our metrics into WM_SIZE_HINTS
 	virtual xcb_size_hints_t compute_size_hints(IN_THREAD_ONLY);
 

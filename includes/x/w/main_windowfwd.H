@@ -6,12 +6,84 @@
 #define x_w_main_windowfwd_h
 
 #include <x/w/namespace.H>
+#include <x/w/rectangle.H>
 #include <x/ptrfwd.H>
+
+#include <unordered_map>
+#include <string>
 
 LIBCXXW_NAMESPACE_START
 
 class main_windowObj;
 class main_windowBase;
+
+//! Memorized positions of \ref main_window "main windows" on the screen.
+
+//! \see save_screen_positions
+//!
+//! \see load_screen_positions
+
+typedef std::unordered_map<std::string, rectangle> screen_positions_t;
+
+//! Save memorized coordinates.
+
+//! \code
+//! #include <INSERT_LIBX_NAMESPACE/config.H>
+//!
+//! INSERT_LIBX_NAMESPACE::w::screen_positions_t screen_positions;
+//!
+//! screen_positions.emplace("main", main_window->get_screen_position());
+//!
+//! INSERT_LIBX_NAMESPACE::w::save_screen_positions(INSERT_LIBX_NAMESPACE::configdir("app@example.com") + "/windows",
+//!                             screen_positions);
+//! \endcode
+//!
+//! Provides the means to save the current coordinates of
+//! \ref main_window "main windows", so that they may be reopened in the same
+//! position the next time the application runs.
+//!
+//! Use <a href="/configdir.html">LibCXX's configdir()</a> to prepare the
+//! application's configuration directory. save_memorize_coordinates() first
+//! parameter is the configuration file's name.
+//!
+//! \see load_screen_positions
+//!
+//! \see generic_window
+
+void save_screen_positions(const std::string &filename,
+			   const screen_positions_t &coordinates);
+
+//! Load memorized coordinates.
+
+//! \code
+//! #include <INSERT_LIBX_NAMESPACE/config.H>
+//!
+//! INSERT_LIBX_NAMESPACE::w::screen_positions_t screen_positions=
+//!     INSERT_LIBX_NAMESPACE::w::load_screen_positions(INSERT_LIBX_NAMESPACE::configdir("app@example.com") + "/windows");
+//!
+//! auto iter=screen_positions.find("main");
+//!
+//! if (iter != screen_positions.end())
+//!     main_window->set_screen_position(iter->second);
+//!
+//! main_window->show_all().
+//! \endcode
+//!
+//! Provides the means to open the application's main window in the same
+//! position as before.
+//!
+//! Use <a href="/configdir.html">LibCXX's configdir()</a> to prepare the
+//! application's configuration directory. load_memorize_coordinates() first
+//! parameter is the configuration file's name.
+//!
+//! No error occurs if the configuraiton file does not exist, in which case an
+//! empty list of coordinates gets returned.
+//!
+//! \see save_screen_positions
+//!
+//! \see generic_window
+
+screen_positions_t load_screen_positions(const std::string &filename);
 
 //! \anchor main_window Top level application window.
 

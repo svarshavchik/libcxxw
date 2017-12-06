@@ -764,6 +764,8 @@ void generic_windowObj::handlerObj::process_configure_notify(IN_THREAD_ONLY,
 	root_x(IN_THREAD)=value->dst_x;
 	root_y(IN_THREAD)=value->dst_y;
 
+	root_xy=std::tuple{value->dst_x, value->dst_y};
+
 	// same_screen=value->same_screen;
 	// child_window=value->child;
 

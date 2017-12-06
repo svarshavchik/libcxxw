@@ -133,6 +133,81 @@ See COPYING for distribution information.
       </para>
     </listitem>
   </itemizedlist>
+
+  <section id="screen_positions">
+    <title>Preserving window positions</title>
+
+    <para>
+      <link linkend="wordwraplabel"><filename>wordwraplabel.C</filename></link>
+      should open its window in the same position where it was previously,
+      the last time the example program ran. This feature requires
+      explicit support.
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+#include &lt;&ns;/config.H&gt;
+
+std::string configfile=
+   &ns;::configdir("wordwraplabel@examples.w.libcxx.com")
+		+ "/windows";
+
+&ns;::w::screen_positions_t pos;
+
+pos.emplace("main", main_window->get_screen_position());
+&ns;::w::save_screen_positions(configfile, pos);</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      <ulink url="&link-typedef-x--w-main-window;"><classname>&ns;::w::main_window</classname></ulink>'s
+      <methodname>get_screen_position</methodname>() gets called before
+      the program ends. This returns the window's last known position on
+      the screen.
+      The position gets saved in an
+      <ulink url="&link-typedef-x--w-screen-positions-t;"><classname>&ns;::w::screen_positions_t</classname></ulink>,
+      which is a container whose key is the window's identifier, a string
+      assigned by the application. The application may put more than one
+      window's position in the container, using a unique identifier for each
+      window.
+      <ulink url="&link-function-x--w-save-screen-positions;"><function>&ns;::w::save_screen_positions</function></ulink>() saves the
+      contents of the
+      <ulink url="&link-typedef-x--w-screen-positions-t;"><classname>&ns;::w::screen_positions_t</classname></ulink>
+      in a file.
+      This example program uses &libcxx;'s base library's
+      <ulink url="/configdir.html"><function>&ns;::configdir</function></ulink>
+      function to initialize a configuration directory for
+      <filename>wordwraplabel</filename>'s use, where the window's position
+      get saved.
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+&ns;::w::screen_positions_t pos=
+   &ns;::w::load_screen_positions(configfile);
+
+auto iter=pos.find("main");
+
+if (iter != pos.end())
+    main_window-&gt;set_screen_position(iter->second);</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      <ulink url="&link-function-x--w-load-screen-positions;"><function>&ns;::w::load_screen_positions</function></ulink>()
+      loads the previously-saved positions into the
+      <ulink url="&link-typedef-x--w-screen-positions-t;"><classname>&ns;::w::screen_positions_t</classname></ulink>
+      container, if the file exists.
+      <function>&ns;::w::load_screen_positions</function> gets called
+      before initially showing the main window; so if the window's position
+      got saved the last time
+      <filename>wordwraplabel</filename> ran, the same position and size
+      gets set for the new window, before
+      <methodname>show</methodname>()-ing it.
+    </para>
+  </section>
 </chapter>
 <!--
 Local Variables:

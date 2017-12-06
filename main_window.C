@@ -591,4 +591,25 @@ input_dialog main_windowObj
 	return new_input_dialog;
 }
 
+rectangle main_windowObj::get_screen_position() const
+{
+	auto handler=impl->handler;
+
+	auto [x, y] = handler->root_xy.get();
+
+	auto r=handler->current_position.get();
+
+	return {x, y, r.width, r.height};
+}
+
+void main_windowObj::set_screen_position(const rectangle &r)
+{
+	impl->handler->IN_THREAD->run_as
+		([r, handler=impl->handler]
+		 (IN_THREAD_ONLY)
+		 {
+			 handler->suggested_position(IN_THREAD)=r;
+		 });
+}
+
 LIBCXXW_NAMESPACE_END

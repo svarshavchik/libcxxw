@@ -8,7 +8,7 @@
 #include <x/w/main_windowfwd.H>
 #include <x/w/main_windowobj.H>
 #include <x/w/gridlayoutmanager.H>
-#include <x/ref.H>
+#include <x/w/generic_window.H>
 #include <x/functional.H>
 
 LIBCXXW_NAMESPACE_START

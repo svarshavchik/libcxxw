@@ -76,16 +76,28 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	coord_t root_x_thread_only; //!< x coordinate on the root window
 	coord_t root_y_thread_only; //!< y coordinate on the root window
 
+ public:
+	//! x & y coordinates on the root window.
+
+	//! This is a mutex-protected copy of root_x and root_y. root_x and
+	//! root_y are accessible IN_THREAD_ONLY, and the connection thread
+	//! uses them, for speed, thusly no need to avoid locking. The
+	//! connection thread, upon received a ConfigureNotify, sets both
+	//! root_x, root_y, and root_xy.
+
+	mpobj<std::tuple<coord_t, coord_t>> root_xy;
+
+ private:
+
 	//! What we will put into WM_CLASS
 	std::string wm_class_instance_thread_only;
 
 	//! What we will put into WM_CLASS
 	std::string wm_class_resource_thread_only;
 
+ public:
 	//! The default value for the instance
 	virtual const char *default_wm_class_instance() const=0;
-
- public:
 
 	//! The default value for the resource.
 

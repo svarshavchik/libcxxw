@@ -79,7 +79,7 @@ static inline dim_t one_millimeter(dim_t pixels, dim_t millimeters,
 // If all else fails, it's "default", 100% scale.
 
 static std::string default_theme_name(const std::string &cxxwtheme_property,
-				      const x::xml::doc &config,
+				      const xml::doc &config,
 				      const std::string &themenameArg)
 {
 	auto themename=themenameArg;
@@ -113,7 +113,7 @@ static std::string default_theme_name(const std::string &cxxwtheme_property,
 }
 
 static double default_theme_scale(const std::string &cxxwtheme_property,
-				  const x::xml::doc &config,
+				  const xml::doc &config,
 				  int scale)
 {
 	if (scale == 0)
@@ -277,8 +277,8 @@ connection::base::available_themes()
 	{
 		// Extract <name> from each theme.
 
-		auto xml=x::xml::doc::create(theme_xml,
-					     "nonet xinclude");
+		auto xml=xml::doc::create(theme_xml,
+					  "nonet xinclude");
 
 		auto directory=
 			theme_xml.substr(0, theme_xml.rfind('/'));
