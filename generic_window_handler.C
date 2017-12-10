@@ -30,11 +30,11 @@
 #include "shortcut/installed_shortcut.H"
 #include "catch_exceptions.H"
 #include <x/property_value.H>
-#include <x/strtok.H>
-#include <x/chrcasecmp.H>
 #include <x/weakcapture.H>
 #include <x/pidinfo.H>
 #include <courier-unicode.h>
+#include <xcb/xcb_icccm.h>
+#include <string>
 
 LIBCXXW_NAMESPACE_START
 
@@ -105,6 +105,25 @@ generic_windowObj::handlerObj
 	frame_extents_thread_only(params.window_handler_params.screenref
 				  ->get_workarea())
 {
+	char hostnamebuf[256];
+
+	if (gethostname(hostnamebuf, sizeof(hostnamebuf)))
+		LOG_ERROR("gethostname() failed");
+	else
+	{
+		hostnamebuf[sizeof(hostnamebuf)-1]=0;
+
+		xcb_icccm_set_wm_client_machine(IN_THREAD->info->conn,
+						id(),
+						XCB_ATOM_STRING,
+						8,
+						strlen(hostnamebuf),
+						hostnamebuf);
+	}
+
+	mpobj<ewmh>::lock lock{screenref->get_connection()->impl->ewmh_info};
+
+	lock->set_window_pid(id());
 }
 
 generic_windowObj::handlerObj::~handlerObj()=default;
@@ -1247,28 +1266,6 @@ void generic_windowObj::handlerObj::frame_extents_updated(IN_THREAD_ONLY)
 {
 }
 
-static const struct {
-	const char *n;
-	xcb_atom_t xcb_ewmh_connection_t::*atom;
-} window_type_atoms[]={
-	{"desktop", &xcb_ewmh_connection_t::_NET_WM_WINDOW_TYPE_DESKTOP},
-	{"dock", &xcb_ewmh_connection_t::_NET_WM_WINDOW_TYPE_DOCK},
-	{"toolbar", &xcb_ewmh_connection_t::_NET_WM_WINDOW_TYPE_TOOLBAR},
-	{"menu", &xcb_ewmh_connection_t::_NET_WM_WINDOW_TYPE_MENU},
-	{"utility", &xcb_ewmh_connection_t::_NET_WM_WINDOW_TYPE_UTILITY},
-	{"splash", &xcb_ewmh_connection_t::_NET_WM_WINDOW_TYPE_SPLASH},
-	{"dialog", &xcb_ewmh_connection_t::_NET_WM_WINDOW_TYPE_DIALOG},
-	{"dropdown_menu",
-	 &xcb_ewmh_connection_t::_NET_WM_WINDOW_TYPE_DROPDOWN_MENU},
-	{"popup_menu", &xcb_ewmh_connection_t::_NET_WM_WINDOW_TYPE_POPUP_MENU},
-	{"tooltip", &xcb_ewmh_connection_t::_NET_WM_WINDOW_TYPE_TOOLTIP},
-	{"notification",
-	 &xcb_ewmh_connection_t::_NET_WM_WINDOW_TYPE_NOTIFICATION},
-	{"combo", &xcb_ewmh_connection_t::_NET_WM_WINDOW_TYPE_COMBO},
-	{"dnd", &xcb_ewmh_connection_t::_NET_WM_WINDOW_TYPE_DND},
-	{"normal", &xcb_ewmh_connection_t::_NET_WM_WINDOW_TYPE_NORMAL},
-};
-
 void generic_windowObj::handlerObj::set_window_type(const std::string &s)
 {
 	IN_THREAD->run_as
@@ -1279,40 +1276,7 @@ void generic_windowObj::handlerObj::set_window_type(const std::string &s)
 		 {
 			 mpobj<ewmh>::lock lock(connection_impl->ewmh_info);
 
-			 if (!lock->ewmh_available)
-				 return;
-
-			 std::vector<xcb_atom_t> atoms;
-
-			 xcb_ewmh_connection_t *ewmh_conn=&*lock;
-
-			 std::list<std::string> words;
-
-			 strtok_str(s, ", \t\r\n", words);
-
-			 for (auto &w:words)
-			 {
-				 std::transform(w.begin(), w.end(), w.begin(),
-						chrcasecmp::tolower);
-
-				 for (auto &a:window_type_atoms)
-				 {
-					 if (w == a.n)
-					 {
-						 atoms.push_back(ewmh_conn
-								 ->*a.atom);
-						 break;
-					 }
-				 }
-			 }
-
-			 if (atoms.empty())
-				 return;
-
-			 xcb_ewmh_set_wm_window_type(ewmh_conn,
-						     me->id(),
-						     atoms.size(),
-						     &atoms[0]);
+			 lock->set_window_type(me->id(), s);
 		 });
 }
 
@@ -1376,17 +1340,7 @@ void generic_windowObj::handlerObj
 		 {
 			 mpobj<ewmh>::lock lock(connection_impl->ewmh_info);
 
-			 if (lock->ewmh_available)
-				 xcb_ewmh_set_wm_name(&*lock,
-						      me->id(),
-						      title.size(),
-						      title.c_str());
-			 else
-				 xcb_icccm_set_wm_name(IN_THREAD->info->conn,
-						       me->id(),
-						       XCB_ATOM_STRING, 8,
-						       title.size(),
-						       title.c_str());
+			 lock->set_window_name(me->id(), title);
 		 });
 }
 

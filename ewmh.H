@@ -64,6 +64,18 @@ class LIBCXX_HIDDEN ewmh : public xcb_ewmh_connection_t {
 	//! Set window manager icon.
 	void set_wm_icon(xcb_window_t wid,
 			 const std::vector<uint32_t> &raw_data);
+
+	//! Set window type.
+	void set_window_type(xcb_window_t wid,
+			     const std::string &type);
+
+	//! Set window name
+	void set_window_name(xcb_window_t wid,
+			     const std::string &name);
+
+	//! Set process id
+	void set_window_pid(xcb_window_t wid);
+
 };
 
 LIBCXXW_NAMESPACE_END

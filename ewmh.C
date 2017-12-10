@@ -9,6 +9,11 @@
 #include "ewmh.H"
 #include "returned_pointer.H"
 #include "connectionfwd.H"
+#include <xcb/xcb_icccm.h>
+#include <x/strtok.H>
+#include <x/chrcasecmp.H>
+#include <algorithm>
+#include <unistd.h>
 
 LOG_CLASS_INIT(LIBCXX_NAMESPACE::w::ewmh);
 
@@ -177,6 +182,86 @@ void ewmh::set_wm_icon(xcb_window_t wid,
 	xcb_ewmh_set_wm_icon(this, XCB_PROP_MODE_REPLACE, wid,
 			     raw_data.size(),
 			     const_cast<uint32_t *>(&raw_data[0]));
+}
+
+static const struct {
+	const char *n;
+	xcb_atom_t xcb_ewmh_connection_t::*atom;
+} window_type_atoms[]={
+	{"desktop", &xcb_ewmh_connection_t::_NET_WM_WINDOW_TYPE_DESKTOP},
+	{"dock", &xcb_ewmh_connection_t::_NET_WM_WINDOW_TYPE_DOCK},
+	{"toolbar", &xcb_ewmh_connection_t::_NET_WM_WINDOW_TYPE_TOOLBAR},
+	{"menu", &xcb_ewmh_connection_t::_NET_WM_WINDOW_TYPE_MENU},
+	{"utility", &xcb_ewmh_connection_t::_NET_WM_WINDOW_TYPE_UTILITY},
+	{"splash", &xcb_ewmh_connection_t::_NET_WM_WINDOW_TYPE_SPLASH},
+	{"dialog", &xcb_ewmh_connection_t::_NET_WM_WINDOW_TYPE_DIALOG},
+	{"dropdown_menu",
+	 &xcb_ewmh_connection_t::_NET_WM_WINDOW_TYPE_DROPDOWN_MENU},
+	{"popup_menu", &xcb_ewmh_connection_t::_NET_WM_WINDOW_TYPE_POPUP_MENU},
+	{"tooltip", &xcb_ewmh_connection_t::_NET_WM_WINDOW_TYPE_TOOLTIP},
+	{"notification",
+	 &xcb_ewmh_connection_t::_NET_WM_WINDOW_TYPE_NOTIFICATION},
+	{"combo", &xcb_ewmh_connection_t::_NET_WM_WINDOW_TYPE_COMBO},
+	{"dnd", &xcb_ewmh_connection_t::_NET_WM_WINDOW_TYPE_DND},
+	{"normal", &xcb_ewmh_connection_t::_NET_WM_WINDOW_TYPE_NORMAL},
+};
+
+void ewmh::set_window_type(xcb_window_t wid,
+			   const std::string &type)
+{
+	if (!ewmh_available)
+		return;
+
+	std::vector<xcb_atom_t> atoms;
+
+	std::list<std::string> words;
+
+	strtok_str(type, ", \t\r\n", words);
+
+	for (auto &w:words)
+	{
+		std::transform(w.begin(), w.end(), w.begin(),
+			       chrcasecmp::tolower);
+
+		for (auto &a:window_type_atoms)
+		{
+			if (w == a.n)
+			{
+				atoms.push_back(this->*a.atom);
+				break;
+			}
+		}
+	}
+
+	if (atoms.empty())
+		return;
+
+	xcb_ewmh_set_wm_window_type(this, wid,
+				    atoms.size(),
+				    &atoms[0]);
+}
+
+void ewmh::set_window_name(xcb_window_t wid, const std::string &title)
+{
+	if (ewmh_available)
+		xcb_ewmh_set_wm_name(this,
+				     wid,
+				     title.size(),
+				     title.c_str());
+	else
+		xcb_icccm_set_wm_name(connection,
+				      wid,
+				      XCB_ATOM_STRING, 8,
+				      title.size(),
+				      title.c_str());
+}
+
+void ewmh::set_window_pid(xcb_window_t wid)
+{
+	if (!ewmh_available)
+		return;
+
+	xcb_ewmh_set_wm_pid(this, wid, getpid());
 }
 
 LIBCXXW_NAMESPACE_END
