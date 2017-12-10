@@ -85,7 +85,7 @@ void connection_threadObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin)
 	// n_poll gets decremented to 1, and we'll only handle event messages,
 	// until doom arrives.
 
-	auto eventfd=msgqueue->getEventfd();
+	auto eventfd=msgqueue->get_eventfd();
 	eventfd->nonblock(true);
 
 	struct pollfd pfd[2];
@@ -129,7 +129,7 @@ void connection_threadObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin)
 			}
 
 			if (pfd[0].revents & POLLIN)
-				msgqueue->getEventfd()->event();
+				msgqueue->get_eventfd()->event();
 		} CATCH_EXCEPTIONS;
 	} while (!stop_received);
 }

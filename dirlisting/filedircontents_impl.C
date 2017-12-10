@@ -42,7 +42,7 @@ void filedircontentsObj::implObj::run(ptr<obj> &mcguffin)
 {
 	msgqueue_auto q{this, eventfd::create()};
 
-	auto fd=q->getEventfd();
+	auto fd=q->get_eventfd();
 
 	fd->nonblock(true);
 
