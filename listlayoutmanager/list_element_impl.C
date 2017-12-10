@@ -119,9 +119,9 @@ list_elementObj::implObj::implObj(const ref<list_container_implObj>
 					->find_alpha_pictformat_by_depth(1),
 					0, 0)),
 	  bullet1(container_element_impl.get_window_handler()
-		  .create_icon("bullet1", render_repeat::none, 0, 0)),
+		  .create_icon({"bullet1"})),
 	  bullet2(container_element_impl.get_window_handler()
-		  .create_icon("bullet2", render_repeat::none, 0, 0)),
+		  .create_icon({"bullet2"})),
 
 	  itemlabel_meta{create_background_color("label_foreground_color"),
 		create_theme_font(label_theme_font())},

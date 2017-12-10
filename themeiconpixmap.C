@@ -20,9 +20,9 @@ icon themeiconpixmapObj<dim_type>::resizemm(IN_THREAD_ONLY,
 					    const dim_arg &width_arg,
 					    const dim_arg &height_arg)
 {
-	return this->image->impl->create_icon(this->name,
-					      this->image->repeat,
-					      width_arg, height_arg);
+	return this->image->impl
+		->create_icon({this->name, this->image->repeat,
+					width_arg, height_arg});
 }
 
 template<typename dim_type>

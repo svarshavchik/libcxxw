@@ -235,9 +235,7 @@ editorObj::implObj::implObj(const ref<editor_peephole_implObj> &parent_peephole,
 			    richtextstring &&string)
 	: superclass_t(// Invisible pointer cursor
 		       parent_peephole->get_element_impl().get_window_handler()
-		       .create_icon("cursor-invisible",
-				    render_repeat::none, 0, 0)
-		       ->create_cursor(),
+		       .create_icon({"cursor-invisible"})->create_cursor(),
 		       // Capture the string's font.
 		       string.get_meta().at(0).second.getfont(),
 		       parent_peephole, config.alignment, 0,

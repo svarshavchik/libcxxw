@@ -1202,33 +1202,28 @@ std::vector<icon> drawableObj::implObj
 	icons.reserve(images.size());
 
 	for (const auto &name:images)
-		icons.push_back(create_icon(name, render_repeat::none,
-					    0, 0));
+		icons.push_back(create_icon({name}));
 
 	return icons;
 }
 
-icon drawableObj::implObj
-::create_icon(const std::string &name,
-	      render_repeat icon_repeat,
-	      const dim_arg &width_arg,
-	      const dim_arg &height_arg)
+icon drawableObj::implObj::create_icon(const create_icon_args_t &args)
 {
 	auto screen=get_screen();
 	auto theme=screen->impl->current_theme.get();
 
-	auto cached_filename=search_extension_cached(screen, name, theme);
+	auto cached_filename=search_extension_cached(screen, args.name, theme);
 
 	auto pixmap_impl=(*cached_filename->info.create)
-		(name, cached_filename, this, screen, theme,
-		 width_arg, height_arg);
+		(args.name, cached_filename, this, screen, theme,
+		 args.width, args.height);
 
 	auto cached_pixmap_with_picture=
 		create_cached_pixmap_with_picture(screen, pixmap_impl,
-						  icon_repeat);
+						  args.icon_repeat);
 
-	return get_cached_icon(name, theme, cached_pixmap_with_picture,
-			       width_arg, height_arg,
+	return get_cached_icon(args.name, theme, cached_pixmap_with_picture,
+			       args.width, args.height,
 			       icon_scale::nearest);
 }
 

@@ -357,9 +357,7 @@ void listlayoutstyle_impl::do_process_list_item_param
 			   {
 				   auto i=textlist_element
 					   .get_window_handler()
-					   .create_icon(s.c_str(),
-							render_repeat::none,
-							0, 0);
+					   .create_icon({s});
 
 				   auto t=list_cell
 					   (list_cellimage::create
@@ -590,9 +588,7 @@ class LIBCXX_HIDDEN menu_list_style_impl
 		{
 			auto i=textlist_element
 				.get_window_handler()
-				.create_icon("submenu",
-					     render_repeat::none,
-					     0, 0);
+				.create_icon({"submenu"});
 
 			return list_cellimage::create
 				(std::vector<icon>{i}, halign::left);

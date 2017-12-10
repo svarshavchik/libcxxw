@@ -637,15 +637,15 @@ new_booklayoutmanager::create(const ref<containerObj::implObj> &parent) const
 				 (container_impl,
 				  std::vector<icon>{
 					  wh.create_icon
-						  ("scroll-left1",
+						  ({"scroll-left1",
 						   render_repeat::none,
 						   0,
-						   "book_scroll_height"),
+						  "book_scroll_height"}),
 					  wh.create_icon
-						  ("scroll-left2",
+						  ({"scroll-left2",
 						   render_repeat::none,
 						   0,
-						   "book_scroll_height"),
+						  "book_scroll_height"}),
 						  });
 
 			 left_scroll_impl=impl;
@@ -726,15 +726,15 @@ new_booklayoutmanager::create(const ref<containerObj::implObj> &parent) const
 				 (container_impl,
 				  std::vector<icon>{
 					  wh.create_icon
-						  ("scroll-right1",
+						  ({"scroll-right1",
 						   render_repeat::none,
 						   0,
-						   "book_scroll_height"),
+						   "book_scroll_height"}),
 					  wh.create_icon
-						  ("scroll-right2",
+						  ({"scroll-right2",
 						   render_repeat::none,
 						   0,
-						   "book_scroll_height"),
+						   "book_scroll_height"}),
 						  });
 
 			 right_scroll_impl=impl;

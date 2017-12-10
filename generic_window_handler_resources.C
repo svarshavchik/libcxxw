@@ -58,9 +58,7 @@ generic_windowObj::handlerObj::resourcesObj
 	  (make_function<icon()>
 	   ([this]
 	    {
-		    return this->create_icon("disabled_mask",
-					     render_repeat::normal,
-					     0, 0);
+		    return this->create_icon({"disabled_mask"});
 	    }),
 	   default_background_color(parent_screen, background_color),
 	   default_background_color(parent_screen, "modal_shade"),

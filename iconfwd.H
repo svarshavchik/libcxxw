@@ -7,6 +7,9 @@
 
 #include <x/ptrfwd.H>
 #include "x/w/types.H"
+#include "x/w/constants_inc.H"
+#include "x/w/dim_arg.H"
+#include <string>
 
 LIBCXXW_NAMESPACE_START
 
@@ -50,6 +53,15 @@ typedef const_ptr<iconObj> const_iconptr;
 //! the requested size.
 
 enum class icon_scale { nearest, atleast, nomore};
+
+//! Parameters to create_icon().
+
+struct create_icon_args_t {
+	std::string name;
+	render_repeat icon_repeat=render_repeat::none;
+	dim_arg width=0;
+	dim_arg height=0;
+};
 
 LIBCXXW_NAMESPACE_END
 

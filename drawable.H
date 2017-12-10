@@ -102,10 +102,7 @@ class LIBCXX_HIDDEN drawableObj::implObj : virtual public obj {
 	//! This drawable is used only to obtain the icon's pictformat, and
 	//! create_pixmap().
 
-	icon create_icon(const std::string &name,
-			 render_repeat icon_repeat,
-			 const dim_arg &width_arg,
-			 const dim_arg &height_arg);
+	icon create_icon(const create_icon_args_t &);
 
 	//! Create an icon, with dimensions specified in pixels
 
