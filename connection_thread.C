@@ -90,7 +90,7 @@ void connection_threadObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin)
 
 	struct pollfd pfd[2];
 
-	pfd[0].fd=eventfd->getFd();
+	pfd[0].fd=eventfd->get_fd();
 	pfd[0].events=POLLIN | POLLHUP;
 
 	pfd[1].fd=xcb_get_file_descriptor(info->conn);

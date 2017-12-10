@@ -75,9 +75,9 @@ void filedircontentsObj::implObj::run(ptr<obj> &mcguffin)
 
 	struct pollfd pfd[2];
 
-	pfd[0].fd=fd->getFd();
+	pfd[0].fd=fd->get_fd();
 	pfd[0].events=POLLIN;
-	pfd[1].fd=i->getFd();
+	pfd[1].fd=i->get_fd();
 	pfd[1].events=POLLIN;
 
 
