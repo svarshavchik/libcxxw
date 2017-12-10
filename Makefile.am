@@ -810,6 +810,7 @@ INTERACTIVETESTPROGRAMS=\
 	testmainwindow					\
 	testmenu					\
 	testlabel					\
+	testping					\
 	testprogressbar					\
 	testscrollbar					\
 	testshowhide					\
@@ -875,6 +876,10 @@ testlist_LDFLAGS=$(TESTLINKTYPE)
 testmenu_SOURCES=testmenu.C
 testmenu_LDADD=libcxxw.la
 testmenu_LDFLAGS=$(TESTLINKTYPE)
+
+testping_SOURCES=testping.C
+testping_LDADD=libcxxw.la
+testping_LDFLAGS=$(TESTLINKTYPE)
 
 testprogressbar_SOURCES=testprogressbar.C
 testprogressbar_LDADD=libcxxw.la

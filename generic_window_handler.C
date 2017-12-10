@@ -124,6 +124,7 @@ generic_windowObj::handlerObj
 	mpobj<ewmh>::lock lock{screenref->get_connection()->impl->ewmh_info};
 
 	lock->set_window_pid(id());
+	lock->set_user_time_window(id(), id());
 }
 
 generic_windowObj::handlerObj::~handlerObj()=default;
@@ -437,6 +438,20 @@ bool generic_windowObj::handlerObj::is_busy()
 }
 
 void generic_windowObj::handlerObj
+::update_user_time(IN_THREAD_ONLY)
+{
+	update_user_time(IN_THREAD, IN_THREAD->timestamp(IN_THREAD));
+}
+
+void generic_windowObj::handlerObj
+::update_user_time(IN_THREAD_ONLY, xcb_timestamp_t t)
+{
+	mpobj<ewmh>::lock lock{screenref->get_connection()->impl->ewmh_info};
+
+	lock->set_user_time(id(), t);
+}
+
+void generic_windowObj::handlerObj
 ::key_press_event(IN_THREAD_ONLY,
 		  const xcb_key_press_event_t *event,
 		  uint16_t sequencehi)
@@ -447,6 +462,8 @@ void generic_windowObj::handlerObj
 	// Make sure we'll release the grab, when the dust settles.
 
 	grabbed_timestamp(IN_THREAD)=event->time;
+
+	update_user_time(IN_THREAD, event->time);
 
 	if (is_busy())
 		// We're busy now. Since we're grabbing all key presses this
@@ -623,6 +640,8 @@ void generic_windowObj::handlerObj
 		     const xcb_button_press_event_t *event)
 {
 	ungrab(IN_THREAD);
+
+	update_user_time(IN_THREAD, event->time);
 
 	auto click_time=std::chrono::steady_clock::now();
 

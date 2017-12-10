@@ -18,6 +18,7 @@ dialogObj::handlerObj::handlerObj(IN_THREAD_ONLY,
 	modal(modal),
 	parent_handler(parent_handler)
 {
+	update_user_time(IN_THREAD);
 }
 
 dialogObj::handlerObj::~handlerObj()=default;

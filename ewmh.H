@@ -6,6 +6,7 @@
 #define ewmh_h
 
 #include <xcb/xcb_ewmh.h>
+#include <xcb/xproto.h>
 #include "x/w/namespace.H"
 #include "x/w/rectangle.H"
 #include <x/logger.H>
@@ -76,6 +77,19 @@ class LIBCXX_HIDDEN ewmh : public xcb_ewmh_connection_t {
 	//! Set process id
 	void set_window_pid(xcb_window_t wid);
 
+	//! Set user time
+	void set_user_time(xcb_window_t wid, xcb_timestamp_t t);
+
+	//! Set user time window
+	void set_user_time_window(xcb_window_t wid, xcb_window_t time_wid);
+
+	//! Process an XCB_CLIENT_MESSAGE.
+
+	//! Handles a response to a _NET_WM_PING, and returns true.
+	//! Returns false if the client message is not recognized.
+
+	bool client_message(const xcb_client_message_event_t *event,
+			    xcb_window_t root_window);
 };
 
 LIBCXXW_NAMESPACE_END

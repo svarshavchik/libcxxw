@@ -47,6 +47,7 @@ suppressfile*
 /testlabel
 /testlist
 /testmenu
+/testping
 /testprogressbar
 /testwordwrappablelabel
 /testmainwindow

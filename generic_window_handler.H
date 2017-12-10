@@ -429,6 +429,14 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	void button_press_event(IN_THREAD_ONLY,
 				const xcb_button_press_event_t *event) override;
 
+	//! Update net_user_time property
+
+	void update_user_time(IN_THREAD_ONLY);
+
+	//! Update net_user_time property
+
+	void update_user_time(IN_THREAD_ONLY, xcb_timestamp_t);
+
  private:
 	//! The last button press event timestamp.
 

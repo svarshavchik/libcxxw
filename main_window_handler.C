@@ -34,16 +34,29 @@ main_windowObj::handlerObj::handlerObj(IN_THREAD_ONLY,
 	// Set WM_PROTOCOLS to WM_DELETE_WINDOW -- we handle the window
 	// close request ourselves.
 
-	xcb_atom_t protocols[1];
+	xcb_atom_t protocols[2];
 
 	protocols[0]=conn()->atoms_info.wm_delete_window;
+
+	int n=1;
+
+	{
+		mpobj<ewmh>::lock lock{screenref->get_connection()
+				->impl->ewmh_info};
+
+		if (lock->ewmh_available)
+		{
+			protocols[1]=lock->_NET_WM_PING;
+			++n;
+		}
+	}
 
 	change_property(IN_THREAD,
 			XCB_PROP_MODE_REPLACE,
 			conn()->atoms_info.wm_protocols,
 			XCB_ATOM_ATOM,
 			sizeof(xcb_atom_t)*8,
-			1,
+			n,
 			protocols);
 }
 
@@ -60,6 +73,8 @@ void main_windowObj::handlerObj
 {
 	if (event->type == IN_THREAD->info->atoms_info.wm_protocols)
 	{
+		update_user_time(IN_THREAD);
+
 		if (event->data.data32[0] ==
 		    IN_THREAD->info->atoms_info.wm_delete_window)
 		{
@@ -71,6 +86,14 @@ void main_windowObj::handlerObj
 			on_delete_callback(IN_THREAD)(yes_i_am);
 			return;
 		}
+
+
+		mpobj<ewmh>::lock lock{screenref->get_connection()
+				->impl->ewmh_info};
+
+		if (lock->client_message(event,
+					 screenref->impl->xcb_screen->root))
+			return;
 	}
 }
 

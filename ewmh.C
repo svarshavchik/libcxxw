@@ -264,4 +264,43 @@ void ewmh::set_window_pid(xcb_window_t wid)
 	xcb_ewmh_set_wm_pid(this, wid, getpid());
 }
 
+void ewmh::set_user_time(xcb_window_t wid, xcb_timestamp_t t)
+{
+	if (!ewmh_available)
+		return;
+
+	xcb_ewmh_set_wm_user_time(this, wid, t);
+}
+
+void ewmh::set_user_time_window(xcb_window_t wid, xcb_window_t time_wid)
+{
+	if (!ewmh_available)
+		return;
+	xcb_ewmh_set_wm_user_time_window(this, wid, time_wid);
+}
+
+bool ewmh::client_message(const xcb_client_message_event_t *event,
+			  xcb_window_t root_window)
+{
+	if (!ewmh_available)
+		return false;
+
+	if (event->data.data32[0] == _NET_WM_PING)
+	{
+		auto message=*event;
+
+		message.response_type=XCB_CLIENT_MESSAGE;
+		message.window=root_window;
+		xcb_send_event(connection,
+			       0,
+			       root_window,
+			       (XCB_EVENT_MASK_SUBSTRUCTURE_NOTIFY |
+				XCB_EVENT_MASK_SUBSTRUCTURE_REDIRECT),
+			       reinterpret_cast<char *>(&message));
+
+		return true;
+	}
+	return false;
+}
+
 LIBCXXW_NAMESPACE_END

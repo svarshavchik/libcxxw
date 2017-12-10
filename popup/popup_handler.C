@@ -30,6 +30,7 @@ popupObj::handlerObj::handlerObj(IN_THREAD_ONLY,
 		       nesting_level),
 	popup_parent_thread_only(parent)
 {
+	update_user_time(IN_THREAD);
 }
 
 popupObj::handlerObj::~handlerObj()=default;
