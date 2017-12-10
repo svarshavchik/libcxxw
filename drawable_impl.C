@@ -82,13 +82,20 @@ pixmap drawableObj::implObj::create_pixmap(dim_t width,
 					   dim_t height,
 					   const const_pictformat &pf)
 {
+	return get_screen()->create_pixmap(pf, width, height);
+}
+
+pixmap screenObj::create_pixmap(const const_pictformat &pf,
+				dim_t width,
+				dim_t height)
+{
 	if (width == dim_t::infinite() ||
 	    height == dim_t::infinite())
 		throw EXCEPTION("Internal error, invalid scratch pixmap size");
 
 	return pixmap::create(ref<pixmapObj::implObj>
 			      ::create(pf,
-				       get_screen(),
+				       ref(this),
 				       width, height));
 }
 

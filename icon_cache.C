@@ -41,8 +41,8 @@ typedef ref<icon_cacheObj::cached_filename_infoObj> cached_filename_info;
 typedef ref<pixmapObj::implObj
 	    > dim_arg_loader(const std::string &name,
 			     const cached_filename_info &filename,
-			     drawableObj::implObj *for_drawable,
 			     const screen &screenref,
+			     const const_pictformat &drawable_pictformat,
 			     const defaulttheme &theme,
 			     const dim_arg &width_arg,
 			     const dim_arg &height_arg);
@@ -50,8 +50,8 @@ typedef ref<pixmapObj::implObj
 typedef ref<pixmapObj::implObj
 	    > dim_t_loader(const std::string &name,
 			   const cached_filename_info &filename,
-			   drawableObj::implObj *for_drawable,
 			   const screen &screenref,
+			   const const_pictformat &drawable_pictformat,
 			   const defaulttheme &theme,
 			   dim_t w, dim_t h, icon_scale scale);
 
@@ -273,18 +273,21 @@ struct icon_cacheObj::std_fmt_pixmap_cache_key_t_hash
 // the load_pixmap() and cache it.
 
 static auto get_cached_pixmap(const cached_filename_info &filename,
-			      drawableObj::implObj *for_drawable,
+			      const screen &screenref,
+			      const const_pictformat &drawable_pictformat,
 			      ref<pixmapObj::implObj> (*load_pixmap)
 			      (const std::string &,
-			       drawableObj::implObj *))
+			       const screen &,
+			       const const_pictformat &))
 {
-	return for_drawable->get_screen()->impl->iconcaches->std_fmt_pixmap_cache
+	return screenref->impl->iconcaches->std_fmt_pixmap_cache
 		->find_or_create
-		({filename, for_drawable->drawable_pictformat},
+		({filename, drawable_pictformat},
 		 [&]
 		 {
 			 return (*load_pixmap)(filename->filename,
-					       for_drawable);
+					       screenref,
+					       drawable_pictformat);
 		 });
 }
 
@@ -512,7 +515,8 @@ struct icon_cacheObj::sxg_pixmap_cache_key_hash
 //! the SXG file. The returned sxg_images are cached.
 
 static auto get_cached_sxg_image(const sxg_parser &sxg,
-				 drawableObj::implObj *drawable_impl,
+				 const const_pictformat &drawable_pictformat,
+				 const screen &screenref,
 				 dim_t w,
 				 dim_t h,
 				 dim_t preadjust_w,
@@ -549,14 +553,16 @@ static auto get_cached_sxg_image(const sxg_parser &sxg,
 
 	// At this point: creating a (preadjust_w, preadjust_h) picture.
 
-	return sxg->screenref->impl->iconcaches
+	return screenref->impl->iconcaches
 		->sxg_pixmap_cache->find_or_create
-		({sxg, drawable_impl->drawable_pictformat,
+		({sxg, drawable_pictformat,
 				preadjust_w, preadjust_h},
 		 [&]
 		 {
-			 auto pixmap=drawable_impl->create_pixmap(preadjust_w,
-								  preadjust_h);
+			 auto pixmap=
+				 screenref->create_pixmap(drawable_pictformat,
+							  preadjust_w,
+							  preadjust_h);
 
 			 // Compute points in the image. render_points()
 			 // needs to know the size of the pixmap that render()
@@ -577,7 +583,8 @@ static auto get_cached_sxg_image(const sxg_parser &sxg,
 			 else
 			 {
 				 auto temp_pixmap=
-					 drawable_impl->create_pixmap(w, h);
+					 screenref->create_pixmap
+					 (drawable_pictformat, w, h);
 
 				 auto temp_picture=
 					 temp_pixmap->create_picture();
@@ -619,7 +626,8 @@ static auto get_cached_sxg_image(const sxg_parser &sxg,
 }
 
 static auto create_sxg_image(const std::string &name,
-			     drawableObj::implObj *drawable_impl,
+			     const screen &screenref,
+			     const const_pictformat &drawable_pictformat,
 			     const sxg_parser &sxg,
 			     const dim_arg &width_arg,
 			     const dim_arg &height_arg)
@@ -646,13 +654,13 @@ static auto create_sxg_image(const std::string &name,
 			h=sxg->height_for_width(w, icon_scale::nearest);
 	}
 
-	return get_cached_sxg_image(sxg, drawable_impl, w, h,
+	return get_cached_sxg_image(sxg, drawable_pictformat, screenref, w, h,
 				    w, h, std::optional<rgb>());
 }
 
 static auto create_sxg_image(const std::string &name,
-			     drawableObj::implObj
-			     *drawable_impl,
+			     const screen &screenref,
+			     const const_pictformat &drawable_pictformat,
 			     const sxg_parser &sxg,
 			     dim_t w, dim_t h,
 			     icon_scale scale)
@@ -683,7 +691,7 @@ static auto create_sxg_image(const std::string &name,
 			orig_h=h=sxg->height_for_width(w, icon_scale::nearest);
 	}
 
-	return get_cached_sxg_image(sxg, drawable_impl,
+	return get_cached_sxg_image(sxg, drawable_pictformat, screenref,
 				    w, h,
 				    orig_w, orig_h,
 				    background_color);
@@ -694,8 +702,8 @@ static auto create_sxg_image(const std::string &name,
 static ref<pixmapObj::implObj>
 create_sxg_icon_from_filename(const std::string &name,
 			      const cached_filename_info &filename,
-			      drawableObj::implObj *for_drawable,
 			      const screen &screenref,
+			      const const_pictformat &drawable_pictformat,
 			      const defaulttheme &theme,
 			      const dim_arg &width_arg,
 			      const dim_arg &height_arg)
@@ -709,15 +717,15 @@ create_sxg_icon_from_filename(const std::string &name,
 						   theme);
 		 });
 
-        return create_sxg_image(name, for_drawable, sxg,
+        return create_sxg_image(name, screenref, drawable_pictformat, sxg,
 				width_arg, height_arg);
 }
 
 static ref<pixmapObj::implObj>
 create_sxg_icon_from_filename_pixels(const std::string &name,
 				     const cached_filename_info &filename,
-				     drawableObj::implObj *for_drawable,
 				     const screen &screenref,
+				     const const_pictformat &drawable_pictformat,
 				     const defaulttheme &theme,
 				     dim_t w, dim_t h,
 				     icon_scale scale)
@@ -731,7 +739,7 @@ create_sxg_icon_from_filename_pixels(const std::string &name,
 						   theme);
 		 });
 
-        return create_sxg_image(name, for_drawable, sxg,
+        return create_sxg_image(name, screenref, drawable_pictformat, sxg,
 				w, h,
 				scale);
 }
@@ -816,7 +824,8 @@ static void jpeg_error_output (j_common_ptr cinfo)
 // Construct a pixmap from a .jpg file.
 static ref<pixmapObj::implObj>
 create_pixmap_from_jpg(const std::string &filename,
-		       drawableObj::implObj *for_drawable)
+		       const screen &screenref,
+		       const const_pictformat &drawable_pictformat)
 {
 	auto f=mmapfile::create(fd::base::open(filename, O_RDONLY), PROT_READ);
 
@@ -841,8 +850,9 @@ create_pixmap_from_jpg(const std::string &filename,
 
 	jpeg_do_decompress do_decompress(decompress);
 
-	auto pixmap=for_drawable->create_pixmap
-		(decompress.cinfo.output_width,
+	auto pixmap=screenref->create_pixmap
+		(drawable_pictformat,
+		 decompress.cinfo.output_width,
 		 decompress.cinfo.output_height);
 
 	pixmap_loader loader{pixmap};
@@ -952,7 +962,8 @@ extern "C" {
 
 static ref<pixmapObj::implObj>
 create_pixmap_from_gif(const std::string &filename,
-		       drawableObj::implObj *for_drawable)
+		       const screen &screenref,
+		       const const_pictformat &drawable_pictformat)
 {
 	auto f=mmapfile::create(fd::base::open(filename, O_RDONLY), PROT_READ);
 
@@ -970,7 +981,8 @@ create_pixmap_from_gif(const std::string &filename,
 	dim_t height=gif.gif->SHeight;
 	auto transparent=gif.gif->SBackGroundColor;
 
-	auto pixmap=for_drawable->create_pixmap(width, height);
+	auto pixmap=screenref->create_pixmap(drawable_pictformat,
+					     width, height);
 
 	pixmap_loader loader{pixmap};
 
@@ -1067,7 +1079,8 @@ class LIBCXX_HIDDEN png_open {
 
 static ref<pixmapObj::implObj>
 create_pixmap_from_png(const std::string &filename,
-		       drawableObj::implObj *for_drawable)
+		       const screen &screenref,
+		       const const_pictformat &drawable_pictformat)
 {
 	auto f=mmapfile::create(fd::base::open(filename, O_RDONLY), PROT_READ);
 
@@ -1089,7 +1102,8 @@ create_pixmap_from_png(const std::string &filename,
 	dim_t width=png.image.width;
 	dim_t height=png.image.height;
 
-	auto pixmap=for_drawable->create_pixmap(width, height);
+	auto pixmap=screenref->create_pixmap(drawable_pictformat,
+					     width, height);
 
 	pixmap_loader loader{pixmap};
 
@@ -1115,26 +1129,26 @@ create_pixmap_from_png(const std::string &filename,
 static ref<pixmapObj::implObj>
 create_jpg_icon_from_filename_pixels(const std::string &name,
 				     const cached_filename_info &filename,
-				     drawableObj::implObj *for_drawable,
 				     const screen &screenref,
+				     const const_pictformat &drawable_pictformat,
 				     const defaulttheme &theme,
 				     dim_t w, dim_t h,
 				     icon_scale scale)
 {
-	return get_cached_pixmap(filename, for_drawable,
+	return get_cached_pixmap(filename, screenref, drawable_pictformat,
 				 create_pixmap_from_jpg);
 }
 
 static ref<pixmapObj::implObj>
 create_jpg_icon_from_filename(const std::string &name,
 			      const cached_filename_info &filename,
-			      drawableObj::implObj *for_drawable,
 			      const screen &screenref,
+			      const const_pictformat &drawable_pictformat,
 			      const defaulttheme &theme,
 			      const dim_arg &width_arg,
 			      const dim_arg &height_arg)
 {
-	return get_cached_pixmap(filename, for_drawable,
+	return get_cached_pixmap(filename, screenref, drawable_pictformat,
 				 create_pixmap_from_jpg);
 }
 
@@ -1143,26 +1157,26 @@ create_jpg_icon_from_filename(const std::string &name,
 static ref<pixmapObj::implObj>
 create_gif_icon_from_filename_pixels(const std::string &name,
 				     const cached_filename_info &filename,
-				     drawableObj::implObj *for_drawable,
 				     const screen &screenref,
+				     const const_pictformat &drawable_pictformat,
 				     const defaulttheme &theme,
 				     dim_t w, dim_t h,
 				     icon_scale scale)
 {
-	return get_cached_pixmap(filename, for_drawable,
+	return get_cached_pixmap(filename, screenref, drawable_pictformat,
 				 create_pixmap_from_gif);
 }
 
 static ref<pixmapObj::implObj>
 create_gif_icon_from_filename(const std::string &name,
 			      const cached_filename_info &filename,
-			      drawableObj::implObj *for_drawable,
 			      const screen &screenref,
+			      const const_pictformat &drawable_pictformat,
 			      const defaulttheme &theme,
 			      const dim_arg &width_arg,
 			      const dim_arg &height_arg)
 {
-	return get_cached_pixmap(filename, for_drawable,
+	return get_cached_pixmap(filename, screenref, drawable_pictformat,
 				 create_pixmap_from_gif);
 }
 
@@ -1171,26 +1185,26 @@ create_gif_icon_from_filename(const std::string &name,
 static ref<pixmapObj::implObj>
 create_png_icon_from_filename_pixels(const std::string &name,
 				     const cached_filename_info &filename,
-				     drawableObj::implObj *for_drawable,
 				     const screen &screenref,
+				     const const_pictformat &drawable_pictformat,
 				     const defaulttheme &theme,
 				     dim_t w, dim_t h,
 				     icon_scale scale)
 {
-	return get_cached_pixmap(filename, for_drawable,
+	return get_cached_pixmap(filename, screenref, drawable_pictformat,
 				 create_pixmap_from_png);
 }
 
 static ref<pixmapObj::implObj>
 create_png_icon_from_filename(const std::string &name,
 			      const cached_filename_info &filename,
-			      drawableObj::implObj *for_drawable,
 			      const screen &screenref,
+			      const const_pictformat &drawable_pictformat,
 			      const defaulttheme &theme,
 			      const dim_arg &width_arg,
 			      const dim_arg &height_arg)
 {
-	return get_cached_pixmap(filename, for_drawable,
+	return get_cached_pixmap(filename, screenref, drawable_pictformat,
 				 create_pixmap_from_png);
 }
 
@@ -1209,17 +1223,23 @@ std::vector<icon> drawableObj::implObj
 
 icon drawableObj::implObj::create_icon(const create_icon_args_t &args)
 {
-	auto screen=get_screen();
-	auto theme=screen->impl->current_theme.get();
+	return create_icon(args, get_screen());
+}
 
-	auto cached_filename=search_extension_cached(screen, args.name, theme);
+icon drawableObj::implObj::create_icon(const create_icon_args_t &args,
+				       const screen &screenref)
+{
+	auto theme=screenref->impl->current_theme.get();
+
+	auto cached_filename=search_extension_cached(screenref, args.name, theme);
 
 	auto pixmap_impl=(*cached_filename->info.create)
-		(args.name, cached_filename, this, screen, theme,
+		(args.name, cached_filename, screenref, drawable_pictformat,
+		 theme,
 		 args.width, args.height);
 
 	auto cached_pixmap_with_picture=
-		create_cached_pixmap_with_picture(screen, pixmap_impl,
+		create_cached_pixmap_with_picture(screenref, pixmap_impl,
 						  args.icon_repeat);
 
 	return get_cached_icon(args.name, theme, cached_pixmap_with_picture,
@@ -1238,7 +1258,7 @@ icon drawableObj::implObj
 	auto cached_filename=search_extension_cached(screen, name, theme);
 
 	auto pixmap_impl=(*cached_filename->info.create_pixels)
-		(name, cached_filename, this, screen, theme,
+		(name, cached_filename, screen, drawable_pictformat, theme,
 		 w, h, scale);
 	auto cached_pixmap_with_picture=
 		create_cached_pixmap_with_picture(screen, pixmap_impl,

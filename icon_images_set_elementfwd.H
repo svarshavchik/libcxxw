@@ -8,7 +8,6 @@
 #include "iconfwd.H"
 #include "connection_threadfwd.H"
 #include "defaultthemefwd.H"
-#include <x/functional.H>
 #include <x/ptrfwd.H>
 #include <utility>
 
@@ -68,10 +67,6 @@ struct LIBCXX_HIDDEN icon_images_set_element_implObj<element_impl, Tag1,
 		inline icon_images_set_element_implObj(const icon &i,
 						       Args && ...args);
 
-	template<typename ...Args>
-		inline icon_images_set_element_implObj(const function<icon()> &,
-						       Args && ...args);
-
 	void initialize(IN_THREAD_ONLY) override;
 
 	void theme_updated(IN_THREAD_ONLY,
@@ -93,11 +88,6 @@ struct LIBCXX_HIDDEN icon_images_set_element_implObj<element_impl, Tag1,
 //! The first N elements to the constructor, where N is the number of
 //! types in the variadic list, are the initial list of icons. The remaining
 //! constructor parameters get forwarded to the main superclass.
-//!
-//! Each icon can be specified as either a pre-created icon object, or as
-//! an x::function closure that returns an icon object. The function closure
-//! gets invoked after the first template parameter's superclass gets
-//! constructed.
 
 template<typename element_impl, typename Tag1=void, typename ...Tags>
 using icon_images_set_elementObj=icon_images_set_element_implObj<

@@ -104,6 +104,16 @@ class LIBCXX_HIDDEN drawableObj::implObj : virtual public obj {
 
 	icon create_icon(const create_icon_args_t &);
 
+ protected:
+
+	//! Create an icon, with dimensions specified in millimeters
+
+	//! Used by generic_windowObj::handlerObj before it is currently
+	//! constructed, hence get_screen() is not yet overridden.
+
+	icon create_icon(const create_icon_args_t &,
+			 const screen &);
+ public:
 	//! Create an icon, with dimensions specified in pixels
 
 	//! The created icon does not have any reference to this drawable.

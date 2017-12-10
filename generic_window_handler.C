@@ -10,13 +10,16 @@
 #include "defaulttheme.H"
 #include "pictformat.H"
 #include "icon.H"
+#include "icon_images_set_element.H"
 #include "draw_info.H"
 #include "container_element.H"
 #include "layoutmanager.H"
 #include "screen.H"
+#include "screen_depthinfo.H"
 #include "xid_t.H"
 #include "element_screen.H"
 #include "background_color.H"
+#include "background_color_element.H"
 #include "cursor_pointer.H"
 #include "focus/focusable.H"
 #include "grabbed_pointer.H"
@@ -53,6 +56,12 @@ static rectangle element_position(const rectangle &r)
 	return cpy;
 }
 
+static background_color default_background_color(const screen &s,
+						 const color_arg &color)
+{
+	return s->impl->create_background_color(color);
+}
+
 //////////////////////////////////////////////////////////////////////////
 
 
@@ -72,6 +81,49 @@ bool generic_windowObj::handlerObj::frame_extents_t
 
 //////////////////////////////////////////////////////////////////////////
 
+static inline generic_windowObj::handlerObj::constructor_params
+create_constructor_params(const screen &parent_screen,
+			  const color_arg &background_color,
+			  size_t nesting_level)
+{
+	rectangle dimensions={0, 0, 1, 1};
+
+	values_and_mask vm(XCB_CW_EVENT_MASK,
+			   (uint32_t)
+			   generic_windowObj::handlerObj::initial_event_mask(),
+			   XCB_CW_COLORMAP,
+			   parent_screen->impl->toplevelwindow_colormap->id(),
+			   XCB_CW_BORDER_PIXEL,
+			   parent_screen->impl->xcb_screen->black_pixel);
+
+	return {
+		{
+			parent_screen,
+			parent_screen->impl->xcb_screen->root, // parent
+			parent_screen->impl->toplevelwindow_pictformat->depth, // depth
+			dimensions, // initial_position
+			XCB_WINDOW_CLASS_INPUT_OUTPUT, // window_class
+			parent_screen->impl->toplevelwindow_visual->impl->visual_id, // visual
+			vm, // events_and_mask
+		},
+		parent_screen->impl->toplevelwindow_pictformat,
+		nesting_level,
+		background_color
+	};
+}
+
+generic_windowObj::handlerObj
+::handlerObj(IN_THREAD_ONLY,
+	     const screen &parent_screen,
+	     const color_arg &background_color,
+	     const shared_handler_data &handler_data,
+	     size_t nesting_level)
+	: handlerObj(IN_THREAD, handler_data,
+		     create_constructor_params(parent_screen, background_color,
+					       nesting_level))
+{
+}
+
 generic_windowObj::handlerObj
 ::handlerObj(IN_THREAD_ONLY,
 	     const shared_handler_data &handler_data,
@@ -89,9 +141,18 @@ generic_windowObj::handlerObj
 					     window_handlerObj::id(),
 					     params.drawable_pictformat->impl
 					     ->id),
-
-	container_elementObj<elementObj::implObj>
-	(params.nesting_level,
+	// And now, the element that represents the window itself, and
+	// all the theme-based resources: background colors, icons, and
+	// masks
+	element_superclass_t
+	(default_background_color(params.window_handler_params.screenref,
+				  params.background_color),
+	 default_background_color(params.window_handler_params.screenref,
+				  "modal_shade"),
+	 drawableObj::implObj::create_icon(create_icon_args_t{
+			 "disabled_mask"},
+		 params.window_handler_params.screenref),
+	 params.nesting_level,
 	 element_position(params.window_handler_params.initial_position),
 	 params.window_handler_params.screenref,
 	 params.drawable_pictformat,
@@ -182,6 +243,31 @@ draw_info &generic_windowObj::handlerObj::get_draw_info_from_scratch(IN_THREAD_O
 			0,
 				});
 
+}
+
+void generic_windowObj::handlerObj
+::set_background_color(IN_THREAD_ONLY,
+		       const background_color &c)
+{
+	background_color_element<background_color_tag>::update(IN_THREAD, c);
+	background_color_changed(IN_THREAD);
+}
+
+const background_color generic_windowObj::handlerObj
+::current_background_color(IN_THREAD_ONLY)
+{
+	return background_color_element<background_color_tag>::get(IN_THREAD);
+}
+
+const background_color generic_windowObj::handlerObj
+::shaded_color(IN_THREAD_ONLY)
+{
+	return background_color_element<shaded_color_tag>::get(IN_THREAD);
+}
+
+const icon generic_windowObj::handlerObj::disabled_mask(IN_THREAD_ONLY)
+{
+	return icon_1tag<disabled_mask_tag>::tagged_icon(IN_THREAD);
 }
 
 rectangle generic_windowObj::handlerObj

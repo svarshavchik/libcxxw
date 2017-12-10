@@ -11,7 +11,9 @@
 #include "drawable.H"
 #include "picture.H"
 #include "iconfwd.H"
+#include "icon_images_set_elementfwd.H"
 #include "background_colorfwd.H"
+#include "background_color_elementfwd.H"
 #include "connection_threadfwd.H"
 #include "container_elementfwd.H"
 #include "grabbed_pointerfwd.H"
@@ -38,20 +40,16 @@
 
 LIBCXXW_NAMESPACE_START
 
+struct background_color_tag;
+struct shaded_color_tag;
+struct disabled_mask_tag;
+
+
 //! Common logic for generic input/output windows.
 
 //! Note that this class doesn't handle xcb_create_window and
 //! xcb_destroy_window. An implementation class that holds a reference on
 //! this handler is responsible for that.
-//!
-//! This is an (indirect) superclass of main windows and popups.
-//! main_windowObj::handlerObj and popupObj::handlerObj does not
-//! inherit from this handlerObj directly, but from its resourceObj.
-//!
-//! This is because the handler needs to construct some resources that require
-//! the handlerObj to already be constructed. This is done by having
-//! resourcesObj handle the initialization of the resources after the
-//! handlerObj is constructed, and that's what gets inheried from.
 
 class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
@@ -68,7 +66,22 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	  public unicode::iconvert::tou,
 
 // The container
-	  public container_elementObj<elementObj::implObj> {
+	  public background_color_elementObj<icon_images_set_elementObj
+					     <container_elementObj
+					      <elementObj::implObj>,
+					      disabled_mask_tag>,
+					     background_color_tag,
+					     shaded_color_tag> {
+
+	//! Alias.
+
+	typedef background_color_elementObj<icon_images_set_elementObj
+					    <container_elementObj
+					     <elementObj::implObj>,
+					     disabled_mask_tag>,
+					    background_color_tag,
+					    shaded_color_tag
+					    > element_superclass_t;
 
 	//! Current event mask.
 	xcb_event_mask_t current_events_thread_only;
@@ -222,6 +235,12 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 		color_arg background_color;
 	};
 
+	//! Public constructor
+	handlerObj(IN_THREAD_ONLY,
+		   const screen &me,
+		   const color_arg &background_color,
+		   const shared_handler_data &handler_data,
+		   size_t nesting_level);
  protected:
 
 	//! Internal constructor
@@ -232,19 +251,19 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! Destructor
 	~handlerObj();
 
-	//! Resources implemented in resourcesObj.
+	//! Return the current background color.
+	const background_color current_background_color(IN_THREAD_ONLY);
 
-	virtual const icon disabled_mask(IN_THREAD_ONLY)=0;
+	//! Implement set_bakcground_color() for the top level window.
+	void set_background_color(IN_THREAD_ONLY,
+				  const background_color &) override;
 
-	// Resources implemented in resourcesObj
-	virtual const background_color current_background_color(IN_THREAD_ONLY)=0;
+	//! Return the color for drawing a shade over a disabled window.
+	const background_color shaded_color(IN_THREAD_ONLY);
 
-	// Resources implemented in resourcesObj
-	virtual void set_background_color(IN_THREAD_ONLY,
-					  const background_color &)=0;
+	//! Return the icon for the disabled element's overlay mask.
 
-	// Resources implemented in resourcesObj
-	virtual const background_color shaded_color(IN_THREAD_ONLY)=0;
+	const icon disabled_mask(IN_THREAD_ONLY);
 
 	THREAD_DATA_ONLY(current_events);
 	THREAD_DATA_ONLY(has_focus);

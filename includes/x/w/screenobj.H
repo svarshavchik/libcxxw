@@ -7,6 +7,8 @@
 
 #include <x/w/screenfwd.H>
 #include <x/w/connectionfwd.H>
+#include <x/w/pixmapfwd.H>
+#include <x/w/pictformatfwd.H>
 #include <x/w/rectangle.H>
 #include <x/w/picturefwd.H>
 #include <x/w/pictformatfwd.H>
@@ -109,6 +111,13 @@ public:
 						     coord_t y1,
 						     coord_t x2,
 						     coord_t y2);
+	//! Create a new pixmap on this screen.
+
+	//! Mostly for internal use.
+
+	pixmap create_pixmap(const const_pictformat &pf,
+			     dim_t width,
+			     dim_t height);
 
 	//! Create a new top level window, using the mainwindowlayout layout manager
 

@@ -5,7 +5,7 @@
 #ifndef main_window_handler_h
 #define main_window_handler_h
 
-#include "generic_window_handler_resources.H"
+#include "generic_window_handler.H"
 #include "main_window.H"
 #include "connection_threadfwd.H"
 #include "icon_images_vector_elementfwd.H"
@@ -21,11 +21,10 @@ LIBCXXW_NAMESPACE_START
 //! this handler is responsible for that.
 
 class LIBCXX_HIDDEN main_windowObj::handlerObj :
-	public icon_images_vector_elementObj<
-	generic_windowObj::handlerObj::resourcesObj> {
+	public icon_images_vector_elementObj<generic_windowObj::handlerObj> {
 
 	typedef icon_images_vector_elementObj<
-		generic_windowObj::handlerObj::resourcesObj> superclass_t;
+		generic_windowObj::handlerObj> superclass_t;
 
 	std::function<void (const busy &)> on_delete_callback_thread_only;
 

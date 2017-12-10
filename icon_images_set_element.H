@@ -60,18 +60,6 @@ inline icon_images_set_element_implObj<element_impl, Tag1, Tags...>
 {
 }
 
-//! Constructor
-
-template<typename element_impl, typename Tag1, typename ...Tags>
-template<typename ...Args>
-inline icon_images_set_element_implObj<element_impl, Tag1, Tags...>
-::icon_images_set_element_implObj(const function<icon()> &f,
-			     Args && ...args)
-	: superclass_t(std::forward<Args>(args)...),
-	  icon_1tag<Tag1>(f())
-{
-}
-
 //! Override initialize()
 
 //! Also initialize the icon in icon_1tag.
