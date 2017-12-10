@@ -1,0 +1,196 @@
+<!--
+
+Copyright 2017 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<chapter id="busy">
+  <title>Disabling input processing</title>
+
+  <para>
+    The introduction explains how an internal execution thread
+    <link linkend="connthread">draws the application windows, and
+    processes keyboard and pointer clicks</link>, by invoking
+    various callbacks in response
+    to them. Furthermore, <xref linkend="callbacks" /> explains that callbacks
+    should not engage in lengthy activities, but notify the main
+    application execution thread
+    before returning, so that the internal execution
+    thread can proceed with its chores.
+  </para>
+
+  <para>
+    Another pointer or keyboard click results in the appropriate callback
+    getting invoked again even if the main application execution thread is
+    still busy with its previous task. The main
+    application thread won't get around to processing
+    the next message from the callback until it's done. This
+    does not result in optimal user experience.
+    The application can also maintain an internal status indication of
+    some kind, that the callbacks can check to see if it's busy with its
+    current task and not take any action.
+  </para>
+
+  <para>
+    This chapter gives an example of a different way to stop keyboard
+    and pointer processing. One of the parameters to callbacks is
+    <ulink url="&link-x--w--busy;"><classname>&ns;::w::busy</classname></ulink>:
+  </para>
+  <blockquote>
+    <informalexample>
+      <programlisting>
+#include &lt;&ns;/w/busy.H&gt;
+
+// ...
+
+    button->on_activate
+        ([]
+         (const &ns;::w::callback_trigger_t &amp;trigger,
+          const &ns;::w::busy &amp;get_busy)
+         {
+            // ...</programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    Calling one of <classname>&ns;::w::busy</classname>'s methods returns an
+    opaque <quote>mcguffin</quote>, a generic reference-counted object,
+    <classname>&ns;::ref&lt;&ns;::obj&gt;</classname>.
+    Mcguffins are a design pattern from the
+    <ulink url="/ondestroy.html">base LibCXX library</ulink>.
+    The internal execution thread ignores button and keypress event while
+    the mcguffin object exists, but continues to update and redraw the
+    application window.
+  </para>
+
+  <para>
+    No explicit action is needed to resume input processing, which occurs
+    automatically when the mcguffin's object gets destroyed.
+    The sequence of events is as follows:
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  The internal execution thread runs the callback.
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  The callback acquires
+	  a busy mcguffin, and includes the
+	  <classname>&ns;::ref&lt;&ns;::obj&gt;</classname>
+	  as part of a message to the main application thread.
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  The callback returns and the internal execution thread continues.
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  Because the mcguffin gets included in the message sent to the main
+	  thread, the mcguffin object remains in existance. The main
+	  application thread
+	  typically receives the message and the mcguffin as one of its
+	  parameters,
+	  and does what it needs to do.
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  When it's done, the main application thread
+	  discards the original message. This removes the last reference to the
+	  mcguffin. The mcguffin gets destroyed and the library's internal
+	  execution thread resumes the usual processing of button or keypress
+	  events.
+	</para>
+      </listitem>
+    </itemizedlist>
+  </para>
+
+  <para>
+    <filename>busy.C</filename> gives a general example of this approach:
+  </para>
+
+  <blockquote>
+    <title><ulink url="examples/busy.C">busy.C</ulink></title>
+
+    <informalexample>
+      <programlisting><xi:include href="../examples/busy.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    <filename>busy.C</filename> uses several classes, templates, and tools
+    from the base &libcxx; library.
+    <ulink url="/msgdispatcher.html"><classname>&ns;::threadmsgdispatcherObj</classname></ulink>
+    is a design pattern for a message-oriented execution thread, with
+    a stylesheet that uses a simple <acronym>XML</acronym> file that
+    defines messages, and generates some skeleton code to implement each
+    message as one class method that sends a message to the execution thread,
+    and a second method that the execution thread runs, the dispatch method,
+    that receives it. The
+    <ulink url="examples/Makefile.am">Makefile</ulink> in the examples
+    directory runs the stylesheet to create <filename>busy.inc.H</filename>
+    that gets pulled into the class definition.
+  </para>
+
+  <para>
+    <filename>busy.C</filename> creates a window with two buttons.
+    Pressing either of the two buttons stops the window from reacting to
+    any additional button clicks, or keys (the only keys that do anything
+    here are the tab keys that manually switch the input focus between the
+    buttons, but this is sufficient for demonstration purposes) for
+    five seconds.
+  </para>
+
+  <para>
+    One of the two buttons' callbacks uses
+    <methodname>get_shade_busy_mcguffin</methodname>(), and the other one
+    uses <methodname>get_wait_busy_mcguffin</methodname>():
+  </para>
+
+  <blockquote>
+    <informalexample>
+      <programlisting>
+    [mythread]
+    (const &ns;::w::callback_trigger_t &amp;ignore,
+    const &ns;::w::busy &amp;get_busy) {
+        mythread-&gt;were_busy(get_busy.get_wait_busy_mcguffin());
+    }</programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    The callbacks call one of these two methods, and call the
+    <methodname>were_busy</methodname>() from the thread dispatcher object,
+    which send a message to the object's thread, that includes the
+    acquired mcguffin as part of the message, then returns to the library's
+    execution thread.
+    Both
+    <methodname>get_shade_busy_mcguffin</methodname>() and
+    <methodname>get_wait_busy_mcguffin</methodname>() produce mcguffins
+    that block button and key press event processing during their
+    existence.
+    <methodname>get_shade_busy_mcguffin</methodname>()
+    draws a theme-specified shade over the entire application window to
+    make it look washed out and indicate that it's inactive, and
+    <methodname>get_wait_busy_mcguffin</methodname>()
+    changes the window's pointer to a <quote>please wait</quote> shape.
+    This provides visual indication that the main application is running.
+  </para>
+
+  <para>
+    The execution thread object receives and dispatches the message, and
+    arranges for the mcguffin to exist for five seconds before destroying
+    it, at which point the window's appearance gets restored to normal.
+  </para>
+</chapter>
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "book" "chapter")
+End:
+-->

@@ -105,9 +105,14 @@ void elementObj::remove_tooltip() const
 		 });
 }
 
-x::ref<x::obj> elementObj::get_busy_mcguffin() const
+ref<obj> elementObj::get_shade_busy_mcguffin() const
 {
-	return impl->get_window_handler().get_busy_mcguffin();
+	return impl->get_window_handler().get_shade_busy_mcguffin();
+}
+
+ref<obj> elementObj::get_wait_busy_mcguffin() const
+{
+	return impl->get_window_handler().get_wait_busy_mcguffin();
 }
 
 ref<elementObj::implObj> elementObj::get_minimum_override_element_impl()

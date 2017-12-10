@@ -39,7 +39,7 @@ void dialogObj::handlerObj
 {
 	if (visibility_info.flag && modal)
 		acquired_busy_mcguffin(IN_THREAD)=
-			parent_handler->get_busy_mcguffin();
+			parent_handler->get_shade_busy_mcguffin();
 
 	if (visibility_info.flag && handle_our_own_placement())
 	{

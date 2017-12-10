@@ -1,0 +1,249 @@
+<?xml version="1.0"?>
+
+<sxg xmlns:xi="http://www.w3.org/2003/XInclude">
+
+  <width>9</width>
+  <height>9</height>
+  <widthmm>4</widthmm>
+  <heightmm>4</heightmm>
+
+  <widthfactor>9</widthfactor>
+  <heightfactor>9</heightfactor>
+
+  <location id="hotspot">
+    <x>4</x>
+    <y>4</y>
+  </location>
+
+  <picture id="border">
+    <type>rgb</type>
+    <color>0%</color>
+  </picture>
+
+  <picture id="bg">
+    <type>rgb</type>
+    <color>100%</color>
+  </picture>
+
+  <pixmap id="mask">
+    <size>scaled</size>
+    <width>9</width>
+    <height>9</height>
+  </pixmap>
+
+  <picture id="inner">
+    <type>pixmap</type>
+    <size>scaled</size>
+    <width>9</width>
+    <height>9</height>
+  </picture>
+
+  <render id="main">
+    <composite>
+      <op>over</op>
+      <width>9</width>
+      <height>9</height>
+      <src>
+	<picture>border</picture>
+      </src>
+    </composite>
+
+    <triangles>
+      <op>xor</op>
+      <src>border</src>
+      <mask>mask</mask>
+      <triangle>
+	<p1>
+	  <x orientation="beginning">0</x>
+	  <y orientation="beginning">0</y>
+	</p1>
+	<p2>
+	  <x orientation="beginning">3</x>
+	  <y orientation="beginning">0</y>
+	</p2>
+	<p3>
+	  <x orientation="beginning">0</x>
+	  <y orientation="beginning">3</y>
+	</p3>
+      </triangle>
+
+      <triangle>
+	<p1>
+	  <x orientation="beginning">6</x>
+	  <y orientation="beginning">0</y>
+	</p1>
+	<p2>
+	  <x orientation="beginning">9</x>
+	  <y orientation="beginning">0</y>
+	</p2>
+	<p3>
+	  <x orientation="beginning">9</x>
+	  <y orientation="beginning">3</y>
+	</p3>
+      </triangle>
+
+      <triangle>
+	<p1>
+	  <x orientation="beginning">9</x>
+	  <y orientation="beginning">6</y>
+	</p1>
+	<p2>
+	  <x orientation="beginning">9</x>
+	  <y orientation="beginning">9</y>
+	</p2>
+	<p3>
+	  <x orientation="beginning">6</x>
+	  <y orientation="beginning">9</y>
+	</p3>
+      </triangle>
+
+      <triangle>
+	<p1>
+	  <x orientation="beginning">0</x>
+	  <y orientation="beginning">6</y>
+	</p1>
+	<p2>
+	  <x orientation="beginning">3</x>
+	  <y orientation="beginning">9</y>
+	</p2>
+	<p3>
+	  <x orientation="beginning">0</x>
+	  <y orientation="beginning">9</y>
+	</p3>
+      </triangle>
+    </triangles>
+  </render>
+
+  <render id="inner">
+    <composite>
+      <op>over</op>
+      <width>9</width>
+      <height>9</height>
+      <src>
+	<picture>bg</picture>
+      </src>
+    </composite>
+
+    <triangles>
+      <op>xor</op>
+      <src>border</src>
+      <mask>mask</mask>
+      <triangle>
+	<p1>
+	  <x orientation="beginning">0</x>
+	  <y orientation="beginning">0</y>
+	</p1>
+	<p2>
+	  <x orientation="beginning">4</x>
+	  <y orientation="beginning">0</y>
+	</p2>
+	<p3>
+	  <x orientation="beginning">0</x>
+	  <y orientation="beginning">4</y>
+	</p3>
+      </triangle>
+
+      <triangle>
+	<p1>
+	  <x orientation="beginning">5</x>
+	  <y orientation="beginning">0</y>
+	</p1>
+	<p2>
+	  <x orientation="beginning">9</x>
+	  <y orientation="beginning">0</y>
+	</p2>
+	<p3>
+	  <x orientation="beginning">9</x>
+	  <y orientation="beginning">4</y>
+	</p3>
+      </triangle>
+
+      <triangle>
+	<p1>
+	  <x orientation="beginning">9</x>
+	  <y orientation="beginning">5</y>
+	</p1>
+	<p2>
+	  <x orientation="beginning">9</x>
+	  <y orientation="beginning">9</y>
+	</p2>
+	<p3>
+	  <x orientation="beginning">5</x>
+	  <y orientation="beginning">9</y>
+	</p3>
+      </triangle>
+
+      <triangle>
+	<p1>
+	  <x orientation="beginning">0</x>
+	  <y orientation="beginning">5</y>
+	</p1>
+	<p2>
+	  <x orientation="beginning">4</x>
+	  <y orientation="beginning">9</y>
+	</p2>
+	<p3>
+	  <x orientation="beginning">0</x>
+	  <y orientation="beginning">9</y>
+	</p3>
+      </triangle>
+    </triangles>
+
+    <fill>
+      <op>clear</op>
+      <r>0</r>
+      <g>0</g>
+      <b>0</b>
+      <a>0</a>
+      <rectangle>
+	<x>0</x>
+	<y>0</y>
+	<width>9</width>
+	<height>1</height>
+      </rectangle>
+
+      <rectangle>
+	<x>0</x>
+	<y>8</y>
+	<width>9</width>
+	<height>1</height>
+      </rectangle>
+
+      <rectangle>
+	<x>0</x>
+	<y>0</y>
+	<width>1</width>
+	<height>9</height>
+      </rectangle>
+
+      <rectangle>
+	<x>8</x>
+	<y>0</y>
+	<width>1</width>
+	<height>9</height>
+      </rectangle>
+    </fill>
+  </render>
+
+  <render id="main">
+    <composite>
+      <op>over</op>
+      <width>9</width>
+      <height>9</height>
+      <src>
+	<picture>inner</picture>
+      </src>
+    </composite>
+
+    <composite>
+      <op>over</op>
+      <x orientation="beginning">2</x>
+      <y orientation="beginning">4</y>
+      <width>5</width>
+      <height>1</height>
+      <src>
+	<picture>border</picture>
+      </src>
+    </composite>
+  </render>
+</sxg>

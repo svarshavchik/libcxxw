@@ -18,6 +18,7 @@ Requires(postun): /sbin/ldconfig
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 BuildRequires: libcxxbase-devel
 BuildRequires: freetype-devel
+BuildRequires: fontconfig-devel
 BuildRequires: libxcb-devel
 BuildRequires: xcb-util-wm-devel
 BuildRequires: xcb-util-keysyms-devel
@@ -25,6 +26,8 @@ BuildRequires: xcb-util-image-devel
 BuildRequires: xcb-util-renderutil-devel
 BuildRequires: libX11-devel
 BuildRequires: libjpeg-turbo-devel
+BuildRequires: giflib-devel
+BuildRequires: libpng-devel
 
 %description
 LibCXX widget toolkit.

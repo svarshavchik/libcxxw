@@ -11,6 +11,9 @@
 #include <x/obj.H>
 #include <x/functional.H>
 
+#include <vector>
+#include <functional>
+
 LIBCXXW_NAMESPACE_START
 
 //! Internal group of focusable fields treated as a single focusable unit.

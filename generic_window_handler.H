@@ -12,6 +12,7 @@
 #include "picture.H"
 #include "iconfwd.H"
 #include "icon_images_set_elementfwd.H"
+#include "cursor_pointer_elementfwd.H"
 #include "background_colorfwd.H"
 #include "background_color_elementfwd.H"
 #include "connection_threadfwd.H"
@@ -66,19 +67,21 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	  public unicode::iconvert::tou,
 
 // The container
-	  public background_color_elementObj<icon_images_set_elementObj
-					     <container_elementObj
-					      <elementObj::implObj>,
-					      disabled_mask_tag>,
+	  public background_color_elementObj<icon_images_set_elementObj<
+					     cursor_pointer_elementObj<
+						     container_elementObj
+						     <elementObj::implObj>>,
+						     disabled_mask_tag>,
 					     background_color_tag,
 					     shaded_color_tag> {
 
 	//! Alias.
 
-	typedef background_color_elementObj<icon_images_set_elementObj
-					    <container_elementObj
-					     <elementObj::implObj>,
-					     disabled_mask_tag>,
+	typedef background_color_elementObj<icon_images_set_elementObj<
+		cursor_pointer_elementObj<
+						    container_elementObj
+						    <elementObj::implObj>>,
+						    disabled_mask_tag>,
 					    background_color_tag,
 					    shaded_color_tag
 					    > element_superclass_t;
@@ -470,20 +473,40 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	void button_release_event(IN_THREAD_ONLY,
 				  const xcb_button_release_event_t *event) override;
 
-	//! A container for the busy mcguffin.
+	class busy_shadeObj;
+	class busy_waitObj;
 
-	typedef mpobj<weakptr<ptr<obj>>> busy_mcguffin_t;
+	struct busy_mcguffins_s {
 
-	//! Construct the busy mcguffin.
+		weakptr<ptr<busy_shadeObj>> shade;
+		weakptr<ptr<busy_waitObj>> wait_cursor;
+	};
 
-	ref<obj> get_busy_mcguffin();
+	typedef mpobj<busy_mcguffins_s> busy_mcguffins_t;
+
 	//! Busy mcguffin.
 
-	busy_mcguffin_t busy_mcguffin;
+	busy_mcguffins_t busy_mcguffins;
+
+	//! Construct a busy mcguffin that shades this window.
+
+	ref<obj> get_shade_busy_mcguffin();
+
+	//! Construct a busy mcguffin that puts up a "wait" cursor.
+
+	ref<obj> get_wait_busy_mcguffin();
 
 	//! Whether we're busy (ignore keyboard or button press events)
 
-	bool is_busy();
+	bool is_input_busy();
+
+	//! Whether a shade is drawn.
+
+	bool is_shade_busy();
+
+	//! Whether a wait cursor is used by this window.
+
+	bool is_wait_busy();
 
 	//! An element's button_press_event() wishes to grab the pointer.
 

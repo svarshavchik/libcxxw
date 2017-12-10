@@ -11,6 +11,7 @@
 #include "pictformat.H"
 #include "icon.H"
 #include "icon_images_set_element.H"
+#include "cursor_pointer_element.H"
 #include "draw_info.H"
 #include "container_element.H"
 #include "layoutmanager.H"
@@ -152,6 +153,10 @@ generic_windowObj::handlerObj
 	 drawableObj::implObj::create_icon(create_icon_args_t{
 			 "disabled_mask"},
 		 params.window_handler_params.screenref),
+	 cursor_pointer::create
+	 (drawableObj::implObj::create_icon(create_icon_args_t{
+			 "cursor-wait"},
+		 params.window_handler_params.screenref)),
 	 params.nesting_level,
 	 element_position(params.window_handler_params.initial_position),
 	 params.window_handler_params.screenref,
@@ -485,42 +490,120 @@ void generic_windowObj::handlerObj::theme_updated_event(IN_THREAD_ONLY)
 	theme_updated(IN_THREAD, new_theme);
 }
 
+// Shade mcguffin.
 
-class LIBCXX_HIDDEN i_am_busyObj : virtual public obj {
+// The destructor schedules a redraw of the entire window, when the
+// shade mcguffin gets destroyed.
+
+class LIBCXX_HIDDEN generic_windowObj::handlerObj::busy_shadeObj
+	: virtual public obj {
 
  public:
-	const ref<generic_windowObj::handlerObj> handler;
+	const weakptr<ptr<generic_windowObj::handlerObj>> handler;
 
-	i_am_busyObj(const ref<generic_windowObj::handlerObj> &handler)
+	busy_shadeObj(const ref<generic_windowObj::handlerObj> &handler)
 		: handler(handler)
 	{
 	}
 
-	~i_am_busyObj()
+	~busy_shadeObj()
 	{
-		handler->schedule_redraw_recursively();
+		auto p=handler.getptr();
+
+		if (!p)
+			return;
+		p->schedule_redraw_recursively();
 	}
 };
 
+// wait mcguffin
 
-ref<obj> generic_windowObj::handlerObj::get_busy_mcguffin()
+// The destructor calls update_displayed_cursor_pointer.
+
+class LIBCXX_HIDDEN generic_windowObj::handlerObj::busy_waitObj
+	: virtual public obj {
+
+ public:
+	const weakptr<ptr<generic_windowObj::handlerObj>> handler;
+
+	busy_waitObj(const ref<generic_windowObj::handlerObj> &handler)
+		: handler(handler)
+	{
+	}
+
+	~busy_waitObj()
+	{
+		update();
+	}
+
+	void update()
+	{
+		auto p=handler.getptr();
+
+		if (!p)
+			return;
+
+		auto h=ref(&*p);
+
+		h->IN_THREAD->run_as
+			([h]
+			 (IN_THREAD_ONLY)
+			 {
+				 h->update_displayed_cursor_pointer(IN_THREAD);
+			 });
+	}
+};
+
+ref<obj> generic_windowObj::handlerObj::get_shade_busy_mcguffin()
 {
-	busy_mcguffin_t::lock lock{busy_mcguffin};
+	if (drawable_pictformat->alpha_depth == 0)
+		return get_wait_busy_mcguffin();
 
-	auto p=lock->getptr();
+	busy_mcguffins_t::lock lock{busy_mcguffins};
+
+	auto p=lock->shade.getptr();
 
 	if (p) return p;
 
-	auto n=ref<i_am_busyObj>::create(ref(this));
+	auto n=ref<busy_shadeObj>::create(ref(this));
 
-	*lock=n;
+	lock->shade=n;
+
 	schedule_redraw_recursively();
 	return n;
 }
 
-bool generic_windowObj::handlerObj::is_busy()
+ref<obj> generic_windowObj::handlerObj::get_wait_busy_mcguffin()
 {
-	return !!busy_mcguffin_t::lock{busy_mcguffin}->getptr();
+	busy_mcguffins_t::lock lock{busy_mcguffins};
+
+	auto p=lock->wait_cursor.getptr();
+
+	if (p) return p;
+
+	auto n=ref<busy_waitObj>::create(ref(this));
+
+	lock->wait_cursor=n;
+
+	n->update();
+	return n;
+}
+
+bool generic_windowObj::handlerObj::is_input_busy()
+{
+	busy_mcguffins_t::lock lock{busy_mcguffins};
+
+	return !!lock->shade.getptr() || !!lock->wait_cursor.getptr();
+}
+
+bool generic_windowObj::handlerObj::is_shade_busy()
+{
+	return !!busy_mcguffins_t::lock{busy_mcguffins}->shade.getptr();
+}
+
+bool generic_windowObj::handlerObj::is_wait_busy()
+{
+	return !!busy_mcguffins_t::lock{busy_mcguffins}->wait_cursor.getptr();
 }
 
 void generic_windowObj::handlerObj
@@ -551,7 +634,7 @@ void generic_windowObj::handlerObj
 
 	update_user_time(IN_THREAD, event->time);
 
-	if (is_busy())
+	if (is_input_busy())
 		// We're busy now. Since we're grabbing all key presses this
 		// can only be checked now, after the grab processing.
 		return;
@@ -798,7 +881,7 @@ void generic_windowObj::handlerObj
 
 	auto report_to=report_pointer_xy(IN_THREAD, me, was_grabbed);
 
-	if (report_to->is_busy())
+	if (report_to->is_input_busy())
 		return;
 
 	handler_data->reporting_button_event_to(IN_THREAD, ref(this),
@@ -1218,7 +1301,7 @@ void generic_windowObj::handlerObj
 {
 	auto g=most_recent_element_with_pointer(IN_THREAD);
 
-	if (is_busy())
+	if (is_input_busy())
 	{
 		pointer_focus_lost(IN_THREAD);
 		return;
@@ -1568,6 +1651,10 @@ void generic_windowObj::handlerObj
 			most_recent_element_with_pointer(IN_THREAD)
 			->get_cursor_pointer(IN_THREAD);
 	}
+
+	if (is_wait_busy())
+		pointer_that_should_be_displayed=
+			tagged_cursor_pointer(IN_THREAD);
 
 	xcb_cursor_t xcb_cursor_t_that_should_be_displayed=XCB_NONE;
 	if (pointer_that_should_be_displayed)

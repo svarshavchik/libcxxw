@@ -31,9 +31,13 @@ class LIBCXX_HIDDEN busy_impl : public busy {
 	//! Destructor
 	~busy_impl();
 
-	//! Acquire the underlying mcguffin, blocking pointer and keyboard
-	//! activity
-	x::ref<x::obj> get_mcguffin() const override;
+	//! Acquire a busy mcguffin that draws a shade.
+
+	ref<obj> get_shade_busy_mcguffin() const override;
+
+	//! Acquire a busy mcguffin that puts up a "wait" cursor.
+
+	ref<obj> get_wait_busy_mcguffin() const override;
 };
 
 LIBCXXW_NAMESPACE_END

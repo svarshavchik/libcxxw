@@ -2,6 +2,7 @@
 
 noinst_PROGRAMS=\
 	booklayoutmanager			\
+	busy					\
 	checkradio				\
 	combobox				\
 	focusable				\
@@ -17,6 +18,11 @@ noinst_PROGRAMS=\
 
 booklayoutmanager_SOURCES=booklayoutmanager.C close_flag.H
 booklayoutmanager_LDADD=-lcxxw -lcxx
+
+$(call THREADMSGDISPATCHER_GEN,busy.inc.H,busy.xml)
+busy_SOURCES=busy.C
+busy_LDADD=-lcxxw -lcxx
+busy_CXXFLAGS=@STDTHREAD_CXXFLAGS@
 
 checkradio_SOURCES=checkradio.C close_flag.H
 checkradio_LDADD=-lcxxw -lcxx

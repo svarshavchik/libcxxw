@@ -16,7 +16,7 @@ bin_PROGRAMS=cxxw
 
 CPPFLAGS += -I$(top_srcdir)/includes -I./includes -I$(top_srcdir) -I. \
             -DPKGDATADIR='"$(pkgdatadir)"'
-CXXFLAGS += -fvisibility-inlines-hidden $(if $(PROFILE),-pg)
+CXXFLAGS += -fvisibility-inlines-hidden $(if $(PROFILE),-pg) @STDTHREAD_CXXFLAGS@
 
 libcxxw_la_LIBADD=-lcxx
 
@@ -801,6 +801,7 @@ TESTPROGRAMS=\
 
 INTERACTIVETESTPROGRAMS=\
 	testbook					\
+	testbusy					\
 	testbutton					\
 	testcombobox					\
 	testimagebuttons			        \
@@ -824,6 +825,11 @@ noinst_PROGRAMS=$(BUILT_TESTPROGRAMS) $(BUILT_INTERACTIVETESTPROGRAMS) genconsta
 testbook_SOURCES=testbook.C
 testbook_LDADD=libcxxw.la
 testbook_LDFLAGS=-static $(STATICLINKFLAGS)
+
+$(call THREADMSGDISPATCHER_GEN,testbusy.inc.H,testbusy.xml)
+testbusy_SOURCES=testbusy.C
+testbusy_LDADD=libcxxw.la
+testbusy_LDFLAGS=$(TESTLINKTYPE)
 
 testbutton_SOURCES=testbutton.C
 testbutton_LDADD=libcxxw.la

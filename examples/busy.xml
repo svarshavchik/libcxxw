@@ -1,0 +1,17 @@
+<class name="busythreadObj">
+  <method name="were_busy">
+    <comment>
+      //! Let's be busy, for a while.
+    </comment>
+
+    <param>
+      <decl>const mcguffin_t &amp;mcguffin</decl>
+    </param>
+  </method>
+
+  <method name="window_close_button_pressed">
+    <comment>
+      //! The window closed button was pressed
+    </comment>
+  </method>
+</class>

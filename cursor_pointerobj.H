@@ -41,8 +41,8 @@ public:
 
 	//! Theme has been updated.
 
-	icon theme_updated(IN_THREAD_ONLY,
-			   const defaulttheme &new_theme);
+	cursor_pointer theme_updated(IN_THREAD_ONLY,
+				     const defaulttheme &new_theme);
 };
 
 LIBCXXW_NAMESPACE_END

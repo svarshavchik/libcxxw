@@ -21,9 +21,14 @@ busy_impl::busy_impl(const ref<generic_windowObj::handlerObj> &w) : w(w)
 busy_impl::~busy_impl()=default;
 
 
-ref<obj> busy_impl::get_mcguffin() const
+ref<obj> busy_impl::get_shade_busy_mcguffin() const
 {
-	return w->get_busy_mcguffin();
+	return w->get_shade_busy_mcguffin();
+}
+
+ref<obj> busy_impl::get_wait_busy_mcguffin() const
+{
+	return w->get_wait_busy_mcguffin();
 }
 
 busy::busy()=default;

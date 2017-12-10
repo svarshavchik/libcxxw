@@ -185,7 +185,8 @@ make</programlisting>
 	<listitem>
 	  <para>
 	    An <ulink url="/ondestroyguard"><classname>&ns;::destroy_callback::base::guard</classname></ulink>
-	    object gets declared before the top level window. A such
+	    object, from the base &libcxx; library,
+	    gets declared before the top level window. A such
 	    the guard object gets destroyed last.
 	    The guard object takes the mcguffin, and the guard object's
 	    destructor waits until the mcguffin gets destroyed,
@@ -278,7 +279,7 @@ make</programlisting>
 
 	  <para>
 	    The underlying &libcxx;'s smart pointers take care of destroying
-	    the <classname>close_flag</classname> themselves.
+	    the <classname>close_flag</classname> by themselves.
 	  </para>
 	</listitem>
       </orderedlist>
@@ -386,6 +387,11 @@ while (!appdata->close_flag)
 	  with is to make sure that its own reference to the application
 	  data object goes out of scope before the main window display element
 	  goes out of scope and gets destroyed.
+	</para>
+
+	<para>
+	  An example of this message-based design found is given in
+	  <xref linkend="busy" />.
 	</para>
       </section>
     </section>
@@ -691,7 +697,7 @@ x::w::label l=f->create_label("Hello world");</programlisting>
       <para>
 	Some layout managers provide factories with additional functionality.
 	<link linkend="gridlayoutmanager">Grid layout manager</link>'s
-	methods return a
+	methods return an
 	<ulink url="&link-typedef-x--w-gridfactory;"><classname>&ns;::w::gridfactory</classname></ulink>
 	with additional methods that set each new element's borders, padding
 	and alignment.

@@ -90,7 +90,11 @@ public:
 
 	//! Block all keyboard and pointer button processing, till further notice.
 
-	ref<obj> get_busy_mcguffin() const;
+	ref<obj> get_shade_busy_mcguffin() const;
+
+	//! Block all keyboard and pointer button processing, till further notice.
+
+	ref<obj> get_wait_busy_mcguffin() const;
 
 	//! This display element is a label for another focusable element.
 

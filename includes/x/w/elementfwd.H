@@ -52,15 +52,21 @@ class elementObj;
 //! existing background color, reverting it to the default one.
 //!
 //! \code
-//! INSERT_LIBX_NAMESPACE::ref<INSERT_LIBX_NAMESPACE::obj> mcguffin=element->get_busy_mcguffin();
+//! INSERT_LIBX_NAMESPACE::ref<INSERT_LIBX_NAMESPACE::obj> mcguffin=element->get_shade_busy_mcguffin();
+//!
+//! INSERT_LIBX_NAMESPACE::ref<INSERT_LIBX_NAMESPACE::obj> mcguffin=element->get_wait_busy_mcguffin();
 //!
 //! INSERT_LIBX_NAMESPACE::ref<INSERT_LIBX_NAMESPACE::obj> mcguffin=element->connection_mcguffin();
 //! \endcode
 //!
-//! get_busy_mcguffin() a \ref busy "mcguffin that blocks processing" of all
+//! get_shade_busy_mcguffin() and get_wait_busy_mcguffin()
+//! return a \ref busy "mcguffin that blocks processing" of all
 //! keyboard
 //! or pointer button press events, until the last reference to the mcguffin
 //! goes out of scope and it gets destroyed.
+//!
+//! get_shade_busy_mcguffin() is equivalent to get_wait_busy_mcguffin() on
+//! display screens that don't support alpha compositing.
 //!
 //! connection_mcguffin() returns a mcguffin for the underlying connection
 //! to the display server. Installing a destructor callback on this mcguffin

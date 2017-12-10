@@ -50,12 +50,13 @@ cursor_pointer cursor_pointerObj::initialize(IN_THREAD_ONLY)
 					->initialize(IN_THREAD));
 }
 
-icon cursor_pointerObj::theme_updated(IN_THREAD_ONLY,
-				      const defaulttheme &new_theme)
+cursor_pointer cursor_pointerObj::theme_updated(IN_THREAD_ONLY,
+						const defaulttheme &new_theme)
 {
 	return cursor_pointer_icon->image->impl->screenref->impl
 		->cursor_pointercaches
-		->create_cursor_pointer(theme_updated(IN_THREAD, new_theme));
+		->create_cursor_pointer(cursor_pointer_icon
+					->theme_updated(IN_THREAD, new_theme));
 }
 
 cursor_pointer iconObj::create_cursor()

@@ -758,7 +758,7 @@ void elementObj::implObj
 	// If there's a busy mcguffin outstanding, and composition is available,
 	// draw a shade on top of us.
 
-	if (wh.is_busy() && wh.drawable_pictformat->alpha_depth > 0)
+	if (wh.is_shade_busy() && wh.drawable_pictformat->alpha_depth > 0)
 	{
 		contents->composite(wh.shaded_color(IN_THREAD)
 				    ->get_current_color(IN_THREAD),

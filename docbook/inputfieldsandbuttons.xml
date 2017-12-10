@@ -306,7 +306,7 @@ text_field->create_tooltip("A brief message, a few lines long.", 30);</programli
       This allows custom fonts and text colors for the tooltip. The
       tooltip's background color is fixed by the current theme.
       An optional second parameter specifies the tooltip's width in
-      millimeters. The tooltip's gext gets wordwrapped to fit within the
+      millimeters. The tooltip's gext gets word-wrapped to fit within the
       given width. The tooltip's text does not get word-wrapped otherwise,
       but may contain <literal>'\n'</literal>s to introduce explicit
       line breaks.
@@ -436,6 +436,37 @@ factory->create_normal_button([]
       <xref linkend="callbacks" /> and
       <xref linkend="containerrefs" /> for more information.
     </para>
+
+    <para>
+      The lambda receives two parameters:
+    </para>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  <ulink url="&link-typedef-x--w-callback-trigger-t;"><classname>&ns;::w::callback_trigger_t</classname></ulink>
+	  provides additional information about why exactly the callback
+	  got invoked, by a button or a key press. It's possible to use this
+	  information to take different actions.
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  The
+	  <ulink url="&link-x--w--busy;"><classname>&ns;::w::busy</classname></ulink>
+	  factory parameter
+	  provides the option of suspending keyboard and pointer button
+	  processing after the callback returns. Normally &appshort;'s
+	  internal execution thread resumes processing keyboard and button
+	  clicks after this callback returns. If the application needs to
+	  engage in a lengthy task because of this button click, and
+	  no more pointer or button clicks should be processed until the
+	  application gets done, the callback uses this factory to
+	  construct a <quote>mcguffin</quote> for that purpose. An
+	  example of this is given in <xref linkend="busy" />.
+	</para>
+      </listitem>
+    </itemizedlist>
   </section>
 
   <section id="appdata">
