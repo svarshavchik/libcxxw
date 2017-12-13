@@ -12,7 +12,7 @@ libtool: $(LIBTOOL_DEPS)
 STATICLINKFLAGS=-Wl,-ljpeg -Wl,-lgif -Wl,-lcourier-unicode -Wl,-lpthread @LIBCXXW_LIBS@ -pthread
 
 lib_LTLIBRARIES=libcxxw.la
-bin_PROGRAMS=cxxw
+bin_PROGRAMS=cxxw cxxwtheme
 
 CPPFLAGS += -I$(top_srcdir)/includes -I./includes -I$(top_srcdir) -I. \
             -DPKGDATADIR='"$(pkgdatadir)"'
@@ -768,6 +768,10 @@ TESTLINKTYPE=$(if $(STATIC),-static $(STATICLINKFLAGS))
 cxxw_SOURCES=cxxw.C
 cxxw_LDADD=libcxxw.la
 cxxw_LDFLAGS=$(TESTLINKTYPE)
+
+cxxwtheme_SOURCES=cxxwtheme.C
+cxxwtheme_LDADD=libcxxw.la
+cxxwtheme_LDFLAGS=$(TESTLINKTYPE)
 
 $(call OPTIONS_GEN,cxxwoptions.H,cxxwoptions.xml)
 

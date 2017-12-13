@@ -99,7 +99,7 @@ void testlabel()
 
 		main_window->get_screen()->get_connection()
 			->set_theme(original_theme.first,
-				    (i % 2) ? 100:200);
+				    (i % 2) ? 100:200, true);
 	}
 }
 

@@ -353,7 +353,8 @@ void connectionObj::implObj::set_wm_icon(xcb_window_t wid,
 //////////////////////////////////////////////////////////////////////////////
 
 void connectionObj::set_theme(const std::string &identifier,
-			      int factor)
+			      int factor,
+			      bool this_connection_only)
 {
 	auto available_themes=connection::base::available_themes();
 
@@ -371,6 +372,23 @@ void connectionObj::set_theme(const std::string &identifier,
 		throw EXCEPTION(gettextmsg(_("Theme scaling factor must be between %1% and %2%"),
 					   SCALE_MIN, SCALE_MAX));
 
+	if (this_connection_only)
+	{
+		auto config=defaulttheme::base::get_config(identifier,
+							   factor/100.0);
+
+		impl->thread->run_as
+			([impl=this->impl, config]
+			 (IN_THREAD_ONLY)
+			 {
+				 update_themes(impl->screens, config);
+				 IN_THREAD->theme_updated(IN_THREAD);
+			 });
+		return;
+
+	}
+
+	save_config(identifier, factor);
 	load_cxxwtheme_property(impl->screens.at(0)->xcb_screen,
 				impl->thread,
 				identifier,

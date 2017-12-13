@@ -531,7 +531,7 @@ void runtestflashwiththeme(const testmainwindowoptions &options)
 
 		main_window->get_screen()->get_connection()
 			->set_theme(flag ? alternate_theme:original_theme.first,
-				    original_theme.second);
+				    original_theme.second, true);
 
 		flag= !flag;
 		{
@@ -705,7 +705,7 @@ runtestthemescale(const testmainwindowoptions &options)
 
 		main_window->get_screen()->get_connection()
 			->set_theme(original_theme.first,
-				    (i % 2) ? 100:200);
+				    (i % 2) ? 100:200, true);
 
 		flag= !flag;
 		{

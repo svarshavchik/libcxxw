@@ -56,7 +56,8 @@ class connectionObj : virtual public obj {
 	//! Sets a new theme and scaling factor.
 
 	void set_theme(const std::string &identifier,
-		       int factor);
+		       int factor,
+		       bool this_connection_only);
 
 	//! Shortcut to render information.
 	const_pictformat find_alpha_pictformat_by_depth(depth_t d) const;

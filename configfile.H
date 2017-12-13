@@ -10,8 +10,9 @@ namespace LIBCXX_NAMESPACE {
 }
 #endif
 
-xml::doc read_config();
-void save_config(const xml::doc &);
+xml::doc read_config() LIBCXX_HIDDEN;
+void save_config(const std::string &themename,
+		 int themescale) LIBCXX_HIDDEN;
 
 #define SCALE_MIN 50
 #define SCALE_MAX 500

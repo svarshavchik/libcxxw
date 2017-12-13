@@ -17,6 +17,7 @@ configure
 /compile
 /cxxw
 /cxxwoptions.H
+/cxxwtheme
 /depcomp
 .dirstamp
 /docbook/entities

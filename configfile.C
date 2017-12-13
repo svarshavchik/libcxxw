@@ -60,16 +60,25 @@ xml::doc read_config()
 	return doc;
 }
 
-void save_config(const xml::doc &d)
+void save_config(const std::string &themename,
+		 int themescale)
 {
-	auto filename=configfilename();
+	auto doc=xml::doc::create();
 
-	try {
-		d->readlock()->save_file(filename);
-	} catch (const exception &e)
-	{
-		std::cerr << filename << ": " << e << std::endl;
-	}
+	auto lock=doc->writelock();
+
+	lock->create_child()->element({"cxxw"})->element({"theme"})
+		->element({"name"})->text(themename);
+
+	lock->get_xpath("/cxxw/theme")->to_node();
+
+	std::ostringstream o;
+
+	o << themescale;
+
+	lock->create_child()->element({"scale"})->text(o.str());
+
+	lock->save_file(configfilename());
 }
 
 #if 0
