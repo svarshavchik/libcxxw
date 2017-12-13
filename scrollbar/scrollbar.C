@@ -109,7 +109,8 @@ static scrollbar create_scrollbar(const ref<containerObj::implObj> &parent_conta
 	auto scrollbar_impl=
 		ref<scrollbarObj::implObj>
 		::create(scrollbar_impl_init_params{ffcontainer_impl,
-					callback,
+					callback ? callback
+					: scrollbar_cb_t{[](const auto &){}},
 					orientation,
 					std::tuple_cat(icon_set_1,
 						       icon_set_2),
@@ -207,6 +208,14 @@ do_create_v_scrollbar(const ref<containerObj::implObj> &parent_container,
 
 scrollbar factoryObj
 ::create_horizontal_scrollbar(const scrollbar_config &config,
+			      dim_arg minimum_size)
+{
+	return create_horizontal_scrollbar(config, nullptr,
+					   minimum_size);
+}
+
+scrollbar factoryObj
+::create_horizontal_scrollbar(const scrollbar_config &config,
 			      const scrollbar_cb_t &callback,
 			      dim_arg minimum_size)
 {
@@ -217,6 +226,15 @@ scrollbar factoryObj
 
 	created_internally(sb);
 	return sb;
+}
+
+
+scrollbar factoryObj
+::create_vertical_scrollbar(const scrollbar_config &config,
+			    dim_arg minimum_size)
+{
+	return create_vertical_scrollbar(config, nullptr,
+					 minimum_size);
 }
 
 scrollbar factoryObj

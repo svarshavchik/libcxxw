@@ -970,7 +970,8 @@ void scrollbarObj::implObj::update_callback(IN_THREAD_ONLY,
 
 	auto v=current_value.get();
 
-	report_current_values(IN_THREAD, std::get<0>(v), std::get<1>(v));
+	report_current_values(IN_THREAD, std::get<0>(v), std::get<1>(v),
+			      initial{});
 }
 
 void scrollbarObj::implObj::report_changed_values(IN_THREAD_ONLY,
@@ -988,21 +989,19 @@ void scrollbarObj::implObj::report_changed_values(IN_THREAD_ONLY,
 		*lock=new_values;
 	}
 
-	report_current_values(IN_THREAD, value, dragged_value);
+	report_current_values(IN_THREAD, value, dragged_value, {});
 }
 
 void scrollbarObj::implObj::report_current_values(IN_THREAD_ONLY,
 						  scroll_v_t value,
-						  scroll_v_t dragged_value)
+						  scroll_v_t dragged_value,
+						  const callback_trigger_t &why)
 {
-	if (!updated_value(IN_THREAD))
-		return;
-
 	try {
 		updated_value(IN_THREAD)
 			(scrollbar_info_t{(scroll_v_t::value_type)value,
 					(scroll_v_t::value_type)dragged_value,
-					callback_trigger_t{},
+					why,
 					busy_impl{*this}
 			});
 	} CATCH_EXCEPTIONS;

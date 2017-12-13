@@ -348,7 +348,8 @@ class LIBCXX_HIDDEN scrollbarObj::implObj :
 
 	void report_current_values(IN_THREAD_ONLY,
 				   scroll_v_t value,
-				   scroll_v_t dragged_value);
+				   scroll_v_t dragged_value,
+				   const callback_trigger_t &why);
  public:
 	//! Mutex-protected container for the current value of the scrollbar
 

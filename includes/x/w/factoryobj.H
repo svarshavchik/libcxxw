@@ -420,7 +420,8 @@ public:
 					  &layout_manager) LIBCXX_PUBLIC;
 
 	//! Create a horizontal scrollbar
-	scrollbar create_horizontal_scrollbar(const scrollbar_config &config)
+	scrollbar create_horizontal_scrollbar(const scrollbar_config &config,
+					      dim_arg minimum_size=0)
 		LIBCXX_PUBLIC;
 
 	//! Create a horizontal scrollbar
@@ -432,7 +433,8 @@ public:
 		LIBCXX_PUBLIC;
 
 	//! Create a vertical scrollbar
-	scrollbar create_vertical_scrollbar(const scrollbar_config &config)
+	scrollbar create_vertical_scrollbar(const scrollbar_config &config,
+					    dim_arg minimum_size=0)
 		LIBCXX_PUBLIC;
 
 	//! Create a vertical scrollbar

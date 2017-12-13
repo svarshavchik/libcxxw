@@ -11,29 +11,29 @@ See COPYING for distribution information.
     <title>Introduction</title>
 
     <para>
-      &appshort; is the first X widget toolkit with a
-      C++17 <acronym>API</acronym>. After several years of private
-      development it has reached beta quality, and
-      is now publicly available.
-      This toolkit is based on the &libcxx; library, see
-      <xref linkend="INSTALL" /> for more information.
+      &appshort; is an optional &libcxx; module that implements a small X
+      user interface toolkit with a modern
+      C++17 <acronym>API</acronym> and without any dependencies on Gnome
+      (GTK) or QT libraries. Its only dependencies are small, low-level
+      libraries that are not tied to any particular desktop environment.
+      See <xref linkend="INSTALL" /> for more information.
       Notable features:
     </para>
 
     <itemizedlist>
       <listitem>
 	<para>
-	  Uses modern C++17 language features; such as:
-	  using lambdas to handle events like pointer clicks and other
+	  Uses modern C++17 language features:
+	  lambdas handle events like mose button clicks and other
 	  user activity; overloaded, variadic-parameter methods offering
 	  alternative means of configuring various display elements; and
-	  other C++1z features.
+	  other C++17 features.
 	</para>
       </listitem>
 
       <listitem>
 	<para>
-	  Implements typical traditional UI elements: labels, text input fields,
+	  Implements basic, traditional UI elements: labels, text input fields,
 	  lists, combo boxes, menus, and dialogs. The UI elements support
 	  basic theming, including scaling -- adjusting the
 	  scaled size of the UI.
@@ -59,7 +59,7 @@ See COPYING for distribution information.
 	<para>
 	  Unlike other high-level toolkits,
 	  &app; does not require the application to use an event-driven
-	  design. &app; manages an internal execution thread that handles all
+	  design. &app; starts an internal execution thread that handles all
 	  X events. The main application
 	  thread can be working on a dedicated, long-running task that
 	  blocks all pointer and keyboard events, but the background thread
@@ -71,7 +71,8 @@ See COPYING for distribution information.
       <listitem>
 	<para>
 	  All display elements are
-	  &libcxx;'s reference-counted objects. There are no explicit methods
+	  &libcxx;'s reference-counted objects (based on smart pointers).
+	  There are no explicit methods
 	  to destroy input fields, buttons, and other display elements.
 	  Each display element is a reference-counted object, and
 	  when the last

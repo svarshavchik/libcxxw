@@ -45,7 +45,7 @@ public:
 	void reconfigure(const scrollbar_config &);
 
 	//! Install a new callback.
-	void on_update(const scrollbar_cb_t &);
+	void on_update(const scrollbar_cb_t &) LIBCXX_PUBLIC;
 
 	//! Destructor
 	~scrollbarObj() LIBCXX_HIDDEN;
