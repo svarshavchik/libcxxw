@@ -57,25 +57,16 @@ void custom_combobox_popup_containerObj::implObj
 					       get_horizvert(IN_THREAD)
 					       ->horiz.preferred(),
 					       tallest_row_height(IN_THREAD));
-
-	auto b=combobox_button(IN_THREAD).getptr();
-
-	if (b)
-		b->resize(IN_THREAD, 0, tallest_row_height(IN_THREAD),
-			  icon_scale::nomore);
 }
 
 void custom_combobox_popup_containerObj::implObj
-::set_current_combobox_selection_element_and_button(const element &e,
-						    const image_button_internal
-						    &button)
+::set_current_combobox_selection_element_and_button(const element &e)
 {
 	e->impl->THREAD->run_as
-		([me=ref<implObj>(this), e, button]
+		([me=ref<implObj>(this), e]
 		 (IN_THREAD_ONLY)
 		 {
 			 me->current_combobox_selection_element(IN_THREAD)=e;
-			 me->combobox_button(IN_THREAD)=button;
 
 			 // If there's anything here, keep it updated.
 			 me->update_current_selection_metrics(IN_THREAD);

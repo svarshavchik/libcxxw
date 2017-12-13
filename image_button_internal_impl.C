@@ -34,6 +34,20 @@ image_button_internalObj::implObj
 {
 }
 
+image_button_internalObj::implObj
+::implObj(const ref<containerObj::implObj> &container,
+	  const std::vector<icon> &icon_images,
+	  const metrics::axis &horiz_metrics,
+	  const metrics::axis &vert_metrics)
+	: superclass_t(icon_images, container,
+		       get_first_icon_image(icon_images),
+		       horiz_metrics, vert_metrics),
+	  current_image(0),
+	  current_callback_thread_only([](size_t, const auto &,
+					  const auto &) {})
+{
+}
+
 image_button_internalObj::implObj::~implObj()=default;
 
 void image_button_internalObj::implObj::set_image_number(IN_THREAD_ONLY,

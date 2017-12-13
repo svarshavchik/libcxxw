@@ -35,6 +35,16 @@ class LIBCXX_HIDDEN combobox_button_implObj
 				const ref<elementObj::implObj>
 				&popup_element_impl);
 
+ private:
+
+	//! Internal constructor
+
+	combobox_button_implObj(const ref<containerObj::implObj> &container,
+				const std::vector<icon> &icon_images,
+				const ref<elementObj::implObj
+				> &popup_element_impl,
+				dim_t first_icon_width);
+ public:
 	//! Destructor
 	~combobox_button_implObj();
 
@@ -49,6 +59,34 @@ class LIBCXX_HIDDEN combobox_button_implObj
 
 	//! Also activate on cursot down.
 	bool activate_on_key(const key_event &ke) override;
+
+	//! Override initialize()
+
+	//! Invoke current_position_updated to make sure our metrics are
+	//! right.
+	void initialize(IN_THREAD_ONLY) override;
+
+	//! Override current_position_updated
+
+	//! We override our metrics to allow unbound height.
+	//! Once resized, we resize the icons and fixate our horizontal
+	//! metrics based on the width of the resized icons.
+
+	void current_position_updated(IN_THREAD_ONLY) override;
+
+	//! Override update_image_metrics()
+
+	//! We override the default metrics from imageObj::implObj based on
+	//! the icon's width. Combobox's button is vertically resizable, so
+	//! so the vertical metrics are adjustable, and the horizontal metrics
+	//! are fixed to the icon's real width, as usual.
+	void update_image_metrics(IN_THREAD_ONLY) override;
+
+ private:
+
+	//! Called by initialize() and current_position_updated().
+
+	void resize_button_icons(IN_THREAD_ONLY);
 };
 
 LIBCXXW_NAMESPACE_END

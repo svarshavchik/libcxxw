@@ -13,23 +13,29 @@
 LIBCXXW_NAMESPACE_START
 
 imageObj::implObj::implObj(const ref<containerObj::implObj> &container,
-		 const icon &initial_icon)
+			   const icon &initial_icon)
 	: implObj(container, initial_icon,
 		  initial_icon->image->get_width(),
-		  initial_icon->image->get_height(),
-		  "image@libcxx.com")
+		  initial_icon->image->get_height())
 {
 }
 
 imageObj::implObj::implObj(const ref<containerObj::implObj> &container,
-		 const icon &initial_icon,
-		 dim_t icon_width,
-		 dim_t icon_height,
-		 const std::string &scratch_bufer_id)
-	: child_elementObj(container,
-			   {"image@libcxx.com",
-				   { {icon_width, icon_width, icon_width},
-					   {icon_height, icon_height,							   icon_height}}}),
+			   const icon &initial_icon,
+			   dim_t icon_width,
+			   dim_t icon_height)
+	: implObj(container, initial_icon,
+		  {icon_width, icon_width, icon_width},
+		  {icon_height, icon_height, icon_height})
+{
+}
+
+imageObj::implObj::implObj(const ref<containerObj::implObj> &container,
+			   const icon &initial_icon,
+			   const metrics::axis &horiz_metrics,
+			   const metrics::axis &vert_metrics)
+	: child_elementObj{container, {"image@libcxx.com",
+		{ horiz_metrics, vert_metrics }}},
 	  current_icon_thread_only(initial_icon)
 {
 }
@@ -89,15 +95,17 @@ void imageObj::implObj::set_icon(IN_THREAD_ONLY, const icon &new_icon)
 {
 	current_icon(IN_THREAD)=new_icon->initialize(IN_THREAD);
 
-	// Update the metrics to reflect the new icon.
+	update_image_metrics(IN_THREAD);
+	schedule_redraw(IN_THREAD);
+}
 
+void imageObj::implObj::update_image_metrics(IN_THREAD_ONLY)
+{
 	auto w=current_icon(IN_THREAD)->image->get_width();
 	auto h=current_icon(IN_THREAD)->image->get_height();
 
 	get_horizvert(IN_THREAD)->set_element_metrics(IN_THREAD,
 						      {w, w, w}, {h, h, h});
-	schedule_redraw(IN_THREAD);
 }
-
 
 LIBCXXW_NAMESPACE_END

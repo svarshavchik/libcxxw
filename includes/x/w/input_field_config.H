@@ -31,6 +31,16 @@ struct input_field_config {
 
 	bool autoselect=false;
 
+	//! Deselect the contents of the input field on focus loss.
+
+	//! This option is mainly enabled for editable combo-boxes.
+	bool autodeselect=false;
+
+	//! Whether clipboards should be updated.
+
+	//! This is turned off by editable combo-boxes.
+	bool update_clipboards=true;
+
 	//! When to show the vertical scrollbar
 
 	scrollbar_visibility vertical_scrollbar=scrollbar_visibility::never;

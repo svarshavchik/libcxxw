@@ -87,8 +87,8 @@ create_combobox_button(const ref<containerObj::implObj> &parent_container,
 	// the focus frame implementation object.
 
 	auto cbfc=ref<combobox_button_focusframe_container_t>
-		::create("inputfocusoff_border",
-			 "inputfocuson_border",
+		::create("comboboxbuttonfocusoff_border",
+			 "comboboxbuttonfocuson_border",
 			 parent_container,
 			 child_element_init_params{"focusframe@libcxx.com"});
 
@@ -163,9 +163,6 @@ class LIBCXX_HIDDEN lookup_collectorObj : virtual public obj {
 			    const custom_comboboxlayoutmanager &lm,
 			    const busy &mcguffin)
 	{
-		if (!search_func)
-			return false;
-
 		size_t i=0;
 
 		list_lock lock{lm};
@@ -182,6 +179,56 @@ class LIBCXX_HIDDEN lookup_collectorObj : virtual public obj {
 				if (activated)
 					buffer.clear();
 				break;
+			case XK_Up:
+			case XK_KP_Up:
+				if (activated)
+				{
+					auto selected=lm->selected();
+
+					i=selected ? *selected:lm->size();
+
+					while (i)
+					{
+						--i;
+						if (!lm->enabled(i))
+							continue;
+
+						lm->autoselect(i);
+						break;
+					}
+				}
+				buffer.clear();
+				// Set "activated" to false in order to bail
+				// out, below, instead of calling search_func().
+				// We handled everything here.
+				activated=false;
+				return true;
+			case XK_Down:
+			case XK_KP_Down:
+				if (activated)
+				{
+					auto selected=lm->selected();
+
+					i=selected ? *selected + 1 : 0;
+
+					auto n=lm->size();
+
+					while (i<n)
+					{
+						if (lm->enabled(i))
+						{
+							lm->autoselect(i);
+							break;
+						}
+						++i;
+					}
+				}
+				buffer.clear();
+				// Set "activated" to false in order to bail
+				// out, below, instead of calling search_func().
+				// We handled everything here.
+				activated=false;
+				return true;
 			default:
 
 				if (!ke->unicode)
@@ -228,7 +275,9 @@ class LIBCXX_HIDDEN lookup_collectorObj : virtual public obj {
 		if (!activated)
 			return true;
 
-		search_func({lock, lm, buffer, i, current_selection, mcguffin});
+		if (search_func)
+			search_func({lock, lm, buffer, i, current_selection,
+						mcguffin});
 
 		return true;
 	}
@@ -387,7 +436,7 @@ focusable_container new_custom_comboboxlayoutmanager
 	// size of the combo-box's items.
 	popup_container->impl
 		->set_current_combobox_selection_element_and_button
-		(current_selection, combobox_button);
+		(current_selection);
 
 	auto c=custom_combobox_container::create(combobox_container_impl,
 						 lm,

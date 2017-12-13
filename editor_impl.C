@@ -96,17 +96,24 @@ struct LIBCXX_HIDDEN editorObj::implObj::moving_cursor {
 	bool in_selection=false;
 	richtextiterator old_cursor;
 
+	// moved is passed to the constructor. The destructor initialized
+	// the bool to indicate whether we actually moved.
+
+	bool &moved;
 	moving_cursor(IN_THREAD_ONLY, editorObj::implObj &me,
-		      const input_mask &mask)
+		      const input_mask &mask, bool &moved)
 		: moving_cursor(IN_THREAD, me,
-				mask.shift || (mask.buttons & 1), false)
+				mask.shift || (mask.buttons & 1), false,
+				moved)
 	{
 	}
 
 	moving_cursor(IN_THREAD_ONLY, editorObj::implObj &me,
 		      bool selection_in_progress,
-		      bool processing_clear)
-		: IN_THREAD(IN_THREAD), me(me), old_cursor(me.cursor->clone())
+		      bool processing_clear,
+		      bool &moved)
+		: IN_THREAD(IN_THREAD), me(me), old_cursor(me.cursor->clone()),
+		moved{moved}
 	{
 		selection_cursor_t::lock cursor_lock{me};
 
@@ -157,6 +164,8 @@ struct LIBCXX_HIDDEN editorObj::implObj::moving_cursor {
 
 		if (me.current_keyboard_focus(IN_THREAD))
 			me.blink(IN_THREAD);
+
+		moved=old_cursor->compare(me.cursor) != 0;
 	}
 };
 
@@ -366,6 +375,8 @@ void editorObj::implObj::keyboard_focus(IN_THREAD_ONLY)
 	EDITOR_FOCUS_DEBUG();
 #endif
 
+	bool deselect=false;
+
 	if (config.autoselect)
 	{
 		if (current_keyboard_focus(IN_THREAD))
@@ -375,8 +386,23 @@ void editorObj::implObj::keyboard_focus(IN_THREAD_ONLY)
 		}
 		else if (autoselected)
 		{
-			moving_cursor moving{IN_THREAD, *this, false, false};
+			// If the entire selection was autoselected on
+			// focus gain, remove the selection on focus loss.
+
+			deselect=true;
 		}
+	}
+
+	if (config.autodeselect && !current_keyboard_focus(IN_THREAD))
+		deselect=true;
+
+	if (deselect)
+	{
+		// Leverage the existing moving_cursor logic.
+
+		bool ignored;
+
+		moving_cursor moving{IN_THREAD, *this, false, false, ignored};
 	}
 }
 
@@ -533,35 +559,37 @@ bool editorObj::implObj::process_keypress(IN_THREAD_ONLY, const key_event &ke)
 		return false;
 	}
 
+	bool moved;
+
 	switch (ke.keysym) {
 	case XK_Left:
 	case XK_KP_Left:
 		{
-			moving_cursor moving{IN_THREAD, *this, ke};
+			moving_cursor moving{IN_THREAD, *this, ke, moved};
 			cursor->prev(IN_THREAD);
 		}
-		return true;
+		return moved;
 	case XK_Right:
 	case XK_KP_Right:
 		{
-			moving_cursor moving{IN_THREAD, *this, ke};
+			moving_cursor moving{IN_THREAD, *this, ke, moved};
 			cursor->next(IN_THREAD);
 		}
-		return true;
+		return moved;
 	case XK_Up:
 	case XK_KP_Up:
 		{
-			moving_cursor moving{IN_THREAD, *this, ke};
+			moving_cursor moving{IN_THREAD, *this, ke, moved};
 			cursor->up(IN_THREAD);
 		}
-		return true;
+		return moved;
 	case XK_Down:
 	case XK_KP_Down:
 		{
-			moving_cursor moving{IN_THREAD, *this, ke};
+			moving_cursor moving{IN_THREAD, *this, ke, moved};
 			cursor->down(IN_THREAD);
 		}
-		return true;
+		return moved;
 	case XK_Delete:
 	case XK_KP_Delete:
 		unblink(IN_THREAD);
@@ -578,39 +606,37 @@ bool editorObj::implObj::process_keypress(IN_THREAD_ONLY, const key_event &ke)
 	case XK_Page_Up:
 	case XK_KP_Page_Up:
 		{
-			moving_cursor moving{IN_THREAD, *this, ke};
+			moving_cursor moving{IN_THREAD, *this, ke, moved};
 			cursor->page_up(IN_THREAD,
 					bounds(get_draw_info(IN_THREAD)
 					       .element_viewport).height);
 		}
-		return true;
+		return moved;
 	case XK_Page_Down:
 	case XK_KP_Page_Down:
 		{
-			moving_cursor moving{IN_THREAD, *this, ke};
+			moving_cursor moving{IN_THREAD, *this, ke, moved};
 			cursor->page_down(IN_THREAD,
 					  bounds(get_draw_info(IN_THREAD)
 						 .element_viewport).height);
 		}
-		return true;
+		return moved;
 	case XK_Home:
 		{
-			moving_cursor moving{IN_THREAD, *this, ke};
+			moving_cursor moving{IN_THREAD, *this, ke, moved};
 			cursor->start_of_line();
 		}
-		return true;
+		return moved;
 	case XK_End:
 		{
-			moving_cursor moving{IN_THREAD, *this, ke};
+			moving_cursor moving{IN_THREAD, *this, ke, moved};
 			cursor->end_of_line();
 		}
-		return true;
+		return moved;
 	case XK_KP_Home:
-		to_begin(IN_THREAD, ke);
-		return true;
+		return to_begin(IN_THREAD, ke);
 	case XK_KP_End:
-		to_end(IN_THREAD, ke);
-		return true;
+		return to_end(IN_THREAD, ke);
 	case XK_Insert:
 		if (ke.shift)
 			get_window_handler()
@@ -770,7 +796,9 @@ bool editorObj::implObj::process_button_event(IN_THREAD_ONLY,
 
 	if (be.press && (be.button == 1 || be.button == 2))
 	{
-		moving_cursor moving{IN_THREAD, *this, be};
+		bool ignored;
+
+		moving_cursor moving{IN_THREAD, *this, be, ignored};
 
 		cursor->moveto(IN_THREAD, most_recent_x, most_recent_y);
 
@@ -806,8 +834,10 @@ void editorObj::implObj::report_motion_event(IN_THREAD_ONLY,
 
 	if (me.mask.buttons & 1)
 	{
+		bool ignored;
 		{
-			moving_cursor moving{IN_THREAD, *this, me.mask};
+			moving_cursor moving{IN_THREAD, *this, me.mask,
+					ignored};
 			cursor->moveto(IN_THREAD, most_recent_x, most_recent_y);
 		}
 
@@ -884,11 +914,13 @@ void editorObj::implObj::selectionObj::clear(IN_THREAD_ONLY)
 
 	if (p)
 	{
+		bool ignored;
+
 		// Leverage moving_cursor for all the heavy lifting.
 		//
 		// We pretend that we're moving the cursor without
 		// a selection in progress, that's all.
-		moving_cursor dummy{IN_THREAD, *p, false, true};
+		moving_cursor dummy{IN_THREAD, *p, false, true, ignored};
 
 		p->primary_selection(IN_THREAD)=nullptr;
 	}
@@ -983,6 +1015,9 @@ editorObj::implObj::create_selection(IN_THREAD_ONLY)
 
 void editorObj::implObj::create_primary_selection(IN_THREAD_ONLY)
 {
+	if (!config.update_clipboards)
+		return;
+
 	selection_cursor_t::lock cursor_lock{*this};
 
 	if (!cursor_lock.cursor)
@@ -1001,6 +1036,9 @@ void editorObj::implObj::create_primary_selection(IN_THREAD_ONLY)
 
 void editorObj::implObj::create_secondary_selection(IN_THREAD_ONLY)
 {
+	if (!config.update_clipboards)
+		return;
+
 	selection_cursor_t::lock cursor_lock{*this};
 
 	if (!cursor_lock.cursor)
@@ -1020,6 +1058,9 @@ void editorObj::implObj::create_secondary_selection(IN_THREAD_ONLY)
 
 void editorObj::implObj::remove_primary_selection(IN_THREAD_ONLY)
 {
+	if (!config.update_clipboards)
+		return;
+
 	if (!primary_selection(IN_THREAD))
 		return;
 
@@ -1031,6 +1072,9 @@ void editorObj::implObj::remove_primary_selection(IN_THREAD_ONLY)
 
 void editorObj::implObj::remove_secondary_selection(IN_THREAD_ONLY)
 {
+	if (!config.update_clipboards)
+		return;
+
 	if (!secondary_selection(IN_THREAD))
 		return;
 
@@ -1040,18 +1084,27 @@ void editorObj::implObj::remove_secondary_selection(IN_THREAD_ONLY)
 	get_window_handler().selection_discard(IN_THREAD, XCB_ATOM_SECONDARY);
 }
 
-void editorObj::implObj::to_begin(IN_THREAD_ONLY, const input_mask &mask)
+bool editorObj::implObj::to_begin(IN_THREAD_ONLY, const input_mask &mask)
 {
-	moving_cursor moving{IN_THREAD, *this, mask};
+	bool moved;
+	{
+		moving_cursor moving{IN_THREAD, *this, mask, moved};
 
-	cursor->swap(cursor->begin());
+		cursor->swap(cursor->begin());
+	}
+	return moved;
 }
 
-void editorObj::implObj::to_end(IN_THREAD_ONLY, const input_mask &mask)
+bool editorObj::implObj::to_end(IN_THREAD_ONLY, const input_mask &mask)
 {
-	moving_cursor moving{IN_THREAD, *this, mask};
+	bool moved;
 
-	cursor->swap(cursor->end());
+	{
+		moving_cursor moving{IN_THREAD, *this, mask, moved};
+
+		cursor->swap(cursor->end());
+	}
+	return moved;
 }
 
 void editorObj::implObj::select_all(IN_THREAD_ONLY)
@@ -1141,7 +1194,10 @@ void editorObj::implObj::set(IN_THREAD_ONLY, const std::u32string &string,
 
 	bool will_have_selection=cursor_pos != selection_pos;
 
-	moving_cursor moving{IN_THREAD, *this, will_have_selection, false};
+	bool ignored;
+
+	moving_cursor moving{IN_THREAD, *this, will_have_selection, false,
+			ignored};
 
 	cursor->swap(cursor->end());
 

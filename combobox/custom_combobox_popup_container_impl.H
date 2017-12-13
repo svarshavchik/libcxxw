@@ -42,11 +42,7 @@ class LIBCXX_HIDDEN custom_combobox_popup_containerObj::implObj
 
 	weakptr<elementptr> current_combobox_selection_element_thread_only;
 
-	//! Set the combo-box button's element's size
-	weakptr<image_button_internalptr> combobox_button_thread_only;
-
 	THREAD_DATA_ONLY(current_combobox_selection_element);
-	THREAD_DATA_ONLY(combobox_button);
 
  public:
 
@@ -92,8 +88,7 @@ class LIBCXX_HIDDEN custom_combobox_popup_containerObj::implObj
 	//! we must use a weak reference to avoid a circular reference.
 
 	void set_current_combobox_selection_element_and_button
-		(const element &e,
-		 const image_button_internal &button);
+		(const element &e);
  private:
 
 	//! Update current selection metrics.

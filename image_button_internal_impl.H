@@ -45,6 +45,12 @@ public:
 	implObj(const ref<containerObj::implObj> &container,
 		const std::vector<icon> &icon_images);
 
+	//! Constructor
+	implObj(const ref<containerObj::implObj> &container,
+		const std::vector<icon> &icon_images,
+		const metrics::axis &horiz_metrics,
+		const metrics::axis &vert_metrics);
+
 	//! Destructor
 	~implObj();
 

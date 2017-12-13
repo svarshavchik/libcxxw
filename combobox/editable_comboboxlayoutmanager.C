@@ -74,11 +74,23 @@ new_editable_comboboxlayoutmanager
 		   // Make sure input field's default font matches the
 		   // labels'.
 
+		   // The field gets automatically sized by the combobox
+		   // layout manager accoridng to the width of the combobox
+		   // items, so for the purpose of creating the input field
+		   // make it think it's only two columns wide;
+
+		   input_field_config config{2,
+				   1, // One row,
+				   true,	// autoselect
+				   true,	// autodeselect
+				   false	// do not update clipboards
+				   };
+
 		   auto input_field=f->create_input_field
 			   ({theme_font({f->get_element_impl()
 							   .label_theme_font()
 							   })
-					   }, {2});
+					   }, config);
 
 		   input_field->on_autocomplete
 			   ([container_impl=make_weak_capture(f->get_container_impl())]

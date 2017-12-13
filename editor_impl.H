@@ -350,10 +350,10 @@ class LIBCXX_HIDDEN editorObj::implObj
 		    const std::u32string_view &str);
 
 	//! Move cursor to the beginning of the text.
-	void to_begin(IN_THREAD_ONLY, const input_mask &mask);
+	bool to_begin(IN_THREAD_ONLY, const input_mask &mask);
 
 	//! Move cursor to the end of the text.
-	void to_end(IN_THREAD_ONLY, const input_mask &mask);
+	bool to_end(IN_THREAD_ONLY, const input_mask &mask);
 
 	//! Select the entire text.
 	void select_all(IN_THREAD_ONLY);

@@ -105,6 +105,8 @@ void testbutton()
 							 LIBCXX_NAMESPACE::w::rgb::maximum},
 						 "Hello world!"}, {30, 4,
 						 false,
+						 false,
+						 true,
 						 LIBCXX_NAMESPACE::w::
 						 scrollbar_visibility::
 						 automatic_reserved});

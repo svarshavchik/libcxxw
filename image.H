@@ -30,9 +30,14 @@ private:
 	implObj(const ref<containerObj::implObj> &container,
 		const icon &initial_icon,
 		dim_t icon_width,
-		dim_t icon_height,
-		const std::string &scratch_bufer_id);
+		dim_t icon_height);
 public:
+	//! Constructor
+	implObj(const ref<containerObj::implObj> &container,
+		const icon &initial_icon,
+		const metrics::axis &horiz_metrics,
+		const metrics::axis &vert_metrics);
+
 	//! Inherited from elementObj::implObj
 
 	void initialize(IN_THREAD_ONLY) override;
@@ -48,6 +53,16 @@ public:
 	//! Set new icon.
 
 	void set_icon(IN_THREAD_ONLY, const icon &new_icon);
+
+ protected:
+
+	//! Compute new metrics for this image element.
+
+	//! The default implementation sets the metrics from the
+	//! icon's width and height.
+
+	virtual void update_image_metrics(IN_THREAD_ONLY);
+
 };
 
 LIBCXXW_NAMESPACE_END
