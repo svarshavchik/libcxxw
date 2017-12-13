@@ -112,6 +112,13 @@ class LIBCXX_HIDDEN connection_threadObj
 
 	std::function<void ()> *cxxwtheme_changed_thread_only;
 
+ public:
+
+	//! Notify all top level windows about a new theme.
+
+	void theme_updated(IN_THREAD_ONLY);
+
+ private:
 	//! Active window handlers.
 
 	std::unordered_map<xcb_window_t,

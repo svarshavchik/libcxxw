@@ -36,6 +36,11 @@ void load_cxxwtheme_property(const screen &screen0,
 			     const std::string &theme_name,
 			     int theme_scale) LIBCXX_PUBLIC;
 
+void load_cxxwtheme_property(const xcb_screen_t *screen_0,
+			     const connection_thread &thread,
+			     const std::string &theme_name,
+			     int theme_scale) LIBCXX_HIDDEN;
+
 //////////////////////////////////////////////////////////////////////////////
 //
 // The window theme
@@ -216,16 +221,6 @@ public:
 	//! Structure returned by \c INSERT_LIBX_NAMESPACE::w::defaulttheme::base::get_config()
 
 	struct config {
-
-		//! Screen #0
-		const xcb_screen_t *screen_0;
-
-		//! The connection thread.
-		connection_thread thread;
-
-		//! CXXWTHEME property on screen_0's root window, if set.
-		std::string cxxwtheme_property;
-
 		//! Determined theme name
 		std::string themename;
 
@@ -235,8 +230,8 @@ public:
 		//! Determined theme scale
 		double themescale;
 
-		//! The loaded theme configuration file, null if parsing error.
-		xml::docptr theme_configfile;
+		//! The loaded theme configuration file.
+		xml::doc theme_configfile;
 	};
 
 
@@ -253,7 +248,7 @@ public:
 	//! Finish the construction. Must get the same theme_config that
 	//! the constructor got, plus a reference to the theme's screen.
 
-	void load(const config &theme_config,
+	void load(const xml::doc &config,
 		  const ref<screenObj::implObj> &screen);
 
 	~defaultthemeObj();

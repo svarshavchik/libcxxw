@@ -195,15 +195,13 @@ void connection_threadObj::run_event(IN_THREAD_ONLY,
 			if (msg->window == IN_THREAD->root_window(IN_THREAD) &&
 			    msg->atom == info->atoms_info.cxxwtheme)
 			{
+				// The callback loads and parses the new theme.
+
 				try {
 					(*cxxwtheme_changed_thread_only)();
 				} CATCH_EXCEPTIONS;
 
-				for (const auto &window_handler
-					     : *window_handlers_thread_only)
-					window_handler.second
-						->theme_updated_event
-						(IN_THREAD);
+				theme_updated(IN_THREAD);
 			}
 
 			// 2) We requested someone to convert a selection
@@ -284,6 +282,12 @@ void connection_threadObj::run_event(IN_THREAD_ONLY,
 		}
 		return;
 	};
+}
+
+void connection_threadObj::theme_updated(IN_THREAD_ONLY)
+{
+	for (const auto &window_handler : *window_handlers_thread_only)
+		window_handler.second->theme_updated_event(IN_THREAD);
 }
 
 bool connection_threadObj::process_buffered_motion_event(IN_THREAD_ONLY)

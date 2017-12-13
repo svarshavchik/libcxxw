@@ -160,8 +160,9 @@ static double default_theme_scale(const std::string &cxxwtheme_property,
 //
 // Retrieve CXXWTHEME property from screen 0's root window.
 
-static std::string cxxwtheme_property(const xcb_screen_t *screen_0,
-				      const connection_thread &thread)
+std::string defaulttheme::base
+::cxxwtheme_property(const xcb_screen_t *screen_0,
+		     const connection_thread &thread)
 {
 	std::string value;
 
@@ -189,10 +190,10 @@ static std::string cxxwtheme_property(const xcb_screen_t *screen_0,
 // First cxxw app initializes CXXWTHEME property in screen 0's root from
 // the configuration file.
 
-static void load_cxxwtheme_property(const xcb_screen_t *screen_0,
-				    const connection_thread &thread,
-				    const std::string &theme_name,
-				    int theme_scale)
+void load_cxxwtheme_property(const xcb_screen_t *screen_0,
+			     const connection_thread &thread,
+			     const std::string &theme_name,
+			     int theme_scale)
 {
 	auto conn=thread->info;
 
@@ -228,8 +229,9 @@ void load_cxxwtheme_property(const screen &screen0,
 
 std::pair<std::string, int> connectionObj::current_theme() const
 {
-	auto property=cxxwtheme_property(impl->screens.at(0)->xcb_screen,
-					 impl->thread);
+	auto property=defaulttheme::base
+		::cxxwtheme_property(impl->screens.at(0)->xcb_screen,
+				     impl->thread);
 	auto config=read_config(); // Configuration file
 
 	return {
@@ -237,31 +239,6 @@ std::pair<std::string, int> connectionObj::current_theme() const
 			(int)(default_theme_scale(property, config, 0)
 			      *100)
 			};
-}
-
-void connectionObj::set_theme(const std::string &identifier,
-			      int factor)
-{
-	auto available_themes=connection::base::available_themes();
-
-	if (std::find_if(available_themes.begin(),
-			 available_themes.end(),
-			 [&]
-			 (const auto &t)
-			 {
-				 return t.identifier == identifier;
-			 }) == available_themes.end())
-		throw EXCEPTION(gettextmsg(_("No such theme: %1%"),
-					   identifier));
-
-	if (factor < SCALE_MIN || factor > SCALE_MAX)
-		throw EXCEPTION(gettextmsg(_("Theme scaling factor must be between %1% and %2%"),
-					   SCALE_MIN, SCALE_MAX));
-
-	load_cxxwtheme_property(impl->screens.at(0)->xcb_screen,
-				impl->thread,
-				identifier,
-				factor);
 }
 
 std::vector<connection::base::available_theme>
@@ -316,16 +293,21 @@ connection::base::available_themes()
 }
 
 defaulttheme::base::config
-defaulttheme::base::get_config(const xcb_screen_t *screen_0,
-			       const connection_thread &thread)
+defaulttheme::base::get_config(const std::string &property)
 {
-	auto property=cxxwtheme_property(screen_0, thread);
 	auto user_configfile=read_config();
 	auto themename=default_theme_name(property, user_configfile,
 					  themesubdirprop.getValue());
 	auto themescale=default_theme_scale(property, user_configfile,
 					    themescaleprop.getValue());
 
+	return get_config(themename, themescale);
+}
+
+defaulttheme::base::config
+defaulttheme::base::get_config(const std::string &themename,
+			       double themescale)
+{
 	xml::docptr theme_configfile;
 
 	auto themedir=themedirbase.getValue() + "/" + themename;
@@ -336,11 +318,11 @@ defaulttheme::base::get_config(const xcb_screen_t *screen_0,
 		theme_configfile=xml::doc::create(filename, "nonet xinclude");
 	} catch (const exception &e)
 	{
-		std::cerr << "Error parsing " << filename
-			  << ": " << e << std::endl;
+		throw EXCEPTION("Error parsing " << filename
+				<< ": " << e);
 	}
 
-	return { screen_0, thread, property, themename, themedir, themescale,
+	return { themename, themedir, themescale,
 			theme_configfile };
 }
 
@@ -355,38 +337,24 @@ defaultthemeObj::defaultthemeObj(const xcb_screen_t *screen,
 			      screen->height_in_millimeters, themescale)),
 	  screen(screen)
 {
-	// If we did not find the CXXWTHEME property, now is the time to
-	// set it.
-
-	if (theme_config.cxxwtheme_property.empty())
-		load_cxxwtheme_property(theme_config.screen_0,
-					theme_config.thread,
-					theme_config.themename,
-					theme_config.themescale * 100);
 }
 
-void defaultthemeObj::load(const config &theme_config,
+void defaultthemeObj::load(const xml::doc &config,
 			   const ref<screenObj::implObj> &screen)
 {
 	try {
-		if (!theme_config.theme_configfile.null())
-		{
-			xml::doc config=theme_config.theme_configfile;
-
-			load_dims(config);
-			load_colors(config);
-			load_color_gradients(config);
-			load_borders(config, screen);
-			load_fonts(config);
-			load_layouts(config);
-			load_factories(config);
-		}
+		load_dims(config);
+		load_colors(config);
+		load_color_gradients(config);
+		load_borders(config, screen);
+		load_fonts(config);
+		load_layouts(config);
+		load_factories(config);
 	} catch (const exception &e)
 	{
-		std::cerr << "An error occured while parsing the "
-			  << themename << " theme configuration file: "
-			  << e << std::endl;
-		_exit(1);
+		throw EXCEPTION("An error occured while parsing the "
+				<< themename << " theme configuration file: "
+				<< e);
 	}
 }
 

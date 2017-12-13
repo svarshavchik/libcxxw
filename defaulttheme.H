@@ -23,8 +23,24 @@ public:
 	typedef defaultthemeObj::config config;
 
 	//! Load the theme configuration.
-	static config get_config(const xcb_screen_t *screen_0,
-				 const connection_thread &thread);
+
+	//! Passing in the CXXWTHEME property from screen 0's root window,
+	//! Possibly empty if unset.
+	//!
+	//! The returned config object gets used to construct a defaulttheme.
+	static config get_config(const std::string &property) LIBCXX_HIDDEN;
+
+	//! Load a custom theme configuration.
+
+	//! The returned config object gets used to construct a defaulttheme.
+	static config get_config(const std::string &themename,
+				 double themescale) LIBCXX_HIDDEN;
+
+	//! Read the CXXWTHEME propert from screen  0's root window.
+
+	static std::string cxxwtheme_property(const xcb_screen_t *screen_0,
+					      const connection_thread &thread)
+		LIBCXX_HIDDEN;
 };
 
 

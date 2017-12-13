@@ -10,6 +10,7 @@
 #include "messages.H"
 #include "pictformat.H"
 #include "defaulttheme.H"
+#include "configfile.H"
 #include "fonts/cached_font.H"
 #include "fonts/fontcollection.H"
 #include "fonts/fontid_t_hash.H"
@@ -17,6 +18,7 @@
 #include "x/w/pictformat.H"
 #include <x/exception.H>
 #include <xcb/xcb_renderutil.h>
+#include <algorithm>
 
 LIBCXXW_NAMESPACE_START
 
@@ -97,7 +99,21 @@ get_screens(const connection_thread &thread,
 	// Peek at screen #0, in order to construct the default theme
 	// configuration.
 
-	auto theme_config=defaulttheme::base::get_config(iter.data, thread);
+	xcb_screen_t *screen_0=iter.data;
+
+	auto property=defaulttheme::base::cxxwtheme_property(screen_0, thread);
+
+	auto theme_config=defaulttheme::base::get_config(property);
+
+	// If we did not find the CXXWTHEME property, now is
+	// the time to set it.
+
+	if (property.empty())
+		load_cxxwtheme_property
+			(screen_0,
+			 thread,
+			 theme_config.themename,
+			 theme_config.themescale * 100);
 
 	while (iter.rem)
 	{
@@ -166,7 +182,7 @@ get_screens(const connection_thread &thread,
 						       root_pictformat,
 						       thread);
 
-		new_theme->load(theme_config, s);
+		new_theme->load(theme_config.theme_configfile, s);
 
 		v.push_back(s);
 		xcb_screen_next(&iter);
@@ -181,22 +197,34 @@ get_screens(const connection_thread &thread,
 // We take care of loading and installing the new theme into each
 // screen object. The connection thread takes care of notifying all windows.
 
-static inline void update_themes(const std::vector<ref<screenObj::implObj>> &s,
-				 const connection_thread &thread)
+static void update_themes(const std::vector<ref<screenObj::implObj>> &s,
+			  const defaulttheme::base::config &theme_config)
+	LIBCXX_HIDDEN;
+
+static void update_themes(const std::vector<ref<screenObj::implObj>> &s,
+			  const defaulttheme::base::config &theme_config)
 {
-	auto theme_config=defaulttheme::base::get_config(s.at(0)->xcb_screen,
-							 thread);
+	// Construct all the themes first.
+
+	std::vector<defaulttheme> new_themes;
+
+	new_themes.reserve(s.size());
 
 	for (const auto &screen:s)
 	{
 		auto new_theme=defaulttheme::create(screen->xcb_screen,
 						    theme_config);
 
-		new_theme->load(theme_config, screen);
-		current_theme_t::lock lock(screen->current_theme);
-
-		*lock=new_theme;
+		new_theme->load(theme_config.theme_configfile, screen);
+		new_themes.push_back(new_theme);
 	}
+
+	// Now that all the themes have been built, install them.
+
+	auto theme_iter=new_themes.begin();
+
+	for (const auto &screen:s)
+		screen->current_theme=*theme_iter++;
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -234,12 +262,19 @@ connectionObj::implObj::implObj(const connection_info &info,
 	  font_cache(font_cache_t::create()),
 	  sorted_font_cache(sorted_font_cache_t::create())
 {
-	thread->set_theme_changed_callback(screens.at(0)->xcb_screen->root,
-					   [screens=this->screens, thread]
-					   {
-						   update_themes(screens,
-								 thread);
-					   });
+	thread->set_theme_changed_callback
+		(screens.at(0)->xcb_screen->root,
+		 [screens=this->screens, thread]
+		 {
+			 auto screen_0=screens.at(0)->xcb_screen;
+
+			 auto property=defaulttheme::base
+				 ::cxxwtheme_property(screen_0, thread);
+			 auto theme_config=defaulttheme::base
+				 ::get_config(property);
+
+			 update_themes(screens, theme_config);
+		 });
 }
 
 connectionObj::implObj::~implObj()
@@ -313,6 +348,33 @@ void connectionObj::implObj::set_wm_icon(xcb_window_t wid,
 	mpobj<ewmh>::lock lock{ewmh_info};
 
 	lock->set_wm_icon(wid, raw_data);
+}
+
+//////////////////////////////////////////////////////////////////////////////
+
+void connectionObj::set_theme(const std::string &identifier,
+			      int factor)
+{
+	auto available_themes=connection::base::available_themes();
+
+	if (std::find_if(available_themes.begin(),
+			 available_themes.end(),
+			 [&]
+			 (const auto &t)
+			 {
+				 return t.identifier == identifier;
+			 }) == available_themes.end())
+		throw EXCEPTION(gettextmsg(_("No such theme: %1%"),
+					   identifier));
+
+	if (factor < SCALE_MIN || factor > SCALE_MAX)
+		throw EXCEPTION(gettextmsg(_("Theme scaling factor must be between %1% and %2%"),
+					   SCALE_MIN, SCALE_MAX));
+
+	load_cxxwtheme_property(impl->screens.at(0)->xcb_screen,
+				impl->thread,
+				identifier,
+				factor);
 }
 
 LIBCXXW_NAMESPACE_END
