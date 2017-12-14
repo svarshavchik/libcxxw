@@ -80,11 +80,13 @@ connectionObj::implObj::implObj(const connection_info &info)
 
 // This is called by the constructor, to create the screens.
 
-static inline std::vector<ref<screenObj::implObj>>
+static std::vector<ref<screenObj::implObj>>
 get_screens(const connection_thread &thread,
 	    const render &render_info,
 	    mpobj<ewmh> &ewmh_info,
-	    const xcb_setup_t *setup)
+	    const xcb_setup_t *setup,
+	    const std::string &theme_property,
+	    bool &theme_exception)
 {
 	std::vector<ref<screenObj::implObj>> v;
 	size_t screen_number=0;
@@ -93,27 +95,15 @@ get_screens(const connection_thread &thread,
 
 	v.reserve(iter.rem);
 
-	if (iter.rem == 0)
-		throw EXCEPTION("No screens reported by the display server?");
-
 	// Peek at screen #0, in order to construct the default theme
 	// configuration.
 
 	xcb_screen_t *screen_0=iter.data;
 
-	auto property=defaulttheme::base::cxxwtheme_property(screen_0, thread);
-
-	auto theme_config=defaulttheme::base::get_config(property);
-
-	// If we did not find the CXXWTHEME property, now is
-	// the time to set it.
-
-	if (property.empty())
-		load_cxxwtheme_property
-			(screen_0,
-			 thread,
-			 theme_config.themename,
-			 theme_config.themescale * 100);
+	// If get_config() throws an exception, try again.
+	theme_exception=true;
+	auto theme_config=defaulttheme::base::get_config(theme_property);
+	theme_exception=false;
 
 	while (iter.rem)
 	{
@@ -182,13 +172,67 @@ get_screens(const connection_thread &thread,
 						       root_pictformat,
 						       thread);
 
+		// If load() throws an exception, try again.
+		theme_exception=true;
 		new_theme->load(theme_config.theme_configfile, s);
+		theme_exception=false;
 
 		v.push_back(s);
 		xcb_screen_next(&iter);
 	}
 
+	// If we did not find the CXXWTHEME property, now is
+	// the time to set it.
+
+	if (theme_property.empty())
+		load_cxxwtheme_property
+			(screen_0,
+			 thread,
+			 theme_config.themename,
+			 theme_config.themescale * 100);
+
 	return v;
+}
+
+static inline std::vector<ref<screenObj::implObj>>
+get_screens(const connection_thread &thread,
+	    const render &render_info,
+	    mpobj<ewmh> &ewmh_info,
+	    const xcb_setup_t *setup)
+{
+	auto iter=xcb_setup_roots_iterator(setup);
+
+	if (iter.rem == 0)
+		throw EXCEPTION("No screens reported by the display server?");
+
+	xcb_screen_t *screen_0=iter.data;
+
+	auto property=defaulttheme::base::cxxwtheme_property(screen_0, thread);
+
+	std::vector<ref<screenObj::implObj>> screens;
+
+	bool theme_exception=false;
+
+	try {
+		screens=get_screens(thread, render_info, ewmh_info, setup,
+				    property,
+				    theme_exception);
+	} catch (const exception &e)
+	{
+		if (!theme_exception)
+			throw;
+		e->caught();
+
+		// Ok, there was a problem initializing the theme,
+		// fallback to the default theme.
+
+		property="100:default";
+		screens=get_screens(thread, render_info, ewmh_info, setup,
+				    property,
+				    theme_exception);
+	}
+
+	return screens;
 }
 
 // This is the callback that gets invoked when the CXXWTHEMES property is
@@ -352,6 +396,13 @@ void connectionObj::implObj::set_wm_icon(xcb_window_t wid,
 
 //////////////////////////////////////////////////////////////////////////////
 
+void connectionObj::set_and_save_theme(const std::string &identifier,
+				       int factor)
+{
+	set_theme(identifier, factor, false);
+	save_config(identifier, factor);
+}
+
 void connectionObj::set_theme(const std::string &identifier,
 			      int factor,
 			      bool this_connection_only)
@@ -388,7 +439,6 @@ void connectionObj::set_theme(const std::string &identifier,
 
 	}
 
-	save_config(identifier, factor);
 	load_cxxwtheme_property(impl->screens.at(0)->xcb_screen,
 				impl->thread,
 				identifier,

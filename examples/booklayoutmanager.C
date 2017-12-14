@@ -176,29 +176,21 @@ static void create_book(const x::w::booklayoutmanager &pl)
 	**
 	** The major difference between page layout manager's pagefactory
 	** and book layout manager's bookpagefactory is that
-	** new pages get created by add(), and callback closure gets
-	** passed two factories, one for the page's tab, and one for the
-	** page itself.
+	** new pages get created by add().
 	*/
 
 	new_page->halign(x::w::halign::left).valign(x::w::valign::top)
-		.add([&]
-		     (const x::w::factory &tab_factory,
-		      const x::w::factory &page_factory)
-		     {
-			     // The callback closure must use both the
-			     // tab and the page factory to create the
-			     // new page's and the page itself.
-			     //
-			     // The tab is typically a label.
-			     //
-			     tab_factory->create_label
-				     ({
-					     "underline"_decoration,
-					     "A",
-					     "no"_decoration,
-					     "ddress"})->show();
+		.add(// The tab's label, an x::w::text_param
+		     {"underline"_decoration,
+				     "A",
+				     "no"_decoration,
+				     "ddress"},
 
+		     // The second parameter constructors the page element.
+
+		     [&]
+		     (const x::w::factory &page_factory)
+		     {
 			     auto container=page_factory->create_container
 				     ([]
 				      (const auto &container)
@@ -210,38 +202,35 @@ static void create_book(const x::w::booklayoutmanager &pl)
 			     container->show_all();
 		     },
 
-
 		     // The third parameter to add() is optional, and specifies
-		     // an x::shortcut for this page.
+		     // an x::w::shortcut for this page.
 
-		     {"Alt", 'A'}
-		     );
+		     {"Alt", 'A'});
+
 
 	/*
 	** Like the pagefactory, the same bookpagefactory can be used to
 	** add multiple pages.
 	*/
 
-	new_page->add([&]
-		      (const x::w::factory &tab_factory,
-		       const x::w::factory &page_factory)
-		      {
-			      tab_factory->create_label
-				      ({
-					      "underline"_decoration,
-					      "P",
-					      "no"_decoration,
-					      "hone"})->show();
-			      page_factory->create_container
-				      ([&]
-				       (const auto &container)
-				       {
-					       phone_tab(container);
-				       },
-				       x::w::new_gridlayoutmanager{})
-				      ->show_all();
-		      },
-		      {"Alt", 'P'});
+	new_page->add({
+			"underline"_decoration,
+				"P",
+				"no"_decoration,
+				"hone"},
+		[&]
+		(const x::w::factory &page_factory)
+		{
+			page_factory->create_container
+				([&]
+				 (const auto &container)
+				 {
+					 phone_tab(container);
+				 },
+				 x::w::new_gridlayoutmanager{})
+				->show_all();
+		},
+		{"Alt", 'P'});
 
 	/*
 	** And, similar to the pagefactory, the insert() method adds new
@@ -249,17 +238,33 @@ static void create_book(const x::w::booklayoutmanager &pl)
 	*/
 	new_page=pl->insert(0);
 
+	/*
+	** The page's tab doesn't have to be a plain text label, it can
+	** be an arbitrary display element. This is done by omitting the
+	** first parameter to add(), and the lambda callback takes two
+	** factories, one for the tab, one for the page.
+	*/
 	new_page->halign(x::w::halign::left).valign(x::w::valign::top)
 		.add([&]
 		     (const x::w::factory &tab_factory,
 		      const x::w::factory &page_factory)
 		     {
+			     /*
+			     ** Providing the text label to add() directly
+			     ** is equivalent to calling create_label() on the
+			     ** first factory, and show()ing the label.
+			     */
 			     tab_factory->create_label
 				     ({
 					     "underline"_decoration,
 					     "N",
 					     "no"_decoration,
 					     "ame"})->show();
+
+			     /*
+			     ** And the second parameter is the same page
+			     ** factory, that creates the page element normally.
+			     */
 			     page_factory->create_container
 				     ([&]
 				      (const auto &container)

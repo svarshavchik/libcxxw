@@ -82,7 +82,8 @@ factoryObj::create_input_field(const text_param &text,
 				impl_mixin,
 				input_field_peephole_style,
 				scrollbar_visibility::never,
-				config.vertical_scrollbar},
+				config.oneline() ? scrollbar_visibility::never
+				: config.vertical_scrollbar},
 		 [&]
 		 (const auto &parent_container_impl)
 		 {

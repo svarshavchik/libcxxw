@@ -10,6 +10,8 @@
 #include <x/w/factoryfwd.H>
 #include <x/w/alignment.H>
 #include <x/w/shortcutfwd.H>
+#include <x/w/text_paramfwd.H>
+#include <x/w/alignment.H>
 #include <x/functional.H>
 #include <x/obj.H>
 
@@ -40,6 +42,19 @@ public:
 		return *this;
 	}
 
+	//! Add another page to the book.
+
+	template<typename functor>
+	inline auto &add(const text_param &label,
+			 functor &&f,
+			 halign h=halign::center)
+	{
+		do_add(label, make_function<void (const factory &)>
+		       (std::forward<functor>(f)), h);
+
+		return *this;
+	}
+
 	//! Add another page to the book, with a shortcut.
 
 	template<typename functor>
@@ -50,6 +65,33 @@ public:
 
 		return *this;
 	}
+
+	//! Add another page to the book, with a shortcut.
+
+	template<typename functor>
+	inline auto &add(const text_param &label,
+			 functor &&f, const shortcut &s,
+			 halign h=halign::center)
+	{
+		do_add(label,
+		       make_function<void (const factory &)>
+		       (std::forward<functor>(f)), s, h);
+
+		return *this;
+	}
+
+	//! Type-erased add().
+
+	void do_add(const text_param &,
+		    const function<void (const factory &)> &f,
+		    halign);
+
+	//! Type-erased add().
+
+	void do_add(const text_param &,
+		    const function<void (const factory &)> &f,
+		    const shortcut &,
+		    halign);
 
 	//! Set next page's alignment
 

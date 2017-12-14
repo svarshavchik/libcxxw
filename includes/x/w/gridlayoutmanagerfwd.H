@@ -153,6 +153,9 @@ cells in the given row or column. Once created, each individual cell's
 alignment gets fixed, and does not get affected by remove_row_defaults() and
 remove_col_defaults().
 
+row_alignment() must get set before using append_row() or insert_row()
+to construct a factory for cells in the row.
+
 */
 
 typedef ref<gridlayoutmanagerObj> gridlayoutmanager;

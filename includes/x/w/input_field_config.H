@@ -43,7 +43,9 @@ struct input_field_config {
 
 	//! When to show the vertical scrollbar
 
-	scrollbar_visibility vertical_scrollbar=scrollbar_visibility::never;
+	//! This is used only when rows > 1.
+	scrollbar_visibility vertical_scrollbar=
+		scrollbar_visibility::automatic_reserved;
 
 	//! Inner alignment
 	halign alignment=halign::left;

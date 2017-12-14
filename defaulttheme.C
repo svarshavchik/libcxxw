@@ -180,8 +180,10 @@ std::string defaulttheme::base
 			 });
 	} catch (const exception &e)
 	{
-		std::cerr << _("Error reading CXXWTHEME property: ")
-			  << e << std::endl;
+		auto ee=EXCEPTION(_("Error reading CXXWTHEME property: ")
+				  << e);
+
+		ee->caught();
 	}
 
 	return value;
@@ -224,21 +226,11 @@ void load_cxxwtheme_property(const screen &screen0,
 				theme_scale);
 }
 
-// Used by cxxwtheme tool, which overrides the theme to the default, for
-// itself, to find the currently set theme.
-
 std::pair<std::string, int> connectionObj::current_theme() const
 {
-	auto property=defaulttheme::base
-		::cxxwtheme_property(impl->screens.at(0)->xcb_screen,
-				     impl->thread);
-	auto config=read_config(); // Configuration file
+	auto theme=impl->screens.at(0)->current_theme.get();
 
-	return {
-		default_theme_name(property, config, ""),
-			(int)(default_theme_scale(property, config, 0)
-			      *100)
-			};
+	return {theme->themename, std::round(theme->themescale*100)};
 }
 
 std::vector<connection::base::available_theme>
@@ -252,31 +244,36 @@ connection::base::available_themes()
 
 	for (const auto &theme_xml:filenames)
 	{
-		// Extract <name> from each theme.
+		try {
+			// Extract <name> from each theme.
 
-		auto xml=xml::doc::create(theme_xml,
-					  "nonet xinclude");
+			auto xml=xml::doc::create(theme_xml,
+						  "nonet xinclude");
 
-		auto directory=
-			theme_xml.substr(0, theme_xml.rfind('/'));
+			auto directory=
+				theme_xml.substr(0, theme_xml.rfind('/'));
 
-		std::string name=directory.substr(directory.rfind('/')+1);
-		std::string description=name;
+			std::string name=directory.substr(directory.rfind('/')+1);
+			std::string description=name;
 
-		auto root=xml->readlock();
+			auto root=xml->readlock();
 
-		if (root->get_root())
-		{
-			auto xpath=root->get_xpath("/theme/name");
-
-			if (xpath->count())
+			if (root->get_root())
 			{
-				xpath->to_node(1);
-				description=root->get_text();
-			}
-		}
+				auto xpath=root->get_xpath("/theme/name");
 
-		themes.push_back({name, description});
+				if (xpath->count())
+				{
+					xpath->to_node(1);
+					description=root->get_text();
+				}
+			}
+
+			themes.push_back({name, description});
+		} catch (const exception &e)
+		{
+			e->caught();
+		}
 	}
 
 	// In alphabetical order.

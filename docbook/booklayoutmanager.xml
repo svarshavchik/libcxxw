@@ -69,12 +69,13 @@ See COPYING for distribution information.
 	<programlisting>
 &ns;::w::bookpagefactory new_page=layout_manager->append();
 
-new_page->add([]
-	      (const &ns;::w::factory &amp;tab_factory,
-	       const &ns;::w::factory &amp;page_factory)
+new_page->add("Tab",
+              []
+	      (const &ns;::w::factory &amp;page_factory)
               {
 
               },
+              // Optional shortcut
               {"Alt", 'X'});</programlisting>
       </informalexample>
     </blockquote>
@@ -89,21 +90,37 @@ new_page->add([]
       <classname>&ns;::w::bookpagefactory</classname>'s
       <methodname>add</methodname>() method creates a new page.
       <methodname>add</methodname>() takes a closure, or a callable object, as
-      a parameter parameter. This closure gets invoked passing two
-      <classname>&ns;::w::factory</classname> parameters: a factory for the
-      new page's tab, and a factory for the new page's actual display element.
+      a parameter parameter.
     </para>
 
     <para>
-      The closure must use both of these factories to create exactly one display
-      element by each factory. The closure can create the
+      There are two overloaded versions of <methodname>add</methodname>().
+      The first version takes a
+      <ulink url="&link-x--w--text-param;"><classname>&ns;::w::text_param</classname></ulink>
+      parameter that sets the new page's tab as a short text string.
+      Its second parameter is a callable object or a closure that creates
+      the new page.
+      The second version takes only the callable object, or a closure,
+      but the closure's parameters are two factories.
+      The extra factory is for creating the new page's tab. Instead of a
+      text string, the tab can be any non-focusable display element.
+      The second version of <methodname>add</methodname>()'s parameters are
+      a factory for creating the display element for the new page's tab,
+      and a factory for creating the new display element for the new page
+      (same parameter as the first version of
+      <methodname>add</methodname>()).
+    </para>
+
+    <para>
+      For either version of <methodname>add</methodname>(),
+      the closure must create exactly one display element using each one of
+      its factory parmeters. For the second version of
+      <methodname>add</methodname>() the closure may create the
       two display elements in either order.
-      They become, respectively, the new page's tab
-      at the top of the book's container, and the new page element.
     </para>
 
     <para>
-      An optional second parameter to
+      Another optional parameter to
       <methodname>add</methodname>() is a keyboard
       <ulink url="&link-x--w--shortcut;"><classname>&ns;::w::shortcut</classname></ulink>
       for opening the corresponding page.

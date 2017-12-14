@@ -54,6 +54,9 @@ typedef std::function<void (const list_item_status_info_t &)
 //! the list are displayed by a highlighted background color. This is the
 //! default value.
 //!
+//! - \c INSERT_LIBX_NAMESPACE::w::bulleted_list - a bullet appears next to
+//! each selected item in the list.
+//!
 //! The remaining fields get initialized to their default values and may be
 //! modified prior before using \c create_focusable_container().
 
