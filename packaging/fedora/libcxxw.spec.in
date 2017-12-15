@@ -28,6 +28,7 @@ BuildRequires: libX11-devel
 BuildRequires: libjpeg-turbo-devel
 BuildRequires: giflib-devel
 BuildRequires: libpng-devel
+BuildRequires: desktop-file-utils
 
 %description
 LibCXX widget toolkit.
@@ -52,8 +53,7 @@ This package installs files needed to develop applications that use LIBCXXw.
 %install
 rm -rf $RPM_BUILD_ROOT
 %{__make} install DESTDIR=$RPM_BUILD_ROOT
-#%{__mkdir_p} $RPM_BUILD_ROOT/%{_datadir}/applications
-#%{__install} -m 0644 cxxwtheme.desktop $RPM_BUILD_ROOT/%{_datadir}/applications
+RPM_BUILD_ROOT="$RPM_BUILD_ROOT" desktop-file-install cxxwtheme.desktop
 rm -f $RPM_BUILD_ROOT/%{_libdir}/*.la
 
 %clean
@@ -69,7 +69,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root,-)
 %{_libdir}/libcxxw.so.*
 %{_datadir}/libcxxw
-#%{_datadir}/applications/*
+%{_datadir}/applications/*
 %{_bindir}/*
 
 %files devel

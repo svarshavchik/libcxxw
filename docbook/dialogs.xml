@@ -158,7 +158,7 @@ const &ns;::w::main_window dialog_window;</programlisting>
       is the name of a small icon
       displayed on the left side of the dialog. Currently, the possible
       choices are:
-      <quote>alert</quote>, <quote>stop</quote>, and <quote>message</quote>.
+      <quote>alert</quote>, <quote>stop</quote>, and <quote>question</quote>.
       The remaining parameters vary, and include:
     </para>
 

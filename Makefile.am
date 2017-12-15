@@ -779,6 +779,7 @@ EXTRA_DIST = config.rpath m4/ChangeLog COPYING \
 	pic_constants.xml gc_constants.xml constants.xsl \
 	parseapiconfig.xsl gridlayoutapi.xml \
 	xim/xim.xml xim/xim.xsl \
+	cxxwtheme.desktop \
 	packaging/fedora/libcxxw.spec \
         examples/configure.ac \
 	examples/Makefile.am \

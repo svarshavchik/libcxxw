@@ -155,6 +155,13 @@ See COPYING for distribution information.
       <quote>for real</quote>, of course.
       However, using an installable package is strongly recommended.
     </para>
+
+    <para>
+      In addition to <command>(g)make install</command>, the
+      <filename>cxxwtheme.desktop</filename> should be included in the
+      installable package, and place in the desktop application directory
+      (usually <filename>/usr/share/applications</filename>).
+    </para>
   </simplesect>
 </section>
 

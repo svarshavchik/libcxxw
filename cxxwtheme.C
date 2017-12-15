@@ -25,15 +25,24 @@
 #include "x/w/image_button.H"
 #include "x/w/radio_group.H"
 #include "x/w/progressbar.H"
+#include "x/w/menubarlayoutmanager.H"
+#include "x/w/menubarfactory.H"
+#include "x/w/file_dialog.H"
+#include "x/w/file_dialog_config.H"
+#include "x/w/input_dialog.H"
+#include "x/w/busy.H"
 #include "configfile.H"
 
 #include <x/logger.H>
 #include <x/destroy_callback.H>
+#include <x/weakcapture.H>
+#include <x/threads/run.H>
 #include <iostream>
 #include <iomanip>
 #include <algorithm>
 #include <vector>
 #include <iterator>
+#include <unistd.h>
 
 LOG_FUNC_SCOPE_DECL("cxxwtheme", cxxwLog);
 
@@ -78,6 +87,11 @@ public:
 };
 
 static void create_demo(const w::booklayoutmanager &lm);
+
+static void file_menu(const w::main_window &mw,
+		      const w::listlayoutmanager &lm);
+static void help_menu(const w::main_window &mw,
+		      const w::listlayoutmanager &lm);
 
 static void create_main_window(const w::main_window &mw,
 			       const close_flag_ref &close_flag)
@@ -279,7 +293,153 @@ static void create_main_window(const w::main_window &mw,
 				  });
 		 },
 		 w::new_gridlayoutmanager{});
+
+	auto mb=mw->get_menubarlayoutmanager();
+
+	auto mbf=mb->append_menus();
+
+	mbf->add_text("File",
+		      [&]
+		      (const auto &lm)
+		      {
+			      file_menu(mw, lm);
+		      });
+
+	mbf=mb->append_right_menus();
+
+	mbf->add_text("Help",
+		      [&]
+		      (const auto &lm)
+		      {
+			      help_menu(mw, lm);
+		      });
+
+	mw->get_menubar()->show();
 }
+
+static void file_menu(const w::main_window &mw,
+		      const w::listlayoutmanager &lm)
+{
+	w::file_dialog_config conf{
+		[](const w::file_dialog &,
+		   const std::string &,
+		   const w::busy &)
+		{
+		},
+		[](const w::busy &) {},
+
+		w::file_dialog_type::create_file};
+
+	auto file_new=mw->create_file_dialog
+		("file_new@cxxwtheme.w.libcxx.com", conf, true);
+
+	conf.type=w::file_dialog_type::existing_file;
+
+	auto file_open=mw->create_file_dialog
+		("file_open@cxxwtheme.w.libcxx.com", conf, true);
+
+	auto file_ok_cancel=mw->create_ok_cancel_dialog
+		("file_ok_cancel@cxxwtheme.w.libcxx.com",
+		 "stop",
+		 []
+		 (const auto &f)
+		 {
+			 f->create_label("Choose ok, or cancel, below");
+		 },
+		 []
+		 (const auto &ignore)
+		 {
+		 },
+		 []
+		 (const auto &ignore)
+		 {
+		 }, true);
+
+	auto file_input_dialog=mw->create_input_dialog
+		("file_input_dialog@cxxwtheme.w.libcxx.com",
+		 "question",
+		 []
+		 (const auto &f)
+		 {
+			 f->create_label("What is your name?");
+		 },
+		 "",
+		 {},
+		 []
+		 (const auto &ignore1, const auto &ignore2)
+		 {
+		 },
+		 []
+		 (const auto &ignore)
+		 {
+		 }, true);
+
+	lm->append_items({
+			[file_new](const w::list_item_status_info_t &info)
+			{
+				file_new->dialog_window->show_all();
+			},
+			"New",
+			[file_open](const w::list_item_status_info_t &info)
+			{
+				file_open->dialog_window->show_all();
+			},
+			"Open",
+			[file_ok_cancel](const w::list_item_status_info_t &info)
+			{
+				file_ok_cancel->dialog_window->show_all();
+			},
+			"Ok/Cancel",
+			[file_input_dialog](const w::list_item_status_info_t &info)
+			{
+				file_input_dialog->input_dialog_field->set("");
+				file_input_dialog->dialog_window->show_all();
+			},
+			w::shortcut{"Alt",'I'},
+			"Input something",
+
+			w::separator{},
+
+			w::menuoption{},
+			"Option",
+
+			w::submenu{[](const auto &submenu_lm)
+				{
+					submenu_lm->append_items
+						({"Submenu item 1",
+						  "Submenu item 2",
+						  "Submenu item 3"});
+				}},
+			"Submenu"
+		    });
+
+}
+
+
+static void help_menu(const w::main_window &mw,
+		      const w::listlayoutmanager &lm)
+{
+	auto help_about=mw->create_ok_dialog
+		("help_about@cxxwtheme.w.libcxx.com",
+		 "alert",
+		 []
+		 (const w::gridfactory &f)
+		 {
+			 f->create_label("LibCXXW version " VERSION);
+		 },
+		 []
+		 (const w::busy &)
+		 {
+		 });
+
+	lm->append_items({
+			[help_about](const w::list_item_status_info_t &info)
+			{
+				help_about->dialog_window->show_all();
+			},
+				"About"});
+}
+
 
 static void demo_list(const w::gridlayoutmanager &lm);
 static void demo_input(const w::gridlayoutmanager &lm);
@@ -451,6 +611,21 @@ static void demo_misc(const w::gridlayoutmanager &lm)
 
 			 pb->update(80, 100);
 		 });
+
+	lm->append_row()->colspan(2).halign(w::halign::center)
+		.create_normal_button_with_label
+		("Busy pointer")->on_activate
+		([]
+		 (const auto &ignore,
+		  const auto &busy)
+		 {
+			 auto mcguffin=busy.get_wait_busy_mcguffin();
+			 run_lambda([mcguffin]
+				    {
+					    sleep(5);
+				    });
+		 });
+
 }
 
 void cxxwtheme()
