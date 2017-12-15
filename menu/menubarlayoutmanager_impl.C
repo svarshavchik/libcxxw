@@ -42,6 +42,25 @@ menubarlayoutmanagerObj::implObj::implObj(const ref<menubar_container_implObj>
 
 menubarlayoutmanagerObj::implObj::~implObj()=default;
 
+void menubarlayoutmanagerObj::implObj::check_if_borders_changed()
+{
+	grid_map_t::lock lock{grid_map};
+
+	// We ignore the divider element for the purpose of this calculation.
+
+	bool should_be_present=(*lock)->elements.at(0).size() > 1;
+
+	if (info(lock).borders_present == should_be_present)
+		return;
+
+	if (should_be_present)
+		default_row_border(1, "menubar_border");
+	else
+		remove_all_defaults();
+
+	info(lock).borders_present=should_be_present;
+}
+
 layoutmanager menubarlayoutmanagerObj::implObj::create_public_object()
 {
 	return menubarlayoutmanager::create(ref<implObj>(this));
@@ -54,6 +73,7 @@ void menubarlayoutmanagerObj::implObj::initialize(menubarlayoutmanagerObj
 	auto f=append_row(public_object);
 
 	row_alignment(0, valign::middle);
+	f->padding(0);
 	f->create_canvas();
 }
 
@@ -187,6 +207,7 @@ menu menubarlayoutmanagerObj::implObj
 	auto new_menu=menu::create(menu_impl, ff_impl);
 
 	new_menu->show();
+	factory->padding(0);
 	factory->created_internally(new_menu);
 
 	new_menu->elementObj::impl->THREAD

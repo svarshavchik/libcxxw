@@ -39,6 +39,9 @@ class LIBCXX_HIDDEN menubarlayoutmanagerObj::implObj
 		//! right sections.
 
 		size_t divider_pos=0;
+
+		//! Borders get drawn when there's at least one menu.
+		bool borders_present=false;
 	};
 
 	protected_info_t protected_info;
@@ -53,6 +56,12 @@ class LIBCXX_HIDDEN menubarlayoutmanagerObj::implObj
 
 	//! Destructor
 	~implObj();
+
+	//! If borders_changed(), rebuild them.
+
+	//! Invoked from the public object's destructor.
+
+	void check_if_borders_changed();
 
 	//! Create the menubarlayoutmanager object.
 

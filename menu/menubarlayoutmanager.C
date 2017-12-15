@@ -56,7 +56,10 @@ menubarlayoutmanagerObj::menubarlayoutmanagerObj(const ref<implObj> &impl)
 {
 }
 
-menubarlayoutmanagerObj::~menubarlayoutmanagerObj()=default;
+menubarlayoutmanagerObj::~menubarlayoutmanagerObj()
+{
+	impl->check_if_borders_changed();
+}
 
 // Implement menubarfactoryObj::implObj.
 //

@@ -339,6 +339,13 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
   <!-- Menu bar -->
 
   <color id="menubar_background_color" scale="80%" />
+
+  <border id="menubar_border" from="thin_0%">
+    <color>0%</color>
+    <color2>30%</color2>
+    <dash>.75</dash>
+  </border>
+
   <color id="menu_background_color" scale="80%" />
   <color id="menu_highlighted_color" scale="90%" />
   <color id="menu_clicked_color" scale="100%" />

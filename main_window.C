@@ -193,11 +193,28 @@ init_containers(const ref<containerObj::implObj> &parent,
 	return menu_and_app;
 }
 
+// We have the main_windowObj::handlerObj.
+//
+// This creates main_windowObj::implObj, and the peephole layout manager.
+// The main window implementation, the handler object, gets the peephole
+// layout manager, for scrolling the contents of the main window if they
+// exceed the maximum permissible size of the main window, whose size is
+// limited by the desktop's size.
+
 std::tuple<ref<main_windowObj::implObj>, layoutmanager>
 do_create_main_window_impl(const ref<main_windowObj::handlerObj> &handler,
 			   const new_layoutmanager &layout_factory,
 			   const function<make_window_impl_factory_t> &factory)
 {
+	// menu_and_app_container is the element in the peephole, the
+	// container for the window's menu, and the container for the
+	// actual contents of the window, with the layoutmanager that
+	// the layout_factory creates, the layout manager that the
+	// application requested for the main window.
+	//
+	// menubar_container is the menu bar's container, and app_container
+	// is the container that uses the app-specified layout manager.
+
 	containerptr menu_and_app_container,
 		menubar_container, app_container;
 
