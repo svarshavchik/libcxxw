@@ -350,6 +350,37 @@ void gridlayoutmanagerObj::implObj
 	(*lock)->elements_have_been_modified();
 }
 
+void gridlayoutmanagerObj::implObj
+::default_row_border(size_t row, const border_arg &arg)
+{
+	auto border_impl=get_current_border(arg);
+
+	grid_map_t::lock lock{grid_map};
+
+	(*lock)->row_defaults[row].default_border=border_impl;
+	(*lock)->borders_changed();
+}
+
+void gridlayoutmanagerObj::implObj
+::default_col_border(size_t col, const border_arg &arg)
+{
+	auto border_impl=get_current_border(arg);
+
+	grid_map_t::lock lock{grid_map};
+
+	(*lock)->column_defaults[col].default_border=border_impl;
+	(*lock)->borders_changed();
+}
+
+void gridlayoutmanagerObj::implObj::remove_all_defaults()
+{
+	grid_map_t::lock lock{grid_map};
+
+	(*lock)->row_defaults.clear();
+	(*lock)->column_defaults.clear();
+	(*lock)->borders_changed();
+}
+
 current_border_impl gridlayoutmanagerObj::implObj
 ::get_current_border(const border_arg &arg)
 {

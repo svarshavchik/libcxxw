@@ -101,12 +101,7 @@ gridlayoutmanagerObj::lookup_row_col(grid_map_t::lock &l, const element &e)
 void gridlayoutmanagerObj::default_row_border(size_t row,
 					      const border_arg &arg)
 {
-	auto border_impl=impl->get_current_border(arg);
-
-	grid_map_t::lock lock{impl->grid_map};
-
-	(*lock)->row_defaults[row].default_border=border_impl;
-	(*lock)->borders_changed();
+	impl->default_row_border(row, arg);
 }
 
 void gridlayoutmanagerObj::requested_row_height(size_t row, int percentage)
@@ -134,12 +129,7 @@ void gridlayoutmanagerObj::row_bottom_padding_set(size_t row,
 void gridlayoutmanagerObj::default_col_border(size_t col,
 					      const border_arg &arg)
 {
-	auto border_impl=impl->get_current_border(arg);
-
-	grid_map_t::lock lock{impl->grid_map};
-
-	(*lock)->column_defaults[col].default_border=border_impl;
-	(*lock)->borders_changed();
+	impl->default_col_border(col, arg);
 }
 
 void gridlayoutmanagerObj::requested_col_width(size_t col, int percentage)

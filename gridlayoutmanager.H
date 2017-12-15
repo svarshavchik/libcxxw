@@ -169,6 +169,18 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 
 	current_border_impl get_current_border(const border_arg &arg);
 
+	//! Implement default_row_border()
+
+	void default_row_border(size_t row, const border_arg &arg);
+
+	//! Implement default_col_border()
+
+	void default_col_border(size_t col, const border_arg &arg);
+
+	//! Remove all defaults.
+
+	void remove_all_defaults();
+
  private:
 
 	//! Store the grid calculation data out of harm's way.
