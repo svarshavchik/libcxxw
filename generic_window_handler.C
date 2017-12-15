@@ -968,6 +968,9 @@ void generic_windowObj::handlerObj::process_configure_notify(IN_THREAD_ONLY,
 	if (error)
 		throw EXCEPTION(connection_error(error));
 
+	auto old_x=root_x(IN_THREAD);
+	auto old_y=root_y(IN_THREAD);
+
 	root_x(IN_THREAD)=value->dst_x;
 	root_y(IN_THREAD)=value->dst_y;
 
@@ -978,14 +981,17 @@ void generic_windowObj::handlerObj::process_configure_notify(IN_THREAD_ONLY,
 
 	auto new_position=element_position(r);
 
-	if (data(IN_THREAD).current_position == new_position)
-	{
+	// If the relative position changed, send out the notifications.
+	update_current_position(IN_THREAD, new_position);
+
+	// If the absolute location changed, do that too. We can't rely
+	// on update_current_position() doing the job. If something wanted
+	// to know when its absolute location has changed, it's possible
+	// that its parent element's position remains unchanged, so
+	// update_current_position() won't trickle down to it.
+
+	if (old_x != root_x(IN_THREAD) || old_y != root_x(IN_THREAD))
 		absolute_location_updated(IN_THREAD);
-	}
-	else
-	{
-		update_current_position(IN_THREAD, new_position);
-	}
 }
 
 void generic_windowObj::handlerObj::current_position_updated(IN_THREAD_ONLY)

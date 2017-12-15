@@ -38,7 +38,12 @@ void popup_attachedto_handlerObj
 ::update_attachedto_element_position(IN_THREAD_ONLY,
 				     const rectangle &new_position)
 {
-	attachedto_info->attachedto_element_position(IN_THREAD)=new_position;
+	auto &existing=attachedto_info->attachedto_element_position(IN_THREAD);
+
+	if (existing == new_position)
+		return;
+
+	existing=new_position;
 	set_popup_position(IN_THREAD);
 }
 
