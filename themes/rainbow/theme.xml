@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<theme xmlns:xi="http://www.w3.org/2003/XInclude">
+
+  <name>Rainbow</name>
+
+  <color id="0%">
+    <r>0</r>
+    <g>0</g>
+    <b>0</b>
+  </color>
+
+  <color id="10%">
+    <r>0</r>
+    <g>0</g>
+    <b>.8</b>
+  </color>
+
+  <color id="30%">
+    <r>0</r>
+    <g>.25</g>
+    <b>0</b>
+  </color>
+
+  <color id="50%">
+    <r>1</r>
+    <g>.6</g>
+    <b>.6</b>
+  </color>
+
+  <color id="70%">
+    <r>.75</r>
+    <g>.75</g>
+    <b>1</b>
+  </color>
+
+  <color id="75%">
+    <r>1</r>
+    <g>1</g>
+    <b>.4</b>
+  </color>
+
+  <color id="80%">
+    <r>1</r>
+    <g>.75</g>
+    <b>.5</b>
+  </color>
+
+  <color id="90%">
+    <r>1</r>
+    <g>1</g>
+    <b>.5</b>
+  </color>
+
+  <color id="100%">
+    <r>1</r>
+    <g>1</g>
+    <b>1</b>
+  </color>
+
+  <color id="red">
+    <r>1</r>
+    <g>0</g>
+    <b>0</b>
+  </color>
+  <color id="yellow">
+    <r>.8</r>
+    <g>.8</g>
+  </color>
+  <color id="light_green">
+    <r>.3</r>
+    <g>1</g>
+    <b>.3</b>
+  </color>
+  <color id="grey">
+    <r>.3</r>
+    <g>.3</g>
+    <b>.3</b>
+  </color>
+  <color_gradient id="progressbar">
+    <color value="0">red</color>
+    <color value="40">yellow</color>
+    <color value="60">yellow</color>
+    <color value="75">light_green</color>
+  </color_gradient>
+
+  <xi:include href="../default/theme.xml" xpointer="xpointer(/theme/*)" />
+</theme>

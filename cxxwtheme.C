@@ -608,9 +608,9 @@ static void demo_misc(const w::gridlayoutmanager &lm)
 			 w::gridlayoutmanager glm=pb->get_layoutmanager();
 
 			 glm->append_row()->halign(w::halign::center)
-				 .create_label("80%")->show();
+				 .create_label("100%")->show();
 
-			 pb->update(80, 100);
+			 pb->update(100, 100);
 		 });
 
 	lm->append_row()->colspan(2).halign(w::halign::center)
