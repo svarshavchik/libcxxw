@@ -224,7 +224,8 @@ void testcombobox(const testcombobox_options &options)
 					 lm->enabled(0, !lm->enabled(0));
 				 });
 
-		 });
+		 },
+		 LIBCXX_NAMESPACE::w::new_gridlayoutmanager{});
 
 	main_window->set_window_title("Hello world!");
 

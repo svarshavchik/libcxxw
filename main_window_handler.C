@@ -23,13 +23,16 @@ LIBCXXW_NAMESPACE_START
 
 main_windowObj::handlerObj::handlerObj(IN_THREAD_ONLY,
 				       const screen &parent_screen,
+				       const std::optional<rectangle>
+				       &suggested_position,
 				       const color_arg &background_color)
 	: superclass_t({},
 		       IN_THREAD, parent_screen,
 		       background_color,
 		       shared_handler_data::create(),
 		       0),
-	on_delete_callback_thread_only([](const auto &ignore) {})
+	  on_delete_callback_thread_only([](const auto &ignore) {}),
+	  suggested_position_thread_only{suggested_position}
 {
 	// Set WM_PROTOCOLS to WM_DELETE_WINDOW -- we handle the window
 	// close request ourselves.

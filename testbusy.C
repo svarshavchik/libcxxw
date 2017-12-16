@@ -10,6 +10,7 @@
 #include <x/ref.H>
 #include <x/obj.H>
 #include <x/threadmsgdispatcher.H>
+#include <x/config.H>
 
 #include "x/w/main_window.H"
 #include "x/w/button.H"
@@ -151,16 +152,22 @@ static inline void create_main_window(const LIBCXX_NAMESPACE::w::main_window &ma
 
 void testbusy()
 {
+	auto configfile=
+		LIBCXX_NAMESPACE::configdir("testbusy@libcxx.com") + "/windows";
+	auto pos=LIBCXX_NAMESPACE::w::load_screen_positions(configfile);
+
 	LIBCXX_NAMESPACE::destroy_callback::base::guard guard;
 
 	auto mythread=LIBCXX_NAMESPACE::ref<testbusythreadObj>::create();
 
-	auto main_window=LIBCXX_NAMESPACE::w::main_window
-		::create([&]
-			 (const auto &main_window)
-			 {
-				 create_main_window(main_window, mythread);
-			 });
+	auto main_window=LIBCXX_NAMESPACE::w::screen::create()
+		->create_mainwindow
+		(pos, "main",
+		 [&]
+		 (const auto &main_window)
+		 {
+			 create_main_window(main_window, mythread);
+		 });
 
 	main_window->set_window_title("Hello world!");
 
@@ -179,6 +186,9 @@ void testbusy()
 		 });
 
 	mythread->run(main_window);
+	pos.clear();
+	pos.emplace("main", main_window->get_screen_position());
+	LIBCXX_NAMESPACE::w::save_screen_positions(configfile, pos);
 }
 
 int main(int argc, char **argv)

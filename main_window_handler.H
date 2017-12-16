@@ -43,6 +43,7 @@ class LIBCXX_HIDDEN main_windowObj::handlerObj :
 
 	//! Constructor
 	handlerObj(IN_THREAD_ONLY, const screen &parent_screen,
+		   const std::optional<rectangle> &suggested_position,
 		   const color_arg &background_color);
 
 	//! Destructor

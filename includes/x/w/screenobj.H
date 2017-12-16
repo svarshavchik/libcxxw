@@ -23,6 +23,7 @@
 #include <unordered_set>
 #include <string>
 #include <string_view>
+#include <utility>
 
 LIBCXXW_NAMESPACE_START
 
@@ -119,27 +120,64 @@ public:
 			     dim_t width,
 			     dim_t height);
 
-	//! Create a new top level window, using the mainwindowlayout layout manager
-
-	template<typename functor>
-	main_window create_mainwindow(functor &&f)
-	{
-		return do_create_mainwindow
-			(make_function<void (const main_window &w)>
-			 (std::forward<functor>(f)));
-	}
-
 	//! Creator for create_mainwindow()
 
 	typedef void main_window_creator_t(const main_window &);
 
-	//! Create a new top level window using a custom layout manager.
+	//! SFINAE selector for a creator functor.
+
 	template<typename functor>
+	using is_main_window_creator=
+		std::void_t<decltype(std::declval<functor &&>()
+				     (std::declval<const main_window &>
+				     ()))>;
+
+	//! Create a new top level window, using the default layout manager
+
+	template<typename functor,
+		 typename =is_main_window_creator<functor>>
+	main_window create_mainwindow(functor &&f)
+	{
+		return do_create_mainwindow
+			(make_function<main_window_creator_t>
+			 (std::forward<functor>(f)));
+	}
+
+	//! Create a new top level window using a custom layout manager.
+	template<typename functor,
+		 typename =is_main_window_creator<functor>>
 	main_window create_mainwindow(functor &&f,
 				      const new_layoutmanager &layout_factory)
 	{
 		return do_create_mainwindow
 			(make_function<main_window_creator_t>
+			 (std::forward<functor>(f)),
+			 layout_factory);
+	}
+
+	//! Create a new top level window, using the default layout manager
+
+	template<typename functor,
+		 typename =is_main_window_creator<functor>>
+	main_window create_mainwindow(const screen_positions_t &pos,
+				      const std::string_view &name,
+				      functor &&f)
+	{
+		return do_create_mainwindow
+			(pos, name, make_function<main_window_creator_t>
+			 (std::forward<functor>(f)));
+	}
+
+	//! Create a new top level window using a custom layout manager.
+	template<typename functor,
+		 typename =is_main_window_creator<functor>>
+	main_window create_mainwindow(const screen_positions_t &pos,
+				      const std::string_view &name,
+				      functor &&f,
+				      const new_layoutmanager &layout_factory)
+	{
+		return do_create_mainwindow
+			(pos, name, make_function<main_window_creator_t>
 			 (std::forward<functor>(f)),
 			 layout_factory);
 	}
@@ -155,6 +193,30 @@ public:
 					 &f,
 					 const new_layoutmanager &factory)
 		LIBCXX_PUBLIC;
+
+	//! create_mainwindow() implementation.
+
+	main_window do_create_mainwindow(const screen_positions_t &pos,
+					 const std::string_view &name,
+					 const function<main_window_creator_t>
+					 &f);
+
+	//! create_mainwindow() implementation.
+
+	main_window do_create_mainwindow(const screen_positions_t &pos,
+					 const std::string_view &name,
+					 const function<main_window_creator_t>
+					 &f,
+					 const new_layoutmanager &factory)
+		LIBCXX_PUBLIC;
+
+	//! create_mainwindow() implementation.
+	main_window do_create_mainwindow(const std::optional<screen_position>
+					 &pos,
+					 const function<main_window_creator_t>
+					 &f,
+					 const new_layoutmanager &factory)
+		LIBCXX_HIDDEN;
 
 	//! Shortcut to render data.
 

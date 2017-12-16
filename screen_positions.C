@@ -8,10 +8,16 @@
 #include <x/xml/doc.H>
 #include <x/exception.H>
 #include <x/logger.H>
+#include <x/property_value.H>
+
 #include <unistd.h>
 #include <sstream>
 
 LIBCXXW_NAMESPACE_START
+
+static property::value<bool>
+preserve_screen_number_prop(LIBCXX_NAMESPACE_STR "::w::preserve_screen_number",
+			    true);
 
 void save_screen_positions(const std::string &filename,
 			   const screen_positions_t &coordinates)
@@ -38,6 +44,16 @@ void save_screen_positions(const std::string &filename,
 		width << coords.second.width;
 		height << coords.second.height;
 
+		if (coords.second.screen_number &&
+		    preserve_screen_number_prop.getValue())
+		{
+			std::ostringstream screen_number;
+
+			screen_number << *coords.second.screen_number;
+			window=window->parent()->create_next_sibling()
+				->element({"screen"})
+				->create_child()->text(screen_number.str());
+		}
 		window=window->parent()->create_next_sibling()->element({"x"})
 			->create_child()->text(x.str());
 		window=window->parent()->create_next_sibling()->element({"y"})
@@ -114,7 +130,23 @@ static void load_screen_positions(const std::string &filename,
 			std::istringstream{width} >> r.width;
 			std::istringstream{height} >> r.height;
 
-			pos.emplace(name, r);
+			std::optional<size_t> screen_number;
+
+			value=lock->clone();
+
+			auto xpath=value->get_xpath("screen_number");
+
+			if (xpath->count() == 1 &&
+			    preserve_screen_number_prop.getValue())
+			{
+				xpath->to_node();
+
+				size_t n=0;
+				std::istringstream{value->get_text()} >> n;
+				screen_number=n;
+			}
+
+			pos.emplace(name, screen_position{r, screen_number});
 
 		} catch (const exception &e)
 		{
@@ -141,6 +173,13 @@ screen_positions_t load_screen_positions(const std::string &filename)
 	} CATCH_EXCEPTIONS;
 
 	return pos;
+}
+
+void preserve_screen_number(bool flag)
+{
+	property::load_property(LIBCXX_NAMESPACE_STR
+				"::w::preserve_screen_number",
+				flag ? "true":"false", true, true);
 }
 
 LIBCXXW_NAMESPACE_END

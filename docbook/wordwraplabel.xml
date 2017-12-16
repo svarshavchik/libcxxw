@@ -139,13 +139,13 @@ See COPYING for distribution information.
     <title>Preserving window positions</title>
 
     <para>
+      Running
       <link linkend="wordwraplabel"><filename>wordwraplabel.C</filename></link>
-      sohuld open its window in the same position where it was previously,
-      the last time the example program ran. After moving its window,
-      resizing it, and closing it, running the program again should open
-      the window in the same position.
-      This feature requires explicit support, and the actual behavior may
-      vary depending upon the display screen's window manager.
+      again
+      should open its window in the same position where it was previously,
+      This stickiness needs some additional coding, and the actual behavior may
+      vary depending upon the display screen's window manager, the ultimate
+      judge where windows open and how big they are.
     </para>
 
     <blockquote>
@@ -192,10 +192,12 @@ pos.emplace("main", main_window->get_screen_position());
 &ns;::w::screen_positions_t pos=
    &ns;::w::load_screen_positions(configfile);
 
-auto iter=pos.find("main");
-
-if (iter != pos.end())
-    main_window-&gt;set_screen_position(iter->second);</programlisting>
+auto main_window=
+    &ns;::w::main_window::create(pos, "main",
+                              [&amp;]
+                              (const &ns;::w::main_window)
+                              {
+                                 // ...</programlisting>
       </informalexample>
     </blockquote>
 
@@ -204,12 +206,13 @@ if (iter != pos.end())
       loads the previously-saved positions into the
       <ulink url="&link-typedef-x--w-screen-positions-t;"><classname>&ns;::w::screen_positions_t</classname></ulink>
       container, if the file exists.
-      <function>&ns;::w::load_screen_positions</function> gets called
-      before initially showing the main window; so if the window's position
+      The resulting container, and the application-assigned label for the
+      main window gets passed to the overloaded main window
+      <function>create</function>()or.
+      If the named window's position
       got saved the last time
       <filename>wordwraplabel</filename> ran, the same position and size
-      gets set for the new window, before
-      <methodname>show</methodname>()-ing it.
+      gets set for the new window.
     </para>
 
     <note>
@@ -219,7 +222,7 @@ if (iter != pos.end())
 	window managers try to remember application windows, and open them
 	in the same location. It's also possible that an application's
 	requested window position gets ignored by the window manager, and
-	the application window still gets opened in some other location
+	the application window still opens in some other location
 	on the screen.
       </para>
     </note>

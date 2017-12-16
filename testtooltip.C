@@ -115,21 +115,23 @@ void testtooltip(int width)
 
 	auto close_flag=close_flag_ref::create();
 
-	auto main_window=LIBCXX_NAMESPACE::w::main_window
-		::create([width]
-			 (const auto &main_window)
-			 {
-				 LIBCXX_NAMESPACE::w::gridlayoutmanager
-				     layout=main_window->get_layoutmanager();
-				 LIBCXX_NAMESPACE::w::gridfactory factory=
-				     layout->append_row();
+	auto main_window=LIBCXX_NAMESPACE::w::screen::create()
+		->create_mainwindow
+		([width]
+		 (const auto &main_window)
+		 {
+			 LIBCXX_NAMESPACE::w::gridlayoutmanager
+			 layout=main_window->get_layoutmanager();
+			 LIBCXX_NAMESPACE::w::gridfactory factory=
+			 layout->append_row();
 
-				 auto l=factory->padding(2.0).create_input_field
-				 ("");
+			 auto l=factory->padding(2.0).create_input_field
+			 ("");
 
-				 l->create_tooltip("This is a word-wrapping tooltip!",
-						   width);
-			 });
+			 l->create_tooltip("This is a word-wrapping tooltip!",
+					   width);
+		 },
+		 LIBCXX_NAMESPACE::w::new_gridlayoutmanager{});
 
 	main_window->set_window_title("Hello world!");
 

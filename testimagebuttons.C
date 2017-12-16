@@ -10,6 +10,7 @@
 #include <x/ref.H>
 #include <x/obj.H>
 #include <x/weakcapture.H>
+#include <x/config.H>
 
 #include "x/w/main_window.H"
 #include "x/w/image_button.H"
@@ -214,16 +215,24 @@ static void create_mainwindow(const LIBCXX_NAMESPACE::w::main_window &main_windo
 
 void testimagebuttons()
 {
+	auto configfile=
+		LIBCXX_NAMESPACE::configdir("testimagebuttons@libcxx.com")
+		+ "/windows";
+	auto pos=LIBCXX_NAMESPACE::w::load_screen_positions(configfile);
+
 	LIBCXX_NAMESPACE::destroy_callback::base::guard guard;
 
 	auto close_flag=close_flag_ref::create();
 
-	auto main_window=LIBCXX_NAMESPACE::w::main_window
-		::create([]
-			 (const auto &main_window)
-			 {
-				 create_mainwindow(main_window);
-			 });
+	auto main_window=LIBCXX_NAMESPACE::w::screen::create()
+		->create_mainwindow
+		(pos, "main",
+		 []
+		 (const auto &main_window)
+		 {
+			 create_mainwindow(main_window);
+		 },
+		 LIBCXX_NAMESPACE::w::new_gridlayoutmanager{});
 
 	main_window->set_window_title("Hello world!");
 
@@ -262,6 +271,9 @@ void testimagebuttons()
 				    (i % 2) ? 100:200);
 	}
 #endif
+	pos.clear();
+	pos.emplace("main", main_window->get_screen_position());
+	LIBCXX_NAMESPACE::w::save_screen_positions(configfile, pos);
 }
 
 int main(int argc, char **argv)

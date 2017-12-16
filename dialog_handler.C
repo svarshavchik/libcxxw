@@ -14,6 +14,7 @@ dialogObj::handlerObj::handlerObj(IN_THREAD_ONLY,
 				  const color_arg &background_color,
 				  bool modal)
 	: main_windowObj::handlerObj(IN_THREAD, parent_handler->get_screen(),
+				     std::nullopt,
 				     background_color),
 	modal(modal),
 	parent_handler(parent_handler)

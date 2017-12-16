@@ -60,72 +60,74 @@ void testbutton()
 
 	typedef LIBCXX_NAMESPACE::ref<appdataObj> appdata_t;
 
-	auto main_window=LIBCXX_NAMESPACE::w::main_window
-		::create([&]
-			 (const auto &main_window)
-			 {
-				 inputfieldsptr fields;
+	auto main_window=
+		LIBCXX_NAMESPACE::w::screen::create()
+		->create_mainwindow
+		([&]
+		 (const auto &main_window)
+		 {
+			 inputfieldsptr fields;
 
-				 LIBCXX_NAMESPACE::w::gridlayoutmanager
-				     layout=main_window->get_layoutmanager();
-				 LIBCXX_NAMESPACE::w::gridfactory factory=
-				 layout->append_row();
+			 LIBCXX_NAMESPACE::w::gridlayoutmanager
+			 layout=main_window->get_layoutmanager();
+			 LIBCXX_NAMESPACE::w::gridfactory factory=
+			 layout->append_row();
 
-				 fields.first=factory->create_input_field({""}, {30, 1, true});
+			 fields.first=factory->create_input_field({""}, {30, 1, true});
 
-				 fields.first->on_change
-				 ([]
-				  (const auto &what) {
-					 switch (what.type) {
-					 case LIBCXX_NAMESPACE::w::input_change_type::deleted:
-						 std::cout << "deleted ";
-						 break;
-					 case LIBCXX_NAMESPACE::w::input_change_type::inserted:
-						 std::cout << "inserted ";
-						 break;
-					 case LIBCXX_NAMESPACE::w::input_change_type::set:
-						 std::cout << "set ";
-						 break;
-					 }
-					 std::cout << " ["
-						   << what.deleted
-						   << "/"
-						   << what.inserted
-						   << "]" << std::endl;
-				 });
+			 fields.first->on_change
+			 ([]
+			  (const auto &what) {
+				 switch (what.type) {
+				 case LIBCXX_NAMESPACE::w::input_change_type::deleted:
+					 std::cout << "deleted ";
+					 break;
+				 case LIBCXX_NAMESPACE::w::input_change_type::inserted:
+					 std::cout << "inserted ";
+					 break;
+				 case LIBCXX_NAMESPACE::w::input_change_type::set:
+					 std::cout << "set ";
+					 break;
+				 }
+				 std::cout << " ["
+					   << what.deleted
+					   << "/"
+					   << what.inserted
+					   << "]" << std::endl;
+			 });
 
 
-				 factory=layout->append_row();
+			 factory=layout->append_row();
 
-				 fields.second=factory->halign(LIBCXXW_NAMESPACE::halign::right)
-				 .create_input_field
-				 ({"sans_serif"_font,
-						 LIBCXX_NAMESPACE::w::rgb{
-						 0, 0,
-							 LIBCXX_NAMESPACE::w::rgb::maximum},
-						 "Hello world!"}, {30, 4,
-						 false,
-						 false,
-						 true,
-						 LIBCXX_NAMESPACE::w::
-						 scrollbar_visibility::
-						 automatic_reserved});
+			 fields.second=factory->halign(LIBCXXW_NAMESPACE::halign::right)
+			 .create_input_field
+			 ({"sans_serif"_font,
+					 LIBCXX_NAMESPACE::w::rgb{
+					 0, 0,
+						 LIBCXX_NAMESPACE::w::rgb::maximum},
+					 "Hello world!"}, {30, 4,
+					 false,
+					 false,
+					 true,
+					 LIBCXX_NAMESPACE::w::
+					 scrollbar_visibility::
+					 automatic_reserved});
 
-				 fields.second->create_tooltip("A brief message, a few lines long.", 30);
+			 fields.second->create_tooltip("A brief message, a few lines long.", 30);
 
-				 factory=layout->append_row();
+			 factory=layout->append_row();
 
-				 auto b=factory->create_special_button_with_label({"Ok"},{'\n'});
-				 b->on_activate([close_flag](const auto &,
-							     const auto &) {
-						 close_flag->close();
-					 });
-				 factory=layout->append_row();
+			 auto b=factory->create_special_button_with_label({"Ok"},{'\n'});
+			 b->on_activate([close_flag](const auto &,
+						     const auto &) {
+						close_flag->close();
+					});
+			 factory=layout->append_row();
 
-				 factory->halign(x::w::halign::fill).create_container
-				 (
-				  []
-				  (const auto &c)
+			 factory->halign(x::w::halign::fill).create_container
+			 (
+			  []
+			  (const auto &c)
 		{
 			x::w::gridlayoutmanager layout=c->get_layoutmanager();
 			layout->requested_col_width(1, 100);
@@ -133,10 +135,10 @@ void testbutton()
 			factory->create_label({"Foo"});
 			factory->create_label({"Bar"});
 		},
-				  x::w::new_gridlayoutmanager());
+			  x::w::new_gridlayoutmanager());
 
 			 main_window->appdata=appdata_t::create(fields);
-			 });
+		 });
 
 	main_window->set_window_title("Hello world!");
 

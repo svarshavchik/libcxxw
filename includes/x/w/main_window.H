@@ -25,21 +25,56 @@ public:
 
 	typedef void main_window_creator_t(const main_window &);
 
-	//! Create a new top level window, using the mainwindowlayout layout manager
+	//! SFINAE selector for a creator functor.
 
 	template<typename functor>
+	using is_main_window_creator=
+		std::void_t<decltype(std::declval<functor &&>()
+				     (std::declval<const main_window &>
+				     ()))>;
+	//! Create a new top level window, using the default layout manager
+
+	template<typename functor,
+		 typename =is_main_window_creator<functor>>
 	static main_window create(functor &&f)
 	{
-		return do_create(make_function<void (const main_window &w)>
+		return do_create(make_function<main_window_creator_t>
+				 (std::forward<functor>(f)));
+	}
+
+	//! Create a new top level window using a custom layout manager.
+	template<typename functor,
+		 typename =is_main_window_creator<functor>>
+	static main_window create(functor &&f,
+				  const new_layoutmanager &layout_factory)
+	{
+		return do_create(make_function<main_window_creator_t>
+				 (std::forward<functor>(f)),
+				 layout_factory);
+	}
+
+	//! Create a new top level window, using the default layout manager
+
+	template<typename functor,
+		 typename =is_main_window_creator<functor>>
+	static main_window create(const screen_positions_t &pos,
+				  const std::string_view &name,
+				  functor &&f)
+	{
+		return do_create(pos, name,
+				 make_function<main_window_creator_t>
 				 (std::forward<functor>(f)));
 	}
 
 	//! Create a new top level window using a custom layout manager.
 	template<typename functor>
-	static main_window create(functor &&f,
+	static main_window create(const screen_positions_t &pos,
+				  const std::string_view &name,
+				  functor &&f,
 				  const new_layoutmanager &layout_factory)
 	{
-		return do_create(make_function<main_window_creator_t>
+		return do_create(pos, name,
+				 make_function<main_window_creator_t>
 				 (std::forward<functor>(f)),
 				 layout_factory);
 	}
@@ -52,7 +87,22 @@ public:
 	//! create() implementation.
 
 	static main_window do_create(const function<main_window_creator_t> &f,
-				     const new_layoutmanager &actory)
+				     const new_layoutmanager &factory)
+		LIBCXX_PUBLIC;
+
+	//! create() implementation.
+
+	static main_window do_create(const screen_positions_t &pos,
+				     const std::string_view &name,
+				     const function<main_window_creator_t> &f)
+		LIBCXX_PUBLIC;
+
+	//! create() implementation.
+
+	static main_window do_create(const screen_positions_t &pos,
+				     const std::string_view &name,
+				     const function<main_window_creator_t> &f,
+				     const new_layoutmanager &factory)
 		LIBCXX_PUBLIC;
 
 	//! The custom create() for main window objects.

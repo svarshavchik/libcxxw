@@ -266,7 +266,8 @@ auto runteststate(testmainwindowoptions &options,
 				  10, 10);
 
 				 main_window->appdata=e;
-			 });
+			 },
+			 LIBCXX_NAMESPACE::w::new_gridlayoutmanager{});
 
 	guard(main_window->connection_mcguffin());
 

@@ -9,6 +9,7 @@
 #include <x/destroy_callback.H>
 #include <x/ref.H>
 #include <x/obj.H>
+#include <x/config.H>
 
 #include "x/w/main_window.H"
 #include "x/w/gridlayoutmanager.H"
@@ -277,7 +278,12 @@ void testbook()
 
 	auto close_flag=close_flag_ref::create();
 
-	auto mw=LIBCXX_NAMESPACE::w::main_window::create([]
+	auto configfile=
+		LIBCXX_NAMESPACE::configdir("testbook@libcxx.com") + "/windows";
+
+	auto pos=LIBCXX_NAMESPACE::w::load_screen_positions(configfile);
+	auto mw=LIBCXX_NAMESPACE::w::main_window::create(pos, "main",
+							 []
 							 (const auto &mw)
 							 {
 								 create_mainwindow(mw);
@@ -304,6 +310,10 @@ void testbook()
 	LIBCXX_NAMESPACE::mpcobj<bool>::lock lock{close_flag->flag};
 
 	lock.wait([&] { return *lock; });
+	pos.clear();
+	pos.emplace("main", mw->get_screen_position());
+	LIBCXX_NAMESPACE::w::save_screen_positions(configfile, pos);
+
 }
 
 int main(int argc, char **argv)

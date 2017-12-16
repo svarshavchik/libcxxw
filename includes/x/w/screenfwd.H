@@ -45,12 +45,32 @@ INSERT_LIBX_NAMESPACE::w::main_window main_window=s->create_mainwindow(
           {
               /// ...
           },
-          INSERT_LIBX_NAMESPACE::w::new_layoutmanager::base::create_grid());
+          INSERT_LIBX_NAMESPACE::w::new_gridlayoutmanager{});
 \endcode
 
 create_mainwindow() creates a new \ref main_window "main window".
 The first parameter is a creator lambda, the second parameter is optional
 and specifies the new main window's layout manager.
+
+\code
+INSERT_LIBX_NAMESPACE::w::screen_positions_t screen_positions=
+    INSERT_LIBX_NAMESPACE::w::load_screen_positions(INSERT_LIBX_NAMESPACE::configdir("app@example.com") + "/windows");
+
+INSERT_LIBX_NAMESPACE::w::main_window main_window=s->create(screen_positions, "main",
+     []
+     (const INSERT_LIBX_NAMESPACE::w::main_window &new_main_window)
+     {
+          // Initialize the new main window.
+     });
+\endcode
+
+The main window's former's position can be saved, loaded with
+load_screen_positions(), then passed in order to reopen the main window
+in the same location.
+
+\note
+If the saved position includes a screen number, the window will really be
+opened on its former screen, which may not necessarily be this screen.
 
 A \ref main_window "main window" may also be created directly:
 
@@ -63,7 +83,7 @@ auto main_window=INSERT_LIBX_NAMESPACE::w::main_window::create(
           {
               /// ...
           },
-          INSERT_LIBX_NAMESPACE::w::new_layoutmanager::base::create_grid());
+          INSERT_LIBX_NAMESPACE::w::new_gridlayoutmanager{});
 \endcode
 
 This creates a new main window on the default screen of the default

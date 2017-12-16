@@ -74,8 +74,6 @@ void wordwrap()
 
 	auto close_flag=close_flag_ref::create();
 
-	auto main_window=x::w::main_window::create(create_mainwindow);
-
 	// Configuration filename where we save the window's position.
 
 	std::string configfile=
@@ -85,20 +83,23 @@ void wordwrap()
 	// Load the saved window position.
 	//
 	// x::w::screen_positions_t is a container, a std::unordered_map.
-	// The key is a std::string, the value is an x::w::rectangle, that
-	// gets passed directly to set_screen_position(). This is really
-	// "set_suggested_screen_position()", and can be used only before
-	// showing the main window for the first time.
+	// The key is a std::string, the value is an x::w::screen_position.
+	// An overloaded main_window create() takes additional parameters
+	// specifying the container, and the name of the key for the saved
+	// window position. This allows the container to hold multiple
+	// windows' saved positions. Window names are arbitrary labels.
+	//
+	// load_screen_positions() returns an empty container if the
+	// configuration file does not exist. It is not an error if the
+	// named window's position does not exist in the container, the
+	// main_window gets created normally, but without the restored
+	// position.
 
-	{
-		x::w::screen_positions_t pos=
-			x::w::load_screen_positions(configfile);
+	x::w::screen_positions_t pos=
+		x::w::load_screen_positions(configfile);
 
-		auto iter=pos.find("main");
-
-		if (iter != pos.end())
-			main_window->set_screen_position(iter->second);
-	}
+	auto main_window=
+		x::w::main_window::create(pos, "main", create_mainwindow);
 
 	main_window->on_disconnect([]
 				   {
@@ -122,13 +123,8 @@ void wordwrap()
 
 	// And save the window's final position, so that it get be used the
 	// next time this program runs.
-	//
-	// x::w::screen_positions_t is a container, a std::unordered_map,
-	// making it possible to save multiple windows' positions, using
-	// application-assigned std::string keys as window identifiers.
 
-	x::w::screen_positions_t pos;
-
+	pos.clear();
 	pos.emplace("main", main_window->get_screen_position());
 
 	x::w::save_screen_positions(configfile, pos);

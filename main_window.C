@@ -102,10 +102,34 @@ main_window main_windowBase::do_create(const function<main_window_creator_t> &f,
 	return screen::base::create()->do_create_mainwindow(f, factory);
 }
 
+main_window main_windowBase::do_create(const screen_positions_t &pos,
+				       const std::string_view &name,
+				       const function<main_window_creator_t> &f)
+{
+	return screen::base::create()->do_create_mainwindow(pos, name, f);
+}
+
+main_window main_windowBase::do_create(const screen_positions_t &pos,
+				       const std::string_view &name,
+				       const function<main_window_creator_t> &f,
+				       const new_layoutmanager &factory)
+{
+	return screen::base::create()->do_create_mainwindow(pos, name, f,
+							    factory);
+}
+
 main_window screenObj
 ::do_create_mainwindow(const function<main_window_creator_t> &f)
 {
 	return do_create_mainwindow(f, new_gridlayoutmanager{});
+}
+
+main_window screenObj
+::do_create_mainwindow(const screen_positions_t &pos,
+		       const std::string_view &name,
+		       const function<main_window_creator_t> &f)
+{
+	return do_create_mainwindow(pos, name, f, new_gridlayoutmanager{});
 }
 
 class LIBCXX_HIDDEN app_container_implObj :
@@ -245,16 +269,50 @@ do_create_main_window_impl(const ref<main_windowObj::handlerObj> &handler,
 }
 
 main_window screenObj
+::do_create_mainwindow(const screen_positions_t &pos,
+		       const std::string_view &name,
+		       const function<main_window_creator_t> &f,
+		       const new_layoutmanager &factory)
+{
+	std::string s{name};
+	auto iter=pos.find(s);
+
+	if (iter == pos.end())
+		return do_create_mainwindow(f, factory);
+	return do_create_mainwindow(iter->second, f, factory);
+}
+
+main_window screenObj
 ::do_create_mainwindow(const function<main_window_creator_t> &f,
 		       const new_layoutmanager &layout_factory)
 {
+	return do_create_mainwindow(std::nullopt, f, layout_factory);
+}
+
+main_window screenObj
+::do_create_mainwindow(const std::optional<screen_position> &pos,
+		       const function<main_window_creator_t> &f,
+		       const new_layoutmanager &layout_factory)
+{
+	auto new_screen=screen(this);
+
+	if (pos && pos->screen_number)
+	{
+		auto conn=get_connection();
+
+		if (*pos->screen_number < conn->screens())
+			new_screen=screen::create(*pos->screen_number);
+	}
+
 	// Keep a batch queue in scope for the duration of the creation,
 	// so everything gets buffered up.
 
 	auto queue=connref->impl->thread->get_batch_queue();
 
 	auto handler=ref<main_windowObj::handlerObj>
-		::create(connref->impl->thread, screen(this),
+		::create(connref->impl->thread, new_screen,
+			 pos ? std::optional<rectangle>{pos}
+			 : std::optional<rectangle>{},
 			 "mainwindow_background");
 
 	handler->set_window_type("normal");
@@ -608,7 +666,7 @@ input_dialog main_windowObj
 	return new_input_dialog;
 }
 
-rectangle main_windowObj::get_screen_position() const
+screen_position main_windowObj::get_screen_position() const
 {
 	auto handler=impl->handler;
 
@@ -616,17 +674,7 @@ rectangle main_windowObj::get_screen_position() const
 
 	auto r=handler->current_position.get();
 
-	return {x, y, r.width, r.height};
-}
-
-void main_windowObj::set_screen_position(const rectangle &r)
-{
-	impl->handler->IN_THREAD->run_as
-		([r, handler=impl->handler]
-		 (IN_THREAD_ONLY)
-		 {
-			 handler->suggested_position(IN_THREAD)=r;
-		 });
+	return {{x, y, r.width, r.height}, get_screen()->impl->screen_number};
 }
 
 LIBCXXW_NAMESPACE_END

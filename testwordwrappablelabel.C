@@ -170,16 +170,13 @@ void testlabel(const testwordwrappablelabel_options &options)
 
 	auto close_flag=close_flag_ref::create();
 
+	auto pos=LIBCXX_NAMESPACE::w::load_screen_positions(configfile);
+
 	auto main_window=LIBCXX_NAMESPACE::w::main_window
-		::create([&]
+		::create(pos, "main",
+			 [&]
 			 (const auto &main_window)
 			 {
-				 auto pos=LIBCXX_NAMESPACE::w::load_screen_positions(configfile);
-
-				 auto main_window_pos=pos.find("main");
-
-				 if (main_window_pos != pos.end())
-					 main_window->set_screen_position(main_window_pos->second);
 				 LIBCXX_NAMESPACE::w::gridlayoutmanager
 				     layout=main_window->get_layoutmanager();
 				 LIBCXX_NAMESPACE::w::gridfactory factory=
@@ -189,7 +186,8 @@ void testlabel(const testwordwrappablelabel_options &options)
 
 				 if (options.testmetrics->value)
 					 layout->append_row()->create_input_field("");
-			 });
+			 },
+			 LIBCXX_NAMESPACE::w::new_gridlayoutmanager{});
 
 	main_window->set_window_title("Hello world!");
 
@@ -241,8 +239,7 @@ void testlabel(const testwordwrappablelabel_options &options)
 		lock.wait([&] { return *lock; });
 	}
 
-	LIBCXX_NAMESPACE::w::screen_positions_t pos;
-
+	pos.clear();
 	pos.emplace("main", main_window->get_screen_position());
 	LIBCXX_NAMESPACE::w::save_screen_positions(configfile, pos);
 }

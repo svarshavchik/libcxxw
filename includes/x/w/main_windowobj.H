@@ -286,10 +286,7 @@ public:
 		      > destroy_when_closed(const std::string_view &);
 
 	//! Get current screen position
-	rectangle get_screen_position() const;
-
-	//! Set the suggested screen position
-	void set_screen_position(const rectangle &);
+	screen_position get_screen_position() const;
 };
 
 LIBCXXW_NAMESPACE_END

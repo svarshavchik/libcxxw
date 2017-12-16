@@ -6,7 +6,7 @@
 #define x_w_main_windowfwd_h
 
 #include <x/w/namespace.H>
-#include <x/w/rectangle.H>
+#include <x/w/screen_position.H>
 #include <x/ptrfwd.H>
 
 #include <unordered_map>
@@ -23,7 +23,7 @@ class main_windowBase;
 //!
 //! \see load_screen_positions
 
-typedef std::unordered_map<std::string, rectangle> screen_positions_t;
+typedef std::unordered_map<std::string, screen_position> screen_positions_t;
 
 //! Save memorized coordinates.
 
@@ -32,7 +32,11 @@ typedef std::unordered_map<std::string, rectangle> screen_positions_t;
 //!
 //! INSERT_LIBX_NAMESPACE::w::screen_positions_t screen_positions;
 //!
-//! screen_positions.emplace("main", main_window->get_screen_position());
+//! auto pos=main_window->get_screen_position();
+//!
+//! pos.screen_number.reset(); // Optional
+//!
+//! screen_positions.emplace("main", pos);
 //!
 //! INSERT_LIBX_NAMESPACE::w::save_screen_positions(INSERT_LIBX_NAMESPACE::configdir("app@example.com") + "/windows",
 //!                             screen_positions);
@@ -46,14 +50,20 @@ typedef std::unordered_map<std::string, rectangle> screen_positions_t;
 //! application's configuration directory. save_memorize_coordinates() first
 //! parameter is the configuration file's name.
 //!
+//! \note
+//! The window's screen number is also included, and can be reset() if
+//! the window should be reopened on the default screen.
+//!
 //! \see load_screen_positions
+//!
+//! \see preserve_screen_number()
 //!
 //! \see generic_window
 
 void save_screen_positions(const std::string &filename,
 			   const screen_positions_t &coordinates);
 
-//! Load memorized coordinates.
+//! Load memorized window locations.
 
 //! \code
 //! #include <INSERT_LIBX_NAMESPACE/config.H>
@@ -61,12 +71,13 @@ void save_screen_positions(const std::string &filename,
 //! INSERT_LIBX_NAMESPACE::w::screen_positions_t screen_positions=
 //!     INSERT_LIBX_NAMESPACE::w::load_screen_positions(INSERT_LIBX_NAMESPACE::configdir("app@example.com") + "/windows");
 //!
-//! auto iter=screen_positions.find("main");
-//!
-//! if (iter != screen_positions.end())
-//!     main_window->set_screen_position(iter->second);
-//!
-//! main_window->show_all().
+//! auto main_window=INSERT_LIBX_NAMESPACE::w::main_window::create
+//!    (screen_positions, "main",
+//!     []
+//!     (const auto &main_window)
+//!     {
+//!          ...
+//!     }
 //! \endcode
 //!
 //! Provides the means to open the application's main window in the same
@@ -81,9 +92,31 @@ void save_screen_positions(const std::string &filename,
 //!
 //! \see save_screen_positions
 //!
+//! \see preserve_screen_number()
+//!
 //! \see generic_window
 
 screen_positions_t load_screen_positions(const std::string &filename);
+
+//! Whether saved screen positions preserve the application's screen number.
+
+//! load_screen_positions() and save_screen_positions() include the
+//! windows' screen numbers. Setting preserve_screen_number() to \c false
+//! has the following results.
+//!
+//! - save_screen_positions() does not include the screen number in the
+//! saved file.
+//!
+//! - load_screen_positions() does not restore the screen number in the
+//! saved file.
+//!
+//! Creating a new \ref main_window "main window" and supplying a
+//! saved position without a screen number results in the new window getting
+//! created on the default screen. The window's position gets preserved if
+//! the default screen resolution is the same as the window's original
+//! screen.
+
+void preserve_screen_number(bool flag);
 
 //! \anchor main_window Top level application window.
 
@@ -109,6 +142,18 @@ INSERT_LIBX_NAMESPACE::w::main_window main_window=screen->create_mainwindow(
                 {
                        // Initialize the new main window.
                 });
+
+// Create a main application window in its previous position.
+
+INSERT_LIBX_NAMESPACE::w::screen_positions_t screen_positions=
+    INSERT_LIBX_NAMESPACE::w::load_screen_positions(INSERT_LIBX_NAMESPACE::configdir("app@example.com") + "/windows");
+
+INSERT_LIBX_NAMESPACE::w::main_window main_window=INSERT_LIBX_NAMESPACE::w::main_window::create(screen_positions, "main",
+     []
+     (const INSERT_LIBX_NAMESPACE::w::main_window &new_main_window)
+     {
+          // Initialize the new main window.
+     });
 
 \endcode
 

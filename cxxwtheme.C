@@ -37,6 +37,7 @@
 #include <x/destroy_callback.H>
 #include <x/weakcapture.H>
 #include <x/threads/run.H>
+#include <x/config.H>
 #include <iostream>
 #include <iomanip>
 #include <algorithm>
@@ -630,12 +631,17 @@ static void demo_misc(const w::gridlayoutmanager &lm)
 
 void cxxwtheme()
 {
+	w::preserve_screen_number(false);
+	auto configfile=configdir("cxxwtheme@w.libcxx.com")+"/windows";
+	auto pos=w::load_screen_positions(configfile);
+
 	destroy_callback::base::guard guard;
 
 	auto close_flag=close_flag_ref::create();
 
 	auto main_window=w::main_window
-		::create([&]
+		::create(pos, "main",
+			 [&]
 			 (const auto &main_window)
 			 {
 				 create_main_window(main_window, close_flag);
@@ -662,12 +668,15 @@ void cxxwtheme()
 
 	mpcobj<bool>::lock lock{close_flag->flag};
 	lock.wait([&] { return *lock; });
+
+	pos.clear();
+	pos.emplace("main", main_window->get_screen_position());
+	LIBCXX_NAMESPACE::w::save_screen_positions(configfile, pos);
 }
 
 int main(int argc, char **argv)
 {
 	LOG_FUNC_SCOPE(cxxwLog);
-
 
 	try {
 		cxxwtheme();
