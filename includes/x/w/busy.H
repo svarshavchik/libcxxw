@@ -50,7 +50,7 @@ LIBCXXW_NAMESPACE_START
 //! mcguffins as well.
 //!
 //! get_shade_busy_mcguffin() is equivalent to get_wait_busy_mcguffin() on
-//! display screens that don't support alpha compositing.
+//! display screens that don't support composition with an alpha channel.
 
 class busy {
 

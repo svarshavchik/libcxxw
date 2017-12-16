@@ -11,12 +11,15 @@ See COPYING for distribution information.
     <title>Introduction</title>
 
     <para>
-      &appshort; is an optional &libcxx; module that implements a small X
-      user interface toolkit with a modern
-      C++17 <acronym>API</acronym> and without any dependencies on Gnome
-      (GTK) or QT libraries. Its only dependencies are small, low-level
+      &appshort; is an optional add-on library to &libcxx;
+      that implements a small X user interface toolkit with a modern
+      C++17 <acronym>API</acronym> and without any dependencies on large
+      Gnome (GTK) or QT libraries. The only dependencies are
+      toolkit-independent
       libraries that are not tied to any particular desktop environment.
       See <xref linkend="INSTALL" /> for more information.
+      &appshort; aims to make it possible to quickly implement a simple,
+      basic, no-frills X user interface.
       Notable features:
     </para>
 
@@ -59,7 +62,7 @@ See COPYING for distribution information.
 	<para>
 	  Unlike other high-level toolkits,
 	  &app; does not require the application to use an event-driven
-	  design. &app; starts an internal execution thread that handles all
+	  design. &app; run an internal execution thread that handles all
 	  X events. The main application
 	  thread can be working on a dedicated, long-running task that
 	  blocks all pointer and keyboard events, but the background thread
@@ -74,16 +77,12 @@ See COPYING for distribution information.
 	  &libcxx;'s reference-counted objects (based on smart pointers).
 	  There are no explicit methods
 	  to destroy input fields, buttons, and other display elements.
-	  Each display element is a reference-counted object, and
-	  when the last
-	  reference to the object goes out of scope, and gets destroyed, this
+	  Each display element is a reference-counted object, with
+	  containers holding references to the elements in the container.
+	  Removing an element from the container results in the last
+	  reference to the object going out of scope, which destroyes it.
+	  This
 	  results in the corresponding display element getting destroyed.
-	</para>
-
-	<para>
-	  And because parent display elements hold references to their
-	  child display elements, removing a parent display element from its
-	  container automatically removes and destroys all elements it contains.
 	</para>
       </listitem>
 

@@ -151,7 +151,7 @@ struct input_change_info_t {
 //! Information passed to the input_field's on_autocomplete() callback.
 
 //! The usual autocomplete behavior is: the callback returns false if
-//! no autocomplete information is avaiable; or the callback sets
+//! no autocomplete information is available; or the callback sets
 //! \c selection_start to \c string.size() then replaces \c string
 //! with the autocompleted text.
 

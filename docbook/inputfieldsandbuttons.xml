@@ -458,10 +458,20 @@ factory->create_normal_button([]
 	  provides the option of suspending keyboard and pointer button
 	  processing after the callback returns. Normally &appshort;'s
 	  internal execution thread resumes processing keyboard and button
-	  clicks after this callback returns. If the application needs to
-	  engage in a lengthy task because of this button click, and
-	  no more pointer or button clicks should be processed until the
-	  application gets done, the callback uses this factory to
+	  clicks after this callback returns. Callbacks should not engage
+	  in lengthy tasks, because they get executed by the library's
+	  internal execution thread whose job is to update the display.
+	  Callbacks are not executed by the main application thread.
+	  A typical design pattern for this kind of a callback is to send
+	  a message to the main application thread, which then starts
+	  working.
+	</para>
+
+	<para>
+	  It is desirable not to process any further pointer or keyboard
+	  clicks until the main application thread is finished, and the
+	  busy factory provides the means to do so. The callback uses this
+	  factory to
 	  construct a <quote>mcguffin</quote> for that purpose. An
 	  example of this is given in <xref linkend="busy" />.
 	</para>

@@ -995,6 +995,8 @@ ALL_DOCS=html/book.css html/.htaccess html/frame.js \
 
 docs: $(ALL_DOCS) html/index.html
 	-chcon -R -t httpd_sys_content_t html/. 2>/dev/null || true
+	rm -rf ~/www/www.courier-mta.org/libcxx/w
+	rsync -a -X html/. ~/www/www.courier-mta.org/libcxx/w
 
 DOCS_SRC = $(shell find includes -name '*.H' -print)
 
@@ -1012,14 +1014,14 @@ html/index.html: html/ref/index.html $(wildcard docbook/*.xml) docbook/xmllinks.
 		--stringparam generate.id.attributes 1 \
 		--param local.l10n.xml 'document("'`pwd`/docbook/l10.xml'")' \
 		$(srcdir)/docbook/docbook.xsl $(srcdir)/docbook/book.xml
-	-rm -f html/* 2>/dev/null >/dev/null || :
-	mv html.tmp/* html
-	rm -rf html.tmp
-	rm -rf html/examples
-	find examples -depth ! -name autom4te.cache \( -type d -o -name '*.[CH]' -o -name '*.xml' -o -name '*.jpg' -o -name Makefile.am -o -name configure.ac \) -print | cpio -o --quiet | (cd html; cpio -i --quiet --make-directories)
-	true; # echo 'ForceType text/plain' >html/examples/.htaccess
-	touch INSTALL.tmp # links -dump -no-numbering -no-references html/INSTALL.html >INSTALL.tmp
+	mkdir html.tmp/ref
+	ln html/ref/* html.tmp/ref
+	find examples -depth \( -type d -o -name '*.[CH]' -o -name '*.xml' -o -name '*.jpg' -o -name Makefile.am -o -name configure.ac \) -print | cpio -o --quiet | (cd html.tmp; cpio -i --quiet --make-directories)
+	echo 'ForceType text/plain' >html.tmp/examples/.htaccess
+	links -dump -no-numbering -no-references html/INSTALL.html >INSTALL.tmp
 	mv -f INSTALL.tmp INSTALL
+	-rm -rf html 2>/dev/null >/dev/null || :
+	mv html.tmp html
 
 html/ref/index.html: $(DOCS_SRC) Doxyfile
 	rm -rf html/ref
@@ -1062,23 +1064,18 @@ endef
 
 $(foreach d,$(all_themes),$(eval $(call install_theme,$d)))
 
-install-data-hook: $(all_installed_theme_files) $(DESTDIR)$(pkgdatadir)/themes/cxxwtheme.properties
+install-data-hook: $(all_installed_theme_files)
 
 install-data-hook-create-dir:
 	$(MKDIR_P) $(foreach d,$(all_installed_theme_dirs),$(DESTDIR)$(d))
 
-$(DESTDIR)$(pkgdatadir)/themes/cxxwtheme.properties: themes/cxxwtheme.properties install-data-hook-create-dir
-	$(INSTALL_DATA) $(srcdir)/themes/cxxwtheme.properties $(DESTDIR)$(pkgdatadir)/themes/cxxwtheme.properties
-
 uninstall-hook:
 	rm -f $(all_installed_theme_files)
-	rm -f $(DESTDIR)$(pkgdatadir)/themes/cxxwtheme.properties
 	-rmdir $(foreach d,$(all_installed_theme_dirs),$(DESTDIR)$(d))
 	-rmdir $(DESTDIR)$(pkgdatadir)/themes
 	-rmdir $(DESTDIR)$(pkgdatadir)
 
-EXTRA_DIST += $(patsubst $(srcdir)/%,%,$(all_theme_source_files)) \
-	themes/cxxwtheme.properties
+EXTRA_DIST += $(patsubst $(srcdir)/%,%,$(all_theme_source_files))
 
 check-am:
 	@test -n "$(BUILT_TESTPROGRAMS)" || exit 0; for p in $(BUILT_TESTPROGRAMS); do echo $$p; ./$$p; done
