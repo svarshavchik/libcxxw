@@ -1,0 +1,333 @@
+<!--
+
+Copyright 2017 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<chapter id="properties">
+  <title>Properties and debugging</title>
+
+  <para>
+    &app; uses &libcxx;'s application properties for some of its internal
+    configuration. Properties are individual configuration settings that
+    control some runtime behavior. A brief overview follows, see
+    <ulink url="/properties">&libcxx;'s
+      documentation for more information</ulink>.
+  </para>
+
+  <section id="settingproperties">
+    <title>Setting properties</title>
+
+    <para>
+      There are several ways to temporarily set individual properties for
+      debugging purposes. The direct way is to just set them in
+      <function>main()</function>:
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+#include &lt;&ns;/property_value.H&gt;
+
+int main()
+{
+    x::property::load_property("x::w::disable_grab", "true", true, true);
+
+    // ...
+}
+	</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      Alternatively, properties can be placed in a separate file.
+      If the binary executable is <filename>helloworld</filename>, &libcxx;
+      checks if <filename>helloworld.properties</filename> exists in the
+      same directory and loads it:
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+x::w::disable_grab=true
+	</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <note>
+      <para>
+	<command>libtool</command> creates a shell script wrapper when
+	linking an executable with a shared library from the same build
+	tree.
+	<filename>helloworld.properties</filename> gets ignored in that
+	case because <filename>helloworld</filename> is a wrapper script
+	that sets up a temporary link path and loads the real binary
+	from the <filename>.libs</filename> subdirectory.
+      </para>
+
+      <para>
+	A temporary static link build is one option in that situation.
+      </para>
+    </note>
+
+    <para>
+      The <envar>PROPERTIES</envar> environment variable overrides the
+      default <filename>filename.properties</filename> properties file
+      location; or the <command>properties</command> command can be used
+      to embed the properties file path into the executable.
+      See <ulink url="/properties.1.html"><citerefentry>
+	  <refentrytitle>properties</refentrytitle>
+	  <manvolnum>1</manvolnum>
+	</citerefentry></ulink> for more information.
+    </para>
+  </section>
+
+  <section id="disablegrab">
+    <title>Locked display when setting breakpoints in callbacks</title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+x::w::disable_grab=true</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      Setting a debugging breakpoint in a &callback; often results in a locked
+      display when the breakpoint gets hit, with no response to pointer
+      or key clicks.
+    </para>
+
+    <para>
+      &app; uses the &xproto;'s passive grab feature to avoid losing
+      events. Setting the
+      <envar>x::w::disable_grab</envar> property to <literal>true</literal>
+      turns off passive grabs.
+    </para>
+  </section>
+
+  <section id="disablexim">
+    <title>Lockups at program startup</title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+x::w::disable_xim=true</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      Setting <envar>&ns;::w::disable_xim</envar> to
+      <literal>true</literal> turns off the initial
+      connection to the X Input Method server. &app; does not start
+      processing key and pointer events until a connection to the XIM
+      server gets established.
+    </para>
+
+    <para>
+      Turning off XIM support is a troubleshooting tool to isolate
+      XIM connection issues during initialization.
+    </para>
+  </section>
+
+  <section id="terminationlockups">
+    <title>Lockups at program terminations</title>
+
+    <para>
+      There can be several reasons why an &app;-using program does not
+      properly terminate.
+    </para>
+
+    <variablelist>
+      <varlistentry>
+	<term>Problems disconnecting from the X Input Method server</term>
+	<listitem>
+	  <para>
+	    &app; does an orderly teardown of the connection to the XIM server
+	    when the library shuts down. For troubleshooting purposes:
+	  </para>
+
+	  <blockquote>
+	    <informalexample>
+	      <programlisting>
+x::w::skip_xim_disconnect=true</programlisting>
+	    </informalexample>
+	  </blockquote>
+
+	  <para>
+	    This terminates the connection with the XIM server immediately.
+	  </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>Circular references</term>
+	<listitem>
+	  <para>
+	    &app; uses <link linkend="libcxx_overview">smart pointers/reference
+	      counted objects</link> to implement all display elements.
+	    A circular reference results in class instances of various &app;
+	    display elements not getting destroyed correctly. This prevents
+	    the library's internal execution thread from properly shutting
+	    down. The internal execution thread does not stop until all
+	    objects that use it get destroyed.
+	  </para>
+	</listitem>
+      </varlistentry>
+    </variablelist>
+
+    <para>
+      This chapter discusses some of the common causes of circular references
+      and how to eliminate them.
+    </para>
+
+    <variablelist>
+      <varlistentry>
+	<term>Containers hold references to all display elements in the
+	  container</term>
+	<listitem>
+	  <para>
+	    A basic display element, like a button,
+	    <link linkend="containerrefs">is owned by its
+	      container</link>
+	    (the top level main window, or an intermediate container).
+	    Taking the button element, and storing its parent container
+	    in the element's <varname>appdata</varname> field creates
+	    a circular reference.
+	  </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>Capturing display elements in callbacks</term>
+	<listitem>
+	  <para>
+	    A &callback; for a display element
+	    cannot <link linkend="callbackrefs">capture
+	      a reference to the display element's parent or child
+	      elements</link>. This creates an internal circular reference.
+	  </para>
+
+	  <para>
+	    Using <link linkend="callbackweakcaptures">weak captures</link>
+	    is often the simplest solution.
+	  </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>Storing display elements in static or dynamic scope</term>
+	<listitem>
+	  <blockquote>
+	    <informalexample>
+	      <programlisting>
+static &ns;::w::labelptr l;
+
+void create_tab(const &amp;&ns;::w::factory &amp;f)
+{
+     l=f->create_label("Hello world");
+}</programlisting>
+	    </informalexample>
+	  </blockquote>
+	  <para>
+	    Unless something gets rid of this statically-scoped reference to
+	    a display element, its existence will prevent &app; from
+	    properly shutting down. Good rules of thumb to follow:
+	  </para>
+	  <itemizedlist>
+	    <listitem>
+	      <para>
+		All display elements get created in automatic scope. All
+		examples in this tutorial create their
+		<classname>&ns;::w::main_window</classname>s in automatic
+		scope, before creating all display elements but not
+		directly storing them anywhere.
+	      </para>
+	    </listitem>
+	    <listitem>
+	      <para>
+		The remaining display elements get created, and generally
+		not separately stored anywhere other than internally, by
+		the library, in their containers.
+	      </para>
+	    </listitem>
+	    <listitem>
+	      <para>
+		Callbacks attached to display elements typically weakly capture
+		any other elements they need. In limited, well defined,
+		controlled cases, a callback captures a different display
+		element in an unrelated hierarchy.
+	      </para>
+	    </listitem>
+	  </itemizedlist>
+	</listitem>
+      </varlistentry>
+    </variablelist>
+  </section>
+  <section id="internallocks">
+    <title>Windows no longer getting updated</title>
+
+    <para>
+      Some common reasons why a window stops getting updated:
+    </para>
+
+    <variablelist>
+      <varlistentry>
+	<term>Explicit locks</term>
+	<listitem>
+	  <para>
+	    Many display elements and layout managers have explicit
+	    locks that block all other execution threads from accessing
+	    the display element.
+	    &app; maintains its own internal
+	    <link linkend="connthread">execution thread</link> that,
+	    amongst other things, updates all windows and display elements.
+	  </para>
+
+	  <para>
+	    The need for explicit locking is obvious. This allows working
+	    with the
+	    contents and the state of a particular display element without
+	    having it simultaneously modified as a result of some
+	    input activity. &app;'s internal execution thread might
+	    access any display element at any time, for example to
+	    redraw its contents if the display server does not use backing
+	    stores and sends an exposure event because some other
+	    application's window moved.
+	  </para>
+
+	  <para>
+	    Constructing locks in dynamic or static scope should be avoided.
+	    It's always better to construct locks in automatic scope.
+	  </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term>Internal layout manager locks</term>
+	<listitem>
+	  <para>
+	    A container's <methodname>get_layoutmanager</methodname>()
+	    constructs and returns the container's &layoutmanager;.
+	    Layout managers holds their own internal locks on their
+	    container, to have a consistent snapshot of the container's
+	    contents while the layout manager makes changes to it.
+	  </para>
+
+	  <para>
+	    Like locks, layout manager objects should not be stored in
+	    dynamic or static scope. Layout managers' locks are much
+	    broader in scope, and affect the entire container.
+	    A layout manager object should get instantiated on as-needed
+	    basis, with <methodname>get_layoutmanager</methodname>();
+	    and kept in automatic scope so that it gets destroyed when
+	    no longer needed.
+	  </para>
+	</listitem>
+      </varlistentry>
+    </variablelist>
+  </section>
+</chapter>
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "book" "chapter")
+End:
+-->

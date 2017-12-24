@@ -88,7 +88,8 @@ void focusableImplObj::focusable_deinitialize(IN_THREAD_ONLY)
 				 if (before == after)
 					 return;
 
-				 label_element->schedule_redraw(IN_THREAD);
+				 label_element->schedule_redraw_recursively
+					 (IN_THREAD);
 			 });
 	}
 
@@ -237,7 +238,7 @@ void elementObj::label_for(const focusable &f)
 			 if (before == after)
 				 return;
 
-			 me->impl->schedule_redraw(IN_THREAD);
+			 me->impl->schedule_redraw_recursively(IN_THREAD);
 		 });
 }
 

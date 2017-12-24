@@ -8,7 +8,7 @@ See COPYING for distribution information.
 <section id="INSTALL">
   <title>Installation, and requirements</title>
 
-  <informaltable id="externallinks">
+  <informaltable class="externallinks">
     <thead cols="1">
       <tr>
 	<th>
@@ -25,7 +25,7 @@ See COPYING for distribution information.
 	  </simpara>
 
 	  <simpara>
-	    <ulink url="https://lists.fedorahosted.org/mailman/listinfo/libcxx-users">Mailing list</ulink>
+	    <ulink url="https://lists.libcxx.org/mailman/listinfo/libcxx-users_lists.libcxx.org">Mailing list</ulink>
 	  </simpara>
 
 	  <simpara>
@@ -52,10 +52,7 @@ See COPYING for distribution information.
   <itemizedlist>
     <listitem>
       <para>
-	&libcxx;, which currently runs only on Linux, with some FreeBSD
-	support; therefore &appshort;'s support is limited to these
-	platforms, at this time. Note that &libcxx; itself requires the
-	current version of gcc, with C++17 support.
+	&libcxx;.
       </para>
     </listitem>
 

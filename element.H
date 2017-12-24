@@ -673,8 +673,13 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 	//! Determines whether this display element should be shown as
 	//! "disabled".
+	//!
+	//! Overridden in child_elementObj. Elements in a focusable label
+	//! forward this to their container, in order to be drawn as disabled
+	//! if their parent container is a label for a focusable.
 
-	bool draw_to_window_picture_as_disabled(IN_THREAD_ONLY);
+	virtual bool draw_to_window_picture_as_disabled(IN_THREAD_ONLY);
+
 	//! Clear to background color
 
 	//! Wrapper that acquires a clip_region_set, first.

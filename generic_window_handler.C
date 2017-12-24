@@ -151,7 +151,8 @@ generic_windowObj::handlerObj
 	 default_background_color(params.window_handler_params.screenref,
 				  "modal_shade"),
 	 drawableObj::implObj::create_icon(create_icon_args_t{
-			 "disabled_mask"},
+			 "disabled_mask",
+			 render_repeat::normal},
 		 params.window_handler_params.screenref),
 	 cursor_pointer::create
 	 (drawableObj::implObj::create_icon(create_icon_args_t{

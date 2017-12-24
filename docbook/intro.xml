@@ -10,16 +10,18 @@ See COPYING for distribution information.
   <section id="intro">
     <title>Introduction</title>
 
+    <?dbhtml-include href="demoreel.inc.html"?>
+
     <para>
       &appshort; is an optional add-on library to &libcxx;
-      that implements a small X user interface toolkit with a modern
+      that implements a basic X user interface toolkit with a modern
       C++17 <acronym>API</acronym> and without any dependencies on large
       Gnome (GTK) or QT libraries. The only dependencies are
       toolkit-independent
       libraries that are not tied to any particular desktop environment.
       See <xref linkend="INSTALL" /> for more information.
       &appshort; aims to make it possible to quickly implement a simple,
-      basic, no-frills X user interface.
+      basic, no-frills X user interface in C++.
       Notable features:
     </para>
 

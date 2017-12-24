@@ -112,6 +112,10 @@ class LIBCXX_HIDDEN child_elementObj : public background_color_elementObj<
 
 	bool enabled(IN_THREAD_ONLY) override;
 
+	//! Override draw_to_window_picture_as_disabled.
+
+	bool draw_to_window_picture_as_disabled(IN_THREAD_ONLY) override;
+
 	//! Button events
 
 	//! All display elements, starting with the one under the pointer

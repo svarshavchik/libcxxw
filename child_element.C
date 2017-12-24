@@ -231,6 +231,13 @@ bool child_elementObj::enabled(IN_THREAD_ONLY)
 	return superclass_t::enabled(IN_THREAD);
 }
 
+bool child_elementObj::draw_to_window_picture_as_disabled(IN_THREAD_ONLY)
+{
+	return superclass_t::draw_to_window_picture_as_disabled(IN_THREAD)
+		|| child_container->get_element_impl()
+		.draw_to_window_picture_as_disabled(IN_THREAD);
+}
+
 bool child_elementObj::process_button_event(IN_THREAD_ONLY,
 					    const button_event &be,
 					    xcb_timestamp_t timestamp)

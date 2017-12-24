@@ -43,6 +43,7 @@
 <!ENTITY scrollbar SYSTEM "scrollbar.xml">
 <!ENTITY sxgdoc SYSTEM "sxg.xml">
 <!ENTITY connections_and_screens SYSTEM "connections_and_screens.xml">
+<!ENTITY properties SYSTEM "properties.xml">
 %entity-list;
 
 ]>
@@ -83,6 +84,7 @@ See COPYING for distribution information.
   <part id="misctopics">
     <title>Miscellaneous topics</title>
     &connections_and_screens;
+    &properties;
   </part>
   &sxgdoc;
 
