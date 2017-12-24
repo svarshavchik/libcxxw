@@ -288,7 +288,7 @@ elementObj::implObj::hover_action_delay(IN_THREAD_ONLY)
 		// Tooltip already created.
 		return std::chrono::milliseconds{0};
 
-	return std::chrono::milliseconds(tooltip_delay.getValue());
+	return std::chrono::milliseconds(tooltip_delay.get());
 }
 
 void elementObj::implObj::hover_action(IN_THREAD_ONLY)

@@ -20,8 +20,7 @@ connection_threadObj::incremental_selection_update_info::next_incremental_update
 	return tick_clock_t::now()+std::chrono::duration_cast
 		<tick_clock_t::duration>
 		(std::chrono::seconds
-		 (incremental_selection_update_timeout.getValue()
-		  .seconds()));
+		 (incremental_selection_update_timeout.get().seconds()));
 }
 
 void connection_threadObj::incremental_selection_update_info

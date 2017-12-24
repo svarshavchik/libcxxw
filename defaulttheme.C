@@ -44,7 +44,7 @@ themescaleprop(LIBCXX_NAMESPACE_STR "::w::theme::scale", 0);
 
 std::string themedirroot()
 {
-	return themedirbase.getValue();
+	return themedirbase.get();
 }
 
 // Set a baseline value of how many pixels make up one millimeter, which
@@ -294,9 +294,9 @@ defaulttheme::base::get_config(const std::string &property)
 {
 	auto user_configfile=read_config();
 	auto themename=default_theme_name(property, user_configfile,
-					  themesubdirprop.getValue());
+					  themesubdirprop.get());
 	auto themescale=default_theme_scale(property, user_configfile,
-					    themescaleprop.getValue());
+					    themescaleprop.get());
 
 	return get_config(themename, themescale);
 }
@@ -307,7 +307,7 @@ defaulttheme::base::get_config(const std::string &themename,
 {
 	xml::docptr theme_configfile;
 
-	auto themedir=themedirbase.getValue() + "/" + themename;
+	auto themedir=themedirbase.get() + "/" + themename;
 
 	auto filename=themedir + "/theme.xml";
 

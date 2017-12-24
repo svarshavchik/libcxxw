@@ -45,7 +45,7 @@ void save_screen_positions(const std::string &filename,
 		height << coords.second.height;
 
 		if (coords.second.screen_number &&
-		    preserve_screen_number_prop.getValue())
+		    preserve_screen_number_prop.get())
 		{
 			std::ostringstream screen_number;
 
@@ -137,7 +137,7 @@ static void load_screen_positions(const std::string &filename,
 			auto xpath=value->get_xpath("screen_number");
 
 			if (xpath->count() == 1 &&
-			    preserve_screen_number_prop.getValue())
+			    preserve_screen_number_prop.get())
 			{
 				xpath->to_node();
 

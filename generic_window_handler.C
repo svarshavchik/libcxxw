@@ -324,7 +324,7 @@ void generic_windowObj::handlerObj
 #ifdef MAP_LOG
 		MAP_LOG();
 #endif
-		if (!disable_grabs.getValue())
+		if (!disable_grabs.get())
 		{
 			xcb_grab_button(IN_THREAD->info->conn,
 					false,
@@ -817,7 +817,7 @@ void generic_windowObj::handlerObj
 	if (previous_click_time)
 	{
 		auto cutoff=previous_click_time.value() +
-			std::chrono::milliseconds(double_click.getValue());
+			std::chrono::milliseconds(double_click.get());
 
 		if (click_time < cutoff)
 			++click_count;

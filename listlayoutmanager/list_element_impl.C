@@ -1647,7 +1647,7 @@ std::chrono::milliseconds list_elementObj::implObj
 
 		if (row.extra->has_submenu())
 			return std::chrono::milliseconds(listitempopup_delay
-							 .getValue());
+							 .get());
 	}
 	return std::chrono::milliseconds{0};
 }

@@ -163,7 +163,7 @@ void filedircontentsObj::implObj::dispatch_next_chunk()
 		return; // Done.
 	}
 
-	auto n=update_chunksize.getValue();
+	auto n=update_chunksize.get();
 	auto c=current_chunk_t::create(filedir_file::create());
 	c->files->files.reserve(n);
 

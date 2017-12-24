@@ -34,7 +34,7 @@ void ximxtransportObj::implObj::disconnected(IN_THREAD_ONLY)
 
 void ximxtransportObj::implObj::connect(IN_THREAD_ONLY)
 {
-	if (disable_xim.getValue())
+	if (disable_xim.get())
 	{
 		LOG_DEBUG("Disabling XIM");
 		xim_disconnected(IN_THREAD);
@@ -164,7 +164,7 @@ void ximxtransportObj::implObj
 		([me=ref<implObj>(this), &logger]
 		 (IN_THREAD_ONLY)
 		 {
-			 if (skip_xim_disconnect.getValue())
+			 if (skip_xim_disconnect.get())
 			 {
 				 LOG_DEBUG("Disabling XIM orderly shutdown");
 				 me->xim_disconnected(IN_THREAD);
