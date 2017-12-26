@@ -3,7 +3,7 @@
 
 <!ENTITY % entity-list SYSTEM "entities">
 
-<!ENTITY app "<application><emphasis>CXX Windows Library</emphasis></application>">
+<!ENTITY app "<application><emphasis>LibCXX Windows Library</emphasis></application>">
 <!ENTITY appshort "<application><emphasis>LibCXXW</emphasis></application>">
 <!ENTITY xproto "<ulink url=&#34;http://www.x.org/releases/X11R7.7/doc/xproto/x11protocol.html&#34;>X protocol</ulink>">
 <!ENTITY render "<ulink url=&#34;http://www.x.org/releases/current/doc/renderproto/renderproto.txt&#34;>RENDER extension</ulink>">
@@ -50,7 +50,7 @@
 
 <!--
 
-Copyright 2016 Double Precision, Inc.
+Copyright 2016-2017 Double Precision, Inc.
 See COPYING for distribution information.
 
 -->

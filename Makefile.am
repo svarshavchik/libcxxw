@@ -1123,3 +1123,9 @@ rpm: dist
 	sh $$HOME/repos.sh
 
 ACLOCAL_AMFLAGS = -I m4
+
+upload:
+	git tag -s -a @PACKAGE@/@VERSION@/`date +%Y%m%d%H%M%S` -m 'Tag version @VERSION@'
+	rm -f @PACKAGE@-@VERSION@.tar.bz2.sig; gpg --detach-sign --default-key mrsam@courier-mta.com @PACKAGE@-@VERSION@.tar.bz2; test -f @PACKAGE@-@VERSION@.tar.bz2.sig || exit 1
+	pag upload @PACKAGE@-@VERSION@.tar.bz2
+	pag upload @PACKAGE@-@VERSION@.tar.bz2.sig
