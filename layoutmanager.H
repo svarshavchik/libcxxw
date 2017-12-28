@@ -139,6 +139,9 @@ class LIBCXX_HIDDEN layoutmanagerObj::implObj : virtual public obj {
 
 	virtual rectangle padded_position(IN_THREAD_ONLY, const elementimpl &e);
 
+	//! Initialize the layout manager, in the connection thread.
+	virtual void initialize(IN_THREAD_ONLY);
+
 	//! The theme has changed
 
 	virtual void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme);

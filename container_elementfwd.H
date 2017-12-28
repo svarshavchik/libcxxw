@@ -49,7 +49,10 @@ public:
 			       const function<void (const element &e)> &)
 		override;
 
-	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme);
+	void initialize(IN_THREAD_ONLY) override;
+
+	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme)
+		override;
 
 	elementObj::implObj &get_element_impl() override;
 

@@ -74,14 +74,11 @@ public:
 	//! doing nothing.
 
 	template<typename functor_type>
-		void invoke_layoutmanager(functor_type &&functor)
+		inline void invoke_layoutmanager(functor_type &&functor)
 	{
-		typedef typename layoutmanager_ptr_t::lock lock_t;
+		auto p=layoutmanager_ptr.get();
 
-		ptr<layoutmanagerObj::implObj> p=
-			*lock_t(layoutmanager_ptr);
-
-		if (p.null())
+		if (!p)
 			return; // In the process of being destroyed
 
 		functor(ref<layoutmanagerObj::implObj>(p));
@@ -179,6 +176,10 @@ public:
 	//! Invoke draw_child_elements_after_visibility_updated.
 
 	void draw_after_visibility_updated(IN_THREAD_ONLY, bool flag);
+
+	//! Invoke layout manager's initialize() method.
+
+	void initialize(IN_THREAD_ONLY);
 
 	//! Invoke layout manager's theme_updated() method.
 

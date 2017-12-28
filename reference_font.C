@@ -29,9 +29,7 @@ reference_fontObj::~reference_fontObj()=default;
 
 void reference_fontObj::initialize(IN_THREAD_ONLY)
 {
-	auto theme=*current_theme_t::lock{
-		font_element().get_screen()->impl->current_theme
-	};
+	auto theme=font_element().get_screen()->impl->current_theme.get();
 
 	theme_updated(IN_THREAD, theme);
 }

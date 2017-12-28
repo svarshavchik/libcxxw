@@ -90,9 +90,21 @@ void container_elementObj<element_impl>
 	containerObj::implObj::draw_after_visibility_updated(IN_THREAD, flag);
 }
 
+//! Override initialize().
+
+//! Invokes the superclass's initialize(), then invokes
+//! containerObj::implObj.
+
+template<typename element_impl>
+void container_elementObj<element_impl>::initialize(IN_THREAD_ONLY)
+{
+	element_impl::initialize(IN_THREAD);
+	containerObj::implObj::initialize(IN_THREAD);
+}
+
 //! Override theme_updated().
 
-//! Invokes the superclass's draw_after_visibility_updated(), then invokes
+//! Invokes the superclass's theme_updated(), then invokes
 //! containerObj::implObj.
 
 template<typename element_impl>
