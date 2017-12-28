@@ -171,13 +171,27 @@ static void center_visibility_at(coord_t &requested_pos,
 		requested_pos=coord_t::truncate(element_size-peephole_size);
 }
 
+void peepholeObj::layoutmanager_implObj::initialize(IN_THREAD_ONLY)
+{
+	// Now we can initialize our element.
+
+	element_in_peephole->get_peepholed_element()->impl
+		->initialize_if_needed(IN_THREAD);
+
+	// Trigger recalculation of our container, in order to
+	// recalculate_with_requested_visibility(), at some point.
+	create_public_object();
+}
+
 void peepholeObj::layoutmanager_implObj
 ::recalculate_with_requested_visibility(IN_THREAD_ONLY, bool flag)
 {
+	// Wait until this container is initialized.
+	if (!container_impl->get_element_impl().data(IN_THREAD).initialized)
+		return;
+
 	auto peephole_element_impl=
 		element_in_peephole->get_peepholed_element()->impl;
-
-	peephole_element_impl->initialize_if_needed(IN_THREAD);
 
 	auto &current_position=container_impl->get_element_impl()
 		.data(IN_THREAD).current_position;

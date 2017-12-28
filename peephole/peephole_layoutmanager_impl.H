@@ -92,6 +92,8 @@ class LIBCXX_HIDDEN peepholeObj::layoutmanager_implObj
 
 	void update_vertical_scroll(IN_THREAD_ONLY, dim_t offset);
 
+	//! Override initialize().
+	void initialize(IN_THREAD_ONLY) override;
  protected:
 
 	//! The peephole element's most recent requested visibility.
