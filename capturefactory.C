@@ -25,7 +25,7 @@ ref<containerObj::implObj> capturefactoryObj::get_container_impl()
 
 elementObj::implObj &capturefactoryObj::get_element_impl()
 {
-	return container_impl->get_element_impl();
+	return container_impl->container_element_impl();
 }
 
 void capturefactoryObj::created(const element &e)

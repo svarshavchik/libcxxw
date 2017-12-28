@@ -46,8 +46,7 @@ ref<containerObj::implObj> pagefactoryObj::get_container_impl()
 
 elementObj::implObj &pagefactoryObj::get_element_impl()
 {
-	return impl->lm->layoutmanagerObj::impl->container_impl
-		->get_element_impl();
+	return impl->lm->layoutmanagerObj::impl->get_element_impl();
 }
 
 ref<containerObj::implObj> pagefactoryObj::last_container_impl()

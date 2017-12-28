@@ -50,7 +50,7 @@ class LIBCXX_HIDDEN peepholed_toplevel_main_windowObj::implObj
 	~implObj();
 
 	//! Convenient typedef alias.
-	typedef reference_font_element<> reference_font;
+	typedef reference_font_tag<> reference_font;
 
 	//! Inherited from elementObj::implObj
 

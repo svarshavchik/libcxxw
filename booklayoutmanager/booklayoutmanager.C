@@ -138,7 +138,7 @@ void booklayoutmanagerObj
 			cb({lock, n, trigger,
 			    busy_impl{lock.layout_manager
 						->impl->impl->container_impl
-						->get_element_impl()}});
+						->container_element_impl()}});
 	} CATCH_EXCEPTIONS;
 }
 

@@ -69,7 +69,7 @@ public:
 		if (!p)
 			return;
 
-		p->container_impl->get_element_impl().THREAD
+		p->get_element_impl().THREAD
 			->run_as([p, update_func=this->update_func,
 				  v=dim_t::truncate(config.dragged_value)]
 				 (IN_THREAD_ONLY)
@@ -256,7 +256,7 @@ bool scrollbarsObj
 	if (be.button != 4 && be.button != 5)
 		return false;
 
-	if (!container_impl->get_element_impl().activate_for(be))
+	if (!container_impl->container_element_impl().activate_for(be))
 		return true;
 
 	if (be.button == 4)

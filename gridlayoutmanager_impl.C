@@ -293,7 +293,7 @@ void gridlayoutmanagerObj::implObj::recalculate(IN_THREAD_ONLY)
 	// recalculate_metrics would want to update the container's own
 	// metrics, as the result of the recalculation.
 
-	auto my_metrics=metrics::horizvert(container_impl->get_element_impl()
+	auto my_metrics=metrics::horizvert(get_element_impl()
 					   .get_horizvert(IN_THREAD));
 
 #ifdef CALLING_RECALCULATE
@@ -306,7 +306,7 @@ void gridlayoutmanagerObj::implObj::recalculate(IN_THREAD_ONLY)
 
 	// Even though the current position hasn't changed, we need to
 	// recalculate and reposition our display elements.
-	container_impl->get_element_impl().schedule_update_position_processing(IN_THREAD);
+	get_element_impl().schedule_update_position_processing(IN_THREAD);
 
 #ifdef GRIDLAYOUTMANAGER_RECALCULATE_LOG
 	GRIDLAYOUTMANAGER_RECALCULATE_LOG(grid_elements(IN_THREAD));

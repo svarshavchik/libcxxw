@@ -34,7 +34,7 @@ struct LIBCXX_NAMESPACE::w::elementObj::implObj :
 	bool original_focus;
 	bool new_focus;
 
-	LIBCXX_NAMESPACE::w::elementObj::implObj &get_element_impl()
+	LIBCXX_NAMESPACE::w::elementObj::implObj &container_element_impl()
 	{ return *this; }
 
 	implObj(int id) : id(id) {}

@@ -20,7 +20,7 @@ label_elementObj<element_impl>
 	: element_impl(parent_container,
 		       child_element_init_params{"label@libcxx.com"}),
 	  textlabelObj::implObj(text, alignment, initial_width, allow_links,
-				parent_container->get_element_impl())
+				parent_container->container_element_impl())
 {
 }
 

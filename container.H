@@ -44,13 +44,13 @@ public:
 
 	//! Must be implement in a subclass
 
-	virtual elementObj::implObj &get_element_impl()=0;
+	virtual elementObj::implObj &container_element_impl()=0;
 
 	//! This container must be an element.
 
 	//! Must be implement in a subclass
 
-	virtual const elementObj::implObj &get_element_impl() const=0;
+	virtual const elementObj::implObj &container_element_impl() const=0;
 
 	//! Return my window
 	generic_windowObj::handlerObj &get_window_handler();

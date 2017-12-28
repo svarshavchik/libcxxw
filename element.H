@@ -726,6 +726,16 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 		initialize_or_log_exception(IN_THREAD);
 	}
 
+	//! Return myself.
+
+	//! This allows mixin templates to be added to a subclass of either
+	//! elementObj::implObj, or layoutmanagerObj::implObj
+
+	inline auto &get_element_impl()
+	{
+		return *this;
+	}
+
  private:
 	//! Invoke initialize()
 

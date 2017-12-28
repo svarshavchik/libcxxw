@@ -32,7 +32,7 @@ ref<containerObj::implObj> gridfactoryObj::get_container_impl()
 
 elementObj::implObj &gridfactoryObj::get_element_impl()
 {
-	return layout->impl->container_impl->get_element_impl();
+	return layout->impl->container_impl->container_element_impl();
 }
 
 // Save new element's borders somewhere safe...

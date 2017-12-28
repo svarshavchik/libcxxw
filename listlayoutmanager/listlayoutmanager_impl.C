@@ -39,7 +39,7 @@ void listlayoutmanagerObj::implObj::child_metrics_updated(IN_THREAD_ONLY)
 
 	auto hv=list_element_singleton->impl->get_horizvert(IN_THREAD);
 
-	container_impl->get_element_impl().get_horizvert(IN_THREAD)
+	get_element_impl().get_horizvert(IN_THREAD)
 		->set_element_metrics(IN_THREAD, hv->horiz, hv->vert);
 }
 

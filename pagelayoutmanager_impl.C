@@ -128,7 +128,8 @@ layoutmanager pagelayoutmanagerObj::implObj::create_public_object()
 
 void pagelayoutmanagerObj::implObj::recalculate(IN_THREAD_ONLY)
 {
-	process_updated_position(IN_THREAD, container_impl->get_element_impl()
+	process_updated_position(IN_THREAD,
+				 container_impl->container_element_impl()
 				 .data(IN_THREAD).current_position);
 }
 
@@ -184,8 +185,8 @@ void pagelayoutmanagerObj::implObj
 		mvert(hv->vert);
 	}
 
-	auto my_metrics=
-		container_impl->get_element_impl().get_horizvert(IN_THREAD);
+	auto my_metrics=container_impl->container_element_impl()
+		.get_horizvert(IN_THREAD);
 
 	// We don't want maximum=infinite if we have no elements.
 	if (lock->elements.empty())

@@ -23,7 +23,7 @@ LIBCXXW_NAMESPACE_START
 //!
 //! \see reference_font_elementObj
 
-class reference_fontObj : virtual public obj {
+class LIBCXX_HIDDEN reference_fontObj : virtual public obj {
 
 	//! The font
 	current_fontcollection reference_font_thread_only;
@@ -61,6 +61,18 @@ public:
 
 	//! Invokes the cached font's theme_updated().
 	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme);
+};
+
+//! Attach a tag to a reference_fontObj
+
+//! \see reference_font_tagObj
+template<typename tag=void>
+class LIBCXX_HIDDEN reference_font_tag : public reference_fontObj {
+public:
+
+	using reference_fontObj::reference_fontObj;
+
+	~reference_font_tag()=default;
 };
 
 LIBCXXW_NAMESPACE_END

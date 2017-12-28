@@ -19,7 +19,7 @@ LIBCXXW_NAMESPACE_START
 
 peepholed_toplevel_main_windowObj::implObj
 ::implObj(const ref<containerObj::implObj> &parent_container)
-	: superclass_t(parent_container->get_element_impl().label_theme_font(),
+	: superclass_t(parent_container->container_element_impl().label_theme_font(),
 		       parent_container)
 {
 }
@@ -53,7 +53,7 @@ void peepholed_toplevel_main_windowObj::implObj
 	// Subtract frame size from total workarea size.
 	// That's our cap.
 
-	auto &fe=get_element_impl().get_window_handler()
+	auto &fe=container_element_impl().get_window_handler()
 		.frame_extents(IN_THREAD);
 
 	auto usable_workarea_width=

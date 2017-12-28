@@ -60,8 +60,7 @@ void gridlayoutmanagerObj::implObj
 ::redraw_child_borders_and_padding(IN_THREAD_ONLY,
 				   const ref<elementObj::implObj> &child)
 {
-	elementObj::implObj &container_element_impl=
-		container_impl->get_element_impl();
+	elementObj::implObj &container_element_impl=get_element_impl();
 
 	if (!container_element_impl.data(IN_THREAD).inherited_visibility)
 		return; // This container is not visible, don't bother.

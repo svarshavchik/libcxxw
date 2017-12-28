@@ -10,10 +10,6 @@
 
 LIBCXXW_NAMESPACE_START
 
-//! Destructor
-template<typename tag>
-reference_font_element<tag>::~reference_font_element()=default;
-
 //! Constructor
 
 //! The first parameter specifies the reference font's name, the remaining
@@ -25,7 +21,7 @@ reference_font_elementObj<element_impl, tag>
 ::reference_font_elementObj(const std::string_view &fontname,
 			    Args && ...args)
 	: element_impl(std::forward<Args>(args)...),
-	  reference_font_element<tag>(*this, fontname)
+	  reference_font_tag<tag>(*this, fontname)
 {
 }
 
@@ -39,7 +35,7 @@ reference_font_elementObj<element_impl, tag>
 ::reference_font_elementObj(const current_fontcollection &reference_font,
 			    Args && ...args)
 	: element_impl(std::forward<Args>(args)...),
-	  reference_font_element<tag>(reference_font)
+	  reference_font_tag<tag>(reference_font)
 {
 }
 
@@ -56,7 +52,7 @@ template<typename element_impl, typename tag>
 elementObj::implObj &reference_font_elementObj<element_impl, tag>
 ::font_element()
 {
-	return *this;
+	return this->get_element_impl();
 }
 
 //! Inherited from elementObj::implObj
@@ -73,7 +69,7 @@ void reference_font_elementObj<element_impl, tag>
 	// in editor_implObj, which looks at the font's width, so the
 	// reference_font needs to be initialized before we go down the
 	// rabbit hole.
-	reference_font_element<tag>::initialize(IN_THREAD);
+	reference_font_tag<tag>::initialize(IN_THREAD);
 	element_impl::initialize(IN_THREAD);
 }
 
@@ -85,7 +81,7 @@ template<typename element_impl, typename tag>
 void reference_font_elementObj<element_impl, tag>
 ::theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme)
 {
-	reference_font_element<tag>::theme_updated(IN_THREAD, new_theme);
+	reference_font_tag<tag>::theme_updated(IN_THREAD, new_theme);
 	element_impl::theme_updated(IN_THREAD, new_theme);
 }
 

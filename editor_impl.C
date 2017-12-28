@@ -41,7 +41,7 @@ LIBCXXW_NAMESPACE_START
 static inline richtextmeta create_default_meta(const ref<containerObj::implObj>
 &container)
 {
-	auto &element=container->get_element_impl();
+	auto &element=container->container_element_impl();
 
 	auto bg_color=element.create_background_color
 		("textedit_foreground_color");
@@ -55,7 +55,7 @@ create_initial_string(const ref<containerObj::implObj> &container,
 		      const richtextmeta &default_meta,
 		      const text_param &text)
 {
-	auto &element=container->get_element_impl();
+	auto &element=container->container_element_impl();
 
 	text_param cpy=text;
 
@@ -243,7 +243,7 @@ editorObj::implObj::implObj(const ref<editor_peephole_implObj> &parent_peephole,
 			    const richtextmeta &default_meta,
 			    richtextstring &&string)
 	: superclass_t(// Invisible pointer cursor
-		       parent_peephole->get_element_impl().get_window_handler()
+		       parent_peephole->container_element_impl().get_window_handler()
 		       .create_icon({"cursor-invisible"})->create_cursor(),
 		       // Capture the string's font.
 		       string.get_meta().at(0).second.getfont(),

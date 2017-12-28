@@ -235,8 +235,7 @@ void toplevelpeephole_layoutmanagerObj::recalculate(IN_THREAD_ONLY)
 
 	element_in_peephole
 		->recalculate_peepholed_metrics(IN_THREAD,
-						container_impl
-						->get_element_impl()
+						get_element_impl()
 						.get_screen());
 
 	// Maximum size of the peephole.
@@ -357,7 +356,7 @@ void toplevelpeephole_layoutmanagerObj::recalculate(IN_THREAD_ONLY)
 	if (v_minimum > max_height)
 		v_minimum=max_height;
 
-	container_impl->get_element_impl().get_horizvert(IN_THREAD)
+	get_element_impl().get_horizvert(IN_THREAD)
 		->set_element_metrics(IN_THREAD,
 				      {h_minimum, h_preferred, h_maximum},
 				      {v_minimum, v_preferred, v_maximum});

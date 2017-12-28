@@ -35,8 +35,7 @@ void focusframelayoutimplObj::rebuild_elements_start(IN_THREAD_ONLY,
 	// Pick the border based on whether my container has input focus.
 
 	auto correct_border=
-		container_impl->get_container_impl().get_element_impl()
-		.current_keyboard_focus(IN_THREAD)
+		get_element_impl().current_keyboard_focus(IN_THREAD)
 		? container_impl->get_focuson_border()
 		: container_impl->get_focusoff_border();
 

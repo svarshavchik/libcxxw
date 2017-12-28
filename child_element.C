@@ -34,7 +34,7 @@ child_elementObj::child_elementObj(const ref<containerObj::implObj> &child_conta
 				   const background_colorptr
 				   &initial_background_color)
 	: superclass_t(initial_background_color,
-		       child_container->get_element_impl()
+		       child_container->container_element_impl()
 			      .nesting_level+1,
 			      rectangle{0, 0, 0, 0},
 			      // The container will position me later
@@ -65,7 +65,7 @@ const generic_windowObj::handlerObj &child_elementObj::get_window_handler()
 void child_elementObj::process_updated_position(IN_THREAD_ONLY)
 {
 	superclass_t::process_updated_position(IN_THREAD);
-	child_container->get_element_impl().schedule_redraw(IN_THREAD);
+	child_container->container_element_impl().schedule_redraw(IN_THREAD);
 }
 
 draw_info &child_elementObj::get_draw_info(IN_THREAD_ONLY)
@@ -94,8 +94,8 @@ draw_info &child_elementObj::get_draw_info_from_scratch(IN_THREAD_ONLY)
 	// This means that if an element has a cached_draw_info, the parent
 	// container should have one too.
 
-	data(IN_THREAD).cached_draw_info=child_container->get_element_impl()
-		.get_draw_info(IN_THREAD);
+	data(IN_THREAD).cached_draw_info=child_container
+		->container_element_impl().get_draw_info(IN_THREAD);
 
 	draw_info &di=*data(IN_THREAD).cached_draw_info;
 
@@ -134,7 +134,8 @@ draw_info &child_elementObj::get_draw_info_from_scratch(IN_THREAD_ONLY)
 
 rectangle child_elementObj::get_absolute_location(IN_THREAD_ONLY)
 {
-	auto r=child_container->get_element_impl().get_absolute_location(IN_THREAD);
+	auto r=child_container->container_element_impl()
+		.get_absolute_location(IN_THREAD);
 
 	auto cpy=data(IN_THREAD).current_position;
 
@@ -145,7 +146,7 @@ rectangle child_elementObj::get_absolute_location(IN_THREAD_ONLY)
 
 void child_elementObj::visibility_updated(IN_THREAD_ONLY, bool flag)
 {
-	if (!child_container->get_element_impl()
+	if (!child_container->container_element_impl()
 	    .data(IN_THREAD).inherited_visibility)
 		flag=false;
 
@@ -213,19 +214,20 @@ bool child_elementObj::has_own_background_color(IN_THREAD_ONLY)
 void child_elementObj::window_focus_change(IN_THREAD_ONLY, bool flag)
 {
 	superclass_t::window_focus_change(IN_THREAD, flag);
-	child_container->get_element_impl().window_focus_change(IN_THREAD, flag);
+	child_container->container_element_impl()
+		.window_focus_change(IN_THREAD, flag);
 }
 
 bool child_elementObj::process_key_event(IN_THREAD_ONLY, const key_event &ke)
 {
 	return superclass_t::process_key_event(IN_THREAD, ke)
-		|| child_container->get_element_impl()
+		|| child_container->container_element_impl()
 		.process_key_event(IN_THREAD, ke);
 }
 
 bool child_elementObj::enabled(IN_THREAD_ONLY)
 {
-	if (!child_container->get_element_impl().enabled(IN_THREAD))
+	if (!child_container->container_element_impl().enabled(IN_THREAD))
 		return false;
 
 	return superclass_t::enabled(IN_THREAD);
@@ -234,7 +236,7 @@ bool child_elementObj::enabled(IN_THREAD_ONLY)
 bool child_elementObj::draw_to_window_picture_as_disabled(IN_THREAD_ONLY)
 {
 	return superclass_t::draw_to_window_picture_as_disabled(IN_THREAD)
-		|| child_container->get_element_impl()
+		|| child_container->container_element_impl()
 		.draw_to_window_picture_as_disabled(IN_THREAD);
 }
 
@@ -245,7 +247,7 @@ bool child_elementObj::process_button_event(IN_THREAD_ONLY,
 	auto ret=superclass_t::process_button_event(IN_THREAD, be,
 							   timestamp);
 
-	if (child_container->get_element_impl()
+	if (child_container->container_element_impl()
 	    .process_button_event(IN_THREAD, be, timestamp))
 		ret=true;
 
@@ -267,7 +269,8 @@ void child_elementObj::report_motion_event(IN_THREAD_ONLY,
 	cpy.x=coord_t::truncate(me.x + data(IN_THREAD).current_position.x);
 	cpy.y=coord_t::truncate(me.y + data(IN_THREAD).current_position.y);
 
-	child_container->get_element_impl().report_motion_event(IN_THREAD, cpy);
+	child_container->container_element_impl()
+		.report_motion_event(IN_THREAD, cpy);
 }
 
 void child_elementObj::ensure_visibility(IN_THREAD_ONLY, const rectangle &r)
@@ -279,46 +282,52 @@ bool child_elementObj::pasted(IN_THREAD_ONLY,
 			      const std::u32string_view &str)
 {
 	return superclass_t::pasted(IN_THREAD, str) ||
-		child_container->get_element_impl().pasted(IN_THREAD, str);
+		child_container->container_element_impl()
+		.pasted(IN_THREAD, str);
 }
 
 void child_elementObj::focusable_initialized(IN_THREAD_ONLY,
 					     focusableImplObj &fimpl)
 {
-	child_container->get_element_impl().focusable_initialized(IN_THREAD,
-								  fimpl);
+	child_container->container_element_impl()
+		.focusable_initialized(IN_THREAD,
+				       fimpl);
 }
 
 void child_elementObj::get_focus_first(IN_THREAD_ONLY, const focusable &f)
 {
-	child_container->get_element_impl().get_focus_first(IN_THREAD, f);
+	child_container->container_element_impl()
+		.get_focus_first(IN_THREAD, f);
 }
 
 void child_elementObj::creating_focusable_element()
 {
-	return child_container->get_element_impl().creating_focusable_element();
+	return child_container->container_element_impl()
+		.creating_focusable_element();
 }
 
 const char *child_elementObj::label_theme_font() const
 {
-	return child_container->get_element_impl().label_theme_font();
+	return child_container->container_element_impl().label_theme_font();
 }
 
 color_arg child_elementObj::label_theme_color() const
 {
-	return child_container->get_element_impl().label_theme_color();
+	return child_container->container_element_impl().label_theme_color();
 }
 
 void child_elementObj::schedule_hover_action(IN_THREAD_ONLY)
 {
 	superclass_t::schedule_hover_action(IN_THREAD);
-	child_container->get_element_impl().schedule_hover_action(IN_THREAD);
+	child_container->container_element_impl()
+		.schedule_hover_action(IN_THREAD);
 }
 
 void child_elementObj::unschedule_hover_action(IN_THREAD_ONLY)
 {
 	superclass_t::unschedule_hover_action(IN_THREAD);
-	child_container->get_element_impl().unschedule_hover_action(IN_THREAD);
+	child_container->container_element_impl()
+		.unschedule_hover_action(IN_THREAD);
 }
 
 cursor_pointerptr child_elementObj::get_cursor_pointer(IN_THREAD_ONLY)
@@ -326,7 +335,7 @@ cursor_pointerptr child_elementObj::get_cursor_pointer(IN_THREAD_ONLY)
 	auto p=superclass_t::get_cursor_pointer(IN_THREAD);
 
 	if (!p)
-		p=child_container->get_element_impl()
+		p=child_container->container_element_impl()
 			.get_cursor_pointer(IN_THREAD);
 
 	return p;

@@ -14,7 +14,7 @@ LIBCXXW_NAMESPACE_START
 
 containerObj::containerObj(const ref<implObj> &impl,
 			   const ref<layoutmanagerObj::implObj> &layout_impl)
-	: elementObj(ref<elementObj::implObj>(&impl->get_element_impl())),
+	: elementObj(ref<elementObj::implObj>(&impl->container_element_impl())),
 	  impl(impl),
 	  layout_impl(layout_impl)
 {

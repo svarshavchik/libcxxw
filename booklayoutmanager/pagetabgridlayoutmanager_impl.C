@@ -31,7 +31,7 @@ void pagetabgridlayoutmanagerObj::implObj::recalculate(IN_THREAD_ONLY)
 {
 	superclass_t::recalculate(IN_THREAD);
 
-	auto hv=container_impl->get_element_impl().get_horizvert(IN_THREAD);
+	auto hv=container_impl->container_element_impl().get_horizvert(IN_THREAD);
 
 	dim_t minimum_width=0;
 
@@ -53,7 +53,7 @@ void pagetabgridlayoutmanagerObj::implObj::recalculate(IN_THREAD_ONLY)
 	if (preferred < minimum_width)
 		preferred=minimum_width;
 
-	parent_container->get_element_impl().get_horizvert(IN_THREAD)
+	parent_container->container_element_impl().get_horizvert(IN_THREAD)
 		->set_element_metrics(IN_THREAD,
 				      metrics::axis{minimum_width, preferred,
 					dim_t::infinite()}, vert_metrics);

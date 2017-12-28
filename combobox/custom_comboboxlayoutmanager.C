@@ -323,7 +323,7 @@ focusable_container new_custom_comboboxlayoutmanager
 	auto [combobox_popup, popup_handler]=
 		create_peepholed_toplevel_listcontainer_popup
 		({
-			ref<elementObj::implObj>(&parent->get_element_impl()),
+			ref(&parent->container_element_impl()),
 				"combo,popup_menu,dropdown_menu",
 				"combobox",
 				"combobox_border",

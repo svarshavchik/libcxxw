@@ -20,11 +20,11 @@ listcontainerObj::implObj::implObj(const ref<containerObj::implObj> &parent,
 	  (
 
 	   // Initialize the background colors
-	   parent->get_element_impl()
+	   parent->container_element_impl()
 	   .create_background_color(style.selected_color),
-	   parent->get_element_impl()
+	   parent->container_element_impl()
 	   .create_background_color(style.highlighted_color),
-	   parent->get_element_impl()
+	   parent->container_element_impl()
 	   .create_background_color(style.current_color),
 	   parent)
 {

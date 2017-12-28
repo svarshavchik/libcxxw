@@ -115,19 +115,19 @@ void container_elementObj<element_impl>
 	containerObj::implObj::theme_updated(IN_THREAD, new_theme);
 }
 
-//! Implement get_element_impl().
+//! Implement container_element_impl().
 
 template<typename element_impl>
-elementObj::implObj &container_elementObj<element_impl>::get_element_impl()
+elementObj::implObj &container_elementObj<element_impl>::container_element_impl()
 {
 	return *this;
 }
 
-//! Implement get_element_impl().
+//! Implement container_element_impl().
 
 template<typename element_impl>
 const elementObj::implObj &container_elementObj<element_impl>
-::get_element_impl() const
+::container_element_impl() const
 {
 	return *this;
 }

@@ -187,13 +187,13 @@ void peepholeObj::layoutmanager_implObj
 ::recalculate_with_requested_visibility(IN_THREAD_ONLY, bool flag)
 {
 	// Wait until this container is initialized.
-	if (!container_impl->get_element_impl().data(IN_THREAD).initialized)
+	if (!get_element_impl().data(IN_THREAD).initialized)
 		return;
 
 	auto peephole_element_impl=
 		element_in_peephole->get_peepholed_element()->impl;
 
-	auto &current_position=container_impl->get_element_impl()
+	auto &current_position=get_element_impl()
 		.data(IN_THREAD).current_position;
 
 	// This is the peepholed element's current position

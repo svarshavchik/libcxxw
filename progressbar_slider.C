@@ -20,7 +20,7 @@ progressbar_sliderObj
 ::progressbar_sliderObj(const ref<containerObj::implObj> &parent,
 			const progressbar_config &config)
 	: progressbar_sliderObj{parent, config,
-		parent->get_element_impl().create_background_color
+		parent->container_element_impl().create_background_color
 		(config.background_color)
 		}
 {
@@ -37,7 +37,7 @@ progressbar_sliderObj
 	: superclass_t{color, color,
 		parent, child_element_init_params{}, color},
 	  slider_color{config.slider_color},
-	  updated_theme{parent->get_element_impl()
+	  updated_theme{parent->container_element_impl()
 			  .get_screen()->impl->current_theme.get()}
 {
 	// Throw an exception now, rather than later.

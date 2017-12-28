@@ -42,7 +42,7 @@ void layoutmanagerObj::implObj::needs_recalculation(IN_THREAD_ONLY)
 
 void layoutmanagerObj::implObj::current_position_updated(IN_THREAD_ONLY)
 {
-	container_impl->get_element_impl().current_position_updated(IN_THREAD);
+	get_element_impl().current_position_updated(IN_THREAD);
 }
 
 void layoutmanagerObj::implObj
@@ -65,6 +65,11 @@ rectangle layoutmanagerObj::implObj::padded_position(IN_THREAD_ONLY,
 						     const elementimpl &e_impl)
 {
 	return e_impl->data(IN_THREAD).current_position;
+}
+
+elementObj::implObj &layoutmanagerObj::implObj::get_element_impl()
+{
+	return container_impl->container_element_impl();
 }
 
 void layoutmanagerObj::implObj::initialize(IN_THREAD_ONLY)

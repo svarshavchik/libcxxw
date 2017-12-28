@@ -12,7 +12,7 @@ LIBCXXW_NAMESPACE_START
 canvasObj::implObj::implObj(const ref<containerObj::implObj> &container,
 			    const metrics::mmaxis &horiz_metrics,
 			    const metrics::mmaxis &vert_metrics)
-	: implObj(container, container->get_element_impl().get_screen()->impl,
+	: implObj(container, container->container_element_impl().get_screen()->impl,
 		  horiz_metrics,
 		  vert_metrics)
 {
@@ -48,7 +48,8 @@ void canvasObj::implObj::theme_updated(IN_THREAD_ONLY,
 
 void canvasObj::implObj::recalculate(IN_THREAD_ONLY)
 {
-	auto screen=child_container->get_element_impl().get_screen()->impl;
+	auto screen=child_container->container_element_impl()
+		.get_screen()->impl;
 
 	get_horizvert(IN_THREAD)->set_element_metrics
 		(IN_THREAD,

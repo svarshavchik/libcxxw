@@ -116,7 +116,7 @@ void singletonlayoutmanagerObj::implObj::recalculate(IN_THREAD_ONLY)
 	// metrics and our current position.
 
 	process_updated_position(IN_THREAD,
-				 container_impl->get_element_impl()
+				 get_element_impl()
 				 .data(IN_THREAD).current_position);
 }
 
@@ -125,7 +125,7 @@ void singletonlayoutmanagerObj::implObj
 		 const metrics::axis &horiz,
 		 const metrics::axis &vert)
 {
-	auto &element=container_impl->get_element_impl();
+	auto &element=get_element_impl();
 
 	element.get_horizvert(IN_THREAD)
 		->set_element_metrics(IN_THREAD,

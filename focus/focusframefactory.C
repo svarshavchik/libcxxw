@@ -25,7 +25,8 @@ ref<containerObj::implObj> focusframefactoryObj::get_container_impl()
 
 elementObj::implObj &focusframefactoryObj::get_element_impl()
 {
-	return glm->layoutmanagerObj::impl->container_impl->get_element_impl();
+	return glm->layoutmanagerObj::impl->container_impl
+		->container_element_impl();
 }
 
 void focusframefactoryObj::created(const element &e)

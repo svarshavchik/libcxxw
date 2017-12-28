@@ -46,7 +46,7 @@ class LIBCXX_HIDDEN replace_singleton_factoryObj : public factoryObj {
 
 	elementObj::implObj &get_element_impl()
 	{
-		return layout_manager->impl->container_impl->get_element_impl();
+		return layout_manager->impl->get_element_impl();
 	}
 
 };

@@ -54,9 +54,9 @@ public:
 	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme)
 		override;
 
-	elementObj::implObj &get_element_impl() override;
+	elementObj::implObj &container_element_impl() override;
 
-	const elementObj::implObj &get_element_impl() const override;
+	const elementObj::implObj &container_element_impl() const override;
 };
 
 LIBCXXW_NAMESPACE_END

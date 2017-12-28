@@ -139,6 +139,13 @@ class LIBCXX_HIDDEN layoutmanagerObj::implObj : virtual public obj {
 
 	virtual rectangle padded_position(IN_THREAD_ONLY, const elementimpl &e);
 
+	//! Return this layout manager's element.
+
+	//! This allows mixin templates to be added to a subclass of either
+	//! elementObj::implObj, or layoutmanagerObj::implObj
+
+	elementObj::implObj &get_element_impl();
+
 	//! Initialize the layout manager, in the connection thread.
 	virtual void initialize(IN_THREAD_ONLY);
 

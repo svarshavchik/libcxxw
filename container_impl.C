@@ -20,13 +20,13 @@ containerObj::implObj::~implObj()=default;
 
 generic_windowObj::handlerObj &containerObj::implObj::get_window_handler()
 {
-	return get_element_impl().get_window_handler();
+	return container_element_impl().get_window_handler();
 }
 
 const generic_windowObj::handlerObj &containerObj::implObj::get_window_handler()
 	const
 {
-	return get_element_impl().get_window_handler();
+	return container_element_impl().get_window_handler();
 }
 
 void containerObj::implObj
@@ -122,7 +122,7 @@ void container_clear_padding(IN_THREAD_ONLY,
 
 void containerObj::implObj::do_draw(IN_THREAD_ONLY)
 {
-	const auto &di=get_element_impl().get_draw_info(IN_THREAD);
+	const auto &di=container_element_impl().get_draw_info(IN_THREAD);
 
 	do_draw(IN_THREAD, di, di.entire_area());
 }
@@ -131,7 +131,7 @@ void containerObj::implObj::do_draw(IN_THREAD_ONLY,
 				    const draw_info &di,
 				    const rectangle_set &areas)
 {
-	auto &element_impl=get_element_impl();
+	auto &element_impl=container_element_impl();
 
 	// Compute the areas where the child elements are.
 
@@ -210,7 +210,7 @@ void containerObj::implObj
 	if (!info.flag)
 		propagate_inherited_visibility(IN_THREAD, info);
 
-	get_element_impl().do_inherited_visibility_updated(IN_THREAD, info);
+	container_element_impl().do_inherited_visibility_updated(IN_THREAD, info);
 
 	invoke_layoutmanager
 		([&]
@@ -288,7 +288,7 @@ void containerObj::implObj::process_updated_position(IN_THREAD_ONLY)
 		 (const auto &manager)
 		 {
 			 manager->process_updated_position(IN_THREAD,
-							   get_element_impl()
+							   container_element_impl()
 							   .data(IN_THREAD)
 							   .current_position);
 		 });
@@ -310,7 +310,7 @@ void containerObj::implObj::request_visibility_recursive(IN_THREAD_ONLY,
 {
 	request_child_visibility_recursive(IN_THREAD, flag);
 
-	auto &element_impl=get_element_impl();
+	auto &element_impl=container_element_impl();
 	element_impl.elementObj::implObj::request_visibility_recursive
 		(IN_THREAD, flag);
 }
@@ -320,7 +320,7 @@ void containerObj::implObj::child_visibility_updated(IN_THREAD_ONLY,
 						     bool flag)
 {
 	needs_recalculation(IN_THREAD);
-	get_element_impl().schedule_redraw(IN_THREAD);
+	container_element_impl().schedule_redraw(IN_THREAD);
 }
 #endif
 
@@ -338,7 +338,7 @@ void containerObj::implObj
 void containerObj::implObj::needs_recalculation(IN_THREAD_ONLY)
 {
 	(*IN_THREAD->containers_2_recalculate(IN_THREAD))
-		[get_element_impl().nesting_level]
+		[container_element_impl().nesting_level]
 		.insert(ref<implObj>(this));
 }
 
@@ -381,7 +381,7 @@ void containerObj::implObj
 				      elementObj::implObj &e,
 				      const rectangle &r)
 {
-	const auto &my_pos=get_element_impl().data(IN_THREAD).current_position;
+	const auto &my_pos=container_element_impl().data(IN_THREAD).current_position;
 
 	// Add the child element (x, y) coordinate to the requested visibility
 	// (x, y) coordinate, to derive the position in this container whose
@@ -421,7 +421,7 @@ void containerObj::implObj
 	coord_t new_y=coord_t::truncate(ey);
 
 
-	get_element_impl().ensure_visibility(IN_THREAD, {
+	container_element_impl().ensure_visibility(IN_THREAD, {
 			new_x, new_y,
 				dim_t::truncate(right-new_x),
 				dim_t::truncate(bottom-new_y)
