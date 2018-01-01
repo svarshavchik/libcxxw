@@ -12,6 +12,8 @@
 #include "generic_window_handler.H"
 #include "background_color_element.H"
 #include "cursor_pointer.H"
+#include "element_screen.H"
+#include "screen.H"
 #include "x/w/picture.H"
 #include "x/w/motion_event.H"
 #include "x/w/rgb.H"
@@ -28,6 +30,20 @@ child_elementObj::child_elementObj(const ref<containerObj::implObj> &child_conta
 	: child_elementObj(child_container, init_params, background_colorptr())
 {
 }
+
+child_elementObj::child_elementObj(const ref<containerObj::implObj> &child_container,
+				   const child_element_init_params &init_params,
+				   const color_arg
+				   &initial_background_color)
+	: child_elementObj(child_container,
+			   init_params,
+			   child_container
+			   ->container_element_impl().get_screen()
+			   ->impl
+			   ->create_background_color(initial_background_color))
+{
+}
+
 
 child_elementObj::child_elementObj(const ref<containerObj::implObj> &child_container,
 				   const child_element_init_params &init_params,

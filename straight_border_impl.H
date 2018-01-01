@@ -12,6 +12,7 @@
 #include "screen.H"
 #include "current_border_impl.H"
 #include "element_screen.H"
+#include "defaulttheme.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -176,6 +177,9 @@ class LIBCXX_HIDDEN horizontal_straight_borderObj : public horizontal_impl {
 				      const grid_elementptr &element_2,
 				      const current_border_implptr &border2,
 				      const current_border_implptr &border_default);
+	horizontal_straight_borderObj(const ref<containerObj::implObj> &c,
+				      const current_border_implptr &border_default);
+
 	//! Destructor
 	~horizontal_straight_borderObj();
 };
@@ -210,6 +214,9 @@ class LIBCXX_HIDDEN vertical_straight_borderObj : public vertical_impl {
 				    const current_border_implptr &border1,
 				    const grid_elementptr &element_2,
 				    const current_border_implptr &border2,
+				    const current_border_implptr &border_default);
+
+	vertical_straight_borderObj(const ref<containerObj::implObj> &c,
 				    const current_border_implptr &border_default);
 
 	//! Destructor

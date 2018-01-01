@@ -236,11 +236,23 @@ void gridlayoutmanagerObj::implObj::remove(grid_map_t::lock &lock,
 
 void gridlayoutmanagerObj::implObj::remove_row(size_t row)
 {
+	remove_rows(row, 1);
+}
+
+void gridlayoutmanagerObj::implObj::remove_rows(size_t row, size_t n)
+{
 	grid_map_t::lock lock{grid_map};
 
 	if (row < (*lock)->elements.size())
 	{
-		(*lock)->elements.erase( (*lock)->elements.begin()+row);
+		size_t max_n=(*lock)->elements.size()-n;
+
+		if (max_n < n)
+			n=max_n;
+
+		auto b=(*lock)->elements.begin()+row;
+
+		(*lock)->elements.erase(b, b+n);
 		(*lock)->elements_have_been_modified();
 	}
 }

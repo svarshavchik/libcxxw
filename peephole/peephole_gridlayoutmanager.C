@@ -6,6 +6,7 @@
 
 #include "peephole/peephole_gridlayoutmanagerobj.H"
 #include "container.H"
+#include "x/w/scrollbar.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -29,6 +30,16 @@ peephole_gridlayoutmanagerObj
 container peephole_gridlayoutmanagerObj::get_peephole_container()
 {
 	return get(0, 0);
+}
+
+scrollbar peephole_gridlayoutmanagerObj::get_vertical_scrollbar()
+{
+	return get(0, 1);
+}
+
+scrollbar peephole_gridlayoutmanagerObj::get_horizontal_scrollbar()
+{
+	return get(1, 0);
 }
 
 void peephole_gridlayoutmanagerObj::request_visibility_recursive(IN_THREAD_ONLY,

@@ -9,10 +9,10 @@
 
 LIBCXXW_NAMESPACE_START
 
-//! A mixin for an always-visible implementation object.
+//! A mixin for an always-visible container implementation object.
 
 //! The template parameter is a container_elementObj or a subclass of it.
-//! This is a mixin for an internal implementation of a display element
+//! This is a mixin for an internal implementation of a container
 //! that will always be visible.
 //!
 //! Overrides request_visibility_recursive(), and implements it by invoking

@@ -1,0 +1,71 @@
+/*
+** Copyright 2018 Double Precision, Inc.
+** See COPYING for distribution information.
+*/
+#ifndef pane_slider_focusframe_h
+#define pane_slider_focusframe_h
+
+#include "focus/standard_focusframecontainer_element.H"
+#include "cursor_pointer_elementfwd.H"
+#include "panelayoutmanager/pane_slider_original_sizes.H"
+#include "x/w/rgb.H"
+
+LIBCXXW_NAMESPACE_START
+
+//! Focus frame around the slider in the pane.
+
+//! It's better user experience to intercept keyboard and button events
+//! in the wider space that encloses the focus frame around the slider,
+//! and also install the slider's custom pointer image for the entire
+//! area, rather than have the slider respond only when the pointer is
+//! inside the focus frame and on top of the slider element.
+
+class LIBCXX_HIDDEN pane_slider_focusframeObj
+	: public cursor_pointer_elementObj<always_visible_focusframe_t> {
+
+	//! Alias.
+	typedef cursor_pointer_elementObj<always_visible_focusframe_t
+					  > superclass_t;
+
+	//! Pointer location when button 1 was pressed.
+	coord_t grabbed_x;
+
+	//! Pointer location when button 1 was pressed.
+	coord_t grabbed_y;
+
+	//! Captured original sizes
+	pane_slider_original_sizes original_sizes;
+
+ public:
+	pane_slider_focusframeObj(const ref<containerObj::implObj> &parent,
+				  const cursor_pointer &custom_pointer,
+				  const color_arg &background_color);
+
+	~pane_slider_focusframeObj();
+
+	//! Override initialize()
+	void initialize(IN_THREAD_ONLY) override;
+
+	//! Override theme_updated()
+	void theme_updated(IN_THREAD_ONLY,
+			   const defaulttheme &new_theme) override;
+
+	//! Override process_button_event().
+
+	bool process_button_event(IN_THREAD_ONLY,
+				  const button_event &be,
+				  xcb_timestamp_t timestamp) override;
+
+	//! Override process_key_event().
+
+	bool process_key_event(IN_THREAD_ONLY, const key_event &ke) override;
+
+	//! report_motion_event().
+
+	void report_motion_event(IN_THREAD_ONLY, const motion_event &) override;
+
+};
+
+LIBCXXW_NAMESPACE_END
+
+#endif

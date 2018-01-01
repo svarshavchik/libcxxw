@@ -204,6 +204,13 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 	data_thread_only_t data_thread_only;
 
+ protected:
+	//! Invoked from always_visible_elementObj's constructor
+
+	inline void set_always_visible()
+	{
+		data_thread_only.requested_visibility=true;
+	}
  public:
 	//! Return my window
 

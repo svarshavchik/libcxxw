@@ -29,6 +29,8 @@ libcxxw_la_SOURCES=\
 	activated_in_threadobj.H		    \
 	always_visible.H			    \
 	always_visiblefwd.H			    \
+	always_visible_element.H		    \
+	always_visible_elementfwd.H		    \
 	assert_or_throw.C			    \
 	assert_or_throw.H			    \
 	background_color.C			    \
@@ -483,6 +485,40 @@ libcxxw_la_SOURCES=\
 	new_layoutmanager.C			    \
 	nonrecursive_visibility.H		    \
 	nonrecursive_visibilityfwd.H		    \
+	panelayoutmanager/create_pane_info.H	    \
+	panelayoutmanager/create_pane_properties.C  \
+	panelayoutmanager/create_pane_properties.H  \
+	panelayoutmanager/panecontainer_impl.C	    \
+	panelayoutmanager/panecontainer_impl.H	    \
+	panelayoutmanager/panefactory.C		    \
+	panelayoutmanager/panefactory_impl.C	    \
+	panelayoutmanager/panefactory_impl.H	    \
+	panelayoutmanager/panelayoutmanager.C	    \
+	panelayoutmanager/panelayoutmanager_impl.C  \
+	panelayoutmanager/panelayoutmanager_impl.H  \
+	panelayoutmanager/pane_peephole.C	    \
+	panelayoutmanager/pane_peephole.H	    \
+	panelayoutmanager/pane_peepholefwd.H	    \
+	panelayoutmanager/pane_peepholeobj.H	    \
+	panelayoutmanager/pane_peephole_impl.C	    \
+	panelayoutmanager/pane_peephole_impl.H	    \
+	panelayoutmanager/pane_peephole_container.C \
+	panelayoutmanager/pane_peephole_container.H \
+	panelayoutmanager/pane_peephole_containerfwd.H \
+	panelayoutmanager/pane_peephole_containerobj.H \
+	panelayoutmanager/pane_peephole_container_impl.C \
+	panelayoutmanager/pane_peephole_container_impl.H \
+	panelayoutmanager/pane_slider.C		    \
+	panelayoutmanager/pane_slider.H		    \
+	panelayoutmanager/pane_sliderfwd.H	    \
+	panelayoutmanager/pane_sliderobj.H	    \
+	panelayoutmanager/pane_slider_impl.C	    \
+	panelayoutmanager/pane_slider_impl.H	    \
+	panelayoutmanager/pane_slider_impl_element.H \
+	panelayoutmanager/pane_slider_impl_elementfwd.H \
+	panelayoutmanager/pane_slider_focusframe.C  \
+	panelayoutmanager/pane_slider_focusframe.H  \
+	panelayoutmanager/pane_slider_original_sizes.H \
 	peephole/peephole.H			    \
 	peephole/peephole.C			    \
 	peephole/peepholefwd.H			    \
@@ -822,6 +858,7 @@ INTERACTIVETESTPROGRAMS=\
 	testscrollbar					\
 	testshowhide					\
 	testpage					\
+	testpane					\
 	testtooltip					\
 	testwordwrappablelabel				\
 	#
@@ -929,6 +966,10 @@ $(call OPTIONS_GEN,testpage.inc.H,testpage.xml)
 testpage_SOURCES=testpage.C
 testpage_LDADD=libcxxw.la
 testpage_LDFLAGS=-static $(STATICLINKFLAGS)
+
+testpane_SOURCES=testpane.C
+testpane_LDADD=libcxxw.la
+testpane_LDFLAGS=$(TESTLINKTYPE)
 
 testtextparam_SOURCES=testtextparam.C
 testtextparam_LDADD=libcxxw.la

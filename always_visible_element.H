@@ -1,0 +1,39 @@
+/*
+** Copyright 2017 Double Precision, Inc.
+** See COPYING for distribution information.
+*/
+#ifndef always_visible_element_H
+#define always_visible_element_H
+
+#include "always_visible_elementfwd.H"
+#include <utility>
+
+LIBCXXW_NAMESPACE_START
+
+//! Constructor
+
+template<typename element_impl>
+template<typename ...Args>
+always_visible_elementObj<element_impl>
+::always_visible_elementObj(Args && ...args)
+	: element_impl(std::forward<Args>(args)...)
+{
+	this->set_always_visible();
+}
+
+//! Destructor
+template<typename element_impl>
+always_visible_elementObj<element_impl>
+::~always_visible_elementObj()=default;
+
+//! Override request_visibility()
+
+template<typename element_impl>
+void always_visible_elementObj<element_impl>
+::request_visibility(IN_THREAD_ONLY, bool flag)
+{
+}
+
+LIBCXXW_NAMESPACE_END
+
+#endif

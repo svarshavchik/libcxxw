@@ -433,6 +433,29 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
     <point_size>12</point_size>
   </font>
 
+  <!-- Panes -->
+
+  <color id="pane_slider_background" scale="100%" />
+
+  <border id="pane_border" from="thin_0%" />
+
+  <border id="pane_slider">
+    <color>30%</color>
+    <color2>50%</color2>
+    <dash>2</dash>
+    <dash>.75</dash>
+    <width axis="horiz">1</width>
+    <height axis="vert">1</height>
+  </border>
+
+  <border id="pane_slider_focusoff_border" from="thin_inputfocusoff_border" />
+
+  <border id="pane_slider_focuson_border" from="pane_slider_focusoff_border">
+    <color>inputfocus_color1</color>
+    <color2>inputfocus_color2</color2>
+    <dash>.75</dash>
+  </border>
+
   <!-- Dialogs -->
 
   <color id="dialog_background" scale="90%" />

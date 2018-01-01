@@ -204,6 +204,22 @@ void peepholeObj::layoutmanager_implObj
 	auto element_horizvert=
 		peephole_element_impl->get_horizvert(IN_THREAD);
 
+	// Copy the peepholed element's metrics to ours, if auto width/height.
+
+	if (style.autowidth || style.autoheight)
+	{
+		auto my_horizvert=get_element_impl().get_horizvert(IN_THREAD);
+
+		auto horiz=my_horizvert->horiz;
+		auto vert=my_horizvert->vert;
+
+		if (style.autowidth)
+			horiz=element_horizvert->horiz;
+		if (style.autoheight)
+			vert=element_horizvert->vert;
+		my_horizvert->set_element_metrics(IN_THREAD, horiz, vert);
+	}
+
 	// Compute the peepholed element's new position. Start with its
 	// current x/y coordinates, and tentatively size it at its maximum
 	// requested size.
@@ -261,6 +277,11 @@ void peepholeObj::layoutmanager_implObj
 		min_scroll_y=-coord_t::truncate(element_pos.height-
 						current_position.height);
 	}
+
+	if (style.autowidth)
+		min_scroll_x=0;
+	if (style.autoheight)
+		min_scroll_y=0;
 
 	LOG_DEBUG("Minimum X position is " << min_scroll_x);
 	LOG_DEBUG("Minimum Y position is " << min_scroll_y);

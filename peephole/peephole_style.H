@@ -27,6 +27,19 @@ struct LIBCXX_HIDDEN peephole_style {
 	//! Alignment of the element when it is smaller than the peephole.
 	valign vertical_alignment=valign::top;
 
+	//! Whether the peephole should automatically stretch its width
+
+	//! If set, this becomes effectively a vertical-only peephole, because
+	//! its width will match the peepholed element's width.
+	bool autowidth=false;
+
+	//! Whether the peephole should automatically stretch its height
+
+	//! If set, this becomes effectively a horizontal-only peephole, because
+	//! its height will match the peepholed element's height.
+	bool autoheight=false;
+
+
 	//! Peephole scrolling strategy
 
 	peephole_scroll scroll=peephole_scroll::minimal;

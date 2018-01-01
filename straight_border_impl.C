@@ -8,9 +8,9 @@
 #include "generic_window_handler.H"
 #include "draw_info.H"
 #include "grid_element.H"
+#include "element_screen.H"
 #include "screen.H"
 #include "scratch_and_mask_buffer_draw.H"
-#include "defaulttheme.H"
 #include "x/w/scratch_buffer.H"
 #include "x/w/pictformat.H"
 
@@ -26,6 +26,13 @@ current_border_implptr border_source::get_border(IN_THREAD_ONLY,
 	const
 {
 	return e ? (*e).*which_one:current_border_implptr();
+}
+
+horizontal_straight_borderObj
+::horizontal_straight_borderObj(const ref<containerObj::implObj> &c,
+				const current_border_implptr &border_default)
+	: horizontal_straight_borderObj(c, {}, {}, {}, {}, border_default)
+{
 }
 
 horizontal_straight_borderObj
@@ -77,6 +84,12 @@ straight_border straight_borderBase
 	return ptrref_base::objfactory<straight_border>::create(impl);
 }
 
+vertical_straight_borderObj
+::vertical_straight_borderObj(const ref<containerObj::implObj> &c,
+			      const current_border_implptr &border_default)
+	: vertical_straight_borderObj(c, {}, {}, {}, {}, border_default)
+{
+}
 
 vertical_straight_borderObj
 ::vertical_straight_borderObj(const ref<containerObj::implObj> &c,

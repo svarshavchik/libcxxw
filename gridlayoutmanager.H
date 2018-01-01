@@ -76,6 +76,9 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 	//! Remove the entire row.
 	void remove_row(size_t row);
 
+	//! Remove the entire row.
+	void remove_rows(size_t row, size_t n);
+
 	//! Remove everything.
 	void remove_all_rows(grid_map_t::lock &lock);
 

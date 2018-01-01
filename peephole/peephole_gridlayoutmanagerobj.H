@@ -7,6 +7,7 @@
 
 #include "gridlayoutmanager.H"
 #include "x/w/containerfwd.H"
+#include "x/w/scrollbarfwd.H"
 #include "connection_threadfwd.H"
 
 LIBCXXW_NAMESPACE_START
@@ -29,6 +30,18 @@ class LIBCXX_HIDDEN peephole_gridlayoutmanagerObj
 	//! It's in cell (0, 0)
 
 	container get_peephole_container();
+
+	//! Return the vertical scrollbar
+
+	//! It's in cell (0, 1)
+
+	scrollbar get_vertical_scrollbar();
+
+	//! Return the horizontal_scrollbar
+
+	//! It's in cell(1, 0)
+
+	scrollbar get_horizontal_scrollbar();
 
 	//! Override request_visibility_recursive().
 

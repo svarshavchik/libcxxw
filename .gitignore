@@ -50,6 +50,7 @@ suppressfile*
 /testlabel
 /testlist
 /testmenu
+/testpane
 /testping
 /testprogressbar
 /testwordwrappablelabel

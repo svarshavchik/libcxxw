@@ -28,6 +28,8 @@ public:
 
 	//! Implement get_impl().
 	ref<focusableImplObj> get_impl() const;
+
+	using focusableObj::get_impl;
 };
 
 LIBCXXW_NAMESPACE_END

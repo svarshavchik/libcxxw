@@ -12,7 +12,7 @@
 #include "focus/focusablefwd.H"
 #include "x/w/metrics/axis.H"
 #include "x/w/picturefwd.H"
-#include "x/w/rgbfwd.H"
+#include "x/w/rgb.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -49,6 +49,13 @@ class LIBCXX_HIDDEN child_elementObj : public background_color_elementObj<
 	//! Additional constructor parameters
 	child_elementObj(const ref<containerObj::implObj> &container,
 			 const child_element_init_params &init_params);
+
+	//! Constructor
+
+	//! Additional constructor parameters
+	child_elementObj(const ref<containerObj::implObj> &container,
+			 const child_element_init_params &init_params,
+			 const color_arg &initial_background_color);
 
 	//! Constructor
 
