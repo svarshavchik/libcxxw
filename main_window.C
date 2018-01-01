@@ -161,8 +161,6 @@ init_containers(const ref<containerObj::implObj> &parent,
 			 ref<gridlayoutmanagerObj::implObj>::create
 			 (menu_and_app_impl));
 
-	menu_and_app->show();
-
 	gridlayoutmanager glm=menu_and_app->get_layoutmanager();
 
 	// Create the first element, a container with the menubarlayoutmanager.
@@ -208,7 +206,6 @@ init_containers(const ref<containerObj::implObj> &parent,
 
 	auto app=container::create(app_impl, layout_impl);
 	f->created_internally(app);
-	app->show();
 
 	menu_and_app_container=menu_and_app;
 	menubar_container=menubar;

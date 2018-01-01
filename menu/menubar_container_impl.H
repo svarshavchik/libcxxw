@@ -15,8 +15,8 @@
 LIBCXXW_NAMESPACE_START
 
 //! Typedef alias for menubar_container_implObj's superclass.
-typedef always_visibleObj<container_elementObj<child_elementObj>
-			  > menubar_container_superclass_impl_t;
+typedef always_visibleObj<container_elementObj<child_elementObj>,
+			  false> menubar_container_superclass_impl_t;
 
 //! Menu bar container implementation object.
 

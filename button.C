@@ -117,7 +117,6 @@ create_button_focusframe(const ref<buttonObj::implObj> &impl,
 	// case.
 	factory->halign(halign::fill);
 	factory->valign(valign::fill);
-	ff->show();
 
 	factory->created_internally(ff);
 

@@ -104,10 +104,6 @@ progressbar factoryObj
 
 	auto pb=progressbar::create(impl,  progressbar_lm);
 
-	// slider is always_visibleOj<>.
-
-	slider->request_visibility(true);
-
 	creator(pb);
 
 	f->created_internally(contents);

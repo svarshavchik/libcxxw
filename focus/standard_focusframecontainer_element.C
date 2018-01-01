@@ -13,7 +13,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-always_visible_focusframe_t
+always_visible_focusframe_ref_t
 create_always_visible_focusframe(const ref<containerObj::implObj>
 				 &parent_container)
 {
@@ -22,7 +22,7 @@ create_always_visible_focusframe(const ref<containerObj::implObj>
 		 "inputfocusoff_border", "inputfocuson_border");
 }
 
-always_visible_focusframe_t
+always_visible_focusframe_ref_t
 create_always_visible_focusframe(const ref<containerObj::implObj>
 				 &parent_container,
 				 const border_arg &focusoff_border,
@@ -34,7 +34,7 @@ create_always_visible_focusframe(const ref<containerObj::implObj>
 		 background_colorptr());
 }
 
-always_visible_focusframe_t
+always_visible_focusframe_ref_t
 create_always_visible_focusframe(const ref<containerObj::implObj>
 				 &parent_container,
 				 const border_arg &focusoff_border,
@@ -42,19 +42,17 @@ create_always_visible_focusframe(const ref<containerObj::implObj>
 				 const background_colorptr
 				 &focusable_background_color)
 {
-	auto e=always_visible_focusframe_t
+	auto e=always_visible_focusframe_ref_t
 		::create(focusoff_border,
 			 focuson_border,
 			 parent_container,
-			 child_element_init_params{"focusframe@libcxx.com"},
+			 child_element_init_params{FOCUSFRAME_ID},
 			 focusable_background_color);
-
-	e->request_visibility(true);
 
 	return e;
 }
 
-nonrecursive_visibility_focusframe_t
+nonrecursive_visibility_focusframe_ref_t
 create_nonrecursive_visibility_focusframe(const ref<containerObj::implObj>
 					  &parent_container)
 {
@@ -63,7 +61,7 @@ create_nonrecursive_visibility_focusframe(const ref<containerObj::implObj>
 		 "inputfocusoff_border", "inputfocuson_border");
 }
 
-nonrecursive_visibility_focusframe_t
+nonrecursive_visibility_focusframe_ref_t
 create_nonrecursive_visibility_focusframe(const ref<containerObj::implObj>
 					  &parent_container,
 					  const border_arg &focusoff_border,
@@ -75,7 +73,7 @@ create_nonrecursive_visibility_focusframe(const ref<containerObj::implObj>
 		 background_colorptr());
 }
 
-nonrecursive_visibility_focusframe_t
+nonrecursive_visibility_focusframe_ref_t
 create_nonrecursive_visibility_focusframe(const ref<containerObj::implObj>
 					  &parent_container,
 					  const border_arg &focusoff_border,
@@ -83,11 +81,11 @@ create_nonrecursive_visibility_focusframe(const ref<containerObj::implObj>
 					  const background_colorptr
 					  &focusable_background_color)
 {
-	auto e=nonrecursive_visibility_focusframe_t
+	auto e=nonrecursive_visibility_focusframe_ref_t
 		::create(focusoff_border,
 			 focuson_border,
 			 parent_container,
-			 child_element_init_params{"focusframe@libcxx.com"},
+			 child_element_init_params{FOCUSFRAME_ID},
 			 focusable_background_color);
 
 	return e;

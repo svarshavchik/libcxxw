@@ -33,10 +33,14 @@ ref<containerObj::implObj> pagefactoryObj::get_container_impl()
 	//
 	// Use the always_visible mixin, so that recursive show/hide_all()s
 	// propagate through the intermediate container, having no effect.
+	//
+	// But override its initially_visible parameter to false, so that
+	// the initial state is still disabled.
 	implObj::info_t::lock lock{impl->info};
 
 	ref<containerObj::implObj> container_impl=
-		ref<always_visibleObj<container_elementObj<child_elementObj>>>
+		ref<always_visibleObj<container_elementObj<child_elementObj>,
+				      false>>
 		::create(impl->lm->layoutmanagerObj::impl->container_impl);
 
 	lock->prev_container_impl=container_impl;

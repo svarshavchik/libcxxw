@@ -94,7 +94,7 @@ create_peepholed_focusable_with_frame_impl
 	focusable_implptr focusable_element_impl;
 	factoryptr ff_factory;
 
-	refptr_traits<always_visible_focusframe_t>
+	refptr_traits<always_visible_focusframe_ref_t>
 		::ptr_t focusframecontainer_impl;
 
 	factory->create_container

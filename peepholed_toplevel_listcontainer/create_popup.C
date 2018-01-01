@@ -107,7 +107,6 @@ do_create_peepholed_toplevel_listcontainer_popup
 					    impl,
 					    popup_listlayoutmanager);
 
-			 popup->show();
 			 popup_listlayoutmanagerptr=popup_listlayoutmanager;
 
 			 return popup;

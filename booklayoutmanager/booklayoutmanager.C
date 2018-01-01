@@ -275,8 +275,6 @@ auto create_new_tab(const gridfactory &gridfactory,
 					  <child_elementObj>>>>
 		::create(gridfactory->get_container_impl());
 
-	inner_tab_gridcontainer_impl->request_visibility(true);
-
 	// Inner container's grid layoutmanager.
 
 	auto inner_tab_lm=
@@ -311,13 +309,12 @@ auto create_new_tab(const gridfactory &gridfactory,
 
 	// Finish initialize the impl in the connection thread.
 	//
-	// It is always_visibleObj, and the initial background color needs
+	// The initial background color needs
 	// to be set. Also, install the shortcut.
 	impl->get_element_impl().THREAD
 		->run_as([impl, sc]
 			 (IN_THREAD_ONLY)
 			 {
-				 impl->request_visibility(IN_THREAD, true);
 				 impl->set_active(IN_THREAD, false);
 				 impl->set_shortcut(IN_THREAD, sc);
 			 });
@@ -667,8 +664,6 @@ new_booklayoutmanager::create(const ref<containerObj::implObj> &parent) const
 		ref<always_visibleObj<peepholeObj::implObj>>
 		::create(factory->get_container_impl());
 
-	peephole_impl->request_visibility(true);
-
 	// And inside this peephole is the actual tab.
 
 	auto pagetab_gridcontainer=pagetabgridcontainer_impl::create
@@ -677,8 +672,6 @@ new_booklayoutmanager::create(const ref<containerObj::implObj> &parent) const
 		 "book_tab_v_padding",
 		 "book_tab_inactive_color",
 		 "book_tab_active_color");
-
-	pagetab_gridcontainer->request_visibility(true);
 
 	// And the layout manager for the pagetab_gridcontainer
 
@@ -839,8 +832,6 @@ new_booklayoutmanager::create(const ref<containerObj::implObj> &parent) const
 	auto current_page_container_impl=
 		ref<always_visibleObj<container_elementObj<child_elementObj>>>
 		::create(c);
-
-	current_page_container_impl->request_visibility(true);
 
 	auto page_lm_impl=new_pagelayoutmanager{}
 	    .create(current_page_container_impl);

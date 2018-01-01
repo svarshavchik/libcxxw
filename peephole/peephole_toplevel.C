@@ -196,8 +196,6 @@ create_peephole_toplevel_impl(const ref<containerObj::implObj> &toplevel,
 	set_peephole_scrollbar_focus_order(scrollbars.horizontal_scrollbar,
 					   scrollbars.vertical_scrollbar);
 
-	// The peephole_element is always_visible.
-	peephole_element->show();
 
 	return toplevel_grid;
 }

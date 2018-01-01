@@ -18,13 +18,19 @@ LIBCXXW_NAMESPACE_START
 //! Overrides request_visibility_recursive(), and implements it by invoking
 //! request_child_visibility_recursive(), so that show_all() or hide_all()
 //! skip over this display element.
+//!
+//! The second template parameter defaults to true, and sets the
+//! new element's initial requested visibility.
 
-template<typename element_impl>
+template<typename element_impl, bool initially_visible=true>
 class LIBCXX_HIDDEN always_visibleObj : public element_impl {
 
 public:
 
-	using element_impl::element_impl;
+	template<typename ...Args>
+		always_visibleObj(Args && ...args);
+
+	~always_visibleObj();
 
 	void request_visibility_recursive(IN_THREAD_ONLY, bool flag)
 		override;
