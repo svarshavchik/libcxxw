@@ -146,6 +146,15 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 	static std::optional<std::tuple<size_t, size_t>>
 		lookup_row_col(grid_map_t::lock &lock,
 			       const ref<elementObj::implObj> &e);
+
+	//! New container metrics have been calculated.
+
+	//! Call set_element_metrics() on the container, accordingly.
+
+	virtual void set_element_metrics(IN_THREAD_ONLY,
+					 const metrics::axis &h,
+					 const metrics::axis &v);
+
  protected:
 	/////////////////////////////////////////////////////////////////////
 	//

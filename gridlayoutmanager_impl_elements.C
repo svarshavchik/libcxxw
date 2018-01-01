@@ -794,10 +794,10 @@ void gridlayoutmanagerObj::implObj
 	}
 }
 
-bool gridlayoutmanagerObj::implObj::elementsObj
+std::tuple<bool, metrics::axis, metrics::axis>
+gridlayoutmanagerObj::implObj::elementsObj
 ::recalculate_metrics(IN_THREAD_ONLY,
-		      bool flag,
-		      const metrics::horizvert &my_metrics)
+		      bool flag)
 {
 	auto do_not_expand_borders=[]
 		(metrics::grid_xy rowcol)
@@ -841,11 +841,8 @@ bool gridlayoutmanagerObj::implObj::elementsObj
 	horiz_metrics=new_horiz_metrics;
 	vert_metrics=new_vert_metrics;
 
-	my_metrics->set_element_metrics(IN_THREAD,
-					total_metrics(horiz_metrics),
-					total_metrics(vert_metrics));
-
-	return flag;
+	return {flag, total_metrics(horiz_metrics),
+			total_metrics(vert_metrics) };
 }
 
 metrics::axis gridlayoutmanagerObj::implObj::elementsObj

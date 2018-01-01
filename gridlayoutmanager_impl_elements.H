@@ -195,11 +195,16 @@ public:
 	//! The bool parameter specifies whether the recalculation was
 	//! triggered by addition or removal of elements from the grid.
 	//!
-	//! This saves some work.
+	//! Computes total metrics. Returns:
+	//!
+	//! - bool flag: true if the flag parameter was true, or the total
+	//! metrics have changed.
+	//!
+	//! - new horizontal and vertical metrics.
 
-	bool recalculate_metrics(IN_THREAD_ONLY,
-				 bool flag,
-				 const metrics::horizvert &my_metrics);
+	std::tuple<bool, metrics::axis, metrics::axis>
+	recalculate_metrics(IN_THREAD_ONLY,
+			    bool flag);
 
 	//! Cached sizes for all columns
 

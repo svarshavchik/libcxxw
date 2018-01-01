@@ -290,19 +290,18 @@ void gridlayoutmanagerObj::implObj::recalculate(IN_THREAD_ONLY)
 	if (flag)
 		initialize_new_elements(IN_THREAD);
 
-	// recalculate_metrics would want to update the container's own
-	// metrics, as the result of the recalculation.
-
-	auto my_metrics=metrics::horizvert(get_element_impl()
-					   .get_horizvert(IN_THREAD));
 
 #ifdef CALLING_RECALCULATE
 	CALLING_RECALCULATE();
 #endif
 
-	if (!grid_elements(IN_THREAD)->recalculate_metrics(IN_THREAD,
-							   flag, my_metrics))
+	auto [final_flag, horiz_metrics, vert_metrics]=
+		grid_elements(IN_THREAD)->recalculate_metrics(IN_THREAD, flag);
+
+	if (!final_flag)
 		return;
+
+	set_element_metrics(IN_THREAD, horiz_metrics, vert_metrics);
 
 	// Even though the current position hasn't changed, we need to
 	// recalculate and reposition our display elements.
@@ -311,6 +310,14 @@ void gridlayoutmanagerObj::implObj::recalculate(IN_THREAD_ONLY)
 #ifdef GRIDLAYOUTMANAGER_RECALCULATE_LOG
 	GRIDLAYOUTMANAGER_RECALCULATE_LOG(grid_elements(IN_THREAD));
 #endif
+}
+
+void gridlayoutmanagerObj::implObj::set_element_metrics(IN_THREAD_ONLY,
+							const metrics::axis &h,
+							const metrics::axis &v)
+{
+	get_element_impl().get_horizvert(IN_THREAD)
+		->set_element_metrics(IN_THREAD, h, v);
 }
 
 layoutmanager gridlayoutmanagerObj::implObj::create_public_object()
