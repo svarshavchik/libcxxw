@@ -407,6 +407,14 @@ static bool parse_dim(const xml::doc::base::readlock &lock,
 	double v;
 
 	{
+		auto t=lock->get_text();
+
+		if (t == "inf")
+		{
+			mm=dim_t::infinite();
+			return true;
+		}
+
 		std::istringstream i(lock->get_text());
 
 		i >> v;

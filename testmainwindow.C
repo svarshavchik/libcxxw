@@ -263,7 +263,7 @@ auto runteststate(testmainwindowoptions &options,
 					 if (individual_show)
 						 c->show();
 				 },
-				  10, 10);
+		{10}, {10});
 
 				 main_window->appdata=e;
 			 },
@@ -407,7 +407,7 @@ void runtestflashwithcolor(const testmainwindowoptions &options)
 					 if (options.showhide->value)
 						 set_filler_color(c);
 				 },
-				  10.0, 10.0);
+		{10.0}, {10.0});
 
 				 main_window->appdata=e;
 			 });
@@ -490,7 +490,7 @@ void runtestflashwiththeme(const testmainwindowoptions &options)
 				 m->append_row()->padding(options.nopadding->value ? 0:1).create_canvas
 				 ([]
 				  (const auto &ignore) {},
-				  10, 10);
+		{10}, {10});
 			 });
 
 	auto original_theme=main_window->get_screen()->get_connection()
@@ -641,7 +641,7 @@ runtestthemescale(const testmainwindowoptions &options)
 				 auto c=m->append_row()->border(b).create_canvas
 				 ([]
 				  (const auto &ignore) {},
-				  30, 30);
+		{30}, {30});
 
 				 main_window->appdata=c;
 			 });

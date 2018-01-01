@@ -49,16 +49,16 @@ fully-initialized display element,
 
 \code
 #include <INSERT_LIBX_NAMESPACE/w/canvas.H>
-#include <INSERT_LIBX_NAMESPACE/w/metrics/mmaxis.H>
-
-INSERT_LIBX_NAMESPACE::w::metrics::mmaxis width{4}, height{4};
 
 INSERT_LIBX_NAMESPACE::w::canvas new_canvas=
    factory->create_canvas([]
                           (const auto &new_canvas)
                           {
                                 // Initializer lambda
-                          }, width, height);
+                          }, {4}, {4});
+
+INSERT_LIBX_NAMESPACE::w::canvas new_canvas=factory->create_canvas();
+
 \endcode
 
 create_canvas() creates an empty display element that does nothing but
@@ -67,7 +67,12 @@ elements in a \ref gridlayoutmanager "grid".
 
 Besides its initializer lambda (which doesn't really have much to
 initializer), create_canvas()'s remaining two parameters specify the
-\ref metrics::mmaxis "size" of the new display element.
+\ref dim_axis_arg "size" of the canvas, its width and height.
+
+An overloaded create_canvas() with no parameters
+returns a canvas that's adjustable to any
+size. It is equivalent to specify a minimum width and height of 0, and
+no bounds to the maximum width and height.
 
 \par Nested containers
 

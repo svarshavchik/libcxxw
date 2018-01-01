@@ -6,40 +6,31 @@
 #define canvas_h
 
 #include "x/w/canvasobj.H"
-#include "x/w/metrics/mmaxis.H"
 #include "x/w/screenobj.H"
+#include "x/w/dim_axis_arg.H"
 #include "connection_threadfwd.H"
 #include "child_elementobj.H"
+#include "themedim_axis_elementfwd.H"
 
 LIBCXXW_NAMESPACE_START
 
 //! Base class for a canvas implementation.
 
-class LIBCXX_HIDDEN canvasObj::implObj : public child_elementObj {
+class LIBCXX_HIDDEN canvasObj::implObj
+	: public themedim_axis_widthObj<
+	themedim_axis_heightObj<child_elementObj>> {
 
-	//! Horizontal metrics
-	metrics::mmaxis horiz_metrics_thread_only;
+	//! Alias.
 
-	//! Vertical metrics
-	metrics::mmaxis vert_metrics_thread_only;
+	typedef themedim_axis_widthObj<
+		themedim_axis_heightObj<child_elementObj>> superclass_t;
+
 public:
-
-	THREAD_DATA_ONLY(horiz_metrics);
-	THREAD_DATA_ONLY(vert_metrics);
-
+	//! Constructor
 	implObj(const ref<containerObj::implObj> &container,
-		const metrics::mmaxis &horiz_metrics,
-		const metrics::mmaxis &vert_metrics);
+		const dim_axis_arg &width,
+		const dim_axis_arg &height);
 
- private:
-	//! Private constructor
-
-	implObj(const ref<containerObj::implObj> &container,
-		const ref<screenObj::implObj> &screen,
-		const metrics::mmaxis &horiz_metrics,
-		const metrics::mmaxis &vert_metrics);
-
- public:
 	//! Destructor
 	~implObj();
 

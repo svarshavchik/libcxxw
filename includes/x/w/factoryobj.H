@@ -12,8 +12,6 @@
 #include <x/w/containerfwd.H>
 #include <x/w/containerobj.H>
 #include <x/w/canvasfwd.H>
-#include <x/w/metrics/axis.H>
-#include <x/w/metrics/mmaxisfwd.H>
 #include <x/w/border_argfwd.H>
 #include <x/w/alignment.H>
 #include <x/w/text_paramfwd.H>
@@ -28,7 +26,7 @@
 #include <x/w/focusable_containerfwd.H>
 #include <x/w/progressbarfwd.H>
 #include <x/w/scrollbarfwd.H>
-#include <x/w/dim_arg.H>
+#include <x/w/dim_axis_arg.H>
 #include <x/obj.H>
 #include <x/functional.H>
 
@@ -100,8 +98,8 @@ public:
 	//! Create an empty \ref canvas "canvas".
 	template<typename functor>
 	canvas create_canvas(functor &&creator,
-			     const metrics::mmaxis &horiz,
-			     const metrics::mmaxis &vert)
+			     const dim_axis_arg &horiz,
+			     const dim_axis_arg &vert)
 	{
 		return do_create_canvas(make_function<void (const canvas &)>
 					(creator),
@@ -111,8 +109,8 @@ public:
 	//! Create an empty \ref canvas "canvas".
 
 	canvas do_create_canvas(const function<void (const canvas &)> &creator,
-				const metrics::mmaxis &horiz,
-				const metrics::mmaxis &vert);
+				const dim_axis_arg &horiz,
+				const dim_axis_arg &vert);
 
 	//! Create a nested container
 

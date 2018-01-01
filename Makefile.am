@@ -172,6 +172,7 @@ libcxxw_la_SOURCES=\
 	dialog_impl.H				    \
 	dialog_handler.C			    \
 	dialog_handler.H			    \
+	dim_axis_arg.C				    \
 	dirlisting/filedircontents.C		    \
 	dirlisting/filedircontents.H		    \
 	dirlisting/filedircontentsfwd.H		    \
@@ -479,7 +480,6 @@ libcxxw_la_SOURCES=\
 	metrics_horizvert.H			    \
 	metrics_horizvertfwd.H			    \
 	metrics_horizvertobj.H			    \
-	metrics_mmaxis.C			    \
 	new_layoutmanager.C			    \
 	nonrecursive_visibility.H		    \
 	nonrecursive_visibilityfwd.H		    \
@@ -723,6 +723,8 @@ libcxxw_la_SOURCES=\
 	themedim.H				    \
 	themedimfwd.H				    \
 	themedimobj.H				    \
+	themedim_axis_element.H			    \
+	themedim_axis_elementfwd.H		    \
 	themedim_element.H			    \
 	themedim_elementfwd.H			    \
 	themedim_element_minoverride.H		    \

@@ -7,7 +7,6 @@
 
 #include <x/w/factoryfwd.H>
 #include <x/w/factoryobj.H>
-#include <x/w/metrics/mmaxis.H>
 #include <x/ref.H>
 
 LIBCXXW_NAMESPACE_START

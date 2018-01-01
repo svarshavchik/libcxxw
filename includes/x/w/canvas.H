@@ -7,7 +7,6 @@
 
 #include <x/w/canvasfwd.H>
 #include <x/w/canvasobj.H>
-#include <x/w/metrics/mmaxis.H>
 #include <x/ref.H>
 
 LIBCXXW_NAMESPACE_START
