@@ -37,53 +37,48 @@ elementObj::implObj &gridfactoryObj::get_element_impl()
 
 // Save new element's borders somewhere safe...
 
-gridfactoryObj &gridfactoryObj::border(const border_arg &arg)
+void gridfactoryObj::border_set(const border_arg &arg)
 {
 	auto border_impl=gridlayout->get_current_border(arg);
 	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
 
 	lock->left_border=lock->right_border=lock->top_border=
 		lock->bottom_border=border_impl;
-	return *this;
 }
 
-gridfactoryObj &gridfactoryObj::left_border(const border_arg &arg)
+void gridfactoryObj::left_border_set(const border_arg &arg)
 {
 	auto border_impl=gridlayout->get_current_border(arg);
 	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
 
 	lock->left_border=border_impl;
-	return *this;
 }
 
-gridfactoryObj &gridfactoryObj::right_border(const border_arg &arg)
+void gridfactoryObj::right_border_set(const border_arg &arg)
 {
 	auto border_impl=gridlayout->get_current_border(arg);
 	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
 
 	lock->right_border=border_impl;
-	return *this;
 }
 
-gridfactoryObj &gridfactoryObj::top_border(const border_arg &arg)
+void gridfactoryObj::top_border_set(const border_arg &arg)
 {
 	auto border_impl=gridlayout->get_current_border(arg);
 	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
 
 	lock->top_border=border_impl;
-	return *this;
 }
 
-gridfactoryObj &gridfactoryObj::bottom_border(const border_arg &arg)
+void gridfactoryObj::bottom_border_set(const border_arg &arg)
 {
 	auto border_impl=gridlayout->get_current_border(arg);
 	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
 
 	lock->bottom_border=border_impl;
-	return *this;
 }
 
-gridfactoryObj &gridfactoryObj::padding_set(const dim_arg &padding)
+void gridfactoryObj::padding_set(const dim_arg &padding)
 {
 	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
 
@@ -91,47 +86,37 @@ gridfactoryObj &gridfactoryObj::padding_set(const dim_arg &padding)
 	lock->right_padding_set=padding;
 	lock->top_padding_set=padding;
 	lock->bottom_padding_set=padding;
-
-	return *this;
 }
 
-gridfactoryObj &gridfactoryObj::left_padding_set(const dim_arg &padding)
+void gridfactoryObj::left_padding_set(const dim_arg &padding)
 {
 	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
 
 	lock->left_padding_set=padding;
-
-	return *this;
 }
 
-gridfactoryObj &gridfactoryObj::right_padding_set(const dim_arg &padding)
+void gridfactoryObj::right_padding_set(const dim_arg &padding)
 {
 	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
 
 	lock->right_padding_set=padding;
-
-	return *this;
 }
 
-gridfactoryObj &gridfactoryObj::top_padding_set(const dim_arg &padding)
+void gridfactoryObj::top_padding_set(const dim_arg &padding)
 {
 	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
 
 	lock->top_padding_set=padding;
-
-	return *this;
 }
 
-gridfactoryObj &gridfactoryObj::bottom_padding_set(const dim_arg &padding)
+void gridfactoryObj::bottom_padding_set(const dim_arg &padding)
 {
 	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
 
 	lock->bottom_padding_set=padding;
-
-	return *this;
 }
 
-gridfactoryObj &gridfactoryObj::colspan(size_t n)
+void gridfactoryObj::colspan_set(size_t n)
 {
 	if (n <= 0 || n >= dim_t::value_type(dim_t::infinite()))
 		throw EXCEPTION(_("Invalid colspan value"));
@@ -139,10 +124,9 @@ gridfactoryObj &gridfactoryObj::colspan(size_t n)
 	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
 
 	lock->width=n;
-	return *this;
 }
 
-gridfactoryObj &gridfactoryObj::rowspan(size_t n)
+void gridfactoryObj::rowspan_set(size_t n)
 {
 	if (n <= 0 || n >= dim_t::value_type(dim_t::infinite()))
 		throw EXCEPTION(_("Invalid rowspan value"));
@@ -150,31 +134,27 @@ gridfactoryObj &gridfactoryObj::rowspan(size_t n)
 	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
 
 	lock->height=n;
-	return *this;
 }
 
-gridfactoryObj &gridfactoryObj::halign(LIBCXXW_NAMESPACE::halign v)
+void gridfactoryObj::halign_set(LIBCXXW_NAMESPACE::halign v)
 {
 	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
 
 	lock->horizontal_alignment=v;
-	return *this;
 }
 
-gridfactoryObj &gridfactoryObj::valign(LIBCXXW_NAMESPACE::valign v)
+void gridfactoryObj::valign_set(LIBCXXW_NAMESPACE::valign v)
 {
 	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
 
 	lock->vertical_alignment=v;
-	return *this;
 }
 
-gridfactoryObj &gridfactoryObj::remove_when_hidden(bool flag)
+void gridfactoryObj::remove_when_hidden_set(bool flag)
 {
 	implObj::new_grid_element_t::lock lock(impl->new_grid_element);
 
 	lock->remove_when_hidden=flag;
-	return *this;
 }
 
 void gridfactoryObj::created(const element &new_element)

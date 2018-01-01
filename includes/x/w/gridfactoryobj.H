@@ -60,49 +60,121 @@ class gridfactoryObj : public factoryObj {
 
 	//! Set new element's width
 
-	gridfactoryObj &colspan(size_t);
+	inline gridfactoryObj &colspan(size_t s)
+	{
+		colspan_set(s);
+		return *this;
+	}
 
 	//! Set new element's height
 
-	gridfactoryObj &rowspan(size_t);
+	inline gridfactoryObj &rowspan(size_t s)
+	{
+		rowspan_set(s);
+		return *this;
+	}
 
 	//! Set new element's alignment
 
-	gridfactoryObj &halign(LIBCXXW_NAMESPACE::halign);
+	inline gridfactoryObj &halign(LIBCXXW_NAMESPACE::halign h)
+	{
+		halign_set(h);
+		return *this;
+	}
 
 	//! Set new element's alignment
 
-	gridfactoryObj &valign(LIBCXXW_NAMESPACE::valign);
+	inline gridfactoryObj &valign(LIBCXXW_NAMESPACE::valign v)
+	{
+		valign_set(v);
+		return *this;
+	}
 
 	//! Set new element's border, first.
 
-	gridfactoryObj &border(const border_arg &arg);
+	inline gridfactoryObj &border(const border_arg &arg)
+	{
+		border_set(arg);
+		return *this;
+	}
 
 	//! Set new element's border, first.
 
-	gridfactoryObj &left_border(const border_arg &arg);
+	inline gridfactoryObj &left_border(const border_arg &arg)
+	{
+		left_border_set(arg);
+		return *this;
+	}
 
 	//! Set new element's border, first.
 
-	gridfactoryObj &right_border(const border_arg &arg);
+	inline gridfactoryObj &right_border(const border_arg &arg)
+	{
+		right_border_set(arg);
+		return *this;
+	}
 
 	//! Set new element's border, first.
 
-	gridfactoryObj &top_border(const border_arg &arg);
+	inline gridfactoryObj &top_border(const border_arg &arg)
+	{
+		top_border_set(arg);
+		return *this;
+	}
 
 	//! Set new element's border, first.
 
-	gridfactoryObj &bottom_border(const border_arg &arg);
+	inline gridfactoryObj &bottom_border(const border_arg &arg)
+	{
+		bottom_border_set(arg);
+		return *this;
+	}
+
+	//! Implement colspan().
+
+	void colspan_set(size_t s);
+
+	//! Implement rowspan().
+
+	void rowspan_set(size_t s);
+
+	//! Implement halign().
+
+	void halign_set(LIBCXXW_NAMESPACE::halign h);
+
+	//! Implement valign().
+
+	void valign_set(LIBCXXW_NAMESPACE::valign v);
+
+	//! Implement border().
+
+	void border_set(const border_arg &arg);
+
+	//! Implement left_border().
+
+	void left_border_set(const border_arg &arg);
+
+	//! Implement right_border().
+
+	void right_border_set(const border_arg &arg);
+
+	//! Implement top_border().
+
+	void top_border_set(const border_arg &arg);
+
+	//! Implement bottom_border().
+
+	void bottom_border_set(const border_arg &arg);
 
 	//! Set new element's padding, first.
 
 	//! The padding can be specified as a theme setting, in form of a
 	//! string, or a \c double value, specifying the padding in
 	//! millimeters.
-	template<typename Arg>
-	inline gridfactoryObj &padding(Arg &&padding)
+	inline gridfactoryObj &padding(const dim_arg &arg)
 	{
-		return padding_set(dim_arg(std::forward<Arg>(padding)));
+		padding_set(arg);
+		return *this;
 	}
 
 	//! Set new element's padding, first.
@@ -110,10 +182,10 @@ class gridfactoryObj : public factoryObj {
 	//! The padding can be specified as a theme setting, in form of a
 	//! string, or a \c double value, specifying the padding in
 	//! millimeters.
-	template<typename Arg>
-	inline gridfactoryObj &left_padding(Arg &&padding)
+	inline gridfactoryObj &left_padding(const dim_arg &arg)
 	{
-		return left_padding_set(dim_arg(std::forward<Arg>(padding)));
+		left_padding_set(arg);
+		return *this;
 	}
 
 	//! Set new element's padding, first.
@@ -121,10 +193,10 @@ class gridfactoryObj : public factoryObj {
 	//! The padding can be specified as a theme setting, in form of a
 	//! string, or a \c double value, specifying the padding in
 	//! millimeters.
-	template<typename Arg>
-	inline gridfactoryObj &right_padding(Arg &&padding)
+	inline gridfactoryObj &right_padding(const dim_arg &arg)
 	{
-		return right_padding_set(dim_arg(std::forward<Arg>(padding)));
+		right_padding_set(arg);
+		return *this;
 	}
 
 	//! Set new element's padding, first.
@@ -132,10 +204,10 @@ class gridfactoryObj : public factoryObj {
 	//! The padding can be specified as a theme setting, in form of a
 	//! string, or a \c double value, specifying the padding in
 	//! millimeters.
-	template<typename Arg>
-	inline gridfactoryObj &top_padding(Arg &&padding)
+	inline gridfactoryObj &top_padding(const dim_arg &arg)
 	{
-		return top_padding_set(dim_arg(std::forward<Arg>(padding)));
+		top_padding_set(arg);
+		return *this;
 	}
 
 	//! Set new element's padding, first.
@@ -143,33 +215,39 @@ class gridfactoryObj : public factoryObj {
 	//! The padding can be specified as a theme setting, in form of a
 	//! string, or a \c double value, specifying the padding in
 	//! millimeters.
-	template<typename Arg>
-	inline gridfactoryObj &bottom_padding(Arg &&padding)
+	inline gridfactoryObj &bottom_padding(const dim_arg &arg)
 	{
-		return bottom_padding_set(dim_arg(std::forward<Arg>(padding)));
+		bottom_padding_set(arg);
+		return *this;
 	}
 
 	//! Implement padding()
-	gridfactoryObj &padding_set(const dim_arg &padding);
+	void padding_set(const dim_arg &padding);
 
 	//! Implement left_padding()
-	gridfactoryObj &left_padding_set(const dim_arg &padding);
+	void left_padding_set(const dim_arg &padding);
 
 	//! Implement right_padding()
-	gridfactoryObj &right_padding_set(const dim_arg &padding);
+	void right_padding_set(const dim_arg &padding);
 
 	//! Implement top_padding()
-	gridfactoryObj &top_padding_set(const dim_arg &padding);
+	void top_padding_set(const dim_arg &padding);
 
 	//! Implement bottom_padding()
-	gridfactoryObj &bottom_padding_set(const dim_arg &padding);
+	void bottom_padding_set(const dim_arg &padding);
 
 	//! When this display element is hidden, "remove" it from the grid.
 
 	//! It is not actually removed, just ignored for the purposes of
 	//! calculating the grid layout.
 
-	gridfactoryObj &remove_when_hidden(bool=true);
+	inline gridfactoryObj &remove_when_hidden(bool flag=true)
+	{
+		remove_when_hidden_set(flag);
+		return *this;
+	}
+
+	void remove_when_hidden_set(bool);
 
 private:
 	//! Created a new display element for the grid.
