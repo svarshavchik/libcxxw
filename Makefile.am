@@ -700,6 +700,7 @@ libcxxw_la_SOURCES=\
 	straight_borderfwd.H			    \
 	straight_borderobj.H			    \
 	straight_border_impl.C			    \
+	straight_border_impl.H			    \
 	pagefactory.C				    \
 	pagefactory_impl.C			    \
 	pagefactory_impl.H			    \
