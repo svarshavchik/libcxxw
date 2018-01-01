@@ -57,6 +57,8 @@ public:
 	elementObj::implObj &container_element_impl() override;
 
 	const elementObj::implObj &container_element_impl() const override;
+
+	void removed_from_container(IN_THREAD_ONLY) override;
 };
 
 LIBCXXW_NAMESPACE_END

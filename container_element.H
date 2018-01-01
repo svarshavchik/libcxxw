@@ -132,6 +132,18 @@ const elementObj::implObj &container_elementObj<element_impl>
 	return *this;
 }
 
+//! Override removed_from_container()
+
+//! Uninstall the layout manager, and recursively invoke all child elements'
+//! removed_from_container().
+
+template<typename element_impl>
+void container_elementObj<element_impl>
+::removed_from_container(IN_THREAD_ONLY)
+{
+	containerObj::implObj::removed_from_container(IN_THREAD);
+}
+
 LIBCXXW_NAMESPACE_END
 
 #endif

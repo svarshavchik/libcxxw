@@ -9,6 +9,7 @@
 #include "layoutmanager.H"
 #include "container_element.H"
 #include "child_element.H"
+#include "run_as.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -43,7 +44,6 @@ containerObj::~containerObj()
 	// next one, before it gets flagged for removal.
 
 	elementObj::impl->removed_from_container();
-	impl->uninstall_layoutmanager();
 }
 
 ref<layoutmanagerObj::implObj> containerObj::get_layout_impl() const

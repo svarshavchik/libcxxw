@@ -309,11 +309,11 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 	void removed_from_container();
 
-	//! Set by remove_from_container(), which is only called in destructor.
+	//! Set by removed_from_container(), which is only called in destructor.
 
-	//! Prevents the overhead from scheduling the message to the connection
-	//! thread twice, because removed_from_container() is also called
-	//! in connectionObj's destructor.
+	//! removed_from_container() gets called from elementObj's
+	//! and containerObj's destructor. This flag gets checked,
+	//! removede_from_container() bails out if it is already set.
 
 	bool removed_from_container_was_called_in_destructor=false;
 
@@ -325,7 +325,7 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//!
 	//! If data.removed is not set, sets it and invoked removed().
 
-	void removed_from_container(IN_THREAD_ONLY);
+	virtual void removed_from_container(IN_THREAD_ONLY);
 
 	//! This element has been removed from its container just now.
 

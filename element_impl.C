@@ -100,17 +100,11 @@ elementObj::implObj::~implObj()
 	if (data_thread_only.removed)
 		return;
 
-	LOG_ERROR("removed_from_container() was not called for a "
-		  << objname());
+	LOG_ERROR("removed_from_container() was not called for an element");
 }
 
 void elementObj::implObj::removed_from_container()
 {
-	if (removed_from_container_was_called_in_destructor)
-		return;
-
-	removed_from_container_was_called_in_destructor=true;
-
 	THREAD->run_as
 		([impl=ref(this)]
 		 (IN_THREAD_ONLY)
@@ -121,6 +115,11 @@ void elementObj::implObj::removed_from_container()
 
 void elementObj::implObj::removed_from_container(IN_THREAD_ONLY)
 {
+	if (removed_from_container_was_called_in_destructor)
+		return;
+
+	removed_from_container_was_called_in_destructor=true;
+
 	// Who knows, maybe we haven't been initialized yet?
 
 	initialize_if_needed(IN_THREAD);

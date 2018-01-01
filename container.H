@@ -223,6 +223,10 @@ public:
 	void ensure_visibility(IN_THREAD_ONLY, elementObj::implObj &e,
 			       const rectangle &r);
 
+	//! This container itself was removed from its container.
+
+	void removed_from_container(IN_THREAD_ONLY);
+
 	//! A child element was just ensure_visibility()-ed.
 
 	//! Overriden by the container_visible_element mixin.

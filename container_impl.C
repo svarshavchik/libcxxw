@@ -11,6 +11,7 @@
 #include "element_draw.H"
 #include "connection_thread.H"
 #include "draw_info.H"
+#include "catch_exceptions.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -52,6 +53,23 @@ void containerObj::implObj::uninstall_layoutmanager()
 	if (!*lock)
 		throw EXCEPTION("Internal error - no layout manager to uninstall");
 	*lock=ptr<layoutmanagerObj::implObj>();
+}
+
+void containerObj::implObj::removed_from_container(IN_THREAD_ONLY)
+{
+	const auto &logger=elementObj::implObj::logger;
+
+	try {
+		auto &e=container_element_impl();
+
+		if (e.removed_from_container_was_called_in_destructor)
+			return; // Already did this.
+
+		e.elementObj::implObj
+			::removed_from_container(IN_THREAD);
+	} CATCH_EXCEPTIONS;
+
+	uninstall_layoutmanager();
 }
 
 void containerObj::implObj::do_for_each_child(IN_THREAD_ONLY,
