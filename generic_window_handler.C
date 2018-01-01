@@ -889,6 +889,14 @@ void generic_windowObj::handlerObj
 						report_to, be);
 
 	report_to->do_button_event(IN_THREAD, event, be, me);
+
+	// The passive grab was released by a button release event.
+	// We need to re-report this as a motion event. If the grabbing element
+	// had a custom pointer installed and the pointer is no longer in the
+	// element, we need to update_displayed_cursor_pointer().
+
+	if (was_grabbed && !buttonpress)
+		report_to->report_pointer_xy(IN_THREAD, me, false);
 }
 
 void generic_windowObj::handlerObj
