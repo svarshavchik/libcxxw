@@ -293,7 +293,7 @@ void panelayoutmanagerObj::implObj
 
 			// The former sole pane had a slider after it, which
 			// is now on row 3, and needs to be removed.
-			remove_row(3);
+			remove_element(lock, 3);
 		}
 		else
 		{
@@ -492,12 +492,13 @@ void panelayoutmanagerObj::implObj
 	{
 		if (pane_number == 1)
 		{
-			remove_row(2);
+			remove_element(lock, 2);
+			request_extra_space_to_canvas();
 			return; // Leaving the slider after the remaining pane.
 		}
 
-		remove_row(1);
-		remove_row(0);
+		remove_element(lock, 1);
+		remove_element(lock, 0);
 
 		// Need to create the stub slider.
 
@@ -507,18 +508,21 @@ void panelayoutmanagerObj::implObj
 		focusable f=get_element(lock, 1);
 		f->get_focus_after(get_element(lock, 0));
 
+		request_extra_space_to_canvas();
 		return;
 	}
 
 	if (s == 0)
 	{
-		remove_row(0);
-		remove_row(1);
+		remove_element(lock, 0);
+		remove_element(lock, 1);
+		request_extra_space_to_canvas();
 		return;
 	}
 
-	remove_row(pane_number*2);
-	remove_row(pane_number*2-1);
+	remove_element(lock, pane_number*2);
+	remove_element(lock, pane_number*2-1);
+	request_extra_space_to_canvas();
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -589,6 +593,13 @@ std::optional<size_t> panelayoutmanagerObj::implObj::orientation<vertical>
 		res=std::get<0>(*ret);
 
 	return res;
+}
+
+template<>
+void panelayoutmanagerObj::implObj::orientation<vertical>
+::remove_elements(grid_map_t::lock &lock, size_t n, size_t c)
+{
+	remove_rows(n, c);
 }
 
 template<>
@@ -716,6 +727,213 @@ void panelayoutmanagerObj::implObj::orientation<vertical>
 				       {first_pane, first_pane, first_pane});
 	after_hv->set_element_metrics(IN_THREAD, after_hv->horiz,
 				      {second_pane, second_pane, second_pane});
+}
+
+/////////////////////////////////////////////////////////////////////////
+//
+// Horizontal panel implementation methods.
+
+typedef panelayoutmanagerObj::implObj::horizontal horizontal;
+
+template<>
+gridfactory panelayoutmanagerObj::implObj::orientation<horizontal>
+::create_slider_factory(layoutmanagerObj *public_object,
+			size_t pos)
+{
+	return insert_columns(public_object,
+			      0,
+			      pos == 0 ? 0: // Initial slider
+			      1+(pos-1)*2 // Subsequent sliders
+			      );
+}
+
+template<>
+const char *panelayoutmanagerObj::implObj::orientation<horizontal>
+::slider_cursor() const
+{
+	return "slider-horiz";
+}
+
+template<>
+ref<pane_sliderObj::implObj>
+panelayoutmanagerObj::implObj::orientation<horizontal>
+::create_pane_slider_impl(const ref<containerObj::implObj> &parent_container,
+			  const current_border_impl &slider_border)
+{
+	return ref<pane_slider_impl_elementObj
+		   <vertical_straight_borderObj>>
+		::create(parent_container, slider_border);
+}
+
+template<>
+gridfactory panelayoutmanagerObj::implObj::orientation<horizontal>
+::create_factory_for_pos(const panelayoutmanager &lm, size_t pos)
+{
+	return insert_columns(&*lm, 0, pos);
+}
+
+template<>
+size_t panelayoutmanagerObj::implObj::orientation<horizontal>
+::total_size(grid_map_t::lock &lock)
+{
+	return cols(0);
+}
+
+template<>
+element panelayoutmanagerObj::implObj::orientation<horizontal>
+::get_element(grid_map_t::lock &lock, size_t n)
+{
+	return get(0, n);
+}
+
+template<>
+std::optional<size_t> panelayoutmanagerObj::implObj::orientation<horizontal>
+::lookup_element(const ref<elementObj::implObj> &e)
+{
+	std::optional<size_t> res;
+
+	auto ret=lookup_row_col(e);
+
+	if (ret)
+		res=std::get<1>(*ret);
+
+	return res;
+}
+
+template<>
+void panelayoutmanagerObj::implObj::orientation<horizontal>
+::remove_elements(grid_map_t::lock &lock, size_t n, size_t c)
+{
+	remove(lock, 0, n, c);
+}
+
+template<>
+std::tuple<peephole_style, scrollbar_visibility, scrollbar_visibility>
+panelayoutmanagerObj::implObj::orientation<horizontal>
+::pane_peephole_style(scrollbar_visibility pane_scrollbar_visibility)
+{
+	peephole_style style;
+
+	style.autoheight=true;
+	return {style, pane_scrollbar_visibility,
+			scrollbar_visibility::never};
+}
+
+template<>
+void panelayoutmanagerObj::implObj::orientation<horizontal>
+::request_extra_space_to_canvas()
+{
+	remove_all_defaults();
+	requested_col_width(cols(0)-1, 100);
+}
+
+template<>
+void panelayoutmanagerObj::implObj::orientation<horizontal>
+::initialize_factory_for_pane(const gridfactory &f)
+{
+	initialize_factory_for_slider(f); // Same border and no padding.
+
+	// Fill new element to pane's entire height
+	// pane_peephole_style() sets autoheight, so the element in the peephole
+	// gets stretched to the pane's height, and the peephole layout manager
+	// takes care of setting the peephole's metrics to the peepholed
+	// element's metrics.
+	//
+	// The end result is that the pane's grid layout manager sees the
+	// vertical metrics of all elements in the pane, and computes its
+	// height accordingly, then fills all elements to the pane's height.
+
+	f->valign(valign::fill);
+}
+
+template<>
+metrics::horizvert_axi
+panelayoutmanagerObj::implObj::orientation<horizontal>
+::initial_peephole_metrics(const dim_arg &size)
+{
+	auto theme=container_impl->container_element_impl()
+		.get_screen()->impl->current_theme.get();
+
+	auto s=theme->get_theme_width_dim_t(size);
+
+	return { {s, s, s}, {0, 0, 0} };
+}
+
+template<>
+pane_slider_original_sizes panelayoutmanagerObj::implObj::orientation<horizontal>
+::original_sizes(IN_THREAD_ONLY,
+		 const ref<elementObj::implObj> &before,
+		 const ref<elementObj::implObj> &after)
+{
+	return {before->data(IN_THREAD).current_position.width,
+			after->data(IN_THREAD).current_position.width};
+}
+
+template<>
+void panelayoutmanagerObj::implObj::orientation<horizontal>
+::sliding(IN_THREAD_ONLY,
+	  const ref<elementObj::implObj> &which_slider,
+	  const pane_slider_original_sizes &original_sizes,
+
+	  coord_t original_x,
+	  coord_t original_y,
+
+	  coord_t current_x,
+	  coord_t current_y)
+{
+	// Figure out how to resize the panes.
+	grid_map_t::lock lock{grid_map};
+
+	auto ret=find_panes(which_slider);
+
+	if (!ret)
+		return;
+
+	// Here are their original sizes.
+
+	dim_t first_pane=original_sizes.first_pane;
+	dim_t second_pane=original_sizes.second_pane;
+
+	// Adjust their original size by how far the pointer traveled
+	// from its grab point.
+
+	if (current_x < original_x)
+	{
+		dim_t left=dim_t::truncate(original_x-current_x);
+
+		if (left > first_pane)
+			left=first_pane;
+
+		first_pane=first_pane - left;
+
+		second_pane=dim_t::truncate(second_pane+left);
+	}
+	else
+	{
+		dim_t right=dim_t::truncate(current_x-original_x);
+
+		if (right > second_pane)
+			right=second_pane;
+
+		second_pane=second_pane - right;
+
+		first_pane=dim_t::truncate(first_pane+right);
+	}
+
+	// Now, update the panes' metrics, and the grid layout manager will,
+	// eventually, do the rest.
+
+	auto &[before, after]=*ret;
+
+	auto before_hv=before->impl->get_horizvert(IN_THREAD);
+	auto after_hv=after->impl->get_horizvert(IN_THREAD);
+
+	before_hv->set_element_metrics(IN_THREAD,
+				       {first_pane, first_pane, first_pane},
+				       before_hv->vert);
+	after_hv->set_element_metrics(IN_THREAD,
+				      {second_pane, second_pane, second_pane},
+				      after_hv->vert);
 }
 
 LIBCXXW_NAMESPACE_END

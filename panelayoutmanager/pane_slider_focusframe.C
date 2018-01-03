@@ -77,12 +77,18 @@ bool pane_slider_focusframeObj::process_button_event(IN_THREAD_ONLY,
 		}
 		else
 		{
-			original_sizes={};
+			original_sizes.reset();
 		}
 		flag=true;
 	}
 
 	return flag;
+}
+
+void pane_slider_focusframeObj::pointer_focus(IN_THREAD_ONLY)
+{
+	if (!current_pointer_focus(IN_THREAD))
+		original_sizes.reset(); // No more sliding.
 }
 
 // Keyboard-based sliding.
@@ -127,7 +133,7 @@ void pane_slider_focusframeObj::report_motion_event(IN_THREAD_ONLY,
 {
 	superclass_t::report_motion_event(IN_THREAD, me);
 
-	if (me.mask.buttons & 1)
+	if ((me.mask.buttons & 1) && original_sizes)
 	{
 		child_container->invoke_layoutmanager
 			([&, this]
@@ -142,7 +148,7 @@ void pane_slider_focusframeObj::report_motion_event(IN_THREAD_ONLY,
 
 				 lm->sliding(IN_THREAD,
 					     ref(this),
-					     original_sizes,
+					     *original_sizes,
 					     grabbed_x,
 					     grabbed_y,
 					     x, y);

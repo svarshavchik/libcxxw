@@ -1,0 +1,172 @@
+<?xml version="1.0"?>
+
+<!--
+
+   Y   Y
+  YXYYYXY
+ YXXXXXXXY
+YXXXYYYXXXY
+ YXXXXXXXY
+  YXYYYXY
+   Y   Y
+-->
+<sxg>
+  <width>11</width>
+  <height>7</height>
+
+  <widthmm>7</widthmm>
+  <heightmm>3</heightmm>
+
+  <widthfactor>11</widthfactor>
+  <heightfactor>7</heightfactor>
+
+  <location id="hotspot">
+    <x>5</x>
+    <y>3</y>
+  </location>
+  <picture id="outline_color">
+    <type>rgb</type>
+    <color>30%</color>
+  </picture>
+
+  <picture id="fill">
+    <type>rgb</type>
+    <color>80%</color>
+  </picture>
+
+  <pixmap id="outline">
+    <size>scaled</size>
+    <width>11</width>
+    <height>7</height>
+    <mask />
+    <gc id="outline_gc" />
+  </pixmap>
+
+  <gc id="outline_gc">
+    <function>set</function>
+
+    <foreground>1</foreground>
+    <line_width>1</line_width>
+    <line>
+      <point>
+	<x>3</x>
+	<y>0</y>
+      </point>
+      <point>
+	<x>0</x>
+	<y>3</y>
+      </point>
+      <point>
+	<x>3</x>
+	<y>6</y>
+      </point>
+      <point>
+	<x>3</x>
+	<y>5</y>
+      </point>
+      <point>
+	<x>7</x>
+	<y>5</y>
+      </point>
+      <point>
+	<x>7</x>
+	<y>6</y>
+      </point>
+      <point>
+	<x>10</x>
+	<y>3</y>
+      </point>
+      <point>
+	<x>7</x>
+	<y>0</y>
+      </point>
+      <point>
+	<x>7</x>
+	<y>1</y>
+      </point>
+      <point>
+	<x>3</x>
+	<y>1</y>
+      </point>
+      <point>
+	<x>3</x>
+	<y>0</y>
+      </point>
+    </line>
+
+    <line>
+      <point>
+	<x>3</x>
+	<y>3</y>
+      </point>
+      <point>
+	<x>7</x>
+	<y>3</y>
+      </point>
+    </line>
+  </gc>
+
+  <render id="main">
+    <composite>
+      <op>over</op>
+      <src>
+	<picture>fill</picture>
+      </src>
+      <x>3</x>
+      <y>1</y>
+      <width>5</width>
+      <height>5</height>
+    </composite>
+
+    <triangles>
+      <op>over</op>
+      <src>fill</src>
+      <triangle>
+	<p1>
+	  <x>0</x>
+	  <y>3</y>
+	</p1>
+	<p2>
+	  <x>3</x>
+	  <y>0</y>
+	</p2>
+	<p3>
+	  <x>3</x>
+	  <y>6</y>
+	</p3>
+      </triangle>
+      <triangle>
+	<p1>
+	  <x>10</x>
+	  <y>3</y>
+	</p1>
+	<p2>
+	  <x>7</x>
+	  <y>0</y>
+	</p2>
+	<p3>
+	  <x>7</x>
+	  <y>6</y>
+	</p3>
+      </triangle>
+    </triangles>
+
+    <composite>
+      <op>over</op>
+      <src>
+	<picture>outline_color</picture>
+      </src>
+      <x>0</x>
+      <y>0</y>
+      <width>11</width>
+      <height>7</height>
+
+      <mask>
+	<pixmap>outline</pixmap>
+	<x>0</x>
+	<y>0</y>
+      </mask>
+
+    </composite>
+  </render>
+</sxg>

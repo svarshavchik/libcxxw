@@ -9,6 +9,7 @@
 #include "cursor_pointer_elementfwd.H"
 #include "panelayoutmanager/pane_slider_original_sizes.H"
 #include "x/w/rgb.H"
+#include <optional>
 
 LIBCXXW_NAMESPACE_START
 
@@ -34,7 +35,7 @@ class LIBCXX_HIDDEN pane_slider_focusframeObj
 	coord_t grabbed_y;
 
 	//! Captured original sizes
-	pane_slider_original_sizes original_sizes;
+	std::optional<pane_slider_original_sizes> original_sizes;
 
  public:
 	pane_slider_focusframeObj(const ref<containerObj::implObj> &parent,
@@ -60,9 +61,13 @@ class LIBCXX_HIDDEN pane_slider_focusframeObj
 
 	bool process_key_event(IN_THREAD_ONLY, const key_event &ke) override;
 
-	//! report_motion_event().
+	//! Override report_motion_event().
 
 	void report_motion_event(IN_THREAD_ONLY, const motion_event &) override;
+
+	//! Override pointer_focus()
+
+	void pointer_focus(IN_THREAD_ONLY) override;
 
 };
 

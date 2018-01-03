@@ -274,8 +274,13 @@ bool elementObj::implObj::process_button_event(IN_THREAD_ONLY,
 
 				 x=coord_t::truncate(x+iamhere.x);
 				 y=coord_t::truncate(y+iamhere.y);
-				 x=coord_t::truncate(x-itsoverthere.x);
-				 y=coord_t::truncate(y-itsoverthere.y);
+
+				 x=coord_t::truncate(coord_t::truncate(x)
+						     -coord_t::truncate
+						     (itsoverthere.x));
+				 y=coord_t::truncate(coord_t::truncate(y)
+						     -coord_t::truncate
+						     (itsoverthere.y));
 
 				 motion_event me{be,
 						 activate_for(be)

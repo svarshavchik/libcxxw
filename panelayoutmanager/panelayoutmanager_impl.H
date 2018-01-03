@@ -191,6 +191,15 @@ class LIBCXX_HIDDEN panelayoutmanagerObj::implObj
 	virtual std::optional<size_t>
 		lookup_element(const ref<elementObj::implObj> &e)=0;
 
+	//! Remove one element.
+
+	inline void remove_element(grid_map_t::lock &lock, size_t n)
+	{
+		return remove_elements(lock, n, 1);
+	}
+
+	virtual void remove_elements(grid_map_t::lock &, size_t n, size_t c)=0;
+
 	//! Start of the process of creating a new pane.
 
 	//! Invoked by the factory as part of the process of creating a new
@@ -378,6 +387,9 @@ class panelayoutmanagerObj::implObj::orientation
 	//! Find the element in the pane container.
 	std::optional<size_t> lookup_element(const ref<elementObj::implObj> &e)
 		override;
+
+	//! Remove the element.
+	void remove_elements(grid_map_t::lock &, size_t n, size_t c) override;
 
 	//! Capture original sizes of two panes.
 

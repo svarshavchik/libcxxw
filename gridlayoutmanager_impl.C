@@ -127,7 +127,7 @@ gridfactory gridlayoutmanagerObj::implObj::insert_columns(layoutmanagerObj
 
 	size_t s=(*lock)->elements.at(row).size();
 
-	if (col >= s)
+	if (col > s)
 	    throw EXCEPTION(_("Attempting to insert columns before a nonexistent column"));
 
 	return create_gridfactory(public_object, row, col);
@@ -220,15 +220,23 @@ void gridlayoutmanagerObj::implObj::remove_all_rows(grid_map_t::lock &lock)
 
 void gridlayoutmanagerObj::implObj::remove(grid_map_t::lock &lock,
 					   size_t row,
-					   size_t col)
+					   size_t col,
+					   size_t n)
 {
 	if (row < (*lock)->elements.size())
 	{
 		auto &r=(*lock)->elements.at(row);
 
-		if (col < r.size())
+		size_t s=r.size();
+
+		if (col < s)
 		{
-			r.erase(r.begin()+col);
+			if (s-col < n)
+				n=s-col;
+
+			auto b=r.begin()+col;
+
+			r.erase(b, b+n);
 			(*lock)->elements_have_been_modified();
 		}
 	}

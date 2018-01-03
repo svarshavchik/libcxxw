@@ -34,24 +34,42 @@ struct pane_style {
 
 //! This parameter gets passed to a \ref factory "factory"'s
 //! \c create_container()
-//! when creating a main window, or a container that
-//! uses the pane layout manager.
+//! when creating a main window, or a container with
+//! vertically-oriented panes.
 
-class LIBCXX_PUBLIC new_panelayoutmanager :
+class LIBCXX_HIDDEN new_panelayoutmanager :
 	public new_focusable_layoutmanager,
 	public pane_style {
 
 public:
-	new_panelayoutmanager() LIBCXX_PUBLIC;
+
+	//! Used by the subclass.
+
+	enum class orientation_t {horizontal, vertical};
+
+	//! Specified by the subclass.
+
+	orientation_t orientation;
+
+	//! Constructor
+	new_panelayoutmanager(orientation_t orientation=
+			      orientation_t::vertical) LIBCXX_PUBLIC;
 
 	//! Destructor
 	~new_panelayoutmanager() LIBCXX_PUBLIC;
+
+	//! Set horizontal panes.
+	inline void horizontal() { orientation=orientation_t::horizontal; }
+
+	//! Set vertical panes.
+	inline void vertical() { orientation=orientation_t::vertical; }
 
 	//! Create a container with the pane layout manager.
 
 	//! \internal
 	focusable_container
 		create(const ref<containerObj::implObj> &) const override;
+
 };
 
 LIBCXXW_NAMESPACE_END

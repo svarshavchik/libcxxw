@@ -124,8 +124,9 @@ void panelayoutmanagerObj::remove_all_panes()
 	//   ...
 	// [canvas]
 
-	impl->remove_rows(2, impl->rows()-3);
-	impl->remove_row(0);
+	impl->remove_elements(lock, 2, impl->total_size(lock)-3);
+	impl->remove_element(lock, 0);
+	impl->request_extra_space_to_canvas();
 }
 
 panefactory panelayoutmanagerObj::replace_all_panes()
@@ -198,9 +199,10 @@ class LIBCXX_HIDDEN panecontainerObj : public focusable_containerObj {
 	}
 };
 
-new_panelayoutmanager::new_panelayoutmanager()
+new_panelayoutmanager::new_panelayoutmanager(orientation_t orientation)
 	: pane_style{"pane_border", "pane_slider",
-		"pane_slider_background"}
+		"pane_slider_background"},
+	  orientation{orientation}
 {
 }
 
@@ -212,14 +214,26 @@ new_panelayoutmanager::create(const ref<containerObj::implObj> &parent)
 {
 	auto impl=ref<panecontainer_implObj>::create(parent);
 
-	ref<panelayoutmanagerObj::implObj> lm_impl=
-		ref<panelayoutmanagerObj::implObj::orientation
-		    <panelayoutmanagerObj::implObj::vertical>>
-		::create(impl, *this);
+	// Create the appropriate implementation subclass.
+
+	ref<panelayoutmanagerObj::implObj> lm_impl{
+		orientation == orientation_t::vertical ?
+			ref<panelayoutmanagerObj::implObj>{
+			ref<panelayoutmanagerObj::implObj::orientation
+			<panelayoutmanagerObj::implObj::vertical>>
+			::create(impl, *this)}
+		: ref<panelayoutmanagerObj::implObj>{
+			ref<panelayoutmanagerObj::implObj::orientation
+			    <panelayoutmanagerObj::implObj::horizontal>>
+				::create(impl, *this)}
+	};
 
 	auto c=ref<panecontainerObj>::create(impl, lm_impl);
 
 	panelayoutmanager lm=c->get_layoutmanager();
+
+	if (orientation != orientation_t::vertical)
+		lm->impl->insert_row(&*lm, 0);
 
 	// Create the canvas element that absorbs any extra space.
 	{

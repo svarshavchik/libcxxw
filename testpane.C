@@ -148,9 +148,14 @@ static LIBCXX_NAMESPACE::w::scrollbar_visibility get_scrollbar_visibility(const 
 	return values[i];
 }
 
-static void create_main_window(const LIBCXX_NAMESPACE::w::main_window &mw)
+static void create_main_window(const LIBCXX_NAMESPACE::w::main_window &mw,
+			       int argc,
+			       char **argv)
 {
 	LIBCXX_NAMESPACE::w::new_panelayoutmanager npl;
+
+	if (argc > 1 && argv[1][0] == 'h')
+		npl.horizontal();
 
 	LIBCXX_NAMESPACE::w::gridlayoutmanager layout=mw->get_layoutmanager();
 	auto factory=layout->append_row();
@@ -264,13 +269,18 @@ static void create_main_window(const LIBCXX_NAMESPACE::w::main_window &mw)
 
 }
 
-void testpane()
+void testpane(int argc, char **argv)
 {
 	LIBCXX_NAMESPACE::destroy_callback::base::guard guard;
 
 	auto close_flag=close_flag_ref::create();
 
-	auto main_window=LIBCXX_NAMESPACE::w::main_window::create(create_main_window);
+	auto main_window=LIBCXX_NAMESPACE::w::main_window
+		::create([&]
+			 (const auto &mw)
+			 {
+				 create_main_window(mw, argc, argv);
+			 });
 
 	main_window->set_window_title("Panes!");
 	main_window->set_window_class("main", "testpane@examples.w.libcxx.com");
@@ -301,7 +311,7 @@ int main(int argc, char **argv)
 		LIBCXX_NAMESPACE::property
 			::load_property(LIBCXX_NAMESPACE_STR "::themes",
 					"themes", true, true);
-		testpane();
+		testpane(argc, argv);
 	} catch (const LIBCXX_NAMESPACE::exception &e)
 	{
 		e->caught();
