@@ -76,9 +76,7 @@ factoryObj::create_input_field(const text_param &text,
 				"inputfocusoff_border",
 				"inputfocuson_border",
 				.2,
-				get_element_impl()
-				.create_background_color
-				("textedit_background_color"),
+				"textedit_background_color",
 				impl_mixin,
 				input_field_peephole_style,
 				scrollbar_visibility::never,

@@ -25,6 +25,9 @@ struct LIBCXX_HIDDEN child_element_init_params {
 
 	//! Element's initial metrics
 	metrics::horizvert_axi initial_metrics;
+
+	//! Element's background color
+	std::optional<color_arg> background_color;
 };
 
 //! An element that has a parent element.
@@ -49,20 +52,6 @@ class LIBCXX_HIDDEN child_elementObj : public background_color_elementObj<
 	//! Additional constructor parameters
 	child_elementObj(const ref<containerObj::implObj> &container,
 			 const child_element_init_params &init_params);
-
-	//! Constructor
-
-	//! Additional constructor parameters
-	child_elementObj(const ref<containerObj::implObj> &container,
-			 const child_element_init_params &init_params,
-			 const color_arg &initial_background_color);
-
-	//! Constructor
-
-	//! Additional constructor parameters
-	child_elementObj(const ref<containerObj::implObj> &container,
-			 const child_element_init_params &init_params,
-			 const background_colorptr &initial_background_color);
 
 	//! Destructor
 	~child_elementObj();

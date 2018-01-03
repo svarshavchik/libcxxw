@@ -41,8 +41,7 @@ class LIBCXX_HIDDEN pane_peepholeObj::implObj
 	//! Constructor
 	implObj(const ref<pane_peephole_containerObj::implObj>
 		&parent_container,
-		const child_element_init_params &init_params,
-		const background_colorptr &background_color);
+		const child_element_init_params &init_params);
 
 	//! Destructor
 	~implObj();

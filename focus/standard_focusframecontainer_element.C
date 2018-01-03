@@ -19,19 +19,7 @@ create_always_visible_focusframe(const ref<containerObj::implObj>
 {
 	return create_always_visible_focusframe
 		(parent_container,
-		 "inputfocusoff_border", "inputfocuson_border");
-}
-
-always_visible_focusframe_ref_t
-create_always_visible_focusframe(const ref<containerObj::implObj>
-				 &parent_container,
-				 const border_arg &focusoff_border,
-				 const border_arg &focuson_border)
-{
-	return create_always_visible_focusframe
-		(parent_container,
-		 focusoff_border, focuson_border,
-		 background_colorptr());
+		 "inputfocusoff_border", "inputfocuson_border", {});
 }
 
 always_visible_focusframe_ref_t
@@ -39,15 +27,14 @@ create_always_visible_focusframe(const ref<containerObj::implObj>
 				 &parent_container,
 				 const border_arg &focusoff_border,
 				 const border_arg &focuson_border,
-				 const background_colorptr
-				 &focusable_background_color)
+				 const std::optional<color_arg> &bgcolor)
 {
 	auto e=always_visible_focusframe_ref_t
 		::create(focusoff_border,
 			 focuson_border,
 			 parent_container,
-			 child_element_init_params{FOCUSFRAME_ID},
-			 focusable_background_color);
+			 child_element_init_params{FOCUSFRAME_ID, {},
+					 bgcolor});
 
 	return e;
 }
@@ -58,19 +45,7 @@ create_nonrecursive_visibility_focusframe(const ref<containerObj::implObj>
 {
 	return create_nonrecursive_visibility_focusframe
 		(parent_container,
-		 "inputfocusoff_border", "inputfocuson_border");
-}
-
-nonrecursive_visibility_focusframe_ref_t
-create_nonrecursive_visibility_focusframe(const ref<containerObj::implObj>
-					  &parent_container,
-					  const border_arg &focusoff_border,
-					  const border_arg &focuson_border)
-{
-	return create_nonrecursive_visibility_focusframe
-		(parent_container,
-		 focusoff_border, focuson_border,
-		 background_colorptr());
+		 "inputfocusoff_border", "inputfocuson_border", {});
 }
 
 nonrecursive_visibility_focusframe_ref_t
@@ -78,15 +53,14 @@ create_nonrecursive_visibility_focusframe(const ref<containerObj::implObj>
 					  &parent_container,
 					  const border_arg &focusoff_border,
 					  const border_arg &focuson_border,
-					  const background_colorptr
-					  &focusable_background_color)
+					  const std::optional<color_arg> &bgcolor)
 {
 	auto e=nonrecursive_visibility_focusframe_ref_t
 		::create(focusoff_border,
 			 focuson_border,
 			 parent_container,
-			 child_element_init_params{FOCUSFRAME_ID},
-			 focusable_background_color);
+			 child_element_init_params{FOCUSFRAME_ID, {},
+					 bgcolor});
 
 	return e;
 }

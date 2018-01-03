@@ -14,6 +14,7 @@
 #include "background_colorfwd.H"
 #include "x/w/border_arg.H"
 #include <x/ref.H>
+#include <optional>
 
 LIBCXXW_NAMESPACE_START
 
@@ -58,21 +59,9 @@ always_visible_focusframe_ref_t
 create_always_visible_focusframe(const ref<containerObj::implObj>
 				 &parent_container,
 				 const border_arg &focusoff_border,
-				 const border_arg &focuson_border)
-	LIBCXX_HIDDEN;
-
-//! Create an always_visibleObj focus frame.
-
-always_visible_focusframe_ref_t
-create_always_visible_focusframe(const ref<containerObj::implObj>
-				 &parent_container,
-				 const border_arg &focusoff_border,
 				 const border_arg &focuson_border,
-				 const background_colorptr
-				 &focusable_background_color)
+				 const std::optional<color_arg> &bgcolor)
 	LIBCXX_HIDDEN;
-
-
 
 //! Create an nonrecursive_visibilityObj focus frame.
 
@@ -87,20 +76,9 @@ nonrecursive_visibility_focusframe_ref_t
 create_nonrecursive_visibility_focusframe(const ref<containerObj::implObj>
 					  &parent_container,
 					  const border_arg &focusoff_border,
-					  const border_arg &focuson_border)
-	LIBCXX_HIDDEN;
-
-//! Create an nonrecursive_visibilityObj focus frame.
-
-nonrecursive_visibility_focusframe_ref_t
-create_nonrecursive_visibility_focusframe(const ref<containerObj::implObj>
-					  &parent_container,
-					  const border_arg &focusoff_border,
 					  const border_arg &focuson_border,
-					  const background_colorptr
-					  &focusable_background_color)
+					  const std::optional<color_arg> &bgcolor)
 	LIBCXX_HIDDEN;
-
 
 LIBCXXW_NAMESPACE_END
 

@@ -94,7 +94,7 @@ static scrollbar create_scrollbar(const ref<containerObj::implObj> &parent_conta
 		create_nonrecursive_visibility_focusframe
 		(parent_container,
 		 "scrollbarfocusoff_border",
-		 "inputfocuson_border");
+		 "inputfocuson_border", {});
 
 	// And this will be its layout manager.
 

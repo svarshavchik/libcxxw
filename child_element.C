@@ -27,40 +27,27 @@ child_elementObj::child_elementObj(const ref<containerObj::implObj> &child_conta
 
 child_elementObj::child_elementObj(const ref<containerObj::implObj> &child_container,
 				   const child_element_init_params &init_params)
-	: child_elementObj(child_container, init_params, background_colorptr())
-{
-}
+	: superclass_t{(init_params.background_color
+			? background_colorptr{
+				child_container
+					->container_element_impl().get_screen()
+					->impl
+					->create_background_color
+					(*init_params.background_color)
+					}
+			: background_colorptr{}),
 
-child_elementObj::child_elementObj(const ref<containerObj::implObj> &child_container,
-				   const child_element_init_params &init_params,
-				   const color_arg
-				   &initial_background_color)
-	: child_elementObj(child_container,
-			   init_params,
-			   child_container
-			   ->container_element_impl().get_screen()
-			   ->impl
-			   ->create_background_color(initial_background_color))
-{
-}
-
-
-child_elementObj::child_elementObj(const ref<containerObj::implObj> &child_container,
-				   const child_element_init_params &init_params,
-				   const background_colorptr
-				   &initial_background_color)
-	: superclass_t(initial_background_color,
-		       child_container->container_element_impl()
-			      .nesting_level+1,
-			      rectangle{0, 0, 0, 0},
-			      // The container will position me later
-			      init_params.initial_metrics,
-			      child_container->get_window_handler()
-			      .get_screen(),
-			      child_container->get_window_handler()
-			      .drawable_pictformat,
-			      init_params.scratch_buffer_id.empty()
-			      ? "default@libcxx.com":init_params.scratch_buffer_id),
+		child_container->container_element_impl()
+		.nesting_level+1,
+		rectangle{0, 0, 0, 0},
+		// The container will position me later
+		init_params.initial_metrics,
+			child_container->get_window_handler()
+			.get_screen(),
+			child_container->get_window_handler()
+			.drawable_pictformat,
+			(init_params.scratch_buffer_id.empty()
+			 ? "default@libcxx.com":init_params.scratch_buffer_id)},
 	  child_container(child_container)
 {
 }

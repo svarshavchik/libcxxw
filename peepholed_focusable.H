@@ -50,7 +50,7 @@ struct LIBCXX_HIDDEN create_peepholed_focusable_args_t {
 	//! This actually sets the background color for
 	//! the focus frame, with the peephole and the
 	//! the focusable element inheriting it.
-	const background_color &focusable_background_color;
+	const color_arg &focusable_background_color;
 
 	//! The implementation object of the new display element under construction.
 

@@ -31,7 +31,7 @@ focusable_label factoryObj
 	auto ff=create_nonrecursive_visibility_focusframe
 		(get_container_impl(),
 		 config.off_border,
-		 config.on_border);
+		 config.on_border, {});
 
 	auto ffl=ref<focusframelayoutimplObj>::create(ff);
 

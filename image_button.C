@@ -189,7 +189,7 @@ do_create_image_button(bool disable_recursive_visibility,
 		create_always_visible_focusframe
 		(image_button_outer_container_impl,
 		 "thin_inputfocusoff_border",
-		 "thin_inputfocuson_border");
+		 "thin_inputfocuson_border", {});
 
 	// Create an image_button_internal implementation object. Its
 	// container is the focusframecontainer.

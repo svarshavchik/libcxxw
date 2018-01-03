@@ -98,8 +98,7 @@ new_listlayoutmanager::create(const ref<containerObj::implObj>
 				"inputfocusoff_border",
 				"inputfocuson_border",
 				0,
-				focusable_container_impl->get_element_impl()
-				.create_background_color(background_color),
+				background_color,
 				focusable_container_impl,
 				list_peephole_style,
 				scrollbar_visibility::never,

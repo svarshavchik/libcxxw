@@ -118,22 +118,11 @@ create_pane_info_t panelayoutmanagerObj::implObj
 
 	// The peephole element.
 
-	child_element_init_params init_params{"",
-			initial_peephole_metrics(lock->dimension)};
-
-	background_colorptr background_color;
-
-	if (lock->background_color)
-	{
-		background_color=container_impl
-			->container_element_impl().get_screen()
-			->impl->create_background_color(lock->background_color
-							.value());
-	}
-
+	child_element_init_params init_params{{},
+			initial_peephole_metrics(lock->dimension),
+				lock->background_color};
 	auto peephole_impl=ref<pane_peepholeObj::implObj>
-		::create(peephole_container_impl, init_params,
-			 background_color);
+		::create(peephole_container_impl, init_params);
 
 	return {peephole_container_impl, peephole_impl};
 }

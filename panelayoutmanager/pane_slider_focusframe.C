@@ -26,8 +26,8 @@ pane_slider_focusframeObj
 		"pane_slider_focusoff_border",
 		"pane_slider_focuson_border",
 		parent,
-		child_element_init_params{FOCUSFRAME_ID},
-		background_color}
+		child_element_init_params{FOCUSFRAME_ID, {},
+			background_color}}
 {
 }
 
