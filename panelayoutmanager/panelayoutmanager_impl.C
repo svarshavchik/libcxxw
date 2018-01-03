@@ -114,15 +114,16 @@ create_pane_info_t panelayoutmanagerObj::implObj
 	// Container for the peephole and its scrollbar.
 
 	auto peephole_container_impl=ref<pane_peephole_containerObj::implObj>
-		::create(container_impl);
+		::create(container_impl,
+			 child_element_init_params
+			 {{}, {}, lock->background_color});
 
 	// The peephole element.
 
-	child_element_init_params init_params{{},
-			initial_peephole_metrics(lock->dimension),
-				lock->background_color};
 	auto peephole_impl=ref<pane_peepholeObj::implObj>
-		::create(peephole_container_impl, init_params);
+		::create(peephole_container_impl,
+			 child_element_init_params
+			 {{}, initial_peephole_metrics(lock->dimension)});
 
 	return {peephole_container_impl, peephole_impl};
 }
@@ -216,7 +217,8 @@ void panelayoutmanagerObj::implObj
 		.bottom_padding(properties.bottom_padding_set);
 
 	auto [style, horizontal_scrollbar_visibility,
-	      vertical_scrollbar_visibility]=pane_peephole_style();
+	      vertical_scrollbar_visibility]=
+		pane_peephole_style(properties.pane_scrollbar_visibility);
 
 	style.horizontal_alignment=properties.horizontal_alignment;
 	style.vertical_alignment=properties.vertical_alignment;
@@ -592,13 +594,13 @@ std::optional<size_t> panelayoutmanagerObj::implObj::orientation<vertical>
 template<>
 std::tuple<peephole_style, scrollbar_visibility, scrollbar_visibility>
 panelayoutmanagerObj::implObj::orientation<vertical>
-::pane_peephole_style()
+::pane_peephole_style(scrollbar_visibility pane_scrollbar_visibility)
 {
 	peephole_style style;
 
 	style.autowidth=true;
 	return {style, scrollbar_visibility::never,
-			scrollbar_visibility::always};
+			pane_scrollbar_visibility};
 }
 
 template<>

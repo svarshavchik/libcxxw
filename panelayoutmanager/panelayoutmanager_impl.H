@@ -295,12 +295,12 @@ class LIBCXX_HIDDEN panelayoutmanagerObj::implObj
 	virtual metrics::horizvert_axi
 		initial_peephole_metrics(const dim_arg &size)=0;
 
-	//! Style for panes' peepholes.
+	//! Style for panes' peepholes, and scroll-bar visibilities.
 
 	virtual std::tuple<peephole_style,
 			   scrollbar_visibility,
 			   scrollbar_visibility>
-		pane_peephole_style()=0;
+		pane_peephole_style(scrollbar_visibility)=0;
 
 	//! Given a slider element, find for me the two panes next to it.
 
@@ -356,7 +356,7 @@ class panelayoutmanagerObj::implObj::orientation
 	std::tuple<peephole_style,
 		   scrollbar_visibility,
 		   scrollbar_visibility>
-	pane_peephole_style() override;
+	pane_peephole_style(scrollbar_visibility) override;
 
 	//! Implement request_extra_space_to_canvas().
 

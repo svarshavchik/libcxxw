@@ -17,6 +17,7 @@
 #include "x/w/panefactory.H"
 #include "x/w/button.H"
 #include "x/w/label.H"
+#include "x/w/standard_comboboxlayoutmanager.H"
 
 #include <string>
 #include <iostream>
@@ -45,13 +46,15 @@ static void create_pane(const LIBCXX_NAMESPACE::w::panelayoutmanager &lm)
 {
 }
 
-static void insert(const LIBCXX_NAMESPACE::w::container &c)
+static void insert(const LIBCXX_NAMESPACE::w::container &c,
+		   LIBCXX_NAMESPACE::w::scrollbar_visibility v)
 {
 	LIBCXX_NAMESPACE::w::panelayoutmanager lm=c->get_layoutmanager();
 
 	LIBCXX_NAMESPACE::w::panefactory f=lm->insert_panes(0);
 
 	f->set_initial_size(20)
+		.set_scrollbar_visibility(v)
 		.create_label("Lorem ipsum\n"
 			      "dolor sit amet\n"
 			      "consectetur\n"
@@ -63,14 +66,16 @@ static void insert(const LIBCXX_NAMESPACE::w::container &c)
 			      "aliqua")->show();
 }
 
-static void append(const LIBCXX_NAMESPACE::w::container &c)
+static void append(const LIBCXX_NAMESPACE::w::container &c,
+		   LIBCXX_NAMESPACE::w::scrollbar_visibility v)
 {
 	LIBCXX_NAMESPACE::w::panelayoutmanager lm=c->get_layoutmanager();
 
 	LIBCXX_NAMESPACE::w::panefactory f=lm->append_panes();
 
 	f->set_background_color("100%")
-		.padding(2.0);
+		.padding(2.0)
+		.set_scrollbar_visibility(v);
 
 	f->create_label("Lorem ipsum "
 			"dolor sit amet\n"
@@ -101,7 +106,8 @@ static void remove_last(const LIBCXX_NAMESPACE::w::container &c)
 		lm->remove_pane(s-1);
 }
 
-static void replace_first(const LIBCXX_NAMESPACE::w::container &c)
+static void replace_first(const LIBCXX_NAMESPACE::w::container &c,
+			  LIBCXX_NAMESPACE::w::scrollbar_visibility v)
 {
 	LIBCXX_NAMESPACE::w::panelayoutmanager lm=c->get_layoutmanager();
 
@@ -109,6 +115,7 @@ static void replace_first(const LIBCXX_NAMESPACE::w::container &c)
 
 	f->set_background_color("100%")
 		.padding(2.0)
+		.set_scrollbar_visibility(v)
 		.valign(LIBCXX_NAMESPACE::w::valign::bottom);
 
 	f->create_label("Lorem ipsum "
@@ -122,6 +129,24 @@ static void replace_first(const LIBCXX_NAMESPACE::w::container &c)
 			"aliqua")->show();
 }
 
+static LIBCXX_NAMESPACE::w::scrollbar_visibility get_scrollbar_visibility(const auto &container)
+{
+	LIBCXX_NAMESPACE::w::standard_comboboxlayoutmanager lm=
+		container->get_layoutmanager();
+
+	auto selected=lm->selected();
+
+	size_t i=selected ? *selected:0;
+
+	static const LIBCXX_NAMESPACE::w::scrollbar_visibility values[]={
+		LIBCXX_NAMESPACE::w::scrollbar_visibility::never,
+		LIBCXX_NAMESPACE::w::scrollbar_visibility::always,
+		LIBCXX_NAMESPACE::w::scrollbar_visibility::automatic,
+		LIBCXX_NAMESPACE::w::scrollbar_visibility::automatic_reserved
+	};
+
+	return values[i];
+}
 
 static void create_main_window(const LIBCXX_NAMESPACE::w::main_window &mw)
 {
@@ -140,24 +165,53 @@ static void create_main_window(const LIBCXX_NAMESPACE::w::main_window &mw)
 
 	factory=layout->append_row();
 
+	factory->halign(LIBCXX_NAMESPACE::w::halign::right)
+		.valign(LIBCXX_NAMESPACE::w::valign::bottom)
+		.create_label("New elements'\nscrollbar visibility:")->show();
+
+	auto scrollbar_visibility=
+		factory->valign(LIBCXX_NAMESPACE::w::valign::bottom)
+		.create_focusable_container
+		([&]
+		 (const auto &c)
+		 {
+			 LIBCXX_NAMESPACE::w::standard_comboboxlayoutmanager lm=
+			 c->get_layoutmanager();
+
+			 lm->append_items({ "Hide",
+						 "Always",
+						 "When needed",
+						 "Reserve space"});
+
+			 lm->selected(3, true, {});
+		 },
+		 LIBCXX_NAMESPACE::w::new_standard_comboboxlayoutmanager{}
+		 );
+
+	scrollbar_visibility->show();
+
+	factory=layout->append_row();
+
 	factory->halign(LIBCXX_NAMESPACE::w::halign::left);
 	auto b=factory->create_normal_button_with_label("Insert");
 
 	b->show();
-	b->on_activate([pane]
+	b->on_activate([pane, scrollbar_visibility]
 		       (const auto &trigger,
 			const auto &busy) {
-			       insert(pane);
+			       insert(pane, get_scrollbar_visibility
+				      (scrollbar_visibility));
 		       });
 
 	factory->halign(LIBCXX_NAMESPACE::w::halign::right);
 	b=factory->create_normal_button_with_label("Append");
 
 	b->show();
-	b->on_activate([pane]
+	b->on_activate([pane, scrollbar_visibility]
 		       (const auto &trigger,
 			const auto &busy) {
-			       append(pane);
+			       append(pane, get_scrollbar_visibility
+				      (scrollbar_visibility));
 		       });
 
 	factory=layout->append_row();
@@ -188,10 +242,11 @@ static void create_main_window(const LIBCXX_NAMESPACE::w::main_window &mw)
 	b=factory->create_normal_button_with_label("Replace 1st pane");
 
 	b->show();
-	b->on_activate([pane]
+	b->on_activate([pane, scrollbar_visibility]
 		       (const auto &trigger,
 			const auto &busy) {
-			       replace_first(pane);
+			       replace_first(pane, get_scrollbar_visibility
+					     (scrollbar_visibility));
 		       });
 
 	factory->halign(LIBCXX_NAMESPACE::w::halign::right);

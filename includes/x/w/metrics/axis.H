@@ -48,9 +48,7 @@ namespace metrics {
 	//! the display element does not specify a maximum size.
 	//!
 	//! This is mostly an internal object that specifies the size in
-	//! pixel counts. The library uses \ref mmaxis "mmaxis" which
-	//! expresses the sizes in millimeters, to define sizes of display
-	//! elements.
+	//! pixel counts.
 
 	class axis {
 

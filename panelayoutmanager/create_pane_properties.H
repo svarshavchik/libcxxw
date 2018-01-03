@@ -8,6 +8,7 @@
 #include "x/w/dim_arg.H"
 #include "x/w/rgb.H"
 #include "x/w/alignment.H"
+#include "x/w/scrollbar.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -41,8 +42,11 @@ struct LIBCXX_HIDDEN create_pane_properties_t {
 	//! Custom alignment
 	valign vertical_alignment=valign::top;
 
-	//! Constructor
+	//! Scrollbar visibility
+	scrollbar_visibility pane_scrollbar_visibility=
+		scrollbar_visibility::automatic_reserved;
 
+	//! Constructor
 	create_pane_properties_t();
 };
 

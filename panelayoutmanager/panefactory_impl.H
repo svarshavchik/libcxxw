@@ -45,8 +45,11 @@ class LIBCXX_HIDDEN panefactory_implObj : public panefactoryObj {
 	//! Destructor
 	~panefactory_implObj();
 
-	//! Implement set_initial_size_set();
+	//! Implement set_initial_size_set().
 	void set_initial_size_set(const dim_arg &arg) override;
+
+	//! Implement set_scrollbar_visibility_set.
+	void set_scrollbar_visibility_set(scrollbar_visibility v) override;
 
 	//! Implement set_background_color_set().
 	void set_background_color_set(const color_arg &arg) override;

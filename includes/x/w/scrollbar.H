@@ -86,20 +86,19 @@ struct scrollbar_config {
 	}
 };
 
-//! When a scrollbar should be shown by display elements that manage their own scrollbars.
-
-//! - never: never show the scrollbar
-//!
-//! - always: always show the scrollbar
-//!
-//! - automatic: show the scrollbar only when there's something to scroll
-//!
-//! - automatic_reserved: like automatic, but reserve the space for the scrollbar
+//! Specify when a scroll-bar is visible.
 
 enum class scrollbar_visibility {
+	//! Never show the scroll-bar.
 	never,
+	//! Always show the scroll-bar, even when there's nothing to scroll.
 	always,
+	//! The scroll-bar appears only when there's something to scroll.
 	automatic,
+	//! Same as \c automatic, but reserve the space for the scroll-bar in advance.
+
+	//! The scroll-bar is not visible when there's nothing to scroll,
+	//! and a blank area appears in its place.
 	automatic_reserved
 };
 

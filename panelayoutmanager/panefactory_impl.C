@@ -33,6 +33,13 @@ void panefactory_implObj::set_background_color_set(const color_arg &arg)
 	lock->background_color=arg;
 }
 
+void panefactory_implObj::set_scrollbar_visibility_set(scrollbar_visibility v)
+{
+	new_pane_properties_t::lock lock{new_pane_properties};
+
+	lock->pane_scrollbar_visibility=v;
+}
+
 void panefactory_implObj::left_padding_set(const dim_arg &arg)
 {
 	new_pane_properties_t::lock lock{new_pane_properties};

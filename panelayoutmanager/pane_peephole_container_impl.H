@@ -23,7 +23,8 @@ class LIBCXX_HIDDEN pane_peephole_containerObj::implObj
 				  > superclass_t;
  public:
 	//! Constructor
-	implObj(const ref<containerObj::implObj> &parent_container);
+	implObj(const ref<containerObj::implObj> &parent_container,
+		const child_element_init_params &init_params);
 
 	//! Destructor
 	~implObj();

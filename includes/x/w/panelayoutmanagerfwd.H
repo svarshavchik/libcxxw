@@ -18,15 +18,18 @@ A series of panes, stacked in a vertical column or a horizontal row in order
 to use less real estate for displaying larger contents.
 
 Each element in a container with a pane layout manager is placed into
-a single column (vertical pane) or row (horizontal pane). The elements
+a single column (vertical panes) or row (horizontal panes). The elements
 are separated by thin dividers which slide, expanding the amount of the
 overall container that's allocated to each element, at expense of the
 other elements in the pane.
 
+The width of vertical panes, and height of horizontal panes, gets
+automatically sized to the widest (tallest) pane.
+
 Each individual pane could be smaller than the pane's element, partially
 (or even fully) hiding it. Move the dividing sliders on each side of the
-element's pane to see more of the pane's element. Alternatively, use the
-scrollbar to scroll different parts of the pane's element into view.
+element's pane to see more of the pane's element. Alternatively, use each
+pane's scroll-bar to scroll different parts of the pane's element into view.
 
 \code
 #include <INSERT_LIBX_NAMESPACE/w/panelayoutmanager.H>

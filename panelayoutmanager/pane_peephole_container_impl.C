@@ -10,8 +10,10 @@
 LIBCXXW_NAMESPACE_START
 
 pane_peephole_containerObj::implObj::implObj(const ref<containerObj::implObj>
-					     &parent_container)
-	: superclass_t{parent_container}
+					     &parent_container,
+					     const child_element_init_params
+					     &init_params)
+	: superclass_t{parent_container, init_params}
 {
 }
 

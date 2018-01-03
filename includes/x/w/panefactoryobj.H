@@ -44,6 +44,13 @@ public:
 		return *this;
 	}
 
+	//! Visibility for the next pane's scroll-bar.
+	inline panefactoryObj &set_scrollbar_visibility(scrollbar_visibility v)
+	{
+		set_scrollbar_visibility_set(v);
+		return *this;
+	}
+
 	//! Set padding for the next pane.
 
 	inline panefactoryObj &left_padding(const dim_arg &arg)
@@ -103,6 +110,9 @@ public:
 	//! Default initial size of the next pane.
 
 	virtual void set_initial_size_set(const dim_arg &arg)=0;
+
+	//! Visibility for the next pane's scroll-bar.
+	virtual void set_scrollbar_visibility_set(scrollbar_visibility v)=0;
 
 	//! Next pane will have this custom background color.
 
