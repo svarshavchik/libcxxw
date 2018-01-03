@@ -39,8 +39,6 @@ LIBCXXW_NAMESPACE_START
 
 // #define DEBUG_EXPOSURE_CALCULATIONS
 
-#define DO_NOT_DRAW (!data(IN_THREAD).inherited_visibility)
-
 void elementObj::implObj::data_thread_only_t::no_focus_callback(focus_change)
 {
 }
@@ -650,7 +648,7 @@ void elementObj::implObj::draw(IN_THREAD_ONLY,
 	if (areas.empty() || di.element_viewport.empty())
 		return; // Don't bother.
 
-	if (DO_NOT_DRAW)
+	if (DO_NOT_DRAW(IN_THREAD))
 		clear_to_color(IN_THREAD, di, areas);
 	else
 		do_draw(IN_THREAD, di, areas);

@@ -5,7 +5,7 @@
 #ifndef x_w_scrollbarobj_h
 #define x_w_scrollbarobj_h
 
-#include <x/w/elementobj.H>
+#include <x/w/containerobj.H>
 #include <x/w/focusableownerobj.H>
 #include <x/w/scrollbarfwd.H>
 

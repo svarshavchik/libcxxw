@@ -301,6 +301,15 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	THREAD_DATA_ONLY(data);
 	THREAD_DATA_SUPERCLASS_ONLY(horizvertObj, get_horizvert);
 
+ protected:
+
+	//! Drawing codepaths need to bail out if DO_NOT_DRAW().
+
+	inline bool DO_NOT_DRAW(IN_THREAD_ONLY) const
+	{
+		return (!data(IN_THREAD).inherited_visibility);
+	}
+ public:
 	//! Install minimum element size overrides.
 	void set_minimum_override(dim_t horiz_override, dim_t vert_override);
 

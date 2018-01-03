@@ -391,6 +391,8 @@ void scrollbarObj::implObj::draw_scroll_low(IN_THREAD_ONLY)
 	if (metrics.too_small)
 		return;
 
+	if (DO_NOT_DRAW(IN_THREAD))
+		return;
 	auto &di=get_draw_info(IN_THREAD);
 
 	clip_region_set clipped{IN_THREAD, get_window_handler(), di};
@@ -431,6 +433,8 @@ void scrollbarObj::implObj::draw_scroll_high(IN_THREAD_ONLY)
 	if (metrics.too_small)
 		return;
 
+	if (DO_NOT_DRAW(IN_THREAD))
+		return;
 	auto &di=get_draw_info(IN_THREAD);
 
 	clip_region_set clipped{IN_THREAD, get_window_handler(), di};
@@ -473,6 +477,8 @@ void scrollbarObj::implObj::draw_slider(IN_THREAD_ONLY)
 	if (metrics.too_small)
 		return;
 
+	if (DO_NOT_DRAW(IN_THREAD))
+		return;
 	auto &di=get_draw_info(IN_THREAD);
 
 	clip_region_set clipped{IN_THREAD, get_window_handler(), di};
