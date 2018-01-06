@@ -400,7 +400,8 @@ void panelayoutmanagerObj::implObj
 	initialize_factory_for_slider(f); // Same border and no padding.
 
 	// Fill new element to pane's entire width and height
-	// pane_peephole_style() sets autowidth/autoheight, so the element in
+	// pane_peephole_style() sets the appropriate algorithm to
+	// peephole_algorithm::stretch_peephole, so the element in
 	// the peephole gets stretched to the pane's height or width
 	// automatically, and the peephole layout manager
 	// takes care of setting the peephole's metrics to the peepholed
@@ -630,7 +631,8 @@ panelayoutmanagerObj::implObj::orientation<vertical>
 {
 	peephole_style style;
 
-	style.autowidth=true;
+	style.width_algorithm=peephole_algorithm::stretch_peephole;
+
 	return {style, scrollbar_visibility::never,
 			pane_scrollbar_visibility};
 }
@@ -816,7 +818,7 @@ panelayoutmanagerObj::implObj::orientation<horizontal>
 {
 	peephole_style style;
 
-	style.autoheight=true;
+	style.height_algorithm=peephole_algorithm::stretch_peephole;
 	return {style, pane_scrollbar_visibility,
 			scrollbar_visibility::never};
 }

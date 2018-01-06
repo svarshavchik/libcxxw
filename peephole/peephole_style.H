@@ -17,6 +17,27 @@ enum class LIBCXX_HIDDEN peephole_scroll {
 	centered, //!< Try to keep the input focus centered in the peephole
 };
 
+//! Peephole sizing algorithm.
+
+enum class LIBCXX_HIDDEN peephole_algorithm {
+
+	//! Default sizing algorithm
+
+	//! We take the width/height of the peepholed element, the
+	//! width/height of the peephole, and work with it.
+
+	automatic,
+
+	//! Stretch the peephole to match the peepholed element's dimension.
+
+	//! Always set the width or the height of the peephole to match
+	//! the width or height of the peepholed element. This effectively
+	//! turns this peephole into a single-dimension peephole. If the
+	//! width gets stretched, the peephole operates only in the vertical
+	//! dimension, and vice versa
+	stretch_peephole
+};
+
 //! Peephole style.
 
 struct LIBCXX_HIDDEN peephole_style {
@@ -27,18 +48,13 @@ struct LIBCXX_HIDDEN peephole_style {
 	//! Alignment of the element when it is smaller than the peephole.
 	valign vertical_alignment=valign::top;
 
-	//! Whether the peephole should automatically stretch its width
+	//! How the peephole's width gets processed.
 
-	//! If set, this becomes effectively a vertical-only peephole, because
-	//! its width will match the peepholed element's width.
-	bool autowidth=false;
+	peephole_algorithm width_algorithm=peephole_algorithm::automatic;
 
-	//! Whether the peephole should automatically stretch its height
+	//! How the peephole's height gets processed.
 
-	//! If set, this becomes effectively a horizontal-only peephole, because
-	//! its height will match the peepholed element's height.
-	bool autoheight=false;
-
+	peephole_algorithm height_algorithm=peephole_algorithm::automatic;
 
 	//! Peephole scrolling strategy
 

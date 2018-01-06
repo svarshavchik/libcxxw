@@ -206,16 +206,18 @@ void peepholeObj::layoutmanager_implObj
 
 	// Copy the peepholed element's metrics to ours, if auto width/height.
 
-	if (style.autowidth || style.autoheight)
+	if (style.width_algorithm==peephole_algorithm::stretch_peephole ||
+	    style.height_algorithm==peephole_algorithm::stretch_peephole)
 	{
 		auto my_horizvert=get_element_impl().get_horizvert(IN_THREAD);
 
 		auto horiz=my_horizvert->horiz;
 		auto vert=my_horizvert->vert;
 
-		if (style.autowidth)
+		if (style.width_algorithm==peephole_algorithm::stretch_peephole)
 			horiz=element_horizvert->horiz;
-		if (style.autoheight)
+		if (style.height_algorithm==
+		    peephole_algorithm::stretch_peephole)
 			vert=element_horizvert->vert;
 		my_horizvert->set_element_metrics(IN_THREAD, horiz, vert);
 	}
@@ -278,9 +280,9 @@ void peepholeObj::layoutmanager_implObj
 						current_position.height);
 	}
 
-	if (style.autowidth)
+	if (style.width_algorithm!=peephole_algorithm::automatic)
 		min_scroll_x=0;
-	if (style.autoheight)
+	if (style.height_algorithm!=peephole_algorithm::automatic)
 		min_scroll_y=0;
 
 	LOG_DEBUG("Minimum X position is " << min_scroll_x);
