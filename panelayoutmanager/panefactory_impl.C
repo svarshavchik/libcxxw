@@ -154,14 +154,11 @@ focusable_container panefactory_implObj
 				const new_focusable_layoutmanager
 				&layout_manager)
 {
+	grid_map_t::lock lock{layout->impl->grid_map};
+	// To protect the created_pane_peephole
+
 	auto fc=panefactoryObj::do_create_focusable_container(creator,
 							      layout_manager);
-
-	// Note that the factory holds a grid map lock. This effectively
-	// assures us that the created_pane_peephole is, indeed, the one for
-	// this new focusable container.
-	//
-	// created_pane_peephole is an mpobj out of abundance of caution.
 
 	pane_peephole_container new_pane_peephole=
 		created_pane_peephole.get();

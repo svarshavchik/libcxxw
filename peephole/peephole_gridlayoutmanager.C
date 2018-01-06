@@ -5,6 +5,7 @@
 #include "libcxxw_config.h"
 
 #include "peephole/peephole_gridlayoutmanagerobj.H"
+#include "peephole/peephole.H"
 #include "container.H"
 #include "x/w/scrollbar.H"
 
@@ -27,7 +28,7 @@ peephole_gridlayoutmanagerObj
 	row_alignment(0, valign::fill);
 }
 
-container peephole_gridlayoutmanagerObj::get_peephole_container()
+peephole peephole_gridlayoutmanagerObj::get_peephole()
 {
 	return get(0, 0);
 }
@@ -45,7 +46,7 @@ scrollbar peephole_gridlayoutmanagerObj::get_horizontal_scrollbar()
 void peephole_gridlayoutmanagerObj::request_visibility_recursive(IN_THREAD_ONLY,
 								 bool flag)
 {
-	get_peephole_container()->elementObj::impl
+	get_peephole()->elementObj::impl
 		->request_visibility_recursive(IN_THREAD, flag);
 }
 

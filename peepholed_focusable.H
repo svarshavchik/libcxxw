@@ -9,6 +9,7 @@
 #include "x/w/containerobj.H"
 #include "x/w/gridlayoutmanagerfwd.H"
 #include "x/w/scrollbarfwd.H"
+#include "x/w/border_arg.H"
 #include "peephole/peephole_style.H"
 #include "peephole/peepholefwd.H"
 #include "peephole/peepholedfwd.H"
@@ -37,7 +38,7 @@ typedef std::tuple<ref<peepholeObj::implObj>, peepholed,
 
 struct LIBCXX_HIDDEN create_peepholed_focusable_args_t {
 	//! The border around the focus frame and scrollbars.
-	const char *border;
+	border_arg border;
 	//! Focus off border
 	const char *inputfocusoff_border;
 	//! Focus on border

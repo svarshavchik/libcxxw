@@ -16,6 +16,7 @@
 #include <x/w/image_param.H>
 #include <x/w/shortcut.H>
 #include <x/w/rgb.H>
+#include <x/w/border_arg.H>
 #include <x/w/dim_axis_arg.H>
 #include <x/ref.H>
 #include <x/refptr_traits.H>
@@ -103,7 +104,10 @@ class LIBCXX_HIDDEN new_listlayoutmanager : public new_focusable_layoutmanager {
 
 	std::variant<size_t, dim_axis_arg> height;
 
-	//! Set height as completely variable.
+	//! Set the new list's height as completely variable.
+
+	//! This is often used when creating a selection list
+	//! inside a \ref panelayoutmanager "pane".
 
 	inline void variable_height()
 	{
@@ -112,7 +116,7 @@ class LIBCXX_HIDDEN new_listlayoutmanager : public new_focusable_layoutmanager {
 
 	//! Number of columns in the list
 
-	//! This is not the number of character, but the number of
+	//! This is not the number of characters, but the number of
 	//! elements in each list item. The default is 1.
 	size_t columns;
 
@@ -124,6 +128,9 @@ class LIBCXX_HIDDEN new_listlayoutmanager : public new_focusable_layoutmanager {
 
 	//! Alignment of all columns.
 	std::unordered_map<size_t, halign> col_alignments;
+
+	//! The border around the list.
+	border_arg list_border;
 
 	//! Padding above and below each list item
 	std::string v_padding;

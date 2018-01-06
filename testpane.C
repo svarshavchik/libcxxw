@@ -66,6 +66,9 @@ static void insert(const LIBCXX_NAMESPACE::w::container &c,
 			      "labore et\n"
 			      "dolore magna\n"
 			      "aliqua")->show();
+
+	LIBCXX_NAMESPACE::w::pane_lock lock{lm};
+	LIBCXX_NAMESPACE::w::label l=lm->get(0);
 }
 
 static void append(const LIBCXX_NAMESPACE::w::container &c,

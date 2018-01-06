@@ -1,0 +1,208 @@
+<!--
+
+Copyright 2018 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<chapter id="panelayoutmanager">
+  <title>The pane layout manager</title>
+
+  <mediaobject>
+    <imageobject>
+      <imagedata fileref="panelayoutmanager.png" format="PNG"
+		 contentwidth="350px" contentdepth="663px" />
+    </imageobject>
+  </mediaobject>
+
+  <para>
+    The pane layout manager is another way to conserve valuable real
+    estate and share a small between multiple display elements.
+  </para>
+
+  <para>
+    The pane layout manager arranges its display elements vertically
+    or horizontally. Each display element becomes a
+    <quote>pane</quote> with the pane layout manager providing
+    draggable dividers in between the panes that look line dashed lines.
+    These dividers drag and slide in both directions, and dragging
+    the dividing sliders visually adjusts the relative sizes of panes on either
+    side of the slider. One pane gets smaller, and the other
+    pane gets larger.
+  </para>
+
+  <para>
+    The pane layout manager also provides scroll-bars for display
+    elements when their panes are not big enough to show them in their
+    entirety.
+  </para>
+
+  <para>
+    Passing an
+    <ulink url="&link-x--w--new-panelayoutmanager;"><classname>&ns;::w::new_panelayoutmanager</classname></ulink>
+    to a &factory;'s <methodname>create_focusable_container</methodname>()
+    creates a &container; with a
+    <ulink url="&link-typedef-x--w-panelayoutmanager;"><classname>&ns;::w::panelayoutmanager</classname></ulink>.
+    The panes are placed in a vertical column by default, with the container
+    getting automatically sized to accomodate the widest pane.
+    Invoking <classname>&ns;::w::new_panelayoutmanager</classname>'s
+    <methodname>horizontal</methodname>() results in horizontally-oriented
+    panes, with the container getting automatically sized to accomodate
+    the tallest pane.
+  </para>
+
+  <para>
+    <filename>panelayoutmanager.C</filename> creates a vertical set of panes
+    and gives an example of using
+    the pane layout manager. Running this example with the
+    <option>-h</option> parameter creates a horizontal set of panes.
+  </para>
+
+  <blockquote>
+    <title><ulink url="examples/panelayoutmanager.C">panelayoutmanager.C</ulink></title>
+
+    <informalexample>
+      <programlisting><xi:include href="../examples/panelayoutmanager.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <section id="createpanes">
+    <title>Creating new panes</title>
+
+    <para>
+      <ulink url="&link-typedef-x--w-panelayoutmanager;"><classname>&ns;::w::panelayoutmanager</classname></ulink>'s
+      <methodname>append_panes()</methodname>,
+      <methodname>insert_panes()</methodname>,
+      <methodname>replace_panes()</methodname>, and
+      <methodname>replace_all_panes()</methodname>
+      return a
+      <ulink url="&link-typedef-x--w-panefactory;"><classname>&ns;::w::panefactory</classname></ulink>,
+      which is a &factory;.
+      Every display element creates by the factory becomes a new pane in the
+      pane layout manager's container.
+    </para>
+
+    <para>
+      The pane layout manager consecutively numbers each pane, starting with
+      pane #0.
+      The factory returned by
+      <methodname>append_panes()</methodname> adds new panes after all, if any,
+      existing panes in the container.
+      <methodname>insert_panes()</methodname> adds new panes before some
+      existing pane in the container.
+      The panes created by
+      <methodname>replace_panes()</methodname>'s factory replace the existing
+      panes in the container.
+      Finally, calling
+      <methodname>replace_all_panes()</methodname> removes all existing
+      panes, with the returned factory starting with an empty pane container.
+    </para>
+
+    <para>
+      <methodname>remove_pane</methodname>() removes an existing pane in
+      the container.
+      <methodname>remove_all_panes</methodname>() removes all panes from the
+      container.
+      <methodname>replace_all_panes()</methodname> is equivalent to calling
+      <methodname>remove_all_panes</methodname>() followed by
+      <methodname>append_panes</methodname>().
+    </para>
+
+    <para>
+      <methodname>size</methodname>() returns the number of elements in the
+      pane, and <methodname>get</methodname>() returns an existing element
+      in the pane.
+      <filename>panelayoutmanager.C</filename> demonstrates an example of
+      using an
+      <ulink url="&link-x--w--pane-lock;"><classname>&ns;::w::pane_lock</classname></ulink>
+      to block other execution threads from accessing the pane layout
+      manager's container.
+    </para>
+  </section>
+
+  <section id="panefocusability">
+    <title>Input focus and selection lists</title>
+
+    <para>
+      The pane layout manager uses &focusable; display elements internally,
+      specifically the dividing sliders between the individual panes, and
+      the <link linkend="scrollbar">scroll-bars</link> that scroll the
+      elements bigger than their pane, into view. This is why
+      the pane layout manager gets used with
+      <methodname>create_focusable_container</methodname>().
+    </para>
+
+    <para>
+      The pane layout manager automatically manages the individual
+      tabbing order for its scroll-bars and sliders. The focusable container
+      is considered to be a single focusable display element, and moving its
+      tabbing order moves the order of all the scroll-bars and sliders as
+      a group.
+      Setting a focusable element's tabbing order before or after the
+      pane's focusable container moves the input focus to it before or after
+      all of the pane's sliders and scroll-bars; with one exception.
+    </para>
+
+    <para>
+      The exception is a <link linkend="list">selection list</link>.
+      Creating a pane with a selection list automatically incorporates the
+      selection list into the pane's natural tabbing order. The input
+      focus gets tabbed in and out of the selection list in order with the
+      pane's focusable elements.
+    </para>
+
+    <para>
+      <link linkend="panelayoutmanager"><filename>panelayoutmanager.C</filename></link>
+      demonstrates how to set several options, for both the selection list
+      itself and its pane, for best results:
+    </para>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  Specifying a <methodname>variable_height</methodname>() for
+	  the selection list, so that it automatically matches it's pane's
+	  height, when the pane's height get adjusted by its dividing sliders.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Eliminating the selection list element's drawn border, because
+	  the pane layout manager provides a border for all of its panes,
+	  already.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Disabling the pane's scroll-bar. The selection list provides its
+	  own scroll-bar when its size is not sufficient to show all elements
+	  in the list.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Removing the small amount of padding in the list's pane. The
+	  selection list provides the same amount of padding itself.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Setting the pane element alighment options to fill out the element
+	  in the pane to always match the size of the pane. This automatically
+	  adjusts the list's height to match the pane's, making the
+	  selection list responsible for its own scrolling.
+	</para>
+      </listitem>
+    </itemizedlist>
+  </section>
+</chapter>
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "book" "chapter")
+End:
+-->

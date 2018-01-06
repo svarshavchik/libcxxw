@@ -5,6 +5,7 @@
 #include "libcxxw_config.h"
 #include "panelayoutmanager/pane_peephole_container_impl.H"
 #include "peephole/peephole_gridlayoutmanagerobj.H"
+#include "peephole/peephole.H"
 #include "focus/focusable.H"
 #include "x/w/scrollbar.H"
 #include <x/exception.H>
@@ -96,15 +97,15 @@ void pane_peephole_containerObj
 				&all_focusable_impls.at(0)});
 }
 
-container pane_peephole_containerObj::get_peephole()
+peephole pane_peephole_containerObj::get_peephole()
 {
-	containerptr c;
+	peepholeptr c;
 
 	impl->invoke_layoutmanager
 		([&]
 		 (const ref<peephole_gridlayoutmanagerObj> &lm)
 		 {
-			 c=lm->get_peephole_container();
+			 c=lm->get_peephole();
 		 });
 
 	return c;

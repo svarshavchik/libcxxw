@@ -81,10 +81,13 @@ pane's background color. Call set_background_color() again to use the same
 INSERT_LIBX_NAMESPACE::w::new_listlayoutmanager nlm;
 
 nlm.variable_height();
+nlm.list_border={};
 
 pane_f->set_initial_size(20)
     .set_scrollbar_visibility(INSERT_LIBX_NAMESPACE::w::scrollbar_visibility::never)
     .halign(LIBCXX_NAMESPACE::w::halign::fill)
+    .valign(LIBCXX_NAMESPACE::w::valign::fill)
+    .padding(0)
     .create_focusable_container(
          []
          (const auto &container)
@@ -119,6 +122,10 @@ pane's sliders adjust the pane's height, and with the pane's now having
 a variable height, the height of the selection list is always the same as
 its containing pane.
 
+Additionally, list_border gets cleared, the pane's borders are enough, and
+the pane-provided padding gets overriden, the list-provided padding is
+sufficient.
+
 The pane's scroll-bar's visibility gets overriden to "never". This removes the
 pane's usual scroll-bar, however the selection list supplies its own
 scroll-bar now when its height isn't enough to fit the entire list.
@@ -127,7 +134,7 @@ The pane's horizontal alignment get set to
 fit inside the pane. This ends up putting ths selection list's scroll-bar
 in the same position where the pane's own scroll-bar normally goes.
 
-The end result is a selection list that functions as a natural part of the
+The end result is a selection list that looks like an integral part of the
 pane container.
 This result gets further improved by automatically incorporating
 the \ref focusable "selection list's tabbing order" into

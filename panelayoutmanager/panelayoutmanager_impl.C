@@ -63,6 +63,24 @@ size_t panelayoutmanagerObj::implObj::size()
 	return s/2;
 }
 
+elementptr panelayoutmanagerObj::implObj::get_pane_element(size_t n)
+{
+	elementptr e;
+
+	grid_map_t::lock lock{grid_map};
+
+	if (n < size())
+	{
+		pane_peephole_container container=get_element(lock, n*2);
+
+		auto peephole=container->get_peephole();
+
+		e=peephole->get_peepholed();
+	}
+
+	return e;
+}
+
 layoutmanager panelayoutmanagerObj::implObj::create_public_object()
 {
 	return panelayoutmanager::create(ref(this));
@@ -252,8 +270,8 @@ pane_peephole_container panelayoutmanagerObj::implObj
 	// Install the peephole_impl into the pane.
 
 	pane_container_grid_factory
-		->created_internally(container::create(info.peephole_impl,
-						       layout_impl));
+		->created_internally(peephole::create(info.peephole_impl,
+						      layout_impl));
 
 	// And install the scrollbars
 	install_peephole_scrollbars(pane_container_grid,

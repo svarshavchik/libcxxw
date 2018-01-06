@@ -5,6 +5,7 @@
 #include "libcxxw_config.h"
 
 #include "peephole/peephole_toplevel_gridlayoutmanagerobj.H"
+#include "peephole/peephole_impl.H"
 #include "container.H"
 #include "layoutmanager.H"
 
@@ -14,10 +15,7 @@ void peephole_toplevel_gridlayoutmanagerObj::needs_recalculation(IN_THREAD_ONLY)
 {
 	peephole_gridlayoutmanagerObj::needs_recalculation(IN_THREAD);
 
-
-	container peephole_container=get(0, 0);
-
-	get_peephole_container()->impl->invoke_layoutmanager
+	get_peephole()->impl->invoke_layoutmanager
 		([&]
 		 (const auto &lm)
 		 {

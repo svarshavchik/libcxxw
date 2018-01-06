@@ -27,6 +27,11 @@ size_t panelayoutmanagerObj::size() const
 	return impl->size();
 }
 
+elementptr panelayoutmanagerObj::get(size_t n) const
+{
+	return impl->get_pane_element(n);
+}
+
 class LIBCXX_HIDDEN append_panefactoryObj : public panefactory_implObj {
 
  public:
@@ -259,5 +264,12 @@ new_panelayoutmanager::create(const ref<containerObj::implObj> &parent)
 
 	return c;
 }
+
+pane_lock::pane_lock(const panelayoutmanager &lm)
+	: grid_map_t::lock{lm->impl->grid_map}
+{
+}
+
+pane_lock::~pane_lock()=default;
 
 LIBCXXW_NAMESPACE_END

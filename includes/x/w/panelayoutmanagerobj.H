@@ -7,6 +7,7 @@
 
 #include <x/w/panelayoutmanagerfwd.H>
 #include <x/w/panefactoryfwd.H>
+#include <x/w/elementfwd.H>
 #include <x/w/layoutmanagerobj.H>
 
 LIBCXXW_NAMESPACE_START
@@ -31,6 +32,9 @@ public:
 
 	//! How many panes currently exist.
 	size_t size() const;
+
+	//! Return an existing element in the pane.
+	elementptr get(size_t) const;
 
 	//! Append panes after all existing ones.
 	panefactory append_panes();

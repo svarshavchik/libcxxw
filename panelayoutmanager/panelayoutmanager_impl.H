@@ -134,6 +134,10 @@ class LIBCXX_HIDDEN panelayoutmanagerObj::implObj
 
 	size_t size();
 
+	//! Return the requested element.
+	elementptr get_pane_element(size_t);
+
+	//! Remove an existing pane.
 	void remove_pane(const panelayoutmanager &public_object,
 			 size_t pane_number);
 

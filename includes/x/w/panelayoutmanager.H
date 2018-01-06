@@ -7,10 +7,12 @@
 
 #include <x/w/panelayoutmanagerfwd.H>
 #include <x/w/panelayoutmanagerobj.H>
+#include <x/w/element.H>
 #include <x/w/layoutmanager.H>
 #include <x/w/new_focusable_layoutmanagerfwd.H>
 #include <x/w/border_arg.H>
 #include <x/w/rgb.H>
+#include <x/w/grid_map_infofwd.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -33,9 +35,8 @@ struct pane_style {
 //! Create a new container with a \ref panelayoutmanager "pane layout manager".
 
 //! This parameter gets passed to a \ref factory "factory"'s
-//! \c create_container()
-//! when creating a main window, or a container with
-//! vertically-oriented panes.
+//! \c create_focusable_container() to create a container that uses the
+//! pane layout manager.
 
 class LIBCXX_HIDDEN new_panelayoutmanager :
 	public new_focusable_layoutmanager,
@@ -43,11 +44,11 @@ class LIBCXX_HIDDEN new_panelayoutmanager :
 
 public:
 
-	//! Used by the subclass.
+	//! Possible pane layouts.
 
 	enum class orientation_t {horizontal, vertical};
 
-	//! Specified by the subclass.
+	//! The new pane's layout.
 
 	orientation_t orientation;
 
@@ -58,10 +59,10 @@ public:
 	//! Destructor
 	~new_panelayoutmanager() LIBCXX_PUBLIC;
 
-	//! Set horizontal panes.
+	//! Set horizontal pane layout.
 	inline void horizontal() { orientation=orientation_t::horizontal; }
 
-	//! Set vertical panes.
+	//! Set vertical pane layout.
 	inline void vertical() { orientation=orientation_t::vertical; }
 
 	//! Create a container with the pane layout manager.
@@ -70,6 +71,17 @@ public:
 	focusable_container
 		create(const ref<containerObj::implObj> &) const override;
 
+};
+
+//! Block other execution threads from accessing the pane.
+
+class pane_lock : public grid_map_t::lock {
+
+public:
+
+	pane_lock(const panelayoutmanager &) LIBCXX_PUBLIC;
+
+	~pane_lock() LIBCXX_PUBLIC;
 };
 
 LIBCXXW_NAMESPACE_END

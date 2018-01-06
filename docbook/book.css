@@ -178,3 +178,12 @@ table.externallinks th {
 table.externallinks th, table.externallinks td {
     border-width: 0px;
 }
+
+#panelayoutmanager div.mediaobject {
+    float: right;
+    margin-left: 2em;
+}
+
+#panelayoutmanager div.blockquote {
+    clear: right;
+}

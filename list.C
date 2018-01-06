@@ -63,20 +63,21 @@ static void default_selection_changed(const list_item_status_info_t &ignore)
 
 new_listlayoutmanager
 ::new_listlayoutmanager(const listlayoutstyle_impl &list_style)
-	: list_style(list_style),
-	  selection_type(single_selection_type),
-	  selection_changed(default_selection_changed),
+	: list_style{list_style},
+	  selection_type{single_selection_type},
+	  selection_changed{default_selection_changed},
 	  height{4},
-	  columns(1),
-	  v_padding("list_v_padding"),
-	  left_padding("list_left_padding"),
-	  inner_padding("list_inner_padding"),
-	  right_padding("list_right_padding"),
-	  vertical_scrollbar(scrollbar_visibility::automatic),
-	  background_color("list_background_color"),
-	  selected_color("list_selected_color"),
-	  highlighted_color("list_highlighted_color"),
-	  current_color("list_current_color")
+	  columns{1},
+	  list_border{"list_border"},
+	  v_padding{"list_v_padding"},
+	  left_padding{"list_left_padding"},
+	  inner_padding{"list_inner_padding"},
+	  right_padding{"list_right_padding"},
+	  vertical_scrollbar{scrollbar_visibility::automatic},
+	  background_color{"list_background_color"},
+	  selected_color{"list_selected_color"},
+	  highlighted_color{"list_highlighted_color"},
+	  current_color{"list_current_color"}
 {
 }
 
@@ -94,7 +95,7 @@ new_listlayoutmanager::create(const ref<containerObj::implObj>
 	peephole_style list_peephole_style{halign::fill};
 
 	auto [peephole_info, lm]=create_peepholed_focusable_with_frame
-		({"list_border",
+		({list_border,
 				"inputfocusoff_border",
 				"inputfocuson_border",
 				0,

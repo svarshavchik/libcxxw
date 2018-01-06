@@ -1,0 +1,10 @@
+<optclass name="options">
+  <option>
+    <name>horizontal</name>
+    <type>bool</type>
+    <opt>h</opt>
+    <longopt>horizontal</longopt>
+    <descr>Create a horizontal pane</descr>
+  </option>
+  <defaultoptions />
+</optclass>

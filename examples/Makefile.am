@@ -11,6 +11,7 @@ noinst_PROGRAMS=\
 	inputfieldsandbuttons			\
 	listlayoutmanager			\
 	menu					\
+	panelayoutmanager			\
 	progressbar				\
 	scrollbar				\
 	pagelayoutmanager			\
@@ -54,14 +55,18 @@ listlayoutmanager_LDADD=-lcxxw -lcxx
 menu_SOURCES=menu.C close_flag.H
 menu_LDADD=-lcxxw -lcxx
 
+$(call OPTIONS_GEN,panelayoutmanager.H,panelayoutmanager.xml)
+panelayoutmanager_SOURCES=panelayoutmanager.C close_flag.H
+panelayoutmanager_LDADD=-lcxxw -lcxx
+
+pagelayoutmanager_SOURCES=pagelayoutmanager.C close_flag.H
+pagelayoutmanager_LDADD=-lcxxw -lcxx
+
 progressbar_SOURCES=progressbar.C close_flag.H
 progressbar_LDADD=-lcxxw -lcxx
 
 scrollbar_SOURCES=scrollbar.C close_flag.H
 scrollbar_LDADD=-lcxxw -lcxx
-
-pagelayoutmanager_SOURCES=pagelayoutmanager.C close_flag.H
-pagelayoutmanager_LDADD=-lcxxw -lcxx
 
 wordwraplabel_SOURCES=wordwraplabel.C close_flag.H
 wordwraplabel_LDADD=-lcxxw -lcxx

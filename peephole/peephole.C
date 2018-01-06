@@ -28,7 +28,7 @@ element peepholeObj::get_peepholed() const
 					   peephole_lm_impl=lm_impl;
 				   });
 
-	return peephole_lm_impl->element_in_peephole;
+	return peephole_lm_impl->element_in_peephole->get_peepholed_element();
 }
 
 LIBCXXW_NAMESPACE_END

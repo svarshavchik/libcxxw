@@ -13,6 +13,8 @@
 /listlayoutmanager.H
 /menu
 /pagelayoutmanager
+/panelayoutmanager.H
+/panelayoutmanager
 /progressbar
 /scrollbar
 /wordwraplabel
