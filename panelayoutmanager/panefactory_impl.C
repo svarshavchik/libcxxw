@@ -13,8 +13,7 @@
 LIBCXXW_NAMESPACE_START
 
 panefactory_implObj::panefactory_implObj(const panelayoutmanager &layout)
-	: panefactoryObj{layout},
-	  lock{layout->impl->grid_map}
+	: panefactoryObj{layout}
 {
 }
 
@@ -117,6 +116,8 @@ ref<containerObj::implObj> panefactory_implObj::last_container_impl()
 
 void panefactory_implObj::created_at(const element &e, size_t position)
 {
+	grid_map_t::lock lock{layout->impl->grid_map};
+
 	auto info=({
 			new_pane_info_t::lock lock{new_pane_info};
 

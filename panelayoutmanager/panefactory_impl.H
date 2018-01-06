@@ -23,10 +23,6 @@ class LIBCXX_HIDDEN panefactory_implObj : public panefactoryObj {
 
  public:
 
-	//! Lock on the underlying grid.
-
-	grid_map_t::lock lock;
-
 	//! Temporary info while creating a new pane element.
 
 	typedef mpobj<std::optional<create_pane_info_t>> new_pane_info_t;
