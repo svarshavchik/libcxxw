@@ -81,7 +81,7 @@ static inline void create_main_window(const x::w::main_window &main_window,
 		new_list.selection_type=x::w::multiple_selection_type;
 
 	if (opts.rows->isSet())
-		new_list.rows=opts.rows->value;
+		new_list.height=opts.rows->value;
 
 
 	// An optional callback that gets invoked whenever a list item gets

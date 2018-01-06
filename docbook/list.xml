@@ -77,7 +77,7 @@ See COPYING for distribution information.
     <blockquote>
       <informalexample>
 	<programlisting>
-new_list.rows=6;
+new_list.height=6;
 	</programlisting>
       </informalexample>
     </blockquote>

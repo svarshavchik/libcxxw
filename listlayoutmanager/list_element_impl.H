@@ -246,9 +246,6 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 	//! Number of columns in the list.
 	const size_t columns;
 
-	//! Number of visible rows in the list.
-	const size_t rows;
-
 	//! Relative width of columns.
 
 	//! Specified in new_listlayoutmanager.
@@ -592,11 +589,11 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 
 	//! Advance currently selected item.
 	std::optional<size_t> move_up_by(listimpl_info_t::lock &lock,
-					 size_t howmuch);
+					 dim_t howmuch);
 
 	//! Advance currently selected item.
 	std::optional<size_t> move_down_by(listimpl_info_t::lock &lock,
-					   size_t howmuch);
+					   dim_t howmuch);
 
 	//! Invoke callbacks after list item's selection status changed.
 	void notify_callbacks(const listlayoutmanager &,

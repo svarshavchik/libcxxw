@@ -66,7 +66,7 @@ new_listlayoutmanager
 	: list_style(list_style),
 	  selection_type(single_selection_type),
 	  selection_changed(default_selection_changed),
-	  rows(4),
+	  height{4},
 	  columns(1),
 	  v_padding("list_v_padding"),
 	  left_padding("list_left_padding"),

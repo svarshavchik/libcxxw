@@ -51,6 +51,18 @@ class LIBCXX_HIDDEN list_container_implObj :
 	//! Implemented in the subclass.
 
 	virtual const_themedim list_inner_padding() const=0;
+
+	//! Override do_draw().
+
+	void do_draw(IN_THREAD_ONLY,
+		     const draw_info &di,
+		     const rectangle_set &areas) override;
+ private:
+
+	//! do_draw() saves the visible height of the list contanier.
+	dim_t most_recent_visible_height_thread_only;
+ public:
+	THREAD_DATA_ONLY(most_recent_visible_height);
 };
 
 LIBCXXW_NAMESPACE_END

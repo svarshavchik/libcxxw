@@ -90,6 +90,49 @@ selection status until the internal execution thread officially updates it.
 The \c selection_changed callback, installed when the list was created,
 gets invoked when list items' selected status gets officially updated.
 
+\par Appearance
+
+\code
+INSERT_LIBX_NAMESPACE::w::new_listlayoutmanager new_list;
+
+new_list.height=10;
+new_list.vertical_scrollbar=INSERT_LIBX_NAMESPACE::w::scrollbar_visibility::always;
+
+f->create_focusable_container
+    ([]
+     (const INSERT_LIBX_NAMESPACE::w::focusable_container &c)
+     {
+         INSERT_LIBX_NAMESPACE::w::listlayoutmanager l=c->get_layoutmanager();
+
+         // ...
+     }, new_list);
+
+\endcode
+
+The list gets automatically sized to accomodate its widest item.
+Several fields in the \ref new_listlayoutmanager "new_listlayoutmanager"
+control other aspects of the list's appearance. \c height sets the list's
+height, this example sets the list to be ten rows tall. The list scrolls
+if there are more than ten items in the list.
+The list's actual height gets computed
+based on the list's default font, and the actual number of items that get
+displayed may vary if there are list items that are anything other than
+plain text with the default font. Setting \c vertical_scrollbar adjusts the
+\ref scrollbar_visibility "scroll-bar's appearance"
+
+\code
+INSERT_LIBX_NAMESPACE::w::new_listlayoutmanager new_list;
+
+new_list.variable_height();
+new_list.vertical_scrollbar=INSERT_LIBX_NAMESPACE::w::scrollbar_visibility::never;
+\endcode
+
+A list added as a vertical pane inside another container that uses
+the \ref panelayoutmanager "pane layout manager" should turn off its own
+scroll-bar entirely, and specify a variable_height(). This makes the list's
+height adjustable, and the pane layout manager supplies the vertical
+scroll-bar for the list, when needed.
+
 \par Locking the list
 
 \code

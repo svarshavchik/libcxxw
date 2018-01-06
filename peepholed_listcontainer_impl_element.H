@@ -9,6 +9,7 @@
 #include "listlayoutmanager/listcontainer_dim_element.H"
 #include "reference_font_element.H"
 #include "themedim.H"
+#include "themedim_axis_element.H"
 #include "metrics_horizvert.H"
 #include "child_element.H"
 
@@ -77,6 +78,10 @@ void peepholed_listcontainer_impl_element_baseObj<element_impl>
 
 //! Constructs the superclass by:
 //!
+//! - passes the dim_axis_arg, if one gets specified by list style's height,
+//!   else provides a default one, to the themedim_axis_elementObj mixin
+//! template.
+//!
 //! - passes the name of the font for the reference_font_elementObj mixin
 //! template.
 //!
@@ -92,9 +97,13 @@ template<typename ...Args>
 peepholed_listcontainer_impl_elementObj<element_impl>
 ::peepholed_listcontainer_impl_elementObj(const new_listlayoutmanager &style,
 					  Args && ...args)
-	: superclass_t(peepholed_listcontainerObj::implObj::default_list_font,
-		       style, style,
-		       std::forward<Args>(args)...)
+	: superclass_t{
+	(std::holds_alternative<dim_axis_arg>(style.height)
+		? std::get<dim_axis_arg>(style.height):
+	 dim_axis_arg{}),
+	peepholed_listcontainerObj::implObj::default_list_font,
+		style, style,
+		std::forward<Args>(args)...}
 {
 }
 
@@ -146,6 +155,15 @@ const child_elementObj &peepholed_listcontainer_impl_elementObj<element_impl>
 ::get_child_elementObj() const
 {
 	return *this;
+}
+
+//! Implement
+
+template<typename element_impl>
+metrics::axis peepholed_listcontainer_impl_elementObj<element_impl>
+::get_height_metrics(IN_THREAD_ONLY) const
+{
+	return this->get_height_axis(IN_THREAD);
 }
 
 LIBCXXW_NAMESPACE_END

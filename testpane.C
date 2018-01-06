@@ -18,6 +18,8 @@
 #include "x/w/button.H"
 #include "x/w/label.H"
 #include "x/w/standard_comboboxlayoutmanager.H"
+#include "x/w/listlayoutmanager.H"
+#include "x/w/canvas.H"
 
 #include <string>
 #include <iostream>
@@ -127,6 +129,41 @@ static void replace_first(const LIBCXX_NAMESPACE::w::container &c,
 			"labore et "
 			"dolore magna\n"
 			"aliqua")->show();
+}
+
+static void insert_list(const LIBCXX_NAMESPACE::w::container &c)
+{
+	LIBCXX_NAMESPACE::w::panelayoutmanager lm=c->get_layoutmanager();
+
+	LIBCXX_NAMESPACE::w::panefactory f=lm->insert_panes(0);
+
+	LIBCXX_NAMESPACE::w::new_listlayoutmanager nlm;
+
+	nlm.height=LIBCXX_NAMESPACE::w::dim_axis_arg{0, 0};
+
+	f->set_initial_size(20)
+		.set_scrollbar_visibility(LIBCXX_NAMESPACE::w
+					  ::scrollbar_visibility::never)
+		.halign(LIBCXX_NAMESPACE::w::halign::fill)
+		.create_focusable_container
+		([]
+		 (const auto &container)
+		 {
+			 LIBCXX_NAMESPACE::w::listlayoutmanager lm=
+				 container->get_layoutmanager();
+
+			 lm->append_items({
+					 "Lorem ipsum",
+					 "dolor sit amet",
+					 "consectetur",
+					 "adipisicing elit sed",
+					 "do eiusmod",
+					 "tempor incididunt ut",
+					 "labore et",
+					 "dolore magna",
+					 "aliqua"});
+		 },
+		 nlm)->show();
 }
 
 static LIBCXX_NAMESPACE::w::scrollbar_visibility get_scrollbar_visibility(const auto &container)
@@ -267,6 +304,20 @@ static void create_main_window(const LIBCXX_NAMESPACE::w::main_window &mw,
 				lm->remove_all_panes();
 		       });
 
+	factory=layout->append_row();
+
+	factory->halign(LIBCXX_NAMESPACE::w::halign::left);
+	b=factory->create_normal_button_with_label("Insert list");
+
+	b->show();
+	b->on_activate([pane]
+		       (const auto &trigger,
+			const auto &busy) {
+			       insert_list(pane);
+		       });
+
+	factory->halign(LIBCXX_NAMESPACE::w::halign::right);
+	factory->create_canvas()->show();
 }
 
 void testpane(int argc, char **argv)

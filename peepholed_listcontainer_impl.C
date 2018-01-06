@@ -10,13 +10,15 @@
 #include "themedim.H"
 #include "child_element.H"
 
+#include <x/visitor.H>
+
 LIBCXXW_NAMESPACE_START
 
 const char peepholed_listcontainerObj::implObj::default_list_font[]="list";
 
 peepholed_listcontainerObj::implObj
 ::implObj(const new_listlayoutmanager &style)
-	: rows(style.rows)
+	: height{style.height}
 {
 }
 
@@ -45,24 +47,42 @@ void peepholed_listcontainerObj::implObj
 ::theme_updated(IN_THREAD_ONLY,
 		const defaulttheme &new_theme)
 {
+	update_peephole_metrics(IN_THREAD);
 }
 
 void peepholed_listcontainerObj::implObj
 ::update_peephole_metrics(IN_THREAD_ONLY)
 {
-	auto h=dim_t::truncate(rowsize(IN_THREAD) *
-			       dim_t{dim_t::truncate(rows)});
+	// We keep our horizontal metrics, and override the vertical
+	// metrics to the fixed height.
+	//
+	// Multiple rowsize by # of rows if the height got specified as rows.
+	//
+	// If the height got specified as a dim_axis_arg, retrieve the current
+	// dimensions from the mixin-specified get_height_metrics().
 
-	//! We keep our horizontal metrics, and override the vertical
-	//! metrics to the fixed height.
+	auto v=std::visit(visitor{
+			[&, this](size_t rows)
+			{
+				auto h=dim_t::truncate(rowsize(IN_THREAD) *
+						       dim_t{dim_t::truncate
+								       (rows)}
+						       );
+
+				return metrics::axis{h, h, h};
+			},
+			[&, this](const dim_axis_arg &arg)
+			{
+				return get_height_metrics(IN_THREAD);
+
+			}},
+		height);
 
 	auto hv=get_child_elementObj().get_horizvert(IN_THREAD);
 
 	get_child_elementObj().child_container->container_element_impl()
 		.get_horizvert(IN_THREAD)
-		->set_element_metrics(IN_THREAD,
-				      hv->horiz,
-				      {h, h, h});
+		->set_element_metrics(IN_THREAD, hv->horiz, v);
 }
 
 LIBCXXW_NAMESPACE_END

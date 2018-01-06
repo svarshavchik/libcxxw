@@ -8,10 +8,13 @@
 #include "peepholed_listcontainerobj.H"
 #include "x/w/listlayoutmanagerfwd.H"
 #include "x/w/containerobj.H"
+#include "x/w/dim_axis_arg.H"
+#include "x/w/metrics/axis.H"
 #include "reference_font_elementfwd.H"
 #include "themedimfwd.H"
 #include "metrics_horizvertfwd.H"
 #include "child_elementfwd.H"
+#include <variant>
 
 LIBCXXW_NAMESPACE_START
 
@@ -27,8 +30,8 @@ class LIBCXX_HIDDEN peepholed_listcontainerObj::implObj : virtual public obj {
 
  public:
 
-	//! The size peephole to this many rows, based on the reference font.
-	const size_t rows;
+	//! Size peephole to this many rows, based on the reference font.
+	const std::variant<size_t, dim_axis_arg> height;
 
 	//! The default font for labels in the list container.
 	static const char default_list_font[];
@@ -38,6 +41,13 @@ class LIBCXX_HIDDEN peepholed_listcontainerObj::implObj : virtual public obj {
 
 	//! Destructor
 	~implObj();
+
+	//! Return the height metrics.
+
+	//! If the height was specified as dim_axis_arg, return the computed
+	//! dimensions based on the current theme.
+
+	virtual metrics::axis get_height_metrics(IN_THREAD_ONLY) const=0;
 
 	//! Return the list reference font.
 

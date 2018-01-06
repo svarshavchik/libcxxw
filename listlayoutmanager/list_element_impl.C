@@ -110,7 +110,6 @@ list_elementObj::implObj::implObj(const ref<list_container_implObj>
 	  textlist_container(textlist_container),
 	  list_style(style.list_style),
 	  columns(list_style.actual_columns(style)),
-	  rows(style.rows),
 	  requested_col_widths(list_style.actual_col_widths(style)),
 	  col_alignments(list_style.actual_col_alignments(style)),
 	  scratch_buffer_for_separator(container_screen->create_scratch_buffer
@@ -131,7 +130,8 @@ list_elementObj::implObj::implObj(const ref<list_container_implObj>
 {
 	// Some sanity checks.
 
-	if (rows <= 0)
+	if (std::holds_alternative<size_t>(style.height) &&
+	    std::get<size_t>(style.height) <= 0)
 		throw EXCEPTION(_("Cannot create a list with 0 visible rows."));
 
 	for (auto &info:requested_col_widths)
@@ -1118,7 +1118,7 @@ bool list_elementObj::implObj::process_key_event(IN_THREAD_ONLY,
 	case XK_Up:
 	case XK_KP_Up:
 		{
-			auto r=move_up_by(lock, 1);
+			auto r=move_up_by(lock, 0);
 
 			if (!r)
 				return false;
@@ -1129,7 +1129,7 @@ bool list_elementObj::implObj::process_key_event(IN_THREAD_ONLY,
 	case XK_Down:
 	case XK_KP_Down:
 		{
-			auto r=move_down_by(lock, 1);
+			auto r=move_down_by(lock, 0);
 
 			if (!r)
 				return false;
@@ -1140,7 +1140,9 @@ bool list_elementObj::implObj::process_key_event(IN_THREAD_ONLY,
 	case XK_Page_Up:
 	case XK_KP_Page_Up:
 		{
-			auto r=move_up_by(lock, rows);
+			auto r=move_up_by(lock, textlist_container
+					  ->most_recent_visible_height
+					  (IN_THREAD));
 
 			if (!r)
 				return false;
@@ -1151,7 +1153,10 @@ bool list_elementObj::implObj::process_key_event(IN_THREAD_ONLY,
 	case XK_Page_Down:
 	case XK_KP_Page_Down:
 		{
-			auto r=move_down_by(lock, rows);
+			auto r=move_down_by(lock,
+					    textlist_container
+					    ->most_recent_visible_height
+					    (IN_THREAD));
 
 			if (!r)
 				return false;
@@ -1169,55 +1174,70 @@ bool list_elementObj::implObj::process_key_event(IN_THREAD_ONLY,
 	return true;
 }
 
+// move_up_by/move_down_by: move in the given direction,
+// skipping over the disabled elements. Do not exceed "howmuch" pixels, but
+// move at least one element unless all elements (if any) in the given
+// direction are disabled.
+
 std::optional<size_t>
 list_elementObj::implObj::move_up_by(listimpl_info_t::lock &lock,
-				     size_t howmuch)
+				     dim_t howmuch)
 {
 	if (!current_keyed_element(lock))
 		return {};
 
 	auto next_row=current_keyed_element(lock).value();
 
-	if (next_row > howmuch)
-		next_row-=howmuch;
-	else
-		next_row=0;
+	std::optional<size_t> move_to;
+	dim_t moved_by=0;
 
-	while (!lock->row_infos.at(next_row).extra->enabled())
+	while (next_row)
 	{
-		if (next_row == 0)
-			return {};
 		--next_row;
-	}
 
-	return next_row;
+		auto &info=lock->row_infos.at(next_row);
+
+		moved_by=dim_t::truncate(moved_by+info.height);
+
+		if (moved_by > howmuch && move_to)
+			break;
+
+		if (!info.extra->enabled())
+			continue;
+
+		move_to=next_row;
+	}
+	return move_to;
 }
 
 std::optional<size_t>
 list_elementObj::implObj::move_down_by(listimpl_info_t::lock &lock,
-				       size_t howmuch)
+				       dim_t howmuch)
 {
 	size_t next_row;
 
 	if (!current_keyed_element(lock))
 		next_row=0;
 	else
-		next_row=current_keyed_element(lock).value()+howmuch;
+		next_row=current_keyed_element(lock).value()+1;
 
-	if (next_row >= lock->row_infos.size())
-		next_row=lock->row_infos.size()-1;
+	std::optional<size_t> move_to;
+	dim_t moved_by=0;
 
-	while (1)
+	while (next_row < lock->row_infos.size())
 	{
-		if (next_row >= lock->row_infos.size())
-			return {};
+		auto &info=lock->row_infos.at(next_row);
 
-		if (lock->row_infos.at(next_row).extra->enabled())
+		moved_by=dim_t::truncate(moved_by+info.height);
+
+		if (moved_by > howmuch && move_to)
 			break;
 
+		if (info.extra->enabled())
+			move_to=next_row;
 		++next_row;
 	}
-	return next_row;
+	return move_to;
 }
 
 bool list_elementObj::implObj::process_button_event(IN_THREAD_ONLY,

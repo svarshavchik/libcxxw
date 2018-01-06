@@ -7,14 +7,19 @@
 
 #include "peepholed_listcontainer_impl.H"
 #include "listlayoutmanager/listcontainer_dim_elementfwd.H"
+#include "reference_font_elementfwd.H"
+#include "themedimfwd.H"
+#include "themedim_axis_elementfwd.H"
 
 LIBCXXW_NAMESPACE_START
 
 //! Combine the peepholed_listcontainerObj::implObj with an element.
 
 //! For internal use by peepholed_listcontainer_impl_elementObj, which
-//! uses this template, and pulls in the font and dimension mixins that
-//! peepholed_listcontainerObj::implObj uses. This makes those mixin to
+//! uses this template, pulls in the font and dimension mixins that
+//! peepholed_listcontainerObj::implObj uses; and pulls in the
+//! themedim_axis_elementObj mixin to handle the list height when it is
+//! specified as a dim_axis_arg. This makes these mixins to
 //! be the subclass of both peepholed_listcontainer_impl_elementObj and
 //! the template parameter, which must be a subclass of child_elementObj
 //! and the container_element mixin.
@@ -59,15 +64,17 @@ class LIBCXX_HIDDEN peepholed_listcontainer_impl_element_baseObj
 
 template<typename element_impl>
 class LIBCXX_HIDDEN peepholed_listcontainer_impl_elementObj :
-	public reference_font_elementObj<
-	listcontainer_dim_elementObj
-	<peepholed_listcontainer_impl_element_baseObj<element_impl>>> {
+	public themedim_axis_heightObj<
+	reference_font_elementObj<
+		listcontainer_dim_elementObj
+		<peepholed_listcontainer_impl_element_baseObj<element_impl>>>> {
 
 public:
-	typedef reference_font_elementObj<
-		listcontainer_dim_elementObj
-	<peepholed_listcontainer_impl_element_baseObj<element_impl>>
-	> superclass_t;
+	typedef themedim_axis_heightObj<reference_font_elementObj<
+		listcontainer_dim_elementObj<
+			peepholed_listcontainer_impl_element_baseObj<
+				element_impl>>>
+				       > superclass_t;
 
 	template<typename ...Args>
 		peepholed_listcontainer_impl_elementObj
@@ -83,6 +90,8 @@ public:
 
 	child_elementObj &get_child_elementObj() override;
 	const child_elementObj &get_child_elementObj() const override;
+
+	virtual metrics::axis get_height_metrics(IN_THREAD_ONLY) const override;
 };
 
 LIBCXXW_NAMESPACE_END

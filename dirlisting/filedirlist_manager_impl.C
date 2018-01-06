@@ -41,7 +41,7 @@ static inline auto create_filedir_list(const factory &f,
 	new_listlayoutmanager nlm{highlighted_list};
 
 	nlm.columns=3;
-	nlm.rows=10;
+	nlm.height=10;
 
 	// Give all space to the first column, with the filename.
 	nlm.requested_col_widths.emplace(0, 100);

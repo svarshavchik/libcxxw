@@ -16,12 +16,13 @@
 #include <x/w/image_param.H>
 #include <x/w/shortcut.H>
 #include <x/w/rgb.H>
+#include <x/w/dim_axis_arg.H>
 #include <x/ref.H>
 #include <x/refptr_traits.H>
 #include <x/w/busyfwd.H>
 #include <string>
 #include <functional>
-#include <tuple>
+#include <variant>
 #include <unordered_map>
 
 LIBCXXW_NAMESPACE_START
@@ -90,12 +91,24 @@ class LIBCXX_HIDDEN new_listlayoutmanager : public new_focusable_layoutmanager {
 
 	list_selection_changed_cb_t selection_changed;
 
-	//! Number of rows in the list.
+	//! The height of the list.
 
-	//! The default is four rows. The actual size of the list element
-	//! is computed based on the number of rows and the default list
-	//! font.
-	size_t rows;
+	//! The height may be specified either as a number of rows, this
+	//! sets the actual size of the list element based on the number
+	//! of rows and the default list fon't height.
+	//!
+	//! Alternatively the list's height may be specified as a dim_axis_arg.
+	//!
+	//! The default height is four rows.
+
+	std::variant<size_t, dim_axis_arg> height;
+
+	//! Set height as completely variable.
+
+	inline void variable_height()
+	{
+		height=dim_axis_arg{0, 0};
+	}
 
 	//! Number of columns in the list
 
