@@ -295,7 +295,8 @@ class LIBCXX_HIDDEN panelayoutmanagerObj::implObj
 
 	//! Set factory for creating a new pane element.
 
-	virtual void initialize_factory_for_pane(const gridfactory &)=0;
+	void initialize_factory_for_pane(const gridfactory &);
+
 	//! Compute initial pane metrics.
 
 	//! Invoke from create_pane_peephole() to set the initial metrics
@@ -374,10 +375,6 @@ class panelayoutmanagerObj::implObj::orientation
 	//! Which pointer to use for the slider.
 
 	const char *slider_cursor() const override;
-
-	//! Implement initialize_factory_for_pane().
-
-	void initialize_factory_for_pane(const gridfactory &f) override;
 
 	//! Implement initial_peephole_metrics().
 

@@ -394,6 +394,27 @@ void panelayoutmanagerObj::implObj
 	}
 }
 
+void panelayoutmanagerObj::implObj
+::initialize_factory_for_pane(const gridfactory &f)
+{
+	initialize_factory_for_slider(f); // Same border and no padding.
+
+	// Fill new element to pane's entire width and height
+	// pane_peephole_style() sets autowidth/autoheight, so the element in
+	// the peephole gets stretched to the pane's height or width
+	// automatically, and the peephole layout manager
+	// takes care of setting the peephole's metrics to the peepholed
+	// element's metrics.
+	//
+	// The end result is that the pane's grid layout manager sees the
+	// metrics of all elements in the pane, and computes the pane's
+	// fixed dimension accordingly, and then sizes all the elements the
+	// same.
+
+	f->halign(halign::fill);
+	f->valign(valign::fill);
+}
+
 pane_slider_original_sizes
 panelayoutmanagerObj::implObj::start_sliding(IN_THREAD_ONLY,
 					     const ref<elementObj::implObj>
@@ -623,25 +644,6 @@ void panelayoutmanagerObj::implObj::orientation<vertical>
 }
 
 template<>
-void panelayoutmanagerObj::implObj::orientation<vertical>
-::initialize_factory_for_pane(const gridfactory &f)
-{
-	initialize_factory_for_slider(f); // Same border and no padding.
-
-	// Fill new element to pane's entire width
-	// pane_peephole_style() sets autowidth, so the element in the peephole
-	// gets stretched to the pane's width, and the peephole layout manager
-	// takes care of setting the peephole's metrics to the peepholed
-	// element's metrics.
-	//
-	// The end result is that the pane's grid layout manager sees the
-	// horizontal metrics of all elements in the pane, and computes its
-	// width accordingly, then fills all elements to the pane's width.
-
-	f->halign(halign::fill);
-}
-
-template<>
 metrics::horizvert_axi
 panelayoutmanagerObj::implObj::orientation<vertical>
 ::initial_peephole_metrics(const dim_arg &size)
@@ -825,25 +827,6 @@ void panelayoutmanagerObj::implObj::orientation<horizontal>
 {
 	remove_all_defaults();
 	requested_col_width(cols(0)-1, 100);
-}
-
-template<>
-void panelayoutmanagerObj::implObj::orientation<horizontal>
-::initialize_factory_for_pane(const gridfactory &f)
-{
-	initialize_factory_for_slider(f); // Same border and no padding.
-
-	// Fill new element to pane's entire height
-	// pane_peephole_style() sets autoheight, so the element in the peephole
-	// gets stretched to the pane's height, and the peephole layout manager
-	// takes care of setting the peephole's metrics to the peepholed
-	// element's metrics.
-	//
-	// The end result is that the pane's grid layout manager sees the
-	// vertical metrics of all elements in the pane, and computes its
-	// height accordingly, then fills all elements to the pane's height.
-
-	f->valign(valign::fill);
 }
 
 template<>
