@@ -88,6 +88,42 @@ remove_pane() removes an existing pane. remove_all_panes() removes all
 panes from the container. replace_all_panes() is equivalent to using
 remove_all_panes(), followed by append_panes().
 
+\par Pane focusability.
+
+\code
+#include <INSERT_LIBX_NAMESPACE/w/panelayoutmanager.H>
+
+INSERT_LIBX_NAMESPACE::w::new_panelayoutmanager nplm;
+
+nplm.slider_background_color="100%";
+
+LIBCXX_NAMESPACE::w::focusable_container c=factory->create_focusable_container(
+    [&]
+    (const INSERT_LIBX_NAMESPACE::w::focusable_container &c)
+    {
+        // ...
+    },
+    nplm);
+
+c->get_focus_before(another_focusable);
+\endcode
+
+The pane layout manager's container is \ref focusable "focusable", whose
+tabbing order is adjustable with respect to other focusable display elements.
+The focusable elements in the pane container include the dividing sliders,
+and each pane's scroll-bars, when they're visible.
+
+In addition to adjusting the slider elements by dragging them with the
+pointer, the slider elements can be tabbed to, using the keyboard,
+and moved using the cursor keys. The tabbing order in the pane container
+goes through the slider elements and all visible pane scroll-bars in order.
+
+Each individual pane may have containers with individual focusable elements.
+The tabbing order of the focusable elements is independent from the
+pane container's tabbing order, they do not "interleave". For that reason
+it's preferred to have their tabbing order immediately follow or precede
+their pane container.
+
 */
 
 typedef ref<panelayoutmanagerObj> panelayoutmanager;

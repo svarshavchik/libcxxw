@@ -75,6 +75,79 @@ For example, set_background_color() sets only the next new display element's
 pane's background color. Call set_background_color() again to use the same
 (or different) background color before creating the netx display element.
 
+\par Panes with selection lists.
+
+\code
+INSERT_LIBX_NAMESPACE::w::new_listlayoutmanager nlm;
+
+nlm.variable_height();
+
+pane_f->set_initial_size(20)
+    .set_scrollbar_visibility(INSERT_LIBX_NAMESPACE::w::scrollbar_visibility::never)
+    .halign(LIBCXX_NAMESPACE::w::halign::fill)
+    .create_focusable_container(
+         []
+         (const auto &container)
+         {
+             INSERT_LIBX_NAMESPACE::w::listlayoutmanager lm=container->get_layoutmanager();
+
+             lm->append_items({
+                     "Lorem ipsum",
+                     "dolor sit amet",
+                     "consectetur",
+                     "adipisicing elit sed",
+                     "do eiusmod",
+                     "tempor incididunt ut",
+                     "labore et",
+                     "dolore magna",
+                     "aliqua"});
+         },
+    	 nlm)->show();
+\endcode
+
+This specific combination of settings results in an intuitive interface
+consisting of a vertical pane with a \ref listlayoutmanager "selection list".
+
+Ordinary selection lists have a fixed height specified as the number of
+rows in the list, with the selection list providing a scroll-bar for longer
+lists.
+
+Using \c variable_height() configures the selection list's container to have
+an adjustable height. After this selection list gets placed in the pane,
+the pane's sliders indirectly adjust the selection list's height. The
+pane's sliders adjust the pane's height, and with the pane's now having
+a variable height, the height of the selection list is always the same as
+its containing pane.
+
+The pane's scroll-bar's visibility gets overriden to "never". This removes the
+pane's usual scroll-bar, however the selection list supplies its own
+scroll-bar now when its height isn't enough to fit the entire list.
+The pane's horizontal alignment get set to
+\c LIBCXX_NAMESPACE::w::halign::fill which makes the selection list's width
+fit inside the pane. This ends up putting ths selection list's scroll-bar
+in the same position where the pane's own scroll-bar normally goes.
+
+The end result is a selection list that functions as a natural part of the
+pane container.
+This result gets further improved by automatically incorporating
+the \ref focusable "selection list's tabbing order" into
+the pane's tabbing order. Normally the pane's sliders'
+and its scroll-bars' tabbing order is independent of any focusable
+elements in the container's pane.
+
+When a focusable container gets created as a pane (a selection list
+is a focusable container), the focusable container's tabbing order
+gets inserted in the natural order of the pane container's individual tabbable
+elements -- the sliders and the pane's own scroll-bars (from other panes
+in the container). Do not directly adjust the individual tabbing order of
+focusable containers in the pane, the pane handles it automatically.
+
+This special treatment gets afforded only to focusable containers that
+get created as individual panes, and does not affect any other focusable
+elements, that get created either directly as panes, or as individual
+elements of non-focusable container panes. Those focusable elements continue
+to have independently-adjustable tabbing order.
+
 */
 
 typedef ref<panefactoryObj> panefactory;

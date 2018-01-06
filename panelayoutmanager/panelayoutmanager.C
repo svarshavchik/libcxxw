@@ -174,12 +174,17 @@ class LIBCXX_HIDDEN panecontainerObj : public focusable_containerObj {
 
 		// An element in the container is either a slider or a pane
 		// element. Both of them are focusables. The pane element
-		// consists of two focusables, the scrollbars. Estimate
+		// consists of two focusables, the scrollbars.
+		//
+		// Additional pane elements that are focusable containers will
+		// get automatically inserted into the focus order, so we'll
+		// just start with a ballpark estimate that's going to be
+		// good enought.
 		// then number of elements we will have.
 
 		std::vector<ref<focusableImplObj>> v;
 
-		v.reserve(1 + n + n/2);
+		v.reserve(1 + 2*n);
 
 		for (size_t i=0; i<n; ++i)
 		{

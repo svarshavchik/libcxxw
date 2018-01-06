@@ -7,6 +7,8 @@
 
 #include "panelayoutmanager/pane_peephole_containerfwd.H"
 #include "x/w/focusable_containerobj.H"
+#include "x/w/focusablefwd.H"
+#include <x/mpobj.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -41,6 +43,10 @@ public:
 
 	//! Return the peephole container.
 	container get_peephole();
+
+	//! The focusable object in this pane, if it's a focusable object.
+
+	mutable mpobj<focusableptr> focusable_element;
 };
 
 LIBCXXW_NAMESPACE_END

@@ -45,6 +45,23 @@ void pane_peephole_containerObj
 
 	std::vector<ref<focusableImplObj>> all_focusable_impls;
 
+	auto optional_focusable_element=focusable_element.get();
+
+	if (optional_focusable_element)
+	{
+		optional_focusable_element->get_impl
+			([&]
+			 (const auto &focusable_info)
+			 {
+				 all_focusable_impls.insert
+					 (all_focusable_impls.end(),
+					  focusable_info.impls,
+					  focusable_info.impls+
+					  focusable_info
+					  .internal_impl_count);
+			 });
+	}
+
 	impl->invoke_layoutmanager
 		([&]
 		 (const ref<peephole_gridlayoutmanagerObj> &lm_impl)
@@ -59,7 +76,6 @@ void pane_peephole_containerObj
 						   focusable_info.impls+
 						   focusable_info
 						   .internal_impl_count);
-
 				  });
 
 			 lm_impl->get_horizontal_scrollbar()->get_impl

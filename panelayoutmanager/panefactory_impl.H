@@ -9,6 +9,7 @@
 #include "grid_map_info.H"
 #include "panelayoutmanager/create_pane_info.H"
 #include "panelayoutmanager/create_pane_properties.H"
+#include "panelayoutmanager/pane_peephole_containerfwd.H"
 #include <optional>
 
 LIBCXXW_NAMESPACE_START
@@ -38,6 +39,9 @@ class LIBCXX_HIDDEN panefactory_implObj : public panefactoryObj {
 
 	//! New pane's properties
 	new_pane_properties_t new_pane_properties;
+
+	//! The new pane that was just created.
+	mpobj<pane_peephole_containerptr> created_pane_peephole;
 
 	//! Constructor
 	panefactory_implObj(const panelayoutmanager &layout);
@@ -91,6 +95,19 @@ class LIBCXX_HIDDEN panefactory_implObj : public panefactoryObj {
 	//! tells us which position the new element goes into, and we
 	//! take care of it.
 	void created_at(const element &e, size_t position);
+
+	//! Override do_create_focusable_container()
+
+	//! Insert the focusable container into the peephole container's
+	//! tabbing order.
+
+	focusable_container
+	do_create_focusable_container(const function<void
+				      (const focusable_container
+				       &)> &creator,
+				      const new_focusable_layoutmanager
+				      &layout_manager) override;
+
 };
 
 LIBCXXW_NAMESPACE_END

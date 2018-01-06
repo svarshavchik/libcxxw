@@ -5,6 +5,7 @@
 #include "libcxxw_config.h"
 #include "panelayoutmanager/panefactory_impl.H"
 #include "panelayoutmanager/panelayoutmanager_impl.H"
+#include "panelayoutmanager/pane_peephole_container.H"
 #include <optional>
 #include "x/w/panelayoutmanager.H"
 #include "x/w/panefactory.H"
@@ -136,13 +137,44 @@ void panefactory_implObj::created_at(const element &e, size_t position)
 			v;
 		});
 
-	layout->impl->created_pane_peephole(layout,
-					    info,
-					    properties,
-					    *this,
-					    e,
-					    position,
-					    lock);
+	created_pane_peephole=layout->impl
+		->created_pane_peephole(layout,
+					info,
+					properties,
+					*this,
+					e,
+					position,
+					lock);
+}
+
+focusable_container panefactory_implObj
+::do_create_focusable_container(const function<void
+				(const focusable_container
+				 &)> &creator,
+				const new_focusable_layoutmanager
+				&layout_manager)
+{
+	auto fc=panefactoryObj::do_create_focusable_container(creator,
+							      layout_manager);
+
+	// Note that the factory holds a grid map lock. This effectively
+	// assures us that the created_pane_peephole is, indeed, the one for
+	// this new focusable container.
+	//
+	// created_pane_peephole is an mpobj out of abundance of caution.
+
+	pane_peephole_container new_pane_peephole=
+		created_pane_peephole.get();
+
+	//! Adjust the initial tabbing order.
+
+	fc->get_focus_before(new_pane_peephole);
+
+	//! And make sure it keeps getting updated, going forward.
+
+	new_pane_peephole->focusable_element=fc;
+
+	return fc;
 }
 
 LIBCXXW_NAMESPACE_END

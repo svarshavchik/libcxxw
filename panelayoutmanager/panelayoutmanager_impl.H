@@ -13,6 +13,7 @@
 #include "panelayoutmanager/create_pane_properties.H"
 #include "panelayoutmanager/pane_sliderobj.H"
 #include "panelayoutmanager/pane_slider_original_sizes.H"
+#include "panelayoutmanager/pane_peephole_containerfwd.H"
 #include "panelayoutmanager/pane_peephole_container_impl.H"
 #include "panelayoutmanager/pane_peephole_impl.H"
 #include "panelayoutmanager/panecontainer_impl.H"
@@ -228,13 +229,14 @@ class LIBCXX_HIDDEN panelayoutmanagerObj::implObj
 	//!
 	//! - the factory's internal lock.
 
-	void created_pane_peephole(const panelayoutmanager &public_object,
-				   const create_pane_info_t &info,
-				   const create_pane_properties_t &properties,
-				   panefactoryObj &factory,
-				   const element &e,
-				   size_t position,
-				   grid_map_t::lock &lock);
+	pane_peephole_container
+		created_pane_peephole(const panelayoutmanager &public_object,
+				      const create_pane_info_t &info,
+				      const create_pane_properties_t &properties,
+				      panefactoryObj &factory,
+				      const element &e,
+				      size_t position,
+				      grid_map_t::lock &lock);
 
 	//! Adjusted the requested size for the trailing canvas element.
 

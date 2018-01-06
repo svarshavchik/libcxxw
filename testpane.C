@@ -139,7 +139,7 @@ static void insert_list(const LIBCXX_NAMESPACE::w::container &c)
 
 	LIBCXX_NAMESPACE::w::new_listlayoutmanager nlm;
 
-	nlm.height=LIBCXX_NAMESPACE::w::dim_axis_arg{0, 0};
+	nlm.variable_height();
 
 	f->set_initial_size(20)
 		.set_scrollbar_visibility(LIBCXX_NAMESPACE::w

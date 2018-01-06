@@ -169,7 +169,7 @@ class LIBCXX_HIDDEN pane_peepholed_elementObj : public peepholedObj {
 	}
 };
 
-void panelayoutmanagerObj::implObj
+pane_peephole_container panelayoutmanagerObj::implObj
 ::created_pane_peephole(const panelayoutmanager &public_object,
 			const create_pane_info_t &info,
 			const create_pane_properties_t &properties,
@@ -214,7 +214,9 @@ void panelayoutmanagerObj::implObj
 		->left_padding(properties.left_padding_set)
 		.right_padding(properties.right_padding_set)
 		.top_padding(properties.top_padding_set)
-		.bottom_padding(properties.bottom_padding_set);
+		.bottom_padding(properties.bottom_padding_set)
+		.halign(halign::fill)
+		.valign(valign::fill);
 
 	auto [style, horizontal_scrollbar_visibility,
 	      vertical_scrollbar_visibility]=
@@ -392,6 +394,8 @@ void panelayoutmanagerObj::implObj
 			pane->get_focus_after(f);
 		}
 	}
+
+	return pane;
 }
 
 void panelayoutmanagerObj::implObj

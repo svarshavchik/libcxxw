@@ -375,7 +375,7 @@ public:
 	}
 
 	//! Create a focusable container
-	focusable_container
+	virtual focusable_container
 	do_create_focusable_container(const function<void
 				      (const focusable_container
 				       &)> &creator,
