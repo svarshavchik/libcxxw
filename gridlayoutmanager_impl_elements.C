@@ -962,13 +962,27 @@ void gridlayoutmanagerObj::implObj
 
 	for (const auto &child:elements.all_elements)
 	{
-		// If this element does not takes_up_space(), we don't need
-		// to compute its position.
+		const auto &element=child.child_element;
+
+		// If this element does not takes_up_space(), we need
+		// to make it disappear. Otherwise it could still attempt
+		// to try to erase itself (to its background color);
+		// meanwhile we have other elements using its real estate.
+		// Simply position the element outside of our drawing area.
 
 		if (!child.takes_up_space)
-			continue;
+		{
+			// But we need to logically set its size to (0,0)
 
-		const auto &element=child.child_element;
+			auto p=element->impl->data(IN_THREAD)
+				.current_position;
+
+			p.x=coord_t::truncate(position.width);
+			p.y=0;
+
+			element->impl->update_current_position(IN_THREAD, p);
+			continue;
+		}
 
 		const metrics::pos_axis_padding &padding=child.padding;
 
