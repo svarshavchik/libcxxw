@@ -88,7 +88,7 @@ class LIBCXX_HIDDEN file_dialogObj::implObj : virtual public obj {
 
 	// A directory entry was clicked on.
 
-	void clicked(size_t n,
+	void clicked(const filedirlist_entry_id &id,
 		     const callback_trigger_t &trigger,
 		     const busy &mcguffin);
 

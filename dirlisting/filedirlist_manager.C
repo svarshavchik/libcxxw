@@ -23,9 +23,9 @@ void filedirlist_managerObj
 	impl->set_selected_callback(c);
 }
 
-filedirlist_entry filedirlist_managerObj::at(size_t n)
+filedirlist_entry filedirlist_managerObj::at(const filedirlist_entry_id &id)
 {
-	return impl->at(n);
+	return impl->at(id);
 }
 
 void filedirlist_managerObj::chdir(const std::string &directory)

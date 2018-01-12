@@ -62,11 +62,11 @@ file_dialogObj::implObj
 
 file_dialogObj::implObj::~implObj()=default;
 
-void file_dialogObj::implObj::clicked(size_t n,
+void file_dialogObj::implObj::clicked(const filedirlist_entry_id &id,
 				      const callback_trigger_t &trigger,
 				      const busy &mcguffin)
 {
-	auto e=directory_contents_list->at(n);
+	auto e=directory_contents_list->at(id);
 
 	bool autoselect_file=true;
 
@@ -640,7 +640,7 @@ void file_dialogObj::constructor(const dialog_args &d_args,
 
 	impl->directory_contents_list->set_selected_callback
 		([impl=make_weak_capture(impl)]
-		 (size_t n,
+		 (const filedirlist_entry_id &id,
 		  const callback_trigger_t &trigger,
 		  const busy &mcguffin)
 		 {
@@ -650,7 +650,7 @@ void file_dialogObj::constructor(const dialog_args &d_args,
 			 {
 				 auto &[impl]=*got;
 
-				 impl->clicked(n, trigger, mcguffin);
+				 impl->clicked(id, trigger, mcguffin);
 			 }
 		 });
 

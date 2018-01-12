@@ -56,17 +56,32 @@ typedef ptr<filedirlist_managerObj> filedirlist_managerptr;
 
 typedef const_ptr<filedirlist_managerObj> const_filedirlist_managerptr;
 
+//! The parameter passed to a filedirlist_selected_callback_t
+
+//! This parameter specifies which subdirectory or file was clicked on.
+
+struct LIBCXX_HIDDEN filedirlist_entry_id {
+
+	static constexpr int dir_section=0;
+
+	static constexpr int file_section=1;
+
+	int section;
+
+	size_t n;
+};
+
 //! Callback that gets invoked when a file directory entry is selected.
 
-//! The file directory list is locked at this point, and the index of the
+//! The file directory list is locked at this point, and the id of the
 //! clicked on entry is passed here.
-typedef void filedirlist_selected_callback_t(size_t,
+typedef void filedirlist_selected_callback_t(filedirlist_entry_id,
 					     const callback_trigger_t &,
 					     const busy &);
 
 //! An entry in the directory being monitored.
 
-struct filedirlist_entry {
+struct LIBCXX_HIDDEN filedirlist_entry {
 
 	//! The filename.
 
@@ -76,6 +91,8 @@ struct filedirlist_entry {
 	//! here.
 
 	std::string name;
+
+	//! Directory entry's attributes.
 
 	struct ::stat st;
 

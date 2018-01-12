@@ -9,6 +9,7 @@
 #include "dirlisting/filedircontentsfwd.H"
 #include "dirlisting/filedir_filefwd.H"
 #include "x/w/listlayoutmanager.H"
+#include "x/w/panelayoutmanager.H"
 #include "x/w/container.H"
 #include "x/w/factory.H"
 #include "x/w/file_dialog_config.H"
@@ -48,16 +49,18 @@ class LIBCXX_HIDDEN filedirlist_managerObj::implObj : virtual public obj {
 
 	const ref<current_selected_callbackObj> current_selected;
 
+ private:
 	//! The list display element.
 
-	const container filedir_list;
+	const focusable_container filedir_list;
 
 	//! Return filedir_list's layout manager.
 
-	inline listlayoutmanager get_layoutmanager()
+	inline panelayoutmanager get_layoutmanager()
 	{
 		return filedir_list->get_layoutmanager();
 	}
+ public:
 
 	//! Mutex-protected information about the directory being managed.
 
@@ -82,12 +85,33 @@ class LIBCXX_HIDDEN filedirlist_managerObj::implObj : virtual public obj {
 
 		ref<obj> callback_mcguffin;
 
-		//! What we know about the contents of the directory.
-		std::vector<filedirlist_entry> entries;
+		//! What we know about the contents of the directory, part 1.
+		std::vector<filedirlist_entry> subdirectories;
+
+		//! What we know about the contents of the directory, part 2.
+		std::vector<filedirlist_entry> files;
 
 		//! Find a particular filename entry.
-		std::vector<filedirlist_entry>::iterator
-		find(const std::string &n);
+
+		//! Searches subdirectories using lower_bound, and the
+		//! appropriate sorting order. Returns a flag if lower_bound
+		//! did not return end(), and the returned iterator's
+		//! "name" matches the given string, and the return value
+		//! from lower_bound().
+
+		std::tuple<bool, std::vector<filedirlist_entry>::iterator>
+		find_subdirectory(const std::string &n);
+
+		//! Find a particular filename entry.
+
+		//! Searches files using lower_bound, and the
+		//! appropriate sorting order. Returns a flag if lower_bound
+		//! did not return end(), and the returned iterator's
+		//! "name" matches the given string, and the return value
+		//! from lower_bound().
+
+		std::tuple<bool, std::vector<filedirlist_entry>::iterator>
+		find_file(const std::string &n);
 
 		//! The current_filedircontents object.
 
@@ -103,21 +127,21 @@ class LIBCXX_HIDDEN filedirlist_managerObj::implObj : virtual public obj {
 
 	//! Custom subclass of \c mpobj that stores a protected info_t
 
-	//! The container uses the list layout manager, acquiring a lock
-	//! on the list before invoking any callback. For that reason we
-	//! must make sure that we never attempt to acquire a list lock
+	//! The filedir_list uses the pane layout manager, acquiring a lock
+	//! on the pane before invoking any callback. For that reason we
+	//! must make sure that we never attempt to acquire a pane lock
 	//! after info_t is already locked, otherwise a deadlock can occur.
 	//!
-	//! We do this by acquiring a list_lock ourselves, first, before
+	//! We do this by acquiring a pane_lock ourselves, first, before
 	//! locking the internal mutex that protects info_t.
 	//!
 	//! Define a mutex-protected wrapper for info_t that's derived from
 	//! a bog-standard mpobj. However we also define a custom \c lock
 	//! inner class.
 	//!
-	//! The inner \c lock class contains two members, \c lm the layout
-	//! manager for the element, and \c ll which is the list lock, making
-	//! sure that the list lock gets acquired first.
+	//! The inner \c lock class contains two members, \c pane_lm the layout
+	//! manager, and \c pl which is the pane lock, making
+	//! sure that the pane lock gets acquired first.
 
 	struct protected_info_t : private mpobj<info_t, std::recursive_mutex> {
 
@@ -130,30 +154,36 @@ class LIBCXX_HIDDEN filedirlist_managerObj::implObj : virtual public obj {
 		//! The base class gets constructed first, before the
 		//! lock on the underlying mpobj.
 
-		struct lock_listbase {
+		struct lock_panebase {
 
-			//! The available list layout manager.
-			listlayoutmanager lm;
+			//! The available pane layout manager.
+			panelayoutmanager pane_lm;
 
-			//! The list lock, which got here first.
-			list_lock ll;
+			//! The pane lock, which got here first.
+			pane_lock pl;
 
 			//! Constructor
-			lock_listbase(const listlayoutmanager &lm)
-				: lm{lm}, ll{lm}
+			lock_panebase(const panelayoutmanager &pane_lm)
+				: pane_lm{pane_lm}, pl{pane_lm}
 			{
 			}
+
+			//! Return the list layout manager for the subdir pane
+			listlayoutmanager subdirectory_lm();
+
+			//! Return the list layout manager for the files pane
+			listlayoutmanager files_lm();
 		};
 
 		//! Custom lock that enforces the correct locking order.
 
-		class lock : public lock_listbase, public superclass_t::lock {
+		class lock : public lock_panebase, public superclass_t::lock {
 
 		public:
 
 			//! Constructor.
 			lock(implObj &impl)
-				: lock_listbase{impl.get_layoutmanager()},
+				: lock_panebase{impl.get_layoutmanager()},
 				  superclass_t::lock{impl.info}
 			{
 			}
@@ -213,7 +243,7 @@ class LIBCXX_HIDDEN filedirlist_managerObj::implObj : virtual public obj {
 
 	//! Retrieve directory contents.
 
-	filedirlist_entry at(size_t n);
+	filedirlist_entry at(const filedirlist_entry_id &id);
 
 	//! Change directories.
 	void chdir(const std::string &directory);

@@ -46,7 +46,7 @@ class LIBCXX_HIDDEN filedirlist_managerObj : virtual public obj {
 
 	//! Return the filename at the given position.
 
-	filedirlist_entry at(size_t n);
+	filedirlist_entry at(const filedirlist_entry_id &id);
 
 	//! Switch the display element to a different directory.
 

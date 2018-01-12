@@ -12,6 +12,7 @@
 #include "x/w/text_param_literals.H"
 #include "x/w/label.H"
 #include "x/w/button_event.H"
+#include "x/w/panefactory.H"
 #include <x/weakcapture.H>
 #include <x/fileattr.H>
 #include <x/ymdhms.H>
@@ -24,7 +25,7 @@ LIBCXXW_NAMESPACE_START
 filedirlist_managerObj::implObj::current_selected_callbackObj
 ::current_selected_callbackObj()
 	: current_callback([]
-			   (size_t,
+			   (const filedirlist_entry_id &,
 			    const callback_trigger_t &,
 			    const busy &)
 			   {
@@ -32,16 +33,30 @@ filedirlist_managerObj::implObj::current_selected_callbackObj
 {
 }
 
-//! Create an internal display element that shows the contents of a directory.
+// Create an internal display element that shows the contents of a directory.
+
+// This is a focusable container with a pane layout manager, and two panes:
+// subdirectories and files.
 
 static inline auto create_filedir_list(const factory &f,
 				       const std::string &initial_directory,
 				       const auto &current_selected)
 {
+	new_panelayoutmanager nplm;
+
+	auto pane_container=f->create_focusable_container([]
+							  (const auto &ignore)
+							  {
+							  }, nplm);
+
+	panelayoutmanager plm=pane_container->get_layoutmanager();
+
+	auto pf=plm->append_panes();
+
 	new_listlayoutmanager nlm{highlighted_list};
 
 	nlm.columns=3;
-	nlm.height=10;
+	nlm.variable_height();
 
 	// Give all space to the first column, with the filename.
 	nlm.requested_col_widths.emplace(0, 100);
@@ -56,13 +71,57 @@ static inline auto create_filedir_list(const factory &f,
 		 const busy &mcguffin)
 		{
 			current_selected->current_callback.get()
-			(n, trigger, mcguffin);
+			({filedirlist_entry_id::dir_section, n}, trigger,
+			 mcguffin);
 		};
-	return f->create_focusable_container([]
-					     (const auto &ignore)
-					     {
-					     },
-					     nlm);
+
+	pf->set_initial_size(30)
+		.set_scrollbar_visibility(LIBCXX_NAMESPACE::w
+					  ::scrollbar_visibility::never)
+		.halign(LIBCXX_NAMESPACE::w::halign::fill)
+		.create_focusable_container([]
+					    (const auto &ignore)
+					    {
+					    },
+					    nlm)->show();
+
+	nlm.selection_type=[current_selected]
+		(const listlayoutmanager &ignore,
+		 size_t n,
+		 const callback_trigger_t &trigger,
+		 const busy &mcguffin)
+		{
+			current_selected->current_callback.get()
+			({filedirlist_entry_id::file_section, n}, trigger,
+			 mcguffin);
+		};
+
+	pf->set_initial_size(50)
+		.set_scrollbar_visibility(LIBCXX_NAMESPACE::w
+					  ::scrollbar_visibility::never)
+		.halign(LIBCXX_NAMESPACE::w::halign::fill)
+		.create_focusable_container([]
+					    (const auto &ignore)
+					    {
+					    },
+					    nlm)->show();
+	return pane_container;
+}
+
+listlayoutmanager filedirlist_managerObj::implObj::protected_info_t
+::lock_panebase::subdirectory_lm()
+{
+	focusable_container c=pane_lm->get(0);
+
+	return c->get_layoutmanager();
+}
+
+listlayoutmanager filedirlist_managerObj::implObj::protected_info_t
+::lock_panebase::files_lm()
+{
+	focusable_container c=pane_lm->get(1);
+
+	return c->get_layoutmanager();
 }
 
 filedirlist_managerObj::implObj
@@ -112,44 +171,44 @@ void filedirlist_managerObj::implObj
 	current_selected->current_callback=c;
 }
 
-// Sort the contents of the directory. Any subdirectories come first, then
-// the files.
+// Sort the contents of the directory using case-insensitive search, assuming
+// UTF-8 encoding.
 
 static bool compare(const filedirlist_entry &a,
-		    const filedirlist_entry &b)
+		    const std::tuple<std::string, std::string>
+		    &str_and_lowercase_str)
 {
-	int ad=S_ISDIR(a.st.st_mode) ? 0:1;
-	int bd=S_ISDIR(b.st.st_mode) ? 0:1;
-
-	if (ad != bd)
-		return ad < bd;
-
 	// Case-insensitive comparison.
 	auto as=unicode::tolower(a.name, unicode::utf_8);
-	auto bs=unicode::tolower(b.name, unicode::utf_8);
 
-	return as < bs;
+	if (as == std::get<1>(str_and_lowercase_str))
+		return a.name < std::get<0>(str_and_lowercase_str);
+
+	return as < std::get<1>(str_and_lowercase_str);
 }
 
-// Because we sort directories first, when searching for an existing entry
-// by name we have to try it both ways.
-
-std::vector<filedirlist_entry>::iterator
-filedirlist_managerObj::implObj::info_t::find(const std::string &n)
+std::tuple<bool, std::vector<filedirlist_entry>::iterator>
+filedirlist_managerObj::implObj::info_t::find_subdirectory(const std::string &n)
 {
-	filedirlist_entry dummy{ n, {} };
+	auto lowercase_str=unicode::tolower(n, unicode::utf_8);
 
-	auto b=entries.begin(),
-		e=entries.end(),
-		p=std::lower_bound(b, e, dummy, compare);
+	auto iter=std::lower_bound(subdirectories.begin(),
+				   subdirectories.end(),
+				   std::tuple{n, lowercase_str}, compare);
 
-	if (p == e || p->name != n)
-	{
-		dummy.st.st_mode=S_IFDIR;
-		p=std::lower_bound(b, e, dummy, compare);
-	}
+	return {iter != subdirectories.end() && iter->name == n, iter};
+}
 
-	return p;
+std::tuple<bool, std::vector<filedirlist_entry>::iterator>
+filedirlist_managerObj::implObj::info_t::find_file(const std::string &n)
+{
+	auto lowercase_str=unicode::tolower(n, unicode::utf_8);
+
+	auto iter=std::lower_bound(files.begin(),
+				   files.end(),
+				   std::tuple{n, lowercase_str}, compare);
+
+	return {iter != files.end() && iter->name == n, iter};
 }
 
 void filedirlist_managerObj::implObj::update(const const_filedir_file &files)
@@ -174,16 +233,31 @@ void filedirlist_managerObj::implObj::update(const const_filedir_file &files)
 	{
 		if (f.removed)
 		{
-			auto p=lock->find(f.name);
+			// A directory entry was removed. We check first
+			// subdirectories, then files.
 
-			bool found=p != lock->entries.end() &&
-				p->name == f.name;
+			auto [found, iter]=lock->find_file(f.name);
 
 			if (found)
 			{
-				lock.lm->remove_item(p-lock->entries.begin());
-				lock->entries.erase(p);
+				lock.files_lm()
+					->remove_item(iter-lock->files.begin());
+				lock->subdirectories.erase(iter);
 			}
+			else
+			{
+				auto [found, iter]=
+					lock->find_subdirectory(f.name);
+
+				if (found)
+				{
+					lock.subdirectory_lm()->remove_item
+						(iter-
+						 lock->subdirectories.begin());
+					lock->subdirectories.erase(iter);
+				}
+			}
+
 			continue;
 		}
 
@@ -207,14 +281,17 @@ void filedirlist_managerObj::implObj::update(const const_filedir_file &files)
 
 		filedirlist_entry e{f.name, st};
 
-		auto p=std::lower_bound(lock->entries.begin(),
-					lock->entries.end(), e, compare);
+		auto is_directory=S_ISDIR(st.st_mode);
 
 		// Prepared to deal with a hit from inotify for something
 		// we already know about.
 
-		bool found=p != lock->entries.end() &&
-			p->name == f.name;
+		auto &which_one=
+			is_directory ? lock->subdirectories:lock->files;
+
+		auto [found, p]=is_directory
+			? lock->find_subdirectory(f.name)
+			: lock->find_file(f.name);
 
 		// Prepare the text that represents this file.
 
@@ -269,11 +346,11 @@ void filedirlist_managerObj::implObj::update(const const_filedir_file &files)
 		if (size_uc.size() < 8)
 			size_uc.insert(0, 8-size_uc.size(), ' ');
 
-		size_t pos=p-lock->entries.begin();
+		size_t pos=p-which_one.begin();
 
 		if (!found)
-			lock->entries.insert(p, {f.name, st});
-		else
+			which_one.insert(p, {f.name, st});
+		else // We already have this one, must be an update from inotify
 			*p={f.name, st};
 
 		text_param filename{
@@ -285,17 +362,17 @@ void filedirlist_managerObj::implObj::update(const const_filedir_file &files)
 		text_param filesize{ "filedir_filesize"_theme_font,
 				size_uc};
 
+		auto lm=is_directory ? lock.subdirectory_lm():lock.files_lm();
+
 		if (found)
 		{
-			lock.lm->replace_items(pos, {filename, filedate,
-						filesize});
+			lm->replace_items(pos, {filename, filedate, filesize});
 		}
 		else
 		{
-			lock.lm->insert_items(pos, {filename, filedate,
-						filesize});
+			lm->insert_items(pos, {filename, filedate, filesize});
 		}
-		lock.lm->enabled(pos, enabled);
+		lm->enabled(pos, enabled);
 	}
 
 	// Hold onto the files object until the connection thread has nothing
@@ -445,15 +522,22 @@ void filedirlist_managerObj::implObj::stop()
 void filedirlist_managerObj::implObj::stop(protected_info_t::lock &lock)
 {
 	lock->current_filedircontents=nullptr;
-	lock.lm->replace_all_items({});
-	lock->entries.clear();
+
+	// Use replace_all_items() as means of wiping the lists.
+	lock.subdirectory_lm()->replace_all_items({});
+	lock.files_lm()->replace_all_items({});
+
+	lock->subdirectories.clear();
+	lock->files.clear();
 }
 
 void filedirlist_managerObj::implObj::start_new(protected_info_t::lock &lock)
 {
-	lock.lm->replace_all_items({});
+	lock.subdirectory_lm()->replace_all_items({});
+	lock.files_lm()->replace_all_items({});
 
-	lock->entries.clear();
+	lock->subdirectories.clear();
+	lock->files.clear();
 
 	lock->current_filedircontents=
 		filedircontents::create
@@ -473,7 +557,8 @@ void filedirlist_managerObj::implObj::start_new(protected_info_t::lock &lock)
 		 });
 }
 
-filedirlist_entry filedirlist_managerObj::implObj::at(size_t n)
+filedirlist_entry filedirlist_managerObj::implObj
+::at(const filedirlist_entry_id &id)
 {
 	protected_info_t::direct_lock lock{*this};
 
@@ -483,7 +568,9 @@ filedirlist_entry filedirlist_managerObj::implObj::at(size_t n)
 		d += "/";
 
 	// Return a full filename
-	auto e=lock->entries.at(n);
+	auto e=id.section == id.dir_section ? lock->subdirectories.at(id.n)
+		: lock->files.at(id.n);
+
 	e.name=d+e.name;
 	return e;
 }
