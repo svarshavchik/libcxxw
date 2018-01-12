@@ -20,10 +20,14 @@
 #include "x/w/text_paramfwd.H"
 #include "x/w/scratch_bufferfwd.H"
 #include "x/w/types.H"
+#include "x/w/metrics/axis.H"
+#include "synchronized_axis_impl.H"
+#include "synchronized_axis_valuefwd.H"
 #include "richtext/richtextfwd.H"
 #include "richtext/richtext_draw_boundariesfwd.H"
 #include "richtext/richtextmeta.H"
 #include <x/mpobj.H>
+#include <x/derivedvaluefwd.H>
 #include <unordered_map>
 #include <set>
 #include <vector>
@@ -232,12 +236,15 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 	//! Destructor
 	~implObj();
 
+	//! Override removed_from_container
+	void removed_from_container(IN_THREAD_ONLY) override;
+
 	//! Override initialize()
-	void initialize(IN_THREAD_ONLY);
+	void initialize(IN_THREAD_ONLY) override;
 
 	//! Override theme_updated()
 	void theme_updated(IN_THREAD_ONLY,
-			   const defaulttheme &new_theme);
+			   const defaulttheme &new_theme) override;
 
 	//! Which list style we're supposed to use.
 
@@ -256,6 +263,12 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 
 	//! Specified in new_listlayoutmanager.
 	const std::unordered_map<size_t, halign> col_alignments;
+
+ private:
+	//! Synchronization info
+
+	my_synchronized_axis synchronized_info;
+ public:
 
 	//! Remove a row.
 	void remove_row(const listlayoutmanager &ll,

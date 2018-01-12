@@ -52,6 +52,11 @@ namespace metrics {
 		//! The next
 		constexpr derivedaxis &operator()(const axis &a)
 		{
+			// Ignore default axi.
+			if (a.minimum() == 0 && a.preferred() == 0 &&
+			    a.maximum() == dim_t::infinite())
+				return *this;
+
 			++counter;
 			sum_of_preferreds += a.preferred();
 

@@ -14,7 +14,7 @@ namespace metrics {
 
 	//! Wrap a derivedaxis computation into a derivedvalue container.
 
-	typedef x::derivedvalue<axis, axis> derived_axis_obj;
+	typedef derivedvalue<axis, axis> derived_axis_obj;
 
 	//! Create a derived axis value calculation object.
 

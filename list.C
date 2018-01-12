@@ -7,6 +7,7 @@
 #include "x/w/focusable_container.H"
 #include "x/w/peepholed_focusableobj.H"
 #include "x/w/rgb.H"
+#include "x/w/synchronized_axis.H"
 #include "listlayoutmanager/listlayoutstyle_impl.H"
 #include "gridlayoutmanager.H"
 #include "focus/focusable.H"
@@ -68,6 +69,7 @@ new_listlayoutmanager
 	  selection_changed{default_selection_changed},
 	  height{4},
 	  columns{1},
+	  synchronized_columns{synchronized_axis::create()},
 	  list_border{"list_border"},
 	  v_padding{"list_v_padding"},
 	  left_padding{"list_left_padding"},

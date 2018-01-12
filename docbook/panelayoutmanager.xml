@@ -198,6 +198,155 @@ See COPYING for distribution information.
 	</para>
       </listitem>
     </itemizedlist>
+
+    <section id="panesynclists">
+      <title>Panes with synchronized lists</title>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting>
+auto pf=plm->append_panes();
+
+&ns;::w::new_listlayoutmanager nlm{highlighted_list};
+
+nlm.columns=3;
+nlm.variable_height();
+nlm.vertical_scrollbar=&ns;::w::scrollbar_visibility::automatic_reserved;
+
+pf->set_initial_size(30)
+   .set_scrollbar_visibility(&ns;::w::scrollbar_visibility::never)
+   .halign(LIBCXX_NAMESPACE::w::halign::fill)
+   .create_focusable_container([]
+                   (const auto &amp;creator)
+                   {
+                       // ...
+                   },
+                   nlm)->show();
+
+pf->set_initial_size(50)
+   .set_scrollbar_visibility(&ns;::w::scrollbar_visibility::never)
+   .halign(LIBCXX_NAMESPACE::w::halign::fill)
+   .create_focusable_container([]
+                   (const auto &amp;creator)
+                   {
+                       // ...
+                   },
+                   nlm)->show();</programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	This example creates two panes with selection lists. Each
+	selection list <link linkend="listcolumns">has three columns</link>.
+	What's not explicitly apparent is that both lists' columns' widths
+	are synchronized.
+      </para>
+
+      <para>
+	Normally each selection list sizes its columns individually; and
+	they're wide enough to accomodate the widest individual item in all rows
+	in that column, in that selection list.
+	The two selection lists are indepedent of each other. The first one's
+	columns' widths	get computed based on the first list's items' widths.
+	The widths of columns in the second list are set based on the widths
+	of the individual items in the second list. So, normally, the
+	widths of columns in the two lists will be different because
+	the lists have different items; and the two lists' columns will not
+	be the same width.
+      </para>
+
+      <para>
+	In this example, the two selection lists appear as two panes,
+	one list on top of each other, and their columns will always line up.
+	This looks like a single list, with a divider element that splits
+	them. But they're really two independent selection lists.
+      </para>
+
+      <para>
+	This is an indirect result of the two selection lists
+	getting created from the same
+	<classname>&ns;::w::new_listlayoutmanager</classname>.
+	<classname>&ns;::w::new_listlayoutmanager</classname>'s
+	constructor creates a new
+	<ulink url="&link-typedef-x--w-synchronized-axis;"><classname>&ns;::w::synchronized_axis</classname></ulink>
+	object for its <varname>synchronized_columns</varname> member.
+      </para>
+
+      <para>
+	A new selection list container that's created by an
+	<classname>&ns;::w::new_listlayoutmanager</classname>'s
+	gets linked
+	to the <varname>synchronized_columns</varname> from the
+	<classname>&ns;::w::new_listlayoutmanager</classname> instance.
+	The computed widths of the selection list's columns are based not
+	only on that selection list's items, but also based on the items of all
+	other selection list's that link to the same
+	<varname>synchronized_columns</varname> object.
+	It's possible to create selection lists from different
+	<classname>&ns;::w::new_listlayoutmanager</classname>s provided
+	that the first one's <varname>synchronized_columns</varname> class
+	member gets manually copied to the second one's.
+      </para>
+
+      <para>
+	Additionally, merely linking multiple selection lists to the same
+	<varname>synchronized_columns</varname> is not sufficient by itself.
+	Two have lists' columns line up with each other requires taking
+	some additional steps:
+      </para>
+
+      <itemizedlist>
+	<listitem>
+	  <para>
+	    The selection lists must have the same number of columns.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    The selection lists' scroll-bars' visibility status must be the
+	    same.
+	    All of the lists' scroll-bars must be visible, or invisible.
+	    It's possible to have
+	    a mixture of lists with visible and invisible scroll-bar's, if
+	    their visibility
+	    is
+	    <literal>&ns;::w::scrollbar_visibility::automatic_reserved</literal>.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    The selection lists have to be sized to the same width, by their
+	    respective containers.
+	  </para>
+	</listitem>
+      </itemizedlist>
+
+      <para>
+	The above example ticks off each requirement as follows:
+      </para>
+
+      <itemizedlist>
+	<listitem>
+	  <para>
+	    Both selection lists have three columns, and a
+	    <varname>vertical_scrollbar</varname> with
+	    <literal>&ns;::w::scrollbar_visibility::automatic_reserved</literal>.
+	  </para>
+	</listitem>
+	<listitem>
+	  <para>
+	    They get placed into the same (vertical) pane container. The
+	    vertical pane container automatically sizes itself to accomodate
+	    the widest pane, and
+	    <literal>&ns;::w::halign::fill</literal> make sure that the
+	    two selection lists get stretched horizontally to the pane
+	    container's full width.
+	  </para>
+	</listitem>
+      </itemizedlist>
+    </section>
   </section>
 </chapter>
 <!--

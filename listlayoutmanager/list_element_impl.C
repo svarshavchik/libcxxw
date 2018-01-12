@@ -31,6 +31,7 @@
 #include "run_as.H"
 #include "catch_exceptions.H"
 #include "defaulttheme.H"
+#include "synchronized_axis_value.H"
 #include <algorithm>
 #include <X11/keysym.h>
 
@@ -74,6 +75,72 @@ list_elementObj::implObj::textlist_info_lock
 
 list_elementObj::implObj::textlist_info_lock::~textlist_info_lock()=default;
 
+
+////////////////////////////////////////////////////////////////////////////
+//
+// synchronized_axis are used to synchronized the columns widths.
+//
+// Implement synchronized_axis_valueObj::updated(), when the synchronized
+// column widths get update. We update the container's metrics based on the
+// new synchronized column widths. Even if the metrics didn't change it's
+// possible that the individual column widths have changed (but the net change
+// is 0), so schedule a redraw in any case.
+
+static dim_t compute_derived_width(const std::vector<metrics::derivedaxis> &v)
+{
+	dim_t total_width=0;
+
+	for (const auto &m:v)
+	{
+		total_width=dim_t::truncate(total_width + m.preferred());
+	}
+
+	if (total_width == dim_t::infinite())
+		--total_width;
+
+	return total_width;
+}
+
+class LIBCXX_HIDDEN list_element_synchronized_columnsObj
+	: public synchronized_axis_valueObj {
+
+ public:
+
+	const ref<containerObj::implObj> parent_container;
+
+	list_element_synchronized_columnsObj
+		(const ref<containerObj::implObj> &parent_container)
+		: parent_container{parent_container}
+	{
+	}
+
+ public:
+
+	void updated(IN_THREAD_ONLY,
+		     const std::vector<metrics::derivedaxis> &v)
+	{
+		auto &e=parent_container->container_element_impl();
+
+		auto hv=e.get_horizvert(IN_THREAD);
+
+		// What's our width now?
+
+		auto w=compute_derived_width(v);
+
+		// If unchanged, well the individual axises might've changed,
+		// so redraw.
+		if (w == hv->horiz.preferred())
+		{
+			e.schedule_redraw(IN_THREAD);
+			return;
+		}
+
+		// Set the metrics, this eventually triggers a redraw.
+		hv->set_element_metrics(IN_THREAD, {w, w, w},
+					hv->vert);
+	}
+};
+
 ////////////////////////////////////////////////////////////////////////////
 
 list_elementObj::implObj::implObj(const ref<list_container_implObj>
@@ -112,6 +179,9 @@ list_elementObj::implObj::implObj(const ref<list_container_implObj>
 	  columns(list_style.actual_columns(style)),
 	  requested_col_widths(list_style.actual_col_widths(style)),
 	  col_alignments(list_style.actual_col_alignments(style)),
+	  synchronized_info{style.synchronized_columns,
+		ref<list_element_synchronized_columnsObj>::create
+		(textlist_container)},
 	  scratch_buffer_for_separator(container_screen->create_scratch_buffer
 				       ("list_separator_scratch@libcxx.com",
 					container_screen
@@ -158,6 +228,16 @@ list_elementObj::implObj::implObj(const ref<list_container_implObj>
 }
 
 list_elementObj::implObj::~implObj()=default;
+
+void list_elementObj::implObj::removed_from_container(IN_THREAD_ONLY)
+{
+	superclass_t::removed_from_container(IN_THREAD);
+
+	// Organized detachment of this list's column widths from any other
+	// list that this list's column widths get synchronized to.
+
+	synchronized_info.removed_from_container(IN_THREAD);
+}
 
 void list_elementObj::implObj::remove_row(const listlayoutmanager &lm,
 				      size_t row_number)
@@ -463,9 +543,33 @@ void list_elementObj::implObj
 	lock->full_redraw_needed=true;
 }
 
+// Note this is also implements update_current_position().
+
 void list_elementObj::implObj::recalculate(IN_THREAD_ONLY)
 {
 	textlist_info_lock lock{IN_THREAD, *this};
+
+	// If full recalculation was done, that's it. Otherwise the only
+	// thing we need to do is to calculate_column_poswidths, because
+	// the update_synchronized_column_widths()-d, and they were
+	// changed, and we need to reflect that.
+
+	if (!lock.was_modified)
+	{
+		dim_t width=calculate_column_poswidths(IN_THREAD, lock);
+
+		auto hv=get_horizvert(IN_THREAD);
+
+		hv->set_element_metrics(IN_THREAD,
+					{ width, width, width},
+					hv->vert);
+
+		if (lock->full_redraw_needed)
+		{
+			lock->full_redraw_needed=false;
+			schedule_redraw(IN_THREAD);
+		}
+	}
 }
 
 void list_elementObj::implObj
@@ -641,33 +745,118 @@ dim_t list_elementObj::implObj
 ::calculate_column_poswidths(IN_THREAD_ONLY,
 			     listimpl_info_t::lock &lock)
 {
-	lock->columns_poswidths.clear();
-	lock->columns_poswidths.reserve(lock->calculated_column_widths.size());
+	// our_column_width is calculate_column_widths plus paddings.
 
-	dim_t final_width=0;
+	std::vector<metrics::axis> our_column_widths_values;
 
-	auto h_padding=
+	const size_t n=lock->calculated_column_widths.size();
+
+	our_column_widths_values.reserve(n);
+
+	auto list_left_padding=
 		textlist_container->list_left_padding()->pixels(IN_THREAD);
-
-	auto inner_padding_times_two=
+	auto list_inner_padding=
 		textlist_container->list_inner_padding()->pixels(IN_THREAD);
+	auto list_right_padding=
+		textlist_container->list_right_padding()->pixels(IN_THREAD);
 
-	inner_padding_times_two=dim_t::truncate(inner_padding_times_two +
-						inner_padding_times_two);
+	// Padding on the left of the first column
+	dim_t left_h_padding=list_left_padding;
+
+	// Padding on the right of the first column
+	dim_t right_h_padding=list_inner_padding;
+
+	size_t i=0;
 
 	for (const auto &w:lock->calculated_column_widths)
 	{
-		final_width=dim_t::truncate(final_width + h_padding);
-		lock->columns_poswidths
-			.emplace_back(coord_t::truncate(final_width), w);
-		final_width=dim_t::truncate(final_width + w);
-		h_padding=inner_padding_times_two;
+		// If this is the last common, this is the padding on its right
+		if (++i == n)
+			right_h_padding=list_right_padding;
+
+		dim_t total_padding=dim_t::truncate(left_h_padding +
+						   right_h_padding);
+		auto total_column_width=dim_t::truncate(total_padding + w);
+
+		// This is what we will synchronize. The synchronized metrics
+		// represent the width of each column including the padding.
+
+		our_column_widths_values.emplace_back(total_column_width,
+						      total_column_width,
+						      total_column_width);
+
+		// Left padding for the 2nd and subsequent columns.
+		left_h_padding=list_inner_padding;
 	}
 
-	final_width=dim_t::truncate(final_width
-				    + textlist_container->list_right_padding()
-				    ->pixels(IN_THREAD));
+	// Synchronize this list's column widths with the other lists'.
 
+	synchronized_values::lock
+		sync_lock{synchronized_info.axis->impl->values};
+
+	if (synchronized_info.my_value->values(IN_THREAD) !=
+	    our_column_widths_values)
+	{
+		// Our column widths have changed.
+
+		synchronized_info.my_value->values(IN_THREAD)=
+			our_column_widths_values;
+
+		synchronized_info.synchronize(IN_THREAD, sync_lock);
+	}
+
+	// We now use the synchronized column_widths to compute the final
+	// position and width of our columns.
+
+	std::vector<std::pair<coord_t, dim_t>> new_columns_poswidths;
+
+	new_columns_poswidths.reserve(n);
+
+	i=0;
+
+	// Add up the total width.
+	dim_t final_width=0;
+
+	// Padding on the left of the first column
+	left_h_padding=list_left_padding;
+
+	// Padding on the right of the first column
+	right_h_padding=list_inner_padding;
+
+	// Now, we take the synchronized column widths. Since it is based on
+	// the width of each column including its padding, we now substract
+	// each column's padding from each derived_value, in order to
+	// compute what goes into the new_columns_poswidths.
+
+	for (const auto &axis:sync_lock->derived_values)
+	{
+		if (++i > n)
+			continue; // Ignore extra columns
+
+		// If this is the last column, this is the padding on its right
+
+		if (i == n)
+			right_h_padding=list_right_padding;
+
+		dim_t total_padding=dim_t::truncate(left_h_padding +
+						   right_h_padding);
+		dim_t total_column_width=axis.preferred();
+
+		dim_t total_usable_width=total_column_width-total_padding;
+
+		// This shouldn't happen:
+		if (total_column_width < total_padding)
+			total_usable_width=0;
+
+		new_columns_poswidths.emplace_back
+			(coord_t::truncate(final_width+left_h_padding),
+			 total_usable_width);
+
+		final_width=dim_t::truncate(final_width+total_column_width);
+
+		// Left padding for the 2nd and subsequent columns.
+		left_h_padding=list_inner_padding;
+	}
 
 	auto total_column_width=final_width;
 	if (total_column_width==dim_t::infinite())
@@ -695,7 +884,7 @@ dim_t list_elementObj::implObj
 
 		for (size_t i=0; i<columns; ++i)
 		{
-			auto &poswidth=lock->columns_poswidths.at(i);
+			auto &poswidth=new_columns_poswidths.at(i);
 
 			poswidth.first=coord_t::truncate(poswidth.first +
 							 coord_offset);
@@ -723,21 +912,22 @@ dim_t list_elementObj::implObj
 		}
 	}
 
-	return total_column_width;
+	// We will definitely need a redraw if something changes.
+	// Even if the final_width is the same.
+
+	if (lock->columns_poswidths != new_columns_poswidths)
+	{
+		lock->columns_poswidths=std::move(new_columns_poswidths);
+		lock->full_redraw_needed=false;
+	}
+
+
+	return final_width;
 }
 
 void list_elementObj::implObj::process_updated_position(IN_THREAD_ONLY)
 {
-	{
-		textlist_info_lock lock{IN_THREAD, *this};
-
-		// If full recalculation was done, that's it. Otherwise the only
-		// thing we need to do is to calculate_column_poswidths;
-
-		if (!lock.was_modified)
-			calculate_column_poswidths(IN_THREAD, lock);
-	}
-
+	recalculate(IN_THREAD);
 	superclass_t::process_updated_position(IN_THREAD);
 }
 

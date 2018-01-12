@@ -57,6 +57,7 @@ static inline auto create_filedir_list(const factory &f,
 
 	nlm.columns=3;
 	nlm.variable_height();
+	nlm.vertical_scrollbar=scrollbar_visibility::automatic_reserved;
 
 	// Give all space to the first column, with the filename.
 	nlm.requested_col_widths.emplace(0, 100);

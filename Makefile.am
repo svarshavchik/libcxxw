@@ -737,6 +737,12 @@ libcxxw_la_SOURCES=\
 	straight_borderobj.H			    \
 	straight_border_impl.C			    \
 	straight_border_impl.H			    \
+	synchronized_axis_impl.C		    \
+	synchronized_axis_impl.H		    \
+	synchronized_axis_value.C		    \
+	synchronized_axis_value.H		    \
+	synchronized_axis_valuefwd.H		    \
+	synchronized_axis_valueobj.H		    \
 	pagefactory.C				    \
 	pagefactory_impl.C			    \
 	pagefactory_impl.H			    \

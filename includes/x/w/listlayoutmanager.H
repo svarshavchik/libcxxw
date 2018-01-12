@@ -21,6 +21,7 @@
 #include <x/ref.H>
 #include <x/refptr_traits.H>
 #include <x/w/busyfwd.H>
+#include <x/w/synchronized_axisfwd.H>
 #include <string>
 #include <functional>
 #include <variant>
@@ -128,6 +129,9 @@ class LIBCXX_HIDDEN new_listlayoutmanager : public new_focusable_layoutmanager {
 
 	//! Alignment of all columns.
 	std::unordered_map<size_t, halign> col_alignments;
+
+	//! What other list this list's columns get synchronized with.
+	synchronized_axis synchronized_columns;
 
 	//! The border around the list.
 	border_arg list_border;

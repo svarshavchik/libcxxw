@@ -286,6 +286,7 @@ llmanager->enabled(2, !flag);</programlisting>
       </para>
     </note>
   </section>
+
   <section id="listitemmethods">
     <title>Modifying the contents of a list</title>
 
@@ -356,7 +357,8 @@ llmanager->append_items(
       All items in a selection list are numbered starting with 0, and get
       automatically renumbered whenever list items get added or removed from
       the list.
-      Each list item is specified by its current item number,
+      <methodname>size</methodname>() returns the number of items in the list.
+      Each list item is specified by its item number,
       when using
       <methodname>selected</methodname>(),
       <methodname>enabled</methodname>(), and other list methods.
@@ -415,6 +417,117 @@ llmanager->append_items(
 	display server until the list lock gets released.
       </para>
     </note>
+  </section>
+
+  <section id="listcolumns">
+    <title>Lists with multiple columns</title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+&ns;::w::new_listlayoutmanager new_list;
+
+new_list.columns=3;
+
+&ns;::w::focusable_container list=f->create_focusable_container(
+       []
+       (const &ns;::w::focusable_container &amp;c)
+       {
+       },
+       new_list);
+
+&ns;::w::listlayoutmanager llmanager=list->get_layoutmanager();
+
+llmanager->append_items(
+    {
+        "Lorem",
+        "Ipsum",
+        "Dolor",
+        &ns;::w::separator{},
+        "Sit",
+        "Amet",
+        "consectetur",
+    });</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      This is an example of creating a list with three columns.
+
+      <classname>&ns;::w::new_listlayoutmanager</classname> initializes
+      <varname>columns</varname> to a default value of 1, resulting in one
+      list item per row.
+      All previous examples in this chapter used this default
+      configuration. This example sets <varname>columns</varname> to 3,
+      resulting in three columns per list item. This example creates a list
+      with two rows, and a
+      <classname>&ns;::w::separator</classname> between them.
+      The resulting list's <methodname>size</methodname>() is 3: a list item
+      with three columns, a separator, and another list item with three
+      columns.
+    </para>
+
+    <para>
+      The results of creating a list with more than one column are as follows.
+      Using the example of a list with three columns:
+    </para>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  When creating new list items (using
+	  <methodname>append_items</methodname>(),
+	  <methodname>insert_items</methodname>(), et. al.)
+	  what goes into each column is individually specified.
+	  The number of consecutive text strings is always a multiple of three.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Each consecutive sequence of text strings creates one new list item.
+	  <varname>size</varname>() increases by 1.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  However, an <classname>&ns;::w::separator</classname> only
+	  appears once.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  The list layout manager automatically aligns list columns. Each
+	  column gets sized wide enough for the widest contents of the
+	  column, in all list rows.
+	</para>
+
+	<para>
+	  It's also possible to synchronized the widths of columns of
+	  two or more selection lists, so if they're positioned above
+	  each other, and their enclosing container sizes them to the
+	  same width, their respective columns also align with each other.
+	  See <xref linkend="panesynclists" /> for an example of doing
+	  this.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Each consecutive sequence of three text strings (and each
+	  individual <classname>&ns;::w::separator</classname>, as usual),
+	  forms one new logical list item, increasing the list's
+	  <varname>size</varname>() by 1, as usual.
+	  The list layout manager continues to automatically number
+	  all logical items in the list. All other list methods,
+	  such as <methodname>enabled</methodname>() or
+	  <methodname>selected</methodname>(), still reference each
+	  logical item using its numbered index.
+	</para>
+      </listitem>
+    </itemizedlist>
   </section>
 </chapter>
 <!--
