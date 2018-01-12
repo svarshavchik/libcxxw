@@ -50,6 +50,14 @@ struct input_field_config {
 	//! Inner alignment
 	halign alignment=halign::left;
 
+	//! Maximum number of unicode characters.
+
+	//! \note
+	//! Attempting to set() the contents of the field to a larger string
+	//! gets quietly ignored.
+
+	size_t maximum_size=(size_t)-1;
+
 	//! Single line input field.
 	constexpr bool oneline() const { return rows <= 1; }
 };

@@ -73,7 +73,13 @@ void testbutton()
 			 LIBCXX_NAMESPACE::w::gridfactory factory=
 			 layout->append_row();
 
-			 fields.first=factory->create_input_field({""}, {30, 1, true});
+			 LIBCXX_NAMESPACE::w::input_field_config conf1{30, 1,
+					 true};
+
+			 conf1.maximum_size=30;
+
+			 fields.first=factory->create_input_field({""},
+								  conf1);
 
 			 fields.first->on_change
 			 ([]
@@ -99,19 +105,19 @@ void testbutton()
 
 			 factory=layout->append_row();
 
+			 LIBCXX_NAMESPACE::w::input_field_config conf2{30, 4};
+
+			 conf2.vertical_scrollbar=
+			 LIBCXX_NAMESPACE::w::scrollbar_visibility
+			 ::automatic_reserved;
+
 			 fields.second=factory->halign(LIBCXXW_NAMESPACE::halign::right)
 			 .create_input_field
 			 ({"sans_serif"_font,
 					 LIBCXX_NAMESPACE::w::rgb{
 					 0, 0,
 						 LIBCXX_NAMESPACE::w::rgb::maximum},
-					 "Hello world!"}, {30, 4,
-					 false,
-					 false,
-					 true,
-					 LIBCXX_NAMESPACE::w::
-					 scrollbar_visibility::
-					 automatic_reserved});
+					 "Hello world!"}, conf2);
 
 			 fields.second->create_tooltip("A brief message, a few lines long.", 30);
 

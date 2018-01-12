@@ -45,6 +45,15 @@ richtextObj::impl_t::lock::lock(IN_THREAD_ONLY, impl_t &me)
 	(**this)->finish_initialization(IN_THREAD);
 }
 
+size_t richtextObj::size(IN_THREAD_ONLY)
+{
+	return read_only_lock([&]
+			      (const auto &l)
+			      {
+				      return (*l)->num_chars;
+			      });
+}
+
 void richtextObj::set(IN_THREAD_ONLY, const richtextstring &string)
 {
 	impl_t::lock lock{IN_THREAD, impl};

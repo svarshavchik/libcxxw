@@ -317,8 +317,48 @@ class LIBCXX_HIDDEN editorObj::implObj
 
 	void set_focus_and_ensure_visibility(IN_THREAD_ONLY) override;
 
-	//! Delete the current selection
-	size_t delete_selection(IN_THREAD_ONLY);
+	//! Delete the current selection.
+
+	//! Constructed to begin the process of deleting the current selection.
+	//! to_be_deleted() returns the number of characters in the current
+	//! selection that will be deleted (0 if there is no current selection).
+	//!
+	//! do_delete() executes the deletion.
+	//!
+	//! to_be_deleted() is a slight misnomer. It can also be called after
+	//! do_delete(), and returns the number of characters that were
+	//! deleted.
+
+	struct delete_selection_info {
+
+		//! Who created me
+
+		implObj &me;
+
+		//! The lock on me's cursor.
+
+		selection_cursor_t::lock cursor_lock;
+
+	private:
+
+		//! The constructor computed the character count.
+
+		size_t n;
+
+	public:
+		//! Constructor
+		delete_selection_info(IN_THREAD_ONLY, implObj &me);
+
+		//! Return the computed character count.
+		inline size_t to_be_deleted() const
+		{
+			return n;
+		}
+
+		//! Delete the current selection.
+
+		void do_delete(IN_THREAD_ONLY);
+	};
 
 	//! Create a new selection object.
 	selection create_selection(IN_THREAD_ONLY);

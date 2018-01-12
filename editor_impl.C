@@ -654,14 +654,13 @@ bool editorObj::implObj::process_keypress(IN_THREAD_ONLY, const key_event &ke)
 
 	if (ke.unicode == '\b')
 	{
-		selection_cursor_t::lock cursor_lock{*this};
+		delete_selection_info del_info{IN_THREAD, *this};
 
 		unblink(IN_THREAD);
 
-		size_t deleted=0;
+		size_t deleted=del_info.to_be_deleted();
 
-		if (cursor_lock.cursor)
-			deleted=delete_selection(IN_THREAD);
+		del_info.do_delete(IN_THREAD);
 
 		auto old=cursor->clone();
 		cursor->prev(IN_THREAD);
@@ -671,7 +670,7 @@ bool editorObj::implObj::process_keypress(IN_THREAD_ONLY, const key_event &ke)
 		cursor->remove(IN_THREAD, old);
 
 		recalculate(IN_THREAD);
-		draw_changes(IN_THREAD, cursor_lock,
+		draw_changes(IN_THREAD, del_info.cursor_lock,
 			     input_change_type::deleted, deleted, 0);
 		blink(IN_THREAD);
 		return true;
@@ -695,17 +694,25 @@ bool editorObj::implObj::pasted(IN_THREAD_ONLY,
 void editorObj::implObj::insert(IN_THREAD_ONLY,
 				const std::u32string_view &str)
 {
-	selection_cursor_t::lock cursor_lock{*this};
+	if (str.empty())
+		return;
+
+	delete_selection_info del_info{IN_THREAD, *this};
 
 	unblink(IN_THREAD);
 
-	size_t deleted=0;
+	size_t deleted=del_info.to_be_deleted();
 
-	if (cursor_lock.cursor)
-		deleted=delete_selection(IN_THREAD);
+	if (cursor->my_richtext->size(IN_THREAD)-deleted + str.size()
+	    -1 // We have an extra space at the end, in there.
+	    > config.maximum_size)
+		return;
+
+	del_info.do_delete(IN_THREAD);
+
 	cursor->insert(IN_THREAD, str);
 	recalculate(IN_THREAD);
-	draw_changes(IN_THREAD, cursor_lock,
+	draw_changes(IN_THREAD, del_info.cursor_lock,
 		     input_change_type::inserted, deleted, str.size());
 	blink(IN_THREAD);
 }
@@ -983,22 +990,33 @@ ptr<current_selectionObj::convertedValueObj> editorObj::implObj::selectionObj
 		::create(type, 8, bytes);
 }
 
-size_t editorObj::implObj::delete_selection(IN_THREAD_ONLY)
+editorObj::implObj::delete_selection_info::delete_selection_info(IN_THREAD_ONLY,
+								 implObj &me)
+	: me{me},
+	  cursor_lock{me},
+	  n{0}
 {
-	selection_cursor_t::lock cursor_lock{*this};
+	if (!cursor_lock.cursor)
+		return;
 
-	size_t p1=cursor->pos();
+	auto p1=me.cursor->pos();
 
-	size_t p2=cursor_lock.cursor->pos();
+	auto p2=cursor_lock.cursor->pos();
 
 	if (p1 > p2)
 		std::swap(p1, p2);
 
-	cursor->remove(IN_THREAD, cursor_lock.cursor);
-	cursor_lock.cursor=richtextiteratorptr();
-	remove_primary_selection(IN_THREAD);
+	n=p2-p1;
+}
 
-	return p2-p1;
+void editorObj::implObj::delete_selection_info::do_delete(IN_THREAD_ONLY)
+{
+	if (!cursor_lock.cursor)
+		return;
+
+	me.cursor->remove(IN_THREAD, cursor_lock.cursor);
+	cursor_lock.cursor=richtextiteratorptr();
+	me.remove_primary_selection(IN_THREAD);
 }
 
 editorObj::implObj::selection
@@ -1121,13 +1139,16 @@ void editorObj::implObj::select_all(IN_THREAD_ONLY)
 size_t editorObj::implObj::delete_char_or_selection(IN_THREAD_ONLY,
 						  const input_mask &mask)
 {
-	selection_cursor_t::lock cursor_lock{*this};
+	delete_selection_info del_info{IN_THREAD, *this};
 
-	if (cursor_lock.cursor)
+	if (del_info.cursor_lock.cursor)
 	{
 		if (mask.shift)
 			create_secondary_selection(IN_THREAD);
-		return delete_selection(IN_THREAD);
+
+		del_info.do_delete(IN_THREAD);
+
+		return del_info.to_be_deleted();
 	}
 
 	auto clone=cursor->clone();
@@ -1184,6 +1205,9 @@ void editorObj::implObj::set(IN_THREAD_ONLY, const std::u32string &string,
 			     size_t cursor_pos, size_t selection_pos)
 {
 	size_t s=string.size();
+
+	if (s > config.maximum_size)
+		return;
 
 	if (cursor_pos > s)
 		cursor_pos=s;

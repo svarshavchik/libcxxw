@@ -234,6 +234,10 @@ class LIBCXX_HIDDEN richtextObj : virtual public obj {
 		return l(lock);
 	}
 
+	//! How many characters there are.
+
+	size_t size(IN_THREAD_ONLY);
+
 	//! Run something while protected by the big thread lock.
 
 	//! This must be used by any IN_THREAD-scoped execution path.
