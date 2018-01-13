@@ -150,7 +150,8 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 		//! Default pointer and keyboard callback, does nothing.
 
-		static void no_focus_callback(focus_change);
+		static void no_focus_callback(focus_change,
+					      const callback_trigger_t &);
 
 		//! Default element state callback, does nothing.
 
@@ -888,7 +889,7 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! The focus reporter parameter to request_focus() and leave_focus().
 
 	typedef void (elementObj::implObj::*focus_reporter_t)
-		(IN_THREAD_ONLY, focus_change);
+		(IN_THREAD_ONLY, focus_change, const callback_trigger_t &);
 
 	//! Input focus is being requested for this display element.
 
@@ -901,7 +902,8 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 	void request_focus(IN_THREAD_ONLY,
 			   const ptr<elementObj::implObj> &current_focus,
-			   focus_reporter_t focus_reporter);
+			   focus_reporter_t focus_reporter,
+			   const callback_trigger_t &trigger);
 
 	//! Input focus is being lost completely.
 
@@ -915,12 +917,14 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! testfocusable().
 
 	void lose_focus(IN_THREAD_ONLY,
-			focus_reporter_t focus_reporter)
+			focus_reporter_t focus_reporter,
+			const callback_trigger_t &trigger)
 	{
 		requested_focus_from(IN_THREAD);
 		leaving_focus(IN_THREAD, ptr<elementObj::implObj>(),
-			      focus_reporter);
-		focus_movement_complete(IN_THREAD, false, focus_reporter);
+			      focus_reporter, trigger);
+		focus_movement_complete(IN_THREAD, false, focus_reporter,
+					trigger);
 	}
 
 	//! Internal focus processing, see element_focusable.C
@@ -935,7 +939,8 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 	void leaving_focus(IN_THREAD_ONLY,
 			   const ptr<elementObj::implObj> &leaving_for,
-			   focus_reporter_t focus_reporter);
+			   focus_reporter_t focus_reporter,
+			   const callback_trigger_t &trigger);
 
 	//! Internal focus processing, see element_focusable.C
 	virtual void do_leaving_focus(IN_THREAD_ONLY,
@@ -943,13 +948,15 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 				      const ref<implObj> &focus_from,
 				      const ptr<elementObj::implObj>
 				      &leaving_for,
-				      focus_reporter_t reporter);
+				      focus_reporter_t reporter,
+				      const callback_trigger_t &trigger);
 
 	//! Internal focus processing, see element_focusable.C
 
 	void entering_focus(IN_THREAD_ONLY,
 			    const ptr<elementObj::implObj> &focus_from,
-			    focus_reporter_t focus_reporter);
+			    focus_reporter_t focus_reporter,
+			    const callback_trigger_t &trigger);
 
 	//! Internal focus processing, see element_focusable.C
 
@@ -957,23 +964,27 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 				       focus_change event,
 				       const ref<implObj> &focus_to,
 				       const ptr<elementObj::implObj> &focus_from,
-				       focus_reporter_t focus_reporter);
+				       focus_reporter_t focus_reporter,
+				       const callback_trigger_t &trigger);
 
 	//! Internal focus processing, see element_focusable.C
 	virtual void focus_movement_complete(IN_THREAD_ONLY,
 					     bool stop_at_original_focus,
-					     focus_reporter_t focus_reporter);
+					     focus_reporter_t focus_reporter,
+					     const callback_trigger_t &trigger);
 
 	//! Invoke the keyboard_focus() virtual function.
 
 	void report_keyboard_focus(IN_THREAD_ONLY,
-				   focus_change event);
+				   focus_change event,
+				   const callback_trigger_t &trigger);
 
 	//! The result of all this is a bunch of calls to keyboard_focus().
 
 	//! The default implementation invokes the keyboard focus callback.
 
-	virtual void keyboard_focus(IN_THREAD_ONLY);
+	virtual void keyboard_focus(IN_THREAD_ONLY,
+				    const callback_trigger_t &trigger);
 
 	//! Install a new keyboard focus callback
 	void on_keyboard_focus(const std::function<focus_callback_t> &callback);
@@ -994,7 +1005,8 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
  private:
 	//! Invoke the callback
-	void invoke_keyboard_focus_callback(IN_THREAD_ONLY);
+	void invoke_keyboard_focus_callback(IN_THREAD_ONLY,
+					    const callback_trigger_t &);
  public:
 	//! Here come the keypresses.
 
@@ -1052,13 +1064,15 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 	//! Invoke the pointer_focus() virtual function.
 	void report_pointer_focus(IN_THREAD_ONLY,
-				  focus_change event);
+				  focus_change event,
+				  const callback_trigger_t &trigger);
 
 	//! The result of all this is a bunch of calls to pointer_focus().
 
 	//! The default implementation invokes the pointer focus callback.
 
-	virtual void pointer_focus(IN_THREAD_ONLY);
+	virtual void pointer_focus(IN_THREAD_ONLY,
+				   const callback_trigger_t &trigger);
 
 	//! Install a new keyboard focus callback
 	void on_pointer_focus(const std::function<focus_callback_t> &callback);
@@ -1068,7 +1082,8 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 			      const std::function<focus_callback_t> &callback);
  private:
 	//! Invoke the callback
-	void invoke_pointer_focus_callback(IN_THREAD_ONLY);
+	void invoke_pointer_focus_callback(IN_THREAD_ONLY,
+					   const callback_trigger_t &);
  public:
 
 	//! The pointer has moved.

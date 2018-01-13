@@ -40,7 +40,8 @@ LIBCXXW_NAMESPACE_START
 void elementObj::implObj::request_focus(IN_THREAD_ONLY,
 					const ptr<elementObj::implObj>
 					&focus_from,
-					focus_reporter_t focus_reporter)
+					focus_reporter_t focus_reporter,
+					const callback_trigger_t &trigger)
 {
 	auto me=ptr<elementObj::implObj>(this);
 
@@ -49,15 +50,16 @@ void elementObj::implObj::request_focus(IN_THREAD_ONLY,
 
 	requested_focus_to(IN_THREAD, focus_from);
 	if (focus_from)
-		focus_from->leaving_focus(IN_THREAD, me, focus_reporter);
-	entering_focus(IN_THREAD, focus_from, focus_reporter);
+		focus_from->leaving_focus(IN_THREAD, me, focus_reporter,
+					  trigger);
+	entering_focus(IN_THREAD, focus_from, focus_reporter, trigger);
 
 
-	focus_movement_complete(IN_THREAD, true, focus_reporter);
+	focus_movement_complete(IN_THREAD, true, focus_reporter, trigger);
 
 	if (focus_from)
 		focus_from->focus_movement_complete(IN_THREAD, false,
-						    focus_reporter);
+						    focus_reporter, trigger);
 }
 
 // Part 1: clear "original_focus" on all display elements starting with
@@ -119,35 +121,40 @@ void child_elementObj::requested_focus_from(IN_THREAD_ONLY)
 // call focus_lost().
 
 void elementObj::implObj::leaving_focus(IN_THREAD_ONLY,
-					const ptr<elementObj::implObj> &leaving_for,
-					focus_reporter_t focus_reporter)
+					const ptr<elementObj::implObj>
+					&leaving_for,
+					focus_reporter_t focus_reporter,
+					const callback_trigger_t &trigger)
 {
 	focus_change e=focus_change::lost;
 
 	do_leaving_focus(IN_THREAD, e, ref<elementObj::implObj>(this),
-			 leaving_for, focus_reporter);
+			 leaving_for, focus_reporter, trigger);
 }
 
 void elementObj::implObj::do_leaving_focus(IN_THREAD_ONLY,
 					   focus_change &event,
 					   const ref<elementObj::implObj> &element,
 					   const ptr<elementObj::implObj> &leaving_for,
-					   focus_reporter_t focus_reporter)
+					   focus_reporter_t focus_reporter,
+					   const callback_trigger_t &trigger)
 {
 	if (leaving_for &&
 	    leaving_for == ptr<elementObj::implObj>(this))
 	{
 		((*this).*focus_reporter)(IN_THREAD,
-					  focus_change::gained_from_child);
+					  focus_change::gained_from_child,
+					  trigger);
 		return;
 	}
 	if (new_focus && event != focus_change::lost)
 	{
 		((*this).*focus_reporter)(IN_THREAD,
-					  focus_change::child_moved);
+					  focus_change::child_moved,
+					  trigger);
 		return;
 	}
-	((*this).*focus_reporter)(IN_THREAD, event);
+	((*this).*focus_reporter)(IN_THREAD, event, trigger);
 	event=focus_change::child_lost;
 }
 
@@ -155,18 +162,20 @@ void child_elementObj::do_leaving_focus(IN_THREAD_ONLY,
 					focus_change &event,
 					const ref<elementObj::implObj> &element,
 					const ptr<elementObj::implObj> &leaving_for,
-					focus_reporter_t focus_reporter)
+					focus_reporter_t focus_reporter,
+					const callback_trigger_t &trigger)
 {
 	// focus_lost() gets called before we recursively go to the parent,
 	// so the loser's focus_lost() gets called before its parents'.
 
 	elementObj::implObj::do_leaving_focus(IN_THREAD, event, element,
-					      leaving_for, focus_reporter);
+					      leaving_for, focus_reporter,
+					      trigger);
 	child_container->container_element_impl()
 		.do_leaving_focus(IN_THREAD, event,
 				  element,
 				  leaving_for,
-				  focus_reporter);
+				  focus_reporter, trigger);
 }
 
 // Part 4: for each element starting with the top level display element,
@@ -176,18 +185,20 @@ void child_elementObj::do_leaving_focus(IN_THREAD_ONLY,
 void elementObj::implObj::entering_focus(IN_THREAD_ONLY,
 					 const ptr<elementObj::implObj>
 					 &focus_from,
-					 focus_reporter_t focus_reporter)
+					 focus_reporter_t focus_reporter,
+					 const callback_trigger_t &trigger)
 {
 	do_entering_focus(IN_THREAD, focus_change::gained,
 			  ref<elementObj::implObj>(this),
-			  focus_from, focus_reporter);
+			  focus_from, focus_reporter, trigger);
 }
 
 void child_elementObj::do_entering_focus(IN_THREAD_ONLY,
 					 focus_change event,
 					 const ref<elementObj::implObj> &element,
 					 const ptr<elementObj::implObj> &focus_from,
-					 focus_reporter_t focus_reporter)
+					 focus_reporter_t focus_reporter,
+					 const callback_trigger_t &trigger)
 {
 	// Recurse to parent first, before calling focus_gained(), so the
 	// display element that's receiving input focus gets called last.
@@ -196,55 +207,60 @@ void child_elementObj::do_entering_focus(IN_THREAD_ONLY,
 		.do_entering_focus(IN_THREAD,
 				   focus_change::child_gained,
 				   element, focus_from,
-				   focus_reporter);
+				   focus_reporter, trigger);
 	elementObj::implObj::do_entering_focus(IN_THREAD, event, element,
-					       focus_from, focus_reporter);
+					       focus_from, focus_reporter,
+					       trigger);
 }
 
 void elementObj::implObj::do_entering_focus(IN_THREAD_ONLY,
 					    focus_change event,
 					    const ref<elementObj::implObj> &element,
 					    const ptr<elementObj::implObj> &focus_from,
-					    focus_reporter_t focus_reporter)
+					    focus_reporter_t focus_reporter,
+					    const callback_trigger_t &trigger)
 {
 	if (focus_from && focus_from == ptr<elementObj::implObj>(this))
 	{
 		((*this).*focus_reporter)(IN_THREAD,
-					  focus_change::lost_to_child);
+					  focus_change::lost_to_child, trigger);
 	}
 	else if (original_focus && event != focus_change::gained)
 	{
 		((*this).*focus_reporter)(IN_THREAD,
-					  focus_change::child_moved);
+					  focus_change::child_moved, trigger);
 	}
 	else
 	{
-		((*this).*focus_reporter)(IN_THREAD, event);
+		((*this).*focus_reporter)(IN_THREAD, event, trigger);
 	}
 }
 
 void elementObj::implObj::focus_movement_complete(IN_THREAD_ONLY,
 						  bool stop_at_original_focus,
-						  focus_reporter_t focus_reporter)
+						  focus_reporter_t focus_reporter,
+						  const callback_trigger_t &trigger)
 {
 	if (stop_at_original_focus && original_focus)
 		return;
 
 	(this->*focus_reporter)(IN_THREAD,
-				focus_change::focus_movement_complete);
+				focus_change::focus_movement_complete,
+				trigger);
 }
 
 void child_elementObj::focus_movement_complete(IN_THREAD_ONLY,
 					       bool stop_at_original_focus,
-					       focus_reporter_t focus_reporter)
+					       focus_reporter_t focus_reporter,
+					       const callback_trigger_t &trigger)
 {
 	elementObj::implObj::focus_movement_complete(IN_THREAD,
 						     stop_at_original_focus,
-						     focus_reporter);
+						     focus_reporter, trigger);
 	child_container->container_element_impl()
 		.focus_movement_complete(IN_THREAD,
 					 stop_at_original_focus,
-					 focus_reporter);
+					 focus_reporter, trigger);
 }
 
 LIBCXXW_NAMESPACE_END

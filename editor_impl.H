@@ -212,7 +212,8 @@ class LIBCXX_HIDDEN editorObj::implObj
 
 	//! Starts or stops the cursor blink.
 
-	void keyboard_focus(IN_THREAD_ONLY) override;
+	void keyboard_focus(IN_THREAD_ONLY, const callback_trigger_t &)
+		override;
 
 	//! Starts or stop the cursor blink.
 	void window_focus_change(IN_THREAD_ONLY, bool flag) override;
@@ -315,7 +316,9 @@ class LIBCXX_HIDDEN editorObj::implObj
 	//! This display element is in a peephole, and the peephole will take
 	//! care of making everything visible.
 
-	void set_focus_and_ensure_visibility(IN_THREAD_ONLY) override;
+	void set_focus_and_ensure_visibility(IN_THREAD_ONLY,
+					     const callback_trigger_t &)
+		override;
 
 	//! Delete the current selection.
 

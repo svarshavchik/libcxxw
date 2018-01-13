@@ -948,9 +948,10 @@ void scrollbarObj::implObj::report_motion_event(IN_THREAD_ONLY,
 				     dragged_value);
 }
 
-void scrollbarObj::implObj::keyboard_focus(IN_THREAD_ONLY)
+void scrollbarObj::implObj::keyboard_focus(IN_THREAD_ONLY,
+					   const callback_trigger_t &trigger)
 {
-	superclass_t::keyboard_focus(IN_THREAD);
+	superclass_t::keyboard_focus(IN_THREAD, trigger);
 
 	if (!current_keyboard_focus(IN_THREAD))
 		reset_state(IN_THREAD);

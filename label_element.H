@@ -120,10 +120,11 @@ void label_elementObj<element_impl>
 
 template<typename element_impl>
 void label_elementObj<element_impl>
-::pointer_focus(IN_THREAD_ONLY)
+::pointer_focus(IN_THREAD_ONLY,
+		const callback_trigger_t &trigger)
 {
-	element_impl::pointer_focus(IN_THREAD);
-	textlabelObj::implObj::pointer_focus(IN_THREAD);
+	element_impl::pointer_focus(IN_THREAD, trigger);
+	textlabelObj::implObj::pointer_focus(IN_THREAD, trigger);
 }
 
 LIBCXXW_NAMESPACE_END

@@ -502,7 +502,8 @@ focusable_container new_custom_comboboxlayoutmanager
 				 .on_keyboard_focus
 				 (IN_THREAD,
 				  [collector]
-				  (const auto &ignore)
+				  (const auto &ignore,
+				   const auto &ignore2)
 				  {
 					  collector->buffer.clear();
 				  });

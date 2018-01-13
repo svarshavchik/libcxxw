@@ -105,7 +105,7 @@ class LIBCXX_HIDDEN peephole_toplevel_implObj
 
 layoutmanager
 create_peephole_toplevel_impl(const ref<containerObj::implObj> &toplevel,
-			      const char *border,
+			      const std::optional<border_arg> &border,
 			      peephole_style style,
 			      const function<create_peepholed_element_t>
 			      &factory)
@@ -145,7 +145,7 @@ create_peephole_toplevel_impl(const ref<containerObj::implObj> &toplevel,
 	auto row0_factory=toplevel_grid->append_row();
 	row0_factory->padding(0);
 	if (border)
-		row0_factory->border(border);
+		row0_factory->border(border.value());
 
 	// The peephole layoutmanager needs to know what border is in place,
 	// because that needs to be factored into calculations.
@@ -176,12 +176,12 @@ create_peephole_toplevel_impl(const ref<containerObj::implObj> &toplevel,
 
 	if (border)
 	{
-		row0_factory->top_border(border);
-		row0_factory->right_border(border);
-		row0_factory->bottom_border(border);
-		row1_factory->left_border(border);
-		row1_factory->bottom_border(border);
-		row1_factory->right_border(border);
+		row0_factory->top_border(border.value());
+		row0_factory->right_border(border.value());
+		row0_factory->bottom_border(border.value());
+		row1_factory->left_border(border.value());
+		row1_factory->bottom_border(border.value());
+		row1_factory->right_border(border.value());
 	}
 
 	install_peephole_scrollbars(toplevel_grid,

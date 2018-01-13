@@ -78,7 +78,8 @@ class elementObj;
 //!
 //! \code
 //! element->on_pointer_focus([]
-//!                           (INSERT_LIBX_NAMESPACE::w::focus_change)
+//!                           (INSERT_LIBX_NAMESPACE::w::focus_change f,
+//!                            const INSERT_LIBX_NAMESPACE::w::callback_trigger_t &trigger)
 //!                           {
 //!                               // ...
 //!                           });
@@ -88,7 +89,16 @@ class elementObj;
 //! (when the pointer moves in and out of the display element).
 //!
 //! The callback also gets invoked immediately to report the element's
-//! current focus state.
+//! current focus state, after the callback gets installed.
+//!
+//! The callback receives a \ref focus_change "focus_change" parameter
+//! that indicates the new status of pointer focusability. The
+//! \ref callback_trigger_t "trigger parameter" is mostly unused with
+//! pointer callbacks, it's provided mostly for consistency with
+//! a focusable element's on_keyboard_focus() callbacks. With pointer
+//! callbacks the trigger has only one possible value: initial, indicating
+//! the initial callback upon installation, and the default monostate
+//! value in most other instances, which are result of pointer movement.
 //!
 //! \note
 //! Well, not immediately. The callbacks get invoked and updated by an

@@ -16,7 +16,7 @@
 #include "peephole/peepholed_toplevel_element.H"
 #include "element.H"
 #include "shared_handler_data.H"
-
+#include "x/w/border_arg.H"
 #include <x/functional.H>
 
 LIBCXXW_NAMESPACE_START
@@ -100,7 +100,7 @@ struct LIBCXX_HIDDEN create_peepholed_toplevel_listcontainer_popup_args {
 	const char *popup_wm_class_instance;
 
 	//! The popup's border.
-	const char *popup_border;
+	std::optional<border_arg> popup_border;
 
 	//! The popup's additional nesting_level.
 

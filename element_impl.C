@@ -39,7 +39,8 @@ LIBCXXW_NAMESPACE_START
 
 // #define DEBUG_EXPOSURE_CALCULATIONS
 
-void elementObj::implObj::data_thread_only_t::no_focus_callback(focus_change)
+void elementObj::implObj::data_thread_only_t
+::no_focus_callback(focus_change, const callback_trigger_t &)
 {
 }
 
@@ -973,11 +974,12 @@ void elementObj::implObj::on_keyboard_focus(IN_THREAD_ONLY,
 					    &callback)
 {
 	data(IN_THREAD).on_keyboard_callback=callback;
-	invoke_keyboard_focus_callback(IN_THREAD);
+	invoke_keyboard_focus_callback(IN_THREAD, initial{});
 }
 
 void elementObj::implObj::report_keyboard_focus(IN_THREAD_ONLY,
-					       focus_change event)
+						focus_change event,
+						const callback_trigger_t &t)
 {
 	if (event != focus_change::focus_movement_complete)
 	{
@@ -985,21 +987,24 @@ void elementObj::implObj::report_keyboard_focus(IN_THREAD_ONLY,
 		return;
 	}
 
-	keyboard_focus(IN_THREAD);
+	keyboard_focus(IN_THREAD, t);
 }
 
 
-void elementObj::implObj::keyboard_focus(IN_THREAD_ONLY)
+void elementObj::implObj::keyboard_focus(IN_THREAD_ONLY,
+					 const callback_trigger_t &trigger)
 {
 	unschedule_hover_action(IN_THREAD);
-	invoke_keyboard_focus_callback(IN_THREAD);
+	invoke_keyboard_focus_callback(IN_THREAD, trigger);
 }
 
-void elementObj::implObj::invoke_keyboard_focus_callback(IN_THREAD_ONLY)
+void elementObj::implObj
+::invoke_keyboard_focus_callback(IN_THREAD_ONLY,
+				 const callback_trigger_t &trigger)
 {
 	try {
 		data(IN_THREAD).on_keyboard_callback
-			(most_recent_keyboard_focus_change(IN_THREAD));
+			(most_recent_keyboard_focus_change(IN_THREAD), trigger);
 	} CATCH_EXCEPTIONS;
 }
 
@@ -1020,11 +1025,13 @@ void elementObj::implObj::on_pointer_focus(IN_THREAD_ONLY,
 					    &callback)
 {
 	data(IN_THREAD).on_pointer_callback=callback;
-	invoke_pointer_focus_callback(IN_THREAD);
+	invoke_pointer_focus_callback(IN_THREAD, initial{});
 }
 
 void elementObj::implObj::report_pointer_focus(IN_THREAD_ONLY,
-					       focus_change event)
+					       focus_change event,
+					       const callback_trigger_t
+					       &trigger)
 {
 	if (event != focus_change::focus_movement_complete)
 	{
@@ -1032,20 +1039,24 @@ void elementObj::implObj::report_pointer_focus(IN_THREAD_ONLY,
 		return;
 	}
 
-	pointer_focus(IN_THREAD);
+	pointer_focus(IN_THREAD, trigger);
 }
 
-void elementObj::implObj::pointer_focus(IN_THREAD_ONLY)
+void elementObj::implObj::pointer_focus(IN_THREAD_ONLY,
+					const callback_trigger_t &trigger)
 {
 	unschedule_hover_action(IN_THREAD);
-	invoke_pointer_focus_callback(IN_THREAD);
+	invoke_pointer_focus_callback(IN_THREAD, trigger);
 }
 
-void elementObj::implObj::invoke_pointer_focus_callback(IN_THREAD_ONLY)
+void elementObj::implObj
+::invoke_pointer_focus_callback(IN_THREAD_ONLY,
+				const callback_trigger_t &trigger)
 {
 	try {
 		data(IN_THREAD).on_pointer_callback
-			(most_recent_pointer_focus_change(IN_THREAD));
+			(most_recent_pointer_focus_change(IN_THREAD),
+			 trigger);
 	} CATCH_EXCEPTIONS;
 }
 

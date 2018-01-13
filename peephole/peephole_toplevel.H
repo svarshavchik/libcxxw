@@ -8,10 +8,12 @@
 
 #include "x/w/container.H"
 #include "x/w/layoutmanagerfwd.H"
+#include "x/w/border_arg.H"
 #include "peephole/peepholed_toplevelfwd.H"
 #include "peephole/peephole_style.H"
 
 #include <x/functional.H>
+#include <optional>
 
 LIBCXXW_NAMESPACE_START
 
@@ -24,15 +26,15 @@ create_peepholed_element_t(const ref<containerObj::implObj> &);
 
 layoutmanager
 create_peephole_toplevel_impl(const ref<containerObj::implObj> &toplevel,
-			      const char *border,
+			      const std::optional<border_arg> &border,
 			      peephole_style style,
 			      const function<create_peepholed_element_t>
 			      &factory) LIBCXX_HIDDEN;
 
 template<typename create_peepholed_element_factory_t>
 auto create_peephole_toplevel(const ref<containerObj::implObj> &toplevel,
-			      const char *border,
 			      peephole_style style,
+			      const std::optional<border_arg> &border,
 			      create_peepholed_element_factory_t
 			      &&element_factory)
 	LIBCXX_HIDDEN;
@@ -83,7 +85,7 @@ auto create_peephole_toplevel(const ref<containerObj::implObj> &toplevel,
 
 template<typename create_peepholed_element_factory_t>
 auto create_peephole_toplevel(const ref<containerObj::implObj> &toplevel,
-			      const char *border,
+			      const std::optional<border_arg> &border,
 			      peephole_style style,
 			      create_peepholed_element_factory_t
 			      &&element_factory)

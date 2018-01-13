@@ -350,10 +350,12 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 				  xcb_timestamp_t timestamp) override;
 
 	//! Handle pointer focus events.
-	void pointer_focus(IN_THREAD_ONLY) override;
+	void pointer_focus(IN_THREAD_ONLY,
+			   const callback_trigger_t &trigger) override;
 
 	//! Handle keyboard focus events.
-	void keyboard_focus(IN_THREAD_ONLY) override;
+	void keyboard_focus(IN_THREAD_ONLY,
+			    const callback_trigger_t &trigger) override;
 
 	//! Invoked from the layout manager.
 	void autoselect(const listlayoutmanager &, size_t,

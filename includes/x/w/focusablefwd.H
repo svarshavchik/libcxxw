@@ -88,7 +88,8 @@ class focusableImplObj;
 //! #include <INSERT_LIBX_NAMESPACE/w/focus.H>
 //!
 //! f->on_keyboard_focus([]
-//!                      (const INSERT_LIBX_NAMESPACE::w::focus_change &f)
+//!                      (INSERT_LIBX_NAMESPACE::w::focus_change f,
+//!                       const INSERT_LIBX_NAMESPACE::w::callback_trigger_t &trigger)
 //!                      {
 //!                         if (INSERT_LIBX_NAMESPACE::w::in_focus(f))
 //!                              // ...
@@ -114,6 +115,13 @@ class focusableImplObj;
 //!
 //! Only one focus callback can be installed. Installing another keyboard
 //! focus change callback replaces any existing one.
+//!
+//! The callback receives a \ref focus_change "focus_change" parameter
+//! that indicates the new status of keyboard focusability. The
+//! \ref callback_trigger_t "trigger parameter" indicates what event
+//! triggered the focus change, which can range between: a button click
+//! on the focusable element; \c prev_key and \c next_key indicate
+//! focus navigation via the \c TAB key.
 //!
 //! on_key_event() installs a callback that receives key events. There are
 //! two possible key events: a

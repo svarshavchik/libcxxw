@@ -29,6 +29,7 @@
 #include "x/w/button_event.H"
 #include "x/w/motion_event.H"
 #include "x/w/values_and_mask.H"
+#include "x/w/callback_triggerfwd.H"
 #include "child_element.H"
 #include "hotspot.H"
 #include "shortcut/installed_shortcut.H"
@@ -458,7 +459,7 @@ void generic_windowObj::handlerObj::mapped(IN_THREAD_ONLY)
 		if (!element->autofocus.get())
 			continue;
 
-		element->set_focus_and_ensure_visibility(IN_THREAD);
+		element->set_focus_and_ensure_visibility(IN_THREAD, {});
 		break;
 	}
 }
@@ -920,7 +921,7 @@ void generic_windowObj::handlerObj
 		    // keyboard
 		    // focus from anything that might have it, right now.
 		    && be.button == 1 && be.press)
-			unset_keyboard_focus(IN_THREAD);
+			unset_keyboard_focus(IN_THREAD, &be);
 	}
 }
 
@@ -1015,7 +1016,8 @@ bool generic_windowObj::handlerObj::process_key_event(IN_THREAD_ONLY,
 	{
 		if (most_recent_keyboard_focus(IN_THREAD))
 		{
-			most_recent_keyboard_focus(IN_THREAD)->prev_focus(IN_THREAD);
+			most_recent_keyboard_focus(IN_THREAD)
+				->prev_focus(IN_THREAD, prev_key{});
 			return true;
 		}
 
@@ -1028,7 +1030,8 @@ bool generic_windowObj::handlerObj::process_key_event(IN_THREAD_ONLY,
 
 			if (element->focusable_enabled(IN_THREAD))
 			{
-				element->set_focus_and_ensure_visibility(IN_THREAD);
+				element->set_focus_and_ensure_visibility
+					(IN_THREAD, prev_key{});
 				return true;
 			}
 		}
@@ -1038,15 +1041,18 @@ bool generic_windowObj::handlerObj::process_key_event(IN_THREAD_ONLY,
 	{
 		if (most_recent_keyboard_focus(IN_THREAD))
 		{
-			most_recent_keyboard_focus(IN_THREAD)->next_focus(IN_THREAD);
+			most_recent_keyboard_focus(IN_THREAD)
+				->next_focus(IN_THREAD, next_key{});
 			return true;
 		}
-		return set_default_focus(IN_THREAD);
+		return set_default_focus(IN_THREAD, next_key{});
 	}
 	return false;
 }
 
-bool generic_windowObj::handlerObj::set_default_focus(IN_THREAD_ONLY)
+bool generic_windowObj::handlerObj
+::set_default_focus(IN_THREAD_ONLY,
+		    const callback_trigger_t &trigger)
 {
 	if (most_recent_keyboard_focus(IN_THREAD))
 		return true;
@@ -1055,7 +1061,8 @@ bool generic_windowObj::handlerObj::set_default_focus(IN_THREAD_ONLY)
 	{
 		if (element->focusable_enabled(IN_THREAD))
 		{
-			element->set_focus_and_ensure_visibility(IN_THREAD);
+			element->set_focus_and_ensure_visibility(IN_THREAD,
+								 trigger);
 			return true;
 		}
 	}
@@ -1101,7 +1108,9 @@ void generic_windowObj::handlerObj::get_focus_first(IN_THREAD_ONLY,
 		    });
 }
 
-void generic_windowObj::handlerObj::unset_keyboard_focus(IN_THREAD_ONLY)
+void generic_windowObj::handlerObj
+::unset_keyboard_focus(IN_THREAD_ONLY,
+		       const callback_trigger_t &trigger)
 {
 	if (most_recent_keyboard_focus(IN_THREAD))
 	{
@@ -1112,7 +1121,7 @@ void generic_windowObj::handlerObj::unset_keyboard_focus(IN_THREAD_ONLY)
 		f->get_focusable_element()
 			.lose_focus(IN_THREAD,
 				    &elementObj::implObj
-				    ::report_keyboard_focus);
+				    ::report_keyboard_focus, trigger);
 	}
 
 	// Notify the XIM server that we do not have input focus.
@@ -1125,7 +1134,8 @@ void generic_windowObj::handlerObj::unset_keyboard_focus(IN_THREAD_ONLY)
 }
 
 void generic_windowObj::handlerObj
-::set_keyboard_focus_to(IN_THREAD_ONLY, const focusable_impl &element)
+::set_keyboard_focus_to(IN_THREAD_ONLY, const focusable_impl &element,
+			const callback_trigger_t &trigger)
 {
 	auto old_focus=most_recent_keyboard_focus(IN_THREAD);
 
@@ -1134,7 +1144,8 @@ void generic_windowObj::handlerObj
 	auto &e=element->get_focusable_element();
 
 	e.request_focus(IN_THREAD, old_focus,
-			&elementObj::implObj::report_keyboard_focus);
+			&elementObj::implObj::report_keyboard_focus,
+			trigger);
 
 	// Update the XIM server.
 
@@ -1410,7 +1421,8 @@ void generic_windowObj::handlerObj
 		update_displayed_cursor_pointer(IN_THREAD);
 
 		e->request_focus(IN_THREAD, old,
-				 &elementObj::implObj::report_pointer_focus);
+				 &elementObj::implObj::report_pointer_focus,
+				 {});
 	}
 }
 
@@ -1438,7 +1450,8 @@ void generic_windowObj::handlerObj::pointer_focus_lost(IN_THREAD_ONLY)
 	most_recent_element_with_pointer(IN_THREAD)=nullptr;
 	update_displayed_cursor_pointer(IN_THREAD);
 	cpy->lose_focus(IN_THREAD,
-			&elementObj::implObj::report_pointer_focus);
+			&elementObj::implObj::report_pointer_focus,
+			{});
 }
 
 void generic_windowObj::handlerObj::update_frame_extents(IN_THREAD_ONLY)

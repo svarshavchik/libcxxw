@@ -336,7 +336,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! focusable field. Returns true if a display element already has
 	//! input focus, or if one was found by set_default_focus().
 
-	bool set_default_focus(IN_THREAD_ONLY);
+	bool set_default_focus(IN_THREAD_ONLY, const callback_trigger_t &);
 
 	//! Set focusable element in the window.
 
@@ -677,10 +677,12 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	THREAD_DATA_ONLY(most_recent_keyboard_focus);
 
 	//! Move the current keyboard focus to another element.
-	void set_keyboard_focus_to(IN_THREAD_ONLY, const focusable_impl &f);
+	void set_keyboard_focus_to(IN_THREAD_ONLY, const focusable_impl &f,
+				   const callback_trigger_t &trigger);
 
 	//! No element has keyboard focus any more.
-	void unset_keyboard_focus(IN_THREAD_ONLY);
+	void unset_keyboard_focus(IN_THREAD_ONLY,
+				  const callback_trigger_t &trigger);
 
 	//! Set input focus to this window
 	virtual void set_input_focus(IN_THREAD_ONLY);

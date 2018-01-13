@@ -91,10 +91,13 @@ void create_mainwindow(const x::w::main_window &main_window)
 			     });
 
 	button6->on_keyboard_focus([]
-				   (x::w::focus_change f)
+				   (x::w::focus_change f,
+				    const x::w::callback_trigger_t &t)
 				   {
 					   std::cout << "Button 6 in focus: "
 						     << x::w::in_focus(f)
+						     << " due to "
+						     << t.index()
 						     << std::endl;
 				   });
 	button6->on_key_event

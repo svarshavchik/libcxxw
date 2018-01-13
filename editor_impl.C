@@ -365,9 +365,10 @@ void editorObj::implObj::rewrap_due_to_updated_position(IN_THREAD_ONLY)
 	text->rewrap(IN_THREAD, preferred_width);
 }
 
-void editorObj::implObj::keyboard_focus(IN_THREAD_ONLY)
+void editorObj::implObj::keyboard_focus(IN_THREAD_ONLY,
+					const callback_trigger_t &trigger)
 {
-	superclass_t::keyboard_focus(IN_THREAD);
+	superclass_t::keyboard_focus(IN_THREAD, trigger);
 
 	blink_if_has_focus(IN_THREAD);
 
@@ -782,9 +783,11 @@ void editorObj::implObj::draw_between(IN_THREAD_ONLY,
 			     get_draw_info(IN_THREAD));
 }
 
-void editorObj::implObj::set_focus_and_ensure_visibility(IN_THREAD_ONLY)
+void editorObj::implObj
+::set_focus_and_ensure_visibility(IN_THREAD_ONLY,
+				  const callback_trigger_t &trigger)
 {
-	set_focus_only(IN_THREAD);
+	set_focus_only(IN_THREAD, trigger);
 }
 
 void editorObj::implObj::scroll_cursor_into_view(IN_THREAD_ONLY)

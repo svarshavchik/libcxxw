@@ -300,7 +300,8 @@ class LIBCXX_HIDDEN scrollbarObj::implObj :
 
 	//! Process a focus change notification.
 
-	void keyboard_focus(IN_THREAD_ONLY) override;
+	void keyboard_focus(IN_THREAD_ONLY,
+			    const callback_trigger_t &trigger) override;
 
 	//////////////////////////////////////////////////////////////////
 

@@ -1462,9 +1462,10 @@ bool list_elementObj::implObj::process_button_event(IN_THREAD_ONLY,
 	return flag;
 }
 
-void list_elementObj::implObj::pointer_focus(IN_THREAD_ONLY)
+void list_elementObj::implObj::pointer_focus(IN_THREAD_ONLY,
+					     const callback_trigger_t &trigger)
 {
-	superclass_t::pointer_focus(IN_THREAD);
+	superclass_t::pointer_focus(IN_THREAD, trigger);
 
 	textlist_info_lock lock{IN_THREAD, *this};
 
@@ -1475,9 +1476,10 @@ void list_elementObj::implObj::pointer_focus(IN_THREAD_ONLY)
 	}
 }
 
-void list_elementObj::implObj::keyboard_focus(IN_THREAD_ONLY)
+void list_elementObj::implObj::keyboard_focus(IN_THREAD_ONLY,
+					      const callback_trigger_t &trigger)
 {
-	superclass_t::keyboard_focus(IN_THREAD);
+	superclass_t::keyboard_focus(IN_THREAD, trigger);
 
 	textlist_info_lock lock{IN_THREAD, *this};
 

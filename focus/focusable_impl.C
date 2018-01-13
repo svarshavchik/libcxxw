@@ -117,7 +117,7 @@ void focusableImplObj::focusable_deinitialize(IN_THREAD_ONLY)
 		// will find another focusable field, and
 		// update keyboard_focus, or call remove_focus()
 		// and null it out.
-		next_focus(IN_THREAD, next_iter);
+		next_focus(IN_THREAD, next_iter, {});
 }
 
 focusable_fields_t &focusableImplObj::focusable_fields(IN_THREAD_ONLY)
@@ -172,7 +172,7 @@ void focusableImplObj::unfocus(IN_THREAD_ONLY)
 	    .most_recent_keyboard_focus(IN_THREAD) != ptr_impl)
 		return;
 
-	next_focus(IN_THREAD);
+	next_focus(IN_THREAD, {});
 }
 
 bool elementObj::implObj
@@ -302,15 +302,17 @@ bool elementObj::implObj::process_button_event(IN_THREAD_ONLY,
 	return processed;
 }
 
-void focusableImplObj::next_focus(IN_THREAD_ONLY)
+void focusableImplObj::next_focus(IN_THREAD_ONLY,
+				  const callback_trigger_t &trigger)
 {
 	auto iter=GET_FOCUSABLE_FIELD_ITER();
 
-	next_focus(IN_THREAD, ++iter);
+	next_focus(IN_THREAD, ++iter, trigger);
 }
 
 void focusableImplObj::next_focus(IN_THREAD_ONLY,
-				  focusable_fields_t::iterator starting_iter)
+				  focusable_fields_t::iterator starting_iter,
+				  const callback_trigger_t &trigger)
 {
 	auto &ff=focusable_fields(IN_THREAD);
 
@@ -318,7 +320,7 @@ void focusableImplObj::next_focus(IN_THREAD_ONLY,
 	{
 		if ((*starting_iter)->focusable_enabled(IN_THREAD))
 		{
-			switch_focus(IN_THREAD, *starting_iter);
+			switch_focus(IN_THREAD, *starting_iter, trigger);
 			return;
 		}
 		++starting_iter;
@@ -328,15 +330,16 @@ void focusableImplObj::next_focus(IN_THREAD_ONLY,
 	     ++starting_iter)
 		if ((*starting_iter)->focusable_enabled(IN_THREAD))
 		{
-			switch_focus(IN_THREAD, *starting_iter);
+			switch_focus(IN_THREAD, *starting_iter, trigger);
 			return;
 		}
 
 	get_focusable_element().get_window_handler()
-		.unset_keyboard_focus(IN_THREAD);
+		.unset_keyboard_focus(IN_THREAD, trigger);
 }
 
-void focusableImplObj::prev_focus(IN_THREAD_ONLY)
+void focusableImplObj::prev_focus(IN_THREAD_ONLY,
+				  const callback_trigger_t &trigger)
 {
 	auto iter=GET_FOCUSABLE_FIELD_ITER();
 
@@ -347,7 +350,7 @@ void focusableImplObj::prev_focus(IN_THREAD_ONLY)
 		--iter;
 		if ((*iter)->focusable_enabled(IN_THREAD))
 		{
-			switch_focus(IN_THREAD, *iter);
+			switch_focus(IN_THREAD, *iter, trigger);
 			return;
 		}
 	}
@@ -357,35 +360,40 @@ void focusableImplObj::prev_focus(IN_THREAD_ONLY)
 		--iter;
 		if ((*iter)->focusable_enabled(IN_THREAD))
 		{
-			switch_focus(IN_THREAD, *iter);
+			switch_focus(IN_THREAD, *iter, trigger);
 			return;
 		}
 	}
 
 	get_focusable_element().get_window_handler()
-		.unset_keyboard_focus(IN_THREAD);
+		.unset_keyboard_focus(IN_THREAD, trigger);
 }
 
-void focusableImplObj::set_focus_only(IN_THREAD_ONLY)
+void focusableImplObj::set_focus_only(IN_THREAD_ONLY,
+				      const callback_trigger_t &trigger)
 {
 	if (!in_focusable_fields(IN_THREAD))
 		throw EXCEPTION("Internal error: attempt to set focus to uninitialized"
 				<< objname());
 
 	get_focusable_element().get_window_handler()
-		.set_keyboard_focus_to(IN_THREAD, focusable_impl(this));
+		.set_keyboard_focus_to(IN_THREAD, focusable_impl(this),
+				       trigger);
 }
 
-void focusableImplObj::set_focus_and_ensure_visibility(IN_THREAD_ONLY)
+void focusableImplObj
+::set_focus_and_ensure_visibility(IN_THREAD_ONLY,
+				  const callback_trigger_t &trigger)
 {
-	set_focus_only(IN_THREAD);
+	set_focus_only(IN_THREAD, trigger);
 	get_focusable_element().ensure_entire_visibility(IN_THREAD);
 }
 
 void focusableImplObj::switch_focus(IN_THREAD_ONLY,
-				    const focusable_impl &focus_to)
+				    const focusable_impl &focus_to,
+				    const callback_trigger_t &trigger)
 {
-	focus_to->set_focus_and_ensure_visibility(IN_THREAD);
+	focus_to->set_focus_and_ensure_visibility(IN_THREAD, trigger);
 
 }
 

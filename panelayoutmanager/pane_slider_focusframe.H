@@ -67,7 +67,8 @@ class LIBCXX_HIDDEN pane_slider_focusframeObj
 
 	//! Override pointer_focus()
 
-	void pointer_focus(IN_THREAD_ONLY) override;
+	void pointer_focus(IN_THREAD_ONLY,
+			   const callback_trigger_t &trigger) override;
 
 };
 

@@ -5,11 +5,15 @@
 #ifndef x_w_focus_H
 #define x_w_focus_H
 
-#include <x/w/namespace.H>
+#include <x/w/callback_triggerfwd.H>
 
 LIBCXXW_NAMESPACE_START
 
 //! Reported keyboard and pointer focus changes.
+
+//! This indication gets passed to a display element's on_pointer_focus() and
+//! a focusable element's on_keyboard_focus() callbacks, and indicates
+//! how the display element focus has changed.
 
 enum class focus_change {
 	gained,       //!< Gained focus
@@ -32,7 +36,7 @@ bool in_focus(focus_change f);
 
 //! Focus callback
 
-typedef void focus_callback_t(focus_change);
+typedef void focus_callback_t(focus_change, const callback_trigger_t &);
 
 LIBCXXW_NAMESPACE_END
 

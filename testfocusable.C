@@ -40,12 +40,13 @@ struct LIBCXX_NAMESPACE::w::elementObj::implObj :
 	implObj(int id) : id(id) {}
 
 	typedef void (elementObj::implObj::*focus_reporter_t)
-		(IN_THREAD_ONLY, focus_change)
+		(IN_THREAD_ONLY, focus_change, const callback_trigger_t &)
 		;
 
 	void request_focus(IN_THREAD_ONLY,
 			   const ptr<elementObj::implObj> &,
-			   focus_reporter_t focus_reporter);
+			   focus_reporter_t focus_reporter,
+			   const callback_trigger_t &trigger);
 
 	virtual void requested_focus_to(IN_THREAD_ONLY,
 					const ptr<elementObj::implObj> &);
@@ -53,33 +54,39 @@ struct LIBCXX_NAMESPACE::w::elementObj::implObj :
 
 	void leaving_focus(IN_THREAD_ONLY,
 			   const ptr<elementObj::implObj> &leaving_for,
-			   focus_reporter_t focus_reporter);
+			   focus_reporter_t focus_reporter,
+			   const callback_trigger_t &trigger);
 
 	virtual void do_leaving_focus(IN_THREAD_ONLY,
 				      LIBCXX_NAMESPACE::w::focus_change &event,
 				      const element_impl &,
 				      const ptr<elementObj::implObj> &leaving_for,
-				      focus_reporter_t focus_reporter);
+				      focus_reporter_t focus_reporter,
+				      const callback_trigger_t &trigger);
 
 	void entering_focus(IN_THREAD_ONLY,
 			    const ptr<elementObj::implObj> &focus_from,
-			    focus_reporter_t focus_reporter);
+			    focus_reporter_t focus_reporter,
+			    const callback_trigger_t &trigger);
 
 	virtual void do_entering_focus(IN_THREAD_ONLY,
 				       LIBCXX_NAMESPACE::w::focus_change event,
 				       const element_impl &focus_to,
 				       const ptr<elementObj::implObj> &focus_from,
-				       focus_reporter_t focus_reporter);
+				       focus_reporter_t focus_reporter,
+				       const callback_trigger_t &trigger);
 
 	void focus_event(IN_THREAD_ONLY,
-			 LIBCXX_NAMESPACE::w::focus_change event)
+			 LIBCXX_NAMESPACE::w::focus_change event,
+			 const callback_trigger_t &trigger)
 	{
 		results.push_back({id, event});
 	}
 
 	virtual void focus_movement_complete(IN_THREAD_ONLY,
 					     bool,
-					     focus_reporter_t);
+					     focus_reporter_t,
+					     const callback_trigger_t &trigger);
 };
 
 struct LIBCXX_NAMESPACE::w::child_elementObj
@@ -101,19 +108,23 @@ struct LIBCXX_NAMESPACE::w::child_elementObj
 			      LIBCXX_NAMESPACE::w::focus_change &event,
 			      const element_impl &,
 			      const ptr<elementObj::implObj> &leaving_for,
-			      focus_reporter_t focus_reporter)
+			      focus_reporter_t focus_reporter,
+			      const callback_trigger_t &trigger)
 		override;
 
 	void do_entering_focus(IN_THREAD_ONLY,
 			       LIBCXX_NAMESPACE::w::focus_change event,
 			       const element_impl &focus_to,
 			       const ptr<elementObj::implObj> &focus_from,
-			       focus_reporter_t focus_reporter)
+			       focus_reporter_t focus_reporter,
+			       const callback_trigger_t &trigger)
 		override;
 
 	void focus_movement_complete(IN_THREAD_ONLY,
 				     bool,
-				     focus_reporter_t) override;
+				     focus_reporter_t,
+				     const callback_trigger_t &trigger)
+		override;
 };
 
 #define child_element_h
@@ -276,14 +287,17 @@ void testfocusable()
 			// This is equivalent to elementObj::implObj::lose_focus().
 			t.from->requested_focus_from(0);
 			t.from->leaving_focus(0, ptr<obj>(),
-					      &elementObj::implObj::focus_event);
+					      &elementObj::implObj::focus_event,
+					      {});
 			t.from->focus_movement_complete(0, false,
-							&elementObj::implObj::focus_event);
+							&elementObj::implObj::focus_event,
+							{});
 		}
 		else
 		{
 			t.to->request_focus(0, t.from,
-					    &elementObj::implObj::focus_event);
+					    &elementObj::implObj::focus_event,
+					    {});
 		}
 
 		if (results != t.expected_results)

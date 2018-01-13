@@ -69,10 +69,11 @@ current_border_impl focusframecontainer_elementObj<element_impl>
 
 template<typename element_impl>
 void focusframecontainer_elementObj<element_impl>
-::keyboard_focus(IN_THREAD_ONLY)
+::keyboard_focus(IN_THREAD_ONLY,
+		 const callback_trigger_t &trigger)
 {
-	superclass_t::keyboard_focus(IN_THREAD);
-	focusframecontainerObj::implObj::keyboard_focus(IN_THREAD);
+	superclass_t::keyboard_focus(IN_THREAD, trigger);
+	focusframecontainerObj::implObj::keyboard_focus(IN_THREAD, trigger);
 }
 
 //! Override window_focus_change().

@@ -228,7 +228,8 @@ class LIBCXX_HIDDEN textlabelObj::implObj : virtual public obj {
 	void report_motion_event(IN_THREAD_ONLY, const motion_event &me);
 
 	//! If no longer have pointer focus, disable any active hotspots.
-	void pointer_focus(IN_THREAD_ONLY);
+	void pointer_focus(IN_THREAD_ONLY,
+			   const callback_trigger_t &trigger);
 
  private:
 	//! Unhighlight any currently-highlighted hotspots.

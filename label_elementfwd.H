@@ -102,7 +102,8 @@ public:
 	//! Override pointer_focus()
 
 	//! If no longer have pointer focus, disable any active hotspots.
-	void pointer_focus(IN_THREAD_ONLY) override;
+	void pointer_focus(IN_THREAD_ONLY,
+			   const callback_trigger_t &trigger) override;
 };
 
 LIBCXXW_NAMESPACE_END

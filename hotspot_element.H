@@ -56,10 +56,12 @@ const focusableImplObj &hotspot_elementObj<element_impl>
 //! Forward it hotspotObj::implObj.
 
 template<typename element_impl>
-void hotspot_elementObj<element_impl>::keyboard_focus(IN_THREAD_ONLY)
+void hotspot_elementObj<element_impl>
+::keyboard_focus(IN_THREAD_ONLY,
+		 const callback_trigger_t &trigger)
 {
-	superclass_t::keyboard_focus(IN_THREAD);
-	hotspotObj::implObj::keyboard_focus(IN_THREAD);
+	superclass_t::keyboard_focus(IN_THREAD, trigger);
+	hotspotObj::implObj::keyboard_focus(IN_THREAD, trigger);
 }
 
 //! Implement pointer_focus(), inherited from elementObj::implObj
@@ -67,10 +69,12 @@ void hotspot_elementObj<element_impl>::keyboard_focus(IN_THREAD_ONLY)
 //! Forward it hotspotObj::implObj.
 
 template<typename element_impl>
-void hotspot_elementObj<element_impl>::pointer_focus(IN_THREAD_ONLY)
+void hotspot_elementObj<element_impl>::pointer_focus(IN_THREAD_ONLY,
+						     const callback_trigger_t
+						     &trigger)
 {
-	superclass_t::pointer_focus(IN_THREAD);
-	hotspotObj::implObj::pointer_focus(IN_THREAD);
+	superclass_t::pointer_focus(IN_THREAD, trigger);
+	hotspotObj::implObj::pointer_focus(IN_THREAD, trigger);
 }
 
 //! Implement process_key_event(), inherited from elementObj::implObj

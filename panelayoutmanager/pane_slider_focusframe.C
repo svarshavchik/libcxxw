@@ -85,7 +85,8 @@ bool pane_slider_focusframeObj::process_button_event(IN_THREAD_ONLY,
 	return flag;
 }
 
-void pane_slider_focusframeObj::pointer_focus(IN_THREAD_ONLY)
+void pane_slider_focusframeObj::pointer_focus(IN_THREAD_ONLY,
+					      const callback_trigger_t &trigger)
 {
 	if (!current_pointer_focus(IN_THREAD))
 		original_sizes.reset(); // No more sliding.

@@ -116,7 +116,7 @@ void shared_handler_dataObj::close_all_menu_popups(IN_THREAD_ONLY)
 	hide_menu_popups_until(IN_THREAD, opened_menu_popups->end());
 	auto h=toplevel_handler.getptr();
 	if (h)
-		h->unset_keyboard_focus(IN_THREAD);
+		h->unset_keyboard_focus(IN_THREAD, {});
 }
 
 bool shared_handler_dataObj

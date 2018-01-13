@@ -20,7 +20,7 @@ class child_elementObj;
 
 //! Return true if this key event is for advancing focus to the next field.
 
-bool next_key(const key_event &) LIBCXX_HIDDEN;
+bool is_next_key(const key_event &) LIBCXX_HIDDEN;
 
 //! Return true if keypress, and next_key().
 
@@ -28,7 +28,7 @@ bool next_key_pressed(const key_event &) LIBCXX_HIDDEN;
 
 //! Return true if this key event is for advancing focus to the previous field.
 
-bool prev_key(const key_event &) LIBCXX_HIDDEN;
+bool is_prev_key(const key_event &) LIBCXX_HIDDEN;
 
 //! Return true if keypress, and prev_key().
 
@@ -139,7 +139,8 @@ class LIBCXX_HIDDEN focusableImplObj : virtual public obj {
 	focusable_fields_t &focusable_fields(IN_THREAD_ONLY);
 
 	//! Advance input focus to the next focusable field.
-	void next_focus(IN_THREAD_ONLY);
+	void next_focus(IN_THREAD_ONLY,
+			const callback_trigger_t &trigger);
 
 	//! This is a label for this display element.
 	void set_label(const ref<elementObj::implObj> &);
@@ -151,10 +152,12 @@ class LIBCXX_HIDDEN focusableImplObj : virtual public obj {
 	//! focusable_fields_iter from focusable_fields.
 
 	void next_focus(IN_THREAD_ONLY,
-			focusable_fields_t::iterator starting_iter);
+			focusable_fields_t::iterator starting_iter,
+			const callback_trigger_t &trigger);
  public:
 	//! Advance input focus to the previous focusable field.
-	void prev_focus(IN_THREAD_ONLY);
+	void prev_focus(IN_THREAD_ONLY,
+			const callback_trigger_t &trigger);
 
 	//! Set focus to this focusable element.
 
@@ -163,11 +166,13 @@ class LIBCXX_HIDDEN focusableImplObj : virtual public obj {
 	//! scrolling as a result of pressing a button would be a rather rude
 	//! thing to do.
 
-	void set_focus_only(IN_THREAD_ONLY);
+	void set_focus_only(IN_THREAD_ONLY,
+			    const callback_trigger_t &);
 
 	//! Set focus to this focusable element and make sure it is visible.
 
-	virtual void set_focus_and_ensure_visibility(IN_THREAD_ONLY);
+	virtual void set_focus_and_ensure_visibility(IN_THREAD_ONLY,
+						     const callback_trigger_t &);
 
  private:
 
@@ -175,7 +180,8 @@ class LIBCXX_HIDDEN focusableImplObj : virtual public obj {
 
 	//! Invokes focus_to's set_focus_and_ensure_visibility().
 
-	void switch_focus(IN_THREAD_ONLY, const focusable_impl &focus_to);
+	void switch_focus(IN_THREAD_ONLY, const focusable_impl &focus_to,
+			  const callback_trigger_t &trigger);
 
  public:
 	//! Set tabbing order.

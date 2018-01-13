@@ -414,7 +414,8 @@ void textlabelObj::implObj::report_motion_event(IN_THREAD_ONLY,
 	link_update(IN_THREAD, link, focus_change::gained);
 }
 
-void textlabelObj::implObj::pointer_focus(IN_THREAD_ONLY)
+void textlabelObj::implObj::pointer_focus(IN_THREAD_ONLY,
+					  const callback_trigger_t &trigger)
 {
 	if (!get_label_element_impl().current_pointer_focus(IN_THREAD))
 		hotspot_unhighlight(IN_THREAD);

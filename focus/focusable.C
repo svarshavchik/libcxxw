@@ -26,20 +26,20 @@ focusableObj::~focusableObj()=default;
 
 bool next_key_pressed(const key_event &ke)
 {
-	return ke.keypress && next_key(ke);
+	return ke.keypress && is_next_key(ke);
 }
 
-bool next_key(const key_event &ke)
+bool is_next_key(const key_event &ke)
 {
 	return ke.notspecial() && ke.unicode == '\t';
 }
 
 bool prev_key_pressed(const key_event &ke)
 {
-	return ke.keypress && prev_key(ke);
+	return ke.keypress && is_prev_key(ke);
 }
 
-bool prev_key(const key_event &ke)
+bool is_prev_key(const key_event &ke)
 {
 	return ke.notspecial() && ke.keysym == XK_ISO_Left_Tab;
 }
@@ -385,7 +385,7 @@ void focusableObj::request_focus()
 				 }
 
 				 impl->set_focus_and_ensure_visibility
-					 (IN_THREAD);
+					 (IN_THREAD, {});
 			 });
 }
 

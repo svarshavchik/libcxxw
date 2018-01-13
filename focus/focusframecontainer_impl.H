@@ -44,7 +44,8 @@ class LIBCXX_HIDDEN focusframecontainerObj::implObj : virtual public obj {
 
 	//! Trigger a container rebuild, in order to update the focus frame.
 
-	void keyboard_focus(IN_THREAD_ONLY);
+	void keyboard_focus(IN_THREAD_ONLY,
+			    const callback_trigger_t &trigger);
 
 	//! Trigger a container rebuild, in order to update the focus frame.
 

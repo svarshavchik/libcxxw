@@ -68,7 +68,7 @@ bool focusable_elementObj<element_impl>
 
 	if (be.button == 1 && this->activate_for(be))
 	{
-		this->set_focus_only(IN_THREAD);
+		this->set_focus_only(IN_THREAD, &be);
 		flag=true;
 	}
 

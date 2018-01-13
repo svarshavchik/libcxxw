@@ -32,20 +32,22 @@ hotspotObj::implObj::implObj()
 
 hotspotObj::implObj::~implObj()=default;
 
-void hotspotObj::implObj::keyboard_focus(IN_THREAD_ONLY)
+void hotspotObj::implObj::keyboard_focus(IN_THREAD_ONLY,
+					 const callback_trigger_t &trigger)
 {
 	if (!get_hotspot_element().current_keyboard_focus(IN_THREAD))
 		is_key_down=false;
 
-	update(IN_THREAD, {});
+	update(IN_THREAD, trigger);
 }
 
-void hotspotObj::implObj::pointer_focus(IN_THREAD_ONLY)
+void hotspotObj::implObj::pointer_focus(IN_THREAD_ONLY,
+					const callback_trigger_t &trigger)
 {
 	if (!get_hotspot_element().current_pointer_focus(IN_THREAD))
 		is_button1_down=false;
 
-	update(IN_THREAD, {});
+	update(IN_THREAD, trigger);
 }
 
 bool hotspotObj::implObj::process_key_event(IN_THREAD_ONLY, const key_event &ke)

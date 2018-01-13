@@ -46,7 +46,7 @@ bool editor_peephole_implObj::process_button_event(IN_THREAD_ONLY,
 	get_element([&]
 		    (const focusable &f)
 		    {
-			    f->get_impl()->set_focus_only(IN_THREAD);
+			    f->get_impl()->set_focus_only(IN_THREAD, &be);
 		    });
 	return true;
 }

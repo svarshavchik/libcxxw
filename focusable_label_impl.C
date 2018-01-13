@@ -25,9 +25,10 @@ bool focusable_labelObj::implObj::uses_input_method()
 	return true;
 }
 
-void focusable_labelObj::implObj::keyboard_focus(IN_THREAD_ONLY)
+void focusable_labelObj::implObj::keyboard_focus(IN_THREAD_ONLY,
+						 const callback_trigger_t &trigger)
 {
-	superclass_t::keyboard_focus(IN_THREAD);
+	superclass_t::keyboard_focus(IN_THREAD, trigger);
 	report_current_cursor_position_if_active(IN_THREAD);
 }
 

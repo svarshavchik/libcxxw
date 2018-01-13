@@ -90,11 +90,13 @@ class LIBCXX_HIDDEN hotspotObj::implObj
 
 	//! Update hotspot temperature due to keyboard focus change.
 
-	void keyboard_focus(IN_THREAD_ONLY);
+	void keyboard_focus(IN_THREAD_ONLY,
+			    const callback_trigger_t &trigger);
 
 	//! Update hotspot temperature due to pointer focus change.
 
-	void pointer_focus(IN_THREAD_ONLY);
+	void pointer_focus(IN_THREAD_ONLY,
+			   const callback_trigger_t &trigger);
 
 	//! Update hotspot temperature due to a keyboard event.
 

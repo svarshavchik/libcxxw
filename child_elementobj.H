@@ -195,7 +195,8 @@ class LIBCXX_HIDDEN child_elementObj : public background_color_elementObj<
 			      focus_change &event,
 			      const ref<implObj> &focus_from,
 			      const ptr<elementObj::implObj> &leaving_for,
-			      focus_reporter_t focus_reporter)
+			      focus_reporter_t focus_reporter,
+			      const callback_trigger_t &trigger)
 		override;
 
 	//! Input focus processing.
@@ -205,7 +206,8 @@ class LIBCXX_HIDDEN child_elementObj : public background_color_elementObj<
 			       focus_change event,
 			       const ref<implObj> &focus_to,
 			       const ptr<elementObj::implObj> &focus_from,
-			       focus_reporter_t focus_reporter)
+			       focus_reporter_t focus_reporter,
+			       const callback_trigger_t &trigger)
 		override;
 
 	//! Input focus processing.
@@ -214,7 +216,9 @@ class LIBCXX_HIDDEN child_elementObj : public background_color_elementObj<
 
 	void focus_movement_complete(IN_THREAD_ONLY,
 				     bool stop_at_original_focus,
-				     focus_reporter_t focus_reporter) override;
+				     focus_reporter_t focus_reporter,
+				     const callback_trigger_t &trigger)
+		override;
 
 	//! Override ensure_visibility.
 
