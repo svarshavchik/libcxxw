@@ -40,7 +40,7 @@ class LIBCXX_HIDDEN peepholed_toplevel_listcontainer_popupObj
 
 	~peepholed_toplevel_listcontainer_popupObj()=default;
 
-	ref<layoutmanagerObj::implObj> get_layout_impl() const
+	ref<layoutmanagerObj::implObj> get_layout_impl() const override
 	{
 		return listlayout_impl;
 	}

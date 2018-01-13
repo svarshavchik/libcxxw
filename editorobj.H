@@ -35,7 +35,7 @@ public:
 	~editorObj() LIBCXX_HIDDEN;
 
 	//! Inherited from focusableObj
-	virtual focusable_impl get_impl() const;
+	focusable_impl get_impl() const override;
 
 	//! Return the preferred horizontal increment
 	dim_t horizontal_increment(IN_THREAD_ONLY) const override;

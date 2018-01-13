@@ -45,7 +45,7 @@ public:
 
 	//! \internal
 
-	ref<focusableImplObj> get_impl() const LIBCXX_INTERNAL;
+	ref<focusableImplObj> get_impl() const override LIBCXX_INTERNAL;
 };
 
 LIBCXXW_NAMESPACE_END

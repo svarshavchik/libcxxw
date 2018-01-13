@@ -32,7 +32,7 @@ class LIBCXX_HIDDEN editor_peephole_implObj
 
 	bool process_button_event(IN_THREAD_ONLY,
 				  const button_event &be,
-				  xcb_timestamp_t timestamp);
+				  xcb_timestamp_t timestamp) override;
 
 	//! Override report_motion_event().
 

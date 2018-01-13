@@ -27,7 +27,7 @@ public:
 	~ownerObj() LIBCXX_HIDDEN;
 
 	//! Implement get_impl().
-	ref<focusableImplObj> get_impl() const;
+	ref<focusableImplObj> get_impl() const override;
 
 	using focusableObj::get_impl;
 };

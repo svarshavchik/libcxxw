@@ -117,7 +117,7 @@ class LIBCXX_HIDDEN list_element_synchronized_columnsObj
  public:
 
 	void updated(IN_THREAD_ONLY,
-		     const std::vector<metrics::derivedaxis> &v)
+		     const std::vector<metrics::derivedaxis> &v) override
 	{
 		auto &e=parent_container->container_element_impl();
 

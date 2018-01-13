@@ -102,7 +102,7 @@ class LIBCXX_HIDDEN singletonlayoutmanagerObj::implObj :
 	//! gets increased.
 
 	void process_updated_position(IN_THREAD_ONLY,
-				      const rectangle &position);
+				      const rectangle &position) override;
 };
 
 LIBCXXW_NAMESPACE_END

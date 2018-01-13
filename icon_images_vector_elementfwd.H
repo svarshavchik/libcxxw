@@ -29,9 +29,10 @@ class LIBCXX_HIDDEN icon_images_vector_elementObj
 
 	icon_images_vector_elementObj();
 
-	void initialize(IN_THREAD_ONLY);
+	void initialize(IN_THREAD_ONLY) override;
 
-	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme);
+	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme)
+		override;
 };
 
 LIBCXXW_NAMESPACE_END

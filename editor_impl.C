@@ -201,7 +201,7 @@ public:
 	ptr<convertedValueObj> convert(IN_THREAD_ONLY, xcb_atom_t type)
 		override;
 
-	std::vector<xcb_atom_t> supported(IN_THREAD_ONLY);
+	std::vector<xcb_atom_t> supported(IN_THREAD_ONLY) override;
 };
 
 ////////////////////////////////////////////////////////////////////////////

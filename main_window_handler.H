@@ -64,7 +64,7 @@ class LIBCXX_HIDDEN main_windowObj::handlerObj :
 	//! the window is made visible.
 
 	void set_inherited_visibility(IN_THREAD_ONLY,
-				      inherited_visibility_info &);
+				      inherited_visibility_info &) override;
 
 	//! Invoke compute_size_hints(), then put them into WM_SIZE_HINTS.
 

@@ -128,7 +128,8 @@ public:
 
 	//! Return the popup's parent main window.
 
-	ptr<generic_windowObj::handlerObj> get_popup_parent(IN_THREAD_ONLY);
+	ptr<generic_windowObj::handlerObj> get_popup_parent(IN_THREAD_ONLY)
+		override;
 
 	//! Mcguffin for a visible popup.
 
@@ -185,7 +186,8 @@ public:
 
 	//! If the ESC key is pressed, close the combo-box popup.
 
-	bool process_key_event(IN_THREAD_ONLY, const key_event &ke);
+	bool process_key_event(IN_THREAD_ONLY, const key_event &ke)
+		override;
 };
 
 LIBCXXW_NAMESPACE_END

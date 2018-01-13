@@ -61,7 +61,7 @@ public:
 
 	//! Inherited from shortcut_activation_element_implObj,
 
-	generic_windowObj::handlerObj &shortcut_window_handler()
+	generic_windowObj::handlerObj &shortcut_window_handler() override
 	{
 		return container_impl->get_window_handler();
 	}
@@ -72,7 +72,7 @@ public:
 
 	//! Is the shortcut enabled?
 
-	bool enabled(IN_THREAD_ONLY)
+	bool enabled(IN_THREAD_ONLY) override
 	{
 		bool enabled=false;
 

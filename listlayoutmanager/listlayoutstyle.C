@@ -606,7 +606,7 @@ class LIBCXX_HIDDEN menu_list_style_impl
 		return list_celltext::create(rt, halign::left, 0);
 	}
 
-	void menu_attribute_requested() const
+	void menu_attribute_requested() const override
 	{
 	}
 };

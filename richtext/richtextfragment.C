@@ -491,7 +491,7 @@ void richtextfragmentObj::recalculate_linebreaks()
 			{
 			}
 
-		int callback(int value)
+		int callback(int value) override
 		{
 			if (skip)
 			{

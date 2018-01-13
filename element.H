@@ -212,12 +212,6 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 		data_thread_only.requested_visibility=true;
 	}
  public:
-	//! Return my window
-
-	virtual generic_windowObj::handlerObj &get_window_handler()=0;
-
-	//! Return my window
-	virtual const generic_windowObj::handlerObj &get_window_handler() const=0;
 
 	//! Use parent display element's background color.
 

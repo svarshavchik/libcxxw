@@ -74,7 +74,7 @@ class LIBCXX_HIDDEN tooltip_handlerObj : public popupObj::handlerObj {
 
 	//! Returns "tooltip".
 
-	const char *default_wm_class_instance() const
+	const char *default_wm_class_instance() const override
 	{
 		return "tooltip";
 	}

@@ -229,7 +229,7 @@ class LIBCXX_HIDDEN editorObj::implObj
 	//! Inherited from elementObj::implObj
 
 	//! Processes a key event.
-	bool process_key_event(IN_THREAD_ONLY, const key_event &ke);
+	bool process_key_event(IN_THREAD_ONLY, const key_event &ke) override;
 
 	//! This display element uses XIM.
 

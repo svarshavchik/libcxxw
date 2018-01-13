@@ -34,7 +34,7 @@ public:
 
 	//! Override get_layout_impl()
 
-	ref<layoutmanagerObj::implObj> get_layout_impl() const;
+	ref<layoutmanagerObj::implObj> get_layout_impl() const override;
 
 	/*! Update the progress bar's value.
 
