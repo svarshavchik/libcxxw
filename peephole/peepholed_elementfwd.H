@@ -16,6 +16,7 @@ LIBCXXW_NAMESPACE_START
 //! The template parameter must be an elementObj or a subclass of it.
 //!
 //! Multiply-inherits from the template parameter and a peepholedObj.
+//! Implements get_peepholed_element().
 
 template<typename element_impl>
 class LIBCXX_HIDDEN peepholed_elementObj : public element_impl,

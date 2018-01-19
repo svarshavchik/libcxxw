@@ -8,7 +8,7 @@
 #include "x/w/elementobj.H"
 #include "x/w/focusableobj.H"
 #include "focus/focusablefwd.H"
-#include "peephole/peepholed_elementfwd.H"
+#include "peephole/peepholed_fontelementfwd.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -16,12 +16,14 @@ LIBCXXW_NAMESPACE_START
 
 //! \see editor
 
-class LIBCXX_HIDDEN editorObj : public peepholed_elementObj<elementObj>,
-				public focusableObj {
+class LIBCXX_HIDDEN editorObj
+	: public peepholed_fontelementObj<peepholed_elementObj<elementObj>>,
+	  public focusableObj {
 
 	//! Alias for my mixin superclass.
 
-	typedef peepholed_elementObj<elementObj> superclass_t;
+	typedef peepholed_fontelementObj<peepholed_elementObj<
+		elementObj>> superclass_t;
 
 public:
 	class implObj;
@@ -36,12 +38,6 @@ public:
 
 	//! Inherited from focusableObj
 	focusable_impl get_impl() const override;
-
-	//! Return the preferred horizontal increment
-	dim_t horizontal_increment(IN_THREAD_ONLY) const override;
-
-	//! Return the preferred vertical increment
-	dim_t vertical_increment(IN_THREAD_ONLY) const override;
 };
 
 LIBCXXW_NAMESPACE_END

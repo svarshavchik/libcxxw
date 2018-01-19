@@ -11,6 +11,8 @@
 LIBCXXW_NAMESPACE_START
 
 class reference_fontObj;
+template<typename tag=void> class LIBCXX_HIDDEN reference_font_tag;
+
 
 LIBCXXW_NAMESPACE_END
 

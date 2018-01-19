@@ -5,6 +5,7 @@
 #ifndef reference_fontobj_H
 #define reference_fontobj_H
 
+#include "reference_fontfwd.H"
 #include "fonts/current_fontcollectionfwd.H"
 #include "connection_threadfwd.H"
 #include "defaultthemefwd.H"
@@ -66,7 +67,7 @@ public:
 //! Attach a tag to a reference_fontObj
 
 //! \see reference_font_tagObj
-template<typename tag=void>
+template<typename tag>
 class LIBCXX_HIDDEN reference_font_tag : public reference_fontObj {
 public:
 

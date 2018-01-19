@@ -542,6 +542,8 @@ libcxxw_la_SOURCES=\
 	peephole/peepholedobj.H			    \
 	peephole/peepholed_element.H		    \
 	peephole/peepholed_elementfwd.H		    \
+	peephole/peepholed_fontelement.H	    \
+	peephole/peepholed_fontelementfwd.H	    \
 	peephole/peepholed_toplevel.C		    \
 	peephole/peepholed_toplevel.H		    \
 	peephole/peepholed_toplevelfwd.H	    \
