@@ -87,6 +87,11 @@ void window_handlerObj::ungrab(IN_THREAD_ONLY)
 	release_grabs(IN_THREAD);
 }
 
+bool window_handlerObj::is_pointer_actively_grabbed(IN_THREAD_ONLY)
+{
+	return false;
+}
+
 void window_handlerObj::release_grabs(IN_THREAD_ONLY)
 {
 	auto timestamp=grabbed_timestamp(IN_THREAD);
@@ -99,7 +104,10 @@ void window_handlerObj::release_grabs(IN_THREAD_ONLY)
 
 	grabbed_timestamp(IN_THREAD)=XCB_CURRENT_TIME;
 
-	xcb_ungrab_pointer(IN_THREAD->info->conn, timestamp);
+	// We only want to unwind a passive grab. Don't attempt to unwind
+	// an active grab.
+	if (!is_pointer_actively_grabbed(IN_THREAD))
+		xcb_ungrab_pointer(IN_THREAD->info->conn, timestamp);
 	xcb_ungrab_keyboard(IN_THREAD->info->conn, timestamp);
 }
 

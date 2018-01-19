@@ -198,6 +198,10 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	virtual grabbed_pointerptr grab_pointer(IN_THREAD_ONLY,
 						const elementimplptr &);
 
+	//! Implement is_pointer_actively_grabbed()
+
+	bool is_pointer_actively_grabbed(IN_THREAD_ONLY) override;
+
 	//! What I want for my initial event mask.
 
 	static constexpr xcb_event_mask_t initial_event_mask()

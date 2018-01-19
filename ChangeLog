@@ -1,3 +1,9 @@
+2018-01-16  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* window_handler.C (release_grabs): Don't ungrab the pointer if there's
+	an active grab in progress, this should ungrab only if there was
+	a passive grab.
+
 2018-01-11  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* Implement input_field_config.maximum_size.

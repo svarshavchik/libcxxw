@@ -136,6 +136,11 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 
 	virtual void ungrab(IN_THREAD_ONLY);
 
+	//! Whether the window actively grabbed the pointer on its own.
+
+	//! The default implemention returns false.
+	virtual bool is_pointer_actively_grabbed(IN_THREAD_ONLY);
+
 	//! Release this handler's grabs, if there are any.
 
 	void release_grabs(IN_THREAD_ONLY);

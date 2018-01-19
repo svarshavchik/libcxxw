@@ -296,4 +296,9 @@ grabbed_pointerptr generic_windowObj::handlerObj
 	return gp->create_another_grab(IN_THREAD, grabbing_element);
 }
 
+bool generic_windowObj::handlerObj::is_pointer_actively_grabbed(IN_THREAD_ONLY)
+{
+	return !!current_pointer_grab(IN_THREAD).getptr();
+}
+
 LIBCXXW_NAMESPACE_END
