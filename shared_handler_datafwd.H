@@ -19,7 +19,8 @@ and all of its popups' top level window handlers.
 
 Keeps track of all opened popups in a window.
 
-Popups: combo-box dropdown popup, and menu popups.
+Popups: exclusive dropdown popup (combo-boxes, date picker popups), and menu
+popups.
 
 This object gets created and inserted into the main window handler object
 (generic_windowObj::handlerObj), then gets linked to each popup handler object

@@ -46,10 +46,10 @@ class LIBCXX_HIDDEN peepholed_toplevel_listcontainer_popupObj
 	}
 };
 
-popup_type_t create_combobox_popup()
+popup_type_t create_exclusive_popup()
 {
-	return {&shared_handler_dataObj::opening_combobox_popup,
-			&shared_handler_dataObj::closing_combobox_popup};
+	return {&shared_handler_dataObj::opening_exclusive_popup,
+			&shared_handler_dataObj::closing_exclusive_popup};
 }
 
 popup_type_t create_menu_popup()

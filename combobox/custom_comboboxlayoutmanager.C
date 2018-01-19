@@ -265,7 +265,7 @@ focusable_container new_custom_comboboxlayoutmanager
 				// the popup gets recalculated.
 				3,
 				attached_to::combobox_above_or_below,
-				create_combobox_popup,
+				create_exclusive_popup,
 				style},
 		 [&]
 		 (const auto &peephole_container)

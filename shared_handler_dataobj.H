@@ -34,9 +34,9 @@ class LIBCXX_HIDDEN shared_handler_dataObj : virtual public obj {
 
 	weakptr<ptr<generic_windowObj::handlerObj>> toplevel_handler;
 
-	//! Currently opened combobox popup.
+	//! Currently opened exclusive
 
-	weakptr<ptr<handler_mcguffinObj>> opened_combobox_popup;
+	weakptr<ptr<handler_mcguffinObj>> opened_exclusive_popup;
 
 	//! A container for an opened hierarchy of popup menus.
 
@@ -67,21 +67,21 @@ public:
 
 	void set_toplevel_handler(const ref<generic_windowObj::handlerObj> &);
 
-	//! A new combo-box popup is being opened.
+	//! A new exclusive popup is being opened.
 
-	//! Invokes close_combobox_popup(). Returns a mcguffin for the
-	//! now-visible combo-box popup.
+	//! Invokes close_exclusive_popup(). Returns a mcguffin for the
+	//! now-visible exclusive popup.
 
-	ref<obj> opening_combobox_popup(IN_THREAD_ONLY,
+	ref<obj> opening_exclusive_popup(IN_THREAD_ONLY,
 					const ref<popupObj::handlerObj> &);
 
-	//! The opened combo-box popup is being closed.
+	//! The opened exclusive popup is being closed.
 
-	void closing_combobox_popup(IN_THREAD_ONLY,
+	void closing_exclusive_popup(IN_THREAD_ONLY,
 				    const popupObj::handlerObj &popup);
 
-	//! Close the currently-opened combo-box popup, if there is one.
-	void close_combobox_popup(IN_THREAD_ONLY);
+	//! Close the currently-opened exclusive popup, if there is one.
+	void close_exclusive_popup(IN_THREAD_ONLY);
 
 	//! A new menu popup is being opened.
 

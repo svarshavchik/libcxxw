@@ -75,7 +75,7 @@ typedef std::tuple<
 					 const popupObj::handlerObj &)
 	> popup_type_t;
 
-popup_type_t create_combobox_popup() LIBCXX_HIDDEN;
+popup_type_t create_exclusive_popup() LIBCXX_HIDDEN;
 
 popup_type_t create_menu_popup() LIBCXX_HIDDEN;
 
@@ -113,7 +113,7 @@ struct LIBCXX_HIDDEN create_peepholed_toplevel_listcontainer_popup_args {
 
 	//! Popup type
 
-	//! This is set to either \c create_combobox_popup or
+	//! This is set to either \c create_exclusive_popup or
 	//! \c create_menu_popup.
 
 	popup_type_t (*popup_type)();
@@ -142,20 +142,6 @@ do_create_peepholed_toplevel_listcontainer_popup
 (const create_peepholed_toplevel_listcontainer_popup_args &args,
  const function<create_p_t_l_impl_t> &,
  const function<create_p_t_l_t> &) LIBCXX_HIDDEN;
-
-//! \ref create_peepholed_toplevel_listcontainer_popup_args "popup_factory option".
-
-ref<popup_attachedto_handlerObj
-    > create_combobox_popup(const ref<generic_windowObj::handlerObj> &,
-			    const popup_attachedto_info &,
-			    size_t) LIBCXX_HIDDEN;
-
-//! \ref create_peepholed_toplevel_listcontainer_popup_args "popup_factory option".
-
-ref<popup_attachedto_handlerObj
-    > create_menu_popup(const ref<generic_windowObj::handlerObj> &,
-			const popup_attachedto_info &,
-			size_t) LIBCXX_HIDDEN;
 
 //! Construct an attached popup with a \ref listlayoutmanager "list layout manager".
 

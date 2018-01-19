@@ -46,27 +46,27 @@ void shared_handler_dataObj::set_toplevel_handler(const ref<generic_windowObj
 }
 
 ref<obj> shared_handler_dataObj
-::opening_combobox_popup(IN_THREAD_ONLY,
+::opening_exclusive_popup(IN_THREAD_ONLY,
 			 const ref<popupObj::handlerObj> &popup)
 {
 	auto mcguffin=ref<handler_mcguffinObj>::create(popup);
 
-	close_combobox_popup(IN_THREAD);
+	close_exclusive_popup(IN_THREAD);
 
-	opened_combobox_popup=mcguffin;
+	opened_exclusive_popup=mcguffin;
 
 	return mcguffin;
 }
 
 void shared_handler_dataObj
-::closing_combobox_popup(IN_THREAD_ONLY,
+::closing_exclusive_popup(IN_THREAD_ONLY,
 			 const popupObj::handlerObj &popup)
 {
 }
 
-void shared_handler_dataObj::close_combobox_popup(IN_THREAD_ONLY)
+void shared_handler_dataObj::close_exclusive_popup(IN_THREAD_ONLY)
 {
-	auto p=opened_combobox_popup.getptr();
+	auto p=opened_exclusive_popup.getptr();
 
 	if (p)
 		p->hide(IN_THREAD);
@@ -89,7 +89,7 @@ ref<obj> shared_handler_dataObj
 ::opening_menu_popup(IN_THREAD_ONLY,
 		     const ref<popupObj::handlerObj> &popup)
 {
-	close_combobox_popup(IN_THREAD);
+	close_exclusive_popup(IN_THREAD);
 
 	auto mcguffin=ref<handler_mcguffinObj>::create(popup);
 
@@ -128,11 +128,11 @@ bool shared_handler_dataObj
 
 	// If there's a combo-box popup, it either deals with the keypress,
 	// or not.
-	auto combobox_popup=opened_combobox_popup.getptr();
+	auto exclusive_popup=opened_exclusive_popup.getptr();
 
-	if (combobox_popup)
+	if (exclusive_popup)
 	{
-		auto handler=combobox_popup->handler.getptr();
+		auto handler=exclusive_popup->handler.getptr();
 
 		if (handler && handler->data(IN_THREAD).requested_visibility)
 			return handler->handle_key_event(IN_THREAD, event,
@@ -201,11 +201,11 @@ shared_handler_dataObj::find_popup_for_xy(IN_THREAD_ONLY,
 					const motion_event &me)
 {
 	// If there's a combo-box popup, all motion events go there.
-	auto combobox_popup=opened_combobox_popup.getptr();
+	auto exclusive_popup=opened_exclusive_popup.getptr();
 
-	if (combobox_popup)
+	if (exclusive_popup)
 	{
-		auto handler=combobox_popup->handler.getptr();
+		auto handler=exclusive_popup->handler.getptr();
 
 		if (handler && handler->data(IN_THREAD).requested_visibility)
 			return handler;
