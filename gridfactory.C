@@ -10,6 +10,9 @@
 #include "child_element.H"
 #include "current_border_impl.H"
 #include "messages.H"
+#include "generic_window_handler.H"
+#include "x/w/pictformat.H"
+#include <x/visitor.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -44,6 +47,33 @@ void gridfactoryObj::border_set(const border_arg &arg)
 
 	lock->left_border=lock->right_border=lock->top_border=
 		lock->bottom_border=border_impl;
+}
+
+void gridfactoryObj::rounded_border_set(const border_arg &arg)
+{
+	if (get_element_impl().get_window_handler()
+	    .drawable_pictformat->alpha_depth > 0)
+	{
+		padding_set(0);
+		border_set(arg);
+		return;
+	}
+
+	std::visit(visitor{
+			[this](const std::string &s)
+			{
+				border_set(s + "_square");
+				left_padding_set(s + "_square_padding_h");
+				right_padding_set(s + "_square_padding_h");
+				top_padding_set(s + "_square_padding_v");
+				bottom_padding_set(s + "_square_padding_v");
+			},
+			[this](border_infomm border_info_cpy)
+			{
+				padding_set(border_info_cpy.radius);
+				border_info_cpy.radius=0;
+				border_set(border_info_cpy);
+			}}, arg);
 }
 
 void gridfactoryObj::left_border_set(const border_arg &arg)

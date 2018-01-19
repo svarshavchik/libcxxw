@@ -279,16 +279,16 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
   <color id="tooltip_background_color" scale="90%" />
 
   <!-- Border when an alpha channel is available -->
-  <border id="tooltip_rounded_border" from="thin_0%">
+  <border id="tooltip_border" from="thin_0%">
     <hradius>1</hradius>
     <vradius>1</vradius>
   </border>
 
-  <dim id="tooltip_square_padding_h" axis="horiz">1</dim>
-  <dim id="tooltip_square_padding_v" axis="vert">1</dim>
   <!-- Border when an alpha channel is not available -->
 
-  <border id="tooltip_square_border" from="thin_0%" />
+  <border id="tooltip_border_square" from="thin_0%" />
+  <dim id="tooltip_border_square_padding_h" axis="horiz">1</dim>
+  <dim id="tooltip_border_square_padding_v" axis="vert">1</dim>
 
   <dim id="tooltip_x_offset" axis="horiz">1</dim>
   <dim id="tooltip_y_offset" axis="vert">1</dim>

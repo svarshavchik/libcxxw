@@ -201,19 +201,7 @@ void tooltip_factory_impl::create(const function<void (const container &)>
 
 	auto f=glm->append_row();
 
-	if (popup_handler->drawable_pictformat->alpha_depth > 0)
-	{
-		f->border("tooltip_rounded_border");
-		f->padding(0);
-	}
-	else
-	{
-		f->border("tooltip_square_border");
-		f->left_padding("tooltip_square_padding_h");
-		f->right_padding("tooltip_square_padding_h");
-		f->top_padding("tooltip_square_padding_v");
-		f->bottom_padding("tooltip_square_padding_v");
-	}
+	f->rounded_border_and_padding("tooltip_border");
 
 	f->create_container([&, this]
 			    (const auto &container)
