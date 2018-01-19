@@ -11,6 +11,8 @@
 #include <x/w/alignment.H>
 #include <x/w/input_field_configfwd.H>
 #include <x/w/scrollbar.H>
+#include <x/w/border_arg.H>
+#include <x/w/rgb.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -60,6 +62,18 @@ struct input_field_config {
 
 	//! Single line input field.
 	constexpr bool oneline() const { return rows <= 1; }
+
+	//! The input field's border.
+
+	border_arg border="textedit_border";
+
+	//! Background color
+
+	color_arg background_color="textedit_background_color";
+
+	//! Destructor
+
+	~input_field_config();
 };
 
 LIBCXXW_NAMESPACE_END

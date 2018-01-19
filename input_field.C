@@ -38,6 +38,8 @@ input_fieldObj::input_fieldObj(const ref<implObj> &impl,
 
 input_fieldObj::~input_fieldObj()=default;
 
+input_field_config::~input_field_config()=default;
+
 /////////////////////////////////////////////////////////////////////
 //
 // The input field is a container based on the grid layout manager.
@@ -72,11 +74,11 @@ factoryObj::create_input_field(const text_param &text,
 	peephole_style input_field_peephole_style{halign::fill};
 
 	auto [peephole_info, lm]=create_peepholed_focusable_with_frame
-		({"textedit_border",
+		({config.border,
 				"inputfocusoff_border",
 				"inputfocuson_border",
 				.2,
-				"textedit_background_color",
+				config.background_color,
 				impl_mixin,
 				input_field_peephole_style,
 				scrollbar_visibility::never,
