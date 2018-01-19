@@ -143,7 +143,8 @@ create_peepholed_focusable_with_frame_impl
 	// We can now create our layout manager, and give it the created
 	// peepholed_element.
 
-	auto scrollbars=create_peephole_scrollbars(args.parent_container);
+	auto scrollbars=create_peephole_scrollbars(args.parent_container,
+						   std::nullopt);
 
 	auto layout_impl=ref<peepholeObj::layoutmanager_implObj::scrollbarsObj>
 		::create(impl,

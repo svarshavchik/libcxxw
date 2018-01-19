@@ -80,7 +80,8 @@ public:
 };
 
 peephole_scrollbars
-create_peephole_scrollbars(const ref<containerObj::implObj> &container)
+create_peephole_scrollbars(const ref<containerObj::implObj> &container,
+			   const std::optional<color_arg> &background_color)
 {
 
 	auto horizontal_impl=
@@ -94,7 +95,7 @@ create_peephole_scrollbars(const ref<containerObj::implObj> &container)
 			 ::update_vertical_scroll);
 
 	auto horizontal=do_create_h_scrollbar
-		(container, scrollbar_config{},
+		(container, background_color, scrollbar_config{},
 		 0,
 		 [=]
 		 (const auto &config)
@@ -103,7 +104,7 @@ create_peephole_scrollbars(const ref<containerObj::implObj> &container)
 		 });
 
 	auto vertical=do_create_v_scrollbar
-		(container, scrollbar_config{},
+		(container, background_color, scrollbar_config{},
 		 0,
 		 [=]
 		 (const auto &config)

@@ -8,6 +8,9 @@
 
 #include "peephole/peephole_layoutmanager_impl.H"
 #include "x/w/scrollbar.H"
+#include "x/w/rgb.H"
+
+#include <optional>
 
 LIBCXXW_NAMESPACE_START
 
@@ -22,7 +25,8 @@ struct LIBCXX_HIDDEN peephole_scrollbars;
 //! manager's constructor.
 
 peephole_scrollbars
-create_peephole_scrollbars(const ref<containerObj::implObj> &container)
+create_peephole_scrollbars(const ref<containerObj::implObj> &container,
+			   const std::optional<color_arg> &background_color)
 	LIBCXX_HIDDEN;
 
 //! Install scrollbar elements for a peephole.

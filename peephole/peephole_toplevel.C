@@ -80,10 +80,11 @@ class LIBCXX_HIDDEN peephole_toplevel_implObj
 
 	peephole_toplevel_implObj(const ref<containerObj::implObj> &parent,
 				  const scrollbar &horizontal_scrollbar,
-				  const scrollbar &vertical_scrollbar)
-		: superclass_t(parent),
-		horizontal_scrollbar(horizontal_scrollbar),
-		vertical_scrollbar(vertical_scrollbar)
+				  const scrollbar &vertical_scrollbar,
+				  const child_element_init_params &init_params)
+		: superclass_t{parent, init_params},
+		horizontal_scrollbar{horizontal_scrollbar},
+		vertical_scrollbar{vertical_scrollbar}
 		{
 		}
 
@@ -106,6 +107,7 @@ class LIBCXX_HIDDEN peephole_toplevel_implObj
 layoutmanager
 create_peephole_toplevel_impl(const ref<containerObj::implObj> &toplevel,
 			      const std::optional<border_arg> &border,
+			      const std::optional<color_arg> &background_color,
 			      peephole_style style,
 			      const function<create_peepholed_element_t>
 			      &factory)
@@ -121,7 +123,8 @@ create_peephole_toplevel_impl(const ref<containerObj::implObj> &toplevel,
 	// of the toplevel_grid.
 
 	auto scrollbars=create_peephole_scrollbars(toplevel_grid->impl
-						   ->container_impl);
+						   ->container_impl,
+						   background_color);
 
 	// The toplevel_grid will have a peephole as its child element,
 	// and the scrollbars, but we'll get around to them later.
@@ -130,10 +133,16 @@ create_peephole_toplevel_impl(const ref<containerObj::implObj> &toplevel,
 	//
 	// This peephole element will be always_visible.
 
-	auto peephole_impl=
-		ref<peephole_toplevel_implObj>::create(toplevel,
-						       scrollbars.horizontal_scrollbar,
-						       scrollbars.vertical_scrollbar);
+	child_element_init_params init_params;
+
+	if (background_color)
+		init_params.background_color=*background_color;
+
+	auto peephole_impl=ref<peephole_toplevel_implObj>
+		::create(toplevel,
+			 scrollbars.horizontal_scrollbar,
+			 scrollbars.vertical_scrollbar,
+			 init_params);
 
 	// Now the fake top level element that we wanted to create originally,
 	// it'll be a child element of the peephole.

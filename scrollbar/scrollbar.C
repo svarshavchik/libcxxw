@@ -76,6 +76,7 @@ void scrollbarObj::on_update(const scrollbar_cb_t &callback)
 // Construct a vertical or a horizontal scrollbar.
 
 static scrollbar create_scrollbar(const ref<containerObj::implObj> &parent_container,
+				  const std::optional<color_arg> &background_color,
 				  const scrollbar_config &conf,
 				  const scrollbar_orientation &orientation,
 				  const auto &icon_set_1,
@@ -94,7 +95,7 @@ static scrollbar create_scrollbar(const ref<containerObj::implObj> &parent_conta
 		create_nonrecursive_visibility_focusframe
 		(parent_container,
 		 "scrollbarfocusoff_border",
-		 "inputfocuson_border", {});
+		 "inputfocuson_border", background_color);
 
 	// And this will be its layout manager.
 
@@ -164,13 +165,14 @@ create_scrollbar_icon_set(drawableObj::implObj &drawable,
 
 scrollbar
 do_create_h_scrollbar(const ref<containerObj::implObj> &parent_container,
+		      const std::optional<color_arg> &background_color,
 		      const scrollbar_config &conf,
 		      const dim_arg &minimum_size,
 		      const scrollbar_cb_t &callback)
 {
 	auto &window_handler=parent_container->get_window_handler();
 
-	return create_scrollbar(parent_container, conf,
+	return create_scrollbar(parent_container, background_color, conf,
 				horizontal_scrollbar,
 				create_scrollbar_icon_set
 				(window_handler,
@@ -186,13 +188,14 @@ do_create_h_scrollbar(const ref<containerObj::implObj> &parent_container,
 
 scrollbar
 do_create_v_scrollbar(const ref<containerObj::implObj> &parent_container,
+		      const std::optional<color_arg> &background_color,
 		      const scrollbar_config &conf,
 		      const dim_arg &minimum_size,
 		      const scrollbar_cb_t &callback)
 {
 	auto &window_handler=parent_container->get_window_handler();
 
-	return create_scrollbar(parent_container, conf,
+	return create_scrollbar(parent_container, background_color, conf,
 				vertical_scrollbar,
 				create_scrollbar_icon_set
 				(window_handler,
@@ -220,6 +223,7 @@ scrollbar factoryObj
 			      dim_arg minimum_size)
 {
 	auto sb=do_create_h_scrollbar(get_container_impl(),
+				      std::nullopt,
 				      config,
 				      minimum_size,
 				      callback);
@@ -243,6 +247,7 @@ scrollbar factoryObj
 			    dim_arg minimum_size)
 {
 	auto sb=do_create_v_scrollbar(get_container_impl(),
+				      std::nullopt,
 				      config,
 				      minimum_size,
 				      callback);

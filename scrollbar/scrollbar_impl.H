@@ -35,6 +35,7 @@ extern const scrollbar_orientation vertical_scrollbar LIBCXX_HIDDEN;
 
 scrollbar do_create_h_scrollbar(const ref<containerObj::implObj>
 				&parent_container,
+				const std::optional<color_arg> &background_color,
 				const scrollbar_config &conf,
 				const dim_arg &minimum_size,
 				const scrollbar_cb_t &callback)
@@ -46,6 +47,7 @@ scrollbar do_create_h_scrollbar(const ref<containerObj::implObj>
 
 scrollbar do_create_v_scrollbar(const ref<containerObj::implObj>
 				&parent_container,
+				const std::optional<color_arg> &background_color,
 				const scrollbar_config &conf,
 				const dim_arg &minimum_size,
 				const scrollbar_cb_t &callback)

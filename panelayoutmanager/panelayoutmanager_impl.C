@@ -244,7 +244,8 @@ pane_peephole_container panelayoutmanagerObj::implObj
 	style.vertical_alignment=properties.vertical_alignment;
 
 	auto scrollbars=
-		create_peephole_scrollbars(info.peephole_container_impl);
+		create_peephole_scrollbars(info.peephole_container_impl,
+					   std::nullopt);
 
 	auto peepholed_element=ref<pane_peepholed_elementObj>
 		::create(e, info.peephole_impl);

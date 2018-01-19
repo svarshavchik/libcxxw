@@ -246,6 +246,7 @@ do_create_main_window_impl(const ref<main_windowObj::handlerObj> &handler,
 	auto lm=create_peephole_toplevel
 		(handler,
 		 std::nullopt,
+		 std::nullopt,
 		 main_window_peephole_style,
 		 [&]
 		 (const ref<containerObj::implObj> &parent)
