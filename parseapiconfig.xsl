@@ -136,7 +136,7 @@ Maybe we should use a <scalar>?
 
 <!-- <parser> generates:
 
-std::function<void, ...parameters> {name}_parser(const xml::doc::base::readlock &lock)
+std::function<void, ...parameters> {name}_parser(const theme_parser_lock &lock)
 {
     auto name=lock->name();
 
@@ -150,7 +150,7 @@ Throws an exception
 std::function&lt;void (<xsl:for-each select="parameter">
 <xsl:if test="position() &gt; 1">,
                 </xsl:if><xsl:text>
-                const </xsl:text><xsl:value-of select="type" />&#32;&amp;</xsl:for-each>)&gt;&#10;      <xsl:value-of select="objectname" />_parser(const xml::doc::base::readlock &amp;lock<xsl:for-each select="other_parameter">
+                const </xsl:text><xsl:value-of select="type" />&#32;&amp;</xsl:for-each>)&gt;&#10;      <xsl:value-of select="objectname" />_parser(const theme_parser_lock &amp;lock<xsl:for-each select="other_parameter">
 		<xsl:text>,&#10;                      </xsl:text>
 		<xsl:value-of select="type" />
 		<xsl:text> </xsl:text>
@@ -165,7 +165,7 @@ std::function&lt;void (<xsl:for-each select="parameter">
     throw EXCEPTION(gettextmsg(_("&lt;%1%&gt;: unknown element"), name));
 }
 
-void <xsl:value-of select="objectname" />_parseconfig(const xml::doc::base::readlock &amp;lock,
+void <xsl:value-of select="objectname" />_parseconfig(const theme_parser_lock &amp;lock,
     std::vector&lt;std::function&lt;void (<xsl:for-each select="parameter">
     <xsl:if test="position()&gt; 1">,
                           </xsl:if>const <xsl:value-of select="type" />&#32;&amp;</xsl:for-each>)&gt;&gt; &amp;config<xsl:for-each select="other_parameter">

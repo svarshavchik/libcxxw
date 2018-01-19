@@ -22,6 +22,7 @@
 #include "defaultthemefwd.H"
 #include "border_implfwd.H"
 #include "gridtemplatefwd.H"
+#include "theme_parser_lock.H"
 
 #include <string>
 #include <unordered_map>
@@ -107,43 +108,43 @@ public:
 			   std::vector<factory_generator_t>> factories;
 
 	//! Parse dimensions from the configuration file.
-	void load_dims(const xml::doc &config);
+	void load_dims(const theme_parser_lock &root_lock);
 
 	//! Parse colors from the configuration file.
-	void load_colors(const xml::doc &config);
+	void load_colors(const theme_parser_lock &root_lock);
 
 	//! Parse gradients from the configuration file.
-	void load_color_gradients(const xml::doc &config);
+	void load_color_gradients(const theme_parser_lock &root_lock);
 
 	//! Parse boders from the configuration file.
-	void load_borders(const xml::doc &config,
+	void load_borders(const theme_parser_lock &root_lock,
 			  const ref<screenObj::implObj> &screen);
 
 	//! Parse fonts from the configuration file
-	void load_fonts(const xml::doc &config);
+	void load_fonts(const theme_parser_lock &root_lock);
 
 	//! Parse layouts from the configuration file
-	void load_layouts(const xml::doc &config);
+	void load_layouts(const theme_parser_lock &root_lock);
 
 	//! Parse elements from the configuration file
-	void load_factories(const xml::doc &config);
+	void load_factories(const theme_parser_lock &root_lock);
 
 	//! Stylesheet-generated parsing code.
 	static layout_generator_t
-		gridlayout_parser(const xml::doc::base::readlock &lock);
+		gridlayout_parser(const theme_parser_lock &lock);
 
 	//! Stylesheet-generated parsing code.
 	static void
-		gridlayout_parseconfig(const xml::doc::base::readlock &lock,
+		gridlayout_parseconfig(const theme_parser_lock &lock,
 				       std::vector<layout_generator_t> &);
 
 	//! Stylesheet-generated parsing code.
 	static factory_generator_t
-		gridfactory_parser(const xml::doc::base::readlock &lock);
+		gridfactory_parser(const theme_parser_lock &lock);
 
 	//! Stylesheet-generated parsing code.
 	static void
-		gridfactory_parseconfig(const xml::doc::base::readlock &lock,
+		gridfactory_parseconfig(const theme_parser_lock &lock,
 					std::vector<factory_generator_t> &);
 
  public:
@@ -155,7 +156,7 @@ public:
 	//! "from" that has not been parsed yet.
 
 	template<typename install_functor, typename lookup_functor>
-		void load_fonts(const xml::doc::base::readlock &lock,
+		void load_fonts(const theme_parser_lock &lock,
 				const xml::doc::base::xpath &xpath,
 				install_functor &&install,
 				lookup_functor &&lookup)
@@ -171,7 +172,7 @@ public:
 
 	//! Load font definitions.
 
-	void do_load_fonts(const xml::doc::base::readlock &lock,
+	void do_load_fonts(const theme_parser_lock &lock,
 			   const xml::doc::base::xpath &xpath,
 			   const function<void (const std::string &,
 						const font &)> &install,

@@ -780,6 +780,8 @@ libcxxw_la_SOURCES=\
 	themeicon.C				    \
 	themeiconpixmapobj.H			    \
 	themeiconpixmap.C			    \
+	theme_parser_lock.H			    \
+	theme_parser_lock.C			    \
 	tooltip.C				    \
 	windowobj.C				    \
 	windowobj.H				    \
@@ -1149,10 +1151,10 @@ test:
 	./testmainwindow --themescale
 	./testmainwindow --themescale --nopadding
 	./testlabel
-	./testtooltip --width=25
+	LC_ALL=ru_RU.UTF-8 ./testtooltip --width=25
 	./testtooltip --width=50
 	./testprogressbar
-	./testpage --testfocus
+	LC_ALL=ru_RU.UTF-8 ./testpage --testfocus
 	./testwordwrappablelabel --testmetrics
 
 .PHONY: rpm

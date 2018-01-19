@@ -21,7 +21,7 @@
 #include <x/strtok.H>
 #include <x/join.H>
 #include <x/glob.H>
-#include <x/xml/doc.H>
+#include <x/imbue.H>
 #include <x/visitor.H>
 #include <sstream>
 #include <cmath>
@@ -340,13 +340,15 @@ void defaultthemeObj::load(const xml::doc &config,
 			   const ref<screenObj::implObj> &screen)
 {
 	try {
-		load_dims(config);
-		load_colors(config);
-		load_color_gradients(config);
-		load_borders(config, screen);
-		load_fonts(config);
-		load_layouts(config);
-		load_factories(config);
+		theme_parser_lock lock{config->readlock(), locale::create("C")};
+
+		load_dims(lock);
+		load_colors(lock);
+		load_color_gradients(lock);
+		load_borders(lock, screen);
+		load_fonts(lock);
+		load_layouts(lock);
+		load_factories(lock);
 	} catch (const exception &e)
 	{
 		throw EXCEPTION("An error occured while parsing the "
@@ -363,7 +365,7 @@ defaultthemeObj::~defaultthemeObj()=default;
 
 // Look up something optional.
 
-static bool if_given(const xml::doc::base::readlock &lock,
+static bool if_given(const theme_parser_lock &lock,
 		     const char *xpath_node)
 {
 	auto xpath=lock->get_xpath(xpath_node);
@@ -395,7 +397,7 @@ static dim_t dim_scale(dim_type &&orig, double scale)
 
 // Parse the dims in the config file
 
-static bool parse_dim(const xml::doc::base::readlock &lock,
+static bool parse_dim(const theme_parser_lock &lock,
 		      const std::unordered_map<std::string, dim_t>
 		      &existing_dims,
 		      dim_t h1mm, dim_t v1mm, dim_t &mm,
@@ -416,6 +418,8 @@ static bool parse_dim(const xml::doc::base::readlock &lock,
 		}
 
 		std::istringstream i(lock->get_text());
+
+		imbue<std::istringstream> imbue{lock.c_locale, i};
 
 		i >> v;
 
@@ -475,7 +479,7 @@ static void unknown_dim(const char *element, const std::string &id)
 
 // Look up a dimension, when parsing something else.
 
-static bool update_dim_if_given(const xml::doc::base::readlock &lock,
+static bool update_dim_if_given(const theme_parser_lock &lock,
 				const char *xpath_node,
 				const std::unordered_map<std::string, dim_t
 				> &existing_dims,
@@ -483,7 +487,7 @@ static bool update_dim_if_given(const xml::doc::base::readlock &lock,
 				const char *descr,
 				const std::string &id)
 {
-	auto node=lock->clone();
+	auto node=lock.clone();
 
 	auto xpath=node->get_xpath(xpath_node);
 
@@ -498,12 +502,12 @@ static bool update_dim_if_given(const xml::doc::base::readlock &lock,
 	return true;
 }
 
-static bool update_color(const xml::doc::base::readlock &lock,
+static bool update_color(const theme_parser_lock &lock,
 			 const char *xpath_name,
 			 const std::unordered_map<std::string, rgb> &colors,
 			 rgb &color)
 {
-	auto color_node=lock->clone();
+	auto color_node=lock.clone();
 
 	auto xpath=color_node->get_xpath(xpath_name);
 
@@ -524,9 +528,9 @@ static bool update_color(const xml::doc::base::readlock &lock,
 	return true;
 }
 
-void defaultthemeObj::load_dims(const xml::doc &config)
+void defaultthemeObj::load_dims(const theme_parser_lock &root_lock)
 {
-	auto lock=config->readlock();
+	auto lock=root_lock.clone();
 
 	if (!lock->get_root())
 		return;
@@ -579,9 +583,9 @@ void defaultthemeObj::load_dims(const xml::doc &config)
 
 // Parse colors
 
-void defaultthemeObj::load_colors(const xml::doc &config)
+void defaultthemeObj::load_colors(const theme_parser_lock &root_lock)
 {
-	auto lock=config->readlock();
+	auto lock=root_lock.clone();
 
 	if (!lock->get_root())
 		return;
@@ -637,7 +641,7 @@ void defaultthemeObj::load_colors(const xml::doc &config)
 
 			for (size_t i=0; i<4; ++i)
 			{
-				auto attribute=lock->clone();
+				auto attribute=lock.clone();
 
 				auto xpath=attribute->get_xpath(channels[i]);
 
@@ -647,6 +651,9 @@ void defaultthemeObj::load_colors(const xml::doc &config)
 				xpath->to_node();
 
 				std::istringstream s(attribute->get_text());
+
+				imbue<std::istringstream> imbue{lock.c_locale,
+						s};
 
 				double v;
 
@@ -700,9 +707,9 @@ void defaultthemeObj::load_colors(const xml::doc &config)
 
 // Color gradients.
 
-void defaultthemeObj::load_color_gradients(const xml::doc &config)
+void defaultthemeObj::load_color_gradients(const theme_parser_lock &root_lock)
 {
-	auto lock=config->readlock();
+	auto lock=root_lock.clone();
 
 	if (!lock->get_root())
 		return;
@@ -723,7 +730,7 @@ void defaultthemeObj::load_color_gradients(const xml::doc &config)
 		if (color_gradients.find(id) != color_gradients.end())
 			continue; // Did this one already.
 
-		auto color=lock->clone();
+		auto color=lock.clone();
 
 		auto all_colors=color->get_xpath("color");
 
@@ -764,10 +771,10 @@ void defaultthemeObj::load_color_gradients(const xml::doc &config)
 //
 // Borders
 
-void defaultthemeObj::load_borders(const xml::doc &config,
+void defaultthemeObj::load_borders(const theme_parser_lock &root_lock,
 				   const ref<screenObj::implObj> &screen)
 {
-	auto lock=config->readlock();
+	auto lock=root_lock.clone();
 
 	if (!lock->get_root())
 		return;
@@ -877,7 +884,7 @@ void defaultthemeObj::load_borders(const xml::doc &config,
 				bool cellcolor=false;
 
 				{
-					auto node=lock->clone();
+					auto node=lock.clone();
 					auto xpath=node->get_xpath("cellcolor");
 
 					if (xpath->count())
@@ -910,7 +917,7 @@ void defaultthemeObj::load_borders(const xml::doc &config,
 			}
 
 			{
-				auto dash_nodes=lock->clone();
+				auto dash_nodes=lock.clone();
 
 				auto xpath=dash_nodes->get_xpath("dash");
 
@@ -1116,9 +1123,9 @@ defaultthemeObj::get_theme_border(const std::string_view &id)
 
 //////////////////////////////////////////////////////////////////////////////
 
-void defaultthemeObj::load_fonts(const xml::doc &config)
+void defaultthemeObj::load_fonts(const theme_parser_lock &root_lock)
 {
-	auto lock=config->readlock();
+	auto lock=root_lock.clone();
 
 	if (!lock->get_root())
 		return;
@@ -1139,7 +1146,7 @@ void defaultthemeObj::load_fonts(const xml::doc &config)
 		   });
 }
 
-void defaultthemeObj::do_load_fonts(const xml::doc::base::readlock &lock,
+void defaultthemeObj::do_load_fonts(const theme_parser_lock &lock,
 				    const xml::doc::base::xpath &xpath,
 				    const function<void (const std::string &,
 							 const font &)>
@@ -1199,7 +1206,7 @@ void defaultthemeObj::do_load_fonts(const xml::doc::base::readlock &lock,
 			for (const auto &v:double_values)
 			{
 				double value;
-				auto node=lock->clone();
+				auto node=lock.clone();
 
 				auto xpath=node->get_xpath(v.name);
 
@@ -1209,6 +1216,9 @@ void defaultthemeObj::do_load_fonts(const xml::doc::base::readlock &lock,
 				xpath->to_node();
 
 				std::istringstream i(node->get_text());
+
+				imbue<std::istringstream> imbue{lock.c_locale,
+						i};
 
 				i >> value;
 
@@ -1235,7 +1245,7 @@ void defaultthemeObj::do_load_fonts(const xml::doc::base::readlock &lock,
 
 			for (const auto &v:string_values)
 			{
-				auto node=lock->clone();
+				auto node=lock.clone();
 
 				auto xpath=node->get_xpath(v.name);
 
@@ -1285,11 +1295,11 @@ font defaultthemeObj::get_theme_font(const std::string &id)
 //////////////////////////////////////////////////////////////////////////////
 
 
-static std::string single_value(const xml::doc::base::readlock &lock,
+static std::string single_value(const theme_parser_lock &lock,
 				const char *element,
 				const char *parent)
 {
-	auto v=lock->clone();
+	auto v=lock.clone();
 
 	auto xpath=v->get_xpath(element);
 
@@ -1301,11 +1311,11 @@ static std::string single_value(const xml::doc::base::readlock &lock,
 	return v->get_text();
 }
 
-static std::string optional_value(const xml::doc::base::readlock &lock,
+static std::string optional_value(const theme_parser_lock &lock,
 				  const char *element,
 				  const char *parent)
 {
-	auto v=lock->clone();
+	auto v=lock.clone();
 
 	auto xpath=v->get_xpath(element);
 
@@ -1321,7 +1331,7 @@ static std::string optional_value(const xml::doc::base::readlock &lock,
 	return v->get_text();
 }
 
-static std::string lowercase_single_value(const xml::doc::base::readlock &lock,
+static std::string lowercase_single_value(const theme_parser_lock &lock,
 					  const char *element,
 					  const char *xpath)
 {
@@ -1332,10 +1342,10 @@ static std::string lowercase_single_value(const xml::doc::base::readlock &lock,
 	return s;
 }
 
-static bool single_value_exists(const xml::doc::base::readlock &lock,
+static bool single_value_exists(const theme_parser_lock &lock,
 				const char *element)
 {
-	auto v=lock->clone();
+	auto v=lock.clone();
 
 	auto xpath=v->get_xpath(element);
 
@@ -1343,12 +1353,15 @@ static bool single_value_exists(const xml::doc::base::readlock &lock,
 }
 
 template<typename to_value_t>
-static to_value_t to_value(const std::string &value,
+static to_value_t to_value(const theme_parser_lock &lock,
+			   const std::string &value,
 			   const char *element)
 {
 	to_value_t v;
 
 	std::istringstream i(value);
+
+	imbue<std::istringstream> imbue{lock.c_locale, i};
 
 	i >> v;
 
@@ -1358,22 +1371,25 @@ static to_value_t to_value(const std::string &value,
 	return v;
 }
 
-inline static dim_t to_dim_t(const xml::doc::base::readlock &lock,
+inline static dim_t to_dim_t(const theme_parser_lock &lock,
 			     const char *element, const char *parent)
 {
-	return to_value<dim_t>(single_value(lock, element, parent), element);
+	return to_value<dim_t>(lock,
+			       single_value(lock, element, parent), element);
 }
 
-inline static size_t to_size_t(const xml::doc::base::readlock &lock,
+inline static size_t to_size_t(const theme_parser_lock &lock,
 			       const char *element, const char *parent)
 {
-	return to_value<size_t>(single_value(lock, element, parent), element);
+	return to_value<size_t>(lock,
+				single_value(lock, element, parent), element);
 }
 
-inline static int to_percentage_t(const xml::doc::base::readlock &lock,
+inline static int to_percentage_t(const theme_parser_lock &lock,
 				  const char *element, const char *parent)
 {
-	int v=to_value<int>(single_value(lock, element, parent), element);
+	int v=to_value<int>(lock,
+			    single_value(lock, element, parent), element);
 
 	if (v < 0 || v > 100)
 		throw EXCEPTION(gettextmsg(_("Value of <%1%> is not 0-100"
@@ -1382,7 +1398,7 @@ inline static int to_percentage_t(const xml::doc::base::readlock &lock,
 	return v;
 }
 
-static halign to_halign_value(const xml::doc::base::readlock &lock,
+static halign to_halign_value(const theme_parser_lock &lock,
 			      const char *element, const char *parent)
 {
 	auto value=single_value(lock, element, parent);
@@ -1415,7 +1431,7 @@ static halign to_halign_value(const xml::doc::base::readlock &lock,
 	return v;
 }
 
-static valign to_valign_value(const xml::doc::base::readlock &lock,
+static valign to_valign_value(const theme_parser_lock &lock,
 			      const char *element, const char *parent)
 {
 	auto value=single_value(lock, element, parent);
@@ -1450,9 +1466,9 @@ static valign to_valign_value(const xml::doc::base::readlock &lock,
 
 #include "gridlayoutapi.inc.C"
 
-void defaultthemeObj::load_layouts(const xml::doc &config)
+void defaultthemeObj::load_layouts(const theme_parser_lock &root_lock)
 {
-	auto lock=config->readlock();
+	auto lock=root_lock.clone();
 
 	if (!lock->get_root())
 		return;
@@ -1474,9 +1490,9 @@ void defaultthemeObj::load_layouts(const xml::doc &config)
 	}
 }
 
-void defaultthemeObj::load_factories(const xml::doc &config)
+void defaultthemeObj::load_factories(const theme_parser_lock &root_lock)
 {
-	auto lock=config->readlock();
+	auto lock=root_lock.clone();
 
 	if (!lock->get_root())
 		return;

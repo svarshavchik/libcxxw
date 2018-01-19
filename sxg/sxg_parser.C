@@ -4,6 +4,7 @@
 */
 
 #include "libcxxw_config.h"
+#include "theme_parser_lock.H"
 #include "sxg/sxg_parser.H"
 #include <x/xml/doc.H>
 #include <x/exception.H>
@@ -17,6 +18,8 @@
 #include "pixmap.H"
 #include "screen.H"
 #include "defaulttheme.H"
+#include <x/locale.H>
+#include <x/imbue.H>
 #include <courier-unicode.h>
 #include <sstream>
 #include <cmath>
@@ -451,12 +454,12 @@ sxg_parserObj::execution_info::gc_info::gc_info(const std::string &pixmap_nameAr
 // value. If the validation fails an error gets thrown.
 
 template<typename value_type, typename validator_type>
-static void get_value(const xml::doc::base::readlock &parent,
+static void get_value(const theme_parser_lock &parent,
 		      const char *attr_name,
 		      value_type &value,
 		      validator_type && validator)
 {
-	auto lock=parent->clone();
+	auto lock=parent.clone();
 
 	if (*attr_name && *attr_name != ' ')
 	{
@@ -470,10 +473,9 @@ static void get_value(const xml::doc::base::readlock &parent,
 		xpath->to_node(1);
 	}
 
-	if (*attr_name)
-		++attr_name;
-
 	std::istringstream is(lock->get_text());
+
+	imbue<std::istringstream> imbue{parent.c_locale, is};
 
 	if ((is >> value).fail() || !is.eof() || !validator(value))
 		throw EXCEPTION("Corrupted value of <"
@@ -482,7 +484,7 @@ static void get_value(const xml::doc::base::readlock &parent,
 
 // Determine if element "lock" has an inner element of the given name.
 
-static bool has_value(const xml::doc::base::readlock &lock,
+static bool has_value(const theme_parser_lock &lock,
 		      const char *attr_name)
 {
 	auto xpath=lock->get_xpath(attr_name);
@@ -494,7 +496,7 @@ static bool has_value(const xml::doc::base::readlock &lock,
 // Supplies a validator that always returns true.
 
 template<typename value_type>
-static void get_value(const xml::doc::base::readlock &parent,
+static void get_value(const theme_parser_lock &parent,
 		      const char *attr_name,
 		      value_type &value)
 {
@@ -509,7 +511,7 @@ static void get_value(const xml::doc::base::readlock &parent,
 // Parse <width> and <height> elements.
 
 template<typename value_type>
-void sxg_parserObj::get_width_height(const xml::doc::base::readlock &parent,
+void sxg_parserObj::get_width_height(const theme_parser_lock &parent,
 				     points_t &points,
 				     const char *width_elem,
 				     const char *height_elem,
@@ -538,7 +540,7 @@ void sxg_parserObj::get_width_height(const xml::doc::base::readlock &parent,
 }
 
 template<typename value_type>
-void sxg_parserObj::get_width_height(const xml::doc::base::readlock &parent,
+void sxg_parserObj::get_width_height(const theme_parser_lock &parent,
 				     points_t &points,
 				     value_type &width, value_type &height)
 {
@@ -632,7 +634,7 @@ static valign get_valign(const std::string &n)
 	throw EXCEPTION("\"" << n << "\" is not a valid vertical alignment");
 }
 
-static halign get_halign(const xml::doc::base::readlock &parent,
+static halign get_halign(const theme_parser_lock &parent,
 			 halign default_value,
 			 const char *element)
 {
@@ -647,7 +649,7 @@ static halign get_halign(const xml::doc::base::readlock &parent,
 	return default_value;
 }
 
-static valign get_valign(const xml::doc::base::readlock &parent,
+static valign get_valign(const theme_parser_lock &parent,
 			 valign default_value,
 			 const char *element)
 {
@@ -664,7 +666,7 @@ static valign get_valign(const xml::doc::base::readlock &parent,
 
 // Whether the given XML element contains a location specification.
 
-static bool has_xy(const xml::doc::base::readlock &lock)
+static bool has_xy(const theme_parser_lock &lock)
 {
 	return has_value(lock, "x") || has_value(lock, "y")
 		|| has_value(lock, "location");
@@ -672,11 +674,11 @@ static bool has_xy(const xml::doc::base::readlock &lock)
 
 // Obtain the location specification for the given XML element.
 
-void sxg_parserObj::get_xy_value(const xml::doc::base::readlock &parent,
+void sxg_parserObj::get_xy_value(const theme_parser_lock &parent,
 				 const char *name,
 				 xy_t &xy)
 {
-	auto lock=parent->clone();
+	auto lock=parent.clone();
 
 	auto xpath=lock->get_xpath(name);
 
@@ -709,7 +711,7 @@ void sxg_parserObj::get_xy_value(const xml::doc::base::readlock &parent,
 	}
 }
 
-void sxg_parserObj::get_xy(const xml::doc::base::readlock &lock,
+void sxg_parserObj::get_xy(const theme_parser_lock &lock,
 			   points_t &points,
 			   xy_t &x,
 			   xy_t &y)
@@ -734,7 +736,7 @@ void sxg_parserObj::get_xy(const xml::doc::base::readlock &lock,
 	get_xy_value(lock, "y", y);
 }
 
-bool sxg_parserObj::optional_xy(const xml::doc::base::readlock &render_element,
+bool sxg_parserObj::optional_xy(const theme_parser_lock &render_element,
 				points_t &points,
 				xy_t &x,
 				xy_t &y)
@@ -761,7 +763,7 @@ struct LIBCXX_HIDDEN sxg_parserObj::sxg_rectangle {
 
 	double width, height;
 
-	sxg_rectangle(const xml::doc::base::readlock &parent,
+	sxg_rectangle(const theme_parser_lock &parent,
 		      points_t &points)
 	{
 		get_xy(parent, points, x, y);
@@ -846,9 +848,9 @@ struct LIBCXX_HIDDEN sxg_parserObj::sxg_rectangle {
 
 // root element specifies the width and height of the sxg canvas.
 
-inline bool sxg_parserObj::parse_root(const xml::doc::base::readlock &root)
+inline bool sxg_parserObj::parse_root(const theme_parser_lock &root)
 {
-	auto lock=root->clone();
+	auto lock=root.clone();
 
 	auto xpath=lock->get_xpath("/sxg");
 
@@ -891,9 +893,9 @@ inline bool sxg_parserObj::parse_root(const xml::doc::base::readlock &root)
 // Parse a <size> element, somewhere
 
 sxg_parserObj::size_type_t
-sxg_parserObj::parse_size_type_t(const xml::doc::base::readlock &parent)
+sxg_parserObj::parse_size_type_t(const theme_parser_lock &parent)
 {
-	auto lock=parent->clone();
+	auto lock=parent.clone();
 
 	auto xpath=lock->get_xpath("size");
 
@@ -947,11 +949,11 @@ sxg_parserObj::parse_size_type_t(const xml::doc::base::readlock &parent)
 
 // Go through and parse all <pixmap> elements.
 
-inline void sxg_parserObj::parse_pixmaps(const xml::doc::base::readlock &root)
+inline void sxg_parserObj::parse_pixmaps(const theme_parser_lock &root)
 {
 	std::unordered_set<std::string> gc_ids;
 
-	auto lock=root->clone();
+	auto lock=root.clone();
 
 	auto xpath=lock->get_xpath("/sxg/pixmap");
 
@@ -1020,7 +1022,7 @@ inline void sxg_parserObj::parse_pixmaps(const xml::doc::base::readlock &root)
 // (default color), a solid color picture (the main attraction), and a RENDER
 // <fill> element.
 
-sxg_parserObj::color_info::color_info(const xml::doc::base::readlock &lock)
+sxg_parserObj::color_info::color_info(const theme_parser_lock &lock)
 {
 	if (has_value(lock, "color"))
 	{
@@ -1091,9 +1093,9 @@ rgb sxg_parserObj::color_info::get_color(const defaulttheme &theme) const
 
 // Parse all <font> elements. Hijack theme code to do all the work for us.
 
-inline void sxg_parserObj::parse_fonts(const xml::doc::base::readlock &root)
+inline void sxg_parserObj::parse_fonts(const theme_parser_lock &root)
 {
-	auto lock=root->clone();
+	auto lock=root.clone();
 
 	auto xpath=lock->get_xpath("/sxg/font");
 
@@ -1120,7 +1122,7 @@ inline void sxg_parserObj::parse_fonts(const xml::doc::base::readlock &root)
 // Parse a text <picture>
 
 inline void sxg_parserObj
-::parse_text_picture(const xml::doc::base::readlock &lock,
+::parse_text_picture(const theme_parser_lock &lock,
 		     picture_info &info)
 {
 	std::string font="label_font";
@@ -1164,9 +1166,9 @@ inline void sxg_parserObj
 
 // Parse all the <picture> elements.
 
-inline void sxg_parserObj::parse_pictures(const xml::doc::base::readlock &root)
+inline void sxg_parserObj::parse_pictures(const theme_parser_lock &root)
 {
-	auto lock=root->clone();
+	auto lock=root.clone();
 
 	auto xpath=lock->get_xpath("/sxg/picture");
 
@@ -1193,7 +1195,7 @@ inline void sxg_parserObj::parse_pictures(const xml::doc::base::readlock &root)
 				sxg_parserObj::picture_type_t::pixmap;
 
 			{
-				auto type=lock->clone();
+				auto type=lock.clone();
 
 				auto type_xpath=type->get_xpath("type");
 
@@ -1278,7 +1280,7 @@ struct LIBCXX_HIDDEN sxg_parserObj::parse_render_gc_info {
 // operation when drawing the SXG picture.
 
 inline ref<sxg_parserObj::gc_operationObj>
-sxg_parserObj::parse_gc_function(const xml::doc::base::readlock &lock)
+sxg_parserObj::parse_gc_function(const theme_parser_lock &lock)
 {
 	auto v=gc::base::function_from_string(lock->get_text());
 
@@ -1291,13 +1293,15 @@ sxg_parserObj::parse_gc_function(const xml::doc::base::readlock &lock)
 }
 
 inline ref<sxg_parserObj::gc_operationObj>
-sxg_parserObj::parse_gc_foreground(const xml::doc::base::readlock &lock)
+sxg_parserObj::parse_gc_foreground(const theme_parser_lock &lock)
 {
 	auto text=lock->get_text();
 
 	double i;
 
 	std::istringstream ii(text);
+
+	imbue<std::istringstream> imbue{lock.c_locale, ii};
 
 	if ((ii >> i).fail() || !ii.eof() || (i < 0 && i > 1))
 		throw EXCEPTION("Empty or invalid <foreground> value");
@@ -1315,13 +1319,15 @@ sxg_parserObj::parse_gc_foreground(const xml::doc::base::readlock &lock)
 }
 
 inline ref<sxg_parserObj::gc_operationObj>
-sxg_parserObj::parse_gc_background(const xml::doc::base::readlock &lock)
+sxg_parserObj::parse_gc_background(const theme_parser_lock &lock)
 {
 	auto text=lock->get_text();
 
 	double i;
 
 	std::istringstream ii(text);
+
+	imbue<std::istringstream> imbue{lock.c_locale, ii};
 
 	if ((ii >> i).fail() || !ii.eof() || (i < 0 && i > 1))
 		throw EXCEPTION("Empty or invalid <foreground> value");
@@ -1339,7 +1345,7 @@ sxg_parserObj::parse_gc_background(const xml::doc::base::readlock &lock)
 }
 
 inline ref<sxg_parserObj::gc_operationObj>
-sxg_parserObj::parse_gc_fill_arc_mode(const xml::doc::base::readlock &lock)
+sxg_parserObj::parse_gc_fill_arc_mode(const theme_parser_lock &lock)
 {
 	auto v=gc::base::fill_arc_mode_from_string(lock->get_text());
 
@@ -1352,7 +1358,7 @@ sxg_parserObj::parse_gc_fill_arc_mode(const xml::doc::base::readlock &lock)
 }
 
 inline ref<sxg_parserObj::gc_operationObj>
-sxg_parserObj::parse_gc_line_width(const xml::doc::base::readlock &lock)
+sxg_parserObj::parse_gc_line_width(const theme_parser_lock &lock)
 {
 	bool flag=false;
 
@@ -1392,7 +1398,7 @@ sxg_parserObj::parse_gc_line_width(const xml::doc::base::readlock &lock)
 }
 
 inline ref<sxg_parserObj::gc_operationObj>
-sxg_parserObj::parse_gc_line_style(const xml::doc::base::readlock &lock)
+sxg_parserObj::parse_gc_line_style(const theme_parser_lock &lock)
 {
 	auto v=gc::base::line_style_from_string(lock->get_text());
 
@@ -1405,7 +1411,7 @@ sxg_parserObj::parse_gc_line_style(const xml::doc::base::readlock &lock)
 }
 
 inline ref<sxg_parserObj::gc_operationObj>
-sxg_parserObj::parse_gc_cap_style(const xml::doc::base::readlock &lock)
+sxg_parserObj::parse_gc_cap_style(const theme_parser_lock &lock)
 {
 	auto v=gc::base::cap_style_from_string(lock->get_text());
 
@@ -1418,7 +1424,7 @@ sxg_parserObj::parse_gc_cap_style(const xml::doc::base::readlock &lock)
 }
 
 inline ref<sxg_parserObj::gc_operationObj>
-sxg_parserObj::parse_gc_join_style(const xml::doc::base::readlock &lock)
+sxg_parserObj::parse_gc_join_style(const theme_parser_lock &lock)
 {
 	auto v=gc::base::join_style_from_string(lock->get_text());
 
@@ -1431,7 +1437,7 @@ sxg_parserObj::parse_gc_join_style(const xml::doc::base::readlock &lock)
 }
 
 inline ref<sxg_parserObj::gc_operationObj>
-sxg_parserObj::parse_gc_fill(const xml::doc::base::readlock &lock)
+sxg_parserObj::parse_gc_fill(const theme_parser_lock &lock)
 {
 	xy_t x, y;
 	double width, height;
@@ -1456,7 +1462,7 @@ sxg_parserObj::parse_gc_fill(const xml::doc::base::readlock &lock)
 }
 
 ref<sxg_parserObj::gc_operationObj>
-sxg_parserObj::parse_gc_clear(const xml::doc::base::readlock &lock)
+sxg_parserObj::parse_gc_clear(const theme_parser_lock &lock)
 {
 	return make_execute_gc
 		([]
@@ -1472,9 +1478,9 @@ sxg_parserObj::parse_gc_clear(const xml::doc::base::readlock &lock)
 }
 
 vector<sxg_parserObj::sxg_rectangle>
-sxg_parserObj::parse_rectangles(const xml::doc::base::readlock &lock)
+sxg_parserObj::parse_rectangles(const theme_parser_lock &lock)
 {
-	auto clone=lock->clone();
+	auto clone=lock.clone();
 
 	auto xpath=clone->get_xpath("rectangle");
 
@@ -1494,7 +1500,7 @@ sxg_parserObj::parse_rectangles(const xml::doc::base::readlock &lock)
 }
 
 inline ref<sxg_parserObj::gc_operationObj>
-sxg_parserObj::parse_gc_clip(const xml::doc::base::readlock &lock,
+sxg_parserObj::parse_gc_clip(const theme_parser_lock &lock,
 			     const std::string &id,
 			     const parse_render_gc_info &info)
 {
@@ -1516,7 +1522,7 @@ sxg_parserObj::parse_gc_clip(const xml::doc::base::readlock &lock,
 	if (pixmap.empty() && rectangles->size() == 0)
 		throw EXCEPTION("Either <pixmap> or <rectangle> must be specified for a <clip>");
 
-	auto clone=lock->clone();
+	auto clone=lock.clone();
 
 	// Recursively parse_gc() the elements in <clipped>
 
@@ -1582,7 +1588,7 @@ sxg_parserObj::parse_gc_clip(const xml::doc::base::readlock &lock,
 
 // Parse <fill_style>
 
-bool sxg_parserObj::get_fill_style_pixmap(const xml::doc::base::readlock &lock,
+bool sxg_parserObj::get_fill_style_pixmap(const theme_parser_lock &lock,
 					  points_t &points,
 					  const char *name,
 					  std::string &pixmap,
@@ -1595,7 +1601,7 @@ bool sxg_parserObj::get_fill_style_pixmap(const xml::doc::base::readlock &lock,
 }
 
 inline ref<sxg_parserObj::gc_operationObj>
-sxg_parserObj::parse_gc_fill_style(const xml::doc::base::readlock &lock)
+sxg_parserObj::parse_gc_fill_style(const theme_parser_lock &lock)
 {
 	std::string pixmap;
 
@@ -1652,9 +1658,9 @@ sxg_parserObj::parse_gc_fill_style(const xml::doc::base::readlock &lock)
 // Parse <dashes>
 
 inline ref<sxg_parserObj::gc_operationObj>
-sxg_parserObj::parse_gc_dashes(const xml::doc::base::readlock &lock)
+sxg_parserObj::parse_gc_dashes(const theme_parser_lock &lock)
 {
-	auto clone=lock->clone();
+	auto clone=lock.clone();
 
 	auto xpath=clone->get_xpath("dash");
 
@@ -1709,7 +1715,7 @@ class LIBCXX_HIDDEN sxg_parserObj::sxg_point {
 
 	xy_t x, y;
 
-	sxg_point(const xml::doc::base::readlock &lock,
+	sxg_point(const theme_parser_lock &lock,
 		  points_t &points)
 	{
 		get_xy(lock, points, x, y);
@@ -1740,9 +1746,9 @@ class LIBCXX_HIDDEN sxg_parserObj::sxg_point {
 // Parse <line>.
 
 inline ref<sxg_parserObj::gc_operationObj>
-sxg_parserObj::parse_gc_line(const xml::doc::base::readlock &lock)
+sxg_parserObj::parse_gc_line(const theme_parser_lock &lock)
 {
-	auto clone=lock->clone();
+	auto clone=lock.clone();
 
 	gc::base::polyfill fill_type=gc::base::polyfill::none;
 
@@ -1824,9 +1830,9 @@ struct LIBCXX_HIDDEN sxg_parserObj::sxg_arc_info {
 // Parse <arcs>
 
 inline ref<sxg_parserObj::gc_operationObj>
-sxg_parserObj::parse_gc_arcs(const xml::doc::base::readlock &lock)
+sxg_parserObj::parse_gc_arcs(const theme_parser_lock &lock)
 {
-	auto clone=lock->clone();
+	auto clone=lock.clone();
 
 	bool fill_flag=has_value(clone, "fill");
 
@@ -1910,7 +1916,7 @@ sxg_parserObj::parse_gc_arcs(const xml::doc::base::readlock &lock)
 // Parse a single <gc> operation.
 
 ref<sxg_parserObj::gc_operationObj>
-sxg_parserObj::parse_gc_op(const xml::doc::base::readlock &lock,
+sxg_parserObj::parse_gc_op(const theme_parser_lock &lock,
 			   const std::string &id,
 			   const parse_render_gc_info &info)
 {
@@ -1974,7 +1980,7 @@ sxg_parserObj::parse_gc_op(const xml::doc::base::readlock &lock,
 // Parse graphic context property initialization.
 
 inline ref<sxg_parserObj::sxg_operationObj>
-sxg_parserObj::parse_gc(const xml::doc::base::readlock &lock)
+sxg_parserObj::parse_gc(const theme_parser_lock &lock)
 {
 	auto id=lock->get_any_attribute("id");
 
@@ -1985,11 +1991,11 @@ sxg_parserObj::parse_gc(const xml::doc::base::readlock &lock)
 }
 
 ref<sxg_parserObj::sxg_operationObj>
-sxg_parserObj::parse_gc(const xml::doc::base::readlock &old_lock,
+sxg_parserObj::parse_gc(const theme_parser_lock &old_lock,
 			const std::string &id,
 			const parse_render_gc_info &info)
 {
-	auto lock=old_lock->clone();
+	auto lock=old_lock.clone();
 
 	// Parse the <gc> list of instructions now...
 
@@ -2049,7 +2055,7 @@ sxg_parserObj::parse_gc(const xml::doc::base::readlock &old_lock,
 // Parse a <src> with a <picture>, or a <mask> with a <picture>. in a
 // <composite>
 
-bool sxg_parserObj::parse_src_mask(const xml::doc::base::readlock &render_element,
+bool sxg_parserObj::parse_src_mask(const theme_parser_lock &render_element,
 				   points_t &points,
 				   const char *what,
 				   const char *pic_or_pixmap,
@@ -2057,7 +2063,7 @@ bool sxg_parserObj::parse_src_mask(const xml::doc::base::readlock &render_elemen
 				   xy_t &x,
 				   xy_t &y)
 {
-	auto p=render_element->clone();
+	auto p=render_element.clone();
 
 	auto xpath=p->get_xpath(what);
 
@@ -2074,7 +2080,7 @@ bool sxg_parserObj::parse_src_mask(const xml::doc::base::readlock &render_elemen
 // Parse a <composite>
 
 inline ref<sxg_parserObj::render_operationObj>
-sxg_parserObj::parse_render_composite(const xml::doc::base::readlock &render_element)
+sxg_parserObj::parse_render_composite(const theme_parser_lock &render_element)
 {
 	std::string op_str;
 
@@ -2244,7 +2250,7 @@ sxg_parserObj::parse_render_composite(const xml::doc::base::readlock &render_ele
 // Parse a <repeat>
 
 inline ref<sxg_parserObj::render_operationObj>
-sxg_parserObj::parse_render_repeat(const xml::doc::base::readlock &render_element)
+sxg_parserObj::parse_render_repeat(const theme_parser_lock &render_element)
 {
 	auto value=picture::base::render_repeat_from_string(render_element
 							    ->get_text());
@@ -2260,7 +2266,7 @@ sxg_parserObj::parse_render_repeat(const xml::doc::base::readlock &render_elemen
 // Parse a <clip>
 
 inline ref<sxg_parserObj::render_operationObj>
-sxg_parserObj::parse_render_clip(const xml::doc::base::readlock &render_element,
+sxg_parserObj::parse_render_clip(const theme_parser_lock &render_element,
 				 const std::string &id,
 				 const parse_render_gc_info &info)
 {
@@ -2277,7 +2283,7 @@ sxg_parserObj::parse_render_clip(const xml::doc::base::readlock &render_element,
 
 	auto rectangles=parse_rectangles(render_element);
 
-	auto clone=render_element->clone();
+	auto clone=render_element.clone();
 
 	// Parse the instructions nested inside <clip>
 
@@ -2344,7 +2350,7 @@ sxg_parserObj::parse_render_clip(const xml::doc::base::readlock &render_element,
 }
 
 static render_pict_op
-parse_optional_op(const xml::doc::base::readlock &render_element,
+parse_optional_op(const theme_parser_lock &render_element,
 		  render_pict_op default_value)
 {
 	if (has_value(render_element, "op"))
@@ -2361,14 +2367,14 @@ parse_optional_op(const xml::doc::base::readlock &render_element,
 // Parse a <fill>
 
 inline ref<sxg_parserObj::render_operationObj>
-sxg_parserObj::parse_render_fill(const xml::doc::base::readlock &render_element)
+sxg_parserObj::parse_render_fill(const theme_parser_lock &render_element)
 {
 	render_pict_op op=parse_optional_op(render_element,
 					    render_pict_op::op_src);
 
 	color_info color(render_element);
 
-	auto clone=render_element->clone();
+	auto clone=render_element.clone();
 
 	auto xpath=clone->get_xpath("rectangle");
 
@@ -2416,11 +2422,10 @@ struct LIBCXX_HIDDEN sxg_parserObj::sxg_triangle {
 
 	// Helper used by the constructor to parse out one of the points.
 
-	static xml::doc::base::readlock
-		get_point(const xml::doc::base::readlock &parent,
-			  const char *point_name)
+	static theme_parser_lock get_point(const theme_parser_lock &parent,
+				     const char *point_name)
 	{
-		auto clone=parent->clone();
+		auto clone=parent.clone();
 
 		auto xpath=clone->get_xpath(point_name);
 
@@ -2433,7 +2438,7 @@ struct LIBCXX_HIDDEN sxg_parserObj::sxg_triangle {
 		return clone;
 	}
 
-	sxg_triangle(const xml::doc::base::readlock &parent,
+	sxg_triangle(const theme_parser_lock &parent,
 		     points_t &points)
 		: p1(get_point(parent, "p1"), points),
 		p2(get_point(parent, "p2"), points),
@@ -2456,7 +2461,7 @@ struct LIBCXX_HIDDEN sxg_parserObj::sxg_triangle {
 // Parse <triangles>
 
 inline ref<sxg_parserObj::render_operationObj>
-sxg_parserObj::parse_render_triangles(const xml::doc::base::readlock &render_element)
+sxg_parserObj::parse_render_triangles(const theme_parser_lock &render_element)
 {
 	render_pict_op op=parse_optional_op(render_element,
 					    render_pict_op::op_src);
@@ -2475,7 +2480,7 @@ sxg_parserObj::parse_render_triangles(const xml::doc::base::readlock &render_ele
 
 	std::vector<sxg_triangle> triangles;
 
-	auto clone=render_element->clone();
+	auto clone=render_element.clone();
 
 	auto xpath=clone->get_xpath("triangle");
 
@@ -2538,7 +2543,7 @@ sxg_parserObj::parse_render_triangles(const xml::doc::base::readlock &render_ele
 // Parse <tri>
 
 ref<sxg_parserObj::render_operationObj>
-sxg_parserObj::parse_render_tri(const xml::doc::base::readlock &render_element,
+sxg_parserObj::parse_render_tri(const theme_parser_lock &render_element,
 				pic_func_no_mask func_1,
 				pic_func_mask func_2)
 {
@@ -2559,7 +2564,7 @@ sxg_parserObj::parse_render_tri(const xml::doc::base::readlock &render_element,
 
 	std::vector<sxg_point> strip;
 
-	auto clone=render_element->clone();
+	auto clone=render_element.clone();
 
 	auto xpath=clone->get_xpath("point");
 
@@ -2626,7 +2631,7 @@ sxg_parserObj::parse_render_tri(const xml::doc::base::readlock &render_element,
 // Parse a single <render> element.
 
 inline ref<sxg_parserObj::render_operationObj>
-sxg_parserObj::parse_render_op(const xml::doc::base::readlock &render_element,
+sxg_parserObj::parse_render_op(const theme_parser_lock &render_element,
 			       const std::string &id,
 			       const parse_render_gc_info &info)
 {
@@ -2667,7 +2672,7 @@ sxg_parserObj::parse_render_op(const xml::doc::base::readlock &render_element,
 // Parse all <render>s.
 
 inline ref<sxg_parserObj::sxg_operationObj>
-sxg_parserObj::parse_render(const xml::doc::base::readlock &render_element)
+sxg_parserObj::parse_render(const theme_parser_lock &render_element)
 {
 	auto id=render_element->get_any_attribute("id");
 
@@ -2678,11 +2683,11 @@ sxg_parserObj::parse_render(const xml::doc::base::readlock &render_element)
 }
 
 ref<sxg_parserObj::sxg_operationObj>
-sxg_parserObj::parse_render(const xml::doc::base::readlock &render_element,
+sxg_parserObj::parse_render(const theme_parser_lock &render_element,
 			    const std::string &id,
 			    const parse_render_gc_info &info)
 {
-	auto lock=render_element->clone();
+	auto lock=render_element.clone();
 
 	// Parse the <render> list of instructions now...
 
@@ -2725,9 +2730,9 @@ sxg_parserObj::parse_render(const xml::doc::base::readlock &render_element,
 
 // Recursively parse all <gc> and <render> elements.
 
-inline void sxg_parserObj::parse_operations(const xml::doc::base::readlock &root)
+inline void sxg_parserObj::parse_operations(const theme_parser_lock &root)
 {
-	auto lock=root->clone();
+	auto lock=root.clone();
 
 	auto xpath=lock->get_xpath("/sxg");
 
@@ -2745,10 +2750,10 @@ inline void sxg_parserObj::parse_operations(const xml::doc::base::readlock &root
 
 // Parse the <location> and <dimension> top-level elements.
 
-inline void sxg_parserObj::get_points(const xml::doc::base::readlock &root,
+inline void sxg_parserObj::get_points(const theme_parser_lock &root,
 				      const char *element)
 {
-	auto clone=root->clone();
+	auto clone=root.clone();
 
 	auto xpath=clone->get_xpath(element);
 
@@ -2779,10 +2784,10 @@ inline void sxg_parserObj::get_points(const xml::doc::base::readlock &root,
 }
 
 inline void sxg_parserObj::
-get_dimensions(const xml::doc::base::readlock &root,
+get_dimensions(const theme_parser_lock &root,
 	       const char *element)
 {
-	auto clone=root->clone();
+	auto clone=root.clone();
 
 	auto xpath=clone->get_xpath(element);
 
@@ -3014,7 +3019,7 @@ sxg_parserObj::sxg_parserObj(const std::string &filename,
 #endif
 	auto config=xml::doc::create(filename, "nonet xinclude");
 
-	auto root=config->readlock();
+	auto root=theme_parser_lock{config->readlock(), locale::create("C")};
 
 	if (!root->get_root())
 	{
