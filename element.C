@@ -12,6 +12,7 @@
 #include "draw_info.H"
 #include "busy.H"
 #include "x/w/picture.H"
+#include "x/w/main_window.H"
 #include "run_as.H"
 
 LIBCXXW_NAMESPACE_START
@@ -29,6 +30,11 @@ elementObj::~elementObj()
 ref<obj> elementObj::connection_mcguffin() const
 {
 	return get_screen()->connection_mcguffin();
+}
+
+main_windowptr elementObj::get_main_window() const
+{
+	return impl->get_window_handler().get_main_window();
 }
 
 screen elementObj::get_screen()

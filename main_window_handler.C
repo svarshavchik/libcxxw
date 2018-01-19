@@ -65,6 +65,11 @@ main_windowObj::handlerObj::handlerObj(IN_THREAD_ONLY,
 
 main_windowObj::handlerObj::~handlerObj()=default;
 
+main_windowptr main_windowObj::handlerObj::get_main_window()
+{
+	return public_object.getptr();
+}
+
 const char *main_windowObj::handlerObj ::default_wm_class_instance() const
 {
 	return "main";

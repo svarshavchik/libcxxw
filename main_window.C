@@ -46,6 +46,12 @@ main_windowObj::main_windowObj(const ref<implObj> &impl,
 {
 }
 
+void main_windowObj::constructor(const ref<implObj> &impl,
+				 const ref<layoutmanagerObj::implObj> &lm)
+{
+	impl->handler->public_object=ref(this);
+}
+
 main_windowObj::~main_windowObj()=default;
 
 void main_windowObj::on_delete(const std::function<void (const busy &)

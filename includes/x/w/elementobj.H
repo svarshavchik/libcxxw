@@ -6,6 +6,7 @@
 #define x_w_elementobj_h
 
 #include <x/w/elementfwd.H>
+#include <x/w/main_windowfwd.H>
 #include <x/w/screenfwd.H>
 #include <x/w/focusablefwd.H>
 #include <x/w/tooltipfwd.H>
@@ -128,7 +129,16 @@ public:
 
 	//! \internal
 
-	virtual ref<implObj> get_minimum_override_element_impl();
+	virtual ref<implObj> get_minimum_override_element_impl() LIBCXX_HIDDEN;
+
+	//! Return the top level main window object.
+
+	//! May return a null ptr in a rare race condition when the main window
+	//! is being simultaneously destroyed by another execution thread.
+	//! This display element will also be destroyed, its days are numbered,
+	//! might as well give up the ghost.
+
+	main_windowptr get_main_window() const;
 };
 
 LIBCXXW_NAMESPACE_END

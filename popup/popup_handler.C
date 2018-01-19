@@ -16,6 +16,7 @@
 #include "x/w/button_event.H"
 #include "x/w/motion_event.H"
 #include "x/w/key_event.H"
+#include "x/w/main_window.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -28,12 +29,24 @@ popupObj::handlerObj::handlerObj(IN_THREAD_ONLY,
 		       background_color,
 		       parent->handler_data,
 		       nesting_level),
-	popup_parent_thread_only(parent)
+	popup_parent(parent)
 {
 	update_user_time(IN_THREAD);
 }
 
 popupObj::handlerObj::~handlerObj()=default;
+
+main_windowptr popupObj::handlerObj::get_main_window()
+{
+	main_windowptr p;
+
+	auto pp=popup_parent.getptr();
+
+	if (pp)
+		p=pp->get_main_window();
+
+	return p;
+}
 
 void popupObj::handlerObj::frame_extents_updated(IN_THREAD_ONLY)
 {
@@ -192,7 +205,7 @@ void popupObj::handlerObj::set_inherited_visibility(IN_THREAD_ONLY,
 
 std::string popupObj::handlerObj::default_wm_class_resource(IN_THREAD_ONLY)
 {
-	auto p=popup_parent(IN_THREAD).getptr();
+	auto p=popup_parent.getptr();
 
 	if (p)
 	{
@@ -209,7 +222,7 @@ std::string popupObj::handlerObj::default_wm_class_resource(IN_THREAD_ONLY)
 ptr<generic_windowObj::handlerObj>
 popupObj::handlerObj::get_popup_parent(IN_THREAD_ONLY)
 {
-	auto p=popup_parent(IN_THREAD).getptr();
+	auto p=popup_parent.getptr();
 
 	if (p)
 		p=p->get_popup_parent(IN_THREAD);
@@ -255,7 +268,7 @@ void popupObj::handlerObj::closing_popup(IN_THREAD_ONLY)
 
 bool popupObj::handlerObj::keep_passive_grab(IN_THREAD_ONLY)
 {
-	auto p=popup_parent(IN_THREAD).getptr();
+	auto p=popup_parent.getptr();
 
 	if (p)
 		return p->keep_passive_grab(IN_THREAD);
@@ -265,7 +278,7 @@ bool popupObj::handlerObj::keep_passive_grab(IN_THREAD_ONLY)
 
 void popupObj::handlerObj::ungrab(IN_THREAD_ONLY)
 {
-	auto p=popup_parent(IN_THREAD).getptr();
+	auto p=popup_parent.getptr();
 
 	if (p)
 	{

@@ -25,6 +25,7 @@
 #include "x/w/focusablefwd.H"
 #include "x/w/busy.H"
 #include "x/w/rgb.H"
+#include "x/w/main_windowfwd.H"
 #include "focus/focusablefwd.H"
 #include "fonts/current_fontcollectionfwd.H"
 #include "x/w/fontfwd.H"
@@ -253,6 +254,9 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
  public:
 	//! Destructor
 	~handlerObj();
+
+	//! Return the top level main window.
+	virtual main_windowptr get_main_window()=0;
 
 	//! Return the current background color.
 	const background_color current_background_color(IN_THREAD_ONLY);

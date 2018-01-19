@@ -36,6 +36,10 @@ public:
 		   size_t nesting_level=0);
 	~handlerObj();
 
+	//! Implement get_main_window()
+
+	main_windowptr get_main_window() override;
+
 	//! Override frame_extends_updated()
 
 	//! This means we need to set_popup_position().
@@ -111,6 +115,7 @@ public:
 					  inherited_visibility_info &info)
 		override;
 
+	//! Implement
  private:
 
 	//! The pointer is grabbed while the popup is open.
@@ -118,7 +123,7 @@ public:
 
 	//! The parent window, which is used for the pointer grab.
 
-	weakptr<ptr<generic_windowObj::handlerObj>> popup_parent_thread_only;
+	weakptr<ptr<generic_windowObj::handlerObj>> popup_parent;
 
 	//! Override default_wm_class_resource().
 
@@ -152,7 +157,6 @@ public:
 	virtual void released_opened_mcguffin(IN_THREAD_ONLY)=0;
 
  public:
-	THREAD_DATA_ONLY(popup_parent);
 
 	//! Perform processing after a popup is opened.
 

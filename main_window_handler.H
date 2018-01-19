@@ -49,6 +49,15 @@ class LIBCXX_HIDDEN main_windowObj::handlerObj :
 	//! Destructor
 	~handlerObj();
 
+	//! Weak pointer to our public object. Initialized during construction.
+
+	weakptr<ptr<main_windowObj>> public_object;
+
+	//! Return my public object.
+
+	main_windowptr get_main_window() override;
+
+	//! Implement client_message_event.
 	void client_message_event(IN_THREAD_ONLY,
 				  const xcb_client_message_event_t *event)
 		override;
