@@ -384,10 +384,10 @@ static dim_t dim_scale(dim_type &&orig, double scale)
 	if (res >= std::numeric_limits<dim_t::value_type>::max()-1)
 		res=std::numeric_limits<dim_t::value_type>::max()-1;
 
-	// However, if the scale is tiny, and the original value is not 0,
+	// However, if the scale is tiny, but is not zero,
 	// we cannot scale it to 0.
 
-	if (orig != 0 && res < 1)
+	if (scale != 0 && res < 1)
 		res=1;
 
 	return (dim_t::value_type)res;
