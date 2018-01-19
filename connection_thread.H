@@ -35,6 +35,7 @@ class window_handlerObj;
 class xidObj;
 class containers_2_recalculate_map;
 class containers_2_batch_recalculate_set;
+class elements_2_batch_showhide_map;
 
 //! The connection thread. Handles X server events. Does everything.
 class LIBCXX_HIDDEN connection_threadObj
@@ -150,7 +151,7 @@ class LIBCXX_HIDDEN connection_threadObj
 	//! Draw elements.
 	bool redraw_elements(IN_THREAD_ONLY);
 
-	//! Which containers need to be recalculated
+	//! Which containers need to be recalculated in bulk
 	containers_2_recalculate_map *containers_2_recalculate_thread_only;
 
 	//! Find a container to recalculate
@@ -325,9 +326,13 @@ class LIBCXX_HIDDEN connection_threadObj
 	// Containers queued up for batch recalculation
 
 	containers_2_batch_recalculate_set *containers_2_batch_recalculate_thread_only;
+	//! Which elements need to have their visibility updated in bulk
+	elements_2_batch_showhide_map *elements_2_batch_showhide_thread_only;
+
 
  public:
 	THREAD_DATA_ONLY(containers_2_batch_recalculate);
+	THREAD_DATA_ONLY(elements_2_batch_showhide);
 
 	//! Same as run_as, but the job goes into the batch queue, instead.
 

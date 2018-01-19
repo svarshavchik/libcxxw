@@ -7,6 +7,7 @@
 
 #include "x/w/batch_queuefwd.H"
 #include "x/w/layoutmanagerobj.H"
+#include "x/w/elementobj.H"
 #include "connection_threadfwd.H"
 #include <x/mpobj.H>
 #include <x/ptrfwd.H>
@@ -26,6 +27,7 @@ class LIBCXX_HIDDEN batch_queueObj : virtual public obj {
 
 	mpobj<bool> something_scheduled;
 
+	//! Batched
  public:
 
 	//! My connection thread.
@@ -47,6 +49,11 @@ class LIBCXX_HIDDEN batch_queueObj : virtual public obj {
 	//! in one shot.
 
 	void schedule_for_recalculation(const ref<layoutmanagerObj::implObj> &);
+
+	//! Schedule an element to have its visibility update.
+
+	void schedule_for_visibility(const ref<elementObj::implObj> &e,
+				     bool visibility);
 
 	//! Execute the functor in the connection thread.
 

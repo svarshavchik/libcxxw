@@ -29,6 +29,21 @@ public:
 	std::unordered_set<ref<containerObj::implObj>> containers;
 };
 
+//! Queue of elements whose visibility should be updated in bulk
+
+class LIBCXX_HIDDEN elements_2_batch_showhide_map {
+
+public:
+	//! Constructor
+	elements_2_batch_showhide_map();
+
+	//! Destructor
+	~elements_2_batch_showhide_map();
+
+	//! The elements.
+	std::unordered_map<ref<elementObj::implObj>, bool> elements;
+};
+
 template<typename functor>
 void batch_queueObj::run_as(functor &&f)
 {

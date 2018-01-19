@@ -156,21 +156,9 @@ void elementObj::implObj::toggle_visibility()
 
 void elementObj::implObj::request_visibility(bool flag)
 {
-	// Set requested_visibility, make sure this is done in the connection
-	// thread.
+	// Batch it up, to be done in bulk.
 
-	// Sets requested_visibility, then adds the element to the
-	// visibility_updated list.
-
-	// The connection thread invokes update_visibility after processing
-	// all messages.
-
-	THREAD->get_batch_queue()->run_as
-		([flag, me=elementimpl(this)]
-		 (IN_THREAD_ONLY)
-		 {
-			 me->request_visibility(IN_THREAD, flag);
-		 });
+	THREAD->get_batch_queue()->schedule_for_visibility(ref(this), flag);
 }
 
 void elementObj::implObj::toggle_visibility(IN_THREAD_ONLY)

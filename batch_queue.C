@@ -7,6 +7,7 @@
 #include "connection_thread.H"
 #include "layoutmanager.H"
 #include "container.H"
+#include "element.H"
 
 LOG_CLASS_INIT(LIBCXX_NAMESPACE::w::batch_queueObj);
 
@@ -17,6 +18,10 @@ containers_2_batch_recalculate_set::containers_2_batch_recalculate_set()
 
 containers_2_batch_recalculate_set::~containers_2_batch_recalculate_set()
 =default;
+
+elements_2_batch_showhide_map::elements_2_batch_showhide_map()=default;
+
+elements_2_batch_showhide_map::~elements_2_batch_showhide_map()=default;
 
 batch_queueObj::batch_queueObj(const connection_thread &my_thread)
 	: something_scheduled{false}, my_thread(my_thread)
@@ -38,6 +43,22 @@ void batch_queueObj
 	something_scheduled=true;
 }
 
+void batch_queueObj
+::schedule_for_visibility(const ref<elementObj::implObj> &e,
+			  bool visibility)
+{
+	my_thread->run_as([=]
+			  (IN_THREAD_ONLY)
+			  {
+				  IN_THREAD->elements_2_batch_showhide
+					  (IN_THREAD)->elements[e]=visibility;
+			  });
+
+	something_scheduled=true;
+}
+
+
+
 batch_queueObj::~batch_queueObj()
 {
 	LOG_DEBUG("Destroyed " << this);
@@ -58,7 +79,8 @@ void connection_threadObj::dispatch_execute_batched_jobs()
 
 	std::atomic_thread_fence(std::memory_order_acquire);
 
-	// Empty out the containers_2_batch_recalculate, then process
+	// Empty out the containers_2_batch_recalculate and
+	// elements_2_batch_showhide, then process
 	// the batch queue.
 
 	auto &containers=containers_2_batch_recalculate(IN_THREAD)->containers;
@@ -66,6 +88,13 @@ void connection_threadObj::dispatch_execute_batched_jobs()
 	for (const auto &c:containers)
 		c->needs_recalculation(IN_THREAD);
 	containers.clear();
+
+	auto &elements=elements_2_batch_showhide(IN_THREAD)->elements;
+
+	for (const auto &e:elements)
+		e.first->request_visibility(IN_THREAD, e.second);
+	elements.clear();
+
 	process_events(batched_queue);
 }
 
