@@ -231,10 +231,16 @@ class LIBCXX_HIDDEN textlabelObj::implObj : virtual public obj {
 	void pointer_focus(IN_THREAD_ONLY,
 			   const callback_trigger_t &trigger);
 
- private:
+	//! Move to the first or the last hotspot
+	void first_hotspot(IN_THREAD_ONLY);
+
+	//! Move to the first or the last hotspot
+	void last_hotspot(IN_THREAD_ONLY);
+
 	//! Unhighlight any currently-highlighted hotspots.
 	void hotspot_unhighlight(IN_THREAD_ONLY);
 
+ private:
 	//! Invoke the link event, and possibly update the label accordingly.
 	void link_update(IN_THREAD_ONLY, const text_hotspot &link,
 			 const text_event_t &event_type);

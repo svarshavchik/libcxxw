@@ -30,6 +30,20 @@ void focusable_labelObj::implObj::keyboard_focus(IN_THREAD_ONLY,
 {
 	superclass_t::keyboard_focus(IN_THREAD, trigger);
 	report_current_cursor_position_if_active(IN_THREAD);
+
+	if (current_keyboard_focus(IN_THREAD))
+	{
+		// If the focus was gained by tabbing into the field, show the
+		// first or the last link in the focusable field.
+		if (std::holds_alternative<next_key>(trigger))
+			first_hotspot(IN_THREAD);
+		else if (std::holds_alternative<prev_key>(trigger))
+			last_hotspot(IN_THREAD);
+	}
+	else
+	{
+		hotspot_unhighlight(IN_THREAD);
+	}
 }
 
 void focusable_labelObj::implObj::current_position_updated(IN_THREAD_ONLY)

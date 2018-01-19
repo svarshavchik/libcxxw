@@ -382,11 +382,36 @@ bool textlabelObj::implObj::process_key_event(IN_THREAD_ONLY,
 	hotspot_unhighlight(IN_THREAD);
 
 	if (!next_link)
+		// Do not process the key, let the generic_window_handler
+		// claim the keypress, and move the input focus.
 		return false;
 
 	hotspot_highlighted(IN_THREAD)=next_link;
 	link_update(IN_THREAD, next_link, focus_change::gained);
 	return true;
+}
+
+void textlabelObj::implObj::first_hotspot(IN_THREAD_ONLY)
+{
+	auto next_link=ordered_hotspots.find(0);
+
+	if (next_link == ordered_hotspots.end())
+		return;
+	hotspot_unhighlight(IN_THREAD);
+
+	hotspot_highlighted(IN_THREAD)=next_link->second;
+	link_update(IN_THREAD, next_link->second, focus_change::gained);
+}
+
+void textlabelObj::implObj::last_hotspot(IN_THREAD_ONLY)
+{
+	auto next_link=ordered_hotspots.find(hotspot_info(IN_THREAD).size()-1);
+	if (next_link == ordered_hotspots.end())
+		return;
+	hotspot_unhighlight(IN_THREAD);
+
+	hotspot_highlighted(IN_THREAD)=next_link->second;
+	link_update(IN_THREAD, next_link->second, focus_change::gained);
 }
 
 void textlabelObj::implObj::report_motion_event(IN_THREAD_ONLY,

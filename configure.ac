@@ -59,7 +59,7 @@ AC_SUBST([XGETTEXT_EXTRA_OPTIONS])
 
 # Checks for library functions.
 
-AC_ARG_WITH(testprograms, [Build internal test programs],[testprograms="$withval"])
+AC_ARG_WITH(testprograms, [AS_HELP_STRING([--with-testprograms],[Build internal test programs.])],[testprograms="$withval"])
 
 BUILT_TESTPROGRAMS=""
 BUILT_INTERACTIVETESTPROGRAMS=""
@@ -83,4 +83,5 @@ AC_CONFIG_FILES([Makefile
 	])
 
 AC_SUBST([LIBTOOL_DEPS])
+AC_SUBST([AM_CPPFLAGS])
 AC_OUTPUT
