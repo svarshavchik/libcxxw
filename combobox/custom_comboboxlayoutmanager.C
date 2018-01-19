@@ -3,24 +3,18 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
+#include "popup_imagebutton.H"
 #include "combobox/custom_combobox_container_impl.H"
 #include "combobox/custom_comboboxlayoutmanager.H"
 #include "combobox/custom_combobox_popup_container_impl.H"
-#include "combobox/combobox_button_impl.H"
 #include "peepholed_toplevel_listcontainer/create_popup.H"
 #include "listlayoutmanager/list_element_impl.H"
 #include "listlayoutmanager/listlayoutstyle_impl.H"
 
-#include "focus/focusframecontainer_element.H"
 #include "focus/focusable_element.H"
 
 #include "x/w/focusable_container.H"
 #include "x/w/key_event.H"
-#include "image_button_internal.H"
-#include "icon_images_vector_element.H"
-#include "hotspot_element.H"
-#include "icon.H"
-#include "generic_window_handler.H"
 #include "capturefactory.H"
 #include "run_as.H"
 
@@ -64,74 +58,6 @@ const_element custom_comboboxlayoutmanagerObj::current_selection() const
 	// in the internally-managed grid.
 
 	return impl->get(0, 0);
-}
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Combobox button.
-
-typedef focusframecontainer_elementObj<container_elementObj<child_elementObj>
-				       > combobox_button_focusframe_container_t;
-
-
-// Create the combobox button.
-
-// The factory where the combobox button gets created gets passed in.
-
-static inline auto
-create_combobox_button(const ref<containerObj::implObj> &parent_container,
-		       const auto &popup_handler)
-{
-	// The actual element that will go into this factory will be the
-	// focus frame, with the button inside it. First, construct
-	// the focus frame implementation object.
-
-	auto cbfc=ref<combobox_button_focusframe_container_t>
-		::create("comboboxbuttonfocusoff_border",
-			 "comboboxbuttonfocuson_border",
-			 parent_container,
-			 child_element_init_params{"focusframe@libcxx.com"});
-
-	// The focus frame implementation object is the parent of the
-	// combobox button. Create its implementatio n button.
-
-	auto &d=cbfc->get_element_impl().get_window_handler();
-
-	auto icon1=d.create_icon_pixels("scroll-down1", render_repeat::none,
-					0, 0,
-					icon_scale::nomore);
-	auto icon2=d.create_icon_pixels("scroll-down2", render_repeat::none,
-					0, 0,
-					icon_scale::nomore);
-
-	auto image_button_internal_impl=
-		ref<combobox_button_implObj>
-		::create(cbfc,
-			 std::vector<icon>{ icon1, icon2 },
-			 popup_handler);
-
-	// We can now create the focusframe public object.
-
-	auto ff=focusframecontainer::create(cbfc, image_button_internal_impl);
-
-	// The focus frame's factory, where the focusable element, the
-	// image button, gets created.
-	auto focusframe_factory=ff->set_focusable();
-
-	// Create the "public" object, show() it, and tell the focus frame:
-	// here's what you hafe inside you.
-	auto combobox_button=image_button_internal
-		::create(image_button_internal_impl);
-
-	combobox_button->show();
-
-	focusframe_factory->created_internally(combobox_button);
-
-	ff->show();
-
-	ff->label_for(ff); // Make clicks on the focusframe work.
-
-	return std::make_tuple(ff, combobox_button);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -416,20 +342,30 @@ focusable_container new_custom_comboboxlayoutmanager
 
 	f->created_internally(current_selection);
 
-	// Now for the combo-button.
-	f->padding(0);
-	f->border("combobox_border");
-	f->halign(halign::fill);
-	f->valign(valign::fill);
+	auto combobox_button=create_popup_imagebutton
+		(f,
+		 []
+		 (const border_arg &focusoff_border,
+		  const border_arg &focuson_border,
+		  const ref<containerObj::implObj> &parent_container,
+		  const child_element_init_params &init_params)
+		 {
+			 return ref<popup_imagebutton_focusframe_implObj>
+			 ::create(focusoff_border,
+				  focuson_border,
+				  parent_container,
+				  init_params);
+		 },
 
-	const auto &[ff, combobox_button]=
-		create_combobox_button(f->get_container_impl(),
-				       popup_handler);
+		 popup_handler,
 
-	ff->elementObj::impl
-		->set_background_color("combobox_background_color");
-
-	f->created_internally(ff);
+		 popup_imagebutton_config{"combobox_border",
+				"combobox_background_color",
+				"scroll-down1",
+				"scroll-down2",
+				"comboboxbuttonfocusoff_border",
+				"comboboxbuttonfocuson_border"
+		});
 
 	// Point the popup container to the current selection element and
 	// the combo-box button element, so both can be sized based on the

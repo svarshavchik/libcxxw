@@ -2,18 +2,19 @@
 ** Copyright 2017 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
-#ifndef combobox_button_impl_h
-#define combobox_button_impl_h
+#ifndef popup_imagebutton_impl_h
+#define popup_imagebutton_impl_h
 
-#include "combobox/combobox_button_implfwd.H"
+#include "popup_imagebutton_implfwd.H"
 #include "popup/popup_showhide_elementfwd.H"
 #include "image_button_internal_impl.H"
+#include "always_visible_elementfwd.H"
 
 LIBCXXW_NAMESPACE_START
 
-/*! Combo-box dropdown button
+/*! A popup show/hide button drawn using two images.
 
-The drop-down button that opens and closes the combo-box popup is an
+A button that opens and closes the combo-box or the calendar date popup is an
 \ref image_button_internal "internal image button object".
 
 Subclass the implementation object to show normal/highlighted image depending
@@ -21,32 +22,35 @@ upon the hotspot temperature.
 
 */
 
-class LIBCXX_HIDDEN combobox_button_implObj
-	: public popup_showhide_elementObj<image_button_internalObj::implObj> {
+class LIBCXX_HIDDEN popup_imagebutton_implObj
+	: public always_visible_elementObj<popup_showhide_elementObj
+					   <image_button_internalObj::implObj>>
+{
 
-	typedef popup_showhide_elementObj<image_button_internalObj::implObj
-					  > superclass_t;
+	typedef always_visible_elementObj<
+		popup_showhide_elementObj<image_button_internalObj::implObj
+					  >> superclass_t;
 
  public:
 	//! Constructor
 
-	combobox_button_implObj(const ref<containerObj::implObj> &container,
-				const std::vector<icon> &icon_images,
-				const ref<elementObj::implObj>
-				&popup_element_impl);
+	popup_imagebutton_implObj(const ref<containerObj::implObj> &container,
+				  const std::vector<icon> &icon_images,
+				  const ref<elementObj::implObj>
+				  &popup_element_impl);
 
  private:
 
 	//! Internal constructor
 
-	combobox_button_implObj(const ref<containerObj::implObj> &container,
-				const std::vector<icon> &icon_images,
-				const ref<elementObj::implObj
-				> &popup_element_impl,
-				dim_t first_icon_width);
+	popup_imagebutton_implObj(const ref<containerObj::implObj> &container,
+				  const std::vector<icon> &icon_images,
+				  const ref<elementObj::implObj
+				  > &popup_element_impl,
+				  dim_t first_icon_width);
  public:
 	//! Destructor
-	~combobox_button_implObj();
+	~popup_imagebutton_implObj();
 
 	//! Override temperature_changed()
 
@@ -57,7 +61,8 @@ class LIBCXX_HIDDEN combobox_button_implObj
 
 	//! Override activate_on_key()
 
-	//! Also activate on cursot down.
+	//! Also activate on cursor down (combo-box) and cursor right
+	//! (date input fields).
 	bool activate_on_key(const key_event &ke) override;
 
 	//! Override initialize()
@@ -77,7 +82,7 @@ class LIBCXX_HIDDEN combobox_button_implObj
 	//! Override update_image_metrics()
 
 	//! We override the default metrics from imageObj::implObj based on
-	//! the icon's width. Combobox's button is vertically resizable, so
+	//! the icon's width. The popup button is vertically resizable, so
 	//! so the vertical metrics are adjustable, and the horizontal metrics
 	//! are fixed to the icon's real width, as usual.
 	void update_image_metrics(IN_THREAD_ONLY) override;

@@ -104,9 +104,6 @@ libcxxw_la_SOURCES=\
 	child_element.H				    \
 	child_elementfwd.H			    \
 	child_elementobj.H			    \
-	combobox/combobox_button_impl.C		    \
-	combobox/combobox_button_impl.H		    \
-	combobox/combobox_button_implfwd.H	    \
 	combobox/custom_comboboxlayoutmanager.C	    \
 	combobox/custom_comboboxlayoutmanager.H	    \
 	combobox/custom_comboboxlayoutmanager_impl.C \
@@ -594,6 +591,11 @@ libcxxw_la_SOURCES=\
 	pixmap_with_picture.H			    \
 	pixmap_with_picturefwd.H		    \
 	pixmap_with_pictureobj.H		    \
+	popup_imagebutton.C			    \
+	popup_imagebutton.H			    \
+	popup_imagebutton_impl.C		    \
+	popup_imagebutton_impl.H		    \
+	popup_imagebutton_implfwd.H		    \
 	popup/popup.C				    \
 	popup/popup.H				    \
 	popup/popupfwd.H			    \
