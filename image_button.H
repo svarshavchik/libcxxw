@@ -112,6 +112,19 @@ create_image_button(bool disable_recursive_visibility,
 		 (std::forward<functor2>(label_creator)));
 }
 
+//! Factory for a typical scroll button.
+
+//! This is used to implement the creator() parameter of create_image_button().
+//!
+//! Creates an image button of specific height, from image1 and image2.
+
+ref<image_button_internalObj::implObj>
+scroll_imagebutton_specific_height(const ref<containerObj::implObj>
+				   &parent_container,
+				   const std::string &image1,
+				   const std::string &image2,
+				   const dim_arg &height) LIBCXX_HIDDEN;
+
 //! Implementation object for the image button display element.
 
 class LIBCXX_HIDDEN image_buttonObj::implObj : virtual public obj {

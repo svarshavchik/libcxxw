@@ -515,35 +515,6 @@ class LIBCXX_HIDDEN pagetabpeepholed_containerObj
 	dim_t vertical_increment(IN_THREAD_ONLY) const override { return 0; }
 };
 
-// Glue together the buttons on the the sides of the tab strip peephole,
-// which we will use with create_image_button().
-
-class LIBCXX_HIDDEN book_tab_imagebuttonObj
-	: public image_button_internalObj::implObj {
-
- public:
-
-	using image_button_internalObj::implObj::implObj;
-
-	~book_tab_imagebuttonObj()=default;
-
-	//! Override temperature_changed()
-
-	//! Flash the scroll icons when clicking on them.
-
-	void temperature_changed(IN_THREAD_ONLY,
-				 const callback_trigger_t &trigger) override
-	{
-		image_button_internalObj::implObj::temperature_changed
-			(IN_THREAD, trigger);
-
-		set_image_number(IN_THREAD,
-				 trigger,
-				 hotspot_temperature(IN_THREAD)
-				 == temperature::hot ? 1:0);
-	}
-};
-
 // And we need to implement our focusable_container.
 
 class LIBCXX_HIDDEN book_focusable_containerObj
@@ -610,8 +581,6 @@ new_booklayoutmanager::create(const ref<containerObj::implObj> &parent) const
 
 	// Left scroll image button.
 
-	auto &wh=c->get_window_handler();
-
 	gridlm->row_alignment(0, valign::bottom);
 	gridlm->requested_row_height(1, 100);
 	factory->padding(0).border(border);
@@ -619,7 +588,7 @@ new_booklayoutmanager::create(const ref<containerObj::implObj> &parent) const
 	// We will not use image button callbacks, instead we'll hook into
 	// the activation callbacks.
 
-	ptr<book_tab_imagebuttonObj> left_scroll_impl,
+	ptr<image_button_internalObj::implObj> left_scroll_impl,
 		right_scroll_impl;
 
 	auto left_scroll=create_image_button
@@ -630,20 +599,11 @@ new_booklayoutmanager::create(const ref<containerObj::implObj> &parent) const
 			 // Use our scalable icons, and make them
 			 // book_scroll_height tall.
 
-			 auto impl=ref<book_tab_imagebuttonObj>::create
-				 (container_impl,
-				  std::vector<icon>{
-					  wh.create_icon
-						  ({"scroll-left1",
-						   render_repeat::none,
-						   0,
-						  "book_scroll_height"}),
-					  wh.create_icon
-						  ({"scroll-left2",
-						   render_repeat::none,
-						   0,
-						  "book_scroll_height"}),
-						  });
+			 auto impl=scroll_imagebutton_specific_height
+			 (container_impl,
+			  "scroll-left1",
+			  "scroll-left2",
+			  "book_scroll_height");
 
 			 left_scroll_impl=impl;
 
@@ -715,20 +675,11 @@ new_booklayoutmanager::create(const ref<containerObj::implObj> &parent) const
 		 [&]
 		 (const auto &container_impl)
 		 {
-			 auto impl=ref<book_tab_imagebuttonObj>::create
-				 (container_impl,
-				  std::vector<icon>{
-					  wh.create_icon
-						  ({"scroll-right1",
-						   render_repeat::none,
-						   0,
-						   "book_scroll_height"}),
-					  wh.create_icon
-						  ({"scroll-right2",
-						   render_repeat::none,
-						   0,
-						   "book_scroll_height"}),
-						  });
+			 auto impl=scroll_imagebutton_specific_height
+			 (container_impl,
+			  "scroll-right1",
+			  "scroll-right2",
+			  "book_scroll_height");
 
 			 right_scroll_impl=impl;
 

@@ -94,6 +94,57 @@ void image_buttonObj::do_update_label(const function<void (const factory &)> &f)
 	f(factory);
 }
 
+//////////////////////////////////////////////////////////////////////////////
+
+class LIBCXX_HIDDEN scroll_imagebuttonObj
+	: public image_button_internalObj::implObj {
+
+ public:
+
+	using image_button_internalObj::implObj::implObj;
+
+	~scroll_imagebuttonObj()=default;
+
+	//! Override temperature_changed()
+
+	//! Flash the scroll icons when clicking on them.
+
+	void temperature_changed(IN_THREAD_ONLY,
+				 const callback_trigger_t &trigger) override
+	{
+		image_button_internalObj::implObj::temperature_changed
+			(IN_THREAD, trigger);
+
+		set_image_number(IN_THREAD,
+				 trigger,
+				 hotspot_temperature(IN_THREAD)
+				 == temperature::hot ? 1:0);
+	}
+};
+
+ref<image_button_internalObj::implObj>
+scroll_imagebutton_specific_height(const ref<containerObj::implObj>
+				   &parent_container,
+				   const std::string &image1,
+				   const std::string &image2,
+				   const dim_arg &height_arg)
+{
+	auto &wh=parent_container->get_window_handler();
+
+	return ref<scroll_imagebuttonObj>::create
+		(parent_container,
+		 std::vector<icon>{
+			 wh.create_icon
+				 ({image1, render_repeat::none,
+						 0,
+						 height_arg}),
+				 wh.create_icon
+				 ({image2, render_repeat::none,
+						 0,
+						 height_arg}),
+				 });
+}
+
 ///////////////////////////////////////////////////////////////////////////
 //
 // This is the container implementation button for the image_buttonObj's
