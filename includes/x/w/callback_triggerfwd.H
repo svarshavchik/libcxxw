@@ -71,6 +71,8 @@ constexpr size_t callback_trigger_button_event=2;
 //!   indicating that the combo-box selection was made by auto-completion.
 //!
 //! - initial invocation from on_pointer_focus() and on_keyboard_focus().
+//!
+//! - initial invocation from date_input_field's on_change().
 
 constexpr size_t callback_trigger_initial=3;
 

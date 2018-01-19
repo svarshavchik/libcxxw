@@ -10,6 +10,7 @@
 #include <x/w/textlabel.H>
 #include <x/w/focusable.H>
 #include <x/w/alignment.H>
+#include <x/w/border_arg.H>
 #include <x/ref.H>
 
 LIBCXXW_NAMESPACE_START
@@ -34,10 +35,13 @@ struct focusable_label_config {
 	static const char LIBCXX_PUBLIC default_on_border[];
 
 	//! No focus border
-	const char *off_border=default_off_border;
+	border_arg off_border=default_off_border;
 
 	//! Focus border
-	const char *on_border=default_on_border;
+	border_arg on_border=default_on_border;
+
+	//! Destructor
+	~focusable_label_config();
 };
 
 LIBCXXW_NAMESPACE_END

@@ -41,6 +41,7 @@ suppressfile*
 /testbutton
 /testcollapse
 /testcombobox
+/testdateinput
 /testderivedaxis
 /testfiledircontents
 /testfocusable

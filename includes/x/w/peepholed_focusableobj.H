@@ -38,8 +38,6 @@ public:
 	//! Inherited from focusableObj
 	ref<focusableImplObj> get_impl() const override LIBCXX_HIDDEN;
 
-private:
-
 	//! Inherited from focusableObj
 	void do_get_impl(const function<internal_focusable_cb> &)
 		const override LIBCXX_HIDDEN;

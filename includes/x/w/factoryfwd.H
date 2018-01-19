@@ -261,6 +261,15 @@ The second parameter to \c create_input_field() is optional. It is an
 \ref input_field_config "input_field_config" that sets the width of the
 text input field, and various other properties.
 
+\code
+#include <INSERT_LIBX_NAMESPACE/w/date_input_field.H>
+
+INSERT_LIBX_NAMESPACE::w::date_input_field field=
+   factory->create_date_input_field();
+\endcode
+
+This creates a new date input field.
+
 \par Images
 
 \code

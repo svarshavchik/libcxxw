@@ -1,0 +1,79 @@
+<!--
+
+Copyright 2018 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<chapter id="dateinputfield">
+  <title>Date input fields</title>
+
+  <mediaobject>
+    <imageobject>
+      <imagedata fileref="dateinputfield.png" format="PNG"
+		 contentwidth="765px" contentdepth="349px" />
+    </imageobject>
+    <caption>
+      <para>
+	A date input field is a customized
+	<link linkend="inputfields">input field</link> for entering
+	dates.
+	The input field validated and reformats the typed in date to
+	a consistent format. Alternatively,
+	a button next to the input field opens a popup with a monthly
+	calendar for picking a date directly off the calendar.
+      </para>
+
+      <para>
+	<filename>dateinputfield.C</filename> creates two date input fields,
+	and shows the number of days between the two entered dates:
+      </para>
+    </caption>
+  </mediaobject>
+
+  <blockquote>
+    <title><ulink url="examples/dateinputfield.C">dateinputfield.C</ulink></title>
+
+    <informalexample>
+      <programlisting><xi:include href="../examples/dateinputfield.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    Date input fields use the
+    <ulink url="/intervals.html"><classname>&ns;::ymd</classname> class</ulink>
+    from the base &libcxx; library to represent its dates;
+    <filename>dateinputfield.C</filename>'s
+    <function>main</function>() also uses the library's
+    <ulink url="/localeobj.html"><classname>&ns;::locale</classname></ulink>
+    to set the library's locale to the system environment's locale.
+    This enables localized month and days of week names in the date input
+    field's popup.
+  </para>
+
+  <para>
+    A &factory;'s <methodname>create_date_input_field</methodname>()'s
+    method creates a new
+    <ulink url="&link-typedef-x--w-date-input-field;"><classname>&ns;::w::date_input_field</classname></ulink>
+    display element. <filename>dateinputfield.C</filename> shows how to
+    use its <methodname>set</methodname>() and <methodname>get</methodname>()
+    methods to set or get the current date in the display element.
+  </para>
+
+  <para>
+    <filename>dateinputfield.C</filename> also demonstrates an alternative
+    way to obtain the entered date. <methodname>on_change</methodname>()
+    installs a &callback; that the library invokes whenever the
+    date input field's content change.
+    <filename>dateinputfield.C</filename> installs a callback into both
+    of its date input fields. When both dates are entered the number of
+    days between the two dates gets computed and displayed in a
+    <link linkend="label">label</link> below the two input fields.
+  </para>
+</chapter>
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "book" "chapter")
+End:
+-->

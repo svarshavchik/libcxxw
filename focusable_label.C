@@ -18,6 +18,8 @@ const char focusable_label_config::default_off_border[]="inputfocusoff_border";
 
 const char focusable_label_config::default_on_border[]="inputfocuson_border";
 
+focusable_label_config::~focusable_label_config()=default;
+
 focusable_label factoryObj
 ::create_focusable_label(const text_param &text)
 {
@@ -31,7 +33,8 @@ focusable_label factoryObj
 	auto ff=create_nonrecursive_visibility_focusframe
 		(get_container_impl(),
 		 config.off_border,
-		 config.on_border, {});
+		 config.on_border,
+		 std::nullopt);
 
 	auto ffl=ref<focusframelayoutimplObj>::create(ff);
 

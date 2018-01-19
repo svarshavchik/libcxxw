@@ -27,6 +27,8 @@
 #include <x/w/progressbarfwd.H>
 #include <x/w/scrollbarfwd.H>
 #include <x/w/dim_axis_arg.H>
+#include <x/w/date_input_fieldfwd.H>
+#include <x/w/date_input_field_configfwd.H>
 #include <x/obj.H>
 #include <x/functional.H>
 
@@ -255,6 +257,12 @@ public:
 	input_field
 	create_input_field(const text_param &text,
 			   const input_field_config &config);
+
+	//! Create a date input field
+	date_input_field create_date_input_field();
+
+	//! Create a date input field
+	date_input_field create_date_input_field(const date_input_field_config &);
 
 	//! Create a display element that shows an image.
 	image create_image(const std::string &name);

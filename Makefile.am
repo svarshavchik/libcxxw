@@ -161,6 +161,15 @@ libcxxw_la_SOURCES=\
 	cursor_pointer_cacheobj.H		    \
 	cursor_pointer_element.H		    \
 	cursor_pointer_elementfwd.H		    \
+	date_input_field/date_input_field.C	    \
+	date_input_field/date_input_field_handler.C \
+	date_input_field/date_input_field_handler.H \
+	date_input_field/date_input_field_impl.C    \
+	date_input_field/date_input_field_impl.H    \
+	date_input_field/date_input_field_calendar.C \
+	date_input_field/date_input_field_calendar.H \
+	date_input_field/date_input_field_calendarfwd.H \
+	date_input_field/date_input_field_calendarobj.H \
 	defaulttheme.C				    \
 	defaulttheme.H				    \
 	defaultthemefwd.H			    \
@@ -860,6 +869,7 @@ INTERACTIVETESTPROGRAMS=\
 	testbusy					\
 	testbutton					\
 	testcombobox					\
+	testdateinput					\
 	testimagebuttons			        \
 	testinputfield					\
 	testmainwindow					\
@@ -896,6 +906,10 @@ $(call OPTIONS_GEN,testcombobox.inc.H,testcombobox.xml)
 testcombobox_SOURCES=testcombobox.C testcombobox.inc.H
 testcombobox_LDADD=libcxxw.la
 testcombobox_LDFLAGS=-static $(STATICLINKFLAGS)
+
+testdateinput_SOURCES=testdateinput.C
+testdateinput_LDADD=libcxxw.la
+testdateinput_LDFLAGS=$(TESTLINKTYPE)
 
 testimagebuttons_SOURCES=testimagebuttons.C
 testimagebuttons_LDADD=libcxxw.la

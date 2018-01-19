@@ -29,6 +29,7 @@
 <!ENTITY label SYSTEM "label.xml">
 <!ENTITY wordwraplabel SYSTEM "wordwraplabel.xml">
 <!ENTITY inputfieldsandbuttons SYSTEM "inputfieldsandbuttons.xml">
+<!ENTITY dateinputfield SYSTEM "dateinputfield.xml">
 <!ENTITY busy SYSTEM "busy.xml">
 <!ENTITY focusable_section SYSTEM "focusable.xml">
 <!ENTITY checkradio SYSTEM "checkradio.xml">
@@ -51,7 +52,7 @@
 
 <!--
 
-Copyright 2016-2017 Double Precision, Inc.
+Copyright 2016-2018 Double Precision, Inc.
 See COPYING for distribution information.
 
 -->
@@ -68,6 +69,7 @@ See COPYING for distribution information.
     &label;
     &wordwraplabel;
     &inputfieldsandbuttons;
+    &dateinputfield;
     &busy;
     &focusable_section;
     &checkradio;

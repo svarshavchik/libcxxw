@@ -21,7 +21,6 @@
 #include "x/w/button.H"
 #include "x/w/text_param_literals.H"
 #include "x/w/input_field.H"
-#include "x/w/input_field_config.H"
 #include "x/w/image_button.H"
 #include "x/w/radio_group.H"
 #include "x/w/progressbar.H"

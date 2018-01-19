@@ -456,6 +456,58 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
     <dash>.75</dash>
   </border>
 
+  <!-- Date input fields -->
+
+  <border id="dateedit_border" from="thin_0%" />
+  <font id="dateedit" from="mono" />
+
+  <border id="dateeditbuttonfocusoff_border" from="inputfocusoff_border">
+    <color>inputfocus_color2</color>
+  </border>
+  <border id="dateeditbuttonfocuson_border" from="inputfocuson_border" />
+
+  <color id="dateedit_background_color" scale="textedit_background_color" />
+  <color id="dateedit_foreground_color" scale="textedit_foreground_color" />
+
+  <!-- Border when an alpha channel is available -->
+  <border id="dateedit_popup_border" from="thin_0%">
+    <hradius>1</hradius>
+    <vradius>1</vradius>
+  </border>
+
+  <!-- Border when an alpha channel is not available -->
+
+  <border id="dateedit_popup_border_square" from="thin_0%" />
+  <dim id="dateedit_popup_border_square_padding_h" axis="horiz">1</dim>
+  <dim id="dateedit_popup_border_square_padding_v" axis="vert">1</dim>
+
+  <color id="dateedit_popup_background_color" scale="100%" />
+
+  <dim id="dateedit_popup_yscroll_height" axis="vert">8</dim>
+  <dim id="dateedit_popup_mscroll_height" axis="vert">6</dim>
+
+  <font id="dateedit_popup_month" from="serif">
+    <point_size>14</point_size>
+  </font>
+
+  <color id="dateedit_popup_month" scale="10%" />
+
+  <font id="dateedit_day_of_week" from="mono">
+    <weight>bold</weight>
+    <point_size>16</point_size>
+  </font>
+
+  <color id="dateedit_day_of_week" scale="0%" />
+
+  <font id="dateedit_day" from="mono">
+    <point_size>16</point_size>
+  </font>
+
+  <color id="dateedit_day" scale="10%" />
+
+  <color id="dateedit_day_highlight_fg" scale="100%" />
+  <color id="dateedit_day_highlight_bg" scale="10%" />
+
   <!-- Dialogs -->
 
   <color id="dialog_background" scale="90%" />

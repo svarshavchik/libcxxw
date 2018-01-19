@@ -9,6 +9,7 @@ noinst_PROGRAMS=\
 	gridlayoutmanager			\
 	helloworld				\
 	inputfieldsandbuttons			\
+	dateinputfield				\
 	listlayoutmanager			\
 	menu					\
 	panelayoutmanager			\
@@ -31,6 +32,9 @@ checkradio_LDADD=-lcxxw -lcxx
 $(call OPTIONS_GEN,combobox.H,combobox.xml)
 combobox_SOURCES=combobox.C close_flag.H
 combobox_LDADD=-lcxxw -lcxx
+
+dateinputfield_SOURCES=dateinputfield.C close_flag.H
+dateinputfield_LDADD=-lcxxw -lcxx
 
 focusable_SOURCES=focusable.C close_flag.H
 focusable_LDADD=-lcxxw -lcxx
