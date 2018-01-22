@@ -15,6 +15,7 @@
 #include <x/w/input_dialogfwd.H>
 #include <x/w/new_layoutmanagerfwd.H>
 #include <x/w/text_paramfwd.H>
+#include <x/w/error_messagefwd.H>
 #include <x/w/busyfwd.H>
 #include <x/w/types.H>
 #include <x/w/input_field_configfwd.H>
@@ -209,6 +210,16 @@ public:
 				&ok_action,
 				const text_param &ok_label,
 				bool modal=false);
+
+	//! Use create_ok_dialog() to create a simple error message dialog.
+
+	void error_message(const text_param &);
+
+	//! Use create_ok_dialog() to create a simple error message dialog.
+
+	void error_message(const text_param &,
+			   const error_message_config &);
+
 
 	//! Create an OK or CANCEL dialog
 

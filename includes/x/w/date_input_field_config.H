@@ -8,6 +8,7 @@
 #include <x/w/types.H>
 #include <x/w/border_arg.H>
 #include <x/w/rgb.H>
+#include <x/w/text_param.H>
 #include <x/w/date_input_field_configfwd.H>
 
 LIBCXXW_NAMESPACE_START
@@ -35,6 +36,12 @@ struct date_input_field_config {
 
 	//! Popup background color
 	color_arg popup_background_color="dateedit_popup_background_color";
+
+	//! Error message to show for invalid input.
+
+	text_param invalid_input=default_invalid_input();
+
+	static text_param default_invalid_input() noexcept;
 
 	//! Destructor
 

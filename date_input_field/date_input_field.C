@@ -19,9 +19,13 @@
 #include "gridlayoutmanager.H"
 #include "x/w/input_field.H"
 #include "x/w/text_param_literals.H"
+#include "x/w/error_message.H"
+#include "x/w/main_window.H"
+#include "messages.H"
 
 #include <x/functional.H>
 #include <x/weakcapture.H>
+#include <x/strtok.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -36,6 +40,11 @@ date_input_fieldObj
 date_input_fieldObj::~date_input_fieldObj()=default;
 
 date_input_field_config::~date_input_field_config()=default;
+
+text_param date_input_field_config::default_invalid_input() noexcept
+{
+	return _("Invalid date");
+}
 
 ref<focusableImplObj> date_input_fieldObj::get_impl() const
 {
@@ -182,7 +191,8 @@ date_input_field factoryObj
 
 	text_input_field->on_keyboard_focus
 		([captured=make_weak_capture(calendar_containerptr,
-					     text_input_field)]
+					     text_input_field),
+		  invalid_input=config.invalid_input]
 		 (focus_change status,
 		  const callback_trigger_t &trigger)
 		 {
@@ -208,13 +218,20 @@ date_input_field factoryObj
 
 			 auto d=lock.get_unicode();
 
-
 			 auto e=locale::base::environment();
+
+			 trim(d);
 
 			 auto parsed_date=ymd::parser{e}.try_parse(d);
 
 			 if (!parsed_date)
 			 {
+				 auto mw=calendar_container
+					 ->get_main_window();
+
+				 if (mw && !d.empty())
+					 mw->error_message(invalid_input);
+
 				 calendar_container->report_new_date
 					 (std::nullopt, trigger);
 				 return;

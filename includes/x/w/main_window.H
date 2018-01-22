@@ -9,6 +9,8 @@
 #include <x/w/main_windowobj.H>
 #include <x/w/gridlayoutmanager.H>
 #include <x/w/generic_window.H>
+#include <x/w/text_param.H>
+#include <x/w/error_message.H>
 #include <x/functional.H>
 
 LIBCXXW_NAMESPACE_START

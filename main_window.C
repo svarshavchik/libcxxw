@@ -30,10 +30,12 @@
 #include "menu/menubar_container_impl.H"
 #include "container_element.H"
 #include "x/w/input_dialog.H"
+#include "x/w/label.H"
 #include "dialog_impl.H"
 #include "dialog_handler.H"
 #include "always_visible.H"
 #include <x/weakcapture.H>
+#include <variant>
 
 LOG_CLASS_INIT(LIBCXX_NAMESPACE::w::main_windowObj);
 
@@ -464,7 +466,8 @@ dialog main_windowObj
 {
 	return create_ok_dialog(dialog_id,
 				icon, content_factory, ok_action,
-				_("Ok"), modal);
+				error_message_config::default_ok_label(),
+				modal);
 }
 
 dialog main_windowObj
@@ -519,6 +522,53 @@ dialog main_windowObj
 
 	return d;
 }
+
+void main_windowObj::error_message(const text_param &msg)
+{
+	error_message(msg, {});
+}
+
+void main_windowObj::error_message(const text_param &msg,
+				   const error_message_config &config)
+{
+	auto autodestroy=destroy_when_closed("error_message@libcxx.com");
+
+	auto d=create_ok_dialog("error_message@libcxx.com",
+				"alert",
+				[&]
+				(const auto &f)
+				{
+					f->create_label(msg);
+				},
+				[autodestroy, cb=config.acknowledged_callback]
+				(const auto &ignore)
+				{
+					autodestroy(ignore);
+					if (cb)
+						cb();
+				},
+				config.ok_label,
+				config.modal);
+
+	std::visit( [&](const auto &title)
+		    {
+			    d->dialog_window->set_window_title(title);
+		    }, config.title);
+
+	d->dialog_window->show_all();
+}
+
+std::string error_message_config::default_title() noexcept
+{
+	return _("Error");
+}
+
+text_param error_message_config::default_ok_label() noexcept
+{
+	return _("Ok");
+}
+
+error_message_config::~error_message_config()=default;
 
 dialog main_windowObj
 ::create_ok_cancel_dialog(const std::string_view &dialog_id,

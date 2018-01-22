@@ -25,6 +25,7 @@
 #include <x/w/input_field.H>
 #include <x/w/file_dialog.H>
 #include <x/w/file_dialog_config.H>
+#include <x/w/error_message.H>
 #include <string>
 #include <vector>
 #include <algorithm>
@@ -57,6 +58,8 @@ void create_help_about(const x::w::main_window &);
 void create_file_new(const x::w::main_window &);
 
 void create_file_open(const x::w::main_window &);
+
+void error_message_dialog(const x::w::main_window &mw);
 
 void testmenu()
 {
@@ -270,7 +273,7 @@ void file_menu(const x::w::main_window &main_window,
 					auto & [main_window]=*got;
 
 					open_file_dialog(main_window,
-							 "file_new@example.libcxx");
+							 "file_new@example.libcxx.com");
 				}
 			},
 			"New",
@@ -285,7 +288,7 @@ void file_menu(const x::w::main_window &main_window,
 					auto & [main_window]=*got;
 
 					open_file_dialog(main_window,
-							 "file_open@example.libcxx");
+							 "file_open@example.libcxx.com");
 				}
 			},
 			"Open",
@@ -397,7 +400,7 @@ static inline void help_question(const x::w::main_window &main_window)
 	// convert the ref.
 
 	x::w::input_dialog help_question=
-		main_window->get_dialog("help_question@example.libcxx");
+		main_window->get_dialog("help_question@example.libcxx.com");
 
 	// Before showing the dialog, clear the input field's existing
 	// contents, if any. We keep show()ing the same dialog object,
@@ -440,12 +443,26 @@ void help_menu(const x::w::main_window &main_window,
 					auto & [main_window]=*got;
 
 					main_window->get_dialog
-						("help_about@example.libcxx")
+						("help_about@example.libcxx.com")
 						->dialog_window
 						->show_all();
 				}
 			},
 			"About",
+
+			[main_window=x::make_weak_capture(main_window)]
+			(const auto &ignore)
+			{
+				auto got=main_window.get();
+
+				if (got)
+				{
+					auto & [main_window]=*got;
+
+					error_message_dialog(main_window);
+				}
+			},
+			"Error message",
 		});
 }
 
@@ -462,7 +479,7 @@ void create_help_about(const x::w::main_window &main_window)
 			(x::w::rgb::maximum * .75)};
 
 	x::w::dialog d=main_window->create_ok_dialog
-		("help_about@example.libcxx",
+		("help_about@example.libcxx.com",
 		 "alert",
 		 []
 		 (const x::w::gridfactory &f)
@@ -510,10 +527,39 @@ void create_help_about(const x::w::main_window &main_window)
 	w->set_window_title("About myself");
 }
 
+void error_message_dialog(const x::w::main_window &mw)
+{
+	// error_message() creates an ad-hoc dialog with an "Ok" button
+	// and an error message, and shows it.
+	//
+	// The second parameter to error_message() is optional, and passes
+	// an error_message_config object that customizes the error message
+	// dialog.
+
+	x::w::error_message_config config;
+
+	// error_message() returns immediately. Like all display elements,
+	// the library's internal execution thread takes care of showing
+	// the entire dialog and handling its "Ok" button. An optional
+	// callback gets invoked by the execution thread when the error
+	// message dialog gets closed.
+
+	config.acknowledged_callback=
+		[]
+		{
+			std::cout << "Error message acknowledged" << std::endl;
+		};
+
+
+	// The first parameter is actually an x::w::text_param, allowing for
+	// custom fonts and colors.
+
+	mw->error_message("An error occured", config);
+}
 void create_help_question(const x::w::main_window &main_window)
 {
 	x::w::input_dialog d=main_window->create_input_dialog
-		("help_question@example.libcxx",
+		("help_question@example.libcxx.com",
 		 "question",
 		 []
 		 (const x::w::gridfactory &f)
@@ -602,7 +648,7 @@ void create_file_open(const x::w::main_window &main_window)
 	set_filename_filters(config);
 
 	x::w::file_dialog d=main_window->create_file_dialog
-		("file_open@example.libcxx",
+		("file_open@example.libcxx.com",
 		 config,
 		 true);
 
@@ -632,7 +678,7 @@ void create_file_new(const x::w::main_window &main_window)
 	set_filename_filters(config);
 
 	x::w::file_dialog d=main_window->create_file_dialog
-		("file_new@example.libcxx",
+		("file_new@example.libcxx.com",
 		 config,
 		 true);
 

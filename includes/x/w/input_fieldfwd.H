@@ -153,7 +153,12 @@ struct input_change_info_t {
 //! The usual autocomplete behavior is: the callback returns false if
 //! no autocomplete information is available; or the callback sets
 //! \c selection_start to \c string.size() then replaces \c string
-//! with the autocompleted text.
+//! with the autocompleted text, whose initial \c string.size() characters
+//! are, presumably, unchanged. What happens is, basically, the returned
+//! \c string's contents replace the contents of the input field and everything
+//! starting from \c selection_start becomes the currently selected portion;
+//! so the next keypress removes it, adds the typed-in character, and then
+//! invokes the callback again.
 
 struct input_autocomplete_info_t {
 
