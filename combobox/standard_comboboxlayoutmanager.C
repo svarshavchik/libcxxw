@@ -6,6 +6,7 @@
 #include "combobox/standard_comboboxlayoutmanager.H"
 #include "x/w/focusable_label.H"
 #include "x/w/label.H"
+#include "busy.H"
 #include "messages.H"
 #include <x/exception.H>
 #include <x/sentry.H>
@@ -385,8 +386,15 @@ custom_combobox_selection_changed_t new_standard_comboboxlayoutmanager
 			current_selection->update("");
 		}
 
+		// The busy mcguffin in info is the busy
+		// mcguffin for the popup window. The callback
+		// would probably want to install the busy
+		// mcguffin for the window that
+		// contains the combo-box.
+		busy_impl yes_i_am{*current_selection->elementObj::impl};
+
 		lm->impl->selection_changed.get()
-			({lock, info.list_item_status_info});
+			({lock, info.list_item_status_info, yes_i_am});
 	};
 }
 

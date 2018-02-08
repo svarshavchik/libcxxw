@@ -15,6 +15,7 @@
 
 #include "x/w/focusable_container.H"
 #include "x/w/key_event.H"
+#include "busy.H"
 #include "capturefactory.H"
 #include "run_as.H"
 
@@ -403,11 +404,19 @@ focusable_container new_custom_comboboxlayoutmanager
 
 				auto &[e, combobox_popup, lm]=*got;
 
+				// The busy mcguffin in info is the busy
+				// mcguffin for the popup window. The callback
+				// would probably want to install the busy
+				// mcguffin for the window that
+				// contains the combo-box.
+				busy_impl yes_i_am{*e->impl};
+
 				lm->selection_changed.get()
 				({ lm->create_public_object(),
 						e,
 						combobox_popup,
-						info});
+						info,
+						yes_i_am});
 			};
 	}
 

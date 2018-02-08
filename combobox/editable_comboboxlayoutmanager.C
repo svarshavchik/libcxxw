@@ -7,6 +7,7 @@
 #include "x/w/input_field.H"
 #include "x/w/input_field_lock.H"
 #include "container.H"
+#include "busy.H"
 #include <x/weakcapture.H>
 
 LIBCXXW_NAMESPACE_START
@@ -168,8 +169,15 @@ custom_combobox_selection_changed_t new_editable_comboboxlayoutmanager
 			}
 		}
 
+		// The busy mcguffin in info is the busy
+		// mcguffin for the popup window. The callback
+		// would probably want to install the busy
+		// mcguffin for the window that
+		// contains the combo-box.
+		busy_impl yes_i_am{*current_selection->elementObj::impl};
+
 		lm->impl->selection_changed.get()
-			({lock, info.list_item_status_info, lm});
+			({lock, info.list_item_status_info, yes_i_am, lm});
 	};
 }
 

@@ -47,6 +47,10 @@ struct LIBCXX_HIDDEN custom_combobox_selection_changed_info_t {
 
 	//! Information from the underlying item selection.
 	const list_item_status_info_t &list_item_status_info;
+
+	//! The busy mcguffin factory, for the callback to use if it wants to.
+
+	const busy &mcguffin;
 };
 
 //! Information passed to the \ref custom_combobox_selection_search_t "custom combo-box selection search callback".
