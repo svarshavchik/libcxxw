@@ -68,7 +68,7 @@ See COPYING for distribution information.
     <filename>dateinputfield.C</filename> installs a callback into both
     of its date input fields. When both dates are entered the number of
     days between the two dates gets computed and displayed in a
-    <link linkend="label">label</link> below the two input fields.
+    <link linkend="labels">label</link> below the two input fields.
   </para>
 </chapter>
 <!--

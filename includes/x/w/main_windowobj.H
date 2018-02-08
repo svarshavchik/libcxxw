@@ -26,6 +26,7 @@
 #include <x/logger.H>
 #include <x/functional.H>
 #include <x/refptr_traits.H>
+#include <x/exception.H>
 
 #include <utility>
 #include <unordered_map>
@@ -220,6 +221,14 @@ public:
 	void error_message(const text_param &,
 			   const error_message_config &);
 
+	//! Format an exception, then use error_message().
+
+	void exception_message(const exception &);
+
+	//! Format an exception, then use error_message().
+
+	void exception_message(const exception &,
+			       const error_message_config &);
 
 	//! Create an OK or CANCEL dialog
 

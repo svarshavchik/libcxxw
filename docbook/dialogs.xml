@@ -689,7 +689,15 @@ auto new_custom_dialog=mw->create_custom_dialog(
 	<programlisting>
 #include &lt;&ns;/w/error_message.H&gt;
 
-mw-&gt;error_message("Something's wrong");</programlisting>
+mw-&gt;error_message("Something's wrong");
+
+try {
+
+  // ...
+} catch (const &ns;::exception &amp;e)
+{
+    mw->exception_message(e);
+}</programlisting>
       </informalexample>
     </blockquote>
 
@@ -699,7 +707,7 @@ mw-&gt;error_message("Something's wrong");</programlisting>
       <methodname>error_message</methodname>().
       <methodname>error_message</methodname>() is a shortcut for
       using <methodname>create_ok_dialog</methodname>() to create
-      a dialog with a <link linkend="label">label</link>, and then
+      a dialog with a <link linkend="labels">label</link>, and then
       <link linkend="dialogshow">show</link> it.
     </para>
 
@@ -709,6 +717,13 @@ mw-&gt;error_message("Something's wrong");</programlisting>
       parameter customizes the ad-hoc error message dialog's appearance.
       The ad-hoc dialog gets automatically <link linkend="dialogrefs">destroyed
 	when it's closed</link>.
+    </para>
+
+    <para>
+      <methodname>exception_message</methodname>() takes an
+      <ulink url="/exceptions.html"><classname>&ns;::exception</classname></ulink>
+      parameter instead of a plain string, and formats the exception
+      accordingly.
     </para>
   </section>
 </chapter>

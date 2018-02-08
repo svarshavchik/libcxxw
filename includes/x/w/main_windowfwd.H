@@ -377,6 +377,33 @@ create_input_dialog() constructs an
 dialog with a \ref input_field "input field", returning an
 \ref input_dialog "INSERT_LIBX_NAMESPACE::w::input_dialog".
 
+\code
+main_window->error_message("Something went wrong");
+
+try {
+    // ...
+} catch (const INSERT_LIBX_NAMESPACE &e)
+{
+    main_window->exception_message(e);
+}
+\endcode
+
+error_message() is a shortcut that uses create_ok_dialog() to format and
+show() a text label in a modal (by default) dialog.
+
+exception_message() does the same with a thrown
+<a href="/exceptions.html">exception</a> object.
+
+An optional
+\ref error_message_config "INSERT_LIBX_NAMESPACE::w::error_message_config"
+parameter customizes the properties of the error dialog.
+
+\note
+error_message() and exception_message() do not wait until the dialog gets
+closed, they return immediately. Use
+\ref error_message_config "INSERT_LIBX_NAMESPACE::w::error_message_config"'s
+\c acknowledged_callback to execute a callback when the dialog gets closed.
+
 \par Managing existing dialogs.
 
 \code

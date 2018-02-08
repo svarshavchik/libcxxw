@@ -523,6 +523,22 @@ dialog main_windowObj
 	return d;
 }
 
+void main_windowObj::exception_message(const exception &e)
+{
+	exception_message(e, {});
+}
+
+
+void main_windowObj::exception_message(const exception &e,
+				       const error_message_config &conf)
+{
+	std::ostringstream o;
+
+	o << e;
+
+	error_message(o.str(), conf);
+}
+
 void main_windowObj::error_message(const text_param &msg)
 {
 	error_message(msg, {});
