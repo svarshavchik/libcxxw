@@ -12,11 +12,13 @@
 
 LIBCXXW_NAMESPACE_START
 
+//! Motion events are, sometimes, reported for other than real pointer motions.
+
 enum class motion_event_type {
-	real_motion,
-	button_event,
-	button_action_event,
-	enter_event,
+	real_motion,		//!< Honest to goodness pointer motion event
+	button_event,		//!< X & Y coordinates for a button event.
+	button_action_event,	//!< X & Y cooridnates for a button event that activates something.
+	enter_event,		//!< Pointer entered this display event.
 };
 
 //! A motion event.
@@ -28,7 +30,8 @@ public:
 	//! Current input mask
 	const input_mask &mask;
 
-	//! Type of the event
+	//! What the motion event is being reported for.
+
 	motion_event_type type;
 
 	//! Coordinate

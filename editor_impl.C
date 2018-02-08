@@ -846,7 +846,7 @@ void editorObj::implObj::report_motion_event(IN_THREAD_ONLY,
 	most_recent_x=me.x;
 	most_recent_y=me.y;
 
-	if (me.mask.buttons & 1)
+	if ((me.mask.buttons & 1) && me.type == motion_event_type::real_motion)
 	{
 		bool ignored;
 		{
