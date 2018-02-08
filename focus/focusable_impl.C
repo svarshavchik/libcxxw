@@ -418,6 +418,12 @@ void focusableImplObj::switch_focus(IN_THREAD_ONLY,
 
 }
 
+bool focusableImplObj::ok_to_lose_focus(IN_THREAD_ONLY,
+					const callback_trigger_t &trigger)
+{
+	return true;
+}
+
 // Need to do a song-and-dance routine to make sure that both focusables
 // get a clean bill of health from GET_FOCUSABLE_FIELD_ITER().
 

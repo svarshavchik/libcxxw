@@ -163,6 +163,20 @@ void input_fieldObj::on_autocomplete(const std::function<bool
 		 });
 }
 
+void input_fieldObj::on_validate(const
+				 std::function<input_field_validation_callback_t
+				 > &callback)
+{
+	auto editor_impl=impl->editor_element->impl;
+
+	editor_impl->get_window_handler().thread()->run_as
+		([callback, editor_impl]
+		 (IN_THREAD_ONLY)
+		 {
+			 editor_impl->validation_callback(IN_THREAD)=callback;
+		 });
+}
+
 ref<elementObj::implObj> input_fieldObj::get_minimum_override_element_impl()
 {
 	return impl->editor_element->impl;

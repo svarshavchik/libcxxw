@@ -16,9 +16,12 @@
 #include "richtext/richtextiteratorfwd.H"
 #include "richtext/richtextstring.H"
 #include "richtext/richtextmeta.H"
+#include "x/w/input_fieldfwd.H"
 #include "x/w/input_field_config.H"
 #include "x/w/input_field_lock.H"
 #include "x/w/button_eventfwd.H"
+
+#include <functional>
 
 #include <tuple>
 
@@ -210,7 +213,8 @@ class LIBCXX_HIDDEN editorObj::implObj
 
 	//! Inherited from elementObj::implObj
 
-	//! Starts or stops the cursor blink.
+	//! Starts or stops the cursor blink. If losing focus also calls
+	//! validate_modified(), just in case.
 
 	void keyboard_focus(IN_THREAD_ONLY, const callback_trigger_t &)
 		override;
@@ -427,6 +431,28 @@ class LIBCXX_HIDDEN editorObj::implObj
 	//! Set the current contents of the editor
 	void set(IN_THREAD_ONLY, const std::u32string &string,
 		 size_t cursor_pos, size_t selection_pos);
+
+	//! Whether we're cool with giving up focus.
+	bool ok_to_lose_focus(IN_THREAD_ONLY,
+			      const callback_trigger_t &trigger) override;
+
+ private:
+	//! Whether the contents of the input field have been modified since they were validated.
+
+	bool validation_required=false;
+
+	//! Invoke validation_callback if validation_required.
+
+	bool validate_modified(IN_THREAD_ONLY, const callback_trigger_t &);
+
+	//! The validation callback.
+
+	std::function<input_field_validation_callback_t>
+		validation_callback_thread_only;
+
+ public:
+	THREAD_DATA_ONLY(validation_callback);
+
 };
 
 LIBCXXW_NAMESPACE_END

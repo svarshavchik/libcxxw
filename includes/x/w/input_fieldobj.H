@@ -53,6 +53,11 @@ public:
 	void on_autocomplete(const std::function<bool
 			     (input_autocomplete_info_t &)> &);
 
+	//! Install a callback to validate modified input field contents.
+
+	void on_validate(const std::function<input_field_validation_callback_t>
+			 &);
+
 	//! Inherited from elementObj
 
 	//! The minimum overrides are set for the editor display element

@@ -14,6 +14,10 @@ LIBCXXW_NAMESPACE_START
 
 class input_fieldObj;
 
+//! Callback for validating the contents of the input field.
+
+typedef bool input_field_validation_callback_t();
+
 //! A text input field.
 
 //! \code

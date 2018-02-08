@@ -368,6 +368,9 @@ void editorObj::implObj::rewrap_due_to_updated_position(IN_THREAD_ONLY)
 void editorObj::implObj::keyboard_focus(IN_THREAD_ONLY,
 					const callback_trigger_t &trigger)
 {
+	if (!current_keyboard_focus(IN_THREAD))
+		(void)validate_modified(IN_THREAD, trigger);
+
 	superclass_t::keyboard_focus(IN_THREAD, trigger);
 
 	blink_if_has_focus(IN_THREAD);
@@ -727,6 +730,7 @@ void editorObj::implObj::draw_changes(IN_THREAD_ONLY,
 	text->redraw_whatsneeded(IN_THREAD, *this,
 				 {cursor_lock.cursor, cursor},
 				 get_draw_info(IN_THREAD));
+	validation_required=true;
 
 	try {
 		on_change(IN_THREAD)({change_made, inserted, deleted,
@@ -1202,6 +1206,12 @@ editorObj::implObj::pos(selection_cursor_t::lock &cursor_lock)
 void editorObj::implObj::set(IN_THREAD_ONLY, const std::u32string &string)
 {
 	set(IN_THREAD, string, string.size(), string.size());
+
+	// draw_changes() was called, setting validation_required=true
+
+	// We ass-ume that since the app explicitly set() this, it does
+	// not need to be validated.
+	validation_required=false;
 }
 
 void editorObj::implObj::set(IN_THREAD_ONLY, const std::u32string &string,
@@ -1248,6 +1258,43 @@ void editorObj::implObj::set(IN_THREAD_ONLY, const std::u32string &string,
 	recalculate(IN_THREAD);
 	draw_changes(IN_THREAD, cursor_lock,
 		     input_change_type::set, deleted, string.size());
+}
+
+bool editorObj::implObj::ok_to_lose_focus(IN_THREAD_ONLY,
+					  const callback_trigger_t &trigger)
+{
+	return validate_modified(IN_THREAD, trigger);
+}
+
+
+bool editorObj::implObj::validate_modified(IN_THREAD_ONLY,
+					   const callback_trigger_t &trigger)
+{
+	if (!data(IN_THREAD).inherited_visibility)
+		// We could be here because we're losing keyboard focus after
+		// we become invisible. Don't want to invoke validation in
+		// that case.
+		return true;
+
+	if (!validation_required)
+		// That was easy, it's already been validated, presumably.
+		return true;
+
+	if (!validation_callback(IN_THREAD))
+	{
+		validation_required=false;
+		return true; // By default.
+	}
+
+	bool flag;
+
+	try {
+		flag=validation_callback(IN_THREAD)(trigger);
+	} CATCH_EXCEPTIONS;
+
+	if (flag)
+		validation_required=false;
+	return flag;
 }
 
 LIBCXXW_NAMESPACE_END

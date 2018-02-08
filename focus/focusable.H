@@ -184,6 +184,10 @@ class LIBCXX_HIDDEN focusableImplObj : virtual public obj {
 			  const callback_trigger_t &trigger);
 
  public:
+	//! Whether we're cool with giving up focus.
+	virtual bool ok_to_lose_focus(IN_THREAD_ONLY,
+				      const callback_trigger_t &trigger);
+
 	//! Set tabbing order.
 	void get_focus_before(IN_THREAD_ONLY,
 			      const ref<focusableImplObj> &other);

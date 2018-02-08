@@ -911,10 +911,33 @@ void generic_windowObj::handlerObj
 
 	if (most_recent_element_with_pointer(IN_THREAD))
 	{
-		most_recent_element_with_pointer(IN_THREAD)
+		elementimpl pointer_element{
+			most_recent_element_with_pointer(IN_THREAD)
+				};
+
+		// If there's an element with keyboard focus, this pointer
+		// click will make it lose. Give it an opportunity to veto
+		// this action. This is used by editor_elementObj::implObj
+		// to validate the input field's contents.
+
+		if (most_recent_keyboard_focus(IN_THREAD) &&
+		    pointer_element->activate_for(be))
+		{
+			elementimpl keyboard_element{
+				&most_recent_keyboard_focus(IN_THREAD)
+					->get_focusable_element()
+					};
+
+			if (keyboard_element != pointer_element &&
+			    !most_recent_keyboard_focus(IN_THREAD)
+			    ->ok_to_lose_focus(IN_THREAD, &be))
+				return;
+		}
+
+		pointer_element
 			->unschedule_hover_action(IN_THREAD);
 
-		if (!most_recent_element_with_pointer(IN_THREAD)
+		if (!pointer_element
 		    ->process_button_event(IN_THREAD, be, event->time)
 
 		    // Clicking pointer button 1 nowhere in particular removes
@@ -1016,6 +1039,9 @@ bool generic_windowObj::handlerObj::process_key_event(IN_THREAD_ONLY,
 	{
 		if (most_recent_keyboard_focus(IN_THREAD))
 		{
+			if (!most_recent_keyboard_focus(IN_THREAD)
+			    ->ok_to_lose_focus(IN_THREAD, &ke))
+				return true;
 			most_recent_keyboard_focus(IN_THREAD)
 				->prev_focus(IN_THREAD, prev_key{});
 			return true;
@@ -1041,6 +1067,10 @@ bool generic_windowObj::handlerObj::process_key_event(IN_THREAD_ONLY,
 	{
 		if (most_recent_keyboard_focus(IN_THREAD))
 		{
+			if (!most_recent_keyboard_focus(IN_THREAD)
+			    ->ok_to_lose_focus(IN_THREAD, &ke))
+				return true;
+
 			most_recent_keyboard_focus(IN_THREAD)
 				->next_focus(IN_THREAD, next_key{});
 			return true;
