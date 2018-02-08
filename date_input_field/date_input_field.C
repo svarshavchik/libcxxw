@@ -189,64 +189,55 @@ date_input_field factoryObj
 			 return container;
 		 });
 
-	text_input_field->on_keyboard_focus
-		([captured=make_weak_capture(calendar_containerptr,
-					     text_input_field),
-		  invalid_input=config.invalid_input]
-		 (focus_change status,
-		  const callback_trigger_t &trigger)
+	// Validate the contents of the date input field.
+
+	text_input_field->set_validator
+		([cc=make_weak_capture(calendar_containerptr),
+		  invalid_input_error_message=config.invalid_input]
+		 (const std::u32string &d,
+		  text_param &error_message,
+		  const callback_trigger_t &trigger) -> std::optional<ymd>
 		 {
-			 if (in_focus(status))
-				 return;
+			 std::optional<ymd> parsed_date;
 
-			 // When losing keyboard focus:
-			 //
-			 // If the entered date is try_parse()able, reformat
-			 // the parsed date, and if the reformatted date is
-			 // different then put it back into the text field.
-			 //
-			 // Update the calendar display.
+			 // try_parse() what was entered.
 
-			 auto got=captured.get();
-
-			 if (!got)
-				 return;
-
-			 auto &[calendar_container, text_input_field]=*got;
-
-			 input_lock lock{text_input_field};
-
-			 auto d=lock.get_unicode();
-
-			 auto e=locale::base::environment();
-
-			 trim(d);
-
-			 auto parsed_date=ymd::parser{e}.try_parse(d);
-
-			 if (!parsed_date)
+			 if (!d.empty())
 			 {
-				 auto mw=calendar_container
-					 ->get_main_window();
+				 parsed_date=ymd::parser{}.try_parse(d);
 
-				 if (mw && !d.empty())
-					 mw->error_message(invalid_input);
-
-				 calendar_container->report_new_date
-					 (std::nullopt, trigger);
-				 return;
+				 if (!parsed_date)
+					 error_message=
+						 invalid_input_error_message;
 			 }
 
-			 auto &new_date=*parsed_date;
+			 auto got=cc.get();
 
-			 auto formatted_d=new_date.format_date(U"%x", e);
+			 if (!got)
+				 return parsed_date;
 
-			 if (d != formatted_d)
-				 text_input_field->set(formatted_d);
+			 auto &[cc]=*got;
 
-			 calendar_container->report_new_date(*parsed_date,
-							     trigger);
-			 calendar_container->update_month(new_date);
+			 cc->report_new_date(parsed_date, trigger);
+
+			 // If a valid date was entered, move the calendar
+			 // popup to its month.
+
+			 if (parsed_date)
+				 cc->update_month(*parsed_date);
+
+			 // And report the new date to the callback.
+
+			 cc->report_new_date(parsed_date, trigger);
+
+			 return parsed_date;
+		 },
+		 []
+		 (const auto &new_date)
+		 {
+			 // Canonically format the date.
+
+			 return new_date.format_date(U"%x");
 		 });
 
 	auto date_picker_popup=popup::create(popup_impl, popup_lm->impl);

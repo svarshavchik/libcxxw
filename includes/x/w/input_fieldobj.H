@@ -7,6 +7,7 @@
 
 #include <x/w/peepholed_focusableobj.H>
 #include <x/w/input_fieldfwd.H>
+#include <x/w/text_paramfwd.H>
 #include <string>
 #include <functional>
 
@@ -64,6 +65,16 @@ public:
 	//! inside the focus frame.
 
 	ref<elementObj::implObj> get_minimum_override_element_impl() override;
+
+	template<typename validator_functor,
+		 typename canonical_format_functor>
+	auto set_validator(validator_functor &&validator,
+			   canonical_format_functor &&canonical_factor);
+
+	template<typename validator_functor,
+		 typename canonical_format_functor>
+	auto set_string_validator(validator_functor &&validator,
+				  canonical_format_functor &&canonical_format);
 };
 
 LIBCXXW_NAMESPACE_END

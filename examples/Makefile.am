@@ -5,17 +5,18 @@ noinst_PROGRAMS=\
 	busy					\
 	checkradio				\
 	combobox				\
+	dateinputfield				\
 	focusable				\
 	gridlayoutmanager			\
 	helloworld				\
 	inputfieldsandbuttons			\
-	dateinputfield				\
 	listlayoutmanager			\
 	menu					\
+	pagelayoutmanager			\
 	panelayoutmanager			\
 	progressbar				\
 	scrollbar				\
-	pagelayoutmanager			\
+	validatedinput				\
 	wordwraplabel
 
 booklayoutmanager_SOURCES=booklayoutmanager.C close_flag.H
@@ -51,6 +52,9 @@ $(call REFCOLLECTION_GEN,inputfields.inc.H,inputfields.xml)
 
 inputfieldsandbuttons_SOURCES=inputfieldsandbuttons.C close_flag.H
 inputfieldsandbuttons_LDADD=-lcxxw -lcxx
+
+validatedinput_SOURCES=validatedinput.C close_flag.H
+validatedinput_LDADD=-lcxxw -lcxx
 
 $(call OPTIONS_GEN,listlayoutmanager.H,listlayoutmanager.xml)
 listlayoutmanager_SOURCES=listlayoutmanager.C close_flag.H

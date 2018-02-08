@@ -439,7 +439,7 @@ class LIBCXX_HIDDEN editorObj::implObj
  private:
 	//! Whether the contents of the input field have been modified since they were validated.
 
-	bool validation_required=false;
+	bool validation_required=true;
 
 	//! Invoke validation_callback if validation_required.
 

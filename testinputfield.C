@@ -123,6 +123,34 @@ void testbutton()
 
 			 factory=layout->append_row();
 
+			 auto n=factory->create_input_field("", {5});
+
+			 n->set_string_validator([]
+						 (const std::string &v,
+						  int *nptr,
+						  auto &error,
+						  const auto &ignore)
+						 -> std::optional<int> {
+							 if (nptr && *nptr >= 0
+							     && *nptr <= 99)
+								 return *nptr;
+
+							 if (!v.empty())
+								 error="0-99, please...";
+							 return std::nullopt;
+						 },
+						 []
+						 (const std::optional<int> &n)
+						 -> std::string {
+							 if (!n)
+								 return "";
+
+							 return std::to_string(*n);
+						 });
+
+
+			 factory=layout->append_row();
+
 			 auto b=factory->create_special_button_with_label({"Ok"},{'\n'});
 			 b->on_activate([close_flag](const auto &,
 						     const auto &) {

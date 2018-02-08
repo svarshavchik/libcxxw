@@ -1,0 +1,85 @@
+<!--
+
+Copyright 2018 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<chapter id="validatedinput">
+  <title>Validating input fields</title>
+
+  <para>
+    An
+    <link linkend="inputfields">input field</link> often represents a
+    data type that's not an ordinary text string.
+    An input field, for example, may prompt for an integer number that
+    should get stored in an <classname>int</classname>, so the free-form
+    text entered into the input field has to get parsed into an
+    <classname>int</classname>.
+  </para>
+
+  <para>
+    A validated input field is an input field whose entered text gets
+    validated and stored in a
+    <classname>std::optional&lt;<replaceable>type</replaceable>&gt;</classname>.
+    The <replaceable>type</replaceable> might be
+    an <classname>int</classname> or some other data type that represented
+    the entered text. The entered text gets successfully validated and
+    converted to the <replaceable>type</replaceable>, and stored into the
+    <classname>std:optional</classname>.
+    A <literal>std::nullopt</literal> <classname>std:optional</classname>
+    indicates that the input field is empty, or the entered text cannot
+    be converted into the <replaceable>type</replaceable>.
+  </para>
+
+  <blockquote>
+    <title><ulink url="examples/validatedinput.C">validatedinput.C</ulink></title>
+
+    <informalexample>
+      <programlisting><xi:include href="../examples/validatedinput.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    <methodname>set_validator</methodname>() and
+    <methodname>set_string_validator</methodname>() install
+    &callback;s that get executed to validate the input field's text
+    and convert it to some arbitrary <replaceable>type</replaceable>.
+    They take two closures, or callable objects, as parameters.
+    The first closure takes the input field's contents and returns
+    the
+    <classname>std::optional&lt;<replaceable>type</replaceable>&gt;</classname>
+    representing the validated value.
+    <methodname>set_validator</methodname>() and
+    <methodname>set_string_validator</methodname>() return an
+    <ulink url="&link-typedef-x--w-validated-input-field;"><classname>&ns;::w::validated_input_field&lt;<replaceable>type</replaceable>&gt;</classname></ulink>.
+    This object represents the most recently validated value.
+  </para>
+
+  <para>
+    The second parameter to
+    <methodname>set_validator</methodname>() and
+    <methodname>set_string_validator</methodname>() is a closure, or a
+    callable object, that takes a
+    <classname>std::optional&lt;<replaceable>type</replaceable>&gt;</classname>
+    and converts it to some standardized, or canonical, format, returning it as
+    a <classname>std::string</classname> or a
+    <classname>std::u32string</classname> which replaces the typed-in text,
+    if it differes from the canonical format.
+  </para>
+
+  <para>
+    <link linkend="dateinputfield">Date input fields</link> use this
+    to allow only a month and a day to be typed into the date input field,
+    which gets supplemented by the default year. Input field validation
+    occurs when tabbing out of the date input field, or clicking outside of
+    it with the pointer button. The typed in text gets replaced by its
+    canonical format that includes the year.
+  </para>
+</chapter>
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "book" "chapter")
+End:
+-->

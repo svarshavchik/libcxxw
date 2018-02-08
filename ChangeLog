@@ -1,3 +1,7 @@
+2018-01-29  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* docbook/validatedinput.xml: Input field validation framework.
+
 2018-01-16  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* window_handler.C (release_grabs): Don't ungrab the pointer if there's
