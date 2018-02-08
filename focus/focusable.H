@@ -213,6 +213,18 @@ class LIBCXX_HIDDEN focusableImplObj : virtual public obj {
 
 	//! Make sure we do not have input focus
 	void unfocus(IN_THREAD_ONLY);
+
+ protected:
+
+	//! Schedule unfocus() to be invoked later.
+
+	//! This is called when the focusable element is no longer visible.
+	//! We don't want to unfocus() immediately, since other elements may
+	//! also be losing visibility at the same time, so let's not bounce
+	//! the focus all over the place. Instead punt this into idle
+	//! callback processing.
+
+	void unfocus_later(IN_THREAD_ONLY);
 };
 
 void get_focus_before_in_thread(IN_THREAD_ONLY,	const focusable &me,

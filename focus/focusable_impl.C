@@ -162,6 +162,24 @@ void focusableImplObj::set_enabled(IN_THREAD_ONLY, bool flag)
 		unfocus(IN_THREAD);
 }
 
+void focusableImplObj::unfocus_later(IN_THREAD_ONLY)
+{
+	(void)GET_FOCUSABLE_FIELD_ITER();
+
+	auto ptr_impl=ptr<focusableImplObj>(this);
+
+	if (get_focusable_element().get_window_handler()
+	    .most_recent_keyboard_focus(IN_THREAD) != ptr_impl)
+		return;
+
+	IN_THREAD->idle_callbacks(IN_THREAD)
+		->push_back([me=ref(this)]
+			    (IN_THREAD_ONLY)
+			    {
+				    me->unfocus(IN_THREAD);
+			    });
+}
+
 void focusableImplObj::unfocus(IN_THREAD_ONLY)
 {
 	(void)GET_FOCUSABLE_FIELD_ITER();
@@ -172,6 +190,9 @@ void focusableImplObj::unfocus(IN_THREAD_ONLY)
 	    .most_recent_keyboard_focus(IN_THREAD) != ptr_impl)
 		return;
 
+#ifdef TEST_UNFOCUS
+	TEST_UNFOCUS();
+#endif
 	next_focus(IN_THREAD, {});
 }
 

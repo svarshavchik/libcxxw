@@ -877,6 +877,7 @@ INTERACTIVETESTPROGRAMS=\
 	testlabel					\
 	testping					\
 	testprogressbar					\
+	testunfocus					\
 	testscrollbar					\
 	testshowhide					\
 	testpage					\
@@ -948,6 +949,12 @@ testlist_SOURCES=testlist.C
 testlist_LDADD=libcxxw.la
 testlist_LDFLAGS=$(TESTLINKTYPE)
 
+$(call OPTIONS_GEN,testmainwindowoptions.H,testmainwindowoptions.xml)
+
+testmainwindow_SOURCES=testmainwindow.C
+testmainwindow_LDADD=libcxxw.la -lcxx
+testmainwindow_LDFLAGS=-static $(STATICLINKFLAGS)
+
 testmenu_SOURCES=testmenu.C
 testmenu_LDADD=libcxxw.la
 testmenu_LDFLAGS=$(TESTLINKTYPE)
@@ -959,11 +966,6 @@ testping_LDFLAGS=$(TESTLINKTYPE)
 testprogressbar_SOURCES=testprogressbar.C
 testprogressbar_LDADD=libcxxw.la
 testprogressbar_LDFLAGS=-static $(STATICLINKFLAGS)
-
-$(call OPTIONS_GEN,testwordwrappablelabel.inc.H,testwordwrappablelabel.xml)
-testwordwrappablelabel_SOURCES=testwordwrappablelabel.C
-testwordwrappablelabel_LDADD=libcxxw.la
-testwordwrappablelabel_LDFLAGS=-static $(STATICLINKFLAGS)
 
 testrichtext_SOURCES=testrichtext.C
 testrichtext_LDADD=libcxxw.la
@@ -1006,11 +1008,15 @@ testtooltip_SOURCES=testtooltip.C testtooltip.H
 testtooltip_LDADD=libcxxw.la
 testtooltip_LDFLAGS=-static $(STATICLINKFLAGS)
 
-$(call OPTIONS_GEN,testmainwindowoptions.H,testmainwindowoptions.xml)
+testunfocus_SOURCES=testunfocus.C
+testunfocus_LDADD=libcxxw.la
+testunfocus_LDFLAGS=-static $(STATICLINKFLAGS)
 
-testmainwindow_SOURCES=testmainwindow.C
-testmainwindow_LDADD=libcxxw.la -lcxx
-testmainwindow_LDFLAGS=-static $(STATICLINKFLAGS)
+$(call OPTIONS_GEN,testwordwrappablelabel.inc.H,testwordwrappablelabel.xml)
+testwordwrappablelabel_SOURCES=testwordwrappablelabel.C
+testwordwrappablelabel_LDADD=libcxxw.la
+testwordwrappablelabel_LDFLAGS=-static $(STATICLINKFLAGS)
+
 
 BUILT_SOURCES=includes/x/w/constants_inc.H \
 	$(XIM_AUTOGEN) \
@@ -1170,6 +1176,7 @@ test:
 	./testprogressbar
 	LC_ALL=ru_RU.UTF-8 ./testpage --testfocus
 	./testwordwrappablelabel --testmetrics
+	./testunfocus
 
 .PHONY: rpm
 

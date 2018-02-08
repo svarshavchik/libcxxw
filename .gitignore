@@ -67,5 +67,6 @@ suppressfile*
 /testtextparam
 /testtooltip
 /testtooltip.H
+/testunfocus
 /m4
 /xml

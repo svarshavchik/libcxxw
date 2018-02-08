@@ -88,7 +88,7 @@ void focusable_elementObj<element_impl>
 {
 	element_impl::set_inherited_visibility_flag(IN_THREAD, flag);
 	if (!flag)
-		this->unfocus(IN_THREAD);
+		this->unfocus_later(IN_THREAD);
 }
 
 LIBCXXW_NAMESPACE_END
