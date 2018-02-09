@@ -6,7 +6,7 @@
 #define x_w_dialogfwd_h
 
 #include <x/w/namespace.H>
-#include <x/w/gridfactoryfwd.H>
+#include <x/w/factoryfwd.H>
 #include <x/ptrfwd.H>
 
 #include <unordered_map>
@@ -39,7 +39,7 @@ INSERT_LIBX_NAMESPACE::w::dialog d=help->create_ok_cancel_dialog(
     "help@example.com",
     "alert",
     []
-    (const INSERT_LIBX_NAMESPACE::w::gridfactory &factory)
+    (const INSERT_LIBX_NAMESPACE::w::factory &factory)
     {
          factory->create_label("Help yoruself");
    },
@@ -98,7 +98,7 @@ struct dialog_args;
 //! theme-specified dialog.
 
 typedef std::unordered_map<std::string,
-			   std::function<void (const gridfactory &)>
+			   std::function<void (const factory &)>
 			   > standard_dialog_elements_t;
 
 LIBCXXW_NAMESPACE_END

@@ -12,6 +12,7 @@
 #include <x/w/gridlayoutmanagerfwd.H>
 #include <x/w/gridfactoryfwd.H>
 #include <x/w/dialogfwd.H>
+#include <x/w/shortcutfwd.H>
 #include <x/w/input_dialogfwd.H>
 #include <x/w/new_layoutmanagerfwd.H>
 #include <x/w/text_paramfwd.H>
@@ -84,15 +85,9 @@ public:
 
 	//! \internal
 	void initialize_theme_dialog(const std::string_view &,
-				     const standard_dialog_elements_t &)
-		LIBCXX_HIDDEN;
-
-	//! Constructor for a standard theme-specified dialog.
-
-	//! \internal
-	void initialize_theme_dialog(const std::string_view &,
-				     standard_dialog_elements_t &&)
-		LIBCXX_HIDDEN;
+				     const standard_dialog_elements_t &,
+				     const std::unordered_map<std::string,
+				     shortcut> &);
 
 	//! Return the layout manager for the menu bar.
 
@@ -195,7 +190,7 @@ public:
 
 	dialog create_ok_dialog(const std::string_view &dialog_id,
 				const std::string &icon,
-				const std::function<void (const gridfactory &)>
+				const std::function<void (const factory &)>
 				&content_factory,
 				const std::function<void (const busy &)>
 				&ok_action,
@@ -205,7 +200,7 @@ public:
 
 	dialog create_ok_dialog(const std::string_view &dialog_id,
 				const std::string &icon,
-				const std::function<void (const gridfactory &)>
+				const std::function<void (const factory &)>
 				&content_factory,
 				const std::function<void (const busy &)>
 				&ok_action,
@@ -235,7 +230,7 @@ public:
 	dialog
 	create_ok_cancel_dialog(const std::string_view &dialog_id,
 				const std::string &icon,
-				const std::function<void (const gridfactory &)>
+				const std::function<void (const factory &)>
 				&content_factory,
 				const std::function<void (const busy &)>
 				&ok_action,
@@ -248,7 +243,7 @@ public:
 	dialog
 	create_ok_cancel_dialog(const std::string_view &dialog_id,
 				const std::string &icon,
-				const std::function<void (const gridfactory &)>
+				const std::function<void (const factory &)>
 				&content_factory,
 				const std::function<void (const busy &)>
 				&ok_action,
@@ -263,7 +258,7 @@ public:
 	input_dialog
 	create_input_dialog(const std::string_view &dialog_id,
 			    const std::string &icon,
-			    const std::function<void (const gridfactory &)>
+			    const std::function<void (const factory &)>
 			    &label_factory,
 			    const text_param &initial_text,
 			    const input_field_config &config,
@@ -279,7 +274,7 @@ public:
 	input_dialog
 	create_input_dialog(const std::string_view &dialog_id,
 			    const std::string &icon,
-			    const std::function<void (const gridfactory &)>
+			    const std::function<void (const factory &)>
 			    &label_factory,
 			    const text_param &initial_text,
 			    const input_field_config &config,

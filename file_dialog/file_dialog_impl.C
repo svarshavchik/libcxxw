@@ -448,7 +448,7 @@ standard_dialog_elements_t file_dialogObj::init_args
 				[&]
 				(const auto &factory)
 				{
-					factory->create_label("File:");
+					factory->create_label(_("File:"));
 				}},
 		{"file-input-field",
 				[&, this]
@@ -462,7 +462,7 @@ standard_dialog_elements_t file_dialogObj::init_args
 				[&]
 				(const auto &factory)
 				{
-					factory->create_label("Directory:");
+					factory->create_label(_("Directory:"));
 				}},
 		{"directory-field",
 				[&, this]
@@ -476,7 +476,7 @@ standard_dialog_elements_t file_dialogObj::init_args
 				[&]
 				(const auto &factory)
 				{
-					factory->create_label("Files:");
+					factory->create_label(_("Files:"));
 				}},
 		{"filter-field",
 				[&, this]
@@ -496,9 +496,9 @@ standard_dialog_elements_t file_dialogObj::init_args
 							 directory,
 							 conf.type);
 				}},
-		{"ok", dialog_ok_button("Ok", ok_button, 0)},
+		{"ok", dialog_ok_button(_("Ok"), ok_button, 0)},
 		{"filler", dialog_filler()},
-		{"cancel", dialog_cancel_button("Cancel",
+		{"cancel", dialog_cancel_button(_("Cancel"),
 						cancel_button,
 						'\e')}
 	};
@@ -519,7 +519,7 @@ file_dialog main_windowObj
 
 			 args.dialog_window->initialize_theme_dialog
 				 ("file-dialog",
-				  init_args.create_elements(conf));
+				  init_args.create_elements(conf), {});
 
 			 return file_dialog::create(args,
 						    conf,

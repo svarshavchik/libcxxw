@@ -9,12 +9,14 @@
 #include <x/w/grid_map_infofwd.H>
 #include <x/w/layoutmanagerobj.H>
 #include <x/w/gridfactoryfwd.H>
+#include <x/w/factoryfwd.H>
 #include <x/w/elementfwd.H>
 #include <x/w/elementobj.H>
 #include <x/w/types.H>
 #include <x/w/border_arg.H>
 #include <x/w/alignment.H>
 #include <x/w/dim_arg.H>
+#include <x/w/shortcutfwd.H>
 #include <x/refptr_hash.H>
 
 #include <vector>
@@ -189,8 +191,10 @@ public:
 	//! This is used by create_standard_dialog().
 
 	void create(const std::string_view &name,
-		    std::unordered_map<std::string,
-		    std::function<void (const gridfactory &)>> &&elements);
+		    const std::unordered_map<std::string,
+		    std::function<void (const factory &)>> &elements,
+		    const std::unordered_map<std::string,
+		    shortcut> &shortcuts);
 };
 
 LIBCXXW_NAMESPACE_END

@@ -24,20 +24,14 @@ LIBCXXW_NAMESPACE_START
 
 void main_windowObj::initialize_theme_dialog(const std::string_view &name,
 					     const standard_dialog_elements_t
-					     &standard_elements)
-{
-	initialize_theme_dialog(name,
-				(standard_dialog_elements_t)(standard_elements))
-		;
-}
-
-void main_windowObj::initialize_theme_dialog(const std::string_view &name,
-					     standard_dialog_elements_t
-					     &&standard_elements)
+					     &standard_elements,
+					     const std::unordered_map<
+					     std::string, shortcut>
+					     &shortcuts)
 {
 	gridlayoutmanager glm=get_layoutmanager();
 
-	glm->create(name, std::move(standard_elements));
+	glm->create(name, standard_elements, shortcuts);
 }
 
 dialogObj::dialogObj(const dialog_args &args)

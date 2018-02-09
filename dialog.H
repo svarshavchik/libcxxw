@@ -6,7 +6,7 @@
 #define dialog_h
 
 #include "x/w/dialog.H"
-#include "x/w/gridfactoryfwd.H"
+#include "x/w/factoryfwd.H"
 #include "x/w/text_paramfwd.H"
 #include "x/w/buttonfwd.H"
 #include "x/w/busyfwd.H"
@@ -37,18 +37,17 @@ void hide_and_invoke_when_closed(const dialog &d,
 				 const std::function
 				 <void (const busy &)> &action);
 
-std::function<void (const gridfactory &)>
+std::function<void (const factory &)>
 dialog_ok_button(const text_param &label,
 		 buttonptr &ret,
 		 char32_t key) LIBCXX_HIDDEN;
 
-std::function<void (const gridfactory &)>
+std::function<void (const factory &)>
 dialog_cancel_button(const text_param &label,
 		     buttonptr &ret,
 		     char32_t key) LIBCXX_HIDDEN;
 
-std::function<void (const gridfactory &)> dialog_filler() LIBCXX_HIDDEN;
-
+std::function<void (const factory &)> dialog_filler() LIBCXX_HIDDEN;
 
 LIBCXXW_NAMESPACE_END
 

@@ -13,7 +13,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-void gridtemplate::generate(const gridfactory &f,
+void gridtemplate::generate(const factory &f,
 			    const std::string &name) const
 {
 	auto iter=generators.find(name);
@@ -29,11 +29,13 @@ void gridtemplate::generate(const gridfactory &f,
 
 
 void gridlayoutmanagerObj::create(const std::string_view &name,
-				  std::unordered_map<std::string,
-				  std::function<void (const gridfactory &)>>
-				  &&elements)
+				  const std::unordered_map<std::string,
+				  std::function<void (const factory &)>>
+				  &elements,
+				  const std::unordered_map<std::string,
+				  shortcut> &shortcuts)
 {
-	gridtemplate telements{std::move(elements)};
+	gridtemplate telements{elements, shortcuts};
 
 	remove();
 

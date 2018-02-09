@@ -276,7 +276,7 @@ INSERT_LIBX_NAMESPACE::w::dialog d=w->create_ok_dialog(
 
     // The featured display element.
     []
-    (const INSERT_LIBX_NAMESPACE::w::gridfactory &factory)
+    (const INSERT_LIBX_NAMESPACE::w::factory &factory)
     {
          factory->create_label("Lorem ipsum");
     },
@@ -297,7 +297,7 @@ INSERT_LIBX_NAMESPACE::w::dialog d=w->create_ok_cancel_dialog(
 
     // The featured display element.
     []
-    (const INSERT_LIBX_NAMESPACE::w::gridfactory &factory)
+    (const INSERT_LIBX_NAMESPACE::w::factory &factory)
     {
          factory->create_label("Lorem ipsum");
    },
@@ -335,7 +335,7 @@ INSERT_LIBX_NAMESPACE::w::input_dialog d=main_window->create_input_dialog
 
        // Callback: the element to the left of the input field.
        []
-       (const INSERT_LIBX_NAMESPACE::w::gridfactory &f)
+       (const INSERT_LIBX_NAMESPACE::w::factory &f)
        {
              f->create_label("What is your name?");
        },
