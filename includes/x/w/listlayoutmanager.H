@@ -75,12 +75,14 @@ class LIBCXX_HIDDEN new_listlayoutmanager : public new_focusable_layoutmanager {
 	//! This may be set to:
 	//!
 	//! - \c INSERT_LIBX_NAMESPACE::w::single_selection_type (default):
-	//! one item may be selected in the list at a time. Selecting a new
-	//! item automatically deselects the previous one.
 	//!
-	//! - \c INSERT_LIBX_NAMESPACE::w::multiple_selection_type:
-	//! each item in the list is selected or unselected individually and
-	//! more than one item can be selected in the list, at the same time.
+	//! - \c INSERT_LIBX_NAMESPACE::w::single_optional_selection_type:
+	//!
+	//! - \c INSERT_LIBX_NAMESPACE::w::multiple_selection_type
+	//!
+	//! \see single_selection_type
+	//! \see single_optional_selection_type
+	//! \see multiple_selection_type
 
 	list_selection_type_cb_t selection_type;
 

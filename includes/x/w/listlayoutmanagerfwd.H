@@ -507,12 +507,23 @@ extern const listlayoutstyle_impl &bulleted_list LIBCXX_PUBLIC;
 //! Default selection list type specified by the
 //! \ref new_listlayoutmanager "new_listlayoutmanager".
 //!
-//! Only one list item may be selected at any time.
+//! Only one list item may be selected at any time. Selecting another item
+//! de-selects the currently-selected item.
 
 void single_selection_type(const listlayoutmanager &layout_manager,
 			   size_t i,
 			   const callback_trigger_t &trigger,
 			   const busy &mcguffin) LIBCXX_PUBLIC;
+
+//! Single, but optional, selection list.
+
+//! Like single_selection_type(), but selecting the currently selected item
+//! again will deselect it.
+
+void single_optional_selection_type(const listlayoutmanager &layout_manager,
+				    size_t i,
+				    const callback_trigger_t &trigger,
+				    const busy &mcguffin) LIBCXX_PUBLIC;
 
 //! Multiple selection list.
 

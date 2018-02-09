@@ -140,6 +140,18 @@ void single_selection_type(const listlayoutmanager &layout_manager,
 			   const callback_trigger_t &trigger,
 			   const busy &mcguffin)
 {
+	if (layout_manager->selected(i))
+		return; // Already selected it.
+
+	layout_manager->unselect();
+	layout_manager->selected(i, true, trigger);
+}
+
+void single_optional_selection_type(const listlayoutmanager &layout_manager,
+				    size_t i,
+				    const callback_trigger_t &trigger,
+				    const busy &mcguffin)
+{
 	// Selecting the sole selection is going to deselect it.
 
 	if (layout_manager->selected(i))

@@ -1,3 +1,10 @@
+2018-02-02  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* list.C (single_selection_type): Do not deselect if the selected
+	item is already selected. Add single_optional_selection_type()
+	that preserves the former behavior of single_selection_type(), if
+	so desired.
+
 2018-01-29  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* docbook/validatedinput.xml: Input field validation framework.
