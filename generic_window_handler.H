@@ -587,18 +587,28 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 	void set_inherited_visibility(IN_THREAD_ONLY,
 				      inherited_visibility_info &info) override;
+ private:
 
-	//! This window, and all its elements, have been mapped.
+	//! Whether this window should be mapped.
 
-	void mapped(IN_THREAD_ONLY);
+	//! Mapping/unmapping gets triggered by set_inherited_visibility().
+	//! However, mapping gets delayed using idle_callbacks, in order
+	//! for metrics to get finalized, via all queued up callbacks, before
+	//! the window is actually mapped.
 
-	//! Whether this window is mapped.
+	bool is_really_mapped=false;
 
-	bool is_mapped(IN_THREAD_ONLY) const
-	{
-		return data(IN_THREAD).inherited_visibility;
-	}
+ protected:
 
+	//! Map this window.
+
+	virtual void set_inherited_visibility_mapped(IN_THREAD_ONLY);
+
+	//! Unmap this window.
+
+	virtual void set_inherited_visibility_unmapped(IN_THREAD_ONLY);
+
+ public:
 	//! Implement configure_notify_received().
 
 	void configure_notify_received(IN_THREAD_ONLY, const rectangle &r)

@@ -316,123 +316,49 @@ void generic_windowObj::handlerObj
 ::set_inherited_visibility(IN_THREAD_ONLY,
 			   inherited_visibility_info &visibility_info)
 {
-	// We establish passive grabs for any button or keypress.
-
-	// button_press_event() and key_press_event() will take care of
-	// releasing the grabs.
-
 	if (visibility_info.flag)
 	{
-#ifdef MAP_LOG
-		MAP_LOG();
-#endif
-		if (!disable_grabs.get())
-		{
-			xcb_grab_button(IN_THREAD->info->conn,
-					false,
-					id(),
-					current_events(IN_THREAD) &
-					(XCB_EVENT_MASK_BUTTON_PRESS |
-					 XCB_EVENT_MASK_BUTTON_RELEASE |
-					 XCB_EVENT_MASK_ENTER_WINDOW |
-					 XCB_EVENT_MASK_LEAVE_WINDOW |
-					 XCB_EVENT_MASK_POINTER_MOTION),
-					XCB_GRAB_MODE_SYNC,
-					XCB_GRAB_MODE_SYNC,
-					XCB_NONE,
-					XCB_NONE,
-					0,
-					XCB_MOD_MASK_ANY);
-
-			xcb_grab_key(IN_THREAD->info->conn,
-				     false,
-				     id(),
-				     XCB_MOD_MASK_ANY,
-				     0,
-				     XCB_GRAB_MODE_SYNC,
-				     XCB_GRAB_MODE_SYNC);
-		}
-
-		// Set WM_CLASS before mapping the window.
-
-		if (wm_class_resource(IN_THREAD).empty())
-			wm_class_resource(IN_THREAD)=
-				default_wm_class_resource(IN_THREAD);
-
-		if (wm_class_instance(IN_THREAD).empty())
-			wm_class_instance(IN_THREAD)=
-				default_wm_class_instance();
-
-		{
-			std::vector<char> instance_resource;
-
-			instance_resource.reserve(wm_class_instance(IN_THREAD)
-						  .size()+
-						  wm_class_resource(IN_THREAD)
-						  .size()+2);
-
-			instance_resource.insert(instance_resource.end(),
-						 wm_class_instance(IN_THREAD)
-						 .begin(),
-						 wm_class_instance(IN_THREAD)
-						 .end());
-			instance_resource.push_back(0);
-
-			instance_resource.insert(instance_resource.end(),
-						 wm_class_resource(IN_THREAD)
-						 .begin(),
-						 wm_class_resource(IN_THREAD)
-						 .end());
-			instance_resource.push_back(0);
-
-			xcb_icccm_set_wm_class(IN_THREAD->info->conn,
-					       id(),
-					       instance_resource.size(),
-					       &*instance_resource.begin());
-		}
-
-		xcb_map_window(IN_THREAD->info->conn, id());
 		visibility_info.do_not_redraw=true;
 
-		// Need to delay call to mapped() until the connection thread
+		// Need to delay mapping until the connection thread
 		// is completely idle. Recursive call to request_visibility()
 		// may get short-circuited in update_visibility() bailing out
 		// if !initialized, that gets rescheduled after some pending
 		// connection thread callback finally initializes the display
-		// element, so in order for mapped() to work, we need to make
-		// sure all of this settles down before mapped().
+		// element, so in order for mapping to work, we need to make
+		// sure all of this settles down before mapping.
 
-		IN_THREAD->idle_callbacks(IN_THREAD)
-			->push_back([me=make_weak_capture(ref(this))]
-				    (IN_THREAD_ONLY)
-				    {
-					    auto got=me.get();
+		IN_THREAD->idle_callbacks(IN_THREAD)->push_back
+			([me=make_weak_capture(ref(this))]
+			 (IN_THREAD_ONLY)
+			 {
+				 auto got=me.get();
 
-					    if (!got)
-						    return;
+				 if (!got)
+					 return;
 
-					    auto &[me]=*got;
+				 auto &[me]=*got;
 
-					    me->mapped(IN_THREAD);
-				    });
+				 if (!me->data(IN_THREAD).inherited_visibility)
+					 return; // The show is cancelled
+
+				 if (me->is_really_mapped)
+					 return; // Definitely cancelled
+
+				 me->is_really_mapped=true;
+				 me->set_inherited_visibility_mapped(IN_THREAD);
+			 });
 	}
 	else
 	{
-		xcb_unmap_window(IN_THREAD->info->conn, id());
-		ungrab(IN_THREAD);
-		xcb_ungrab_key(IN_THREAD->info->conn,
-			       0,
-			       id(),
-			       XCB_MOD_MASK_ANY);
-
-		xcb_ungrab_button(IN_THREAD->info->conn,
-				  0,
-				  id(),
-				  XCB_MOD_MASK_ANY);
+		if (is_really_mapped)
+		{
+			is_really_mapped=false;
+			set_inherited_visibility_unmapped(IN_THREAD);
+		}
 	}
 
-	elementObj::implObj::set_inherited_visibility(IN_THREAD,
-						      visibility_info);
+	superclass_t::set_inherited_visibility(IN_THREAD, visibility_info);
 }
 
 std::string
@@ -447,8 +373,84 @@ generic_windowObj::handlerObj::default_wm_class_resource(IN_THREAD_ONLY)
 	return n;
 }
 
-void generic_windowObj::handlerObj::mapped(IN_THREAD_ONLY)
+void generic_windowObj::handlerObj
+::set_inherited_visibility_mapped(IN_THREAD_ONLY)
 {
+	// We establish passive grabs for any button or keypress.
+
+	// button_press_event() and key_press_event() will take care of
+	// releasing the grabs.
+
+#ifdef MAP_LOG
+	MAP_LOG();
+#endif
+	if (!disable_grabs.get())
+	{
+		xcb_grab_button(IN_THREAD->info->conn,
+				false,
+				id(),
+				current_events(IN_THREAD) &
+				(XCB_EVENT_MASK_BUTTON_PRESS |
+				 XCB_EVENT_MASK_BUTTON_RELEASE |
+				 XCB_EVENT_MASK_ENTER_WINDOW |
+				 XCB_EVENT_MASK_LEAVE_WINDOW |
+				 XCB_EVENT_MASK_POINTER_MOTION),
+				XCB_GRAB_MODE_SYNC,
+				XCB_GRAB_MODE_SYNC,
+				XCB_NONE,
+				XCB_NONE,
+				0,
+				XCB_MOD_MASK_ANY);
+
+		xcb_grab_key(IN_THREAD->info->conn,
+			     false,
+			     id(),
+			     XCB_MOD_MASK_ANY,
+			     0,
+			     XCB_GRAB_MODE_SYNC,
+			     XCB_GRAB_MODE_SYNC);
+	}
+
+	// Set WM_CLASS before mapping the window.
+
+	if (wm_class_resource(IN_THREAD).empty())
+		wm_class_resource(IN_THREAD)=
+			default_wm_class_resource(IN_THREAD);
+
+	if (wm_class_instance(IN_THREAD).empty())
+		wm_class_instance(IN_THREAD)=
+			default_wm_class_instance();
+
+	{
+		std::vector<char> instance_resource;
+
+		instance_resource.reserve(wm_class_instance(IN_THREAD)
+					  .size()+
+					  wm_class_resource(IN_THREAD)
+					  .size()+2);
+
+		instance_resource.insert(instance_resource.end(),
+					 wm_class_instance(IN_THREAD)
+					 .begin(),
+					 wm_class_instance(IN_THREAD)
+					 .end());
+		instance_resource.push_back(0);
+
+		instance_resource.insert(instance_resource.end(),
+					 wm_class_resource(IN_THREAD)
+					 .begin(),
+					 wm_class_resource(IN_THREAD)
+					 .end());
+		instance_resource.push_back(0);
+
+		xcb_icccm_set_wm_class(IN_THREAD->info->conn,
+				       id(),
+				       instance_resource.size(),
+				       &*instance_resource.begin());
+	}
+
+	xcb_map_window(IN_THREAD->info->conn, id());
+
 	// Find the first element with autofocus(), and make it so.
 
 	for (const auto &element:focusable_fields(IN_THREAD))
@@ -462,6 +464,22 @@ void generic_windowObj::handlerObj::mapped(IN_THREAD_ONLY)
 		element->set_focus_and_ensure_visibility(IN_THREAD, {});
 		break;
 	}
+}
+
+void generic_windowObj::handlerObj
+::set_inherited_visibility_unmapped(IN_THREAD_ONLY)
+{
+	xcb_unmap_window(IN_THREAD->info->conn, id());
+	ungrab(IN_THREAD);
+	xcb_ungrab_key(IN_THREAD->info->conn,
+		       0,
+		       id(),
+		       XCB_MOD_MASK_ANY);
+
+	xcb_ungrab_button(IN_THREAD->info->conn,
+			  0,
+			  id(),
+			  XCB_MOD_MASK_ANY);
 }
 
 void generic_windowObj::handlerObj::remove_background_color(IN_THREAD_ONLY)
