@@ -1593,6 +1593,10 @@ void defaultthemeObj::layout_insert(const factory &f,
 					    new_container->set_background_color
 						    (background_color);
 
+				    elements->new_layouts
+					    .emplace(name,
+						     new_container);
+
 				    this->layout_insert(glm, elements, name);
 			    },
 			    new_gridlayoutmanager{});
@@ -1616,6 +1620,8 @@ void defaultthemeObj::layout_book_container(const factory &f,
 		([&, this]
 		 (const auto &new_container)
 		 {
+			 elements->new_layouts.emplace(name,
+						       new_container);
 			 booklayoutmanager blm=
 				 new_container->get_layoutmanager();
 

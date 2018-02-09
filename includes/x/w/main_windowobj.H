@@ -18,6 +18,7 @@
 #include <x/w/text_paramfwd.H>
 #include <x/w/error_messagefwd.H>
 #include <x/w/busyfwd.H>
+#include <x/w/containerfwd.H>
 #include <x/w/types.H>
 #include <x/w/input_field_configfwd.H>
 #include <x/w/input_fieldfwd.H>
@@ -84,10 +85,11 @@ public:
 	//! Constructor for a standard theme-specified dialog.
 
 	//! \internal
-	void initialize_theme_dialog(const std::string_view &,
-				     const standard_dialog_elements_t &,
-				     const std::unordered_map<std::string,
-				     shortcut> &);
+	std::unordered_map<std::string, container>
+	initialize_theme_dialog(const std::string_view &,
+				const standard_dialog_elements_t &,
+				const std::unordered_map<std::string,
+				shortcut> &);
 
 	//! Return the layout manager for the menu bar.
 

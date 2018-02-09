@@ -33,9 +33,11 @@ void gridlayoutmanagerObj::create(const std::string_view &name,
 				  std::function<void (const factory &)>>
 				  &elements,
 				  const std::unordered_map<std::string,
-				  shortcut> &shortcuts)
+				  shortcut> &shortcuts,
+				  std::unordered_map<std::string,
+				  container> &new_layouts)
 {
-	gridtemplate telements{elements, shortcuts};
+	gridtemplate telements{elements, shortcuts, new_layouts};
 
 	remove();
 

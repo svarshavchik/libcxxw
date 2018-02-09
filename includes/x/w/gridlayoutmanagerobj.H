@@ -17,6 +17,7 @@
 #include <x/w/alignment.H>
 #include <x/w/dim_arg.H>
 #include <x/w/shortcutfwd.H>
+#include <x/w/containerfwd.H>
 #include <x/refptr_hash.H>
 
 #include <vector>
@@ -194,7 +195,8 @@ public:
 		    const std::unordered_map<std::string,
 		    std::function<void (const factory &)>> &elements,
 		    const std::unordered_map<std::string,
-		    shortcut> &shortcuts);
+		    shortcut> &shortcuts,
+		    std::unordered_map<std::string, container> &new_layouts);
 };
 
 LIBCXXW_NAMESPACE_END

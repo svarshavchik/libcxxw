@@ -6,6 +6,7 @@
 #include "x/w/dialog.H"
 #include "x/w/element_state.H"
 #include "x/w/gridlayoutmanager.H"
+#include "x/w/container.H"
 #include "main_window.H"
 #include "dialog_impl.H"
 #include "dialog_handler.H"
@@ -22,16 +23,20 @@ LIBCXXW_NAMESPACE_START
 // we get something other than an rvalue ref, delegate this to the proper
 // constructor.
 
-void main_windowObj::initialize_theme_dialog(const std::string_view &name,
-					     const standard_dialog_elements_t
-					     &standard_elements,
-					     const std::unordered_map<
-					     std::string, shortcut>
-					     &shortcuts)
+std::unordered_map<std::string, container>
+main_windowObj::initialize_theme_dialog(const std::string_view &name,
+					const standard_dialog_elements_t
+					&standard_elements,
+					const std::unordered_map<
+					std::string, shortcut>&shortcuts)
 {
+	std::unordered_map<std::string, container> new_layouts;
+
 	gridlayoutmanager glm=get_layoutmanager();
 
-	glm->create(name, standard_elements, shortcuts);
+	glm->create(name, standard_elements, shortcuts, new_layouts);
+
+	return new_layouts;
 }
 
 dialogObj::dialogObj(const dialog_args &args)

@@ -9,6 +9,7 @@
 #include "x/w/gridlayoutmanagerfwd.H"
 #include "x/w/factoryfwd.H"
 #include "x/w/shortcut.H"
+#include "x/w/containerfwd.H"
 #include <x/obj.H>
 #include <functional>
 #include <unordered_map>
@@ -33,6 +34,9 @@ public:
 	//! Our standalone shortcuts, currently used for book pages.
 
 	const std::unordered_map<std::string, shortcut> &shortcuts;
+
+	//! The internal containers that get created.
+	std::unordered_map<std::string, container> &new_layouts;
 
 	//! Execute a generator
 
