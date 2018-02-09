@@ -16,6 +16,10 @@ LIBCXXW_NAMESPACE_START
 
 class LIBCXX_HIDDEN dialogObj::handlerObj : public main_windowObj::handlerObj {
 
+	//! Alias
+
+	typedef main_windowObj::handlerObj superclass_t;
+
 	//! If modal, and visible, the acquired busy mcguffin.
 
 	ptr<obj> acquired_busy_mcguffin_thread_only;
@@ -45,12 +49,16 @@ class LIBCXX_HIDDEN dialogObj::handlerObj : public main_windowObj::handlerObj {
 	//! Override set_inherited_visibility()
 
 	//! If modal, acquire or release the busy mcguffin, accordingly.
-	//!
-	//! If we need to handle_our_own_placement(), figure out what it
-	//! should be, if we're made visible.
 
 	void set_inherited_visibility(IN_THREAD_ONLY,
 				      inherited_visibility_info &) override;
+
+	//! Override set_inherited_visibility_mapped)(.
+
+	//! If we need to handle_our_own_placement(), figure out what it
+	//! should be, if we're made visible.
+
+	void set_inherited_visibility_mapped(IN_THREAD_ONLY) override;
 
 	//! Override compute_size_hints.
 

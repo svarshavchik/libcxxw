@@ -13,9 +13,9 @@ dialogObj::handlerObj::handlerObj(IN_THREAD_ONLY,
 				  ::handlerObj> &parent_handler,
 				  const color_arg &background_color,
 				  bool modal)
-	: main_windowObj::handlerObj(IN_THREAD, parent_handler->get_screen(),
-				     std::nullopt,
-				     background_color),
+	: superclass_t(IN_THREAD, parent_handler->get_screen(),
+		       std::nullopt,
+		       background_color),
 	modal(modal),
 	parent_handler(parent_handler)
 {
@@ -42,7 +42,15 @@ void dialogObj::handlerObj
 		acquired_busy_mcguffin(IN_THREAD)=
 			parent_handler->get_shade_busy_mcguffin();
 
-	if (visibility_info.flag && handle_our_own_placement())
+	superclass_t::set_inherited_visibility(IN_THREAD,
+							     visibility_info);
+	if (!visibility_info.flag)
+		acquired_busy_mcguffin(IN_THREAD)=nullptr;
+}
+
+void dialogObj::handlerObj::set_inherited_visibility_mapped(IN_THREAD_ONLY)
+{
+	if (handle_our_own_placement())
 	{
 		// Before we become visible we are going to
 		// manually position the dialog so that it's
@@ -106,15 +114,12 @@ void dialogObj::handlerObj
 				     configure_window_vals.values().data());
 	}
 
-	main_windowObj::handlerObj::set_inherited_visibility(IN_THREAD,
-							     visibility_info);
-	if (!visibility_info.flag)
-		acquired_busy_mcguffin(IN_THREAD)=nullptr;
+	superclass_t::set_inherited_visibility_mapped(IN_THREAD);
 }
 
 xcb_size_hints_t dialogObj::handlerObj::compute_size_hints(IN_THREAD_ONLY)
 {
-	auto hints=main_windowObj::handlerObj::compute_size_hints(IN_THREAD);
+	auto hints=superclass_t::compute_size_hints(IN_THREAD);
 
 	if (handle_our_own_placement())
 		hints.flags |= XCB_ICCCM_SIZE_HINT_P_POSITION;
