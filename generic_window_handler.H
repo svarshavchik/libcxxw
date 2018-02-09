@@ -408,7 +408,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! Decided that this is the handler that the pointer should be reported to.
 	void report_pointer_xy_to_this_handler(IN_THREAD_ONLY,
 					       const grabbed_pointerptr &pg,
-					       motion_event &me,
+					       motion_event me,
 					       bool was_grabbed);
 
 	//! This is the element that should be receiving pointer events.

@@ -1352,7 +1352,7 @@ ref<generic_windowObj::handlerObj> generic_windowObj::handlerObj
 void generic_windowObj::handlerObj
 ::report_pointer_xy_to_this_handler(IN_THREAD_ONLY,
 				    const grabbed_pointerptr &pg,
-				    motion_event &me,
+				    motion_event me,
 				    bool was_grabbed)
 {
 	auto g=most_recent_element_with_pointer(IN_THREAD);
