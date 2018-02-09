@@ -169,6 +169,16 @@ class LIBCXX_HIDDEN new_custom_comboboxlayoutmanager
 
 	custom_combobox_selection_search_t selection_search;
 
+	//! Whether a selection should always "stick"
+
+	//! If reset to false, selecting the currently-deselected combo-box
+	//! item deselects it.
+	//!
+	//! This is used mostly with standard combo-boxes. This has no
+	//! tangible result with editable combo-boxes.
+
+	bool selection_required=true;
+
 	//! Create the focusable container.
 
 	//! \internal

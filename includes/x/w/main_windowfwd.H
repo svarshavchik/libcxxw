@@ -404,6 +404,20 @@ closed, they return immediately. Use
 \ref error_message_config "INSERT_LIBX_NAMESPACE::w::error_message_config"'s
 \c acknowledged_callback to execute a callback when the dialog gets closed.
 
+\code
+#include <INSERT_LIBX_NAMESPACE/w/print_dialog.H>
+#include <INSERT_LIBX_NAMESPACE/w/print_dialog_config.H>
+
+INSERT_LIBX_NAMESPACE::w::print_dialog_config config;
+
+INSERT_LIBX_NAMESPACE::w::print_dialog d=main_window->create_print_dialog("print", config, true);
+
+\endcode
+
+create_print_dialog() returns a
+\ref print_dialog "INSERT_LIBX_NAMESPACE::w::print_dialog", for selecting
+a printer and options for printing a document.
+
 \par Managing existing dialogs.
 
 \code

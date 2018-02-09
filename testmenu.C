@@ -9,6 +9,7 @@
 #include <x/destroy_callback.H>
 #include <x/ref.H>
 #include <x/obj.H>
+#include <x/mpobj.H>
 #include <x/weakcapture.H>
 #include <x/singletonptr.H>
 #include "x/w/main_window.H"
@@ -26,7 +27,11 @@
 #include "x/w/input_dialog.H"
 #include "x/w/file_dialog.H"
 #include "x/w/file_dialog_config.H"
+#include "x/w/print_dialog.H"
+#include "x/w/print_dialog_config.H"
 #include "x/w/image.H"
+#include <x/locale.H>
+#include <x/cups/job.H>
 #include <string>
 #include <iostream>
 #include <sstream>
@@ -54,9 +59,58 @@ class app_dialogsObj : virtual public LIBCXX_NAMESPACE::obj {
 
 public:
 
+	typedef LIBCXX_NAMESPACE::mpobj<std::function<
+						void (const std::string &)>
+					> on_file_open_t;
+
+	on_file_open_t on_file_open;
+
+	template<typename F>
+	void open_file_open(const std::string &title, F &&f)
+	{
+		on_file_open=std::forward<F>(f);
+
+		file_open->dialog_window->set_window_title(title);
+		file_open->dialog_window->show_all();
+	}
+
+	void do_file_open(const std::string &name)
+	{
+		on_file_open_t::lock lock{on_file_open};
+
+		(*lock)(name);
+	}
+
+	typedef LIBCXX_NAMESPACE::mpobj<
+		std::function<void (const LIBCXX_NAMESPACE::cups::job &,
+				    const LIBCXX_NAMESPACE::ref<
+				    LIBCXX_NAMESPACE::obj> &)>
+		> on_file_print_t;
+
+	on_file_print_t on_file_print;
+
+	template<typename F>
+	void open_file_print(const std::string &title, F &&f)
+	{
+		on_file_print=std::forward<F>(f);
+
+		file_print->dialog_window->set_window_title(title);
+		file_print->initial_show();
+	}
+
+	void do_file_print(const LIBCXX_NAMESPACE::cups::job &job,
+			   const LIBCXX_NAMESPACE::ref<
+			   LIBCXX_NAMESPACE::obj> &mcguffin)
+	{
+		on_file_print_t::lock lock{on_file_print};
+
+		(*lock)(job, mcguffin);
+	}
+
 	LIBCXX_NAMESPACE::w::input_dialog help_question;
 	LIBCXX_NAMESPACE::w::dialog help_about;
 	LIBCXX_NAMESPACE::w::file_dialog file_open;
+	LIBCXX_NAMESPACE::w::print_dialog file_print;
 
 	app_dialogsObj(const LIBCXX_NAMESPACE::w::main_window &main_window);
 
@@ -65,13 +119,17 @@ public:
 	static LIBCXX_NAMESPACE::w::dialog create_help_about(const LIBCXX_NAMESPACE::w::main_window &main_window);
 
 	static LIBCXX_NAMESPACE::w::file_dialog create_file_open(const LIBCXX_NAMESPACE::w::main_window &main_window);
+
+	static LIBCXX_NAMESPACE::w::print_dialog create_file_print(const LIBCXX_NAMESPACE::w::main_window &main_window);
 };
 
+typedef LIBCXX_NAMESPACE::singletonptr<app_dialogsObj> app_dialogs;
 
 app_dialogsObj::app_dialogsObj(const LIBCXX_NAMESPACE::w::main_window &main_window)
 	: help_question(create_help_question(main_window)),
 	  help_about(create_help_about(main_window)),
-	  file_open(create_file_open(main_window))
+	  file_open(create_file_open(main_window)),
+	  file_print(create_file_print(main_window))
 {
 }
 
@@ -141,10 +199,14 @@ app_dialogsObj::create_file_open(const LIBCXX_NAMESPACE::w::main_window &main_wi
 		   const std::string &name,
 		   const auto &busy_mcguffin)
 		{
-			std::cout << "File open selected: "
-				  << name
-				  << std::endl;
 			d->dialog_window->hide();
+
+			app_dialogs all_app_dialogs;
+
+			if (!all_app_dialogs)
+				return;
+
+			all_app_dialogs->do_file_open(name);
 		},
 		[](const auto &busy_mcguffin)
 		{
@@ -156,17 +218,38 @@ app_dialogsObj::create_file_open(const LIBCXX_NAMESPACE::w::main_window &main_wi
 		("Text files", "\\.txt$");
 	config.filename_filters.emplace_back
 		("Image files", "\\.(gif|png|jpg)$");
-	config.initial_filename_filter=1;
+	config.initial_filename_filter=0;
 
 	auto d=main_window->create_file_dialog("file_open", config, true);
-
-	d->dialog_window->set_window_title("Open File");
 
 	return d;
 }
 
-typedef LIBCXX_NAMESPACE::singletonptr<app_dialogsObj> app_dialogs;
+LIBCXX_NAMESPACE::w::print_dialog
+app_dialogsObj::create_file_print(const LIBCXX_NAMESPACE::w::main_window &main_window)
+{
+	LIBCXX_NAMESPACE::w::print_dialog_config config{
 
+		[](const auto &job, const auto &mcguffin)
+		{
+			app_dialogs all_app_dialogs;
+
+			if (!all_app_dialogs)
+				return;
+
+			all_app_dialogs->do_file_print(job, mcguffin);
+		},
+		[]
+		{
+			std::cout << "Cancelled" << std::endl;
+		}};
+
+	auto d=main_window->create_print_dialog("file_print", config, true);
+
+	d->dialog_window->set_window_title("Print File");
+
+	return d;
+}
 
 void remove_help_menu(const LIBCXX_NAMESPACE::w::main_window &main_window)
 {
@@ -211,6 +294,35 @@ void add_recent(const LIBCXX_NAMESPACE::w::main_window &main_window,
 			LIBCXX_NAMESPACE::w::list_item_param{s}});
 }
 
+static inline void file_print_selected()
+{
+	app_dialogs all_app_dialogs;
+
+	if (!all_app_dialogs)
+		return;
+
+	all_app_dialogs->open_file_open
+		("Select file to print",
+		 []
+		 (const std::string &file)
+		 {
+			 app_dialogs all_app_dialogs;
+
+			 if (!all_app_dialogs)
+				 return;
+
+			 all_app_dialogs->open_file_print
+				 ("Print file",
+				  [file]
+				  (const auto &job,
+				   const auto &mcguffin)
+				  {
+					  job->add_document_file("File",
+								 file);
+					  job->submit("testmenu");
+				  });
+		 });
+}
 
 void file_menu(const LIBCXX_NAMESPACE::w::main_window &main_window,
 	       const LIBCXX_NAMESPACE::w::listlayoutmanager &m,
@@ -225,8 +337,15 @@ void file_menu(const LIBCXX_NAMESPACE::w::main_window &main_window,
 				app_dialogs all_app_dialogs;
 
 				if (all_app_dialogs)
-					all_app_dialogs->file_open
-						->dialog_window->show_all();
+					all_app_dialogs->open_file_open
+						("New File",
+						 []
+						 (const std::string &name)
+						 {
+							 std::cout << "New: "
+								   << name
+								   << std::endl;
+						 });
 			},
 			"New",
 			LIBCXX_NAMESPACE::w::shortcut{"Alt", 'O'},
@@ -235,8 +354,15 @@ void file_menu(const LIBCXX_NAMESPACE::w::main_window &main_window,
 				app_dialogs all_app_dialogs;
 
 				if (all_app_dialogs)
-					all_app_dialogs->file_open
-						->dialog_window->show_all();
+					all_app_dialogs->open_file_open
+						("Open File",
+						 []
+						 (const std::string &name)
+						 {
+							 std::cout << "Open: "
+								   << name
+								   << std::endl;
+						 });
 			},
 			"Open",
 			[](const auto &ignore)
@@ -245,6 +371,12 @@ void file_menu(const LIBCXX_NAMESPACE::w::main_window &main_window,
 					  << std::endl;
 			},
 			"Close",
+			LIBCXX_NAMESPACE::w::shortcut{"Alt", 'P'},
+			[](const auto &ignore)
+			{
+				file_print_selected();
+			},
+			"Print",
 
 			LIBCXX_NAMESPACE::w::separator{},
 
@@ -481,6 +613,8 @@ int main(int argc, char **argv)
 		LIBCXX_NAMESPACE::property
 			::load_property(LIBCXX_NAMESPACE_STR "::themes",
 					"themes", true, true);
+		LIBCXX_NAMESPACE::locale::base::environment()->global();
+
 		testmenu();
 	} catch (const LIBCXX_NAMESPACE::exception &e)
 	{

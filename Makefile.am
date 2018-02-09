@@ -11,7 +11,8 @@ libtool: $(LIBTOOL_DEPS)
 
 STATICLINKFLAGS=-Wl,-ljpeg -Wl,-lgif -Wl,-lcourier-unicode -Wl,-lpthread @LIBCXXW_LIBS@ -pthread
 
-lib_LTLIBRARIES=libcxxw.la
+lib_LTLIBRARIES=libcxxw.la libcxxwcups.la
+
 bin_PROGRAMS=cxxw cxxwtheme
 
 CPPFLAGS += -I$(top_srcdir)/includes -I./includes -I$(top_srcdir) -I. \
@@ -821,6 +822,18 @@ libcxxw_la_SOURCES=\
 	xim_generic_window.H			    \
         #
 
+
+$(call REFCOLLECTION_GEN,print_dialog/print_dialog.inc.H, \
+			print_dialog/print_dialog.xml)
+
+libcxxwcups_la_LIBADD=libcxxw.la -lcxxcups -lcxx -lcourier-unicode
+libcxxwcups_la_LDFLAGS=$(STATICLINKFLAGS)
+libcxxwcups_la_SOURCES=\
+	print_dialog/print_dialog.C		    \
+	print_dialog/print_dialog_impl.C	    \
+	print_dialog/print_dialog_impl.H	    \
+        #
+
 XIM_AUTOGEN=xim/ximclient.inc.C xim/ximclient2.inc.C xim/ximclient.inc.H
 
 TESTLINKTYPE=$(if $(STATIC),-static $(STATICLINKFLAGS))
@@ -956,7 +969,7 @@ testmainwindow_LDADD=libcxxw.la -lcxx
 testmainwindow_LDFLAGS=-static $(STATICLINKFLAGS)
 
 testmenu_SOURCES=testmenu.C
-testmenu_LDADD=libcxxw.la
+testmenu_LDADD=libcxxwcups.la libcxxw.la
 testmenu_LDFLAGS=$(TESTLINKTYPE)
 
 testping_SOURCES=testping.C

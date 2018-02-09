@@ -704,6 +704,37 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
     </include>
   </factory>
 
+  <factory type="grid" id="ok-cancel-button-container-1">
+    <padding>
+      <side>left</side>
+      <padding>no-padding</padding>
+    </padding>
+
+    <padding>
+      <side>right</side>
+      <padding>no-padding</padding>
+    </padding>
+
+    <padding>
+      <side>top</side>
+      <padding>no-padding</padding>
+    </padding>
+
+    <padding>
+      <side>bottom</side>
+      <padding>no-padding</padding>
+    </padding>
+
+    <halign>
+      <halign>fill</halign>
+    </halign>
+
+    <include>
+      <name>ok-cancel-button-row</name>
+      <background_color>75%</background_color>
+    </include>
+  </factory>
+
   <layout type="grid" id="ok-cancel-button-row">
     <append_row>
       <name>ok-cancel-button</name>
@@ -1026,5 +1057,479 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
 
   <font id="filedir_filesize" from="mono">
     <point_size>12</point_size>
+  </font>
+
+  <!-- Print dialog -->
+
+  <!--
+      The dialog itself contains a book container, with the print option
+      pages, and the button row
+  -->
+
+  <layout type="grid" id="print-dialog">
+    <append_row>
+      <name>print-dialog-book-container</name>
+    </append_row>
+
+    <append_row>
+      <name>ok-cancel-button-container-1</name>
+    </append_row>
+  </layout>
+
+  <factory type="grid" id="print-dialog-book-container">
+
+    <padding>
+      <side>left</side>
+      <padding>dialog-h-padding</padding>
+    </padding>
+
+    <padding>
+      <side>right</side>
+      <padding>dialog-h-padding</padding>
+    </padding>
+
+    <padding>
+      <side>top</side>
+      <padding>dialog-v-padding</padding>
+    </padding>
+
+    <padding>
+      <side>bottom</side>
+      <padding>dialog-v-padding</padding>
+    </padding>
+
+    <book>
+      <name>print-dialog-options</name>
+    </book>
+  </factory>
+
+  <layout type="book" id="print-dialog-options">
+    <append_pages>
+      <name>print-dialog-options-pages</name>
+    </append_pages>
+    <open>
+      <page>0</page>
+    </open>
+  </layout>
+
+  <factory type="book" id="print-dialog-options-pages">
+    <add>
+      <label>print-dialog-general-label</label>
+      <layout>print-dialog-general-options</layout>
+    </add>
+
+    <add>
+      <label>print-dialog-page-label</label>
+      <layout>print-dialog-page-options</layout>
+    </add>
+
+    <add>
+      <label>print-dialog-image-label</label>
+      <layout>print-dialog-image-options</layout>
+    </add>
+  </factory>
+
+  <!-- Print dialog: general options -->
+
+  <layout type="grid" id="print-dialog-general-options">
+    <append_row>
+      <name>print-dialog-select-printer</name>
+    </append_row>
+
+    <append_row>
+      <name>print-dialog-printer-info</name>
+    </append_row>
+
+    <append_row>
+      <name>print-dialog-number-of-copies</name>
+    </append_row>
+
+    <append_row>
+      <name>print-dialog-print-all-pages</name>
+    </append_row>
+
+    <append_row>
+      <name>print-dialog-print-selected-pages-row</name>
+    </append_row>
+  </layout>
+
+  <!-- Print dialog: page options -->
+
+  <layout type="grid" id="print-dialog-page-options">
+    <append_row>
+      <name>print-dialog-page-size</name>
+    </append_row>
+
+    <append_row>
+      <name>print-dialog-duplex</name>
+    </append_row>
+
+    <append_row>
+      <name>print-dialog-pages-per-side</name>
+    </append_row>
+
+    <append_row>
+      <name>print-dialog-orientation-requested</name>
+    </append_row>
+
+    <append_row>
+      <name>print-dialog-finishings</name>
+    </append_row>
+  </layout>
+
+  <!-- Print dialog: image options -->
+
+  <layout type="grid" id="print-dialog-image-options">
+    <append_row>
+      <name>print-dialog-color-mode</name>
+    </append_row>
+
+    <append_row>
+      <name>print-dialog-quality</name>
+    </append_row>
+
+    <append_row>
+      <name>print-dialog-resolution</name>
+    </append_row>
+  </layout>
+
+  <!-- Select printer label and combo-box -->
+
+  <factory type="grid" id="print-dialog-select-printer">
+    <halign>
+      <halign>right</halign>
+    </halign>
+
+    <element>
+      <name>select-printer-label</name>
+    </element>
+
+    <element>
+      <name>select-printer-field</name>
+    </element>
+  </factory>
+
+  <!--
+      Currently selected printer info label, below the print selection combo
+  -->
+
+  <factory type="grid" id="print-dialog-printer-info">
+    <element>
+      <name>filler</name>
+    </element>
+
+    <element>
+      <name>printer-info</name>
+    </element>
+  </factory>
+
+  <!-- Number of copies label and input field row -->
+
+  <factory type="grid" id="print-dialog-number-of-copies">
+    <halign>
+      <halign>right</halign>
+    </halign>
+
+    <valign>
+      <valign>middle</valign>
+    </valign>
+
+    <element>
+      <name>number-of-copies-label</name>
+    </element>
+
+    <valign>
+      <valign>middle</valign>
+    </valign>
+
+    <element>
+      <name>number-of-copies-field</name>
+    </element>
+  </factory>
+
+  <!-- Print all pages radio button row -->
+
+  <factory type="grid" id="print-dialog-print-all-pages">
+    <element>
+      <name>filler</name>
+    </element>
+
+    <element>
+      <name>all-pages-radio-button</name>
+    </element>
+  </factory>
+
+  <!--
+      Print selected pages row.
+
+     The row consists of a nested layout, with the radio button and input field.
+  -->
+
+  <factory type="grid" id="print-dialog-print-selected-pages-row">
+    <element>
+      <name>filler</name>
+    </element>
+
+    <include>
+      <name>print-dialog-print-selected-pages-radio-button-and-input-field</name>
+    </include>
+  </factory>
+
+  <!--
+      nested layout for the print selectes pages radio button and input field.
+  -->
+
+  <layout type="grid" id="print-dialog-print-selected-pages-radio-button-and-input-field">
+    <append_row>
+      <name>print-dialog-print-selected-pages</name>
+    </append_row>
+  </layout>
+
+  <!--
+      Print selected pages radio button and input field
+  -->
+
+  <factory type="grid" id="print-dialog-print-selected-pages">
+    <padding>
+      <side>top</side>
+      <padding>no-padding</padding>
+    </padding>
+
+    <padding>
+      <side>bottom</side>
+      <padding>no-padding</padding>
+    </padding>
+
+    <padding>
+      <side>left</side>
+      <padding>no-padding</padding>
+    </padding>
+
+    <valign>
+      <valign>middle</valign>
+    </valign>
+
+    <element>
+      <name>page-range-radio-button</name>
+    </element>
+
+    <padding>
+      <side>top</side>
+      <padding>no-padding</padding>
+    </padding>
+
+    <padding>
+      <side>bottom</side>
+      <padding>no-padding</padding>
+    </padding>
+
+    <padding>
+      <side>right</side>
+      <padding>no-padding</padding>
+    </padding>
+
+    <valign>
+      <valign>middle</valign>
+    </valign>
+
+    <element>
+      <name>page-range-field</name>
+    </element>
+  </factory>
+
+  <factory type="grid" id="print-dialog-page-size">
+    <halign>
+      <halign>right</halign>
+    </halign>
+
+    <valign>
+      <valign>middle</valign>
+    </valign>
+
+    <element>
+      <name>page-size-label</name>
+    </element>
+
+    <valign>
+      <valign>middle</valign>
+    </valign>
+
+    <element>
+      <name>page-size-field</name>
+    </element>
+  </factory>
+
+  <factory type="grid" id="print-dialog-duplex">
+    <halign>
+      <halign>right</halign>
+    </halign>
+
+    <valign>
+      <valign>middle</valign>
+    </valign>
+
+    <element>
+      <name>duplex-label</name>
+    </element>
+
+    <valign>
+      <valign>middle</valign>
+    </valign>
+
+    <element>
+      <name>duplex-field</name>
+    </element>
+  </factory>
+
+  <factory type="grid" id="print-dialog-pages-per-side">
+    <halign>
+      <halign>right</halign>
+    </halign>
+
+    <valign>
+      <valign>middle</valign>
+    </valign>
+
+    <element>
+      <name>pages-per-side-label</name>
+    </element>
+
+    <valign>
+      <valign>middle</valign>
+    </valign>
+
+    <element>
+      <name>pages-per-side-field</name>
+    </element>
+  </factory>
+
+  <factory type="grid" id="print-dialog-orientation-requested">
+    <halign>
+      <halign>right</halign>
+    </halign>
+
+    <valign>
+      <valign>middle</valign>
+    </valign>
+
+    <element>
+      <name>orientation-label</name>
+    </element>
+
+    <valign>
+      <valign>middle</valign>
+    </valign>
+
+    <element>
+      <name>orientation-field</name>
+    </element>
+  </factory>
+
+  <!-- Finishings label and input field row -->
+
+  <factory type="grid" id="print-dialog-finishings">
+    <halign>
+      <halign>right</halign>
+    </halign>
+
+    <valign>
+      <valign>middle</valign>
+    </valign>
+
+    <element>
+      <name>finishings-label</name>
+    </element>
+
+    <valign>
+      <valign>middle</valign>
+    </valign>
+
+    <element>
+      <name>finishings-field</name>
+    </element>
+  </factory>
+
+  <!-- Print color mode label and input field row -->
+
+  <factory type="grid" id="print-dialog-color-mode">
+    <halign>
+      <halign>right</halign>
+    </halign>
+
+    <valign>
+      <valign>middle</valign>
+    </valign>
+
+    <element>
+      <name>print-color-mode-label</name>
+    </element>
+
+    <valign>
+      <valign>middle</valign>
+    </valign>
+
+    <element>
+      <name>print-color-mode-field</name>
+    </element>
+  </factory>
+
+  <!-- Print quality label and input field row -->
+
+  <factory type="grid" id="print-dialog-quality">
+    <halign>
+      <halign>right</halign>
+    </halign>
+
+    <valign>
+      <valign>middle</valign>
+    </valign>
+
+    <element>
+      <name>print-quality-label</name>
+    </element>
+
+    <valign>
+      <valign>middle</valign>
+    </valign>
+
+    <element>
+      <name>print-quality-field</name>
+    </element>
+  </factory>
+
+  <!-- Printer resolution label and input field row -->
+
+  <factory type="grid" id="print-dialog-resolution">
+    <halign>
+      <halign>right</halign>
+    </halign>
+
+    <valign>
+      <valign>middle</valign>
+    </valign>
+
+    <element>
+      <name>printer-resolution-label</name>
+    </element>
+
+    <valign>
+      <valign>middle</valign>
+    </valign>
+
+    <element>
+      <name>printer-resolution-field</name>
+    </element>
+  </factory>
+
+  <font id="printer_make_and_model" from="serif">
+    <point_size>10</point_size>
+  </font>
+
+  <font id="printer_location" from="sans_serif">
+    <point_size>10</point_size>
+  </font>
+
+  <font id="printer_status" from="mono">
+    <point_size>10</point_size>
   </font>
 </theme>

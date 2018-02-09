@@ -24,6 +24,8 @@
 #include <x/w/input_fieldfwd.H>
 #include <x/w/file_dialogfwd.H>
 #include <x/w/file_dialog_configfwd.H>
+#include <x/w/print_dialogfwd.H>
+#include <x/w/print_dialog_configfwd.H>
 #include <x/obj.H>
 #include <x/logger.H>
 #include <x/functional.H>
@@ -293,6 +295,11 @@ public:
 	file_dialog create_file_dialog(const std::string_view &dialog_id,
 				       const file_dialog_config &,
 				       bool modal=false);
+
+	//! Create a print dialog
+	print_dialog create_print_dialog(const std::string_view &dialog_id,
+					 const print_dialog_config &,
+					 bool modal=false);
 
 	//! Construct a callback that calls remove_dialog().
 

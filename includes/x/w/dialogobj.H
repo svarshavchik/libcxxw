@@ -32,7 +32,7 @@ public:
 	dialogObj(const dialog_args &) LIBCXX_PUBLIC;
 
 	//! Destructor
-	~dialogObj() LIBCXX_HIDDEN;
+	~dialogObj() LIBCXX_PUBLIC;
 };
 
 LIBCXXW_NAMESPACE_END

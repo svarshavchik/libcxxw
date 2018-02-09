@@ -24,14 +24,12 @@ typedef decltype(make_weak_capture(std::declval<dialog &&>())
 
 void hide_and_invoke(const captured_dialog_t &d,
 		     const busy &yes_i_am,
-		     const std::function<void (const busy &)>  &action)
-	LIBCXX_HIDDEN;
+		     const std::function<void (const busy &)>  &action);
 
 void hide_and_invoke_when_activated(const dialog &d,
 				    const hotspot &button,
 				    const std::function
-				    <void (const busy &)> &action)
-	LIBCXX_HIDDEN;
+				    <void (const busy &)> &action);
 
 void hide_and_invoke_when_closed(const dialog &d,
 				 const std::function
@@ -40,14 +38,14 @@ void hide_and_invoke_when_closed(const dialog &d,
 std::function<void (const factory &)>
 dialog_ok_button(const text_param &label,
 		 buttonptr &ret,
-		 char32_t key) LIBCXX_HIDDEN;
+		 char32_t key);
 
 std::function<void (const factory &)>
 dialog_cancel_button(const text_param &label,
 		     buttonptr &ret,
-		     char32_t key) LIBCXX_HIDDEN;
+		     char32_t key);
 
-std::function<void (const factory &)> dialog_filler() LIBCXX_HIDDEN;
+std::function<void (const factory &)> dialog_filler();
 
 LIBCXXW_NAMESPACE_END
 

@@ -245,6 +245,9 @@ focusable_container new_custom_comboboxlayoutmanager
 	style.highlighted_color="combobox_highlighted_color";
 	style.current_color="combobox_current_color";
 
+	if (!selection_required)
+		style.selection_type=single_optional_selection_type;
+
 	custom_combobox_popup_containerptr popup_containerptr;
 
 	auto [combobox_popup, popup_handler]=

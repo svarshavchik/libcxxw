@@ -33,6 +33,14 @@ BuildRequires: desktop-file-utils
 %description
 LibCXX widget toolkit.
 
+%package cups
+Group: System Environment/Libraries
+Summary: LibCXXw print dialog
+Requires: %{name} = 0:%{version}-%{release}
+
+%description cups
+This package installs the LIBCXXw printing dialog library.
+
 %package devel
 Group: Development/Libraries
 Summary: LIBCXXw development libraries
@@ -71,6 +79,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/libcxxw
 %{_datadir}/applications/*
 %{_bindir}/*
+
+%files cups
+%defattr(-,root,root,-)
+%{_libdir}/libcxxwcups.so.*
 
 %files devel
 %defattr(-,root,root,-)
