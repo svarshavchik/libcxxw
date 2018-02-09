@@ -12,7 +12,7 @@ LIBCXXW_NAMESPACE_START
 
 class label_forObj;
 
-//! A link before a focusable, and its label.
+//! A link between a focusable, and its label.
 
 //! Pointer clicks on a label get forwarded to its focusable, as if the
 //! focusable itself was clicking, with the same results.

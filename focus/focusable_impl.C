@@ -263,6 +263,56 @@ void elementObj::label_for(const focusable &f)
 		 });
 }
 
+bool elementObj::implObj::enabled(IN_THREAD_ONLY)
+{
+	// This element has been removed from the container.
+	//
+	// The destructor of the public object will make sure that
+	// the focus has been properly removed from me. But, when an
+	// entire container is removed, remove() recursively sets the removed
+	// flag on the container's entire contents, and this is going to
+	// prevent the input focus from bouncing until it escapes the
+	// elements that are being destroyed.
+
+	if (data(IN_THREAD).removed || !data(IN_THREAD).inherited_visibility)
+		return false;
+
+	// If this element is a label for another element we have to check
+	// that element's enabled flag.
+	auto check_this=ref(this);
+
+	if (data(IN_THREAD).label_for)
+	{
+		data(IN_THREAD).label_for->with_link
+			(IN_THREAD, [&]
+			 (const auto &thats_me,
+			  const auto &focusable)
+			 {
+				 check_this=ref(&focusable
+						->get_focusable_element());
+			 });
+	}
+
+	// Should check this again now, in case this is the labeled element.
+	if (check_this->data(IN_THREAD).removed ||
+	    !check_this->data(IN_THREAD).inherited_visibility)
+		return false;
+
+	// Finally.
+	return check_this->data(IN_THREAD).enabled;
+}
+
+bool elementObj::implObj
+::process_button_event_if_enabled(IN_THREAD_ONLY,
+				  const button_event &be,
+				  xcb_timestamp_t timestamp)
+{
+	if (!enabled(IN_THREAD))
+		return false;
+
+	return process_button_event(IN_THREAD, be, timestamp);
+}
+
 bool elementObj::implObj::process_button_event(IN_THREAD_ONLY,
 					       const button_event &be,
 					       xcb_timestamp_t timestamp)

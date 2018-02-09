@@ -928,23 +928,6 @@ background_color elementObj::implObj
 	return get_screen()->impl->create_background_color(color_name);
 }
 
-bool elementObj::implObj::enabled(IN_THREAD_ONLY)
-{
-	// This element has been removed from the container.
-	//
-	// The destructor of the public object will make sure that
-	// the focus has been properly removed from me. But, when an
-	// entire container is removed, remove() recursively sets the removed
-	// flag on the container's entire contents, and this is going to
-	// prevent the input focus from bouncing until it escapes the
-	// elements that are being destroyed.
-
-	if (data(IN_THREAD).removed || !data(IN_THREAD).inherited_visibility)
-		return false;
-
-	return data(IN_THREAD).enabled;
-}
-
 void elementObj::implObj::on_keyboard_focus(const
 					    std::function<focus_callback_t>
 					    &callback)

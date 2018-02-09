@@ -938,7 +938,8 @@ void generic_windowObj::handlerObj
 			->unschedule_hover_action(IN_THREAD);
 
 		if (!pointer_element
-		    ->process_button_event(IN_THREAD, be, event->time)
+		    ->process_button_event_if_enabled(IN_THREAD, be,
+						      event->time)
 
 		    // Clicking pointer button 1 nowhere in particular removes
 		    // keyboard

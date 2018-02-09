@@ -1045,6 +1045,12 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 					  const button_event &be,
 					  xcb_timestamp_t timestamp);
 
+	//! If enabled() call process_button_event()
+
+	virtual bool process_button_event_if_enabled(IN_THREAD_ONLY,
+						     const button_event &be,
+						     xcb_timestamp_t timestamp);
+
 	//! Whether this element will use the X Input Method.
 
 	//! The default implementation returns false. When the element

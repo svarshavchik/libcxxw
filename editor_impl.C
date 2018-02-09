@@ -806,6 +806,10 @@ bool editorObj::implObj::process_button_event(IN_THREAD_ONLY,
 					      const button_event &be,
 					      xcb_timestamp_t timestamp)
 {
+	if (!enabled(IN_THREAD))
+		return superclass_t::process_button_event(IN_THREAD, be,
+							  timestamp);
+
 	autoselected=false;
 
 	if (be.press && (be.button == 1 || be.button == 2))
