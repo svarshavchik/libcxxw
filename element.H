@@ -591,6 +591,19 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 	void schedule_redraw_recursively(IN_THREAD_ONLY);
 
+	//! This element's enabled status has changed.
+
+	//! Calls schedule_redraw() and invokes itself recursively for all
+	//! child elements (if any).
+	//!
+	//! Disabled elements are drawn in shaded style, so when an element
+	//! becomes enabled or disabled we schedule_redraw().
+	//!
+	//! Additionally, an element marked as disabled automatically
+	//! disables all child elements.
+
+	virtual void enablability_changed(IN_THREAD_ONLY);
+
 	//! Whether this element is scheduled for redrawing
 
 	bool redraw_scheduled(IN_THREAD_ONLY);

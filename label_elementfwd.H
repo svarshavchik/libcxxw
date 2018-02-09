@@ -8,6 +8,7 @@
 #include "textlabel.H"
 #include "element.H"
 #include "x/w/text_paramfwd.H"
+#include "x/w/rgb.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -40,7 +41,8 @@ public:
 			 richtextstring &&string,
 			 const richtextmeta &default_meta,
 			 bool allow_links,
-			 const char *element_id);
+			 const char *element_id,
+			 const color_arg &initial_background_color);
 
 	//! Destructor
 	~label_elementObj();

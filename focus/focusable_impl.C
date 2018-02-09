@@ -138,7 +138,7 @@ void focusableImplObj::set_enabled(IN_THREAD_ONLY, bool flag)
 	fe.data(IN_THREAD).enabled=flag;
 	// Because this may be the parent element, we want to recursively
 	// redraw this.
-	fe.schedule_redraw_recursively(IN_THREAD);
+	fe.enablability_changed(IN_THREAD);
 
 	// Redraw all my labels too.
 

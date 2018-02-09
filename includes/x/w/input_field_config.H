@@ -71,6 +71,14 @@ struct input_field_config {
 
 	color_arg background_color="textedit_background_color";
 
+	//! Background color when the input field is disabled.
+
+	//! Typical disabled element shading is not sufficient to distingish
+	//! the visibility change.
+
+	color_arg disabled_background_color=
+		"textedit_disabled_background_color";
+
 	//! Destructor
 
 	~input_field_config();

@@ -8,6 +8,7 @@
 #include "element_screen.H"
 #include "cursor_pointer_element.H"
 #include "reference_font_element.H"
+#include "background_color_element.H"
 #include "screen.H"
 #include "draw_info.H"
 #include "busy.H"
@@ -242,7 +243,11 @@ editorObj::implObj::implObj(const ref<editor_peephole_implObj> &parent_peephole,
 			    const input_field_config &config,
 			    const richtextmeta &default_meta,
 			    richtextstring &&string)
-	: superclass_t(// Invisible pointer cursor
+	: superclass_t(// Background colors
+		       config.background_color,
+		       config.disabled_background_color,
+
+		       // Invisible pointer cursor
 		       parent_peephole->container_element_impl().get_window_handler()
 		       .create_icon({"cursor-invisible"})->create_cursor(),
 		       // Capture the string's font.
@@ -251,7 +256,10 @@ editorObj::implObj::implObj(const ref<editor_peephole_implObj> &parent_peephole,
 		       std::move(string),
 		       default_meta,
 		       false,
-		       "textedit@libcxx.com"),
+		       "textedit@libcxx.com",
+
+		       // Initial background_color
+		       config.background_color),
 	  cursor(this->text->end()),
 	  on_change_thread_only( [](const auto &) {} ),
 	  on_autocomplete_thread_only([](const auto &) { return false; }),
@@ -719,6 +727,17 @@ void editorObj::implObj::insert(IN_THREAD_ONLY,
 	draw_changes(IN_THREAD, del_info.cursor_lock,
 		     input_change_type::inserted, deleted, str.size());
 	blink(IN_THREAD);
+}
+
+void editorObj::implObj::enablability_changed(IN_THREAD_ONLY)
+{
+	set_background_color
+		(IN_THREAD,
+		 enabled(IN_THREAD)
+		 ? background_color_element<textedit_background_color>
+		 ::get(IN_THREAD)
+		 : background_color_element<textedit_disabled_background_color>
+		 ::get(IN_THREAD));
 }
 
 void editorObj::implObj::draw_changes(IN_THREAD_ONLY,

@@ -10,6 +10,7 @@
 #include "label_elementfwd.H"
 #include "cursor_pointer_elementfwd.H"
 #include "reference_font_elementfwd.H"
+#include "background_color_elementfwd.H"
 #include "fonts/current_fontcollectionfwd.H"
 #include "focus/focusable_elementfwd.H"
 #include "editor_peephole_impl.H"
@@ -27,17 +28,43 @@
 
 LIBCXXW_NAMESPACE_START
 
-class LIBCXX_HIDDEN editorObj::implObj
-	: public cursor_pointer_elementObj<reference_font_elementObj
-					   <focusable_elementObj
-					    <label_elementObj<child_elementObj>
-					     >>> {
+struct textedit_background_color;
+struct textedit_disabled_background_color;
+
+//! Compose the superclass for editorObj::implObj.
+
+//! Pulls in various mixins:
+//!
+//! - background_color_element, for the regular and disabled background
+//! colors.
+//!
+//! - reference_font, used to compute the actual element metrics, based
+//! on the nominal font size, and the requested number of rows and columns.
+//!
+//! - and the last, but not least, this is a focusable label element.
+
+typedef background_color_elementObj<
+	cursor_pointer_elementObj<reference_font_elementObj
+				  <focusable_elementObj
+				   <label_elementObj<child_elementObj>
+				    >>>,
+	textedit_background_color,
+	textedit_disabled_background_color> editor_impl_superclass_t;
+
+//! Implementation object for the editor element.
+
+//! This editor element is derived from, guess what, the label element.
+//! The label element is based on the richtext object, which offers
+//! an API that can be used to handle key events to edit the contents of the
+//! label, which the label display element takes care of updating.
+//!
+//! editorObj::implObj takes care of handling keyboard (and button) events,
+//! and drawing the blinking cursor by manipulating the richtext API.
+
+class LIBCXX_HIDDEN editorObj::implObj : public editor_impl_superclass_t {
 
 	//! My superclass alias.
-	typedef cursor_pointer_elementObj<reference_font_elementObj
-					  <focusable_elementObj
-					   <label_elementObj<child_elementObj>>
-					   >> superclass_t;
+	typedef editor_impl_superclass_t superclass_t;
 
 	//! Mcguffin for the scheduled cursor blink callback.
 	ptr<obj> blinking;
@@ -295,6 +322,13 @@ class LIBCXX_HIDDEN editorObj::implObj
 	//! Entry point using by moving_cursor, with the saved cursor position
 	//! prior the move.
 	void unblink(IN_THREAD_ONLY, const richtextiterator &cursor);
+
+	//! Override enablability_changed()
+
+	//! Update the element's background color in response to it being
+	//! enabled or disabled.
+
+	void enablability_changed(IN_THREAD_ONLY) override;
 
 	//! Draw changed text fragments.
 	void draw_changes(IN_THREAD_ONLY,

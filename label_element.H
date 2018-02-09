@@ -32,9 +32,11 @@ label_elementObj<element_impl>
 		   richtextstring &&string,
 		   const richtextmeta &default_meta,
 		   bool allow_links,
-		   const char *element_id)
+		   const char *element_id,
+		   const color_arg &initial_background_color)
 	: element_impl(parent_container,
-		       child_element_init_params{element_id}),
+		       child_element_init_params{element_id, {},
+				       initial_background_color}),
 	  textlabelObj::implObj(alignment, initial_width,
 				std::move(string), default_meta, allow_links)
 {

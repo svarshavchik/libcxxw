@@ -402,6 +402,18 @@ void elementObj::implObj::schedule_redraw_recursively(IN_THREAD_ONLY)
 		       });
 }
 
+void elementObj::implObj::enablability_changed(IN_THREAD_ONLY)
+{
+	schedule_redraw(IN_THREAD);
+
+	for_each_child(IN_THREAD,
+		       [&]
+		       (const element &e)
+		       {
+			       e->impl->enablability_changed(IN_THREAD);
+		       });
+}
+
 rectangle_set draw_info::entire_area() const
 {
 	if (absolute_location.width == 0 || absolute_location.height == 0)
