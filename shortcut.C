@@ -46,6 +46,9 @@ shortcut::shortcut(size_t dash_pos,
 		   const std::string_view &string)
 	: input_mask(string.substr(0, dash_pos))
 {
+	if (string.empty())
+		return;
+
 	if (dash_pos < string.size() && string[dash_pos] == '-')
 		++dash_pos;
 
@@ -53,6 +56,15 @@ shortcut::shortcut(size_t dash_pos,
 	{
 		auto key=string.substr(dash_pos);
 
+		auto ustr=unicode::iconvert::tou::convert(std::string{key},
+							  unicode::utf_8)
+			.first;
+
+		if (ustr.size() == 1)
+		{
+			unicode=ustr.at(0);
+			return;
+		}
 		if (key[0] == 'f' || key[0] == 'F')
 		{
 			std::istringstream i{std::string{key.substr(1)}};

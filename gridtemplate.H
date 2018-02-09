@@ -8,6 +8,7 @@
 #include "gridtemplatefwd.H"
 #include "x/w/gridlayoutmanagerfwd.H"
 #include "x/w/gridfactoryfwd.H"
+#include "x/w/shortcut.H"
 #include <x/obj.H>
 #include <functional>
 #include <unordered_map>
@@ -28,6 +29,10 @@ public:
 	std::unordered_map<std::string,
 			   std::function<void (const gridfactory &)>
 			   > generators;
+
+	//! Our standalone shortcuts, currently used for book pages.
+
+	std::unordered_map<std::string, shortcut> shortcuts;
 
 	//! Execute a generator
 

@@ -602,6 +602,38 @@ static void [objectname]_parseconfig(const xml::doc::base::readlock &lock,
       </parameter>
     </function>
 
+    <!-- book -->
+    <function>
+      <name>book</name>
+
+      <invoke>layout_book_container</invoke>
+
+      <object>theme</object>
+
+      <parameter>
+	<scalar>factory</scalar>
+      </parameter>
+
+      <parameter>
+	<scalar>elements</scalar>
+      </parameter>
+
+      <parameter>
+	<name>name</name>
+	<type>single_value</type>
+      </parameter>
+
+      <parameter>
+	<type>optional_value</type>
+	<name>background_color</name>
+      </parameter>
+
+      <parameter>
+	<type>optional_value</type>
+	<name>border</name>
+      </parameter>
+    </function>
+
     <!-- include -->
 
     <function>
@@ -625,6 +657,135 @@ static void [objectname]_parseconfig(const xml::doc::base::readlock &lock,
       <parameter>
 	<type>optional_value</type>
 	<name>background_color</name>
+      </parameter>
+    </function>
+  </parser>
+
+  <!-- book layout manager parser -->
+
+  <parser>
+    <objectname>defaultthemeObj::booklayout</objectname>
+
+    <parameter>
+      <type>booklayoutmanager</type>
+      <name>layout</name>
+    </parameter>
+
+    <parameter>
+      <type>gridtemplate *</type>
+      <name>elements</name>
+    </parameter>
+
+    <parameter>
+      <type>defaulttheme</type>
+      <name>theme</name>
+    </parameter>
+
+    <function>
+      <name>append_pages</name>
+      <invoke>layout_append_pages</invoke>
+      <object>theme</object>
+
+      <parameter>
+	<scalar>layout</scalar>
+      </parameter>
+
+      <parameter>
+	<scalar>elements</scalar>
+      </parameter>
+
+      <parameter>
+	<name>name</name>
+	<type>single_value</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>open</name>
+      <invoke>open</invoke>
+      <object>layout</object>
+
+      <parameter>
+	<name>page</name>
+	<type>to_size_t</type>
+      </parameter>
+    </function>
+  </parser>
+
+  <!-- book page factory -->
+
+  <parser>
+    <objectname>defaultthemeObj::bookpagefactory</objectname>
+
+    <parameter>
+      <type>bookpagefactory</type>
+      <name>factory</name>
+    </parameter>
+
+    <parameter>
+      <type>gridtemplate *</type>
+      <name>elements</name>
+    </parameter>
+
+    <parameter>
+      <type>defaulttheme</type>
+      <name>theme</name>
+    </parameter>
+
+    <!-- halign -->
+
+    <function>
+      <name>halign</name>
+      <invoke>halign</invoke>
+
+      <object>factory</object>
+
+      <parameter>
+	<name>halign</name>
+	<type>to_halign_value</type>
+      </parameter>
+    </function>
+
+    <!-- valign -->
+
+    <function>
+      <name>valign</name>
+      <invoke>valign</invoke>
+
+      <object>factory</object>
+
+      <parameter>
+	<name>valign</name>
+	<type>to_valign_value</type>
+      </parameter>
+    </function>
+
+    <function>
+      <name>add</name>
+      <invoke>layout_add_page</invoke>
+      <object>theme</object>
+
+      <parameter>
+	<scalar>factory</scalar>
+      </parameter>
+
+      <parameter>
+	<scalar>elements</scalar>
+      </parameter>
+
+      <parameter>
+	<name>label</name>
+	<type>single_value</type>
+      </parameter>
+
+      <parameter>
+	<name>shortcut</name>
+	<type>optional_value</type>
+      </parameter>
+
+      <parameter>
+	<name>layout</name>
+	<type>single_value</type>
       </parameter>
     </function>
   </parser>

@@ -15,6 +15,9 @@
 #include "picture.H"
 #include "x/w/gridlayoutmanager.H"
 #include "x/w/gridfactory.H"
+#include "x/w/booklayoutmanager.H"
+#include "x/w/bookpagefactory.H"
+#include "x/w/shortcut.H"
 #include "gridtemplate.H"
 #include <x/property_value.H>
 #include <x/chrcasecmp.H>
@@ -1486,7 +1489,28 @@ void defaultthemeObj::load_layouts(const theme_parser_lock &root_lock)
 		if (id.empty())
 			throw EXCEPTION(_("no id specified for layout"));
 
-		gridlayout_parseconfig(lock, layouts[id]);
+		if (gridlayouts.find(id) != gridlayouts.end())
+			continue;
+
+		if (booklayouts.find(id) != booklayouts.end())
+			continue;
+
+		auto type=lock->get_any_attribute("type");
+
+		if (type == "book")
+		{
+			booklayout_parseconfig(lock, booklayouts[id]);
+		}
+		else if (type == "grid")
+		{
+			gridlayout_parseconfig(lock, gridlayouts[id]);
+		}
+		else
+		{
+			throw EXCEPTION("Unknown type="
+					<< type
+					<< "for layout id=" << id);
+		}
 	}
 }
 
@@ -1510,7 +1534,29 @@ void defaultthemeObj::load_factories(const theme_parser_lock &root_lock)
 		if (id.empty())
 			throw EXCEPTION(_("no id specified for factory"));
 
-		gridfactory_parseconfig(lock, factories[id]);
+		if (gridfactories.find(id) != gridfactories.end())
+			continue;
+
+		if (bookpagefactories.find(id) != bookpagefactories.end())
+			continue;
+
+		auto type=lock->get_any_attribute("type");
+
+		if (type == "book")
+		{
+			bookpagefactory_parseconfig(lock,
+						    bookpagefactories[id]);
+		}
+		else if (type == "grid")
+		{
+			gridfactory_parseconfig(lock, gridfactories[id]);
+		}
+		else
+		{
+			throw EXCEPTION("Unknown type="
+					<< type
+					<< "for factory id=" << id);
+		}
 	}
 }
 
@@ -1518,9 +1564,9 @@ void defaultthemeObj::layout_append_row(const gridlayoutmanager &glm,
 					const gridtemplate *elements,
 					const std::string &name)
 {
-	auto iter=factories.find(name);
+	auto iter=gridfactories.find(name);
 
-	if (iter == factories.end())
+	if (iter == gridfactories.end())
 		throw EXCEPTION
 			(gettextmsg
 			 (_("Did not find definition of \"%1%\" in the theme"),
@@ -1533,7 +1579,7 @@ void defaultthemeObj::layout_append_row(const gridlayoutmanager &glm,
 		c(f, elements, me);
 }
 
-void defaultthemeObj::layout_insert(const gridfactory &f,
+void defaultthemeObj::layout_insert(const factory &f,
 				    const gridtemplate *elements,
 				    const std::string &name,
 				    const std::string &background_color)
@@ -1552,13 +1598,40 @@ void defaultthemeObj::layout_insert(const gridfactory &f,
 			    new_gridlayoutmanager{});
 }
 
+void defaultthemeObj::layout_book_container(const factory &f,
+					    const gridtemplate *elements,
+					    const std::string &name,
+					    const std::string &background_color,
+					    const std::string &border)
+{
+	new_booklayoutmanager nblm;
+
+	if (!background_color.empty())
+		nblm.background_color=background_color;
+
+	if (!border.empty())
+		nblm.border=border;
+
+	f->create_focusable_container
+		([&, this]
+		 (const auto &new_container)
+		 {
+			 booklayoutmanager blm=
+				 new_container->get_layoutmanager();
+
+			 this->layout_book_container(blm, elements,
+						     name);
+		 },
+		 nblm);
+}
+
 void defaultthemeObj::layout_insert(const gridlayoutmanager &glm,
 				    const gridtemplate *elements,
 				    const std::string &name)
 {
-	auto iter=layouts.find(name);
+	auto iter=gridlayouts.find(name);
 
-	if (iter == layouts.end())
+	if (iter == gridlayouts.end())
 		throw EXCEPTION(gettextmsg(_("Layout %1% not defined."),
 					   name));
 
@@ -1566,6 +1639,70 @@ void defaultthemeObj::layout_insert(const gridlayoutmanager &glm,
 
 	for (const auto &c:iter->second)
 		c(glm, elements, me);
+}
+
+
+void defaultthemeObj::layout_book_container(const booklayoutmanager &blm,
+					    const gridtemplate *elements,
+					    const std::string &name)
+{
+	auto iter=booklayouts.find(name);
+
+	if (iter == booklayouts.end())
+		throw EXCEPTION(gettextmsg(_("Layout %1% not defined."),
+					   name));
+
+	auto me=defaulttheme(this);
+
+	for (const auto &c:iter->second)
+		c(blm, elements, me);
+}
+
+void defaultthemeObj::layout_append_pages(const booklayoutmanager &blm,
+					  const gridtemplate *elements,
+					  const std::string &name)
+{
+	auto f=blm->append();
+
+	auto iter=bookpagefactories.find(name);
+
+	if (iter == bookpagefactories.end())
+		throw EXCEPTION(gettextmsg(_("Book factory %1% not defined."),
+					   name));
+
+	auto me=defaulttheme(this);
+
+	for (const auto &c:iter->second)
+		c(f, elements, me);
+}
+
+void defaultthemeObj::layout_add_page(const bookpagefactory &f,
+				      const gridtemplate *elements,
+				      const std::string &label,
+				      const std::string &sc,
+				      const std::string &name)
+{
+	auto shortcut_iter=elements->shortcuts.find(sc);
+
+	f->add([&, this]
+	       (const auto &label_factory,
+		const auto &page_factory)
+	       {
+		       elements->generate(label_factory, label);
+
+		       page_factory->create_container
+			       ([&]
+				(const auto &container)
+				{
+					gridlayoutmanager glm=
+						container->get_layoutmanager();
+
+					layout_insert(glm, elements, name);
+				},
+				new_gridlayoutmanager{});
+	       },
+	       shortcut_iter == elements->shortcuts.end()
+	       ? shortcut{}:shortcut_iter->second);
 }
 
 LIBCXXW_NAMESPACE_END

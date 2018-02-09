@@ -60,9 +60,10 @@ public:
 	shortcut(const std::string_view &modifier,
 		 char32_t unicode);
 
-	//! Specify a shortcut comprising of a function key.
+	//! Specify a shortcut as a single string.
 
-	//! This constructor expects the string to be "Fn", and sets keysym
+	//! The constructor can be either a single (UTF-8) character, or
+	//! "Fn", and sets the unicode shortcut to the character, or the keysym
 	//! to the appropriate function key.
 	//!
 	//! The specified string may also have a "modifier-" prefix, example:

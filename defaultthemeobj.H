@@ -16,7 +16,12 @@
 #include "x/w/screenobj.H"
 #include "x/w/pictformatfwd.H"
 #include "x/w/gridlayoutmanagerfwd.H"
+#include "x/w/booklayoutmanagerfwd.H"
+#include "x/w/factoryfwd.H"
 #include "x/w/gridfactoryfwd.H"
+#include "x/w/bookpagefactoryfwd.H"
+#include "x/w/text_paramfwd.H"
+#include "x/w/shortcutfwd.H"
 #include "x/w/dim_arg.H"
 #include "connection_threadfwd.H"
 #include "defaultthemefwd.H"
@@ -86,26 +91,51 @@ public:
 	//! Fonts
 	std::unordered_map<std::string, font> fonts;
 
-	//! Type-erased layout generator.
+	//! Type-erased grid layout generator.
 
 	typedef std::function<void (const gridlayoutmanager &,
 				    const gridtemplate * &,
-				    const defaulttheme &)> layout_generator_t;
+				    const defaulttheme &)
+			      > gridlayout_generator_t;
 
-	//! Layouts
+	//! Type-erased book layout generator.
 
-	std::unordered_map<std::string, std::vector<layout_generator_t>
-			   > layouts;
+	typedef std::function<void (const booklayoutmanager &,
+				    const gridtemplate * &,
+				    const defaulttheme &)
+			      > booklayout_generator_t;
+
+	//! Grid layouts
+
+	std::unordered_map<std::string, std::vector<gridlayout_generator_t>
+			   > gridlayouts;
+
+	//! Book layouts
+	std::unordered_map<std::string, std::vector<booklayout_generator_t>
+			   > booklayouts;
 
 	//! Type-erased factory generator.
 
 	typedef std::function<void (const gridfactory &,
 				    const gridtemplate * &,
-				    const defaulttheme &)> factory_generator_t;
+				    const defaulttheme &)
+			      > gridfactory_generator_t;
 
-	//! Factories
+	//! Type-erased factory generator.
+
+	typedef std::function<void (const bookpagefactory &,
+				    const gridtemplate * &,
+				    const defaulttheme &)
+			      > bookpagefactory_generator_t;
+
+	//! Grid layout manager factories
 	std::unordered_map<std::string,
-			   std::vector<factory_generator_t>> factories;
+			   std::vector<gridfactory_generator_t>> gridfactories;
+
+	//! Book-page layout manager factories
+	std::unordered_map<std::string,
+			   std::vector<bookpagefactory_generator_t>
+			   > bookpagefactories;
 
 	//! Parse dimensions from the configuration file.
 	void load_dims(const theme_parser_lock &root_lock);
@@ -130,22 +160,41 @@ public:
 	void load_factories(const theme_parser_lock &root_lock);
 
 	//! Stylesheet-generated parsing code.
-	static layout_generator_t
+	static gridlayout_generator_t
 		gridlayout_parser(const theme_parser_lock &lock);
 
 	//! Stylesheet-generated parsing code.
 	static void
 		gridlayout_parseconfig(const theme_parser_lock &lock,
-				       std::vector<layout_generator_t> &);
+				       std::vector<gridlayout_generator_t> &);
 
 	//! Stylesheet-generated parsing code.
-	static factory_generator_t
+	static gridfactory_generator_t
 		gridfactory_parser(const theme_parser_lock &lock);
 
 	//! Stylesheet-generated parsing code.
 	static void
 		gridfactory_parseconfig(const theme_parser_lock &lock,
-					std::vector<factory_generator_t> &);
+					std::vector<gridfactory_generator_t> &);
+
+	//! Stylesheet-generated parsing code.
+	static booklayout_generator_t
+		booklayout_parser(const theme_parser_lock &lock);
+
+	//! Stylesheet-generated parsing code.
+	static void
+		booklayout_parseconfig(const theme_parser_lock &lock,
+				       std::vector<booklayout_generator_t> &);
+
+	//! Stylesheet-generated parsing code.
+	static bookpagefactory_generator_t
+		bookpagefactory_parser(const theme_parser_lock &lock);
+
+	//! Stylesheet-generated parsing code.
+	static void
+		bookpagefactory_parseconfig(const theme_parser_lock &lock,
+					    std::vector<
+					    bookpagefactory_generator_t> &);
 
  public:
 
@@ -263,10 +312,37 @@ public:
 
 	//! Insert another template
 
-	void layout_insert(const gridfactory &,
+	void layout_insert(const factory &,
 			   const gridtemplate *,
 			   const std::string &,
 			   const std::string &);
+
+	//! Insert a book container
+
+	void layout_book_container(const factory &,
+				   const gridtemplate *,
+				   const std::string &,
+				   const std::string &,
+				   const std::string &);
+
+	//! Insert a book container
+	void layout_book_container(const booklayoutmanager &,
+				   const gridtemplate *,
+				   const std::string &);
+
+	//! Add a new page to the book layout manager.
+	void layout_append_pages(const booklayoutmanager &,
+				 const gridtemplate *,
+				 const std::string &);
+
+	//! Add a new page.
+
+	void layout_add_page(const bookpagefactory &,
+			     const gridtemplate *,
+			     const std::string &label,
+			     const std::string &shortcut,
+			     const std::string &);
+
  public:
 	//! Insert a theme template
 	void layout_insert(const gridlayoutmanager &glm,

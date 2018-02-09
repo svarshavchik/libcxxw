@@ -518,7 +518,7 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
   <dim id="dialog-v-padding" axis="vert">4</dim>
   <dim id="dialog-h-padding" axis="vert">4</dim>
 
-  <layout id="ok-dialog">
+  <layout type="grid" id="ok-dialog">
     <valign>
       <row>0</row>
       <valign>middle</valign>
@@ -538,7 +538,7 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
     </append_row>
   </layout>
 
-  <factory id="icon-and-message">
+  <factory type="grid" id="icon-and-message">
     <padding>
       <side>top</side>
       <padding>dialog-v-padding</padding>
@@ -593,7 +593,7 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
     </element>
   </factory>
 
-  <factory id="ok-button-container">
+  <factory type="grid" id="ok-button-container">
     <padding>
       <side>left</side>
       <padding>no-padding</padding>
@@ -627,13 +627,13 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
     </include>
   </factory>
 
-  <layout id="ok-button-row">
+  <layout type="grid" id="ok-button-row">
     <append_row>
       <name>ok-button</name>
     </append_row>
   </layout>
 
-  <factory id="ok-button">
+  <factory type="grid" id="ok-button">
     <element>
       <name>filler</name>
     </element>
@@ -650,7 +650,7 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
 
   <!-- A dialog with "Ok" and "Cancel" buttons -->
 
-  <layout id="ok-cancel-dialog">
+  <layout type="grid" id="ok-cancel-dialog">
     <valign>
       <row>0</row>
       <valign>middle</valign>
@@ -670,7 +670,7 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
     </append_row>
   </layout>
 
-  <factory id="ok-cancel-button-container">
+  <factory type="grid" id="ok-cancel-button-container">
     <padding>
       <side>left</side>
       <padding>no-padding</padding>
@@ -704,13 +704,13 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
     </include>
   </factory>
 
-  <layout id="ok-cancel-button-row">
+  <layout type="grid" id="ok-cancel-button-row">
     <append_row>
       <name>ok-cancel-button</name>
     </append_row>
   </layout>
 
-  <factory id="ok-cancel-button">
+  <factory type="grid" id="ok-cancel-button">
     <padding>
       <side>left</side>
       <padding>dialog-h-padding</padding>
@@ -736,7 +736,7 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
 
   <!-- A dialog with an input field -->
 
-  <layout id="input-dialog">
+  <layout type="grid" id="input-dialog">
     <valign>
       <row>0</row>
       <valign>middle</valign>
@@ -756,7 +756,7 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
     </append_row>
   </layout>
 
-  <factory id="icon-and-input-container">
+  <factory type="grid" id="icon-and-input-container">
     <padding>
       <side>top</side>
       <padding>dialog-v-padding</padding>
@@ -811,7 +811,7 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
     </include>
   </factory>
 
-  <layout id="label-and-input-container">
+  <layout type="grid" id="label-and-input-container">
     <valign>
       <row>0</row>
       <valign>top</valign>
@@ -822,7 +822,7 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
     </append_row>
   </layout>
 
-  <factory id="label-and-input">
+  <factory type="grid" id="label-and-input">
     <padding>
       <side>top</side>
       <padding>no-padding</padding>
@@ -864,7 +864,7 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
 
   <!-- File open dialog -->
 
-  <layout id="file-dialog">
+  <layout type="grid" id="file-dialog">
     <valign>
       <row>0</row>
       <valign>middle</valign>
@@ -901,7 +901,7 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
     </append_row>
   </layout>
 
-  <factory id="file-input-row">
+  <factory type="grid" id="file-input-row">
     <padding>
       <side>top</side>
       <padding>dialog-v-padding</padding>
@@ -935,7 +935,7 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
     </element>
   </factory>
 
-  <factory id="directory-label-row">
+  <factory type="grid" id="directory-label-row">
     <padding>
       <side>left</side>
       <padding>dialog-h-padding</padding>
@@ -958,7 +958,7 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
       <name>directory-field</name>
     </element>
   </factory>
-  <factory id="filter-row">
+  <factory type="grid" id="filter-row">
     <padding>
       <side>left</side>
       <padding>dialog-h-padding</padding>
@@ -982,7 +982,7 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
     </element>
   </factory>
 
-  <factory id="directory-contents-row">
+  <factory type="grid" id="directory-contents-row">
     <padding>
       <side>left</side>
       <padding>dialog-h-padding</padding>
