@@ -32,6 +32,7 @@
 #include "catch_exceptions.H"
 #include <x/logger.H>
 #include <x/weakcapture.H>
+#include <x/visitor.H>
 
 LOG_CLASS_INIT(LIBCXX_NAMESPACE::w::elementObj::implObj);
 
@@ -921,6 +922,20 @@ const char *elementObj::implObj::label_theme_font() const
 color_arg elementObj::implObj::label_theme_color() const
 {
 	return "label_foreground_color";
+}
+
+current_fontcollection
+elementObj::implObj::create_fontcollection(const font_arg &f)
+{
+	return std::visit(visitor{
+			[this](const theme_font &f)
+			{
+				return create_theme_font(f.name);
+			},
+			[this](const font &f)
+			{
+				return create_font(f);
+			}}, f);
 }
 
 current_fontcollection elementObj::implObj::create_font(const font &props)

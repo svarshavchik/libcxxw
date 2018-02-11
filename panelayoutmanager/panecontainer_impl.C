@@ -11,7 +11,7 @@ LIBCXXW_NAMESPACE_START
 
 panecontainer_implObj
 ::panecontainer_implObj(const ref<containerObj::implObj> &parent)
-	: superclass_t{"list", parent}
+	: superclass_t{theme_font{"list"}, parent}
 {
 }
 

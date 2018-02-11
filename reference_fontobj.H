@@ -11,6 +11,7 @@
 #include "defaultthemefwd.H"
 #include "x/w/elementobj.H"
 #include "x/w/types.H"
+#include "x/w/font_arg.H"
 #include <string_view>
 #include <x/obj.H>
 
@@ -42,7 +43,7 @@ public:
 
 	//! Constructor
 	reference_fontObj(elementObj::implObj &e,
-			  const std::string_view &fontname);
+			  const font_arg &f);
 
 	//! Constructor
 	reference_fontObj(const current_fontcollection &reference_font);

@@ -169,7 +169,9 @@ date_input_field factoryObj
 
 			 auto container_impl=ref<date_input_field_calendarObj
 			 ::implObj>::create
-			 (parent->container_element_impl().label_theme_font(),
+			 (theme_font{
+				 parent->container_element_impl()
+					 .label_theme_font()},
 			  parent, init_params);
 
 			 auto glm_impl=ref<gridlayoutmanagerObj::implObj>

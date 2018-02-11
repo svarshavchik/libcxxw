@@ -18,10 +18,10 @@ LIBCXXW_NAMESPACE_START
 template<typename element_impl, typename tag>
 template<typename ...Args>
 reference_font_1elementObj<element_impl, tag>
-::reference_font_1elementObj(const std::string_view &fontname,
+::reference_font_1elementObj(const font_arg &f,
 			    Args && ...args)
 	: element_impl(std::forward<Args>(args)...),
-	  reference_font_tag<tag>(*this, fontname)
+	  reference_font_tag<tag>(*this, f)
 {
 }
 

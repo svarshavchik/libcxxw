@@ -17,6 +17,7 @@
 #include "x/w/busyfwd.H"
 #include "x/w/focus.H"
 #include "x/w/rgbfwd.H"
+#include "x/w/font_arg.H"
 #include "connection_threadfwd.H"
 #include "defaultthemefwd.H"
 #include "elementfwd.H"
@@ -836,6 +837,10 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! create_theme_font().
 
 	current_fontcollection create_theme_font(const std::string_view &font);
+
+	//! Convert a font_arg into a current_fontcollection
+
+	current_fontcollection create_fontcollection(const font_arg &);
 
 	//! Shortcut for invoking the same screen method
 

@@ -101,7 +101,9 @@ peepholed_listcontainer_impl_elementObj<element_impl>
 	(std::holds_alternative<dim_axis_arg>(style.height)
 		? std::get<dim_axis_arg>(style.height):
 	 dim_axis_arg{}),
-	peepholed_listcontainerObj::implObj::default_list_font,
+		theme_font{
+		peepholed_listcontainerObj::implObj::default_list_font
+			},
 		style, style,
 		std::forward<Args>(args)...}
 {
