@@ -16,7 +16,8 @@
 #include <x/w/input_dialogfwd.H>
 #include <x/w/new_layoutmanagerfwd.H>
 #include <x/w/text_paramfwd.H>
-#include <x/w/error_messagefwd.H>
+#include <x/w/alert_messagefwd.H>
+#include <x/w/stop_messagefwd.H>
 #include <x/w/busyfwd.H>
 #include <x/w/containerfwd.H>
 #include <x/w/types.H>
@@ -211,14 +212,23 @@ public:
 				const text_param &ok_label,
 				bool modal=false);
 
+	//! Use create_ok_dialog() to create a simple informational message dialog.
+
+	void alert_message(const text_param &);
+
+	//! Use create_ok_dialog() to create a simple informational message dialog.
+
+	void alert_message(const text_param &,
+			   const alert_message_config &);
+
 	//! Use create_ok_dialog() to create a simple error message dialog.
 
-	void error_message(const text_param &);
+	void stop_message(const text_param &);
 
 	//! Use create_ok_dialog() to create a simple error message dialog.
 
-	void error_message(const text_param &,
-			   const error_message_config &);
+	void stop_message(const text_param &,
+			   const stop_message_config &);
 
 	//! Format an exception, then use error_message().
 
@@ -227,7 +237,7 @@ public:
 	//! Format an exception, then use error_message().
 
 	void exception_message(const exception &,
-			       const error_message_config &);
+			       const stop_message_config &);
 
 	//! Create an OK or CANCEL dialog
 

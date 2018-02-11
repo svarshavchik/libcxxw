@@ -273,7 +273,7 @@ auto input_fieldObj::set_validator(validator_functor &&validator,
 				 auto mw=my_field_ptr->get_main_window();
 
 				 if (mw)
-					 mw->error_message(error_message);
+					 mw->stop_message(error_message);
 				 return false;
 			 }
 			 return true;

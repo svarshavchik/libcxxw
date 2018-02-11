@@ -378,7 +378,7 @@ dialog with a \ref input_field "input field", returning an
 \ref input_dialog "INSERT_LIBX_NAMESPACE::w::input_dialog".
 
 \code
-main_window->error_message("Something went wrong");
+main_window->stop_message("Something went wrong");
 
 try {
     // ...
@@ -388,20 +388,28 @@ try {
 }
 \endcode
 
-error_message() is a shortcut that uses create_ok_dialog() to format and
-show() a text label in a modal (by default) dialog.
+stop_message() is a shortcut that uses create_ok_dialog() to format and
+show() a text label in a modal (by default) dialog using the "stop" icon.
 
 exception_message() does the same with a thrown
 <a href="/exceptions.html">exception</a> object.
 
 An optional
-\ref error_message_config "INSERT_LIBX_NAMESPACE::w::error_message_config"
+\ref stop_message_config "INSERT_LIBX_NAMESPACE::w::stop_message_config"
 parameter customizes the properties of the error dialog.
 
+alert_message() creates a similar dialog that uses the "alert" icon,
+and the optional
+\ref alert_message_config "INSERT_LIBX_NAMESPACE::w::alert_message_config"
+parameter.
+
 \note
-error_message() and exception_message() do not wait until the dialog gets
+stop_message(), exception_message(), and alert_message()
+do not wait until the dialog gets
 closed, they return immediately. Use
-\ref error_message_config "INSERT_LIBX_NAMESPACE::w::error_message_config"'s
+\ref stop_message_config "INSERT_LIBX_NAMESPACE::w::stop_message_config"'s
+or
+\ref alert_message_config "INSERT_LIBX_NAMESPACE::w::alert_message_config"'s
 \c acknowledged_callback to execute a callback when the dialog gets closed.
 
 \code
@@ -410,7 +418,7 @@ closed, they return immediately. Use
 
 INSERT_LIBX_NAMESPACE::w::print_dialog_config config;
 
-INSERT_LIBX_NAMESPACE::w::print_dialog d=main_window->create_print_dialog("print", config, true);
+INSERT_LIBX_NAMESPACE::w::print_dialog d=main_window->create_print_dialog("print@example.com", config, true);
 
 \endcode
 

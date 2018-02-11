@@ -19,7 +19,7 @@
 #include "x/w/focusable_container.H"
 #include "x/w/listlayoutmanager.H"
 #include "x/w/booklayoutmanager.H"
-#include "x/w/error_message.H"
+#include "x/w/stop_message.H"
 #include <x/weakptr.H>
 #include <x/mpobj.H>
 #include <x/threads/run.H>
@@ -482,10 +482,10 @@ print_dialog main_windowObj
 	auto print_callback_impl=
 		functionref<print_callback_t>::create
 		([cb=conf.print_callback]
-		 (const cups::job &j, const ref<obj> &mcguffin)
+		 (const print_callback_info &info)
 		 {
 			 if (cb)
-				 cb(j, mcguffin);
+				 cb(info);
 		 });
 
 	hide_and_invoke_when_activated(d, d->impl->fields.ok_button,
@@ -538,7 +538,7 @@ void print_dialogObj::initial_show()
 		   (const auto &my_main_window,
 		    const auto &mcguffin, const auto &me)
 		   {
-			   error_message_config config;
+			   stop_message_config config;
 
 			   config.acknowledged_callback=
 				   [cb=me->impl->cancel_callback]

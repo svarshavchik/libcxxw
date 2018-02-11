@@ -31,7 +31,7 @@
 	}								\
 	catch(...)							\
 	{								\
-		(window)->error_message("Unknown exception thrown.");	\
+		(window)->stop_message("Unknown exception thrown.");	\
 	}
 
 #define REPORT_EXCEPTIONS_WITH_CONFIG(window,config)			\
@@ -45,6 +45,6 @@
 	}								\
 	catch(...)							\
 	{								\
-		(window)->error_message("Unknown exception thrown.", config); \
+		(window)->stop_message("Unknown exception thrown.", config); \
 	}
 #endif

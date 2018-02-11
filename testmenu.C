@@ -82,9 +82,8 @@ public:
 	}
 
 	typedef LIBCXX_NAMESPACE::mpobj<
-		std::function<void (const LIBCXX_NAMESPACE::cups::job &,
-				    const LIBCXX_NAMESPACE::ref<
-				    LIBCXX_NAMESPACE::obj> &)>
+		std::function<void (const LIBCXX_NAMESPACE::w
+				    ::print_callback_info &)>
 		> on_file_print_t;
 
 	on_file_print_t on_file_print;
@@ -98,13 +97,11 @@ public:
 		file_print->initial_show();
 	}
 
-	void do_file_print(const LIBCXX_NAMESPACE::cups::job &job,
-			   const LIBCXX_NAMESPACE::ref<
-			   LIBCXX_NAMESPACE::obj> &mcguffin)
+	void do_file_print(const LIBCXX_NAMESPACE::w::print_callback_info &info)
 	{
 		on_file_print_t::lock lock{on_file_print};
 
-		(*lock)(job, mcguffin);
+		(*lock)(info);
 	}
 
 	LIBCXX_NAMESPACE::w::input_dialog help_question;
@@ -230,14 +227,14 @@ app_dialogsObj::create_file_print(const LIBCXX_NAMESPACE::w::main_window &main_w
 {
 	LIBCXX_NAMESPACE::w::print_dialog_config config{
 
-		[](const auto &job, const auto &mcguffin)
+		[](const auto &info)
 		{
 			app_dialogs all_app_dialogs;
 
 			if (!all_app_dialogs)
 				return;
 
-			all_app_dialogs->do_file_print(job, mcguffin);
+			all_app_dialogs->do_file_print(info);
 		},
 		[]
 		{
@@ -314,12 +311,11 @@ static inline void file_print_selected()
 			 all_app_dialogs->open_file_print
 				 ("Print file",
 				  [file]
-				  (const auto &job,
-				   const auto &mcguffin)
+				  (const auto &info)
 				  {
-					  job->add_document_file("File",
-								 file);
-					  job->submit("testmenu");
+					  info.job->add_document_file("File",
+								      file);
+					  info.job->submit("testmenu");
 				  });
 		 });
 }

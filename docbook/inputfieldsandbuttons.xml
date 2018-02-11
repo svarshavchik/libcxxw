@@ -514,7 +514,7 @@ factory->create_normal_button([]
     </para>
 
     <para>
-      The <varname>appdata</varname> provides a convenient way to compile a
+      The <varname>appdata</varname> provides one convenient way to compile a
       list of all display elements in one place, safely:
     </para>
 
@@ -632,6 +632,10 @@ typedef &ns;::ref&lt;appdataObj&gt; appdata_t;</programlisting>
     <para>
       See <xref linkend="booklayoutmanager" /> for another
       example of using <varname>appdata</varname>.
+
+      See <xref linkend="singletonptr" /> for a different approach to
+      conveniently compiling a collection of all objects in a manner that's
+      compatible with &app;'s rules for reference-counted objects.
     </para>
   </section>
 </chapter>

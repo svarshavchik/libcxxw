@@ -19,7 +19,7 @@
 #include "gridlayoutmanager.H"
 #include "x/w/input_field.H"
 #include "x/w/text_param_literals.H"
-#include "x/w/error_message.H"
+#include "x/w/stop_message.H"
 #include "x/w/main_window.H"
 #include "messages.H"
 

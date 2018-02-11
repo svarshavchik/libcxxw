@@ -25,7 +25,7 @@
 #include <x/w/input_field.H>
 #include <x/w/file_dialog.H>
 #include <x/w/file_dialog_config.H>
-#include <x/w/error_message.H>
+#include <x/w/stop_message.H>
 #include <string>
 #include <vector>
 #include <algorithm>
@@ -59,7 +59,7 @@ void create_file_new(const x::w::main_window &);
 
 void create_file_open(const x::w::main_window &);
 
-void error_message_dialog(const x::w::main_window &mw);
+void stop_message_dialog(const x::w::main_window &mw);
 
 void testmenu()
 {
@@ -459,7 +459,7 @@ void help_menu(const x::w::main_window &main_window,
 				{
 					auto & [main_window]=*got;
 
-					error_message_dialog(main_window);
+					stop_message_dialog(main_window);
 				}
 			},
 			"Error message",
@@ -527,18 +527,18 @@ void create_help_about(const x::w::main_window &main_window)
 	w->set_window_title("About myself");
 }
 
-void error_message_dialog(const x::w::main_window &mw)
+void stop_message_dialog(const x::w::main_window &mw)
 {
-	// error_message() creates an ad-hoc dialog with an "Ok" button
+	// stop_message() creates an ad-hoc dialog with an "Ok" button
 	// and an error message, and shows it.
 	//
-	// The second parameter to error_message() is optional, and passes
-	// an error_message_config object that customizes the error message
+	// The second parameter to stop_message() is optional, and passes
+	// an stop_message_config object that customizes the error message
 	// dialog.
 
-	x::w::error_message_config config;
+	x::w::stop_message_config config;
 
-	// error_message() returns immediately. Like all display elements,
+	// stop_message() returns immediately. Like all display elements,
 	// the library's internal execution thread takes care of showing
 	// the entire dialog and handling its "Ok" button. An optional
 	// callback gets invoked by the execution thread when the error
@@ -554,8 +554,9 @@ void error_message_dialog(const x::w::main_window &mw)
 	// The first parameter is actually an x::w::text_param, allowing for
 	// custom fonts and colors.
 
-	mw->error_message("An error occured", config);
+	mw->stop_message("An error occured", config);
 }
+
 void create_help_question(const x::w::main_window &main_window)
 {
 	x::w::input_dialog d=main_window->create_input_dialog

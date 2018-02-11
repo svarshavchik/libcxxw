@@ -12,9 +12,26 @@
 
 LIBCXXW_NAMESPACE_START
 
+//! Parameter passed to the print dialog's callback.
+
+//! A discrete object as a parameter, for future expandability.
+
+struct print_callback_info {
+
+	//! The print job created by the print dialog.
+
+	cups::job job;
+
+	//! The print dialog conveniently created a busy-wait mcguffin.
+
+	//! Because it takes a while to print something.
+
+	ref<obj> wait_mcguffin;
+};
+
 //! Callback used by the "Print" button in the \ref print_dialog "print dialog".
 
-typedef void print_callback_t(const cups::job &, const ref<obj> &);
+typedef void print_callback_t(const print_callback_info &);
 
 //! The configuration of a print dialog.
 

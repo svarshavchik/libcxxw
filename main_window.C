@@ -470,7 +470,7 @@ dialog main_windowObj
 {
 	return create_ok_dialog(dialog_id,
 				icon, content_factory, ok_action,
-				error_message_config::default_ok_label(),
+				stop_message_config::default_ok_label(),
 				modal);
 }
 
@@ -534,26 +534,73 @@ void main_windowObj::exception_message(const exception &e)
 
 
 void main_windowObj::exception_message(const exception &e,
-				       const error_message_config &conf)
+				       const stop_message_config &conf)
 {
 	std::ostringstream o;
 
 	o << e;
 
-	error_message(o.str(), conf);
+	stop_message(o.str(), conf);
 }
 
-void main_windowObj::error_message(const text_param &msg)
+void main_windowObj::stop_message(const text_param &msg)
 {
-	error_message(msg, {});
+	stop_message(msg, {});
 }
 
-void main_windowObj::error_message(const text_param &msg,
-				   const error_message_config &config)
+void main_windowObj::stop_message(const text_param &msg,
+				   const stop_message_config &config)
 {
-	auto autodestroy=destroy_when_closed("error_message@libcxx.com");
+	auto autodestroy=destroy_when_closed("stop_message@libcxx.com");
 
-	auto d=create_ok_dialog("error_message@libcxx.com",
+	auto d=create_ok_dialog("stop_message@libcxx.com",
+				"stop",
+				[&]
+				(const auto &f)
+				{
+					f->create_label(msg);
+				},
+				[autodestroy, cb=config.acknowledged_callback]
+				(const auto &ignore)
+				{
+					autodestroy(ignore);
+					if (cb)
+						cb();
+				},
+				config.ok_label,
+				config.modal);
+
+	std::visit( [&](const auto &title)
+		    {
+			    d->dialog_window->set_window_title(title);
+		    }, config.title);
+
+	d->dialog_window->show_all();
+}
+
+std::string stop_message_config::default_title() noexcept
+{
+	return _("Error");
+}
+
+text_param stop_message_config::default_ok_label() noexcept
+{
+	return _("Ok");
+}
+
+stop_message_config::~stop_message_config()=default;
+
+void main_windowObj::alert_message(const text_param &msg)
+{
+	alert_message(msg, {});
+}
+
+void main_windowObj::alert_message(const text_param &msg,
+				   const alert_message_config &config)
+{
+	auto autodestroy=destroy_when_closed("alert_message@libcxx.com");
+
+	auto d=create_ok_dialog("alert_message@libcxx.com",
 				"alert",
 				[&]
 				(const auto &f)
@@ -578,17 +625,17 @@ void main_windowObj::error_message(const text_param &msg,
 	d->dialog_window->show_all();
 }
 
-std::string error_message_config::default_title() noexcept
+std::string alert_message_config::default_title() noexcept
 {
-	return _("Error");
+	return _("Attention");
 }
 
-text_param error_message_config::default_ok_label() noexcept
+text_param alert_message_config::default_ok_label() noexcept
 {
 	return _("Ok");
 }
 
-error_message_config::~error_message_config()=default;
+alert_message_config::~alert_message_config()=default;
 
 dialog main_windowObj
 ::create_ok_cancel_dialog(const std::string_view &dialog_id,

@@ -1,0 +1,202 @@
+<!--
+
+Copyright 2018 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<chapter id="printdialog">
+  <title>Print Dialog</title>
+
+  <mediaobject>
+    <imageobject>
+      <imagedata fileref="printdialog.png" format="PNG"
+		 contentwidth="537px" contentdepth="396px" />
+    </imageobject>
+    <textobject>
+      <phrase>
+	Print dialog
+      </phrase>
+    </textobject>
+    <caption>
+      <para>
+	<filename>printdialog.C</filename> demonstrates the basics of using
+	a
+	<ulink url="&link-typedef-x--w-print-dialog;"><classname>&ns;::w::print_dialog</classname></ulink>.
+	This dialog shows a list of printers, and each printer's options.
+      </para>
+
+      <note>
+	<para>
+	  Using this dialog requires linking with
+	  <literal>-lcxxwcups</literal> and <literal>-lcxxcups</literal>
+	  in additional to the default libraries.
+	  See the sample
+	  <ulink url="examples/Makefile.am"><filename>Makefile.am</filename></ulink>
+	  for more information.
+	</para>
+      </note>
+    </caption>
+  </mediaobject>
+
+  <blockquote>
+    <title><ulink url="examples/printdialog.C">printdialog.C</ulink></title>
+
+    <informalexample>
+      <programlisting><xi:include href="../examples/printdialog.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <section id="printdialoguse">
+    <title>Using the print dialog</title>
+
+    <para>
+      <filename>printdialog.C</filename> calls the
+      <ulink url="&link-typedef-x--w-main-window;"><classname>&ns;::w::main_window</classname></ulink>'s
+      <methodname>create_print_dialog</methodname>()'s method to create the
+      print dialog in advance, during the program's initialization phase.
+      Clicking the sole <quote>Print</quote> button in the window opens
+      a <link linkend="filedialog">file dialog</link> first, this select the
+      file to print. Afterwards the print dialog's
+      <methodname>initial_show</methodname>() makes it visible.
+    </para>
+
+    <para>
+      <methodname>initial_show</methodname>() returns immediately, so it can
+      be called from some other &callback;, in this case the file dialog's
+      callback.
+      <methodname>create_print_dialog</methodname>()'s
+      <ulink url="&link-x--w--print-dialog-config;"><classname>&ns;::w::print_dialog_config</classname></ulink>
+      parameter specifies a &callback; that gets invoked in response to the
+      <quote>Print</quote> button.
+    </para>
+
+    <para>
+      The callback receives a
+      <ulink url="&link-x--w--print-callback-info;"><classname>&ns;:;w::print_callback_info</classname></ulink>
+      parameter with a pre-configured
+      <ulink url="/cups_job.html"><classname>&ns;::cups::job</classname></ulink>
+      based on the options selected in the print dialog.
+      <filename>printdialog.C</filename> saves the file after it gets selected
+      in the initially-shown file open dialog, then use the
+      <classname>&ns;::cups::job</classname> to submit the print job.
+    </para>
+  </section>
+
+  <section id="singletonptr">
+    <title>Using singleton objects</title>
+
+    <para>
+      <link linkend="printdialog"><filename>printdialog.C</filename></link>
+      gives an example of a design pattern that uses &libcxx;'s
+      <ulink url="/singleton.html"><classname>&ns;::singletonptr</classname></ulink>s
+      in ways that are compatible with &app;'s rules for
+      <link linkend="concepts">reference-counted objects</link> and their
+      references.
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+class my_appObj : virtual public &ns;::obj {
+
+public:
+
+// ...
+};
+
+typedef &ns;::singletonptr&lt;my_appObj&gt; my_app;
+
+// ..............
+
+&ns;::ptr&lt;my_appObj&gt; app_ptr;
+
+auto main_window=&ns;::w::main_window::create(
+    []
+    (const auto &amp;main_window)
+    {
+        // ...
+
+        app_ptr=x::ref&lt;my_appObj&gt;::create(main_window);
+    });
+
+my_app app{app_ptr};</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      The <classname>my_appObj</classname> class contains references to
+      key display elements and other application data, such as:
+    </para>
+
+    <itemizedlist>
+      <listitem>
+	<para>The main application window itself.</para>
+      </listitem>
+      <listitem>
+	<para>The main window's dialogs.</para>
+      </listitem>
+      <listitem>
+	<para>
+	  The name of the file selected by the <quote>file open</quote>
+	  dialog. The file to print gets selected from this dialog and saved
+	  in the application object, then the print dialog opens. If the
+	  print dialog is not get cancelled, if the dialog's
+	  <quote>Print</quote> button gets selected, the name of the previously
+	  selected file is retrieved, and printed.
+	</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>
+      The object and the constructed
+      <classname>&ns;::singletonptr</classname> get
+      constructed in automatic scope. Because they get constructed in
+      automatic scope, both of the object and the
+      <classname>&ns;::singletonptr</classname> get destroyed before
+      <function>testprintdialog</function>() returns.
+      <function>testprintdialog</function>() waits for the application
+      window's <quote>Close</quote> button, that closes and terminates
+      the application.
+    </para>
+
+    <para>
+      All the references to the underlying object go out of scope and
+      get destroyed in the right order. Elsewhere in the application code:
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+my_app app;
+
+if (!app)
+   return;
+
+app-&gt;selected_file=filename;</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      A default-constructed <classname>&ns;::singletonptr</classname>
+      can be declared anywhere in the application code without any other
+      preliminary setup; anywhere where it's convenient to do so.
+      After verifying that the singleton object still exists, the object
+      and its members or methods are fully accessible. It's the same object
+      that was originally constructed when creating the main application
+      window.
+    </para>
+
+    <para>
+      In this manner, all references to the singleton object exist in
+      automatic scope, and get automatically cleaned up when execution
+      leaves the scope.
+    </para>
+  </section>
+</chapter>
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "book" "chapter")
+End:
+-->

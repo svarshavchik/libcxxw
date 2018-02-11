@@ -227,7 +227,7 @@ create_mainwindow(const x::w::main_window &main_window,
 				   if (!main_window)
 					   return true;
 
-				   main_window->error_message("No it's not.");
+				   main_window->stop_message("No it's not.");
 
 				   return false;
 			   });

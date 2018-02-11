@@ -1,5 +1,5 @@
 /*
-** Copyright 2017 Double Precision, Inc.
+** Copyright 2018 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 
@@ -110,14 +110,13 @@ static x::w::print_dialog create_print_dialog(const x::w::main_window &main_wind
 	// the print dialog object gets created in advance.
 
 	x::w::print_dialog_config config{
-		[](const x::cups::job &job,
-		   const x::ref<x::obj> &busy_mcguffin)
+		[]
+		(const x::w::print_callback_info &info)
 		{
-			std::cout << "CLICKED" << std::endl;
 			// The "Print" button was selected. The print dialog
 			// takes care of closing itself. Our job is to
 			// submit the print job. The print dialog helpfully
-			// gave us the x::cups::job object, with all the
+			// gives us the x::cups::job object, with all the
 			// selected options set.
 			//
 			// All we have to do is specify the file to print
@@ -125,27 +124,25 @@ static x::w::print_dialog create_print_dialog(const x::w::main_window &main_wind
 
 			my_app app;
 
-			std::cout << "app: " << (app ? true:false) << std::endl;
-
 			if (!app)
 				return;
 
-			job->add_document_file("file",
-					       app->selected_file.get());
+			info.job->add_document_file("file",
+						    app->selected_file.get());
 
 			std::ostringstream o;
 
 			o << "Created print job "
-			  << job->submit("printdialog");
+			  << info.job->submit("printdialog");
 
 			// This is not really an error message, I'm just too
 			// lazy to formally create_ok_dialog().
 
-			x::w::error_message_config config;
+			x::w::alert_message_config config;
 
 			config.title="Job submitted";
 
-			app->main_window->error_message(o.str(), config);
+			app->main_window->alert_message(o.str(), config);
 		},
 		[]
 		{
@@ -212,8 +209,10 @@ void testprintdialog()
 
 	auto close_flag=close_flag_ref::create();
 
+	x::ptr<my_appObj> app_ptr;
+
 	auto main_window=x::w::main_window
-		::create([]
+		::create([&]
 			 (const auto &main_window)
 			 {
 				 x::w::gridlayoutmanager
@@ -222,6 +221,8 @@ void testprintdialog()
 				     layout->append_row();
 
 				 initialize_mainwindow(factory);
+
+				 app_ptr=x::ref<my_appObj>::create(main_window);
 			 });
 
 	main_window->set_window_title("Print something!");
@@ -236,7 +237,7 @@ void testprintdialog()
 	// the main_window, and before the destructor guard, so all these
 	// references will go away in an orderly fashion.
 
-	my_app app{x::ref<my_appObj>::create(main_window)};
+	my_app app{app_ptr};
 
 	guard(main_window->connection_mcguffin());
 

@@ -681,15 +681,18 @@ auto new_custom_dialog=mw->create_custom_dialog(
     </para>
   </section>
 
-  <section id="error_message">
+  <section id="adhoc_message">
     <title>Ad-hoc error message dialogs</title>
 
     <blockquote>
       <informalexample>
 	<programlisting>
-#include &lt;&ns;/w/error_message.H&gt;
+#include &lt;&ns;/w/stop_message.H&gt;
+#include &lt;&ns;/w/alert_message.H&gt;
 
-mw-&gt;error_message("Something's wrong");
+mw-&gt;stop_message("Something's wrong");
+
+mw-&gt;alert_message("Job completed");
 
 try {
 
@@ -704,19 +707,25 @@ try {
     <para>
       <filename>menu.C</filename> from <xref linkend="menu" />
       gives an example of using
-      <methodname>error_message</methodname>().
-      <methodname>error_message</methodname>() is a shortcut for
+      <methodname>stop_message</methodname>().
+      <methodname>stop_message</methodname>() is a shortcut for
       using <methodname>create_ok_dialog</methodname>() to create
       a dialog with a <link linkend="labels">label</link>, and then
       <link linkend="dialogshow">show</link> it.
+      The dialog has the <quote>stop</quote> icon.
+      <methodname>alert_message</methodname>() creates a similar dialog
+      with the <quote>alert</quote> icon.
     </para>
 
     <para>
-      <methodname>error_message</methodname>()'s second, optional
-      <ulink url="&link-x--w--error-message-config;"><classname>&ns;::w::error_message_config</classname></ulink>
+      <methodname>stop_message</methodname>()'s second, optional
+      <ulink url="&link-x--w--stop-message-config;"><classname>&ns;::w::stop_message_config</classname></ulink>
       parameter customizes the ad-hoc error message dialog's appearance.
       The ad-hoc dialog gets automatically <link linkend="dialogrefs">destroyed
 	when it's closed</link>.
+      <methodname>alert_message</methodname>()'s second optional parameter
+      is unimaginatively called
+      <ulink url="&link-x--w--alert-message-config;"><classname>&ns;::w::alert_message_config</classname></ulink>
     </para>
 
     <para>

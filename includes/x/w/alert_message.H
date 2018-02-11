@@ -3,29 +3,29 @@
 ** See COPYING for distribution information.
 */
 
-#ifndef x_w_error_message_H
-#define x_w_error_message_H
+#ifndef x_w_alert_message_H
+#define x_w_alert_message_H
 
-#include <x/w/error_messagefwd.H>
+#include <x/w/alert_messagefwd.H>
 #include <string>
 #include <functional>
 
 LIBCXXW_NAMESPACE_START
 
-//! Optional parameters for a \ref main_window "main window"'s error_message().
+//! Optional parameters for a \ref main_window "main window"'s alert_message().
 
-struct error_message_config {
+struct alert_message_config {
 
 	//! Callback when the dialog gets closed.
 
-	//! error_message() returns immediately, and, by default, the modal
+	//! alert_message() returns immediately, and, by default, the modal
 	//! dialog blocks keyboard and pointer events until the dialog
 	//! gets closed. If set, acknowledged_callback() gets invoked when
 	//! the dialog gets closed.
 
 	std::function<void ()> acknowledged_callback;
 
-	//! error_message()'s dialog's title.
+	//! alert_message()'s dialog's title.
 
 	std::variant<std::string, std::u32string> title=default_title();
 
@@ -43,7 +43,7 @@ struct error_message_config {
 	bool modal=true;
 
 	//! Destructor
-	~error_message_config();
+	~alert_message_config();
 };
 
 LIBCXXW_NAMESPACE_END
