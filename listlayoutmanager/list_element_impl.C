@@ -166,14 +166,11 @@ list_elementObj::implObj::implObj(const ref<list_container_implObj>
 			      const new_listlayoutmanager &style,
 			      elementObj::implObj &container_element_impl,
 			      const screen &container_screen)
-	: superclass_t(container_element_impl
-		       .create_background_color(style.selected_color),
-		       container_element_impl
-		       .create_background_color(style.highlighted_color),
-		       container_element_impl
-		       .create_background_color(style.current_color),
-		       "list_separator_border",
-		       textlist_container),
+	: superclass_t{style.selected_color,
+		style.highlighted_color,
+		style.current_color,
+		"list_separator_border",
+		textlist_container},
 	  textlist_container(textlist_container),
 	  list_style(style.list_style),
 	  columns(list_style.actual_columns(style)),
@@ -193,7 +190,7 @@ list_elementObj::implObj::implObj(const ref<list_container_implObj>
 		  .create_icon({"bullet2"})),
 
 	  itemlabel_meta{create_background_color("label_foreground_color"),
-		create_theme_font(label_theme_font())},
+			  create_fontcollection(style.list_font)},
 	  itemshortcut_meta{create_background_color("label_foreground_color"),
 			  create_theme_font("menu_shortcut")}
 

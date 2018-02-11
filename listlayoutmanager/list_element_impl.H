@@ -41,6 +41,9 @@ struct listcontainer_highlighted_color;
 struct listcontainer_current_color;
 struct textlist_rowinfo;
 
+struct list_font_tag;
+struct shortcut_font_tag;
+
 //! Container that keeps track of minimum columns widths.
 
 //! An entry for each text element in each row, for each column,
@@ -180,17 +183,20 @@ struct LIBCXX_HIDDEN listimpl_info_s {
 	bool row_redraw_needed=false;
 };
 
+typedef background_color_elementObj<themeborder_elementObj
+				    <focusable_elementObj
+				     <child_elementObj>>,
+				    listcontainer_selected_color,
+				    listcontainer_highlighted_color,
+				    listcontainer_current_color
+				    > list_element_impl_superclass_t;
+
 //! Internal implementation object.
 
 //! \see list_element
 
 class LIBCXX_HIDDEN list_elementObj::implObj :
-	public background_color_elementObj<themeborder_elementObj
-					   <focusable_elementObj
-					    <child_elementObj>>,
-					   listcontainer_selected_color,
-					   listcontainer_highlighted_color,
-					   listcontainer_current_color> {
+	public list_element_impl_superclass_t {
 
  public:
 
@@ -199,13 +205,7 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 	const ref<list_container_implObj> textlist_container;
 
 	//! Alias
-	typedef background_color_elementObj<themeborder_elementObj
-					    <focusable_elementObj
-					     <child_elementObj>>,
-					   listcontainer_selected_color,
-					   listcontainer_highlighted_color,
-					   listcontainer_current_color
-					    > superclass_t;
+	typedef list_element_impl_superclass_t superclass_t;
 
 	//! Constructor
 	implObj(const ref<list_container_implObj> &textlist_container,

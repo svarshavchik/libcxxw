@@ -14,8 +14,6 @@
 
 LIBCXXW_NAMESPACE_START
 
-const char peepholed_listcontainerObj::implObj::default_list_font[]="list";
-
 peepholed_listcontainerObj::implObj
 ::implObj(const new_listlayoutmanager &style)
 	: height{style.height}

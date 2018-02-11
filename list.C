@@ -79,7 +79,8 @@ new_listlayoutmanager
 	  background_color{"list_background_color"},
 	  selected_color{"list_selected_color"},
 	  highlighted_color{"list_highlighted_color"},
-	  current_color{"list_current_color"}
+	  current_color{"list_current_color"},
+	  list_font{theme_font{"list"}}
 {
 }
 

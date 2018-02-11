@@ -18,6 +18,7 @@
 #include <x/w/rgb.H>
 #include <x/w/border_arg.H>
 #include <x/w/dim_axis_arg.H>
+#include <x/w/font_arg.H>
 #include <x/ref.H>
 #include <x/refptr_traits.H>
 #include <x/w/busyfwd.H>
@@ -166,6 +167,9 @@ class LIBCXX_HIDDEN new_listlayoutmanager : public new_focusable_layoutmanager {
 
 	//! Currently selected color
 	color_arg current_color;
+
+	//! List font
+	font_arg list_font;
 
 	//! Constructor
 	new_listlayoutmanager(const listlayoutstyle_impl &list_style

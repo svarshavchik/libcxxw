@@ -220,8 +220,6 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
 
   <font id="combobox" from="label" />
 
-  <font id="menu" from="label" />
-
   <font id="menu_shortcut" from="serif">
     <point_size>12</point_size>
     <slant>italic</slant>

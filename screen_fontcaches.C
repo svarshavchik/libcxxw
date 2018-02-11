@@ -92,13 +92,10 @@ class LIBCXX_HIDDEN current_themefontcollectionObj
 	current_themefontcollectionObj(const screen &font_screen,
 				       depth_t depth,
 				       const std::string &font_name)
-		: current_themefontcollectionObj
-		(font_screen,
-		 depth,
-		 font_name,
-		 *current_theme_t::lock{
-			font_screen->impl->current_theme
-				})
+		: current_themefontcollectionObj{font_screen,
+			depth,
+			font_name,
+			font_screen->impl->current_theme.get()}
 	{
 	}
 
@@ -106,10 +103,9 @@ class LIBCXX_HIDDEN current_themefontcollectionObj
 				       depth_t depth,
 				       const std::string &font_name,
 				       const defaulttheme &font_theme)
-		: current_fontcollectionObj(font_screen, depth,
-					    font_theme->get_theme_font
-					    (font_name),
-					    font_theme),
+		: current_fontcollectionObj{font_screen, depth,
+			font_theme->get_theme_font(font_name),
+			font_theme},
 		font_name(font_name)
 		{
 		}

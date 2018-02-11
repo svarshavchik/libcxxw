@@ -33,9 +33,6 @@ class LIBCXX_HIDDEN peepholed_listcontainerObj::implObj : virtual public obj {
 	//! Size peephole to this many rows, based on the reference font.
 	const std::variant<size_t, dim_axis_arg> height;
 
-	//! The default font for labels in the list container.
-	static const char default_list_font[];
-
 	//! Constructor
 	implObj(const new_listlayoutmanager &style);
 

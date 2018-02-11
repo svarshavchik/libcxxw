@@ -407,8 +407,6 @@ libcxxw_la_SOURCES=\
 	label.C					    \
 	label_element.H				    \
 	label_elementfwd.H			    \
-	label_theme_font_element.H		    \
-	label_theme_font_elementfwd.H		    \
 	layoutmanager.C				    \
 	layoutmanager.H				    \
 	layoutmanager_impl.C			    \

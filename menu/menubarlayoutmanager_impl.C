@@ -12,7 +12,6 @@
 #include "menu/menu_impl.H"
 #include "peepholed_toplevel_listcontainer/create_popup.H"
 #include "container.H"
-#include "label_theme_font_element.H"
 #include "grid_map_info.H"
 #include "x/w/gridfactory.H"
 #include "x/w/canvas.H"
@@ -77,18 +76,6 @@ void menubarlayoutmanagerObj::implObj::initialize(menubarlayoutmanagerObj
 	f->create_canvas();
 }
 
-class LIBCXX_HIDDEN popup_menu_listObj : public p_t_l_impl_t {
-
- public:
-
-	using  p_t_l_impl_t::p_t_l_impl_t;
-
-	const char *label_theme_font() const override
-	{
-		return "menu_font";
-	}
-};
-
 std::tuple<popup, ref<popup_attachedto_handlerObj> >
 menubarlayoutmanagerObj::implObj
 ::do_create_popup_menu(const elementimpl &e,
@@ -101,6 +88,7 @@ menubarlayoutmanagerObj::implObj
 	style.background_color="menu_popup_background_color";
 	style.current_color="menu_popup_highlighted_color";
 	style.highlighted_color="menu_popup_clicked_color";
+	style.list_font=theme_font{"menu_font"};
 	style.columns=1;
 
 	style.selection_type=&menuitem_selected;
@@ -117,8 +105,7 @@ menubarlayoutmanagerObj::implObj
 			[&]
 			(const auto &peephole_container)
 			{
-				auto impl=ref
-					<popup_menu_listObj>
+				auto impl=ref<p_t_l_impl_t>
 					::create(style,
 						 peephole_container);
 

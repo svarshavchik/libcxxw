@@ -83,8 +83,6 @@ public:
 
 	~peepholed_listcontainer_impl_elementObj();
 
-	const char *label_theme_font() const override;
-
 	const reference_fontObj &list_reference_font()
 		const override;
 
