@@ -96,6 +96,12 @@ make</programlisting>
 	<classname>&ns;::w::main_window</classname> is a
 	&container;,
 	a display element that contains other display elements.
+	They can be individual display elements like buttons and input
+	fields, or they can be other containers with their own display
+	elements. Each container is, itself, a display element.
+      </para>
+
+      <para>
 	Naturally, containers hold references on the elements in the
 	container. Removing an element from the container gets rid of the
 	container's reference on the element. Normally, no other references
@@ -103,10 +109,13 @@ make</programlisting>
       </para>
 
       <para>
-	An application may also obtain its own reference on a display
+	The application creates all display elements, and it's possible
+	for the application to retain its own reference to the display
 	element. The application must make sure that it no longer holds
-	its own reference on a display element when it gets destroyed;
-	or when any of its parent containers get destroyed.
+	its own reference on a display element when it gets removed from
+	the container;
+	or when any of its parent containers get removed from their respective
+	container.
       </para>
 
       <para>
@@ -121,6 +130,7 @@ make</programlisting>
       </para>
 
       <para>
+	<link linkend="helloworld"><filename>helloworld.C</filename></link>'s
 	<function>create_label</function>() creates a
 	label
 	display element in the main window, but

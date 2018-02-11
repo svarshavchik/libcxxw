@@ -8,6 +8,7 @@
 #include <x/w/print_dialogfwd.H>
 #include <x/w/print_dialogobj.H>
 #include <x/ref.H>
+#include <x/w/print_dialog_config.H>
 
 LIBCXXW_NAMESPACE_START
 

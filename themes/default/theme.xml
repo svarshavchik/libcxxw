@@ -1519,6 +1519,12 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
     </element>
   </factory>
 
+  <font id="printer_local_font" from="sans_serif" />
+
+  <font id="printer_remote_font" from="printer_local_font">
+    <slant>italic</slant>
+  </font>
+
   <font id="printer_make_and_model" from="serif">
     <point_size>10</point_size>
   </font>

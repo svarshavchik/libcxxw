@@ -14,10 +14,13 @@ noinst_PROGRAMS=\
 	menu					\
 	pagelayoutmanager			\
 	panelayoutmanager			\
+	printdialog				\
 	progressbar				\
 	scrollbar				\
 	validatedinput				\
 	wordwraplabel
+
+AM_CPPFLAGS=-Wall -Werror
 
 booklayoutmanager_SOURCES=booklayoutmanager.C close_flag.H
 booklayoutmanager_LDADD=-lcxxw -lcxx
@@ -69,6 +72,9 @@ panelayoutmanager_LDADD=-lcxxw -lcxx
 
 pagelayoutmanager_SOURCES=pagelayoutmanager.C close_flag.H
 pagelayoutmanager_LDADD=-lcxxw -lcxx
+
+printdialog_SOURCES=printdialog.C close_flag.H
+printdialog_LDADD=-lcxxwcups -lcxxw -lcxxcups -lcxx
 
 progressbar_SOURCES=progressbar.C close_flag.H
 progressbar_LDADD=-lcxxw -lcxx

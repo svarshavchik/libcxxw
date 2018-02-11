@@ -11,6 +11,7 @@
 #include "x/w/label.H"
 #include "x/w/standard_comboboxlayoutmanager.H"
 #include "x/w/text_param_literals.H"
+#include "x/w/text_param.H"
 #include "x/w/busy.H"
 #include "messages.H"
 #include "catch_exceptions.H"
@@ -158,7 +159,12 @@ void print_dialogObj::implObj::enumerate_printers()
 		auto ustr=unicode::iconvert::tou::convert(n, l->charset())
 			.first;
 
-		printer_list.push_back(ustr);
+		printer_list.emplace_back(text_param{
+				theme_font{ printer->is_discovered()
+						? "printer_remote_font"
+						: "printer_local_font" },
+				ustr
+					});
 	}
 
 	listlayoutmanager selected_printer_list=
