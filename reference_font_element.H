@@ -17,8 +17,8 @@ LIBCXXW_NAMESPACE_START
 
 template<typename element_impl, typename tag>
 template<typename ...Args>
-reference_font_elementObj<element_impl, tag>
-::reference_font_elementObj(const std::string_view &fontname,
+reference_font_1elementObj<element_impl, tag>
+::reference_font_1elementObj(const std::string_view &fontname,
 			    Args && ...args)
 	: element_impl(std::forward<Args>(args)...),
 	  reference_font_tag<tag>(*this, fontname)
@@ -31,8 +31,8 @@ reference_font_elementObj<element_impl, tag>
 
 template<typename element_impl, typename tag>
 template<typename ...Args>
-reference_font_elementObj<element_impl, tag>
-::reference_font_elementObj(const current_fontcollection &reference_font,
+reference_font_1elementObj<element_impl, tag>
+::reference_font_1elementObj(const current_fontcollection &reference_font,
 			    Args && ...args)
 	: element_impl(std::forward<Args>(args)...),
 	  reference_font_tag<tag>(reference_font)
@@ -41,15 +41,15 @@ reference_font_elementObj<element_impl, tag>
 
 //! Default destructor
 template<typename element_impl, typename tag>
-reference_font_elementObj<element_impl, tag>
-::~reference_font_elementObj()=default;
+reference_font_1elementObj<element_impl, tag>
+::~reference_font_1elementObj()=default;
 
 //! Inherited from reference_fontObj
 
 //! Returns my attached element.
 
 template<typename element_impl, typename tag>
-elementObj::implObj &reference_font_elementObj<element_impl, tag>
+elementObj::implObj &reference_font_1elementObj<element_impl, tag>
 ::font_element()
 {
 	return this->get_element_impl();
@@ -60,7 +60,7 @@ elementObj::implObj &reference_font_elementObj<element_impl, tag>
 //! Invokes the superclass, and the reference_fontObj::initialized().
 
 template<typename element_impl, typename tag>
-void reference_font_elementObj<element_impl, tag>
+void reference_font_1elementObj<element_impl, tag>
 ::initialize(IN_THREAD_ONLY)
 {
 	// Initialize the mixin first.
@@ -78,7 +78,7 @@ void reference_font_elementObj<element_impl, tag>
 //! Invokes the superclass, and the reference_fontObj::theme_updated().
 
 template<typename element_impl, typename tag>
-void reference_font_elementObj<element_impl, tag>
+void reference_font_1elementObj<element_impl, tag>
 ::theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme)
 {
 	reference_font_tag<tag>::theme_updated(IN_THREAD, new_theme);
