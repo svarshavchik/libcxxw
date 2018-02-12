@@ -102,6 +102,10 @@ class LIBCXX_HIDDEN hotspotObj::implObj
 
 	bool process_key_event(IN_THREAD_ONLY, const key_event &ke);
 
+	//! Update hotspot temperature due to the window focus change.
+
+	void window_focus_change(IN_THREAD_ONLY, bool flag);
+
 	//! Button 1 press requests focus to us.
 
 	bool process_button_event(IN_THREAD_ONLY,

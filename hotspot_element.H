@@ -90,6 +90,21 @@ bool hotspot_elementObj<element_impl>
 		superclass_t::process_key_event(IN_THREAD, ke);
 }
 
+//! Implement window_focus_change(), inherited from elementObj::implObj
+
+//! Has same effect as key release event. If a button opens a popup after
+//! registering a key press. The key press makes the hotspot's temperature
+//! hot. When the popup closes, make sure that this hotspot doesn't think
+//! it's hot any more...
+
+template<typename element_impl>
+void hotspot_elementObj<element_impl>
+::window_focus_change(IN_THREAD_ONLY, bool flag)
+{
+	hotspotObj::implObj::window_focus_change(IN_THREAD, flag);
+	superclass_t::window_focus_change(IN_THREAD, flag);
+}
+
 //! Implement process_button_event(), inherited from elementObj::implObj
 
 //! Button 1 press requests input focus.

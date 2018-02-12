@@ -57,6 +57,9 @@ class LIBCXX_HIDDEN hotspot_elementObj
 			   const callback_trigger_t &trigger) override;
 
 	bool process_key_event(IN_THREAD_ONLY, const key_event &ke) override;
+
+	void window_focus_change(IN_THREAD_ONLY, bool flag) override;
+
 	bool process_button_event(IN_THREAD_ONLY,
 				  const button_event &be,
 				  xcb_timestamp_t timestamp) override;

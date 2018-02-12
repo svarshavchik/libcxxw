@@ -50,6 +50,15 @@ void hotspotObj::implObj::pointer_focus(IN_THREAD_ONLY,
 	update(IN_THREAD, trigger);
 }
 
+void hotspotObj::implObj::window_focus_change(IN_THREAD_ONLY, bool flag)
+{
+	if (!flag)
+	{
+		is_key_down=false;
+		update(IN_THREAD, {});
+	}
+}
+
 bool hotspotObj::implObj::process_key_event(IN_THREAD_ONLY, const key_event &ke)
 {
 	if (activate_on_key(ke))

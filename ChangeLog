@@ -1,3 +1,10 @@
+2018-02-10  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* Implement the print dialog.
+
+	* hotspot: cool down to warm or cold temperature if the window
+	loses keyboard focus.
+
 2018-02-02  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* list.C (single_selection_type): Do not deselect if the selected
