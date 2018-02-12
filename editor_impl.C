@@ -1309,7 +1309,7 @@ bool editorObj::implObj::validate_modified(IN_THREAD_ONLY,
 		return true; // By default.
 	}
 
-	bool flag;
+	bool flag=false;
 
 	try {
 		flag=validation_callback(IN_THREAD)(trigger);
