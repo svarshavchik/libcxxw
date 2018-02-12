@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([libcxxw], [0.1], [mrsam@courier-mta.com])
+AC_INIT([libcxxw], [0.2], [libcxx-users@lists.libcxx.org])
 AC_CONFIG_SRCDIR([connection.C])
 AC_CONFIG_HEADERS([libcxxw_config.h])
 AM_INIT_AUTOMAKE([dist-bzip2 foreign -Wno-portability])
@@ -61,6 +61,8 @@ AC_SUBST([XGETTEXT_EXTRA_OPTIONS])
 
 AC_ARG_WITH(testprograms, [AS_HELP_STRING([--with-testprograms],[Build internal test programs.])],[testprograms="$withval"])
 
+AC_ARG_WITH(localthemedir, [AS_HELP_STRING([--with-localthemedir],[Compile with -DTHEMEDIR=./themes (for testing purposes).])],[localthemedir="$withval"])
+
 BUILT_TESTPROGRAMS=""
 BUILT_INTERACTIVETESTPROGRAMS=""
 
@@ -82,6 +84,12 @@ AC_CONFIG_FILES([Makefile
 	packaging/fedora/libcxxw.spec
 	])
 
+VERSION_INFO=1:0:0
+AC_SUBST(VERSION_INFO)
+
+AM_CONDITIONAL([LOCALTHEMEDIR], [test "$localthemedir" = "yes" ])
+pwdthemes="`pwd`/themes"
+AC_SUBST(pwdthemes)
+
 AC_SUBST([LIBTOOL_DEPS])
-AC_SUBST([AM_CPPFLAGS])
 AC_OUTPUT

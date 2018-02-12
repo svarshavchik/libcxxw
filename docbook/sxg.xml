@@ -911,10 +911,10 @@ See COPYING for distribution information.
 	  factors</link> but still support rendering an &sxg; image of
 	any size, by filling the extra padding with the background color.
 	The &sxg; image's size gets rounded down until its size is an
-	even multiple of its specified with and height factors. The final
+	even multiple of its specified width and height factors. The final
 	image's size matches the desired size, with the rendered image centered
 	and the background color providing the few pixels' worth of padding
-	on the outside of the inmage.
+	on the outside of the image.
       </para>
     </section>
     <section id="sxgthemecolors">
@@ -1008,7 +1008,7 @@ See COPYING for distribution information.
       </para>
 
       <para>
-	Similarly, the <tag class='element'>dimension</tag> element list
+	Similarly, the <tag class='element'>dimension</tag> element lists
 	predefined widths and heights that can be referenced accordingly.
       </para>
     </section>

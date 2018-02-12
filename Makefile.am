@@ -1,13 +1,12 @@
 @LIBCXX_AM@
 
+if LOCALTHEMEDIR
+CPPFLAGS += -DTHEMEDIR=\"@pwdthemes@\"
+endif
+
 AUTOMAKE_OPTIONS=subdir-objects
 
 SUBDIRS= po includes/x/w
-
-configure: libtool
-
-libtool: $(LIBTOOL_DEPS)
-	$(SHELL) ./config.status libtool
 
 STATICLINKFLAGS=-Wl,-ljpeg -Wl,-lgif -Wl,-lcourier-unicode -Wl,-lpthread @LIBCXXW_LIBS@ -pthread
 
@@ -21,7 +20,7 @@ CXXFLAGS += -fvisibility-inlines-hidden $(if $(PROFILE),-pg) @STDTHREAD_CXXFLAGS
 
 libcxxw_la_LIBADD=-lcxx
 
-libcxxw_la_LDFLAGS=$(STATICLINKFLAGS)
+libcxxw_la_LDFLAGS=$(STATICLINKFLAGS) -version-info @VERSION_INFO@
 
 libcxxw_la_SOURCES=\
 	activated_in_thread.C			    \
@@ -825,7 +824,7 @@ $(call REFCOLLECTION_GEN,print_dialog/print_dialog.inc.H, \
 			print_dialog/print_dialog.xml)
 
 libcxxwcups_la_LIBADD=libcxxw.la -lcxxcups -lcxx -lcourier-unicode
-libcxxwcups_la_LDFLAGS=$(STATICLINKFLAGS)
+libcxxwcups_la_LDFLAGS=$(STATICLINKFLAGS) -version-info @VERSION_INFO@
 libcxxwcups_la_SOURCES=\
 	print_dialog/print_dialog.C		    \
 	print_dialog/print_dialog_impl.C	    \

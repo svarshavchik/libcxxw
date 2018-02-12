@@ -20,6 +20,7 @@ BuildRequires: libcxxbase-devel
 BuildRequires: freetype-devel
 BuildRequires: fontconfig-devel
 BuildRequires: libxcb-devel
+BuildRequires: xcb-proto
 BuildRequires: xcb-util-wm-devel
 BuildRequires: xcb-util-keysyms-devel
 BuildRequires: xcb-util-image-devel

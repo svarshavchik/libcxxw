@@ -29,7 +29,7 @@ See COPYING for distribution information.
       <listitem>
 	<para>
 	  Uses modern C++17 language features:
-	  lambdas handle events like mose button clicks and other
+	  lambdas handle events like mouse button clicks and other
 	  user activity; overloaded, variadic-parameter methods offering
 	  alternative means of configuring various display elements; and
 	  other C++17 features.

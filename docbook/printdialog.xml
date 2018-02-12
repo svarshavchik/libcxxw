@@ -30,7 +30,7 @@ See COPYING for distribution information.
 	<para>
 	  Using this dialog requires linking with
 	  <literal>-lcxxwcups</literal> and <literal>-lcxxcups</literal>
-	  in additional to the default libraries.
+	  in addition to the default libraries.
 	  See the sample
 	  <ulink url="examples/Makefile.am"><filename>Makefile.am</filename></ulink>
 	  for more information.

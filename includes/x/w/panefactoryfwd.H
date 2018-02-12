@@ -35,11 +35,11 @@ of each pane.
 
 Initially each pane shows only as much of the pane's element as fits within
 the specified pane initial size. Sliding dividers get placed between panes.
-The mouse or keyboard to moves the sliders. This adjust how the pane
-container overall space gets divided between all the panes.
+The mouse or keyboard moves the sliders. This adjusts how the pane
+container overall space gets divided between all of its panes.
 
 \note
-Each new pane element's needs to get show()n to be visible.
+Each new pane's element needs to get show()n to be visible.
 
 \par Miscellaneous pane properties
 
@@ -131,7 +131,7 @@ pane's usual scroll-bar, however the selection list supplies its own
 scroll-bar now when its height isn't enough to fit the entire list.
 The pane's horizontal alignment get set to
 \c LIBCXX_NAMESPACE::w::halign::fill which makes the selection list's width
-fit inside the pane. This ends up putting ths selection list's scroll-bar
+fit inside the pane. This ends up putting this selection list's scroll-bar
 in the same position where the pane's own scroll-bar normally goes.
 
 The end result is a selection list that looks like an integral part of the
