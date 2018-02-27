@@ -49,20 +49,6 @@ public:
 		    dim_t minimum_height,
 		    const function<void (const picture &, const pixmap &,
 					 const gc &)> &);
-
-	//! Retrieve the cached picture
-
-	//! Sometimes a scratch_buffer is used for read-only cached pictures,
-	//! if so we won't ask for a minimum size
-
-	const_picture get_picture();
-
-	//! Retrieve the cached pixmap
-
-	//! Sometimes a scratch_buffer is used for read-only cached pictures,
-	//! if so we won't ask for a minimum size
-
-	const_pixmap get_pixmap();
 };
 
 LIBCXXW_NAMESPACE_END

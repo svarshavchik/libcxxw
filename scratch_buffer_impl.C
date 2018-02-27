@@ -50,18 +50,4 @@ void scratch_bufferObj::implObj
 	callback(lock->pic, lock->pm, lock->graphic_context);
 }
 
-const_picture scratch_bufferObj::implObj::get_picture()
-{
-	cached_picture_t::lock lock(cached_picture);
-
-	return lock->pic;
-}
-
-const_pixmap scratch_bufferObj::implObj::get_pixmap()
-{
-	cached_picture_t::lock lock(cached_picture);
-
-	return lock->pm;
-}
-
 LIBCXXW_NAMESPACE_END
