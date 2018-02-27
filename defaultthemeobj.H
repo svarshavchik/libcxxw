@@ -80,7 +80,7 @@ public:
 	std::unordered_map<std::string, dim_t> dims;
 
 	//! Parsed colors
-	std::unordered_map<std::string, rgb> colors;
+	std::unordered_map<std::string, theme_color_t> colors;
 
 	//! Parsed gradients
 	std::unordered_map<std::string, rgb_gradient> color_gradients;

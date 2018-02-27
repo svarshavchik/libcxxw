@@ -22,7 +22,7 @@ class theme_parser_lock : public xml::doc::base::readlock {
 
 public:
 
-	const const_locale c_locale;
+	const_locale c_locale;
 
 	//! Constructor
 	theme_parser_lock(const xml::doc::base::readlock &l,

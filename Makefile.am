@@ -40,6 +40,8 @@ libcxxw_la_SOURCES=\
 	background_color_element.C		    \
 	background_color_element.H		    \
 	background_color_elementfwd.H		    \
+	background_color_element_recalculated.H	    \
+	background_color_element_recalculatedfwd.H  \
 	batch_queue.C				    \
 	batch_queue.H				    \
 	batch_queueobj.H			    \

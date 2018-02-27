@@ -37,7 +37,7 @@ struct progressbar_config {
 
 	//! The progress bar's slider's color.
 
-	rgb_gradient_arg slider_color{"progressbar"};
+	color_arg slider_color{"progressbar"};
 };
 
 LIBCXXW_NAMESPACE_END

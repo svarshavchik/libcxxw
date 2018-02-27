@@ -508,8 +508,9 @@ static bool update_dim_if_given(const theme_parser_lock &lock,
 
 static bool update_color(const theme_parser_lock &lock,
 			 const char *xpath_name,
-			 const std::unordered_map<std::string, rgb> &colors,
-			 rgb &color)
+			 const std::unordered_map<std::string,
+			 theme_color_t> &colors,
+			 theme_color_t &color)
 {
 	auto color_node=lock.clone();
 
@@ -587,6 +588,196 @@ void defaultthemeObj::load_dims(const theme_parser_lock &root_lock)
 
 // Parse colors
 
+static inline bool scale_theme_color(theme_parser_lock &lock,
+				     const std::string &id,
+				     const std::string &scale,
+				     rgb &color,
+				     std::unordered_map<std::string,
+				     theme_color_t> &parsed_colors)
+{
+	static const char * const channels[]={"r",
+					      "g",
+					      "b",
+					      "a"};
+
+	static rgb_component_t rgb::* const fields[]={
+		&rgb::r,
+		&rgb::g,
+		&rgb::b,
+		&rgb::a};
+
+	std::istringstream s;
+
+	imbue<std::istringstream> imbue{lock.c_locale, s};
+
+	for (size_t i=0; i<4; ++i)
+	{
+		auto attribute=lock.clone();
+
+		auto xpath=attribute->get_xpath(channels[i]);
+
+		if (xpath->count() == 0)
+			continue;
+
+		xpath->to_node();
+
+		s.seekg(0);
+		s.str(attribute->get_text());
+
+		double v;
+
+		s >> v;
+
+		if (s.fail())
+			throw EXCEPTION(gettextmsg(_("could not parse color id=%1%"),
+						   id));
+
+		if (v < 0)
+			throw EXCEPTION(gettextmsg(_("negative color value for id=%1%"),
+						   id));
+		rgb_component_t c;
+
+		if (scale.empty())
+		{
+			if (v > 1)
+				v=1;
+			c=v * rgb::maximum;
+		}
+		else
+		{
+			v *= color.*(fields[i]);
+
+			if (v > rgb::maximum)
+				v=rgb::maximum;
+			c=v;
+		}
+
+		color.*(fields[i])=c;
+	}
+
+	return true;
+}
+
+static inline bool scale_theme_color(theme_parser_lock &lock,
+				     const std::string &id,
+				     const std::string &scale,
+				     linear_gradient &color,
+				     std::unordered_map<std::string,
+				     theme_color_t> &parsed_colors)
+{
+	static const char * const coords[]={"x1",
+					    "y1",
+					    "x2",
+					    "y2"};
+
+	static double linear_gradient::* const fields[]={
+		&linear_gradient::x1,
+		&linear_gradient::y1,
+		&linear_gradient::x2,
+		&linear_gradient::y2};
+
+	std::istringstream s(lock->get_text());
+
+	imbue<std::istringstream> imbue{lock.c_locale, s};
+
+	for (size_t i=0; i<4; i++)
+	{
+		auto attribute=lock.clone();
+
+		auto xpath=attribute->get_xpath(coords[i]);
+
+		if (xpath->count() == 0)
+			continue;
+
+		xpath->to_node();
+
+		s.seekg(0);
+		s.str(attribute->get_text());
+
+		double v;
+
+		s >> v;
+
+		if (s.fail())
+			throw EXCEPTION(gettextmsg
+					(_("could not parse %2% for id=%1%"),
+					 id, coords[i]));
+
+		if (v < 0 || v>1)
+			throw EXCEPTION(gettextmsg
+					(_("%2 for id=%1% must be between 0"
+					   " and 1"),
+					 id, coords[i]));
+
+		color.*(fields[i])=v;
+	}
+
+
+	auto gradients=lock.clone();
+
+	auto xpath=gradients->get_xpath("gradient");
+
+	size_t n=xpath->count();
+
+	for (size_t i=0; i<n; ++i)
+	{
+		xpath->to_node(i+1);
+
+		auto gradient=gradients.clone();
+
+		auto vxpath=gradient->get_xpath("value");
+
+		vxpath->to_node();
+
+		unsigned n;
+
+		s.seekg(0);
+		s.str(gradient->get_text());
+
+		s >> n;
+
+		if (s.fail())
+			throw EXCEPTION(gettextmsg
+					(_("could not parse <value>"
+					   " for id=%1%"),
+					 id));
+
+		gradient=gradients.clone();
+		vxpath=gradient->get_xpath("color");
+		vxpath->to_node();
+
+		auto s=gradient->get_text();
+
+		if (s.empty())
+			continue;
+
+		auto iter=parsed_colors.find(s);
+
+		if (iter == parsed_colors.end())
+			return false; // Not yet parsed
+
+		if (!std::holds_alternative<rgb>(iter->second))
+			throw EXCEPTION(gettextmsg
+					(_("gradient id=%1% cannot use color "
+					   "%2"), id, s));
+		color.gradient.emplace(n, std::get<rgb>(iter->second));
+	}
+
+	try {
+		valid_gradient(color.gradient);
+	} catch (const exception &e) {
+		std::ostringstream o;
+
+		o << e;
+
+		throw EXCEPTION(gettextmsg
+				(_("gradient id=%1% is not valid: %2%"),
+				 id, o.str()));
+	}
+
+	return true;
+}
+
 void defaultthemeObj::load_colors(const theme_parser_lock &root_lock)
 {
 	auto lock=root_lock.clone();
@@ -621,7 +812,7 @@ void defaultthemeObj::load_colors(const theme_parser_lock &root_lock)
 
 			auto scale=lock->get_any_attribute("scale");
 
-			rgb color;
+			theme_color_t new_color;
 
 			if (!scale.empty())
 			{
@@ -630,68 +821,38 @@ void defaultthemeObj::load_colors(const theme_parser_lock &root_lock)
 				if (iter == colors.end())
 					continue; // Not yet parsed
 
-				color=iter->second;
+				new_color=iter->second;
 			}
-
-			static const char * const channels[]={"r",
-							      "g",
-							      "b",
-							      "a"};
-			static uint16_t rgb::* const fields[]={
-				&rgb::r,
-				&rgb::g,
-				&rgb::b,
-				&rgb::a};
-
-			for (size_t i=0; i<4; ++i)
+			else
 			{
-				auto attribute=lock.clone();
+				auto type=lock->get_any_attribute("type");
 
-				auto xpath=attribute->get_xpath(channels[i]);
+				if (type.empty()) type="rgb";
 
-				if (xpath->count() == 0)
-					continue;
-
-				xpath->to_node();
-
-				std::istringstream s(attribute->get_text());
-
-				imbue<std::istringstream> imbue{lock.c_locale,
-						s};
-
-				double v;
-
-				s >> v;
-
-				if (s.fail())
-					throw EXCEPTION(gettextmsg(_("could not parse color id=%1%"),
-							   id));
-
-				if (v < 0)
-					throw EXCEPTION(gettextmsg(_("negative color value for id=%1%"),
-							   id));
-				uint16_t c;
-
-				if (scale.empty())
-				{
-					if (v > 1)
-						v=1;
-					c=v * rgb::maximum;
-				}
-				else
-				{
-					v *= color.*(fields[i]);
-
-					if (v > rgb::maximum)
-						v=rgb::maximum;
-					c=v;
-				}
-
-				color.*(fields[i])=c;
+				if (type != "rgb" && type != "linear_gradient")
+					throw EXCEPTION
+						(gettextmsg
+						 (_("Unknown type=%1% specified"
+						    " for id=%2%"),
+						  type, id));
+				if (type == "linear_gradient")
+					new_color=linear_gradient{};
 			}
 
-			colors.insert({id, color});
-			parsed=true;
+			bool flag=std::visit
+				([&]
+				 (auto &c)
+				 {
+					 return scale_theme_color(lock, id,
+								  scale, c,
+								  colors);
+				 }, new_color);
+
+			if (flag)
+			{
+				colors.insert({id, new_color});
+				parsed=true;
+			}
 		}
 	} while (parsed);
 
@@ -760,8 +921,11 @@ void defaultthemeObj::load_color_gradients(const theme_parser_lock &root_lock)
 			if (iter == colors.end())
 				throw EXCEPTION(gettextmsg(_("Color gradient id=%1% references non-existent color %2%"), id, color->get_text()));
 
+			if (!std::holds_alternative<rgb>(iter->second))
+				throw EXCEPTION("TODO");
+
 			if (!new_gradient
-			    .insert({v, iter->second}).second)
+			    .insert({v, std::get<rgb>(iter->second)}).second)
 				throw EXCEPTION(gettextmsg(_("Duplicate value %1% specified for color gradient id=%1%"), v, id));
 		}
 
@@ -900,21 +1064,27 @@ void defaultthemeObj::load_borders(const theme_parser_lock &root_lock,
 
 				if (!cellcolor)
 				{
-					rgb color;
+					theme_color_t color;
+
 					update_color(lock, "color", colors,
 						     color);
 
+					auto mkbg=[&, this]
+						(const auto &c)
+						{
+							return screen
+							->create_background_color(c);
+						};
+
 					new_border->colors.push_back
-						(screen->create_background_color
-						 (color));
+						(std::visit(mkbg, color));
 
 					if (update_color(lock, "color2", colors,
 							 color))
 					{
 						new_border->colors.push_back
-							(screen
-							 ->create_background_color
-							 (color));
+							(std::visit(mkbg,
+								    color));
 					}
 				}
 			}

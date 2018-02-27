@@ -71,7 +71,7 @@ public:
 //! A linear gradient.
 
 struct linear_gradient {
-	double x1, y1, x2, y2;
+	double x1=0, y1=0, x2=1, y2=1;
 	rgb_gradient gradient;
 
 	bool operator==(const linear_gradient &o) const noexcept

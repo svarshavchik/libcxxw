@@ -403,11 +403,29 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
   <color id="progressbar_value_0_color" scale="0%" />
   <color id="progressbar_value_100_color" scale="70%" />
 
-  <color_gradient id="progressbar">
-    <color value="0">progressbar_value_0_color</color>
-    <color value="1">progressbar_value_100_color</color>
-    <color value="2">progressbar_value_100_color</color>
-  </color_gradient>
+  <color id="progressbar" type="linear_gradient">
+
+    <x1>0</x1>
+    <y1>0</y1>
+    <x2>1</x2>
+    <y2>0</y2>
+
+    <gradient>
+      <value>0</value>
+      <color>progressbar_value_0_color</color>
+    </gradient>
+
+    <gradient>
+      <value>1</value>
+      <color>progressbar_value_100_color</color>
+    </gradient>
+
+    <gradient>
+      <value>2</value>
+      <color>progressbar_value_100_color</color>
+    </gradient>
+
+  </color>
 
   <!-- Books -->
 
