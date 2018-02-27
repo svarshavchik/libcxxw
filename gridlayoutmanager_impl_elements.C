@@ -105,43 +105,12 @@ void gridlayoutmanagerObj::implObj::theme_updated(IN_THREAD_ONLY,
 {
 	grid_map_t::lock lock(grid_map);
 
-	for (const auto &row:(*lock)->elements)
-		for (const auto &col:row)
-			col->theme_updated(new_theme);
-
-	for (const auto &row:(*lock)->elements)
-		for (const auto &col:row)
-		{
-			// Borders elements are display elements. Each border
-			// specified by a grid element should be a part of
-			// some actual border, in straight_borders or corner
-			// borders, and, get updated directly (see
-			// straight_border_implObj). But, just to be sure, do
-			// our due diligence.
-
-			if (col->left_border)
-				col->left_border->theme_updated(IN_THREAD,
-								new_theme);
-			if (col->right_border)
-				col->right_border->theme_updated(IN_THREAD,
-								new_theme);
-			if (col->top_border)
-				col->top_border->theme_updated(IN_THREAD,
-								new_theme);
-			if (col->bottom_border)
-				col->bottom_border->theme_updated(IN_THREAD,
-								new_theme);
-		}
-
-	// Ditto
-	for (const auto &def: (*lock)->column_defaults)
-		if (def.second.default_border)
-			def.second.default_border->theme_updated(IN_THREAD,
-								 new_theme);
-	for (const auto &def: (*lock)->row_defaults)
-		if (def.second.default_border)
-			def.second.default_border->theme_updated(IN_THREAD,
-								 new_theme);
+	for_each_child(IN_THREAD,
+		       [&]
+		       (const auto &child)
+		       {
+			       child->impl->theme_updated(IN_THREAD, new_theme);
+		       });
 
 	(*lock)->padding_recalculated();
 	(*lock)->borders_changed();
@@ -735,6 +704,8 @@ corner_border gridlayoutmanagerObj::implObj::elementsObj
 
 void gridlayoutmanagerObj::implObj::initialize_new_elements(IN_THREAD_ONLY)
 {
+	grid_map_t::lock lock(grid_map);
+
 	bool flag;
 
 	// Before calculating the metrics, check if any of these
@@ -742,11 +713,13 @@ void gridlayoutmanagerObj::implObj::initialize_new_elements(IN_THREAD_ONLY)
 
 	do
 	{
-		for (const auto &element:grid_elements(IN_THREAD)->all_elements)
-		{
-			element.child_element->impl
-				->initialize_if_needed(IN_THREAD);
-		}
+		for_each_child
+			(IN_THREAD,
+			 [&]
+			 (const auto &child)
+			 {
+				 child->impl->initialize_if_needed(IN_THREAD);
+			 });
 
 		// initialize_new_elements() was invoked only if
 		// rebuild_elements() retursn true.
