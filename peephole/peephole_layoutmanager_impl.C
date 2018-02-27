@@ -8,12 +8,20 @@
 #include "metrics_horizvert.H"
 #include "catch_exceptions.H"
 #include "container.H"
+#include "generic_window_handler.H"
+#include "gc.H"
+#include "x/w/scratch_buffer.H"
 #include "run_as.H"
+#include <x/property_value.H>
 
 LOG_CLASS_INIT(LIBCXX_NAMESPACE::w::peepholeObj::layoutmanager_implObj)
 LIBCXX_HIDDEN;
 
 LIBCXXW_NAMESPACE_START
+
+static property::value<bool>
+disable_fast_scroll(LIBCXX_NAMESPACE_STR
+		    "::w::disable_fast_scroll", false);
 
 void peepholeObj::layoutmanager_implObj
 ::update_scrollbars(IN_THREAD_ONLY,
@@ -369,8 +377,10 @@ void peepholeObj::layoutmanager_implObj
 	}
 
 	LOG_DEBUG("Positioning element to: " << element_pos);
-	peephole_element_impl->update_current_position(IN_THREAD,
-						       element_pos);
+
+	if (!attempt_scroll_to(IN_THREAD, element_pos))
+		peephole_element_impl->update_current_position(IN_THREAD,
+							       element_pos);
 
 	// update_scrollbars expects to see only NEGATIVE x and y positions,
 	// which is how we normally scroll. But if the element is smaller than
@@ -387,6 +397,181 @@ void peepholeObj::layoutmanager_implObj
 	update_scrollbars(IN_THREAD, element_pos, current_position);
 }
 
+bool peepholeObj::layoutmanager_implObj
+::attempt_scroll_to(IN_THREAD_ONLY, const rectangle &r)
+{
+	if (disable_fast_scroll.get())
+		return false;
+
+	auto peephole_element_impl=
+		element_in_peephole->get_peepholed_element()->impl;
+
+	auto &element_current_position=
+		peephole_element_impl->data(IN_THREAD).current_position;
+
+	// This must be a scroll if:
+
+	// 0) We are visible
+
+	auto &e=get_element_impl();
+
+	if (!e.data(IN_THREAD).inherited_visibility)
+		return false;
+
+	// 1) The element's size doesn't change.
+	if (element_current_position.width != r.width ||
+	    element_current_position.height != r.height)
+		return false;
+
+	// 2) The element's position changes
+
+	if (element_current_position.x == r.x &&
+	    element_current_position.y == r.y)
+		return false;
+
+	auto &di=e.get_draw_info(IN_THREAD);
+
+	// 3) The peephole is unobstructed.
+	//
+	// Look at the element_viewport. Unobstructed means exactly one
+	// rectangle in there.
+	if (di.element_viewport.size() != 1)
+		return false;
+
+	auto &viewport_rectangle=*di.element_viewport.begin();
+
+	auto scrolled_rectangle=viewport_rectangle;
+
+	// 4) The scrolling distance fits within the viewport.
+
+	dim_t shift_left=0, shift_right=0, shift_up=0, shift_down=0;
+
+	if (element_current_position.x > r.x)
+	{
+		shift_left=dim_t::truncate(element_current_position.x-r.x);
+
+		if (shift_left >= viewport_rectangle.width)
+			return false;
+
+		scrolled_rectangle.x=coord_t::truncate(scrolled_rectangle.x-
+						       shift_left);
+	}
+	else
+	{
+		shift_right=dim_t::truncate(r.x-element_current_position.x);
+
+		if (shift_right >= viewport_rectangle.width)
+			return false;
+
+		scrolled_rectangle.x=coord_t::truncate(scrolled_rectangle.x+
+						       shift_right);
+	}
+
+	if (element_current_position.y > r.y)
+	{
+		shift_up=dim_t::truncate(element_current_position.y-r.y);
+
+		if (shift_up >= viewport_rectangle.height)
+			return false;
+
+		scrolled_rectangle.y=coord_t::truncate(scrolled_rectangle.y-
+						       shift_up);
+	}
+	else
+	{
+		shift_down=dim_t::truncate(r.y-element_current_position.y);
+
+		if (shift_down >= viewport_rectangle.height)
+			return false;
+
+		scrolled_rectangle.y=coord_t::truncate(scrolled_rectangle.y+
+						       shift_down);
+	}
+
+	// So, viewport_rectangle is our current rectangle. And
+	// scrolled_rectangle is what would its position be, if it was scrolled
+	// like we want to scroll the peepholed element.
+
+	// The intersection between the two of them would be the portion of the
+	// peephole viewport that gets scrolled AFTER it is scrolled.
+#if 0
+	std::cout << "CURRENT POSITION: " << element_current_position
+		  << std::endl;
+	std::cout << "NEW POSITION: " << r << std::endl;
+
+	std::cout << "SCROLL VIEWPORT: " << viewport_rectangle << std::endl;
+	std::cout << "    (" << e.objname() << ")" << std::endl;
+	std::cout << "TO: " << scrolled_rectangle << std::endl;
+#endif
+	auto after_scroll_rectangle_set=intersect(di.element_viewport,
+						  {scrolled_rectangle});
+
+	// Should always be a single rectangle.
+
+	if (after_scroll_rectangle_set.size() != 1)
+		return false;
+
+	auto scrolled_to=*after_scroll_rectangle_set.begin();
+
+	// Now, reverse engineer where this gets scrolled from.
+
+	auto scrolled_from=scrolled_to;
+
+	scrolled_from.x =
+		coord_t::truncate(scrolled_from.x-shift_right+shift_left);
+	scrolled_from.y =
+		coord_t::truncate(scrolled_from.y-shift_down+shift_up);
+
+	// scrolled_to is the shifted position of the scroll area.
+	//
+	// The scroll effectively paints it. Subtract it from the entire
+	// viewport to determine what should be manually redrawn, after the
+	// scroll, because it was vacated by the scrolled content.
+
+	auto redrawn=subtract(di.element_viewport, {scrolled_to});
+#if 0
+	std::cout << "MOVE: " << element_current_position
+		  << " -> " << r
+		  << std::endl;
+	std::cout << "SCROLL: " << scrolled_from << " -> " << scrolled_to
+		  << std::endl;
+	std::cout << "REDRAW " << e.objname() << ":" << std::endl;
+	for (const auto &r:redrawn)
+		std::cout << " " << r << std::endl;
+#endif
+	// Effect the scroll using xcb_copy-area
+
+	peephole_element_impl->element_scratch_buffer->get
+		(0, 0,
+		 [&, this]
+		 (const picture &,
+		  const pixmap &,
+		  const gc &gc)
+		 {
+			 auto wid=peephole_element_impl->get_window_handler()
+				 .id();
+
+			 xcb_copy_area(IN_THREAD->info->conn, wid, wid,
+				       gc->impl->gc_id(),
+				       coord_t::truncate(scrolled_from.x),
+				       coord_t::truncate(scrolled_from.y),
+				       coord_t::truncate(scrolled_to.x),
+				       coord_t::truncate(scrolled_to.y),
+				       coord_t::truncate(scrolled_from.width),
+				       coord_t::truncate(scrolled_from.height));
+		 });
+
+	// Notify the element via scroll_by_parent_container before
+	// invoking exposure_event_recursive() in order to redraw everything
+	// inside it.
+
+	peephole_element_impl->scroll_by_parent_container(IN_THREAD, r.x, r.y);
+	if (!redrawn.empty())
+		e.exposure_event_recursive(IN_THREAD, redrawn);
+
+	return true;
+}
+
 void peepholeObj::layoutmanager_implObj
 ::update_horizontal_scroll(IN_THREAD_ONLY, dim_t offset)
 {
@@ -398,7 +583,10 @@ void peepholeObj::layoutmanager_implObj
 	coord_t x=coord_t::truncate(offset);
 
 	cur_pos.x= -x;
-	peephole_element_impl->update_current_position(IN_THREAD, cur_pos);
+
+	if (!attempt_scroll_to(IN_THREAD, cur_pos))
+		peephole_element_impl->update_current_position(IN_THREAD,
+							       cur_pos);
 }
 
 void peepholeObj::layoutmanager_implObj
@@ -412,7 +600,9 @@ void peepholeObj::layoutmanager_implObj
 	coord_t y=coord_t::truncate(offset);
 
 	cur_pos.y= -y;
-	peephole_element_impl->update_current_position(IN_THREAD, cur_pos);
+	if (!attempt_scroll_to(IN_THREAD, cur_pos))
+		peephole_element_impl->update_current_position(IN_THREAD,
+							       cur_pos);
 }
 
 void peepholeObj::layoutmanager_implObj

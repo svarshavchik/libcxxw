@@ -108,6 +108,22 @@ class LIBCXX_HIDDEN peepholeObj::layoutmanager_implObj
 	void recalculate_with_requested_visibility(IN_THREAD_ONLY,
 						   bool flag);
 
+ private:
+
+	//! See if we can scroll the element.
+
+	//! Computed the peepholed element's new position. Determine whether
+	//! the element can be repositioned by scrolling the visible peephole
+	//! using CopyArea, and manually refreshing the exposed areas.
+	//!
+	//! If all the qualification are met, the scroll gets performed and
+	//! \c true gets returned; a \c false return indicates the element's
+	//! update_current_position() should be called, and let it handle
+	//! everything.
+
+	bool attempt_scroll_to(IN_THREAD_ONLY, const rectangle &);
+
+ protected:
 	virtual void update_scrollbars(IN_THREAD_ONLY,
 				       const rectangle &element_pos,
 				       const rectangle &current_position);

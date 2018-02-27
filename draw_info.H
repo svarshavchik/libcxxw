@@ -65,6 +65,11 @@ struct draw_info {
 	//! region of its parent. The calculated visibly-clipped region is
 	//! placed here. This is an empty set if this display element
 	//! is completely invisible.
+	//!
+	//! This element's top/left coordinate in the top level window
+	//! gets specified by absolute_location, and element_viewport
+	//! is some subset (element_viewport's (0,0) is the top level window's
+	//! top left corner).
 
 	rectangle_set element_viewport;
 

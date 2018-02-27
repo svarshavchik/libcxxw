@@ -1,3 +1,7 @@
+2018-02-18  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* Use CopyArea() to optimize scrollbar-based scrolling.
+
 0.2
 
 2018-02-10  Sam Varshavchik  <mrsam@courier-mta.com>
