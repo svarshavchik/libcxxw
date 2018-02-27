@@ -521,7 +521,8 @@ static auto get_cached_sxg_image(const sxg_parser &sxg,
 				 dim_t h,
 				 dim_t preadjust_w,
 				 dim_t preadjust_h,
-				 const std::optional<rgb> &background_color)
+				 const std::optional<const_picture>
+				 &background_color)
 {
 	// preadjust_[wh] is the original requested size of the rendered
 	// sxg image.
@@ -570,9 +571,9 @@ static auto get_cached_sxg_image(const sxg_parser &sxg,
 
 			 pixmap->impl->points_of_interest=
 				 has_background_color
-				 ? sxg->render_points(w, h)
+				 ? sxg->render_points(w, h, pixmap)
 				 : sxg->render_points(preadjust_w,
-						      preadjust_h);
+						      preadjust_h, pixmap);
 
 			 auto picture=pixmap->create_picture();
 
@@ -589,23 +590,24 @@ static auto get_cached_sxg_image(const sxg_parser &sxg,
 				 auto temp_picture=
 					 temp_pixmap->create_picture();
 
-				 sxg->render(temp_picture, temp_pixmap);
 
-				 picture->fill_rectangle({0, 0,
-							 preadjust_w,
-							 preadjust_h},
-					 background_color.value());
+				 sxg->render(temp_picture, temp_pixmap);
 
 				 coord_t offset_x=coord_t::truncate
 					 ((preadjust_w-w)/2);
 				 coord_t offset_y=coord_t::truncate
 					 ((preadjust_h-h)/2);
 
+				 picture->composite
+					 (*background_color,
+					  -offset_x,
+					  -offset_y,
+					  {0, 0, preadjust_w, preadjust_h});
 
 				 picture->composite(temp_picture, 0, 0,
 						    {offset_x, offset_y,
 								    w, h},
-						    render_pict_op::op_over);
+						    render_pict_op::op_src);
 
 				 // Also adjust the points.
 
@@ -655,7 +657,7 @@ static auto create_sxg_image(const std::string &name,
 	}
 
 	return get_cached_sxg_image(sxg, drawable_pictformat, screenref, w, h,
-				    w, h, std::optional<rgb>());
+				    w, h, {});
 }
 
 static auto create_sxg_image(const std::string &name,
@@ -665,7 +667,7 @@ static auto create_sxg_image(const std::string &name,
 			     dim_t w, dim_t h,
 			     icon_scale scale)
 {
-	auto background_color=sxg->background_color();
+	auto background_color=sxg->get_background_color(w, h, screenref->impl);
 
 	if (background_color)
 		scale=icon_scale::nomore; // We can scale.

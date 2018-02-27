@@ -8,7 +8,9 @@
 #include "sxg/sxg_parserfwd.H"
 #include "defaultthemefwd.H"
 #include "iconfwd.H"
+#include "background_colorfwd.H"
 #include "x/w/screenfwd.H"
+#include "x/w/screenobj.H"
 #include "x/w/fontfwd.H"
 #include "x/w/gcfwd.H"
 #include "x/w/pixmapfwd.H"
@@ -106,7 +108,8 @@ class LIBCXX_HIDDEN sxg_parserObj : virtual public obj {
 	//! receives, return any predefined points in the image.
 	//! The SXG image may define certain points. Return the
 	//! locations of predefined points.
-	pixmap_points_of_interest_t render_points(dim_t, dim_t) const;
+	pixmap_points_of_interest_t render_points(dim_t, dim_t,
+						  const drawable &) const;
 
 	void render(
 		    //! This PICTURE is cleared to a transparent color, then
@@ -120,7 +123,13 @@ class LIBCXX_HIDDEN sxg_parserObj : virtual public obj {
 
 	//! Whether this SXG image defines a background color.
 
-	std::optional<rgb> background_color() const;
+	//! The parameter is a reference drawable where the SXG image would
+	//! be drawn into.
+	std::optional<const_picture>
+		get_background_color(dim_t width,
+				     dim_t height,
+				     const ref<screenObj::implObj> &s)
+		const;
 
  private:
 
@@ -225,7 +234,10 @@ class LIBCXX_HIDDEN sxg_parserObj : virtual public obj {
 
 		color_info(const theme_parser_lock &lock);
 
-		rgb get_color(const defaulttheme &w) const;
+		const_picture get_color(dim_t width,
+					dim_t height,
+					const ref<screenObj::implObj> &s,
+					const defaulttheme &theme) const;
 	};
 
 	//! Text picture info
@@ -422,6 +434,15 @@ class LIBCXX_HIDDEN sxg_parserObj : virtual public obj {
 
 		const sxg_parserObj &sxg_parser_ref;
 
+		//! The drawable's screen
+		ref<screenObj::implObj> s;
+
+		//! Destination width
+		dim_t drawable_width;
+
+		//! Destination height
+		dim_t drawable_height;
+
 		//! Computed scaling, by how much to scale the SXG image.
 		double scale_w=1;
 
@@ -489,7 +510,8 @@ class LIBCXX_HIDDEN sxg_parserObj : virtual public obj {
 
 		//! Constructor
 		execution_info(const sxg_parserObj &sxg_parser_refArg,
-			       dim_t w, dim_t h);
+			       dim_t w, dim_t h,
+			       const ref<screenObj::implObj> &s);
 
 	};
 

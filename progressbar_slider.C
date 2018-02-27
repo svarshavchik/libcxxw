@@ -101,13 +101,19 @@ void progressbar_sliderObj::update(IN_THREAD_ONLY,
 
 		TEST_SLIDER_GRADIENT();
 #endif
+		linear_gradient lg{0, 0, 1.0, 0,
+				updated_theme
+				->get_theme_color_gradient(slider_color)};
+
+		auto p=s->impl->create_linear_gradient_picture
+			(lg,
+			 updated_width,
+			 1,
+			 render_repeat::pad);
+
 		background_color_element<progressbar_gradient_tag>
 			::update(IN_THREAD, s->impl->create_background_color
-				 (s->create_linear_gradient_picture
-				  (updated_theme
-				   ->get_theme_color_gradient(slider_color),
-				   0, 0, coord_t::truncate(updated_width-1),
-				   0, render_repeat::pad)));
+				 (p));
 
 		new_gradient_required=false;
 	}

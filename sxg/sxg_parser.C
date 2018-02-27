@@ -1,5 +1,5 @@
 /*
-** Copyright 2017 Double Precision, Inc.
+** Copyright 2017-2018 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 
@@ -18,6 +18,7 @@
 #include "pixmap.H"
 #include "screen.H"
 #include "defaulttheme.H"
+#include "background_color.H"
 #include <x/locale.H>
 #include <x/imbue.H>
 #include <courier-unicode.h>
@@ -329,10 +330,12 @@ sxg_parserObj::render_execute_info
 
 sxg_parserObj::execution_info
 ::execution_info(const sxg_parserObj &sxg_parser_refArg,
-		 dim_t w, dim_t h)
-	: sxg_parser_ref(sxg_parser_refArg)
+		 dim_t w, dim_t h,
+		 const ref<screenObj::implObj> &s)
+	: sxg_parser_ref{sxg_parser_refArg}, s{s},
+	  drawable_width{w}, drawable_height{h}
 {
-		// Compute scaling factors
+	// Compute scaling factors
 
 	scale_w=(double)dim_t::value_type(w)/
 		dim_t::value_type(sxg_parser_ref.nominal_width);
@@ -1057,16 +1060,21 @@ sxg_parserObj::color_info::color_info(const theme_parser_lock &lock)
 	}
 }
 
-rgb sxg_parserObj::color_info::get_color(const defaulttheme &theme) const
+const_picture sxg_parserObj::color_info::get_color(dim_t width,
+						   dim_t height,
+						   const ref<screenObj
+						   ::implObj> &s,
+						   const defaulttheme &theme)
+	const
 {
 	if (theme_color.empty())
 	{
-		return {
-			rgb_component_t(rgb::maximum * red),
-			rgb_component_t(rgb::maximum * green),
-			rgb_component_t(rgb::maximum * blue),
-			rgb_component_t(rgb::maximum * alpha)
-				};
+		return s->create_solid_color_picture({
+				rgb_component_t(rgb::maximum * red),
+					rgb_component_t(rgb::maximum * green),
+					rgb_component_t(rgb::maximum * blue),
+					rgb_component_t(rgb::maximum * alpha)
+					});
 	}
 
 	auto color=theme->get_theme_color(theme_color);
@@ -1085,10 +1093,10 @@ rgb sxg_parserObj::color_info::get_color(const defaulttheme &theme) const
 	if (alpha_value > rgb::maximum)
 		alpha_value=rgb::maximum;
 
-	return rgb{rgb_component_t(red_value),
-			rgb_component_t(green_value),
-			rgb_component_t(blue_value),
-			rgb_component_t(alpha_value)};
+	return s->create_solid_color_picture({rgb_component_t(red_value),
+				rgb_component_t(green_value),
+				rgb_component_t(blue_value),
+				rgb_component_t(alpha_value)});
 }
 
 // Parse all <font> elements. Hijack theme code to do all the work for us.
@@ -2395,17 +2403,22 @@ sxg_parserObj::parse_render_fill(const theme_parser_lock &render_element)
 		([=]
 		 (const render_execute_info &info)
 		 {
-			 rectangle rvec[n];
+			 rectangle r;
+
+			 auto p=color.get_color(info.info.drawable_width,
+						info.info.drawable_height,
+						info.info.s,
+						info.info.sxg_parser_ref.theme);
 
 			 for (size_t i=0; i<n; ++i)
-				 rectangles.at(i).scale(info.scale, rvec[i]);
+			 {
+				 rectangles.at(i).scale(info.scale, r);
 
-			 info.dest_picture->fill_rectangles(rvec, n,
-							    color.get_color
-							    (info.info
-							     .sxg_parser_ref
-							     .theme),
-							    op);
+				 info.dest_picture->composite(p,
+							      r.x,
+							      r.y,
+							      r, op);
+			 }
 		 });
 }
 
@@ -2853,7 +2866,8 @@ double sxg_parserObj::pixels_per_mm_h() const
 void sxg_parserObj::render(const picture &p,
 			   const drawable &d) const
 {
-	execution_info info{*this, d->get_width(), d->get_height()};
+	execution_info info{*this, d->get_width(), d->get_height(),
+			d->impl->get_screen()->impl};
 
 	// Start by clearing the picture
 
@@ -2938,10 +2952,13 @@ void sxg_parserObj::render(const picture &p,
 		case picture_type_t::solid_color:
 			info.const_pictures
 				.insert({picture_info.first,
-							d->get_screen()->impl
-							->create_solid_color_picture
-							(picture_info.second.color
-							 .get_color(theme))});
+							picture_info.second
+							.color
+							.get_color
+							(d->get_width(),
+							 d->get_height(),
+							 d->get_screen()->impl,
+							 theme)});
 			break;
 		case picture_type_t::pixmap:
 
@@ -2979,9 +2996,11 @@ void sxg_parserObj::render(const picture &p,
 		op->execute(info);
 }
 
-pixmap_points_of_interest_t sxg_parserObj::render_points(dim_t w, dim_t h) const
+pixmap_points_of_interest_t sxg_parserObj::render_points(dim_t w, dim_t h,
+							 const drawable &d)
+	const
 {
-	execution_info info{*this, w, h};
+	execution_info info{*this, w, h, d->impl->get_screen()->impl};
 
 	// This will be main picture's scale, when rendered.
 	scale_info main_scale(size_type_t::scaled,
@@ -3146,7 +3165,10 @@ dim_t sxg_parserObj::width_for_height(dim_t height, icon_scale scale) const
 		 scale);
 }
 
-std::optional <rgb> sxg_parserObj::background_color()
+std::optional <const_picture>
+sxg_parserObj::get_background_color(dim_t width,
+				    dim_t height,
+				    const ref<screenObj::implObj> &s)
 	const
 {
 	auto iter=pictures.find("background");
@@ -3154,7 +3176,7 @@ std::optional <rgb> sxg_parserObj::background_color()
 	if (iter != pictures.end() &&
 	    iter->second.type == picture_type_t::solid_color)
 	{
-		return iter->second.color.get_color(theme);
+		return iter->second.color.get_color(width, height, s, theme);
 	}
 
 	return {};

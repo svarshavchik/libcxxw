@@ -47,9 +47,11 @@ sxg_parserObj::create_text_picture(const picture_info &info,
 					richtextmeta{
 					screenref->impl
 						->create_background_color
-						(screenref->impl
-						 ->create_solid_color_picture
-						 (t.color.get_color(theme))),
+						(t.color.get_color
+						 (main->get_width(),
+						  main->get_height(),
+						  main->impl->get_screen()
+						  ->impl, theme)),
 						screenref->impl->fontcaches
 						->create_custom_font
 						(screenref,
