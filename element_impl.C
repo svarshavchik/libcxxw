@@ -506,6 +506,35 @@ void elementObj::implObj::update_current_position(IN_THREAD_ONLY,
 	current_position_updated(IN_THREAD);
 }
 
+void elementObj::implObj::scroll_by_parent_container(IN_THREAD_ONLY,
+						     coord_t x,
+						     coord_t y)
+{
+	auto &current_position=data(IN_THREAD).current_position;
+
+	if (current_position.x == x && current_position.y == y)
+		return;
+
+	current_position.x=x;
+	current_position.y=y;
+
+	invalidate_cached_draw_info(IN_THREAD, {});
+
+	auto r=current_position;
+
+	// Our update_position() will not do anything because, supposedly
+	// the current position is not getting changed. This is just
+	// in case it is overridden by a subclass:
+	update_current_position(IN_THREAD, r);
+
+	// Since update_current_position() did nothing, we have to do this:
+	notify_updated_position(IN_THREAD);
+
+	// And also notify ourselves and any child processes as if our
+	// absolute location has changed:
+	absolute_location_updated(IN_THREAD);
+}
+
 void elementObj::implObj::current_position_updated(IN_THREAD_ONLY)
 {
 	schedule_update_position_processing(IN_THREAD);

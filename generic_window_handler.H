@@ -443,6 +443,10 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 	void process_collected_exposures(IN_THREAD_ONLY) override;
 
+	//! Implement the graphics exposure event.
+
+	void process_collected_graphics_exposures(IN_THREAD_ONLY) override;
+
 	//! Theme update notification.
 	void theme_updated_event(IN_THREAD_ONLY) override;
 

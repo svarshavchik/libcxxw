@@ -274,13 +274,29 @@ void connection_threadObj::run_event(IN_THREAD_ONLY,
 			// into a generic rectangle, which can have negative
 			// cordinates; hence rectangle's X & Y are signed.
 
-			iter->second->exposed_rectangles(IN_THREAD)
-				.insert({msg->x, msg->y, msg->width,
-							msg->height});
-			iter->second->exposed_rectangles_complete(IN_THREAD)=
-				msg->count == 0;
+			auto &r=iter->second->exposure_rectangles(IN_THREAD);
+
+			r.rectangles.insert({msg->x, msg->y, msg->width,
+						msg->height});
+			r.complete=msg->count == 0;
 		}
 		return;
+	case XCB_GRAPHICS_EXPOSURE:
+		{
+			GET_MSG(graphics_exposure_event);
+
+			FIND_HANDLER(drawable);
+
+			auto &r=iter->second
+				->graphics_exposure_rectangles(IN_THREAD);
+
+			r.rectangles.insert({msg->x, msg->y, msg->width,
+						msg->height});
+			r.complete=msg->count == 0;
+		}
+		return;
+
+
 	};
 }
 

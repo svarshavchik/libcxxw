@@ -63,13 +63,27 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 	//! process_collected_exposures() after all exposure events got
 	//! buffered.
 
-	rectangle_set exposed_rectangles_thread_only;
+	struct exposed_t {
 
-	//! Count on the most recent Exposure event was 0
+		//! The collected rectangles
 
-	//! Updated by connection_thread, which uses it, as part of its
-	//! loop, to determine when to call process_colletced_exposures().
-	bool exposed_rectangles_complete_thread_only=false;
+		rectangle_set rectangles;
+
+		//! Count on the most recent Exposure event was 0
+
+		//! Updated by connection_thread, which uses it, as part of its
+		//! loop, to determine when to call
+		//! process_collected_exposures().
+		bool complete=false;
+	};
+
+	//! Exposure event's collected rectangles
+
+	exposed_t exposure_rectangles_thread_only;
+
+	//! GraphicsExposure event's collected rectangles
+
+	exposed_t graphics_exposure_rectangles_thread_only;
 
 	//! Most recently received ConfigureNotify event, if there is one.
 
@@ -84,8 +98,8 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 	THREAD_DATA_ONLY(grabbed_timestamp);
 	THREAD_DATA_ONLY(grab_locked);
 	THREAD_DATA_ONLY(selections);
-	THREAD_DATA_ONLY(exposed_rectangles);
-	THREAD_DATA_ONLY(exposed_rectangles_complete);
+	THREAD_DATA_ONLY(exposure_rectangles);
+	THREAD_DATA_ONLY(graphics_exposure_rectangles);
 	THREAD_DATA_ONLY(pending_configure_notify_event);
 
 	//! My screen
@@ -166,6 +180,10 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 	//! Connection thread wants us to process the collected exposures.
 
 	virtual void process_collected_exposures(IN_THREAD_ONLY);
+
+	//! Connection thread wants us to process the collected graphics exposures.
+
+	virtual void process_collected_graphics_exposures(IN_THREAD_ONLY);
 
 	//! A new theme has been installed
 

@@ -359,6 +359,16 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	virtual void update_current_position(IN_THREAD_ONLY,
 					     const rectangle &r);
 
+	//! The parent container is scrolling us.
+
+	//! This is semantically equivalent to update_current_position(),
+	//! except that current_position_updated() does not get invoked.
+	//! Updates this element's position, and invalidates the cached
+	//! draw info. The parent container scrolling us will be responsible
+	//! for redrawing everything, we're just doing the bookkeeping here.
+
+	void scroll_by_parent_container(IN_THREAD_ONLY, coord_t x, coord_t y);
+
 	//! The top level window's position changed, but not its size
 
 	//! So nothing has to be recalculated, however popups need to know

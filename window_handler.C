@@ -142,6 +142,10 @@ void window_handlerObj::process_collected_exposures(IN_THREAD_ONLY)
 {
 }
 
+void window_handlerObj::process_collected_graphics_exposures(IN_THREAD_ONLY)
+{
+}
+
 void window_handlerObj::theme_updated_event(IN_THREAD_ONLY)
 {
 }

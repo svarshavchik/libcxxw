@@ -496,7 +496,16 @@ void generic_windowObj::handlerObj::remove_background_color(IN_THREAD_ONLY)
 void generic_windowObj::handlerObj::process_collected_exposures(IN_THREAD_ONLY)
 {
 	has_exposed(IN_THREAD)=true;
-	exposure_event_recursive(IN_THREAD, exposed_rectangles(IN_THREAD));
+	exposure_event_recursive(IN_THREAD,
+				 exposure_rectangles(IN_THREAD).rectangles);
+}
+
+void generic_windowObj::handlerObj
+::process_collected_graphics_exposures(IN_THREAD_ONLY)
+{
+	exposure_event_recursive(IN_THREAD,
+				 graphics_exposure_rectangles(IN_THREAD)
+				 .rectangles);
 }
 
 void generic_windowObj::handlerObj::theme_updated_event(IN_THREAD_ONLY)
@@ -999,7 +1008,7 @@ void generic_windowObj::handlerObj::configure_notify_received(IN_THREAD_ONLY,
 
 		// And we can throw away all accumulated exposure rectangles
 		// because we are guaranteed to get new ones.
-		exposed_rectangles(IN_THREAD).clear();
+		exposure_rectangles(IN_THREAD).rectangles.clear();
 	}
 	*lock=r;
 }

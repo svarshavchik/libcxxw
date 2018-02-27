@@ -194,8 +194,10 @@ bool connection_threadObj
 			processed_buffered_event=true;
 		}
 
-		if (!w.exposed_rectangles(IN_THREAD).empty() &&
-		    w.exposed_rectangles_complete(IN_THREAD))
+		auto &exposure_rectangles=w.exposure_rectangles(IN_THREAD);
+
+		if (!exposure_rectangles.rectangles.empty() &&
+		    exposure_rectangles.complete)
 		{
 			// Exposure events were received, and the last one
 			// had a 0 count.
@@ -204,7 +206,24 @@ bool connection_threadObj
 				w.process_collected_exposures(IN_THREAD);
 			} CATCH_EXCEPTIONS;
 
-			w.exposed_rectangles(IN_THREAD).clear();
+			exposure_rectangles.rectangles.clear();
+			processed_buffered_event=true;
+		}
+
+		// Same logic for graphics exposures
+
+		auto &graphics_exposure_rectangles=
+			w.exposure_rectangles(IN_THREAD);
+
+		if (!graphics_exposure_rectangles.rectangles.empty() &&
+		    graphics_exposure_rectangles.complete)
+		{
+			try {
+				w.process_collected_graphics_exposures
+					(IN_THREAD);
+			} CATCH_EXCEPTIONS;
+
+			graphics_exposure_rectangles.rectangles.clear();
 			processed_buffered_event=true;
 		}
 
