@@ -1,5 +1,5 @@
 /*
-** Copyright 2017 Double Precision, Inc.
+** Copyright 2017-2018 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
@@ -10,6 +10,7 @@
 #include "container.H"
 #include "generic_window_handler.H"
 #include "gc.H"
+#include "background_color.H"
 #include "x/w/scratch_buffer.H"
 #include "run_as.H"
 #include <x/property_value.H>
@@ -411,11 +412,14 @@ bool peepholeObj::layoutmanager_implObj
 
 	// This must be a scroll if:
 
-	// 0) We are visible
+	// 0) We are visible, and our background is scrollable
 
 	auto &e=get_element_impl();
 
 	if (!e.data(IN_THREAD).inherited_visibility)
+		return false;
+
+	if (!e.current_background_color(IN_THREAD)->is_scrollable_background())
 		return false;
 
 	// 1) The element's size doesn't change.

@@ -113,6 +113,11 @@ class LIBCXX_HIDDEN theme_background_colorObj : public background_colorObj {
 
 	~theme_background_colorObj()=default;
 
+	bool is_scrollable_background() override
+	{
+		return true;
+	}
+
 	const_picture get_current_color(IN_THREAD_ONLY) override
 	{
 		return nontheme_background_color->get_current_color(IN_THREAD);
@@ -139,6 +144,15 @@ class LIBCXX_HIDDEN theme_background_colorObj : public background_colorObj {
 						      screen,
 						      current_theme);
 	}
+
+	// TODO
+
+	background_color get_background_color_for(IN_THREAD_ONLY,
+						  elementObj::implObj &e)
+		override
+	{
+		return ref(this);
+	}
 };
 
 background_color screenObj::implObj
@@ -159,10 +173,13 @@ class LIBCXX_HIDDEN nonThemeBackgroundColorObj : public background_colorObj {
 
 
 	const const_picture fixed_color;
+	const bool is_scrollable;
 
  public:
-	nonThemeBackgroundColorObj(const const_picture &fixed_color)
-		: fixed_color(fixed_color)
+	nonThemeBackgroundColorObj(const const_picture &fixed_color,
+				   bool is_scrollable)
+		: fixed_color{fixed_color},
+		is_scrollable{is_scrollable}
 	{
 	}
 
@@ -173,6 +190,11 @@ class LIBCXX_HIDDEN nonThemeBackgroundColorObj : public background_colorObj {
 		return fixed_color;
 	}
 
+	bool is_scrollable_background() override
+	{
+		return is_scrollable;
+	}
+
 	void initialize(IN_THREAD_ONLY) override
 	{
 	}
@@ -180,6 +202,15 @@ class LIBCXX_HIDDEN nonThemeBackgroundColorObj : public background_colorObj {
 	void theme_updated(IN_THREAD_ONLY,
 			   const defaulttheme &new_theme) override
 	{
+	}
+
+	// TODO
+
+	background_color get_background_color_for(IN_THREAD_ONLY,
+						  elementObj::implObj &e)
+		override
+	{
+		return ref(this);
 	}
 };
 
@@ -194,7 +225,8 @@ background_color screenObj::implObj
 		(pic,
 		 [&, this]
 		 {
-			 return ref<nonThemeBackgroundColorObj>::create(pic);
+			 return ref<nonThemeBackgroundColorObj>::create(pic,
+									false);
 		 });
 }
 

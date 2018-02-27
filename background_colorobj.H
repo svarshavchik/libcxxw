@@ -7,6 +7,7 @@
 
 #include <x/obj.H>
 #include "x/w/picturefwd.H"
+#include "x/w/elementobj.H"
 #include "connection_threadfwd.H"
 #include "defaultthemefwd.H"
 
@@ -20,11 +21,35 @@ LIBCXXW_NAMESPACE_START
 class LIBCXX_HIDDEN background_colorObj : virtual public obj {
 
 public:
+	//! Constructor
 	background_colorObj();
+
+	//! Destructor
 	~background_colorObj();
 
+	//! Adjust this background color for an element of the given size.
+
+	//! If the background color is a gradient, this gets adjusted
+	//! accordingly.
+
+	virtual background_color get_background_color_for(IN_THREAD_ONLY,
+							  elementObj::implObj &)
+		=0;
+
+	//! Whether this background color is scrollable, by a peephole.
+
+	//! Basically returns true if the background color is a solid color
+	//! picture, and false for all other kinds of backgrounds.
+
+	virtual bool is_scrollable_background()=0;
+
+	//! Return the current color picture.
 	virtual const_picture get_current_color(IN_THREAD_ONLY)=0;
+
+	//! This background color's display element is about to be initialized.
 	virtual void initialize(IN_THREAD_ONLY)=0;
+
+	//! The current display theme has been changed.
 	virtual void theme_updated(IN_THREAD_ONLY,
 				   const defaulttheme &new_theme)=0;
 };
