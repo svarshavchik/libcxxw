@@ -263,7 +263,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	virtual main_windowptr get_main_window()=0;
 
 	//! Return the current background color.
-	const background_color current_background_color(IN_THREAD_ONLY);
+	background_color current_background_color(IN_THREAD_ONLY) override;
 
 	//! Implement set_bakcground_color() for the top level window.
 	void set_background_color(IN_THREAD_ONLY,
@@ -331,6 +331,16 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! to the default background color.
 
 	void remove_background_color(IN_THREAD_ONLY) override;
+
+	//! Implement has_own_background_color()
+
+	//! Always returns true
+
+	bool has_own_background_color(IN_THREAD_ONLY) override;
+
+	//! Implement current_position_update()
+
+	//! Calls schedule_update_position_processing().
 
 	void current_position_updated(IN_THREAD_ONLY) override;
 

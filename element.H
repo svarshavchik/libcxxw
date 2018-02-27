@@ -249,7 +249,13 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! The default implementation always returns true.
 	//! child_element overrides this, and returns the correct values.
 
-	virtual bool has_own_background_color(IN_THREAD_ONLY);
+	virtual bool has_own_background_color(IN_THREAD_ONLY)=0;
+
+	//! Retrieve the effective background color
+
+	//! If has_own_backgorund_color(), returns it, else returns the
+	//! parent element's background color.
+	virtual background_color current_background_color(IN_THREAD_ONLY)=0;
 
 	//! This element's background color has changed.
 

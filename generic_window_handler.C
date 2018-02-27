@@ -260,7 +260,7 @@ void generic_windowObj::handlerObj
 	background_color_changed(IN_THREAD);
 }
 
-const background_color generic_windowObj::handlerObj
+background_color generic_windowObj::handlerObj
 ::current_background_color(IN_THREAD_ONLY)
 {
 	return background_color_element<background_color_tag>::get(IN_THREAD);
@@ -487,6 +487,11 @@ void generic_windowObj::handlerObj::remove_background_color(IN_THREAD_ONLY)
 	set_background_color(IN_THREAD,
 			     screenref->impl->create_background_color
 			     (original_background_color));
+}
+
+bool generic_windowObj::handlerObj::has_own_background_color(IN_THREAD_ONLY)
+{
+	return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

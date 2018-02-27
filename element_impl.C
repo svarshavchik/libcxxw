@@ -891,11 +891,6 @@ void elementObj::implObj
 		       });
 }
 
-bool elementObj::implObj::has_own_background_color(IN_THREAD_ONLY)
-{
-	return true;
-}
-
 void elementObj::implObj::background_color_changed(IN_THREAD_ONLY)
 {
 	if (!data(IN_THREAD).inherited_visibility)

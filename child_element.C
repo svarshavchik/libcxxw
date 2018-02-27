@@ -180,6 +180,15 @@ void child_elementObj::remove_background_color(IN_THREAD_ONLY)
 						  (this));
 }
 
+background_color child_elementObj::current_background_color(IN_THREAD_ONLY)
+{
+	if (has_own_background_color(IN_THREAD))
+		return background_color_element_implObj::get(IN_THREAD);
+
+	return child_container->container_element_impl()
+		.current_background_color(IN_THREAD);
+}
+
 void child_elementObj::set_background_color(IN_THREAD_ONLY,
 					    const background_color &bgcolor)
 {

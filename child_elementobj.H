@@ -146,6 +146,9 @@ class LIBCXX_HIDDEN child_elementObj : public background_color_elementObj<
 
 	bool has_own_background_color(IN_THREAD_ONLY) override;
 
+	//! Implement current_background_color()
+	background_color current_background_color(IN_THREAD_ONLY) override;
+
 	//! Implement get_draw_info()
 	draw_info &get_draw_info(IN_THREAD_ONLY) override;
 
