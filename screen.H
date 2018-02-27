@@ -221,12 +221,15 @@ class LIBCXX_HIDDEN screenObj::implObj
 	const_picture create_solid_color_picture(const rgb &color);
 
 	//! Create a cached linear gradient picture
-	const_picture create_linear_gradient_picture(const rgb_gradient &g,
-						     coord_t x1,
-						     coord_t y1,
-						     coord_t x2,
-						     coord_t y2,
+	const_picture create_linear_gradient_picture(const linear_gradient &g,
+						     dim_t w,
+						     dim_t h,
 						     render_repeat repeat);
+
+	//! Create a cached linear gradient background color
+	background_color create_linear_gradient_background_color
+		(const background_color &base_color,
+		 const const_picture &p);
 
 	//! Create a background color from the current theme.
 

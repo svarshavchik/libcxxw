@@ -195,7 +195,7 @@ void child_elementObj::set_background_color(IN_THREAD_ONLY,
 		return; // noop
 
 	is_mine_background_color=true;
-	background_color_element_implObj::update(IN_THREAD, bgcolor);
+	background_color_element<>::update(IN_THREAD, bgcolor);
 	background_color_changed(IN_THREAD);
 	child_container->child_background_color_changed(IN_THREAD,
 						  ref<elementObj::implObj>

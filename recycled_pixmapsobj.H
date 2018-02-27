@@ -11,7 +11,9 @@
 #include "x/w/scratch_bufferfwd.H"
 #include "x/w/picturefwd.H"
 #include "x/w/rgb.H"
+#include "x/w/types.H"
 #include <x/obj.H>
+#include <x/refptr_hash.H>
 #include <x/weakunordered_multimapfwd.H>
 #include <string>
 
@@ -34,7 +36,7 @@ class LIBCXX_HIDDEN recycled_pixmapsObj : virtual public obj {
 		const_pictformat pf;
 
 		//! Equality comparison
-		bool operator==(const scratch_buffer_key &) const;
+		bool operator==(const scratch_buffer_key &) const noexcept;
 	};
 
 
@@ -44,7 +46,7 @@ class LIBCXX_HIDDEN recycled_pixmapsObj : virtual public obj {
 
 		//! Hash a \c scratch_buffer_key
 
-		size_t operator()(const scratch_buffer_key &) const;
+		size_t operator()(const scratch_buffer_key &) const noexcept;
 	};
 
 public:
@@ -72,6 +74,39 @@ public:
 		nontheme_background_color_cache_t;
 
 	nontheme_background_color_cache_t nontheme_background_color_cache;
+
+	//! Key used for the linear gradient cache.
+
+	struct linear_gradient_key {
+
+		background_color base_background;
+		const_picture gradient_picture;
+
+		bool operator==(const linear_gradient_key &)
+			const noexcept;
+	};
+
+	//! A hashed for a \c linear_gradient_key
+
+	struct linear_gradient_key_hash
+		: public std::hash<background_color>,
+		std::hash<const_picture> {
+
+		//! Hash a \c linear_gradient_key
+
+		size_t operator()(const linear_gradient_key &) const noexcept;
+	};
+
+	//! Container for the scratch buffer cache.
+
+	typedef weakunordered_multimap<linear_gradient_key,
+				       background_colorObj,
+				       linear_gradient_key_hash>
+		linear_gradient_cache_t;
+
+	//! The cache of scratch buffers.
+
+	linear_gradient_cache_t linear_gradient_cache;
 
 	//! Constructor
 

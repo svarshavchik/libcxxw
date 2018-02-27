@@ -68,6 +68,19 @@ public:
 	}
 };
 
+//! A linear gradient.
+
+struct linear_gradient {
+	double x1, y1, x2, y2;
+	rgb_gradient gradient;
+
+	bool operator==(const linear_gradient &o) const noexcept
+	{
+		return x1 == o.x1 && y1 == o.y1 && x2 == o.x2 && y2 == o.y2 &&
+			gradient == o.gradient;
+	}
+};
+
 LIBCXXW_NAMESPACE_END
 
 #endif

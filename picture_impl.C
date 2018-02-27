@@ -565,31 +565,38 @@ bool screen_picturecacheObj::linear_gradient_cache_key_t
 		repeat == o.repeat && g == o.g;
 }
 
-const_picture screenObj::create_linear_gradient_picture(const rgb_gradient &g,
-							coord_t x1,
-							coord_t y1,
-							coord_t x2,
-							coord_t y2,
-							render_repeat repeat)
+const_picture screenObj::implObj
+::create_linear_gradient_picture(const linear_gradient &lg,
+				 dim_t w,
+				 dim_t h,
+				 render_repeat repeat)
 {
-	return impl->create_linear_gradient_picture(g, x1, y1, x2, y2, repeat);
-}
+	auto default_color=valid_gradient(lg.gradient);
 
-const_picture screenObj
-::implObj::create_linear_gradient_picture(const rgb_gradient &g,
-					  coord_t x1,
-					  coord_t y1,
-					  coord_t x2,
-					  coord_t y2,
-					  render_repeat repeat)
-{
+	// logical coordinate (1.0, 1.0) is the bottom-right
+	// pixel address, or (w-1, h-1).
+
+	if (w == 0 || h == 0)
+	{
+		return create_solid_color_picture(default_color);
+	}
+
+	--w;
+	--h;
+	coord_t x1{coord_t::truncate(std::trunc(lg.x1 * dim_t::truncate(w)))};
+	coord_t x2{coord_t::truncate(std::trunc(lg.x2 * dim_t::truncate(w)))};
+
+	coord_t y1{coord_t::truncate(std::trunc(lg.y1 * dim_t::truncate(h)))};
+	coord_t y2{coord_t::truncate(std::trunc(lg.y2 * dim_t::truncate(h)))};
+
 	return picturecache->linear_gradients->find_or_create
-		({g, x1, y1, x2, y2, repeat},
+		({lg.gradient, x1, y1, x2, y2, repeat},
 		 [&, this]
 		 {
 			 auto picture_impl=ref<linearGradientPictureImplObj>
 				 ::create
-				 (this->thread, g, pictureObj::point{x1, y1},
+				 (this->thread, lg.gradient,
+				  pictureObj::point{x1, y1},
 				  pictureObj::point{x2, y2});
 
 			 picture_impl->repeat(repeat);
@@ -598,10 +605,13 @@ const_picture screenObj
 		 });
 }
 
-void valid_gradient(const rgb_gradient &gradient)
+rgb valid_gradient(const rgb_gradient &gradient)
 {
-	if (gradient.find(0) == gradient.end())
+	auto iter=gradient.find(0);
+
+	if (iter == gradient.end())
 		throw EXCEPTION(_("Invalid gradient specification"));
+	return iter->second;
 }
 
 LIBCXXW_NAMESPACE_END

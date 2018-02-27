@@ -430,8 +430,8 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 	//! Invoke all existing state update callbacks, for some reason.
 
-	void invoke_element_state_updates(IN_THREAD_ONLY,
-					  element_state::state_update_t);
+	virtual void invoke_element_state_updates(IN_THREAD_ONLY,
+						  element_state::state_update_t);
 
 	/////////////////////////////////////////////////////////////////////
 	//

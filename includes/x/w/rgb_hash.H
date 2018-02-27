@@ -23,19 +23,22 @@ namespace std {
 		}
 	};
 
-	//! Specialization of \c std::hash for \c INSERT_LIBX_NAMESPACE::w::color_arg
-	template<>
-	struct hash<LIBCXX_NAMESPACE::w::color_arg> : public hash<string> {
-
-		size_t operator()(const LIBCXX_NAMESPACE::w::color_arg &r)
-			const noexcept;
-	};
 
 	//! \c std::hash can handle an rgb_gradient just fine.
 
 	template<>
 	struct hash<LIBCXX_NAMESPACE::w::rgb_gradient> {
 		size_t operator()(const LIBCXX_NAMESPACE::w::rgb_gradient &r)
+			const noexcept;
+	};
+
+	//! Specialization of \c std::hash for \c INSERT_LIBX_NAMESPACE::w::color_arg
+	template<>
+	struct hash<LIBCXX_NAMESPACE::w::color_arg>
+		: public hash<string>,
+		  public hash<LIBCXX_NAMESPACE::w::rgb_gradient> {
+
+		size_t operator()(const LIBCXX_NAMESPACE::w::color_arg &r)
 			const noexcept;
 	};
 }

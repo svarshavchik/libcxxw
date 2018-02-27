@@ -7,6 +7,8 @@
 #include "scratch_buffer.H"
 #include "background_color.H"
 #include "screen.H"
+#include "element.H"
+#include "element_screen.H"
 #include "x/w/pictformat.H"
 #include "x/w/rgb_hash.H"
 #include "pixmap.H"
@@ -19,6 +21,8 @@
 #include <x/refptr_hash.H>
 #include <x/weakunordered_multimap.H>
 #include <x/visitor.H>
+#include <variant>
+#include <cmath>
 
 LIBCXXW_NAMESPACE_START
 
@@ -27,7 +31,8 @@ recycled_pixmapsObj::recycled_pixmapsObj()
 	  theme_background_color_cache{
 		  theme_background_color_cache_t::create()},
 	  nontheme_background_color_cache{
-		  nontheme_background_color_cache_t::create()}
+		  nontheme_background_color_cache_t::create()},
+	  linear_gradient_cache{linear_gradient_cache_t::create()}
 {
 }
 
@@ -68,6 +73,185 @@ scratch_buffer screenObj::implObj
 				 });
 }
 
+namespace {
+#if 0
+}
+#endif
+
+////////////////////////////////////////////////////////////////////////////
+//
+// Gradient background color.
+//
+// A gradient background color gets initially constructed as a solid color
+// background object. When the size of the gradient's element is known,
+// its get_background_color_for() construct this linear_gradient_color
+// object, which becomes the background color.
+//
+// The gradient background color object saved the background_color it was
+// created from, which may be a theme, or a nontheme color, see below.
+// Other background_color methods get forwarded to the base_color.
+
+class linear_gradient_colorObj : public background_colorObj {
+
+	//! The gradient's picture.
+
+	const const_picture gradient_color;
+
+	//! The base color this gradient was created from.
+	const background_color base_color;
+
+public:
+
+	//! Constructor
+	linear_gradient_colorObj(const const_picture &gradient_color,
+				 const background_color &base_color)
+		: gradient_color{gradient_color},
+		  base_color{base_color}
+	{
+	}
+
+	//! Destructor
+	~linear_gradient_colorObj()=default;
+
+	bool is_scrollable_background() override
+	{
+		return false;
+	}
+
+	const_picture get_current_color(IN_THREAD_ONLY) override
+	{
+		return gradient_color;
+	}
+
+	//! Always a no-op.
+	void initialize(IN_THREAD_ONLY) override
+	{
+	}
+
+	//! Forward theme_updated to the base background color.
+
+	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme)
+		override
+	{
+		base_color->theme_updated(IN_THREAD, new_theme);
+	}
+
+	//! Forward get_background_color_for to the base background color.
+
+	background_color get_background_color_for(IN_THREAD_ONLY,
+						  elementObj::implObj &e)
+		override
+	{
+		return base_color->get_background_color_for(IN_THREAD, e);
+	}
+};
+
+////////////////////////////////////////////////////////////////////////////
+// Implement background_color object as a non theme-dependent color, that's
+// specified either as a plain rgb value, or a gradient.
+
+class nontheme_background_colorObj : public background_colorObj {
+
+	// The background color specifier
+	std::variant<rgb, linear_gradient, const_picture> color;
+
+protected:
+	// The background color picture
+
+	const_picture fixed_color;
+
+public:
+	static inline const_picture
+	create_fixed_color(const rgb &r,
+			   const ref<screenObj::implObj> &s)
+	{
+		return s->create_solid_color_picture(r);
+	}
+
+	// Before we know the dimensions of the
+	// gradient, the opening bid is to
+	// create the first gradient color.
+	//
+	// This will not go to waste. When
+	// we create the real gradient, this
+	// color will already be cached.
+
+	static inline const_picture
+	create_fixed_color(const linear_gradient &g,
+			   const ref<screenObj::implObj> &s)
+	{
+		auto iter=g.gradient.find(0);
+
+		if (iter == g.gradient.end())
+			throw EXCEPTION("Internal error: "
+					"invalid gradient parameter");
+
+		return s->create_solid_color_picture(iter->second);
+	}
+
+	static inline const_picture
+	create_fixed_color(const const_picture &c,
+			   const ref<screenObj::implObj> &s)
+	{
+
+		return c;
+	}
+
+	template<typename Arg>
+	nontheme_background_colorObj(Arg &&arg,
+				     const ref<screenObj::implObj> &s)
+		: color{std::forward<Arg>(arg)},
+		  fixed_color{std::visit([&](const auto &c)
+					 {
+						 return create_fixed_color(c,
+									   s);
+					 }, color)}
+	{
+	}
+
+	~nontheme_background_colorObj()=default;
+
+	const_picture get_current_color(IN_THREAD_ONLY) override
+	{
+		return fixed_color;
+	}
+
+	bool is_scrollable_background() override
+	{
+		return std::holds_alternative<rgb>(color) ? false:true;
+	}
+
+	void initialize(IN_THREAD_ONLY) override
+	{
+	}
+
+	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme)
+		override
+	{
+	}
+
+	background_color get_background_color_for(IN_THREAD_ONLY,
+						  elementObj::implObj &e)
+		override
+	{
+		if (!std::holds_alternative<linear_gradient>(color))
+			return ref(this);
+
+		const auto &g=std::get<linear_gradient>(color);
+
+		auto screen_impl=e.get_screen()->impl;
+
+		auto picture=screen_impl->create_linear_gradient_picture
+			(g, e.data(IN_THREAD).current_position.width,
+			 e.data(IN_THREAD).current_position.height,
+			 render_repeat::pad);
+
+		return screen_impl
+			->create_linear_gradient_background_color(ref(this),
+								  picture);
+	}
+};
+
 ////////////////////////////////////////////////////////////////////////////
 //
 // Implements background_color object as a color specified by the theme.
@@ -77,24 +261,11 @@ scratch_buffer screenObj::implObj
 // unordered_map lookup, compares it to the cached color, and creates a
 // new picture, if necessary.
 
-class LIBCXX_HIDDEN theme_background_colorObj : public background_colorObj {
+class theme_background_colorObj : public nontheme_background_colorObj {
 
 	const std::string theme_color;
 	const ref<screenObj::implObj> screen;
 	defaulttheme current_theme;
-
-	static background_color
-		get_nontheme_background_color(const std::string &theme_color,
-					      const ref<screenObj::implObj> &s,
-					      const defaulttheme &theme)
-	{
-		auto rgb=theme->get_theme_color(theme_color);
-		auto p=s->create_solid_color_picture(rgb);
-
-		return s->create_background_color(p);
-	}
-
-	background_color nontheme_background_color;
 
  public:
 
@@ -102,27 +273,25 @@ class LIBCXX_HIDDEN theme_background_colorObj : public background_colorObj {
 
 	theme_background_colorObj(const std::string &theme_color,
 				  const ref<screenObj::implObj> &screen)
-		: theme_color(theme_color),
-		screen(screen),
-		current_theme(screen->current_theme.get()),
-		nontheme_background_color
-		(get_nontheme_background_color(theme_color,
-					       screen,
-					       current_theme))
-		{
-		}
+		: theme_background_colorObj(theme_color,
+					    screen,
+					    screen->current_theme.get())
+	{
+	}
+
+	theme_background_colorObj(const std::string &theme_color,
+				  const ref<screenObj::implObj> &screen,
+				  const defaulttheme &current_theme)
+		: nontheme_background_colorObj{current_theme
+			->get_theme_color(theme_color),
+			screen},
+		  theme_color{theme_color},
+		  screen{screen},
+		  current_theme{current_theme}
+	{
+	}
 
 	~theme_background_colorObj()=default;
-
-	bool is_scrollable_background() override
-	{
-		return true;
-	}
-
-	const_picture get_current_color(IN_THREAD_ONLY) override
-	{
-		return nontheme_background_color->get_current_color(IN_THREAD);
-	}
 
 	// Potential rare race condition, the theme changing after the
 	// background color object was created and before it is installed.
@@ -140,89 +309,42 @@ class LIBCXX_HIDDEN theme_background_colorObj : public background_colorObj {
 
 		current_theme=new_theme;
 
-		nontheme_background_color=
-			get_nontheme_background_color(theme_color,
-						      screen,
-						      current_theme);
-	}
-
-	// TODO
-
-	background_color get_background_color_for(IN_THREAD_ONLY,
-						  elementObj::implObj &e)
-		override
-	{
-		return ref(this);
+		fixed_color=create_fixed_color
+			(current_theme->get_theme_color(theme_color),
+			 screen);
 	}
 };
+
+#if 0
+{
+#endif
+}
 
 background_color screenObj::implObj
 ::create_background_color(const color_arg &color_name)
 {
-	return std::visit(visitor{
-			[&, this](const std::string &color_name)
-				-> background_color
-			{
-				return recycled_pixmaps_cache->theme_background_color_cache
-					->find_or_create
-					(color_name,
-					 [&,this]
-					 {
-						 return ref<theme_background_colorObj>
-							 ::create(color_name, ref(this));
-					 });
-			},
-			[this](const rgb &c) -> background_color
-			{
-				return create_background_color
-					(create_solid_color_picture(c));
-			}}, color_name);
+	return recycled_pixmaps_cache->theme_background_color_cache
+		->find_or_create
+		(color_name,
+		 [&,this]
+		 {
+			 return std::visit(visitor{
+				 [this](const std::string &name)
+					 ->background_color
+				 {
+					 return ref<theme_background_colorObj>
+						 ::create(name, ref(this));
+				 },
+				 [this](const auto &nontheme_color)
+					 ->background_color
+				 {
+					 return ref<nontheme_background_colorObj
+						    >::create(nontheme_color,
+							      ref(this));
+				 }}, color_name);
+		 });
 }
 
-class LIBCXX_HIDDEN nonThemeBackgroundColorObj : public background_colorObj {
-
-
-	const const_picture fixed_color;
-	const bool is_scrollable;
-
- public:
-	nonThemeBackgroundColorObj(const const_picture &fixed_color,
-				   bool is_scrollable)
-		: fixed_color{fixed_color},
-		is_scrollable{is_scrollable}
-	{
-	}
-
-	~nonThemeBackgroundColorObj()=default;
-
-	const_picture get_current_color(IN_THREAD_ONLY) override
-	{
-		return fixed_color;
-	}
-
-	bool is_scrollable_background() override
-	{
-		return is_scrollable;
-	}
-
-	void initialize(IN_THREAD_ONLY) override
-	{
-	}
-
-	void theme_updated(IN_THREAD_ONLY,
-			   const defaulttheme &new_theme) override
-	{
-	}
-
-	// TODO
-
-	background_color get_background_color_for(IN_THREAD_ONLY,
-						  elementObj::implObj &e)
-		override
-	{
-		return ref(this);
-	}
-};
 
 background_color screenObj::implObj
 ::create_background_color(const const_picture &pic)
@@ -235,24 +357,53 @@ background_color screenObj::implObj
 		(pic,
 		 [&, this]
 		 {
-			 return ref<nonThemeBackgroundColorObj>::create(pic,
-									false);
+			 return ref<nontheme_background_colorObj>
+				 ::create(pic, ref{this});
+		 });
+}
+
+background_color screenObj::implObj
+::create_linear_gradient_background_color(const background_color &base_color,
+					  const const_picture &p)
+{
+	return recycled_pixmaps_cache->linear_gradient_cache->find_or_create
+		({base_color, p},
+		 [&, this]
+		 {
+			 return ref<linear_gradient_colorObj>
+				 ::create(p, base_color);
 		 });
 }
 
 /////////////////////////////////////////////////////////////////////////////
 
 bool recycled_pixmapsObj
-::scratch_buffer_key::operator==(const scratch_buffer_key &o) const
+::scratch_buffer_key::operator==(const scratch_buffer_key &o) const noexcept
 {
 	return identifier == o.identifier && pf == o.pf;
 }
 
 size_t recycled_pixmapsObj
-::scratch_buffer_key_hash::operator()(const scratch_buffer_key &k) const
+::scratch_buffer_key_hash::operator()(const scratch_buffer_key &k)
+	const noexcept
 {
 	return std::hash<std::string>()(k.identifier)
 		+ std::hash<const_pictformat>()(k.pf);
+}
+
+
+bool recycled_pixmapsObj::linear_gradient_key
+::operator==(const linear_gradient_key &o) const noexcept
+{
+	return base_background == o.base_background &&
+		gradient_picture == o.gradient_picture;
+}
+
+size_t recycled_pixmapsObj::linear_gradient_key_hash
+::operator()(const linear_gradient_key &k) const noexcept
+{
+	return std::hash<background_color>::operator()(k.base_background) +
+		std::hash<const_picture>::operator()(k.gradient_picture);
 }
 
 LIBCXXW_NAMESPACE_END

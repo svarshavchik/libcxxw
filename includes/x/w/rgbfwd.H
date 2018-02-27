@@ -36,9 +36,11 @@ typedef uint32_t rgb_component_squared_t;
 
 typedef std::unordered_map<size_t, rgb> rgb_gradient;
 
+struct linear_gradient;
+
 //! A color can be specified as either a literal rgb value, or a theme color
 
-typedef std::variant<std::string, rgb> color_arg;
+typedef std::variant<std::string, rgb, linear_gradient> color_arg;
 
 //! A gradient can be specified either literally, or as a theme graident.
 

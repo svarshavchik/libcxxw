@@ -10,6 +10,7 @@
 #include <x/refptr_hash.H>
 #include <x/visitor.H>
 #include <variant>
+#include <cmath>
 
 namespace std {
 #if 0
@@ -47,6 +48,20 @@ size_t hash<LIBCXX_NAMESPACE::w::color_arg>
 			(const string &s)
 			{
 				return this->hash<string>::operator()(s);
+			},
+			[this]
+			(const LIBCXX_NAMESPACE::w::linear_gradient &g)
+			{
+				return this->hash<LIBCXX_NAMESPACE::w
+						  ::rgb_gradient>::operator()
+					(g.gradient) +
+					(size_t)(std::round(g.x1*256)) +
+					(size_t)(std::round(g.y1*65536)) +
+					(size_t)(std::round(g.x2*
+							    (65536.0*256.0)))
+					+
+					(size_t)(std::round(g.y2*
+							    (65536.0*65536.0)));
 			}},
 		r);
 }
