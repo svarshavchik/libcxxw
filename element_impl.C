@@ -625,9 +625,6 @@ void elementObj::implObj::exposure_event_recursive(IN_THREAD_ONLY,
 {
 	auto &di=get_draw_info(IN_THREAD);
 
-	// Any queued redraws are moot, now.
-	IN_THREAD->elements_to_redraw(IN_THREAD)->erase(elementimpl(this));
-
 #ifdef DEBUG_EXPOSURE_CALCULATIONS
 
 	std::cout << "Exposure: " << objname() << ": "
@@ -650,6 +647,24 @@ void elementObj::implObj::exposure_event_recursive(IN_THREAD_ONLY,
 	auto draw_area=intersect(di.element_viewport, areas,
 				 -di.absolute_location.x,
 				 -di.absolute_location.y);
+
+	if (draw_area.size() == 1)
+	{
+		auto &r=*draw_area.begin();
+
+		if (r.x == 0 && r.y == 0 &&
+		    r.width == data(IN_THREAD).current_position.width &&
+		    r.width == data(IN_THREAD).current_position.height)
+		{
+			// Any queued redraws are moot, now.
+			//
+			// We are redrawing the entire display element right
+			// now.
+
+			IN_THREAD->elements_to_redraw(IN_THREAD)
+				->erase(elementimpl(this));
+		}
+	}
 
 #ifdef DEBUG_EXPOSURE_CALCULATIONS
 
