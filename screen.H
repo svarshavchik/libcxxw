@@ -206,7 +206,7 @@ class LIBCXX_HIDDEN screenObj::implObj
 	// Lock the current theme, and obtain the theme-specific data.
 
 	//! Retrieve theme color
-	rgb get_theme_color(const std::string &theme_color);
+	theme_color_t get_theme_color(const std::string &theme_color);
 
 	//! Retrieve theme gradient
 	rgb_gradient get_theme_color_gradient(const rgb_gradient_arg &arg);

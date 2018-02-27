@@ -220,6 +220,9 @@ class LIBCXX_HIDDEN sxg_parserObj : virtual public obj {
 
 	//! Parse either a theme color, or red/green/blue/alpha, in advance.
 
+	//! If a theme_color is specified, the red/green/blue/alpha values
+	//! are interpreted as scaling factors.
+
 	class color_info {
 
 	public:
@@ -238,6 +241,25 @@ class LIBCXX_HIDDEN sxg_parserObj : virtual public obj {
 					dim_t height,
 					const ref<screenObj::implObj> &s,
 					const defaulttheme &theme) const;
+
+	private:
+
+		//! Scale a theme_color_t's colors
+		const_picture scale_color_to_picture(rgb r,
+						     dim_t width,
+						     dim_t height,
+						     const ref<screenObj
+						     ::implObj> &s) const;
+
+		const_picture scale_color_to_picture(linear_gradient g,
+						     dim_t width,
+						     dim_t height,
+						     const ref<screenObj
+						     ::implObj> &s) const;
+
+
+		void scale_rgb(rgb &color) const;
+
 	};
 
 	//! Text picture info

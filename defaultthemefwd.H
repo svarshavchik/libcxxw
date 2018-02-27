@@ -9,6 +9,7 @@
 #include <x/mpobj.H>
 #include "x/w/dim_arg.H"
 #include "x/w/types.H"
+#include <variant>
 
 LIBCXXW_NAMESPACE_START
 
@@ -18,6 +19,13 @@ std::string themedirroot();
 
 class defaultthemeObj;
 class defaultthemeBase;
+
+class rgb;
+struct linear_gradient;
+
+//! A theme color is either an rgb solid color, or a gradient color.
+
+typedef std::variant<rgb, linear_gradient> theme_color_t;
 
 //! A loaded application theme.
 

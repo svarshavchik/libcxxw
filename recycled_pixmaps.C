@@ -152,13 +152,25 @@ public:
 
 class nontheme_background_colorObj : public background_colorObj {
 
-	// The background color specifier
-	std::variant<rgb, linear_gradient, const_picture> color;
-
 protected:
+	// The background color specifier
+	typedef std::variant<rgb, linear_gradient, const_picture> color_t;
+
+	color_t color;
+
 	// The background color picture
 
 	const_picture fixed_color;
+
+	// Updated fixed_color based on color
+
+	const_picture create_fixed_color(const ref<screenObj::implObj> &s)
+	{
+		return std::visit([&, this](const auto &c)
+				  {
+					  return create_fixed_color(c, s);
+				  }, color);
+	}
 
 public:
 	static inline const_picture
@@ -201,11 +213,7 @@ public:
 	nontheme_background_colorObj(Arg &&arg,
 				     const ref<screenObj::implObj> &s)
 		: color{std::forward<Arg>(arg)},
-		  fixed_color{std::visit([&](const auto &c)
-					 {
-						 return create_fixed_color(c,
-									   s);
-					 }, color)}
+		  fixed_color{create_fixed_color(s)}
 	{
 	}
 
@@ -282,8 +290,12 @@ class theme_background_colorObj : public nontheme_background_colorObj {
 	theme_background_colorObj(const std::string &theme_color,
 				  const ref<screenObj::implObj> &screen,
 				  const defaulttheme &current_theme)
-		: nontheme_background_colorObj{current_theme
-			->get_theme_color(theme_color),
+		: nontheme_background_colorObj{
+		std::visit([&](const auto &c)
+			   {
+				   return color_t{c};
+			   }, current_theme
+			   ->get_theme_color(theme_color)),
 			screen},
 		  theme_color{theme_color},
 		  screen{screen},
@@ -309,9 +321,13 @@ class theme_background_colorObj : public nontheme_background_colorObj {
 
 		current_theme=new_theme;
 
-		fixed_color=create_fixed_color
-			(current_theme->get_theme_color(theme_color),
-			 screen);
+		std::visit([&, this]
+			   (const auto &c)
+			   {
+				   this->color=c;
+			   }, current_theme->get_theme_color(theme_color));
+
+		fixed_color=create_fixed_color(screen);
 	}
 };
 

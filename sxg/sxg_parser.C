@@ -1079,6 +1079,17 @@ const_picture sxg_parserObj::color_info::get_color(dim_t width,
 
 	auto color=theme->get_theme_color(theme_color);
 
+	return std::visit([&, this](const auto &what)
+			  {
+				  return scale_color_to_picture(what,
+								width,
+								height,
+								s);
+			  }, color);
+}
+
+void sxg_parserObj::color_info::scale_rgb(rgb &color) const
+{
 	auto red_value=color.r * red;
 	auto green_value=color.g * green;
 	auto blue_value=color.b * blue;
@@ -1093,11 +1104,37 @@ const_picture sxg_parserObj::color_info::get_color(dim_t width,
 	if (alpha_value > rgb::maximum)
 		alpha_value=rgb::maximum;
 
-	return s->create_solid_color_picture({rgb_component_t(red_value),
-				rgb_component_t(green_value),
-				rgb_component_t(blue_value),
-				rgb_component_t(alpha_value)});
+	color=rgb{rgb_component_t(red_value),
+		  rgb_component_t(green_value),
+		  rgb_component_t(blue_value),
+		  rgb_component_t(alpha_value)};
+};
+
+const_picture sxg_parserObj::color_info
+::scale_color_to_picture(rgb r,
+			 dim_t width,
+			 dim_t height,
+			 const ref<screenObj::implObj> &s) const
+{
+	scale_rgb(r);
+
+	return s->create_solid_color_picture(r);
 }
+
+
+const_picture sxg_parserObj::color_info
+::scale_color_to_picture(linear_gradient g,
+			 dim_t width,
+			 dim_t height,
+			 const ref<screenObj::implObj> &s) const
+{
+	for (auto &rgb:g.gradient)
+		scale_rgb(rgb.second);
+
+	return s->create_linear_gradient_picture(g, width, height,
+						 render_repeat::pad);
+}
+
 
 // Parse all <font> elements. Hijack theme code to do all the work for us.
 

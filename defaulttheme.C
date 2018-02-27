@@ -1058,7 +1058,7 @@ dim_t defaultthemeObj::compute_height(double millimeters)
 	return dim_t::value_type(scaled);
 }
 
-rgb defaultthemeObj::get_theme_color(const std::string_view &id) const
+theme_color_t defaultthemeObj::get_theme_color(const std::string_view &id) const
 {
 	std::vector<std::string> ids;
 
