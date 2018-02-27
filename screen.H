@@ -18,7 +18,7 @@
 #include "connection_threadfwd.H"
 #include "defaultthemefwd.H"
 #include "background_colorfwd.H"
-#include "screen_solidcolorpicturesfwd.H"
+#include "screen_picturecachefwd.H"
 #include "screen_fontcachesfwd.H"
 #include "border_implfwd.H"
 #include "border_cachefwd.H"
@@ -103,7 +103,7 @@ class LIBCXX_HIDDEN screenObj::implObj
 	//! A cache of solid color picture objects
 
 	//! Used by create_solid_color_picture().
-	const screen_solidcolorpictures solid_color_picture_cache;
+	const screen_picturecache picturecache;
 
 	//! A cache of recycled pixtures and pixmaps
 
@@ -221,6 +221,14 @@ class LIBCXX_HIDDEN screenObj::implObj
 	//! Create a cached solid color picture;
 
 	const_picture create_solid_color_picture(const rgb &color);
+
+	//! Create a cached linear gradient picture
+	const_picture create_linear_gradient_picture(const rgb_gradient &g,
+						     coord_t x1,
+						     coord_t y1,
+						     coord_t x2,
+						     coord_t y2,
+						     render_repeat repeat);
 
 	//! Create a background color from the current theme.
 

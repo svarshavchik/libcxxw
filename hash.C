@@ -87,6 +87,21 @@ size_t hash<LIBCXX_NAMESPACE::w::border_arg>
 			}}, a);
 }
 
+size_t hash<LIBCXX_NAMESPACE::w::rgb_gradient>
+::operator()(const LIBCXX_NAMESPACE::w::rgb_gradient &r)
+	const noexcept
+{
+	size_t i=0;
+
+	std::hash<LIBCXX_NAMESPACE::w::rgb_gradient::key_type> k_h{};
+	std::hash<LIBCXX_NAMESPACE::w::rgb_gradient::mapped_type> v_h{};
+
+	for (const auto &kv:r)
+		i += k_h(kv.first)+v_h(kv.second);
+
+	return i;
+}
+
 #if 0
 {
 #endif

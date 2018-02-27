@@ -7,6 +7,7 @@
 #include "pictformat.H"
 #include "xid_t.H"
 #include "connection_thread.H"
+#include "screen_picturecache.H"
 #include "x/w/rgbfwd.H"
 #include "screen.H"
 #include "messages.H"
@@ -503,6 +504,11 @@ static void gradient_normalize(const rgb_gradient &gradient,
 			      (std::forward<functor>(f)));
 }
 
+namespace {
+#if 0
+}
+#endif
+
 //! Create a linear gradient picture
 
 class LIBCXX_HIDDEN linearGradientPictureImplObj : public pictureObj::implObj {
@@ -536,17 +542,60 @@ class LIBCXX_HIDDEN linearGradientPictureImplObj : public pictureObj::implObj {
 	}
 };
 
+#if 0
+{
+#endif
+}
+
+size_t screen_picturecacheObj::linear_gradient_cache_key_t_hash
+::operator()(const linear_gradient_cache_key_t &k) const noexcept
+{
+	return std::hash<rgb_gradient>::operator()(k.g)
+		+ coord_t::truncate(k.x1)
+		+ coord_t::truncate(k.x2)
+		+ coord_t::truncate(k.y1)
+		+ coord_t::truncate(k.y2)
+		+ static_cast<size_t>(k.repeat);
+}
+
+bool screen_picturecacheObj::linear_gradient_cache_key_t
+::operator==(const linear_gradient_cache_key_t &o) const noexcept
+{
+	return x1 == o.x1 && y1 == o.y1 && x2 == o.x2 && y2 == o.y2 &&
+		repeat == o.repeat && g == o.g;
+}
+
 const_picture screenObj::create_linear_gradient_picture(const rgb_gradient &g,
 							coord_t x1,
 							coord_t y1,
 							coord_t x2,
-							coord_t y2)
+							coord_t y2,
+							render_repeat repeat)
 {
-	auto picture_impl=ref<linearGradientPictureImplObj>::create
-		(impl->thread, g, pictureObj::point{x1, y1},
-		 pictureObj::point{x2, y2});
+	return impl->create_linear_gradient_picture(g, x1, y1, x2, y2, repeat);
+}
 
-	return picture::create(picture_impl);
+const_picture screenObj
+::implObj::create_linear_gradient_picture(const rgb_gradient &g,
+					  coord_t x1,
+					  coord_t y1,
+					  coord_t x2,
+					  coord_t y2,
+					  render_repeat repeat)
+{
+	return picturecache->linear_gradients->find_or_create
+		({g, x1, y1, x2, y2, repeat},
+		 [&, this]
+		 {
+			 auto picture_impl=ref<linearGradientPictureImplObj>
+				 ::create
+				 (this->thread, g, pictureObj::point{x1, y1},
+				  pictureObj::point{x2, y2});
+
+			 picture_impl->repeat(repeat);
+
+			 return picture::create(picture_impl);
+		 });
 }
 
 void valid_gradient(const rgb_gradient &gradient)

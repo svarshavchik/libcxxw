@@ -10,7 +10,7 @@
 #include "background_color.H"
 #include "xid_t.H"
 #include "picture.H"
-#include "screen_solidcolorpictures.H"
+#include "screen_picturecache.H"
 #include "screen_fontcaches.H"
 #include "recycled_pixmaps.H"
 #include "border_impl.H"
@@ -194,7 +194,7 @@ screenObj::implObj::implObj(const xcb_screen_t *xcb_screen,
 	  current_theme(current_theme),
 	  fc(fontconfig::create()),
 	  ft(freetype::create()),
-	  solid_color_picture_cache(screen_solidcolorpictures::create()),
+	  picturecache(screen_picturecache::create()),
 	  recycled_pixmaps_cache(recycled_pixmaps::create()),
 	  screen_border_cache(border_cache::create()),
 	  fontcaches(screen_fontcaches::create()),

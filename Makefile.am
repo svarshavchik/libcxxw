@@ -705,10 +705,10 @@ libcxxw_la_SOURCES=\
 	screen_fontcaches.C			    \
 	screen_fontcaches.H			    \
 	screen_fontcachesfwd.H			    \
+	screen_picturecache.C			    \
+	screen_picturecache.H			    \
+	screen_picturecachefwd.H		    \
 	screen_positions.C			    \
-	screen_solidcolorpictures.C		    \
-	screen_solidcolorpictures.H		    \
-	screen_solidcolorpicturesfwd.H		    \
 	scrollbar/scrollbar.C			    \
 	scrollbar/scrollbar_icon_set.H		    \
 	scrollbar/scrollbar_impl.C		    \

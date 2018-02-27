@@ -107,7 +107,7 @@ void progressbar_sliderObj::update(IN_THREAD_ONLY,
 				  (updated_theme
 				   ->get_theme_color_gradient(slider_color),
 				   0, 0, coord_t::truncate(updated_width-1),
-				   0)));
+				   0, render_repeat::pad)));
 
 		new_gradient_required=false;
 	}

@@ -15,6 +15,7 @@
 #include <x/w/scratch_bufferfwd.H>
 #include <x/w/main_windowfwd.H>
 #include <x/w/rgbfwd.H>
+#include <x/w/types.H>
 #include <x/w/new_layoutmanagerfwd.H>
 #include <x/obj.H>
 #include <x/vectorfwd.H>
@@ -111,7 +112,8 @@ public:
 						     coord_t x1,
 						     coord_t y1,
 						     coord_t x2,
-						     coord_t y2);
+						     coord_t y2,
+						     render_repeat repeat);
 	//! Create a new pixmap on this screen.
 
 	//! Mostly for internal use.

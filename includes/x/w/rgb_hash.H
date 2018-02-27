@@ -30,6 +30,14 @@ namespace std {
 		size_t operator()(const LIBCXX_NAMESPACE::w::color_arg &r)
 			const noexcept;
 	};
+
+	//! \c std::hash can handle an rgb_gradient just fine.
+
+	template<>
+	struct hash<LIBCXX_NAMESPACE::w::rgb_gradient> {
+		size_t operator()(const LIBCXX_NAMESPACE::w::rgb_gradient &r)
+			const noexcept;
+	};
 }
 
 #endif
