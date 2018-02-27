@@ -24,10 +24,12 @@ void themeborder_element_implObj::initialize(IN_THREAD_ONLY)
 	theme_updated(IN_THREAD,
 		      get_border_element_impl().get_screen()->impl
 		      ->current_theme.get());
+
+	current_border->initialize(IN_THREAD);
 }
 
 void themeborder_element_implObj::theme_updated(IN_THREAD_ONLY,
-					   const defaulttheme &new_theme)
+						const defaulttheme &new_theme)
 {
 	current_border->theme_updated(IN_THREAD, new_theme);
 }

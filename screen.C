@@ -239,7 +239,7 @@ screen::base::visual_t screenObj::implObj
 //
 // Theme access
 
-rgb screenObj::implObj::get_theme_color(const color_arg &theme_color)
+rgb screenObj::implObj::get_theme_color(const std::string &theme_color)
 {
 	return current_theme.get()->get_theme_color(theme_color);
 }

@@ -10,6 +10,7 @@
 #include "grid_element.H"
 #include "element.H"
 #include "draw_info.H"
+#include "background_color.H"
 #include <x/exception.H>
 
 LIBCXXW_NAMESPACE_START
@@ -870,7 +871,7 @@ void border_implObj::composite_line(IN_THREAD_ONLY,
 				      di.mask_pixmap,
 				      0, 0);
 
-	di.area_picture->composite(colors.at(n),
+	di.area_picture->composite(colors.at(n)->get_current_color(IN_THREAD),
 
 				   // source coordinate for colors[n].
 
@@ -1015,6 +1016,5 @@ void border_implObj::mask_segment_xor(const draw_info &di,
 	props.function(gc::base::function::XOR);
 	di.mask_gc->segment(x1, y1, x2, y2, props);
 }
-
 
 LIBCXXW_NAMESPACE_END

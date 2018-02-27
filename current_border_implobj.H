@@ -35,6 +35,9 @@ class LIBCXX_HIDDEN current_border_implObj: virtual public obj {
 
 	const_border_impl border_thread_only;
 
+	//! Whether it's been formally initialized
+
+	bool initialized=false;
  public:
 
 	THREAD_DATA_ONLY(current_theme);
@@ -54,6 +57,13 @@ class LIBCXX_HIDDEN current_border_implObj: virtual public obj {
  public:
 	//! Destructor
 	~current_border_implObj();
+
+	//! Initialize the border
+
+	//! The element with the border is being initialized by the connection
+	//! thread.
+
+	void initialize(IN_THREAD_ONLY);
 
 	//! The current theme has been updated.
 

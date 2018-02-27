@@ -105,9 +105,7 @@ class LIBCXX_HIDDEN screenObj::implObj
 	//! Used by create_solid_color_picture().
 	const screen_picturecache picturecache;
 
-	//! A cache of recycled pixtures and pixmaps
-
-	//! Used by create_scratch_buffer().
+	//! A cache of recycled pixtures, pixmaps, and background colors
 
 	const recycled_pixmaps recycled_pixmaps_cache;
 
@@ -208,7 +206,7 @@ class LIBCXX_HIDDEN screenObj::implObj
 	// Lock the current theme, and obtain the theme-specific data.
 
 	//! Retrieve theme color
-	rgb get_theme_color(const color_arg &theme_color);
+	rgb get_theme_color(const std::string &theme_color);
 
 	//! Retrieve theme gradient
 	rgb_gradient get_theme_color_gradient(const rgb_gradient_arg &arg);

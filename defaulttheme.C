@@ -13,6 +13,7 @@
 #include "messages.H"
 #include "border_impl.H"
 #include "picture.H"
+#include "background_color.H"
 #include "x/w/gridlayoutmanager.H"
 #include "x/w/gridfactory.H"
 #include "x/w/booklayoutmanager.H"
@@ -904,8 +905,7 @@ void defaultthemeObj::load_borders(const theme_parser_lock &root_lock,
 						     color);
 
 					new_border->colors.push_back
-						(screen
-						 ->create_solid_color_picture
+						(screen->create_background_color
 						 (color));
 
 					if (update_color(lock, "color2", colors,
@@ -913,7 +913,7 @@ void defaultthemeObj::load_borders(const theme_parser_lock &root_lock,
 					{
 						new_border->colors.push_back
 							(screen
-							 ->create_solid_color_picture
+							 ->create_background_color
 							 (color));
 					}
 				}
@@ -1058,30 +1058,22 @@ dim_t defaultthemeObj::compute_height(double millimeters)
 	return dim_t::value_type(scaled);
 }
 
-rgb defaultthemeObj::get_theme_color(const color_arg &color) const
+rgb defaultthemeObj::get_theme_color(const std::string_view &id) const
 {
-	return std::visit(visitor{
-			[](const rgb &color) { return color; },
-			[this](const std::string &id)
-			{
-				std::vector<std::string> ids;
+	std::vector<std::string> ids;
 
-				if (!id.empty())
-					strtok_str(id, ", \r\t\n", ids);
+	if (!id.empty())
+		strtok_str(id, ", \r\t\n", ids);
 
-				for (const auto &try_id:ids)
-				{
-					auto iter=colors.find(try_id);
+	for (const auto &try_id:ids)
+	{
+		auto iter=colors.find(try_id);
 
-					if (iter != colors.end())
-						return iter->second;
-				}
+		if (iter != colors.end())
+			return iter->second;
+	}
 
-				throw EXCEPTION
-					(gettextmsg
-					 (_("Theme color %1% does not exist"),
-					  id));
-			}}, color);
+	throw EXCEPTION(gettextmsg(_("Theme color %1% does not exist"), id));
 }
 
 rgb_gradient

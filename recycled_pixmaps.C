@@ -18,6 +18,7 @@
 #include <x/ref.H>
 #include <x/refptr_hash.H>
 #include <x/weakunordered_multimap.H>
+#include <x/visitor.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -78,12 +79,12 @@ scratch_buffer screenObj::implObj
 
 class LIBCXX_HIDDEN theme_background_colorObj : public background_colorObj {
 
-	const color_arg theme_color;
+	const std::string theme_color;
 	const ref<screenObj::implObj> screen;
 	defaulttheme current_theme;
 
 	static background_color
-		get_nontheme_background_color(const color_arg &theme_color,
+		get_nontheme_background_color(const std::string &theme_color,
 					      const ref<screenObj::implObj> &s,
 					      const defaulttheme &theme)
 	{
@@ -99,7 +100,7 @@ class LIBCXX_HIDDEN theme_background_colorObj : public background_colorObj {
 
 	// The constructor gets initializes with the current background color
 
-	theme_background_colorObj(const color_arg &theme_color,
+	theme_background_colorObj(const std::string &theme_color,
 				  const ref<screenObj::implObj> &screen)
 		: theme_color(theme_color),
 		screen(screen),
@@ -158,16 +159,25 @@ class LIBCXX_HIDDEN theme_background_colorObj : public background_colorObj {
 background_color screenObj::implObj
 ::create_background_color(const color_arg &color_name)
 {
-	return recycled_pixmaps_cache->theme_background_color_cache
-		->find_or_create
-		(color_name,
-		 [&,this]
-		 {
-			 return ref<theme_background_colorObj>
-				 ::create(color_name, ref(this));
-		 });
+	return std::visit(visitor{
+			[&, this](const std::string &color_name)
+				-> background_color
+			{
+				return recycled_pixmaps_cache->theme_background_color_cache
+					->find_or_create
+					(color_name,
+					 [&,this]
+					 {
+						 return ref<theme_background_colorObj>
+							 ::create(color_name, ref(this));
+					 });
+			},
+			[this](const rgb &c) -> background_color
+			{
+				return create_background_color
+					(create_solid_color_picture(c));
+			}}, color_name);
 }
-
 
 class LIBCXX_HIDDEN nonThemeBackgroundColorObj : public background_colorObj {
 

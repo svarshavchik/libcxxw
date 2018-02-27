@@ -7,6 +7,7 @@
 #include "border_impl.H"
 #include "screen.H"
 #include "defaulttheme.H"
+#include "background_color.H"
 #include <variant>
 #include <functional>
 #include <x/visitor.H>
@@ -15,7 +16,7 @@ LIBCXXW_NAMESPACE_START
 
 static inline border_info
 convert_to_border_info(const ref<screenObj::implObj> &s,
-		       const current_theme_t::lock &lock,
+		       const defaulttheme &theme,
 		       const border_infomm &mm)
 {
 	border_info info;
@@ -23,21 +24,17 @@ convert_to_border_info(const ref<screenObj::implObj> &s,
 	info.colors.reserve(mm.colors.size());
 
 	for (const auto &c:mm.colors)
-	{
-		auto p=s->create_solid_color_picture((*lock)
-						     ->get_theme_color(c));
-		info.colors.push_back(p);
-	}
+		info.colors.push_back(s->create_background_color(c));
 
-	info.width=(*lock)->compute_width(mm.width);
-	info.height=(*lock)->compute_height(mm.height);
+	info.width=theme->compute_width(mm.width);
+	info.height=theme->compute_height(mm.height);
 
 	// Sanity check
 	if (info.width == dim_t::infinite() || info.height == dim_t::infinite())
 		info.width=info.height=0;
 
-	auto radius_w=(*lock)->compute_width(mm.radius);
-	auto radius_h=(*lock)->compute_height(mm.radius);
+	auto radius_w=theme->compute_width(mm.radius);
+	auto radius_h=theme->compute_height(mm.radius);
 
 	// Sanity check
 	if (radius_w == dim_t::infinite() ||
@@ -73,8 +70,8 @@ convert_to_border_info(const ref<screenObj::implObj> &s,
 
 	for (const auto &orig_dash:mm.dashes)
 	{
-		auto dash_w=(*lock)->compute_width(orig_dash);
-		auto dash_h=(*lock)->compute_height(orig_dash);
+		auto dash_w=theme->compute_width(orig_dash);
+		auto dash_h=theme->compute_height(orig_dash);
 
 		if (dash_w == dim_t::infinite() ||
 		    dash_h == dim_t::infinite())
@@ -96,7 +93,7 @@ convert_to_border_info(const ref<screenObj::implObj> &s,
 static const_border_impl
 border_impl_from_arg(const ref<screenObj::implObj> &screen,
 		     const border_arg &arg,
-		     const current_theme_t::lock &lock)
+		     const defaulttheme &theme)
 {
 	return std::visit(visitor{
 			[&]
@@ -104,14 +101,14 @@ border_impl_from_arg(const ref<screenObj::implObj> &screen,
 			{
 				auto b=border_impl
 					::create(convert_to_border_info
-						 (screen, lock, info));
+						 (screen, theme, info));
 				b->calculate();
 				return const_border_impl(b);
 			},
 			[&]
 			(const std::string &n)
 			{
-				return (*lock)->get_theme_border(n);
+				return theme->get_theme_border(n);
 			}}, arg);
 }
 
@@ -130,8 +127,7 @@ current_border_implObj
 	: screen(screen),
 	  arg(arg),
 	  current_theme_thread_only(*lock),
-	  border_thread_only(border_impl_from_arg(screen, arg,
-						  lock))
+	  border_thread_only(border_impl_from_arg(screen, arg, *lock))
 {
 }
 
@@ -153,9 +149,19 @@ void current_border_implObj
 
 	t=new_theme;
 
-	current_theme_t::lock lock{screen->current_theme};
+	border(IN_THREAD)=border_impl_from_arg(screen, arg, new_theme);
 
-	border(IN_THREAD)=border_impl_from_arg(screen, arg, lock);
+	initialized=false;
+	initialize(IN_THREAD);
+}
+
+void current_border_implObj::initialize(IN_THREAD_ONLY)
+{
+	if (initialized)
+		return;
+	initialized=true;
+	for (const auto &c:border(IN_THREAD)->colors)
+		c->initialize(IN_THREAD);
 }
 
 LIBCXXW_NAMESPACE_END

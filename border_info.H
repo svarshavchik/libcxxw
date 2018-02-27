@@ -8,6 +8,7 @@
 #include "x/w/picture.H"
 #include "x/w/types.H"
 #include "border_infofwd.H"
+#include "background_colorfwd.H"
 #include <vector>
 
 LIBCXXW_NAMESPACE_START
@@ -34,7 +35,7 @@ struct border_info {
 
 	//! Typically 1 color, but maybe two.
 
-	std::vector<const_picture> colors;
+	std::vector<background_color> colors;
 
 	//! Configured width in pixels
 	dim_t width=1;
