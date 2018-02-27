@@ -32,10 +32,16 @@ struct LIBCXX_HIDDEN child_element_init_params {
 
 //! An element that has a parent element.
 
-class LIBCXX_HIDDEN child_elementObj : public background_color_elementObj<
-	elementObj::implObj> {
+class LIBCXX_HIDDEN child_elementObj
+	: public background_color_elementObj<elementObj::implObj> {
 
+	//! Alias
 	typedef background_color_elementObj<elementObj::implObj> superclass_t;
+
+	//! Returned by has_own_background_color()
+
+	bool is_mine_background_color;
+
  public:
 
 	//! My parent element

@@ -20,19 +20,19 @@ LIBCXXW_NAMESPACE_START
 class LIBCXX_HIDDEN background_color_element_implObj : virtual public obj {
 
 	//! Wrapped background color
-	background_colorptr color;
+	background_color color;
 
 public:
 
 	//! Constructor
-	background_color_element_implObj(const background_colorptr &color);
+	background_color_element_implObj(const background_color &color);
 
 	//! Set new background color
-	void update(IN_THREAD_ONLY, const background_colorptr &new_color);
+	void update(IN_THREAD_ONLY, const background_color &new_color);
 
 	// Retrieve the current color.
 
-	background_colorptr get(IN_THREAD_ONLY);
+	const background_color get(IN_THREAD_ONLY);
 
 	//! Update the background color
 	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme);
@@ -71,9 +71,8 @@ class LIBCXX_HIDDEN background_color_1elementObj
 	//! Constructor
 
 	template<typename ...Args>
-		background_color_1elementObj(const background_colorptr &color,
+		background_color_1elementObj(const background_color &color,
 					     Args && ...args);
-
 	//! Constructor
 
 	//! Uses the already-constructed element_impl superclass to

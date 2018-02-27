@@ -89,9 +89,9 @@ create_button_focusframe(const ref<buttonObj::implObj> &impl,
 	// the contents of the focusframecontainer.
 
 	auto ffi=button_focusframe
-		::create(impl->create_background_color("button_normal_color"),
-			 impl->create_background_color("button_selected_color"),
-			 impl->create_background_color("button_active_color"),
+		::create("button_normal_color",
+			 "button_selected_color",
+			 "button_active_color",
 			 "inputfocusoff_border",
 			 "inputfocuson_border",
 			 glmi->container_impl,

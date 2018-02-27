@@ -27,16 +27,14 @@ child_elementObj::child_elementObj(const ref<containerObj::implObj> &child_conta
 
 child_elementObj::child_elementObj(const ref<containerObj::implObj> &child_container,
 				   const child_element_init_params &init_params)
-	: superclass_t{(init_params.background_color
-			? background_colorptr{
-				child_container
-					->container_element_impl().get_screen()
-					->impl
-					->create_background_color
-					(*init_params.background_color)
-					}
-			: background_colorptr{}),
+	: superclass_t{child_container->container_element_impl()
 
+		// If no background color is given, create a placeholder
+		// black rgb color. is_mine_background_color will specify
+		// what the deal is.
+		.create_background_color(init_params.background_color
+					 ? *init_params.background_color
+					 : color_arg{rgb{}}),
 		child_container->container_element_impl()
 		.nesting_level+1,
 		rectangle{0, 0, 0, 0},
@@ -48,6 +46,7 @@ child_elementObj::child_elementObj(const ref<containerObj::implObj> &child_conta
 			.drawable_pictformat,
 			(init_params.scratch_buffer_id.empty()
 			 ? "default@libcxx.com":init_params.scratch_buffer_id)},
+	  is_mine_background_color{init_params.background_color ? true:false},
 	  child_container(child_container)
 {
 }
@@ -122,11 +121,11 @@ draw_info &child_elementObj::get_draw_info_from_scratch(IN_THREAD_ONLY)
 
 	// Figure out the background color.
 
-	auto bg=background_color_element_implObj::get(IN_THREAD);
-
-	if (bg && data(IN_THREAD).inherited_visibility)
+	if (has_own_background_color(IN_THREAD) &&
+	    data(IN_THREAD).inherited_visibility)
 		// If we're not visible, we use the parent background
 	{
+		auto bg=background_color_element_implObj::get(IN_THREAD);
 		di.window_background=bg->get_current_color(IN_THREAD)->impl;
 		di.background_x=di.absolute_location.x;
 		di.background_y=di.absolute_location.y;
@@ -169,11 +168,10 @@ void child_elementObj::horizvert_updated(IN_THREAD_ONLY)
 
 void child_elementObj::remove_background_color(IN_THREAD_ONLY)
 {
-	if (!background_color_element_implObj::get(IN_THREAD))
+	if (!is_mine_background_color)
 		return; // no-op
 
-	background_color_element_implObj::update(IN_THREAD,
-						 background_colorptr());
+	is_mine_background_color=false;
 	background_color_changed(IN_THREAD);
 	child_container->child_background_color_changed(IN_THREAD,
 						  ref<elementObj::implObj>
@@ -192,9 +190,11 @@ background_color child_elementObj::current_background_color(IN_THREAD_ONLY)
 void child_elementObj::set_background_color(IN_THREAD_ONLY,
 					    const background_color &bgcolor)
 {
-	if (background_color_element_implObj::get(IN_THREAD) == bgcolor)
+	if (is_mine_background_color &&
+	    background_color_element_implObj::get(IN_THREAD) == bgcolor)
 		return; // noop
 
+	is_mine_background_color=true;
 	background_color_element_implObj::update(IN_THREAD, bgcolor);
 	background_color_changed(IN_THREAD);
 	child_container->child_background_color_changed(IN_THREAD,
@@ -220,7 +220,7 @@ void child_elementObj
 
 bool child_elementObj::has_own_background_color(IN_THREAD_ONLY)
 {
-	return background_color_element_implObj::get(IN_THREAD) ? true:false;
+	return is_mine_background_color;
 }
 
 void child_elementObj::window_focus_change(IN_THREAD_ONLY, bool flag)
