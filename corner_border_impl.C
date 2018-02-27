@@ -304,7 +304,8 @@ void corner_borderObj::implObj::do_draw(IN_THREAD_ONLY,
 #ifdef DRAW_STUB_BORDER
 		DRAW_STUB_BORDER();
 #endif
-		std::get<0>(b)->draw_stubs(border_draw_info, std::get<1>(b));
+		std::get<0>(b)->draw_stubs(IN_THREAD,
+					   border_draw_info, std::get<1>(b));
 	}
 
 	for (const auto &b:info.corners)

@@ -45,8 +45,9 @@ template<dim_t border_implObj::*calc_major,
 	 void (straight_borderObj::implObj::*do_fill_bg)
 	 (IN_THREAD_ONLY, const border_implObj::draw_info &) const,
 	 // draw_horizontal, or draw_vertical, of course.
-	 void (border_implObj::
-	       *do_draw_horizvert)(const border_implObj::draw_info &,
+	 void (border_implObj::*do_draw_horizvert)
+				  (IN_THREAD_ONLY,
+				   const border_implObj::draw_info &,
 				   const grid_elementptr &,
 				   const grid_elementptr &) const>
 class LIBCXX_HIDDEN straight_border_implObj
@@ -138,7 +139,7 @@ class LIBCXX_HIDDEN straight_border_implObj
 // color.
 
 			((*b_impl).*do_draw_horizvert)
-				(di, borders(IN_THREAD).element_1,
+				(IN_THREAD, di, borders(IN_THREAD).element_1,
 				 borders(IN_THREAD).element_2);
 		}
 	}

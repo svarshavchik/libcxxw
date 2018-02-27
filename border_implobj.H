@@ -13,6 +13,7 @@
 #include "x/w/gcfwd.H"
 #include "x/w/gcobj.H"
 #include "x/w/rectangle.H"
+#include "defaultthemefwd.H"
 #include "border_info.H"
 #include "border_implfwd.H"
 #include "corner_borderfwd.H"
@@ -134,12 +135,14 @@ class LIBCXX_HIDDEN border_implObj: virtual public obj, public border_info {
 	};
 
 	//! Draw a horizontal border
-	void draw_horizontal(//! Information needed to draw the border
+	void draw_horizontal(IN_THREAD_ONLY,
+			     //! Information needed to draw the border
 			     const draw_info &di) const;
 
 	//! Draw a horizontal border
 
-	void draw_horizontal(//! Information needed to draw the border
+	void draw_horizontal(IN_THREAD_ONLY,
+			     //! Information needed to draw the border
 			     const draw_info &di,
 
 			     //! Element above the border.
@@ -153,7 +156,8 @@ class LIBCXX_HIDDEN border_implObj: virtual public obj, public border_info {
  private:
 	//! Draw a horizontal border
 
-	void draw_horizontal(//! Information needed to draw the border
+	void draw_horizontal(IN_THREAD_ONLY,
+			     //! Information needed to draw the border
 			     const draw_info &di,
 
 			     //! The starting coordinate to draw from.
@@ -170,7 +174,9 @@ class LIBCXX_HIDDEN border_implObj: virtual public obj, public border_info {
  public:
 	//! Draw a vertical border
 
-	void draw_vertical(//! Information needed to draw the border
+	void draw_vertical(IN_THREAD_ONLY,
+
+			   //! Information needed to draw the border
 			   const draw_info &di,
 
 			   //! Element to the left of the border
@@ -182,7 +188,9 @@ class LIBCXX_HIDDEN border_implObj: virtual public obj, public border_info {
  private:
 	//! Draw a vertical border
 
-	void draw_vertical(//! Information needed to draw the border
+	void draw_vertical(IN_THREAD_ONLY,
+
+			   //! Information needed to draw the border
 			   const draw_info &di,
 
 			   //! The row to draw from.
@@ -202,7 +210,8 @@ class LIBCXX_HIDDEN border_implObj: virtual public obj, public border_info {
 	//! draw_horizontal or draw_vertical prepared a mask for compositing
 	//! color #n into area_picture, so we do it here.
 
-	void composite_line(const draw_info &di, size_t n) const;
+	void composite_line(IN_THREAD_ONLY,
+			    const draw_info &di, size_t n) const;
 
  public:
 	//! Draw a corner, or perhaps a frankencorner.
@@ -240,7 +249,8 @@ class LIBCXX_HIDDEN border_implObj: virtual public obj, public border_info {
 	//! When a border does not join through a corner, the border is
 	//! simply a stub to the center of the border area.
 
-	void draw_stubs(//! Information needed to draw the border
+	void draw_stubs(IN_THREAD_ONLY,
+			//! Information needed to draw the border
 			const draw_info &di,
 
 			//! Which stubs are being drawn
@@ -269,7 +279,8 @@ class LIBCXX_HIDDEN border_implObj: virtual public obj, public border_info {
 			   const surrounding_elements_info &elements) const;
 
 	//! When there's no radius, all the corners are just plain squares.
-	void draw_square_corner(const draw_info &di,
+	void draw_square_corner(IN_THREAD_ONLY,
+				const draw_info &di,
 				coord_t x,
 				coord_t y) const;
 

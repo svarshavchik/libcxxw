@@ -1090,11 +1090,10 @@ rectangle list_elementObj::implObj::do_draw_row(IN_THREAD_ONLY,
 							       mask_gc,
 							       di.absolute_location.x,
 							       di.absolute_location.y};
-						       current_border
-							       ->border
+						       current_border->border
 							       (IN_THREAD)
 							       ->draw_horizontal
-							       (bdi);
+							       (IN_THREAD, bdi);
 					       });
 
 			 },
