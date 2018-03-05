@@ -68,15 +68,29 @@ public:
 	}
 };
 
-//! A linear gradient.
+//! A linear gradient for a display element's background color.
+
+//! Define a linear gradient from (x1, y1) to (x2, y2).
+//!
+//! The x and y coordinates range between 0 and 1. (0, 0) is the display
+//! element's top left corner, (1, 1) is its bottom right corner.
+//!
+//! If fixed_width and fixed_height are not 0, this computes the gradient
+//! for a display element with a fixed width or height, rather than the
+//! actual height of the display element. fixed_width and fixed_height
+//! gets specified in millimeters.
 
 struct linear_gradient {
 	double x1=0, y1=0, x2=1, y2=1;
+	double fixed_width=0, fixed_height=0;
+
 	rgb_gradient gradient;
 
 	bool operator==(const linear_gradient &o) const noexcept
 	{
 		return x1 == o.x1 && y1 == o.y1 && x2 == o.x2 && y2 == o.y2 &&
+			fixed_width == o.fixed_width &&
+			fixed_height == o.fixed_height &&
 			gradient == o.gradient;
 	}
 };

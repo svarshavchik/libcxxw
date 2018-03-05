@@ -1131,7 +1131,7 @@ const_picture sxg_parserObj::color_info
 	for (auto &rgb:g.gradient)
 		scale_rgb(rgb.second);
 
-	return s->create_linear_gradient_picture(g, width, height,
+	return s->create_linear_gradient_picture(g, 0, 0, width, height,
 						 render_repeat::pad);
 }
 

@@ -567,6 +567,8 @@ bool screen_picturecacheObj::linear_gradient_cache_key_t
 
 const_picture screenObj::implObj
 ::create_linear_gradient_picture(const linear_gradient &lg,
+				 coord_t offset_x,
+				 coord_t offset_y,
 				 dim_t w,
 				 dim_t h,
 				 render_repeat repeat)
@@ -588,6 +590,11 @@ const_picture screenObj::implObj
 
 	coord_t y1{coord_t::truncate(std::trunc(lg.y1 * dim_t::truncate(h)))};
 	coord_t y2{coord_t::truncate(std::trunc(lg.y2 * dim_t::truncate(h)))};
+
+	x1=coord_t::truncate(x1+offset_x);
+	x2=coord_t::truncate(x2+offset_x);
+	y1=coord_t::truncate(y1+offset_y);
+	y2=coord_t::truncate(y2+offset_y);
 
 	return picturecache->linear_gradients->find_or_create
 		({lg.gradient, x1, y1, x2, y2, repeat},

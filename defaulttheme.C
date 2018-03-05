@@ -834,19 +834,26 @@ static inline bool scale_theme_color(theme_parser_lock &lock,
 	static const char * const coords[]={"x1",
 					    "y1",
 					    "x2",
-					    "y2"};
+					    "y2",
+					    "widthmm",
+					    "heightmm"};
+
+	static const double minvalue[]={0,0,0,0,-999,-999};
+	static const double maxvalue[]={1,1,1,1,999,999};
 
 	static double linear_gradient::* const fields[]={
 		&linear_gradient::x1,
 		&linear_gradient::y1,
 		&linear_gradient::x2,
-		&linear_gradient::y2};
+		&linear_gradient::y2,
+		&linear_gradient::fixed_width,
+		&linear_gradient::fixed_height};
 
 	std::istringstream s(lock->get_text());
 
 	imbue<std::istringstream> imbue{lock.c_locale, s};
 
-	for (size_t i=0; i<4; i++)
+	for (size_t i=0; i<6; i++)
 	{
 		auto attribute=lock.clone();
 
@@ -869,11 +876,12 @@ static inline bool scale_theme_color(theme_parser_lock &lock,
 					(_("could not parse %2% for id=%1%"),
 					 id, coords[i]));
 
-		if (v < 0 || v>1)
+		if (v < minvalue[i] || v>maxvalue[i])
 			throw EXCEPTION(gettextmsg
-					(_("%2 for id=%1% must be between 0"
-					   " and 1"),
-					 id, coords[i]));
+					(_("%2% for id=%1% must be between %3%"
+					   " and %4%"),
+					 id, coords[i],
+					 minvalue[i], maxvalue[i]));
 
 		color.*(fields[i])=v;
 	}

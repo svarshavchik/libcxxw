@@ -249,10 +249,55 @@ public:
 
 		auto screen_impl=e.get_screen()->impl;
 
+		dim_t width=e.data(IN_THREAD).current_position.width;
+		dim_t height=e.data(IN_THREAD).current_position.height;
+
+		auto fixed_width=g.fixed_width;
+		auto fixed_height=g.fixed_height;
+
+		// Negative values mean from the opposite side.
+
+		bool from_right=false;
+		bool from_bottom=false;
+		coord_t x=0;
+		coord_t y=0;
+
+		if (fixed_width < 0)
+		{
+			fixed_width=-fixed_width;
+			from_right=true;
+		}
+
+		if (fixed_height < 0)
+		{
+			fixed_height=-fixed_height;
+			from_bottom=true;
+		}
+		if (fixed_width > 0 || fixed_height > 0)
+		{
+			current_theme_t::lock lock{e.get_screen()->impl
+					->current_theme};
+
+			if (fixed_width > 0)
+				width= (*lock)->compute_width(fixed_width);
+
+			if (fixed_height > 0)
+				height= (*lock)->compute_height(fixed_height);
+		}
+
+		if (from_right)
+			x=coord_t::truncate
+				(coord_t::truncate
+				 (e.data(IN_THREAD).current_position.width)
+				 -width);
+		if (from_bottom)
+			y=coord_t::truncate
+				(coord_t::truncate
+				 (e.data(IN_THREAD).current_position.height)
+				 -height);
+
 		auto picture=screen_impl->create_linear_gradient_picture
-			(g, e.data(IN_THREAD).current_position.width,
-			 e.data(IN_THREAD).current_position.height,
-			 render_repeat::pad);
+			(g, x, y, width, height, render_repeat::pad);
 
 		return screen_impl
 			->create_linear_gradient_background_color(ref(this),
