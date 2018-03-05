@@ -7,11 +7,18 @@
 
 #include <x/w/namespace.H>
 #include <x/ptrfwd.H>
+#include <string>
+#include <unordered_set>
 
 LIBCXXW_NAMESPACE_START
 
 class connectionObj;
 class connectionBase;
+struct theme_option;
+
+//! Which options are enabled for the given theme.
+
+typedef std::unordered_set<std::string> enabled_theme_options_t;
 
 //! A connection to the display server
 

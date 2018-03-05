@@ -189,7 +189,9 @@ get_screens(const connection_thread &thread,
 			(screen_0,
 			 thread,
 			 theme_config.themename,
-			 theme_config.themescale * 100);
+			 theme_config.themescale * 100,
+			 theme_config.enabled_theme_options
+			 );
 
 	return v;
 }
@@ -397,14 +399,18 @@ void connectionObj::implObj::set_wm_icon(xcb_window_t wid,
 //////////////////////////////////////////////////////////////////////////////
 
 void connectionObj::set_and_save_theme(const std::string &identifier,
-				       int factor)
+				       int factor,
+				       const enabled_theme_options_t
+				       &enabled_options)
+
 {
-	set_theme(identifier, factor, false);
-	save_config(identifier, factor);
+	set_theme(identifier, factor, enabled_options, false);
+	save_config(identifier, factor, enabled_options);
 }
 
 void connectionObj::set_theme(const std::string &identifier,
 			      int factor,
+			      const enabled_theme_options_t &enabled_options,
 			      bool this_connection_only)
 {
 	auto available_themes=connection::base::available_themes();
@@ -426,7 +432,8 @@ void connectionObj::set_theme(const std::string &identifier,
 	if (this_connection_only)
 	{
 		auto config=defaulttheme::base::get_config(identifier,
-							   factor/100.0);
+							   factor/100.0,
+							   enabled_options);
 
 		impl->thread->run_as
 			([impl=this->impl, config]
@@ -442,7 +449,8 @@ void connectionObj::set_theme(const std::string &identifier,
 	load_cxxwtheme_property(impl->screens.at(0)->xcb_screen,
 				impl->thread,
 				identifier,
-				factor);
+				factor,
+				enabled_options);
 }
 
 LIBCXXW_NAMESPACE_END

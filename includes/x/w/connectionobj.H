@@ -51,18 +51,22 @@ class connectionObj : virtual public obj {
 
 	//! Returns the current theme and scaling factor.
 
-	std::pair<std::string, int> current_theme() const;
+	std::tuple<std::string, int, enabled_theme_options_t
+		   > current_theme() const;
 
 	//! Sets a new theme and scaling factor.
 
 	void set_theme(const std::string &identifier,
 		       int factor,
+		       const enabled_theme_options_t &enabled_options,
 		       bool this_connection_only);
 
 	//! Sets and saves new theme and scaling factor.
 
 	void set_and_save_theme(const std::string &identifier,
-				int factor);
+				int factor,
+				const enabled_theme_options_t &enabled_options);
+
 
 	//! Shortcut to render information.
 	const_pictformat find_alpha_pictformat_by_depth(depth_t d) const;

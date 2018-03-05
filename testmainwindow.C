@@ -493,7 +493,8 @@ void runtestflashwiththeme(const testmainwindowoptions &options)
 		{10}, {10});
 			 });
 
-	auto original_theme=main_window->get_screen()->get_connection()
+	auto [original_theme, original_scale, original_options]=
+		main_window->get_screen()->get_connection()
 		->current_theme();
 
 	std::string alternate_theme;
@@ -501,7 +502,7 @@ void runtestflashwiththeme(const testmainwindowoptions &options)
 	for (const auto &theme:LIBCXX_NAMESPACE::w::connection::base
 		     ::available_themes())
 	{
-		if (theme.identifier == original_theme.first)
+		if (theme.identifier == original_theme)
 			continue;
 		alternate_theme=theme.identifier;
 		break;
@@ -531,8 +532,10 @@ void runtestflashwiththeme(const testmainwindowoptions &options)
 		}
 
 		main_window->get_screen()->get_connection()
-			->set_theme(flag ? alternate_theme:original_theme.first,
-				    original_theme.second, true);
+			->set_theme(flag ? alternate_theme:original_theme,
+				    original_scale,
+				    original_options,
+				    true);
 
 		flag= !flag;
 		{
@@ -646,7 +649,8 @@ runtestthemescale(const testmainwindowoptions &options)
 				 main_window->appdata=c;
 			 });
 
-	auto original_theme=main_window->get_screen()->get_connection()
+	auto [original_theme, original_scale, original_options]=
+		main_window->get_screen()->get_connection()
 		->current_theme();
 
 	guard(main_window->connection_mcguffin());
@@ -705,8 +709,10 @@ runtestthemescale(const testmainwindowoptions &options)
 		}
 
 		main_window->get_screen()->get_connection()
-			->set_theme(original_theme.first,
-				    (i % 2) ? 100:200, true);
+			->set_theme(original_theme,
+				    (i % 2) ? 100:200,
+				    original_options,
+				    true);
 
 		flag= !flag;
 		{
@@ -717,6 +723,12 @@ runtestthemescale(const testmainwindowoptions &options)
 				      { return false; });
 		}
 	}
+
+	main_window->get_screen()->get_connection()
+		->set_theme(original_theme,
+			    original_scale,
+			    original_options,
+			    true);
 	return {cmain, ccanvas};
 }
 

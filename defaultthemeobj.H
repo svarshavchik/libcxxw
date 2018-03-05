@@ -23,6 +23,7 @@
 #include "x/w/text_paramfwd.H"
 #include "x/w/shortcutfwd.H"
 #include "x/w/dim_arg.H"
+#include "x/w/connectionfwd.H"
 #include "connection_threadfwd.H"
 #include "defaultthemefwd.H"
 #include "border_implfwd.H"
@@ -40,12 +41,16 @@ class connection_implObj;
 
 void load_cxxwtheme_property(const screen &screen0,
 			     const std::string &theme_name,
-			     int theme_scale) LIBCXX_PUBLIC;
+			     int theme_scale,
+			     const enabled_theme_options_t
+			     &enabled_theme_options) LIBCXX_PUBLIC;
 
 void load_cxxwtheme_property(const xcb_screen_t *screen_0,
 			     const connection_thread &thread,
 			     const std::string &theme_name,
-			     int theme_scale) LIBCXX_HIDDEN;
+			     int theme_scale,
+			     const enabled_theme_options_t
+			     &enabled_theme_options) LIBCXX_HIDDEN;
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -59,6 +64,10 @@ public:
 
 	//! Scaling factor
 	const double themescale;
+
+	//! All available options for this theme.
+
+	const std::vector<theme_option> available_theme_options;
 
 	//! The directory this theme was loaded from
 	const std::string themedir;
@@ -269,6 +278,9 @@ public:
 
 		//! Determined theme scale
 		double themescale;
+
+		//! Enabled options
+		enabled_theme_options_t enabled_theme_options;
 
 		//! The loaded theme configuration file.
 		xml::doc theme_configfile;

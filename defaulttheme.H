@@ -34,7 +34,9 @@ public:
 
 	//! The returned config object gets used to construct a defaulttheme.
 	static config get_config(const std::string &themename,
-				 double themescale) LIBCXX_HIDDEN;
+				 double themescale,
+				 const enabled_theme_options_t
+				 &enabled_theme_options) LIBCXX_HIDDEN;
 
 	//! Read the CXXWTHEME propert from screen  0's root window.
 

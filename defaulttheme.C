@@ -1,5 +1,5 @@
 /*
-** Copyright 2017 Double Precision, Inc.
+** Copyright 2017-2018 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
@@ -30,6 +30,7 @@
 #include <sstream>
 #include <cmath>
 #include <algorithm>
+#include <courier-unicode.h>
 
 LIBCXXW_NAMESPACE_START
 
@@ -45,6 +46,9 @@ themesubdirprop(LIBCXX_NAMESPACE_STR "::w::theme::name", "");
 
 static property::value<int>
 themescaleprop(LIBCXX_NAMESPACE_STR "::w::theme::scale", 0);
+
+static property::value<std::string>
+themeoptionsprop(LIBCXX_NAMESPACE_STR "::w::theme::options", "");
 
 std::string themedirroot()
 {
@@ -160,6 +164,60 @@ static double default_theme_scale(const std::string &cxxwtheme_property,
 	return scale / 100.0;
 }
 
+static enabled_theme_options_t
+default_theme_options(const std::string &cxxwtheme_property,
+		      const xml::doc &config,
+		      std::string themeoptions)
+{
+	enabled_theme_options_t enabled_options;
+
+	std::istringstream i;
+
+	if (themeoptions.empty())
+	{
+		auto n=cxxwtheme_property.find(':');
+
+		if (n != std::string::npos)
+		{
+			i.str(cxxwtheme_property.substr(0,n));
+
+			int ignore;
+
+			i >> ignore; // Scaling factor.
+		}
+		else
+		{
+			auto lock=config->readlock();
+
+			if (lock->get_root())
+			{
+				auto xp=lock->get_xpath("/cxxw/theme/option");
+
+				int n=xp->count();
+
+				for (int i=0; i<n; ++i)
+				{
+					xp->to_node(i+1);
+					enabled_options
+						.insert(lock->get_text());
+				}
+			}
+			return enabled_options;
+		}
+	}
+	else
+	{
+		i.str(themeoptions);
+	}
+
+	std::string word;
+
+	while (i >> word)
+		enabled_options.insert(word);
+
+	return enabled_options;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 // Retrieve CXXWTHEME property from screen 0's root window.
@@ -199,13 +257,20 @@ std::string defaulttheme::base
 void load_cxxwtheme_property(const xcb_screen_t *screen_0,
 			     const connection_thread &thread,
 			     const std::string &theme_name,
-			     int theme_scale)
+			     int theme_scale,
+			     const enabled_theme_options_t
+			     &enabled_theme_options)
 {
 	auto conn=thread->info;
 
 	std::ostringstream o;
 
-	o << theme_scale << ":" << theme_name;
+	o << theme_scale;
+
+	for (const auto &opt:enabled_theme_options)
+		o << " " << opt;
+
+	o << ":" << theme_name;
 
 	auto data=o.str();
 
@@ -222,19 +287,104 @@ void load_cxxwtheme_property(const xcb_screen_t *screen_0,
 
 void load_cxxwtheme_property(const screen &screen0,
 			     const std::string &theme_name,
-			     int theme_scale)
+			     int theme_scale,
+			     const enabled_theme_options_t
+			     &enabled_theme_options)
 {
 	load_cxxwtheme_property(screen0->impl->xcb_screen,
 				screen0->impl->thread,
 				theme_name,
-				theme_scale);
+				theme_scale,
+				enabled_theme_options);
 }
 
-std::pair<std::string, int> connectionObj::current_theme() const
+static inline enabled_theme_options_t
+get_enabled_options(const std::vector<theme_option> &available_theme_options)
+{
+	enabled_theme_options_t opts;
+
+	for (const auto &option:available_theme_options)
+		if (option.selected)
+			opts.insert(option.label);
+
+	return opts;
+}
+
+std::tuple<std::string, int, enabled_theme_options_t>
+connectionObj::current_theme() const
 {
 	auto theme=impl->screens.at(0)->current_theme.get();
 
-	return {theme->themename, std::round(theme->themescale*100)};
+	return {theme->themename, std::round(theme->themescale*100),
+			get_enabled_options(theme->available_theme_options)};
+}
+
+static std::vector<theme_option>
+make_available_theme_options(const xml::doc &theme_configfile,
+			     const enabled_theme_options_t
+			     &enabled_theme_options)
+
+{
+	std::vector<theme_option> opts;
+
+	theme_parser_lock lock{theme_configfile->readlock(),
+				locale::create("C")};
+
+	if (lock->get_root())
+	{
+		auto xpath=lock->get_xpath("/theme/option");
+
+		size_t count=xpath->count();
+
+		std::unordered_set<std::string> seen;
+
+		for (size_t i=0; i<count; ++i)
+		{
+			xpath->to_node(i+1);
+
+			auto descr_str=lock->get_text();
+
+			auto id=lock->get_any_attribute("id");
+
+			if (id.empty())
+				throw EXCEPTION("Missing \"id\" "
+						"attribute for an "
+						"<option>");
+
+			if (seen.find(id) != seen.end())
+				continue;
+
+			seen.insert(id);
+
+			if (descr_str.empty())
+				continue;
+			auto descr=unicode::iconvert::tou
+				::convert(descr_str, unicode::utf_8).first;
+
+			opts.push_back({id, descr,
+						enabled_theme_options.find(id)
+						!=
+						enabled_theme_options.end()});
+		}
+	}
+
+	return opts;
+}
+
+static std::vector<theme_option>
+make_available_theme_options(const defaultthemeObj::config &config)
+{
+	try {
+		return make_available_theme_options
+			(config.theme_configfile,
+			 config.enabled_theme_options);
+	} catch (const exception &e)
+	{
+		throw EXCEPTION("An error occured while parsing the "
+				<< config.themename
+				<< " theme configuration file: "
+				<< e);
+	}
 }
 
 std::vector<connection::base::available_theme>
@@ -260,20 +410,9 @@ connection::base::available_themes()
 			std::string name=directory.substr(directory.rfind('/')+1);
 			std::string description=name;
 
-			auto root=xml->readlock();
+			auto options=make_available_theme_options(xml, {});
 
-			if (root->get_root())
-			{
-				auto xpath=root->get_xpath("/theme/name");
-
-				if (xpath->count())
-				{
-					xpath->to_node(1);
-					description=root->get_text();
-				}
-			}
-
-			themes.push_back({name, description});
+			themes.push_back({name, description, options});
 		} catch (const exception &e)
 		{
 			e->caught();
@@ -301,13 +440,17 @@ defaulttheme::base::get_config(const std::string &property)
 					  themesubdirprop.get());
 	auto themescale=default_theme_scale(property, user_configfile,
 					    themescaleprop.get());
+	auto themeoptions=default_theme_options(property, user_configfile,
+						themeoptionsprop.get());
 
-	return get_config(themename, themescale);
+	return get_config(themename, themescale, themeoptions);
 }
 
 defaulttheme::base::config
 defaulttheme::base::get_config(const std::string &themename,
-			       double themescale)
+			       double themescale,
+			       const enabled_theme_options_t
+			       &enabled_theme_options)
 {
 	xml::docptr theme_configfile;
 
@@ -324,6 +467,7 @@ defaulttheme::base::get_config(const std::string &themename,
 	}
 
 	return { themename, themedir, themescale,
+			enabled_theme_options,
 			theme_configfile };
 }
 
@@ -331,6 +475,7 @@ defaultthemeObj::defaultthemeObj(const xcb_screen_t *screen,
 				 const config &theme_config)
 	: themename(theme_config.themename),
 	  themescale(theme_config.themescale),
+	  available_theme_options(make_available_theme_options(theme_config)),
 	  themedir(theme_config.themedir),
 	  h1mm(one_millimeter(screen->width_in_pixels,
 			      screen->width_in_millimeters, themescale)),
@@ -1169,6 +1314,17 @@ theme_color_t defaultthemeObj::get_theme_color(const std::string_view &id) const
 
 	for (const auto &try_id:ids)
 	{
+		for (const auto &option:available_theme_options)
+		{
+			if (!option.selected)
+				continue;
+			auto iter=colors.find(option.label + ":"
+					      + try_id);
+
+			if (iter != colors.end())
+				return iter->second;
+		}
+
 		auto iter=colors.find(try_id);
 
 		if (iter != colors.end())

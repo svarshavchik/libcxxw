@@ -37,6 +37,7 @@
 #include <x/weakcapture.H>
 #include <x/threads/run.H>
 #include <x/config.H>
+#include <x/singletonptr.H>
 #include <iostream>
 #include <iomanip>
 #include <algorithm>
@@ -77,14 +78,144 @@ public:
 
 	std::string name;
 	int scale;
+	w::enabled_theme_options_t enabled_theme_options;
+
+	std::vector<w::connection::base::available_theme> available_themes;
 
 	theme_infoObj(const w::connection &conn)
+		: available_themes{w::connection::base::available_themes()}
+
 	{
-		std::tie(name, scale)=conn->current_theme();
+		std::tie(name, scale, enabled_theme_options)=
+			conn->current_theme();
 	}
 
 	~theme_infoObj()=default;
+
+	void set_theme_options(const w::container &);
+
+	void validate_options()
+	{
+		auto iter=std::find_if(available_themes.begin(),
+				       available_themes.end(),
+				       [&, this]
+				       (const auto &theme)
+				       {
+					       return theme.identifier == name;
+				       });
+
+		if (iter == available_themes.end())
+		{
+			enabled_theme_options.clear();
+			return; // Shouldn't happen.
+		}
+
+		w::enabled_theme_options_t validated_theme_options;
+
+		for (const auto &option:iter->available_options)
+		{
+			if (enabled_theme_options.find(option.label) !=
+			    enabled_theme_options.end())
+				validated_theme_options.insert(option.label);
+		}
+		enabled_theme_options=validated_theme_options;
+	}
+
 };
+
+typedef singletonptr<theme_infoObj> theme_info_t;
+
+// The container with the currently shown theme's options.
+
+class current_theme_optionsObj : virtual public obj {
+
+public:
+
+	const w::container options_container;
+
+	current_theme_optionsObj(const w::container &options_container)
+		: options_container{options_container}
+	{
+	}
+
+	~current_theme_optionsObj()=default;
+};
+
+typedef singletonptr<current_theme_optionsObj> current_theme_options_t;
+
+void theme_infoObj::set_theme_options(const w::container &c)
+{
+	w::gridlayoutmanager glm=c->get_layoutmanager();
+
+	glm->remove();
+
+	auto iter=std::find_if(available_themes.begin(),
+			       available_themes.end(),
+			       [&, this]
+			       (const auto &theme)
+			       {
+				       return theme.identifier == name;
+			       });
+
+	if (iter == available_themes.end())
+		return;
+
+	for (const auto &option:iter->available_options)
+	{
+		auto f=glm->append_row();
+		auto cb=f->create_checkbox
+			([&]
+			 (const w::factory &f)
+			 {
+				 f->create_label(option.description);
+			 });
+		auto value=enabled_theme_options.find(option.label);
+
+		if (value != enabled_theme_options.end())
+			cb->set_value(1);
+
+		cb->on_activate
+			([label=option.label]
+			 (size_t n,
+			  const auto &trigger,
+			  const auto &busy)
+			 {
+				 if (std::holds_alternative<w::initial>
+				     (trigger))
+					 return;
+
+				 theme_info_t theme_info;
+
+				 if (!theme_info)
+					 return;
+
+				 if (n == 0)
+					 theme_info->enabled_theme_options
+						 .erase(label);
+				 else
+					 theme_info->enabled_theme_options
+						 .insert(label);
+
+				 current_theme_options_t current_theme_options;
+
+				 if (!current_theme_options)
+					 return;
+
+				 auto conn=current_theme_options
+					 ->options_container
+					 ->get_screen()
+					 ->get_connection();
+
+				 conn->set_theme(theme_info->name,
+						 theme_info->scale,
+						 theme_info
+						 ->enabled_theme_options,
+						 true);
+			 });
+
+		cb->show_all();
+	}
+}
 
 static void create_demo(const w::booklayoutmanager &lm);
 
@@ -93,8 +224,8 @@ static void file_menu(const w::main_window &mw,
 static void help_menu(const w::main_window &mw,
 		      const w::listlayoutmanager &lm);
 
-static void create_main_window(const w::main_window &mw,
-			       const close_flag_ref &close_flag)
+static w::container create_main_window(const w::main_window &mw,
+				       const close_flag_ref &close_flag)
 {
 	w::gridlayoutmanager glm=mw->get_layoutmanager();
 
@@ -102,7 +233,7 @@ static void create_main_window(const w::main_window &mw,
 
 	// [Theme:] [combobox] [Scale:] [x%] [canvas]
 	//
-	// [        canvas            ] [ scrollbar ]
+	// [        options           ] [ scrollbar ]
 	//
 	// [             demo container             ]
 
@@ -112,24 +243,22 @@ static void create_main_window(const w::main_window &mw,
 
 	auto conn=mw->get_screen()->get_connection();
 
-	auto theme_info=ref<theme_infoObj>::create(conn);
+	theme_info_t theme_info;
 
-	auto available_themes=w::connection::base::available_themes();
-
-	size_t i=std::find_if(available_themes.begin(),
-			      available_themes.end(),
+	size_t i=std::find_if(theme_info->available_themes.begin(),
+			      theme_info->available_themes.end(),
 			      [&]
 			      (const auto &t)
 			      {
 				      return t.identifier == theme_info->name;
-			      })-available_themes.begin();
+			      })-theme_info->available_themes.begin();
 
 	std::vector<std::string> themeids;
 
-	themeids.reserve(available_themes.size());
+	themeids.reserve(theme_info->available_themes.size());
 
-	std::transform(available_themes.begin(),
-		       available_themes.end(),
+	std::transform(theme_info->available_themes.begin(),
+		       theme_info->available_themes.end(),
 		       std::back_insert_iterator{themeids},
 		       []
 		       (const auto &available_theme)
@@ -139,9 +268,14 @@ static void create_main_window(const w::main_window &mw,
 
 	w::new_standard_comboboxlayoutmanager
 		themes_combobox{
-		[themeids, theme_info, conn](const auto &info)
+		[themeids, conn](const auto &info)
 		{
 			if (!info.list_item_status_info.selected)
+				return;
+
+			theme_info_t theme_info;
+
+			if (!theme_info)
 				return;
 
 			theme_info->name=themeids[info.list_item_status_info
@@ -149,7 +283,15 @@ static void create_main_window(const w::main_window &mw,
 
 			conn->set_theme(theme_info->name,
 					theme_info->scale,
+					theme_info->enabled_theme_options,
 					true);
+
+			current_theme_options_t current_theme_options;
+
+			if (current_theme_options)
+				theme_info->set_theme_options
+					(current_theme_options
+					 ->options_container);
 		}};
 
 	f->create_focusable_container
@@ -161,10 +303,11 @@ static void create_main_window(const w::main_window &mw,
 
 			 std::vector<w::list_item_param> descriptions;
 
-			 descriptions.reserve(available_themes.size());
+			 descriptions.reserve(theme_info
+					      ->available_themes.size());
 
-			 std::transform(available_themes.begin(),
-					available_themes.end(),
+			 std::transform(theme_info->available_themes.begin(),
+					theme_info->available_themes.end(),
 					std::back_insert_iterator{descriptions},
 					[]
 					(const auto &available_theme)
@@ -197,9 +340,18 @@ static void create_main_window(const w::main_window &mw,
 
 	f->create_canvas();
 
+	glm->row_alignment(1, w::valign::top);
+
 	f=glm->append_row();
 
-	f->colspan(3).create_canvas();
+	auto options_container=
+		f->colspan(3).create_container
+		([&]
+		 (const auto &c)
+		 {
+			 theme_info->set_theme_options(c);
+		 },
+		 w::new_gridlayoutmanager{});
 
 	w::scrollbar_config config{(SCALE_MAX-SCALE_MIN)/SCALE_INC+1};
 
@@ -209,10 +361,15 @@ static void create_main_window(const w::main_window &mw,
 		f->colspan(2).create_horizontal_scrollbar(config, 100);
 
 	scale_scrollbar->on_update
-		([scale_label, theme_info, conn]
+		([scale_label, conn]
 		 (const auto &info)
 		 {
 			 if (std::holds_alternative<w::initial>(info.trigger))
+				 return;
+
+			 theme_info_t theme_info;
+
+			 if (!theme_info)
 				 return;
 
 			 std::ostringstream initial_scale;
@@ -231,7 +388,15 @@ static void create_main_window(const w::main_window &mw,
 
 			 conn->set_theme(theme_info->name,
 					 theme_info->scale,
+					 theme_info->enabled_theme_options,
 					 true);
+
+			 current_theme_options_t current_theme_options;
+
+			 if (current_theme_options)
+				 theme_info->set_theme_options
+					 (current_theme_options
+					  ->options_container);
 		 });
 
 	f=glm->append_row();
@@ -265,13 +430,22 @@ static void create_main_window(const w::main_window &mw,
 
 			 f->create_normal_button_with_label
 				 ("Set")->on_activate
-				 ([close_flag, theme_info, conn]
+				 ([close_flag, conn]
 				  (const auto &ignore1,
 				   const auto &ignore2)
 				  {
-					  conn->set_theme(theme_info->name,
-							  theme_info->scale,
-							  false);
+					  theme_info_t theme_info;
+
+					  if (!theme_info)
+						  return;
+
+					  theme_info->validate_options();
+					  conn->set_theme
+						  (theme_info->name,
+						   theme_info->scale,
+						   theme_info
+						   ->enabled_theme_options,
+						   false);
 					  close_flag->close();
 				  });
 
@@ -282,13 +456,21 @@ static void create_main_window(const w::main_window &mw,
 						 "no"_decoration,
 						 "et and save"
 						 }, {"Alt", 's'})->on_activate
-				 ([close_flag, theme_info, conn]
+				 ([close_flag, conn]
 				  (const auto &ignore1,
 				   const auto &ignore2)
 				  {
+					  theme_info_t theme_info;
+
+					  if (!theme_info)
+						  return;
+
+					  theme_info->validate_options();
 					  conn->set_and_save_theme
 						  (theme_info->name,
-						   theme_info->scale);
+						   theme_info->scale,
+						   theme_info
+						   ->enabled_theme_options);
 					  close_flag->close();
 				  });
 		 },
@@ -315,6 +497,8 @@ static void create_main_window(const w::main_window &mw,
 		      });
 
 	mw->get_menubar()->show();
+
+	return options_container;
 }
 
 static void file_menu(const w::main_window &mw,
@@ -609,7 +793,7 @@ static void demo_misc(const w::gridlayoutmanager &lm)
 			 glm->append_row()->halign(w::halign::center)
 				 .create_label("100%")->show();
 
-			 pb->update(100, 100);
+			 pb->update(75, 100);
 		 });
 
 	lm->append_row()->colspan(2).halign(w::halign::center)
@@ -638,13 +822,24 @@ void cxxwtheme()
 
 	auto close_flag=close_flag_ref::create();
 
-	auto main_window=w::main_window
-		::create(pos, "main",
-			 [&]
-			 (const auto &main_window)
-			 {
-				 create_main_window(main_window, close_flag);
-			 });
+	auto default_screen=w::screen::base::create();
+
+	theme_info_t theme_info{ref<theme_infoObj>::create
+			(default_screen->get_connection())};
+
+	w::containerptr options_containerptr;
+
+	auto main_window=default_screen->create_mainwindow
+		(pos, "main",
+		 [&]
+		 (const auto &main_window)
+		 {
+			 options_containerptr=create_main_window
+			 (main_window, close_flag);
+		 });
+
+	current_theme_options_t options_container{ref<current_theme_optionsObj>
+			::create(options_containerptr)};
 
 	main_window->set_window_title("Set LibCXXW theme");
 	main_window->set_window_class("main", "cxxwtheme@w.libcxx.com");

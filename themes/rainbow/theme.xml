@@ -76,12 +76,39 @@
     <g>.3</g>
     <b>.3</b>
   </color>
-  <color_gradient id="progressbar">
-    <color value="0">red</color>
-    <color value="40">yellow</color>
-    <color value="60">yellow</color>
-    <color value="75">light_green</color>
-  </color_gradient>
+
+  <color id="progressbar" type="linear_gradient">
+
+    <x1>0</x1>
+    <y1>0</y1>
+    <x2>1</x2>
+    <y2>0</y2>
+
+    <gradient>
+      <value>0</value>
+      <color>red</color>
+    </gradient>
+
+    <gradient>
+      <value>40</value>
+      <color>yellow</color>
+    </gradient>
+
+    <gradient>
+      <value>60</value>
+      <color>yellow</color>
+    </gradient>
+
+    <gradient>
+      <value>75</value>
+      <color>light_green</color>
+    </gradient>
+
+    <gradient>
+      <value>100</value>
+      <color>light_green</color>
+    </gradient>
+  </color>
 
   <xi:include href="../default/theme.xml" xpointer="xpointer(/theme/*)" />
 </theme>

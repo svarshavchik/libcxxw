@@ -87,7 +87,8 @@ void testlabel()
 
 	main_window->show_all();
 
-	auto original_theme=main_window->get_screen()->get_connection()
+	auto [original_theme, original_scale, original_options]
+		=main_window->get_screen()->get_connection()
 		->current_theme();
 
 	LIBCXX_NAMESPACE::mpcobj<bool>::lock lock{close_flag->flag};
@@ -98,9 +99,17 @@ void testlabel()
 			      [&] { return *lock; });
 
 		main_window->get_screen()->get_connection()
-			->set_theme(original_theme.first,
-				    (i % 2) ? 100:200, true);
+			->set_theme(original_theme,
+				    (i % 2) ? 100:200,
+				    original_options,
+				    true);
 	}
+
+	main_window->get_screen()->get_connection()
+		->set_theme(original_theme,
+			    original_scale,
+			    original_options,
+			    true);
 }
 
 int main(int argc, char **argv)

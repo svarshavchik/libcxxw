@@ -2,6 +2,7 @@
 #define configfile_H
 
 #include <x/xml/doc.H>
+#include "x/w/connectionfwd.H"
 
 namespace LIBCXX_NAMESPACE {
 	namespace w {
@@ -12,7 +13,8 @@ namespace LIBCXX_NAMESPACE {
 
 xml::doc read_config() LIBCXX_HIDDEN;
 void save_config(const std::string &themename,
-		 int themescale) LIBCXX_HIDDEN;
+		 int themescale,
+		 const enabled_theme_options_t &enabled_options) LIBCXX_HIDDEN;
 
 #define SCALE_MIN 50
 #define SCALE_MAX 500

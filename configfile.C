@@ -61,7 +61,8 @@ xml::doc read_config()
 }
 
 void save_config(const std::string &themename,
-		 int themescale)
+		 int themescale,
+		 const enabled_theme_options_t &enabled_options)
 {
 	auto doc=xml::doc::create();
 
@@ -70,6 +71,11 @@ void save_config(const std::string &themename,
 	lock->create_child()->element({"cxxw"})->element({"theme"})
 		->element({"name"})->text(themename);
 
+	for (const auto &option:enabled_options)
+	{
+		lock->get_xpath("/cxxw/theme")->to_node();
+		lock->create_child()->element({"option"})->text(option);
+	}
 	lock->get_xpath("/cxxw/theme")->to_node();
 
 	std::ostringstream o;

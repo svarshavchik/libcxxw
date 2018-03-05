@@ -3,6 +3,8 @@
 
   <name>Default theme</name>
 
+  <option id="noshade">Disable shading</option>
+
   <dim id="no-padding" axis="pixels">0</dim>
 
   <color id="transparent">
@@ -180,9 +182,45 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
     <color>action_color1</color>
   </border>
 
-  <color  id="button_normal_color" scale="70%" />
-  <color  id="button_selected_color" scale="80%" />
-  <color  id="button_active_color" scale="100%" />
+  <color  id="button_normal_color" type="linear_gradient">
+    <gradient>
+      <value>0</value>
+      <color>50%</color>
+    </gradient>
+
+    <gradient>
+      <value>1</value>
+      <color>70%</color>
+    </gradient>
+  </color>
+
+  <color  id="button_selected_color" type="linear_gradient">
+    <gradient>
+      <value>0</value>
+      <color>70%</color>
+    </gradient>
+
+    <gradient>
+      <value>1</value>
+      <color>80%</color>
+    </gradient>
+  </color>
+
+  <color  id="button_active_color" type="linear_gradient">
+    <gradient>
+      <value>0</value>
+      <color>90%</color>
+    </gradient>
+
+    <gradient>
+      <value>1</value>
+      <color>100%</color>
+    </gradient>
+  </color>
+
+  <color  id="noshade:button_normal_color" scale="70%" />
+  <color  id="noshade:button_selected_color" scale="80%" />
+  <color  id="noshade:button_active_color" scale="100%" />
 
   <!-- Fonts -->
 
@@ -426,6 +464,8 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
     </gradient>
 
   </color>
+
+  <color id="noshade:progressbar" scale="progressbar_value_100_color" />
 
   <!-- Books -->
 
