@@ -119,16 +119,6 @@ public:
 
 	void tell_layout_manager_it_needs_recalculation(IN_THREAD_ONLY);
 
-	/////////////////////////////////////////////////////////////////////
-	//
-	// The parent class that inherits from container and element must
-	// override the following element methods, and invoke the container's
-	// methods.
-	//
-	// These methods are overridden using
-	// container_element_overrides_decl.H and
-	// container_element_overrides_impl.H.
-
 	//! Draw the container.
 
 	//! The only thing we need to do is clear all parts of the container

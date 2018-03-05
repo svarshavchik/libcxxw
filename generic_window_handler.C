@@ -146,32 +146,34 @@ generic_windowObj::handlerObj
 	// And now, the element that represents the window itself, and
 	// all the theme-based resources: background colors, icons, and
 	// masks
-	element_superclass_t
-	(default_background_color(params.window_handler_params.screenref,
-				  params.background_color),
-	 default_background_color(params.window_handler_params.screenref,
-				  "modal_shade"),
-	 drawableObj::implObj::create_icon(create_icon_args_t{
-			 "disabled_mask",
-			 render_repeat::normal},
-		 params.window_handler_params.screenref),
-	 cursor_pointer::create
-	 (drawableObj::implObj::create_icon(create_icon_args_t{
-			 "cursor-wait"},
-		 params.window_handler_params.screenref)),
-	 params.nesting_level,
-	 element_position(params.window_handler_params.initial_position),
-	 params.window_handler_params.screenref,
-	 params.drawable_pictformat,
-	 "background@libcxx.com"),
-	current_events_thread_only((xcb_event_mask_t)
-				   params.window_handler_params
-				   .events_and_mask.m.at(XCB_CW_EVENT_MASK)),
-	current_position(params.window_handler_params.initial_position),
-	handler_data(handler_data),
-	original_background_color(params.background_color),
-	frame_extents_thread_only(params.window_handler_params.screenref
-				  ->get_workarea())
+	element_superclass_t{
+	default_background_color(params.window_handler_params.screenref,
+				 params.background_color),
+		default_background_color(params.window_handler_params.screenref,
+					 "modal_shade"),
+		drawableObj::implObj::create_icon(create_icon_args_t{
+				"disabled_mask",
+					render_repeat::normal},
+			params.window_handler_params.screenref),
+		cursor_pointer::create
+		(drawableObj::implObj::create_icon(create_icon_args_t{
+				"cursor-wait"},
+			params.window_handler_params.screenref)),
+		params.nesting_level,
+		element_position(params.window_handler_params.initial_position),
+		params.window_handler_params.screenref,
+		params.drawable_pictformat,
+		"background@libcxx.com"},
+	current_events_thread_only{(xcb_event_mask_t)
+			params.window_handler_params
+			.events_and_mask.m.at(XCB_CW_EVENT_MASK)},
+	current_position{params.window_handler_params.initial_position},
+	handler_data{handler_data},
+	original_background_color{params.background_color},
+	frame_extents_thread_only{params.window_handler_params.screenref
+			->get_workarea()},
+	current_theme_thread_only{params.window_handler_params.screenref
+			->impl->current_theme.get()}
 {
 	char hostnamebuf[256];
 
@@ -515,13 +517,20 @@ void generic_windowObj::handlerObj
 
 void generic_windowObj::handlerObj::theme_updated_event(IN_THREAD_ONLY)
 {
-	// container_element_overrides_decl hijacks theme_updated(), so we
-	// just do this here.
+	auto new_theme=get_screen()->impl->current_theme.get();
 
-	auto new_theme=*current_theme_t::lock{
-		get_screen()->impl->current_theme
-	};
-	theme_updated(IN_THREAD, new_theme);
+	bool is_different_theme=
+		new_theme->is_different_theme(current_theme(IN_THREAD));
+
+	// Even if they're "the same", still update our current_theme.
+	// Even if they're "the same", they are different objects, as such
+	// we drop our ref to the old one, thus saving a little bit of
+	// memory.
+
+	current_theme(IN_THREAD)=new_theme;
+
+	if (is_different_theme)
+		theme_updated(IN_THREAD, new_theme);
 }
 
 // Shade mcguffin.

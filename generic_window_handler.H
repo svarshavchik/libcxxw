@@ -187,6 +187,9 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 	frame_extents_t frame_extents_thread_only;
 
+	//! The current theme in effect for this window.
+	defaulttheme current_theme_thread_only;
+
 	//! The current pointer grab.
 
 	weakptr<grabbed_pointerptr> current_pointer_grab_thread_only;
@@ -281,6 +284,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	THREAD_DATA_ONLY(frame_extents);
 	THREAD_DATA_ONLY(current_pointer_grab);
 	THREAD_DATA_ONLY(has_exposed);
+	THREAD_DATA_ONLY(current_theme);
 
 	//! Invoked after the handler gets installed.
 

@@ -270,7 +270,19 @@ static void update_themes(const std::vector<ref<screenObj::implObj>> &s,
 	auto theme_iter=new_themes.begin();
 
 	for (const auto &screen:s)
-		screen->current_theme=*theme_iter++;
+	{
+		// cxxwtheme set the CXXWTHEME property, this makes it
+		// back to us, typically, before cxxwtheme gets around
+		// to destroying the main window. Make sure to update
+		// the screen's theme object only when needed.
+
+		current_theme_t::lock lock{screen->current_theme};
+
+		if ((*lock)->is_different_theme(*theme_iter))
+			*lock=*theme_iter;
+
+		++theme_iter;
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////

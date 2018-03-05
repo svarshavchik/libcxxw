@@ -485,6 +485,28 @@ defaultthemeObj::defaultthemeObj(const xcb_screen_t *screen,
 {
 }
 
+bool defaultthemeObj::is_different_theme(const defaulttheme &t) const
+{
+	if (themename != t->themename ||
+	    themescale != t->themescale ||
+	    available_theme_options.size() != t->available_theme_options.size())
+		return true;
+
+	auto oo=t->available_theme_options.begin();
+
+	for (const auto &this_o:available_theme_options)
+	{
+		if (this_o.label != oo->label)
+			return true;
+
+		if (this_o.selected != oo->selected)
+			return true;
+
+		++oo;
+	}
+	return false;
+}
+
 void defaultthemeObj::load(const xml::doc &config,
 			   const ref<screenObj::implObj> &screen)
 {

@@ -69,7 +69,18 @@ public:
 
 	const std::vector<theme_option> available_theme_options;
 
-	//! The directory this theme was loaded from
+	//! See if two theme objects are the same
+
+	//! cxxwtheme updates the screen's theme justbefore it terminates.
+	//! This sends back to us the notification for the property change,
+	//! which often happens before we start the process of closing the
+	//! main window. The program termination gets needlessly delayed while
+	//! the repercurssions of the updated theme are digested. The newly
+	//! set theme is the same one that's already set in its window, so
+	//! this provides the means of detecting it.
+
+	bool is_different_theme(const defaulttheme &t) const;
+
 	const std::string themedir;
 
 	//! Horizontal distance of 1 millimeter, in pixels
