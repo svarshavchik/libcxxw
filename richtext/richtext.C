@@ -359,10 +359,10 @@ void richtextObj::draw(IN_THREAD_ONLY,
 						 di.background_y,
 						 coord_t::truncate
 						 (di.absolute_location.x +
-						  draw_bounds.position_x),
+						  draw_bounds.position.x),
 						 coord_t::truncate
 						 (di.absolute_location.y +
-						  draw_bounds.position_y),
+						  draw_bounds.position.y),
 
 						 draw_bounds.draw_bounds.width,
 						 dim_t::truncate(draw_bounds.draw_bounds.x),
@@ -398,11 +398,11 @@ void richtextObj::draw(IN_THREAD_ONLY,
 
 			 },
 			 rectangle{coord_t::truncate(draw_bounds.draw_bounds.x +
-						     draw_bounds.position_x),
+						     draw_bounds.position.x),
 					 coord_t::truncate(coord_t::truncate
 							   (y_position) +
 							   draw_bounds
-							   .position_y),
+							   .position.y),
 					 draw_bounds.draw_bounds.width,
 					 height},
 			 di, di,
@@ -442,10 +442,10 @@ void richtextObj::draw(IN_THREAD_ONLY,
 				 y=dim_t::truncate(y + scratch_height);
 				 scratch_height=scratch_pixmap->get_height();
 			 },
-			 rectangle{draw_bounds.position_x,
+			 rectangle{draw_bounds.position.x,
 					 coord_t::truncate(y +
 							   draw_bounds
-							   .position_y),
+							   .position.y),
 					 di.absolute_location.width,
 					 scratch_height},
 			 di, di,

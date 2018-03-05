@@ -67,8 +67,7 @@ void richtext_draw_boundaries::position_at(const rectangle &pos)
 		draw_bounds.y=coord_t::truncate(draw_bounds.y-pos.y);
 	}
 
-	position_x=pos.x;
-	position_y=pos.y;
+	this->position=pos;
 }
 
 LIBCXXW_NAMESPACE_END

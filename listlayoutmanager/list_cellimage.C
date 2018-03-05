@@ -54,11 +54,6 @@ void list_cellimageObj::cell_redraw(IN_THREAD_ONLY,
 
 	clip.draw_as_disabled=draw_as_disabled;
 
-	rectangle where=boundaries.draw_bounds;
-
-	where.x=coord_t::truncate(where.x+boundaries.position_x);
-	where.y=coord_t::truncate(where.y+boundaries.position_y);
-
 	draw.draw_using_scratch_buffer
 		(IN_THREAD,
 		 [&, this]
@@ -76,22 +71,20 @@ void list_cellimageObj::cell_redraw(IN_THREAD_ONLY,
 			 dim_t x=0;
 			 dim_t y=0;
 
-			 if (boundaries.draw_bounds.width > w)
+			 if (boundaries.position.width > w)
 				 switch (alignment) {
 				 case halign::right:
-					 x=boundaries.draw_bounds.width
-						 -w;
+					 x=boundaries.position.width-w;
 					 break;
 				 case halign::center:
-					 x=(boundaries.draw_bounds.width
-					    -w)/2;
+					 x=(boundaries.position.width-w)/2;
 					 break;
 				 default:
 					 break;
 				 }
 
-			 if (boundaries.draw_bounds.height > h)
-				 y=(boundaries.draw_bounds.height-h)/2;
+			 if (boundaries.position.height > h)
+				 y=(boundaries.position.height-h)/2;
 
 			 area_picture->composite(image->image->
 						 icon_picture,
@@ -102,7 +95,7 @@ void list_cellimageObj::cell_redraw(IN_THREAD_ONLY,
 						 render_pict_op::op_over
 						 );
 		 },
-		 where,
+		 boundaries.position,
 		 di,
 		 di,
 		 clip);

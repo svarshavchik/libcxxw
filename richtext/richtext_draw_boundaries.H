@@ -51,13 +51,13 @@ struct LIBCXX_HIDDEN richtext_draw_boundaries {
 	//! position.x/position.y setting draw_bounds. Now, draw_bounds is
 	//! with respect to position.
 	//!
-	//! Saves position.x and position.y in position_x and position_y.
+	//! Saves the position.
 
 	void position_at(const rectangle &);
 
-	coord_t position_x=0;
+	//! The last parameter to position_at().
 
-	coord_t position_y=0;
+	rectangle position;
 };
 
 LIBCXXW_NAMESPACE_END;
