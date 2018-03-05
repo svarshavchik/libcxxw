@@ -51,7 +51,7 @@ struct border_implObj::corner_draw_info {
 		top_half_height,
 		bottom_half_height;
 
-	// left_pad and right_pad are the starting (x,y) coordinates
+	// left_pad and top_pad are the starting (x,y) coordinates
 	// for the real border.
 	coord_t x, y;
 
@@ -725,11 +725,14 @@ void border_implObj::draw_round_corner(IN_THREAD_ONLY,
 	// appropriate quarter of the circle/oval to fall into the clipped
 	// area:
 
+	coord_t circle_x=x;
+	coord_t circle_y=y;
+
 	if (subtract_width)
-		x=coord_t::truncate(x-calculated_border_width);
+		circle_x=coord_t::truncate(circle_x-calculated_border_width);
 
 	if (subtract_height)
-		y=coord_t::truncate(y-calculated_border_height);
+		circle_y=coord_t::truncate(circle_y-calculated_border_height);
 
 	// inner_hradius() and inner_vradius() translates to additional
 	// padding around the border. The border is formed from, essentially:
@@ -740,8 +743,8 @@ void border_implObj::draw_round_corner(IN_THREAD_ONLY,
 	// the top/right corner of the rectangle within which the circle/oval
 	// gets drawn.
 
-	x=coord_t::truncate(x+inner_hradius());
-	y=coord_t::truncate(y+inner_vradius());
+	circle_x=coord_t::truncate(circle_x+inner_hradius());
+	circle_y=coord_t::truncate(circle_y+inner_vradius());
 
 	// And there's an inner radius, we start by creating a mask for the
 	// innermost circle/oval that comprises the inner area of the rounded
@@ -758,8 +761,8 @@ void border_implObj::draw_round_corner(IN_THREAD_ONLY,
 		// Looks like rectangle dimensions for drawing an arc
 		// enclose the actual rectangle, so we have to subtract 1.
 
-		coord_t inner_x = coord_t::truncate(x + width);
-		coord_t inner_y = coord_t::truncate(y + height);
+		coord_t inner_x = coord_t::truncate(circle_x + width);
+		coord_t inner_y = coord_t::truncate(circle_y + height);
 
 		di.mask_gc->fill_arc(inner_x, inner_y,
 				     inner_hradius()*2-1,
@@ -775,8 +778,8 @@ void border_implObj::draw_round_corner(IN_THREAD_ONLY,
 				->get_draw_info(IN_THREAD);
 
 			auto xy=e_draw_info.background_xy_to
-				(di.area_rectangle.x,
-				 di.area_rectangle.y);
+				(coord_t::truncate(di.area_x+x),
+				 coord_t::truncate(di.area_y+y));
 
 			picture::base::clip_mask mask(di.area_picture,
 						      di.mask_pixmap,
@@ -808,7 +811,7 @@ void border_implObj::draw_round_corner(IN_THREAD_ONLY,
 
 	props.function(gc::base::function::XOR);
 
-	di.mask_gc->fill_arc(x, y,
+	di.mask_gc->fill_arc(circle_x, circle_y,
 			     outer_circle_w, outer_circle_h,
 			     0, 360*64, props);
 
@@ -817,7 +820,7 @@ void border_implObj::draw_round_corner(IN_THREAD_ONLY,
 	// 1-pixel rounded line.
 	props.function(gc::base::function::SET);
 
-	di.mask_gc->draw_arc(x, y, outer_circle_w, outer_circle_h,
+	di.mask_gc->draw_arc(circle_x, circle_y, outer_circle_w, outer_circle_h,
 			     0, 360*64, props);
 #endif
 
