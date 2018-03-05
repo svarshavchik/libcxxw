@@ -18,7 +18,11 @@ void container_elementObj<element_impl>
 ::inherited_visibility_updated(IN_THREAD_ONLY,
 			       inherited_visibility_info &info)
 {
-	containerObj::implObj::inherited_visibility_updated(IN_THREAD, info);
+	containerObj::implObj::inherited_visibility_updated_before(IN_THREAD,
+								   info);
+	element_impl::inherited_visibility_updated(IN_THREAD, info);
+	containerObj::implObj::inherited_visibility_updated_after(IN_THREAD,
+								  info);
 }
 
 //! Override do_draw().

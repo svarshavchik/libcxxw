@@ -218,8 +218,8 @@ void containerObj::implObj
 }
 
 void containerObj::implObj
-::inherited_visibility_updated(IN_THREAD_ONLY,
-			       inherited_visibility_info &info)
+::inherited_visibility_updated_before(IN_THREAD_ONLY,
+				      inherited_visibility_info &info)
 {
 	// When the container gets hidden, the child elements are hidden
 	// first. When the container gets shown, the child elements are
@@ -227,9 +227,12 @@ void containerObj::implObj
 
 	if (!info.flag)
 		propagate_inherited_visibility(IN_THREAD, info);
+}
 
-	container_element_impl().do_inherited_visibility_updated(IN_THREAD, info);
-
+void containerObj::implObj
+::inherited_visibility_updated_after(IN_THREAD_ONLY,
+				     inherited_visibility_info &info)
+{
 	invoke_layoutmanager
 		([&]
 		 (const auto &manager)

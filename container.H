@@ -135,13 +135,33 @@ public:
 	//! in the container, after they reposition their display elements.
 	void do_draw(IN_THREAD_ONLY);
 
-	//! Container's inherited visibility has been updated.
+	//! Container's inherited visibility has been updated, part 1.
 
-	//! The subclass must inherit from elementObj::implObj, and override
-	//! inherited_visibility_updated, and invoke this method.
+	//! What needs to be done before container_element's overriden
+	//! inherited_visibility_updated() forwards the overridden call
+	//! to the superclass.
+	//!
+	//! If the container is being hidden, the child elements get
+	//! get hidden first, and this propagates the inherited_visibility
+	//! updated() call to them before this element's.
 
-	void inherited_visibility_updated(IN_THREAD_ONLY,
-					  inherited_visibility_info &info);
+	void inherited_visibility_updated_before(IN_THREAD_ONLY,
+						 inherited_visibility_info &);
+
+	//! Container's inherited visibility has been updated, part 2.
+
+	//! What needs to be done after container_element's overriden
+	//! inherited_visibility_updated() forwards the overridden call
+	//! to the superclass.
+	//!
+	//! If the container is being shown, the child elements get
+	//! get shown after propagating the inherited_visibility
+	//! updated() call to the container element.
+	//!
+	//! Also invokes the layout manager's inherited_visibility_updated().
+
+	void inherited_visibility_updated_after(IN_THREAD_ONLY,
+						inherited_visibility_info &);
 
 	//! The container's position has been updated.
 
