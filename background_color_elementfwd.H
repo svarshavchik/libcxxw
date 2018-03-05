@@ -39,14 +39,17 @@ public:
 
 	//! Set new background color
 	void do_update(IN_THREAD_ONLY,
-		       const background_color &new_color);
+		       const background_color &new_color,
+		       elementObj::implObj &e);
 
 	// Retrieve the current color.
 
 	const background_color get(IN_THREAD_ONLY);
 
 	//! Update the background color
-	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme);
+	void theme_updated(IN_THREAD_ONLY,
+			   const defaulttheme &new_theme,
+			   elementObj::implObj &);
 
 	//! Initialize after construction
 	void initialize(IN_THREAD_ONLY);

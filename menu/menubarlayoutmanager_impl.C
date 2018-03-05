@@ -1,5 +1,5 @@
 /*
-** Copyright 2017 Double Precision, Inc.
+** Copyright 2017-2018 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
@@ -101,7 +101,16 @@ menubarlayoutmanagerObj::implObj
 				0,
 				attached_to_how,
 				create_menu_popup,
-				style},
+				style,
+
+				attached_to_how ==
+				attached_to::combobox_above_or_below
+				? "menu_above_background_color"
+				: "menu_left_background_color",
+				attached_to_how ==
+				attached_to::combobox_above_or_below
+				? "menu_below_background_color"
+				: "menu_right_background_color"},
 			[&]
 			(const auto &peephole_container)
 			{

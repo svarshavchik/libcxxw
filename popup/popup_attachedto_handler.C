@@ -1,5 +1,5 @@
 /*
-** Copyright 2017 Double Precision, Inc.
+** Copyright 2017-2018 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
@@ -47,8 +47,7 @@ void popup_attachedto_handlerObj
 	set_popup_position(IN_THREAD);
 }
 
-
-void popup_attachedto_handlerObj
+popup_position_affinity popup_attachedto_handlerObj
 ::recalculate_popup_position(IN_THREAD_ONLY,
 			     rectangle &r,
 			     dim_t screen_width,
@@ -68,6 +67,8 @@ void popup_attachedto_handlerObj
 	if (r.height > max_peephole_height_value)
 		r.height=max_peephole_height_value;
 
+	popup_position_affinity a;
+
 	if (attachedto_info->how == attached_to::submenu_next)
 	{
 		// The popup cannot start to the right of max_x, without
@@ -78,9 +79,14 @@ void popup_attachedto_handlerObj
 		coord_t x=coord_t::truncate(attachedto_element_position.x +
 					    attachedto_element_position.width);
 
+		a=popup_position_affinity::right;
+
 		if (x > max_x)
+		{
 			x=coord_t::truncate(attachedto_element_position.x -
 					    r.width);
+			a=popup_position_affinity::left;
+		}
 
 		// The popup's y position is same as element's, but it
 		// cannot be below max_y.
@@ -111,10 +117,14 @@ void popup_attachedto_handlerObj
 					    attachedto_element_position.height
 					    );
 
+		a=popup_position_affinity::below;
+
 		if (y > max_y)
+		{
+			a=popup_position_affinity::above;
 			y=coord_t::truncate(attachedto_element_position.y
 					    - r.height);
-
+		}
 		r.x=x;
 		r.y=y;
 
@@ -123,6 +133,7 @@ void popup_attachedto_handlerObj
 		if (r.width < attachedto_element_position.width)
 			r.width=attachedto_element_position.width;
 	}
+	return a;
 }
 
 ref<obj> popup_attachedto_handlerObj::get_opened_mcguffin(IN_THREAD_ONLY)

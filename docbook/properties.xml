@@ -105,6 +105,14 @@ x::w::disable_grab=true</programlisting>
       <envar>x::w::disable_grab</envar> property to <literal>true</literal>
       turns off passive grabs.
     </para>
+
+    <note>
+      <para>
+	<envar>x::w::disable_grab</envar> does not disable active grabs that
+	are obtained when popup windows (combo-boxes, and menus) are
+	visible.
+      </para>
+    </note>
   </section>
 
   <section id="disablexim">

@@ -1,5 +1,5 @@
 /*
-** Copyright 2017 Double Precision, Inc.
+** Copyright 2017-2018 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
@@ -20,6 +20,11 @@
 #include "element_screen.H"
 
 LIBCXXW_NAMESPACE_START
+
+namespace {
+#if 0
+}
+#endif
 
 //! Subclass the peephole layout manager, for the top level peephole.
 
@@ -103,6 +108,11 @@ class LIBCXX_HIDDEN peephole_toplevel_implObj
 	}
 
 };
+
+#if 0
+{
+#endif
+}
 
 layoutmanager
 create_peephole_toplevel_impl(const ref<containerObj::implObj> &toplevel,

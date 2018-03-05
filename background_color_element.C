@@ -17,22 +17,25 @@ background_color_element_implObj::~background_color_element_implObj()=default;
 
 void background_color_element_implObj::do_update(IN_THREAD_ONLY,
 						 const background_color
-						 &new_color)
+						 &new_color,
+						 elementObj::implObj &e)
 {
 	color=new_color;
 	color->initialize(IN_THREAD);
+	background_color_element_width=0;
+	background_color_element_height=0;
+	set_background_color_for_element(IN_THREAD, e);
 }
 
 void background_color_element_implObj::theme_updated(IN_THREAD_ONLY,
 						     const defaulttheme
-						     &new_theme)
+						     &new_theme,
+						     elementObj::implObj &e)
 {
 	color->theme_updated(IN_THREAD, new_theme);
-
-	// The background_color_element template will immediately call
-	// set_background_color_for_element().
 	background_color_element_width=0;
 	background_color_element_height=0;
+	set_background_color_for_element(IN_THREAD, e);
 }
 
 void background_color_element_implObj

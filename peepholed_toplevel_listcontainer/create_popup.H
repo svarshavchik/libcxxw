@@ -1,5 +1,5 @@
 /*
-** Copyright 2017 Double Precision, Inc.
+** Copyright 2017-2018 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 #ifndef peepholed_toplevel_listcontainer_create_popup_h
@@ -120,6 +120,13 @@ struct LIBCXX_HIDDEN create_peepholed_toplevel_listcontainer_popup_args {
 
 	//! The style of the list container.
 	const new_listlayoutmanager &list_style;
+
+	//! Popup's background color when it's above/to the left of its element
+	color_arg topleft_color;
+
+	//! Popup's background color when it's below/to the right of its element
+	color_arg bottomright_color;
+
 };
 
 //! Return value from create_peepholed_toplevel_listcontainer_popup().

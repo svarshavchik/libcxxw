@@ -1,5 +1,5 @@
 /*
-** Copyright 2017 Double Precision, Inc.
+** Copyright 2017-2018 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
@@ -256,7 +256,7 @@ focusable_container new_custom_comboboxlayoutmanager
 			ref(&parent->container_element_impl()),
 				"combo,popup_menu,dropdown_menu",
 				"combobox",
-				"combobox_border",
+				"combobox_popup_border",
 
 				// We're about to create the combobox container,
 				// with nesting_level of parent+1
@@ -270,7 +270,9 @@ focusable_container new_custom_comboboxlayoutmanager
 				3,
 				attached_to::combobox_above_or_below,
 				create_exclusive_popup,
-				style},
+				style,
+				"combobox_above_background_color",
+				"combobox_below_background_color"},
 		 [&]
 		 (const auto &peephole_container)
 		 {

@@ -1,5 +1,5 @@
 /*
-** Copyright 2017 Double Precision, Inc.
+** Copyright 2017-2018 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
@@ -26,6 +26,11 @@ LIBCXXW_NAMESPACE_START
 
 static property::value<unsigned>
 tooltip_delay(LIBCXX_NAMESPACE_STR "::w::tooltip_delay", 2000);
+
+namespace {
+#if 0
+}
+#endif
 
 //! Subclass popupObj::handlerObj for a tooltip window.
 
@@ -59,10 +64,11 @@ class LIBCXX_HIDDEN tooltip_handlerObj : public popupObj::handlerObj {
 	~tooltip_handlerObj();
 
 	//! Implement recalculate_popup_position()
-	void recalculate_popup_position(IN_THREAD_ONLY,
-					rectangle &r,
-					dim_t screen_width,
-					dim_t screen_height) override;
+	popup_position_affinity recalculate_popup_position(IN_THREAD_ONLY,
+							   rectangle &r,
+							   dim_t screen_width,
+							   dim_t screen_height)
+		override;
 
 	const char *label_theme_font() const override
 	{
@@ -111,10 +117,11 @@ tooltip_handlerObj::tooltip_handlerObj(IN_THREAD_ONLY,
 
 tooltip_handlerObj::~tooltip_handlerObj()=default;
 
-void tooltip_handlerObj::recalculate_popup_position(IN_THREAD_ONLY,
-						    rectangle &r,
-						    dim_t screen_width,
-						    dim_t screen_height)
+popup_position_affinity
+tooltip_handlerObj::recalculate_popup_position(IN_THREAD_ONLY,
+					       rectangle &r,
+					       dim_t screen_width,
+					       dim_t screen_height)
 {
 	auto s=get_screen()->impl;
 
@@ -132,13 +139,19 @@ void tooltip_handlerObj::recalculate_popup_position(IN_THREAD_ONLY,
 	if (y < 0)
 		y=coord_t::truncate(pointer_y+offset_y);
 
+	auto a=popup_position_affinity::right;
+
 	if (dim_t::truncate(x + r.width) > screen_width)
+	{
 		x=coord_t::truncate(coord_t{
 				coord_t::truncate(x - offset_x)
 					} - r.width);
-
+		a=popup_position_affinity::left;
+	}
 	r.x=x;
 	r.y=y;
+
+	return a;
 }
 
 class LIBCXX_HIDDEN tooltip_factory_impl : public tooltip_factory {
@@ -218,6 +231,10 @@ void tooltip_factory_impl::create(const function<void (const container &)>
 	// Now that the tooltip is visible, allow pointer events going
 	// forward.
 	grab->allow_events(IN_THREAD);
+}
+#if 0
+{
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////

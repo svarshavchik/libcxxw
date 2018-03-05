@@ -359,7 +359,56 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
 
   <border id="combobox_border" from="thin_0%" />
 
+  <border id="combobox_popup_border" from="thin">
+    <color>30%</color>
+  </border>
+
+  <!-- "default" background color for the combobox's elements -->
   <color id="combobox_background_color" scale="90%" />
+
+  <!-- Background color for the popup when it's below the combobox -->
+
+  <color id="combobox_below_background_color" type="linear_gradient">
+    <widthmm>2</widthmm>
+    <heightmm>2</heightmm>
+    <x1>0</x1>
+    <y1>0</y1>
+    <x2>0</x2>
+    <y2>1</y2>
+    <gradient>
+      <value>0</value>
+      <color>30%</color>
+    </gradient>
+    <gradient>
+      <value>1</value>
+      <color>90%</color>
+    </gradient>
+  </color>
+
+  <!-- Background color for the popup when it's above the combobox -->
+
+  <color id="combobox_above_background_color" type="linear_gradient">
+    <widthmm>2</widthmm>
+    <heightmm>-2</heightmm>
+    <x1>0</x1>
+    <y1>0</y1>
+    <x2>0</x2>
+    <y2>1</y2>
+    <gradient>
+      <value>0</value>
+      <color>90%</color>
+    </gradient>
+    <gradient>
+      <value>1</value>
+      <color>30%</color>
+    </gradient>
+  </color>
+
+  <color id="noshade:combobox_above_background_color"
+	 scale="combobox_background_color" />
+
+  <color id="noshade:combobox_below_background_color"
+	 scale="combobox_background_color" />
 
   <color id="combobox_selected_color" scale="80%" />
 
@@ -387,8 +436,92 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
   <color id="menu_highlighted_color" scale="90%" />
   <color id="menu_clicked_color" scale="100%" />
 
+  <border id="menu_popup_border">
+    <color>inputfocus_color1</color>
+    <width axis="horiz">.5</width>
+    <height axis="vert">.5</height>
+  </border>
+
+  <!-- Background color for a menu when it's below the menu bar -->
+
+  <color id="menu_below_background_color" type="linear_gradient">
+    <x1>0</x1>
+    <y1>0</y1>
+    <x2>0</x2>
+    <y2>1</y2>
+    <gradient>
+      <value>0</value>
+      <color>70%</color>
+    </gradient>
+    <gradient>
+      <value>1</value>
+      <color>100%</color>
+    </gradient>
+  </color>
+
+  <!-- Background color for a menu when it's above the menu bar -->
+
+  <color id="menu_above_background_color" type="linear_gradient">
+    <x1>0</x1>
+    <y1>0</y1>
+    <x2>0</x2>
+    <y2>1</y2>
+    <gradient>
+      <value>0</value>
+      <color>100%</color>
+    </gradient>
+    <gradient>
+      <value>1</value>
+      <color>70%</color>
+    </gradient>
+  </color>
+
+  <!-- Background color for a submenu to the left of its menu item -->
+
+  <color id="menu_left_background_color" type="linear_gradient">
+    <x1>0</x1>
+    <y1>0</y1>
+    <x2>1</x2>
+    <y2>0</y2>
+    <gradient>
+      <value>0</value>
+      <color>100%</color>
+    </gradient>
+    <gradient>
+      <value>1</value>
+      <color>70%</color>
+    </gradient>
+  </color>
+
+  <!-- Background color for a submenu to the right of its menu item -->
+
+  <color id="menu_right_background_color" type="linear_gradient">
+    <x1>0</x1>
+    <y1>0</y1>
+    <x2>1</x2>
+    <y2>0</y2>
+    <gradient>
+      <value>0</value>
+      <color>70%</color>
+    </gradient>
+    <gradient>
+      <value>1</value>
+      <color>100%</color>
+    </gradient>
+  </color>
+
   <color id="menu_popup_background_color" scale="90%" />
-  <color id="menu_popup_highlighted_color" scale="80%" />
+
+  <color id="noshade:menu_above_background_color"
+	 scale="menu_popup_background_color" />
+  <color id="noshade:menu_below_background_color"
+	 scale="menu_popup_background_color" />
+  <color id="noshade:menu_left_background_color"
+	 scale="menu_popup_background_color" />
+  <color id="noshade:menu_right_background_color"
+	 scale="menu_popup_background_color" />
+
+  <color id="menu_popup_highlighted_color" scale="50%" />
   <color id="menu_popup_clicked_color" scale="100%" />
 
   <border id="menu_inputfocusoff_border">
@@ -401,12 +534,6 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
     <color>inputfocus_color1</color>
     <color2>inputfocus_color2</color2>
     <dash>.5</dash>
-  </border>
-
-  <border id="menu_popup_border">
-    <color>inputfocus_color1</color>
-    <width axis="horiz">.5</width>
-    <height axis="vert">.5</height>
   </border>
 
   <dim id="menu_shortcut_padding" axis="horiz">5</dim>

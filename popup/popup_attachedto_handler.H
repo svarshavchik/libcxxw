@@ -1,5 +1,5 @@
 /*
-** Copyright 2017 Double Precision, Inc.
+** Copyright 2017-2018 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 #ifndef popup_attachedto_handler_h
@@ -72,10 +72,11 @@ class LIBCXX_HIDDEN popup_attachedto_handlerObj : public popupObj::handlerObj {
 
 	//! Implement recalculate_popup_position().
 
-	void recalculate_popup_position(IN_THREAD_ONLY,
-					rectangle &r,
-					dim_t screen_width,
-					dim_t screen_height) override;
+	popup_position_affinity recalculate_popup_position(IN_THREAD_ONLY,
+							   rectangle &r,
+							   dim_t screen_width,
+							   dim_t screen_height)
+		override;
 
  private:
 	//! Implement get_opened_mcguffin().

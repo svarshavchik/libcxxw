@@ -1,5 +1,5 @@
 /*
-** Copyright 2017 Double Precision, Inc.
+** Copyright 2017-2018 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 #ifndef background_color_element_H
@@ -28,8 +28,8 @@ void background_color_element<tag>
 ::update(IN_THREAD_ONLY,
 	 const background_color &new_color)
 {
-	this->do_update(IN_THREAD, new_color);
-	set_background_color_for_element(IN_THREAD);
+	this->do_update(IN_THREAD, new_color,
+			this->background_color_element_impl());
 }
 
 template<typename tag>
@@ -102,9 +102,8 @@ template<typename element_impl, typename tag>
 void background_color_1elementObj<element_impl, tag>
 ::theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme)
 {
-	background_color_element<tag>::theme_updated(IN_THREAD, new_theme);
-	background_color_element<tag>::set_background_color_for_element
-		(IN_THREAD);
+	background_color_element<tag>::theme_updated(IN_THREAD, new_theme,
+						     *this);
 	element_impl::theme_updated(IN_THREAD, new_theme);
 }
 

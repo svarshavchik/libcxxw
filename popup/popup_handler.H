@@ -1,5 +1,5 @@
 /*
-** Copyright 2017 Double Precision, Inc.
+** Copyright 2017-2018 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 #ifndef popup_handler_h
@@ -14,6 +14,20 @@
 #include <x/weakptr.H>
 
 LIBCXXW_NAMESPACE_START
+
+//! Return value from recalculate_popup_position
+
+//! Indicates where recalculate_popup_position() placed the popup in relation
+//! to its attached display element.
+//!
+//! \see popup
+
+enum class popup_position_affinity {
+	above,		//!< Popup positioned above its display element
+	below,		//!< Popup positioned below its display element
+	left,		//!< Popup positioned left of its display element
+	right		//!< Popup positioned right of its display element
+};
 
 //! Popup handler implementation object.
 
@@ -64,10 +78,11 @@ public:
 	//! The end result gets adjusted to make sure it fits on the screen,
 	//! then sets the popup position.
 
-	virtual void recalculate_popup_position(IN_THREAD_ONLY,
-						rectangle &r,
-						dim_t screen_width,
-						dim_t screen_height)=0;
+	virtual popup_position_affinity
+		recalculate_popup_position(IN_THREAD_ONLY,
+					   rectangle &r,
+					   dim_t screen_width,
+					   dim_t screen_height)=0;
 
  protected:
 
