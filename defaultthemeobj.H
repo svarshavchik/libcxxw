@@ -82,9 +82,6 @@ public:
 	//! Parsed colors
 	std::unordered_map<std::string, theme_color_t> colors;
 
-	//! Parsed gradients
-	std::unordered_map<std::string, rgb_gradient> color_gradients;
-
 	//! Borders
 	std::unordered_map<std::string, const_border_impl> borders;
 
@@ -142,9 +139,6 @@ public:
 
 	//! Parse colors from the configuration file.
 	void load_colors(const theme_parser_lock &root_lock);
-
-	//! Parse gradients from the configuration file.
-	void load_color_gradients(const theme_parser_lock &root_lock);
 
 	//! Parse boders from the configuration file.
 	void load_borders(const theme_parser_lock &root_lock,
@@ -252,10 +246,6 @@ public:
 
 	//! Retrieve theme color
 	theme_color_t get_theme_color(const std::string_view &theme_color)
-		const;
-
-	//! Retrieve theme gradient
-	rgb_gradient get_theme_color_gradient(const rgb_gradient_arg &arg)
 		const;
 
 	//! Retrieve a theme border.

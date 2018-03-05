@@ -348,7 +348,6 @@ void defaultthemeObj::load(const xml::doc &config,
 
 		load_dims(lock);
 		load_colors(lock);
-		load_color_gradients(lock);
 		load_borders(lock, screen);
 		load_fonts(lock);
 		load_layouts(lock);
@@ -868,73 +867,6 @@ void defaultthemeObj::load_colors(const theme_parser_lock &root_lock)
 	}
 }
 
-///////////////////////////////////////////////////////////////////////////////
-
-// Color gradients.
-
-void defaultthemeObj::load_color_gradients(const theme_parser_lock &root_lock)
-{
-	auto lock=root_lock.clone();
-
-	if (!lock->get_root())
-		return;
-
-	auto xpath=lock->get_xpath("/theme/color_gradient");
-
-	size_t count=xpath->count();
-
-	for (size_t i=0; i<count; ++i)
-	{
-		xpath->to_node(i+1);
-
-		auto id=lock->get_any_attribute("id");
-
-		if (id.empty())
-			throw EXCEPTION(_("no id specified for color_gradient"));
-
-		if (color_gradients.find(id) != color_gradients.end())
-			continue; // Did this one already.
-
-		auto color=lock.clone();
-
-		auto all_colors=color->get_xpath("color");
-
-		size_t n_colors=all_colors->count();
-
-		rgb_gradient new_gradient;
-
-		for (size_t i=0; i<n_colors; ++i)
-		{
-			all_colors->to_node(i+1);
-
-			rgb_gradient::key_type v=0;
-
-			std::istringstream s(color->get_any_attribute("value"));
-
-			s >> v;
-
-			if (s.fail())
-				throw EXCEPTION(gettextmsg(_("Missing or invalid @value attribute for color gradient id=%1%"), id));
-
-			auto iter=colors.find(color->get_text());
-
-			if (iter == colors.end())
-				throw EXCEPTION(gettextmsg(_("Color gradient id=%1% references non-existent color %2%"), id, color->get_text()));
-
-			if (!std::holds_alternative<rgb>(iter->second))
-				throw EXCEPTION("TODO");
-
-			if (!new_gradient
-			    .insert({v, std::get<rgb>(iter->second)}).second)
-				throw EXCEPTION(gettextmsg(_("Duplicate value %1% specified for color gradient id=%1%"), v, id));
-		}
-
-		valid_gradient(new_gradient);
-
-		color_gradients.insert({id, new_gradient});
-	}
-}
-
 //////////////////////////////////////////////////////////////////////////////
 //
 // Borders
@@ -1244,33 +1176,6 @@ theme_color_t defaultthemeObj::get_theme_color(const std::string_view &id) const
 	}
 
 	throw EXCEPTION(gettextmsg(_("Theme color %1% does not exist"), id));
-}
-
-rgb_gradient
-defaultthemeObj::get_theme_color_gradient(const rgb_gradient_arg &arg) const
-{
-	return std::visit(visitor{
-			[](const rgb_gradient &g) { return g; },
-			[this](const std::string &id)
-			{
-				std::vector<std::string> ids;
-
-				if (!id.empty())
-					strtok_str(id, ", \r\t\n", ids);
-
-				for (const auto &try_id:ids)
-				{
-					auto iter=color_gradients.find(try_id);
-
-					if (iter != color_gradients.end())
-						return iter->second;
-				}
-
-				throw EXCEPTION
-					(gettextmsg
-					 (_("Theme gradient %1% "
-					    "does not exist"), id));
-			}}, arg);
 }
 
 

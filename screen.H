@@ -208,8 +208,6 @@ class LIBCXX_HIDDEN screenObj::implObj
 	//! Retrieve theme color
 	theme_color_t get_theme_color(const std::string &theme_color);
 
-	//! Retrieve theme gradient
-	rgb_gradient get_theme_color_gradient(const rgb_gradient_arg &arg);
 	//! Find or create a theme border
 
 	//////////////////////////////////////////////////////////////////////
