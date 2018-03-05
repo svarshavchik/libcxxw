@@ -97,6 +97,7 @@ do_create_peepholed_toplevel_listcontainer_popup
 		(popup_handler,
 		 args.popup_border,
 		 std::nullopt,
+		 std::nullopt,
 		 popup_peephole_style,
 		[&]
 		 (const auto &peephole_container)

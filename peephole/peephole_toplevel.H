@@ -27,7 +27,10 @@ create_peepholed_element_t(const ref<containerObj::implObj> &);
 layoutmanager
 create_peephole_toplevel_impl(const ref<containerObj::implObj> &toplevel,
 			      const std::optional<border_arg> &border,
-			      const std::optional<color_arg> &background_color,
+			      const std::optional<color_arg>
+			      &peephole_background_color,
+			      const std::optional<color_arg>
+			      &scrollbars_background_color,
 			      peephole_style style,
 			      const function<create_peepholed_element_t>
 			      &factory) LIBCXX_HIDDEN;
@@ -36,7 +39,10 @@ template<typename create_peepholed_element_factory_t>
 auto create_peephole_toplevel(const ref<containerObj::implObj> &toplevel,
 			      peephole_style style,
 			      const std::optional<border_arg> &border,
-			      const std::optional<color_arg> &background_color,
+			      const std::optional<color_arg>
+			      &peephole_background_color,
+			      const std::optional<color_arg>
+			      &scrollbars_background_color,
 			      create_peepholed_element_factory_t
 			      &&element_factory)
 	LIBCXX_HIDDEN;
@@ -51,7 +57,8 @@ auto create_peephole_toplevel(const ref<containerObj::implObj> &toplevel,
 //! gets passed as the first parameter.
 //!
 //! The next parameters specify an optional border and background color for
-//! the top level peephole.
+//! the top level peephole, and the scrollbars' background color (when
+//! the peephole's scrollbars are visible).
 //!
 //! The next parameter specifies the top level peephole's style.
 //!
@@ -88,7 +95,10 @@ auto create_peephole_toplevel(const ref<containerObj::implObj> &toplevel,
 template<typename create_peepholed_element_factory_t>
 auto create_peephole_toplevel(const ref<containerObj::implObj> &toplevel,
 			      const std::optional<border_arg> &border,
-			      const std::optional<color_arg> &background_color,
+			      const std::optional<color_arg>
+			      &peephole_background_color,
+			      const std::optional<color_arg>
+			      &scrollbars_background_color,
 			      peephole_style style,
 			      create_peepholed_element_factory_t
 			      &&element_factory)
@@ -96,7 +106,8 @@ auto create_peephole_toplevel(const ref<containerObj::implObj> &toplevel,
 	return create_peephole_toplevel_impl
 		(toplevel,
 		 border,
-		 background_color,
+		 peephole_background_color,
+		 scrollbars_background_color,
 		 style,
 		 make_function<create_peepholed_element_t>
 		 (std::forward<create_peepholed_element_factory_t>

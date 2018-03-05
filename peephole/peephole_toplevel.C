@@ -107,7 +107,10 @@ class LIBCXX_HIDDEN peephole_toplevel_implObj
 layoutmanager
 create_peephole_toplevel_impl(const ref<containerObj::implObj> &toplevel,
 			      const std::optional<border_arg> &border,
-			      const std::optional<color_arg> &background_color,
+			      const std::optional<color_arg>
+			      &peephole_background_color,
+			      const std::optional<color_arg>
+			      &scrollbars_background_color,
 			      peephole_style style,
 			      const function<create_peepholed_element_t>
 			      &factory)
@@ -124,7 +127,7 @@ create_peephole_toplevel_impl(const ref<containerObj::implObj> &toplevel,
 
 	auto scrollbars=create_peephole_scrollbars(toplevel_grid->impl
 						   ->container_impl,
-						   background_color);
+						   scrollbars_background_color);
 
 	// The toplevel_grid will have a peephole as its child element,
 	// and the scrollbars, but we'll get around to them later.
@@ -135,8 +138,7 @@ create_peephole_toplevel_impl(const ref<containerObj::implObj> &toplevel,
 
 	child_element_init_params init_params;
 
-	if (background_color)
-		init_params.background_color=*background_color;
+	init_params.background_color=peephole_background_color;
 
 	auto peephole_impl=ref<peephole_toplevel_implObj>
 		::create(toplevel,

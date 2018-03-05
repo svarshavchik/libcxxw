@@ -158,6 +158,7 @@ date_input_field factoryObj
 		(attachedto_handler,
 		 config.popup_border,
 		 config.popup_background_color,
+		 config.popup_background_color,
 		 popup_peephole_style,
 		 [&]
 		 (const ref<containerObj::implObj> &parent)
