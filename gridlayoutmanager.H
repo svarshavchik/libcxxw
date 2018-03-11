@@ -232,10 +232,17 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 	void child_background_color_changed(IN_THREAD_ONLY,
 					    const elementimpl &child) override;
 
-	//! Redraw the borders around the child element.
-	void child_visibility_changed(IN_THREAD_ONLY,
-				      const elementimpl &child,
-				      inherited_visibility_info &info) override;
+	//! If the child element is remove_when_hidden we need to recalculate.
+
+	void requested_child_visibility_changed
+		(IN_THREAD_ONLY,
+		 const elementimpl &child, bool) override;
+
+	//! Redraw the borders around the child element, unless it is remove_when_hidden
+	void inherited_child_visibility_changed
+		(IN_THREAD_ONLY,
+		 const elementimpl &child,
+		 inherited_visibility_info &info) override;
  private:
 	//! Redraw the borders around the child element.
 

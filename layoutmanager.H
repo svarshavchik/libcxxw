@@ -120,12 +120,20 @@ class LIBCXX_HIDDEN layoutmanagerObj::implObj : virtual public obj {
 	virtual void child_background_color_changed(IN_THREAD_ONLY,
 						    const elementimpl &child);
 
-	//! A child element's visibility has changed
+	//! A child element's visibility will change soon.
 
 	//! The default implementation does nothing
-	virtual void child_visibility_changed(IN_THREAD_ONLY,
-					      const elementimpl &child,
-					      inherited_visibility_info &info);
+	virtual void requested_child_visibility_changed
+		(IN_THREAD_ONLY,
+		 const elementimpl &child, bool);
+
+	//! A child element's inherited_visibility has changed
+
+	//! The default implementation does nothing
+	virtual void inherited_child_visibility_changed
+		(IN_THREAD_ONLY,
+		 const elementimpl &child,
+		 inherited_visibility_info &info);
 
 	//! The container's visibility has changed
 

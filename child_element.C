@@ -202,6 +202,18 @@ void child_elementObj::set_background_color(IN_THREAD_ONLY,
 						  (this));
 }
 
+void child_elementObj::request_visibility(IN_THREAD_ONLY, bool flag)
+{
+	bool current_flag=data(IN_THREAD).requested_visibility;
+
+	superclass_t::request_visibility(IN_THREAD, flag);
+
+	if (current_flag != data(IN_THREAD).requested_visibility)
+		child_container->requested_child_visibility_updated
+			(IN_THREAD, elementimpl(this),
+			 data(IN_THREAD).requested_visibility);
+}
+
 void child_elementObj
 ::set_inherited_visibility(IN_THREAD_ONLY,
 			   inherited_visibility_info &visibility_info)
@@ -210,12 +222,12 @@ void child_elementObj
 	bool new_flag=visibility_info.flag;
 
 	superclass_t::set_inherited_visibility(IN_THREAD,
-						      visibility_info);
+					       visibility_info);
 
 	if (current_flag != new_flag)
-		child_container->child_visibility_updated(IN_THREAD,
-							  elementimpl(this),
-							  visibility_info);
+		child_container->inherited_child_visibility_updated
+			(IN_THREAD, elementimpl(this),
+			 visibility_info);
 }
 
 bool child_elementObj::has_own_background_color(IN_THREAD_ONLY)

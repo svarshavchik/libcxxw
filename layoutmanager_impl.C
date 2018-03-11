@@ -51,8 +51,15 @@ void layoutmanagerObj::implObj
 }
 
 void layoutmanagerObj::implObj
-::child_visibility_changed(IN_THREAD_ONLY, const elementimpl &child,
-			   inherited_visibility_info &info)
+::requested_child_visibility_changed(IN_THREAD_ONLY,
+				     const elementimpl &child,
+				     bool flag)
+{
+}
+
+void layoutmanagerObj::implObj
+::inherited_child_visibility_changed(IN_THREAD_ONLY, const elementimpl &child,
+				     inherited_visibility_info &info)
 {
 }
 

@@ -140,6 +140,9 @@ class LIBCXX_HIDDEN child_elementObj
 	void report_motion_event(IN_THREAD_ONLY, const motion_event &)
 		override;
 
+	//! Request visibility change.
+	void request_visibility(IN_THREAD_ONLY, bool flag) override;
+
  protected:
 
 	//! Changed visibility mean a change to the background color.

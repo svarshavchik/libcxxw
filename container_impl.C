@@ -204,16 +204,30 @@ void containerObj::implObj
 }
 
 void containerObj::implObj
-::child_visibility_updated(IN_THREAD_ONLY,
-			   const elementimpl &child,
-			   inherited_visibility_info &info)
+::requested_child_visibility_updated(IN_THREAD_ONLY,
+				     const elementimpl &child,
+				     bool flag)
 {
 	invoke_layoutmanager
 		([&]
 		 (const auto &manager)
 		 {
-			 manager->child_visibility_changed(IN_THREAD, child,
-							   info);
+			 manager->requested_child_visibility_changed
+				 (IN_THREAD, child, flag);
+		 });
+}
+
+void containerObj::implObj
+::inherited_child_visibility_updated(IN_THREAD_ONLY,
+				     const elementimpl &child,
+				     inherited_visibility_info &info)
+{
+	invoke_layoutmanager
+		([&]
+		 (const auto &manager)
+		 {
+			 manager->inherited_child_visibility_changed
+				 (IN_THREAD, child, info);
 		 });
 }
 

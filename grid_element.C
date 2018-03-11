@@ -99,6 +99,9 @@ void grid_elementObj::theme_updated(const defaulttheme &theme)
 
 bool grid_elementObj::takes_up_space(IN_THREAD_ONLY) const
 {
+	// Recalculate gets triggered in requested_child_visibility_changed()
+	// hook, so when requested_visibility changes this gets recalculated.
+
 	return grid_element->impl->data(IN_THREAD).requested_visibility ||
 		!remove_when_hidden;
 }

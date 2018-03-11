@@ -453,7 +453,9 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! Overridden in generic_window_handler(). The first time a top
 	//! level window is made visible, it gets resized to its preferred
 	//! width, first.
-
+	//!
+	//! Overridden in child_element, the grid layout manager may choose
+	//! to hide non-visible elements.
 	virtual void request_visibility(IN_THREAD_ONLY, bool flag);
 
 	//! show() or hide() this display element.

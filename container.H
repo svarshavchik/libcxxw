@@ -101,11 +101,17 @@ public:
 	virtual void draw_child_elements_after_visibility_updated
 		(IN_THREAD_ONLY, bool flag);
 
+	//! A child element will be visible or not visible.
+
+	void requested_child_visibility_updated(IN_THREAD_ONLY,
+						const elementimpl &,
+						bool);
+
 	//! A child element became visible or not visible.
 
-	void child_visibility_updated(IN_THREAD_ONLY,
-				      const elementimpl &,
-				      inherited_visibility_info &);
+	void inherited_child_visibility_updated(IN_THREAD_ONLY,
+						const elementimpl &,
+						inherited_visibility_info &);
 
 	//! Add this container to containers_2_recalculate
 

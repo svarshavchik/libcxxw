@@ -422,10 +422,13 @@ void gridlayoutmanagerObj::implObj
 	redraw_child_borders_and_padding(IN_THREAD, child);
 }
 
+///////////////////////////////////////////////////////////////////////////////
+//
+//
 void gridlayoutmanagerObj::implObj
-::child_visibility_changed(IN_THREAD_ONLY,
-			   const elementimpl &child,
-			   inherited_visibility_info &info)
+::requested_child_visibility_changed(IN_THREAD_ONLY,
+				     const elementimpl &child,
+				     bool flag)
 {
 	grid_map_t::lock lock(grid_map);
 
@@ -441,14 +444,32 @@ void gridlayoutmanagerObj::implObj
 
 	if (ge->remove_when_hidden)
 	{
-		// Needs to complete recalculate the container since the
-		// child's visibility affects whether the grid makes room for
-		// it.
+		// takes_up_space() checks requested_visibility when
+		// remove_when_hidden.
 
 		(*lock)->borders_changed();
 		needs_recalculation(IN_THREAD);
 	}
-	else
+}
+
+void gridlayoutmanagerObj::implObj
+::inherited_child_visibility_changed(IN_THREAD_ONLY,
+				     const elementimpl &child,
+				     inherited_visibility_info &info)
+{
+	grid_map_t::lock lock(grid_map);
+
+	auto &lookup_table=(*lock)->get_lookup_table();
+
+	auto lookup=lookup_table.find(child);
+
+	if (lookup == lookup_table.end())
+		return;
+
+	const auto &ge=(*lock)->elements.at(lookup->second->row)
+		.at(lookup->second->col);
+
+	if (!ge->remove_when_hidden)
 	{
 		// The layout of the container is not going to be changed
 		// as a result of the child visibility change. The only thing
