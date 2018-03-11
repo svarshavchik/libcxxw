@@ -22,10 +22,11 @@ class defaultthemeBase;
 
 class rgb;
 struct linear_gradient;
+struct radial_gradient;
 
 //! A theme color is either an rgb solid color, or a gradient color.
 
-typedef std::variant<rgb, linear_gradient> theme_color_t;
+typedef std::variant<rgb, linear_gradient, radial_gradient> theme_color_t;
 
 //! A loaded application theme.
 

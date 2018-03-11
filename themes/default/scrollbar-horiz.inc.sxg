@@ -6,8 +6,8 @@
       <op>src</op>
       <x>0</x>
       <y>0</y>
-      <width>30</width>
-      <height>30</height>
+      <width>6</width>
+      <height>6</height>
       <src>
 	<picture>outline</picture>
       </src>
@@ -15,11 +15,13 @@
     <composite>
       <op>src</op>
       <x>0</x>
-      <y>5</y>
-      <width>30</width>
-      <height>20</height>
+      <y>1</y>
+      <width>6</width>
+      <height>4</height>
       <src>
-	<picture>fill</picture>
+	<picture>fill-horiz</picture>
+	<x>0</x>
+	<y>1</y>
       </src>
     </composite>
   </render>

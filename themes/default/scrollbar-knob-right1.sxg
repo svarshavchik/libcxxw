@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
 
 <sxg xmlns:xi="http://www.w3.org/2003/XInclude">
-  <width>15</width>
-  <height>30</height>
+  <width>3</width>
+  <height>6</height>
 
   <widthmm>2</widthmm>
   <heightmm>4</heightmm>
 
-  <widthfactor>1</widthfactor>
-  <heightfactor>5</heightfactor>
+  <widthfactor>3</widthfactor>
+  <heightfactor>6</heightfactor>
 
   <xi:include href="scrollbar-knob-colors1.inc.sxg" xpointer="xpointer(/sxg/*)" />
 
@@ -17,14 +17,14 @@
   <render id="main">
     <composite>
       <op>src</op>
-      <width>15</width>
-      <height>30</height>
+      <width>3</width>
+      <height>6</height>
       <src>
 	<picture>knob</picture>
-	<x>15</x>
+	<x>3</x>
 	<y>0</y>
-	<width>15</width>
-	<height>30</height>
+	<width>3</width>
+	<height>6</height>
       </src>
     </composite>
   </render>

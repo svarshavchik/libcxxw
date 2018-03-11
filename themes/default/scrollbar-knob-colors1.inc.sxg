@@ -4,8 +4,20 @@
     <color>scrollbar_foreground_highlight_color</color>
   </picture>
 
-  <picture id="fill">
+  <picture id="fill-knob">
     <type>rgb</type>
-    <color>scrollbar_foreground_color</color>
+    <width>6</width>
+    <height>6</height>
+    <color>scrollbar_knob_foreground_color</color>
+  </picture>
+
+  <picture id="fill-horiz">
+    <type>rgb</type>
+    <color>scrollbar_horiz_foreground_color</color>
+  </picture>
+
+  <picture id="fill-vert">
+    <type>rgb</type>
+    <color>scrollbar_vert_foreground_color</color>
   </picture>
 </sxg>

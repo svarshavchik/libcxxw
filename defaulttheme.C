@@ -824,6 +824,12 @@ static inline bool scale_theme_color(theme_parser_lock &lock,
 	return true;
 }
 
+static bool parse_gradients(theme_parser_lock &lock,
+			    rgb_gradient &gradient,
+			    std::unordered_map<std::string,
+			    theme_color_t> &parsed_colors,
+			    const std::string &id);
+
 static inline bool scale_theme_color(theme_parser_lock &lock,
 				     const std::string &id,
 				     const std::string &scale,
@@ -886,12 +892,162 @@ static inline bool scale_theme_color(theme_parser_lock &lock,
 		color.*(fields[i])=v;
 	}
 
+	bool flag;
 
+	try {
+		flag=parse_gradients(lock, color.gradient, parsed_colors, id);
+	} catch (const exception &e) {
+		std::ostringstream o;
+
+		o << e;
+
+		throw EXCEPTION(gettextmsg
+				(_("gradient id=%1% is not valid: %2%"),
+				 id, o.str()));
+	}
+
+	return flag;
+}
+
+static std::string lowercase_single_value(const theme_parser_lock &lock,
+					  const char *element,
+					  const char *xpath);
+
+static inline bool scale_theme_color(theme_parser_lock &lock,
+				     const std::string &id,
+				     const std::string &scale,
+				     radial_gradient &color,
+				     std::unordered_map<std::string,
+				     theme_color_t> &parsed_colors)
+{
+	static const char * const coords[]={"inner_x",
+					    "inner_y",
+					    "outer_x",
+					    "outer_y",
+					    "inner_radius",
+					    "outer_radius",
+					    "widthmm",
+					    "heightmm"};
+
+	static const double minvalue[]={0,0,0,0,0,0,-999,-999};
+	static const double maxvalue[]={1,1,1,1,1,1,999,999};
+
+	static double radial_gradient::* const fields[]={
+		&radial_gradient::inner_center_x,
+		&radial_gradient::inner_center_y,
+		&radial_gradient::outer_center_x,
+		&radial_gradient::outer_center_y,
+		&radial_gradient::inner_radius,
+		&radial_gradient::outer_radius,
+		&radial_gradient::fixed_width,
+		&radial_gradient::fixed_height};
+
+	std::istringstream s;
+
+	imbue<std::istringstream> imbue{lock.c_locale, s};
+
+	for (size_t i=0; i<6; i++)
+	{
+		auto attribute=lock.clone();
+
+		auto xpath=attribute->get_xpath(coords[i]);
+
+		if (xpath->count() == 0)
+			continue;
+
+		xpath->to_node();
+
+		s.seekg(0);
+		s.str(attribute->get_text());
+
+		double v;
+
+		s >> v;
+
+		if (s.fail())
+			throw EXCEPTION(gettextmsg
+					(_("could not parse %2% for id=%1%"),
+					 id, coords[i]));
+
+		if (v < minvalue[i] || v>maxvalue[i])
+			throw EXCEPTION(gettextmsg
+					(_("%2% for id=%1% must be between %3%"
+					   " and %4%"),
+					 id, coords[i],
+					 minvalue[i], maxvalue[i]));
+
+		color.*(fields[i])=v;
+	}
+
+	static const char * const raxises[]={"inner_radius_axis",
+					     "outer_radius_axis"};
+
+	static radial_gradient::radius_axis radial_gradient::* const rfields[]={
+		&radial_gradient::inner_radius_axis,
+		&radial_gradient::outer_radius_axis};
+
+	for (size_t i=0; i<2; i++)
+	{
+		auto s=lowercase_single_value(lock, raxises[i], "color");
+
+		if (s.empty())
+			continue;
+
+		if (s == "horizontal")
+		{
+			color.*(rfields[i])=radial_gradient::horizontal;
+		}
+		else if (s == "vertical")
+		{
+			color.*(rfields[i])=radial_gradient::vertical;
+		}
+		else if (s == "shortest")
+		{
+			color.*(rfields[i])=radial_gradient::shortest;
+		}
+		else if (s == "longest")
+		{
+			color.*(rfields[i])=radial_gradient::longest;
+		}
+		else
+			throw EXCEPTION(gettextmsg
+					(_("%1% is not a valid value for %2%"
+					   ", id=%3%"),
+					 s, raxises[i], id));
+	}
+
+	bool flag;
+
+	try {
+		flag=parse_gradients(lock, color.gradient, parsed_colors, id);
+	} catch (const exception &e) {
+		std::ostringstream o;
+
+		o << e;
+
+		throw EXCEPTION(gettextmsg
+				(_("gradient id=%1% is not valid: %2%"),
+				 id, o.str()));
+	}
+
+	return flag;
+}
+
+static bool parse_gradients(theme_parser_lock &lock,
+			    rgb_gradient &parsed_gradient,
+			    std::unordered_map<std::string,
+			    theme_color_t> &parsed_colors,
+			    const std::string &id)
+{
 	auto gradients=lock.clone();
 
 	auto xpath=gradients->get_xpath("gradient");
 
 	size_t n=xpath->count();
+
+	std::istringstream s;
+
+	imbue<std::istringstream> imbue{lock.c_locale, s};
 
 	for (size_t i=0; i<n; ++i)
 	{
@@ -934,21 +1090,10 @@ static inline bool scale_theme_color(theme_parser_lock &lock,
 			throw EXCEPTION(gettextmsg
 					(_("gradient id=%1% cannot use color "
 					   "%2"), id, s));
-		color.gradient.emplace(n, std::get<rgb>(iter->second));
+		parsed_gradient.emplace(n, std::get<rgb>(iter->second));
 	}
 
-	try {
-		valid_gradient(color.gradient);
-	} catch (const exception &e) {
-		std::ostringstream o;
-
-		o << e;
-
-		throw EXCEPTION(gettextmsg
-				(_("gradient id=%1% is not valid: %2%"),
-				 id, o.str()));
-	}
-
+	valid_gradient(parsed_gradient);
 	return true;
 }
 
@@ -1003,7 +1148,8 @@ void defaultthemeObj::load_colors(const theme_parser_lock &root_lock)
 
 				if (type.empty()) type="rgb";
 
-				if (type != "rgb" && type != "linear_gradient")
+				if (type != "rgb" && type != "linear_gradient"
+				    && type != "radial_gradient")
 					throw EXCEPTION
 						(gettextmsg
 						 (_("Unknown type=%1% specified"
@@ -1011,6 +1157,8 @@ void defaultthemeObj::load_colors(const theme_parser_lock &root_lock)
 						  type, id));
 				if (type == "linear_gradient")
 					new_color=linear_gradient{};
+				if (type == "radial_gradient")
+					new_color=radial_gradient{};
 			}
 
 			bool flag=std::visit

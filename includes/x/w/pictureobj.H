@@ -209,8 +209,13 @@ public:
 		//! Comparison operator
 		inline constexpr bool operator!=(const fixedprec &o) const;
 
-		//! Borrow number.H to safely truncate a value
+		//! Distance between two fixedprec.
 
+		//! Basically, abs(a-b).
+
+		inline constexpr uint32_t distance(const fixedprec &) const;
+
+		//! Borrow number.H to safely truncate a value
 		template<typename T>
 		static auto inline constexpr truncate(T &&v);
 	};

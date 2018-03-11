@@ -23,7 +23,8 @@ LIBCXXW_NAMESPACE_START
 
 screen_picturecacheObj::screen_picturecacheObj()
 	: solid_colors{solid_color_map_t::create()},
-	  linear_gradients{linear_gradient_map_t::create()}
+	  linear_gradients{linear_gradient_map_t::create()},
+	  radial_gradients{radial_gradient_map_t::create()}
 {
 }
 

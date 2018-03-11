@@ -6,20 +6,22 @@
       <op>src</op>
       <x>0</x>
       <y>0</y>
-      <width>30</width>
-      <height>30</height>
+      <width>6</width>
+      <height>6</height>
       <src>
 	<picture>outline</picture>
       </src>
     </composite>
     <composite>
       <op>src</op>
-      <x>5</x>
+      <x>1</x>
       <y>0</y>
-      <width>20</width>
-      <height>30</height>
+      <width>4</width>
+      <height>6</height>
       <src>
-	<picture>fill</picture>
+	<picture>fill-vert</picture>
+	<x>1</x>
+	<y>0</y>
       </src>
     </composite>
   </render>

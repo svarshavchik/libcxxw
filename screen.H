@@ -226,6 +226,14 @@ class LIBCXX_HIDDEN screenObj::implObj
 						     dim_t h,
 						     render_repeat repeat);
 
+	//! Create a cached radial gradient picture
+	const_picture create_radial_gradient_picture(const radial_gradient &g,
+						     coord_t offset_x,
+						     coord_t offset_y,
+						     dim_t w,
+						     dim_t h,
+						     render_repeat repeat);
+
 	//! Create a cached gradient background color
 	background_color create_gradient_background_color
 		(const background_color &base_color,

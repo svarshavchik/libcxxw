@@ -307,6 +307,144 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
   <color  id="scrollbar_foreground_highlight_color" scale="80%" />
   <color  id="scrollbar_dragging_color" scale="90%" />
 
+  <color id="scrollbar_horiz_foreground_color" type="linear_gradient">
+    <x1>0</x1>
+    <y1>0</y1>
+    <x2>0</x2>
+    <y2>1</y2>
+
+    <gradient>
+      <value>0</value>
+      <color>0%</color>
+    </gradient>
+    <gradient>
+      <value>1</value>
+      <color>scrollbar_foreground_color</color>
+    </gradient>
+    <gradient>
+      <value>2</value>
+      <color>0%</color>
+    </gradient>
+  </color>
+
+  <color id="scrollbar_vert_foreground_color" type="linear_gradient">
+    <x1>0</x1>
+    <y1>0</y1>
+    <x2>1</x2>
+    <y2>0</y2>
+
+    <gradient>
+      <value>0</value>
+      <color>0%</color>
+    </gradient>
+    <gradient>
+      <value>1</value>
+      <color>scrollbar_foreground_color</color>
+    </gradient>
+    <gradient>
+      <value>2</value>
+      <color>0%</color>
+    </gradient>
+  </color>
+
+  <color id="scrollbar_knob_foreground_color" type="radial_gradient">
+    <inner_x>.5</inner_x>
+    <inner_y>.5</inner_y>
+    <outer_x>.5</outer_x>
+    <outer_y>.5</outer_y>
+    <inner_radius>0</inner_radius>
+    <outer_radius>.5</outer_radius>
+    <inner_radius_axis>shortest</inner_radius_axis>
+    <outer_radius_axis>longest</outer_radius_axis>
+
+    <gradient>
+      <value>0</value>
+      <color>scrollbar_foreground_color</color>
+    </gradient>
+    <gradient>
+      <value>1</value>
+      <color>0%</color>
+    </gradient>
+  </color>
+
+  <color id="scrollbar_knob_dragging_color" type="radial_gradient">
+    <inner_x>.5</inner_x>
+    <inner_y>.5</inner_y>
+    <outer_x>.5</outer_x>
+    <outer_y>.5</outer_y>
+    <inner_radius>0</inner_radius>
+    <outer_radius>.5</outer_radius>
+    <inner_radius_axis>shortest</inner_radius_axis>
+    <outer_radius_axis>longest</outer_radius_axis>
+
+    <gradient>
+      <value>0</value>
+      <color>0%</color>
+    </gradient>
+    <gradient>
+      <value>1</value>
+      <color>scrollbar_dragging_color</color>
+    </gradient>
+  </color>
+
+  <color id="noshade:scrollbar_horiz_foreground_color"
+	 scale="scrollbar_foreground_color" />
+
+  <color id="noshade:scrollbar_vert_foreground_color"
+	 scale="scrollbar_foreground_color" />
+
+  <color id="noshade:scrollbar_knob_foreground_color"
+	 scale="scrollbar_foreground_color" />
+
+  <color id="noshade:scrollbar_knob_dragging_color"
+	 scale="scrollbar_dragging_color" />
+
+  <color id="scrollbar_horiz_dragging_color" type="linear_gradient">
+    <x1>0</x1>
+    <y1>0</y1>
+    <x2>0</x2>
+    <y2>1</y2>
+
+    <gradient>
+      <value>0</value>
+      <color>scrollbar_dragging_color</color>
+    </gradient>
+    <gradient>
+      <value>1</value>
+      <color>0%</color>
+    </gradient>
+    <gradient>
+      <value>2</value>
+      <color>scrollbar_dragging_color</color>
+    </gradient>
+  </color>
+
+  <color id="scrollbar_vert_dragging_color" type="linear_gradient">
+    <x1>0</x1>
+    <y1>0</y1>
+    <x2>1</x2>
+    <y2>0</y2>
+
+    <gradient>
+      <value>0</value>
+      <color>scrollbar_dragging_color</color>
+    </gradient>
+    <gradient>
+      <value>1</value>
+      <color>0%</color>
+    </gradient>
+    <gradient>
+      <value>2</value>
+      <color>scrollbar_dragging_color</color>
+    </gradient>
+  </color>
+
+  <color id="noshade:scrollbar_horiz_dragging_color"
+	 scale="scrollbar_dragging_color" />
+
+  <color id="noshade:scrollbar_vert_dragging_color"
+	 scale="scrollbar_dragging_color" />
+
   <border id="scrollbarfocusoff_border" from="inputfocusoff_border">
     <color>10%</color>
   </border>

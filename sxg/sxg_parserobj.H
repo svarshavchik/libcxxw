@@ -251,7 +251,15 @@ class LIBCXX_HIDDEN sxg_parserObj : virtual public obj {
 						     const ref<screenObj
 						     ::implObj> &s) const;
 
+		//! Scale a theme_color_t's colors
 		const_picture scale_color_to_picture(linear_gradient g,
+						     dim_t width,
+						     dim_t height,
+						     const ref<screenObj
+						     ::implObj> &s) const;
+
+		//! Scale a theme_color_t's colors
+		const_picture scale_color_to_picture(radial_gradient g,
 						     dim_t width,
 						     dim_t height,
 						     const ref<screenObj
@@ -660,6 +668,11 @@ class LIBCXX_HIDDEN sxg_parserObj : virtual public obj {
 	std::tuple<pixmap, picture>
 		create_text_picture(const picture_info &info,
 				    const drawable &main) const;
+
+	//! Create a color picture
+	const_picture create_color_picture(const picture_info &pi,
+					   const execution_info &info,
+					   const drawable &main) const;
 
 	//! Internal parsing function.
 

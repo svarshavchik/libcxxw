@@ -5,14 +5,14 @@
   <picture id="knob">
     <type>pixmap</type>
     <size>scaled</size>
-    <width>30</width>
-    <height>30</height>
+    <width>6</width>
+    <height>6</height>
   </picture>
 
   <pixmap id="mask">
     <size>scaled</size>
-    <width>30</width>
-    <height>30</height>
+    <width>6</width>
+    <height>6</height>
     <gc id="mask_gc" />
   </pixmap>
 
@@ -25,8 +25,8 @@
       <arc>
 	<x>0</x>
 	<y>0</y>
-	<width>30</width>
-	<height>30</height>
+	<width>6</width>
+	<height>6</height>
 	<angle1>0</angle1>
 	<angle2>360</angle2>
       </arc>
@@ -36,8 +36,8 @@
       <arc>
 	<x>0</x>
 	<y>0</y>
-	<width>30</width>
-	<height>30</height>
+	<width>6</width>
+	<height>6</height>
 	<angle1>0</angle1>
 	<angle2>360</angle2>
       </arc>
@@ -51,15 +51,15 @@
       <rectangle>
 	<x>0</x>
 	<y>0</y>
-	<width>30</width>
-	<height>30</height>
+	<width>6</width>
+	<height>6</height>
       </rectangle>
     </fill>
 
     <composite>
       <op>over</op>
-      <width>30</width>
-      <height>30</height>
+      <width>6</width>
+      <height>6</height>
 
       <mask>
 	<pixmap>mask</pixmap>
@@ -81,10 +81,10 @@
     <arcs>
       <fill />
       <arc>
-	<x>5</x>
-	<y>5</y>
-	<width>20</width>
-	<height>20</height>
+	<x>1</x>
+	<y>1</y>
+	<width>4</width>
+	<height>4</height>
 	<angle1>0</angle1>
 	<angle2>360</angle2>
       </arc>
@@ -92,10 +92,10 @@
 
     <arcs>
       <arc>
-	<x>5</x>
-	<y>5</y>
-	<width>20</width>
-	<height>20</height>
+	<x>1</x>
+	<y>1</y>
+	<width>4</width>
+	<height>4</height>
 	<angle1>0</angle1>
 	<angle2>360</angle2>
       </arc>
@@ -105,15 +105,15 @@
   <render id="knob">
     <composite>
       <op>over</op>
-      <width>30</width>
-      <height>30</height>
+      <width>6</width>
+      <height>6</height>
 
       <mask>
 	<pixmap>mask</pixmap>
       </mask>
 
       <src>
-	<picture>fill</picture>
+	<picture>fill-knob</picture>
       </src>
     </composite>
   </render>

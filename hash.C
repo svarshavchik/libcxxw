@@ -61,7 +61,36 @@ size_t hash<LIBCXX_NAMESPACE::w::color_arg>
 							    (65536.0*256.0)))
 					+
 					(size_t)(std::round(g.y2*
-							    (65536.0*65536.0)));
+							    (65536.0*65536.0)))
+					+ (size_t)(std::round(g.fixed_width
+							      * 64))
+					+ (size_t)(std::round(g.fixed_height
+							      * 16));
+			},
+			[this]
+			(const LIBCXX_NAMESPACE::w::radial_gradient &g)
+			{
+				return this->hash<LIBCXX_NAMESPACE::w
+						  ::rgb_gradient>::operator()
+					(g.gradient) +
+					(size_t)(std::round(g.inner_center_x
+							    *256)) +
+					(size_t)(std::round(g.inner_center_y
+							    *65536)) +
+					(size_t)(std::round(g.outer_center_x*
+							    (65536.0*256.0)))
+					+
+					(size_t)(std::round(g.outer_center_y*
+							    (65536.0*65536.0)))
+					+ (size_t)(std::round(g.inner_radius
+							      * 128))
+					+ (size_t)(std::round(g.outer_radius
+							      * 16384))
+					+ (size_t)(std::round(g.fixed_width
+							      * 64))
+					+ (size_t)(std::round(g.fixed_height
+							      * 16));
+
 			}},
 		r);
 }

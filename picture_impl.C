@@ -560,6 +560,47 @@ bool screen_picturecacheObj::linear_gradient_cache_key_t
 		repeat == o.repeat && g == o.g;
 }
 
+// Scale a gradient coordinate
+
+// Code shared by create_linear_gradient_picture() and
+// create_radial_gradient_picture(). Both of them have a pair of gradient
+// coordinates, specified as (x, y) duples between 0.0 and 1.0. Scale this
+// to fixedprec x,y; for a [w, h] big display element, and then offset
+// the coordinates by offset_x/offset_y.
+//
+// offset_x/offset_y are the coordinates of the display element in its
+// window, so the gradient focal point ends up reflecting window coordinates.
+
+static std::tuple<picture::base::fixedprec,
+		  picture::base::fixedprec>
+scale_gradient_coordinates(double gx, double gy,
+			   coord_t offset_x,
+			   coord_t offset_y,
+			   dim_t w,
+			   dim_t h)
+{
+	// If width and height is 5, for example we need to scale lg.[xy][12]
+	// from 0 to 4.9999... using the fixedprec type. So, we convert
+	// convert width and height to fixedprec type, then decrement the
+	// value, to get the bottom-right coordinate.
+
+	picture::base::fixedprec x1{xcoord_t::truncate(w)},
+		y1{xcoord_t::truncate(h)};
+
+	--x1.value;
+	--y1.value;
+
+	// Now, we can scale each value by lg.[xy][12], add the offset, and
+	// truncate it.
+
+	picture::base::fixedprec offset_xfp{offset_x}, offset_yfp{offset_y};
+
+	x1.value=x1.truncate(x1.value * gx + offset_xfp.value);
+	y1.value=y1.truncate(y1.value * gy + offset_yfp.value);
+
+	return {x1, y1};
+}
+
 const_picture screenObj::implObj
 ::create_linear_gradient_picture(const linear_gradient &lg,
 				 coord_t offset_x,
@@ -579,29 +620,15 @@ const_picture screenObj::implObj
 		return create_solid_color_picture(default_color);
 	}
 
-	// If width and height is 5, for example we need to scale lg.[xy][12]
-	// from 0 to 4.9999... using the fixedprec type. So, we convert
-	// convert width and height to fixedprec type, then decrement the
-	// value, to get the bottom-right coordinate.
+	auto [x1, y1]=scale_gradient_coordinates(lg.x1, lg.y1,
+						 offset_x,
+						 offset_y,
+						 w, h);
 
-	picture::base::fixedprec x1{xcoord_t::truncate(w)},
-		y1{xcoord_t::truncate(h)}, x2=x1, y2=y1;
-
-	--x1.value;
-	--y1.value;
-	--x2.value;
-	--y2.value;
-
-	// Now, we can scale each value by lg.[xy][12], add the offset, and
-	// truncate it.
-
-	picture::base::fixedprec offset_xfp{offset_x}, offset_yfp{offset_y};
-
-	x1.value=x1.truncate(x1.value * lg.x1 + offset_xfp.value);
-	x2.value=x2.truncate(x2.value * lg.x2 + offset_xfp.value);
-
-	y1.value=y1.truncate(y1.value * lg.y1 + offset_yfp.value);
-	y2.value=y2.truncate(y2.value * lg.y2 + offset_yfp.value);
+	auto [x2, y2]=scale_gradient_coordinates(lg.x2, lg.y2,
+						 offset_x,
+						 offset_y,
+						 w, h);
 
 	return picturecache->linear_gradients->find_or_create
 		({lg.gradient, x1, y1, x2, y2, repeat},
@@ -616,6 +643,185 @@ const_picture screenObj::implObj
 
 			 return picture::create(picture_impl);
 		 });
+}
+
+namespace {
+#if 0
+}
+#endif
+
+//! Create a radial gradient picture
+
+class LIBCXX_HIDDEN radialGradientPictureImplObj : public pictureObj::implObj {
+
+ public:
+	radialGradientPictureImplObj(const connection_thread &thread,
+				     const rgb_gradient &gradient,
+				     const pictureObj::point &inner,
+				     const pictureObj::point &outer,
+				     const pictureObj::fixedprec &inner_radius,
+				     const pictureObj::fixedprec &outer_radius)
+		: pictureObj::implObj(thread)
+	{
+		gradient_normalize(gradient,
+				   [&, this]
+				   (auto stops,
+				    auto colors,
+				    size_t n)
+				   {
+					   xcb_render_create_radial_gradient
+						   (picture_conn()->conn,
+						    picture_id(),
+						    to_pointfix(inner),
+						    to_pointfix(outer),
+						    inner_radius.value,
+						    outer_radius.value,
+						    n,
+						    stops, colors);
+				   });
+	}
+
+	~radialGradientPictureImplObj()
+	{
+		xcb_render_free_picture(picture_conn()->conn, picture_id());
+	}
+};
+#if 0
+{
+#endif
+};
+
+const_picture screenObj::implObj
+::create_radial_gradient_picture(const radial_gradient &g,
+				 coord_t offset_x,
+				 coord_t offset_y,
+				 dim_t w,
+				 dim_t h,
+				 render_repeat repeat)
+{
+	auto default_color=valid_gradient(g.gradient);
+
+	// logical coordinate (1.0, 1.0) is the bottom-right
+	// pixel address, expressed as fixedprec. If the given width or
+	// height is 0, that's an edge case, punt.
+
+	if (w == 0 || h == 0)
+	{
+		return create_solid_color_picture(default_color);
+	}
+
+	auto [inner_center_x, inner_center_y]=
+		scale_gradient_coordinates(g.inner_center_x, g.inner_center_y,
+					   offset_x,
+					   offset_y,
+					   w, h);
+
+	auto [outer_center_x, outer_center_y]=
+		scale_gradient_coordinates(g.outer_center_x, g.outer_center_y,
+					   offset_x,
+					   offset_y,
+					   w, h);
+
+	picture::base::fixedprec
+		inner_radius{g.inner_radius *
+			dim_t::truncate(g.inner_radius_axis == g.horizontal ||
+					(g.inner_radius_axis == g.shortest &&
+					 w<h) ? w:h)};
+	picture::base::fixedprec
+		outer_radius{g.outer_radius *
+			dim_t::truncate(g.outer_radius_axis == g.horizontal ||
+					(g.outer_radius_axis == g.shortest &&
+					 w<h) ? w:h)};
+
+	if (inner_radius.value < 0)
+		inner_radius.value=0;
+
+	if (outer_radius.value < 0)
+		outer_radius.value=0;
+
+	// The inner circle must be entirely enclosed by the outer circle.
+	//
+	// Automatically adjust the radii to enforce this requirement.
+	//
+	// Start by computing the distance between the center points.
+
+	double delta_x=inner_center_x.distance(outer_center_x);
+	double delta_y=inner_center_y.distance(outer_center_y);
+
+	picture::base::fixedprec
+		distance{std::sqrt(delta_x * delta_x + delta_y * delta_y)};
+
+	// We want to overestimate the distance, so bump it by 1, to account
+	// for rounding off.
+
+	if (distance.value < std::numeric_limits<decltype(distance.value)>
+	    ::max())
+		++distance.value;
+
+	// Now, the outer radius must be at least as big enough as the distance
+	// between the center points, in order to enclose the inner circle.
+
+	if (outer_radius < distance)
+		outer_radius=distance;
+
+	// The difference between the distance and the outer circle's radius
+	// is now the upper limit on the inner circle's radius.
+
+	picture::base::fixedprec max_inner_radius;
+
+	max_inner_radius.value=outer_radius.value - distance.value;
+
+	// Enforce it.
+
+	if (inner_radius > max_inner_radius)
+		inner_radius=max_inner_radius;
+
+	return picturecache->radial_gradients->find_or_create
+		({g.gradient, inner_center_x, inner_center_y,
+				outer_center_x, outer_center_y,
+				inner_radius, outer_radius,
+				repeat},
+		 [&, this]
+		 {
+			 auto picture_impl=ref<radialGradientPictureImplObj>
+				 ::create(this->thread, g.gradient,
+					  picture::base::point{inner_center_x,
+							  inner_center_y},
+					  picture::base::point{outer_center_x,
+							  outer_center_y},
+					  inner_radius, outer_radius);
+
+			 picture_impl->repeat(repeat);
+
+			 return picture::create(picture_impl);
+		 });
+}
+
+size_t screen_picturecacheObj::radial_gradient_cache_key_t_hash
+::operator()(const radial_gradient_cache_key_t &k) const noexcept
+{
+	typedef std::hash<picture::base::fixedprec> fixedprec_hash;
+
+	return std::hash<rgb_gradient>::operator()(k.g)
+		+ fixedprec_hash::operator()(k.inner_x)
+		+ fixedprec_hash::operator()(k.inner_y)
+		+ fixedprec_hash::operator()(k.outer_x)
+		+ fixedprec_hash::operator()(k.outer_y)
+		+ fixedprec_hash::operator()(k.inner_radius)
+		+ fixedprec_hash::operator()(k.outer_radius)
+		+ static_cast<size_t>(k.repeat);
+}
+
+bool screen_picturecacheObj::radial_gradient_cache_key_t
+::operator==(const radial_gradient_cache_key_t &o) const noexcept
+{
+	return inner_x == o.inner_x &&
+		inner_y == o.inner_y &&
+		outer_x == o.outer_x &&
+		outer_y == o.outer_y &&
+		inner_radius == o.inner_radius &&
+		outer_radius == o.outer_radius &&
+		repeat == o.repeat && g == o.g;
 }
 
 rgb valid_gradient(const rgb_gradient &gradient)

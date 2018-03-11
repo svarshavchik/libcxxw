@@ -198,6 +198,15 @@ inline constexpr bool pictureObj::fixedprec::operator!=(const fixedprec &o)
 	return compare(o) != 0;
 }
 
+//! Distance between two points.
+
+inline constexpr uint32_t pictureObj::fixedprec::distance(const fixedprec &o)
+	const
+{
+	return value < o.value ?
+		       int64_t{o.value}-value : int64_t{value}-o.value;
+}
+
 //! Borrow number.H to safely truncate a value
 
 template<typename T>

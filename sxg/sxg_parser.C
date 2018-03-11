@@ -1157,6 +1157,19 @@ const_picture sxg_parserObj::color_info
 						 render_repeat::pad);
 }
 
+const_picture sxg_parserObj::color_info
+::scale_color_to_picture(radial_gradient g,
+			 dim_t width,
+			 dim_t height,
+			 const ref<screenObj::implObj> &s) const
+{
+	for (auto &rgb:g.gradient)
+		scale_rgb(rgb.second);
+
+	return s->create_radial_gradient_picture(g, 0, 0, width, height,
+						 render_repeat::pad);
+}
+
 
 // Parse all <font> elements. Hijack theme code to do all the work for us.
 
@@ -1315,6 +1328,13 @@ inline void sxg_parserObj::parse_pictures(const theme_parser_lock &root)
 				break;
 			case sxg_parserObj::picture_type_t::solid_color:
 				new_pic_iter.color=sxg_parserObj::color_info(lock);
+				new_pic_iter.size=parse_size_type_t(lock);
+
+				if (has_value(lock, "width") ||
+				    has_value(lock, "height"))
+					get_width_height(lock, points,
+							 new_pic_iter.width,
+							 new_pic_iter.height);
 				break;
 
 			case sxg_parserObj::picture_type_t::text:
@@ -2938,6 +2958,52 @@ double sxg_parserObj::pixels_per_mm_h() const
 		* theme->themescale;
 }
 
+
+inline const_picture sxg_parserObj
+::create_color_picture(const picture_info &pi,
+		       const execution_info &info,
+		       const drawable &d) const
+{
+	SXG_DEBUG_DUMP("Get color "
+		       << d->get_width()
+		       << "x"
+		       << d->get_height()
+		       << " (2): "
+		       << picture_info.first);
+
+	// pass in the drawable's width and height to
+	// get_color(). If the color is a gradient, this
+	// scales the gradient to "main"'s size, and
+	// source_picture() uses "main"'s scaling factors
+	//
+	// see source_scale().
+
+	auto width=d->get_width();
+	auto height=d->get_height();
+
+	if (pi.width != 0 && pi.height != 0)
+	{
+		scale_info scale(pi.size,
+				 info.scale_w,
+				 info.scale_h,
+				 info.pixels_per_mm_w,
+				 info.pixels_per_mm_h);
+
+		width=dim_t::truncate
+			(scale.x_pixel(pi
+				       .width,
+				       scale_info::beginning));
+
+		height=dim_t::truncate
+			(scale.y_pixel(pi
+				       .height,
+				       scale_info::beginning));
+	}
+
+	return pi.color.get_color(width, height,
+				  d->get_screen()->impl, theme);
+}
+
 void sxg_parserObj::render(const picture &p,
 			   const drawable &d) const
 {
@@ -3039,28 +3105,11 @@ void sxg_parserObj::render(const picture &p,
 			}
 			break;
 		case picture_type_t::solid_color:
-			SXG_DEBUG_DUMP("Get color "
-				       << d->get_width()
-				       << "x"
-				       << d->get_height()
-				       << " (2): "
-				       << picture_info.first);
 
-			// pass in the drawable's width and height to
-			// get_color(). If the color is a gradient, this
-			// scales the gradient to "main"'s size, and
-			// source_picture() uses "main"'s scaling factors
-			//
-			// see source_scale().
-			info.const_pictures
-				.insert({picture_info.first,
-							picture_info.second
-							.color
-							.get_color
-							(d->get_width(),
-							 d->get_height(),
-							 d->get_screen()->impl,
-							 theme)});
+			info.const_pictures.insert
+				({picture_info.first, create_color_picture
+						(picture_info.second, info,
+						 d)});
 			break;
 		case picture_type_t::pixmap:
 

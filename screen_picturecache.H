@@ -63,6 +63,43 @@ class LIBCXX_HIDDEN screen_picturecacheObj : virtual public obj {
 
 	const linear_gradient_map_t linear_gradients;
 
+	//! Caching key for gradient colors
+
+	struct radial_gradient_cache_key_t {
+		rgb_gradient g;
+		picture::base::fixedprec inner_x;
+		picture::base::fixedprec inner_y;
+		picture::base::fixedprec outer_x;
+		picture::base::fixedprec outer_y;
+		picture::base::fixedprec inner_radius;
+		picture::base::fixedprec outer_radius;
+
+		render_repeat repeat;
+
+		bool operator==(const radial_gradient_cache_key_t &)
+			const noexcept;
+	};
+
+	//! Compute a hash key
+
+	struct radial_gradient_cache_key_t_hash
+		: public std::hash<rgb_gradient>,
+		  public std::hash<picture::base::fixedprec> {
+		size_t operator()(const radial_gradient_cache_key_t &)
+			const noexcept;
+	};
+
+	//! A container for linear gradients.
+
+	typedef x::weakunordered_multimap<radial_gradient_cache_key_t,
+					  pictureObj,
+					  radial_gradient_cache_key_t_hash
+					  > radial_gradient_map_t;
+
+	//! Linear gradients
+
+	const radial_gradient_map_t radial_gradients;
+
 	//! Constructor
 	screen_picturecacheObj();
 

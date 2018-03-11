@@ -37,14 +37,17 @@ typedef uint32_t rgb_component_squared_t;
 typedef std::unordered_map<size_t, rgb> rgb_gradient;
 
 struct linear_gradient;
+struct radial_gradient;
 
 //! A color can be specified as either a literal rgb value, or a theme color
 
-typedef std::variant<std::string, rgb, linear_gradient> color_arg;
+//! The background color for a display element may also be specified as a
+//! linear or a radial gradient. Gradient colors are ignored in all other
+//! situations (border colors, etc...), and fall back to using the #0 gradient
+//! color.
 
-//! A gradient can be specified either literally, or as a theme graident.
-
-typedef std::variant<std::string, rgb_gradient> rgb_gradient_arg;
+typedef std::variant<std::string, rgb, linear_gradient, radial_gradient
+		     > color_arg;
 
 LIBCXXW_NAMESPACE_END
 

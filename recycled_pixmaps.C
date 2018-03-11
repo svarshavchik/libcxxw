@@ -154,7 +154,8 @@ class nontheme_background_colorObj : public background_colorObj {
 
 protected:
 	// The background color specifier
-	typedef std::variant<rgb, linear_gradient, const_picture> color_t;
+	typedef std::variant<rgb, linear_gradient,
+			     radial_gradient, const_picture> color_t;
 
 	color_t color;
 
@@ -190,6 +191,19 @@ public:
 
 	static inline const_picture
 	create_fixed_color(const linear_gradient &g,
+			   const ref<screenObj::implObj> &s)
+	{
+		auto iter=g.gradient.find(0);
+
+		if (iter == g.gradient.end())
+			throw EXCEPTION("Internal error: "
+					"invalid gradient parameter");
+
+		return s->create_solid_color_picture(iter->second);
+	}
+
+	static inline const_picture
+	create_fixed_color(const radial_gradient &g,
 			   const ref<screenObj::implObj> &s)
 	{
 		auto iter=g.gradient.find(0);
@@ -238,22 +252,84 @@ public:
 	{
 	}
 
+
+private:
+
+	inline background_color make_gradient(IN_THREAD_ONLY,
+					      elementObj::implObj &e,
+					      const linear_gradient &g)
+	{
+		auto screen_impl=e.get_screen()->impl;
+
+		auto [x, y, width, height]=
+			get_gradient_params(IN_THREAD, e, screen_impl,
+					    g.fixed_width,
+					    g.fixed_height);
+
+		auto picture=screen_impl->create_linear_gradient_picture
+			(g, x, y, width, height, render_repeat::pad);
+
+		return screen_impl->create_gradient_background_color(ref(this),
+								     picture);
+	}
+
+	inline background_color make_gradient(IN_THREAD_ONLY,
+					      elementObj::implObj &e,
+					      const radial_gradient &g)
+	{
+		auto screen_impl=e.get_screen()->impl;
+
+		auto [x, y, width, height]=
+			get_gradient_params(IN_THREAD,
+					    e, screen_impl,
+					    g.fixed_width,
+					    g.fixed_height);
+
+		auto picture=screen_impl->create_radial_gradient_picture
+			(g, x, y, width, height, render_repeat::pad);
+
+		return screen_impl->create_gradient_background_color(ref(this),
+								     picture);
+	}
+
+public:
+
 	background_color get_background_color_for(IN_THREAD_ONLY,
 						  elementObj::implObj &e)
 		override
 	{
-		if (!std::holds_alternative<linear_gradient>(color))
-			return ref(this);
+		return std::visit(visitor{
+				[&, this](const rgb &)
+					->background_color
+				{
+					return ref(this);
+				},
+				[&, this](const const_picture &)
+					->background_color
+				{
+					return ref(this);
+				},
+				[&, this](const linear_gradient &g)
+				{
+					return make_gradient(IN_THREAD, e, g);
+				},
+				[&, this](const radial_gradient &g)
+				{
+					return make_gradient(IN_THREAD, e, g);
+				}}, color);
+	}
 
-		const auto &g=std::get<linear_gradient>(color);
-
-		auto screen_impl=e.get_screen()->impl;
-
+private:
+	static std::tuple<coord_t, coord_t, dim_t, dim_t
+			  > get_gradient_params(IN_THREAD_ONLY,
+						elementObj::implObj &e,
+						const ref<screenObj::implObj>
+						&screen_impl,
+						double fixed_width,
+						double fixed_height)
+	{
 		dim_t width=e.data(IN_THREAD).current_position.width;
 		dim_t height=e.data(IN_THREAD).current_position.height;
-
-		auto fixed_width=g.fixed_width;
-		auto fixed_height=g.fixed_height;
 
 		// Negative values mean from the opposite side.
 
@@ -296,12 +372,7 @@ public:
 				 (e.data(IN_THREAD).current_position.height)
 				 -height);
 
-		auto picture=screen_impl->create_linear_gradient_picture
-			(g, x, y, width, height, render_repeat::pad);
-
-		return screen_impl
-			->create_gradient_background_color(ref(this),
-							   picture);
+		return {x, y, width, height};
 	}
 };
 
