@@ -598,10 +598,55 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
 
   <dim id="book_tab_h_padding" axis="horiz">1</dim>
   <dim id="book_tab_v_padding" axis="horiz">1</dim>
-  <color id="book_tab_inactive_color" scale="50%" />
-  <color id="book_tab_active_color" scale="70%" />
-  <color id="book_tab_warm_color" scale="80%" />
-  <color id="book_tab_hot_color" scale="100%" />
+
+  <color id="book_tab_inactive_color" type="linear_gradient">
+    <gradient>
+      <value>0</value>
+      <color>30%</color>
+    </gradient>
+    <gradient>
+      <value>1</value>
+      <color>50%</color>
+    </gradient>
+  </color>
+
+  <color id="book_tab_active_color" type="linear_gradient">
+    <gradient>
+      <value>0</value>
+      <color>50%</color>
+    </gradient>
+    <gradient>
+      <value>1</value>
+      <color>70%</color>
+    </gradient>
+  </color>
+
+  <color id="book_tab_warm_color" type="linear_gradient">
+    <gradient>
+      <value>0</value>
+      <color>50%</color>
+    </gradient>
+    <gradient>
+      <value>1</value>
+      <color>80%</color>
+    </gradient>
+  </color>
+
+  <color id="book_tab_hot_color" type="linear_gradient">
+    <gradient>
+      <value>0</value>
+      <color>70%</color>
+    </gradient>
+    <gradient>
+      <value>1</value>
+      <color>100%</color>
+    </gradient>
+  </color>
+
+  <color id="noshade:book_tab_inactive_color" scale="50%" />
+  <color id="noshade:book_tab_active_color" scale="70%" />
+  <color id="noshade:book_tab_warm_color" scale="80%" />
+  <color id="noshade:book_tab_hot_color" scale="100%" />
 
   <color id="page_background" scale="80%" />
   <border id="page_border" from="thin_0%" />
@@ -700,6 +745,25 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
 
   <dim id="dialog-v-padding" axis="vert">4</dim>
   <dim id="dialog-h-padding" axis="vert">4</dim>
+
+  <color id="button-row-color" type="linear_gradient">
+    <gradient>
+      <value>0</value>
+      <color>50%</color>
+    </gradient>
+
+    <gradient>
+      <value>1</value>
+      <color>75%</color>
+    </gradient>
+
+    <gradient>
+      <value>2</value>
+      <color>50%</color>
+    </gradient>
+  </color>
+
+  <color id="noshade:button-row-color" scale="75%" />
 
   <layout type="grid" id="ok-dialog">
     <valign>
@@ -806,7 +870,7 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
 
     <include>
       <name>ok-button-row</name>
-      <background_color>75%</background_color>
+      <background_color>button-row-color</background_color>
     </include>
   </factory>
 
@@ -883,7 +947,7 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
 
     <include>
       <name>ok-cancel-button-row</name>
-      <background_color>75%</background_color>
+      <background_color>button-row-color</background_color>
     </include>
   </factory>
 
@@ -914,7 +978,7 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
 
     <include>
       <name>ok-cancel-button-row</name>
-      <background_color>75%</background_color>
+      <background_color>button-row-color</background_color>
     </include>
   </factory>
 
