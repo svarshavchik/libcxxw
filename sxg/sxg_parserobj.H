@@ -447,6 +447,8 @@ class LIBCXX_HIDDEN sxg_parserObj : virtual public obj {
 
 	points_t points;
 
+	class render_execute_info;
+
 	//! What needs to be known to execute SXG.
 
 	class execution_info {

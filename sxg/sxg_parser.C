@@ -27,6 +27,15 @@
 
 LIBCXXW_NAMESPACE_START
 
+#ifdef SXG_DEBUG
+static const sxg_parserObj *sxg_debug;
+
+#define SXG_DEBUG_DUMP(o) \
+	do { if (sxg_debug == this) std::cout << o << std::endl; } while (0)
+#else
+#define SXG_DEBUG_DUMP(o) do { } while (0)
+#endif
+
 sxg_parserObj::sxg_operationObj::sxg_operationObj()=default;
 
 sxg_parserObj::sxg_operationObj::~sxg_operationObj()=default;
@@ -367,7 +376,7 @@ const_picture sxg_parserObj::execution_info::source_picture(const std::string &n
 }
 
 sxg_parserObj::scale_info
-sxg_parserObj::execution_info::source_scale(const std::string &n)	const
+sxg_parserObj::execution_info::source_scale(const std::string &n) const
 {
 	auto iter=sxg_parser_ref.pictures.find(n);
 
@@ -418,7 +427,20 @@ sxg_parserObj::execution_info::source_scale(const std::string &n)	const
 		break;
 	}
 
-	return scale_info(size_type_t::fixed, 1, 1, 1, 1);
+	// For solid_color pictures use the main destination picture's
+	// scaling factor. render() calls get_color() using the metrics of
+	// the passed-in drawable, which are used to calculate these scaling
+	// factors. By using the same scaling factors for a solid_color
+	// picture, if this picture is a gradient we will end up scaling the
+	// gradient based on "main"'s size.
+	//
+	// see render().
+
+	return scale_info(size_type_t::scaled,
+			  scale_w,
+			  scale_h,
+			  pixels_per_mm_w,
+			  pixels_per_mm_h);
 }
 
 const sxg_parserObj::execution_info::pixmap_picture_t &
@@ -1934,6 +1956,14 @@ sxg_parserObj::parse_gc_arcs(const theme_parser_lock &lock)
 				 gc_arc.x=r.x;
 				 gc_arc.y=r.y;
 
+				 SXG_DEBUG_DUMP("Arc "
+						<< r.x
+						<< ", "
+						<< r.y
+						<< ": "
+						<< r.width
+						<< "x" << r.height);
+
 				 /*
 				   The X protocol appears to specify the
 				   bounding rectangle inclusively. An arc
@@ -2241,6 +2271,13 @@ sxg_parserObj::parse_render_composite(const theme_parser_lock &render_element)
 				 dst.y = coord_t::truncate
 					 (dst.y - dst.height/2);
 
+			 SXG_DEBUG_DUMP("Composite " << src_picture
+					<< ": dest="
+					<< dst
+					<< ", source: "
+					<< src_scaled_x << ", "
+					<< src_scaled_y);
+
 			 if (!mask_picture.empty())
 			 {
 				 auto mask=info.info
@@ -2441,6 +2478,13 @@ sxg_parserObj::parse_render_fill(const theme_parser_lock &render_element)
 		 (const render_execute_info &info)
 		 {
 			 rectangle r;
+
+			 SXG_DEBUG_DUMP("Get color "
+					<< info.info.drawable_width
+					<< "x"
+					<< info.info.drawable_height
+					<< " (1): "
+					<< color.theme_color);
 
 			 auto p=color.get_color(info.info.drawable_width,
 						info.info.drawable_height,
@@ -2914,6 +2958,9 @@ void sxg_parserObj::render(const picture &p,
 	info.pictures.insert({"main",
 			{p, d, size_type_t::scaled}});
 
+	SXG_DEBUG_DUMP( std::endl << "main size is " << d->get_width()
+			<< "x" << d->get_height() );
+
 	// Create all pixmaps
 
 	for (const auto &pixmap:pixmaps)
@@ -2927,8 +2974,10 @@ void sxg_parserObj::render(const picture &p,
 				 info.pixels_per_mm_w,
 				 info.pixels_per_mm_h);
 
-		auto p_width=dim_t::truncate(scale.x_pixel(width));
-		auto p_height=dim_t::truncate(scale.y_pixel(height));
+		auto p_width=dim_t::truncate(scale.x_pixel(width,
+							   scale.beginning));
+		auto p_height=dim_t::truncate(scale.y_pixel(height,
+							    scale.beginning));
 
 		auto new_pixmap=
 			d->create_pixmap(p_width, p_height,
@@ -2961,6 +3010,12 @@ void sxg_parserObj::render(const picture &p,
 					 (pixmap.first,
 					  new_pixmap->create_gc(), p)));
 
+		SXG_DEBUG_DUMP( pixmap.first
+				<< " size is "
+				<< p_width
+				<< "x"
+				<< p_height );
+
 		info.pictures.insert({pixmap.first,
 				{p, new_pixmap, pixmap.second.size}});
 	}
@@ -2973,20 +3028,36 @@ void sxg_parserObj::render(const picture &p,
 
 		case picture_type_t::text:
 			{
-				auto tp=create_text_picture(picture_info.second,
+				auto [pix, pic]=
+					create_text_picture(picture_info.second,
 							    d);
+
+				SXG_DEBUG_DUMP( picture_info.first
+						<< " size is "
+						<< pix->get_width()
+						<< "x"
+						<< pix->get_height() );
 
 				info.pictures.insert
 					({picture_info.first,
-						{std::get<picture>(tp),
-								std::get
-								<pixmap>(tp),
-								picture_info
-								.second
-								.size}});
+						{pic, pix, picture_info
+								.second.size}});
 			}
 			break;
 		case picture_type_t::solid_color:
+			SXG_DEBUG_DUMP("Get color "
+				       << d->get_width()
+				       << "x"
+				       << d->get_height()
+				       << " (2): "
+				       << picture_info.first);
+
+			// pass in the drawable's width and height to
+			// get_color(). If the color is a gradient, this
+			// scales the gradient to "main"'s size, and
+			// source_picture() uses "main"'s scaling factors
+			//
+			// see source_scale().
 			info.const_pictures
 				.insert({picture_info.first,
 							picture_info.second
@@ -3017,6 +3088,12 @@ void sxg_parserObj::render(const picture &p,
 
 			new_pic->fill_rectangle({0, 0, p_w, p_h},
 						rgb(0, 0, 0, 0));
+
+			SXG_DEBUG_DUMP( picture_info.first
+					<< " size is "
+					<< p_w
+					<< "x"
+					<< p_h );
 
 			info.pictures
 				.insert({picture_info.first,
@@ -3074,6 +3151,15 @@ sxg_parserObj::sxg_parserObj(const std::string &filename,
 	SXG_PARSER_CONSTRUCTOR_TEST();
 #endif
 	auto config=xml::doc::create(filename, "nonet xinclude");
+
+#ifdef SXG_DEBUG
+	auto sl=filename.rfind('/');
+
+	const char *env=getenv("SXG_DEBUG_FILENAME");
+
+	if (env && filename.substr(sl+1) == env)
+		sxg_debug=this;
+#endif
 
 	auto root=theme_parser_lock{config->readlock(), locale::create("C")};
 
