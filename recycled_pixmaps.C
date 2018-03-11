@@ -32,7 +32,7 @@ recycled_pixmapsObj::recycled_pixmapsObj()
 		  theme_background_color_cache_t::create()},
 	  nontheme_background_color_cache{
 		  nontheme_background_color_cache_t::create()},
-	  linear_gradient_cache{linear_gradient_cache_t::create()}
+	  gradient_cache{gradient_cache_t::create()}
 {
 }
 
@@ -91,7 +91,7 @@ namespace {
 // created from, which may be a theme, or a nontheme color, see below.
 // Other background_color methods get forwarded to the base_color.
 
-class linear_gradient_colorObj : public background_colorObj {
+class LIBCXX_HIDDEN gradient_colorObj : public background_colorObj {
 
 	//! The gradient's picture.
 
@@ -103,15 +103,15 @@ class linear_gradient_colorObj : public background_colorObj {
 public:
 
 	//! Constructor
-	linear_gradient_colorObj(const const_picture &gradient_color,
-				 const background_color &base_color)
+	gradient_colorObj(const const_picture &gradient_color,
+			  const background_color &base_color)
 		: gradient_color{gradient_color},
 		  base_color{base_color}
 	{
 	}
 
 	//! Destructor
-	~linear_gradient_colorObj()=default;
+	~gradient_colorObj()=default;
 
 	bool is_scrollable_background() override
 	{
@@ -300,8 +300,8 @@ public:
 			(g, x, y, width, height, render_repeat::pad);
 
 		return screen_impl
-			->create_linear_gradient_background_color(ref(this),
-								  picture);
+			->create_gradient_background_color(ref(this),
+							   picture);
 	}
 };
 
@@ -424,15 +424,14 @@ background_color screenObj::implObj
 }
 
 background_color screenObj::implObj
-::create_linear_gradient_background_color(const background_color &base_color,
-					  const const_picture &p)
+::create_gradient_background_color(const background_color &base_color,
+				   const const_picture &p)
 {
-	return recycled_pixmaps_cache->linear_gradient_cache->find_or_create
+	return recycled_pixmaps_cache->gradient_cache->find_or_create
 		({base_color, p},
 		 [&, this]
 		 {
-			 return ref<linear_gradient_colorObj>
-				 ::create(p, base_color);
+			 return ref<gradient_colorObj>::create(p, base_color);
 		 });
 }
 
@@ -453,15 +452,15 @@ size_t recycled_pixmapsObj
 }
 
 
-bool recycled_pixmapsObj::linear_gradient_key
-::operator==(const linear_gradient_key &o) const noexcept
+bool recycled_pixmapsObj::gradient_key
+::operator==(const gradient_key &o) const noexcept
 {
 	return base_background == o.base_background &&
 		gradient_picture == o.gradient_picture;
 }
 
-size_t recycled_pixmapsObj::linear_gradient_key_hash
-::operator()(const linear_gradient_key &k) const noexcept
+size_t recycled_pixmapsObj::gradient_key_hash
+::operator()(const gradient_key &k) const noexcept
 {
 	return std::hash<background_color>::operator()(k.base_background) +
 		std::hash<const_picture>::operator()(k.gradient_picture);

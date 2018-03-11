@@ -1799,14 +1799,8 @@ class LIBCXX_HIDDEN sxg_parserObj::sxg_point {
 	void get_fixedprec(const scale_info &scale,
 			   picture::base::point &fp) const
 	{
-		auto sx=scale.x_pixel(x);
-		auto sy=scale.y_pixel(y);
-
-		fp.x.fraction=0;
-		fp.y.fraction=0;
-
-		fp.x.integer=coord_t::truncate(sx);
-		fp.y.integer=coord_t::truncate(sy);
+		fp.x=scale.x_pixel(x);
+		fp.y=scale.y_pixel(y);
 	}
 };
 

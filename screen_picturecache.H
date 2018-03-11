@@ -8,7 +8,8 @@
 #include "screen_picturecachefwd.H"
 #include "x/w/rgb.H"
 #include "x/w/rgb_hash.H"
-#include "x/w/picturefwd.H"
+#include "x/w/picture.H"
+#include "x/w/picture_hash.H"
 #include "x/w/types.H"
 #include <x/weakunordered_multimapfwd.H>
 #include <x/obj.H>
@@ -32,10 +33,10 @@ class LIBCXX_HIDDEN screen_picturecacheObj : virtual public obj {
 
 	struct linear_gradient_cache_key_t {
 		rgb_gradient g;
-		coord_t x1;
-		coord_t y1;
-		coord_t x2;
-		coord_t y2;
+		picture::base::fixedprec x1;
+		picture::base::fixedprec y1;
+		picture::base::fixedprec x2;
+		picture::base::fixedprec y2;
 		render_repeat repeat;
 
 		bool operator==(const linear_gradient_cache_key_t &)
@@ -45,7 +46,8 @@ class LIBCXX_HIDDEN screen_picturecacheObj : virtual public obj {
 	//! Compute a hash key
 
 	struct linear_gradient_cache_key_t_hash
-		: public std::hash<rgb_gradient> {
+		: public std::hash<rgb_gradient>,
+		  public std::hash<picture::base::fixedprec> {
 		size_t operator()(const linear_gradient_cache_key_t &)
 			const noexcept;
 	};

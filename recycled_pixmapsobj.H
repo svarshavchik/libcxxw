@@ -75,38 +75,38 @@ public:
 
 	nontheme_background_color_cache_t nontheme_background_color_cache;
 
-	//! Key used for the linear gradient cache.
+	//! Key used for the gradient cache.
 
-	struct linear_gradient_key {
+	struct gradient_key {
 
 		background_color base_background;
 		const_picture gradient_picture;
 
-		bool operator==(const linear_gradient_key &)
+		bool operator==(const gradient_key &)
 			const noexcept;
 	};
 
-	//! A hashed for a \c linear_gradient_key
+	//! A hashed for a \c gradient_key
 
-	struct linear_gradient_key_hash
+	struct gradient_key_hash
 		: public std::hash<background_color>,
 		std::hash<const_picture> {
 
-		//! Hash a \c linear_gradient_key
+		//! Hash a \c gradient_key
 
-		size_t operator()(const linear_gradient_key &) const noexcept;
+		size_t operator()(const gradient_key &) const noexcept;
 	};
 
 	//! Container for the scratch buffer cache.
 
-	typedef weakunordered_multimap<linear_gradient_key,
+	typedef weakunordered_multimap<gradient_key,
 				       background_colorObj,
-				       linear_gradient_key_hash>
-		linear_gradient_cache_t;
+				       gradient_key_hash>
+		gradient_cache_t;
 
 	//! The cache of scratch buffers.
 
-	linear_gradient_cache_t linear_gradient_cache;
+	gradient_cache_t gradient_cache;
 
 	//! Constructor
 

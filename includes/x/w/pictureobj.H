@@ -1,5 +1,5 @@
 /*
-** Copyright 2017 Double Precision, Inc.
+** Copyright 2017-2018 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 #ifndef x_w_pictureobj_h
@@ -13,9 +13,13 @@
 #include <x/w/rgbfwd.H>
 #include <x/w/types.H>
 #include <x/obj.H>
+#include <x/number.H>
 
 #include <vector>
 #include <set>
+#include <cmath>
+#include <limits>
+#include <type_traits>
 
 LIBCXXW_NAMESPACE_START
 
@@ -126,47 +130,89 @@ public:
 	//! Clear the clip area completely.
 	void clear_clip();
 
-	//! Fixed precision
+	//! A fixed precision value.
+
+	//! Wrapped for the FIXEDPREC type.
 
 	struct fixedprec {
 
-		//! Integer portion of the value
-		int16_t integer;
+		//! The value.
+		typedef int32_t value_t;
 
-		//! Fractional portion of the value
-		uint16_t fraction;
+		value_t value;
 
 		//! Default constructor
-		fixedprec() : integer(0), fraction(0) {}
+		inline constexpr fixedprec() noexcept;
 
 		//! Constructor
-		fixedprec(int16_t integer, uint16_t fraction)
-			: integer(integer),
-			  fraction(fraction)
-		{
-		}
+		inline constexpr fixedprec(int16_t integer,
+					   uint16_t fraction) noexcept;
 
 		//! Constructor
-		inline fixedprec(const coord_t &c)
-			: integer{xcoord_t::truncate(c)}, fraction{0}
-		{
-		}
+		inline constexpr fixedprec(const coord_t &c) noexcept;
+
+		struct double_constructor_helper;
+		struct intprec_constructor_helper;
+
+		//! Use SFINAE to select a constructor helper
+
+		template<typename T,
+			 bool T_is_int16=(std::numeric_limits<T>::is_integer &&
+					  std::numeric_limits<T>::max() <=
+					  std::numeric_limits<int16_t>::max()),
+			bool T_is_double=(!std::numeric_limits<T>::is_exact &&
+					  std::numeric_limits<T>::digits10 <=
+					  std::numeric_limits<double>::digits10)
+			> struct constructor_helper;
+
+		//! Single argument constructor
+
+		//! Accepts either an int16_t or a double value
+
+		template<typename T,
+			 typename=std::enable_if_t<std::numeric_limits<T>
+						   ::is_specialized>>
+		inline constexpr fixedprec(T int16_or_double_value) noexcept;
+
+		//! Constructor
+
+		//! Accept only an int16_t parameter, or smaller.
+
+		inline constexpr fixedprec(const intprec_constructor_helper &v)
+		noexcept;
+
+		//! Constructor
+		inline constexpr fixedprec(const double_constructor_helper &v)
+		noexcept;
 
 		//! Comparison operator
-		int compare(const fixedprec &o) const
-		{
-			return integer < o.integer ? -1:
-				integer > o.integer ? 1:
-				fraction < o.fraction ? -1:
-				fraction > o.fraction ? 1:0;
-		}
+		inline constexpr int compare(const fixedprec &o) const;
+
+		//! Comparison operator
+		inline constexpr bool operator<(const fixedprec &o) const;
 
 		//! Comparison operator
 
-		bool operator<(const fixedprec &o) const
-		{
-			return compare(o) < 0;
-		}
+		inline constexpr bool operator<=(const fixedprec &o) const;
+
+		//! Comparison operator
+
+		inline constexpr bool operator>(const fixedprec &o) const;
+
+		//! Comparison operator
+
+		inline constexpr bool operator>=(const fixedprec &o) const;
+
+		//! Comparison operator
+		inline constexpr bool operator==(const fixedprec &o) const;
+
+		//! Comparison operator
+		inline constexpr bool operator!=(const fixedprec &o) const;
+
+		//! Borrow number.H to safely truncate a value
+
+		template<typename T>
+		static auto inline constexpr truncate(T &&v);
 	};
 
 	//! Fixed point
@@ -179,22 +225,15 @@ public:
 		fixedprec y;
 
 		//! Comparison operator
-		int compare(const point &o) const
-		{
-			int v=x.compare(o.x);
-
-			if (!v)
-				v=y.compare(o.y);
-
-			return v;
-		}
+		constexpr int compare(const point &o) const noexcept;
 
 		//! Comparison operator
 
-		bool operator<(const point &o) const
-		{
-			return compare(o) < 0;
-		}
+		constexpr bool operator<(const point &o) const noexcept;
+
+		//! Comparison operator
+
+		constexpr bool operator==(const point &o) const noexcept;
 	};
 
 	//! Triangle
@@ -211,24 +250,11 @@ public:
 
 		//! Comparison operator
 
-		int compare(const triangle &o) const
-		{
-			int v=p1.compare(o.p1);
-
-			if (!v) v=p2.compare(o.p2);
-
-			if (!v) v=p3.compare(o.p3);
-
-			return v;
-		}
+		constexpr int compare(const triangle &o) const;
 
 		//! Comparison operator
 
-		bool operator<(const triangle &o) const
-		{
-			return compare(o) < 0;
-		}
-
+		constexpr bool operator<(const triangle &o) const;
 	};
 
 	//! Fill rectangles

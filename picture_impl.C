@@ -19,16 +19,10 @@
 
 LIBCXXW_NAMESPACE_START
 
-inline static constexpr xcb_render_fixed_t
-to_fixed(const pictureObj::fixedprec &f)
-{
-	return (((xcb_render_fixed_t)f.integer << 16) | f.fraction);
-}
-
 inline static constexpr xcb_render_pointfix_t
 to_pointfix(const pictureObj::point &p)
 {
-	return { to_fixed(p.x), to_fixed(p.y) };
+	return { p.x.value, p.y.value };
 }
 
 inline static constexpr xcb_render_color_t to_color(const rgb &rgb)
@@ -390,13 +384,15 @@ static void
 do_gradient_normalize(const rgb_gradient &gradient,
 		      const function<normalized_gradient_callback_t> &callback)
 {
+	typedef pictureObj::fixedprec fixedprec;
+
 	auto n=gradient.size();
 
 	if (n == 0)
 	{
 		// First GIGO edge case:
 
-		xcb_render_fixed_t stops[2]={0, to_fixed({1,0})};
+		xcb_render_fixed_t stops[2]={0, fixedprec({1,0}).value};
 		xcb_render_color_t colors[2]={to_color({}), to_color({})};
 
 		callback(stops, colors, 2);
@@ -435,7 +431,7 @@ do_gradient_normalize(const rgb_gradient &gradient,
 
 	double one=gradients[n-1].first;
 
-	uint16_t last=0; // The previous fraction of the FIXEDPREC stop.
+	fixedprec last; // The previous fraction of the FIXEDPREC stop.
 
 	size_t j=0; // Output index into the stops+colors array.
 
@@ -446,9 +442,8 @@ do_gradient_normalize(const rgb_gradient &gradient,
 
 	for (i=0; i+1<n; ++i)
 	{
-		pictureObj::fixedprec
-			fp{0, (uint16_t)std::floor((gradients[i].first/one)
-						   * (uint16_t)-1)};
+		fixedprec fp{0, (uint16_t)std::floor((gradients[i].first/one)
+						     * (uint16_t)-1)};
 
 		if (i > 0)
 		{
@@ -466,29 +461,27 @@ do_gradient_normalize(const rgb_gradient &gradient,
 			// Note that we are not iterating until the last value,
 			// so we will always emit the 1 value, below.
 
-			if (last == (uint16_t)~0)
+			if (last == fixedprec{0, (uint16_t)~0})
 				continue;
 
-			if (fp.fraction <= last)
+			if (fp <= last)
 			{
-				fp.fraction=last;
-				++fp.fraction;
+				fp=last;
+				++fp.value;
 			}
 		}
 
 		// Make sure the FIXEDPREC fraction is monotonously increasing.
-		last=fp.fraction;
+		last=fp;
 
-		stops[j]=to_fixed(fp);
+		stops[j]=fp.value;
 		colors[j]=to_color(gradients[i].second);
 		++j;
 	}
 
 	// The last one is always at position 1.0
 
-	pictureObj::fixedprec v{1,0};
-
-	stops[j]=to_fixed(v);
+	stops[j]=fixedprec{1,0}.value;
 	colors[j]=to_color(gradients[i].second);
 	++j;
 
@@ -550,11 +543,13 @@ class LIBCXX_HIDDEN linearGradientPictureImplObj : public pictureObj::implObj {
 size_t screen_picturecacheObj::linear_gradient_cache_key_t_hash
 ::operator()(const linear_gradient_cache_key_t &k) const noexcept
 {
+	typedef std::hash<picture::base::fixedprec> fixedprec_hash;
+
 	return std::hash<rgb_gradient>::operator()(k.g)
-		+ coord_t::truncate(k.x1)
-		+ coord_t::truncate(k.x2)
-		+ coord_t::truncate(k.y1)
-		+ coord_t::truncate(k.y2)
+		+ fixedprec_hash::operator()(k.x1)
+		+ fixedprec_hash::operator()(k.x2)
+		+ fixedprec_hash::operator()(k.y1)
+		+ fixedprec_hash::operator()(k.y2)
 		+ static_cast<size_t>(k.repeat);
 }
 
@@ -576,35 +571,46 @@ const_picture screenObj::implObj
 	auto default_color=valid_gradient(lg.gradient);
 
 	// logical coordinate (1.0, 1.0) is the bottom-right
-	// pixel address, or (w-1, h-1).
+	// pixel address, expressed as fixedprec. If the given width or
+	// height is 0, that's an edge case, punt.
 
 	if (w == 0 || h == 0)
 	{
 		return create_solid_color_picture(default_color);
 	}
 
-	--w;
-	--h;
-	coord_t x1{coord_t::truncate(std::trunc(lg.x1 * dim_t::truncate(w)))};
-	coord_t x2{coord_t::truncate(std::trunc(lg.x2 * dim_t::truncate(w)))};
+	// If width and height is 5, for example we need to scale lg.[xy][12]
+	// from 0 to 4.9999... using the fixedprec type. So, we convert
+	// convert width and height to fixedprec type, then decrement the
+	// value, to get the bottom-right coordinate.
 
-	coord_t y1{coord_t::truncate(std::trunc(lg.y1 * dim_t::truncate(h)))};
-	coord_t y2{coord_t::truncate(std::trunc(lg.y2 * dim_t::truncate(h)))};
+	picture::base::fixedprec x1{xcoord_t::truncate(w)},
+		y1{xcoord_t::truncate(h)}, x2=x1, y2=y1;
 
-	x1=coord_t::truncate(x1+offset_x);
-	x2=coord_t::truncate(x2+offset_x);
-	y1=coord_t::truncate(y1+offset_y);
-	y2=coord_t::truncate(y2+offset_y);
+	--x1.value;
+	--y1.value;
+	--x2.value;
+	--y2.value;
+
+	// Now, we can scale each value by lg.[xy][12], add the offset, and
+	// truncate it.
+
+	picture::base::fixedprec offset_xfp{offset_x}, offset_yfp{offset_y};
+
+	x1.value=x1.truncate(x1.value * lg.x1 + offset_xfp.value);
+	x2.value=x2.truncate(x2.value * lg.x2 + offset_xfp.value);
+
+	y1.value=y1.truncate(y1.value * lg.y1 + offset_yfp.value);
+	y2.value=y2.truncate(y2.value * lg.y2 + offset_yfp.value);
 
 	return picturecache->linear_gradients->find_or_create
 		({lg.gradient, x1, y1, x2, y2, repeat},
 		 [&, this]
 		 {
 			 auto picture_impl=ref<linearGradientPictureImplObj>
-				 ::create
-				 (this->thread, lg.gradient,
-				  pictureObj::point{x1, y1},
-				  pictureObj::point{x2, y2});
+				 ::create(this->thread, lg.gradient,
+					  picture::base::point{x1, y1},
+					  picture::base::point{x2, y2});
 
 			 picture_impl->repeat(repeat);
 

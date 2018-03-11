@@ -70,7 +70,9 @@ public:
 
 //! A linear gradient for a display element's background color.
 
-//! Define a linear gradient from (x1, y1) to (x2, y2).
+//! Define a linear gradient from (x1, y1) to (x2, y2). Closely modeled on
+//! the RENDER extension's CreateLinearGradient request, because that's what
+//! it is.
 //!
 //! The x and y coordinates range between 0 and 1. (0, 0) is the display
 //! element's top left corner, (1, 1) is its bottom right corner.

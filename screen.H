@@ -226,8 +226,8 @@ class LIBCXX_HIDDEN screenObj::implObj
 						     dim_t h,
 						     render_repeat repeat);
 
-	//! Create a cached linear gradient background color
-	background_color create_linear_gradient_background_color
+	//! Create a cached gradient background color
+	background_color create_gradient_background_color
 		(const background_color &base_color,
 		 const const_picture &p);
 
