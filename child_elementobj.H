@@ -89,6 +89,14 @@ class LIBCXX_HIDDEN child_elementObj
 	void set_background_color(IN_THREAD_ONLY,
 				  const background_color &) override;
 
+	//! Theme has changed.
+
+	//! If this child element has its own background color, if it was
+	//! changed by the theme we pretend that set_background_color()
+	//! has happened.
+
+	void theme_updated(IN_THREAD_ONLY, const defaulttheme &th) override;
+
 	//! Override schedule_hover_action
 
 	//! This gets invoked for the element under the pointer. Propagate

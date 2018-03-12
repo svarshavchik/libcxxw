@@ -926,6 +926,10 @@ void elementObj::implObj::background_color_changed(IN_THREAD_ONLY)
 void elementObj::implObj::theme_updated(IN_THREAD_ONLY,
 					const defaulttheme &new_theme)
 {
+	invalidate_cached_draw_info(IN_THREAD,
+				    draw_info_invalidation_reason
+				    ::recursive_invalidation);
+
 	if (data(IN_THREAD).inherited_visibility)
 		schedule_redraw(IN_THREAD);
 

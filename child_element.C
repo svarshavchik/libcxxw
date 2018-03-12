@@ -190,16 +190,53 @@ background_color child_elementObj::current_background_color(IN_THREAD_ONLY)
 void child_elementObj::set_background_color(IN_THREAD_ONLY,
 					    const background_color &bgcolor)
 {
-	if (is_mine_background_color &&
-	    background_color_element_implObj::get(IN_THREAD) == bgcolor)
-		return; // noop
+	// The background color may be a gradient that gets adjusted for
+	// the current display element's size.
+	//
+	// For this reason we check if the background color has changed,
+	// in the following manner, AFTER the update().
+
+	background_colorptr old_color;
+
+	if (is_mine_background_color)
+		old_color=background_color_element_implObj::get(IN_THREAD);
 
 	is_mine_background_color=true;
 	background_color_element<>::update(IN_THREAD, bgcolor);
+
+	if (background_color_element_implObj::get(IN_THREAD) == old_color)
+		return; // noop
+
+	// Ok, now the background color has changed (1/2).
 	background_color_changed(IN_THREAD);
 	child_container->child_background_color_changed(IN_THREAD,
 						  ref<elementObj::implObj>
 						  (this));
+}
+
+void child_elementObj::theme_updated(IN_THREAD_ONLY, const defaulttheme &th)
+{
+	if (!is_mine_background_color)
+	{
+		superclass_t::theme_updated(IN_THREAD, th);
+		return;
+	}
+
+	// Check if the theme changes our background color.
+
+	auto b=background_color_element_implObj::get(IN_THREAD);
+
+	superclass_t::theme_updated(IN_THREAD, th);
+
+	if (b == background_color_element_implObj::get(IN_THREAD))
+		return;
+
+	// Ok, now the background color has changed (2/2).
+
+	background_color_changed(IN_THREAD);
+	child_container->child_background_color_changed
+		(IN_THREAD,
+		 ref<elementObj::implObj>(this));
 }
 
 void child_elementObj::request_visibility(IN_THREAD_ONLY, bool flag)

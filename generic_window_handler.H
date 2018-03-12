@@ -78,14 +78,15 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 	//! Alias.
 
-	typedef background_color_elementObj<icon_images_set_elementObj<
-		cursor_pointer_elementObj<
-						    container_elementObj
-						    <elementObj::implObj>>,
-						    disabled_mask_tag>,
-					    background_color_tag,
-					    shaded_color_tag
-					    > element_superclass_t;
+	typedef background_color_elementObj<
+		icon_images_set_elementObj<
+			cursor_pointer_elementObj<
+				container_elementObj
+				<elementObj::implObj>>,
+			disabled_mask_tag>,
+		background_color_tag,
+		shaded_color_tag
+		> superclass_t;
 
 	//! Current event mask.
 	xcb_event_mask_t current_events_thread_only;
@@ -463,6 +464,9 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 	//! Theme update notification.
 	void theme_updated_event(IN_THREAD_ONLY) override;
+
+	//! Override theme_updated
+	void theme_updated(IN_THREAD_ONLY, const defaulttheme &) override;
 
 	//! Key press event
 	void key_press_event(IN_THREAD_ONLY,

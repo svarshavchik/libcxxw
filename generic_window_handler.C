@@ -146,7 +146,7 @@ generic_windowObj::handlerObj
 	// And now, the element that represents the window itself, and
 	// all the theme-based resources: background colors, icons, and
 	// masks
-	element_superclass_t{
+	superclass_t{
 	default_background_color(params.window_handler_params.screenref,
 				 params.background_color),
 		default_background_color(params.window_handler_params.screenref,
@@ -258,7 +258,16 @@ void generic_windowObj::handlerObj
 ::set_background_color(IN_THREAD_ONLY,
 		       const background_color &c)
 {
+	auto b=current_background_color(IN_THREAD);
+
 	background_color_element<background_color_tag>::update(IN_THREAD, c);
+
+	// We must check AFTER the update, because this background color
+	// may be a gradient that's adjusted according to our size.
+	if (current_background_color(IN_THREAD) == b)
+		return;
+
+	// Background color changed (1/2).
 	background_color_changed(IN_THREAD);
 }
 
@@ -531,6 +540,20 @@ void generic_windowObj::handlerObj::theme_updated_event(IN_THREAD_ONLY)
 
 	if (is_different_theme)
 		theme_updated(IN_THREAD, new_theme);
+}
+
+void generic_windowObj::handlerObj::theme_updated(IN_THREAD_ONLY,
+						  const defaulttheme &th)
+{
+	auto b=current_background_color(IN_THREAD);
+
+	superclass_t::theme_updated(IN_THREAD, th);
+
+	if (b == current_background_color(IN_THREAD))
+		return;
+
+	// Background color changed (2/2).
+	background_color_changed(IN_THREAD);
 }
 
 // Shade mcguffin.
