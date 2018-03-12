@@ -7,7 +7,7 @@
   <widthmm>4</widthmm>
   <heightmm>4</heightmm>
 
-  <widthfactor>6</widthfactor>
+  <widthfactor>1</widthfactor>
   <heightfactor>6</heightfactor>
 
   <xi:include href="scrollbar-knob-colors2.inc.sxg" xpointer="xpointer(/sxg/*)" />

@@ -780,10 +780,10 @@ bool scrollbarObj::implObj::process_button_event(IN_THREAD_ONLY,
 
 		scroll_low_pressed=be.press;
 
-		if (activate_for(be) && to_low(IN_THREAD, be))
-			return true;
-
 		draw_scroll_low(IN_THREAD);
+
+		if (activate_for(be))
+			to_low(IN_THREAD, be);
 	}
 	else if (what.hi)
 	{
@@ -792,10 +792,9 @@ bool scrollbarObj::implObj::process_button_event(IN_THREAD_ONLY,
 
 		scroll_high_pressed=be.press;
 
-		if (activate_for(be) && to_high(IN_THREAD, be))
-			return true;
-
 		draw_scroll_high(IN_THREAD);
+		if (activate_for(be))
+			to_high(IN_THREAD, be);
 	}
 	else
 	{
