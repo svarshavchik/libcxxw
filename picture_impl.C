@@ -726,12 +726,17 @@ const_picture screenObj::implObj
 		inner_radius{g.inner_radius *
 			dim_t::truncate(g.inner_radius_axis == g.horizontal ||
 					(g.inner_radius_axis == g.shortest &&
-					 w<h) ? w:h)};
+					 w<h) ||
+					(g.inner_radius_axis == g.longest &&
+					 w>h)
+					? w:h)};
 	picture::base::fixedprec
 		outer_radius{g.outer_radius *
 			dim_t::truncate(g.outer_radius_axis == g.horizontal ||
 					(g.outer_radius_axis == g.shortest &&
-					 w<h) ? w:h)};
+					 w<h) ||
+					(g.outer_radius_axis == g.longest &&
+					 w>h) ? w:h)};
 
 	if (inner_radius.value < 0)
 		inner_radius.value=0;
@@ -748,8 +753,18 @@ const_picture screenObj::implObj
 	double delta_x=inner_center_x.distance(outer_center_x);
 	double delta_y=inner_center_y.distance(outer_center_y);
 
-	picture::base::fixedprec
-		distance{std::sqrt(delta_x * delta_x + delta_y * delta_y)};
+	// delta_[xy] are already in fixedprec precision.
+
+	// Therefore, the result of the pythagorean theorem goes directly
+	// into distance.value.
+	//
+	// Round off using trunc().
+
+	picture::base::fixedprec distance;
+
+	distance.value=number<decltype(distance.value), void>
+		::truncate(std::trunc
+			   (std::sqrt(delta_x * delta_x + delta_y * delta_y)));
 
 	// We want to overestimate the distance, so bump it by 1, to account
 	// for rounding off.

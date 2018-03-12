@@ -740,22 +740,22 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
   <color id="book_tab_inactive_color" type="linear_gradient">
     <gradient>
       <value>0</value>
-      <color>30%</color>
+      <color>50%</color>
     </gradient>
     <gradient>
       <value>1</value>
-      <color>50%</color>
+      <color>70%</color>
     </gradient>
   </color>
 
   <color id="book_tab_active_color" type="linear_gradient">
     <gradient>
       <value>0</value>
-      <color>50%</color>
+      <color>70%</color>
     </gradient>
     <gradient>
       <value>1</value>
-      <color>70%</color>
+      <color>90%</color>
     </gradient>
   </color>
 
@@ -766,7 +766,7 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
     </gradient>
     <gradient>
       <value>1</value>
-      <color>80%</color>
+      <color>100%</color>
     </gradient>
   </color>
 

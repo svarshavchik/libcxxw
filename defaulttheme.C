@@ -913,6 +913,9 @@ static std::string lowercase_single_value(const theme_parser_lock &lock,
 					  const char *element,
 					  const char *xpath);
 
+static bool single_value_exists(const theme_parser_lock &lock,
+				const char *element);
+
 static inline bool scale_theme_color(theme_parser_lock &lock,
 				     const std::string &id,
 				     const std::string &scale,
@@ -930,7 +933,7 @@ static inline bool scale_theme_color(theme_parser_lock &lock,
 					    "heightmm"};
 
 	static const double minvalue[]={0,0,0,0,0,0,-999,-999};
-	static const double maxvalue[]={1,1,1,1,1,1,999,999};
+	static const double maxvalue[]={1,1,1,1,999,999,999,999};
 
 	static double radial_gradient::* const fields[]={
 		&radial_gradient::inner_center_x,
@@ -988,6 +991,9 @@ static inline bool scale_theme_color(theme_parser_lock &lock,
 
 	for (size_t i=0; i<2; i++)
 	{
+		if (!single_value_exists(lock, raxises[i]))
+			continue;
+
 		auto s=lowercase_single_value(lock, raxises[i], "color");
 
 		if (s.empty())
@@ -1753,7 +1759,7 @@ static bool single_value_exists(const theme_parser_lock &lock,
 
 	auto xpath=v->get_xpath(element);
 
-	return xpath->count() == 1;
+	return xpath->count() > 0;
 }
 
 template<typename to_value_t>
