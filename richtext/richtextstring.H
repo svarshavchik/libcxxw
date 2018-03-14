@@ -195,15 +195,8 @@ class LIBCXX_HIDDEN richtextstring {
 	//! the first vector always has index #0.
 	//! The freetypefont remains in effect until the next element's index,
 	//! or the end of the string.
-	//!
-	//! If password_char is non-zero, the fonts are resolved as if every
-	//! character in the string is password_char.
-	//!
-	//! It is expected that all calls to resolve_fonts(), compute_fonts(),
-	//! will pass the same password_char.
 
-	const resolved_fonts_t &resolve_fonts(IN_THREAD_ONLY,
-					      char32_t password_char);
+	const resolved_fonts_t &resolve_fonts(IN_THREAD_ONLY);
 
 	//! Calculate the width and the kerning of each character.
 
@@ -218,19 +211,12 @@ class LIBCXX_HIDDEN richtextstring {
 	//!
 	//! Characters that cannot be represented get replaced by
 	//! unprintable_char.
-	//!
-	//! If password_char is non-zero, the fonts are resolved as if every
-	//! character in the string is password_char.
-	//!
-	//! It is expected that all calls to resolve_fonts(), compute_fonts(),
-	//! will pass the same password_char.
 
 	void compute_width(IN_THREAD_ONLY,
 			   richtextstring *previous_string,
 			   char32_t unprintable_char,
 			   std::vector<dim_t> &widths,
-			   std::vector<int16_t> &kernings,
-			   char32_t password_char);
+			   std::vector<int16_t> &kernings);
 
 	//! Update existing widths and kernings.
 
@@ -248,7 +234,6 @@ class LIBCXX_HIDDEN richtextstring {
 			   char32_t unprintable_char,
 			   std::vector<dim_t> &widths,
 			   std::vector<int16_t> &kernings,
-			   char32_t password_char,
 			   size_t skip,
 			   size_t count);
 

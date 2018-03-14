@@ -40,8 +40,26 @@ struct input_field_config {
 
 	//! Whether clipboards should be updated.
 
-	//! This is turned off by editable combo-boxes.
+	//! This is turned off by editable combo-boxes and password fields.
 	bool update_clipboards=true;
+
+	//! Whether this is a password field
+
+	//! Setting this to non-zero visually replaces all characters with
+	//! the given character.
+
+	char32_t password_char=0;
+
+	//! Set the typical settings for a password field.
+
+	void set_password(char32_t c='*')
+	{
+		autoselect=true;
+		autodeselect=true;
+		update_clipboards=false;
+		password_char=c;
+		alignment=halign::center;
+	}
 
 	//! When to show the vertical scrollbar
 

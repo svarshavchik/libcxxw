@@ -36,36 +36,70 @@
 #include <courier-unicode.h>
 #include <chrono>
 #include <iterator>
+#include <algorithm>
 
 LIBCXXW_NAMESPACE_START
 
-static inline richtextmeta create_default_meta(const ref<containerObj::implObj>
-&container)
+static inline richtextmeta
+create_default_meta(const ref<containerObj::implObj> &container,
+		    const input_field_config &config)
 {
 	auto &element=container->container_element_impl();
 
 	auto bg_color=element.create_background_color
 		("textedit_foreground_color");
-	auto font=element.create_theme_font("textedit");
+	auto font=element.create_theme_font(config.password_char
+					    ? "password":"textedit");
 
 	return {bg_color, font};
 }
 
-static inline richtextstring
-create_initial_string(const ref<containerObj::implObj> &container,
-		      const richtextmeta &default_meta,
-		      const text_param &text)
+editorObj::implObj::init_args
+::init_args(const ref<editor_peephole_implObj> &parent_peephole,
+	    const text_param &text,
+	    const input_field_config &config)
+	: parent_peephole{parent_peephole},
+	  text{text},
+	  config{config},
+	  default_meta{create_default_meta(parent_peephole, config)}
 {
-	auto &element=container->container_element_impl();
+}
 
-	text_param cpy=text;
+editorObj::implObj::init_args::~init_args()=default;
+
+static inline richtextstring
+create_initial_string(editorObj::implObj::init_args &args,
+		      richtext_password_info &password_info)
+{
+	auto &element=args.parent_peephole->container_element_impl();
+
+	text_param cpy=args.text;
 
 	cpy(" ");
 
-	auto string=element.create_richtextstring(default_meta, cpy);
+	auto string=element.create_richtextstring(args.default_meta, cpy);
 
 	if (string.get_meta().size() > 1)
 		throw EXCEPTION(_("Input text cannot contain embedded formatting."));
+
+	// We get called from editorObj::implObj's constructor.
+	// password_info is the superclass, which is already fully
+	// constructed.
+
+	if (password_info.password_char != 0)
+	{
+		// Save the real string here, and replace everything except
+		// the appended space with the password_char
+
+		password_info.real_string=string;
+
+		auto b=cpy.string.begin();
+		auto e=cpy.string.end();
+
+		std::fill(b, --e, password_info.password_char);
+
+		string=element.create_richtextstring(args.default_meta, cpy);
+	}
 
 	return string;
 }
@@ -116,7 +150,7 @@ struct LIBCXX_HIDDEN editorObj::implObj::moving_cursor {
 		: IN_THREAD(IN_THREAD), me(me), old_cursor(me.cursor->clone()),
 		moved{moved}
 	{
-		selection_cursor_t::lock cursor_lock{me};
+		selection_cursor_t::lock cursor_lock{IN_THREAD, me};
 
 		// Make sure to turn off the blink, before
 		// starting a selection.
@@ -190,8 +224,7 @@ public:
 	THREAD_DATA_ONLY(valid_flag);
 
 	selectionObj(xcb_timestamp_t timestamp, const ref<implObj> &me,
-		     const richtextiterator &a,
-		     const richtextiterator &b);
+		     const richtextiterator &other);
 
 	~selectionObj()=default;
 
@@ -207,65 +240,64 @@ public:
 
 ////////////////////////////////////////////////////////////////////////////
 
-editorObj::implObj::selection_cursor_t::lock::lock(implObj &impl)
+editorObj::implObj::selection_cursor_t::const_lock
+::const_lock(implObj &impl)
 	: internal_lock{impl.cursor->my_richtext->impl},
 	  cursor{impl.selection_cursor.cursor}
 {
+}
+
+editorObj::implObj::selection_cursor_t::const_lock::~const_lock()=default;
+
+std::optional<size_t> editorObj::implObj::selection_cursor_t::const_lock
+::cursor_pos() const
+{
+	if (!cursor) return std::nullopt;
+
+	return cursor->pos();
+}
+
+editorObj::implObj::selection_cursor_t::lock::lock(IN_THREAD_ONLY,
+						   implObj &impl,
+						   bool blinking_or_clearing)
+	: const_lock{impl}
+{
+	if (!blinking_or_clearing)
+		impl.clear_password_peek(IN_THREAD);
 }
 
 editorObj::implObj::selection_cursor_t::lock::~lock()=default;
 
 ////////////////////////////////////////////////////////////////////////////
 
-editorObj::implObj::implObj(const ref<editor_peephole_implObj> &parent_peephole,
-			    const text_param &text,
-			    const input_field_config &config)
-	: implObj(parent_peephole,
-		  text,
-		  config,
-		  create_default_meta(parent_peephole))
+editorObj::implObj::implObj(init_args &args)
+	: richtext_password_info{args.config},
+	  superclass_t{args.config.background_color,	// Background colors
+			  args.config.disabled_background_color,
+
+			  // Invisible pointer cursor
+			  args.parent_peephole->container_element_impl()
+			  .get_window_handler()
+			  .create_icon({"cursor-invisible"})->create_cursor(),
+			  // Capture the string's font.
+			  args.default_meta.getfont(),
+			  args.parent_peephole, args.config.alignment, 0,
+			  create_initial_string(args, *this),
+			  args.default_meta,
+			  false,
+			  "textedit@libcxx.com",
+
+			  // Initial background_color
+			  args.config.background_color},
+	  cursor{this->text->end()},
+	  on_change_thread_only{ [](const auto &) {} },
+	  on_autocomplete_thread_only{[](const auto &) { return false; }},
+	  parent_peephole{args.parent_peephole},
+	  config{args.config}
 {
 	// The first input field in a window gets focus when its shown.
 
 	autofocus=true;
-}
-
-editorObj::implObj::implObj(const ref<editor_peephole_implObj> &parent_peephole,
-			    const text_param &text,
-			    const input_field_config &config,
-			    const richtextmeta &default_meta)
-	: implObj(parent_peephole, config, default_meta,
-		  create_initial_string(parent_peephole, default_meta, text))
-{
-}
-
-editorObj::implObj::implObj(const ref<editor_peephole_implObj> &parent_peephole,
-			    const input_field_config &config,
-			    const richtextmeta &default_meta,
-			    richtextstring &&string)
-	: superclass_t(// Background colors
-		       config.background_color,
-		       config.disabled_background_color,
-
-		       // Invisible pointer cursor
-		       parent_peephole->container_element_impl().get_window_handler()
-		       .create_icon({"cursor-invisible"})->create_cursor(),
-		       // Capture the string's font.
-		       string.get_meta().at(0).second.getfont(),
-		       parent_peephole, config.alignment, 0,
-		       std::move(string),
-		       default_meta,
-		       false,
-		       "textedit@libcxx.com",
-
-		       // Initial background_color
-		       config.background_color),
-	  cursor(this->text->end()),
-	  on_change_thread_only( [](const auto &) {} ),
-	  on_autocomplete_thread_only([](const auto &) { return false; }),
-	  parent_peephole(parent_peephole),
-	  config(config)
-{
 
 #ifdef EDITOR_CONSTRUCTOR_DEBUG
 	EDITOR_CONSTRUCTOR_DEBUG();
@@ -480,7 +512,7 @@ void editorObj::implObj::blink(IN_THREAD_ONLY)
 void editorObj::implObj::blink(IN_THREAD_ONLY,
 			       const richtextiterator &cursor)
 {
-	selection_cursor_t::lock cursor_lock{*this};
+	selection_cursor_t::lock cursor_lock{IN_THREAD, *this, true};
 
 	// We actually blink the cursor only when we are not showing a
 	// selection.
@@ -606,7 +638,7 @@ bool editorObj::implObj::process_keypress(IN_THREAD_ONLY, const key_event &ke)
 	case XK_KP_Delete:
 		unblink(IN_THREAD);
 		{
-			selection_cursor_t::lock cursor_lock{*this};
+			selection_cursor_t::lock cursor_lock{IN_THREAD, *this};
 
 			size_t deleted=delete_char_or_selection(IN_THREAD, ke);
 			recalculate(IN_THREAD);
@@ -679,7 +711,7 @@ bool editorObj::implObj::process_keypress(IN_THREAD_ONLY, const key_event &ke)
 
 		deleted += (cursor->pos() == old->pos() ? 0:1);
 
-		cursor->remove(IN_THREAD, old);
+		remove_content(IN_THREAD, old);
 
 		recalculate(IN_THREAD);
 		draw_changes(IN_THREAD, del_info.cursor_lock,
@@ -688,6 +720,110 @@ bool editorObj::implObj::process_keypress(IN_THREAD_ONLY, const key_event &ke)
 		return true;
 	}
 	return false;
+}
+
+void editorObj::implObj::remove_content(IN_THREAD_ONLY,
+					const richtextiterator &other)
+{
+	if (password_char == 0)
+	{
+		cursor->remove(IN_THREAD, other);
+		return;
+	}
+
+	// Extra work for password fields.
+
+	auto a=cursor->pos();
+	auto b=other->pos();
+
+	if (a > b)
+		std::swap(a, b);
+
+	cursor->remove(IN_THREAD, other);
+	real_string.erase(a, b-a);
+}
+
+void editorObj::implObj::insert_content(IN_THREAD_ONLY,
+					const std::u32string_view &str)
+{
+	if (password_char == 0)
+	{
+		cursor->insert(IN_THREAD, str);
+		return;
+	}
+
+	// Extra work for password fields.
+
+	auto p=cursor->pos();
+
+	if (str.size() == 1 && cursor->end()->compare(cursor) == 0)
+	{
+		password_peeking=get_screen()->impl->thread->schedule_callback
+			(IN_THREAD,
+			 std::chrono::seconds{2},
+			 // Don't create a lambda that owns a strong ref to me.
+			 // Use a weak pointer.
+			 [me=make_weak_capture(ref(this))]
+			 (IN_THREAD_ONLY)
+			 {
+				 auto got=me.get();
+
+				 if (got)
+				 {
+					 auto & [me]=*got;
+					 me->clear_password_peek(IN_THREAD);
+				 }
+			 });
+		cursor->insert(IN_THREAD, str);
+	}
+	else
+	{
+		cursor->insert(IN_THREAD,
+			       std::u32string(str.size(), password_char));
+	}
+	real_string.insert(p, str);
+}
+
+void editorObj::implObj::clear_password_peek(IN_THREAD_ONLY)
+{
+	if (!password_peeking)
+		return;
+
+	selection_cursor_t::lock cursor_lock{IN_THREAD, *this, true};
+
+	password_peeking=nullptr;
+
+	auto p=cursor->clone();
+
+	p->prev(IN_THREAD);
+	p->insert(IN_THREAD, std::u32string(1, password_char));
+	p->remove(IN_THREAD, cursor);
+
+	text->redraw_whatsneeded(IN_THREAD, *this,
+				 {cursor_lock.cursor, cursor},
+				 get_draw_info(IN_THREAD));
+}
+
+richtextstring editorObj::implObj::get_content(const richtextiterator &other)
+{
+	return get_content(cursor, other);
+}
+
+richtextstring editorObj::implObj::get_content(const richtextiterator &a,
+					       const richtextiterator &b)
+{
+	if (password_char == 0)
+		return a->get(b);
+
+	// Look at the real_string, instead.
+
+	auto ap=a->pos();
+	auto bp=b->pos();
+
+	if (ap > bp)
+		std::swap(ap, bp);
+
+	return {real_string, ap, bp-ap};
 }
 
 bool editorObj::implObj::uses_input_method()
@@ -722,7 +858,7 @@ void editorObj::implObj::insert(IN_THREAD_ONLY,
 
 	del_info.do_delete(IN_THREAD);
 
-	cursor->insert(IN_THREAD, str);
+	insert_content(IN_THREAD, str);
 	recalculate(IN_THREAD);
 	draw_changes(IN_THREAD, del_info.cursor_lock,
 		     input_change_type::inserted, deleted, str.size());
@@ -787,7 +923,7 @@ void editorObj::implObj::do_draw(IN_THREAD_ONLY,
 #ifdef EDITOR_DRAW
 	EDITOR_DRAW();
 #endif
-	selection_cursor_t::lock cursor_lock{*this};
+	selection_cursor_t::lock cursor_lock{IN_THREAD, *this};
 
 	text->full_redraw(IN_THREAD, *this,
 			     {cursor_lock.cursor, cursor},
@@ -798,7 +934,7 @@ void editorObj::implObj::draw_between(IN_THREAD_ONLY,
 				      const richtextiterator &a,
 				      const richtextiterator &b)
 {
-	selection_cursor_t::lock cursor_lock{*this};
+	selection_cursor_t::lock cursor_lock{IN_THREAD, *this};
 
 	text->redraw_between(IN_THREAD, *this,
 			     a, b,
@@ -890,7 +1026,7 @@ void editorObj::implObj::start_scrolling(IN_THREAD_ONLY)
 		 std::chrono::milliseconds{250},
 		 // Don't create a lambda that owns a strong ref to me.
 		 // Use a weak pointer.
-		 [me=make_weak_capture(ref<implObj>(this))]
+		 [me=make_weak_capture(ref(this))]
 		 (IN_THREAD_ONLY)
 		 {
 			 auto got=me.get();
@@ -933,10 +1069,9 @@ void editorObj::implObj::removed(IN_THREAD_ONLY)
 
 editorObj::implObj::selectionObj::
 selectionObj(xcb_timestamp_t timestamp, const ref<implObj> &me,
-	     const richtextiterator &a,
-	     const richtextiterator &b)
+	     const richtextiterator &other)
 	: current_selectionObj(timestamp), me(me),
-	  cut_text{a->get(b).get_string()}
+	  cut_text{me->get_content(other).get_string()}
 {
 }
 
@@ -1023,7 +1158,7 @@ ptr<current_selectionObj::convertedValueObj> editorObj::implObj::selectionObj
 editorObj::implObj::delete_selection_info::delete_selection_info(IN_THREAD_ONLY,
 								 implObj &me)
 	: me{me},
-	  cursor_lock{me},
+	  cursor_lock{IN_THREAD, me},
 	  n{0}
 {
 	if (!cursor_lock.cursor)
@@ -1044,7 +1179,7 @@ void editorObj::implObj::delete_selection_info::do_delete(IN_THREAD_ONLY)
 	if (!cursor_lock.cursor)
 		return;
 
-	me.cursor->remove(IN_THREAD, cursor_lock.cursor);
+	me.remove_content(IN_THREAD, cursor_lock.cursor);
 	cursor_lock.cursor=richtextiteratorptr();
 	me.remove_primary_selection(IN_THREAD);
 }
@@ -1052,12 +1187,11 @@ void editorObj::implObj::delete_selection_info::do_delete(IN_THREAD_ONLY)
 editorObj::implObj::selection
 editorObj::implObj::create_selection(IN_THREAD_ONLY)
 {
-	selection_cursor_t::lock cursor_lock{*this};
+	selection_cursor_t::lock cursor_lock{IN_THREAD, *this};
 
 	return selection::create(get_screen()->impl->thread
 				 ->timestamp(IN_THREAD),
 				 ref<implObj>(this),
-				 cursor,
 				 cursor_lock.cursor);
 }
 
@@ -1066,7 +1200,7 @@ void editorObj::implObj::create_primary_selection(IN_THREAD_ONLY)
 	if (!config.update_clipboards)
 		return;
 
-	selection_cursor_t::lock cursor_lock{*this};
+	selection_cursor_t::lock cursor_lock{IN_THREAD, *this};
 
 	if (!cursor_lock.cursor)
 		return;
@@ -1087,7 +1221,7 @@ void editorObj::implObj::create_secondary_selection(IN_THREAD_ONLY)
 	if (!config.update_clipboards)
 		return;
 
-	selection_cursor_t::lock cursor_lock{*this};
+	selection_cursor_t::lock cursor_lock{IN_THREAD, *this};
 
 	if (!cursor_lock.cursor)
 		return;
@@ -1186,14 +1320,14 @@ size_t editorObj::implObj::delete_char_or_selection(IN_THREAD_ONLY,
 
 	size_t p=cursor->pos() == clone->pos() ? 0:1;
 
-	cursor->remove(IN_THREAD, clone);
+	remove_content(IN_THREAD, clone);
 
 	return p;
 }
 
 std::u32string editorObj::implObj::get()
 {
-	return cursor->begin()->get(cursor->end()).get_string();
+	return get_content(cursor->begin(), cursor->end()).get_string();
 }
 
 size_t editorObj::implObj::size() const
@@ -1208,20 +1342,22 @@ size_t editorObj::implObj::size() const
 
 std::tuple<size_t, size_t> editorObj::implObj::pos()
 {
-	selection_cursor_t::lock cursor_lock{*this};
+	selection_cursor_t::const_lock cursor_lock{*this};
 
 	return pos(cursor_lock);
 }
 
 std::tuple<size_t, size_t>
-editorObj::implObj::pos(selection_cursor_t::lock &cursor_lock)
+editorObj::implObj::pos(selection_cursor_t::const_lock &cursor_lock)
 {
 	size_t p=cursor->pos();
 
 	size_t p2=p;
 
-	if (cursor_lock.cursor)
-		p2=cursor_lock.cursor->pos();
+	auto cursor_pos=cursor_lock.cursor_pos();
+
+	if (cursor_pos)
+		p2=*cursor_pos;
 
 	return {p, p2};
 }
@@ -1250,7 +1386,7 @@ void editorObj::implObj::set(IN_THREAD_ONLY, const std::u32string &string,
 	if (selection_pos > s)
 		selection_pos=s;
 
-	selection_cursor_t::lock cursor_lock{*this};
+	selection_cursor_t::lock cursor_lock{IN_THREAD, *this};
 
 	bool will_have_selection=cursor_pos != selection_pos;
 
@@ -1263,9 +1399,9 @@ void editorObj::implObj::set(IN_THREAD_ONLY, const std::u32string &string,
 
 	size_t deleted=cursor->pos();
 
-	cursor->remove(IN_THREAD, cursor->begin());
+	remove_content(IN_THREAD, cursor->begin());
 	remove_primary_selection(IN_THREAD);
-	cursor->insert(IN_THREAD, string);
+	insert_content(IN_THREAD, string);
 
 	cursor->swap(cursor->pos(cursor_pos));
 

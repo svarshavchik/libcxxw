@@ -17,6 +17,8 @@
 #include "richtext/richtextiteratorfwd.H"
 #include "richtext/richtextstring.H"
 #include "richtext/richtextmeta.H"
+#include "richtext/richtext_password_info.H"
+
 #include "x/w/input_fieldfwd.H"
 #include "x/w/input_field_config.H"
 #include "x/w/input_field_lock.H"
@@ -58,10 +60,17 @@ typedef background_color_elementObj<
 //! an API that can be used to handle key events to edit the contents of the
 //! label, which the label display element takes care of updating.
 //!
+//! But before this object derives from the label element, it derives from
+//! richtext_password_info first, because the richtext_password_info gets
+//! used in the constructor initialization, and this is a cheap, dirty trick
+//! to have this initialized beforehand.
+//!
 //! editorObj::implObj takes care of handling keyboard (and button) events,
 //! and drawing the blinking cursor by manipulating the richtext API.
 
-class LIBCXX_HIDDEN editorObj::implObj : public editor_impl_superclass_t {
+class LIBCXX_HIDDEN editorObj::implObj
+	: public richtext_password_info,
+	  public editor_impl_superclass_t {
 
 	//! My superclass alias.
 	typedef editor_impl_superclass_t superclass_t;
@@ -71,6 +80,55 @@ class LIBCXX_HIDDEN editorObj::implObj : public editor_impl_superclass_t {
 
 	//! The current cursor position.
 	const richtextiterator cursor;
+
+	//! All access to the contents of the input field goes through here.
+
+	//! Removes the characters between the \c cursor and the \c other
+	//! iterator. If this is a password input field we also remove
+	//! the corresponding characters from the real_string.
+
+	void remove_content(IN_THREAD_ONLY,
+			    const richtextiterator &other);
+
+	//! All access to the contents of the input field goes through here.
+
+	//! Inserts into the input field. If this is a password input field
+	//! the new unicode text gets inserted into the \c real_string, and
+	//! the actual field gets password_char-s instead.
+
+	void insert_content(IN_THREAD_ONLY,
+			    const std::u32string_view &str);
+
+	//! All access to the contents of the input field goes through here.
+
+	//! Returns the characters between the \c cursor and the \c other
+	//! iterator. If this is a password field, the characters get
+	//! retrieved from the real_string instead.
+	richtextstring get_content(const richtextiterator &other);
+
+	//! All access to the contents of the input field goes through here.
+
+	//! Returns the characters between the two iterators.
+	//! If this is a password field, the characters get
+	//! retrieved from the real_string instead.
+
+	richtextstring get_content(const richtextiterator &a,
+				   const richtextiterator &b);
+
+	//! Whether the last character inserted into a password field is shown
+
+	//! This is the mcguffin for hiding the peek at the last password
+	//! character.
+
+	ptr<obj> password_peeking;
+
+ public:
+
+	void clear_password_peek(IN_THREAD_ONLY);
+
+ private:
+
+	struct moving_cursor;
 
 	//! A container for the current selection cursor.
 
@@ -86,20 +144,36 @@ class LIBCXX_HIDDEN editorObj::implObj : public editor_impl_superclass_t {
 
 		//! Gain access to the selection cursor
 
-		class lock {
+		class const_lock {
 
 			//! The lock on the underlying rich text object.
 
 			internal_richtext_impl_t::lock internal_lock;
 
-		public:
+		protected:
 
 			//! The cursor reference.
 
 			richtextiteratorptr &cursor;
+		public:
+			//! Constructor
+			const_lock(implObj &impl);
+
+			//! Destructor
+			~const_lock();
+
+			std::optional<size_t> cursor_pos() const;
+		};
+
+		class lock : public const_lock {
+
+		public:
+
+			using const_lock::cursor;
 
 			//! Constructor
-			lock(implObj &impl);
+			lock(IN_THREAD_ONLY, implObj &impl,
+			     bool blinking_or_clearing=false);
 
 			//! Destructor
 			~lock();
@@ -127,8 +201,6 @@ class LIBCXX_HIDDEN editorObj::implObj : public editor_impl_superclass_t {
 
 	//! For the X server
 	selectionptr secondary_selection_thread_only;
-
-	struct moving_cursor;
 
 	//! Callback
 	std::function< void(const input_change_info_t &)
@@ -183,25 +255,35 @@ class LIBCXX_HIDDEN editorObj::implObj : public editor_impl_superclass_t {
 				  dim_t horiz_override,
 				  dim_t vert_override) override;
 
-	//! Contsructor
-	implObj(const ref<editor_peephole_implObj> &parent_peephole,
-		const text_param &text,
-		const input_field_config &config);
+	//! Parameters needed by the constructor
 
- private:
-	//! Internal constructor
-	implObj(const ref<editor_peephole_implObj> &parent_peephole,
-		const text_param &text,
-		const input_field_config &config,
-		const richtextmeta &default_meta);
+	//! The three parameters - the peephole, text, and config, do not
+	//! get passed directly. Rather, they construct the init_args object,
+	//! then the init_args object gets passed to the constructor.
 
-	//! Internal constructor
-	implObj(const ref<editor_peephole_implObj> &parent_peephole,
-		const input_field_config &config,
-		const richtextmeta &default_meta,
-		richtextstring &&string);
+	struct init_args {
+		const ref<editor_peephole_implObj> &parent_peephole;
+		const text_param &text;
+		const input_field_config &config;
 
- public:
+		//! init_args also constructs some additional objects.
+
+		init_args(const ref<editor_peephole_implObj> &parent_peephole,
+			  const text_param &text,
+			  const input_field_config &config);
+
+		//! Default metadata.
+		richtextmeta default_meta;
+
+		~init_args();
+	};
+
+	//! Constructor
+
+	//! Construct the init_args, then pass it here.
+
+	implObj(init_args &args);
+
 	//! Destructor
 	~implObj();
 
@@ -456,7 +538,7 @@ class LIBCXX_HIDDEN editorObj::implObj : public editor_impl_superclass_t {
 
  private:
 	//! Return the current cursor position.
-	std::tuple<size_t, size_t> pos(selection_cursor_t::lock &cursor_lock);
+	std::tuple<size_t, size_t> pos(selection_cursor_t::const_lock &);
  public:
 	//! Set the current contents of the editor
 

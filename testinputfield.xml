@@ -8,4 +8,8 @@
     <name>second</name>
     <type>LIBCXX_NAMESPACE::w::input_field</type>
   </ref>
+  <ref>
+    <name>password</name>
+    <type>LIBCXX_NAMESPACE::w::input_field</type>
+  </ref>
 </collection>

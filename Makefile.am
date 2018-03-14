@@ -686,6 +686,8 @@ libcxxw_la_SOURCES=\
 	richtext/richtextparagraph.C		    \
 	richtext/richtextparagraph.H		    \
 	richtext/richtextparagraphfwd.H		    \
+	richtext/richtext_password_info.C	    \
+	richtext/richtext_password_info.H	    \
 	richtext/richtextstring.C		    \
 	richtext/richtextstring.H		    \
 	richtext/richtextstring2.C		    \

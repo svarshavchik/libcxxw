@@ -266,6 +266,44 @@ x::w::input_lock lock{f};</programlisting>
 	</para>
       </note>
     </section>
+
+    <section id="passwordfields">
+      <title>Password input fields</title>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting>
+&ns;::w::input_field_config password_conf{21};
+
+password_conf.maximum_size=20;
+password_conf.set_password();
+
+factory->create_input_field("", password_conf);</programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	This example creates an input field for a password. The input field
+	is 21 characters long, with a 20 character limit on the entered
+	text (one more for the cursor pointer when it follows the last
+	character in the input field).
+      </para>
+
+      <para>
+	<methodname>set_password</methodname>() sets the configuration for
+	a password input field. Password input fields do not show each
+	entered character, but show an asterisk (by default) in place of
+	each character, with the original character remaining visible for
+	a brief moment before it gets replaced by the asterisk.
+      </para>
+
+      <para>
+	<methodname>set_password</methodname>()'s optional
+	parameter is the replacement character, an asterisk by default.
+	The parameter can be any unicode character that's renderable by
+	the input field's font.
+      </para>
+    </section>
   </section>
 
   <section id="tooltips">

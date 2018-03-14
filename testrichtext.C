@@ -231,7 +231,7 @@ void testresolvedfonts(const current_fontcollection &font1,
 			{5, {black, font2}},
 		}};
 
-	const auto &resolved_fonts=ustring.resolve_fonts(IN_THREAD, 0);
+	const auto &resolved_fonts=ustring.resolve_fonts(IN_THREAD);
 
 	if (ustring.need_font_resolution())
 		throw EXCEPTION("resolve_fonts() didn't cache");
@@ -282,7 +282,7 @@ void testresolvedfonts(const current_fontcollection &font1,
 		if (substr.need_font_resolution())
 			throw EXCEPTION("substr() didn't produce cached results");
 
-		if (substr.resolve_fonts(IN_THREAD, 0)!=t.results)
+		if (substr.resolve_fonts(IN_THREAD)!=t.results)
 			throw EXCEPTION("substr(" << t.pos << ", "
 					<< t.len << ") did not recalculate"
 					" resolved fonts correctly");
@@ -332,7 +332,7 @@ void testresolvedfonts(const current_fontcollection &font1,
 		if (orig.need_font_resolution())
 			throw EXCEPTION("substr() didn't produce cached results");
 
-		if (orig.resolve_fonts(IN_THREAD, 0)!=t.results)
+		if (orig.resolve_fonts(IN_THREAD)!=t.results)
 			throw EXCEPTION("insert(" << t.pos
 					<< ") did not recalculate"
 					" resolved fonts correctly");
@@ -342,8 +342,8 @@ void testresolvedfonts(const current_fontcollection &font1,
 		if (orig.need_font_resolution())
 			throw EXCEPTION("substr() didn't produce cached results");
 
-		if (orig.resolve_fonts(IN_THREAD, 0) !=
-		    ustring.resolve_fonts(IN_THREAD, 0))
+		if (orig.resolve_fonts(IN_THREAD) !=
+		    ustring.resolve_fonts(IN_THREAD))
 			throw EXCEPTION("erase(" << t.pos
 					<< ") did not recalculate"
 					" resolved fonts correctly");

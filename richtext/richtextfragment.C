@@ -37,7 +37,7 @@ LIBCXXW_NAMESPACE_START
 			"Internal error: paragraph or text linkage sanity check failed.")
 
 #define RESOLVE_FONTS() \
-	(string.resolve_fonts(IN_THREAD, my_paragraph->my_richtext->password_char))
+	(string.resolve_fonts(IN_THREAD))
 
 // Given a font height, compute how big the underline would be. A tiny one
 // line for a huge font doesn't look good.
@@ -207,8 +207,7 @@ void richtextfragmentObj
 						       &previous_fragment->string:NULL,
 						       my_paragraph->my_richtext->unprintable_char,
 						       widths,
-						       kernings,
-						       my_paragraph->my_richtext->password_char);
+						       kernings);
 			  });
 }
 
@@ -230,7 +229,6 @@ void richtextfragmentObj::update_glyphs_widths_kernings(IN_THREAD_ONLY,
 						       my_paragraph->my_richtext->unprintable_char,
 						       widths,
 						       kernings,
-						       my_paragraph->my_richtext->password_char,
 						       pos, count);
 			  });
 }

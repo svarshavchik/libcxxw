@@ -141,9 +141,6 @@ public:
 	//! cursor on top of a newline character is visible.
 	char32_t unprintable_char=0;
 
-	//! If non-0, show this instead of every character
-	char32_t password_char=0;
-
 	//! Alignment of text, for rendering paragraphs
 
 	//! We store it here, but richtextObj doesn't use it. The rendering

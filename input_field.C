@@ -90,9 +90,11 @@ factoryObj::create_input_field(const text_param &text,
 			auto peephole_impl=ref<editor_peephole_implObj>
 			::create(parent_container_impl);
 
+			// The peephole contains the real editor element.
 
-			auto e_impl=ref<editorObj::implObj>
-			::create(peephole_impl, text, config);
+			editorObj::implObj::init_args args{
+				peephole_impl, text, config};
+			auto e_impl=ref<editorObj::implObj>::create(args);
 
 			auto e=editor::create(e_impl);
 

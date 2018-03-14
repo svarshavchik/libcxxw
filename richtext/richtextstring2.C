@@ -17,7 +17,7 @@
 LIBCXXW_NAMESPACE_START
 
 const richtextstring::resolved_fonts_t
-&richtextstring::resolve_fonts(IN_THREAD_ONLY, char32_t password_char)
+&richtextstring::resolve_fonts(IN_THREAD_ONLY)
 {
 	if (!fonts_need_resolving)
 		return resolved_fonts;
@@ -43,19 +43,8 @@ const richtextstring::resolved_fonts_t
 		assert_or_throw(end_char <= string.size(),
 				"Internal error: text fragment metadata inconsistent");
 
-		size_t orig_start_char=start_char;
-
 		auto rb=textp+start_char;
 		auto re=textp+end_char;
-
-		// If we're replacing everything with a password character,
-		// feed only the password character to lookup().
-
-		if (password_char)
-		{
-			rb= &password_char;
-			re= rb+1;
-		}
 
 		// Now, look up the font for each character in the range
 		// covered by this metadata entry.
@@ -66,8 +55,7 @@ const richtextstring::resolved_fonts_t
 			  auto e,
 			  const freetypefont &font)
 			 {
-				 auto start_char=password_char
-					 ? orig_start_char : b-textp;
+				 auto start_char=b-textp;
 
 				 // If this is still the same font, just
 				 // keep going.
@@ -88,8 +76,7 @@ void richtextstring::compute_width(IN_THREAD_ONLY,
 				   richtextstring *previous_string,
 				   char32_t unprintable_char,
 				   std::vector<dim_t> &widths,
-				   std::vector<int16_t> &kernings,
-				   char32_t password_char)
+				   std::vector<int16_t> &kernings)
 {
 	widths.resize(string.size());
 	kernings.resize(string.size());
@@ -98,54 +85,14 @@ void richtextstring::compute_width(IN_THREAD_ONLY,
 		      unprintable_char,
 		      widths,
 		      kernings,
-		      password_char,
 		      0, string.size());
 }
-
-// A stripped down iterator, suitable for passing to iterating templates,
-// that replaced all characters except \0 with the password character, if one
-// is specified.
-
-struct LIBCXX_HIDDEN compute_width_iterator {
-
-	const char32_t *p;
-	char32_t password_char;
-
-	inline char32_t operator*() const
-	{
-		return *p == 0 || password_char == 0 ? *p:password_char;
-	}
-
-	inline auto operator++()
-	{
-		++p;
-		return *this;
-	}
-
-	inline auto operator++(int)
-	{
-		auto cpy= *this;
-		++p;
-		return cpy;
-	}
-
-	inline auto operator==(const compute_width_iterator &o)
-	{
-		return p == o.p;
-	}
-
-	inline auto operator!=(const compute_width_iterator &o)
-	{
-		return p != o.p;
-	}
-};
 
 void richtextstring::compute_width(IN_THREAD_ONLY,
 				   richtextstring *previous_string,
 				   char32_t unprintable_char,
 				   std::vector<dim_t> &widths,
 				   std::vector<int16_t> &kernings,
-				   char32_t password_char,
 				   size_t skip,
 				   size_t count)
 {
@@ -171,18 +118,17 @@ void richtextstring::compute_width(IN_THREAD_ONLY,
 	if (end_skip < string.size())
 		++end_skip;
 
-	const auto &fonts=resolve_fonts(IN_THREAD, password_char);
+	const auto &fonts=resolve_fonts(IN_THREAD);
 	char32_t previous_char=0;
 
 	// For element #0, if the previous string ends in the same font,
 	// set previous_char to the last character in the string, so that
 	// we can set the kerning for element #0 accordingly.
 
-	if (previous_string && password_char == 0)
+	if (previous_string)
 	{
 		const auto &previous_fonts=
-			previous_string->resolve_fonts(IN_THREAD,
-						       password_char);
+			previous_string->resolve_fonts(IN_THREAD);
 
 		if (!previous_fonts.empty() && !fonts.empty() &&
 		    (--previous_fonts.end())->second == fonts.begin()->second)
@@ -251,8 +197,8 @@ void richtextstring::compute_width(IN_THREAD_ONLY,
 		if (end_char > end_skip)
 			end_char=end_skip;
 
-		compute_width_iterator sb{str+start_char, password_char};
-		compute_width_iterator se{str+end_char, password_char};
+		auto sb=str+start_char;
+		auto se=str+end_char;
 
 		b->second->load_glyphs(sb, se, unprintable_char);
 

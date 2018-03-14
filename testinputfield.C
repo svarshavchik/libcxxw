@@ -148,6 +148,15 @@ void testbutton()
 							 return std::to_string(*n);
 						 });
 
+			 factory=layout->append_row();
+
+			 LIBCXX_NAMESPACE::w::input_field_config conf3{20};
+
+			 conf3.set_password();
+
+			 fields.password=factory->create_input_field({"rosebud"},
+								     conf3);
+
 
 			 factory=layout->append_row();
 
@@ -199,10 +208,12 @@ void testbutton()
 	appdata_t appdata=main_window->appdata;
 
 	LIBCXX_NAMESPACE::w::input_lock lock_first{appdata->first},
-		lock_second{appdata->second};
+		lock_second{appdata->second},
+			lock_password{appdata->password};
 
 	std::cout << lock_first.get() << std::endl;
 	std::cout << lock_second.get() << std::endl;
+	std::cout << lock_password.get() << std::endl;
 
 	std::cout << lock_first.size() << std::endl;
 
