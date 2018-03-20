@@ -274,7 +274,9 @@ focusable_container new_custom_comboboxlayoutmanager
 				"combobox_above_background_color",
 				"combobox_below_background_color"},
 		 [&]
-		 (const auto &peephole_container)
+		(const auto &peephole_container,
+		 const popup_attachedto_info &attachedto_info)
+			->create_popup_factory_ret_t
 		 {
 			 auto impl=ref<custom_combobox_popup_containerObj
 			 ::implObj>::create(peephole_container, style);
@@ -282,29 +284,18 @@ focusable_container new_custom_comboboxlayoutmanager
 			 auto textlist_impl=ref<list_elementObj::implObj>
 			 ::create(impl, style);
 
-			 return create_p_t_l_impl_ret_t{impl,
-					 ref<peepholed_toplevel_listcontainer_layoutmanager_implObj>
-					 ::create(impl,
-						  list_element::create
-						  (textlist_impl)
-						  )
-					 };
+			 auto lm=ref<peepholed_toplevel_listcontainer_layoutmanager_implObj
+			 >::create(impl,
+				   list_element::create(textlist_impl));
 
-		 },
-
-		 [&]
-		 (const popup_attachedto_info &attachedto_info,
-		  const ref<custom_combobox_popup_containerObj::implObj> &impl,
-		  const ref<listlayoutmanagerObj::implObj> &layout_impl)
-		 {
 			 auto container=custom_combobox_popup_container
 			 ::create(impl,
-				  layout_impl,
+				  lm,
 				  attachedto_info);
 
 			 popup_containerptr=container;
 
-			 return container;
+			 return {container, container};
 		 });
 
         custom_combobox_popup_container popup_container=popup_containerptr;

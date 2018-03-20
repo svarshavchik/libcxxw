@@ -73,7 +73,6 @@ popup_type_t create_menu_popup()
 create_p_t_l_popup_ret_t
 do_create_peepholed_toplevel_listcontainer_popup
 (const create_peepholed_toplevel_listcontainer_popup_args &args,
- const function<create_p_t_l_impl_t> &impl_factory,
  const function<create_p_t_l_t> &factory)
 {
 	// First, the handler.
@@ -116,16 +115,12 @@ do_create_peepholed_toplevel_listcontainer_popup
 		[&]
 		 (const auto &peephole_container)
 		 {
-			 auto [impl, popup_listlayoutmanager]=
-			 impl_factory(peephole_container);
+			 auto [c, toplevel_info]=factory(peephole_container,
+							 attachedto_info);
 
-			 auto popup=factory(attachedto_info,
-					    impl,
-					    popup_listlayoutmanager);
+			 popup_listlayoutmanagerptr=c->get_layout_impl();
 
-			 popup_listlayoutmanagerptr=popup_listlayoutmanager;
-
-			 return popup;
+			 return toplevel_info;
 		 });
 
 	// Now, finish creating the popup's implementation object, and the

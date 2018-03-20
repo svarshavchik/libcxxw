@@ -40,7 +40,9 @@ do_create_menu_popup(const elementimpl &e,
 	return create_peepholed_toplevel_listcontainer_popup
 		(popup_args,
 		 [&]
-		 (const auto &peephole_container)
+		 (const auto &peephole_container,
+		  const popup_attachedto_info &attachedto_info)
+		 ->create_popup_factory_ret_t
 		 {
 			 auto impl=ref<p_t_l_impl_t>
 				 ::create(style,
@@ -49,28 +51,20 @@ do_create_menu_popup(const elementimpl &e,
 			 auto textlist_impl=ref<list_elementObj::implObj>
 				 ::create(impl, style);
 
-			 return create_p_t_l_impl_ret_t{impl,
-					 ref<peepholed_toplevel_listcontainer_layoutmanager_implObj>
-					 ::create(impl,
-						  list_element::create
-						  (textlist_impl))
-					 };
-		 },
-		 [&]
-		 (const popup_attachedto_info &attachedto_info,
-		  const ref<p_t_l_impl_t> &impl,
-		  const ref<listlayoutmanagerObj::implObj> &layout_impl)
-		 {
+			 auto lm=ref<peepholed_toplevel_listcontainer_layoutmanager_implObj>
+				 ::create(impl,list_element::create
+					  (textlist_impl));
+
 			 auto c=ref<p_t_l_t>::create
 				 (attachedto_info,
 				  impl,
-				  layout_impl->list_element_singleton->impl,
+				  lm->list_element_singleton->impl,
 				  impl,
-				  layout_impl);
+				  lm);
 
-			 creator(layout_impl->create_public_object());
+			 creator(lm->create_public_object());
 
-			 return c;
+			 return {c, c};
 		 });
 }
 

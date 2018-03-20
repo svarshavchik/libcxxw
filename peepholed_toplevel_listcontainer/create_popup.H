@@ -45,25 +45,15 @@ typedef std::tuple<ref<p_t_l_impl_t>,
 		   ref<peepholed_toplevel_listcontainer_layoutmanager_implObj>
 		   > create_p_t_l_impl_ret_t;
 
-//! Peepholed list layout manager container implementation object factory.
+//! Return value from the content factory passed to \ref create_peepholed_toplevel_listcontainer_popup "create_peepholed_toplevel_listcontainer_popup".
 
-//! Callback used by create_peepholed_toplevel_listcontainer_popup() to
-//! construct the list layout manager container's implementation object,
-//! and the layout manager.
+typedef std::tuple<container, peepholed_toplevel> create_popup_factory_ret_t;
 
-typedef create_p_t_l_impl_ret_t create_p_t_l_impl_t(const ref<containerObj
-						    ::implObj>);
+//! Signature of the content factory passed to \ref create_peepholed_toplevel_listcontainer_popup "create_peepholed_toplevel_listcontainer_popup".
 
-//! Peepholed list layout manager container object factory.
-
-//! Callback used by create_peepholed_toplevel_listcontainer_popup() to
-//! construct the list layout manager container object.
-
-typedef ref<p_t_l_t> create_p_t_l_t(const popup_attachedto_info
-				      &attachedto_info,
-				      const ref<p_t_l_impl_t> &,
-				      const ref<listlayoutmanagerObj
-				      ::implObj> &);
+typedef create_popup_factory_ret_t
+create_p_t_l_t(const ref<containerObj::implObj> &,
+	       const popup_attachedto_info &);
 
 //! The type that specifies what kind of a popup it is.
 
@@ -133,11 +123,10 @@ struct LIBCXX_HIDDEN create_peepholed_toplevel_listcontainer_popup_args {
 
 typedef std::tuple<popup, popup_attachedto_handler> create_p_t_l_popup_ret_t;
 
-template<typename impl_factory_t, typename factory_t>
+template<typename factory_t>
 create_p_t_l_popup_ret_t
 create_peepholed_toplevel_listcontainer_popup
 (const create_peepholed_toplevel_listcontainer_popup_args &args,
- impl_factory_t &&impl_factory,
  factory_t &&factory)
 	LIBCXX_HIDDEN;
 
@@ -146,7 +135,6 @@ create_peepholed_toplevel_listcontainer_popup
 create_p_t_l_popup_ret_t
 do_create_peepholed_toplevel_listcontainer_popup
 (const create_peepholed_toplevel_listcontainer_popup_args &args,
- const function<create_p_t_l_impl_t> &,
  const function<create_p_t_l_t> &) LIBCXX_HIDDEN;
 
 //! Construct an attached popup with a \ref listlayoutmanager "list layout manager".
@@ -163,38 +151,14 @@ do_create_peepholed_toplevel_listcontainer_popup
 //!
 //! Two callbacks are used in addition to the fixed arguments:
 //!
-//! 1. The first callback constructs the implementation object for the
-//! peepholed container and its list layout manager. The callback returns
-//! a create_p_t_l_impl_ret_t, which is a tuple with two values.
+//! 1. The first callback receives the container implementation object
+//! and a \ref popup_attachedto_info "popup_attachedto_info", and should
+//! return the constructed container, and a
+//! \ref peepholed_toplevel "peepholed_toplevel object".
 //!
-//! The first value in the tuple is a reference to a newly-constructed
-//! subclass of a \c p_t_l_impl_t. The callback's
-//! sole parameter is the new implementation's object parent container. To
-//! construct the p_t_l_impl_t the callback
-//! supplies this parameter and the same \c new_listlayoutmanager parameter.
-//!
-//! The second value in the tuple is a reference to a
-//! subclass of a peepholed_toplevel_listcontainer_layoutmanager_implObj,o
-//! the list layout manager. The
-//! peepholed_toplevel_listcontainer_layoutmanager_implObj is constructed by
-//! passing the tuple's first value as the first two parameters to its
-//! constructor, and the same \c new_listlayoutmanager parameter as the
-//! third parameter.
-//!
-//! 2. The second callback constructs the "public" container with the
-//! list layout manager. The second callback gets three parameters,
-//! the \ref popup_attachedto_info "popup_attachedto_info" object,
-//! the \c p_t_l_impl_t subclass implementation
-//! object returned by the first callback, and a
-//! listlayoutmanagerObj::implObj object, for the new container.
-//!
-//! The second callback creates a subclass of a
-//! \c p_t_l_t. To construct the
-//! \c p_t_l_t the callback use the
-//! \c popup_attachedto_info, its \c p_t_l_impl_t
-//! parameter for the 2nd and 3rd parameters to
-//! p_t_l_t's constructor, and the
-//! listlayoutmanagerObj::implObj object.
+//! The callback typically constructs a \ref p_t_l_t "p_t_l_t" object
+//! and returns it as both values, since it inherits from both
+//! a container, and a \ref peepholed_toplevel "peepholed_toplevel" object.
 //!
 //! Returns the new popup, and a
 //! \ref popup_attachedto_handlerObj "popup_attachedto_handler".
@@ -208,17 +172,14 @@ do_create_peepholed_toplevel_listcontainer_popup
 //!
 //! A popup can only be attached to one element.
 
-template<typename impl_factory_t, typename factory_t>
+template<typename factory_t>
 create_p_t_l_popup_ret_t
 create_peepholed_toplevel_listcontainer_popup
 (const create_peepholed_toplevel_listcontainer_popup_args &args,
- impl_factory_t &&impl_factory,
  factory_t &&factory)
 {
 	return do_create_peepholed_toplevel_listcontainer_popup
 		(args,
-		 make_function<create_p_t_l_impl_t>
-		 (std::forward<impl_factory_t>(impl_factory)),
 		 make_function<create_p_t_l_t>
 		 (std::forward<factory_t>(factory)));
 }
