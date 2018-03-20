@@ -298,9 +298,12 @@ elementObj::implObj::hover_action_delay(IN_THREAD_ONLY)
 
 void elementObj::implObj::hover_action(IN_THREAD_ONLY)
 {
+	if (!data(IN_THREAD).tooltip_factory)
+		return;
+
 	tooltip_factory_impl create_a_tooltip(IN_THREAD, ref(this));
 
-	data(IN_THREAD).tooltip_factory(create_a_tooltip);
+	data(IN_THREAD).tooltip_factory->invoke(create_a_tooltip);
 }
 
 void elementObj::implObj::hover_cancel(IN_THREAD_ONLY)

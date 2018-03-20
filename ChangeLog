@@ -1,3 +1,7 @@
+2018-03-15  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* Convert tooltip callbacks from std::function to x::functionref
+
 2018-03-13  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* Password input fields.

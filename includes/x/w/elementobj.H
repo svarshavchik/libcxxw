@@ -117,10 +117,20 @@ public:
 	//! Create a custom tooltip.
 
 	//! Installs a factory for the tooltip.
-	void create_custom_tooltip
-	(const std::function<void (const tooltip_factory &)>
-	 &tooltip_factory) const;
+	template<typename factory>
+	void create_custom_tooltip(factory &&f) const
+	{
+		do_create_custom_tooltip(functionref<void
+					 (const tooltip_factory &)>
+					 ::create(std::forward<factory>(f)));
+	}
 
+	//! Create a custom tooltip.
+
+	//! Type-erased implementation.
+	void do_create_custom_tooltip
+	(const functionref<void (const tooltip_factory &)>
+	 &tooltip_factory) const;
 
 	//! Remove the tooltip from this display element.
 	void remove_tooltip() const;

@@ -88,9 +88,9 @@ void elementObj::on_pointer_focus(const std::function<focus_callback_t> &callbac
 	impl->on_pointer_focus(callback);
 }
 
-void elementObj::create_custom_tooltip(const std::function<void
-				       (const tooltip_factory &)>
-				       &tooltip_factory) const
+void elementObj::do_create_custom_tooltip(const functionref<void
+					  (const tooltip_factory &)>
+					  &tooltip_factory) const
 {
 	impl->THREAD->run_as
 		([impl=this->impl, tooltip_factory]

@@ -451,7 +451,18 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
 
   <!-- Tooltips -->
 
-  <color id="tooltip_background_color" scale="90%" />
+  <color id="tooltip_background_color" type="linear_gradient">
+    <gradient>
+      <value>0</value>
+      <color>80%</color>
+    </gradient>
+    <gradient>
+      <value>1</value>
+      <color>100%</color>
+    </gradient>
+  </color>
+
+  <color id="noshade:tooltip_background_color" scale="90%" />
 
   <!-- Border when an alpha channel is available -->
   <border id="tooltip_border" from="thin_0%">
