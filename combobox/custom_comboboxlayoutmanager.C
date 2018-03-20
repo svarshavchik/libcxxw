@@ -296,7 +296,9 @@ focusable_container new_custom_comboboxlayoutmanager
 			 popup_containerptr=container;
 
 			 return {container, container};
-		 });
+		 },
+
+		create_p_t_l_handler);
 
         custom_combobox_popup_container popup_container=popup_containerptr;
 	ref<listlayoutmanagerObj::implObj>

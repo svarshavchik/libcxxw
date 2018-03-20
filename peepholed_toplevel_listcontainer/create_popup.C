@@ -73,7 +73,8 @@ popup_type_t create_menu_popup()
 create_p_t_l_popup_ret_t
 do_create_peepholed_toplevel_listcontainer_popup
 (const create_peepholed_toplevel_listcontainer_popup_args &args,
- const function<create_p_t_l_t> &factory)
+ const function<create_p_t_l_t> &factory,
+ const function<create_p_t_l_handler_t> &handler_factory)
 {
 	// First, the handler.
 
@@ -85,18 +86,17 @@ do_create_peepholed_toplevel_listcontainer_popup
 
 	auto [opened_popup, closed_popup]=(*args.popup_type)();
 
-	auto popup_handler=peepholed_toplevel_listcontainer_handler
-		::create(peepholed_toplevel_listcontainer_handler_args{
-				args.topleft_color,
-				args.bottomright_color,	{
-					opened_popup,
-					closed_popup,
-					args.popup_wm_class_instance,
-					parent_handler,
-					attachedto_info,
-					args.parent_element
-					->nesting_level+
-					args.extra_nesting_level}});
+	auto popup_handler=handler_factory({
+			args.topleft_color,
+			args.bottomright_color,	{
+				opened_popup,
+				closed_popup,
+				args.popup_wm_class_instance,
+				parent_handler,
+				attachedto_info,
+				args.parent_element
+				->nesting_level+
+				args.extra_nesting_level}});
 
 	popup_handler->set_window_type(args.popup_window_type);
 
@@ -135,6 +135,12 @@ do_create_peepholed_toplevel_listcontainer_popup
 			 popup_listlayoutmanagerptr);
 
 	return { p, popup_impl->handler };
+}
+
+peepholed_toplevel_listcontainer_handler
+create_p_t_l_handler(const peepholed_toplevel_listcontainer_handler_args &args)
+{
+	return peepholed_toplevel_listcontainer_handler::create(args);
 }
 
 LIBCXXW_NAMESPACE_END

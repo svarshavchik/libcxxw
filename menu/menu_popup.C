@@ -65,7 +65,9 @@ do_create_menu_popup(const elementimpl &e,
 			 creator(lm->create_public_object());
 
 			 return {c, c};
-		 });
+		 },
+		 create_p_t_l_handler);
+
 }
 
 static auto

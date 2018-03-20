@@ -10,6 +10,7 @@
 #include "popup/popup_attachedto_info.H"
 #include "popup/popup_attachedto_handler.H"
 #include "always_visible.H"
+#include "peepholed_toplevel_listcontainer/handler.H"
 #include "peepholed_toplevel_listcontainer/impl_element.H"
 #include "peepholed_toplevel_listcontainer/element.H"
 #include "peepholed_toplevel_listcontainer/layoutmanager_impl.H"
@@ -55,7 +56,20 @@ typedef create_popup_factory_ret_t
 create_p_t_l_t(const ref<containerObj::implObj> &,
 	       const popup_attachedto_info &);
 
+//! Signature for the handler factory parameter to \ref create_peepholed_toplevel_listcontainer_popup "create_peepholed_toplevel_listcontainer_popup"().
+
+typedef peepholed_toplevel_listcontainer_handler
+create_p_t_l_handler_t(const peepholed_toplevel_listcontainer_handler_args &);
+
+//! Default handler factory parameter for \ref create_peepholed_toplevel_listcontainer_popup "create_peepholed_toplevel_listcontainer_popup"().
+
+peepholed_toplevel_listcontainer_handler
+create_p_t_l_handler(const peepholed_toplevel_listcontainer_handler_args &)
+	LIBCXX_HIDDEN;
+
 //! The type that specifies what kind of a popup it is.
+
+//! This value get passed to \ref create_peepholed_toplevel_listcontainer_popup "create_peepholed_toplevel_listcontainer_popup"().
 
 typedef std::tuple<
 	ref<obj> (shared_handler_dataObj::*)(IN_THREAD_ONLY,
@@ -65,8 +79,11 @@ typedef std::tuple<
 					 const popupObj::handlerObj &)
 	> popup_type_t;
 
+//! Parameter for \ref create_peepholed_toplevel_listcontainer_popup "create_peepholed_toplevel_listcontainer_popup"().
+
 popup_type_t create_exclusive_popup() LIBCXX_HIDDEN;
 
+//! Parameter for \ref create_peepholed_toplevel_listcontainer_popup "create_peepholed_toplevel_listcontainer_popup"().
 popup_type_t create_menu_popup() LIBCXX_HIDDEN;
 
 //! Non-factory parameters to create_peepholed_toplevel_listcontainer_popup().
@@ -123,11 +140,12 @@ struct LIBCXX_HIDDEN create_peepholed_toplevel_listcontainer_popup_args {
 
 typedef std::tuple<popup, popup_attachedto_handler> create_p_t_l_popup_ret_t;
 
-template<typename factory_t>
+template<typename factory_t, typename handler_factory_t>
 create_p_t_l_popup_ret_t
 create_peepholed_toplevel_listcontainer_popup
 (const create_peepholed_toplevel_listcontainer_popup_args &args,
- factory_t &&factory)
+ factory_t &&factory,
+ handler_factory_t &&handler_factory)
 	LIBCXX_HIDDEN;
 
 //! Type-erased create_peepholed_toplevel_listcontainer_popup().
@@ -135,7 +153,8 @@ create_peepholed_toplevel_listcontainer_popup
 create_p_t_l_popup_ret_t
 do_create_peepholed_toplevel_listcontainer_popup
 (const create_peepholed_toplevel_listcontainer_popup_args &args,
- const function<create_p_t_l_t> &) LIBCXX_HIDDEN;
+ const function<create_p_t_l_t> &,
+ const function<create_p_t_l_handler_t> &) LIBCXX_HIDDEN;
 
 //! Construct an attached popup with a \ref listlayoutmanager "list layout manager".
 
@@ -160,6 +179,14 @@ do_create_peepholed_toplevel_listcontainer_popup
 //! and returns it as both values, since it inherits from both
 //! a container, and a \ref peepholed_toplevel "peepholed_toplevel" object.
 //!
+//! 2. The second callback constructs the handler object for the new popup.
+//! The callback receives a \ref peepholed_toplevel_listcontainer_handler_args "peepholed_toplevel_listcontainer_handler_args",
+//! the argument to
+//! \ref peepholed_toplevel_listcontainer_handler "peepholed_toplevel_listcontainer_handler"'s
+//! constructor, and should return the constructed object, or its subclass.
+//! This factory may be specified as \ref create_p_t_l_handler "create_p_t_l_handler",
+//! the default implementation.
+//!
 //! Returns the new popup, and a
 //! \ref popup_attachedto_handlerObj "popup_attachedto_handler".
 //! create_peepholed_toplevel_listcontainer_popup() gets called to construct
@@ -172,16 +199,19 @@ do_create_peepholed_toplevel_listcontainer_popup
 //!
 //! A popup can only be attached to one element.
 
-template<typename factory_t>
+template<typename factory_t, typename handler_factory_t>
 create_p_t_l_popup_ret_t
 create_peepholed_toplevel_listcontainer_popup
 (const create_peepholed_toplevel_listcontainer_popup_args &args,
- factory_t &&factory)
+ factory_t &&factory,
+ handler_factory_t &&handler_factory)
 {
 	return do_create_peepholed_toplevel_listcontainer_popup
 		(args,
 		 make_function<create_p_t_l_t>
-		 (std::forward<factory_t>(factory)));
+		 (std::forward<factory_t>(factory)),
+		 make_function<create_p_t_l_handler_t>
+		 (std::forward<handler_factory_t>(handler_factory)));
 }
 
 LIBCXXW_NAMESPACE_END
