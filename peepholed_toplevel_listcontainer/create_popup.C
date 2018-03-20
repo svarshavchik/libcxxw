@@ -34,14 +34,14 @@ class LIBCXX_HIDDEN peepholed_toplevel_listcontainer_popupObj
 
  public:
 
-	const ref<listlayoutmanagerObj::implObj> listlayout_impl;
+	const ref<layoutmanagerObj::implObj> layout_impl;
 
 	peepholed_toplevel_listcontainer_popupObj
 		(const ref<implObj> &impl,
 		 const ref<layoutmanagerObj::implObj> &layout,
-		 const ref<listlayoutmanagerObj::implObj> &listlayout_impl)
-		: popupObj(impl, layout),
-		listlayout_impl(listlayout_impl)
+		 const ref<layoutmanagerObj::implObj> &listlayout_impl)
+		: popupObj{impl, layout},
+		layout_impl{listlayout_impl}
 		{
 		}
 
@@ -49,7 +49,7 @@ class LIBCXX_HIDDEN peepholed_toplevel_listcontainer_popupObj
 
 	ref<layoutmanagerObj::implObj> get_layout_impl() const override
 	{
-		return listlayout_impl;
+		return layout_impl;
 	}
 };
 
@@ -101,8 +101,7 @@ do_create_peepholed_toplevel_listcontainer_popup
 
 	popup_handler->set_window_type(args.popup_window_type);
 
-	ptr<peepholed_toplevel_listcontainer_layoutmanager_implObj
-	    > popup_listlayoutmanagerptr;
+	ptr<layoutmanagerObj::implObj> popup_listlayoutmanagerptr;
 
 	peephole_style popup_peephole_style{halign::fill};
 
