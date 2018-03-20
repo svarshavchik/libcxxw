@@ -438,7 +438,7 @@ focusable_container new_custom_comboboxlayoutmanager
 			 // attached_popup.
 
 			 combobox_container_impl->data(IN_THREAD)
-				 .attached_popup=popup_handler;
+				 .attached_popup_impl=popup_handler;
 
 
 			 auto &focusable_element=focusable_selection

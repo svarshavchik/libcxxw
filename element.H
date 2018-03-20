@@ -193,7 +193,12 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 		popupptr tooltip;
 
 		//! There's a popup attached to this element.
-		ptr<implObj> attached_popup;
+
+		//! This is used by combo-box code to attach the implementation
+		//! object for the combo-box's popup, so it gets hidden if
+		//! the combo-box element itself gets hidden.
+
+		elementimplptr attached_popup_impl;
 
 		//! Scheduled tooltip creation
 		tick_clock_t::time_point hover_scheduled_creation;

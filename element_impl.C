@@ -315,8 +315,8 @@ void elementObj::implObj
 		unschedule_hover_action(IN_THREAD);
 
 		// Also hide the popup.
-		if (data(IN_THREAD).attached_popup)
-			data(IN_THREAD).attached_popup
+		if (data(IN_THREAD).attached_popup_impl)
+			data(IN_THREAD).attached_popup_impl
 				->request_visibility(IN_THREAD, false);
 	}
 }
