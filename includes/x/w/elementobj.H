@@ -1,11 +1,12 @@
 /*
-** Copyright 2017 Double Precision, Inc.
+** Copyright 2017-2018 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 #ifndef x_w_elementobj_h
 #define x_w_elementobj_h
 
 #include <x/w/elementfwd.H>
+#include <x/w/containerfwd.H>
 #include <x/w/main_windowfwd.H>
 #include <x/w/screenfwd.H>
 #include <x/w/focusablefwd.H>
@@ -17,8 +18,11 @@
 #include <x/w/busyfwd.H>
 #include <x/w/types.H>
 #include <x/w/focus.H>
+#include <x/w/listlayoutmanagerfwd.H>
+#include <x/w/shortcutfwd.H>
 #include <x/obj.H>
-
+#include <x/functional.H>
+#include <x/functionalrefptr.H>
 #include <string_view>
 #include <functional>
 
@@ -134,6 +138,54 @@ public:
 
 	//! Remove the tooltip from this display element.
 	void remove_tooltip() const;
+
+	//! Create a popup context menu for this display element.
+
+	template<typename functor>
+	inline container create_popup_menu(functor &&f) const
+	{
+		return do_create_popup_menu(make_function
+					    <void (const listlayoutmanager &)>
+					    (std::forward<functor>(f)));
+	}
+
+	//! Type-erased create_popup_menu().
+	container do_create_popup_menu(const function
+				       <void (const listlayoutmanager&)> &)
+		const;
+
+	//! Install a context popup callback.
+	template<typename factory>
+	inline void install_contextpopup_callback(factory &&f)
+	{
+		do_install_contextpopup_callback
+			(functionref<install_contextpopup_callback_t>
+			 ::create(std::forward<factory>(f)));
+	}
+
+	//! Install a context popup callback.
+	template<typename factory>
+	inline void install_contextpopup_callback(factory &&f,
+						  const shortcut &sc)
+	{
+		do_install_contextpopup_callback
+			(functionref<install_contextpopup_callback_t>
+			 ::create(std::forward<factory>(f)), sc);
+	}
+
+	//! Create a factory for a context menu.
+	void do_install_contextpopup_callback(const functionref
+					      <install_contextpopup_callback_t>
+					      &);
+
+	//! Create a factory for a context menu.
+	void do_install_contextpopup_callback(const functionref
+					      <install_contextpopup_callback_t>
+					      &,
+					      const shortcut &);
+
+	//! Remove a previously installed context menu.
+	void remove_contextpopup_callback() const;
 
 	//! Return the implementation object whose size should be overridden.
 

@@ -1,16 +1,19 @@
 /*
-** Copyright 2017 Double Precision, Inc.
+** Copyright 2017-2018 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
 #include "x/w/focusable.H"
 #include "x/w/button_event.H"
 #include "x/w/motion_event.H"
+#include "x/w/main_window.H"
 #include "focus/focusable.H"
 #include "generic_window_handler.H"
 #include "child_element.H"
 #include "messages.H"
+#include "busy.H"
 #include "connection_thread.H"
+#include "catch_exceptions.H"
 #include "xid_t.H"
 
 LIBCXXW_NAMESPACE_START
@@ -370,6 +373,22 @@ bool elementObj::implObj::process_button_event(IN_THREAD_ONLY,
 			 });
 	}
 
+	if (!processed && activate_for(be) && be.button == 3 &&
+	    data(IN_THREAD).contextpopup_callback)
+	{
+		auto main_window=get_window_handler().get_main_window();
+
+		if (main_window)
+		{
+			busy_impl yes_i_am{*this};
+			try {
+				data(IN_THREAD).contextpopup_callback(&be,
+								      yes_i_am);
+			} REPORT_EXCEPTIONS(main_window);
+		}
+
+		processed=true;
+	}
 	return processed;
 }
 

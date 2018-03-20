@@ -732,6 +732,10 @@ libcxxw_la_SOURCES=\
 	shared_handler_datafwd.H		    \
 	shared_handler_dataobj.H		    \
 	shortcut.C				    \
+	shortcut/independent_shortcut_activation.C  \
+	shortcut/independent_shortcut_activation.H  \
+	shortcut/independent_shortcut_activationfwd.H \
+	shortcut/independent_shortcut_activationobj.H \
 	shortcut/installed_shortcut.C		    \
 	shortcut/installed_shortcut.H		    \
 	shortcut/installed_shortcutfwd.H	    \

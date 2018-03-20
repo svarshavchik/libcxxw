@@ -37,6 +37,7 @@
 #include <x/obj.H>
 #include <x/logger.H>
 #include <x/functional.H>
+#include <x/functionalrefptr.H>
 #include <string_view>
 #include <xcb/xproto.h>
 
@@ -199,6 +200,11 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 		//! the combo-box element itself gets hidden.
 
 		elementimplptr attached_popup_impl;
+
+		//! Context popup callback.
+		std::function<void(const callback_trigger_t &,
+				   const busy &)
+			      > contextpopup_callback;
 
 		//! Scheduled tooltip creation
 		tick_clock_t::time_point hover_scheduled_creation;

@@ -15,7 +15,8 @@ LIBCXXW_NAMESPACE_START
 //! Active shortcut mixin.
 
 //! Handles installation and uninstallation of shortcuts. Must be used
-//! with the shortcut_activation_elementObj template.
+//! with the shortcut_activation_elementObj template. Alternatively,
+//! derive from independent_shortcut_activationObj.
 
 class shortcut_activation_element_implObj : virtual public obj {
 

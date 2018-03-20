@@ -30,6 +30,7 @@
 #include "x/w/motion_event.H"
 #include "x/w/values_and_mask.H"
 #include "x/w/callback_triggerfwd.H"
+#include "x/w/main_window.H"
 #include "child_element.H"
 #include "hotspot.H"
 #include "shortcut/installed_shortcut.H"
@@ -862,9 +863,12 @@ bool generic_windowObj::handlerObj
 
 	if (best_shortcut)
 	{
-		try {
-			best_shortcut->activated(IN_THREAD, &ke);
-		} CATCH_EXCEPTIONS;
+		auto main_window=get_main_window();
+
+		if (main_window)
+			try {
+				best_shortcut->activated(IN_THREAD, &ke);
+			} REPORT_EXCEPTIONS(main_window);
 		processed=true;
 	}
 	return processed;

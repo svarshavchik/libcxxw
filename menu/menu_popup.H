@@ -48,6 +48,12 @@ submenu_popup(const elementimpl &e,
 			&creator)
 	LIBCXX_HIDDEN;
 
+//! Creating a popup context menu.
+
+container
+contextmenu_popup(const elementimpl &e,
+		  const function<void (const listlayoutmanager &)> &creator);
+
 LIBCXXW_NAMESPACE_END
 
 #endif

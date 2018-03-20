@@ -1,0 +1,195 @@
+<!--
+
+Copyright 2018 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<chapter id="popupmenu">
+  <title>Context popup menus</title>
+
+  <mediaobject>
+    <imageobject>
+      <imagedata fileref="popupmenu1.png" format="PNG"
+		 contentwidth="348px" contentdepth="132px" />
+    </imageobject>
+    <textobject>
+      <phrase>
+	Context popup menu
+      </phrase>
+    </textobject>
+    <caption>
+      <para>
+	Each display element can have an associated context popup menu.
+	Clicking on it with the right pointer button makes the context
+	popup menu appear next to the pointer's current location.
+      </para>
+    </caption>
+  </mediaobject>
+
+  <para>
+    Setting up a context popup menu is a two step process:
+  </para>
+
+  <itemizedlist>
+    <listitem>
+      <para>
+	Use <methodname>create_popup_menu</methodname>() to create the
+	contents of the popup menu.
+      </para>
+    </listitem>
+
+    <listitem>
+      <para>
+	Use <methodname>install_contextpopup_callback</methodname>() to
+	install a &callback; that gets executed in response to the
+	right pointer button click.
+      </para>
+    </listitem>
+  </itemizedlist>
+
+  <para>
+    The executed callback has no obligation to do anything in particular,
+    such as displaying a popup menu. All that happens
+    is that it gets executed by the pointer's right button getting clicked
+    with the pointer position on top of the display element.
+    <filename>popupmenu1.C</filename>
+    demonstrates the expected behavior: the callback
+    simply <methodname>show</methodname>()s the context popup menu.
+  </para>
+
+  <blockquote>
+    <title><ulink url="examples/popupmenu1.C">popupmenu1.C</ulink></title>
+
+    <informalexample>
+      <programlisting><xi:include href="../examples/popupmenu1.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <note>
+    <para>
+      The context popup menu does not own a reference on its display element,
+      and the display element does not own a reference on its context popup
+      menu, but all other <link linkend="callbackrefs">rules for captured
+	references</link> apply.
+      The callback's first parameter is a reference to its display element,
+      and this is done in a manner that does not violate the rules.
+      Context popup callbacks often need to use their display elements, and
+      this avoids the chore of
+      <link linkend="callbackweakcaptures">weakly-capturing</link>
+      their display elements,
+      and recovering the strong reference in the callback.
+    </para>
+
+    <para>
+      In this example, the context popup gets captured by value, by
+      the installed callback. The installed callback exists as long as the
+      context popup remains installed: as long as its display element exists,
+      or until a replacement context popup callback gets installed (only
+      one context popup callback exists for each display element),
+      or until <methodname>remove_contextpopup_callback</methodname>()
+      explicitly removes it.
+    </para>
+  </note>
+
+  <section id="popupmenuitems">
+    <title>Creating the contents of the context popup menu</title>
+
+    <para>
+      <methodname>create_popup_menu</methodname>()'s parameter is a
+      &creator; whose job is to create the contents of the popup menu.
+      The menu gets created the same way as <link linkend="menu">normal
+	application menus</link>. The lambda receives the list layout
+      manager as its parameter, and proceeds to create the menu items.
+    </para>
+
+    <para>
+      <methodname>create_popup_menu</methodname>() returns an opaque
+      &container; that represents the popup menu.
+      <methodname>show</methodname>() it makes it appear next to the current
+      pointer location.
+    </para>
+
+    <para>
+      It is possible to modify the contents of the context popup menu,
+      using <methodname>get_layoutmanager</methodname>() to obtain its
+      list layout manager, and using the list layout manager's methods.
+      However, since a context popup menu's creation is not dependent on
+      the context popup callback, it is possible to simply create a
+      new context popup menu, on demand.
+    </para>
+  </section>
+
+  <section id="popupmenucallback">
+    <title>Creating new context popup menus on demand</title>
+
+    <blockquote>
+      <title><ulink url="examples/popupmenu2.C">popupmenu2.C</ulink></title>
+
+      <informalexample>
+	<programlisting><xi:include href="../examples/popupmenu2.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      <methodname>popupmenu2.C</methodname> gives an example of creating
+      a new context popup menu every time. In this manner, the contents of
+      the context popup menu may reflect the application's current state.
+    </para>
+
+    <para>
+      <methodname>popupmenu2.C</methodname> simulates the recommended approach
+      when creating a context popup menu is a time-consuming task.
+      <methodname>popupmenu2.C</methodname>'s context popup callback
+      uses its
+      <ulink url="&link-x--w--busy;"><classname>&ns;::w::busy</classname></ulink>
+      parameter to <link linkend="busy">stop input processing</link>,
+      and start a separate execution thread before the
+      callback returns.
+      This allows the internal <link linkend="connthread">connection
+	thread</link> to update the display server, but ignore all
+      pointer and key clicks.
+    </para>
+
+    <para>
+      The new execution thread waits a few seconds, to simulate a
+      time-consuming popup context menu creation, then finally shows
+      the created context popup menu.
+    </para>
+
+    <section id="popupshortcuts">
+      <title>Keyboard shortcuts for context popup menus</title>
+
+      <para>
+	<methodname>install_contextpopup_callback</methodname>()'s
+	optional second parameter specifies a keyboard
+	<ulink url="&link-x--w--shortcut;"><classname>&ns;::w::shortcut</classname></ulink>
+	for the callback.
+	The keyboard shortcut invokes the callback, just like the right
+	pointer button click. The callback's
+	<ulink url="&link-typedef-x--w-callback-trigger-t;"><classname>&ns;::w::callback_trigger_t</classname></ulink>
+	parameter indicates why it's invoked.
+      </para>
+
+      <note>
+	<para>
+	  The keyboard shortcut is active only when its display element is
+	  visible. <methodname>show</methodname>()ing the context popup menu
+	  makes it appear next to the pointer, whether it's on top of the
+	  display element, or not.
+	</para>
+
+	<para>
+	  Since keyboard shortcuts are global to their windows, all
+	  context popup callbacks should have unique keyboard shortcuts.
+	</para>
+      </note>
+    </section>
+  </section>
+</chapter>
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "book" "chapter")
+End:
+-->

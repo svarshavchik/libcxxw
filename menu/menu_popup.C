@@ -7,6 +7,8 @@
 #include "menu/menubarlayoutmanager_impl.H"
 #include "peepholed_toplevel_listcontainer/create_popup.H"
 #include "listlayoutmanager/list_element_impl.H"
+#include "activated_in_thread.H"
+#include <x/weakptr.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -35,7 +37,8 @@ do_create_menu_popup(const elementimpl &e,
 		     const function<void (const listlayoutmanager &)> &creator,
 		     const new_listlayoutmanager &style,
 		     const create_peepholed_toplevel_listcontainer_popup_args
-		     &popup_args)
+		     &popup_args,
+		     const function<create_p_t_l_handler_t> &create_handler)
 {
 	return create_peepholed_toplevel_listcontainer_popup
 		(popup_args,
@@ -66,7 +69,11 @@ do_create_menu_popup(const elementimpl &e,
 
 			 return {c, c};
 		 },
-		 create_p_t_l_handler);
+		 [&]
+		 (const auto &args)
+		 {
+			 return create_handler(args);
+		 });
 
 }
 
@@ -76,7 +83,8 @@ do_create_dropdown_menu(const elementimpl &e,
 			&creator,
 			attached_to attached_to_how,
 			const char *above_color,
-			const char *below_color)
+			const char *below_color,
+			const function<create_p_t_l_handler_t> &create_handler)
 {
 	new_listlayoutmanager style{menu_list};
 
@@ -94,13 +102,14 @@ do_create_dropdown_menu(const elementimpl &e,
 			 e, "dropdown_menu,popup_menu",
 				 "menu",
 				 "menu_popup_border",
-				 0,
+				 2,
 				 attached_to_how,
 				 create_menu_popup,
 				 style,
 				 above_color,
 				 below_color
-				 });
+				 },
+		 create_handler);
 }
 
 std::tuple<popup, ref<popup_attachedto_handlerObj> >
@@ -110,7 +119,10 @@ topmenu_popup(const elementimpl &e,
 	return do_create_dropdown_menu(e, creator,
 				       attached_to::combobox_above_or_below,
 				       "menu_above_background_color",
-				       "menu_below_background_color");
+				       "menu_below_background_color",
+				       make_function
+				       <create_p_t_l_handler_t>
+				       (create_p_t_l_handler));
 }
 
 
@@ -121,7 +133,93 @@ submenu_popup(const elementimpl &e,
 	return do_create_dropdown_menu(e, creator,
 				       attached_to::submenu_next,
 				       "menu_left_background_color",
-				       "menu_right_background_color");
+				       "menu_right_background_color",
+				       make_function
+				       <create_p_t_l_handler_t>
+				       (create_p_t_l_handler));
+}
+
+namespace {
+#if 0
+}
+#endif
+
+//! Custom handler object for context menu popups.
+
+//! Positions the context menu at the most recent pointer position before
+//! the context menu becomes visible.
+
+class LIBCXX_HIDDEN contextmenu_popup_handlerObj
+	: public peepholed_toplevel_listcontainer_handlerObj {
+
+	weakptr<elementimplptr> contextmenu_element;
+
+	typedef peepholed_toplevel_listcontainer_handlerObj superclass_t;
+
+ public:
+	contextmenu_popup_handlerObj
+		(const peepholed_toplevel_listcontainer_handler_args &args,
+		 const elementimpl &contextmenu_element)
+		: superclass_t{args}, contextmenu_element{contextmenu_element}
+	{
+	}
+
+	~contextmenu_popup_handlerObj()=default;
+
+	//! Override set_inherited_visibility_mapped
+
+	//! Before mapping the popup, get the pointer position and make
+	//! the popup visible here.
+
+	void set_inherited_visibility_mapped(IN_THREAD_ONLY) override
+	{
+		auto eptr=contextmenu_element.getptr();
+
+		if (eptr)
+		{
+			auto &wh=eptr->get_window_handler();
+
+			auto r=wh.elementObj::implObj
+				::get_absolute_location_on_screen(IN_THREAD);
+
+			r.x=coord_t::truncate(r.x+
+					      wh.data(IN_THREAD).last_motion_x);
+			r.y=coord_t::truncate(r.y+
+					      wh.data(IN_THREAD).last_motion_y);
+			r.width=1;
+			r.height=1;
+
+			update_attachedto_element_position(IN_THREAD, r);
+		}
+
+		superclass_t::set_inherited_visibility_mapped(IN_THREAD);
+	}
+};
+
+#if 0
+{
+#endif
+}
+
+container
+contextmenu_popup(const elementimpl &e,
+		  const function<void (const listlayoutmanager &)> &creator)
+{
+	auto ret=do_create_dropdown_menu
+		(e, creator,
+		 attached_to::combobox_above_or_below,
+		 "menu_above_background_color",
+		 "menu_below_background_color",
+
+		 make_function<create_p_t_l_handler_t>
+		 ([e]
+		  (const auto &args)
+		  {
+			  return ref<contextmenu_popup_handlerObj>
+			  ::create(args, e);
+		  }));
+
+	return std::get<0>(ret);
 }
 
 LIBCXXW_NAMESPACE_END

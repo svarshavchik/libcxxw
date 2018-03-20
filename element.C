@@ -11,9 +11,17 @@
 #include "generic_window_handler.H"
 #include "draw_info.H"
 #include "busy.H"
+#include "menu/menu_popup.H"
+#include "activated_in_thread.H"
 #include "x/w/picture.H"
 #include "x/w/main_window.H"
+#include "x/w/container.H"
+#include "shortcut/independent_shortcut_activation.H"
+#include "activated_in_thread.H"
 #include "run_as.H"
+#include <x/weakptr.H>
+#include <x/weakcapture.H>
+#include "catch_exceptions.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -108,6 +116,156 @@ void elementObj::remove_tooltip() const
 		 (IN_THREAD_ONLY)
 		 {
 			 impl->data(IN_THREAD).tooltip_factory=nullptr;
+		 });
+}
+
+container elementObj
+::do_create_popup_menu(const function<void (const listlayoutmanager &)>
+		       &creator)
+	const
+{
+	return contextmenu_popup(impl, creator);
+}
+
+void elementObj::do_install_contextpopup_callback
+(const functionref<install_contextpopup_callback_t> &callback)
+{
+	do_install_contextpopup_callback(callback, {});
+}
+
+namespace {
+#if 0
+}
+#endif
+
+//! Shortcut activation for context popups.
+
+//! Invokes the context popup callback.
+
+class LIBCXX_HIDDEN contextpopup_shortcut_activatorObj
+	: public activated_in_threadObj {
+
+ public:
+	const functionref<install_contextpopup_callback_t> callback;
+
+	const weakptr<elementptr> weake;
+
+	contextpopup_shortcut_activatorObj(const functionref<
+					   install_contextpopup_callback_t>
+					   &callback,
+					   const element &e)
+		: callback{callback}, weake{e}
+	{
+	}
+
+	~contextpopup_shortcut_activatorObj()=default;
+
+	//! Shortcut activated.
+
+	void activated(IN_THREAD_ONLY, const callback_trigger_t &trigger)
+		override
+	{
+		auto e=weake.getptr();
+
+		if (!e)
+			return;
+
+		element stronge{e};
+
+		auto window=stronge->get_main_window();
+
+		if (!window)
+			return;
+
+		busy_impl yes_i_am{*stronge->impl};
+
+		callback->invoke(stronge, trigger, yes_i_am);
+	}
+
+	//! If the attached-to element is visible, the shortcut is enabled.
+
+	bool enabled(IN_THREAD_ONLY) override
+	{
+		auto eptr=weake.getptr();
+
+		if (!eptr)
+			return false;
+
+		return eptr->impl->data(IN_THREAD).inherited_visibility;
+	}
+};
+
+#if 0
+{
+#endif
+}
+
+void elementObj::do_install_contextpopup_callback
+(const functionref<install_contextpopup_callback_t> &callback,
+ const shortcut &sc)
+{
+
+	impl->THREAD->run_as
+		([me=ref(this), callback, sc]
+		 (IN_THREAD_ONLY)
+		 {
+			 independent_shortcut_activationptr sc_impl;
+			 ptr<contextpopup_shortcut_activatorObj> sc_active;
+
+			 // If there's a shortcut we set it up. This gets
+			 // captured by the installed callback, so it remains
+			 // in scope until remove_contextpopup_callback().
+
+			 if (sc)
+			 {
+				 auto i=independent_shortcut_activation
+					 ::create(ref(&me->impl->
+						      get_window_handler()));
+				 auto a=ref<contextpopup_shortcut_activatorObj>
+					 ::create(callback, me);
+
+				 i->install_shortcut(sc, a);
+
+				 sc_impl=i;
+				 sc_active=a;
+			 }
+
+			 me->impl->data(IN_THREAD).contextpopup_callback=
+				 [callback,
+				  sc_impl,
+				  sc_active,
+				  me=make_weak_capture(me)]
+				 (const auto &trigger,
+				  const auto &mcguffin)
+				 {
+					 auto got=me.get();
+
+					 if (!got)
+						 return;
+
+					 auto &[me]=*got;
+
+					 auto window=me->get_main_window();
+
+					 if (!window)
+						 return;
+
+					 try {
+						 callback->invoke(me,
+								  trigger,
+								  mcguffin);
+					 } REPORT_EXCEPTIONS(window);
+				 };
+		 });
+}
+
+void elementObj::remove_contextpopup_callback() const
+{
+	impl->THREAD->run_as
+		([impl=this->impl]
+		 (IN_THREAD_ONLY)
+		 {
+			 impl->data(IN_THREAD).contextpopup_callback=nullptr;
 		 });
 }
 

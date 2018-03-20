@@ -14,6 +14,8 @@ noinst_PROGRAMS=\
 	menu					\
 	pagelayoutmanager			\
 	panelayoutmanager			\
+	popupmenu1				\
+	popupmenu2				\
 	printdialog				\
 	progressbar				\
 	scrollbar				\
@@ -66,12 +68,19 @@ listlayoutmanager_LDADD=-lcxxw -lcxx
 menu_SOURCES=menu.C close_flag.H
 menu_LDADD=-lcxxw -lcxx
 
+pagelayoutmanager_SOURCES=pagelayoutmanager.C close_flag.H
+pagelayoutmanager_LDADD=-lcxxw -lcxx
+
 $(call OPTIONS_GEN,panelayoutmanager.H,panelayoutmanager.xml)
 panelayoutmanager_SOURCES=panelayoutmanager.C close_flag.H
 panelayoutmanager_LDADD=-lcxxw -lcxx
 
-pagelayoutmanager_SOURCES=pagelayoutmanager.C close_flag.H
-pagelayoutmanager_LDADD=-lcxxw -lcxx
+popupmenu1_SOURCES=popupmenu1.C close_flag.H
+popupmenu1_LDADD=-lcxxw -lcxx
+
+popupmenu2_SOURCES=popupmenu2.C close_flag.H
+popupmenu2_LDADD=-lcxxw -lcxx
+popupmenu2_CXXFLAGS=@STDTHREAD_CXXFLAGS@
 
 printdialog_SOURCES=printdialog.C close_flag.H
 printdialog_LDADD=-lcxxwcups -lcxxw -lcxxcups -lcxx

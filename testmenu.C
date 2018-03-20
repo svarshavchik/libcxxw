@@ -30,6 +30,7 @@
 #include "x/w/print_dialog.H"
 #include "x/w/print_dialog_config.H"
 #include "x/w/image.H"
+#include "x/w/shortcut.H"
 #include <x/locale.H>
 #include <x/cups/job.H>
 #include <string>
@@ -516,64 +517,97 @@ void help_menu(const LIBCXX_NAMESPACE::w::main_window &main_window,
 			       });
 }
 
+void make_context_menu(const LIBCXX_NAMESPACE::w::listlayoutmanager &m)
+{
+	m->append_items
+		({
+			[]
+			(const auto &ignore)
+			{
+				std::cout << "Help selected" << std::endl;
+			},
+			"Help",
+			[]
+			(const auto &ignore)
+			{
+				std::cout << "About selected" << std::endl;
+			},
+			"About",
+				});
+}
+
 void testmenu()
 {
 	LIBCXX_NAMESPACE::destroy_callback::base::guard guard;
 
 	auto close_flag=close_flag_ref::create();
 
-	auto main_window=LIBCXX_NAMESPACE::w::main_window
-		::create([]
-			 (const auto &main_window)
-			 {
-				 LIBCXX_NAMESPACE::w::gridlayoutmanager
-				     layout=main_window->get_layoutmanager();
-				 LIBCXX_NAMESPACE::w::gridfactory factory=
-				     layout->append_row();
+	auto main_window=LIBCXX_NAMESPACE::w::main_window::create
+		([]
+		 (const auto &main_window)
+		 {
+			 LIBCXX_NAMESPACE::w::gridlayoutmanager
+			 layout=main_window->get_layoutmanager();
+			 LIBCXX_NAMESPACE::w::gridfactory factory=
+			 layout->append_row();
 
-				 factory->create_image("docbook/menu.png");
+			 auto i=factory->create_image("docbook/menu.png");
 
-				 auto mb=main_window->get_menubarlayoutmanager();
-				 auto f=mb->append_menus();
-
-				 size_t options_menu_item;
-
-				 LIBCXX_NAMESPACE::w::menu view_m=f->add([]
-					(const auto &factory) {
-						factory->create_label("View");
-					},
-					[&]
-					(const auto &factory) {
-						options_menu_item=view_menu(factory);
-					});
-
-				 f=mb->insert_menus(0);
-
-				 f->add_text("File",
-					     [&]
-					     (const auto &factory) {
-						     file_menu(main_window,
-							       factory,
-							       view_m,
-							       options_menu_item);
-					     });
-
-				 f=mb->append_right_menus();
-
-				 f->add_text("Help",
-					     [&]
-					     (const auto &factory) {
-						     help_menu(main_window,
-							       factory);
-					     });
-
-				 main_window->get_menubar()->show();
-
-				 LIBCXX_NAMESPACE::w::menubar_lock lock{mb};
-
-				 std::cout << lock.menus() << std::endl;
-				 std::cout << lock.right_menus() << std::endl;
+			 auto context_menu=i->create_popup_menu
+			 ([]
+			  (const auto &lm) {
+				 make_context_menu(lm);
 			 });
+
+			 i->install_contextpopup_callback
+			 ([context_menu]
+			  (const auto &e,
+			   const auto &t,
+			   const auto &m) {
+				 context_menu->show();
+			 }, {"F3"});
+
+			 auto mb=main_window->get_menubarlayoutmanager();
+			 auto f=mb->append_menus();
+
+			 size_t options_menu_item;
+
+			 LIBCXX_NAMESPACE::w::menu view_m=f->add([]
+								 (const auto &factory) {
+									 factory->create_label("View");
+								 },
+								 [&]
+								 (const auto &factory) {
+									 options_menu_item=view_menu(factory);
+								 });
+
+			 f=mb->insert_menus(0);
+
+			 f->add_text("File",
+				     [&]
+				     (const auto &factory) {
+					     file_menu(main_window,
+						       factory,
+						       view_m,
+						       options_menu_item);
+				     });
+
+			 f=mb->append_right_menus();
+
+			 f->add_text("Help",
+				     [&]
+				     (const auto &factory) {
+					     help_menu(main_window,
+						       factory);
+				     });
+
+			 main_window->get_menubar()->show();
+
+			 LIBCXX_NAMESPACE::w::menubar_lock lock{mb};
+
+			 std::cout << lock.menus() << std::endl;
+			 std::cout << lock.right_menus() << std::endl;
+		 });
 
 	main_window->set_window_title("Hello world!");
 	main_window->set_window_class("main", "testmenu@examples.w.libcxx.com");
