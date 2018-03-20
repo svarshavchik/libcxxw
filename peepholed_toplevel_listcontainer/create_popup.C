@@ -7,12 +7,12 @@
 #include "peephole/peephole_toplevel.H"
 #include "peepholed_toplevel_listcontainer/create_popup.H"
 #include "peepholed_toplevel_listcontainer/layoutmanager_impl.H"
+#include "peepholed_toplevel_listcontainer/handler.H"
 #include "generic_window_handler.H"
 #include "popup/popup_attachedto_handler.H"
 #include "popup/popup_impl.H"
 #include "listlayoutmanager/listcontainer_impl.H"
 #include "shared_handler_data.H"
-#include "gridlayoutmanager.H"
 #include "background_color.H"
 
 LIBCXXW_NAMESPACE_START
@@ -53,118 +53,6 @@ class LIBCXX_HIDDEN peepholed_toplevel_listcontainer_popupObj
 	}
 };
 
-//! Popup handler object
-
-//! Stored the background colors used for the list's background when the
-//! list popup is above and below, or to the left or the right, of the
-//! attached_to element.
-//!
-//! Overrides recalculate_popup_position, and captures the newly-calculated
-//! popup_position_affinity, that determines which background color to set
-//! for the list popup's background, which gets updated accordingly.
-
-class LIBCXX_HIDDEN listcontainer_popup_attachedto_handlerObj
-	: public popup_attachedto_handlerObj {
-
-	typedef popup_attachedto_handlerObj superclass_t;
-
-	//! Which affinity is used to set the current list popup background
-
-	//! do_create_peepholed_toplevel_listcontainer_popup initializes the
-	//! list popup's background to the topright background color, so that's
-	//! the opening bid.
-
-	popup_position_affinity current_affinity=popup_position_affinity::above;
-
-	//! Background color when attached to left or above
-
-	const background_color topleft_color;
-
-	//! Background color when attached to right or below.
-
-	const background_color bottomright_color;
-
- public:
-
-	listcontainer_popup_attachedto_handlerObj
-		(const color_arg &topleft_color,
-		 const color_arg &bottomright_color,
-		 const popup_attachedto_handler_args &args)
-		: superclass_t{args},
-		topleft_color{this->create_background_color(topleft_color)},
-			bottomright_color{this->create_background_color
-					(bottomright_color)}
-	{
-	}
-
-	popup_position_affinity recalculate_popup_position(IN_THREAD_ONLY,
-							   rectangle &r,
-							   dim_t screen_width,
-							   dim_t screen_height)
-		override
-	{
-		auto adjusted_current_affinity=current_affinity;
-
-		current_affinity=superclass_t::recalculate_popup_position
-			(IN_THREAD, r,
-			 screen_width,
-			 screen_height);
-
-		auto adjusted_new_affinity=current_affinity;
-
-		switch (adjusted_current_affinity) {
-		case popup_position_affinity::left:
-			adjusted_current_affinity=
-				popup_position_affinity::above;
-			break;
-
-		case popup_position_affinity::right:
-			adjusted_current_affinity=
-				popup_position_affinity::below;
-			break;
-		case popup_position_affinity::above:
-		case popup_position_affinity::below:
-			break;
-		}
-
-		switch (adjusted_new_affinity) {
-		case popup_position_affinity::left:
-			adjusted_new_affinity=popup_position_affinity::above;
-			break;
-
-		case popup_position_affinity::right:
-			adjusted_new_affinity=
-				popup_position_affinity::below;
-			break;
-		case popup_position_affinity::above:
-		case popup_position_affinity::below:
-			break;
-		}
-
-		if (adjusted_current_affinity == adjusted_new_affinity)
-			return current_affinity;
-
-		invoke_layoutmanager
-			([&]
-			 (const ref<gridlayoutmanagerObj::implObj> &peephole_lm)
-			 {
-				 // The top level element is a grid with a
-				 // peephole being element (0, 0) in the grid.
-
-				 auto i=peephole_lm->get(0, 0)->impl;
-
-				 auto &c=adjusted_new_affinity ==
-					 popup_position_affinity::above
-					 ? topleft_color
-					 : bottomright_color;
-
-				 i->set_background_color(IN_THREAD, c);
-			 });
-
-		return current_affinity;
-	}
-};
-
 #if 0
 {
 #endif
@@ -198,17 +86,18 @@ do_create_peepholed_toplevel_listcontainer_popup
 
 	auto [opened_popup, closed_popup]=(*args.popup_type)();
 
-	auto popup_handler=ref<listcontainer_popup_attachedto_handlerObj>
-		::create(args.topleft_color,
-			 args.bottomright_color,
-			 popup_attachedto_handler_args{
-				 opened_popup,
-				 closed_popup,
-				 args.popup_wm_class_instance,
-				 parent_handler,
-				 attachedto_info,
-				 args.parent_element->nesting_level+
-					 args.extra_nesting_level});
+	auto popup_handler=peepholed_toplevel_listcontainer_handler
+		::create(peepholed_toplevel_listcontainer_handler_args{
+				args.topleft_color,
+				args.bottomright_color,	{
+					opened_popup,
+					closed_popup,
+					args.popup_wm_class_instance,
+					parent_handler,
+					attachedto_info,
+					args.parent_element
+					->nesting_level+
+					args.extra_nesting_level}});
 
 	popup_handler->set_window_type(args.popup_window_type);
 

@@ -131,8 +131,7 @@ struct LIBCXX_HIDDEN create_peepholed_toplevel_listcontainer_popup_args {
 
 //! Return value from create_peepholed_toplevel_listcontainer_popup().
 
-typedef std::tuple<popup, ref<popup_attachedto_handlerObj>
-		   > create_p_t_l_popup_ret_t;
+typedef std::tuple<popup, popup_attachedto_handler> create_p_t_l_popup_ret_t;
 
 template<typename impl_factory_t, typename factory_t>
 create_p_t_l_popup_ret_t

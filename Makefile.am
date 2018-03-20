@@ -565,6 +565,10 @@ libcxxw_la_SOURCES=\
 	peepholed_toplevel_listcontainer/create_popup.H \
 	peepholed_toplevel_listcontainer/element.H  \
 	peepholed_toplevel_listcontainer/elementfwd.H \
+	peepholed_toplevel_listcontainer/handler.C  \
+	peepholed_toplevel_listcontainer/handler.H  \
+	peepholed_toplevel_listcontainer/handlerfwd.H \
+	peepholed_toplevel_listcontainer/handlerobj.H \
 	peepholed_toplevel_listcontainer/impl.C	    \
 	peepholed_toplevel_listcontainer/impl.H	    \
 	peepholed_toplevel_listcontainer/impl_element.H \
