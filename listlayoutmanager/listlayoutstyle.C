@@ -18,7 +18,7 @@
 #include "peephole/peephole_impl.H"
 #include "popup/popup.H"
 #include "popup/popup_attachedto_handler.H"
-#include "menu/menubarlayoutmanager_impl.H"
+#include "menu/menu_popup.H"
 #include "richtext/richtextstring.H"
 #include "icon.H"
 #include "messages.H"
@@ -331,11 +331,10 @@ void listlayoutstyle_impl::do_process_list_item_param
 			   [&](const submenu &sm)
 			   {
 				   next_rowinfo.setting_menu_item();
-				   auto ret=menubarlayoutmanagerObj::implObj
-					   ::create_popup_menu
+				   auto ret=create_menu_popup
 					   (elementimpl(&textlist_element),
 					    sm.creator,
-					    attached_to::submenu_next);
+					    submenu_popup);
 
 				   next_rowinfo.menu_item=menu_item_submenu{
 					   std::get<0>(ret),

@@ -11,8 +11,6 @@
 #include "x/w/gridfactoryfwd.H"
 #include "gridlayoutmanager.H"
 #include "menu/menubar_container_implfwd.H"
-#include "popup/popupfwd.H"
-#include "popup/popup_attachedto_handler.H"
 
 #include <x/mpobj.H>
 #include <x/functional.H>
@@ -89,46 +87,6 @@ class LIBCXX_HIDDEN menubarlayoutmanagerObj::implObj
 	//! ones tabbed into.
 
 	void fix_order(IN_THREAD_ONLY, const menu &new_element);
-
-	//! A menu item selection has been made.
-
-	//! This is used as the selection_type called for the underlying
-	//! list. This gets called when a menu item has been selected/clicked
-	//! on.
-
-	static void menuitem_selected(const listlayoutmanager &lm,
-				      size_t i,
-				      const callback_trigger_t &trigger,
-				      const busy &mcguffin);
-
-	//! Create a popup menu and its attachment handler.
-
-	//! Shared code by the menubar layout manager, to create a new menu
-	//! popup and also by the menu layout manager, to create a submenu
-	//! popup.
-
-
-	template<typename creator_t>
-	static inline auto create_popup_menu(const elementimpl &e,
-					     creator_t &&creator,
-					     attached_to attached_to_how)
-	{
-		return do_create_popup_menu(e,
-					    make_function<void
-					    (const listlayoutmanager &)>
-					    (std::forward<creator_t>(creator)),
-					    attached_to_how);
-	}
-
-	//! Create a popup menu and its attachment handler.
-
-	static std::tuple<popup, ref<popup_attachedto_handlerObj> >
-		do_create_popup_menu(const elementimpl &e,
-				     const function<void (const
-							  listlayoutmanager &)>
-				     &creator,
-				     attached_to attached_to_how);
-
 };
 
 LIBCXXW_NAMESPACE_END

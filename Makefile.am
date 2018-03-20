@@ -471,6 +471,8 @@ libcxxw_la_SOURCES=\
 	menu/menubarlayoutmanager.C		    \
 	menu/menubarlayoutmanager_impl.C	    \
 	menu/menubarlayoutmanager_impl.H	    \
+	menu/menu_popup.H			    \
+	menu/menu_popup.C			    \
 	messages.H				    \
 	metrics_axis.C				    \
 	metrics_axis.H				    \
@@ -617,6 +619,8 @@ libcxxw_la_SOURCES=\
 	popup/popup_impl.H			    \
 	popup/popup_attachedto_handler.C	    \
 	popup/popup_attachedto_handler.H	    \
+	popup/popup_attachedto_handlerfwd.H	    \
+	popup/popup_attachedto_handlerobj.H	    \
 	popup/popup_attachedto_handler_element.H    \
 	popup/popup_attachedto_handler_elementfwd.H \
 	popup/popup_attachedto_info.C		    \

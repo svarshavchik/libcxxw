@@ -6,6 +6,7 @@
 #define popup_attachedto_handler_element_h
 
 #include "popup/popup_attachedto_handler_elementfwd.H"
+#include "popup/popup_attachedto_handler.H"
 #include <x/ref.H>
 
 LIBCXXW_NAMESPACE_START
@@ -15,7 +16,7 @@ LIBCXXW_NAMESPACE_START
 template<typename element_impl>
 template<typename ...Args>
 popup_attachedto_handler_elementObj<element_impl>
-::popup_attachedto_handler_elementObj(const ref<popup_attachedto_handlerObj>
+::popup_attachedto_handler_elementObj(const popup_attachedto_handler
 				      &attachedto_handler, Args && ...args)
 	: element_impl(std::forward<Args>(args)...),
 	  attachedto_handler(attachedto_handler)

@@ -5,7 +5,8 @@
 #ifndef popup_attachedto_handler_elementfwd_h
 #define popup_attachedto_handler_elementfwd_h
 
-#include "popup/popup_attachedto_handler.H"
+#include "popup/popup_attachedto_handlerfwd.H"
+#include "connection_threadfwd.H"
 #include <x/ptrfwd.H>
 
 LIBCXXW_NAMESPACE_START
@@ -25,10 +26,10 @@ class LIBCXX_HIDDEN popup_attachedto_handler_elementObj : public element_impl {
 
 	//! The handler for the popup attached to this display element.
 
-	const ref<popup_attachedto_handlerObj> attachedto_handler;
+	const popup_attachedto_handler attachedto_handler;
 
 	template<typename ...Args>
-		popup_attachedto_handler_elementObj(const ref<popup_attachedto_handlerObj> &attachedto_handler, Args && ...args);
+		popup_attachedto_handler_elementObj(const popup_attachedto_handler &attachedto_handler, Args && ...args);
 
 	~popup_attachedto_handler_elementObj();
 

@@ -5,12 +5,12 @@
 #include "libcxxw_config.h"
 #include "listlayoutmanager/listlayoutstyle_implfwd.H"
 #include "listlayoutmanager/list_element_impl.H"
-#include "popup/popup.H"
+#include "listlayoutmanager/listlayoutmanager_impl.H"
 #include "menu/menubarlayoutmanager_impl.H"
 #include "menu/menubar_container_impl.H"
 #include "menu/menubar_hotspot_implobj.H"
 #include "menu/menu_impl.H"
-#include "peepholed_toplevel_listcontainer/create_popup.H"
+#include "menu/menu_popup.H"
 #include "container.H"
 #include "grid_map_info.H"
 #include "x/w/gridfactory.H"
@@ -76,77 +76,6 @@ void menubarlayoutmanagerObj::implObj::initialize(menubarlayoutmanagerObj
 	f->create_canvas();
 }
 
-std::tuple<popup, ref<popup_attachedto_handlerObj> >
-menubarlayoutmanagerObj::implObj
-::do_create_popup_menu(const elementimpl &e,
-		       const function<void (const listlayoutmanager
-					    &)> &creator,
-		       attached_to attached_to_how)
-{
-	new_listlayoutmanager style{menu_list};
-
-	style.background_color="menu_popup_background_color";
-	style.current_color="menu_popup_highlighted_color";
-	style.highlighted_color="menu_popup_clicked_color";
-	style.list_font=theme_font{"menu_font"};
-	style.columns=1;
-
-	style.selection_type=&menuitem_selected;
-
-	return create_peepholed_toplevel_listcontainer_popup
-		({
-			e, "dropdown_menu,popup_menu",
-				"menu",
-				"menu_popup_border",
-				0,
-				attached_to_how,
-				create_menu_popup,
-				style,
-
-				attached_to_how ==
-				attached_to::combobox_above_or_below
-				? "menu_above_background_color"
-				: "menu_left_background_color",
-				attached_to_how ==
-				attached_to::combobox_above_or_below
-				? "menu_below_background_color"
-				: "menu_right_background_color"},
-			[&]
-			(const auto &peephole_container)
-			{
-				auto impl=ref<p_t_l_impl_t>
-					::create(style,
-						 peephole_container);
-
-				auto textlist_impl=ref<list_elementObj::implObj>
-					::create(impl, style);
-
-				return create_p_t_l_impl_ret_t{impl,
-						ref<peepholed_toplevel_listcontainer_layoutmanager_implObj>
-						::create(impl,
-							 list_element::create
-							 (textlist_impl))
-						};
-			},
-			[&]
-			(const popup_attachedto_info &attachedto_info,
-			 const ref<p_t_l_impl_t> &impl,
-			 const ref<listlayoutmanagerObj::implObj> &layout_impl)
-			{
-				auto c=ref<p_t_l_t>::create
-					(attachedto_info,
-					 impl,
-					 layout_impl->list_element_singleton
-					 ->impl,
-					 impl,
-					 layout_impl);
-
-				creator(layout_impl->create_public_object());
-
-				return c;
-			});
-}
-
 menu menubarlayoutmanagerObj::implObj
 ::add(menubarlayoutmanagerObj *public_object,
       const gridfactory &factory,
@@ -160,8 +89,11 @@ menu menubarlayoutmanagerObj::implObj
 	auto &e=container_impl->get_element_impl();
 
 	auto [menu_popup, popup_handler]=
-		do_create_popup_menu(ref(&e), content_creator,
-				     attached_to::combobox_above_or_below);
+		create_menu_popup(ref(&e), [&]
+				  (const auto &l)
+				  {
+					  content_creator(l);
+				  }, topmenu_popup);
 
 	auto menu_impl=ref<menuObj::implObj>
 		::create(menu_popup,
@@ -268,17 +200,4 @@ void menubarlayoutmanagerObj::implObj::fix_order(IN_THREAD_ONLY,
 						       new_element);
 }
 
-void menubarlayoutmanagerObj::implObj
-::menuitem_selected(const listlayoutmanager &lmbase,
-		    size_t i,
-		    const callback_trigger_t &trigger,
-		    const busy &mcguffin)
-{
-	listlayoutmanager lm{lmbase};
-
-	lm->impl->list_element_singleton->impl->menuitem_selected(lm,
-								  i,
-								  trigger,
-								  mcguffin);
-}
 LIBCXXW_NAMESPACE_END
