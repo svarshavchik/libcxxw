@@ -5,6 +5,7 @@
 #ifndef popup_attachedto_handlerobj_h
 #define popup_attachedto_handlerobj_h
 
+#include "popup/popup_attachedto_handlerfwd.H"
 #include "popup/popup_attachedto_infofwd.H"
 #include "popup/popup_handler.H"
 #include "connection_threadfwd.H"
@@ -23,6 +24,7 @@ class LIBCXX_HIDDEN popup_attachedto_handlerObj : public popupObj::handlerObj {
 
 	const popup_attachedto_info attachedto_info;
 
+ public:
 	//! Signature for an opened_popup report.
 
 	typedef ref<obj> (shared_handler_dataObj::*opened_popup_t)
@@ -32,7 +34,7 @@ class LIBCXX_HIDDEN popup_attachedto_handlerObj : public popupObj::handlerObj {
 
 	typedef void (shared_handler_dataObj::*closed_popup_t)
 		(IN_THREAD_ONLY, const popupObj::handlerObj &);
-
+ private:
 	//! Which shared_handler_dataObj method we report our visibility to.
 
 	const opened_popup_t opened_popup;
@@ -52,14 +54,7 @@ class LIBCXX_HIDDEN popup_attachedto_handlerObj : public popupObj::handlerObj {
 
  public:
 	//! Constructor
-	popup_attachedto_handlerObj
-		(opened_popup_t opened_popup,
-		 closed_popup_t closed_popup,
-		 const char *wm_class_instance,
-		 const ref<generic_windowObj::handlerObj> &parent,
-		 const color_arg &background_color,
-		 const popup_attachedto_info &attachedto_info,
-		 size_t nesting_level);
+	popup_attachedto_handlerObj(const popup_attachedto_handler_args &);
 
 	//! Destructor
 	~popup_attachedto_handlerObj();
@@ -83,6 +78,27 @@ class LIBCXX_HIDDEN popup_attachedto_handlerObj : public popupObj::handlerObj {
 
 	//! Implement released_opened_mcguffin().
 	void released_opened_mcguffin(IN_THREAD_ONLY) override;
+};
+
+//! Arguments to \ref popup_attachedto_handler "attached popup handler"'s constructor.
+
+struct LIBCXX_HIDDEN popup_attachedto_handler_args {
+	//! Which shared_handler_dataObj method we report our visibility to.
+	popup_attachedto_handlerObj::opened_popup_t opened_popup;
+	//! Which shared_handler_dataObj method we report our visibility to.
+	popup_attachedto_handlerObj::closed_popup_t closed_popup;
+
+	//! What WM_CLASS instance this is
+	const char *wm_class_instance;
+
+	//! Parent top level display element
+	const ref<generic_windowObj::handlerObj> &parent;
+
+	//! Popup attachedment information
+	const popup_attachedto_info &attachedto_info;
+
+	//! Initial nesting level of the popup.
+	size_t nesting_level;
 };
 
 LIBCXXW_NAMESPACE_END

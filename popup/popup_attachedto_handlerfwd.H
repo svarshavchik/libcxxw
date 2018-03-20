@@ -12,6 +12,8 @@ LIBCXXW_NAMESPACE_START
 
 class popup_attachedto_handlerObj;
 
+struct popup_attachedto_handler_args;
+
 /*! A handler for a popup that's attached to an element.
 
 Subclass of popupObj::handlerObj implementing recalculate_popup_position()

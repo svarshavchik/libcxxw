@@ -86,12 +86,11 @@ class LIBCXX_HIDDEN listcontainer_popup_attachedto_handlerObj
 
  public:
 
-	template<typename ...Args>
-		listcontainer_popup_attachedto_handlerObj
+	listcontainer_popup_attachedto_handlerObj
 		(const color_arg &topleft_color,
 		 const color_arg &bottomright_color,
-		 Args && ...args)
-		: superclass_t{std::forward<Args>(args)...},
+		 const popup_attachedto_handler_args &args)
+		: superclass_t{args},
 		topleft_color{this->create_background_color(topleft_color)},
 			bottomright_color{this->create_background_color
 					(bottomright_color)}
@@ -202,14 +201,14 @@ do_create_peepholed_toplevel_listcontainer_popup
 	auto popup_handler=ref<listcontainer_popup_attachedto_handlerObj>
 		::create(args.topleft_color,
 			 args.bottomright_color,
-			 opened_popup,
-			 closed_popup,
-			 args.popup_wm_class_instance,
-			 parent_handler,
-			 "transparent",
-			 attachedto_info,
-			 args.parent_element->nesting_level+
-			 args.extra_nesting_level);
+			 popup_attachedto_handler_args{
+				 opened_popup,
+				 closed_popup,
+				 args.popup_wm_class_instance,
+				 parent_handler,
+				 attachedto_info,
+				 args.parent_element->nesting_level+
+					 args.extra_nesting_level});
 
 	popup_handler->set_window_type(args.popup_window_type);
 

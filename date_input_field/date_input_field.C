@@ -137,13 +137,14 @@ date_input_field factoryObj
 
 	auto attachedto_handler=
 		ref<popup_attachedto_handlerObj>::create
-		(&shared_handler_dataObj::opening_exclusive_popup,
-		 &shared_handler_dataObj::closing_exclusive_popup,
-		 "date_input",
-		 parent_handler,
-		 "transparent",
-		 attachedto_info,
-		 parent_container->container_element_impl().nesting_level+2);
+		(popup_attachedto_handler_args{
+			&shared_handler_dataObj::opening_exclusive_popup,
+			&shared_handler_dataObj::closing_exclusive_popup,
+			"date_input",
+			parent_handler,
+			attachedto_info,
+			parent_container->container_element_impl()
+				.nesting_level+2});
 
 	attachedto_handler->set_window_type("popup_menu,dropdown_menu");
 

@@ -11,19 +11,14 @@
 LIBCXXW_NAMESPACE_START
 
 popup_attachedto_handlerObj
-::popup_attachedto_handlerObj(opened_popup_t opened_popup,
-			      closed_popup_t closed_popup,
-			      const char *wm_class_instance,
-			      const ref<generic_windowObj::handlerObj> &parent,
-			      const color_arg &background_color,
-			      const popup_attachedto_info &attachedto_info,
-			      size_t nesting_level)
-	: popupObj::handlerObj(parent->thread(), parent, background_color,
-			       nesting_level),
-	attachedto_info(attachedto_info),
-	opened_popup(opened_popup),
-	closed_popup(closed_popup),
-	wm_class_instance(wm_class_instance)
+::popup_attachedto_handlerObj(const popup_attachedto_handler_args &args)
+	: popupObj::handlerObj{args.parent->thread(), args.parent,
+		"transparent",
+		args.nesting_level},
+	attachedto_info{args.attachedto_info},
+	opened_popup{args.opened_popup},
+	closed_popup{args.closed_popup},
+	wm_class_instance{args.wm_class_instance}
 {
 }
 
