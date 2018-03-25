@@ -86,7 +86,16 @@ public:
 	void remove_background_color();
 
 	//! Install a state update callback.
-	void on_state_update(const std::function<element_state_callback_t> &);
+	template<typename functor>
+	inline void on_state_update(functor &&f)
+	{
+		do_on_state_update(functionref<element_state_callback_t>
+				   ::create(std::forward<functor>(f)));
+	}
+
+	//! Type-erased on-state_update().
+
+	void do_on_state_update(const functionref<element_state_callback_t> &);
 
 	//! Return the mcguffin for this display element's connection.
 
@@ -106,7 +115,15 @@ public:
 	void label_for(const focusable &f);
 
 	//! Install a pointer focus callback.
-	void on_pointer_focus(const std::function<focus_callback_t> &callback);
+	template<typename functor>
+	inline void on_pointer_focus(functor &&f)
+	{
+		do_on_pointer_focus(functionref<focus_callback_t>::create
+				    (std::forward<functor>(f)));
+	}
+
+	//! Type-erased on_pointer_focus().
+	void do_on_pointer_focus(const functionref<focus_callback_t> &);
 
 	//! Create a standard tooltip consisting of an unwrapped label.
 

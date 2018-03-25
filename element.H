@@ -137,40 +137,22 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 		bool enabled=true;
 
 		//! State update callback
-		std::function<element_state_callback_t> element_state_callback=
-			no_element_state_callback;
+		functionptr<element_state_callback_t> element_state_callback;
 
 		//! Pointer focus callback
 
-		std::function<focus_callback_t> on_pointer_callback=
-			no_focus_callback;
+		functionptr<focus_callback_t> on_pointer_callback;
 
 		//! Keyboard focus callback
-
-		std::function<focus_callback_t> on_keyboard_callback=
-			no_focus_callback;
+		functionptr<focus_callback_t> on_keyboard_callback;
 
 		//! Default pointer and keyboard callback, does nothing.
 
-		static void no_focus_callback(focus_change,
-					      const callback_trigger_t &);
-
-		//! Default element state callback, does nothing.
-
-		static void no_element_state_callback(const element_state &,
-						     const busy &);
+		static functionref<focus_callback_t> no_focus_callback();
 
 		//! Callback for reporting key events.
 
-		std::function<key_event_callback_t> on_key_event_callback=
-			no_key_event_callback;
-
-		//! Default key event callback, does nothing.
-
-		static bool no_key_event_callback(const all_key_events_t &,
-						  bool,
-						  const busy &);
-
+		functionptr<key_event_callback_t> on_key_event_callback;
 
 		//! Whether this element is a label for some focusable.
 
@@ -362,7 +344,7 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	virtual void removed(IN_THREAD_ONLY);
 
 	//! Install a state update callback.
-	void on_state_update(const std::function<element_state_callback_t> &cb);
+	void on_state_update(const functionref<element_state_callback_t> &cb);
 
 	//! Somebody wishes to inform us of our new current_position
 
@@ -1034,20 +1016,20 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 				    const callback_trigger_t &trigger);
 
 	//! Install a new keyboard focus callback
-	void on_keyboard_focus(const std::function<focus_callback_t> &callback);
+	void on_keyboard_focus(const functionref<focus_callback_t> &callback);
 
 	//! Install a new keyboard focus callback
 	void on_keyboard_focus(IN_THREAD_ONLY,
-			       const std::function<focus_callback_t> &callback);
+			       const functionref<focus_callback_t> &callback);
 
 	//! Install a new key event callback
 
-	void on_key_event(const std::function<key_event_callback_t> &);
+	void on_key_event(const functionref<key_event_callback_t> &);
 
 	//! Install a new key event callback
 
 	void on_key_event(IN_THREAD_ONLY,
-			  const std::function<key_event_callback_t> &);
+			  const functionref<key_event_callback_t> &);
 
 
  private:
@@ -1128,11 +1110,11 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 				   const callback_trigger_t &trigger);
 
 	//! Install a new keyboard focus callback
-	void on_pointer_focus(const std::function<focus_callback_t> &callback);
+	void on_pointer_focus(const functionref<focus_callback_t> &callback);
 
 	//! Install a new keyboard focus callback
 	void on_pointer_focus(IN_THREAD_ONLY,
-			      const std::function<focus_callback_t> &callback);
+			      const functionref<focus_callback_t> &callback);
  private:
 	//! Invoke the callback
 	void invoke_pointer_focus_callback(IN_THREAD_ONLY,

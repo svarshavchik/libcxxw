@@ -10,9 +10,9 @@
 #include <x/w/key_event.H>
 #include <x/obj.H>
 #include <x/functional.H>
+#include <x/functionalrefptr.H>
 
 #include <vector>
-#include <functional>
 
 LIBCXXW_NAMESPACE_START
 
@@ -95,11 +95,30 @@ public:
 	//! The callback gets invoked upon installation, reporting this
 	//! display element's current status.
 
-	void on_keyboard_focus(const std::function<focus_callback_t> &)
+	template<typename functor>
+	inline void on_keyboard_focus(functor &&f)
+	{
+		do_on_keyboard_focus(functionref<focus_callback_t>
+				     ::create(std::forward<functor>(f)));
+	}
+
+	//! Type-erased on_keyboard_focus().
+
+	void do_on_keyboard_focus(const functionref<focus_callback_t> &)
 		LIBCXX_PUBLIC;
 
 	//! Install a new callback to report key events.
-	void on_key_event(const std::function<key_event_callback_t> &)
+
+	template<typename functor>
+	inline void on_key_event(functor &&f)
+	{
+		do_on_key_event(functionref<key_event_callback_t>::create
+				(std::forward<functor>(f)));
+	}
+
+	//! Type-erased on_key_event().
+
+	void do_on_key_event(const functionref<key_event_callback_t> &)
 		LIBCXX_PUBLIC;
 
 	//! Give this element the initial input focus

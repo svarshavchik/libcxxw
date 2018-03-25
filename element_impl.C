@@ -40,25 +40,6 @@ LIBCXXW_NAMESPACE_START
 
 // #define DEBUG_EXPOSURE_CALCULATIONS
 
-void elementObj::implObj::data_thread_only_t
-::no_focus_callback(focus_change, const callback_trigger_t &)
-{
-}
-
-void elementObj::implObj::data_thread_only_t
-::no_element_state_callback(const element_state &,
-			    const busy &)
-{
-}
-
-bool elementObj::implObj::data_thread_only_t
-::no_key_event_callback(const all_key_events_t &,
-			bool,
-			const busy &)
-{
-	return false;
-}
-
 elementObj::implObj::implObj(size_t nesting_level,
 			     const rectangle &initial_position,
 			     const screen &my_screen,
@@ -455,18 +436,19 @@ void elementObj::implObj::explicit_redraw(IN_THREAD_ONLY)
 }
 
 void elementObj::implObj
-::on_state_update(const std::function<element_state_callback_t> &cb)
+::on_state_update(const functionref<element_state_callback_t> &cb)
 {
-	THREAD->get_batch_queue()->run_as([cb, me=ref(this)]
-		       (IN_THREAD_ONLY)
-		       {
-			       me->data(IN_THREAD).element_state_callback=cb;
+	THREAD->get_batch_queue()->run_as
+		([cb, me=ref(this)]
+		 (IN_THREAD_ONLY)
+		 {
+			 me->data(IN_THREAD).element_state_callback=cb;
 
-			       cb(me->create_element_state
-				  (IN_THREAD,
-				   element_state::current_state),
-				  busy_impl{*me});
-		       });
+			 cb->invoke(me->create_element_state
+				    (IN_THREAD,
+				     element_state::current_state),
+				    busy_impl{*me});
+		 });
 }
 
 void elementObj::implObj::set_minimum_override(dim_t horiz_override,
@@ -606,9 +588,11 @@ void elementObj::implObj
 ::invoke_element_state_updates(IN_THREAD_ONLY,
 			       element_state::state_update_t reason)
 {
-	data(IN_THREAD).element_state_callback
-		(create_element_state(IN_THREAD, reason),
-		 busy_impl{*this});
+	auto &cb=data(IN_THREAD).element_state_callback;
+
+	if (cb)
+		cb->invoke(create_element_state(IN_THREAD, reason),
+			   busy_impl{*this});
 }
 
 clip_region_set::clip_region_set(IN_THREAD_ONLY,
@@ -999,7 +983,7 @@ background_color elementObj::implObj
 }
 
 void elementObj::implObj::on_keyboard_focus(const
-					    std::function<focus_callback_t>
+					    functionref<focus_callback_t>
 					    &callback)
 {
 	THREAD->run_as([me=ref(this), callback]
@@ -1011,7 +995,7 @@ void elementObj::implObj::on_keyboard_focus(const
 
 void elementObj::implObj::on_keyboard_focus(IN_THREAD_ONLY,
 					    const
-					    std::function<focus_callback_t>
+					    functionref<focus_callback_t>
 					    &callback)
 {
 	data(IN_THREAD).on_keyboard_callback=callback;
@@ -1044,14 +1028,17 @@ void elementObj::implObj
 				 const callback_trigger_t &trigger)
 {
 	try {
-		data(IN_THREAD).on_keyboard_callback
-			(most_recent_keyboard_focus_change(IN_THREAD), trigger);
+		auto &cb=data(IN_THREAD).on_keyboard_callback;
+
+		if (cb)
+			cb->invoke(most_recent_keyboard_focus_change(IN_THREAD),
+				   trigger);
 	} CATCH_EXCEPTIONS;
 }
 
 void elementObj::implObj::on_pointer_focus(const
-					    std::function<focus_callback_t>
-					    &callback)
+					   functionref<focus_callback_t>
+					   &callback)
 {
 	THREAD->run_as([me=ref(this), callback]
 		       (IN_THREAD_ONLY)
@@ -1062,7 +1049,7 @@ void elementObj::implObj::on_pointer_focus(const
 
 void elementObj::implObj::on_pointer_focus(IN_THREAD_ONLY,
 					    const
-					    std::function<focus_callback_t>
+					    functionref<focus_callback_t>
 					    &callback)
 {
 	data(IN_THREAD).on_pointer_callback=callback;
@@ -1095,9 +1082,11 @@ void elementObj::implObj
 				const callback_trigger_t &trigger)
 {
 	try {
-		data(IN_THREAD).on_pointer_callback
-			(most_recent_pointer_focus_change(IN_THREAD),
-			 trigger);
+		auto &cb=data(IN_THREAD).on_pointer_callback;
+
+		if (cb)
+			cb->invoke(most_recent_pointer_focus_change(IN_THREAD),
+				   trigger);
 	} CATCH_EXCEPTIONS;
 }
 
@@ -1121,7 +1110,7 @@ bool in_focus(focus_change v)
 }
 
 void elementObj::implObj
-::on_key_event(const std::function<key_event_callback_t> &cb)
+::on_key_event(const functionref<key_event_callback_t> &cb)
 {
 	THREAD->run_as([me=ref(this), cb]
 		       (IN_THREAD_ONLY)
@@ -1132,7 +1121,7 @@ void elementObj::implObj
 
 void elementObj::implObj
 ::on_key_event(IN_THREAD_ONLY,
-	       const std::function<key_event_callback_t> &cb)
+	       const functionref<key_event_callback_t> &cb)
 {
 	data(IN_THREAD).on_key_event_callback=cb;
 }
@@ -1151,9 +1140,9 @@ bool elementObj::implObj::process_key_event(IN_THREAD_ONLY, const key_event &e)
 {
 	busy_impl mcguffin{*this};
 
-	return data(IN_THREAD).on_key_event_callback(&e,
-						     activate_for(e),
-						     mcguffin);
+	auto &cb=data(IN_THREAD).on_key_event_callback;
+
+	return cb ? cb->invoke(&e, activate_for(e), mcguffin):false;
 }
 
 bool elementObj::implObj::uses_input_method()
@@ -1285,7 +1274,10 @@ bool elementObj::implObj::pasted(IN_THREAD_ONLY,
 				 const std::u32string_view &str)
 {
 	busy_impl mcguffin{*this};
-	return data(IN_THREAD).on_key_event_callback(&str, true, mcguffin);
+
+	auto &cb=data(IN_THREAD).on_key_event_callback;
+
+	return cb ? cb->invoke(&str, true, mcguffin):false;
 }
 
 void elementObj::implObj::creating_focusable_element()

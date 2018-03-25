@@ -85,15 +85,15 @@ void elementObj::remove_background_color()
 	impl->remove_background_color();
 }
 
-void elementObj::on_state_update(const std::function<element_state_callback_t
-				 > &cb)
+void elementObj::do_on_state_update(const functionref<element_state_callback_t
+				    > &cb)
 {
 	impl->on_state_update(cb);
 }
 
-void elementObj::on_pointer_focus(const std::function<focus_callback_t> &callback)
+void elementObj::do_on_pointer_focus(const functionref<focus_callback_t> &cb)
 {
-	impl->on_pointer_focus(callback);
+	impl->on_pointer_focus(cb);
 }
 
 void elementObj::do_create_custom_tooltip(const functionref<void
