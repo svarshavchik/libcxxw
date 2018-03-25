@@ -141,7 +141,7 @@ menu menubarlayoutmanagerObj::implObj
 	new_menu->elementObj::impl->THREAD
 		->run_as
 		([new_menu, container_impl=this->container_impl]
-		 (IN_THREAD_ONLY)
+		 (ONLY IN_THREAD)
 		 {
 			 container_impl->fix_order(IN_THREAD, new_menu);
 		 });
@@ -149,7 +149,7 @@ menu menubarlayoutmanagerObj::implObj
 	return new_menu;
 }
 
-void menubarlayoutmanagerObj::implObj::fix_order(IN_THREAD_ONLY,
+void menubarlayoutmanagerObj::implObj::fix_order(ONLY IN_THREAD,
 						 const menu &new_element)
 {
 	if (new_element->impl->tabbing_order_set(IN_THREAD))

@@ -36,7 +36,7 @@ class LIBCXX_HIDDEN nonrecursive_visibilityObj : public container_impl {
 	//! The container controls the visibility of the objects in the
 	//! container, manually.
 
-	void request_visibility_recursive(IN_THREAD_ONLY, bool flag)
+	void request_visibility_recursive(ONLY IN_THREAD, bool flag)
 		override;
 };
 

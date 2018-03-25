@@ -22,7 +22,7 @@ LOG_FUNC_SCOPE_DECL(LIBCXXW_NAMESPACE::service_window_handlerObj,
 		    service_log);
 
 void service_window_handlerObj
-::connect_service(IN_THREAD_ONLY, const char *service_name,
+::connect_service(ONLY IN_THREAD, const char *service_name,
 		  const char * const * attributes)
 {
 	LOG_FUNC_SCOPE(service_log);
@@ -114,7 +114,7 @@ void service_window_handlerObj
 	connect_next_server(IN_THREAD);
 }
 
-void service_window_handlerObj::connect_next_server(IN_THREAD_ONLY)
+void service_window_handlerObj::connect_next_server(ONLY IN_THREAD)
 {
 	LOG_FUNC_SCOPE(service_log);
 
@@ -156,7 +156,7 @@ void service_window_handlerObj::connect_next_server(IN_THREAD_ONLY)
 	all_servers_tried(IN_THREAD);
 }
 
-void service_window_handlerObj::check_next_attribute(IN_THREAD_ONLY)
+void service_window_handlerObj::check_next_attribute(ONLY IN_THREAD)
 {
 	LOG_FUNC_SCOPE(service_log);
 
@@ -185,7 +185,7 @@ void service_window_handlerObj::check_next_attribute(IN_THREAD_ONLY)
 }
 
 void service_window_handlerObj
-::conversion_failed(IN_THREAD_ONLY, xcb_atom_t clipboard,
+::conversion_failed(ONLY IN_THREAD, xcb_atom_t clipboard,
 		    xcb_atom_t type,
 		    xcb_timestamp_t timestamp)
 {
@@ -201,7 +201,7 @@ void service_window_handlerObj
 }
 
 bool service_window_handlerObj
-::begin_converted_data(IN_THREAD_ONLY, xcb_atom_t type,
+::begin_converted_data(ONLY IN_THREAD, xcb_atom_t type,
 		       xcb_timestamp_t timestamp)
 {
 	return current_attribute_checked < attribute_atoms.size() &&
@@ -209,7 +209,7 @@ bool service_window_handlerObj
 }
 
 void service_window_handlerObj
-::converted_data(IN_THREAD_ONLY, xcb_atom_t clipboard,
+::converted_data(ONLY IN_THREAD, xcb_atom_t clipboard,
 		 xcb_atom_t actual_type,
 		 xcb_atom_t format,
 		 void *data,
@@ -227,7 +227,7 @@ void service_window_handlerObj
 }
 
 void service_window_handlerObj
-::end_converted_data(IN_THREAD_ONLY,
+::end_converted_data(ONLY IN_THREAD,
 		     xcb_atom_t clipboard,
 		     xcb_timestamp_t timestamp)
 {
@@ -245,7 +245,7 @@ void service_window_handlerObj
 	}
 }
 
-void service_window_handlerObj::server_failed(IN_THREAD_ONLY)
+void service_window_handlerObj::server_failed(ONLY IN_THREAD)
 {
 	LOG_FUNC_SCOPE(service_log);
 

@@ -44,7 +44,7 @@ class LIBCXX_HIDDEN peepholed_toplevel_listcontainer_implObj
 	//! Returns \c true if the tallest_row_height has changed. Calls
 	//! listcontainer_element's container's needs_recalculation().
 
-	virtual bool update_tallest_row_height(IN_THREAD_ONLY,
+	virtual bool update_tallest_row_height(ONLY IN_THREAD,
 					       dim_t new_tallest_height);
 
 	//! Return the child_elementObj this mixin implementation is a part of.

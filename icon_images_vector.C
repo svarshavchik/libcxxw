@@ -15,7 +15,7 @@ icon_images_vector::icon_images_vector(const std::vector<icon> &icon_images)
 
 icon_images_vector::~icon_images_vector()=default;
 
-void icon_images_vector::initialize(IN_THREAD_ONLY)
+void icon_images_vector::initialize(ONLY IN_THREAD)
 {
 	for (auto &i:icon_images(IN_THREAD))
 	{
@@ -23,7 +23,7 @@ void icon_images_vector::initialize(IN_THREAD_ONLY)
 	}
 }
 
-void icon_images_vector::theme_updated(IN_THREAD_ONLY,
+void icon_images_vector::theme_updated(ONLY IN_THREAD,
 				       const defaulttheme &new_theme)
 {
 	for (auto &i:icon_images(IN_THREAD))
@@ -32,7 +32,7 @@ void icon_images_vector::theme_updated(IN_THREAD_ONLY,
 	}
 }
 
-void icon_images_vector::resize(IN_THREAD_ONLY, dim_t w, dim_t h,
+void icon_images_vector::resize(ONLY IN_THREAD, dim_t w, dim_t h,
 				icon_scale scale)
 {
 	for (auto &i:icon_images(IN_THREAD))

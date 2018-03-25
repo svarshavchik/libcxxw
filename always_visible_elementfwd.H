@@ -33,7 +33,7 @@ public:
 
 	~always_visible_elementObj();
 
-	void request_visibility(IN_THREAD_ONLY, bool flag)
+	void request_visibility(ONLY IN_THREAD, bool flag)
 		override;
 };
 

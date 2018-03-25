@@ -24,7 +24,7 @@ connection_threadObj::incremental_selection_update_info::next_incremental_update
 }
 
 void connection_threadObj::incremental_selection_update_info
-::no_more_pending_updates(IN_THREAD_ONLY,
+::no_more_pending_updates(ONLY IN_THREAD,
 			  pending_updates_t::iterator iter)
 {
 	assert_or_throw(iter != pending_updates.end(),
@@ -54,7 +54,7 @@ void connection_threadObj::incremental_selection_update_info
 connection_threadObj::incremental_selection_update_info
 ::pending_window_updates_t &
 connection_threadObj::incremental_selection_update_info
-::get_updates_for_window(IN_THREAD_ONLY, xcb_window_t w)
+::get_updates_for_window(ONLY IN_THREAD, xcb_window_t w)
 {
 	return get_updates_for_window(IN_THREAD, w, pending_updates.find(w));
 }
@@ -62,7 +62,7 @@ connection_threadObj::incremental_selection_update_info
 connection_threadObj::incremental_selection_update_info
 ::pending_window_updates_t &
 connection_threadObj::incremental_selection_update_info
-::get_updates_for_window(IN_THREAD_ONLY,
+::get_updates_for_window(ONLY IN_THREAD,
 			 xcb_window_t w,
 			 pending_updates_t::iterator iter)
 {
@@ -115,7 +115,7 @@ connection_threadObj::incremental_selection_update_info
 // After we invoke_scheduled_callbacks(), we check if we need to
 // expire_incremental_updates().
 
-void connection_threadObj::expire_incremental_updates(IN_THREAD_ONLY,
+void connection_threadObj::expire_incremental_updates(ONLY IN_THREAD,
 						      int &poll_for)
 {
 	auto now=tick_clock_t::now();
@@ -162,7 +162,7 @@ void connection_threadObj::expire_incremental_updates(IN_THREAD_ONLY,
 }
 
 void connection_threadObj
-::handle_incremental_update(IN_THREAD_ONLY,
+::handle_incremental_update(ONLY IN_THREAD,
 			    const xcb_property_notify_event_t *event)
 {
 	// We might get property notification events not for our own windows

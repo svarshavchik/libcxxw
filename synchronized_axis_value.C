@@ -47,7 +47,7 @@ my_synchronized_axis::~my_synchronized_axis()
 		lock->all_values.erase(value_list_iterator);
 }
 
-void my_synchronized_axis::removed_from_container(IN_THREAD_ONLY)
+void my_synchronized_axis::removed_from_container(ONLY IN_THREAD)
 {
 	synchronized_values::lock lock{axis->impl->values};
 
@@ -62,7 +62,7 @@ void my_synchronized_axis::removed_from_container(IN_THREAD_ONLY)
 	lock->recalculate(IN_THREAD, e);
 }
 
-void my_synchronized_axis::synchronize(IN_THREAD_ONLY,
+void my_synchronized_axis::synchronize(ONLY IN_THREAD,
 				       synchronized_values::lock &lock)
 {
 	lock->recalculate(IN_THREAD, value_list_iterator);
@@ -71,7 +71,7 @@ void my_synchronized_axis::synchronize(IN_THREAD_ONLY,
 ///////////////////////////////////////////////////////////////////////
 
 void synchronized_axis_values_t
-::recalculate(IN_THREAD_ONLY,
+::recalculate(ONLY IN_THREAD,
 	      std::list<synchronized_axis_value>::iterator iter)
 {
 	LOG_FUNC_SCOPE(recalculate_loggerObj);

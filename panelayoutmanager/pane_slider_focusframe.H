@@ -45,29 +45,29 @@ class LIBCXX_HIDDEN pane_slider_focusframeObj
 	~pane_slider_focusframeObj();
 
 	//! Override initialize()
-	void initialize(IN_THREAD_ONLY) override;
+	void initialize(ONLY IN_THREAD) override;
 
 	//! Override theme_updated()
-	void theme_updated(IN_THREAD_ONLY,
+	void theme_updated(ONLY IN_THREAD,
 			   const defaulttheme &new_theme) override;
 
 	//! Override process_button_event().
 
-	bool process_button_event(IN_THREAD_ONLY,
+	bool process_button_event(ONLY IN_THREAD,
 				  const button_event &be,
 				  xcb_timestamp_t timestamp) override;
 
 	//! Override process_key_event().
 
-	bool process_key_event(IN_THREAD_ONLY, const key_event &ke) override;
+	bool process_key_event(ONLY IN_THREAD, const key_event &ke) override;
 
 	//! Override report_motion_event().
 
-	void report_motion_event(IN_THREAD_ONLY, const motion_event &) override;
+	void report_motion_event(ONLY IN_THREAD, const motion_event &) override;
 
 	//! Override pointer_focus()
 
-	void pointer_focus(IN_THREAD_ONLY,
+	void pointer_focus(ONLY IN_THREAD,
 			   const callback_trigger_t &trigger) override;
 
 };

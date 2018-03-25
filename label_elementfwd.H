@@ -56,55 +56,55 @@ public:
 	// Inherited from elementObj::implObj
 
 	//! Calculate the metrics of the initial contents of this label.
-	void initialize(IN_THREAD_ONLY) override;
+	void initialize(ONLY IN_THREAD) override;
 
 	//! Invoke the underlying text object's theme_updated().
 
 	//! When done, recalculate() our updated size.
-	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme) override;
+	void theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme) override;
 
 	//! Invoke the underlying text object's do_draw().
 
-	void do_draw(IN_THREAD_ONLY,
+	void do_draw(ONLY IN_THREAD,
 		     const draw_info &di,
 		     const rectangle_set &areas) override;
 
 	//! Override process_updated_position()
 
 	//! Call the superclass, then rewrap_due_to_updated_position().
-	void process_updated_position(IN_THREAD_ONLY)
+	void process_updated_position(ONLY IN_THREAD)
 		override;
 
 	//! Override update_current_position().
 
 	//! Call the superclass, then invoke call position_set(), to
 	//! indicate that the layout manager has set the label's position.
-	void update_current_position(IN_THREAD_ONLY,
+	void update_current_position(ONLY IN_THREAD,
 				     const rectangle &r) override;
 
 	//! Override process_buton_event().
 
 	//! Detect clicks over hotspots.
 
-	bool process_button_event(IN_THREAD_ONLY,
+	bool process_button_event(ONLY IN_THREAD,
 				  const button_event &be,
 				  xcb_timestamp_t timestamp) override;
 
 	//! Override process_key_event()
 
 	//! Keyboard navigation over hotspots.
-	bool process_key_event(IN_THREAD_ONLY, const key_event &ke) override;
+	bool process_key_event(ONLY IN_THREAD, const key_event &ke) override;
 
 	//! Override report_motion-event
 
 	//! Detect pointer movement over hotspots.
-	void report_motion_event(IN_THREAD_ONLY, const motion_event &)
+	void report_motion_event(ONLY IN_THREAD, const motion_event &)
 		override;
 
 	//! Override pointer_focus()
 
 	//! If no longer have pointer focus, disable any active hotspots.
-	void pointer_focus(IN_THREAD_ONLY,
+	void pointer_focus(ONLY IN_THREAD,
 			   const callback_trigger_t &trigger) override;
 };
 

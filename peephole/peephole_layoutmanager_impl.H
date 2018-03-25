@@ -44,7 +44,7 @@ class LIBCXX_HIDDEN peepholeObj::layoutmanager_implObj
 
 	~layoutmanager_implObj();
 
-	virtual bool process_button_event(IN_THREAD_ONLY,
+	virtual bool process_button_event(ONLY IN_THREAD,
 					  const button_event &be,
 					  xcb_timestamp_t timestamp);
 
@@ -53,12 +53,12 @@ class LIBCXX_HIDDEN peepholeObj::layoutmanager_implObj
 	//! My element's metrics must've been updated. Resize the element
 	//! according to its preferred size.
 
-	void child_metrics_updated(IN_THREAD_ONLY) override;
+	void child_metrics_updated(ONLY IN_THREAD) override;
 
 	//! Implement do_for_each_child().
 
 	//! We always have one child element.
-	void do_for_each_child(IN_THREAD_ONLY,
+	void do_for_each_child(ONLY IN_THREAD,
 			       const function<void (const element &e)> &)
 		override;
 
@@ -69,31 +69,31 @@ class LIBCXX_HIDDEN peepholeObj::layoutmanager_implObj
 
 	//! Implement recalculate().
 
-	void recalculate(IN_THREAD_ONLY) override;
+	void recalculate(ONLY IN_THREAD) override;
 
 	//! Implement ensure_visibility().
 
 	//! We can only be called to ensure peephole_element's visibility.
 
-	void ensure_visibility(IN_THREAD_ONLY,
+	void ensure_visibility(ONLY IN_THREAD,
 			       elementObj::implObj &e,
 			       const rectangle &r) override;
 
 	//! Implement process_updated_position().
 
-	void process_updated_position(IN_THREAD_ONLY,
+	void process_updated_position(ONLY IN_THREAD,
 				      const rectangle &position) override;
 
 	//! Horizontal scrollbar was moved.
 
-	void update_horizontal_scroll(IN_THREAD_ONLY, dim_t offset);
+	void update_horizontal_scroll(ONLY IN_THREAD, dim_t offset);
 
 	//! Vertical scrollbar was moved.
 
-	void update_vertical_scroll(IN_THREAD_ONLY, dim_t offset);
+	void update_vertical_scroll(ONLY IN_THREAD, dim_t offset);
 
 	//! Override initialize().
-	void initialize(IN_THREAD_ONLY) override;
+	void initialize(ONLY IN_THREAD) override;
  protected:
 
 	//! The peephole element's most recent requested visibility.
@@ -105,7 +105,7 @@ class LIBCXX_HIDDEN peepholeObj::layoutmanager_implObj
 	//! If 'flag' is set, make sure client's requested visibility is
 	//! honored.
 
-	void recalculate_with_requested_visibility(IN_THREAD_ONLY,
+	void recalculate_with_requested_visibility(ONLY IN_THREAD,
 						   bool flag);
 
  private:
@@ -121,10 +121,10 @@ class LIBCXX_HIDDEN peepholeObj::layoutmanager_implObj
 	//! update_current_position() should be called, and let it handle
 	//! everything.
 
-	bool attempt_scroll_to(IN_THREAD_ONLY, const rectangle &);
+	bool attempt_scroll_to(ONLY IN_THREAD, const rectangle &);
 
  protected:
-	virtual void update_scrollbars(IN_THREAD_ONLY,
+	virtual void update_scrollbars(ONLY IN_THREAD,
 				       const rectangle &element_pos,
 				       const rectangle &current_position);
 };

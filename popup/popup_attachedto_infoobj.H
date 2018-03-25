@@ -36,10 +36,10 @@ class LIBCXX_HIDDEN popup_attachedto_infoObj : virtual public obj {
 	//! Destructor
 	~popup_attachedto_infoObj();
 
-	dim_t max_peephole_width(IN_THREAD_ONLY, const screen &screenref)
+	dim_t max_peephole_width(ONLY IN_THREAD, const screen &screenref)
 		const;
 
-	dim_t max_peephole_height(IN_THREAD_ONLY, const screen &screenref)
+	dim_t max_peephole_height(ONLY IN_THREAD, const screen &screenref)
 		const;
 };
 

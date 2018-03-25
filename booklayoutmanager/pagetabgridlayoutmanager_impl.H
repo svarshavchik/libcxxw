@@ -59,7 +59,7 @@ class LIBCXX_HIDDEN pagetabgridlayoutmanagerObj::implObj
 	//! peephole gets all the extra width of the first row, sandwiched
 	//! between the scroll buttons.
 
-	void recalculate(IN_THREAD_ONLY) override;
+	void recalculate(ONLY IN_THREAD) override;
 
 };
 

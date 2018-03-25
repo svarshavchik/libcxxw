@@ -121,11 +121,11 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 	//
 	// Overridden methods.
 
-	void child_metrics_updated(IN_THREAD_ONLY) override;
+	void child_metrics_updated(ONLY IN_THREAD) override;
 
-	void recalculate(IN_THREAD_ONLY) override;
+	void recalculate(ONLY IN_THREAD) override;
 
-	void do_for_each_child(IN_THREAD_ONLY,
+	void do_for_each_child(ONLY IN_THREAD,
 			       const function<void
 			       (const element &e)> &callback) override;
 
@@ -156,7 +156,7 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 
 	//! Call set_element_metrics() on the container, accordingly.
 
-	virtual void set_element_metrics(IN_THREAD_ONLY,
+	virtual void set_element_metrics(ONLY IN_THREAD,
 					 const metrics::axis &h,
 					 const metrics::axis &v);
 
@@ -205,59 +205,59 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 
 	//! Rebuild elements, if needed.
 
-	bool rebuild_elements(IN_THREAD_ONLY);
+	bool rebuild_elements(ONLY IN_THREAD);
 
 	//! Invoked from rebuild_elements() after the grid map gets locked.
 
 	//! A hook for a subclass to perform any processing on the grid
 	//! map nodes. The default implementation does nothing.
 
-	virtual void rebuild_elements_start(IN_THREAD_ONLY,
+	virtual void rebuild_elements_start(ONLY IN_THREAD,
 					    grid_map_t::lock &lock);
 
 	//! After rebuilding the elements initialize() the new ones.
 
-	void initialize_new_elements(IN_THREAD_ONLY);
+	void initialize_new_elements(ONLY IN_THREAD);
 
  public:
 	THREAD_DATA_ONLY(grid_elements);
 
 	//! The container's position has been updated.
 
-	void process_updated_position(IN_THREAD_ONLY,
+	void process_updated_position(ONLY IN_THREAD,
 				      const rectangle &position) override;
 
 	//! Redraw the borders around the child element.
 
-	void child_background_color_changed(IN_THREAD_ONLY,
+	void child_background_color_changed(ONLY IN_THREAD,
 					    const elementimpl &child) override;
 
 	//! If the child element is remove_when_hidden we need to recalculate.
 
 	void requested_child_visibility_changed
-		(IN_THREAD_ONLY,
+		(ONLY IN_THREAD,
 		 const elementimpl &child, bool) override;
 
 	//! Redraw the borders around the child element, unless it is remove_when_hidden
 	void inherited_child_visibility_changed
-		(IN_THREAD_ONLY,
+		(ONLY IN_THREAD,
 		 const elementimpl &child,
 		 inherited_visibility_info &info) override;
  private:
 	//! Redraw the borders around the child element.
 
-	void redraw_child_borders_and_padding(IN_THREAD_ONLY,
+	void redraw_child_borders_and_padding(ONLY IN_THREAD,
 					      const elementimpl &child);
  public:
 
 
 	//! Recalculate paddings.
 
-	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme) override;
+	void theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme) override;
 
 	//! Return the display element's position with padding.
 
-	rectangle padded_position(IN_THREAD_ONLY,
+	rectangle padded_position(ONLY IN_THREAD,
 				  const elementimpl &e)
 		override;
 };

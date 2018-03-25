@@ -114,7 +114,7 @@ class LIBCXX_HIDDEN current_themefontcollectionObj
 
 	// Update the font specs.
 
-	void theme_was_really_updated(IN_THREAD_ONLY) override
+	void theme_was_really_updated(ONLY IN_THREAD) override
 	{
 		font_spec(IN_THREAD)=
 			font_theme->get_theme_font(font_name);

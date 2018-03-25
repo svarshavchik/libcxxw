@@ -89,10 +89,10 @@ class LIBCXX_HIDDEN ximxtransportObj::implObj
 
 	//! Attempt to connect to the X Input Method server.
 
-	void connect(IN_THREAD_ONLY);
+	void connect(ONLY IN_THREAD);
 
 	//! Protocol disconnection from the server
-	void disconnected(IN_THREAD_ONLY) override;
+	void disconnected(ONLY IN_THREAD) override;
 
 	//! Wait until we disconnect from the XIM server in an orderly fashion.
 
@@ -104,23 +104,23 @@ class LIBCXX_HIDDEN ximxtransportObj::implObj
 
 	//! service_window_handlerObj has found a server for us.
 
-	bool found_server(IN_THREAD_ONLY, xcb_window_t) override;
+	bool found_server(ONLY IN_THREAD, xcb_window_t) override;
 
 	//! All servers have been tried, none were acceptable.
 
-	void all_servers_tried(IN_THREAD_ONLY) override;
+	void all_servers_tried(ONLY IN_THREAD) override;
 
 	//! Received a client message
 
-	void client_message_event(IN_THREAD_ONLY,
+	void client_message_event(ONLY IN_THREAD,
 				  const xcb_client_message_event_t *)
 		override;
 
-	bool begin_converted_data(IN_THREAD_ONLY, xcb_atom_t type,
+	bool begin_converted_data(ONLY IN_THREAD, xcb_atom_t type,
 				  xcb_timestamp_t timestamp)
 		override;
 
-	void converted_data(IN_THREAD_ONLY, xcb_atom_t clipboard,
+	void converted_data(ONLY IN_THREAD, xcb_atom_t clipboard,
 			    xcb_atom_t actual_type,
 			    xcb_atom_t format,
 			    void *data,
@@ -128,7 +128,7 @@ class LIBCXX_HIDDEN ximxtransportObj::implObj
 
 
 	//! Hooray, we received a message from the XIM server.
-	void received_single_message(IN_THREAD_ONLY,
+	void received_single_message(ONLY IN_THREAD,
 				     const uint8_t *data, size_t n);
 
 	//////////////////////////////////////////////////////////////////
@@ -136,14 +136,14 @@ class LIBCXX_HIDDEN ximxtransportObj::implObj
 	// Inherited from ximserverObj
 
 	//! Send a message.
-	void send(IN_THREAD_ONLY, const uint8_t *data, size_t n)
+	void send(ONLY IN_THREAD, const uint8_t *data, size_t n)
 		override;
 
 	//! Disconnection. Fatal error, or orderly disconnection.
-	void xim_disconnected(IN_THREAD_ONLY) override;
+	void xim_disconnected(ONLY IN_THREAD) override;
 
 	//! All connection negotiation has taken place.
-	void xim_fully_connected(IN_THREAD_ONLY) override;
+	void xim_fully_connected(ONLY IN_THREAD) override;
 };
 
 LIBCXXW_NAMESPACE_END

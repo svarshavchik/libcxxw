@@ -18,13 +18,13 @@ list_celltextObj::list_celltextObj(const richtextstring &string,
 }
 
 std::pair<metrics::axis, metrics::axis>
-list_celltextObj::cell_get_metrics(IN_THREAD_ONLY, dim_t preferred_width)
+list_celltextObj::cell_get_metrics(ONLY IN_THREAD, dim_t preferred_width)
 {
 	return get_metrics(IN_THREAD, preferred_width);
 }
 
 
-void list_celltextObj::cell_redraw(IN_THREAD_ONLY,
+void list_celltextObj::cell_redraw(ONLY IN_THREAD,
 				   element_drawObj &draw,
 				   const draw_info &di,
 				   bool draw_as_disabled,
@@ -38,13 +38,13 @@ void list_celltextObj::cell_redraw(IN_THREAD_ONLY,
 	full_redraw(IN_THREAD, draw, rdi, di, boundaries);
 }
 
-void list_celltextObj::cell_initialize(IN_THREAD_ONLY,
+void list_celltextObj::cell_initialize(ONLY IN_THREAD,
 				       const defaulttheme &initial_theme)
 {
 	theme_updated(IN_THREAD, initial_theme);
 }
 
-void list_celltextObj::cell_theme_updated(IN_THREAD_ONLY,
+void list_celltextObj::cell_theme_updated(ONLY IN_THREAD,
 					  const defaulttheme &initial_theme)
 {
 	theme_updated(IN_THREAD, initial_theme);

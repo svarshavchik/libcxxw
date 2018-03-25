@@ -27,7 +27,7 @@ scratch_buffer_draw<child_type>::~scratch_buffer_draw()=default;
 //! clip region set.
 
 template<typename child_type>
-void scratch_buffer_draw<child_type>::do_draw(IN_THREAD_ONLY,
+void scratch_buffer_draw<child_type>::do_draw(ONLY IN_THREAD,
 					      const draw_info &di,
 					      const rectangle_set &areas)
 {

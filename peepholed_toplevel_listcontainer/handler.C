@@ -22,7 +22,7 @@ peepholed_toplevel_listcontainer_handlerObj
 
 popup_position_affinity
 peepholed_toplevel_listcontainer_handlerObj
-::recalculate_popup_position(IN_THREAD_ONLY,
+::recalculate_popup_position(ONLY IN_THREAD,
 			     rectangle &r,
 			     dim_t screen_width,
 			     dim_t screen_height)

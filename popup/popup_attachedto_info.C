@@ -19,7 +19,7 @@ popup_attachedto_infoObj
 popup_attachedto_infoObj::~popup_attachedto_infoObj()=default;
 
 dim_t popup_attachedto_infoObj
-::max_peephole_width(IN_THREAD_ONLY,
+::max_peephole_width(ONLY IN_THREAD,
 		     const screen &screenref) const
 {
 	dim_t screen_width=screenref->impl->width_in_pixels();
@@ -56,7 +56,7 @@ dim_t popup_attachedto_infoObj
 }
 
 dim_t popup_attachedto_infoObj
-::max_peephole_height(IN_THREAD_ONLY,
+::max_peephole_height(ONLY IN_THREAD,
 		      const screen &screenref) const
 {
 	auto screen_height=screenref->impl->height_in_pixels();

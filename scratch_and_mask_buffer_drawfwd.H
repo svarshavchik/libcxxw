@@ -34,7 +34,7 @@ class LIBCXX_HIDDEN scratch_and_mask_buffer_draw_impl {
 	~scratch_and_mask_buffer_draw_impl();
 
 	//! Reinvoke do_draw(), after locking area_scratch
-	void get_mask_scratch_buffer(IN_THREAD_ONLY,
+	void get_mask_scratch_buffer(ONLY IN_THREAD,
 				     const draw_info &di,
 				     const picture &area_picture,
 				     const pixmap &area_pixmap,
@@ -42,7 +42,7 @@ class LIBCXX_HIDDEN scratch_and_mask_buffer_draw_impl {
 				     const rectangle &area_entire_rect);
 
 	//! Implement do_draw(), with a convenient scratch buffer.
-	virtual void do_draw(IN_THREAD_ONLY,
+	virtual void do_draw(ONLY IN_THREAD,
 			     const draw_info &di,
 			     const picture &area_picture,
 			     const pixmap &area_pixmap,
@@ -90,7 +90,7 @@ class LIBCXX_HIDDEN scratch_and_mask_buffer_draw
 
 	~scratch_and_mask_buffer_draw();
 
-	void do_draw(IN_THREAD_ONLY,
+	void do_draw(ONLY IN_THREAD,
 		     const draw_info &di,
 		     const picture &area_picture,
 		     const pixmap &area_pixmap,

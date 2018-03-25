@@ -106,11 +106,11 @@ class LIBCXX_HIDDEN focusableImplObj : virtual public obj {
 
 	//! Whether this element is enabled for focusing.
 
-	bool focusable_enabled(IN_THREAD_ONLY);
+	bool focusable_enabled(ONLY IN_THREAD);
 
 	//! Set enabled/disabled
 
-	void set_enabled(IN_THREAD_ONLY, bool flag);
+	void set_enabled(ONLY IN_THREAD, bool flag);
 
 	//! Must be implement in the subclass.
 
@@ -129,17 +129,17 @@ class LIBCXX_HIDDEN focusableImplObj : virtual public obj {
 	//! Called from the public object's constructor to finish construction.
 
 	//! Inserts itself into the focusable_fields list.
-	void focusable_initialize(IN_THREAD_ONLY);
+	void focusable_initialize(ONLY IN_THREAD);
 
 	//! Invoke from the public object's destructor
 
-	void focusable_deinitialize(IN_THREAD_ONLY);
+	void focusable_deinitialize(ONLY IN_THREAD);
 
 	//! Return the focusable fields.
-	focusable_fields_t &focusable_fields(IN_THREAD_ONLY);
+	focusable_fields_t &focusable_fields(ONLY IN_THREAD);
 
 	//! Advance input focus to the next focusable field.
-	void next_focus(IN_THREAD_ONLY,
+	void next_focus(ONLY IN_THREAD,
 			const callback_trigger_t &trigger);
 
 	//! This is a label for this display element.
@@ -151,12 +151,12 @@ class LIBCXX_HIDDEN focusableImplObj : virtual public obj {
 	//! The public object's destructor invokes next_focus() after removing
 	//! focusable_fields_iter from focusable_fields.
 
-	void next_focus(IN_THREAD_ONLY,
+	void next_focus(ONLY IN_THREAD,
 			focusable_fields_t::iterator starting_iter,
 			const callback_trigger_t &trigger);
  public:
 	//! Advance input focus to the previous focusable field.
-	void prev_focus(IN_THREAD_ONLY,
+	void prev_focus(ONLY IN_THREAD,
 			const callback_trigger_t &trigger);
 
 	//! Set focus to this focusable element.
@@ -166,12 +166,12 @@ class LIBCXX_HIDDEN focusableImplObj : virtual public obj {
 	//! scrolling as a result of pressing a button would be a rather rude
 	//! thing to do.
 
-	void set_focus_only(IN_THREAD_ONLY,
+	void set_focus_only(ONLY IN_THREAD,
 			    const callback_trigger_t &);
 
 	//! Set focus to this focusable element and make sure it is visible.
 
-	virtual void set_focus_and_ensure_visibility(IN_THREAD_ONLY,
+	virtual void set_focus_and_ensure_visibility(ONLY IN_THREAD,
 						     const callback_trigger_t &);
 
  private:
@@ -180,27 +180,27 @@ class LIBCXX_HIDDEN focusableImplObj : virtual public obj {
 
 	//! Invokes focus_to's set_focus_and_ensure_visibility().
 
-	void switch_focus(IN_THREAD_ONLY, const focusable_impl &focus_to,
+	void switch_focus(ONLY IN_THREAD, const focusable_impl &focus_to,
 			  const callback_trigger_t &trigger);
 
  public:
 	//! Whether we're cool with giving up focus.
-	virtual bool ok_to_lose_focus(IN_THREAD_ONLY,
+	virtual bool ok_to_lose_focus(ONLY IN_THREAD,
 				      const callback_trigger_t &trigger);
 
 	//! Set tabbing order.
-	void get_focus_before(IN_THREAD_ONLY,
+	void get_focus_before(ONLY IN_THREAD,
 			      const ref<focusableImplObj> &other);
 	//! Set tabbing order.
-	void get_focus_after(IN_THREAD_ONLY,
+	void get_focus_after(ONLY IN_THREAD,
 			      const ref<focusableImplObj> &other);
 
  private:
 	//! Set tabbing order.
-	void i_will_get_focus_before(IN_THREAD_ONLY,
+	void i_will_get_focus_before(ONLY IN_THREAD,
 				     focusableImplObj &other);
 	//! Set tabbing order.
-	void i_will_get_focus_after(IN_THREAD_ONLY,
+	void i_will_get_focus_after(ONLY IN_THREAD,
 				    focusableImplObj &other);
 
  public:
@@ -216,7 +216,7 @@ class LIBCXX_HIDDEN focusableImplObj : virtual public obj {
 
 
 	//! Make sure we do not have input focus
-	void unfocus(IN_THREAD_ONLY);
+	void unfocus(ONLY IN_THREAD);
 
  protected:
 
@@ -228,16 +228,16 @@ class LIBCXX_HIDDEN focusableImplObj : virtual public obj {
 	//! the focus all over the place. Instead punt this into idle
 	//! callback processing.
 
-	void unfocus_later(IN_THREAD_ONLY);
+	void unfocus_later(ONLY IN_THREAD);
 };
 
-void get_focus_before_in_thread(IN_THREAD_ONLY,	const focusable &me,
+void get_focus_before_in_thread(ONLY IN_THREAD,	const focusable &me,
 				const focusable &other) LIBCXX_HIDDEN;
 
-void get_focus_after_in_thread(IN_THREAD_ONLY,	const focusable &me,
+void get_focus_after_in_thread(ONLY IN_THREAD,	const focusable &me,
 				const focusable &other) LIBCXX_HIDDEN;
 
-void get_focus_impl_after_in_thread(IN_THREAD_ONLY, const focusable &me,
+void get_focus_impl_after_in_thread(ONLY IN_THREAD, const focusable &me,
 				    const ref<focusableImplObj> &a)
 	LIBCXX_HIDDEN;
 

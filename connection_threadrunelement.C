@@ -70,7 +70,7 @@ elementimpl connection_threadObj::next_highest_element(element_set_t &s)
 // Some display element changed their visibility. Invoke
 // their update_visibility() methods.
 
-bool connection_threadObj::process_visibility_updated(IN_THREAD_ONLY)
+bool connection_threadObj::process_visibility_updated(ONLY IN_THREAD)
 {
 	if (visibility_updated_thread_only->empty())
 		return false;
@@ -88,7 +88,7 @@ bool connection_threadObj::process_visibility_updated(IN_THREAD_ONLY)
 	return true;
 }
 
-bool connection_threadObj::recalculate_containers(IN_THREAD_ONLY)
+bool connection_threadObj::recalculate_containers(ONLY IN_THREAD)
 {
 	if (containers_2_recalculate_thread_only->empty())
 		return false;
@@ -133,7 +133,7 @@ bool connection_threadObj::recalculate_containers(IN_THREAD_ONLY)
 	return true;
 }
 
-bool connection_threadObj::process_element_position_updated(IN_THREAD_ONLY)
+bool connection_threadObj::process_element_position_updated(ONLY IN_THREAD)
 {
 	if (element_position_updated_thread_only->empty())
 		return false;
@@ -151,7 +151,7 @@ bool connection_threadObj::process_element_position_updated(IN_THREAD_ONLY)
 	return true;
 }
 
-bool connection_threadObj::redraw_elements(IN_THREAD_ONLY)
+bool connection_threadObj::redraw_elements(ONLY IN_THREAD)
 {
 	if (elements_to_redraw_thread_only->empty())
 		return false;

@@ -21,7 +21,7 @@ public:
 	{
 	}
 
-	void hide(IN_THREAD_ONLY)
+	void hide(ONLY IN_THREAD)
 	{
 		auto p=handler.getptr();
 
@@ -46,7 +46,7 @@ void shared_handler_dataObj::set_toplevel_handler(const ref<generic_windowObj
 }
 
 ref<obj> shared_handler_dataObj
-::opening_exclusive_popup(IN_THREAD_ONLY,
+::opening_exclusive_popup(ONLY IN_THREAD,
 			 const ref<popupObj::handlerObj> &popup)
 {
 	auto mcguffin=ref<handler_mcguffinObj>::create(popup);
@@ -59,12 +59,12 @@ ref<obj> shared_handler_dataObj
 }
 
 void shared_handler_dataObj
-::closing_exclusive_popup(IN_THREAD_ONLY,
+::closing_exclusive_popup(ONLY IN_THREAD,
 			 const popupObj::handlerObj &popup)
 {
 }
 
-void shared_handler_dataObj::close_exclusive_popup(IN_THREAD_ONLY)
+void shared_handler_dataObj::close_exclusive_popup(ONLY IN_THREAD)
 {
 	auto p=opened_exclusive_popup.getptr();
 
@@ -73,7 +73,7 @@ void shared_handler_dataObj::close_exclusive_popup(IN_THREAD_ONLY)
 }
 
 void shared_handler_dataObj
-::hide_menu_popups_until(IN_THREAD_ONLY,
+::hide_menu_popups_until(ONLY IN_THREAD,
 			 opened_menu_popups_t::base::iterator iter)
 {
 	for (auto b=opened_menu_popups->begin(); b != iter; ++b)
@@ -86,7 +86,7 @@ void shared_handler_dataObj
 }
 
 ref<obj> shared_handler_dataObj
-::opening_menu_popup(IN_THREAD_ONLY,
+::opening_menu_popup(ONLY IN_THREAD,
 		     const ref<popupObj::handlerObj> &popup)
 {
 	close_exclusive_popup(IN_THREAD);
@@ -104,14 +104,14 @@ ref<obj> shared_handler_dataObj
 }
 
 void shared_handler_dataObj
-::closing_menu_popup(IN_THREAD_ONLY,
+::closing_menu_popup(ONLY IN_THREAD,
 		     const popupObj::handlerObj &popup)
 {
 	hide_menu_popups_until(IN_THREAD, opened_menu_popups
 			       ->lower_bound(popup.nesting_level));
 }
 
-void shared_handler_dataObj::close_all_menu_popups(IN_THREAD_ONLY)
+void shared_handler_dataObj::close_all_menu_popups(ONLY IN_THREAD)
 {
 	hide_menu_popups_until(IN_THREAD, opened_menu_popups->end());
 	auto h=toplevel_handler.getptr();
@@ -120,7 +120,7 @@ void shared_handler_dataObj::close_all_menu_popups(IN_THREAD_ONLY)
 }
 
 bool shared_handler_dataObj
-::handle_key_event(IN_THREAD_ONLY,
+::handle_key_event(ONLY IN_THREAD,
 		   const xcb_key_release_event_t *event,
 		   bool keypress)
 {
@@ -163,7 +163,7 @@ bool shared_handler_dataObj
 }
 
 void shared_handler_dataObj
-::reporting_button_event_to(IN_THREAD_ONLY,
+::reporting_button_event_to(ONLY IN_THREAD,
 			    const ref<generic_windowObj::handlerObj> &from,
 			    const ref<generic_windowObj::handlerObj> &to,
 			    const button_event &be)
@@ -197,7 +197,7 @@ void shared_handler_dataObj
 }
 
 ptr<generic_windowObj::handlerObj>
-shared_handler_dataObj::find_popup_for_xy(IN_THREAD_ONLY,
+shared_handler_dataObj::find_popup_for_xy(ONLY IN_THREAD,
 					const motion_event &me)
 {
 	// If there's a combo-box popup, all motion events go there.

@@ -33,15 +33,15 @@ class LIBCXX_HIDDEN popup_attachedto_handler_elementObj : public element_impl {
 
 	~popup_attachedto_handler_elementObj();
 
-	void initialize(IN_THREAD_ONLY) override;
+	void initialize(ONLY IN_THREAD) override;
 
-	void process_updated_position(IN_THREAD_ONLY) override;
+	void process_updated_position(ONLY IN_THREAD) override;
 
-	void absolute_location_updated(IN_THREAD_ONLY) override;
+	void absolute_location_updated(ONLY IN_THREAD) override;
 
  private:
 
-	void update_attachedto_info(IN_THREAD_ONLY);
+	void update_attachedto_info(ONLY IN_THREAD);
 };
 
 LIBCXXW_NAMESPACE_END

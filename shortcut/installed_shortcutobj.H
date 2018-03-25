@@ -40,13 +40,13 @@ public:
 	//! Implement activated().
 
 	//! Forwarded to the real activate().
-	void activated(IN_THREAD_ONLY,
+	void activated(ONLY IN_THREAD,
 		       const callback_trigger_t &trigger) override;
 
 	//! Implement enabled().
 
 	//! Forwarded to the real enabled().
-	bool enabled(IN_THREAD_ONLY) override;
+	bool enabled(ONLY IN_THREAD) override;
 };
 
 LIBCXXW_NAMESPACE_END

@@ -41,7 +41,7 @@ class LIBCXX_HIDDEN dialogObj::handlerObj : public main_windowObj::handlerObj {
 
 	//! Constructor
 
-	handlerObj(IN_THREAD_ONLY,
+	handlerObj(ONLY IN_THREAD,
 		   const ref<generic_windowObj::handlerObj> &parent_handler,
 		   const color_arg &background_color,
 		   bool modal);
@@ -50,7 +50,7 @@ class LIBCXX_HIDDEN dialogObj::handlerObj : public main_windowObj::handlerObj {
 
 	//! If modal, acquire or release the busy mcguffin, accordingly.
 
-	void set_inherited_visibility(IN_THREAD_ONLY,
+	void set_inherited_visibility(ONLY IN_THREAD,
 				      inherited_visibility_info &) override;
 
 	//! Override set_inherited_visibility_mapped)(.
@@ -58,20 +58,20 @@ class LIBCXX_HIDDEN dialogObj::handlerObj : public main_windowObj::handlerObj {
 	//! If we need to handle_our_own_placement(), figure out what it
 	//! should be, if we're made visible.
 
-	void set_inherited_visibility_mapped(IN_THREAD_ONLY) override;
+	void set_inherited_visibility_mapped(ONLY IN_THREAD) override;
 
 	//! Override compute_size_hints.
 
 	//! If we need to handle_our_own_placement() then we set the P_POSITION
 	//! hint (and set_inherited_visibility() will calculate what it is).
 
-	xcb_size_hints_t compute_size_hints(IN_THREAD_ONLY) override;
+	xcb_size_hints_t compute_size_hints(ONLY IN_THREAD) override;
 
 	//! Override default_wm_class_resource().
 
 	//! Use the same one as the parent, by default.
 
-	std::string default_wm_class_resource(IN_THREAD_ONLY) override;
+	std::string default_wm_class_resource(ONLY IN_THREAD) override;
 
  private:
 

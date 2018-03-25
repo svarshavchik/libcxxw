@@ -39,7 +39,7 @@ ximxtransportObj::ximxtransportObj(const ref<implObj> &impl)
 	: impl(impl), window_owner(ref<windowObj>::create(impl))
 {
 	impl->thread()->run_as([impl]
-			       (IN_THREAD_ONLY)
+			       (ONLY IN_THREAD)
 			       {
 				       impl->connect(IN_THREAD);
 			       });

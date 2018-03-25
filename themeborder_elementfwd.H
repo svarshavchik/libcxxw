@@ -46,10 +46,10 @@ public:
 
 	//! Makes sure the border gets updated properly, in the event
 	//! of the default theme changing after construction.
-	void initialize(IN_THREAD_ONLY) override;
+	void initialize(ONLY IN_THREAD) override;
 
 	//! Recalculate the dimension, after a theme change.
-	void theme_updated(IN_THREAD_ONLY,
+	void theme_updated(ONLY IN_THREAD,
 			   const defaulttheme &new_theme) override;
 
 	elementObj::implObj &get_border_element_impl() override;

@@ -46,7 +46,7 @@ public:
 
 	~themedim_axis_widthObj();
 
-	metrics::axis get_width_axis(IN_THREAD_ONLY) const;
+	metrics::axis get_width_axis(ONLY IN_THREAD) const;
 };
 
 //! Vertical metrics axis specification mixin.
@@ -77,7 +77,7 @@ public:
 
 	~themedim_axis_heightObj();
 
-	metrics::axis get_height_axis(IN_THREAD_ONLY) const;
+	metrics::axis get_height_axis(ONLY IN_THREAD) const;
 };
 
 LIBCXXW_NAMESPACE_END

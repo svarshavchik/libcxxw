@@ -67,7 +67,7 @@ corner_borderObj::implObj
 
 corner_borderObj::implObj::~implObj()=default;
 
-void corner_borderObj::implObj::updated(IN_THREAD_ONLY)
+void corner_borderObj::implObj::updated(ONLY IN_THREAD)
 {
 	bool unchanged=surrounding_elements(IN_THREAD) ==
 		old_surrounding_elements(IN_THREAD);
@@ -86,19 +86,19 @@ void corner_borderObj::implObj::updated(IN_THREAD_ONLY)
 	schedule_redraw(IN_THREAD);
 }
 
-void corner_borderObj::implObj::initialize(IN_THREAD_ONLY)
+void corner_borderObj::implObj::initialize(ONLY IN_THREAD)
 {
 	compute_metrics(IN_THREAD);
 	superclass_t::initialize(IN_THREAD);
 }
 
-void corner_borderObj::implObj::theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme)
+void corner_borderObj::implObj::theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme)
 {
 	compute_metrics(IN_THREAD);
 	superclass_t::theme_updated(IN_THREAD, new_theme);
 }
 
-void corner_borderObj::implObj::compute_metrics(IN_THREAD_ONLY)
+void corner_borderObj::implObj::compute_metrics(ONLY IN_THREAD)
 {
 	auto &elements=surrounding_elements(IN_THREAD);
 
@@ -167,7 +167,7 @@ void corner_borderObj::implObj::compute_metrics(IN_THREAD_ONLY)
 	cached_draw_info.reset();
 }
 
-void corner_borderObj::implObj::do_draw(IN_THREAD_ONLY,
+void corner_borderObj::implObj::do_draw(ONLY IN_THREAD,
 					const draw_info &di,
 					const picture &area_picture,
 					const pixmap &area_pixmap,
@@ -317,7 +317,7 @@ void corner_borderObj::implObj::do_draw(IN_THREAD_ONLY,
 }
 
 corner_borderObj::implObj::cached_draw_info_s
-&corner_borderObj::implObj::get_cached_draw_info(IN_THREAD_ONLY)
+&corner_borderObj::implObj::get_cached_draw_info(ONLY IN_THREAD)
 {
 	if (cached_draw_info)
 		return *cached_draw_info;
@@ -514,7 +514,7 @@ corner_borderObj::implObj::cached_draw_info_s
 // they can be drawn as a corner.
 
 void corner_borderObj::implObj::surrounding_elements_and_borders
-::get_same_border(IN_THREAD_ONLY,
+::get_same_border(ONLY IN_THREAD,
 		  from_b border1,
 		  from_b border2,
 		  int which_corners,
@@ -544,7 +544,7 @@ void corner_borderObj::implObj::surrounding_elements_and_borders
 }
 
 void corner_borderObj::implObj::surrounding_elements_and_borders
-::pick_border(IN_THREAD_ONLY,
+::pick_border(ONLY IN_THREAD,
 	      from_b which_border,
 	      int flag,
 	      std::vector<std::tuple<const_border_impl, int>> &borders)

@@ -27,7 +27,7 @@ public:
 
 	using container_impl::container_impl;
 
-	void ensured_visibility_of_child_element(IN_THREAD_ONLY,
+	void ensured_visibility_of_child_element(ONLY IN_THREAD,
 						 elementObj::implObj &e,
 						 const rectangle &r) override;
 };

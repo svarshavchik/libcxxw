@@ -25,7 +25,7 @@ class LIBCXX_HIDDEN peephole_toplevel_gridlayoutmanagerObj
 	//! Simultaneously trigger recalculation of the peepholed container,
 	//! which will recalculate_metrics() of the toplevel peepholed
 	//! element.
-	void needs_recalculation(IN_THREAD_ONLY) override;
+	void needs_recalculation(ONLY IN_THREAD) override;
 };
 
 LIBCXXW_NAMESPACE_END

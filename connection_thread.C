@@ -161,7 +161,7 @@ batch_queue connection_threadObj::get_batch_queue()
 }
 
 bool connection_threadObj
-::release_grabs_and_process_buffered_events(IN_THREAD_ONLY)
+::release_grabs_and_process_buffered_events(ONLY IN_THREAD)
 {
 	bool flag=false;
 
@@ -245,7 +245,7 @@ bool connection_threadObj
 }
 
 void connection_threadObj
-::install_window_handler(IN_THREAD_ONLY,
+::install_window_handler(ONLY IN_THREAD,
 			 const ref<window_handlerObj> &handler)
 {
 	IN_THREAD->window_handlers(IN_THREAD)
@@ -259,7 +259,7 @@ void connection_threadObj
 }
 
 void connection_threadObj
-::uninstall_window_handler(IN_THREAD_ONLY,
+::uninstall_window_handler(ONLY IN_THREAD,
 			   const ref<window_handlerObj> &handler)
 {
 	auto window_id=handler->id();

@@ -43,10 +43,10 @@ template<dim_t border_implObj::*calc_major,
 
 	 // Fill in elements' background color
 	 void (straight_borderObj::implObj::*do_fill_bg)
-	 (IN_THREAD_ONLY, const border_implObj::draw_info &) const,
+	 (ONLY IN_THREAD, const border_implObj::draw_info &) const,
 	 // draw_horizontal, or draw_vertical, of course.
 	 void (border_implObj::*do_draw_horizvert)
-				  (IN_THREAD_ONLY,
+				  (ONLY IN_THREAD,
 				   const border_implObj::draw_info &,
 				   const grid_elementptr &,
 				   const grid_elementptr &) const>
@@ -60,7 +60,7 @@ class LIBCXX_HIDDEN straight_border_implObj
 	~straight_border_implObj()=default;
 
 	template<typename F>
-		inline void for_each_non_null_border(IN_THREAD_ONLY,
+		inline void for_each_non_null_border(ONLY IN_THREAD,
 						     F &&f)
 	{
 		const auto &b=this->borders(IN_THREAD);
@@ -76,7 +76,7 @@ class LIBCXX_HIDDEN straight_border_implObj
 
 	//! Compute our metrics for the first time.
 
-	void initialize(IN_THREAD_ONLY) override
+	void initialize(ONLY IN_THREAD) override
 	{
 		straight_borderObj::implObj::initialize(IN_THREAD);
 		theme_updated(IN_THREAD,
@@ -91,7 +91,7 @@ class LIBCXX_HIDDEN straight_border_implObj
 
 	//! The screen's theme has been updated.
 
-	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme)
+	void theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme)
 		override
 	{
 		for_each_non_null_border(IN_THREAD,
@@ -109,7 +109,7 @@ class LIBCXX_HIDDEN straight_border_implObj
  private:
 	//! Pick the best border.
 
-	void compute_metrics(IN_THREAD_ONLY) override
+	void compute_metrics(ONLY IN_THREAD) override
 	{
 		horizvert_axi current_axi;
 
@@ -140,7 +140,7 @@ class LIBCXX_HIDDEN straight_border_implObj
 
  private:
 
-	void draw_horizvert(IN_THREAD_ONLY,
+	void draw_horizvert(ONLY IN_THREAD,
 			    const border_implObj::draw_info &di)
 		const override
 	{

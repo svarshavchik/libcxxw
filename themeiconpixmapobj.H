@@ -30,7 +30,7 @@ class LIBCXX_HIDDEN themeiconpixmapObj : public themeiconObj<dim_type> {
 	//! Won't resize anything, but we need to construct a new cached icon
 	//! for the new virtual size.
 
-	icon resizemm(IN_THREAD_ONLY,
+	icon resizemm(ONLY IN_THREAD,
 		      const dim_arg &width_arg,
 		      const dim_arg &height_arg) override;
 
@@ -38,7 +38,7 @@ class LIBCXX_HIDDEN themeiconpixmapObj : public themeiconObj<dim_type> {
 
 	//! Won't resize anything, but we need to construct a new cached icon
 	//! for the new virtual size.
-	icon resize(IN_THREAD_ONLY, dim_t w, dim_t h,
+	icon resize(ONLY IN_THREAD, dim_t w, dim_t h,
 		    icon_scale scale) override;
 
 };

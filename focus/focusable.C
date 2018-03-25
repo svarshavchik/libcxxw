@@ -95,7 +95,7 @@ void focusableObj::set_enabled(bool flag)
 
 	get_impl()->get_focusable_element().THREAD->run_as
 		([me, flag]
-		 (IN_THREAD_ONLY)
+		 (ONLY IN_THREAD)
 		 {
 			 // Enable or disable all real focusables
 
@@ -215,13 +215,13 @@ void focusableObj::get_focus_before(const focusable &other)
 
 	sanity_check(impl1, impl2)->run_as
 		([me=focusable(this), other]
-		 (IN_THREAD_ONLY)
+		 (ONLY IN_THREAD)
 		 {
 			 get_focus_before_in_thread(IN_THREAD, me, other);
 		 });
 }
 
-void get_focus_before_in_thread(IN_THREAD_ONLY,	const focusable &me,
+void get_focus_before_in_thread(ONLY IN_THREAD,	const focusable &me,
 				const focusable &other)
 {
 	get_two_impls
@@ -256,7 +256,7 @@ void focusableObj::get_focus_after(const focusable &other)
 
 	sanity_check(impl1, impl2)->run_as
 		([me=focusable(this), other]
-		 (IN_THREAD_ONLY)
+		 (ONLY IN_THREAD)
 		 {
 			 get_focus_after_in_thread(IN_THREAD, me, other);
 		 });
@@ -268,7 +268,7 @@ void focusableObj::get_focus_after(const focusable &other)
 // focusable group, putting each individual focusable after that one, then
 // make "that one" the one that I just ordered.
 
-static void get_focus_impl_after_in_thread_with_group(IN_THREAD_ONLY,
+static void get_focus_impl_after_in_thread_with_group(ONLY IN_THREAD,
 						      const auto &me_group,
 						      ref<focusableImplObj> a)
 {
@@ -283,7 +283,7 @@ static void get_focus_impl_after_in_thread_with_group(IN_THREAD_ONLY,
 	}
 }
 
-void get_focus_after_in_thread(IN_THREAD_ONLY, const focusable &me,
+void get_focus_after_in_thread(ONLY IN_THREAD, const focusable &me,
 			       const focusable &other)
 {
 	get_two_impls
@@ -300,7 +300,7 @@ void get_focus_after_in_thread(IN_THREAD_ONLY, const focusable &me,
 		 });
 }
 
-void get_focus_impl_after_in_thread(IN_THREAD_ONLY, const focusable &me,
+void get_focus_impl_after_in_thread(ONLY IN_THREAD, const focusable &me,
 				    const ref<focusableImplObj> &a)
 {
 	me->get_impl
@@ -317,7 +317,7 @@ void focusableObj::get_focus_first()
 {
 	get_impl()->get_focusable_element().THREAD
 		->run_as([me=focusable(this)]
-			 (IN_THREAD_ONLY)
+			 (ONLY IN_THREAD)
 			 {
 				 me->get_impl()->get_focusable_element()
 					 .get_focus_first(IN_THREAD, me);
@@ -328,7 +328,7 @@ void focusableObj::get_focus_after_me(const std::vector<focusable> &others)
 {
 	sanity_check(get_impl(), others)->run_as
 		([me=focusable(this), others]
-		 (IN_THREAD_ONLY)
+		 (ONLY IN_THREAD)
 		 mutable
 		 {
 			 for (const auto &f:others)
@@ -343,7 +343,7 @@ void focusableObj::get_focus_before_me(const std::vector<focusable> &others)
 {
 	sanity_check(get_impl(), others)->run_as
 		([me=focusable(this), others]
-		 (IN_THREAD_ONLY)
+		 (ONLY IN_THREAD)
 		 {
 			 for (const auto &f:others)
 				 get_focus_before_in_thread(IN_THREAD, f, me);
@@ -373,7 +373,7 @@ void focusableObj::request_focus()
 	impl->get_focusable_element().THREAD
 		->get_batch_queue()
 		->run_as([impl]
-			 (IN_THREAD_ONLY)
+			 (ONLY IN_THREAD)
 			 {
 				 LOG_FUNC_SCOPE(focusable_log);
 

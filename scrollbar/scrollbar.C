@@ -31,7 +31,7 @@ scrollbarObj::~scrollbarObj()=default;
 void scrollbarObj::set(scroll_v_t value)
 {
 	impl->THREAD->run_as([impl=this->impl, value]
-			     (IN_THREAD_ONLY)
+			     (ONLY IN_THREAD)
 			     {
 				     auto new_state=impl->state(IN_THREAD);
 
@@ -58,7 +58,7 @@ scroll_v_t::value_type scrollbarObj::get_dragged_value() const
 void scrollbarObj::reconfigure(const scrollbar_config &new_state)
 {
 	impl->THREAD->run_as([impl=this->impl, new_state]
-			     (IN_THREAD_ONLY)
+			     (ONLY IN_THREAD)
 			     {
 				     impl->reconfigure(IN_THREAD, new_state);
 			     });
@@ -67,7 +67,7 @@ void scrollbarObj::reconfigure(const scrollbar_config &new_state)
 void scrollbarObj::on_update(const scrollbar_cb_t &callback)
 {
 	impl->THREAD->run_as([impl=this->impl, callback]
-			     (IN_THREAD_ONLY)
+			     (ONLY IN_THREAD)
 			     {
 				     impl->update_callback(IN_THREAD, callback);
 			     });

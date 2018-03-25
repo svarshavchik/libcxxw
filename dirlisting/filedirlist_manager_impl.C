@@ -384,11 +384,11 @@ void filedirlist_managerObj::implObj::update(const const_filedir_file &files)
 
 	filedir_list->elementObj::impl->THREAD->get_batch_queue()->run_as
 		([files]
-		 (IN_THREAD_ONLY)
+		 (ONLY IN_THREAD)
 		 {
 			 IN_THREAD->idle_callbacks(IN_THREAD)->push_back
 				 ([files]
-				  (IN_THREAD_ONLY)
+				  (ONLY IN_THREAD)
 				  {
 				  });
 		 });

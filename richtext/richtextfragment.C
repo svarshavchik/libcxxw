@@ -86,7 +86,7 @@ richtextfragmentObj
 {
 }
 
-void richtextfragmentObj::finish_setting(IN_THREAD_ONLY)
+void richtextfragmentObj::finish_setting(ONLY IN_THREAD)
 {
 	load_glyphs_widths_kernings(IN_THREAD, nullptr);
 }
@@ -178,7 +178,7 @@ richtextfragmentObj::find_y_position(size_t y_position_requested)
 }
 
 void richtextfragmentObj
-::theme_updated_called_by_fragment_list(IN_THREAD_ONLY,
+::theme_updated_called_by_fragment_list(ONLY IN_THREAD,
 					const defaulttheme &new_theme)
 {
 	string.theme_updated(IN_THREAD, new_theme);
@@ -187,13 +187,13 @@ void richtextfragmentObj
 	redraw_needed=true;
 }
 
-void richtextfragmentObj::load_glyphs_widths_kernings(IN_THREAD_ONLY)
+void richtextfragmentObj::load_glyphs_widths_kernings(ONLY IN_THREAD)
 {
 	load_glyphs_widths_kernings(IN_THREAD, prev_fragment());
 }
 
 void richtextfragmentObj
-::load_glyphs_widths_kernings(IN_THREAD_ONLY,
+::load_glyphs_widths_kernings(ONLY IN_THREAD,
 			      richtextfragmentObj *previous_fragment)
 {
 	USING_MY_PARAGRAPH();
@@ -211,7 +211,7 @@ void richtextfragmentObj
 			  });
 }
 
-void richtextfragmentObj::update_glyphs_widths_kernings(IN_THREAD_ONLY,
+void richtextfragmentObj::update_glyphs_widths_kernings(ONLY IN_THREAD,
 							size_t pos,
 							size_t count)
 {
@@ -287,7 +287,7 @@ richtextfragmentObj *richtextfragmentObj::next_fragment() const
 	return nullptr;
 }
 
-void richtextfragmentObj::recalculate_size_called_by_fragment_list(IN_THREAD_ONLY)
+void richtextfragmentObj::recalculate_size_called_by_fragment_list(ONLY IN_THREAD)
 {
 	width=0;
 	minimum_width=0;
@@ -341,7 +341,7 @@ void richtextfragmentObj::recalculate_size_called_by_fragment_list(IN_THREAD_ONL
 		location->horiz_pos_no_longer_valid();
 }
 
-size_t richtextfragmentObj::insert(IN_THREAD_ONLY,
+size_t richtextfragmentObj::insert(ONLY IN_THREAD,
 				   paragraph_list &my_paragraphs,
 				   const richtext_insert_base &new_string)
 {
@@ -779,7 +779,7 @@ inline void richtextfragmentObj
 // Combine the metadata range with overlayed attributes.
 
 inline void richtextfragmentObj
-::render_range_with_overlay(IN_THREAD_ONLY,
+::render_range_with_overlay(ONLY IN_THREAD,
 			    render_range_info &range_info,
 			    const overlay_map_t &overlay)
 {
@@ -890,7 +890,7 @@ void richtextfragmentObj::overlay_merge(overlay_map_t &overlay,
 	overlay.insert(std::make_pair(end, resume));
 }
 
-coord_t richtextfragmentObj::first_xpos(IN_THREAD_ONLY) const
+coord_t richtextfragmentObj::first_xpos(ONLY IN_THREAD) const
 {
 	assert_or_throw(my_paragraph && my_paragraph->my_richtext,
 			"Internal error: fragment not linked.");
@@ -926,7 +926,7 @@ coord_t richtextfragmentObj::first_xpos(IN_THREAD_ONLY) const
 	return 0;
 }
 
-dim_t richtextfragmentObj::x_width(IN_THREAD_ONLY)
+dim_t richtextfragmentObj::x_width(ONLY IN_THREAD)
 {
 	assert_or_throw(my_paragraph && my_paragraph->my_richtext,
 			"Internal error: fragment not linked.");
@@ -934,7 +934,7 @@ dim_t richtextfragmentObj::x_width(IN_THREAD_ONLY)
 	return horiz_info.width();
 }
 
-void richtextfragmentObj::render(IN_THREAD_ONLY,
+void richtextfragmentObj::render(ONLY IN_THREAD,
 				 const render_info &info)
 {
 	USING_MY_PARAGRAPH();
@@ -1124,7 +1124,7 @@ void richtextfragmentObj::render(IN_THREAD_ONLY,
 
 ////////////////////////////////////////////////////////////////////////////
 
-richtextfragment richtextfragmentObj::split(IN_THREAD_ONLY,
+richtextfragment richtextfragmentObj::split(ONLY IN_THREAD,
 					    fragment_list &my_fragments,
 					    size_t pos)
 {
@@ -1212,7 +1212,7 @@ richtextfragment richtextfragmentObj::split(IN_THREAD_ONLY,
 }
 
 void richtextfragmentObj
-::appended_no_change_in_char_count(IN_THREAD_ONLY,
+::appended_no_change_in_char_count(ONLY IN_THREAD,
 				   fragment_list &my_fragments,
 				   const richtextfragment &new_fragment)
 {
@@ -1226,7 +1226,7 @@ void richtextfragmentObj
 						    new_fragment);
 }
 
-void richtextfragmentObj::merge(IN_THREAD_ONLY, fragment_list &my_fragments)
+void richtextfragmentObj::merge(ONLY IN_THREAD, fragment_list &my_fragments)
 {
 	USING_MY_PARAGRAPH();
 
@@ -1288,7 +1288,7 @@ void richtextfragmentObj::merge(IN_THREAD_ONLY, fragment_list &my_fragments)
 	my_fragments.fragment_text_changed(IN_THREAD, my_fragment_number, 0);
 }
 
-void richtextfragmentObj::remove(IN_THREAD_ONLY,
+void richtextfragmentObj::remove(ONLY IN_THREAD,
 				 size_t pos,
 				 size_t nchars,
 				 fragment_list &my_fragments)

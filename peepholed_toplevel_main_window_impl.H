@@ -54,19 +54,19 @@ class LIBCXX_HIDDEN peepholed_toplevel_main_windowObj::implObj
 
 	//! Inherited from elementObj::implObj
 
-	void initialize(IN_THREAD_ONLY) override;
+	void initialize(ONLY IN_THREAD) override;
 
 	//! Recalculate the data
 
 	//! Invoked by initialize() and from the pseudo-public object.
-	void recalculate_metrics(IN_THREAD_ONLY);
+	void recalculate_metrics(ONLY IN_THREAD);
 
 	//! Override get_focus_first()
 
 	//! A focusable that once to be first in the tabbing order will
 	//! be rudely repositioned after the last menu element in the menu bar.
 
-	void get_focus_first(IN_THREAD_ONLY, const focusable &) override;
+	void get_focus_first(ONLY IN_THREAD, const focusable &) override;
 };
 
 LIBCXXW_NAMESPACE_END

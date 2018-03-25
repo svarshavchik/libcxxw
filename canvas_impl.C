@@ -6,6 +6,7 @@
 #include "canvas.H"
 #include "themedim_axis_element.H"
 #include "connection_thread.H"
+#include "xid_t.H"
 #include "run_as.H"
 
 LIBCXXW_NAMESPACE_START
@@ -22,7 +23,7 @@ canvasObj::implObj::implObj(const ref<containerObj::implObj> &container,
 	// implementaiton object already has the translated metrics right from
 	// the start.
 
-	auto thread_=THREAD;
+	ONLY IN_THREAD=THREAD;
 
 	auto hv=get_horizvert(IN_THREAD);
 
@@ -32,20 +33,20 @@ canvasObj::implObj::implObj(const ref<containerObj::implObj> &container,
 
 canvasObj::implObj::~implObj()=default;
 
-void canvasObj::implObj::initialize(IN_THREAD_ONLY)
+void canvasObj::implObj::initialize(ONLY IN_THREAD)
 {
 	superclass_t::initialize(IN_THREAD);
 	recalculate(IN_THREAD);
 }
 
-void canvasObj::implObj::theme_updated(IN_THREAD_ONLY,
+void canvasObj::implObj::theme_updated(ONLY IN_THREAD,
 				       const defaulttheme &new_theme)
 {
 	superclass_t::theme_updated(IN_THREAD, new_theme);
 	recalculate(IN_THREAD);
 }
 
-void canvasObj::implObj::recalculate(IN_THREAD_ONLY)
+void canvasObj::implObj::recalculate(ONLY IN_THREAD)
 {
 	get_horizvert(IN_THREAD)->set_element_metrics
 		(IN_THREAD,

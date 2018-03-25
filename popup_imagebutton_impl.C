@@ -40,7 +40,7 @@ popup_imagebutton_implObj
 popup_imagebutton_implObj::~popup_imagebutton_implObj()=default;
 
 void popup_imagebutton_implObj
-::temperature_changed(IN_THREAD_ONLY,
+::temperature_changed(ONLY IN_THREAD,
 		      const callback_trigger_t &trigger)
 {
 	set_image_number(IN_THREAD,
@@ -57,19 +57,19 @@ bool popup_imagebutton_implObj::activate_on_key(const key_event &ke)
 		     || ke.keysym == XK_Right || ke.keysym == XK_KP_Right));
 }
 
-void popup_imagebutton_implObj::initialize(IN_THREAD_ONLY)
+void popup_imagebutton_implObj::initialize(ONLY IN_THREAD)
 {
 	superclass_t::initialize(IN_THREAD);
 	resize_button_icons(IN_THREAD);
 }
 
-void popup_imagebutton_implObj::current_position_updated(IN_THREAD_ONLY)
+void popup_imagebutton_implObj::current_position_updated(ONLY IN_THREAD)
 {
 	superclass_t::current_position_updated(IN_THREAD);
 	resize_button_icons(IN_THREAD);
 }
 
-void popup_imagebutton_implObj::resize_button_icons(IN_THREAD_ONLY)
+void popup_imagebutton_implObj::resize_button_icons(ONLY IN_THREAD)
 {
 	auto height=data(IN_THREAD).current_position.height;
 
@@ -77,7 +77,7 @@ void popup_imagebutton_implObj::resize_button_icons(IN_THREAD_ONLY)
 	set_image_number(IN_THREAD, {}, get_image_number());
 }
 
-void popup_imagebutton_implObj::update_image_metrics(IN_THREAD_ONLY)
+void popup_imagebutton_implObj::update_image_metrics(ONLY IN_THREAD)
 {
 	auto w=current_icon(IN_THREAD)->image->get_width();
 

@@ -21,7 +21,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-main_windowObj::handlerObj::handlerObj(IN_THREAD_ONLY,
+main_windowObj::handlerObj::handlerObj(ONLY IN_THREAD,
 				       const screen &parent_screen,
 				       const std::optional<rectangle>
 				       &suggested_position,
@@ -76,7 +76,7 @@ const char *main_windowObj::handlerObj ::default_wm_class_instance() const
 }
 
 void main_windowObj::handlerObj
-::client_message_event(IN_THREAD_ONLY,
+::client_message_event(ONLY IN_THREAD,
 		       const xcb_client_message_event_t *event)
 {
 	if (event->type == IN_THREAD->info->atoms_info.wm_protocols)
@@ -105,7 +105,7 @@ void main_windowObj::handlerObj
 	}
 }
 
-void main_windowObj::handlerObj::horizvert_updated(IN_THREAD_ONLY)
+void main_windowObj::handlerObj::horizvert_updated(ONLY IN_THREAD)
 {
 	auto p=get_horizvert(IN_THREAD);
 
@@ -134,7 +134,7 @@ static std::vector<icon> create_icons(drawableObj::implObj &me,
 }
 
 void main_windowObj::handlerObj
-::set_inherited_visibility(IN_THREAD_ONLY,
+::set_inherited_visibility(ONLY IN_THREAD,
 			   inherited_visibility_info &visibility_info)
 {
 	if (visibility_info.flag)
@@ -164,7 +164,7 @@ void main_windowObj::handlerObj
 		::set_inherited_visibility(IN_THREAD, visibility_info);
 }
 
-void main_windowObj::handlerObj::update_size_hints(IN_THREAD_ONLY)
+void main_windowObj::handlerObj::update_size_hints(ONLY IN_THREAD)
 {
 	auto hints=compute_size_hints(IN_THREAD);
 	{
@@ -197,7 +197,7 @@ void main_windowObj::handlerObj::update_size_hints(IN_THREAD_ONLY)
 
 }
 
-xcb_size_hints_t main_windowObj::handlerObj::compute_size_hints(IN_THREAD_ONLY)
+xcb_size_hints_t main_windowObj::handlerObj::compute_size_hints(ONLY IN_THREAD)
 {
 	auto p=get_horizvert(IN_THREAD);
 
@@ -284,7 +284,7 @@ xcb_size_hints_t main_windowObj::handlerObj::compute_size_hints(IN_THREAD_ONLY)
 	return hints;
 }
 
-void main_windowObj::handlerObj::request_visibility(IN_THREAD_ONLY,
+void main_windowObj::handlerObj::request_visibility(ONLY IN_THREAD,
 						    bool flag)
 {
 	if (!flag || preferred_dimensions_set(IN_THREAD))
@@ -299,7 +299,7 @@ void main_windowObj::handlerObj::request_visibility(IN_THREAD_ONLY,
 
 	IN_THREAD->run_as
 		([me=ref<handlerObj>(this)]
-		 (IN_THREAD_ONLY)
+		 (ONLY IN_THREAD)
 		 {
 			 me->preferred_dimensions_set(IN_THREAD)=true;
 
@@ -359,7 +359,7 @@ void main_windowObj::handlerObj::request_visibility(IN_THREAD_ONLY,
 
 			 IN_THREAD->get_batch_queue()->run_as
 				 ([me]
-				  (IN_THREAD_ONLY)
+				  (ONLY IN_THREAD)
 				  {
 					  me->request_visibility(IN_THREAD,
 								 true);
@@ -367,7 +367,7 @@ void main_windowObj::handlerObj::request_visibility(IN_THREAD_ONLY,
 		 });
 }
 
-void main_windowObj::handlerObj::frame_extents_updated(IN_THREAD_ONLY)
+void main_windowObj::handlerObj::frame_extents_updated(ONLY IN_THREAD)
 {
 	generic_windowObj::handlerObj::frame_extents_updated(IN_THREAD);
 	containerObj::implObj::tell_layout_manager_it_needs_recalculation
@@ -384,7 +384,7 @@ void main_windowObj::handlerObj
 {
 	screenref->impl->thread->run_as
 		([v=create_icons(*this, icons), me=ref(this)]
-		 (IN_THREAD_ONLY)
+		 (ONLY IN_THREAD)
 		 {
 			 me->install_window_theme_icon(IN_THREAD, v);
 		 });
@@ -396,20 +396,20 @@ void main_windowObj::handlerObj
 {
 	screenref->impl->thread->run_as
 		([v=create_icons(*this, icons), me=ref(this)]
-		 (IN_THREAD_ONLY)
+		 (ONLY IN_THREAD)
 		 {
 			 me->install_window_icon(IN_THREAD, v);
 		 });
 }
 
 void main_windowObj::handlerObj
-::install_window_theme_icon(IN_THREAD_ONLY, const std::vector<icon> &icons)
+::install_window_theme_icon(ONLY IN_THREAD, const std::vector<icon> &icons)
 {
 	icon_images(IN_THREAD)=install_window_icon(IN_THREAD, icons);
 }
 
 std::vector<icon> main_windowObj::handlerObj
-::install_window_icon(IN_THREAD_ONLY, const std::vector<icon> &icons)
+::install_window_icon(ONLY IN_THREAD, const std::vector<icon> &icons)
 {
 	// Need to finish initializing the icons.
 
@@ -426,14 +426,14 @@ std::vector<icon> main_windowObj::handlerObj
 }
 
 void main_windowObj::handlerObj
-::theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme)
+::theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme)
 {
 	superclass_t::theme_updated(IN_THREAD, new_theme);
 	update_net_wm_icon(IN_THREAD, icon_images(IN_THREAD));
 }
 
 void main_windowObj::handlerObj
-::update_net_wm_icon(IN_THREAD_ONLY,
+::update_net_wm_icon(ONLY IN_THREAD,
 		     const std::vector<icon> &icon_images)
 {
 	if (icon_images.empty())

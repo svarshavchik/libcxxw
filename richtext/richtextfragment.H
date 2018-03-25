@@ -201,7 +201,7 @@ public:
 	richtexthorizinfo_t horiz_info;
 
 	//! Current theme was updated. Fonts have been changed.
-	void theme_updated_called_by_fragment_list(IN_THREAD_ONLY,
+	void theme_updated_called_by_fragment_list(ONLY IN_THREAD,
 						   const defaulttheme
 						   &new_theme);
 
@@ -212,11 +212,11 @@ public:
 	//! This invokes richtextstring's compute_width(), after some minor
 	//! prep work.
 
-	void load_glyphs_widths_kernings(IN_THREAD_ONLY);
+	void load_glyphs_widths_kernings(ONLY IN_THREAD);
 
 	//! Internal implementation.
 
-	void load_glyphs_widths_kernings(IN_THREAD_ONLY,
+	void load_glyphs_widths_kernings(ONLY IN_THREAD,
 					 richtextfragmentObj *prev_fragment);
 
 	//! Compute glyphs, widths, and kernings for a subset of characters.
@@ -226,7 +226,7 @@ public:
 	//! of the whole thing.
 	//!
 	//! Invokes richtextstring's compute_width().
-	void update_glyphs_widths_kernings(IN_THREAD_ONLY,
+	void update_glyphs_widths_kernings(ONLY IN_THREAD,
 					   size_t pos,
 					   size_t count);
 
@@ -250,7 +250,7 @@ public:
 	//! set() must add the new fragment to its paragraph, before we can
 	//! wrap things up and load_glyphs_widths_kernings().
 
-	void finish_setting(IN_THREAD_ONLY);
+	void finish_setting(ONLY IN_THREAD);
 
 	//! Private constructor
 
@@ -269,7 +269,7 @@ public:
 	//! Returns a new text fragment, containing character #n and
 	//! onwards. This text fragment is truncated to character #n.
 
-	richtextfragment split(IN_THREAD_ONLY,
+	richtextfragment split(ONLY IN_THREAD,
 			       //! Fragment's paragraph's fragment list
 			       fragment_list &my_fragments,
 
@@ -278,7 +278,7 @@ public:
 
 	//! Take the next fragment in this paragraph and merge it into this one.
 
-	void merge(IN_THREAD_ONLY,
+	void merge(ONLY IN_THREAD,
 		   //! Fragment's paragraph's fragment list
 		   fragment_list &my_fragments);
 
@@ -300,7 +300,7 @@ public:
 
 	//! Delete text.
 
-	void remove(IN_THREAD_ONLY,
+	void remove(ONLY IN_THREAD,
 		    size_t pos,
 		    size_t nchars,
 		    fragment_list &my_fragments);
@@ -320,7 +320,7 @@ public:
 	//! paragraph. Each inserted paragraph increments the return value
 	//! by 1.
 
-	size_t insert(IN_THREAD_ONLY,
+	size_t insert(ONLY IN_THREAD,
 		      paragraph_list &my_paragraphs,
 		      const richtext_insert_base &new_string);
 
@@ -368,22 +368,22 @@ public:
 
 	//! Invoked by fragment_list to recalculate this fragment.
 
-	void recalculate_size_called_by_fragment_list(IN_THREAD_ONLY);
+	void recalculate_size_called_by_fragment_list(ONLY IN_THREAD);
 
 	struct render_info;
 
 	//! Render fragment
 
-	void render(IN_THREAD_ONLY,
+	void render(ONLY IN_THREAD,
 
 		    //! Rendering coordinate information
 		    const render_info &info);
 
 	//! Compute starting X position of the rendered fragment.
-	coord_t first_xpos(IN_THREAD_ONLY) const;
+	coord_t first_xpos(ONLY IN_THREAD) const;
 
 	//! Return the width of the fragment in pixels.
-	dim_t x_width(IN_THREAD_ONLY);
+	dim_t x_width(ONLY IN_THREAD);
  private:
 
 	//! We may sometimes need to overlay richtextmeta with something
@@ -406,7 +406,7 @@ public:
 	struct render_range_info;
 
 	//! Apply overlays to range_info, call render_range()
-	void render_range_with_overlay(IN_THREAD_ONLY,
+	void render_range_with_overlay(ONLY IN_THREAD,
 				       render_range_info &range_info,
 				       const overlay_map_t &overlay);
 
@@ -425,7 +425,7 @@ public:
 
 	//! This is called from split_from(), no change in the number of
 	//! characters in this fragment's paragraph.
-	void appended_no_change_in_char_count(IN_THREAD_ONLY,
+	void appended_no_change_in_char_count(ONLY IN_THREAD,
 					      //! Fragment's paragraph's fragment list
 					      fragment_list &my_fragments,
 					      const richtextfragment &new_fragment);

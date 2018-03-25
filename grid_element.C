@@ -62,7 +62,7 @@ grid_elementObj::grid_elementObj(const new_grid_element_info &info,
 
 grid_elementObj::~grid_elementObj()=default;
 
-void grid_elementObj::initialize(IN_THREAD_ONLY)
+void grid_elementObj::initialize(ONLY IN_THREAD)
 {
 	initialized(IN_THREAD)=true;
 
@@ -97,7 +97,7 @@ void grid_elementObj::theme_updated(const defaulttheme &theme)
 	total_vert_padding=total;
 }
 
-bool grid_elementObj::takes_up_space(IN_THREAD_ONLY) const
+bool grid_elementObj::takes_up_space(ONLY IN_THREAD) const
 {
 	// Recalculate gets triggered in requested_child_visibility_changed()
 	// hook, so when requested_visibility changes this gets recalculated.

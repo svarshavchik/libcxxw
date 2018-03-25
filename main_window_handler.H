@@ -42,7 +42,7 @@ class LIBCXX_HIDDEN main_windowObj::handlerObj :
 	THREAD_DATA_ONLY(wm_icon_set);
 
 	//! Constructor
-	handlerObj(IN_THREAD_ONLY, const screen &parent_screen,
+	handlerObj(ONLY IN_THREAD, const screen &parent_screen,
 		   const std::optional<rectangle> &suggested_position,
 		   const color_arg &background_color);
 
@@ -58,21 +58,21 @@ class LIBCXX_HIDDEN main_windowObj::handlerObj :
 	main_windowptr get_main_window() override;
 
 	//! Implement client_message_event.
-	void client_message_event(IN_THREAD_ONLY,
+	void client_message_event(ONLY IN_THREAD,
 				  const xcb_client_message_event_t *event)
 		override;
 
 	//! Override horizvert_updated()
 
 	//! Invoke update_size_hints() if we are visible.
-	void horizvert_updated(IN_THREAD_ONLY) override;
+	void horizvert_updated(ONLY IN_THREAD) override;
 
 	//! Override set_inherited_visibility().
 
 	//! Invoke update_size_hints() before invoking the superclass if
 	//! the window is made visible.
 
-	void set_inherited_visibility(IN_THREAD_ONLY,
+	void set_inherited_visibility(ONLY IN_THREAD,
 				      inherited_visibility_info &) override;
 
 	//! Invoke compute_size_hints(), then put them into WM_SIZE_HINTS.
@@ -80,7 +80,7 @@ class LIBCXX_HIDDEN main_windowObj::handlerObj :
 	//! Our metrics go into WM_SIZE_HINTS, for the window manager to
 	//! resize us, if we are visible.
 
-	void update_size_hints(IN_THREAD_ONLY);
+	void update_size_hints(ONLY IN_THREAD);
 
  private:
 	//! Recommended screen position for this window.
@@ -90,13 +90,13 @@ class LIBCXX_HIDDEN main_windowObj::handlerObj :
 	THREAD_DATA_ONLY(suggested_position);
 
 	//! Translate our metrics into WM_SIZE_HINTS
-	virtual xcb_size_hints_t compute_size_hints(IN_THREAD_ONLY);
+	virtual xcb_size_hints_t compute_size_hints(ONLY IN_THREAD);
 
 	//! Override request_visiblity()
 
 	//! Set window size to preferred size before its visible for 1st time.
 
-	void request_visibility(IN_THREAD_ONLY, bool flag) override;
+	void request_visibility(ONLY IN_THREAD, bool flag) override;
 
 	//! Override frame_extents_updated()
 
@@ -104,7 +104,7 @@ class LIBCXX_HIDDEN main_windowObj::handlerObj :
 	//! frame extents got updated. The toplevel layout manager, a peephole
 	//! May need to recalculate itself.
 
-	void frame_extents_updated(IN_THREAD_ONLY) override;
+	void frame_extents_updated(ONLY IN_THREAD) override;
 
  private:
 	//! The first time the window is mapped, it's resized to its preferred size, first.
@@ -119,7 +119,7 @@ class LIBCXX_HIDDEN main_windowObj::handlerObj :
 
 	//! Update the _NET_WM_ICON property
 
-	void update_net_wm_icon(IN_THREAD_ONLY,
+	void update_net_wm_icon(ONLY IN_THREAD,
 				const std::vector<icon> &icon_images);
 
  public:
@@ -133,18 +133,18 @@ class LIBCXX_HIDDEN main_windowObj::handlerObj :
 				 dim_t, dim_t>> &icons);
 
 	//! Install new icons.
-	void install_window_theme_icon(IN_THREAD_ONLY,
+	void install_window_theme_icon(ONLY IN_THREAD,
 				       const std::vector<icon> &icons);
 
 	//! Install new icons.
-	std::vector<icon> install_window_icon(IN_THREAD_ONLY,
+	std::vector<icon> install_window_icon(ONLY IN_THREAD,
 					      const std::vector<icon> &icons);
 
 	//! Override theme_updated.
 
 	//! Invoke update_net_wm_icon();
 
-	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme)
+	void theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme)
 		override;
 
 	THREAD_DATA_ONLY(preferred_dimensions_set);

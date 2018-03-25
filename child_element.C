@@ -64,13 +64,13 @@ const generic_windowObj::handlerObj &child_elementObj::get_window_handler()
 	return child_container->get_window_handler();
 }
 
-void child_elementObj::process_updated_position(IN_THREAD_ONLY)
+void child_elementObj::process_updated_position(ONLY IN_THREAD)
 {
 	superclass_t::process_updated_position(IN_THREAD);
 	child_container->container_element_impl().schedule_redraw(IN_THREAD);
 }
 
-draw_info &child_elementObj::get_draw_info(IN_THREAD_ONLY)
+draw_info &child_elementObj::get_draw_info(ONLY IN_THREAD)
 {
 	if (data(IN_THREAD).cached_draw_info)
 	{
@@ -89,7 +89,7 @@ draw_info &child_elementObj::get_draw_info(IN_THREAD_ONLY)
 	return get_draw_info_from_scratch(IN_THREAD);
 }
 
-draw_info &child_elementObj::get_draw_info_from_scratch(IN_THREAD_ONLY)
+draw_info &child_elementObj::get_draw_info_from_scratch(ONLY IN_THREAD)
 {
 	// Start by copying the parent to the child
 
@@ -134,7 +134,7 @@ draw_info &child_elementObj::get_draw_info_from_scratch(IN_THREAD_ONLY)
 	return di;
 }
 
-rectangle child_elementObj::get_absolute_location(IN_THREAD_ONLY)
+rectangle child_elementObj::get_absolute_location(ONLY IN_THREAD)
 {
 	auto r=child_container->container_element_impl()
 		.get_absolute_location(IN_THREAD);
@@ -146,7 +146,7 @@ rectangle child_elementObj::get_absolute_location(IN_THREAD_ONLY)
 	return cpy;
 }
 
-void child_elementObj::visibility_updated(IN_THREAD_ONLY, bool flag)
+void child_elementObj::visibility_updated(ONLY IN_THREAD, bool flag)
 {
 	if (!child_container->container_element_impl()
 	    .data(IN_THREAD).inherited_visibility)
@@ -156,7 +156,7 @@ void child_elementObj::visibility_updated(IN_THREAD_ONLY, bool flag)
 }
 
 // When metrics are updated, notify my layout manager.
-void child_elementObj::horizvert_updated(IN_THREAD_ONLY)
+void child_elementObj::horizvert_updated(ONLY IN_THREAD)
 {
 	child_container->invoke_layoutmanager([&]
 					(const auto &manager)
@@ -166,7 +166,7 @@ void child_elementObj::horizvert_updated(IN_THREAD_ONLY)
 					});
 }
 
-void child_elementObj::remove_background_color(IN_THREAD_ONLY)
+void child_elementObj::remove_background_color(ONLY IN_THREAD)
 {
 	if (!is_mine_background_color)
 		return; // no-op
@@ -178,7 +178,7 @@ void child_elementObj::remove_background_color(IN_THREAD_ONLY)
 						  (this));
 }
 
-background_color child_elementObj::current_background_color(IN_THREAD_ONLY)
+background_color child_elementObj::current_background_color(ONLY IN_THREAD)
 {
 	if (has_own_background_color(IN_THREAD))
 		return background_color_element_implObj::get(IN_THREAD);
@@ -187,7 +187,7 @@ background_color child_elementObj::current_background_color(IN_THREAD_ONLY)
 		.current_background_color(IN_THREAD);
 }
 
-void child_elementObj::set_background_color(IN_THREAD_ONLY,
+void child_elementObj::set_background_color(ONLY IN_THREAD,
 					    const background_color &bgcolor)
 {
 	// The background color may be a gradient that gets adjusted for
@@ -214,7 +214,7 @@ void child_elementObj::set_background_color(IN_THREAD_ONLY,
 						  (this));
 }
 
-void child_elementObj::theme_updated(IN_THREAD_ONLY, const defaulttheme &th)
+void child_elementObj::theme_updated(ONLY IN_THREAD, const defaulttheme &th)
 {
 	if (!is_mine_background_color)
 	{
@@ -239,7 +239,7 @@ void child_elementObj::theme_updated(IN_THREAD_ONLY, const defaulttheme &th)
 		 ref<elementObj::implObj>(this));
 }
 
-void child_elementObj::request_visibility(IN_THREAD_ONLY, bool flag)
+void child_elementObj::request_visibility(ONLY IN_THREAD, bool flag)
 {
 	bool current_flag=data(IN_THREAD).requested_visibility;
 
@@ -252,7 +252,7 @@ void child_elementObj::request_visibility(IN_THREAD_ONLY, bool flag)
 }
 
 void child_elementObj
-::set_inherited_visibility(IN_THREAD_ONLY,
+::set_inherited_visibility(ONLY IN_THREAD,
 			   inherited_visibility_info &visibility_info)
 {
 	bool current_flag=data(IN_THREAD).inherited_visibility;
@@ -267,26 +267,26 @@ void child_elementObj
 			 visibility_info);
 }
 
-bool child_elementObj::has_own_background_color(IN_THREAD_ONLY)
+bool child_elementObj::has_own_background_color(ONLY IN_THREAD)
 {
 	return is_mine_background_color;
 }
 
-void child_elementObj::window_focus_change(IN_THREAD_ONLY, bool flag)
+void child_elementObj::window_focus_change(ONLY IN_THREAD, bool flag)
 {
 	superclass_t::window_focus_change(IN_THREAD, flag);
 	child_container->container_element_impl()
 		.window_focus_change(IN_THREAD, flag);
 }
 
-bool child_elementObj::process_key_event(IN_THREAD_ONLY, const key_event &ke)
+bool child_elementObj::process_key_event(ONLY IN_THREAD, const key_event &ke)
 {
 	return superclass_t::process_key_event(IN_THREAD, ke)
 		|| child_container->container_element_impl()
 		.process_key_event(IN_THREAD, ke);
 }
 
-bool child_elementObj::enabled(IN_THREAD_ONLY)
+bool child_elementObj::enabled(ONLY IN_THREAD)
 {
 	if (!child_container->container_element_impl().enabled(IN_THREAD))
 		return false;
@@ -294,14 +294,14 @@ bool child_elementObj::enabled(IN_THREAD_ONLY)
 	return superclass_t::enabled(IN_THREAD);
 }
 
-bool child_elementObj::draw_to_window_picture_as_disabled(IN_THREAD_ONLY)
+bool child_elementObj::draw_to_window_picture_as_disabled(ONLY IN_THREAD)
 {
 	return superclass_t::draw_to_window_picture_as_disabled(IN_THREAD)
 		|| child_container->container_element_impl()
 		.draw_to_window_picture_as_disabled(IN_THREAD);
 }
 
-bool child_elementObj::process_button_event(IN_THREAD_ONLY,
+bool child_elementObj::process_button_event(ONLY IN_THREAD,
 					    const button_event &be,
 					    xcb_timestamp_t timestamp)
 {
@@ -315,12 +315,12 @@ bool child_elementObj::process_button_event(IN_THREAD_ONLY,
 	return ret;
 }
 
-void child_elementObj::grab(IN_THREAD_ONLY)
+void child_elementObj::grab(ONLY IN_THREAD)
 {
 	get_window_handler().grab(IN_THREAD, ref<elementObj::implObj>(this));
 }
 
-void child_elementObj::report_motion_event(IN_THREAD_ONLY,
+void child_elementObj::report_motion_event(ONLY IN_THREAD,
 					   const motion_event &me)
 {
 	superclass_t::report_motion_event(IN_THREAD, me);
@@ -334,12 +334,12 @@ void child_elementObj::report_motion_event(IN_THREAD_ONLY,
 		.report_motion_event(IN_THREAD, cpy);
 }
 
-void child_elementObj::ensure_visibility(IN_THREAD_ONLY, const rectangle &r)
+void child_elementObj::ensure_visibility(ONLY IN_THREAD, const rectangle &r)
 {
 	child_container->ensure_visibility(IN_THREAD, *this, r);
 }
 
-bool child_elementObj::pasted(IN_THREAD_ONLY,
+bool child_elementObj::pasted(ONLY IN_THREAD,
 			      const std::u32string_view &str)
 {
 	return superclass_t::pasted(IN_THREAD, str) ||
@@ -347,7 +347,7 @@ bool child_elementObj::pasted(IN_THREAD_ONLY,
 		.pasted(IN_THREAD, str);
 }
 
-void child_elementObj::focusable_initialized(IN_THREAD_ONLY,
+void child_elementObj::focusable_initialized(ONLY IN_THREAD,
 					     focusableImplObj &fimpl)
 {
 	child_container->container_element_impl()
@@ -355,7 +355,7 @@ void child_elementObj::focusable_initialized(IN_THREAD_ONLY,
 				       fimpl);
 }
 
-void child_elementObj::get_focus_first(IN_THREAD_ONLY, const focusable &f)
+void child_elementObj::get_focus_first(ONLY IN_THREAD, const focusable &f)
 {
 	child_container->container_element_impl()
 		.get_focus_first(IN_THREAD, f);
@@ -377,21 +377,21 @@ color_arg child_elementObj::label_theme_color() const
 	return child_container->container_element_impl().label_theme_color();
 }
 
-void child_elementObj::schedule_hover_action(IN_THREAD_ONLY)
+void child_elementObj::schedule_hover_action(ONLY IN_THREAD)
 {
 	superclass_t::schedule_hover_action(IN_THREAD);
 	child_container->container_element_impl()
 		.schedule_hover_action(IN_THREAD);
 }
 
-void child_elementObj::unschedule_hover_action(IN_THREAD_ONLY)
+void child_elementObj::unschedule_hover_action(ONLY IN_THREAD)
 {
 	superclass_t::unschedule_hover_action(IN_THREAD);
 	child_container->container_element_impl()
 		.unschedule_hover_action(IN_THREAD);
 }
 
-cursor_pointerptr child_elementObj::get_cursor_pointer(IN_THREAD_ONLY)
+cursor_pointerptr child_elementObj::get_cursor_pointer(ONLY IN_THREAD)
 {
 	auto p=superclass_t::get_cursor_pointer(IN_THREAD);
 

@@ -44,19 +44,19 @@ class LIBCXX_HIDDEN ximrequestObj : virtual public obj {
 	void wrong_request_type(const char *received_request_type);
 
 	//! Create a reply.
-	virtual void xim_create_ic_reply(IN_THREAD_ONLY,
+	virtual void xim_create_ic_reply(ONLY IN_THREAD,
 					 const ximserver &server,
 					 xim_ic_t input_context_id);
 	//! Create a reply.
-	virtual void xim_destroy_ic_reply(IN_THREAD_ONLY,
+	virtual void xim_destroy_ic_reply(ONLY IN_THREAD,
 					  const ximserver &server,
 					  xim_ic_t input_context_id);
 	//! Create a reply.
-	virtual void xim_sync_reply(IN_THREAD_ONLY,
+	virtual void xim_sync_reply(ONLY IN_THREAD,
 				    const ximserver &server,
 				    uint16_t input_context_id);
 #if 0
-	virtual void xim_get_ic_values_reply(IN_THREAD_ONLY,
+	virtual void xim_get_ic_values_reply(ONLY IN_THREAD,
 					     const ximserver &server,
 					     uint16_t input_context_id,
 					     const std::vector<

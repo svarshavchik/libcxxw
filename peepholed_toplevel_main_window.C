@@ -23,28 +23,28 @@ peepholed_toplevel_main_windowObj
 peepholed_toplevel_main_windowObj::~peepholed_toplevel_main_windowObj()=default;
 
 void peepholed_toplevel_main_windowObj
-::recalculate_peepholed_metrics(IN_THREAD_ONLY, const screen &s)
+::recalculate_peepholed_metrics(ONLY IN_THREAD, const screen &s)
 {
 	impl->recalculate_metrics(IN_THREAD);
 }
 
-dim_t peepholed_toplevel_main_windowObj::max_width(IN_THREAD_ONLY) const
+dim_t peepholed_toplevel_main_windowObj::max_width(ONLY IN_THREAD) const
 {
 	return impl->data(IN_THREAD).max_width;
 }
 
-dim_t peepholed_toplevel_main_windowObj::max_height(IN_THREAD_ONLY) const
+dim_t peepholed_toplevel_main_windowObj::max_height(ONLY IN_THREAD) const
 {
 	return impl->data(IN_THREAD).max_height;
 }
 
-dim_t peepholed_toplevel_main_windowObj::horizontal_increment(IN_THREAD_ONLY)
+dim_t peepholed_toplevel_main_windowObj::horizontal_increment(ONLY IN_THREAD)
 	const
 {
 	return impl->reference_font::font_nominal_width(IN_THREAD);
 }
 
-dim_t peepholed_toplevel_main_windowObj::vertical_increment(IN_THREAD_ONLY) const
+dim_t peepholed_toplevel_main_windowObj::vertical_increment(ONLY IN_THREAD) const
 {
 	return impl->reference_font::font_height(IN_THREAD);
 }

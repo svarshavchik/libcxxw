@@ -12,7 +12,7 @@
 LIBCXXW_NAMESPACE_START
 
 inline const background_color background_color_element_implObj
-::get(IN_THREAD_ONLY)
+::get(ONLY IN_THREAD)
 {
 	return color;
 }
@@ -25,7 +25,7 @@ background_color_element<tag>::~background_color_element()=default;
 
 template<typename tag>
 void background_color_element<tag>
-::update(IN_THREAD_ONLY,
+::update(ONLY IN_THREAD,
 	 const background_color &new_color)
 {
 	this->do_update(IN_THREAD, new_color,
@@ -34,7 +34,7 @@ void background_color_element<tag>
 
 template<typename tag>
 void background_color_element<tag>
-::set_background_color_for_element(IN_THREAD_ONLY)
+::set_background_color_for_element(ONLY IN_THREAD)
 {
 	auto &e=this->background_color_element_impl();
 
@@ -84,7 +84,7 @@ background_color_1elementObj<element_impl, tag>::~background_color_1elementObj()
 //! Invoke the parent class's initialize(), then invoke theme_updated() for
 //! the background_color, in case the theme has changed in the meantime.
 template<typename element_impl, typename tag>
-void background_color_1elementObj<element_impl, tag>::initialize(IN_THREAD_ONLY)
+void background_color_1elementObj<element_impl, tag>::initialize(ONLY IN_THREAD)
 {
 	background_color_element<tag>::initialize(IN_THREAD);
 	background_color_element<tag>::set_background_color_for_element
@@ -100,7 +100,7 @@ void background_color_1elementObj<element_impl, tag>::initialize(IN_THREAD_ONLY)
 
 template<typename element_impl, typename tag>
 void background_color_1elementObj<element_impl, tag>
-::theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme)
+::theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme)
 {
 	background_color_element<tag>::theme_updated(IN_THREAD, new_theme,
 						     *this);
@@ -114,7 +114,7 @@ void background_color_1elementObj<element_impl, tag>
 
 template<typename element_impl, typename tag>
 void background_color_1elementObj<element_impl, tag>
-::process_updated_position(IN_THREAD_ONLY)
+::process_updated_position(ONLY IN_THREAD)
 {
 	background_color_element<tag>::set_background_color_for_element
 		(IN_THREAD);
@@ -129,7 +129,7 @@ void background_color_1elementObj<element_impl, tag>
 
 template<typename element_impl, typename tag>
 void background_color_1elementObj<element_impl, tag>
-::invoke_element_state_updates(IN_THREAD_ONLY,
+::invoke_element_state_updates(ONLY IN_THREAD,
 			       element_state::state_update_t s)
 {
 	if (s == element_state::before_showing)

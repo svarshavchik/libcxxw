@@ -42,7 +42,7 @@ current_fontcollectionObj
 
 current_fontcollectionObj::~current_fontcollectionObj()=default;
 
-void current_fontcollectionObj::theme_updated(IN_THREAD_ONLY,
+void current_fontcollectionObj::theme_updated(ONLY IN_THREAD,
 					      const defaulttheme &new_theme)
 {
 	if (new_theme == font_theme)
@@ -85,7 +85,7 @@ fontcollection current_fontcollectionObj::create_fc(const font &font_spec)
 		 });
 }
 
-void current_fontcollectionObj::theme_was_really_updated(IN_THREAD_ONLY)
+void current_fontcollectionObj::theme_was_really_updated(ONLY IN_THREAD)
 {
 }
 

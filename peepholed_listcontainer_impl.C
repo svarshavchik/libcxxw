@@ -22,18 +22,18 @@ peepholed_listcontainerObj::implObj
 
 peepholed_listcontainerObj::implObj::~implObj()=default;
 
-void peepholed_listcontainerObj::implObj::initialize(IN_THREAD_ONLY)
+void peepholed_listcontainerObj::implObj::initialize(ONLY IN_THREAD)
 {
 	update_peephole_metrics(IN_THREAD);
 }
 
 void peepholed_listcontainerObj::implObj
-::horizvert_updated(IN_THREAD_ONLY)
+::horizvert_updated(ONLY IN_THREAD)
 {
 	update_peephole_metrics(IN_THREAD);
 }
 
-dim_t peepholed_listcontainerObj::implObj::rowsize(IN_THREAD_ONLY) const
+dim_t peepholed_listcontainerObj::implObj::rowsize(ONLY IN_THREAD) const
 {
 	return dim_t::truncate
 		(list_reference_font().font_height(IN_THREAD)
@@ -42,14 +42,14 @@ dim_t peepholed_listcontainerObj::implObj::rowsize(IN_THREAD_ONLY) const
 }
 
 void peepholed_listcontainerObj::implObj
-::theme_updated(IN_THREAD_ONLY,
+::theme_updated(ONLY IN_THREAD,
 		const defaulttheme &new_theme)
 {
 	update_peephole_metrics(IN_THREAD);
 }
 
 void peepholed_listcontainerObj::implObj
-::update_peephole_metrics(IN_THREAD_ONLY)
+::update_peephole_metrics(ONLY IN_THREAD)
 {
 	// We keep our horizontal metrics, and override the vertical
 	// metrics to the fixed height.

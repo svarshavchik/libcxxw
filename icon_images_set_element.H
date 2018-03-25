@@ -24,7 +24,7 @@ icon_1tag(const icon &i) : tagged_icon_thread_only(i)
 //! Initialize the icon.
 template<typename C>
 
-inline void icon_1tag<C>::initialize(IN_THREAD_ONLY)
+inline void icon_1tag<C>::initialize(ONLY IN_THREAD)
 {
 	tagged_icon(IN_THREAD)=
 		tagged_icon(IN_THREAD)->initialize(IN_THREAD);
@@ -32,7 +32,7 @@ inline void icon_1tag<C>::initialize(IN_THREAD_ONLY)
 
 //! Reload all images after theme_updated().
 template<typename C>
-inline void icon_1tag<C>::theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme)
+inline void icon_1tag<C>::theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme)
 {
 	tagged_icon(IN_THREAD)=
 		tagged_icon(IN_THREAD)->theme_updated(IN_THREAD,
@@ -42,7 +42,7 @@ inline void icon_1tag<C>::theme_updated(IN_THREAD_ONLY, const defaulttheme &new_
 
 //! Resize the icon.
 template<typename C>
-inline void icon_1tag<C>::resize(IN_THREAD_ONLY, dim_t w, dim_t h,
+inline void icon_1tag<C>::resize(ONLY IN_THREAD, dim_t w, dim_t h,
 				 icon_scale scale)
 {
 	tagged_icon(IN_THREAD)=
@@ -65,7 +65,7 @@ inline icon_images_set_element_implObj<element_impl, Tag1, Tags...>
 //! Also initialize the icon in icon_1tag.
 template<typename element_impl, typename Tag1, typename ...Tags>
 inline void icon_images_set_element_implObj<element_impl, Tag1, Tags...>
-::initialize(IN_THREAD_ONLY)
+::initialize(ONLY IN_THREAD)
 {
 	superclass_t::initialize(IN_THREAD);
 	icon_1tag<Tag1>::initialize(IN_THREAD);
@@ -77,7 +77,7 @@ inline void icon_images_set_element_implObj<element_impl, Tag1, Tags...>
 
 template<typename element_impl, typename Tag1, typename ...Tags>
 inline void icon_images_set_element_implObj<element_impl, Tag1, Tags...>
-::theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme)
+::theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme)
 {
 	superclass_t::theme_updated(IN_THREAD, new_theme);
 	icon_1tag<Tag1>::theme_updated(IN_THREAD, new_theme);

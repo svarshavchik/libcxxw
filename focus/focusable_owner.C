@@ -20,7 +20,7 @@ focusableObj::ownerObj::ownerObj(const ref<focusableImplObj> &impl) : impl(impl)
 
 	impl->get_focusable_element().get_screen()->impl->thread->run_as
 		([impl=this->impl]
-		 (IN_THREAD_ONLY)
+		 (ONLY IN_THREAD)
 		 {
 			 impl->focusable_initialize(IN_THREAD);
 		 });
@@ -36,7 +36,7 @@ focusableObj::ownerObj::~ownerObj()
 
 	impl->get_focusable_element().get_screen()->impl->thread->run_as
 		([impl=this->impl]
-		 (IN_THREAD_ONLY)
+		 (ONLY IN_THREAD)
 		 {
 			 impl->focusable_deinitialize(IN_THREAD);
 		 });

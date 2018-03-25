@@ -16,7 +16,7 @@ background_color_element_recalculatedObj<element_impl>
 
 template<typename element_impl>
 void background_color_element_recalculatedObj<element_impl>
-::initialize(IN_THREAD_ONLY)
+::initialize(ONLY IN_THREAD)
 {
 	recalculated_flag=false;
 	element_impl::initialize(IN_THREAD);
@@ -26,7 +26,7 @@ void background_color_element_recalculatedObj<element_impl>
 
 template<typename element_impl>
 void background_color_element_recalculatedObj<element_impl>
-::theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme)
+::theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme)
 {
 	recalculated_flag=false;
 	element_impl::theme_updated(IN_THREAD, new_theme);
@@ -36,7 +36,7 @@ void background_color_element_recalculatedObj<element_impl>
 
 template<typename element_impl>
 void background_color_element_recalculatedObj<element_impl>
-::process_updated_position(IN_THREAD_ONLY)
+::process_updated_position(ONLY IN_THREAD)
 {
 	recalculated_flag=false;
 	element_impl::process_updated_position(IN_THREAD);
@@ -46,7 +46,7 @@ void background_color_element_recalculatedObj<element_impl>
 
 template<typename element_impl>
 void background_color_element_recalculatedObj<element_impl>
-::invoke_element_state_updates(IN_THREAD_ONLY,
+::invoke_element_state_updates(ONLY IN_THREAD,
 			       element_state::state_update_t e)
 {
 	recalculated_flag=false;
@@ -59,7 +59,7 @@ void background_color_element_recalculatedObj<element_impl>
 
 template<typename element_impl>
 void background_color_element_recalculatedObj<element_impl>
-::background_color_was_recalculated(IN_THREAD_ONLY)
+::background_color_was_recalculated(ONLY IN_THREAD)
 {
 	recalculated_flag=true;
 }

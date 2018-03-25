@@ -33,7 +33,7 @@ layoutmanager singletonlayoutmanagerObj::implObj::create_public_object()
 }
 
 void singletonlayoutmanagerObj::implObj
-::do_for_each_child(IN_THREAD_ONLY,
+::do_for_each_child(ONLY IN_THREAD,
 		    const function<void (const element &e)> &callback)
 {
 	auto c=current_element.get();
@@ -46,22 +46,22 @@ void singletonlayoutmanagerObj::implObj
 	callback(c);
 }
 
-dim_t singletonlayoutmanagerObj::implObj::get_left_padding(IN_THREAD_ONLY)
+dim_t singletonlayoutmanagerObj::implObj::get_left_padding(ONLY IN_THREAD)
 {
 	return 0;
 }
 
-dim_t singletonlayoutmanagerObj::implObj::get_right_padding(IN_THREAD_ONLY)
+dim_t singletonlayoutmanagerObj::implObj::get_right_padding(ONLY IN_THREAD)
 {
 	return 0;
 }
 
-dim_t singletonlayoutmanagerObj::implObj::get_top_padding(IN_THREAD_ONLY)
+dim_t singletonlayoutmanagerObj::implObj::get_top_padding(ONLY IN_THREAD)
 {
 	return 0;
 }
 
-dim_t singletonlayoutmanagerObj::implObj::get_bottom_padding(IN_THREAD_ONLY)
+dim_t singletonlayoutmanagerObj::implObj::get_bottom_padding(ONLY IN_THREAD)
 {
 	return 0;
 }
@@ -77,7 +77,7 @@ elementptr singletonlayoutmanagerObj::implObj::get()
 }
 
 elementimplptr singletonlayoutmanagerObj::implObj
-::get_list_element_impl(IN_THREAD_ONLY)
+::get_list_element_impl(ONLY IN_THREAD)
 {
 	auto e=get();
 
@@ -87,7 +87,7 @@ elementimplptr singletonlayoutmanagerObj::implObj
 	return e->impl;
 }
 
-void singletonlayoutmanagerObj::implObj::recalculate(IN_THREAD_ONLY)
+void singletonlayoutmanagerObj::implObj::recalculate(ONLY IN_THREAD)
 {
 	auto list_impl=get_list_element_impl(IN_THREAD);
 
@@ -121,7 +121,7 @@ void singletonlayoutmanagerObj::implObj::recalculate(IN_THREAD_ONLY)
 }
 
 void singletonlayoutmanagerObj::implObj
-::update_metrics(IN_THREAD_ONLY,
+::update_metrics(ONLY IN_THREAD,
 		 const metrics::axis &horiz,
 		 const metrics::axis &vert)
 {
@@ -133,7 +133,7 @@ void singletonlayoutmanagerObj::implObj
 }
 
 void singletonlayoutmanagerObj::implObj
-::process_updated_position(IN_THREAD_ONLY,
+::process_updated_position(ONLY IN_THREAD,
 			   const rectangle &position)
 {
 	// If our own width/height is 0, don't bother updating the element's

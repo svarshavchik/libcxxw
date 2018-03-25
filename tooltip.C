@@ -53,7 +53,7 @@ class LIBCXX_HIDDEN tooltip_handlerObj : public popupObj::handlerObj {
 	const ref<obj> grab;
 
 	//! Constructor
-	tooltip_handlerObj(IN_THREAD_ONLY,
+	tooltip_handlerObj(ONLY IN_THREAD,
 			   const ref<generic_windowObj::handlerObj> &parent,
 			   const color_arg &background_color,
 			   const ref<obj> &grab,
@@ -64,7 +64,7 @@ class LIBCXX_HIDDEN tooltip_handlerObj : public popupObj::handlerObj {
 	~tooltip_handlerObj();
 
 	//! Implement recalculate_popup_position()
-	popup_position_affinity recalculate_popup_position(IN_THREAD_ONLY,
+	popup_position_affinity recalculate_popup_position(ONLY IN_THREAD,
 							   rectangle &r,
 							   dim_t screen_width,
 							   dim_t screen_height)
@@ -85,12 +85,12 @@ class LIBCXX_HIDDEN tooltip_handlerObj : public popupObj::handlerObj {
 		return "tooltip";
 	}
 
-	ref<obj> get_opened_mcguffin(IN_THREAD_ONLY) override
+	ref<obj> get_opened_mcguffin(ONLY IN_THREAD) override
 	{
 		return ref<obj>::create(); // Dummy stub.
 	}
 
-	void released_opened_mcguffin(IN_THREAD_ONLY) override
+	void released_opened_mcguffin(ONLY IN_THREAD) override
 	{
 		// Dummy stub
 	}
@@ -100,7 +100,7 @@ class LIBCXX_HIDDEN tooltip_handlerObj : public popupObj::handlerObj {
 #endif
 };
 
-tooltip_handlerObj::tooltip_handlerObj(IN_THREAD_ONLY,
+tooltip_handlerObj::tooltip_handlerObj(ONLY IN_THREAD,
 				       const ref<generic_windowObj::handlerObj>
 				       &parent,
 				       const color_arg &background_color,
@@ -118,7 +118,7 @@ tooltip_handlerObj::tooltip_handlerObj(IN_THREAD_ONLY,
 tooltip_handlerObj::~tooltip_handlerObj()=default;
 
 popup_position_affinity
-tooltip_handlerObj::recalculate_popup_position(IN_THREAD_ONLY,
+tooltip_handlerObj::recalculate_popup_position(ONLY IN_THREAD,
 					       rectangle &r,
 					       dim_t screen_width,
 					       dim_t screen_height)
@@ -156,12 +156,12 @@ tooltip_handlerObj::recalculate_popup_position(IN_THREAD_ONLY,
 
 class LIBCXX_HIDDEN tooltip_factory_impl : public tooltip_factory {
 
-	IN_THREAD_ONLY;
+	ONLY IN_THREAD;
 
 	const ref<elementObj::implObj> parent_element;
 
  public:
-	tooltip_factory_impl(IN_THREAD_ONLY,
+	tooltip_factory_impl(ONLY IN_THREAD,
 			     const ref<elementObj::implObj> &parent_element)
 		: IN_THREAD(IN_THREAD),
 		parent_element(parent_element)
@@ -281,7 +281,7 @@ void elementObj::create_tooltip(const text_param &text,
 }
 
 std::chrono::milliseconds
-elementObj::implObj::hover_action_delay(IN_THREAD_ONLY)
+elementObj::implObj::hover_action_delay(ONLY IN_THREAD)
 {
 	auto &d=data(IN_THREAD);
 
@@ -296,7 +296,7 @@ elementObj::implObj::hover_action_delay(IN_THREAD_ONLY)
 	return std::chrono::milliseconds(tooltip_delay.get());
 }
 
-void elementObj::implObj::hover_action(IN_THREAD_ONLY)
+void elementObj::implObj::hover_action(ONLY IN_THREAD)
 {
 	if (!data(IN_THREAD).tooltip_factory)
 		return;
@@ -306,7 +306,7 @@ void elementObj::implObj::hover_action(IN_THREAD_ONLY)
 	data(IN_THREAD).tooltip_factory->invoke(create_a_tooltip);
 }
 
-void elementObj::implObj::hover_cancel(IN_THREAD_ONLY)
+void elementObj::implObj::hover_cancel(ONLY IN_THREAD)
 {
 	// Cancel the pending tooltip. If it's already shown, discard it.
 	// And discard the timer's mcguffin, if we were getting set to do it.

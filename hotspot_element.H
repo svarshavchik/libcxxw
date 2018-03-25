@@ -57,7 +57,7 @@ const focusableImplObj &hotspot_elementObj<element_impl>
 
 template<typename element_impl>
 void hotspot_elementObj<element_impl>
-::keyboard_focus(IN_THREAD_ONLY,
+::keyboard_focus(ONLY IN_THREAD,
 		 const callback_trigger_t &trigger)
 {
 	superclass_t::keyboard_focus(IN_THREAD, trigger);
@@ -69,7 +69,7 @@ void hotspot_elementObj<element_impl>
 //! Forward it hotspotObj::implObj.
 
 template<typename element_impl>
-void hotspot_elementObj<element_impl>::pointer_focus(IN_THREAD_ONLY,
+void hotspot_elementObj<element_impl>::pointer_focus(ONLY IN_THREAD,
 						     const callback_trigger_t
 						     &trigger)
 {
@@ -83,7 +83,7 @@ void hotspot_elementObj<element_impl>::pointer_focus(IN_THREAD_ONLY,
 
 template<typename element_impl>
 bool hotspot_elementObj<element_impl>
-::process_key_event(IN_THREAD_ONLY, const key_event &ke)
+::process_key_event(ONLY IN_THREAD, const key_event &ke)
 {
 	return hotspotObj::implObj::process_key_event(IN_THREAD, ke)
 		||
@@ -99,7 +99,7 @@ bool hotspot_elementObj<element_impl>
 
 template<typename element_impl>
 void hotspot_elementObj<element_impl>
-::window_focus_change(IN_THREAD_ONLY, bool flag)
+::window_focus_change(ONLY IN_THREAD, bool flag)
 {
 	hotspotObj::implObj::window_focus_change(IN_THREAD, flag);
 	superclass_t::window_focus_change(IN_THREAD, flag);
@@ -111,7 +111,7 @@ void hotspot_elementObj<element_impl>
 
 template<typename element_impl>
 bool hotspot_elementObj<element_impl>
-::process_button_event(IN_THREAD_ONLY,
+::process_button_event(ONLY IN_THREAD,
 		       const button_event &be,
 		       xcb_timestamp_t timestamp)
 {

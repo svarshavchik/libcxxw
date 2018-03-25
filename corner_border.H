@@ -66,7 +66,7 @@ class LIBCXX_HIDDEN corner_borderObj::implObj
 		//! The border, and which_corners, gets added to the borders
 		//! vector.
 
-		void get_same_border(IN_THREAD_ONLY,
+		void get_same_border(ONLY IN_THREAD,
 				     from_b border1,
 				     from_b border2,
 				     int which_corners,
@@ -80,7 +80,7 @@ class LIBCXX_HIDDEN corner_borderObj::implObj
 		//! If which_border is defined, add it, together with an
 		//! opaque "flag" to the borders vector.
 
-		void pick_border(IN_THREAD_ONLY,
+		void pick_border(ONLY IN_THREAD,
 				 from_b which_border,
 				 int flag,
 				 std::vector<std::tuple<const_border_impl,
@@ -123,7 +123,7 @@ class LIBCXX_HIDDEN corner_borderObj::implObj
 
 	//! If the cached draw info is cached, return it, else compute it.
 
-	cached_draw_info_s &get_cached_draw_info(IN_THREAD_ONLY);
+	cached_draw_info_s &get_cached_draw_info(ONLY IN_THREAD);
 
  public:
 
@@ -132,7 +132,7 @@ class LIBCXX_HIDDEN corner_borderObj::implObj
 
 	//! The grid layout manager has updated the surrounding_elements()
 
-	void updated(IN_THREAD_ONLY);
+	void updated(ONLY IN_THREAD);
 
 	//! Constructor
 	implObj(const ref<containerObj::implObj> &container);
@@ -146,16 +146,16 @@ class LIBCXX_HIDDEN corner_borderObj::implObj
 	~implObj();
 
 	//! Initialize this element.
-	void initialize(IN_THREAD_ONLY) override;
+	void initialize(ONLY IN_THREAD) override;
 
 	//! The current theme has changed.
-	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme) override;
+	void theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme) override;
 
 	//! Recalculate my metrics.
-	void compute_metrics(IN_THREAD_ONLY);
+	void compute_metrics(ONLY IN_THREAD);
 
 	//! Draw the border.
-	void do_draw(IN_THREAD_ONLY,
+	void do_draw(ONLY IN_THREAD,
 		     const draw_info &di,
 		     const picture &area_picture,
 		     const pixmap &area_pixmap,

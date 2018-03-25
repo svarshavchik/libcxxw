@@ -32,7 +32,7 @@ hotspotObj::implObj::implObj()
 
 hotspotObj::implObj::~implObj()=default;
 
-void hotspotObj::implObj::keyboard_focus(IN_THREAD_ONLY,
+void hotspotObj::implObj::keyboard_focus(ONLY IN_THREAD,
 					 const callback_trigger_t &trigger)
 {
 	if (!get_hotspot_element().current_keyboard_focus(IN_THREAD))
@@ -41,7 +41,7 @@ void hotspotObj::implObj::keyboard_focus(IN_THREAD_ONLY,
 	update(IN_THREAD, trigger);
 }
 
-void hotspotObj::implObj::pointer_focus(IN_THREAD_ONLY,
+void hotspotObj::implObj::pointer_focus(ONLY IN_THREAD,
 					const callback_trigger_t &trigger)
 {
 	if (!get_hotspot_element().current_pointer_focus(IN_THREAD))
@@ -50,7 +50,7 @@ void hotspotObj::implObj::pointer_focus(IN_THREAD_ONLY,
 	update(IN_THREAD, trigger);
 }
 
-void hotspotObj::implObj::window_focus_change(IN_THREAD_ONLY, bool flag)
+void hotspotObj::implObj::window_focus_change(ONLY IN_THREAD, bool flag)
 {
 	if (!flag)
 	{
@@ -59,7 +59,7 @@ void hotspotObj::implObj::window_focus_change(IN_THREAD_ONLY, bool flag)
 	}
 }
 
-bool hotspotObj::implObj::process_key_event(IN_THREAD_ONLY, const key_event &ke)
+bool hotspotObj::implObj::process_key_event(ONLY IN_THREAD, const key_event &ke)
 {
 	if (activate_on_key(ke))
 	{
@@ -81,7 +81,7 @@ bool hotspotObj::implObj::activate_on_key(const key_event &ke)
 	return select_key(ke);
 }
 
-bool hotspotObj::implObj::process_button_event(IN_THREAD_ONLY,
+bool hotspotObj::implObj::process_button_event(ONLY IN_THREAD,
 					       const button_event &be,
 					       xcb_timestamp_t timestamp)
 {
@@ -101,7 +101,7 @@ bool hotspotObj::implObj::process_button_event(IN_THREAD_ONLY,
 	return false;
 }
 
-void hotspotObj::implObj::update(IN_THREAD_ONLY,
+void hotspotObj::implObj::update(ONLY IN_THREAD,
 				 const callback_trigger_t &trigger)
 {
 	temperature new_temperature=temperature::cold;
@@ -124,7 +124,7 @@ void hotspotObj::implObj::update(IN_THREAD_ONLY,
 	temperature_changed(IN_THREAD, trigger);
 }
 
-void hotspotObj::implObj::temperature_changed(IN_THREAD_ONLY,
+void hotspotObj::implObj::temperature_changed(ONLY IN_THREAD,
 					      const callback_trigger_t &trigger)
 {
 }
@@ -133,13 +133,13 @@ void hotspotObj::implObj::on_activate(const hotspot_callback_t &new_callback)
 {
 	get_hotspot_element().THREAD
 		->run_as([me=ref<implObj>(this), new_callback]
-			 (IN_THREAD_ONLY)
+			 (ONLY IN_THREAD)
 			 {
 				 me->on_activate(IN_THREAD, new_callback);
 			 });
 }
 
-void hotspotObj::implObj::on_activate(IN_THREAD_ONLY,
+void hotspotObj::implObj::on_activate(ONLY IN_THREAD,
 				      const hotspot_callback_t &new_callback)
 {
 	callback(IN_THREAD)=new_callback;
@@ -147,7 +147,7 @@ void hotspotObj::implObj::on_activate(IN_THREAD_ONLY,
 
 LOG_FUNC_SCOPE_DECL(LIBCXXW_NAMESPACE::hotspot, hotspot_log);
 
-void hotspotObj::implObj::activated(IN_THREAD_ONLY,
+void hotspotObj::implObj::activated(ONLY IN_THREAD,
 				    const callback_trigger_t &trigger)
 {
 	LOG_FUNC_SCOPE(hotspot_log);
@@ -157,12 +157,12 @@ void hotspotObj::implObj::activated(IN_THREAD_ONLY,
 	} CATCH_EXCEPTIONS;
 }
 
-bool hotspotObj::implObj::enabled(IN_THREAD_ONLY)
+bool hotspotObj::implObj::enabled(ONLY IN_THREAD)
 {
 	return get_hotspot_focusable().focusable_enabled(IN_THREAD);
 }
 
-void hotspotObj::implObj::set_shortcut(IN_THREAD_ONLY, const shortcut &sc)
+void hotspotObj::implObj::set_shortcut(ONLY IN_THREAD, const shortcut &sc)
 {
 	if (sc)
 		install_shortcut(sc, activated_in_thread(this));

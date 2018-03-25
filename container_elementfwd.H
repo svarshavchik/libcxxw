@@ -31,34 +31,34 @@ public:
 
 	using element_impl::element_impl;
 
-	void do_draw(IN_THREAD_ONLY,
+	void do_draw(ONLY IN_THREAD,
 		     const draw_info &di,
 		     const rectangle_set &areas) override;
 
-	void inherited_visibility_updated(IN_THREAD_ONLY,
+	void inherited_visibility_updated(ONLY IN_THREAD,
 					  inherited_visibility_info &info)
 		override;
 
-	void process_updated_position(IN_THREAD_ONLY) override;
+	void process_updated_position(ONLY IN_THREAD) override;
 
-	void request_visibility_recursive(IN_THREAD_ONLY, bool flag) override;
+	void request_visibility_recursive(ONLY IN_THREAD, bool flag) override;
 
-	void draw_after_visibility_updated(IN_THREAD_ONLY, bool flag) override;
+	void draw_after_visibility_updated(ONLY IN_THREAD, bool flag) override;
 
-	void do_for_each_child(IN_THREAD_ONLY,
+	void do_for_each_child(ONLY IN_THREAD,
 			       const function<void (const element &e)> &)
 		override;
 
-	void initialize(IN_THREAD_ONLY) override;
+	void initialize(ONLY IN_THREAD) override;
 
-	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme)
+	void theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme)
 		override;
 
 	elementObj::implObj &container_element_impl() override;
 
 	const elementObj::implObj &container_element_impl() const override;
 
-	void removed_from_container(IN_THREAD_ONLY) override;
+	void removed_from_container(ONLY IN_THREAD) override;
 };
 
 LIBCXXW_NAMESPACE_END

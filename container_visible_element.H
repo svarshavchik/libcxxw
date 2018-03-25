@@ -20,7 +20,7 @@ LIBCXXW_NAMESPACE_START
 
 template<typename container_impl>
 void container_visible_elementObj<container_impl>
-::ensured_visibility_of_child_element(IN_THREAD_ONLY,
+::ensured_visibility_of_child_element(ONLY IN_THREAD,
 				      elementObj::implObj &e,
 				      const rectangle &r)
 {

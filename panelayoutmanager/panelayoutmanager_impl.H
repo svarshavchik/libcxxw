@@ -253,12 +253,12 @@ class LIBCXX_HIDDEN panelayoutmanagerObj::implObj
 	//! Callback from a slider element: sliding has started.
 
 	pane_slider_original_sizes
-		start_sliding(IN_THREAD_ONLY,
+		start_sliding(ONLY IN_THREAD,
 			      const ref<elementObj::implObj> &which_slider);
 
 	//! Slide panes.
 
-	virtual void sliding(IN_THREAD_ONLY,
+	virtual void sliding(ONLY IN_THREAD,
 			     const ref<elementObj::implObj> &which_slider,
 			     const pane_slider_original_sizes &original_sizes,
 
@@ -269,11 +269,11 @@ class LIBCXX_HIDDEN panelayoutmanagerObj::implObj
 			     coord_t current_y)=0;
 
 	//! Key up/left
-	void slide_start(IN_THREAD_ONLY,
+	void slide_start(ONLY IN_THREAD,
 			 const ref<elementObj::implObj> &which_slider);
 
 	//! Key down_right
-	void slide_end(IN_THREAD_ONLY,
+	void slide_end(ONLY IN_THREAD,
 		       const ref<elementObj::implObj> &which_slider);
 
  protected:
@@ -326,7 +326,7 @@ class LIBCXX_HIDDEN panelayoutmanagerObj::implObj
 	//! Return original sizes of two panes.
 
 	virtual pane_slider_original_sizes
-		original_sizes(IN_THREAD_ONLY,
+		original_sizes(ONLY IN_THREAD,
 			       const ref<elementObj::implObj> &before,
 			       const ref<elementObj::implObj> &after)=0;
 };
@@ -397,13 +397,13 @@ class panelayoutmanagerObj::implObj::orientation
 	//! Capture original sizes of two panes.
 
 	pane_slider_original_sizes
-	original_sizes(IN_THREAD_ONLY,
+	original_sizes(ONLY IN_THREAD,
 		       const ref<elementObj::implObj> &before,
 		       const ref<elementObj::implObj> &after) override;
 
 	//! Slide panes.
 
-	void sliding(IN_THREAD_ONLY,
+	void sliding(ONLY IN_THREAD,
 		     const ref<elementObj::implObj> &which_slider,
 		     const pane_slider_original_sizes &original_sizes,
 

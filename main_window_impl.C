@@ -37,7 +37,7 @@ void main_windowObj::implObj::on_delete(const std::function<void
 					(const busy &)> &callback)
 {
 	thread()->run_as([handler=this->handler, callback]
-			 (IN_THREAD_ONLY)
+			 (ONLY IN_THREAD)
 			 {
 				 handler->on_delete_callback(IN_THREAD)
 					 =callback;

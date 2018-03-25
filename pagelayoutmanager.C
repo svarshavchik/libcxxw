@@ -133,7 +133,7 @@ void pagelayoutmanagerObj::open(size_t n)
 void pagelayoutmanagerObj::close()
 {
 	queue->run_as([impl=this->impl]
-		      (IN_THREAD_ONLY)
+		      (ONLY IN_THREAD)
 		      {
 			      page_layout_info_t::lock lock{impl->info};
 

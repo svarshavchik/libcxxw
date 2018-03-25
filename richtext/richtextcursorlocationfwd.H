@@ -29,7 +29,7 @@ class richtextcursorlocationObj;
 //!
 //! We thread a very fine needle here. In all cases, we can only get here
 //! under protection of richtextobj's big lock. So, we're single-threaded
-//! here in all cases. But, additionally, IN_THREAD_ONLY we may also look
+//! here in all cases. But, additionally, ONLY IN_THREAD we may also look
 //! at my richtextfragmentObj's horiz_info in order to cache the horizontal
 //! pixel offset that this location represents.
 

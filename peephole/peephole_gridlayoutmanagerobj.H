@@ -50,7 +50,7 @@ class LIBCXX_HIDDEN peephole_gridlayoutmanagerObj
 	//! peephole element in cell (0,0). The peephole manages the visibility
 	//! of the scrollbars, by itself.
 
-	void request_visibility_recursive(IN_THREAD_ONLY, bool) override;
+	void request_visibility_recursive(ONLY IN_THREAD, bool) override;
 };
 
 LIBCXXW_NAMESPACE_END

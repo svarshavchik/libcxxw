@@ -36,7 +36,7 @@ public:
 	ref<focusableImplObj> get_impl() const override;
 
 	//! Resize the icon images.
-	void resize(IN_THREAD_ONLY,
+	void resize(ONLY IN_THREAD,
 		    dim_t w, dim_t h, icon_scale scale);
 };
 

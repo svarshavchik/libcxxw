@@ -16,7 +16,7 @@ nonrecursive_visibilityObj<container_impl>
 
 template<typename container_impl>
 void nonrecursive_visibilityObj<container_impl>
-::request_visibility_recursive(IN_THREAD_ONLY, bool flag)
+::request_visibility_recursive(ONLY IN_THREAD, bool flag)
 {
 	this->request_visibility(IN_THREAD, flag);
 }

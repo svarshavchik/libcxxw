@@ -77,33 +77,33 @@ class LIBCXX_HIDDEN richtextObj : virtual public obj {
 
 	//! Updated word_wrap_width. A width of 0 un-wordwraps the label.
 
-	bool rewrap(IN_THREAD_ONLY, dim_t width);
+	bool rewrap(ONLY IN_THREAD, dim_t width);
 
 	//! Return the text object's current width
-	dim_t get_width(IN_THREAD_ONLY);
+	dim_t get_width(ONLY IN_THREAD);
 
 	//! Return the text object's current metrics
 
 	//! Return the text object's current horizontal and vertical sizes.
 
 	std::pair<metrics::axis, metrics::axis>
-		get_metrics(IN_THREAD_ONLY, dim_t preferred_width);
+		get_metrics(ONLY IN_THREAD, dim_t preferred_width);
 
 	//! Theme has been updated
 
 	//! Forwarded to the implementation object.
 
-	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme);
+	void theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme);
 
 	//! Set the entire contents of the richtext.
 
-	void set(IN_THREAD_ONLY, const richtextstring &string);
+	void set(ONLY IN_THREAD, const richtextstring &string);
 
 	//! Redraw this element fully.
 
 	//! Invoked from do_draw(), which handles exposure events.
 
-	void full_redraw(IN_THREAD_ONLY,
+	void full_redraw(ONLY IN_THREAD,
 			 element_drawObj &,
 			 const richtext_draw_info &,
 			 const draw_info &,
@@ -115,7 +115,7 @@ class LIBCXX_HIDDEN richtextObj : virtual public obj {
 	//! multiple text elements inside its element. It supplies a custom
 	//! richtext_draw_boundaries.
 
-	void full_redraw(IN_THREAD_ONLY,
+	void full_redraw(ONLY IN_THREAD,
 			 element_drawObj &,
 			 const richtext_draw_info &,
 			 const draw_info &,
@@ -125,7 +125,7 @@ class LIBCXX_HIDDEN richtextObj : virtual public obj {
 
 	//! Invoked after the text is modified.
 
-	void redraw_whatsneeded(IN_THREAD_ONLY,
+	void redraw_whatsneeded(ONLY IN_THREAD,
 				element_drawObj &,
 				const richtext_draw_info &,
 				const draw_info &);
@@ -134,7 +134,7 @@ class LIBCXX_HIDDEN richtextObj : virtual public obj {
 
 	//! This constructs a pixmap and a picture, then renders the text
 	//! into the picture.
-	std::tuple<pixmap, picture> create(IN_THREAD_ONLY,
+	std::tuple<pixmap, picture> create(ONLY IN_THREAD,
 					   const drawable &for_drawable);
 
 	//! Redraw only the fragments that need redrawing.
@@ -142,7 +142,7 @@ class LIBCXX_HIDDEN richtextObj : virtual public obj {
 	//! Invoked after the text is modified. The rectangleset further
 	//! narrows down what needs to be redrawn.
 
-	void redraw_whatsneeded(IN_THREAD_ONLY,
+	void redraw_whatsneeded(ONLY IN_THREAD,
 				element_drawObj &,
 				const richtext_draw_info &,
 				const draw_info &,
@@ -153,7 +153,7 @@ class LIBCXX_HIDDEN richtextObj : virtual public obj {
 	//! This is used by the editor element, as such this takes care of
 	//! constructing richtext_draw_boundaries that assumes that the
 	//! text label is the entire display element (it is).
-	void redraw_between(IN_THREAD_ONLY,
+	void redraw_between(ONLY IN_THREAD,
 			    element_drawObj &,
 			    const richtextiterator &,
 			    const richtextiterator &,
@@ -174,7 +174,7 @@ class LIBCXX_HIDDEN richtextObj : virtual public obj {
  private:
 	//! Draw the text
 
-	void draw(IN_THREAD_ONLY,
+	void draw(ONLY IN_THREAD,
 		  //! The element being drawn
 		  element_drawObj &element,
 
@@ -224,7 +224,7 @@ class LIBCXX_HIDDEN richtextObj : virtual public obj {
 	//! honor system) to the underlying implementation object.
 	//!
 	//! Here, "read-only" means: no access to the horiz_info structure of
-	//! any text fragment. It is accessible IN_THREAD_ONLY.
+	//! any text fragment. It is accessible ONLY IN_THREAD.
 
 	template<typename lambda>
 		auto read_only_lock(lambda &&l)
@@ -236,14 +236,14 @@ class LIBCXX_HIDDEN richtextObj : virtual public obj {
 
 	//! How many characters there are.
 
-	size_t size(IN_THREAD_ONLY);
+	size_t size(ONLY IN_THREAD);
 
 	//! Run something while protected by the big thread lock.
 
 	//! This must be used by any IN_THREAD-scoped execution path.
 
 	template<typename lambda>
-		auto thread_lock(IN_THREAD_ONLY, lambda &&l)
+		auto thread_lock(ONLY IN_THREAD, lambda &&l)
 	{
 		impl_t::lock lock{IN_THREAD, impl};
 
@@ -256,7 +256,7 @@ class LIBCXX_HIDDEN richtextObj : virtual public obj {
 	//! Passes a richtextcursorlocation that must have the
 	//! do_not_adjust_in_insert flag set.
 
-	void insert_at_location(IN_THREAD_ONLY,
+	void insert_at_location(ONLY IN_THREAD,
 				impl_t::lock &lock,
 				const richtext_insert_base &new_text);
 
@@ -265,14 +265,14 @@ class LIBCXX_HIDDEN richtextObj : virtual public obj {
 
 	//! Invoked from richtextiterator->insert() after a thread_lock().
 
-	void remove_at_location(IN_THREAD_ONLY,
+	void remove_at_location(ONLY IN_THREAD,
 				impl_t::lock &lock,
 				const richtextcursorlocation &a,
 				const richtextcursorlocation &b);
 
 	//! Combine remove with insert.
 
-	void replace_at_location(IN_THREAD_ONLY,
+	void replace_at_location(ONLY IN_THREAD,
 				 impl_t::lock &lock,
 				 const richtext_insert_base &new_text,
 				 const richtextcursorlocation &remove_from,
@@ -299,7 +299,7 @@ class LIBCXX_HIDDEN richtextObj : virtual public obj {
  public:
 	//! For testing purpose.
 
-	ref<richtext_implObj> debug_get_impl(IN_THREAD_ONLY);
+	ref<richtext_implObj> debug_get_impl(ONLY IN_THREAD);
 };
 
 
@@ -308,7 +308,7 @@ class richtextObj::impl_t::lock : public internal_richtext_impl_t::lock {
 
 
 public:
-	lock(IN_THREAD_ONLY, impl_t &);
+	lock(ONLY IN_THREAD, impl_t &);
 };
 
 LIBCXXW_NAMESPACE_END;

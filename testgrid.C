@@ -23,7 +23,7 @@ class LIBCXX_HIDDEN myhorizvertObj : public horizvertObj {
 public:
 	using horizvertObj::horizvertObj;
 
-	void horizvert_updated(IN_THREAD_ONLY) override
+	void horizvert_updated(ONLY IN_THREAD) override
 	{
 	}
 };

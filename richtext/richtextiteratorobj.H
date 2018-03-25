@@ -75,19 +75,19 @@ class LIBCXX_HIDDEN richtextiteratorObj : virtual public obj {
 	richtextiterator pos(size_t offset) const;
 
 	//! Ahead by 1
-	inline void next(IN_THREAD_ONLY)
+	inline void next(ONLY IN_THREAD)
 	{
 		move(IN_THREAD, 1);
 	}
 
 	//! Reverse by 1
-	inline void prev(IN_THREAD_ONLY)
+	inline void prev(ONLY IN_THREAD)
 	{
 		move(IN_THREAD, -1);
 	}
 
 	//! Advance the iterator
-	void move(IN_THREAD_ONLY, ssize_t howmuch);
+	void move(ONLY IN_THREAD, ssize_t howmuch);
 
 	//! Ditto
 	void start_of_line();
@@ -96,23 +96,23 @@ class LIBCXX_HIDDEN richtextiteratorObj : virtual public obj {
 	void end_of_line();
 
 	//! Ditto
-	void up(IN_THREAD_ONLY);
+	void up(ONLY IN_THREAD);
 
 	//! Ditto
-	void down(IN_THREAD_ONLY);
+	void down(ONLY IN_THREAD);
 
 	//! Ditto
-	void page_up(IN_THREAD_ONLY, dim_t height);
+	void page_up(ONLY IN_THREAD, dim_t height);
 
 	//! Ditto
-	void page_down(IN_THREAD_ONLY, dim_t height);
+	void page_down(ONLY IN_THREAD, dim_t height);
 
 	//! Move to the given coordinates
 
 	//! Returns false if the x coordinate is outside of the rendered
 	//! text, true otherwise. The iterator gets positioned on the
 	//! nearest character for the X coordinate, in all cases.
-	bool moveto(IN_THREAD_ONLY, coord_t x, coord_t y);
+	bool moveto(ONLY IN_THREAD, coord_t x, coord_t y);
 
 	//! What the at() returns.
 
@@ -123,7 +123,7 @@ class LIBCXX_HIDDEN richtextiteratorObj : virtual public obj {
 	};
 
 	//! What's at this iterator's location
-	at_info at(IN_THREAD_ONLY) const;
+	at_info at(ONLY IN_THREAD) const;
 
 	//! Current offset from the start of text, in characters
 	size_t pos() const;
@@ -137,11 +137,11 @@ class LIBCXX_HIDDEN richtextiteratorObj : virtual public obj {
 	//! inserted text, and the number of inserted paragraphs, see
 	//! richtextfragmentObj::insert().
 
-	richtextiterator insert(IN_THREAD_ONLY, const richtextstring &string);
+	richtextiterator insert(ONLY IN_THREAD, const richtextstring &string);
 
 	//! \overload
 
-	richtextiterator insert(IN_THREAD_ONLY,
+	richtextiterator insert(ONLY IN_THREAD,
 				const std::u32string_view &string);
 
 	//! Replace text.
@@ -151,13 +151,13 @@ class LIBCXX_HIDDEN richtextiteratorObj : virtual public obj {
 	//! iterator to the end of the inserted text, returning the
 	//! iterator
 
-	void replace(IN_THREAD_ONLY,
+	void replace(ONLY IN_THREAD,
 		     const const_richtextiterator &other,
 		     const richtextstring &string) const;
 
 	//! \overload
 
-	void replace(IN_THREAD_ONLY,
+	void replace(ONLY IN_THREAD,
 		     const const_richtextiterator &other,
 		     const std::u32string_view &string) const;
 
@@ -167,25 +167,25 @@ class LIBCXX_HIDDEN richtextiteratorObj : virtual public obj {
 
 	//! Internal implementation of insert().
 
-	richtextiterator insert(IN_THREAD_ONLY, const internal_insert &string);
+	richtextiterator insert(ONLY IN_THREAD, const internal_insert &string);
 
 	struct insert_lock;
 
 	//! Internal implementation of insert()
 
-	richtextiterator insert(IN_THREAD_ONLY,
+	richtextiterator insert(ONLY IN_THREAD,
 				struct insert_lock &lock_wrapper,
 				const internal_insert &string);
 
 	//! Internal implementation of replace()
 
-	void replace(IN_THREAD_ONLY,
+	void replace(ONLY IN_THREAD,
 		     const const_richtextiterator &other,
 		     const internal_insert &string) const;
 
 	//! Internal implementation of replace()
 
-	void replace(IN_THREAD_ONLY,
+	void replace(ONLY IN_THREAD,
 		     struct insert_lock &lock_wrapper,
 		     const const_richtextiterator &other,
 		     const internal_insert &string) const;
@@ -194,7 +194,7 @@ class LIBCXX_HIDDEN richtextiteratorObj : virtual public obj {
 
 	//! Remove characters between this iterator and the other one
 
-	void remove(IN_THREAD_ONLY, const const_richtextiterator &other) const;
+	void remove(ONLY IN_THREAD, const const_richtextiterator &other) const;
 
 	//! Get text between the iterators
 
@@ -206,11 +206,11 @@ class LIBCXX_HIDDEN richtextiteratorObj : virtual public obj {
 
 	//! Return current horizontal position
 
-	dim_t horiz_pos(IN_THREAD_ONLY);
+	dim_t horiz_pos(ONLY IN_THREAD);
 
 	//! Set the "cursor" flag for this iterator
 
-	void set_cursor(IN_THREAD_ONLY, bool cursor_on);
+	void set_cursor(ONLY IN_THREAD, bool cursor_on);
 
 	//! For testing purpose.
 

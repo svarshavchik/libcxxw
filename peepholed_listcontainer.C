@@ -22,12 +22,12 @@ peepholed_listcontainerObj
 
 peepholed_listcontainerObj::~peepholed_listcontainerObj()=default;
 
-dim_t peepholed_listcontainerObj::horizontal_increment(IN_THREAD_ONLY) const
+dim_t peepholed_listcontainerObj::horizontal_increment(ONLY IN_THREAD) const
 {
 	return impl->list_reference_font().font_nominal_width(IN_THREAD);
 }
 
-dim_t peepholed_listcontainerObj::vertical_increment(IN_THREAD_ONLY) const
+dim_t peepholed_listcontainerObj::vertical_increment(ONLY IN_THREAD) const
 {
 	return impl->rowsize(IN_THREAD);
 }

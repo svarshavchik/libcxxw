@@ -54,7 +54,7 @@ class LIBCXX_HIDDEN peepholed_toplevel_listcontainer_handlerObj
 	~peepholed_toplevel_listcontainer_handlerObj();
 
 	//! Override recalculate_popup_position()
-	popup_position_affinity recalculate_popup_position(IN_THREAD_ONLY,
+	popup_position_affinity recalculate_popup_position(ONLY IN_THREAD,
 							   rectangle &r,
 							   dim_t screen_width,
 							   dim_t screen_height)

@@ -161,13 +161,13 @@ void textlabelObj::implObj::update(const text_param &string)
 {
 	get_label_element_impl().THREAD->run_as
 		([me=ref<implObj>(this), string]
-		 (IN_THREAD_ONLY)
+		 (ONLY IN_THREAD)
 		 {
 			 me->update(IN_THREAD, string);
 		 });
 }
 
-void textlabelObj::implObj::update(IN_THREAD_ONLY, const text_param &string)
+void textlabelObj::implObj::update(ONLY IN_THREAD, const text_param &string)
 {
 	get_label_element_impl().initialize_if_needed(IN_THREAD);
 	auto s=get_label_element_impl()
@@ -181,7 +181,7 @@ void textlabelObj::implObj::update(IN_THREAD_ONLY, const text_param &string)
 	get_label_element_impl().schedule_redraw(IN_THREAD);
 }
 
-void textlabelObj::implObj::compute_preferred_width(IN_THREAD_ONLY)
+void textlabelObj::implObj::compute_preferred_width(ONLY IN_THREAD)
 {
 	auto screen=get_label_element_impl().get_screen()->impl;
 
@@ -189,7 +189,7 @@ void textlabelObj::implObj::compute_preferred_width(IN_THREAD_ONLY)
 		->compute_width(word_wrap_widthmm(IN_THREAD));
 }
 
-void textlabelObj::implObj::initialize(IN_THREAD_ONLY)
+void textlabelObj::implObj::initialize(ONLY IN_THREAD)
 {
 	auto screen=get_label_element_impl().get_screen()->impl;
 	auto current_theme=screen->current_theme.get();
@@ -200,7 +200,7 @@ void textlabelObj::implObj::initialize(IN_THREAD_ONLY)
 	updated(IN_THREAD);
 }
 
-void textlabelObj::implObj::updated(IN_THREAD_ONLY)
+void textlabelObj::implObj::updated(ONLY IN_THREAD)
 {
 	rewrap_due_to_updated_position(IN_THREAD);
 
@@ -209,7 +209,7 @@ void textlabelObj::implObj::updated(IN_THREAD_ONLY)
 	recalculate(IN_THREAD);
 }
 
-void textlabelObj::implObj::theme_updated(IN_THREAD_ONLY,
+void textlabelObj::implObj::theme_updated(ONLY IN_THREAD,
 				      const defaulttheme &new_theme)
 {
 	text->theme_updated(IN_THREAD, new_theme);
@@ -217,7 +217,7 @@ void textlabelObj::implObj::theme_updated(IN_THREAD_ONLY,
 	updated(IN_THREAD);
 }
 
-void textlabelObj::implObj::position_set(IN_THREAD_ONLY)
+void textlabelObj::implObj::position_set(ONLY IN_THREAD)
 {
 	if (position_set_flag)
 		return;
@@ -233,12 +233,12 @@ void textlabelObj::implObj::position_set(IN_THREAD_ONLY)
 	rewrap_due_to_updated_position(IN_THREAD);
 }
 
-void textlabelObj::implObj::process_updated_position(IN_THREAD_ONLY)
+void textlabelObj::implObj::process_updated_position(ONLY IN_THREAD)
 {
 	rewrap_due_to_updated_position(IN_THREAD);
 }
 
-void textlabelObj::implObj::rewrap_due_to_updated_position(IN_THREAD_ONLY)
+void textlabelObj::implObj::rewrap_due_to_updated_position(ONLY IN_THREAD)
 {
 	if (preferred_width == 0)
 	{
@@ -261,7 +261,7 @@ void textlabelObj::implObj::rewrap_due_to_updated_position(IN_THREAD_ONLY)
 	recalculate(IN_THREAD);
 }
 
-void textlabelObj::implObj::do_draw(IN_THREAD_ONLY,
+void textlabelObj::implObj::do_draw(ONLY IN_THREAD,
 				const draw_info &di,
 				const rectangle_set &areas)
 {
@@ -271,7 +271,7 @@ void textlabelObj::implObj::do_draw(IN_THREAD_ONLY,
 	text->full_redraw(IN_THREAD, get_label_element_impl(), {}, di, areas);
 }
 
-void textlabelObj::implObj::recalculate(IN_THREAD_ONLY)
+void textlabelObj::implObj::recalculate(ONLY IN_THREAD)
 {
 	auto metrics=calculate_current_metrics(IN_THREAD);
 
@@ -290,12 +290,12 @@ void textlabelObj::implObj::recalculate(IN_THREAD_ONLY)
 }
 
 std::pair<metrics::axis, metrics::axis>
-textlabelObj::implObj::calculate_current_metrics(IN_THREAD_ONLY)
+textlabelObj::implObj::calculate_current_metrics(ONLY IN_THREAD)
 {
 	return text->get_metrics(IN_THREAD, preferred_width);
 }
 
-bool textlabelObj::implObj::process_button_event(IN_THREAD_ONLY,
+bool textlabelObj::implObj::process_button_event(ONLY IN_THREAD,
 						 const button_event &be,
 						 xcb_timestamp_t timestamp)
 {
@@ -305,7 +305,7 @@ bool textlabelObj::implObj::process_button_event(IN_THREAD_ONLY,
 	return true;
 }
 
-bool textlabelObj::implObj::process_key_event(IN_THREAD_ONLY,
+bool textlabelObj::implObj::process_key_event(ONLY IN_THREAD,
 					      const key_event &ke)
 {
 	if (hotspot_info(IN_THREAD).empty())
@@ -391,7 +391,7 @@ bool textlabelObj::implObj::process_key_event(IN_THREAD_ONLY,
 	return true;
 }
 
-void textlabelObj::implObj::first_hotspot(IN_THREAD_ONLY)
+void textlabelObj::implObj::first_hotspot(ONLY IN_THREAD)
 {
 	auto next_link=ordered_hotspots.find(0);
 
@@ -403,7 +403,7 @@ void textlabelObj::implObj::first_hotspot(IN_THREAD_ONLY)
 	link_update(IN_THREAD, next_link->second, focus_change::gained);
 }
 
-void textlabelObj::implObj::last_hotspot(IN_THREAD_ONLY)
+void textlabelObj::implObj::last_hotspot(ONLY IN_THREAD)
 {
 	auto next_link=ordered_hotspots.find(hotspot_info(IN_THREAD).size()-1);
 	if (next_link == ordered_hotspots.end())
@@ -414,7 +414,7 @@ void textlabelObj::implObj::last_hotspot(IN_THREAD_ONLY)
 	link_update(IN_THREAD, next_link->second, focus_change::gained);
 }
 
-void textlabelObj::implObj::report_motion_event(IN_THREAD_ONLY,
+void textlabelObj::implObj::report_motion_event(ONLY IN_THREAD,
 						const motion_event &me)
 {
 	if (hotspot_info(IN_THREAD).empty() || !hotspot_cursor)
@@ -439,14 +439,14 @@ void textlabelObj::implObj::report_motion_event(IN_THREAD_ONLY,
 	link_update(IN_THREAD, link, focus_change::gained);
 }
 
-void textlabelObj::implObj::pointer_focus(IN_THREAD_ONLY,
+void textlabelObj::implObj::pointer_focus(ONLY IN_THREAD,
 					  const callback_trigger_t &trigger)
 {
 	if (!get_label_element_impl().current_pointer_focus(IN_THREAD))
 		hotspot_unhighlight(IN_THREAD);
 }
 
-void textlabelObj::implObj::hotspot_unhighlight(IN_THREAD_ONLY)
+void textlabelObj::implObj::hotspot_unhighlight(ONLY IN_THREAD)
 {
 	if (!hotspot_highlighted(IN_THREAD))
 		return;
@@ -457,7 +457,7 @@ void textlabelObj::implObj::hotspot_unhighlight(IN_THREAD_ONLY)
 	link_update(IN_THREAD, old_link, focus_change::lost);
 }
 
-void textlabelObj::implObj::link_update(IN_THREAD_ONLY,
+void textlabelObj::implObj::link_update(ONLY IN_THREAD,
 					const text_hotspot &link,
 					const text_event_t &event_type)
 {

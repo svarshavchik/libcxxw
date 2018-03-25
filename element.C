@@ -102,7 +102,7 @@ void elementObj::do_create_custom_tooltip(const functionref<void
 {
 	impl->THREAD->run_as
 		([impl=this->impl, tooltip_factory]
-		 (IN_THREAD_ONLY)
+		 (ONLY IN_THREAD)
 		 {
 			 impl->data(IN_THREAD).tooltip_factory=tooltip_factory;
 		 });
@@ -113,7 +113,7 @@ void elementObj::remove_tooltip() const
 {
 	impl->THREAD->run_as
 		([impl=this->impl]
-		 (IN_THREAD_ONLY)
+		 (ONLY IN_THREAD)
 		 {
 			 impl->data(IN_THREAD).tooltip_factory=nullptr;
 		 });
@@ -162,7 +162,7 @@ class LIBCXX_HIDDEN contextpopup_shortcut_activatorObj
 
 	//! Shortcut activated.
 
-	void activated(IN_THREAD_ONLY, const callback_trigger_t &trigger)
+	void activated(ONLY IN_THREAD, const callback_trigger_t &trigger)
 		override
 	{
 		auto e=weake.getptr();
@@ -184,7 +184,7 @@ class LIBCXX_HIDDEN contextpopup_shortcut_activatorObj
 
 	//! If the attached-to element is visible, the shortcut is enabled.
 
-	bool enabled(IN_THREAD_ONLY) override
+	bool enabled(ONLY IN_THREAD) override
 	{
 		auto eptr=weake.getptr();
 
@@ -207,7 +207,7 @@ void elementObj::do_install_contextpopup_callback
 
 	impl->THREAD->run_as
 		([me=ref(this), callback, sc]
-		 (IN_THREAD_ONLY)
+		 (ONLY IN_THREAD)
 		 {
 			 independent_shortcut_activationptr sc_impl;
 			 ptr<contextpopup_shortcut_activatorObj> sc_active;
@@ -263,7 +263,7 @@ void elementObj::remove_contextpopup_callback() const
 {
 	impl->THREAD->run_as
 		([impl=this->impl]
-		 (IN_THREAD_ONLY)
+		 (ONLY IN_THREAD)
 		 {
 			 impl->data(IN_THREAD).contextpopup_callback=nullptr;
 		 });

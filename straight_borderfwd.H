@@ -51,7 +51,7 @@ struct LIBCXX_HIDDEN border_source {
 	//! If the grid element exists return the specified border, else
 	//! return a null pointer.
 
-	current_border_implptr get_border(IN_THREAD_ONLY,
+	current_border_implptr get_border(ONLY IN_THREAD,
 					  current_border_implptr
 					  grid_elementObj::*which_one) const;
 };
@@ -67,7 +67,7 @@ struct LIBCXX_HIDDEN border_source {
 //! - the default border for the grid.
 
 typedef straight_border
-straight_border_factory_t(IN_THREAD_ONLY,
+straight_border_factory_t(ONLY IN_THREAD,
 			  const ref<containerObj::implObj> &c,
 			  const border_source &e1,
 			  const border_source &e2,
@@ -79,7 +79,7 @@ straight_border_factory_t(IN_THREAD_ONLY,
 //! update_vertical_border().
 
 typedef straight_border
-straight_border_update_t(IN_THREAD_ONLY,
+straight_border_update_t(ONLY IN_THREAD,
 			 const straight_border &b,
 			 const border_source &e1,
 			 const border_source &e2,

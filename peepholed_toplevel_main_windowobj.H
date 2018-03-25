@@ -43,20 +43,20 @@ class LIBCXX_HIDDEN peepholed_toplevel_main_windowObj
 
 	//! Implement recalculate_metrics().
 
-	void recalculate_peepholed_metrics(IN_THREAD_ONLY,
+	void recalculate_peepholed_metrics(ONLY IN_THREAD,
 					   const screen &my_screen) override;
 
 	//! Implement max_width()
-	dim_t max_width(IN_THREAD_ONLY) const override;
+	dim_t max_width(ONLY IN_THREAD) const override;
 
 	//! Implement max_height()
-	dim_t max_height(IN_THREAD_ONLY) const override;
+	dim_t max_height(ONLY IN_THREAD) const override;
 
 	//! Implement horizontal_increment()
-	dim_t horizontal_increment(IN_THREAD_ONLY) const override;
+	dim_t horizontal_increment(ONLY IN_THREAD) const override;
 
 	//! Implement vertical_increment()
-	dim_t vertical_increment(IN_THREAD_ONLY) const override;
+	dim_t vertical_increment(ONLY IN_THREAD) const override;
 };
 
 

@@ -32,7 +32,7 @@ template<typename dim_type>
 themeiconObj<dim_type>::~themeiconObj()=default;
 
 template<>
-icon themeiconObj<dim_arg>::initialize(IN_THREAD_ONLY)
+icon themeiconObj<dim_arg>::initialize(ONLY IN_THREAD)
 {
 	auto drawable=image->impl;
 
@@ -45,7 +45,7 @@ icon themeiconObj<dim_arg>::initialize(IN_THREAD_ONLY)
 }
 
 template<>
-icon themeiconObj<dim_arg>::theme_updated(IN_THREAD_ONLY,
+icon themeiconObj<dim_arg>::theme_updated(ONLY IN_THREAD,
 					  const defaulttheme &new_theme)
 {
 	if (new_theme == theme)
@@ -55,7 +55,7 @@ icon themeiconObj<dim_arg>::theme_updated(IN_THREAD_ONLY,
 }
 
 template<>
-icon themeiconObj<dim_t>::initialize(IN_THREAD_ONLY)
+icon themeiconObj<dim_t>::initialize(ONLY IN_THREAD)
 {
 	auto drawable=image->impl;
 
@@ -69,7 +69,7 @@ icon themeiconObj<dim_t>::initialize(IN_THREAD_ONLY)
 }
 
 template<>
-icon themeiconObj<dim_t>::theme_updated(IN_THREAD_ONLY,
+icon themeiconObj<dim_t>::theme_updated(ONLY IN_THREAD,
 					const defaulttheme &new_theme)
 {
 	if (new_theme == theme)

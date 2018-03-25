@@ -47,7 +47,7 @@ class LIBCXX_HIDDEN real_pointer_grabObj : public grabbed_pointerObj {
 	const xcb_grab_status_t result;
 
 	//! Constructor
-	real_pointer_grabObj(IN_THREAD_ONLY,
+	real_pointer_grabObj(ONLY IN_THREAD,
 			   const ref<generic_windowObj::handlerObj>
 			   &grabbed_window);
 
@@ -63,14 +63,14 @@ private:
 
 	//! Whether the grab succeeded
 
-	bool succeeded(IN_THREAD_ONLY) const override;
+	bool succeeded(ONLY IN_THREAD) const override;
 	//! Allow events
 
-	void allow_events(IN_THREAD_ONLY) override;
+	void allow_events(ONLY IN_THREAD) override;
 
-	elementimplptr get_grab_element(IN_THREAD_ONLY) override;
+	elementimplptr get_grab_element(ONLY IN_THREAD) override;
 
-	grabbed_pointerptr create_another_grab(IN_THREAD_ONLY,
+	grabbed_pointerptr create_another_grab(ONLY IN_THREAD,
 					       const elementimplptr &)
 		override;
 };
@@ -104,26 +104,26 @@ class LIBCXX_HIDDEN element_grabObj : public grabbed_pointerObj {
 		}
 
 	//! Return the grabbing element.
-	elementimplptr get_grab_element(IN_THREAD_ONLY) override
+	elementimplptr get_grab_element(ONLY IN_THREAD) override
 	{
 		return grabbing_element.getptr();
 	}
 
 	//! Forward succeeded() to the real grab mcguffin.
-	bool succeeded(IN_THREAD_ONLY) const override
+	bool succeeded(ONLY IN_THREAD) const override
 	{
 		return real_grab_pointer->succeeded(IN_THREAD);
 	}
 
 	//! Forward allow_events() to the real grab mcguffin.
-	void allow_events(IN_THREAD_ONLY) override
+	void allow_events(ONLY IN_THREAD) override
 	{
 		return real_grab_pointer->allow_events(IN_THREAD);
 	}
 
 	//! Forward create_another_grab() to the real grab mcguffin.
 
-	grabbed_pointerptr create_another_grab(IN_THREAD_ONLY,
+	grabbed_pointerptr create_another_grab(ONLY IN_THREAD,
 					       const elementimplptr &e)
 		override
 	{
@@ -172,7 +172,7 @@ static xcb_grab_status_t do_grab(xcb_connection_t *c,
 	return (xcb_grab_status_t)value->status;
 }
 
-real_pointer_grabObj::real_pointer_grabObj(IN_THREAD_ONLY,
+real_pointer_grabObj::real_pointer_grabObj(ONLY IN_THREAD,
 				       const ref<generic_windowObj::handlerObj>
 				       &grabbed_window)
 	: grabbed_window(grabbed_window),
@@ -215,12 +215,12 @@ connection_info real_pointer_grabObj::conn() const
 	return grabbed_window->screenref->get_connection()->impl->info;
 }
 
-bool real_pointer_grabObj::succeeded(IN_THREAD_ONLY) const
+bool real_pointer_grabObj::succeeded(ONLY IN_THREAD) const
 {
 	return result == XCB_GRAB_STATUS_SUCCESS;
 }
 
-void real_pointer_grabObj::allow_events(IN_THREAD_ONLY)
+void real_pointer_grabObj::allow_events(ONLY IN_THREAD)
 {
 	if (result == XCB_GRAB_STATUS_SUCCESS)
 	{
@@ -233,7 +233,7 @@ void real_pointer_grabObj::allow_events(IN_THREAD_ONLY)
 	}
 }
 
-elementimplptr real_pointer_grabObj::get_grab_element(IN_THREAD_ONLY)
+elementimplptr real_pointer_grabObj::get_grab_element(ONLY IN_THREAD)
 {
 	auto p=grabbing_element.getptr();
 
@@ -244,7 +244,7 @@ elementimplptr real_pointer_grabObj::get_grab_element(IN_THREAD_ONLY)
 };
 
 grabbed_pointerptr real_pointer_grabObj
-::create_another_grab(IN_THREAD_ONLY, const elementimplptr &i)
+::create_another_grab(ONLY IN_THREAD, const elementimplptr &i)
 {
 	if (i)
 	{
@@ -266,7 +266,7 @@ grabbed_pointerptr real_pointer_grabObj
 
 ///////////////////////////////////////////////////////////////////////////
 
-grabbed_pointerptr elementObj::implObj::grab_pointer(IN_THREAD_ONLY)
+grabbed_pointerptr elementObj::implObj::grab_pointer(ONLY IN_THREAD)
 {
 	if ( !data(IN_THREAD).inherited_visibility ||
 	     data(IN_THREAD).removed)
@@ -276,7 +276,7 @@ grabbed_pointerptr elementObj::implObj::grab_pointer(IN_THREAD_ONLY)
 }
 
 grabbed_pointerptr generic_windowObj::handlerObj
-::grab_pointer(IN_THREAD_ONLY, const elementimplptr &grabbing_element)
+::grab_pointer(ONLY IN_THREAD, const elementimplptr &grabbing_element)
 {
 	auto &window_grab=current_pointer_grab(IN_THREAD);
 
@@ -296,7 +296,7 @@ grabbed_pointerptr generic_windowObj::handlerObj
 	return gp->create_another_grab(IN_THREAD, grabbing_element);
 }
 
-bool generic_windowObj::handlerObj::is_pointer_actively_grabbed(IN_THREAD_ONLY)
+bool generic_windowObj::handlerObj::is_pointer_actively_grabbed(ONLY IN_THREAD)
 {
 	return !!current_pointer_grab(IN_THREAD).getptr();
 }

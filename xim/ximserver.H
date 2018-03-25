@@ -59,13 +59,13 @@ class LIBCXX_HIDDEN ximserverObj : virtual public obj {
 
  private:
 	//! Send an opaque packet to the XIM server.
-	virtual void send(IN_THREAD_ONLY, const uint8_t *data, size_t n)=0;
+	virtual void send(ONLY IN_THREAD, const uint8_t *data, size_t n)=0;
 
 	//! Callback: disconnected from the XIM server.
-	virtual void xim_disconnected(IN_THREAD_ONLY)=0;
+	virtual void xim_disconnected(ONLY IN_THREAD)=0;
 
 	//! Callback: connection negotiation to the XIm server is completed.
-	virtual void xim_fully_connected(IN_THREAD_ONLY)=0;
+	virtual void xim_fully_connected(ONLY IN_THREAD)=0;
 
 public:
 	//! Constructor
@@ -76,14 +76,14 @@ public:
 
 	//! Start an orderly shutdown process.
 
-	void shutdown(IN_THREAD_ONLY);
+	void shutdown(ONLY IN_THREAD);
  protected:
 
 	//! Process a received message from the XIM server.
-	void received(IN_THREAD_ONLY, const uint8_t *data, size_t n);
+	void received(ONLY IN_THREAD, const uint8_t *data, size_t n);
 
  private:
-	void badmessage(IN_THREAD_ONLY, const char *message)
+	void badmessage(ONLY IN_THREAD, const char *message)
 		__attribute__((noreturn));
  public:
 
@@ -158,7 +158,7 @@ public:
 	// ordinal value.
 
 	template<typename lambda_type>
-		uint32_t find_best_input_style(IN_THREAD_ONLY,
+		uint32_t find_best_input_style(ONLY IN_THREAD,
 					       lambda_type &&lambda)
 	{
 		if (input_styles(IN_THREAD).empty())
@@ -186,7 +186,7 @@ public:
 
 	//! Callbacks used by add_request().
 
-	typedef std::function<bool (IN_THREAD_ONLY, const ximserver &)
+	typedef std::function<bool (ONLY IN_THREAD, const ximserver &)
 			      > send_sync_request_callback_t;
 
 	// Add a synchronoous request.
@@ -200,7 +200,7 @@ public:
 	// req's appropriate callback function gets invoked when the response
 	// is received.
 
-	void add_request(IN_THREAD_ONLY,
+	void add_request(ONLY IN_THREAD,
 			 const ximrequest &req,
 			 const send_sync_request_callback_t &callback);
 
@@ -215,17 +215,17 @@ public:
 	//!
 	//! input_context_id gets cleared to 0 when xim_destroy_ic is set.
 	//! the wrapper will check this, and if 0, it returns.
-	void add_client_request(IN_THREAD_ONLY,
+	void add_client_request(ONLY IN_THREAD,
 				const ximrequest &req,
 				const ximclient &client,
-				const std::function<bool (IN_THREAD_ONLY,
+				const std::function<bool (ONLY IN_THREAD,
 							  const ximserver &,
 							  const ximclient &)>
 				&callback);
 	// Synchronous request queue
 	std::deque<std::pair<send_sync_request_callback_t, ximrequest>>
 		request_queue;
-	void send_next_request(IN_THREAD_ONLY);
+	void send_next_request(ONLY IN_THREAD);
 
  protected:
 
@@ -260,7 +260,7 @@ public:
 	//! been completed, so received() will remain in business until
 	//! that time.
 
-	void stop(IN_THREAD_ONLY);
+	void stop(ONLY IN_THREAD);
 
  private:
 
@@ -279,15 +279,15 @@ public:
  public:
 
 	//! Create a new input context for a client.
-	void create_client(IN_THREAD_ONLY, const ximclient &client);
+	void create_client(ONLY IN_THREAD, const ximclient &client);
 
  private:
 
 	//! Ready to create a new input context for a client.
-	bool attempt_to_create_client(IN_THREAD_ONLY, const ximclient &client);
+	bool attempt_to_create_client(ONLY IN_THREAD, const ximclient &client);
  public:
 	//! Destroy the client's input context.
-	void destroy_client(IN_THREAD_ONLY, const ximclient &client);
+	void destroy_client(ONLY IN_THREAD, const ximclient &client);
 
  private:
 	class create_ic_requestObj;
@@ -296,7 +296,7 @@ public:
 	class get_ic_valuesObj;
 
 	//! Diagnostic
-	void get_ic_values(IN_THREAD_ONLY, const ximclient &client,
+	void get_ic_values(ONLY IN_THREAD, const ximclient &client,
 			   const std::vector<std::string> &values);
 
 	//! Process a reply to a synchronous message.
@@ -307,7 +307,7 @@ public:
 	//! queue.
 
 	template<typename lambda_type>
-		void sync_reply_received(IN_THREAD_ONLY, lambda_type &&lambda)
+		void sync_reply_received(ONLY IN_THREAD, lambda_type &&lambda)
 	{
 		do_sync_reply_received(IN_THREAD, make_function<void
 				       (const ximrequest &req)>
@@ -316,19 +316,19 @@ public:
 
 	//! Process a reply to a synchronous message.
 
-	void do_sync_reply_received(IN_THREAD_ONLY, const function<void
+	void do_sync_reply_received(ONLY IN_THREAD, const function<void
 				    (const ximrequest &)> &callback);
 
  public:
 	//! Report a client's spotLocation
-	void set_spot_location(IN_THREAD_ONLY, const ximclient &client);
+	void set_spot_location(ONLY IN_THREAD, const ximclient &client);
 
 	//! Report a client's focus state
 
-	void focus_state(IN_THREAD_ONLY, const ximclient &client, bool flag);
+	void focus_state(ONLY IN_THREAD, const ximclient &client, bool flag);
 
 	//! Forward a key press or release event.
-	bool forward_key_press_release_event(IN_THREAD_ONLY,
+	bool forward_key_press_release_event(ONLY IN_THREAD,
 					     const ximclient &client,
 					     const xcb_key_release_event_t &e,
 					     uint16_t sequencehi,

@@ -50,7 +50,7 @@ bool connection_threadObj
 		size_t &npoll,
 		int &poll_for)
 {
-	connection_thread thread_(this);
+	connection_thread IN_THREAD{this};
 
 	LOG_FUNC_SCOPE(runLogger);
 
@@ -152,7 +152,7 @@ bool connection_threadObj
 // Insert a new callback
 
 ref<obj> connection_threadObj
-::do_schedule_callback(IN_THREAD_ONLY,
+::do_schedule_callback(ONLY IN_THREAD,
 		       const tick_clock_t::duration &timeout,
 		       const callback_functional_t &callback)
 {
@@ -168,7 +168,7 @@ ref<obj> connection_threadObj
 // at which point something might be scheduled, then. Otherwise poll_for
 // is left alone (it should be initialized to -1.
 
-bool connection_threadObj::invoke_scheduled_callbacks(IN_THREAD_ONLY,
+bool connection_threadObj::invoke_scheduled_callbacks(ONLY IN_THREAD,
 						      int &poll_for)
 {
 	bool invoked=false;
@@ -259,7 +259,7 @@ int connection_threadObj::compute_poll_until(tick_clock_t::time_point now,
 }
 
 void connection_threadObj
-::dispatch_do_run_as(const x::function<void (IN_THREAD_ONLY)> &func)
+::dispatch_do_run_as(const x::function<void (ONLY IN_THREAD)> &func)
 {
 	LOG_FUNC_SCOPE(runLogger);
 
@@ -273,7 +273,7 @@ void connection_threadObj
 	func(connection_thread(this));
 }
 
-bool connection_threadObj::run_idle(IN_THREAD_ONLY)
+bool connection_threadObj::run_idle(ONLY IN_THREAD)
 {
 	if (idle_callbacks(IN_THREAD)->empty())
 		return false;

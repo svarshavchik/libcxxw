@@ -22,7 +22,7 @@ peepholed_toplevel_listcontainer_layoutmanager_implObj
 ::~peepholed_toplevel_listcontainer_layoutmanager_implObj()=default;
 
 void peepholed_toplevel_listcontainer_layoutmanager_implObj
-::update_tallest_row_height(IN_THREAD_ONLY, dim_t v)
+::update_tallest_row_height(ONLY IN_THREAD, dim_t v)
 {
 	container_impl->update_tallest_row_height(IN_THREAD, v);
 }

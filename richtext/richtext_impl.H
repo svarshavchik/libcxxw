@@ -28,8 +28,8 @@ class richtext_insert_base;
 //! A list of text paragraphs that ends with a mandatory line break.
 
 //! This is not a thread-safe object. Although some methods are marked
-//! IN_THREAD_ONLY, this implementation object is protected by a mutex, in
-//! the public object. The IN_THREAD_ONLY is in addition to the
+//! ONLY IN_THREAD, this implementation object is protected by a mutex, in
+//! the public object. The ONLY IN_THREAD is in addition to the
 //! general thread-safe requirement.
 
 class LIBCXX_HIDDEN richtext_implObj : virtual public obj {
@@ -156,7 +156,7 @@ public:
 
 	//! Replace existing contents by something else.
 
-	void set(IN_THREAD_ONLY,
+	void set(ONLY IN_THREAD,
 		 //! Text string
 		 const richtextstring &string);
 
@@ -177,9 +177,9 @@ public:
 	//! Invoked from set(), after initialized is set to false.
 	//!
 	//! Also invoked from the parent rich text object, after acquiring
-	//! the lock IN_THREAD_ONLY, to finish the construction of this object.
+	//! the lock ONLY IN_THREAD, to finish the construction of this object.
 
-	void finish_initialization(IN_THREAD_ONLY);
+	void finish_initialization(ONLY IN_THREAD);
 
 	//! Destructor
 	~richtext_implObj();
@@ -233,12 +233,12 @@ public:
 	//! Rewrap this rich text to requested width, in pixels.
 
 	//! Returns true if the rich text was reformatted.
-	bool rewrap(IN_THREAD_ONLY,
+	bool rewrap(ONLY IN_THREAD,
 		    dim_t width);
 
 	// Text was removed and inserted here. Rewrap only from here.
 
-	void rewrap_at_fragment(IN_THREAD_ONLY,
+	void rewrap_at_fragment(ONLY IN_THREAD,
 				dim_t width,
 				richtextfragmentObj *fragment,
 				fragment_list &fragment_list_arg);
@@ -246,7 +246,7 @@ public:
 	//! Unwrap all text
 
 	//! Returns true if the rich text was reformatted.
-	bool unwrap(IN_THREAD_ONLY);
+	bool unwrap(ONLY IN_THREAD);
 
 	/////////////////////////////////////////////////////////////////////
 
@@ -256,7 +256,7 @@ public:
 	//! locking everything down tightly, and supplying us with the
 	//! word_wrap_width.
 
-	void insert_at_location(IN_THREAD_ONLY,
+	void insert_at_location(ONLY IN_THREAD,
 				dim_t word_wrap_width,
 				const richtext_insert_base &new_text);
 
@@ -265,14 +265,14 @@ public:
 	//! Invoked from the public object's remove_at_location(), after
 	//! locking everything down tightly, and supplying us with the
 	//! word_wrap_width.
-	void remove_at_location(IN_THREAD_ONLY,
+	void remove_at_location(ONLY IN_THREAD,
 				dim_t word_wrap_width,
 				const richtextcursorlocation &a,
 				const richtextcursorlocation &b);
 
 	//! Combine replace and insert at location, together.
 
-	void replace_at_location(IN_THREAD_ONLY,
+	void replace_at_location(ONLY IN_THREAD,
 				 dim_t word_wrap_width,
 				 const richtext_insert_base &new_text,
 				 const richtextcursorlocation &remove_from,
@@ -284,13 +284,13 @@ public:
 
 	//! Common code shared by remove_at_location() and replace_at_location().
 
-	void remove_at_location(IN_THREAD_ONLY,
+	void remove_at_location(ONLY IN_THREAD,
 				const remove_info &,
 				paragraph_list &,
 				dim_t);
 	//! Common code shared by remove_at_location() and replace_at_location().
 
-	void insert_at_location(IN_THREAD_ONLY,
+	void insert_at_location(ONLY IN_THREAD,
 				paragraph_list &my_paragraphs,
 				dim_t word_wrap_width,
 				const richtext_insert_base &new_text,
@@ -318,7 +318,7 @@ public:
 	richtextstring get_as_richtext() const;
 
 	// Theme was updated.
-	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme);
+	void theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme);
 };
 
 LIBCXXW_NAMESPACE_END

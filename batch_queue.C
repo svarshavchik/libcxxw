@@ -33,7 +33,7 @@ void batch_queueObj
 ::schedule_for_recalculation(const ref<layoutmanagerObj::implObj> &l)
 {
 	my_thread->run_as([c=l->container_impl]
-			  (IN_THREAD_ONLY)
+			  (ONLY IN_THREAD)
 			  {
 				  IN_THREAD->containers_2_batch_recalculate
 					  (IN_THREAD)
@@ -48,7 +48,7 @@ void batch_queueObj
 			  bool visibility)
 {
 	my_thread->run_as([=]
-			  (IN_THREAD_ONLY)
+			  (ONLY IN_THREAD)
 			  {
 				  IN_THREAD->elements_2_batch_showhide
 					  (IN_THREAD)->elements[e]=visibility;
@@ -70,7 +70,7 @@ batch_queueObj::~batch_queueObj()
 
 void connection_threadObj::dispatch_execute_batched_jobs()
 {
-	const connection_thread thread_(this);
+	connection_thread IN_THREAD{this};
 
 	// Make sure all changes in the main execution thread are
 	// committed by now. Although this should theoretically

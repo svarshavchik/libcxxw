@@ -42,21 +42,21 @@ public:
 	//! receives its supposedly new icon takes care of its obligation
 	//! to call initialize().
 
-	virtual icon initialize(IN_THREAD_ONLY);
+	virtual icon initialize(ONLY IN_THREAD);
 
 	//! Display theme was updated.
 
 	//! The default implementation returns the same object.
-	virtual icon theme_updated(IN_THREAD_ONLY,
+	virtual icon theme_updated(ONLY IN_THREAD,
 				   const defaulttheme &new_theme);
 
 	//! Resize this icon, if this is a resizable icon.
-	virtual icon resizemm(IN_THREAD_ONLY,
+	virtual icon resizemm(ONLY IN_THREAD,
 			      const dim_arg &width_arg,
 			      const dim_arg &height_arg);
 
 	//! Resize this icon, if this is a resizable icon.
-	virtual icon resize(IN_THREAD_ONLY, dim_t w, dim_t h,
+	virtual icon resize(ONLY IN_THREAD, dim_t w, dim_t h,
 			    icon_scale scale);
 
 	//! Create a cursor pointer from this icon.

@@ -72,7 +72,7 @@ public:
 
 	//! Is the shortcut enabled?
 
-	bool enabled(IN_THREAD_ONLY) override
+	bool enabled(ONLY IN_THREAD) override
 	{
 		bool enabled=false;
 
@@ -95,7 +95,7 @@ public:
 
 	//! Shortcut activated
 
-	void activated(IN_THREAD_ONLY, const callback_trigger_t &trigger)
+	void activated(ONLY IN_THREAD, const callback_trigger_t &trigger)
 		override
 	{
 		listlayoutmanagerptr lm;
@@ -183,7 +183,7 @@ void extra_list_row_infoObj::set_meta(const listlayoutmanager &lm,
 					   current_shortcut);
 }
 
-void extra_list_row_infoObj::show_submenu(IN_THREAD_ONLY, const rectangle &r)
+void extra_list_row_infoObj::show_submenu(ONLY IN_THREAD, const rectangle &r)
 {
 	if (!has_submenu())
 		return;
@@ -195,7 +195,7 @@ void extra_list_row_infoObj::show_submenu(IN_THREAD_ONLY, const rectangle &r)
 	popup.submenu_popup->show_all();
 }
 
-void extra_list_row_infoObj::toggle_submenu(IN_THREAD_ONLY, const rectangle &r)
+void extra_list_row_infoObj::toggle_submenu(ONLY IN_THREAD, const rectangle &r)
 {
 	if (!has_submenu())
 		return;

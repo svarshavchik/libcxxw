@@ -78,15 +78,15 @@ class LIBCXX_HIDDEN child_elementObj
 	//! The container is responsible for clearing parts of it that are
 	//! not covered by any element.
 
-	void process_updated_position(IN_THREAD_ONLY) override;
+	void process_updated_position(ONLY IN_THREAD) override;
 
 	//! Use parent display element's background color.
 
-	void remove_background_color(IN_THREAD_ONLY) override;
+	void remove_background_color(ONLY IN_THREAD) override;
 
 	//! Use its own background color.
 
-	void set_background_color(IN_THREAD_ONLY,
+	void set_background_color(ONLY IN_THREAD,
 				  const background_color &) override;
 
 	//! Theme has changed.
@@ -95,7 +95,7 @@ class LIBCXX_HIDDEN child_elementObj
 	//! changed by the theme we pretend that set_background_color()
 	//! has happened.
 
-	void theme_updated(IN_THREAD_ONLY, const defaulttheme &th) override;
+	void theme_updated(ONLY IN_THREAD, const defaulttheme &th) override;
 
 	//! Override schedule_hover_action
 
@@ -103,28 +103,28 @@ class LIBCXX_HIDDEN child_elementObj
 	//! this to its parent container, so that anything under the pointer
 	//! with a tooltip will schedule its creation.
 
-	void schedule_hover_action(IN_THREAD_ONLY) override;
+	void schedule_hover_action(ONLY IN_THREAD) override;
 
 	//! Override schedule_hover_action
 
 	//! This gets invoked for the element under the pointer. Propagate
 	//! this to its parent container, so that anything under the pointer
 	//! with a tooltip will schedule its creation.
-	void unschedule_hover_action(IN_THREAD_ONLY) override;
+	void unschedule_hover_action(ONLY IN_THREAD) override;
 
 	//! Forward the call to the container.
-	void window_focus_change(IN_THREAD_ONLY, bool flag) override;
+	void window_focus_change(ONLY IN_THREAD, bool flag) override;
 
 	//! If child_element doesn't handle it, punt it back to the parent.
-	bool process_key_event(IN_THREAD_ONLY, const key_event &) override;
+	bool process_key_event(ONLY IN_THREAD, const key_event &) override;
 
 	//! If the parent container is set as disabled, so are we.
 
-	bool enabled(IN_THREAD_ONLY) override;
+	bool enabled(ONLY IN_THREAD) override;
 
 	//! Override draw_to_window_picture_as_disabled.
 
-	bool draw_to_window_picture_as_disabled(IN_THREAD_ONLY) override;
+	bool draw_to_window_picture_as_disabled(ONLY IN_THREAD) override;
 
 	//! Button events
 
@@ -132,55 +132,55 @@ class LIBCXX_HIDDEN child_elementObj
 	//! and its parents, get notified of a button event. The return
 	//! value is true if anyone returned true.
 
-	bool process_button_event(IN_THREAD_ONLY,
+	bool process_button_event(ONLY IN_THREAD,
 				  const button_event &be,
 				  xcb_timestamp_t timestamp) override;
 
 	//! Implement grab().
 
-	void grab(IN_THREAD_ONLY) override;
+	void grab(ONLY IN_THREAD) override;
 
 	//! Motion events
 
 	//! The motion event, after it's reported for this element,
 	//! gets also reported for its parent display element.
 
-	void report_motion_event(IN_THREAD_ONLY, const motion_event &)
+	void report_motion_event(ONLY IN_THREAD, const motion_event &)
 		override;
 
 	//! Request visibility change.
-	void request_visibility(IN_THREAD_ONLY, bool flag) override;
+	void request_visibility(ONLY IN_THREAD, bool flag) override;
 
  protected:
 
 	//! Changed visibility mean a change to the background color.
 
-	void set_inherited_visibility(IN_THREAD_ONLY,
+	void set_inherited_visibility(ONLY IN_THREAD,
 				      inherited_visibility_info
 				      &visibility_info) override;
 
 	//! Whether set_background_color() is in force.
 
-	bool has_own_background_color(IN_THREAD_ONLY) override;
+	bool has_own_background_color(ONLY IN_THREAD) override;
 
 	//! Implement current_background_color()
-	background_color current_background_color(IN_THREAD_ONLY) override;
+	background_color current_background_color(ONLY IN_THREAD) override;
 
 	//! Implement get_draw_info()
-	draw_info &get_draw_info(IN_THREAD_ONLY) override;
+	draw_info &get_draw_info(ONLY IN_THREAD) override;
 
 	//! Implement get_draw_info_from_scratch()
-	draw_info &get_draw_info_from_scratch(IN_THREAD_ONLY) override;
+	draw_info &get_draw_info_from_scratch(ONLY IN_THREAD) override;
 
 	//! Invoke parent_element->get_absolute_location(), and add my x/y
-	rectangle get_absolute_location(IN_THREAD_ONLY) override;
+	rectangle get_absolute_location(ONLY IN_THREAD) override;
 
 	//! update_visibility() invokes this callback.
 
 	//! This element's inherited visibility is visible only if
 	//! both this element is explicitly visible, and its parent is.
 
-	void visibility_updated(IN_THREAD_ONLY, bool flag) override;
+	void visibility_updated(ONLY IN_THREAD, bool flag) override;
 
  public:
 
@@ -188,30 +188,30 @@ class LIBCXX_HIDDEN child_elementObj
 
 	//! Forward to parent.
 
-	void focusable_initialized(IN_THREAD_ONLY,
+	void focusable_initialized(ONLY IN_THREAD,
 				   focusableImplObj &fimpl) override;
 
 	//! Forward to parent.
 
-	void get_focus_first(IN_THREAD_ONLY, const focusable &f) override;
+	void get_focus_first(ONLY IN_THREAD, const focusable &f) override;
 
 	//! Input focus processing.
 
 	//! See element_focusable.C
-	void requested_focus_to(IN_THREAD_ONLY,
+	void requested_focus_to(ONLY IN_THREAD,
 				const ptr<elementObj::implObj> &current_focus)
 		override;
 
 	//! Input focus processing.
 
 	//! See element_focusable.C
-	void requested_focus_from(IN_THREAD_ONLY)
+	void requested_focus_from(ONLY IN_THREAD)
 		override;
 
 	//! Input focus processing.
 
 	//! See element_focusable.C
-	void do_leaving_focus(IN_THREAD_ONLY,
+	void do_leaving_focus(ONLY IN_THREAD,
 			      focus_change &event,
 			      const ref<implObj> &focus_from,
 			      const ptr<elementObj::implObj> &leaving_for,
@@ -222,7 +222,7 @@ class LIBCXX_HIDDEN child_elementObj
 	//! Input focus processing.
 
 	//! See element_focusable.C
-	void do_entering_focus(IN_THREAD_ONLY,
+	void do_entering_focus(ONLY IN_THREAD,
 			       focus_change event,
 			       const ref<implObj> &focus_to,
 			       const ptr<elementObj::implObj> &focus_from,
@@ -234,7 +234,7 @@ class LIBCXX_HIDDEN child_elementObj
 
 	//! See element_focusable.C
 
-	void focus_movement_complete(IN_THREAD_ONLY,
+	void focus_movement_complete(ONLY IN_THREAD,
 				     bool stop_at_original_focus,
 				     focus_reporter_t focus_reporter,
 				     const callback_trigger_t &trigger)
@@ -242,14 +242,14 @@ class LIBCXX_HIDDEN child_elementObj
 
 	//! Override ensure_visibility.
 
-	void ensure_visibility(IN_THREAD_ONLY, const rectangle &) override;
+	void ensure_visibility(ONLY IN_THREAD, const rectangle &) override;
 
  protected:
 	/////////////////////////////////////////////////////////////////////
 	//
 	// Inherited from horizvertObj
 
-	void horizvert_updated(IN_THREAD_ONLY) override;
+	void horizvert_updated(ONLY IN_THREAD) override;
 
  public:
 
@@ -257,7 +257,7 @@ class LIBCXX_HIDDEN child_elementObj
 
 	//! Forwarded to the container, if not handled by the element.
 
-	bool pasted(IN_THREAD_ONLY,
+	bool pasted(ONLY IN_THREAD,
 		    const std::u32string_view &str) override;
 
 	//! Override creating_focusable_element().
@@ -277,7 +277,7 @@ class LIBCXX_HIDDEN child_elementObj
 	//! If this element does not have a set cursor pointer,
 	//! the call is forwarded to the parent.
 
-	cursor_pointerptr get_cursor_pointer(IN_THREAD_ONLY) override;
+	cursor_pointerptr get_cursor_pointer(ONLY IN_THREAD) override;
 };
 
 LIBCXXW_NAMESPACE_END

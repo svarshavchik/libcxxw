@@ -23,7 +23,7 @@ ref<focusableImplObj> image_button_internalObj::get_impl() const
 	return impl;
 }
 
-void image_button_internalObj::resize(IN_THREAD_ONLY,
+void image_button_internalObj::resize(ONLY IN_THREAD,
 				      dim_t w, dim_t h,
 				      icon_scale scale)
 {

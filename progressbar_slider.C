@@ -33,7 +33,7 @@ progressbar_sliderObj
 progressbar_sliderObj::~progressbar_sliderObj()=default;
 
 void progressbar_sliderObj
-::all_background_colors_were_recalculated(IN_THREAD_ONLY)
+::all_background_colors_were_recalculated(ONLY IN_THREAD)
 {
 	update(IN_THREAD);
 
@@ -42,7 +42,7 @@ void progressbar_sliderObj
 #endif
 }
 
-void progressbar_sliderObj::update(IN_THREAD_ONLY)
+void progressbar_sliderObj::update(ONLY IN_THREAD)
 {
 	auto width=data(IN_THREAD).current_position.width;
 

@@ -21,28 +21,28 @@ pagetabsingletonlayoutmanager_implObj
 pagetabsingletonlayoutmanager_implObj::~pagetabsingletonlayoutmanager_implObj()
 =default;
 
-dim_t pagetabsingletonlayoutmanager_implObj::get_left_padding(IN_THREAD_ONLY)
+dim_t pagetabsingletonlayoutmanager_implObj::get_left_padding(ONLY IN_THREAD)
 {
 	return pagetab_container->my_pagetabgridcontainer_impl
 		->themedim_element<tab_h_padding_tag>
 		::pixels(IN_THREAD);
 }
 
-dim_t pagetabsingletonlayoutmanager_implObj::get_right_padding(IN_THREAD_ONLY)
+dim_t pagetabsingletonlayoutmanager_implObj::get_right_padding(ONLY IN_THREAD)
 {
 	return pagetab_container->my_pagetabgridcontainer_impl
 		->themedim_element<tab_h_padding_tag>
 		::pixels(IN_THREAD);
 }
 
-dim_t pagetabsingletonlayoutmanager_implObj::get_top_padding(IN_THREAD_ONLY)
+dim_t pagetabsingletonlayoutmanager_implObj::get_top_padding(ONLY IN_THREAD)
 {
 	return pagetab_container->my_pagetabgridcontainer_impl
 		->themedim_element<tab_v_padding_tag>
 		::pixels(IN_THREAD);
 }
 
-dim_t pagetabsingletonlayoutmanager_implObj::get_bottom_padding(IN_THREAD_ONLY)
+dim_t pagetabsingletonlayoutmanager_implObj::get_bottom_padding(ONLY IN_THREAD)
 {
 	return pagetab_container->my_pagetabgridcontainer_impl
 		->themedim_element<tab_v_padding_tag>

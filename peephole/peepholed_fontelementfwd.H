@@ -46,10 +46,10 @@ public:
 	~peepholed_fontelementObj();
 
 	//! Implement horizontal_increment().
-	dim_t horizontal_increment(IN_THREAD_ONLY) const override;
+	dim_t horizontal_increment(ONLY IN_THREAD) const override;
 
 	//! Implement vertical_increment().
-	dim_t vertical_increment(IN_THREAD_ONLY) const override;
+	dim_t vertical_increment(ONLY IN_THREAD) const override;
 
 };
 

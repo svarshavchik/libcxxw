@@ -54,7 +54,7 @@ class LIBCXX_HIDDEN list_container_implObj :
 
 	//! Override do_draw().
 
-	void do_draw(IN_THREAD_ONLY,
+	void do_draw(ONLY IN_THREAD,
 		     const draw_info &di,
 		     const rectangle_set &areas) override;
  private:

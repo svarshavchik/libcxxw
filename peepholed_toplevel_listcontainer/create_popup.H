@@ -72,10 +72,10 @@ create_p_t_l_handler(const peepholed_toplevel_listcontainer_handler_args &)
 //! This value get passed to \ref create_peepholed_toplevel_listcontainer_popup "create_peepholed_toplevel_listcontainer_popup"().
 
 typedef std::tuple<
-	ref<obj> (shared_handler_dataObj::*)(IN_THREAD_ONLY,
+	ref<obj> (shared_handler_dataObj::*)(ONLY IN_THREAD,
 					   const ref<popupObj::handlerObj> &),
 
-	void (shared_handler_dataObj::*)(IN_THREAD_ONLY,
+	void (shared_handler_dataObj::*)(ONLY IN_THREAD,
 					 const popupObj::handlerObj &)
 	> popup_type_t;
 

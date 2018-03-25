@@ -89,7 +89,7 @@ class LIBCXX_HIDDEN listlayoutstyle_impl {
 	//! If this is the highlighted list style. Does nothing, for the
 	//! bulleted list style.
 
-	virtual void set_selected_background(IN_THREAD_ONLY,
+	virtual void set_selected_background(ONLY IN_THREAD,
 					     draw_info &di,
 					     const background_color &bgcolor)
 		const=0;

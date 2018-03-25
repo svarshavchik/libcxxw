@@ -75,14 +75,14 @@ class LIBCXX_HIDDEN date_input_field_calendarObj
 	dim_t max_height_value;
 
 	//! Compute the maximum size.
-	void recalculate_peepholed_metrics(IN_THREAD_ONLY,
+	void recalculate_peepholed_metrics(ONLY IN_THREAD,
 					   const screen &s) override;
 
 	//! Return the maximum width
-	dim_t max_width(IN_THREAD_ONLY) const override;
+	dim_t max_width(ONLY IN_THREAD) const override;
 
 	//! Return the maximum height
-	dim_t max_height(IN_THREAD_ONLY) const override;
+	dim_t max_height(ONLY IN_THREAD) const override;
 
 	//! Update the shown month.
 

@@ -12,7 +12,7 @@ LIBCXXW_NAMESPACE_START
 
 peepholeObj::implObj::~implObj()=default;
 
-bool peepholeObj::implObj::process_button_event(IN_THREAD_ONLY,
+bool peepholeObj::implObj::process_button_event(ONLY IN_THREAD,
 						const button_event &be,
 						xcb_timestamp_t timestamp)
 {

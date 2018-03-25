@@ -71,7 +71,7 @@ class LIBCXX_HIDDEN fragment_list : public const_fragment_list {
 
  private:
 
-	IN_THREAD_ONLY;
+	ONLY IN_THREAD;
 
 	//! Internal flag set by the methods when the fragments were modified.
 
@@ -91,7 +91,7 @@ class LIBCXX_HIDDEN fragment_list : public const_fragment_list {
 	defaultthemeptr theme_was_updated;
 
 	//! Constructor
-	fragment_list(IN_THREAD_ONLY, paragraph_list &my_paragraphsArg,
+	fragment_list(ONLY IN_THREAD, paragraph_list &my_paragraphsArg,
 		      richtextparagraphObj &paragraphArg);
 
 	//! Destructor
@@ -126,7 +126,7 @@ class LIBCXX_HIDDEN fragment_list : public const_fragment_list {
 	//! recalculate_fragment_size() (for the new fragment),
 	//! and sets the size_changed flag.
 
-	void insert_no_change_in_char_count(IN_THREAD_ONLY,
+	void insert_no_change_in_char_count(ONLY IN_THREAD,
 					    fragments_t::iterator at,
 					    const richtextfragment &fragment);
 
@@ -141,7 +141,7 @@ class LIBCXX_HIDDEN fragment_list : public const_fragment_list {
 	//! Append a new fragment.
 
 	//! Like insert(), but uses append_no_recalculate() instead.
-	void append(IN_THREAD_ONLY, const richtextfragment &new_fragment);
+	void append(ONLY IN_THREAD, const richtextfragment &new_fragment);
 
  public:
 
@@ -165,7 +165,7 @@ class LIBCXX_HIDDEN fragment_list : public const_fragment_list {
 	//! any and all fragments that follow \c split_after into the new
 	//! paragraph, adjusting all character counts accordingly...
 
-	void split_from(IN_THREAD_ONLY,
+	void split_from(ONLY IN_THREAD,
 			const richtextfragment &new_fragment,
 			richtextfragmentObj *split_after);
 
@@ -196,7 +196,7 @@ class LIBCXX_HIDDEN fragment_list : public const_fragment_list {
 	//! This is also called from set(), when initializing the entire
 	//! rich text object.
 
-	void fragment_text_changed(IN_THREAD_ONLY,
+	void fragment_text_changed(ONLY IN_THREAD,
 				   size_t fragment_number,
 				   ssize_t text_count_changed);
 
@@ -204,7 +204,7 @@ class LIBCXX_HIDDEN fragment_list : public const_fragment_list {
 
 	//! Recalculate the dimensions of the given fragment
 
-	void recalculate_fragment_size(IN_THREAD_ONLY,
+	void recalculate_fragment_size(ONLY IN_THREAD,
 				       size_t fragment_number);
 
 	//! Recalculate the width and the height of this text paragraph.

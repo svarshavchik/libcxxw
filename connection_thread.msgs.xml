@@ -19,7 +19,7 @@
       //! Run a closure in the connection thread
     </comment>
     <param>
-      <decl>const x::function&lt;void (IN_THREAD_ONLY)> &amp;func</decl>
+      <decl>const x::function&lt;void (ONLY IN_THREAD)> &amp;func</decl>
     </param>
   </method>
 

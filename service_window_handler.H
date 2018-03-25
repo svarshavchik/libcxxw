@@ -54,7 +54,7 @@ class LIBCXX_HIDDEN service_window_handlerObj : public window_handlerObj {
 	//! them were acceptable to found_server(), all_servers_tried() gets
 	//! called.
 
-	void connect_service(IN_THREAD_ONLY,
+	void connect_service(ONLY IN_THREAD,
 			     const char *service_name,
 			     const char * const * attributes);
 
@@ -67,7 +67,7 @@ class LIBCXX_HIDDEN service_window_handlerObj : public window_handlerObj {
 	//!
 	//! If there are no available server, all_servers_tried().
 
-	void connect_next_server(IN_THREAD_ONLY);
+	void connect_next_server(ONLY IN_THREAD);
 
 	//! The server currently being tried.
 	xcb_window_t selection_owner;
@@ -81,7 +81,7 @@ class LIBCXX_HIDDEN service_window_handlerObj : public window_handlerObj {
 	//! If all attributes exist, calls found_server(), otherwise
 	//! server_failed().
 
-	void check_next_attribute(IN_THREAD_ONLY);
+	void check_next_attribute(ONLY IN_THREAD);
 
  protected:
 	//! The values of the attributes.
@@ -90,26 +90,26 @@ class LIBCXX_HIDDEN service_window_handlerObj : public window_handlerObj {
 	//! The currently probed server does not support an attribute.
 
 	//! Calls server_failed().
-	void conversion_failed(IN_THREAD_ONLY,
+	void conversion_failed(ONLY IN_THREAD,
 			       xcb_atom_t clipboard,
 			       xcb_atom_t type,
 			       xcb_timestamp_t timestamp) override;
 
 	//! Received new property.
 
-	bool begin_converted_data(IN_THREAD_ONLY, xcb_atom_t type,
+	bool begin_converted_data(ONLY IN_THREAD, xcb_atom_t type,
 				  xcb_timestamp_t timestamp) override;
 
 	//! The currently probed server's attribute.
 
-	void converted_data(IN_THREAD_ONLY, xcb_atom_t clipboard,
+	void converted_data(ONLY IN_THREAD, xcb_atom_t clipboard,
 			    xcb_atom_t actual_type,
 			    xcb_atom_t format,
 			    void *data,
 			    size_t size) override;
 
 	//! End of the currently probed server's attribute.
-	void end_converted_data(IN_THREAD_ONLY,
+	void end_converted_data(ONLY IN_THREAD,
 				xcb_atom_t clipboard,
 				xcb_timestamp_t timestamp) override;
 
@@ -117,18 +117,18 @@ class LIBCXX_HIDDEN service_window_handlerObj : public window_handlerObj {
 
 	//! The current server has failed.
 
-	void server_failed(IN_THREAD_ONLY);
+	void server_failed(ONLY IN_THREAD);
 
 	//! Check of the server's attributes are acceptable.
 
 	//! If true is returned, sets owner, and we're done.
 	//! If false is returned, we try to connect_next_server().
 
-	virtual bool found_server(IN_THREAD_ONLY, xcb_window_t owner)=0;
+	virtual bool found_server(ONLY IN_THREAD, xcb_window_t owner)=0;
 
 	//! All servers have been tried, none were acceptable.
 
-	virtual void all_servers_tried(IN_THREAD_ONLY)=0;
+	virtual void all_servers_tried(ONLY IN_THREAD)=0;
 };
 
 LIBCXXW_NAMESPACE_END

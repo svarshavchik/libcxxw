@@ -27,7 +27,7 @@ layoutmanager pagetabgridlayoutmanagerObj::implObj::create_public_object()
 	return pagetabgridlayoutmanager::create(ref(this));
 }
 
-void pagetabgridlayoutmanagerObj::implObj::recalculate(IN_THREAD_ONLY)
+void pagetabgridlayoutmanagerObj::implObj::recalculate(ONLY IN_THREAD)
 {
 	superclass_t::recalculate(IN_THREAD);
 

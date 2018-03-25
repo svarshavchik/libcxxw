@@ -43,7 +43,7 @@ scrollbar peephole_gridlayoutmanagerObj::get_horizontal_scrollbar()
 	return get(1, 0);
 }
 
-void peephole_gridlayoutmanagerObj::request_visibility_recursive(IN_THREAD_ONLY,
+void peephole_gridlayoutmanagerObj::request_visibility_recursive(ONLY IN_THREAD,
 								 bool flag)
 {
 	get_peephole()->elementObj::impl

@@ -83,7 +83,7 @@ class LIBCXX_HIDDEN pagelayoutmanagerObj::implObj
  public:
 	//! Implement do_for_each_child()
 
-	void do_for_each_child(IN_THREAD_ONLY,
+	void do_for_each_child(ONLY IN_THREAD,
 			       const function<void(const element &)> &)
 		override;
 
@@ -91,10 +91,10 @@ class LIBCXX_HIDDEN pagelayoutmanagerObj::implObj
 	layoutmanager create_public_object() override;
 
 	//! Implement recalculate()
-	void recalculate(IN_THREAD_ONLY) override;
+	void recalculate(ONLY IN_THREAD) override;
 
 	//! Implement process_updated_position()
-	void process_updated_position(IN_THREAD_ONLY,
+	void process_updated_position(ONLY IN_THREAD,
 				      const rectangle &position) override;
 };
 

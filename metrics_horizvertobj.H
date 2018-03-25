@@ -39,7 +39,7 @@ namespace metrics {
 	//! Specifies a display element's horizontal and vertical sizes.
 	//!
 	//! \note
-	//! THIS ENTIRE OBJECT IS IN_THREAD_ONLY
+	//! THIS ENTIRE OBJECT IS ONLY IN_THREAD
 
 	class LIBCXX_HIDDEN horizvertObj : public horizvert_axi,
 					   virtual public obj {
@@ -59,9 +59,9 @@ namespace metrics {
 
 		/////////////////////////////////////////////////////////////
 		//
-		// NOTE: this entire object is IN_THREAD_ONLY
+		// NOTE: this entire object is ONLY IN_THREAD
 
-		virtual void horizvert_updated(IN_THREAD_ONLY)=0;
+		virtual void horizvert_updated(ONLY IN_THREAD)=0;
 
 		//! Default constructor
 		horizvertObj();
@@ -75,7 +75,7 @@ namespace metrics {
 
 		//! Update the metrics.
 
-		void set_element_metrics(IN_THREAD_ONLY,
+		void set_element_metrics(ONLY IN_THREAD,
 					 const axis &new_horiz,
 					 const axis &new_vert)
 		{
@@ -99,7 +99,7 @@ namespace metrics {
 
 		//! Install new minimum overrides
 
-		void set_minimum_override(IN_THREAD_ONLY,
+		void set_minimum_override(ONLY IN_THREAD,
 					  dim_t horiz_override,
 					  dim_t vert_override)
 		{

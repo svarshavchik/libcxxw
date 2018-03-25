@@ -43,7 +43,7 @@ themeborder1_elementObj<element_impl, tag>
 //! initialization.
 template<typename element_impl, typename tag>
 void themeborder1_elementObj<element_impl, tag>
-::initialize(IN_THREAD_ONLY)
+::initialize(ONLY IN_THREAD)
 {
 	element_impl::initialize(IN_THREAD);
 	themeborder_element_impl<tag>::initialize(IN_THREAD);
@@ -55,7 +55,7 @@ void themeborder1_elementObj<element_impl, tag>
 
 template<typename element_impl, typename tag>
 void themeborder1_elementObj<element_impl, tag>
-::theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme)
+::theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme)
 {
 	element_impl::theme_updated(IN_THREAD, new_theme);
 	themeborder_element_impl<tag>::theme_updated(IN_THREAD, new_theme);

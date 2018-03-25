@@ -60,7 +60,7 @@ void focusable_elementObj<element_impl>::creating_focusable_element()
 
 template<typename element_impl>
 bool focusable_elementObj<element_impl>
-::process_button_event(IN_THREAD_ONLY,
+::process_button_event(ONLY IN_THREAD,
 		       const button_event &be,
 		       xcb_timestamp_t timestamp)
 {
@@ -84,7 +84,7 @@ bool focusable_elementObj<element_impl>
 
 template<typename element_impl>
 void focusable_elementObj<element_impl>
-::set_inherited_visibility_flag(IN_THREAD_ONLY, bool flag)
+::set_inherited_visibility_flag(ONLY IN_THREAD, bool flag)
 {
 	element_impl::set_inherited_visibility_flag(IN_THREAD, flag);
 	if (!flag)

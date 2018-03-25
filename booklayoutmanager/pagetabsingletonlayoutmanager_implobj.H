@@ -32,19 +32,19 @@ public:
 
 	//! Override get_left_padding().
 
-	dim_t get_left_padding(IN_THREAD_ONLY) override;
+	dim_t get_left_padding(ONLY IN_THREAD) override;
 
 	//! Override get_right_padding().
 
-	dim_t get_right_padding(IN_THREAD_ONLY) override;
+	dim_t get_right_padding(ONLY IN_THREAD) override;
 
 	//! Override get_top_padding().
 
-	dim_t get_top_padding(IN_THREAD_ONLY) override;
+	dim_t get_top_padding(ONLY IN_THREAD) override;
 
 	//! Override get_bottom_padding().
 
-	dim_t get_bottom_padding(IN_THREAD_ONLY) override;
+	dim_t get_bottom_padding(ONLY IN_THREAD) override;
 };
 
 LIBCXXW_NAMESPACE_END

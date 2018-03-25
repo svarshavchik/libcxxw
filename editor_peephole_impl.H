@@ -30,7 +30,7 @@ class LIBCXX_HIDDEN editor_peephole_implObj
 
 	//! Button 1 sets focus to the element.
 
-	bool process_button_event(IN_THREAD_ONLY,
+	bool process_button_event(ONLY IN_THREAD,
 				  const button_event &be,
 				  xcb_timestamp_t timestamp) override;
 
@@ -44,14 +44,14 @@ class LIBCXX_HIDDEN editor_peephole_implObj
 	//! not actually be on top of the editor implementation objcet, which
 	//! is a glorified label object that may not cover the entire peephole.
 
-	void report_motion_event(IN_THREAD_ONLY,
+	void report_motion_event(ONLY IN_THREAD,
 				 const motion_event &me) override;
 
 	//! Compute updated metrics.
 
 	//! Invoke from the editor element, when its metrics have changed.
 	//! We might need to adjust our own metrics as well.
-	void recalculate(IN_THREAD_ONLY, editorObj::implObj &e);
+	void recalculate(ONLY IN_THREAD, editorObj::implObj &e);
 
 	//! Destructor
 	~editor_peephole_implObj();

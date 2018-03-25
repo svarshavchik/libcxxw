@@ -33,7 +33,7 @@ public:
 
 	//! New synchronized values have been computed.
 
-	virtual void updated(IN_THREAD_ONLY,
+	virtual void updated(ONLY IN_THREAD,
 			     const std::vector<metrics::derivedaxis> &)=0;
 };
 

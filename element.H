@@ -57,7 +57,7 @@ class text_param;
 
 class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
-// horizvertObj is considered to be IN_THREAD_ONLY
+// horizvertObj is considered to be ONLY IN_THREAD
 //
 // **** use get_horizvert() to access it. ****
 					  private metrics::horizvertObj {
@@ -216,7 +216,7 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 	//! Use parent display element's background color.
 
-	virtual void remove_background_color(IN_THREAD_ONLY)=0;
+	virtual void remove_background_color(ONLY IN_THREAD)=0;
 
 
 	//! Use a standard background color for this display element.
@@ -234,7 +234,7 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 	//! Install the background color
 
-	virtual void set_background_color(IN_THREAD_ONLY,
+	virtual void set_background_color(ONLY IN_THREAD,
 					  const background_color &)=0;
 
 	//! Whether this element uses its own custom background color
@@ -242,13 +242,13 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! The default implementation always returns true.
 	//! child_element overrides this, and returns the correct values.
 
-	virtual bool has_own_background_color(IN_THREAD_ONLY)=0;
+	virtual bool has_own_background_color(ONLY IN_THREAD)=0;
 
 	//! Retrieve the effective background color
 
 	//! If has_own_backgorund_color(), returns it, else returns the
 	//! parent element's background color.
-	virtual background_color current_background_color(IN_THREAD_ONLY)=0;
+	virtual background_color current_background_color(ONLY IN_THREAD)=0;
 
 	//! This element's background color has changed.
 
@@ -257,7 +257,7 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! container has any visible child elements that use the parent's
 	//! background color, they need to be redrawn too!
 
-	void background_color_changed(IN_THREAD_ONLY);
+	void background_color_changed(ONLY IN_THREAD);
 
 	//! Return the element's screen
 	screen get_screen();
@@ -300,7 +300,7 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 	//! Drawing codepaths need to bail out if DO_NOT_DRAW().
 
-	inline bool DO_NOT_DRAW(IN_THREAD_ONLY) const
+	inline bool DO_NOT_DRAW(ONLY IN_THREAD) const
 	{
 		return (!data(IN_THREAD).inherited_visibility);
 	}
@@ -309,7 +309,7 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	void set_minimum_override(dim_t horiz_override, dim_t vert_override);
 
 	//! Install minimum element size overrides.
-	virtual void set_minimum_override(IN_THREAD_ONLY,
+	virtual void set_minimum_override(ONLY IN_THREAD,
 					  dim_t horiz_override,
 					  dim_t vert_override);
 
@@ -336,12 +336,12 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//!
 	//! If data.removed is not set, sets it and invoked removed().
 
-	virtual void removed_from_container(IN_THREAD_ONLY);
+	virtual void removed_from_container(ONLY IN_THREAD);
 
 	//! This element has been removed from its container just now.
 
 	//! The default implementation does nothing.
-	virtual void removed(IN_THREAD_ONLY);
+	virtual void removed(ONLY IN_THREAD);
 
 	//! Install a state update callback.
 	void on_state_update(const functionref<element_state_callback_t> &cb);
@@ -355,7 +355,7 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! position, update it, and call notify_updated_position()
 	//! and current_position_updated().
 
-	virtual void update_current_position(IN_THREAD_ONLY,
+	virtual void update_current_position(ONLY IN_THREAD,
 					     const rectangle &r);
 
 	//! The parent container is scrolling us.
@@ -366,7 +366,7 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! draw info. The parent container scrolling us will be responsible
 	//! for redrawing everything, we're just doing the bookkeeping here.
 
-	void scroll_by_parent_container(IN_THREAD_ONLY, coord_t x, coord_t y);
+	void scroll_by_parent_container(ONLY IN_THREAD, coord_t x, coord_t y);
 
 	//! The top level window's position changed, but not its size
 
@@ -374,7 +374,7 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! about this.
 	//!
 	//! Propagate absolute_location_updated() to all elements.
-	virtual void absolute_location_updated(IN_THREAD_ONLY);
+	virtual void absolute_location_updated(ONLY IN_THREAD);
 
 	//! This element's current_position has been updated.
 
@@ -388,7 +388,7 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! changed, and the top level window's layout manager has to reposition
 	//! the child elements, that will itself trigger a redraw.
 
-	virtual void current_position_updated(IN_THREAD_ONLY);
+	virtual void current_position_updated(ONLY IN_THREAD);
 
 	//! Add this element to the element_position_updated() queue.
 
@@ -402,7 +402,7 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! window to execute current_position_updated(), as the top level
 	//! container will recalculate and reposition all elements, as needed.
 
-	void schedule_update_position_processing(IN_THREAD_ONLY);
+	void schedule_update_position_processing(ONLY IN_THREAD);
 
 	//! Invoked by the connection thread.
 
@@ -411,19 +411,19 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! Overridden by containers, which notify their layout manager,
 	//! before invoking notify_updated_position().
 
-	virtual void process_updated_position(IN_THREAD_ONLY);
+	virtual void process_updated_position(ONLY IN_THREAD);
 
 	//! Calls invoke_element_state_updates().
 
-	void notify_updated_position(IN_THREAD_ONLY);
+	void notify_updated_position(ONLY IN_THREAD);
 
 	//! Create the current element_state for invoking callbacks.
-	element_state create_element_state(IN_THREAD_ONLY,
+	element_state create_element_state(ONLY IN_THREAD,
 					   element_state::state_update_t);
 
 	//! Invoke all existing state update callbacks, for some reason.
 
-	virtual void invoke_element_state_updates(IN_THREAD_ONLY,
+	virtual void invoke_element_state_updates(ONLY IN_THREAD,
 						  element_state::state_update_t);
 
 	/////////////////////////////////////////////////////////////////////
@@ -449,18 +449,18 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//!
 	//! Overridden in child_element, the grid layout manager may choose
 	//! to hide non-visible elements.
-	virtual void request_visibility(IN_THREAD_ONLY, bool flag);
+	virtual void request_visibility(ONLY IN_THREAD, bool flag);
 
 	//! show() or hide() this display element.
 
 	//! Executed in the connection thread.
-	void toggle_visibility(IN_THREAD_ONLY);
+	void toggle_visibility(ONLY IN_THREAD);
 
 	//! Schedule update_visibility() to be invoke by the connection thread.
 
 	//! Inserts this element into the visibility_update list.
 
-	void schedule_update_visibility(IN_THREAD_ONLY);
+	void schedule_update_visibility(ONLY IN_THREAD);
 
 	//! Recursive show() or hide().
 
@@ -472,13 +472,13 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! The default implementation invokes request_visibility().
 	//! Overridden by the container implementation object.
 
-	virtual void request_visibility_recursive(IN_THREAD_ONLY, bool flag);
+	virtual void request_visibility_recursive(ONLY IN_THREAD, bool flag);
 
 	//! Executed in the connection thread.
 
 	//! If different visibility was updated, invoke update_visibility().
 
-	void update_visibility(IN_THREAD_ONLY);
+	void update_visibility(ONLY IN_THREAD);
 
 	//! update_visibility() invokes this callback.
 
@@ -490,7 +490,7 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! visibility_updated() compares flag with the
 	//! current value of inherited_visibility flag. If it's different,
 	//! inherited_visibility_updated() gets invoked.
-	virtual void visibility_updated(IN_THREAD_ONLY, bool flag);
+	virtual void visibility_updated(ONLY IN_THREAD, bool flag);
 
 
 	//! This element's inherited_visibility flag has changed.
@@ -500,7 +500,7 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! also updates the containers' elements inherited visibility,
 	//! before invoking do_inherited_visibility_updated().
 
-	virtual void inherited_visibility_updated(IN_THREAD_ONLY,
+	virtual void inherited_visibility_updated(ONLY IN_THREAD,
 						  inherited_visibility_info &info);
 
 	//! Finally update this element's inherited visibility status.
@@ -510,7 +510,7 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//!
 	//! Update the flag, invoke before/after showing/hiding callbacks.
 
-	void do_inherited_visibility_updated(IN_THREAD_ONLY,
+	void do_inherited_visibility_updated(ONLY IN_THREAD,
 					     inherited_visibility_info &info);
 
 	//! Actually set the inherited visibility flag, and I do really mean it.
@@ -529,14 +529,14 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! child element is not shown, it falls back to using the parent's
 	//! background color, so officially its background color has changed.
 
-	virtual void set_inherited_visibility(IN_THREAD_ONLY,
+	virtual void set_inherited_visibility(ONLY IN_THREAD,
 					      inherited_visibility_info
 					      &visibility_info);
 
 	//! Ditto
 
 	//! Implement set_inherited_visibility flag.
-	virtual void set_inherited_visibility_flag(IN_THREAD_ONLY, bool);
+	virtual void set_inherited_visibility_flag(ONLY IN_THREAD, bool);
 
 	//! Redraw this display element, after showing or hiding it.
 
@@ -550,7 +550,7 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! Overridden by child_element, calling the container's
 	//! child_visibility_updated().
 
-	virtual void draw_after_visibility_updated(IN_THREAD_ONLY,
+	virtual void draw_after_visibility_updated(ONLY IN_THREAD,
 						   bool flag);
 
 
@@ -558,11 +558,11 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 	//! Call get_draw_info_from_scratch() if it does not exist.
 
-	virtual draw_info &get_draw_info(IN_THREAD_ONLY)=0;
+	virtual draw_info &get_draw_info(ONLY IN_THREAD)=0;
 
 	//! Calculate draw_info for this element.
 
-	virtual draw_info &get_draw_info_from_scratch(IN_THREAD_ONLY)=0;
+	virtual draw_info &get_draw_info_from_scratch(ONLY IN_THREAD)=0;
 
 	//! Why invalidate_cached_draw_info() was called.
 
@@ -581,19 +581,19 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! Something that factors into draw_info's contents has changed,
 	//! so if it is cached make sure it is still valid.
 
-	void invalidate_cached_draw_info(IN_THREAD_ONLY,
+	void invalidate_cached_draw_info(ONLY IN_THREAD,
 					 draw_info_invalidation_reason);
 
 	//! We don't need the full draw_info, just the absolute location.
 
-	virtual rectangle get_absolute_location(IN_THREAD_ONLY)=0;
+	virtual rectangle get_absolute_location(ONLY IN_THREAD)=0;
 
 	//! We need get_absolute_location() for the screen!
-	rectangle get_absolute_location_on_screen(IN_THREAD_ONLY);
+	rectangle get_absolute_location_on_screen(ONLY IN_THREAD);
 
 	//! Schedule the connection thread to invoke explicit_redraw().
 
-	void schedule_redraw(IN_THREAD_ONLY);
+	void schedule_redraw(ONLY IN_THREAD);
 
 	//! schedule_redraw() this one, and all child elements.
 
@@ -601,7 +601,7 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 	//! schedule_redraw() this one, and all child elements.
 
-	void schedule_redraw_recursively(IN_THREAD_ONLY);
+	void schedule_redraw_recursively(ONLY IN_THREAD);
 
 	//! This element's enabled status has changed.
 
@@ -614,11 +614,11 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! Additionally, an element marked as disabled automatically
 	//! disables all child elements.
 
-	virtual void enablability_changed(IN_THREAD_ONLY);
+	virtual void enablability_changed(ONLY IN_THREAD);
 
 	//! Whether this element is scheduled for redrawing
 
-	bool redraw_scheduled(IN_THREAD_ONLY);
+	bool redraw_scheduled(ONLY IN_THREAD);
 
 	//! Forcibly redraw this display element
 
@@ -626,7 +626,7 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! Otherwise calls draw() (which then has to call do_draw(), because
 	//! the element is visible).
 
-	void explicit_redraw(IN_THREAD_ONLY);
+	void explicit_redraw(ONLY IN_THREAD);
 
 	//! Exposure event handling.
 
@@ -635,7 +635,7 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! after calculating each child's rectangle_set consisting of the
 	//! given rectangle_set intersected with the child's viewport.
 
-	void exposure_event_recursive(IN_THREAD_ONLY,
+	void exposure_event_recursive(ONLY IN_THREAD,
 				      const rectangle_set &areas);
 
 	//! Draw the display element.
@@ -643,7 +643,7 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! If the display element is not visible, does nothing.
 	//!
 	//! Otherwise calls do_draw().
-	void draw(IN_THREAD_ONLY,
+	void draw(ONLY IN_THREAD,
 		  const draw_info &di,
 		  const rectangle_set &areas);
 
@@ -653,13 +653,13 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//!
 	//! The rectangle cooridnates are specified relative to the viewport.
 
-	virtual void do_draw(IN_THREAD_ONLY,
+	virtual void do_draw(ONLY IN_THREAD,
 			     const draw_info &di,
 			     const rectangle_set &areas);
 
 
 	//! Implementation of draw_using_scratch_buffer() with element_scratch_uffer.
-	void do_draw_using_scratch_buffer(IN_THREAD_ONLY,
+	void do_draw_using_scratch_buffer(ONLY IN_THREAD,
 					  const function
 					  <scratch_buffer_draw_func_t> &cb,
 					  const rectangle &rect,
@@ -669,7 +669,7 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 		override;
 
 	//! Implementation of draw_using_scratch_buffer() with a custom scratch buffer.
-	void do_draw_using_scratch_buffer(IN_THREAD_ONLY,
+	void do_draw_using_scratch_buffer(ONLY IN_THREAD,
 					  const function
 					  <scratch_buffer_draw_func_t> &cb,
 					  const rectangle &rect,
@@ -685,7 +685,7 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! element's contents is ultimately funneled through draw_to_window
 	//! picture.
 
-	void draw_to_window_picture(IN_THREAD_ONLY,
+	void draw_to_window_picture(ONLY IN_THREAD,
 				    //! The draw operation is now clipped
 				    const clip_region_set &set,
 
@@ -714,13 +714,13 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! forward this to their container, in order to be drawn as disabled
 	//! if their parent container is a label for a focusable.
 
-	virtual bool draw_to_window_picture_as_disabled(IN_THREAD_ONLY);
+	virtual bool draw_to_window_picture_as_disabled(ONLY IN_THREAD);
 
 	//! Clear to background color
 
 	//! Wrapper that acquires a clip_region_set, first.
 
-	void clear_to_color(IN_THREAD_ONLY,
+	void clear_to_color(ONLY IN_THREAD,
 			    const draw_info &di,
 			    const rectangle_set &areas);
 
@@ -729,7 +729,7 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! The rectangles' coordinates are relative to the viewport.
 	//! background_color_di is the draw_info of the element whose background
 	//! color is drawn here (default is the same as di).
-	void clear_to_color(IN_THREAD_ONLY,
+	void clear_to_color(ONLY IN_THREAD,
 			    const clip_region_set &,
 			    const draw_info &di,
 			    const draw_info &background_color_di,
@@ -741,12 +741,12 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! Invoke schedule_redraw(), then recursively invoke
 	//! theme_updated() (as long as we're visible, of course).
 
-	virtual void theme_updated(IN_THREAD_ONLY,
+	virtual void theme_updated(ONLY IN_THREAD,
 				   const defaulttheme &new_theme);
 
 	//! Invoke initialize(), if necessary.
 
-	inline void initialize_if_needed(IN_THREAD_ONLY)
+	inline void initialize_if_needed(ONLY IN_THREAD)
 	{
 		auto &flag=data(IN_THREAD).initialized;
 
@@ -775,7 +775,7 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
  private:
 	//! Invoke initialize()
 
-	void initialize_or_log_exception(IN_THREAD_ONLY);
+	void initialize_or_log_exception(ONLY IN_THREAD);
 
  protected:
 	//! Initialize this display element.
@@ -783,11 +783,11 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! After a display element gets added to a container, the layout
 	//! manager should invoke initialize() from the connection thread.
 
-	virtual void initialize(IN_THREAD_ONLY);
+	virtual void initialize(ONLY IN_THREAD);
 
 	//! Whether this display element has been initialized
 
-	inline bool initialized(IN_THREAD_ONLY) const
+	inline bool initialized(ONLY IN_THREAD) const
 	{
 		return data(IN_THREAD).initialized;
 	}
@@ -795,7 +795,7 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! Invoke a lambda for each child element.
 
 	template<typename functor_type>
-		void for_each_child(IN_THREAD_ONLY,
+		void for_each_child(ONLY IN_THREAD,
 				    functor_type &&functor)
 	{
 		do_for_each_child(IN_THREAD,
@@ -808,7 +808,7 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! The default implementation does nothing. This is overridden in
 	//! containerObj.
 
-	virtual void do_for_each_child(IN_THREAD_ONLY,
+	virtual void do_for_each_child(ONLY IN_THREAD,
 				       const function<void
 				       (const element &e)> &);
 
@@ -890,14 +890,14 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! Overriden in generic_windowObj::handlerObj, which ends up
 	//! handling either top level windows without peepholes (tooltips),
 	//! or the scrollbars themselves.
-	virtual void focusable_initialized(IN_THREAD_ONLY,
+	virtual void focusable_initialized(ONLY IN_THREAD,
 					   focusableImplObj &fimpl)=0;
 
 	//! This element should be the first focusable element.
 	//! child_elementObj forwards it to its parent container; and this
 	//! is implemented in generic_windowObj::handlerObj.
 
-	virtual void get_focus_first(IN_THREAD_ONLY, const focusable &)=0;
+	virtual void get_focus_first(ONLY IN_THREAD, const focusable &)=0;
 
 	//! Whether this element is enabled for focus processing.
 
@@ -905,7 +905,7 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! Turning off focus in any parent element automatically turns off
 	//! focus processing for all of their child elements, in this manner.
 
-	virtual bool enabled(IN_THREAD_ONLY);
+	virtual bool enabled(ONLY IN_THREAD);
 
 	//! Used in input focus processing, accessed by the connection thread only.
 
@@ -918,7 +918,7 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! The focus reporter parameter to request_focus() and leave_focus().
 
 	typedef void (elementObj::implObj::*focus_reporter_t)
-		(IN_THREAD_ONLY, focus_change, const callback_trigger_t &);
+		(ONLY IN_THREAD, focus_change, const callback_trigger_t &);
 
 	//! Input focus is being requested for this display element.
 
@@ -929,7 +929,7 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//!
 	//! \see focus_change
 
-	void request_focus(IN_THREAD_ONLY,
+	void request_focus(ONLY IN_THREAD,
 			   const ptr<elementObj::implObj> &current_focus,
 			   focus_reporter_t focus_reporter,
 			   const callback_trigger_t &trigger);
@@ -945,7 +945,7 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! In testfocusable.C this is equivalent to the (!t.to) case in
 	//! testfocusable().
 
-	void lose_focus(IN_THREAD_ONLY,
+	void lose_focus(ONLY IN_THREAD,
 			focus_reporter_t focus_reporter,
 			const callback_trigger_t &trigger)
 	{
@@ -958,21 +958,21 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 	//! Internal focus processing, see element_focusable.C
 
-	virtual void requested_focus_to(IN_THREAD_ONLY,
+	virtual void requested_focus_to(ONLY IN_THREAD,
 					const ptr<elementObj::implObj> &current_focus);
 
 	//! Internal focus processing, see element_focusable.C
-	virtual void requested_focus_from(IN_THREAD_ONLY);
+	virtual void requested_focus_from(ONLY IN_THREAD);
 
 	//! Internal focus processing, see element_focusable.C
 
-	void leaving_focus(IN_THREAD_ONLY,
+	void leaving_focus(ONLY IN_THREAD,
 			   const ptr<elementObj::implObj> &leaving_for,
 			   focus_reporter_t focus_reporter,
 			   const callback_trigger_t &trigger);
 
 	//! Internal focus processing, see element_focusable.C
-	virtual void do_leaving_focus(IN_THREAD_ONLY,
+	virtual void do_leaving_focus(ONLY IN_THREAD,
 				      focus_change &event,
 				      const ref<implObj> &focus_from,
 				      const ptr<elementObj::implObj>
@@ -982,14 +982,14 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 	//! Internal focus processing, see element_focusable.C
 
-	void entering_focus(IN_THREAD_ONLY,
+	void entering_focus(ONLY IN_THREAD,
 			    const ptr<elementObj::implObj> &focus_from,
 			    focus_reporter_t focus_reporter,
 			    const callback_trigger_t &trigger);
 
 	//! Internal focus processing, see element_focusable.C
 
-	virtual void do_entering_focus(IN_THREAD_ONLY,
+	virtual void do_entering_focus(ONLY IN_THREAD,
 				       focus_change event,
 				       const ref<implObj> &focus_to,
 				       const ptr<elementObj::implObj> &focus_from,
@@ -997,14 +997,14 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 				       const callback_trigger_t &trigger);
 
 	//! Internal focus processing, see element_focusable.C
-	virtual void focus_movement_complete(IN_THREAD_ONLY,
+	virtual void focus_movement_complete(ONLY IN_THREAD,
 					     bool stop_at_original_focus,
 					     focus_reporter_t focus_reporter,
 					     const callback_trigger_t &trigger);
 
 	//! Invoke the keyboard_focus() virtual function.
 
-	void report_keyboard_focus(IN_THREAD_ONLY,
+	void report_keyboard_focus(ONLY IN_THREAD,
 				   focus_change event,
 				   const callback_trigger_t &trigger);
 
@@ -1012,14 +1012,14 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 	//! The default implementation invokes the keyboard focus callback.
 
-	virtual void keyboard_focus(IN_THREAD_ONLY,
+	virtual void keyboard_focus(ONLY IN_THREAD,
 				    const callback_trigger_t &trigger);
 
 	//! Install a new keyboard focus callback
 	void on_keyboard_focus(const functionref<focus_callback_t> &callback);
 
 	//! Install a new keyboard focus callback
-	void on_keyboard_focus(IN_THREAD_ONLY,
+	void on_keyboard_focus(ONLY IN_THREAD,
 			       const functionref<focus_callback_t> &callback);
 
 	//! Install a new key event callback
@@ -1028,13 +1028,13 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 	//! Install a new key event callback
 
-	void on_key_event(IN_THREAD_ONLY,
+	void on_key_event(ONLY IN_THREAD,
 			  const functionref<key_event_callback_t> &);
 
 
  private:
 	//! Invoke the callback
-	void invoke_keyboard_focus_callback(IN_THREAD_ONLY,
+	void invoke_keyboard_focus_callback(ONLY IN_THREAD,
 					    const callback_trigger_t &);
  public:
 	//! Here come the keypresses.
@@ -1044,7 +1044,7 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//!
 	//! The default implementation invokes the installed callback.
 
-	virtual bool process_key_event(IN_THREAD_ONLY, const key_event &ke);
+	virtual bool process_key_event(ONLY IN_THREAD, const key_event &ke);
 
 	//! When keyboard-bound action should be taken.
 
@@ -1070,13 +1070,13 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//!
 	//! The default implementation always returns false.
 
-	virtual bool process_button_event(IN_THREAD_ONLY,
+	virtual bool process_button_event(ONLY IN_THREAD,
 					  const button_event &be,
 					  xcb_timestamp_t timestamp);
 
 	//! If enabled() call process_button_event()
 
-	virtual bool process_button_event_if_enabled(IN_THREAD_ONLY,
+	virtual bool process_button_event_if_enabled(ONLY IN_THREAD,
 						     const button_event &be,
 						     xcb_timestamp_t timestamp);
 
@@ -1091,14 +1091,14 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 	//! Reports the current cursor position to the XIM server. Should
 	//! only be called when this element has keyboard focus.
-	void report_current_cursor_position(IN_THREAD_ONLY, rectangle pos);
+	void report_current_cursor_position(ONLY IN_THREAD, rectangle pos);
 
 	//! process_button_event() calls grab() to grab the pointer.
 
-	virtual void grab(IN_THREAD_ONLY)=0;
+	virtual void grab(ONLY IN_THREAD)=0;
 
 	//! Invoke the pointer_focus() virtual function.
-	void report_pointer_focus(IN_THREAD_ONLY,
+	void report_pointer_focus(ONLY IN_THREAD,
 				  focus_change event,
 				  const callback_trigger_t &trigger);
 
@@ -1106,18 +1106,18 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 	//! The default implementation invokes the pointer focus callback.
 
-	virtual void pointer_focus(IN_THREAD_ONLY,
+	virtual void pointer_focus(ONLY IN_THREAD,
 				   const callback_trigger_t &trigger);
 
 	//! Install a new keyboard focus callback
 	void on_pointer_focus(const functionref<focus_callback_t> &callback);
 
 	//! Install a new keyboard focus callback
-	void on_pointer_focus(IN_THREAD_ONLY,
+	void on_pointer_focus(ONLY IN_THREAD,
 			      const functionref<focus_callback_t> &callback);
  private:
 	//! Invoke the callback
-	void invoke_pointer_focus_callback(IN_THREAD_ONLY,
+	void invoke_pointer_focus_callback(ONLY IN_THREAD,
 					   const callback_trigger_t &);
  public:
 
@@ -1125,7 +1125,7 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 	//! Log it, and if it's a real pointer movement trigger
 	//! hover processing, if appropriate.
-	virtual void report_motion_event(IN_THREAD_ONLY, const motion_event &);
+	virtual void report_motion_event(ONLY IN_THREAD, const motion_event &);
 
 	//! If this element has a hover action, schedule it.
 
@@ -1135,7 +1135,7 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//!
 	//! Overriden in child_elementObj, which invokes this and also
 	//! invokes its container schedule_hover_action().
-	virtual void schedule_hover_action(IN_THREAD_ONLY);
+	virtual void schedule_hover_action(ONLY IN_THREAD);
 
 	//! Left focus, etc...
 
@@ -1143,7 +1143,7 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//!
 	//! Overriden in child_elementObj, which invokes this and also
 	//! invokes its container unschedule_hover_action().
-	virtual void unschedule_hover_action(IN_THREAD_ONLY);
+	virtual void unschedule_hover_action(ONLY IN_THREAD);
 
 	//! If this element takes action on a hover delay, return the delay.
 
@@ -1159,7 +1159,7 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! configuration setting if this element has a tooltip factory
 	//! installed, else returns 0.
 
-	virtual std::chrono::milliseconds hover_action_delay(IN_THREAD_ONLY);
+	virtual std::chrono::milliseconds hover_action_delay(ONLY IN_THREAD);
 
 	//! The pointer has hovered over this element, so do something.
 
@@ -1171,7 +1171,7 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! interval, which is now elapsed.
 	//!
 	//! The default implementation shows the tooltip.
-	virtual void hover_action(IN_THREAD_ONLY);
+	virtual void hover_action(ONLY IN_THREAD);
 
 	//! Cancel the hover-triggered action.
 
@@ -1184,15 +1184,15 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! The default implementation removes the tooltip, if one is
 	//! currently shown.
 	//! interval, which is now elapsed.
-	virtual void hover_cancel(IN_THREAD_ONLY);
+	virtual void hover_cancel(ONLY IN_THREAD);
 
  private:
 	//! Schedule a timer to check if the tooltip needs to be shown.
-	void schedule_hover_timer(IN_THREAD_ONLY,
+	void schedule_hover_timer(ONLY IN_THREAD,
 				    tick_clock_t::time_point now);
 
 	//! Check if the tooltip needs to be shown.
-	void check_hover_timer(IN_THREAD_ONLY);
+	void check_hover_timer(ONLY IN_THREAD);
 
 	//! The most recent keyboard_focus() reported
 	focus_change most_recent_keyboard_focus_change_thread_only=focus_change::lost;
@@ -1209,21 +1209,21 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 	//! The default implementation does nothing.
 
-	virtual void window_focus_change(IN_THREAD_ONLY, bool flag);
+	virtual void window_focus_change(ONLY IN_THREAD, bool flag);
 
 	//! Whether this display element currently has keyboard input focus.
 
 	//! Returns true if most_recent_keyboard_focus_change was anything
 	//! other than focus_change::lost or focus_change::child_lost
 
-	bool current_keyboard_focus(IN_THREAD_ONLY);
+	bool current_keyboard_focus(ONLY IN_THREAD);
 
 	//! Whether this display element currently has pointer input focus.
 
 	//! Returns true if most_recent_pointer_focus_change was anything
 	//! other than focus_change::lost or focus_change::child_lost
 
-	bool current_pointer_focus(IN_THREAD_ONLY);
+	bool current_pointer_focus(ONLY IN_THREAD);
 
 	//! Make sure that the given rectangle is visible.
 
@@ -1238,20 +1238,20 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! makes sure that its child element's specified position will be
 	//! scrolled into view.
 
-	virtual void ensure_visibility(IN_THREAD_ONLY, const rectangle &);
+	virtual void ensure_visibility(ONLY IN_THREAD, const rectangle &);
 
 	//! Ensure visibility of this entire element.
 
 	//! Constructs a rectangle for this entire display element's current
 	//! size and invokes ensure_visibility().
-	void ensure_entire_visibility(IN_THREAD_ONLY);
+	void ensure_entire_visibility(ONLY IN_THREAD);
 
 	//! Process pasted text.
 
 	//! Returns true if this element processed the pasted text.
 	//! The default elementation returns false.
 
-	virtual bool pasted(IN_THREAD_ONLY,
+	virtual bool pasted(ONLY IN_THREAD,
 			    const std::u32string_view &str);
 
 	//! Creating a focusable element in this container.
@@ -1266,20 +1266,20 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! Returns a mcguffin if the pointer is not already grabbed by another
 	//! element, and the grab succeeds.
 
-	grabbed_pointerptr grab_pointer(IN_THREAD_ONLY);
+	grabbed_pointerptr grab_pointer(ONLY IN_THREAD);
 
 	//! The the mouse pointer pursor.
-	void set_cursor_pointer(IN_THREAD_ONLY, const cursor_pointer &);
+	void set_cursor_pointer(ONLY IN_THREAD, const cursor_pointer &);
 
 	//! Remove the mouse pointer cursor,
-	void remove_cursor_pointer(IN_THREAD_ONLY);
+	void remove_cursor_pointer(ONLY IN_THREAD);
 
 	//! Retrieve the cursor pointer for this element.
 
 	//! Overridden in child_elementObj. If this element does not have a
 	//! set cursor pointer, call get_container_cursor_pointer().
 
-	virtual cursor_pointerptr get_cursor_pointer(IN_THREAD_ONLY);
+	virtual cursor_pointerptr get_cursor_pointer(ONLY IN_THREAD);
 };
 
 LIBCXXW_NAMESPACE_END

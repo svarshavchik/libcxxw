@@ -20,7 +20,7 @@ border_source::border_source(const grid_elementptr &e) : e(e)
 {
 }
 
-current_border_implptr border_source::get_border(IN_THREAD_ONLY,
+current_border_implptr border_source::get_border(ONLY IN_THREAD,
 						 current_border_implptr
 						 grid_elementObj::*which_one)
 	const
@@ -56,7 +56,7 @@ horizontal_straight_borderObj
 horizontal_straight_borderObj::~horizontal_straight_borderObj()=default;
 
 straight_border straight_borderBase
-::create_horizontal_border(IN_THREAD_ONLY,
+::create_horizontal_border(ONLY IN_THREAD,
 			   const ref<containerObj::implObj> &container_impl,
 			   const border_source &element_above,
 			   const border_source &element_below,
@@ -112,7 +112,7 @@ vertical_straight_borderObj
 vertical_straight_borderObj::~vertical_straight_borderObj()=default;
 
 straight_border straight_borderBase
-::create_vertical_border(IN_THREAD_ONLY,
+::create_vertical_border(ONLY IN_THREAD,
 			 const ref<containerObj::implObj> &container_impl,
 			 const border_source &element_onleft,
 			 const border_source &element_onright,
@@ -143,7 +143,7 @@ straight_border straight_borderBase
 // existing border, otherwise create a new one.
 
 straight_border straight_borderBase
-::update_horizontal_border(IN_THREAD_ONLY,
+::update_horizontal_border(ONLY IN_THREAD,
 			   const straight_border &existing_border,
 			   const border_source &element_above,
 			   const border_source &element_below,
@@ -173,7 +173,7 @@ straight_border straight_borderBase
 }
 
 straight_border straight_borderBase
-::update_vertical_border(IN_THREAD_ONLY,
+::update_vertical_border(ONLY IN_THREAD,
 			 const straight_border &existing_border,
 			 const border_source &element_onleft,
 			 const border_source &element_onright,
@@ -243,7 +243,7 @@ straight_borderObj::implObj
 straight_borderObj::implObj::~implObj()=default;
 
 const current_border_implptr &straight_borderObj::implObj
-::best_border(IN_THREAD_ONLY) const
+::best_border(ONLY IN_THREAD) const
 {
 	const auto &b=borders(IN_THREAD);
 
@@ -262,7 +262,7 @@ const current_border_implptr &straight_borderObj::implObj
 	return b.border_default;
 }
 
-void straight_borderObj::implObj::do_draw(IN_THREAD_ONLY,
+void straight_borderObj::implObj::do_draw(ONLY IN_THREAD,
 					  const draw_info &di,
 					  const picture &area_picture,
 					  const pixmap &area_pixmap,
@@ -286,7 +286,7 @@ void straight_borderObj::implObj::do_draw(IN_THREAD_ONLY,
 }
 
 void straight_borderObj::implObj
-::background_horizontal(IN_THREAD_ONLY,
+::background_horizontal(ONLY IN_THREAD,
 			const border_implObj::draw_info &bg) const
 {
 	dim_t top_height=bg.area_rectangle.height/2;
@@ -325,7 +325,7 @@ void straight_borderObj::implObj
 }
 
 void straight_borderObj::implObj
-::background_vertical(IN_THREAD_ONLY,
+::background_vertical(ONLY IN_THREAD,
 		      const border_implObj::draw_info &bg) const
 {
 	dim_t left_width=bg.area_rectangle.width/2;

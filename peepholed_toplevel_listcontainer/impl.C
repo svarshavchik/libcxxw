@@ -17,7 +17,7 @@ peepholed_toplevel_listcontainer_implObj
 ::~peepholed_toplevel_listcontainer_implObj()=default;
 
 bool peepholed_toplevel_listcontainer_implObj
-::update_tallest_row_height(IN_THREAD_ONLY,
+::update_tallest_row_height(ONLY IN_THREAD,
 			    dim_t new_tallest_height)
 {
 	if (tallest_row_height(IN_THREAD) == new_tallest_height)

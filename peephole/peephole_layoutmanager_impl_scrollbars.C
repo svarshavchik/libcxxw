@@ -34,7 +34,7 @@ class LIBCXX_HIDDEN scrollbarsObj::callbackObj
 	: virtual public obj {
 
 public:
-	typedef void (scrollbarsObj::*update_func_t)(IN_THREAD_ONLY, dim_t);
+	typedef void (scrollbarsObj::*update_func_t)(ONLY IN_THREAD, dim_t);
 
 	// update_horizontal_scroll() or update_vertical_scroll()
 	const update_func_t update_func;
@@ -72,7 +72,7 @@ public:
 		p->get_element_impl().THREAD
 			->run_as([p, update_func=this->update_func,
 				  v=dim_t::truncate(config.dragged_value)]
-				 (IN_THREAD_ONLY)
+				 (ONLY IN_THREAD)
 				 {
 					 ((*p).*update_func)(IN_THREAD, v);
 				 });
@@ -173,7 +173,7 @@ void set_peephole_scrollbar_focus_order(const focusable &horizontal_scrollbar,
 }
 
 void set_top_level_peephole_scrollbar_focus_order
-(IN_THREAD_ONLY,
+(ONLY IN_THREAD,
  focusableImplObj &new_element,
  const focusable &horizontal_scrollbar,
  const focusable &vertical_scrollbar)
@@ -234,13 +234,13 @@ void scrollbarsObj::initialize_scrollbars()
 	v_callback->my_layoutmanager=me;
 }
 
-void scrollbarsObj::vert_scroll_low(IN_THREAD_ONLY,
+void scrollbarsObj::vert_scroll_low(ONLY IN_THREAD,
 				    const input_mask &m)
 {
 	v_scrollbar->impl->to_low(IN_THREAD, m);
 }
 
-void scrollbarsObj::vert_scroll_high(IN_THREAD_ONLY,
+void scrollbarsObj::vert_scroll_high(ONLY IN_THREAD,
 				     const input_mask &m)
 {
 	v_scrollbar->impl->to_high(IN_THREAD, m);
@@ -250,7 +250,7 @@ scrollbarsObj::~scrollbarsObj()=default;
 
 
 bool scrollbarsObj
-::process_button_event(IN_THREAD_ONLY,
+::process_button_event(ONLY IN_THREAD,
 		       const button_event &be,
 		       xcb_timestamp_t timestamp)
 {
@@ -267,7 +267,7 @@ bool scrollbarsObj
 	return true;
 }
 
-void scrollbarsObj::update_scrollbars(IN_THREAD_ONLY,
+void scrollbarsObj::update_scrollbars(ONLY IN_THREAD,
 				      const rectangle &element_pos,
 				      const rectangle &current_position)
 {
@@ -289,7 +289,7 @@ void scrollbarsObj::update_scrollbars(IN_THREAD_ONLY,
 }
 
 void scrollbarsObj
-::update_scrollbar(IN_THREAD_ONLY,
+::update_scrollbar(ONLY IN_THREAD,
 		   const ref<scrollbarObj::implObj> &scrollbar,
 		   const elementimpl &visibility_element,
 		   const scrollbar_visibility visibility,

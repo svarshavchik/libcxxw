@@ -98,7 +98,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! x & y coordinates on the root window.
 
 	//! This is a mutex-protected copy of root_x and root_y. root_x and
-	//! root_y are accessible IN_THREAD_ONLY, and the connection thread
+	//! root_y are accessible ONLY IN_THREAD, and the connection thread
 	//! uses them, for speed, thusly no need to avoid locking. The
 	//! connection thread, upon received a ConfigureNotify, sets both
 	//! root_x, root_y, and root_xy.
@@ -121,7 +121,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 	//! The default implementation grabs exename.
 
-	virtual std::string default_wm_class_resource(IN_THREAD_ONLY);
+	virtual std::string default_wm_class_resource(ONLY IN_THREAD);
 
 	class resourcesObj;
 
@@ -154,7 +154,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! Because popupObj::handlerObj maintains a weak reference on its
 	//! parent, it's possible that a null pointer gets returned.
 
-	virtual ptr<handlerObj> get_popup_parent(IN_THREAD_ONLY);
+	virtual ptr<handlerObj> get_popup_parent(ONLY IN_THREAD);
  private:
 	//! Default background color name
 	const color_arg original_background_color;
@@ -199,12 +199,12 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! Attempt to grab a pointer on behalf of an element.
 
 	//! A null grabbing_element indicates a popup grabbing the pointer.
-	virtual grabbed_pointerptr grab_pointer(IN_THREAD_ONLY,
+	virtual grabbed_pointerptr grab_pointer(ONLY IN_THREAD,
 						const elementimplptr &);
 
 	//! Implement is_pointer_actively_grabbed()
 
-	bool is_pointer_actively_grabbed(IN_THREAD_ONLY) override;
+	bool is_pointer_actively_grabbed(ONLY IN_THREAD) override;
 
 	//! What I want for my initial event mask.
 
@@ -248,7 +248,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	};
 
 	//! Public constructor
-	handlerObj(IN_THREAD_ONLY,
+	handlerObj(ONLY IN_THREAD,
 		   const screen &me,
 		   const color_arg &background_color,
 		   const shared_handler_data &handler_data,
@@ -256,7 +256,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
  protected:
 
 	//! Internal constructor
-	handlerObj(IN_THREAD_ONLY,
+	handlerObj(ONLY IN_THREAD,
 		   const shared_handler_data &handler_data,
 		   const constructor_params &params);
  public:
@@ -267,18 +267,18 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	virtual main_windowptr get_main_window()=0;
 
 	//! Return the current background color.
-	background_color current_background_color(IN_THREAD_ONLY) override;
+	background_color current_background_color(ONLY IN_THREAD) override;
 
 	//! Implement set_bakcground_color() for the top level window.
-	void set_background_color(IN_THREAD_ONLY,
+	void set_background_color(ONLY IN_THREAD,
 				  const background_color &) override;
 
 	//! Return the color for drawing a shade over a disabled window.
-	const background_color shaded_color(IN_THREAD_ONLY);
+	const background_color shaded_color(ONLY IN_THREAD);
 
 	//! Return the icon for the disabled element's overlay mask.
 
-	const icon disabled_mask(IN_THREAD_ONLY);
+	const icon disabled_mask(ONLY IN_THREAD);
 
 	THREAD_DATA_ONLY(current_events);
 	THREAD_DATA_ONLY(has_focus);
@@ -291,7 +291,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 	//! The handler is now registered with the connection thread.
 
-	void installed(IN_THREAD_ONLY) override;
+	void installed(ONLY IN_THREAD) override;
 
 	////////////////////////////////////////////////////////////////////
 	//
@@ -305,53 +305,53 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 	//! Implement get_draw_info().
 
-	draw_info &get_draw_info(IN_THREAD_ONLY)
+	draw_info &get_draw_info(ONLY IN_THREAD)
 		override;
 
 	//! Implement get_draw_info() from scratch.
 
 	//! Use our declared background color.
 
-	draw_info &get_draw_info_from_scratch(IN_THREAD_ONLY) override;
+	draw_info &get_draw_info_from_scratch(ONLY IN_THREAD) override;
 
 	//! Override get_absolute_location().
 
 	//! For top level display elements, this is the same as
 	//! their alleged current_position.
 
-	rectangle get_absolute_location(IN_THREAD_ONLY) override;
+	rectangle get_absolute_location(ONLY IN_THREAD) override;
 
 	//! Translate coordinates to screen coordinates.
-	void get_absolute_location_on_screen(IN_THREAD_ONLY, rectangle &r);
+	void get_absolute_location_on_screen(ONLY IN_THREAD, rectangle &r);
 
 	//! Take local x/y coordinates, add root_[xy].
-	void add_root_xy(IN_THREAD_ONLY, coord_t &x, coord_t &y);
+	void add_root_xy(ONLY IN_THREAD, coord_t &x, coord_t &y);
 
 	//! Take root x/y coordinates, subtract root_[xy].
-	void subtract_root_xy(IN_THREAD_ONLY, coord_t &x, coord_t &y);
+	void subtract_root_xy(ONLY IN_THREAD, coord_t &x, coord_t &y);
 
 	//! Remove our own background color.
 
 	//! For top level windows, this simply sets their background color
 	//! to the default background color.
 
-	void remove_background_color(IN_THREAD_ONLY) override;
+	void remove_background_color(ONLY IN_THREAD) override;
 
 	//! Implement has_own_background_color()
 
 	//! Always returns true
 
-	bool has_own_background_color(IN_THREAD_ONLY) override;
+	bool has_own_background_color(ONLY IN_THREAD) override;
 
 	//! Implement current_position_update()
 
 	//! Calls schedule_update_position_processing().
 
-	void current_position_updated(IN_THREAD_ONLY) override;
+	void current_position_updated(ONLY IN_THREAD) override;
 
 	//! Process TAB/Shift TAB, do move the input focus.
 
-	bool process_key_event(IN_THREAD_ONLY, const key_event &ke) override;
+	bool process_key_event(ONLY IN_THREAD, const key_event &ke) override;
 
 	//! Set default input focus.
 
@@ -359,17 +359,17 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! focusable field. Returns true if a display element already has
 	//! input focus, or if one was found by set_default_focus().
 
-	bool set_default_focus(IN_THREAD_ONLY, const callback_trigger_t &);
+	bool set_default_focus(ONLY IN_THREAD, const callback_trigger_t &);
 
 	//! Set focusable element in the window.
 
-	void get_focus_first(IN_THREAD_ONLY, const focusable &f) override;
+	void get_focus_first(ONLY IN_THREAD, const focusable &f) override;
 
 	//! Override focusable_initialized
 
 	//! The default implementation does nothing.
 
-	void focusable_initialized(IN_THREAD_ONLY,
+	void focusable_initialized(ONLY IN_THREAD,
 				   focusableImplObj &fimpl) override;
 
  private:
@@ -386,20 +386,20 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 	//! Process pointer motion event.
 
-	void pointer_motion_event(IN_THREAD_ONLY,
+	void pointer_motion_event(ONLY IN_THREAD,
 				  const xcb_motion_notify_event_t *)
 		override;
 
 	//! Enter event.
-	void enter_notify_event(IN_THREAD_ONLY,
+	void enter_notify_event(ONLY IN_THREAD,
 				const xcb_enter_notify_event_t *) override;
 
 	//! Leave event.
-	void leave_notify_event(IN_THREAD_ONLY,
+	void leave_notify_event(ONLY IN_THREAD,
 				const xcb_enter_notify_event_t *) override;
 
 	//! Focus change event
-	void focus_change_event(IN_THREAD_ONLY, bool) override;
+	void focus_change_event(ONLY IN_THREAD, bool) override;
 
  private:
 
@@ -411,24 +411,24 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! Returns which top level handler the pointer was reported to
 	//! (could be another one, that's actively grabbed the pointer).
 
-	ref<handlerObj> report_pointer_xy(IN_THREAD_ONLY,
+	ref<handlerObj> report_pointer_xy(ONLY IN_THREAD,
 					  motion_event &me,
 					  bool was_grabbed);
 
 	//! Use grab_locked() for was_grabbed in the overloaded method.
 
-	ref<handlerObj> report_pointer_xy(IN_THREAD_ONLY,
+	ref<handlerObj> report_pointer_xy(ONLY IN_THREAD,
 					  motion_event &me);
 
 	//! Decided that this is the handler that the pointer should be reported to.
-	void report_pointer_xy_to_this_handler(IN_THREAD_ONLY,
+	void report_pointer_xy_to_this_handler(ONLY IN_THREAD,
 					       const grabbed_pointerptr &pg,
 					       motion_event me,
 					       bool was_grabbed);
 
 	//! This is the element that should be receiving pointer events.
 
-	void set_element_with_pointer(IN_THREAD_ONLY,
+	void set_element_with_pointer(ONLY IN_THREAD,
 				      const ref<elementObj::implObj> &e);
 
  public:
@@ -438,7 +438,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//!
 	//! This takes care of making sure the element is not pointed to from
 	//! most_recent_element_with_pointer.
-	void removing_element_from_window(IN_THREAD_ONLY,
+	void removing_element_from_window(ONLY IN_THREAD,
 					  const ref<elementObj::implObj> &);
  private:
 
@@ -447,7 +447,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! The element with the pointer focus is being removed, or the
 	//! pointer has left the window. Report lossage of pointer focus.
 
-	void pointer_focus_lost(IN_THREAD_ONLY);
+	void pointer_focus_lost(ONLY IN_THREAD);
  public:
 
 	////////////////////////////////////////////////////////////////////
@@ -456,38 +456,38 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 	//! Implement the exposure event.
 
-	void process_collected_exposures(IN_THREAD_ONLY) override;
+	void process_collected_exposures(ONLY IN_THREAD) override;
 
 	//! Implement the graphics exposure event.
 
-	void process_collected_graphics_exposures(IN_THREAD_ONLY) override;
+	void process_collected_graphics_exposures(ONLY IN_THREAD) override;
 
 	//! Theme update notification.
-	void theme_updated_event(IN_THREAD_ONLY) override;
+	void theme_updated_event(ONLY IN_THREAD) override;
 
 	//! Override theme_updated
-	void theme_updated(IN_THREAD_ONLY, const defaulttheme &) override;
+	void theme_updated(ONLY IN_THREAD, const defaulttheme &) override;
 
 	//! Key press event
-	void key_press_event(IN_THREAD_ONLY,
+	void key_press_event(ONLY IN_THREAD,
 			     const xcb_key_press_event_t *event,
 			     uint16_t sequencehi) override;
 
 	//! Key release event
-	void key_release_event(IN_THREAD_ONLY,
+	void key_release_event(ONLY IN_THREAD,
 			       const xcb_key_release_event_t *event,
 			       uint16_t sequencehi) override;
 	//! Button press event
-	void button_press_event(IN_THREAD_ONLY,
+	void button_press_event(ONLY IN_THREAD,
 				const xcb_button_press_event_t *event) override;
 
 	//! Update net_user_time property
 
-	void update_user_time(IN_THREAD_ONLY);
+	void update_user_time(ONLY IN_THREAD);
 
 	//! Update net_user_time property
 
-	void update_user_time(IN_THREAD_ONLY, xcb_timestamp_t);
+	void update_user_time(ONLY IN_THREAD, xcb_timestamp_t);
 
  private:
 	//! The last button press event timestamp.
@@ -500,7 +500,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
  public:
 	//! Button release event
-	void button_release_event(IN_THREAD_ONLY,
+	void button_release_event(ONLY IN_THREAD,
 				  const xcb_button_release_event_t *event) override;
 
 	class busy_shadeObj;
@@ -540,7 +540,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 	//! An element's button_press_event() wishes to grab the pointer.
 
-	void grab(IN_THREAD_ONLY, const ref<elementObj::implObj> &e);
+	void grab(ONLY IN_THREAD, const ref<elementObj::implObj> &e);
 
 	friend class shared_handler_dataObj;
  protected:
@@ -548,13 +548,13 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! Forward key event to the X Input Method server.
 
 	//! If XIM not available, call handle_key_event().
-	void forward_key_event(IN_THREAD_ONLY,
+	void forward_key_event(ONLY IN_THREAD,
 			       const xcb_key_release_event_t *event,
 			       uint16_t sequencehi,
 			       bool keypress);
 
 	//! Process a key press or release event.
-	bool handle_key_event(IN_THREAD_ONLY,
+	bool handle_key_event(ONLY IN_THREAD,
 			      const xcb_key_release_event_t *event,
 			      bool keypress) override;
 
@@ -562,7 +562,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 	//! Use grab_locked() for was_grabbed in the overloaded method.
 
-	void do_button_event(IN_THREAD_ONLY,
+	void do_button_event(ONLY IN_THREAD,
 			     const xcb_button_release_event_t *event,
 			     bool buttonpress);
 
@@ -571,7 +571,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! Calls report_pointer_xy() to find the element under cursor,
 	//! and constructs a button_event.
 
-	void do_button_event(IN_THREAD_ONLY,
+	void do_button_event(ONLY IN_THREAD,
 			     const xcb_button_release_event_t *event,
 			     bool buttonpress,
 			     bool was_grabbed);
@@ -586,28 +586,28 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! and it is a button #1 press, the keyboard input focus gets removed
 	//! from the element that currently has the keyboard input focus.
 
-	virtual void do_button_event(IN_THREAD_ONLY,
+	virtual void do_button_event(ONLY IN_THREAD,
 				     const xcb_button_release_event_t *event,
 				     const button_event &be,
 				     const motion_event &me);
 
 	//! The top level display element cannot grab. Throw an exception.
 
-	void grab(IN_THREAD_ONLY) override;
+	void grab(ONLY IN_THREAD) override;
 
  public:
 	//! Do not redraw after the window's visibility is updated.
 
 	//! Instead, we redraw in response to exposure events.
 
-	void draw_child_elements_after_visibility_updated(IN_THREAD_ONLY,
+	void draw_child_elements_after_visibility_updated(ONLY IN_THREAD,
 							  bool flag) override;
 
 	//! Setting the inherited_visibility flag.
 
 	//! This gets translated to mapping/unmapping the window.
 
-	void set_inherited_visibility(IN_THREAD_ONLY,
+	void set_inherited_visibility(ONLY IN_THREAD,
 				      inherited_visibility_info &info) override;
  private:
 
@@ -624,21 +624,21 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 	//! Map this window.
 
-	virtual void set_inherited_visibility_mapped(IN_THREAD_ONLY);
+	virtual void set_inherited_visibility_mapped(ONLY IN_THREAD);
 
 	//! Unmap this window.
 
-	virtual void set_inherited_visibility_unmapped(IN_THREAD_ONLY);
+	virtual void set_inherited_visibility_unmapped(ONLY IN_THREAD);
 
  public:
 	//! Implement configure_notify_received().
 
-	void configure_notify_received(IN_THREAD_ONLY, const rectangle &r)
+	void configure_notify_received(ONLY IN_THREAD, const rectangle &r)
 		override;
 
 	//! Implement process_configure_notify().
 
-	void process_configure_notify(IN_THREAD_ONLY, const rectangle &r)
+	void process_configure_notify(ONLY IN_THREAD, const rectangle &r)
 		override;
 
 	//! Update frame extents
@@ -646,13 +646,13 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! Invoked in response to the _NET_FRAME_EXTENTS property getting
 	//! updated.
 
-	void update_frame_extents(IN_THREAD_ONLY);
+	void update_frame_extents(ONLY IN_THREAD);
 
 	//! Frame extents have changed.
 
 	//! The default implementation does nothing.
 
-	virtual void frame_extents_updated(IN_THREAD_ONLY);
+	virtual void frame_extents_updated(ONLY IN_THREAD);
 
 	//! Set extended window manage hints for this window's type.
 
@@ -717,15 +717,15 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	THREAD_DATA_ONLY(most_recent_keyboard_focus);
 
 	//! Move the current keyboard focus to another element.
-	void set_keyboard_focus_to(IN_THREAD_ONLY, const focusable_impl &f,
+	void set_keyboard_focus_to(ONLY IN_THREAD, const focusable_impl &f,
 				   const callback_trigger_t &trigger);
 
 	//! No element has keyboard focus any more.
-	void unset_keyboard_focus(IN_THREAD_ONLY,
+	void unset_keyboard_focus(ONLY IN_THREAD,
 				  const callback_trigger_t &trigger);
 
 	//! Set input focus to this window
-	virtual void set_input_focus(IN_THREAD_ONLY);
+	virtual void set_input_focus(ONLY IN_THREAD);
 
 	//! Paste a string from a clipboard.
 
@@ -733,7 +733,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! input focus. Results in that element's pasted() getting invoked,
 	//! piecemeal, with the pasted text.
 
-	void paste(IN_THREAD_ONLY, xcb_atom_t clipboard,
+	void paste(ONLY IN_THREAD, xcb_atom_t clipboard,
 		   xcb_timestamp_t timestamp);
 
  private:
@@ -747,12 +747,12 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 	//! Recognize STRING and UTF8_STRING atoms, that start the conversion.
 
-	bool begin_converted_data(IN_THREAD_ONLY, xcb_atom_t type,
+	bool begin_converted_data(ONLY IN_THREAD, xcb_atom_t type,
 				  xcb_timestamp_t timestamp) override;
 
 	//! Receive converted data.
 
-	void converted_data(IN_THREAD_ONLY, xcb_atom_t clipboard,
+	void converted_data(ONLY IN_THREAD, xcb_atom_t clipboard,
 			    xcb_atom_t actual_type,
 			    xcb_atom_t format,
 			    void *data,
@@ -763,12 +763,12 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	bool received_converted_data;
 
 	//! Converted data has been received.
-	void end_converted_data(IN_THREAD_ONLY, xcb_atom_t clipboard,
+	void end_converted_data(ONLY IN_THREAD, xcb_atom_t clipboard,
 				xcb_timestamp_t timestamp) override;
 
 	//! Incremental conversion in progress.
 
-	void converting_incrementally(IN_THREAD_ONLY,
+	void converting_incrementally(ONLY IN_THREAD,
 				      xcb_atom_t type,
 				      xcb_timestamp_t timestamp,
 				      uint32_t estimated_size) override;
@@ -780,7 +780,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 	//! This means that paste() failed.
 
-	void conversion_failed(IN_THREAD_ONLY, xcb_atom_t clipboard,
+	void conversion_failed(ONLY IN_THREAD, xcb_atom_t clipboard,
 			       xcb_atom_t type,
 			       xcb_timestamp_t timestamp) override;
 
@@ -795,7 +795,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 	//! This is also called to commit an string from the XIM server.
 
-	void pasted_string(IN_THREAD_ONLY,
+	void pasted_string(ONLY IN_THREAD,
 			   const std::u32string_view &)
 		override;
 
@@ -821,7 +821,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! Figure out which cursor pointer this window should be displaying.
 
 	//! Set XCB_CW_CURSOR accordingly.
-	void update_displayed_cursor_pointer(IN_THREAD_ONLY);
+	void update_displayed_cursor_pointer(ONLY IN_THREAD);
 
 };
 

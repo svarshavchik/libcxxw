@@ -27,14 +27,14 @@ peepholed_fontelementObj<element_impl, font_tag>::~peepholed_fontelementObj()
 
 template<typename element_impl, typename font_tag>
 dim_t peepholed_fontelementObj<element_impl, font_tag>
-::horizontal_increment(IN_THREAD_ONLY) const
+::horizontal_increment(ONLY IN_THREAD) const
 {
 	return font_impl->font_nominal_width(IN_THREAD);
 }
 
 template<typename element_impl, typename font_tag>
 dim_t peepholed_fontelementObj<element_impl, font_tag>
-::vertical_increment(IN_THREAD_ONLY) const
+::vertical_increment(ONLY IN_THREAD) const
 {
 	return font_impl->font_height(IN_THREAD);
 }

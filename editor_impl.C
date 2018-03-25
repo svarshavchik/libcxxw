@@ -125,7 +125,7 @@ create_initial_string(editorObj::implObj::init_args &args,
 
 struct LIBCXX_HIDDEN editorObj::implObj::moving_cursor {
 
-	IN_THREAD_ONLY;
+	ONLY IN_THREAD;
 	editorObj::implObj &me;
 
 	bool in_selection=false;
@@ -135,7 +135,7 @@ struct LIBCXX_HIDDEN editorObj::implObj::moving_cursor {
 	// the bool to indicate whether we actually moved.
 
 	bool &moved;
-	moving_cursor(IN_THREAD_ONLY, editorObj::implObj &me,
+	moving_cursor(ONLY IN_THREAD, editorObj::implObj &me,
 		      const input_mask &mask, bool &moved)
 		: moving_cursor(IN_THREAD, me,
 				mask.shift || (mask.buttons & 1), false,
@@ -143,7 +143,7 @@ struct LIBCXX_HIDDEN editorObj::implObj::moving_cursor {
 	{
 	}
 
-	moving_cursor(IN_THREAD_ONLY, editorObj::implObj &me,
+	moving_cursor(ONLY IN_THREAD, editorObj::implObj &me,
 		      bool selection_in_progress,
 		      bool processing_clear,
 		      bool &moved)
@@ -228,14 +228,14 @@ public:
 
 	~selectionObj()=default;
 
-	bool stillvalid(IN_THREAD_ONLY) override;
+	bool stillvalid(ONLY IN_THREAD) override;
 
-	void clear(IN_THREAD_ONLY) override;
+	void clear(ONLY IN_THREAD) override;
 
-	ptr<convertedValueObj> convert(IN_THREAD_ONLY, xcb_atom_t type)
+	ptr<convertedValueObj> convert(ONLY IN_THREAD, xcb_atom_t type)
 		override;
 
-	std::vector<xcb_atom_t> supported(IN_THREAD_ONLY) override;
+	std::vector<xcb_atom_t> supported(ONLY IN_THREAD) override;
 };
 
 ////////////////////////////////////////////////////////////////////////////
@@ -257,7 +257,7 @@ std::optional<size_t> editorObj::implObj::selection_cursor_t::const_lock
 	return cursor->pos();
 }
 
-editorObj::implObj::selection_cursor_t::lock::lock(IN_THREAD_ONLY,
+editorObj::implObj::selection_cursor_t::lock::lock(ONLY IN_THREAD,
 						   implObj &impl,
 						   bool blinking_or_clearing)
 	: const_lock{impl}
@@ -315,25 +315,25 @@ editorObj::implObj::implObj(init_args &args)
 
 editorObj::implObj::~implObj()=default;
 
-void editorObj::implObj::initialize(IN_THREAD_ONLY)
+void editorObj::implObj::initialize(ONLY IN_THREAD)
 {
 	superclass_t::initialize(IN_THREAD);
 	parent_peephole->recalculate(IN_THREAD, *this);
 }
 
-void editorObj::implObj::theme_updated(IN_THREAD_ONLY,
+void editorObj::implObj::theme_updated(ONLY IN_THREAD,
 				       const defaulttheme &new_theme)
 {
 	superclass_t::theme_updated(IN_THREAD, new_theme);
 	parent_peephole->recalculate(IN_THREAD, *this);
 }
 
-void editorObj::implObj::compute_preferred_width(IN_THREAD_ONLY)
+void editorObj::implObj::compute_preferred_width(ONLY IN_THREAD)
 {
 	preferred_width=config.oneline() ? 0:nominal_width(IN_THREAD);
 }
 
-dim_t editorObj::implObj::nominal_width(IN_THREAD_ONLY) const
+dim_t editorObj::implObj::nominal_width(ONLY IN_THREAD) const
 {
 	dim_t w=dim_t::truncate(config.columns *
 				(dim_t::value_type)
@@ -347,7 +347,7 @@ dim_t editorObj::implObj::nominal_width(IN_THREAD_ONLY) const
 	return w;
 }
 
-dim_t editorObj::implObj::nominal_height(IN_THREAD_ONLY) const
+dim_t editorObj::implObj::nominal_height(ONLY IN_THREAD) const
 {
 
 	dim_t h=dim_t::truncate(config.rows *
@@ -362,7 +362,7 @@ dim_t editorObj::implObj::nominal_height(IN_THREAD_ONLY) const
 	return h;
 }
 
-void editorObj::implObj::set_minimum_override(IN_THREAD_ONLY,
+void editorObj::implObj::set_minimum_override(ONLY IN_THREAD,
 					      dim_t horiz_override,
 					      dim_t vert_override)
 {
@@ -373,7 +373,7 @@ void editorObj::implObj::set_minimum_override(IN_THREAD_ONLY,
 }
 
 std::pair<metrics::axis, metrics::axis>
-editorObj::implObj::calculate_current_metrics(IN_THREAD_ONLY)
+editorObj::implObj::calculate_current_metrics(ONLY IN_THREAD)
 {
 	auto metrics=text->get_metrics(IN_THREAD, preferred_width);
 
@@ -390,12 +390,12 @@ editorObj::implObj::calculate_current_metrics(IN_THREAD_ONLY)
 	return metrics;
 }
 
-void editorObj::implObj::rewrap_due_to_updated_position(IN_THREAD_ONLY)
+void editorObj::implObj::rewrap_due_to_updated_position(ONLY IN_THREAD)
 {
 	initialize_if_needed(IN_THREAD);
 	text->thread_lock(IN_THREAD,
 			  [&, this]
-			  (IN_THREAD_ONLY, const auto &impl)
+			  (ONLY IN_THREAD, const auto &impl)
 			  {
 				  (*impl)->minimum_width_override=
 					  data(IN_THREAD).current_position
@@ -405,7 +405,7 @@ void editorObj::implObj::rewrap_due_to_updated_position(IN_THREAD_ONLY)
 	text->rewrap(IN_THREAD, preferred_width);
 }
 
-void editorObj::implObj::keyboard_focus(IN_THREAD_ONLY,
+void editorObj::implObj::keyboard_focus(ONLY IN_THREAD,
 					const callback_trigger_t &trigger)
 {
 	if (!current_keyboard_focus(IN_THREAD))
@@ -450,13 +450,13 @@ void editorObj::implObj::keyboard_focus(IN_THREAD_ONLY,
 	}
 }
 
-void editorObj::implObj::window_focus_change(IN_THREAD_ONLY, bool flag)
+void editorObj::implObj::window_focus_change(ONLY IN_THREAD, bool flag)
 {
 	blink_if_has_focus(IN_THREAD);
 	superclass_t::window_focus_change(IN_THREAD, flag);
 }
 
-void editorObj::implObj::blink_if_has_focus(IN_THREAD_ONLY)
+void editorObj::implObj::blink_if_has_focus(ONLY IN_THREAD)
 {
 	if (current_keyboard_focus(IN_THREAD))
 	{
@@ -471,7 +471,7 @@ void editorObj::implObj::blink_if_has_focus(IN_THREAD_ONLY)
 	}
 }
 
-void editorObj::implObj::schedule_blink(IN_THREAD_ONLY)
+void editorObj::implObj::schedule_blink(ONLY IN_THREAD)
 {
 	blinking=get_screen()->impl->thread->schedule_callback
 		(IN_THREAD,
@@ -479,7 +479,7 @@ void editorObj::implObj::schedule_blink(IN_THREAD_ONLY)
 		 // Don't create a lambda that owns a strong ref to me.
 		 // Use a weak pointer.
 		 [me=make_weak_capture(ref<implObj>(this))]
-		 (IN_THREAD_ONLY)
+		 (ONLY IN_THREAD)
 		 {
 			 auto got=me.get();
 
@@ -492,24 +492,24 @@ void editorObj::implObj::schedule_blink(IN_THREAD_ONLY)
 		 });
 }
 
-void editorObj::implObj::unblink(IN_THREAD_ONLY)
+void editorObj::implObj::unblink(ONLY IN_THREAD)
 {
 	unblink(IN_THREAD, cursor);
 }
 
-void editorObj::implObj::unblink(IN_THREAD_ONLY,
+void editorObj::implObj::unblink(ONLY IN_THREAD,
 				  const richtextiterator &cursor)
 {
 	if (blinkon)
 		blink(IN_THREAD, cursor);
 }
 
-void editorObj::implObj::blink(IN_THREAD_ONLY)
+void editorObj::implObj::blink(ONLY IN_THREAD)
 {
 	blink(IN_THREAD, cursor);
 }
 
-void editorObj::implObj::blink(IN_THREAD_ONLY,
+void editorObj::implObj::blink(ONLY IN_THREAD,
 			       const richtextiterator &cursor)
 {
 	selection_cursor_t::lock cursor_lock{IN_THREAD, *this, true};
@@ -546,7 +546,7 @@ void editorObj::implObj::blink(IN_THREAD_ONLY,
 				 {current_position});
 }
 
-bool editorObj::implObj::process_key_event(IN_THREAD_ONLY, const key_event &ke)
+bool editorObj::implObj::process_key_event(ONLY IN_THREAD, const key_event &ke)
 {
 	// Hide the pointer by installing the invisible pointer, here.
 
@@ -577,7 +577,7 @@ bool editorObj::implObj::process_key_event(IN_THREAD_ONLY, const key_event &ke)
 	return superclass_t::process_key_event(IN_THREAD, ke);
 }
 
-bool editorObj::implObj::process_keypress(IN_THREAD_ONLY, const key_event &ke)
+bool editorObj::implObj::process_keypress(ONLY IN_THREAD, const key_event &ke)
 {
 	if (ke.ctrl)
 	{
@@ -722,7 +722,7 @@ bool editorObj::implObj::process_keypress(IN_THREAD_ONLY, const key_event &ke)
 	return false;
 }
 
-void editorObj::implObj::remove_content(IN_THREAD_ONLY,
+void editorObj::implObj::remove_content(ONLY IN_THREAD,
 					const richtextiterator &other)
 {
 	if (password_char == 0)
@@ -743,7 +743,7 @@ void editorObj::implObj::remove_content(IN_THREAD_ONLY,
 	real_string.erase(a, b-a);
 }
 
-void editorObj::implObj::insert_content(IN_THREAD_ONLY,
+void editorObj::implObj::insert_content(ONLY IN_THREAD,
 					const std::u32string_view &str)
 {
 	if (password_char == 0)
@@ -764,7 +764,7 @@ void editorObj::implObj::insert_content(IN_THREAD_ONLY,
 			 // Don't create a lambda that owns a strong ref to me.
 			 // Use a weak pointer.
 			 [me=make_weak_capture(ref(this))]
-			 (IN_THREAD_ONLY)
+			 (ONLY IN_THREAD)
 			 {
 				 auto got=me.get();
 
@@ -784,7 +784,7 @@ void editorObj::implObj::insert_content(IN_THREAD_ONLY,
 	real_string.insert(p, str);
 }
 
-void editorObj::implObj::clear_password_peek(IN_THREAD_ONLY)
+void editorObj::implObj::clear_password_peek(ONLY IN_THREAD)
 {
 	if (!password_peeking)
 		return;
@@ -831,7 +831,7 @@ bool editorObj::implObj::uses_input_method()
 	return true;
 }
 
-bool editorObj::implObj::pasted(IN_THREAD_ONLY,
+bool editorObj::implObj::pasted(ONLY IN_THREAD,
 				const std::u32string_view &str)
 {
 	insert(IN_THREAD, str);
@@ -839,7 +839,7 @@ bool editorObj::implObj::pasted(IN_THREAD_ONLY,
 	return true;
 }
 
-void editorObj::implObj::insert(IN_THREAD_ONLY,
+void editorObj::implObj::insert(ONLY IN_THREAD,
 				const std::u32string_view &str)
 {
 	if (str.empty())
@@ -865,7 +865,7 @@ void editorObj::implObj::insert(IN_THREAD_ONLY,
 	blink(IN_THREAD);
 }
 
-void editorObj::implObj::enablability_changed(IN_THREAD_ONLY)
+void editorObj::implObj::enablability_changed(ONLY IN_THREAD)
 {
 	set_background_color
 		(IN_THREAD,
@@ -876,7 +876,7 @@ void editorObj::implObj::enablability_changed(IN_THREAD_ONLY)
 		 ::get(IN_THREAD));
 }
 
-void editorObj::implObj::draw_changes(IN_THREAD_ONLY,
+void editorObj::implObj::draw_changes(ONLY IN_THREAD,
 				      selection_cursor_t::lock &cursor_lock,
 				      input_change_type change_made,
 				      size_t deleted,
@@ -916,7 +916,7 @@ void editorObj::implObj::draw_changes(IN_THREAD_ONLY,
 	}
 }
 
-void editorObj::implObj::do_draw(IN_THREAD_ONLY,
+void editorObj::implObj::do_draw(ONLY IN_THREAD,
 				 const draw_info &di,
 				 const rectangle_set &areas)
 {
@@ -930,7 +930,7 @@ void editorObj::implObj::do_draw(IN_THREAD_ONLY,
 			  di, areas);
 }
 
-void editorObj::implObj::draw_between(IN_THREAD_ONLY,
+void editorObj::implObj::draw_between(ONLY IN_THREAD,
 				      const richtextiterator &a,
 				      const richtextiterator &b)
 {
@@ -943,13 +943,13 @@ void editorObj::implObj::draw_between(IN_THREAD_ONLY,
 }
 
 void editorObj::implObj
-::set_focus_and_ensure_visibility(IN_THREAD_ONLY,
+::set_focus_and_ensure_visibility(ONLY IN_THREAD,
 				  const callback_trigger_t &trigger)
 {
 	set_focus_only(IN_THREAD, trigger);
 }
 
-void editorObj::implObj::scroll_cursor_into_view(IN_THREAD_ONLY)
+void editorObj::implObj::scroll_cursor_into_view(ONLY IN_THREAD)
 {
 	auto pos=cursor->at(IN_THREAD).position;
 
@@ -957,7 +957,7 @@ void editorObj::implObj::scroll_cursor_into_view(IN_THREAD_ONLY)
 	report_current_cursor_position(IN_THREAD, pos);
 }
 
-bool editorObj::implObj::process_button_event(IN_THREAD_ONLY,
+bool editorObj::implObj::process_button_event(ONLY IN_THREAD,
 					      const button_event &be,
 					      xcb_timestamp_t timestamp)
 {
@@ -995,7 +995,7 @@ bool editorObj::implObj::process_button_event(IN_THREAD_ONLY,
 	return superclass_t::process_button_event(IN_THREAD, be, timestamp);
 }
 
-void editorObj::implObj::report_motion_event(IN_THREAD_ONLY,
+void editorObj::implObj::report_motion_event(ONLY IN_THREAD,
 					     const motion_event &me)
 {
 	superclass_t::report_motion_event(IN_THREAD, me);
@@ -1019,7 +1019,7 @@ void editorObj::implObj::report_motion_event(IN_THREAD_ONLY,
 	}
 }
 
-void editorObj::implObj::start_scrolling(IN_THREAD_ONLY)
+void editorObj::implObj::start_scrolling(ONLY IN_THREAD)
 {
 	motion_scroll_callback=get_screen()->impl->thread->schedule_callback
 		(IN_THREAD,
@@ -1027,7 +1027,7 @@ void editorObj::implObj::start_scrolling(IN_THREAD_ONLY)
 		 // Don't create a lambda that owns a strong ref to me.
 		 // Use a weak pointer.
 		 [me=make_weak_capture(ref(this))]
-		 (IN_THREAD_ONLY)
+		 (ONLY IN_THREAD)
 		 {
 			 auto got=me.get();
 
@@ -1039,7 +1039,7 @@ void editorObj::implObj::start_scrolling(IN_THREAD_ONLY)
 		 });
 }
 
-void editorObj::implObj::scroll(IN_THREAD_ONLY)
+void editorObj::implObj::scroll(ONLY IN_THREAD)
 {
 	stop_scrolling(IN_THREAD);
 	// In order to scroll_cursor_into_view, that's it.
@@ -1048,13 +1048,13 @@ void editorObj::implObj::scroll(IN_THREAD_ONLY)
 	// again.
 }
 
-void editorObj::implObj::stop_scrolling(IN_THREAD_ONLY)
+void editorObj::implObj::stop_scrolling(ONLY IN_THREAD)
 {
 	motion_scroll_callback=nullptr;
 	scroll_cursor_into_view(IN_THREAD);
 }
 
-void editorObj::implObj::removed(IN_THREAD_ONLY)
+void editorObj::implObj::removed(ONLY IN_THREAD)
 {
 	// When this element is removed from its container, remove all the
 	// selections, too...
@@ -1075,12 +1075,12 @@ selectionObj(xcb_timestamp_t timestamp, const ref<implObj> &me,
 {
 }
 
-bool editorObj::implObj::selectionObj::stillvalid(IN_THREAD_ONLY)
+bool editorObj::implObj::selectionObj::stillvalid(ONLY IN_THREAD)
 {
 	return valid_flag(IN_THREAD);
 }
 
-void editorObj::implObj::selectionObj::clear(IN_THREAD_ONLY)
+void editorObj::implObj::selectionObj::clear(ONLY IN_THREAD)
 {
 	auto p=me.getptr();
 
@@ -1099,7 +1099,7 @@ void editorObj::implObj::selectionObj::clear(IN_THREAD_ONLY)
 }
 
 std::vector<xcb_atom_t> editorObj::implObj::selectionObj
-::supported(IN_THREAD_ONLY)
+::supported(ONLY IN_THREAD)
 {
 	std::vector<xcb_atom_t> v;
 
@@ -1119,7 +1119,7 @@ std::vector<xcb_atom_t> editorObj::implObj::selectionObj
 // Somebody is asking for our selection.
 
 ptr<current_selectionObj::convertedValueObj> editorObj::implObj::selectionObj
-::convert(IN_THREAD_ONLY, xcb_atom_t type)
+::convert(ONLY IN_THREAD, xcb_atom_t type)
 {
 	const char *charset=nullptr;
 
@@ -1155,7 +1155,7 @@ ptr<current_selectionObj::convertedValueObj> editorObj::implObj::selectionObj
 		::create(type, 8, bytes);
 }
 
-editorObj::implObj::delete_selection_info::delete_selection_info(IN_THREAD_ONLY,
+editorObj::implObj::delete_selection_info::delete_selection_info(ONLY IN_THREAD,
 								 implObj &me)
 	: me{me},
 	  cursor_lock{IN_THREAD, me},
@@ -1174,7 +1174,7 @@ editorObj::implObj::delete_selection_info::delete_selection_info(IN_THREAD_ONLY,
 	n=p2-p1;
 }
 
-void editorObj::implObj::delete_selection_info::do_delete(IN_THREAD_ONLY)
+void editorObj::implObj::delete_selection_info::do_delete(ONLY IN_THREAD)
 {
 	if (!cursor_lock.cursor)
 		return;
@@ -1185,7 +1185,7 @@ void editorObj::implObj::delete_selection_info::do_delete(IN_THREAD_ONLY)
 }
 
 editorObj::implObj::selection
-editorObj::implObj::create_selection(IN_THREAD_ONLY)
+editorObj::implObj::create_selection(ONLY IN_THREAD)
 {
 	selection_cursor_t::lock cursor_lock{IN_THREAD, *this};
 
@@ -1195,7 +1195,7 @@ editorObj::implObj::create_selection(IN_THREAD_ONLY)
 				 cursor_lock.cursor);
 }
 
-void editorObj::implObj::create_primary_selection(IN_THREAD_ONLY)
+void editorObj::implObj::create_primary_selection(ONLY IN_THREAD)
 {
 	if (!config.update_clipboards)
 		return;
@@ -1216,7 +1216,7 @@ void editorObj::implObj::create_primary_selection(IN_THREAD_ONLY)
 	get_window_handler().selection_announce(IN_THREAD, XCB_ATOM_PRIMARY, s);
 }
 
-void editorObj::implObj::create_secondary_selection(IN_THREAD_ONLY)
+void editorObj::implObj::create_secondary_selection(ONLY IN_THREAD)
 {
 	if (!config.update_clipboards)
 		return;
@@ -1238,7 +1238,7 @@ void editorObj::implObj::create_secondary_selection(IN_THREAD_ONLY)
 						s);
 }
 
-void editorObj::implObj::remove_primary_selection(IN_THREAD_ONLY)
+void editorObj::implObj::remove_primary_selection(ONLY IN_THREAD)
 {
 	if (!config.update_clipboards)
 		return;
@@ -1252,7 +1252,7 @@ void editorObj::implObj::remove_primary_selection(IN_THREAD_ONLY)
 	get_window_handler().selection_discard(IN_THREAD, XCB_ATOM_PRIMARY);
 }
 
-void editorObj::implObj::remove_secondary_selection(IN_THREAD_ONLY)
+void editorObj::implObj::remove_secondary_selection(ONLY IN_THREAD)
 {
 	if (!config.update_clipboards)
 		return;
@@ -1266,7 +1266,7 @@ void editorObj::implObj::remove_secondary_selection(IN_THREAD_ONLY)
 	get_window_handler().selection_discard(IN_THREAD, XCB_ATOM_SECONDARY);
 }
 
-bool editorObj::implObj::to_begin(IN_THREAD_ONLY, const input_mask &mask)
+bool editorObj::implObj::to_begin(ONLY IN_THREAD, const input_mask &mask)
 {
 	bool moved;
 	{
@@ -1277,7 +1277,7 @@ bool editorObj::implObj::to_begin(IN_THREAD_ONLY, const input_mask &mask)
 	return moved;
 }
 
-bool editorObj::implObj::to_end(IN_THREAD_ONLY, const input_mask &mask)
+bool editorObj::implObj::to_end(ONLY IN_THREAD, const input_mask &mask)
 {
 	bool moved;
 
@@ -1289,7 +1289,7 @@ bool editorObj::implObj::to_end(IN_THREAD_ONLY, const input_mask &mask)
 	return moved;
 }
 
-void editorObj::implObj::select_all(IN_THREAD_ONLY)
+void editorObj::implObj::select_all(ONLY IN_THREAD)
 {
 	input_mask mask;
 
@@ -1300,7 +1300,7 @@ void editorObj::implObj::select_all(IN_THREAD_ONLY)
 	to_end(IN_THREAD, mask);
 }
 
-size_t editorObj::implObj::delete_char_or_selection(IN_THREAD_ONLY,
+size_t editorObj::implObj::delete_char_or_selection(ONLY IN_THREAD,
 						  const input_mask &mask)
 {
 	delete_selection_info del_info{IN_THREAD, *this};
@@ -1362,7 +1362,7 @@ editorObj::implObj::pos(selection_cursor_t::const_lock &cursor_lock)
 	return {p, p2};
 }
 
-void editorObj::implObj::set(IN_THREAD_ONLY, const std::u32string &string)
+void editorObj::implObj::set(ONLY IN_THREAD, const std::u32string &string)
 {
 	set(IN_THREAD, string, string.size(), string.size());
 
@@ -1373,7 +1373,7 @@ void editorObj::implObj::set(IN_THREAD_ONLY, const std::u32string &string)
 	validation_required=false;
 }
 
-void editorObj::implObj::set(IN_THREAD_ONLY, const std::u32string &string,
+void editorObj::implObj::set(ONLY IN_THREAD, const std::u32string &string,
 			     size_t cursor_pos, size_t selection_pos)
 {
 	size_t s=string.size();
@@ -1419,14 +1419,14 @@ void editorObj::implObj::set(IN_THREAD_ONLY, const std::u32string &string,
 		     input_change_type::set, deleted, string.size());
 }
 
-bool editorObj::implObj::ok_to_lose_focus(IN_THREAD_ONLY,
+bool editorObj::implObj::ok_to_lose_focus(ONLY IN_THREAD,
 					  const callback_trigger_t &trigger)
 {
 	return validate_modified(IN_THREAD, trigger);
 }
 
 
-bool editorObj::implObj::validate_modified(IN_THREAD_ONLY,
+bool editorObj::implObj::validate_modified(ONLY IN_THREAD,
 					   const callback_trigger_t &trigger)
 {
 	if (!data(IN_THREAD).inherited_visibility)

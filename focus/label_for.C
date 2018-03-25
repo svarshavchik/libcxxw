@@ -17,7 +17,7 @@ label_forObj::label_forObj(const ref<elementObj::implObj> &label,
 
 label_forObj::~label_forObj()=default;
 
-void label_forObj::do_with_link(IN_THREAD_ONLY,
+void label_forObj::do_with_link(ONLY IN_THREAD,
 				const function<with_link_t> &callback)
 {
 	auto l=label(IN_THREAD).getptr();

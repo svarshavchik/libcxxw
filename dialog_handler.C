@@ -8,7 +8,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-dialogObj::handlerObj::handlerObj(IN_THREAD_ONLY,
+dialogObj::handlerObj::handlerObj(ONLY IN_THREAD,
 				  const ref<generic_windowObj
 				  ::handlerObj> &parent_handler,
 				  const color_arg &background_color,
@@ -35,7 +35,7 @@ bool dialogObj::handlerObj::handle_our_own_placement()
 }
 
 void dialogObj::handlerObj
-::set_inherited_visibility(IN_THREAD_ONLY,
+::set_inherited_visibility(ONLY IN_THREAD,
 			   inherited_visibility_info &visibility_info)
 {
 	if (visibility_info.flag && modal)
@@ -48,7 +48,7 @@ void dialogObj::handlerObj
 		acquired_busy_mcguffin(IN_THREAD)=nullptr;
 }
 
-void dialogObj::handlerObj::set_inherited_visibility_mapped(IN_THREAD_ONLY)
+void dialogObj::handlerObj::set_inherited_visibility_mapped(ONLY IN_THREAD)
 {
 	if (handle_our_own_placement())
 	{
@@ -117,7 +117,7 @@ void dialogObj::handlerObj::set_inherited_visibility_mapped(IN_THREAD_ONLY)
 	superclass_t::set_inherited_visibility_mapped(IN_THREAD);
 }
 
-xcb_size_hints_t dialogObj::handlerObj::compute_size_hints(IN_THREAD_ONLY)
+xcb_size_hints_t dialogObj::handlerObj::compute_size_hints(ONLY IN_THREAD)
 {
 	auto hints=superclass_t::compute_size_hints(IN_THREAD);
 
@@ -127,7 +127,7 @@ xcb_size_hints_t dialogObj::handlerObj::compute_size_hints(IN_THREAD_ONLY)
 	return hints;
 }
 
-std::string dialogObj::handlerObj::default_wm_class_resource(IN_THREAD_ONLY)
+std::string dialogObj::handlerObj::default_wm_class_resource(ONLY IN_THREAD)
 {
 	if (parent_handler->wm_class_resource(IN_THREAD).empty())
 		return parent_handler->default_wm_class_resource(IN_THREAD);

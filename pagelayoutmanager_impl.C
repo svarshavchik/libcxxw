@@ -112,7 +112,7 @@ void pagelayoutmanagerObj::implObj
 }
 
 void pagelayoutmanagerObj::implObj
-::do_for_each_child(IN_THREAD_ONLY,
+::do_for_each_child(ONLY IN_THREAD,
 		    const function<void(const element &)> &callback)
 {
 	page_layout_info_t::lock lock{info};
@@ -126,7 +126,7 @@ layoutmanager pagelayoutmanagerObj::implObj::create_public_object()
 	return pagelayoutmanager::create(ref(this));
 }
 
-void pagelayoutmanagerObj::implObj::recalculate(IN_THREAD_ONLY)
+void pagelayoutmanagerObj::implObj::recalculate(ONLY IN_THREAD)
 {
 	process_updated_position(IN_THREAD,
 				 container_impl->container_element_impl()
@@ -134,7 +134,7 @@ void pagelayoutmanagerObj::implObj::recalculate(IN_THREAD_ONLY)
 }
 
 void pagelayoutmanagerObj::implObj
-::process_updated_position(IN_THREAD_ONLY,
+::process_updated_position(ONLY IN_THREAD,
 			   const rectangle &position)
 {
 	page_layout_info_t::lock lock{info};

@@ -28,12 +28,12 @@ class LIBCXX_HIDDEN popup_attachedto_handlerObj : public popupObj::handlerObj {
 	//! Signature for an opened_popup report.
 
 	typedef ref<obj> (shared_handler_dataObj::*opened_popup_t)
-		(IN_THREAD_ONLY, const ref<popupObj::handlerObj> &);
+		(ONLY IN_THREAD, const ref<popupObj::handlerObj> &);
 
 	//! Signature for an closed_popup report.
 
 	typedef void (shared_handler_dataObj::*closed_popup_t)
-		(IN_THREAD_ONLY, const popupObj::handlerObj &);
+		(ONLY IN_THREAD, const popupObj::handlerObj &);
  private:
 	//! Which shared_handler_dataObj method we report our visibility to.
 
@@ -61,12 +61,12 @@ class LIBCXX_HIDDEN popup_attachedto_handlerObj : public popupObj::handlerObj {
 
 	//! Report the updated position of the element we are attached to.
 
-	void update_attachedto_element_position(IN_THREAD_ONLY,
+	void update_attachedto_element_position(ONLY IN_THREAD,
 						const rectangle &new_position);
 
 	//! Implement recalculate_popup_position().
 
-	popup_position_affinity recalculate_popup_position(IN_THREAD_ONLY,
+	popup_position_affinity recalculate_popup_position(ONLY IN_THREAD,
 							   rectangle &r,
 							   dim_t screen_width,
 							   dim_t screen_height)
@@ -74,10 +74,10 @@ class LIBCXX_HIDDEN popup_attachedto_handlerObj : public popupObj::handlerObj {
 
  private:
 	//! Implement get_opened_mcguffin().
-	ref<obj> get_opened_mcguffin(IN_THREAD_ONLY) override;
+	ref<obj> get_opened_mcguffin(ONLY IN_THREAD) override;
 
 	//! Implement released_opened_mcguffin().
-	void released_opened_mcguffin(IN_THREAD_ONLY) override;
+	void released_opened_mcguffin(ONLY IN_THREAD) override;
 };
 
 //! Arguments to \ref popup_attachedto_handler "attached popup handler"'s constructor.

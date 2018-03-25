@@ -43,7 +43,7 @@ peepholed_toplevel_listcontainer_elementObj<element_impl>
 
 template<typename element_impl>
 void peepholed_toplevel_listcontainer_elementObj<element_impl>
-::recalculate_peepholed_metrics(IN_THREAD_ONLY, const screen &s)
+::recalculate_peepholed_metrics(ONLY IN_THREAD, const screen &s)
 {
 	max_width_value=attachedto_info->max_peephole_width(IN_THREAD, s);
 	max_height_value=attachedto_info->max_peephole_height(IN_THREAD, s);
@@ -62,7 +62,7 @@ void peepholed_toplevel_listcontainer_elementObj<element_impl>
 
 template<typename element_impl>
 dim_t peepholed_toplevel_listcontainer_elementObj<element_impl>
-::max_width(IN_THREAD_ONLY) const
+::max_width(ONLY IN_THREAD) const
 {
 	return max_width_value;
 }
@@ -71,7 +71,7 @@ dim_t peepholed_toplevel_listcontainer_elementObj<element_impl>
 
 template<typename element_impl>
 dim_t peepholed_toplevel_listcontainer_elementObj<element_impl>
-::max_height(IN_THREAD_ONLY) const
+::max_height(ONLY IN_THREAD) const
 {
 	return max_height_value;
 }
@@ -80,7 +80,7 @@ dim_t peepholed_toplevel_listcontainer_elementObj<element_impl>
 
 template<typename element_impl>
 dim_t peepholed_toplevel_listcontainer_elementObj<element_impl>
-::horizontal_increment(IN_THREAD_ONLY) const
+::horizontal_increment(ONLY IN_THREAD) const
 {
 	return horizontal_increment_value;
 }
@@ -89,7 +89,7 @@ dim_t peepholed_toplevel_listcontainer_elementObj<element_impl>
 
 template<typename element_impl>
 dim_t peepholed_toplevel_listcontainer_elementObj<element_impl>
-::vertical_increment(IN_THREAD_ONLY) const
+::vertical_increment(ONLY IN_THREAD) const
 {
 	return toplevel_listcontainer_impl->tallest_row_height(IN_THREAD);
 }

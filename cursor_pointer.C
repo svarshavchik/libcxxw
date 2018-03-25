@@ -42,7 +42,7 @@ cursor_pointerObj::~cursor_pointerObj()
 	xcb_free_cursor(conn()->conn, cursor_id());
 }
 
-cursor_pointer cursor_pointerObj::initialize(IN_THREAD_ONLY)
+cursor_pointer cursor_pointerObj::initialize(ONLY IN_THREAD)
 {
 	return cursor_pointer_icon->image->impl->screenref->impl
 		->cursor_pointercaches
@@ -50,7 +50,7 @@ cursor_pointer cursor_pointerObj::initialize(IN_THREAD_ONLY)
 					->initialize(IN_THREAD));
 }
 
-cursor_pointer cursor_pointerObj::theme_updated(IN_THREAD_ONLY,
+cursor_pointer cursor_pointerObj::theme_updated(ONLY IN_THREAD,
 						const defaulttheme &new_theme)
 {
 	return cursor_pointer_icon->image->impl->screenref->impl

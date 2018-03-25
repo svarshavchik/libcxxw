@@ -105,7 +105,7 @@ class LIBCXX_HIDDEN grid_elementObj
 	~grid_elementObj();
 
 	//! Initialize this grid element in the connection thread.
-	void initialize(IN_THREAD_ONLY);
+	void initialize(ONLY IN_THREAD);
 
 	//! The element
 	const element grid_element;
@@ -131,7 +131,7 @@ class LIBCXX_HIDDEN grid_elementObj
 
 	//! Return true if the element is visible, or if its space is reserved.
 
-	bool takes_up_space(IN_THREAD_ONLY) const;
+	bool takes_up_space(ONLY IN_THREAD) const;
 };
 
 LIBCXXW_NAMESPACE_END

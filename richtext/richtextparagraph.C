@@ -21,7 +21,7 @@ richtextparagraphObj::~richtextparagraphObj()
 	fragments.paragraph_destroyed();
 }
 
-bool richtextparagraphObj::rewrap(IN_THREAD_ONLY,
+bool richtextparagraphObj::rewrap(ONLY IN_THREAD,
 				  paragraph_list &my_paragraphs,
 				  dim_t width)
 {
@@ -48,7 +48,7 @@ bool richtextparagraphObj::rewrap(IN_THREAD_ONLY,
 	return changed;
 }
 
-bool richtextparagraphObj::unwrap(IN_THREAD_ONLY,
+bool richtextparagraphObj::unwrap(ONLY IN_THREAD,
 				  paragraph_list &my_paragraphs)
 {
 	fragment_list my_fragments(IN_THREAD, my_paragraphs, *this);
@@ -69,7 +69,7 @@ bool richtextparagraphObj::unwrap(IN_THREAD_ONLY,
 	return flag;
 }
 
-void richtextparagraphObj::rewrap_fragment(IN_THREAD_ONLY,
+void richtextparagraphObj::rewrap_fragment(ONLY IN_THREAD,
 					   fragment_list &my_fragments,
 					   dim_t width,
 					   size_t fragment_n,

@@ -135,13 +135,13 @@ class LIBCXX_HIDDEN border_implObj: virtual public obj, public border_info {
 	};
 
 	//! Draw a horizontal border
-	void draw_horizontal(IN_THREAD_ONLY,
+	void draw_horizontal(ONLY IN_THREAD,
 			     //! Information needed to draw the border
 			     const draw_info &di) const;
 
 	//! Draw a horizontal border
 
-	void draw_horizontal(IN_THREAD_ONLY,
+	void draw_horizontal(ONLY IN_THREAD,
 			     //! Information needed to draw the border
 			     const draw_info &di,
 
@@ -156,7 +156,7 @@ class LIBCXX_HIDDEN border_implObj: virtual public obj, public border_info {
  private:
 	//! Draw a horizontal border
 
-	void draw_horizontal(IN_THREAD_ONLY,
+	void draw_horizontal(ONLY IN_THREAD,
 			     //! Information needed to draw the border
 			     const draw_info &di,
 
@@ -174,7 +174,7 @@ class LIBCXX_HIDDEN border_implObj: virtual public obj, public border_info {
  public:
 	//! Draw a vertical border
 
-	void draw_vertical(IN_THREAD_ONLY,
+	void draw_vertical(ONLY IN_THREAD,
 
 			   //! Information needed to draw the border
 			   const draw_info &di,
@@ -188,7 +188,7 @@ class LIBCXX_HIDDEN border_implObj: virtual public obj, public border_info {
  private:
 	//! Draw a vertical border
 
-	void draw_vertical(IN_THREAD_ONLY,
+	void draw_vertical(ONLY IN_THREAD,
 
 			   //! Information needed to draw the border
 			   const draw_info &di,
@@ -210,7 +210,7 @@ class LIBCXX_HIDDEN border_implObj: virtual public obj, public border_info {
 	//! draw_horizontal or draw_vertical prepared a mask for compositing
 	//! color #n into area_picture, so we do it here.
 
-	void composite_line(IN_THREAD_ONLY,
+	void composite_line(ONLY IN_THREAD,
 			    const draw_info &di, size_t n) const;
 
  public:
@@ -231,7 +231,7 @@ class LIBCXX_HIDDEN border_implObj: virtual public obj, public border_info {
 	//! indicate a centered rectangle in area_pictures that's
 	//! exactly calculated_border_width/height in size.
 
-	void draw_corner(IN_THREAD_ONLY,
+	void draw_corner(ONLY IN_THREAD,
 
 			 //! Information needed to draw the border
 			 const draw_info &di,
@@ -249,7 +249,7 @@ class LIBCXX_HIDDEN border_implObj: virtual public obj, public border_info {
 	//! When a border does not join through a corner, the border is
 	//! simply a stub to the center of the border area.
 
-	void draw_stubs(IN_THREAD_ONLY,
+	void draw_stubs(ONLY IN_THREAD,
 			//! Information needed to draw the border
 			const draw_info &di,
 
@@ -259,33 +259,33 @@ class LIBCXX_HIDDEN border_implObj: virtual public obj, public border_info {
  private:
 
 	//! Draw a top-left corner.
-	void draw_cornertl(IN_THREAD_ONLY,
+	void draw_cornertl(ONLY IN_THREAD,
 			   const corner_draw_info &di,
 			   const surrounding_elements_info &elements) const;
 
 	//! Draw a top-right corner.
-	void draw_cornertr(IN_THREAD_ONLY,
+	void draw_cornertr(ONLY IN_THREAD,
 			   const corner_draw_info &di,
 			   const surrounding_elements_info &elements) const;
 
 	//! Draw a bottom-left corner.
-	void draw_cornerbl(IN_THREAD_ONLY,
+	void draw_cornerbl(ONLY IN_THREAD,
 			   const corner_draw_info &di,
 			   const surrounding_elements_info &elements) const;
 
 	//! Draw a bottom-right corner.
-	void draw_cornerbr(IN_THREAD_ONLY,
+	void draw_cornerbr(ONLY IN_THREAD,
 			   const corner_draw_info &di,
 			   const surrounding_elements_info &elements) const;
 
 	//! When there's no radius, all the corners are just plain squares.
-	void draw_square_corner(IN_THREAD_ONLY,
+	void draw_square_corner(ONLY IN_THREAD,
 				const draw_info &di,
 				coord_t x,
 				coord_t y) const;
 
 	//! There's both a horizontal and a vertical radius to be drawn.
-	void draw_round_corner(IN_THREAD_ONLY,
+	void draw_round_corner(ONLY IN_THREAD,
 			       const draw_info &di,
 			       coord_t x,
 			       coord_t y,

@@ -17,7 +17,7 @@ LIBCXXW_NAMESPACE_START
 
 editor_peephole_implObj::~editor_peephole_implObj()=default;
 
-void editor_peephole_implObj::recalculate(IN_THREAD_ONLY,
+void editor_peephole_implObj::recalculate(ONLY IN_THREAD,
 					  editorObj::implObj &e)
 {
 	dim_t height=e.nominal_height(IN_THREAD);
@@ -35,7 +35,7 @@ void editor_peephole_implObj::recalculate(IN_THREAD_ONLY,
 		 {height, height, height});
 }
 
-bool editor_peephole_implObj::process_button_event(IN_THREAD_ONLY,
+bool editor_peephole_implObj::process_button_event(ONLY IN_THREAD,
 						   const button_event &be,
 						   xcb_timestamp_t
 						   timestamp)
@@ -51,7 +51,7 @@ bool editor_peephole_implObj::process_button_event(IN_THREAD_ONLY,
 	return true;
 }
 
-void editor_peephole_implObj::report_motion_event(IN_THREAD_ONLY,
+void editor_peephole_implObj::report_motion_event(ONLY IN_THREAD,
 						  const motion_event &me)
 {
 	// If we're hiding the pointer, remove it.

@@ -30,7 +30,7 @@ always_visible_elementObj<element_impl>
 
 template<typename element_impl>
 void always_visible_elementObj<element_impl>
-::request_visibility(IN_THREAD_ONLY, bool flag)
+::request_visibility(ONLY IN_THREAD, bool flag)
 {
 }
 

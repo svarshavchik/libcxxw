@@ -20,7 +20,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-popupObj::handlerObj::handlerObj(IN_THREAD_ONLY,
+popupObj::handlerObj::handlerObj(ONLY IN_THREAD,
 				 const ref<generic_windowObj::handlerObj>
 				 &parent,
 				 const color_arg &background_color,
@@ -48,17 +48,17 @@ main_windowptr popupObj::handlerObj::get_main_window()
 	return p;
 }
 
-void popupObj::handlerObj::frame_extents_updated(IN_THREAD_ONLY)
+void popupObj::handlerObj::frame_extents_updated(ONLY IN_THREAD)
 {
 	set_popup_position(IN_THREAD);
 }
 
-void popupObj::handlerObj::horizvert_updated(IN_THREAD_ONLY)
+void popupObj::handlerObj::horizvert_updated(ONLY IN_THREAD)
 {
 	set_popup_position(IN_THREAD);
 }
 
-void popupObj::handlerObj::theme_updated(IN_THREAD_ONLY,
+void popupObj::handlerObj::theme_updated(ONLY IN_THREAD,
 					 const defaulttheme &new_theme)
 {
 	generic_windowObj::handlerObj::theme_updated(IN_THREAD, new_theme);
@@ -66,7 +66,7 @@ void popupObj::handlerObj::theme_updated(IN_THREAD_ONLY,
 	set_popup_position(IN_THREAD);
 }
 
-void popupObj::handlerObj::set_popup_position(IN_THREAD_ONLY)
+void popupObj::handlerObj::set_popup_position(ONLY IN_THREAD)
 {
 	auto hv=get_horizvert(IN_THREAD);
 
@@ -149,19 +149,19 @@ void popupObj::handlerObj::set_popup_position(IN_THREAD_ONLY)
 	generic_windowObj::handlerObj::process_configure_notify(IN_THREAD, r);
 }
 
-void popupObj::handlerObj::process_configure_notify(IN_THREAD_ONLY,
+void popupObj::handlerObj::process_configure_notify(ONLY IN_THREAD,
 						    const rectangle &)
 {
 	// Ignoring the ConfigureNotify event, see?
 }
 
-void popupObj::handlerObj::configure_notify_received(IN_THREAD_ONLY,
+void popupObj::handlerObj::configure_notify_received(ONLY IN_THREAD,
 						     const rectangle &)
 {
 	// Ignoring the ConfigureNotify event, see?
 }
 
-void popupObj::handlerObj::do_button_event(IN_THREAD_ONLY,
+void popupObj::handlerObj::do_button_event(ONLY IN_THREAD,
 					   const xcb_button_release_event_t *event,
 					   const button_event &be,
 					   const motion_event &me)
@@ -180,7 +180,7 @@ void popupObj::handlerObj::do_button_event(IN_THREAD_ONLY,
 						       me);
 }
 
-void popupObj::handlerObj::set_inherited_visibility(IN_THREAD_ONLY,
+void popupObj::handlerObj::set_inherited_visibility(ONLY IN_THREAD,
 						    inherited_visibility_info
 						    &visibility_info)
 {
@@ -203,7 +203,7 @@ void popupObj::handlerObj::set_inherited_visibility(IN_THREAD_ONLY,
 	}
 }
 
-std::string popupObj::handlerObj::default_wm_class_resource(IN_THREAD_ONLY)
+std::string popupObj::handlerObj::default_wm_class_resource(ONLY IN_THREAD)
 {
 	auto p=popup_parent.getptr();
 
@@ -220,7 +220,7 @@ std::string popupObj::handlerObj::default_wm_class_resource(IN_THREAD_ONLY)
 }
 
 ptr<generic_windowObj::handlerObj>
-popupObj::handlerObj::get_popup_parent(IN_THREAD_ONLY)
+popupObj::handlerObj::get_popup_parent(ONLY IN_THREAD)
 {
 	auto p=popup_parent.getptr();
 
@@ -230,7 +230,7 @@ popupObj::handlerObj::get_popup_parent(IN_THREAD_ONLY)
 	return p;
 }
 
-grabbed_pointerptr popupObj::handlerObj::grab_pointer(IN_THREAD_ONLY,
+grabbed_pointerptr popupObj::handlerObj::grab_pointer(ONLY IN_THREAD,
 						      const elementimplptr &i)
 {
 	auto p=get_popup_parent(IN_THREAD);
@@ -241,7 +241,7 @@ grabbed_pointerptr popupObj::handlerObj::grab_pointer(IN_THREAD_ONLY,
 	return p->grab_pointer(IN_THREAD, i);
 }
 
-void popupObj::handlerObj::popup_opened(IN_THREAD_ONLY)
+void popupObj::handlerObj::popup_opened(ONLY IN_THREAD)
 {
 	auto p=get_popup_parent(IN_THREAD);
 
@@ -259,14 +259,14 @@ void popupObj::handlerObj::popup_opened(IN_THREAD_ONLY)
 	}
 }
 
-void popupObj::handlerObj::closing_popup(IN_THREAD_ONLY)
+void popupObj::handlerObj::closing_popup(ONLY IN_THREAD)
 {
 	ungrab(IN_THREAD);
 	current_grab=NULL;
 }
 
 
-bool popupObj::handlerObj::keep_passive_grab(IN_THREAD_ONLY)
+bool popupObj::handlerObj::keep_passive_grab(ONLY IN_THREAD)
 {
 	auto p=popup_parent.getptr();
 
@@ -276,7 +276,7 @@ bool popupObj::handlerObj::keep_passive_grab(IN_THREAD_ONLY)
 	return generic_windowObj::handlerObj::keep_passive_grab(IN_THREAD);
 }
 
-void popupObj::handlerObj::ungrab(IN_THREAD_ONLY)
+void popupObj::handlerObj::ungrab(ONLY IN_THREAD)
 {
 	auto p=popup_parent.getptr();
 
@@ -290,7 +290,7 @@ void popupObj::handlerObj::ungrab(IN_THREAD_ONLY)
 }
 
 bool popupObj::handlerObj
-::process_key_event(IN_THREAD_ONLY, const key_event &ke)
+::process_key_event(ONLY IN_THREAD, const key_event &ke)
 {
 	if (generic_windowObj::handlerObj::process_key_event(IN_THREAD, ke))
 		return true;
@@ -304,7 +304,7 @@ bool popupObj::handlerObj
 }
 
 void popupObj::handlerObj
-::inherited_visibility_updated(IN_THREAD_ONLY,
+::inherited_visibility_updated(ONLY IN_THREAD,
 			       inherited_visibility_info &info)
 {
 	generic_windowObj::handlerObj::inherited_visibility_updated(IN_THREAD,

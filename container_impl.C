@@ -55,7 +55,7 @@ void containerObj::implObj::uninstall_layoutmanager()
 	*lock=ptr<layoutmanagerObj::implObj>();
 }
 
-void containerObj::implObj::removed_from_container(IN_THREAD_ONLY)
+void containerObj::implObj::removed_from_container(ONLY IN_THREAD)
 {
 	const auto &logger=elementObj::implObj::logger;
 
@@ -72,7 +72,7 @@ void containerObj::implObj::removed_from_container(IN_THREAD_ONLY)
 	uninstall_layoutmanager();
 }
 
-void containerObj::implObj::do_for_each_child(IN_THREAD_ONLY,
+void containerObj::implObj::do_for_each_child(ONLY IN_THREAD,
 					      const function<void (const element &e)> &f)
 {
 	invoke_layoutmanager([&]
@@ -107,7 +107,7 @@ void containerObj::implObj::do_for_each_child(IN_THREAD_ONLY,
 // into a rectangle_set. The layout manager, when it calls this as a result
 // of the element's background color change, simply rides the coat-tails.
 
-void container_clear_padding(IN_THREAD_ONLY,
+void container_clear_padding(ONLY IN_THREAD,
 			     elementObj::implObj &container_element_impl,
 			     layoutmanagerObj::implObj &manager,
 			     const elementimpl &e_impl,
@@ -138,14 +138,14 @@ void container_clear_padding(IN_THREAD_ONLY,
 		.clear_to_color(IN_THREAD, clip, di, child_di, padding);
 }
 
-void containerObj::implObj::do_draw(IN_THREAD_ONLY)
+void containerObj::implObj::do_draw(ONLY IN_THREAD)
 {
 	const auto &di=container_element_impl().get_draw_info(IN_THREAD);
 
 	do_draw(IN_THREAD, di, di.entire_area());
 }
 
-void containerObj::implObj::do_draw(IN_THREAD_ONLY,
+void containerObj::implObj::do_draw(ONLY IN_THREAD,
 				    const draw_info &di,
 				    const rectangle_set &areas)
 {
@@ -192,7 +192,7 @@ void containerObj::implObj::do_draw(IN_THREAD_ONLY,
 
 
 void containerObj::implObj
-::child_background_color_changed(IN_THREAD_ONLY, const elementimpl &child)
+::child_background_color_changed(ONLY IN_THREAD, const elementimpl &child)
 {
 	invoke_layoutmanager
 		([&]
@@ -204,7 +204,7 @@ void containerObj::implObj
 }
 
 void containerObj::implObj
-::requested_child_visibility_updated(IN_THREAD_ONLY,
+::requested_child_visibility_updated(ONLY IN_THREAD,
 				     const elementimpl &child,
 				     bool flag)
 {
@@ -218,7 +218,7 @@ void containerObj::implObj
 }
 
 void containerObj::implObj
-::inherited_child_visibility_updated(IN_THREAD_ONLY,
+::inherited_child_visibility_updated(ONLY IN_THREAD,
 				     const elementimpl &child,
 				     inherited_visibility_info &info)
 {
@@ -232,7 +232,7 @@ void containerObj::implObj
 }
 
 void containerObj::implObj
-::inherited_visibility_updated_before(IN_THREAD_ONLY,
+::inherited_visibility_updated_before(ONLY IN_THREAD,
 				      inherited_visibility_info &info)
 {
 	// When the container gets hidden, the child elements are hidden
@@ -244,7 +244,7 @@ void containerObj::implObj
 }
 
 void containerObj::implObj
-::inherited_visibility_updated_after(IN_THREAD_ONLY,
+::inherited_visibility_updated_after(ONLY IN_THREAD,
 				     inherited_visibility_info &info)
 {
 	invoke_layoutmanager
@@ -267,7 +267,7 @@ void containerObj::implObj
 // inherited_visibility_updated().
 
 void containerObj::implObj
-::propagate_inherited_visibility(IN_THREAD_ONLY,
+::propagate_inherited_visibility(ONLY IN_THREAD,
 				 inherited_visibility_info &info)
 {
 	for_each_child(IN_THREAD,
@@ -284,14 +284,14 @@ void containerObj::implObj
 
 // If this container was shown, propagate this event to children.
 
-void containerObj::implObj::draw_after_visibility_updated(IN_THREAD_ONLY,
+void containerObj::implObj::draw_after_visibility_updated(ONLY IN_THREAD,
 							  bool flag)
 {
 	draw_child_elements_after_visibility_updated(IN_THREAD, flag);
 }
 
 void containerObj::implObj
-::draw_child_elements_after_visibility_updated(IN_THREAD_ONLY, bool flag)
+::draw_child_elements_after_visibility_updated(ONLY IN_THREAD, bool flag)
 {
 	if (!flag)
 		return;
@@ -316,7 +316,7 @@ void containerObj::implObj
 }
 
 
-void containerObj::implObj::process_updated_position(IN_THREAD_ONLY)
+void containerObj::implObj::process_updated_position(ONLY IN_THREAD)
 {
 	invoke_layoutmanager
 		([&]
@@ -329,7 +329,7 @@ void containerObj::implObj::process_updated_position(IN_THREAD_ONLY)
 		 });
 }
 
-void containerObj::implObj::request_child_visibility_recursive(IN_THREAD_ONLY,
+void containerObj::implObj::request_child_visibility_recursive(ONLY IN_THREAD,
 							       bool flag)
 {
 	invoke_layoutmanager
@@ -340,7 +340,7 @@ void containerObj::implObj::request_child_visibility_recursive(IN_THREAD_ONLY,
 		 });
 }
 
-void containerObj::implObj::request_visibility_recursive(IN_THREAD_ONLY,
+void containerObj::implObj::request_visibility_recursive(ONLY IN_THREAD,
 							 bool flag)
 {
 	request_child_visibility_recursive(IN_THREAD, flag);
@@ -351,7 +351,7 @@ void containerObj::implObj::request_visibility_recursive(IN_THREAD_ONLY,
 }
 
 #if 0
-void containerObj::implObj::child_visibility_updated(IN_THREAD_ONLY,
+void containerObj::implObj::child_visibility_updated(ONLY IN_THREAD,
 						     bool flag)
 {
 	needs_recalculation(IN_THREAD);
@@ -360,7 +360,7 @@ void containerObj::implObj::child_visibility_updated(IN_THREAD_ONLY,
 #endif
 
 void containerObj::implObj
-::tell_layout_manager_it_needs_recalculation(IN_THREAD_ONLY)
+::tell_layout_manager_it_needs_recalculation(ONLY IN_THREAD)
 {
 	invoke_layoutmanager
 		([&]
@@ -370,14 +370,14 @@ void containerObj::implObj
 		 });
 }
 
-void containerObj::implObj::needs_recalculation(IN_THREAD_ONLY)
+void containerObj::implObj::needs_recalculation(ONLY IN_THREAD)
 {
 	(*IN_THREAD->containers_2_recalculate(IN_THREAD))
 		[container_element_impl().nesting_level]
 		.insert(ref<implObj>(this));
 }
 
-void containerObj::implObj::initialize(IN_THREAD_ONLY)
+void containerObj::implObj::initialize(ONLY IN_THREAD)
 {
 	invoke_layoutmanager([&](const auto &manager)
 			     {
@@ -385,7 +385,7 @@ void containerObj::implObj::initialize(IN_THREAD_ONLY)
 			     });
 }
 
-void containerObj::implObj::theme_updated(IN_THREAD_ONLY,
+void containerObj::implObj::theme_updated(ONLY IN_THREAD,
 					  const defaulttheme &new_theme)
 {
 	invoke_layoutmanager([&](const auto &manager)
@@ -395,7 +395,7 @@ void containerObj::implObj::theme_updated(IN_THREAD_ONLY,
 			     });
 }
 
-void containerObj::implObj::ensure_visibility(IN_THREAD_ONLY,
+void containerObj::implObj::ensure_visibility(ONLY IN_THREAD,
 					      elementObj::implObj &e,
 					      const rectangle &r)
 {
@@ -412,7 +412,7 @@ void containerObj::implObj::ensure_visibility(IN_THREAD_ONLY,
 }
 
 void containerObj::implObj
-::ensured_visibility_of_child_element(IN_THREAD_ONLY,
+::ensured_visibility_of_child_element(ONLY IN_THREAD,
 				      elementObj::implObj &e,
 				      const rectangle &r)
 {

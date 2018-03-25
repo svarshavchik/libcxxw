@@ -34,13 +34,13 @@ pane_slider_focusframeObj
 pane_slider_focusframeObj::~pane_slider_focusframeObj()=default;
 
 // Update the cursor pointer.
-void pane_slider_focusframeObj::initialize(IN_THREAD_ONLY)
+void pane_slider_focusframeObj::initialize(ONLY IN_THREAD)
 {
 	superclass_t::initialize(IN_THREAD);
 	set_cursor_pointer(IN_THREAD, tagged_cursor_pointer(IN_THREAD));
 }
 
-void pane_slider_focusframeObj::theme_updated(IN_THREAD_ONLY,
+void pane_slider_focusframeObj::theme_updated(ONLY IN_THREAD,
 					      const defaulttheme &new_theme)
 {
 	superclass_t::theme_updated(IN_THREAD, new_theme);
@@ -49,7 +49,7 @@ void pane_slider_focusframeObj::theme_updated(IN_THREAD_ONLY,
 
 // Button 1 starts the sliding process.
 
-bool pane_slider_focusframeObj::process_button_event(IN_THREAD_ONLY,
+bool pane_slider_focusframeObj::process_button_event(ONLY IN_THREAD,
 						     const button_event &be,
 						     xcb_timestamp_t timestamp)
 {
@@ -85,7 +85,7 @@ bool pane_slider_focusframeObj::process_button_event(IN_THREAD_ONLY,
 	return flag;
 }
 
-void pane_slider_focusframeObj::pointer_focus(IN_THREAD_ONLY,
+void pane_slider_focusframeObj::pointer_focus(ONLY IN_THREAD,
 					      const callback_trigger_t &trigger)
 {
 	if (!current_pointer_focus(IN_THREAD))
@@ -94,7 +94,7 @@ void pane_slider_focusframeObj::pointer_focus(IN_THREAD_ONLY,
 
 // Keyboard-based sliding.
 
-bool pane_slider_focusframeObj::process_key_event(IN_THREAD_ONLY,
+bool pane_slider_focusframeObj::process_key_event(ONLY IN_THREAD,
 						  const key_event &ke)
 {
 	switch (ke.keysym) {
@@ -129,7 +129,7 @@ bool pane_slider_focusframeObj::process_key_event(IN_THREAD_ONLY,
 
 // Motion events while sliding adjust the relative sizes of the panes.
 
-void pane_slider_focusframeObj::report_motion_event(IN_THREAD_ONLY,
+void pane_slider_focusframeObj::report_motion_event(ONLY IN_THREAD,
 						    const motion_event &me)
 {
 	superclass_t::report_motion_event(IN_THREAD, me);

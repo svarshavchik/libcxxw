@@ -52,7 +52,7 @@ elementObj::implObj &label_elementObj<element_impl>::get_label_element_impl()
 }
 
 template<typename element_impl>
-void label_elementObj<element_impl>::initialize(IN_THREAD_ONLY)
+void label_elementObj<element_impl>::initialize(ONLY IN_THREAD)
 {
 	element_impl::initialize(IN_THREAD);
 	textlabelObj::implObj::initialize(IN_THREAD);
@@ -61,7 +61,7 @@ void label_elementObj<element_impl>::initialize(IN_THREAD_ONLY)
 
 template<typename element_impl>
 void label_elementObj<element_impl>
-::theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme)
+::theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme)
 {
 	textlabelObj::implObj::theme_updated(IN_THREAD, new_theme);
 	element_impl::theme_updated(IN_THREAD, new_theme);
@@ -69,14 +69,14 @@ void label_elementObj<element_impl>
 
 template<typename element_impl>
 void label_elementObj<element_impl>
-::do_draw(IN_THREAD_ONLY, const draw_info &di, const rectangle_set &areas)
+::do_draw(ONLY IN_THREAD, const draw_info &di, const rectangle_set &areas)
 {
 	textlabelObj::implObj::do_draw(IN_THREAD, di, areas);
 }
 
 template<typename element_impl>
 void label_elementObj<element_impl>
-::process_updated_position(IN_THREAD_ONLY)
+::process_updated_position(ONLY IN_THREAD)
 {
 	element_impl::process_updated_position(IN_THREAD);
 	textlabelObj::implObj::process_updated_position(IN_THREAD);
@@ -84,7 +84,7 @@ void label_elementObj<element_impl>
 
 template<typename element_impl>
 void label_elementObj<element_impl>
-::update_current_position(IN_THREAD_ONLY,
+::update_current_position(ONLY IN_THREAD,
 			  const rectangle &r)
 {
 	element_impl::update_current_position(IN_THREAD, r);
@@ -93,7 +93,7 @@ void label_elementObj<element_impl>
 
 template<typename element_impl>
 bool label_elementObj<element_impl>
-::process_button_event(IN_THREAD_ONLY,
+::process_button_event(ONLY IN_THREAD,
 		       const button_event &be,
 		       xcb_timestamp_t timestamp)
 {
@@ -105,7 +105,7 @@ bool label_elementObj<element_impl>
 
 template<typename element_impl>
 bool label_elementObj<element_impl>
-::process_key_event(IN_THREAD_ONLY, const key_event &ke)
+::process_key_event(ONLY IN_THREAD, const key_event &ke)
 {
 	return textlabelObj::implObj::process_key_event(IN_THREAD, ke)
 		||
@@ -114,7 +114,7 @@ bool label_elementObj<element_impl>
 
 template<typename element_impl>
 void label_elementObj<element_impl>
-::report_motion_event(IN_THREAD_ONLY, const motion_event &me)
+::report_motion_event(ONLY IN_THREAD, const motion_event &me)
 {
 	element_impl::report_motion_event(IN_THREAD, me);
 	textlabelObj::implObj::report_motion_event(IN_THREAD, me);
@@ -122,7 +122,7 @@ void label_elementObj<element_impl>
 
 template<typename element_impl>
 void label_elementObj<element_impl>
-::pointer_focus(IN_THREAD_ONLY,
+::pointer_focus(ONLY IN_THREAD,
 		const callback_trigger_t &trigger)
 {
 	element_impl::pointer_focus(IN_THREAD, trigger);

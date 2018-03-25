@@ -80,21 +80,21 @@ public:
 
 	~peepholed_toplevel_listcontainer_elementObj();
 
-	void recalculate_peepholed_metrics(IN_THREAD_ONLY, const screen &s)
+	void recalculate_peepholed_metrics(ONLY IN_THREAD, const screen &s)
 		override;
 
-	dim_t max_width(IN_THREAD_ONLY) const override;
+	dim_t max_width(ONLY IN_THREAD) const override;
 
-	dim_t max_height(IN_THREAD_ONLY) const override;
+	dim_t max_height(ONLY IN_THREAD) const override;
 
 private:
 	//! Calculated by recalculate_metrics()
 	dim_t horizontal_increment_value;
 
 public:
-	dim_t horizontal_increment(IN_THREAD_ONLY) const override;
+	dim_t horizontal_increment(ONLY IN_THREAD) const override;
 
-	dim_t vertical_increment(IN_THREAD_ONLY) const override;
+	dim_t vertical_increment(ONLY IN_THREAD) const override;
 };
 
 LIBCXXW_NAMESPACE_END

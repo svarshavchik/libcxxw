@@ -29,7 +29,7 @@ focusframelayoutimplObj
 
 focusframelayoutimplObj::~focusframelayoutimplObj()=default;
 
-void focusframelayoutimplObj::rebuild_elements_start(IN_THREAD_ONLY,
+void focusframelayoutimplObj::rebuild_elements_start(ONLY IN_THREAD,
 						     grid_map_t::lock &lock)
 {
 	// Pick the border based on whether my container has input focus.

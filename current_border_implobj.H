@@ -63,13 +63,13 @@ class LIBCXX_HIDDEN current_border_implObj: virtual public obj {
 	//! The element with the border is being initialized by the connection
 	//! thread.
 
-	void initialize(IN_THREAD_ONLY);
+	void initialize(ONLY IN_THREAD);
 
 	//! The current theme has been updated.
 
 	//! Check if the border has changed, and update it.
 
-	void theme_updated(IN_THREAD_ONLY,
+	void theme_updated(ONLY IN_THREAD,
 			   const defaulttheme &new_theme);
 };
 

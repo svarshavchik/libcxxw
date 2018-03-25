@@ -75,7 +75,7 @@ class LIBCXX_HIDDEN connection_threadObj
 
 	//! Run an event received from the X server.
 
-	void run_event(IN_THREAD_ONLY, const xcb_generic_event_t *event);
+	void run_event(ONLY IN_THREAD, const xcb_generic_event_t *event);
 
 	//! Most recent timestamp from the server.
 
@@ -83,7 +83,7 @@ class LIBCXX_HIDDEN connection_threadObj
 	///////////////////////////////////////////////////////////////////
 	//
 	// These objects are constructed on the connection thread's stack,
-	// and are accessible IN_THREAD_ONLY
+	// and are accessible ONLY IN_THREAD
 
 	//! Define a set of elements, ordered by their nesting level.
 
@@ -103,7 +103,7 @@ class LIBCXX_HIDDEN connection_threadObj
 
 	//! Check for a visibility change, and process it.
 
-	bool process_visibility_updated(IN_THREAD_ONLY);
+	bool process_visibility_updated(ONLY IN_THREAD);
 
 	//! Root window on screen 0
 
@@ -117,7 +117,7 @@ class LIBCXX_HIDDEN connection_threadObj
 
 	//! Notify all top level windows about a new theme.
 
-	void theme_updated(IN_THREAD_ONLY);
+	void theme_updated(ONLY IN_THREAD);
 
  private:
 	//! Active window handlers.
@@ -149,13 +149,13 @@ class LIBCXX_HIDDEN connection_threadObj
 	elements_to_redraw_set *elements_to_redraw_thread_only;
 
 	//! Draw elements.
-	bool redraw_elements(IN_THREAD_ONLY);
+	bool redraw_elements(ONLY IN_THREAD);
 
 	//! Which containers need to be recalculated in bulk
 	containers_2_recalculate_map *containers_2_recalculate_thread_only;
 
 	//! Find a container to recalculate
-	bool recalculate_containers(IN_THREAD_ONLY);
+	bool recalculate_containers(ONLY IN_THREAD);
 
 	//! Display elements that need their updated positions processed.
 
@@ -166,7 +166,7 @@ class LIBCXX_HIDDEN connection_threadObj
 	element_set_t *element_position_updated_thread_only;
 
 	//! Process an element's position.
-	bool process_element_position_updated(IN_THREAD_ONLY);
+	bool process_element_position_updated(ONLY IN_THREAD);
 
 	//! tick_clock_t's time_point.
 
@@ -174,7 +174,7 @@ class LIBCXX_HIDDEN connection_threadObj
 
 	//! A regularly-scheduled callback function object.
 
-	typedef functionref<void (IN_THREAD_ONLY)> callback_functional_t;
+	typedef functionref<void (ONLY IN_THREAD)> callback_functional_t;
 
 	//! A container for currently scheduled callbacks.
 
@@ -194,7 +194,7 @@ class LIBCXX_HIDDEN connection_threadObj
 
 	//! idle callbacks are executed last, just before flushing X events.
 
-	typedef std::deque<std::function<void (IN_THREAD_ONLY)>
+	typedef std::deque<std::function<void (ONLY IN_THREAD)>
 			   > idle_callbacks_t;
 
 	//! Pending idle callbacks.
@@ -202,20 +202,20 @@ class LIBCXX_HIDDEN connection_threadObj
 
 	//! Check for any scheduled callbacks, and invoke them.
 
-	bool invoke_scheduled_callbacks(IN_THREAD_ONLY, int &);
+	bool invoke_scheduled_callbacks(ONLY IN_THREAD, int &);
 
 	//! Expire incremental selection updates
 
-	void expire_incremental_updates(IN_THREAD_ONLY, int &);
+	void expire_incremental_updates(ONLY IN_THREAD, int &);
 
 	//! Handle an incremental update.
 
-	void handle_incremental_update(IN_THREAD_ONLY,
+	void handle_incremental_update(ONLY IN_THREAD,
 				       const xcb_property_notify_event_t *);
 
 	//! Look for something in idle_callbacks to run, instead of sleeping.
 
-	bool run_idle(IN_THREAD_ONLY);
+	bool run_idle(ONLY IN_THREAD);
 
 	//! Compute timeout parameter for poll().
 
@@ -234,7 +234,7 @@ class LIBCXX_HIDDEN connection_threadObj
 	//! Also, if we buffered any configure and/or exposure events,
 	//! process them.
 
-	bool release_grabs_and_process_buffered_events(IN_THREAD_ONLY);
+	bool release_grabs_and_process_buffered_events(ONLY IN_THREAD);
 
 	//! on_disconnect() callback
 
@@ -267,7 +267,7 @@ class LIBCXX_HIDDEN connection_threadObj
 	// Invoke run_as() as follows, in order to execute a closure from
 	// the connection thread:
 	//
-	//    run_as([](IN_THREAD_ONLY) { ... });
+	//    run_as([](ONLY IN_THREAD) { ... });
 
 	template<typename T>
 		void run_as(T &&func)
@@ -278,7 +278,7 @@ class LIBCXX_HIDDEN connection_threadObj
 		// for the connection thread to see what it needs to see.
 		std::atomic_thread_fence(std::memory_order_release);
 
-		do_run_as(make_function<void (IN_THREAD_ONLY)>(std::forward<T>
+		do_run_as(make_function<void (ONLY IN_THREAD)>(std::forward<T>
 							       (func)));
 	}
 
@@ -288,7 +288,7 @@ class LIBCXX_HIDDEN connection_threadObj
 	//! lambda to be invoked at the prescribed point in time.
 
 	template<typename lambda, typename timeout_duration>
-		ref<obj> schedule_callback(IN_THREAD_ONLY,
+		ref<obj> schedule_callback(ONLY IN_THREAD,
 					   timeout_duration &&duration,
 					   lambda &&l)
 	{
@@ -303,7 +303,7 @@ class LIBCXX_HIDDEN connection_threadObj
 
 	//! Implement schedule_callback().
 
-	ref<obj> do_schedule_callback(IN_THREAD_ONLY,
+	ref<obj> do_schedule_callback(ONLY IN_THREAD,
 				      const tick_clock_t::duration &timeout,
 				      const callback_functional_t &callback);
 
@@ -342,7 +342,7 @@ class LIBCXX_HIDDEN connection_threadObj
 		sendeventaux(batched_queue,
 			     &connection_threadObj::dispatch_do_run_as,
 			     this,
-			     make_function<void (IN_THREAD_ONLY)>
+			     make_function<void (ONLY IN_THREAD)>
 			     (std::forward<T>(func)));
 	}
 
@@ -357,7 +357,7 @@ class LIBCXX_HIDDEN connection_threadObj
 
 	//! The given handler gets added to window_handlers.
 
-	void install_window_handler(IN_THREAD_ONLY,
+	void install_window_handler(ONLY IN_THREAD,
 				    const ref<window_handlerObj> &handler);
 
 	//! Uninstall a window handler.
@@ -368,7 +368,7 @@ class LIBCXX_HIDDEN connection_threadObj
 	//! The given handler is removed from window_handlers, and its xid_obj
 	//! is moved into destroyed_xids, pending receipt of a destroy notify.
 
-	void uninstall_window_handler(IN_THREAD_ONLY,
+	void uninstall_window_handler(ONLY IN_THREAD,
 				      const ref<window_handlerObj> &handler);
 
  private:
@@ -377,7 +377,7 @@ class LIBCXX_HIDDEN connection_threadObj
 
 	//! We try to buffer up MOTION_EVENTs until they stop coming.
 
-	bool process_buffered_motion_event(IN_THREAD_ONLY);
+	bool process_buffered_motion_event(ONLY IN_THREAD);
 };
 
 #define connection_thread_included

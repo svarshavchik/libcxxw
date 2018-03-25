@@ -38,24 +38,24 @@ public:
 	background_color_element_implObj(const background_color &color);
 
 	//! Set new background color
-	void do_update(IN_THREAD_ONLY,
+	void do_update(ONLY IN_THREAD,
 		       const background_color &new_color,
 		       elementObj::implObj &e);
 
 	// Retrieve the current color.
 
-	const background_color get(IN_THREAD_ONLY);
+	const background_color get(ONLY IN_THREAD);
 
 	//! Update the background color
-	void theme_updated(IN_THREAD_ONLY,
+	void theme_updated(ONLY IN_THREAD,
 			   const defaulttheme &new_theme,
 			   elementObj::implObj &);
 
 	//! Initialize after construction
-	void initialize(IN_THREAD_ONLY);
+	void initialize(ONLY IN_THREAD);
 
 	//! The size of the background color's element.
-	void set_background_color_for_element(IN_THREAD_ONLY,
+	void set_background_color_for_element(ONLY IN_THREAD,
 					      elementObj::implObj &);
 
 	//! The background color was recalculated.
@@ -63,7 +63,7 @@ public:
 	//! Invoked by set_background_color_for_element() and
 	//! theme_updated().
 
-	virtual void background_color_was_recalculated(IN_THREAD_ONLY);
+	virtual void background_color_was_recalculated(ONLY IN_THREAD);
 
 	//! Destructor
 	~background_color_element_implObj();
@@ -86,12 +86,12 @@ class LIBCXX_HIDDEN background_color_element
 	virtual elementObj::implObj &background_color_element_impl()=0;
 
 	//! Call do_update(), then set_background_color_for_element().
-	void update(IN_THREAD_ONLY,
+	void update(ONLY IN_THREAD,
 		    const background_color &new_color);
 
 	//! If the element is visible, invoke do_update().
 
-	void set_background_color_for_element(IN_THREAD_ONLY);
+	void set_background_color_for_element(ONLY IN_THREAD);
 };
 
 //! Attach one background color mixin.
@@ -126,10 +126,10 @@ class LIBCXX_HIDDEN background_color_1elementObj
 	//! Makes sure the background color gets updated properly, in the event
 	//! of the default theme changing after construction.
 
-	void initialize(IN_THREAD_ONLY) override;
+	void initialize(ONLY IN_THREAD) override;
 
 	//! Set new background color
-	void update(IN_THREAD_ONLY,
+	void update(ONLY IN_THREAD,
 		    const background_color &new_color);
 
 	//! Recalculate the background color, after a theme change.
@@ -137,7 +137,7 @@ class LIBCXX_HIDDEN background_color_1elementObj
 	//! If the display element is visible, call
 	//! set_background_color_for_element().
 
-	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme)
+	void theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme)
 		override;
 
 	//! Override process_updated_position.
@@ -145,14 +145,14 @@ class LIBCXX_HIDDEN background_color_1elementObj
 	//! If the display element is visible, call
 	//! set_background_color_for_element().
 
-	void process_updated_position(IN_THREAD_ONLY) override;
+	void process_updated_position(ONLY IN_THREAD) override;
 
 	//! Override invoke_element_state_updates
 
 	//! If becoming visible, call set_background_color_for_element().
 	//! This makes sure we do this work before the display window
 	//! becomes visible.
-	void invoke_element_state_updates(IN_THREAD_ONLY,
+	void invoke_element_state_updates(ONLY IN_THREAD,
 					  element_state::state_update_t)
 		override;
 

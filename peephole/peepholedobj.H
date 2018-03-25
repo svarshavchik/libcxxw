@@ -31,10 +31,10 @@ class LIBCXX_HIDDEN peepholedObj : virtual public obj {
 	virtual element get_peepholed_element()=0;
 
 	//! Return the preferred horizontal increment
-	virtual dim_t horizontal_increment(IN_THREAD_ONLY) const=0;
+	virtual dim_t horizontal_increment(ONLY IN_THREAD) const=0;
 
 	//! Return the preferred vertical increment
-	virtual dim_t vertical_increment(IN_THREAD_ONLY) const=0;
+	virtual dim_t vertical_increment(ONLY IN_THREAD) const=0;
 };
 
 LIBCXXW_NAMESPACE_END

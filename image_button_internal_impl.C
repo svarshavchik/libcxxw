@@ -50,7 +50,7 @@ image_button_internalObj::implObj
 
 image_button_internalObj::implObj::~implObj()=default;
 
-void image_button_internalObj::implObj::set_image_number(IN_THREAD_ONLY,
+void image_button_internalObj::implObj::set_image_number(ONLY IN_THREAD,
 							 const callback_trigger_t &trigger,
 							 size_t next_icon)
 {
@@ -67,7 +67,7 @@ void image_button_internalObj::implObj::set_image_number(IN_THREAD_ONLY,
 		} CATCH_EXCEPTIONS;
 }
 
-void image_button_internalObj::implObj::do_set_image_number(IN_THREAD_ONLY,
+void image_button_internalObj::implObj::do_set_image_number(ONLY IN_THREAD,
 							    size_t next_icon)
 {
 	next_icon %= icon_images(IN_THREAD).size();
@@ -100,7 +100,7 @@ class LIBCXX_HIDDEN checkbox_image_buttonObj :
 
 	//! We do not use hotspot callbacks. Invoke set_image_number();
 
-	void activated(IN_THREAD_ONLY, const callback_trigger_t &trigger)
+	void activated(ONLY IN_THREAD, const callback_trigger_t &trigger)
 		override
 	{
 		set_image_number(IN_THREAD, trigger, get_image_number() ? 0:1);
@@ -146,7 +146,7 @@ class LIBCXX_HIDDEN radio_image_buttonObj :
 	//! activated() calls it, as well as the public object's set_value().
 	//! This way, the same radio button logic gets used for both.
 
-	void set_image_number(IN_THREAD_ONLY,
+	void set_image_number(ONLY IN_THREAD,
 			      const callback_trigger_t &trigger,
 			      size_t) override;
 };
@@ -164,7 +164,7 @@ create_radio_impl(const radio_group &group,
 	return r;
 }
 
-void radio_image_buttonObj::set_image_number(IN_THREAD_ONLY,
+void radio_image_buttonObj::set_image_number(ONLY IN_THREAD,
 					     const callback_trigger_t &trigger,
 					     size_t n)
 {

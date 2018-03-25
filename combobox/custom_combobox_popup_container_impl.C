@@ -27,14 +27,14 @@ const char *custom_combobox_popup_containerObj::implObj::label_theme_font()
 }
 
 void custom_combobox_popup_containerObj::implObj
-::horizvert_updated(IN_THREAD_ONLY)
+::horizvert_updated(ONLY IN_THREAD)
 {
 	superclass_t::horizvert_updated(IN_THREAD);
 	update_current_selection_metrics(IN_THREAD);
 }
 
 bool custom_combobox_popup_containerObj::implObj
-::update_tallest_row_height(IN_THREAD_ONLY,
+::update_tallest_row_height(ONLY IN_THREAD,
 			    dim_t new_tallest_height)
 {
 	auto flag=superclass_t::update_tallest_row_height(IN_THREAD,
@@ -47,7 +47,7 @@ bool custom_combobox_popup_containerObj::implObj
 }
 
 void custom_combobox_popup_containerObj::implObj
-::update_current_selection_metrics(IN_THREAD_ONLY)
+::update_current_selection_metrics(ONLY IN_THREAD)
 {
 	auto e=current_combobox_selection_element(IN_THREAD).getptr();
 
@@ -64,7 +64,7 @@ void custom_combobox_popup_containerObj::implObj
 {
 	e->impl->THREAD->run_as
 		([me=ref<implObj>(this), e]
-		 (IN_THREAD_ONLY)
+		 (ONLY IN_THREAD)
 		 {
 			 me->current_combobox_selection_element(IN_THREAD)=e;
 

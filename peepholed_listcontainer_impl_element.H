@@ -41,7 +41,7 @@ peepholed_listcontainer_impl_element_baseObj<element_impl>
 
 template<typename element_impl>
 void peepholed_listcontainer_impl_element_baseObj<element_impl>
-::initialize(IN_THREAD_ONLY)
+::initialize(ONLY IN_THREAD)
 {
 	element_impl::initialize(IN_THREAD);
 	peepholed_listcontainerObj::implObj::initialize(IN_THREAD);
@@ -54,7 +54,7 @@ void peepholed_listcontainer_impl_element_baseObj<element_impl>
 
 template<typename element_impl>
 void peepholed_listcontainer_impl_element_baseObj<element_impl>
-::horizvert_updated(IN_THREAD_ONLY)
+::horizvert_updated(ONLY IN_THREAD)
 {
 	element_impl::horizvert_updated(IN_THREAD);
 	peepholed_listcontainerObj::implObj::horizvert_updated(IN_THREAD);
@@ -67,7 +67,7 @@ void peepholed_listcontainer_impl_element_baseObj<element_impl>
 
 template<typename element_impl>
 void peepholed_listcontainer_impl_element_baseObj<element_impl>
-::theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme)
+::theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme)
 {
 	element_impl::theme_updated(IN_THREAD, new_theme);
 	peepholed_listcontainerObj::implObj::theme_updated(IN_THREAD,
@@ -150,7 +150,7 @@ const child_elementObj &peepholed_listcontainer_impl_elementObj<element_impl>
 
 template<typename element_impl>
 metrics::axis peepholed_listcontainer_impl_elementObj<element_impl>
-::get_height_metrics(IN_THREAD_ONLY) const
+::get_height_metrics(ONLY IN_THREAD) const
 {
 	return this->get_height_axis(IN_THREAD);
 }

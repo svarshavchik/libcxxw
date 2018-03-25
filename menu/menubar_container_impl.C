@@ -20,7 +20,7 @@ menubar_container_implObj
 
 menubar_container_implObj::~menubar_container_implObj()=default;
 
-void menubar_container_implObj::fix_order(IN_THREAD_ONLY,
+void menubar_container_implObj::fix_order(ONLY IN_THREAD,
 					  const menu &new_element)
 {
 	invoke_layoutmanager([&]

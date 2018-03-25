@@ -449,7 +449,7 @@ void connectionObj::set_theme(const std::string &identifier,
 
 		impl->thread->run_as
 			([impl=this->impl, config]
-			 (IN_THREAD_ONLY)
+			 (ONLY IN_THREAD)
 			 {
 				 update_themes(impl->screens, config);
 				 IN_THREAD->theme_updated(IN_THREAD);

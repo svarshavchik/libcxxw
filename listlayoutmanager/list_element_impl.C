@@ -64,7 +64,7 @@ list_lock::~list_lock()=default;
 // recalculate().
 
 list_elementObj::implObj::textlist_info_lock
-::textlist_info_lock(IN_THREAD_ONLY, implObj &me)
+::textlist_info_lock(ONLY IN_THREAD, implObj &me)
 	: listimpl_info_t::lock{me.textlist_info},
 	was_modified{ listimpl_info_t::lock::operator->()
 			->row_infos.modified}
@@ -116,7 +116,7 @@ class LIBCXX_HIDDEN list_element_synchronized_columnsObj
 
  public:
 
-	void updated(IN_THREAD_ONLY,
+	void updated(ONLY IN_THREAD,
 		     const std::vector<metrics::derivedaxis> &v) override
 	{
 		auto &e=parent_container->container_element_impl();
@@ -226,7 +226,7 @@ list_elementObj::implObj::implObj(const ref<list_container_implObj>
 
 list_elementObj::implObj::~implObj()=default;
 
-void list_elementObj::implObj::removed_from_container(IN_THREAD_ONLY)
+void list_elementObj::implObj::removed_from_container(ONLY IN_THREAD)
 {
 	superclass_t::removed_from_container(IN_THREAD);
 
@@ -542,7 +542,7 @@ void list_elementObj::implObj
 
 // Note this is also implements update_current_position().
 
-void list_elementObj::implObj::recalculate(IN_THREAD_ONLY)
+void list_elementObj::implObj::recalculate(ONLY IN_THREAD)
 {
 	textlist_info_lock lock{IN_THREAD, *this};
 
@@ -570,7 +570,7 @@ void list_elementObj::implObj::recalculate(IN_THREAD_ONLY)
 }
 
 void list_elementObj::implObj
-::calculate_column_widths(IN_THREAD_ONLY,
+::calculate_column_widths(ONLY IN_THREAD,
 			  listimpl_info_t::lock &lock)
 {
 	lock->calculated_column_widths.clear();
@@ -588,7 +588,7 @@ void list_elementObj::implObj
 	}
 }
 
-void list_elementObj::implObj::initialize(IN_THREAD_ONLY)
+void list_elementObj::implObj::initialize(ONLY IN_THREAD)
 {
 	superclass_t::initialize(IN_THREAD);
 
@@ -598,7 +598,7 @@ void list_elementObj::implObj::initialize(IN_THREAD_ONLY)
 	request_visibility(IN_THREAD, true);
 }
 
-void list_elementObj::implObj::theme_updated(IN_THREAD_ONLY,
+void list_elementObj::implObj::theme_updated(ONLY IN_THREAD,
 					     const defaulttheme &new_theme)
 {
 	superclass_t::theme_updated(IN_THREAD, new_theme);
@@ -610,7 +610,7 @@ void list_elementObj::implObj::theme_updated(IN_THREAD_ONLY,
 	recalculate_with_new_theme(IN_THREAD, lock);
 }
 
-void list_elementObj::implObj::recalculate_with_new_theme(IN_THREAD_ONLY,
+void list_elementObj::implObj::recalculate_with_new_theme(ONLY IN_THREAD,
 							  listimpl_info_t::lock
 							  &lock)
 {
@@ -627,7 +627,7 @@ void list_elementObj::implObj::recalculate_with_new_theme(IN_THREAD_ONLY,
 	recalculate(IN_THREAD, lock);
 }
 
-void list_elementObj::implObj::recalculate(IN_THREAD_ONLY,
+void list_elementObj::implObj::recalculate(ONLY IN_THREAD,
 					   listimpl_info_t::lock &lock)
 {
 	size_t n=lock->row_infos.size();
@@ -739,7 +739,7 @@ void list_elementObj::implObj::recalculate(IN_THREAD_ONLY,
 }
 
 dim_t list_elementObj::implObj
-::calculate_column_poswidths(IN_THREAD_ONLY,
+::calculate_column_poswidths(ONLY IN_THREAD,
 			     listimpl_info_t::lock &lock)
 {
 	// our_column_width is calculate_column_widths plus paddings.
@@ -922,27 +922,27 @@ dim_t list_elementObj::implObj
 	return final_width;
 }
 
-void list_elementObj::implObj::process_updated_position(IN_THREAD_ONLY)
+void list_elementObj::implObj::process_updated_position(ONLY IN_THREAD)
 {
 	recalculate(IN_THREAD);
 	superclass_t::process_updated_position(IN_THREAD);
 }
 
-void list_elementObj::implObj::do_draw(IN_THREAD_ONLY,
+void list_elementObj::implObj::do_draw(ONLY IN_THREAD,
 				       const draw_info &di,
 				       const rectangle_set &areas)
 {
 	do_draw(IN_THREAD, di, areas, false);
 }
 
-void list_elementObj::implObj::redraw_needed_rows(IN_THREAD_ONLY)
+void list_elementObj::implObj::redraw_needed_rows(ONLY IN_THREAD)
 {
 	const auto &di=get_draw_info(IN_THREAD);
 
 	do_draw(IN_THREAD, di, di.entire_area(), true);
 }
 
-void list_elementObj::implObj::do_draw(IN_THREAD_ONLY,
+void list_elementObj::implObj::do_draw(ONLY IN_THREAD,
 				       const draw_info &di,
 				       const rectangle_set &areas,
 				       bool only_whats_needed)
@@ -1018,14 +1018,14 @@ void list_elementObj::implObj::do_draw(IN_THREAD_ONLY,
 	superclass_t::do_draw(IN_THREAD, di, subtract(areas, drawn));
 }
 
-void list_elementObj::implObj::redraw_rows(IN_THREAD_ONLY,
+void list_elementObj::implObj::redraw_rows(ONLY IN_THREAD,
 				       listimpl_info_t::lock &lock,
 				       size_t row_number1)
 {
 	redraw_rows(IN_THREAD, lock, row_number1, row_number1, false);
 }
 
-void list_elementObj::implObj::redraw_rows(IN_THREAD_ONLY,
+void list_elementObj::implObj::redraw_rows(ONLY IN_THREAD,
 					   listimpl_info_t::lock &lock,
 					   size_t row_number1,
 					   size_t row_number2,
@@ -1043,7 +1043,7 @@ void list_elementObj::implObj::redraw_rows(IN_THREAD_ONLY,
 }
 
 
-rectangle list_elementObj::implObj::do_draw_row(IN_THREAD_ONLY,
+rectangle list_elementObj::implObj::do_draw_row(ONLY IN_THREAD,
 						const draw_info &di,
 						richtext_draw_boundaries &bounds,
 						listimpl_info_t::lock &lock,
@@ -1144,7 +1144,7 @@ rectangle list_elementObj::implObj::do_draw_row(IN_THREAD_ONLY,
 }
 
 rectangle list_elementObj::implObj
-::do_draw_row(IN_THREAD_ONLY,
+::do_draw_row(ONLY IN_THREAD,
 	      const draw_info &di,
 	      richtext_draw_boundaries &bounds,
 	      listimpl_info_t::lock &lock,
@@ -1199,7 +1199,7 @@ rectangle list_elementObj::implObj
 }
 
 
-void list_elementObj::implObj::report_motion_event(IN_THREAD_ONLY,
+void list_elementObj::implObj::report_motion_event(ONLY IN_THREAD,
 						   const motion_event &me)
 {
 	superclass_t::report_motion_event(IN_THREAD, me);
@@ -1240,7 +1240,7 @@ void list_elementObj::implObj::report_motion_event(IN_THREAD_ONLY,
 		unset_current_element(IN_THREAD, lock);
 }
 
-bool list_elementObj::implObj::process_key_event(IN_THREAD_ONLY,
+bool list_elementObj::implObj::process_key_event(ONLY IN_THREAD,
 						 const key_event &ke)
 {
 	textlist_info_lock lock{IN_THREAD, *this};
@@ -1251,7 +1251,7 @@ bool list_elementObj::implObj::process_key_event(IN_THREAD_ONLY,
 	return superclass_t::process_key_event(IN_THREAD, ke);
 }
 
-bool list_elementObj::implObj::process_key_event(IN_THREAD_ONLY,
+bool list_elementObj::implObj::process_key_event(ONLY IN_THREAD,
 						 const key_event &ke,
 						 listimpl_info_t::lock &lock)
 {
@@ -1426,7 +1426,7 @@ list_elementObj::implObj::move_down_by(listimpl_info_t::lock &lock,
 	return move_to;
 }
 
-bool list_elementObj::implObj::process_button_event(IN_THREAD_ONLY,
+bool list_elementObj::implObj::process_button_event(ONLY IN_THREAD,
 						    const button_event &be,
 						    xcb_timestamp_t timestamp)
 {
@@ -1458,7 +1458,7 @@ bool list_elementObj::implObj::process_button_event(IN_THREAD_ONLY,
 	return flag;
 }
 
-void list_elementObj::implObj::pointer_focus(IN_THREAD_ONLY,
+void list_elementObj::implObj::pointer_focus(ONLY IN_THREAD,
 					     const callback_trigger_t &trigger)
 {
 	superclass_t::pointer_focus(IN_THREAD, trigger);
@@ -1472,7 +1472,7 @@ void list_elementObj::implObj::pointer_focus(IN_THREAD_ONLY,
 	}
 }
 
-void list_elementObj::implObj::keyboard_focus(IN_THREAD_ONLY,
+void list_elementObj::implObj::keyboard_focus(ONLY IN_THREAD,
 					      const callback_trigger_t &trigger)
 {
 	superclass_t::keyboard_focus(IN_THREAD, trigger);
@@ -1486,7 +1486,7 @@ void list_elementObj::implObj::keyboard_focus(IN_THREAD_ONLY,
 	}
 }
 
-void list_elementObj::implObj::unset_current_element(IN_THREAD_ONLY,
+void list_elementObj::implObj::unset_current_element(ONLY IN_THREAD,
 						     listimpl_info_t::lock &lock)
 {
 	if (!current_element(lock))
@@ -1501,7 +1501,7 @@ void list_elementObj::implObj::unset_current_element(IN_THREAD_ONLY,
 }
 
 void list_elementObj::implObj
-::set_current_element(IN_THREAD_ONLY,
+::set_current_element(ONLY IN_THREAD,
 		      listimpl_info_t::lock &lock,
 		      size_t row_number,
 		      bool make_sure_row_is_visible)
@@ -1520,7 +1520,7 @@ void list_elementObj::implObj
 		    make_sure_row_is_visible);
 }
 
-void list_elementObj::implObj::click(IN_THREAD_ONLY,
+void list_elementObj::implObj::click(ONLY IN_THREAD,
 				     listimpl_info_t::lock &lock,
 				     const callback_trigger_t &trigger)
 {
@@ -1586,7 +1586,7 @@ void list_elementObj::implObj
 		this->THREAD->run_as
 			([e=ref(this),
 			  extra=row.extra]
-			 (IN_THREAD_ONLY)
+			 (ONLY IN_THREAD)
 			 {
 				 textlist_info_lock lock{IN_THREAD, *e};
 
@@ -1635,7 +1635,7 @@ void list_elementObj::implObj
 
 	this->THREAD->run_as
 		([e=ref(this)]
-		 (IN_THREAD_ONLY)
+		 (ONLY IN_THREAD)
 		 {
 			 e->get_window_handler().handler_data
 				 ->close_all_menu_popups(IN_THREAD);
@@ -1747,7 +1747,7 @@ void list_elementObj::implObj::schedule_row_redraw(listimpl_info_t::lock &lock)
 	lock->row_redraw_needed=true;
 
 	THREAD->run_as([me=ref(this)]
-		       (IN_THREAD_ONLY)
+		       (ONLY IN_THREAD)
 		       {
 			       me->redraw_needed_rows(IN_THREAD);
 		       });
@@ -1845,7 +1845,7 @@ bool list_elementObj::implObj::unselect(const listlayoutmanager &lm,
 }
 
 std::chrono::milliseconds list_elementObj::implObj
-::hover_action_delay(IN_THREAD_ONLY)
+::hover_action_delay(ONLY IN_THREAD)
 {
 	textlist_info_lock lock{IN_THREAD, *this};
 
@@ -1860,7 +1860,7 @@ std::chrono::milliseconds list_elementObj::implObj
 	return std::chrono::milliseconds{0};
 }
 
-void list_elementObj::implObj::hover_action(IN_THREAD_ONLY)
+void list_elementObj::implObj::hover_action(ONLY IN_THREAD)
 {
 	textlist_info_lock lock{IN_THREAD, *this};
 

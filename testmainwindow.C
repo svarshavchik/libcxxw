@@ -140,7 +140,7 @@ static void foobar()
 			{						\
 				IN_THREAD->run_as(\
 						  [me=ref<implObj>(this)] \
-						  (IN_THREAD_ONLY) {	\
+						  (ONLY IN_THREAD) {	\
 							  me->child_metrics_updated(IN_THREAD);	\
 						  });			\
 			}						\
@@ -148,7 +148,7 @@ static void foobar()
 			{						\
 				IN_THREAD->run_as(\
 						  [me=ref<implObj>(this)] \
-						  (IN_THREAD_ONLY) {	\
+						  (ONLY IN_THREAD) {	\
 							  grid_map_t::lock \
 								  lock(me->grid_map); \
 							  (*lock)->elements_have_been_modified(); \

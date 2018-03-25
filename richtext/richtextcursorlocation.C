@@ -64,13 +64,13 @@ void richtextcursorlocationObj::deinitialize()
 	my_fragment=nullptr;
 }
 
-dim_t richtextcursorlocationObj::get_horiz_pos(IN_THREAD_ONLY)
+dim_t richtextcursorlocationObj::get_horiz_pos(ONLY IN_THREAD)
 {
 	cache_horiz_pos(IN_THREAD);
 	return dim_t::truncate(position.cached_horiz_pos);
 }
 
-void richtextcursorlocationObj::cache_horiz_pos(IN_THREAD_ONLY)
+void richtextcursorlocationObj::cache_horiz_pos(ONLY IN_THREAD)
 {
 	assert_or_throw(my_fragment, "Internal error in cache_horiz_pos(): my_fragment is not initialized");
 
@@ -87,7 +87,7 @@ void richtextcursorlocationObj::cache_horiz_pos(IN_THREAD_ONLY)
 	new_targeted_horiz_pos(IN_THREAD);
 }
 
-void richtextcursorlocationObj::new_targeted_horiz_pos(IN_THREAD_ONLY)
+void richtextcursorlocationObj::new_targeted_horiz_pos(ONLY IN_THREAD)
 {
 	assert_or_throw(my_fragment, "Internal error in new_targeted_horiz_pos(): my_fragment is not initialized");
 
@@ -96,14 +96,14 @@ void richtextcursorlocationObj::new_targeted_horiz_pos(IN_THREAD_ONLY)
 					(get_offset())/2);
 }
 
-dim_squared_t richtextcursorlocationObj::get_targeted_horiz_pos(IN_THREAD_ONLY)
+dim_squared_t richtextcursorlocationObj::get_targeted_horiz_pos(ONLY IN_THREAD)
 {
 	cache_horiz_pos(IN_THREAD);
 	return position.targeted_horiz_pos;
 }
 
 void richtextcursorlocationObj
-::set_targeted_horiz_pos(IN_THREAD_ONLY,
+::set_targeted_horiz_pos(ONLY IN_THREAD,
 			 dim_squared_t targeted_horiz_pos)
 {
 	assert_or_throw(my_fragment, "Internal error in set_targeted_horiz_pos(): my_fragment is not initialized");
@@ -130,7 +130,7 @@ void richtextcursorlocationObj
 //
 // If horiz_pos_is_valid, horiz_pos gets updated too.
 
-inline void richtextcursorlocationObj::leftby1(IN_THREAD_ONLY)
+inline void richtextcursorlocationObj::leftby1(ONLY IN_THREAD)
 {
 	// Move by one character.
 
@@ -141,7 +141,7 @@ inline void richtextcursorlocationObj::leftby1(IN_THREAD_ONLY)
 	new_targeted_horiz_pos(IN_THREAD);
 }
 
-inline void richtextcursorlocationObj::rightby1(IN_THREAD_ONLY)
+inline void richtextcursorlocationObj::rightby1(ONLY IN_THREAD)
 {
 	position.cached_horiz_pos=
 		dim_t::truncate
@@ -150,7 +150,7 @@ inline void richtextcursorlocationObj::rightby1(IN_THREAD_ONLY)
 	new_targeted_horiz_pos(IN_THREAD);
 }
 
-void richtextcursorlocationObj::move(IN_THREAD_ONLY, ssize_t howmuch)
+void richtextcursorlocationObj::move(ONLY IN_THREAD, ssize_t howmuch)
 {
 	while (howmuch < 0)
 	{
@@ -324,7 +324,7 @@ void richtextcursorlocationObj::move(IN_THREAD_ONLY, ssize_t howmuch)
 	}
 }
 
-void richtextcursorlocationObj::up(IN_THREAD_ONLY)
+void richtextcursorlocationObj::up(ONLY IN_THREAD)
 {
 	auto targeted_horiz_pos=get_targeted_horiz_pos(IN_THREAD);
 
@@ -336,7 +336,7 @@ void richtextcursorlocationObj::up(IN_THREAD_ONLY)
 	set_targeted_horiz_pos(IN_THREAD, targeted_horiz_pos);
 }
 
-void richtextcursorlocationObj::down(IN_THREAD_ONLY)
+void richtextcursorlocationObj::down(ONLY IN_THREAD)
 {
 	auto targeted_horiz_pos=get_targeted_horiz_pos(IN_THREAD);
 
@@ -348,7 +348,7 @@ void richtextcursorlocationObj::down(IN_THREAD_ONLY)
 	set_targeted_horiz_pos(IN_THREAD, targeted_horiz_pos);
 }
 
-void richtextcursorlocationObj::page_up(IN_THREAD_ONLY, dim_t height)
+void richtextcursorlocationObj::page_up(ONLY IN_THREAD, dim_t height)
 {
 	auto targeted_horiz_pos=get_targeted_horiz_pos(IN_THREAD);
 
@@ -374,7 +374,7 @@ void richtextcursorlocationObj::page_up(IN_THREAD_ONLY, dim_t height)
 	set_targeted_horiz_pos(IN_THREAD, targeted_horiz_pos);
 }
 
-void richtextcursorlocationObj::page_down(IN_THREAD_ONLY, dim_t height)
+void richtextcursorlocationObj::page_down(ONLY IN_THREAD, dim_t height)
 {
 	auto targeted_horiz_pos=get_targeted_horiz_pos(IN_THREAD);
 
@@ -400,7 +400,7 @@ void richtextcursorlocationObj::page_down(IN_THREAD_ONLY, dim_t height)
 	set_targeted_horiz_pos(IN_THREAD, targeted_horiz_pos);
 }
 
-bool richtextcursorlocationObj::moveto(IN_THREAD_ONLY, coord_t x, coord_t y)
+bool richtextcursorlocationObj::moveto(ONLY IN_THREAD, coord_t x, coord_t y)
 {
 	// We expect that the requested x/y coordinates will be near this
 	// existing location; so we just search.
@@ -471,7 +471,7 @@ void richtextcursorlocationObj::end_of_line()
 	horiz_pos_no_longer_valid();
 }
 
-void richtextcursorlocationObj::inserted_at(IN_THREAD_ONLY,
+void richtextcursorlocationObj::inserted_at(ONLY IN_THREAD,
 					    size_t pos,
 					    size_t nchars,
 					    dim_t extra_width)

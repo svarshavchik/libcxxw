@@ -35,7 +35,7 @@ always_visibleObj<element_impl, initially_visible>
 
 template<typename element_impl, bool initially_visible>
 void always_visibleObj<element_impl, initially_visible>
-::request_visibility_recursive(IN_THREAD_ONLY, bool flag)
+::request_visibility_recursive(ONLY IN_THREAD, bool flag)
 {
 	this->request_child_visibility_recursive(IN_THREAD, flag);
 }

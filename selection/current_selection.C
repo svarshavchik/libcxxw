@@ -59,7 +59,7 @@ current_selectionObj::convertedValueObj
 }
 
 ref<current_selectionObj::convertedValueObj>
-current_selectionObj::convertedValueObj::next_chunk(IN_THREAD_ONLY)
+current_selectionObj::convertedValueObj::next_chunk(ONLY IN_THREAD)
 {
 	throw EXCEPTION("Internal error: no incremental selection available");
 }
@@ -85,7 +85,7 @@ current_selectionObj::convertedIncrementalValueObj
 ::~convertedIncrementalValueObj()=default;
 
 ref<current_selectionObj::convertedValueObj>
-current_selectionObj::convertedIncrementalValueObj::next_chunk(IN_THREAD_ONLY)
+current_selectionObj::convertedIncrementalValueObj::next_chunk(ONLY IN_THREAD)
 {
 	auto e=original_value->data->end();
 
@@ -104,7 +104,7 @@ current_selectionObj::convertedIncrementalValueObj::next_chunk(IN_THREAD_ONLY)
 
 ////////////////////////////////////////////////////////////////////////////
 
-void window_handlerObj::selection_clear_event(IN_THREAD_ONLY,
+void window_handlerObj::selection_clear_event(ONLY IN_THREAD,
 					      xcb_atom_t selection_atom,
 					      xcb_timestamp_t timestamp)
 {
@@ -129,7 +129,7 @@ void window_handlerObj::selection_clear_event(IN_THREAD_ONLY,
 	} CATCH_EXCEPTIONS;
 }
 
-void window_handlerObj::selection_announce(IN_THREAD_ONLY,
+void window_handlerObj::selection_announce(ONLY IN_THREAD,
 					   xcb_atom_t selection_atom,
 					   const current_selection &selection)
 {
@@ -159,7 +159,7 @@ void window_handlerObj::selection_announce(IN_THREAD_ONLY,
 		} CATCH_EXCEPTIONS;
 }
 
-void window_handlerObj::selection_discard(IN_THREAD_ONLY,
+void window_handlerObj::selection_discard(ONLY IN_THREAD,
 					  xcb_atom_t selection_atom)
 {
 	LOG_FUNC_SCOPE(selection_log);

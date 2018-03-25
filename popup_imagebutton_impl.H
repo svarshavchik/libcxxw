@@ -56,7 +56,7 @@ class LIBCXX_HIDDEN popup_imagebutton_implObj
 
 	//! Show image 1 when the pointer button is down, else show image 0.
 
-	void temperature_changed(IN_THREAD_ONLY,
+	void temperature_changed(ONLY IN_THREAD,
 				 const callback_trigger_t &trigger) override;
 
 	//! Override activate_on_key()
@@ -69,7 +69,7 @@ class LIBCXX_HIDDEN popup_imagebutton_implObj
 
 	//! Invoke current_position_updated to make sure our metrics are
 	//! right.
-	void initialize(IN_THREAD_ONLY) override;
+	void initialize(ONLY IN_THREAD) override;
 
 	//! Override current_position_updated
 
@@ -77,7 +77,7 @@ class LIBCXX_HIDDEN popup_imagebutton_implObj
 	//! Once resized, we resize the icons and fixate our horizontal
 	//! metrics based on the width of the resized icons.
 
-	void current_position_updated(IN_THREAD_ONLY) override;
+	void current_position_updated(ONLY IN_THREAD) override;
 
 	//! Override update_image_metrics()
 
@@ -85,13 +85,13 @@ class LIBCXX_HIDDEN popup_imagebutton_implObj
 	//! the icon's width. The popup button is vertically resizable, so
 	//! so the vertical metrics are adjustable, and the horizontal metrics
 	//! are fixed to the icon's real width, as usual.
-	void update_image_metrics(IN_THREAD_ONLY) override;
+	void update_image_metrics(ONLY IN_THREAD) override;
 
  private:
 
 	//! Called by initialize() and current_position_updated().
 
-	void resize_button_icons(IN_THREAD_ONLY);
+	void resize_button_icons(ONLY IN_THREAD);
 };
 
 LIBCXXW_NAMESPACE_END

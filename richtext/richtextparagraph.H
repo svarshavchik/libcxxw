@@ -131,14 +131,14 @@ public:
 
 	//! Returns true if this paragraph was reformatted.
 
-	bool rewrap(IN_THREAD_ONLY,
+	bool rewrap(ONLY IN_THREAD,
 		    paragraph_list &my_paragraphs,
 		    dim_t width);
 
 	//! Unwrap the paragraph completely
 
 	//! This is equivalent to rewrap() with the maximum width
-	bool unwrap(IN_THREAD_ONLY,
+	bool unwrap(ONLY IN_THREAD,
 		    paragraph_list &my_paragraphs);
 
 	//! Rewrap some entry in the fragments container
@@ -153,7 +153,7 @@ public:
 	//! fragment was destroyed and rebuilt as a weak shadow of its
 	//! former self.
 
-	void rewrap_fragment(IN_THREAD_ONLY,
+	void rewrap_fragment(ONLY IN_THREAD,
 			     fragment_list &my_fragments,
 			     dim_t width, size_t fragment_n,
 			     bool &toosmall,

@@ -27,7 +27,7 @@ peepholed_toplevel_main_windowObj::implObj
 
 peepholed_toplevel_main_windowObj::implObj::~implObj()=default;
 
-void peepholed_toplevel_main_windowObj::implObj::initialize(IN_THREAD_ONLY)
+void peepholed_toplevel_main_windowObj::implObj::initialize(ONLY IN_THREAD)
 {
 	superclass_t::initialize(IN_THREAD);
 	recalculate_metrics(IN_THREAD);
@@ -43,7 +43,7 @@ void peepholed_toplevel_main_windowObj::implObj::initialize(IN_THREAD_ONLY)
 }
 
 void peepholed_toplevel_main_windowObj::implObj
-::recalculate_metrics(IN_THREAD_ONLY)
+::recalculate_metrics(ONLY IN_THREAD)
 {
 	if (!elementObj::implObj::data(IN_THREAD).initialized)
 		return;
@@ -69,7 +69,7 @@ void peepholed_toplevel_main_windowObj::implObj
 }
 
 void peepholed_toplevel_main_windowObj::implObj
-::get_focus_first(IN_THREAD_ONLY, const focusable &f)
+::get_focus_first(ONLY IN_THREAD, const focusable &f)
 {
 	// Even though this element wants to be the first one in the tabbing
 	// order, we rudely refuse its request, and set it to be the first

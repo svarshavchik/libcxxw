@@ -35,7 +35,7 @@ const char *pagetabObj::implObj::label_theme_font() const
 	return "book_tab_font";
 }
 
-void pagetabObj::implObj::set_active(IN_THREAD_ONLY, bool flag)
+void pagetabObj::implObj::set_active(ONLY IN_THREAD, bool flag)
 {
 	background_color_element<hotspot_cold_color>::update
 		(IN_THREAD,

@@ -12,7 +12,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-void connection_threadObj::run_event(IN_THREAD_ONLY,
+void connection_threadObj::run_event(ONLY IN_THREAD,
 				     const xcb_generic_event_t *event)
 {
 #ifdef CONNECTION_RUN_EVENT
@@ -300,13 +300,13 @@ void connection_threadObj::run_event(IN_THREAD_ONLY,
 	};
 }
 
-void connection_threadObj::theme_updated(IN_THREAD_ONLY)
+void connection_threadObj::theme_updated(ONLY IN_THREAD)
 {
 	for (const auto &window_handler : *window_handlers_thread_only)
 		window_handler.second->theme_updated_event(IN_THREAD);
 }
 
-bool connection_threadObj::process_buffered_motion_event(IN_THREAD_ONLY)
+bool connection_threadObj::process_buffered_motion_event(ONLY IN_THREAD)
 {
 	if (!buffered_motion_event)
 		return false;

@@ -171,7 +171,7 @@ class LIBCXX_HIDDEN contextmenu_popup_handlerObj
 	//! Before mapping the popup, get the pointer position and make
 	//! the popup visible here.
 
-	void set_inherited_visibility_mapped(IN_THREAD_ONLY) override
+	void set_inherited_visibility_mapped(ONLY IN_THREAD) override
 	{
 		auto eptr=contextmenu_element.getptr();
 

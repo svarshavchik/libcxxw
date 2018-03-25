@@ -34,7 +34,7 @@ popup_attachedto_handler_elementObj<element_impl>
 //! The attachedto_info needs to be updated.
 template<typename element_impl>
 void popup_attachedto_handler_elementObj<element_impl>
-::initialize(IN_THREAD_ONLY)
+::initialize(ONLY IN_THREAD)
 {
 	element_impl::initialize(IN_THREAD);
 	update_attachedto_info(IN_THREAD);
@@ -45,7 +45,7 @@ void popup_attachedto_handler_elementObj<element_impl>
 //! The attachedto_info needs to be updated.
 template<typename element_impl>
 void popup_attachedto_handler_elementObj<element_impl>
-::process_updated_position(IN_THREAD_ONLY)
+::process_updated_position(ONLY IN_THREAD)
 {
 	element_impl::process_updated_position(IN_THREAD);
 	update_attachedto_info(IN_THREAD);
@@ -57,7 +57,7 @@ void popup_attachedto_handler_elementObj<element_impl>
 
 template<typename element_impl>
 void popup_attachedto_handler_elementObj<element_impl>
-::absolute_location_updated(IN_THREAD_ONLY)
+::absolute_location_updated(ONLY IN_THREAD)
 {
 	element_impl::absolute_location_updated(IN_THREAD);
 	update_attachedto_info(IN_THREAD);
@@ -68,7 +68,7 @@ void popup_attachedto_handler_elementObj<element_impl>
 //! So the popup is reposition to reflect our new absolute location.
 template<typename element_impl>
 void popup_attachedto_handler_elementObj<element_impl>
-::update_attachedto_info(IN_THREAD_ONLY)
+::update_attachedto_info(ONLY IN_THREAD)
 {
 	attachedto_handler->update_attachedto_element_position
 		(IN_THREAD,

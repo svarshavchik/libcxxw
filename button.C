@@ -186,7 +186,7 @@ button factoryObj::do_create_button(const border_arg &theme_border,
 		.get_window_handler().thread()->run_as
 		([shortcut_key,
 		  hotspot_impl=ab->hotspotObj::impl]
-		 (IN_THREAD_ONLY)
+		 (ONLY IN_THREAD)
 		 {
 			 hotspot_impl->set_shortcut(IN_THREAD, shortcut_key);
 		 });

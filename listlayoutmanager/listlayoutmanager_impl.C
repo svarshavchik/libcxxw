@@ -24,7 +24,7 @@ layoutmanager listlayoutmanagerObj::implObj::create_public_object()
 	return listlayoutmanager::create(ref(this));
 }
 
-void listlayoutmanagerObj::implObj::recalculate(IN_THREAD_ONLY)
+void listlayoutmanagerObj::implObj::recalculate(ONLY IN_THREAD)
 {
 	list_element_singleton->impl->recalculate(IN_THREAD);
 	singletonlayoutmanagerObj::implObj::recalculate(IN_THREAD);
@@ -33,7 +33,7 @@ void listlayoutmanagerObj::implObj::recalculate(IN_THREAD_ONLY)
 				  ->tallest_row_height(IN_THREAD));
 }
 
-void listlayoutmanagerObj::implObj::child_metrics_updated(IN_THREAD_ONLY)
+void listlayoutmanagerObj::implObj::child_metrics_updated(ONLY IN_THREAD)
 {
 	// Always copy the child element metrics to our own...
 
@@ -44,7 +44,7 @@ void listlayoutmanagerObj::implObj::child_metrics_updated(IN_THREAD_ONLY)
 }
 
 void listlayoutmanagerObj::implObj
-::process_updated_position(IN_THREAD_ONLY,
+::process_updated_position(ONLY IN_THREAD,
 			   const rectangle &position)
 {
 	// ... and then size the child element to match our size.
@@ -53,7 +53,7 @@ void listlayoutmanagerObj::implObj
 }
 
 void listlayoutmanagerObj::implObj
-::theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme)
+::theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme)
 {
 	singletonlayoutmanagerObj::implObj::theme_updated(IN_THREAD, new_theme);
 
@@ -62,7 +62,7 @@ void listlayoutmanagerObj::implObj
 }
 
 void listlayoutmanagerObj::implObj
-::update_tallest_row_height(IN_THREAD_ONLY, dim_t v)
+::update_tallest_row_height(ONLY IN_THREAD, dim_t v)
 {
 }
 

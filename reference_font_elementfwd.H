@@ -31,9 +31,9 @@ public:
 
 	elementObj::implObj &font_element() override;
 
-	void initialize(IN_THREAD_ONLY) override;
+	void initialize(ONLY IN_THREAD) override;
 
-	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme) override;
+	void theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme) override;
 };
 
 template<typename ...args> struct reference_font_element_types;

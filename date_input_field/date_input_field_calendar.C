@@ -46,18 +46,18 @@ date_input_field_calendarObj
 date_input_field_calendarObj::~date_input_field_calendarObj()=default;
 
 void date_input_field_calendarObj
-::recalculate_peepholed_metrics(IN_THREAD_ONLY,	const screen &s)
+::recalculate_peepholed_metrics(ONLY IN_THREAD,	const screen &s)
 {
 	max_width_value=attachedto_info->max_peephole_width(IN_THREAD, s);
 	max_height_value=attachedto_info->max_peephole_height(IN_THREAD, s);
 }
 
-dim_t date_input_field_calendarObj::max_width(IN_THREAD_ONLY) const
+dim_t date_input_field_calendarObj::max_width(ONLY IN_THREAD) const
 {
 	return max_width_value;
 }
 
-dim_t date_input_field_calendarObj::max_height(IN_THREAD_ONLY) const
+dim_t date_input_field_calendarObj::max_height(ONLY IN_THREAD) const
 {
 	return max_height_value;
 }

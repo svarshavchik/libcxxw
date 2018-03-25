@@ -16,7 +16,7 @@
 LIBCXXW_NAMESPACE_START
 
 window_handlerObj
-::window_handlerObj(IN_THREAD_ONLY,
+::window_handlerObj(ONLY IN_THREAD,
 		    const constructor_params &params)
 	: xid_t<xcb_window_t>(IN_THREAD),
 	screenref(params.screenref)
@@ -59,15 +59,15 @@ window_handlerObj::~window_handlerObj()
 	xcb_destroy_window(conn()->conn, id());
 }
 
-void window_handlerObj::installed(IN_THREAD_ONLY)
+void window_handlerObj::installed(ONLY IN_THREAD)
 {
 }
 
-void window_handlerObj::disconnected(IN_THREAD_ONLY)
+void window_handlerObj::disconnected(ONLY IN_THREAD)
 {
 }
 
-bool window_handlerObj::keep_passive_grab(IN_THREAD_ONLY)
+bool window_handlerObj::keep_passive_grab(ONLY IN_THREAD)
 {
 	if (grabbed_timestamp(IN_THREAD) != XCB_CURRENT_TIME &&
 	    !grab_locked(IN_THREAD))
@@ -81,18 +81,18 @@ bool window_handlerObj::keep_passive_grab(IN_THREAD_ONLY)
 	return false;
 }
 
-void window_handlerObj::ungrab(IN_THREAD_ONLY)
+void window_handlerObj::ungrab(ONLY IN_THREAD)
 {
 	grab_locked(IN_THREAD)=false;
 	release_grabs(IN_THREAD);
 }
 
-bool window_handlerObj::is_pointer_actively_grabbed(IN_THREAD_ONLY)
+bool window_handlerObj::is_pointer_actively_grabbed(ONLY IN_THREAD)
 {
 	return false;
 }
 
-void window_handlerObj::release_grabs(IN_THREAD_ONLY)
+void window_handlerObj::release_grabs(ONLY IN_THREAD)
 {
 	auto timestamp=grabbed_timestamp(IN_THREAD);
 
@@ -111,7 +111,7 @@ void window_handlerObj::release_grabs(IN_THREAD_ONLY)
 	xcb_ungrab_keyboard(IN_THREAD->info->conn, timestamp);
 }
 
-void window_handlerObj::change_property(IN_THREAD_ONLY,
+void window_handlerObj::change_property(ONLY IN_THREAD,
 					uint8_t mode,
 					xcb_atom_t property,
 					xcb_atom_t type,
@@ -123,78 +123,78 @@ void window_handlerObj::change_property(IN_THREAD_ONLY,
 			    type, format, data_len, data);
 }
 
-void window_handlerObj::configure_notify_received(IN_THREAD_ONLY,
+void window_handlerObj::configure_notify_received(ONLY IN_THREAD,
 						  const rectangle &)
 {
 }
 
-void window_handlerObj::process_configure_notify(IN_THREAD_ONLY,
+void window_handlerObj::process_configure_notify(ONLY IN_THREAD,
 						 const rectangle &)
 {
 }
 
-void window_handlerObj::client_message_event(IN_THREAD_ONLY,
+void window_handlerObj::client_message_event(ONLY IN_THREAD,
 					     const xcb_client_message_event_t *)
 {
 }
 
-void window_handlerObj::process_collected_exposures(IN_THREAD_ONLY)
+void window_handlerObj::process_collected_exposures(ONLY IN_THREAD)
 {
 }
 
-void window_handlerObj::process_collected_graphics_exposures(IN_THREAD_ONLY)
+void window_handlerObj::process_collected_graphics_exposures(ONLY IN_THREAD)
 {
 }
 
-void window_handlerObj::theme_updated_event(IN_THREAD_ONLY)
+void window_handlerObj::theme_updated_event(ONLY IN_THREAD)
 {
 }
 
-void window_handlerObj::key_press_event(IN_THREAD_ONLY,
+void window_handlerObj::key_press_event(ONLY IN_THREAD,
 					const xcb_key_press_event_t *event,
 					uint16_t sequencehi)
 {
 }
 
-bool window_handlerObj::handle_key_event(IN_THREAD_ONLY,
+bool window_handlerObj::handle_key_event(ONLY IN_THREAD,
 					 const xcb_key_release_event_t *event,
 					 bool keypress)
 {
 	return false;
 }
 
-void window_handlerObj::key_release_event(IN_THREAD_ONLY,
+void window_handlerObj::key_release_event(ONLY IN_THREAD,
 					  const xcb_key_release_event_t *event,
 					  uint16_t sequencehi)
 {
 }
 
-void window_handlerObj::button_press_event(IN_THREAD_ONLY,
+void window_handlerObj::button_press_event(ONLY IN_THREAD,
 					   const xcb_button_press_event_t *event)
 {
 }
 
-void window_handlerObj::button_release_event(IN_THREAD_ONLY,
+void window_handlerObj::button_release_event(ONLY IN_THREAD,
 					     const xcb_button_release_event_t *event)
 {
 }
 
-void window_handlerObj::pointer_motion_event(IN_THREAD_ONLY,
+void window_handlerObj::pointer_motion_event(ONLY IN_THREAD,
 					     const xcb_motion_notify_event_t *)
 {
 }
 
-void window_handlerObj::enter_notify_event(IN_THREAD_ONLY,
+void window_handlerObj::enter_notify_event(ONLY IN_THREAD,
 					     const xcb_enter_notify_event_t *)
 {
 }
 
-void window_handlerObj::leave_notify_event(IN_THREAD_ONLY,
+void window_handlerObj::leave_notify_event(ONLY IN_THREAD,
 					   const xcb_leave_notify_event_t *)
 {
 }
 
-void window_handlerObj::focus_change_event(IN_THREAD_ONLY, bool)
+void window_handlerObj::focus_change_event(ONLY IN_THREAD, bool)
 {
 }
 
@@ -202,7 +202,7 @@ void window_handlerObj::focus_change_event(IN_THREAD_ONLY, bool)
 LOG_FUNC_SCOPE_DECL(INSERT_LIBX_NAMESPACE::w::selection, selection_debug_log);
 
 void window_handlerObj
-::selection_request_event(IN_THREAD_ONLY,
+::selection_request_event(ONLY IN_THREAD,
 			  const xcb_selection_request_event_t &request,
 			  xcb_selection_notify_event_t &reply)
 {
@@ -326,13 +326,13 @@ void window_handlerObj
 }
 
 void window_handlerObj::
-pasted_string(IN_THREAD_ONLY,
+pasted_string(ONLY IN_THREAD,
 	      const std::u32string_view &)
 {
 }
 
 void window_handlerObj
-::selection_request_multiple(IN_THREAD_ONLY,
+::selection_request_multiple(ONLY IN_THREAD,
 			     const xcb_selection_request_event_t &request,
 			     xcb_selection_notify_event_t &reply,
 			     const current_selection &selection)

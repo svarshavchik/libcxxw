@@ -106,20 +106,20 @@ scrollbarObj::implObj::implObj(const scrollbar_impl_init_params &init_params)
 }
 
 scrollbarObj::implObj
-::scrollbar_icon_set scrollbarObj::implObj::normal_icons(IN_THREAD_ONLY)
+::scrollbar_icon_set scrollbarObj::implObj::normal_icons(ONLY IN_THREAD)
 {
 	return {NORMAL(low), NORMAL(high), NORMAL(handlebar_start),
 			NORMAL(handlebar), NORMAL(handlebar_end)};
 }
 
 scrollbarObj::implObj
-::scrollbar_icon_set scrollbarObj::implObj::pressed_icons(IN_THREAD_ONLY)
+::scrollbar_icon_set scrollbarObj::implObj::pressed_icons(ONLY IN_THREAD)
 {
 	return {PRESSED(low), PRESSED(high), PRESSED(handlebar_start),
 			PRESSED(handlebar), PRESSED(handlebar_end)};
 }
 
-void scrollbarObj::implObj::validate_conf(IN_THREAD_ONLY)
+void scrollbarObj::implObj::validate_conf(ONLY IN_THREAD)
 {
 	if (state(IN_THREAD).range <= 0)
 		state(IN_THREAD).range=1;
@@ -139,21 +139,21 @@ void scrollbarObj::implObj::validate_conf(IN_THREAD_ONLY)
 
 scrollbarObj::implObj::~implObj()=default;
 
-void scrollbarObj::implObj::initialize(IN_THREAD_ONLY)
+void scrollbarObj::implObj::initialize(ONLY IN_THREAD)
 {
 	superclass_t::initialize(IN_THREAD);
 	recalculate_metrics(IN_THREAD);
 	calculate_scrollbar_metrics(IN_THREAD);
 }
 
-void scrollbarObj::implObj::theme_updated(IN_THREAD_ONLY,
+void scrollbarObj::implObj::theme_updated(ONLY IN_THREAD,
 					  const defaulttheme &new_theme)
 {
 	superclass_t::theme_updated(IN_THREAD, new_theme);
 	recalculate_metrics(IN_THREAD);
 }
 
-void scrollbarObj::implObj::reconfigure(IN_THREAD_ONLY,
+void scrollbarObj::implObj::reconfigure(ONLY IN_THREAD,
 					const scrollbar_config &new_config)
 {
 	if (new_config == state(IN_THREAD))
@@ -195,34 +195,34 @@ dim_t scrollbarObj::implObj::minor_icon_size(const icon &i) const
 	return minor_size(icon_size(i));
 }
 
-dim_t scrollbarObj::implObj::current_position_major_size(IN_THREAD_ONLY) const
+dim_t scrollbarObj::implObj::current_position_major_size(ONLY IN_THREAD) const
 {
 	return major_size(data(IN_THREAD).current_position);
 }
 
-dim_t scrollbarObj::implObj::current_position_minor_size(IN_THREAD_ONLY) const
+dim_t scrollbarObj::implObj::current_position_minor_size(ONLY IN_THREAD) const
 {
 	return minor_size(data(IN_THREAD).current_position);
 }
 
-dim_t scrollbarObj::implObj::scroll_low_size(IN_THREAD_ONLY) const
+dim_t scrollbarObj::implObj::scroll_low_size(ONLY IN_THREAD) const
 {
 	return major_icon_size(NORMAL(low));
 }
 
-dim_t scrollbarObj::implObj::scroll_high_size(IN_THREAD_ONLY) const
+dim_t scrollbarObj::implObj::scroll_high_size(ONLY IN_THREAD) const
 {
 	return major_icon_size(NORMAL(high));
 }
 
-coord_t scrollbarObj::implObj::scroll_high_position(IN_THREAD_ONLY) const
+coord_t scrollbarObj::implObj::scroll_high_position(ONLY IN_THREAD) const
 {
 	return coord_t::truncate(data(IN_THREAD).current_position
 				 .*(orientation.major_size)-
 				 scroll_high_size(IN_THREAD));
 }
 
-dim_t scrollbarObj::implObj::slider_size(IN_THREAD_ONLY) const
+dim_t scrollbarObj::implObj::slider_size(ONLY IN_THREAD) const
 {
 	return data(IN_THREAD).current_position
 		.*(orientation.major_size)
@@ -230,22 +230,22 @@ dim_t scrollbarObj::implObj::slider_size(IN_THREAD_ONLY) const
 		- scroll_high_size(IN_THREAD);
 }
 
-dim_t scrollbarObj::implObj::handlebar_start_size(IN_THREAD_ONLY) const
+dim_t scrollbarObj::implObj::handlebar_start_size(ONLY IN_THREAD) const
 {
 	return major_icon_size(NORMAL(handlebar_start));
 }
 
-dim_t scrollbarObj::implObj::handlebar_size(IN_THREAD_ONLY) const
+dim_t scrollbarObj::implObj::handlebar_size(ONLY IN_THREAD) const
 {
 	return major_icon_size(NORMAL(handlebar));
 }
 
-dim_t scrollbarObj::implObj::handlebar_end_size(IN_THREAD_ONLY) const
+dim_t scrollbarObj::implObj::handlebar_end_size(ONLY IN_THREAD) const
 {
 	return major_icon_size(NORMAL(handlebar_end));
 }
 
-void scrollbarObj::implObj::recalculate_metrics(IN_THREAD_ONLY)
+void scrollbarObj::implObj::recalculate_metrics(ONLY IN_THREAD)
 {
 	// Use low's size to fix the height of the horizontal
 	// scrollbar and the width of the vertical scrollbar.
@@ -264,7 +264,7 @@ void scrollbarObj::implObj::recalculate_metrics(IN_THREAD_ONLY)
 						      new_metrics.vert);
 }
 
-void scrollbarObj::implObj::current_position_updated(IN_THREAD_ONLY)
+void scrollbarObj::implObj::current_position_updated(ONLY IN_THREAD)
 {
 	// The current_position_updated() may get called even if the
 	// element's size has not changed. Only reset_state() if the size
@@ -275,7 +275,7 @@ void scrollbarObj::implObj::current_position_updated(IN_THREAD_ONLY)
 	superclass_t::current_position_updated(IN_THREAD);
 }
 
-void scrollbarObj::implObj::reset_state(IN_THREAD_ONLY)
+void scrollbarObj::implObj::reset_state(ONLY IN_THREAD)
 {
 	bool was_dragging=dragging;
 	bool was_scroll_low_pressed=scroll_low_pressed;
@@ -295,7 +295,7 @@ void scrollbarObj::implObj::reset_state(IN_THREAD_ONLY)
 		draw_slider(IN_THREAD);
 }
 
-bool scrollbarObj::implObj::calculate_scrollbar_metrics(IN_THREAD_ONLY)
+bool scrollbarObj::implObj::calculate_scrollbar_metrics(ONLY IN_THREAD)
 {
 	auto current_position=data(IN_THREAD).current_position;
 
@@ -353,7 +353,7 @@ bool scrollbarObj::implObj::calculate_scrollbar_metrics(IN_THREAD_ONLY)
 //
 // Draw all of, or redraw selected parts of the scrollbar.
 
-void scrollbarObj::implObj::do_draw(IN_THREAD_ONLY,
+void scrollbarObj::implObj::do_draw(ONLY IN_THREAD,
 				   const draw_info &di,
 				   const rectangle_set &areas)
 {
@@ -386,7 +386,7 @@ void scrollbarObj::implObj::do_draw(IN_THREAD_ONLY,
 		 di, di, clipped);
 }
 
-void scrollbarObj::implObj::draw_scroll_low(IN_THREAD_ONLY)
+void scrollbarObj::implObj::draw_scroll_low(ONLY IN_THREAD)
 {
 	if (metrics.too_small)
 		return;
@@ -417,7 +417,7 @@ void scrollbarObj::implObj::draw_scroll_low(IN_THREAD_ONLY)
 		 r, di, di, clipped);
 }
 
-void scrollbarObj::implObj::do_draw_scroll_low(IN_THREAD_ONLY,
+void scrollbarObj::implObj::do_draw_scroll_low(ONLY IN_THREAD,
 					       const picture &buffer)
 {
 	if (metrics.too_small)
@@ -428,7 +428,7 @@ void scrollbarObj::implObj::do_draw_scroll_low(IN_THREAD_ONLY,
 		     0);
 }
 
-void scrollbarObj::implObj::draw_scroll_high(IN_THREAD_ONLY)
+void scrollbarObj::implObj::draw_scroll_high(ONLY IN_THREAD)
 {
 	if (metrics.too_small)
 		return;
@@ -460,7 +460,7 @@ void scrollbarObj::implObj::draw_scroll_high(IN_THREAD_ONLY)
 		 r, di, di, clipped);
 }
 
-void scrollbarObj::implObj::do_draw_scroll_high(IN_THREAD_ONLY,
+void scrollbarObj::implObj::do_draw_scroll_high(ONLY IN_THREAD,
 						const picture &buffer,
 						coord_t coordinate)
 {
@@ -472,7 +472,7 @@ void scrollbarObj::implObj::do_draw_scroll_high(IN_THREAD_ONLY,
 		     coordinate);
 }
 
-void scrollbarObj::implObj::draw_slider(IN_THREAD_ONLY)
+void scrollbarObj::implObj::draw_slider(ONLY IN_THREAD)
 {
 	if (metrics.too_small)
 		return;
@@ -505,7 +505,7 @@ void scrollbarObj::implObj::draw_slider(IN_THREAD_ONLY)
 		 r, di, di, clipped);
 }
 
-void scrollbarObj::implObj::do_draw_slider(IN_THREAD_ONLY,
+void scrollbarObj::implObj::do_draw_slider(ONLY IN_THREAD,
 					   const picture &buffer,
 					   coord_t coordinate)
 {
@@ -527,7 +527,7 @@ void scrollbarObj::implObj::do_draw_slider(IN_THREAD_ONLY,
 		     handlebar_pressed, c);
 }
 
-coord_t scrollbarObj::implObj::do_draw_icon(IN_THREAD_ONLY,
+coord_t scrollbarObj::implObj::do_draw_icon(ONLY IN_THREAD,
 					    const picture &buffer,
 					    icon scrollbar_icon_set::*which_icon,
 					    bool pressed,
@@ -552,7 +552,7 @@ coord_t scrollbarObj::implObj::do_draw_icon(IN_THREAD_ONLY,
 //
 // Process keyboard or pointer button events.
 
-bool scrollbarObj::implObj::process_key_event(IN_THREAD_ONLY,
+bool scrollbarObj::implObj::process_key_event(ONLY IN_THREAD,
 					      const key_event &ke)
 {
 	switch (ke.keysym) {
@@ -615,7 +615,7 @@ bool scrollbarObj::implObj::process_key_event(IN_THREAD_ONLY,
 	return true;
 }
 
-void scrollbarObj::implObj::abort_handlebar(IN_THREAD_ONLY)
+void scrollbarObj::implObj::abort_handlebar(ONLY IN_THREAD)
 {
 	if (handlebar_pressed)
 	{
@@ -624,7 +624,7 @@ void scrollbarObj::implObj::abort_handlebar(IN_THREAD_ONLY)
 	}
 }
 
-bool scrollbarObj::implObj::to_low(IN_THREAD_ONLY,
+bool scrollbarObj::implObj::to_low(ONLY IN_THREAD,
 				   const input_mask &mask)
 {
 	if (state(IN_THREAD).value > 0)
@@ -638,7 +638,7 @@ bool scrollbarObj::implObj::to_low(IN_THREAD_ONLY,
 	return false;
 }
 
-bool scrollbarObj::implObj::to_high(IN_THREAD_ONLY,
+bool scrollbarObj::implObj::to_high(ONLY IN_THREAD,
 				    const input_mask &mask)
 {
 	if (state(IN_THREAD).value < state(IN_THREAD).range-state(IN_THREAD).page_size)
@@ -655,7 +655,7 @@ bool scrollbarObj::implObj::to_high(IN_THREAD_ONLY,
 	return false;
 }
 
-bool scrollbarObj::implObj::page_up(IN_THREAD_ONLY)
+bool scrollbarObj::implObj::page_up(ONLY IN_THREAD)
 {
 	if (state(IN_THREAD).value > 0)
 	{
@@ -668,7 +668,7 @@ bool scrollbarObj::implObj::page_up(IN_THREAD_ONLY)
 	return false;
 }
 
-bool scrollbarObj::implObj::page_down(IN_THREAD_ONLY)
+bool scrollbarObj::implObj::page_down(ONLY IN_THREAD)
 {
 	if (state(IN_THREAD).value < state(IN_THREAD).range-state(IN_THREAD).page_size)
 	{
@@ -684,7 +684,7 @@ bool scrollbarObj::implObj::page_down(IN_THREAD_ONLY)
 	return false;
 }
 
-bool scrollbarObj::implObj::process_button_event(IN_THREAD_ONLY,
+bool scrollbarObj::implObj::process_button_event(ONLY IN_THREAD,
 						 const button_event &be,
 						 xcb_timestamp_t timestamp)
 {
@@ -846,7 +846,7 @@ bool scrollbarObj::implObj::process_button_event(IN_THREAD_ONLY,
 	return true;
 }
 
-void scrollbarObj::implObj::abort_dragging(IN_THREAD_ONLY)
+void scrollbarObj::implObj::abort_dragging(ONLY IN_THREAD)
 {
 	dragged_value=state(IN_THREAD).value;
 	current_pixel=drag_start_current_pixel;
@@ -854,7 +854,7 @@ void scrollbarObj::implObj::abort_dragging(IN_THREAD_ONLY)
 			     state(IN_THREAD).value);
 }
 
-void scrollbarObj::implObj::report_motion_event(IN_THREAD_ONLY,
+void scrollbarObj::implObj::report_motion_event(ONLY IN_THREAD,
 						const motion_event &me)
 {
 	// Previous motion position.
@@ -947,7 +947,7 @@ void scrollbarObj::implObj::report_motion_event(IN_THREAD_ONLY,
 				     dragged_value);
 }
 
-void scrollbarObj::implObj::keyboard_focus(IN_THREAD_ONLY,
+void scrollbarObj::implObj::keyboard_focus(ONLY IN_THREAD,
 					   const callback_trigger_t &trigger)
 {
 	superclass_t::keyboard_focus(IN_THREAD, trigger);
@@ -960,7 +960,7 @@ void scrollbarObj::implObj::keyboard_focus(IN_THREAD_ONLY,
 //
 // Report discrete changes to the scrollbar's value.
 
-void scrollbarObj::implObj::updated_value_no_drag(IN_THREAD_ONLY)
+void scrollbarObj::implObj::updated_value_no_drag(ONLY IN_THREAD)
 {
 	current_pixel=metrics.value_to_pixel(state(IN_THREAD).value);
 	dragged_value=state(IN_THREAD).value;
@@ -969,7 +969,7 @@ void scrollbarObj::implObj::updated_value_no_drag(IN_THREAD_ONLY)
 	report_changed_values(IN_THREAD, state(IN_THREAD).value, dragged_value);
 }
 
-void scrollbarObj::implObj::update_callback(IN_THREAD_ONLY,
+void scrollbarObj::implObj::update_callback(ONLY IN_THREAD,
 					    const scrollbar_cb_t &callback)
 {
 	updated_value(IN_THREAD)=callback;
@@ -980,7 +980,7 @@ void scrollbarObj::implObj::update_callback(IN_THREAD_ONLY,
 			      initial{});
 }
 
-void scrollbarObj::implObj::report_changed_values(IN_THREAD_ONLY,
+void scrollbarObj::implObj::report_changed_values(ONLY IN_THREAD,
 						  scroll_v_t value,
 						  scroll_v_t dragged_value)
 {
@@ -998,7 +998,7 @@ void scrollbarObj::implObj::report_changed_values(IN_THREAD_ONLY,
 	report_current_values(IN_THREAD, value, dragged_value, {});
 }
 
-void scrollbarObj::implObj::report_current_values(IN_THREAD_ONLY,
+void scrollbarObj::implObj::report_current_values(ONLY IN_THREAD,
 						  scroll_v_t value,
 						  scroll_v_t dragged_value,
 						  const callback_trigger_t &why)

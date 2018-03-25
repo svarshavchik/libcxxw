@@ -20,7 +20,7 @@ scratch_buffer_draw_impl::scratch_buffer_draw_impl()=default;
 
 scratch_buffer_draw_impl::~scratch_buffer_draw_impl()=default;
 
-void scratch_buffer_draw_impl::get_scratch_buffer(IN_THREAD_ONLY,
+void scratch_buffer_draw_impl::get_scratch_buffer(ONLY IN_THREAD,
 						  elementObj::implObj &element,
 						  const draw_info &di)
 {

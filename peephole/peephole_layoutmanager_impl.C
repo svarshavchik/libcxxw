@@ -25,14 +25,14 @@ disable_fast_scroll(LIBCXX_NAMESPACE_STR
 		    "::w::disable_fast_scroll", false);
 
 void peepholeObj::layoutmanager_implObj
-::update_scrollbars(IN_THREAD_ONLY,
+::update_scrollbars(ONLY IN_THREAD,
 		    const rectangle &element_pos,
 		    const rectangle &current_position)
 {
 }
 
 bool peepholeObj::layoutmanager_implObj
-::process_button_event(IN_THREAD_ONLY,
+::process_button_event(ONLY IN_THREAD,
 		       const button_event &be,
 		       xcb_timestamp_t timestamp)
 {
@@ -52,13 +52,13 @@ peepholeObj::layoutmanager_implObj
 peepholeObj::layoutmanager_implObj::~layoutmanager_implObj()=default;
 
 void peepholeObj::layoutmanager_implObj
-::child_metrics_updated(IN_THREAD_ONLY)
+::child_metrics_updated(ONLY IN_THREAD)
 {
 	recalculate(IN_THREAD);
 }
 
 void peepholeObj::layoutmanager_implObj
-::do_for_each_child(IN_THREAD_ONLY,
+::do_for_each_child(ONLY IN_THREAD,
 		    const function<void (const element &e)> &callback)
 {
 	callback(element_in_peephole->get_peepholed_element());
@@ -70,7 +70,7 @@ layoutmanager peepholeObj::layoutmanager_implObj::create_public_object()
 }
 
 void peepholeObj::layoutmanager_implObj
-::ensure_visibility(IN_THREAD_ONLY,
+::ensure_visibility(ONLY IN_THREAD,
 		    elementObj::implObj &e,
 		    const rectangle &r)
 {
@@ -129,7 +129,7 @@ static void adjust_for_visibility(rectangle &element_pos,
 	}
 }
 
-void peepholeObj::layoutmanager_implObj::recalculate(IN_THREAD_ONLY)
+void peepholeObj::layoutmanager_implObj::recalculate(ONLY IN_THREAD)
 {
 	recalculate_with_requested_visibility(IN_THREAD, false);
 }
@@ -180,7 +180,7 @@ static void center_visibility_at(coord_t &requested_pos,
 		requested_pos=coord_t::truncate(element_size-peephole_size);
 }
 
-void peepholeObj::layoutmanager_implObj::initialize(IN_THREAD_ONLY)
+void peepholeObj::layoutmanager_implObj::initialize(ONLY IN_THREAD)
 {
 	// Now we can initialize our element.
 
@@ -193,7 +193,7 @@ void peepholeObj::layoutmanager_implObj::initialize(IN_THREAD_ONLY)
 }
 
 void peepholeObj::layoutmanager_implObj
-::recalculate_with_requested_visibility(IN_THREAD_ONLY, bool flag)
+::recalculate_with_requested_visibility(ONLY IN_THREAD, bool flag)
 {
 	// Wait until this container is initialized.
 	if (!get_element_impl().data(IN_THREAD).initialized)
@@ -399,7 +399,7 @@ void peepholeObj::layoutmanager_implObj
 }
 
 bool peepholeObj::layoutmanager_implObj
-::attempt_scroll_to(IN_THREAD_ONLY, const rectangle &r)
+::attempt_scroll_to(ONLY IN_THREAD, const rectangle &r)
 {
 	if (disable_fast_scroll.get())
 		return false;
@@ -577,7 +577,7 @@ bool peepholeObj::layoutmanager_implObj
 }
 
 void peepholeObj::layoutmanager_implObj
-::update_horizontal_scroll(IN_THREAD_ONLY, dim_t offset)
+::update_horizontal_scroll(ONLY IN_THREAD, dim_t offset)
 {
 	auto peephole_element_impl=
 		element_in_peephole->get_peepholed_element()->impl;
@@ -594,7 +594,7 @@ void peepholeObj::layoutmanager_implObj
 }
 
 void peepholeObj::layoutmanager_implObj
-::update_vertical_scroll(IN_THREAD_ONLY, dim_t offset)
+::update_vertical_scroll(ONLY IN_THREAD, dim_t offset)
 {
 	auto peephole_element_impl=
 		element_in_peephole->get_peepholed_element()->impl;
@@ -610,7 +610,7 @@ void peepholeObj::layoutmanager_implObj
 }
 
 void peepholeObj::layoutmanager_implObj
-::process_updated_position(IN_THREAD_ONLY,
+::process_updated_position(ONLY IN_THREAD,
 			   const rectangle &position)
 {
 	recalculate(IN_THREAD);

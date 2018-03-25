@@ -39,13 +39,13 @@ richtextObj::~richtextObj()=default;
 // We must make sure that finish_initialization() gets invoked after the
 // object gets constructed.
 
-richtextObj::impl_t::lock::lock(IN_THREAD_ONLY, impl_t &me)
+richtextObj::impl_t::lock::lock(ONLY IN_THREAD, impl_t &me)
 	: internal_richtext_impl_t::lock(me)
 {
 	(**this)->finish_initialization(IN_THREAD);
 }
 
-size_t richtextObj::size(IN_THREAD_ONLY)
+size_t richtextObj::size(ONLY IN_THREAD)
 {
 	return read_only_lock([&]
 			      (const auto &l)
@@ -54,14 +54,14 @@ size_t richtextObj::size(IN_THREAD_ONLY)
 			      });
 }
 
-void richtextObj::set(IN_THREAD_ONLY, const richtextstring &string)
+void richtextObj::set(ONLY IN_THREAD, const richtextstring &string)
 {
 	impl_t::lock lock{IN_THREAD, impl};
 
 	(*lock)->set(IN_THREAD, string);
 }
 
-bool richtextObj::rewrap(IN_THREAD_ONLY,
+bool richtextObj::rewrap(ONLY IN_THREAD,
 			 dim_t width)
 {
 	if (word_wrap_width(IN_THREAD) == width)
@@ -75,7 +75,7 @@ bool richtextObj::rewrap(IN_THREAD_ONLY,
 		: (*lock)->unwrap(IN_THREAD);
 }
 
-dim_t richtextObj::get_width(IN_THREAD_ONLY)
+dim_t richtextObj::get_width(ONLY IN_THREAD)
 {
 	impl_t::lock lock{IN_THREAD, impl};
 
@@ -83,7 +83,7 @@ dim_t richtextObj::get_width(IN_THREAD_ONLY)
 }
 
 std::pair<metrics::axis, metrics::axis>
-richtextObj::get_metrics(IN_THREAD_ONLY, dim_t preferred_width)
+richtextObj::get_metrics(ONLY IN_THREAD, dim_t preferred_width)
 {
 	impl_t::lock lock{IN_THREAD, impl};
 
@@ -130,14 +130,14 @@ richtextObj::get_metrics(IN_THREAD_ONLY, dim_t preferred_width)
 	};
 }
 
-void richtextObj::theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme)
+void richtextObj::theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme)
 {
 	impl_t::lock lock{IN_THREAD, impl};
 
 	(*lock)->theme_updated(IN_THREAD, new_theme);
 }
 
-void richtextObj::full_redraw(IN_THREAD_ONLY,
+void richtextObj::full_redraw(ONLY IN_THREAD,
 			      element_drawObj &element,
 			      const richtext_draw_info &rdi,
 			      const draw_info &di,
@@ -148,7 +148,7 @@ void richtextObj::full_redraw(IN_THREAD_ONLY,
 	full_redraw(IN_THREAD, element, rdi, di, draw_bounds);
 }
 
-void richtextObj::full_redraw(IN_THREAD_ONLY,
+void richtextObj::full_redraw(ONLY IN_THREAD,
 			      element_drawObj &element,
 			      const richtext_draw_info &rdi,
 			      const draw_info &di,
@@ -164,7 +164,7 @@ void richtextObj::full_redraw(IN_THREAD_ONLY,
 	     true, draw_bounds);
 }
 
-void richtextObj::redraw_whatsneeded(IN_THREAD_ONLY,
+void richtextObj::redraw_whatsneeded(ONLY IN_THREAD,
 				     element_drawObj &element,
 				     const richtext_draw_info &rdi,
 				     const draw_info &di)
@@ -172,7 +172,7 @@ void richtextObj::redraw_whatsneeded(IN_THREAD_ONLY,
 	redraw_whatsneeded(IN_THREAD, element, rdi, di, di.entire_area());
 }
 
-void richtextObj::redraw_whatsneeded(IN_THREAD_ONLY,
+void richtextObj::redraw_whatsneeded(ONLY IN_THREAD,
 				     element_drawObj &element,
 				     const richtext_draw_info &rdi,
 				     const draw_info &di,
@@ -201,7 +201,7 @@ void richtextObj::text_width(const std::optional<dim_t> &s)
 		       });
 }
 
-void richtextObj::redraw_between(IN_THREAD_ONLY,
+void richtextObj::redraw_between(ONLY IN_THREAD,
 				 element_drawObj &element,
 				 const richtextiterator &a,
 				 const richtextiterator &b,
@@ -250,7 +250,7 @@ void richtextObj::redraw_between(IN_THREAD_ONLY,
 	     draw_bounds);
 }
 
-void richtextObj::draw(IN_THREAD_ONLY,
+void richtextObj::draw(ONLY IN_THREAD,
 		       element_drawObj &element,
 		       const richtext_draw_info &rdi,
 		       const draw_info &di,
@@ -454,7 +454,7 @@ void richtextObj::draw(IN_THREAD_ONLY,
 
 }
 
-std::tuple<pixmap, picture> richtextObj::create(IN_THREAD_ONLY,
+std::tuple<pixmap, picture> richtextObj::create(ONLY IN_THREAD,
 						const drawable &for_drawable)
 {
 	impl_t::lock lock{IN_THREAD, impl};
@@ -551,7 +551,7 @@ richtextiterator richtextObj::at(internal_richtext_impl_t::lock &lock, size_t np
 					npos);
 }
 
-void richtextObj::insert_at_location(IN_THREAD_ONLY,
+void richtextObj::insert_at_location(ONLY IN_THREAD,
 				       impl_t::lock &lock,
 				       const richtext_insert_base &new_text)
 {
@@ -560,7 +560,7 @@ void richtextObj::insert_at_location(IN_THREAD_ONLY,
 				    new_text);
 }
 
-void richtextObj::remove_at_location(IN_THREAD_ONLY,
+void richtextObj::remove_at_location(ONLY IN_THREAD,
 				     impl_t::lock &lock,
 				     const richtextcursorlocation &a,
 				     const richtextcursorlocation &b)
@@ -570,7 +570,7 @@ void richtextObj::remove_at_location(IN_THREAD_ONLY,
 					   a, b);
 }
 
-void richtextObj::replace_at_location(IN_THREAD_ONLY,
+void richtextObj::replace_at_location(ONLY IN_THREAD,
 				      impl_t::lock &lock,
 				      const richtext_insert_base &new_text,
 				      const richtextcursorlocation &remove_from,
@@ -653,7 +653,7 @@ void richtextObj::get(const internal_richtext_impl_t::lock &lock,
 		   {f->string, 0, location_b->get_offset()});
 }
 
-ref<richtext_implObj> richtextObj::debug_get_impl(IN_THREAD_ONLY)
+ref<richtext_implObj> richtextObj::debug_get_impl(ONLY IN_THREAD)
 {
 	impl_t::lock lock{IN_THREAD, impl};
 

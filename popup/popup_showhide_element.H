@@ -33,7 +33,7 @@ popup_showhide_elementObj<element_impl>
 //! Show/hide the other element.
 
 template<typename element_impl>
-void popup_showhide_elementObj<element_impl>::activated(IN_THREAD_ONLY,
+void popup_showhide_elementObj<element_impl>::activated(ONLY IN_THREAD,
 							const callback_trigger_t
 							&trigger)
 {

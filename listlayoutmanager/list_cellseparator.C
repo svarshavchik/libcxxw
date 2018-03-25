@@ -11,13 +11,13 @@ LIBCXXW_NAMESPACE_START
 list_cellseparatorObj::list_cellseparatorObj()=default;
 
 std::pair<metrics::axis, metrics::axis>
-list_cellseparatorObj::cell_get_metrics(IN_THREAD_ONLY, dim_t preferred_width)
+list_cellseparatorObj::cell_get_metrics(ONLY IN_THREAD, dim_t preferred_width)
 {
 	return {{},{}};
 }
 
 
-void list_cellseparatorObj::cell_redraw(IN_THREAD_ONLY,
+void list_cellseparatorObj::cell_redraw(ONLY IN_THREAD,
 				       element_drawObj &draw,
 				       const draw_info &di,
 				       bool draw_as_disabled,
@@ -26,12 +26,12 @@ void list_cellseparatorObj::cell_redraw(IN_THREAD_ONLY,
 {
 }
 
-void list_cellseparatorObj::cell_initialize(IN_THREAD_ONLY,
+void list_cellseparatorObj::cell_initialize(ONLY IN_THREAD,
 					   const defaulttheme &initial_theme)
 {
 }
 
-void list_cellseparatorObj::cell_theme_updated(IN_THREAD_ONLY,
+void list_cellseparatorObj::cell_theme_updated(ONLY IN_THREAD,
 					      const defaulttheme &initial_theme)
 {
 }

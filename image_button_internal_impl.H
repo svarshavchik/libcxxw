@@ -61,7 +61,7 @@ public:
 	//!
 	//! The default implementation calls do_set_image_number().
 
-	virtual void set_image_number(IN_THREAD_ONLY,
+	virtual void set_image_number(ONLY IN_THREAD,
 				      const callback_trigger_t &trigger,
 				      size_t);
 
@@ -71,7 +71,7 @@ public:
 	//! for all radio buttons in its group. This avoids infinite
 	//! recursion, since radio buttons override set_image_number().
 
-	void do_set_image_number(IN_THREAD_ONLY, size_t);
+	void do_set_image_number(ONLY IN_THREAD, size_t);
 
 	//! Return the current icon number.
 

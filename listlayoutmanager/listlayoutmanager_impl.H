@@ -43,30 +43,30 @@ class LIBCXX_HIDDEN listlayoutmanagerObj::implObj
 
 	//! Forward recalculate() to textlist_impl's.
 
-	void recalculate(IN_THREAD_ONLY) override;
+	void recalculate(ONLY IN_THREAD) override;
 
 	//! Implement child_metrics_updated().
 
 	//! textlist_element's metrics get copied to our metrics.
 
-	void child_metrics_updated(IN_THREAD_ONLY) override;
+	void child_metrics_updated(ONLY IN_THREAD) override;
 
 	//! Implement process_updated_position().
 
 	//! textlist_element() is sized to match our dimensions.
-	void process_updated_position(IN_THREAD_ONLY,
+	void process_updated_position(ONLY IN_THREAD,
 				      const rectangle &position) override;
 
 	//! Implement theme_updated().
 
-	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme)
+	void theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme)
 		override;
 
 	//! Report the tallest row height.
 
 	//! Used to size the combo-box current element. The default
 	//! implementation does nothing.
-	virtual void update_tallest_row_height(IN_THREAD_ONLY, dim_t);
+	virtual void update_tallest_row_height(ONLY IN_THREAD, dim_t);
 };
 
 LIBCXXW_NAMESPACE_END

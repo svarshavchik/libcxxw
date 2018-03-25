@@ -32,7 +32,7 @@ public:
 
 	~always_visibleObj();
 
-	void request_visibility_recursive(IN_THREAD_ONLY, bool flag)
+	void request_visibility_recursive(ONLY IN_THREAD, bool flag)
 		override;
 };
 

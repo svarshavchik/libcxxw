@@ -135,7 +135,7 @@ current_border_implObj
 ::~current_border_implObj()=default;
 
 void current_border_implObj
-::theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme)
+::theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme)
 {
 	// This custom border object can be attached to multiple
 	// border display elements. Go through the motions of
@@ -155,7 +155,7 @@ void current_border_implObj
 	initialize(IN_THREAD);
 }
 
-void current_border_implObj::initialize(IN_THREAD_ONLY)
+void current_border_implObj::initialize(ONLY IN_THREAD)
 {
 	if (initialized)
 		return;

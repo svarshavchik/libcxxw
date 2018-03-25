@@ -9,6 +9,7 @@
 #include "screen.H"
 #include "run_as.H"
 #include "connection_thread.H"
+#include "xid_t.H"
 #include <string>
 #include <courier-unicode.h>
 
@@ -50,11 +51,11 @@ void generic_windowObj::set_window_title(const std::u32string_view &s)
 void generic_windowObj::set_window_class(const std::string_view &instance,
 					 const std::string_view &resource)
 {
-	impl->handler->IN_THREAD->run_as
+	impl->handler->thread()->run_as
 		([instance=std::string{instance.begin(), instance.end()},
 		  resource=std::string{resource.begin(), resource.end()},
 		  handler=impl->handler]
-		 (IN_THREAD_ONLY)
+		 (ONLY IN_THREAD)
 		 {
 			 handler->wm_class_instance(IN_THREAD)=instance;
 			 handler->wm_class_resource(IN_THREAD)=resource;

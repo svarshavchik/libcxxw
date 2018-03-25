@@ -69,7 +69,7 @@ current_border_impl focusframecontainer_elementObj<element_impl>
 
 template<typename element_impl>
 void focusframecontainer_elementObj<element_impl>
-::keyboard_focus(IN_THREAD_ONLY,
+::keyboard_focus(ONLY IN_THREAD,
 		 const callback_trigger_t &trigger)
 {
 	superclass_t::keyboard_focus(IN_THREAD, trigger);
@@ -82,7 +82,7 @@ void focusframecontainer_elementObj<element_impl>
 
 template<typename element_impl>
 void focusframecontainer_elementObj<element_impl>
-::window_focus_change(IN_THREAD_ONLY, bool flag)
+::window_focus_change(ONLY IN_THREAD, bool flag)
 {
 	superclass_t::window_focus_change(IN_THREAD, flag);
 	focusframecontainerObj::implObj::window_focus_change(IN_THREAD, flag);

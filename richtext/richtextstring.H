@@ -196,7 +196,7 @@ class LIBCXX_HIDDEN richtextstring {
 	//! The freetypefont remains in effect until the next element's index,
 	//! or the end of the string.
 
-	const resolved_fonts_t &resolve_fonts(IN_THREAD_ONLY);
+	const resolved_fonts_t &resolve_fonts(ONLY IN_THREAD);
 
 	//! Calculate the width and the kerning of each character.
 
@@ -212,7 +212,7 @@ class LIBCXX_HIDDEN richtextstring {
 	//! Characters that cannot be represented get replaced by
 	//! unprintable_char.
 
-	void compute_width(IN_THREAD_ONLY,
+	void compute_width(ONLY IN_THREAD,
 			   richtextstring *previous_string,
 			   char32_t unprintable_char,
 			   std::vector<dim_t> &widths,
@@ -229,7 +229,7 @@ class LIBCXX_HIDDEN richtextstring {
 	//! "count" gives the count of characters, starting at "skip", that
 	//! get updated.
 
-	void compute_width(IN_THREAD_ONLY,
+	void compute_width(ONLY IN_THREAD,
 			   richtextstring *previous_string,
 			   char32_t unprintable_char,
 			   std::vector<dim_t> &widths,
@@ -248,7 +248,7 @@ class LIBCXX_HIDDEN richtextstring {
 	//! The current theme was updated.
 
 	//! Invoke all fonts' theme_updated().
-	void theme_updated(IN_THREAD_ONLY,
+	void theme_updated(ONLY IN_THREAD,
 			   const defaulttheme &new_theme);
 
 	//! Modify rich text meta.

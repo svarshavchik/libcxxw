@@ -44,7 +44,7 @@ class LIBCXX_HIDDEN focusframelayoutimplObj
 
 	//! Set the appropriate border for our element.
 
-	void rebuild_elements_start(IN_THREAD_ONLY,
+	void rebuild_elements_start(ONLY IN_THREAD,
 				    grid_map_t::lock &lock) override;
 
 };

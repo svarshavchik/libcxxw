@@ -79,7 +79,7 @@ typedef LIBCXX_NAMESPACE::mpcobj<testtooltip_info_s> testtooltip_info_t;
 testtooltip_info_t testtooltip_info;
 
 #define TOOLTIP_HANDLER_EXTRA_METHODS					\
-	void set_inherited_visibility(IN_THREAD_ONLY,			\
+	void set_inherited_visibility(ONLY IN_THREAD,			\
 				      inherited_visibility_info		\
 				      &info) override			\
 	{								\

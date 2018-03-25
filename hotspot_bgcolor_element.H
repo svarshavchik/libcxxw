@@ -40,7 +40,7 @@ const hotspotObj::implObj &hotspot_bgcolor_elementObj<element_impl>
 //! Invokes cold_color() to set the initial background color of the hotspot.
 
 template<typename element_impl>
-void hotspot_bgcolor_elementObj<element_impl>::initialize(IN_THREAD_ONLY)
+void hotspot_bgcolor_elementObj<element_impl>::initialize(ONLY IN_THREAD)
 {
 	hotspot_elementObj<element_impl>::initialize(IN_THREAD);
 	hotspot_bgcolorObj::implObj::temperature_changed(IN_THREAD, {});
@@ -53,7 +53,7 @@ void hotspot_bgcolor_elementObj<element_impl>::initialize(IN_THREAD_ONLY)
 
 template<typename element_impl>
 void hotspot_bgcolor_elementObj<element_impl>
-::temperature_changed(IN_THREAD_ONLY,
+::temperature_changed(ONLY IN_THREAD,
 		      const callback_trigger_t &trigger)
 {
 	hotspot_elementObj<element_impl>::temperature_changed(IN_THREAD, trigger);
@@ -63,7 +63,7 @@ void hotspot_bgcolor_elementObj<element_impl>
 //! Implement cold_color().
 template<typename element_impl>
 background_color
-hotspot_bgcolor_elementObj<element_impl>::cold_color(IN_THREAD_ONLY)
+hotspot_bgcolor_elementObj<element_impl>::cold_color(ONLY IN_THREAD)
 {
 	return background_color_element<hotspot_cold_color>::get(IN_THREAD);
 }
@@ -71,7 +71,7 @@ hotspot_bgcolor_elementObj<element_impl>::cold_color(IN_THREAD_ONLY)
 //! Implement warm_color().
 template<typename element_impl>
 background_color
-hotspot_bgcolor_elementObj<element_impl>::warm_color(IN_THREAD_ONLY)
+hotspot_bgcolor_elementObj<element_impl>::warm_color(ONLY IN_THREAD)
 {
 	return background_color_element<hotspot_warm_color>::get(IN_THREAD);
 }
@@ -79,7 +79,7 @@ hotspot_bgcolor_elementObj<element_impl>::warm_color(IN_THREAD_ONLY)
 //! Implement hot_color().
 template<typename element_impl>
 background_color
-hotspot_bgcolor_elementObj<element_impl>::hot_color(IN_THREAD_ONLY)
+hotspot_bgcolor_elementObj<element_impl>::hot_color(ONLY IN_THREAD)
 {
 	return background_color_element<hotspot_hot_color>::get(IN_THREAD);
 }

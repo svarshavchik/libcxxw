@@ -40,7 +40,7 @@ imageObj::implObj::implObj(const ref<containerObj::implObj> &container,
 {
 }
 
-void imageObj::implObj::initialize(IN_THREAD_ONLY)
+void imageObj::implObj::initialize(ONLY IN_THREAD)
 {
 	auto new_icon=current_icon(IN_THREAD)->initialize(IN_THREAD);
 
@@ -50,7 +50,7 @@ void imageObj::implObj::initialize(IN_THREAD_ONLY)
 	set_icon(IN_THREAD, new_icon);
 }
 
-void imageObj::implObj::do_draw(IN_THREAD_ONLY,
+void imageObj::implObj::do_draw(ONLY IN_THREAD,
 				const draw_info &di,
 				const rectangle_set &areas)
 {
@@ -80,7 +80,7 @@ void imageObj::implObj::do_draw(IN_THREAD_ONLY,
 				  di, di, clipped);
 }
 
-void imageObj::implObj::theme_updated(IN_THREAD_ONLY,
+void imageObj::implObj::theme_updated(ONLY IN_THREAD,
 				      const defaulttheme &new_theme)
 {
 	auto new_icon=current_icon(IN_THREAD)->theme_updated(IN_THREAD, new_theme);
@@ -91,7 +91,7 @@ void imageObj::implObj::theme_updated(IN_THREAD_ONLY,
 	set_icon(IN_THREAD, new_icon);
 }
 
-void imageObj::implObj::set_icon(IN_THREAD_ONLY, const icon &new_icon)
+void imageObj::implObj::set_icon(ONLY IN_THREAD, const icon &new_icon)
 {
 	current_icon(IN_THREAD)=new_icon->initialize(IN_THREAD);
 
@@ -99,7 +99,7 @@ void imageObj::implObj::set_icon(IN_THREAD_ONLY, const icon &new_icon)
 	schedule_redraw(IN_THREAD);
 }
 
-void imageObj::implObj::update_image_metrics(IN_THREAD_ONLY)
+void imageObj::implObj::update_image_metrics(ONLY IN_THREAD)
 {
 	auto w=current_icon(IN_THREAD)->image->get_width();
 	auto h=current_icon(IN_THREAD)->image->get_height();

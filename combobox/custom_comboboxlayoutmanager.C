@@ -423,7 +423,7 @@ focusable_container new_custom_comboboxlayoutmanager
 	c->elementObj::impl->THREAD->run_as
 		([=,
 		  selection_search=this->selection_search]
-		 (IN_THREAD_ONLY)
+		 (ONLY IN_THREAD)
 		 {
 			 // Install:
 

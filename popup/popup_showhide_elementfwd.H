@@ -31,7 +31,7 @@ public:
 
 	~popup_showhide_elementObj();
 
-	void activated(IN_THREAD_ONLY,
+	void activated(ONLY IN_THREAD,
 		       const callback_trigger_t &trigger) override;
 };
 

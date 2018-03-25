@@ -103,13 +103,13 @@ class LIBCXX_HIDDEN extra_list_row_infoObj : virtual public obj {
 	//! Invokes current_popup_attachedto_handler's
 	//! update_attachedto_element_position(), then show_alls() the popup.
 
-	void show_submenu(IN_THREAD_ONLY, const rectangle &);
+	void show_submenu(ONLY IN_THREAD, const rectangle &);
 
 	//! Hide or display the popup
 
 	//! Like show_submenu(), but toggles the visibility.
 
-	void toggle_submenu(IN_THREAD_ONLY, const rectangle &);
+	void toggle_submenu(ONLY IN_THREAD, const rectangle &);
 
 	//! Return the submenu's layoutmanager.
 

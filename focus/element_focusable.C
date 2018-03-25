@@ -37,7 +37,7 @@ LIBCXXW_NAMESPACE_START
 // Calls to report_<x>_focus() from all display elements starting with, but not
 // including the common parent and the element that gains the input focus.
 
-void elementObj::implObj::request_focus(IN_THREAD_ONLY,
+void elementObj::implObj::request_focus(ONLY IN_THREAD,
 					const ptr<elementObj::implObj>
 					&focus_from,
 					focus_reporter_t focus_reporter,
@@ -72,7 +72,7 @@ void elementObj::implObj::request_focus(IN_THREAD_ONLY,
 // This must be a top level element. If this was a child element, this gets
 // overridden by child_elementObj.
 
-void elementObj::implObj::requested_focus_to(IN_THREAD_ONLY,
+void elementObj::implObj::requested_focus_to(ONLY IN_THREAD,
 					     const ptr<elementObj::implObj> &focus_from)
 {
 	original_focus=false;
@@ -82,7 +82,7 @@ void elementObj::implObj::requested_focus_to(IN_THREAD_ONLY,
 	new_focus=true;
 }
 
-void child_elementObj::requested_focus_to(IN_THREAD_ONLY,
+void child_elementObj::requested_focus_to(ONLY IN_THREAD,
 					  const ptr<elementObj::implObj> &focus_from)
 {
 	original_focus=false;
@@ -100,13 +100,13 @@ void child_elementObj::requested_focus_to(IN_THREAD_ONLY,
 // Note that "new_focus" gets cleared before Part 1 sets it for all elements
 // in the new input focus's chain.
 
-void elementObj::implObj::requested_focus_from(IN_THREAD_ONLY)
+void elementObj::implObj::requested_focus_from(ONLY IN_THREAD)
 {
 	original_focus=true;
 	new_focus=false;
 }
 
-void child_elementObj::requested_focus_from(IN_THREAD_ONLY)
+void child_elementObj::requested_focus_from(ONLY IN_THREAD)
 {
 	original_focus=true;
 	new_focus=false;
@@ -120,7 +120,7 @@ void child_elementObj::requested_focus_from(IN_THREAD_ONLY)
 // focus, and up to the top level display element, if new_focus is not set
 // call focus_lost().
 
-void elementObj::implObj::leaving_focus(IN_THREAD_ONLY,
+void elementObj::implObj::leaving_focus(ONLY IN_THREAD,
 					const ptr<elementObj::implObj>
 					&leaving_for,
 					focus_reporter_t focus_reporter,
@@ -132,7 +132,7 @@ void elementObj::implObj::leaving_focus(IN_THREAD_ONLY,
 			 leaving_for, focus_reporter, trigger);
 }
 
-void elementObj::implObj::do_leaving_focus(IN_THREAD_ONLY,
+void elementObj::implObj::do_leaving_focus(ONLY IN_THREAD,
 					   focus_change &event,
 					   const ref<elementObj::implObj> &element,
 					   const ptr<elementObj::implObj> &leaving_for,
@@ -158,7 +158,7 @@ void elementObj::implObj::do_leaving_focus(IN_THREAD_ONLY,
 	event=focus_change::child_lost;
 }
 
-void child_elementObj::do_leaving_focus(IN_THREAD_ONLY,
+void child_elementObj::do_leaving_focus(ONLY IN_THREAD,
 					focus_change &event,
 					const ref<elementObj::implObj> &element,
 					const ptr<elementObj::implObj> &leaving_for,
@@ -182,7 +182,7 @@ void child_elementObj::do_leaving_focus(IN_THREAD_ONLY,
 // until the element that's gaining focus, call focus_gained() if original_focus
 // is not set.
 
-void elementObj::implObj::entering_focus(IN_THREAD_ONLY,
+void elementObj::implObj::entering_focus(ONLY IN_THREAD,
 					 const ptr<elementObj::implObj>
 					 &focus_from,
 					 focus_reporter_t focus_reporter,
@@ -193,7 +193,7 @@ void elementObj::implObj::entering_focus(IN_THREAD_ONLY,
 			  focus_from, focus_reporter, trigger);
 }
 
-void child_elementObj::do_entering_focus(IN_THREAD_ONLY,
+void child_elementObj::do_entering_focus(ONLY IN_THREAD,
 					 focus_change event,
 					 const ref<elementObj::implObj> &element,
 					 const ptr<elementObj::implObj> &focus_from,
@@ -213,7 +213,7 @@ void child_elementObj::do_entering_focus(IN_THREAD_ONLY,
 					       trigger);
 }
 
-void elementObj::implObj::do_entering_focus(IN_THREAD_ONLY,
+void elementObj::implObj::do_entering_focus(ONLY IN_THREAD,
 					    focus_change event,
 					    const ref<elementObj::implObj> &element,
 					    const ptr<elementObj::implObj> &focus_from,
@@ -236,7 +236,7 @@ void elementObj::implObj::do_entering_focus(IN_THREAD_ONLY,
 	}
 }
 
-void elementObj::implObj::focus_movement_complete(IN_THREAD_ONLY,
+void elementObj::implObj::focus_movement_complete(ONLY IN_THREAD,
 						  bool stop_at_original_focus,
 						  focus_reporter_t focus_reporter,
 						  const callback_trigger_t &trigger)
@@ -249,7 +249,7 @@ void elementObj::implObj::focus_movement_complete(IN_THREAD_ONLY,
 				trigger);
 }
 
-void child_elementObj::focus_movement_complete(IN_THREAD_ONLY,
+void child_elementObj::focus_movement_complete(ONLY IN_THREAD,
 					       bool stop_at_original_focus,
 					       focus_reporter_t focus_reporter,
 					       const callback_trigger_t &trigger)

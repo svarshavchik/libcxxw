@@ -14,7 +14,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-void container_clear_padding(IN_THREAD_ONLY,
+void container_clear_padding(ONLY IN_THREAD,
 			     elementObj::implObj &container_element_impl,
 			     layoutmanagerObj::implObj &manager,
 			     const ref<elementObj::implObj> &e_impl,

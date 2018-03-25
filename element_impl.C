@@ -88,13 +88,13 @@ void elementObj::implObj::removed_from_container()
 {
 	THREAD->run_as
 		([impl=ref(this)]
-		 (IN_THREAD_ONLY)
+		 (ONLY IN_THREAD)
 		 {
 			 impl->removed_from_container(IN_THREAD);
 		 });
 }
 
-void elementObj::implObj::removed_from_container(IN_THREAD_ONLY)
+void elementObj::implObj::removed_from_container(ONLY IN_THREAD)
 {
 	if (removed_from_container_was_called_in_destructor)
 		return;
@@ -122,7 +122,7 @@ void elementObj::implObj::removed_from_container(IN_THREAD_ONLY)
 							  ref(this));
 }
 
-void elementObj::implObj::removed(IN_THREAD_ONLY)
+void elementObj::implObj::removed(ONLY IN_THREAD)
 {
 }
 
@@ -130,7 +130,7 @@ void elementObj::implObj::toggle_visibility()
 {
 	THREAD->get_batch_queue()
 		->run_as([me=ref(this)]
-			 (IN_THREAD_ONLY)
+			 (ONLY IN_THREAD)
 			 {
 				 me->toggle_visibility(IN_THREAD);
 			 });
@@ -143,13 +143,13 @@ void elementObj::implObj::request_visibility(bool flag)
 	THREAD->get_batch_queue()->schedule_for_visibility(ref(this), flag);
 }
 
-void elementObj::implObj::toggle_visibility(IN_THREAD_ONLY)
+void elementObj::implObj::toggle_visibility(ONLY IN_THREAD)
 {
 	request_visibility(IN_THREAD,
 			   !data(IN_THREAD).requested_visibility);
 }
 
-void elementObj::implObj::request_visibility(IN_THREAD_ONLY, bool flag)
+void elementObj::implObj::request_visibility(ONLY IN_THREAD, bool flag)
 {
 	if (data(IN_THREAD).requested_visibility == flag)
 		return;
@@ -159,7 +159,7 @@ void elementObj::implObj::request_visibility(IN_THREAD_ONLY, bool flag)
 	schedule_update_visibility(IN_THREAD);
 }
 
-void elementObj::implObj::schedule_update_visibility(IN_THREAD_ONLY)
+void elementObj::implObj::schedule_update_visibility(ONLY IN_THREAD)
 {
 	IN_THREAD->insert_element_set
 		(*IN_THREAD->visibility_updated(IN_THREAD), elementimpl(this));
@@ -169,19 +169,19 @@ void elementObj::implObj::request_visibility_recursive(bool flag)
 {
 	THREAD->get_batch_queue()->run_as
 		([flag, me=elementimpl(this)]
-		 (IN_THREAD_ONLY)
+		 (ONLY IN_THREAD)
 		 {
 			 me->request_visibility_recursive(IN_THREAD, flag);
 		 });
 }
 
-void elementObj::implObj::request_visibility_recursive(IN_THREAD_ONLY,
+void elementObj::implObj::request_visibility_recursive(ONLY IN_THREAD,
 						       bool flag)
 {
 	request_visibility(IN_THREAD, flag);
 }
 
-void elementObj::implObj::update_visibility(IN_THREAD_ONLY)
+void elementObj::implObj::update_visibility(ONLY IN_THREAD)
 {
 	// Ignore visibility updates until such time we are
 	// initialize_if_needed().
@@ -206,7 +206,7 @@ void elementObj::implObj::update_visibility(IN_THREAD_ONLY)
 			    data(IN_THREAD).requested_visibility));
 }
 
-void elementObj::implObj::visibility_updated(IN_THREAD_ONLY, bool flag)
+void elementObj::implObj::visibility_updated(ONLY IN_THREAD, bool flag)
 {
 	// This is called when this element's actual visibility changes.
 	//
@@ -234,7 +234,7 @@ void elementObj::implObj::visibility_updated(IN_THREAD_ONLY, bool flag)
 }
 
 void elementObj::implObj
-::inherited_visibility_updated(IN_THREAD_ONLY,
+::inherited_visibility_updated(ONLY IN_THREAD,
 			       inherited_visibility_info &visibility_info)
 {
 	// This is called when the element's inherited_visibility, the
@@ -249,7 +249,7 @@ void elementObj::implObj
 }
 
 void elementObj::implObj
-::do_inherited_visibility_updated(IN_THREAD_ONLY,
+::do_inherited_visibility_updated(ONLY IN_THREAD,
 				  inherited_visibility_info &info)
 {
 	// Officially record the fact that this element is now visible, or
@@ -273,14 +273,14 @@ void elementObj::implObj
 }
 
 void elementObj::implObj
-::set_inherited_visibility(IN_THREAD_ONLY,
+::set_inherited_visibility(ONLY IN_THREAD,
 			   inherited_visibility_info &info)
 {
 	set_inherited_visibility_flag(IN_THREAD, info.flag);
 }
 
 void elementObj::implObj
-::set_inherited_visibility_flag(IN_THREAD_ONLY, bool flag)
+::set_inherited_visibility_flag(ONLY IN_THREAD, bool flag)
 {
 	// Offically update this element's "real" visibility.
 
@@ -302,7 +302,7 @@ void elementObj::implObj
 	}
 }
 
-void elementObj::implObj::draw_after_visibility_updated(IN_THREAD_ONLY,
+void elementObj::implObj::draw_after_visibility_updated(ONLY IN_THREAD,
 							bool flag)
 {
 	// Display the contents of this element.
@@ -315,7 +315,7 @@ void elementObj::implObj::draw_after_visibility_updated(IN_THREAD_ONLY,
 }
 
 void elementObj::implObj
-::invalidate_cached_draw_info(IN_THREAD_ONLY,
+::invalidate_cached_draw_info(ONLY IN_THREAD,
 			      draw_info_invalidation_reason reason)
 {
 	if (!data(IN_THREAD).cached_draw_info)
@@ -355,7 +355,7 @@ void elementObj::implObj
 		       });
 }
 
-void elementObj::implObj::schedule_redraw(IN_THREAD_ONLY)
+void elementObj::implObj::schedule_redraw(ONLY IN_THREAD)
 {
 	if (!get_window_handler().has_exposed(IN_THREAD))
 		return;
@@ -366,13 +366,13 @@ void elementObj::implObj::schedule_redraw(IN_THREAD_ONLY)
 void elementObj::implObj::schedule_redraw_recursively()
 {
 	THREAD->run_as([me=ref(this)]
-		       (IN_THREAD_ONLY)
+		       (ONLY IN_THREAD)
 		       {
 			       me->schedule_redraw_recursively(IN_THREAD);
 		       });
 }
 
-void elementObj::implObj::schedule_redraw_recursively(IN_THREAD_ONLY)
+void elementObj::implObj::schedule_redraw_recursively(ONLY IN_THREAD)
 {
 	schedule_redraw(IN_THREAD);
 
@@ -384,7 +384,7 @@ void elementObj::implObj::schedule_redraw_recursively(IN_THREAD_ONLY)
 		       });
 }
 
-void elementObj::implObj::enablability_changed(IN_THREAD_ONLY)
+void elementObj::implObj::enablability_changed(ONLY IN_THREAD)
 {
 	schedule_redraw(IN_THREAD);
 
@@ -404,7 +404,7 @@ rectangle_set draw_info::entire_area() const
 	return {{0, 0, absolute_location.width, absolute_location.height}};
 }
 
-rectangle elementObj::implObj::get_absolute_location_on_screen(IN_THREAD_ONLY)
+rectangle elementObj::implObj::get_absolute_location_on_screen(ONLY IN_THREAD)
 {
 	auto r=get_absolute_location(IN_THREAD);
 
@@ -413,14 +413,14 @@ rectangle elementObj::implObj::get_absolute_location_on_screen(IN_THREAD_ONLY)
 	return r;
 }
 
-bool elementObj::implObj::redraw_scheduled(IN_THREAD_ONLY)
+bool elementObj::implObj::redraw_scheduled(ONLY IN_THREAD)
 {
 	auto elements_to_redraw=IN_THREAD->elements_to_redraw(IN_THREAD);
 
 	return elements_to_redraw->find(ref(this)) != elements_to_redraw->end();
 }
 
-void elementObj::implObj::explicit_redraw(IN_THREAD_ONLY)
+void elementObj::implObj::explicit_redraw(ONLY IN_THREAD)
 {
 	// Remove myself from the connection thread's list.
 
@@ -440,7 +440,7 @@ void elementObj::implObj
 {
 	THREAD->get_batch_queue()->run_as
 		([cb, me=ref(this)]
-		 (IN_THREAD_ONLY)
+		 (ONLY IN_THREAD)
 		 {
 			 me->data(IN_THREAD).element_state_callback=cb;
 
@@ -457,7 +457,7 @@ void elementObj::implObj::set_minimum_override(dim_t horiz_override,
 	THREAD->run_as([me=ref(this),
 			horiz_override,
 			vert_override]
-		       (IN_THREAD_ONLY)
+		       (ONLY IN_THREAD)
 		       {
 			       me->set_minimum_override(IN_THREAD,
 							horiz_override,
@@ -465,7 +465,7 @@ void elementObj::implObj::set_minimum_override(dim_t horiz_override,
 		       });
 }
 
-void elementObj::implObj::set_minimum_override(IN_THREAD_ONLY,
+void elementObj::implObj::set_minimum_override(ONLY IN_THREAD,
 					       dim_t horiz_override,
 					       dim_t vert_override)
 {
@@ -474,7 +474,7 @@ void elementObj::implObj::set_minimum_override(IN_THREAD_ONLY,
 				       horiz_override, vert_override);
 }
 
-void elementObj::implObj::update_current_position(IN_THREAD_ONLY,
+void elementObj::implObj::update_current_position(ONLY IN_THREAD,
 						  const rectangle &r)
 {
 	auto &current_data=data(IN_THREAD);
@@ -488,7 +488,7 @@ void elementObj::implObj::update_current_position(IN_THREAD_ONLY,
 	current_position_updated(IN_THREAD);
 }
 
-void elementObj::implObj::scroll_by_parent_container(IN_THREAD_ONLY,
+void elementObj::implObj::scroll_by_parent_container(ONLY IN_THREAD,
 						     coord_t x,
 						     coord_t y)
 {
@@ -517,7 +517,7 @@ void elementObj::implObj::scroll_by_parent_container(IN_THREAD_ONLY,
 	absolute_location_updated(IN_THREAD);
 }
 
-void elementObj::implObj::current_position_updated(IN_THREAD_ONLY)
+void elementObj::implObj::current_position_updated(ONLY IN_THREAD)
 {
 	schedule_update_position_processing(IN_THREAD);
 
@@ -531,7 +531,7 @@ void elementObj::implObj::current_position_updated(IN_THREAD_ONLY)
 		       });
 }
 
-void elementObj::implObj::absolute_location_updated(IN_THREAD_ONLY)
+void elementObj::implObj::absolute_location_updated(ONLY IN_THREAD)
 {
 	for_each_child(IN_THREAD,
 		       [&]
@@ -541,14 +541,14 @@ void elementObj::implObj::absolute_location_updated(IN_THREAD_ONLY)
 		       });
 }
 
-void elementObj::implObj::schedule_update_position_processing(IN_THREAD_ONLY)
+void elementObj::implObj::schedule_update_position_processing(ONLY IN_THREAD)
 {
 	IN_THREAD->insert_element_set(*IN_THREAD->element_position_updated
 				      (IN_THREAD),
 				      elementimpl(this));
 }
 
-void elementObj::implObj::process_updated_position(IN_THREAD_ONLY)
+void elementObj::implObj::process_updated_position(ONLY IN_THREAD)
 {
 	schedule_redraw(IN_THREAD);
 
@@ -560,14 +560,14 @@ void elementObj::implObj::process_updated_position(IN_THREAD_ONLY)
 
 }
 
-void elementObj::implObj::notify_updated_position(IN_THREAD_ONLY)
+void elementObj::implObj::notify_updated_position(ONLY IN_THREAD)
 {
 	invoke_element_state_updates(IN_THREAD,
 				     element_state::current_state);
 }
 
 element_state elementObj::implObj
-::create_element_state(IN_THREAD_ONLY,
+::create_element_state(ONLY IN_THREAD,
 		       element_state::state_update_t element_state_for)
 {
 	auto &current_data=data(IN_THREAD);
@@ -585,7 +585,7 @@ element_state elementObj::implObj
 }
 
 void elementObj::implObj
-::invoke_element_state_updates(IN_THREAD_ONLY,
+::invoke_element_state_updates(ONLY IN_THREAD,
 			       element_state::state_update_t reason)
 {
 	auto &cb=data(IN_THREAD).element_state_callback;
@@ -595,7 +595,7 @@ void elementObj::implObj
 			   busy_impl{*this});
 }
 
-clip_region_set::clip_region_set(IN_THREAD_ONLY,
+clip_region_set::clip_region_set(ONLY IN_THREAD,
 				 generic_windowObj::handlerObj &h,
 				 const draw_info &di)
 {
@@ -604,7 +604,7 @@ clip_region_set::clip_region_set(IN_THREAD_ONLY,
 	h.set_clip_rectangles(di.element_viewport);
 }
 
-void elementObj::implObj::exposure_event_recursive(IN_THREAD_ONLY,
+void elementObj::implObj::exposure_event_recursive(ONLY IN_THREAD,
 						   const rectangle_set &areas)
 {
 	auto &di=get_draw_info(IN_THREAD);
@@ -671,7 +671,7 @@ void elementObj::implObj::exposure_event_recursive(IN_THREAD_ONLY,
 		       });
 }
 
-void elementObj::implObj::draw(IN_THREAD_ONLY,
+void elementObj::implObj::draw(ONLY IN_THREAD,
 			       const draw_info &di,
 			       const rectangle_set &areas)
 {
@@ -684,7 +684,7 @@ void elementObj::implObj::draw(IN_THREAD_ONLY,
 		do_draw(IN_THREAD, di, areas);
 }
 
-void elementObj::implObj::do_draw(IN_THREAD_ONLY,
+void elementObj::implObj::do_draw(ONLY IN_THREAD,
 				  const draw_info &di,
 				  const rectangle_set &areas)
 {
@@ -692,7 +692,7 @@ void elementObj::implObj::do_draw(IN_THREAD_ONLY,
 }
 
 void elementObj::implObj
-::do_draw_using_scratch_buffer(IN_THREAD_ONLY,
+::do_draw_using_scratch_buffer(ONLY IN_THREAD,
 			       const function<scratch_buffer_draw_func_t> &cb,
 			       const rectangle &rect,
 			       const draw_info &di,
@@ -705,7 +705,7 @@ void elementObj::implObj
 }
 
 void elementObj::implObj
-::do_draw_using_scratch_buffer(IN_THREAD_ONLY,
+::do_draw_using_scratch_buffer(ONLY IN_THREAD,
 			       const function<scratch_buffer_draw_func_t> &cb,
 			       const rectangle &rect,
 			       const draw_info &di,
@@ -748,7 +748,7 @@ void elementObj::implObj
 }
 
 void elementObj::implObj
-::draw_to_window_picture(IN_THREAD_ONLY,
+::draw_to_window_picture(ONLY IN_THREAD,
 			 const clip_region_set &set,
 			 const draw_info &di,
 			 const picture &contents,
@@ -798,7 +798,7 @@ void elementObj::implObj
 	// generic_window_handler inherits from pictureObj::implObj
 	wh.composite(contents->impl, 0, 0, cpy);
 }
-void elementObj::implObj::clear_to_color(IN_THREAD_ONLY,
+void elementObj::implObj::clear_to_color(ONLY IN_THREAD,
 					 const draw_info &di,
 					 const rectangle_set &areas)
 {
@@ -807,7 +807,7 @@ void elementObj::implObj::clear_to_color(IN_THREAD_ONLY,
 		       di, di, areas);
 }
 
-void elementObj::implObj::clear_to_color(IN_THREAD_ONLY,
+void elementObj::implObj::clear_to_color(ONLY IN_THREAD,
 					 const clip_region_set &clip,
 					 const draw_info &di,
 					 const draw_info &background_color_di,
@@ -852,7 +852,7 @@ void elementObj::implObj::clear_to_color(IN_THREAD_ONLY,
 void elementObj::implObj::remove_background_color()
 {
 	THREAD->run_as([impl=ref<implObj>(this)]
-		       (IN_THREAD_ONLY)
+		       (ONLY IN_THREAD)
 		       {
 			       impl->remove_background_color(IN_THREAD);
 		       });
@@ -869,13 +869,13 @@ void elementObj::implObj
 ::set_background_color(const background_color &c)
 {
 	THREAD->run_as([impl=ref<implObj>(this), c]
-		       (IN_THREAD_ONLY)
+		       (ONLY IN_THREAD)
 		       {
 			       impl->set_background_color(IN_THREAD, c);
 		       });
 }
 
-void elementObj::implObj::background_color_changed(IN_THREAD_ONLY)
+void elementObj::implObj::background_color_changed(ONLY IN_THREAD)
 {
 	if (!data(IN_THREAD).inherited_visibility)
 	{
@@ -907,7 +907,7 @@ void elementObj::implObj::background_color_changed(IN_THREAD_ONLY)
 		       });
 }
 
-void elementObj::implObj::theme_updated(IN_THREAD_ONLY,
+void elementObj::implObj::theme_updated(ONLY IN_THREAD,
 					const defaulttheme &new_theme)
 {
 	invalidate_cached_draw_info(IN_THREAD,
@@ -924,18 +924,18 @@ void elementObj::implObj::theme_updated(IN_THREAD_ONLY,
 		       });
 }
 
-void elementObj::implObj::initialize_or_log_exception(IN_THREAD_ONLY)
+void elementObj::implObj::initialize_or_log_exception(ONLY IN_THREAD)
 {
 	try {
 		initialize(IN_THREAD);
 	} CATCH_EXCEPTIONS;
 }
 
-void elementObj::implObj::initialize(IN_THREAD_ONLY)
+void elementObj::implObj::initialize(ONLY IN_THREAD)
 {
 }
 
-void elementObj::implObj::do_for_each_child(IN_THREAD_ONLY,
+void elementObj::implObj::do_for_each_child(ONLY IN_THREAD,
 					    const function<void
 					    (const element &e)> &)
 {
@@ -987,13 +987,13 @@ void elementObj::implObj::on_keyboard_focus(const
 					    &callback)
 {
 	THREAD->run_as([me=ref(this), callback]
-		       (IN_THREAD_ONLY)
+		       (ONLY IN_THREAD)
 		       {
 			       me->on_keyboard_focus(IN_THREAD, callback);
 		       });
 }
 
-void elementObj::implObj::on_keyboard_focus(IN_THREAD_ONLY,
+void elementObj::implObj::on_keyboard_focus(ONLY IN_THREAD,
 					    const
 					    functionref<focus_callback_t>
 					    &callback)
@@ -1002,7 +1002,7 @@ void elementObj::implObj::on_keyboard_focus(IN_THREAD_ONLY,
 	invoke_keyboard_focus_callback(IN_THREAD, initial{});
 }
 
-void elementObj::implObj::report_keyboard_focus(IN_THREAD_ONLY,
+void elementObj::implObj::report_keyboard_focus(ONLY IN_THREAD,
 						focus_change event,
 						const callback_trigger_t &t)
 {
@@ -1016,7 +1016,7 @@ void elementObj::implObj::report_keyboard_focus(IN_THREAD_ONLY,
 }
 
 
-void elementObj::implObj::keyboard_focus(IN_THREAD_ONLY,
+void elementObj::implObj::keyboard_focus(ONLY IN_THREAD,
 					 const callback_trigger_t &trigger)
 {
 	unschedule_hover_action(IN_THREAD);
@@ -1024,7 +1024,7 @@ void elementObj::implObj::keyboard_focus(IN_THREAD_ONLY,
 }
 
 void elementObj::implObj
-::invoke_keyboard_focus_callback(IN_THREAD_ONLY,
+::invoke_keyboard_focus_callback(ONLY IN_THREAD,
 				 const callback_trigger_t &trigger)
 {
 	try {
@@ -1041,13 +1041,13 @@ void elementObj::implObj::on_pointer_focus(const
 					   &callback)
 {
 	THREAD->run_as([me=ref(this), callback]
-		       (IN_THREAD_ONLY)
+		       (ONLY IN_THREAD)
 		       {
 			       me->on_pointer_focus(IN_THREAD, callback);
 		       });
 }
 
-void elementObj::implObj::on_pointer_focus(IN_THREAD_ONLY,
+void elementObj::implObj::on_pointer_focus(ONLY IN_THREAD,
 					    const
 					    functionref<focus_callback_t>
 					    &callback)
@@ -1056,7 +1056,7 @@ void elementObj::implObj::on_pointer_focus(IN_THREAD_ONLY,
 	invoke_pointer_focus_callback(IN_THREAD, initial{});
 }
 
-void elementObj::implObj::report_pointer_focus(IN_THREAD_ONLY,
+void elementObj::implObj::report_pointer_focus(ONLY IN_THREAD,
 					       focus_change event,
 					       const callback_trigger_t
 					       &trigger)
@@ -1070,7 +1070,7 @@ void elementObj::implObj::report_pointer_focus(IN_THREAD_ONLY,
 	pointer_focus(IN_THREAD, trigger);
 }
 
-void elementObj::implObj::pointer_focus(IN_THREAD_ONLY,
+void elementObj::implObj::pointer_focus(ONLY IN_THREAD,
 					const callback_trigger_t &trigger)
 {
 	unschedule_hover_action(IN_THREAD);
@@ -1078,7 +1078,7 @@ void elementObj::implObj::pointer_focus(IN_THREAD_ONLY,
 }
 
 void elementObj::implObj
-::invoke_pointer_focus_callback(IN_THREAD_ONLY,
+::invoke_pointer_focus_callback(ONLY IN_THREAD,
 				const callback_trigger_t &trigger)
 {
 	try {
@@ -1090,16 +1090,16 @@ void elementObj::implObj
 	} CATCH_EXCEPTIONS;
 }
 
-void elementObj::implObj::window_focus_change(IN_THREAD_ONLY, bool flag)
+void elementObj::implObj::window_focus_change(ONLY IN_THREAD, bool flag)
 {
 }
 
-bool elementObj::implObj::current_keyboard_focus(IN_THREAD_ONLY)
+bool elementObj::implObj::current_keyboard_focus(ONLY IN_THREAD)
 {
 	return in_focus(most_recent_keyboard_focus_change(IN_THREAD));
 }
 
-bool elementObj::implObj::current_pointer_focus(IN_THREAD_ONLY)
+bool elementObj::implObj::current_pointer_focus(ONLY IN_THREAD)
 {
 	return in_focus(most_recent_pointer_focus_change(IN_THREAD));
 }
@@ -1113,14 +1113,14 @@ void elementObj::implObj
 ::on_key_event(const functionref<key_event_callback_t> &cb)
 {
 	THREAD->run_as([me=ref(this), cb]
-		       (IN_THREAD_ONLY)
+		       (ONLY IN_THREAD)
 		       {
 			       me->on_key_event(IN_THREAD, cb);
 		       });
 }
 
 void elementObj::implObj
-::on_key_event(IN_THREAD_ONLY,
+::on_key_event(ONLY IN_THREAD,
 	       const functionref<key_event_callback_t> &cb)
 {
 	data(IN_THREAD).on_key_event_callback=cb;
@@ -1136,7 +1136,7 @@ bool elementObj::implObj::activate_for(const button_event &be) const
 	return be.press;
 }
 
-bool elementObj::implObj::process_key_event(IN_THREAD_ONLY, const key_event &e)
+bool elementObj::implObj::process_key_event(ONLY IN_THREAD, const key_event &e)
 {
 	busy_impl mcguffin{*this};
 
@@ -1150,7 +1150,7 @@ bool elementObj::implObj::uses_input_method()
 	return false;
 }
 
-void elementObj::implObj::report_current_cursor_position(IN_THREAD_ONLY,
+void elementObj::implObj::report_current_cursor_position(ONLY IN_THREAD,
 							 rectangle pos)
 {
 	auto loc=get_absolute_location(IN_THREAD);
@@ -1166,7 +1166,7 @@ void elementObj::implObj::report_current_cursor_position(IN_THREAD_ONLY,
 		 });
 }
 
-void elementObj::implObj::report_motion_event(IN_THREAD_ONLY,
+void elementObj::implObj::report_motion_event(ONLY IN_THREAD,
 					      const motion_event &me)
 {
 	data(IN_THREAD).last_motion_x=me.x;
@@ -1183,7 +1183,7 @@ void elementObj::implObj::report_motion_event(IN_THREAD_ONLY,
 	}
 }
 
-void elementObj::implObj::schedule_hover_action(IN_THREAD_ONLY)
+void elementObj::implObj::schedule_hover_action(ONLY IN_THREAD)
 {
 	auto &d=data(IN_THREAD);
 
@@ -1202,7 +1202,7 @@ void elementObj::implObj::schedule_hover_action(IN_THREAD_ONLY)
 	schedule_hover_timer(IN_THREAD, now);
 }
 
-void elementObj::implObj::schedule_hover_timer(IN_THREAD_ONLY,
+void elementObj::implObj::schedule_hover_timer(ONLY IN_THREAD,
 						 tick_clock_t::time_point now)
 {
 	data(IN_THREAD).hover_scheduled_mcguffin=IN_THREAD->schedule_callback
@@ -1211,7 +1211,7 @@ void elementObj::implObj::schedule_hover_timer(IN_THREAD_ONLY,
 		 ? data(IN_THREAD).hover_scheduled_creation - now
 		 : ++tick_clock_t::duration::zero(),
 		 [me=make_weak_capture(ref<implObj>(this))]
-		 (IN_THREAD_ONLY)
+		 (ONLY IN_THREAD)
 		 {
 			 auto got=me.get();
 
@@ -1224,7 +1224,7 @@ void elementObj::implObj::schedule_hover_timer(IN_THREAD_ONLY,
 		 });
 }
 
-void elementObj::implObj::check_hover_timer(IN_THREAD_ONLY)
+void elementObj::implObj::check_hover_timer(ONLY IN_THREAD)
 {
 	// The timer to show the tooltip gets scheduled on a motion event.
 	// For optimal performance the timer does not get rescheduled with
@@ -1251,18 +1251,18 @@ void elementObj::implObj::check_hover_timer(IN_THREAD_ONLY)
 	hover_action(IN_THREAD);
 }
 
-void elementObj::implObj::unschedule_hover_action(IN_THREAD_ONLY)
+void elementObj::implObj::unschedule_hover_action(ONLY IN_THREAD)
 {
 	data(IN_THREAD).hover_scheduled_mcguffin=nullptr;
 
 	hover_cancel(IN_THREAD);
 }
 
-void elementObj::implObj::ensure_visibility(IN_THREAD_ONLY, const rectangle &r)
+void elementObj::implObj::ensure_visibility(ONLY IN_THREAD, const rectangle &r)
 {
 }
 
-void elementObj::implObj::ensure_entire_visibility(IN_THREAD_ONLY)
+void elementObj::implObj::ensure_entire_visibility(ONLY IN_THREAD)
 {
 	ensure_visibility(IN_THREAD, {0, 0,
 				data(IN_THREAD).current_position.width,
@@ -1270,7 +1270,7 @@ void elementObj::implObj::ensure_entire_visibility(IN_THREAD_ONLY)
 }
 
 
-bool elementObj::implObj::pasted(IN_THREAD_ONLY,
+bool elementObj::implObj::pasted(ONLY IN_THREAD,
 				 const std::u32string_view &str)
 {
 	busy_impl mcguffin{*this};
@@ -1286,7 +1286,7 @@ void elementObj::implObj::creating_focusable_element()
 
 //////////////////////////////////////////////////////////////////////////////
 
-void elementObj::implObj::set_cursor_pointer(IN_THREAD_ONLY,
+void elementObj::implObj::set_cursor_pointer(ONLY IN_THREAD,
 					     const cursor_pointer &p)
 {
 	if (data(IN_THREAD).pointer != p)
@@ -1296,7 +1296,7 @@ void elementObj::implObj::set_cursor_pointer(IN_THREAD_ONLY,
 	}
 }
 
-void elementObj::implObj::remove_cursor_pointer(IN_THREAD_ONLY)
+void elementObj::implObj::remove_cursor_pointer(ONLY IN_THREAD)
 {
 	if (data(IN_THREAD).pointer)
 	{
@@ -1305,7 +1305,7 @@ void elementObj::implObj::remove_cursor_pointer(IN_THREAD_ONLY)
 	}
 }
 
-cursor_pointerptr elementObj::implObj::get_cursor_pointer(IN_THREAD_ONLY)
+cursor_pointerptr elementObj::implObj::get_cursor_pointer(ONLY IN_THREAD)
 {
 	return data(IN_THREAD).pointer;
 }

@@ -113,7 +113,7 @@ void booklayoutmanagerObj
 			  // is rather rude.
 			  ensure_visibility=trigger.index() ==
 			  callback_trigger_button_event ? false:true]
-			 (IN_THREAD_ONLY)
+			 (ONLY IN_THREAD)
 			 {
 				 if (previous_page)
 				 {
@@ -163,7 +163,7 @@ void booklayoutmanagerObj::close()
 
 	impl->book_pagecontainer->elementObj::impl->THREAD
 		->run_as([previous_page]
-			 (IN_THREAD_ONLY)
+			 (ONLY IN_THREAD)
 			 {
 				 previous_page->impl
 					 ->set_active(IN_THREAD, false);
@@ -313,7 +313,7 @@ auto create_new_tab(const gridfactory &gridfactory,
 	// to be set. Also, install the shortcut.
 	impl->get_element_impl().THREAD
 		->run_as([impl, sc]
-			 (IN_THREAD_ONLY)
+			 (ONLY IN_THREAD)
 			 {
 				 impl->set_active(IN_THREAD, false);
 				 impl->set_shortcut(IN_THREAD, sc);
@@ -511,8 +511,8 @@ class LIBCXX_HIDDEN pagetabpeepholed_containerObj
 
 	// There are no scrollbars, but we need to define these anyway.
 
-	dim_t horizontal_increment(IN_THREAD_ONLY) const override { return 0; }
-	dim_t vertical_increment(IN_THREAD_ONLY) const override { return 0; }
+	dim_t horizontal_increment(ONLY IN_THREAD) const override { return 0; }
+	dim_t vertical_increment(ONLY IN_THREAD) const override { return 0; }
 };
 
 // And we need to implement our focusable_container.

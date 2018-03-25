@@ -45,10 +45,10 @@ class LIBCXX_HIDDEN focusframecontainer_elementObj
 	virtual current_border_impl get_focusoff_border() const override;
 	virtual current_border_impl get_focuson_border() const override;
 
-	void keyboard_focus(IN_THREAD_ONLY,
+	void keyboard_focus(ONLY IN_THREAD,
 			    const callback_trigger_t &trigger) override;
 
-	void window_focus_change(IN_THREAD_ONLY, bool flag) override;
+	void window_focus_change(ONLY IN_THREAD, bool flag) override;
 };
 
 

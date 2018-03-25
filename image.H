@@ -40,19 +40,19 @@ public:
 
 	//! Inherited from elementObj::implObj
 
-	void initialize(IN_THREAD_ONLY) override;
+	void initialize(ONLY IN_THREAD) override;
 
-	void do_draw(IN_THREAD_ONLY,
+	void do_draw(ONLY IN_THREAD,
 		     const draw_info &di,
 		     const rectangle_set &areas) override;
 
-	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme) override;
+	void theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme) override;
 
 	///////////////////////////////////////////////////////
 
 	//! Set new icon.
 
-	void set_icon(IN_THREAD_ONLY, const icon &new_icon);
+	void set_icon(ONLY IN_THREAD, const icon &new_icon);
 
  protected:
 
@@ -61,7 +61,7 @@ public:
 	//! The default implementation sets the metrics from the
 	//! icon's width and height.
 
-	virtual void update_image_metrics(IN_THREAD_ONLY);
+	virtual void update_image_metrics(ONLY IN_THREAD);
 
 };
 

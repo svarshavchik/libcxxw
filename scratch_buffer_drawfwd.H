@@ -35,12 +35,12 @@ class LIBCXX_HIDDEN scratch_buffer_draw_impl {
 	~scratch_buffer_draw_impl();
 
 	//! Reinvoke do_draw(), after locking area_scratch
-	void get_scratch_buffer(IN_THREAD_ONLY,
+	void get_scratch_buffer(ONLY IN_THREAD,
 				elementObj::implObj &element,
 				const draw_info &di);
 
 	//! Implement do_draw(), with a convenient scratch buffer.
-	virtual void do_draw(IN_THREAD_ONLY,
+	virtual void do_draw(ONLY IN_THREAD,
 			     const draw_info &di,
 			     const picture &area_picture,
 			     const pixmap &area_pixmap,
@@ -78,7 +78,7 @@ public:
 
 	//! Implement element's do_draw().
 
-	void do_draw(IN_THREAD_ONLY,
+	void do_draw(ONLY IN_THREAD,
 		     const draw_info &di,
 		     const rectangle_set &areas) override;
 

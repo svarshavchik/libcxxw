@@ -30,45 +30,45 @@ void layoutmanagerObj::implObj::needs_recalculation(const batch_queue &queue)
 	queue->schedule_for_recalculation(ref<implObj>(this));
 }
 
-void layoutmanagerObj::implObj::child_metrics_updated(IN_THREAD_ONLY)
+void layoutmanagerObj::implObj::child_metrics_updated(ONLY IN_THREAD)
 {
 	needs_recalculation(IN_THREAD);
 }
 
-void layoutmanagerObj::implObj::needs_recalculation(IN_THREAD_ONLY)
+void layoutmanagerObj::implObj::needs_recalculation(ONLY IN_THREAD)
 {
 	container_impl->needs_recalculation(IN_THREAD);
 }
 
-void layoutmanagerObj::implObj::current_position_updated(IN_THREAD_ONLY)
+void layoutmanagerObj::implObj::current_position_updated(ONLY IN_THREAD)
 {
 	get_element_impl().current_position_updated(IN_THREAD);
 }
 
 void layoutmanagerObj::implObj
-::child_background_color_changed(IN_THREAD_ONLY, const elementimpl &child)
+::child_background_color_changed(ONLY IN_THREAD, const elementimpl &child)
 {
 }
 
 void layoutmanagerObj::implObj
-::requested_child_visibility_changed(IN_THREAD_ONLY,
+::requested_child_visibility_changed(ONLY IN_THREAD,
 				     const elementimpl &child,
 				     bool flag)
 {
 }
 
 void layoutmanagerObj::implObj
-::inherited_child_visibility_changed(IN_THREAD_ONLY, const elementimpl &child,
+::inherited_child_visibility_changed(ONLY IN_THREAD, const elementimpl &child,
 				     inherited_visibility_info &info)
 {
 }
 
 void layoutmanagerObj::implObj
-::inherited_visibility_updated(IN_THREAD_ONLY, bool)
+::inherited_visibility_updated(ONLY IN_THREAD, bool)
 {
 }
 
-rectangle layoutmanagerObj::implObj::padded_position(IN_THREAD_ONLY,
+rectangle layoutmanagerObj::implObj::padded_position(ONLY IN_THREAD,
 						     const elementimpl &e_impl)
 {
 	return e_impl->data(IN_THREAD).current_position;
@@ -79,22 +79,22 @@ elementObj::implObj &layoutmanagerObj::implObj::get_element_impl()
 	return container_impl->container_element_impl();
 }
 
-void layoutmanagerObj::implObj::initialize(IN_THREAD_ONLY)
+void layoutmanagerObj::implObj::initialize(ONLY IN_THREAD)
 {
 }
 
-void layoutmanagerObj::implObj::theme_updated(IN_THREAD_ONLY,
+void layoutmanagerObj::implObj::theme_updated(ONLY IN_THREAD,
 					      const defaulttheme &new_theme)
 {
 }
 
-void layoutmanagerObj::implObj::ensure_visibility(IN_THREAD_ONLY,
+void layoutmanagerObj::implObj::ensure_visibility(ONLY IN_THREAD,
 						  elementObj::implObj &e,
 						  const rectangle &r)
 {
 }
 
-void layoutmanagerObj::implObj::request_visibility_recursive(IN_THREAD_ONLY,
+void layoutmanagerObj::implObj::request_visibility_recursive(ONLY IN_THREAD,
 							     bool flag)
 {
 	for_each_child

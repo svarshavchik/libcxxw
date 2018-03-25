@@ -44,10 +44,10 @@ class LIBCXX_HIDDEN peepholed_listcontainerObj
 	~peepholed_listcontainerObj();
 
 	//! Inherited from peepholedObj
-	dim_t horizontal_increment(IN_THREAD_ONLY) const override;
+	dim_t horizontal_increment(ONLY IN_THREAD) const override;
 
 	//! Inherited from peepholedObj
-	dim_t vertical_increment(IN_THREAD_ONLY) const override;
+	dim_t vertical_increment(ONLY IN_THREAD) const override;
 };
 
 LIBCXXW_NAMESPACE_END

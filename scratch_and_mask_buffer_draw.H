@@ -39,7 +39,7 @@ scratch_and_mask_buffer_draw<child_type>::~scratch_and_mask_buffer_draw()
 
 template<typename child_type>
 void scratch_and_mask_buffer_draw<child_type>
-::do_draw(IN_THREAD_ONLY,
+::do_draw(ONLY IN_THREAD,
 	  const draw_info &di,
 	  const picture &area_picture,
 	  const pixmap &area_pixmap,

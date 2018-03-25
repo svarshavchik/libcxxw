@@ -116,7 +116,7 @@ create_constructor_params(const screen &parent_screen,
 }
 
 generic_windowObj::handlerObj
-::handlerObj(IN_THREAD_ONLY,
+::handlerObj(ONLY IN_THREAD,
 	     const screen &parent_screen,
 	     const color_arg &background_color,
 	     const shared_handler_data &handler_data,
@@ -128,7 +128,7 @@ generic_windowObj::handlerObj
 }
 
 generic_windowObj::handlerObj
-::handlerObj(IN_THREAD_ONLY,
+::handlerObj(ONLY IN_THREAD,
 	     const shared_handler_data &handler_data,
 	     const constructor_params &params)
 	: // This sets up the xcb_window_t
@@ -200,7 +200,7 @@ generic_windowObj::handlerObj
 
 generic_windowObj::handlerObj::~handlerObj()=default;
 
-void generic_windowObj::handlerObj::installed(IN_THREAD_ONLY)
+void generic_windowObj::handlerObj::installed(ONLY IN_THREAD)
 {
 	{
 		mpobj<ewmh>::lock lock{screenref->get_connection()
@@ -231,7 +231,7 @@ generic_windowObj::handlerObj::get_window_handler() const
 	return *this;
 }
 
-draw_info &generic_windowObj::handlerObj::get_draw_info(IN_THREAD_ONLY)
+draw_info &generic_windowObj::handlerObj::get_draw_info(ONLY IN_THREAD)
 {
 	if (data(IN_THREAD).cached_draw_info)
 		return *data(IN_THREAD).cached_draw_info;
@@ -239,7 +239,7 @@ draw_info &generic_windowObj::handlerObj::get_draw_info(IN_THREAD_ONLY)
 	return get_draw_info_from_scratch(IN_THREAD);
 }
 
-draw_info &generic_windowObj::handlerObj::get_draw_info_from_scratch(IN_THREAD_ONLY)
+draw_info &generic_windowObj::handlerObj::get_draw_info_from_scratch(ONLY IN_THREAD)
 {
 	auto &viewport=data(IN_THREAD).current_position;
 
@@ -256,7 +256,7 @@ draw_info &generic_windowObj::handlerObj::get_draw_info_from_scratch(IN_THREAD_O
 }
 
 void generic_windowObj::handlerObj
-::set_background_color(IN_THREAD_ONLY,
+::set_background_color(ONLY IN_THREAD,
 		       const background_color &c)
 {
 	auto b=current_background_color(IN_THREAD);
@@ -273,44 +273,44 @@ void generic_windowObj::handlerObj
 }
 
 background_color generic_windowObj::handlerObj
-::current_background_color(IN_THREAD_ONLY)
+::current_background_color(ONLY IN_THREAD)
 {
 	return background_color_element<background_color_tag>::get(IN_THREAD);
 }
 
 const background_color generic_windowObj::handlerObj
-::shaded_color(IN_THREAD_ONLY)
+::shaded_color(ONLY IN_THREAD)
 {
 	return background_color_element<shaded_color_tag>::get(IN_THREAD);
 }
 
-const icon generic_windowObj::handlerObj::disabled_mask(IN_THREAD_ONLY)
+const icon generic_windowObj::handlerObj::disabled_mask(ONLY IN_THREAD)
 {
 	return icon_1tag<disabled_mask_tag>::tagged_icon(IN_THREAD);
 }
 
 rectangle generic_windowObj::handlerObj
-::get_absolute_location(IN_THREAD_ONLY)
+::get_absolute_location(ONLY IN_THREAD)
 {
 	return data(IN_THREAD).current_position;
 }
 
 void generic_windowObj::handlerObj
-::get_absolute_location_on_screen(IN_THREAD_ONLY, rectangle &r)
+::get_absolute_location_on_screen(ONLY IN_THREAD, rectangle &r)
 {
 	r.x=coord_t::truncate(r.x + root_x(IN_THREAD));
 	r.y=coord_t::truncate(r.y + root_y(IN_THREAD));
 }
 
 void generic_windowObj::handlerObj
-::add_root_xy(IN_THREAD_ONLY, coord_t &x, coord_t &y)
+::add_root_xy(ONLY IN_THREAD, coord_t &x, coord_t &y)
 {
 	x=coord_t::truncate(x + root_x(IN_THREAD));
 	y=coord_t::truncate(y + root_y(IN_THREAD));
 }
 
 void generic_windowObj::handlerObj
-::subtract_root_xy(IN_THREAD_ONLY, coord_t &x, coord_t &y)
+::subtract_root_xy(ONLY IN_THREAD, coord_t &x, coord_t &y)
 {
 	x=coord_t::truncate(coord_t::truncate(x) -
 			    coord_t::truncate(root_x(IN_THREAD)));
@@ -320,12 +320,12 @@ void generic_windowObj::handlerObj
 }
 
 void generic_windowObj::handlerObj
-::draw_child_elements_after_visibility_updated(IN_THREAD_ONLY, bool flag)
+::draw_child_elements_after_visibility_updated(ONLY IN_THREAD, bool flag)
 {
 }
 
 void generic_windowObj::handlerObj
-::set_inherited_visibility(IN_THREAD_ONLY,
+::set_inherited_visibility(ONLY IN_THREAD,
 			   inherited_visibility_info &visibility_info)
 {
 	if (visibility_info.flag)
@@ -342,7 +342,7 @@ void generic_windowObj::handlerObj
 
 		IN_THREAD->idle_callbacks(IN_THREAD)->push_back
 			([me=make_weak_capture(ref(this))]
-			 (IN_THREAD_ONLY)
+			 (ONLY IN_THREAD)
 			 {
 				 auto got=me.get();
 
@@ -374,7 +374,7 @@ void generic_windowObj::handlerObj
 }
 
 std::string
-generic_windowObj::handlerObj::default_wm_class_resource(IN_THREAD_ONLY)
+generic_windowObj::handlerObj::default_wm_class_resource(ONLY IN_THREAD)
 {
 	auto n=exename();
 
@@ -386,7 +386,7 @@ generic_windowObj::handlerObj::default_wm_class_resource(IN_THREAD_ONLY)
 }
 
 void generic_windowObj::handlerObj
-::set_inherited_visibility_mapped(IN_THREAD_ONLY)
+::set_inherited_visibility_mapped(ONLY IN_THREAD)
 {
 	// We establish passive grabs for any button or keypress.
 
@@ -479,7 +479,7 @@ void generic_windowObj::handlerObj
 }
 
 void generic_windowObj::handlerObj
-::set_inherited_visibility_unmapped(IN_THREAD_ONLY)
+::set_inherited_visibility_unmapped(ONLY IN_THREAD)
 {
 	xcb_unmap_window(IN_THREAD->info->conn, id());
 	ungrab(IN_THREAD);
@@ -494,14 +494,14 @@ void generic_windowObj::handlerObj
 			  XCB_MOD_MASK_ANY);
 }
 
-void generic_windowObj::handlerObj::remove_background_color(IN_THREAD_ONLY)
+void generic_windowObj::handlerObj::remove_background_color(ONLY IN_THREAD)
 {
 	set_background_color(IN_THREAD,
 			     screenref->impl->create_background_color
 			     (original_background_color));
 }
 
-bool generic_windowObj::handlerObj::has_own_background_color(IN_THREAD_ONLY)
+bool generic_windowObj::handlerObj::has_own_background_color(ONLY IN_THREAD)
 {
 	return true;
 }
@@ -510,7 +510,7 @@ bool generic_windowObj::handlerObj::has_own_background_color(IN_THREAD_ONLY)
 //
 // Inherited from window_handler
 
-void generic_windowObj::handlerObj::process_collected_exposures(IN_THREAD_ONLY)
+void generic_windowObj::handlerObj::process_collected_exposures(ONLY IN_THREAD)
 {
 	has_exposed(IN_THREAD)=true;
 	exposure_event_recursive(IN_THREAD,
@@ -518,14 +518,14 @@ void generic_windowObj::handlerObj::process_collected_exposures(IN_THREAD_ONLY)
 }
 
 void generic_windowObj::handlerObj
-::process_collected_graphics_exposures(IN_THREAD_ONLY)
+::process_collected_graphics_exposures(ONLY IN_THREAD)
 {
 	exposure_event_recursive(IN_THREAD,
 				 graphics_exposure_rectangles(IN_THREAD)
 				 .rectangles);
 }
 
-void generic_windowObj::handlerObj::theme_updated_event(IN_THREAD_ONLY)
+void generic_windowObj::handlerObj::theme_updated_event(ONLY IN_THREAD)
 {
 	auto new_theme=get_screen()->impl->current_theme.get();
 
@@ -543,7 +543,7 @@ void generic_windowObj::handlerObj::theme_updated_event(IN_THREAD_ONLY)
 		theme_updated(IN_THREAD, new_theme);
 }
 
-void generic_windowObj::handlerObj::theme_updated(IN_THREAD_ONLY,
+void generic_windowObj::handlerObj::theme_updated(ONLY IN_THREAD,
 						  const defaulttheme &th)
 {
 	auto b=current_background_color(IN_THREAD);
@@ -612,9 +612,9 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj::busy_waitObj
 
 		auto h=ref(&*p);
 
-		h->IN_THREAD->run_as
+		h->thread()->run_as
 			([h]
-			 (IN_THREAD_ONLY)
+			 (ONLY IN_THREAD)
 			 {
 				 h->update_displayed_cursor_pointer(IN_THREAD);
 			 });
@@ -674,13 +674,13 @@ bool generic_windowObj::handlerObj::is_wait_busy()
 }
 
 void generic_windowObj::handlerObj
-::update_user_time(IN_THREAD_ONLY)
+::update_user_time(ONLY IN_THREAD)
 {
 	update_user_time(IN_THREAD, IN_THREAD->timestamp(IN_THREAD));
 }
 
 void generic_windowObj::handlerObj
-::update_user_time(IN_THREAD_ONLY, xcb_timestamp_t t)
+::update_user_time(ONLY IN_THREAD, xcb_timestamp_t t)
 {
 	mpobj<ewmh>::lock lock{screenref->get_connection()->impl->ewmh_info};
 
@@ -688,7 +688,7 @@ void generic_windowObj::handlerObj
 }
 
 void generic_windowObj::handlerObj
-::key_press_event(IN_THREAD_ONLY,
+::key_press_event(ONLY IN_THREAD,
 		  const xcb_key_press_event_t *event,
 		  uint16_t sequencehi)
 {
@@ -710,7 +710,7 @@ void generic_windowObj::handlerObj
 }
 
 void generic_windowObj::handlerObj
-::key_release_event(IN_THREAD_ONLY,
+::key_release_event(ONLY IN_THREAD,
 		    const xcb_key_release_event_t *event,
 		    uint16_t sequencehi)
 {
@@ -719,7 +719,7 @@ void generic_windowObj::handlerObj
 }
 
 void generic_windowObj::handlerObj
-::forward_key_event(IN_THREAD_ONLY,
+::forward_key_event(ONLY IN_THREAD,
 		    const xcb_key_release_event_t *event,
 		    uint16_t sequencehi,
 		    bool keypress)
@@ -759,7 +759,7 @@ void generic_windowObj::handlerObj
 }
 
 bool generic_windowObj::handlerObj
-::handle_key_event(IN_THREAD_ONLY,
+::handle_key_event(ONLY IN_THREAD,
 		   const xcb_key_release_event_t *event,
 		   bool keypress)
 {
@@ -875,7 +875,7 @@ bool generic_windowObj::handlerObj
 }
 
 void generic_windowObj::handlerObj
-::button_press_event(IN_THREAD_ONLY,
+::button_press_event(ONLY IN_THREAD,
 		     const xcb_button_press_event_t *event)
 {
 	ungrab(IN_THREAD);
@@ -910,7 +910,7 @@ void generic_windowObj::handlerObj
 }
 
 void generic_windowObj::handlerObj
-::button_release_event(IN_THREAD_ONLY,
+::button_release_event(ONLY IN_THREAD,
 		       const xcb_button_release_event_t *event)
 {
 	// We need to remove all the grab first, in the case that the
@@ -925,7 +925,7 @@ void generic_windowObj::handlerObj
 }
 
 void generic_windowObj::handlerObj
-::do_button_event(IN_THREAD_ONLY,
+::do_button_event(ONLY IN_THREAD,
 		  const xcb_button_release_event_t *event,
 		  bool buttonpress)
 {
@@ -933,7 +933,7 @@ void generic_windowObj::handlerObj
 }
 
 void generic_windowObj::handlerObj
-::do_button_event(IN_THREAD_ONLY,
+::do_button_event(ONLY IN_THREAD,
 		  const xcb_button_release_event_t *event,
 		  bool buttonpress,
 		  bool was_grabbed)
@@ -969,7 +969,7 @@ void generic_windowObj::handlerObj
 }
 
 void generic_windowObj::handlerObj
-::do_button_event(IN_THREAD_ONLY,
+::do_button_event(ONLY IN_THREAD,
 		  const xcb_button_release_event_t *event,
 		  const button_event &be,
 		  const motion_event &me)
@@ -1017,7 +1017,7 @@ void generic_windowObj::handlerObj
 	}
 }
 
-void generic_windowObj::handlerObj::grab(IN_THREAD_ONLY,
+void generic_windowObj::handlerObj::grab(ONLY IN_THREAD,
 					 const ref<elementObj::implObj> &e)
 {
 	set_element_with_pointer(IN_THREAD, e);
@@ -1025,12 +1025,12 @@ void generic_windowObj::handlerObj::grab(IN_THREAD_ONLY,
 		keep_passive_grab(IN_THREAD);
 }
 
-void generic_windowObj::handlerObj::grab(IN_THREAD_ONLY)
+void generic_windowObj::handlerObj::grab(ONLY IN_THREAD)
 {
 	throw EXCEPTION("Internal error: called grab() on the top level window.");
 }
 
-void generic_windowObj::handlerObj::configure_notify_received(IN_THREAD_ONLY,
+void generic_windowObj::handlerObj::configure_notify_received(ONLY IN_THREAD,
 							      const rectangle
 							      &r)
 {
@@ -1054,7 +1054,7 @@ void generic_windowObj::handlerObj::configure_notify_received(IN_THREAD_ONLY,
 	*lock=r;
 }
 
-void generic_windowObj::handlerObj::process_configure_notify(IN_THREAD_ONLY,
+void generic_windowObj::handlerObj::process_configure_notify(ONLY IN_THREAD,
 							     const rectangle &r)
 {
 	returned_pointer<xcb_generic_error_t *> error;
@@ -1096,12 +1096,12 @@ void generic_windowObj::handlerObj::process_configure_notify(IN_THREAD_ONLY,
 		absolute_location_updated(IN_THREAD);
 }
 
-void generic_windowObj::handlerObj::current_position_updated(IN_THREAD_ONLY)
+void generic_windowObj::handlerObj::current_position_updated(ONLY IN_THREAD)
 {
 	schedule_update_position_processing(IN_THREAD);
 }
 
-bool generic_windowObj::handlerObj::process_key_event(IN_THREAD_ONLY,
+bool generic_windowObj::handlerObj::process_key_event(ONLY IN_THREAD,
 						      const key_event &ke)
 {
 	if (prev_key_pressed(ke))
@@ -1150,7 +1150,7 @@ bool generic_windowObj::handlerObj::process_key_event(IN_THREAD_ONLY,
 }
 
 bool generic_windowObj::handlerObj
-::set_default_focus(IN_THREAD_ONLY,
+::set_default_focus(ONLY IN_THREAD,
 		    const callback_trigger_t &trigger)
 {
 	if (most_recent_keyboard_focus(IN_THREAD))
@@ -1169,11 +1169,11 @@ bool generic_windowObj::handlerObj
 }
 
 void generic_windowObj::handlerObj
-::focusable_initialized(IN_THREAD_ONLY, focusableImplObj &fimpl)
+::focusable_initialized(ONLY IN_THREAD, focusableImplObj &fimpl)
 {
 }
 
-void generic_windowObj::handlerObj::get_focus_first(IN_THREAD_ONLY,
+void generic_windowObj::handlerObj::get_focus_first(ONLY IN_THREAD,
 						    const focusable &f)
 {
 	auto b=focusable_fields(IN_THREAD).begin();
@@ -1208,7 +1208,7 @@ void generic_windowObj::handlerObj::get_focus_first(IN_THREAD_ONLY,
 }
 
 void generic_windowObj::handlerObj
-::unset_keyboard_focus(IN_THREAD_ONLY,
+::unset_keyboard_focus(ONLY IN_THREAD,
 		       const callback_trigger_t &trigger)
 {
 	if (most_recent_keyboard_focus(IN_THREAD))
@@ -1233,7 +1233,7 @@ void generic_windowObj::handlerObj
 }
 
 void generic_windowObj::handlerObj
-::set_keyboard_focus_to(IN_THREAD_ONLY, const focusable_impl &element,
+::set_keyboard_focus_to(ONLY IN_THREAD, const focusable_impl &element,
 			const callback_trigger_t &trigger)
 {
 	auto old_focus=most_recent_keyboard_focus(IN_THREAD);
@@ -1264,7 +1264,7 @@ void generic_windowObj::handlerObj
 }
 
 void generic_windowObj::handlerObj
-::pointer_motion_event(IN_THREAD_ONLY,
+::pointer_motion_event(ONLY IN_THREAD,
 		       const xcb_motion_notify_event_t *event)
 {
 	auto &keysyms=
@@ -1279,7 +1279,7 @@ void generic_windowObj::handlerObj
 }
 
 void generic_windowObj::handlerObj
-::enter_notify_event(IN_THREAD_ONLY,
+::enter_notify_event(ONLY IN_THREAD,
 		     const xcb_enter_notify_event_t *event)
 {
 	// Treat it just as any other pointer motion event
@@ -1295,14 +1295,14 @@ void generic_windowObj::handlerObj
 }
 
 void generic_windowObj::handlerObj
-::leave_notify_event(IN_THREAD_ONLY,
+::leave_notify_event(ONLY IN_THREAD,
 		     const xcb_leave_notify_event_t *event)
 {
 	pointer_focus_lost(IN_THREAD);
 }
 
 void generic_windowObj::handlerObj
-::focus_change_event(IN_THREAD_ONLY, bool flag)
+::focus_change_event(ONLY IN_THREAD, bool flag)
 {
 	has_focus(IN_THREAD)=flag;
 	if (most_recent_keyboard_focus(IN_THREAD))
@@ -1311,20 +1311,20 @@ void generic_windowObj::handlerObj
 }
 
 ref<generic_windowObj::handlerObj> generic_windowObj::handlerObj
-::report_pointer_xy(IN_THREAD_ONLY,
+::report_pointer_xy(ONLY IN_THREAD,
 		    motion_event &me)
 {
 	return report_pointer_xy(IN_THREAD, me, grab_locked(IN_THREAD));
 }
 
 ptr<generic_windowObj::handlerObj>
-generic_windowObj::handlerObj::get_popup_parent(IN_THREAD_ONLY)
+generic_windowObj::handlerObj::get_popup_parent(ONLY IN_THREAD)
 {
 	return ptr<generic_windowObj::handlerObj>(this);
 }
 
 ref<generic_windowObj::handlerObj> generic_windowObj::handlerObj
-::report_pointer_xy(IN_THREAD_ONLY,
+::report_pointer_xy(ONLY IN_THREAD,
 		    motion_event &me,
 		    bool was_grabbed)
 {
@@ -1419,7 +1419,7 @@ ref<generic_windowObj::handlerObj> generic_windowObj::handlerObj
 }
 
 void generic_windowObj::handlerObj
-::report_pointer_xy_to_this_handler(IN_THREAD_ONLY,
+::report_pointer_xy_to_this_handler(ONLY IN_THREAD,
 				    const grabbed_pointerptr &pg,
 				    motion_event me,
 				    bool was_grabbed)
@@ -1500,7 +1500,7 @@ void generic_windowObj::handlerObj
 }
 
 void generic_windowObj::handlerObj
-::set_element_with_pointer(IN_THREAD_ONLY, const ref<elementObj::implObj> &e)
+::set_element_with_pointer(ONLY IN_THREAD, const ref<elementObj::implObj> &e)
 {
 	// Even though we checked the "removed" flag, already, someday someone
 	// may win the lottery and we end up here when the top level
@@ -1526,7 +1526,7 @@ void generic_windowObj::handlerObj
 }
 
 void generic_windowObj::handlerObj
-::removing_element_from_window(IN_THREAD_ONLY,
+::removing_element_from_window(ONLY IN_THREAD,
 			       const ref<elementObj::implObj> &ei)
 {
 	if (most_recent_element_with_pointer(IN_THREAD) == ei)
@@ -1536,7 +1536,7 @@ void generic_windowObj::handlerObj
 	}
 }
 
-void generic_windowObj::handlerObj::pointer_focus_lost(IN_THREAD_ONLY)
+void generic_windowObj::handlerObj::pointer_focus_lost(ONLY IN_THREAD)
 {
 	if (grab_locked(IN_THREAD))
 		return;
@@ -1553,7 +1553,7 @@ void generic_windowObj::handlerObj::pointer_focus_lost(IN_THREAD_ONLY)
 			{});
 }
 
-void generic_windowObj::handlerObj::update_frame_extents(IN_THREAD_ONLY)
+void generic_windowObj::handlerObj::update_frame_extents(ONLY IN_THREAD)
 {
 	auto &data=frame_extents(IN_THREAD);
 
@@ -1577,17 +1577,17 @@ void generic_windowObj::handlerObj::update_frame_extents(IN_THREAD_ONLY)
 	frame_extents_updated(IN_THREAD);
 }
 
-void generic_windowObj::handlerObj::frame_extents_updated(IN_THREAD_ONLY)
+void generic_windowObj::handlerObj::frame_extents_updated(ONLY IN_THREAD)
 {
 }
 
 void generic_windowObj::handlerObj::set_window_type(const std::string &s)
 {
-	IN_THREAD->run_as
+	thread()->run_as
 		([s,
 		  connection_impl=screenref->get_connection()->impl,
 		  me=ref<generic_windowObj::handlerObj>(this)]
-		 (IN_THREAD_ONLY)
+		 (ONLY IN_THREAD)
 		 {
 			 mpobj<ewmh>::lock lock(connection_impl->ewmh_info);
 
@@ -1647,11 +1647,11 @@ dim_t generic_windowObj::handlerObj::get_height() const
 void generic_windowObj::handlerObj
 ::set_window_title(const std::string_view &s)
 {
-	IN_THREAD->run_as
+	thread()->run_as
 		([title=std::string{s},
 		  connection_impl=screenref->get_connection()->impl,
 		  me=ref<generic_windowObj::handlerObj>(this)]
-		 (IN_THREAD_ONLY)
+		 (ONLY IN_THREAD)
 		 {
 			 mpobj<ewmh>::lock lock(connection_impl->ewmh_info);
 
@@ -1659,7 +1659,7 @@ void generic_windowObj::handlerObj
 		 });
 }
 
-void generic_windowObj::handlerObj::paste(IN_THREAD_ONLY, xcb_atom_t clipboard,
+void generic_windowObj::handlerObj::paste(ONLY IN_THREAD, xcb_atom_t clipboard,
 					  xcb_timestamp_t timestamp)
 {
 	incremental_conversion_in_progress=false;
@@ -1670,7 +1670,7 @@ void generic_windowObj::handlerObj::paste(IN_THREAD_ONLY, xcb_atom_t clipboard,
 }
 
 void generic_windowObj::handlerObj
-::conversion_failed(IN_THREAD_ONLY, xcb_atom_t clipboard,
+::conversion_failed(ONLY IN_THREAD, xcb_atom_t clipboard,
 		    xcb_atom_t type,
 		    xcb_timestamp_t timestamp)
 {
@@ -1681,7 +1681,7 @@ void generic_windowObj::handlerObj
 }
 
 bool generic_windowObj::handlerObj
-::begin_converted_data(IN_THREAD_ONLY, xcb_atom_t type,
+::begin_converted_data(ONLY IN_THREAD, xcb_atom_t type,
 		       xcb_timestamp_t timestamp)
 {
 	if (type == IN_THREAD->info->atoms_info.string)
@@ -1711,7 +1711,7 @@ bool generic_windowObj::handlerObj
 }
 
 void generic_windowObj::handlerObj
-::converting_incrementally(IN_THREAD_ONLY,
+::converting_incrementally(ONLY IN_THREAD,
 			   xcb_atom_t type,
 			   xcb_timestamp_t timestamp,
 			   uint32_t estimated_size)
@@ -1721,7 +1721,7 @@ void generic_windowObj::handlerObj
 }
 
 void generic_windowObj::handlerObj
-::converted_data(IN_THREAD_ONLY, xcb_atom_t clipboard,
+::converted_data(ONLY IN_THREAD, xcb_atom_t clipboard,
 		 xcb_atom_t type,
 		 xcb_atom_t format,
 		 void *data,
@@ -1733,7 +1733,7 @@ void generic_windowObj::handlerObj
 }
 
 void generic_windowObj::handlerObj
-::end_converted_data(IN_THREAD_ONLY, xcb_atom_t clipboard,
+::end_converted_data(ONLY IN_THREAD, xcb_atom_t clipboard,
 				xcb_timestamp_t timestamp)
 {
 	if (!received_converted_data)
@@ -1753,14 +1753,14 @@ int generic_windowObj::handlerObj::converted(const char32_t *ptr, size_t cnt)
 }
 
 void generic_windowObj::handlerObj
-::pasted_string(IN_THREAD_ONLY, const std::u32string_view &s)
+::pasted_string(ONLY IN_THREAD, const std::u32string_view &s)
 {
 	if (most_recent_keyboard_focus(IN_THREAD))
 		most_recent_keyboard_focus(IN_THREAD)->get_focusable_element()
 			.pasted(IN_THREAD, s);
 }
 
-void generic_windowObj::handlerObj::set_input_focus(IN_THREAD_ONLY)
+void generic_windowObj::handlerObj::set_input_focus(ONLY IN_THREAD)
 {
 	xcb_set_input_focus(conn()->conn, XCB_NONE, id(),
 			    IN_THREAD->timestamp(IN_THREAD));
@@ -1768,7 +1768,7 @@ void generic_windowObj::handlerObj::set_input_focus(IN_THREAD_ONLY)
 
 
 void generic_windowObj::handlerObj
-::update_displayed_cursor_pointer(IN_THREAD_ONLY)
+::update_displayed_cursor_pointer(ONLY IN_THREAD)
 {
 	cursor_pointerptr pointer_that_should_be_displayed;
 

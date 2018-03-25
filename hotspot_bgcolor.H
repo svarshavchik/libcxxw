@@ -33,19 +33,19 @@ class LIBCXX_HIDDEN hotspot_bgcolorObj::implObj : virtual public obj {
 
 	//! Get my cold color
 
-	virtual background_color cold_color(IN_THREAD_ONLY)=0;
+	virtual background_color cold_color(ONLY IN_THREAD)=0;
 
 	//! Get my warm color
-	virtual background_color warm_color(IN_THREAD_ONLY)=0;
+	virtual background_color warm_color(ONLY IN_THREAD)=0;
 
 	//! Get my hot color
-	virtual background_color hot_color(IN_THREAD_ONLY)=0;
+	virtual background_color hot_color(ONLY IN_THREAD)=0;
 
 	//! Update the current background color.
 
 	//! The subclass must override this in hotspotObj::implObj,
 	//! and invoke this method.
-	void temperature_changed(IN_THREAD_ONLY,
+	void temperature_changed(ONLY IN_THREAD,
 				 const callback_trigger_t &trigger);
 };
 

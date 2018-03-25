@@ -32,7 +32,7 @@ gridlayoutmanagerObj::implObj::elementsObj::elementsObj()=default;
 
 gridlayoutmanagerObj::implObj::elementsObj::~elementsObj()=default;
 
-void gridlayoutmanagerObj::implObj::child_metrics_updated(IN_THREAD_ONLY)
+void gridlayoutmanagerObj::implObj::child_metrics_updated(ONLY IN_THREAD)
 {
 	auto &ge=grid_elements(IN_THREAD);
 
@@ -57,7 +57,7 @@ static void register_border(auto &lookup,
 // surrounding borders.
 
 void gridlayoutmanagerObj::implObj
-::redraw_child_borders_and_padding(IN_THREAD_ONLY,
+::redraw_child_borders_and_padding(ONLY IN_THREAD,
 				   const ref<elementObj::implObj> &child)
 {
 	elementObj::implObj &container_element_impl=get_element_impl();
@@ -100,7 +100,7 @@ void gridlayoutmanagerObj::implObj
 		b->impl->schedule_redraw(IN_THREAD);
 }
 
-void gridlayoutmanagerObj::implObj::theme_updated(IN_THREAD_ONLY,
+void gridlayoutmanagerObj::implObj::theme_updated(ONLY IN_THREAD,
 						  const defaulttheme &new_theme)
 {
 	grid_map_t::lock lock(grid_map);
@@ -118,7 +118,7 @@ void gridlayoutmanagerObj::implObj::theme_updated(IN_THREAD_ONLY,
 	needs_recalculation(IN_THREAD);
 }
 
-bool gridlayoutmanagerObj::implObj::rebuild_elements(IN_THREAD_ONLY)
+bool gridlayoutmanagerObj::implObj::rebuild_elements(ONLY IN_THREAD)
 {
 	grid_map_t::lock lock(grid_map);
 
@@ -578,13 +578,13 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(IN_THREAD_ONLY)
 	return true;
 }
 
-void gridlayoutmanagerObj::implObj::rebuild_elements_start(IN_THREAD_ONLY,
+void gridlayoutmanagerObj::implObj::rebuild_elements_start(ONLY IN_THREAD,
 							   grid_map_t::lock &)
 {
 }
 
 straight_border gridlayoutmanagerObj::implObj::elementsObj
-::get_straight_border(IN_THREAD_ONLY,
+::get_straight_border(ONLY IN_THREAD,
 		      const ref<containerObj::implObj> &container_impl,
 		      straight_border_factory_t factory,
 		      straight_border_update_t update,
@@ -663,7 +663,7 @@ straight_border gridlayoutmanagerObj::implObj::elementsObj
 }
 
 corner_border gridlayoutmanagerObj::implObj::elementsObj
-::get_corner_border(IN_THREAD_ONLY,
+::get_corner_border(ONLY IN_THREAD,
 		    const ref<containerObj::implObj> &container_impl,
 		    metrics::grid_xy x,
 		    metrics::grid_xy y)
@@ -702,7 +702,7 @@ corner_border gridlayoutmanagerObj::implObj::elementsObj
 	return new_border;
 }
 
-void gridlayoutmanagerObj::implObj::initialize_new_elements(IN_THREAD_ONLY)
+void gridlayoutmanagerObj::implObj::initialize_new_elements(ONLY IN_THREAD)
 {
 	grid_map_t::lock lock(grid_map);
 
@@ -732,7 +732,7 @@ void gridlayoutmanagerObj::implObj::initialize_new_elements(IN_THREAD_ONLY)
 }
 
 void gridlayoutmanagerObj::implObj
-::do_for_each_child(IN_THREAD_ONLY,
+::do_for_each_child(ONLY IN_THREAD,
 		    const function<void (const element &e)> &callback)
 {
 	// It's possible that we get here before processing any new elements
@@ -769,7 +769,7 @@ void gridlayoutmanagerObj::implObj
 
 std::tuple<bool, metrics::axis, metrics::axis>
 gridlayoutmanagerObj::implObj::elementsObj
-::recalculate_metrics(IN_THREAD_ONLY,
+::recalculate_metrics(ONLY IN_THREAD,
 		      bool flag)
 {
 	auto do_not_expand_borders=[]
@@ -912,7 +912,7 @@ bool gridlayoutmanagerObj::implObj::elementsObj
 }
 
 void gridlayoutmanagerObj::implObj
-::process_updated_position(IN_THREAD_ONLY,
+::process_updated_position(ONLY IN_THREAD,
 			   const rectangle &position)
 {
 	auto &elements=*grid_elements(IN_THREAD);
@@ -1051,7 +1051,7 @@ void gridlayoutmanagerObj::implObj
 }
 
 rectangle gridlayoutmanagerObj::implObj
-::padded_position(IN_THREAD_ONLY,
+::padded_position(ONLY IN_THREAD,
 		  const ref<elementObj::implObj> &e_impl)
 {
 	rectangle ret=layoutmanagerObj::implObj::padded_position(IN_THREAD,

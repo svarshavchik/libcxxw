@@ -72,7 +72,7 @@ class LIBCXX_HIDDEN pagetabObj::implObj : public always_visibleObj<
 
 	//! If it is active, ensure_entire_visibility().
 
-	void set_active(IN_THREAD_ONLY, bool);
+	void set_active(ONLY IN_THREAD, bool);
 
 	//! Get the element.
 

@@ -17,7 +17,7 @@ list_container_implObj
 
 list_container_implObj::~list_container_implObj()=default;
 
-void list_container_implObj::do_draw(IN_THREAD_ONLY,
+void list_container_implObj::do_draw(ONLY IN_THREAD,
 				     const draw_info &di,
 				     const rectangle_set &areas)
 {

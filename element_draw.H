@@ -34,7 +34,7 @@ class LIBCXX_HIDDEN clip_region_set {
 public:
 	//! Constructor - install clip mask for drawing.
 
-	clip_region_set(IN_THREAD_ONLY,
+	clip_region_set(ONLY IN_THREAD,
 			generic_windowObj::handlerObj &,
 			const draw_info &di);
 
@@ -104,7 +104,7 @@ public:
 
 	template<typename lambda_type,
 		 typename ...Args>
-	void draw_using_scratch_buffer(IN_THREAD_ONLY,
+	void draw_using_scratch_buffer(ONLY IN_THREAD,
 				       lambda_type &&lambda,
 				       const rectangle &rect,
 				       const draw_info &di,
@@ -126,7 +126,7 @@ public:
 
 	//! Implementation of draw_using_scratch_buffer() with element_scratch_uffer.
 	virtual void do_draw_using_scratch_buffer
-	(IN_THREAD_ONLY,
+	(ONLY IN_THREAD,
 	 const function<scratch_buffer_draw_func_t> &cb,
 	 const rectangle &rect,
 	 const draw_info &di,
@@ -135,7 +135,7 @@ public:
 
 	//! Implementation of draw_using_scratch_buffer() with a custom scratch buffer.
 	virtual void do_draw_using_scratch_buffer
-	(IN_THREAD_ONLY,
+	(ONLY IN_THREAD,
 	 const function<scratch_buffer_draw_func_t> &cb,
 	 const rectangle &rect,
 	 const draw_info &di,

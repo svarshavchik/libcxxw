@@ -42,11 +42,11 @@ class LIBCXX_HIDDEN themedimObj : virtual public obj {
 	~themedimObj();
 
 	//! Recalculate padding.
-	void initialize(IN_THREAD_ONLY,
+	void initialize(ONLY IN_THREAD,
 			const ref<screenObj::implObj> &screen_impl);
 
 	//! Recalculate padding.
-	void theme_updated(IN_THREAD_ONLY,
+	void theme_updated(ONLY IN_THREAD,
 			   const defaulttheme &new_theme);
 };
 

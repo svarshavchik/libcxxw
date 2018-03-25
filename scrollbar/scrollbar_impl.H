@@ -85,11 +85,11 @@ class LIBCXX_HIDDEN scrollbarObj::implObj :
 
 	//! Return the normal icons.
 
-	scrollbar_icon_set normal_icons(IN_THREAD_ONLY);
+	scrollbar_icon_set normal_icons(ONLY IN_THREAD);
 
 	//! Return the pressed icons.
 
-	scrollbar_icon_set pressed_icons(IN_THREAD_ONLY);
+	scrollbar_icon_set pressed_icons(ONLY IN_THREAD);
 
 	//! My superclass
 
@@ -138,14 +138,14 @@ class LIBCXX_HIDDEN scrollbarObj::implObj :
 	//! For a horizontal scrollbar returns current_position.width.
 	//! For a vertical scrollbar returns current_position.height.
 
-	dim_t current_position_major_size(IN_THREAD_ONLY) const;
+	dim_t current_position_major_size(ONLY IN_THREAD) const;
 
 	//! Return the current minor size.
 
 	//! For a horizontal scrollbar returns current_position.height.
 	//! For a vertical scrollbar returns current_position.width.
 
-	dim_t current_position_minor_size(IN_THREAD_ONLY) const;
+	dim_t current_position_minor_size(ONLY IN_THREAD) const;
 
 	//! Current, internal scrollbar configuration
 	scrollbar_config state_thread_only;
@@ -160,7 +160,7 @@ class LIBCXX_HIDDEN scrollbarObj::implObj :
 	//! This is normally same as conf.value, except when dragging.
 
 	//! Sanity-check the values in conf().
-	void validate_conf(IN_THREAD_ONLY);
+	void validate_conf(ONLY IN_THREAD);
 
 	//! Current metrics for the parts of the scrollbar.
 	scrollbar_metrics metrics;
@@ -191,31 +191,31 @@ class LIBCXX_HIDDEN scrollbarObj::implObj :
 	//! If we were in a middle of something, like a button or a key press,
 	//! none of that applies. Reset all the flags to defaults.
 
-	void reset_state(IN_THREAD_ONLY);
+	void reset_state(ONLY IN_THREAD);
 
 	//! Pixel value when dragging started.
 	scroll_v_t drag_start_current_pixel=0;
 
 	//! The current major size of the scroll_low button.
-	dim_t scroll_low_size(IN_THREAD_ONLY) const;
+	dim_t scroll_low_size(ONLY IN_THREAD) const;
 
 	//! The current major size of the scroll_high button.
-	dim_t scroll_high_size(IN_THREAD_ONLY) const;
+	dim_t scroll_high_size(ONLY IN_THREAD) const;
 
 	//! The scroll_high button's drawing position.
-	coord_t scroll_high_position(IN_THREAD_ONLY) const;
+	coord_t scroll_high_position(ONLY IN_THREAD) const;
 
 	//! The slider area's size.
-	dim_t slider_size(IN_THREAD_ONLY) const;
+	dim_t slider_size(ONLY IN_THREAD) const;
 
 	//! The current major size of the handlebar start image.
-	dim_t handlebar_start_size(IN_THREAD_ONLY) const;
+	dim_t handlebar_start_size(ONLY IN_THREAD) const;
 
 	//! The current major size of the handlebar image.
-	dim_t handlebar_size(IN_THREAD_ONLY) const;
+	dim_t handlebar_size(ONLY IN_THREAD) const;
 
 	//! The current major size of the handlebar end image.
-	dim_t handlebar_end_size(IN_THREAD_ONLY) const;
+	dim_t handlebar_end_size(ONLY IN_THREAD) const;
 
  public:
 	THREAD_DATA_ONLY(state);
@@ -231,22 +231,22 @@ class LIBCXX_HIDDEN scrollbarObj::implObj :
 	//! Advance slider towards 0.
 
 	//! Returns true if the slider was moved and redrawn.
-	bool to_low(IN_THREAD_ONLY, const input_mask &mask);
+	bool to_low(ONLY IN_THREAD, const input_mask &mask);
 
 	//! Advance slider towards its maximum value.
 
 	//! Returns true if the slider was moved and redrawn.
-	bool to_high(IN_THREAD_ONLY, const input_mask &mask);
+	bool to_high(ONLY IN_THREAD, const input_mask &mask);
 
 	//! Advance slider towards 0, by page size.
 
 	//! Returns true if the slider was moved and redrawn.
-	bool page_up(IN_THREAD_ONLY);
+	bool page_up(ONLY IN_THREAD);
 
 	//! Advance slider towards its maximum value, by page size.
 
 	//! Returns true if the slider was moved and redrawn.
-	bool page_down(IN_THREAD_ONLY);
+	bool page_down(ONLY IN_THREAD);
 
 	//! Internal constructor
 
@@ -263,18 +263,18 @@ class LIBCXX_HIDDEN scrollbarObj::implObj :
 
 	//! initialize() all icons. Invoke recalculate_metrics() and
 	//! calculate_scrollbar_metrics().
-	void initialize(IN_THREAD_ONLY) override;
+	void initialize(ONLY IN_THREAD) override;
 
 	//! Theme has been updated.
 
 	//! theme_updated() all icons. Invoke recalculate_metrics().
 
-	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme) override;
+	void theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme) override;
 
 	//! Scrollbar's size has been updated.
 
 	//! Invoke calculate_scrollbar_metrics().
-	void current_position_updated(IN_THREAD_ONLY) override;
+	void current_position_updated(ONLY IN_THREAD) override;
 
 	//! Redraw the scrollbar.
 
@@ -283,26 +283,26 @@ class LIBCXX_HIDDEN scrollbarObj::implObj :
 	//!
 	//! Invokes do_draw_slider() if the display element is big enough
 	//! for it.
-	void do_draw(IN_THREAD_ONLY,
+	void do_draw(ONLY IN_THREAD,
 		     const draw_info &di,
 		     const rectangle_set &areas) override;
 
 	//! Process key events.
-	bool process_key_event(IN_THREAD_ONLY, const key_event &ke) override;
+	bool process_key_event(ONLY IN_THREAD, const key_event &ke) override;
 
 	//! Process button events.
-	bool process_button_event(IN_THREAD_ONLY,
+	bool process_button_event(ONLY IN_THREAD,
 				  const button_event &be,
 				  xcb_timestamp_t timestamp) override;
 
 	//! Process motion events.
 
-	void report_motion_event(IN_THREAD_ONLY, const motion_event &)
+	void report_motion_event(ONLY IN_THREAD, const motion_event &)
 		override;
 
 	//! Process a focus change notification.
 
-	void keyboard_focus(IN_THREAD_ONLY,
+	void keyboard_focus(ONLY IN_THREAD,
 			    const callback_trigger_t &trigger) override;
 
 	//////////////////////////////////////////////////////////////////
@@ -312,12 +312,12 @@ class LIBCXX_HIDDEN scrollbarObj::implObj :
 	//! This updates the scrollbar's configuration. The updated_value()
 	//! callback does not get invoked.
 
-	void reconfigure(IN_THREAD_ONLY,
+	void reconfigure(ONLY IN_THREAD,
 			 const scrollbar_config &new_config);
 
 	//! Update the callback
 
-	void update_callback(IN_THREAD_ONLY,
+	void update_callback(ONLY IN_THREAD,
 			     const scrollbar_cb_t &);
  private:
 	//! Release the handlebar, if it's pressed.
@@ -325,31 +325,31 @@ class LIBCXX_HIDDEN scrollbarObj::implObj :
 	//! Called when processing a key event, to make sure the handlebar
 	//! state is released, if somehow a key event is received in the
 	//! middle of dragging.
-	void abort_handlebar(IN_THREAD_ONLY);
+	void abort_handlebar(ONLY IN_THREAD);
 
 	//! Clean up after an aborted drag.
 
 	//! Called when the button is released outside of the scrollbar,
 	//! or when the input element loses focus in the middle of the drag.
 
-	void abort_dragging(IN_THREAD_ONLY);
+	void abort_dragging(ONLY IN_THREAD);
 
 	//! A value has been updated, no dragging took place.
 
 	//! Sets drag_value to conf.value, calls draw_slider() and
 	//! updated_value().
 
-	void updated_value_no_drag(IN_THREAD_ONLY);
+	void updated_value_no_drag(ONLY IN_THREAD);
 
 	//! Invoke the callback if the values are different than previous values
 
-	void report_changed_values(IN_THREAD_ONLY,
+	void report_changed_values(ONLY IN_THREAD,
 				   scroll_v_t value,
 				   scroll_v_t dragged_value);
 
 	//! Invoke the callback
 
-	void report_current_values(IN_THREAD_ONLY,
+	void report_current_values(ONLY IN_THREAD,
 				   scroll_v_t value,
 				   scroll_v_t dragged_value,
 				   const callback_trigger_t &why);
@@ -371,7 +371,7 @@ class LIBCXX_HIDDEN scrollbarObj::implObj :
 	//! Use this to set our element metrics. This is done when this
 	//! display element gets initialize()d, or when theme_updated(),
 	//! because a new theme means new icons.
-	void recalculate_metrics(IN_THREAD_ONLY);
+	void recalculate_metrics(ONLY IN_THREAD);
 
 	//! Compute metrics based on the current size of the scrollbar.
 
@@ -380,7 +380,7 @@ class LIBCXX_HIDDEN scrollbarObj::implObj :
 	//! icons accordingly.
 	//!
 	//! Returns false if the scrollbar metrics have not actually changed.
-	bool calculate_scrollbar_metrics(IN_THREAD_ONLY);
+	bool calculate_scrollbar_metrics(ONLY IN_THREAD);
 
 	//! What the scrollbar metrics were based on
 	dim_t metrics_based_on_width=0;
@@ -392,17 +392,17 @@ class LIBCXX_HIDDEN scrollbarObj::implObj :
 
 	//! Constructs a scratch buffer and invokes do_draw_scroll_low().
 
-	void draw_scroll_low(IN_THREAD_ONLY);
+	void draw_scroll_low(ONLY IN_THREAD);
 
 	//! Draw the "scroll low" button into the given scratch buffer.
 
-	void do_draw_scroll_low(IN_THREAD_ONLY, const picture &buffer);
+	void do_draw_scroll_low(ONLY IN_THREAD, const picture &buffer);
 
 	//! Draw the 'scroll high' button
 
 	//! Constructs a scratch buffer and invokes do_draw_scroll_high().
 
-	void draw_scroll_high(IN_THREAD_ONLY);
+	void draw_scroll_high(ONLY IN_THREAD);
 
 	//! Draw the "scroll high" button.
 
@@ -413,14 +413,14 @@ class LIBCXX_HIDDEN scrollbarObj::implObj :
 	//! for the entire display element, and pass the scroll_high_position()
 	//! for the coordinate.
 
-	void do_draw_scroll_high(IN_THREAD_ONLY, const picture &buffer,
+	void do_draw_scroll_high(ONLY IN_THREAD, const picture &buffer,
 				 coord_t coordinate);
 
 	//! Draw the slider.
 
 	//! Constructs a scratch buffer and invokes do_draw_slider().
 
-	void draw_slider(IN_THREAD_ONLY);
+	void draw_slider(ONLY IN_THREAD);
 
 	//! Draw the scrollbar slider
 
@@ -430,7 +430,7 @@ class LIBCXX_HIDDEN scrollbarObj::implObj :
 	//! When redrawing the entire display element we use a scratch buffer
 	//! for the entire display element, and pass scroll_low_size() for the
 	//! coordinate.
-	void do_draw_slider(IN_THREAD_ONLY, const picture &buffer,
+	void do_draw_slider(ONLY IN_THREAD, const picture &buffer,
 			    coord_t coordinate);
 
 	//! Draw an icon at the given major coordinate
@@ -449,7 +449,7 @@ class LIBCXX_HIDDEN scrollbarObj::implObj :
 	//! Returns major_coord plus either the icon's width, for horizontal
 	//! slider, or the icon's height for vertical sliders.
 
-	coord_t do_draw_icon(IN_THREAD_ONLY,
+	coord_t do_draw_icon(ONLY IN_THREAD,
 			     const picture &buffer,
 			     icon scrollbar_icon_set::*which_icon,
 			     bool pressed,

@@ -237,13 +237,13 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 	~implObj();
 
 	//! Override removed_from_container
-	void removed_from_container(IN_THREAD_ONLY) override;
+	void removed_from_container(ONLY IN_THREAD) override;
 
 	//! Override initialize()
-	void initialize(IN_THREAD_ONLY) override;
+	void initialize(ONLY IN_THREAD) override;
 
 	//! Override theme_updated()
-	void theme_updated(IN_THREAD_ONLY,
+	void theme_updated(ONLY IN_THREAD,
 			   const defaulttheme &new_theme) override;
 
 	//! Which list style we're supposed to use.
@@ -316,45 +316,45 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 
 	//! Recalculate after a theme update.
 
-	void recalculate_with_new_theme(IN_THREAD_ONLY,
+	void recalculate_with_new_theme(ONLY IN_THREAD,
 					listimpl_info_t::lock &lock);
 
 	//! Recalculate our metrics, and everything.
 
 	//! Invoked from listlayoutmanagerObj::implObj.
-	void recalculate(IN_THREAD_ONLY);
+	void recalculate(ONLY IN_THREAD);
 
 	//! Override process_updated_position().
 
 	//! Calls recalculate().
-	void process_updated_position(IN_THREAD_ONLY) override;
+	void process_updated_position(ONLY IN_THREAD) override;
 
 	//! Override do_draw.
 
 	//! Draw ourselves.
-	void do_draw(IN_THREAD_ONLY,
+	void do_draw(ONLY IN_THREAD,
 		     const draw_info &di,
 		     const rectangle_set &areas) override;
 
 	//! Handle motion events.
 
-	void report_motion_event(IN_THREAD_ONLY, const motion_event &) override;
+	void report_motion_event(ONLY IN_THREAD, const motion_event &) override;
 
 	//! Handle keyboard events.
 
-	bool process_key_event(IN_THREAD_ONLY, const key_event &ke) override;
+	bool process_key_event(ONLY IN_THREAD, const key_event &ke) override;
 
 	//! Handle button events.
-	bool process_button_event(IN_THREAD_ONLY,
+	bool process_button_event(ONLY IN_THREAD,
 				  const button_event &be,
 				  xcb_timestamp_t timestamp) override;
 
 	//! Handle pointer focus events.
-	void pointer_focus(IN_THREAD_ONLY,
+	void pointer_focus(ONLY IN_THREAD,
 			   const callback_trigger_t &trigger) override;
 
 	//! Handle keyboard focus events.
-	void keyboard_focus(IN_THREAD_ONLY,
+	void keyboard_focus(ONLY IN_THREAD,
 			    const callback_trigger_t &trigger) override;
 
 	//! Invoked from the layout manager.
@@ -413,10 +413,10 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
  private:
 	//! Redraw only those rows whose status has changed.
 
-	void redraw_needed_rows(IN_THREAD_ONLY);
+	void redraw_needed_rows(ONLY IN_THREAD);
 
 	//! Redraw all visible rows.
-	void do_draw(IN_THREAD_ONLY,
+	void do_draw(ONLY IN_THREAD,
 		     const draw_info &di,
 		     const rectangle_set &areas,
 		     bool only_whats_needed);
@@ -460,7 +460,7 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 		// The construct checks row_infos.modified, and if so calls
 		// recalculate().
 
-		textlist_info_lock(IN_THREAD_ONLY, implObj &me);
+		textlist_info_lock(ONLY IN_THREAD, implObj &me);
 
 		//! Destructor
 
@@ -533,22 +533,22 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 			   size_t row,
 			   size_t count);
 
-	void recalculate(IN_THREAD_ONLY, listimpl_info_t::lock &lock);
+	void recalculate(ONLY IN_THREAD, listimpl_info_t::lock &lock);
 
 	//! Compute calculate_column_widths and total_column_width
 
-	void calculate_column_widths(IN_THREAD_ONLY,
+	void calculate_column_widths(ONLY IN_THREAD,
 				     listimpl_info_t::lock &lock);
 
 	//! Compute column_poswidths.
 
 	//! Based on calculated_column_widths and padding. Returns total
 	//! width.
-	dim_t calculate_column_poswidths(IN_THREAD_ONLY, listimpl_info_t::lock
+	dim_t calculate_column_poswidths(ONLY IN_THREAD, listimpl_info_t::lock
 					 &lock);
 
 	//! Draw an individual row.
-	rectangle do_draw_row(IN_THREAD_ONLY,
+	rectangle do_draw_row(ONLY IN_THREAD,
 			      const draw_info &di,
 			      richtext_draw_boundaries &bounds,
 			      listimpl_info_t::lock &lock,
@@ -556,7 +556,7 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 			      bool make_sure_row_is_visible);
 
 	//! Draw an individual row.
-	rectangle do_draw_row(IN_THREAD_ONLY,
+	rectangle do_draw_row(ONLY IN_THREAD,
 			      const draw_info &di,
 			      richtext_draw_boundaries &bounds,
 			      listimpl_info_t::lock &lock,
@@ -566,13 +566,13 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 
 	//! Explicitly redraw one row.
 
-	void redraw_rows(IN_THREAD_ONLY,
+	void redraw_rows(ONLY IN_THREAD,
 			 listimpl_info_t::lock &lock,
 			 size_t row_number1);
 
 	//! Explicitly redraw two row.
 
-	void redraw_rows(IN_THREAD_ONLY,
+	void redraw_rows(ONLY IN_THREAD,
 			 listimpl_info_t::lock &lock,
 			 size_t row_number1,
 			 size_t row_number2,
@@ -583,23 +583,23 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 	//! Pointer moved out of the window/lost keyboard focus, etc...
 	//! Unset current_element.
 
-	void unset_current_element(IN_THREAD_ONLY,
+	void unset_current_element(ONLY IN_THREAD,
 				   listimpl_info_t::lock &lock);
 
 	//! Set current element.
 
-	void set_current_element(IN_THREAD_ONLY,
+	void set_current_element(ONLY IN_THREAD,
 				 listimpl_info_t::lock &lock,
 				 size_t row_number,
 				 bool make_sure_row_is_visible);
 
 	//! Process keyboard event.
 
-	bool process_key_event(IN_THREAD_ONLY, const key_event &ke,
+	bool process_key_event(ONLY IN_THREAD, const key_event &ke,
 			       listimpl_info_t::lock &lock);
 
 	//! Clicked on the list item.
-	void click(IN_THREAD_ONLY, listimpl_info_t::lock &lock,
+	void click(ONLY IN_THREAD, listimpl_info_t::lock &lock,
 		   const callback_trigger_t &trigger);
 
 	//! Advance currently selected item.
@@ -631,12 +631,12 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 	//! Override hover_action_delay.
 
 	//! Checks if the currently highlighted list item has a popup.
-	std::chrono::milliseconds hover_action_delay(IN_THREAD_ONLY) override;
+	std::chrono::milliseconds hover_action_delay(ONLY IN_THREAD) override;
 
 	//! Override hover_action().
 
 	//! Display the popup for the currently highlighted list item.
-	void hover_action(IN_THREAD_ONLY) override;
+	void hover_action(ONLY IN_THREAD) override;
 
 	//! Return an existing menu item's submenu layoutmanager.
 	listlayoutmanagerptr get_item_layoutmanager(size_t i);

@@ -36,14 +36,14 @@ class LIBCXX_HIDDEN peepholed_toplevelObj : public peepholedObj {
 	//!
 	//! recalculate_peepholed_metrics() gets invoked before invoking
 	//! max_width() and max_height().
-	virtual void recalculate_peepholed_metrics(IN_THREAD_ONLY,
+	virtual void recalculate_peepholed_metrics(ONLY IN_THREAD,
 						   const screen &my_screen)=0;
 
 	//! Return the maximum width of the toplevel element.
-	virtual dim_t max_width(IN_THREAD_ONLY) const=0;
+	virtual dim_t max_width(ONLY IN_THREAD) const=0;
 
 	//! Return the maximum height of the toplevel element.
-	virtual dim_t max_height(IN_THREAD_ONLY) const=0;
+	virtual dim_t max_height(ONLY IN_THREAD) const=0;
 };
 
 LIBCXXW_NAMESPACE_END

@@ -35,14 +35,14 @@ public:
 	~implObj();
 
 	//! Inherit from elementObj::implObj
-	void initialize(IN_THREAD_ONLY) override;
+	void initialize(ONLY IN_THREAD) override;
 
 	//! Inherit from elementObj::implObj
-	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme) override;
+	void theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme) override;
 
  private:
 	//! Recalculate my metrics
-	void recalculate(IN_THREAD_ONLY);
+	void recalculate(ONLY IN_THREAD);
 };
 
 LIBCXXW_NAMESPACE_END

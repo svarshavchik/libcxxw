@@ -82,7 +82,7 @@ class LIBCXX_HIDDEN straight_borderObj::implObj
 	possible_borders borders_thread_only;
 
 	//! Implemented in the border_element_implObj subclass.
-	virtual void compute_metrics(IN_THREAD_ONLY)=0;
+	virtual void compute_metrics(ONLY IN_THREAD)=0;
 
  public:
 
@@ -131,27 +131,27 @@ class LIBCXX_HIDDEN straight_borderObj::implObj
 	//! is picked, otherwise we choose the best border between the two.
 	//! The remaining borders are ignored.
 
-	const current_border_implptr &best_border(IN_THREAD_ONLY) const;
+	const current_border_implptr &best_border(ONLY IN_THREAD) const;
 
  private:
 
 	//! Subclass implementation invokes the appropriate draw method.
-	virtual void draw_horizvert(IN_THREAD_ONLY,
+	virtual void draw_horizvert(ONLY IN_THREAD,
 				    const border_implObj::draw_info &di)
 		const=0;
 
  public:
 	//! Fill background colors of elements above/below this horiz border.
-	void background_horizontal(IN_THREAD_ONLY,
+	void background_horizontal(ONLY IN_THREAD,
 				   const border_implObj::draw_info &bg) const;
 
 	//! Fill background colors of elements to the left/right of this vert border.
-	void background_vertical(IN_THREAD_ONLY,
+	void background_vertical(ONLY IN_THREAD,
 				 const border_implObj::draw_info &bg) const;
 
 
 	//! Draw the border.
-	void do_draw(IN_THREAD_ONLY,
+	void do_draw(ONLY IN_THREAD,
 		     const draw_info &di,
 		     const picture &area_picture,
 		     const pixmap &area_pixmap,

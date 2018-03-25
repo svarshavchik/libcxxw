@@ -30,14 +30,14 @@ public:
 
 	//! initialize() all images.
 
-	void initialize(IN_THREAD_ONLY);
+	void initialize(ONLY IN_THREAD);
 
 	//! Reload all images after theme_updated().
 
-	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme);
+	void theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme);
 
 	//! Resize the images
-	void resize(IN_THREAD_ONLY, dim_t w, dim_t h, icon_scale scale);
+	void resize(ONLY IN_THREAD, dim_t w, dim_t h, icon_scale scale);
 };
 
 LIBCXXW_NAMESPACE_END

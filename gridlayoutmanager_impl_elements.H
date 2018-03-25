@@ -22,7 +22,7 @@ LIBCXXW_NAMESPACE_START
 //! Object encapsulates all data needed to calculate grid elements'
 //! positions.
 //!
-//! This is an IN_THREAD_ONLY object.
+//! This is an ONLY IN_THREAD object.
 
 class gridlayoutmanagerObj::implObj::elementsObj : virtual public obj {
 
@@ -135,7 +135,7 @@ public:
 			    straight_border_info,
 			    border_map_hash> straight_borders;
 
-	straight_border get_straight_border(IN_THREAD_ONLY,
+	straight_border get_straight_border(ONLY IN_THREAD,
 					    const ref<containerObj::implObj>
 					    &container_impl,
 					    straight_border_factory_t factory,
@@ -163,7 +163,7 @@ public:
 
 	//! Create a corner border cell, if needed.
 
-	corner_border get_corner_border(IN_THREAD_ONLY,
+	corner_border get_corner_border(ONLY IN_THREAD,
 					const ref<containerObj::implObj>
 					&container_impl,
 					metrics::grid_xy x,
@@ -203,7 +203,7 @@ public:
 	//! - new horizontal and vertical metrics.
 
 	std::tuple<bool, metrics::axis, metrics::axis>
-	recalculate_metrics(IN_THREAD_ONLY,
+	recalculate_metrics(ONLY IN_THREAD,
 			    bool flag);
 
 	//! Cached sizes for all columns

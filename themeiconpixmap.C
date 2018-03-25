@@ -16,7 +16,7 @@ template<typename dim_type>
 themeiconpixmapObj<dim_type>::~themeiconpixmapObj()=default;
 
 template<typename dim_type>
-icon themeiconpixmapObj<dim_type>::resizemm(IN_THREAD_ONLY,
+icon themeiconpixmapObj<dim_type>::resizemm(ONLY IN_THREAD,
 					    const dim_arg &width_arg,
 					    const dim_arg &height_arg)
 {
@@ -26,7 +26,7 @@ icon themeiconpixmapObj<dim_type>::resizemm(IN_THREAD_ONLY,
 }
 
 template<typename dim_type>
-icon themeiconpixmapObj<dim_type>::resize(IN_THREAD_ONLY, dim_t w, dim_t h,
+icon themeiconpixmapObj<dim_type>::resize(ONLY IN_THREAD, dim_t w, dim_t h,
 					  icon_scale scale)
 {
 	return this->image->impl->create_icon_pixels(this->name,

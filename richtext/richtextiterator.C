@@ -93,12 +93,12 @@ std::ptrdiff_t richtextiteratorObj::compare(const const_richtextiterator &other)
 		 });
 }
 
-void richtextiteratorObj::move(IN_THREAD_ONLY, ssize_t howmuch)
+void richtextiteratorObj::move(ONLY IN_THREAD, ssize_t howmuch)
 {
 	my_richtext->thread_lock
 		(IN_THREAD,
 		 [&, this]
-		 (IN_THREAD_ONLY, const auto &ignore)
+		 (ONLY IN_THREAD, const auto &ignore)
 		 {
 			 my_location->move(IN_THREAD, howmuch);
 		 });
@@ -114,54 +114,54 @@ void richtextiteratorObj::start_of_line()
 		 });
 }
 
-void richtextiteratorObj::up(IN_THREAD_ONLY)
+void richtextiteratorObj::up(ONLY IN_THREAD)
 {
 	my_richtext->thread_lock(IN_THREAD,
 				 [this]
-				 (IN_THREAD_ONLY, const auto &lock)
+				 (ONLY IN_THREAD, const auto &lock)
 				 {
 					 my_location->up(IN_THREAD);
 				 });
 }
 
-void richtextiteratorObj::down(IN_THREAD_ONLY)
+void richtextiteratorObj::down(ONLY IN_THREAD)
 {
 	my_richtext->thread_lock(IN_THREAD,
 				 [this]
-				 (IN_THREAD_ONLY, const auto &lock)
+				 (ONLY IN_THREAD, const auto &lock)
 				 {
 					 my_location->down(IN_THREAD);
 				 });
 }
 
-void richtextiteratorObj::page_up(IN_THREAD_ONLY, dim_t height)
+void richtextiteratorObj::page_up(ONLY IN_THREAD, dim_t height)
 {
 	my_richtext->thread_lock(IN_THREAD,
 				 [height, this]
-				 (IN_THREAD_ONLY, const auto &lock)
+				 (ONLY IN_THREAD, const auto &lock)
 				 {
 					 my_location->page_up(IN_THREAD,
 							      height);
 				 });
 }
 
-void richtextiteratorObj::page_down(IN_THREAD_ONLY, dim_t height)
+void richtextiteratorObj::page_down(ONLY IN_THREAD, dim_t height)
 {
 	my_richtext->thread_lock(IN_THREAD,
 				 [height, this]
-				 (IN_THREAD_ONLY, const auto &lock)
+				 (ONLY IN_THREAD, const auto &lock)
 				 {
 					 my_location->page_down(IN_THREAD,
 								height);
 				 });
 }
 
-bool richtextiteratorObj::moveto(IN_THREAD_ONLY, coord_t x, coord_t y)
+bool richtextiteratorObj::moveto(ONLY IN_THREAD, coord_t x, coord_t y)
 {
 	return my_richtext->thread_lock
 		(IN_THREAD,
 		 [&, this]
-		 (IN_THREAD_ONLY, const auto &lock)
+		 (ONLY IN_THREAD, const auto &lock)
 		 {
 			return my_location->moveto(IN_THREAD, x, y);
 		 });
@@ -236,14 +236,14 @@ class LIBCXX_HIDDEN richtextiteratorObj::internal_insert_impl
 // subclass, and invoking the private function.
 
 richtextiterator
-richtextiteratorObj::insert(IN_THREAD_ONLY,
+richtextiteratorObj::insert(ONLY IN_THREAD,
 			    const richtextstring &new_string)
 {
 	return insert(IN_THREAD,
 		      internal_insert_impl<richtextstring>{new_string});
 }
 
-richtextiterator richtextiteratorObj::insert(IN_THREAD_ONLY,
+richtextiterator richtextiteratorObj::insert(ONLY IN_THREAD,
 					     const std::u32string_view
 					     &new_string)
 {
@@ -252,7 +252,7 @@ richtextiterator richtextiteratorObj::insert(IN_THREAD_ONLY,
 		      {new_string});
 }
 
-void richtextiteratorObj::replace(IN_THREAD_ONLY,
+void richtextiteratorObj::replace(ONLY IN_THREAD,
 				  const const_richtextiterator &other,
 				  const richtextstring &new_string) const
 {
@@ -261,7 +261,7 @@ void richtextiteratorObj::replace(IN_THREAD_ONLY,
 		internal_insert_impl<richtextstring>{new_string});
 }
 
-void richtextiteratorObj::replace(IN_THREAD_ONLY,
+void richtextiteratorObj::replace(ONLY IN_THREAD,
 				  const const_richtextiterator &other,
 				  const std::u32string_view &new_string) const
 {
@@ -279,13 +279,13 @@ struct LIBCXX_HIDDEN richtextiteratorObj::insert_lock {
 	richtextObj::impl_t::lock &lock;
 };
 
-richtextiterator richtextiteratorObj::insert(IN_THREAD_ONLY,
+richtextiterator richtextiteratorObj::insert(ONLY IN_THREAD,
 					     const internal_insert &new_string)
 {
 	return my_richtext->thread_lock
 		(IN_THREAD,
 		 [&, this]
-		 (IN_THREAD_ONLY, auto &lock)
+		 (ONLY IN_THREAD, auto &lock)
 		 {
 			 insert_lock wrapper{lock};
 
@@ -293,7 +293,7 @@ richtextiterator richtextiteratorObj::insert(IN_THREAD_ONLY,
 		 });
 }
 
-richtextiterator richtextiteratorObj::insert(IN_THREAD_ONLY,
+richtextiterator richtextiteratorObj::insert(ONLY IN_THREAD,
 					     struct insert_lock &wrapper,
 					     const internal_insert &new_string)
 {
@@ -322,7 +322,7 @@ richtextiterator richtextiteratorObj::insert(IN_THREAD_ONLY,
 	return orig;
 }
 
-void richtextiteratorObj::remove(IN_THREAD_ONLY,
+void richtextiteratorObj::remove(ONLY IN_THREAD,
 				 const const_richtextiterator &other) const
 {
 	assert_or_throw(my_richtext == other->my_richtext,
@@ -331,7 +331,7 @@ void richtextiteratorObj::remove(IN_THREAD_ONLY,
 	my_richtext->thread_lock
 		(IN_THREAD,
 		 [&, this]
-		 (IN_THREAD_ONLY, auto &lock)
+		 (ONLY IN_THREAD, auto &lock)
 		 {
 			 my_richtext->remove_at_location(IN_THREAD, lock,
 							 my_location,
@@ -339,7 +339,7 @@ void richtextiteratorObj::remove(IN_THREAD_ONLY,
 		 });
 }
 
-void richtextiteratorObj::replace(IN_THREAD_ONLY,
+void richtextiteratorObj::replace(ONLY IN_THREAD,
 				  const const_richtextiterator &other,
 				  const internal_insert &new_string) const
 {
@@ -358,7 +358,7 @@ void richtextiteratorObj::replace(IN_THREAD_ONLY,
 	my_richtext->thread_lock
 		(IN_THREAD,
 		 [&, this]
-		 (IN_THREAD_ONLY, auto &lock)
+		 (ONLY IN_THREAD, auto &lock)
 		 {
 			 insert_lock wrapper{lock};
 
@@ -367,7 +367,7 @@ void richtextiteratorObj::replace(IN_THREAD_ONLY,
 		 });
 }
 
-void richtextiteratorObj::replace(IN_THREAD_ONLY,
+void richtextiteratorObj::replace(ONLY IN_THREAD,
 				  struct insert_lock &wrapper,
 				  const const_richtextiterator &other,
 				  const internal_insert &new_string) const
@@ -394,12 +394,12 @@ void richtextiteratorObj::replace(IN_THREAD_ONLY,
 		   }));
 }
 
-richtextiteratorObj::at_info richtextiteratorObj::at(IN_THREAD_ONLY) const
+richtextiteratorObj::at_info richtextiteratorObj::at(ONLY IN_THREAD) const
 {
 	return my_richtext->thread_lock
 		(IN_THREAD,
 		 [this]
-		 (IN_THREAD_ONLY, const auto &lock)
+		 (ONLY IN_THREAD, const auto &lock)
 		 {
 			 auto f=my_location->my_fragment;
 			 auto o=my_location->get_offset();
@@ -478,23 +478,23 @@ richtextstring richtextiteratorObj::get(const const_richtextiterator &other)
 	return ret;
 }
 
-dim_t richtextiteratorObj::horiz_pos(IN_THREAD_ONLY)
+dim_t richtextiteratorObj::horiz_pos(ONLY IN_THREAD)
 {
 	return my_richtext->thread_lock
 		(IN_THREAD,
 		 [this]
-		 (IN_THREAD_ONLY, auto &lock)
+		 (ONLY IN_THREAD, auto &lock)
 		 {
 			 return my_location->get_horiz_pos(IN_THREAD);
 		 });
 }
 
-void richtextiteratorObj::set_cursor(IN_THREAD_ONLY, bool cursor_on)
+void richtextiteratorObj::set_cursor(ONLY IN_THREAD, bool cursor_on)
 {
 	my_richtext->thread_lock
 		(IN_THREAD,
 		 [cursor_on, this]
-		 (IN_THREAD_ONLY, auto &lock)
+		 (ONLY IN_THREAD, auto &lock)
 		 {
 			 assert_or_throw(my_location->my_fragment,
 					 "my_fragment cannot be null.");

@@ -38,7 +38,7 @@ themedim_element_minoverrideObj<element_impl>
 //! Invoke compute_minimum_override()
 template<typename element_impl>
 void themedim_element_minoverrideObj<element_impl>
-::initialize(IN_THREAD_ONLY)
+::initialize(ONLY IN_THREAD)
 {
 	superclass_t::initialize(IN_THREAD);
 	compute_minimum_override(IN_THREAD);
@@ -49,7 +49,7 @@ void themedim_element_minoverrideObj<element_impl>
 //! Invoke compute_minimum_override()
 template<typename element_impl>
 void themedim_element_minoverrideObj<element_impl>
-::theme_updated(IN_THREAD_ONLY,
+::theme_updated(ONLY IN_THREAD,
 		const defaulttheme &new_theme)
 {
 	superclass_t::theme_updated(IN_THREAD, new_theme);
@@ -58,7 +58,7 @@ void themedim_element_minoverrideObj<element_impl>
 
 template<typename element_impl>
 void themedim_element_minoverrideObj<element_impl>
-::compute_minimum_override(IN_THREAD_ONLY)
+::compute_minimum_override(ONLY IN_THREAD)
 {
 	this->get_horizvert(IN_THREAD)->set_minimum_override
 		(IN_THREAD,

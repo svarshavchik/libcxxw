@@ -87,7 +87,7 @@ class LIBCXX_HIDDEN editorObj::implObj
 	//! iterator. If this is a password input field we also remove
 	//! the corresponding characters from the real_string.
 
-	void remove_content(IN_THREAD_ONLY,
+	void remove_content(ONLY IN_THREAD,
 			    const richtextiterator &other);
 
 	//! All access to the contents of the input field goes through here.
@@ -96,7 +96,7 @@ class LIBCXX_HIDDEN editorObj::implObj
 	//! the new unicode text gets inserted into the \c real_string, and
 	//! the actual field gets password_char-s instead.
 
-	void insert_content(IN_THREAD_ONLY,
+	void insert_content(ONLY IN_THREAD,
 			    const std::u32string_view &str);
 
 	//! All access to the contents of the input field goes through here.
@@ -124,7 +124,7 @@ class LIBCXX_HIDDEN editorObj::implObj
 
  public:
 
-	void clear_password_peek(IN_THREAD_ONLY);
+	void clear_password_peek(ONLY IN_THREAD);
 
  private:
 
@@ -172,7 +172,7 @@ class LIBCXX_HIDDEN editorObj::implObj
 			using const_lock::cursor;
 
 			//! Constructor
-			lock(IN_THREAD_ONLY, implObj &impl,
+			lock(ONLY IN_THREAD, implObj &impl,
 			     bool blinking_or_clearing=false);
 
 			//! Destructor
@@ -233,25 +233,25 @@ class LIBCXX_HIDDEN editorObj::implObj
 
 	//! After the reference font is initialized, recalculate the peephole.
 
-	void initialize(IN_THREAD_ONLY) override;
+	void initialize(ONLY IN_THREAD) override;
 
 	//! After the theme is updated, recalculate the peephole.
 
-	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme) override;
+	void theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme) override;
 
 	//! Multiply columns by font's nominal width.
 
-	dim_t nominal_width(IN_THREAD_ONLY) const;
+	dim_t nominal_width(ONLY IN_THREAD) const;
 
 	//! Multiple rows by font's height.
-	dim_t nominal_height(IN_THREAD_ONLY) const;
+	dim_t nominal_height(ONLY IN_THREAD) const;
 
 	//! Override set_minimum_override()
 
 	//! Because nominal_width() and nominal_height() takes them into
 	//! account, we'll call parent_peephole->recalculate().
 
-	void set_minimum_override(IN_THREAD_ONLY,
+	void set_minimum_override(ONLY IN_THREAD,
 				  dim_t horiz_override,
 				  dim_t vert_override) override;
 
@@ -289,18 +289,18 @@ class LIBCXX_HIDDEN editorObj::implObj
 
 	//! Override do_draw().
 
-	void do_draw(IN_THREAD_ONLY,
+	void do_draw(ONLY IN_THREAD,
 		     const draw_info &di,
 		     const rectangle_set &areas) override;
 
 	//! Override removed()
-	void removed(IN_THREAD_ONLY) override;
+	void removed(ONLY IN_THREAD) override;
 
  protected:
 	//! Override compute_preferred_width().
 
 	//! We compute it directly from font and columns.
-	void compute_preferred_width(IN_THREAD_ONLY) override;
+	void compute_preferred_width(ONLY IN_THREAD) override;
 
 	//! Override calculate_current_metrics().
 
@@ -308,7 +308,7 @@ class LIBCXX_HIDDEN editorObj::implObj
 	//! get_metrics() to reflect that.
 
 	std::pair<metrics::axis, metrics::axis>
-		calculate_current_metrics(IN_THREAD_ONLY) override;
+		calculate_current_metrics(ONLY IN_THREAD) override;
 
 	//! Override rewrap_due_to_updated_position().
 
@@ -318,18 +318,18 @@ class LIBCXX_HIDDEN editorObj::implObj
 	//! the rich text object renders it to the full width of the
 	//! display element.
 
-	void rewrap_due_to_updated_position(IN_THREAD_ONLY) override;
+	void rewrap_due_to_updated_position(ONLY IN_THREAD) override;
 
 	//! Inherited from elementObj::implObj
 
 	//! Starts or stops the cursor blink. If losing focus also calls
 	//! validate_modified(), just in case.
 
-	void keyboard_focus(IN_THREAD_ONLY, const callback_trigger_t &)
+	void keyboard_focus(ONLY IN_THREAD, const callback_trigger_t &)
 		override;
 
 	//! Starts or stop the cursor blink.
-	void window_focus_change(IN_THREAD_ONLY, bool flag) override;
+	void window_focus_change(ONLY IN_THREAD, bool flag) override;
 
  private:
 
@@ -338,12 +338,12 @@ class LIBCXX_HIDDEN editorObj::implObj
 	//! Call scroll_cursor_into_view(), then start blinking, if enabled,
 	// and has current_keyboard_focus(). Otherwise stop blinking.
 
-	void blink_if_has_focus(IN_THREAD_ONLY);
+	void blink_if_has_focus(ONLY IN_THREAD);
  public:
 	//! Inherited from elementObj::implObj
 
 	//! Processes a key event.
-	bool process_key_event(IN_THREAD_ONLY, const key_event &ke) override;
+	bool process_key_event(ONLY IN_THREAD, const key_event &ke) override;
 
 	//! This display element uses XIM.
 
@@ -351,11 +351,11 @@ class LIBCXX_HIDDEN editorObj::implObj
 
 	//! Button 1 moves the cursor, button2 pastes the primary clipboard.
 
-	bool process_button_event(IN_THREAD_ONLY,
+	bool process_button_event(ONLY IN_THREAD,
 				  const button_event &be,
 				  xcb_timestamp_t timestamp) override;
 	//! Pointer motion event
-	void report_motion_event(IN_THREAD_ONLY, const motion_event &)
+	void report_motion_event(ONLY IN_THREAD, const motion_event &)
 		override;
 
  private:
@@ -371,64 +371,64 @@ class LIBCXX_HIDDEN editorObj::implObj
 
 	//! Install a motion_scroll_callback
 
-	void start_scrolling(IN_THREAD_ONLY);
+	void start_scrolling(ONLY IN_THREAD);
 
 	//! Remove the motion_scroll_callback, and scroll the editor.
 
-	void stop_scrolling(IN_THREAD_ONLY);
+	void stop_scrolling(ONLY IN_THREAD);
 
 	//! Scroll while dragging the mouse button.
 
-	void scroll(IN_THREAD_ONLY);
+	void scroll(ONLY IN_THREAD);
 
 	//! Set a callback for the next cursor blink on/off.
-	void schedule_blink(IN_THREAD_ONLY);
+	void schedule_blink(ONLY IN_THREAD);
 
 	//! Blink the cursor, on or off.
-	void blink(IN_THREAD_ONLY);
+	void blink(ONLY IN_THREAD);
 
 	//! Blink the cursor, on or off.
 
 	//! Entry point using by moving_cursor, with the saved cursor position
 	//! prior the move.
-	void blink(IN_THREAD_ONLY, const richtextiterator &cursor);
+	void blink(ONLY IN_THREAD, const richtextiterator &cursor);
 
 	//! Whether the cursor is blinked on.
 	bool blinkon=false;
 
 	//! If the cursor is currently blinked on, blink it off.
-	void unblink(IN_THREAD_ONLY);
+	void unblink(ONLY IN_THREAD);
 
 	//! If the cursor is currently blinked on, blink it off.
 
 	//! Entry point using by moving_cursor, with the saved cursor position
 	//! prior the move.
-	void unblink(IN_THREAD_ONLY, const richtextiterator &cursor);
+	void unblink(ONLY IN_THREAD, const richtextiterator &cursor);
 
 	//! Override enablability_changed()
 
 	//! Update the element's background color in response to it being
 	//! enabled or disabled.
 
-	void enablability_changed(IN_THREAD_ONLY) override;
+	void enablability_changed(ONLY IN_THREAD) override;
 
 	//! Draw changed text fragments.
-	void draw_changes(IN_THREAD_ONLY,
+	void draw_changes(ONLY IN_THREAD,
 			  selection_cursor_t::lock &cursor_lock,
 			  input_change_type change_made,
 			  size_t deleted,
 			  size_t inserted);
 
 	//! Draw a fragment range.
-	void draw_between(IN_THREAD_ONLY,
+	void draw_between(ONLY IN_THREAD,
 			  const richtextiterator &a,
 			  const richtextiterator &b);
 
 	//! Process key press.
-	bool process_keypress(IN_THREAD_ONLY, const key_event &);
+	bool process_keypress(ONLY IN_THREAD, const key_event &);
 
 	//! ensure_visibility() of the cursor.
-	void scroll_cursor_into_view(IN_THREAD_ONLY);
+	void scroll_cursor_into_view(ONLY IN_THREAD);
 
 	//! Override set_focus_and_ensure_visibility()
 
@@ -436,7 +436,7 @@ class LIBCXX_HIDDEN editorObj::implObj
 	//! This display element is in a peephole, and the peephole will take
 	//! care of making everything visible.
 
-	void set_focus_and_ensure_visibility(IN_THREAD_ONLY,
+	void set_focus_and_ensure_visibility(ONLY IN_THREAD,
 					     const callback_trigger_t &)
 		override;
 
@@ -470,7 +470,7 @@ class LIBCXX_HIDDEN editorObj::implObj
 
 	public:
 		//! Constructor
-		delete_selection_info(IN_THREAD_ONLY, implObj &me);
+		delete_selection_info(ONLY IN_THREAD, implObj &me);
 
 		//! Return the computed character count.
 		inline size_t to_be_deleted() const
@@ -480,49 +480,49 @@ class LIBCXX_HIDDEN editorObj::implObj
 
 		//! Delete the current selection.
 
-		void do_delete(IN_THREAD_ONLY);
+		void do_delete(ONLY IN_THREAD);
 	};
 
 	//! Create a new selection object.
-	selection create_selection(IN_THREAD_ONLY);
+	selection create_selection(ONLY IN_THREAD);
 
 	//! Prepare a new primary selection, if we can.
-	void create_primary_selection(IN_THREAD_ONLY);
+	void create_primary_selection(ONLY IN_THREAD);
 
 	//! Prepare a new secondary selection, if we can.
-	void create_secondary_selection(IN_THREAD_ONLY);
+	void create_secondary_selection(ONLY IN_THREAD);
 
 	//! Remove the announced primary selection.
-	void remove_primary_selection(IN_THREAD_ONLY);
+	void remove_primary_selection(ONLY IN_THREAD);
 
 	//! Remove the announced secondary selection.
-	void remove_secondary_selection(IN_THREAD_ONLY);
+	void remove_secondary_selection(ONLY IN_THREAD);
 
 	//! Text was pasted.
 
 	//! Calls insert(), then scroll_cursor_into_view().
 
-	bool pasted(IN_THREAD_ONLY,
+	bool pasted(ONLY IN_THREAD,
 		    const std::u32string_view &str) override;
 
  private:
 
 	//! Insert text at current position.
 
-	void insert(IN_THREAD_ONLY,
+	void insert(ONLY IN_THREAD,
 		    const std::u32string_view &str);
 
 	//! Move cursor to the beginning of the text.
-	bool to_begin(IN_THREAD_ONLY, const input_mask &mask);
+	bool to_begin(ONLY IN_THREAD, const input_mask &mask);
 
 	//! Move cursor to the end of the text.
-	bool to_end(IN_THREAD_ONLY, const input_mask &mask);
+	bool to_end(ONLY IN_THREAD, const input_mask &mask);
 
 	//! Select the entire text.
-	void select_all(IN_THREAD_ONLY);
+	void select_all(ONLY IN_THREAD);
 
 	//! What happens when DEL is pressed.
-	size_t delete_char_or_selection(IN_THREAD_ONLY, const input_mask &mask);
+	size_t delete_char_or_selection(ONLY IN_THREAD, const input_mask &mask);
 
  public:
 
@@ -542,14 +542,14 @@ class LIBCXX_HIDDEN editorObj::implObj
  public:
 	//! Set the current contents of the editor
 
-	void set(IN_THREAD_ONLY, const std::u32string &string);
+	void set(ONLY IN_THREAD, const std::u32string &string);
 
 	//! Set the current contents of the editor
-	void set(IN_THREAD_ONLY, const std::u32string &string,
+	void set(ONLY IN_THREAD, const std::u32string &string,
 		 size_t cursor_pos, size_t selection_pos);
 
 	//! Whether we're cool with giving up focus.
-	bool ok_to_lose_focus(IN_THREAD_ONLY,
+	bool ok_to_lose_focus(ONLY IN_THREAD,
 			      const callback_trigger_t &trigger) override;
 
  private:
@@ -559,7 +559,7 @@ class LIBCXX_HIDDEN editorObj::implObj
 
 	//! Invoke validation_callback if validation_required.
 
-	bool validate_modified(IN_THREAD_ONLY, const callback_trigger_t &);
+	bool validate_modified(ONLY IN_THREAD, const callback_trigger_t &);
 
 	//! The validation callback.
 

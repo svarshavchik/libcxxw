@@ -32,7 +32,7 @@ scratch_and_mask_buffer_draw_impl
 scratch_and_mask_buffer_draw_impl::~scratch_and_mask_buffer_draw_impl()=default;
 
 void scratch_and_mask_buffer_draw_impl
-::get_mask_scratch_buffer(IN_THREAD_ONLY,
+::get_mask_scratch_buffer(ONLY IN_THREAD,
 			  const draw_info &di,
 			  const picture &area_picture,
 			  const pixmap &area_pixmap,

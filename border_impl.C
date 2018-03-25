@@ -64,14 +64,14 @@ struct border_implObj::corner_draw_info {
 
 	// Draw extra lines in the padding areas.
 
-	void draw_top_pad(IN_THREAD_ONLY, const grid_elementptr &left_element,
+	void draw_top_pad(ONLY IN_THREAD, const grid_elementptr &left_element,
 			  const grid_elementptr &right_element)
 	{
 		me.draw_vertical(IN_THREAD,
 				 di, 0, top_pad, left_element, right_element);
 	}
 
-	void draw_bottom_pad(IN_THREAD_ONLY,
+	void draw_bottom_pad(ONLY IN_THREAD,
 			     const grid_elementptr &left_element,
 			     const grid_elementptr &right_element)
 	{
@@ -83,14 +83,14 @@ struct border_implObj::corner_draw_info {
 				 left_element, right_element);
 	}
 
-	void draw_left_pad(IN_THREAD_ONLY, const grid_elementptr &top_element,
+	void draw_left_pad(ONLY IN_THREAD, const grid_elementptr &top_element,
 			   const grid_elementptr &bottom_element)
 	{
 		me.draw_horizontal(IN_THREAD,
 				   di, 0, left_pad, top_element, bottom_element);
 	}
 
-	void draw_right_pad(IN_THREAD_ONLY, const grid_elementptr &top_element,
+	void draw_right_pad(ONLY IN_THREAD, const grid_elementptr &top_element,
 			    const grid_elementptr &bottom_element)
 	{
 		me.draw_horizontal(IN_THREAD, di,
@@ -103,14 +103,14 @@ struct border_implObj::corner_draw_info {
 
 	// Now, draw the corresponding line to the center of the border.
 
-	void draw_top_stub(IN_THREAD_ONLY, const grid_elementptr &left_element,
+	void draw_top_stub(ONLY IN_THREAD, const grid_elementptr &left_element,
 			   const grid_elementptr &right_element)
 	{
 		me.draw_vertical(IN_THREAD, di, y, top_half_height,
 				 left_element, right_element);
 	}
 
-	void draw_bottom_stub(IN_THREAD_ONLY,
+	void draw_bottom_stub(ONLY IN_THREAD,
 			      const grid_elementptr &left_element,
 			      const grid_elementptr &right_element)
 	{
@@ -118,14 +118,14 @@ struct border_implObj::corner_draw_info {
 				 left_element, right_element);
 	}
 
-	void draw_left_stub(IN_THREAD_ONLY, const grid_elementptr &top_element,
+	void draw_left_stub(ONLY IN_THREAD, const grid_elementptr &top_element,
 			    const grid_elementptr &bottom_element)
 	{
 		me.draw_horizontal(IN_THREAD, di, 0, left_half_width,
 				   top_element, bottom_element);
 	}
 
-	void draw_right_stub(IN_THREAD_ONLY, const grid_elementptr &top_element,
+	void draw_right_stub(ONLY IN_THREAD, const grid_elementptr &top_element,
 			     const grid_elementptr &bottom_element)
 	{
 		me.draw_horizontal(IN_THREAD, di, center_x, right_half_width,
@@ -136,7 +136,7 @@ struct border_implObj::corner_draw_info {
 
 	// Used only when drawing a straight corner.
 
-	void topleft_background_fill(IN_THREAD_ONLY,
+	void topleft_background_fill(ONLY IN_THREAD,
 				     const surrounding_elements_info &elements)
 		const
 	{
@@ -158,7 +158,7 @@ struct border_implObj::corner_draw_info {
 						 top_half_height);
 	}
 
-	void topright_background_fill(IN_THREAD_ONLY,
+	void topright_background_fill(ONLY IN_THREAD,
 				      const surrounding_elements_info &elements)
 		const
 	{
@@ -182,7 +182,7 @@ struct border_implObj::corner_draw_info {
 						 top_half_height);
 	}
 
-	void bottomleft_background_fill(IN_THREAD_ONLY,
+	void bottomleft_background_fill(ONLY IN_THREAD,
 					const surrounding_elements_info
 					&elements) const
 	{
@@ -206,7 +206,7 @@ struct border_implObj::corner_draw_info {
 						 bottom_half_height);
 	}
 
-	void bottomright_background_fill(IN_THREAD_ONLY,
+	void bottomright_background_fill(ONLY IN_THREAD,
 					 const surrounding_elements_info
 					 &elements) const
 	{
@@ -233,7 +233,7 @@ struct border_implObj::corner_draw_info {
 
 	//! Invoke the appropriate background_fill based on which_corners.
 
-	void background_fill(IN_THREAD_ONLY,
+	void background_fill(ONLY IN_THREAD,
 			     int which_corners,
 			     const surrounding_elements_info &elements)
 		const
@@ -357,13 +357,13 @@ bool border_implObj::no_vertical_border(const draw_info &di) const
 		|| (di.area_rectangle.width < calculated_border_width);
 }
 
-void border_implObj::draw_horizontal(IN_THREAD_ONLY,
+void border_implObj::draw_horizontal(ONLY IN_THREAD,
 				     const draw_info &di) const
 {
 	draw_horizontal(IN_THREAD, di, grid_elementptr(), grid_elementptr());
 }
 
-void border_implObj::draw_horizontal(IN_THREAD_ONLY,
+void border_implObj::draw_horizontal(ONLY IN_THREAD,
 				     const draw_info &di,
 				     const grid_elementptr &top_element,
 				     const grid_elementptr &bottom_element) const
@@ -375,7 +375,7 @@ void border_implObj::draw_horizontal(IN_THREAD_ONLY,
 			top_element, bottom_element);
 }
 
-void border_implObj::draw_horizontal(IN_THREAD_ONLY,
+void border_implObj::draw_horizontal(ONLY IN_THREAD,
 				     const draw_info &di,
 				     coord_t x,
 				     dim_t length,
@@ -420,7 +420,7 @@ void border_implObj::draw_horizontal(IN_THREAD_ONLY,
 
 // Same logic as draw_horizontal, but in the other direction.
 
-void border_implObj::draw_vertical(IN_THREAD_ONLY,
+void border_implObj::draw_vertical(ONLY IN_THREAD,
 				   const draw_info &di,
 				   const grid_elementptr &left_element,
 				   const grid_elementptr &right_element) const
@@ -432,7 +432,7 @@ void border_implObj::draw_vertical(IN_THREAD_ONLY,
 		      left_element, right_element);
 }
 
-void border_implObj::draw_vertical(IN_THREAD_ONLY, const draw_info &di,
+void border_implObj::draw_vertical(ONLY IN_THREAD, const draw_info &di,
 				   coord_t y,
 				   dim_t length,
 				   const grid_elementptr &left_element,
@@ -462,7 +462,7 @@ void border_implObj::draw_vertical(IN_THREAD_ONLY, const draw_info &di,
 	}
 }
 
-void border_implObj::draw_corner(IN_THREAD_ONLY,
+void border_implObj::draw_corner(ONLY IN_THREAD,
 				 const draw_info &di, int which_corners,
 				 const surrounding_elements_info &elements
 				 ) const
@@ -600,7 +600,7 @@ void border_implObj::draw_corner(IN_THREAD_ONLY,
 	}
 }
 
-void border_implObj::draw_cornertl(IN_THREAD_ONLY,
+void border_implObj::draw_cornertl(ONLY IN_THREAD,
 				   const corner_draw_info &cdi,
 				   const surrounding_elements_info &elements)
 	const
@@ -618,7 +618,7 @@ void border_implObj::draw_cornertl(IN_THREAD_ONLY,
 	draw_square_corner(IN_THREAD, cdi.di, cdi.x, cdi.y);
 }
 
-void border_implObj::draw_cornertr(IN_THREAD_ONLY,
+void border_implObj::draw_cornertr(ONLY IN_THREAD,
 				   const corner_draw_info &cdi,
 				   const surrounding_elements_info &elements)
 	const
@@ -636,7 +636,7 @@ void border_implObj::draw_cornertr(IN_THREAD_ONLY,
 	draw_square_corner(IN_THREAD, cdi.di, cdi.x, cdi.y);
 }
 
-void border_implObj::draw_cornerbl(IN_THREAD_ONLY,
+void border_implObj::draw_cornerbl(ONLY IN_THREAD,
 				   const corner_draw_info &cdi,
 				   const surrounding_elements_info &elements)
 	const
@@ -654,7 +654,7 @@ void border_implObj::draw_cornerbl(IN_THREAD_ONLY,
 	draw_square_corner(IN_THREAD, cdi.di, cdi.x, cdi.y);
 }
 
-void border_implObj::draw_cornerbr(IN_THREAD_ONLY,
+void border_implObj::draw_cornerbr(ONLY IN_THREAD,
 				   const corner_draw_info &cdi,
 				   const surrounding_elements_info &elements)
 	const
@@ -672,7 +672,7 @@ void border_implObj::draw_cornerbr(IN_THREAD_ONLY,
 	draw_square_corner(IN_THREAD, cdi.di, cdi.x, cdi.y);
 }
 
-void border_implObj::draw_square_corner(IN_THREAD_ONLY,
+void border_implObj::draw_square_corner(ONLY IN_THREAD,
 					const draw_info &di,
 					coord_t x,
 					coord_t y) const
@@ -690,7 +690,7 @@ void border_implObj::draw_square_corner(IN_THREAD_ONLY,
 	composite_line(IN_THREAD, di, 0);
 }
 
-void border_implObj::draw_round_corner(IN_THREAD_ONLY,
+void border_implObj::draw_round_corner(ONLY IN_THREAD,
 				       const draw_info &di,
 				       coord_t x,
 				       coord_t y,
@@ -827,7 +827,7 @@ void border_implObj::draw_round_corner(IN_THREAD_ONLY,
 	composite_line(IN_THREAD, di, 0);
 }
 
-void border_implObj::draw_stubs(IN_THREAD_ONLY,
+void border_implObj::draw_stubs(ONLY IN_THREAD,
 				const draw_info &di, int stubs) const
 {
 	if (no_corner_border(di))
@@ -865,7 +865,7 @@ void border_implObj::draw_stubs(IN_THREAD_ONLY,
 	}
 }
 
-void border_implObj::composite_line(IN_THREAD_ONLY,
+void border_implObj::composite_line(ONLY IN_THREAD,
 				    const draw_info &di, size_t n) const
 {
 	// Now we'll use the pixmap as a mask to compose colors[n] into the

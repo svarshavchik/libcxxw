@@ -119,7 +119,7 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 	};
 
 	//! The constructor calls xcb_create_window()
-	window_handlerObj(IN_THREAD_ONLY,
+	window_handlerObj(ONLY IN_THREAD,
 			  const constructor_params &params);
 
 	//! The destructor calls xcb_destroy_window()
@@ -130,13 +130,13 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 
 	//! The handler is now registered with the connection thread.
 
-	virtual void installed(IN_THREAD_ONLY);
+	virtual void installed(ONLY IN_THREAD);
 
 	//! Unexpected disconnection from the server.
 
 	//! The default implementation does nothing.
 
-	virtual void disconnected(IN_THREAD_ONLY);
+	virtual void disconnected(ONLY IN_THREAD);
 
 	//! Logically retain the passive grab.
 
@@ -144,24 +144,24 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 	//! button or key press event). This sets grab_locked(), then
 	//! allowsevents.
 
-	virtual bool keep_passive_grab(IN_THREAD_ONLY);
+	virtual bool keep_passive_grab(ONLY IN_THREAD);
 
 	//! Unlock the current grab, and release it.
 
-	virtual void ungrab(IN_THREAD_ONLY);
+	virtual void ungrab(ONLY IN_THREAD);
 
 	//! Whether the window actively grabbed the pointer on its own.
 
 	//! The default implemention returns false.
-	virtual bool is_pointer_actively_grabbed(IN_THREAD_ONLY);
+	virtual bool is_pointer_actively_grabbed(ONLY IN_THREAD);
 
 	//! Release this handler's grabs, if there are any.
 
-	void release_grabs(IN_THREAD_ONLY);
+	void release_grabs(ONLY IN_THREAD);
 
 	//! Set a window property.
 
-	void change_property(IN_THREAD_ONLY,
+	void change_property(ONLY IN_THREAD,
 			     uint8_t mode,
 			     xcb_atom_t property,
 			     xcb_atom_t type,
@@ -174,26 +174,26 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 	// Implement in top level windows:
 
 	//! Protocol client message
-	virtual void client_message_event(IN_THREAD_ONLY,
+	virtual void client_message_event(ONLY IN_THREAD,
 					  const xcb_client_message_event_t *);
 
 	//! Connection thread wants us to process the collected exposures.
 
-	virtual void process_collected_exposures(IN_THREAD_ONLY);
+	virtual void process_collected_exposures(ONLY IN_THREAD);
 
 	//! Connection thread wants us to process the collected graphics exposures.
 
-	virtual void process_collected_graphics_exposures(IN_THREAD_ONLY);
+	virtual void process_collected_graphics_exposures(ONLY IN_THREAD);
 
 	//! A new theme has been installed
 
-	virtual void theme_updated_event(IN_THREAD_ONLY);
+	virtual void theme_updated_event(ONLY IN_THREAD);
 
 	//! Configure notification
 
 	//! Do not process the configure notification just yet. The
 	//! connection thread will invoke process_configure_notify().
-	virtual void configure_notify_received(IN_THREAD_ONLY,
+	virtual void configure_notify_received(ONLY IN_THREAD,
 					       const rectangle &);
 
 	//! Process most recent configure notification
@@ -218,59 +218,59 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 	//! process_configure_notify() gets called where all expensive work,
 	//! that results from a resized window, occurs.
 
-	virtual void process_configure_notify(IN_THREAD_ONLY,
+	virtual void process_configure_notify(ONLY IN_THREAD,
 					      const rectangle &);
 
 	//! Key press event
-	virtual void key_press_event(IN_THREAD_ONLY,
+	virtual void key_press_event(ONLY IN_THREAD,
 				     const xcb_key_press_event_t *event,
 				     uint16_t sequencehi);
 
 	//! Key release event
-	virtual void key_release_event(IN_THREAD_ONLY,
+	virtual void key_release_event(ONLY IN_THREAD,
 				       const xcb_key_release_event_t *event,
 				       uint16_t sequencehi);
 
 	//! Process a key press or release event.
 
 	//! Invoked by XIM server when a forwarded key event is received.
-	virtual bool handle_key_event(IN_THREAD_ONLY,
+	virtual bool handle_key_event(ONLY IN_THREAD,
 				      const xcb_key_release_event_t *event,
 				      bool keypress);
 
 	//! Button press event
-	virtual void button_press_event(IN_THREAD_ONLY,
+	virtual void button_press_event(ONLY IN_THREAD,
 					const xcb_button_press_event_t *event);
 
 	//! Button release event
-	virtual void button_release_event(IN_THREAD_ONLY,
+	virtual void button_release_event(ONLY IN_THREAD,
 					  const xcb_button_release_event_t *event);
 	//! Pointer motion event.
-	virtual void pointer_motion_event(IN_THREAD_ONLY,
+	virtual void pointer_motion_event(ONLY IN_THREAD,
 					  const xcb_motion_notify_event_t *);
 	//! Enter event.
-	virtual void enter_notify_event(IN_THREAD_ONLY,
+	virtual void enter_notify_event(ONLY IN_THREAD,
 					const xcb_enter_notify_event_t *);
 	//! Leave event.
-	virtual void leave_notify_event(IN_THREAD_ONLY,
+	virtual void leave_notify_event(ONLY IN_THREAD,
 					const xcb_enter_notify_event_t *);
 
 	//! Focus change on the window
-	virtual void focus_change_event(IN_THREAD_ONLY, bool);
+	virtual void focus_change_event(ONLY IN_THREAD, bool);
 
 	//! Received a SelectionClear event
-	void selection_clear_event(IN_THREAD_ONLY,
+	void selection_clear_event(ONLY IN_THREAD,
 				   xcb_atom_t selection_atom,
 				   xcb_timestamp_t timestamp);
 
 	//! Received a SelectionRequest event
-	void selection_request_event(IN_THREAD_ONLY,
+	void selection_request_event(ONLY IN_THREAD,
 				     const xcb_selection_request_event_t
 				     &request,
 				     xcb_selection_notify_event_t &reply);
  private:
 	//! Handle request for a MULTIPLE target.
-	void selection_request_multiple(IN_THREAD_ONLY,
+	void selection_request_multiple(ONLY IN_THREAD,
 					const xcb_selection_request_event_t
 					&request,
 					xcb_selection_notify_event_t &reply,
@@ -281,7 +281,7 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 	//! If there's an existing selection, its clear() method gets
 	//! invoked, after the new selection is replaced.
 
-	void selection_announce(IN_THREAD_ONLY,
+	void selection_announce(ONLY IN_THREAD,
 				xcb_atom_t selection_atom,
 				const current_selection &selection);
 
@@ -290,12 +290,12 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 	//! The element must arrange for its current_selection to return
 	//! \c false to stillvalid(). If the specified selection returns
 	//! \c false, it is removed.
-	void selection_discard(IN_THREAD_ONLY,
+	void selection_discard(ONLY IN_THREAD,
 			       xcb_atom_t selection_atom);
 
 	//! selection_notify event, the selection has been pasted.
 
-	void selection_notify_event(IN_THREAD_ONLY,
+	void selection_notify_event(ONLY IN_THREAD,
 				    const xcb_selection_notify_event_t *msg);
 
 	////////////////////////////////////////////////////////////////////
@@ -326,12 +326,12 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 	//! begin_converted_data() and end_converted_data(), without a call to
 	//! converted_data() between them.
 
-	void convert_selection(IN_THREAD_ONLY, xcb_atom_t clipboard,
+	void convert_selection(ONLY IN_THREAD, xcb_atom_t clipboard,
 			       xcb_atom_t type, xcb_timestamp_t timestamp);
 
 	//! Selection conversion failed.
 
-	virtual void conversion_failed(IN_THREAD_ONLY, xcb_atom_t clipboard,
+	virtual void conversion_failed(ONLY IN_THREAD, xcb_atom_t clipboard,
 				       xcb_atom_t type,
 				       xcb_timestamp_t timestamp);
 
@@ -360,12 +360,12 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 	//! depend only on "type". The subclass should always accept converted
 	//! data of the same type.
 
-	virtual bool begin_converted_data(IN_THREAD_ONLY, xcb_atom_t type,
+	virtual bool begin_converted_data(ONLY IN_THREAD, xcb_atom_t type,
 					  xcb_timestamp_t timestamp);
 
 	//! Converted selection data.
 
-	virtual void converted_data(IN_THREAD_ONLY, xcb_atom_t clipboard,
+	virtual void converted_data(ONLY IN_THREAD, xcb_atom_t clipboard,
 				    xcb_atom_t actual_type,
 				    xcb_atom_t format,
 				    void *data,
@@ -373,7 +373,7 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 
 	//! Converted selection data will be sent incrementally.
 
-	virtual void converting_incrementally(IN_THREAD_ONLY,
+	virtual void converting_incrementally(ONLY IN_THREAD,
 					      xcb_atom_t type,
 					      xcb_timestamp_t timestamp,
 					      uint32_t estimated_size);
@@ -383,7 +383,7 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 	//! If the converted selection's data was empty, converted_data()
 	//! never gets called, only end_converted_data().
 
-	virtual void end_converted_data(IN_THREAD_ONLY,
+	virtual void end_converted_data(ONLY IN_THREAD,
 					xcb_atom_t clipboard,
 					xcb_timestamp_t timestamp);
 
@@ -393,7 +393,7 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 	//! begin_converted_data(), converted_data()/converting_incrementally()
 	//! and end_converted_data().
 
-	void property_notify_event(IN_THREAD_ONLY,
+	void property_notify_event(ONLY IN_THREAD,
 				   const xcb_property_notify_event_t *msg);
 
 
@@ -418,7 +418,7 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 	//! Paste a string into the window
 
 	//! Called by the XIM server.
-	virtual void pasted_string(IN_THREAD_ONLY,
+	virtual void pasted_string(ONLY IN_THREAD,
 				   const std::u32string_view &);
 };
 

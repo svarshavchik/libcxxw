@@ -15,7 +15,7 @@ background_color_element_implObj
 
 background_color_element_implObj::~background_color_element_implObj()=default;
 
-void background_color_element_implObj::do_update(IN_THREAD_ONLY,
+void background_color_element_implObj::do_update(ONLY IN_THREAD,
 						 const background_color
 						 &new_color,
 						 elementObj::implObj &e)
@@ -27,7 +27,7 @@ void background_color_element_implObj::do_update(IN_THREAD_ONLY,
 	set_background_color_for_element(IN_THREAD, e);
 }
 
-void background_color_element_implObj::theme_updated(IN_THREAD_ONLY,
+void background_color_element_implObj::theme_updated(ONLY IN_THREAD,
 						     const defaulttheme
 						     &new_theme,
 						     elementObj::implObj &e)
@@ -39,17 +39,17 @@ void background_color_element_implObj::theme_updated(IN_THREAD_ONLY,
 }
 
 void background_color_element_implObj
-::background_color_was_recalculated(IN_THREAD_ONLY)
+::background_color_was_recalculated(ONLY IN_THREAD)
 {
 }
 
-void background_color_element_implObj::initialize(IN_THREAD_ONLY)
+void background_color_element_implObj::initialize(ONLY IN_THREAD)
 {
 	color->initialize(IN_THREAD);
 }
 
 void background_color_element_implObj
-::set_background_color_for_element(IN_THREAD_ONLY,
+::set_background_color_for_element(ONLY IN_THREAD,
 				   elementObj::implObj &e)
 {
 	auto &pos=e.data(IN_THREAD).current_position;

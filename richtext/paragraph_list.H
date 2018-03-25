@@ -84,15 +84,15 @@ public:
 	friend class const_fragment_list;
 
 	//! Invoke all paragraphs' rewrap() method.
-	bool rewrap(IN_THREAD_ONLY, dim_t width);
+	bool rewrap(ONLY IN_THREAD, dim_t width);
 
 	//! Invoke all paragraphs' unwrap() method.
-	bool unwrap(IN_THREAD_ONLY);
+	bool unwrap(ONLY IN_THREAD);
 
 	//! Invoke all paragraphs's fragments' theme_updated().
 
 	//! Takes care of updating the Y position of everything.
-	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme);
+	void theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme);
 };
 
 LIBCXXW_NAMESPACE_END

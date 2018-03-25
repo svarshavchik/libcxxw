@@ -20,7 +20,7 @@ list_cellimageObj::list_cellimageObj(const std::vector<icon> &images,
 }
 
 std::pair<metrics::axis, metrics::axis>
-list_cellimageObj::cell_get_metrics(IN_THREAD_ONLY, dim_t preferred_width)
+list_cellimageObj::cell_get_metrics(ONLY IN_THREAD, dim_t preferred_width)
 {
 	// Derive the metrics from the largest icon we have.
 
@@ -43,7 +43,7 @@ list_cellimageObj::cell_get_metrics(IN_THREAD_ONLY, dim_t preferred_width)
 	return { {w, w, w}, {h, h, h} };
 }
 
-void list_cellimageObj::cell_redraw(IN_THREAD_ONLY,
+void list_cellimageObj::cell_redraw(ONLY IN_THREAD,
 					element_drawObj &draw,
 					const draw_info &di,
 					bool draw_as_disabled,
@@ -101,13 +101,13 @@ void list_cellimageObj::cell_redraw(IN_THREAD_ONLY,
 		 clip);
 }
 
-void list_cellimageObj::cell_initialize(IN_THREAD_ONLY,
+void list_cellimageObj::cell_initialize(ONLY IN_THREAD,
 					    const defaulttheme &initial_theme)
 {
 	initialize(IN_THREAD);
 }
 
-void list_cellimageObj::cell_theme_updated(IN_THREAD_ONLY,
+void list_cellimageObj::cell_theme_updated(ONLY IN_THREAD,
 					       const defaulttheme &new_theme)
 {
 	theme_updated(IN_THREAD, new_theme);

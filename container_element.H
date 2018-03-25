@@ -15,7 +15,7 @@ LIBCXXW_NAMESPACE_START
 
 template<typename element_impl>
 void container_elementObj<element_impl>
-::inherited_visibility_updated(IN_THREAD_ONLY,
+::inherited_visibility_updated(ONLY IN_THREAD,
 			       inherited_visibility_info &info)
 {
 	containerObj::implObj::inherited_visibility_updated_before(IN_THREAD,
@@ -30,7 +30,7 @@ void container_elementObj<element_impl>
 //! Forwarded to containerObj::implObj.
 
 template<typename element_impl>
-void container_elementObj<element_impl>::do_draw(IN_THREAD_ONLY,
+void container_elementObj<element_impl>::do_draw(ONLY IN_THREAD,
 						 const draw_info &di,
 						 const rectangle_set &areas)
 {
@@ -51,7 +51,7 @@ void container_elementObj<element_impl>::do_draw(IN_THREAD_ONLY,
 
 template<typename element_impl>
 void container_elementObj<element_impl>
-::process_updated_position(IN_THREAD_ONLY)
+::process_updated_position(ONLY IN_THREAD)
 {
 	containerObj::implObj::process_updated_position(IN_THREAD);
 	element_impl::process_updated_position(IN_THREAD);
@@ -64,7 +64,7 @@ void container_elementObj<element_impl>
 
 template<typename element_impl>
 void container_elementObj<element_impl>
-::request_visibility_recursive(IN_THREAD_ONLY, bool flag)
+::request_visibility_recursive(ONLY IN_THREAD, bool flag)
 {
 	containerObj::implObj::request_visibility_recursive(IN_THREAD, flag);
 }
@@ -75,7 +75,7 @@ void container_elementObj<element_impl>
 
 template<typename element_impl>
 void container_elementObj<element_impl>
-::do_for_each_child(IN_THREAD_ONLY,
+::do_for_each_child(ONLY IN_THREAD,
 		    const function<void (const element &)> &e)
 {
 	containerObj::implObj::do_for_each_child(IN_THREAD, e);
@@ -88,7 +88,7 @@ void container_elementObj<element_impl>
 
 template<typename element_impl>
 void container_elementObj<element_impl>
-::draw_after_visibility_updated(IN_THREAD_ONLY, bool flag)
+::draw_after_visibility_updated(ONLY IN_THREAD, bool flag)
 {
 	element_impl::draw_after_visibility_updated(IN_THREAD, flag);
 	containerObj::implObj::draw_after_visibility_updated(IN_THREAD, flag);
@@ -100,7 +100,7 @@ void container_elementObj<element_impl>
 //! containerObj::implObj.
 
 template<typename element_impl>
-void container_elementObj<element_impl>::initialize(IN_THREAD_ONLY)
+void container_elementObj<element_impl>::initialize(ONLY IN_THREAD)
 {
 	element_impl::initialize(IN_THREAD);
 	containerObj::implObj::initialize(IN_THREAD);
@@ -113,7 +113,7 @@ void container_elementObj<element_impl>::initialize(IN_THREAD_ONLY)
 
 template<typename element_impl>
 void container_elementObj<element_impl>
-::theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme)
+::theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme)
 {
 	element_impl::theme_updated(IN_THREAD, new_theme);
 	containerObj::implObj::theme_updated(IN_THREAD, new_theme);
@@ -143,7 +143,7 @@ const elementObj::implObj &container_elementObj<element_impl>
 
 template<typename element_impl>
 void container_elementObj<element_impl>
-::removed_from_container(IN_THREAD_ONLY)
+::removed_from_container(ONLY IN_THREAD)
 {
 	containerObj::implObj::removed_from_container(IN_THREAD);
 }

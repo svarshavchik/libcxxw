@@ -25,7 +25,7 @@ bool focusable_labelObj::implObj::uses_input_method()
 	return true;
 }
 
-void focusable_labelObj::implObj::keyboard_focus(IN_THREAD_ONLY,
+void focusable_labelObj::implObj::keyboard_focus(ONLY IN_THREAD,
 						 const callback_trigger_t &trigger)
 {
 	superclass_t::keyboard_focus(IN_THREAD, trigger);
@@ -46,14 +46,14 @@ void focusable_labelObj::implObj::keyboard_focus(IN_THREAD_ONLY,
 	}
 }
 
-void focusable_labelObj::implObj::current_position_updated(IN_THREAD_ONLY)
+void focusable_labelObj::implObj::current_position_updated(ONLY IN_THREAD)
 {
 	superclass_t::current_position_updated(IN_THREAD);
 	report_current_cursor_position_if_active(IN_THREAD);
 }
 
 void focusable_labelObj::implObj
-::report_current_cursor_position_if_active(IN_THREAD_ONLY)
+::report_current_cursor_position_if_active(ONLY IN_THREAD)
 {
 	if (!current_keyboard_focus(IN_THREAD))
 		return;

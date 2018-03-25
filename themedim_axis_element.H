@@ -37,7 +37,7 @@ themedim_axis_widthObj<base>::~themedim_axis_widthObj()=default;
 //! Return the current dimensions, as a metrics::axis
 
 template<typename base>
-metrics::axis themedim_axis_widthObj<base>::get_width_axis(IN_THREAD_ONLY)
+metrics::axis themedim_axis_widthObj<base>::get_width_axis(ONLY IN_THREAD)
 	const
 {
 	dim_t min=themedim_element<themedim_width_min>::pixels(IN_THREAD);
@@ -75,7 +75,7 @@ themedim_axis_heightObj<base>::~themedim_axis_heightObj()=default;
 //! Return the current dimensions, as a metrics::axis
 
 template<typename base>
-metrics::axis themedim_axis_heightObj<base>::get_height_axis(IN_THREAD_ONLY)
+metrics::axis themedim_axis_heightObj<base>::get_height_axis(ONLY IN_THREAD)
 	const
 {
 	dim_t min=themedim_element<themedim_height_min>::pixels(IN_THREAD);

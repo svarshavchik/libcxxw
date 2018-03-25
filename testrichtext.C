@@ -17,7 +17,7 @@ void testrichtext(const current_fontcollection &font1,
 		  const current_fontcollection &font2,
 		  const main_window &w)
 {
-	auto thread_=w->get_screen()->impl->thread;
+	auto IN_THREAD=w->get_screen()->impl->thread;
 
 	auto black=w->get_screen()->impl->create_background_color("0%");
 
@@ -91,7 +91,7 @@ void testsplit(const current_fontcollection &font1,
 	       const current_fontcollection &font2,
 	       const main_window &w)
 {
-	auto thread_=w->get_screen()->impl->thread;
+	auto IN_THREAD=w->get_screen()->impl->thread;
 
 	auto black=w->get_screen()->impl->create_background_color("0%");
 
@@ -221,7 +221,7 @@ void testresolvedfonts(const current_fontcollection &font1,
 		       const current_fontcollection &font2,
 		       const main_window &w)
 {
-	auto thread_=w->get_screen()->impl->thread;
+	auto IN_THREAD=w->get_screen()->impl->thread;
 	auto black=w->get_screen()->impl->create_background_color("0%");
 
 	richtextstring ustring{

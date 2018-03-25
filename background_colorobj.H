@@ -32,7 +32,7 @@ public:
 	//! If the background color is a gradient, this gets adjusted
 	//! accordingly.
 
-	virtual background_color get_background_color_for(IN_THREAD_ONLY,
+	virtual background_color get_background_color_for(ONLY IN_THREAD,
 							  elementObj::implObj &)
 		=0;
 
@@ -44,13 +44,13 @@ public:
 	virtual bool is_scrollable_background()=0;
 
 	//! Return the current color picture.
-	virtual const_picture get_current_color(IN_THREAD_ONLY)=0;
+	virtual const_picture get_current_color(ONLY IN_THREAD)=0;
 
 	//! This background color's display element is about to be initialized.
-	virtual void initialize(IN_THREAD_ONLY)=0;
+	virtual void initialize(ONLY IN_THREAD)=0;
 
 	//! The current display theme has been changed.
-	virtual void theme_updated(IN_THREAD_ONLY,
+	virtual void theme_updated(ONLY IN_THREAD,
 				   const defaulttheme &new_theme)=0;
 };
 

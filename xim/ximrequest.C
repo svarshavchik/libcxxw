@@ -29,28 +29,28 @@ void ximrequestObj::wrong_request_type(const char *received_request_type)
 		  << " response, received " << received_request_type);
 }
 
-void ximrequestObj::xim_create_ic_reply(IN_THREAD_ONLY,
+void ximrequestObj::xim_create_ic_reply(ONLY IN_THREAD,
 					const ximserver &server,
 					xim_ic_t input_context_id)
 {
 	wrong_request_type("xim_create_ic_reply");
 }
 
-void ximrequestObj::xim_destroy_ic_reply(IN_THREAD_ONLY,
+void ximrequestObj::xim_destroy_ic_reply(ONLY IN_THREAD,
 					 const ximserver &server,
 					 xim_ic_t input_context_id)
 {
 	wrong_request_type("xim_destroy_ic_reply");
 }
 
-void ximrequestObj::xim_sync_reply(IN_THREAD_ONLY,
+void ximrequestObj::xim_sync_reply(ONLY IN_THREAD,
 				   const ximserver &server,
 				   xim_ic_t input_context_id)
 {
 	wrong_request_type("xim_sync_reply");
 }
 #if 0
-void ximrequestObj::xim_get_ic_values_reply(IN_THREAD_ONLY,
+void ximrequestObj::xim_get_ic_values_reply(ONLY IN_THREAD,
 					    const ximserver &server,
 					    uint16_t input_context_id,
 					    const std::vector<ximattrvalue>

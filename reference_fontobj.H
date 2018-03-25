@@ -57,12 +57,12 @@ public:
 	//! The mixin's element has been initialized
 
 	//! Invokes theme_updated().
-	void initialize(IN_THREAD_ONLY);
+	void initialize(ONLY IN_THREAD);
 
 	//! The theme was updated.
 
 	//! Invokes the cached font's theme_updated().
-	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme);
+	void theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme);
 };
 
 //! Attach a tag to a reference_fontObj

@@ -20,7 +20,7 @@ windowObj::windowObj(const ref<window_handlerObj> &handler)
 
 	handler->thread()->run_as
 		([handler]
-		 (IN_THREAD_ONLY)
+		 (ONLY IN_THREAD)
 		 {
 			 IN_THREAD->install_window_handler(IN_THREAD, handler);
 		 });
@@ -37,7 +37,7 @@ windowObj::~windowObj()
 
 	handler->thread()->run_as
 		([handler=this->handler]
-		 (IN_THREAD_ONLY)
+		 (ONLY IN_THREAD)
 		 {
 			 IN_THREAD->uninstall_window_handler(IN_THREAD, handler);
 		 });
@@ -68,7 +68,7 @@ windowObj::~windowObj()
 			 LOG_DEBUG("Destroying: xid " << window_id);
 			 thread->run_as
 				 ([window_id, screen]
-				  (IN_THREAD_ONLY)
+				  (ONLY IN_THREAD)
 				  {
 				  });
 		 });

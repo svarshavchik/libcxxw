@@ -107,7 +107,7 @@ class LIBCXX_HIDDEN richtextcursorlocationObj : virtual public obj {
 	position_t position;
 
 	//! Set a new targeted horiz pos for the current actual cursor location.
-	void new_targeted_horiz_pos(IN_THREAD_ONLY);
+	void new_targeted_horiz_pos(ONLY IN_THREAD);
 
  public:
 	//! What is says.
@@ -166,25 +166,25 @@ class LIBCXX_HIDDEN richtextcursorlocationObj : virtual public obj {
 	//! Reset horiz_pos to point exactly to this location.
 
 	//! If it is not already cached.
-	void cache_horiz_pos(IN_THREAD_ONLY);
+	void cache_horiz_pos(ONLY IN_THREAD);
 
 	//! Return the current "targeted" horizontal position.
-	dim_squared_t get_targeted_horiz_pos(IN_THREAD_ONLY);
+	dim_squared_t get_targeted_horiz_pos(ONLY IN_THREAD);
 
 	//! Reset offset and horiz pos to point to targeted_horiz_pos
-	void set_targeted_horiz_pos(IN_THREAD_ONLY,
+	void set_targeted_horiz_pos(ONLY IN_THREAD,
 				    dim_squared_t targeted_horiz_pos);
 
 	//! Return the current horizontal position
 
-	dim_t get_horiz_pos(IN_THREAD_ONLY);
+	dim_t get_horiz_pos(ONLY IN_THREAD);
 
 	//! Adjust location by character count.
-	void move(IN_THREAD_ONLY, ssize_t howmuch);
+	void move(ONLY IN_THREAD, ssize_t howmuch);
 
  private:
-	void leftby1(IN_THREAD_ONLY);
-	void rightby1(IN_THREAD_ONLY);
+	void leftby1(ONLY IN_THREAD);
+	void rightby1(ONLY IN_THREAD);
  public:
 	//! Beginning of fragment
 	void start_of_line();
@@ -193,27 +193,27 @@ class LIBCXX_HIDDEN richtextcursorlocationObj : virtual public obj {
 	void end_of_line();
 
 	//! Up
-	void up(IN_THREAD_ONLY);
+	void up(ONLY IN_THREAD);
 
 	//! Down
-	void down(IN_THREAD_ONLY);
+	void down(ONLY IN_THREAD);
 
 	//! Up
-	void page_up(IN_THREAD_ONLY, dim_t height);
+	void page_up(ONLY IN_THREAD, dim_t height);
 
 	//! Down
-	void page_down(IN_THREAD_ONLY, dim_t height);
+	void page_down(ONLY IN_THREAD, dim_t height);
 
 	//! Move to the given coordinates
 
 	//! Returns true if the X coordinate lies within the fragment.
 	//! If it is outside the fragment, the location is moved to the first
 	//! or the last character.
-	bool moveto(IN_THREAD_ONLY, coord_t x, coord_t y);
+	bool moveto(ONLY IN_THREAD, coord_t x, coord_t y);
 
 	//! richtextfragment inserted nchars at offset #pos, with extra_width pixels
 
-	void inserted_at(IN_THREAD_ONLY,
+	void inserted_at(ONLY IN_THREAD,
 			 size_t pos, size_t nchars, dim_t extra_width);
 
 	//! The same location?

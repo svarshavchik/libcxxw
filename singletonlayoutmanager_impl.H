@@ -39,7 +39,7 @@ class LIBCXX_HIDDEN singletonlayoutmanagerObj::implObj :
 
 	//! Inherited from layoutmanagerObj::implObj
 
-	void do_for_each_child(IN_THREAD_ONLY,
+	void do_for_each_child(ONLY IN_THREAD,
 			       const function<void (const element &e)> &)
 		override;
 
@@ -53,28 +53,28 @@ class LIBCXX_HIDDEN singletonlayoutmanagerObj::implObj :
 	//! Return list_element's implementation object.
 
 	//! Invoking initialize_if_needed()
-	elementimplptr get_list_element_impl(IN_THREAD_ONLY);
+	elementimplptr get_list_element_impl(ONLY IN_THREAD);
 
  public:
 	//! Left margin padding.
 
 	//! The default implementation returns 0
-	virtual dim_t get_left_padding(IN_THREAD_ONLY);
+	virtual dim_t get_left_padding(ONLY IN_THREAD);
 
 	//! Right margin padding.
 
 	//! The default implementation returns 0
-	virtual dim_t get_right_padding(IN_THREAD_ONLY);
+	virtual dim_t get_right_padding(ONLY IN_THREAD);
 
 	//! Top margin padding.
 
 	//! The default implementation returns 0
-	virtual dim_t get_top_padding(IN_THREAD_ONLY);
+	virtual dim_t get_top_padding(ONLY IN_THREAD);
 
 	//! Bottom margin padding.
 
 	//! The default implementation returns 0
-	virtual dim_t get_bottom_padding(IN_THREAD_ONLY);
+	virtual dim_t get_bottom_padding(ONLY IN_THREAD);
 
 	//! Implement recalculate()
 
@@ -82,13 +82,13 @@ class LIBCXX_HIDDEN singletonlayoutmanagerObj::implObj :
 	//! metrics and padding and calls update_metrics().
 	//!
 	//! Calls process_updated_position().
-	void recalculate(IN_THREAD_ONLY) override;
+	void recalculate(ONLY IN_THREAD) override;
 
 	//! Set the container's default metrics.
 
 	//! Takes the metrics computed by recalculate(), and sets its as the
 	//! container's metrics.
-	virtual void update_metrics(IN_THREAD_ONLY,
+	virtual void update_metrics(ONLY IN_THREAD,
 				    const metrics::axis &horiz,
 				    const metrics::axis &vert);
 
@@ -101,7 +101,7 @@ class LIBCXX_HIDDEN singletonlayoutmanagerObj::implObj :
 	//! element maintains the set left padding, and the right padding
 	//! gets increased.
 
-	void process_updated_position(IN_THREAD_ONLY,
+	void process_updated_position(ONLY IN_THREAD,
 				      const rectangle &position) override;
 };
 

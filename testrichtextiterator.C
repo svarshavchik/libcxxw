@@ -18,7 +18,7 @@ void testrichtext1(const main_window &w,
 		   const current_fontcollection &font1,
 		   const current_fontcollection &font2)
 {
-	auto thread_=w->get_screen()->impl->thread;
+	auto IN_THREAD=w->get_screen()->impl->thread;
 
 	auto black=w->get_screen()->impl->create_background_color("0%");
 
@@ -165,7 +165,7 @@ void testrichtext1(const main_window &w,
 		"Cursor did not move to next fragment");
 }
 
-void validate_richtext(IN_THREAD_ONLY,
+void validate_richtext(ONLY IN_THREAD,
 		       const richtext &rtext,
 		       const std::string &s,
 		       const std::string &what)
@@ -174,7 +174,7 @@ void validate_richtext(IN_THREAD_ONLY,
 
 	auto text=rtext->thread_lock(IN_THREAD,
 				     []
-				     (IN_THREAD_ONLY, auto &lock)
+				     (ONLY IN_THREAD, auto &lock)
 				     {
 					     return *lock;
 				     });
@@ -281,7 +281,7 @@ void validate_richtext(IN_THREAD_ONLY,
 void testrichtext2(const main_window &w,
 		   const current_fontcollection &font1)
 {
-	auto thread_=w->get_screen()->impl->thread;
+	auto IN_THREAD=w->get_screen()->impl->thread;
 
 	auto black=w->get_screen()->impl->create_background_color("0%");
 
@@ -393,7 +393,7 @@ void testrichtext2(const main_window &w,
 void testrichtext3(const main_window &w,
 		   const current_fontcollection &font1)
 {
-	auto thread_=w->get_screen()->impl->thread;
+	auto IN_THREAD=w->get_screen()->impl->thread;
 
 	auto black=w->get_screen()->impl->create_background_color("0%");
 
@@ -449,7 +449,7 @@ void testrichtext3(const main_window &w,
 		text->thread_lock
 			(IN_THREAD,
 			 []
-			 (IN_THREAD_ONLY, auto &lock)
+			 (ONLY IN_THREAD, auto &lock)
 			 {
 				 assert_or_throw
 					 ((*lock)->paragraphs.size() == 4,
@@ -589,7 +589,7 @@ void testrichtext3(const main_window &w,
 void testrichtext4(const main_window &w,
 		   const current_fontcollection &font1)
 {
-	auto thread_=w->get_screen()->impl->thread;
+	auto IN_THREAD=w->get_screen()->impl->thread;
 
 	auto black=w->get_screen()->impl->create_background_color("0%");
 
@@ -612,7 +612,7 @@ void testrichtext4(const main_window &w,
 	richtext->thread_lock
 		(IN_THREAD,
 		 [&]
-		 (IN_THREAD_ONLY, auto &lock)
+		 (ONLY IN_THREAD, auto &lock)
 		 {
 			 auto p=(*lock)->paragraphs.get_paragraph(0);
 
@@ -664,7 +664,7 @@ void testrichtext4(const main_window &w,
 void testrichtext5(const main_window &w,
 		   const current_fontcollection &font2)
 {
-	auto thread_=w->get_screen()->impl->thread;
+	auto IN_THREAD=w->get_screen()->impl->thread;
 
 	auto black=w->get_screen()->impl->create_background_color("0%");
 
@@ -683,7 +683,7 @@ void testrichtext5(const main_window &w,
 	auto text_width=richtext->thread_lock
 		(IN_THREAD,
 		 []
-		 (IN_THREAD_ONLY, auto &lock)
+		 (ONLY IN_THREAD, auto &lock)
 		 {
 			 return (*lock)->width();
 		 });
@@ -721,7 +721,7 @@ void testrichtext6(const main_window &w,
 		   const current_fontcollection &font1,
 		   const current_fontcollection &font2)
 {
-	auto thread_=w->get_screen()->impl->thread;
+	auto IN_THREAD=w->get_screen()->impl->thread;
 
 	auto black=w->get_screen()->impl->create_background_color("0%");
 

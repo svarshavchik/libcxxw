@@ -43,18 +43,18 @@ class LIBCXX_HIDDEN focusable_labelObj::implObj
 
 	//! Call report_current_cursor_position_if_active().
 
-	void keyboard_focus(IN_THREAD_ONLY,
+	void keyboard_focus(ONLY IN_THREAD,
 			    const callback_trigger_t &trigger) override;
 
 	//! Override current_position_updated()
 
 	//! Call report_current_cursor_position_if_active().
 
-	void current_position_updated(IN_THREAD_ONLY) override;
+	void current_position_updated(ONLY IN_THREAD) override;
 
 	//! report_current_cursor_position() when we have input focus.
 
-	void report_current_cursor_position_if_active(IN_THREAD_ONLY);
+	void report_current_cursor_position_if_active(ONLY IN_THREAD);
 };
 
 LIBCXXW_NAMESPACE_END

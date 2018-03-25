@@ -44,7 +44,7 @@ class LIBCXX_HIDDEN popupObj::handlerObj :
 	typedef generic_windowObj::handlerObj superclass_t;
 
 public:
-	handlerObj(IN_THREAD_ONLY,
+	handlerObj(ONLY IN_THREAD,
 		   const ref<generic_windowObj::handlerObj> &parent,
 		   const color_arg &background_color,
 		   size_t nesting_level=0);
@@ -58,16 +58,16 @@ public:
 
 	//! This means we need to set_popup_position().
 
-	void frame_extents_updated(IN_THREAD_ONLY) override;
+	void frame_extents_updated(ONLY IN_THREAD) override;
 
 	//! Override horizvert_updated()
 
 	//! This means we need to set_popup_position().
 
-	void horizvert_updated(IN_THREAD_ONLY) override;
+	void horizvert_updated(ONLY IN_THREAD) override;
 
 	//! Implement theme_updated()
-	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme)
+	void theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme)
 		override;
 
 	//! Recalculate what my position should be.
@@ -79,7 +79,7 @@ public:
 	//! then sets the popup position.
 
 	virtual popup_position_affinity
-		recalculate_popup_position(IN_THREAD_ONLY,
+		recalculate_popup_position(ONLY IN_THREAD,
 					   rectangle &r,
 					   dim_t screen_width,
 					   dim_t screen_height)=0;
@@ -92,7 +92,7 @@ public:
 	//! needs to base its logic on, call it, then use the adjusted
 	//! rectangle to xcb_configure_window().
 
-	void set_popup_position(IN_THREAD_ONLY);
+	void set_popup_position(ONLY IN_THREAD);
 
  public:
 
@@ -100,33 +100,33 @@ public:
 
 	//! We manage our own size, and ignore ConfigureNotify messages
 	//! from the server.
-	void process_configure_notify(IN_THREAD_ONLY,
+	void process_configure_notify(ONLY IN_THREAD,
 				      const rectangle &) override;
 
 	//! Override configure_notify_received()
 
 	//! We manage our own size, and ignore ConfigureNotify messages
 	//! from the server.
-	void configure_notify_received(IN_THREAD_ONLY,
+	void configure_notify_received(ONLY IN_THREAD,
 				      const rectangle &) override;
 
 	//! Override button_press_event
 
 	//! Pressing a button outside of the popup hides it.
-	void do_button_event(IN_THREAD_ONLY,
+	void do_button_event(ONLY IN_THREAD,
 			     const xcb_button_release_event_t *event,
 			     const button_event &be,
 			     const motion_event &me) override;
 
 	//! Perform any needed grab/pointer processing due to visibility change.
-	void set_inherited_visibility(IN_THREAD_ONLY,
+	void set_inherited_visibility(ONLY IN_THREAD,
 				      inherited_visibility_info
 				      &visibility_info)
 		override;
 
 	//! Automatically advance input focus to first field, upon visibility.
 
-	void inherited_visibility_updated(IN_THREAD_ONLY,
+	void inherited_visibility_updated(ONLY IN_THREAD,
 					  inherited_visibility_info &info)
 		override;
 
@@ -144,11 +144,11 @@ public:
 
 	//! Look to the popup parent's.
 
-	std::string default_wm_class_resource(IN_THREAD_ONLY) override;
+	std::string default_wm_class_resource(ONLY IN_THREAD) override;
 
 	//! Return the popup's parent main window.
 
-	ptr<generic_windowObj::handlerObj> get_popup_parent(IN_THREAD_ONLY)
+	ptr<generic_windowObj::handlerObj> get_popup_parent(ONLY IN_THREAD)
 		override;
 
 	//! Mcguffin for a visible popup.
@@ -162,50 +162,50 @@ public:
 	//! The subclass must implement it by invoking the appropriate
 	//! method in shared_handler_data, and returning the mcguffin.
 
-	virtual ref<obj> get_opened_mcguffin(IN_THREAD_ONLY)=0;
+	virtual ref<obj> get_opened_mcguffin(ONLY IN_THREAD)=0;
 
 	//! We just released the opened_mcguffin
 
 	//! Because we're no longer visible.
 	//! The subclass must implement it by invoking the appropriate
 	//! method in shared_handler_data.
-	virtual void released_opened_mcguffin(IN_THREAD_ONLY)=0;
+	virtual void released_opened_mcguffin(ONLY IN_THREAD)=0;
 
  public:
 
 	//! Perform processing after a popup is opened.
 
 	//! Grab the pointer.
-	virtual void popup_opened(IN_THREAD_ONLY);
+	virtual void popup_opened(ONLY IN_THREAD);
 
 	//! The popup is about to be closed.
 
 	//! Release the pointer grab.
 
-	virtual void closing_popup(IN_THREAD_ONLY);
+	virtual void closing_popup(ONLY IN_THREAD);
 
 	//! Override keep_passive_grab().
 
 	//! Forward to parent element, that grabbed the pointer for us.
 
-	bool keep_passive_grab(IN_THREAD_ONLY) override;
+	bool keep_passive_grab(ONLY IN_THREAD) override;
 
 	//! Override ungrab().
 
 	//! Forward to parent element, that grabbed the pointer for us.
-	void ungrab(IN_THREAD_ONLY) override;
+	void ungrab(ONLY IN_THREAD) override;
 
 	//! Override grab_pointer().
 
 	//! Forwarded to parent element.
-	grabbed_pointerptr grab_pointer(IN_THREAD_ONLY,
+	grabbed_pointerptr grab_pointer(ONLY IN_THREAD,
 					const elementimplptr &) override;
 
 	//! Override process_key_event()
 
 	//! If the ESC key is pressed, close the combo-box popup.
 
-	bool process_key_event(IN_THREAD_ONLY, const key_event &ke)
+	bool process_key_event(ONLY IN_THREAD, const key_event &ke)
 		override;
 };
 

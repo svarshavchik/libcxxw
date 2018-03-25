@@ -47,24 +47,24 @@ class LIBCXX_HIDDEN current_selectionObj : virtual public obj {
 
 	//! Indicates whether the original display element still considers
 	//! this a valid selection.
-	virtual bool stillvalid(IN_THREAD_ONLY)=0;
+	virtual bool stillvalid(ONLY IN_THREAD)=0;
 
 	//! This selection will not be used any more.
 
 	//! Either we received a SelectionClear() message, or another
 	//! display element announced its own selection.
-	virtual void clear(IN_THREAD_ONLY)=0;
+	virtual void clear(ONLY IN_THREAD)=0;
 
 	class convertedValueObj;
 	class convertedIncrementalValueObj;
 
 	// Convert the current selection to the requested format. Returns
 	// a null ptr if the current selection value cannot be converted.
-	virtual ptr<convertedValueObj> convert(IN_THREAD_ONLY, xcb_atom_t)=0;
+	virtual ptr<convertedValueObj> convert(ONLY IN_THREAD, xcb_atom_t)=0;
 
 	// For which targets convert() is supported.
 
-	virtual std::vector<xcb_atom_t> supported(IN_THREAD_ONLY)=0;
+	virtual std::vector<xcb_atom_t> supported(ONLY IN_THREAD)=0;
 };
 
 //! A converted selection value.
@@ -122,7 +122,7 @@ class LIBCXX_HIDDEN current_selectionObj::convertedValueObj
 	//! chunk of the incrementally provided value, returning a zero-length
 	//! value vector after it's done.
 
-	virtual ref<convertedValueObj> next_chunk(IN_THREAD_ONLY);
+	virtual ref<convertedValueObj> next_chunk(ONLY IN_THREAD);
 };
 
 // Taking a value, and chopping it up into incremental chunks.
@@ -149,7 +149,7 @@ class LIBCXX_HIDDEN current_selectionObj::convertedIncrementalValueObj
 	~convertedIncrementalValueObj();
 
 	//! Implement next_chunk().
-	ref<convertedValueObj> next_chunk(IN_THREAD_ONLY) override;
+	ref<convertedValueObj> next_chunk(ONLY IN_THREAD) override;
 };
 
 LIBCXXW_NAMESPACE_END

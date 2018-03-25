@@ -23,7 +23,7 @@ ximserverObj::ximserverObj()
 
 ximserverObj::~ximserverObj()=default;
 
-void ximserverObj::stop(IN_THREAD_ONLY)
+void ximserverObj::stop(ONLY IN_THREAD)
 {
 	if (!stop_flag)
 	{
@@ -35,17 +35,17 @@ void ximserverObj::stop(IN_THREAD_ONLY)
 }
 
 void ximserverObj
-::add_client_request(IN_THREAD_ONLY,
+::add_client_request(ONLY IN_THREAD,
 		     const ximrequest &req,
 		     const ximclient &client,
-		     const std::function<bool (IN_THREAD_ONLY,
+		     const std::function<bool (ONLY IN_THREAD,
 					       const ximserver &,
 					       const ximclient &)>
 		     &callback)
 {
 	add_request(IN_THREAD, req,
 		    [=]
-		    (IN_THREAD_ONLY, const ximserver &server)
+		    (ONLY IN_THREAD, const ximserver &server)
 		    {
 			    if (client->input_context_id(IN_THREAD) == 0)
 			    {
@@ -61,7 +61,7 @@ void ximserverObj
 
 // Queue up a synchronous request.
 
-void ximserverObj::add_request(IN_THREAD_ONLY,
+void ximserverObj::add_request(ONLY IN_THREAD,
 			       const ximrequest &req,
 			       const send_sync_request_callback_t &action)
 {
@@ -84,7 +84,7 @@ void ximserverObj::add_request(IN_THREAD_ONLY,
 		send_next_request(IN_THREAD);
 }
 
-void ximserverObj::send_next_request(IN_THREAD_ONLY)
+void ximserverObj::send_next_request(ONLY IN_THREAD)
 {
 	auto me=ximserver(this);
 
@@ -115,7 +115,7 @@ void ximserverObj::send_next_request(IN_THREAD_ONLY)
 // with it, then send the next synchronous request to the X input method
 // server, if there is one.
 
-void ximserverObj::do_sync_reply_received(IN_THREAD_ONLY, const function<void
+void ximserverObj::do_sync_reply_received(ONLY IN_THREAD, const function<void
 					  (const ximrequest &)> &callback)
 {
 	if (request_queue.empty())
@@ -143,7 +143,7 @@ typedef int16_t INT16;
 typedef uint16_t CARD16;
 typedef uint8_t CARD8;
 
-static inline bool CARD32_received(IN_THREAD_ONLY,
+static inline bool CARD32_received(ONLY IN_THREAD,
 				   const uint8_t *&data, size_t &data_size,
 				   CARD32 &v)
 {
@@ -158,7 +158,7 @@ static inline bool CARD32_received(IN_THREAD_ONLY,
 	return true;
 }
 
-static inline bool INT16_received(IN_THREAD_ONLY,
+static inline bool INT16_received(ONLY IN_THREAD,
 				  const uint8_t *&data, size_t &data_size,
 				  INT16 &v)
 {
@@ -172,7 +172,7 @@ static inline bool INT16_received(IN_THREAD_ONLY,
 	return true;
 }
 
-static inline bool CARD16_received(IN_THREAD_ONLY,
+static inline bool CARD16_received(ONLY IN_THREAD,
 				  const uint8_t *&data, size_t &data_size,
 				   CARD16 &v)
 {
@@ -186,7 +186,7 @@ static inline bool CARD16_received(IN_THREAD_ONLY,
 	return true;
 }
 
-static inline bool CARD8_received(IN_THREAD_ONLY,
+static inline bool CARD8_received(ONLY IN_THREAD,
 				  const uint8_t *&data, size_t &data_size,
 				  CARD8 &v)
 {
@@ -200,7 +200,7 @@ static inline bool CARD8_received(IN_THREAD_ONLY,
 
 // Receive a forwarded X event as a 32 byte blob, we'll parse it later.
 
-static inline bool eventbuf_t_received(IN_THREAD_ONLY,
+static inline bool eventbuf_t_received(ONLY IN_THREAD,
 				       const uint8_t * &data, size_t &data_size,
 				       ximserverObj::eventbuf_t &a)
 {
@@ -326,7 +326,7 @@ static void set_preedit_position(const auto &ic_attributes_by_name,
 }
 
 
-void ximserverObj::badmessage(IN_THREAD_ONLY, const char *message)
+void ximserverObj::badmessage(ONLY IN_THREAD, const char *message)
 {
 	xim_disconnected(IN_THREAD);
 
@@ -344,7 +344,7 @@ ximattrvalue::ximattrvalue(uint16_t idArg,
 	CARD32_generate(p, valueArg);
 }
 
-void ximserverObj::received(IN_THREAD_ONLY, const uint8_t *data, size_t p)
+void ximserverObj::received(ONLY IN_THREAD, const uint8_t *data, size_t p)
 {
 	if (p < 4)
 		badmessage(IN_THREAD, "(unknown)");
@@ -381,7 +381,7 @@ void ximserverObj::received(IN_THREAD_ONLY, const uint8_t *data, size_t p)
 // Then XCONNECT response is checked in client_message_event() doing
 // a xim_connect_send(). Now, we have the xim_connect reply:
 
-void ximserverObj::received_xim_connect_reply(IN_THREAD_ONLY,
+void ximserverObj::received_xim_connect_reply(ONLY IN_THREAD,
 					      uint16_t major,
 					      uint16_t minor)
 {
@@ -403,7 +403,7 @@ void ximserverObj::received_xim_connect_reply(IN_THREAD_ONLY,
 // Received a reply to the XIM_OPEN message.
 
 void ximserverObj
-::received_xim_open_reply(IN_THREAD_ONLY,
+::received_xim_open_reply(ONLY IN_THREAD,
 			  xim_im_t input_method_idArg,
 			  const std::vector<attr> &im_attributes,
 			  const std::vector<attr> &ic_attributes)
@@ -477,7 +477,7 @@ void ximserverObj
 }
 
 void ximserverObj
-::received_xim_encoding_negotiation_reply(IN_THREAD_ONLY,
+::received_xim_encoding_negotiation_reply(ONLY IN_THREAD,
 					  xim_im_t input_method_id,
 					  uint16_t category,
 					  int16_t index)
@@ -517,7 +517,7 @@ void ximserverObj
 
 // Process the reply to XIM_GET_IM_VALUES.
 
-void ximserverObj::received_xim_get_im_values_reply(IN_THREAD_ONLY,
+void ximserverObj::received_xim_get_im_values_reply(ONLY IN_THREAD,
 						    xim_im_t input_method_id,
 						    const std::vector<attrvalue>
 						    &im_attributes)
@@ -605,7 +605,7 @@ void ximserverObj::received_xim_get_im_values_reply(IN_THREAD_ONLY,
 // message. Immediately after sending XIM_CLOSE, we stop() al further
 // requests.
 
-void ximserverObj::shutdown(IN_THREAD_ONLY)
+void ximserverObj::shutdown(ONLY IN_THREAD)
 {
 	shutdown_requested=true;
 
@@ -615,7 +615,7 @@ void ximserverObj::shutdown(IN_THREAD_ONLY)
 	add_request(IN_THREAD,
 		    ximrequest::create("shut down"),
 		    []
-		    (IN_THREAD_ONLY,
+		    (ONLY IN_THREAD,
 		     const ximserver &me)
 		    {
 			    LOG_DEBUG("Sending XIM_CLOSE");
@@ -645,7 +645,7 @@ void ximserverObj::shutdown(IN_THREAD_ONLY)
 // Received the reply to the XIM_CLOSE message. We send a XIM_DISCONNECT
 // message.
 
-void ximserverObj::received_xim_close_reply(IN_THREAD_ONLY,
+void ximserverObj::received_xim_close_reply(ONLY IN_THREAD,
 					    xim_im_t input_method_id)
 {
 	LOG_DEBUG("XIM_CLOSE reply");
@@ -656,7 +656,7 @@ void ximserverObj::received_xim_close_reply(IN_THREAD_ONLY,
 // Received the reply to the XIM_DISCONNECT message. Everything is fully
 // stopped.
 
-void ximserverObj::received_xim_disconnect_reply(IN_THREAD_ONLY)
+void ximserverObj::received_xim_disconnect_reply(ONLY IN_THREAD)
 {
 	LOG_DEBUG("XIM_DISCONNECT reply");
 
@@ -680,7 +680,7 @@ class LIBCXX_HIDDEN ximserverObj::create_ic_requestObj : public ximrequestObj {
 
 	~create_ic_requestObj()=default;
 
-	void xim_create_ic_reply(IN_THREAD_ONLY,
+	void xim_create_ic_reply(ONLY IN_THREAD,
 				 const ximserver &server,
 				 xim_ic_t input_context_id) override
 	{
@@ -698,7 +698,7 @@ class LIBCXX_HIDDEN ximserverObj::create_ic_requestObj : public ximrequestObj {
 };
 
 void ximserverObj
-::create_client(IN_THREAD_ONLY, const ximclient &client)
+::create_client(ONLY IN_THREAD, const ximclient &client)
 {
 	LOG_DEBUG("xim_create_ic scheduled");
 
@@ -707,7 +707,7 @@ void ximserverObj
 	add_request(IN_THREAD,
 		    req,
 		    [client]
-		    (IN_THREAD_ONLY,
+		    (ONLY IN_THREAD,
 		     const ximserver &server)
 		    {
 			    return server->attempt_to_create_client(IN_THREAD,
@@ -717,7 +717,7 @@ void ximserverObj
 
 // Too much indentation...
 
-bool ximserverObj::attempt_to_create_client(IN_THREAD_ONLY,
+bool ximserverObj::attempt_to_create_client(ONLY IN_THREAD,
 					    const ximclient &client)
 {
 	std::vector<attrvalue> attributes;
@@ -815,7 +815,7 @@ class LIBCXX_HIDDEN ximserverObj::destroy_ic_requestObj : public ximrequestObj {
 
 	~destroy_ic_requestObj()=default;
 
-	void xim_destroy_ic_reply(IN_THREAD_ONLY,
+	void xim_destroy_ic_reply(ONLY IN_THREAD,
 				  const ximserver &server,
 				  xim_ic_t input_context_id) override
 	{
@@ -824,7 +824,7 @@ class LIBCXX_HIDDEN ximserverObj::destroy_ic_requestObj : public ximrequestObj {
 	}
 };
 
-void ximserverObj::destroy_client(IN_THREAD_ONLY, const ximclient &client)
+void ximserverObj::destroy_client(ONLY IN_THREAD, const ximclient &client)
 {
 	LOG_DEBUG("xim_destroy_ic scheduled");
 
@@ -833,7 +833,7 @@ void ximserverObj::destroy_client(IN_THREAD_ONLY, const ximclient &client)
 	add_request(IN_THREAD,
 		    req,
 		    [client]
-		    (IN_THREAD_ONLY,
+		    (ONLY IN_THREAD,
 		     const ximserver &server)
 		    {
 			    // Deregister this one from input_contexts, first.
@@ -862,7 +862,7 @@ void ximserverObj::destroy_client(IN_THREAD_ONLY, const ximclient &client)
 //////////////////////////////////////////////////////////////////////////
 
 void ximserverObj
-::received_xim_set_event_mask(IN_THREAD_ONLY,
+::received_xim_set_event_mask(ONLY IN_THREAD,
 			      xim_im_t input_method_id,
 			      xim_ic_t input_context_id,
 			      uint32_t forward_event_mask,
@@ -893,7 +893,7 @@ void ximserverObj
 }
 
 void ximserverObj
-::received_xim_register_triggerkeys(IN_THREAD_ONLY,
+::received_xim_register_triggerkeys(ONLY IN_THREAD,
 				    xim_im_t input_method_id,
 				    const std::vector<triggerkey> &on_keys,
 				    const std::vector<triggerkey> &off_keys)
@@ -930,7 +930,7 @@ void ximserverObj
 			}));
 }
 
-void ximserverObj::received_xim_sync(IN_THREAD_ONLY,
+void ximserverObj::received_xim_sync(ONLY IN_THREAD,
 				     xim_im_t input_method_id,
 				     xim_ic_t input_context_id)
 {
@@ -950,7 +950,7 @@ class LIBCXX_HIDDEN ximserverObj::sync_requestObj : public ximrequestObj {
 	{
 	}
 
-	void xim_sync_reply(IN_THREAD_ONLY,
+	void xim_sync_reply(ONLY IN_THREAD,
 			    const ximserver &server,
 			    uint16_t input_context_id) override
 	{
@@ -958,7 +958,7 @@ class LIBCXX_HIDDEN ximserverObj::sync_requestObj : public ximrequestObj {
 	}
 };
 
-void ximserverObj::received_xim_sync_reply(IN_THREAD_ONLY,
+void ximserverObj::received_xim_sync_reply(ONLY IN_THREAD,
 					   xim_im_t input_method_id,
 					   xim_ic_t input_context_id)
 {
@@ -972,7 +972,7 @@ void ximserverObj::received_xim_sync_reply(IN_THREAD_ONLY,
 			    });
 }
 
-void ximserverObj::received_xim_create_ic_reply(IN_THREAD_ONLY,
+void ximserverObj::received_xim_create_ic_reply(ONLY IN_THREAD,
 						xim_im_t input_method_id,
 						xim_ic_t input_context_id)
 {
@@ -986,7 +986,7 @@ void ximserverObj::received_xim_create_ic_reply(IN_THREAD_ONLY,
 			    });
 }
 
-void ximserverObj::received_xim_destroy_ic_reply(IN_THREAD_ONLY,
+void ximserverObj::received_xim_destroy_ic_reply(ONLY IN_THREAD,
 						 xim_im_t input_method_id,
 						 xim_ic_t input_context_id)
 {
@@ -1001,7 +1001,7 @@ void ximserverObj::received_xim_destroy_ic_reply(IN_THREAD_ONLY,
 }
 
 
-void ximserverObj::set_spot_location(IN_THREAD_ONLY,
+void ximserverObj::set_spot_location(ONLY IN_THREAD,
 				     const ximclient &client)
 {
 	add_client_request
@@ -1009,7 +1009,7 @@ void ximserverObj::set_spot_location(IN_THREAD_ONLY,
 		 ximrequest::create("XIM_SET_IC_VALUES(spotLocation)"),
 		 client,
 		 []
-		 (IN_THREAD_ONLY,
+		 (ONLY IN_THREAD,
 		  const ximserver &me, const ximclient &client)
 		 {
 			 auto &pos=client->sent_cursor_position(IN_THREAD);
@@ -1043,7 +1043,7 @@ void ximserverObj::set_spot_location(IN_THREAD_ONLY,
 		 });
 }
 
-void ximserverObj::focus_state(IN_THREAD_ONLY, const ximclient &client,
+void ximserverObj::focus_state(ONLY IN_THREAD, const ximclient &client,
 			       bool flag)
 {
 	add_client_request
@@ -1052,7 +1052,7 @@ void ximserverObj::focus_state(IN_THREAD_ONLY, const ximclient &client,
 				    "XIM_SET_IC_FOCUS":"XIM_UNSET_IC_FOCUS"),
 		 client,
 		 [flag]
-		 (IN_THREAD_ONLY,
+		 (ONLY IN_THREAD,
 		  const ximserver &me, const ximclient &client)
 		 {
 			 if (client->sent_focus(IN_THREAD) == flag)
@@ -1081,7 +1081,7 @@ void ximserverObj::focus_state(IN_THREAD_ONLY, const ximclient &client,
 }
 
 bool ximserverObj
-::forward_key_press_release_event(IN_THREAD_ONLY,
+::forward_key_press_release_event(ONLY IN_THREAD,
 				  const ximclient &client,
 				  const xcb_key_release_event_t &e,
 				  uint16_t sequencehi,
@@ -1103,7 +1103,7 @@ bool ximserverObj
 		add_client_request
 			(IN_THREAD, req, client,
 			 [e, sequencehi]
-			 (IN_THREAD_ONLY, const ximserver &server,
+			 (ONLY IN_THREAD, const ximserver &server,
 			  const ximclient &client)
 			 {
 				 server->xim_forward_keypress_event_send
@@ -1132,7 +1132,7 @@ bool ximserverObj
 	return true;
 }
 
-void ximserverObj::received_xim_forwarded_event(IN_THREAD_ONLY,
+void ximserverObj::received_xim_forwarded_event(ONLY IN_THREAD,
 						xim_im_t input_method_id,
 						xim_ic_t input_context_id,
 						uint16_t flag,
@@ -1189,7 +1189,7 @@ void ximserverObj::received_xim_forwarded_event(IN_THREAD_ONLY,
 	}
 }
 
-void ximserverObj::received_xim_commit(IN_THREAD_ONLY,
+void ximserverObj::received_xim_commit(ONLY IN_THREAD,
 				       xim_im_t input_method_id,
 				       xim_ic_t input_context_id,
 				       uint16_t flag,
@@ -1228,7 +1228,7 @@ void ximserverObj::received_xim_commit(IN_THREAD_ONLY,
 	} CATCH_EXCEPTIONS;
 }
 
-void ximserverObj::received_xim_set_ic_values_reply(IN_THREAD_ONLY,
+void ximserverObj::received_xim_set_ic_values_reply(ONLY IN_THREAD,
 						    xim_im_t input_method_id,
 						    xim_ic_t input_context_id)
 {
@@ -1250,7 +1250,7 @@ public:
 
 	~get_ic_valuesObj()=default;
 
-	void xim_get_ic_values_reply(IN_THREAD_ONLY,
+	void xim_get_ic_values_reply(ONLY IN_THREAD,
 				     const ximserver &server,
 				     uint16_t input_context_id,
 				     const std::vector<ximattrvalue>
@@ -1258,7 +1258,7 @@ public:
 };
 
 void ximserverObj::get_ic_valuesObj
-::xim_get_ic_values_reply(IN_THREAD_ONLY,
+::xim_get_ic_values_reply(ONLY IN_THREAD,
 			  const ximserver &server,
 			  uint16_t input_context_id,
 			  const std::vector<attrvalue> &ic_attributes)
@@ -1300,7 +1300,7 @@ void ximserverObj::get_ic_valuesObj
 			}));
 }
 
-void ximserverObj::get_ic_values(IN_THREAD_ONLY,
+void ximserverObj::get_ic_values(ONLY IN_THREAD,
 				 const ximclient &client,
 				 const std::vector<std::string> &values)
 {
@@ -1309,7 +1309,7 @@ void ximserverObj::get_ic_values(IN_THREAD_ONLY,
 		 ref<get_ic_valuesObj>::create(),
 		 client,
 		 [values]
-		 (IN_THREAD_ONLY,
+		 (ONLY IN_THREAD,
 		  const ximserver &me, const ximclient &client)
 		 {
 			 std::vector<uint16_t> ids;
@@ -1344,7 +1344,7 @@ void ximserverObj::get_ic_values(IN_THREAD_ONLY,
 }
 
 void ximserverObj
-::received_xim_get_ic_values_reply(IN_THREAD_ONLY,
+::received_xim_get_ic_values_reply(ONLY IN_THREAD,
 				   xim_im_t input_method_id,
 				   xim_ic_t input_context_id,
 				   const std::vector<attrvalue> &ic_attributes)
@@ -1364,7 +1364,7 @@ void ximserverObj
 }
 #endif
 
-void ximserverObj::received_xim_error(IN_THREAD_ONLY,
+void ximserverObj::received_xim_error(ONLY IN_THREAD,
 				      xim_im_t input_method_id,
 				      xim_ic_t input_context_id,
 				      uint16_t flag,

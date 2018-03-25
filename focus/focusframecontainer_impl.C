@@ -16,20 +16,20 @@ focusframecontainerObj::implObj::implObj()=default;
 focusframecontainerObj::implObj::~implObj()=default;
 
 void focusframecontainerObj::implObj
-::keyboard_focus(IN_THREAD_ONLY,
+::keyboard_focus(ONLY IN_THREAD,
 		 const callback_trigger_t &trigger)
 {
 	update_focusframe(IN_THREAD);
 }
 
 void focusframecontainerObj::implObj
-::window_focus_change(IN_THREAD_ONLY, bool flag)
+::window_focus_change(ONLY IN_THREAD, bool flag)
 {
 	update_focusframe(IN_THREAD);
 }
 
 void focusframecontainerObj::implObj
-::update_focusframe(IN_THREAD_ONLY)
+::update_focusframe(ONLY IN_THREAD)
 {
 	// The focus frame gets updated by overriding
 	// gridlayoutmanagerObj::implObj's rebuild_element_start(). So what

@@ -176,12 +176,12 @@ class LIBCXX_HIDDEN pane_peepholed_elementObj : public peepholedObj {
 		return peepholed_element;
 	}
 
-	dim_t horizontal_increment(IN_THREAD_ONLY) const override
+	dim_t horizontal_increment(ONLY IN_THREAD) const override
 	{
 		return pane_peephole_impl->font_nominal_width(IN_THREAD);
 	}
 
-	dim_t vertical_increment(IN_THREAD_ONLY) const override
+	dim_t vertical_increment(ONLY IN_THREAD) const override
 	{
 		return pane_peephole_impl->font_height(IN_THREAD);
 	}
@@ -440,7 +440,7 @@ void panelayoutmanagerObj::implObj
 }
 
 pane_slider_original_sizes
-panelayoutmanagerObj::implObj::start_sliding(IN_THREAD_ONLY,
+panelayoutmanagerObj::implObj::start_sliding(ONLY IN_THREAD,
 					     const ref<elementObj::implObj>
 					     &which_slider)
 {
@@ -456,7 +456,7 @@ panelayoutmanagerObj::implObj::start_sliding(IN_THREAD_ONLY,
 	return {};
 }
 
-void panelayoutmanagerObj::implObj::slide_start(IN_THREAD_ONLY,
+void panelayoutmanagerObj::implObj::slide_start(ONLY IN_THREAD,
 						const ref<elementObj::implObj>
 						&which_slider)
 {
@@ -473,7 +473,7 @@ void panelayoutmanagerObj::implObj::slide_start(IN_THREAD_ONLY,
 		reference_height, reference_height, 0, 0);
 }
 
-void panelayoutmanagerObj::implObj::slide_end(IN_THREAD_ONLY,
+void panelayoutmanagerObj::implObj::slide_end(ONLY IN_THREAD,
 					      const ref<elementObj::implObj>
 					      &which_slider)
 {
@@ -683,7 +683,7 @@ panelayoutmanagerObj::implObj::orientation<vertical>
 
 template<>
 pane_slider_original_sizes panelayoutmanagerObj::implObj::orientation<vertical>
-::original_sizes(IN_THREAD_ONLY,
+::original_sizes(ONLY IN_THREAD,
 		 const ref<elementObj::implObj> &before,
 		 const ref<elementObj::implObj> &after)
 {
@@ -693,7 +693,7 @@ pane_slider_original_sizes panelayoutmanagerObj::implObj::orientation<vertical>
 
 template<>
 void panelayoutmanagerObj::implObj::orientation<vertical>
-::sliding(IN_THREAD_ONLY,
+::sliding(ONLY IN_THREAD,
 	  const ref<elementObj::implObj> &which_slider,
 	  const pane_slider_original_sizes &original_sizes,
 
@@ -869,7 +869,7 @@ panelayoutmanagerObj::implObj::orientation<horizontal>
 
 template<>
 pane_slider_original_sizes panelayoutmanagerObj::implObj::orientation<horizontal>
-::original_sizes(IN_THREAD_ONLY,
+::original_sizes(ONLY IN_THREAD,
 		 const ref<elementObj::implObj> &before,
 		 const ref<elementObj::implObj> &after)
 {
@@ -879,7 +879,7 @@ pane_slider_original_sizes panelayoutmanagerObj::implObj::orientation<horizontal
 
 template<>
 void panelayoutmanagerObj::implObj::orientation<horizontal>
-::sliding(IN_THREAD_ONLY,
+::sliding(ONLY IN_THREAD,
 	  const ref<elementObj::implObj> &which_slider,
 	  const pane_slider_original_sizes &original_sizes,
 

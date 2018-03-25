@@ -61,7 +61,7 @@ struct LIBCXX_HIDDEN synchronized_axis_values_t {
 	//! the values' element is already responsible for recalculating it,
 	//! so no need to do it again.
 
-	void recalculate(IN_THREAD_ONLY,
+	void recalculate(ONLY IN_THREAD,
 			 std::list<synchronized_axis_value>::iterator iter);
 };
 
@@ -146,7 +146,7 @@ struct LIBCXX_HIDDEN my_synchronized_axis {
 	//! the synchronized list, and take this opportunity to recalculate
 	//! the derived values.
 
-	void removed_from_container(IN_THREAD_ONLY);
+	void removed_from_container(ONLY IN_THREAD);
 
 	//! After updating my_value, recalculated the synchronized axis.
 
@@ -154,7 +154,7 @@ struct LIBCXX_HIDDEN my_synchronized_axis {
 	//! updated() callback. It is expected that synchronize()'s
 	//! caller will be responsible for accessing the synchronized_value.
 
-	void synchronize(IN_THREAD_ONLY, synchronized_values::lock &);
+	void synchronize(ONLY IN_THREAD, synchronized_values::lock &);
 };
 
 LIBCXXW_NAMESPACE_END

@@ -30,7 +30,7 @@ class LIBCXX_HIDDEN peepholeObj::implObj
 
 	//! Processes button 4 and 5 events.
 
-	bool process_button_event(IN_THREAD_ONLY,
+	bool process_button_event(ONLY IN_THREAD,
 				  const button_event &be,
 				  xcb_timestamp_t timestamp) override;
 

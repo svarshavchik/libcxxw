@@ -38,7 +38,7 @@ class LIBCXX_HIDDEN menubar_container_implObj
 	//! Keep the tabbing order of the menu bar elements to be the first
 	//! ones tabbed into.
 
-	void fix_order(IN_THREAD_ONLY, const menu &new_element);
+	void fix_order(ONLY IN_THREAD, const menu &new_element);
 };
 
 LIBCXXW_NAMESPACE_END

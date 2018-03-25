@@ -19,7 +19,7 @@ void ximclientObj::xim_client_register() noexcept
 {
 	client_window->thread()->run_as
 		([client_window=this->client_window, me=ximclient(this)]
-		 (IN_THREAD_ONLY)
+		 (ONLY IN_THREAD)
 		 {
 			 client_window->ximclient_ptr=me;
 			 me->server->create_client(IN_THREAD, me);
@@ -30,14 +30,14 @@ void ximclientObj::xim_client_deregister() noexcept
 {
 	client_window->thread()->run_as
 		([client_window=this->client_window, me=ximclient(this)]
-		 (IN_THREAD_ONLY)
+		 (ONLY IN_THREAD)
 		 {
 			 client_window->ximclient_ptr=nullptr;
 			 me->server->destroy_client(IN_THREAD, me);
 		 });
 }
 
-void ximclientObj::current_cursor_position(IN_THREAD_ONLY,
+void ximclientObj::current_cursor_position(ONLY IN_THREAD,
 					   const rectangle &r)
 {
 	if (r == reported_cursor_position(IN_THREAD))
@@ -47,7 +47,7 @@ void ximclientObj::current_cursor_position(IN_THREAD_ONLY,
 	server->set_spot_location(IN_THREAD, ximclient(this));
 }
 
-void ximclientObj::focus_state(IN_THREAD_ONLY, bool flag)
+void ximclientObj::focus_state(ONLY IN_THREAD, bool flag)
 {
 	if (flag == reported_focus(IN_THREAD))
 		return;
@@ -56,7 +56,7 @@ void ximclientObj::focus_state(IN_THREAD_ONLY, bool flag)
 	server->focus_state(IN_THREAD, ximclient(this), flag);
 }
 
-bool ximclientObj::forward_key_press_event(IN_THREAD_ONLY,
+bool ximclientObj::forward_key_press_event(ONLY IN_THREAD,
 					   const xcb_key_press_event_t &e,
 					   uint16_t sequencehi)
 {
@@ -65,7 +65,7 @@ bool ximclientObj::forward_key_press_event(IN_THREAD_ONLY,
 		 XCB_EVENT_MASK_KEY_PRESS);
 }
 
-bool ximclientObj::forward_key_release_event(IN_THREAD_ONLY,
+bool ximclientObj::forward_key_release_event(ONLY IN_THREAD,
 					     const xcb_key_release_event_t &e,
 					     uint16_t sequencehi)
 {

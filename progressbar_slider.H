@@ -63,15 +63,15 @@ class LIBCXX_HIDDEN progressbar_sliderObj : public progressbar_slider_base_t {
 
 	//! Update our background color, which draws the slider, if needed.
 
-	void update(IN_THREAD_ONLY);
+	void update(ONLY IN_THREAD);
 
 	//! Implement all_background_colors_were_recalculated().
 
-	void all_background_colors_were_recalculated(IN_THREAD_ONLY) override;
+	void all_background_colors_were_recalculated(ONLY IN_THREAD) override;
  private:
 	//! \internal
 
-	void update(IN_THREAD_ONLY, const defaulttheme &);
+	void update(ONLY IN_THREAD, const defaulttheme &);
 };
 
 LIBCXXW_NAMESPACE_END

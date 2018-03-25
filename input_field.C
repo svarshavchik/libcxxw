@@ -131,7 +131,7 @@ void input_fieldObj::set(const std::u32string_view &str)
 
 	editor_impl->get_window_handler().thread()->run_as
 		([str=std::u32string{str}, editor_impl]
-		 (IN_THREAD_ONLY)
+		 (ONLY IN_THREAD)
 		 {
 			 editor_impl->set(IN_THREAD, str);
 		 });
@@ -144,7 +144,7 @@ void input_fieldObj::on_change(const std::function<
 
 	editor_impl->get_window_handler().thread()->run_as
 		([callback, editor_impl]
-		 (IN_THREAD_ONLY)
+		 (ONLY IN_THREAD)
 		 {
 			 editor_impl->on_change(IN_THREAD)=callback;
 		 });
@@ -159,7 +159,7 @@ void input_fieldObj::on_autocomplete(const std::function<bool
 
 	editor_impl->get_window_handler().thread()->run_as
 		([callback, editor_impl]
-		 (IN_THREAD_ONLY)
+		 (ONLY IN_THREAD)
 		 {
 			 editor_impl->on_autocomplete(IN_THREAD)=callback;
 		 });
@@ -173,7 +173,7 @@ void input_fieldObj::on_validate(const
 
 	editor_impl->get_window_handler().thread()->run_as
 		([callback, editor_impl]
-		 (IN_THREAD_ONLY)
+		 (ONLY IN_THREAD)
 		 {
 			 editor_impl->validation_callback(IN_THREAD)=callback;
 		 });

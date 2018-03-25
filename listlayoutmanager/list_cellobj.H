@@ -27,21 +27,21 @@ struct LIBCXX_HIDDEN list_cellObj : virtual public obj {
 
 	//! Return this cell's metrics.
 	virtual std::pair<metrics::axis, metrics::axis>
-		cell_get_metrics(IN_THREAD_ONLY, dim_t preferred_width)=0;
+		cell_get_metrics(ONLY IN_THREAD, dim_t preferred_width)=0;
 
 	//! Draw this cell's contents.
-	virtual void cell_redraw(IN_THREAD_ONLY,
+	virtual void cell_redraw(ONLY IN_THREAD,
 			    element_drawObj &draw,
 			    const draw_info &di,
 			    bool draw_as_disabled,
 			    const richtext_draw_boundaries &boundaries)=0;
 
 	//! Initialize this cell, in the connection thread.
-	virtual void cell_initialize(IN_THREAD_ONLY,
+	virtual void cell_initialize(ONLY IN_THREAD,
 				     const defaulttheme &initial_theme)=0;
 
 	//! Update this cell to a new theme.
-	virtual void cell_theme_updated(IN_THREAD_ONLY,
+	virtual void cell_theme_updated(ONLY IN_THREAD,
 					const defaulttheme &initial_theme)=0;
 
 	//! Whether this cell is considered "empty".

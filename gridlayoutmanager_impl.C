@@ -301,7 +301,7 @@ gridlayoutmanagerObj::implObj::lookup_row_col(grid_map_t::lock &lock,
 	return {};
 }
 
-void gridlayoutmanagerObj::implObj::recalculate(IN_THREAD_ONLY)
+void gridlayoutmanagerObj::implObj::recalculate(ONLY IN_THREAD)
 {
 	// Not all recalculation is the result of inserting or removing
 	// elements. rebuild_elements() will do its work only if needed.
@@ -332,7 +332,7 @@ void gridlayoutmanagerObj::implObj::recalculate(IN_THREAD_ONLY)
 #endif
 }
 
-void gridlayoutmanagerObj::implObj::set_element_metrics(IN_THREAD_ONLY,
+void gridlayoutmanagerObj::implObj::set_element_metrics(ONLY IN_THREAD,
 							const metrics::axis &h,
 							const metrics::axis &v)
 {
@@ -416,7 +416,7 @@ current_border_impl gridlayoutmanagerObj::implObj
 }
 
 void gridlayoutmanagerObj::implObj
-::child_background_color_changed(IN_THREAD_ONLY,
+::child_background_color_changed(ONLY IN_THREAD,
 				 const elementimpl &child)
 {
 	redraw_child_borders_and_padding(IN_THREAD, child);
@@ -426,7 +426,7 @@ void gridlayoutmanagerObj::implObj
 //
 //
 void gridlayoutmanagerObj::implObj
-::requested_child_visibility_changed(IN_THREAD_ONLY,
+::requested_child_visibility_changed(ONLY IN_THREAD,
 				     const elementimpl &child,
 				     bool flag)
 {
@@ -453,7 +453,7 @@ void gridlayoutmanagerObj::implObj
 }
 
 void gridlayoutmanagerObj::implObj
-::inherited_child_visibility_changed(IN_THREAD_ONLY,
+::inherited_child_visibility_changed(ONLY IN_THREAD,
 				     const elementimpl &child,
 				     inherited_visibility_info &info)
 {

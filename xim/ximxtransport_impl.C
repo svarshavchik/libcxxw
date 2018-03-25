@@ -26,13 +26,13 @@ skip_xim_disconnect(LIBCXX_NAMESPACE_STR "::w::skip_xim_disconnect", false);
 
 ximxtransportObj::implObj::~implObj()=default;
 
-void ximxtransportObj::implObj::disconnected(IN_THREAD_ONLY)
+void ximxtransportObj::implObj::disconnected(ONLY IN_THREAD)
 {
 	xim_disconnected(IN_THREAD);
 	service_window_handlerObj::disconnected(IN_THREAD);
 }
 
-void ximxtransportObj::implObj::connect(IN_THREAD_ONLY)
+void ximxtransportObj::implObj::connect(ONLY IN_THREAD)
 {
 	if (disable_xim.get())
 	{
@@ -45,7 +45,7 @@ void ximxtransportObj::implObj::connect(IN_THREAD_ONLY)
 	connect_service(IN_THREAD, "XIM_SERVERS", attributes);
 }
 
-bool ximxtransportObj::implObj::found_server(IN_THREAD_ONLY, xcb_window_t owner)
+bool ximxtransportObj::implObj::found_server(ONLY IN_THREAD, xcb_window_t owner)
 {
 	LOG_FUNC_SCOPE(transport_log);
 	// Check TRANSPORT for:
@@ -119,7 +119,7 @@ bool ximxtransportObj::implObj::protocol_connected()
 	return lock->x_connected && !lock->x_disconnected;
 }
 
-void ximxtransportObj::implObj::all_servers_tried(IN_THREAD_ONLY)
+void ximxtransportObj::implObj::all_servers_tried(ONLY IN_THREAD)
 {
 	update_connection_state([]
 				(auto &state)
@@ -129,7 +129,7 @@ void ximxtransportObj::implObj::all_servers_tried(IN_THREAD_ONLY)
 	stop(IN_THREAD);
 }
 
-void ximxtransportObj::implObj::xim_disconnected(IN_THREAD_ONLY)
+void ximxtransportObj::implObj::xim_disconnected(ONLY IN_THREAD)
 {
 	LOG_FUNC_SCOPE(transport_log);
 
@@ -137,7 +137,7 @@ void ximxtransportObj::implObj::xim_disconnected(IN_THREAD_ONLY)
 	all_servers_tried(IN_THREAD);
 }
 
-void ximxtransportObj::implObj::xim_fully_connected(IN_THREAD_ONLY)
+void ximxtransportObj::implObj::xim_fully_connected(ONLY IN_THREAD)
 {
 	LOG_FUNC_SCOPE(transport_log);
 
@@ -162,7 +162,7 @@ void ximxtransportObj::implObj
 
 	thread()->run_as
 		([me=ref<implObj>(this), &logger]
-		 (IN_THREAD_ONLY)
+		 (ONLY IN_THREAD)
 		 {
 			 if (skip_xim_disconnect.get())
 			 {
@@ -189,7 +189,7 @@ void ximxtransportObj::implObj
 
 		thread()->run_as
 			([me=ref<implObj>(this)]
-			 (IN_THREAD_ONLY)
+			 (ONLY IN_THREAD)
 			 {
 				 me->xim_disconnected(IN_THREAD);
 			 });
@@ -202,7 +202,7 @@ void ximxtransportObj::implObj
 }
 
 void ximxtransportObj::implObj
-::client_message_event(IN_THREAD_ONLY,
+::client_message_event(ONLY IN_THREAD,
 		       const xcb_client_message_event_t *event)
 {
 	LOG_FUNC_SCOPE(transport_log);
@@ -289,7 +289,7 @@ void ximxtransportObj::implObj
 }
 
 bool ximxtransportObj::implObj
-::begin_converted_data(IN_THREAD_ONLY, xcb_atom_t type,
+::begin_converted_data(ONLY IN_THREAD, xcb_atom_t type,
 			  xcb_timestamp_t timestamp)
 {
 	if (type == IN_THREAD->info->atoms_info.xim_clientXXX)
@@ -301,7 +301,7 @@ bool ximxtransportObj::implObj
 }
 
 void ximxtransportObj::implObj
-::converted_data(IN_THREAD_ONLY, xcb_atom_t clipboard,
+::converted_data(ONLY IN_THREAD, xcb_atom_t clipboard,
 		 xcb_atom_t actual_type,
 		 xcb_atom_t format,
 		 void *data,
@@ -342,7 +342,7 @@ void ximxtransportObj::implObj
 }
 
 void ximxtransportObj::implObj
-::received_single_message(IN_THREAD_ONLY,
+::received_single_message(ONLY IN_THREAD,
 			  const uint8_t *data, size_t n)
 {
 	LOG_DEBUG("Received single message");
@@ -369,7 +369,7 @@ void ximxtransportObj::implObj
 }
 
 void ximxtransportObj::implObj
-::send(IN_THREAD_ONLY, const uint8_t *data, size_t n)
+::send(ONLY IN_THREAD, const uint8_t *data, size_t n)
 {
 	LOG_FUNC_SCOPE(transport_log);
 

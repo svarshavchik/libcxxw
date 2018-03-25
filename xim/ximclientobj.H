@@ -101,7 +101,7 @@ class LIBCXX_HIDDEN ximclientObj : virtual public obj {
 
 	//! Sets reported_cursor_position, if it changed, and schedules
 	//! a request to update the server.
-	void current_cursor_position(IN_THREAD_ONLY, const rectangle &);
+	void current_cursor_position(ONLY IN_THREAD, const rectangle &);
 
  private:
 
@@ -117,17 +117,17 @@ class LIBCXX_HIDDEN ximclientObj : virtual public obj {
 
 	//! Notify the XIM server whether or not we should have input focus.
 
-	void focus_state(IN_THREAD_ONLY, bool flag);
+	void focus_state(ONLY IN_THREAD, bool flag);
 
 	//! Forward key event to the XIM server.
 
-	bool forward_key_press_event(IN_THREAD_ONLY,
+	bool forward_key_press_event(ONLY IN_THREAD,
 				     const xcb_key_press_event_t &e,
 				     uint16_t sequencehi);
 
 	//! Forward key event to the XIM server.
 
-	bool forward_key_release_event(IN_THREAD_ONLY,
+	bool forward_key_release_event(ONLY IN_THREAD,
 				       const xcb_key_release_event_t &e,
 				       uint16_t sequencehi);
 };

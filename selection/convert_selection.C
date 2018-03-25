@@ -16,7 +16,7 @@ LIBCXXW_NAMESPACE_START
 LOG_FUNC_SCOPE_DECL(LIBCXXW_NAMESPACE::window_handlerObj::convert,
 		    convert_log);
 
-void window_handlerObj::convert_selection(IN_THREAD_ONLY, xcb_atom_t clipboard,
+void window_handlerObj::convert_selection(ONLY IN_THREAD, xcb_atom_t clipboard,
 					  xcb_atom_t type,
 					  xcb_timestamp_t timestamp)
 {
@@ -60,7 +60,7 @@ void window_handlerObj::convert_selection(IN_THREAD_ONLY, xcb_atom_t clipboard,
 }
 
 void window_handlerObj
-::selection_notify_event(IN_THREAD_ONLY,
+::selection_notify_event(ONLY IN_THREAD,
 			 const xcb_selection_notify_event_t *msg)
 {
 	LOG_FUNC_SCOPE(convert_log);
@@ -79,7 +79,7 @@ void window_handlerObj
 }
 
 void window_handlerObj
-::property_notify_event(IN_THREAD_ONLY,
+::property_notify_event(ONLY IN_THREAD,
 			const xcb_property_notify_event_t *msg)
 {
 	LOG_FUNC_SCOPE(convert_log);
@@ -158,21 +158,21 @@ void window_handlerObj
 }
 
 void window_handlerObj
-::conversion_failed(IN_THREAD_ONLY, xcb_atom_t clipboard,
+::conversion_failed(ONLY IN_THREAD, xcb_atom_t clipboard,
 		    xcb_atom_t type,
 		    xcb_timestamp_t timestamp)
 {
 }
 
 bool window_handlerObj
-::begin_converted_data(IN_THREAD_ONLY, xcb_atom_t type,
+::begin_converted_data(ONLY IN_THREAD, xcb_atom_t type,
 		       xcb_timestamp_t timestamp)
 {
 	return false;
 }
 
 void window_handlerObj
-::converting_incrementally(IN_THREAD_ONLY,
+::converting_incrementally(ONLY IN_THREAD,
 			   xcb_atom_t type,
 			   xcb_timestamp_t timestamp,
 			   uint32_t estimated_size)
@@ -180,7 +180,7 @@ void window_handlerObj
 }
 
 void window_handlerObj
-::converted_data(IN_THREAD_ONLY, xcb_atom_t clipboard,
+::converted_data(ONLY IN_THREAD, xcb_atom_t clipboard,
 		 xcb_atom_t actual_type,
 		 xcb_atom_t format,
 		 void *data,
@@ -189,7 +189,7 @@ void window_handlerObj
 }
 
 void window_handlerObj
-::end_converted_data(IN_THREAD_ONLY,
+::end_converted_data(ONLY IN_THREAD,
 		     xcb_atom_t type,
 		     xcb_timestamp_t timestamp)
 {

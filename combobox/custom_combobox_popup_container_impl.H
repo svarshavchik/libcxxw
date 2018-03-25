@@ -63,7 +63,7 @@ class LIBCXX_HIDDEN custom_combobox_popup_containerObj::implObj
 	//! selection, so that it is sized, horizontally, to be the same size
 	//! as the dynamically-calculated popup list.
 
-	void horizvert_updated(IN_THREAD_ONLY) override;
+	void horizvert_updated(ONLY IN_THREAD) override;
 
 	//! Override update_tallest_row_height()
 
@@ -71,7 +71,7 @@ class LIBCXX_HIDDEN custom_combobox_popup_containerObj::implObj
 	//! Invokes update_current_selection_metrics() if the tallest_row_height
 	//! changed.
 
-	bool update_tallest_row_height(IN_THREAD_ONLY,
+	bool update_tallest_row_height(ONLY IN_THREAD,
 				       dim_t new_tallest_height) override;
 
 	//! Install a link to the current combobox selection element.
@@ -92,7 +92,7 @@ class LIBCXX_HIDDEN custom_combobox_popup_containerObj::implObj
  private:
 
 	//! Update current selection metrics.
-	void update_current_selection_metrics(IN_THREAD_ONLY);
+	void update_current_selection_metrics(ONLY IN_THREAD);
 };
 
 LIBCXXW_NAMESPACE_END

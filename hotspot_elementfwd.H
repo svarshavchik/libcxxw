@@ -50,17 +50,17 @@ class LIBCXX_HIDDEN hotspot_elementObj
 
 	const focusableImplObj &get_hotspot_focusable() const override;
 
-	void keyboard_focus(IN_THREAD_ONLY, const callback_trigger_t &)
+	void keyboard_focus(ONLY IN_THREAD, const callback_trigger_t &)
 		override;
 
-	void pointer_focus(IN_THREAD_ONLY,
+	void pointer_focus(ONLY IN_THREAD,
 			   const callback_trigger_t &trigger) override;
 
-	bool process_key_event(IN_THREAD_ONLY, const key_event &ke) override;
+	bool process_key_event(ONLY IN_THREAD, const key_event &ke) override;
 
-	void window_focus_change(IN_THREAD_ONLY, bool flag) override;
+	void window_focus_change(ONLY IN_THREAD, bool flag) override;
 
-	bool process_button_event(IN_THREAD_ONLY,
+	bool process_button_event(ONLY IN_THREAD,
 				  const button_event &be,
 				  xcb_timestamp_t timestamp) override;
 

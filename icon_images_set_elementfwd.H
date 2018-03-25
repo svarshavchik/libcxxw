@@ -26,9 +26,9 @@ class LIBCXX_HIDDEN icon_1tag {
 	THREAD_DATA_ONLY(tagged_icon);
 
 	icon_1tag(const icon &i);
-	void initialize(IN_THREAD_ONLY);
-	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme);
-	void resize(IN_THREAD_ONLY, dim_t w, dim_t h, icon_scale scale);
+	void initialize(ONLY IN_THREAD);
+	void theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme);
+	void resize(ONLY IN_THREAD, dim_t w, dim_t h, icon_scale scale);
 };
 
 //! icon_images_set_elementObj implementation.
@@ -67,9 +67,9 @@ struct LIBCXX_HIDDEN icon_images_set_element_implObj<element_impl, Tag1,
 		inline icon_images_set_element_implObj(const icon &i,
 						       Args && ...args);
 
-	void initialize(IN_THREAD_ONLY) override;
+	void initialize(ONLY IN_THREAD) override;
 
-	void theme_updated(IN_THREAD_ONLY,
+	void theme_updated(ONLY IN_THREAD,
 			   const defaulttheme &new_theme) override;
 };
 

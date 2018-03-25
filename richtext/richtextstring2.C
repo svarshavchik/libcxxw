@@ -17,7 +17,7 @@
 LIBCXXW_NAMESPACE_START
 
 const richtextstring::resolved_fonts_t
-&richtextstring::resolve_fonts(IN_THREAD_ONLY)
+&richtextstring::resolve_fonts(ONLY IN_THREAD)
 {
 	if (!fonts_need_resolving)
 		return resolved_fonts;
@@ -72,7 +72,7 @@ const richtextstring::resolved_fonts_t
 	return resolved_fonts;
 }
 
-void richtextstring::compute_width(IN_THREAD_ONLY,
+void richtextstring::compute_width(ONLY IN_THREAD,
 				   richtextstring *previous_string,
 				   char32_t unprintable_char,
 				   std::vector<dim_t> &widths,
@@ -88,7 +88,7 @@ void richtextstring::compute_width(IN_THREAD_ONLY,
 		      0, string.size());
 }
 
-void richtextstring::compute_width(IN_THREAD_ONLY,
+void richtextstring::compute_width(ONLY IN_THREAD,
 				   richtextstring *previous_string,
 				   char32_t unprintable_char,
 				   std::vector<dim_t> &widths,
@@ -228,7 +228,7 @@ void richtextstring::compute_width(IN_THREAD_ONLY,
 	}
 }
 
-void richtextstring::theme_updated(IN_THREAD_ONLY,
+void richtextstring::theme_updated(ONLY IN_THREAD,
 				   const defaulttheme &new_theme)
 {
 	for (const auto &m:meta)

@@ -30,7 +30,7 @@ themedimObj::themedimObj(const dim_arg &dimname,
 
 themedimObj::~themedimObj()=default;
 
-void themedimObj::initialize(IN_THREAD_ONLY,
+void themedimObj::initialize(ONLY IN_THREAD,
 			     const ref<screenObj::implObj> &screen_impl)
 {
 	// Recalculate now we're in the connection thread.
@@ -38,7 +38,7 @@ void themedimObj::initialize(IN_THREAD_ONLY,
 	pixels(IN_THREAD)=compute_dim(screen_impl, dimname, width_or_height);
 }
 
-void themedimObj::theme_updated(IN_THREAD_ONLY,
+void themedimObj::theme_updated(ONLY IN_THREAD,
 				const defaulttheme &new_theme)
 {
 	pixels(IN_THREAD)=((*new_theme).*width_or_height)(dimname);

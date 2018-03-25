@@ -35,11 +35,11 @@ class LIBCXX_HIDDEN focusable_elementObj : public element_impl,
 
 	void creating_focusable_element() override;
 
-	bool process_button_event(IN_THREAD_ONLY,
+	bool process_button_event(ONLY IN_THREAD,
 				  const button_event &be,
 				  xcb_timestamp_t timestamp) override;
 
-	void set_inherited_visibility_flag(IN_THREAD_ONLY, bool) override;
+	void set_inherited_visibility_flag(ONLY IN_THREAD, bool) override;
 };
 
 

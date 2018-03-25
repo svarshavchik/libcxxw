@@ -10,6 +10,8 @@
 #include "focus/standard_focusframecontainer_element.H"
 #include "icon.H"
 #include "busy.H"
+#include "xid_t.H"
+#include "connection_thread.H"
 #include "x/w/factory.H"
 #include "x/w/button_event.H"
 #include "x/w/key_event.H"
@@ -49,9 +51,9 @@ void image_buttonObj::set_value(size_t n)
 {
 	elementimpl e=impl->button->impl;
 
-	e->get_window_handler().IN_THREAD->run_as
+	e->get_window_handler().thread()->run_as
 		([impl=this->impl, n]
-		 (IN_THREAD_ONLY)
+		 (ONLY IN_THREAD)
 		 {
 			 impl->button->impl->set_image_number(IN_THREAD,
 							      {}, n);
@@ -64,9 +66,9 @@ void image_buttonObj::on_activate(const image_button_callback_t &callback)
 
 	elementimpl e=impl->button->impl;
 
-	e->get_window_handler().IN_THREAD->run_as
+	e->get_window_handler().thread()->run_as
 		([&, impl=this->impl, callback]
-		 (IN_THREAD_ONLY)
+		 (ONLY IN_THREAD)
 		 {
 			 auto i=impl->button->impl;
 
@@ -109,7 +111,7 @@ class LIBCXX_HIDDEN scroll_imagebuttonObj
 
 	//! Flash the scroll icons when clicking on them.
 
-	void temperature_changed(IN_THREAD_ONLY,
+	void temperature_changed(ONLY IN_THREAD,
 				 const callback_trigger_t &trigger) override
 	{
 		image_button_internalObj::implObj::temperature_changed
@@ -179,7 +181,7 @@ class LIBCXX_HIDDEN image_button_containerObj
 	//! visible, so a mere show() on the image button will reveal
 	//! everything.
 
-	void request_visibility_recursive(IN_THREAD_ONLY, bool flag)
+	void request_visibility_recursive(ONLY IN_THREAD, bool flag)
 		override
 	{
 		if (disable_recursive_visibility)

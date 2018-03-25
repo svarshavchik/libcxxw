@@ -40,7 +40,7 @@ void progressbarObj::update(size_t value, size_t maximum_value,
 {
 	elementObj::impl->THREAD->run_as
 		([=, me=ref(this)]
-		 (IN_THREAD_ONLY)
+		 (ONLY IN_THREAD)
 		 {
 			 closure();
 			 me->impl->slider->value(IN_THREAD)=value;

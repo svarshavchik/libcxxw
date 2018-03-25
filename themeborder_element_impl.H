@@ -37,10 +37,10 @@ class LIBCXX_HIDDEN themeborder_element_implObj : virtual public obj {
 	virtual elementObj::implObj &get_border_element_impl()=0;
 
 	//! Implement initialize().
-	void initialize(IN_THREAD_ONLY);
+	void initialize(ONLY IN_THREAD);
 
 	//! Implement theme_updated().
-	void theme_updated(IN_THREAD_ONLY,
+	void theme_updated(ONLY IN_THREAD,
 			   const defaulttheme &new_theme);
 
 };

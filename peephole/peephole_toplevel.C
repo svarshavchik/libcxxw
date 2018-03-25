@@ -56,7 +56,7 @@ class LIBCXX_HIDDEN toplevelpeephole_layoutmanagerObj
 	//! Performs some value-added adjustments before invoking the
 	//! overridden recalculate().
 
-	void recalculate(IN_THREAD_ONLY) override;
+	void recalculate(ONLY IN_THREAD) override;
 };
 
 //! Implementation object for the top level peephole element.
@@ -97,7 +97,7 @@ class LIBCXX_HIDDEN peephole_toplevel_implObj
 
 	//! Override focusable_initialized()
 
-	void focusable_initialized(IN_THREAD_ONLY,
+	void focusable_initialized(ONLY IN_THREAD,
 				   focusableImplObj &fimpl) override
 	{
 		set_top_level_peephole_scrollbar_focus_order
@@ -246,7 +246,7 @@ toplevelpeephole_layoutmanagerObj::toplevelpeephole_layoutmanagerObj
 
 toplevelpeephole_layoutmanagerObj::~toplevelpeephole_layoutmanagerObj()=default;
 
-void toplevelpeephole_layoutmanagerObj::recalculate(IN_THREAD_ONLY)
+void toplevelpeephole_layoutmanagerObj::recalculate(ONLY IN_THREAD)
 {
 	// How big the element in the peephole wants to be.
 	auto peepholed_metrics=element_in_peephole->get_peepholed_element()

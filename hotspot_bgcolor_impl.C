@@ -14,7 +14,7 @@ hotspot_bgcolorObj::implObj::implObj()=default;
 
 hotspot_bgcolorObj::implObj::~implObj()=default;
 
-void hotspot_bgcolorObj::implObj::temperature_changed(IN_THREAD_ONLY,
+void hotspot_bgcolorObj::implObj::temperature_changed(ONLY IN_THREAD,
 						      const callback_trigger_t
 						      &trigger)
 {

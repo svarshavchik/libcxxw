@@ -11,7 +11,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-void peephole_toplevel_gridlayoutmanagerObj::needs_recalculation(IN_THREAD_ONLY)
+void peephole_toplevel_gridlayoutmanagerObj::needs_recalculation(ONLY IN_THREAD)
 {
 	peephole_gridlayoutmanagerObj::needs_recalculation(IN_THREAD);
 

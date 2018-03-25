@@ -25,8 +25,8 @@ class LIBCXX_HIDDEN cursor_pointer_1tag {
 	THREAD_DATA_ONLY(tagged_cursor_pointer);
 
 	cursor_pointer_1tag(const cursor_pointer &c);
-	void initialize(IN_THREAD_ONLY);
-	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme);
+	void initialize(ONLY IN_THREAD);
+	void theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme);
 };
 
 //! cursor_pointer_elementObj implementation.
@@ -65,9 +65,9 @@ struct LIBCXX_HIDDEN cursor_pointer_element_implObj<element_impl, Tag1,
 		inline cursor_pointer_element_implObj(const cursor_pointer &i,
 						       Args && ...args);
 
-	void initialize(IN_THREAD_ONLY) override;
+	void initialize(ONLY IN_THREAD) override;
 
-	void theme_updated(IN_THREAD_ONLY,
+	void theme_updated(ONLY IN_THREAD,
 			   const defaulttheme &new_theme) override;
 };
 

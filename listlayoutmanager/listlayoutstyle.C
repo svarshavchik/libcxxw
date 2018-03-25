@@ -404,7 +404,7 @@ class LIBCXX_HIDDEN highlighted_listlayoutstyle_impl
 		return style.col_alignments;
 	}
 
-	void set_selected_background(IN_THREAD_ONLY,
+	void set_selected_background(ONLY IN_THREAD,
 				     draw_info &di,
 				     const background_color &bgcolor)
 		const override
@@ -497,7 +497,7 @@ class LIBCXX_HIDDEN bulleted_listlayoutstyle_impl
 		return actual;
 	}
 
-	void set_selected_background(IN_THREAD_ONLY,
+	void set_selected_background(ONLY IN_THREAD,
 				     draw_info &di,
 				     const background_color &bgcolor)
 		const override

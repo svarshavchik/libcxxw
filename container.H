@@ -99,23 +99,23 @@ public:
 	//! get the exposure event.
 
 	virtual void draw_child_elements_after_visibility_updated
-		(IN_THREAD_ONLY, bool flag);
+		(ONLY IN_THREAD, bool flag);
 
 	//! A child element will be visible or not visible.
 
-	void requested_child_visibility_updated(IN_THREAD_ONLY,
+	void requested_child_visibility_updated(ONLY IN_THREAD,
 						const elementimpl &,
 						bool);
 
 	//! A child element became visible or not visible.
 
-	void inherited_child_visibility_updated(IN_THREAD_ONLY,
+	void inherited_child_visibility_updated(ONLY IN_THREAD,
 						const elementimpl &,
 						inherited_visibility_info &);
 
 	//! Add this container to containers_2_recalculate
 
-	void needs_recalculation(IN_THREAD_ONLY);
+	void needs_recalculation(ONLY IN_THREAD);
 
 	//! Invoke the layout manager's needs_recalculation().
 
@@ -123,7 +123,7 @@ public:
 	//! whose default implementation simply calls needs_recalculation()
 	//! here, but is also overridden by some layout managers.
 
-	void tell_layout_manager_it_needs_recalculation(IN_THREAD_ONLY);
+	void tell_layout_manager_it_needs_recalculation(ONLY IN_THREAD);
 
 	//! Draw the container.
 
@@ -131,7 +131,7 @@ public:
 	//! that are not occupted by any element in the container. The
 	//! elements in the container will take care of drawing themselves.
 
-	void do_draw(IN_THREAD_ONLY,
+	void do_draw(ONLY IN_THREAD,
 		     const draw_info &di,
 		     const rectangle_set &areas);
 
@@ -139,7 +139,7 @@ public:
 
 	//! Invoked by layout managers in order to clear the filler space
 	//! in the container, after they reposition their display elements.
-	void do_draw(IN_THREAD_ONLY);
+	void do_draw(ONLY IN_THREAD);
 
 	//! Container's inherited visibility has been updated, part 1.
 
@@ -151,7 +151,7 @@ public:
 	//! get hidden first, and this propagates the inherited_visibility
 	//! updated() call to them before this element's.
 
-	void inherited_visibility_updated_before(IN_THREAD_ONLY,
+	void inherited_visibility_updated_before(ONLY IN_THREAD,
 						 inherited_visibility_info &);
 
 	//! Container's inherited visibility has been updated, part 2.
@@ -166,46 +166,46 @@ public:
 	//!
 	//! Also invokes the layout manager's inherited_visibility_updated().
 
-	void inherited_visibility_updated_after(IN_THREAD_ONLY,
+	void inherited_visibility_updated_after(ONLY IN_THREAD,
 						inherited_visibility_info &);
 
 	//! The container's position has been updated.
 
 	//! Invokes the layout manager's process_updated_position() callback.
 
-	void process_updated_position(IN_THREAD_ONLY);
+	void process_updated_position(ONLY IN_THREAD);
 
 	//! Recursive show() or hide().
 
 	//! Invokes request_child_visibility_recursive(), then invoke
 	//! the container's element's request_visibility.
 
-	void request_visibility_recursive(IN_THREAD_ONLY, bool flag);
+	void request_visibility_recursive(ONLY IN_THREAD, bool flag);
 
 	//! request_visibility_recursive() for all elements in the container.
 
 	//! Recursively invoke the child elements'
 	//! request_visibility_recursive.
 
-	void request_child_visibility_recursive(IN_THREAD_ONLY, bool flag);
+	void request_child_visibility_recursive(ONLY IN_THREAD, bool flag);
 
 	//! Invoke draw_child_elements_after_visibility_updated.
 
-	void draw_after_visibility_updated(IN_THREAD_ONLY, bool flag);
+	void draw_after_visibility_updated(ONLY IN_THREAD, bool flag);
 
 	//! Invoke layout manager's initialize() method.
 
-	void initialize(IN_THREAD_ONLY);
+	void initialize(ONLY IN_THREAD);
 
 	//! Invoke layout manager's theme_updated() method.
 
-	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme);
+	void theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme);
 	//////////////////////////////////////////////////////////////////////
 
 	//! Invoke a lambda for each child element.
 
 	template<typename functor_type>
-		void for_each_child(IN_THREAD_ONLY,
+		void for_each_child(ONLY IN_THREAD,
 				    functor_type &&functor)
 	{
 		do_for_each_child(IN_THREAD,
@@ -217,16 +217,16 @@ public:
 
 	//! Invoke the layout manager's do_for_each_child.
 
-	void do_for_each_child(IN_THREAD_ONLY,
+	void do_for_each_child(ONLY IN_THREAD,
 			       const function<void (const element &)> &);
 
 	//! Child element's background color has changed
 
-	void child_background_color_changed(IN_THREAD_ONLY,
+	void child_background_color_changed(ONLY IN_THREAD,
 					    const elementimpl &child);
 
  private:
-	void propagate_inherited_visibility(IN_THREAD_ONLY,
+	void propagate_inherited_visibility(ONLY IN_THREAD,
 					    inherited_visibility_info &info);
 
  public:
@@ -236,12 +236,12 @@ public:
 	//! Notifies the layout manager, then invokes
 	//! ensured_visibility_of_child_element().
 
-	void ensure_visibility(IN_THREAD_ONLY, elementObj::implObj &e,
+	void ensure_visibility(ONLY IN_THREAD, elementObj::implObj &e,
 			       const rectangle &r);
 
 	//! This container itself was removed from its container.
 
-	void removed_from_container(IN_THREAD_ONLY);
+	void removed_from_container(ONLY IN_THREAD);
 
 	//! A child element was just ensure_visibility()-ed.
 
@@ -251,7 +251,7 @@ public:
 	//! coordinates, then computes the corresponding coordinates in the
 	//! container, then invokes the container's ensure_visibility().
 
-	virtual void ensured_visibility_of_child_element(IN_THREAD_ONLY,
+	virtual void ensured_visibility_of_child_element(ONLY IN_THREAD,
 							 elementObj::implObj &e,
 							 const rectangle &r);
 };

@@ -82,7 +82,7 @@ See COPYING for distribution information.
   <xsl:template match="datatype" mode="request-prototypes">
     <xsl:text>bool </xsl:text>
     <xsl:value-of select="name" />
-    <xsl:text>_received(IN_THREAD_ONLY, const uint8_t * &amp;data, size_t &amp;data_size</xsl:text>
+    <xsl:text>_received(ONLY IN_THREAD, const uint8_t * &amp;data, size_t &amp;data_size</xsl:text>
     <xsl:for-each select="parameter">
       <xsl:text>, </xsl:text>
       <xsl:value-of select="type" />
@@ -109,7 +109,7 @@ See COPYING for distribution information.
   <xsl:template match="request" mode="request-prototypes">
     <xsl:text>void </xsl:text>
     <xsl:value-of select="name" />
-    <xsl:text>_send(IN_THREAD_ONLY</xsl:text>
+    <xsl:text>_send(ONLY IN_THREAD</xsl:text>
     <xsl:if test="count(parameter) &gt; 0">
       <xsl:text>, </xsl:text>
     </xsl:if>
@@ -121,7 +121,7 @@ See COPYING for distribution information.
   <xsl:template match="reply" mode="request-prototypes">
     <xsl:text>void received_</xsl:text>
     <xsl:value-of select="name" />
-    <xsl:text>(IN_THREAD_ONLY</xsl:text>
+    <xsl:text>(ONLY IN_THREAD</xsl:text>
     <xsl:if test="count(parameter) &gt; 0">
       <xsl:text>, </xsl:text>
     </xsl:if>
@@ -329,7 +329,7 @@ code path.
 
     <xsl:text>bool ximserverObj::</xsl:text>
     <xsl:value-of select="name" />
-    <xsl:text>_received(IN_THREAD_ONLY, const uint8_t * &amp;data, size_t &amp;data_size</xsl:text>
+    <xsl:text>_received(ONLY IN_THREAD, const uint8_t * &amp;data, size_t &amp;data_size</xsl:text>
     <xsl:for-each select="parameter">
       <xsl:text>, </xsl:text>
       <xsl:value-of select="type" />
@@ -349,7 +349,7 @@ code path.
 
     <xsl:text>void ximserverObj::</xsl:text>
     <xsl:value-of select="name" />
-    <xsl:text>_send(IN_THREAD_ONLY</xsl:text>
+    <xsl:text>_send(ONLY IN_THREAD</xsl:text>
     <xsl:if test="count(parameter) &gt; 0">
       <xsl:text>, </xsl:text>
     </xsl:if>

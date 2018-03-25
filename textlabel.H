@@ -44,7 +44,7 @@ class LIBCXX_HIDDEN textlabelObj::implObj : virtual public obj {
 
 	//! Compute preferred_width
 
-	virtual void compute_preferred_width(IN_THREAD_ONLY);
+	virtual void compute_preferred_width(ONLY IN_THREAD);
 
  public:
 	//! Info about each links.
@@ -145,26 +145,26 @@ class LIBCXX_HIDDEN textlabelObj::implObj : virtual public obj {
 
 	//! Replace text
 
-	void update(IN_THREAD_ONLY, const text_param &string);
+	void update(ONLY IN_THREAD, const text_param &string);
 
 	//! Text has been updated
-	void updated(IN_THREAD_ONLY);
+	void updated(ONLY IN_THREAD);
 
 	////////////////////////////////////////////////////////////////////
 	//
 	// Inherited from elementObj::implObj
 
 	//! Calculate the metrics of the initial contents of this label.
-	void initialize(IN_THREAD_ONLY);
+	void initialize(ONLY IN_THREAD);
 
 	//! Invoke the underlying text object's theme_updated().
 
 	//! When done, recalculate() our updated size.
-	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme);
+	void theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme);
 
 	//! Invoke the underlying text object's do_draw().
 
-	void do_draw(IN_THREAD_ONLY,
+	void do_draw(ONLY IN_THREAD,
 		     const draw_info &di,
 		     const rectangle_set &areas);
 
@@ -172,7 +172,7 @@ class LIBCXX_HIDDEN textlabelObj::implObj : virtual public obj {
 
 	//! The label's position has changed.
 
-	void process_updated_position(IN_THREAD_ONLY);
+	void process_updated_position(ONLY IN_THREAD);
 
 	//! The layout manager has set our position.
 
@@ -181,7 +181,7 @@ class LIBCXX_HIDDEN textlabelObj::implObj : virtual public obj {
 	//! accordingly, then the fixed metrics get unfrozen, and the metrics
 	//! then indicate the word-wrappability of the label.
 
-	void position_set(IN_THREAD_ONLY);
+	void position_set(ONLY IN_THREAD);
  private:
 
 	//! Whether the label's position has been set at least once.
@@ -194,14 +194,14 @@ class LIBCXX_HIDDEN textlabelObj::implObj : virtual public obj {
 	//!
 	//! Overriden in editor_impl.
 
-	virtual void rewrap_due_to_updated_position(IN_THREAD_ONLY);
+	virtual void rewrap_due_to_updated_position(ONLY IN_THREAD);
 
  protected:
 	//! Recalculate and update our metrics.
 
 	//! Invoke calculate_current_metrics(), then set_element_metrics().
 
-	void recalculate(IN_THREAD_ONLY);
+	void recalculate(ONLY IN_THREAD);
 
 	//! Calculate current text metrics.
 
@@ -211,38 +211,38 @@ class LIBCXX_HIDDEN textlabelObj::implObj : virtual public obj {
 	//! to the preferred width.
 
 	virtual std::pair<metrics::axis, metrics::axis>
-		calculate_current_metrics(IN_THREAD_ONLY);
+		calculate_current_metrics(ONLY IN_THREAD);
 
 
  public:
 	//! Detect clicks over hotspots.
 
-	bool process_button_event(IN_THREAD_ONLY,
+	bool process_button_event(ONLY IN_THREAD,
 				  const button_event &be,
 				  xcb_timestamp_t timestamp);
 
 	//! Keyboard navigation over hotspots.
-	bool process_key_event(IN_THREAD_ONLY, const key_event &ke);
+	bool process_key_event(ONLY IN_THREAD, const key_event &ke);
 
 	//! Detect pointer movement over hotspots.
-	void report_motion_event(IN_THREAD_ONLY, const motion_event &me);
+	void report_motion_event(ONLY IN_THREAD, const motion_event &me);
 
 	//! If no longer have pointer focus, disable any active hotspots.
-	void pointer_focus(IN_THREAD_ONLY,
+	void pointer_focus(ONLY IN_THREAD,
 			   const callback_trigger_t &trigger);
 
 	//! Move to the first or the last hotspot
-	void first_hotspot(IN_THREAD_ONLY);
+	void first_hotspot(ONLY IN_THREAD);
 
 	//! Move to the first or the last hotspot
-	void last_hotspot(IN_THREAD_ONLY);
+	void last_hotspot(ONLY IN_THREAD);
 
 	//! Unhighlight any currently-highlighted hotspots.
-	void hotspot_unhighlight(IN_THREAD_ONLY);
+	void hotspot_unhighlight(ONLY IN_THREAD);
 
  private:
 	//! Invoke the link event, and possibly update the label accordingly.
-	void link_update(IN_THREAD_ONLY, const text_hotspot &link,
+	void link_update(ONLY IN_THREAD, const text_hotspot &link,
 			 const text_event_t &event_type);
 };
 

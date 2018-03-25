@@ -52,14 +52,14 @@ class LIBCXX_HIDDEN label_forObj : virtual public obj {
 	//! still exists).
 
 	template<typename functor_type>
-		inline void with_link(IN_THREAD_ONLY, functor_type &&f)
+		inline void with_link(ONLY IN_THREAD, functor_type &&f)
 	{
 		do_with_link(IN_THREAD, make_function<with_link_t>
 			     (std::forward<functor_type>(f)));
 	}
 
 	//! Invoke a callback, passing it the linked objects.
-	void do_with_link(IN_THREAD_ONLY,
+	void do_with_link(ONLY IN_THREAD,
 			  const function<with_link_t> &callback);
 };
 

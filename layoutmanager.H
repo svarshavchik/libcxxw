@@ -63,7 +63,7 @@ class LIBCXX_HIDDEN layoutmanagerObj::implObj : virtual public obj {
 
 	//! The default implementation invokes needs_recalculation().
 
-	virtual void child_metrics_updated(IN_THREAD_ONLY);
+	virtual void child_metrics_updated(ONLY IN_THREAD);
 
 	//! Mark this layout as needing recalculation.
 
@@ -71,12 +71,12 @@ class LIBCXX_HIDDEN layoutmanagerObj::implObj : virtual public obj {
 
 	//! Mark this layout as needing recalculation.
 
-	virtual void needs_recalculation(IN_THREAD_ONLY);
+	virtual void needs_recalculation(ONLY IN_THREAD);
 
 	//! Iterate over all child elements
 
 	template<typename functor_type>
-		void for_each_child(IN_THREAD_ONLY,
+		void for_each_child(ONLY IN_THREAD,
 				    functor_type &&functor)
 	{
 		do_for_each_child(IN_THREAD,
@@ -85,7 +85,7 @@ class LIBCXX_HIDDEN layoutmanagerObj::implObj : virtual public obj {
 	}
 
 	//! Subclass iterates over each child element.
-	virtual void do_for_each_child(IN_THREAD_ONLY,
+	virtual void do_for_each_child(ONLY IN_THREAD,
 				       const function<void
 				       (const element &e)> &)=0;
 
@@ -104,48 +104,48 @@ class LIBCXX_HIDDEN layoutmanagerObj::implObj : virtual public obj {
 	//! If there are any new elements in the container, recalculate()
 	//! should call initialize_if_needed() on them.
 
-	virtual void recalculate(IN_THREAD_ONLY)=0;
+	virtual void recalculate(ONLY IN_THREAD)=0;
 
 	//! The container's position has been updated.
 
 	//! The container should, if necessary, recalculate and update
 	//! the child elements' positions.
 
-	virtual void process_updated_position(IN_THREAD_ONLY,
+	virtual void process_updated_position(ONLY IN_THREAD,
 					      const rectangle &position)=0;
 
 	//! A child element's background color has changed
 
 	//! The default implementation does nothing
-	virtual void child_background_color_changed(IN_THREAD_ONLY,
+	virtual void child_background_color_changed(ONLY IN_THREAD,
 						    const elementimpl &child);
 
 	//! A child element's visibility will change soon.
 
 	//! The default implementation does nothing
 	virtual void requested_child_visibility_changed
-		(IN_THREAD_ONLY,
+		(ONLY IN_THREAD,
 		 const elementimpl &child, bool);
 
 	//! A child element's inherited_visibility has changed
 
 	//! The default implementation does nothing
 	virtual void inherited_child_visibility_changed
-		(IN_THREAD_ONLY,
+		(ONLY IN_THREAD,
 		 const elementimpl &child,
 		 inherited_visibility_info &info);
 
 	//! The container's visibility has changed
 
 	//! The default implementation does nothing
-	virtual void inherited_visibility_updated(IN_THREAD_ONLY, bool);
+	virtual void inherited_visibility_updated(ONLY IN_THREAD, bool);
 
 	//! Return the child element position that includes any container-provided padding.
 
 	//! The default implementation returns the same rectangle as the
 	//! element's current_position.
 
-	virtual rectangle padded_position(IN_THREAD_ONLY, const elementimpl &e);
+	virtual rectangle padded_position(ONLY IN_THREAD, const elementimpl &e);
 
 	//! Return this layout manager's element.
 
@@ -155,17 +155,17 @@ class LIBCXX_HIDDEN layoutmanagerObj::implObj : virtual public obj {
 	elementObj::implObj &get_element_impl();
 
 	//! Initialize the layout manager, in the connection thread.
-	virtual void initialize(IN_THREAD_ONLY);
+	virtual void initialize(ONLY IN_THREAD);
 
 	//! The theme has changed
 
-	virtual void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme);
+	virtual void theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme);
 
  protected:
 
 	//! Invokes the container's element function of the same name.
 
-	void current_position_updated(IN_THREAD_ONLY);
+	void current_position_updated(ONLY IN_THREAD);
 
  public:
 
@@ -177,13 +177,13 @@ class LIBCXX_HIDDEN layoutmanagerObj::implObj : virtual public obj {
 	//! The peephole layout manager makes sure that its element scrolls
 	//! this part of it into view.
 
-	virtual void ensure_visibility(IN_THREAD_ONLY,
+	virtual void ensure_visibility(ONLY IN_THREAD,
 				       elementObj::implObj &e,
 				       const rectangle &r);
 
 	//! Invoke request_visibility_recursive() for each child.
 
-	virtual void request_visibility_recursive(IN_THREAD_ONLY, bool);
+	virtual void request_visibility_recursive(ONLY IN_THREAD, bool);
 };
 
 LIBCXXW_NAMESPACE_END

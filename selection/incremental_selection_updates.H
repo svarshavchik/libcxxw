@@ -78,14 +78,14 @@ class LIBCXX_HIDDEN connection_threadObj::incremental_selection_update_info {
 
 	static tick_clock_t::time_point next_incremental_update_timeout();
 
-	pending_window_updates_t &get_updates_for_window(IN_THREAD_ONLY,
+	pending_window_updates_t &get_updates_for_window(ONLY IN_THREAD,
 							 xcb_window_t);
 	pending_window_updates_t
-		&get_updates_for_window(IN_THREAD_ONLY,
+		&get_updates_for_window(ONLY IN_THREAD,
 					xcb_window_t,
 					pending_updates_t::iterator);
 
-	void no_more_pending_updates(IN_THREAD_ONLY,
+	void no_more_pending_updates(ONLY IN_THREAD,
 				     pending_updates_t::iterator iter);
 };
 

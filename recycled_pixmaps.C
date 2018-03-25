@@ -118,19 +118,19 @@ public:
 		return false;
 	}
 
-	const_picture get_current_color(IN_THREAD_ONLY) override
+	const_picture get_current_color(ONLY IN_THREAD) override
 	{
 		return gradient_color;
 	}
 
 	//! Always a no-op.
-	void initialize(IN_THREAD_ONLY) override
+	void initialize(ONLY IN_THREAD) override
 	{
 	}
 
 	//! Forward theme_updated to the base background color.
 
-	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme)
+	void theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme)
 		override
 	{
 		base_color->theme_updated(IN_THREAD, new_theme);
@@ -138,7 +138,7 @@ public:
 
 	//! Forward get_background_color_for to the base background color.
 
-	background_color get_background_color_for(IN_THREAD_ONLY,
+	background_color get_background_color_for(ONLY IN_THREAD,
 						  elementObj::implObj &e)
 		override
 	{
@@ -233,7 +233,7 @@ public:
 
 	~nontheme_background_colorObj()=default;
 
-	const_picture get_current_color(IN_THREAD_ONLY) override
+	const_picture get_current_color(ONLY IN_THREAD) override
 	{
 		return fixed_color;
 	}
@@ -243,11 +243,11 @@ public:
 		return std::holds_alternative<rgb>(color) ? false:true;
 	}
 
-	void initialize(IN_THREAD_ONLY) override
+	void initialize(ONLY IN_THREAD) override
 	{
 	}
 
-	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme)
+	void theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme)
 		override
 	{
 	}
@@ -255,7 +255,7 @@ public:
 
 private:
 
-	inline background_color make_gradient(IN_THREAD_ONLY,
+	inline background_color make_gradient(ONLY IN_THREAD,
 					      elementObj::implObj &e,
 					      const linear_gradient &g)
 	{
@@ -273,7 +273,7 @@ private:
 								     picture);
 	}
 
-	inline background_color make_gradient(IN_THREAD_ONLY,
+	inline background_color make_gradient(ONLY IN_THREAD,
 					      elementObj::implObj &e,
 					      const radial_gradient &g)
 	{
@@ -294,7 +294,7 @@ private:
 
 public:
 
-	background_color get_background_color_for(IN_THREAD_ONLY,
+	background_color get_background_color_for(ONLY IN_THREAD,
 						  elementObj::implObj &e)
 		override
 	{
@@ -321,7 +321,7 @@ public:
 
 private:
 	static std::tuple<coord_t, coord_t, dim_t, dim_t
-			  > get_gradient_params(IN_THREAD_ONLY,
+			  > get_gradient_params(ONLY IN_THREAD,
 						elementObj::implObj &e,
 						const ref<screenObj::implObj>
 						&screen_impl,
@@ -424,12 +424,12 @@ class theme_background_colorObj : public nontheme_background_colorObj {
 	// Potential rare race condition, the theme changing after the
 	// background color object was created and before it is installed.
 
-	void initialize(IN_THREAD_ONLY) override
+	void initialize(ONLY IN_THREAD) override
 	{
 		theme_updated(IN_THREAD, screen->current_theme.get());
 	}
 
-	void theme_updated(IN_THREAD_ONLY,
+	void theme_updated(ONLY IN_THREAD,
 			   const defaulttheme &new_theme) override
 	{
 		if (new_theme == current_theme)

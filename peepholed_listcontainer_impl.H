@@ -44,7 +44,7 @@ class LIBCXX_HIDDEN peepholed_listcontainerObj::implObj : virtual public obj {
 	//! If the height was specified as dim_axis_arg, return the computed
 	//! dimensions based on the current theme.
 
-	virtual metrics::axis get_height_metrics(IN_THREAD_ONLY) const=0;
+	virtual metrics::axis get_height_metrics(ONLY IN_THREAD) const=0;
 
 	//! Return the list reference font.
 
@@ -67,24 +67,24 @@ class LIBCXX_HIDDEN peepholed_listcontainerObj::implObj : virtual public obj {
 	virtual const child_elementObj &get_child_elementObj() const=0;
 
 	//! Update_peephole_metrics().
-	void initialize(IN_THREAD_ONLY);
+	void initialize(ONLY IN_THREAD);
 
 	//! Call update_peephole_metrics().
-	void horizvert_updated(IN_THREAD_ONLY);
+	void horizvert_updated(ONLY IN_THREAD);
 
 	//! Compute the height of the single row.
 
 	//! Adds the vertical padding, specified in the list style,
 	//! to the font's height.
-	dim_t rowsize(IN_THREAD_ONLY) const;
+	dim_t rowsize(ONLY IN_THREAD) const;
 
 	//! Stub, does nothing.
-	void theme_updated(IN_THREAD_ONLY, const defaulttheme &new_theme);
+	void theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme);
 
  private:
 
 	//! Recalculate and update my peephole's metrics.
-	void update_peephole_metrics(IN_THREAD_ONLY);
+	void update_peephole_metrics(ONLY IN_THREAD);
 };
 
 LIBCXXW_NAMESPACE_END

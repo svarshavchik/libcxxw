@@ -30,7 +30,7 @@ const char *popup_attachedto_handlerObj::default_wm_class_instance() const
 }
 
 void popup_attachedto_handlerObj
-::update_attachedto_element_position(IN_THREAD_ONLY,
+::update_attachedto_element_position(ONLY IN_THREAD,
 				     const rectangle &new_position)
 {
 	auto &existing=attachedto_info->attachedto_element_position(IN_THREAD);
@@ -43,7 +43,7 @@ void popup_attachedto_handlerObj
 }
 
 popup_position_affinity popup_attachedto_handlerObj
-::recalculate_popup_position(IN_THREAD_ONLY,
+::recalculate_popup_position(ONLY IN_THREAD,
 			     rectangle &r,
 			     dim_t screen_width,
 			     dim_t screen_height)
@@ -131,14 +131,14 @@ popup_position_affinity popup_attachedto_handlerObj
 	return a;
 }
 
-ref<obj> popup_attachedto_handlerObj::get_opened_mcguffin(IN_THREAD_ONLY)
+ref<obj> popup_attachedto_handlerObj::get_opened_mcguffin(ONLY IN_THREAD)
 {
 	return ((*handler_data).*opened_popup)(IN_THREAD,
 					       ref<popupObj::handlerObj>(this)
 					       );
 }
 
-void popup_attachedto_handlerObj::released_opened_mcguffin(IN_THREAD_ONLY)
+void popup_attachedto_handlerObj::released_opened_mcguffin(ONLY IN_THREAD)
 {
 	((*handler_data).*closed_popup)(IN_THREAD, *this);
 }

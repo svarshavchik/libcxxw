@@ -36,7 +36,7 @@ icon_images_vector_elementObj<element_impl>::icon_images_vector_elementObj()
 //! Forwarded to the template superclass and the icon_images_vector mixin.
 
 template<typename element_impl>
-void icon_images_vector_elementObj<element_impl>::initialize(IN_THREAD_ONLY)
+void icon_images_vector_elementObj<element_impl>::initialize(ONLY IN_THREAD)
 {
 	element_impl::initialize(IN_THREAD);
 	icon_images_vector::initialize(IN_THREAD);
@@ -48,7 +48,7 @@ void icon_images_vector_elementObj<element_impl>::initialize(IN_THREAD_ONLY)
 
 template<typename element_impl>
 void icon_images_vector_elementObj<element_impl>
-::theme_updated(IN_THREAD_ONLY,
+::theme_updated(ONLY IN_THREAD,
 		const defaulttheme &new_theme)
 {
 	element_impl::theme_updated(IN_THREAD, new_theme);

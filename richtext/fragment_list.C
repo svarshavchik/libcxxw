@@ -101,7 +101,7 @@ void const_fragment_list
 }
 
 
-fragment_list::fragment_list(IN_THREAD_ONLY,
+fragment_list::fragment_list(ONLY IN_THREAD,
 			     paragraph_list &my_paragraphsArg,
 			     richtextparagraphObj &paragraphArg)
 	: const_fragment_list{my_paragraphsArg, paragraphArg},
@@ -154,7 +154,7 @@ void fragment_list::recalculate_needed_fragment_sizes()
 		 });
 }
 
-void fragment_list::insert_no_change_in_char_count(IN_THREAD_ONLY,
+void fragment_list::insert_no_change_in_char_count(ONLY IN_THREAD,
 			   fragments_t::iterator at,
 			   const richtextfragment &fragment)
 {
@@ -173,7 +173,7 @@ void fragment_list::erase(fragments_t::iterator at)
 	size_changed=true;
 }
 
-void fragment_list::append(IN_THREAD_ONLY,
+void fragment_list::append(ONLY IN_THREAD,
 			   const richtextfragment &new_fragment)
 {
 	append_no_recalculate(new_fragment);
@@ -187,7 +187,7 @@ size_t fragment_list::size() const
 	return paragraph.fragments.size();
 }
 
-void fragment_list::split_from(IN_THREAD_ONLY,
+void fragment_list::split_from(ONLY IN_THREAD,
 			       const richtextfragment &new_fragment,
 			       richtextfragmentObj *split_after)
 {
@@ -311,7 +311,7 @@ void fragment_list::join_next()
 	size_changed=true;
 }
 
-void fragment_list::fragment_text_changed(IN_THREAD_ONLY,
+void fragment_list::fragment_text_changed(ONLY IN_THREAD,
 					  size_t fragment_number,
 					  ssize_t text_count_changed)
 {
@@ -321,7 +321,7 @@ void fragment_list::fragment_text_changed(IN_THREAD_ONLY,
 	paragraph.adjust_char_count(text_count_changed);
 }
 
-void fragment_list::recalculate_fragment_size(IN_THREAD_ONLY,
+void fragment_list::recalculate_fragment_size(ONLY IN_THREAD,
 					      size_t fragment_number)
 {
 	assert_or_throw(fragment_number < paragraph.fragments.size(),

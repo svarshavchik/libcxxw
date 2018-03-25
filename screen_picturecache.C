@@ -42,7 +42,7 @@ class LIBCXX_HIDDEN solidColorPictureObj
 	: public pictureObj::implObj {
 
  public:
-	solidColorPictureObj(IN_THREAD_ONLY,
+	solidColorPictureObj(ONLY IN_THREAD,
 			     const rgb &color)
 		:  implObj(IN_THREAD)
 	{
