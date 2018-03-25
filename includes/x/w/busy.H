@@ -7,7 +7,6 @@
 
 #include <x/w/namespace.H>
 #include <x/w/busyfwd.H>
-#include <x/w/connection_threadfwd.H>
 #include <x/ref.H>
 #include <x/obj.H>
 
