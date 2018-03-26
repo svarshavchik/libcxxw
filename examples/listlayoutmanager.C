@@ -95,7 +95,8 @@ static inline void create_main_window(const x::w::main_window &main_window,
 
 	new_list.selection_changed=
 		[]
-		(const x::w::list_item_status_info_t &info)
+		(ONLY IN_THREAD,
+		 const x::w::list_item_status_info_t &info)
 		{
 			std::cout << "Item #" << info.item_number << " was ";
 
@@ -201,7 +202,8 @@ static inline void create_main_window(const x::w::main_window &main_window,
 
 	insert_row->on_activate
 		([list_container, counter=0]
-		 (const x::w::callback_trigger_t &trigger,
+		 (ONLY IN_THREAD,
+		  const x::w::callback_trigger_t &trigger,
 		  const x::w::busy &busy_mcguffin)
 		 mutable
 		 {
@@ -222,7 +224,8 @@ static inline void create_main_window(const x::w::main_window &main_window,
 			 l->insert_items
 				 (0, {
 					 [counter]
-					 (const x::w::list_item_status_info_t
+					 (ONLY IN_THREAD,
+					  const x::w::list_item_status_info_t
 					  &info)
 					 {
 						 std::cout << "Item factory: "
@@ -243,7 +246,8 @@ static inline void create_main_window(const x::w::main_window &main_window,
 
 	append_row->on_activate
 		([list_container]
-		 (const x::w::callback_trigger_t &trigger,
+		 (ONLY IN_THREAD,
+		  const x::w::callback_trigger_t &trigger,
 		  const x::w::busy &busy_mcguffin)
 		 {
 			 x::w::listlayoutmanager l=
@@ -263,7 +267,8 @@ static inline void create_main_window(const x::w::main_window &main_window,
 
 	remove_row->on_activate
 		([list_container]
-		 (const x::w::callback_trigger_t &trigger,
+		 (ONLY IN_THREAD,
+		  const x::w::callback_trigger_t &trigger,
 		  const x::w::busy &busy_mcguffin)
 		 {
 			 x::w::listlayoutmanager l=
@@ -279,7 +284,8 @@ static inline void create_main_window(const x::w::main_window &main_window,
 
 	replace_row->on_activate
 		([list_container]
-		 (const x::w::callback_trigger_t &trigger,
+		 (ONLY IN_THREAD,
+		  const x::w::callback_trigger_t &trigger,
 		  const x::w::busy &busy_mcguffin)
 		 {
 			 x::w::listlayoutmanager l=
@@ -296,7 +302,8 @@ static inline void create_main_window(const x::w::main_window &main_window,
 
 	reset->on_activate
 		([list_container]
-		 (const x::w::callback_trigger_t &trigger,
+		 (ONLY IN_THREAD,
+		  const x::w::callback_trigger_t &trigger,
 		  const x::w::busy &busy_mcguffin)
 		 {
 			 x::w::listlayoutmanager l=
@@ -314,7 +321,8 @@ static inline void create_main_window(const x::w::main_window &main_window,
 
 	show_me->on_activate
 		([list_container]
-		 (const x::w::callback_trigger_t &trigger,
+		 (ONLY IN_THREAD,
+		  const x::w::callback_trigger_t &trigger,
 		  const x::w::busy &busy_mcguffin)
 		 {
 			 x::w::listlayoutmanager l=
@@ -377,7 +385,8 @@ void testlistlayoutmanager(const options &opts)
 
 	main_window->on_delete
 		([close_flag]
-		 (const x::w::busy &ignore)
+		 (ONLY IN_THREAD,
+		  const x::w::busy &ignore)
 		 {
 			 close_flag->close();
 		 });

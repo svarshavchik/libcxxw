@@ -14,6 +14,7 @@
 #include <x/w/rgb.H>
 #include <x/w/border_arg.H>
 #include <x/w/callback_triggerfwd.H>
+#include <x/functionalrefptr.H>
 
 LIBCXXW_NAMESPACE_START
 

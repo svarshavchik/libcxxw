@@ -60,7 +60,8 @@ void create_mainwindow(const x::w::main_window &main_window)
 
 	label->install_contextpopup_callback
 		([popup_info=most_recent_popup::create()]
-		 (const x::w::element &my_element,
+		 (ONLY IN_THREAD,
+		  const x::w::element &my_element,
 		  const x::w::callback_trigger_t &trigger,
 		  const x::w::busy &mcguffin)
 		 {
@@ -95,21 +96,24 @@ x::w::container create_popup_menu(const x::w::element &my_element)
 		 (const x::w::listlayoutmanager &lm)
 		 {
 			 lm->append_items({
-					 [](const auto &info)
+					 [](ONLY IN_THREAD,
+					    const auto &info)
 					 {
 						 std::cout << "New"
 							   << std::endl;
 					 },
 					 "New",
 
-					 [](const auto &info)
+					 [](ONLY IN_THREAD,
+					    const auto &info)
 					 {
 						 std::cout << "Open"
 							   << std::endl;
 					 },
 					 "Open",
 
-					 [](const auto &info)
+					 [](ONLY IN_THREAD,
+					    const auto &info)
 					 {
 						 std::cout << "Close"
 							   << std::endl;
@@ -149,7 +153,8 @@ void popupmenu2()
 				      "popupmenu2@examples.w.libcxx.com");
 	main_window->on_delete
 		([close_flag]
-		 (const x::w::busy &ignore)
+		 (ONLY IN_THREAD,
+		  const x::w::busy &ignore)
 		 {
 			 close_flag->close();
 		 });

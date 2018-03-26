@@ -12,10 +12,12 @@ LIBCXXW_NAMESPACE_START
 /////////////////////////////////////////////////////////////////////////////
 
 file_dialog_config
-::file_dialog_config(const std::function<void (const file_dialog &,
-					       const std::string &,
-					       const busy &)> &ok_action,
-		     const std::function<void (const busy &)
+::file_dialog_config(const functionref<void (THREAD_CALLBACK,
+					     const file_dialog &,
+					     const std::string &,
+					     const busy &)> &ok_action,
+		     const functionref<void (THREAD_CALLBACK,
+					     const busy &)
 		     > &cancel_action,
 		     file_dialog_type type)
 	: ok_action{ok_action},

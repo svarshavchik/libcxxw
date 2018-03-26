@@ -18,6 +18,7 @@
 #include "x/w/focus.H"
 #include "x/w/rgbfwd.H"
 #include "x/w/font_arg.H"
+#include "x/w/text_param.H"
 #include "connection_threadfwd.H"
 #include "defaultthemefwd.H"
 #include "elementfwd.H"
@@ -41,7 +42,6 @@
 #include <string_view>
 #include <xcb/xproto.h>
 
-#include <functional>
 #include <chrono>
 
 LIBCXXW_NAMESPACE_START
@@ -146,10 +146,6 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 		//! Keyboard focus callback
 		functionptr<focus_callback_t> on_keyboard_callback;
 
-		//! Default pointer and keyboard callback, does nothing.
-
-		static functionref<focus_callback_t> no_focus_callback();
-
 		//! Callback for reporting key events.
 
 		functionptr<key_event_callback_t> on_key_event_callback;
@@ -184,8 +180,8 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 		elementimplptr attached_popup_impl;
 
 		//! Context popup callback.
-		std::function<void(const callback_trigger_t &,
-				   const busy &)
+		functionptr<void(THREAD_CALLBACK, const callback_trigger_t &,
+				 const busy &)
 			      > contextpopup_callback;
 
 		//! Scheduled tooltip creation
@@ -1280,6 +1276,12 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 	//! set cursor pointer, call get_container_cursor_pointer().
 
 	virtual cursor_pointerptr get_cursor_pointer(ONLY IN_THREAD);
+
+	//! Convenient shortcut
+	void exception_message(const exception &);
+
+	//! Convenient shortcut
+	void stop_message(const text_param &);
 };
 
 LIBCXXW_NAMESPACE_END

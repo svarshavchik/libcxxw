@@ -67,25 +67,37 @@ std::optional<size_t> booklayoutmanagerObj::opened() const
 }
 
 void booklayoutmanagerObj
-::on_opened(const std::function<void (const book_status_info_t &)> &cb)
+::on_opened(const functionref<void (THREAD_CALLBACK,
+				    const book_status_info_t &)> &cb)
 {
-	book_lock lock{ref(this)};
+	impl->impl->container_impl->container_element_impl()
+		.get_window_handler().thread()
+		->run_as([me=ref(this), cb]
+			 (ONLY IN_THREAD)
+			 {
+				 book_lock lock{me};
 
-	lock.layout_manager->impl->impl->callback(lock)=cb;
+				 lock.layout_manager->impl->impl
+					 ->callback(lock)=cb;
+			 });
 }
 
 void booklayoutmanagerObj::open(size_t n)
 {
-	implObj::open(ref(this), n, {});
+	impl->impl->container_impl->container_element_impl()
+		.get_window_handler().thread()
+		->run_as([me=ref(this), n]
+			 (ONLY IN_THREAD)
+			 {
+				 implObj::open(IN_THREAD, me, n, {});
+			 });
 }
 
 void booklayoutmanagerObj
-::implObj::open(const booklayoutmanager &blm, size_t n,
+::implObj::open(ONLY IN_THREAD,
+		const booklayoutmanager &blm, size_t n,
 		const callback_trigger_t &trigger)
 {
-	// Hijack the logger for LOG_ERROR
-	const auto &logger=elementObj::implObj::logger;
-
 	book_lock lock{blm};
 
 	// Remember which page is currently open.
@@ -103,43 +115,39 @@ void booklayoutmanagerObj
 
 	blm->impl->book_pagelayoutmanager->open(n);
 
-	blm->impl->book_pagecontainer->elementObj::impl->THREAD
-		->run_as([previous_page, next_page,
+	// Make sure to scroll the opened tab into the view
+	// (the center of the peephole), unless it was a
+	// button click. Yanking the tab into the center
+	// of the peephole, just after clicking on it,
+	// is rather rude.
+	auto ensure_visibility=trigger.index() ==
+		callback_trigger_button_event ? false:true;
 
-			  // Make sure to scroll the opened tab into the view
-			  // (the center of the peephole), unless it was a
-			  // button click. Yanking the tab into the center
-			  // of the peephole, just after clicking on it,
-			  // is rather rude.
-			  ensure_visibility=trigger.index() ==
-			  callback_trigger_button_event ? false:true]
-			 (ONLY IN_THREAD)
-			 {
-				 if (previous_page)
-				 {
-					 previous_page->impl
-						 ->initialize_if_needed
-						 (IN_THREAD);
-					 previous_page->impl
-						 ->set_active(IN_THREAD, false);
-				 }
-				 next_page->impl->set_active(IN_THREAD, true);
+	if (previous_page)
+	{
+		previous_page->impl->initialize_if_needed(IN_THREAD);
+		previous_page->impl->set_active(IN_THREAD, false);
+	}
+	next_page->impl->set_active(IN_THREAD, true);
 
-				 if (!ensure_visibility)
-					 return;
-				 next_page->elementObj::impl
-					 ->ensure_entire_visibility(IN_THREAD);
-			 });
+	if (ensure_visibility)
+	{
+		next_page->elementObj::impl
+			->ensure_entire_visibility(IN_THREAD);
+	}
 
-	try {
-		auto &cb=lock.layout_manager->impl->impl->callback(lock);
+	auto &cb=lock.layout_manager->impl->impl->callback(lock);
 
-		if (cb)
-			cb({lock, n, trigger,
-			    busy_impl{lock.layout_manager
-						->impl->impl->container_impl
-						->container_element_impl()}});
-	} CATCH_EXCEPTIONS;
+	if (cb)
+	{
+		auto &e=lock.layout_manager->impl->impl->container_impl
+			->container_element_impl();
+
+		try {
+			cb(IN_THREAD, book_status_info_t{lock, n, trigger,
+						busy_impl{e}});
+		} REPORT_EXCEPTIONS(&e);
+	}
 }
 
 void booklayoutmanagerObj::close()
@@ -228,7 +236,8 @@ class LIBCXX_HIDDEN bookpagefactory_implObj : public bookpagefactoryObj {
 
 // callback that gets executed when a tab is selected by pointer or keyboard.
 
-static inline void tab_activate(const booklayoutmanager &layout_manager,
+static inline void tab_activate(ONLY IN_THREAD,
+				const booklayoutmanager &layout_manager,
 				const element &activated_page,
 				const callback_trigger_t &trigger)
 {
@@ -240,7 +249,8 @@ static inline void tab_activate(const booklayoutmanager &layout_manager,
 	if (!index)
 		return;
 
-	booklayoutmanagerObj::implObj::open(layout_manager,
+	booklayoutmanagerObj::implObj::open(IN_THREAD,
+					    layout_manager,
 					    *index,
 					    trigger);
 }
@@ -357,7 +367,7 @@ void install_activate_callback(const booklayoutmanager &layout_manager,
 		([weak_captures=make_weak_capture(layout_manager->impl
 						  ->impl->container_impl,
 						  new_page)]
-		 (const auto &trigger, const auto &busy)
+		 (ONLY IN_THREAD, const auto &trigger, const auto &busy)
 		 {
 			 // Recover the weak captures, and invoke
 			 // tab_activated().
@@ -374,7 +384,7 @@ void install_activate_callback(const booklayoutmanager &layout_manager,
 				  (const auto &lm_impl)
 				  {
 					  tab_activate
-						  (lm_impl
+						  (IN_THREAD, lm_impl
 						   ->create_public_object(),
 						   new_page,
 						   trigger);
@@ -696,7 +706,8 @@ new_booklayoutmanager::create(const ref<containerObj::implObj> &parent) const
 
 	left_scroll_impl->on_activate
 		([c=make_weak_capture(c)]
-		 (const auto &trigger,
+		 (ONLY IN_THREAD,
+		  const auto &trigger,
 		  const auto &mcguffin)
 		 {
 			 auto got=c.get();
@@ -707,7 +718,7 @@ new_booklayoutmanager::create(const ref<containerObj::implObj> &parent) const
 			 auto &[c]=*got;
 
 			 c->invoke_layoutmanager
-				 ([]
+				 ([&]
 				  (const auto &lm_impl)
 				  {
 					  booklayoutmanager lm=
@@ -731,13 +742,15 @@ new_booklayoutmanager::create(const ref<containerObj::implObj> &parent) const
 					  if (next == 0)
 						  return;
 
-					  lm->open(--next);
+					  lm->impl->open(IN_THREAD, lm, --next,
+							 trigger);
 				  });
 		 });
 
 	right_scroll_impl->on_activate
 		([c=make_weak_capture(c)]
-		 (const auto &trigger,
+		 (ONLY IN_THREAD,
+		  const auto &trigger,
 		  const auto &mcguffin)
 		 {
 			 auto got=c.get();
@@ -748,7 +761,7 @@ new_booklayoutmanager::create(const ref<containerObj::implObj> &parent) const
 			 auto &[c]=*got;
 
 			 c->invoke_layoutmanager
-				 ([]
+				 ([&]
 				  (const auto &lm_impl)
 				  {
 					  booklayoutmanager lm=
@@ -772,7 +785,8 @@ new_booklayoutmanager::create(const ref<containerObj::implObj> &parent) const
 					  if (next >= n)
 						  return;
 
-					  lm->open(next);
+					  lm->impl->open(IN_THREAD, lm, next,
+							 trigger);
 				  });
 		 });
 

@@ -20,7 +20,7 @@
 #include <x/mpobj.H>
 #include <x/weakptr.H>
 #include <x/refptr_hash.H>
-#include <functional>
+#include <x/functionalrefptr.H>
 #include <poll.h>
 #include <unordered_map>
 #include <unordered_set>
@@ -111,7 +111,7 @@ class LIBCXX_HIDDEN connection_threadObj
 
 	// Callback for when CXXWTHEME on the root window changes.
 
-	std::function<void ()> *cxxwtheme_changed_thread_only;
+	functionref<void ()> *cxxwtheme_changed_thread_only;
 
  public:
 
@@ -194,7 +194,7 @@ class LIBCXX_HIDDEN connection_threadObj
 
 	//! idle callbacks are executed last, just before flushing X events.
 
-	typedef std::deque<std::function<void (ONLY IN_THREAD)>
+	typedef std::deque<functionref<void (ONLY IN_THREAD)>
 			   > idle_callbacks_t;
 
 	//! Pending idle callbacks.
@@ -238,7 +238,7 @@ class LIBCXX_HIDDEN connection_threadObj
 
 	//! on_disconnect() callback
 
-	std::function<void ()> disconnect_callback_thread_only;
+	functionref<void ()> disconnect_callback_thread_only;
 
 	//! Flag that gets set upon a disconnect.
 	bool disconnected_flag_thread_only;

@@ -30,7 +30,8 @@ input_lock::input_lock(const editable_comboboxlayoutmanagerObj &e)
 
 ///////////////////////////////////////////////////////////////////////////
 
-static inline bool autocomplete(const auto &container_impl,
+static inline bool autocomplete(ONLY IN_THREAD,
+				const auto &container_impl,
 				auto &autocomplete_info)
 {
 	ptr<layoutmanagerObj::implObj> layoutmanager_impl;
@@ -59,7 +60,9 @@ static inline bool autocomplete(const auto &container_impl,
 		autocomplete_info.string=lock.item(found).string;
 
 		if (!lm->selected(found))
-			lm->autoselect(found, initial{});
+			// The initial{} callback trigger is referenced in the
+			// selection_changed callback, below.
+			lm->autoselect(IN_THREAD, found, initial{});
 		return true;
 	}
 	lm->unselect();
@@ -67,7 +70,8 @@ static inline bool autocomplete(const auto &container_impl,
 }
 
 new_editable_comboboxlayoutmanager
-::new_editable_comboboxlayoutmanager()
+::new_editable_comboboxlayoutmanager(const editable_combobox_selection_changed_t
+				     &selection_changed)
 	: new_custom_comboboxlayoutmanager
 	  ([]
 	   (const auto &f)
@@ -95,7 +99,8 @@ new_editable_comboboxlayoutmanager
 
 		   input_field->on_autocomplete
 			   ([container_impl=make_weak_capture(f->get_container_impl())]
-			    (auto &autocomplete_info) {
+			    (ONLY IN_THREAD,
+			     auto &autocomplete_info) {
 
 				   bool flag=false;
 
@@ -104,7 +109,8 @@ new_editable_comboboxlayoutmanager
 				   if (got)
 				   {
 					   auto & [ci]=*got;
-					   flag=autocomplete(ci,
+					   flag=autocomplete(IN_THREAD,
+							     ci,
 							     autocomplete_info);
 				   }
 				   return flag;
@@ -112,26 +118,27 @@ new_editable_comboboxlayoutmanager
 
 		   return input_field;
 	   }),
-	  selection_changed{ [](const auto &ignore) {}}
+	  selection_changed{ selection_changed }
 {
 }
 
-new_editable_comboboxlayoutmanager
-::new_editable_comboboxlayoutmanager(const editable_combobox_selection_changed_t
-				     &selection_changed)
-	: new_editable_comboboxlayoutmanager()
+static editable_combobox_selection_changed_t noop_selection_changed=
+	[]
+	(THREAD_CALLBACK, const auto &ignore)
 {
-	this->selection_changed=selection_changed;
+};
+
+new_editable_comboboxlayoutmanager::new_editable_comboboxlayoutmanager()
+	: new_editable_comboboxlayoutmanager{noop_selection_changed}
+{
 }
 
 new_editable_comboboxlayoutmanager::~new_editable_comboboxlayoutmanager()
 =default;
 
-custom_combobox_selection_changed_t new_editable_comboboxlayoutmanager
-::get_selection_changed() const
-{
-	return []
-		(const auto &info)
+static custom_combobox_selection_changed_t editable_selection_changed=
+	[]
+	(ONLY IN_THREAD, const auto &info)
 	{
 		editable_comboboxlayoutmanager lm=info.lm;
 		x::w::input_field current_selection=info.current_selection;
@@ -177,8 +184,15 @@ custom_combobox_selection_changed_t new_editable_comboboxlayoutmanager
 		busy_impl yes_i_am{*current_selection->elementObj::impl};
 
 		lm->impl->selection_changed.get()
-			({lock, info.list_item_status_info, yes_i_am, lm});
+		(IN_THREAD, editable_combobox_selection_changed_info_t{
+			lock, info.list_item_status_info, yes_i_am, lm});
 	};
+
+
+custom_combobox_selection_changed_t new_editable_comboboxlayoutmanager
+::get_selection_changed() const
+{
+	return editable_selection_changed;
 }
 
 void editable_comboboxlayoutmanagerObj

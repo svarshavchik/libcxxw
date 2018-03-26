@@ -176,7 +176,8 @@ void theme_infoObj::set_theme_options(const w::container &c)
 
 		cb->on_activate
 			([label=option.label]
-			 (size_t n,
+			 (ONLY IN_THREAD,
+			  size_t n,
 			  const auto &trigger,
 			  const auto &busy)
 			 {
@@ -268,7 +269,8 @@ static w::container create_main_window(const w::main_window &mw,
 
 	w::new_standard_comboboxlayoutmanager
 		themes_combobox{
-		[themeids, conn](const auto &info)
+		[themeids, conn]
+			(ONLY IN_THREAD, const auto &info)
 		{
 			if (!info.list_item_status_info.selected)
 				return;
@@ -362,7 +364,7 @@ static w::container create_main_window(const w::main_window &mw,
 
 	scale_scrollbar->on_update
 		([scale_label, conn]
-		 (const auto &info)
+		 (THREAD_CALLBACK, const auto &info)
 		 {
 			 if (std::holds_alternative<w::initial>(info.trigger))
 				 return;
@@ -422,7 +424,8 @@ static w::container create_main_window(const w::main_window &mw,
 			 f->create_normal_button_with_label
 				 ("Cancel", {'\e'})->on_activate
 				 ([close_flag]
-				  (const auto &ignore1,
+				  (THREAD_CALLBACK,
+				   const auto &ignore1,
 				   const auto &ignore2)
 				  {
 					  close_flag->close();
@@ -431,7 +434,8 @@ static w::container create_main_window(const w::main_window &mw,
 			 f->create_normal_button_with_label
 				 ("Set")->on_activate
 				 ([close_flag, conn]
-				  (const auto &ignore1,
+				  (THREAD_CALLBACK,
+				   const auto &ignore1,
 				   const auto &ignore2)
 				  {
 					  theme_info_t theme_info;
@@ -457,7 +461,8 @@ static w::container create_main_window(const w::main_window &mw,
 						 "et and save"
 						 }, {"Alt", 's'})->on_activate
 				 ([close_flag, conn]
-				  (const auto &ignore1,
+				  (THREAD_CALLBACK,
+				   const auto &ignore1,
 				   const auto &ignore2)
 				  {
 					  theme_info_t theme_info;
@@ -505,12 +510,14 @@ static void file_menu(const w::main_window &mw,
 		      const w::listlayoutmanager &lm)
 {
 	w::file_dialog_config conf{
-		[](const w::file_dialog &,
+		[](ONLY IN_THREAD,
+		   const w::file_dialog &,
 		   const std::string &,
 		   const w::busy &)
 		{
 		},
-		[](const w::busy &) {},
+		[](ONLY IN_THREAD,
+		   const w::busy &) {},
 
 		w::file_dialog_type::create_file};
 
@@ -531,11 +538,11 @@ static void file_menu(const w::main_window &mw,
 			 f->create_label("Choose ok, or cancel, below");
 		 },
 		 []
-		 (const auto &ignore)
+		 (THREAD_CALLBACK, const auto &ignore)
 		 {
 		 },
 		 []
-		 (const auto &ignore)
+		 (THREAD_CALLBACK, const auto &ignore)
 		 {
 		 }, true);
 
@@ -550,31 +557,35 @@ static void file_menu(const w::main_window &mw,
 		 "",
 		 {},
 		 []
-		 (const auto &ignore1, const auto &ignore2)
+		 (THREAD_CALLBACK, const auto &ignore1, const auto &ignore2)
 		 {
 		 },
 		 []
-		 (const auto &ignore)
+		 (THREAD_CALLBACK, const auto &ignore)
 		 {
 		 }, true);
 
 	lm->append_items({
-			[file_new](const w::list_item_status_info_t &info)
+			[file_new](THREAD_CALLBACK,
+				   const w::list_item_status_info_t &info)
 			{
 				file_new->dialog_window->show_all();
 			},
 			"New",
-			[file_open](const w::list_item_status_info_t &info)
+			[file_open](THREAD_CALLBACK,
+				    const w::list_item_status_info_t &info)
 			{
 				file_open->dialog_window->show_all();
 			},
 			"Open",
-			[file_ok_cancel](const w::list_item_status_info_t &info)
+			[file_ok_cancel](THREAD_CALLBACK,
+					 const w::list_item_status_info_t &info)
 			{
 				file_ok_cancel->dialog_window->show_all();
 			},
 			"Ok/Cancel",
-			[file_input_dialog](const w::list_item_status_info_t &info)
+			[file_input_dialog](THREAD_CALLBACK,
+					    const w::list_item_status_info_t &info)
 			{
 				file_input_dialog->input_dialog_field->set("");
 				file_input_dialog->dialog_window->show_all();
@@ -612,12 +623,13 @@ static void help_menu(const w::main_window &mw,
 			 f->create_label("LibCXXW version " VERSION);
 		 },
 		 []
-		 (const w::busy &)
+		 (THREAD_CALLBACK, const w::busy &)
 		 {
 		 });
 
 	lm->append_items({
-			[help_about](const w::list_item_status_info_t &info)
+			[help_about](THREAD_CALLBACK,
+				     const w::list_item_status_info_t &info)
 			{
 				help_about->dialog_window->show_all();
 			},
@@ -800,7 +812,8 @@ static void demo_misc(const w::gridlayoutmanager &lm)
 		.create_normal_button_with_label
 		("Busy pointer")->on_activate
 		([]
-		 (const auto &ignore,
+		 (THREAD_CALLBACK,
+		  const auto &ignore,
 		  const auto &busy)
 		 {
 			 auto mcguffin=busy.get_wait_busy_mcguffin();
@@ -853,7 +866,8 @@ void cxxwtheme()
 
 	main_window->on_delete
 		([close_flag]
-		 (const auto &ignore)
+		 (THREAD_CALLBACK,
+		  const auto &ignore)
 		 {
 			 close_flag->close();
 		 });

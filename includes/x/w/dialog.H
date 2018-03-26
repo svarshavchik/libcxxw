@@ -8,6 +8,7 @@
 #include <x/w/dialogfwd.H>
 #include <x/w/dialogobj.H>
 #include <x/w/main_window.H>
+#include <x/functionalrefptr.H>
 
 LIBCXXW_NAMESPACE_START
 

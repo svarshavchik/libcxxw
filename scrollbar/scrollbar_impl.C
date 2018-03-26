@@ -1005,12 +1005,13 @@ void scrollbarObj::implObj::report_current_values(ONLY IN_THREAD,
 {
 	try {
 		updated_value(IN_THREAD)
-			(scrollbar_info_t{(scroll_v_t::value_type)value,
+			(IN_THREAD,
+			 scrollbar_info_t{(scroll_v_t::value_type)value,
 					(scroll_v_t::value_type)dragged_value,
 					why,
 					busy_impl{*this}
 			});
-	} CATCH_EXCEPTIONS;
+	} REPORT_EXCEPTIONS(this);
 }
 
 LIBCXXW_NAMESPACE_END

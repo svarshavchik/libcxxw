@@ -6,8 +6,9 @@
 #define x_w_editable_comboboxlayoutmanagerfwd_h
 
 #include <x/w/namespace.H>
+#include <x/w/connection_threadfwd.H>
 #include <x/ptrfwd.H>
-#include <functional>
+#include <x/functionalrefptrfwd.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -51,7 +52,8 @@ Callback that gets invoked when an editable combo-box's selection changes.
 
 */
 
-typedef std::function<void (const editable_combobox_selection_changed_info_t &)
+typedef functionref<void (THREAD_CALLBACK,
+			  const editable_combobox_selection_changed_info_t &)
 		      > editable_combobox_selection_changed_t;
 
 LIBCXXW_NAMESPACE_END

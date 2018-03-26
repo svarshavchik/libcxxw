@@ -330,7 +330,7 @@ void connection_threadObj::recycle_xid(uint32_t xid)
 
 void connection_threadObj
 ::dispatch_set_theme_changed_callback(xcb_window_t root_window,
-				      const std::function<void ()> &callback)
+				      const functionref<void ()> &callback)
 {
 	root_window_thread_only=root_window;
 	*cxxwtheme_changed_thread_only=callback;

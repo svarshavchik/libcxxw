@@ -29,7 +29,8 @@ void connection_threadObj::dispatch_stop_politely()
 	LOG_DEBUG("Connection thread stop message received");
 }
 
-void connection_threadObj::dispatch_install_on_disconnect(const std::function<void ()> &callback)
+void connection_threadObj::dispatch_install_on_disconnect(const functionref
+							  <void ()> &callback)
 {
 	disconnect_callback_thread_only=callback;
 }

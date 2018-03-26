@@ -7,8 +7,9 @@
 #define x_w_alert_message_H
 
 #include <x/w/alert_messagefwd.H>
+#include <x/w/connection_threadfwd.H>
 #include <string>
-#include <functional>
+#include <x/functionalrefptr.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -23,7 +24,7 @@ struct alert_message_config {
 	//! gets closed. If set, acknowledged_callback() gets invoked when
 	//! the dialog gets closed.
 
-	std::function<void ()> acknowledged_callback;
+	functionptr<void (THREAD_CALLBACK)> acknowledged_callback;
 
 	//! alert_message()'s dialog's title.
 

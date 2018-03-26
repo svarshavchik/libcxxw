@@ -71,7 +71,8 @@ void testdateinput()
 				 auto ed=factory->create_normal_button_with_label("Enable/Disable");
 
 				 ed->on_activate([di, flag=false]
-						 (const auto &trigger,
+						 (THREAD_CALLBACK,
+						  const auto &trigger,
 						  const auto &busy) mutable {
 
 							 di->set_enabled(flag);
@@ -83,7 +84,8 @@ void testdateinput()
 
 				 di->on_change
 				 ([]
-				  (const auto &value,
+				  (THREAD_CALLBACK,
+				   const auto &value,
 				   const auto &trigger) {
 					 if (value)
 						 std::cout << value->format_date
@@ -107,7 +109,8 @@ void testdateinput()
 
 	main_window->on_delete
 		([close_flag]
-		 (const auto &ignore)
+		 (THREAD_CALLBACK,
+		  const auto &ignore)
 		 {
 			 close_flag->close();
 		 });

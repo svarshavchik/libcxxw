@@ -10,6 +10,7 @@
 #include "x/w/gridfactory.H"
 #include "element.H"
 #include "run_as.H"
+#include "catch_exceptions.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -32,17 +33,21 @@ ref<layoutmanagerObj::implObj> progressbarObj::get_layout_impl() const
 
 void progressbarObj::update(size_t value, size_t maximum_value)
 {
-	update(value, maximum_value, []{});
+	update(value, maximum_value, [](THREAD_CALLBACK){});
 }
 
 void progressbarObj::update(size_t value, size_t maximum_value,
-			    const std::function <void ()> &closure)
+			    const functionref<void (THREAD_CALLBACK)>
+			    &closure)
 {
 	elementObj::impl->THREAD->run_as
 		([=, me=ref(this)]
 		 (ONLY IN_THREAD)
 		 {
-			 closure();
+			 try {
+				 closure(IN_THREAD);
+			 } REPORT_EXCEPTIONS(me->elementObj::impl);
+
 			 me->impl->slider->value(IN_THREAD)=value;
 			 me->impl->slider->maximum_value(IN_THREAD)=
 				 maximum_value;

@@ -20,13 +20,8 @@
 
 LIBCXXW_NAMESPACE_START
 
-static void no_callback(const callback_trigger_t &, const busy &)
-{
-}
-
 hotspotObj::implObj::implObj()
-	: hotspot_temperature_thread_only(temperature::cold),
-	  callback_thread_only(no_callback)
+	: hotspot_temperature_thread_only(temperature::cold)
 {
 }
 
@@ -145,16 +140,17 @@ void hotspotObj::implObj::on_activate(ONLY IN_THREAD,
 	callback(IN_THREAD)=new_callback;
 }
 
-LOG_FUNC_SCOPE_DECL(LIBCXXW_NAMESPACE::hotspot, hotspot_log);
-
 void hotspotObj::implObj::activated(ONLY IN_THREAD,
 				    const callback_trigger_t &trigger)
 {
-	LOG_FUNC_SCOPE(hotspot_log);
+	if (!callback(IN_THREAD))
+		return;
+
+	auto &e=get_hotspot_element();
 
 	try {
-		callback(IN_THREAD)(trigger, busy_impl{get_hotspot_element()});
-	} CATCH_EXCEPTIONS;
+		callback(IN_THREAD)(IN_THREAD, trigger, busy_impl{e});
+	} REPORT_EXCEPTIONS(&e);
 }
 
 bool hotspotObj::implObj::enabled(ONLY IN_THREAD)

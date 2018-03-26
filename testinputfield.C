@@ -83,7 +83,8 @@ void testbutton()
 
 			 fields.first->on_change
 			 ([]
-			  (const auto &what) {
+			  (THREAD_CALLBACK,
+			   const auto &what) {
 				 switch (what.type) {
 				 case LIBCXX_NAMESPACE::w::input_change_type::deleted:
 					 std::cout << "deleted ";
@@ -126,7 +127,8 @@ void testbutton()
 			 auto n=factory->create_input_field("", {5});
 
 			 n->set_string_validator([]
-						 (const std::string &v,
+						 (THREAD_CALLBACK,
+						  const std::string &v,
 						  int *nptr,
 						  auto &error,
 						  const auto &ignore)
@@ -161,7 +163,8 @@ void testbutton()
 			 factory=layout->append_row();
 
 			 auto b=factory->create_special_button_with_label({"Ok"},{'\n'});
-			 b->on_activate([close_flag](const auto &,
+			 b->on_activate([close_flag](THREAD_CALLBACK,
+						     const auto &,
 						     const auto &) {
 						close_flag->close();
 					});
@@ -194,7 +197,8 @@ void testbutton()
 
 	main_window->on_delete
 		([close_flag]
-		 (const auto &ignore)
+		 (THREAD_CALLBACK,
+		  const auto &ignore)
 		 {
 			 close_flag->close();
 		 });

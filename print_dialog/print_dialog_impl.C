@@ -14,6 +14,7 @@
 #include "x/w/text_param.H"
 #include "x/w/busy.H"
 #include "messages.H"
+#include "run_as.H"
 #include "catch_exceptions.H"
 #include <sstream>
 #include <iterator>
@@ -32,7 +33,8 @@
 LIBCXXW_NAMESPACE_START
 
 print_dialogObj::implObj::implObj(const main_window &parent_window,
-				  const functionref<void ()> &cancel_callback,
+				  const functionref<void (THREAD_CALLBACK)>
+				  &cancel_callback,
 				  const print_dialog_fieldsptr &fields)
 	: printer_info{ref<printer_infoObj>::create()},
 	  parent_window{parent_window},
@@ -41,7 +43,8 @@ print_dialogObj::implObj::implObj(const main_window &parent_window,
 	  number_of_copies_value{
 		  fields.number_of_copies->set_string_validator
 			  ([printer_info=this->printer_info]
-			   (const std::string &value,
+			   (THREAD_CALLBACK,
+			    const std::string &value,
 			    int *parsed_value,
 			    text_param &error_message,
 			    const auto &ignore) -> std::optional<int>
@@ -85,7 +88,8 @@ print_dialogObj::implObj::implObj(const main_window &parent_window,
 	  page_ranges_value{
 		  fields.page_range->set_validator
 			  ([]
-			   (const std::string &value,
+			   (THREAD_CALLBACK,
+			    const std::string &value,
 			    text_param &error_message,
 			    const auto &ignore)
 			   -> std::optional<std::vector<std::tuple<int, int>>>
@@ -115,7 +119,8 @@ print_dialogObj::implObj::implObj(const main_window &parent_window,
 	// is enabled.
 	fields.page_range_radio_button->on_activate
 		([page_range=fields.page_range]
-		 (size_t n,
+		 (THREAD_CALLBACK,
+		  size_t n,
 		  const auto &trigger,
 		  const auto &busy)
 		 {
@@ -826,9 +831,25 @@ void print_dialogObj::implObj::print(const main_window &from_window,
 			   } REPORT_EXCEPTIONS(from_window);
 
 			   if (new_job)
-				   cb(print_callback_info{new_job, mcguffin});
-			   else
-				   me->cancel_callback();
+			   {
+				   try {
+					   cb(print_callback_info{
+							   new_job, mcguffin
+								   });
+				   } REPORT_EXCEPTIONS(from_window);
+				   return;
+			   }
+
+			   from_window->elementObj::impl->get_window_handler()
+				   .thread()->run_as
+				   ([me, from_window]
+				    (ONLY IN_THREAD)
+				    {
+					    try {
+						    me->cancel_callback
+							    (IN_THREAD);
+					    } REPORT_EXCEPTIONS(from_window);
+				    });
 		   }, ref(this),
 		   cb,
 		   from_window,

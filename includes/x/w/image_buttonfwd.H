@@ -9,7 +9,7 @@
 #include <x/w/busyfwd.H>
 #include <x/w/callback_triggerfwd.H>
 #include <x/ptrfwd.H>
-#include <functional>
+#include <x/functionalrefptrfwd.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -17,9 +17,9 @@ class image_buttonObj;
 
 //! Signature for an image_button activation function.
 
-typedef std::function<void (size_t,
-			    const callback_trigger_t &,
-			    const busy &)> image_button_callback_t;
+typedef functionref<void (THREAD_CALLBACK, size_t,
+			  const callback_trigger_t &,
+			  const busy &)> image_button_callback_t;
 
 //! A simple button that display a different image when it changes state.
 
@@ -68,7 +68,8 @@ typedef std::function<void (size_t,
 //! image_button->set_value(1);
 //!
 //! image_button->on_activate([]
-//!                           (size_t value,
+//!                           (ONLY IN_THREAD,
+//!                            size_t value,
 //!                            const INSERT_LIBX_NAMESPACE::w::callback_trigger_t &trigger,
 //!                            const INSERT_LIBX_NAMESPACE::w::busy &busy_mcguffin)
 //!                           {

@@ -13,6 +13,7 @@
 #include <x/w/stop_message.H>
 #include <x/w/alert_message.H>
 #include <x/functional.H>
+#include <x/functionalrefptrfwd.H>
 
 LIBCXXW_NAMESPACE_START
 

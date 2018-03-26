@@ -56,42 +56,48 @@ void create_mainwindow(const x::w::main_window &main_window)
 	// a reference to another button, which is neither its parent or child.
 
 	button2->on_activate([=]
-			     (const x::w::callback_trigger_t &trigger,
+			     (ONLY IN_THREAD,
+			      const x::w::callback_trigger_t &trigger,
 			      const x::w::busy &mcguffin)
 			     {
 				     button1->set_enabled(false);
 			     });
 
 	button3->on_activate([=]
-			     (const x::w::callback_trigger_t &trigger,
+			     (ONLY IN_THREAD,
+			      const x::w::callback_trigger_t &trigger,
 			      const x::w::busy &mcguffin)
 			     {
 				     button1->set_enabled(true);
 			     });
 
 	button4->on_activate([=]
-			     (const x::w::callback_trigger_t &trigger,
+			     (ONLY IN_THREAD,
+			      const x::w::callback_trigger_t &trigger,
 			      const x::w::busy &mcguffin)
 			     {
 				     button2->get_focus_before(button1);
 			     });
 
 	button5->on_activate([=]
-			     (const x::w::callback_trigger_t &trigger,
+			     (ONLY IN_THREAD,
+			      const x::w::callback_trigger_t &trigger,
 			      const x::w::busy &mcguffin)
 			     {
 				     button3->get_focus_after(button2);
 			     });
 
 	button6->on_activate([=]
-			     (const x::w::callback_trigger_t &trigger,
+			     (ONLY IN_THREAD,
+			      const x::w::callback_trigger_t &trigger,
 			      const x::w::busy &mcguffin)
 			     {
 				     button1->get_focus_first();
 			     });
 
 	button6->on_keyboard_focus([]
-				   (x::w::focus_change f,
+				   (ONLY IN_THREAD,
+				    x::w::focus_change f,
 				    const x::w::callback_trigger_t &t)
 				   {
 					   std::cout << "Button 6 in focus: "
@@ -102,7 +108,8 @@ void create_mainwindow(const x::w::main_window &main_window)
 				   });
 	button6->on_key_event
 		([]
-		 (const x::w::all_key_events_t &ke,
+		 (ONLY IN_THREAD,
+		  const x::w::all_key_events_t &ke,
 		  bool activated,
 		  const x::w::busy &mcguffin)
 		 {
@@ -153,7 +160,8 @@ void create_mainwindow(const x::w::main_window &main_window)
 		 });
 
 	button7->on_activate([=]
-			     (const x::w::callback_trigger_t &trigger,
+			     (ONLY IN_THREAD,
+			      const x::w::callback_trigger_t &trigger,
 			      const x::w::busy &mcguffin)
 			     {
 				     button1->request_focus();
@@ -184,7 +192,8 @@ void focusables()
 
 	main_window->on_delete
 		([close_flag]
-		 (const x::w::busy &ignore)
+		 (ONLY IN_THREAD,
+		  const x::w::busy &ignore)
 		 {
 			 close_flag->close();
 		 });

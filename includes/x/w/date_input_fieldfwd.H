@@ -9,8 +9,7 @@
 #include <x/w/callback_triggerfwd.H>
 #include <x/ptrfwd.H>
 #include <x/ymd.H>
-
-#include <functional>
+#include <x/functionalrefptrfwd.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -41,7 +40,8 @@ or clears the field if the date is not provided.
 \code
 field->on_change(
     []
-    (const std::optional<INSERT_LIBX_NAMESPACE::ymd> &new_date,
+    (ONLY IN_THREAD,
+     const std::optional<INSERT_LIBX_NAMESPACE::ymd> &new_date,
      const INSERT_LIBX_NAMESPACE::w::callback_trigger_t &trigger)
     {
     });
@@ -87,9 +87,9 @@ typedef const_ptr<date_input_fieldObj> const_date_input_fieldptr;
 
 //! Callback that gets invoked when the date input field's value changes.
 
-typedef std::function<void (const std::optional<ymd> &,
-			    const callback_trigger_t &)
-		      > date_input_field_callback_t;
+typedef functionref<void (THREAD_CALLBACK, const std::optional<ymd> &,
+			  const callback_trigger_t &)
+		    > date_input_field_callback_t;
 
 LIBCXXW_NAMESPACE_END
 

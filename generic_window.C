@@ -27,7 +27,7 @@ generic_windowObj::generic_windowObj(const ref<implObj> &impl,
 
 generic_windowObj::~generic_windowObj()=default;
 
-void generic_windowObj::on_disconnect(const std::function<void ()> &callback)
+void generic_windowObj::on_disconnect(const functionref<void ()> &callback)
 {
 	get_screen()->get_connection()->on_disconnect(callback);
 }

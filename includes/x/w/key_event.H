@@ -13,7 +13,7 @@ LIBCXXW_NAMESPACE_START
 
 //! Parsed information about a key press or release event
 
-class LIBCXX_HIDDEN key_event : public input_mask {
+class key_event : public input_mask {
 
  public:
 
@@ -29,10 +29,10 @@ class LIBCXX_HIDDEN key_event : public input_mask {
 	//! Partial constructor
 
 	//! Only initializes input_mask.
-	key_event(uint16_t state, const keysyms &k);
+	key_event(uint16_t state, const keysyms &k) LIBCXX_HIDDEN;
 
 	//! Destructor
-	~key_event();
+	~key_event() LIBCXX_HIDDEN;
 };
 
 LIBCXXW_NAMESPACE_END

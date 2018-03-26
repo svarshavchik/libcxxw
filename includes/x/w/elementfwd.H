@@ -79,7 +79,8 @@ for the connection, stops.
 
 \code
 element->on_pointer_focus([]
-                          (INSERT_LIBX_NAMESPACE::w::focus_change f,
+                          (ONLY IN_THREAD,
+                           INSERT_LIBX_NAMESPACE::w::focus_change f,
                            const INSERT_LIBX_NAMESPACE::w::callback_trigger_t &trigger)
                           {
                               // ...
@@ -135,7 +136,8 @@ INSERT_LIBX_NAMESPACE::w::container context_popup=
 
 
 element->install_contextpopup_callback([context_popup]
-                                      (const INSERT_LIBX_NAMESPACE::w::element &e,
+                                      (ONLY IN_THREAD,
+				       const INSERT_LIBX_NAMESPACE::w::element &e,
                                        const INSERT_LIBX_NAMESPACE::w::callback_trigger_t &trigger,
                                        const INSERT_LIBX_NAMESPACE::w::busy &mcguffin)
                                        {
@@ -190,6 +192,36 @@ This results in the display element owning a reference on its callback,
 and the callback owning a reference on the popup, so it remains in scope
 until the callback gets removed.
 
+\par Invoke an arbitrary callback in the display element's connection thread.
+
+\code
+conn->in_thread([]
+                (ONLY IN_THREAD)
+                {
+                    // ...
+                });
+
+conn->in_thread_idle([]
+                    (ONLY IN_THREAD)
+                    {
+                       // ...
+                    });
+\endcode
+
+in_thread() returns immediately, and executes the passed-in callable
+object by the internal connection thread that's responsible for updating
+the visual appearance of this display element. The callback gets executed
+after repositioning and resizing any display elements (not just this one)
+due to any pending metric and size changes, but before processing X
+display server messages or updating the display.
+
+in_thread_idle() returns immediately, and executes the passed-in callable
+object by the internal connection thread. The callback gets executed
+after all other activity gets processed; after processing any X
+display server messages, and updating the display with any
+unprocessed changes.
+
+
 */
 
 typedef ref<elementObj> element;
@@ -212,7 +244,8 @@ typedef const_ptr<elementObj> const_elementptr;
 
 //! Signature of a context menu callback installer.
 
-typedef void install_contextpopup_callback_t(const element &,
+typedef void install_contextpopup_callback_t(THREAD_CALLBACK,
+					     const element &,
 					     const callback_trigger_t &,
 					     const busy &);
 

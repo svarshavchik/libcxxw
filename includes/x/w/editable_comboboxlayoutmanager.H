@@ -8,6 +8,7 @@
 #include <x/w/editable_comboboxlayoutmanagerfwd.H>
 #include <x/w/editable_comboboxlayoutmanagerobj.H>
 #include <x/w/standard_comboboxlayoutmanager.H>
+#include <x/functionalrefptr.H>
 
 LIBCXXW_NAMESPACE_START
 

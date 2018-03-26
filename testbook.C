@@ -209,7 +209,7 @@ static void create_book(const LIBCXX_NAMESPACE::w::booklayoutmanager &sl)
 
 	sl->on_opened
 		([]
-		 (const auto &info)
+		 (THREAD_CALLBACK, const auto &info)
 		 {
 			 auto n=info.opened;
 
@@ -300,7 +300,8 @@ void testbook()
 			  });
 
 	mw->on_delete([close_flag]
-		      (const auto &ignore)
+		      (THREAD_CALLBACK,
+		       const auto &ignore)
 		      {
 			      close_flag->close();
 		      });

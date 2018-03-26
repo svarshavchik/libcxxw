@@ -10,11 +10,13 @@
 #include <x/w/image_paramfwd.H>
 #include <x/w/shortcutfwd.H>
 #include <x/w/callback_triggerfwd.H>
+#include <x/w/connection_threadfwd.H>
+#include <x/w/busyfwd.H>
 #include <x/ptrfwd.H>
+#include <x/functionalrefptrfwd.H>
 #include <x/mpobj.H>
 
 #include <variant>
-#include <functional>
 #include <type_traits>
 
 LIBCXXW_NAMESPACE_START
@@ -238,7 +240,8 @@ replace_items().
 l->insert_items(0,
                {
                    []
-                   (const INSERT_LIBX_NAMESPACE::w::list_item_status_info_t &)
+                   (ONLY IN_THREAD,
+                    const INSERT_LIBX_NAMESPACE::w::list_item_status_info_t &)
                    {
                    },
 		   "Lorem",
@@ -259,7 +262,8 @@ also specified.
 \code
 l->append_items({
                    []
-                   (const INSERT_LIBX_NAMESPACE::w::list_item_status_info_t &)
+                   (ONLY IN_THREAD,
+                    const INSERT_LIBX_NAMESPACE::w::list_item_status_info_t &)
                    {
                    },
                    INSERT_LIBX_NAMESPACE::w::menuoption{},
@@ -283,7 +287,8 @@ the list item.
 l->append_items({
                    INSERT_LIBX_NAMESPACE::w::shortcut{"Alt", 'O'),
                    []
-                   (const INSERT_LIBX_NAMESPACE::w::list_item_status_info_t &)
+                   (ONLY IN_THREAD,
+                    const INSERT_LIBX_NAMESPACE::w::list_item_status_info_t &)
                    {
                    },
 		   "Open",
@@ -389,6 +394,20 @@ becomes a new item, with each text string in the corresponding column,
 The sole exception is a list item separator. This parameter always gets
 specified by itself, as a single value.
 
+\par Internal thread methods
+
+remove_item(), append_items(), insert_items(), replace_items(),
+replace_all_items(),
+autoselect(),
+unselect(),
+selected(),
+and the enabled() overload which enables or disable a list item,
+get executed by the internal connection thread. There are two versions
+of each method. The first version sends a message to the internal
+library connection thread that implements this method. The \c IN_THREAD
+version of each message is the implemention method that executes the
+operation.
+
 */
 
 typedef ref<listlayoutmanagerObj> listlayoutmanager;
@@ -427,7 +446,7 @@ struct submenu {
 
 	//! Callback invoked to create the submenu.
 
-	std::function<void (const listlayoutmanager &)> creator;
+	functionref<void (const listlayoutmanager &)> creator;
 };
 
 //! This is a selectable menu option.
@@ -467,12 +486,13 @@ struct LIBCXX_PUBLIC list_item_status_info_t {
 //! List item callback's signature
 
 //! \see listlayoutmanager
-typedef void list_item_status_change_callback_t(const list_item_status_info_t
+typedef void list_item_status_change_callback_t(THREAD_CALLBACK,
+						const list_item_status_info_t
 						&);
 
 //! Type-erased list_item_status_change_callback_t.
 
-typedef std::function<list_item_status_change_callback_t
+typedef functionref<list_item_status_change_callback_t
 		      > list_item_status_change_callback;
 
 //! SFINAE template for overloading a list_item_status_change_callback_t parameter.
@@ -481,7 +501,8 @@ template<typename callback>
 using is_list_item_status_change_callback=
 	std::is_same<std::void_t<
 			     decltype(std::declval<callback &&>()
-				      (std::declval<const
+				      (std::declval<THREAD_CALLBACK>(),
+				       std::declval<const
 				       list_item_status_info_t &>()))>,
 		     void>;
 
@@ -502,6 +523,17 @@ extern const listlayoutstyle_impl &highlighted_list LIBCXX_PUBLIC;
 
 extern const listlayoutstyle_impl &bulleted_list LIBCXX_PUBLIC;
 
+
+//! selection_type callback.
+
+//! \see new_listlayoutmanager
+
+typedef functionref<void (THREAD_CALLBACK,
+			  const listlayoutmanager &, size_t,
+				  const callback_trigger_t &,
+			  const busy &)
+		    > list_selection_type_cb_t;
+
 //! Single selection list.
 
 //! Default selection list type specified by the
@@ -510,28 +542,23 @@ extern const listlayoutstyle_impl &bulleted_list LIBCXX_PUBLIC;
 //! Only one list item may be selected at any time. Selecting another item
 //! de-selects the currently-selected item.
 
-void single_selection_type(const listlayoutmanager &layout_manager,
-			   size_t i,
-			   const callback_trigger_t &trigger,
-			   const busy &mcguffin) LIBCXX_PUBLIC;
+extern const list_selection_type_cb_t single_selection_type LIBCXX_PUBLIC;
+
 
 //! Single, but optional, selection list.
 
 //! Like single_selection_type(), but selecting the currently selected item
 //! again will deselect it.
 
-void single_optional_selection_type(const listlayoutmanager &layout_manager,
-				    size_t i,
-				    const callback_trigger_t &trigger,
-				    const busy &mcguffin) LIBCXX_PUBLIC;
+extern const list_selection_type_cb_t single_optional_selection_type
+LIBCXX_PUBLIC;
+
 
 //! Multiple selection list.
 
 //! Multiple list items may be selected at any time.
-void multiple_selection_type(const listlayoutmanager &layout_manager,
-			     size_t i,
-			     const callback_trigger_t &trigger,
-			     const busy &mcguffin) LIBCXX_PUBLIC;
+
+extern const list_selection_type_cb_t multiple_selection_type LIBCXX_PUBLIC;
 
 LIBCXXW_NAMESPACE_END
 

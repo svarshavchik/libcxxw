@@ -22,7 +22,7 @@ const xml::doc::base::readlock &lock
 
 It's second parameter is a reference to a std::vector of
 
-std::function<void (const [parameter]/[type] &)>, using each <parameter>'s
+functionref<void (const [parameter]/[type] &)>, using each <parameter>'s
 <type>.
 
 If there are any <other_parameter>'s, each one gives any additional parameter's

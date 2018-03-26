@@ -382,8 +382,8 @@ bool elementObj::implObj::process_button_event(ONLY IN_THREAD,
 		{
 			busy_impl yes_i_am{*this};
 			try {
-				data(IN_THREAD).contextpopup_callback(&be,
-								      yes_i_am);
+				data(IN_THREAD).contextpopup_callback
+					(IN_THREAD, &be, yes_i_am);
 			} REPORT_EXCEPTIONS(main_window);
 		}
 

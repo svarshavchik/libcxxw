@@ -137,8 +137,9 @@ void input_fieldObj::set(const std::u32string_view &str)
 		 });
 }
 
-void input_fieldObj::on_change(const std::function<
-			       void(const input_change_info_t &)> &callback)
+void input_fieldObj::on_change(const functionref<
+			       void(THREAD_CALLBACK,
+				    const input_change_info_t &)> &callback)
 {
 	auto editor_impl=impl->editor_element->impl;
 
@@ -151,8 +152,9 @@ void input_fieldObj::on_change(const std::function<
 }
 
 
-void input_fieldObj::on_autocomplete(const std::function<bool
-				     (input_autocomplete_info_t &)>
+void input_fieldObj::on_autocomplete(const functionref<bool
+				     (THREAD_CALLBACK,
+				      input_autocomplete_info_t &)>
 				     &callback)
 {
 	auto editor_impl=impl->editor_element->impl;
@@ -166,7 +168,7 @@ void input_fieldObj::on_autocomplete(const std::function<bool
 }
 
 void input_fieldObj::on_validate(const
-				 std::function<input_field_validation_callback_t
+				 functionref<input_field_validation_callback_t
 				 > &callback)
 {
 	auto editor_impl=impl->editor_element->impl;

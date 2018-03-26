@@ -112,7 +112,8 @@ void wordwrap()
 	main_window->set_window_class("main", "wordwraplabel@examples.w.libcxx.com");
 	main_window->on_delete
 		([close_flag]
-		 (const x::w::busy &ignore)
+		 (THREAD_CALLBACK,
+		  const x::w::busy &ignore)
 		 {
 			 close_flag->close();
 		 });

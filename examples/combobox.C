@@ -34,7 +34,8 @@ create_standard_combobox(const x::w::factory &factory,
 		// list item gets selected or unselected.
 
 		[]
-		(const x::w::standard_combobox_selection_changed_info_t &i)
+		(ONLY IN_THREAD,
+		 const x::w::standard_combobox_selection_changed_info_t &i)
 		{
 			if (!i.list_item_status_info.selected)
 				return;
@@ -57,7 +58,8 @@ create_editable_combobox(const x::w::factory &factory,
 		// list item gets selected or unselected.
 
 		[]
-		(const x::w::editable_combobox_selection_changed_info_t &i)
+		(ONLY IN_THREAD,
+		 const x::w::editable_combobox_selection_changed_info_t &i)
 		{
 			if (!i.list_item_status_info.selected)
 				return;
@@ -123,7 +125,8 @@ static inline void create_main_window(const x::w::main_window &main_window,
 		.create_special_button_with_label("Append row");
 
 	button->on_activate([=, counter=0]
-			    (const x::w::callback_trigger_t &trigger,
+			    (ONLY IN_THREAD,
+			     const x::w::callback_trigger_t &trigger,
 			     const x::w::busy &ignore)
 			    mutable
 			    {
@@ -144,7 +147,8 @@ static inline void create_main_window(const x::w::main_window &main_window,
 		.create_special_button_with_label("Insert row");
 
 	button->on_activate([=, counter=0]
-			    (const x::w::callback_trigger_t &trigger,
+			    (ONLY IN_THREAD,
+			     const x::w::callback_trigger_t &trigger,
 			     const x::w::busy &ignore)
 			    mutable
 			    {
@@ -165,7 +169,8 @@ static inline void create_main_window(const x::w::main_window &main_window,
 		.create_special_button_with_label("Replace row");
 
 	button->on_activate([=, counter=0]
-			    (const x::w::callback_trigger_t &trigger,
+			    (ONLY IN_THREAD,
+			     const x::w::callback_trigger_t &trigger,
 			     const x::w::busy &ignore)
 			    mutable
 			    {
@@ -187,7 +192,8 @@ static inline void create_main_window(const x::w::main_window &main_window,
 		.create_special_button_with_label("Delete row");
 
 	button->on_activate([=, counter=0]
-			    (const x::w::callback_trigger_t &trigger,
+			    (ONLY IN_THREAD,
+			     const x::w::callback_trigger_t &trigger,
 			     const x::w::busy &ignore)
 			    mutable
 			    {
@@ -205,7 +211,8 @@ static inline void create_main_window(const x::w::main_window &main_window,
 		.create_special_button_with_label("Reset");
 
 	button->on_activate([=, counter=0]
-			    (const x::w::callback_trigger_t &trigger,
+			    (ONLY IN_THREAD,
+			     const x::w::callback_trigger_t &trigger,
 			     const x::w::busy &ignore)
 			    mutable
 			    {
@@ -249,7 +256,8 @@ void create_combobox(const options &opts)
 
 	main_window->on_delete
 		([close_flag]
-		 (const x::w::busy &ignore)
+		 (ONLY IN_THREAD,
+		  const x::w::busy &ignore)
 		 {
 			 close_flag->close();
 		 });

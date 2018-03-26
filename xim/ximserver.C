@@ -38,9 +38,9 @@ void ximserverObj
 ::add_client_request(ONLY IN_THREAD,
 		     const ximrequest &req,
 		     const ximclient &client,
-		     const std::function<bool (ONLY IN_THREAD,
-					       const ximserver &,
-					       const ximclient &)>
+		     const functionref<bool (ONLY IN_THREAD,
+					     const ximserver &,
+					     const ximclient &)>
 		     &callback)
 {
 	add_request(IN_THREAD, req,

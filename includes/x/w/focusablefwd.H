@@ -88,7 +88,8 @@ class focusableImplObj;
 //! #include <INSERT_LIBX_NAMESPACE/w/focus.H>
 //!
 //! f->on_keyboard_focus([]
-//!                      (INSERT_LIBX_NAMESPACE::w::focus_change f,
+//!                      (ONLY IN_THREAD,
+//!                       INSERT_LIBX_NAMESPACE::w::focus_change f,
 //!                       const INSERT_LIBX_NAMESPACE::w::callback_trigger_t &trigger)
 //!                      {
 //!                         if (INSERT_LIBX_NAMESPACE::w::in_focus(f))
@@ -98,7 +99,8 @@ class focusableImplObj;
 //!
 //! #include <INSERT_LIBX_NAMESPACE/w/key_event.H>
 //! f->on_key_event([]
-//!                      (const INSERT_LIBX_NAMESPACE::w::all_key_events_t &e,
+//!                      (ONLY IN_THREAD,
+//!                       const INSERT_LIBX_NAMESPACE::w::all_key_events_t &e,
 //!                       bool activated,
 //!                       const busy &mcguffin)
 //!                      {

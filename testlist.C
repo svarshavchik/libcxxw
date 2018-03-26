@@ -9,6 +9,7 @@
 #include <x/destroy_callback.H>
 #include <x/ref.H>
 #include <x/obj.H>
+#include <x/mpobj.H>
 
 #include "x/w/main_window.H"
 #include "x/w/gridlayoutmanager.H"
@@ -21,7 +22,47 @@
 
 using namespace LIBCXX_NAMESPACE::w;
 
-std::vector<std::tuple<size_t, size_t, bool>> invocations;
+typedef LIBCXX_NAMESPACE::mpobj<std::vector<std::tuple<size_t, size_t, bool>>
+				> invocations_t;
+
+invocations_t invocations;
+
+class flagObj : virtual public LIBCXX_NAMESPACE::obj {
+
+public:
+
+	typedef LIBCXX_NAMESPACE::mpcobj<bool> value_t;
+
+	value_t value=false;
+
+	void signal()
+	{
+		value_t::lock lock{value};
+
+		*lock=true;
+		lock.notify_all();
+	}
+
+	void wait()
+	{
+		value_t::lock lock{value};
+
+		lock.wait([&] { return *lock; });
+	}
+};
+
+void flush(const LIBCXX_NAMESPACE::w::element &e)
+{
+	auto flag=LIBCXX_NAMESPACE::ref<flagObj>::create();
+
+	e->in_thread_idle([flag]
+			  (THREAD_CALLBACK)
+			  {
+				  flag->signal();
+			  });
+
+	flag->wait();
+}
 
 void testlist2(const listlayoutmanager &tlm)
 {
@@ -30,11 +71,14 @@ void testlist2(const listlayoutmanager &tlm)
 		mutable
 		{
 			return [this_counter=counter++]
-			(const auto &info)
+			(THREAD_CALLBACK,
+			 const auto &info)
 			{
-				invocations.emplace_back(this_counter,
-							 info.item_number,
-							 info.selected);
+				invocations_t::lock lock{invocations};
+
+				lock->emplace_back(this_counter,
+						   info.item_number,
+						   info.selected);
 			};
 		};
 
@@ -51,14 +95,15 @@ void testlist2(const listlayoutmanager &tlm)
 	// [0, 0, 1]
 	// [1, 1, 1]
 	// [2, 2, 1]
-	tlm->selected(0, true, {});
-	tlm->selected(1, true, {});
-	tlm->selected(2, true, {});
+
+	tlm->selected(0, true);
+	tlm->selected(1, true);
+	tlm->selected(2, true);
 
 	// NO-OP
-	tlm->selected(0, true, {});
-	tlm->selected(1, true, {});
-	tlm->selected(2, true, {});
+	tlm->selected(0, true);
+	tlm->selected(1, true);
+	tlm->selected(2, true);
 
 
 	// A (0)
@@ -87,8 +132,8 @@ void testlist2(const listlayoutmanager &tlm)
 	// [3, 0, 1]
 	// [4, 1, 1]
 
-	tlm->selected(0, true, {});
-	tlm->selected(1, true, {});
+	tlm->selected(0, true);
+	tlm->selected(1, true);
 
 	// D (3) *
 	// E (4) *
@@ -96,7 +141,6 @@ void testlist2(const listlayoutmanager &tlm)
 	// C (2)
 	tlm->insert_items(2, {
 			callback_factory(), "F"});
-
 
 	// D (3) *
 	// E (4) *
@@ -106,8 +150,8 @@ void testlist2(const listlayoutmanager &tlm)
 	// [5, 2, 1]
 	// [2, 3, 1]
 
-	tlm->selected(2, true, {});
-	tlm->selected(3, true, {});
+	tlm->selected(2, true);
+	tlm->selected(3, true);
 
 	// E (4) *
 	// F (5) *
@@ -136,8 +180,8 @@ void testlist2(const listlayoutmanager &tlm)
 	// [6, 2, 1]
 	// [7, 3, 1]
 
-	tlm->selected(2, true, {});
-	tlm->selected(3, true, {});
+	tlm->selected(2, true);
+	tlm->selected(3, true);
 
 	// I (8)
 	// J (9)
@@ -152,6 +196,7 @@ void testlist2(const listlayoutmanager &tlm)
 				callback_factory(), "J",
 				callback_factory(), "K"});
 
+
 	// I (8) *
 	// J (9) *
 	// K (10) *
@@ -159,13 +204,19 @@ void testlist2(const listlayoutmanager &tlm)
 	// [8, 0, 1]
 	// [9, 1, 1]
 	// [10, 2, 1]
-	tlm->selected(0, true, {});
-	tlm->selected(1, true, {});
-	tlm->selected(2, true, {});
+	tlm->selected(0, true);
+	tlm->selected(1, true);
+	tlm->selected(2, true);
+}
+
+void testlist3(const element &e)
+{
+	flush(e);
+	invocations_t::lock lock{invocations};
 
 	std::ostringstream o;
 
-	for (const auto &t:invocations)
+	for (const auto &t:*lock)
 		o << "[" << std::get<0>(t)
 		  << ", " << std::get<1>(t)
 		  << ", " << std::get<2>(t)
@@ -200,8 +251,10 @@ void testlist2(const listlayoutmanager &tlm)
 
 void testlist()
 {
+	LIBCXX_NAMESPACE::w::containerptr c;
+
 	auto main_window=main_window
-		::create([]
+		::create([&]
 			 (const auto &main_window)
 			 {
 				 gridlayoutmanager
@@ -211,13 +264,14 @@ void testlist()
 
 				 new_listlayoutmanager nlm{highlighted_list};
 
-				 factory->create_focusable_container
+				 c=factory->create_focusable_container
 				 ([]
-				  (const auto &l) {
-					 testlist2(l->get_layoutmanager());
-				 },
-				  nlm);
+				  (const auto &c) {
+					 testlist2(c->get_layoutmanager());
+				 }, nlm);
 			 });
+
+	testlist3(c);
 }
 
 int main(int argc, char **argv)

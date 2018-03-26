@@ -88,7 +88,8 @@ static void create_mainwindow(const LIBCXX_NAMESPACE::w::main_window &main_windo
 			checkbox->set_value(2);
 
 		checkbox->on_activate([day_of_week]
-				      (size_t flag,
+				      (THREAD_CALLBACK,
+				       size_t flag,
 				       const auto &trigger,
 				       const auto &ignore)
 				      {
@@ -126,7 +127,8 @@ static void create_mainwindow(const LIBCXX_NAMESPACE::w::main_window &main_windo
 	saturday->set_enabled(false);
 
 	train->on_activate([saturday, sunday, train=LIBCXX_NAMESPACE::make_weak_capture(train)]
-			   (size_t flag,
+			   (THREAD_CALLBACK,
+			    size_t flag,
 			    const auto &trigger,
 			    const auto &ignore)
 			   {
@@ -168,7 +170,8 @@ static void create_mainwindow(const LIBCXX_NAMESPACE::w::main_window &main_windo
 			      });
 
 	bus->on_activate([]
-			 (size_t flag,
+			 (THREAD_CALLBACK,
+			  size_t flag,
 			  const auto &trigger,
 			  const auto &ignore)
 			 {
@@ -193,7 +196,8 @@ static void create_mainwindow(const LIBCXX_NAMESPACE::w::main_window &main_windo
 			      });
 
 	drive->on_activate([]
-			   (size_t flag,
+			   (THREAD_CALLBACK,
+			    size_t flag,
 			    const auto &trigger,
 			    const auto &ignore)
 			   {
@@ -245,7 +249,8 @@ void testimagebuttons()
 
 	main_window->on_delete
 		([close_flag]
-		 (const auto &ignore)
+		 (THREAD_CALLBACK,
+		  const auto &ignore)
 		 {
 			 close_flag->close();
 		 });

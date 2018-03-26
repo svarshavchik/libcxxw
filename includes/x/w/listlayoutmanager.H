@@ -19,32 +19,22 @@
 #include <x/w/border_arg.H>
 #include <x/w/dim_axis_arg.H>
 #include <x/w/font_arg.H>
+#include <x/w/synchronized_axisfwd.H>
 #include <x/ref.H>
 #include <x/refptr_traits.H>
-#include <x/w/busyfwd.H>
-#include <x/w/synchronized_axisfwd.H>
+#include <x/functionalrefptr.H>
 #include <string>
-#include <functional>
 #include <variant>
 #include <unordered_map>
 
 LIBCXXW_NAMESPACE_START
 
-//! selection_type callback.
-
-//! \see new_listlayoutmanager
-
-typedef std::function<void (const listlayoutmanager &, size_t,
-			    const callback_trigger_t &,
-			    const busy &)
-		      > list_selection_type_cb_t;
-
 //! selection_changed callback.
 
 //! \see new_listlayoutmanager
 
-typedef std::function<void (const list_item_status_info_t &)
-		      > list_selection_changed_cb_t;
+typedef functionptr<void (THREAD_CALLBACK, const list_item_status_info_t &)
+		    > list_selection_changed_cb_t;
 
 //! Create a new container with a \ref listlayoutmanager "list layout manager".
 

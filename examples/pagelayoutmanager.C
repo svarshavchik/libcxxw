@@ -331,7 +331,8 @@ static void create_mainwindow(const x::w::main_window &mw)
 	*/
 
 	name_button->on_activate([=]
-				 (const auto &trigger, const auto &busy)
+				 (ONLY IN_THREAD,
+				  const auto &trigger, const auto &busy)
 				 {
 					 x::w::pagelayoutmanager pl=
 						 pg->get_layoutmanager();
@@ -341,7 +342,8 @@ static void create_mainwindow(const x::w::main_window &mw)
 				 });
 
 	address_button->on_activate([=]
-				    (const auto &trigger, const auto &busy)
+				    (ONLY IN_THREAD,
+				     const auto &trigger, const auto &busy)
 				    {
 					    x::w::pagelayoutmanager pl=
 						    pg->get_layoutmanager();
@@ -351,7 +353,8 @@ static void create_mainwindow(const x::w::main_window &mw)
 				    });
 
 	phone_button->on_activate([=]
-				  (const auto &trigger, const auto &busy)
+				  (ONLY IN_THREAD,
+				   const auto &trigger, const auto &busy)
 				  {
 					  x::w::pagelayoutmanager pl=
 						  pg->get_layoutmanager();
@@ -365,7 +368,8 @@ static void create_mainwindow(const x::w::main_window &mw)
 	*/
 
 	clear_button->on_activate([=]
-				  (const auto &trigger, const auto &busy)
+				  (ONLY IN_THREAD,
+				   const auto &trigger, const auto &busy)
 				  {
 					  x::w::pagelayoutmanager pl=
 						  pg->get_layoutmanager();
@@ -403,7 +407,8 @@ void testpage()
 			  });
 
 	mw->on_delete([close_flag]
-		      (const auto &ignore)
+		      (ONLY IN_THREAD,
+		       const auto &ignore)
 		      {
 			      close_flag->close();
 		      });

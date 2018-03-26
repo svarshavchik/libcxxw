@@ -184,7 +184,8 @@ void initialize_volume_control(const x::w::main_window &main_window)
 	x::w::scrollbar sb=
 		factory->create_horizontal_scrollbar(vi->scrollbar_config(),
 						     [vi, input_field]
-						     (const x::w::scrollbar_info_t &status)
+						     (ONLY IN_THREAD,
+						      const x::w::scrollbar_info_t &status)
 						     {
 							     vi->set_volume(status.dragged_value,
 									    input_field);
@@ -199,7 +200,8 @@ void initialize_volume_control(const x::w::main_window &main_window)
 	input_field->on_key_event([vi,
 				   fields=x::make_weak_capture(sb, input_field,
 							       main_window)]
-				  (const auto &why,
+				  (ONLY IN_THREAD,
+				   const auto &why,
 				   bool activated,
 				   const auto &ignore)
 				  {
@@ -235,7 +237,8 @@ void initialize_volume_control(const x::w::main_window &main_window)
 
 	checkbox->on_activate([vi,
 			       fields=x::make_weak_capture(sb, input_field)]
-			      (size_t state,
+			      (ONLY IN_THREAD,
+			       size_t state,
 			       const auto &ignore1,
 			       const auto &ignore2)
 			      {
@@ -277,7 +280,8 @@ void testscrollbar()
 
 	main_window->on_delete
 		([close_flag]
-		 (const auto &ignore)
+		 (ONLY IN_THREAD,
+		  const auto &ignore)
 		 {
 			 close_flag->close();
 		 });

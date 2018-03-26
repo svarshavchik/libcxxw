@@ -22,6 +22,7 @@
 #include "image_button.H"
 #include "image_button_internal_impl.H"
 #include "catch_exceptions.H"
+#include "run_as.H"
 
 #include <x/visitor.H>
 #include <x/locale.H>
@@ -84,7 +85,8 @@ class LIBCXX_HIDDEN date_input_field_calendar_helperObj : virtual public obj {
 // Each day is a focusable label, do some work to highlight it, and do
 // something when it gets selected.
 
-static inline text_param do_hotspot(const std::string &label,
+static inline text_param do_hotspot(ONLY IN_THREAD,
+				    const std::string &label,
 				    const ymd &date,
 				    const text_event_t &event,
 				    const ref<
@@ -122,7 +124,7 @@ static inline text_param do_hotspot(const std::string &label,
 				if (!me->elementObj::impl->activate_for(*b))
 					return;
 
-				me->picked(date, b);
+				me->picked(IN_THREAD, date, b);
 			},
 			[&](const key_event *k)
 			{
@@ -131,7 +133,7 @@ static inline text_param do_hotspot(const std::string &label,
 				if (!me)
 					return;
 
-				me->picked(date, k);
+				me->picked(IN_THREAD, date, k);
 			}},
 		event);
 
@@ -192,9 +194,11 @@ static void calendar_grid(const gridlayoutmanager &glm,
 
 			auto link=text_hotspot::create
 				([day_str, current_date, weak_me]
-				 (const text_event_t &event)
+				 (ONLY IN_THREAD,
+				  const text_event_t &event)
 				 {
-					 return do_hotspot(day_str,
+					 return do_hotspot(IN_THREAD,
+							   day_str,
 							   current_date,
 							   event,
 							   weak_me);
@@ -277,8 +281,9 @@ void date_input_field_calendarObj
 
 					  b->on_activate
 						  ([me=make_weak_capture(ref(this))]
-						   (const auto &trigger,
-						    const auto &bussy)
+						   (ONLY IN_THREAD,
+						    const auto &trigger,
+						    const auto &busy)
 						   {
 							   auto got=me.get();
 
@@ -306,8 +311,9 @@ void date_input_field_calendarObj
 						   "dateedit_popup_mscroll_height");
 					  b->on_activate
 						  ([me=make_weak_capture(ref(this))]
-						   (const auto &trigger,
-						    const auto &bussy)
+						   (ONLY IN_THREAD,
+						    const auto &trigger,
+						    const auto &busy)
 						   {
 							   auto got=me.get();
 
@@ -340,8 +346,9 @@ void date_input_field_calendarObj
 						   "dateedit_popup_mscroll_height");
 					  b->on_activate
 						  ([me=make_weak_capture(ref(this))]
-						   (const auto &trigger,
-						    const auto &bussy)
+						   (ONLY IN_THREAD,
+						    const auto &trigger,
+						    const auto &busy)
 						   {
 							   auto got=me.get();
 
@@ -371,8 +378,9 @@ void date_input_field_calendarObj
 						   "dateedit_popup_yscroll_height");
 					  b->on_activate
 						  ([me=make_weak_capture(ref(this))]
-						   (const auto &trigger,
-						    const auto &bussy)
+						   (ONLY IN_THREAD,
+						    const auto &trigger,
+						    const auto &busy)
 						   {
 							   auto got=me.get();
 
@@ -455,14 +463,23 @@ void date_input_field_calendarObj
 void date_input_field_calendarObj::on_change(const date_input_field_callback_t
 					     &cb)
 {
-	most_recent_date_t::lock lock{most_recent_date};
+	impl->get_window_handler().thread()->run_as
+		([me=ref(this), cb]
+		 (ONLY IN_THREAD)
+		 {
+			 most_recent_date_t::lock lock{me->most_recent_date};
 
-	lock->callback=cb;
+			 lock->callback=cb;
 
-	cb(lock->date_value, initial{});
+			 try {
+				 cb(IN_THREAD, lock->date_value, initial{});
+			 } REPORT_EXCEPTIONS(&me->impl
+					     ->container_element_impl());
+		 });
 }
 
-void date_input_field_calendarObj::set(const std::optional<ymd> &d,
+void date_input_field_calendarObj::set(ONLY IN_THREAD,
+				       const std::optional<ymd> &d,
 				       const callback_trigger_t &trigger)
 {
 	auto e=locale::base::global();
@@ -474,13 +491,14 @@ void date_input_field_calendarObj::set(const std::optional<ymd> &d,
 
 	text_input_field->set(s);
 
-	report_new_date(d, trigger);
+	report_new_date(IN_THREAD, d, trigger);
 }
 
 LOG_FUNC_SCOPE_DECL(LIBCXX_NAMESPACE::w::date_input_field, date_inputfieldLog);
 
 void date_input_field_calendarObj
-::report_new_date(const std::optional<ymd> &d,
+::report_new_date(ONLY IN_THREAD,
+		  const std::optional<ymd> &d,
 		  const callback_trigger_t &trigger)
 {
 	LOG_FUNC_SCOPE(date_inputfieldLog);
@@ -494,8 +512,8 @@ void date_input_field_calendarObj
 
 	try {
 		if (lock->callback)
-			lock->callback(d, trigger);
-	} CATCH_EXCEPTIONS;
+			lock->callback(IN_THREAD, d, trigger);
+	} REPORT_EXCEPTIONS(elementObj::impl);
 }
 
 std::optional<ymd> date_input_field_calendarObj::get() const
@@ -609,10 +627,11 @@ void date_input_field_calendarObj::next_mon()
 	update_month(lock);
 }
 
-void date_input_field_calendarObj::picked(const ymd &y,
+void date_input_field_calendarObj::picked(ONLY IN_THREAD,
+					  const ymd &y,
 					  const callback_trigger_t &trigger)
 {
-	set(y, trigger);
+	set(IN_THREAD, y, trigger);
 	text_input_field->request_focus();
 
 	// Hide the popup.

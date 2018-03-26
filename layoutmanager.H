@@ -15,6 +15,7 @@
 #include "connection_threadfwd.H"
 
 #include <x/functional.H>
+#include <x/functionalrefptrfwd.H>
 #include <x/logger.H>
 
 LIBCXXW_NAMESPACE_START
@@ -184,6 +185,9 @@ class LIBCXX_HIDDEN layoutmanagerObj::implObj : virtual public obj {
 	//! Invoke request_visibility_recursive() for each child.
 
 	virtual void request_visibility_recursive(ONLY IN_THREAD, bool);
+
+	//! Convenient shortcut
+	void run_as(const functionref<void (ONLY IN_THREAD)> &f);
 };
 
 LIBCXXW_NAMESPACE_END

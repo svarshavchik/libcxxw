@@ -228,7 +228,7 @@ static void create_main_window(const LIBCXX_NAMESPACE::w::main_window &mw,
 						 "When needed",
 						 "Reserve space"});
 
-			 lm->selected(3, true, {});
+			 lm->selected(3, true);
 		 },
 		 LIBCXX_NAMESPACE::w::new_standard_comboboxlayoutmanager{}
 		 );
@@ -242,7 +242,8 @@ static void create_main_window(const LIBCXX_NAMESPACE::w::main_window &mw,
 
 	b->show();
 	b->on_activate([pane, scrollbar_visibility]
-		       (const auto &trigger,
+		       (THREAD_CALLBACK,
+			const auto &trigger,
 			const auto &busy) {
 			       insert(pane, get_scrollbar_visibility
 				      (scrollbar_visibility));
@@ -253,7 +254,8 @@ static void create_main_window(const LIBCXX_NAMESPACE::w::main_window &mw,
 
 	b->show();
 	b->on_activate([pane, scrollbar_visibility]
-		       (const auto &trigger,
+		       (THREAD_CALLBACK,
+			const auto &trigger,
 			const auto &busy) {
 			       append(pane, get_scrollbar_visibility
 				      (scrollbar_visibility));
@@ -266,7 +268,8 @@ static void create_main_window(const LIBCXX_NAMESPACE::w::main_window &mw,
 
 	b->show();
 	b->on_activate([pane]
-		       (const auto &trigger,
+		       (THREAD_CALLBACK,
+			const auto &trigger,
 			const auto &busy) {
 			       remove_first(pane);
 		       });
@@ -276,7 +279,8 @@ static void create_main_window(const LIBCXX_NAMESPACE::w::main_window &mw,
 
 	b->show();
 	b->on_activate([pane]
-		       (const auto &trigger,
+		       (THREAD_CALLBACK,
+			const auto &trigger,
 			const auto &busy) {
 			       remove_last(pane);
 		       });
@@ -288,7 +292,8 @@ static void create_main_window(const LIBCXX_NAMESPACE::w::main_window &mw,
 
 	b->show();
 	b->on_activate([pane, scrollbar_visibility]
-		       (const auto &trigger,
+		       (THREAD_CALLBACK,
+			const auto &trigger,
 			const auto &busy) {
 			       replace_first(pane, get_scrollbar_visibility
 					     (scrollbar_visibility));
@@ -299,7 +304,8 @@ static void create_main_window(const LIBCXX_NAMESPACE::w::main_window &mw,
 
 	b->show();
 	b->on_activate([pane]
-		       (const auto &trigger,
+		       (THREAD_CALLBACK,
+			const auto &trigger,
 			const auto &busy) {
 			       	LIBCXX_NAMESPACE::w::panelayoutmanager
 					lm=pane->get_layoutmanager();
@@ -314,7 +320,8 @@ static void create_main_window(const LIBCXX_NAMESPACE::w::main_window &mw,
 
 	b->show();
 	b->on_activate([pane]
-		       (const auto &trigger,
+		       (THREAD_CALLBACK,
+			const auto &trigger,
 			const auto &busy) {
 			       insert_list(pane);
 		       });
@@ -348,7 +355,8 @@ void testpane(int argc, char **argv)
 
 	main_window->on_delete
 		([close_flag]
-		 (const auto &ignore)
+		 (THREAD_CALLBACK,
+		  const auto &ignore)
 		 {
 			 close_flag->close();
 		 });

@@ -7,6 +7,7 @@
 
 #include <x/xml/doc.H>
 #include <x/functional.H>
+#include <x/functionalrefptrfwd.H>
 
 #include "x/w/drawablefwd.H"
 #include "x/w/rgb.H"
@@ -110,16 +111,16 @@ public:
 
 	//! Type-erased grid layout generator.
 
-	typedef std::function<void (const gridlayoutmanager &,
-				    const gridtemplate * &,
-				    const defaulttheme &)
-			      > gridlayout_generator_t;
+	typedef functionref<void (const gridlayoutmanager &,
+				  const gridtemplate * &,
+				  const defaulttheme &)
+			    > gridlayout_generator_t;
 
 	//! Type-erased book layout generator.
 
-	typedef std::function<void (const booklayoutmanager &,
-				    const gridtemplate * &,
-				    const defaulttheme &)
+	typedef functionref<void (const booklayoutmanager &,
+				  const gridtemplate * &,
+				  const defaulttheme &)
 			      > booklayout_generator_t;
 
 	//! Grid layouts
@@ -133,17 +134,17 @@ public:
 
 	//! Type-erased factory generator.
 
-	typedef std::function<void (const gridfactory &,
+	typedef functionref<void (const gridfactory &,
 				    const gridtemplate * &,
 				    const defaulttheme &)
 			      > gridfactory_generator_t;
 
 	//! Type-erased factory generator.
 
-	typedef std::function<void (const bookpagefactory &,
-				    const gridtemplate * &,
-				    const defaulttheme &)
-			      > bookpagefactory_generator_t;
+	typedef functionref<void (const bookpagefactory &,
+				  const gridtemplate * &,
+				  const defaulttheme &)
+			    > bookpagefactory_generator_t;
 
 	//! Grid layout manager factories
 	std::unordered_map<std::string,

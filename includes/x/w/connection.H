@@ -8,6 +8,7 @@
 #include <x/w/connectionfwd.H>
 #include <x/w/connectionobj.H>
 #include <x/ref.H>
+#include <x/functionalrefptr.H>
 #include <string>
 #include <vector>
 

@@ -7,6 +7,7 @@
 
 #include <x/w/namespace.H>
 #include <x/w/factoryfwd.H>
+#include <x/functionalrefptrfwd.H>
 #include <x/ptrfwd.H>
 
 #include <unordered_map>
@@ -98,7 +99,7 @@ struct dialog_args;
 //! theme-specified dialog.
 
 typedef std::unordered_map<std::string,
-			   std::function<void (const factory &)>
+			   functionref<void (const factory &)>
 			   > standard_dialog_elements_t;
 
 LIBCXXW_NAMESPACE_END

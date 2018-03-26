@@ -7,8 +7,7 @@
 
 #include "x/w/namespace.H"
 #include <x/ptrfwd.H>
-
-#include <functional>
+#include <x/functionalrefptrfwd.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -50,7 +49,7 @@ typedef const_ptr<filedir_fileObj> const_filedir_fileptr;
 
 //! A callback function that receives the next chunk of files read.
 
-typedef std::function<void (const const_filedir_file &)> filedir_callback_t;
+typedef functionref<void (const const_filedir_file &)> filedir_callback_t;
 
 
 LIBCXXW_NAMESPACE_END

@@ -8,6 +8,7 @@
 #include "dirlisting/filedir_filefwd.H"
 #include "dirlisting/filedir_fileobj.H"
 #include <x/ref.H>
+#include <x/functionalrefptr.H>
 
 LIBCXXW_NAMESPACE_START
 

@@ -126,7 +126,8 @@ public:
 		if (!p)
 			return;
 
-		lm->autoselect(p->current_row_number(IN_THREAD), trigger);
+		lm->autoselect(IN_THREAD,
+			       p->current_row_number(IN_THREAD), trigger);
 	}
 };
 
@@ -143,11 +144,6 @@ extra_list_row_infoObj::~extra_list_row_infoObj()
 		current_shortcut->uninstall_shortcut();
 }
 
-void extra_list_row_infoObj
-::default_status_change_callback(const list_item_status_info_t &)
-{
-}
-
 bool extra_list_row_infoObj::enabled() const
 {
 	return row_type == list_row_type_t::enabled;
@@ -159,7 +155,7 @@ void extra_list_row_infoObj::set_meta(const listlayoutmanager &lm,
 	if (meta.listitem_callback)
 		status_change_callback= *meta.listitem_callback;
 	else
-		status_change_callback=default_status_change_callback;
+		status_change_callback=nullptr;
 
 	menu_item=meta.menu_item;
 

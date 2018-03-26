@@ -20,8 +20,8 @@
 
 #include <x/pcrefwd.H>
 #include <x/weakptr.H>
+#include <x/functionalrefptr.H>
 #include <string>
-#include <functional>
 
 LIBCXXW_NAMESPACE_START
 
@@ -53,8 +53,8 @@ class LIBCXX_HIDDEN file_dialogObj::implObj : virtual public obj {
 	const button cancel_button;
 
 	//! "Ok" callback.
-	const std::function<void (const file_dialog &,
-				  const std::string &, const busy &)
+	const functionref<void (THREAD_CALLBACK, const file_dialog &,
+				const std::string &, const busy &)
 			    > ok_action;
 
 	//! The semantics of this file dialog.
@@ -73,8 +73,9 @@ class LIBCXX_HIDDEN file_dialogObj::implObj : virtual public obj {
 		const filedirlist_manager &directory_contents_list,
 		const button &ok_button,
 		const button &cancel_button,
-		const std::function<void (const file_dialog &,
-					  const std::string &, const busy &)
+		const functionref<void (THREAD_CALLBACK,
+					const file_dialog &,
+					const std::string &, const busy &)
 		> &ok_action,
 		file_dialog_type type,
 		const std::string &access_denied_message,
@@ -88,7 +89,8 @@ class LIBCXX_HIDDEN file_dialogObj::implObj : virtual public obj {
 
 	// A directory entry was clicked on.
 
-	void clicked(const filedirlist_entry_id &id,
+	void clicked(ONLY IN_THREAD,
+		     const filedirlist_entry_id &id,
 		     const callback_trigger_t &trigger,
 		     const busy &mcguffin);
 
@@ -102,12 +104,13 @@ class LIBCXX_HIDDEN file_dialogObj::implObj : virtual public obj {
 
 	// Enter pressed in the filename field.
 
-	void enter_key(const busy &mcguffin);
+	void enter_key(ONLY IN_THREAD, const busy &mcguffin);
 
 	//! Existing contents of the directory was selected, or typed in.
 
 	//! Perform the appropriate action, depending on the file dialog type.
-	void selected(const std::string &filename,
+	void selected(ONLY IN_THREAD,
+		      const std::string &filename,
 		      const busy &mcguffin);
 
  private:

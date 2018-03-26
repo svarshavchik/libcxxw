@@ -46,7 +46,7 @@ ref<obj> connectionObj::mcguffin() const
 	return impl->info;
 }
 
-void connectionObj::on_disconnect(const std::function<void ()> &callback)
+void connectionObj::on_disconnect(const functionref<void ()> &callback)
 {
 	return impl->thread->install_on_disconnect(callback);
 }
@@ -54,6 +54,26 @@ void connectionObj::on_disconnect(const std::function<void ()> &callback)
 const_pictformat connectionObj::find_alpha_pictformat_by_depth(depth_t d) const
 {
 	return impl->render_info.find_alpha_pictformat_by_depth(d);
+}
+
+void connectionObj::in_thread(const functionref<void (THREAD_CALLBACK)> &cb)
+{
+	impl->thread->run_as([cb]
+			     (ONLY IN_THREAD)
+			     {
+				     cb(IN_THREAD);
+			     });
+}
+
+void connectionObj::in_thread_idle(const functionref<void (THREAD_CALLBACK)>
+				   &cb)
+{
+	impl->thread->run_as([cb]
+			     (ONLY IN_THREAD)
+			     {
+				     IN_THREAD->idle_callbacks(IN_THREAD)
+					     ->push_back(cb);
+			     });
 }
 
 /////////////////////////////////////////////////////////////////////////////

@@ -70,7 +70,8 @@ static x::w::file_dialog create_select_file_dialog(const x::w::main_window &main
 	// to select the file to print.
 
 	x::w::file_dialog_config config{
-		[](const x::w::file_dialog &this_dialog,
+		[](ONLY IN_THREAD,
+		   const x::w::file_dialog &this_dialog,
 		   const std::string &filename,
 		   const x::w::busy &ignored)
 		{
@@ -89,7 +90,8 @@ static x::w::file_dialog create_select_file_dialog(const x::w::main_window &main
 			app->print_dialog->initial_show();
 		},
 
-		[](const auto &ignore)
+		[](ONLY IN_THREAD,
+		   const auto &ignore)
 		{
 			std::cout << "File dialog cancelled." << std::endl;
 		}};
@@ -145,6 +147,7 @@ static x::w::print_dialog create_print_dialog(const x::w::main_window &main_wind
 			app->main_window->alert_message(o.str(), config);
 		},
 		[]
+		(ONLY IN_THREAD)
 		{
 			std::cout << "Print dialog cancelled." << std::endl;
 		}};
@@ -190,7 +193,8 @@ static inline void initialize_mainwindow(const x::w::gridfactory &f)
 	// The button's callback opens the file dialog.
 
 	b->on_activate([]
-		       (const x::w::callback_trigger_t &trigger,
+		       (ONLY IN_THREAD,
+			const x::w::callback_trigger_t &trigger,
 			const x::w::busy &ignore)
 		       {
 			       my_app app;
@@ -248,7 +252,8 @@ void testprintdialog()
 
 	main_window->on_delete
 		([close_flag]
-		 (const auto &ignore)
+		 (ONLY IN_THREAD,
+		  const auto &ignore)
 		 {
 			 close_flag->close();
 		 });

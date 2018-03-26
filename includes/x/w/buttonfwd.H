@@ -16,11 +16,15 @@ class buttonObj;
 
 //! \code
 //! button->on_activate([]
+//!                     (ONLY IN_THREAD,
+//!                      const INSERT_LIBX_NAMESPACE::w::callback_trigger_t &,
+//!                      const INSERT_LIBX_NAMESPACE::w::busy &)
 //!                     {
 //!                     });
 //! \endcode
 //!
-//! on_activate() installs a callback that gets invoked by clicking the button.
+//! on_activate() installs a callback that gets invoked by clicking on the
+//! button.
 
 typedef ref<buttonObj> button;
 

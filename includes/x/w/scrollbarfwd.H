@@ -5,11 +5,11 @@
 #ifndef x_w_scrollbarfwd_h
 #define x_w_scrollbarfwd_h
 
+#include <x/w/connection_threadfwd.H>
 #include <x/ptrfwd.H>
-#include <x/w/namespace.H>
 #include <x/number.H>
+#include <x/functionalrefptrfwd.H>
 #include <cstdint>
-#include <functional>
 
 LIBCXXW_NAMESPACE_START
 
@@ -27,7 +27,9 @@ struct scrollbar_config;
 struct LIBCXX_HIDDEN scrollbar_info_t;
 
 //! Callback that reports the scrollbar's updated values.
-typedef std::function<void (const scrollbar_info_t &)> scrollbar_cb_t;
+
+typedef functionref<void (THREAD_CALLBACK,
+			  const scrollbar_info_t &)> scrollbar_cb_t;
 
 /*! A scroll-bar display element.
 
@@ -85,7 +87,8 @@ advances the scrollbar's value by 1.
 
 \code
 sb->on_update([]
-              (const INSERT_LIBX_NAMESPACE::w::scrollbar_info_t &info)
+              (ONLY IN_THREAD,
+               const INSERT_LIBX_NAMESPACE::w::scrollbar_info_t &info)
               {
 
               });

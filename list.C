@@ -8,6 +8,7 @@
 #include "x/w/peepholed_focusableobj.H"
 #include "x/w/rgb.H"
 #include "x/w/synchronized_axis.H"
+#include "listlayoutmanager/listlayoutmanager_impl.H"
 #include "listlayoutmanager/listlayoutstyle_impl.H"
 #include "gridlayoutmanager.H"
 #include "focus/focusable.H"
@@ -58,15 +59,10 @@ class LIBCXX_HIDDEN listObj : public peepholed_focusableObj {
 
 ///////////////////////////////////////////////////////////
 
-static void default_selection_changed(const list_item_status_info_t &ignore)
-{
-}
-
 new_listlayoutmanager
 ::new_listlayoutmanager(const listlayoutstyle_impl &list_style)
 	: list_style{list_style},
 	  selection_type{single_selection_type},
-	  selection_changed{default_selection_changed},
 	  height{4},
 	  columns{1},
 	  synchronized_columns{synchronized_axis::create()},
@@ -135,42 +131,54 @@ new_listlayoutmanager::create(const ref<containerObj::implObj>
 
 ////////////////////////////////////////////////////////////////////////////
 
+// Implementation functions for the stock list selection types.
 
-void single_selection_type(const listlayoutmanager &layout_manager,
-			   size_t i,
-			   const callback_trigger_t &trigger,
-			   const busy &mcguffin)
+const list_selection_type_cb_t single_selection_type=
+	[]
+	(ONLY IN_THREAD,
+	 const listlayoutmanager &layout_manager,
+	 size_t i,
+	 const callback_trigger_t &trigger,
+	 const busy &mcguffin)
 {
 	if (layout_manager->selected(i))
 		return; // Already selected it.
 
-	layout_manager->unselect();
-	layout_manager->selected(i, true, trigger);
-}
+	layout_manager->unselect(IN_THREAD);
+	layout_manager->selected(IN_THREAD, i, true, trigger);
+};
 
-void single_optional_selection_type(const listlayoutmanager &layout_manager,
-				    size_t i,
-				    const callback_trigger_t &trigger,
-				    const busy &mcguffin)
+const list_selection_type_cb_t single_optional_selection_type=
+	[]
+	(ONLY IN_THREAD,
+	 const listlayoutmanager
+	 &layout_manager,
+	 size_t i,
+	 const callback_trigger_t &trigger,
+	 const busy &mcguffin)
 {
 	// Selecting the sole selection is going to deselect it.
 
 	if (layout_manager->selected(i))
 	{
-		layout_manager->selected(i, false, trigger);
+		layout_manager->selected(IN_THREAD, i, false, trigger);
 		return;
 	}
 
-	layout_manager->unselect();
-	layout_manager->selected(i, true, trigger);
-}
+	layout_manager->unselect(IN_THREAD);
+	layout_manager->selected(IN_THREAD, i, true, trigger);
+};
 
-void multiple_selection_type(const listlayoutmanager &layout_manager,
-			     size_t i,
-			     const callback_trigger_t &trigger,
-			     const busy &mcguffin)
+const list_selection_type_cb_t multiple_selection_type=
+	[](ONLY IN_THREAD,
+	   const listlayoutmanager &layout_manager,
+	   size_t i,
+	   const callback_trigger_t &trigger,
+	   const busy &mcguffin)
 {
-	layout_manager->selected(i, !layout_manager->selected(i), trigger);
-}
+	layout_manager->selected(IN_THREAD, i, !layout_manager->selected(i),
+				 trigger);
+};
+
 
 LIBCXXW_NAMESPACE_END

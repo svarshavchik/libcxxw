@@ -106,7 +106,8 @@ void testprogressbar()
 
 	main_window->on_delete
 		([close_flag]
-		 (const auto &ignore)
+		 (ONLY IN_THREAD,
+		  const auto &ignore)
 		 {
 			 close_flag->close();
 		 });
@@ -151,6 +152,7 @@ void testprogressbar()
 		o << v << '%';
 
 		pb->update(v, 100, [txt=o.str(), l]
+			   (ONLY IN_THREAD)
 			   {
 				   l->update(txt);
 			   });

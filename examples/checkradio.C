@@ -129,7 +129,8 @@ void create_mainwindow(const x::w::main_window &main_window,
 		// Install a callback that gets invoked whenever the checkbox
 		// changes state.
 		checkbox->on_activate([day_of_week]
-				      (size_t flag,
+				      (ONLY IN_THREAD,
+				       size_t flag,
 				       const x::w::callback_trigger_t &trigger,
 				       const auto &ignore)
 				      {
@@ -200,7 +201,8 @@ void create_mainwindow(const x::w::main_window &main_window,
 
 	train->on_activate([saturday, sunday,
 			    train=x::make_weak_capture(train)]
-			   (size_t flag,
+			   (ONLY IN_THREAD,
+			    size_t flag,
 			    const x::w::callback_trigger_t &trigger,
 			    const auto &ignore2)
 			   {
@@ -238,7 +240,8 @@ void create_mainwindow(const x::w::main_window &main_window,
 				      });
 
 	bus->on_activate([]
-			 (size_t flag,
+			 (ONLY IN_THREAD,
+			  size_t flag,
 			  const x::w::callback_trigger_t &trigger,
 			  const auto &ignore)
 			 {
@@ -264,7 +267,8 @@ void create_mainwindow(const x::w::main_window &main_window,
 				      });
 
 	drive->on_activate([]
-			   (size_t flag,
+			   (ONLY IN_THREAD,
+			    size_t flag,
 			    const x::w::callback_trigger_t &trigger,
 			    const auto &ignore)
 			   {
@@ -333,7 +337,8 @@ void checkradio()
 
 	main_window->on_delete
 		([close_flag]
-		 (const x::w::busy &ignore)
+		 (ONLY IN_THREAD,
+		  const x::w::busy &ignore)
 		 {
 			 close_flag->close();
 		 });

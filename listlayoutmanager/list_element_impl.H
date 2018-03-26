@@ -271,46 +271,55 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
  public:
 
 	//! Remove a row.
-	void remove_row(const listlayoutmanager &ll,
+	void remove_row(ONLY IN_THREAD,
+			const listlayoutmanager &ll,
 			size_t row_number);
 
 	//! Add rows to the end.
-	void append_rows(const listlayoutmanager &ll,
+	void append_rows(ONLY IN_THREAD,
+			 const listlayoutmanager &ll,
 			 const std::vector<list_item_param> &items);
 
 	//! Add rows to the end.
-	void append_rows(const listlayoutmanager &lm,
+	void append_rows(ONLY IN_THREAD,
+			 const listlayoutmanager &lm,
 			 const std::vector<list_cell> &texts,
 			 const std::vector<textlist_rowinfo> &meta);
 
 	//! Insert rows.
-	void insert_rows(const listlayoutmanager &ll,
+	void insert_rows(ONLY IN_THREAD,
+			 const listlayoutmanager &ll,
 			 size_t row_number,
 			 const std::vector<list_item_param> &items);
 
 	//! Insert rows.
-	void insert_rows(const listlayoutmanager &ll,
+	void insert_rows(ONLY IN_THREAD,
+			 const listlayoutmanager &ll,
 			 size_t row_number,
 			 const std::vector<list_cell> &texts,
 			 const std::vector<textlist_rowinfo> &meta);
 
 	//! Replace rows.
-	void replace_rows(const listlayoutmanager &ll,
+	void replace_rows(ONLY IN_THREAD,
+			  const listlayoutmanager &ll,
 			  size_t row_number,
 			  const std::vector<list_item_param> &items);
 
 	//! Replace rows.
-	void replace_rows(const listlayoutmanager &ll,
+	void replace_rows(ONLY IN_THREAD,
+			  const listlayoutmanager &ll,
 			  size_t row_number,
 			  const std::vector<list_cell> &texts,
 			  const std::vector<textlist_rowinfo> &meta);
 
 	//! Replace all rows.
-	void replace_all_rows(const listlayoutmanager &ll,
+	void replace_all_rows(ONLY IN_THREAD,
+			      const listlayoutmanager &ll,
 			      const std::vector<list_item_param> &items);
 
 	//! Replace all rows.
-	void replace_all_rows(const listlayoutmanager &ll,
+	void replace_all_rows(ONLY IN_THREAD,
+			      const listlayoutmanager &ll,
 			      const std::vector<list_cell> &texts,
 			      const std::vector<textlist_rowinfo> &meta);
 
@@ -358,15 +367,18 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 			    const callback_trigger_t &trigger) override;
 
 	//! Invoked from the layout manager.
-	void autoselect(const listlayoutmanager &, size_t,
+	void autoselect(ONLY IN_THREAD,
+			const listlayoutmanager &, size_t,
+			const callback_trigger_t &);
+
+	//! Invoked from the layout manager.
+	void selected(ONLY IN_THREAD,
+		      const listlayoutmanager &, size_t, bool,
 		      const callback_trigger_t &);
 
 	//! Invoked from the layout manager.
-	void selected(const listlayoutmanager &, size_t, bool,
-		      const callback_trigger_t &);
-
-	//! Invoked from the layout manager.
-	void menuitem_selected(const listlayoutmanager &, size_t,
+	void menuitem_selected(ONLY IN_THREAD,
+			       const listlayoutmanager &, size_t,
 			       const callback_trigger_t &,
 			       const busy &);
  private:
@@ -374,7 +386,8 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 	//! Common internal selection processing.
 
 	//! \internal
-	void selected_common(const listlayoutmanager &,
+	void selected_common(ONLY IN_THREAD,
+			     const listlayoutmanager &,
 			     list_lock &,
 			     listimpl_info_t::lock &,
 			     size_t,
@@ -400,7 +413,8 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 	std::vector<size_t> all_selected();
 
 	//! Unselect all().
-	void unselect(const listlayoutmanager &);
+	void unselect(THREAD_CALLBACK,
+		      const listlayoutmanager &);
 
 	//! Whether the given list item is enabled().
 
@@ -408,7 +422,7 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 
 	//! Enable or disable the list item.
 
-	void enabled(size_t i, bool flag);
+	void enabled(ONLY IN_THREAD, size_t i, bool flag);
 
  private:
 	//! Redraw only those rows whose status has changed.
@@ -430,7 +444,8 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 	//! to nuke everything from high orbit, and doesn't need to call
 	//! schedule_row_redraw().
 
-	bool unselect(const listlayoutmanager &,
+	bool unselect(THREAD_CALLBACK,
+		      const listlayoutmanager &,
 		      list_lock &);
 
  public:
@@ -511,7 +526,8 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 	}
 
 	//! Insert rows.
-	void insert_rows(const listlayoutmanager &ll,
+	void insert_rows(ONLY IN_THREAD,
+			 const listlayoutmanager &ll,
 			 list_lock &lock,
 			 size_t row_number,
 			 const std::vector<list_cell> &texts,
@@ -519,7 +535,8 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 
 	//! Remove the given rows.
 
-	void remove_rows(const listlayoutmanager &ll,
+	void remove_rows(ONLY IN_THREAD,
+			 const listlayoutmanager &ll,
 			 listimpl_info_t::lock &lock,
 			 size_t row_number,
 			 size_t count);
@@ -528,7 +545,8 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 
 	//! Unlink the rows' cells from column_widths
 
-	void removing_rows(const listlayoutmanager &ll,
+	void removing_rows(ONLY IN_THREAD,
+			   const listlayoutmanager &ll,
 			   listimpl_info_t::lock &lock,
 			   size_t row,
 			   size_t count);
@@ -611,7 +629,8 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 					   dim_t howmuch);
 
 	//! Invoke callbacks after list item's selection status changed.
-	void notify_callbacks(const listlayoutmanager &,
+	void notify_callbacks(ONLY IN_THREAD,
+			      const listlayoutmanager &,
 			      list_lock &,
 			      const list_row_info_t &,
 			      size_t,
@@ -619,7 +638,8 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 			      const callback_trigger_t &);
 
 	//! Invoke callbacks after list item's selection status changed.
-	void notify_callbacks(const listlayoutmanager &,
+	void notify_callbacks(ONLY IN_THREAD,
+			      const listlayoutmanager &,
 			      list_lock &,
 			      const list_row_info_t &,
 			      size_t,

@@ -22,7 +22,8 @@ class LIBCXX_HIDDEN bookgridlayoutmanagerObj
 	: public gridlayoutmanagerObj::implObj {
 
 
-	std::function<void (const book_status_info_t &)> callback_under_lock;
+	functionptr<void (THREAD_CALLBACK,
+			  const book_status_info_t &)> callback_under_lock;
 
  public:
 	//! Constructor

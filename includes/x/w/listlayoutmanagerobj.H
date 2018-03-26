@@ -30,25 +30,48 @@ public:
 	~listlayoutmanagerObj() LIBCXX_HIDDEN;
 
 	//! Remove a list item
-	virtual void remove_item(size_t item_number);
+	void remove_item(size_t item_number);
+
+	//! Remove a list item
+	virtual void remove_item(ONLY IN_THREAD, size_t item_number);
 
 	//! Append new list items.
 
 	virtual void append_items(const std::vector<list_item_param> &items);
 
-	//! Insert new list items.
+	//! Append new list items.
 
+	virtual void append_items(ONLY IN_THREAD,
+				  const std::vector<list_item_param> &items);
+
+	//! Insert new list items.
 	virtual void insert_items(size_t item_number,
-				 const std::vector<list_item_param> &items);
+				  const std::vector<list_item_param> &items);
+
+	//! Insert new list items.
+	virtual void insert_items(ONLY IN_THREAD, size_t item_number,
+				  const std::vector<list_item_param> &items);
 
 	//! Replace list items.
 
 	virtual void replace_items(size_t item_number,
-				  const std::vector<list_item_param> &items);
+				   const std::vector<list_item_param> &items);
+
+	//! Replace list items.
+
+	virtual void replace_items(ONLY IN_THREAD,
+				   size_t item_number,
+				   const std::vector<list_item_param> &items);
 
 	//! Replace all list items.
 
 	virtual void replace_all_items(const std::vector<list_item_param>
+				       &items);
+
+	//! Replace all list items.
+
+	virtual void replace_all_items(ONLY IN_THREAD,
+				       const std::vector<list_item_param>
 				       &items);
 
 	//! Number of items in the list
@@ -69,19 +92,16 @@ public:
 	std::vector<size_t> all_selected() const;
 
 	//! Select or unselect item \#i
-	void selected(size_t i, bool selected_flag,
-		      const callback_trigger_t &trigger);
-
-	//! Shortcut
-
-	//! Invoke selected() with the default trigger.
-	//! \overload
-
 	void selected(size_t i, bool selected_flag);
+
+	//! Select or unselect item \#i
+	void selected(ONLY IN_THREAD, size_t i, bool selected_flag,
+		      const callback_trigger_t &trigger);
 
 	//! As if item \#i was clicked on.
 
-	void autoselect(size_t i,
+	void autoselect(ONLY IN_THREAD,
+			size_t i,
 			const callback_trigger_t &trigger);
 	//! Shortcut
 
@@ -92,6 +112,9 @@ public:
 	//! Unselect all selected items.
 	void unselect();
 
+	//! Unselect all selected items.
+	void unselect(ONLY IN_THREAD);
+
 	//! Whether the given list item is enabled().
 
 	bool enabled(size_t i) const;
@@ -99,6 +122,10 @@ public:
 	//! Enable or disable the list item.
 
 	void enabled(size_t i, bool flag);
+
+	//! Enable or disable the list item.
+
+	void enabled(ONLY IN_THREAD, size_t i, bool flag);
 
 	//! Return an existing menu item's submenu layoutmanager.
 	listlayoutmanagerptr get_item_layoutmanager(size_t i);

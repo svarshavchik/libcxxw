@@ -158,7 +158,8 @@ static std::tuple<x::w::date_input_field, x::w::date_input_field
 
 	starting_date->on_change
 		([current_values]
-		 (const std::optional<x::ymd> &new_value,
+		 (ONLY IN_THREAD,
+		  const std::optional<x::ymd> &new_value,
 		  const x::w::callback_trigger_t &trigger)
 		 {
 			 current_values->starting_date=new_value;
@@ -171,7 +172,8 @@ static std::tuple<x::w::date_input_field, x::w::date_input_field
 
 	ending_date->on_change
 		([current_values]
-		 (const std::optional<x::ymd> &new_value,
+		 (ONLY IN_THREAD,
+		  const std::optional<x::ymd> &new_value,
 		  const x::w::callback_trigger_t &trigger)
 		 {
 			 if (std::holds_alternative<x::w::initial>(trigger))
@@ -212,7 +214,8 @@ void dateinputfields()
 
 	main_window->on_delete
 		([close_flag]
-		 (const auto &ignore)
+		 (ONLY IN_THREAD,
+		  const auto &ignore)
 		 {
 			 close_flag->close();
 		 });

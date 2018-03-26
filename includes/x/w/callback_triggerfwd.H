@@ -26,6 +26,14 @@ struct prev_key {};
 
 struct next_key {};
 
+//! \ref callback_trigger_t "callback_trigger_t" is not copyable.
+
+struct callback_trigger_is_not_copyable {
+
+	callback_trigger_is_not_copyable(const callback_trigger_is_not_copyable
+					 &)=delete;
+};
+
 //! What triggered a callback activation.
 
 //! This parameter specifies the reason for a callback's activation: a
@@ -45,7 +53,8 @@ typedef std::variant<std::monostate,
 		     const button_event *,
 		     initial,
 		     prev_key,
-		     next_key
+		     next_key,
+		     callback_trigger_is_not_copyable
 		     > callback_trigger_t;
 
 //! \ref callback_trigger_t "callback_trigger_t" has a \ref key_event "const INSERT_LIBX_NAMESPACE::w::key_event &".

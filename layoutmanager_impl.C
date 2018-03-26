@@ -12,6 +12,8 @@
 #include "child_element.H"
 #include "catch_exceptions.H"
 #include "batch_queue.H"
+#include "catch_exceptions.H"
+#include <x/functionalrefptr.H>
 
 LOG_CLASS_INIT(LIBCXX_NAMESPACE::w::layoutmanagerObj::implObj);
 
@@ -24,6 +26,21 @@ layoutmanagerObj::implObj
 }
 
 layoutmanagerObj::implObj::~implObj()=default;
+
+void layoutmanagerObj::implObj::run_as(const functionref<void (ONLY IN_THREAD)>
+				       &f)
+{
+	auto e=ref(&container_impl->container_element_impl());
+
+	e->get_window_handler().thread()
+		->run_as([e, f]
+			 (ONLY IN_THREAD)
+			 {
+				 try {
+					 f(IN_THREAD);
+				 } REPORT_EXCEPTIONS(e);
+			 });
+}
 
 void layoutmanagerObj::implObj::needs_recalculation(const batch_queue &queue)
 {

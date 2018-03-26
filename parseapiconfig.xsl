@@ -136,7 +136,7 @@ Maybe we should use a <scalar>?
 
 <!-- <parser> generates:
 
-std::function<void, ...parameters> {name}_parser(const theme_parser_lock &lock)
+functionref<void, ...parameters> {name}_parser(const theme_parser_lock &lock)
 {
     auto name=lock->name();
 
@@ -147,7 +147,7 @@ Throws an exception
 -->
 
   <xsl:template name="make-parser">
-std::function&lt;void (<xsl:for-each select="parameter">
+functionref&lt;void (<xsl:for-each select="parameter">
 <xsl:if test="position() &gt; 1">,
                 </xsl:if><xsl:text>
                 const </xsl:text><xsl:value-of select="type" />&#32;&amp;</xsl:for-each>)&gt;&#10;      <xsl:value-of select="objectname" />_parser(const theme_parser_lock &amp;lock<xsl:for-each select="other_parameter">
@@ -166,7 +166,7 @@ std::function&lt;void (<xsl:for-each select="parameter">
 }
 
 void <xsl:value-of select="objectname" />_parseconfig(const theme_parser_lock &amp;lock,
-    std::vector&lt;std::function&lt;void (<xsl:for-each select="parameter">
+    std::vector&lt;functionref&lt;void (<xsl:for-each select="parameter">
     <xsl:if test="position()&gt; 1">,
                           </xsl:if>const <xsl:value-of select="type" />&#32;&amp;</xsl:for-each>)&gt;&gt; &amp;config<xsl:for-each select="other_parameter">
 			  <xsl:text>,&#10;                          </xsl:text>

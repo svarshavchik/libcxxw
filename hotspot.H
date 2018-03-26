@@ -17,6 +17,7 @@
 #include "focus/focusable_elementfwd.H"
 #include "connection_threadfwd.H"
 #include "activated_in_threadobj.H"
+#include <x/refptr_traits.H>
 #include <xcb/xproto.h>
 
 LIBCXXW_NAMESPACE_START
@@ -37,7 +38,7 @@ class LIBCXX_HIDDEN hotspotObj::implObj
 
 	//! Current activation callback
 
-	hotspot_callback_t callback_thread_only;
+	refptr_traits<hotspot_callback_t>::ptr_t callback_thread_only;
 
 	//! Whether ENTER or SPACE pressed.
 	bool is_key_down=false;

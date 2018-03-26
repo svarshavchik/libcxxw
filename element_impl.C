@@ -23,6 +23,7 @@
 #include "x/w/key_event.H"
 #include "x/w/button_event.H"
 #include "x/w/tooltip.H"
+#include "x/w/main_window.H"
 #include "x/callback_list.H"
 #include "element_screen.H"
 #include "focus/label_for.H"
@@ -444,9 +445,12 @@ void elementObj::implObj
 		 {
 			 me->data(IN_THREAD).element_state_callback=cb;
 
-			 cb(me->create_element_state
-			    (IN_THREAD, element_state::current_state),
-			    busy_impl{*me});
+			 try {
+				 cb(IN_THREAD,
+				    me->create_element_state
+				    (IN_THREAD, element_state::current_state),
+				    busy_impl{*me});
+			 } REPORT_EXCEPTIONS(me);
 		 });
 }
 
@@ -590,7 +594,10 @@ void elementObj::implObj
 	auto &cb=data(IN_THREAD).element_state_callback;
 
 	if (cb)
-		cb(create_element_state(IN_THREAD, reason), busy_impl{*this});
+		try {
+			cb(IN_THREAD, create_element_state(IN_THREAD, reason),
+			   busy_impl{*this});
+		} REPORT_EXCEPTIONS(this);
 }
 
 clip_region_set::clip_region_set(ONLY IN_THREAD,
@@ -1029,7 +1036,8 @@ void elementObj::implObj
 		auto &cb=data(IN_THREAD).on_keyboard_callback;
 
 		if (cb)
-			cb(most_recent_keyboard_focus_change(IN_THREAD),
+			cb(IN_THREAD,
+			   most_recent_keyboard_focus_change(IN_THREAD),
 			   trigger);
 	} CATCH_EXCEPTIONS;
 }
@@ -1046,9 +1054,9 @@ void elementObj::implObj::on_pointer_focus(const
 }
 
 void elementObj::implObj::on_pointer_focus(ONLY IN_THREAD,
-					    const
-					    functionref<focus_callback_t>
-					    &callback)
+					   const
+					   functionref<focus_callback_t>
+					   &callback)
 {
 	data(IN_THREAD).on_pointer_callback=callback;
 	invoke_pointer_focus_callback(IN_THREAD, initial{});
@@ -1083,9 +1091,10 @@ void elementObj::implObj
 		auto &cb=data(IN_THREAD).on_pointer_callback;
 
 		if (cb)
-			cb(most_recent_pointer_focus_change(IN_THREAD),
+			cb(IN_THREAD,
+			   most_recent_pointer_focus_change(IN_THREAD),
 			   trigger);
-	} CATCH_EXCEPTIONS;
+	} REPORT_EXCEPTIONS(this);
 }
 
 void elementObj::implObj::window_focus_change(ONLY IN_THREAD, bool flag)
@@ -1140,7 +1149,13 @@ bool elementObj::implObj::process_key_event(ONLY IN_THREAD, const key_event &e)
 
 	auto &cb=data(IN_THREAD).on_key_event_callback;
 
-	return cb ? cb(&e, activate_for(e), mcguffin):false;
+	bool ret=false;
+
+	if (cb)
+		try {
+			ret=cb(THREAD, &e, activate_for(e), mcguffin);
+		} REPORT_EXCEPTIONS(this);
+	return ret;
 }
 
 bool elementObj::implObj::uses_input_method()
@@ -1275,11 +1290,27 @@ bool elementObj::implObj::pasted(ONLY IN_THREAD,
 
 	auto &cb=data(IN_THREAD).on_key_event_callback;
 
-	return cb ? cb(&str, true, mcguffin):false;
+	return cb ? cb(IN_THREAD, &str, true, mcguffin):false;
 }
 
 void elementObj::implObj::creating_focusable_element()
 {
+}
+
+void elementObj::implObj::exception_message(const exception &e)
+{
+	auto mw=get_window_handler().get_main_window();
+
+	if (mw)
+		mw->exception_message(e);
+}
+
+void elementObj::implObj::stop_message(const text_param &t)
+{
+	auto mw=get_window_handler().get_main_window();
+
+	if (mw)
+		mw->stop_message(t);
 }
 
 //////////////////////////////////////////////////////////////////////////////

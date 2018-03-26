@@ -48,21 +48,6 @@ typedef const connection_thread &ONLY;
 
 //! \code
 //! element->on_state_update([]
-//!                          (INVOKED IN_THREAD, ...)
-//!                          {
-//!                                method(IN_THREAD);
-//!                          });
-//! \endcode
-//!
-//! Alternative syntactic sugar for declaring callbacks that get invoked
-//! by the library's internal execution thread.
-
-typedef ONLY INVOKED;
-
-//! Alternative syntactic sugar for \ref ONLY "thread-only invoked callbacks"
-
-//! \code
-//! element->on_state_update([]
 //!                          (THREAD_CALLBACK, ...)
 //!                          {
 //!                                method(IN_THREAD);
@@ -75,5 +60,8 @@ typedef ONLY INVOKED;
 typedef ONLY THREAD_CALLBACK;
 
 LIBCXXW_NAMESPACE_END
+
+using LIBCXX_NAMESPACE::w::ONLY;
+using LIBCXX_NAMESPACE::w::THREAD_CALLBACK;
 
 #endif

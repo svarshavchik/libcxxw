@@ -5,6 +5,8 @@
 #include "libcxxw_config.h"
 #include "listlayoutmanager/listlayoutmanager_impl.H"
 #include "listlayoutmanager/list_element_impl.H"
+#include "messages.H"
+#include "run_as.H"
 
 LIBCXXW_NAMESPACE_START
 

@@ -9,8 +9,8 @@
 #include "x/w/factory.H"
 #include "x/w/file_dialog_config.H"
 #include <x/pcrefwd.H>
+#include <x/functionalrefptrfwd.H>
 #include <string>
-#include <functional>
 
 LIBCXXW_NAMESPACE_START
 
@@ -41,7 +41,7 @@ class LIBCXX_HIDDEN filedirlist_managerObj : virtual public obj {
 
 	//! Install a new callback that gets invoked when a selection is made.
 
-	void set_selected_callback(const std::function
+	void set_selected_callback(const functionref
 				   <filedirlist_selected_callback_t> &);
 
 	//! Return the filename at the given position.

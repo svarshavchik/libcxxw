@@ -26,7 +26,8 @@ class LIBCXX_HIDDEN main_windowObj::handlerObj :
 	typedef icon_images_vector_elementObj<
 		generic_windowObj::handlerObj> superclass_t;
 
-	std::function<void (const busy &)> on_delete_callback_thread_only;
+	functionref<void (THREAD_CALLBACK,
+			  const busy &)> on_delete_callback_thread_only;
 
 	//! Whether an icon was set.
 	bool wm_icon_set_thread_only=false;

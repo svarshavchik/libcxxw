@@ -145,14 +145,16 @@ app_dialogsObj::create_help_question(const LIBCXX_NAMESPACE::w::main_window &mai
 		 "", // Initial text
 		 {}, // input_field_config
 		 []
-		 (const auto &input_field, const auto &ignore)
+		 (THREAD_CALLBACK,
+		  const auto &input_field, const auto &ignore)
 		 {
 			 LIBCXX_NAMESPACE::w::input_lock lock{input_field};
 
 			 std::cout << "Your name is " << lock.get()<< std::endl;
 		 },
 		 []
-		 (const auto &ignore)
+		 (THREAD_CALLBACK,
+		  const auto &ignore)
 		 {
 			 std::cout << "Never mind!" << std::endl;
 		 },
@@ -174,12 +176,12 @@ app_dialogsObj::create_help_about(const LIBCXX_NAMESPACE::w::main_window &main_w
 			 factory->create_label("Help -> About!");
 		 },
 		 []
-		 (const auto &ignore)
+		 (THREAD_CALLBACK, const auto &ignore)
 		 {
 			 std::cout << "Help -> About Ok!" << std::endl;
 		 },
 		 []
-		 (const auto &ignore)
+		 (THREAD_CALLBACK, const auto &ignore)
 		 {
 			 std::cout << "Help -> About Cancel!" << std::endl;
 		 },
@@ -193,7 +195,8 @@ LIBCXX_NAMESPACE::w::file_dialog
 app_dialogsObj::create_file_open(const LIBCXX_NAMESPACE::w::main_window &main_window)
 {
 	LIBCXX_NAMESPACE::w::file_dialog_config config{
-		[](const auto &d,
+		[](ONLY IN_THREAD,
+		   const auto &d,
 		   const std::string &name,
 		   const auto &busy_mcguffin)
 		{
@@ -206,7 +209,7 @@ app_dialogsObj::create_file_open(const LIBCXX_NAMESPACE::w::main_window &main_wi
 
 			all_app_dialogs->do_file_open(name);
 		},
-		[](const auto &busy_mcguffin)
+		[](ONLY IN_THREAD, const auto &busy_mcguffin)
 		{
 			std::cout << "File open cancelled" << std::endl;
 		}
@@ -237,7 +240,7 @@ app_dialogsObj::create_file_print(const LIBCXX_NAMESPACE::w::main_window &main_w
 
 			all_app_dialogs->do_file_print(info);
 		},
-		[]
+		[](ONLY IN_THREAD)
 		{
 			std::cout << "Cancelled" << std::endl;
 		}};
@@ -282,10 +285,10 @@ void add_recent(const LIBCXX_NAMESPACE::w::main_window &main_window,
 
 	LIBCXX_NAMESPACE::w::menubar_lock lock{lm};
 
-	lock.get_menu(0)->get_layoutmanager()->get_item_layoutmanager(5)
+	lock.get_menu(0)->get_layoutmanager()->get_item_layoutmanager(6)
 		->append_items
 		({
-			[s](const auto &info)
+			[s](THREAD_CALLBACK, const auto &info)
 			{
 				std::cout << "YAY:" << s << std::endl;
 			},
@@ -329,7 +332,7 @@ void file_menu(const LIBCXX_NAMESPACE::w::main_window &main_window,
 	m->append_items({
 			LIBCXX_NAMESPACE::w::shortcut{"Alt", 'N'},
 
-			[](const auto &ignore)
+			[](THREAD_CALLBACK, const auto &ignore)
 			{
 				app_dialogs all_app_dialogs;
 
@@ -346,7 +349,7 @@ void file_menu(const LIBCXX_NAMESPACE::w::main_window &main_window,
 			},
 			"New",
 			LIBCXX_NAMESPACE::w::shortcut{"Alt", 'O'},
-			[](const auto &ignore)
+			[](THREAD_CALLBACK, const auto &ignore)
 			{
 				app_dialogs all_app_dialogs;
 
@@ -362,14 +365,14 @@ void file_menu(const LIBCXX_NAMESPACE::w::main_window &main_window,
 						 });
 			},
 			"Open",
-			[](const auto &ignore)
+			[](THREAD_CALLBACK, const auto &ignore)
 			{
 				std::cout << "File->Close selected"
 					  << std::endl;
 			},
 			"Close",
 			LIBCXX_NAMESPACE::w::shortcut{"Alt", 'P'},
-			[](const auto &ignore)
+			[](THREAD_CALLBACK, const auto &ignore)
 			{
 				file_print_selected();
 			},
@@ -377,7 +380,7 @@ void file_menu(const LIBCXX_NAMESPACE::w::main_window &main_window,
 
 			LIBCXX_NAMESPACE::w::separator{},
 
-			[=](const auto &ignore)
+			[=](THREAD_CALLBACK, const auto &ignore)
 			{
 				auto l=view_menu->get_layoutmanager();
 
@@ -401,7 +404,8 @@ void file_menu(const LIBCXX_NAMESPACE::w::main_window &main_window,
 
 						recent_menu->append_items
 							({LIBCXX_NAMESPACE::w::list_item_param{
-									[s](const auto &)
+									[s](THREAD_CALLBACK,
+									    const auto &)
 									{
 										std::cout << s
 											  << std::endl;
@@ -411,13 +415,13 @@ void file_menu(const LIBCXX_NAMESPACE::w::main_window &main_window,
 					}
 				}},
 			"Recent",
-				[=](const auto &ignore)
+			[=](THREAD_CALLBACK, const auto &ignore)
 			{
 				std::cout << "File->Quit selected" << std::endl;
 			},
 			"Quit",
 			[main_window=LIBCXX_NAMESPACE::make_weak_capture(main_window)]
-				(const auto &ignore)
+				(THREAD_CALLBACK, const auto &ignore)
 			{
 				auto got=main_window.get();
 
@@ -430,7 +434,7 @@ void file_menu(const LIBCXX_NAMESPACE::w::main_window &main_window,
 			},
 			"Remove Help menu",
 			[main_window=LIBCXX_NAMESPACE::make_weak_capture(main_window)]
-				(const auto &ignore)
+				(THREAD_CALLBACK, const auto &ignore)
 			{
 				auto got=main_window.get();
 
@@ -444,7 +448,7 @@ void file_menu(const LIBCXX_NAMESPACE::w::main_window &main_window,
 			"Remove View menu",
 
 			[i=4, main_window=LIBCXX_NAMESPACE::make_weak_capture(main_window)]
-				(const auto &ignore)
+				(THREAD_CALLBACK, const auto &ignore)
 				mutable
 			{
 				auto got=main_window.get();
@@ -463,7 +467,7 @@ size_t view_menu(const LIBCXX_NAMESPACE::w::listlayoutmanager &m)
 {
 	m->replace_all_items({
 		LIBCXX_NAMESPACE::w::menuoption{},
-		[](const auto &info)
+		[](THREAD_CALLBACK, const auto &info)
 		{
 			std::cout << "View->Tools: " << info.selected
 				  << std::endl;
@@ -472,7 +476,7 @@ size_t view_menu(const LIBCXX_NAMESPACE::w::listlayoutmanager &m)
 		"Tools",
 
 		LIBCXX_NAMESPACE::w::menuoption{},
-		[](const auto &info)
+		[](THREAD_CALLBACK, const auto &info)
 		{
 			std::cout << "View->Options: " << info.selected
 				  << std::endl;
@@ -488,7 +492,7 @@ void help_menu(const LIBCXX_NAMESPACE::w::main_window &main_window,
 	       const LIBCXX_NAMESPACE::w::listlayoutmanager &m)
 {
 	m->insert_items(0, {
-		       [](const auto &ignore)
+		       [](THREAD_CALLBACK, const auto &ignore)
 		       {
 			       app_dialogs all_app_dialogs;
 
@@ -505,7 +509,7 @@ void help_menu(const LIBCXX_NAMESPACE::w::main_window &main_window,
 
 		       LIBCXX_NAMESPACE::w::shortcut{"F1"},
 
-		       [](const auto &ignore)
+		       [](THREAD_CALLBACK, const auto &ignore)
 		       {
 			       app_dialogs all_app_dialogs;
 
@@ -522,13 +526,13 @@ void make_context_menu(const LIBCXX_NAMESPACE::w::listlayoutmanager &m)
 	m->append_items
 		({
 			[]
-			(const auto &ignore)
+			(THREAD_CALLBACK, const auto &ignore)
 			{
 				std::cout << "Help selected" << std::endl;
 			},
 			"Help",
 			[]
-			(const auto &ignore)
+			(THREAD_CALLBACK, const auto &ignore)
 			{
 				std::cout << "About selected" << std::endl;
 			},
@@ -561,7 +565,8 @@ void testmenu()
 
 			 i->install_contextpopup_callback
 			 ([context_menu]
-			  (const auto &e,
+			  (THREAD_CALLBACK,
+			   const auto &e,
 			   const auto &t,
 			   const auto &m) {
 				 context_menu->show();
@@ -626,7 +631,8 @@ void testmenu()
 
 	main_window->on_delete
 		([close_flag]
-		 (const auto &ignore)
+		 (THREAD_CALLBACK,
+		  const auto &ignore)
 		 {
 			 close_flag->close();
 		 });

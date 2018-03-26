@@ -10,6 +10,7 @@
 #include <x/w/dim_arg.H>
 #include <x/w/rgb.H>
 #include <x/ref.H>
+#include <x/functionalrefptr.H>
 
 LIBCXXW_NAMESPACE_START
 

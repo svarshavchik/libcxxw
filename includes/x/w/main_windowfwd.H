@@ -196,7 +196,8 @@ tries each known filename suffix.
 
 \code
 main_window->on_delete([]
-                       (const INSERT_LIBX_NAMESPACE::w::busy &block)
+                       (ONLY IN_THREAD,
+                        const INSERT_LIBX_NAMESPACE::w::busy &block)
                        {
                        });
 \endcode
@@ -283,7 +284,8 @@ INSERT_LIBX_NAMESPACE::w::dialog d=w->create_ok_dialog(
 
     // The callback when the dialog gets closed.
     []
-    (const INSERT_LIBX_NAMESPACE::w::busy &ignore)
+    (ONLY IN_THREAD,
+     const INSERT_LIBX_NAMESPACE::w::busy &ignore)
     {
          // ...
     }, true);
@@ -301,11 +303,13 @@ INSERT_LIBX_NAMESPACE::w::dialog d=w->create_ok_cancel_dialog(
     {
          factory->create_label("Lorem ipsum");
    },
-    (const INSERT_LIBX_NAMESPACE::w::busy &ignore)
+    (ONLY IN_THREAD,
+     const INSERT_LIBX_NAMESPACE::w::busy &ignore)
     {
          // Ok action.
     },
-    (const INSERT_LIBX_NAMESPACE::w::busy &ignore)
+    (ONLY IN_THREAD,
+     const INSERT_LIBX_NAMESPACE::w::busy &ignore)
     {
          // Cancel action.
     },
@@ -352,7 +356,8 @@ INSERT_LIBX_NAMESPACE::w::input_dialog d=main_window->create_input_dialog
        // This callback received the input_field display elements, so that
        // the callback may obtain the entered text.
        []
-       (const INSERT_LIBX_NAMESPACE::w::input_field &f,
+       (ONLY IN_THREAD,
+        const INSERT_LIBX_NAMESPACE::w::input_field &f,
         const INSERT_LIBX_NAMESPACE::w::busy &)
        {
            INSERT_LIBX_NAMESPACE::w::input_lock lock{f};
@@ -365,7 +370,8 @@ INSERT_LIBX_NAMESPACE::w::input_dialog d=main_window->create_input_dialog
        // provided by the window manager.
 
        []
-       (const INSERT_LIBX_NAMESPACE::w::busy &)
+       (ONLY IN_THREAD,
+        const INSERT_LIBX_NAMESPACE::w::busy &)
        {
            std::cout << "How rude..." << std::endl;
        },
@@ -411,6 +417,33 @@ closed, they return immediately. Use
 or
 \ref alert_message_config "INSERT_LIBX_NAMESPACE::w::alert_message_config"'s
 \c acknowledged_callback to execute a callback when the dialog gets closed.
+
+\code
+#include <INSERT_LIBX_NAMESPACE/w/file_dialog.H>
+#include <INSERT_LIBX_NAMESPACE/w/file_dialog_config.H>
+
+INSERT_LIBX_NAMESPACE::w::file_dialog_config config{
+    []
+    (ONLY IN_THREAD,
+     const INSERT_LIBX_NAMESPACE::w::file_dialog &d,
+     const std::string &name,
+     const INSERT_LIBX_NAMESPACE::w::busy &busy_mcguffin)
+     {
+          d->dialog_window->hide();
+
+          // ...
+     },
+     [](ONLY IN_THREAD, const INSERT_LIBX_NAMESPACE::w::busy &busy_mcguffin)
+     {
+
+     }};
+
+INSERT_LIBX_NAMESPACE::w::file_dialog d=main_window->create_file_dialog("file_open@example.com", config, true);
+\endcode
+
+create_file_dialog() returns a
+\ref file_dialog "INSERT_LIBX_NAMESPACE::w::file_dialog", for selecting
+an existing or a new file.
 
 \code
 #include <INSERT_LIBX_NAMESPACE/w/print_dialog.H>

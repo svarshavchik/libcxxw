@@ -8,6 +8,7 @@
 #include <x/w/generic_windowfwd.H>
 #include <x/w/generic_windowobj.H>
 #include <x/ref.H>
+#include <x/functionalrefptr.H>
 
 LIBCXXW_NAMESPACE_START
 

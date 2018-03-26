@@ -9,7 +9,7 @@
 #include <x/w/layoutmanagerobj.H>
 #include <x/w/bookpagefactoryfwd.H>
 #include <x/w/elementfwd.H>
-#include <functional>
+#include <x/functionalrefptrfwd.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -53,7 +53,9 @@ public:
 	element get_page(size_t) const;
 
 	//! Install a new callback
-	void on_opened(const std::function<void (const book_status_info_t &)>&);
+
+	void on_opened(const functionref<void (THREAD_CALLBACK,
+					       const book_status_info_t &)>&);
 };
 
 LIBCXXW_NAMESPACE_END

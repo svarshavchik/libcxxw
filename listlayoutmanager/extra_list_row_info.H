@@ -8,6 +8,7 @@
 #include "listlayoutmanager/extra_list_row_infofwd.H"
 #include "listlayoutmanager/extra_list_row_infoobj.H"
 #include <x/ref.H>
+#include <x/functionalrefptrfwd.H>
 
 LIBCXXW_NAMESPACE_START
 

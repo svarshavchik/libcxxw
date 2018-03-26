@@ -292,7 +292,8 @@ static void create_book(const x::w::booklayoutmanager &pl)
 
 	pl->on_opened
 		([]
-		 (const x::w::book_status_info_t &info)
+		 (ONLY IN_THREAD,
+		  const x::w::book_status_info_t &info)
 		 {
 			 // Page number that was opened.
 
@@ -368,7 +369,8 @@ void testbook()
 			  });
 
 	mw->on_delete([close_flag]
-		      (const auto &ignore)
+		      (ONLY IN_THREAD,
+		       const auto &ignore)
 		      {
 			      close_flag->close();
 		      });

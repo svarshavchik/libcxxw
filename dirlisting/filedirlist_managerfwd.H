@@ -8,6 +8,7 @@
 #include "x/w/namespace.H"
 #include "x/w/busyfwd.H"
 #include "x/w/callback_triggerfwd.H"
+#include "x/w/connection_threadfwd.H"
 #include <x/ptrfwd.H>
 #include <string>
 #include <sys/stat.h>
@@ -75,7 +76,8 @@ struct LIBCXX_HIDDEN filedirlist_entry_id {
 
 //! The file directory list is locked at this point, and the id of the
 //! clicked on entry is passed here.
-typedef void filedirlist_selected_callback_t(filedirlist_entry_id,
+typedef void filedirlist_selected_callback_t(THREAD_CALLBACK,
+					     filedirlist_entry_id,
 					     const callback_trigger_t &,
 					     const busy &);
 

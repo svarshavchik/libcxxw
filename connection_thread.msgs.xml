@@ -10,11 +10,12 @@
       //! Install a new on_disconnect() callback.
     </comment>
     <param>
-      <decl>const std::function&lt;void ()&gt; &amp;callback</decl>
+      <decl>const functionref&lt;void ()&gt; &amp;callback</decl>
     </param>
   </method>
 
   <method name="do_run_as">
+    <attributes>LIBCXX_PUBLIC</attributes>
     <comment>
       //! Run a closure in the connection thread
     </comment>
@@ -46,7 +47,7 @@
 	//! The callback
       </comment>
 
-      <decl>const std::function&lt;void ()&gt; &amp;callback</decl>
+      <decl>const functionref&lt;void ()&gt; &amp;callback</decl>
     </param>
   </method>
 </class>

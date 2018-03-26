@@ -241,7 +241,8 @@ static void create_mainwindow(const LIBCXX_NAMESPACE::w::main_window &mw)
 				phone_button});
 
 	name_button->on_activate([=]
-				 (const auto &trigger, const auto &busy)
+				 (THREAD_CALLBACK,
+				  const auto &trigger, const auto &busy)
 				 {
 					 LIBCXX_NAMESPACE::w::pagelayoutmanager sl=
 						 sw->get_layoutmanager();
@@ -251,7 +252,8 @@ static void create_mainwindow(const LIBCXX_NAMESPACE::w::main_window &mw)
 				 });
 
 	address_button->on_activate([=]
-				    (const auto &trigger, const auto &busy)
+				    (THREAD_CALLBACK,
+				     const auto &trigger, const auto &busy)
 				    {
 					    LIBCXX_NAMESPACE::w::pagelayoutmanager sl=
 						    sw->get_layoutmanager();
@@ -261,7 +263,8 @@ static void create_mainwindow(const LIBCXX_NAMESPACE::w::main_window &mw)
 				    });
 
 	phone_button->on_activate([=]
-				  (const auto &trigger, const auto &busy)
+				  (THREAD_CALLBACK,
+				   const auto &trigger, const auto &busy)
 				  {
 					  LIBCXX_NAMESPACE::w::pagelayoutmanager sl=
 						  sw->get_layoutmanager();
@@ -271,7 +274,8 @@ static void create_mainwindow(const LIBCXX_NAMESPACE::w::main_window &mw)
 				  });
 
 	clear_button->on_activate([=]
-				  (const auto &trigger, const auto &busy)
+				  (THREAD_CALLBACK,
+				   const auto &trigger, const auto &busy)
 				  {
 					  LIBCXX_NAMESPACE::w::pagelayoutmanager sl=
 						  sw->get_layoutmanager();
@@ -303,7 +307,8 @@ void testpage(const testpage_options &options)
 			  });
 
 	mw->on_delete([close_flag]
-		      (const auto &ignore)
+		      (THREAD_CALLBACK,
+		       const auto &ignore)
 		      {
 			      close_flag->close();
 		      });

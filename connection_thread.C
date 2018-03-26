@@ -22,7 +22,8 @@ LIBCXXW_NAMESPACE_START
 
 connection_threadObj
 ::connection_threadObj(const connection_info &info)
-	: info(info)
+	: info{info},
+	  disconnect_callback_thread_only{[] {}}
 {
 }
 
@@ -55,7 +56,7 @@ void connection_threadObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin)
 	incremental_selection_update_info pending_incremental_updates;
 	idle_callbacks_t idle_callbacks;
 
-	std::function<void ()> cxxwtheme_changed=[] {};
+	functionref<void ()> cxxwtheme_changed=[] {};
 
 	window_handlers_thread_only= &window_handlers;
 	destroyed_xids_thread_only= &destroyed_xids;
@@ -71,7 +72,6 @@ void connection_threadObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin)
 	idle_callbacks_thread_only= &idle_callbacks;
 
 	visibility_updated_thread_only= &visibility_updated;
-	disconnect_callback_thread_only=[] {};
 
 	root_window_thread_only=XCB_NONE;
 	cxxwtheme_changed_thread_only=&cxxwtheme_changed;

@@ -58,7 +58,8 @@ void testbutton()
 				 factory->create_normal_button_with_label
 				 ({"Close me"})->on_activate
 				 ([close_flag]
-				  (const auto &, const auto &) {
+				  (THREAD_CALLBACK,
+				   const auto &, const auto &) {
 					 std::cout << "Ok!" << std::endl;
 					 close_flag->close();
 				 });
@@ -75,7 +76,8 @@ void testbutton()
 
 	main_window->on_delete
 		([close_flag]
-		 (const auto &ignore)
+		 (THREAD_CALLBACK,
+		  const auto &ignore)
 		 {
 		 });
 

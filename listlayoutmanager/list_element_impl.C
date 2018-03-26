@@ -179,6 +179,8 @@ list_elementObj::implObj::implObj(const ref<list_container_implObj>
 	  synchronized_info{style.synchronized_columns,
 		ref<list_element_synchronized_columnsObj>::create
 		(textlist_container)},
+	  textlist_info{listimpl_info_s{style.selection_type,
+				  style.selection_changed}},
 	  scratch_buffer_for_separator(container_screen->create_scratch_buffer
 				       ("list_separator_scratch@libcxx.com",
 					container_screen
@@ -220,8 +222,6 @@ list_elementObj::implObj::implObj(const ref<list_container_implObj>
 	listimpl_info_t::lock lock{textlist_info};
 
 	lock->column_widths.resize(columns);
-	lock->selection_type=style.selection_type;
-	lock->selection_changed=style.selection_changed;
 }
 
 list_elementObj::implObj::~implObj()=default;
@@ -236,42 +236,46 @@ void list_elementObj::implObj::removed_from_container(ONLY IN_THREAD)
 	synchronized_info.removed_from_container(IN_THREAD);
 }
 
-void list_elementObj::implObj::remove_row(const listlayoutmanager &lm,
-				      size_t row_number)
+void list_elementObj::implObj::remove_row(ONLY IN_THREAD,
+					  const listlayoutmanager &lm,
+					  size_t row_number)
 {
 	list_lock lock{lm};
 
 	listimpl_info_t::lock &l{lock};
 
-	remove_rows(lm, l, row_number, 1);
+	remove_rows(IN_THREAD, lm, l, row_number, 1);
 }
 
-void list_elementObj::implObj::append_rows(const listlayoutmanager &lm,
-				       const std::vector<list_item_param>
-				       &items)
+void list_elementObj::implObj::append_rows(ONLY IN_THREAD,
+					   const listlayoutmanager &lm,
+					   const std::vector<list_item_param>
+					   &items)
 {
 	std::vector<list_cell> texts;
 	std::vector<textlist_rowinfo> meta;
 
 	list_style.create_cells(items, *this, texts, meta);
 
-	append_rows(lm, texts, meta);
+	append_rows(IN_THREAD, lm, texts, meta);
 }
 
-void list_elementObj::implObj::append_rows(const listlayoutmanager &lm,
-				       const std::vector<list_cell> &texts,
-				       const std::vector<textlist_rowinfo> &meta
-				       )
+void list_elementObj::implObj::append_rows(ONLY IN_THREAD,
+					   const listlayoutmanager &lm,
+					   const std::vector<list_cell> &texts,
+					   const std::vector<textlist_rowinfo> &meta
+					   )
 {
 	list_lock lock{lm};
 
 	listimpl_info_t::lock &l{lock};
 
 	// Implement by calling insert at the end of the list.
-	insert_rows(lm, lock, l->row_infos.size(), texts, meta);
+	insert_rows(IN_THREAD, lm, lock, l->row_infos.size(), texts, meta);
 }
 
-void list_elementObj::implObj::insert_rows(const listlayoutmanager &lm,
+void list_elementObj::implObj::insert_rows(ONLY IN_THREAD,
+					   const listlayoutmanager &lm,
 					   size_t row_number,
 					   const std::vector<list_item_param>
 					   &items)
@@ -281,10 +285,11 @@ void list_elementObj::implObj::insert_rows(const listlayoutmanager &lm,
 
 	list_style.create_cells(items, *this, texts, meta);
 
-	insert_rows(lm, row_number, texts, meta);
+	insert_rows(IN_THREAD, lm, row_number, texts, meta);
 }
 
-void list_elementObj::implObj::insert_rows(const listlayoutmanager &lm,
+void list_elementObj::implObj::insert_rows(ONLY IN_THREAD,
+					   const listlayoutmanager &lm,
 					   size_t row_number,
 					   const std::vector<list_cell> &texts,
 					   const std::vector<textlist_rowinfo>
@@ -292,10 +297,12 @@ void list_elementObj::implObj::insert_rows(const listlayoutmanager &lm,
 {
 	list_lock lock{lm};
 
-	insert_rows(lm, lock, row_number, texts, meta);
+	insert_rows(IN_THREAD,
+		    lm, lock, row_number, texts, meta);
 }
 
-void list_elementObj::implObj::insert_rows(const listlayoutmanager &lm,
+void list_elementObj::implObj::insert_rows(ONLY IN_THREAD,
+					   const listlayoutmanager &lm,
 					   list_lock &ll,
 					   size_t row_number,
 					   const std::vector<list_cell>
@@ -306,7 +313,7 @@ void list_elementObj::implObj::insert_rows(const listlayoutmanager &lm,
 	listimpl_info_t::lock &lock=ll;
 
 	if (row_number > lock->row_infos.size())
-		throw EXCEPTION(gettextmsg(_("Row %1% does not exist"),
+		throw EXCEPTION(gettextmsg(_("Item %1% does not exist"),
 					   row_number));
 
 	size_t rows=texts.size() / columns;
@@ -355,7 +362,8 @@ void list_elementObj::implObj::insert_rows(const listlayoutmanager &lm,
 		++*current_keyed_element(lock);
 }
 
-void list_elementObj::implObj::replace_rows(const listlayoutmanager &lm,
+void list_elementObj::implObj::replace_rows(ONLY IN_THREAD,
+					    const listlayoutmanager &lm,
 					    size_t row_number,
 					    const std::vector<list_item_param>
 					    &items)
@@ -365,10 +373,11 @@ void list_elementObj::implObj::replace_rows(const listlayoutmanager &lm,
 
 	list_style.create_cells(items, *this, texts, meta);
 
-	replace_rows(lm, row_number, texts, meta);
+	replace_rows(IN_THREAD, lm, row_number, texts, meta);
 }
 
-void list_elementObj::implObj::replace_rows(const listlayoutmanager &lm,
+void list_elementObj::implObj::replace_rows(ONLY IN_THREAD,
+					    const listlayoutmanager &lm,
 					    size_t row_number,
 					    const std::vector<list_cell>
 					    &texts,
@@ -382,21 +391,21 @@ void list_elementObj::implObj::replace_rows(const listlayoutmanager &lm,
 	size_t n=texts.size() / columns;
 
 	if (row_number > lock->row_infos.size())
-		removing_rows(lm, lock, row_number, n); // Throw the exception
+		removing_rows(IN_THREAD, lm, lock, row_number, n); // Throw the exception
 
 	if (n >= lock->row_infos.size()-row_number)
 	{
 		// Edge case, replacing rows at the end. Do this via
 		// remove+insert.
 
-		remove_rows(lm, lock, row_number,
+		remove_rows(IN_THREAD, lm, lock, row_number,
 			    lock->row_infos.size()-row_number);
-		insert_rows(lm, ll, lock->row_infos.size(), texts, meta);
+		insert_rows(IN_THREAD, lm, ll, lock->row_infos.size(), texts, meta);
 		return;
 	}
 
 	// The existing rows are officially being removed.
-	removing_rows(lm, lock, row_number, n);
+	removing_rows(IN_THREAD, lm, lock, row_number, n);
 
 	// With the booking out of the way, we simply replace the rows and
 	// cells.
@@ -427,7 +436,8 @@ void list_elementObj::implObj::replace_rows(const listlayoutmanager &lm,
 }
 
 void list_elementObj::implObj
-::replace_all_rows(const listlayoutmanager &lm,
+::replace_all_rows(ONLY IN_THREAD,
+		   const listlayoutmanager &lm,
 		   const std::vector<list_item_param> &items)
 {
 	std::vector<list_cell> texts;
@@ -435,17 +445,18 @@ void list_elementObj::implObj
 
 	list_style.create_cells(items, *this, texts, meta);
 
-	replace_all_rows(lm, texts, meta);
+	replace_all_rows(IN_THREAD, lm, texts, meta);
 }
 
 void list_elementObj::implObj
-::replace_all_rows(const listlayoutmanager &lm,
+::replace_all_rows(ONLY IN_THREAD,
+		   const listlayoutmanager &lm,
 		   const std::vector<list_cell> &texts,
 		   const std::vector<textlist_rowinfo> &meta)
 {
 	list_lock ll{lm};
 
-	unselect(lm, ll);
+	unselect(IN_THREAD, lm, ll);
 
 	listimpl_info_t::lock &lock=ll;
 
@@ -458,15 +469,16 @@ void list_elementObj::implObj
 	lock->cells.clear();
 	for (auto &column_widths:lock->column_widths)
 		column_widths.clear();
-	insert_rows(lm, ll, 0, texts, meta);
+	insert_rows(IN_THREAD, lm, ll, 0, texts, meta);
 }
 
-void list_elementObj::implObj::remove_rows(const listlayoutmanager &lm,
+void list_elementObj::implObj::remove_rows(ONLY IN_THREAD,
+					   const listlayoutmanager &lm,
 					   listimpl_info_t::lock &lock,
 					   size_t row_number,
 					   size_t count)
 {
-	removing_rows(lm, lock, row_number, count);
+	removing_rows(IN_THREAD, lm, lock, row_number, count);
 
 	lock->row_infos.erase(lock->row_infos.begin()+row_number,
 			      lock->row_infos.begin()+row_number+count);
@@ -476,7 +488,8 @@ void list_elementObj::implObj::remove_rows(const listlayoutmanager &lm,
 }
 
 void list_elementObj::implObj
-::removing_rows(const listlayoutmanager &lm,
+::removing_rows(ONLY IN_THREAD,
+		const listlayoutmanager &lm,
 		listimpl_info_t::lock &lock,
 		size_t row,
 		size_t count)
@@ -502,7 +515,7 @@ void list_elementObj::implObj
 		auto &r=lock->row_infos.at(row+i);
 
 		if (r.extra->selected)
-			selected(lm, row+i, false, {});
+			selected(IN_THREAD, lm, row+i, false, {});
 	}
 
 	if (row > lock->row_infos.size() ||
@@ -1533,11 +1546,12 @@ void list_elementObj::implObj::click(ONLY IN_THREAD,
 		 {
 			 listlayoutmanager tlm=lm->create_public_object();
 
-			 tlm->autoselect(row_number, trigger);
+			 tlm->autoselect(IN_THREAD, row_number, trigger);
 		 });
 }
 
-void list_elementObj::implObj::autoselect(const listlayoutmanager &lm,
+void list_elementObj::implObj::autoselect(ONLY IN_THREAD,
+					  const listlayoutmanager &lm,
 					  size_t i,
 					  const callback_trigger_t &trigger)
 {
@@ -1545,10 +1559,11 @@ void list_elementObj::implObj::autoselect(const listlayoutmanager &lm,
 
 	busy_impl yes_i_am{*this};
 
-	lock->selection_type(lm, i, trigger, yes_i_am);
+	lock->selection_type(IN_THREAD, lm, i, trigger, yes_i_am);
 }
 
-void list_elementObj::implObj::selected(const listlayoutmanager &lm,
+void list_elementObj::implObj::selected(ONLY IN_THREAD,
+					const listlayoutmanager &lm,
 					size_t i,
 					bool selected_flag,
 					const callback_trigger_t &trigger)
@@ -1558,13 +1573,15 @@ void list_elementObj::implObj::selected(const listlayoutmanager &lm,
 	listimpl_info_t::lock &lock=ll;
 
 	if (i >= lock->row_infos.size())
-		throw EXCEPTION(gettextmsg(_("Row %1% does not exist"), i));
+		throw EXCEPTION(gettextmsg(_("Item %1% does not exist"), i));
 
-	selected_common(lm, ll, lock, i, selected_flag, trigger);
+	selected_common(IN_THREAD,
+			lm, ll, lock, i, selected_flag, trigger);
 }
 
 void list_elementObj::implObj
-::menuitem_selected(const listlayoutmanager &lm,
+::menuitem_selected(ONLY IN_THREAD,
+		    const listlayoutmanager &lm,
 		    size_t i,
 		    const callback_trigger_t &trigger,
 		    const busy &mcguffin)
@@ -1574,58 +1591,37 @@ void list_elementObj::implObj
 	listimpl_info_t::lock &lock=ll;
 
 	if (i >= lock->row_infos.size())
-		throw EXCEPTION(gettextmsg(_("Row %1% does not exist"), i));
+		throw EXCEPTION(gettextmsg(_("Item %1% does not exist"), i));
 
 	auto &row=lock->row_infos.at(i);
 
 	if (row.extra->has_submenu())
 	{
-		// Need to postpone accessing row location until we're
-		// IN_THREAD
+		auto y=row.y;
+		auto height=row.height;
 
-		this->THREAD->run_as
-			([e=ref(this),
-			  extra=row.extra]
-			 (ONLY IN_THREAD)
-			 {
-				 textlist_info_lock lock{IN_THREAD, *e};
+		auto r=get_absolute_location(IN_THREAD);
 
-				 auto i=extra->current_row_number(IN_THREAD);
+		r.y = coord_t::truncate(r.y+y);
+		r.height=height;
 
-				 if (i >= lock->row_infos.size())
-					 return;
+		get_window_handler().get_absolute_location_on_screen
+			(IN_THREAD, r);
 
-				 const auto &row=lock->row_infos.at(i);
-
-				 if (row.extra != extra)
-					 return;
-
-				 auto y=row.y;
-				 auto height=row.height;
-
-				 auto r=e->get_absolute_location(IN_THREAD);
-
-				 r.y = coord_t::truncate(r.y+y);
-				 r.height=height;
-
-				 e->get_window_handler()
-					 .get_absolute_location_on_screen
-					 (IN_THREAD, r);
-
-				 extra->toggle_submenu(IN_THREAD, r);
-			 });
+		row.extra->toggle_submenu(IN_THREAD, r);
 		return;
 	}
 
 	if (row.extra->is_option())
 	{
-		selected_common(lm, ll, lock, i,
+		selected_common(IN_THREAD, lm, ll, lock, i,
 				!row.extra->selected,
 				trigger);
 	}
 	else
 	{
-		notify_callbacks(lm, ll, row, i, row.extra->selected,
+		notify_callbacks(IN_THREAD,
+				 lm, ll, row, i, row.extra->selected,
 				 trigger, mcguffin);
 	}
 
@@ -1633,17 +1629,12 @@ void list_elementObj::implObj
 	// all menu popups, now that the menu selection
 	// has been made...
 
-	this->THREAD->run_as
-		([e=ref(this)]
-		 (ONLY IN_THREAD)
-		 {
-			 e->get_window_handler().handler_data
-				 ->close_all_menu_popups(IN_THREAD);
-		 });
+	get_window_handler().handler_data->close_all_menu_popups(IN_THREAD);
 }
 
 void list_elementObj::implObj
-::selected_common(const listlayoutmanager &lm,
+::selected_common(ONLY IN_THREAD,
+		  const listlayoutmanager &lm,
 		  list_lock &ll,
 		  listimpl_info_t::lock &lock,
 		  size_t i,
@@ -1661,14 +1652,15 @@ void list_elementObj::implObj
 	try {
 		list_style.selected_changed(&lock->cells.at(i*columns),
 					    selected_flag);
-	} CATCH_EXCEPTIONS;
+	} REPORT_EXCEPTIONS(this);
 
-	notify_callbacks(lm, ll, r, i, selected_flag, trigger);
+	notify_callbacks(IN_THREAD, lm, ll, r, i, selected_flag, trigger);
 	schedule_row_redraw(lock);
 }
 
 void list_elementObj::implObj
-::notify_callbacks(const listlayoutmanager &lm,
+::notify_callbacks(ONLY IN_THREAD,
+		   const listlayoutmanager &lm,
 		   list_lock &ll,
 		   const list_row_info_t &r,
 		   size_t i,
@@ -1677,11 +1669,13 @@ void list_elementObj::implObj
 {
 	busy_impl yes_i_am{*this};
 
-	notify_callbacks(lm, ll, r, i, selected_flag, trigger, yes_i_am);
+	notify_callbacks(IN_THREAD,
+			 lm, ll, r, i, selected_flag, trigger, yes_i_am);
 }
 
 void list_elementObj::implObj
-::notify_callbacks(const listlayoutmanager &lm,
+::notify_callbacks(ONLY IN_THREAD,
+		   const listlayoutmanager &lm,
 		   list_lock &ll,
 		   const list_row_info_t &r,
 		   size_t i,
@@ -1697,12 +1691,13 @@ void list_elementObj::implObj
 
 	if (r.extra->status_change_callback)
 		try {
-			r.extra->status_change_callback(info);
-		} CATCH_EXCEPTIONS;
+			r.extra->status_change_callback(IN_THREAD, info);
+		} REPORT_EXCEPTIONS(this);
 
-	try {
-		lock->selection_changed(info);
-	} CATCH_EXCEPTIONS;
+	if (lock->selection_changed)
+		try {
+			lock->selection_changed(IN_THREAD, info);
+		} REPORT_EXCEPTIONS(this);
 }
 
 bool list_elementObj::implObj::enabled(size_t i)
@@ -1710,17 +1705,17 @@ bool list_elementObj::implObj::enabled(size_t i)
 	listimpl_info_t::lock lock{textlist_info};
 
 	if (i >= lock->row_infos.size())
-		throw EXCEPTION(gettextmsg(_("Row %1% does not exist"), i));
+		throw EXCEPTION(gettextmsg(_("Item %1% does not exist"), i));
 
 	return lock->row_infos.at(i).extra->enabled();
 }
 
-void list_elementObj::implObj::enabled(size_t i, bool flag)
+void list_elementObj::implObj::enabled(ONLY IN_THREAD, size_t i, bool flag)
 {
 	listimpl_info_t::lock lock{textlist_info};
 
 	if (i >= lock->row_infos.size())
-		throw EXCEPTION(gettextmsg(_("Row %1% does not exist"), i));
+		throw EXCEPTION(gettextmsg(_("Item %1% does not exist"), i));
 
 	auto &r=lock->row_infos.at(i);
 
@@ -1801,15 +1796,17 @@ std::vector<size_t> list_elementObj::implObj::all_selected()
 	return all;
 }
 
-void list_elementObj::implObj::unselect(const listlayoutmanager &lm)
+void list_elementObj::implObj::unselect(ONLY IN_THREAD,
+					const listlayoutmanager &lm)
 {
 	list_lock ll{lm};
 
-	if (unselect(lm, ll))
+	if (unselect(IN_THREAD, lm, ll))
 		schedule_row_redraw(ll);
 }
 
-bool list_elementObj::implObj::unselect(const listlayoutmanager &lm,
+bool list_elementObj::implObj::unselect(ONLY IN_THREAD,
+					const listlayoutmanager &lm,
 					list_lock &ll)
 {
 	bool unselected=false;
@@ -1837,7 +1834,8 @@ bool list_elementObj::implObj::unselect(const listlayoutmanager &lm,
 					 false);
 			} CATCH_EXCEPTIONS;
 			unselected=true;
-			notify_callbacks(lm, ll, r, i, false, internal);
+			notify_callbacks(IN_THREAD,
+					 lm, ll, r, i, false, internal);
 		}
 	}
 

@@ -461,7 +461,7 @@ void textlabelObj::implObj::link_update(ONLY IN_THREAD,
 					const text_hotspot &link,
 					const text_event_t &event_type)
 {
-	auto replacement_text=link->event(event_type);
+	auto replacement_text=link->event(IN_THREAD, event_type);
 
 	if (replacement_text.string.empty())
 		return;

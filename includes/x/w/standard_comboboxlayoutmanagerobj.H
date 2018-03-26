@@ -40,23 +40,48 @@ public:
 
 	void append_items(const std::vector<list_item_param> &items) override;
 
+	//! Append a new item to the combo-box.
+
+	void append_items(ONLY IN_THREAD,
+			  const std::vector<list_item_param> &items) override;
+
 	//! Insert a new item to the combo-box before an existing item.
 
 	void insert_items(size_t i, const std::vector<list_item_param> &items)
 		override;
 
-	//! Remove an item from the combo-box.
+	//! Insert a new item to the combo-box before an existing item.
 
-	void remove_item(size_t i) override;
+	void insert_items(ONLY IN_THREAD,
+			  size_t i, const std::vector<list_item_param> &items)
+		override;
+
+	//! Remove an item from the combo-box.
+	void remove_item(ONLY IN_THREAD, size_t i) override;
+
+	using custom_comboboxlayoutmanagerObj::remove_item;
 
 	//! Replace an item.
 
 	void replace_items(size_t item_number,
 			  const std::vector<list_item_param> &items) override;
 
+	//! Replace an item.
+
+	void replace_items(ONLY IN_THREAD,
+			   size_t item_number,
+			   const std::vector<list_item_param> &items) override;
+
 	//! Override replace_all().
 
-	void replace_all_items(const std::vector<list_item_param> &items) override;
+	void replace_all_items(const std::vector<list_item_param> &items)
+		override;
+
+	//! Override replace_all().
+
+	void replace_all_items(ONLY IN_THREAD,
+			       const std::vector<list_item_param> &items)
+		override;
 
 	//! Return combo-box item.
 	text_param item(size_t i) const;

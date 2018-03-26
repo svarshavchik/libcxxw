@@ -83,7 +83,8 @@ class LIBCXX_HIDDEN booklayoutmanagerObj::implObj : virtual public obj {
 
 	//! Open a page.
 
-	static void open(const booklayoutmanager &blm, size_t n,
+	static void open(THREAD_CALLBACK,
+			 const booklayoutmanager &blm, size_t n,
 			 const callback_trigger_t &trigger);
 
 };

@@ -205,7 +205,8 @@ void create_mainwindow(const x::w::main_window &main_window,
 			 // activated.
 
 			 cancel->on_activate([close_flag]
-					     (const x::w::callback_trigger_t &trigger,
+					     (ONLY IN_THREAD,
+					      const x::w::callback_trigger_t &trigger,
 					      const x::w::busy &ignore)
 					     {
 						     std::cout << "Cancel"
@@ -225,7 +226,8 @@ void create_mainwindow(const x::w::main_window &main_window,
 			 // to be destroyed.
 
 			 reset->on_activate([text_field, subject_field]
-					    (const x::w::callback_trigger_t &trigger,
+					    (ONLY IN_THREAD,
+					     const x::w::callback_trigger_t &trigger,
 					     const x::w::busy &ignore)
 					    {
 						    text_field->set("");
@@ -233,7 +235,8 @@ void create_mainwindow(const x::w::main_window &main_window,
 					    });
 
 			 ok->on_activate([close_flag]
-					 (const x::w::callback_trigger_t &trigger,
+					 (ONLY IN_THREAD,
+					  const x::w::callback_trigger_t &trigger,
 					  const x::w::busy &ignore)
 					 {
 						 std::cout << "Ok"
@@ -280,7 +283,8 @@ void inputfieldsandbuttons()
 				      "inputfieldsandbuttons@examples.w.libcxx.com");
 	main_window->on_delete
 		([close_flag]
-		 (const x::w::busy &ignore)
+		 (ONLY IN_THREAD,
+		  const x::w::busy &ignore)
 		 {
 			 close_flag->close();
 		 });

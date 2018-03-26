@@ -21,13 +21,13 @@
 		LOG_ERROR("Unknown exception thrown");		\
 	}
 
-#define REPORT_EXCEPTIONS(window) catch (const exception &e)		\
+#define REPORT_EXCEPTIONS(window) catch (const exception &caught_e)	\
 	{								\
-		(window)->exception_message(e);				\
+		(window)->exception_message(caught_e);			\
 	}								\
-	catch (const std::exception &e)					\
+	catch (const std::exception &caught_e)				\
 	{								\
-		(window)->exception_message(EXCEPTION(e.what()));	\
+		(window)->exception_message(EXCEPTION(caught_e.what())); \
 	}								\
 	catch(...)							\
 	{								\
@@ -35,16 +35,17 @@
 	}
 
 #define REPORT_EXCEPTIONS_WITH_CONFIG(window,config)			\
-	catch (const exception &e)					\
+	catch (const exception &caught_e)				\
 	{								\
-		(window)->exception_message(e,config);			\
+		(window)->exception_message(caught_e,(config));		\
 	}								\
-	catch (const std::exception &e)					\
+	catch (const std::exception &caught_e)				\
 	{								\
-		(window)->exception_message(EXCEPTION(e.what()), config); \
+		(window)->exception_message(EXCEPTION(caught_e.what()),	\
+					    (config));			\
 	}								\
 	catch(...)							\
 	{								\
-		(window)->stop_message("Unknown exception thrown.", config); \
+		(window)->stop_message("Unknown exception thrown.", (config)); \
 	}
 #endif

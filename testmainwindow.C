@@ -275,7 +275,7 @@ auto runteststate(testmainwindowoptions &options,
 
 	main_window->on_state_update
 		([c]
-		 (const auto &what, const auto &ignore)
+		 (THREAD_CALLBACK, const auto &what, const auto &ignore)
 		 {
 			 std::cout << "Window state update: " << what
 			 << std::endl;
@@ -659,7 +659,7 @@ runtestthemescale(const testmainwindowoptions &options)
 
 	main_window->on_state_update
 		([cmain]
-		 (const auto &what, const auto &ignore)
+		 (THREAD_CALLBACK, const auto &what, const auto &ignore)
 		 {
 			 std::cout << "Main window: " << what << std::endl;
 
@@ -673,7 +673,7 @@ runtestthemescale(const testmainwindowoptions &options)
 	LIBCXX_NAMESPACE::w::element(main_window->appdata)
 		->on_state_update
 		([ccanvas, first_time=true]
-		 (const auto &what, const auto &ignore)
+		 (THREAD_CALLBACK, const auto &what, const auto &ignore)
 		 mutable
 		 {
 			 if (first_time)

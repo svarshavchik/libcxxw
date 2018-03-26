@@ -7,6 +7,7 @@
 
 #include <x/w/hotspotfwd.H>
 #include <x/w/hotspotobj.H>
+#include <x/functionalrefptr.H>
 
 LIBCXXW_NAMESPACE_START
 

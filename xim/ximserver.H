@@ -13,14 +13,13 @@
 #include "x/w/types.H"
 #include <x/obj.H>
 #include <x/logger.H>
-#include <x/functional.H>
+#include <x/functionalrefptr.H>
 
 #include <xcb/xproto.h>
 
 #include <string>
 #include <vector>
 #include <unordered_map>
-#include <functional>
 #include <deque>
 
 LIBCXXW_NAMESPACE_START
@@ -186,8 +185,8 @@ public:
 
 	//! Callbacks used by add_request().
 
-	typedef std::function<bool (ONLY IN_THREAD, const ximserver &)
-			      > send_sync_request_callback_t;
+	typedef functionref<bool (ONLY IN_THREAD, const ximserver &)
+			    > send_sync_request_callback_t;
 
 	// Add a synchronoous request.
 
@@ -218,9 +217,9 @@ public:
 	void add_client_request(ONLY IN_THREAD,
 				const ximrequest &req,
 				const ximclient &client,
-				const std::function<bool (ONLY IN_THREAD,
-							  const ximserver &,
-							  const ximclient &)>
+				const functionref<bool (ONLY IN_THREAD,
+							const ximserver &,
+							const ximclient &)>
 				&callback);
 	// Synchronous request queue
 	std::deque<std::pair<send_sync_request_callback_t, ximrequest>>

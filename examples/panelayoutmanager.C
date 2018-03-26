@@ -106,7 +106,7 @@ static void create_main_window(const x::w::main_window &mw,
 					 "When needed",
 					 "Reserve space"});
 
-			 lm->selected(3, true, {});
+			 lm->selected(3, true);
 		 },
 		 x::w::new_standard_comboboxlayoutmanager{});
 
@@ -121,7 +121,8 @@ static void create_main_window(const x::w::main_window &mw,
 
 	b->show();
 	b->on_activate([pane, scrollbar_visibility]
-		       (const auto &trigger,
+		       (ONLY IN_THREAD,
+			const auto &trigger,
 			const auto &busy) {
 			       insert(pane, get_scrollbar_visibility
 				      (scrollbar_visibility));
@@ -132,7 +133,8 @@ static void create_main_window(const x::w::main_window &mw,
 
 	b->show();
 	b->on_activate([pane, scrollbar_visibility]
-		       (const auto &trigger,
+		       (ONLY IN_THREAD,
+			const auto &trigger,
 			const auto &busy) {
 			       append(pane, get_scrollbar_visibility
 				      (scrollbar_visibility));
@@ -145,7 +147,8 @@ static void create_main_window(const x::w::main_window &mw,
 
 	b->show();
 	b->on_activate([pane]
-		       (const auto &trigger,
+		       (ONLY IN_THREAD,
+			const auto &trigger,
 			const auto &busy) {
 			       remove_first(pane);
 		       });
@@ -155,7 +158,8 @@ static void create_main_window(const x::w::main_window &mw,
 
 	b->show();
 	b->on_activate([pane]
-		       (const auto &trigger,
+		       (ONLY IN_THREAD,
+			const auto &trigger,
 			const auto &busy) {
 			       remove_last(pane);
 		       });
@@ -167,7 +171,8 @@ static void create_main_window(const x::w::main_window &mw,
 
 	b->show();
 	b->on_activate([pane, scrollbar_visibility]
-		       (const auto &trigger,
+		       (ONLY IN_THREAD,
+			const auto &trigger,
 			const auto &busy) {
 			       replace_first(pane, get_scrollbar_visibility
 					     (scrollbar_visibility));
@@ -178,7 +183,8 @@ static void create_main_window(const x::w::main_window &mw,
 
 	b->show();
 	b->on_activate([pane]
-		       (const auto &trigger,
+		       (ONLY IN_THREAD,
+			const auto &trigger,
 			const auto &busy) {
 			       	x::w::panelayoutmanager
 					lm=pane->get_layoutmanager();
@@ -203,7 +209,8 @@ static void create_main_window(const x::w::main_window &mw,
 
 		b->show();
 		b->on_activate([pane]
-			       (const auto &trigger,
+			       (ONLY IN_THREAD,
+				const auto &trigger,
 				const auto &busy) {
 				       insert_list(pane);
 			       });
@@ -214,7 +221,8 @@ static void create_main_window(const x::w::main_window &mw,
 
 	b->show();
 	b->on_activate([pane, scrollbar_visibility]
-		       (const auto &trigger,
+		       (ONLY IN_THREAD,
+			const auto &trigger,
 			const auto &busy) {
 			       replace_all(pane, get_scrollbar_visibility
 					   (scrollbar_visibility));
@@ -486,7 +494,8 @@ void testpane(const options &opts)
 
 	main_window->on_delete
 		([close_flag]
-		 (const auto &ignore)
+		 (ONLY IN_THREAD,
+		  const auto &ignore)
 		 {
 			 close_flag->close();
 		 });

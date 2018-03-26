@@ -8,8 +8,8 @@
 #include <x/w/peepholed_focusableobj.H>
 #include <x/w/input_fieldfwd.H>
 #include <x/w/text_paramfwd.H>
+#include <x/functionalrefptrfwd.H>
 #include <string>
-#include <functional>
 
 LIBCXXW_NAMESPACE_START
 
@@ -47,16 +47,18 @@ public:
 
 	//! Install a callback that gets invoked when the contents of the input field change.
 
-	void on_change(const std::function<void(const input_change_info_t &)>&);
+	void on_change(const functionref<void(THREAD_CALLBACK,
+					      const input_change_info_t &)>&);
 
 	//! Install a callback that gets invoked to autocomplete typed in text.
 
-	void on_autocomplete(const std::function<bool
-			     (input_autocomplete_info_t &)> &);
+	void on_autocomplete(const functionref<bool
+			     (THREAD_CALLBACK,
+			      input_autocomplete_info_t &)> &);
 
 	//! Install a callback to validate modified input field contents.
 
-	void on_validate(const std::function<input_field_validation_callback_t>
+	void on_validate(const functionref<input_field_validation_callback_t>
 			 &);
 
 	//! Inherited from elementObj

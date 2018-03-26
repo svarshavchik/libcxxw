@@ -17,15 +17,14 @@
 #include <x/w/focusable.H>
 #include <x/ref.H>
 
-#include <functional>
-#include <tuple>
+#include <x/functionalrefptr.H>
 
 LIBCXXW_NAMESPACE_START
 
 //! Signature for a custom combo-box selection factory.
 
-typedef std::function<focusable (const factory &)
-		      > custom_combobox_selection_factory_t;
+typedef functionref<focusable (const factory &)
+		    > custom_combobox_selection_factory_t;
 
 //! Information passed to the \ref custom_combobox_selection_changed_t "custom combo-box selection changed callback".
 
@@ -78,8 +77,10 @@ struct LIBCXX_HIDDEN custom_combobox_selection_search_info_t {
 
 //! Callback that gets invoked when a combo-box selection is made.
 
-typedef std::function<void (const custom_combobox_selection_search_info_t &)
-		      > custom_combobox_selection_search_t;
+typedef functionref<void (ONLY IN_THREAD,
+				  const custom_combobox_selection_search_info_t
+				  &)
+		    > custom_combobox_selection_search_t;
 
 
 /*!

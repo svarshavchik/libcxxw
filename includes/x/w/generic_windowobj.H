@@ -12,7 +12,7 @@
 #include <x/w/drawableobj.H>
 #include <x/obj.H>
 #include <x/logger.H>
-
+#include <x/functionalrefptrfwd.H>
 #include <string_view>
 
 LIBCXXW_NAMESPACE_START
@@ -57,7 +57,8 @@ public:
 	//! Invoke this lambda if the server disconnects unexpectedly.
 
 	//! \see connection
-	void on_disconnect(const std::function<void ()> &callback);
+
+	void on_disconnect(const functionref<void ()> &callback);
 };
 
 LIBCXXW_NAMESPACE_END

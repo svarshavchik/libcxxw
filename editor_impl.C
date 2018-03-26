@@ -290,8 +290,6 @@ editorObj::implObj::implObj(init_args &args)
 			  // Initial background_color
 			  args.config.background_color},
 	  cursor{this->text->end()},
-	  on_change_thread_only{ [](const auto &) {} },
-	  on_autocomplete_thread_only{[](const auto &) { return false; }},
 	  parent_peephole{args.parent_peephole},
 	  config{args.config}
 {
@@ -888,9 +886,13 @@ void editorObj::implObj::draw_changes(ONLY IN_THREAD,
 	validation_required=true;
 
 	try {
-		on_change(IN_THREAD)({change_made, inserted, deleted,
-					size()});
-	} CATCH_EXCEPTIONS;
+		auto &cb=on_change(IN_THREAD);
+
+		if (cb)
+			cb(IN_THREAD, input_change_info_t{change_made,
+						inserted, deleted,
+						size()});
+	} REPORT_EXCEPTIONS(this);
 
 	// Invoke the autocomplete callback if the conditions are right.
 
@@ -907,8 +909,11 @@ void editorObj::implObj::draw_changes(ONLY IN_THREAD,
 		bool flag=false;
 
 		try {
-			flag=on_autocomplete(IN_THREAD)(info);
-		} CATCH_EXCEPTIONS;
+			auto &cb=on_autocomplete(IN_THREAD);
+
+			if (cb)
+				flag=cb(IN_THREAD, info);
+		} REPORT_EXCEPTIONS(this);
 
 		if (flag)
 			set(IN_THREAD, info.string, info.string.size(),
@@ -1448,8 +1453,8 @@ bool editorObj::implObj::validate_modified(ONLY IN_THREAD,
 	bool flag=false;
 
 	try {
-		flag=validation_callback(IN_THREAD)(trigger);
-	} CATCH_EXCEPTIONS;
+		flag=validation_callback(IN_THREAD)(IN_THREAD, trigger);
+	} REPORT_EXCEPTIONS(this);
 
 	if (flag)
 		validation_required=false;

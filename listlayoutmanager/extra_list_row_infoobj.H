@@ -13,6 +13,7 @@
 #include "x/w/shortcutfwd.H"
 #include "x/w/rectangle.H"
 #include <x/obj.H>
+#include <x/functionalrefptrfwd.H>
 
 #include <functional>
 
@@ -66,13 +67,8 @@ class LIBCXX_HIDDEN extra_list_row_infoObj : virtual public obj {
 
 	//! This item's status change callback.
 
-	std::function<list_item_status_change_callback_t
-		      > status_change_callback=default_status_change_callback;
-
-	//! Default no-op status_change_callback.
-
-	static void default_status_change_callback(const
-						   list_item_status_info_t &);
+	functionptr<list_item_status_change_callback_t
+		    > status_change_callback;
 
  private:
 

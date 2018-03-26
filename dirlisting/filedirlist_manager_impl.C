@@ -25,7 +25,7 @@ LIBCXXW_NAMESPACE_START
 filedirlist_managerObj::implObj::current_selected_callbackObj
 ::current_selected_callbackObj()
 	: current_callback([]
-			   (const filedirlist_entry_id &,
+			   (THREAD_CALLBACK, const filedirlist_entry_id &,
 			    const callback_trigger_t &,
 			    const busy &)
 			   {
@@ -66,13 +66,16 @@ static inline auto create_filedir_list(const factory &f,
 	nlm.col_alignments.emplace(2, halign::right);
 
 	nlm.selection_type=[current_selected]
-		(const listlayoutmanager &ignore,
+		(ONLY IN_THREAD,
+		 const listlayoutmanager &ignore,
 		 size_t n,
 		 const callback_trigger_t &trigger,
 		 const busy &mcguffin)
 		{
 			current_selected->current_callback.get()
-			({filedirlist_entry_id::dir_section, n}, trigger,
+			(IN_THREAD,
+			filedirlist_entry_id{filedirlist_entry_id::dir_section,
+					n}, trigger,
 			 mcguffin);
 		};
 
@@ -87,13 +90,16 @@ static inline auto create_filedir_list(const factory &f,
 					    nlm)->show();
 
 	nlm.selection_type=[current_selected]
-		(const listlayoutmanager &ignore,
+		(ONLY IN_THREAD,
+		 const listlayoutmanager &ignore,
 		 size_t n,
 		 const callback_trigger_t &trigger,
 		 const busy &mcguffin)
 		{
 			current_selected->current_callback.get()
-			({filedirlist_entry_id::file_section, n}, trigger,
+			(IN_THREAD,
+			filedirlist_entry_id{
+				filedirlist_entry_id::file_section, n}, trigger,
 			 mcguffin);
 		};
 
@@ -150,7 +156,7 @@ void filedirlist_managerObj::implObj::constructor(const factory &,
 
 	filedir_list->on_state_update
 		([me=make_weak_capture(ref(this))]
-		 (const auto &state, const auto &busy)
+		 (THREAD_CALLBACK, const auto &state, const auto &busy)
 		 {
 			 auto got=me.get();
 
@@ -167,7 +173,7 @@ void filedirlist_managerObj::implObj::constructor(const factory &,
 }
 
 void filedirlist_managerObj::implObj
-::set_selected_callback(const std::function<filedirlist_selected_callback_t> &c)
+::set_selected_callback(const functionref<filedirlist_selected_callback_t> &c)
 {
 	current_selected->current_callback=c;
 }
@@ -464,7 +470,7 @@ void filedirlist_managerObj::implObj::start()
 }
 
 void filedirlist_managerObj::implObj::start(protected_info_t::lock &lock,
-					    const std::function
+					    const functionref
 					    <void
 					    (protected_info_t::lock &lock)>
 					    &prepare)

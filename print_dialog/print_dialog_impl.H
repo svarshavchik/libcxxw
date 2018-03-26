@@ -103,7 +103,7 @@ class LIBCXX_HIDDEN print_dialogObj::implObj : virtual public obj {
 
 	//! The dialog's cancel callback.
 
-	const functionref<void ()> cancel_callback;
+	const functionref<void (THREAD_CALLBACK)> cancel_callback;
 
 	//! The display elements for the various options.
 
@@ -118,7 +118,7 @@ class LIBCXX_HIDDEN print_dialogObj::implObj : virtual public obj {
 
 	//! Constructor
 	implObj(const main_window &parent_window,
-		const functionref<void ()> &cancel_callback,
+		const functionref<void (THREAD_CALLBACK)> &cancel_callback,
 		const print_dialog_fieldsptr &fields);
 
 	//! Destructor

@@ -6,9 +6,10 @@
 #define x_w_print_dialog_config_h
 
 #include <x/w/print_dialog_configfwd.H>
+#include <x/w/connection_threadfwd.H>
 #include <x/w/busy.H>
 #include <x/cups/job.H>
-#include <functional>
+#include <x/functionalrefptr.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -31,6 +32,8 @@ struct print_callback_info {
 
 //! Callback used by the "Print" button in the \ref print_dialog "print dialog".
 
+//! This is not a THREAD_CALLBACK, it gets started in a separate thread.
+
 typedef void print_callback_t(const print_callback_info &);
 
 //! The configuration of a print dialog.
@@ -41,10 +44,10 @@ struct print_dialog_config {
 
 	//! Callback, "Print" selected, dialog closed
 
-	std::function<print_callback_t> print_callback;
+	functionptr<print_callback_t> print_callback;
 
 	//! Callback, dialog closed.
-	std::function<void ()> cancel_callback;
+	functionptr<void (THREAD_CALLBACK)> cancel_callback;
 
 	//! Destructor
 	~print_dialog_config();

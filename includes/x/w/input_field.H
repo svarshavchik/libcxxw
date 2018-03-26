@@ -17,6 +17,7 @@
 #include <x/ref.H>
 #include <x/weakptr.H>
 #include <x/strtok.H>
+#include <x/functionalrefptr.H>
 #include <sstream>
 #include <optional>
 #include <utility>
@@ -66,7 +67,8 @@ template<typename validator_functor>
 class input_field_detect_validator_functor_parameter<
 	validator_functor,
 	std::void_t<decltype(std::declval<validator_functor &&>()
-			     (std::declval<const std::string &>(),
+			     (std::declval<THREAD_CALLBACK>(),
+			      std::declval<const std::string &>(),
 			      std::declval<text_param &>(),
 			      std::declval<const callback_trigger_t &>()))>>
 	: public input_field_get_for_validator<std::string> {};
@@ -76,7 +78,8 @@ template<typename validator_functor>
 class input_field_detect_validator_functor_parameter<
 	validator_functor,
 	std::void_t<decltype(std::declval<validator_functor &&>()
-			     (std::declval<const std::u32string &>(),
+			     (std::declval<THREAD_CALLBACK>(),
+			      std::declval<const std::u32string &>(),
 			      std::declval<text_param &>(),
 			      std::declval<const callback_trigger_t &>()))>>
 	: public input_field_get_for_validator<std::u32string> {};
@@ -216,7 +219,8 @@ auto input_fieldObj::set_validator(validator_functor &&validator,
 
 	// Figure out the std::optional that the validator returns.
 
-	typedef decltype(validator(std::declval<const validated_string_t &>(),
+	typedef decltype(validator(std::declval<THREAD_CALLBACK>(),
+				   std::declval<const validated_string_t &>(),
 				   std::declval<text_param &>(),
 				   std::declval<const callback_trigger_t &>()))
 		validator_optional_ret_t;
@@ -236,7 +240,8 @@ auto input_fieldObj::set_validator(validator_functor &&validator,
 
 	on_validate
 		([=]
-		 (const callback_trigger_t &trigger)
+		 (ONLY IN_THREAD,
+		  const callback_trigger_t &trigger)
 		 {
 			 auto my_field_ptr=validated->my_inputfield.getptr();
 
@@ -258,7 +263,8 @@ auto input_fieldObj::set_validator(validator_functor &&validator,
 			 // Get the contents of the input field, trim off the
 			 // leading and the trailing whitespace, invoke
 			 // the validator function.
-			 auto v=validator(trim(validator_t
+			 auto v=validator(IN_THREAD,
+					  trim(validator_t
 					       ::get(my_input_field_lock)),
 					  error_message, trigger);
 
@@ -292,7 +298,8 @@ auto input_fieldObj::set_string_validator(validator_functor &&validator,
 {
 	return set_validator
 		([=]
-		 (const std::string &value,
+		 (ONLY IN_THREAD,
+		  const std::string &value,
 		  text_param &error_message,
 		  const callback_trigger_t &trigger)
 		 {
@@ -300,7 +307,9 @@ auto input_fieldObj::set_string_validator(validator_functor &&validator,
 			 // the type being returned.
 
 			 typedef typename input_field_validator_ret_t<
-				 decltype(validator(std::declval<const
+				 decltype(validator(std::declval
+						    <THREAD_CALLBACK>(),
+						    std::declval<const
 						    std::string &>(),
 						    nullptr,
 						    std::declval<text_param
@@ -328,14 +337,16 @@ auto input_fieldObj::set_string_validator(validator_functor &&validator,
 					 i.get();
 					 if (i.eof())
 					 {
-						 return validator(value, &v,
+						 return validator(IN_THREAD,
+								  value, &v,
 								  error_message,
 								  trigger);
 					 }
 				 }
 			 }
 
-			 return validator(value, nullptr,
+			 return validator(IN_THREAD,
+					  value, nullptr,
 					  error_message, trigger);
 		 },
 

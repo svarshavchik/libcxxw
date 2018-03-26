@@ -109,7 +109,7 @@ focusable_container create_combobox(const factory &f,
 focusable_container create_editable_combobox(const factory &f)
 {
 	new_editable_comboboxlayoutmanager ec{
-		[] (const auto &info)
+		[] (THREAD_CALLBACK, const auto &info)
 		{
 			if (info.list_item_status_info.selected)
 				std::cout << "Selected item #"
@@ -124,7 +124,8 @@ focusable_container create_editable_combobox(const factory &f)
 focusable_container create_standard_combobox(const factory &f)
 {
 	new_standard_comboboxlayoutmanager sc{
-		[] (const auto &info)
+		[](ONLY IN_THREAD,
+		   const auto &info)
 		{
 			if (info.list_item_status_info.selected)
 				std::cout << "Selected item #"
@@ -165,7 +166,8 @@ void testcombobox(const testcombobox_options &options)
 
 			 factory->halign(halign::fill)
 			 .create_normal_button_with_label({"Append"},{"Alt", 'A'})
-			 ->on_activate([combobox, i=0](const auto &,
+			 ->on_activate([combobox, i=0](THREAD_CALLBACK,
+						       const auto &,
 						       const auto &) mutable {
 					 standard_comboboxlayoutmanager lm=
 						 combobox->get_layoutmanager();
@@ -181,7 +183,8 @@ void testcombobox(const testcombobox_options &options)
 
 			 factory->halign(halign::fill)
 			 .create_normal_button_with_label("Delete")
-			 ->on_activate([combobox](const auto &, const auto &) {
+			 ->on_activate([combobox](THREAD_CALLBACK,
+						  const auto &, const auto &) {
 					 standard_comboboxlayoutmanager lm=
 						 combobox->get_layoutmanager();
 
@@ -195,7 +198,8 @@ void testcombobox(const testcombobox_options &options)
 
 			 factory->halign(halign::center)
 			 .create_normal_button_with_label({"Append Separator"})
-			 ->on_activate([combobox](const auto &, const auto &) {
+			 ->on_activate([combobox](THREAD_CALLBACK,
+						  const auto &, const auto &) {
 					 standard_comboboxlayoutmanager lm=
 						 combobox->get_layoutmanager();
 
@@ -206,7 +210,8 @@ void testcombobox(const testcombobox_options &options)
 
 			 factory->halign(halign::center)
 			 .create_normal_button_with_label({"Insert Separator"})
-			 ->on_activate([combobox](const auto &, const auto &) {
+			 ->on_activate([combobox](THREAD_CALLBACK,
+						  const auto &, const auto &) {
 					 standard_comboboxlayoutmanager lm=
 						 combobox->get_layoutmanager();
 
@@ -217,7 +222,8 @@ void testcombobox(const testcombobox_options &options)
 
 			 factory->halign(halign::center)
 			 .create_normal_button_with_label({"Disable/Enable 1st item"})
-			 ->on_activate([combobox](const auto &, const auto &) {
+			 ->on_activate([combobox](THREAD_CALLBACK,
+						  const auto &, const auto &) {
 					 standard_comboboxlayoutmanager lm=
 						 combobox->get_layoutmanager();
 
@@ -238,7 +244,8 @@ void testcombobox(const testcombobox_options &options)
 
 	main_window->on_delete
 		([close_flag]
-		 (const auto &ignore)
+		 (THREAD_CALLBACK,
+		  const auto &ignore)
 		 {
 			 close_flag->close();
 		 });

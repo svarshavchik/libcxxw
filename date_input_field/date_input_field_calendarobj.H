@@ -97,7 +97,7 @@ class LIBCXX_HIDDEN date_input_field_calendarObj
 	struct most_recent_date_s {
 
 		std::optional<ymd> date_value;
-		date_input_field_callback_t callback;
+		refptr_traits<date_input_field_callback_t>::ptr_t callback;
 	};
 
 	//! Container for the most recently picked date+callback
@@ -113,7 +113,8 @@ class LIBCXX_HIDDEN date_input_field_calendarObj
 
 	//! Invoke the callback, if one is installed.
 
-	void report_new_date(const std::optional<ymd> &d,
+	void report_new_date(THREAD_CALLBACK,
+			     const std::optional<ymd> &d,
 			     const callback_trigger_t &trigger);
 
 	// Switch to a new calendar.
@@ -133,11 +134,13 @@ class LIBCXX_HIDDEN date_input_field_calendarObj
 	void next_mon();
 
 	//! Picked a date.
-	void picked(const ymd &y, const callback_trigger_t &callback);
+	void picked(THREAD_CALLBACK,
+		    const ymd &y, const callback_trigger_t &callback);
 
 	//! Set a new date in the field. Pass a null value to clear it.
 
-	void set(const std::optional<ymd> &, const callback_trigger_t &);
+	void set(THREAD_CALLBACK,
+		 const std::optional<ymd> &, const callback_trigger_t &);
 
 	//! Return the entered date. Returns a null value if no valid date is entered.
 

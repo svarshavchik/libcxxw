@@ -8,9 +8,10 @@
 
 LIBCXXW_NAMESPACE_START
 
-text_hotspotObj::text_hotspotObj(const std::function<text_param
-				 (const text_event_t &)> &event)
-	:event(event)
+text_hotspotObj::text_hotspotObj(const functionref<text_param
+				 (THREAD_CALLBACK,
+				  const text_event_t &)> &event)
+	:event{event}
 {
 }
 

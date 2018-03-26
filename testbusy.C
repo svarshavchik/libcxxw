@@ -136,7 +136,8 @@ static inline void create_main_window(const LIBCXX_NAMESPACE::w::main_window &ma
 	factory->create_normal_button_with_label
 		({"Shade"})->on_activate
 		([mythread]
-		 (const auto &, const auto &get_busy) {
+		 (THREAD_CALLBACK,
+		  const auto &, const auto &get_busy) {
 			mythread->were_busy(get_busy.get_shade_busy_mcguffin());
 		});
 
@@ -145,7 +146,8 @@ static inline void create_main_window(const LIBCXX_NAMESPACE::w::main_window &ma
 	factory->create_normal_button_with_label
 		({"Pointer"})->on_activate
 		([mythread]
-		 (const auto &, const auto &get_busy) {
+		 (THREAD_CALLBACK,
+		  const auto &, const auto &get_busy) {
 			mythread->were_busy(get_busy.get_wait_busy_mcguffin());
 		});
 }
@@ -180,7 +182,8 @@ void testbusy()
 
 	main_window->on_delete
 		([mythread]
-		 (const auto &ignore)
+		 (THREAD_CALLBACK,
+		  const auto &ignore)
 		 {
 			 mythread->window_close_button_pressed();
 		 });

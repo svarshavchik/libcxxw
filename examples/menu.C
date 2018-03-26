@@ -108,7 +108,8 @@ void testmenu()
 
 	main_window->on_delete
 		([close_flag]
-		 (const x::w::busy &ignore)
+		 (ONLY IN_THREAD,
+		  const x::w::busy &ignore)
 		 {
 			 close_flag->close();
 		 });
@@ -264,7 +265,8 @@ void file_menu(const x::w::main_window &main_window,
 			// "New", "Open", AND "Close"
 			x::w::shortcut{"Alt", 'N'},
 			[main_window=x::make_weak_capture(main_window)]
-			(const auto &info)
+			(ONLY IN_THREAD,
+			 const auto &info)
 			{
 				auto got=main_window.get();
 
@@ -279,7 +281,8 @@ void file_menu(const x::w::main_window &main_window,
 			"New",
 			x::w::shortcut{"Alt", 'O'},
 			[main_window=x::make_weak_capture(main_window)]
-			(const auto &info)
+			(ONLY IN_THREAD,
+			 const auto &info)
 			{
 				auto got=main_window.get();
 
@@ -295,7 +298,8 @@ void file_menu(const x::w::main_window &main_window,
 
 			x::w::shortcut{"Alt", 'C'},
 			[]
-			(const auto &info)
+			(ONLY IN_THREAD,
+			 const auto &info)
 			{
 				std::cout << "File->Close selected" << std::endl;
 			},
@@ -310,7 +314,8 @@ void file_menu(const x::w::main_window &main_window,
 
 			x::w::shortcut{"Alt", 'T'},
 			[=]
-			(const auto &info)
+			(ONLY IN_THREAD,
+			 const auto &info)
 			{
 				auto l=view_menu->get_layoutmanager();
 
@@ -340,7 +345,8 @@ void file_menu(const x::w::main_window &main_window,
 
 						recent_menu->append_items
 							({[=]
-							  (const auto &ignore)
+							  (ONLY IN_THREAD,
+							   const auto &ignore)
 							  {
 								  std::cout << s
 									    << std::endl;
@@ -352,7 +358,8 @@ void file_menu(const x::w::main_window &main_window,
 
 			x::w::shortcut{"Alt", 'Q'},
 			[close_flag]
-			(const auto &info)
+			(ONLY IN_THREAD,
+			 const auto &info)
 			{
 				std::cout << "File->Quit selected" << std::endl;
 				close_flag->close();
@@ -370,7 +377,8 @@ size_t view_menu(const x::w::listlayoutmanager &m)
 		({
 			x::w::menuoption{},
 			[]
-			(const x::w::list_item_status_info_t &info)
+			(ONLY IN_THREAD,
+			 const x::w::list_item_status_info_t &info)
 			{
 				std::cout << "View->Tools: " << info.selected
 					  << std::endl;
@@ -379,7 +387,8 @@ size_t view_menu(const x::w::listlayoutmanager &m)
 
 			x::w::menuoption{},
 			[]
-			(const x::w::list_item_status_info_t &info)
+			(ONLY IN_THREAD,
+			 const x::w::list_item_status_info_t &info)
 			{
 				std::cout << "View->Options: " << info.selected
 					  << std::endl;
@@ -419,7 +428,8 @@ void help_menu(const x::w::main_window &main_window,
 	m->append_items
 		({
 			[main_window=x::make_weak_capture(main_window)]
-			(const auto &ignore)
+			(ONLY IN_THREAD,
+			 const auto &ignore)
 			{
 				auto got=main_window.get();
 
@@ -434,7 +444,8 @@ void help_menu(const x::w::main_window &main_window,
 
 			x::w::shortcut{"F1"},
 			[main_window=x::make_weak_capture(main_window)]
-			(const auto &ignore)
+			(ONLY IN_THREAD,
+			 const auto &ignore)
 			{
 				auto got=main_window.get();
 
@@ -451,7 +462,8 @@ void help_menu(const x::w::main_window &main_window,
 			"About",
 
 			[main_window=x::make_weak_capture(main_window)]
-			(const auto &ignore)
+			(ONLY IN_THREAD,
+			 const auto &ignore)
 			{
 				auto got=main_window.get();
 
@@ -513,7 +525,7 @@ void create_help_about(const x::w::main_window &main_window)
 					 100.0);
 		 },
 		 []
-		 (const x::w::busy &)
+		 (ONLY IN_THREAD, const x::w::busy &)
 		 {
 			 std::cout << "Help/About closed!" << std::endl;
 		 },
@@ -546,6 +558,7 @@ void stop_message_dialog(const x::w::main_window &mw)
 
 	config.acknowledged_callback=
 		[]
+		(ONLY IN_THREAD)
 		{
 			std::cout << "Error message acknowledged" << std::endl;
 		};
@@ -573,7 +586,8 @@ void create_help_question(const x::w::main_window &main_window)
 		 "",
 		 {},
 		 []
-		 (const x::w::input_field &f,
+		 (ONLY IN_THREAD,
+		  const x::w::input_field &f,
 		  const x::w::busy &)
 		 {
 			 x::w::input_lock lock{f};
@@ -581,7 +595,7 @@ void create_help_question(const x::w::main_window &main_window)
 			 std::cout << "Your name: " << lock.get() << std::endl;
 		 },
 		 []
-		 (const x::w::busy &)
+		 (ONLY IN_THREAD, const x::w::busy &)
 		 {
 			 std::cout << "How rude..." << std::endl;
 		 },
@@ -629,7 +643,8 @@ void create_file_open(const x::w::main_window &main_window)
 {
 	x::w::file_dialog_config
 		config{
-		[](const x::w::file_dialog &fd,
+		[](ONLY IN_THREAD,
+		   const x::w::file_dialog &fd,
 		   const std::string &filename,
 		   const x::w::busy &mcguffin)
 		{
@@ -640,7 +655,7 @@ void create_file_open(const x::w::main_window &main_window)
 
 			fd->dialog_window->hide();
 		},
-		[](const x::w::busy &mcguffin)
+		[](ONLY IN_THREAD, const x::w::busy &mcguffin)
 		{
 			std::cout << "File->Open: closed" << std::endl;
 		},
@@ -660,7 +675,8 @@ void create_file_new(const x::w::main_window &main_window)
 {
 	x::w::file_dialog_config
 		config{
-		[](const auto &fd, const std::string &filename,
+		[](ONLY IN_THREAD,
+		   const auto &fd, const std::string &filename,
 		   const x::w::busy &mcguffin)
 		{
 			std::cout << "File->New: " << filename << std::endl;
@@ -670,7 +686,7 @@ void create_file_new(const x::w::main_window &main_window)
 
 			fd->dialog_window->hide();
 		},
-		[](const x::w::busy &mcguffin)
+		[](ONLY IN_THREAD, const x::w::busy &mcguffin)
 		{
 			std::cout << "File->New: closed" << std::endl;
 		},

@@ -22,7 +22,8 @@ class text_hotspotObj;
 //! \code
 //! auto link=INSERT_LIBX_NAMESPACE::w::text_hotspot::create([],
 //!                                          []
-//!                                          (const INSERT_LIBX_NAMESPACE::w::text_event_t &e)
+//!                                          (ONLY IN_THREAD,
+//!                                           const INSERT_LIBX_NAMESPACE::w::text_event_t &e)
 //!                                          {
 //!                                              INSERT_LIBX_NAMESPACE::w::text_param ret;
 //!

@@ -29,6 +29,7 @@ INSERT_LIBX_NAMESPACE::w::progressbar
 pb->update(
       15, 50,
       []
+      (ONLY IN_THREAD)
       {
       });
 

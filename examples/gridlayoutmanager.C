@@ -263,7 +263,8 @@ inline void create_mainwindow(const x::w::main_window &main_window)
 
 	my_appdata->insert_column->on_activate
 		([main_window=x::make_weak_capture(main_window), counter=0]
-		 (const x::w::callback_trigger_t &trigger, const auto &busy)
+		 (ONLY IN_THREAD,
+		  const x::w::callback_trigger_t &trigger, const auto &busy)
 		 mutable
 		 {
 			 auto got=main_window.get();
@@ -278,7 +279,8 @@ inline void create_mainwindow(const x::w::main_window &main_window)
 
 	my_appdata->remove_column->on_activate
 		([main_window=x::make_weak_capture(main_window)]
-		 (const x::w::callback_trigger_t &trigger, const auto &busy)
+		 (ONLY IN_THREAD,
+		  const x::w::callback_trigger_t &trigger, const auto &busy)
 		 {
 			 auto got=main_window.get();
 
@@ -292,7 +294,8 @@ inline void create_mainwindow(const x::w::main_window &main_window)
 
 	my_appdata->insert_row->on_activate
 		([main_window=x::make_weak_capture(main_window), counter=0]
-		 (const x::w::callback_trigger_t &trigger, const auto &busy)
+		 (ONLY IN_THREAD,
+		  const x::w::callback_trigger_t &trigger, const auto &busy)
 		 mutable
 		 {
 			 auto got=main_window.get();
@@ -307,7 +310,8 @@ inline void create_mainwindow(const x::w::main_window &main_window)
 
 	my_appdata->remove_row->on_activate
 		([main_window=x::make_weak_capture(main_window), counter=0]
-		 (const x::w::callback_trigger_t &trigger, const auto &busy)
+		 (ONLY IN_THREAD,
+		  const x::w::callback_trigger_t &trigger, const auto &busy)
 		 mutable
 		 {
 			 auto got=main_window.get();
@@ -348,7 +352,8 @@ void gridlayoutmanager()
 
 	main_window->on_delete
 		([close_flag]
-		 (const x::w::busy &ignore)
+		 (ONLY IN_THREAD,
+		  const x::w::busy &ignore)
 		 {
 			 close_flag->close();
 		 });

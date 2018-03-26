@@ -23,10 +23,10 @@ public:
 	button_event(uint16_t SETofKEYBUTMASK, const keysyms &k,
 		     int button,
 		     bool press,
-		     unsigned click_count);
+		     unsigned click_count) LIBCXX_HIDDEN;
 
 	//! Destructor
-	~button_event();
+	~button_event() LIBCXX_HIDDEN;
 
 	int button; //!< Pointer button number
 	bool press; //!< Press or release

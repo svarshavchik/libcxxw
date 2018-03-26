@@ -9,6 +9,7 @@
 #include <x/w/gridlayoutmanagerobj.H>
 #include <x/w/new_layoutmanagerfwd.H>
 #include <x/ref.H>
+#include <x/functionalrefptr.H>
 
 LIBCXXW_NAMESPACE_START
 

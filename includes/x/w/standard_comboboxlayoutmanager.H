@@ -9,6 +9,7 @@
 #include <x/w/standard_comboboxlayoutmanagerobj.H>
 #include <x/w/custom_comboboxlayoutmanager.H>
 #include <x/w/text_param.H>
+#include <x/functionalrefptr.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -140,14 +141,25 @@ public:
 	//! Append new items to the combo-box.
 	void append_items(const std::vector<list_item_param> &items);
 
+	//! Append new items to the combo-box.
+	void append_items(ONLY IN_THREAD,
+			  const std::vector<list_item_param> &items);
+
 	//! Insert a new item to the combo-box before an existing item.
 	void insert_items(size_t i, const list_item_param &item);
 
 	//! Insert a new item to the combo-box before an existing item.
 	void insert_items(size_t i, const std::vector<list_item_param> &items);
 
+	//! Insert a new item to the combo-box before an existing item.
+	void insert_items(ONLY IN_THREAD,
+			  size_t i, const std::vector<list_item_param> &items);
+
 	//! Remove an item from the combo-box.
 	void remove_item(size_t i);
+
+	//! Remove an item from the combo-box.
+	void remove_item(ONLY IN_THREAD, size_t i);
 
 	//! Replace an item in the combo-box.
 	void replace_items(size_t i, const list_item_param &item);
@@ -155,8 +167,16 @@ public:
 	//! Replace items in the combo-box.
 	void replace_items(size_t i, const std::vector<list_item_param> &items);
 
+	//! Replace items in the combo-box.
+	void replace_items(ONLY IN_THREAD,
+			   size_t i, const std::vector<list_item_param> &items);
+
 	//! Replace all existing items in the combo-box.
 	void replace_all_items(const std::vector<list_item_param> &items);
+
+	//! Replace all existing items in the combo-box.
+	void replace_all_items(ONLY IN_THREAD,
+			       const std::vector<list_item_param> &items);
 
 	//! Combo-box search.
 

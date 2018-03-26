@@ -18,7 +18,7 @@ filedirlist_managerObj::filedirlist_managerObj(const factory &f,
 filedirlist_managerObj::~filedirlist_managerObj()=default;
 
 void filedirlist_managerObj
-::set_selected_callback(const std::function<filedirlist_selected_callback_t> &c)
+::set_selected_callback(const functionref<filedirlist_selected_callback_t> &c)
 {
 	impl->set_selected_callback(c);
 }

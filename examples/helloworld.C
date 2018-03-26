@@ -115,7 +115,7 @@ void testlabel()
 	// many options...
 	//
 	// For this simple program, close_flag->close(), like the more
-	// orderly on_Delete() does, will also work.
+	// orderly on_delete() does, will also work.
 	//
 	// _exit() is for emergencies. Can't use exit() because the library
 	// will try to wait for its internal execution thread to finish, but
@@ -146,7 +146,8 @@ void testlabel()
 	// it gets a "close window" message from the display server.
 	main_window->on_delete
 		([close_flag]
-		 (const x::w::busy &ignore)
+		 (THREAD_CALLBACK,
+		  const x::w::busy &ignore)
 		 {
 			 close_flag->close();
 		 });

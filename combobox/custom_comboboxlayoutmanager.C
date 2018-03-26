@@ -82,7 +82,8 @@ class LIBCXX_HIDDEN lookup_collectorObj : virtual public obj {
 	//
 	// This is always invoked from the connection thread.
 
-	inline bool process(const all_key_events_t &e,
+	inline bool process(ONLY IN_THREAD,
+			    const all_key_events_t &e,
 			    bool activated,
 			    const custom_combobox_selection_search_t
 			    &search_func,
@@ -202,9 +203,10 @@ class LIBCXX_HIDDEN lookup_collectorObj : virtual public obj {
 		if (!activated)
 			return true;
 
-		if (search_func)
-			search_func({lock, lm, buffer, i, current_selection,
-						mcguffin});
+		search_func(IN_THREAD,
+			    custom_combobox_selection_search_info_t
+			    {lock, lm, buffer, i, current_selection,
+					    mcguffin});
 
 		return true;
 	}
@@ -214,14 +216,23 @@ typedef ref<lookup_collectorObj> lookup_collector;
 
 /////////////////////////////////////////////////////////////////////////////
 
+static custom_combobox_selection_changed_t noop_selection_changed=
+	[]
+	(THREAD_CALLBACK, const auto &ignore) {
+};
+
+static custom_combobox_selection_search_t noop_selection_search=
+	[]
+	(THREAD_CALLBACK, const auto &ignore)
+{
+};
+
 new_custom_comboboxlayoutmanager
 ::new_custom_comboboxlayoutmanager(const custom_combobox_selection_factory_t
 				   &selection_factory)
-	: selection_factory(selection_factory),
-	  selection_changed([]
-			    (const auto &ignore)
-			    {
-			    })
+	: selection_factory{selection_factory},
+	  selection_changed{noop_selection_changed},
+	  selection_search{noop_selection_search}
 {
 }
 
@@ -393,7 +404,7 @@ focusable_container new_custom_comboboxlayoutmanager
 		lock->selection_changed=
 			[=, current_selection=make_weak_capture
 			 (current_selection, combobox_popup, lm)]
-			(const auto &info)
+			(ONLY IN_THREAD, const auto &info)
 			{
 				auto got=current_selection.get();
 
@@ -410,7 +421,9 @@ focusable_container new_custom_comboboxlayoutmanager
 				busy_impl yes_i_am{*e->impl};
 
 				lm->selection_changed.get()
-				({ lm->create_public_object(),
+				(IN_THREAD,
+				 custom_combobox_selection_changed_info_t{
+					lm->create_public_object(),
 						e,
 						combobox_popup,
 						info,
@@ -445,7 +458,8 @@ focusable_container new_custom_comboboxlayoutmanager
 				 .on_keyboard_focus
 				 (IN_THREAD,
 				  [collector]
-				  (const auto &ignore,
+				  (THREAD_CALLBACK,
+				   const auto &ignore,
 				   const auto &ignore2)
 				  {
 					  collector->buffer.clear();
@@ -459,7 +473,8 @@ focusable_container new_custom_comboboxlayoutmanager
 				   selection_search,
 				   c=make_weak_capture
 				   (current_selection, lm)]
-				  (const auto &key_event,
+				  (ONLY IN_THREAD,
+				   const auto &key_event,
 				   bool activated,
 				   const auto &mcguffin)
 				  {
@@ -473,7 +488,8 @@ focusable_container new_custom_comboboxlayoutmanager
 							 lm]= *got;
 
 						  processed=collector->process
-							  (key_event,
+							  (IN_THREAD,
+							   key_event,
 							   activated,
 							   selection_search,
 							   current_selection,

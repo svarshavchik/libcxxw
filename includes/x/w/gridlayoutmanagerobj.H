@@ -19,12 +19,12 @@
 #include <x/w/shortcutfwd.H>
 #include <x/w/containerfwd.H>
 #include <x/refptr_hash.H>
+#include <x/functionalrefptrfwd.H>
 
 #include <vector>
 #include <unordered_map>
 #include <string_view>
 #include <string>
-#include <functional>
 
 LIBCXXW_NAMESPACE_START
 
@@ -193,7 +193,7 @@ public:
 
 	void create(const std::string_view &name,
 		    const std::unordered_map<std::string,
-		    std::function<void (const factory &)>> &elements,
+		    functionref<void (const factory &)>> &elements,
 		    const std::unordered_map<std::string,
 		    shortcut> &shortcuts,
 		    std::unordered_map<std::string, container> &new_layouts);

@@ -21,6 +21,7 @@
 #include "x/w/text_param_literals.H"
 #include "x/w/stop_message.H"
 #include "x/w/main_window.H"
+#include "run_as.H"
 #include "messages.H"
 
 #include <x/functional.H>
@@ -69,7 +70,15 @@ void date_input_fieldObj::set(const std::optional<ymd> &d)
 	// container object, which also sets the input field after picking
 	// a day from the calendar. Hijack it.
 
-	impl->calendar_container->set(d, {});
+	auto c=impl->calendar_container;
+
+	c->impl->get_window_handler().thread()->run_as
+		([=]
+		 (ONLY IN_THREAD)
+		 {
+			 c->set(IN_THREAD, d, {});
+		 });
+
 }
 
 std::optional<ymd> date_input_fieldObj::get() const
@@ -198,7 +207,8 @@ date_input_field factoryObj
 	text_input_field->set_validator
 		([cc=make_weak_capture(calendar_containerptr),
 		  invalid_input_error_message=config.invalid_input]
-		 (const std::u32string &d,
+		 (ONLY IN_THREAD,
+		  const std::u32string &d,
 		  text_param &error_message,
 		  const callback_trigger_t &trigger) -> std::optional<ymd>
 		 {
@@ -222,7 +232,7 @@ date_input_field factoryObj
 
 			 auto &[cc]=*got;
 
-			 cc->report_new_date(parsed_date, trigger);
+			 cc->report_new_date(IN_THREAD, parsed_date, trigger);
 
 			 // If a valid date was entered, move the calendar
 			 // popup to its month.
@@ -232,7 +242,7 @@ date_input_field factoryObj
 
 			 // And report the new date to the callback.
 
-			 cc->report_new_date(parsed_date, trigger);
+			 cc->report_new_date(IN_THREAD, parsed_date, trigger);
 
 			 return parsed_date;
 		 },

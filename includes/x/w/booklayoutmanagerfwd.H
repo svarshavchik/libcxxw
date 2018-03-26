@@ -82,7 +82,8 @@ page is currently open.
 
 \code
 book->on_opened([]
-                (const INSERT_LIBX_NAMESPACE::w::book_status_info_t &info)
+                (ONLY IN_THREAD,
+                 const INSERT_LIBX_NAMESPACE::w::book_status_info_t &info)
                 {
                      size_t n=info.opened;
                 });

@@ -13,7 +13,7 @@
 #include "x/w/hotspotfwd.H"
 
 #include <x/weakcapture.H>
-#include <functional>
+#include <x/functionalrefptr.H>
 #include <utility>
 
 LIBCXXW_NAMESPACE_START
@@ -24,28 +24,31 @@ typedef decltype(make_weak_capture(std::declval<dialog &&>())
 
 void hide_and_invoke(const captured_dialog_t &d,
 		     const busy &yes_i_am,
-		     const std::function<void (const busy &)>  &action);
+		     const functionref<void (THREAD_CALLBACK,
+					     const busy &)>  &action);
 
 void hide_and_invoke_when_activated(const dialog &d,
 				    const hotspot &button,
-				    const std::function
-				    <void (const busy &)> &action);
+				    const functionref
+				    <void (THREAD_CALLBACK,
+					   const busy &)> &action);
 
 void hide_and_invoke_when_closed(const dialog &d,
-				 const std::function
-				 <void (const busy &)> &action);
+				 const functionref
+				 <void (THREAD_CALLBACK,
+					const busy &)> &action);
 
-std::function<void (const factory &)>
+functionref<void (const factory &)>
 dialog_ok_button(const text_param &label,
 		 buttonptr &ret,
 		 char32_t key);
 
-std::function<void (const factory &)>
+functionref<void (const factory &)>
 dialog_cancel_button(const text_param &label,
 		     buttonptr &ret,
 		     char32_t key);
 
-std::function<void (const factory &)> dialog_filler();
+functionref<void (const factory &)> dialog_filler();
 
 LIBCXXW_NAMESPACE_END
 

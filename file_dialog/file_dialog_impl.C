@@ -41,8 +41,9 @@ file_dialogObj::implObj
 	  const filedirlist_manager &directory_contents_list,
 	  const button &ok_button,
 	  const button &cancel_button,
-	  const std::function<void (const file_dialog &,
-				    const std::string &, const busy &)
+	  const functionref<void (THREAD_CALLBACK,
+				  const file_dialog &,
+				  const std::string &, const busy &)
 	  > &ok_action,
 	  file_dialog_type type,
 	  const std::string &access_denied_message,
@@ -62,7 +63,8 @@ file_dialogObj::implObj
 
 file_dialogObj::implObj::~implObj()=default;
 
-void file_dialogObj::implObj::clicked(const filedirlist_entry_id &id,
+void file_dialogObj::implObj::clicked(ONLY IN_THREAD,
+				      const filedirlist_entry_id &id,
 				      const callback_trigger_t &trigger,
 				      const busy &mcguffin)
 {
@@ -107,7 +109,7 @@ void file_dialogObj::implObj::clicked(const filedirlist_entry_id &id,
 		// a) this is a button click, b) click count is not 2.
 
 		if (autoselect_file)
-			selected(e.name, mcguffin);
+			selected(IN_THREAD, e.name, mcguffin);
 	}
 }
 
@@ -116,7 +118,8 @@ bool file_dialogObj::implObj::button_clicked(const button_event &be)
 	return filename_field->elementObj::impl->activate_for(be) && be.button == 1;
 }
 
-void file_dialogObj::implObj::enter_key(const busy &mcguffin)
+void file_dialogObj::implObj::enter_key(ONLY IN_THREAD,
+					const busy &mcguffin)
 {
 	auto filename=input_lock{filename_field}.get();
 
@@ -138,11 +141,12 @@ void file_dialogObj::implObj::enter_key(const busy &mcguffin)
 	}
 	else
 	{
-		selected(filename, mcguffin);
+		selected(IN_THREAD, filename, mcguffin);
 	}
 }
 
-void file_dialogObj::implObj::selected(const std::string &filename,
+void file_dialogObj::implObj::selected(ONLY IN_THREAD,
+				       const std::string &filename,
 				       const busy &mcguffin)
 {
 	auto d=the_file_dialog.getptr();
@@ -184,7 +188,8 @@ void file_dialogObj::implObj::selected(const std::string &filename,
 		access_denied(d, access_denied_message, filename);
 		return;
 	}
-	ok_action(d, filename, mcguffin);
+	ok_action(IN_THREAD,
+		  d, filename, mcguffin);
 }
 
 text_param file_dialogObj::implObj::create_dirlabel(const std::string &s)
@@ -270,7 +275,8 @@ void file_dialogObj::implObj::create_hotspot(text_param &t,
 	t(text_hotspot::create
 	  ([name, path,
 	    me=make_weak_capture(ref(this))]
-	   (const text_event_t &event)
+	   (THREAD_CALLBACK,
+	    const text_event_t &event)
 	   {
 		   text_param t;
 
@@ -579,16 +585,18 @@ void file_dialogObj::constructor(const dialog_args &d_args,
 	// cancel_action, as usual.
 	hide_and_invoke_when_activated(d, impl->cancel_button,
 				       [cancel_action=conf.cancel_action]
-				       (const auto &busy)
+				       (ONLY IN_THREAD,
+					const auto &busy)
 				       {
-					       cancel_action(busy);
+					       cancel_action(IN_THREAD, busy);
 				       });
 
 	hide_and_invoke_when_closed(d,
 				    [cancel_action=conf.cancel_action]
-				    (const auto &busy)
+				    (ONLY IN_THREAD,
+				     const auto &busy)
 				    {
-					    cancel_action(busy);
+					    cancel_action(IN_THREAD, busy);
 				    });
 
 	// The "Ok" button is initially disabled.
@@ -598,7 +606,8 @@ void file_dialogObj::constructor(const dialog_args &d_args,
 
 	impl->filename_field
 		->on_change([ok_button=impl->ok_button]
-			    (const auto &info)
+			    (THREAD_CALLBACK,
+			     const auto &info)
 			    {
 				    ok_button->set_enabled(info.size > 0);
 			    });
@@ -611,7 +620,7 @@ void file_dialogObj::constructor(const dialog_args &d_args,
 		standard_comboboxlayoutmanager lm=impl->filter_field
 			->get_layoutmanager();
 
-		if (lm->size() <= conf.initial_filename_filter)
+		if (conf.filename_filters.size()<=conf.initial_filename_filter)
 			throw EXCEPTION(_("Invalid initial_filename_filter"));
 
 		// Callback to invoke manager->chfilter() whenever the filename
@@ -620,7 +629,8 @@ void file_dialogObj::constructor(const dialog_args &d_args,
 		lm->selection_changed
 			([filters=create_pcre_filters(conf.filename_filters),
 			  manager=impl->directory_contents_list]
-			 (const auto &info)
+			 (ONLY IN_THREAD,
+			  const auto &info)
 			 {
 				 if (!info.list_item_status_info.selected)
 					 return;
@@ -640,7 +650,8 @@ void file_dialogObj::constructor(const dialog_args &d_args,
 
 	impl->directory_contents_list->set_selected_callback
 		([impl=make_weak_capture(impl)]
-		 (const filedirlist_entry_id &id,
+		 (ONLY IN_THREAD,
+		  const filedirlist_entry_id &id,
 		  const callback_trigger_t &trigger,
 		  const busy &mcguffin)
 		 {
@@ -650,7 +661,8 @@ void file_dialogObj::constructor(const dialog_args &d_args,
 			 {
 				 auto &[impl]=*got;
 
-				 impl->clicked(id, trigger, mcguffin);
+				 impl->clicked(IN_THREAD,
+					       id, trigger, mcguffin);
 			 }
 		 });
 
@@ -658,7 +670,8 @@ void file_dialogObj::constructor(const dialog_args &d_args,
 
 	impl->filename_field->on_key_event
 		([impl=make_weak_capture(impl)]
-		 (const auto &event,
+		 (ONLY IN_THREAD,
+		  const auto &event,
 		  bool activated,
 		  const auto &busy_mcguffin)
 		 {
@@ -682,7 +695,8 @@ void file_dialogObj::constructor(const dialog_args &d_args,
 				 if (elements->filename_field
 				     ->elementObj::impl
 				     ->activate_for(ke))
-					 elements->enter_key(busy_mcguffin);
+					 elements->enter_key(IN_THREAD,
+							     busy_mcguffin);
 			 }
 
 			 return true;
@@ -696,7 +710,8 @@ void file_dialogObj::constructor(const dialog_args &d_args,
 	// Set up the Ok button to act like the Enter key.
 	impl->ok_button->on_activate
 		([impl=make_weak_capture(impl)]
-		 (const auto &trigger, const auto &busy)
+		 (ONLY IN_THREAD,
+		  const auto &trigger, const auto &busy)
 		 {
 			 auto got=impl.get();
 
@@ -704,7 +719,7 @@ void file_dialogObj::constructor(const dialog_args &d_args,
 			 {
 				 auto &[elements]=*got;
 
-				 elements->enter_key(busy);
+				 elements->enter_key(IN_THREAD, busy);
 			 }
 		 });
 }

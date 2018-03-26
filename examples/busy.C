@@ -275,7 +275,8 @@ static inline void create_main_window(const x::w::main_window &main_window,
 	factory->create_normal_button_with_label
 		({"Shade"})->on_activate
 		([mythread]
-		 (const x::w::callback_trigger_t &ignore,
+		 (ONLY IN_THREAD,
+		  const x::w::callback_trigger_t &ignore,
 		  const x::w::busy &get_busy) {
 			mythread->were_busy(get_busy.get_shade_busy_mcguffin());
 		});
@@ -285,7 +286,8 @@ static inline void create_main_window(const x::w::main_window &main_window,
 	factory->create_normal_button_with_label
 		({"Pointer"})->on_activate
 		([mythread]
-		 (const x::w::callback_trigger_t &ignore,
+		 (ONLY IN_THREAD,
+		  const x::w::callback_trigger_t &ignore,
 		  const x::w::busy &get_busy) {
 			mythread->were_busy(get_busy.get_wait_busy_mcguffin());
 		});
@@ -317,7 +319,8 @@ void busy()
 
 	main_window->on_delete
 		([mythread]
-		 (const auto &ignore)
+		 (ONLY IN_THREAD,
+		  const auto &ignore)
 		 {
 			 mythread->window_close_button_pressed();
 		 });

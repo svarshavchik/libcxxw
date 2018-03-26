@@ -98,7 +98,7 @@ create_peephole_scrollbars(const ref<containerObj::implObj> &container,
 		(container, background_color, scrollbar_config{},
 		 0,
 		 [=]
-		 (const auto &config)
+		 (THREAD_CALLBACK, const auto &config)
 		 {
 			 horizontal_impl->updated_value(config);
 		 });
@@ -107,7 +107,7 @@ create_peephole_scrollbars(const ref<containerObj::implObj> &container,
 		(container, background_color, scrollbar_config{},
 		 0,
 		 [=]
-		 (const auto &config)
+		 (THREAD_CALLBACK, const auto &config)
 		 {
 			 vertical_impl->updated_value(config);
 		 });

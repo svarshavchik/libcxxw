@@ -6,8 +6,9 @@
 #define x_w_custom_comboboxlayoutmanagerfwd_h
 
 #include <x/w/namespace.H>
+#include <x/w/connection_threadfwd.H>
 #include <x/ptrfwd.H>
-#include <functional>
+#include <x/functionalrefptrfwd.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -48,7 +49,8 @@ struct LIBCXX_HIDDEN custom_combobox_selection_changed_info_t;
 
 //! Callback that gets invoked when a combo-box selection is made.
 
-typedef std::function<void (const custom_combobox_selection_changed_info_t &)
+typedef functionref<void (THREAD_CALLBACK,
+			  const custom_combobox_selection_changed_info_t &)
 		      > custom_combobox_selection_changed_t;
 
 LIBCXXW_NAMESPACE_END

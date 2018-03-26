@@ -72,7 +72,8 @@ class LIBCXX_HIDDEN main_windowObj::implObj
 
 	//! Install a callback to invoke upon close.
 
-	void on_delete(const std::function<void (const busy &)> &callback);
+	void on_delete(const functionref<void (THREAD_CALLBACK,
+					       const busy &)> &callback);
 
 	//! Container for this main window's dialogs.
 

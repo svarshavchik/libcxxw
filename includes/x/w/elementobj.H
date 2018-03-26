@@ -22,7 +22,7 @@
 #include <x/w/shortcutfwd.H>
 #include <x/obj.H>
 #include <x/functional.H>
-#include <x/functionalrefptr.H>
+#include <x/functionalrefptrfwd.H>
 #include <string_view>
 #include <functional>
 
@@ -171,6 +171,14 @@ public:
 	//! might as well give up the ghost.
 
 	main_windowptr get_main_window() const;
+
+	//! Invoke the callback in the execution thread.
+
+	void in_thread(const functionref<void (THREAD_CALLBACK)> &cb);
+
+	//! Invoke the callback in the execution thread, after all other callbacks.
+
+	void in_thread_idle(const functionref<void (THREAD_CALLBACK)> &cb);
 };
 
 LIBCXXW_NAMESPACE_END

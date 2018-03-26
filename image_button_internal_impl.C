@@ -28,9 +28,7 @@ image_button_internalObj::implObj
 	  const std::vector<icon> &icon_images)
 	: superclass_t(icon_images, container,
 		       get_first_icon_image(icon_images)),
-	  current_image(0),
-	  current_callback_thread_only([](size_t, const auto &,
-					  const auto &) {})
+	  current_image(0)
 {
 }
 
@@ -42,9 +40,7 @@ image_button_internalObj::implObj
 	: superclass_t(icon_images, container,
 		       get_first_icon_image(icon_images),
 		       horiz_metrics, vert_metrics),
-	  current_image(0),
-	  current_callback_thread_only([](size_t, const auto &,
-					  const auto &) {})
+	  current_image(0)
 {
 }
 
@@ -62,9 +58,12 @@ void image_button_internalObj::implObj::set_image_number(ONLY IN_THREAD,
 
 	if (p != n)
 		try {
-			current_callback(IN_THREAD)(n, trigger,
-						    busy_impl{*this});
-		} CATCH_EXCEPTIONS;
+			auto &cb=current_callback(IN_THREAD);
+
+			if (cb)
+				cb(IN_THREAD, n, trigger,
+				   busy_impl{*this});
+		} REPORT_EXCEPTIONS(this);
 }
 
 void image_button_internalObj::implObj::do_set_image_number(ONLY IN_THREAD,
@@ -201,7 +200,12 @@ void radio_image_buttonObj::set_image_number(ONLY IN_THREAD,
 			continue;
 
 		if (button->get_image_number())
-			callbacks.push_back(button->current_callback(IN_THREAD));
+		{
+			auto &cb=button->current_callback(IN_THREAD);
+
+			if (cb)
+				callbacks.push_back(cb);
+		}
 
 		button->do_set_image_number(IN_THREAD, 0);
 	}
@@ -216,14 +220,16 @@ void radio_image_buttonObj::set_image_number(ONLY IN_THREAD,
 
 	for (const auto &cb:callbacks)
 		try {
-			cb(0, trigger, i_am_busy);
-		} CATCH_EXCEPTIONS;
+			cb(IN_THREAD, 0, trigger, i_am_busy);
+		} REPORT_EXCEPTIONS(this);
 
 	if (n != p)
 		try {
-			current_callback(IN_THREAD)(n, trigger,
-						    i_am_busy);
-		} CATCH_EXCEPTIONS;
+			auto &cb=current_callback(IN_THREAD);
+
+			if (cb)
+				cb(IN_THREAD, n, trigger, i_am_busy);
+		} REPORT_EXCEPTIONS(this);
 }
 
 LIBCXXW_NAMESPACE_END

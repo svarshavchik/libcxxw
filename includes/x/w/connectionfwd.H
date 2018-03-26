@@ -62,6 +62,35 @@ typedef std::unordered_set<std::string> enabled_theme_options_t;
 //!
 //! Returns the identifier for the current theme, and the scaling factor
 //! percentage.
+//!
+//! \par Invoke an arbitrary callback in the connection thread.
+//!
+//! \code
+//! conn->in_thread([]
+//!                 (ONLY IN_THREAD)
+//!                 {
+//!                     // ...
+//!                 });
+//!
+//! conn->in_thread_idle([]
+//!                     (ONLY IN_THREAD)
+//!                     {
+//!                        // ...
+//!                     });
+//! \endcode
+//!
+//! in_thread() returns immediately, and executes the passed-in callable
+//! object by the internal connection thread. The callback gets executed
+//! after repositioning and resizing any display elements due to any
+//! pending metric and size changes, but before processing X display server
+//! messages or updating the display.
+//!
+//! in_thread() returns immediately, and executes the passed-in callable
+//! object by the internal connection thread. The callback gets executed
+//! after all other activity gets processed; after processing any X
+//! display server messages, and updating the display with any
+//! unprocessed changes.
+
 
 typedef ref<connectionObj, connectionBase> connection;
 

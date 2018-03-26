@@ -8,6 +8,7 @@
 #include <x/w/input_field_configfwd.H>
 #include <x/w/busyfwd.H>
 #include <x/w/callback_triggerfwd.H>
+#include <x/w/connection_threadfwd.H>
 #include <x/ptrfwd.H>
 #include <string>
 
@@ -18,7 +19,8 @@ template<typename type> class validated_input_fieldObj;
 
 //! Callback for validating the contents of the input field.
 
-typedef bool input_field_validation_callback_t(const callback_trigger_t &);
+typedef bool input_field_validation_callback_t(THREAD_CALLBACK,
+					       const callback_trigger_t &);
 
 //! A text input field.
 
@@ -66,12 +68,14 @@ typedef bool input_field_validation_callback_t(const callback_trigger_t &);
 //!
 //! \code
 //! f->on_change([]
-//!              (const INSERT_LIBX_NAMESPACE::w::input_change_info_t &)
+//!              (ONLY IN_THREAD,
+//!               const INSERT_LIBX_NAMESPACE::w::input_change_info_t &)
 //!              {
 //!              });
 //!
 //! f->on_autocomplete([]
-//!               (const INSERT_LIBX_NAMESPACE::w::input_autocomplete_info_t &)
+//!               (ONLY IN_THREAD,
+//!                const INSERT_LIBX_NAMESPACE::w::input_autocomplete_info_t &)
 //!               {
 //!                       return false;
 //!               });
@@ -96,7 +100,8 @@ typedef bool input_field_validation_callback_t(const callback_trigger_t &);
 //!
 //! \code
 //! f->on_validate([f=INSERT_LIBX_NAMESPACE::make_weak_capture(f)]
-//!               (const x::w::callback_trigger_t &triggering_event)
+//!               (ONLY IN_THREAD,
+//!                const x::w::callback_trigger_t &triggering_event)
 //!               {
 //!                   auto got=me.get();
 //!
@@ -137,7 +142,8 @@ typedef bool input_field_validation_callback_t(const callback_trigger_t &);
 //! \code
 //! x::w::validated_input_field<int> validated_field=field->set_validator
 //!        ([]
-//!          (const std::string &value,
+//!          (ONLY IN_THREAD,
+//!           const std::string &value,
 //!           x::w::text_param &error_message,
 //!           const x::w::callback_trigger_t &trigger)-> std::optional<int>
 //!          {
@@ -176,7 +182,7 @@ typedef bool input_field_validation_callback_t(const callback_trigger_t &);
 //! set_validator()'s return value as
 //! \c INSERT_LIBX_NAMESPACE::w::validated_input_field<T>.
 //!
-//! set_validator()'s first closure receives three parameters:
+//! set_validator()'s first closure receives the following parameters:
 //!
 //! - either a \c std::string or \c std::u32string, the closure receives
 //! the current contents of the input field as either a UTF-8 string, or a
@@ -216,7 +222,8 @@ typedef bool input_field_validation_callback_t(const callback_trigger_t &);
 //! \code
 //! x::w::validated_input_field<int> validated_int=field->set_string_validator
 //!         ([]
-//!          (const std::string &value,
+//!          (ONLY IN_THREAD,
+//!           const std::string &value,
 //!           int *parsed_value,
 //!           x::w::text_param &error_message,
 //!           const x::w::callback_trigger_t &trigger) -> std::optional<int>
@@ -291,7 +298,8 @@ typedef const_ptr<input_fieldObj> const_input_fieldptr;
 //! INSERT_LIBX_NAMESPACE::w::validated_input_field<int> value=
 //!         input_field->set_string_validator(
 //!              []
-//!		 (const std::string &value,
+//!		 (ONLY IN_THREAD,
+//!               const std::string &value,
 //!		  int *parsed_value,
 //!		  x::w::text_param &error_message,
 //!		  const x::w::callback_trigger_t &trigger) -> std::optional<int>

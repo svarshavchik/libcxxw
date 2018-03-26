@@ -179,7 +179,7 @@ class LIBCXX_HIDDEN contextpopup_shortcut_activatorObj
 
 		busy_impl yes_i_am{*stronge->impl};
 
-		callback(stronge, trigger, yes_i_am);
+		callback(IN_THREAD, stronge, trigger, yes_i_am);
 	}
 
 	//! If the attached-to element is visible, the shortcut is enabled.
@@ -235,7 +235,8 @@ void elementObj::install_contextpopup_callback
 				  sc_impl,
 				  sc_active,
 				  me=make_weak_capture(me)]
-				 (const auto &trigger,
+				 (ONLY IN_THREAD,
+				  const auto &trigger,
 				  const auto &mcguffin)
 				 {
 					 auto got=me.get();
@@ -251,7 +252,8 @@ void elementObj::install_contextpopup_callback
 						 return;
 
 					 try {
-						 callback(me, trigger,
+						 callback(IN_THREAD,
+							  me, trigger,
 							  mcguffin);
 					 } REPORT_EXCEPTIONS(window);
 				 };
@@ -281,6 +283,16 @@ ref<obj> elementObj::get_wait_busy_mcguffin() const
 ref<elementObj::implObj> elementObj::get_minimum_override_element_impl()
 {
 	return impl;
+}
+
+void elementObj::in_thread(const functionref<void (THREAD_CALLBACK)> &cb)
+{
+	get_screen()->get_connection()->in_thread(cb);
+}
+
+void elementObj::in_thread_idle(const functionref<void (THREAD_CALLBACK)> &cb)
+{
+	get_screen()->get_connection()->in_thread_idle(cb);
 }
 
 std::ostream &operator<<(std::ostream &o, const element_state &s)

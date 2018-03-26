@@ -56,8 +56,8 @@ void main_windowObj::constructor(const ref<implObj> &impl,
 
 main_windowObj::~main_windowObj()=default;
 
-void main_windowObj::on_delete(const std::function<void (const busy &)
-			       > &callback)
+void main_windowObj::on_delete(const functionref<void (THREAD_CALLBACK,
+						       const busy &)> &callback)
 {
 	impl->on_delete(callback);
 }
@@ -371,7 +371,7 @@ const_menubarlayoutmanager main_windowObj::get_menubarlayoutmanager() const
 
 static auto icon_element(const std::string &icon)
 {
-	return std::function<void (const factory &)>
+	return functionref<void (const factory &)>
 		([=](const factory &f)
 		 {
 			 f->create_image(icon);
@@ -380,7 +380,7 @@ static auto icon_element(const std::string &icon)
 
 // Return a factory that creates a button in a theme template
 
-std::function<void (const factory &)>
+functionref<void (const factory &)>
 dialog_ok_button(const text_param &label,
 		 buttonptr &ret,
 		 char32_t key)
@@ -391,7 +391,7 @@ dialog_ok_button(const text_param &label,
 	};
 }
 
-std::function<void (const factory &)>
+functionref<void (const factory &)>
 dialog_cancel_button(const text_param &label,
 		     buttonptr &ret,
 		     char32_t key)
@@ -402,7 +402,7 @@ dialog_cancel_button(const text_param &label,
 	};
 }
 
-std::function<void (const factory &)> dialog_filler()
+functionref<void (const factory &)> dialog_filler()
 {
 	return [](const factory &f)
 	{
@@ -412,9 +412,10 @@ std::function<void (const factory &)> dialog_filler()
 
 // Hide a theme-generated dialog, then invoke a callback action.
 
-static void hide_and_invoke(const captured_dialog_t &d,
-			    const std::function
-			    <void (const busy &)>  &action)
+static void hide_and_invoke(ONLY IN_THREAD,
+			    const captured_dialog_t &d,
+			    const functionref<void (THREAD_CALLBACK,
+						    const busy &)> &action)
 {
 	auto got=d.get();
 
@@ -429,7 +430,7 @@ static void hide_and_invoke(const captured_dialog_t &d,
 
 		busy_impl yes_i_am{d->impl->handler->parent_handler};
 
-		action(yes_i_am);
+		action(IN_THREAD, yes_i_am);
 	}
 }
 
@@ -437,35 +438,41 @@ static void hide_and_invoke(const captured_dialog_t &d,
 
 void hide_and_invoke_when_activated(const dialog &d,
 				    const hotspot &button,
-				    const std::function
-				    <void (const busy &)> &action)
+				    const functionref<void (THREAD_CALLBACK,
+							    const busy &)>
+				    &action)
 {
 	button->on_activate([d=make_weak_capture(d), action]
-			    (const auto &ignore, const busy &yes_i_am)
+			    (ONLY IN_THREAD,
+			     const auto &ignore, const busy &yes_i_am)
 			    {
-				    hide_and_invoke(d, action);
+				    hide_and_invoke(IN_THREAD, d, action);
 			    });
 }
 
 // When a theme dialog's close button is pressed, hide and invoke the callback.
 
 void hide_and_invoke_when_closed(const dialog &d,
-				 const std::function
-				 <void (const busy &)> &action)
+				 const functionref
+				 <void (THREAD_CALLBACK,
+					const busy &)> &action)
 {
 	d->dialog_window->on_delete([d=make_weak_capture(d), action]
-				    (const busy &yes_i_am)
+				    (ONLY IN_THREAD,
+				     const busy &yes_i_am)
 				    {
-					    hide_and_invoke(d, action);
+					    hide_and_invoke(IN_THREAD,
+							    d, action);
 				    });
 }
 
 dialog main_windowObj
 ::create_ok_dialog(const std::string_view &dialog_id,
 		   const std::string &icon,
-		   const std::function<void (const factory &)>
+		   const functionref<void (const factory &)>
 		   &content_factory,
-		   const std::function<void (const busy &)>
+		   const functionref<void (THREAD_CALLBACK,
+					   const busy &)>
 		   &ok_action,
 		   bool modal)
 {
@@ -478,9 +485,10 @@ dialog main_windowObj
 dialog main_windowObj
 ::create_ok_dialog(const std::string_view &dialog_id,
 		   const std::string &icon,
-		   const std::function<void (const factory &)>
+		   const functionref<void (const factory &)>
 		   &content_factory,
-		   const std::function<void (const busy &)>
+		   const functionref<void (THREAD_CALLBACK,
+					   const busy &)>
 		   &ok_action,
 		   const text_param &ok_label,
 		   bool modal)
@@ -550,7 +558,7 @@ void main_windowObj::stop_message(const text_param &msg)
 }
 
 void main_windowObj::stop_message(const text_param &msg,
-				   const stop_message_config &config)
+				  const stop_message_config &config)
 {
 	auto autodestroy=destroy_when_closed("stop_message@libcxx.com");
 
@@ -562,11 +570,11 @@ void main_windowObj::stop_message(const text_param &msg,
 					f->create_label(msg);
 				},
 				[autodestroy, cb=config.acknowledged_callback]
-				(const auto &ignore)
+				(ONLY IN_THREAD, const auto &ignore)
 				{
-					autodestroy(ignore);
+					autodestroy(IN_THREAD, ignore);
 					if (cb)
-						cb();
+						cb(IN_THREAD);
 				},
 				config.ok_label,
 				config.modal);
@@ -609,11 +617,11 @@ void main_windowObj::alert_message(const text_param &msg,
 					f->create_label(msg);
 				},
 				[autodestroy, cb=config.acknowledged_callback]
-				(const auto &ignore)
+				(ONLY IN_THREAD, const auto &ignore)
 				{
-					autodestroy(ignore);
+					autodestroy(IN_THREAD, ignore);
 					if (cb)
-						cb();
+						cb(IN_THREAD);
 				},
 				config.ok_label,
 				config.modal);
@@ -641,11 +649,13 @@ alert_message_config::~alert_message_config()=default;
 dialog main_windowObj
 ::create_ok_cancel_dialog(const std::string_view &dialog_id,
 			  const std::string &icon,
-			  const std::function<void (const factory &)>
+			  const functionref<void (const factory &)>
 			  &content_factory,
-			  const std::function<void (const busy &)>
+			  const functionref<void (THREAD_CALLBACK,
+						  const busy &)>
 			  &ok_action,
-			  const std::function<void (const busy &)>
+			  const functionref<void (THREAD_CALLBACK,
+						  const busy &)>
 			  &cancel_action,
 			  bool modal)
 {
@@ -659,11 +669,13 @@ dialog main_windowObj
 dialog main_windowObj
 ::create_ok_cancel_dialog(const std::string_view &dialog_id,
 			  const std::string &icon,
-			  const std::function<void (const factory &)>
+			  const functionref<void (const factory &)>
 			  &content_factory,
-			  const std::function<void (const busy &)>
+			  const functionref<void (THREAD_CALLBACK,
+						  const busy &)>
 			  &ok_action,
-			  const std::function<void (const busy &)>
+			  const functionref<void (THREAD_CALLBACK,
+						  const busy &)>
 			  &cancel_action,
 			  const text_param &ok_label,
 			  const text_param &cancel_label,
@@ -702,14 +714,16 @@ dialog main_windowObj
 input_dialog main_windowObj
 ::create_input_dialog(const std::string_view &dialog_id,
 		      const std::string &icon,
-		      const std::function<void (const factory &)>
+		      const functionref<void (const factory &)>
 		      &label_factory,
 		      const text_param &initial_text,
 		      const input_field_config &config,
-		      const std::function<void (const input_field &,
-						const busy &)>
+		      const functionref<void (THREAD_CALLBACK,
+					      const input_field &,
+					      const busy &)>
 		      &ok_action,
-		      const std::function<void (const busy &)>
+		      const functionref<void (THREAD_CALLBACK,
+					      const busy &)>
 		      &cancel_action,
 		      bool modal)
 {
@@ -725,13 +739,15 @@ input_dialog main_windowObj
 input_dialog main_windowObj
 ::create_input_dialog(const std::string_view &dialog_id,
 		      const std::string &icon,
-		      const std::function<void (const factory &)>
+		      const functionref<void (const factory &)>
 		      &label_factory,
 		      const text_param &initial_text,
 		      const input_field_config &config,
-		      const std::function<void (const input_field &,
-						const busy &)> &ok_action,
-		      const std::function<void (const busy &)> &cancel_action,
+		      const functionref<void (THREAD_CALLBACK,
+					      const input_field &,
+					      const busy &)> &ok_action,
+		      const functionref<void (THREAD_CALLBACK,
+					      const busy &)> &cancel_action,
 		      const text_param &ok_label,
 		      const text_param &cancel_label,
 		      bool modal)
@@ -778,9 +794,10 @@ input_dialog main_windowObj
 	hide_and_invoke_when_activated
 		(d, ok_button,
 		 [field=input_field{field}, ok_action]
-		 (const auto &busy)
+		 (ONLY IN_THREAD,
+		  const auto &busy)
 		 {
-			 ok_action(field, busy);
+			 ok_action(IN_THREAD, field, busy);
 		 });
 	hide_and_invoke_when_activated(d, cancel_button, cancel_action);
 	hide_and_invoke_when_closed(d, cancel_action);

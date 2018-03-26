@@ -27,9 +27,11 @@
 #include <x/w/file_dialog_configfwd.H>
 #include <x/w/print_dialogfwd.H>
 #include <x/w/print_dialog_configfwd.H>
+#include <x/w/connection_threadfwd.H>
 #include <x/obj.H>
 #include <x/logger.H>
 #include <x/functional.H>
+#include <x/functionalrefptrfwd.H>
 #include <x/refptr_traits.H>
 #include <x/exception.H>
 
@@ -38,7 +40,6 @@
 #include <unordered_set>
 #include <string_view>
 #include <string>
-#include <functional>
 
 LIBCXXW_NAMESPACE_START
 
@@ -111,7 +112,8 @@ public:
 
 	//! Install a callback that gets invoke when the window close button is clicked.
 
-	void on_delete(const std::function<void (const busy &)> &callback);
+	void on_delete(const functionref<void (THREAD_CALLBACK,
+					       const busy &)> &callback);
 
 private:
 
@@ -195,9 +197,10 @@ public:
 
 	dialog create_ok_dialog(const std::string_view &dialog_id,
 				const std::string &icon,
-				const std::function<void (const factory &)>
+				const functionref<void (const factory &)>
 				&content_factory,
-				const std::function<void (const busy &)>
+				const functionref<void (THREAD_CALLBACK,
+							const busy &)>
 				&ok_action,
 				bool modal=false);
 
@@ -205,9 +208,10 @@ public:
 
 	dialog create_ok_dialog(const std::string_view &dialog_id,
 				const std::string &icon,
-				const std::function<void (const factory &)>
+				const functionref<void (const factory &)>
 				&content_factory,
-				const std::function<void (const busy &)>
+				const functionref<void (THREAD_CALLBACK,
+							const busy &)>
 				&ok_action,
 				const text_param &ok_label,
 				bool modal=false);
@@ -244,11 +248,13 @@ public:
 	dialog
 	create_ok_cancel_dialog(const std::string_view &dialog_id,
 				const std::string &icon,
-				const std::function<void (const factory &)>
+				const functionref<void (const factory &)>
 				&content_factory,
-				const std::function<void (const busy &)>
+				const functionref<void (THREAD_CALLBACK,
+							const busy &)>
 				&ok_action,
-				const std::function<void (const busy &)>
+				const functionref<void (THREAD_CALLBACK,
+							const busy &)>
 				&cancel_action,
 				bool modal=false);
 
@@ -257,11 +263,13 @@ public:
 	dialog
 	create_ok_cancel_dialog(const std::string_view &dialog_id,
 				const std::string &icon,
-				const std::function<void (const factory &)>
+				const functionref<void (const factory &)>
 				&content_factory,
-				const std::function<void (const busy &)>
+				const functionref<void (THREAD_CALLBACK,
+							const busy &)>
 				&ok_action,
-				const std::function<void (const busy &)>
+				const functionref<void (THREAD_CALLBACK,
+							const busy &)>
 				&cancel_action,
 				const text_param &ok_label,
 				const text_param &cancel_label,
@@ -272,14 +280,16 @@ public:
 	input_dialog
 	create_input_dialog(const std::string_view &dialog_id,
 			    const std::string &icon,
-			    const std::function<void (const factory &)>
+			    const functionref<void (const factory &)>
 			    &label_factory,
 			    const text_param &initial_text,
 			    const input_field_config &config,
-			    const std::function<void (const input_field &,
-						      const busy &)>
+			    const functionref<void (THREAD_CALLBACK,
+						    const input_field &,
+						    const busy &)>
 			    &ok_action,
-			    const std::function<void (const busy &)>
+			    const functionref<void (THREAD_CALLBACK,
+						    const busy &)>
 			    &cancel_action,
 			    bool modal=false);
 
@@ -288,14 +298,16 @@ public:
 	input_dialog
 	create_input_dialog(const std::string_view &dialog_id,
 			    const std::string &icon,
-			    const std::function<void (const factory &)>
+			    const functionref<void (const factory &)>
 			    &label_factory,
 			    const text_param &initial_text,
 			    const input_field_config &config,
-			    const std::function<void (const input_field &,
-						      const busy &)>
+			    const functionref<void (THREAD_CALLBACK,
+						    const input_field &,
+						    const busy &)>
 			    &ok_action,
-			    const std::function<void (const busy &)>
+			    const functionref<void (THREAD_CALLBACK,
+						    const busy &)>
 			    &cancel_action,
 			    const text_param &ok_label,
 			    const text_param &cancel_label,
@@ -321,8 +333,8 @@ public:
 	//! in order to remove the dialog
 	//! automatically after it's closed.
 
-	std::function<void (const busy &)
-		      > destroy_when_closed(const std::string_view &);
+	functionref<void (THREAD_CALLBACK, const busy &)
+		    > destroy_when_closed(const std::string_view &);
 
 	//! Get current screen position
 	screen_position get_screen_position() const;

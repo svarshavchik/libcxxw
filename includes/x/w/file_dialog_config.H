@@ -9,7 +9,7 @@
 #include <x/w/file_dialogfwd.H>
 #include <x/w/text_param.H>
 #include <x/w/busy.H>
-#include <functional>
+#include <x/functionalrefptr.H>
 #include <tuple>
 
 LIBCXXW_NAMESPACE_START
@@ -43,20 +43,29 @@ struct file_dialog_config {
 
 	//! A particular file was selected by the dialog.
 
-	std::function<void (const file_dialog &,
-			    const std::string &, const busy &)> ok_action;
+	//! The file dialog remains open. It's up to the callback
+	//! to hide() it.
+
+	functionref<void (THREAD_CALLBACK,
+			  const file_dialog &,
+			  const std::string &, const busy &)> ok_action;
 
 	//! The dialog was canceled.
-	std::function<void (const busy &)> cancel_action;
+
+	//! The cancel button takes care of hiding the dialog, before
+	//! executing this callback.
+	functionref<void (THREAD_CALLBACK, const busy &)> cancel_action;
 
 	//! File dialog's semantics.
 	file_dialog_type type=file_dialog_type::existing_file;
 
 	//! Constructor
-	file_dialog_config(const std::function<void (const file_dialog &d,
-						     const std::string &,
-						     const busy &)> &ok_action,
-			   const std::function<void (const busy &)
+	file_dialog_config(const functionref<void (THREAD_CALLBACK,
+						   const file_dialog &d,
+						   const std::string &,
+						   const busy &)> &ok_action,
+			   const functionref<void (THREAD_CALLBACK,
+						   const busy &)
 			   > &cancel_action,
 			   file_dialog_type type=file_dialog_type::existing_file
 			   );

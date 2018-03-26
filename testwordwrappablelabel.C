@@ -113,7 +113,8 @@ static void initialize_label(const LIBCXX_NAMESPACE::w::factory &factory)
 						"Lorem ipsum\n",
 					}
 				}]
-			(const auto &e)
+			(THREAD_CALLBACK,
+			 const auto &e)
 			{
 				return std::visit(processor, e);
 			});
@@ -129,7 +130,8 @@ static void initialize_label(const LIBCXX_NAMESPACE::w::factory &factory)
 						"laborum."
 					},
 				}]
-			(const auto &e)
+			(THREAD_CALLBACK,
+			 const auto &e)
 			{
 				return std::visit(processor, e);
 			});
@@ -200,7 +202,8 @@ void testlabel(const testwordwrappablelabel_options &options)
 
 	main_window->on_delete
 		([close_flag]
-		 (const auto &ignore)
+		 (THREAD_CALLBACK,
+		  const auto &ignore)
 		 {
 			 close_flag->close();
 		 });

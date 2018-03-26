@@ -75,10 +75,11 @@ void image_buttonObj::on_activate(const image_button_callback_t &callback)
 			 i->current_callback(IN_THREAD)=callback;
 
 			 try {
-				 callback(i->get_image_number(),
+				 callback(IN_THREAD,
+					  i->get_image_number(),
 					  initial{},
 					  busy_impl{*i});
-			 } CATCH_EXCEPTIONS;
+			 } REPORT_EXCEPTIONS(impl->button->impl);
 		 });
 }
 

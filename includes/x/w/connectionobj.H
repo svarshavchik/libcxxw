@@ -9,10 +9,9 @@
 #include <x/w/screenfwd.H>
 #include <x/w/pictformatfwd.H>
 #include <x/obj.H>
+#include <x/functionalrefptrfwd.H>
 #include <vector>
 #include <string_view>
-
-#include <functional>
 
 LIBCXXW_NAMESPACE_START
 
@@ -47,7 +46,7 @@ class connectionObj : virtual public obj {
 
 	//! Invoke this lambda if the server disconnects unexpectedly.
 
-	void on_disconnect(const std::function<void ()> &callback);
+	void on_disconnect(const functionref<void ()> &callback);
 
 	//! Returns the current theme and scaling factor.
 
@@ -70,6 +69,14 @@ class connectionObj : virtual public obj {
 
 	//! Shortcut to render information.
 	const_pictformat find_alpha_pictformat_by_depth(depth_t d) const;
+
+	//! Invoke the callback in the execution thread.
+
+	void in_thread(const functionref<void (THREAD_CALLBACK)> &cb);
+
+	//! Invoke the callback in the execution thread, after all other callbacks.
+
+	void in_thread_idle(const functionref<void (THREAD_CALLBACK)> &cb);
 };
 
 LIBCXXW_NAMESPACE_END

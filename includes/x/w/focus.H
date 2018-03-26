@@ -6,6 +6,7 @@
 #define x_w_focus_H
 
 #include <x/w/callback_triggerfwd.H>
+#include <x/w/connection_threadfwd.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -36,7 +37,8 @@ bool in_focus(focus_change f);
 
 //! Focus callback
 
-typedef void focus_callback_t(focus_change, const callback_trigger_t &);
+typedef void focus_callback_t(THREAD_CALLBACK,
+			      focus_change, const callback_trigger_t &);
 
 LIBCXXW_NAMESPACE_END
 

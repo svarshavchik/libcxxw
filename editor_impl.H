@@ -203,12 +203,12 @@ class LIBCXX_HIDDEN editorObj::implObj
 	selectionptr secondary_selection_thread_only;
 
 	//! Callback
-	std::function< void(const input_change_info_t &)
+	functionptr< void(THREAD_CALLBACK, const input_change_info_t &)
 		       > on_change_thread_only;
 
 	//! Callback
-	std::function<bool(input_autocomplete_info_t &)
-		      > on_autocomplete_thread_only;
+	functionptr<bool(THREAD_CALLBACK, input_autocomplete_info_t &)
+		    > on_autocomplete_thread_only;
 
 	//! My parent peephole
 	const ref<editor_peephole_implObj> parent_peephole;
@@ -563,7 +563,7 @@ class LIBCXX_HIDDEN editorObj::implObj
 
 	//! The validation callback.
 
-	std::function<input_field_validation_callback_t>
+	functionptr<input_field_validation_callback_t>
 		validation_callback_thread_only;
 
  public:

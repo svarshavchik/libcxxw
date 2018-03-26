@@ -10,6 +10,7 @@
 #include <x/w/containerobj.H>
 #include <x/w/callback_triggerfwd.H>
 #include <x/w/busyfwd.H>
+#include <x/functionalrefptr.H>
 
 #include <x/ref.H>
 

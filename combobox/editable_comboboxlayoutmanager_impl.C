@@ -9,14 +9,21 @@
 
 LIBCXXW_NAMESPACE_START
 
+static standard_combobox_selection_changed_t noop_standard_selection_changed=
+	[]
+	(ONLY IN_THREAD, const auto &)
+{
+};
+
 editable_comboboxlayoutmanagerObj::implObj
 ::implObj(const ref<custom_combobox_containerObj::implObj> &container_impl,
 	  const new_editable_comboboxlayoutmanager &style)
-	: standard_comboboxlayoutmanagerObj::implObj(container_impl, style,
-						     // Dummy selection changed
-						     // callback for the parent
-						     // standard combobox class.
-						     [](const auto &){}),
+	: standard_comboboxlayoutmanagerObj::implObj
+	(container_impl, style,
+	 // Dummy selection changed
+	 // callback for the parent
+	 // standard combobox class.
+	 noop_standard_selection_changed),
 	selection_changed{style.selection_changed}
 {
 }

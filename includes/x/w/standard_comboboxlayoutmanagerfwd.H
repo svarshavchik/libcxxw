@@ -6,8 +6,9 @@
 #define x_w_standard_comboboxlayoutmanagerfwd_h
 
 #include <x/w/namespace.H>
+#include <x/w/connection_threadfwd.H>
 #include <x/ptrfwd.H>
-#include <functional>
+#include <x/functionalrefptrfwd.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -78,6 +79,13 @@ in order to lock access to the combo-box's items.
 Standard combo-boxes inherit the \c enabled() method from the underlying
 list layout manager, in order to enable or disabling individual list items.
 
+\par Internal thread methods
+
+Standard combo-boxes inherit the \c IN_THREAD and the non\c IN_THREAD
+versions of the methods from the underlying
+\ref listlayoutmanager "list layout manager", which
+work in the analogous way.
+
 */
 
 typedef ref<standard_comboboxlayoutmanagerObj> standard_comboboxlayoutmanager;
@@ -112,7 +120,8 @@ Callback that gets invoked when a standard combo-box's selection changes.
 
 */
 
-typedef std::function<void (const standard_combobox_selection_changed_info_t &)
+typedef functionref<void (THREAD_CALLBACK,
+			  const standard_combobox_selection_changed_info_t &)
 		      > standard_combobox_selection_changed_t;
 
 LIBCXXW_NAMESPACE_END

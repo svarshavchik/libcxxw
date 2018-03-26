@@ -16,6 +16,7 @@
 #include "connection_threadfwd.H"
 
 #include <x/mpobj.H>
+#include <x/refptr_traits.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -36,7 +37,8 @@ class LIBCXX_HIDDEN image_button_internalObj::implObj :
 	//! Current index in icon_images
 	current_image_t current_image;
 
-	image_button_callback_t current_callback_thread_only;
+	refptr_traits<image_button_callback_t>
+		::ptr_t current_callback_thread_only;
 
 public:
 	THREAD_DATA_ONLY(current_callback);

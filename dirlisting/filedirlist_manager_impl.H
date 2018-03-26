@@ -15,6 +15,7 @@
 #include "x/w/file_dialog_config.H"
 #include <x/mpobj.H>
 #include <x/pcrefwd.H>
+#include <x/functionalrefptr.H>
 
 #include <string>
 #include <unistd.h>
@@ -37,7 +38,7 @@ class LIBCXX_HIDDEN filedirlist_managerObj::implObj : virtual public obj {
 
 	struct current_selected_callbackObj : virtual public obj {
 
-		mpobj<std::function<filedirlist_selected_callback_t>
+		mpobj<functionref<filedirlist_selected_callback_t>
 		      > current_callback;
 
 		current_selected_callbackObj();
@@ -238,7 +239,7 @@ class LIBCXX_HIDDEN filedirlist_managerObj::implObj : virtual public obj {
 
 	//! Install the callback that gets invoked when a directory item is selected.
 
-	void set_selected_callback(const std::function<
+	void set_selected_callback(const functionref<
 				   filedirlist_selected_callback_t> &);
 
 	//! Retrieve directory contents.
@@ -278,7 +279,7 @@ class LIBCXX_HIDDEN filedirlist_managerObj::implObj : virtual public obj {
 	//! is set, but invoke the prepare() callback before doing so.
 
 	void start(protected_info_t::lock &lock,
-		   const std::function<void (protected_info_t::lock &lock)>
+		   const functionref<void (protected_info_t::lock &lock)>
 		   &prepare);
 
 	//! Stop monitoring the current directory.

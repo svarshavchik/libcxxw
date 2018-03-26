@@ -8,6 +8,7 @@
 #include <x/w/progressbarfwd.H>
 #include <x/w/rgbfwd.H>
 #include <x/w/containerobj.H>
+#include <x/functionalrefptrfwd.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -59,18 +60,23 @@ public:
 	  updating the slider's position, and updating the descriptive content
 	  of the progress bar.
 
-	  update() results in the progress bar getting redrawn, only to
+	  Using update() followed by making the appropriate changes to the
+	  element in the progressbar container usually
+	  results in the progress bar getting redrawn, only to
 	  redraw it again as a result of updating the descriptive content
 	  in the progress bar.
 
-	  This overload schedule the progress bar to get redrawn after
-	  invoking the closure, which presumably updates the progress bar's
-	  contents. The closure gets invoked by the connection thread,
+	  This overload makes it possible to redraw everything just once.
+	  The closure gets invoked after the progressbar's value gets updated,
+	  but before it gets redrawn. Presumably the closure updates the
+	  progressbar's container. This should result in a single redraw.
+
+	  The closure gets invoked by the connection thread,
 	  asynchronously, before or after update() returns.
 	*/
 
 	void update(size_t value, size_t maximum_value,
-		    const std::function <void ()> &closure);
+		    const functionref <void (THREAD_CALLBACK)> &closure);
 };
 
 LIBCXXW_NAMESPACE_END

@@ -133,13 +133,14 @@ void main_windowObj::remove_dialog(const std::string_view &dialog_id)
 		lock->erase(p);
 }
 
-std::function<void (const busy &)
+functionref<void (THREAD_CALLBACK, const busy &)
 	      > main_windowObj::destroy_when_closed(const std::string_view
 						    &dialog_id)
 {
 	return [me=make_weak_capture(ref(this)),
 		dialog_id=std::string{dialog_id.begin(),
-				      dialog_id.end()}](const busy &)
+				      dialog_id.end()}]
+		(THREAD_CALLBACK, const busy &)
 	{
 		auto got=me.get();
 

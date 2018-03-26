@@ -31,7 +31,8 @@ main_windowObj::handlerObj::handlerObj(ONLY IN_THREAD,
 		       background_color,
 		       shared_handler_data::create(),
 		       0),
-	  on_delete_callback_thread_only([](const auto &ignore) {}),
+	  on_delete_callback_thread_only([](THREAD_CALLBACK,
+					    const auto &ignore) {}),
 	  suggested_position_thread_only{suggested_position}
 {
 	// Set WM_PROTOCOLS to WM_DELETE_WINDOW -- we handle the window
@@ -89,9 +90,13 @@ void main_windowObj::handlerObj
 			if (is_input_busy())
 				return;
 
-			busy_impl yes_i_am{*this};
+			try {
+				busy_impl yes_i_am{*this};
 
-			on_delete_callback(IN_THREAD)(yes_i_am);
+				on_delete_callback(IN_THREAD)(IN_THREAD,
+							      yes_i_am);
+			} REPORT_EXCEPTIONS(this);
+
 			return;
 		}
 

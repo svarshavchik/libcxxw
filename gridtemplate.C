@@ -30,7 +30,7 @@ void gridtemplate::generate(const factory &f,
 
 void gridlayoutmanagerObj::create(const std::string_view &name,
 				  const std::unordered_map<std::string,
-				  std::function<void (const factory &)>>
+				  functionref<void (const factory &)>>
 				  &elements,
 				  const std::unordered_map<std::string,
 				  shortcut> &shortcuts,

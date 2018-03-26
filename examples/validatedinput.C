@@ -61,7 +61,8 @@ create_mainwindow(const x::w::main_window &main_window,
 
 	x::w::validated_input_field<char> validated_char=field->set_validator
 		([]
-		 (const std::u32string &value,
+		 (ONLY IN_THREAD,
+		  const std::u32string &value,
 		  x::w::text_param &error_message,
 		  const x::w::callback_trigger_t &trigger)
 		 -> std::optional<char>
@@ -148,7 +149,8 @@ create_mainwindow(const x::w::main_window &main_window,
 
 	auto validated_int=field->set_string_validator
 		([]
-		 (const std::string &value,
+		 (ONLY IN_THREAD,
+		  const std::string &value,
 		  int *parsed_value,
 		  x::w::text_param &error_message,
 		  const x::w::callback_trigger_t &trigger)
@@ -210,7 +212,8 @@ create_mainwindow(const x::w::main_window &main_window,
 	// it in the input field that failed validation.
 
 	field->on_validate([me=x::make_weak_capture(field)]
-			   (const x::w::callback_trigger_t &triggering_event)
+			   (ONLY IN_THREAD,
+			    const x::w::callback_trigger_t &triggering_event)
 			   {
 				   auto got=me.get();
 
@@ -264,7 +267,8 @@ void validatedinputfields()
 				      "validatedinputfields@examples.w.libcxx.com");
 	main_window->on_delete
 		([close_flag]
-		 (const x::w::busy &ignore)
+		 (ONLY IN_THREAD,
+		  const x::w::busy &ignore)
 		 {
 			 close_flag->close();
 		 });

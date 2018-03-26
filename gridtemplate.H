@@ -11,7 +11,7 @@
 #include "x/w/shortcut.H"
 #include "x/w/containerfwd.H"
 #include <x/obj.H>
-#include <functional>
+#include <x/functionalrefptr.H>
 #include <unordered_map>
 #include <string>
 
@@ -28,7 +28,7 @@ public:
 	//! Our generators
 
 	const std::unordered_map<std::string,
-				 std::function<void (const factory &)>
+				 functionref<void (const factory &)>
 				 > &generators;
 
 	//! Our standalone shortcuts, currently used for book pages.

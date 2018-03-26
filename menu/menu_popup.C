@@ -3,6 +3,7 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
+#include "listlayoutmanager/listlayoutmanager_impl.H"
 #include "menu/menu_popup.H"
 #include "menu/menubarlayoutmanager_impl.H"
 #include "peepholed_toplevel_listcontainer/create_popup.H"
@@ -19,18 +20,20 @@ LIBCXXW_NAMESPACE_START
 //! list. This gets called when a menu item has been selected/clicked
 //! on.
 
-static void menuitem_selected(const listlayoutmanager &lmbase,
-			      size_t i,
-			      const callback_trigger_t &trigger,
-			      const busy &mcguffin)
+static const list_selection_type_cb_t menuitem_selected_type=
+	[]
+	(ONLY IN_THREAD,
+	 const listlayoutmanager &lm,
+	 size_t i,
+	 const callback_trigger_t &trigger,
+	 const busy &mcguffin)
 {
-	listlayoutmanager lm{lmbase};
-
-	lm->impl->list_element_singleton->impl->menuitem_selected(lm,
+	lm->impl->list_element_singleton->impl->menuitem_selected(IN_THREAD,
+								  lm,
 								  i,
 								  trigger,
 								  mcguffin);
-}
+};
 
 static std::tuple<popup, ref<popup_attachedto_handlerObj> >
 do_create_menu_popup(const elementimpl &e,
@@ -93,8 +96,7 @@ do_create_dropdown_menu(const elementimpl &e,
 	style.highlighted_color="menu_popup_clicked_color";
 	style.list_font=theme_font{"menu_font"};
 	style.columns=1;
-
-	style.selection_type=&menuitem_selected;
+	style.selection_type=menuitem_selected_type;
 
 	return do_create_menu_popup
 		(e, creator, style,

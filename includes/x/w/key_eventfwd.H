@@ -7,6 +7,7 @@
 #define key_eventfwd_H
 
 #include <x/w/busyfwd.H>
+#include <x/w/connection_threadfwd.H>
 #include <string_view>
 #include <variant>
 
@@ -36,7 +37,8 @@ typedef std::variant<const key_event *,
 //! considered to be "activation" of that key. This parameter is always
 //! set to "true" for pasted X input method manager text.
 
-typedef bool key_event_callback_t(const all_key_events_t &,
+typedef bool key_event_callback_t(THREAD_CALLBACK,
+				  const all_key_events_t &,
 				  bool,
 				  const busy &mcguffin);
 

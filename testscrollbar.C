@@ -67,7 +67,8 @@ void testscrollbar()
 				 factory->create_horizontal_scrollbar
 				 ({100, 10, 2, 45},
 				   []
-				   (const auto &scrollbar_info) {
+				  (THREAD_CALLBACK,
+				   const auto &scrollbar_info) {
 					   updated_value(scrollbar_info);
 				   }, 100);
 			 });
@@ -83,7 +84,8 @@ void testscrollbar()
 
 	main_window->on_delete
 		([close_flag]
-		 (const auto &ignore)
+		 (THREAD_CALLBACK,
+		  const auto &ignore)
 		 {
 			 close_flag->close();
 		 });

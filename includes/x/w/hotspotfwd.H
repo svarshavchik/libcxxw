@@ -9,8 +9,7 @@
 #include <x/w/busyfwd.H>
 #include <x/w/callback_triggerfwd.H>
 #include <x/ptrfwd.H>
-
-#include <functional>
+#include <x/functionalrefptrfwd.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -18,8 +17,9 @@ class hotspotObj;
 
 //! Signature for a hotspot activation function.
 
-typedef std::function<void (const callback_trigger_t &,
-			    const busy &)> hotspot_callback_t;
+typedef functionref<void (THREAD_CALLBACK,
+			  const callback_trigger_t &,
+			  const busy &)> hotspot_callback_t;
 
 //! \anchor hotspot A display element that can be activated.
 
@@ -28,8 +28,11 @@ typedef std::function<void (const callback_trigger_t &,
 //!
 //! \code
 //! element->on_activate([]
-//!                      {
-//!                      });
+//!                     (ONLY IN_THREAD,
+//!                      const INSERT_LIBX_NAMESPACE::w::callback_trigger_t &,
+//!                      const INSERT_LIBX_NAMESPACE::w::busy &)
+//!                     {
+//!                     });
 //! \endcode
 //!
 //! Installs a callback that gets invoked when the hotspot is activated.

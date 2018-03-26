@@ -27,6 +27,7 @@
 #include <x/glob.H>
 #include <x/imbue.H>
 #include <x/visitor.H>
+#include <x/functionalrefptr.H>
 #include <sstream>
 #include <cmath>
 #include <algorithm>

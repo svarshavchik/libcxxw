@@ -174,7 +174,8 @@ standard_dialog_elements_t print_dialog_init_helper
 						single_selection_type;
 
 					nlm.selection_changed=
-						[parent](const auto &info)
+						[parent](THREAD_CALLBACK,
+							 const auto &info)
 						{
 							parent->printer_selected
 								(info);
@@ -420,10 +421,10 @@ print_dialog main_windowObj
 {
 	auto future_parent=ref<print_dialog_parentObj>::create();
 
-	functionref<void ()> cancel_callback_impl=
+	functionref<void (THREAD_CALLBACK)> cancel_callback_impl=
 		([cb=conf.cancel_callback,
 		  me=make_weak_capture(ref(this))]
-		 ()
+		 (ONLY IN_THREAD)
 		 {
 			 if (!cb)
 				 return;
@@ -437,7 +438,7 @@ print_dialog main_windowObj
 
 
 			 try {
-				 cb();
+				 cb(IN_THREAD);
 			 } REPORT_EXCEPTIONS(mw);
 		 });
 
@@ -479,17 +480,19 @@ print_dialog main_windowObj
 	// and installing their callbacks.
 
 	functionref<print_callback_t> print_callback_impl=
-		([cb=conf.print_callback]
-		 (const print_callback_info &info)
-		 {
-			 if (cb)
-				 cb(info);
-		 });
+		conf.print_callback
+		? functionref<print_callback_t>{conf.print_callback}
+		: functionref<print_callback_t>{
+		[]
+		(const print_callback_info &info)
+		{
+		}};
 
 	hide_and_invoke_when_activated(d, d->impl->fields.ok_button,
 				       [what=make_weak_capture(d, ref(this)),
 					callback=print_callback_impl]
-				       (const busy &mcguffin)
+				       (ONLY IN_THREAD,
+					const busy &mcguffin)
 				       {
 					       auto got=what.get();
 
@@ -503,16 +506,18 @@ print_dialog main_windowObj
 
 	hide_and_invoke_when_activated(d, d->impl->fields.cancel_button,
 				       [cancel_callback_impl]
-				       (const busy &mcguffin)
+				       (ONLY IN_THREAD,
+					const busy &mcguffin)
 				       {
-					       cancel_callback_impl();
+					       cancel_callback_impl(IN_THREAD);
 				       });
 
 	hide_and_invoke_when_closed(d,
 				    [cancel_callback_impl]
-				    (const busy &mcguffin)
+				    (ONLY IN_THREAD,
+				     const busy &mcguffin)
 				    {
-					    cancel_callback_impl();
+					    cancel_callback_impl(IN_THREAD);
 				    });
 
 	return d;
@@ -540,8 +545,9 @@ void print_dialogObj::initial_show()
 
 			   config.acknowledged_callback=
 				   [cb=me->impl->cancel_callback]
+				   (ONLY IN_THREAD)
 				   {
-					   (*cb)();
+					   (*cb)(IN_THREAD);
 				   };
 
 			   try {
