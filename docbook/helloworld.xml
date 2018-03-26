@@ -234,8 +234,19 @@ make</programlisting>
       </para>
 
       <para>
-	The internal &app; execution thread is what invokes the callback
-	lambdas, so their code must be thread safe. Callbacks, in general,
+	<function>on_delete</function>() callback's first parameter,
+	<quote><literal>ONLY IN_THREAD</literal></quote>.
+	indicates it gets invoked from the connection-thread,
+	as explained in <xref linkend="connection_thread" />.
+	Although <function>on_disconnect</function>()'s callback also
+	gets invoked from the connection-thread its invocation indicates
+	that the connection-thread is no longer functional, so it does
+	not get the
+	<quote><literal>ONLY IN_THREAD</literal></quote> parameter.
+      </para>
+
+      <para>
+	In all cases, callbacks, in general,
 	should not engage in lengthy, time-consuming tasks. Until the
 	callback returns, the internal connection thread will be unable to
 	process any additional X protocol messages. Callbacks should be
@@ -336,7 +347,8 @@ make</programlisting>
 	  <informalexample>
 	    <programlisting><![CDATA[
 main_window->on_delete([queue]
-    (const x::w::busy &amp;ignore)
+    (ONLY IN_THREAD,
+     const x::w::busy &amp;ignore)
     {
         queue->message([]
             (const x::w::main_window &main_window, const appdata_t &appdata)
@@ -628,6 +640,20 @@ while (!appdata->close_flag)
 	      supplying clickable buttons for each page, that get drawn as
 	      tabs in a horizontal strip above the paged container. Clicking
 	      on each button tab opens the corresponding page (in the book).
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>
+	    <link linkend="panelayoutmanager"><classname>&ns;::w::panelayoutmanager</classname></link>
+	  </term>
+	  <listitem>
+	    <para>
+	      All elements in this container get arranged into a single
+	      row or column. Each element is a resizable <quote>pane</quote>
+	      with draggable sliders between the panes dividing the
+	      row or column between the panes.
 	    </para>
 	  </listitem>
 	</varlistentry>

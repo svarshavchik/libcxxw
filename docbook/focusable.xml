@@ -13,9 +13,10 @@ See COPYING for distribution information.
     are examples of focusable display elements, or
     <quote>focusables</quote>. Focusables process keyboard
     events when they have keyboard input focus. There are two general
-    ways for a focusable to gain input focus: by clicking on the field
-    with pointer button 1, or by using the <keycap>Tab</keycap> and
-    <keycap>Shift-Tab</keycap> keys.
+    ways for a focusable to gain input focus: by clicking on it with the
+    primary pointer button, or by using the <keycap>Tab</keycap> and
+    <keycap>Shift-Tab</keycap> keys, which cycle through the focusable
+    fields in the window.
   </para>
 
   <para>

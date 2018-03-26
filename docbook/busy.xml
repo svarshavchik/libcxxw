@@ -46,7 +46,8 @@ See COPYING for distribution information.
 
     button->on_activate
         ([]
-         (const &ns;::w::callback_trigger_t &amp;trigger,
+         (ONLY IN_THREAD,
+          const &ns;::w::callback_trigger_t &amp;trigger,
           const &ns;::w::busy &amp;get_busy)
          {
             // ...</programlisting>
@@ -72,15 +73,17 @@ See COPYING for distribution information.
     <itemizedlist>
       <listitem>
 	<para>
-	  The internal execution thread runs the callback.
+	  The internal &connection_thread; executes the callback.
 	</para>
       </listitem>
       <listitem>
 	<para>
 	  The callback acquires
-	  a busy mcguffin, and includes the
+	  a busy mcguffin, and puts the
 	  <classname>&ns;::ref&lt;&ns;::obj&gt;</classname>
-	  as part of a message to the main application thread.
+	  as part of a message to the main application thread, or starts
+	  a new execution thread and passes the mcguffin to the new
+	  execution thread.
 	</para>
       </listitem>
       <listitem>
@@ -91,7 +94,8 @@ See COPYING for distribution information.
       <listitem>
 	<para>
 	  Because the mcguffin gets included in the message sent to the main
-	  thread, the mcguffin object remains in existance. The main
+	  thread, or a new thread,
+	  the mcguffin object remains in existance. The main
 	  application thread
 	  typically receives the message and the mcguffin as one of its
 	  parameters,
@@ -101,7 +105,8 @@ See COPYING for distribution information.
       <listitem>
 	<para>
 	  When it's done, the main application thread
-	  discards the original message. This removes the last reference to the
+	  discards the original message, or a new execution thread
+	  terminates. This removes the last reference to the
 	  mcguffin. The mcguffin gets destroyed and the library's internal
 	  execution thread resumes the usual processing of button or keypress
 	  events.
@@ -156,9 +161,10 @@ See COPYING for distribution information.
     <informalexample>
       <programlisting>
     [mythread]
-    (const &ns;::w::callback_trigger_t &amp;ignore,
-    const &ns;::w::busy &amp;get_busy) {
-        mythread-&gt;were_busy(get_busy.get_wait_busy_mcguffin());
+    (ONLY IN_THREAD,
+     const &ns;::w::callback_trigger_t &amp;ignore,
+     const &ns;::w::busy &amp;get_busy) {
+         mythread-&gt;were_busy(get_busy.get_wait_busy_mcguffin());
     }</programlisting>
     </informalexample>
   </blockquote>

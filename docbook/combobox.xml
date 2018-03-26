@@ -230,7 +230,8 @@ lock->remove_item(1);</programlisting>
 	<programlisting>
 x::w::new_editable_comboboxlayoutmanager
 	nclm([]
-	     (const x::w::editable_combobox_selection_changed_info_t &amp;info)
+	     (ONLY IN_THREAD,
+	      const x::w::editable_combobox_selection_changed_info_t &amp;info)
 	     {
                   // ...
              });

@@ -158,12 +158,14 @@ See COPYING for distribution information.
 f->set("Hello world");
 
 f->on_change([]
-             (const &ns;::w::input_change_info_t &amp;info)
+             (ONLY IN_THREAD,
+              const &ns;::w::input_change_info_t &amp;info)
              {
              });
 
 f->on_autocomplete([]
-                  (&ns;::w::input_autocomplete_info_t &amp;info)
+                  (ONLY IN_THREAD,
+                   &ns;::w::input_autocomplete_info_t &amp;info)
                   {
                         return false;
                   });
@@ -186,7 +188,7 @@ f->on_autocomplete([]
       <para>
 	<methodname>on_change</methodname>() installs a callback that gets
 	invoked anytime the contents of the input field get changed.
-	This callback receives a
+	This callback receives a &connection_thread; handle and an
 	<ulink url="&link-x--w--input-change-info-t;"><classname>&ns;;:w::input_change_info_t</classname></ulink>
 	parameter that provides some context for the change.
       </para>
@@ -196,7 +198,7 @@ f->on_autocomplete([]
 	added to
 	the end of the field, the
 	<methodname>on_autocomplete</methodname>() callback also gets invoked.
-	This callback receives a reference to a
+	This callback also receives a &connection_thread; handle, but with a
 	<ulink url="&link-x--w--input-autocomplete-info-t;"><classname>&ns;;:w::input_autocomplete_info_t</classname></ulink>
 	object.
       </para>
@@ -476,10 +478,16 @@ factory->create_normal_button([]
     </para>
 
     <para>
-      The lambda receives two parameters:
+      The lambda receives the following parameters.
     </para>
 
     <itemizedlist>
+      <listitem>
+	<para>
+	  A &connection_thread; handle.
+	</para>
+      </listitem>
+
       <listitem>
 	<para>
 	  <ulink url="&link-typedef-x--w-callback-trigger-t;"><classname>&ns;::w::callback_trigger_t</classname></ulink>

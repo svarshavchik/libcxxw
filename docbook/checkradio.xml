@@ -303,7 +303,8 @@ size_t n=button->get_state();</programlisting>
       <informalexample>
 	<programlisting>
 button->on_activate([]
-                    (size_t value,
+                    (ONLY IN_THREAD,
+                     size_t value,
                      const x::w::callback_trigger_t &amp;trigger,
                      const x::w::busy &amp;mcguffin)
                     {

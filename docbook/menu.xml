@@ -213,7 +213,8 @@ m->append_items(
       {
             &ns;::w::shortcut{"Alt", 'N'},
             []
-            (const &ns;::w::list_item_status_info_t &amp;info)
+            (ONLY IN_THREAD,
+             const &ns;::w::list_item_status_info_t &amp;info)
             {
                 std::cout &lt;&lt; "File->New selected" &lt;&lt; std::endl;
             },
@@ -221,7 +222,8 @@ m->append_items(
 
             &ns;::w::shortcut{"Alt", 'O'},
             []
-            (const &ns;::w::list_item_status_info_t &amp;info)
+            (ONLY IN_THREAD,
+             const &ns;::w::list_item_status_info_t &amp;info)
             {
                 std::cout &lt;&lt; "File->Open selected" &lt;&lt; std::endl;
             },
@@ -282,7 +284,8 @@ m->append_items(
       {
 		x::w::menuoption{},
 		[]
-		(const x::w::list_item_status_info_t &amp;info)
+		(ONLY IN_THREAD,
+                 const x::w::list_item_status_info_t &amp;info)
 		{
 			std::cout &lt;&lt; &#34;View->Tools: &#34; &lt;&lt; info.selected
 				  &lt;&lt; std::endl;

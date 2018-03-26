@@ -134,13 +134,15 @@ new_list.height=6;
 new_list.selection_type=&ns;::w::multiple_selection_type;
 
 new_list.selection_type=[]
-       (const &ns;::w::listlayoutmanagerbase &amp; l,
+       (ONLY IN_THREAD,
+        const &ns;::w::listlayoutmanagerbase &amp; l,
         size_t item_number)
        {
        };
 
 new_list.selection_changed=[]
-       (const &ns;::w::list_item_status_info_t &amp;info)
+       (ONLY IN_THREAD,
+        const &ns;::w::list_item_status_info_t &amp;info)
        {
        };
 	</programlisting>
@@ -173,6 +175,16 @@ new_list.selection_changed=[]
       lambda is responsible for selecting or
       unselecting the list's items, as it sees fit.
     </para>
+
+    <note>
+      <para>
+	<varname>selection_type</varname> callbacks get executed by the
+	&connection_thread;.
+	They should use <varname>IN_THREAD</varname>
+	<ulink url="&link-typedef-x--w-listlayoutmanager;"><classname>&ns;::w::listlayoutmanager</classname></ulink>
+	methods to examine and update the list.
+      </para>
+    </note>
 
     <para>
       <varname>selection_changed</varname> is an optional
@@ -370,6 +382,22 @@ llmanager->append_items(
 
     <note>
       <para>
+	<methodname>size</methodname>() will not immediately reflect the
+	new size of the list after calling &allitemmethods;.
+	The contents of the display element get updated by the
+	&connection_thread;. These methods send a message to the connection
+	thread, which then makes the corresponding update.
+      </para>
+
+      <para>
+	A &callback; from the &connection_thread; has access to the overloaded
+	<varname>IN_THREAD</varname> methods, which immediately update the
+	list items.
+      </para>
+    </note>
+
+    <note>
+      <para>
 	The height of the selection list gets specified as the number of list
 	rows. The actual height gets computed using the default list label
 	font. Using custom fonts and separators results in a selection list
@@ -478,7 +506,8 @@ llmanager->append_items(
 	  When creating new list items (using
 	  <methodname>append_items</methodname>(),
 	  <methodname>insert_items</methodname>(), et. al.)
-	  what goes into each column is individually specified.
+	  a separate text stribng goes into each column, and gets
+	  individual specified.
 	  The number of consecutive text strings is always a multiple of three.
 	</para>
       </listitem>
@@ -505,10 +534,10 @@ llmanager->append_items(
 	</para>
 
 	<para>
-	  It's also possible to synchronized the widths of columns of
+	  It's also possible to synchronize the widths of columns of
 	  two or more selection lists, so if they're positioned above
-	  each other, and their enclosing container sizes them to the
-	  same width, their respective columns also align with each other.
+	  each other, and their enclosing containers size them to the
+	  same width, their respective columns will then align with each other.
 	  See <xref linkend="panesynclists" /> for an example of doing
 	  this.
 	</para>

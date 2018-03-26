@@ -12,6 +12,7 @@
 <!ENTITY ns "x">
 <!ENTITY libcxx "<ulink url='/'>LibCXX</ulink>">
 <!ENTITY callback "<link linkend='callbacks'>callback</link>">
+<!ENTITY connection_thread "<link linkend='connection_thread'>connection thread</link>">
 <!ENTITY focusable "<link linkend='focusable'>focusable</link>">
 <!ENTITY factory "<link linkend='factory'>factory</link>">
 <!ENTITY focusable "<link linkend='focusable'>focusable</link>">
@@ -48,7 +49,9 @@
 <!ENTITY scrollbar SYSTEM "scrollbar.xml">
 <!ENTITY sxgdoc SYSTEM "sxg.xml">
 <!ENTITY connections_and_screens SYSTEM "connections_and_screens.xml">
+<!ENTITY connthread SYSTEM "connthread.xml">
 <!ENTITY properties SYSTEM "properties.xml">
+
 %entity-list;
 
 ]>
@@ -94,6 +97,7 @@ See COPYING for distribution information.
   <part id="misctopics">
     <title>Miscellaneous topics</title>
     &connections_and_screens;
+    &connthread;
     &properties;
   </part>
   &sxgdoc;

@@ -1,0 +1,231 @@
+<!--
+
+Copyright 2018 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<chapter id="connection_thread">
+  <title>Connection threads and callbacks</title>
+
+  <para>
+    As mentioned briefly in the introduction, the &app; creates an internal
+    execution thread for the connection with the display server.
+    &app; takes care of starting and stopping the connection thread.
+    The connection thread gets started when needed, and the connection
+    thread gets stopped when the last top level window,
+    or an explicitly constructed
+    <link linkend="connections_and_screens">connection</link> object,
+    goes out of scope and gets destroyed.
+  </para>
+
+  <para>
+    The connection thread takes care of updating the display, and
+    processing internal display protocol messages. The connection thread
+    also executes application-specified lambdas or other callable
+    objects in response to specific events.
+  </para>
+
+  <para>
+    The connection thread resumes its normal duties after the application
+    callback returns. Application callbacks should not get bogged down
+    with long-running tasks, as this will result in the application
+    window appearing to be frozen. Callbacks should be minimal, and consist
+    of little more than sending a message of some kind, or setting a flag.
+  </para>
+
+  <section id="callback_signatures">
+    <title>Callback calling conventions</title>
+
+    <para>
+      Typical example: a
+      main window's <methodname>on_delete</methodname>() method
+      sets the callback that gets executed in when the window's close
+      button gets clicked:
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+main_window->on_delete([close_flag]
+    (ONLY IN_THREAD,
+     const &ns;::w::busy &amp;ignore)
+     {
+         close_flag->close();
+     });</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      This is an example of the calling convention &appshort; uses for
+      invoking its callbacks by the internal execution thread.
+      The callback's first parameter is a reference to an internal
+      object that represents the connection thread itself.
+      The callback's first parameter gets specified as
+      <quote><literal>ONLY IN_THREAD</literal></quote>, this declares a
+      parameter named <varname>IN_THREAD</varname> that carries this
+      internal reference.
+    </para>
+
+    <para>
+      This calling convention serves a dual purpose:
+    </para>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  This identifies lambdas that always get invoked by the library's'
+	  internal connection
+	  thread, as well as object methods that can only be invoked
+	  from the connection thread.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  A lambda that receives the <varname>IN_THREAD</varname> parameter
+	  can call other functions and methods by forwarding to them this
+	  parameter:
+	</para>
+
+	<blockquote>
+	  <informalexample>
+	    <programlisting>
+lm-&gt;remove_item(IN_THREAD, 0);</programlisting>
+	  </informalexample>
+	</blockquote>
+
+	<para>
+	  The only way to receive the <varname>IN_THREAD</varname> parameter
+	  is by having a function executed by the internal connection thread.
+	  In this manner only <varname>IN_THREAD</varname> code can invoke
+	  other <varname>IN_THREAD</varname> code.
+	</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>
+      The <quote><literal>THREAD_CALLBACK</literal></quote> designation
+      is just an alias. for the parameter's type:
+      </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+main_window->on_delete([close_flag]
+    (THREAD_CALLBACK,
+     const &ns;::w::busy &amp;ignore)
+     {
+         close_flag->close();
+     });</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      <quote><literal>ONLY IN_THREAD</literal></quote> and
+      <quote><literal>THREAD_CALLBACK</literal></quote> mean the same
+      thing. The only difference is that the former declares a named
+      parameter, called <quote>IN_THREAD</quote>; and the latter is just
+      a parameter type declaration. This <methodname>on_delete</methodname>()
+      example does not need to call any other connection thread code, so
+      it doesn't need to forward its thread parameter anywhere.
+      Using the <literal>THREAD_CALLBACK</literal> designation is a little
+      but more descriptive.
+    </para>
+
+    <para>
+      Some &appshort; objects provide overloaded versions of the same
+      method, with and without the <literal>ONLY IN_THREAD</literal>
+      designation. Except where noted, &appshort; makes all changes to
+      display elements from the internal connection thread.
+      Application code invoking the non-<literal>IN_THREAD</literal>
+      method does not immediately update the display element. What happens
+      is that a message gets sent to the connection thread, which processes
+      it at the first available opportunity.
+    </para>
+
+    <para>
+      But a callback that gets executed by the connection thread and receives
+      the <varname>IN_THREAD</varname> parameter has the ability to
+      use the <literal>ONLY IN_THREAD</literal> overload, which makes the
+      change immediately. An
+      <varname>IN_THREAD</varname> code is free to invoke the
+      non-<varname>IN_THREAD</varname> overload also, but this will not
+      result in any changes until the callback returns, and the connection
+      thread resumes processing its internal messages.
+    </para>
+  </section>
+
+  <section id="callback_invocation">
+    <title>Callback invocations</title>
+
+    <para>
+      The &connection_thread; thread is completely asynchronous. This
+      means that uninstalling or replacing an existing callback does not
+      guarantee that the existing callback gets removed, and is no longer
+      in effect, cannot be called again. It's possible that the connection
+      thread is in the middle of running the existing callback. The
+      replacement or the uninstallation takes effect only when the
+      execution thread processes the internal message to uninstall the
+      callback, or install a replacement callback.
+    </para>
+
+    <para>
+      Callbacks get wrapped into a reference-counted object, which exists
+      as long as the callback remains active.
+      This means that the
+      application's callbacks should safely capture anything they
+      need by value (subject to <link linkend="callbackrefs">restrictions
+	on creating circular references</link>).
+      &libcxx;'s reference-counted objects (which are,
+      incidentally, are used to build the &app; itself) are an excellent
+      suggestion. The callback and the main application coordinate their
+      mutual dependency through some reference-counted object, and the
+      underlying framework handles the cleanup easily:
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+main_window->on_delete([close_flag]
+    (ONLY IN_THREAD,
+     const &ns;::w::busy &amp;ignore)
+     {
+         close_flag->close();
+     });</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      This examples captures the <varname>close_flag</varname> object, which
+      is a
+      <ulink url="&refobj;">reference-counted object</ulink>. A reference
+      to the lambda itself gets stored internally, in the
+      <varname>main_window</varname>, keeping the captured reference.
+      The main application has another reference on the
+      <varname>close_flag</varname> object, and responds by leaving
+      <varname>main_window</varname>'s scope, which destroys this object,
+      that represents the application's main window.
+    </para>
+
+    <para>
+      This closes the window and destroys the object, together with its
+      <varname>on_delete</varname> callback, and its captured object reference,
+      and the application's second reference to the same object goes out of
+      scope as well.
+    </para>
+
+    <para>
+      It is immaterial which reference to the <varname>close_flag</varname>
+      goes out of scope first and last. Whichever reference goes out of
+      scope last, the <varname>close_flag</varname> object gets destroyed,
+      deleting all the memory associated with it.
+    </para>
+  </section>
+</chapter>
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "book" "chapter")
+End:
+-->

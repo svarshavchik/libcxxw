@@ -9,8 +9,9 @@ See COPYING for distribution information.
   <title>The grid layout manager</title>
 
   <para>
-    The following example show how to use additional features of the
-    grid layout manager, introduced in previous chapters.
+    Previous chapters introduces the grid layout manager.
+    The following example shows how to use additional features of the
+    grid layout manager.
     It also shows a design pattern for correctly capturing object references
     for <link linkend="callbacks">callbacks</link>.
   </para>
@@ -228,13 +229,16 @@ layout->remove_col_defaults(col);
 	<programlisting>
 button-&gt;on_activate
     ([main_window=&ns;::make_weak_capture(main_window)]
-     (const &ns;::w::callback_trigger_t &amp;trigger, const auto &amp;ignore)
+     (ONLY IN_THREAD,
+      const &ns;::w::callback_trigger_t &amp;trigger, const auto &amp;ignore)
      {
-          main_winow.get([&amp;]
-                         (const auto &amp;main_window)
-                         {
-                              // ...
-                         });
+          auto got=main_window.get();
+          if (!got)
+              return; // Did not recover a strong reference.
+
+          auto &amp;[main_window]=*got;
+
+          // ... main_window is ready for use.
      });</programlisting>
       </informalexample>
     </blockquote>
@@ -254,16 +258,16 @@ button-&gt;on_activate
     </para>
 
     <para>
-      The solution is to use <function>&ns;::make_weak_capture</function>(),
-      from the core &libcxx; classes, to capture a
-      <quote>weak</quote> pointer.
+      One solution is to use <function>&ns;::make_weak_capture</function>(),
+      from the core &libcxx; library, to capture one or more
+      <quote>weak</quote> pointers.
       The callback attempts to <methodname>get</methodname>() a regular
       reference from it, and proceeds with its business if this succeeds.
 
       If the callback happens to execute while the main window is getting
       destroyed, and the top level <varname>main_window</varname> no longer
-      exists, <methodname>get</methodname>() fails to recover a strong
-      reference, and the callback bails out, and lets the execution thread
+      exists, <methodname>get</methodname>() fails to recover the strong
+      references, and the callback bails out, and lets the execution thread
       finish cleaning things up.
     </para>
 

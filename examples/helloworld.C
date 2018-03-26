@@ -146,7 +146,7 @@ void testlabel()
 	// it gets a "close window" message from the display server.
 	main_window->on_delete
 		([close_flag]
-		 (THREAD_CALLBACK,
+		 (ONLY IN_THREAD,
 		  const x::w::busy &ignore)
 		 {
 			 close_flag->close();

@@ -135,7 +135,8 @@ new_page->add("Tab",
 	<programlisting>
     	pl->on_opened
 		([]
-		 (const x::w::book_status_info_t &amp;info)
+		 (ONLY IN_THREAD,
+                  const x::w::book_status_info_t &amp;info)
 		 {
                      // ...
 	         });</programlisting>
@@ -165,7 +166,8 @@ container->appdata=f->create_input_field("", config);
 // ...
 
 pl->on_opened([]
-     (const &ns;::w::book_status_info_t &amp;info)
+     (ONLY IN_THREAD,
+      const &ns;::w::book_status_info_t &amp;info)
      {
              size_t n=info.opened;
 
@@ -182,9 +184,10 @@ pl->on_opened([]
       <link linkend="appdata">using <varname>appdata</varname></link>.
 
       <link linkend="booklayoutmanager"><filename>booklayoutmanager.C</filename></link>
-      puts the first
-      <classname>&ns;::w::input_field</classname> into the
-2      <varname>app</varname> of each page's
+      takes the first
+      <classname>&ns;::w::input_field</classname> on each page, and puts it
+      into the
+      <varname>appdata</varname> of each page's
       <classname>&ns;::w::container</classname> element.
     </para>
 

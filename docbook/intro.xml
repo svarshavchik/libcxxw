@@ -215,54 +215,6 @@ See COPYING for distribution information.
 	destroyed.
       </para>
     </section>
-
-    <section id="connection_thread">
-      <title>The connection thread</title>
-
-      <para>
-	As mentioned briefly in the introduction, the &app; uses a separate
-	thread for the connection with the display server. &app; takes care
-	of starting the connection thread. The connection thread gets
-	automatically stopped when the last top level window gets destroyed.
-      </para>
-
-      <para>
-	The connection thread takes care of updating the display, and
-	processing internal display protocol messages. The connection thread
-	may also end up executing an application-supplied callback in the form
-	of a lambda or some other callable object.
-      </para>
-
-      <para>
-	The connection thread resumes its normal duties after the application
-	callback returns. Application callbacks should not get bogged down
-	with long-running tasks, as this will result in the application
-	window appearing to be frozen. Callbacks should be minimal, and consist
-	of little more than sending a message of some kind, or setting a flag.
-      </para>
-
-      <para>
-	Different callbacks get installed or uninstalled in different ways.
-	Due to asynchronous nature of the connection thread, the application
-	must be prepared for the callback to be executing at the same time
-	the application requests the callback to be turned off or uninstalled;
-	or shortly thereafter before the callback's deactivation gets finalized.
-      </para>
-
-      <para>
-	As such, application's callbacks should safely capture anything they
-	need by value (subject to <link linkend="callbackrefs">restrictions
-	  on creating circular references</link>).
-	&libcxx;'s reference-counted objects (which are,
-	incidentally, are used to build the &app; itself) are an excellent
-	suggestion. The callback and the main application coordinate their
-	mutual dependency through some refernece-counted object. After both
-	the application gets rid of its reference, and the callback gets
-	uninstalled, with the captured reference going out of scope and
-	getting destroyed, the underlying reference-counted object which was
-	used for this coordination gets destroyed automatically.
-      </para>
-    </section>
   </section>
 </preface>
 
