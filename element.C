@@ -85,20 +85,20 @@ void elementObj::remove_background_color()
 	impl->remove_background_color();
 }
 
-void elementObj::do_on_state_update(const functionref<element_state_callback_t
-				    > &cb)
+void elementObj::on_state_update(const functionref<element_state_callback_t>
+				 &cb)
 {
 	impl->on_state_update(cb);
 }
 
-void elementObj::do_on_pointer_focus(const functionref<focus_callback_t> &cb)
+void elementObj::on_pointer_focus(const functionref<focus_callback_t> &cb)
 {
 	impl->on_pointer_focus(cb);
 }
 
-void elementObj::do_create_custom_tooltip(const functionref<void
-					  (const tooltip_factory &)>
-					  &tooltip_factory) const
+void elementObj::create_custom_tooltip(const functionref<void
+				       (const tooltip_factory &)>
+				       &tooltip_factory) const
 {
 	impl->THREAD->run_as
 		([impl=this->impl, tooltip_factory]
@@ -127,10 +127,10 @@ container elementObj
 	return contextmenu_popup(impl, creator);
 }
 
-void elementObj::do_install_contextpopup_callback
+void elementObj::install_contextpopup_callback
 (const functionref<install_contextpopup_callback_t> &callback)
 {
-	do_install_contextpopup_callback(callback, {});
+	install_contextpopup_callback(callback, {});
 }
 
 namespace {
@@ -179,7 +179,7 @@ class LIBCXX_HIDDEN contextpopup_shortcut_activatorObj
 
 		busy_impl yes_i_am{*stronge->impl};
 
-		callback->invoke(stronge, trigger, yes_i_am);
+		callback(stronge, trigger, yes_i_am);
 	}
 
 	//! If the attached-to element is visible, the shortcut is enabled.
@@ -200,7 +200,7 @@ class LIBCXX_HIDDEN contextpopup_shortcut_activatorObj
 #endif
 }
 
-void elementObj::do_install_contextpopup_callback
+void elementObj::install_contextpopup_callback
 (const functionref<install_contextpopup_callback_t> &callback,
  const shortcut &sc)
 {
@@ -251,9 +251,8 @@ void elementObj::do_install_contextpopup_callback
 						 return;
 
 					 try {
-						 callback->invoke(me,
-								  trigger,
-								  mcguffin);
+						 callback(me, trigger,
+							  mcguffin);
 					 } REPORT_EXCEPTIONS(window);
 				 };
 		 });

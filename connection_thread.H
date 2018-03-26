@@ -297,8 +297,7 @@ class LIBCXX_HIDDEN connection_threadObj
 					    <tick_clock_t::duration>
 					    (std::forward<timeout_duration>
 					     (duration)),
-					    callback_functional_t::create
-					    (std::forward<lambda>(l)));
+					    std::forward<lambda>(l));
 	}
 
 	//! Implement schedule_callback().

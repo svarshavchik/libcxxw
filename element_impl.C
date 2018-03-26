@@ -444,10 +444,9 @@ void elementObj::implObj
 		 {
 			 me->data(IN_THREAD).element_state_callback=cb;
 
-			 cb->invoke(me->create_element_state
-				    (IN_THREAD,
-				     element_state::current_state),
-				    busy_impl{*me});
+			 cb(me->create_element_state
+			    (IN_THREAD, element_state::current_state),
+			    busy_impl{*me});
 		 });
 }
 
@@ -591,8 +590,7 @@ void elementObj::implObj
 	auto &cb=data(IN_THREAD).element_state_callback;
 
 	if (cb)
-		cb->invoke(create_element_state(IN_THREAD, reason),
-			   busy_impl{*this});
+		cb(create_element_state(IN_THREAD, reason), busy_impl{*this});
 }
 
 clip_region_set::clip_region_set(ONLY IN_THREAD,
@@ -1031,8 +1029,8 @@ void elementObj::implObj
 		auto &cb=data(IN_THREAD).on_keyboard_callback;
 
 		if (cb)
-			cb->invoke(most_recent_keyboard_focus_change(IN_THREAD),
-				   trigger);
+			cb(most_recent_keyboard_focus_change(IN_THREAD),
+			   trigger);
 	} CATCH_EXCEPTIONS;
 }
 
@@ -1085,8 +1083,8 @@ void elementObj::implObj
 		auto &cb=data(IN_THREAD).on_pointer_callback;
 
 		if (cb)
-			cb->invoke(most_recent_pointer_focus_change(IN_THREAD),
-				   trigger);
+			cb(most_recent_pointer_focus_change(IN_THREAD),
+			   trigger);
 	} CATCH_EXCEPTIONS;
 }
 
@@ -1142,7 +1140,7 @@ bool elementObj::implObj::process_key_event(ONLY IN_THREAD, const key_event &e)
 
 	auto &cb=data(IN_THREAD).on_key_event_callback;
 
-	return cb ? cb->invoke(&e, activate_for(e), mcguffin):false;
+	return cb ? cb(&e, activate_for(e), mcguffin):false;
 }
 
 bool elementObj::implObj::uses_input_method()
@@ -1277,7 +1275,7 @@ bool elementObj::implObj::pasted(ONLY IN_THREAD,
 
 	auto &cb=data(IN_THREAD).on_key_event_callback;
 
-	return cb ? cb->invoke(&str, true, mcguffin):false;
+	return cb ? cb(&str, true, mcguffin):false;
 }
 
 void elementObj::implObj::creating_focusable_element()

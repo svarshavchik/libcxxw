@@ -86,16 +86,8 @@ public:
 	void remove_background_color();
 
 	//! Install a state update callback.
-	template<typename functor>
-	inline void on_state_update(functor &&f)
-	{
-		do_on_state_update(functionref<element_state_callback_t>
-				   ::create(std::forward<functor>(f)));
-	}
 
-	//! Type-erased on-state_update().
-
-	void do_on_state_update(const functionref<element_state_callback_t> &);
+	void on_state_update(const functionref<element_state_callback_t> &);
 
 	//! Return the mcguffin for this display element's connection.
 
@@ -115,15 +107,7 @@ public:
 	void label_for(const focusable &f);
 
 	//! Install a pointer focus callback.
-	template<typename functor>
-	inline void on_pointer_focus(functor &&f)
-	{
-		do_on_pointer_focus(functionref<focus_callback_t>::create
-				    (std::forward<functor>(f)));
-	}
-
-	//! Type-erased on_pointer_focus().
-	void do_on_pointer_focus(const functionref<focus_callback_t> &);
+	void on_pointer_focus(const functionref<focus_callback_t> &);
 
 	//! Create a standard tooltip consisting of an unwrapped label.
 
@@ -138,18 +122,7 @@ public:
 	//! Create a custom tooltip.
 
 	//! Installs a factory for the tooltip.
-	template<typename factory>
-	void create_custom_tooltip(factory &&f) const
-	{
-		do_create_custom_tooltip(functionref<void
-					 (const tooltip_factory &)>
-					 ::create(std::forward<factory>(f)));
-	}
-
-	//! Create a custom tooltip.
-
-	//! Type-erased implementation.
-	void do_create_custom_tooltip
+	void create_custom_tooltip
 	(const functionref<void (const tooltip_factory &)>
 	 &tooltip_factory) const;
 
@@ -172,34 +145,14 @@ public:
 		const;
 
 	//! Install a context popup callback.
-	template<typename factory>
-	inline void install_contextpopup_callback(factory &&f)
-	{
-		do_install_contextpopup_callback
-			(functionref<install_contextpopup_callback_t>
-			 ::create(std::forward<factory>(f)));
-	}
+
+	void install_contextpopup_callback(const functionref
+					   <install_contextpopup_callback_t> &);
 
 	//! Install a context popup callback.
-	template<typename factory>
-	inline void install_contextpopup_callback(factory &&f,
-						  const shortcut &sc)
-	{
-		do_install_contextpopup_callback
-			(functionref<install_contextpopup_callback_t>
-			 ::create(std::forward<factory>(f)), sc);
-	}
-
-	//! Create a factory for a context menu.
-	void do_install_contextpopup_callback(const functionref
-					      <install_contextpopup_callback_t>
-					      &);
-
-	//! Create a factory for a context menu.
-	void do_install_contextpopup_callback(const functionref
-					      <install_contextpopup_callback_t>
-					      &,
-					      const shortcut &);
+	void install_contextpopup_callback(const functionref
+					   <install_contextpopup_callback_t> &,
+					   const shortcut &);
 
 	//! Remove a previously installed context menu.
 	void remove_contextpopup_callback() const;

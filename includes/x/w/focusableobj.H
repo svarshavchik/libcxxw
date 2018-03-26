@@ -95,30 +95,12 @@ public:
 	//! The callback gets invoked upon installation, reporting this
 	//! display element's current status.
 
-	template<typename functor>
-	inline void on_keyboard_focus(functor &&f)
-	{
-		do_on_keyboard_focus(functionref<focus_callback_t>
-				     ::create(std::forward<functor>(f)));
-	}
-
-	//! Type-erased on_keyboard_focus().
-
-	void do_on_keyboard_focus(const functionref<focus_callback_t> &)
+	void on_keyboard_focus(const functionref<focus_callback_t> &)
 		LIBCXX_PUBLIC;
 
 	//! Install a new callback to report key events.
 
-	template<typename functor>
-	inline void on_key_event(functor &&f)
-	{
-		do_on_key_event(functionref<key_event_callback_t>::create
-				(std::forward<functor>(f)));
-	}
-
-	//! Type-erased on_key_event().
-
-	void do_on_key_event(const functionref<key_event_callback_t> &)
+	void on_key_event(const functionref<key_event_callback_t> &)
 		LIBCXX_PUBLIC;
 
 	//! Give this element the initial input focus

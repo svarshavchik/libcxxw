@@ -303,7 +303,7 @@ void elementObj::implObj::hover_action(ONLY IN_THREAD)
 
 	tooltip_factory_impl create_a_tooltip(IN_THREAD, ref(this));
 
-	data(IN_THREAD).tooltip_factory->invoke(create_a_tooltip);
+	data(IN_THREAD).tooltip_factory(create_a_tooltip);
 }
 
 void elementObj::implObj::hover_cancel(ONLY IN_THREAD)

@@ -444,46 +444,44 @@ focusable_container new_custom_comboboxlayoutmanager
 			 focusable_element
 				 .on_keyboard_focus
 				 (IN_THREAD,
-				  functionref<focus_callback_t>::create
-				  ([collector]
-				   (const auto &ignore,
-				    const auto &ignore2)
-				   {
-					   collector->buffer.clear();
-				   }));
+				  [collector]
+				  (const auto &ignore,
+				   const auto &ignore2)
+				  {
+					  collector->buffer.clear();
+				  });
 
 			 // Install an on_key_event, to collect the typed in
 			 // text, and trigger a combo-box search.
 			 focusable_element.on_key_event
 				 (IN_THREAD,
-				  functionref<key_event_callback_t>::create
-				  ([collector,
-				    selection_search,
-				    c=make_weak_capture
-				    (current_selection, lm)]
-				   (const auto &key_event,
-				    bool activated,
-				    const auto &mcguffin)
-				   {
-					   bool processed=false;
+				  [collector,
+				   selection_search,
+				   c=make_weak_capture
+				   (current_selection, lm)]
+				  (const auto &key_event,
+				   bool activated,
+				   const auto &mcguffin)
+				  {
+					  bool processed=false;
 
-					   auto got=c.get();
+					  auto got=c.get();
 
-					   if (got)
-					   {
-						   auto &[current_selection,
-							  lm]= *got;
+					  if (got)
+					  {
+						  auto &[current_selection,
+							 lm]= *got;
 
-						   processed=collector->process
-							   (key_event,
-							    activated,
-							    selection_search,
-							    current_selection,
-							    lm->create_public_object(),
-							    mcguffin);
-					   }
-					   return processed;
-				   }));
+						  processed=collector->process
+							  (key_event,
+							   activated,
+							   selection_search,
+							   current_selection,
+							   lm->create_public_object(),
+							   mcguffin);
+					  }
+					  return processed;
+				  });
 		 });
 
 	return c;

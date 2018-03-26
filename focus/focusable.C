@@ -350,12 +350,12 @@ void focusableObj::get_focus_before_me(const std::vector<focusable> &others)
 		 });
 }
 
-void focusableObj::do_on_keyboard_focus(const functionref<focus_callback_t> &cb)
+void focusableObj::on_keyboard_focus(const functionref<focus_callback_t> &cb)
 {
 	get_impl()->get_focusable_element().on_keyboard_focus(cb);
 }
 
-void focusableObj::do_on_key_event(const functionref<key_event_callback_t> &cb)
+void focusableObj::on_key_event(const functionref<key_event_callback_t> &cb)
 {
 	get_impl()->get_focusable_element().on_key_event(cb);
 }

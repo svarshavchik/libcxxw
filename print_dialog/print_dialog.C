@@ -420,8 +420,7 @@ print_dialog main_windowObj
 {
 	auto future_parent=ref<print_dialog_parentObj>::create();
 
-	auto cancel_callback_impl=
-		functionref<void ()>::create
+	functionref<void ()> cancel_callback_impl=
 		([cb=conf.cancel_callback,
 		  me=make_weak_capture(ref(this))]
 		 ()
@@ -479,8 +478,7 @@ print_dialog main_windowObj
 	// Finish initializing the print and cancel button, by constructing
 	// and installing their callbacks.
 
-	auto print_callback_impl=
-		functionref<print_callback_t>::create
+	functionref<print_callback_t> print_callback_impl=
 		([cb=conf.print_callback]
 		 (const print_callback_info &info)
 		 {
@@ -507,14 +505,14 @@ print_dialog main_windowObj
 				       [cancel_callback_impl]
 				       (const busy &mcguffin)
 				       {
-					       cancel_callback_impl->invoke();
+					       cancel_callback_impl();
 				       });
 
 	hide_and_invoke_when_closed(d,
 				    [cancel_callback_impl]
 				    (const busy &mcguffin)
 				    {
-					    cancel_callback_impl->invoke();
+					    cancel_callback_impl();
 				    });
 
 	return d;

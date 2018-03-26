@@ -208,7 +208,7 @@ bool connection_threadObj::invoke_scheduled_callbacks(ONLY IN_THREAD,
 			b->second.erase();
 
 			try {
-				p->invoke(IN_THREAD);
+				p(IN_THREAD);
 			} CATCH_EXCEPTIONS;
 			invoked=true;
 			p=nullptr;

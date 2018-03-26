@@ -826,10 +826,9 @@ void print_dialogObj::implObj::print(const main_window &from_window,
 			   } REPORT_EXCEPTIONS(from_window);
 
 			   if (new_job)
-				   cb->invoke(print_callback_info{new_job,
-							   mcguffin});
+				   cb(print_callback_info{new_job, mcguffin});
 			   else
-				   me->cancel_callback->invoke();
+				   me->cancel_callback();
 		   }, ref(this),
 		   cb,
 		   from_window,
