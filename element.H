@@ -169,7 +169,8 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 		cursor_pointerptr pointer;
 
 		//! This element's tooltip factory
-		functionptr<void (const tooltip_factory &)> tooltip_factory;
+		functionptr<void (THREAD_CALLBACK,
+				  const tooltip_factory &)> tooltip_factory;
 
 		//! This element's created tooltip
 		popupptr tooltip;

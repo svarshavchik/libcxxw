@@ -243,7 +243,7 @@ void elementObj::create_tooltip(const text_param &text)
 {
 	create_custom_tooltip
 		([=]
-		 (const auto &factory)
+		 (ONLY IN_THREAD, const auto &factory)
 		 {
 			 factory([&]
 				 (const auto &c)
@@ -264,7 +264,7 @@ void elementObj::create_tooltip(const text_param &text,
 {
 	create_custom_tooltip
 		([=]
-		 (const auto &factory)
+		 (THREAD_CALLBACK, const auto &factory)
 		 {
 			 factory([&]
 				 (const auto &c)
@@ -303,7 +303,7 @@ void elementObj::implObj::hover_action(ONLY IN_THREAD)
 
 	tooltip_factory_impl create_a_tooltip(IN_THREAD, ref(this));
 
-	data(IN_THREAD).tooltip_factory(create_a_tooltip);
+	data(IN_THREAD).tooltip_factory(IN_THREAD, create_a_tooltip);
 }
 
 void elementObj::implObj::hover_cancel(ONLY IN_THREAD)

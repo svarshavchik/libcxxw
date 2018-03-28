@@ -126,7 +126,7 @@ public:
 
 	//! Installs a factory for the tooltip.
 	void create_custom_tooltip
-	(const functionref<void (const tooltip_factory &)>
+	(const functionref<void (THREAD_CALLBACK, const tooltip_factory &)>
 	 &tooltip_factory) const;
 
 	//! Remove the tooltip from this display element.

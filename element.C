@@ -103,7 +103,8 @@ void elementObj::on_pointer_focus(const functionref<focus_callback_t> &cb)
 }
 
 void elementObj::create_custom_tooltip(const functionref<void
-				       (const tooltip_factory &)>
+				       (THREAD_CALLBACK,
+					const tooltip_factory &)>
 				       &tooltip_factory) const
 {
 	impl->THREAD->run_as
