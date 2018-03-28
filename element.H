@@ -139,6 +139,9 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 		//! State update callback
 		functionptr<element_state_callback_t> element_state_callback;
 
+		//! Metrics update callback
+		functionptr<metrics_update_callback_t> metrics_update_callback;
+
 		//! Pointer focus callback
 
 		functionptr<focus_callback_t> on_pointer_callback;
@@ -341,6 +344,11 @@ class LIBCXX_HIDDEN elementObj::implObj : public element_drawObj,
 
 	//! Install a state update callback.
 	void on_state_update(const functionref<element_state_callback_t> &cb);
+
+	//! Install a metrics update callback.
+
+	void on_metrics_update(const functionref<metrics_update_callback_t>
+			       &cb);
 
 	//! Somebody wishes to inform us of our new current_position
 

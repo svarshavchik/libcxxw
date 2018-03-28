@@ -454,6 +454,26 @@ void elementObj::implObj
 		 });
 }
 
+//! Install a metrics update callback.
+
+void elementObj::implObj
+::on_metrics_update(const functionref<metrics_update_callback_t> &cb)
+{
+	THREAD->get_batch_queue()->run_as
+		([cb, me=ref(this)]
+		 (ONLY IN_THREAD)
+		 {
+			 me->data(IN_THREAD).metrics_update_callback=cb;
+
+			 auto hv=me->get_horizvert(IN_THREAD);
+
+			 try {
+				 cb(IN_THREAD, hv->horiz, hv->vert);
+			 } REPORT_EXCEPTIONS(me);
+		 });
+}
+
+
 void elementObj::implObj::set_minimum_override(dim_t horiz_override,
 					       dim_t vert_override)
 {

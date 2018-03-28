@@ -91,6 +91,12 @@ void elementObj::on_state_update(const functionref<element_state_callback_t>
 	impl->on_state_update(cb);
 }
 
+void elementObj::on_metrics_update(const functionref<metrics_update_callback_t>
+				   &cb)
+{
+	impl->on_metrics_update(cb);
+}
+
 void elementObj::on_pointer_focus(const functionref<focus_callback_t> &cb)
 {
 	impl->on_pointer_focus(cb);

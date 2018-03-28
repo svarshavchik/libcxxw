@@ -6,7 +6,7 @@
 #define x_w_metrics_axis_H
 
 #include <x/w/types.H>
-#include <x/w/screenfwd.H>
+#include <x/w/metrics/axis.H>
 #include <x/exception.H>
 #include <iostream>
 #include <iterator>

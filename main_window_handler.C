@@ -112,6 +112,8 @@ void main_windowObj::handlerObj
 
 void main_windowObj::handlerObj::horizvert_updated(ONLY IN_THREAD)
 {
+	superclass_t::horizvert_updated(IN_THREAD);
+
 	auto p=get_horizvert(IN_THREAD);
 
 	preferred_width(IN_THREAD)=p->horiz.preferred();

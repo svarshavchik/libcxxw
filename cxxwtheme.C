@@ -30,6 +30,8 @@
 #include "x/w/file_dialog_config.H"
 #include "x/w/input_dialog.H"
 #include "x/w/busy.H"
+#include "x/w/metrics/axis.H"
+#include "x/w/element_state.H"
 #include "configfile.H"
 
 #include <x/logger.H>
@@ -38,6 +40,7 @@
 #include <x/threads/run.H>
 #include <x/config.H>
 #include <x/singletonptr.H>
+#include <x/property_value.H>
 #include <iostream>
 #include <iomanip>
 #include <algorithm>
@@ -51,24 +54,86 @@ LOG_FUNC_SCOPE_DECL("cxxwtheme", cxxwLog);
 
 using namespace LIBCXX_NAMESPACE;
 
-class close_flagObj : public obj {
+property::value<unsigned> resize_timeout{"resize_timeout", 5};
+
+class appstateObj : public obj {
 
 public:
-	mpcobj<bool> flag;
+	// Flag - close the app.
+	mpcobj<bool> close_flag;
 
-	close_flagObj() : flag{false} {}
-	~close_flagObj()=default;
+	// Top level window's current metrics
+
+	// Updated by a THREAD_CALLBACK
+	w::metrics::axis horiz_metrics, vert_metrics;
+
+	// Top level window's size.
+
+	// Updated by a THREAD_CALLBACK
+	w::rectangle current_position;
+
+	// If the top level window's size does not match metrics, it must
+	// mean we're resizing.
+	mpcobj<bool> resizing_flag;
+
+	appstateObj() : close_flag{false} {}
+	~appstateObj()=default;
 
 	void close()
 	{
-		mpcobj<bool>::lock lock{flag};
+		mpcobj<bool>::lock lock{close_flag};
 
 		*lock=true;
 		lock.notify_all();
 	}
+
+	// Compare our current size versus our metrics. If the size doesn't
+	// fit, expect the window manager to be resizing us shortly.
+
+	void set_resizing_flag()
+	{
+		bool flag=(current_position.width < horiz_metrics.minimum()) ||
+			(current_position.width > horiz_metrics.maximum()) ||
+			(current_position.height < vert_metrics.minimum()) ||
+			(current_position.height > vert_metrics.maximum());
+
+		mpcobj<bool>::lock lock{resizing_flag};
+
+		if (*lock == flag)
+			return;
+
+		if (flag)
+		{
+			// Deal with the window manager's rudeness. If it
+			// doesn't properly resize us, bail out after a
+			// timeout.
+
+			run_lambda
+				([]
+				 (const auto &me)
+				 {
+					 mpcobj<bool>::lock
+						 lock{me->resizing_flag};
+
+					 lock.wait_for
+						 (std::chrono::seconds
+						  (resize_timeout.get()),
+						  [&]
+						  {
+							  return *lock==false;
+						  });
+					 *lock=false;
+					 lock.notify_all();
+				 },
+				 ref(this));
+		}
+
+		*lock=flag;
+		lock.notify_all();
+	}
 };
 
-typedef ref<close_flagObj> close_flag_ref;
+typedef ref<appstateObj> appstate_ref;
 
 // object that stores the currently shown theme name and scale.
 
@@ -92,7 +157,9 @@ public:
 
 	~theme_infoObj()=default;
 
-	void set_theme_options(const w::container &);
+	void set_theme_options(const w::main_window &,
+			       const appstate_ref &,
+			       const w::container &);
 
 	void validate_options()
 	{
@@ -141,9 +208,83 @@ public:
 	~current_theme_optionsObj()=default;
 };
 
+
+
+// Setting a new theme for out connection.
+
+static void wait_until_theme_installed(const w::connection &conn,
+				       const appstate_ref &appstate,
+				       const ref<obj> &mcguffin);
+
+static void set_new_theme(const w::main_window &mw,
+			  const w::connection &conn,
+			  const appstate_ref &appstate,
+			  const theme_info_t &theme_info)
+{
+	// The first step is to make ourselves busy, then wait until the
+	// connection thread finishes wraps up the busy setup.
+
+	auto wait_mcguffin=mw->get_wait_busy_mcguffin();
+
+	mw->in_thread_idle([conn, name=theme_info->name,
+			    scale=theme_info->scale,
+			    options=theme_info->enabled_theme_options,
+			    appstate,
+			    mw,
+			    wait_mcguffin]
+			   (THREAD_CALLBACK)
+			   {
+				   // Now we can officially set the theme.
+				   conn->set_theme(name, scale, options, true);
+				   wait_until_theme_installed(conn, appstate,
+							      wait_mcguffin);
+			   });
+}
+
+// Wait until the new theme fully percolates and everything is updated.
+
+static void wait_until_theme_installed(const w::connection &conn,
+				       const appstate_ref &appstate,
+				       const ref<obj> &mcguffin)
+{
+	// Let's check how things are when the connection thread is done.
+
+	conn->in_thread_idle
+		([conn, appstate, mcguffin]
+		 (THREAD_CALLBACK)
+		 {
+			 mpcobj<bool>::lock
+				 lock{appstate->resizing_flag};
+
+			 if (!*lock)
+				 return; // Finished resizing!
+
+			 // Ok, we're still resizing, so wait until we're not.
+
+			 run_lambda([conn, appstate, mcguffin]
+				    {
+					    mpcobj<bool>::lock
+						    lock{appstate->resizing_flag
+							    };
+
+					    lock.wait([&]
+						      {
+							      return !*lock;
+						      });
+					    // And check again.
+
+					    wait_until_theme_installed
+						    (conn, appstate, mcguffin);
+				    });
+		 });
+}
+
+
 typedef singletonptr<current_theme_optionsObj> current_theme_options_t;
 
-void theme_infoObj::set_theme_options(const w::container &c)
+void theme_infoObj::set_theme_options(const w::main_window &mw,
+				      const appstate_ref &appstate,
+				      const w::container &c)
 {
 	w::gridlayoutmanager glm=c->get_layoutmanager();
 
@@ -175,7 +316,8 @@ void theme_infoObj::set_theme_options(const w::container &c)
 			cb->set_value(1);
 
 		cb->on_activate
-			([label=option.label]
+			([label=option.label, appstate,
+			  mw=make_weak_capture(mw)]
 			 (ONLY IN_THREAD,
 			  size_t n,
 			  const auto &trigger,
@@ -184,6 +326,13 @@ void theme_infoObj::set_theme_options(const w::container &c)
 				 if (std::holds_alternative<w::initial>
 				     (trigger))
 					 return;
+
+				 auto got=mw.get();
+
+				 if (!got)
+					 return;
+
+				 auto &[mw]=*got;
 
 				 theme_info_t theme_info;
 
@@ -207,11 +356,7 @@ void theme_infoObj::set_theme_options(const w::container &c)
 					 ->get_screen()
 					 ->get_connection();
 
-				 conn->set_theme(theme_info->name,
-						 theme_info->scale,
-						 theme_info
-						 ->enabled_theme_options,
-						 true);
+				 set_new_theme(mw, conn, appstate, theme_info);
 			 });
 
 		cb->show_all();
@@ -226,8 +371,28 @@ static void help_menu(const w::main_window &mw,
 		      const w::listlayoutmanager &lm);
 
 static w::container create_main_window(const w::main_window &mw,
-				       const close_flag_ref &close_flag)
+				       const appstate_ref &appstate)
 {
+	mw->on_state_update([appstate]
+			    (THREAD_CALLBACK,
+			     const auto &new_state,
+			     const auto &ignore)
+			    {
+				    appstate->current_position=
+					    new_state.current_position;
+				    appstate->set_resizing_flag();
+			    });
+
+	mw->on_metrics_update([appstate]
+			      (THREAD_CALLBACK,
+			       const auto &horiz,
+			       const auto &vert)
+			      {
+				      appstate->horiz_metrics=horiz;
+				      appstate->vert_metrics=vert;
+				      appstate->set_resizing_flag();
+			      });
+
 	w::gridlayoutmanager glm=mw->get_layoutmanager();
 
 	glm->row_alignment(0, w::valign::middle);
@@ -269,11 +434,18 @@ static w::container create_main_window(const w::main_window &mw,
 
 	w::new_standard_comboboxlayoutmanager
 		themes_combobox{
-		[themeids, conn]
+		[themeids, conn, appstate, mw=make_weak_capture(mw)]
 			(ONLY IN_THREAD, const auto &info)
 		{
 			if (!info.list_item_status_info.selected)
 				return;
+
+			auto got=mw.get();
+
+			if (!got)
+				return;
+
+			auto &[mw]=*got;
 
 			theme_info_t theme_info;
 
@@ -283,16 +455,13 @@ static w::container create_main_window(const w::main_window &mw,
 			theme_info->name=themeids[info.list_item_status_info
 						  .item_number];
 
-			conn->set_theme(theme_info->name,
-					theme_info->scale,
-					theme_info->enabled_theme_options,
-					true);
+			set_new_theme(mw, conn, appstate, theme_info);
 
 			current_theme_options_t current_theme_options;
 
 			if (current_theme_options)
 				theme_info->set_theme_options
-					(current_theme_options
+					(mw, appstate, current_theme_options
 					 ->options_container);
 		}};
 
@@ -351,7 +520,7 @@ static w::container create_main_window(const w::main_window &mw,
 		([&]
 		 (const auto &c)
 		 {
-			 theme_info->set_theme_options(c);
+			 theme_info->set_theme_options(mw, appstate, c);
 		 },
 		 w::new_gridlayoutmanager{});
 
@@ -363,11 +532,18 @@ static w::container create_main_window(const w::main_window &mw,
 		f->colspan(2).create_horizontal_scrollbar(config, 100);
 
 	scale_scrollbar->on_update
-		([scale_label, conn]
+		([scale_label, conn, appstate, mw=make_weak_capture(mw)]
 		 (THREAD_CALLBACK, const auto &info)
 		 {
 			 if (std::holds_alternative<w::initial>(info.trigger))
 				 return;
+
+			 auto got=mw.get();
+
+			 if (!got)
+				 return;
+
+			 auto &[mw]=*got;
 
 			 theme_info_t theme_info;
 
@@ -388,16 +564,13 @@ static w::container create_main_window(const w::main_window &mw,
 
 			 theme_info->scale=v;
 
-			 conn->set_theme(theme_info->name,
-					 theme_info->scale,
-					 theme_info->enabled_theme_options,
-					 true);
+			 set_new_theme(mw, conn, appstate, theme_info);
 
 			 current_theme_options_t current_theme_options;
 
 			 if (current_theme_options)
 				 theme_info->set_theme_options
-					 (current_theme_options
+					 (mw, appstate, current_theme_options
 					  ->options_container);
 		 });
 
@@ -423,17 +596,17 @@ static w::container create_main_window(const w::main_window &mw,
 
 			 f->create_normal_button_with_label
 				 ("Cancel", {'\e'})->on_activate
-				 ([close_flag]
+				 ([appstate]
 				  (THREAD_CALLBACK,
 				   const auto &ignore1,
 				   const auto &ignore2)
 				  {
-					  close_flag->close();
+					  appstate->close();
 				  });
 
 			 f->create_normal_button_with_label
 				 ("Set")->on_activate
-				 ([close_flag, conn]
+				 ([appstate, conn]
 				  (THREAD_CALLBACK,
 				   const auto &ignore1,
 				   const auto &ignore2)
@@ -450,7 +623,7 @@ static w::container create_main_window(const w::main_window &mw,
 						   theme_info
 						   ->enabled_theme_options,
 						   false);
-					  close_flag->close();
+					  appstate->close();
 				  });
 
 			 f->create_special_button_with_label
@@ -460,7 +633,7 @@ static w::container create_main_window(const w::main_window &mw,
 						 "no"_decoration,
 						 "et and save"
 						 }, {"Alt", 's'})->on_activate
-				 ([close_flag, conn]
+				 ([appstate, conn]
 				  (THREAD_CALLBACK,
 				   const auto &ignore1,
 				   const auto &ignore2)
@@ -476,7 +649,7 @@ static w::container create_main_window(const w::main_window &mw,
 						   theme_info->scale,
 						   theme_info
 						   ->enabled_theme_options);
-					  close_flag->close();
+					  appstate->close();
 				  });
 		 },
 		 w::new_gridlayoutmanager{});
@@ -833,7 +1006,7 @@ void cxxwtheme()
 
 	destroy_callback::base::guard guard;
 
-	auto close_flag=close_flag_ref::create();
+	auto appstate=appstate_ref::create();
 
 	auto default_screen=w::screen::base::create();
 
@@ -848,7 +1021,7 @@ void cxxwtheme()
 		 (const auto &main_window)
 		 {
 			 options_containerptr=create_main_window
-			 (main_window, close_flag);
+			 (main_window, appstate);
 		 });
 
 	current_theme_options_t options_container{ref<current_theme_optionsObj>
@@ -865,16 +1038,16 @@ void cxxwtheme()
 				   });
 
 	main_window->on_delete
-		([close_flag]
+		([appstate]
 		 (THREAD_CALLBACK,
 		  const auto &ignore)
 		 {
-			 close_flag->close();
+			 appstate->close();
 		 });
 
 	main_window->show_all();
 
-	mpcobj<bool>::lock lock{close_flag->flag};
+	mpcobj<bool>::lock lock{appstate->close_flag};
 	lock.wait([&] { return *lock; });
 
 	pos.clear();

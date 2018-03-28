@@ -137,9 +137,6 @@ bool connection_threadObj
 
 		if (redraw_elements(IN_THREAD))
 			continue;
-
-		if (run_idle(IN_THREAD))
-			return false;
 		break;
 	}
 
@@ -147,6 +144,9 @@ bool connection_threadObj
 		return false;
 
 	xcb_flush(info->conn);
+
+	if (run_idle(IN_THREAD))
+		return false;
 	return true;
 }
 

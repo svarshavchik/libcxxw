@@ -349,6 +349,10 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 	void current_position_updated(ONLY IN_THREAD) override;
 
+	//! Metrics updated.
+
+	void horizvert_updated(ONLY IN_THREAD) override;
+
 	//! Process TAB/Shift TAB, do move the input focus.
 
 	bool process_key_event(ONLY IN_THREAD, const key_event &ke) override;

@@ -14,6 +14,7 @@
 #include "cursor_pointer.H"
 #include "element_screen.H"
 #include "screen.H"
+#include "catch_exceptions.H"
 #include "x/w/picture.H"
 #include "x/w/motion_event.H"
 #include "x/w/rgb.H"
@@ -158,6 +159,14 @@ void child_elementObj::visibility_updated(ONLY IN_THREAD, bool flag)
 // When metrics are updated, notify my layout manager.
 void child_elementObj::horizvert_updated(ONLY IN_THREAD)
 {
+	if (data(IN_THREAD).metrics_update_callback)
+		try {
+			auto hv=get_horizvert(IN_THREAD);
+
+			data(IN_THREAD).metrics_update_callback
+				(IN_THREAD, hv->horiz, hv->vert);
+		} REPORT_EXCEPTIONS(this);
+
 	child_container->invoke_layoutmanager([&]
 					(const auto &manager)
 					{

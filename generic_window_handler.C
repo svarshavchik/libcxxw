@@ -1101,6 +1101,17 @@ void generic_windowObj::handlerObj::current_position_updated(ONLY IN_THREAD)
 	schedule_update_position_processing(IN_THREAD);
 }
 
+void generic_windowObj::handlerObj::horizvert_updated(ONLY IN_THREAD)
+{
+	if (data(IN_THREAD).metrics_update_callback)
+		try {
+			auto hv=get_horizvert(IN_THREAD);
+
+			data(IN_THREAD).metrics_update_callback
+				(IN_THREAD, hv->horiz, hv->vert);
+		} REPORT_EXCEPTIONS(this);
+}
+
 bool generic_windowObj::handlerObj::process_key_event(ONLY IN_THREAD,
 						      const key_event &ke)
 {

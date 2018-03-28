@@ -89,6 +89,9 @@ public:
 
 	void on_state_update(const functionref<element_state_callback_t> &);
 
+	//! Install a metrics update callback.
+	void on_metrics_update(const functionref<metrics_update_callback_t> &);
+
 	//! Return the mcguffin for this display element's connection.
 
 	//! \see connection

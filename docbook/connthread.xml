@@ -222,6 +222,159 @@ main_window->on_delete([close_flag]
       deleting all the memory associated with it.
     </para>
   </section>
+
+  <section id="connflush">
+    <title>Flushing the display buffers</title>
+
+    <para>
+      Other toolkit libraries typically offer the means
+      to <quote>flush</quote> their
+      output buffer and send all buffered commands to the display
+      server in order to update the application's window and have it reflect
+      all buffered changes to its fields and display elements. There is no such
+      direct equivalent with &appshort;. Its internal &connection_thread;
+      automatically flushes the display buffer after the thread finishes
+      all pending processes, and has nothing else to do.
+    </para>
+
+    <para>
+      However, sometimes its necessary to do something analogous with
+      &appshort;. One such case is creating a large window with many
+      display elements, and a complicated layout, which may take a noticably
+      long period of time, and cannot be avoided. Using
+      <link linkend="busy"><methodname>get_wait_busy_mcguffin</methodname></link>()
+      changes the current pointer to a <quote>busy</quote> icon, but
+      this icon doesn't appear until the display message that creates it gest
+      flushed to the display server; and if the connection thread is busy,
+      creating this large window, this won't happen until that's already done.
+    </para>
+
+    <para>
+      Here's one possible solution:
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+button-&gt;on_activate(
+   [button=&ns;::make_weak_capture(button)]
+   (ONLY IN_THREAD,
+    const &ns;::w::callback_trigger_t &amp;trigger,
+    const x::w::busy &amp;mcguffin_factory)
+   {
+       auto got=button.get();
+       if (!got)
+           return;
+       auto &amp; [button]=*got;
+
+       &ns;::ref&lt;&ns;::obj&gt; mcguffin=mcguffin_factory.get_wait_busy_mcguffin();
+       button-&gt;in_thread_idle(
+          [mcguffin]
+          (ONLY IN_THREAD)
+          {
+               // Now create the large window
+          });
+   });</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      <varname>button</varname> is some button. Its
+      <link linkend="activation"><methodname>on_activate</methodname></link>()
+      &callback; weakly-captures itself, in order to
+      <link linkend="callbackrefs">prevent a circular reference</link>.
+      After dispensing with the formalities of dealing with the weak reference,
+      <methodname>get_wait_busy_mcguffin()</methodname> acquires the
+      <link linkend="busy"><quote>busy mcguffin</quote></link>, to block
+      input processing and change the pointer to the <quote>busy</quote>
+      icon, before scheduling an <methodname>in_thread_idle</methodname>()
+      callback.
+    </para>
+
+    <para>
+      Invoking a display element's
+      <methodname>in_thread_idle</methodname>() method schedules the
+      specified callback to get executed by the &connection_thread; after
+      the connection thread finishes all of its pending work and flushes
+      the display buffer. The pending work here consists of changing the
+      pointer icon, and everything else that happened previously.
+    </para>
+
+    <para>
+      Once that's done, the second callback executes, and takes its time
+      to do whatever it needs to do. The second callback intentionally
+      captures the reference to the busy mcguffin, so all input processing
+      stops and the pointer icon continues to indicate <quote>busy</quote>
+      until the callback executes and finishes.
+    </para>
+
+    <para>
+      This can be used to mimic the classical <quote>flush</quote> function:
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+class flagObj : virtual public &ns;::obj {
+
+public:
+
+    typedef &ns;::mpcobj&lt;bool&gt; value_t;
+
+    value_t value=false;
+
+    void signal()
+    {
+        value_t::lock lock{value};
+
+        *lock=true;
+        lock.notify_all();
+    }
+
+    void wait()
+    {
+        value_t::lock lock{value};
+
+        lock.wait([&amp;] { return *lock; });
+    }
+};
+
+void flush(const &ns;::w::element &amp;e)
+{
+    auto flag=&ns;::ref&lt;flagObj&gt;::create();
+
+    e->in_thread_idle([flag]
+              (THREAD_CALLBACK)
+              {
+                  flag->signal();
+              });
+
+    flag->wait();
+}</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      This works only if <methodname>flush</methodname>() is not called
+      from the connection thread itself. <methodname>flush</methodname>()
+      uses <methodname>in_thread_idle</methodname>() to schedule execution
+      of a callback
+      that sets a flag and signals a condition variable, then waits for
+      the condition variable to get signalled. If
+      <methodname>flush</methodname>() itself gets called
+      from the connection thread, this will wait forever for itself to set
+      the flag and signal the condition variable.
+    </para>
+
+    <para>
+      There's also <methodname>in_thread</methodname>() in addition to
+      <methodname>in_thread_idle</methodname>().
+      <methodname>in_thread</methodname>() does not wait for the connection
+      thread to be idle, but executes the callback after all higher-priority
+      processing is complete, but before doing any low priority work like
+      drawing the actual display elements.
+    </para>
+  </section>
 </chapter>
 <!--
 Local Variables:

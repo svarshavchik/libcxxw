@@ -7,9 +7,15 @@
 
 #include <x/w/namespace.H>
 #include <x/w/callback_triggerfwd.H>
+#include <x/w/connection_threadfwd.H>
+#include <x/w/metrics/axisfwd.H>
 #include <x/ptrfwd.H>
 
 LIBCXXW_NAMESPACE_START
+
+typedef void metrics_update_callback_t(THREAD_CALLBACK,
+				       const metrics::axis &,
+				       const metrics::axis &);
 
 class elementObj;
 
