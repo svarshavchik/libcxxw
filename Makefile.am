@@ -1206,6 +1206,10 @@ test:
 
 .PHONY: rpm
 
+# Make sure auto-generated files get built, before make dist, because that
+# generates PO files, which looks for source files.
+dist: $(BUILT_SOURCES)
+
 rpm: dist
 	mkdir -p rpm
 	rm -rf rpm/SRPMS/*
