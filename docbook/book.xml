@@ -25,6 +25,7 @@
 
 <!ENTITY intro SYSTEM "intro.xml">
 <!ENTITY install SYSTEM "install.xml">
+<!ENTITY overview SYSTEM "overview.xml">
 <!ENTITY refobj "/refobj.html">
 <!ENTITY helloworld SYSTEM "helloworld.xml">
 <!ENTITY label SYSTEM "label.xml">
@@ -71,6 +72,7 @@ See COPYING for distribution information.
   <part id="tutorial">
     <title>Tutorial</title>
 
+    &overview;
     &helloworld;
     &label;
     &wordwraplabel;
