@@ -102,63 +102,55 @@ void corner_borderObj::implObj::compute_metrics(ONLY IN_THREAD)
 {
 	auto &elements=surrounding_elements(IN_THREAD);
 
-	// Compile a list of all the straight borders we have.
-
-	std::vector<straight_border> all_borders;
-
-	all_borders.reserve(4);
-
-	if (elements.fromtop_border)
-		all_borders.push_back(elements.fromtop_border);
-
-	if (elements.frombottom_border)
-		all_borders.push_back(elements.frombottom_border);
-
-	if (elements.fromleft_border)
-		all_borders.push_back(elements.fromleft_border);
-
-	if (elements.fromright_border)
-		all_borders.push_back(elements.fromright_border);
-
-	// Our metrics consist of the largest width+height of all borders
-	// together.
 	dim_t width;
 	dim_t height;
-	size_t n_borders=0;
 
-	for (const auto &b:all_borders)
+	if (elements.fromtop_border)
 	{
-		const auto &bb=b->impl->best_border(IN_THREAD);
+		auto b=elements.fromtop_border->impl->best_border(IN_THREAD);
 
-		if (!bb)
-			continue;
+		if (b)
+			width=b->border(IN_THREAD)->calculated_border_width;
+	}
 
-		const auto &current_border=bb->border(IN_THREAD);
+	if (elements.frombottom_border)
+	{
+		auto b=elements.frombottom_border->impl->best_border(IN_THREAD);
 
-		if (current_border->calculated_border_width > width)
-			width=current_border->calculated_border_width;
+		if (b)
+		{
+			auto width2=b->border(IN_THREAD)
+				->calculated_border_width;
 
-		if (current_border->calculated_border_height > height)
-			height=current_border->calculated_border_height;
+			if (width2 > width)
+				width=width2;
+		}
+	}
 
-		++n_borders;
+	if (elements.fromleft_border)
+	{
+		auto b=elements.fromleft_border->impl->best_border(IN_THREAD);
+
+		if (b)
+			height=b->border(IN_THREAD)->calculated_border_height;
+	}
+
+	if (elements.fromright_border)
+	{
+		auto b=elements.fromright_border->impl->best_border(IN_THREAD);
+
+		if (b)
+		{
+			auto height2=b->border(IN_THREAD)
+				->calculated_border_height;
+
+			if (height2 > height)
+				height=height2;
+		}
 	}
 
 	metrics::axis h{width, width, width};
 	metrics::axis v{height, height, height};
-
-	/*
-	** Plan B for when one border enters a corner area, part 1.
-	**
-	** If we're lucky, the grid layout manager will not allocate any
-	** space to this row or column. Otherwise, we'll do part 2.
-	*/
-
-	if (n_borders == 1)
-	{
-		h={0, 0, 0};
-		v={0, 0, 0};
-	}
 
 	get_horizvert(IN_THREAD)
 		->set_element_metrics(IN_THREAD, h, v);
