@@ -211,6 +211,9 @@ standard_dialog_elements_t print_dialog_init_helper
 				(const auto &factory)
 				{
 					input_field_config conf{4, 1, true};
+
+					conf.set_default_spin_control_factories
+						();
 					auto f=factory->create_input_field
 						("", conf);
 					f->autofocus(false);

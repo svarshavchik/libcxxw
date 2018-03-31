@@ -115,6 +115,49 @@ print_dialogObj::implObj::implObj(const main_window &parent_window,
 {
 	number_of_copies_value->set(1);
 
+	fields.number_of_copies->on_spin
+		([number_of_copies_value=this->number_of_copies_value]
+		 (ONLY IN_THREAD,
+		  const auto &trigger,
+		  const auto &mcguffin)
+		 {
+			 auto n=number_of_copies_value->validated_value
+				 .get().value_or(1);
+
+			 if (--n)
+			 {
+				 number_of_copies_value->set(n);
+			 }
+		 },
+		 [number_of_copies_value=this->number_of_copies_value,
+		  printer_info=this->printer_info]
+		 (ONLY IN_THREAD,
+		  const auto &trigger,
+		  const auto &mcguffin)
+		 {
+			 auto n=number_of_copies_value->validated_value
+				 .get().value_or(0);
+
+			 ++n;
+
+			 printer_info_lock lock{printer_info};
+
+			 if (lock->number_of_copies.empty())
+				 return;
+
+			 for (const auto &r:lock->number_of_copies)
+			 {
+				 auto &[from, to]=r;
+
+				 if (n >= from && n <= to)
+				 {
+					 number_of_copies_value->set(n);
+					 return;
+				 }
+			 }
+
+		 });
+
 	// The page range input field is enabled only when its radio button
 	// is enabled.
 	fields.page_range_radio_button->on_activate
