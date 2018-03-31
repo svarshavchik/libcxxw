@@ -1,0 +1,126 @@
+<?xml version="1.0"?>
+
+<sxg>
+  <width>15</width>
+  <height>15</height>
+
+  <widthmm>4</widthmm>
+  <heightmm>4</heightmm>
+
+  <widthfactor>15</widthfactor>
+  <heightfactor>15</heightfactor>
+
+  <picture id="background">
+    <type>rgb</type>
+    <color>transparent</color>
+  </picture>
+
+  <picture id="fill">
+    <type>rgb</type>
+    <color>30%</color>
+  </picture>
+
+  <picture id="button_spinner_gradient">
+    <type>rgb</type>
+    <color>button_spinner_gradient</color>
+  </picture>
+
+  <pixmap id="circle_mask">
+    <size>scaled</size>
+    <width>3</width>
+    <height>3</height>
+    <mask />
+    <gc id="circle_mask_gc" />
+  </pixmap>
+
+  <gc id="circle_mask_gc">
+    <function>set</function>
+
+    <arcs>
+      <fill />
+
+      <arc>
+	<x>0</x>
+	<y>0</y>
+	<width>3</width>
+	<height>3</height>
+	<angle1>0</angle1>
+	<angle2>360</angle2>
+      </arc>
+    </arcs>
+  </gc>
+
+  <!--
+            11111
+  012345678901234
+ 0
+ 1
+ 2
+ 3
+ 4
+ 5
+ 6  XXXXXXXXXXX
+ 7 XXXXXXXXXXXXX
+ 8  XXXXXXXXXXX
+ 9
+10
+11
+12
+13
+14
+
+
+  -->
+  <render id="main">
+    <composite>
+      <op>over</op>
+      <mask>
+	<pixmap>circle_mask</pixmap>
+      </mask>
+      <src>
+	<picture>fill</picture>
+      </src>
+      <x>1</x>
+      <y>6</y>
+      <width>3</width>
+      <height>3</height>
+    </composite>
+    <composite>
+      <op>over</op>
+      <mask>
+	<pixmap>circle_mask</pixmap>
+      </mask>
+      <src>
+	<picture>fill</picture>
+      </src>
+      <x>11</x>
+      <y>6</y>
+      <width>3</width>
+      <height>3</height>
+    </composite>
+
+    <composite>
+      <op>over</op>
+      <src>
+	<picture>fill</picture>
+      </src>
+      <x>2</x>
+      <y>6</y>
+      <width>11</width>
+      <height>3</height>
+    </composite>
+
+    <composite>
+      <op>over</op>
+      <src>
+	<picture>button_spinner_gradient</picture>
+	<x>2</x>
+	<y>7</y>
+      </src>
+      <x>2</x>
+      <y>7</y>
+      <width>11</width>
+      <height>1</height>
+    </composite>
+  </render>
+</sxg>

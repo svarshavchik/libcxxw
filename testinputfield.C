@@ -22,6 +22,7 @@
 #include "x/w/screen.H"
 #include "x/w/connection.H"
 #include "x/w/button.H"
+#include <x/weakcapture.H>
 #include <string>
 #include <iostream>
 
@@ -159,6 +160,29 @@ void testbutton()
 			 fields.password=factory->create_input_field({"rosebud"},
 								     conf3);
 
+			 factory=layout->append_row();
+
+			 LIBCXX_NAMESPACE::w::input_field_config conf4{5};
+
+			 conf4.set_default_spin_control_factories();
+
+#if 0
+			 conf4.set_spin_control_factories
+			 ([](const auto &factory) {
+				 factory->create_label({
+						 "liberation mono"_font,
+							 "-"
+
+					 });
+			 }, [](const auto &factory) {
+				 factory->create_label({
+						 "liberation mono"_font,
+							 "+"
+
+					 });
+			 });
+#endif
+			 fields.spinner=factory->create_input_field("", conf4);
 
 			 factory=layout->append_row();
 
@@ -168,6 +192,33 @@ void testbutton()
 						     const auto &) {
 						close_flag->close();
 					});
+			 factory=layout->append_row();
+			 b=factory->create_special_button_with_label("Enable/Disable");
+			 b->on_activate
+			 ([flag=true,
+			   mw=LIBCXX_NAMESPACE::make_weak_capture(main_window)]
+			  (THREAD_CALLBACK,
+			   const auto &,
+			   const auto &) mutable {
+
+				 flag=!flag;
+
+				 auto got=mw.get();
+
+				 if (!got)
+					 return;
+
+				 auto &[mw]=*got;
+
+				 appdata_t appdata=mw->appdata;
+
+				 appdata->first->set_enabled(flag);
+				 appdata->second->set_enabled(flag);
+				 appdata->password->set_enabled(flag);
+				 appdata->spinner->set_enabled(flag);
+			 });
+
+
 			 factory=layout->append_row();
 
 			 factory->halign(x::w::halign::fill).create_container

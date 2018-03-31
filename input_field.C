@@ -15,13 +15,17 @@
 #include "peephole/peepholed.H"
 #include "peephole/peephole_layoutmanager_impl.H"
 #include "editor_peephole_impl.H"
+#include "button.H"
 #include "xid_t.H"
 #include "x/w/input_field.H"
 #include "x/w/input_field_config.H"
 #include "x/w/text_param.H"
 #include "x/w/scrollbar.H"
+#include "x/w/button.H"
+#include "x/w/image.H"
 #include "gridlayoutmanager.H"
 #include "x/w/factory.H"
+#include "messages.H"
 #include <courier-unicode.h>
 
 LIBCXXW_NAMESPACE_START
@@ -37,6 +41,24 @@ input_fieldObj::input_fieldObj(const ref<implObj> &impl,
 }
 
 input_fieldObj::~input_fieldObj()=default;
+
+void input_field_config
+::set_spin_control_factories(const functionref<void(const factory &)> &first,
+			     const functionref<void(const factory &)> &second)
+{
+	spin_control_factories.emplace(first, second);
+}
+
+void input_field_config
+::set_default_spin_control_factories()
+{
+	set_spin_control_factories
+		([](const auto &factory) {
+			factory->create_image("spin-decrement");
+		},[](const auto &factory) {
+			factory->create_image("spin-increment");
+		});
+}
 
 input_field_config::~input_field_config()=default;
 
@@ -111,6 +133,64 @@ factoryObj::create_input_field(const text_param &text,
 		::create(impl_mixin,
 			 created_editor);
 
+
+	if (config.spin_control_factories)
+	{
+		// Append spinner elements. In row 0 element #0 is the
+		// input field, element #1 is the vertical scrollbar (usually
+		// hidden). This will create elements #2 and #3, which
+		// do_get_impl() checks for, below.
+
+#define HAS_SPIN_CONTROLS(impl) ((impl)->cols(0) >= 4)
+#define SPIN_CONTROL_A(impl) ((impl)->get(0,2))
+#define SPIN_CONTROL_B(impl) ((impl)->get(0,3))
+
+		auto f=lm->append_columns(0);
+		f->padding(0);
+		// The unused horizontal scrollbar is on the 2nd row.
+		f->rowspan(2);
+		f->valign(valign::fill);
+
+		child_element_init_params init_params;
+
+		init_params.background_color=x::w::rgb{x::w::rgb::maximum,
+						       0, 0};
+
+		do_create_button_with_explicit_borders
+			(*f, "empty", "empty",
+			 config.border, config.border,
+			 "button_spinner_normal_color",
+			 "button_spinner_selected_color",
+			 "button_spinner_active_color",
+			 make_function<factoryObj::factory_creator_t>
+			 ([c=std::get<0>(*config.spin_control_factories)]
+			  (const auto &f)
+			  {
+				  c(f);
+			  }),
+			 {},
+			 init_params)->show_all();
+
+		f->padding(0);
+		f->rowspan(2);
+		f->valign(valign::fill);
+
+		do_create_button_with_explicit_borders
+			(*f, "empty", config.border,
+			 config.border, config.border,
+			 "button_spinner_normal_color",
+			 "button_spinner_selected_color",
+			 "button_spinner_active_color",
+			 make_function<factoryObj::factory_creator_t>
+			 ([c=std::get<1>(*config.spin_control_factories)]
+			  (const auto &f)
+			  {
+				  c(f);
+			  }),
+			 {},
+			 init_params)->show_all();
+	}
+
 	auto input_field=input_field::create(impl,
 					     peephole_info,
 					     lm->impl);
@@ -118,6 +198,107 @@ factoryObj::create_input_field(const text_param &text,
 	created(input_field);
 	return input_field;
 }
+
+void input_fieldObj::do_get_impl(const function<internal_focusable_cb> &cb)
+	const
+{
+	containerObj::impl->invoke_layoutmanager
+		([&, this]
+		 (const ref<gridlayoutmanagerObj::implObj> &impl)
+		 {
+			 if (!HAS_SPIN_CONTROLS(impl))
+			 {
+				 peepholed_focusableObj::do_get_impl(cb);
+				 return;
+			 }
+
+			 // Additinal spinner elements, created above.
+
+			 focusable a=SPIN_CONTROL_A(impl),
+				 b=SPIN_CONTROL_B(impl);
+
+			 // Recursively invoke do_get_impl from:
+			 //
+			 // our superclass, a, and b
+			 //
+			 // Helper macros invokes each one, executing "code".
+
+#define GRAB_FOCUSABLE_GROUPS_FROM(source,name,code)			\
+			 source(make_function<internal_focusable_cb>	\
+				 ([&]					\
+				 (const auto &name)			\
+			 {						\
+				 do {					\
+					 code				\
+						 } while (0);		\
+			 }));
+
+			 // And, once all three are grabbed, we combined
+			 // their focusables, and invoke the real callback.
+
+#define DO_WITH_GRABBED_FOCUSABLES()					\
+			 std::vector<ref<focusableImplObj>> impls;	\
+									\
+			 impls.reserve(group1.internal_impl_count+	\
+				       group2.internal_impl_count+	\
+				       group3.internal_impl_count);	\
+									\
+			 impls.insert(impls.end(),			\
+				      group1.impls,			\
+				      group1.impls+			\
+				      group1.internal_impl_count);	\
+									\
+			 impls.insert(impls.end(),			\
+				      group2.impls,			\
+				      group2.impls+			\
+				      group2.internal_impl_count);	\
+									\
+			 impls.insert(impls.end(),			\
+				      group3.impls,			\
+				      group3.impls+			\
+				      group3.internal_impl_count);	\
+									\
+			 internal_focusable_group combined{		\
+				 impls.size(),				\
+					 &*impls.begin()		\
+					 };				\
+									\
+			 cb(combined);
+
+			 // And now, put the jigsaw puzzle together.
+
+			 GRAB_FOCUSABLE_GROUPS_FROM
+				 (peepholed_focusableObj::do_get_impl,
+				  group1,
+				  GRAB_FOCUSABLE_GROUPS_FROM
+				  (a->do_get_impl, group2,
+				   GRAB_FOCUSABLE_GROUPS_FROM
+				   (b->do_get_impl, group3,
+				    DO_WITH_GRABBED_FOCUSABLES())))
+				 });
+
+}
+
+void input_fieldObj::on_spin(const hotspot_callback_t &a_cb,
+			     const hotspot_callback_t &b_cb)
+{
+	containerObj::impl->invoke_layoutmanager
+		([&]
+		 (const ref<gridlayoutmanagerObj::implObj> &impl)
+		 {
+			 if (!HAS_SPIN_CONTROLS(impl))
+			 {
+				 throw EXCEPTION(_("Input field does not have spin controls."));
+			 }
+
+			 button a=SPIN_CONTROL_A(impl),
+				 b=SPIN_CONTROL_B(impl);
+
+			 a->on_activate(a_cb);
+			 b->on_activate(b_cb);
+		 });
+}
+
 
 void input_fieldObj::set(const std::string_view &str)
 {

@@ -222,6 +222,34 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
   <color  id="noshade:button_selected_color" scale="80%" />
   <color  id="noshade:button_active_color" scale="100%" />
 
+  <color  id="button_spinner_normal_color" scale="70%" />
+  <color  id="button_spinner_selected_color" scale="80%" />
+  <color  id="button_spinner_active_color" scale="100%" />
+
+  <color  id="button_spinner_fill" scale="30%" />
+
+  <color  id="button_spinner_gradient" type="radial_gradient">
+    <inner_x>.5</inner_x>
+    <inner_y>.5</inner_y>
+    <outer_x>.5</outer_x>
+    <outer_y>.5</outer_y>
+    <inner_radius>0</inner_radius>
+    <outer_radius>.5</outer_radius>
+    <inner_radius_axis>shortest</inner_radius_axis>
+    <outer_radius_axis>shortest</outer_radius_axis>
+
+    <gradient>
+      <value>0</value>
+      <color>80%</color>
+    </gradient>
+    <gradient>
+      <value>1</value>
+      <color>transparent</color>
+    </gradient>
+  </color>
+
+  <color  id="noshade:button_spinner_gradient" scale="50%" />
+
   <!-- Fonts -->
 
   <font id="sans_serif">

@@ -222,6 +222,25 @@ public:
 						shortcut_key);
 	}
 
+	//! Create a button with a custom border.
+
+	template<typename functor>
+	button create_button(const border_arg &arg, functor &&f)
+	{
+		return do_create_button(arg, make_function<factory_creator_t>
+					(std::forward<functor>(f)));
+	}
+	//! Create a button with a custom border.
+
+	template<typename functor>
+	button create_button(const border_arg &arg, functor &&f,
+			     const shortcut &shortcut_key)
+	{
+		return do_create_button(arg, make_function<factory_creator_t>
+					(std::forward<functor>(f)),
+					shortcut_key);
+	}
+
 	//! Helper for creating buttons.
 	button do_create_normal_button(const function<factory_creator_t> &);
 
@@ -235,6 +254,10 @@ public:
 	//! Helper for creating buttons.
 	button do_create_special_button(const function<factory_creator_t> &,
 					const shortcut &);
+
+	//! Helper for creating buttons.
+	button do_create_button(const border_arg &,
+				const function<factory_creator_t> &);
 
 	//! Helper for creating buttons.
 	button do_create_button(const border_arg &,

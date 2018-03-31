@@ -9,6 +9,7 @@
 #include <x/w/busyfwd.H>
 #include <x/w/callback_triggerfwd.H>
 #include <x/w/connection_threadfwd.H>
+#include <x/w/factoryfwd.H>
 #include <x/ptrfwd.H>
 #include <string>
 

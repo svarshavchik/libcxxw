@@ -8,6 +8,7 @@
 #include <x/w/peepholed_focusableobj.H>
 #include <x/w/input_fieldfwd.H>
 #include <x/w/text_paramfwd.H>
+#include <x/w/hotspotfwd.H>
 #include <x/functionalrefptrfwd.H>
 #include <string>
 
@@ -77,6 +78,15 @@ public:
 		 typename canonical_format_functor>
 	auto set_string_validator(validator_functor &&validator,
 				  canonical_format_functor &&canonical_format);
+
+	//! Override peepholed_focusable.
+	void do_get_impl(const function<internal_focusable_cb> &)
+		const override LIBCXX_HIDDEN;
+
+	//! Install the spin control callbacks
+
+	void on_spin(const hotspot_callback_t &,
+		     const hotspot_callback_t &);
 };
 
 LIBCXXW_NAMESPACE_END

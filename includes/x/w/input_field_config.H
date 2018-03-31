@@ -13,6 +13,9 @@
 #include <x/w/scrollbar.H>
 #include <x/w/border_arg.H>
 #include <x/w/rgb.H>
+#include <x/w/factory.H>
+#include <x/functionalrefptrfwd.H>
+#include <optional>
 
 LIBCXXW_NAMESPACE_START
 
@@ -96,6 +99,23 @@ struct input_field_config {
 
 	color_arg disabled_background_color=
 		"textedit_disabled_background_color";
+
+
+	//! Optional factories for the spin controls next to the input field.
+
+	std::optional<std::tuple<functionref<void(const factory &)>,
+				 functionref<void(const factory &)>>
+		      > spin_control_factories;
+
+	//! Set the spin control factories.
+
+	void set_spin_control_factories(const functionref<void(const factory
+							       &)> &,
+					const functionref<void(const factory
+							       &)> &);
+
+	//! Set the default spin control factories
+	void set_default_spin_control_factories();
 
 	//! Destructor
 

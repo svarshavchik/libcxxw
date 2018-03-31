@@ -70,8 +70,14 @@ typedef factoryObj::factory_creator_t factory_creator_t;
 
 static buttonObj::internal_construction_info
 create_button_focusframe(const ref<buttonObj::implObj> &impl,
-			 const border_arg &border,
-			 const function<factory_creator_t> &f)
+			 const border_arg &left_border,
+			 const border_arg &right_border,
+			 const border_arg &top_border,
+			 const border_arg &bottom_border,
+			 const color_arg &normal_color,
+			 const color_arg &selected_color,
+			 const color_arg &active_color,
+			 const function<factory_creator_t> &creator)
 {
 	// Create the grid layout manager that the button uses
 	// for its real contents: the focusframecontainer.
@@ -89,9 +95,9 @@ create_button_focusframe(const ref<buttonObj::implObj> &impl,
 	// the contents of the focusframecontainer.
 
 	auto ffi=button_focusframe
-		::create("button_normal_color",
-			 "button_selected_color",
-			 "button_active_color",
+		::create(normal_color,
+			 selected_color,
+			 active_color,
 			 "inputfocusoff_border",
 			 "inputfocuson_border",
 			 glmi->container_impl,
@@ -102,7 +108,7 @@ create_button_focusframe(const ref<buttonObj::implObj> &impl,
 	// Call the application-provided creator to populate the contents
 	// of the button.
 
-	f(ff->set_focusable());
+	creator(ff->set_focusable());
 
 	// Now, it's time to go back to the new button's grid
 	// layout manager, and insert the fully-cooked focusframecontainer.
@@ -110,7 +116,10 @@ create_button_focusframe(const ref<buttonObj::implObj> &impl,
 	auto factory=glm->append_row();
 
 	factory->padding(0);	// No padding for the focus frame.
-	factory->border(border); // And set its border, too.
+	factory->left_border(left_border); // And set its border, too.
+	factory->right_border(right_border);
+	factory->top_border(top_border);
+	factory->bottom_border(bottom_border);
 
 	// If the button is placed in a grid cell that fill()ed, it will
 	// stretch the button element. Stretch the focusframe too, in that
@@ -165,14 +174,45 @@ button factoryObj::do_create_special_button(const function<factory_creator_t>&f,
 }
 
 button factoryObj::do_create_button(const border_arg &theme_border,
+				    const function<factory_creator_t> &f)
+{
+	return do_create_button(theme_border, f, {});
+}
+
+button factoryObj::do_create_button(const border_arg &theme_border,
 				    const function<factory_creator_t> &f,
 				    const shortcut &shortcut_key)
 {
-	auto impl=ref<buttonObj::implObj>::create(get_container_impl());
+	return do_create_button_with_explicit_borders
+		(*this, theme_border, theme_border, theme_border, theme_border,
+		 "button_normal_color",
+		 "button_selected_color",
+		 "button_active_color",
+		 f, shortcut_key, {});
+}
+
+button do_create_button_with_explicit_borders
+(factoryObj &f,
+ const border_arg &left_border,
+ const border_arg &right_border,
+ const border_arg &top_border,
+ const border_arg &bottom_border,
+ const color_arg &normal_color,
+ const color_arg &selected_color,
+ const color_arg &active_color,
+ const function<factory_creator_t> &creator,
+ const shortcut &shortcut_key,
+ const child_element_init_params &init_params)
+{
+	auto impl=ref<buttonObj::implObj>::create(f.get_container_impl(),
+						  init_params);
 
 	auto ab=button::create(impl,
 			       create_button_focusframe
-			       (impl, theme_border, f));
+			       (impl, left_border, right_border,
+				top_border, bottom_border,
+				normal_color, selected_color, active_color,
+				creator));
 
 	// Left to its own devices, the real focusable element is the internal
 	// container inside the focus frame. Pointer clicks just outside of it,
@@ -191,7 +231,7 @@ button factoryObj::do_create_button(const border_arg &theme_border,
 			 hotspot_impl->set_shortcut(IN_THREAD, shortcut_key);
 		 });
 
-	created(ab);
+	f.created_internally(ab);
 	return ab;
 }
 
