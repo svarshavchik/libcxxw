@@ -107,14 +107,21 @@ struct input_field_config {
 				 functionref<void(const factory &)>>
 		      > spin_control_factories;
 
-	//! Set the spin control factories.
+	//! Custom spin buttons
+
+	//! Enables two spin buttons next to the input field.
+	//! The callbacks must use the their factory parameter to create one
+	//! display element that shows an icon or a label for that spin
+	//! button.
 
 	void set_spin_control_factories(const functionref<void(const factory
 							       &)> &,
 					const functionref<void(const factory
 							       &)> &);
 
-	//! Set the default spin control factories
+	//! Enable spin buttons, with a default appearance.
+
+	//! Enables two spin buttons next to the input field.
 	void set_default_spin_control_factories();
 
 	//! Destructor

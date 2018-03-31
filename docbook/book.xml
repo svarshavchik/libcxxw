@@ -15,6 +15,7 @@
 <!ENTITY connection_thread "<link linkend='connection_thread'>connection thread</link>">
 <!ENTITY focusable "<link linkend='focusable'>focusable</link>">
 <!ENTITY factory "<link linkend='factory'>factory</link>">
+<!ENTITY factories "<link linkend='factory'>factories</link>">
 <!ENTITY focusable "<link linkend='focusable'>focusable</link>">
 <!ENTITY container "<link linkend='container'>container</link>">
 <!ENTITY layoutmanager "<link linkend='layoutmanager'>layout manager</link>">
@@ -33,6 +34,7 @@
 <!ENTITY inputfieldsandbuttons SYSTEM "inputfieldsandbuttons.xml">
 <!ENTITY dateinputfield SYSTEM "dateinputfield.xml">
 <!ENTITY validatedinput SYSTEM "validatedinput.xml">
+<!ENTITY spininput SYSTEM "spininput.xml">
 <!ENTITY busy SYSTEM "busy.xml">
 <!ENTITY focusable_section SYSTEM "focusable.xml">
 <!ENTITY checkradio SYSTEM "checkradio.xml">
@@ -79,6 +81,7 @@ See COPYING for distribution information.
     &inputfieldsandbuttons;
     &dateinputfield;
     &validatedinput;
+    &spininput;
     &busy;
     &focusable_section;
     &checkradio;

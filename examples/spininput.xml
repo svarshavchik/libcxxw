@@ -1,0 +1,10 @@
+<optclass name="options">
+  <option>
+    <name>custom</name>
+    <type>bool</type>
+    <opt>c</opt>
+    <longopt>custom</longopt>
+    <descr>Use custom spin buttons</descr>
+  </option>
+  <defaultoptions />
+</optclass>

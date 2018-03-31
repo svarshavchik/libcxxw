@@ -21,5 +21,7 @@
 /printdialog
 /progressbar
 /scrollbar
+/spininput
+/spininput.H
 /validatedinput
 /wordwraplabel

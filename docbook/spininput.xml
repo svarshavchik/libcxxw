@@ -1,0 +1,97 @@
+<!--
+
+Copyright 2018 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<chapter id="spininput">
+  <title>Input field spinners</title>
+
+  <mediaobject>
+    <imageobject>
+      <imagedata fileref="spininput.png" format="PNG"
+		 contentwidth="288px" contentdepth="63px" />
+    </imageobject>
+    <textobject>
+      <phrase>
+	Input field spinner.
+      </phrase>
+    </textobject>
+    <caption>
+      <para>
+	Two optional, small buttons to the right of an input field provide
+	a convenient way to enter a number in a relatively small numerical
+	range. The two small buttons typically "spin" the value in the
+	input field; decreasing or increasing the value with each click.
+      </para>
+    </caption>
+  </mediaobject>
+
+  <para>
+    <filename>spininput.C</filename> gives an example of using spin buttons:
+  </para>
+
+  <blockquote>
+    <title><ulink url="examples/spininput.C">spininput.C</ulink></title>
+
+    <informalexample>
+      <programlisting><xi:include href="../examples/spininput.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    Spin buttons get enabled by
+    using a <ulink url="&link-x--w--input-field-config;"><classname>&ns;::w::input_field_config</classname></ulink>
+    object with <methodname>create_input_field</methodname>().
+    <classname>&ns;::w::input_field_config</classname>
+    <methodname>set_default_spin_control_factories</methodname>()
+    sets the &factories; that create two spin buttons with a default appearance:
+    a <quote>-</quote> and a <quote>+</quote> icon.
+    The expectation is that these buttons
+    decrement and increment the value in the input field.
+  </para>
+
+  <para>
+    Alternatively,
+    <methodname>set_spin_control_factories</methodname>() installs
+    &callback;s that specify custom factories for the spin buttons.
+    Passing a <option>--custom</option> option to
+    <filename>spininput.C</filename> uses it to create spin buttons as
+    plain text <quote>-</quote> and <quote>+</quote> labels.
+  </para>
+
+  <section id="usingspinbuttons">
+    <title>Implementing spin buttons</title>
+
+    <para>
+      The spin buttons, by themselves, don't do anything to the input field.
+      It's up to the application to implement them. The spin buttons don't
+      have to increment the numerical value in the input field by 1.
+      The input field is not required to have a numerical value, and the
+      spin buttons may update the input field in some other fashion.
+      The application has complete control over what the spin buttons do.
+      <methodname>on_spin</methodname>() installs two &callback;s, one
+      for each spin button, and the callbacks have complete flexibility to
+      update the contents of the input field.
+    </para>
+
+    <para>
+      <filename>spininput.C</filename> gives an example of using
+      <link linkend="validatedinput">input field validators</link>.
+      <filename>spininput.C</filename> installs a validator that requires
+      a number value in the input field, rejects invalid input, and
+      automatically converts the entered text into an ordinary
+      <classname>int</classname>.
+      <methodname>on_spin</methodname>()'s callbacks simply need to
+      increment or decrement the <classname>int</classname> value, within
+      bounds, and use the validator to update the input field.
+    </para>
+  </section>
+</chapter>
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "book" "chapter")
+End:
+-->

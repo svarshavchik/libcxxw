@@ -19,6 +19,7 @@ noinst_PROGRAMS=\
 	printdialog				\
 	progressbar				\
 	scrollbar				\
+	spininput				\
 	validatedinput				\
 	wordwraplabel
 
@@ -58,9 +59,6 @@ $(call REFCOLLECTION_GEN,inputfields.inc.H,inputfields.xml)
 inputfieldsandbuttons_SOURCES=inputfieldsandbuttons.C close_flag.H
 inputfieldsandbuttons_LDADD=-lcxxw -lcxx
 
-validatedinput_SOURCES=validatedinput.C close_flag.H
-validatedinput_LDADD=-lcxxw -lcxx
-
 $(call OPTIONS_GEN,listlayoutmanager.H,listlayoutmanager.xml)
 listlayoutmanager_SOURCES=listlayoutmanager.C close_flag.H
 listlayoutmanager_LDADD=-lcxxw -lcxx
@@ -90,6 +88,13 @@ progressbar_LDADD=-lcxxw -lcxx
 
 scrollbar_SOURCES=scrollbar.C close_flag.H
 scrollbar_LDADD=-lcxxw -lcxx
+
+$(call OPTIONS_GEN,spininput.H,spininput.xml)
+spininput_SOURCES=spininput.C close_flag.H
+spininput_LDADD=-lcxxw -lcxx
+
+validatedinput_SOURCES=validatedinput.C close_flag.H
+validatedinput_LDADD=-lcxxw -lcxx
 
 wordwraplabel_SOURCES=wordwraplabel.C close_flag.H
 wordwraplabel_LDADD=-lcxxw -lcxx

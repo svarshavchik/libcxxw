@@ -174,7 +174,7 @@ create_mainwindow(const x::w::main_window &main_window,
 				 }
 			 }
 
-			 error_message="Must enter a number 0-99";
+			 error_message="Must enter a number 0-49";
 			 return std::nullopt;
 		 },
 		 []
