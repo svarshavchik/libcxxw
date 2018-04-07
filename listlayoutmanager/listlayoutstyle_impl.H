@@ -10,14 +10,14 @@
 #include "listlayoutmanager/list_element_impl.H"
 #include "peephole/peepholedfwd.H"
 #include "peephole/peepholeobj.H"
-#include "draw_infofwd.H"
-#include "background_colorfwd.H"
+#include "x/w/impl/draw_infofwd.H"
+#include "x/w/impl/background_colorfwd.H"
 #include "x/w/containerfwd.H"
 #include "x/w/focusablefwd.H"
 #include "x/w/text_paramfwd.H"
 #include "x/w/listlayoutmanager.H"
-#include "focus/focusablefwd.H"
-#include "connection_threadfwd.H"
+#include "x/w/impl/focus/focusablefwd.H"
+#include "x/w/connection_threadfwd.H"
 #include <vector>
 #include <x/functional.H>
 

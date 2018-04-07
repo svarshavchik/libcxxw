@@ -8,7 +8,7 @@
 #include "layoutmanager.H"
 #include "gridlayoutmanager.H"
 #include "x/w/gridfactory.H"
-#include "element.H"
+#include "x/w/impl/element.H"
 #include "run_as.H"
 #include "catch_exceptions.H"
 

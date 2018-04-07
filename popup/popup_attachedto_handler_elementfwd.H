@@ -6,7 +6,7 @@
 #define popup_attachedto_handler_elementfwd_h
 
 #include "popup/popup_attachedto_handlerfwd.H"
-#include "connection_threadfwd.H"
+#include "x/w/connection_threadfwd.H"
 #include <x/ptrfwd.H>
 
 LIBCXXW_NAMESPACE_START

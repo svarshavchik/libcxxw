@@ -20,7 +20,7 @@
 #include "icon.H"
 #include "container_element.H"
 #include "container_visible_element.H"
-#include "child_element.H"
+#include "x/w/impl/child_element.H"
 #include "always_visible.H"
 #include "capturefactory.H"
 #include "busy.H"

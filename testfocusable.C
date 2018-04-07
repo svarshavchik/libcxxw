@@ -125,7 +125,8 @@ struct LIBCXX_NAMESPACE::w::child_elementObj
 		override;
 };
 
-#define child_element_h
+#define x_w_impl_child_element_h
+#define x_w_impl_container_H
 #include "focus/element_focusable.C"
 
 using namespace LIBCXX_NAMESPACE;

@@ -12,8 +12,6 @@
 #include "current_border_impl.H"
 #include "container_impl.H"
 #include "connection_thread.H"
-#include "element_screen.H"
-#include "element_draw.H"
 #include <x/number_hash.H>
 
 LIBCXXW_NAMESPACE_START

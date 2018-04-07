@@ -5,7 +5,7 @@
 #ifndef cursor_pointer_h
 #define cursor_pointer_h
 
-#include "cursor_pointerfwd.H"
+#include "x/w/impl/cursor_pointerfwd.H"
 #include "cursor_pointerobj.H"
 #include <x/ref.H>
 

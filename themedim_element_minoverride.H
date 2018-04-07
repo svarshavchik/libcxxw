@@ -6,8 +6,8 @@
 #define themedim_element_minoverride_H
 
 #include "themedim_element_minoverridefwd.H"
-#include "themedim_element.H"
-#include "defaulttheme.H"
+#include "x/w/impl/themedim_element.H"
+
 LIBCXXW_NAMESPACE_START
 
 //! Constructor
@@ -19,9 +19,9 @@ inline themedim_element_minoverrideObj<element_impl>
 				  const dim_arg &height_override,
 				  Args && ...args)
 	: superclass_t(width_override,
-		       &defaultthemeObj::get_theme_width_dim_t,
+		       themedimaxis::width,
 		       height_override,
-		       &defaultthemeObj::get_theme_height_dim_t,
+		       themedimaxis::height,
 		       std::forward<Args>(args)...)
 {
 }

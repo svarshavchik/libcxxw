@@ -5,7 +5,7 @@
 #include "libcxxw_config.h"
 #include "focus/focusframefactory.H"
 #include "layoutmanager.H"
-#include "container.H"
+#include "x/w/impl/container.H"
 #include "x/w/gridlayoutmanager.H"
 #include "x/w/gridfactory.H"
 

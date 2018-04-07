@@ -5,11 +5,11 @@
 #ifndef cursor_pointerobj_h
 #define cursor_pointerobj_h
 
-#include "cursor_pointerfwd.H"
+#include "x/w/impl/cursor_pointerfwd.H"
 #include "iconfwd.H"
-#include "defaultthemefwd.H"
+#include "x/w/impl/defaultthemefwd.H"
 #include "xid_t.H"
-#include "connection_threadfwd.H"
+#include "x/w/connection_threadfwd.H"
 #include <x/obj.H>
 
 LIBCXXW_NAMESPACE_START

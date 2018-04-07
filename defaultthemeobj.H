@@ -25,8 +25,9 @@
 #include "x/w/shortcutfwd.H"
 #include "x/w/dim_arg.H"
 #include "x/w/connectionfwd.H"
-#include "connection_threadfwd.H"
-#include "defaultthemefwd.H"
+#include "x/w/connection_threadfwd.H"
+#include "x/w/impl/defaultthemefwd.H"
+#include "x/w/impl/themedimfwd.H"
 #include "border_implfwd.H"
 #include "gridtemplatefwd.H"
 #include "theme_parser_lock.H"
@@ -247,15 +248,10 @@ public:
 
 	//! The given dimension is specified in the theme. The dimension
 	//! name may also be a numerical value, given as a literal string,
-	//! which is interpreted as millimeters.
-	dim_t get_theme_width_dim_t(const dim_arg &id);
+	//! which is interpreted as millimeters; in which case themedimaxis
+	//! specifies whether this is a horizontal or a vertical dimension.
 
-	//! Retrieve theme dimension
-
-	//! The given dimension is specified in the theme. The dimension
-	//! name may also be a numerical value, given as a literal string,
-	//! which is interpreted as millimeters.
-	dim_t get_theme_height_dim_t(const dim_arg &id);
+	dim_t get_theme_dim_t(const dim_arg &id, themedimaxis wh);
 
 	//! Compute # of pixels from millimeters, for width
 

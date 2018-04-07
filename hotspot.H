@@ -15,7 +15,7 @@
 #include "x/w/focus.H"
 #include "x/w/generic_windowobj.H"
 #include "focus/focusable_elementfwd.H"
-#include "connection_threadfwd.H"
+#include "x/w/connection_threadfwd.H"
 #include "activated_in_threadobj.H"
 #include <x/refptr_traits.H>
 #include <xcb/xproto.h>

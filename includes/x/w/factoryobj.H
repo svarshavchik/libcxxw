@@ -48,7 +48,7 @@ public:
 
 	//! \internal
 
-	virtual ref<containerObj::implObj> get_container_impl() LIBCXX_HIDDEN=0;
+	virtual ref<containerObj::implObj> get_container_impl()=0;
 
 	//! Return the container's element implementation object.
 
@@ -57,7 +57,7 @@ public:
 	//!
 	//! \internal
 
-	virtual elementObj::implObj &get_element_impl() LIBCXX_HIDDEN=0;
+	virtual elementObj::implObj &get_element_impl()=0;
 
 	//! Return parent container implementation object of newly created element.
 
@@ -68,11 +68,11 @@ public:
 	//!
 	//! \internal.
 
-	virtual ref<containerObj::implObj> last_container_impl() LIBCXX_HIDDEN;
+	virtual ref<containerObj::implObj> last_container_impl();
 
 	//! An internal call to create().
 
-	void created_internally(const element &) LIBCXX_HIDDEN;
+	void created_internally(const element &);
 
 private:
 	//! Invoked by factory's methods, after creating a new element.

@@ -14,9 +14,10 @@
 #include "richtext/richtextcursorlocation.H"
 #include "richtext/richtext_draw_info.H"
 #include "richtext/richtext_draw_boundaries.H"
-#include "draw_info.H"
-#include "element_draw.H"
+#include "x/w/impl/draw_info.H"
+#include "x/w/impl/element_draw.H"
 #include "screen.H"
+#include "picture.H"
 
 LIBCXXW_NAMESPACE_START
 

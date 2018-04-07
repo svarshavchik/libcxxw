@@ -6,9 +6,9 @@
 #define grabbed_pointerobj_h
 
 #include <x/obj.H>
-#include "grabbed_pointerfwd.H"
-#include "connection_threadfwd.H"
-#include "elementfwd.H"
+#include "x/w/impl/grabbed_pointerfwd.H"
+#include "x/w/connection_threadfwd.H"
+#include "x/w/elementobj.H"
 
 LIBCXXW_NAMESPACE_START
 

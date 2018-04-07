@@ -3,8 +3,8 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
-#include "container.H"
-#include "child_element.H"
+#include "x/w/impl/container.H"
+#include "x/w/impl/child_element.H"
 #include "gridlayoutmanager.H"
 #include "gridfactory.H"
 #include "grid_map_info.H"

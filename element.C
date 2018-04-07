@@ -3,13 +3,12 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
-#include "element.H"
-#include "element_screen.H"
+#include "x/w/impl/element.H"
 #include "screen.H"
 #include "batch_queue.H"
-#include "background_color.H"
+#include "x/w/impl/background_color.H"
 #include "generic_window_handler.H"
-#include "draw_info.H"
+#include "x/w/impl/draw_info.H"
 #include "busy.H"
 #include "menu/menu_popup.H"
 #include "activated_in_thread.H"

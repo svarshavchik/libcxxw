@@ -8,7 +8,7 @@
 #include "x/w/namespace.H"
 #include "iconfwd.H"
 #include "iconobj.H"
-#include "connection_threadfwd.H"
+#include "x/w/connection_threadfwd.H"
 #include "icon_images_set_elementfwd.H"
 
 LIBCXXW_NAMESPACE_START

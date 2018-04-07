@@ -6,7 +6,7 @@
 #define label_elementfwd_H
 
 #include "textlabel.H"
-#include "element.H"
+#include "x/w/impl/element.H"
 #include "x/w/text_paramfwd.H"
 #include "x/w/rgb.H"
 
@@ -20,8 +20,8 @@ LIBCXXW_NAMESPACE_START
 //! Multiply inherits from the template parameter, and textlabelObj::implObj.
 
 template<typename element_impl>
-class label_elementObj : public element_impl,
-			 public textlabelObj::implObj {
+class LIBCXX_HIDDEN label_elementObj : public element_impl,
+				       public textlabelObj::implObj {
 
 public:
 

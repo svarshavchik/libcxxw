@@ -8,10 +8,10 @@
 #include "combobox/custom_combobox_container.H"
 #include "combobox/custom_combobox_popup_containerfwd.H"
 #include "popup/popup_attachedto_handler_elementfwd.H"
-#include "popup/popupfwd.H"
+#include "x/w/impl/popup/popupfwd.H"
 #include "nonrecursive_visibilityfwd.H"
 #include "container_elementfwd.H"
-#include "child_element.H"
+#include "x/w/impl/child_element.H"
 
 LIBCXXW_NAMESPACE_START
 

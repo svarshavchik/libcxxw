@@ -4,7 +4,7 @@
 */
 
 #include "libcxxw_config.h"
-#include "draw_info.H"
+#include "x/w/impl/draw_info.H"
 #include "richtext/richtext_draw_boundaries.H"
 #include <x/exception.H>
 

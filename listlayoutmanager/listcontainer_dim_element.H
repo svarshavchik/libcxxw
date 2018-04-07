@@ -5,8 +5,8 @@
 #ifndef listcontainer_dim_element_h
 #define listcontainer_dim_element_h
 
-#include "themedim_element.H"
-#include "defaulttheme.H"
+#include "x/w/impl/themedim_element.H"
+#include "x/w/impl/themedimfwd.H"
 #include "listlayoutmanager/listcontainer_dim_elementfwd.H"
 
 LIBCXXW_NAMESPACE_START
@@ -18,16 +18,16 @@ template<typename ...Args>
 inline listcontainer_dim_elementObj<element_impl>
 ::listcontainer_dim_elementObj(const new_listlayoutmanager &style,
 			       Args && ...args)
-	: superclass_t(style.v_padding,
-		       &defaultthemeObj::get_theme_height_dim_t,
-		       style.left_padding,
-		       &defaultthemeObj::get_theme_width_dim_t,
-		       style.inner_padding,
-		       &defaultthemeObj::get_theme_width_dim_t,
-		       style.right_padding,
-		       &defaultthemeObj::get_theme_width_dim_t,
+	: superclass_t{style.v_padding,
+			       themedimaxis::height,
+			       style.left_padding,
+			       themedimaxis::width,
+			       style.inner_padding,
+			       themedimaxis::width,
+			       style.right_padding,
+			       themedimaxis::width,
 
-		       std::forward<Args>(args)...)
+			       std::forward<Args>(args)...}
 {
 }
 

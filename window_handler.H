@@ -6,7 +6,7 @@
 #define window_handler_h
 
 #include "xid_t.H"
-#include "connection_threadfwd.H"
+#include "x/w/connection_threadfwd.H"
 #include "x/w/values_and_mask.H"
 #include "x/w/rectangle.H"
 #include "x/w/screenfwd.H"

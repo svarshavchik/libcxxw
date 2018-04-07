@@ -5,7 +5,7 @@
 #include "libcxxw_config.h"
 #include "button.H"
 #include "gridlayoutmanager.H"
-#include "background_color.H"
+#include "x/w/impl/background_color.H"
 #include "x/w/factory.H"
 #include "x/w/label.H"
 #include "x/w/border_arg.H"

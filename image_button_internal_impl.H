@@ -13,7 +13,7 @@
 #include "image.H"
 #include "hotspot_elementfwd.H"
 #include <vector>
-#include "connection_threadfwd.H"
+#include "x/w/connection_threadfwd.H"
 
 #include <x/mpobj.H>
 #include <x/refptr_traits.H>

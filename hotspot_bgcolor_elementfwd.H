@@ -7,7 +7,7 @@
 
 #include "hotspot_bgcolor.H"
 #include "hotspot_elementfwd.H"
-#include "background_color_elementfwd.H"
+#include "x/w/impl/background_color_elementfwd.H"
 #include "x/w/hotspotobj.H"
 
 LIBCXXW_NAMESPACE_START

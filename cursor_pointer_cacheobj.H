@@ -5,10 +5,10 @@
 #ifndef cursor_pointer_cacheobj_H
 #define cursor_pointer_cacheobj_H
 
-#include "defaultthemefwd.H"
+#include "x/w/impl/defaultthemefwd.H"
 #include "cursor_pointer_cachefwd.H"
 #include "cursor_pointerobj.H"
-#include "cursor_pointerfwd.H"
+#include "x/w/impl/cursor_pointerfwd.H"
 #include "iconfwd.H"
 #include <x/weakunordered_multimapfwd.H>
 

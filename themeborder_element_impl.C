@@ -7,7 +7,7 @@
 #include "screen.H"
 #include "defaulttheme.H"
 #include "current_border_impl.H"
-#include "element_screen.H"
+#include "x/w/impl/element.H"
 
 LIBCXXW_NAMESPACE_START
 

@@ -6,8 +6,8 @@
 #define x_w_extra_list_row_infoobj_h
 
 #include "listlayoutmanager/extra_list_row_infofwd.H"
-#include "popup/popupfwd.H"
-#include "connection_threadfwd.H"
+#include "x/w/impl/popup/popupfwd.H"
+#include "x/w/impl/connection_threadfwd.H"
 #include "listlayoutmanager/listlayoutstyle_impl.H"
 #include "x/w/listlayoutmanagerfwd.H"
 #include "x/w/shortcutfwd.H"

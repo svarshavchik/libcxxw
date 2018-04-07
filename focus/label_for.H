@@ -5,7 +5,7 @@
 #ifndef label_for_h
 #define label_for_h
 
-#include "focus/label_forfwd.H"
+#include "x/w/impl/focus/label_forfwd.H"
 #include "focus/label_forobj.H"
 
 LIBCXXW_NAMESPACE_START

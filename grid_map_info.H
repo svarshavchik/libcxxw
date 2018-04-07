@@ -6,7 +6,7 @@
 #define grid_map_info_h
 
 #include "x/w/namespace.H"
-#include "element.H"
+#include "x/w/impl/element.H"
 #include "grid_element.H"
 #include "grid_map_infoobj.H"
 

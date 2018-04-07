@@ -12,8 +12,9 @@
 #include "image_button_internal.H"
 #include "focus/focusframecontainerobj.H"
 #include "focus/focusframecontainer_element.H"
+#include "container_element.H"
 #include "always_visible.H"
-#include "child_element.H"
+#include "x/w/impl/child_element.H"
 #include <x/functional.H>
 
 LIBCXXW_NAMESPACE_START

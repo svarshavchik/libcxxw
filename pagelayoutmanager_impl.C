@@ -5,7 +5,7 @@
 #include "libcxxw_config.h"
 #include "pagelayoutmanager_impl.H"
 #include "container_impl.H"
-#include "metrics_horizvert.H"
+#include "x/w/impl/metrics_horizvert.H"
 #include "x/w/metrics/derivedaxis.H"
 #include "messages.H"
 

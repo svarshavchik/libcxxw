@@ -1,6 +1,6 @@
 headerdir=$(includedir)/x/w
 
-SUBDIRS=deps metrics
+SUBDIRS=deps impl metrics
 
 header_HEADERS = $(shell cd $(srcdir) && echo *.H)
 

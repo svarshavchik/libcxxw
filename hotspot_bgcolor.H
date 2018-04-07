@@ -7,7 +7,7 @@
 
 #include "x/w/hotspot_bgcolor.H"
 #include "x/w/hotspotobj.H"
-#include "background_colorfwd.H"
+#include "x/w/impl/background_colorfwd.H"
 #include "connection_thread.H"
 #include <x/obj.H>
 

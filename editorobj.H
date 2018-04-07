@@ -7,7 +7,7 @@
 
 #include "x/w/elementobj.H"
 #include "x/w/focusableobj.H"
-#include "focus/focusablefwd.H"
+#include "x/w/impl/focus/focusablefwd.H"
 #include "peephole/peepholed_fontelementfwd.H"
 
 LIBCXXW_NAMESPACE_START

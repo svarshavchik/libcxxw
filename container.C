@@ -3,12 +3,12 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
-#include "container.H"
+#include "x/w/impl/container.H"
 #include "x/w/container.H"
 #include "x/w/factory.H"
 #include "layoutmanager.H"
 #include "container_element.H"
-#include "child_element.H"
+#include "x/w/impl/child_element.H"
 #include "run_as.H"
 
 LIBCXXW_NAMESPACE_START

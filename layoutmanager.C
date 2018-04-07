@@ -4,7 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "layoutmanager.H"
-#include "container.H"
+#include "x/w/impl/container.H"
 #include "xid_t.H"
 #include "generic_window_handler.H"
 #include "connection_thread.H"

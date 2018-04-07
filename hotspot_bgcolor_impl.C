@@ -5,8 +5,8 @@
 #include "libcxxw_config.h"
 #include "hotspot.H"
 #include "hotspot_bgcolor.H"
-#include "child_element.H"
-#include "background_color.H"
+#include "x/w/impl/child_element.H"
+#include "x/w/impl/background_color.H"
 
 LIBCXXW_NAMESPACE_START
 

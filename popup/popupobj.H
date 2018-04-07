@@ -5,7 +5,7 @@
 #ifndef popupobj_h
 #define popupobj_h
 
-#include "popup/popupfwd.H"
+#include "x/w/impl/popup/popupfwd.H"
 #include "x/w/generic_windowobj.H"
 
 LIBCXXW_NAMESPACE_START

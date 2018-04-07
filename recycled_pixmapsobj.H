@@ -6,7 +6,7 @@
 #define recycled_pixmapsobj_h
 
 #include "recycled_pixmapsfwd.H"
-#include "background_colorfwd.H"
+#include "x/w/impl/background_colorfwd.H"
 #include "x/w/pictformatfwd.H"
 #include "x/w/scratch_bufferfwd.H"
 #include "x/w/picturefwd.H"

@@ -7,9 +7,9 @@
 
 #include "menu/menubar_container_implfwd.H"
 #include "container_elementfwd.H"
-#include "container.H"
+#include "x/w/impl/container.H"
 #include "always_visiblefwd.H"
-#include "child_element.H"
+#include "x/w/impl/child_element.H"
 #include "x/w/menufwd.H"
 
 LIBCXXW_NAMESPACE_START

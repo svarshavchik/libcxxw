@@ -8,7 +8,7 @@
 #include "screen_fontcaches.H"
 #include "drawable.H"
 #include "defaulttheme.H"
-#include "background_color.H"
+#include "x/w/impl/background_color.H"
 #include "richtext/richtext.H"
 #include "richtext/richtextmeta.H"
 #include "x/w/picture.H"

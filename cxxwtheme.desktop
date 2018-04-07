@@ -1,6 +1,6 @@
 [Desktop Entry]
-Name=LibCXXw Theme
-Comment=Set default display theme for LibCXXw-based applications
+Name=LibCXXW Theme
+Comment=Set default display theme for LibCXXW-based applications
 Exec=cxxwtheme
 Icon=preferences-system
 Terminal=false

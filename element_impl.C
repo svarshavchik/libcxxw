@@ -3,19 +3,19 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
-#include "element.H"
-#include "element_draw.H"
+#include "x/w/impl/element.H"
+#include "inherited_visibility_info.H"
 #include "screen.H"
 #include "connection_thread.H"
 #include "batch_queue.H"
 #include "generic_window_handler.H"
-#include "draw_info.H"
+#include "x/w/impl/draw_info.H"
 #include "busy.H"
 #include "icon.H"
 #include "pixmap_with_picture.H"
 #include "cursor_pointer.H"
 #include "run_as.H"
-#include "background_color.H"
+#include "x/w/impl/background_color.H"
 #include "grabbed_pointer.H"
 #include "x/w/element_state.H"
 #include "x/w/scratch_buffer.H"
@@ -25,7 +25,6 @@
 #include "x/w/tooltip.H"
 #include "x/w/main_window.H"
 #include "x/callback_list.H"
-#include "element_screen.H"
 #include "focus/label_for.H"
 #include "fonts/current_fontcollection.H"
 #include "xim/ximclient.H"
@@ -83,6 +82,16 @@ elementObj::implObj::~implObj()
 		return;
 
 	LOG_ERROR("removed_from_container() was not called for an element");
+}
+
+screen elementObj::implObj::get_screen()
+{
+	return get_window_handler().screenref;
+}
+
+const_screen elementObj::implObj::get_screen() const
+{
+	return get_window_handler().screenref;
 }
 
 void elementObj::implObj::removed_from_container()

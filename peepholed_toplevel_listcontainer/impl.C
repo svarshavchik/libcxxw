@@ -5,8 +5,8 @@
 #include "libcxxw_config.h"
 #include "listlayoutmanager/listcontainer_impl.H"
 #include "peepholed_toplevel_listcontainer/impl.H"
-#include "child_element.H"
-#include "container.H"
+#include "x/w/impl/child_element.H"
+#include "x/w/impl/container.H"
 
 LIBCXXW_NAMESPACE_START
 

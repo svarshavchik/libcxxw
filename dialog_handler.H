@@ -8,7 +8,7 @@
 #include "x/w/dialogobj.H"
 #include "x/w/rgbfwd.H"
 #include "main_window_handler.H"
-#include "connection_threadfwd.H"
+#include "x/w/connection_threadfwd.H"
 
 LIBCXXW_NAMESPACE_START
 

@@ -11,7 +11,7 @@
 #include "always_visiblefwd.H"
 #include "container_elementfwd.H"
 #include "reference_font_elementfwd.H"
-#include "child_element.H"
+#include "x/w/impl/child_element.H"
 
 LIBCXXW_NAMESPACE_START
 

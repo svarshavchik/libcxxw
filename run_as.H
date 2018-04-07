@@ -7,7 +7,7 @@
 
 #include "xid_t.H"
 #include "connection_thread.H"
-#include "element.H"
+#include "x/w/impl/element.H"
 #include "generic_window_handler.H"
 #include "screen.H"
 

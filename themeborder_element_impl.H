@@ -6,8 +6,8 @@
 #define themeborder_element_impl_H
 
 #include "current_border_implfwd.H"
-#include "defaultthemefwd.H"
-#include "connection_threadfwd.H"
+#include "x/w/impl/defaultthemefwd.H"
+#include "x/w/connection_threadfwd.H"
 #include "x/w/border_arg.H"
 #include "x/w/elementobj.H"
 

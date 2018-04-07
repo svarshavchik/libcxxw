@@ -144,7 +144,7 @@ const &ns;::w::main_window dialog_window;</programlisting>
       can use <quote>dialog1@example.com</quote>, or
       <quote>confirmation@app1.example.com</quote>, as an example.
       &appshort;'s internal dialog identifiers use
-      <quote>@libcxx.com</quote> to avoid applicaiton conflicts.
+      <quote>@libcxx.com</quote> to avoid application conflicts.
     </para>
   </section>
 

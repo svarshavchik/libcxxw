@@ -7,7 +7,7 @@
 #include "gridfactory.H"
 #include "x/w/factory.H"
 #include "gridlayoutmanager.H"
-#include "child_element.H"
+#include "x/w/impl/child_element.H"
 #include "current_border_impl.H"
 #include "messages.H"
 #include "generic_window_handler.H"

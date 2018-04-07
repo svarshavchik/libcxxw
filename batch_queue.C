@@ -6,8 +6,8 @@
 #include "batch_queue.H"
 #include "connection_thread.H"
 #include "layoutmanager.H"
-#include "container.H"
-#include "element.H"
+#include "x/w/impl/container.H"
+#include "x/w/impl/element.H"
 
 LOG_CLASS_INIT(LIBCXX_NAMESPACE::w::batch_queueObj);
 

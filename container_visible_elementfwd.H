@@ -5,7 +5,7 @@
 #ifndef container_visible_elementfwd_H
 #define container_visible_elementfwd_H
 
-#include "connection_threadfwd.H"
+#include "x/w/connection_threadfwd.H"
 #include "x/w/rectanglefwd.H"
 #include "x/w/elementobj.H"
 

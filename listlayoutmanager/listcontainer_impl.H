@@ -6,11 +6,11 @@
 #define listcontainer_impl_h
 
 #include "listcontainer.H"
-#include "child_element.H"
+#include "x/w/impl/child_element.H"
 #include "container_elementfwd.H"
 #include "hotspot_elementfwd.H"
-#include "background_color_elementfwd.H"
-#include "themedimfwd.H"
+#include "x/w/impl/background_color_elementfwd.H"
+#include "x/w/impl/themedimfwd.H"
 #include "x/w/listlayoutmanagerfwd.H"
 #include "x/w/focus.H"
 #include "x/w/elementfwd.H"

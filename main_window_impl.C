@@ -12,7 +12,7 @@
 #include "run_as.H"
 #include "connection_info.H"
 #include "connection.H"
-#include "element.H"
+#include "x/w/impl/element.H"
 #include "screen.H"
 #include "screen_depthinfo.H"
 #include "connection.H"

@@ -4,7 +4,7 @@
 */
 
 #include "libcxxw_config.h"
-#include "background_color.H"
+#include "x/w/impl/background_color.H"
 #include "fonts/current_fontcollection.H"
 #include "richtext/richtextmeta.H"
 #include "x/w/text_hotspot.H"

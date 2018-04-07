@@ -7,7 +7,7 @@
 
 #include "shared_handler_datafwd.H"
 #include "popup/popup_handler.H"
-#include "connection_threadfwd.H"
+#include "x/w/connection_threadfwd.H"
 #include "shortcut/installed_shortcutfwd.H"
 #include "x/w/generic_windowobj.H"
 #include "x/w/motion_event.H"

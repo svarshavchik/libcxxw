@@ -6,9 +6,8 @@
 #include "gridtemplate.H"
 #include "messages.H"
 #include "gridlayoutmanager.H"
-#include "container.H"
+#include "x/w/impl/container.H"
 #include "screen.H"
-#include "element_screen.H"
 #include "defaulttheme.H"
 
 LIBCXXW_NAMESPACE_START

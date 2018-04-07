@@ -9,7 +9,7 @@
 #include "current_border_implfwd.H"
 #include "metrics_grid_posfwd.H"
 #include "metrics_grid.H"
-#include "defaultthemefwd.H"
+#include "x/w/impl/defaultthemefwd.H"
 #include "x/w/elementfwd.H"
 #include "x/w/screenfwd.H"
 #include "x/w/types.H"

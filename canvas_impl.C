@@ -3,32 +3,71 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
-#include "canvas.H"
-#include "themedim_axis_element.H"
+#include "x/w/impl/canvas.H"
+#include "x/w/impl/themedim_axis_element.H"
 #include "connection_thread.H"
+#include "defaulttheme.H"
 #include "xid_t.H"
 #include "run_as.H"
 
 LIBCXXW_NAMESPACE_START
 
-canvasObj::implObj::implObj(const ref<containerObj::implObj> &container,
-			    const dim_axis_arg &horiz,
-			    const dim_axis_arg &vert)
-	: superclass_t(horiz, vert,
-		       container, child_element_init_params
-		       {"background@libcxx.com"})
+static metrics::axis
+initial_axis(const defaulttheme &theme,
+	     themedimaxis wh,
+	     const dim_axis_arg &arg)
 {
-	// It's ok to break the rules here, there cannot be any multithreading
-	// at this point, the object isn't even constructed. This way, the
-	// implementaiton object already has the translated metrics right from
-	// the start.
+	auto min=theme->get_theme_dim_t(arg.minimum, wh);
+	auto pref=theme->get_theme_dim_t(arg.preferred, wh);
+	auto max=theme->get_theme_dim_t(arg.maximum, wh);
 
-	ONLY IN_THREAD=THREAD;
+	if (pref < min)
+		pref=min;
 
-	auto hv=get_horizvert(IN_THREAD);
+	if (max < pref)
+		max=pref;
 
-	hv->horiz=get_width_axis(IN_THREAD);
-	hv->vert=get_height_axis(IN_THREAD);
+	return {min, pref, max};
+}
+
+child_element_init_params
+canvasObj::implObj
+::create_child_element_params(const ref<containerObj::implObj> &container,
+			      const canvas_init_params &params)
+{
+	auto theme=container->container_element_impl().get_screen()
+		->impl->current_theme.get();
+
+	return {
+		params.scratch_buffer_id.empty() ?
+			std::string{"background@libcxx.com"} :
+		params.scratch_buffer_id,
+		{
+			initial_axis(theme,
+				     themedimaxis::width,
+				     params.width),
+			initial_axis(theme,
+				     themedimaxis::height,
+				     params.height),
+		},
+		params.background_color};
+}
+
+canvasObj::implObj::implObj(const ref<containerObj::implObj> &container,
+			    const canvas_init_params &init_params)
+	: implObj{container, init_params,
+		create_child_element_params(container, init_params)}
+{
+}
+
+canvasObj::implObj::implObj(const ref<containerObj::implObj> &container,
+			    const canvas_init_params &init_params,
+			    const child_element_init_params
+			    &child_element_params)
+
+	: superclass_t{init_params.width, init_params.height,
+		container, child_element_params}
+{
 }
 
 canvasObj::implObj::~implObj()=default;

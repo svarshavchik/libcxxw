@@ -263,6 +263,14 @@ inline constexpr bool pictureObj::triangle::operator<(const triangle &o) const
 	return compare(o) < 0;
 }
 
+//! An internal implementation object of a \ref picture "picture".
+
+typedef ref<pictureObj::implObj> picture_internal;
+
+//! A constant internal implementation object of a \ref picture "picture".
+
+typedef ref<pictureObj::implObj> const_picture_internal;
+
 LIBCXXW_NAMESPACE_END
 
 #endif

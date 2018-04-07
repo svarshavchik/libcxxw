@@ -11,7 +11,7 @@
 #include "render.H"
 #include "ewmh.H"
 #include "keysyms.H"
-#include "connection_threadfwd.H"
+#include "x/w/impl/connection_threadfwd.H"
 #include "connection_infofwd.H"
 #include "current_border_implfwd.H"
 #include "fonts/cached_fontfwd.H"

@@ -5,10 +5,10 @@
 #ifndef container_impl_H
 #define container_impl_H
 
-#include "container.H"
-#include "element.H"
-#include "connection_threadfwd.H"
-#include "draw_infofwd.H"
+#include "x/w/impl/container.H"
+#include "x/w/impl/element.H"
+#include "x/w/connection_threadfwd.H"
+#include "x/w/impl/draw_infofwd.H"
 #include "x/w/rectangle.H"
 #include "x/w/layoutmanagerobj.H"
 

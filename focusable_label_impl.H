@@ -7,7 +7,7 @@
 
 #include "x/w/focusable_label.H"
 #include "textlabel.H"
-#include "child_element.H"
+#include "x/w/impl/child_element.H"
 #include "label_elementfwd.H"
 #include "focus/focusable_elementfwd.H"
 

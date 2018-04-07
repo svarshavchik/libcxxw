@@ -6,7 +6,8 @@
 #define label_element_H
 
 #include "label_elementfwd.H"
-#include "child_element.H"
+#include "x/w/impl/child_element.H"
+#include "x/w/impl/container.H"
 
 LIBCXXW_NAMESPACE_START
 

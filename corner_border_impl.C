@@ -6,14 +6,14 @@
 #include "libcxxw_config.h"
 #include "corner_border.H"
 #include "grid_element.H"
-#include "scratch_buffer.H"
 #include "current_border_impl.H"
 #include "border_impl.H"
 #include "straight_border.H"
-#include "scratch_and_mask_buffer_draw.H"
 #include "x/w/pictformat.H"
 #include "x/w/picture.H"
 #include "x/w/pixmap.H"
+#include "x/w/impl/scratch_buffer.H"
+#include "x/w/impl/scratch_and_mask_buffer_draw.H"
 #include <algorithm>
 
 LIBCXXW_NAMESPACE_START
@@ -167,6 +167,7 @@ void corner_borderObj::implObj::do_draw(ONLY IN_THREAD,
 					const picture &mask_picture,
 					const pixmap &mask_pixmap,
 					const gc &mask_gc,
+					const clip_region_set &clipped,
 					const rectangle &area_entire_rect)
 {
 	border_implObj::draw_info border_draw_info{

@@ -6,7 +6,7 @@
 #include "progressbar_impl.H"
 #include "container_element.H"
 #include "themedim_element_minoverride.H"
-#include "background_color.H"
+#include "x/w/impl/background_color.H"
 #include "defaulttheme.H"
 
 LIBCXXW_NAMESPACE_START

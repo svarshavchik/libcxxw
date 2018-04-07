@@ -1,0 +1,86 @@
+<!--
+
+Copyright 2018 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<refentry id="cxxwtheme.1">
+  <info>
+    <author>
+      <firstname>Sam</firstname>
+      <surname>Varshavchik</surname>
+      <contrib>Author</contrib>
+    </author>
+    <productname>&app;</productname>
+  </info>
+
+  <refmeta>
+    <refentrytitle>cxxwtheme</refentrytitle>
+    <manvolnum>1</manvolnum>
+    <refmiscinfo class='manual'>&appshort;</refmiscinfo>
+  </refmeta>
+
+  <refnamediv>
+    <refname>cxxwtheme</refname>
+    <refpurpose>Set default display theme for &appshort;-based applications</refpurpose>
+  </refnamediv>
+
+  <refsynopsisdiv>
+    <cmdsynopsis>
+      <command>cxxwtheme</command>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+
+  <refsect1>
+    <title>Description</title>
+
+    <para>
+      Opens a window listing all themes known to the &app;.
+      The dropdown list in the top-left corner selects a theme, and buttons
+      that select any available theme options appear below. A slider
+      to the right controls the scale for magnifying or reducing the theme's
+      apparent size.
+    </para>
+
+    <para>
+      Selecting a theme, an option, or adjusting the theme's scale redraws
+      the window using the new settings. The bottom
+      of the window displays a sampling of display elements, and serves as
+      a preview of the theme's appearance. The window's menus don't serve
+      any specific function other than to demonstrate their appearance with
+      the currently shown display theme.
+    </para>
+
+    <para>
+      The <quote>Cancel</quote> button closes the window without making the
+      changes permanent. <quote>Set</quote> makes the theme take effect for
+      the duration of the current session/login only (or until it's changed
+      again). <quote>Set and save</quote> also saves the theme as the default
+      for all future sessions.
+    </para>
+  </refsect1>
+
+  <refsect1>
+    <title>Files</title>
+
+    <variablelist>
+      <varlistentry>
+	<term><filename>$HOME/.cxxw</filename></term>
+
+	<listitem>
+	  <para>
+	    Saved theme settings.
+	  </para>
+	</listitem>
+      </varlistentry>
+    </variablelist>
+  </refsect1>
+</refentry>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "appendix" "refentry")
+End:
+-->

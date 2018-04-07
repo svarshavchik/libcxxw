@@ -6,7 +6,7 @@
 #include "listlayoutmanager/listcontainer_impl.H"
 #include "hotspot_element.H"
 #include "container_element.H"
-#include "background_color_element.H"
+#include "x/w/impl/background_color_element.H"
 #include "x/w/listlayoutmanager.H"
 #include "x/w/rgb.H"
 #include "messages.H"

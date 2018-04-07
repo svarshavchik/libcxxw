@@ -8,7 +8,6 @@
 #include "themeborder_elementfwd.H"
 #include "current_border_impl.H"
 #include "border_impl.H"
-#include "element_screen.H"
 
 LIBCXXW_NAMESPACE_START
 

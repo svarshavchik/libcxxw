@@ -7,7 +7,7 @@
 
 #include "metrics_grid_posfwd.H"
 #include "metrics_grid_posobj.H"
-#include "metrics_horizvert.H"
+#include "x/w/impl/metrics_horizvert.H"
 
 LIBCXXW_NAMESPACE_START
 

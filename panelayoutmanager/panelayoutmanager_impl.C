@@ -12,15 +12,13 @@
 #include "focus/focusable.H"
 #include "focus/focusframecontainer.H"
 #include "focus/focusframefactory.H"
-#include "element_screen.H"
 #include "current_border_impl.H"
 #include "screen.H"
 #include "straight_border_impl.H"
 #include "generic_window_handler.H"
 #include "icon.H"
 #include "cursor_pointer.H"
-#include "element_screen.H"
-#include "background_color.H"
+#include "x/w/impl/background_color.H"
 #include "peephole/peephole.H"
 #include "peephole/peepholed.H"
 #include "peephole/peephole_impl.H"
@@ -676,7 +674,7 @@ panelayoutmanagerObj::implObj::orientation<vertical>
 	auto theme=container_impl->container_element_impl()
 		.get_screen()->impl->current_theme.get();
 
-	auto s=theme->get_theme_height_dim_t(size);
+	auto s=theme->get_theme_dim_t(size, themedimaxis::height);
 
 	return { {0, 0, 0}, {s, s, s} };
 }
@@ -862,7 +860,7 @@ panelayoutmanagerObj::implObj::orientation<horizontal>
 	auto theme=container_impl->container_element_impl()
 		.get_screen()->impl->current_theme.get();
 
-	auto s=theme->get_theme_width_dim_t(size);
+	auto s=theme->get_theme_dim_t(size, themedimaxis::width);
 
 	return { {s, s, s}, {0, 0, 0} };
 }

@@ -5,10 +5,10 @@
 #ifndef button_h
 #define button_h
 
-#include "child_elementobj.H"
+#include "x/w/impl/child_elementobj.H"
 #include "container_elementfwd.H"
 #include "container_visible_elementfwd.H"
-#include "child_element.H"
+#include "x/w/impl/child_element.H"
 #include "x/w/buttonobj.H"
 #include "x/w/factoryfwd.H"
 #include "x/w/factoryobj.H"

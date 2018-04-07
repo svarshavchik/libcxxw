@@ -8,10 +8,10 @@
 #include "peepholed_listcontainer_impl_elementfwd.H"
 #include "listlayoutmanager/listcontainer_dim_element.H"
 #include "reference_font_element.H"
-#include "themedim.H"
-#include "themedim_axis_element.H"
-#include "metrics_horizvert.H"
-#include "child_element.H"
+#include "x/w/impl/themedim.H"
+#include "x/w/impl/themedim_axis_element.H"
+#include "x/w/impl/metrics_horizvert.H"
+#include "x/w/impl/child_element.H"
 
 LIBCXXW_NAMESPACE_START
 

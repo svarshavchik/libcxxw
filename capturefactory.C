@@ -6,7 +6,7 @@
 #include "capturefactory.H"
 #include "x/w/element.H"
 #include "messages.H"
-#include "container.H"
+#include "x/w/impl/container.H"
 
 LIBCXXW_NAMESPACE_START
 

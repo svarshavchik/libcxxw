@@ -6,7 +6,7 @@
 #include "singletonlayoutmanager.H"
 #include "singletonlayoutmanager_impl.H"
 #include "layoutmanager.H"
-#include "container.H"
+#include "x/w/impl/container.H"
 #include "x/w/factory.H"
 
 LIBCXXW_NAMESPACE_START

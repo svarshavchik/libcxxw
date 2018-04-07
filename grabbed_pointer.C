@@ -5,7 +5,7 @@
 #include "libcxxw_config.h"
 #include "generic_window_handler.H"
 #include "grabbed_pointer.H"
-#include "element.H"
+#include "x/w/impl/element.H"
 #include "connection_thread.H"
 #include "connection.H"
 #include "returned_pointer.H"

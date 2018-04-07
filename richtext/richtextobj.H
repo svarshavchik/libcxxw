@@ -6,8 +6,8 @@
 #ifndef richtextobj_H
 #define richtextobj_H
 
-#include "connection_threadfwd.H"
-#include "element_draw.H"
+#include "x/w/connection_threadfwd.H"
+#include "x/w/impl/element_draw.H"
 #include "richtext/richtextfwd.H"
 #include "richtext/richtextstring.H"
 #include "richtext/richtextiteratorfwd.H"

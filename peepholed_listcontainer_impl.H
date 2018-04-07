@@ -11,9 +11,9 @@
 #include "x/w/dim_axis_arg.H"
 #include "x/w/metrics/axis.H"
 #include "reference_font_elementfwd.H"
-#include "themedimfwd.H"
-#include "metrics_horizvertfwd.H"
-#include "child_elementfwd.H"
+#include "x/w/impl/themedimfwd.H"
+#include "x/w/impl/metrics_horizvertfwd.H"
+#include "x/w/impl/child_elementfwd.H"
 #include <variant>
 
 LIBCXXW_NAMESPACE_START

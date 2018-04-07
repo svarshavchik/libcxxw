@@ -6,11 +6,10 @@
 #include "libcxxw_config.h"
 #include "straight_border_impl.H"
 #include "generic_window_handler.H"
-#include "draw_info.H"
+#include "x/w/impl/draw_info.H"
+#include "x/w/impl/scratch_and_mask_buffer_draw.H"
 #include "grid_element.H"
-#include "element_screen.H"
 #include "screen.H"
-#include "scratch_and_mask_buffer_draw.H"
 #include "x/w/scratch_buffer.H"
 #include "x/w/pictformat.H"
 
@@ -270,6 +269,7 @@ void straight_borderObj::implObj::do_draw(ONLY IN_THREAD,
 					  const picture &mask_picture,
 					  const pixmap &mask_pixmap,
 					  const gc &mask_gc,
+					  const clip_region_set &clipped,
 					  const rectangle &area_entire_rect)
 {
 	border_implObj::draw_info

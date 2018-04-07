@@ -3,7 +3,7 @@
 #include "richtext/richtextparagraph.H"
 #include "richtext/fragment_list.H"
 #include "richtext/paragraph_list.H"
-#include "background_color.H"
+#include "x/w/impl/background_color.H"
 #include "screen.H"
 #include "main_window.H"
 #include "main_window_handler.H"

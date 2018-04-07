@@ -5,6 +5,7 @@
 #include "libcxxw_config.h"
 #include "dialog_handler.H"
 #include "connection_thread.H"
+#include "inherited_visibility_info.H"
 
 LIBCXXW_NAMESPACE_START
 

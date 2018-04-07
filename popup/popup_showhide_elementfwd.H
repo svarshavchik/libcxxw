@@ -5,7 +5,7 @@
 #ifndef popup_showhide_elementfwd_h
 #define popup_showhide_elementfwd_h
 
-#include "element.H"
+#include "x/w/impl/element.H"
 #include "x/w/hotspotfwd.H"
 
 LIBCXXW_NAMESPACE_START

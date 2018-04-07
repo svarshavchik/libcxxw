@@ -7,7 +7,7 @@
 #include "connection_thread.H"
 #include "screen_depthinfo.H"
 #include "defaulttheme.H"
-#include "background_color.H"
+#include "x/w/impl/background_color.H"
 #include "xid_t.H"
 #include "picture.H"
 #include "screen_picturecache.H"

@@ -4,7 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "peephole/peephole_toplevel.H"
-#include "child_element.H"
+#include "x/w/impl/child_element.H"
 #include "always_visible.H"
 #include "gridlayoutmanager.H"
 #include "peephole/peephole.H"
@@ -17,7 +17,6 @@
 #include "border_impl.H"
 #include "x/w/screen.H"
 #include "x/w/scrollbar.H"
-#include "element_screen.H"
 
 LIBCXXW_NAMESPACE_START
 

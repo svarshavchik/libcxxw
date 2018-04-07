@@ -7,7 +7,7 @@
 
 #include "progressbar_handler.H"
 #include "container_elementfwd.H"
-#include "child_elementobj.H"
+#include "x/w/impl/child_elementobj.H"
 #include "progressbar_sliderfwd.H"
 
 LIBCXXW_NAMESPACE_START

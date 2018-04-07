@@ -9,7 +9,7 @@
 #include "peephole/peepholed_elementfwd.H"
 #include "listlayoutmanager/listcontainerobj.H"
 #include "peephole/peepholedobj.H"
-#include "connection_threadfwd.H"
+#include "x/w/connection_threadfwd.H"
 #include "x/w/layoutmanagerobj.H"
 #include "x/w/elementfwd.H"
 #include "x/w/types.H"

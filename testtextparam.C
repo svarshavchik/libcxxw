@@ -13,7 +13,7 @@
 #include "screen.H"
 #include "main_window.H"
 #include "main_window_handler.H"
-#include "background_color.H"
+#include "x/w/impl/background_color.H"
 
 using namespace LIBCXX_NAMESPACE::w;
 

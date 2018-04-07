@@ -17,7 +17,7 @@
 #include "pixmap_with_picture.H"
 #include "icon_images_set_element.H"
 #include "themedim_element_minoverride.H"
-#include "metrics_horizvertobj.H"
+#include "x/w/impl/metrics_horizvertobj.H"
 #include "catch_exceptions.H"
 #include "run_as.H"
 #include "catch_exceptions.H"

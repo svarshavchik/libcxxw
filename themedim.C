@@ -3,7 +3,7 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
-#include "themedim.H"
+#include "x/w/impl/themedim.H"
 #include "screen.H"
 #include "defaulttheme.H"
 
@@ -11,16 +11,16 @@ LIBCXXW_NAMESPACE_START
 
 static dim_t compute_dim(const auto &screen_impl,
 			 const dim_arg &dimname,
-			 auto width_or_height)
+			 themedimaxis width_or_height)
 {
 	current_theme_t::lock lock{screen_impl->current_theme};
 
-	return ((**lock).*width_or_height)(dimname);
+	return (*lock)->get_theme_dim_t(dimname, width_or_height);
 }
 
 themedimObj::themedimObj(const dim_arg &dimname,
 			 const ref<screenObj::implObj> &screen_impl,
-			 theme_width_or_height width_or_height)
+			 themedimaxis width_or_height)
 	: dimname(dimname),
 	  pixels_thread_only(compute_dim(screen_impl, this->dimname,
 					 width_or_height)),
@@ -41,7 +41,7 @@ void themedimObj::initialize(ONLY IN_THREAD,
 void themedimObj::theme_updated(ONLY IN_THREAD,
 				const defaulttheme &new_theme)
 {
-	pixels(IN_THREAD)=((*new_theme).*width_or_height)(dimname);
+	pixels(IN_THREAD)=new_theme->get_theme_dim_t(dimname, width_or_height);
 }
 
 LIBCXXW_NAMESPACE_END

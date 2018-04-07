@@ -19,6 +19,7 @@ configure
 /cxxw
 /cxxwoptions.H
 /cxxwtheme
+/cxxwtheme.1
 /depcomp
 .dirstamp
 /docbook/entities
@@ -32,6 +33,7 @@ configure
 /libcxxw_doctags
 libtool
 ltmain.sh
+man.stamp
 missing
 /rpm
 stamp-h1
@@ -41,6 +43,7 @@ suppressfile*
 /testbutton
 /testcollapse
 /testcombobox
+/testcustomcanvas
 /testdateinput
 /testderivedaxis
 /testfiledircontents

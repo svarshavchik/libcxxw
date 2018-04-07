@@ -13,11 +13,11 @@
 #include "x/w/gcfwd.H"
 #include "x/w/gcobj.H"
 #include "x/w/rectangle.H"
-#include "defaultthemefwd.H"
+#include "x/w/impl/defaultthemefwd.H"
 #include "border_info.H"
 #include "border_implfwd.H"
 #include "corner_borderfwd.H"
-#include "connection_threadfwd.H"
+#include "x/w/connection_threadfwd.H"
 #include <vector>
 #include <tuple>
 

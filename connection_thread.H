@@ -6,9 +6,10 @@
 #define connection_thread_h
 
 #include "connection_infofwd.H"
-#include "connection_threadfwd.H"
+#include "x/w/connection_threadfwd.H"
+#include "x/w/impl/clock.H"
 #include "x/w/batch_queuefwd.H"
-#include "elementfwd.H"
+#include "x/w/elementobj.H"
 #include "connection_info.H"
 #include "x/w/rectangle.H"
 #include <x/threadmsgdispatcher.H>

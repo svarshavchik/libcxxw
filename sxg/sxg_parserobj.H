@@ -6,9 +6,9 @@
 #define sxg_parserobj_H
 
 #include "sxg/sxg_parserfwd.H"
-#include "defaultthemefwd.H"
+#include "x/w/impl/defaultthemefwd.H"
 #include "iconfwd.H"
-#include "background_colorfwd.H"
+#include "x/w/impl/background_colorfwd.H"
 #include "x/w/screenfwd.H"
 #include "x/w/screenobj.H"
 #include "x/w/fontfwd.H"

@@ -5,7 +5,7 @@
 #ifndef themedim_element_minoverridefwd_H
 #define themedim_element_minoverridefwd_H
 
-#include "themedim_elementfwd.H"
+#include "x/w/impl/themedim_elementfwd.H"
 #include "x/w/dim_arg.H"
 
 LIBCXXW_NAMESPACE_START

@@ -7,10 +7,10 @@
 
 #include "hotspot_bgcolor_elementfwd.H"
 #include "container_elementfwd.H"
-#include "child_element.H"
-#include "popup/popupfwd.H"
+#include "x/w/impl/child_element.H"
+#include "x/w/impl/popup/popupfwd.H"
 #include "popup/popup_showhide_elementfwd.H"
-#include "background_colorfwd.H"
+#include "x/w/impl/background_colorfwd.H"
 
 LIBCXXW_NAMESPACE_START
 

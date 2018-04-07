@@ -9,7 +9,7 @@
 #include "x/w/types.H"
 #include "x/w/rectangle.H"
 
-#include "connection_threadfwd.H"
+#include "x/w/connection_threadfwd.H"
 #include "windowobj.H"
 
 LIBCXXW_NAMESPACE_START

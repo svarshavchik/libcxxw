@@ -5,7 +5,7 @@
 #ifndef scratch_bufferobj_h
 #define scratch_bufferobj_h
 
-#include "scratch_bufferfwd.H"
+#include "x/w/scratch_bufferfwd.H"
 #include "x/w/pixmapfwd.H"
 #include "x/w/picturefwd.H"
 #include "x/w/gcfwd.H"

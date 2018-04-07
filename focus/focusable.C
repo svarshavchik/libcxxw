@@ -4,7 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "focus/focusable.H"
-#include "child_element.H"
+#include "x/w/impl/child_element.H"
 #include "generic_window_handler.H"
 #include "run_as.H"
 #include "xid_t.H"

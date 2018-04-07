@@ -9,7 +9,7 @@
 #include "fonts/current_fontcollection.H"
 #include "fonts/fontcollection.H"
 #include "fonts/freetypefont.H"
-#include "background_color.H"
+#include "x/w/impl/background_color.H"
 #include "assert_or_throw.H"
 
 #include <algorithm>

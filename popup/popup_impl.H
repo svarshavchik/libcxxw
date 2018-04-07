@@ -8,7 +8,7 @@
 #include "popup/popup.H"
 #include "windowobj.H"
 #include "generic_window.H"
-#include "connection_threadfwd.H"
+#include "x/w/connection_threadfwd.H"
 
 LIBCXXW_NAMESPACE_START
 

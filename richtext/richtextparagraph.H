@@ -10,7 +10,7 @@
 #include "richtext/richtextfragment.H"
 #include "richtext/richtextstring.H"
 #include "richtext/richtext_impl.H"
-#include "connection_threadfwd.H"
+#include "x/w/connection_threadfwd.H"
 
 LIBCXXW_NAMESPACE_START
 

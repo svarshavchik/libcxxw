@@ -3,7 +3,7 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
-#include "background_color_element.H"
+#include "x/w/impl/background_color_element.H"
 
 LIBCXXW_NAMESPACE_START
 

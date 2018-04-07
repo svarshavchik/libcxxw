@@ -7,8 +7,8 @@
 
 #include "popup/popup.H"
 #include "generic_window_handler.H"
-#include "connection_threadfwd.H"
-#include "grabbed_pointerfwd.H"
+#include "x/w/connection_threadfwd.H"
+#include "x/w/impl/grabbed_pointerfwd.H"
 #include "x/w/rectangle.H"
 
 #include <x/weakptr.H>

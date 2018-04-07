@@ -7,7 +7,7 @@
 #include "menu/menubarlayoutmanager_impl.H"
 #include "container_element.H"
 #include "hotspot_bgcolor_element.H"
-#include "background_color_element.H"
+#include "x/w/impl/background_color_element.H"
 #include "always_visible.H"
 
 LIBCXXW_NAMESPACE_START

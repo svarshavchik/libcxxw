@@ -7,7 +7,7 @@
 #include "popup/popup_impl.H"
 #include "popup/popup_handler.H"
 #include "generic_window_handler.H"
-#include "element_screen.H"
+#include "screen.H"
 #include <xcb/xproto.h>
 
 LIBCXXW_NAMESPACE_START

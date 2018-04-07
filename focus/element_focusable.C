@@ -3,7 +3,8 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
-#include "child_element.H"
+#include "x/w/impl/child_element.H"
+#include "x/w/impl/container.H"
 
 LIBCXXW_NAMESPACE_START
 

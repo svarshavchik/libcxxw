@@ -5,7 +5,7 @@
 #include "libcxxw_config.h"
 #include "main_window_handler.H"
 #include "connection_thread.H"
-#include "draw_info.H"
+#include "x/w/impl/draw_info.H"
 #include "layoutmanager.H"
 #include "shared_handler_data.H"
 #include "batch_queue.H"
@@ -18,6 +18,7 @@
 #include "x/w/connection.H"
 #include "busy.H"
 #include "catch_exceptions.H"
+#include "inherited_visibility_info.H"
 
 LIBCXXW_NAMESPACE_START
 

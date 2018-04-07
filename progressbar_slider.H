@@ -7,13 +7,13 @@
 
 #include "x/w/progressbar.H"
 #include "x/w/rgb.H"
-#include "background_color_elementfwd.H"
+#include "x/w/impl/background_color_elementfwd.H"
 #include "background_color_element_recalculatedfwd.H"
 #include "progressbar_sliderfwd.H"
 #include "always_visiblefwd.H"
 #include "container_elementfwd.H"
-#include "container.H"
-#include "child_element.H"
+#include "x/w/impl/container.H"
+#include "x/w/impl/child_element.H"
 
 LIBCXXW_NAMESPACE_START
 

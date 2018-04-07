@@ -9,10 +9,10 @@
 #include "x/w/containerobj.H"
 #include "x/w/rectangle.H"
 #include "x/w/batch_queuefwd.H"
-#include "draw_infofwd.H"
-#include "child_elementfwd.H"
-#include "element.H"
-#include "connection_threadfwd.H"
+#include "x/w/impl/draw_infofwd.H"
+#include "x/w/impl/child_elementfwd.H"
+#include "x/w/impl/element.H"
+#include "x/w/connection_threadfwd.H"
 
 #include <x/functional.H>
 #include <x/functionalrefptrfwd.H>

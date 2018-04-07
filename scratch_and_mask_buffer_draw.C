@@ -3,9 +3,9 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
-#include "scratch_and_mask_buffer_draw.H"
-#include "scratch_buffer.H"
-#include "child_element.H"
+#include "x/w/impl/scratch_and_mask_buffer_draw.H"
+#include "x/w/impl/scratch_buffer.H"
+#include "x/w/impl/child_element.H"
 #include "generic_window_handler.H"
 #include "x/w/picture.H"
 #include "x/w/pixmap.H"
@@ -37,6 +37,7 @@ void scratch_and_mask_buffer_draw_impl
 			  const picture &area_picture,
 			  const pixmap &area_pixmap,
 			  const gc &area_gc,
+			  const clip_region_set &clipped,
 			  const rectangle &area_entire_rect)
 {
 	mask_scratch->get
@@ -55,6 +56,7 @@ void scratch_and_mask_buffer_draw_impl
 				 mask_picture,
 				 mask_pixmap,
 				 mask_gc,
+				 clipped,
 				 area_entire_rect);
 		 });
 }

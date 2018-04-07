@@ -11,11 +11,6 @@
 #include <xcb/render.h>
 
 LIBCXXW_NAMESPACE_START
-
-typedef ref<pictureObj::implObj> picture_internal;
-
-typedef ref<pictureObj::implObj> const_picture_internal;
-
 //! picture internal implementation details.
 
 class LIBCXX_HIDDEN pictureObj::implObj : virtual public obj {

@@ -7,9 +7,9 @@
 
 #include "x/w/focusableobj.H"
 #include "x/w/elementobj.H"
-#include "focus/focusablefwd.H"
-#include "focus/label_forfwd.H"
-#include "connection_threadfwd.H"
+#include "x/w/impl/focus/focusablefwd.H"
+#include "x/w/impl/focus/label_forfwd.H"
+#include "x/w/impl/connection_threadfwd.H"
 #include <array>
 #include <utility>
 #include <x/weaklist.H>

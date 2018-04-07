@@ -8,7 +8,7 @@
 #include "x/w/date_input_field.H"
 #include "container_elementfwd.H"
 #include "nonrecursive_visibilityfwd.H"
-#include "child_element.H"
+#include "x/w/impl/child_element.H"
 
 LIBCXXW_NAMESPACE_START
 

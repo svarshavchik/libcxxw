@@ -5,7 +5,7 @@
 #ifndef listcontainer_dim_elementfwd_h
 #define listcontainer_dim_elementfwd_h
 
-#include "themedim_elementfwd.H"
+#include "x/w/impl/themedim_elementfwd.H"
 #include "x/w/listlayoutmanager.H"
 
 LIBCXXW_NAMESPACE_START

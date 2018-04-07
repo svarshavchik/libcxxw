@@ -15,12 +15,12 @@
 #include "fonts/freetypefont.H"
 #include "fonts/composite_text_stream.H"
 #include "screen.H"
-#include "background_color.H"
+#include "x/w/impl/background_color.H"
 #include "assert_or_throw.H"
 #include "picture.H"
 #include "xid_t.H"
 #include "connection_thread.H"
-#include "draw_info.H"
+#include "x/w/impl/draw_info.H"
 #include <x/sentry.H>
 #include <cmath>
 #include <courier-unicode.h>

@@ -8,7 +8,7 @@
 #include <x/ptrfwd.H>
 #include "popup/popup_attachedto_infofwd.H"
 #include "peepholed_toplevel_listcontainer/impl.H"
-#include "connection_threadfwd.H"
+#include "x/w/connection_threadfwd.H"
 #include "x/w/screenfwd.H"
 #include "x/w/focusableobj.H"
 

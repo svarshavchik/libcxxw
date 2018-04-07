@@ -5,7 +5,7 @@
 #ifndef x_w_popup_h
 #define x_w_popup_h
 
-#include "popup/popupfwd.H"
+#include "x/w/impl/popup/popupfwd.H"
 #include "popup/popupobj.H"
 #include <x/ref.H>
 #include <xcb/xproto.h>

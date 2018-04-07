@@ -6,10 +6,10 @@
 #ifndef richtextstring_H
 #define richtextstring_H
 
-#include "defaultthemefwd.H"
+#include "x/w/impl/defaultthemefwd.H"
 #include "richtext/richtextmetafwd.H"
 #include "fonts/freetypefontfwd.H"
-#include "connection_threadfwd.H"
+#include "x/w/connection_threadfwd.H"
 #include "x/w/types.H"
 #include <courier-unicode.h>
 #include <unordered_map>

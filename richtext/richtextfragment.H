@@ -14,8 +14,8 @@
 #include <x/logger.H>
 #include <x/functional.H>
 #include <x/vector.H>
-#include "connection_threadfwd.H"
-#include "defaultthemefwd.H"
+#include "x/w/connection_threadfwd.H"
+#include "x/w/impl/defaultthemefwd.H"
 #include "richtext/richtextmeta.H"
 #include "richtext/richtextstring.H"
 #include "richtext/richtextcursorlocationfwd.H"

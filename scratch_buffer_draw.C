@@ -3,11 +3,10 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
-#include "scratch_buffer_draw.H"
-#include "scratch_buffer.H"
-#include "child_element.H"
+#include "x/w/impl/scratch_buffer_draw.H"
+#include "x/w/impl/scratch_buffer.H"
+#include "x/w/impl/child_element.H"
 #include "generic_window_handler.H"
-#include "element_draw.H"
 #include "x/w/picture.H"
 #include "x/w/pixmap.H"
 #include "x/w/gc.H"
@@ -42,7 +41,7 @@ void scratch_buffer_draw_impl::get_scratch_buffer(ONLY IN_THREAD,
 		 {
 			 do_draw(IN_THREAD, di,
 				 area_picture, area_pixmap,
-				 area_gc, area_entire_rect);
+				 area_gc, clip, area_entire_rect);
 		 },
 		 area_entire_rect,
 		 di,

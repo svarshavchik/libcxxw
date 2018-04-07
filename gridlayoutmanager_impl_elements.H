@@ -7,7 +7,7 @@
 
 #include "gridlayoutmanager.H"
 #include "metrics_grid.H"
-#include "element.H"
+#include "x/w/impl/element.H"
 #include "straight_borderfwd.H"
 #include "corner_borderfwd.H"
 #include "metrics_grid_xy.H"

@@ -4,9 +4,9 @@
 */
 #include "libcxxw_config.h"
 #include "x/w/factory.H"
-#include "container.H"
+#include "x/w/impl/container.H"
 #include "messages.H"
-#include "child_element.H"
+#include "x/w/impl/child_element.H"
 #include <x/exception.H>
 
 LIBCXXW_NAMESPACE_START

@@ -5,7 +5,7 @@
 #include "libcxxw_config.h"
 #include "x/w/picture.H"
 #include "border_info.H"
-#include "background_color.H"
+#include "x/w/impl/background_color.H"
 
 LIBCXXW_NAMESPACE_START
 

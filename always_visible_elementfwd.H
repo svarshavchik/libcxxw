@@ -5,7 +5,7 @@
 #ifndef always_visible_elementfwd_H
 #define always_visible_elementfwd_H
 
-#include "connection_threadfwd.H"
+#include "x/w/connection_threadfwd.H"
 
 LIBCXXW_NAMESPACE_START
 

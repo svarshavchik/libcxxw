@@ -5,7 +5,8 @@
 #ifndef straight_border_h
 #define straight_border_h
 
-#include "child_elementobj.H"
+#include "x/w/impl/child_elementobj.H"
+#include "x/w/impl/scratch_and_mask_buffer_drawfwd.H"
 #include "current_border_implfwd.H"
 #include "border_implobj.H"
 #include "grid_elementfwd.H"
@@ -15,8 +16,7 @@
 #include "straight_borderfwd.H"
 #include "straight_borderobj.H"
 #include "corner_borderfwd.H"
-#include "connection_threadfwd.H"
-#include "scratch_and_mask_buffer_drawfwd.H"
+#include "x/w/connection_threadfwd.H"
 #include <string_view>
 
 LIBCXXW_NAMESPACE_START
@@ -159,6 +159,7 @@ class LIBCXX_HIDDEN straight_borderObj::implObj
 		     const picture &mask_picture,
 		     const pixmap &mask_pixmap,
 		     const gc &mask_gc,
+		     const clip_region_set &clipped,
 		     const rectangle &area_entire_rect) override;
 };
 

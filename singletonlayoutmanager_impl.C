@@ -6,8 +6,8 @@
 #include "singletonlayoutmanager_impl.H"
 #include "singletonlayoutmanager.H"
 #include "catch_exceptions.H"
-#include "container.H"
-#include "child_element.H"
+#include "x/w/impl/container.H"
+#include "x/w/impl/child_element.H"
 
 LIBCXXW_NAMESPACE_START
 

@@ -8,7 +8,7 @@
 #include "x/w/namespace.H"
 #include "x/w/grid_map_infofwd.H"
 #include "x/w/dim_arg.H"
-#include "elementfwd.H"
+#include "x/w/elementobj.H"
 #include "grid_elementfwd.H"
 #include "current_border_implfwd.H"
 #include "metrics_grid_xy.H"

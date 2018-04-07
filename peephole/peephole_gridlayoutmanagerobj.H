@@ -9,7 +9,7 @@
 #include "x/w/containerfwd.H"
 #include "x/w/scrollbarfwd.H"
 #include "peephole/peepholefwd.H"
-#include "connection_threadfwd.H"
+#include "x/w/connection_threadfwd.H"
 
 LIBCXXW_NAMESPACE_START
 

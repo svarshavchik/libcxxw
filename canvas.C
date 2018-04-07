@@ -3,8 +3,9 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
-#include "canvas.H"
+#include "x/w/impl/canvas.H"
 #include "x/w/factory.H"
+#include "x/w/impl/container.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -30,9 +31,9 @@ canvas factoryObj::do_create_canvas(const function<void (const canvas &)>
 				    const dim_axis_arg &horiz,
 				    const dim_axis_arg &vert)
 {
-	auto canvas_impl=ref<canvasObj::implObj>::create(get_container_impl(),
-							 horiz,
-							 vert);
+	auto canvas_impl=ref<canvasObj::implObj>
+		::create(get_container_impl(),
+			 canvas_init_params{horiz, vert});
 
 	auto c=canvas::create(canvas_impl);
 

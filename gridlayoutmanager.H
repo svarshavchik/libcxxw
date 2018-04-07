@@ -11,7 +11,7 @@
 #include "layoutmanager.H"
 #include "gridfactory.H"
 #include "metrics_grid_posfwd.H"
-#include "connection_threadfwd.H"
+#include "x/w/connection_threadfwd.H"
 #include "current_border_implfwd.H"
 #include "grid_elementobj.H"
 #include <x/vector.H>

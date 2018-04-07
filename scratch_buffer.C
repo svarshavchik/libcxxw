@@ -3,7 +3,7 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
-#include "scratch_buffer.H"
+#include "x/w/impl/scratch_buffer.H"
 #include "x/w/picture.H"
 #include "x/w/pixmap.H"
 

@@ -8,7 +8,7 @@
 #include "x/w/types.H"
 #include "x/w/elementfwd.H"
 #include "peephole/peepholedfwd.H"
-#include "connection_threadfwd.H"
+#include "x/w/impl/connection_threadfwd.H"
 
 #include <x/obj.H>
 

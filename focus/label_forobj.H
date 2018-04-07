@@ -5,9 +5,9 @@
 #ifndef label_forobj_h
 #define label_forobj_h
 
-#include "focus/label_forfwd.H"
-#include "focus/focusablefwd.H"
-#include "connection_threadfwd.H"
+#include "x/w/impl/focus/label_forfwd.H"
+#include "x/w/impl/focus/focusablefwd.H"
+#include "x/w/impl/connection_threadfwd.H"
 #include "x/w/elementobj.H"
 #include <x/weakptr.H>
 #include <x/functional.H>

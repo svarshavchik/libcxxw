@@ -6,7 +6,7 @@
 #define panecontainer_impl_h
 
 #include "container_elementfwd.H"
-#include "child_element.H"
+#include "x/w/impl/child_element.H"
 #include "reference_font_elementfwd.H"
 
 LIBCXXW_NAMESPACE_START

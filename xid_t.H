@@ -5,7 +5,7 @@
 #ifndef xid_t_h
 #define xid_t_h
 
-#include "connection_threadfwd.H"
+#include "x/w/connection_threadfwd.H"
 #include "connection_info.H"
 #include "xid_t_fwd.H"
 

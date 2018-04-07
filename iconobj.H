@@ -5,11 +5,11 @@
 #ifndef iconobj_H
 #define iconobj_H
 
-#include "defaultthemefwd.H"
+#include "x/w/impl/defaultthemefwd.H"
 #include "iconfwd.H"
 #include "pixmap_with_picturefwd.H"
-#include "connection_threadfwd.H"
-#include "cursor_pointerfwd.H"
+#include "x/w/connection_threadfwd.H"
+#include "x/w/impl/cursor_pointerfwd.H"
 #include "x/w/dim_arg.H"
 #include <x/obj.H>
 

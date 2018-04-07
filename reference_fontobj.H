@@ -6,9 +6,9 @@
 #define reference_fontobj_H
 
 #include "reference_fontfwd.H"
-#include "fonts/current_fontcollectionfwd.H"
-#include "connection_threadfwd.H"
-#include "defaultthemefwd.H"
+#include "x/w/impl/fonts/current_fontcollectionfwd.H"
+#include "x/w/impl/connection_threadfwd.H"
+#include "x/w/impl/defaultthemefwd.H"
 #include "x/w/elementobj.H"
 #include "x/w/types.H"
 #include "x/w/font_arg.H"

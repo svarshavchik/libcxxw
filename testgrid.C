@@ -1,7 +1,7 @@
 #include "libcxxw_config.h"
 #include "metrics_grid.H"
 #include <x/exception.H>
-#include "metrics_horizvert.H"
+#include "x/w/impl/metrics_horizvert.H"
 #include "metrics_grid_axisrange.H"
 #include "metrics_grid_pos.H"
 #include "rectangle.H"

@@ -8,7 +8,7 @@
 #include "xim/ximrequestfwd.H"
 #include "xim/ximserverfwd.H"
 #include "xim/ximclientfwd.H"
-#include "connection_threadfwd.H"
+#include "x/w/connection_threadfwd.H"
 #include <x/logger.H>
 #include <x/functional.H>
 

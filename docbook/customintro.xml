@@ -1,0 +1,132 @@
+<!--
+
+Copyright 2018 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<chapter id="custom_overview">
+  <title>Introduction</title>
+
+  <para>
+    This section is a guide for creating &appshort; display elements with
+    custom functionality, by creating subclasses of the classes and templates
+    defined
+    by the library. &appshort;'s display elements offer installable
+    &callback;s that provide sufficient functionality for typical use cases.
+    These callbacks provide the means for implementing actions to be taken
+    in response to pointer and button clicks, and other activity and events.
+    This is sufficient for most needs, but subclassing offers additional
+    customization when it's not.
+  </para>
+
+  <para>
+    The most useful aspect of creating a custom class of &appshort;'s
+    display elements is attaching application data to a display element
+    in situations where the generic
+    <link linkend="appdata">generic <varname>appdata</varname>
+    object</link>
+    is not convenient. Implementing actions in response to pointer and button
+    click events is also slightly faster than using the corresponding callback,
+    but it takes more work.
+  </para>
+
+  <section id="pubimpl">
+    <title>Public and implementation objects</title>
+
+    <para>
+      As <link linkend="refobjelements">described in the introductory
+	tutorial</link>
+      all &appshort; objects are reference-counted objects, represented
+      by reference handles.
+      Each &appshort; display element consists of two objects.
+      The <quote>public</quote> object is the object that's visible to
+      the application, such as
+      <link linkend="inputfieldsandbuttons"><classname>&ns;::w::input_field</classname></link>.
+      &appshort; follows LibCXX's <ulink url="/constrefobj.html">naming
+	convention</ulink>, defining
+      <classname>&ns;::w::input_field</classname> as an
+      <classname>&ns;::ref</classname> to the
+      <classname>&ns;::w::input_fieldObj</classname>.
+    </para>
+
+    <para>
+      The public object (usually) has a reference to its internal
+      <quote>implementation</quote> object.
+      <classname>&ns;::w::input_fieldObj::implObj</classname> is
+      <classname>&ns;::w::input_fieldObj</classname>'s implementation class.
+      This is the usual naming convention (with some isolated exceptions).
+      The public object inherits from
+      <ulink url="&link-typedef-x--w-element;"><classname>&ns;::w::elementObj</classname></ulink>,
+      which implements some functionality that's common to all display elements;
+      and the implementation object is a subclass
+      of <ulink url="&link-x--w--elementObj--implObj;"><classname>&ns;::w::elementObj::implObj</classname></ulink>; but only the main application window
+      directly subclasses <classname>&ns;::w::elementObj::implObj</classname>.
+      All regular display elements indirectly subclass it via the
+      <ulink url="&link-x--w--child-elementObj;"><classname>&ns;::w::child_elementObj</classname></ulink>
+      class, that represents a display element in a &container;.
+      This is because all ordinary display elements belong to their parent
+      &container; and controlled by their container's &layoutmanager;.
+    </para>
+  </section>
+
+  <section id="customimpl">
+    <title>Implementing a custom display element</title>
+
+    <para>
+      Implementing a custom display element involves several steps.
+    </para>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  Define a subclass of an existing display element's
+	  implementation class.
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  Define a subclass of an existing display element's
+	  public class. It is not necessary to subclass both the public
+	  and the implementation class, but this is the typical use case.
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  The first step for actually creating an instance of the
+	  new custom display element involves using a
+	  &factory;'s <methodname>get_container_impl</methodname>() method.
+	  This returns an
+	  <ulink url="&link-x--w--containerObj--implObj;"><classname>&ns;::ref&lt;&ns;::w::containerObj::implObj&gt;</classname></ulink>
+	  for the parent container element.
+	  The subclassed implementation object takes the parent container
+	  element reference as one of its parameter, and the subclass's
+	  constructor typically passes it to its superclass together with
+	  any other parameters.
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  The custom public object gets constructed with the custom
+	  implementation object as its parameter. This typically gets forwarded
+	  to the subclassed superclass.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  The constructed public object gets passed to the &factory;'s
+	  <methodname>created_internally</methodname>() method. This method
+	  places the new display element into its container.
+	</para>
+      </listitem>
+    </itemizedlist>
+  </section>
+</chapter>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "book" "chapter")
+End:
+-->

@@ -7,7 +7,7 @@
 #define current_fontcollection_H
 
 #include <x/ref.H>
-#include "fonts/current_fontcollectionfwd.H"
+#include "x/w/impl/fonts/current_fontcollectionfwd.H"
 #include "fonts/current_fontcollectionobj.H"
 #include "fonts/fontcollection.H"
 

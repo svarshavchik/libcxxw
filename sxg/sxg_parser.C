@@ -18,7 +18,7 @@
 #include "pixmap.H"
 #include "screen.H"
 #include "defaulttheme.H"
-#include "background_color.H"
+#include "x/w/impl/background_color.H"
 #include <x/locale.H>
 #include <x/imbue.H>
 #include <courier-unicode.h>

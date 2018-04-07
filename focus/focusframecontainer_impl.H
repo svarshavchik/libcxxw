@@ -10,7 +10,7 @@
 #include "x/w/focus.H"
 #include "focus/focusframecontainerobj.H"
 #include "current_border_implfwd.H"
-#include "connection_threadfwd.H"
+#include "x/w/connection_threadfwd.H"
 
 LIBCXXW_NAMESPACE_START
 

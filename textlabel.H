@@ -18,8 +18,8 @@
 #include "richtext/richtextmeta.H"
 #include "richtext/richtextstring.H"
 #include "richtext/richtextiteratorfwd.H"
-#include "draw_infofwd.H"
-#include "elementfwd.H"
+#include "x/w/impl/draw_infofwd.H"
+#include "x/w/impl/connection_threadfwd.H"
 
 #include <x/refptr_hash.H>
 #include <unordered_map>

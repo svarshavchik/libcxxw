@@ -7,7 +7,6 @@
 #include "generic_window_handler.H"
 #include "fonts/current_fontcollection.H"
 #include "fonts/fontcollection.H"
-#include "element_screen.H"
 #include "screen.H"
 #include "defaulttheme.H"
 

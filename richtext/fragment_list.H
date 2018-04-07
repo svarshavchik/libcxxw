@@ -7,8 +7,8 @@
 #define fragment_list_H
 
 #include "richtext/richtextfragment.H"
-#include "connection_threadfwd.H"
-#include "defaultthemefwd.H"
+#include "x/w/connection_threadfwd.H"
+#include "x/w/impl/defaultthemefwd.H"
 
 LIBCXXW_NAMESPACE_START
 

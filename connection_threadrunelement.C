@@ -4,8 +4,8 @@
 */
 #include "libcxxw_config.h"
 #include "connection_thread.H"
-#include "element.H"
-#include "container.H"
+#include "x/w/impl/element.H"
+#include "x/w/impl/container.H"
 #include "layoutmanager.H"
 #include "catch_exceptions.H"
 

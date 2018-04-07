@@ -6,7 +6,7 @@
 #include "popup/popup_impl.H"
 #include "popup/popup_handler.H"
 #include "generic_window_handler.H"
-#include "element_screen.H"
+#include "inherited_visibility_info.H"
 #include "screen.H"
 #include "connection_thread.H"
 #include "grabbed_pointer.H"

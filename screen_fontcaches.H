@@ -9,7 +9,7 @@
 #include "x/w/fontfwd.H"
 #include "x/w/types.H"
 #include "x/w/screenfwd.H"
-#include "fonts/current_fontcollectionfwd.H"
+#include "x/w/impl/fonts/current_fontcollectionfwd.H"
 #include <x/weakunordered_multimapfwd.H>
 #include <x/obj.H>
 #include <x/ref.H>

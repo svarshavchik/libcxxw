@@ -6,7 +6,7 @@
 #define installed_shortcutobj_h
 
 #include "shortcut/installed_shortcutfwd.H"
-#include "connection_threadfwd.H"
+#include "x/w/impl/connection_threadfwd.H"
 #include "activated_in_threadfwd.H"
 #include "activated_in_threadobj.H"
 #include "x/w/shortcut.H"

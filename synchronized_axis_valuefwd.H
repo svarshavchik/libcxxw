@@ -8,7 +8,7 @@
 #include "x/w/namespace.H"
 #include "x/w/metrics/derivedaxis.H"
 #include "x/w/synchronized_axisfwd.H"
-#include "connection_threadfwd.H"
+#include "x/w/connection_threadfwd.H"
 #include <x/mpobj.H>
 #include <vector>
 #include <list>

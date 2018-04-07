@@ -9,7 +9,7 @@
 #include "richtext/richtextfragment.H"
 #include "richtext/richtextmeta.H"
 #include "x/w/picturefwd.H"
-#include "draw_infofwd.H"
+#include "x/w/impl/draw_infofwd.H"
 
 LIBCXXW_NAMESPACE_START
 

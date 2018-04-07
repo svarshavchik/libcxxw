@@ -6,7 +6,7 @@
 #define cursor_pointer_element_h
 
 #include "cursor_pointer.H"
-#include "connection_threadfwd.H"
+#include "x/w/connection_threadfwd.H"
 #include "cursor_pointer_elementfwd.H"
 #include <utility>
 

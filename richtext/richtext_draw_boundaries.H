@@ -6,7 +6,7 @@
 #ifndef richtext_draw_boundaries_H
 #define richtext_draw_boundaries_H
 
-#include "draw_infofwd.H"
+#include "x/w/impl/draw_infofwd.H"
 #include "richtext/richtext_draw_boundariesfwd.H"
 #include "x/w/rectangle.H"
 

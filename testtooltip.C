@@ -20,6 +20,7 @@
 #include "x/w/font_literals.H"
 #include "x/w/screen.H"
 #include "x/w/connection.H"
+#include "inherited_visibility_info.H"
 #include <string>
 #include <iostream>
 

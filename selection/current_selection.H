@@ -10,7 +10,7 @@
 #include <xcb/xcb.h>
 #include <xcb/xproto.h>
 
-#include "connection_threadfwd.H"
+#include "x/w/connection_threadfwd.H"
 #include "selection/current_selectionfwd.H"
 
 LIBCXXW_NAMESPACE_START

@@ -21,10 +21,10 @@ public:
 	const ref<implObj> impl;
 
 	//! Constructor
-	canvasObj(const ref<implObj> &impl) LIBCXX_HIDDEN;
+	canvasObj(const ref<implObj> &impl);
 
 	//! Destructor
-	~canvasObj() LIBCXX_HIDDEN;
+	~canvasObj();
 };
 
 LIBCXXW_NAMESPACE_END

@@ -13,12 +13,11 @@
 #include "iconfwd.H"
 #include "icon_images_set_elementfwd.H"
 #include "cursor_pointer_elementfwd.H"
-#include "background_colorfwd.H"
-#include "background_color_elementfwd.H"
-#include "connection_threadfwd.H"
+#include "x/w/impl/background_colorfwd.H"
+#include "x/w/impl/background_color_elementfwd.H"
+#include "x/w/connection_threadfwd.H"
 #include "container_elementfwd.H"
-#include "grabbed_pointerfwd.H"
-#include "cursor_pointerfwd.H"
+#include "x/w/impl/grabbed_pointerfwd.H"
 
 #include "x/w/pictformatfwd.H"
 #include "x/w/types.H"
@@ -26,8 +25,7 @@
 #include "x/w/busy.H"
 #include "x/w/rgb.H"
 #include "x/w/main_windowfwd.H"
-#include "focus/focusablefwd.H"
-#include "fonts/current_fontcollectionfwd.H"
+#include "x/w/impl/focus/focusablefwd.H"
 #include "x/w/fontfwd.H"
 #include <string_view>
 #include <courier-unicode.h>

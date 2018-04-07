@@ -7,7 +7,7 @@
 #include "grid_element.H"
 #include "current_border_impl.H"
 #include "metrics_grid_pos.H"
-#include "element.H"
+#include "x/w/impl/element.H"
 #include "screen.H"
 #include "defaulttheme.H"
 #include "grid_map_info.H"
@@ -75,22 +75,24 @@ void grid_elementObj::initialize(ONLY IN_THREAD)
 
 void grid_elementObj::theme_updated(const defaulttheme &theme)
 {
-	left_padding=theme->get_theme_width_dim_t(left_padding_set);
+	left_padding=theme->get_theme_dim_t(left_padding_set,
+					    themedimaxis::width);
 	dim_t total=
 		dim_t::truncate(left_padding+
-				theme->get_theme_width_dim_t(right_padding_set))
-		;
+				theme->get_theme_dim_t(right_padding_set,
+						       themedimaxis::width));
 
 	if (total == dim_t::infinite())
 		--total;
 
 	total_horiz_padding=total;
 
-	top_padding=theme->get_theme_height_dim_t(top_padding_set);
+	top_padding=theme->get_theme_dim_t(top_padding_set,
+					   themedimaxis::height);
 
 	total=dim_t::truncate(top_padding+
-			      theme->get_theme_height_dim_t(bottom_padding_set))
-		;
+			      theme->get_theme_dim_t(bottom_padding_set,
+						     themedimaxis::height));
 
 	if (total == dim_t::infinite())
 		--total;

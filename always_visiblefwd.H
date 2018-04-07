@@ -5,7 +5,7 @@
 #ifndef always_visiblefwd_H
 #define always_visiblefwd_H
 
-#include "connection_threadfwd.H"
+#include "x/w/connection_threadfwd.H"
 
 LIBCXXW_NAMESPACE_START
 

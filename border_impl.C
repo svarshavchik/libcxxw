@@ -8,9 +8,10 @@
 #include "x/w/pixmap.H"
 #include "x/w/gc.H"
 #include "grid_element.H"
-#include "element.H"
-#include "draw_info.H"
-#include "background_color.H"
+#include "x/w/impl/element.H"
+#include "picture.H"
+#include "x/w/impl/draw_info.H"
+#include "x/w/impl/background_color.H"
 #include <x/exception.H>
 
 LIBCXXW_NAMESPACE_START

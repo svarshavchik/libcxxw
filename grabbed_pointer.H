@@ -5,7 +5,7 @@
 #ifndef grabbed_pointer_h
 #define grabbed_pointer_h
 
-#include "grabbed_pointerfwd.H"
+#include "x/w/impl/grabbed_pointerfwd.H"
 #include "grabbed_pointerobj.H"
 #include <x/ref.H>
 

@@ -164,7 +164,7 @@ public:
 
 	//! \internal
 
-	virtual ref<implObj> get_minimum_override_element_impl() LIBCXX_HIDDEN;
+	virtual ref<implObj> get_minimum_override_element_impl();
 
 	//! Return the top level main window object.
 
@@ -183,6 +183,10 @@ public:
 
 	void in_thread_idle(const functionref<void (THREAD_CALLBACK)> &cb);
 };
+
+typedef ref<elementObj::implObj> elementimpl;
+
+typedef ptr<elementObj::implObj> elementimplptr;
 
 LIBCXXW_NAMESPACE_END
 

@@ -4,7 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "hotspot.H"
-#include "child_element.H"
+#include "x/w/impl/child_element.H"
 #include "xid_t.H"
 #include "connection_thread.H"
 #include "run_as.H"

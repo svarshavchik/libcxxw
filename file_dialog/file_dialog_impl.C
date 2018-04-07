@@ -7,7 +7,7 @@
 #include "dirlisting/filedirlist_manager.H"
 #include "main_window.H"
 #include "dialog.H"
-#include "element.H"
+#include "x/w/impl/element.H"
 #include "messages.H"
 #include "x/w/input_field.H"
 #include "x/w/input_field_lock.H"

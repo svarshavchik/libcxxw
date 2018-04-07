@@ -5,7 +5,7 @@
 #ifndef ximserver_H
 #define ximserver_H
 
-#include "connection_threadfwd.H"
+#include "x/w/impl/connection_threadfwd.H"
 #include "xim/ximclientfwd.H"
 #include "xim/ximserverfwd.H"
 #include "xim/ximrequestfwd.H"

@@ -7,7 +7,7 @@
 #include "pagefactory_impl.H"
 #include "container_element.H"
 #include "always_visible.H"
-#include "child_element.H"
+#include "x/w/impl/child_element.H"
 #include "singletonlayoutmanager_impl.H"
 
 LIBCXXW_NAMESPACE_START

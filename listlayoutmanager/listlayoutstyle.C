@@ -3,8 +3,8 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
-#include "draw_info.H"
-#include "background_color.H"
+#include "x/w/impl/draw_info.H"
+#include "x/w/impl/background_color.H"
 
 #include "listlayoutmanager/listlayoutstyle_impl.H"
 #include "listlayoutmanager/list_element_impl.H"

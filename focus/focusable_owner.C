@@ -5,11 +5,10 @@
 #include "libcxxw_config.h"
 #include "x/w/focusableownerobj.H"
 #include "focus/focusable.H"
-#include "element_screen.H"
 #include "screen.H"
 #include "connection_thread.H"
 #include "generic_window_handler.H"
-#include "child_element.H"
+#include "x/w/impl/child_element.H"
 
 LIBCXXW_NAMESPACE_START
 

@@ -7,7 +7,7 @@
 
 #include "popup/popup.H"
 #include "popup/popup_attachedto_handler.H"
-#include "elementfwd.H"
+#include "x/w/elementobj.H"
 #include "x/w/listlayoutmanager.H"
 #include <x/functional.H>
 #include <tuple>

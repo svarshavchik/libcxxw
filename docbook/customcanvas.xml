@@ -1,0 +1,505 @@
+<!--
+
+Copyright 2018 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<chapter id="customcanvas">
+  <title>Custom <classname>&ns;::w::canvas</classname></title>
+
+  <mediaobject>
+    <imageobject>
+      <imagedata fileref="customcanvas.png" format="PNG"
+		 contentwidth="243px" contentdepth="312px" />
+    </imageobject>
+    <textobject>
+      <phrase>
+	Custom canvas display element
+      </phrase>
+    </textobject>
+  </mediaobject>
+
+  <para>
+    <filename>customcanvas.C</filename> is a simple example of creating
+    a custom subclass of the
+    <ulink url="&link-typedef-x--w-canvas;"><classname>&ns;::w::canvas</classname></ulink>
+    display element that draws a circle. This example demonstrates:
+  </para>
+
+  <variablelist>
+    <varlistentry>
+      <term><link linkend="dim_axis_arg">Horizontal and vertical metrics</link></term>
+      <listitem>
+	<para>
+	  Canvas's implementation class's,
+	  <ulink url="&link-x--w--canvasObj--implObj;"><classname>&ns;::w::canvasObj::implObj</classname></ulink>'s
+	  constructor takes parameter that sets the element's minimum,
+	  preferred, and maximum size. This is the only display element in
+	  its window, so the window becomes resiable within the specified
+	  constraints.
+	</para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term><link linkend="mixintemplates">Mixin templates</link></term>
+      <listitem>
+	<para>
+	  &appshort;'s internal header files define several
+	  <quote>mixin templates</quote>. Each such template declares
+	  a class that multiply-inherits from its template parameter,
+	  which usually must be a
+	  subclass of
+	  <ulink url="&link-x--w--child-elementObj;"><classname>&ns;::w::child_elementObj</classname></ulink>,
+	  and a mixin class; then
+	  overrides or defines methods inherited from its
+	  <classname>&ns;::w::child_elementObj</classname> superclass using
+	  the mixin-provided functionality.
+	</para>
+
+	<para>
+	  This example uses two mixin templates that implement a simplified
+	  interface for drawing the contents of the display element, and
+	  specifying a theme-based color for drawing thay circle.
+	</para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term><link linkend="customdraw">Drawing custom display elements</link></term>
+      <listitem>
+	<para>
+	  &appshort; implements several classes that provide access to the
+	  graphic context, pixmap, and picture resources of the underlying
+	  &xproto; and its &render;.
+	  <filename>customcanvas.C</filename> uses them to draw a circle
+	  in the custom display element.
+	</para>
+      </listitem>
+    </varlistentry>
+
+  </variablelist>
+  <blockquote>
+    <title><ulink url="examples/customcanvas.C">customcanvas.C</ulink></title>
+
+    <informalexample>
+      <programlisting><xi:include href="../examples/customcanvas.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <section id="dim_axis_arg">
+    <title>Horizontal and vertical metrics</title>
+
+    <para>
+      <ulink url="&link-x--w--canvasObj--implObj;"><classname>&ns;::w::canvasObj::implObj</classname></ulink>'s
+      constructor first parameter is a reference to the new element's
+      parent container. Its second parameter is an
+      <ulink url="&link-x--w--canvas-init-params;"><classname>&ns;::w::canvas_init_params</classname></ulink>
+      object.
+      The object's first two members specify the new display element's metrics:
+      the horizontal metric and the vertical metric,
+      which specified as a
+      <ulink url="&link-x--w--dim-axis-arg;"><classname>&ns;::w::dim_axis_arg</classname></ulink>.
+    </para>
+
+    <para>
+      A horizontal or a vertical metric has three discrete values: minimum,
+      preferred, and maximum; and the metric
+      specifies that the display element's width or height should have
+      this minimum, preferred, or maximum size. The display element's
+      &container; is expected to
+      size the display element to at least its minimum width, or height;
+      but no larger than the maximum value. The preferred metric requests the
+      element's initial width and height; however in a container with multiple
+      display elements it's unlikely that the container will make everyone
+      happy.
+    </para>
+
+    <note>
+      <para>
+	Its possible that a container will size a display element to be larger
+	than its maximum requested metric. For example, the
+	<link linkend="gridlayoutmanager">grid layout manager</link> can
+	be instructed to set its container element's alignment to
+	<literal><literal>&ns;::w::halign::fill</literal></literal> or
+	<literal><literal>&ns;::w::valign::fill</literal></literal>,
+	which may exceed the element's maximum metric.
+      </para>
+
+      <para>
+	It's unlikely that a container
+	will size an element to be smaller than its minimum metrics.
+	However, a new display element's width or height can be 0, until
+	it gets formally sized by its container. So it's possible that
+	a display element's state indicate that its smaller than its minimum
+	metric; this can also happen in marginal edge cases when the
+	parent container has no other options.
+      </para>
+
+      <para>
+	In conclusion: custom display element implementation code must be
+	prepared to draw itself even if its current size is outside of its
+	metric.
+      </para>
+    </note>
+
+    <para>
+      <ulink url="&link-typedef-x--w-dim-arg;"><classname>&ns;::w::dim_arg</classname></ulink>
+      specifies the value of a minimum, preferred, or maximum metric.
+      The value may be:
+    </para>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  A text string. This references a width or height defined by the
+	  current display theme, by name. An exception gets thrown if the
+	  theme does not define the width/height with this label.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  A <classname>double</classname> value specifies the width or
+	  height in millimeters. The actual pixel size gets computed based
+	  on the display screen's resolution, and scaled by the current theme
+	  scaling factor.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  A maximum metric, and only the maximum metric
+	  specified as <literal>NAN</literal> sets
+	  an unlimited maximum metric. The display element has no defined
+	  maximum width or height.
+	</para>
+      </listitem>
+    </itemizedlist>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+	  /* ... */
+
+&ns;::w::canvas_init_params{
+   {20.0, 50.0, 100.0},
+   {20.0, 50.0, 100.0},
+   "my_canvas@examples.w.libcxx.com"}
+	</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      <link linkend="customcanvas"><filename>customcanvas.C</filename></link>
+      creates horizontal and vertical metrics that set the custom canvas's
+      minimum width and height to 20 millimeters, the preferred width and
+      height to 50 millimeters, and 100 millimeters as the maximum metric.
+      This is the only display element in the window, so the resulting
+      window is resizable within these bounds.
+      Replacing the 100 millimeter value with <literal>NAN</literal> results
+      in a window that has no upper maximum width or height.
+    </para>
+
+    <para>
+      <ulink url="&link-x--w--canvasObj--implObj;"><classname>&ns;::w::canvasObj::implObj</classname></ulink>
+      major selling point, as a candidate for a custom subclass, is that its
+      size gets specified in millimeters and does not depend on the display
+      screen's resolution. Furthermore, it
+      automatically updates its metrics, in realtime, if the
+      current display theme scaling factor gets adjusted by
+      <link linkend="cxxwtheme.1"><command>cxxwtheme</command></link>.
+      If the window's size ends up being outside the minimum or maximum
+      metrics because of the new theme scaling factor,
+      the window gets resized accordingly.
+    </para>
+  </section>
+
+  <section id="mixintemplates">
+    <title>Mixin templates</title>
+
+    <para>
+      <link linkend="customcanvas"><filename>customcanvas.C</filename></link>
+      gives an example of creating a custom subclass of
+      <ulink url="&link-x--w--canvasObj--implObj;"><classname>&ns;::w::canvasObj::implObj</classname></ulink>
+      and two mixin templates:
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+struct fore_color_tag;
+
+class my_canvas_implObj : public &ns;::w::scratch_and_mask_buffer_draw&lt;
+	&ns;::w::background_color_elementObj&lt;x::w::canvasObj::implObj,
+					  fore_color_tag&gt;&gt; {
+
+
+typedef &ns;::w::scratch_and_mask_buffer_draw&lt;
+            &ns;::w::background_color_elementObj&lt;x::w::canvasObj::implObj,
+					  fore_color_tag&gt;&gt; superclass_t;
+// ...
+
+       my_canvas_implObj( /* parameters */ )
+            : superclass_t{ /* parameters */ }
+// ...
+
+</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      &appshort;'s mixin templates follow this general design pattern:
+    </para>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  The template defines a class that inherits from the class
+	  specified by the first parameter. In this example,
+	  <ulink url="&link-typedef-x--w-background-color-elementObj;"><classname>&ns;::w::background_color_elementObj</classname></ulink>
+	  inherits from <classname>&ns;::w::canvasObj::implObj</classname>,
+	  and
+	  <ulink url="&link-x--w--scratch-and-mask-buffer-draw;"><classname>&ns;::w::scratch_and_mask_buffer_draw</classname></ulink>
+	  inherits from that.
+	</para>
+
+	<para>
+	  Some mixin templates may have their own, specific, additional
+	  template parameters. Their purpose depends on the mixin.
+	  <classname>&ns;::w::background_color_elementObj</classname> has
+	  an additional <classname>fore_color_tag</classname> parameter in
+	  this example.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Mixin template constructors have variadic parameters.
+	  Depending on the mixin template, the its constructors' initial
+	  parameters apply to the mixin template itself, and the remaining
+	  constructor parameters get universally-forwarded to the superclass.
+	</para>
+
+	<para>
+	  Some mixin templates do not need any constructor parameters. Those
+	  mixin templates directly delegate their constructor to their
+	  superclass.
+	</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>
+      The
+      <ulink url="&link-x--w--scratch-and-mask-buffer-draw;"><classname>&ns;::w::scratch_and_mask_buffer_draw</classname></ulink>
+      template mixin's constructor requires three parameters.
+      <ulink url="&link-typedef-x--w-background-color-elementObj;"><classname>&ns;::w::background_color_elementObj</classname></ulink>'s
+      constructor requires one.
+      This means that whatever parameters that my_canvas_implObj
+      passes to its parent class:
+    </para>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  Its parent class is the
+	  <classname>&ns;::w::scratch_and_mask_buffer_draw</classname>
+	  mixin. Its constructor uses its first three parameters, and forwards
+	  the rest to its superclass.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Its parent class is the
+	  <classname>&ns;::w::background_color_elementObj</classname>
+	  mixin. Its constructor uses its first parameter, and forwards
+	  the rest to its superclass.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  The remaining parameter reachs their final destination:
+	  <classname>&ns;::w::canvasObj::implObj</classname>'s constructor.
+	</para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
+  <section id="customdraw">
+    <title>Drawing custom display elements</title>
+
+    <para>
+      <link linkend="customcanvas"><filename>customcanvas.C</filename></link>
+      gives a simplified example of drawing custom display elements by
+      inheriting from
+      <ulink url="&link-x--w--scratch-and-mask-buffer-draw;"><classname>&ns;::w::scratch_and_mask_buffer_draw</classname></ulink>
+      and implementing its <methodname>do_draw</methodname>():
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+void my_canvas_implObj::do_draw(ONLY IN_THREAD,
+                const &ns;::w::draw_info &amp;di,
+                const &ns;::w::picture &amp;area_picture,
+                const &ns;::w::pixmap &amp;area_pixmap,
+                const &ns;::w::gc &amp;area_gc,
+
+                const &ns;::w::picture &amp;mask_picture,
+                const &ns;::w::pixmap &amp;mask_pixmap,
+                const &ns;::w::gc &amp;mask_gc,
+
+                const &ns;::w::clip_region_set &amp;clipped,
+                const &ns;::w::rectangle &amp;area_entire_rect)
+{</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      &appshort;'s
+      <ulink url="&link-typedef-x--w-pixmap;"><classname>&ns;::w::pixmap</classname></ulink>,
+      <ulink url="&link-typedef-x--w-gc;"><classname>&ns;::w::gc</classname></ulink>, and
+      <ulink url="&link-typedef-x--w-picture;"><classname>&ns;::w::picture</classname></ulink>
+      objects implement most operations on pixmap, graphic contexts, and
+      picture objects, as specified by the underlying &xproto; and the
+      &render;.
+      For more information see the protocol documentation and these objects'
+      documentation.
+    </para>
+
+    <para>
+      The <varname>area_entire_rect</varname> parameter describes the
+      <ulink url="&link-x--w--rectangle;">rectangle</ulink>
+      that <methodname>do_draw</methodname>() should draw.
+      This simplified drawing interface always has the display element's
+      current size reflected in the rectangle's width and height, and
+      the x and y coordinates are always zero. In other words: the entire
+      rectangle.
+    </para>
+
+    <para>
+      <methodname>do_draw</methodname>() does not draw the display element
+      directly on the display.
+      The <varname>area_picture</varname>,
+      <varname>area_pixmap</varname>, and
+      <varname>area_gc</varname> parameters refer to a scratch buffer.
+      This scratch buffer gets cleared to the display element's background
+      color before <methodname>do_draw</methodname>() gets called.
+      After <methodname>do_draw</methodname>() returns the scratch buffer's
+      contents get copied to the display. This approach results in flicker-free
+      drawing.
+    </para>
+
+    <para>
+      A second set of picture, pixmap, and graphic context objects refer to
+      a second scratch buffer. This is a 1-bit deep scratch buffer for
+      executing any masking operations when compositing the main area
+      scratch buffer's image. The contents of the scratch buffer do not
+      get cleared. <methodname>do_draw</methodname>() is responsible for
+      clearing the masking scratch buffer prior to use.
+    </para>
+
+    <section id="scratchbuffers">
+      <title>Scratch buffers</title>
+
+      <para>
+	Custom display elements must provide a label for their scratch buffers.
+	Their <ulink url="&link-x--w--child-elementObj;"><classname>&ns;::w::child_elementObj</classname></ulink>
+	parent class's constructor takes
+	a
+	<ulink url="&link-x--w--child-element-init-params;"><classname>child_element_init_params</classname></ulink>
+	parameter with a <varname>scratch_buffer_id</varname>.
+	This specifies the label for the display elements scratch buffer.
+      </para>
+
+      <para>
+	The <link linkend="mixintemplates"><classname>&ns;::w::scratch_and_mask_buffer_draw</classname>
+	  mixin template</link>'s constructor
+	has an additional parameter specifying the masking scratch buffer's
+	label.
+      </para>
+
+      <para>
+	The labels are plain text strings that uniquely identify a scratch
+	buffer. Display elements that specify the same scratch buffer label
+	share the same underlying scratch buffer. The scratch buffers get
+	sized appropriately, for each display element. For that reason they
+	may exceed a display element's current size, because another,
+	larger, display element uses it.
+      </para>
+
+      <para>
+	Use the following convention for naming scratch buffer labels:
+      </para>
+
+      <itemizedlist>
+	<listitem>
+	  <para>
+	    Each label should be formatted as either an E-mail address or
+	    an Internet hostname, using the domain that belongs to the
+	    application that uses the custom display element.
+	    An application developed by
+	    <literal>example.com</literal>
+	    can use <quote>circle@labels.example.com</quote>, or
+	    <quote>circle.labels.example.com</quote>.
+	    &appshort;'s internal dialog identifiers use this convention,
+	    and this avoids conflicts for that reason.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Display elements whose sizes are similar
+	    can use same scratch buffer labels,
+	    and share the underlying scratch buffer.
+	    Display elements of vastly different sizes need to use different
+	    scratch buffer labels
+	  </para>
+
+	  <para>
+	    If a very wide display element uses the same label as another
+	    display element that's very tall, the resulting scratch buffer
+	    can become both as wide as as tall as both of these display
+	    elements combined together. These two display elements end up
+	    using the same underlying scratch buffer, which becomes wasteful.
+	  </para>
+
+	  <para>
+	    Display elements don't need to have an identical size in order
+	    to share a scratch buffer. The library simply sizes the scratch
+	    buffer, on demand, to accomodate each display element's requested
+	    size, so the scratch buffer ends up being big enough to keep
+	    everyone happy (&appshort; actually tries to stay ahead of the
+	    game by proactively sizing the scratch buffer with extra room
+	    to spare, for growth, in hopes of avoiding a reallocation forced
+	    by a larger display element).
+	  </para>
+
+	  <para>
+	    But this means that having both a very wide and a very tall
+	    display element ends up with a scratch buffer wasting a lot of
+	    valuable display memory (pixmap memory gets allocated on the
+	    display server, after all) in order to accomodate both a very
+	    wide and a very tall display element.
+	  </para>
+
+	  <para>
+	    By naming scratch buffer labels using Internet domain names,
+	    this avoids accidental reuse of the same label by different
+	    libraries/applications for display elements with widely different
+	    sizes.
+	  </para>
+	</listitem>
+      </itemizedlist>
+    </section>
+  </section>
+</chapter>
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "book" "chapter")
+End:
+-->

@@ -8,7 +8,8 @@
 #include "x/w/rectangle.H"
 #include "x/w/screenfwd.H"
 #include "popup/popup_attachedto_infofwd.H"
-#include "connection_threadfwd.H"
+#include "x/w/connection_threadfwd.H"
+#include "x/w/impl/connection_threadfwd.H"
 #include <x/obj.H>
 
 LIBCXXW_NAMESPACE_START

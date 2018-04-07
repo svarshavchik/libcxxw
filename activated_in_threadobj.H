@@ -6,7 +6,7 @@
 #define activated_in_threadobj_h
 
 #include "activated_in_threadfwd.H"
-#include "connection_threadfwd.H"
+#include "x/w/connection_threadfwd.H"
 #include "x/w/hotspotfwd.H"
 #include <x/obj.H>
 

@@ -10,7 +10,7 @@
 
 #include "x/w/focusable_containerobj.H"
 #include "x/w/custom_comboboxlayoutmanagerobj.H"
-#include "popup/popupfwd.H"
+#include "x/w/impl/popup/popupfwd.H"
 
 LIBCXXW_NAMESPACE_START
 

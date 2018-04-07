@@ -1,4 +1,4 @@
-Summary: LIBCXXw
+Summary: LibCXXW
 Name: libcxxw
 Version: @VERSION@
 Release: 1%{?extrarelease}
@@ -36,21 +36,31 @@ LibCXX widget toolkit.
 
 %package cups
 Group: System Environment/Libraries
-Summary: LibCXXw print dialog
+Summary: LibCXXW print dialog
 Requires: %{name} = 0:%{version}-%{release}
 
 %description cups
-This package installs the LIBCXXw printing dialog library.
+This package installs the LibCXXW printing dialog library.
 
 %package devel
 Group: Development/Libraries
-Summary: LIBCXXw development libraries
+Summary: LibCXXW development libraries
 Requires: %{name} = 0:%{version}-%{release}
 Requires: libcxxbase-devel
 Requires: libX11-devel
 
 %description devel
-This package installs files needed to develop applications that use LIBCXXw.
+This package installs files needed to develop applications that use LibCXXW.
+
+%package devel-internals
+Group: Development/Libraries
+Summary: LibCXXW development libraries
+Requires: %{name}-devel = 0:%{version}-%{release}
+Requires: libxcb-devel
+
+%description devel-internals
+This package installs additional internal header files for building
+custom LibCXXW display elements.
 
 %prep
 %setup -q
@@ -65,12 +75,16 @@ rm -rf $RPM_BUILD_ROOT
 RPM_BUILD_ROOT="$RPM_BUILD_ROOT" desktop-file-install cxxwtheme.desktop
 rm -f $RPM_BUILD_ROOT/%{_libdir}/*.la
 
+echo '%defattr(-,root,root,-)' >public-headers
+
+(cd $RPM_BUILD_ROOT; find %{_includedir}/x/w -name impl -prune -o -type f -print) >>public-headers
+
+(cd $RPM_BUILD_ROOT; find %{_includedir}/x/w -name impl -prune -o -type d -print) | sed 's@^@%dir @' >>public-headers
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%post
-/sbin/ldconfig
-#%{_bindir}/properties --set=%{_datadir}/libcxxw/themes/cxxwtheme.properties %{_bindir}/cxxwtheme >/dev/null
+%post -p /sbin/ldconfig
 
 %postun -p /sbin/ldconfig
 
@@ -80,14 +94,18 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/libcxxw
 %{_datadir}/applications/*
 %{_bindir}/*
+%{_mandir}/*/*
 
 %files cups
 %defattr(-,root,root,-)
 %{_libdir}/libcxxwcups.so.*
 
-%files devel
+%files devel -f public-headers
 %defattr(-,root,root,-)
 %{_libdir}/*.so
 %{_libdir}/*.a
-%{_includedir}/x/w
 %doc examples
+
+%files devel-internals
+%defattr(-,root,root,-)
+%{_includedir}/x/w/impl

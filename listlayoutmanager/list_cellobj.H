@@ -7,10 +7,9 @@
 
 #include "listlayoutmanager/list_cellfwd.H"
 #include "listlayoutmanager/list_element_impl.H"
-#include "connection_threadfwd.H"
-#include "element_draw.H"
-#include "draw_infofwd.H"
-#include "defaultthemefwd.H"
+#include "x/w/connection_threadfwd.H"
+#include "x/w/impl/draw_infofwd.H"
+#include "x/w/impl/defaultthemefwd.H"
 #include "richtext/richtext_draw_boundariesfwd.H"
 #include "x/w/metrics/axis.H"
 

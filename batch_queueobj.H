@@ -8,7 +8,7 @@
 #include "x/w/batch_queuefwd.H"
 #include "x/w/layoutmanagerobj.H"
 #include "x/w/elementobj.H"
-#include "connection_threadfwd.H"
+#include "x/w/connection_threadfwd.H"
 #include <x/mpobj.H>
 #include <x/ptrfwd.H>
 #include <x/logger.H>

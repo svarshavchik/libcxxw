@@ -54,6 +54,9 @@
 <!ENTITY connections_and_screens SYSTEM "connections_and_screens.xml">
 <!ENTITY connthread SYSTEM "connthread.xml">
 <!ENTITY properties SYSTEM "properties.xml">
+<!ENTITY customintro SYSTEM "customintro.xml">
+<!ENTITY customcanvas SYSTEM "customcanvas.xml">
+<!ENTITY cxxwtheme SYSTEM "cxxwtheme.xml">
 
 %entity-list;
 
@@ -99,6 +102,13 @@ See COPYING for distribution information.
     &scrollbar;
   </part>
 
+  <part id="custom">
+    <title>Custom display elements</title>
+
+    &customintro;
+    &customcanvas;
+  </part>
+
   <part id="misctopics">
     <title>Miscellaneous topics</title>
     &connections_and_screens;
@@ -106,6 +116,12 @@ See COPYING for distribution information.
     &properties;
   </part>
   &sxgdoc;
+
+  <appendix id="manpages">
+    <title>Manual pages</title>
+
+    &cxxwtheme;
+  </appendix>
 
   <appendix id="COPYING">
     <title>COPYING</title>

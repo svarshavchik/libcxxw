@@ -5,10 +5,10 @@
 #ifndef peepholed_toplevel_listcontainer_impl_h
 #define peepholed_toplevel_listcontainer_impl_h
 
-#include "child_elementfwd.H"
-#include "connection_threadfwd.H"
+#include "x/w/impl/child_elementfwd.H"
+#include "x/w/connection_threadfwd.H"
 #include "x/w/types.H"
-#include "child_element.H"
+#include "x/w/impl/child_element.H"
 #include "focus/focusable.H"
 #include <x/obj.H>
 

@@ -13,7 +13,7 @@
 #include "messages.H"
 #include "border_impl.H"
 #include "picture.H"
-#include "background_color.H"
+#include "x/w/impl/background_color.H"
 #include "x/w/gridlayoutmanager.H"
 #include "x/w/gridfactory.H"
 #include "x/w/booklayoutmanager.H"
@@ -1400,32 +1400,13 @@ void defaultthemeObj::load_borders(const theme_parser_lock &root_lock,
 
 /////////////////////////////////////////////////////////////////////////////
 
-dim_t defaultthemeObj::get_theme_width_dim_t(const dim_arg &id)
+dim_t defaultthemeObj::get_theme_dim_t(const dim_arg &id, themedimaxis wh)
 {
 	return std::visit(visitor{
-			[this](double v)
+			[this, wh](double v)
 			{
-				return compute_height(v);
-			},
-			[&](const std::string &id)
-			{
-				auto iter=dims.find(id);
-
-				if (iter == dims.end())
-					throw EXCEPTION
-						(gettextmsg
-						 (_("Size %1% does not exist"),
-						  id));
-				return iter->second;
-			}}, id);
-}
-
-dim_t defaultthemeObj::get_theme_height_dim_t(const dim_arg &id)
-{
-	return std::visit(visitor{
-			[this](double v)
-			{
-				return compute_height(v);
+				return wh == themedimaxis::width
+					? compute_width(v):compute_height(v);
 			},
 			[&](const std::string &id)
 			{

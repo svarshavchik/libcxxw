@@ -5,8 +5,8 @@
 #ifndef container_elementfwd_H
 #define container_elementfwd_H
 
-#include "container.H"
-#include "element.H"
+#include "x/w/impl/container.H"
+#include "x/w/impl/element.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -24,8 +24,8 @@ LIBCXXW_NAMESPACE_START
 //! containerObj::implObj does not need construction parameters.
 
 template<typename element_impl>
-class container_elementObj : public element_impl,
-			     public containerObj::implObj {
+class LIBCXX_HIDDEN container_elementObj : public element_impl,
+					   public containerObj::implObj {
 
 public:
 

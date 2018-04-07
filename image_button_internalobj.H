@@ -7,7 +7,7 @@
 
 #include "iconfwd.H"
 #include "image_button_internalfwd.H"
-#include "connection_threadfwd.H"
+#include "x/w/connection_threadfwd.H"
 #include "x/w/imageobj.H"
 #include "x/w/focusableobj.H"
 

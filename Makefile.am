@@ -34,12 +34,7 @@ libcxxw_la_SOURCES=\
 	assert_or_throw.C			    \
 	assert_or_throw.H			    \
 	background_color.C			    \
-	background_color.H			    \
-	background_colorfwd.H			    \
-	background_colorobj.H			    \
 	background_color_element.C		    \
-	background_color_element.H		    \
-	background_color_elementfwd.H		    \
 	background_color_element_recalculated.H	    \
 	background_color_element_recalculatedfwd.H  \
 	batch_queue.C				    \
@@ -94,7 +89,6 @@ libcxxw_la_SOURCES=\
 	corner_borderobj.H			    \
 	corner_border_impl.C			    \
 	calculate_borders.H			    \
-	canvas.H				    \
 	canvas.C				    \
 	canvas_impl.C				    \
 	capturefactory.C			    \
@@ -103,9 +97,6 @@ libcxxw_la_SOURCES=\
 	capturefactoryobj.H			    \
 	catch_exceptions.H			    \
 	child_element.C				    \
-	child_element.H				    \
-	child_elementfwd.H			    \
-	child_elementobj.H			    \
 	combobox/custom_comboboxlayoutmanager.C	    \
 	combobox/custom_comboboxlayoutmanager.H	    \
 	combobox/custom_comboboxlayoutmanager_impl.C \
@@ -137,12 +128,10 @@ libcxxw_la_SOURCES=\
 	connection_infofwd.H			    \
 	connection_thread.C			    \
 	connection_thread.H			    \
-	connection_threadfwd.H			    \
 	connection_threadevent.C		    \
 	connection_threadrun.C			    \
 	connection_threadrunelement.C		    \
 	container.C				    \
-	container.H				    \
 	container_element.H			    \
 	container_elementfwd.H			    \
 	container_impl.H			    \
@@ -155,7 +144,6 @@ libcxxw_la_SOURCES=\
 	current_border_implobj.H		    \
 	cursor_pointer.C			    \
 	cursor_pointer.H			    \
-	cursor_pointerfwd.H			    \
 	cursor_pointerobj.H			    \
 	cursor_pointer_cache.C			    \
 	cursor_pointer_cache.H			    \
@@ -174,7 +162,6 @@ libcxxw_la_SOURCES=\
 	date_input_field/date_input_field_calendarobj.H \
 	defaulttheme.C				    \
 	defaulttheme.H				    \
-	defaultthemefwd.H			    \
 	defaultthemeobj.H			    \
 	dialog.H				    \
 	dialog.C				    \
@@ -202,8 +189,6 @@ libcxxw_la_SOURCES=\
 	drawable.C				    \
 	drawable.H				    \
 	drawable_impl.C				    \
-	draw_infofwd.H				    \
-	draw_info.H				    \
 	editor.C				    \
 	editor.H				    \
 	editorfwd.H				    \
@@ -213,11 +198,7 @@ libcxxw_la_SOURCES=\
 	editor_peephole_impl.C			    \
 	editor_peephole_impl.H			    \
 	element.C				    \
-	element.H				    \
-	element_draw.H				    \
-	elementfwd.H				    \
 	element_impl.C				    \
-	element_screen.H			    \
 	ewmh.C					    \
 	ewmh.H					    \
 	factory.C				    \
@@ -236,7 +217,6 @@ libcxxw_la_SOURCES=\
 	focus/element_focusable.C		    \
 	focus/focusable.C			    \
 	focus/focusable.H			    \
-	focus/focusablefwd.H			    \
 	focus/focusable_container.C		    \
 	focus/focusable_element.H		    \
 	focus/focusable_elementfwd.H		    \
@@ -257,7 +237,6 @@ libcxxw_la_SOURCES=\
 	focus/focusframelayoutimplfwd.H		    \
 	focus/label_for.C			    \
 	focus/label_for.H			    \
-	focus/label_forfwd.H			    \
 	focus/label_forobj.H			    \
 	focus/standard_focusframecontainer_element.C \
 	focus/standard_focusframecontainer_element.H \
@@ -266,7 +245,6 @@ libcxxw_la_SOURCES=\
 	fonts/composite_text_streamfwd.H	    \
 	fonts/current_fontcollection.C		    \
 	fonts/current_fontcollection.H		    \
-	fonts/current_fontcollectionfwd.H	    \
 	fonts/current_fontcollectionobj.H	    \
 	fonts/cached_font.C			    \
 	fonts/cached_font.H			    \
@@ -339,7 +317,6 @@ libcxxw_la_SOURCES=\
 	generic_window_impl.C			    \
 	grabbed_pointer.C			    \
 	grabbed_pointer.H			    \
-	grabbed_pointerfwd.H			    \
 	grabbed_pointerobj.H			    \
 	grid_element.C				    \
 	grid_element.H				    \
@@ -397,6 +374,7 @@ libcxxw_la_SOURCES=\
 	image_button_internal_impl.H		    \
 	image_button_internal_impl.C		    \
 	impl_connection_thread.H		    \
+	inherited_visibility_info.H		    \
 	input_dialog.C				    \
 	input_field.H				    \
 	input_field.C				    \
@@ -487,9 +465,6 @@ libcxxw_la_SOURCES=\
 	metrics_grid_posfwd.H			    \
 	metrics_grid_posobj.H			    \
 	metrics_horizvert.C			    \
-	metrics_horizvert.H			    \
-	metrics_horizvertfwd.H			    \
-	metrics_horizvertobj.H			    \
 	new_layoutmanager.C			    \
 	nonrecursive_visibility.H		    \
 	nonrecursive_visibilityfwd.H		    \
@@ -615,7 +590,6 @@ libcxxw_la_SOURCES=\
 	popup_imagebutton_implfwd.H		    \
 	popup/popup.C				    \
 	popup/popup.H				    \
-	popup/popupfwd.H			    \
 	popup/popupobj.H			    \
 	popup/popup_handler.C			    \
 	popup/popup_handler.H			    \
@@ -703,13 +677,8 @@ libcxxw_la_SOURCES=\
 	run_as.H				    \
 	scratch_buffer.C			    \
 	scratch_buffer_impl.C			    \
-	scratch_buffer.H			    \
 	scratch_buffer_draw.C			    \
-	scratch_buffer_draw.H			    \
-	scratch_buffer_drawfwd.H		    \
 	scratch_and_mask_buffer_draw.C		    \
-	scratch_and_mask_buffer_draw.H		    \
-	scratch_and_mask_buffer_drawfwd.H	    \
 	screen.C				    \
 	screen.H				    \
 	screen_depthinfo.C			    \
@@ -790,13 +759,6 @@ libcxxw_la_SOURCES=\
 	themeborder_element_impl.C		    \
 	themeborder_element_impl.H		    \
 	themedim.C				    \
-	themedim.H				    \
-	themedimfwd.H				    \
-	themedimobj.H				    \
-	themedim_axis_element.H			    \
-	themedim_axis_elementfwd.H		    \
-	themedim_element.H			    \
-	themedim_elementfwd.H			    \
 	themedim_element_minoverride.H		    \
 	themedim_element_minoverridefwd.H	    \
 	themeiconobj.H				    \
@@ -861,6 +823,8 @@ cxxwtheme_LDFLAGS=$(TESTLINKTYPE)
 
 $(call OPTIONS_GEN,cxxwoptions.H,cxxwoptions.xml)
 
+man_MANS=cxxwtheme.1
+
 EXTRA_DIST = config.rpath m4/ChangeLog COPYING \
 	pic_constants.xml gc_constants.xml constants.xsl \
 	parseapiconfig.xsl gridlayoutapi.xml \
@@ -895,6 +859,7 @@ INTERACTIVETESTPROGRAMS=\
 	testbusy					\
 	testbutton					\
 	testcombobox					\
+	testcustomcanvas				\
 	testdateinput					\
 	testimagebuttons			        \
 	testinputfield					\
@@ -933,6 +898,9 @@ $(call OPTIONS_GEN,testcombobox.inc.H,testcombobox.xml)
 testcombobox_SOURCES=testcombobox.C testcombobox.inc.H
 testcombobox_LDADD=libcxxw.la
 testcombobox_LDFLAGS=-static $(STATICLINKFLAGS)
+
+testcustomcanvas_SOURCES=testcustomcanvas.C
+testcustomcanvas_LDADD=libcxxw.la
 
 testdateinput_SOURCES=testdateinput.C
 testdateinput_LDADD=libcxxw.la
@@ -1125,6 +1093,17 @@ html/index.html: html/ref/index.html $(wildcard docbook/*.xml) docbook/xmllinks.
 	mv -f INSTALL.tmp INSTALL
 	-rm -rf html 2>/dev/null >/dev/null || :
 	mv html.tmp html
+
+$(man_MANS): man.stamp
+	touch $@
+
+CLEANFILES += $(man_MANS)
+
+man.stamp: $(wildcard docbook/cxxwtheme.xml)
+	set -e; rm -rf manpages; \
+	xsltproc --nonet -o manpages/ http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl docbook/book.xml; \
+	mv -f manpages/* . ; touch man.stamp
+	rm -rf manpages
 
 html/ref/index.html: $(DOCS_SRC) Doxyfile
 	rm -rf html/ref

@@ -634,8 +634,8 @@ static auto create_sxg_image(const std::string &name,
 			     const dim_arg &width_arg,
 			     const dim_arg &height_arg)
 {
-	dim_t w=sxg->theme->get_theme_width_dim_t(width_arg);
-	dim_t h=sxg->theme->get_theme_height_dim_t(height_arg);
+	dim_t w=sxg->theme->get_theme_dim_t(width_arg, themedimaxis::width);
+	dim_t h=sxg->theme->get_theme_dim_t(height_arg, themedimaxis::height);
 
 	if (w == 0 && h == 0)
 	{

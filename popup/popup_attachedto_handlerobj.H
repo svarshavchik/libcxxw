@@ -8,7 +8,7 @@
 #include "popup/popup_attachedto_handlerfwd.H"
 #include "popup/popup_attachedto_infofwd.H"
 #include "popup/popup_handler.H"
-#include "connection_threadfwd.H"
+#include "x/w/connection_threadfwd.H"
 #include "shared_handler_data.H"
 #include "x/w/rgbfwd.H"
 

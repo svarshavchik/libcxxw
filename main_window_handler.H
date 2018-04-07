@@ -7,7 +7,7 @@
 
 #include "generic_window_handler.H"
 #include "main_window.H"
-#include "connection_threadfwd.H"
+#include "x/w/connection_threadfwd.H"
 #include "icon_images_vector_elementfwd.H"
 #include "x/w/busyfwd.H"
 #include <xcb/xcb_icccm.h>
