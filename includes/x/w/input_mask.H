@@ -96,7 +96,10 @@ public:
 	bool same_shortcut_modifiers(const input_mask &o) const;
 
 	//! Add up how many modifiers and buttons are set here
-	int ordinal() const;
+
+	//! If ignore_toggles is set, num_lock and mode_switch do not count.
+
+	int ordinal(bool ignore_toggles=false) const;
 
 	//! Return the protocol SETofKEYBUTMASK value.
 

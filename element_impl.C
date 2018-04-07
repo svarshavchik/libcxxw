@@ -1211,7 +1211,7 @@ void elementObj::implObj::report_motion_event(ONLY IN_THREAD,
 	{
 		unschedule_hover_action(IN_THREAD);
 
-		if (me.mask.ordinal() == 0)
+		if (me.mask.ordinal(true) == 0)
 			schedule_hover_action(IN_THREAD);
 	}
 }

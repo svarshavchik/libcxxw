@@ -186,17 +186,19 @@ bool input_mask::same_shortcut_modifiers(const input_mask &o) const
 		((buttons & o.buttons) ^ buttons) == 0;
 }
 
-int input_mask::ordinal() const
+int input_mask::ordinal(bool ignore_toggles) const
 {
+	int toggle_value=ignore_toggles ? 0:1;
+
 	int n=(shift ? 1:0) +
 		(lock ? 1:0) +
 		(ctrl ? 1:0) +
-		(num_lock ? 1:0) +
+		(num_lock ? toggle_value:0) +
 		(meta ? 1:0) +
 		(alt ? 1:0) +
 		(super ? 1:0) +
 		(hyper ? 1:0) +
-		(mode_switch ? 1:0);
+		(mode_switch ? toggle_value:0);
 
 	auto b=buttons;
 
