@@ -19,8 +19,10 @@ A picture consists of a
 \ref drawable "drawable", a \ref pictformat "pictformat", and
 some rendering state, and implements rendering operations.
 
-\code
+This class implements Picture object operations, see the RENDER X
+protocol extension for more information.
 
+\code
 INSERT_LIBX_NAMESPACE::w::picture dst_picture;
 
 dst_picture->repeat(INSERT_LIBX_NAMESPACE::w::render_repeat::normal);
@@ -44,7 +46,21 @@ dst_picture->fill_rectangle( {0, 0, 100, 100}, { INSERT_LIBX_NAMESPACE::w::rgb::
       INSERT_LIBX_NAMESPACE::w::rgb::maximum(),
       0 });
 
+std::set<INSERT_LIBX_NAMESPACE::w::picture::base::triangle> triangles;
+
+dst_picture->fill_triangles(triangles, yellow);
+
+std::vector<INSERT_LIBX_NAMESPACE::w::picture::base::point> points;
+
+dst_picture->fill_tri_strip(points, yellow);
+
+dst_picture->fill_tri_fan(points, yellow);
+
 \endcode
+
+These picture methods implement various compositing operations. Several
+overloaded methods offer alternative calling conventions, and options,
+like specifying an explicit compositing operation (the default is SRC).
 
 */
 typedef ref<pictureObj, pictureBase> picture;

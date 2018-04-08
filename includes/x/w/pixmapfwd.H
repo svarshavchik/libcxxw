@@ -17,7 +17,20 @@ class pixmapObj;
 
 //! A Pixmap object.
 
-//! This is a wrapper for the X protocol's Pixmap object.
+//! This is a wrapper for the X protocol's Pixmap object. This pixmap
+//! object offers few methods on its own. Drawing operations are performed
+//! using an associated
+//! \ref picture "picture" object, using the X RENDER extension, and
+//! using the \ref gc "graphic context" object.
+//! A pixmap inherits from a \ref drawable "drawable" object, whose
+//! \c create_picture() and \c create_gc() methods construct
+//! suitable picture and graphic context objects for that purpose.
+//!
+//! The only information of interest the pixmap brings to the table by itself
+//! is the \c points_of_interest class member. Pixmaps created from SXG
+//! files (using an existing drawable's \c load_pixmap() method) might use
+//! the \c points_of_interest class member to identify designated coordinates in
+//! the pixmap image.
 
 typedef ref<pixmapObj> pixmap;
 

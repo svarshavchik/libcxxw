@@ -14,9 +14,45 @@ LIBCXXW_NAMESPACE_START
 class gcObj;
 class gcBase;
 
-//! A graphic context
+/*! A graphic context
 
-//! A low-level object used by the library to compose alpha masks in a pixmap.
+Implements primitive graphic context operations, as described in the X protocol
+extension. This library uses this
+low-level object mostly to compose alpha masks in a pixmap.
+
+\code
+INSERT_LIBX_NAMESPACE::w::gc context;
+
+INSERT_LIBX_NAMESPACE::w::gc::base::properties props;
+
+context->fill_rectangle(0, 0, 100, 100, props);
+
+context->segment(0, 0, 100, 100, props);
+
+std::vector<INSERT_LIBX_NAMESPACE::w::polyline> lines;
+
+context->lines(lines, props);
+
+INSERT_LIBX_NAMESPACE::w::gc::arc one_arc;
+std::vector<INSERT_LIBX_NAMESPACE::w::gc::arc> arcs;
+
+context->draw_arc(one_arc, props);
+
+context->draw_arcs(arcs, props);
+
+context->fill_arc(one_arc, props);
+
+context->fill_arcs(arcs, props);
+
+\endcode
+
+Various overloaded versions of these methods implement optional features
+of each X protocol drawing request. These methods require a
+\ref gcObj::properties "INSERT_LIBX_NAMESPACE::w::gc::base::properties" object
+that specify the particular graphic context settings which apply for that
+operation.
+
+*/
 
 typedef ref<gcObj, gcBase> gc;
 
