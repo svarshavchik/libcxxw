@@ -122,6 +122,9 @@ void preserve_screen_number(bool flag);
 
 /*!
 
+Inherits some functionality from its \ref generic_window "generic_window"
+superclass.
+
 \code
 // Create an application window on the default screen.
 

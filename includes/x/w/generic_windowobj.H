@@ -54,6 +54,12 @@ public:
 	void set_window_class(const std::string_view &instance,
 			      const std::string_view &resource);
 
+	//! Raise this window
+	void raise();
+
+	//! Lower this window
+	void lower();
+
 	//! Invoke this lambda if the server disconnects unexpectedly.
 
 	//! \see connection

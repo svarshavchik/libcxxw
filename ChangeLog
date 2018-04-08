@@ -1,3 +1,11 @@
+2018-04-08  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* cxxwtheme: make it a singleton application.
+
+	* Move several internal header files into <x/w/impl>, making it
+	possible to create custom display elements. Document an example
+	of implementing a custom canvas display element.
+
 2018-03-25  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* Add IN_THREAD to all connection thread callbacks.

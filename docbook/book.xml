@@ -51,6 +51,7 @@
 <!ENTITY progressbar SYSTEM "progressbar.xml">
 <!ENTITY scrollbar SYSTEM "scrollbar.xml">
 <!ENTITY sxgdoc SYSTEM "sxg.xml">
+<!ENTITY singleton SYSTEM "singleton.xml">
 <!ENTITY connections_and_screens SYSTEM "connections_and_screens.xml">
 <!ENTITY connthread SYSTEM "connthread.xml">
 <!ENTITY properties SYSTEM "properties.xml">
@@ -111,6 +112,7 @@ See COPYING for distribution information.
 
   <part id="misctopics">
     <title>Miscellaneous topics</title>
+    &singleton;
     &connections_and_screens;
     &connthread;
     &properties;

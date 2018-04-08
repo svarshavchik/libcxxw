@@ -44,11 +44,18 @@ class LIBCXX_HIDDEN popupObj::handlerObj :
 	typedef generic_windowObj::handlerObj superclass_t;
 
 public:
+
+	//! Constructor
 	handlerObj(ONLY IN_THREAD,
 		   const ref<generic_windowObj::handlerObj> &parent,
 		   const color_arg &background_color,
 		   size_t nesting_level=0);
+
+	//! Destructor
 	~handlerObj();
+
+	//! Override installed().
+	void installed(ONLY IN_THREAD) override;
 
 	//! Implement get_main_window()
 

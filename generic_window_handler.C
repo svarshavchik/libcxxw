@@ -170,6 +170,7 @@ generic_windowObj::handlerObj
 			.events_and_mask.m.at(XCB_CW_EVENT_MASK)},
 	current_position{params.window_handler_params.initial_position},
 	handler_data{handler_data},
+	my_popups{my_popups_t::create()},
 	original_background_color{params.background_color},
 	frame_extents_thread_only{params.window_handler_params.screenref
 			->get_workarea()},
@@ -1052,6 +1053,44 @@ void generic_windowObj::handlerObj::configure_notify_received(ONLY IN_THREAD,
 		exposure_rectangles(IN_THREAD).rectangles.clear();
 	}
 	*lock=r;
+}
+
+void generic_windowObj::handlerObj::raise(ONLY IN_THREAD)
+{
+	values_and_mask configure_window_vals
+		(XCB_CONFIG_WINDOW_STACK_MODE,
+		 XCB_STACK_MODE_ABOVE);
+
+	xcb_configure_window(IN_THREAD->info->conn, id(),
+			     configure_window_vals.mask(),
+			     configure_window_vals.values().data());
+
+	for (const auto &my_popup:*my_popups)
+	{
+		auto p=my_popup.getptr();
+
+		if (p)
+			p->raise(IN_THREAD);
+	}
+}
+
+void generic_windowObj::handlerObj::lower(ONLY IN_THREAD)
+{
+	for (const auto &my_popup:*my_popups)
+	{
+		auto p=my_popup.getptr();
+
+		if (p)
+			p->lower(IN_THREAD);
+	}
+
+	values_and_mask configure_window_vals
+		(XCB_CONFIG_WINDOW_STACK_MODE,
+		 XCB_STACK_MODE_BELOW);
+
+	xcb_configure_window(IN_THREAD->info->conn, id(),
+			     configure_window_vals.mask(),
+			     configure_window_vals.values().data());
 }
 
 void generic_windowObj::handlerObj::process_configure_notify(ONLY IN_THREAD,

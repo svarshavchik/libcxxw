@@ -31,6 +31,7 @@
 #include <courier-unicode.h>
 #include <list>
 #include <x/weakptr.H>
+#include <x/weaklist.H>
 #include <x/mpobj.H>
 #include <xcb/xcb_icccm.h>
 #include <x/functional.H>
@@ -144,6 +145,26 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! Keep track of opened popups and shortcuts.
 
 	const shared_handler_data handler_data;
+
+	//! Container that keeps track of immediate popups
+
+	typedef weaklist<handlerObj> my_popups_t;
+
+	//! Besides shared_handler_data, need to know all direct popups from me.
+
+	const my_popups_t my_popups;
+
+	//! Raise this window.
+
+	//! Recursively raise my popups, too.
+
+	void raise(ONLY IN_THREAD);
+
+	//! Lower this window
+
+	//! Recursively raise my popups, too.
+
+	void lower(ONLY IN_THREAD);
 
 	//! Return the popup's parent's main window.
 

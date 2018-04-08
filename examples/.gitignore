@@ -22,6 +22,7 @@
 /printdialog
 /progressbar
 /scrollbar
+/singleton
 /spininput
 /spininput.H
 /validatedinput

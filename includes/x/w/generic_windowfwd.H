@@ -46,6 +46,14 @@ class generic_windowBase;
 //! A generic window is also a
 //! \ref container "container" and a
 //! \ref drawable "drawable".
+//!
+//! \code
+//! main_window->raise();
+//!
+//! main_window->lower();
+//! \endcode
+//!
+//! Moves this window above all other windows, or below all other windows.
 
 typedef ref<generic_windowObj, generic_windowBase> generic_window;
 

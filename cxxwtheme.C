@@ -42,6 +42,7 @@
 #include <x/config.H>
 #include <x/singletonptr.H>
 #include <x/property_value.H>
+#include <x/managedsingletonapp.H>
 #include <iostream>
 #include <iomanip>
 #include <algorithm>
@@ -60,6 +61,9 @@ property::value<unsigned> resize_timeout{"resize_timeout", 5};
 class appstateObj : public obj {
 
 public:
+	//! The main app window.
+	const w::main_window main_window;
+
 	// Flag - close the app.
 	mpcobj<bool> close_flag;
 
@@ -77,7 +81,12 @@ public:
 	// mean we're resizing.
 	mpcobj<bool> resizing_flag;
 
-	appstateObj() : close_flag{false} {}
+	appstateObj(const w::main_window &main_window)
+		: main_window{main_window},
+		  close_flag{false}
+	{
+	}
+
 	~appstateObj()=default;
 
 	void close()
@@ -136,6 +145,8 @@ public:
 
 typedef ref<appstateObj> appstate_ref;
 
+typedef singletonptr<appstateObj> appstate_t;
+
 // object that stores the currently shown theme name and scale.
 
 class theme_infoObj : virtual public obj {
@@ -159,7 +170,6 @@ public:
 	~theme_infoObj()=default;
 
 	void set_theme_options(const w::main_window &,
-			       const appstate_ref &,
 			       const w::container &);
 
 	void validate_options()
@@ -284,7 +294,6 @@ static void wait_until_theme_installed(const w::connection &conn,
 typedef singletonptr<current_theme_optionsObj> current_theme_options_t;
 
 void theme_infoObj::set_theme_options(const w::main_window &mw,
-				      const appstate_ref &appstate,
 				      const w::container &c)
 {
 	w::gridlayoutmanager glm=c->get_layoutmanager();
@@ -317,7 +326,7 @@ void theme_infoObj::set_theme_options(const w::main_window &mw,
 			cb->set_value(1);
 
 		cb->on_activate
-			([label=option.label, appstate,
+			([label=option.label,
 			  mw=make_weak_capture(mw)]
 			 (ONLY IN_THREAD,
 			  size_t n,
@@ -326,6 +335,11 @@ void theme_infoObj::set_theme_options(const w::main_window &mw,
 			 {
 				 if (std::holds_alternative<w::initial>
 				     (trigger))
+					 return;
+
+				 appstate_t appstate;
+
+				 if (!appstate)
 					 return;
 
 				 auto got=mw.get();
@@ -371,29 +385,8 @@ static void file_menu(const w::main_window &mw,
 static void help_menu(const w::main_window &mw,
 		      const w::listlayoutmanager &lm);
 
-static w::container create_main_window(const w::main_window &mw,
-				       const appstate_ref &appstate)
+static w::container create_main_window(const w::main_window &mw)
 {
-	mw->on_state_update([appstate]
-			    (THREAD_CALLBACK,
-			     const auto &new_state,
-			     const auto &ignore)
-			    {
-				    appstate->current_position=
-					    new_state.current_position;
-				    appstate->set_resizing_flag();
-			    });
-
-	mw->on_metrics_update([appstate]
-			      (THREAD_CALLBACK,
-			       const auto &horiz,
-			       const auto &vert)
-			      {
-				      appstate->horiz_metrics=horiz;
-				      appstate->vert_metrics=vert;
-				      appstate->set_resizing_flag();
-			      });
-
 	w::gridlayoutmanager glm=mw->get_layoutmanager();
 
 	glm->row_alignment(0, w::valign::middle);
@@ -435,10 +428,15 @@ static w::container create_main_window(const w::main_window &mw,
 
 	w::new_standard_comboboxlayoutmanager
 		themes_combobox{
-		[themeids, conn, appstate, mw=make_weak_capture(mw)]
+		[themeids, conn, mw=make_weak_capture(mw)]
 			(ONLY IN_THREAD, const auto &info)
 		{
 			if (!info.list_item_status_info.selected)
+				return;
+
+			appstate_t appstate;
+
+			if (!appstate)
 				return;
 
 			auto got=mw.get();
@@ -462,7 +460,7 @@ static w::container create_main_window(const w::main_window &mw,
 
 			if (current_theme_options)
 				theme_info->set_theme_options
-					(mw, appstate, current_theme_options
+					(mw, current_theme_options
 					 ->options_container);
 		}};
 
@@ -521,7 +519,7 @@ static w::container create_main_window(const w::main_window &mw,
 		([&]
 		 (const auto &c)
 		 {
-			 theme_info->set_theme_options(mw, appstate, c);
+			 theme_info->set_theme_options(mw, c);
 		 },
 		 w::new_gridlayoutmanager{});
 
@@ -533,10 +531,15 @@ static w::container create_main_window(const w::main_window &mw,
 		f->colspan(2).create_horizontal_scrollbar(config, 100);
 
 	scale_scrollbar->on_update
-		([scale_label, conn, appstate, mw=make_weak_capture(mw)]
+		([scale_label, conn, mw=make_weak_capture(mw)]
 		 (THREAD_CALLBACK, const auto &info)
 		 {
 			 if (std::holds_alternative<w::initial>(info.trigger))
+				 return;
+
+			 appstate_t appstate;
+
+			 if (!appstate)
 				 return;
 
 			 auto got=mw.get();
@@ -571,7 +574,7 @@ static w::container create_main_window(const w::main_window &mw,
 
 			 if (current_theme_options)
 				 theme_info->set_theme_options
-					 (mw, appstate, current_theme_options
+					 (mw, current_theme_options
 					  ->options_container);
 		 });
 
@@ -597,17 +600,22 @@ static w::container create_main_window(const w::main_window &mw,
 
 			 f->create_normal_button_with_label
 				 ("Cancel", {'\e'})->on_activate
-				 ([appstate]
+				 ([]
 				  (THREAD_CALLBACK,
 				   const auto &ignore1,
 				   const auto &ignore2)
 				  {
+					  appstate_t appstate;
+
+					  if (!appstate)
+						  return;
+
 					  appstate->close();
 				  });
 
 			 f->create_normal_button_with_label
 				 ("Set")->on_activate
-				 ([appstate, conn]
+				 ([conn]
 				  (THREAD_CALLBACK,
 				   const auto &ignore1,
 				   const auto &ignore2)
@@ -615,6 +623,11 @@ static w::container create_main_window(const w::main_window &mw,
 					  theme_info_t theme_info;
 
 					  if (!theme_info)
+						  return;
+
+					  appstate_t appstate;
+
+					  if (!appstate)
 						  return;
 
 					  theme_info->validate_options();
@@ -634,7 +647,7 @@ static w::container create_main_window(const w::main_window &mw,
 						 "no"_decoration,
 						 "et and save"
 						 }, {"Alt", 's'})->on_activate
-				 ([appstate, conn]
+				 ([conn]
 				  (THREAD_CALLBACK,
 				   const auto &ignore1,
 				   const auto &ignore2)
@@ -642,6 +655,11 @@ static w::container create_main_window(const w::main_window &mw,
 					  theme_info_t theme_info;
 
 					  if (!theme_info)
+						  return;
+
+					  appstate_t appstate;
+
+					  if (!appstate)
 						  return;
 
 					  theme_info->validate_options();
@@ -1065,8 +1083,6 @@ void cxxwtheme()
 
 	destroy_callback::base::guard guard;
 
-	auto appstate=appstate_ref::create();
-
 	auto default_screen=w::screen::base::create();
 
 	theme_info_t theme_info{ref<theme_infoObj>::create
@@ -1079,9 +1095,41 @@ void cxxwtheme()
 		 [&]
 		 (const auto &main_window)
 		 {
-			 options_containerptr=create_main_window
-			 (main_window, appstate);
+			 options_containerptr=create_main_window(main_window);
 		 });
+
+	appstate_t appstate{appstate_ref::create(main_window)};
+
+	main_window->on_state_update([]
+				     (THREAD_CALLBACK,
+				      const auto &new_state,
+				      const auto &ignore)
+				     {
+					     appstate_t appstate;
+
+					     if (!appstate)
+						     return;
+
+					     appstate->current_position=
+						     new_state.current_position;
+					     appstate->set_resizing_flag();
+				     });
+
+	main_window->on_metrics_update([]
+				       (THREAD_CALLBACK,
+					const auto &horiz,
+					const auto &vert)
+				       {
+					       appstate_t appstate;
+
+					       if (!appstate)
+						       return;
+
+					       appstate->horiz_metrics=horiz;
+					       appstate->vert_metrics=vert;
+					       appstate->set_resizing_flag();
+				       });
+
 
 	current_theme_options_t options_container{ref<current_theme_optionsObj>
 			::create(options_containerptr)};
@@ -1097,11 +1145,14 @@ void cxxwtheme()
 				   });
 
 	main_window->on_delete
-		([appstate]
+		([]
 		 (THREAD_CALLBACK,
 		  const auto &ignore)
 		 {
-			 appstate->close();
+			 appstate_t appstate;
+
+			 if (appstate)
+				 appstate->close();
 		 });
 
 	main_window->show_all();
@@ -1114,12 +1165,66 @@ void cxxwtheme()
 	LIBCXX_NAMESPACE::w::save_screen_positions(configfile, pos);
 }
 
+class args_retObj : virtual public x::obj {
+
+public:
+
+	template<typename iter_type> void serialize(iter_type &iter)
+	{
+	}
+};
+
+typedef x::ref<args_retObj> args_ret;
+
+class cxxwtheme_threadObj : virtual public x::obj {
+
+public:
+
+	args_ret run(uid_t uid,
+		     const args_ret &ignore)
+	{
+		cxxwtheme();
+
+		return args_ret::create();
+	}
+
+	void instance(uid_t uid,
+		      const args_ret &ignore,
+		      const args_ret &ignore_ret,
+		      const x::singletonapp::processed &flag,
+		      const x::ref<x::obj> &mcguffin)
+	{
+		appstate_t appstate;
+
+		if (appstate)
+			appstate->main_window->raise();
+
+		flag->processed();
+	}
+
+	void stop()
+	{
+		appstate_t appstate;
+
+		if (appstate)
+			appstate->close();
+	}
+};
+
+typedef x::ref<cxxwtheme_threadObj> cxxwtheme_thread;
+
 int main(int argc, char **argv)
 {
 	LOG_FUNC_SCOPE(cxxwLog);
 
 	try {
-		cxxwtheme();
+		x::singletonapp::managed
+			([]
+			 {
+				 return cxxwtheme_thread::create();
+			 },
+			 args_ret::create());
+
 	} catch (const exception &e)
 	{
 		e->caught();

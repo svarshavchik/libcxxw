@@ -359,10 +359,18 @@ void my_canvas_implObj::do_draw(ONLY IN_THREAD,
     </blockquote>
 
     <para>
-      &appshort;'s
+      <methodname>do_draw</methodname>() first two parameters are an
+      <link linkend="callback_signatures">internal execution thread
+	signature</link> and an
+      <ulink url="&link-x--w--draw-info;"><classname>&ns;::w::draw_info</classname></ulink>
+      object that's needed by some drawing-related methods in the parent class,
+      should they be used.
+      The next set of parameters provide a
       <ulink url="&link-typedef-x--w-pixmap;"><classname>&ns;::w::pixmap</classname></ulink>,
       <ulink url="&link-typedef-x--w-gc;"><classname>&ns;::w::gc</classname></ulink>, and
       <ulink url="&link-typedef-x--w-picture;"><classname>&ns;::w::picture</classname></ulink>
+      objects representing the scratch buffer for drawing the display element.
+      These &appshort;
       objects implement most operations on pixmap, graphic contexts, and
       picture objects, as specified by the underlying &xproto; and the
       &render;.

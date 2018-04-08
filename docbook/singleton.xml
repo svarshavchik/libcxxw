@@ -1,0 +1,53 @@
+<!--
+
+Copyright 2018 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<chapter id="singleton">
+  <title>Singleton windows</title>
+
+  <para>
+    Some application do not support, or prefer not to have, multiple
+    windows. Executing another copy of the application
+    does not create a new window,
+    by a new process. A common result of that is that the existing window
+    gets moved to be above all
+    other window, or some other action takes place.
+  </para>
+
+  <para>
+    <filename>singleton.C</filename> gives a basic design pattern for this
+    kind of an application.
+    <filename>singleton.C</filename> opens a single window. Running
+    it again does not create a new window, but moves the existing window
+    on top of all other windows on the display screen. Running it again
+    with a <quote>stop</quote> parameter closes the currently running window
+    and terminates its process:
+  </para>
+
+  <blockquote>
+    <title><ulink url="examples/singleton.C">singleton.C</ulink></title>
+
+    <informalexample>
+      <programlisting><xi:include href="../examples/singleton.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    Most of this functionality comes from the base &libcxx; library.
+    This example uses <link linkend="singletonptr">singleton object
+      pointers</link> that were mentioned in
+    <xref linkend="printdialog" /> together with
+    &libcxx;'s <ulink url="/singletonapp.html">singleton application instance
+      classes</ulink> to implement this functionality.
+  </para>
+
+</chapter>
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "book" "chapter")
+End:
+-->

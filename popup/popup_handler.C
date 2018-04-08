@@ -36,6 +36,16 @@ popupObj::handlerObj::handlerObj(ONLY IN_THREAD,
 
 popupObj::handlerObj::~handlerObj()=default;
 
+void popupObj::handlerObj::installed(ONLY IN_THREAD)
+{
+	superclass_t::installed(IN_THREAD);
+
+	auto pp=popup_parent.getptr();
+
+	if (pp)
+		pp->my_popups->push_back(ref(this));
+}
+
 main_windowptr popupObj::handlerObj::get_main_window()
 {
 	main_windowptr p;

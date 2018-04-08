@@ -62,4 +62,24 @@ void generic_windowObj::set_window_class(const std::string_view &instance,
 		 });
 }
 
+void generic_windowObj::raise()
+{
+	impl->handler->thread()->run_as
+		([handler=impl->handler]
+		 (ONLY IN_THREAD)
+		 {
+			 handler->raise(IN_THREAD);
+		 });
+}
+
+void generic_windowObj::lower()
+{
+	impl->handler->thread()->run_as
+		([handler=impl->handler]
+		 (ONLY IN_THREAD)
+		 {
+			 handler->lower(IN_THREAD);
+		 });
+}
+
 LIBCXXW_NAMESPACE_END

@@ -20,6 +20,7 @@ noinst_PROGRAMS=\
 	printdialog				\
 	progressbar				\
 	scrollbar				\
+	singleton				\
 	spininput				\
 	validatedinput				\
 	wordwraplabel
@@ -92,6 +93,10 @@ progressbar_LDADD=-lcxxw -lcxx
 
 scrollbar_SOURCES=scrollbar.C close_flag.H
 scrollbar_LDADD=-lcxxw -lcxx
+
+singleton_SOURCES=singleton.C close_flag.H
+singleton_LDADD=-lcxxw -lcxx
+singleton_CXXFLAGS=@STDTHREAD_CXXFLAGS@
 
 $(call OPTIONS_GEN,spininput.H,spininput.xml)
 spininput_SOURCES=spininput.C close_flag.H
