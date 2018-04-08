@@ -6,6 +6,7 @@ noinst_PROGRAMS=\
 	checkradio				\
 	combobox				\
 	customcanvas				\
+	customelement				\
 	dateinputfield				\
 	focusable				\
 	gridlayoutmanager			\
@@ -44,6 +45,9 @@ combobox_LDADD=-lcxxw -lcxx
 
 customcanvas_SOURCES=customcanvas.C close_flag.H
 customcanvas_LDADD=-lcxxw -lcxx
+
+customelement_SOURCES=customelement.C close_flag.H
+customelement_LDADD=-lcxxw -lcxx
 
 dateinputfield_SOURCES=dateinputfield.C close_flag.H
 dateinputfield_LDADD=-lcxxw -lcxx

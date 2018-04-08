@@ -48,10 +48,10 @@ public:
 	ptr<obj> appdata;
 
 	//! Constructor
-	elementObj(const ref<implObj> &impl) LIBCXX_HIDDEN;
+	elementObj(const ref<implObj> &impl);
 
 	//! Destructor
-	~elementObj() LIBCXX_HIDDEN;
+	~elementObj();
 
 	//! Return my screen
 

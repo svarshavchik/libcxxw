@@ -1,0 +1,165 @@
+<!--
+
+Copyright 2018 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<chapter id="customelement">
+  <title>Custom <classname>&ns;::w::element</classname></title>
+
+  <para>
+    <filename>customelement.C</filename> is an example of creating
+    a custom subclass of the
+    <ulink url="&link-typedef-x--w-element;"><classname>&ns;::w::element</classname></ulink>
+    display element that draws a circle. The differences between creating
+    a custom subclass of an <classname>&ns;::w::element</classname>
+    and a custom subclass of an <classname>&ns;::w::canvas</classname> are:
+  </para>
+
+  <variablelist>
+    <varlistentry>
+      <term><link linkend="pubimpl">Implementation</link> classes</term>
+      <listitem>
+	<para>
+	  <classname>&ns;::w::canvasObj</classname>'s internal
+	  implementation class is
+	  <classname>&ns;::w::canvasObj::implObj</classname>.
+	  <classname>&ns;::w::elementObj</classname>'s internal
+	  implementation class is
+	  <ulink url="&link-x--w--elementObj--implObj;"><classname>&ns;::w::elementObj::implObj</classname></ulink>
+	  but a custom subclass must derive from an intermediate subclass,
+	  <ulink url="&link-x--w--child-elementObj;"><classname>&ns;::w::child_elementObj</classname></ulink>.
+	  <classname>&ns;::w::child_elementObj</classname>
+	  is a subclass that represents an implementation class of a display
+	  element in its parent container. All custom display elements must
+	  be placed in a container, and therefore must derive from
+	  <classname>&ns;::w::child_elementObj</classname>.
+	</para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term>Element metrics</term>
+      <listitem>
+	<para>
+	  <classname>&ns;::w::canvasObj::implObj</classname>'s size comes
+	  from <link linkend="dim_axis_arg">metrics in millimeters, or
+	    theme-specified metrics</link>.
+	  The computed metrics include the current display theme's scaling
+	  factor. Adjusting the current display theme automatically updates
+	  the canvas's metrics, and the computed size. The canvas's metrics
+	  are set once when its implementation object gets created, and there
+	  are no provisions to modify it.
+	</para>
+
+	<para>
+	  <classname>&ns;::w::elementObj::implObj</classname>'s metrics
+	  get specified in pixels, and they ignore the current display theme.
+	  The display element is resizable. This is done by updating its
+	  metrics. Afterwards, its container factors in the revised metrics,
+	  and may or may not resize the display element, accordingly.
+	</para>
+      </listitem>
+    </varlistentry>
+  </variablelist>
+
+  <para>
+    <filename>customelement.C</filename> differs from
+    <link linkend="customcanvas"><filename>customcanvas.C</filename></link>
+    in several ways: it's a custom subclass of
+    <classname>&ns;::w::element</classname>; the custom display element's
+    size is initially 50x50 pixels, and a button toggles its size between 50x50
+    and 100x100 pixels; the window's background color is set to white, also
+    independent of the current display theme; and the circle gets drawn
+    using a fixed gradient color, going from black to light grey, also
+    independent of the current display theme.
+  </para>
+
+  <blockquote>
+    <title><ulink url="examples/customelement.C">customelement.C</ulink></title>
+
+    <informalexample>
+      <programlisting><xi:include href="../examples/customelement.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    This custom implementation subclass uses the same two mixin templates
+    as <filename>customcanvas.C</filename>.
+    But instead of initializing the background color template
+    mixin with <quote>0%</quote>, a reference to a theme background color,
+    the background color template mixin gets initialized with
+    a <ulink url="&link-x--w--linear-gradient;"><classname>&ns;::w::linear_gradient</classname></ulink>
+    that defines a gradient color.
+  </para>
+
+  <para>
+    Although the gradient color is not theme-dependent, it does depend on the
+    size of the display element. The background color element mixin template
+    takes care of recalculating the gradient color, automatically.
+  </para>
+
+  <section id="elementresize">
+    <title>Resizing a custom display element</title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+    &ns;::w::child_element_init_params init_params;
+
+    init_params.initial_metrics={
+        {50, 50, 50},
+        {50, 50, 50}
+    };</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      The <classname>&ns;::w::child_elementObj</classname> implementation
+      class's constructor's parameter includes a
+      <varname>initial_metrics</varname> member. Similar to
+      <link linkend="dim_axis_arg"><classname>&ns;::w::canvasObj::implObj</classname></link>'s
+      analogous parameter, this
+      <ulink url='&link-x--w--metrics--horizvert-axi;'><classname>&ns;::w::horizvert_axi</classname></ulink>
+      parameter sets the individual minimum, preferred, and maximum
+      horizontal and vertical metrics of the new display element.
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+e-&gt;impl-&gt;get_horizvert(IN_THREAD)
+    -&gt;set_element_metrics(IN_THREAD,
+              {s, s, s},
+              {s, s, s});
+	</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      A display element's size does not get adjusted directly. Instead, its
+      horizontal and vertical metrics get adjusted.
+      <methodname>get_horizvert</methodname>() returns the implementation
+      object's metrics object. its
+      <methodname>set_element_metrics</methodname>() method sets the display
+      element's new horizontal and vertical metrics, expressed in pixels.
+      The element's container processes the updated metrics automatically
+      and may (or may not) choose to actually resize the display element.
+    </para>
+
+    <para>
+      The display element's container has full responsibility for resizing the
+      display element. The only thing that anyone else can do is update a
+      display element's metrics, and hope for the best.
+      Resized display elements get redrawn automatically.
+      <methodname>do_draw</methodname>() in this example is materially the same
+      as <filename>customcanvas.C</filename>'s.
+    </para>
+  </section>
+</chapter>
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "book" "chapter")
+End:
+-->

@@ -114,7 +114,7 @@ public:
 			child_init_params.initial_metrics.vert.preferred(),
 
 
-		// The background_color_element mixn constructor param:
+		// The background_color_element mixin constructor param:
 
 		// The circle's color. Take color "0%" from the theme.
 
@@ -339,10 +339,6 @@ void testcustomcanvas()
 int main(int argc, char **argv)
 {
 	try {
-		LIBCXX_NAMESPACE::property
-			::load_property(LIBCXX_NAMESPACE_STR "::themes",
-					"themes", true, true);
-
 		testcustomcanvas();
 	} catch (const x::exception &e)
 	{

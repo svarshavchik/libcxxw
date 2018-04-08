@@ -6,6 +6,10 @@
 	possible to create custom display elements. Document an example
 	of implementing a custom canvas display element.
 
+	* Added spin button control to input fields.
+
+0.3
+
 2018-03-25  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* Add IN_THREAD to all connection thread callbacks.
