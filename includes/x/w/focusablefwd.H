@@ -11,7 +11,6 @@
 LIBCXXW_NAMESPACE_START
 
 class focusableObj;
-class focusableImplObj;
 
 //! Methods common to all display element that can receive input focus.
 

@@ -36,7 +36,7 @@ class LIBCXX_HIDDEN pane_slider_impl_elementObj
 
 	elementObj::implObj &slider_element_impl() override;
 
-	focusableImplObj &slider_focusable_impl() override;
+	focusableObj::implObj &slider_focusable_impl() override;
 };
 
 LIBCXXW_NAMESPACE_END

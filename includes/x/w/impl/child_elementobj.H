@@ -189,7 +189,7 @@ class child_elementObj
 	//! Forward to parent.
 
 	void focusable_initialized(ONLY IN_THREAD,
-				   focusableImplObj &fimpl) override;
+				   focusableObj::implObj &fimpl) override;
 
 	//! Forward to parent.
 

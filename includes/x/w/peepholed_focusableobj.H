@@ -36,7 +36,7 @@ public:
 	~peepholed_focusableObj() LIBCXX_HIDDEN;
 
 	//! Inherited from focusableObj
-	ref<focusableImplObj> get_impl() const override LIBCXX_HIDDEN;
+	ref<focusableObj::implObj> get_impl() const override LIBCXX_HIDDEN;
 
 	//! Inherited from focusableObj
 	void do_get_impl(const function<internal_focusable_cb> &)

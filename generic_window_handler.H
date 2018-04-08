@@ -393,7 +393,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! The default implementation does nothing.
 
 	void focusable_initialized(ONLY IN_THREAD,
-				   focusableImplObj &fimpl) override;
+				   focusableObj::implObj &fimpl) override;
 
  private:
 	//! Most recent popup where the pointer motion event went to.
@@ -729,10 +729,10 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! focusable_deinitialize(). focusable_deinitialize() takes
 	//! care of dropping the reference to the child member.
 
-	std::list<ref<focusableImplObj>> focusable_fields_thread_only;
+	std::list<ref<focusableObj::implObj>> focusable_fields_thread_only;
 
 	//! Current field that's receiving input focus.
-	ptr<focusableImplObj> most_recent_keyboard_focus_thread_only;
+	ptr<focusableObj::implObj> most_recent_keyboard_focus_thread_only;
 
  public:
 

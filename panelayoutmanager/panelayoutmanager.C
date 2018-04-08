@@ -145,6 +145,10 @@ panefactory panelayoutmanagerObj::replace_all_panes()
 }
 
 ///////////////////////////////////////////////////////////////////////////
+namespace {
+#if 0
+}
+#endif
 
 class LIBCXX_HIDDEN panecontainerObj : public focusable_containerObj {
 
@@ -152,7 +156,7 @@ class LIBCXX_HIDDEN panecontainerObj : public focusable_containerObj {
 
 	const ref<panelayoutmanagerObj::implObj> layout_impl;
 
-	panecontainerObj(const ref<implObj> &impl,
+	panecontainerObj(const ref<containerObj::implObj> &impl,
 			 const ref<panelayoutmanagerObj::implObj> &layout_impl)
 		: focusable_containerObj{impl, layout_impl},
 		layout_impl{layout_impl}
@@ -161,7 +165,7 @@ class LIBCXX_HIDDEN panecontainerObj : public focusable_containerObj {
 
 	~panecontainerObj()=default;
 
-	ref<focusableImplObj> get_impl() const override
+	ref<focusableObj::implObj> get_impl() const override
 	{
 		grid_map_t::lock lock{layout_impl->grid_map};
 
@@ -187,7 +191,7 @@ class LIBCXX_HIDDEN panecontainerObj : public focusable_containerObj {
 		// good enought.
 		// then number of elements we will have.
 
-		std::vector<ref<focusableImplObj>> v;
+		std::vector<ref<focusableObj::implObj>> v;
 
 		v.reserve(1 + 2*n);
 
@@ -208,6 +212,11 @@ class LIBCXX_HIDDEN panecontainerObj : public focusable_containerObj {
 		cb(internal_focusable_group{v.size(), &v.at(0)});
 	}
 };
+
+#if 0
+{
+#endif
+}
 
 new_panelayoutmanager::new_panelayoutmanager(orientation_t orientation)
 	: pane_style{"pane_border", "pane_slider",

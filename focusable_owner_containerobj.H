@@ -19,11 +19,11 @@ class LIBCXX_HIDDEN focusable_owner_containerObj :
 	focusable_owner_containerObj(const ref<containerObj::implObj> &impl,
 				     const ref<layoutmanagerObj::implObj>
 				     &layout_impl,
-				     const ref<focusableImplObj> &f_impl)
+				     const ref<focusableObj::implObj> &f_impl)
 		LIBCXX_HIDDEN;
 	~focusable_owner_containerObj();
 
-	ref<focusableImplObj> get_impl() const override LIBCXX_HIDDEN;
+	ref<focusableObj::implObj> get_impl() const override LIBCXX_HIDDEN;
 };
 
 LIBCXXW_NAMESPACE_END

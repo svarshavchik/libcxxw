@@ -19,16 +19,16 @@
 
 LIBCXXW_NAMESPACE_START
 
-focusableImplObj::focusableImplObj()
+focusableObj::implObj::implObj()
 	: in_focusable_fields_thread_only(false),
 	  my_labels_thread_only(my_labels_t::create()),
 	  autofocus(false)
 {
 }
 
-focusableImplObj::~focusableImplObj()=default;
+focusableObj::implObj::~implObj()=default;
 
-bool focusableImplObj::focusable_enabled(ONLY IN_THREAD)
+bool focusableObj::implObj::focusable_enabled(ONLY IN_THREAD)
 {
 	return get_focusable_element().enabled(IN_THREAD);
 }
@@ -40,7 +40,7 @@ bool focusableImplObj::focusable_enabled(ONLY IN_THREAD)
 						\
 	focusable_fields_iter(IN_THREAD); })
 
-void focusableImplObj::focusable_initialize(ONLY IN_THREAD)
+void focusableObj::implObj::focusable_initialize(ONLY IN_THREAD)
 {
 	if (in_focusable_fields(IN_THREAD))
 		throw EXCEPTION("Internal element: multiply-linked focusable: "
@@ -51,14 +51,14 @@ void focusableImplObj::focusable_initialize(ONLY IN_THREAD)
 	auto &ff=focusable_fields(IN_THREAD);
 
 	focusable_fields_iter(IN_THREAD)=ff.insert(ff.end(),
-						   ref<focusableImplObj>(this));
+						   ref<focusableObj::implObj>(this));
 
 	in_focusable_fields(IN_THREAD)=true;
 
 	e.focusable_initialized(IN_THREAD, *this);
 }
 
-void focusableImplObj::focusable_deinitialize(ONLY IN_THREAD)
+void focusableObj::implObj::focusable_deinitialize(ONLY IN_THREAD)
 {
 	if (!in_focusable_fields(IN_THREAD))
 		throw EXCEPTION("Internal element: multiply-linked focusable: "
@@ -102,7 +102,7 @@ void focusableImplObj::focusable_deinitialize(ONLY IN_THREAD)
 
 	auto &ff=window_handler.focusable_fields(IN_THREAD);
 
-	auto ptr_impl=ptr<focusableImplObj>(this);
+	auto ptr_impl=ptr<focusableObj::implObj>(this);
 
 	// Remove the focusable field from focusable_fields,
 	// in every case.
@@ -124,13 +124,13 @@ void focusableImplObj::focusable_deinitialize(ONLY IN_THREAD)
 		next_focus(IN_THREAD, next_iter, {});
 }
 
-focusable_fields_t &focusableImplObj::focusable_fields(ONLY IN_THREAD)
+focusable_fields_t &focusableObj::implObj::focusable_fields(ONLY IN_THREAD)
 {
 	return get_focusable_element().get_window_handler()
 		.focusable_fields(IN_THREAD);
 }
 
-void focusableImplObj::set_enabled(ONLY IN_THREAD, bool flag)
+void focusableObj::implObj::set_enabled(ONLY IN_THREAD, bool flag)
 {
 	(void)GET_FOCUSABLE_FIELD_ITER();
 
@@ -166,11 +166,11 @@ void focusableImplObj::set_enabled(ONLY IN_THREAD, bool flag)
 		unfocus(IN_THREAD);
 }
 
-void focusableImplObj::unfocus_later(ONLY IN_THREAD)
+void focusableObj::implObj::unfocus_later(ONLY IN_THREAD)
 {
 	(void)GET_FOCUSABLE_FIELD_ITER();
 
-	auto ptr_impl=ptr<focusableImplObj>(this);
+	auto ptr_impl=ptr<focusableObj::implObj>(this);
 
 	if (get_focusable_element().get_window_handler()
 	    .most_recent_keyboard_focus(IN_THREAD) != ptr_impl)
@@ -184,11 +184,11 @@ void focusableImplObj::unfocus_later(ONLY IN_THREAD)
 			    });
 }
 
-void focusableImplObj::unfocus(ONLY IN_THREAD)
+void focusableObj::implObj::unfocus(ONLY IN_THREAD)
 {
 	(void)GET_FOCUSABLE_FIELD_ITER();
 
-	auto ptr_impl=ptr<focusableImplObj>(this);
+	auto ptr_impl=ptr<focusableObj::implObj>(this);
 
 	if (get_focusable_element().get_window_handler()
 	    .most_recent_keyboard_focus(IN_THREAD) != ptr_impl)
@@ -393,7 +393,7 @@ bool elementObj::implObj::process_button_event(ONLY IN_THREAD,
 	return processed;
 }
 
-void focusableImplObj::next_focus(ONLY IN_THREAD,
+void focusableObj::implObj::next_focus(ONLY IN_THREAD,
 				  const callback_trigger_t &trigger)
 {
 	auto iter=GET_FOCUSABLE_FIELD_ITER();
@@ -401,7 +401,7 @@ void focusableImplObj::next_focus(ONLY IN_THREAD,
 	next_focus(IN_THREAD, ++iter, trigger);
 }
 
-void focusableImplObj::next_focus(ONLY IN_THREAD,
+void focusableObj::implObj::next_focus(ONLY IN_THREAD,
 				  focusable_fields_t::iterator starting_iter,
 				  const callback_trigger_t &trigger)
 {
@@ -429,7 +429,7 @@ void focusableImplObj::next_focus(ONLY IN_THREAD,
 		.unset_keyboard_focus(IN_THREAD, trigger);
 }
 
-void focusableImplObj::prev_focus(ONLY IN_THREAD,
+void focusableObj::implObj::prev_focus(ONLY IN_THREAD,
 				  const callback_trigger_t &trigger)
 {
 	auto iter=GET_FOCUSABLE_FIELD_ITER();
@@ -460,7 +460,7 @@ void focusableImplObj::prev_focus(ONLY IN_THREAD,
 		.unset_keyboard_focus(IN_THREAD, trigger);
 }
 
-void focusableImplObj::set_focus_only(ONLY IN_THREAD,
+void focusableObj::implObj::set_focus_only(ONLY IN_THREAD,
 				      const callback_trigger_t &trigger)
 {
 	if (!in_focusable_fields(IN_THREAD))
@@ -472,7 +472,7 @@ void focusableImplObj::set_focus_only(ONLY IN_THREAD,
 				       trigger);
 }
 
-void focusableImplObj
+void focusableObj::implObj
 ::set_focus_and_ensure_visibility(ONLY IN_THREAD,
 				  const callback_trigger_t &trigger)
 {
@@ -480,7 +480,7 @@ void focusableImplObj
 	get_focusable_element().ensure_entire_visibility(IN_THREAD);
 }
 
-void focusableImplObj::switch_focus(ONLY IN_THREAD,
+void focusableObj::implObj::switch_focus(ONLY IN_THREAD,
 				    const focusable_impl &focus_to,
 				    const callback_trigger_t &trigger)
 {
@@ -488,7 +488,7 @@ void focusableImplObj::switch_focus(ONLY IN_THREAD,
 
 }
 
-bool focusableImplObj::ok_to_lose_focus(ONLY IN_THREAD,
+bool focusableObj::implObj::ok_to_lose_focus(ONLY IN_THREAD,
 					const callback_trigger_t &trigger)
 {
 	return true;
@@ -497,49 +497,49 @@ bool focusableImplObj::ok_to_lose_focus(ONLY IN_THREAD,
 // Need to do a song-and-dance routine to make sure that both focusables
 // get a clean bill of health from GET_FOCUSABLE_FIELD_ITER().
 
-void focusableImplObj::get_focus_before(ONLY IN_THREAD,
-					const ref<focusableImplObj> &other)
+void focusableObj::implObj::get_focus_before(ONLY IN_THREAD,
+					const ref<focusableObj::implObj> &other)
 {
 	(void)GET_FOCUSABLE_FIELD_ITER();
 
 	other->i_will_get_focus_after(IN_THREAD, *this);
 }
 
-void focusableImplObj::get_focus_after(ONLY IN_THREAD,
-				       const ref<focusableImplObj> &other)
+void focusableObj::implObj::get_focus_after(ONLY IN_THREAD,
+				       const ref<focusableObj::implObj> &other)
 {
 	(void)GET_FOCUSABLE_FIELD_ITER();
 
 	other->i_will_get_focus_before(IN_THREAD, *this);
 }
 
-void focusableImplObj::i_will_get_focus_before(ONLY IN_THREAD,
-					       focusableImplObj &other)
+void focusableObj::implObj::i_will_get_focus_before(ONLY IN_THREAD,
+					       focusableObj::implObj &other)
 {
 	auto iter=GET_FOCUSABLE_FIELD_ITER();
 
 	auto &ff=focusable_fields(IN_THREAD);
 
-	auto new_iter=ff.insert(++iter, ref<focusableImplObj>(&other));
+	auto new_iter=ff.insert(++iter, ref<focusableObj::implObj>(&other));
 
 	ff.erase(other.focusable_fields_iter(IN_THREAD));
 	other.focusable_fields_iter(IN_THREAD)=new_iter;
 }
 
-void focusableImplObj::i_will_get_focus_after(ONLY IN_THREAD,
-					      focusableImplObj &other)
+void focusableObj::implObj::i_will_get_focus_after(ONLY IN_THREAD,
+					      focusableObj::implObj &other)
 {
 	auto iter=GET_FOCUSABLE_FIELD_ITER();
 
 	auto &ff=focusable_fields(IN_THREAD);
 
-	auto new_iter=ff.insert(iter, ref<focusableImplObj>(&other));
+	auto new_iter=ff.insert(iter, ref<focusableObj::implObj>(&other));
 
 	ff.erase(other.focusable_fields_iter(IN_THREAD));
 	other.focusable_fields_iter(IN_THREAD)=new_iter;
 }
 
-void focusableImplObj::creating_focusable_child_element()
+void focusableObj::implObj::creating_focusable_child_element()
 {
 	throw EXCEPTION(_("Focusable display elements cannot be created inside another focusable element."));
 }

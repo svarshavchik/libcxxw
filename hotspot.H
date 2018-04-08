@@ -60,14 +60,14 @@ class LIBCXX_HIDDEN hotspotObj::implObj
 	//! Returns this hotspot's focusable.
 	//! \see hotspot_element
 
-	virtual focusableImplObj &get_hotspot_focusable()=0;
+	virtual focusableObj::implObj &get_hotspot_focusable()=0;
 
 	//! Must be implemented in the subclass.
 
 	//! Returns this hotspot's focusable.
 	//! \see hotspot_element
 
-	virtual const focusableImplObj &get_hotspot_focusable() const=0;
+	virtual const focusableObj::implObj &get_hotspot_focusable() const=0;
 
 	//! Must be implemented in the subclass.
 

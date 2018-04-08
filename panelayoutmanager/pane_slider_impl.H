@@ -33,7 +33,7 @@ public:
 
 	//! Return my focusable implementation object.
 
-	virtual focusableImplObj &slider_focusable_impl()=0;
+	virtual focusableObj::implObj &slider_focusable_impl()=0;
 };
 
 LIBCXXW_NAMESPACE_END

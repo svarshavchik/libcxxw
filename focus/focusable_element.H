@@ -29,7 +29,7 @@ focusable_elementObj<element_impl>::focusable_elementObj(Args && ...args)
 template<typename element_impl>
 focusable_elementObj<element_impl>::~focusable_elementObj()=default;
 
-//! Implement get_focusable_element() for focusableImplObj.
+//! Implement get_focusable_element() for focusableObj::implObj.
 
 template<typename element_impl>
 child_elementObj &focusable_elementObj<element_impl>::get_focusable_element()
@@ -37,7 +37,7 @@ child_elementObj &focusable_elementObj<element_impl>::get_focusable_element()
 	return *this;
 }
 
-//! Implement get_focusable_element() for focusableImplObj.
+//! Implement get_focusable_element() for focusableObj::implObj.
 
 template<typename element_impl>
 const child_elementObj &focusable_elementObj<element_impl>

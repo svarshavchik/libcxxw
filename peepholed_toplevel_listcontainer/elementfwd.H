@@ -75,7 +75,7 @@ public:
 	(const popup_attachedto_info &attachedto_info,
 	 const ref<peepholed_toplevel_listcontainer_implObj
 	 > &toplevel_listcontainer_impl,
-	 const ref<focusableImplObj> &focusable_impl,
+	 const ref<focusableObj::implObj> &focusable_impl,
 	 Args && ...args);
 
 	~peepholed_toplevel_listcontainer_elementObj();

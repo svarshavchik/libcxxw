@@ -46,9 +46,9 @@ class LIBCXX_HIDDEN hotspot_elementObj
 
 	const child_elementObj &get_hotspot_element() const override;
 
-	focusableImplObj &get_hotspot_focusable() override;
+	focusableObj::implObj &get_hotspot_focusable() override;
 
-	const focusableImplObj &get_hotspot_focusable() const override;
+	const focusableObj::implObj &get_hotspot_focusable() const override;
 
 	void keyboard_focus(ONLY IN_THREAD, const callback_trigger_t &)
 		override;

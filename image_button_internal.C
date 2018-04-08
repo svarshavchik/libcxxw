@@ -18,7 +18,7 @@ image_button_internalObj::image_button_internalObj(const ref<implObj> &impl)
 
 image_button_internalObj::~image_button_internalObj()=default;
 
-ref<focusableImplObj> image_button_internalObj::get_impl() const
+ref<focusableObj::implObj> image_button_internalObj::get_impl() const
 {
 	return impl;
 }

@@ -31,7 +31,7 @@ public:
 	~list_elementObj();
 
 	//! Implement get_impl()
-	ref<focusableImplObj> get_impl() const override;
+	ref<focusableObj::implObj> get_impl() const override;
 
 };
 

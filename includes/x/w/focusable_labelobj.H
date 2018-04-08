@@ -27,14 +27,14 @@ public:
 	focusable_labelObj(const ref<containerObj::implObj> &container_impl,
 			   const ref<layoutmanagerObj::implObj> &layout_impl,
 			   const ref<textlabelObj::implObj> &label_impl,
-			   const ref<focusableImplObj> &focusable_impl)
+			   const ref<focusableObj::implObj> &focusable_impl)
 		LIBCXX_HIDDEN;
 
 	//! Destructor
 	~focusable_labelObj() LIBCXX_HIDDEN;
 
 	//! Inherited from focusableObj
-	ref<focusableImplObj> get_impl() const override LIBCXX_HIDDEN;
+	ref<focusableObj::implObj> get_impl() const override LIBCXX_HIDDEN;
 
 	//! Inherited from elementObj
 

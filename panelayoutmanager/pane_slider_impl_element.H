@@ -37,7 +37,7 @@ elementObj::implObj &pane_slider_impl_elementObj<straight_borderobj_t>
 
 //! Implement slider_focusalbe_impl()
 template<typename straight_borderobj_t>
-focusableImplObj &pane_slider_impl_elementObj<straight_borderobj_t>
+focusableObj::implObj &pane_slider_impl_elementObj<straight_borderobj_t>
 ::slider_focusable_impl()
 {
 	return *this;

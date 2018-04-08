@@ -4,7 +4,7 @@
 
 	* Move several internal header files into <x/w/impl>, making it
 	possible to create custom display elements. Document an example
-	of implementing a custom canvas display element.
+	of implementing some custom display elements.
 
 	* Added spin button control to input fields.
 

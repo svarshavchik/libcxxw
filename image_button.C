@@ -37,7 +37,7 @@ image_buttonObj::image_buttonObj(const ref<implObj> &impl,
 
 image_buttonObj::~image_buttonObj()=default;
 
-ref<focusableImplObj> image_buttonObj::get_impl() const
+ref<focusableObj::implObj> image_buttonObj::get_impl() const
 {
 	return impl->button->impl;
 }

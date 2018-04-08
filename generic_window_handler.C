@@ -1219,7 +1219,7 @@ bool generic_windowObj::handlerObj
 }
 
 void generic_windowObj::handlerObj
-::focusable_initialized(ONLY IN_THREAD, focusableImplObj &fimpl)
+::focusable_initialized(ONLY IN_THREAD, focusableObj::implObj &fimpl)
 {
 }
 

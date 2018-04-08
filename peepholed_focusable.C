@@ -32,7 +32,7 @@ peepholed_focusableObj
 
 peepholed_focusableObj::~peepholed_focusableObj()=default;
 
-ref<focusableImplObj> peepholed_focusableObj::get_impl() const
+ref<focusableObj::implObj> peepholed_focusableObj::get_impl() const
 {
 	return impl->get_impl();
 }
@@ -57,7 +57,7 @@ peepholed_focusableObj::implObj
 
 peepholed_focusableObj::implObj::~implObj()=default;
 
-ref<focusableImplObj> peepholed_focusableObj::implObj::get_impl() const
+ref<focusableObj::implObj> peepholed_focusableObj::implObj::get_impl() const
 {
 	return peepholed_element->get_impl();
 }

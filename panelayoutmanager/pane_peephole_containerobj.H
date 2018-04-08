@@ -36,7 +36,7 @@ public:
 
 	//! Implement get_impl
 
-	ref<focusableImplObj> get_impl() const override;
+	ref<focusableObj::implObj> get_impl() const override;
 
 	//! Implement do_get_impl()
 	void do_get_impl(const function<internal_focusable_cb> &cb)

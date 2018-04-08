@@ -37,7 +37,7 @@ public:
 	~image_buttonObj() LIBCXX_HIDDEN;
 
 	//! Implement get_impl().
-	ref<focusableImplObj> get_impl() const override;
+	ref<focusableObj::implObj> get_impl() const override;
 
 	//! Which image is currently being shown by this image button.
 

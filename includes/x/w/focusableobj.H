@@ -31,6 +31,7 @@ typedef void internal_focusable_cb(const internal_focusable_group &);
 class focusableObj : virtual public obj {
 
 public:
+	class implObj;
 	class ownerObj;
 
 	//! Constructor
@@ -42,7 +43,7 @@ public:
 	//! Return the implementation object.
 
 	//! \internal
-	virtual ref<focusableImplObj> get_impl() const LIBCXX_HIDDEN=0;
+	virtual ref<focusableObj::implObj> get_impl() const LIBCXX_HIDDEN=0;
 
 
 	//! Enable/disable the focusable object.

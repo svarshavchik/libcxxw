@@ -19,6 +19,7 @@
 #include <x/w/busyfwd.H>
 #include <x/w/focus.H>
 #include <x/w/rgbfwd.H>
+#include <x/w/focusableobj.H>
 #include <x/w/font_arg.H>
 #include <x/w/text_param.H>
 #include <x/w/impl/clock.H>
@@ -931,7 +932,7 @@ class elementObj::implObj : public element_drawObj,
 	//! handling either top level windows without peepholes (tooltips),
 	//! or the scrollbars themselves.
 	virtual void focusable_initialized(ONLY IN_THREAD,
-					   focusableImplObj &fimpl)=0;
+					   focusableObj::implObj &fimpl)=0;
 
 	//! This element should be the first focusable element.
 	//! child_elementObj forwards it to its parent container; and this

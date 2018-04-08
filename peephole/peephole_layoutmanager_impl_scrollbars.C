@@ -174,7 +174,7 @@ void set_peephole_scrollbar_focus_order(const focusable &horizontal_scrollbar,
 
 void set_top_level_peephole_scrollbar_focus_order
 (ONLY IN_THREAD,
- focusableImplObj &new_element,
+ focusableObj::implObj &new_element,
  const focusable &horizontal_scrollbar,
  const focusable &vertical_scrollbar)
 {

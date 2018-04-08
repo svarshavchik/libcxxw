@@ -63,7 +63,7 @@ bool select_key_pressed(const key_event &) LIBCXX_HIDDEN;
 //! The public object must inherit from focusableObj::ownerObj, which takes
 //! care of invoking focusable_initialize() and focusable_deinitialize().
 
-class LIBCXX_HIDDEN focusableImplObj : virtual public obj {
+class LIBCXX_HIDDEN focusableObj::implObj : virtual public obj {
 
 	//! My iterator in the focusable_fields list.
 
@@ -99,10 +99,10 @@ class LIBCXX_HIDDEN focusableImplObj : virtual public obj {
 	mpobj<bool> autofocus;
 
 	//! Constructor
-	focusableImplObj();
+	implObj();
 
 	//! Destructor
-	~focusableImplObj();
+	~implObj();
 
 	//! Whether this element is enabled for focusing.
 
@@ -190,18 +190,18 @@ class LIBCXX_HIDDEN focusableImplObj : virtual public obj {
 
 	//! Set tabbing order.
 	void get_focus_before(ONLY IN_THREAD,
-			      const ref<focusableImplObj> &other);
+			      const ref<focusableObj::implObj> &other);
 	//! Set tabbing order.
 	void get_focus_after(ONLY IN_THREAD,
-			      const ref<focusableImplObj> &other);
+			      const ref<focusableObj::implObj> &other);
 
  private:
 	//! Set tabbing order.
 	void i_will_get_focus_before(ONLY IN_THREAD,
-				     focusableImplObj &other);
+				     focusableObj::implObj &other);
 	//! Set tabbing order.
 	void i_will_get_focus_after(ONLY IN_THREAD,
-				    focusableImplObj &other);
+				    focusableObj::implObj &other);
 
  public:
 
@@ -238,7 +238,7 @@ void get_focus_after_in_thread(ONLY IN_THREAD,	const focusable &me,
 				const focusable &other) LIBCXX_HIDDEN;
 
 void get_focus_impl_after_in_thread(ONLY IN_THREAD, const focusable &me,
-				    const ref<focusableImplObj> &a)
+				    const ref<focusableObj::implObj> &a)
 	LIBCXX_HIDDEN;
 
 //! focusableObj::do_get_impl() constructs this object and invokes the
@@ -250,7 +250,7 @@ struct LIBCXX_HIDDEN internal_focusable_group {
 	size_t internal_impl_count;
 
 	//! Pointer to an array of intenral_impl_count focusable implementation objects.
-	ref<focusableImplObj> *impls;
+	ref<focusableObj::implObj> *impls;
 };
 
 //! Fixed list of focusable elements in a single group.
@@ -267,7 +267,7 @@ template<typename ...Args>
 inline void process_focusable_impls(const function<internal_focusable_cb> &cb,
 				    Args && ...args)
 {
-	std::array<ref<focusableImplObj>, sizeof...(Args)> impls={
+	std::array<ref<focusableObj::implObj>, sizeof...(Args)> impls={
 		std::forward<Args>(args)...};
 
 	internal_focusable_group group{impls.size(), &impls[0]};

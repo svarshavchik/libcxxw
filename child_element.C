@@ -357,7 +357,7 @@ bool child_elementObj::pasted(ONLY IN_THREAD,
 }
 
 void child_elementObj::focusable_initialized(ONLY IN_THREAD,
-					     focusableImplObj &fimpl)
+					     focusableObj::implObj &fimpl)
 {
 	child_container->container_element_impl()
 		.focusable_initialized(IN_THREAD,

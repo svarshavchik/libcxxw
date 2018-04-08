@@ -97,7 +97,7 @@ class LIBCXX_HIDDEN peephole_toplevel_implObj
 	//! Override focusable_initialized()
 
 	void focusable_initialized(ONLY IN_THREAD,
-				   focusableImplObj &fimpl) override
+				   focusableObj::implObj &fimpl) override
 	{
 		set_top_level_peephole_scrollbar_focus_order
 			(IN_THREAD,

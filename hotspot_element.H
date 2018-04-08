@@ -38,14 +38,14 @@ const child_elementObj &hotspot_elementObj<element_impl>::get_hotspot_element()
 //! Implement get_hotspot_focusable() for hotspotObj::implObj.
 
 template<typename element_impl>
-focusableImplObj &hotspot_elementObj<element_impl>
+focusableObj::implObj &hotspot_elementObj<element_impl>
 ::get_hotspot_focusable()
 {
 	return *this;
 }
 
 template<typename element_impl>
-const focusableImplObj &hotspot_elementObj<element_impl>
+const focusableObj::implObj &hotspot_elementObj<element_impl>
 ::get_hotspot_focusable() const
 {
 	return *this;

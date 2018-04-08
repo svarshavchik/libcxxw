@@ -12,7 +12,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-focusableObj::ownerObj::ownerObj(const ref<focusableImplObj> &impl) : impl(impl)
+focusableObj::ownerObj::ownerObj(const ref<focusableObj::implObj> &impl) : impl(impl)
 {
 	// The constructor inserts the implementation object into the
 	// top level window's focusable_fields.
@@ -41,7 +41,7 @@ focusableObj::ownerObj::~ownerObj()
 		 });
 }
 
-ref<focusableImplObj> focusableObj::ownerObj::get_impl() const
+ref<focusableObj::implObj> focusableObj::ownerObj::get_impl() const
 {
 	return impl;
 }

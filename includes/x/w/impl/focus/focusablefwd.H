@@ -5,13 +5,12 @@
 #ifndef x_w_impl_focusablefwd_h
 #define x_w_impl_focusablefwd_h
 
-#include <x/ref.H>
+#include <x/ptrfwd.H>
+#include <x/w/focusableobj.H>
 #include <x/w/namespace.H>
 #include <list>
 
 LIBCXXW_NAMESPACE_START
-
-class focusableImplObj;
 
 //! A focusable implementation mixin.
 
@@ -31,11 +30,11 @@ class focusableImplObj;
 //! This focusable implementation object handles the mechanics of switching
 //! keyboard input focus to the next/previous focusable object.
 
-typedef ref<focusableImplObj> focusable_impl;
+typedef ref<focusableObj::implObj> focusable_impl;
 
 //! A nullable pointer reference to a \ref focusable_impl "focusable object".
 
-typedef ptr<focusableImplObj> focusable_implptr;
+typedef ptr<focusableObj::implObj> focusable_implptr;
 
 //! A list of all focusable fields.
 

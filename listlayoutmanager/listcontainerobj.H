@@ -19,10 +19,10 @@ class LIBCXX_HIDDEN listcontainerObj : public focusable_containerObj {
 	class implObj;
 
 	//! Internal implementation object.
-	const ref<focusableImplObj> focusable_impl;
+	const ref<focusableObj::implObj> focusable_impl;
 
 	//! Constructor
-	listcontainerObj(const ref<focusableImplObj> &focusable_impl,
+	listcontainerObj(const ref<focusableObj::implObj> &focusable_impl,
 			 const ref<containerObj::implObj> &container_impl,
 			 const ref<layoutmanagerObj::implObj> &list_impl);
 
@@ -30,7 +30,7 @@ class LIBCXX_HIDDEN listcontainerObj : public focusable_containerObj {
 	~listcontainerObj();
 
 	//! Inherited from focusableObj
-	ref<focusableImplObj> get_impl() const override;
+	ref<focusableObj::implObj> get_impl() const override;
 };
 
 LIBCXXW_NAMESPACE_END

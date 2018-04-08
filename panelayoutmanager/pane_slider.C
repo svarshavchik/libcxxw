@@ -18,7 +18,7 @@ pane_sliderObj::pane_sliderObj(const ref<implObj> &impl)
 
 pane_sliderObj::~pane_sliderObj()=default;
 
-ref<focusableImplObj> pane_sliderObj::get_impl() const
+ref<focusableObj::implObj> pane_sliderObj::get_impl() const
 {
 	return ref(&impl->slider_focusable_impl());
 }
