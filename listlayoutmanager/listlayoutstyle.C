@@ -12,7 +12,7 @@
 #include "listlayoutmanager/list_cellimage.H"
 #include "listlayoutmanager/list_cellseparator.H"
 #include "listlayoutmanager/listlayoutmanager_impl.H"
-#include "listlayoutmanager/list_container_impl.H"
+#include "listlayoutmanager/listcontainer_pseudo_impl.H"
 #include "listlayoutmanager/list_cell.H"
 #include "peepholed_listcontainer_impl_element.H"
 #include "peephole/peephole_impl.H"
@@ -47,7 +47,7 @@ listlayoutstyle_impl
 
 	auto internal_listcontainer_impl=
 		ref<peepholed_listcontainer_impl_elementObj
-		    <list_container_implObj>>
+		    <listcontainer_pseudo_implObj>>
 		::create(style, peephole_parent);
 
 	// The single element in the container, used to draw the list, and

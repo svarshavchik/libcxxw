@@ -142,7 +142,7 @@ class LIBCXX_HIDDEN list_element_synchronized_columnsObj
 
 ////////////////////////////////////////////////////////////////////////////
 
-list_elementObj::implObj::implObj(const ref<list_container_implObj>
+list_elementObj::implObj::implObj(const ref<listcontainer_pseudo_implObj>
 				  &textlist_container,
 				  const new_listlayoutmanager &style)
 	: implObj(textlist_container, style,
@@ -150,7 +150,7 @@ list_elementObj::implObj::implObj(const ref<list_container_implObj>
 {
 }
 
-list_elementObj::implObj::implObj(const ref<list_container_implObj>
+list_elementObj::implObj::implObj(const ref<listcontainer_pseudo_implObj>
 			      &textlist_container,
 			      const new_listlayoutmanager &style,
 			      elementObj::implObj &container_element_impl)
@@ -160,7 +160,7 @@ list_elementObj::implObj::implObj(const ref<list_container_implObj>
 {
 }
 
-list_elementObj::implObj::implObj(const ref<list_container_implObj>
+list_elementObj::implObj::implObj(const ref<listcontainer_pseudo_implObj>
 			      &textlist_container,
 			      const new_listlayoutmanager &style,
 			      elementObj::implObj &container_element_impl,

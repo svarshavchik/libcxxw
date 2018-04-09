@@ -9,7 +9,7 @@
 #include "listlayoutmanager/listlayoutstyle_implfwd.H"
 #include "listlayoutmanager/list_cellfwd.H"
 #include "listlayoutmanager/extra_list_row_info.H"
-#include "listlayoutmanager/list_container_impl.H"
+#include "listlayoutmanager/listcontainer_pseudo_impl.H"
 #include "focus/focusable_elementfwd.H"
 #include "x/w/impl/background_color_elementfwd.H"
 #include "iconfwd.H"
@@ -202,25 +202,25 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 
 	//! Parent container, with a singleton layout manager.
 
-	const ref<list_container_implObj> textlist_container;
+	const ref<listcontainer_pseudo_implObj> textlist_container;
 
 	//! Alias
 	typedef list_element_impl_superclass_t superclass_t;
 
 	//! Constructor
-	implObj(const ref<list_container_implObj> &textlist_container,
+	implObj(const ref<listcontainer_pseudo_implObj> &textlist_container,
 		const new_listlayoutmanager &style);
 
  private:
 	//! Internal constructor
 
-	implObj(const ref<list_container_implObj> &textlist_container,
+	implObj(const ref<listcontainer_pseudo_implObj> &textlist_container,
 		const new_listlayoutmanager &style,
 		elementObj::implObj &container_element_impl);
 
 	//! Internal constructor
 
-	implObj(const ref<list_container_implObj> &textlist_container,
+	implObj(const ref<listcontainer_pseudo_implObj> &textlist_container,
 		const new_listlayoutmanager &style,
 		elementObj::implObj &container_element_impl,
 		const screen &container_screen);

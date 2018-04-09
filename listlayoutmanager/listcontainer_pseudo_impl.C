@@ -3,23 +3,23 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
-#include "listlayoutmanager/list_container_impl.H"
+#include "listlayoutmanager/listcontainer_pseudo_impl.H"
 #include "container_element.H"
 #include "x/w/impl/draw_info.H"
 
 LIBCXXW_NAMESPACE_START
 
-list_container_implObj
-::list_container_implObj(const ref<containerObj::implObj> &parent)
+listcontainer_pseudo_implObj
+::listcontainer_pseudo_implObj(const ref<containerObj::implObj> &parent)
 	: superclass_t(parent)
 {
 }
 
-list_container_implObj::~list_container_implObj()=default;
+listcontainer_pseudo_implObj::~listcontainer_pseudo_implObj()=default;
 
-void list_container_implObj::do_draw(ONLY IN_THREAD,
-				     const draw_info &di,
-				     const rectangle_set &areas)
+void listcontainer_pseudo_implObj::do_draw(ONLY IN_THREAD,
+					 const draw_info &di,
+					 const rectangle_set &areas)
 {
 	auto b=di.element_viewport.begin();
 	auto e=di.element_viewport.end();

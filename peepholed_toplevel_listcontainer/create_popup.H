@@ -29,7 +29,7 @@ LIBCXXW_NAMESPACE_START
 
 typedef always_visibleObj<
 	peepholed_toplevel_listcontainer_impl_elementObj<
-		listcontainer_dim_elementObj<list_container_implObj>>
+		listcontainer_dim_elementObj<listcontainer_pseudo_implObj>>
 	> p_t_l_impl_t;
 
 //! Typedef alias.

@@ -409,8 +409,6 @@ libcxxw_la_SOURCES=\
 	listlayoutmanager/list_celltext.H	    \
 	listlayoutmanager/list_celltextfwd.H	    \
 	listlayoutmanager/list_celltextobj.H	    \
-	listlayoutmanager/list_container_impl.C     \
-	listlayoutmanager/list_container_impl.H     \
 	listlayoutmanager/list_element.C	    \
 	listlayoutmanager/list_element.H	    \
 	listlayoutmanager/list_elementfwd.H	    \
@@ -425,6 +423,8 @@ libcxxw_la_SOURCES=\
 	listlayoutmanager/listcontainer_impl.H	    \
 	listlayoutmanager/listcontainer_dim_element.H \
 	listlayoutmanager/listcontainer_dim_elementfwd.H \
+	listlayoutmanager/listcontainer_pseudo_impl.C \
+	listlayoutmanager/listcontainer_pseudo_impl.H \
 	listlayoutmanager/listlayoutmanager.C \
 	listlayoutmanager/listlayoutmanager_impl.C \
 	listlayoutmanager/listlayoutmanager_impl.H \

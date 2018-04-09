@@ -2,8 +2,8 @@
 ** Copyright 2017 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
-#ifndef list_container_impl_h
-#define list_container_impl_h
+#ifndef listcontainer_pseudo_impl_h
+#define listcontainer_pseudo_impl_h
 
 #include "container_elementfwd.H"
 #include "x/w/impl/child_element.H"
@@ -12,7 +12,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-//! The peepholed container with a \ref listlayoutmanager "list layout manager".
+//! The pseudo-container with a \ref listlayoutmanager "list layout manager".
 
 //! Base class for a container that uses the list layout manager.
 //!
@@ -26,7 +26,7 @@ LIBCXXW_NAMESPACE_START
 //! implementing the virtual methods, using the
 //! \ref listcontainer_dim_elementObj "list padding dimension mixin".
 
-class LIBCXX_HIDDEN list_container_implObj :
+class LIBCXX_HIDDEN listcontainer_pseudo_implObj :
 	public container_elementObj<child_elementObj> {
 
  public:
@@ -35,10 +35,10 @@ class LIBCXX_HIDDEN list_container_implObj :
 	typedef container_elementObj<child_elementObj> superclass_t;
 
 	//! Constructor
-	list_container_implObj(const ref<containerObj::implObj> &parent);
+	listcontainer_pseudo_implObj(const ref<containerObj::implObj> &parent);
 
 	//! Destructor
-	~list_container_implObj();
+	~listcontainer_pseudo_implObj();
 
 	//! Implemented in the subclass.
 	virtual const_themedim list_v_padding() const=0;
