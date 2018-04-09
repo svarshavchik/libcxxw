@@ -25,7 +25,7 @@ struct LIBCXX_HIDDEN focusframecontainerObj::new_focusframelayoutmanager {
 // the delegated constructor
 
 focusframecontainerObj::focusframecontainerObj(const ref<implObj> &impl,
-					       const ref<focusableObj::implObj>
+					       const focusable_impl
 					       &focusable_impl)
 	: focusframecontainerObj(impl,
 				 ref(&impl->get_container_impl()),
@@ -44,7 +44,7 @@ focusframecontainerObj::focusframecontainerObj(const ref<implObj> &impl,
 focusframecontainerObj::focusframecontainerObj(const ref<implObj> &impl,
 					       const ref<containerObj::implObj>
 					       &container_impl,
-					       const ref<focusableObj::implObj>
+					       const focusable_impl
 					       &focusable_impl,
 					       const new_focusframelayoutmanager
 					       &factory)

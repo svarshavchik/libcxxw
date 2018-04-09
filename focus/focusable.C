@@ -112,8 +112,8 @@ void focusableObj::set_enabled(bool flag)
 			 });
 }
 
-static auto sanity_check(const ref<focusableObj::implObj> &impl1,
-			 const ref<focusableObj::implObj> &impl2)
+static auto sanity_check(const focusable_impl &impl1,
+			 const focusable_impl &impl2)
 {
 	auto h1=ref<generic_windowObj::handlerObj>
 		(&impl1->get_focusable_element().get_window_handler());
@@ -126,7 +126,7 @@ static auto sanity_check(const ref<focusableObj::implObj> &impl1,
 	return h1->thread();
 }
 
-static auto sanity_check(const ref<focusableObj::implObj> &impl1,
+static auto sanity_check(const focusable_impl &impl1,
 			 const std::vector<focusable> &focusables)
 {
 	auto h1=ref<generic_windowObj::handlerObj>
@@ -270,7 +270,7 @@ void focusableObj::get_focus_after(const focusable &other)
 
 static void get_focus_impl_after_in_thread_with_group(ONLY IN_THREAD,
 						      const auto &me_group,
-						      ref<focusableObj::implObj> a)
+						      focusable_impl a)
 {
 	auto n=me_group.internal_impl_count;
 
@@ -301,7 +301,7 @@ void get_focus_after_in_thread(ONLY IN_THREAD, const focusable &me,
 }
 
 void get_focus_impl_after_in_thread(ONLY IN_THREAD, const focusable &me,
-				    const ref<focusableObj::implObj> &a)
+				    const focusable_impl &a)
 {
 	me->get_impl
 		([&]
@@ -398,7 +398,7 @@ void process_focusable_impls_from_focusables
 (const function<internal_focusable_cb> &cb,
  const std::vector<focusable> &v)
 {
-	std::vector<ref<focusableObj::implObj>> i;
+	std::vector<focusable_impl> i;
 
 	for (const auto &f:v)
 	{

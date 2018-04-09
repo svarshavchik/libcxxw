@@ -47,7 +47,7 @@ text_param date_input_field_config::default_invalid_input() noexcept
 	return _("Invalid date");
 }
 
-ref<focusableObj::implObj> date_input_fieldObj::get_impl() const
+focusable_impl date_input_fieldObj::get_impl() const
 {
 	return impl->calendar_container->text_input_field->get_impl();
 }

@@ -15,7 +15,7 @@ list_elementObj::list_elementObj(const ref<implObj> &impl)
 
 list_elementObj::~list_elementObj()=default;
 
-ref<focusableObj::implObj> list_elementObj::get_impl() const
+focusable_impl list_elementObj::get_impl() const
 {
 	return impl;
 }

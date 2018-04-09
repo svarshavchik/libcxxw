@@ -32,7 +32,7 @@ custom_combobox_containerObj::~custom_combobox_containerObj()=default;
 // This is a composite focusable, the current selection focusable, and the
 // focusable combo-box button.
 
-ref<focusableObj::implObj> custom_combobox_containerObj::get_impl() const
+focusable_impl custom_combobox_containerObj::get_impl() const
 {
 	return current_selection_focusable->get_impl();
 }
@@ -48,7 +48,7 @@ void custom_combobox_containerObj
 		([&]
 		 (const auto &current_selection_group)
 		 {
-			 std::vector<ref<focusableObj::implObj>> composite;
+			 std::vector<focusable_impl> composite;
 
 			 composite.reserve(current_selection_group
 					   .internal_impl_count+1);

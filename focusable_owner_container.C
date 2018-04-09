@@ -12,7 +12,7 @@ focusable_owner_containerObj
 ::focusable_owner_containerObj(const ref<containerObj::implObj> &impl,
 				     const ref<layoutmanagerObj::implObj>
 				     &layout_impl,
-				     const ref<focusableObj::implObj> &f_impl)
+				     const focusable_impl &f_impl)
 	: containerObj(impl, layout_impl),
 	  focusableObj::ownerObj(f_impl)
 {
@@ -20,7 +20,7 @@ focusable_owner_containerObj
 
 focusable_owner_containerObj::~focusable_owner_containerObj()=default;
 
-ref<focusableObj::implObj> focusable_owner_containerObj::get_impl() const
+focusable_impl focusable_owner_containerObj::get_impl() const
 {
 	return focusableObj::ownerObj::get_impl();
 }

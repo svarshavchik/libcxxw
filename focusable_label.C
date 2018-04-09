@@ -65,7 +65,7 @@ focusable_labelObj
 ::focusable_labelObj(const ref<containerObj::implObj> &container_impl,
 		     const ref<layoutmanagerObj::implObj> &layout_impl,
 		     const ref<textlabelObj::implObj> &label_impl,
-		     const ref<focusableObj::implObj> &focusable_impl)
+		     const focusable_impl &focusable_impl)
 	: containerObj(container_impl, layout_impl),
 	  textlabelObj(label_impl),
 	  focusableObj::ownerObj(focusable_impl)
@@ -74,7 +74,7 @@ focusable_labelObj
 
 focusable_labelObj::~focusable_labelObj()=default;
 
-ref<focusableObj::implObj> focusable_labelObj::get_impl() const
+focusable_impl focusable_labelObj::get_impl() const
 {
 	return focusableObj::ownerObj::get_impl();
 }

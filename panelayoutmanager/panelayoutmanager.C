@@ -165,7 +165,7 @@ class LIBCXX_HIDDEN panecontainerObj : public focusable_containerObj {
 
 	~panecontainerObj()=default;
 
-	ref<focusableObj::implObj> get_impl() const override
+	focusable_impl get_impl() const override
 	{
 		grid_map_t::lock lock{layout_impl->grid_map};
 
@@ -191,7 +191,7 @@ class LIBCXX_HIDDEN panecontainerObj : public focusable_containerObj {
 		// good enought.
 		// then number of elements we will have.
 
-		std::vector<ref<focusableObj::implObj>> v;
+		std::vector<focusable_impl> v;
 
 		v.reserve(1 + 2*n);
 

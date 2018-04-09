@@ -190,10 +190,10 @@ class LIBCXX_HIDDEN focusableObj::implObj : virtual public obj {
 
 	//! Set tabbing order.
 	void get_focus_before(ONLY IN_THREAD,
-			      const ref<focusableObj::implObj> &other);
+			      const focusable_impl &other);
 	//! Set tabbing order.
 	void get_focus_after(ONLY IN_THREAD,
-			      const ref<focusableObj::implObj> &other);
+			      const focusable_impl &other);
 
  private:
 	//! Set tabbing order.
@@ -238,7 +238,7 @@ void get_focus_after_in_thread(ONLY IN_THREAD,	const focusable &me,
 				const focusable &other) LIBCXX_HIDDEN;
 
 void get_focus_impl_after_in_thread(ONLY IN_THREAD, const focusable &me,
-				    const ref<focusableObj::implObj> &a)
+				    const focusable_impl &a)
 	LIBCXX_HIDDEN;
 
 //! focusableObj::do_get_impl() constructs this object and invokes the
@@ -250,7 +250,7 @@ struct LIBCXX_HIDDEN internal_focusable_group {
 	size_t internal_impl_count;
 
 	//! Pointer to an array of intenral_impl_count focusable implementation objects.
-	ref<focusableObj::implObj> *impls;
+	focusable_impl *impls;
 };
 
 //! Fixed list of focusable elements in a single group.
@@ -267,7 +267,7 @@ template<typename ...Args>
 inline void process_focusable_impls(const function<internal_focusable_cb> &cb,
 				    Args && ...args)
 {
-	std::array<ref<focusableObj::implObj>, sizeof...(Args)> impls={
+	std::array<focusable_impl, sizeof...(Args)> impls={
 		std::forward<Args>(args)...};
 
 	internal_focusable_group group{impls.size(), &impls[0]};

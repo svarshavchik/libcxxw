@@ -18,16 +18,16 @@ class focusableObj::ownerObj : public focusableObj {
 public:
 	//! Internal implementation details.
 
-	const ref<focusableObj::implObj> impl;
+	const focusable_impl impl;
 
 	//! Constructor
-	ownerObj(const ref<focusableObj::implObj> &impl) LIBCXX_HIDDEN;
+	ownerObj(const focusable_impl &impl) LIBCXX_HIDDEN;
 
 	//! Destructor
 	~ownerObj() LIBCXX_HIDDEN;
 
 	//! Implement get_impl().
-	ref<focusableObj::implObj> get_impl() const override;
+	focusable_impl get_impl() const override;
 
 	using focusableObj::get_impl;
 };

@@ -142,7 +142,7 @@ buttonObj::buttonObj(const ref<implObj> &impl,
 
 buttonObj::~buttonObj()=default;
 
-ref<focusableObj::implObj> buttonObj::get_impl() const
+focusable_impl buttonObj::get_impl() const
 {
 	const_gridlayoutmanager m=get_layoutmanager();
 

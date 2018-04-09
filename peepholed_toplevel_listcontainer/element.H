@@ -23,7 +23,7 @@ peepholed_toplevel_listcontainer_elementObj<element_impl>
 (const popup_attachedto_info &attachedto_info,
  const ref<peepholed_toplevel_listcontainer_implObj
  > &toplevel_listcontainer_impl,
- const ref<focusableObj::implObj> &focusable_impl,
+ const focusable_impl &focusable_impl,
  Args && ...args)
 	: element_impl(std::forward<Args>(args)...),
 	  list_focusable_owner(ref<focusableObj::ownerObj>

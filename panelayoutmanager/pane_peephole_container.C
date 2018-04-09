@@ -23,7 +23,7 @@ pane_peephole_containerObj
 
 pane_peephole_containerObj::~pane_peephole_containerObj()=default;
 
-ref<focusableObj::implObj> pane_peephole_containerObj::get_impl() const
+focusable_impl pane_peephole_containerObj::get_impl() const
 {
 	// The only reason we end up here is to do internal sanity checks.
 	// We don't care which focusable we return here.
@@ -44,7 +44,7 @@ void pane_peephole_containerObj
 {
 	// Combine the scrollbars' into a single focusable list.
 
-	std::vector<ref<focusableObj::implObj>> all_focusable_impls;
+	std::vector<focusable_impl> all_focusable_impls;
 
 	auto optional_focusable_element=focusable_element.get();
 

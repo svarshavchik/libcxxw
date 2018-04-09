@@ -8,20 +8,20 @@
 
 LIBCXXW_NAMESPACE_START
 
-listcontainerObj::listcontainerObj(const ref<focusableObj::implObj> &focusable_impl,
+listcontainerObj::listcontainerObj(const focusable_impl &list_focusable_impl,
 				   const ref<containerObj::implObj> &container_impl,
 				   const ref<layoutmanagerObj::implObj>
 				   &list_impl)
-	: focusable_containerObj(container_impl, list_impl),
-	  focusable_impl(focusable_impl)
+	: focusable_containerObj{container_impl, list_impl},
+	  list_focusable_impl{list_focusable_impl}
 {
 }
 
 listcontainerObj::~listcontainerObj()=default;
 
-ref<focusableObj::implObj> listcontainerObj::get_impl() const
+focusable_impl listcontainerObj::get_impl() const
 {
-	return focusable_impl;
+	return list_focusable_impl;
 }
 
 LIBCXXW_NAMESPACE_END

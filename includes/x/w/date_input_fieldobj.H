@@ -36,7 +36,7 @@ public:
 
 	//! Inherited from focusableObj
 
-	ref<focusableObj::implObj> get_impl() const override LIBCXX_HIDDEN;
+	focusable_impl get_impl() const override LIBCXX_HIDDEN;
 
 	//! Inherited from focusableObj
 

@@ -33,7 +33,7 @@ public:
 	//! Destructor
 	~image_button_internalObj() LIBCXX_HIDDEN;
 
-	ref<focusableObj::implObj> get_impl() const override;
+	focusable_impl get_impl() const override;
 
 	//! Resize the icon images.
 	void resize(ONLY IN_THREAD,

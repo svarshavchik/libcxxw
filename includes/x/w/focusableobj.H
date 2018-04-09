@@ -43,8 +43,7 @@ public:
 	//! Return the implementation object.
 
 	//! \internal
-	virtual ref<focusableObj::implObj> get_impl() const LIBCXX_HIDDEN=0;
-
+	virtual ref<implObj> get_impl() const LIBCXX_HIDDEN=0;
 
 	//! Enable/disable the focusable object.
 
@@ -121,6 +120,30 @@ inline void focusableObj::get_impl(functor &&f) const
 	do_get_impl(make_function<internal_focusable_cb>
 		    (std::forward<functor>(f)));
 }
+
+//! A focusable implementation mixin.
+
+//! A display element that can received pointer or keyboard focus.
+//!
+//! There must be exactly one \ref focusableObj::ownerObj "owner object"
+//! that officially owns a reference to the focusable object.
+//!
+//! A list of focusable fields is stored in the top level window handler
+//! objects. This creates a circular reference, since display elements own
+//! strong references to their parent display element, and the list becomes a
+//! circular reference from the topmost display element to its child elements.
+//!
+//! The focusable owner object is responsible for creating the circular
+//! reference in its constructor and removing it in the destructor.
+//!
+//! This focusable implementation object handles the mechanics of switching
+//! keyboard input focus to the next/previous focusable object.
+
+typedef ref<focusableObj::implObj> focusable_impl;
+
+//! A nullable pointer reference to a \ref focusable_impl "focusable object".
+
+typedef ptr<focusableObj::implObj> focusable_implptr;
 
 LIBCXXW_NAMESPACE_END
 

@@ -535,9 +535,9 @@ class LIBCXX_HIDDEN book_focusable_containerObj
 
 	~book_focusable_containerObj()=default;
 
-	ref<focusableObj::implObj> get_impl() const override
+	focusable_impl get_impl() const override
 	{
-		ptr<focusableObj::implObj> p;
+		focusable_implptr p;
 
 		containerObj::impl->invoke_layoutmanager
 			([&]

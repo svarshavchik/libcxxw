@@ -30,7 +30,7 @@ public:
 	~pane_sliderObj();
 
 	//! Implement get_impl()
-	ref<focusableObj::implObj> get_impl() const override;
+	focusable_impl get_impl() const override;
 };
 
 LIBCXXW_NAMESPACE_END

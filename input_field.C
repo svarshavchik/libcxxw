@@ -237,7 +237,7 @@ void input_fieldObj::do_get_impl(const function<internal_focusable_cb> &cb)
 			 // their focusables, and invoke the real callback.
 
 #define DO_WITH_GRABBED_FOCUSABLES()					\
-			 std::vector<ref<focusableObj::implObj>> impls;	\
+			 std::vector<focusable_impl> impls;	\
 									\
 			 impls.reserve(group1.internal_impl_count+	\
 				       group2.internal_impl_count+	\

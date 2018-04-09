@@ -19,9 +19,9 @@ menuObj::menuObj(const ref<implObj> &impl,
 
 menuObj::~menuObj()=default;
 
-ref<focusableObj::implObj> menuObj::get_impl() const
+focusable_impl menuObj::get_impl() const
 {
-	ptr<focusableObj::implObj> f_impl;
+	focusable_implptr f_impl;
 
 	impl->invoke_layoutmanager([&]
 				   (const ref<gridlayoutmanagerObj::implObj> &l)

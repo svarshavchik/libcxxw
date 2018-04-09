@@ -35,7 +35,7 @@ class LIBCXX_HIDDEN peepholed_listcontainerObj
 
 	//! Constructor
 	peepholed_listcontainerObj(const ref<implObj> &impl,
-				   const ref<focusableObj::implObj> &focusable_impl,
+				   const focusable_impl &focusable_impl,
 				   const ref<containerObj::implObj> &container_impl,
 				   const ref<layoutmanagerObj::implObj>
 				   &list_impl);

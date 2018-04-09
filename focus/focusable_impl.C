@@ -51,7 +51,7 @@ void focusableObj::implObj::focusable_initialize(ONLY IN_THREAD)
 	auto &ff=focusable_fields(IN_THREAD);
 
 	focusable_fields_iter(IN_THREAD)=ff.insert(ff.end(),
-						   ref<focusableObj::implObj>(this));
+						   focusable_impl(this));
 
 	in_focusable_fields(IN_THREAD)=true;
 
@@ -102,7 +102,7 @@ void focusableObj::implObj::focusable_deinitialize(ONLY IN_THREAD)
 
 	auto &ff=window_handler.focusable_fields(IN_THREAD);
 
-	auto ptr_impl=ptr<focusableObj::implObj>(this);
+	auto ptr_impl=focusable_implptr(this);
 
 	// Remove the focusable field from focusable_fields,
 	// in every case.
@@ -170,7 +170,7 @@ void focusableObj::implObj::unfocus_later(ONLY IN_THREAD)
 {
 	(void)GET_FOCUSABLE_FIELD_ITER();
 
-	auto ptr_impl=ptr<focusableObj::implObj>(this);
+	auto ptr_impl=focusable_implptr(this);
 
 	if (get_focusable_element().get_window_handler()
 	    .most_recent_keyboard_focus(IN_THREAD) != ptr_impl)
@@ -188,7 +188,7 @@ void focusableObj::implObj::unfocus(ONLY IN_THREAD)
 {
 	(void)GET_FOCUSABLE_FIELD_ITER();
 
-	auto ptr_impl=ptr<focusableObj::implObj>(this);
+	auto ptr_impl=focusable_implptr(this);
 
 	if (get_focusable_element().get_window_handler()
 	    .most_recent_keyboard_focus(IN_THREAD) != ptr_impl)
@@ -498,7 +498,7 @@ bool focusableObj::implObj::ok_to_lose_focus(ONLY IN_THREAD,
 // get a clean bill of health from GET_FOCUSABLE_FIELD_ITER().
 
 void focusableObj::implObj::get_focus_before(ONLY IN_THREAD,
-					const ref<focusableObj::implObj> &other)
+					const focusable_impl &other)
 {
 	(void)GET_FOCUSABLE_FIELD_ITER();
 
@@ -506,7 +506,7 @@ void focusableObj::implObj::get_focus_before(ONLY IN_THREAD,
 }
 
 void focusableObj::implObj::get_focus_after(ONLY IN_THREAD,
-				       const ref<focusableObj::implObj> &other)
+				       const focusable_impl &other)
 {
 	(void)GET_FOCUSABLE_FIELD_ITER();
 
@@ -520,7 +520,7 @@ void focusableObj::implObj::i_will_get_focus_before(ONLY IN_THREAD,
 
 	auto &ff=focusable_fields(IN_THREAD);
 
-	auto new_iter=ff.insert(++iter, ref<focusableObj::implObj>(&other));
+	auto new_iter=ff.insert(++iter, focusable_impl(&other));
 
 	ff.erase(other.focusable_fields_iter(IN_THREAD));
 	other.focusable_fields_iter(IN_THREAD)=new_iter;
@@ -533,7 +533,7 @@ void focusableObj::implObj::i_will_get_focus_after(ONLY IN_THREAD,
 
 	auto &ff=focusable_fields(IN_THREAD);
 
-	auto new_iter=ff.insert(iter, ref<focusableObj::implObj>(&other));
+	auto new_iter=ff.insert(iter, focusable_impl(&other));
 
 	ff.erase(other.focusable_fields_iter(IN_THREAD));
 	other.focusable_fields_iter(IN_THREAD)=new_iter;

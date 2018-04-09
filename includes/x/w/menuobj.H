@@ -31,7 +31,7 @@ public:
 	~menuObj() LIBCXX_HIDDEN;
 
 	//! Return the internal focusable object.
-	ref<focusableObj::implObj> get_impl() const override LIBCXX_HIDDEN;
+	focusable_impl get_impl() const override LIBCXX_HIDDEN;
 
 	//! Override get_layout_impl()
 
