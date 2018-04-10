@@ -3,7 +3,7 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
-#include "focus/focusable.H"
+#include "x/w/impl/focus/focusable.H"
 #include "date_input_field/date_input_field_impl.H"
 #include "date_input_field/date_input_field_handler.H"
 #include "date_input_field/date_input_field_calendar.H"
@@ -15,7 +15,7 @@
 #include "popup_imagebutton.H"
 #include "peephole/peephole_toplevel.H"
 #include "peephole/peepholed_toplevel.H"
-#include "focus/focusable.H"
+#include "x/w/impl/focus/focusable.H"
 #include "gridlayoutmanager.H"
 #include "x/w/input_field.H"
 #include "x/w/text_param_literals.H"

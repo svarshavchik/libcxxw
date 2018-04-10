@@ -21,10 +21,10 @@ public:
 	const focusable_impl impl;
 
 	//! Constructor
-	ownerObj(const focusable_impl &impl) LIBCXX_HIDDEN;
+	ownerObj(const focusable_impl &impl);
 
 	//! Destructor
-	~ownerObj() LIBCXX_HIDDEN;
+	~ownerObj();
 
 	//! Implement get_impl().
 	focusable_impl get_impl() const override;

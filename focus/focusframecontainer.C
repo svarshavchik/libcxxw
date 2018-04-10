@@ -3,7 +3,7 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
-#include "focus/focusable.H"
+#include "x/w/impl/focus/focusable.H"
 #include "focus/focusframefactory.H"
 #include "focus/focusframecontainer.H"
 #include "focus/focusframecontainer_impl.H"

@@ -12,7 +12,7 @@
 #include "reference_font_elementfwd.H"
 #include "x/w/impl/background_color_elementfwd.H"
 #include "x/w/impl/fonts/current_fontcollectionfwd.H"
-#include "focus/focusable_elementfwd.H"
+#include "x/w/impl/focus/focusable_elementfwd.H"
 #include "editor_peephole_impl.H"
 #include "richtext/richtextiteratorfwd.H"
 #include "richtext/richtextstring.H"

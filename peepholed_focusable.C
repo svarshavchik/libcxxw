@@ -10,7 +10,7 @@
 #include "peephole/peephole_impl.H"
 #include "peephole/peephole_layoutmanager_impl_scrollbars.H"
 #include "peephole/peephole_gridlayoutmanagerobj.H"
-#include "focus/focusable.H"
+#include "x/w/impl/focus/focusable.H"
 #include "focus/standard_focusframecontainer_element.H"
 #include "container_element.H"
 #include "container_visible_element.H"

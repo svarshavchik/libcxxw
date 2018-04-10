@@ -14,7 +14,7 @@
 #include "x/w/listlayoutmanagerfwd.H"
 #include "x/w/focus.H"
 #include "x/w/elementfwd.H"
-#include "focus/focusable.H"
+#include "x/w/impl/focus/focusable.H"
 
 LIBCXXW_NAMESPACE_START
 

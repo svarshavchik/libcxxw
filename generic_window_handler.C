@@ -21,7 +21,7 @@
 #include "x/w/impl/background_color.H"
 #include "x/w/impl/background_color_element.H"
 #include "cursor_pointer.H"
-#include "focus/focusable.H"
+#include "x/w/impl/focus/focusable.H"
 #include "grabbed_pointer.H"
 #include "xim/ximclient.H"
 #include "x/w/key_event.H"

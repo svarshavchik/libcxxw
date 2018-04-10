@@ -7,6 +7,7 @@ noinst_PROGRAMS=\
 	combobox				\
 	customcanvas				\
 	customelement				\
+	customkeyfocus				\
 	dateinputfield				\
 	focusable				\
 	gridlayoutmanager			\
@@ -48,6 +49,9 @@ customcanvas_LDADD=-lcxxw -lcxx
 
 customelement_SOURCES=customelement.C close_flag.H
 customelement_LDADD=-lcxxw -lcxx
+
+customkeyfocus_SOURCES=customkeyfocus.C close_flag.H
+customkeyfocus_LDADD=-lcxxw -lcxx
 
 dateinputfield_SOURCES=dateinputfield.C close_flag.H
 dateinputfield_LDADD=-lcxxw -lcxx

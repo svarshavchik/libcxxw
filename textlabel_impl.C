@@ -11,7 +11,7 @@
 #include "richtext/richtext.H"
 #include "richtext/richtextmeta.H"
 #include "richtext/richtext_draw_info.H"
-#include "focus/focusable.H"
+#include "x/w/impl/focus/focusable.H"
 #include "x/w/impl/background_color.H"
 #include "messages.H"
 #include "defaulttheme.H"

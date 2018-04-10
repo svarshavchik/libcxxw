@@ -10,7 +10,7 @@
 #include "x/w/key_event.H"
 #include "x/w/button_event.H"
 #include "x/w/busy.H"
-#include "focus/focusable_element.H"
+#include "x/w/impl/focus/focusable_element.H"
 #include "generic_window_handler.H"
 #include "run_as.H"
 #include "catch_exceptions.H"

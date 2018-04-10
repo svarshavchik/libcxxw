@@ -9,7 +9,7 @@
 #include "x/w/focusable_container.H"
 #include "x/w/panefactory.H"
 #include "x/w/canvas.H"
-#include "focus/focusable.H"
+#include "x/w/impl/focus/focusable.H"
 #include "defaulttheme.H"
 
 LIBCXXW_NAMESPACE_START

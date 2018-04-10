@@ -32,7 +32,7 @@ See COPYING for distribution information.
       <term><link linkend="dim_axis_arg">Horizontal and vertical metrics</link></term>
       <listitem>
 	<para>
-	  Canvas's implementation class's,
+	  Canvas's &implementation_class;'s,
 	  <ulink url="&link-x--w--canvasObj--implObj;"><classname>&ns;::w::canvasObj::implObj</classname></ulink>'s
 	  constructor takes parameter that sets the element's minimum,
 	  preferred, and maximum size. This is the only display element in
@@ -258,11 +258,12 @@ typedef &ns;::w::scratch_and_mask_buffer_draw&lt;
 	<para>
 	  The template defines a class that inherits from the class
 	  specified by the first parameter. In this example,
-	  <ulink url="&link-typedef-x--w-background-color-elementObj;"><classname>&ns;::w::background_color_elementObj</classname></ulink>
-	  inherits from <classname>&ns;::w::canvasObj::implObj</classname>,
-	  and
-	  <ulink url="&link-x--w--scratch-and-mask-buffer-draw;"><classname>&ns;::w::scratch_and_mask_buffer_draw</classname></ulink>
-	  inherits from that.
+	  <classname>my_canvas_implObj</classname> inherits from
+	  <ulink url="&link-x--w--scratch-and-mask-buffer-draw;"><classname>&ns;::w::scratch_and_mask_buffer_draw</classname></ulink>,
+	  which inherits from
+	  <ulink url="&link-typedef-x--w-background-color-elementObj;"><classname>&ns;::w::background_color_elementObj</classname></ulink>,
+	  which inherits from
+	  <classname>&ns;::w::canvasObj::implObj</classname>.
 	</para>
 
 	<para>
@@ -277,7 +278,7 @@ typedef &ns;::w::scratch_and_mask_buffer_draw&lt;
       <listitem>
 	<para>
 	  Mixin template constructors have variadic parameters.
-	  Depending on the mixin template, the its constructors' initial
+	  Depending on the mixin template, its constructors' initial
 	  parameters apply to the mixin template itself, and the remaining
 	  constructor parameters get universally-forwarded to the superclass.
 	</para>
@@ -296,17 +297,18 @@ typedef &ns;::w::scratch_and_mask_buffer_draw&lt;
       template mixin's constructor requires three parameters.
       <ulink url="&link-typedef-x--w-background-color-elementObj;"><classname>&ns;::w::background_color_elementObj</classname></ulink>'s
       constructor requires one.
-      This means that whatever parameters that my_canvas_implObj
-      passes to its parent class:
+      This means that whatever <classname>my_canvas_implObj</classname>
+      passes the following parameters to its parent class:
     </para>
 
     <itemizedlist>
       <listitem>
 	<para>
-	  Its parent class is the
+	  Its immediate parent class is the
 	  <classname>&ns;::w::scratch_and_mask_buffer_draw</classname>
-	  mixin. Its constructor uses its first three parameters, and forwards
-	  the rest to its superclass.
+	  mixin. This mixin's constructor uses its first three parameters,
+	  and forwards
+	  the rest to its parent class.
 	</para>
       </listitem>
 
@@ -314,14 +316,15 @@ typedef &ns;::w::scratch_and_mask_buffer_draw&lt;
 	<para>
 	  Its parent class is the
 	  <classname>&ns;::w::background_color_elementObj</classname>
-	  mixin. Its constructor uses its first parameter, and forwards
-	  the rest to its superclass.
+	  mixin, handling one color. Therefore,
+	  its constructor uses its first parameter, and forwards
+	  the rest to its parent class.
 	</para>
       </listitem>
 
       <listitem>
 	<para>
-	  The remaining parameter reachs their final destination:
+	  The remaining construct parameters reach the
 	  <classname>&ns;::w::canvasObj::implObj</classname>'s constructor.
 	</para>
       </listitem>
@@ -414,7 +417,9 @@ void my_canvas_implObj::do_draw(ONLY IN_THREAD,
       <title>Scratch buffers</title>
 
       <para>
-	Custom display elements must provide a label for their scratch buffers.
+	Custom display elements must provide an
+	identifying label for their scratch buffers. This label is a plain
+	text string.
 	Their <ulink url="&link-x--w--child-elementObj;"><classname>&ns;::w::child_elementObj</classname></ulink>
 	parent class's constructor takes
 	a
@@ -434,13 +439,15 @@ void my_canvas_implObj::do_draw(ONLY IN_THREAD,
 	The labels are plain text strings that uniquely identify a scratch
 	buffer. Display elements that specify the same scratch buffer label
 	share the same underlying scratch buffer. The scratch buffers get
-	sized appropriately, for each display element. For that reason they
-	may exceed a display element's current size, because another,
-	larger, display element uses it.
+	sized appropriately, for each display element that uses them. For
+	that reason <methodname>do_draw</methodname>() can get a scratch
+	buffer that's bigger than the drawing rectangle's size
+	because another,
+	larger, display element uses the same scratch buffer.
       </para>
 
       <para>
-	Use the following convention for naming scratch buffer labels:
+	Use the following convention for using scratch buffer labels:
       </para>
 
       <itemizedlist>

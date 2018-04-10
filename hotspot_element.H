@@ -8,7 +8,7 @@
 #include "x/w/hotspot.H"
 #include "x/w/button_event.H"
 #include "hotspot_elementfwd.H"
-#include "focus/focusable_element.H"
+#include "x/w/impl/focus/focusable_element.H"
 #include "shortcut/shortcut_activation_element.H"
 
 LIBCXXW_NAMESPACE_START

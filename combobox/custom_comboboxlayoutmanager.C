@@ -11,7 +11,7 @@
 #include "listlayoutmanager/list_element_impl.H"
 #include "listlayoutmanager/listlayoutstyle_impl.H"
 
-#include "focus/focusable_element.H"
+#include "x/w/impl/focus/focusable_element.H"
 
 #include "x/w/focusable_container.H"
 #include "x/w/key_event.H"
@@ -194,8 +194,11 @@ class LIBCXX_HIDDEN lookup_collectorObj : virtual public obj {
 		    {
 			    buffer += *str;
 			    return true;
-		    }
-				}, e))
+		    },
+		    [](const all_key_events_is_not_copyable &)
+		    {
+			    return true;
+		    }}, e))
 		{
 			return false;
 		}

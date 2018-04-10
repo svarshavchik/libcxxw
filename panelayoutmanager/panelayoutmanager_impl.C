@@ -9,7 +9,7 @@
 #include "panelayoutmanager/pane_slider_impl_element.H"
 #include "focus/standard_focusframecontainer_element.H"
 #include "focus/focusframelayoutimpl.H"
-#include "focus/focusable.H"
+#include "x/w/impl/focus/focusable.H"
 #include "focus/focusframecontainer.H"
 #include "focus/focusframefactory.H"
 #include "current_border_impl.H"

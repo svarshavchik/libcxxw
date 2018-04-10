@@ -4,7 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "x/w/focusableownerobj.H"
-#include "focus/focusable.H"
+#include "x/w/impl/focus/focusable.H"
 #include "screen.H"
 #include "connection_thread.H"
 #include "generic_window_handler.H"

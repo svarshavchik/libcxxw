@@ -5,7 +5,7 @@
 #include "libcxxw_config.h"
 #include "focusable_label_impl.H"
 #include "label_element.H"
-#include "focus/focusable_element.H"
+#include "x/w/impl/focus/focusable_element.H"
 
 LIBCXXW_NAMESPACE_START
 

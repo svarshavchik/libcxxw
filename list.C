@@ -11,7 +11,7 @@
 #include "listlayoutmanager/listlayoutmanager_impl.H"
 #include "listlayoutmanager/listlayoutstyle_impl.H"
 #include "gridlayoutmanager.H"
-#include "focus/focusable.H"
+#include "x/w/impl/focus/focusable.H"
 #include "peephole/peepholed.H"
 #include "peephole/peephole_impl.H"
 #include "peepholed_focusable.H"

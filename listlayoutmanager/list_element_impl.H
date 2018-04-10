@@ -10,7 +10,7 @@
 #include "listlayoutmanager/list_cellfwd.H"
 #include "listlayoutmanager/extra_list_row_info.H"
 #include "listlayoutmanager/listcontainer_pseudo_impl.H"
-#include "focus/focusable_elementfwd.H"
+#include "x/w/impl/focus/focusable_elementfwd.H"
 #include "x/w/impl/background_color_elementfwd.H"
 #include "iconfwd.H"
 #include "x/w/impl/child_element.H"

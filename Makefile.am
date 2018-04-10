@@ -216,10 +216,7 @@ libcxxw_la_SOURCES=\
 	focusable_owner_containerobj.H		    \
 	focus/element_focusable.C		    \
 	focus/focusable.C			    \
-	focus/focusable.H			    \
 	focus/focusable_container.C		    \
-	focus/focusable_element.H		    \
-	focus/focusable_elementfwd.H		    \
 	focus/focusable_impl.C			    \
 	focus/focusable_owner.C			    \
 	focus/focusframecontainer.C		    \

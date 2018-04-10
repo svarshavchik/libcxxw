@@ -21,6 +21,77 @@ See COPYING for distribution information.
   </para>
 
   <para>
+    At this time, only the following display elements are fully exposed to
+    the public API, and are subclassable:
+  </para>
+
+  <variablelist>>
+    <varlistentry>
+      <term><link linkend="customelement"><classname>&ns;::w::element</classname></link></term>
+      <listitem>
+	<para>
+	  A basic display element, that does nothing.
+	</para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term><link linkend="customcanvas"><classname>&ns;::w::canvas</classname></link></term>
+      <listitem>
+	<para>
+	  A little bit more than just an
+	  <classname>&ns;::w::element</classname>. A display element with a
+	  fixed size, specified in millimeters, and actual size computed
+	  and updated based on the display's resolution and the current theme's
+	  scaling factor.
+	</para>
+      </listitem>
+    </varlistentry>
+  </variablelist>
+
+  <para>
+    The following <link linkend="mixintemplates">mixin templates</link>
+    are available to &implementation_class; subclasses for inheriting
+    common functionality:
+  </para>
+
+  <variablelist>>
+    <varlistentry>
+      <term><ulink url="&link-typedef-x--w-background-color-elementObj;"><classname>&ns;::w::background_color_elementObj</classname></ulink></term>
+      <listitem>
+	<para>
+	  Defines one or more colors; based on the current theme and/or
+	  based on the display element's size (color gradients).
+	</para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term><ulink url="&link-x--w--scratch-and-mask-buffer-draw;"><classname>&ns;::w::scratch_and_mask_buffer_draw</classname></ulink></term>
+      <listitem>
+	<para>
+	  Implements a simplified interface for drawing the contents of the
+	  display element. Rather than updating only the rectangular areas
+	  of the display element that require updating, the entire contents
+	  of the display element get updated in one fell swoop.
+	</para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term><ulink url="&link-x--w--focusable-elementObj;"><classname>&ns;::w::focusable_elementObj</classname></ulink></term>
+      <listitem>
+	<para>
+	  Adds support for handling keyboard focus and key press/release
+	  events.
+	</para>
+      </listitem>
+    </varlistentry>
+  </variablelist>
+
+  <para>
+    A brief overview and examples of subclassing these display elements and
+    using these mixins follows.
+  </para>
+
+  <para>
     The most useful aspect of creating a custom class of &appshort;'s
     display elements is attaching application data to a display element
     in situations where the generic
@@ -44,10 +115,11 @@ See COPYING for distribution information.
       the application, such as
       <link linkend="inputfieldsandbuttons"><classname>&ns;::w::input_field</classname></link>.
       &appshort; follows LibCXX's <ulink url="/constrefobj.html">naming
-	convention</ulink>, defining
-      <classname>&ns;::w::input_field</classname> as an
+	convention</ulink>; and
+      <classname>&ns;::w::input_field</classname> is an
       <classname>&ns;::ref</classname> to the
-      <classname>&ns;::w::input_fieldObj</classname>.
+      <classname>&ns;::w::input_fieldObj</classname>. All other display
+      element classes follow this naming convention.
     </para>
 
     <para>
@@ -56,11 +128,19 @@ See COPYING for distribution information.
       <classname>&ns;::w::input_fieldObj::implObj</classname> is
       <classname>&ns;::w::input_fieldObj</classname>'s implementation class.
       This is the usual naming convention (with some isolated exceptions).
-      The public object inherits from
-      <ulink url="&link-typedef-x--w-element;"><classname>&ns;::w::elementObj</classname></ulink>,
-      which implements some functionality that's common to all display elements;
+    </para>
+
+    <para>
+      Brief, very brief, example of subclassing:
+      the public object inherits from
+      <ulink url="&link-typedef-x--w-element;"><classname>&ns;::w::elementObj</classname></ulink> (<classname>&ns;::w::elementObj</classname>
+      implements shared functionality that's common to all display elements);
       and the implementation object is a subclass
-      of <ulink url="&link-x--w--elementObj--implObj;"><classname>&ns;::w::elementObj::implObj</classname></ulink>; but only the main application window
+      of <ulink url="&link-x--w--elementObj--implObj;"><classname>&ns;::w::elementObj::implObj</classname></ulink>.
+    </para>
+
+    <para>
+      However, only the main application window
       directly subclasses <classname>&ns;::w::elementObj::implObj</classname>.
       All regular display elements indirectly subclass it via the
       <ulink url="&link-x--w--child-elementObj;"><classname>&ns;::w::child_elementObj</classname></ulink>
@@ -81,14 +161,14 @@ See COPYING for distribution information.
       <listitem>
 	<para>
 	  Define a subclass of an existing display element's
-	  implementation class.
+	  &implementation_class;.
 	</para>
       </listitem>
       <listitem>
 	<para>
 	  Define a subclass of an existing display element's
 	  public class. It is not necessary to subclass both the public
-	  and the implementation class, but this is the typical use case.
+	  and the &implementation_class;, but this is the typical use case.
 	</para>
       </listitem>
       <listitem>
@@ -98,24 +178,25 @@ See COPYING for distribution information.
 	  &factory;'s <methodname>get_container_impl</methodname>() method.
 	  This returns an
 	  <ulink url="&link-x--w--containerObj--implObj;"><classname>&ns;::ref&lt;&ns;::w::containerObj::implObj&gt;</classname></ulink>
-	  for the parent container element.
-	  The subclassed implementation object takes the parent container
-	  element reference as one of its parameter, and the subclass's
+	  that refers the parent container element's &implementation_class;.
+	  The subclassed &implementation_class; takes the parent container
+	  element reference as (typically) the first parameter
+	  to its constructor, and the subclass's
 	  constructor typically passes it to its superclass together with
 	  any other parameters.
 	</para>
       </listitem>
       <listitem>
 	<para>
-	  The custom public object gets constructed with the custom
-	  implementation object as its parameter. This typically gets forwarded
+	  The custom &public_class; gets constructed with the custom
+	  &implementation_class; as its parameter. This typically gets forwarded
 	  to the subclassed superclass.
 	</para>
       </listitem>
 
       <listitem>
 	<para>
-	  The constructed public object gets passed to the &factory;'s
+	  The constructed &public_class; gets passed to the &factory;'s
 	  <methodname>created_internally</methodname>() method. This method
 	  places the new display element into its container.
 	</para>

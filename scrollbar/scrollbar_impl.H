@@ -5,7 +5,7 @@
 #ifndef scrollbar_impl_h
 #define scrollbar_impl_h
 
-#include "focus/focusable_elementfwd.H"
+#include "x/w/impl/focus/focusable_elementfwd.H"
 #include "x/w/impl/child_element.H"
 #include "scrollbar/scrollbar_icon_set.H"
 #include "scrollbar/scrollbar_metrics.H"

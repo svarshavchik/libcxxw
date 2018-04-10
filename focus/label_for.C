@@ -3,9 +3,9 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
-#include "focus/label_for.H"
-#include "focus/focusable.H"
+#include "x/w/impl/focus/focusable.H"
 #include "x/w/impl/element.H"
+#include "focus/label_for.H"
 
 LIBCXXW_NAMESPACE_START
 

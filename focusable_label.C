@@ -8,7 +8,7 @@
 #include "x/w/label.H"
 #include "focus/standard_focusframecontainer_element.H"
 #include "focus/focusframelayoutimpl.H"
-#include "focus/focusable.H"
+#include "x/w/impl/focus/focusable.H"
 #include "textlabel.H"
 #include "focusable_label_impl.H"
 

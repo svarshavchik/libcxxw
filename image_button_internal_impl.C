@@ -5,7 +5,7 @@
 #include "libcxxw_config.h"
 #include "x/w/busy.H"
 #include "image_button_internal_impl.H"
-#include "focus/focusable_element.H"
+#include "x/w/impl/focus/focusable_element.H"
 #include "hotspot_element.H"
 #include "icon_images_vector_element.H"
 #include "icon.H"

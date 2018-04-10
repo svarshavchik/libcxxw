@@ -9,7 +9,7 @@
 #include "textlabel.H"
 #include "x/w/impl/child_element.H"
 #include "label_elementfwd.H"
-#include "focus/focusable_elementfwd.H"
+#include "x/w/impl/focus/focusable_elementfwd.H"
 
 LIBCXXW_NAMESPACE_START
 

@@ -35,15 +35,15 @@ public:
 	class ownerObj;
 
 	//! Constructor
-	focusableObj() LIBCXX_HIDDEN;
+	focusableObj();
 
 	//! Destructor
-	~focusableObj() LIBCXX_HIDDEN;
+	~focusableObj();
 
 	//! Return the implementation object.
 
 	//! \internal
-	virtual ref<implObj> get_impl() const LIBCXX_HIDDEN=0;
+	virtual ref<implObj> get_impl() const=0;
 
 	//! Enable/disable the focusable object.
 
@@ -82,13 +82,13 @@ public:
 	//! and passing this information.
 
 	template<typename functor>
-	void get_impl(functor &&f) const LIBCXX_HIDDEN;
+	void get_impl(functor &&f) const;
 
 	//! Type-erased get_impl().
 
 	//! \internal
 	virtual void do_get_impl(const function<internal_focusable_cb> &)
-		const LIBCXX_HIDDEN;
+		const LIBCXX_PUBLIC;
 
 	//! Install a new callback to report focus changes.
 

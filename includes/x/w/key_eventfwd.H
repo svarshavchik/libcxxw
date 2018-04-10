@@ -15,6 +15,14 @@ LIBCXXW_NAMESPACE_START
 
 class key_event;
 
+//! \ref all_key_events_t "all_key_events_t"  is not copyable.
+
+struct all_key_events_is_not_copyable {
+
+	all_key_events_is_not_copyable(const all_key_events_is_not_copyable
+				       &)=delete;
+};
+
 //! Key event callback
 
 //! There are two alternative key events. An actual key press or release,
@@ -24,7 +32,8 @@ class key_event;
 //! other. Its argument is a variant of pointers to the possible events.
 
 typedef std::variant<const key_event *,
-		     const std::u32string_view *> all_key_events_t;
+		     const std::u32string_view *,
+		     all_key_events_is_not_copyable> all_key_events_t;
 
 //! Callbacks for reporting key events.
 

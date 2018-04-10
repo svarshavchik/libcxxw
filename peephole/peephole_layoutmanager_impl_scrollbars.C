@@ -6,7 +6,7 @@
 #include "x/w/canvas.H"
 #include "x/w/gridfactory.H"
 #include "x/w/button_event.H"
-#include "focus/focusable.H"
+#include "x/w/impl/focus/focusable.H"
 #include "peephole/peephole_layoutmanager_impl_scrollbars.H"
 #include "scrollbar/scrollbar_impl.H"
 #include "x/w/impl/container.H"

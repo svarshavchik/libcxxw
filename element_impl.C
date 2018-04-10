@@ -630,6 +630,13 @@ void elementObj::implObj
 }
 
 clip_region_set::clip_region_set(ONLY IN_THREAD,
+				 elementObj::implObj &e,
+				 const draw_info &di)
+	: clip_region_set{IN_THREAD, e.get_window_handler(), di}
+{
+}
+
+clip_region_set::clip_region_set(ONLY IN_THREAD,
 				 generic_windowObj::handlerObj &h,
 				 const draw_info &di)
 {

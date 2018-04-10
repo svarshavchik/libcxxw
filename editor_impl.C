@@ -13,7 +13,7 @@
 #include "busy.H"
 #include "fonts/current_fontcollection.H"
 #include "fonts/fontcollection.H"
-#include "focus/focusable_element.H"
+#include "x/w/impl/focus/focusable_element.H"
 #include "label_element.H"
 #include "richtext/richtext.H"
 #include "richtext/richtext_impl.H"

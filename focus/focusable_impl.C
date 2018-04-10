@@ -7,7 +7,7 @@
 #include "x/w/button_event.H"
 #include "x/w/motion_event.H"
 #include "x/w/main_window.H"
-#include "focus/focusable.H"
+#include "x/w/impl/focus/focusable.H"
 #include "focus/label_for.H"
 #include "generic_window_handler.H"
 #include "x/w/impl/child_element.H"

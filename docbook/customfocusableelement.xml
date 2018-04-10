@@ -1,0 +1,268 @@
+<!--
+
+Copyright 2018 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<chapter id="customfocusableelement">
+  <title>Custom focusable <classname>&ns;::w::element</classname></title>
+
+  <para>
+    <filename>customkeyfocus.C</filename> is an example of creating
+    a custom subclass of the basic
+    <ulink url="&link-typedef-x--w-element;"><classname>&ns;::w::element</classname></ulink>
+    display element which supports keyboard focus.
+    Handling keyboard focus allows a display element to process key press
+    and release events.
+    All display elements that have keyboard focus capability get ordered.
+    <literal>TAB</literal> key moves the keyboard focus to the next
+    focusable display element, one at a time.
+    (<literal>SHIFT-TAB</literal> goes backwards in the order).
+    Key press and release events get routed to the display element with
+    the current keyboard focus.
+  </para>
+
+  <para>
+    Requirements for implementing a custom display element that handles
+    keyboard focus:
+  </para>
+
+  <itemizedlist>
+    <listitem>
+      <para>
+	The &implementation_class; must be a subclass of the
+	<ulink url="&link-x--w--focusable-elementObj;">
+	  <classname>&ns;::w::focusable_elementObj</classname></ulink>
+	template. This is a &template_mixin; that multiply-inherits from its
+	template parameter and
+	<ulink url="&link-x--w--focusableObj--implObj;"><classname>&ns;::w::focusableObj::implObj</classname></ulink>,
+	which implements the keyboard focus support.
+      </para>
+    </listitem>
+
+    <listitem>
+      <para>
+	The &public_class; must derive from
+	<ulink url="&link-x--w--focusableObj--ownerObj;"><classname>&ns;::w::focusableObj::ownerObj</classname></ulink>,
+	designating the public subclass as the responsible
+	<quote>owner</quote> of the focusable display element. The
+	&public_class; multiply-inherits from
+	<classname>&ns;::w::focusableObj::ownerObj</classname> and a
+	<classname>&ns;::w::elementObj</classname>, or some subclass of it.
+      </para>
+
+      <para>
+	<classname>&ns;::w::focusableObj::ownerObj</classname>'s constructor
+	takes a reference handle to
+	<classname>&ns;::w::focusableObj::implObj</classname>; so passing
+	it the &implementation_class;, which derives from it via
+	<classname>&ns;::w::focusable_elementObj</classname>, is sufficient.
+      </para>
+    </listitem>
+  </itemizedlist>
+
+  <para>
+    <filename>customkeyfocus.C</filename> implements a bare-bones display
+    element that handles keyboard focus. The display element is a bare,
+    colored
+    square; initially light grey and changing to a white color when it
+    acquired keyboard focus. There's a button below the element, and tabbing
+    between the button and the custom display element demonstrates the color
+    difference.
+    Pressing <quote>r</quote>, <quote>g</quote>, and <quote>b</quote> keys
+    on the keyboard, when the input focus is in the custom display element,
+    results in the element's color getting updated to red, green, or blue,
+    respectively:
+  </para>
+
+  <blockquote>
+    <title><ulink url="examples/customkeyfocus.C">customkeyfocus.C</ulink></title>
+    <informalexample>
+      <programlisting><xi:include href="../examples/customkeyfocus.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <section id="process_key_event">
+    <title>Overriding <methodname>keyboard_focus</methodname>() and <methodname>process_key_event</methodname>()</title>
+
+    <para>
+      An &implementation_class; that inherits from
+      the <classname>&ns;::w::focusable_elementObj</classname>
+      &template_mixin; can override
+      <methodname>keyboard_focus</methodname>() and
+      <methodname>process_key_event</methodname>().
+      <methodname>keyboard_focus</methodname>() gets executed whenever the
+      display element gains or loses input focus.
+      <methodname>process_key_event</methodname>() gets executed to process
+      a key event that occurs while the display element has keyboard input
+      focus.
+    </para>
+
+    <para>
+      As shown in <filename>customkeyfocus.C</filename>,
+      <methodname>keyboard_focus</methodname>() override
+      is responsible for invoking
+      the overridden superclass.
+      A <methodname>process_key_event</methodname>() override returns
+      <literal>true</literal> if it processes the key press or release event;
+      otherwise the overriden <methodname>process_key_event</methodname>()
+      should get invoked, in order to correctly process key events.
+    </para>
+  </section>
+
+  <section id="customdrawbasic">
+    <title>Overriding <classname>elementObj::implObj</classname>'s basic
+      <methodname>do_draw</methodname>() method</title>
+
+    <para>
+      <link linkend="customfocusableelement"><filename>customkeyfocus.C</filename></link>
+      does not use the simplified drawing interface implemented by the
+      <classname>&ns;::w::scratch_and_mask_buffer_draw</classname>
+      template.
+      <filename>customkeyfocus.C</filename> overrides the base
+      <methodname>do_draw</methodname>() method that takes just two
+      parameters:
+    </para>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  A
+	  <ulink url="&link-x--w--draw-info;"><classname>&ns;::w::draw_info</classname></ulink>
+	  object that's needed by fundamental drawing-related methods
+	  from the parent <classname>elementObj::implobj</classname> class.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  A list of rectangles that specify the portion or portions of the
+	  display element that require drawing. In nearly all cases this is
+	  just one rectangle representing the entire area taken up by the
+	  display element; but it doesn't have to be. A partially-obscured
+	  display element results in just the visible parts of its appearing
+	  in the rectangle set.
+	</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>
+      <filename>customkeyfocus.C</filename>
+      gives an example of manually redrawing the display element, one
+      rectangle at a time.
+    </para>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  Creating a
+	  <ulink url="&link-x--w--clip-region-set;"><classname>&ns;::w::clip_region_set</classname></ulink>
+	  sets a clip mask on the underlying window, clipping the subsequent
+	  draw operations to the display element.
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  Calling <methodname>draw_using_scratch_buffer</methodname>()
+	  to redraw each portion of the display element.
+	</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>
+      The lambda that gets passed to
+      <methodname>draw_using_scratch_buffer</methodname>()
+      gets invoked with a picture, pixmap, and a graphic context representing
+      a <link linkend="scratchbuffers">scratch buffer</link> for drawing.
+      <methodname>draw_using_scratch_buffer</methodname>() is the only
+      mechanism that must be used for updating the apperance of the display
+      element.
+      After the lambda returns, the scratch buffers get copied to the window
+      after some additional, optional processing related
+      to <link linkend="busy">shading inactive windows</link> and
+      adjusting the image in the style of a disabled element, if the
+      focusable display element is disabled.
+    </para>
+
+    <para>
+      <methodname>draw_using_scratch_buffer</methodname>()'s remaining
+      parameters, in addition to the closure are:
+      the rectangle to be redrawn;
+      the <classname>&ns;::w::draw_info</classname> object
+      (always passed as two separate parameters, some internal functions
+      use different objects for specific situations);
+      and the
+      <classname>&ns;::w::clip_region_set</classname> object in order to
+      prove, by contract, that the clipping region is installed.
+    </para>
+  </section>
+
+  <section id="schedule_redraw">
+    <title>Drawing the updated contents of a custom display element</title>
+
+    <para>
+      <link linkend="customfocusableelement"><filename>customkeyfocus.C</filename></link>'s
+      custom display element's appearance changes when it gains or
+      loses keyboard input focus, and in response to
+      <quote>r</quote>, <quote>g</quote>, and <quote>b</quote> keys.
+      This means that the display element requires redrawing any time any
+      of these events occur.
+    </para>
+
+    <para>
+      It's possible to perform the necessary work to immediately call
+      <methodname>do_draw</methodname>(), directly.
+      <filename>customkeyfocus.C</filename> gives an example of the
+      preferred way to do this, by calling
+      <methodname>schedule_redraw</methodname>().
+    </para>
+
+    <para>
+      <methodname>schedule_redraw</methodname>() arranges for a subsequent
+      call to <methodname>do_draw</methodname>() to take place; and
+      does this optimally, taking care of many optimizations on its own:
+    </para>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  <methodname>schedule_redraw</methodname>() quietly does nothing
+	  at all if the display element is not visible, and nothing needs
+	  to be redrawn.
+	  This can't happen in
+          <filename>customkeyfocus.C</filename> because all events that
+	  result in an explicit redrawing can only occur while the display
+	  element is busy.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Actual redrawing is a low-priority task, done only when there's
+	  nothing more urgent to do. Handling display server message;
+	  adding or creating new display elements; moving them around for
+	  one reason, or another;
+	  and all other tedious work that makes up a nice UI; all of that
+	  is deemed to be more important, and one
+	  <methodname>schedule_redraw</methodname>() request is sufficient.
+	</para>
+
+	<para>
+	  If <methodname>schedule_redraw</methodname>()
+	  gets called again, for the same display element, before
+	  the library gets around to actually calling
+	  <methodname>do_draw</methodname>(), the redundant
+	  <methodname>schedule_redraw</methodname>() also does nothing,
+	  quietly.
+	</para>
+      </listitem>
+    </itemizedlist>
+  </section>
+</chapter>
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "book" "chapter")
+End:
+-->

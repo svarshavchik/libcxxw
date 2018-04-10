@@ -12,7 +12,7 @@
 #include "x/w/callback_trigger.H"
 #include "busy.H"
 #include "scrollbar/scrollbar_impl.H"
-#include "focus/focusable_element.H"
+#include "x/w/impl/focus/focusable_element.H"
 #include "icon.H"
 #include "pixmap_with_picture.H"
 #include "icon_images_set_element.H"

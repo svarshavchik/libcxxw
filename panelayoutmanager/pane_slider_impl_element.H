@@ -6,7 +6,7 @@
 #define pane_slider_impl_element_h
 
 #include "panelayoutmanager/pane_slider_impl_elementfwd.H"
-#include "focus/focusable_element.H"
+#include "x/w/impl/focus/focusable_element.H"
 #include "always_visible_element.H"
 
 LIBCXXW_NAMESPACE_START

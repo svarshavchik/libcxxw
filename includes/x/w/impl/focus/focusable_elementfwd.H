@@ -1,12 +1,12 @@
 /*
-** Copyright 2017 Double Precision, Inc.
+** Copyright 2017-2018 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
-#ifndef focusable_elementfwd_h
-#define focusable_elementfwd_h
+#ifndef x_w_impl_focusable_elementfwd_h
+#define x_w_impl_focusable_elementfwd_h
 
-#include "focus/focusable.H"
-#include "x/w/button_eventfwd.H"
+#include <x/w/impl/focus/focusable.H>
+#include <x/w/button_eventfwd.H>
 #include <xcb/xproto.h>
 
 LIBCXXW_NAMESPACE_START
@@ -17,8 +17,8 @@ LIBCXXW_NAMESPACE_START
 //! multiply-inherits from the template parameter, and focusableObj::implObj.
 
 template<typename element_impl=child_elementObj>
-class LIBCXX_HIDDEN focusable_elementObj : public element_impl,
-					   public focusableObj::implObj {
+class focusable_elementObj : public element_impl,
+			     public focusableObj::implObj {
 
  public:
 

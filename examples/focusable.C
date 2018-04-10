@@ -151,6 +151,11 @@ void create_mainwindow(const x::w::main_window &main_window)
 				 // Buttons don't receive pasted unicode text
 				 // from the X input method manager.
 				 // this is for demo purposes.
+			     },
+			     [](const x::w::all_key_events_is_not_copyable &)
+			     {
+				     // Stub to enforce all_key_events_t
+				     // untouchability.
 			     }}, ke);
 
 			 // This callback takes no action on anything, it just

@@ -6,7 +6,7 @@
 #include "menu/menu_impl.H"
 #include "x/w/listlayoutmanager.H"
 #include "gridlayoutmanager.H"
-#include "focus/focusable.H"
+#include "x/w/impl/focus/focusable.H"
 #include "popup/popup.H"
 
 LIBCXXW_NAMESPACE_START

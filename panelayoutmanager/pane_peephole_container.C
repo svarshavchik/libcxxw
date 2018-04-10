@@ -6,7 +6,7 @@
 #include "panelayoutmanager/pane_peephole_container_impl.H"
 #include "peephole/peephole_gridlayoutmanagerobj.H"
 #include "peephole/peephole.H"
-#include "focus/focusable.H"
+#include "x/w/impl/focus/focusable.H"
 #include "x/w/scrollbar.H"
 #include <x/exception.H>
 #include <vector>

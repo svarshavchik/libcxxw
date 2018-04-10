@@ -1,15 +1,15 @@
 /*
-** Copyright 2017 Double Precision, Inc.
+** Copyright 2017-2018 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
-#ifndef focusable_h
-#define focusable_h
+#ifndef x_w_impl_focusable_h
+#define x_w_impl_focusable_h
 
-#include "x/w/focusableobj.H"
-#include "x/w/elementobj.H"
-#include "x/w/impl/focus/focusablefwd.H"
-#include "x/w/impl/focus/label_forfwd.H"
-#include "x/w/impl/connection_threadfwd.H"
+#include <x/w/focusableobj.H>
+#include <x/w/elementobj.H>
+#include <x/w/impl/focus/focusablefwd.H>
+#include <x/w/impl/focus/label_forfwd.H>
+#include <x/w/impl/connection_threadfwd.H>
 #include <array>
 #include <utility>
 #include <x/weaklist.H>
@@ -63,7 +63,7 @@ bool select_key_pressed(const key_event &) LIBCXX_HIDDEN;
 //! The public object must inherit from focusableObj::ownerObj, which takes
 //! care of invoking focusable_initialize() and focusable_deinitialize().
 
-class LIBCXX_HIDDEN focusableObj::implObj : virtual public obj {
+class focusableObj::implObj : virtual public obj {
 
 	//! My iterator in the focusable_fields list.
 
@@ -129,21 +129,21 @@ class LIBCXX_HIDDEN focusableObj::implObj : virtual public obj {
 	//! Called from the public object's constructor to finish construction.
 
 	//! Inserts itself into the focusable_fields list.
-	void focusable_initialize(ONLY IN_THREAD);
+	void focusable_initialize(ONLY IN_THREAD) LIBCXX_HIDDEN;
 
 	//! Invoke from the public object's destructor
 
-	void focusable_deinitialize(ONLY IN_THREAD);
+	void focusable_deinitialize(ONLY IN_THREAD) LIBCXX_HIDDEN;
 
 	//! Return the focusable fields.
-	focusable_fields_t &focusable_fields(ONLY IN_THREAD);
+	focusable_fields_t &focusable_fields(ONLY IN_THREAD) LIBCXX_HIDDEN;
 
 	//! Advance input focus to the next focusable field.
 	void next_focus(ONLY IN_THREAD,
-			const callback_trigger_t &trigger);
+			const callback_trigger_t &trigger) LIBCXX_HIDDEN;
 
 	//! This is a label for this display element.
-	void set_label(const ref<elementObj::implObj> &);
+	void set_label(const ref<elementObj::implObj> &) LIBCXX_HIDDEN;
 
  private:
 	//! Advance input focus to the next focusable field, on or after this iterator.
@@ -153,11 +153,11 @@ class LIBCXX_HIDDEN focusableObj::implObj : virtual public obj {
 
 	void next_focus(ONLY IN_THREAD,
 			focusable_fields_t::iterator starting_iter,
-			const callback_trigger_t &trigger);
+			const callback_trigger_t &trigger) LIBCXX_HIDDEN;
  public:
 	//! Advance input focus to the previous focusable field.
 	void prev_focus(ONLY IN_THREAD,
-			const callback_trigger_t &trigger);
+			const callback_trigger_t &trigger) LIBCXX_HIDDEN;
 
 	//! Set focus to this focusable element.
 
@@ -172,7 +172,8 @@ class LIBCXX_HIDDEN focusableObj::implObj : virtual public obj {
 	//! Set focus to this focusable element and make sure it is visible.
 
 	virtual void set_focus_and_ensure_visibility(ONLY IN_THREAD,
-						     const callback_trigger_t &);
+						     const callback_trigger_t &)
+		;
 
  private:
 
@@ -181,7 +182,7 @@ class LIBCXX_HIDDEN focusableObj::implObj : virtual public obj {
 	//! Invokes focus_to's set_focus_and_ensure_visibility().
 
 	void switch_focus(ONLY IN_THREAD, const focusable_impl &focus_to,
-			  const callback_trigger_t &trigger);
+			  const callback_trigger_t &trigger) LIBCXX_HIDDEN;
 
  public:
 	//! Whether we're cool with giving up focus.
@@ -190,18 +191,20 @@ class LIBCXX_HIDDEN focusableObj::implObj : virtual public obj {
 
 	//! Set tabbing order.
 	void get_focus_before(ONLY IN_THREAD,
-			      const focusable_impl &other);
+			      const focusable_impl &other) LIBCXX_HIDDEN;
 	//! Set tabbing order.
 	void get_focus_after(ONLY IN_THREAD,
-			      const focusable_impl &other);
+			      const focusable_impl &other) LIBCXX_HIDDEN;
 
  private:
 	//! Set tabbing order.
 	void i_will_get_focus_before(ONLY IN_THREAD,
-				     focusableObj::implObj &other);
+				     focusableObj::implObj &other)
+		LIBCXX_HIDDEN;
 	//! Set tabbing order.
 	void i_will_get_focus_after(ONLY IN_THREAD,
-				    focusableObj::implObj &other);
+				    focusableObj::implObj &other)
+		LIBCXX_HIDDEN;
 
  public:
 
@@ -214,9 +217,8 @@ class LIBCXX_HIDDEN focusableObj::implObj : virtual public obj {
 
 	void creating_focusable_child_element();
 
-
 	//! Make sure we do not have input focus
-	void unfocus(ONLY IN_THREAD);
+	void unfocus(ONLY IN_THREAD) LIBCXX_HIDDEN;
 
  protected:
 

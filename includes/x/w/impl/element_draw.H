@@ -12,6 +12,7 @@
 #include <x/w/rectanglefwd.H>
 #include <x/w/scratch_bufferfwd.H>
 #include <x/w/generic_windowobj.H>
+#include <x/w/elementobj.H>
 #include <x/w/impl/draw_infofwd.H>
 #include <x/functional.H>
 #include <x/obj.H>
@@ -31,6 +32,12 @@ LIBCXXW_NAMESPACE_START
 class clip_region_set {
 
 public:
+	//! Constructor - install clip mask for drawing.
+
+	clip_region_set(ONLY IN_THREAD,
+			elementObj::implObj &,
+			const draw_info &di);
+
 	//! Constructor - install clip mask for drawing.
 
 	clip_region_set(ONLY IN_THREAD,

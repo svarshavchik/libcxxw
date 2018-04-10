@@ -12,7 +12,7 @@
 #include "always_visible.H"
 #include "gridlayoutmanager.H"
 #include "menu/menubarlayoutmanager_impl.H"
-#include "focus/focusable.H"
+#include "x/w/impl/focus/focusable.H"
 #include "x/w/menu.H"
 
 LIBCXXW_NAMESPACE_START

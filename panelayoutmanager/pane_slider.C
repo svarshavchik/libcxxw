@@ -3,7 +3,7 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
-#include "focus/focusable.H"
+#include "x/w/impl/focus/focusable.H"
 #include "panelayoutmanager/pane_slider.H"
 #include "panelayoutmanager/pane_slider_impl.H"
 #include "x/w/impl/element.H"

@@ -9,7 +9,7 @@
 #include "x/w/connection_threadfwd.H"
 #include "x/w/types.H"
 #include "x/w/impl/child_element.H"
-#include "focus/focusable.H"
+#include "x/w/impl/focus/focusable.H"
 #include <x/obj.H>
 
 LIBCXXW_NAMESPACE_START

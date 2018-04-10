@@ -11,7 +11,7 @@
 #include "x/w/button_eventfwd.H"
 #include "x/w/key_eventfwd.H"
 #include "x/w/focus.H"
-#include "focus/focusable_elementfwd.H"
+#include "x/w/impl/focus/focusable_elementfwd.H"
 #include "shortcut/shortcut_activation_elementfwd.H"
 
 LIBCXXW_NAMESPACE_START
