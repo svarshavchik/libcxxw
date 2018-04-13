@@ -7,7 +7,7 @@
 #include "panelayoutmanager/panelayoutmanager_impl.H"
 #include "always_visible.H"
 #include "container_visible_element.H"
-#include "container_element.H"
+#include "x/w/impl/container_element.H"
 #include "themeborder_element.H"
 #include "cursor_pointer_element.H"
 #include "grabbed_pointer.H"

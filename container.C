@@ -7,7 +7,7 @@
 #include "x/w/container.H"
 #include "x/w/factory.H"
 #include "layoutmanager.H"
-#include "container_element.H"
+#include "x/w/impl/container_element.H"
 #include "x/w/impl/child_element.H"
 #include "run_as.H"
 

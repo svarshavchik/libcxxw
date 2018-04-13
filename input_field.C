@@ -7,7 +7,7 @@
 #include "editor_impl.H"
 #include "input_field.H"
 #include "x/w/impl/background_color.H"
-#include "container_element.H"
+#include "x/w/impl/container_element.H"
 #include "nonrecursive_visibility.H"
 #include "generic_window_handler.H"
 #include "connection_thread.H"

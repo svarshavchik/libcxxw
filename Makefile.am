@@ -132,8 +132,6 @@ libcxxw_la_SOURCES=\
 	connection_threadrun.C			    \
 	connection_threadrunelement.C		    \
 	container.C				    \
-	container_element.H			    \
-	container_elementfwd.H			    \
 	container_impl.H			    \
 	container_impl.C			    \
 	container_visible_element.H		    \

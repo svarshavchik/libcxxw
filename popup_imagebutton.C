@@ -9,7 +9,7 @@
 #include "hotspot_element.H"
 #include "image_button_internal.H"
 #include "icon_images_vector_element.H"
-#include "container_element.H"
+#include "x/w/impl/container_element.H"
 #include "x/w/impl/child_element.H"
 #include "generic_window_handler.H"
 #include "icon.H"

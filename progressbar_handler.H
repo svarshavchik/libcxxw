@@ -8,7 +8,7 @@
 #include "x/w/progressbar.H"
 #include "x/w/dim_arg.H"
 #include "x/w/rgbfwd.H"
-#include "container_elementfwd.H"
+#include "x/w/impl/container_elementfwd.H"
 #include "x/w/impl/child_elementobj.H"
 #include "themedim_element_minoverridefwd.H"
 

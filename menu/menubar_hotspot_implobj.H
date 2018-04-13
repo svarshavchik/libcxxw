@@ -6,7 +6,7 @@
 #define menubar_hotspot_implobj_h
 
 #include "hotspot_bgcolor_elementfwd.H"
-#include "container_elementfwd.H"
+#include "x/w/impl/container_elementfwd.H"
 #include "x/w/impl/child_element.H"
 #include "x/w/impl/popup/popupfwd.H"
 #include "popup/popup_showhide_elementfwd.H"

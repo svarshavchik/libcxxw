@@ -5,7 +5,7 @@
 #ifndef panecontainer_impl_h
 #define panecontainer_impl_h
 
-#include "container_elementfwd.H"
+#include "x/w/impl/container_elementfwd.H"
 #include "x/w/impl/child_element.H"
 #include "reference_font_elementfwd.H"
 

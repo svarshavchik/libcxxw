@@ -7,7 +7,7 @@
 #define peephole_impl_H
 
 #include "peephole/peepholeobj.H"
-#include "container_elementfwd.H"
+#include "x/w/impl/container_elementfwd.H"
 #include "x/w/impl/child_element.H"
 
 LIBCXXW_NAMESPACE_START

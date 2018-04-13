@@ -3,7 +3,7 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
-#include "container_element.H"
+#include "x/w/impl/container_element.H"
 #include "editor_peephole_impl.H"
 #include "peephole/peephole_get_element.H"
 #include "editor.H"

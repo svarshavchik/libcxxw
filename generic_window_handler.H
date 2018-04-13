@@ -16,7 +16,7 @@
 #include "x/w/impl/background_colorfwd.H"
 #include "x/w/impl/background_color_elementfwd.H"
 #include "x/w/connection_threadfwd.H"
-#include "container_elementfwd.H"
+#include "x/w/impl/container_elementfwd.H"
 #include "x/w/impl/grabbed_pointerfwd.H"
 
 #include "x/w/pictformatfwd.H"

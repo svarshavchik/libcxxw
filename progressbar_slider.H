@@ -11,7 +11,7 @@
 #include "background_color_element_recalculatedfwd.H"
 #include "progressbar_sliderfwd.H"
 #include "always_visiblefwd.H"
-#include "container_elementfwd.H"
+#include "x/w/impl/container_elementfwd.H"
 #include "x/w/impl/container.H"
 #include "x/w/impl/child_element.H"
 

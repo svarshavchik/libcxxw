@@ -5,7 +5,7 @@
 #include "libcxxw_config.h"
 #include "generic_window_handler.H"
 #include "scrollbar_impl.H"
-#include "container_element.H"
+#include "x/w/impl/container_element.H"
 #include "container_visible_element.H"
 #include "nonrecursive_visibility.H"
 #include "focus/focusframefactory.H"

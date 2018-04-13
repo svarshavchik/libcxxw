@@ -32,8 +32,6 @@ class containerObj::implObj : virtual public obj {
 
 public:
 
-#pragma GCC visibility push(hidden)
-
 	//! Constructor
 
 	implObj();
@@ -256,8 +254,6 @@ public:
 	virtual void ensured_visibility_of_child_element(ONLY IN_THREAD,
 							 elementObj::implObj &e,
 							 const rectangle &r);
-#pragma GCC visibility pop
-
 };
 
 // The connection thread maintains a map of all containers that need to

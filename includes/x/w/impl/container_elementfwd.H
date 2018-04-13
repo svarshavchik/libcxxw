@@ -1,12 +1,12 @@
 /*
-** Copyright 2017 Double Precision, Inc.
+** Copyright 2017-2018 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
-#ifndef container_elementfwd_H
-#define container_elementfwd_H
+#ifndef x_w_impl_container_elementfwd_H
+#define x_w_impl_container_elementfwd_H
 
-#include "x/w/impl/container.H"
-#include "x/w/impl/element.H"
+#include <x/w/impl/container.H>
+#include <x/w/impl/element.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -24,8 +24,8 @@ LIBCXXW_NAMESPACE_START
 //! containerObj::implObj does not need construction parameters.
 
 template<typename element_impl>
-class LIBCXX_HIDDEN container_elementObj : public element_impl,
-					   public containerObj::implObj {
+class container_elementObj : public element_impl,
+			     public containerObj::implObj {
 
 public:
 

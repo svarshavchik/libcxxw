@@ -7,7 +7,7 @@
 
 #include "peepholed_toplevel_main_windowobj.H"
 #include "peephole/peepholed_toplevel_elementfwd.H"
-#include "container_elementfwd.H"
+#include "x/w/impl/container_elementfwd.H"
 #include "x/w/impl/child_element.H"
 #include "always_visiblefwd.H"
 #include "reference_font_elementfwd.H"

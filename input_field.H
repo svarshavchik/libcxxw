@@ -7,7 +7,7 @@
 
 #include "x/w/input_fieldobj.H"
 #include "x/w/scrollbarfwd.H"
-#include "container_elementfwd.H"
+#include "x/w/impl/container_elementfwd.H"
 #include "x/w/impl/child_elementobj.H"
 #include "editorfwd.H"
 #include "nonrecursive_visibilityfwd.H"

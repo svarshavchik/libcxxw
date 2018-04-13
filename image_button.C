@@ -15,7 +15,7 @@
 #include "x/w/factory.H"
 #include "x/w/button_event.H"
 #include "x/w/key_event.H"
-#include "container_element.H"
+#include "x/w/impl/container_element.H"
 #include "gridlayoutmanager.H"
 #include "container_visible_element.H"
 #include "messages.H"

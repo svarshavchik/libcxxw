@@ -17,7 +17,7 @@
 #include "x/w/impl/background_colorfwd.H"
 #include "x/w/impl/focus/focusablefwd.H"
 #include "nonrecursive_visibilityfwd.H"
-#include "container_elementfwd.H"
+#include "x/w/impl/container_elementfwd.H"
 #include "x/w/impl/child_element.H"
 
 #include <x/functional.H>

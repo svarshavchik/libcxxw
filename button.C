@@ -9,7 +9,7 @@
 #include "x/w/factory.H"
 #include "x/w/label.H"
 #include "x/w/border_arg.H"
-#include "container_element.H"
+#include "x/w/impl/container_element.H"
 #include "container_visible_element.H"
 #include "hotspot_bgcolor_element.H"
 #include "always_visible.H"

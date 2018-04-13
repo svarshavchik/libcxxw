@@ -14,8 +14,9 @@ LIBCXXW_NAMESPACE_START
 //! \see reference_font_elementObj
 
 template<typename element_impl, typename tag>
-class reference_font_1elementObj : public element_impl,
-				   public reference_font_tag<tag> {
+class LIBCXX_HIDDEN reference_font_1elementObj
+	: public element_impl,
+	  public reference_font_tag<tag> {
 
 public:
 

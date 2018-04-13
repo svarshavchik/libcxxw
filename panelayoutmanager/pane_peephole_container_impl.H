@@ -7,7 +7,7 @@
 
 #include "panelayoutmanager/pane_peephole_container.H"
 #include "always_visiblefwd.H"
-#include "container_elementfwd.H"
+#include "x/w/impl/container_elementfwd.H"
 #include "x/w/impl/child_element.H"
 
 LIBCXXW_NAMESPACE_START

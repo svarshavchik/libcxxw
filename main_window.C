@@ -28,7 +28,7 @@
 #include "peepholed_toplevel_main_window_impl.H"
 #include "menu/menubarlayoutmanager_impl.H"
 #include "menu/menubar_container_impl.H"
-#include "container_element.H"
+#include "x/w/impl/container_element.H"
 #include "x/w/input_dialog.H"
 #include "x/w/label.H"
 #include "dialog_impl.H"
