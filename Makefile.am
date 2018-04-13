@@ -457,8 +457,6 @@ libcxxw_la_SOURCES=\
 	metrics_grid_posobj.H			    \
 	metrics_horizvert.C			    \
 	new_layoutmanager.C			    \
-	nonrecursive_visibility.H		    \
-	nonrecursive_visibilityfwd.H		    \
 	panelayoutmanager/create_pane_info.H	    \
 	panelayoutmanager/create_pane_properties.C  \
 	panelayoutmanager/create_pane_properties.H  \

@@ -19,7 +19,7 @@
 #include "x/w/impl/container.H"
 #include "reference_font_element.H"
 #include "x/w/impl/container_element.H"
-#include "nonrecursive_visibility.H"
+#include "x/w/impl/nonrecursive_visibility.H"
 
 #include <tuple>
 #include <utility>

@@ -5,7 +5,7 @@
 #include "libcxxw_config.h"
 #include "date_input_field/date_input_field_handler.H"
 #include "x/w/impl/container_element.H"
-#include "nonrecursive_visibility.H"
+#include "x/w/impl/nonrecursive_visibility.H"
 #include "popup/popup.H"
 
 LIBCXXW_NAMESPACE_START

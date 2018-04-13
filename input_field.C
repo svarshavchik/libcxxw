@@ -8,7 +8,7 @@
 #include "input_field.H"
 #include "x/w/impl/background_color.H"
 #include "x/w/impl/container_element.H"
-#include "nonrecursive_visibility.H"
+#include "x/w/impl/nonrecursive_visibility.H"
 #include "generic_window_handler.H"
 #include "connection_thread.H"
 #include "peephole/peephole.H"

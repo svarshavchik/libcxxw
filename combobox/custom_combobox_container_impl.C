@@ -7,7 +7,7 @@
 #include "combobox/custom_combobox_popup_container_impl.H"
 #include "popup/popup_attachedto_handler_element.H"
 #include "x/w/impl/container_element.H"
-#include "nonrecursive_visibility.H"
+#include "x/w/impl/nonrecursive_visibility.H"
 
 LIBCXXW_NAMESPACE_START
 

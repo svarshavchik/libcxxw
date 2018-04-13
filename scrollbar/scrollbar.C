@@ -7,7 +7,7 @@
 #include "scrollbar_impl.H"
 #include "x/w/impl/container_element.H"
 #include "container_visible_element.H"
-#include "nonrecursive_visibility.H"
+#include "x/w/impl/nonrecursive_visibility.H"
 #include "focus/focusframefactory.H"
 #include "focus/focusframelayoutimpl.H"
 #include "focus/standard_focusframecontainer_element.H"

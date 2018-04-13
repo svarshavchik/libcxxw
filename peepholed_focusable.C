@@ -4,7 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "peepholed_focusable.H"
-#include "nonrecursive_visibility.H"
+#include "x/w/impl/nonrecursive_visibility.H"
 #include "peephole/peephole.H"
 #include "peephole/peepholed.H"
 #include "peephole/peephole_impl.H"

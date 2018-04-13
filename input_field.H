@@ -10,7 +10,7 @@
 #include "x/w/impl/container_elementfwd.H"
 #include "x/w/impl/child_elementobj.H"
 #include "editorfwd.H"
-#include "nonrecursive_visibilityfwd.H"
+#include "x/w/impl/nonrecursive_visibilityfwd.H"
 #include "focus/focusframecontainerfwd.H"
 #include "peepholed_focusable.H"
 

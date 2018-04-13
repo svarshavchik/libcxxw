@@ -8,7 +8,7 @@
 #include "x/w/impl/container_element.H"
 #include "container_visible_element.H"
 #include "x/w/impl/always_visible.H"
-#include "nonrecursive_visibility.H"
+#include "x/w/impl/nonrecursive_visibility.H"
 #include "x/w/impl/background_color.H"
 
 LIBCXXW_NAMESPACE_START

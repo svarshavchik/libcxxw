@@ -3,10 +3,10 @@
 ** See COPYING for distribution information.
 */
 
-#ifndef nonrecursive_visibility_H
-#define nonrecursive_visibility_H
+#ifndef x_w_impl_nonrecursive_visibility_H
+#define x_w_impl_nonrecursive_visibility_H
 
-#include "nonrecursive_visibilityfwd.H"
+#include <x/w/impl/nonrecursive_visibilityfwd.H>
 
 LIBCXXW_NAMESPACE_START
 

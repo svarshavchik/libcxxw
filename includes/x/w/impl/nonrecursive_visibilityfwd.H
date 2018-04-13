@@ -1,13 +1,13 @@
 /*
-** Copyright 2017 Double Precision, Inc.
+** Copyright 2017-2018 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 
-#ifndef nonrecursive_visibility_fwd_H
-#define nonrecursive_visibility_fwd_H
+#ifndef x_w_impl_nonrecursive_visibility_fwd_H
+#define x_w_impl_nonrecursive_visibility_fwd_H
 
-#include "x/w/namespace.H"
-#include "x/w/connection_threadfwd.H"
+#include <x/w/namespace.H>
+#include <x/w/connection_threadfwd.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -22,7 +22,7 @@ LIBCXXW_NAMESPACE_START
 //! request_visibility_recursive().
 
 template<typename container_impl>
-class LIBCXX_HIDDEN nonrecursive_visibilityObj : public container_impl {
+class nonrecursive_visibilityObj : public container_impl {
 
  public:
 	using container_impl::container_impl;

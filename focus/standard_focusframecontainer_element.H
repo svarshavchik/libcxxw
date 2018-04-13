@@ -8,7 +8,7 @@
 #include "focus/focusframecontainer_elementfwd.H"
 #include "x/w/impl/container_elementfwd.H"
 #include "container_visible_elementfwd.H"
-#include "nonrecursive_visibilityfwd.H"
+#include "x/w/impl/nonrecursive_visibilityfwd.H"
 #include "x/w/impl/always_visiblefwd.H"
 #include "x/w/impl/child_element.H"
 #include "x/w/impl/background_colorfwd.H"

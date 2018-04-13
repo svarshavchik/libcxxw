@@ -6,7 +6,7 @@
 #define menu_impl_h
 
 #include "x/w/menu.H"
-#include "nonrecursive_visibilityfwd.H"
+#include "x/w/impl/nonrecursive_visibilityfwd.H"
 #include "focus/focusframecontainer_elementfwd.H"
 #include "popup/popup_attachedto_handler_elementfwd.H"
 #include "x/w/impl/popup/popupfwd.H"
