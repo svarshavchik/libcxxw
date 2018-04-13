@@ -25,7 +25,7 @@ class LIBCXX_HIDDEN date_input_fieldObj::handlerObj
 
  public:
 	//! Constructor
-	handlerObj(const ref<containerObj::implObj> &parent_container);
+	handlerObj(const container_impl &parent_container);
 
 	//! Destructor
 	~handlerObj();

@@ -21,7 +21,7 @@ new_gridlayoutmanager::new_gridlayoutmanager()=default;
 new_gridlayoutmanager::~new_gridlayoutmanager()=default;
 
 ref<layoutmanagerObj::implObj>
-new_gridlayoutmanager::create(const ref<containerObj::implObj> &parent) const
+new_gridlayoutmanager::create(const container_impl &parent) const
 {
 	return ref<gridlayoutmanagerObj::implObj>::create(parent);
 }

@@ -54,8 +54,7 @@ class my_element_implObj : public x::w::scratch_and_mask_buffer_draw<
 		> superclass_t;
 public:
 
-	my_element_implObj(const x::ref<x::w::containerObj::implObj>
-			  &parent_container)
+	my_element_implObj(const x::w::container_impl &parent_container)
 		: superclass_t{
 
 		// Label ID for the scratch mask.
@@ -228,7 +227,7 @@ void testcustomelement()
 
 			 // Obtain the parent container from the factory.
 
-			 x::ref<x::w::containerObj::implObj> parent_container=
+			 x::w::container_impl parent_container=
 				 factory->get_container_impl();
 
 			 // Create the "implementation" object for the custom

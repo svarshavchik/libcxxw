@@ -52,7 +52,7 @@ class gridfactoryObj : public factoryObj {
 
 	//! Implement get_container_impl()
 
-	ref<containerObj::implObj> get_container_impl() override LIBCXX_HIDDEN;
+	container_impl get_container_impl() override LIBCXX_HIDDEN;
 
 	//! Return get_element_impl()
 

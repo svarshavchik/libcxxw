@@ -38,7 +38,7 @@ class LIBCXX_HIDDEN peepholeObj::layoutmanager_implObj
 
 	const peepholed element_in_peephole;
 
-	layoutmanager_implObj(const ref<containerObj::implObj> &container_impl,
+	layoutmanager_implObj(const container_impl &container_impl,
 			      peephole_style style,
 			      const peepholed &element_in_peephole);
 

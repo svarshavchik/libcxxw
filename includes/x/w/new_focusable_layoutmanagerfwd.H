@@ -32,7 +32,7 @@ public:
 	~new_focusable_layoutmanager();
 
 	//! Internal implementation
-	virtual focusable_container create(const ref<containerObj::implObj> &)
+	virtual focusable_container create(const container_impl &)
 		const=0;
 };
 

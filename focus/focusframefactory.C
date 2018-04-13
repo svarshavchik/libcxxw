@@ -18,14 +18,14 @@ focusframefactoryObj::focusframefactoryObj(const container &ffc)
 
 focusframefactoryObj::~focusframefactoryObj()=default;
 
-ref<containerObj::implObj> focusframefactoryObj::get_container_impl()
+container_impl focusframefactoryObj::get_container_impl()
 {
-	return glm->layoutmanagerObj::impl->container_impl;
+	return glm->layoutmanagerObj::impl->layout_container_impl;
 }
 
 elementObj::implObj &focusframefactoryObj::get_element_impl()
 {
-	return glm->layoutmanagerObj::impl->container_impl
+	return glm->layoutmanagerObj::impl->layout_container_impl
 		->container_element_impl();
 }
 

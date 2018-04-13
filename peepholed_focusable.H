@@ -57,7 +57,7 @@ struct LIBCXX_HIDDEN create_peepholed_focusable_args_t {
 
 	//! This implementation object should inherit from the
 	//! nonrecursive_visibility mixin.
-	const ref<containerObj::implObj> &parent_container;
+	const container_impl &parent_container;
 
 	//! Peephole's style
 	peephole_style style;

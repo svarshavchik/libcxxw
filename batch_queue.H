@@ -26,7 +26,7 @@ public:
 	//! Destructor
 	~containers_2_batch_recalculate_set();
 	//! The containers
-	std::unordered_set<ref<containerObj::implObj>> containers;
+	std::unordered_set<container_impl> containers;
 };
 
 //! Queue of elements whose visibility should be updated in bulk

@@ -15,7 +15,7 @@ factoryObj::factoryObj()=default;
 
 factoryObj::~factoryObj()=default;
 
-ref<containerObj::implObj> factoryObj::last_container_impl()
+container_impl factoryObj::last_container_impl()
 {
 	return get_container_impl();
 }

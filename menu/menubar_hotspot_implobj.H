@@ -30,7 +30,7 @@ class LIBCXX_HIDDEN menubar_hotspot_implObj
 				const background_color &bg_color,
 				const background_color &highlighted_color,
 				const background_color &clicked_color,
-				const ref<containerObj::implObj> &container_impl
+				const container_impl &container_impl
 				);
 
 	~menubar_hotspot_implObj();

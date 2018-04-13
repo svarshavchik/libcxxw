@@ -29,7 +29,7 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
  public:
 
 	//! Constructor
-	implObj(const ref<containerObj::implObj> &container_impl);
+	implObj(const container_impl &container_impl);
 
 	//! Destructor
 	~implObj();
@@ -230,24 +230,24 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 	//! Redraw the borders around the child element.
 
 	void child_background_color_changed(ONLY IN_THREAD,
-					    const elementimpl &child) override;
+					    const element_impl &child) override;
 
 	//! If the child element is remove_when_hidden we need to recalculate.
 
 	void requested_child_visibility_changed
 		(ONLY IN_THREAD,
-		 const elementimpl &child, bool) override;
+		 const element_impl &child, bool) override;
 
 	//! Redraw the borders around the child element, unless it is remove_when_hidden
 	void inherited_child_visibility_changed
 		(ONLY IN_THREAD,
-		 const elementimpl &child,
+		 const element_impl &child,
 		 inherited_visibility_info &info) override;
  private:
 	//! Redraw the borders around the child element.
 
 	void redraw_child_borders_and_padding(ONLY IN_THREAD,
-					      const elementimpl &child);
+					      const element_impl &child);
  public:
 
 
@@ -258,7 +258,7 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 	//! Return the display element's position with padding.
 
 	rectangle padded_position(ONLY IN_THREAD,
-				  const elementimpl &e)
+				  const element_impl &e)
 		override;
 };
 

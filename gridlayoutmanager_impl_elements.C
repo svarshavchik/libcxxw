@@ -232,7 +232,7 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(ONLY IN_THREAD)
 
 				  auto b=ge->get_straight_border
 					  (IN_THREAD,
-					   this->container_impl,
+					   this->layout_container_impl,
 					   &straight_border::base
 					   ::create_vertical_border,
 					   &straight_border::base
@@ -256,7 +256,7 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(ONLY IN_THREAD)
 
 				  auto cb1=ge->get_corner_border
 					  (IN_THREAD,
-					   this->container_impl,
+					   this->layout_container_impl,
 					   column_number, row_start-1);
 
 				  // We can set the bottomleft and bottomright
@@ -278,7 +278,7 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(ONLY IN_THREAD)
 
 				  auto cb2=ge->get_corner_border
 					  (IN_THREAD,
-					   this->container_impl,
+					   this->layout_container_impl,
 					   column_number, row_end+1);
 
 				  // We can set the topleft and topright
@@ -363,7 +363,7 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(ONLY IN_THREAD)
 
 				  auto b=ge->get_straight_border
 					  (IN_THREAD,
-					   this->container_impl,
+					   this->layout_container_impl,
 					   &straight_border::base
 					   ::create_horizontal_border,
 					   &straight_border::base
@@ -396,7 +396,7 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(ONLY IN_THREAD)
 
 				  auto cb=ge->get_corner_border
 					  (IN_THREAD,
-					   this->container_impl,
+					   this->layout_container_impl,
 					   col1-1, row_number);
 
 				  // We can set the topright and bottomright
@@ -418,7 +418,7 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(ONLY IN_THREAD)
 
 				  cb=ge->get_corner_border
 					  (IN_THREAD,
-					   this->container_impl,
+					   this->layout_container_impl,
 					   col2+1, row_number);
 
 				  // We can set the topleft and bottomleft
@@ -583,7 +583,7 @@ void gridlayoutmanagerObj::implObj::rebuild_elements_start(ONLY IN_THREAD,
 
 straight_border gridlayoutmanagerObj::implObj::elementsObj
 ::get_straight_border(ONLY IN_THREAD,
-		      const ref<containerObj::implObj> &container_impl,
+		      const container_impl &container_impl,
 		      straight_border_factory_t factory,
 		      straight_border_update_t update,
 		      const current_border_implptr &default_border,
@@ -662,7 +662,7 @@ straight_border gridlayoutmanagerObj::implObj::elementsObj
 
 corner_border gridlayoutmanagerObj::implObj::elementsObj
 ::get_corner_border(ONLY IN_THREAD,
-		    const ref<containerObj::implObj> &container_impl,
+		    const container_impl &container_impl,
 		    metrics::grid_xy x,
 		    metrics::grid_xy y)
 {

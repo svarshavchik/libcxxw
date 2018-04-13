@@ -25,7 +25,8 @@ LIBCXXW_NAMESPACE_START
 peepholed_focusableObj
 ::peepholed_focusableObj(const ref<implObj> &impl,
 			 const ref<layoutmanagerObj::implObj> &layout_impl)
-	: focusable_containerObj(layout_impl->container_impl, layout_impl),
+	: focusable_containerObj{layout_impl->layout_container_impl,
+		layout_impl},
 	  impl(impl)
 {
 }

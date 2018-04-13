@@ -12,7 +12,7 @@
 LIBCXXW_NAMESPACE_START
 
 peephole_gridlayoutmanagerObj
-::peephole_gridlayoutmanagerObj(const ref<containerObj::implObj>
+::peephole_gridlayoutmanagerObj(const container_impl
 				&container_impl)
 	: gridlayoutmanagerObj::implObj(container_impl)
 {

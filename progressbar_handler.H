@@ -37,7 +37,7 @@ class LIBCXX_HIDDEN progressbarObj::handlerObj
 		container_elementObj<child_elementObj>> superclass_t;
 
 	//! Constructor
-	handlerObj(const ref<containerObj::implObj> &parent_container,
+	handlerObj(const container_impl &parent_container,
 		   const progressbar_config &config);
 
 	//! Destructor

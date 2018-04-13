@@ -40,7 +40,7 @@ bool peepholeObj::layoutmanager_implObj
 }
 
 peepholeObj::layoutmanager_implObj
-::layoutmanager_implObj(const ref<containerObj::implObj> &container_impl,
+::layoutmanager_implObj(const container_impl &container_impl,
 			peephole_style style,
 			const peepholed &element_in_peephole)
 	: layoutmanagerObj::implObj(container_impl),

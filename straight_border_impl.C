@@ -28,14 +28,14 @@ current_border_implptr border_source::get_border(ONLY IN_THREAD,
 }
 
 horizontal_straight_borderObj
-::horizontal_straight_borderObj(const ref<containerObj::implObj> &c,
+::horizontal_straight_borderObj(const container_impl &c,
 				const current_border_implptr &border_default)
 	: horizontal_straight_borderObj(c, {}, {}, {}, {}, border_default)
 {
 }
 
 horizontal_straight_borderObj
-::horizontal_straight_borderObj(const ref<containerObj::implObj> &c,
+::horizontal_straight_borderObj(const container_impl &c,
 				const grid_elementptr &element_1,
 				const current_border_implptr &border1,
 				const grid_elementptr &element_2,
@@ -56,7 +56,7 @@ horizontal_straight_borderObj::~horizontal_straight_borderObj()=default;
 
 straight_border straight_borderBase
 ::create_horizontal_border(ONLY IN_THREAD,
-			   const ref<containerObj::implObj> &container_impl,
+			   const container_impl &container_impl,
 			   const border_source &element_above,
 			   const border_source &element_below,
 			   const current_border_implptr &default_border)
@@ -84,14 +84,14 @@ straight_border straight_borderBase
 }
 
 vertical_straight_borderObj
-::vertical_straight_borderObj(const ref<containerObj::implObj> &c,
+::vertical_straight_borderObj(const container_impl &c,
 			      const current_border_implptr &border_default)
 	: vertical_straight_borderObj(c, {}, {}, {}, {}, border_default)
 {
 }
 
 vertical_straight_borderObj
-::vertical_straight_borderObj(const ref<containerObj::implObj> &c,
+::vertical_straight_borderObj(const container_impl &c,
 			      const grid_elementptr &element_1,
 			      const current_border_implptr &border1,
 			      const grid_elementptr &element_2,
@@ -112,7 +112,7 @@ vertical_straight_borderObj::~vertical_straight_borderObj()=default;
 
 straight_border straight_borderBase
 ::create_vertical_border(ONLY IN_THREAD,
-			 const ref<containerObj::implObj> &container_impl,
+			 const container_impl &container_impl,
 			 const border_source &element_onleft,
 			 const border_source &element_onright,
 			 const current_border_implptr &default_border)
@@ -203,7 +203,7 @@ straight_border straight_borderBase
 }
 
 straight_borderObj::implObj
-::implObj(const ref<containerObj::implObj> &container,
+::implObj(const container_impl &container,
 	  const metrics::horizvert_axi &initial_metrics,
 	  const char *scratch_buffer_label,
 	  const grid_elementptr &element_1,
@@ -219,7 +219,7 @@ straight_borderObj::implObj
 }
 
 straight_borderObj::implObj
-::implObj(const ref<containerObj::implObj> &container,
+::implObj(const container_impl &container,
 	  const metrics::horizvert_axi &initial_metrics,
 	  const char *scratch_buffer_label,
 	  generic_windowObj::handlerObj &h,

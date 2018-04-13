@@ -43,7 +43,7 @@ class LIBCXX_HIDDEN peepholed_toplevel_main_windowObj::implObj
 	THREAD_DATA_ONLY(data);
 
 	//! Constructor
-	implObj(const ref<containerObj::implObj> &parent_container);
+	implObj(const container_impl &parent_container);
 
 	//! Destructor
 	~implObj();

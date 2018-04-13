@@ -70,7 +70,7 @@ void booklayoutmanagerObj
 ::on_opened(const functionref<void (THREAD_CALLBACK,
 				    const book_status_info_t &)> &cb)
 {
-	impl->impl->container_impl->container_element_impl()
+	impl->impl->layout_container_impl->container_element_impl()
 		.get_window_handler().thread()
 		->run_as([me=ref(this), cb]
 			 (ONLY IN_THREAD)
@@ -84,7 +84,7 @@ void booklayoutmanagerObj
 
 void booklayoutmanagerObj::open(size_t n)
 {
-	impl->impl->container_impl->container_element_impl()
+	impl->impl->layout_container_impl->container_element_impl()
 		.get_window_handler().thread()
 		->run_as([me=ref(this), n]
 			 (ONLY IN_THREAD)
@@ -140,7 +140,7 @@ void booklayoutmanagerObj
 
 	if (cb)
 	{
-		auto &e=lock.layout_manager->impl->impl->container_impl
+		auto &e=lock.layout_manager->impl->impl->layout_container_impl
 			->container_element_impl();
 
 		try {
@@ -365,7 +365,7 @@ void install_activate_callback(const booklayoutmanager &layout_manager,
 {
 	new_hotspot->on_activate
 		([weak_captures=make_weak_capture(layout_manager->impl
-						  ->impl->container_impl,
+						  ->impl->layout_container_impl,
 						  new_page)]
 		 (ONLY IN_THREAD, const auto &trigger, const auto &busy)
 		 {
@@ -571,11 +571,11 @@ new_booklayoutmanager::new_booklayoutmanager()
 new_booklayoutmanager::~new_booklayoutmanager()=default;
 
 focusable_container
-new_booklayoutmanager::create(const ref<containerObj::implObj> &parent) const
+new_booklayoutmanager::create(const container_impl &parent) const
 {
 	// Our container implementation is nothing special.
 
-	ref<containerObj::implObj> c=
+	container_impl c=
 		ref<container_elementObj<child_elementObj>>::create(parent);
 
 	// Create the our gridlayoutmanager subclass, the real layout manager

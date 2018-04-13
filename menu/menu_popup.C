@@ -36,7 +36,7 @@ static const list_selection_type_cb_t menuitem_selected_type=
 };
 
 static std::tuple<popup, ref<popup_attachedto_handlerObj> >
-do_create_menu_popup(const elementimpl &e,
+do_create_menu_popup(const element_impl &e,
 		     const function<void (const listlayoutmanager &)> &creator,
 		     const new_listlayoutmanager &style,
 		     const create_peepholed_toplevel_listcontainer_popup_args
@@ -81,7 +81,7 @@ do_create_menu_popup(const elementimpl &e,
 }
 
 static auto
-do_create_dropdown_menu(const elementimpl &e,
+do_create_dropdown_menu(const element_impl &e,
 			const function<void (const listlayoutmanager &)>
 			&creator,
 			attached_to attached_to_how,
@@ -115,7 +115,7 @@ do_create_dropdown_menu(const elementimpl &e,
 }
 
 std::tuple<popup, ref<popup_attachedto_handlerObj> >
-topmenu_popup(const elementimpl &e,
+topmenu_popup(const element_impl &e,
 	      const function<void (const listlayoutmanager &)> &creator)
 {
 	return do_create_dropdown_menu(e, creator,
@@ -129,7 +129,7 @@ topmenu_popup(const elementimpl &e,
 
 
 std::tuple<popup, ref<popup_attachedto_handlerObj> >
-submenu_popup(const elementimpl &e,
+submenu_popup(const element_impl &e,
 	      const function<void (const listlayoutmanager &)> &creator)
 {
 	return do_create_dropdown_menu(e, creator,
@@ -154,14 +154,14 @@ namespace {
 class LIBCXX_HIDDEN contextmenu_popup_handlerObj
 	: public peepholed_toplevel_listcontainer_handlerObj {
 
-	weakptr<elementimplptr> contextmenu_element;
+	weakptr<element_implptr> contextmenu_element;
 
 	typedef peepholed_toplevel_listcontainer_handlerObj superclass_t;
 
  public:
 	contextmenu_popup_handlerObj
 		(const peepholed_toplevel_listcontainer_handler_args &args,
-		 const elementimpl &contextmenu_element)
+		 const element_impl &contextmenu_element)
 		: superclass_t{args}, contextmenu_element{contextmenu_element}
 	{
 	}
@@ -204,7 +204,7 @@ class LIBCXX_HIDDEN contextmenu_popup_handlerObj
 }
 
 container
-contextmenu_popup(const elementimpl &e,
+contextmenu_popup(const element_impl &e,
 		  const function<void (const listlayoutmanager &)> &creator)
 {
 	auto ret=do_create_dropdown_menu

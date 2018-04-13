@@ -11,11 +11,12 @@
 LIBCXXW_NAMESPACE_START
 
 custom_comboboxlayoutmanagerObj::implObj
-::implObj(const ref<custom_combobox_containerObj::implObj> &container_impl,
+::implObj(const ref<custom_combobox_containerObj::implObj>
+	  &combo_container_impl,
 	  const new_custom_comboboxlayoutmanager &style)
-	: gridlayoutmanagerObj::implObj(container_impl),
-	container_impl(container_impl),
-	selection_changed(style.get_selection_changed())
+	: gridlayoutmanagerObj::implObj{combo_container_impl},
+	combo_container_impl{combo_container_impl},
+	selection_changed{style.get_selection_changed()}
 {
 }
 
@@ -25,7 +26,7 @@ layoutmanager custom_comboboxlayoutmanagerObj::implObj::create_public_object()
 {
 	return custom_comboboxlayoutmanager
 		::create(ref<implObj>(this),
-			 container_impl->popup_container->layout_impl);
+			 combo_container_impl->popup_container->layout_impl);
 
 }
 

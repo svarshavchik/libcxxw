@@ -32,7 +32,7 @@ batch_queueObj::batch_queueObj(const connection_thread &my_thread)
 void batch_queueObj
 ::schedule_for_recalculation(const ref<layoutmanagerObj::implObj> &l)
 {
-	my_thread->run_as([c=l->container_impl]
+	my_thread->run_as([c=l->layout_container_impl]
 			  (ONLY IN_THREAD)
 			  {
 				  IN_THREAD->containers_2_batch_recalculate

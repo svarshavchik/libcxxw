@@ -30,10 +30,10 @@
 LIBCXXW_NAMESPACE_START
 
 panelayoutmanagerObj::implObj::implObj(const ref<panecontainer_implObj>
-				       &container_impl,
+				       &pane_container_impl,
 				       const pane_style &style)
-	: gridlayoutmanagerObj::implObj{container_impl},
-	container_impl{container_impl},
+	: gridlayoutmanagerObj::implObj{pane_container_impl},
+	pane_container_impl{pane_container_impl},
 	style{style}
 {
 }
@@ -90,13 +90,14 @@ void panelayoutmanagerObj::implObj::create_slider(const gridfactory &f)
 
 	auto ff=ref<pane_slider_focusframeObj>::create
 		(f->get_container_impl(),
-		 container_impl->container_element_impl().get_window_handler()
+		 pane_container_impl->container_element_impl()
+		 .get_window_handler()
 		 .create_icon({slider_cursor()})->create_cursor(),
 		 style.slider_background_color);
 
 	// Create the implementation object for the slider element.
-	auto slider_border=container_impl->container_element_impl().get_screen()
-		->impl->get_cached_border(style.slider);
+	auto slider_border=pane_container_impl->container_element_impl()
+		.get_screen()->impl->get_cached_border(style.slider);
 
 	auto slider_impl=create_pane_slider_impl(ff, slider_border);
 
@@ -130,7 +131,7 @@ create_pane_info_t panelayoutmanagerObj::implObj
 	// Container for the peephole and its scrollbar.
 
 	auto peephole_container_impl=ref<pane_peephole_containerObj::implObj>
-		::create(container_impl,
+		::create(pane_container_impl,
 			 child_element_init_params
 			 {{}, {}, lock->background_color});
 
@@ -459,7 +460,7 @@ void panelayoutmanagerObj::implObj::slide_start(ONLY IN_THREAD,
 						&which_slider)
 {
 	coord_t reference_height=
-		coord_t::truncate(container_impl->font_height(IN_THREAD));
+		coord_t::truncate(pane_container_impl->font_height(IN_THREAD));
 
 	grid_map_t::lock lock{grid_map};
 
@@ -476,7 +477,7 @@ void panelayoutmanagerObj::implObj::slide_end(ONLY IN_THREAD,
 					      &which_slider)
 {
 	coord_t reference_height=
-		coord_t::truncate(container_impl->font_height(IN_THREAD));
+		coord_t::truncate(pane_container_impl->font_height(IN_THREAD));
 
 	grid_map_t::lock lock{grid_map};
 
@@ -595,7 +596,7 @@ const char *panelayoutmanagerObj::implObj::orientation<vertical>
 template<>
 ref<pane_sliderObj::implObj>
 panelayoutmanagerObj::implObj::orientation<vertical>
-::create_pane_slider_impl(const ref<containerObj::implObj> &parent_container,
+::create_pane_slider_impl(const container_impl &parent_container,
 			  const current_border_impl &slider_border)
 {
 	return ref<pane_slider_impl_elementObj
@@ -671,7 +672,7 @@ metrics::horizvert_axi
 panelayoutmanagerObj::implObj::orientation<vertical>
 ::initial_peephole_metrics(const dim_arg &size)
 {
-	auto theme=container_impl->container_element_impl()
+	auto theme=pane_container_impl->container_element_impl()
 		.get_screen()->impl->current_theme.get();
 
 	auto s=theme->get_theme_dim_t(size, themedimaxis::height);
@@ -782,7 +783,7 @@ const char *panelayoutmanagerObj::implObj::orientation<horizontal>
 template<>
 ref<pane_sliderObj::implObj>
 panelayoutmanagerObj::implObj::orientation<horizontal>
-::create_pane_slider_impl(const ref<containerObj::implObj> &parent_container,
+::create_pane_slider_impl(const container_impl &parent_container,
 			  const current_border_impl &slider_border)
 {
 	return ref<pane_slider_impl_elementObj
@@ -857,7 +858,7 @@ metrics::horizvert_axi
 panelayoutmanagerObj::implObj::orientation<horizontal>
 ::initial_peephole_metrics(const dim_arg &size)
 {
-	auto theme=container_impl->container_element_impl()
+	auto theme=pane_container_impl->container_element_impl()
 		.get_screen()->impl->current_theme.get();
 
 	auto s=theme->get_theme_dim_t(size, themedimaxis::width);

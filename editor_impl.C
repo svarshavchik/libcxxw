@@ -40,7 +40,7 @@
 LIBCXXW_NAMESPACE_START
 
 static inline richtextmeta
-create_default_meta(const ref<containerObj::implObj> &container,
+create_default_meta(const container_impl &container,
 		    const input_field_config &config)
 {
 	auto &element=container->container_element_impl();

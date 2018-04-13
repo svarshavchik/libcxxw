@@ -44,11 +44,11 @@ public:
 	THREAD_DATA_ONLY(current_callback);
 
 	//! Constructor
-	implObj(const ref<containerObj::implObj> &container,
+	implObj(const container_impl &container,
 		const std::vector<icon> &icon_images);
 
 	//! Constructor
-	implObj(const ref<containerObj::implObj> &container,
+	implObj(const container_impl &container,
 		const std::vector<icon> &icon_images,
 		const metrics::axis &horiz_metrics,
 		const metrics::axis &vert_metrics);
@@ -85,7 +85,7 @@ public:
 //! The new display element has checkbox semantics.
 
 ref<image_button_internalObj::implObj>
-create_checkbox_impl(const ref<containerObj::implObj> &container,
+create_checkbox_impl(const container_impl &container,
 		     const std::vector<icon> &icon_images) LIBCXX_HIDDEN;
 
 //! Create an image button internal implementation display element.
@@ -94,7 +94,7 @@ create_checkbox_impl(const ref<containerObj::implObj> &container,
 
 ref<image_button_internalObj::implObj>
 create_radio_impl(const radio_group &group,
-		  const ref<containerObj::implObj> &container,
+		  const container_impl &container,
 		  const std::vector<icon> &icon_images) LIBCXX_HIDDEN;
 
 LIBCXXW_NAMESPACE_END

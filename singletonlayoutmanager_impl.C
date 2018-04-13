@@ -12,7 +12,7 @@
 LIBCXXW_NAMESPACE_START
 
 singletonlayoutmanagerObj::implObj
-::implObj(const ref<containerObj::implObj> &container_impl,
+::implObj(const container_impl &container_impl,
 	  const elementptr &initial_element)
 	: layoutmanagerObj::implObj(container_impl),
 	current_element(initial_element)
@@ -76,13 +76,13 @@ elementptr singletonlayoutmanagerObj::implObj::get()
 	return current_element.get();
 }
 
-elementimplptr singletonlayoutmanagerObj::implObj
+element_implptr singletonlayoutmanagerObj::implObj
 ::get_list_element_impl(ONLY IN_THREAD)
 {
 	auto e=get();
 
 	if (!e)
-		return elementimplptr();
+		return element_implptr();
 
 	return e->impl;
 }

@@ -135,11 +135,11 @@ class LIBCXX_HIDDEN corner_borderObj::implObj
 	void updated(ONLY IN_THREAD);
 
 	//! Constructor
-	implObj(const ref<containerObj::implObj> &container);
+	implObj(const container_impl &container);
 
  private:
 	//! Internal constructor
-	implObj(const ref<containerObj::implObj> &container,
+	implObj(const container_impl &container,
 		generic_windowObj::handlerObj &h);
 
 	//! Destructor

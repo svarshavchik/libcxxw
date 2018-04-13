@@ -14,7 +14,7 @@
 LIBCXXW_NAMESPACE_START
 
 typedef ref<image_button_internalObj::implObj>
-image_button_internal_factory_t(const ref<containerObj::implObj>);
+image_button_internal_factory_t(const container_impl);
 
 //! Type-erased create_image_button() and create_image_button_with_label_factory().
 
@@ -119,7 +119,7 @@ create_image_button(bool disable_recursive_visibility,
 //! Creates an image button of specific height, from image1 and image2.
 
 ref<image_button_internalObj::implObj>
-scroll_imagebutton_specific_height(const ref<containerObj::implObj>
+scroll_imagebutton_specific_height(const container_impl
 				   &parent_container,
 				   const std::string &image1,
 				   const std::string &image2,

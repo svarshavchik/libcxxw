@@ -37,9 +37,9 @@ class LIBCXX_HIDDEN replace_singleton_factoryObj : public factoryObj {
 
 	//! Return the container for a new element.
 
-	ref<containerObj::implObj> get_container_impl() override
+	container_impl get_container_impl() override
 	{
-		return layout_manager->impl->container_impl;
+		return layout_manager->impl->layout_container_impl;
 	}
 
 	//! Return the container's element.

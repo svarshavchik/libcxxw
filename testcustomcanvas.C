@@ -58,7 +58,7 @@ class my_canvas_implObj :
 					     > superclass_t;
 public:
 
-	my_canvas_implObj(const ref<containerObj::implObj> &parent_container)
+	my_canvas_implObj(const container_impl &parent_container)
 		: my_canvas_implObj(parent_container,
 				    canvas_init_params{
 					    {50.0, 50.0, 100.0},
@@ -67,7 +67,7 @@ public:
 	{
 	}
 
-	my_canvas_implObj(const ref<containerObj::implObj> &parent_container,
+	my_canvas_implObj(const container_impl &parent_container,
 			  const canvas_init_params &init_params)
 		: my_canvas_implObj{parent_container,
 			init_params,
@@ -76,7 +76,7 @@ public:
 	{
 	}
 
-	my_canvas_implObj(const ref<containerObj::implObj> &parent_container,
+	my_canvas_implObj(const container_impl &parent_container,
 			  const canvas_init_params &init_params,
 			  const child_element_init_params &child_init_params)
 		: superclass_t{

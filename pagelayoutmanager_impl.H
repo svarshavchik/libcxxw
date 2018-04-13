@@ -63,7 +63,7 @@ class LIBCXX_HIDDEN pagelayoutmanagerObj::implObj
 	page_layout_info_t info;
 
 	//! Constructor
-	implObj(const ref<containerObj::implObj> &container_impl);
+	implObj(const container_impl &container_impl);
 
 	//! Destructor
 	~implObj();

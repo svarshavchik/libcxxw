@@ -105,10 +105,10 @@ class LIBCXX_HIDDEN list_element_synchronized_columnsObj
 
  public:
 
-	const ref<containerObj::implObj> parent_container;
+	const container_impl parent_container;
 
 	list_element_synchronized_columnsObj
-		(const ref<containerObj::implObj> &parent_container)
+		(const container_impl &parent_container)
 		: parent_container{parent_container}
 	{
 	}

@@ -29,7 +29,7 @@ public:
 
 	//! Constructor
 	image_buttonObj(const ref<implObj> &impl,
-			const ref<containerObj::implObj> &container_impl,
+			const container_impl &container_impl,
 			const ref<layoutmanagerObj::implObj> &lm_impl)
 		LIBCXX_HIDDEN;
 

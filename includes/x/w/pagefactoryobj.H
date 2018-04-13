@@ -30,13 +30,13 @@ public:
 	~pagefactoryObj() LIBCXX_HIDDEN;
 
 	//! Implement get_container_impl()
-	ref<containerObj::implObj> get_container_impl() override LIBCXX_HIDDEN;
+	container_impl get_container_impl() override LIBCXX_HIDDEN;
 
 	//! Implement get_element_impl()
 	elementObj::implObj &get_element_impl() override LIBCXX_HIDDEN;
 
 	//! Implement last_container_impl()
-	ref<containerObj::implObj> last_container_impl() override LIBCXX_HIDDEN;
+	container_impl last_container_impl() override LIBCXX_HIDDEN;
 
 	//! Set new element's alignment
 

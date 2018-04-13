@@ -37,7 +37,7 @@ class LIBCXX_HIDDEN custom_combobox_containerObj::implObj
 	const custom_combobox_popup_container popup_container;
 
 	//! Constructor
-	implObj(const ref<containerObj::implObj> &parent_container,
+	implObj(const container_impl &parent_container,
 		const custom_combobox_popup_container &popup_container,
 		const ref<popup_attachedto_handlerObj> &attachedto_handler);
 

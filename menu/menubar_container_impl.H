@@ -28,7 +28,7 @@ class LIBCXX_HIDDEN menubar_container_implObj
  public:
 
 	//! Constructor
-	menubar_container_implObj(const ref<containerObj::implObj> &parent);
+	menubar_container_implObj(const container_impl &parent);
 
 	//! Destructor
 	~menubar_container_implObj();

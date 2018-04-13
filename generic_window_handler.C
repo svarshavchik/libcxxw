@@ -980,7 +980,7 @@ void generic_windowObj::handlerObj
 
 	if (most_recent_element_with_pointer(IN_THREAD))
 	{
-		elementimpl pointer_element{
+		element_impl pointer_element{
 			most_recent_element_with_pointer(IN_THREAD)
 				};
 
@@ -992,7 +992,7 @@ void generic_windowObj::handlerObj
 		if (most_recent_keyboard_focus(IN_THREAD) &&
 		    pointer_element->activate_for(be))
 		{
-			elementimpl keyboard_element{
+			element_impl keyboard_element{
 				&most_recent_keyboard_focus(IN_THREAD)
 					->get_focusable_element()
 					};

@@ -47,7 +47,7 @@ public:
 
 	//! \internal
 
-	ref<layoutmanagerObj::implObj> create(const ref<containerObj::implObj> &
+	ref<layoutmanagerObj::implObj> create(const container_impl &
 					      ) const override;
 };
 

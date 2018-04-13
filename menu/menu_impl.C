@@ -16,7 +16,7 @@ menuObj::implObj::implObj(const popup &menu_popup,
 			  const border_arg &focuson_border,
 			  const ref<popup_attachedto_handlerObj>
 			  &attachedto_handler,
-			  const ref<containerObj::implObj> &parent_container)
+			  const container_impl &parent_container)
 	: superclass_t(attachedto_handler,
 		       focusoff_border, focuson_border,
 		       parent_container,

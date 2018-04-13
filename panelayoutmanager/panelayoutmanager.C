@@ -156,7 +156,7 @@ class LIBCXX_HIDDEN panecontainerObj : public focusable_containerObj {
 
 	const ref<panelayoutmanagerObj::implObj> layout_impl;
 
-	panecontainerObj(const ref<containerObj::implObj> &impl,
+	panecontainerObj(const container_impl &impl,
 			 const ref<panelayoutmanagerObj::implObj> &layout_impl)
 		: focusable_containerObj{impl, layout_impl},
 		layout_impl{layout_impl}
@@ -228,7 +228,7 @@ new_panelayoutmanager::new_panelayoutmanager(orientation_t orientation)
 new_panelayoutmanager::~new_panelayoutmanager()=default;
 
 focusable_container
-new_panelayoutmanager::create(const ref<containerObj::implObj> &parent)
+new_panelayoutmanager::create(const container_impl &parent)
 	const
 {
 	auto impl=ref<panecontainer_implObj>::create(parent);

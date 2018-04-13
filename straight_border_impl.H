@@ -188,13 +188,13 @@ class LIBCXX_HIDDEN horizontal_straight_borderObj : public horizontal_impl {
 	//! Used by the grid layout manager to build a border element
 	//! based on the grid elements next to it.
 
-	horizontal_straight_borderObj(const ref<containerObj::implObj> &c,
+	horizontal_straight_borderObj(const container_impl &c,
 				      const grid_elementptr &element_1,
 				      const current_border_implptr &border1,
 				      const grid_elementptr &element_2,
 				      const current_border_implptr &border2,
 				      const current_border_implptr &border_default);
-	horizontal_straight_borderObj(const ref<containerObj::implObj> &c,
+	horizontal_straight_borderObj(const container_impl &c,
 				      const current_border_implptr &border_default);
 
 	//! Destructor
@@ -226,14 +226,14 @@ class LIBCXX_HIDDEN vertical_straight_borderObj : public vertical_impl {
 
 	//! Used by the grid layout manager to build a border element
 	//! based on the grid elements above and below it.
-	vertical_straight_borderObj(const ref<containerObj::implObj> &c,
+	vertical_straight_borderObj(const container_impl &c,
 				    const grid_elementptr &element_1,
 				    const current_border_implptr &border1,
 				    const grid_elementptr &element_2,
 				    const current_border_implptr &border2,
 				    const current_border_implptr &border_default);
 
-	vertical_straight_borderObj(const ref<containerObj::implObj> &c,
+	vertical_straight_borderObj(const container_impl &c,
 				    const current_border_implptr &border_default);
 
 	//! Destructor

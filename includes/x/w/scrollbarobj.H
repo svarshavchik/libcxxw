@@ -27,7 +27,7 @@ public:
 
 	//! Constructor
 	scrollbarObj(const ref<implObj> &impl,
-		     const ref<containerObj::implObj> &container_impl,
+		     const container_impl &container_impl,
 		     const ref<layoutmanagerObj::implObj> &layout_impl)
 		LIBCXX_HIDDEN;
 

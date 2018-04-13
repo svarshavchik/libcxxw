@@ -22,18 +22,18 @@ public:
 	THREAD_DATA_ONLY(current_icon);
 
 	//! Constructor
-	implObj(const ref<containerObj::implObj> &container,
+	implObj(const container_impl &container,
 		const icon &initial_icon);
 
 private:
 	//! Internal constructor
-	implObj(const ref<containerObj::implObj> &container,
+	implObj(const container_impl &container,
 		const icon &initial_icon,
 		dim_t icon_width,
 		dim_t icon_height);
 public:
 	//! Constructor
-	implObj(const ref<containerObj::implObj> &container,
+	implObj(const container_impl &container,
 		const icon &initial_icon,
 		const metrics::axis &horiz_metrics,
 		const metrics::axis &vert_metrics);

@@ -88,15 +88,15 @@ class LIBCXX_HIDDEN connection_threadObj
 
 	//! Define a set of elements, ordered by their nesting level.
 
-	typedef std::map<size_t, std::unordered_set<elementimpl>> element_set_t;
+	typedef std::map<size_t, std::unordered_set<element_impl>> element_set_t;
 
  public:
 	THREAD_DATA_ONLY(timestamp);
 	static void insert_element_set(element_set_t &s,
-				       const elementimpl &i);
+				       const element_impl &i);
 
-	static elementimpl next_lowest_element(element_set_t &s);
-	static elementimpl next_highest_element(element_set_t &s);
+	static element_impl next_lowest_element(element_set_t &s);
+	static element_impl next_highest_element(element_set_t &s);
  private:
 	//! A list of elements that have requested their visibility to be changed.
 

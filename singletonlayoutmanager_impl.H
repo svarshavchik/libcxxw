@@ -27,7 +27,7 @@ class LIBCXX_HIDDEN singletonlayoutmanagerObj::implObj :
 
  public:
 	//! Constructor
-	implObj(const ref<containerObj::implObj> &container_impl,
+	implObj(const container_impl &container_impl,
 		const elementptr &initial_element);
 
 	//! Destructor
@@ -53,7 +53,7 @@ class LIBCXX_HIDDEN singletonlayoutmanagerObj::implObj :
 	//! Return list_element's implementation object.
 
 	//! Invoking initialize_if_needed()
-	elementimplptr get_list_element_impl(ONLY IN_THREAD);
+	element_implptr get_list_element_impl(ONLY IN_THREAD);
 
  public:
 	//! Left margin padding.

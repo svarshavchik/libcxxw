@@ -24,7 +24,7 @@ layoutmanager standard_comboboxlayoutmanagerObj::implObj::create_public_object()
 {
 	return standard_comboboxlayoutmanager
 		::create(ref<implObj>(this),
-			 container_impl->popup_container->layout_impl);
+			 combo_container_impl->popup_container->layout_impl);
 
 }
 

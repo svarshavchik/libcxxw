@@ -52,10 +52,10 @@ class LIBCXX_HIDDEN layoutmanagerObj::implObj : virtual public obj {
 
 	//! My container implementation.
 
-	const ref<containerObj::implObj> container_impl;
+	const container_impl layout_container_impl;
 
 	//! Constructor
-	implObj(const ref<containerObj::implObj> &container_impl);
+	implObj(const container_impl &layout_container_impl);
 
 	//! Destructor
 	~implObj();
@@ -119,21 +119,21 @@ class LIBCXX_HIDDEN layoutmanagerObj::implObj : virtual public obj {
 
 	//! The default implementation does nothing
 	virtual void child_background_color_changed(ONLY IN_THREAD,
-						    const elementimpl &child);
+						    const element_impl &child);
 
 	//! A child element's visibility will change soon.
 
 	//! The default implementation does nothing
 	virtual void requested_child_visibility_changed
 		(ONLY IN_THREAD,
-		 const elementimpl &child, bool);
+		 const element_impl &child, bool);
 
 	//! A child element's inherited_visibility has changed
 
 	//! The default implementation does nothing
 	virtual void inherited_child_visibility_changed
 		(ONLY IN_THREAD,
-		 const elementimpl &child,
+		 const element_impl &child,
 		 inherited_visibility_info &info);
 
 	//! The container's visibility has changed
@@ -146,7 +146,7 @@ class LIBCXX_HIDDEN layoutmanagerObj::implObj : virtual public obj {
 	//! The default implementation returns the same rectangle as the
 	//! element's current_position.
 
-	virtual rectangle padded_position(ONLY IN_THREAD, const elementimpl &e);
+	virtual rectangle padded_position(ONLY IN_THREAD, const element_impl &e);
 
 	//! Return this layout manager's element.
 

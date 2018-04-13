@@ -32,7 +32,7 @@ initial_axis(const defaulttheme &theme,
 
 child_element_init_params
 canvasObj::implObj
-::create_child_element_params(const ref<containerObj::implObj> &container,
+::create_child_element_params(const container_impl &container,
 			      const canvas_init_params &params)
 {
 	auto theme=container->container_element_impl().get_screen()
@@ -53,14 +53,14 @@ canvasObj::implObj
 		params.background_color};
 }
 
-canvasObj::implObj::implObj(const ref<containerObj::implObj> &container,
+canvasObj::implObj::implObj(const container_impl &container,
 			    const canvas_init_params &init_params)
 	: implObj{container, init_params,
 		create_child_element_params(container, init_params)}
 {
 }
 
-canvasObj::implObj::implObj(const ref<containerObj::implObj> &container,
+canvasObj::implObj::implObj(const container_impl &container,
 			    const canvas_init_params &init_params,
 			    const child_element_init_params
 			    &child_element_params)

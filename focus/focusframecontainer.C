@@ -42,7 +42,7 @@ focusframecontainerObj::focusframecontainerObj(const ref<implObj> &impl,
 // a ref to the grid layout manager subclass in it.
 
 focusframecontainerObj::focusframecontainerObj(const ref<implObj> &impl,
-					       const ref<containerObj::implObj>
+					       const container_impl
 					       &container_impl,
 					       const focusable_impl
 					       &focusable_impl,

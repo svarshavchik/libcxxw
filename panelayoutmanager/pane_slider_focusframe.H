@@ -38,7 +38,7 @@ class LIBCXX_HIDDEN pane_slider_focusframeObj
 	std::optional<pane_slider_original_sizes> original_sizes;
 
  public:
-	pane_slider_focusframeObj(const ref<containerObj::implObj> &parent,
+	pane_slider_focusframeObj(const container_impl &parent,
 				  const cursor_pointer &custom_pointer,
 				  const color_arg &background_color);
 

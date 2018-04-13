@@ -172,7 +172,7 @@ class LIBCXX_HIDDEN new_listlayoutmanager : public new_focusable_layoutmanager {
 	//! \internal
 	//! Create the focusable container.
 
-	focusable_container create(const ref<containerObj::implObj> &)
+	focusable_container create(const container_impl &)
 		const override;
 };
 

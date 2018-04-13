@@ -28,7 +28,7 @@ class LIBCXX_HIDDEN panecontainer_implObj
 
  public:
 	//! Constructor
-	panecontainer_implObj(const ref<containerObj::implObj> &parent);
+	panecontainer_implObj(const container_impl &parent);
 
 	//! Destructor
 	~panecontainer_implObj();

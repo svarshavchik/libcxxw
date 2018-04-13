@@ -184,9 +184,11 @@ public:
 	void in_thread_idle(const functionref<void (THREAD_CALLBACK)> &cb);
 };
 
-typedef ref<elementObj::implObj> elementimpl;
+//! Alias
+typedef ref<elementObj::implObj> element_impl;
 
-typedef ptr<elementObj::implObj> elementimplptr;
+//! Alias
+typedef ptr<elementObj::implObj> element_implptr;
 
 LIBCXXW_NAMESPACE_END
 

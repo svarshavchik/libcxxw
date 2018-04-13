@@ -20,7 +20,7 @@
 LIBCXXW_NAMESPACE_START
 
 gridlayoutmanagerObj::implObj
-::implObj(const ref<containerObj::implObj> &container_impl)
+::implObj(const container_impl &container_impl)
 	: layoutmanagerObj::implObj(container_impl),
 	grid_map(ref<grid_map_infoObj>::create()),
 	grid_elements_thread_only(ref<elementsObj>::create())
@@ -411,13 +411,13 @@ void gridlayoutmanagerObj::implObj::remove_all_defaults()
 current_border_impl gridlayoutmanagerObj::implObj
 ::get_current_border(const border_arg &arg)
 {
-	return container_impl->get_window_handler().screenref
+	return layout_container_impl->get_window_handler().screenref
 		->impl->get_cached_border(arg);
 }
 
 void gridlayoutmanagerObj::implObj
 ::child_background_color_changed(ONLY IN_THREAD,
-				 const elementimpl &child)
+				 const element_impl &child)
 {
 	redraw_child_borders_and_padding(IN_THREAD, child);
 }
@@ -427,7 +427,7 @@ void gridlayoutmanagerObj::implObj
 //
 void gridlayoutmanagerObj::implObj
 ::requested_child_visibility_changed(ONLY IN_THREAD,
-				     const elementimpl &child,
+				     const element_impl &child,
 				     bool flag)
 {
 	grid_map_t::lock lock(grid_map);
@@ -454,7 +454,7 @@ void gridlayoutmanagerObj::implObj
 
 void gridlayoutmanagerObj::implObj
 ::inherited_child_visibility_changed(ONLY IN_THREAD,
-				     const elementimpl &child,
+				     const element_impl &child,
 				     inherited_visibility_info &info)
 {
 	grid_map_t::lock lock(grid_map);

@@ -34,7 +34,7 @@ class LIBCXX_HIDDEN focusframelayoutimplObj
 
  public:
 	//! My container.
-	const ref<focusframecontainerObj::implObj> container_impl;
+	const ref<focusframecontainerObj::implObj> focusframe_container_impl;
 
 	//! Constructor
 	focusframelayoutimplObj(const ref<focusframecontainerObj::implObj> &);

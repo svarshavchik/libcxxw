@@ -46,14 +46,14 @@ class canvasObj::implObj
 
 public:
 	//! Constructor
-	implObj(const ref<containerObj::implObj> &container,
+	implObj(const container_impl &container,
 		const canvas_init_params &params) LIBCXX_PUBLIC;
 
 	//! Delegating constructor
 
 	//! create_child_element_params() constructs the additional parameter.
 
-	implObj(const ref<containerObj::implObj> &container,
+	implObj(const container_impl &container,
 		const canvas_init_params &params,
 		const child_element_init_params &child_element_params)
 	LIBCXX_PUBLIC;
@@ -65,7 +65,7 @@ public:
 	//! constructor.
 
 	static child_element_init_params
-	create_child_element_params(const ref<containerObj::implObj> &container,
+	create_child_element_params(const container_impl &container,
 				    const canvas_init_params &params);
 
 	//! Destructor

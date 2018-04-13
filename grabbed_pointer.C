@@ -68,10 +68,10 @@ private:
 
 	void allow_events(ONLY IN_THREAD) override;
 
-	elementimplptr get_grab_element(ONLY IN_THREAD) override;
+	element_implptr get_grab_element(ONLY IN_THREAD) override;
 
 	grabbed_pointerptr create_another_grab(ONLY IN_THREAD,
-					       const elementimplptr &)
+					       const element_implptr &)
 		override;
 };
 
@@ -93,18 +93,18 @@ class LIBCXX_HIDDEN element_grabObj : public grabbed_pointerObj {
 	//! Which element effected the grab.
 
 	//! This element is expected to own this mcguffin.
-	weakptr<elementimplptr> grabbing_element;
+	weakptr<element_implptr> grabbing_element;
 
 	//! Constructor
 	element_grabObj(const grabbed_pointer &real_grab_pointer,
-			const elementimpl &grabbing_element)
+			const element_impl &grabbing_element)
 		: real_grab_pointer(real_grab_pointer),
 		grabbing_element(grabbing_element)
 		{
 		}
 
 	//! Return the grabbing element.
-	elementimplptr get_grab_element(ONLY IN_THREAD) override
+	element_implptr get_grab_element(ONLY IN_THREAD) override
 	{
 		return grabbing_element.getptr();
 	}
@@ -124,7 +124,7 @@ class LIBCXX_HIDDEN element_grabObj : public grabbed_pointerObj {
 	//! Forward create_another_grab() to the real grab mcguffin.
 
 	grabbed_pointerptr create_another_grab(ONLY IN_THREAD,
-					       const elementimplptr &e)
+					       const element_implptr &e)
 		override
 	{
 		return real_grab_pointer->create_another_grab(IN_THREAD, e);
@@ -233,18 +233,18 @@ void real_pointer_grabObj::allow_events(ONLY IN_THREAD)
 	}
 }
 
-elementimplptr real_pointer_grabObj::get_grab_element(ONLY IN_THREAD)
+element_implptr real_pointer_grabObj::get_grab_element(ONLY IN_THREAD)
 {
 	auto p=grabbing_element.getptr();
 
 	if (!p)
-		return elementimplptr();
+		return element_implptr();
 
 	return p->get_grab_element(IN_THREAD);
 };
 
 grabbed_pointerptr real_pointer_grabObj
-::create_another_grab(ONLY IN_THREAD, const elementimplptr &i)
+::create_another_grab(ONLY IN_THREAD, const element_implptr &i)
 {
 	if (i)
 	{
@@ -276,7 +276,7 @@ grabbed_pointerptr elementObj::implObj::grab_pointer(ONLY IN_THREAD)
 }
 
 grabbed_pointerptr generic_windowObj::handlerObj
-::grab_pointer(ONLY IN_THREAD, const elementimplptr &grabbing_element)
+::grab_pointer(ONLY IN_THREAD, const element_implptr &grabbing_element)
 {
 	auto &window_grab=current_pointer_grab(IN_THREAD);
 

@@ -248,7 +248,7 @@ new_custom_comboboxlayoutmanager::get_selection_changed() const
 }
 
 focusable_container new_custom_comboboxlayoutmanager
-::create(const ref<containerObj::implObj> &parent) const
+::create(const container_impl &parent) const
 {
 	// Start by creating the popup first.
 
@@ -360,7 +360,7 @@ focusable_container new_custom_comboboxlayoutmanager
 		 []
 		 (const border_arg &focusoff_border,
 		  const border_arg &focuson_border,
-		  const ref<containerObj::implObj> &parent_container,
+		  const container_impl &parent_container,
 		  const child_element_init_params &init_params)
 		 {
 			 return ref<popup_imagebutton_focusframe_implObj>

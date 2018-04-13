@@ -61,7 +61,7 @@ struct LIBCXX_HIDDEN popup_imagebutton_config {
 typedef ref<focusframecontainerObj::implObj>
 popup_imagebutton_focusframe_factory(const border_arg &,
 				     const border_arg &,
-				     const ref<containerObj::implObj> &,
+				     const container_impl &,
 				     const child_element_init_params &);
 
 //! Superclass that's returned from the \ref popup_imagebutton_focusframe_factory "popup_imagebutton_focusframe_factory".

@@ -13,7 +13,7 @@
 LIBCXXW_NAMESPACE_START
 
 menubar_container_implObj
-::menubar_container_implObj(const ref<containerObj::implObj> &parent)
+::menubar_container_implObj(const container_impl &parent)
 	: menubar_container_superclass_impl_t(parent)
 {
 }

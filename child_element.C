@@ -21,12 +21,12 @@
 
 LIBCXXW_NAMESPACE_START
 
-child_elementObj::child_elementObj(const ref<containerObj::implObj> &child_container)
+child_elementObj::child_elementObj(const container_impl &child_container)
 	: child_elementObj(child_container, {})
 {
 }
 
-child_elementObj::child_elementObj(const ref<containerObj::implObj> &child_container,
+child_elementObj::child_elementObj(const container_impl &child_container,
 				   const child_element_init_params &init_params)
 	: superclass_t{child_container->container_element_impl()
 
@@ -256,7 +256,7 @@ void child_elementObj::request_visibility(ONLY IN_THREAD, bool flag)
 
 	if (current_flag != data(IN_THREAD).requested_visibility)
 		child_container->requested_child_visibility_updated
-			(IN_THREAD, elementimpl(this),
+			(IN_THREAD, element_impl(this),
 			 data(IN_THREAD).requested_visibility);
 }
 
@@ -272,7 +272,7 @@ void child_elementObj
 
 	if (current_flag != new_flag)
 		child_container->inherited_child_visibility_updated
-			(IN_THREAD, elementimpl(this),
+			(IN_THREAD, element_impl(this),
 			 visibility_info);
 }
 

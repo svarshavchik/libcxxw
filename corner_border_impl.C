@@ -48,14 +48,14 @@ bool corner_borderObj::implObj::surrounding_elements_and_borders
 }
 
 corner_borderObj::implObj
-::implObj(const ref<containerObj::implObj> &container)
+::implObj(const container_impl &container)
 	: implObj(container, container->get_window_handler())
 {
 }
 
 
 corner_borderObj::implObj
-::implObj(const ref<containerObj::implObj> &container,
+::implObj(const container_impl &container,
 	  generic_windowObj::handlerObj &h)
 	: scratch_and_mask_buffer_draw<child_elementObj>
 	("cornermask@libcxx.com",

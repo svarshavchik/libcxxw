@@ -15,10 +15,10 @@ LIBCXXW_NAMESPACE_START
 
 focusframelayoutimplObj
 ::focusframelayoutimplObj(const ref<focusframecontainerObj::implObj>
-			  &container_impl)
-	: gridlayoutmanagerObj::implObj(ref(&container_impl
-					    ->get_container_impl())),
-	container_impl{container_impl}
+			  &focusframe_container_impl)
+	: gridlayoutmanagerObj::implObj{ref(&focusframe_container_impl
+					    ->get_container_impl())},
+	focusframe_container_impl{focusframe_container_impl}
 {
 	requested_col_width(0, 100);
 	requested_row_height(0, 100);
@@ -35,8 +35,8 @@ void focusframelayoutimplObj::rebuild_elements_start(ONLY IN_THREAD,
 
 	auto correct_border=
 		get_element_impl().current_keyboard_focus(IN_THREAD)
-		? container_impl->get_focuson_border()
-		: container_impl->get_focusoff_border();
+		? focusframe_container_impl->get_focuson_border()
+		: focusframe_container_impl->get_focusoff_border();
 
 	// Should always be one element, here.
 

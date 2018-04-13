@@ -28,14 +28,14 @@ gridfactoryObj::gridfactoryObj(const layoutmanager &layout,
 
 gridfactoryObj::~gridfactoryObj()=default;
 
-ref<containerObj::implObj> gridfactoryObj::get_container_impl()
+container_impl gridfactoryObj::get_container_impl()
 {
-	return layout->impl->container_impl;
+	return layout->impl->layout_container_impl;
 }
 
 elementObj::implObj &gridfactoryObj::get_element_impl()
 {
-	return layout->impl->container_impl->container_element_impl();
+	return layout->impl->layout_container_impl->container_element_impl();
 }
 
 // Save new element's borders somewhere safe...

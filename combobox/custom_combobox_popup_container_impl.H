@@ -47,7 +47,7 @@ class LIBCXX_HIDDEN custom_combobox_popup_containerObj::implObj
  public:
 
 	//! Constructor
-	implObj(const ref<containerObj::implObj> &parent,
+	implObj(const container_impl &parent,
 		const new_listlayoutmanager &style);
 
 	//! Destructor

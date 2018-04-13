@@ -9,7 +9,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-pane_peephole_containerObj::implObj::implObj(const ref<containerObj::implObj>
+pane_peephole_containerObj::implObj::implObj(const container_impl
 					     &parent_container,
 					     const child_element_init_params
 					     &init_params)

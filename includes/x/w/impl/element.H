@@ -209,7 +209,7 @@ class elementObj::implObj : public element_drawObj,
 		//! object for the combo-box's popup, so it gets hidden if
 		//! the combo-box element itself gets hidden.
 
-		elementimplptr attached_popup_impl;
+		element_implptr attached_popup_impl;
 
 		//! Context popup callback.
 		functionptr<void(THREAD_CALLBACK, const callback_trigger_t &,

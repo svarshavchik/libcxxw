@@ -185,7 +185,7 @@ public:
 
 	//! Container for the element lookup table.
 
-	typedef std::unordered_map<elementimpl, lookup_info> lookup_t;
+	typedef std::unordered_map<element_impl, lookup_info> lookup_t;
 
 	//! An internal lookup table.
 

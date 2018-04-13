@@ -57,6 +57,12 @@ public:
 
 };
 
+//! Alias
+typedef ref<containerObj::implObj> container_impl;
+
+//! Alias
+typedef ptr<containerObj::implObj> container_implptr;
+
 LIBCXXW_NAMESPACE_END
 
 #endif

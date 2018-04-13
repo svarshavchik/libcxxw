@@ -27,7 +27,7 @@ class LIBCXX_HIDDEN grabbed_pointerObj : virtual public obj {
 	~grabbed_pointerObj();
 
 	//! Return the element that owns the grab, if there is one.
-	virtual elementimplptr get_grab_element(ONLY IN_THREAD)=0;
+	virtual element_implptr get_grab_element(ONLY IN_THREAD)=0;
 
 	//! Whether the grab succeeded
 	virtual bool succeeded(ONLY IN_THREAD) const=0;
@@ -38,7 +38,7 @@ class LIBCXX_HIDDEN grabbed_pointerObj : virtual public obj {
 	//! Somebody else wants to grab the pointer too?
 
 	virtual grabbed_pointerptr create_another_grab(ONLY IN_THREAD,
-						       const elementimplptr &)
+						       const element_implptr &)
 		=0;
 };
 

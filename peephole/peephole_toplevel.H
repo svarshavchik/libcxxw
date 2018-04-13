@@ -20,12 +20,12 @@ LIBCXXW_NAMESPACE_START
 //! A factory for create_peephole_toplevel().
 
 typedef peepholed_toplevel
-create_peepholed_element_t(const ref<containerObj::implObj> &);
+create_peepholed_element_t(const container_impl &);
 
 //! Type-erased implementation of create_peephole_toplevel().
 
 layoutmanager
-create_peephole_toplevel_impl(const ref<containerObj::implObj> &toplevel,
+create_peephole_toplevel_impl(const container_impl &toplevel,
 			      const std::optional<border_arg> &border,
 			      const std::optional<color_arg>
 			      &peephole_background_color,
@@ -36,7 +36,7 @@ create_peephole_toplevel_impl(const ref<containerObj::implObj> &toplevel,
 			      &factory) LIBCXX_HIDDEN;
 
 template<typename create_peepholed_element_factory_t>
-auto create_peephole_toplevel(const ref<containerObj::implObj> &toplevel,
+auto create_peephole_toplevel(const container_impl &toplevel,
 			      peephole_style style,
 			      const std::optional<border_arg> &border,
 			      const std::optional<color_arg>
@@ -93,7 +93,7 @@ auto create_peephole_toplevel(const ref<containerObj::implObj> &toplevel,
 //! have a window manager-managed border. The border is specified for popups.
 
 template<typename create_peepholed_element_factory_t>
-auto create_peephole_toplevel(const ref<containerObj::implObj> &toplevel,
+auto create_peephole_toplevel(const container_impl &toplevel,
 			      const std::optional<border_arg> &border,
 			      const std::optional<color_arg>
 			      &peephole_background_color,

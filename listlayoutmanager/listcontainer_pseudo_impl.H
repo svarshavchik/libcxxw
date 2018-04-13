@@ -35,7 +35,7 @@ class LIBCXX_HIDDEN listcontainer_pseudo_implObj :
 	typedef container_elementObj<child_elementObj> superclass_t;
 
 	//! Constructor
-	listcontainer_pseudo_implObj(const ref<containerObj::implObj> &parent);
+	listcontainer_pseudo_implObj(const container_impl &parent);
 
 	//! Destructor
 	~listcontainer_pseudo_implObj();

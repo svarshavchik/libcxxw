@@ -14,7 +14,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-listcontainerObj::implObj::implObj(const ref<containerObj::implObj> &parent,
+listcontainerObj::implObj::implObj(const container_impl &parent,
 				   const new_listlayoutmanager &style)
 	: listcontainer_impl_superclass_t
 	  (

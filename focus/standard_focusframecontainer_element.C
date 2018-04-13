@@ -14,7 +14,7 @@
 LIBCXXW_NAMESPACE_START
 
 always_visible_focusframe_ref_t
-create_always_visible_focusframe(const ref<containerObj::implObj>
+create_always_visible_focusframe(const container_impl
 				 &parent_container)
 {
 	return create_always_visible_focusframe
@@ -23,7 +23,7 @@ create_always_visible_focusframe(const ref<containerObj::implObj>
 }
 
 always_visible_focusframe_ref_t
-create_always_visible_focusframe(const ref<containerObj::implObj>
+create_always_visible_focusframe(const container_impl
 				 &parent_container,
 				 const border_arg &focusoff_border,
 				 const border_arg &focuson_border,
@@ -40,7 +40,7 @@ create_always_visible_focusframe(const ref<containerObj::implObj>
 }
 
 nonrecursive_visibility_focusframe_ref_t
-create_nonrecursive_visibility_focusframe(const ref<containerObj::implObj>
+create_nonrecursive_visibility_focusframe(const container_impl
 					  &parent_container)
 {
 	return create_nonrecursive_visibility_focusframe
@@ -49,7 +49,7 @@ create_nonrecursive_visibility_focusframe(const ref<containerObj::implObj>
 }
 
 nonrecursive_visibility_focusframe_ref_t
-create_nonrecursive_visibility_focusframe(const ref<containerObj::implObj>
+create_nonrecursive_visibility_focusframe(const container_impl
 					  &parent_container,
 					  const border_arg &focusoff_border,
 					  const border_arg &focuson_border,

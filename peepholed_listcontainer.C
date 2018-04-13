@@ -13,7 +13,7 @@ LIBCXXW_NAMESPACE_START
 peepholed_listcontainerObj
 ::peepholed_listcontainerObj(const ref<implObj> &impl,
 			     const focusable_impl &focusable_impl,
-			     const ref<containerObj::implObj> &container_impl,
+			     const container_impl &container_impl,
 			     const ref<layoutmanagerObj::implObj> &list_impl)
 	: superclass_t(focusable_impl, container_impl, list_impl),
 	  impl(impl)

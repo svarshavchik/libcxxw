@@ -12,7 +12,7 @@
 LIBCXXW_NAMESPACE_START
 
 pagetabgridcontainer_implObj
-::pagetabgridcontainer_implObj(const ref<containerObj::implObj>
+::pagetabgridcontainer_implObj(const container_impl
 			       &parent_container,
 			       const dim_arg &h_padding,
 			       const dim_arg &v_padding,

@@ -37,7 +37,7 @@ class LIBCXX_HIDDEN toplevelpeephole_layoutmanagerObj
 
 	//! Constructor
 	toplevelpeephole_layoutmanagerObj
-		(const ref<containerObj::implObj> &container_impl,
+		(const container_impl &container_impl,
 		 peephole_style style,
 		 const peepholed_toplevel &element_in_peephole,
 		 const current_border_implptr &peephole_border,
@@ -82,7 +82,7 @@ class LIBCXX_HIDDEN peephole_toplevel_implObj
 	//! so capturing this reference is ok.
 	const scrollbar vertical_scrollbar;
 
-	peephole_toplevel_implObj(const ref<containerObj::implObj> &parent,
+	peephole_toplevel_implObj(const container_impl &parent,
 				  const scrollbar &horizontal_scrollbar,
 				  const scrollbar &vertical_scrollbar,
 				  const child_element_init_params &init_params)
@@ -114,7 +114,7 @@ class LIBCXX_HIDDEN peephole_toplevel_implObj
 }
 
 layoutmanager
-create_peephole_toplevel_impl(const ref<containerObj::implObj> &toplevel,
+create_peephole_toplevel_impl(const container_impl &toplevel,
 			      const std::optional<border_arg> &border,
 			      const std::optional<color_arg>
 			      &peephole_background_color,
@@ -135,7 +135,7 @@ create_peephole_toplevel_impl(const ref<containerObj::implObj> &toplevel,
 	// of the toplevel_grid.
 
 	auto scrollbars=create_peephole_scrollbars(toplevel_grid->impl
-						   ->container_impl,
+						   ->layout_container_impl,
 						   scrollbars_background_color);
 
 	// The toplevel_grid will have a peephole as its child element,
@@ -223,13 +223,13 @@ create_peephole_toplevel_impl(const ref<containerObj::implObj> &toplevel,
 //////////////////////////////////////////////////////////////////////////////
 
 toplevelpeephole_layoutmanagerObj::toplevelpeephole_layoutmanagerObj
-(const ref<containerObj::implObj> &container_impl,
+(const container_impl &layout_container_impl,
  peephole_style style,
  const peepholed_toplevel &element_in_peephole,
  const current_border_implptr &peephole_border,
  const peephole_scrollbars &scrollbars)
 	: peepholeObj::layoutmanager_implObj
-	::scrollbarsObj(container_impl,
+	::scrollbarsObj(layout_container_impl,
 			style,
 			element_in_peephole,
 			scrollbars,

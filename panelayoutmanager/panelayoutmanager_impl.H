@@ -103,7 +103,7 @@ class LIBCXX_HIDDEN panelayoutmanagerObj::implObj
  public:
 
 	//! My container
-	const ref<panecontainer_implObj> container_impl;
+	const ref<panecontainer_implObj> pane_container_impl;
 
 	//! This pane's style
 
@@ -120,7 +120,7 @@ class LIBCXX_HIDDEN panelayoutmanagerObj::implObj
 	template<typename> class orientation;
 
 	//! Constructor
-	implObj(const ref<panecontainer_implObj> &container_impl,
+	implObj(const ref<panecontainer_implObj> &pane_container_impl,
 		const pane_style &style);
 
 	//! Destructor
@@ -288,7 +288,7 @@ class LIBCXX_HIDDEN panelayoutmanagerObj::implObj
 	//! Construct the pane_slider implementation object.
 
 	virtual ref<pane_sliderObj::implObj>
-		create_pane_slider_impl(const ref<containerObj::implObj> &,
+		create_pane_slider_impl(const container_impl &,
 					const current_border_impl &)=0;
 
 	//! Which pointer to use for the slider.
@@ -356,7 +356,7 @@ class panelayoutmanagerObj::implObj::orientation
 	//! Implement create_pane_slider_impl().
 
 	ref<pane_sliderObj::implObj>
-	create_pane_slider_impl(const ref<containerObj::implObj> &,
+	create_pane_slider_impl(const container_impl &,
 				const current_border_impl &) override;
 
 	//! Implement total_size()

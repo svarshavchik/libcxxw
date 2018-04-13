@@ -44,7 +44,7 @@ class LIBCXX_HIDDEN menuObj::implObj :
 		const border_arg &focusoff_border,
 		const border_arg &focuson_border,
 		const ref<popup_attachedto_handlerObj> &attachedto_handler,
-		const ref<containerObj::implObj> &parent_container);
+		const container_impl &parent_container);
 
 	//! Destructor
 	~implObj();

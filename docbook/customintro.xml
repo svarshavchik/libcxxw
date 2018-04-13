@@ -177,7 +177,7 @@ See COPYING for distribution information.
 	  new custom display element involves using a
 	  &factory;'s <methodname>get_container_impl</methodname>() method.
 	  This returns an
-	  <ulink url="&link-x--w--containerObj--implObj;"><classname>&ns;::ref&lt;&ns;::w::containerObj::implObj&gt;</classname></ulink>
+	  <ulink url="&link-typedef-x--w-container-impl;"><classname>&ns;::w::container_impl</classname></ulink>
 	  that refers the parent container element's &implementation_class;.
 	  The subclassed &implementation_class; takes the parent container
 	  element reference as (typically) the first parameter

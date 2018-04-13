@@ -37,7 +37,7 @@ class extra_list_row_infoObj::shortcut_implObj
 
 	//! The parent container with the listlayoutmanager
 
-	const ref<containerObj::implObj> container_impl;
+	const container_impl list_container_impl;
 
 	//! Our extra_list_row_info
 
@@ -50,7 +50,8 @@ public:
 
 	shortcut_implObj(const listlayoutmanager &lm,
 			 const extra_list_row_info &extra)
-		: container_impl(lm->layoutmanagerObj::impl->container_impl),
+		: list_container_impl{lm->layoutmanagerObj::impl
+			->layout_container_impl},
 		  extra_ptr(extra)
 	{
 	}
@@ -63,7 +64,7 @@ public:
 
 	generic_windowObj::handlerObj &shortcut_window_handler() override
 	{
-		return container_impl->get_window_handler();
+		return list_container_impl->get_window_handler();
 	}
 
 	///////////////////////////////////////////////////////////////
@@ -76,7 +77,7 @@ public:
 	{
 		bool enabled=false;
 
-		container_impl->invoke_layoutmanager
+		list_container_impl->invoke_layoutmanager
 			([&, this]
 			 (const ref<listlayoutmanagerObj::implObj> &l_impl)
 			 {
@@ -100,7 +101,7 @@ public:
 	{
 		listlayoutmanagerptr lm;
 
-		container_impl->invoke_layoutmanager
+		list_container_impl->invoke_layoutmanager
 			([&]
 			 (const auto &impl)
 			 {

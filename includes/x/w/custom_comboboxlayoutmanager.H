@@ -183,7 +183,7 @@ class LIBCXX_HIDDEN new_custom_comboboxlayoutmanager
 	//! Create the focusable container.
 
 	//! \internal
-	focusable_container create(const ref<containerObj::implObj> &)
+	focusable_container create(const container_impl &)
 		const override;
 
  protected:

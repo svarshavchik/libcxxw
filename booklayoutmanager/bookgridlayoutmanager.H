@@ -27,7 +27,7 @@ class LIBCXX_HIDDEN bookgridlayoutmanagerObj
 
  public:
 	//! Constructor
-	bookgridlayoutmanagerObj(const ref<containerObj::implObj> &);
+	bookgridlayoutmanagerObj(const container_impl &);
 
 	//! Destructor
 	~bookgridlayoutmanagerObj();

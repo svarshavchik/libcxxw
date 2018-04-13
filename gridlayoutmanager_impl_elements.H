@@ -136,7 +136,7 @@ public:
 			    border_map_hash> straight_borders;
 
 	straight_border get_straight_border(ONLY IN_THREAD,
-					    const ref<containerObj::implObj>
+					    const container_impl
 					    &container_impl,
 					    straight_border_factory_t factory,
 					    straight_border_update_t update,
@@ -164,7 +164,7 @@ public:
 	//! Create a corner border cell, if needed.
 
 	corner_border get_corner_border(ONLY IN_THREAD,
-					const ref<containerObj::implObj>
+					const container_impl
 					&container_impl,
 					metrics::grid_xy x,
 					metrics::grid_xy y);

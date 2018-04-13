@@ -12,7 +12,7 @@ LIBCXXW_NAMESPACE_START
 
 pagetabgridlayoutmanagerObj::implObj
 ::implObj(const pagetabgridcontainer_impl &my_container,
-	  const ref<containerObj::implObj> &parent_container)
+	  const container_impl &parent_container)
 
 	: superclass_t{my_container},
 	  my_container{my_container},
@@ -31,7 +31,8 @@ void pagetabgridlayoutmanagerObj::implObj::recalculate(ONLY IN_THREAD)
 {
 	superclass_t::recalculate(IN_THREAD);
 
-	auto hv=container_impl->container_element_impl().get_horizvert(IN_THREAD);
+	auto hv=layout_container_impl
+		->container_element_impl().get_horizvert(IN_THREAD);
 
 	dim_t minimum_width=0;
 

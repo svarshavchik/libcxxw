@@ -41,7 +41,8 @@ void gridlayoutmanagerObj::create(const std::string_view &name,
 	remove();
 
 	auto theme=*current_theme_t::lock{
-		impl->container_impl->container_element_impl().get_screen()
+		impl->layout_container_impl
+		->container_element_impl().get_screen()
 		->impl->current_theme};
 
 	theme->layout_insert(gridlayoutmanager(this), &telements,

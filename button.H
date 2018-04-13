@@ -45,7 +45,7 @@ class LIBCXX_HIDDEN buttonObj::implObj
 
 	//! Constructor
 
-	implObj(const ref<containerObj::implObj> &container,
+	implObj(const container_impl &container,
 		const child_element_init_params &init_params);
 
 

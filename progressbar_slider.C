@@ -18,7 +18,7 @@
 LIBCXXW_NAMESPACE_START
 
 progressbar_sliderObj
-::progressbar_sliderObj(const ref<containerObj::implObj> &parent,
+::progressbar_sliderObj(const container_impl &parent,
 			const progressbar_config &config)
 	// We temporary initialize the slider to 'color', and because
 	// new_gradient_required we will make sure to create the gradient

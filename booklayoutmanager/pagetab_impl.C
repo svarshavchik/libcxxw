@@ -13,7 +13,7 @@
 LIBCXXW_NAMESPACE_START
 
 pagetabObj::implObj
-::implObj(const ref<containerObj::implObj> &parent_container,
+::implObj(const container_impl &parent_container,
 	  const pagetabgridcontainer_impl &my_pagetabgridcontainer_impl,
 	  const color_arg &warm_color,
 	  const color_arg &hot_color)

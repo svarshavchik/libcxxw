@@ -25,7 +25,7 @@ struct LIBCXX_HIDDEN peephole_scrollbars;
 //! manager's constructor.
 
 peephole_scrollbars
-create_peephole_scrollbars(const ref<containerObj::implObj> &container,
+create_peephole_scrollbars(const container_impl &container,
 			   const std::optional<color_arg> &background_color)
 	LIBCXX_HIDDEN;
 
@@ -137,19 +137,19 @@ class LIBCXX_HIDDEN peepholeObj::layoutmanager_implObj::scrollbarsObj
 	//! This is not the horizontal_scrollbar. This is a focusframe around
 	//! it. This is the object that should be shown or hidden, depending
 	//! on whether the peephole is active or not.
-	const elementimpl horizontal_scrollbar_element;
+	const element_impl horizontal_scrollbar_element;
 
 	//! The vertical scrollbar display element
 
 	//! This is not the vertical_scrollbar. This is a focusframe around
 	//! it. This is the object that should be shown or hidden, depending
 	//! on whether the peephole is active or not.
-	const elementimpl vertical_scrollbar_element;
+	const element_impl vertical_scrollbar_element;
 
  public:
 
 	//! Constructor
-	scrollbarsObj(const ref<containerObj::implObj> &container_impl,
+	scrollbarsObj(const container_impl &container_impl,
 		      peephole_style style,
 		      const peepholed &element_in_peephole,
 		      const peephole_scrollbars &scrollbars,
@@ -186,7 +186,7 @@ class LIBCXX_HIDDEN peepholeObj::layoutmanager_implObj::scrollbarsObj
 
 	void update_scrollbar(ONLY IN_THREAD,
 			      const ref<scrollbarObj::implObj> &scrollbar,
-			      const elementimpl &visibility_element,
+			      const element_impl &visibility_element,
 			      const scrollbar_visibility visibility,
 			      coord_t pos,
 			      dim_t size,

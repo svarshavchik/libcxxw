@@ -13,7 +13,7 @@ LIBCXXW_NAMESPACE_START
 
 template<typename element_impl>
 label_elementObj<element_impl>
-::label_elementObj(const ref<containerObj::implObj> &parent_container,
+::label_elementObj(const container_impl &parent_container,
 		   const text_param &text,
 		   halign alignment,
 		   double initial_width,
@@ -27,7 +27,7 @@ label_elementObj<element_impl>
 
 template<typename element_impl>
 label_elementObj<element_impl>
-::label_elementObj(const ref<containerObj::implObj> &parent_container,
+::label_elementObj(const container_impl &parent_container,
 		   halign alignment,
 		   double initial_width,
 		   richtextstring &&string,

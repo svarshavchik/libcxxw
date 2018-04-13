@@ -18,7 +18,7 @@
 LIBCXXW_NAMESPACE_START
 
 scrollbarObj::scrollbarObj(const ref<implObj> &impl,
-			   const ref<containerObj::implObj> &container_impl,
+			   const container_impl &container_impl,
 			   const ref<layoutmanagerObj::implObj> &layout_impl)
 	: containerObj(container_impl, layout_impl),
 	  focusableObj::ownerObj(impl),
@@ -82,7 +82,7 @@ static scrollbar_cb_t null_callback()
 
 // Construct a vertical or a horizontal scrollbar.
 
-static scrollbar create_scrollbar(const ref<containerObj::implObj> &parent_container,
+static scrollbar create_scrollbar(const container_impl &parent_container,
 				  const std::optional<color_arg> &background_color,
 				  const scrollbar_config &conf,
 				  const scrollbar_orientation &orientation,
@@ -170,7 +170,7 @@ create_scrollbar_icon_set(drawableObj::implObj &drawable,
 }
 
 scrollbar
-do_create_h_scrollbar(const ref<containerObj::implObj> &parent_container,
+do_create_h_scrollbar(const container_impl &parent_container,
 		      const std::optional<color_arg> &background_color,
 		      const scrollbar_config &conf,
 		      const dim_arg &minimum_size,
@@ -193,7 +193,7 @@ do_create_h_scrollbar(const ref<containerObj::implObj> &parent_container,
 }
 
 scrollbar
-do_create_v_scrollbar(const ref<containerObj::implObj> &parent_container,
+do_create_v_scrollbar(const container_impl &parent_container,
 		      const std::optional<color_arg> &background_color,
 		      const scrollbar_config &conf,
 		      const dim_arg &minimum_size,

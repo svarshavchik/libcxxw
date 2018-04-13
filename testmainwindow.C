@@ -88,6 +88,10 @@ sausage_factory_t sausages;
 	} while(0)
 
 #define IS_MAIN_GRID \
+	(layout_container_impl->objname() == LIBCXX_NAMESPACE_STR	\
+	 "::w::app_container_implObj")
+
+#define IS_MAIN_GRID_C						\
 	(container_impl->objname() == LIBCXX_NAMESPACE_STR	\
 	 "::w::app_container_implObj")
 
@@ -96,7 +100,7 @@ sausage_factory_t sausages;
 		sausage_factory_t::lock					\
 			lock(sausages);					\
 		std::cout << "REBUILD ON: "				\
-			  << container_impl->objname() << std::endl;	\
+			  << layout_container_impl->objname() << std::endl; \
 		++lock->rebuild_elements;				\
 	} while (0)
 
@@ -122,7 +126,7 @@ static void foobar()
 	} while (0)
 
 #define CREATE_STRAIGHT_BORDER() do {					\
-		if (!IS_MAIN_GRID) break;				\
+		if (!IS_MAIN_GRID_C) break;				\
 		sausage_factory_t::lock					\
 			lock(sausages);					\
 		++lock->created_straight_border;			\

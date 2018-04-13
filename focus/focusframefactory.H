@@ -34,7 +34,7 @@ class LIBCXX_HIDDEN focusframefactoryObj : public factoryObj {
 
 	//! Return the container for a new element.
 
-	ref<containerObj::implObj> get_container_impl() override;
+	container_impl get_container_impl() override;
 
 	//! Return the container's element.
 

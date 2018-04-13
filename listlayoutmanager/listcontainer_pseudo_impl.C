@@ -10,7 +10,7 @@
 LIBCXXW_NAMESPACE_START
 
 listcontainer_pseudo_implObj
-::listcontainer_pseudo_implObj(const ref<containerObj::implObj> &parent)
+::listcontainer_pseudo_implObj(const container_impl &parent)
 	: superclass_t(parent)
 {
 }

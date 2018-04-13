@@ -39,8 +39,8 @@ void containerObj::implObj
 	if (*lock)
 		throw EXCEPTION("Internal error: duplicate layout manager installation (already have a " << (*lock)->objname() << ")");
 
-	if (impl->container_impl !=
-	    ref<containerObj::implObj>(this))
+	if (impl->layout_container_impl !=
+	    container_impl{this})
 		throw EXCEPTION("Internal error: layout manager getting installed into the wrong container.");
 
 	*lock=impl;
@@ -111,7 +111,7 @@ void containerObj::implObj::do_for_each_child(ONLY IN_THREAD,
 void container_clear_padding(ONLY IN_THREAD,
 			     elementObj::implObj &container_element_impl,
 			     layoutmanagerObj::implObj &manager,
-			     const elementimpl &e_impl,
+			     const element_impl &e_impl,
 			     const draw_info &di,
 			     clip_region_set &clip,
 			     rectangle_set &child_areas)
@@ -193,7 +193,7 @@ void containerObj::implObj::do_draw(ONLY IN_THREAD,
 
 
 void containerObj::implObj
-::child_background_color_changed(ONLY IN_THREAD, const elementimpl &child)
+::child_background_color_changed(ONLY IN_THREAD, const element_impl &child)
 {
 	invoke_layoutmanager
 		([&]
@@ -206,7 +206,7 @@ void containerObj::implObj
 
 void containerObj::implObj
 ::requested_child_visibility_updated(ONLY IN_THREAD,
-				     const elementimpl &child,
+				     const element_impl &child,
 				     bool flag)
 {
 	invoke_layoutmanager
@@ -220,7 +220,7 @@ void containerObj::implObj
 
 void containerObj::implObj
 ::inherited_child_visibility_updated(ONLY IN_THREAD,
-				     const elementimpl &child,
+				     const element_impl &child,
 				     inherited_visibility_info &info)
 {
 	invoke_layoutmanager

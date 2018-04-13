@@ -12,7 +12,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-imageObj::implObj::implObj(const ref<containerObj::implObj> &container,
+imageObj::implObj::implObj(const container_impl &container,
 			   const icon &initial_icon)
 	: implObj(container, initial_icon,
 		  initial_icon->image->get_width(),
@@ -20,7 +20,7 @@ imageObj::implObj::implObj(const ref<containerObj::implObj> &container,
 {
 }
 
-imageObj::implObj::implObj(const ref<containerObj::implObj> &container,
+imageObj::implObj::implObj(const container_impl &container,
 			   const icon &initial_icon,
 			   dim_t icon_width,
 			   dim_t icon_height)
@@ -30,7 +30,7 @@ imageObj::implObj::implObj(const ref<containerObj::implObj> &container,
 {
 }
 
-imageObj::implObj::implObj(const ref<containerObj::implObj> &container,
+imageObj::implObj::implObj(const container_impl &container,
 			   const icon &initial_icon,
 			   const metrics::axis &horiz_metrics,
 			   const metrics::axis &vert_metrics)

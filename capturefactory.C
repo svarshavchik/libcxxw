@@ -10,22 +10,22 @@
 
 LIBCXXW_NAMESPACE_START
 
-capturefactoryObj::capturefactoryObj(const ref<containerObj::implObj>
-				     &container_impl)
-	: container_impl(container_impl)
+capturefactoryObj::capturefactoryObj(const container_impl
+				     &factory_container_impl)
+	: factory_container_impl{factory_container_impl}
 {
 }
 
 capturefactoryObj::~capturefactoryObj()=default;
 
-ref<containerObj::implObj> capturefactoryObj::get_container_impl()
+container_impl capturefactoryObj::get_container_impl()
 {
-	return container_impl;
+	return factory_container_impl;
 }
 
 elementObj::implObj &capturefactoryObj::get_element_impl()
 {
-	return container_impl->container_element_impl();
+	return factory_container_impl->container_element_impl();
 }
 
 void capturefactoryObj::created(const element &e)

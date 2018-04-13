@@ -9,7 +9,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-buttonObj::implObj::implObj(const ref<containerObj::implObj> &container,
+buttonObj::implObj::implObj(const container_impl &container,
 			    const child_element_init_params &init_params)
 	: superclass_t{container, init_params}
 {

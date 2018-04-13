@@ -16,12 +16,12 @@ new_pagelayoutmanager::new_pagelayoutmanager()=default;
 new_pagelayoutmanager::~new_pagelayoutmanager()=default;
 
 ref<layoutmanagerObj::implObj>
-new_pagelayoutmanager::create(const ref<containerObj::implObj> &c) const
+new_pagelayoutmanager::create(const container_impl &c) const
 {
 	return ref<pagelayoutmanagerObj::implObj>::create(c);
 }
 
-pagelayoutmanagerObj::implObj::implObj(const ref<containerObj::implObj> &c)
+pagelayoutmanagerObj::implObj::implObj(const container_impl &c)
 	: layoutmanagerObj::implObj(c)
 {
 }
@@ -129,7 +129,7 @@ layoutmanager pagelayoutmanagerObj::implObj::create_public_object()
 void pagelayoutmanagerObj::implObj::recalculate(ONLY IN_THREAD)
 {
 	process_updated_position(IN_THREAD,
-				 container_impl->container_element_impl()
+				 layout_container_impl->container_element_impl()
 				 .data(IN_THREAD).current_position);
 }
 
@@ -185,7 +185,7 @@ void pagelayoutmanagerObj::implObj
 		mvert(hv->vert);
 	}
 
-	auto my_metrics=container_impl->container_element_impl()
+	auto my_metrics=layout_container_impl->container_element_impl()
 		.get_horizvert(IN_THREAD);
 
 	// We don't want maximum=infinite if we have no elements.

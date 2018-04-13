@@ -12,7 +12,7 @@
 LIBCXXW_NAMESPACE_START
 
 custom_combobox_containerObj::implObj
-::implObj(const ref<containerObj::implObj> &parent_container,
+::implObj(const container_impl &parent_container,
 	  const custom_combobox_popup_container &popup_container,
 	  const ref<popup_attachedto_handlerObj> &attachedto_handler)
 	: superclass_t(attachedto_handler, parent_container),

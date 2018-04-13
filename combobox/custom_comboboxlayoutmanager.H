@@ -30,14 +30,14 @@ class LIBCXX_HIDDEN custom_comboboxlayoutmanagerObj::implObj
  public:
 	//! Parent container
 
-	const ref<custom_combobox_containerObj::implObj> container_impl;
+	const ref<custom_combobox_containerObj::implObj> combo_container_impl;
 
 	//! Current selection callback.
 	mpobj<custom_combobox_selection_changed_t> selection_changed;
 
 	//! Constructor
 	implObj(const ref<custom_combobox_containerObj::implObj>
-		&container_impl,
+		&combo_container_impl,
 		const new_custom_comboboxlayoutmanager &style);
 
 	//! Destructor

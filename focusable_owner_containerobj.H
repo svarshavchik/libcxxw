@@ -16,7 +16,7 @@ class LIBCXX_HIDDEN focusable_owner_containerObj :
 	public focusableObj::ownerObj {
 
  public:
-	focusable_owner_containerObj(const ref<containerObj::implObj> &impl,
+	focusable_owner_containerObj(const container_impl &impl,
 				     const ref<layoutmanagerObj::implObj>
 				     &layout_impl,
 				     const focusable_impl &f_impl)

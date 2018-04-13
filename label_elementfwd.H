@@ -27,7 +27,7 @@ public:
 
 	//! Constructor
 
-	label_elementObj(const ref<containerObj::implObj> &parent_container,
+	label_elementObj(const container_impl &parent_container,
 			 const text_param &text,
 			 halign alignment,
 			 double initial_width,
@@ -35,7 +35,7 @@ public:
 
 	//! Constructor used by the editor subclass.
 
-	label_elementObj(const ref<containerObj::implObj> &container,
+	label_elementObj(const container_impl &container,
 			 halign alignment,
 			 double initial_width,
 			 richtextstring &&string,

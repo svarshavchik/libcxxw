@@ -53,7 +53,7 @@ typedef std::tuple<container, peepholed_toplevel> create_popup_factory_ret_t;
 //! Signature of the content factory passed to \ref create_peepholed_toplevel_listcontainer_popup "create_peepholed_toplevel_listcontainer_popup".
 
 typedef create_popup_factory_ret_t
-create_p_t_l_t(const ref<containerObj::implObj> &,
+create_p_t_l_t(const container_impl &,
 	       const popup_attachedto_info &);
 
 //! Signature for the handler factory parameter to \ref create_peepholed_toplevel_listcontainer_popup "create_peepholed_toplevel_listcontainer_popup"().

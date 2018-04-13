@@ -172,13 +172,13 @@ void elementObj::implObj::request_visibility(ONLY IN_THREAD, bool flag)
 void elementObj::implObj::schedule_update_visibility(ONLY IN_THREAD)
 {
 	IN_THREAD->insert_element_set
-		(*IN_THREAD->visibility_updated(IN_THREAD), elementimpl(this));
+		(*IN_THREAD->visibility_updated(IN_THREAD), element_impl(this));
 }
 
 void elementObj::implObj::request_visibility_recursive(bool flag)
 {
 	THREAD->get_batch_queue()->run_as
-		([flag, me=elementimpl(this)]
+		([flag, me=element_impl(this)]
 		 (ONLY IN_THREAD)
 		 {
 			 me->request_visibility_recursive(IN_THREAD, flag);
@@ -370,7 +370,7 @@ void elementObj::implObj::schedule_redraw(ONLY IN_THREAD)
 	if (!get_window_handler().has_exposed(IN_THREAD))
 		return;
 
-	IN_THREAD->elements_to_redraw(IN_THREAD)->insert(elementimpl(this));
+	IN_THREAD->elements_to_redraw(IN_THREAD)->insert(element_impl(this));
 }
 
 void elementObj::implObj::schedule_redraw_recursively()
@@ -577,7 +577,7 @@ void elementObj::implObj::schedule_update_position_processing(ONLY IN_THREAD)
 {
 	IN_THREAD->insert_element_set(*IN_THREAD->element_position_updated
 				      (IN_THREAD),
-				      elementimpl(this));
+				      element_impl(this));
 }
 
 void elementObj::implObj::process_updated_position(ONLY IN_THREAD)
@@ -687,7 +687,7 @@ void elementObj::implObj::exposure_event_recursive(ONLY IN_THREAD,
 			// now.
 
 			IN_THREAD->elements_to_redraw(IN_THREAD)
-				->erase(elementimpl(this));
+				->erase(element_impl(this));
 		}
 	}
 

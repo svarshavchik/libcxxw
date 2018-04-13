@@ -106,13 +106,13 @@ public:
 	//! A child element will be visible or not visible.
 
 	void requested_child_visibility_updated(ONLY IN_THREAD,
-						const elementimpl &,
+						const element_impl &,
 						bool);
 
 	//! A child element became visible or not visible.
 
 	void inherited_child_visibility_updated(ONLY IN_THREAD,
-						const elementimpl &,
+						const element_impl &,
 						inherited_visibility_info &);
 
 	//! Add this container to containers_2_recalculate
@@ -225,7 +225,7 @@ public:
 	//! Child element's background color has changed
 
 	void child_background_color_changed(ONLY IN_THREAD,
-					    const elementimpl &child);
+					    const element_impl &child);
 
  private:
 	void propagate_inherited_visibility(ONLY IN_THREAD,
@@ -267,7 +267,7 @@ public:
 
 class LIBCXX_HIDDEN containers_2_recalculate_map
 	: public std::map<size_t,
-			  std::unordered_set<ref<containerObj::implObj>>>
+			  std::unordered_set<container_impl>>
 {
 };
 

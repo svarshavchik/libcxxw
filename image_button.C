@@ -27,7 +27,7 @@ LIBCXXW_NAMESPACE_START
 LOG_FUNC_SCOPE_DECL(INSERT_LIBX_NAMESPACE::w::image_button, image_log);
 
 image_buttonObj::image_buttonObj(const ref<implObj> &impl,
-				 const ref<containerObj::implObj>
+				 const container_impl
 				 &container_impl,
 				 const ref<layoutmanagerObj::implObj> &lm_impl)
 	: containerObj(container_impl, lm_impl),
@@ -49,7 +49,7 @@ size_t image_buttonObj::get_value() const
 
 void image_buttonObj::set_value(size_t n)
 {
-	elementimpl e=impl->button->impl;
+	element_impl e=impl->button->impl;
 
 	e->get_window_handler().thread()->run_as
 		([impl=this->impl, n]
@@ -64,7 +64,7 @@ void image_buttonObj::on_activate(const image_button_callback_t &callback)
 {
 	LOG_FUNC_SCOPE(image_log);
 
-	elementimpl e=impl->button->impl;
+	element_impl e=impl->button->impl;
 
 	e->get_window_handler().thread()->run_as
 		([&, impl=this->impl, callback]
@@ -126,7 +126,7 @@ class LIBCXX_HIDDEN scroll_imagebuttonObj
 };
 
 ref<image_button_internalObj::implObj>
-scroll_imagebutton_specific_height(const ref<containerObj::implObj>
+scroll_imagebutton_specific_height(const container_impl
 				   &parent_container,
 				   const std::string &image1,
 				   const std::string &image2,
@@ -163,7 +163,7 @@ class LIBCXX_HIDDEN image_button_containerObj
 	const bool disable_recursive_visibility;
 
 	image_button_containerObj(bool disable_recursive_visibility,
-				  const ref<containerObj::implObj>
+				  const container_impl
 				  &parent_container)
 		: image_button_container_superclass_t(parent_container,
 						      {"focusframe@libcxx.com"}),

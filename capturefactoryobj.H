@@ -24,18 +24,18 @@ class LIBCXX_HIDDEN capturefactoryObj : public factoryObj {
 	//! The capture element.
 	capture_element_t capture_element;
 
-	const ref<containerObj::implObj> container_impl;
+	const container_impl factory_container_impl;
  public:
 
 	//! Constructor
-	capturefactoryObj(const ref<containerObj::implObj> &container_impl);
+	capturefactoryObj(const container_impl &factory_container_impl);
 
 	//! Destructor
 	~capturefactoryObj();
 
 	//! Implement get_container_impl()
 
-	ref<containerObj::implObj> get_container_impl() override;
+	container_impl get_container_impl() override;
 
 	//! Return get_element_impl()
 

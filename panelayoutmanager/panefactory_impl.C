@@ -94,7 +94,7 @@ void panefactory_implObj::valign_set(LIBCXXW_NAMESPACE::valign v)
 	lock->vertical_alignment=v;
 }
 
-ref<containerObj::implObj> panefactory_implObj::get_container_impl()
+container_impl panefactory_implObj::get_container_impl()
 {
 	auto info=layout->impl->create_pane_peephole(*this);
 	new_pane_info=info;
@@ -104,10 +104,10 @@ ref<containerObj::implObj> panefactory_implObj::get_container_impl()
 
 elementObj::implObj &panefactory_implObj::get_element_impl()
 {
-	return layout->impl->container_impl->container_element_impl();
+	return layout->impl->pane_container_impl->container_element_impl();
 }
 
-ref<containerObj::implObj> panefactory_implObj::last_container_impl()
+container_impl panefactory_implObj::last_container_impl()
 {
 	new_pane_info_t::lock lock{new_pane_info};
 

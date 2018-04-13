@@ -241,7 +241,7 @@ popupObj::handlerObj::get_popup_parent(ONLY IN_THREAD)
 }
 
 grabbed_pointerptr popupObj::handlerObj::grab_pointer(ONLY IN_THREAD,
-						      const elementimplptr &i)
+						      const element_implptr &i)
 {
 	auto p=get_popup_parent(IN_THREAD);
 
@@ -257,7 +257,7 @@ void popupObj::handlerObj::popup_opened(ONLY IN_THREAD)
 
 	if (p)
 	{
-		auto mcguffin=p->grab_pointer(IN_THREAD, elementimplptr());
+		auto mcguffin=p->grab_pointer(IN_THREAD, element_implptr());
 
 		current_grab=mcguffin;
 		if (mcguffin)

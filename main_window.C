@@ -152,7 +152,7 @@ class LIBCXX_HIDDEN app_container_implObj :
 };
 
 static inline peepholed_toplevel
-init_containers(const ref<containerObj::implObj> &parent,
+init_containers(const container_impl &parent,
 		containerptr &menu_and_app_container,
 		containerptr &menubar_container,
 		containerptr &app_container,
@@ -258,7 +258,7 @@ do_create_main_window_impl(const ref<main_windowObj::handlerObj> &handler,
 		 std::nullopt,
 		 main_window_peephole_style,
 		 [&]
-		 (const ref<containerObj::implObj> &parent)
+		 (const container_impl &parent)
 		 {
 			 auto c=init_containers(parent,
 						menu_and_app_container,

@@ -332,7 +332,7 @@ void listlayoutstyle_impl::do_process_list_item_param
 			   {
 				   next_rowinfo.setting_menu_item();
 				   auto ret=create_menu_popup
-					   (elementimpl(&textlist_element),
+					   (element_impl(&textlist_element),
 					    sm.creator,
 					    submenu_popup);
 

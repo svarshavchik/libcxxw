@@ -44,7 +44,7 @@ class LIBCXX_HIDDEN new_booklayoutmanager
 
 	//! \internal
 	focusable_container
-		create(const ref<containerObj::implObj> &) const override;
+		create(const container_impl &) const override;
 };
 
 //! Lock the book layout manager.

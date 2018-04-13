@@ -31,7 +31,7 @@ class LIBCXX_HIDDEN listlayoutmanagerObj::implObj
 	const list_element list_element_singleton;
 
 	//! Constructor
-	implObj(const ref<containerObj::implObj> &container_impl,
+	implObj(const container_impl &container_impl,
 		const list_element &list_element_singleton);
 
 	//! Destructor

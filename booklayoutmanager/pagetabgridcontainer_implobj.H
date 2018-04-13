@@ -57,7 +57,7 @@ class LIBCXX_HIDDEN pagetabgridcontainer_implObj
 	//! Constructor
 
 	pagetabgridcontainer_implObj
-		(const ref<containerObj::implObj> &parent_container,
+		(const container_impl &parent_container,
 		 const dim_arg &h_padding,
 		 const dim_arg &v_padding,
 		 const color_arg &inactive_color,

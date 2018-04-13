@@ -32,11 +32,11 @@ class LIBCXX_HIDDEN pagetabgridlayoutmanagerObj::implObj
 	//! This is the peephole's container, the parent of the container
 	//! with the pagetabgridlayoutmanager.
 
-	const ref<containerObj::implObj> parent_container;
+	const container_impl parent_container;
 
 	//! Constructor
 	implObj(const pagetabgridcontainer_impl &my_container,
-		const ref<containerObj::implObj> &parent_container);
+		const container_impl &parent_container);
 
 	//! Destructor
 	~implObj();

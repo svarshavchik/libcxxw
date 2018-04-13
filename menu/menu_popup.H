@@ -21,7 +21,7 @@ LIBCXXW_NAMESPACE_START
 //! popup.
 
 template<typename creator_t, typename which_one>
-static inline auto create_menu_popup(const elementimpl &e,
+static inline auto create_menu_popup(const element_impl &e,
 				     creator_t &&creator,
 				     which_one &wo)
 {
@@ -34,7 +34,7 @@ static inline auto create_menu_popup(const elementimpl &e,
 //! Passed as a third parameter to create_menu_popup().
 
 std::tuple<popup, ref<popup_attachedto_handlerObj> >
-topmenu_popup(const elementimpl &e,
+topmenu_popup(const element_impl &e,
 	      const function<void (const listlayoutmanager &)> &creator)
 	LIBCXX_HIDDEN;
 
@@ -43,7 +43,7 @@ topmenu_popup(const elementimpl &e,
 //! Passed as a third parameter to create_menu_popup().
 
 std::tuple<popup, ref<popup_attachedto_handlerObj> >
-submenu_popup(const elementimpl &e,
+submenu_popup(const element_impl &e,
 	      const function<void (const listlayoutmanager &)>
 			&creator)
 	LIBCXX_HIDDEN;
@@ -51,7 +51,7 @@ submenu_popup(const elementimpl &e,
 //! Creating a popup context menu.
 
 container
-contextmenu_popup(const elementimpl &e,
+contextmenu_popup(const element_impl &e,
 		  const function<void (const listlayoutmanager &)> &creator);
 
 LIBCXXW_NAMESPACE_END

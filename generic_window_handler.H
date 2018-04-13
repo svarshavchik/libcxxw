@@ -219,7 +219,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 	//! A null grabbing_element indicates a popup grabbing the pointer.
 	virtual grabbed_pointerptr grab_pointer(ONLY IN_THREAD,
-						const elementimplptr &);
+						const element_implptr &);
 
 	//! Implement is_pointer_actively_grabbed()
 

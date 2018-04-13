@@ -80,15 +80,14 @@ public:
 // Take the parent container implementation object, find its element, and
 // get_screen().
 
-	my_element_implObj(const x::ref<x::w::containerObj::implObj>
-			   &parent_container)
+	my_element_implObj(const x::w::container_impl &parent_container)
 		: my_element_implObj{parent_container,
 			parent_container->container_element_impl()
 			.get_screen()}
 	{
 	}
 
-	my_element_implObj(const x::ref<x::w::containerObj::implObj> &parent_container,
+	my_element_implObj(const x::w::container_impl &parent_container,
 			   const x::w::screen &s)
 		: superclass_t{parent_container,
 			create_child_element_init_params()},

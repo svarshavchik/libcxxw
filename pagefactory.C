@@ -19,7 +19,7 @@ pagefactoryObj::pagefactoryObj(const ref<implObj> &impl)
 
 pagefactoryObj::~pagefactoryObj()=default;
 
-ref<containerObj::implObj> pagefactoryObj::get_container_impl()
+container_impl pagefactoryObj::get_container_impl()
 {
 	// Pull a switcheroo that creates a new container that uses the
 	// singleton layout manager. This is what gets added to the
@@ -38,14 +38,15 @@ ref<containerObj::implObj> pagefactoryObj::get_container_impl()
 	// the initial state is still disabled.
 	implObj::info_t::lock lock{impl->info};
 
-	ref<containerObj::implObj> container_impl=
+	container_impl factory_container_impl=
 		ref<always_visibleObj<container_elementObj<child_elementObj>,
 				      false>>
-		::create(impl->lm->layoutmanagerObj::impl->container_impl);
+		::create(impl->lm->layoutmanagerObj::impl
+			 ->layout_container_impl);
 
-	lock->prev_container_impl=container_impl;
+	lock->prev_container_impl=factory_container_impl;
 
-	return container_impl;
+	return factory_container_impl;
 }
 
 elementObj::implObj &pagefactoryObj::get_element_impl()
@@ -53,7 +54,7 @@ elementObj::implObj &pagefactoryObj::get_element_impl()
 	return impl->lm->layoutmanagerObj::impl->get_element_impl();
 }
 
-ref<containerObj::implObj> pagefactoryObj::last_container_impl()
+container_impl pagefactoryObj::last_container_impl()
 {
 	implObj::info_t::lock lock{impl->info};
 
@@ -93,7 +94,7 @@ void pagefactoryObj::created(const element &e)
 	// Make sure that any thrown exception, after construction of the
 	// container object, destroys the implementation object too.
 
-	ref<containerObj::implObj> container_impl=lock->prev_container_impl;
+	container_impl container_impl=lock->prev_container_impl;
 	lock->prev_container_impl=nullptr;
 
 	// Finish the job started in get_container_impl(), above.

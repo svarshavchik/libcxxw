@@ -45,18 +45,18 @@ class child_elementObj
  public:
 
 	//! My parent element
-	const ref<containerObj::implObj> child_container LIBCXX_PUBLIC;
+	const container_impl child_container LIBCXX_PUBLIC;
 
 	//! Constructor.
 
 	//! Save parent element, increase this element's nesting level.
 
-	child_elementObj(const ref<containerObj::implObj> &container);
+	child_elementObj(const container_impl &container);
 
 	//! Constructor
 
 	//! Additional constructor parameters
-	child_elementObj(const ref<containerObj::implObj> &container,
+	child_elementObj(const container_impl &container,
 			 const child_element_init_params &init_params);
 
 	//! Destructor

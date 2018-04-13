@@ -16,7 +16,7 @@ LIBCXXW_NAMESPACE_START
 // We initially set our metrics based on the first icon's width.
 
 popup_imagebutton_implObj
-::popup_imagebutton_implObj(const ref<containerObj::implObj> &container,
+::popup_imagebutton_implObj(const container_impl &container,
 			    const std::vector<icon> &icon_images,
 			    const ref<elementObj::implObj> &popup_element_impl)
 	: popup_imagebutton_implObj{container,
@@ -26,7 +26,7 @@ popup_imagebutton_implObj
 }
 
 popup_imagebutton_implObj
-::popup_imagebutton_implObj(const ref<containerObj::implObj> &container,
+::popup_imagebutton_implObj(const container_impl &container,
 			    const std::vector<icon> &icon_images,
 			    const ref<elementObj::implObj> &popup_element_impl,
 			    dim_t first_icon_width)

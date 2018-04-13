@@ -171,7 +171,7 @@ date_input_field factoryObj
 		 config.popup_background_color,
 		 popup_peephole_style,
 		 [&]
-		 (const ref<containerObj::implObj> &parent)
+		 (const container_impl &parent)
 		 {
 			 child_element_init_params init_params;
 
@@ -261,7 +261,7 @@ date_input_field factoryObj
 		 [&]
 		 (const border_arg &focusoff_border,
 		  const border_arg &focuson_border,
-		  const ref<containerObj::implObj> &parent_container,
+		  const container_impl &parent_container,
 		  const child_element_init_params &init_params)
 		 {
 			 auto ff=ref<popup_attachedto_handler_elementObj

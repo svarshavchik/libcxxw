@@ -33,7 +33,7 @@ extern const scrollbar_orientation vertical_scrollbar LIBCXX_HIDDEN;
 //! It is the caller's responsibility to, at some point, add it to the
 //! parent using created_internally().
 
-scrollbar do_create_h_scrollbar(const ref<containerObj::implObj>
+scrollbar do_create_h_scrollbar(const container_impl
 				&parent_container,
 				const std::optional<color_arg> &background_color,
 				const scrollbar_config &conf,
@@ -45,7 +45,7 @@ scrollbar do_create_h_scrollbar(const ref<containerObj::implObj>
 
 //! Like create_horizontal_scrollbar(), but makes a vertical one.
 
-scrollbar do_create_v_scrollbar(const ref<containerObj::implObj>
+scrollbar do_create_v_scrollbar(const container_impl
 				&parent_container,
 				const std::optional<color_arg> &background_color,
 				const scrollbar_config &conf,
@@ -59,7 +59,7 @@ scrollbar do_create_v_scrollbar(const ref<containerObj::implObj>
 //! shouldn't care about the parameters, so we encapsulate them here.
 
 struct LIBCXX_HIDDEN scrollbar_impl_init_params {
-	const ref<containerObj::implObj> &container;
+	const container_impl &container;
 	const scrollbar_cb_t &callback;
 	const scrollbar_orientation &orientation;
 	const scrollbar_icons_tuple_t &icons;

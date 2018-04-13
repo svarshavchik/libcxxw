@@ -38,7 +38,7 @@ class LIBCXX_HIDDEN pagefactoryObj::implObj : virtual public obj {
 	struct info_s {
 
 		//! Most recent intermediate container for the new element.
-		ptr<containerObj::implObj> prev_container_impl;
+		container_implptr prev_container_impl;
 
 		//! Alignment for the next element to be created.
 		LIBCXXW_NAMESPACE::halign horizontal_alignment=

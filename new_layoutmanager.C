@@ -15,7 +15,7 @@ new_layoutmanager::new_layoutmanager()=default;
 new_layoutmanager::~new_layoutmanager()=default;
 
 container new_layoutmanager
-::create(const ref<containerObj::implObj> &parent,
+::create(const container_impl &parent,
 	 const function<void(const container &)> &creator) const
 {
 	auto impl=ref<container_elementObj<child_elementObj>>

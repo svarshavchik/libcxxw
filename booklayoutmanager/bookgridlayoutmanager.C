@@ -10,7 +10,7 @@
 LIBCXXW_NAMESPACE_START
 
 bookgridlayoutmanagerObj
-::bookgridlayoutmanagerObj(const ref<containerObj::implObj> &container)
+::bookgridlayoutmanagerObj(const container_impl &container)
 	: gridlayoutmanagerObj::implObj(container)
 {
 }

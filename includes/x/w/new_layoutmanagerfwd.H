@@ -33,10 +33,10 @@ public:
 
 	//! Internal implementation
 	virtual ref<layoutmanagerObj::implObj>
-		create(const ref<containerObj::implObj> &) const=0;
+		create(const container_impl &) const=0;
 
 	//! Internal implementation
-	virtual container create(const ref<containerObj::implObj> &,
+	virtual container create(const container_impl &,
 				 const function<void(const container &)> &)
 		const;
 };

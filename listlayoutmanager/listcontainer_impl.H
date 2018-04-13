@@ -46,7 +46,7 @@ class LIBCXX_HIDDEN listcontainerObj::implObj :
 
 	//! Constructor
 
-	implObj(const ref<containerObj::implObj> &parent,
+	implObj(const container_impl &parent,
 		const new_listlayoutmanager &style);
 
 	//! Destructor

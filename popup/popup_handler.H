@@ -206,7 +206,7 @@ public:
 
 	//! Forwarded to parent element.
 	grabbed_pointerptr grab_pointer(ONLY IN_THREAD,
-					const elementimplptr &) override;
+					const element_implptr &) override;
 
 	//! Override process_key_event()
 

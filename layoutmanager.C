@@ -13,9 +13,9 @@
 LIBCXXW_NAMESPACE_START
 
 layoutmanagerObj::layoutmanagerObj(const ref<implObj> &impl)
-	: impl(impl),
-	  queue(impl->container_impl->get_window_handler().thread()
-		->get_batch_queue())
+	: impl{impl},
+	  queue{impl->layout_container_impl->get_window_handler().thread()
+			  ->get_batch_queue()}
 
 {
 }

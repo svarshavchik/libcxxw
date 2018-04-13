@@ -49,14 +49,14 @@ typedef ref<nonrecursive_visibility_focusframe_t
 //! Create an always_visibleObj focus frame.
 
 always_visible_focusframe_ref_t
-create_always_visible_focusframe(const ref<containerObj::implObj>
+create_always_visible_focusframe(const container_impl
 				 &parent_container)
 	LIBCXX_HIDDEN;
 
 //! Create an always_visibleObj focus frame.
 
 always_visible_focusframe_ref_t
-create_always_visible_focusframe(const ref<containerObj::implObj>
+create_always_visible_focusframe(const container_impl
 				 &parent_container,
 				 const border_arg &focusoff_border,
 				 const border_arg &focuson_border,
@@ -66,14 +66,14 @@ create_always_visible_focusframe(const ref<containerObj::implObj>
 //! Create an nonrecursive_visibilityObj focus frame.
 
 nonrecursive_visibility_focusframe_ref_t
-create_nonrecursive_visibility_focusframe(const ref<containerObj::implObj>
+create_nonrecursive_visibility_focusframe(const container_impl
 					  &parent_container)
 	LIBCXX_HIDDEN;
 
 //! Create an nonrecursive_visibilityObj focus frame.
 
 nonrecursive_visibility_focusframe_ref_t
-create_nonrecursive_visibility_focusframe(const ref<containerObj::implObj>
+create_nonrecursive_visibility_focusframe(const container_impl
 					  &parent_container,
 					  const border_arg &focusoff_border,
 					  const border_arg &focuson_border,

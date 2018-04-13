@@ -68,7 +68,7 @@ struct LIBCXX_HIDDEN border_source {
 
 typedef straight_border
 straight_border_factory_t(ONLY IN_THREAD,
-			  const ref<containerObj::implObj> &c,
+			  const container_impl &c,
 			  const border_source &e1,
 			  const border_source &e2,
 			  const current_border_implptr &d);

@@ -77,13 +77,13 @@ class LIBCXX_HIDDEN panefactory_implObj : public panefactoryObj {
 
 	//! Begin creating a new element.
 
-	ref<containerObj::implObj> get_container_impl() override;
+	container_impl get_container_impl() override;
 
 	//! Implement get_element_impl().
 	elementObj::implObj &get_element_impl() override;
 
 	//! Implement last_container_impl().
-	ref<containerObj::implObj> last_container_impl() override;
+	container_impl last_container_impl() override;
 
 	//! End of the road. New element has been created.
 

@@ -19,7 +19,7 @@
 LIBCXXW_NAMESPACE_START
 
 pane_slider_focusframeObj
-::pane_slider_focusframeObj(const ref<containerObj::implObj> &parent,
+::pane_slider_focusframeObj(const container_impl &parent,
 			    const cursor_pointer &custom_pointer,
 			    const color_arg &background_color)
 	: superclass_t{custom_pointer,

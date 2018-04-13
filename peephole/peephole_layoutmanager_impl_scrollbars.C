@@ -80,7 +80,7 @@ public:
 };
 
 peephole_scrollbars
-create_peephole_scrollbars(const ref<containerObj::implObj> &container,
+create_peephole_scrollbars(const container_impl &container,
 			   const std::optional<color_arg> &background_color)
 {
 
@@ -207,13 +207,13 @@ peephole_scrollbars::~peephole_scrollbars()=default;
 //////////////////////////////////////////////////////////////////////////////
 
 scrollbarsObj
-::scrollbarsObj(const ref<containerObj::implObj> &container_impl,
-			peephole_style style,
-			const peepholed &element_in_peephole,
+::scrollbarsObj(const container_impl &container_impl,
+		peephole_style style,
+		const peepholed &element_in_peephole,
 
-			const peephole_scrollbars &scrollbars,
-			const scrollbar_visibility horizontal_scrollbar_visibility,
-			const scrollbar_visibility vertical_scrollbar_visibility)
+		const peephole_scrollbars &scrollbars,
+		const scrollbar_visibility horizontal_scrollbar_visibility,
+		const scrollbar_visibility vertical_scrollbar_visibility)
 	: layoutmanager_implObj(container_impl, style, element_in_peephole),
 	h_scrollbar(scrollbars.horizontal_scrollbar),
 	v_scrollbar(scrollbars.vertical_scrollbar),
@@ -257,7 +257,7 @@ bool scrollbarsObj
 	if (be.button != 4 && be.button != 5)
 		return false;
 
-	if (!container_impl->container_element_impl().activate_for(be))
+	if (!layout_container_impl->container_element_impl().activate_for(be))
 		return true;
 
 	if (be.button == 4)
@@ -291,7 +291,7 @@ void scrollbarsObj::update_scrollbars(ONLY IN_THREAD,
 void scrollbarsObj
 ::update_scrollbar(ONLY IN_THREAD,
 		   const ref<scrollbarObj::implObj> &scrollbar,
-		   const elementimpl &visibility_element,
+		   const element_impl &visibility_element,
 		   const scrollbar_visibility visibility,
 		   coord_t pos,
 		   dim_t size,

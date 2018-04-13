@@ -11,7 +11,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-progressbarObj::handlerObj::handlerObj(const ref<containerObj::implObj>
+progressbarObj::handlerObj::handlerObj(const container_impl
 				       &parent_container,
 				       const progressbar_config &config)
 	: superclass_t{config.minimum_width, 0,

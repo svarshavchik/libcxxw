@@ -48,7 +48,7 @@ public:
 
 	//! \internal
 
-	virtual ref<containerObj::implObj> get_container_impl()=0;
+	virtual container_impl get_container_impl()=0;
 
 	//! Return the container's element implementation object.
 
@@ -68,7 +68,7 @@ public:
 	//!
 	//! \internal.
 
-	virtual ref<containerObj::implObj> last_container_impl();
+	virtual container_impl last_container_impl();
 
 	//! An internal call to create().
 

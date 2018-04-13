@@ -65,8 +65,7 @@ public:
 	//
 	// Start the ball rolling by constructing the canvas_init_params
 
-	my_canvas_implObj(const x::ref<x::w::containerObj::implObj>
-			  &parent_container)
+	my_canvas_implObj(const x::w::container_impl &parent_container)
 		: my_canvas_implObj(parent_container,
 				    x::w::canvas_init_params{
 					    // Horizontal metrics:
@@ -85,8 +84,7 @@ public:
 	// Now, we use x::w::canvasObj::implObj::create_child_element_params
 	// to compute the metrics of the display elements in pixels.
 
-	my_canvas_implObj(const x::ref<x::w::containerObj::implObj>
-			  &parent_container,
+	my_canvas_implObj(const x::w::container_impl &parent_container,
 			  const x::w::canvas_init_params &init_params)
 		: my_canvas_implObj{parent_container,
 			init_params,
@@ -96,8 +94,7 @@ public:
 	}
 
 	// Now we have all the info we need.
-	my_canvas_implObj(const x::ref<x::w::containerObj::implObj>
-			  &parent_container,
+	my_canvas_implObj(const x::w::container_impl &parent_container,
 			  const x::w::canvas_init_params &init_params,
 			  const x::w::child_element_init_params
 			  &child_init_params)
@@ -291,7 +288,7 @@ void testcustomcanvas()
 
 			 // Obtain the parent container from the factory.
 
-			 x::ref<x::w::containerObj::implObj> parent_container=
+			 x::w::container_impl parent_container=
 				 factory->get_container_impl();
 
 			 // Create the "implementation" object for the custom

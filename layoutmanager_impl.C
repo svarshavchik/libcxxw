@@ -20,8 +20,8 @@ LOG_CLASS_INIT(LIBCXX_NAMESPACE::w::layoutmanagerObj::implObj);
 LIBCXXW_NAMESPACE_START
 
 layoutmanagerObj::implObj
-::implObj(const ref<containerObj::implObj> &container_impl)
-	: container_impl(container_impl)
+::implObj(const container_impl &layout_container_impl)
+	: layout_container_impl{layout_container_impl}
 {
 }
 
@@ -30,7 +30,7 @@ layoutmanagerObj::implObj::~implObj()=default;
 void layoutmanagerObj::implObj::run_as(const functionref<void (ONLY IN_THREAD)>
 				       &f)
 {
-	auto e=ref(&container_impl->container_element_impl());
+	auto e=ref(&layout_container_impl->container_element_impl());
 
 	e->get_window_handler().thread()
 		->run_as([e, f]
@@ -54,7 +54,7 @@ void layoutmanagerObj::implObj::child_metrics_updated(ONLY IN_THREAD)
 
 void layoutmanagerObj::implObj::needs_recalculation(ONLY IN_THREAD)
 {
-	container_impl->needs_recalculation(IN_THREAD);
+	layout_container_impl->needs_recalculation(IN_THREAD);
 }
 
 void layoutmanagerObj::implObj::current_position_updated(ONLY IN_THREAD)
@@ -63,19 +63,19 @@ void layoutmanagerObj::implObj::current_position_updated(ONLY IN_THREAD)
 }
 
 void layoutmanagerObj::implObj
-::child_background_color_changed(ONLY IN_THREAD, const elementimpl &child)
+::child_background_color_changed(ONLY IN_THREAD, const element_impl &child)
 {
 }
 
 void layoutmanagerObj::implObj
 ::requested_child_visibility_changed(ONLY IN_THREAD,
-				     const elementimpl &child,
+				     const element_impl &child,
 				     bool flag)
 {
 }
 
 void layoutmanagerObj::implObj
-::inherited_child_visibility_changed(ONLY IN_THREAD, const elementimpl &child,
+::inherited_child_visibility_changed(ONLY IN_THREAD, const element_impl &child,
 				     inherited_visibility_info &info)
 {
 }
@@ -86,14 +86,14 @@ void layoutmanagerObj::implObj
 }
 
 rectangle layoutmanagerObj::implObj::padded_position(ONLY IN_THREAD,
-						     const elementimpl &e_impl)
+						     const element_impl &e_impl)
 {
 	return e_impl->data(IN_THREAD).current_position;
 }
 
 elementObj::implObj &layoutmanagerObj::implObj::get_element_impl()
 {
-	return container_impl->container_element_impl();
+	return layout_container_impl->container_element_impl();
 }
 
 void layoutmanagerObj::implObj::initialize(ONLY IN_THREAD)

@@ -83,7 +83,7 @@ new_listlayoutmanager
 new_listlayoutmanager::~new_listlayoutmanager()=default;
 
 focusable_container
-new_listlayoutmanager::create(const ref<containerObj::implObj>
+new_listlayoutmanager::create(const container_impl
 			      &parent_container) const
 {
 	auto focusable_container_impl=
@@ -104,7 +104,7 @@ new_listlayoutmanager::create(const ref<containerObj::implObj>
 				scrollbar_visibility::never,
 				vertical_scrollbar},
 		 [&, this]
-		 (const ref<containerObj::implObj> &peepholed_parent)
+		 (const container_impl &peepholed_parent)
 		 {
 			 auto peephole_impl=ref<peepholeObj::implObj>
 			 ::create(peepholed_parent);

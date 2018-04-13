@@ -12,7 +12,7 @@
 LIBCXXW_NAMESPACE_START
 
 void connection_threadObj::insert_element_set(element_set_t &s,
-					      const elementimpl &i)
+					      const element_impl &i)
 {
 	s[i->nesting_level].insert(i);
 }
@@ -23,7 +23,7 @@ void connection_threadObj::insert_element_set(element_set_t &s,
 // for optimally processing visibility changes, for example, so that the
 // so that the topmost element's visibility is updated last.
 
-elementimpl connection_threadObj::next_lowest_element(element_set_t &s)
+element_impl connection_threadObj::next_lowest_element(element_set_t &s)
 {
 	auto iter=--s.end();
 
@@ -49,7 +49,7 @@ elementimpl connection_threadObj::next_lowest_element(element_set_t &s)
 // last, since the topmost element may choose to recalculate the sizes of its
 // child elements.
 
-elementimpl connection_threadObj::next_highest_element(element_set_t &s)
+element_impl connection_threadObj::next_highest_element(element_set_t &s)
 {
 	auto iter=s.begin();
 

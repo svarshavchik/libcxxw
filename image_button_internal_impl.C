@@ -24,7 +24,7 @@ static auto get_first_icon_image(const auto &v)
 }
 
 image_button_internalObj::implObj
-::implObj(const ref<containerObj::implObj> &container,
+::implObj(const container_impl &container,
 	  const std::vector<icon> &icon_images)
 	: superclass_t(icon_images, container,
 		       get_first_icon_image(icon_images)),
@@ -33,7 +33,7 @@ image_button_internalObj::implObj
 }
 
 image_button_internalObj::implObj
-::implObj(const ref<containerObj::implObj> &container,
+::implObj(const container_impl &container,
 	  const std::vector<icon> &icon_images,
 	  const metrics::axis &horiz_metrics,
 	  const metrics::axis &vert_metrics)
@@ -107,7 +107,7 @@ class LIBCXX_HIDDEN checkbox_image_buttonObj :
 };
 
 ref<image_button_internalObj::implObj>
-create_checkbox_impl(const ref<containerObj::implObj> &container,
+create_checkbox_impl(const container_impl &container,
 		     const std::vector<icon> &icon_images)
 {
 	return ref<checkbox_image_buttonObj>::create(container, icon_images);
@@ -126,7 +126,7 @@ class LIBCXX_HIDDEN radio_image_buttonObj :
 
 	//! Constructor
 	radio_image_buttonObj(const radio_group &group,
-			      const ref<containerObj::implObj> &container,
+			      const container_impl &container,
 			      const std::vector<icon> &icon_images)
 		: checkbox_image_buttonObj(container, icon_images),
 		group(group)
@@ -152,7 +152,7 @@ class LIBCXX_HIDDEN radio_image_buttonObj :
 
 ref<image_button_internalObj::implObj>
 create_radio_impl(const radio_group &group,
-		  const ref<containerObj::implObj> &container,
+		  const container_impl &container,
 		  const std::vector<icon> &icon_images)
 {
 	auto r=ref<radio_image_buttonObj>::create(group,

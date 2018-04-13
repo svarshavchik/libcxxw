@@ -55,7 +55,7 @@ class LIBCXX_HIDDEN progressbar_sliderObj : public progressbar_slider_base_t {
 	THREAD_DATA_ONLY(maximum_value);
 
 	//! Constructor
-	progressbar_sliderObj(const ref<containerObj::implObj> &parent,
+	progressbar_sliderObj(const container_impl &parent,
 			      const progressbar_config &config);
 
 	//! Destructor

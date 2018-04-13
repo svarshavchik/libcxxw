@@ -34,7 +34,7 @@ class LIBCXX_HIDDEN popup_imagebutton_implObj
  public:
 	//! Constructor
 
-	popup_imagebutton_implObj(const ref<containerObj::implObj> &container,
+	popup_imagebutton_implObj(const container_impl &container,
 				  const std::vector<icon> &icon_images,
 				  const ref<elementObj::implObj>
 				  &popup_element_impl);
@@ -43,7 +43,7 @@ class LIBCXX_HIDDEN popup_imagebutton_implObj
 
 	//! Internal constructor
 
-	popup_imagebutton_implObj(const ref<containerObj::implObj> &container,
+	popup_imagebutton_implObj(const container_impl &container,
 				  const std::vector<icon> &icon_images,
 				  const ref<elementObj::implObj
 				  > &popup_element_impl,
