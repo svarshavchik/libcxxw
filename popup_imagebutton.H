@@ -13,7 +13,7 @@
 #include "focus/focusframecontainerobj.H"
 #include "focus/focusframecontainer_element.H"
 #include "x/w/impl/container_element.H"
-#include "always_visible.H"
+#include "x/w/impl/always_visible.H"
 #include "x/w/impl/child_element.H"
 #include <x/functional.H>
 

@@ -1,11 +1,11 @@
 /*
-** Copyright 2017 Double Precision, Inc.
+** Copyright 2017-2018 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
-#ifndef always_visible_H
-#define always_visible_H
+#ifndef x_w_impl_always_visible_H
+#define x_w_impl_always_visible_H
 
-#include "always_visiblefwd.H"
+#include <x/w/impl/always_visiblefwd.H>
 
 LIBCXXW_NAMESPACE_START
 

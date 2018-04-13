@@ -5,7 +5,7 @@
 #include "libcxxw_config.h"
 #include "peephole/peephole_toplevel.H"
 #include "x/w/impl/child_element.H"
-#include "always_visible.H"
+#include "x/w/impl/always_visible.H"
 #include "gridlayoutmanager.H"
 #include "peephole/peephole.H"
 #include "peephole/peephole_impl.H"

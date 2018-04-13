@@ -5,7 +5,7 @@
 #include "libcxxw_config.h"
 #include "panelayoutmanager/pane_slider_focusframe.H"
 #include "panelayoutmanager/panelayoutmanager_impl.H"
-#include "always_visible.H"
+#include "x/w/impl/always_visible.H"
 #include "container_visible_element.H"
 #include "x/w/impl/container_element.H"
 #include "themeborder_element.H"

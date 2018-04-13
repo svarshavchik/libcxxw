@@ -1,11 +1,11 @@
 /*
-** Copyright 2017 Double Precision, Inc.
+** Copyright 2017-2018 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
-#ifndef always_visible_elementfwd_H
-#define always_visible_elementfwd_H
+#ifndef x_w_impl_always_visible_elementfwd_H
+#define x_w_impl_always_visible_elementfwd_H
 
-#include "x/w/connection_threadfwd.H"
+#include <x/w/connection_threadfwd.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -24,7 +24,7 @@ LIBCXXW_NAMESPACE_START
 //! request_visibility gets overriden, and quietly does nothing.
 
 template<typename element_impl>
-class LIBCXX_HIDDEN always_visible_elementObj : public element_impl {
+class always_visible_elementObj : public element_impl {
 
 public:
 

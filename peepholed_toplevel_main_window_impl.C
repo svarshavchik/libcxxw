@@ -9,7 +9,7 @@
 #include "generic_window_handler.H"
 #include "reference_font_element.H"
 #include "layoutmanager.H"
-#include "always_visible.H"
+#include "x/w/impl/always_visible.H"
 #include "gridlayoutmanager.H"
 #include "menu/menubarlayoutmanager_impl.H"
 #include "x/w/impl/focus/focusable.H"

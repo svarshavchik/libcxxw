@@ -7,7 +7,7 @@
 
 #include "booklayoutmanager/pagetab.H"
 #include "booklayoutmanager/pagetabgridcontainer_implfwd.H"
-#include "always_visiblefwd.H"
+#include "x/w/impl/always_visiblefwd.H"
 #include "hotspot_bgcolor_elementfwd.H"
 #include "x/w/impl/container_elementfwd.H"
 #include "x/w/impl/child_element.H"

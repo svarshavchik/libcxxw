@@ -27,10 +27,6 @@ libcxxw_la_SOURCES=\
 	activated_in_thread.H			    \
 	activated_in_threadfwd.H		    \
 	activated_in_threadobj.H		    \
-	always_visible.H			    \
-	always_visiblefwd.H			    \
-	always_visible_element.H		    \
-	always_visible_elementfwd.H		    \
 	assert_or_throw.C			    \
 	assert_or_throw.H			    \
 	background_color.C			    \

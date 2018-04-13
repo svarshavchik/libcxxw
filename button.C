@@ -12,7 +12,7 @@
 #include "x/w/impl/container_element.H"
 #include "container_visible_element.H"
 #include "hotspot_bgcolor_element.H"
-#include "always_visible.H"
+#include "x/w/impl/always_visible.H"
 #include "focus/focusframecontainer_element.H"
 #include "generic_window_handler.H"
 #include "xid_t.H"

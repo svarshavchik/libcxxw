@@ -9,7 +9,7 @@
 #include "peephole/peepholed_toplevel_elementfwd.H"
 #include "x/w/impl/container_elementfwd.H"
 #include "x/w/impl/child_element.H"
-#include "always_visiblefwd.H"
+#include "x/w/impl/always_visiblefwd.H"
 #include "reference_font_elementfwd.H"
 
 LIBCXXW_NAMESPACE_START

@@ -8,7 +8,7 @@
 #include "panelayoutmanager/pane_peephole.H"
 #include "panelayoutmanager/pane_peephole_containerobj.H"
 #include "peephole/peephole_impl.H"
-#include "always_visiblefwd.H"
+#include "x/w/impl/always_visiblefwd.H"
 #include "x/w/impl/container_elementfwd.H"
 #include "reference_font_elementfwd.H"
 #include "x/w/impl/child_element.H"

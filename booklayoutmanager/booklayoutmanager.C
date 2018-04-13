@@ -21,7 +21,7 @@
 #include "x/w/impl/container_element.H"
 #include "container_visible_element.H"
 #include "x/w/impl/child_element.H"
-#include "always_visible.H"
+#include "x/w/impl/always_visible.H"
 #include "capturefactory.H"
 #include "busy.H"
 #include "run_as.H"

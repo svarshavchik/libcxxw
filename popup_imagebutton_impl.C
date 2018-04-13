@@ -8,7 +8,7 @@
 #include "pixmap_with_picture.H"
 #include "icon.H"
 #include "x/w/metrics/axis.H"
-#include "always_visible_element.H"
+#include "x/w/impl/always_visible_element.H"
 #include <X11/keysym.h>
 
 LIBCXXW_NAMESPACE_START

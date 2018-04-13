@@ -8,7 +8,7 @@
 #include "popup_imagebutton_implfwd.H"
 #include "popup/popup_showhide_elementfwd.H"
 #include "image_button_internal_impl.H"
-#include "always_visible_elementfwd.H"
+#include "x/w/impl/always_visible_elementfwd.H"
 
 LIBCXXW_NAMESPACE_START
 

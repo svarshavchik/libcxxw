@@ -6,7 +6,7 @@
 #define pane_peephole_container_impl_h
 
 #include "panelayoutmanager/pane_peephole_container.H"
-#include "always_visiblefwd.H"
+#include "x/w/impl/always_visiblefwd.H"
 #include "x/w/impl/container_elementfwd.H"
 #include "x/w/impl/child_element.H"
 

@@ -33,7 +33,7 @@
 #include "x/w/label.H"
 #include "dialog_impl.H"
 #include "dialog_handler.H"
-#include "always_visible.H"
+#include "x/w/impl/always_visible.H"
 #include <x/weakcapture.H>
 #include <variant>
 

@@ -9,7 +9,7 @@
 #include "popup/popup.H"
 #include "popup/popup_attachedto_info.H"
 #include "popup/popup_attachedto_handler.H"
-#include "always_visible.H"
+#include "x/w/impl/always_visible.H"
 #include "peepholed_toplevel_listcontainer/handler.H"
 #include "peepholed_toplevel_listcontainer/impl_element.H"
 #include "peepholed_toplevel_listcontainer/element.H"

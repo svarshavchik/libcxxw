@@ -8,7 +8,7 @@
 #include "menu/menubar_container_implfwd.H"
 #include "x/w/impl/container_elementfwd.H"
 #include "x/w/impl/container.H"
-#include "always_visiblefwd.H"
+#include "x/w/impl/always_visiblefwd.H"
 #include "x/w/impl/child_element.H"
 #include "x/w/menufwd.H"
 

@@ -5,7 +5,7 @@
 #include "libcxxw_config.h"
 #include "booklayoutmanager/pagetab_impl.H"
 #include "booklayoutmanager/pagetabgridcontainer_impl.H"
-#include "always_visible.H"
+#include "x/w/impl/always_visible.H"
 #include "hotspot_bgcolor_element.H"
 #include "x/w/impl/container_element.H"
 #include "singletonlayoutmanager_impl.H"

@@ -4,7 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "progressbar_slider.H"
-#include "always_visible.H"
+#include "x/w/impl/always_visible.H"
 #include "x/w/impl/container_element.H"
 #include "x/w/impl/background_color.H"
 #include "x/w/impl/background_color_element.H"

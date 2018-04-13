@@ -9,7 +9,7 @@
 #include "peephole/peepholed_fontelementfwd.H"
 #include "reference_font_elementfwd.H"
 #include "peephole/peepholed_toplevel_elementfwd.H"
-#include "always_visiblefwd.H"
+#include "x/w/impl/always_visiblefwd.H"
 #include "popup/popup_attachedto_infofwd.H"
 #include "x/w/impl/container_elementfwd.H"
 #include "x/w/containerobj.H"
