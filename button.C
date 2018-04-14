@@ -12,6 +12,7 @@
 #include "x/w/impl/container_element.H"
 #include "container_visible_element.H"
 #include "hotspot_bgcolor_element.H"
+#include "capturefactory.H"
 #include "x/w/impl/always_visible.H"
 #include "focus/focusframecontainer_element.H"
 #include "generic_window_handler.H"
@@ -103,12 +104,14 @@ create_button_focusframe(const ref<buttonObj::implObj> &impl,
 			 glmi->layout_container_impl,
 			 child_element_init_params{"focusframe@libcxx.com"});
 
-	auto ff=focusframecontainer::create(ffi, ffi);
-
 	// Call the application-provided creator to populate the contents
 	// of the button.
 
-	creator(ff->set_focusable());
+	auto cf=capturefactory::create(ffi);
+
+	creator(cf);
+
+	auto ff=create_focusframecontainer(ffi, cf->get(), ffi);
 
 	// Now, it's time to go back to the new button's grid
 	// layout manager, and insert the fully-cooked focusframecontainer.

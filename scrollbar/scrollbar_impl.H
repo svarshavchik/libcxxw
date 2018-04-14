@@ -7,6 +7,7 @@
 
 #include "x/w/impl/focus/focusable_elementfwd.H"
 #include "x/w/impl/child_element.H"
+#include "x/w/impl/always_visible_elementfwd.H"
 #include "scrollbar/scrollbar_icon_set.H"
 #include "scrollbar/scrollbar_metrics.H"
 #include "icon_images_set_elementfwd.H"
@@ -71,7 +72,8 @@ struct LIBCXX_HIDDEN scrollbar_impl_init_params {
 
 class LIBCXX_HIDDEN scrollbarObj::implObj :
 	public themedim_element_minoverrideObj<
-	scrollbar_icon_images_set_t<focusable_elementObj<>>> {
+	scrollbar_icon_images_set_t<always_visible_elementObj
+				    <focusable_elementObj<>>>> {
 
 	//! Normal or pressed icons.
 
@@ -94,8 +96,8 @@ class LIBCXX_HIDDEN scrollbarObj::implObj :
 	//! My superclass
 
 	typedef themedim_element_minoverrideObj<
-		scrollbar_icon_images_set_t<focusable_elementObj<>
-					    >> superclass_t;
+		scrollbar_icon_images_set_t<always_visible_elementObj<
+			focusable_elementObj<>>>> superclass_t;
 
 	//! Specifies whether this is a horizontal or a vertical scrollbar
 

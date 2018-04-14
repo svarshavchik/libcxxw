@@ -6,9 +6,10 @@
 #include "generic_window_handler.H"
 #include "scrollbar_impl.H"
 #include "x/w/impl/container_element.H"
+#include "x/w/impl/always_visible_element.H"
 #include "container_visible_element.H"
 #include "x/w/impl/nonrecursive_visibility.H"
-#include "focus/focusframefactory.H"
+#include "focus/focusframecontainer.H"
 #include "focus/focusframelayoutimpl.H"
 #include "focus/standard_focusframecontainer_element.H"
 #include "run_as.H"
@@ -106,8 +107,7 @@ static scrollbar create_scrollbar(const container_impl &parent_container,
 
 	// And this will be its layout manager.
 
-	auto fflayout=ref<focusframelayoutimplObj>
-		::create(ffcontainer_impl);
+	auto fflayout=ref<focusframelayoutimplObj>::create(ffcontainer_impl);
 
 	// The focus frame will manage the actual scrollbar element. Create
 	// the implementation object. Since the focus-framed element will
@@ -115,7 +115,7 @@ static scrollbar create_scrollbar(const container_impl &parent_container,
 	// object's container is ffcontainer_impl.
 
 	auto scrollbar_impl=
-		ref<scrollbarObj::implObj>
+		ref<always_visible_elementObj<scrollbarObj::implObj>>
 		::create(scrollbar_impl_init_params{ffcontainer_impl,
 					callback,
 					orientation,
@@ -137,10 +137,7 @@ static scrollbar create_scrollbar(const container_impl &parent_container,
 	// and make it visible.
 	auto e=element::create(scrollbar_impl);
 
-	focusframefactory::create(sb)->created(e);
-
-	e->set_background_color("scrollbar_background_color");
-	e->show();
+	install_focusframe_element(sb, e);
 
 	return sb;
 }

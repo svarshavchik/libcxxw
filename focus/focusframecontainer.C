@@ -4,7 +4,6 @@
 */
 #include "libcxxw_config.h"
 #include "x/w/impl/focus/focusable.H"
-#include "focus/focusframefactory.H"
 #include "focus/focusframecontainer.H"
 #include "focus/focusframecontainer_impl.H"
 #include "focus/focusframelayoutimpl.H"
@@ -13,6 +12,33 @@
 #include "current_border_impl.H"
 
 LIBCXXW_NAMESPACE_START
+
+focusframecontainer
+create_focusframecontainer(const ref<focusframecontainerObj::implObj> &impl,
+			   const element &e,
+			   const focusable_impl &element_focusable_impl)
+{
+	auto ffc=focusframecontainer::create(impl, element_focusable_impl);
+
+	install_focusframe_element(ffc, e);
+
+	return ffc;
+}
+
+void install_focusframe_element(const container &c,
+				const element &e)
+{
+	gridlayoutmanager glm=c->get_layoutmanager();
+
+	// If the focusframe is inside a grid layout and the cell is filled
+	// with the focus frame, return the courtesy by centering the contents
+	// of the focus frame.
+	glm->append_row()->padding(0)
+		.halign(halign::center)
+		.valign(valign::middle)
+		.created_internally(e);
+}
+
 
 // Temporary container for the new focus frame's layout manager.
 
@@ -57,22 +83,5 @@ focusframecontainerObj::focusframecontainerObj(const ref<implObj> &impl,
 }
 
 focusframecontainerObj::~focusframecontainerObj()=default;
-
-///////////////////////////////////////////////////////////////////////////
-//
-// set_focusable() returns a private factory object, whose created() installs
-// the new display element into the real, underlying grid factory.
-
-factory focusframecontainerObj::set_focusable()
-{
-	return focusframefactory::create(container(this));
-}
-
-element focusframecontainerObj::get_focusable() const
-{
-	const_gridlayoutmanager glm=get_layoutmanager();
-
-	return glm->get(0, 0);
-}
 
 LIBCXXW_NAMESPACE_END

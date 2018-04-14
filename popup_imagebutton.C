@@ -67,21 +67,17 @@ do_create_popup_imagebutton(const gridfactory &f,
 			 std::vector<icon>{ icon1, icon2 },
 			 popup_element);
 
-	// We can now create the focusframe public object.
-
-	auto ff=focusframecontainer::create(cbfc, image_button_internal_impl);
-
-	// The focus frame's factory, where the focusable element, the
-	// image button, gets created.
-	auto focusframe_factory=ff->set_focusable();
-
-	// Create the "public" object, show() it, and tell the focus frame:
-	// here's what you hafe inside you.
+	// Create the "public" object.
 	auto popup_button=image_button_internal
 		::create(image_button_internal_impl);
 
-	focusframe_factory->created_internally(popup_button);
+	// We can now create the focusframe public object.
 
+	auto ff=create_focusframecontainer(cbfc,
+					   popup_button,
+					   image_button_internal_impl);
+
+	//! show() the public object.
 	ff->show();
 
 	ff->label_for(ff); // Make clicks on the focusframe work.

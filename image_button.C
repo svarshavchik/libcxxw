@@ -254,21 +254,17 @@ do_create_image_button(bool disable_recursive_visibility,
 	auto ibi=image_button_internal::create(ibii);
 
 	// Now, create the focusframecontainer object, pointing it to the
-	// image_button_internalObj as its focusable implementation object.
-
-	auto focus_frame=focusframecontainer::create(focus_frame_impl,
-						     ibii);
-
-	// And "create" the image_button_internal inside the focusframe.
-
+	// image_button_internalObj as its focusable implementation object,
+	// with the image_button_internal inside the focusframe.
+	//
 	// We will show() the focusframe, and the outer container.
 	// The outer container implementation inherits from
 	// nonrecursive_visibilityObj, so its show_all/hide_all() will not
 	// recursively show/hide the internal display elements.
 
-	auto focus_frame_factory=focus_frame->set_focusable();
+	auto focus_frame=create_focusframecontainer(focus_frame_impl,
+						    ibi, ibii);
 
-	focus_frame_factory->created_internally(ibi);
 	ibi->show();
 
 	// Now, let's get back to our internal gridlayoutmanager, where we

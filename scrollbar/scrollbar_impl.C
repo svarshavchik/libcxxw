@@ -12,6 +12,7 @@
 #include "x/w/callback_trigger.H"
 #include "busy.H"
 #include "scrollbar/scrollbar_impl.H"
+#include "x/w/impl/always_visible_element.H"
 #include "x/w/impl/focus/focusable_element.H"
 #include "icon.H"
 #include "pixmap_with_picture.H"
@@ -86,21 +87,29 @@ const scrollbar_orientation vertical_scrollbar={
 	true,
 };
 
-scrollbarObj::implObj::implObj(const scrollbar_impl_init_params &init_params)
-	: superclass_t((init_params.orientation.minimum_width
-			? init_params.minimum_size:dim_arg(0)),
-		       (init_params.orientation.minimum_height
-			? init_params.minimum_size:dim_arg(0)),
+static child_element_init_params create_c_e_init_params(const std::string &id)
+{
+	child_element_init_params params{id};
 
-		       scrollbar_icon_tuple_t_get(init_params.icons),
-		       init_params.container,
-		       child_element_init_params{init_params.orientation
-				       .scratch_buffer_id}),
-	  orientation(init_params.orientation),
-	  state_thread_only(init_params.conf),
-	  updated_value_thread_only(init_params.callback),
-	  current_value(std::tuple{init_params.conf.value,
-				  init_params.conf.value})
+	params.background_color="scrollbar_background_color";
+	return params;
+}
+
+scrollbarObj::implObj::implObj(const scrollbar_impl_init_params &init_params)
+	: superclass_t{(init_params.orientation.minimum_width
+			? init_params.minimum_size:dim_arg(0)),
+		(init_params.orientation.minimum_height
+		 ? init_params.minimum_size:dim_arg(0)),
+
+		scrollbar_icon_tuple_t_get(init_params.icons),
+		init_params.container,
+		create_c_e_init_params(init_params.orientation
+				       .scratch_buffer_id)},
+	  orientation{init_params.orientation},
+	  state_thread_only{init_params.conf},
+	  updated_value_thread_only{init_params.callback},
+	  current_value{std::tuple{init_params.conf.value,
+				  init_params.conf.value}}
 {
 	validate_conf(THREAD);
 }
