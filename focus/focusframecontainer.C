@@ -3,7 +3,6 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
-#include "x/w/impl/focus/focusable.H"
 #include "focus/focusframecontainer.H"
 #include "focus/focusframecontainer_impl.H"
 #include "focus/focusframelayoutimpl.H"
@@ -13,16 +12,19 @@
 
 LIBCXXW_NAMESPACE_START
 
-focusframecontainer
-create_focusframecontainer(const ref<focusframecontainerObj::implObj> &impl,
+focusable_container_owner
+create_focusframecontainer(const ref<focusframecontainer_implObj> &impl,
 			   const element &e,
 			   const focusable_impl &element_focusable_impl)
 {
-	auto ffc=focusframecontainer::create(impl, element_focusable_impl);
+	auto lm=ref<focusframelayoutimplObj>::create(impl);
 
-	install_focusframe_element(ffc, e);
+	auto c=focusable_container_owner::create(impl, lm,
+						 element_focusable_impl);
 
-	return ffc;
+	install_focusframe_element(c, e);
+
+	return c;
 }
 
 void install_focusframe_element(const container &c,
@@ -38,50 +40,5 @@ void install_focusframe_element(const container &c,
 		.valign(valign::middle)
 		.created_internally(e);
 }
-
-
-// Temporary container for the new focus frame's layout manager.
-
-struct LIBCXX_HIDDEN focusframecontainerObj::new_focusframelayoutmanager {
-
-	ref<focusframelayoutimplObj> new_layoutmanager;
-};
-
-// Main constructor: create a focusframelayoutimplObj instance, then invoke
-// the delegated constructor
-
-focusframecontainerObj::focusframecontainerObj(const ref<implObj> &impl,
-					       const focusable_impl
-					       &focusable_impl)
-	: focusframecontainerObj(impl,
-				 ref(&impl->get_container_impl()),
-				 focusable_impl,
-				 new_focusframelayoutmanager{
-					 ref<focusframelayoutimplObj>::create
-						 (impl)})
-{
-}
-
-// The delegated constructor constructs the container superclass, using
-// the new focusframelayoutimplObj layout manager, and finishes constructing
-// the object. It can now construct the implementation object, and save
-// a ref to the grid layout manager subclass in it.
-
-focusframecontainerObj::focusframecontainerObj(const ref<implObj> &impl,
-					       const container_impl
-					       &container_impl,
-					       const focusable_impl
-					       &focusable_impl,
-					       const new_focusframelayoutmanager
-					       &factory)
-
-	: containerObj(container_impl,
-		       factory.new_layoutmanager),
-	  focusableObj::ownerObj(focusable_impl),
-	  impl(impl)
-{
-}
-
-focusframecontainerObj::~focusframecontainerObj()=default;
 
 LIBCXXW_NAMESPACE_END

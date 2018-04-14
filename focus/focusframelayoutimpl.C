@@ -14,7 +14,7 @@
 LIBCXXW_NAMESPACE_START
 
 focusframelayoutimplObj
-::focusframelayoutimplObj(const ref<focusframecontainerObj::implObj>
+::focusframelayoutimplObj(const ref<focusframecontainer_implObj>
 			  &focusframe_container_impl)
 	: gridlayoutmanagerObj::implObj{ref(&focusframe_container_impl
 					    ->get_container_impl())},

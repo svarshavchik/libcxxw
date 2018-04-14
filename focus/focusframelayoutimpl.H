@@ -6,7 +6,7 @@
 #define focusframelayoutimpl_h
 
 #include "focus/focusframelayoutimplfwd.H"
-#include "focus/focusframecontainerobj.H"
+#include "focus/focusframecontainer_impl.H"
 #include "gridlayoutmanager.H"
 #include "current_border_implfwd.H"
 #include "themeborder_elementfwd.H"
@@ -28,10 +28,10 @@ class LIBCXX_HIDDEN focusframelayoutimplObj
 
  public:
 	//! My container.
-	const ref<focusframecontainerObj::implObj> focusframe_container_impl;
+	const ref<focusframecontainer_implObj> focusframe_container_impl;
 
 	//! Constructor
-	focusframelayoutimplObj(const ref<focusframecontainerObj::implObj> &);
+	focusframelayoutimplObj(const ref<focusframecontainer_implObj> &);
 
 	//! Destructor
 	~focusframelayoutimplObj();

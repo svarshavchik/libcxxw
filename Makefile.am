@@ -201,6 +201,7 @@ libcxxw_la_SOURCES=\
 	file_dialog/file_dialog_impl.C		    \
 	file_dialog/file_dialog_impl.H		    \
 	focusable_container.C			    \
+	focusable_container_owner.C		    \
 	focusable_label.C			    \
 	focusable_label_impl.C			    \
 	focusable_label_impl.H			    \
@@ -215,8 +216,6 @@ libcxxw_la_SOURCES=\
 	focus/focusable_owner.C			    \
 	focus/focusframecontainer.C		    \
 	focus/focusframecontainer.H		    \
-	focus/focusframecontainerfwd.H		    \
-	focus/focusframecontainerobj.H		    \
 	focus/focusframecontainer_element.H	    \
 	focus/focusframecontainer_elementfwd.H	    \
 	focus/focusframecontainer_impl.C	    \

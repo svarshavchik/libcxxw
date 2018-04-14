@@ -5,15 +5,15 @@
 #ifndef focusframecontainer_h
 #define focusframecontainer_h
 
-#include "focus/focusframecontainerfwd.H"
-#include "focus/focusframecontainerobj.H"
-#include "x/w/factory.H"
-#include <x/ref.H>
+#include "focus/focusframecontainer_impl.H"
+#include "x/w/focusable_container_owner.H"
+#include "x/w/element.H"
+#include "x/w/focusableobj.H"
 
 LIBCXXW_NAMESPACE_START
 
-focusframecontainer
-create_focusframecontainer(const ref<focusframecontainerObj::implObj> &impl,
+focusable_container_owner
+create_focusframecontainer(const ref<focusframecontainer_implObj> &impl,
 			   const element &e,
 			   const focusable_impl &element_focusable_impl)
 	LIBCXX_HIDDEN;

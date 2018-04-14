@@ -5,7 +5,6 @@
 #ifndef focusframecontainer_element_h
 #define focusframecontainer_element_h
 
-#include "focus/focusframecontainer.H"
 #include "focus/focusframecontainer_elementfwd.H"
 #include "themeborder_element.H"
 
@@ -18,7 +17,7 @@ focusframecontainer_elementObj<element_impl>::~focusframecontainer_elementObj()
 
 //! Implement get_container_impl().
 
-//! Inherited from focusframecontainerObj::implObj.
+//! Inherited from focusframecontainer_implObj.
 
 template<typename element_impl>
 containerObj::implObj &focusframecontainer_elementObj<element_impl>
@@ -29,7 +28,7 @@ containerObj::implObj &focusframecontainer_elementObj<element_impl>
 
 //! Implement get_container_impl().
 
-//! Inherited from focusframecontainerObj::implObj.
+//! Inherited from focusframecontainer_implObj.
 
 template<typename element_impl>
 const containerObj::implObj &focusframecontainer_elementObj<element_impl>
@@ -40,7 +39,7 @@ const containerObj::implObj &focusframecontainer_elementObj<element_impl>
 
 //! Implement get_focusoff_border().
 
-//! Inherited from focusframecontainerObj::implObj.
+//! Inherited from focusframecontainer_implObj.
 
 template<typename element_impl>
 current_border_impl focusframecontainer_elementObj<element_impl>
@@ -53,7 +52,7 @@ current_border_impl focusframecontainer_elementObj<element_impl>
 
 //! Implement get_focuson_border().
 
-//! Inherited from focusframecontainerObj::implObj.
+//! Inherited from focusframecontainer_implObj.
 
 template<typename element_impl>
 current_border_impl focusframecontainer_elementObj<element_impl>
@@ -73,7 +72,7 @@ void focusframecontainer_elementObj<element_impl>
 		 const callback_trigger_t &trigger)
 {
 	superclass_t::keyboard_focus(IN_THREAD, trigger);
-	focusframecontainerObj::implObj::keyboard_focus(IN_THREAD, trigger);
+	focusframecontainer_implObj::keyboard_focus(IN_THREAD, trigger);
 }
 
 //! Override window_focus_change().
@@ -85,7 +84,7 @@ void focusframecontainer_elementObj<element_impl>
 ::window_focus_change(ONLY IN_THREAD, bool flag)
 {
 	superclass_t::window_focus_change(IN_THREAD, flag);
-	focusframecontainerObj::implObj::window_focus_change(IN_THREAD, flag);
+	focusframecontainer_implObj::window_focus_change(IN_THREAD, flag);
 }
 
 LIBCXXW_NAMESPACE_END

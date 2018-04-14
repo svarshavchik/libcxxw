@@ -15,6 +15,7 @@
 #include "capturefactory.H"
 #include "x/w/impl/always_visible.H"
 #include "focus/focusframecontainer_element.H"
+#include "focus/focusframecontainer.H"
 #include "generic_window_handler.H"
 #include "xid_t.H"
 #include "connection_thread.H"
@@ -149,9 +150,9 @@ focusable_impl buttonObj::get_impl() const
 {
 	const_gridlayoutmanager m=get_layoutmanager();
 
-	focusframecontainer ffc=m->get(0, 0);
+	focusable ffc=m->get(0, 0);
 
-	return ffc->impl;
+	return ffc->get_impl();
 }
 
 button factoryObj::do_create_normal_button(const function<factory_creator_t> &f)

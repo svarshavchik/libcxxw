@@ -4,35 +4,32 @@
 */
 #include "libcxxw_config.h"
 #include "focus/focusframecontainer_impl.H"
-#include "focus/focusframecontainer_element.H"
 #include "gridlayoutmanager.H"
 #include "grid_map_info.H"
-#include "x/w/impl/container_element.H"
+#include "container_impl.H"
 
 LIBCXXW_NAMESPACE_START
 
-focusframecontainerObj::implObj::implObj()=default;
+focusframecontainer_implObj::focusframecontainer_implObj()=default;
 
-focusframecontainerObj::implObj::~implObj()=default;
+focusframecontainer_implObj::~focusframecontainer_implObj()=default;
 
-void focusframecontainerObj::implObj
+void focusframecontainer_implObj
 ::keyboard_focus(ONLY IN_THREAD,
 		 const callback_trigger_t &trigger)
 {
 	update_focusframe(IN_THREAD);
 }
 
-void focusframecontainerObj::implObj
-::window_focus_change(ONLY IN_THREAD, bool flag)
+void focusframecontainer_implObj::window_focus_change(ONLY IN_THREAD, bool flag)
 {
 	update_focusframe(IN_THREAD);
 }
 
-void focusframecontainerObj::implObj
-::update_focusframe(ONLY IN_THREAD)
+void focusframecontainer_implObj::update_focusframe(ONLY IN_THREAD)
 {
 	// The focus frame gets updated by overriding
-	// gridlayoutmanagerObj::implObj's rebuild_element_start(). So what
+	// gridlayoutmanagerObj::focusframecontainer_implObj's rebuild_element_start(). So what
 	// we need to do is to pretend that the grid's elements were modified.
 
 	get_container_impl().invoke_layoutmanager

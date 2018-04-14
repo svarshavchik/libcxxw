@@ -4,6 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "peepholed_focusable.H"
+#include "x/w/focusable_container_owner.H"
 #include "x/w/impl/nonrecursive_visibility.H"
 #include "peephole/peephole.H"
 #include "peephole/peepholed.H"
@@ -12,6 +13,7 @@
 #include "peephole/peephole_gridlayoutmanagerobj.H"
 #include "x/w/impl/focus/focusable.H"
 #include "focus/standard_focusframecontainer_element.H"
+#include "focus/focusframelayoutimpl.H"
 #include "x/w/impl/container_element.H"
 #include "container_visible_element.H"
 #include "gridlayoutmanager.H"
@@ -170,9 +172,10 @@ create_peepholed_focusable_with_frame_impl
 	// We can now create the focusframecontainer public object, now that
 	// the implementation object, and the focusable object exist.
 
-	auto ff=focusframecontainer
-		::create(focusframecontainer_impl,
-			 focusable_element_impl);
+	auto ff=focusable_container_owner::create
+		(focusframecontainer_impl,
+		 ref<focusframelayoutimplObj>::create(focusframecontainer_impl),
+		 focusable_element_impl);
 
 	// Make sure that the the focusframe and the scrollbars use the
 	// correct tabbing order.

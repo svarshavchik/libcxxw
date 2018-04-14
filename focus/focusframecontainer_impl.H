@@ -8,23 +8,22 @@
 #include "x/w/containerobj.H"
 #include "x/w/elementobj.H"
 #include "x/w/focus.H"
-#include "focus/focusframecontainerobj.H"
 #include "current_border_implfwd.H"
 #include "x/w/connection_threadfwd.H"
 
 LIBCXXW_NAMESPACE_START
 
-//! focusframecontainer implementation object.
+//! A mixin for a container that uses the \ref focusframelayoutimplObj "focus frame layout manager".
 
-class LIBCXX_HIDDEN focusframecontainerObj::implObj : virtual public obj {
+class LIBCXX_HIDDEN focusframecontainer_implObj : virtual public obj {
 
  public:
 
 	//! Constructor
-	implObj();
+	focusframecontainer_implObj();
 
 	//! Destructor
-	~implObj();
+	~focusframecontainer_implObj();
 
 	//! Implemented by the mixin template, to return my container.
 

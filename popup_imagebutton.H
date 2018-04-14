@@ -10,7 +10,7 @@
 #include "x/w/element.H"
 #include "x/w/gridfactory.H"
 #include "image_button_internal.H"
-#include "focus/focusframecontainerobj.H"
+#include "focus/focusframecontainer_impl.H"
 #include "focus/focusframecontainer_element.H"
 #include "x/w/impl/container_element.H"
 #include "x/w/impl/always_visible.H"
@@ -58,7 +58,7 @@ struct LIBCXX_HIDDEN popup_imagebutton_config {
 //! The factory receives the arguments that are expected to be passed to the
 //! base mixin composition.
 
-typedef ref<focusframecontainerObj::implObj>
+typedef ref<focusframecontainer_implObj>
 popup_imagebutton_focusframe_factory(const border_arg &,
 				     const border_arg &,
 				     const container_impl &,

@@ -49,12 +49,10 @@ public:
 
 	//! Constructor
 	containerObj(const ref<implObj> &impl,
-		     const ref<layoutmanagerObj::implObj> &layout_impl)
-		LIBCXX_HIDDEN;
+		     const ref<layoutmanagerObj::implObj> &layout_impl);
 
 	//! Destructor
-	~containerObj() LIBCXX_HIDDEN;
-
+	~containerObj();
 };
 
 //! Alias

@@ -11,7 +11,6 @@
 #include "x/w/impl/child_elementobj.H"
 #include "editorfwd.H"
 #include "x/w/impl/nonrecursive_visibilityfwd.H"
-#include "focus/focusframecontainerfwd.H"
 #include "peepholed_focusable.H"
 
 LIBCXXW_NAMESPACE_START
