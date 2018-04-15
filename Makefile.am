@@ -1056,7 +1056,7 @@ html/index.html: html/ref/index.html $(wildcard docbook/*.xml) docbook/xmllinks.
 	find examples -depth ! -name autom4te.cache \( -type d -o -name '*.[CH]' -o -name '*.xml' -o -name '*.jpg' -o -name Makefile.am -o -name configure.ac \) -print | cpio -o --quiet | (cd html.tmp; cpio -i --quiet --make-directories)
 	echo 'ForceType text/plain' >html.tmp/examples/.htaccess
 	echo 'Options +Indexes' >>html.tmp/examples/.htaccess
-	links -dump -no-numbering -no-references html/INSTALL.html >INSTALL.tmp
+	links -dump -no-numbering -no-references html.tmp/INSTALL.html >INSTALL.tmp
 	mv -f INSTALL.tmp INSTALL
 	-rm -rf html 2>/dev/null >/dev/null || :
 	mv html.tmp html
