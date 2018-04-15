@@ -9,20 +9,24 @@
 
 LIBCXXW_NAMESPACE_START
 
-border_info::border_info()=default;
+border_info::border_info(const background_color &color1)
+	: color1{color1}
+{
+}
 
 border_info::~border_info()=default;
 
 bool border_info::no_border() const
 {
-	return width == 0 || height == 0 || colors.empty();
+	return width == 0 || height == 0;
 }
 
 bool border_info::operator==(const border_info &o) const
 {
 	return width == o.width && height == o.height &&
 		hradius == o.hradius && vradius == o.vradius &&
-		dashes == o.dashes && colors == o.colors;
+		dashes == o.dashes && color1 == o.color1 &&
+		color2 == o.color2;
 }
 
 bool border_info::compare(const border_info &o) const
@@ -43,7 +47,12 @@ bool border_info::compare(const border_info &o) const
 	if (o.dashes < o.dashes)
 		return false;
 
-	return colors < o.colors;
+	if (color1 < o.color1)
+		return true;
+	if (o.color1 < color1)
+		return false;
+
+	return color2 < o.color2;
 }
 
 LIBCXXW_NAMESPACE_END

@@ -46,7 +46,7 @@ struct radial_gradient;
 //! situations (border colors, etc...), and fall back to using the #0 gradient
 //! color.
 
-typedef std::variant<std::string, rgb, linear_gradient, radial_gradient
+typedef std::variant<rgb, std::string, linear_gradient, radial_gradient
 		     > color_arg;
 
 LIBCXXW_NAMESPACE_END

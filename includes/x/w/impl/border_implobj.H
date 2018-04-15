@@ -33,10 +33,7 @@ class border_implObj: virtual public obj, public border_info {
 
  public:
 
-	//! Default constructor
-	border_implObj();
-
-	//! Clone constructor
+	//! Constructor
 	border_implObj(const border_info &b);
 
 	//! Destructor
@@ -217,13 +214,14 @@ class border_implObj: virtual public obj, public border_info {
 			   //! Element to the right of the border
 			   const grid_elementptr &right_element) const;
 
-	//! Composite color \#n into the area_picture.
+	//! Composite color into the area_picture.
 
 	//! draw_horizontal or draw_vertical prepared a mask for compositing
-	//! color \#n into area_picture, so we do it here.
+	//! color into area_picture, so we do it here.
 
 	void composite_line(ONLY IN_THREAD,
-			    const draw_info &di, size_t n) const;
+			    const draw_info &di,
+			    const background_color &c) const;
 
  public:
 	//! Draw a corner, or perhaps a frankencorner.

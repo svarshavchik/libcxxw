@@ -316,13 +316,13 @@ my_element create_with_focusframe(const x::w::factory &f,
 	// The focus off border is invisible. This is done by specifying
 	// an invisible color.
 
-	custom_focusoff_border.colors={ x::w::rgb{ 0, 0, 0, 0} };
+	custom_focusoff_border.color1=x::w::rgb{ 0, 0, 0, 0};
 
 	// And the focus on color, yellow/green.
 
-	custom_focuson_border.colors={ x::w::rgb{ x::w::rgb::maximum/4*3,
-						  x::w::rgb::maximum/4*3,
-						  0}};
+	custom_focuson_border.color1=x::w::rgb{ x::w::rgb::maximum/4*3,
+						x::w::rgb::maximum/4*3,
+						0};
 
 	// Make our custom border
 

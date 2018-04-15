@@ -1236,24 +1236,76 @@ void defaultthemeObj::load_borders(const theme_parser_lock &root_lock,
 
 			auto from=lock->get_any_attribute("from");
 
-			bool copied_from=false;
+			border_implptr new_borderptr;
 
-			auto new_border=from.empty()
-				? border_impl::create() :
-				({
-					auto iter=borders.find(from);
+			if (!from.empty())
+			{
+				auto iter=borders.find(from);
 
-					if (iter == borders.end())
-						continue; // Not yet parsed
+				if (iter == borders.end())
+					continue; // Not yet parsed
 
-					copied_from=true;
+				auto b=iter->second->clone();
 
-					auto b=iter->second->clone();
+				borders.insert({id, b});
 
-					borders.insert({id, b});
+				new_borderptr=b;
+			}
 
-					b;
-				});
+			// If we copied the border from another from, then
+			// unless the following values are given, don't
+			// touch the colors.
+
+			bool have_color1=false;
+
+			auto mkbg=[&, this]
+				(const auto &c)
+				{
+					return screen->
+					create_background_color(c);
+				};
+
+			if (if_given(lock, "color"))
+			{
+				theme_color_t color;
+
+				update_color(lock, "color", colors,
+					     color);
+
+				have_color1=true;
+
+				auto color1=std::visit(mkbg, color);
+
+				if (new_borderptr)
+				{
+					new_borderptr->color1=color1;
+				}
+				else
+				{
+					new_borderptr=border_impl::create(color1);
+				}
+			}
+
+			if (!new_borderptr)
+			{
+				throw EXCEPTION(gettextmsg
+						(_("<color> not specified for "
+						   "%1"), id));
+			}
+
+			border_impl new_border=new_borderptr;
+
+			if (have_color1)
+			{
+				theme_color_t color;
+
+				if (update_color(lock, "color2", colors,
+						 color))
+				{
+					new_border->color2=
+						std::visit(mkbg, color);
+				}
+			}
 
 			update_dim_if_given(lock, "width",
 					    dims, h1mm, v1mm,
@@ -1301,54 +1353,6 @@ void defaultthemeObj::load_borders(const theme_parser_lock &root_lock,
 					new_border->hradius=2;
 				if (new_border->vradius < 2)
 					new_border->vradius=2;
-			}
-			// If we copied the border from another from, then
-			// unless the following values are given, don't
-			// touch the colors.
-
-			if (!copied_from || if_given(lock, "cellcolor") ||
-			    if_given(lock, "nocellcolor") ||
-			    if_given(lock, "color"))
-			{
-
-				bool cellcolor=false;
-
-				{
-					auto node=lock.clone();
-					auto xpath=node->get_xpath("cellcolor");
-
-					if (xpath->count())
-						cellcolor=true;
-				}
-
-				new_border->colors.clear();
-				new_border->colors.reserve(2);
-
-				if (!cellcolor)
-				{
-					theme_color_t color;
-
-					update_color(lock, "color", colors,
-						     color);
-
-					auto mkbg=[&, this]
-						(const auto &c)
-						{
-							return screen
-							->create_background_color(c);
-						};
-
-					new_border->colors.push_back
-						(std::visit(mkbg, color));
-
-					if (update_color(lock, "color2", colors,
-							 color))
-					{
-						new_border->colors.push_back
-							(std::visit(mkbg,
-								    color));
-					}
-				}
 			}
 
 			{

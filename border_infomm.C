@@ -17,7 +17,7 @@ bool border_infomm::operator==(const border_infomm &o) const
 	return width == o.width && height == o.height &&
 		rounded == o.rounded &&
 		radius == o.radius && dashes == o.dashes &&
-		colors == o.colors;
+		color1 == o.color1 && color2 == o.color2;
 }
 
 LIBCXXW_NAMESPACE_END

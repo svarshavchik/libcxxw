@@ -392,13 +392,16 @@ void runtestflashwithcolor(const testmainwindowoptions &options)
 		::create([&]
 			 (const auto &main_window)
 			 {
-				 LIBCXX_NAMESPACE::w::gridlayoutmanager m=main_window->get_layoutmanager();
+				 LIBCXX_NAMESPACE::w::gridlayoutmanager m{
+					 main_window->get_layoutmanager()
+				 };
+
 				 LIBCXX_NAMESPACE::w::border_infomm b;
 
-				 b.colors.push_back(LIBCXX_NAMESPACE::w::rgb
-		{LIBCXX_NAMESPACE::w::rgb::maximum,
-				LIBCXX_NAMESPACE::w::rgb::maximum,
-				LIBCXX_NAMESPACE::w::rgb::maximum});
+				 b.color1=LIBCXX_NAMESPACE::w::rgb{
+					 LIBCXX_NAMESPACE::w::rgb::maximum,
+					 LIBCXX_NAMESPACE::w::rgb::maximum,
+					 LIBCXX_NAMESPACE::w::rgb::maximum};
 
 				 b.width=3;
 				 b.height=3;
@@ -637,8 +640,7 @@ runtestthemescale(const testmainwindowoptions &options)
 
 				 LIBCXX_NAMESPACE::w::border_infomm b;
 
-				 b.colors.push_back(LIBCXX_NAMESPACE::w
-						    ::rgb{0, 0, 0});
+				 b.color1=LIBCXX_NAMESPACE::w::rgb{0, 0, 0};
 				 b.width=1;
 				 b.height=1;
 				 b.dashes.push_back(2);

@@ -8,6 +8,7 @@
 #include <x/w/rgb.H>
 #include <x/w/border_infommfwd.H>
 #include <vector>
+#include <optional>
 
 LIBCXXW_NAMESPACE_START
 
@@ -33,11 +34,11 @@ struct border_infomm {
 	//! Destructor
 	~border_infomm();
 
-	//! Border's colors
+	//! Border color
+	color_arg color1;
 
-	//! Typically 1 color, but maybe two.
-
-	std::vector<color_arg> colors;
+	//! Optional 2nd color, for dashed broders.
+	std::optional<color_arg> color2;
 
 	//! Border width in millimeters
 	double width=0;

@@ -79,11 +79,13 @@
   <!-- Stock borders -->
 
   <border id="empty">
+    <color>transparent</color>
     <width axis="pixels">0</width>
     <height axis="pixels">0</height>
   </border>
 
   <border id="thin">
+    <color>transparent</color>
     <width axis="horiz">.4</width>
     <height axis="vert">.4</height>
   </border>
@@ -93,6 +95,7 @@
   </border>
 
   <border id="thick">
+    <color>transparent</color>
     <width axis="horiz">.75</width>
     <height axis="vert">.75</height>
   </border>

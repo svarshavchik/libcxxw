@@ -18,8 +18,6 @@
 
 LIBCXXW_NAMESPACE_START
 
-border_implObj::border_implObj()=default;
-
 border_implObj::border_implObj(const border_info &b)
 	: border_info(b)
 {
@@ -413,11 +411,11 @@ void border_implObj::draw_horizontal(ONLY IN_THREAD,
 		     x, ycenter,
 		     x2, ycenter);
 
-	composite_line(IN_THREAD, di, 0);
-	if (colors.size() > 1)
+	composite_line(IN_THREAD, di, color1);
+	if (color2)
 	{
 		mask_segment_xor(di, height, x, ycenter, x2, ycenter);
-		composite_line(IN_THREAD, di, 1);
+		composite_line(IN_THREAD, di, color2);
 	}
 }
 
@@ -457,11 +455,11 @@ void border_implObj::draw_vertical(ONLY IN_THREAD, const draw_info &di,
 		     xcenter, y,
 		     xcenter, y2);
 
-	composite_line(IN_THREAD, di, 0);
-	if (colors.size() > 1)
+	composite_line(IN_THREAD, di, color1);
+	if (color2)
 	{
 		mask_segment_xor(di, width, xcenter, y, xcenter, y2);
-		composite_line(IN_THREAD, di, 1);
+		composite_line(IN_THREAD, di, color2);
 	}
 }
 
@@ -690,7 +688,7 @@ void border_implObj::draw_square_corner(ONLY IN_THREAD,
 	di.mask_gc->fill_rectangle(x, y,
 				   calculated_border_width,
 				   calculated_border_height, props);
-	composite_line(IN_THREAD, di, 0);
+	composite_line(IN_THREAD, di, color1);
 }
 
 void border_implObj::draw_round_corner(ONLY IN_THREAD,
@@ -827,7 +825,7 @@ void border_implObj::draw_round_corner(ONLY IN_THREAD,
 			     0, 360*64, props);
 #endif
 
-	composite_line(IN_THREAD, di, 0);
+	composite_line(IN_THREAD, di, color1);
 }
 
 void border_implObj::draw_stubs(ONLY IN_THREAD,
@@ -869,7 +867,8 @@ void border_implObj::draw_stubs(ONLY IN_THREAD,
 }
 
 void border_implObj::composite_line(ONLY IN_THREAD,
-				    const draw_info &di, size_t n) const
+				    const draw_info &di,
+				    const background_color &c) const
 {
 	// Now we'll use the pixmap as a mask to compose colors[n] into the
 	// area.
@@ -877,7 +876,7 @@ void border_implObj::composite_line(ONLY IN_THREAD,
 				      di.mask_pixmap,
 				      0, 0);
 
-	di.area_picture->composite(colors.at(n)->get_current_color(IN_THREAD),
+	di.area_picture->composite(c->get_current_color(IN_THREAD),
 
 				   // source coordinate for colors[n].
 

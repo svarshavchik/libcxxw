@@ -19,12 +19,10 @@ convert_to_border_info(const ref<screenObj::implObj> &s,
 		       const defaulttheme &theme,
 		       const border_infomm &mm)
 {
-	border_info info;
+	border_info info{s->create_background_color(mm.color1)};
 
-	info.colors.reserve(mm.colors.size());
-
-	for (const auto &c:mm.colors)
-		info.colors.push_back(s->create_background_color(c));
+	if (mm.color2)
+		info.color2=s->create_background_color(*mm.color2);
 
 	info.width=theme->compute_width(mm.width);
 	info.height=theme->compute_height(mm.height);
@@ -160,8 +158,11 @@ void current_border_implObj::initialize(ONLY IN_THREAD)
 	if (initialized)
 		return;
 	initialized=true;
-	for (const auto &c:border(IN_THREAD)->colors)
-		c->initialize(IN_THREAD);
+
+	border(IN_THREAD)->color1->initialize(IN_THREAD);
+
+	if (border(IN_THREAD)->color2)
+		border(IN_THREAD)->color2->initialize(IN_THREAD);
 }
 
 LIBCXXW_NAMESPACE_END

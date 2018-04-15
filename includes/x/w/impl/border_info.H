@@ -26,16 +26,17 @@ LIBCXXW_NAMESPACE_START
 struct border_info {
 
 	//! Constructor
-	border_info();
+	border_info(const background_color &color1);
 
 	//! Destructor
 	~border_info();
 
-	//! Border's colors
+	//! Border color.
 
-	//! Typically 1 color, but maybe two.
+	background_color color1;
 
-	std::vector<background_color> colors;
+	//! Optional 2nd color, for dashed broders.
+	background_colorptr color2;
 
 	//! Configured width in pixels
 	dim_t width=1;

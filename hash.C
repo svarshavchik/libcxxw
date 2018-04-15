@@ -107,8 +107,11 @@ size_t hash<LIBCXX_NAMESPACE::w::border_infomm>
 
 	size_t h=s;
 
-	for (const auto &color:b.colors)
-		h += hash<LIBCXX_NAMESPACE::w::color_arg>::operator()(color);
+	h += hash<LIBCXX_NAMESPACE::w::color_arg>::operator()(b.color1);
+
+	if (b.color2)
+		h += hash<LIBCXX_NAMESPACE::w::color_arg>
+			::operator()(*b.color2);
 
 	return h;
 }

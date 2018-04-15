@@ -61,8 +61,8 @@ void testshowhide()
 			 layout=main_window->get_layoutmanager();
 
 			 border_infomm my_border;
+			 my_border.color1=rgb{0,0,0};
 
-			 my_border.colors.push_back(rgb{0,0,0});
 			 my_border.width=.5;
 			 my_border.height=.5;
 
