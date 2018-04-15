@@ -4,7 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "popup_imagebutton.H"
-#include "focus/focusframecontainer_element.H"
+#include "x/w/impl/focus/focusframecontainer_element.H"
 #include "focus/focusframecontainer.H"
 #include "popup_imagebutton_impl.H"
 #include "hotspot_element.H"
@@ -74,9 +74,9 @@ do_create_popup_imagebutton(const gridfactory &f,
 
 	// We can now create the focusframe public object.
 
-	auto ff=create_focusframecontainer(cbfc,
-					   popup_button,
-					   image_button_internal_impl);
+	auto ff=create_focusframe_container_owner(cbfc,
+						  popup_button,
+						  image_button_internal_impl);
 
 	//! show() the public object.
 	ff->show();

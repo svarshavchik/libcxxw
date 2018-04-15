@@ -8,7 +8,7 @@
 #include "x/w/impl/always_visible.H"
 #include "container_visible_element.H"
 #include "x/w/impl/container_element.H"
-#include "themeborder_element.H"
+#include "x/w/impl/themeborder_element.H"
 #include "cursor_pointer_element.H"
 #include "grabbed_pointer.H"
 #include "x/w/button_event.H"

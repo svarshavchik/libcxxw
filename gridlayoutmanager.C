@@ -11,7 +11,7 @@
 #include "x/w/element.H"
 #include "gridfactory.H"
 #include "metrics_grid_pos.H"
-#include "current_border_impl.H"
+#include "x/w/impl/current_border_impl.H"
 #include "messages.H"
 
 LIBCXXW_NAMESPACE_START

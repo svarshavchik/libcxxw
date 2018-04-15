@@ -3,13 +3,15 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
-#include "border_impl.H"
+#include "x/w/impl/border_impl.H"
 #include "x/w/picture.H"
 #include "x/w/pixmap.H"
 #include "x/w/gc.H"
 #include "grid_element.H"
 #include "x/w/impl/element.H"
 #include "picture.H"
+#include "grid_element.H"
+#include "corner_borderfwd.H"
 #include "x/w/impl/draw_info.H"
 #include "x/w/impl/background_color.H"
 #include <x/exception.H>

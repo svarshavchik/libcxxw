@@ -1,14 +1,14 @@
 /*
-** Copyright 2017 Double Precision, Inc.
+** Copyright 2017-2018 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
-#ifndef border_info_h
-#define border_info_h
+#ifndef x_w_impl_border_info_h
+#define x_w_impl_border_info_h
 
-#include "x/w/picture.H"
-#include "x/w/types.H"
-#include "border_infofwd.H"
-#include "x/w/impl/background_colorfwd.H"
+#include <x/w/picture.H>
+#include <x/w/types.H>
+#include <x/w/impl/border_infofwd.H>
+#include <x/w/impl/background_colorfwd.H>
 #include <vector>
 
 LIBCXXW_NAMESPACE_START

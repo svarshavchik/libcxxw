@@ -3,10 +3,10 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
-#include "themeborder_element_impl.H"
+#include "x/w/impl/themeborder_element_impl.H"
 #include "screen.H"
 #include "defaulttheme.H"
-#include "current_border_impl.H"
+#include "x/w/impl/current_border_impl.H"
 #include "x/w/impl/element.H"
 
 LIBCXXW_NAMESPACE_START

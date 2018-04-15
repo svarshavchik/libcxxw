@@ -5,8 +5,8 @@
 #ifndef grid_elementobj_h
 #define grid_elementobj_h
 
-#include "grid_elementfwd.H"
-#include "current_border_implfwd.H"
+#include "x/w/impl/grid_elementfwd.H"
+#include "x/w/impl/current_border_implfwd.H"
 #include "metrics_grid_posfwd.H"
 #include "metrics_grid.H"
 #include "x/w/impl/defaultthemefwd.H"

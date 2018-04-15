@@ -2,12 +2,12 @@
 ** Copyright 2017 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
-#ifndef themeborder_element_H
-#define themeborder_element_H
+#ifndef x_w_impl_themeborder_element_H
+#define x_w_impl_themeborder_element_H
 
-#include "themeborder_elementfwd.H"
-#include "current_border_impl.H"
-#include "border_impl.H"
+#include <x/w/impl/themeborder_elementfwd.H>
+#include <x/w/impl/current_border_impl.H>
+#include <x/w/impl/border_impl.H>
 
 LIBCXXW_NAMESPACE_START
 

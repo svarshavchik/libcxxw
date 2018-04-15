@@ -5,7 +5,7 @@
 
 #include "libcxxw_config.h"
 #include "grid_element.H"
-#include "current_border_impl.H"
+#include "x/w/impl/current_border_impl.H"
 #include "metrics_grid_pos.H"
 #include "x/w/impl/element.H"
 #include "screen.H"

@@ -1,12 +1,12 @@
 /*
-** Copyright 2017 Double Precision, Inc.
+** Copyright 2017-2018 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
-#ifndef focusframecontainer_element_h
-#define focusframecontainer_element_h
+#ifndef x_w_impl_focusframecontainer_element_h
+#define x_w_impl_focusframecontainer_element_h
 
-#include "focus/focusframecontainer_elementfwd.H"
-#include "themeborder_element.H"
+#include <x/w/impl/focus/focusframecontainer_elementfwd.H>
+#include <x/w/impl/themeborder_element.H>
 
 LIBCXXW_NAMESPACE_START
 

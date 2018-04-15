@@ -14,7 +14,7 @@
 #include "x/w/impl/background_color_elementfwd.H"
 #include "iconfwd.H"
 #include "x/w/impl/child_element.H"
-#include "themeborder_elementfwd.H"
+#include "x/w/impl/themeborder_elementfwd.H"
 #include "x/w/alignment.H"
 #include "x/w/listlayoutmanager.H"
 #include "x/w/text_paramfwd.H"

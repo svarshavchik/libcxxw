@@ -1,33 +1,35 @@
 /*
-** Copyright 2017 Double Precision, Inc.
+** Copyright 2017-2018 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
-#ifndef border_implobj_h
-#define border_implobj_h
+#ifndef x_w_impl_border_implobj_h
+#define x_w_impl_border_implobj_h
 
-#include "x/w/types.H"
-#include "x/w/pictureobj.H"
-#include "x/w/picturefwd.H"
-#include "x/w/pixmapfwd.H"
-#include "x/w/pixmapobj.H"
-#include "x/w/gcfwd.H"
-#include "x/w/gcobj.H"
-#include "x/w/rectangle.H"
-#include "x/w/impl/defaultthemefwd.H"
-#include "border_info.H"
-#include "border_implfwd.H"
-#include "corner_borderfwd.H"
-#include "x/w/connection_threadfwd.H"
+#include <x/w/types.H>
+#include <x/w/pictureobj.H>
+#include <x/w/picturefwd.H>
+#include <x/w/pixmapfwd.H>
+#include <x/w/pixmapobj.H>
+#include <x/w/gcfwd.H>
+#include <x/w/gcobj.H>
+#include <x/w/rectangle.H>
+#include <x/w/impl/defaultthemefwd.H>
+#include <x/w/impl/border_info.H>
+#include <x/w/impl/border_implfwd.H>
+#include <x/w/connection_threadfwd.H>
+#include <x/w/impl/grid_elementfwd.H>
 #include <vector>
 #include <tuple>
 
 LIBCXXW_NAMESPACE_START
 
+struct surrounding_elements_info;
+
 //! A border implementation
 
 //! \see border_impl
 
-class LIBCXX_HIDDEN border_implObj: virtual public obj, public border_info {
+class border_implObj: virtual public obj, public border_info {
 
  public:
 

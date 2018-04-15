@@ -5,7 +5,7 @@
 
 #include "libcxxw_config.h"
 #include "grid_map_info.H"
-#include "current_border_impl.H"
+#include "x/w/impl/current_border_impl.H"
 
 LIBCXXW_NAMESPACE_START
 

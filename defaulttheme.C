@@ -11,7 +11,7 @@
 #include "screen.H"
 #include "drawable.H"
 #include "messages.H"
-#include "border_impl.H"
+#include "x/w/impl/border_impl.H"
 #include "picture.H"
 #include "x/w/impl/background_color.H"
 #include "x/w/gridlayoutmanager.H"

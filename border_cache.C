@@ -4,8 +4,8 @@
 */
 #include "libcxxw_config.h"
 #include "border_cache.H"
-#include "current_border_impl.H"
-#include "border_impl.H"
+#include "x/w/impl/current_border_impl.H"
+#include "x/w/impl/border_impl.H"
 #include "x/w/border_arg_hash.H"
 #include "connection.H"
 #include "screen.H"

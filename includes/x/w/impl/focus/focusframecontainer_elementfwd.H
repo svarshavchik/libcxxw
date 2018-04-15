@@ -1,18 +1,18 @@
 /*
-** Copyright 2017 Double Precision, Inc.
+** Copyright 2017-2018 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
-#ifndef focusframecontainer_elementfwd_h
-#define focusframecontainer_elementfwd_h
+#ifndef x_w_impl_focusframecontainer_elementfwd_h
+#define x_w_impl_focusframecontainer_elementfwd_h
 
-#include "focus/focusframecontainer_impl.H"
-#include "themeborder_elementfwd.H"
-#include "x/w/border_arg.H"
+#include <x/w/impl/focus/focusframecontainer_impl.H>
+#include <x/w/impl/themeborder_elementfwd.H>
+#include <x/w/border_arg.H>
 
 LIBCXXW_NAMESPACE_START
 
-struct LIBCXX_HIDDEN focusoff_border_tag;
-struct LIBCXX_HIDDEN focuson_border_tag;
+struct focusoff_border_tag;
+struct focuson_border_tag;
 
 //! A mixin for inheriting from a display element, and a focusframecontainer_implObj.
 
@@ -22,7 +22,7 @@ struct LIBCXX_HIDDEN focuson_border_tag;
 //! focus-on borders, and focusframecontainer_implObj.
 
 template<typename element_impl>
-class LIBCXX_HIDDEN focusframecontainer_elementObj
+class focusframecontainer_elementObj
 	: public themeborder_elementObj<element_impl,
 					focusoff_border_tag,
 					focuson_border_tag>,

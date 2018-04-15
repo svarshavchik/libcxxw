@@ -1,15 +1,15 @@
 /*
-** Copyright 2017 Double Precision, Inc.
+** Copyright 2017-2018 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
-#ifndef themeborder_element_impl_H
-#define themeborder_element_impl_H
+#ifndef x_w_impl_themeborder_element_impl_H
+#define x_w_impl_themeborder_element_impl_H
 
-#include "current_border_implfwd.H"
-#include "x/w/impl/defaultthemefwd.H"
-#include "x/w/connection_threadfwd.H"
-#include "x/w/border_arg.H"
-#include "x/w/elementobj.H"
+#include <x/w/impl/current_border_implfwd.H>
+#include <x/w/impl/defaultthemefwd.H>
+#include <x/w/connection_threadfwd.H>
+#include <x/w/border_arg.H>
+#include <x/w/elementobj.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -17,8 +17,10 @@ LIBCXXW_NAMESPACE_START
 
 //! Maintains a current_border_impl, made available as a current_border,
 //! that a display element uses.
+//!
+//! \see themeborder_element
 
-class LIBCXX_HIDDEN themeborder_element_implObj : virtual public obj {
+class themeborder_element_implObj : virtual public obj {
 
  public:
 

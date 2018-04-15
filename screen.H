@@ -20,7 +20,7 @@
 #include "x/w/impl/background_colorfwd.H"
 #include "screen_picturecachefwd.H"
 #include "screen_fontcachesfwd.H"
-#include "border_implfwd.H"
+#include "x/w/impl/border_implfwd.H"
 #include "border_cachefwd.H"
 #include "xid_t.H"
 #include "fonts/fontconfigfwd.H"

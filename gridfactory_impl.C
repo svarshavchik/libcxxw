@@ -6,7 +6,7 @@
 #include "libcxxw_config.h"
 #include "gridfactory.H"
 #include "gridlayoutmanager.H"
-#include "current_border_impl.H"
+#include "x/w/impl/current_border_impl.H"
 
 LIBCXXW_NAMESPACE_START
 

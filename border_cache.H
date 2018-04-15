@@ -5,7 +5,7 @@
 #ifndef border_cache_h
 #define border_cache_h
 
-#include "current_border_implfwd.H"
+#include "x/w/impl/current_border_implfwd.H"
 #include "border_cachefwd.H"
 #include "x/w/border_arg_hash.H"
 #include <x/weakunordered_multimap.H>

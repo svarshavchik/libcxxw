@@ -9,8 +9,8 @@
 #include "x/w/grid_map_infofwd.H"
 #include "x/w/dim_arg.H"
 #include "x/w/elementobj.H"
-#include "grid_elementfwd.H"
-#include "current_border_implfwd.H"
+#include "x/w/impl/grid_elementfwd.H"
+#include "x/w/impl/current_border_implfwd.H"
 #include "metrics_grid_xy.H"
 
 #include <x/refptr_hash.H>

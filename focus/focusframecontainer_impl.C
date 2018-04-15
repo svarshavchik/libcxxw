@@ -3,7 +3,7 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
-#include "focus/focusframecontainer_impl.H"
+#include "x/w/impl/focus/focusframecontainer_impl.H"
 #include "gridlayoutmanager.H"
 #include "grid_map_info.H"
 #include "container_impl.H"

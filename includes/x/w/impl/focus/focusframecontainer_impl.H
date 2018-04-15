@@ -1,21 +1,23 @@
 /*
-** Copyright 2017 Double Precision, Inc.
+** Copyright 2017-2018 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
-#ifndef focusframecontainer_impl_h
-#define focusframecontainer_impl_h
+#ifndef x_w_impl_focusframecontainer_impl_h
+#define x_w_impl_focusframecontainer_impl_h
 
-#include "x/w/containerobj.H"
-#include "x/w/elementobj.H"
-#include "x/w/focus.H"
-#include "current_border_implfwd.H"
-#include "x/w/connection_threadfwd.H"
+#include <x/w/containerobj.H>
+#include <x/w/elementobj.H>
+#include <x/w/focus.H>
+#include <x/w/impl/current_border_implfwd.H>
+#include <x/w/connection_threadfwd.H>
 
 LIBCXXW_NAMESPACE_START
 
 //! A mixin for a container that uses the \ref focusframelayoutimplObj "focus frame layout manager".
 
-class LIBCXX_HIDDEN focusframecontainer_implObj : virtual public obj {
+//! \see focusframecontainer_elementObj
+
+class focusframecontainer_implObj : virtual public obj {
 
  public:
 

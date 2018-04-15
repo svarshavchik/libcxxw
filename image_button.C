@@ -262,8 +262,8 @@ do_create_image_button(bool disable_recursive_visibility,
 	// nonrecursive_visibilityObj, so its show_all/hide_all() will not
 	// recursively show/hide the internal display elements.
 
-	auto focus_frame=create_focusframecontainer(focus_frame_impl,
-						    ibi, ibii);
+	auto focus_frame=create_focusframe_container_owner(focus_frame_impl,
+							   ibi, ibii);
 
 	ibi->show();
 

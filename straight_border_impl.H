@@ -5,12 +5,11 @@
 #ifndef straight_border_impl_h
 #define straight_border_impl_h
 
-#include "border_implobj.H"
+#include "x/w/impl/border_implobj.H"
 #include "x/w/impl/metrics_horizvertobj.H"
 #include "straight_border.H"
-#include "grid_elementfwd.H"
 #include "screen.H"
-#include "current_border_impl.H"
+#include "x/w/impl/current_border_impl.H"
 #include "defaulttheme.H"
 
 LIBCXXW_NAMESPACE_START

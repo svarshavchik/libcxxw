@@ -7,7 +7,7 @@
 
 #include "x/w/gridfactory.H"
 #include "x/w/border_infomm.H"
-#include "current_border_implfwd.H"
+#include "x/w/impl/current_border_implfwd.H"
 #include "grid_elementobj.H"
 #include <x/mpobj.H>
 

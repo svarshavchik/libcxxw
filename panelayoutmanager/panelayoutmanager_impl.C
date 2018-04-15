@@ -11,7 +11,7 @@
 #include "focus/focusframelayoutimpl.H"
 #include "x/w/impl/focus/focusable.H"
 #include "focus/focusframecontainer.H"
-#include "current_border_impl.H"
+#include "x/w/impl/current_border_impl.H"
 #include "screen.H"
 #include "straight_border_impl.H"
 #include "generic_window_handler.H"
@@ -102,8 +102,8 @@ void panelayoutmanagerObj::implObj::create_slider(const gridfactory &f)
 
 	auto slider=pane_slider::create(slider_impl);
 
-	auto slider_container=create_focusframecontainer(ff, slider,
-							 slider_impl);
+	auto slider_container=create_focusframe_container_owner(ff, slider,
+								slider_impl);
 
 	slider_container->label_for(slider);
 

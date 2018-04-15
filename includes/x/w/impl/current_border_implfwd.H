@@ -1,12 +1,12 @@
 /*
-** Copyright 2017 Double Precision, Inc.
+** Copyright 2017-2018 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
-#ifndef current_border_implfwd_h
-#define current_border_implfwd_h
+#ifndef x_w_impl_current_border_implfwd_h
+#define x_w_impl_current_border_implfwd_h
 
 #include <x/ptrfwd.H>
-#include "x/w/namespace.H"
+#include <x/w/namespace.H>
 
 LIBCXXW_NAMESPACE_START
 

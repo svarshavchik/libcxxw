@@ -13,7 +13,7 @@
 #include "screen_picturecache.H"
 #include "screen_fontcaches.H"
 #include "recycled_pixmaps.H"
-#include "border_impl.H"
+#include "x/w/impl/border_impl.H"
 #include "border_cache.H"
 #include "fonts/fontconfig.H"
 #include "fonts/freetype.H"

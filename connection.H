@@ -13,7 +13,7 @@
 #include "keysyms.H"
 #include "x/w/impl/connection_threadfwd.H"
 #include "connection_infofwd.H"
-#include "current_border_implfwd.H"
+#include "x/w/impl/current_border_implfwd.H"
 #include "fonts/cached_fontfwd.H"
 #include "fonts/fontcollectionfwd.H"
 #include "xim/ximxtransportfwd.H"

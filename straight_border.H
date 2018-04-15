@@ -7,9 +7,8 @@
 
 #include "x/w/impl/child_elementobj.H"
 #include "x/w/impl/scratch_and_mask_buffer_drawfwd.H"
-#include "current_border_implfwd.H"
-#include "border_implobj.H"
-#include "grid_elementfwd.H"
+#include "x/w/impl/current_border_implfwd.H"
+#include "x/w/impl/border_implobj.H"
 #include "x/w/scratch_bufferfwd.H"
 #include "x/w/generic_windowobj.H"
 #include "x/w/containerobj.H"

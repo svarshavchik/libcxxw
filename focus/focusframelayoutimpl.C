@@ -4,9 +4,9 @@
 */
 #include "libcxxw_config.h"
 #include "focus/focusframelayoutimpl.H"
-#include "focus/focusframecontainer_impl.H"
+#include "x/w/impl/focus/focusframecontainer_impl.H"
 #include "x/w/impl/container.H"
-#include "current_border_impl.H"
+#include "x/w/impl/current_border_impl.H"
 #include "screen.H"
 #include "grid_element.H"
 #include "grid_map_info.H"

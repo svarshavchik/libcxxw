@@ -64,12 +64,7 @@ libcxxw_la_SOURCES=\
 	border_cache.H				    \
 	border_cachefwd.H			    \
 	border_impl.C				    \
-	border_impl.H				    \
-	border_implfwd.H			    \
-	border_implobj.H			    \
 	border_info.C				    \
-	border_info.H				    \
-	border_infofwd.H			    \
 	border_infomm.C				    \
 	builtin_atoms.C				    \
 	builtin_atoms.H				    \
@@ -133,9 +128,6 @@ libcxxw_la_SOURCES=\
 	container_visible_element.H		    \
 	container_visible_elementfwd.H		    \
 	current_border_impl.C			    \
-	current_border_impl.H			    \
-	current_border_implfwd.H		    \
-	current_border_implobj.H		    \
 	cursor_pointer.C			    \
 	cursor_pointer.H			    \
 	cursor_pointerobj.H			    \
@@ -216,10 +208,7 @@ libcxxw_la_SOURCES=\
 	focus/focusable_owner.C			    \
 	focus/focusframecontainer.C		    \
 	focus/focusframecontainer.H		    \
-	focus/focusframecontainer_element.H	    \
-	focus/focusframecontainer_elementfwd.H	    \
 	focus/focusframecontainer_impl.C	    \
-	focus/focusframecontainer_impl.H	    \
 	focus/focusframelayoutimpl.C		    \
 	focus/focusframelayoutimpl.H		    \
 	focus/focusframelayoutimplfwd.H		    \
@@ -308,7 +297,6 @@ libcxxw_la_SOURCES=\
 	grabbed_pointerobj.H			    \
 	grid_element.C				    \
 	grid_element.H				    \
-	grid_elementfwd.H			    \
 	grid_elementobj.H			    \
 	grid_map_info.C				    \
 	grid_map_info.H				    \
@@ -740,10 +728,7 @@ libcxxw_la_SOURCES=\
 	sxg/sxg_parserobj.H			    \
 	sxg/sxg_parser_text.C			    \
 	text_param.C				    \
-	themeborder_element.H			    \
-	themeborder_elementfwd.H		    \
 	themeborder_element_impl.C		    \
-	themeborder_element_impl.H		    \
 	themedim.C				    \
 	themedim_element_minoverride.H		    \
 	themedim_element_minoverridefwd.H	    \

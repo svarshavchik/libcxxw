@@ -5,7 +5,7 @@
 #include "libcxxw_config.h"
 #include "menu/menu_impl.H"
 #include "x/w/impl/nonrecursive_visibility.H"
-#include "focus/focusframecontainer_element.H"
+#include "x/w/impl/focus/focusframecontainer_element.H"
 #include "popup/popup_attachedto_handler_element.H"
 #include "x/w/impl/container_element.H"
 

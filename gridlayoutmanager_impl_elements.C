@@ -9,7 +9,7 @@
 #include "calculate_borders.H"
 #include "straight_border.H"
 #include "corner_border.H"
-#include "current_border_impl.H"
+#include "x/w/impl/current_border_impl.H"
 #include "container_impl.H"
 #include "connection_thread.H"
 #include <x/number_hash.H>

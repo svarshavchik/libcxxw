@@ -13,8 +13,8 @@
 #include "peephole/peephole_layoutmanager_impl_scrollbars.H"
 #include "peephole/peepholed_toplevel_element.H"
 #include "scrollbar/scrollbar_impl.H"
-#include "current_border_impl.H"
-#include "border_impl.H"
+#include "x/w/impl/current_border_impl.H"
+#include "x/w/impl/border_impl.H"
 #include "x/w/screen.H"
 #include "x/w/scrollbar.H"
 

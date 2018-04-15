@@ -28,7 +28,7 @@
 #include "x/w/connection_threadfwd.H"
 #include "x/w/impl/defaultthemefwd.H"
 #include "x/w/impl/themedimfwd.H"
-#include "border_implfwd.H"
+#include "x/w/impl/border_implfwd.H"
 #include "gridtemplatefwd.H"
 #include "theme_parser_lock.H"
 

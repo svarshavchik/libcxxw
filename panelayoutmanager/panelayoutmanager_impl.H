@@ -20,7 +20,7 @@
 #include "panelayoutmanager/panefactory_impl.H"
 #include "gridlayoutmanager.H"
 #include "peephole/peephole_style.H"
-#include "current_border_implfwd.H"
+#include "x/w/impl/current_border_implfwd.H"
 #include <tuple>
 
 LIBCXXW_NAMESPACE_START

@@ -3,8 +3,8 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
-#include "current_border_impl.H"
-#include "border_impl.H"
+#include "x/w/impl/current_border_impl.H"
+#include "x/w/impl/border_impl.H"
 #include "screen.H"
 #include "defaulttheme.H"
 #include "x/w/impl/background_color.H"

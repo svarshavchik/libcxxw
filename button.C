@@ -14,7 +14,7 @@
 #include "hotspot_bgcolor_element.H"
 #include "capturefactory.H"
 #include "x/w/impl/always_visible.H"
-#include "focus/focusframecontainer_element.H"
+#include "x/w/impl/focus/focusframecontainer_element.H"
 #include "focus/focusframecontainer.H"
 #include "generic_window_handler.H"
 #include "xid_t.H"
@@ -112,7 +112,7 @@ create_button_focusframe(const ref<buttonObj::implObj> &impl,
 
 	creator(cf);
 
-	auto ff=create_focusframecontainer(ffi, cf->get(), ffi);
+	auto ff=create_focusframe_container_owner(ffi, cf->get(), ffi);
 
 	// Now, it's time to go back to the new button's grid
 	// layout manager, and insert the fully-cooked focusframecontainer.

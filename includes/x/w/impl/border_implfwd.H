@@ -1,12 +1,12 @@
 /*
-** Copyright 2017 Double Precision, Inc.
+** Copyright 2017-2018 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
-#ifndef border_implfwd_h
-#define border_implfwd_h
+#ifndef x_w_impl_border_implfwd_h
+#define x_w_impl_border_implfwd_h
 
 #include <x/ptrfwd.H>
-#include "x/w/namespace.H"
+#include <x/w/namespace.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -14,9 +14,9 @@ class border_implObj;
 class border_impl_base;
 class border_info;
 
-//! A border implementation
+//! A border implementation.
 
-//! This object contains specifications for a border, and the logic to
+//! An object that contains specifications for a border, and the logic to
 //! draw it.
 
 typedef ref<border_implObj, border_impl_base> border_impl;

@@ -1,11 +1,11 @@
 /*
-** Copyright 2017 Double Precision, Inc.
+** Copyright 2017-2018 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
-#ifndef themeborder_elementfwd_H
-#define themeborder_elementfwd_H
+#ifndef x_w_impl_themeborder_elementfwd_H
+#define x_w_impl_themeborder_elementfwd_H
 
-#include "themeborder_element_impl.H"
+#include <x/w/impl/themeborder_element_impl.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -13,7 +13,7 @@ LIBCXXW_NAMESPACE_START
 
 //! \see themeborder_elementObj
 template<typename tag=void>
-class LIBCXX_HIDDEN themeborder_element_impl
+class themeborder_element_impl
 	: public themeborder_element_implObj {
 
  public:
@@ -30,7 +30,7 @@ class LIBCXX_HIDDEN themeborder_element_impl
 //! Helper used by themeborder_elementObj
 
 template<typename element_impl, typename tag=void>
-class LIBCXX_HIDDEN themeborder1_elementObj
+class themeborder1_elementObj
 	: public element_impl,
 	  public themeborder_element_impl<tag> {
 
@@ -62,7 +62,7 @@ template<typename ...args> struct themeborder_element_types;
 //! Helper template used by themeborder_elementObj
 
 template<typename base, typename arg>
-struct LIBCXX_HIDDEN themeborder_element_types<base, arg> {
+struct themeborder_element_types<base, arg> {
 
 	typedef themeborder1_elementObj<base, arg> type;
 };
@@ -70,7 +70,7 @@ struct LIBCXX_HIDDEN themeborder_element_types<base, arg> {
 //! Helper template used by themeborder_elementObj
 
 template<typename base, typename arg1, typename arg2, typename ...args>
-struct LIBCXX_HIDDEN themeborder_element_types<base, arg1, arg2, args...> {
+struct themeborder_element_types<base, arg1, arg2, args...> {
 
 	typedef themeborder1_elementObj<typename
 					themeborder_element_types<base, arg2,

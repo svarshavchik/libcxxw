@@ -1,16 +1,16 @@
 /*
-** Copyright 2017 Double Precision, Inc.
+** Copyright 2017-2018 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
-#ifndef current_border_implobj_h
-#define current_border_implobj_h
+#ifndef x_w_impl_current_border_implobj_h
+#define x_w_impl_current_border_implobj_h
 
-#include "current_border_implfwd.H"
-#include "border_implfwd.H"
-#include "x/w/impl/connection_threadfwd.H"
-#include "x/w/impl/defaultthemefwd.H"
-#include "x/w/border_arg.H"
-#include "x/w/screenobj.H"
+#include <x/w/impl/current_border_implfwd.H>
+#include <x/w/impl/border_implfwd.H>
+#include <x/w/impl/connection_threadfwd.H>
+#include <x/w/impl/defaultthemefwd.H>
+#include <x/w/border_arg.H>
+#include <x/w/screenobj.H>
 #include <x/obj.H>
 
 LIBCXXW_NAMESPACE_START
@@ -19,7 +19,7 @@ LIBCXXW_NAMESPACE_START
 
 //! \see current_border_impl
 
-class LIBCXX_HIDDEN current_border_implObj: virtual public obj {
+class current_border_implObj: virtual public obj {
 
 	//! My screen.
 	const ref<screenObj::implObj> screen;

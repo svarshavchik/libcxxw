@@ -4,18 +4,18 @@
 */
 #include "libcxxw_config.h"
 #include "focus/focusframecontainer.H"
-#include "focus/focusframecontainer_impl.H"
+#include "x/w/impl/focus/focusframecontainer_impl.H"
 #include "focus/focusframelayoutimpl.H"
 #include "x/w/impl/container.H"
 #include "gridlayoutmanager.H"
-#include "current_border_impl.H"
+#include "x/w/impl/current_border_impl.H"
 
 LIBCXXW_NAMESPACE_START
 
 focusable_container_owner
-create_focusframecontainer(const ref<focusframecontainer_implObj> &impl,
-			   const element &e,
-			   const focusable_impl &element_focusable_impl)
+create_focusframe_container_owner(const ref<focusframecontainer_implObj> &impl,
+				  const element &e,
+				  const focusable_impl &element_focusable_impl)
 {
 	auto lm=ref<focusframelayoutimplObj>::create(impl);
 
