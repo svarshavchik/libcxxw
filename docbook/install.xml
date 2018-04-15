@@ -110,7 +110,7 @@ See COPYING for distribution information.
       &app; into an installable package; rather than manually building
       and installing &app; directly. The source tarball
       is directly buildable on Fedora. Running
-      <quote><command>rpm -ta libcxxw-<replaceable>version</replaceable>.tar.bz2</command></quote>
+      <quote><command>rpmbuild -ta libcxxw-<replaceable>version</replaceable>.tar.bz2</command></quote>
       creates the following packages:
     </para>
 
@@ -123,6 +123,13 @@ See COPYING for distribution information.
 	  The <quote>devel</quote> subpackage, containing header files and
 	  other supporting files used for developing applications that use the
 	  &app;.
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  The <quote>devel-internals</quote> subpackage, containing additional
+	  header files exposing internal library API's, for
+	  <link linkend="custom">developing custom display elements</link>.
 	</para>
       </listitem>
     </itemizedlist>
@@ -153,7 +160,7 @@ See COPYING for distribution information.
     <para>
       In addition to <command>(g)make install</command>, the
       <filename>cxxwtheme.desktop</filename> should be included in the
-      installable package, and place in the desktop application directory
+      installable package, and placed in the desktop application directory
       (usually <filename>/usr/share/applications</filename>).
     </para>
   </simplesect>

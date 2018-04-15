@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([libcxxw], [0.3], [libcxx-users@lists.libcxx.org])
+AC_INIT([libcxxw], [0.4], [libcxx-users@lists.libcxx.org])
 AC_CONFIG_SRCDIR([connection.C])
 AC_CONFIG_HEADERS([libcxxw_config.h])
 AM_INIT_AUTOMAKE([dist-bzip2 foreign -Wno-portability])
@@ -88,7 +88,7 @@ AC_CONFIG_FILES([Makefile
 	packaging/fedora/libcxxw.spec
 	])
 
-VERSION_INFO=2:0:0
+VERSION_INFO=3:0:0
 AC_SUBST(VERSION_INFO)
 
 AM_CONDITIONAL([LOCALTHEMEDIR], [test "$localthemedir" = "yes" ])
