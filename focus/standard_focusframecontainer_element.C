@@ -27,6 +27,19 @@ create_focusframe_container_owner(const ref<focusframecontainer_implObj> &impl,
 	return c;
 }
 
+container create_focusframe_container(const
+				      ref<focusframecontainer_implObj> &impl,
+				      const element &e)
+{
+	auto lm=ref<focusframelayoutimplObj>::create(impl);
+
+	auto c=container::create(lm->layout_container_impl, lm);
+
+	install_focusframe_element(c, e);
+
+	return c;
+}
+
 void install_focusframe_element(const container &c,
 				const element &e)
 {

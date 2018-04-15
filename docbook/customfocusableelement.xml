@@ -12,10 +12,9 @@ See COPYING for distribution information.
     <filename>customkeyfocus.C</filename> is an example of creating
     a custom subclass of the basic
     <ulink url="&link-typedef-x--w-element;"><classname>&ns;::w::element</classname></ulink>
-    display element which supports keyboard focus.
+    display element with keyboard focus support.
     Handling keyboard focus allows a display element to process key press
     and release events.
-    All display elements that have keyboard focus capability get ordered.
     <literal>TAB</literal> key moves the keyboard focus to the next
     focusable display element, one at a time.
     (<literal>SHIFT-TAB</literal> goes backwards in the order).
@@ -206,22 +205,22 @@ See COPYING for distribution information.
       custom display element's appearance changes when it gains or
       loses keyboard input focus, and in response to
       <quote>r</quote>, <quote>g</quote>, and <quote>b</quote> keys.
-      This means that the display element requires redrawing any time any
+      This means that it's necessary to redraw the display element when any
       of these events occur.
     </para>
 
     <para>
-      It's possible to perform the necessary work to immediately call
+      It's possible to perform the necessary work and immediately call
       <methodname>do_draw</methodname>(), directly.
-      <filename>customkeyfocus.C</filename> gives an example of the
-      preferred way to do this, by calling
+      <filename>customkeyfocus.C</filename> gives an example of a better
+      way to do this, by calling
       <methodname>schedule_redraw</methodname>().
     </para>
 
     <para>
       <methodname>schedule_redraw</methodname>() arranges for a subsequent
-      call to <methodname>do_draw</methodname>() to take place; and
-      does this optimally, taking care of many optimizations on its own:
+      call to <methodname>do_draw</methodname>() to take place; but also
+      does a few things that produce a better result:
     </para>
 
     <itemizedlist>
@@ -240,24 +239,365 @@ See COPYING for distribution information.
       <listitem>
 	<para>
 	  Actual redrawing is a low-priority task, done only when there's
-	  nothing more urgent to do. Handling display server message;
+	  nothing more urgent to do. The more urgent tasks are:
+	  handling display server messages;
 	  adding or creating new display elements; moving them around for
-	  one reason, or another;
-	  and all other tedious work that makes up a nice UI; all of that
-	  is deemed to be more important, and one
-	  <methodname>schedule_redraw</methodname>() request is sufficient.
+	  one reason, or another.
+	  It's better to wait until all of this is done in order to avoid
+	  needlessly redrawing the same display elements after every little
+	  change. It's more efficient to postpone the drawing until the dust
+	  settles.
 	</para>
 
 	<para>
-	  If <methodname>schedule_redraw</methodname>()
-	  gets called again, for the same display element, before
-	  the library gets around to actually calling
-	  <methodname>do_draw</methodname>(), the redundant
-	  <methodname>schedule_redraw</methodname>() also does nothing,
-	  quietly.
+	  <methodname>schedule_redraw</methodname>() quietly does nothing
+	  if it gets called a second time before the display element gets
+	  redrawn. That's the flip side of the coin.
+	  A custom display element only needs to use
+	  <methodname>schedule_redraw</methodname>() to indicate that it needs
+	  to be redrawn. Multiple calls to
+	  <methodname>schedule_redraw</methodname> result in
+	  only one subsequent execution of <methodname>do_draw</methodname>().
 	</para>
       </listitem>
     </itemizedlist>
+  </section>
+
+  <section id="standard_focusframe">
+    <title>Creating the standard input focus frame display element</title>
+
+    <para>
+      <link linkend="customfocusableelement"><filename>customkeyfocus.C</filename></link>'s
+      custom display element's default appearance is plain and unadorned.
+      &appshort;'s standard display elements visually indicate which one has
+      keyboard
+      input focus frame by drawing a border around that display
+      element. This is not something that happens automatically. Each
+      display element has full control over its appearance.
+    </para>
+
+    <para>
+      <filename>customkeyfocus.C</filename> custom display element
+      changes its background color when it has input focus.
+      Running <command>customkeyfocus</command> with the <option>-f</option>
+      option also draws the standard input focus frame.
+    </para>
+
+    <para>
+      An input focus frame is a &container;. &appshort;'s display elements
+      are arranged in a logical hierarchy of containers, and a container
+      itself is a display element; namely a display element that contains
+      other display elements. An input focus frame is a container that draws
+      a input focus border around the display element inside the container.
+    </para>
+
+    <para>
+      A brief overview of a process for <link linkend="customimpl">creating
+	a custom display element</link>:
+    </para>
+
+    <orderedlist>
+      <listitem>
+	<para>
+	  Use a &factory;'s <methodname>get_container_impl</methodname>() to
+	  obtain the new custom element's parent container
+	  &implementation_object;.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Create the custom element's &implementation_object; instance,
+	  passing to it the parent container's &implementation_object;.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Create the &public_object; for the custom element's
+	  &implementation_object;.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Pass the new &public_object; to the &factory;'s
+	  <methodname>created_internally</methodname>() method.
+	</para>
+      </listitem>
+    </orderedlist>
+
+    <para>
+      Use the following process for creating a custom focusable element with
+      an input focus frame.
+    </para>
+
+    <orderedlist>
+      <listitem>
+	<para>
+	  Use a &factory;'s <methodname>get_container_impl</methodname>() to
+	  obtain the new custom element's parent container
+	  &implementation_object;.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Create an &implementation_object; for the input focus frame's
+	  container.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Create the custom element's &implementation_object; instance,
+	  passing to it the input focus frame container's
+	  &implementation_object;.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Create the &public_object; for the custom element's
+	  &implementation_object;.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Create the &public_object; for the input focus frame, using
+	  <function>&ns;::w::create_focusframe_container</function>(), which
+	  takes care of logically using
+	  <methodname>created_internally</methodname>() with the
+	  custom element's &public_object;.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Pass the input focus frame's &public_object; to the &factory;'s
+	  <methodname>created_internally</methodname>() method.
+	</para>
+      </listitem>
+    </orderedlist>
+
+    <para>
+      This logically translates to a minor sleight of hand.
+      Instead of creating a custom display element for the &factory; in
+      question, the input focus frame display element gets created. That
+      becomes the new display element.
+      But the real custom display element goes into the input focus frame,
+      which is a container.
+    </para>
+  </section>
+
+  <section id="standard_focusframe_impl_element">
+    <title>Creating the standard input focus frame &implementation_object;</title>
+
+    <para>
+      <link linkend="customfocusableelement"><filename>customkeyfocus.C</filename></link>'s
+      <ulink url="&link-function-x--w-create-nonrecursive-visibility-focusframe-impl;"><function>&ns;::w::create_nonrecursive_visibility_focusframe_impl</function></ulink>()
+      and
+      <ulink url="&link-function-x--w-create-always-visible-focusframe-impl;"><function>&ns;::w::create_always_visible_focusframe_impl</function></ulink>()
+      assemble the &implementation_object; for a standard input focus
+      frame container. They implement two ways of handling the visibility
+      of the focus frame container's contents.
+    </para>
+
+    <para>
+      A display element's <methodname>show</methodname>() or
+      <methodname>hide</methodname>() makes the display element visible or
+      invisible.
+      A container's <methodname>show_all</methodname>() and
+      <methodname>hide_all</methodname>() recursively updates the visibility
+      of the container itself and everything inside it. This is equivalent
+      to <methodname>show</methodname>() or <methodname>hide</methodname>()
+      not just for the container itself, but for everything inside it,
+      recursively.
+    </para>
+
+    <para>
+      This matters because a given display element is visible not only
+      when it's <methodname>show</methodname>()n, but only if all of its
+      parent containers are also <methodname>show</methodname>()n.
+      <methodname>hide</methodname>()ing a container makes the entire
+      container disappear, even if some display elements in the container
+      are <methodname>show</methodname>()n. Each display element maintains
+      its own visibility state, and the final visibility of a given
+      display element requires all of its parent containers to be visible.
+    </para>
+
+    <section id="nonrecursive_visibility">
+      <title>The <classname>&ns;::w::nonrecursive_visibilityObj</classname> template mixin</title>
+
+      <para>
+	<function>&ns;::w::create_nonrecursive_visibility_focusframe_impl</function>()
+	uses <ulink url="&link-x--w--nonrecursive-visibilityObj;"><classname>&ns;::w::nonrecursive_visibilityObj</classname></ulink>
+	to create the
+	focus frame container's &implementation_class;.
+	<classname>&ns;::w::nonrecursive_visibilityObj</classname> is a
+	&template_mixin; that overrides <methodname>show_all</methodname>()
+	and <methodname>hide_all</methodname>() for the resulting display
+	element. They become equivalent to
+	<methodname>show</methodname>() and
+	<methodname>hide</methodname>().
+      </para>
+
+      <para>
+	This makes the resulting container behave similar to a monolithic
+	display element. Otherwise, a
+	<methodname>hide_all</methodname>() followed by
+	<methodname>show</methodname>() tresults
+	in the container being visible, but none of the container's
+	elements being visible. This is because
+	<methodname>hide_all</methodname>() hid everything, but
+	<methodname>show</methodname>() made only the container visible.
+      </para>
+
+      <para>
+	For a simple display element, and not a container,
+	<methodname>show</methodname>() and
+	<methodname>hide</methodname>() are the same as
+	<methodname>show_all</methodname>() and
+	<methodname>hide_all</methodname>().
+	Only containers have
+	other display elements that
+	<methodname>show_all</methodname>() and
+	<methodname>hide_all</methodname>() affects.
+	This template mixin makes containers look like simple display elements
+	in that respect.
+      </para>
+
+
+      <para>
+	The
+	<classname>&ns;::w::nonrecursive_visibilityObj</classname>
+	&template_mixin; results in a container that behaves as a monolithic
+	display element, for visibility purposes.
+	<methodname>hide_all</methodname>() followed by
+	<methodname>show</methodname>() makes the container's contents appear,
+	as if the container is just a single display element, because
+	<methodname>hide_all</methodname>() ignored the container's elements
+	in the first place.
+      </para>
+
+      <note>
+	<para>
+	  New display elements are not visible upon creation, by default.
+	  This remains the case. Each display element that gets added to this
+	  container should still be
+	  <methodname>show</methodname>()n (or
+	  <methodname>show_all</methodname>()ed, perhaps),
+	  in order for this to work
+	  correctly.
+	</para>
+
+	<para>
+	  This is why
+	  <link linkend="customfocusableelement"><filename>customkeyfocus.C</filename></link>
+	  still needs to <methodname>show</methodname>() the custom
+	  display element after it gets added to a non-recursive visibility
+	  input focus frame.
+	</para>
+
+      </note>
+    </section>
+
+    <section id="always_visible">
+      <title>The <classname>&ns;::w::always_visibleObj</classname> template mixin</title>
+
+      <para>
+	<function>&ns;::w::create_always_visible_focusframe_impl</function>()
+	uses the <ulink url="&link-x--w--always-visibleObj;"><classname>&ns;::w::always_visibleObj</classname></ulink> to create the
+	focus frame container's &implementation_class;.
+	<classname>&ns;::w::always_visibilityObj</classname> is a
+	&template_mixin; that overrides <methodname>show_all</methodname>()
+	and <methodname>hide_all</methodname>() for the resulting display
+	element.
+      </para>
+
+      <para>
+	<classname>&ns;::w::always_visibleObj</classname> disables
+	<methodname>show_all</methodname>() and
+	<methodname>hide_all</methodname>() for its container,
+	but only for the container itself.
+	<methodname>show_all</methodname>() and
+	<methodname>hide_all</methodname>() still apply to
+	all display elements in the container.
+	Additionally, <classname>&ns;::w::always_visibleObj</classname>
+	automatically <methodname>show</methodname>()s the container after
+	it gets created.
+      </para>
+
+      <note>
+	<para>
+	  Only <methodname>show_all</methodname>() and
+	  <methodname>hide_all</methodname>() get disabled.
+	  <methodname>show</methodname>() and
+	  <methodname>hide</methodname>() still have the usual effect
+	  on the container.
+	</para>
+      </note>
+    </section>
+
+    <section id="container_visible">
+      <title>The <classname>&ns;::w::container_visibleObj</classname> template mixin</title>
+
+      <para>
+	<function>&ns;::w::create_nonrecursive_visibility_focusframe_impl</function>()
+	and
+	<function>&ns;::w::create_always_visible_focusframe_impl</function>()
+
+	use the <ulink url="&link-x--w--container-visible-elementObj;"><classname>&ns;::w::container_visible_elementObj</classname></ulink>
+	&template_mixin;.
+	&appshort; automatically provides
+	<link linkend="scrollbar">scroll-bars</link>
+	for the application's window if it's too big to fit on the screen.
+	When that happens,
+	display elements that receive keyboard focus get automatically
+	scrolled into view if they are not fully visible.
+      </para>
+
+      <para>
+	This &template_mixin; adjusts the scrolling so that its entire
+	container gets scrolled into view instead of just some display
+	element in the container. The
+	<link linkend="standard_focusframe">standard input focus frame</link>
+	is a container, and using this template mixin scrolls the entire
+	input focus frame into view, instead of the focusable display
+	element in the container, leaving one edge of the input focus frame
+	scrolled out of view.
+      </para>
+    </section>
+  </section>
+
+  <section id="standard_focusframe_element">
+    <title>Creating the standard input focus frame &public_object;</title>
+
+    <para>
+      After <link linkend="standard_focusframe_impl_element">creating the
+	input focus frame's implementation object</link>,
+      <link linkend="customfocusableelement"><filename>customkeyfocus.C</filename></link>
+      uses it to create the custom element's &implementation_object;
+      and the &public_object;, then
+      calls
+      <ulink url="&link-function-x--w-create-focusframe-container;"><function>&ns;::w::create_focusframe_container</function></ulink>().
+
+      <function>&ns;::w::create_focusframe_container</function>()
+      constructs the &public_object; for the input focus frame
+      implementation object, and puts the new custom element into the
+      new input focus frame container.
+      <link linkend="customfocusableelement"><filename>customkeyfocus.C</filename></link>
+      concludes the process by <link linkend="customimpl">calling the
+	original factory's <methodname>created_internally</methodname>()</link>.
+    </para>
+
+    <para>
+      From the original &factory;'s perspective, one new display element
+      gets created. The display element is the focus frame container, and
+      the focus frame container contains the real custom display element
+      that gets created.
+    </para>
   </section>
 </chapter>
 <!--

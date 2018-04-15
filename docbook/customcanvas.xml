@@ -21,7 +21,7 @@ See COPYING for distribution information.
   </mediaobject>
 
   <para>
-    <filename>customcanvas.C</filename> is a simple example of creating
+    <filename>customcanvas.C</filename> shows an example of creating
     a custom subclass of the
     <ulink url="&link-typedef-x--w-canvas;"><classname>&ns;::w::canvas</classname></ulink>
     display element that draws a circle. This example demonstrates:
@@ -34,9 +34,9 @@ See COPYING for distribution information.
 	<para>
 	  Canvas's &implementation_class;'s,
 	  <ulink url="&link-x--w--canvasObj--implObj;"><classname>&ns;::w::canvasObj::implObj</classname></ulink>'s
-	  constructor takes parameter that sets the element's minimum,
+	  constructor takes a parameter that sets its minimum,
 	  preferred, and maximum size. This is the only display element in
-	  its window, so the window becomes resiable within the specified
+	  its window, so the window becomes resizable within the specified
 	  constraints.
 	</para>
       </listitem>
@@ -47,12 +47,14 @@ See COPYING for distribution information.
       <listitem>
 	<para>
 	  &appshort;'s internal header files define several
-	  <quote>mixin templates</quote>. Each such template declares
-	  a class that multiply-inherits from its template parameter,
+	  <quote>mixin templates</quote>. Each such template creates
+	  a class that inherits from its template parameter,
 	  which usually must be a
 	  subclass of
-	  <ulink url="&link-x--w--child-elementObj;"><classname>&ns;::w::child_elementObj</classname></ulink>,
-	  and a mixin class; then
+	  <ulink url="&link-x--w--child-elementObj;"><classname>&ns;::w::child_elementObj</classname></ulink>.
+	  The template either directly overrides any methods itself,
+	  or also multiply inherits from a
+	  mixin class; then
 	  overrides or defines methods inherited from its
 	  <classname>&ns;::w::child_elementObj</classname> superclass using
 	  the mixin-provided functionality.
@@ -61,7 +63,7 @@ See COPYING for distribution information.
 	<para>
 	  This example uses two mixin templates that implement a simplified
 	  interface for drawing the contents of the display element, and
-	  specifying a theme-based color for drawing thay circle.
+	  specifying a theme-based color for drawing this circle.
 	</para>
       </listitem>
     </varlistentry>
@@ -104,11 +106,12 @@ See COPYING for distribution information.
     </para>
 
     <para>
-      A horizontal or a vertical metric has three discrete values: minimum,
+      A horizontal or a vertical metric consists of
+      three discrete values: minimum,
       preferred, and maximum; and the metric
       specifies that the display element's width or height should have
       this minimum, preferred, or maximum size. The display element's
-      &container; is expected to
+      &container; should
       size the display element to at least its minimum width, or height;
       but no larger than the maximum value. The preferred metric requests the
       element's initial width and height; however in a container with multiple
@@ -116,9 +119,16 @@ See COPYING for distribution information.
       happy.
     </para>
 
+    <para>
+      Display elements do not get explicitly resized, directly. This is done
+      indirectly by updating their metrics. Their &container; and its
+      &layoutmanager; always have the final word on each element's actual
+      size.
+    </para>
+
     <note>
       <para>
-	Its possible that a container will size a display element to be larger
+	Its possible that a container resizes a display element to be larger
 	than its maximum requested metric. For example, the
 	<link linkend="gridlayoutmanager">grid layout manager</link> can
 	be instructed to set its container element's alignment to
@@ -132,15 +142,18 @@ See COPYING for distribution information.
 	will size an element to be smaller than its minimum metrics.
 	However, a new display element's width or height can be 0, until
 	it gets formally sized by its container. So it's possible that
-	a display element's state indicate that its smaller than its minimum
-	metric; this can also happen in marginal edge cases when the
+	a display element's state indicates that its smaller than its minimum
+	metric; this can also happen in some edge cases when the
 	parent container has no other options.
       </para>
 
       <para>
-	In conclusion: custom display element implementation code must be
-	prepared to draw itself even if its current size is outside of its
-	metric.
+	In conclusion: custom display elements must be
+	prepared to draw themselves when their size is outside of their
+	declared metrics. Display elements should still reasonably draw their
+	contents if their size exceeds their maximum metrics. It is acceptable
+	to simply draw an empty display element if their size is smaller than
+	their minimum metrics.
       </para>
     </note>
 
@@ -170,8 +183,8 @@ See COPYING for distribution information.
 
       <listitem>
 	<para>
-	  A maximum metric, and only the maximum metric
-	  specified as <literal>NAN</literal> sets
+	  Additionally, a <literal>NAN</literal> value for a maximum metric,
+	  and only the maximum metric, sets
 	  an unlimited maximum metric. The display element has no defined
 	  maximum width or height.
 	</para>
@@ -324,7 +337,7 @@ typedef &ns;::w::scratch_and_mask_buffer_draw&lt;
 
       <listitem>
 	<para>
-	  The remaining construct parameters reach the
+	  The remaining constructor parameters reach the
 	  <classname>&ns;::w::canvasObj::implObj</classname>'s constructor.
 	</para>
       </listitem>
@@ -393,24 +406,26 @@ void my_canvas_implObj::do_draw(ONLY IN_THREAD,
 
     <para>
       <methodname>do_draw</methodname>() does not draw the display element
-      directly on the display.
+      directly in its window.
       The <varname>area_picture</varname>,
       <varname>area_pixmap</varname>, and
       <varname>area_gc</varname> parameters refer to a scratch buffer.
       This scratch buffer gets cleared to the display element's background
       color before <methodname>do_draw</methodname>() gets called.
-      After <methodname>do_draw</methodname>() returns the scratch buffer's
-      contents get copied to the display. This approach results in flicker-free
+      The scratch buffer's
+      contents get copied to the window
+      when <methodname>do_draw</methodname>() returns.
+      This approach results in flicker-free
       drawing.
     </para>
 
     <para>
       A second set of picture, pixmap, and graphic context objects refer to
       a second scratch buffer. This is a 1-bit deep scratch buffer for
-      executing any masking operations when compositing the main area
+      preparing any masking operations for compositing the main area
       scratch buffer's image. The contents of the scratch buffer do not
       get cleared. <methodname>do_draw</methodname>() is responsible for
-      clearing the masking scratch buffer prior to use.
+      clearing its masking scratch buffer before using it.
     </para>
 
     <section id="scratchbuffers">
@@ -436,18 +451,25 @@ void my_canvas_implObj::do_draw(ONLY IN_THREAD,
       </para>
 
       <para>
-	The labels are plain text strings that uniquely identify a scratch
-	buffer. Display elements that specify the same scratch buffer label
-	share the same underlying scratch buffer. The scratch buffers get
-	sized appropriately, for each display element that uses them. For
-	that reason <methodname>do_draw</methodname>() can get a scratch
-	buffer that's bigger than the drawing rectangle's size
-	because another,
-	larger, display element uses the same scratch buffer.
+	These labels are plain text strings that uniquely identify a scratch
+	buffer. &appshort; treats them as opaque identifiers, and
+	display elements that specify the same scratch buffer label
+	share the same underlying scratch buffer. Display elements that
+	specify different labels get separate scratch buffers.
       </para>
 
       <para>
-	Use the following convention for using scratch buffer labels:
+
+	The scratch buffers get
+	sized appropriately for each display element that uses them. For
+	that reason <methodname>do_draw</methodname>() can get a scratch
+	buffer that's actually bigger than the drawing rectangle's size
+	because another,
+	larger, display element shares the same scratch buffer.
+      </para>
+
+      <para>
+	Use the following convention for specifying scratch buffer labels:
       </para>
 
       <itemizedlist>
@@ -467,24 +489,25 @@ void my_canvas_implObj::do_draw(ONLY IN_THREAD,
 
 	<listitem>
 	  <para>
-	    Display elements whose sizes are similar
-	    can use same scratch buffer labels,
-	    and share the underlying scratch buffer.
+	    Use the same scratch buffer label with
+	    display elements whose sizes are similar.
 	    Display elements of vastly different sizes need to use different
-	    scratch buffer labels
+	    scratch buffer labels.
 	  </para>
 
 	  <para>
 	    If a very wide display element uses the same label as another
 	    display element that's very tall, the resulting scratch buffer
-	    can become both as wide as as tall as both of these display
+	    becomes both as wide as as tall as both of these display
 	    elements combined together. These two display elements end up
 	    using the same underlying scratch buffer, which becomes wasteful.
 	  </para>
 
 	  <para>
-	    Display elements don't need to have an identical size in order
-	    to share a scratch buffer. The library simply sizes the scratch
+	    Display elements don't need to have identical sizes in order
+	    to share a scratch buffer.
+	    <quote>Close enough</quote> is good enough.
+	    The library simply sizes the scratch
 	    buffer, on demand, to accomodate each display element's requested
 	    size, so the scratch buffer ends up being big enough to keep
 	    everyone happy (&appshort; actually tries to stay ahead of the

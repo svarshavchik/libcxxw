@@ -1,0 +1,18 @@
+<optclass name="options">
+  <option>
+    <name>focusframe</name>
+    <type>bool</type>
+    <opt>f</opt>
+    <longopt>focusframe</longopt>
+    <descr>Use a standard focus frame</descr>
+  </option>
+
+  <option>
+    <name>custom_focusframe</name>
+    <type>bool</type>
+    <opt>c</opt>
+    <longopt>custom</longopt>
+    <descr>Use a custom focus frame</descr>
+  </option>
+  <defaultoptions />
+</optclass>

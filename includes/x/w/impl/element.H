@@ -73,6 +73,13 @@ LIBCXXW_NAMESPACE_START
 //!
 //! TODO: documentation
 
+//! \class border
+//!
+//! TODO: documentation
+
+//! \class focusframelayoutimplObj
+//!
+//! TODO: documentation
 
 class clip_region_set;
 class richtextstring;

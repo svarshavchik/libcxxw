@@ -77,9 +77,9 @@ rm -f $RPM_BUILD_ROOT/%{_libdir}/*.la
 
 echo '%defattr(-,root,root,-)' >public-headers
 
-(cd $RPM_BUILD_ROOT; find %{_includedir}/x/w -name impl -prune -o -type f -print) >>public-headers
+(cd $RPM_BUILD_ROOT; find .%{_includedir}/x/w -name impl -prune -o -type f -print) | sed 's/^.//' >>public-headers
 
-(cd $RPM_BUILD_ROOT; find %{_includedir}/x/w -name impl -prune -o -type d -print) | sed 's@^@%dir @' >>public-headers
+(cd $RPM_BUILD_ROOT; find .%{_includedir}/x/w -name impl -prune -o -type d -print) | sed 's@^.@%dir @' >>public-headers
 
 %clean
 rm -rf $RPM_BUILD_ROOT

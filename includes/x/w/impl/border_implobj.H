@@ -137,13 +137,18 @@ class border_implObj: virtual public obj, public border_info {
 	};
 
 	//! Draw a horizontal border
-	void draw_horizontal(ONLY IN_THREAD,
+	void draw_horizontal(//! Invoked from the connection thread
+
+			     ONLY IN_THREAD,
+
 			     //! Information needed to draw the border
 			     const draw_info &di) const;
 
 	//! Draw a horizontal border
 
-	void draw_horizontal(ONLY IN_THREAD,
+	void draw_horizontal(//! Invoked from the connection thread
+
+			     ONLY IN_THREAD,
 			     //! Information needed to draw the border
 			     const draw_info &di,
 
@@ -158,7 +163,9 @@ class border_implObj: virtual public obj, public border_info {
  private:
 	//! Draw a horizontal border
 
-	void draw_horizontal(ONLY IN_THREAD,
+	void draw_horizontal(//! Invoked from the connection thread
+			     ONLY IN_THREAD,
+
 			     //! Information needed to draw the border
 			     const draw_info &di,
 
@@ -176,7 +183,9 @@ class border_implObj: virtual public obj, public border_info {
  public:
 	//! Draw a vertical border
 
-	void draw_vertical(ONLY IN_THREAD,
+	void draw_vertical(//! Invoked from the connection thread
+
+			   ONLY IN_THREAD,
 
 			   //! Information needed to draw the border
 			   const draw_info &di,
@@ -190,7 +199,8 @@ class border_implObj: virtual public obj, public border_info {
  private:
 	//! Draw a vertical border
 
-	void draw_vertical(ONLY IN_THREAD,
+	void draw_vertical(//! Invoked from the connection thread
+			   ONLY IN_THREAD,
 
 			   //! Information needed to draw the border
 			   const draw_info &di,
@@ -207,10 +217,10 @@ class border_implObj: virtual public obj, public border_info {
 			   //! Element to the right of the border
 			   const grid_elementptr &right_element) const;
 
-	//! Composite color #n into the area_picture.
+	//! Composite color \#n into the area_picture.
 
 	//! draw_horizontal or draw_vertical prepared a mask for compositing
-	//! color #n into area_picture, so we do it here.
+	//! color \#n into area_picture, so we do it here.
 
 	void composite_line(ONLY IN_THREAD,
 			    const draw_info &di, size_t n) const;
@@ -233,7 +243,8 @@ class border_implObj: virtual public obj, public border_info {
 	//! indicate a centered rectangle in area_pictures that's
 	//! exactly calculated_border_width/height in size.
 
-	void draw_corner(ONLY IN_THREAD,
+	void draw_corner(//! Invoked from the connection thread
+			 ONLY IN_THREAD,
 
 			 //! Information needed to draw the border
 			 const draw_info &di,
@@ -251,7 +262,9 @@ class border_implObj: virtual public obj, public border_info {
 	//! When a border does not join through a corner, the border is
 	//! simply a stub to the center of the border area.
 
-	void draw_stubs(ONLY IN_THREAD,
+	void draw_stubs(//! Invoked from the connection thread
+			ONLY IN_THREAD,
+
 			//! Information needed to draw the border
 			const draw_info &di,
 
@@ -341,7 +354,9 @@ class border_implObj: virtual public obj, public border_info {
 
 	//! Draw a segment in mask_pixmap, using max_gc.
 
-	void mask_segment(const draw_info &di,
+	void mask_segment(//! What to draw.
+
+			  const draw_info &di,
 
 			  //! Absolute starting offset
 

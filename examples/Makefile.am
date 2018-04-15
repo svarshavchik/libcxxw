@@ -50,6 +50,7 @@ customcanvas_LDADD=-lcxxw -lcxx
 customelement_SOURCES=customelement.C close_flag.H
 customelement_LDADD=-lcxxw -lcxx
 
+$(call OPTIONS_GEN,customkeyfocus.H,customkeyfocus.xml)
 customkeyfocus_SOURCES=customkeyfocus.C close_flag.H
 customkeyfocus_LDADD=-lcxxw -lcxx
 
