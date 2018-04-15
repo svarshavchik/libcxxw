@@ -6,7 +6,7 @@
 #include "x/w/focusable_label.H"
 #include "x/w/factoryobj.H"
 #include "x/w/label.H"
-#include "focus/standard_focusframecontainer_element.H"
+#include "x/w/impl/focus/standard_focusframecontainer_element_impl.H"
 #include "focus/focusframelayoutimpl.H"
 #include "x/w/impl/focus/focusable.H"
 #include "textlabel.H"
@@ -30,11 +30,10 @@ focusable_label factoryObj
 ::create_focusable_label(const text_param &text,
 			 const focusable_label_config &config)
 {
-	auto ff=create_nonrecursive_visibility_focusframe
+	auto ff=create_nonrecursive_visibility_focusframe_impl
 		(get_container_impl(),
 		 config.off_border,
-		 config.on_border,
-		 std::nullopt);
+		 config.on_border);
 
 	auto ffl=ref<focusframelayoutimplObj>::create(ff);
 

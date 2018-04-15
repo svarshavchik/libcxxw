@@ -5,7 +5,7 @@
 #ifndef pane_slider_focusframe_h
 #define pane_slider_focusframe_h
 
-#include "focus/standard_focusframecontainer_element.H"
+#include "x/w/impl/focus/standard_focusframecontainer_element_impl.H"
 #include "cursor_pointer_elementfwd.H"
 #include "panelayoutmanager/pane_slider_original_sizes.H"
 #include "x/w/rgb.H"

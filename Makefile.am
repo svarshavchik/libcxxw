@@ -204,8 +204,6 @@ libcxxw_la_SOURCES=\
 	focus/focusable_container.C		    \
 	focus/focusable_impl.C			    \
 	focus/focusable_owner.C			    \
-	focus/focusframecontainer.C		    \
-	focus/focusframecontainer.H		    \
 	focus/focusframecontainer_impl.C	    \
 	focus/focusframelayoutimpl.C		    \
 	focus/focusframelayoutimpl.H		    \
@@ -214,7 +212,7 @@ libcxxw_la_SOURCES=\
 	focus/label_for.H			    \
 	focus/label_forobj.H			    \
 	focus/standard_focusframecontainer_element.C \
-	focus/standard_focusframecontainer_element.H \
+	focus/standard_focusframecontainer_element_impl.C \
 	fonts/composite_text_stream.C		    \
 	fonts/composite_text_stream.H		    \
 	fonts/composite_text_streamfwd.H	    \

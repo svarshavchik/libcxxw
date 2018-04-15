@@ -6,8 +6,8 @@
 #include "image_button.H"
 #include "image_button_internal.H"
 #include "image_button_internal_impl.H"
-#include "focus/focusframecontainer.H"
-#include "focus/standard_focusframecontainer_element.H"
+#include "x/w/impl/focus/standard_focusframecontainer_element.H"
+#include "x/w/impl/focus/standard_focusframecontainer_element_impl.H"
 #include "icon.H"
 #include "busy.H"
 #include "xid_t.H"
@@ -240,10 +240,10 @@ do_create_image_button(bool disable_recursive_visibility,
 	// This grid layout manager will contain a single focusframecontainer.
 
 	auto focus_frame_impl=
-		create_always_visible_focusframe
+		create_always_visible_focusframe_impl
 		(image_button_outer_container_impl,
 		 "thin_inputfocusoff_border",
-		 "thin_inputfocuson_border", {});
+		 "thin_inputfocuson_border");
 
 	// Create an image_button_internal implementation object. Its
 	// container is the focusframecontainer.

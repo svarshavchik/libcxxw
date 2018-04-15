@@ -9,9 +9,9 @@
 #include "x/w/impl/always_visible_element.H"
 #include "x/w/impl/container_visible_element.H"
 #include "x/w/impl/nonrecursive_visibility.H"
-#include "focus/focusframecontainer.H"
+#include "x/w/impl/focus/standard_focusframecontainer_element.H"
 #include "focus/focusframelayoutimpl.H"
-#include "focus/standard_focusframecontainer_element.H"
+#include "x/w/impl/focus/standard_focusframecontainer_element_impl.H"
 #include "run_as.H"
 #include "x/w/rgb.H"
 #include "x/w/factory.H"
@@ -100,7 +100,7 @@ static scrollbar create_scrollbar(const container_impl &parent_container,
 	// factory's container.
 
 	auto ffcontainer_impl=
-		create_nonrecursive_visibility_focusframe
+		create_nonrecursive_visibility_focusframe_impl
 		(parent_container,
 		 "scrollbarfocusoff_border",
 		 "inputfocuson_border", background_color);

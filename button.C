@@ -15,7 +15,7 @@
 #include "capturefactory.H"
 #include "x/w/impl/always_visible.H"
 #include "x/w/impl/focus/focusframecontainer_element.H"
-#include "focus/focusframecontainer.H"
+#include "x/w/impl/focus/standard_focusframecontainer_element.H"
 #include "generic_window_handler.H"
 #include "xid_t.H"
 #include "connection_thread.H"

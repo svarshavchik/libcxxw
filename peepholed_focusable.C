@@ -12,7 +12,7 @@
 #include "peephole/peephole_layoutmanager_impl_scrollbars.H"
 #include "peephole/peephole_gridlayoutmanagerobj.H"
 #include "x/w/impl/focus/focusable.H"
-#include "focus/standard_focusframecontainer_element.H"
+#include "x/w/impl/focus/standard_focusframecontainer_element_impl.H"
 #include "focus/focusframelayoutimpl.H"
 #include "x/w/impl/container_element.H"
 #include "x/w/impl/container_visible_element.H"
@@ -125,7 +125,7 @@ create_peepholed_focusable_with_frame_impl
 			 // Create the focusframe implementation object, first.
 
 			 auto focusframe_impl_ret=
-				 create_always_visible_focusframe
+				 create_always_visible_focusframe_impl
 				 (new_container->impl,
 				  args.inputfocusoff_border,
 				  args.inputfocuson_border,

@@ -3,66 +3,42 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
-#include "focus/standard_focusframecontainer_element.H"
-#include "x/w/impl/focus/focusframecontainer_element.H"
-#include "x/w/impl/container_element.H"
-#include "x/w/impl/container_visible_element.H"
-#include "x/w/impl/always_visible.H"
-#include "x/w/impl/nonrecursive_visibility.H"
-#include "x/w/impl/background_color.H"
+#include "x/w/impl/focus/standard_focusframecontainer_element.H"
+#include "x/w/impl/focus/focusframecontainer_impl.H"
+#include "focus/focusframelayoutimpl.H"
+#include "x/w/impl/container.H"
+#include "gridlayoutmanager.H"
+#include "x/w/impl/current_border_impl.H"
 
 LIBCXXW_NAMESPACE_START
 
-always_visible_focusframe_ref_t
-create_always_visible_focusframe(const container_impl
-				 &parent_container)
+focusable_container_owner
+create_focusframe_container_owner(const ref<focusframecontainer_implObj> &impl,
+				  const element &e,
+				  const focusable_impl &element_focusable_impl)
 {
-	return create_always_visible_focusframe
-		(parent_container,
-		 "inputfocusoff_border", "inputfocuson_border", {});
+	auto lm=ref<focusframelayoutimplObj>::create(impl);
+
+	auto c=focusable_container_owner::create(impl, lm,
+						 element_focusable_impl);
+
+	install_focusframe_element(c, e);
+
+	return c;
 }
 
-always_visible_focusframe_ref_t
-create_always_visible_focusframe(const container_impl
-				 &parent_container,
-				 const border_arg &focusoff_border,
-				 const border_arg &focuson_border,
-				 const std::optional<color_arg> &bgcolor)
+void install_focusframe_element(const container &c,
+				const element &e)
 {
-	auto e=always_visible_focusframe_ref_t
-		::create(focusoff_border,
-			 focuson_border,
-			 parent_container,
-			 child_element_init_params{FOCUSFRAME_ID, {},
-					 bgcolor});
+	gridlayoutmanager glm=c->get_layoutmanager();
 
-	return e;
-}
-
-nonrecursive_visibility_focusframe_ref_t
-create_nonrecursive_visibility_focusframe(const container_impl
-					  &parent_container)
-{
-	return create_nonrecursive_visibility_focusframe
-		(parent_container,
-		 "inputfocusoff_border", "inputfocuson_border", {});
-}
-
-nonrecursive_visibility_focusframe_ref_t
-create_nonrecursive_visibility_focusframe(const container_impl
-					  &parent_container,
-					  const border_arg &focusoff_border,
-					  const border_arg &focuson_border,
-					  const std::optional<color_arg> &bgcolor)
-{
-	auto e=nonrecursive_visibility_focusframe_ref_t
-		::create(focusoff_border,
-			 focuson_border,
-			 parent_container,
-			 child_element_init_params{FOCUSFRAME_ID, {},
-					 bgcolor});
-
-	return e;
+	// If the focusframe is inside a grid layout and the cell is filled
+	// with the focus frame, return the courtesy by centering the contents
+	// of the focus frame.
+	glm->append_row()->padding(0)
+		.halign(halign::center)
+		.valign(valign::middle)
+		.created_internally(e);
 }
 
 LIBCXXW_NAMESPACE_END

@@ -5,7 +5,7 @@
 #include "libcxxw_config.h"
 #include "popup_imagebutton.H"
 #include "x/w/impl/focus/focusframecontainer_element.H"
-#include "focus/focusframecontainer.H"
+#include "x/w/impl/focus/standard_focusframecontainer_element.H"
 #include "popup_imagebutton_impl.H"
 #include "hotspot_element.H"
 #include "image_button_internal.H"
