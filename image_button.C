@@ -17,7 +17,7 @@
 #include "x/w/key_event.H"
 #include "x/w/impl/container_element.H"
 #include "gridlayoutmanager.H"
-#include "container_visible_element.H"
+#include "x/w/impl/container_visible_element.H"
 #include "messages.H"
 #include "generic_window_handler.H"
 #include "catch_exceptions.H"

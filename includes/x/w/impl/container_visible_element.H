@@ -1,11 +1,11 @@
 /*
-** Copyright 2017 Double Precision, Inc.
+** Copyright 2017-2018 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
-#ifndef container_visible_element_H
-#define container_visible_element_H
+#ifndef x_w_impl_container_visible_element_H
+#define x_w_impl_container_visible_element_H
 
-#include "container_visible_elementfwd.H"
+#include <x/w/impl/container_visible_elementfwd.H>
 
 LIBCXXW_NAMESPACE_START
 

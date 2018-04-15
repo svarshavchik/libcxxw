@@ -125,8 +125,6 @@ libcxxw_la_SOURCES=\
 	container.C				    \
 	container_impl.H			    \
 	container_impl.C			    \
-	container_visible_element.H		    \
-	container_visible_elementfwd.H		    \
 	current_border_impl.C			    \
 	cursor_pointer.C			    \
 	cursor_pointer.H			    \

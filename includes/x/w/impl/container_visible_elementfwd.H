@@ -1,13 +1,13 @@
 /*
-** Copyright 2017 Double Precision, Inc.
+** Copyright 2017-2018 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
-#ifndef container_visible_elementfwd_H
-#define container_visible_elementfwd_H
+#ifndef x_w_impl_container_visible_elementfwd_H
+#define x_w_impl_container_visible_elementfwd_H
 
-#include "x/w/connection_threadfwd.H"
-#include "x/w/rectanglefwd.H"
-#include "x/w/elementobj.H"
+#include <x/w/connection_threadfwd.H>
+#include <x/w/rectanglefwd.H>
+#include <x/w/elementobj.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -17,7 +17,7 @@ LIBCXXW_NAMESPACE_START
 //! Implements ensured_visibility_of_child_element() by invoking
 //! ensure_entire_visibility(). This is used by display elements that
 //! are containers with focusable elements, and when the focus element
-//! wants to insure its visibility the entire display elements wants to
+//! wants to ensure its visibility the entire display element wants to
 //! ensure its visibility.
 
 template<typename container_impl>

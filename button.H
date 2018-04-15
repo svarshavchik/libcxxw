@@ -7,7 +7,7 @@
 
 #include "x/w/impl/child_elementobj.H"
 #include "x/w/impl/container_elementfwd.H"
-#include "container_visible_elementfwd.H"
+#include "x/w/impl/container_visible_elementfwd.H"
 #include "x/w/impl/child_element.H"
 #include "x/w/buttonobj.H"
 #include "x/w/factoryfwd.H"

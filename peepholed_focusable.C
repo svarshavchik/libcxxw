@@ -15,7 +15,7 @@
 #include "focus/standard_focusframecontainer_element.H"
 #include "focus/focusframelayoutimpl.H"
 #include "x/w/impl/container_element.H"
-#include "container_visible_element.H"
+#include "x/w/impl/container_visible_element.H"
 #include "gridlayoutmanager.H"
 #include "x/w/factory.H"
 #include "x/w/gridfactory.H"

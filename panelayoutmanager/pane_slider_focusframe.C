@@ -6,7 +6,7 @@
 #include "panelayoutmanager/pane_slider_focusframe.H"
 #include "panelayoutmanager/panelayoutmanager_impl.H"
 #include "x/w/impl/always_visible.H"
-#include "container_visible_element.H"
+#include "x/w/impl/container_visible_element.H"
 #include "x/w/impl/container_element.H"
 #include "x/w/impl/themeborder_element.H"
 #include "cursor_pointer_element.H"

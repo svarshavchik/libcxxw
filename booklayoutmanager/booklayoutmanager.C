@@ -19,7 +19,7 @@
 #include "image_button_internal_impl.H"
 #include "icon.H"
 #include "x/w/impl/container_element.H"
-#include "container_visible_element.H"
+#include "x/w/impl/container_visible_element.H"
 #include "x/w/impl/child_element.H"
 #include "x/w/impl/always_visible.H"
 #include "capturefactory.H"
