@@ -87,6 +87,7 @@ class LIBCXX_HIDDEN lookup_collectorObj : virtual public obj {
 			    bool activated,
 			    const custom_combobox_selection_search_t
 			    &search_func,
+			    bool selection_required,
 			    const element &current_selection,
 			    const custom_comboboxlayoutmanager &lm,
 			    const busy &mcguffin)
@@ -209,6 +210,7 @@ class LIBCXX_HIDDEN lookup_collectorObj : virtual public obj {
 		search_func(IN_THREAD,
 			    custom_combobox_selection_search_info_t
 			    {lock, lm, buffer, i, current_selection,
+					    selection_required,
 					    mcguffin});
 
 		return true;
@@ -438,6 +440,7 @@ focusable_container new_custom_comboboxlayoutmanager
 
 	c->elementObj::impl->THREAD->run_as
 		([=,
+		  selection_required=this->selection_required,
 		  selection_search=this->selection_search]
 		 (ONLY IN_THREAD)
 		 {
@@ -474,6 +477,7 @@ focusable_container new_custom_comboboxlayoutmanager
 				 (IN_THREAD,
 				  [collector,
 				   selection_search,
+				   selection_required,
 				   c=make_weak_capture
 				   (current_selection, lm)]
 				  (ONLY IN_THREAD,
@@ -495,6 +499,7 @@ focusable_container new_custom_comboboxlayoutmanager
 							   key_event,
 							   activated,
 							   selection_search,
+							   selection_required,
 							   current_selection,
 							   lm->create_public_object(),
 							   mcguffin);

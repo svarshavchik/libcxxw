@@ -431,7 +431,8 @@ static custom_combobox_selection_search_t standard_combobox_selection_search=
 
 	if (search_info.text.size() == 0)
 	{
-		lm->unselect();
+		if (!search_info.selection_required)
+			lm->unselect();
 		return;
 	}
 

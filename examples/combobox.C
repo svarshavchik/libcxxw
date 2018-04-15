@@ -132,7 +132,7 @@ static inline void create_main_window(const x::w::main_window &main_window,
 			    {
 				    std::ostringstream o;
 
-				    o << "Append " << ++counter << std::endl;
+				    o << "Append " << ++counter;
 
 				    x::w::standard_comboboxlayoutmanager lm=
 					    combobox->get_layoutmanager();

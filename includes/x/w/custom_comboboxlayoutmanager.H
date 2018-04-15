@@ -71,6 +71,9 @@ struct LIBCXX_HIDDEN custom_combobox_selection_search_info_t {
 	//! The item element that has been selected or unselected.
 	const element &current_selection;
 
+	//! The selection_required flag from new_custom_comboboxlayoutmanager
+	bool selection_required;
+
 	//! Available mcguffin for blocking all further processing.
 	const busy &mcguffin;
 };

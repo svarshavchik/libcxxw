@@ -1,5 +1,10 @@
 0.4
 
+2018-04-15  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* Do not reset standard combo-box by hitting Enter in the search
+	field without typing in the search string first, if selection_required.
+
 2018-04-08  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* cxxwtheme: make it a singleton application.
