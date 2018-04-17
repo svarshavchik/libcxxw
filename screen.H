@@ -13,7 +13,6 @@
 #include "x/w/border_arg.H"
 #include "recycled_pixmapsfwd.H"
 #include "x/w/rgb.H"
-#include "x/w/metrics/mmaxisfwd.H"
 #include "connection.H"
 #include "x/w/connection_threadfwd.H"
 #include "x/w/impl/defaultthemefwd.H"
@@ -252,22 +251,6 @@ class LIBCXX_HIDDEN screenObj::implObj
 	//! Return a non-theme background_color object.
 
 	background_color create_background_color(const const_picture &pic);
-
-	/////////////////////////////////////////////////////////////////////
-	//
-	// Compute a size in pixels given the size in millimeters.
-
-	//! Compute # of pixels from millimeters, for width
-
-	metrics::axis compute_width(const metrics::mmaxis &);
-
-	//! Compute # of pixels from millimeters, for height
-
-	metrics::axis compute_height(const metrics::mmaxis &);
-
-	//! Compute # of millimeters from pixels.
-
-	double compute_widthmm(const current_theme_t::lock &, dim_t pixels);
 
 	//! Find or create a custom border.
 
