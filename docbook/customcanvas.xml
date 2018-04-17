@@ -534,6 +534,27 @@ void my_canvas_implObj::do_draw(ONLY IN_THREAD,
       </itemizedlist>
     </section>
   </section>
+
+  <section id="process_button_event">
+    <title>Overriding <methodname>process_button_event</methodname>()</title>
+
+    <para>
+      <link linkend="customcanvas"><filename>customcanvas.C</filename></link>
+      shows a simple example of handling button clicks. This is done by
+      having the &implementation_object; override
+      <methodname>process_button_event</methodname>().
+      The &implementation_object; falls back to the overridden method if it
+      chooses not to process the button event; otherwise it returns
+      <literal>true</literal>.
+    </para>
+
+    <para>
+      <filename>customcanvas.C</filename> responds to a pointer button #1
+      click by adjusting the custom element's metrics by invoking
+      <methodname>update</methodname>() that it inherits from
+      <ulink url="&link-x--w--canvasObj--implObj;"><classname>&ns;::w::canvasObj::implObj</classname></ulink>.
+    </para>
+  </section>
 </chapter>
 <!--
 Local Variables:

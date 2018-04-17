@@ -38,6 +38,14 @@ void themedimObj::initialize(ONLY IN_THREAD,
 	pixels(IN_THREAD)=compute_dim(screen_impl, dimname, width_or_height);
 }
 
+void themedimObj::update(ONLY IN_THREAD,
+			 const dim_arg &new_dimname,
+			 const defaulttheme &current_theme)
+{
+	dimname=new_dimname;
+	theme_updated(IN_THREAD, current_theme);
+}
+
 void themedimObj::theme_updated(ONLY IN_THREAD,
 				const defaulttheme &new_theme)
 {

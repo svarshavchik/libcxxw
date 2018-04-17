@@ -14,6 +14,7 @@
 #include <x/w/gridlayoutmanager.H>
 #include <x/w/gridfactory.H>
 #include <x/w/canvas.H>
+#include <x/w/button_event.H>
 
 #include <x/w/impl/canvas.H>
 #include <x/w/impl/background_color_element.H>
@@ -47,7 +48,20 @@ class my_canvas_implObj : public x::w::scratch_and_mask_buffer_draw<
 		x::w::background_color_elementObj<x::w::canvasObj::implObj,
 						  fore_color_tag>
 		> superclass_t;
+
+
+	static constexpr double default_minimum=20,
+		default_preferred=50,
+		default_maximum=100;
+
+
+	double minimum=default_minimum;
+	double preferred=default_preferred;
+	double maximum=default_maximum;
+
 public:
+
+	using x::w::canvasObj::implObj::update;
 
 	// Construction needs to take care of several details.
 
@@ -69,10 +83,14 @@ public:
 		: my_canvas_implObj(parent_container,
 				    x::w::canvas_init_params{
 					    // Horizontal metrics:
-					    {20.0, 50.0, 100.0},
+					    {default_minimum,
+					     default_preferred,
+					     default_maximum},
 
-					    // Vertical metrics
-					    {20.0, 50.0, 100.0},
+					    // Vertical metrics:
+					    {default_minimum,
+					     default_preferred,
+					     default_maximum},
 
 					    // Label ID for the custom
 					    // element's scratch buffer.
@@ -136,6 +154,12 @@ public:
 		     const x::w::gc &mask_gc,
 		     const x::w::clip_region_set &clipped,
 		     const x::w::rectangle &area_entire_rect) override;
+
+	// Override process_button_event().
+
+	bool process_button_event(ONLY IN_THREAD,
+				  const x::w::button_event &be,
+				  xcb_timestamp_t timestamp) override;
 };
 
 typedef x::ref<my_canvas_implObj> my_canvas_impl;
@@ -246,6 +270,46 @@ void my_canvas_implObj::do_draw(ONLY IN_THREAD,
 				area_entire_rect.width,
 				area_entire_rect.height,
 				x::w::render_pict_op::op_over);
+}
+
+/////////////////////////////////////////////////////////////////////
+//
+// An implementation object overrides process_button_event() in order to
+// to do something with button clicks.
+
+bool my_canvas_implObj::process_button_event(ONLY IN_THREAD,
+					     const x::w::button_event &be,
+					     xcb_timestamp_t timestamp)
+{
+	// If the overriden process_button_event() does not wish to process
+	// this button event: it should invoke the overriden method.
+
+	// Take action on pointer button #1 clicks. activate_for() is just
+	// a fancy check for a button press, as opposed to a button release,
+	// event.
+
+	if (!activate_for(be) || be.button != 1)
+		return superclass_t::process_button_event(IN_THREAD, be,
+							  timestamp);
+
+	// In response to button #1 clicks we toggle the element metrics
+	// between minimum/preferred/maximum of 20/50/100 and 110/140/150.
+	//
+	// Our container will oblige and resize us accordingly. Note that
+	// after the first resize-ment, subsequent ones result in very little
+	// adjustment. This is because the largest metric's minimum size
+	// is 100. When we flip back to 20/50/100, since the maximum is 100
+	// our size only gets reduced slightly to 100, from 110.
+
+	minimum=130-minimum;
+	preferred=190-preferred;
+	maximum=250-maximum;
+
+	update(IN_THREAD,
+	       {minimum, preferred, maximum},
+	       {minimum, preferred, maximum});
+
+	return true;
 }
 
 // "Public" object subclasses the public canvas object. Not really needed

@@ -49,6 +49,22 @@ metrics::axis themedim_axis_widthObj<base>::get_width_axis(ONLY IN_THREAD)
 	return {min, pref, max};
 }
 
+//! Update the current dimensions
+
+template<typename base>
+void themedim_axis_widthObj<base>
+::update_width_axis(ONLY IN_THREAD,
+		    const dim_axis_arg &arg,
+		    const defaulttheme &current_theme)
+{
+	themedim_element<themedim_width_min>::update(IN_THREAD, arg.minimum,
+						     current_theme);
+	themedim_element<themedim_width_pref>::update(IN_THREAD, arg.preferred,
+						      current_theme);
+	themedim_element<themedim_width_max>::update(IN_THREAD, arg.maximum,
+						     current_theme);
+}
+
 //! Constructor
 
 //! The first template parameter initialized the themedim_elementObj
@@ -85,6 +101,22 @@ metrics::axis themedim_axis_heightObj<base>::get_height_axis(ONLY IN_THREAD)
 	if (pref < min) pref=min;
 	if (max < pref) max=pref;
 	return {min, pref, max};
+}
+
+//! Update the current dimensions
+
+template<typename base>
+void themedim_axis_heightObj<base>
+::update_height_axis(ONLY IN_THREAD,
+		     const dim_axis_arg &arg,
+		     const defaulttheme &current_theme)
+{
+	themedim_element<themedim_height_min>::update(IN_THREAD, arg.minimum,
+						     current_theme);
+	themedim_element<themedim_height_pref>::update(IN_THREAD, arg.preferred,
+						      current_theme);
+	themedim_element<themedim_height_max>::update(IN_THREAD, arg.maximum,
+						      current_theme);
 }
 
 

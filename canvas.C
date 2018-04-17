@@ -16,6 +16,16 @@ canvasObj::canvasObj(const ref<implObj> &impl) : elementObj(impl),
 
 canvasObj::~canvasObj()=default;
 
+void canvasObj::update(const dim_axis_arg &new_width,
+		       const dim_axis_arg &new_height)
+{
+	in_thread([new_width, new_height, impl=this->impl]
+		  (ONLY IN_THREAD)
+		  {
+			  impl->update(IN_THREAD, new_width, new_height);
+		  });
+}
+
 canvas factoryObj::create_canvas()
 {
 	return create_canvas([]

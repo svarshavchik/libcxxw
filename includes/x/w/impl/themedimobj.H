@@ -22,7 +22,7 @@ LIBCXXW_NAMESPACE_START
 class themedimObj : virtual public obj {
 
 	//! The name of the dimension
-	const dim_arg dimname;
+	dim_arg dimname;
 
 	//! How big it is, in pixels.
 	dim_t pixels_thread_only;
@@ -41,13 +41,18 @@ class themedimObj : virtual public obj {
 	//! Destructor
 	~themedimObj();
 
-	//! Recalculate padding.
+	//! Recalculate the size in pixels.
 	void initialize(ONLY IN_THREAD,
 			const ref<screenObj::implObj> &screen_impl);
 
-	//! Recalculate padding.
+	//! Recalculate the size in pixels.
 	void theme_updated(ONLY IN_THREAD,
 			   const defaulttheme &new_theme);
+
+	//! Update the dimension.
+	void update(ONLY IN_THREAD,
+		    const dim_arg &new_dimname,
+		    const defaulttheme &current_theme);
 };
 
 

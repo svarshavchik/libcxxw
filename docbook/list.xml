@@ -506,8 +506,8 @@ llmanager->append_items(
 	  When creating new list items (using
 	  <methodname>append_items</methodname>(),
 	  <methodname>insert_items</methodname>(), et. al.)
-	  a separate text stribng goes into each column, and gets
-	  individual specified.
+	  a separate text string goes into each column, and gets
+	  individually specified.
 	  The number of consecutive text strings is always a multiple of three.
 	</para>
       </listitem>
@@ -535,9 +535,9 @@ llmanager->append_items(
 
 	<para>
 	  It's also possible to synchronize the widths of columns of
-	  two or more selection lists, so if they're positioned above
+	  two or more selection lists. If they're positioned above
 	  each other, and their enclosing containers size them to the
-	  same width, their respective columns will then align with each other.
+	  same width, then their respective columns will align with each other.
 	  See <xref linkend="panesynclists" /> for an example of doing
 	  this.
 	</para>

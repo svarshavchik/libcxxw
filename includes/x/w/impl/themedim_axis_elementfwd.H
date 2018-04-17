@@ -47,6 +47,10 @@ public:
 	~themedim_axis_widthObj();
 
 	metrics::axis get_width_axis(ONLY IN_THREAD) const;
+
+	void update_width_axis(ONLY IN_THREAD,
+			       const dim_axis_arg &arg,
+			       const defaulttheme &current_theme);
 };
 
 //! Vertical metrics axis specification mixin.
@@ -79,6 +83,10 @@ public:
 	~themedim_axis_heightObj();
 
 	metrics::axis get_height_axis(ONLY IN_THREAD) const;
+
+	void update_height_axis(ONLY IN_THREAD,
+				const dim_axis_arg &arg,
+				const defaulttheme &current_theme);
 };
 
 LIBCXXW_NAMESPACE_END

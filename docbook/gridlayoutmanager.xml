@@ -9,7 +9,7 @@ See COPYING for distribution information.
   <title>The grid layout manager</title>
 
   <para>
-    Previous chapters introduces the grid layout manager.
+    Previous chapters introduced the grid layout manager.
     The following example shows how to use additional features of the
     grid layout manager.
     It also shows a design pattern for correctly capturing object references

@@ -6,6 +6,7 @@
 #define x_w_canvasobj_h
 
 #include <x/w/elementobj.H>
+#include <x/w/dim_axis_arg.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -25,6 +26,10 @@ public:
 
 	//! Destructor
 	~canvasObj();
+
+	//! Update the canvas's size.
+	void update(const dim_axis_arg &new_width,
+		    const dim_axis_arg &new_height);
 };
 
 LIBCXXW_NAMESPACE_END

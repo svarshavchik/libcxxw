@@ -85,6 +85,18 @@ void canvasObj::implObj::theme_updated(ONLY IN_THREAD,
 	recalculate(IN_THREAD);
 }
 
+void canvasObj::implObj::update(ONLY IN_THREAD,
+				const dim_axis_arg &new_width,
+				const dim_axis_arg &new_height)
+{
+	auto theme=get_screen()->impl->current_theme.get();
+
+	update_width_axis(IN_THREAD, new_width, theme);
+	update_height_axis(IN_THREAD, new_height, theme);
+
+	recalculate(IN_THREAD);
+}
+
 void canvasObj::implObj::recalculate(ONLY IN_THREAD)
 {
 	get_horizvert(IN_THREAD)->set_element_metrics

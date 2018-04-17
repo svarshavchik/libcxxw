@@ -187,7 +187,7 @@ make</programlisting>
 	  <para>
 	    <link linkend="helloworld"><filename>helloworld.C</filename></link>
 	    uses <function>connection_mcguffin</function> to retrieve
-	    a <ulink url="/ondestroy">mcguffin</ulink> for the underlying
+	    a <ulink url="/ondestroy.html">mcguffin</ulink> for the underlying
 	    X protocol connection.
 	  </para>
 	</listitem>

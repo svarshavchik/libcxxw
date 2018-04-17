@@ -15,8 +15,8 @@ class canvasObj;
 //! A mostly empty display element.
 
 //! \code
-//! INSERT_LIBX_NAMESPACE::w::metrics::axis h_metrics{0, 50, 100};
-//! INSERT_LIBX_NAMESPACE::w::metrics::axis v_metrics{0, 50, 100};
+//! INSERT_LIBX_NAMESPACE::w::dim_axis_arg h_metrics{0, 50, 100};
+//! INSERT_LIBX_NAMESPACE::w::dim_axis_arg v_metrics{0, 50, 100};
 //!
 //! factory->create_canvas([]
 //!                        (const canvas &c)
@@ -28,6 +28,12 @@ class canvasObj;
 //!
 //! The canvas object gets constructed, with specified
 //! horizontal and vertical metrics.
+//!
+//! \code
+//! c->update(h_metrics, v_metrics);
+//! \endcode
+//!
+//! Update the canvas object's horizontal and vertical metrics.
 
 typedef ref<canvasObj> canvas;
 

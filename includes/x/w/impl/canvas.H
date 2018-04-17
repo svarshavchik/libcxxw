@@ -71,12 +71,16 @@ public:
 	//! Destructor
 	~implObj();
 
-	//! Inherit from elementObj::implObj
+	//! Inherited from elementObj::implObj
 	void initialize(ONLY IN_THREAD) override;
 
-	//! Inherit from elementObj::implObj
+	//! Inherited from elementObj::implObj
 	void theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme) override;
 
+	//! Update the canvas's metrics.
+	void update(ONLY IN_THREAD,
+		    const dim_axis_arg &new_width,
+		    const dim_axis_arg &new_height);
  private:
 	//! Recalculate my metrics
 	void recalculate(ONLY IN_THREAD) LIBCXX_HIDDEN;
