@@ -30,13 +30,19 @@ struct child_element_init_params {
 	std::optional<color_arg> background_color;
 };
 
+//! Tag for the background color
+
+struct child_element_bgcolor;
+
 //! An element that has a parent element.
 
 class child_elementObj
-	: public background_color_elementObj<elementObj::implObj> {
+	: public background_color_elementObj<elementObj::implObj,
+					     child_element_bgcolor> {
 
 	//! Alias
-	typedef background_color_elementObj<elementObj::implObj> superclass_t;
+	typedef background_color_elementObj<elementObj::implObj,
+					    child_element_bgcolor> superclass_t;
 
 	//! Returned by has_own_background_color()
 

@@ -211,7 +211,8 @@ void child_elementObj::set_background_color(ONLY IN_THREAD,
 		old_color=background_color_element_implObj::get(IN_THREAD);
 
 	is_mine_background_color=true;
-	background_color_element<>::update(IN_THREAD, bgcolor);
+	background_color_element<child_element_bgcolor>
+		::update(IN_THREAD, bgcolor);
 
 	if (background_color_element_implObj::get(IN_THREAD) == old_color)
 		return; // noop
