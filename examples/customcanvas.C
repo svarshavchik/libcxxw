@@ -371,7 +371,7 @@ void testcustomcanvas()
 			 factory->created_internally(c);
 
 		 },
-		 LIBCXX_NAMESPACE::w::new_gridlayoutmanager{});
+		 x::w::new_gridlayoutmanager{});
 
 	main_window->set_window_title("Custom canvas");
 

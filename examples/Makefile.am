@@ -6,6 +6,7 @@ noinst_PROGRAMS=\
 	checkradio				\
 	combobox				\
 	customcanvas				\
+	customcontainer				\
 	customelement				\
 	customkeyfocus				\
 	dateinputfield				\
@@ -46,6 +47,9 @@ combobox_LDADD=-lcxxw -lcxx
 
 customcanvas_SOURCES=customcanvas.C close_flag.H
 customcanvas_LDADD=-lcxxw -lcxx
+
+customcontainer_SOURCES=customcontainer.C close_flag.H
+customcontainer_LDADD=-lcxxw -lcxx
 
 customelement_SOURCES=customelement.C close_flag.H
 customelement_LDADD=-lcxxw -lcxx

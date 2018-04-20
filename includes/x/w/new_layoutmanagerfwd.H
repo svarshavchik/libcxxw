@@ -32,12 +32,12 @@ public:
 	~new_layoutmanager();
 
 	//! Internal implementation
-	virtual layout_impl create(const container_impl &) const=0;
+	virtual layout_impl create(const container_impl &) const LIBCXX_PUBLIC=0;
 
 	//! Internal implementation
 	virtual container create(const container_impl &,
 				 const function<void(const container &)> &)
-		const;
+		const LIBCXX_PUBLIC;
 };
 
 LIBCXXW_NAMESPACE_END

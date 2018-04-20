@@ -88,14 +88,24 @@ See COPYING for distribution information.
     </varlistentry>
 
     <varlistentry>
+      <term><ulink url="&link-x--w--container-elementObj;"><classname>&ns;::w::container_elementObj</classname></ulink></term>
+      <listitem>
+	<para>
+	  Creates an implementation class for a
+	  <link linkend="customcontainer">generic container</link>.
+	</para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
       <term><ulink url="&link-x--w--focusframecontainer-elementObj;"><classname>&ns;::w::focusframecontainer_elementObj</classname></ulink></term>
 
       <listitem>
 	<para>
-	  Creates a &container; that shows a
+	  Creates a specialized &container; that draws a
 	  <link linkend="standard_focusframe">keyboard
-	    input focus frame</link> whenever a display element in the
-	  container has keyboard input focus.
+	    input focus frame</link> around the container's contents
+	  whenever a display element in the container has keyboard input focus.
 	</para>
       </listitem>
     </varlistentry>
@@ -137,6 +147,9 @@ See COPYING for distribution information.
   </variablelist>
 
   <para>
+    The desired properties inherited by a custom display elements are formed
+    by combining these mixin templates. For example:
+    <classname>&ns;::w::nonrecursive_visibilityObj&lt;&ns;::w::container_elementObj&lt;child_elementObj&gt;&gt;</classname>.
     This chapter gives a brief overview and examples of subclassing these
     display elements and
     using these mixins.
@@ -230,7 +243,7 @@ See COPYING for distribution information.
     </itemizedlist>
 
     <para>
-      Creating each custom display elements requires obtaining a
+      Creating each custom display element requires obtaining a
       &factory; from an
       existing container, then:
     </para>

@@ -64,6 +64,7 @@
 <!ENTITY public_object "<link linkend='pubimpl'>public object</link>">
 <!ENTITY template_mixin "<link linkend='mixintemplates'>template mixin</link>">
 <!ENTITY customfocusableelement SYSTEM "customfocusableelement.xml">
+<!ENTITY customcontainer SYSTEM "customcontainer.xml">
 <!ENTITY cxxwtheme SYSTEM "cxxwtheme.xml">
 
 %entity-list;
@@ -117,6 +118,7 @@ See COPYING for distribution information.
     &customcanvas;
     &customelement;
     &customfocusableelement;
+    &customcontainer;
   </part>
 
   <part id="misctopics">

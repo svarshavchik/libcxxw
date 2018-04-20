@@ -152,7 +152,8 @@ public:
 	//! updated() call to them before this element's.
 
 	void inherited_visibility_updated_before(ONLY IN_THREAD,
-						 inherited_visibility_info &);
+						 inherited_visibility_info &)
+		LIBCXX_PUBLIC;
 
 	//! Container's inherited visibility has been updated, part 2.
 
@@ -167,7 +168,8 @@ public:
 	//! Also invokes the layout manager's inherited_visibility_updated().
 
 	void inherited_visibility_updated_after(ONLY IN_THREAD,
-						inherited_visibility_info &);
+						inherited_visibility_info &)
+		LIBCXX_PUBLIC;
 
 	//! The container's position has been updated.
 

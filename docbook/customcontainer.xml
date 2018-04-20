@@ -1,0 +1,199 @@
+<!--
+
+Copyright 2018 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<chapter id="customcontainer">
+  <title>Custom <classname>&ns;::w::container</classname></title>
+
+  <mediaobject>
+    <imageobject>
+      <imagedata fileref="customcontainer.png" format="PNG"
+		 contentwidth="272px" contentdepth="211px" />
+    </imageobject>
+    <textobject>
+      <phrase>
+	Custom container display element
+      </phrase>
+    </textobject>
+    <caption>
+      <para>
+	<filename>customcontainer.C</filename> is an example of creating
+	a custom subclass of the
+	<ulink url="&link-typedef-x--w-container;"><classname>&ns;::w::container</classname></ulink>
+	and its &implementation_class;. The custom container shows a radial
+	background color gradient whenever the pointer moves inside the
+	container, and
+	restores the default background color when the pointer leaves the container:
+    </para>
+    </caption>
+  </mediaobject>
+
+  <blockquote>
+    <title><ulink url="examples/customcontainer.C">customcontainer.C</ulink></title>
+
+    <informalexample>
+      <programlisting><xi:include href="../examples/customcontainer.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <section id="container_element">
+    <title>The <classname>&ns;::w::container_elementObj</classname> template mixin</title>
+
+    <para>
+      Creating a custom container element involves several additional
+      steps beyond the ones for <link linkend="customimpl">creating a
+	custom display element</link>.
+    </para>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  Declare a custom &implementation_class; that's derived from
+	  <ulink url="&link-x--w--child-elementObj;"><classname>&ns;::w::child_elementObj</classname></ulink> and
+	  <ulink url="&link-x--w--container-elementObj;"><classname>&ns;::w::container_elementObj</classname></ulink>;
+	  typically <classname>&ns;::w::container_elementObj&lt;&ns;::w::child_elementObj&gt;</classname>.
+	</para>
+
+	<para>
+	  <classname>&ns;::w::container_elementObj</classname> is a
+	  &template_mixin; that creates an &implementation_class; for
+	  a container. The template inherits from the class specified
+	  by its template parameter, and the template forwards its constructor
+	  to its superclass. The template also multiply-inherits from
+	  <ulink url="&link-x--w--containerObj--implObj;"><classname>&ns;::w::containerObj::implObj</classname></ulink>.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Declare a custom &public_class; that's derived from
+	  <ulink url="&link-x--w--containerObj;"><classname>&ns;::w::containerObj</classname></ulink>.
+	</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>
+      Creating each custom container requires obtaining a
+      &factory; from an
+      existing container, like for an ordinary display element.
+      This is followed by some additional steps,
+      similar to the ones taken when creating a custom display element.
+    </para>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  The first step is the same as when
+	  <link linkend="customimpl">creating a
+	    custom display element</link>:
+	  use the
+	  &factory;'s <methodname>get_container_impl</methodname>() method.
+	  to obtain an
+	  <ulink url="&link-typedef-x--w-container-impl;"><classname>&ns;::w::container_impl</classname></ulink>
+	  representing the parent container, and then use it to create the
+	  custom &implementation_class; instance.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Prepare a new container specifier, like
+	  an <ulink url="&link-x--w--new-gridlayoutmanager;"><classname>&ns;::w::new_gridlayoutmanager</classname></ulink>,
+	  in the same way it's used to specify the attributes of a new
+	  container.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Invoke the new container specifier's <methodname>create</methodname>()
+	  method and pass the new &implementation_object; as its parameter.
+	  This <methodname>create</methodname>() returns
+	  an <ulink url="&link-typedef-x--w-layout-impl;"><classname>&ns;::w::layout_impl</classname></ulink>,
+	  a reference handler for the new container's layout manager's
+	  implementation class.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Construct a new instance of the &public_class; which is derived
+	  from <ulink url="&link-x--w--containerObj;"><classname>&ns;::w::containerObj</classname></ulink>.
+	  <classname>&ns;::w::containerObj</classname>'s constructor takes
+	  two parameters, the implementation class constructed by
+	  <classname>&ns;::w::container_elementObj</classname> &template_mixin;,
+	  and the <classname>&ns;::w::layout_impl</classname>.
+	</para>
+
+	<para>
+	  The usual approach is pass both the new &implementation_object;
+	  and the layout manager implementation object to the new
+	  &public_object;; with its constructor forwarding these parameters
+	  to its superclass, in addition to storing the &implementation_object;
+	  for its own use.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  At this point, the new container is ready to be populated with its
+	  contents. The last step is to invoke the original &factory;'s
+	  <methodname>created_internally</methodname>() method, just like when
+	  <link linkend="customimpl">creating a
+	    custom display element</link>.
+	  This can be done immediately and before populating the contents of
+	  the new container, but optimally the new container's contents should
+	  be created first.
+	</para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
+  <section id="pointer_focus">
+    <title>Overriding <methodname>pointer_focus</methodname>()</title>
+
+    <para>
+      <link linkend="customcontainer"><filename>customcontainer.C</filename></link>
+      gives an example of overriding <methodname>pointer_focus</methodname>()
+      in the &implementation_object;. The main window's
+      <link linkend="gridlayoutmanager">grid layout manager</link>
+      provides
+      a 10 millimeter <methodname>padding</methodname>() for the custom
+      container. The custom container's grid layout manager provides an
+      additional 10 millimeter padding for its small
+      <link linkend="inputfieldsandbuttons">input field</link>.
+    </para>
+
+    <para>
+      <methodname>pointer_focus</methodname>() gets invoked whenever the
+      pointer moves into, or out of, a display element. Moving the pointer
+      ten millimeters into the window crosses into the custom container,
+      triggering a call to
+      <methodname>pointer_focus</methodname>(). The custom implementation
+      uses this to set the custom display element's background color to
+      a radial gradient color. Moving the pointer out of the container restores
+      the default background color.
+    </para>
+
+    <note>
+      <para>
+	The entire window's background color changes, and not just the
+	custom container's
+	This is because a display element's background color
+	includes any padding around the display element. The custom
+	container's background color gets extended to the padding area around
+	it.
+      </para>
+    </note>
+  </section>
+</chapter>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "book" "chapter")
+End:
+-->
