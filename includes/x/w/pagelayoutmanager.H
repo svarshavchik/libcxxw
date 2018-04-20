@@ -47,8 +47,7 @@ public:
 
 	//! \internal
 
-	ref<layoutmanagerObj::implObj> create(const container_impl &
-					      ) const override;
+	layout_impl create(const container_impl &) const override;
 };
 
 LIBCXXW_NAMESPACE_END

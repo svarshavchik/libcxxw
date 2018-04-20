@@ -20,10 +20,10 @@ LIBCXXW_NAMESPACE_START
 
 scrollbarObj::scrollbarObj(const ref<implObj> &impl,
 			   const container_impl &container_impl,
-			   const ref<layoutmanagerObj::implObj> &layout_impl)
-	: containerObj(container_impl, layout_impl),
-	  focusableObj::ownerObj(impl),
-	impl(impl)
+			   const layout_impl &container_layout_impl)
+	: containerObj{container_impl, container_layout_impl},
+	  focusableObj::ownerObj{impl},
+	impl{impl}
 {
 }
 

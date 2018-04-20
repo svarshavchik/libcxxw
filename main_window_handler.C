@@ -6,7 +6,7 @@
 #include "main_window_handler.H"
 #include "connection_thread.H"
 #include "x/w/impl/draw_info.H"
-#include "layoutmanager.H"
+#include "x/w/impl/layoutmanager.H"
 #include "shared_handler_data.H"
 #include "batch_queue.H"
 #include "icon.H"

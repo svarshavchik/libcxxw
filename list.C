@@ -26,6 +26,11 @@
 
 LIBCXXW_NAMESPACE_START
 
+namespace {
+#if 0
+}
+#endif
+
 //! The container returned by create_list().
 
 //! create_list() returned this subclass of focusable_containerObj.
@@ -43,19 +48,23 @@ class LIBCXX_HIDDEN listObj : public peepholed_focusableObj {
 
 	listObj(const container &internal_listcontainer,
 		const ref<peepholed_focusableObj::implObj> &impl,
-		const ref<layoutmanagerObj::implObj> &layout_impl)
-		: peepholed_focusableObj(impl, layout_impl),
-		internal_listcontainer(internal_listcontainer)
+		const layout_impl &container_layout_impl)
+		: peepholed_focusableObj{impl, container_layout_impl},
+		internal_listcontainer{internal_listcontainer}
 		{
 		}
 
 	~listObj()=default;
 
-	ref<layoutmanagerObj::implObj> get_layout_impl() const override
+	layout_impl get_layout_impl() const override
 	{
 		return internal_listcontainer->get_layout_impl();
 	}
 };
+#if 0
+{
+#endif
+}
 
 ///////////////////////////////////////////////////////////
 

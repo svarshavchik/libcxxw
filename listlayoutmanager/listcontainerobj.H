@@ -24,7 +24,7 @@ class LIBCXX_HIDDEN listcontainerObj : public focusable_containerObj {
 	//! Constructor
 	listcontainerObj(const focusable_impl &list_focusable_impl,
 			 const container_impl &container_impl,
-			 const ref<layoutmanagerObj::implObj> &list_impl);
+			 const layout_impl &list_layout_impl);
 
 	//! Destructor
 	~listcontainerObj();

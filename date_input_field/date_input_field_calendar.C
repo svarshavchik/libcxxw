@@ -34,7 +34,7 @@ LIBCXXW_NAMESPACE_START
 date_input_field_calendarObj
 ::date_input_field_calendarObj(const popup_attachedto_info &attachedto_info,
 			       const ref<implObj> &impl,
-			       const ref<layoutmanagerObj::implObj> &lm_impl,
+			       const layout_impl &lm_impl,
 			       const ymd &current_ym,
 			       const input_field &text_input_field)
 	: superclass_t{impl, impl, lm_impl},
@@ -234,7 +234,7 @@ static text_param get_month_label(const const_locale &e,
 void date_input_field_calendarObj
 ::constructor(const popup_attachedto_info &attachedto_info,
 	      const ref<implObj> &impl,
-	      const ref<layoutmanagerObj::implObj> &lm_impl,
+	      const layout_impl &lm_impl,
 	      const ymd &current_ym,
 	      const input_field &text_input_field)
 {

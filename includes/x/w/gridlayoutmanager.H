@@ -33,8 +33,7 @@ public:
 	//! Create a container with the grid layout manager.
 
 	//! \internal
-	ref<layoutmanagerObj::implObj>
-		create(const container_impl &) const override;
+	layout_impl create(const container_impl &) const override;
 };
 
 LIBCXXW_NAMESPACE_END

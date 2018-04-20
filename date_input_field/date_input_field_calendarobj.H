@@ -45,14 +45,14 @@ class LIBCXX_HIDDEN date_input_field_calendarObj
 
 	date_input_field_calendarObj(const popup_attachedto_info &,
 				     const ref<implObj> &,
-				     const ref<layoutmanagerObj::implObj> &,
+				     const layout_impl &,
 				     const ymd &current_ym,
 				     const input_field &text_input_field);
 
 	//! Constructor, phase 2.
 	void constructor(const popup_attachedto_info &,
 			 const ref<implObj> &,
-			 const ref<layoutmanagerObj::implObj> &,
+			 const layout_impl &,
 			 const ymd &current_ym,
 			 const input_field &text_input_field);
 

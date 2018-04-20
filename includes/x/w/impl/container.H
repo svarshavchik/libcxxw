@@ -62,7 +62,7 @@ public:
 
 	//! \see layoutmanagerObj::implObj
 
-	typedef mpobj<ptr<layoutmanagerObj::implObj>> layoutmanager_ptr_t;
+	typedef mpobj<layout_implptr> layoutmanager_ptr_t;
 
 	//! The link to the container's layout manager.
 
@@ -81,12 +81,12 @@ public:
 		if (!p)
 			return; // In the process of being destroyed
 
-		functor(ref<layoutmanagerObj::implObj>(p));
+		functor(layout_impl{p});
 	}
 
 	//! Invoked from layoutmanager's public object's constructor
 
-	void install_layoutmanager(const ref<layoutmanagerObj::implObj> &);
+	void install_layoutmanager(const layout_impl &);
 
 	//! Invoked from layoutmanager's public object's destructor
 

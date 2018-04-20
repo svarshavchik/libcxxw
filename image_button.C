@@ -29,7 +29,7 @@ LOG_FUNC_SCOPE_DECL(INSERT_LIBX_NAMESPACE::w::image_button, image_log);
 image_buttonObj::image_buttonObj(const ref<implObj> &impl,
 				 const container_impl
 				 &container_impl,
-				 const ref<layoutmanagerObj::implObj> &lm_impl)
+				 const layout_impl &lm_impl)
 	: containerObj(container_impl, lm_impl),
 	  impl(impl)
 {

@@ -1,20 +1,19 @@
 /*
-** Copyright 2017 Double Precision, Inc.
+** Copyright 2017-2018 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
-#ifndef layoutmanager_h
-#define layoutmanager_h
+#ifndef x_w_impl_layoutmanager_h
+#define x_w_impl_layoutmanager_h
 
-#include "x/w/layoutmanager.H"
-#include "x/w/containerobj.H"
-#include "x/w/rectangle.H"
-#include "x/w/batch_queuefwd.H"
-#include "x/w/impl/draw_infofwd.H"
-#include "x/w/impl/child_elementfwd.H"
-#include "x/w/impl/element.H"
-#include "x/w/connection_threadfwd.H"
+#include <x/w/layoutmanager.H>
+#include <x/w/containerobj.H>
+#include <x/w/rectangle.H>
+#include <x/w/batch_queuefwd.H>
+#include <x/w/impl/draw_infofwd.H>
+#include <x/w/impl/child_elementfwd.H>
+#include <x/w/impl/element.H>
+#include <x/w/connection_threadfwd.H>
 
-#include <x/functional.H>
 #include <x/functionalrefptrfwd.H>
 #include <x/logger.H>
 
@@ -43,7 +42,7 @@ LIBCXXW_NAMESPACE_START
 //! public layout manager object, that's referenced only from the public
 //! container object, gets destroyed.
 
-class LIBCXX_HIDDEN layoutmanagerObj::implObj : virtual public obj {
+class layoutmanagerObj::implObj : virtual public obj {
 
  protected:
 	LOG_CLASS_SCOPE;

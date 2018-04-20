@@ -21,7 +21,7 @@
 #include "x/w/canvas.H"
 #include "x/w/input_field.H"
 #include "file_dialog/file_dialog_impl.H"
-#include "layoutmanager.H"
+#include "x/w/impl/layoutmanager.H"
 #include "peephole/peephole_toplevel.H"
 #include "peephole/peepholed_toplevel_element.H"
 #include "peepholed_toplevel_main_window.H"
@@ -42,14 +42,14 @@ LOG_CLASS_INIT(LIBCXX_NAMESPACE::w::main_windowObj);
 LIBCXXW_NAMESPACE_START
 
 main_windowObj::main_windowObj(const ref<implObj> &impl,
-			       const ref<layoutmanagerObj::implObj> &lm)
+			       const layout_impl &lm)
 	: generic_windowObj(impl, lm),
 	  impl(impl)
 {
 }
 
 void main_windowObj::constructor(const ref<implObj> &impl,
-				 const ref<layoutmanagerObj::implObj> &lm)
+				 const layout_impl &lm)
 {
 	impl->handler->public_object=ref(this);
 }
@@ -339,7 +339,7 @@ main_window screenObj
 	return mw;
 }
 
-ref<layoutmanagerObj::implObj> main_windowObj::get_layout_impl() const
+layout_impl main_windowObj::get_layout_impl() const
 {
 	return impl->app_container->get_layout_impl();
 }

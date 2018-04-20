@@ -29,8 +29,8 @@ public:
 
 	//! Constructor
 	peepholed_focusableObj(const ref<implObj> &impl,
-			       const ref<layoutmanagerObj::implObj>
-			       &layout_impl) LIBCXX_HIDDEN;
+			       const layout_impl &container_layout_impl)
+		LIBCXX_HIDDEN;
 
 	//! Destructor
 	~peepholed_focusableObj() LIBCXX_HIDDEN;

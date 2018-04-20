@@ -8,7 +8,7 @@
 
 #include "peephole/peepholeobj.H"
 #include "peephole/peephole_style.H"
-#include "layoutmanager.H"
+#include "x/w/impl/layoutmanager.H"
 #include "peephole/peepholed_elementfwd.H"
 #include "x/w/gridlayoutmanagerfwd.H"
 #include "x/w/elementfwd.H"

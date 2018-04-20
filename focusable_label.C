@@ -62,12 +62,12 @@ focusable_label factoryObj
 
 focusable_labelObj
 ::focusable_labelObj(const container_impl &container_impl,
-		     const ref<layoutmanagerObj::implObj> &layout_impl,
+		     const layout_impl &container_layout_impl,
 		     const ref<textlabelObj::implObj> &label_impl,
 		     const focusable_impl &focusable_impl)
-	: containerObj(container_impl, layout_impl),
-	  textlabelObj(label_impl),
-	  focusableObj::ownerObj(focusable_impl)
+	: containerObj{container_impl, container_layout_impl},
+	  textlabelObj{label_impl},
+	  focusableObj::ownerObj{focusable_impl}
 {
 }
 

@@ -6,7 +6,7 @@
 #include "x/w/impl/container.H"
 #include "x/w/container.H"
 #include "x/w/factory.H"
-#include "layoutmanager.H"
+#include "x/w/impl/layoutmanager.H"
 #include "x/w/impl/container_element.H"
 #include "x/w/impl/child_element.H"
 #include "run_as.H"
@@ -14,12 +14,12 @@
 LIBCXXW_NAMESPACE_START
 
 containerObj::containerObj(const ref<implObj> &impl,
-			   const ref<layoutmanagerObj::implObj> &layout_impl)
-	: elementObj(ref<elementObj::implObj>(&impl->container_element_impl())),
-	  impl(impl),
-	  layout_impl(layout_impl)
+			   const layout_impl &container_layout_impl)
+	: elementObj{ref{&impl->container_element_impl()}},
+	  impl{impl},
+	  container_layout_impl{container_layout_impl}
 {
-	impl->install_layoutmanager(layout_impl);
+	impl->install_layoutmanager(container_layout_impl);
 }
 
 containerObj::~containerObj()
@@ -46,9 +46,9 @@ containerObj::~containerObj()
 	elementObj::impl->removed_from_container();
 }
 
-ref<layoutmanagerObj::implObj> containerObj::get_layout_impl() const
+layout_impl containerObj::get_layout_impl() const
 {
-	return layout_impl;
+	return container_layout_impl;
 }
 
 layoutmanager containerObj::get_layoutmanager()

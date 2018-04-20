@@ -27,7 +27,7 @@ public:
 
 	//! Constructor
 	progressbarObj(const ref<implObj> &impl,
-		       const ref<layoutmanagerObj::implObj> &layout_impl)
+		       const layout_impl &container_layout_impl)
 		LIBCXX_HIDDEN;
 
 	//! Destructor
@@ -35,7 +35,7 @@ public:
 
 	//! Override get_layout_impl()
 
-	ref<layoutmanagerObj::implObj> get_layout_impl() const override;
+	layout_impl get_layout_impl() const override;
 
 	/*! Update the progress bar's value.
 

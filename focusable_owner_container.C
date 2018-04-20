@@ -10,11 +10,10 @@ LIBCXXW_NAMESPACE_START
 
 focusable_owner_containerObj
 ::focusable_owner_containerObj(const container_impl &impl,
-				     const ref<layoutmanagerObj::implObj>
-				     &layout_impl,
-				     const focusable_impl &f_impl)
-	: containerObj(impl, layout_impl),
-	  focusableObj::ownerObj(f_impl)
+			       const layout_impl &container_layout_impl,
+			       const focusable_impl &f_impl)
+	: containerObj{impl, container_layout_impl},
+	  focusableObj::ownerObj{f_impl}
 {
 }
 

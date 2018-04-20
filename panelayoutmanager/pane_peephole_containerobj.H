@@ -28,8 +28,7 @@ public:
 
 	//! Constructor
 	pane_peephole_containerObj(const ref<implObj> &impl,
-				   const ref<layoutmanagerObj::implObj>
-				   &layout_impl);
+				   const layout_impl &container_layout_impl);
 
 	//! Destructor
 	~pane_peephole_containerObj();

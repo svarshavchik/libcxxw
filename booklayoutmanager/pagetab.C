@@ -8,8 +8,8 @@
 LIBCXXW_NAMESPACE_START
 
 pagetabObj::pagetabObj(const ref<implObj> &impl,
-		       const ref<layoutmanagerObj::implObj> &layout_impl)
-	: containerObj{impl, layout_impl},
+		       const layout_impl &container_layout_impl)
+	: containerObj{impl, container_layout_impl},
 	  hotspotObj(impl),
 	  focusableObj::ownerObj{impl},
 	impl{impl}

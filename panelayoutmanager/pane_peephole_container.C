@@ -15,8 +15,8 @@ LIBCXXW_NAMESPACE_START
 
 pane_peephole_containerObj
 ::pane_peephole_containerObj(const ref<implObj> &impl,
-			     const ref<layoutmanagerObj::implObj> &layout_impl)
-	: focusable_containerObj{impl, layout_impl},
+			     const layout_impl &container_layout_impl)
+	: focusable_containerObj{impl, container_layout_impl},
 	  impl{impl}
 {
 }

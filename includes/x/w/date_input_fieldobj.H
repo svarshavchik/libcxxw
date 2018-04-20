@@ -28,7 +28,7 @@ public:
 
 	//! Constructor
 	date_input_fieldObj(const ref<implObj> &impl,
-			    const ref<layoutmanagerObj::implObj> &layout_impl)
+			    const layout_impl &my_layout_impl)
 		LIBCXX_HIDDEN;
 
 	//! Destructor

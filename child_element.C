@@ -7,7 +7,7 @@
 #include "x/w/impl/draw_info.H"
 #include "x/w/impl/container.H"
 #include "connection_thread.H"
-#include "layoutmanager.H"
+#include "x/w/impl/layoutmanager.H"
 #include "x/w/impl/background_color.H"
 #include "generic_window_handler.H"
 #include "x/w/impl/background_color_element.H"

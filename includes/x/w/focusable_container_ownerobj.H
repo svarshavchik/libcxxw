@@ -21,8 +21,7 @@ class focusable_container_ownerObj : public containerObj,
 public:
 	//! Constructor
 	focusable_container_ownerObj(const ref<containerObj::implObj> &impl,
-				     const ref<layoutmanagerObj::implObj>
-				     &layout_impl,
+				     const layout_impl &my_layout_impl,
 				     const focusable_impl &f_impl);
 
 	//! Destructor

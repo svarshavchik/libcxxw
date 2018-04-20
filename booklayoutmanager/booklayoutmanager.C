@@ -14,7 +14,7 @@
 #include "peephole/peepholed_element.H"
 #include "peephole/peephole_style.H"
 #include "peephole/peephole_layoutmanager_impl.H"
-#include "layoutmanager.H"
+#include "x/w/impl/layoutmanager.H"
 #include "image_button.H"
 #include "image_button_internal_impl.H"
 #include "icon.H"

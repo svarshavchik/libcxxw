@@ -12,8 +12,8 @@
 LIBCXXW_NAMESPACE_START
 
 menuObj::menuObj(const ref<implObj> &impl,
-		 const ref<layoutmanagerObj::implObj> &layout_impl)
-	: focusable_containerObj(impl, layout_impl), impl(impl)
+		 const layout_impl &container_layout_impl)
+	: focusable_containerObj{impl, container_layout_impl}, impl{impl}
 {
 }
 
@@ -33,7 +33,7 @@ focusable_impl menuObj::get_impl() const
 	return f_impl;
 }
 
-ref<layoutmanagerObj::implObj> menuObj::get_layout_impl() const
+layout_impl menuObj::get_layout_impl() const
 {
 	return impl->menu_popup->get_layout_impl();
 }

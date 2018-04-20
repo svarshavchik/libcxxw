@@ -48,7 +48,7 @@ class LIBCXX_HIDDEN batch_queueObj : virtual public obj {
 	//! call gets batched, to invoke needs_recalculation() on all of them
 	//! in one shot.
 
-	void schedule_for_recalculation(const ref<layoutmanagerObj::implObj> &);
+	void schedule_for_recalculation(const layout_impl &);
 
 	//! Schedule an element to have its visibility update.
 

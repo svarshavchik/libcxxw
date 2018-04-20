@@ -66,7 +66,7 @@ void peepholeObj::layoutmanager_implObj
 
 layoutmanager peepholeObj::layoutmanager_implObj::create_public_object()
 {
-	return layoutmanager::create(ref<layoutmanagerObj::implObj>(this));
+	return layoutmanager::create(layout_impl{this});
 }
 
 void peepholeObj::layoutmanager_implObj

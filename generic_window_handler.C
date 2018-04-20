@@ -14,7 +14,7 @@
 #include "cursor_pointer_element.H"
 #include "x/w/impl/draw_info.H"
 #include "x/w/impl/container_element.H"
-#include "layoutmanager.H"
+#include "x/w/impl/layoutmanager.H"
 #include "screen.H"
 #include "screen_depthinfo.H"
 #include "xid_t.H"

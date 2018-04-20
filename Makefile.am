@@ -359,7 +359,6 @@ libcxxw_la_SOURCES=\
 	label_element.H				    \
 	label_elementfwd.H			    \
 	layoutmanager.C				    \
-	layoutmanager.H				    \
 	layoutmanager_impl.C			    \
 	list.C					    \
 	listlayoutmanager/extra_list_row_info.C	    \

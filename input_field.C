@@ -33,10 +33,9 @@ LIBCXXW_NAMESPACE_START
 input_fieldObj::input_fieldObj(const ref<implObj> &impl,
 			       const ref<peepholed_focusableObj::implObj>
 			       &peephole_impl,
-			       const ref<layoutmanagerObj::implObj>
-			       &layout_impl)
-	: peepholed_focusableObj(peephole_impl, layout_impl),
-	  impl(impl)
+			       const layout_impl &container_layout_impl)
+	: peepholed_focusableObj{peephole_impl, container_layout_impl},
+	  impl{impl}
 {
 }
 

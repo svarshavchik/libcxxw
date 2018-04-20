@@ -32,8 +32,8 @@ LIBCXXW_NAMESPACE_START
 
 date_input_fieldObj
 ::date_input_fieldObj(const ref<implObj> &impl,
-		      const ref<layoutmanagerObj::implObj> &layout_impl)
-	: focusable_containerObj{impl->handler, layout_impl},
+		      const layout_impl &my_layout_impl)
+	: focusable_containerObj{impl->handler, my_layout_impl},
 	  impl{impl}
 {
 }

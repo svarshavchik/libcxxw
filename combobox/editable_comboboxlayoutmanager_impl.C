@@ -34,7 +34,8 @@ layoutmanager editable_comboboxlayoutmanagerObj::implObj::create_public_object()
 {
 	return editable_comboboxlayoutmanager
 		::create(ref<implObj>(this),
-			 combo_container_impl->popup_container->layout_impl);
+			 combo_container_impl->popup_container
+			 ->listlayout_impl);
 }
 
 LIBCXXW_NAMESPACE_END

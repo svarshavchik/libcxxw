@@ -6,7 +6,7 @@
 #include "x/w/new_layoutmanagerfwd.H"
 #include "x/w/impl/container_element.H"
 #include "x/w/impl/child_element.H"
-#include "layoutmanager.H"
+#include "x/w/impl/layoutmanager.H"
 
 LIBCXXW_NAMESPACE_START
 

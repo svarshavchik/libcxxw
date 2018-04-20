@@ -9,7 +9,7 @@
 LIBCXXW_NAMESPACE_START
 
 popupObj::popupObj(const ref<implObj> &impl,
-		   const ref<layoutmanagerObj::implObj> &layout)
+		   const layout_impl &layout)
 	: generic_windowObj(impl, layout),
 	  impl(impl)
 {

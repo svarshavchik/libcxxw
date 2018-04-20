@@ -7,7 +7,7 @@
 #include "peephole/peephole_toplevel_gridlayoutmanagerobj.H"
 #include "peephole/peephole_impl.H"
 #include "x/w/impl/container.H"
-#include "layoutmanager.H"
+#include "x/w/impl/layoutmanager.H"
 
 LIBCXXW_NAMESPACE_START
 

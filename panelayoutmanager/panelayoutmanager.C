@@ -154,12 +154,13 @@ class LIBCXX_HIDDEN panecontainerObj : public focusable_containerObj {
 
  public:
 
-	const ref<panelayoutmanagerObj::implObj> layout_impl;
+	const ref<panelayoutmanagerObj::implObj> panelayout_impl;
 
 	panecontainerObj(const container_impl &impl,
-			 const ref<panelayoutmanagerObj::implObj> &layout_impl)
-		: focusable_containerObj{impl, layout_impl},
-		layout_impl{layout_impl}
+			 const ref<panelayoutmanagerObj::implObj>
+			 &panelayout_impl)
+		: focusable_containerObj{impl, panelayout_impl},
+		panelayout_impl{panelayout_impl}
 		{
 		}
 
@@ -167,19 +168,19 @@ class LIBCXX_HIDDEN panecontainerObj : public focusable_containerObj {
 
 	focusable_impl get_impl() const override
 	{
-		grid_map_t::lock lock{layout_impl->grid_map};
+		grid_map_t::lock lock{panelayout_impl->grid_map};
 
-		auto n=layout_impl->total_size(lock);
+		auto n=panelayout_impl->total_size(lock);
 
-		return layout_impl->get_element(lock, n <= 1 ? 0:1);
+		return panelayout_impl->get_element(lock, n <= 1 ? 0:1);
 	}
 
 	void do_get_impl(const function<internal_focusable_cb> &cb)
 		const override
 	{
-		grid_map_t::lock lock{layout_impl->grid_map};
+		grid_map_t::lock lock{panelayout_impl->grid_map};
 
-		auto n=layout_impl->total_size(lock);
+		auto n=panelayout_impl->total_size(lock);
 
 		// An element in the container is either a slider or a pane
 		// element. Both of them are focusables. The pane element
@@ -197,7 +198,7 @@ class LIBCXX_HIDDEN panecontainerObj : public focusable_containerObj {
 
 		for (size_t i=0; i<n; ++i)
 		{
-			focusable f=layout_impl->get_element(lock, i);
+			focusable f=panelayout_impl->get_element(lock, i);
 
 			f->get_impl([&]
 				    (const auto &focusable_group)

@@ -34,7 +34,7 @@ static inline bool autocomplete(ONLY IN_THREAD,
 				const auto &container_impl,
 				auto &autocomplete_info)
 {
-	ptr<layoutmanagerObj::implObj> layoutmanager_impl;
+	layout_implptr layoutmanager_impl;
 
 	container_impl->invoke_layoutmanager
 		([&]

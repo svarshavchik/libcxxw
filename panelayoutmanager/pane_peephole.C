@@ -9,8 +9,8 @@ LIBCXXW_NAMESPACE_START
 
 pane_peepholeObj
 ::pane_peepholeObj(const ref<implObj> &impl,
-		   const ref<layoutmanagerObj::implObj> &layout_impl)
-	: containerObj{impl, layout_impl},
+		   const layout_impl &container_layout_impl)
+	: containerObj{impl, container_layout_impl},
 	  impl{impl}
 {
 }

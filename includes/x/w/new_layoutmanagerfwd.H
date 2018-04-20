@@ -32,8 +32,7 @@ public:
 	~new_layoutmanager();
 
 	//! Internal implementation
-	virtual ref<layoutmanagerObj::implObj>
-		create(const container_impl &) const=0;
+	virtual layout_impl create(const container_impl &) const=0;
 
 	//! Internal implementation
 	virtual container create(const container_impl &,

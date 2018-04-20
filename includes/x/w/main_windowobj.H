@@ -61,12 +61,12 @@ public:
 
 	//! Constructor, phase 1.
 	main_windowObj(const ref<implObj> &impl,
-		       const ref<layoutmanagerObj::implObj> &lm)
+		       const layout_impl &lm)
 		LIBCXX_HIDDEN;
 
 	//! Constructor, phase 2.
 	void constructor(const ref<implObj> &impl,
-			 const ref<layoutmanagerObj::implObj> &lm)
+			 const layout_impl &lm)
 		LIBCXX_HIDDEN;
 
 	//! Destructor
@@ -119,7 +119,7 @@ private:
 
 	//! Inherited from containerObj
 
-	ref<layoutmanagerObj::implObj> get_layout_impl() const override;
+	layout_impl get_layout_impl() const override;
 
 public:
 	//! Creator for create_mainwindow()

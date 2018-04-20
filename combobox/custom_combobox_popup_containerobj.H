@@ -32,12 +32,12 @@ public:
 
 	//! The combo-box popup container uses the list layout manager.
 
-	const ref<listlayoutmanagerObj::implObj> layout_impl;
+	const ref<listlayoutmanagerObj::implObj> listlayout_impl;
 
 	//! Constructor
 	custom_combobox_popup_containerObj(const ref<implObj> &impl,
 					   const ref<listlayoutmanagerObj
-					   ::implObj> &layout_impl,
+					   ::implObj> &listlayout_impl,
 					   const popup_attachedto_info
 					   &attachedto_info)
 		LIBCXX_HIDDEN;

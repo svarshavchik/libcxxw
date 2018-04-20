@@ -14,15 +14,15 @@ LIBCXXW_NAMESPACE_START
 custom_combobox_popup_containerObj
 ::custom_combobox_popup_containerObj(const ref<implObj> &impl,
 				     const ref<listlayoutmanagerObj
-				     ::implObj> &layout_impl,
+				     ::implObj> &listlayout_impl,
 				     const popup_attachedto_info
 				     &attachedto_info)
-	: superclass_t(attachedto_info, impl,
-		       layout_impl->list_element_singleton->impl,
-		       impl,
-		       layout_impl),
-	  impl(impl),
-	  layout_impl(layout_impl)
+	: superclass_t{attachedto_info, impl,
+		listlayout_impl->list_element_singleton->impl,
+		impl,
+		listlayout_impl},
+	  impl{impl},
+	  listlayout_impl{listlayout_impl}
 {
 }
 

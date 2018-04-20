@@ -7,16 +7,15 @@
 #include "peepholed_toplevel_main_window.H"
 #include "peepholed_toplevel_main_window_impl.H"
 #include "peephole/peepholed_toplevel_element.H"
-#include "layoutmanager.H"
+#include "x/w/impl/layoutmanager.H"
 
 LIBCXXW_NAMESPACE_START
 
 peepholed_toplevel_main_windowObj
 ::peepholed_toplevel_main_windowObj(const ref<implObj> &impl,
-				    const ref<layoutmanagerObj::implObj>
-				    &layout_impl)
-	: toplevel_container_superclass_t(impl, layout_impl),
-	  impl(impl)
+				    const layout_impl &container_layout_impl)
+	: toplevel_container_superclass_t{impl, container_layout_impl},
+	  impl{impl}
 {
 }
 

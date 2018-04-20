@@ -6,7 +6,7 @@
 #include "connection_thread.H"
 #include "x/w/impl/element.H"
 #include "x/w/impl/container.H"
-#include "layoutmanager.H"
+#include "x/w/impl/layoutmanager.H"
 #include "catch_exceptions.H"
 
 LIBCXXW_NAMESPACE_START

@@ -36,7 +36,7 @@ public:
 
 	//! Constructor
 	generic_windowObj(const ref<implObj> &impl,
-			  const ref<layoutmanagerObj::implObj> &lm)
+			  const layout_impl &lm)
 		LIBCXX_HIDDEN;
 
 	//! Destructor

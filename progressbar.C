@@ -5,7 +5,7 @@
 #include "libcxxw_config.h"
 #include "progressbar_impl.H"
 #include "progressbar_slider.H"
-#include "layoutmanager.H"
+#include "x/w/impl/layoutmanager.H"
 #include "gridlayoutmanager.H"
 #include "x/w/gridfactory.H"
 #include "x/w/impl/element.H"
@@ -15,15 +15,14 @@
 LIBCXXW_NAMESPACE_START
 
 progressbarObj::progressbarObj(const ref<implObj> &impl,
-			       const ref<layoutmanagerObj::implObj>
-			       &layout_impl)
-	: containerObj(impl->handler, layout_impl), impl{impl}
+			       const layout_impl &container_layout_impl)
+	: containerObj{impl->handler, container_layout_impl}, impl{impl}
 {
 }
 
 progressbarObj::~progressbarObj()=default;
 
-ref<layoutmanagerObj::implObj> progressbarObj::get_layout_impl() const
+layout_impl progressbarObj::get_layout_impl() const
 {
 	// This is the inner container, and this returns its layout manager,
 	// rather than our boring one.

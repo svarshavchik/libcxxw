@@ -25,7 +25,7 @@ public:
 
 	//! Constructor
 	popupObj(const ref<implObj> &impl,
-		 const ref<layoutmanagerObj::implObj> &layout);
+		 const layout_impl &layout);
 
 	//! Destructor
 	~popupObj();

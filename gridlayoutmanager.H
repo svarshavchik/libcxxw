@@ -8,7 +8,7 @@
 #include "x/w/gridlayoutmanager.H"
 #include "x/w/border_infommfwd.H"
 #include "x/w/grid_map_infofwd.H"
-#include "layoutmanager.H"
+#include "x/w/impl/layoutmanager.H"
 #include "gridfactory.H"
 #include "metrics_grid_posfwd.H"
 #include "x/w/connection_threadfwd.H"

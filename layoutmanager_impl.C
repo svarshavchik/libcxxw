@@ -3,7 +3,7 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
-#include "layoutmanager.H"
+#include "x/w/impl/layoutmanager.H"
 #include "x/w/impl/container.H"
 #include "generic_window_handler.H"
 #include "xid_t.H"

@@ -35,6 +35,12 @@ public:
 
 };
 
+//! Alias
+typedef ref<layoutmanagerObj::implObj> layout_impl;
+
+//! Alias
+typedef ptr<layoutmanagerObj::implObj> layout_implptr;
+
 LIBCXXW_NAMESPACE_END
 
 #endif

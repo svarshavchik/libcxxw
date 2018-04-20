@@ -8,7 +8,7 @@
 #include "x/w/pagelayoutmanager.H"
 #include "x/w/containerfwd.H"
 #include "x/w/alignment.H"
-#include "layoutmanager.H"
+#include "x/w/impl/layoutmanager.H"
 #include <optional>
 #include <unordered_map>
 #include <x/mpobj.H>

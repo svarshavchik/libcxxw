@@ -6,7 +6,7 @@
 #include "x/w/impl/container.H"
 #include "container_impl.H"
 #include "x/w/container.H"
-#include "layoutmanager.H"
+#include "x/w/impl/layoutmanager.H"
 #include "x/w/impl/child_element.H"
 #include "inherited_visibility_info.H"
 #include "x/w/impl/element_draw.H"
@@ -32,7 +32,7 @@ const generic_windowObj::handlerObj &containerObj::implObj::get_window_handler()
 }
 
 void containerObj::implObj
-::install_layoutmanager(const ref<layoutmanagerObj::implObj> &impl)
+::install_layoutmanager(const layout_impl &impl)
 {
 	layoutmanager_ptr_t::lock lock(layoutmanager_ptr);
 
@@ -53,7 +53,7 @@ void containerObj::implObj::uninstall_layoutmanager()
 
 	if (!*lock)
 		throw EXCEPTION("Internal error - no layout manager to uninstall");
-	*lock=ptr<layoutmanagerObj::implObj>();
+	*lock=layout_implptr();
 }
 
 void containerObj::implObj::removed_from_container(ONLY IN_THREAD)

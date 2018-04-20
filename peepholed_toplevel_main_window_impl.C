@@ -8,7 +8,7 @@
 #include "peephole/peepholed_toplevel_element.H"
 #include "generic_window_handler.H"
 #include "reference_font_element.H"
-#include "layoutmanager.H"
+#include "x/w/impl/layoutmanager.H"
 #include "x/w/impl/always_visible.H"
 #include "gridlayoutmanager.H"
 #include "menu/menubarlayoutmanager_impl.H"

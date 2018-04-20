@@ -15,8 +15,7 @@ new_pagelayoutmanager::new_pagelayoutmanager()=default;
 
 new_pagelayoutmanager::~new_pagelayoutmanager()=default;
 
-ref<layoutmanagerObj::implObj>
-new_pagelayoutmanager::create(const container_impl &c) const
+layout_impl new_pagelayoutmanager::create(const container_impl &c) const
 {
 	return ref<pagelayoutmanagerObj::implObj>::create(c);
 }

@@ -28,7 +28,7 @@ public:
 private:
 	//! Layout manager's internal implementation object.
 
-	const ref<layoutmanagerObj::implObj> layout_impl;
+	const layout_impl container_layout_impl;
 public:
 	//! Return my implementation object.
 
@@ -39,7 +39,7 @@ public:
 	//! looks like the top level display element is using that layout
 	//! manager.
 
-	virtual ref<layoutmanagerObj::implObj> get_layout_impl() const;
+	virtual layout_impl get_layout_impl() const;
 
 	//! Return this container's layout manager.
 	layoutmanager get_layoutmanager();
@@ -49,7 +49,7 @@ public:
 
 	//! Constructor
 	containerObj(const ref<implObj> &impl,
-		     const ref<layoutmanagerObj::implObj> &layout_impl);
+		     const layout_impl &container_layout_impl);
 
 	//! Destructor
 	~containerObj();

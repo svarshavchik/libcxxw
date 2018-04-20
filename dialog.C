@@ -10,7 +10,7 @@
 #include "main_window.H"
 #include "dialog_impl.H"
 #include "dialog_handler.H"
-#include "layoutmanager.H"
+#include "x/w/impl/layoutmanager.H"
 #include "connection_thread.H"
 #include "batch_queue.H"
 

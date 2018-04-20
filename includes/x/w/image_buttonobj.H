@@ -30,7 +30,7 @@ public:
 	//! Constructor
 	image_buttonObj(const ref<implObj> &impl,
 			const container_impl &container_impl,
-			const ref<layoutmanagerObj::implObj> &lm_impl)
+			const layout_impl &lm_impl)
 		LIBCXX_HIDDEN;
 
 	//! Destructor

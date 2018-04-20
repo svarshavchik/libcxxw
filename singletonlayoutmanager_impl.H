@@ -5,7 +5,7 @@
 #ifndef singletonlayoutmanager_impl_h
 #define singletonlayoutmanager_impl_h
 
-#include "layoutmanager.H"
+#include "x/w/impl/layoutmanager.H"
 #include "singletonlayoutmanagerobj.H"
 #include <x/mpobj.H>
 #include <vector>
