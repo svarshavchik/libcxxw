@@ -552,10 +552,9 @@ void panelayoutmanagerObj::implObj
 		return;
 	}
 
-	if (s == 0)
+	if (pane_number == 0)
 	{
-		remove_element(lock, 0);
-		remove_element(lock, 1);
+		remove_elements(lock, 0, 2);
 		request_extra_space_to_canvas();
 		return;
 	}
