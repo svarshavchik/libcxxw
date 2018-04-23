@@ -211,7 +211,7 @@ l->insert_items(0, {"Lorem", INSERT_LIBX_NAMESPACE::w::text_param{"ipsum"}});
 \endcode
 
 A \c std::string, or a \c std::u32string specifies an individual list
-item, as a UTF-8 or a unicode string. Alternatively, an
+item, as a locale-encoded string or a unicode string. Alternatively, an
 \ref text_param "INSERT_LIBX_NAMESPACE::w::text_param" object specifies
 a list item with font and color mark-ups.
 

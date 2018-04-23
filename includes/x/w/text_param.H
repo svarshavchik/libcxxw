@@ -89,7 +89,7 @@ INSERT_LIBX_NAMESPACE::w::text_param p;
 p("Hello world");
 \endcode
 
-A \c std::string specifies a UTF-8 string.
+A \c std::string specifies a string in the current locale charset.
 
 \code
 INSERT_LIBX_NAMESPACE::w::text_param p;
@@ -113,7 +113,7 @@ p(INSERT_LIBX_NAMESPACE::w::font{"liberation sans", 12.0}, "Hello world");
 \endcode
 
 A \ref font "INSERT_LIBX_NAMESPACE::w::font" specifies a new font.
-At least one additional string parameter (either UTF-8 or unicode) must
+At least one additional string parameter (either string or unicode) must
 follow a font specification, otherwise an exception gets thrown; either
 in the same variadic parameter pack, or in a subsequent \c () call.
 
@@ -169,7 +169,7 @@ p("Hello world");
 
 A \ref rgb "INSERT_LIBX_NAMESPACE::w::rgb" parameter specifies a new color.
 This must be followed by at least one additional string parameter (either
-UTF-8 or unicode), otherwise an exception gets thrown.
+string or unicode), otherwise an exception gets thrown.
 The specified color applies to all subsequent strings passed to the
 constructor or the \c () operator, until the next font, if there is one.
 
@@ -190,7 +190,7 @@ p("highlight"_color, "Hello world!");
 
 A \ref theme_color "INSERT_LIBX_NAMESPACE::w::theme_color" specifies a new
 theme-specified color.
-At least one additional string parameter (either UTF-8 or unicode) must
+At least one additional string parameter (either string or unicode) must
 follow a color specification, otherwise an exception gets thrown; either
 in the same variadic parameter pack, or in a subsequent \c () call.
 \c text_param_literals.H allows using a \c "name"_color string literal

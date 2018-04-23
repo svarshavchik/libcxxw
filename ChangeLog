@@ -1,5 +1,8 @@
 2018-04-22  Sam Varshavchik  <mrsam@courier-mta.com>
 
+	* text_param.C (operator): Treat the string as encoded in the
+	current local's charset, and not UTF-8.
+
 	* input_field.C (set): Treat the string as encoded in the current
 	locale's character set, and not UTF-8.
 

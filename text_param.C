@@ -54,7 +54,7 @@ text_param &text_param::operator()(const std::string_view &s)
 	std::u32string out_buf;
 
 	unicode::iconvert::tou::convert(s.begin(), s.end(),
-					unicode::utf_8, out_buf);
+					unicode_locale_chset(), out_buf);
 
 	string += out_buf;
 	return *this;

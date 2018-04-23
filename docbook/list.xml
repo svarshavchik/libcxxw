@@ -345,7 +345,7 @@ llmanager->append_items(
     <itemizedlist>
       <listitem>
 	<para>
-	  A UTF-8 <classname>std::string</classname> or a unicode
+	  A <classname>std::string</classname> or a unicode
 	  <classname>std::u32string</classname>.
 	</para>
       </listitem>
