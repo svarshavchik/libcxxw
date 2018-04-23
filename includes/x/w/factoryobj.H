@@ -185,7 +185,7 @@ public:
 	button create_normal_button(functor &&f)
 	{
 		return do_create_normal_button(make_function<factory_creator_t>
-					       (std::forward<function>(f))
+					       (std::forward<functor>(f))
 					       );
 	}
 
@@ -197,7 +197,7 @@ public:
 				    const shortcut &shortcut_key)
 	{
 		return do_create_normal_button(make_function<factory_creator_t>
-					       (std::forward<function>(f)),
+					       (std::forward<functor>(f)),
 					       shortcut_key);
 	}
 
@@ -206,7 +206,7 @@ public:
 	button create_special_button(functor &&f)
 	{
 		return do_create_special_button(make_function<factory_creator_t>
-						(std::forward<function>(f))
+						(std::forward<functor>(f))
 						);
 	}
 
@@ -218,7 +218,7 @@ public:
 				     const shortcut &shortcut_key)
 	{
 		return do_create_special_button(make_function<factory_creator_t>
-						(std::forward<function>(f)),
+						(std::forward<functor>(f)),
 						shortcut_key);
 	}
 
