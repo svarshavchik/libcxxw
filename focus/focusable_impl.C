@@ -390,6 +390,24 @@ bool elementObj::implObj::process_button_event(ONLY IN_THREAD,
 
 		processed=true;
 	}
+
+	if (!processed && data(IN_THREAD).on_button_event_callback)
+	{
+		auto main_window=get_window_handler().get_main_window();
+
+		if (main_window)
+		{
+			busy_impl yes_i_am{*this};
+			try {
+				processed=data(IN_THREAD)
+					.on_button_event_callback
+					(IN_THREAD, be,
+					 activate_for(be),
+					 yes_i_am);
+			} REPORT_EXCEPTIONS(main_window);
+		}
+	}
+
 	return processed;
 }
 

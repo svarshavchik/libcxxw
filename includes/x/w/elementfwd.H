@@ -9,6 +9,7 @@
 #include <x/w/callback_triggerfwd.H>
 #include <x/w/connection_threadfwd.H>
 #include <x/w/metrics/axisfwd.H>
+#include <x/w/button_eventfwd.H>
 #include <x/ptrfwd.H>
 
 LIBCXXW_NAMESPACE_START
@@ -120,6 +121,34 @@ the previous callback still gets invoked after on_pointer_focus()
 returns, if the execution thread was about to call it. In any case,
 after the execution thread invokes the replacement callback once, the
 previous one is a distant memory.
+
+\note
+The callback cannot capture references to its display element, any of its
+parent display elements, or any of its child display elements (if the
+element is a container). This creates a circular references. Weak captures
+must be used.
+
+\par Button event callback
+
+\code
+#include <INSERT_LIBX_NAMESPACE/w/button_event.H>
+
+element->on_button_event([]
+                        (ONLY IN_THREAD,
+                         const INSERT_LIBX_NAMESPACE::w::button_event &e,
+                         bool activated,
+                         const INSERT_LIBX_NAMESPACE::w::busy &mcguffin)
+                         {
+                             if (activated && e.button == 1)
+                                 // ...
+                         });
+\endcode
+
+Installs a callback that gets invoked whenever a pointer button gets
+pressed or released with the pointer inside the element.
+
+The callback gets invoked only if no other action occurs in response to the
+button event.
 
 \note
 The callback cannot capture references to its display element, any of its
@@ -254,7 +283,21 @@ typedef void install_contextpopup_callback_t(THREAD_CALLBACK,
 					     const element &,
 					     const callback_trigger_t &,
 					     const busy &);
+//! Signature of a button event callback
 
+//! The callback returns true if it processed the button event.
+
+//! The first parameter is the button event.
+//!
+//! The second parameter indicates whether the button press or release is
+//! considered to be "activation" of that button.
+//!
+//! Generally, if it's the same as button_event.press, then do something.
+
+typedef bool button_event_callback_t(THREAD_CALLBACK,
+				     const button_event &,
+				     bool,
+				     const busy &);
 
 LIBCXXW_NAMESPACE_END
 

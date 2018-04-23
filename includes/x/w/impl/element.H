@@ -188,6 +188,10 @@ class elementObj::implObj : public element_drawObj,
 
 		functionptr<key_event_callback_t> on_key_event_callback;
 
+		//! Callback for reporting button events.
+
+		functionptr<button_event_callback_t> on_button_event_callback;
+
 		//! Whether this element is a label for some focusable.
 
 		label_forptr label_for;

@@ -112,6 +112,10 @@ public:
 	//! Install a pointer focus callback.
 	void on_pointer_focus(const functionref<focus_callback_t> &);
 
+	//! Install a button event callback
+
+	void on_button_event(const functionref<button_event_callback_t> &);
+
 	//! Create a standard tooltip consisting of an unwrapped label.
 
 	void create_tooltip(const text_param &text);
