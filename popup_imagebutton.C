@@ -13,9 +13,41 @@
 #include "x/w/impl/container_element.H"
 #include "x/w/impl/child_element.H"
 #include "generic_window_handler.H"
+#include "popup/popup_attachedto_handler.H"
+#include "popup/popup_attachedto_handler_element.H"
 #include "icon.H"
 
 LIBCXXW_NAMESPACE_START
+
+image_button_internal
+create_standard_popup_imagebutton(const gridfactory &f,
+				  const popup_attachedto_handler
+				  &attachedto_handler,
+				  const ref<elementObj::implObj> &popup_element,
+				  const popup_imagebutton_config &config)
+{
+	return create_popup_imagebutton
+		(f,
+		 [&]
+		 (const border_arg &focusoff_border,
+		  const border_arg &focuson_border,
+		  const container_impl &parent_container,
+		  const child_element_init_params &init_params)
+		 {
+			 auto ff=ref<popup_attachedto_handler_elementObj
+				     <popup_imagebutton_focusframe_implObj>>
+				 ::create(attachedto_handler,
+					  focusoff_border,
+					  focuson_border,
+					  parent_container,
+					  init_params);
+
+			 return ff;
+		 },
+
+		 popup_element,
+		 config);
+}
 
 image_button_internal
 do_create_popup_imagebutton(const gridfactory &f,

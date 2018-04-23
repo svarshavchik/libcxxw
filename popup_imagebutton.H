@@ -15,6 +15,7 @@
 #include "x/w/impl/container_element.H"
 #include "x/w/impl/always_visible.H"
 #include "x/w/impl/child_element.H"
+#include "popup/popup_attachedto_handlerfwd.H"
 #include <x/functional.H>
 
 LIBCXXW_NAMESPACE_START
@@ -112,6 +113,19 @@ create_popup_imagebutton(//! Factory for the grid cell with the popup button
 		 popup_element,
 		 config);
 }
+
+//! Create a popup_imagebutton based on a popup_attachedto_handler_element.
+
+//! This uses create_popup_imagebutton(), supplying a closure that constructs
+//! a \c popup_attachedto_handler_elementObj<popup_imagebutton_focusframe_implObj>.
+
+image_button_internal
+create_standard_popup_imagebutton(const gridfactory &f,
+				  const popup_attachedto_handler
+				  &attachedto_handler,
+				  const ref<elementObj::implObj> &popup_element,
+				  const popup_imagebutton_config &config)
+	LIBCXX_HIDDEN;
 
 LIBCXXW_NAMESPACE_END
 

@@ -145,7 +145,7 @@ date_input_field factoryObj
 	auto parent_handler=ref(&parent_container->get_window_handler());
 
 	auto attachedto_handler=
-		ref<popup_attachedto_handlerObj>::create
+		popup_attachedto_handler::create
 		(popup_attachedto_handler_args{
 			&shared_handler_dataObj::opening_exclusive_popup,
 			&shared_handler_dataObj::closing_exclusive_popup,
@@ -253,25 +253,8 @@ date_input_field factoryObj
 
 	auto date_picker_popup=popup::create(popup_impl, popup_lm->impl);
 
-	auto popup_imagebutton=create_popup_imagebutton
-		(f,
-		 [&]
-		 (const border_arg &focusoff_border,
-		  const border_arg &focuson_border,
-		  const container_impl &parent_container,
-		  const child_element_init_params &init_params)
-		 {
-			 auto ff=ref<popup_attachedto_handler_elementObj
-				     <popup_imagebutton_focusframe_implObj>>
-				 ::create(attachedto_handler,
-					  focusoff_border,
-					  focuson_border,
-					  parent_container,
-					  init_params);
-
-			 return ff;
-		 },
-
+	auto popup_imagebutton=create_standard_popup_imagebutton
+		(f, attachedto_handler,
 		 date_picker_popup->elementObj::impl,
 		 {
 			 config.border,
