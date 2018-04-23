@@ -6,20 +6,16 @@
 #define x_w_date_input_field_calendarobj_h
 
 #include "date_input_field/date_input_field_calendarfwd.H"
-#include "peephole/peepholed_fontelementfwd.H"
-#include "reference_font_elementfwd.H"
-#include "peephole/peepholed_toplevel_elementfwd.H"
-#include "x/w/impl/always_visiblefwd.H"
-#include "popup/popup_attachedto_infofwd.H"
-#include "x/w/impl/container_elementfwd.H"
+#include "peephole/peepholed_attachedto_containerobj.H"
 #include "x/w/containerobj.H"
 #include "x/w/gridlayoutmanagerfwd.H"
 #include "x/w/input_fieldfwd.H"
 #include "x/w/date_input_fieldfwd.H"
-#include "x/w/impl/child_element.H"
 
 #include <x/ymd.H>
 #include <x/mpobj.H>
+#include <x/refptr_traits.H>
+#include <x/functionalrefptr.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -28,18 +24,9 @@ LIBCXXW_NAMESPACE_START
 //! \see date_input_field_calendar
 
 class LIBCXX_HIDDEN date_input_field_calendarObj
-	: public peepholed_fontelementObj<peepholed_toplevel_elementObj
-					  <containerObj>> {
+	: public peepholed_attachedto_containerObj {
 
-	typedef peepholed_fontelementObj<peepholed_toplevel_elementObj
-					 <containerObj>> superclass_t;
  public:
-
-	//! Implementation object.
-
-	typedef reference_font_elementObj<
-		always_visibleObj<container_elementObj<child_elementObj>>
-		> implObj;
 
 	//! Constructor, phase 1.
 
@@ -59,30 +46,10 @@ class LIBCXX_HIDDEN date_input_field_calendarObj
 	//! Destructor
 	~date_input_field_calendarObj();
 
- private:
-
-	//! Attachment calculation info for the popup.
-	const popup_attachedto_info attachedto_info;
-
  public:
 	//! Input field for the date.
 	const input_field text_input_field;
  private:
-	//! Computed maximum width value.
-	dim_t max_width_value;
-
-	//! Computed maximum height value.
-	dim_t max_height_value;
-
-	//! Compute the maximum size.
-	void recalculate_peepholed_metrics(ONLY IN_THREAD,
-					   const screen &s) override;
-
-	//! Return the maximum width
-	dim_t max_width(ONLY IN_THREAD) const override;
-
-	//! Return the maximum height
-	dim_t max_height(ONLY IN_THREAD) const override;
 
 	//! Update the shown month.
 

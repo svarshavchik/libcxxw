@@ -15,6 +15,7 @@
 #include "popup_imagebutton.H"
 #include "peephole/peephole_toplevel.H"
 #include "peephole/peepholed_toplevel.H"
+#include "peephole/peepholed_attachedto_container_impl.H"
 #include "x/w/impl/focus/focusable.H"
 #include "gridlayoutmanager.H"
 #include "x/w/input_field.H"
@@ -72,12 +73,11 @@ void date_input_fieldObj::set(const std::optional<ymd> &d)
 
 	auto c=impl->calendar_container;
 
-	c->impl->get_window_handler().thread()->run_as
-		([=]
-		 (ONLY IN_THREAD)
-		 {
-			 c->set(IN_THREAD, d, {});
-		 });
+	c->in_thread([=]
+		     (ONLY IN_THREAD)
+		     {
+			     c->set(IN_THREAD, d, {});
+		     });
 
 }
 
@@ -180,10 +180,7 @@ date_input_field factoryObj
 
 			 auto container_impl=ref<date_input_field_calendarObj
 			 ::implObj>::create
-			 (theme_font{
-				 parent->container_element_impl()
-					 .label_theme_font()},
-			  parent, init_params);
+			 (parent, init_params);
 
 			 auto glm_impl=ref<gridlayoutmanagerObj::implObj>
 			 ::create(container_impl);

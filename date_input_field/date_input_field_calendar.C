@@ -3,9 +3,8 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
-#include "date_input_field_calendar.H"
-#include "peephole/peepholed_fontelement.H"
-#include "peephole/peepholed_toplevel_element.H"
+#include "date_input_field/date_input_field_calendar.H"
+#include "peephole/peepholed_attachedto_container_impl.H"
 #include "popup/popup_attachedto_info.H"
 #include "x/w/impl/container.H"
 #include "x/w/date_input_field.H"
@@ -37,32 +36,13 @@ date_input_field_calendarObj
 			       const layout_impl &lm_impl,
 			       const ymd &current_ym,
 			       const input_field &text_input_field)
-	: superclass_t{impl, impl, lm_impl},
-	  attachedto_info{attachedto_info},
+	: peepholed_attachedto_containerObj{attachedto_info, impl, lm_impl},
 	  text_input_field{text_input_field},
 	  current_ym{current_ym}
 {
 }
 
 date_input_field_calendarObj::~date_input_field_calendarObj()=default;
-
-void date_input_field_calendarObj
-::recalculate_peepholed_metrics(ONLY IN_THREAD,	const screen &s)
-{
-	max_width_value=attachedto_info->max_peephole_width(IN_THREAD, s);
-	max_height_value=attachedto_info->max_peephole_height(IN_THREAD, s);
-}
-
-dim_t date_input_field_calendarObj::max_width(ONLY IN_THREAD) const
-{
-	return max_width_value;
-}
-
-dim_t date_input_field_calendarObj::max_height(ONLY IN_THREAD) const
-{
-	return max_height_value;
-}
-
 
 // The day of the month buttons invoke picked(). Use this helper class to
 // avoid the overhead of separately weakly-capturing the object weakly for
@@ -463,19 +443,18 @@ void date_input_field_calendarObj
 void date_input_field_calendarObj::on_change(const date_input_field_callback_t
 					     &cb)
 {
-	impl->get_window_handler().thread()->run_as
-		([me=ref(this), cb]
-		 (ONLY IN_THREAD)
-		 {
-			 most_recent_date_t::lock lock{me->most_recent_date};
+	in_thread([me=ref(this), cb]
+		  (ONLY IN_THREAD)
+		  {
+			  most_recent_date_t::lock lock{me->most_recent_date};
 
-			 lock->callback=cb;
+			  lock->callback=cb;
 
-			 try {
-				 cb(IN_THREAD, lock->date_value, initial{});
-			 } REPORT_EXCEPTIONS(&me->impl
-					     ->container_element_impl());
-		 });
+			  try {
+				  cb(IN_THREAD, lock->date_value, initial{});
+			  } REPORT_EXCEPTIONS(&me->impl
+					      ->container_element_impl());
+		  });
 }
 
 void date_input_field_calendarObj::set(ONLY IN_THREAD,
@@ -635,7 +614,8 @@ void date_input_field_calendarObj::picked(ONLY IN_THREAD,
 	text_input_field->request_focus();
 
 	// Hide the popup.
-	impl->get_window_handler().request_visibility(false);
+	elementObj::impl->get_window_handler().request_visibility(IN_THREAD,
+								  false);
 }
 
 LIBCXXW_NAMESPACE_END
