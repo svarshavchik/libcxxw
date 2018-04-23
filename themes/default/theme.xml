@@ -917,6 +917,72 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
   <color id="dateedit_day_highlight_fg" scale="100%" />
   <color id="dateedit_day_highlight_bg" scale="10%" />
 
+  <!-- Color picker -->
+
+  <border id="color_picker_border" from="thin_0%" />
+
+  <!-- Size of the element showing the current color -->
+
+  <dim id="color_picker_current_width" axis="horiz">10</dim>
+  <dim id="color_picker_current_height" axis="vert">6</dim>
+
+  <!-- Border when an alpha channel is available -->
+
+  <border id="color_picker_popup_border" from="thin_0%">
+    <hradius>1</hradius>
+    <vradius>1</vradius>
+  </border>
+
+  <!-- Border when an alpha channel is not available -->
+
+  <border id="color_picker_popup_border_square" from="thin_0%" />
+  <dim id="color_picker_popup_border_square_padding_h" axis="horiz">1</dim>
+  <dim id="color_picker_popup_border_square_padding_v" axis="vert">1</dim>
+
+  <color id="color_picker_background_color" scale="textedit_background_color" />
+
+  <color id="color_picker_popup_background_color" scale="100%" />
+
+  <border id="color_pickerbuttonfocusoff_border" from="inputfocusoff_border">
+    <color>inputfocus_color2</color>
+  </border>
+  <border id="color_pickerbuttonfocuson_border" from="inputfocuson_border" />
+
+  <!--
+      In the color picker popup, the dimensions of the gradient square.
+  -->
+
+  <dim id="color_picker_square_width" axis="horiz">50</dim>
+  <dim id="color_picker_square_height" axis="vert\">50</dim>
+
+  <!--
+      In the color picker popup, the buffer between the gradient square and the
+      component strips.
+  -->
+
+  <dim id="color_picker_buffer_width" axis="horiz">4</dim>
+  <dim id="color_picker_buffer_height" axis="vert">4</dim>
+
+  <!-- In the color picker, the width/height of the component strips. -->
+
+  <dim id="color_picker_strip_width" axis="horiz">6</dim>
+  <dim id="color_picker_strip_height" axis="vert">6</dim>
+
+  <!-- Border around the gradient square -->
+
+  <border id="color_picker_gradient_border" from="thick_0%">
+    <rounded />
+  </border>
+
+  <!-- Border around the fixed component gradient -->
+
+  <border id="color_picker_fixed_component_border" from="thick_0%">
+    <rounded />
+    <color>30%</color>
+    <color2>70%</color2>
+    <dash>1</dash>
+  </border>
+
   <!-- Dialogs -->
 
   <color id="dialog_background" scale="90%" />

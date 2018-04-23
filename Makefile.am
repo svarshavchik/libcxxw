@@ -88,6 +88,23 @@ libcxxw_la_SOURCES=\
 	capturefactoryobj.H			    \
 	catch_exceptions.H			    \
 	child_element.C				    \
+	color_picker/color_picker.C		    \
+	color_picker/color_picker_handler.C	    \
+	color_picker/color_picker_handler.H	    \
+	color_picker/color_picker_impl.C	    \
+	color_picker/color_picker_impl.H	    \
+	color_picker/color_picker_selector.C	    \
+	color_picker/color_picker_selector.H	    \
+	color_picker/color_picker_selectorfwd.H	    \
+	color_picker/color_picker_selectorobj.H	    \
+	color_picker/color_picker_selector_impl.C   \
+	color_picker/color_picker_selector_impl.H   \
+	color_picker/color_picker_square.C	    \
+	color_picker/color_picker_square.H	    \
+	color_picker/color_picker_squarefwd.H       \
+	color_picker/color_picker_squareobj.H       \
+	color_picker/color_picker_square_impl.C     \
+	color_picker/color_picker_square_impl.H     \
 	combobox/custom_comboboxlayoutmanager.C	    \
 	combobox/custom_comboboxlayoutmanager.H	    \
 	combobox/custom_comboboxlayoutmanager_impl.C \
@@ -608,6 +625,7 @@ libcxxw_la_SOURCES=\
 	render.C				    \
 	render.H				    \
 	returned_pointer.H			    \
+	rgb.C					    \
 	richtext/fragment_list.C		    \
 	richtext/fragment_list.H		    \
 	richtext/paragraph_list.C		    \
@@ -830,6 +848,7 @@ INTERACTIVETESTPROGRAMS=\
 	testbook					\
 	testbusy					\
 	testbutton					\
+	testcolorpicker					\
 	testcombobox					\
 	testcustomcanvas				\
 	testdateinput					\
@@ -855,7 +874,7 @@ noinst_PROGRAMS=$(BUILT_TESTPROGRAMS) $(BUILT_INTERACTIVETESTPROGRAMS) genconsta
 
 testbook_SOURCES=testbook.C
 testbook_LDADD=libcxxw.la
-testbook_LDFLAGS=-static $(STATICLINKFLAGS)
+testbook_LDFLAGS=$(TESTLINKTYPE)
 
 $(call THREADMSGDISPATCHER_GEN,testbusy.inc.H,testbusy.xml)
 testbusy_SOURCES=testbusy.C
@@ -864,12 +883,16 @@ testbusy_LDFLAGS=$(TESTLINKTYPE)
 
 testbutton_SOURCES=testbutton.C
 testbutton_LDADD=libcxxw.la
-testbutton_LDFLAGS=-static $(STATICLINKFLAGS)
+testbutton_LDFLAGS=$(TESTLINKTYPE)
+
+testcolorpicker_SOURCES=testcolorpicker.C
+testcolorpicker_LDADD=libcxxw.la
+testcolorpicker_LDFLAGS=$(TESTLINKTYPE)
 
 $(call OPTIONS_GEN,testcombobox.inc.H,testcombobox.xml)
 testcombobox_SOURCES=testcombobox.C testcombobox.inc.H
 testcombobox_LDADD=libcxxw.la
-testcombobox_LDFLAGS=-static $(STATICLINKFLAGS)
+testcombobox_LDFLAGS=$(TESTLINKTYPE)
 
 testcustomcanvas_SOURCES=testcustomcanvas.C
 testcustomcanvas_LDADD=libcxxw.la

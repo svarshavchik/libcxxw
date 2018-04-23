@@ -9,6 +9,8 @@
 #include <x/w/rgbfwd.H>
 #include <x/w/namespace.H>
 #include <stdlib.h>
+#include <string>
+#include <iostream>
 
 LIBCXXW_NAMESPACE_START
 
@@ -66,7 +68,14 @@ public:
 	{
 		return (((((((uint64_t)a) << 16) | r) << 16) | g) << 16) | b;
 	}
+
+	//! Convert to a readable label
+	operator std::string() const;
 };
+
+//! Overload << operator
+
+std::ostream &operator<<(std::ostream &, const rgb &);
 
 //! A linear gradient for a display element's background color.
 

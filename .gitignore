@@ -42,6 +42,7 @@ suppressfile*
 /testbusy
 /testbutton
 /testcollapse
+/testcolorpicker
 /testcombobox
 /testcustomcanvas
 /testdateinput

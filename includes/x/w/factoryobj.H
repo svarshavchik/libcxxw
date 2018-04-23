@@ -29,6 +29,8 @@
 #include <x/w/dim_axis_arg.H>
 #include <x/w/date_input_fieldfwd.H>
 #include <x/w/date_input_field_configfwd.H>
+#include <x/w/color_pickerfwd.H>
+#include <x/w/color_picker_configfwd.H>
 #include <x/obj.H>
 #include <x/functional.H>
 
@@ -473,6 +475,12 @@ public:
 					    const scrollbar_cb_t &callback,
 					    dim_arg minimum_size=0)
 		LIBCXX_PUBLIC;
+
+	//! Create a color picker
+	color_picker create_color_picker();
+
+	//! Create a color picker
+	color_picker create_color_picker(const color_picker_config &);
 };
 
 LIBCXXW_NAMESPACE_END
