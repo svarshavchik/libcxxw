@@ -302,7 +302,7 @@ void input_fieldObj::on_spin(const hotspot_callback_t &a_cb,
 void input_fieldObj::set(const std::string_view &str)
 {
 	set(unicode::iconvert::tou::convert(std::string{str},
-					    unicode::utf_8).first);
+					    unicode_locale_chset()).first);
 }
 
 void input_fieldObj::set(const std::u32string_view &str)

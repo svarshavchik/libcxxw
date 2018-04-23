@@ -175,7 +175,7 @@ f->on_autocomplete([]
 
       <para>
 	<methodname>set()</methodname> is overloaded for a
-	<classname>std::string</classname> (encoded in UTF-8), and a
+	<classname>std::string</classname>, and a
 	<classname>std::u32string</classname>.
 	<methodname>on_change</methodname>() and
 	<methodname>on_autocomplete</methodname>() install

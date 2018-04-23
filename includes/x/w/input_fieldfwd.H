@@ -39,7 +39,7 @@ f->set("Hello world");
 f->set_unicode(U"Hello world");
 \endcode
 
-set() specifies the new contents of the input field, in UTF-8.
+set() specifies the new contents of the input field.
 set_unicode() specifies the new contents as a unicode string.
 
 \code
