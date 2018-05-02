@@ -15,7 +15,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-static auto get_first_icon_image(const auto &v)
+static auto get_first_icon_image(const std::vector<icon> &v)
 {
 	if (v.empty())
 		throw EXCEPTION("Internal error: empty icon list");

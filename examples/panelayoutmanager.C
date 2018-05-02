@@ -43,7 +43,8 @@ static void replace_all(const x::w::container &c,
 // Translate the currently selected item in the scrollbar visibility combo-box
 // to an x::w::scrollbar_visibility value.
 
-static x::w::scrollbar_visibility get_scrollbar_visibility(const auto &container)
+static x::w::scrollbar_visibility
+get_scrollbar_visibility(const x::w::container &container)
 {
 	x::w::standard_comboboxlayoutmanager lm=
 		container->get_layoutmanager();

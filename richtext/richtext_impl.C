@@ -156,7 +156,7 @@ void richtext_implObj::do_set(const richtextstring &string)
 	while (i<n)
 	{
 		// Find the next mandatory line break.
-		size_t j=std::find(&breaks[i+1], &breaks[n],
+		size_t j=std::find(&breaks[0]+(i+1), &breaks[0]+n,
 				   UNICODE_LB_MANDATORY)-&breaks[0];
 
 		auto new_paragraph=my_paragraphs.append_new_paragraph();

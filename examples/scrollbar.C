@@ -61,10 +61,10 @@ public:
 		return config;
 	}
 
-	void set_volume(auto v,
+	void set_volume(double v,
 			const x::w::input_field &input_field)
 	{
-		current_volume=use_decimals ? (double)v/10:(double)v;
+		current_volume=use_decimals ? v/10:v;
 
 		std::ostringstream o;
 

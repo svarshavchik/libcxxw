@@ -55,7 +55,7 @@ void glyphsetObj::addObj::done()
 			      &new_glyphs[0],
 			      &new_glyphinfos[0],
 			      data.size(),
-			      &data[0]);
+			      data.size() == 0 ? nullptr:&data[0]);
 
 	// Ok, record the saved glyphs' information
 

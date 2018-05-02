@@ -40,7 +40,9 @@ filedirlist_managerObj::implObj::current_selected_callbackObj
 
 static inline auto create_filedir_list(const factory &f,
 				       const std::string &initial_directory,
-				       const auto &current_selected)
+				       const ref<filedirlist_managerObj
+				       ::implObj::current_selected_callbackObj>
+				       &current_selected)
 {
 	new_panelayoutmanager nplm;
 

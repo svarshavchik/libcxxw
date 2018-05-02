@@ -62,7 +62,7 @@ public:
 	// TODO: this always gets invoked in the connection thread, as such
 	// run_as() is not really needed.
 
-	inline void updated_value(const auto &config)
+	inline void updated_value(const scrollbar_info_t &config)
 	{
 		auto p=get_layoutmanager();
 

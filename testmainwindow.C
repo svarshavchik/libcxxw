@@ -603,7 +603,7 @@ public:
 
 	LIBCXX_NAMESPACE::mpobj<s> counter;
 
-	void increment(auto n)
+	void increment(LIBCXX_NAMESPACE::w::dim_t n)
 	{
 		LIBCXX_NAMESPACE::mpobj<s>::lock lock(counter);
 

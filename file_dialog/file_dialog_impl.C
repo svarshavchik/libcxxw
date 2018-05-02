@@ -559,7 +559,9 @@ file_dialogObj::file_dialogObj(const dialog_args &d_args,
 
 // Factored out for readability.
 
-static inline auto create_pcre_filters(const auto &filename_filters)
+static inline auto create_pcre_filters(const
+				       std::vector<std::tuple<text_param,
+				       std::string>> &filename_filters)
 {
 	std::vector<pcre> filters;
 

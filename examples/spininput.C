@@ -24,7 +24,7 @@
 #include <optional>
 
 void create_mainwindow(const x::w::main_window &main_window,
-		       const auto &close_flag,
+		       const close_flag_ref &close_flag,
 		       const options &opts)
 {
 	x::w::gridlayoutmanager

@@ -17,7 +17,7 @@
 
 using namespace LIBCXX_NAMESPACE::w;
 
-void testtextparam(const auto &main_window)
+void testtextparam(const main_window &mw)
 {
 	text_param param1{"foo", U"bar", rgb(0,0,0),
 			theme_font{"sans_serif"},
@@ -30,11 +30,11 @@ void testtextparam(const auto &main_window)
 			  "foobaz");
 
 	auto string=
-		main_window->impl->handler
-		->create_richtextstring( {main_window->get_screen()
+		mw->impl->handler
+		->create_richtextstring( {mw->get_screen()
 					->impl
 					->create_background_color("0%"),
-					main_window->impl->handler
+					mw->impl->handler
 					->create_theme_font("serif")},
 			param2);
 

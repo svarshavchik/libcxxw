@@ -81,14 +81,16 @@ static scrollbar_cb_t null_callback()
 	};
 }
 
+typedef std::tuple<icon, icon, icon, icon, icon> icon_set_t;
+
 // Construct a vertical or a horizontal scrollbar.
 
 static scrollbar create_scrollbar(const container_impl &parent_container,
 				  const std::optional<color_arg> &background_color,
 				  const scrollbar_config &conf,
 				  const scrollbar_orientation &orientation,
-				  const auto &icon_set_1,
-				  const auto &icon_set_2,
+				  const icon_set_t &icon_set_1,
+				  const icon_set_t &icon_set_2,
 				  const dim_arg &minimum_size,
 				  const scrollbar_cb_t &callback)
 {

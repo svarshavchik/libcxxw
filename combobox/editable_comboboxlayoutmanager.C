@@ -31,12 +31,12 @@ input_lock::input_lock(const editable_comboboxlayoutmanagerObj &e)
 ///////////////////////////////////////////////////////////////////////////
 
 static inline bool autocomplete(ONLY IN_THREAD,
-				const auto &container_impl,
-				auto &autocomplete_info)
+				const container_impl &combobox_container_impl,
+				input_autocomplete_info_t &autocomplete_info)
 {
 	layout_implptr layoutmanager_impl;
 
-	container_impl->invoke_layoutmanager
+	combobox_container_impl->invoke_layoutmanager
 		([&]
 		 (const auto &lm_impl)
 		 {

@@ -9,7 +9,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-static dim_t compute_dim(const auto &screen_impl,
+static dim_t compute_dim(const ref<screenObj::implObj> &screen_impl,
 			 const dim_arg &dimname,
 			 themedimaxis width_or_height)
 {

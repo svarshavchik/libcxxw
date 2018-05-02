@@ -268,9 +268,10 @@ void focusableObj::get_focus_after(const focusable &other)
 // focusable group, putting each individual focusable after that one, then
 // make "that one" the one that I just ordered.
 
-static void get_focus_impl_after_in_thread_with_group(ONLY IN_THREAD,
-						      const auto &me_group,
-						      focusable_impl a)
+static void get_focus_impl_after_in_thread_with_group
+(ONLY IN_THREAD,
+ const internal_focusable_group &me_group,
+ focusable_impl a)
 {
 	auto n=me_group.internal_impl_count;
 

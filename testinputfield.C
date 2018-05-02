@@ -131,7 +131,8 @@ void testbutton()
 						 (THREAD_CALLBACK,
 						  const std::string &v,
 						  int *nptr,
-						  auto &error,
+						  LIBCXX_NAMESPACE::w
+						  ::text_param &t,
 						  const auto &ignore)
 						 -> std::optional<int> {
 							 if (nptr && *nptr >= 0
@@ -139,7 +140,7 @@ void testbutton()
 								 return *nptr;
 
 							 if (!v.empty())
-								 error="0-99, please...";
+								 t="0-99, please...";
 							 return std::nullopt;
 						 },
 						 []

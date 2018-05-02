@@ -39,7 +39,7 @@ void gridlayoutmanagerObj::implObj::child_metrics_updated(ONLY IN_THREAD)
 	layoutmanagerObj::implObj::child_metrics_updated(IN_THREAD);
 }
 
-static void register_border(auto &lookup,
+static void register_border(const grid_map_infoObj::lookup_t &lookup,
 			    grid_element *ptr,
 			    const element &border_element)
 {

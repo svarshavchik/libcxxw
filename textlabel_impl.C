@@ -98,7 +98,8 @@ create_hotspot_info(richtextstring &s, const richtext &t)
 
 // After create_hotspot_info() comes rebuild_ordered_hotspots.
 
-static auto rebuild_ordered_hotspots(const auto &hotspot_info)
+static auto rebuild_ordered_hotspots(const textlabelObj::implObj
+				     ::hotspot_info_t &hotspot_info)
 {
 	std::unordered_map<size_t, text_hotspot> m;
 

@@ -15,8 +15,7 @@
 #include "run_as.H"
 #include <x/property_value.H>
 
-LOG_CLASS_INIT(LIBCXX_NAMESPACE::w::peepholeObj::layoutmanager_implObj)
-LIBCXX_HIDDEN;
+LOG_CLASS_INIT(LIBCXX_NAMESPACE::w::peepholeObj::layoutmanager_implObj);
 
 LIBCXXW_NAMESPACE_START
 

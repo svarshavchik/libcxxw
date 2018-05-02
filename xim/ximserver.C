@@ -274,7 +274,8 @@ static inline void eventbuf_t_generate(uint8_t * &p,
 		*p++=a[i];
 }
 
-static void set_preedit_position(const auto &ic_attributes_by_name,
+static void set_preedit_position(const std::unordered_map<std::string,
+				 ximserverObj::attr> &ic_attributes_by_name,
 				 const rectangle &pos,
 				 std::vector<ximattrvalue> &attrs)
 {

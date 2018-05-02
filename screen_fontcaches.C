@@ -22,7 +22,9 @@ namespace std {
 		: public hash<LIBCXX_NAMESPACE::w::font>,
 		hash<LIBCXX_NAMESPACE::w::depth_t> {
 
-		inline size_t operator()(const auto &key) const noexcept
+		inline size_t operator()(const pair<LIBCXX_NAMESPACE::w::font,
+					 LIBCXX_NAMESPACE::w::depth_t> &key)
+			const noexcept
 		{
 			return hash<LIBCXX_NAMESPACE::w::font>::operator()
 				(key.first) +
@@ -39,7 +41,9 @@ namespace std {
 		: public hash<string>,
 		hash<LIBCXX_NAMESPACE::w::depth_t> {
 
-		inline size_t operator()(const auto &key) const noexcept
+		inline size_t operator()(const pair<string,
+					 LIBCXX_NAMESPACE::w::depth_t> &key)
+			const noexcept
 		{
 			return hash<string>::operator()(key.first) +
 				hash<LIBCXX_NAMESPACE::w::depth_t>::operator()

@@ -941,7 +941,7 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
 
   <color id="color_picker_background_color" scale="textedit_background_color" />
 
-  <color id="color_picker_popup_background_color" scale="100%" />
+  <color id="color_picker_popup_background_color" scale="70%" />
 
   <border id="color_pickerbuttonfocusoff_border" from="inputfocusoff_border">
     <color>inputfocus_color2</color>

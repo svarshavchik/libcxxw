@@ -52,7 +52,7 @@ class LIBCXX_HIDDEN ximencoding_ctObj : public ximencodingObj {
 	public:
 
 		bool operator()(const ct_charset_info &a,
-				const ct_charset_info &b)
+				const ct_charset_info &b) const noexcept
 		{
 			return strcmp(a.esc_seq, b.esc_seq) < 0;
 		}

@@ -27,7 +27,7 @@
 std::tuple<x::w::validated_input_field<char>,
 	   x::w::validated_input_field<int>>
 create_mainwindow(const x::w::main_window &main_window,
-		  const auto &close_flag)
+		  const close_flag_ref &close_flag)
 {
 	x::w::gridlayoutmanager
 		layout=main_window->get_layoutmanager();

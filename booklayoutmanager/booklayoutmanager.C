@@ -360,7 +360,7 @@ auto create_new_tab(const gridfactory &gridfactory,
 
 static
 void install_activate_callback(const booklayoutmanager &layout_manager,
-			       const auto &new_hotspot,
+			       const pagetab &new_hotspot,
 			       const element &new_page)
 {
 	new_hotspot->on_activate

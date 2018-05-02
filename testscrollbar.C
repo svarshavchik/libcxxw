@@ -43,7 +43,8 @@ public:
 
 typedef ref<close_flagObj> close_flag_ref;
 
-static inline void updated_value(const auto &info)
+static inline void updated_value(const LIBCXX_NAMESPACE::w::scrollbar_info_t
+				 &info)
 {
 	std::cout << info.value << " (" << info.dragged_value << ")"
 		  << std::endl;

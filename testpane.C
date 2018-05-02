@@ -169,7 +169,8 @@ static void insert_list(const LIBCXX_NAMESPACE::w::container &c)
 		 nlm)->show();
 }
 
-static LIBCXX_NAMESPACE::w::scrollbar_visibility get_scrollbar_visibility(const auto &container)
+static LIBCXX_NAMESPACE::w::scrollbar_visibility
+get_scrollbar_visibility(const LIBCXX_NAMESPACE::w::container &container)
 {
 	LIBCXX_NAMESPACE::w::standard_comboboxlayoutmanager lm=
 		container->get_layoutmanager();

@@ -185,8 +185,9 @@ public:
 
 	//! Container for the element lookup table.
 
+ public:
 	typedef std::unordered_map<element_impl, lookup_info> lookup_t;
-
+ private:
 	//! An internal lookup table.
 
 	//! The elements in the grid are stored in the elements

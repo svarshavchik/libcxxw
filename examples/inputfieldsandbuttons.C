@@ -44,7 +44,7 @@ typedef x::ref<appdataObj> appdata_t;
 // factored out for readability.
 
 void create_mainwindow(const x::w::main_window &main_window,
-		       const auto &close_flag)
+		       const close_flag_ref &close_flag)
 {
 	// Each display element contains an optional 'appdata', a
 	// generic LibCXX object, an x::ptr<x::obj>, that the library ignores,

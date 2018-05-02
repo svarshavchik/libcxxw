@@ -923,13 +923,15 @@ class LIBCXX_HIDDEN gif_open {
 	size_t left;
 
 	GifFileType *gif;
+	int error_code;
 
 	inline gif_open(const mmapfile &file)
 		: buf(file->buffer()), left(file->size()),
-		gif(DGifOpen(reinterpret_cast<void *>(this), read_gif))
+		gif(DGifOpen(reinterpret_cast<void *>(this), read_gif,
+			     &error_code))
 		{
 			if (!gif)
-				error();
+				throw EXCEPTION(GifErrorString(error_code));
 		}
 
 	static void error()
@@ -939,7 +941,9 @@ class LIBCXX_HIDDEN gif_open {
 
 	inline ~gif_open()
 	{
-		DGifCloseFile(gif);
+		int error_code;
+
+		DGifCloseFile(gif, &error_code);
 	}
 };
 
