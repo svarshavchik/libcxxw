@@ -74,6 +74,16 @@ void elementObj::hide()
 	impl->request_visibility(false);
 }
 
+void elementObj::stop_message(const text_param &t)
+{
+	impl->stop_message(t);
+}
+
+void elementObj::exception_message(const exception &e)
+{
+	impl->exception_message(e);
+}
+
 void elementObj::set_background_color(const color_arg &name)
 {
 	impl->set_background_color(name);

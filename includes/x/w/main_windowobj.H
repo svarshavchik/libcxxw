@@ -227,16 +227,16 @@ public:
 
 	//! Use create_ok_dialog() to create a simple error message dialog.
 
-	void stop_message(const text_param &);
+	void stop_message(const text_param &) override;
 
 	//! Use create_ok_dialog() to create a simple error message dialog.
 
 	void stop_message(const text_param &,
-			   const stop_message_config &);
+			  const stop_message_config &);
 
 	//! Format an exception, then use error_message().
 
-	void exception_message(const exception &);
+	void exception_message(const exception &) override;
 
 	//! Format an exception, then use error_message().
 

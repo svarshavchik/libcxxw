@@ -275,10 +275,7 @@ auto input_fieldObj::set_validator(validator_functor &&validator,
 
 			 if (!error_message.string.empty())
 			 {
-				 auto mw=my_field_ptr->get_main_window();
-
-				 if (mw)
-					 mw->stop_message(error_message);
+				 my_field_ptr->stop_message(error_message);
 				 return false;
 			 }
 			 return true;

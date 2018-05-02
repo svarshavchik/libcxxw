@@ -146,6 +146,14 @@ public:
 					    (std::forward<functor>(f)));
 	}
 
+	//! Forwarded to stop_message() in my main_window.
+
+	virtual void stop_message(const text_param &);
+
+	//! Forwarded to exception_message() in my main_window.
+
+	virtual void exception_message(const exception &);
+
 	//! Type-erased create_popup_menu().
 	container do_create_popup_menu(const function
 				       <void (const listlayoutmanager&)> &)

@@ -9,7 +9,9 @@
 #include <x/w/namespace.H>
 #include <x/w/button_eventfwd.H>
 #include <x/w/key_eventfwd.H>
+#include <x/w/text_paramfwd.H>
 #include <x/w/focus.H>
+#include <x/exception.H>
 #include <variant>
 
 LIBCXXW_NAMESPACE_START
