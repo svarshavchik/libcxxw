@@ -16,7 +16,7 @@ bin_PROGRAMS=cxxw cxxwtheme
 
 CPPFLAGS += -I$(top_srcdir)/includes -I./includes -I$(top_srcdir) -I. \
             -DPKGDATADIR='"$(pkgdatadir)"'
-CXXFLAGS += -fvisibility-inlines-hidden $(if $(PROFILE),-pg) @STDTHREAD_CXXFLAGS@
+CXXFLAGS += -fvisibility-inlines-hidden $(if $(PROFILE),-pg)
 
 libcxxw_la_LIBADD=-lcxx
 

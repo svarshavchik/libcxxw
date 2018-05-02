@@ -36,7 +36,6 @@ booklayoutmanager_LDADD=-lcxxw -lcxx
 $(call THREADMSGDISPATCHER_GEN,busy.inc.H,busy.xml)
 busy_SOURCES=busy.C
 busy_LDADD=-lcxxw -lcxx
-busy_CXXFLAGS=@STDTHREAD_CXXFLAGS@
 
 checkradio_SOURCES=checkradio.C close_flag.H
 checkradio_LDADD=-lcxxw -lcxx
@@ -96,7 +95,6 @@ popupmenu1_LDADD=-lcxxw -lcxx
 
 popupmenu2_SOURCES=popupmenu2.C close_flag.H
 popupmenu2_LDADD=-lcxxw -lcxx
-popupmenu2_CXXFLAGS=@STDTHREAD_CXXFLAGS@
 
 printdialog_SOURCES=printdialog.C close_flag.H
 printdialog_LDADD=-lcxxwcups -lcxxw -lcxxcups -lcxx
@@ -109,7 +107,6 @@ scrollbar_LDADD=-lcxxw -lcxx
 
 singleton_SOURCES=singleton.C close_flag.H
 singleton_LDADD=-lcxxw -lcxx
-singleton_CXXFLAGS=@STDTHREAD_CXXFLAGS@
 
 $(call OPTIONS_GEN,spininput.H,spininput.xml)
 spininput_SOURCES=spininput.C close_flag.H
