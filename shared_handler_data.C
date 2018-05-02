@@ -244,4 +244,19 @@ shared_handler_dataObj::find_popup_for_xy(ONLY IN_THREAD,
 	return ptr<generic_windowObj::handlerObj>();
 }
 
+void shared_handler_dataObj::opening_dialog(ONLY IN_THREAD)
+{
+	hide_menu_popups_until(IN_THREAD, opened_menu_popups->end());
+
+	auto p=opened_exclusive_popup.getptr();
+
+	if (p)
+		p->hide(IN_THREAD);
+	hide_menu_popups_until(IN_THREAD, opened_menu_popups->end());
+}
+
+void shared_handler_dataObj::closing_dialog(ONLY IN_THREAD)
+{
+}
+
 LIBCXXW_NAMESPACE_END

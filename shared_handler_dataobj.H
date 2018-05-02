@@ -130,6 +130,12 @@ public:
 	//! Look up installed shortcuts
 
 	mpobj<shortcut_lookup_t> installed_shortcuts;
+
+	//! A dialog is being opened.
+	void opening_dialog(ONLY IN_THREAD);
+
+	//! A dialog is being closed
+	void closing_dialog(ONLY IN_THREAD);
 };
 
 LIBCXXW_NAMESPACE_END

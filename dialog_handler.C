@@ -6,6 +6,7 @@
 #include "dialog_handler.H"
 #include "connection_thread.H"
 #include "inherited_visibility_info.H"
+#include "shared_handler_data.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -115,6 +116,7 @@ void dialogObj::handlerObj::set_inherited_visibility_mapped(ONLY IN_THREAD)
 				     configure_window_vals.values().data());
 	}
 
+	parent_handler->handler_data->opening_dialog(IN_THREAD);
 	superclass_t::set_inherited_visibility_mapped(IN_THREAD);
 }
 
@@ -126,6 +128,12 @@ xcb_size_hints_t dialogObj::handlerObj::compute_size_hints(ONLY IN_THREAD)
 		hints.flags |= XCB_ICCCM_SIZE_HINT_P_POSITION;
 
 	return hints;
+}
+
+void dialogObj::handlerObj::set_inherited_visibility_unmapped(ONLY IN_THREAD)
+{
+	superclass_t::set_inherited_visibility_unmapped(IN_THREAD);
+	parent_handler->handler_data->closing_dialog(IN_THREAD);
 }
 
 std::string dialogObj::handlerObj::default_wm_class_resource(ONLY IN_THREAD)
