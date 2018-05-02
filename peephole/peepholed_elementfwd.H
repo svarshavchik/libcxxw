@@ -5,7 +5,7 @@
 #ifndef peepholed_elementfwd_h
 #define peepholed_elementfwd_h
 
-#include <x/w/namespace.H>
+#include "x/w/namespace.H"
 #include <x/ptrfwd.H>
 #include "peephole/peepholedobj.H"
 

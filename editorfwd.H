@@ -5,7 +5,7 @@
 #ifndef editorfwd_h
 #define editorfwd_h
 
-#include <x/w/namespace.H>
+#include "x/w/namespace.H"
 #include <x/ptrfwd.H>
 
 LIBCXXW_NAMESPACE_START

@@ -5,7 +5,7 @@
 #ifndef x_w_list_celltextfwd_h
 #define x_w_list_celltextfwd_h
 
-#include <x/w/namespace.H>
+#include "x/w/namespace.H"
 #include <x/ptrfwd.H>
 
 LIBCXXW_NAMESPACE_START

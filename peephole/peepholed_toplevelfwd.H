@@ -5,7 +5,7 @@
 #ifndef peepholed_toplevelfwd_h
 #define peepholed_toplevelfwd_h
 
-#include <x/w/namespace.H>
+#include "x/w/namespace.H"
 #include <x/ptrfwd.H>
 
 LIBCXXW_NAMESPACE_START

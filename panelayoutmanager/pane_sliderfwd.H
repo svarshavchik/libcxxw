@@ -5,7 +5,7 @@
 #ifndef pane_sliderfwd_h
 #define pane_sliderfwd_h
 
-#include <x/w/namespace.H>
+#include "x/w/namespace.H"
 #include <x/ptrfwd.H>
 
 LIBCXXW_NAMESPACE_START

@@ -5,7 +5,7 @@
 #ifndef peepholed_toplevel_main_windowfwd_h
 #define peepholed_toplevel_main_windowfwd_h
 
-#include <x/w/namespace.H>
+#include "x/w/namespace.H"
 #include <x/ptrfwd.H>
 #include "peephole/peepholed_toplevelobj.H"
 

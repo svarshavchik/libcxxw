@@ -6,7 +6,7 @@
 #ifndef peephole_style_H
 #define peephole_style_H
 
-#include <x/w/alignment.H>
+#include "x/w/alignment.H"
 
 LIBCXXW_NAMESPACE_START
 

@@ -5,7 +5,7 @@
 #ifndef singletonlayoutmanagerfwd_h
 #define singletonlayoutmanagerfwd_h
 
-#include <x/w/namespace.H>
+#include "x/w/namespace.H"
 #include <x/ptrfwd.H>
 
 LIBCXXW_NAMESPACE_START
