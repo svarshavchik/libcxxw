@@ -49,7 +49,7 @@ public:
 	handlerObj(ONLY IN_THREAD,
 		   const ref<generic_windowObj::handlerObj> &parent,
 		   const color_arg &background_color,
-		   size_t nesting_level=0);
+		   size_t nesting_level);
 
 	//! Destructor
 	~handlerObj();
@@ -129,12 +129,6 @@ public:
 	void set_inherited_visibility(ONLY IN_THREAD,
 				      inherited_visibility_info
 				      &visibility_info)
-		override;
-
-	//! Automatically advance input focus to first field, upon visibility.
-
-	void inherited_visibility_updated(ONLY IN_THREAD,
-					  inherited_visibility_info &info)
 		override;
 
 	//! Implement

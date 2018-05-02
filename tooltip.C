@@ -106,7 +106,7 @@ tooltip_handlerObj::tooltip_handlerObj(ONLY IN_THREAD,
 				       const ref<obj> &grab,
 				       coord_t pointer_x,
 				       coord_t pointer_y)
-	: superclass_t(IN_THREAD, parent, background_color),
+	: superclass_t{IN_THREAD, parent, background_color, 0},
 	pointer_x(pointer_x),
 	pointer_y(pointer_y),
 	grab(grab)

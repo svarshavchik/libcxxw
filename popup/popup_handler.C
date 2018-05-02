@@ -313,16 +313,5 @@ bool popupObj::handlerObj
 	return false;
 }
 
-void popupObj::handlerObj
-::inherited_visibility_updated(ONLY IN_THREAD,
-			       inherited_visibility_info &info)
-{
-	generic_windowObj::handlerObj::inherited_visibility_updated(IN_THREAD,
-								    info);
-
-	if (info.flag)
-		set_default_focus(IN_THREAD, {});
-}
-
 
 LIBCXXW_NAMESPACE_END

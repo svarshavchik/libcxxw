@@ -31,6 +31,9 @@ peepholed_toplevel_listcontainer_elementObj<element_impl>
 	  attachedto_info(attachedto_info),
 	  toplevel_listcontainer_impl(toplevel_listcontainer_impl)
 {
+	// Make sure we get the keyboard focus automatically when the popup
+	// becomes visible.
+	this->list_focusable_owner->autofocus(true);
 }
 
 //! Destructor
