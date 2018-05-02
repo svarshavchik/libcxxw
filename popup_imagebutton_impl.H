@@ -6,38 +6,37 @@
 #define popup_imagebutton_impl_h
 
 #include "popup_imagebutton_implfwd.H"
-#include "popup/popup_showhide_elementfwd.H"
 #include "image_button_internal_impl.H"
-#include "x/w/impl/always_visible_elementfwd.H"
 
 LIBCXXW_NAMESPACE_START
 
 /*! A popup show/hide button drawn using two images.
 
-A button that opens and closes the combo-box or the calendar date popup is an
+A subclass of image_button_internalObj::implObj, usually
+a button that opens and closes the combo-box or the calendar date popup is an
 \ref image_button_internal "internal image button object".
 
-Subclass the implementation object to show normal/highlighted image depending
+Subclasses image_button_internalObj::implObj
+to show normal/highlighted image depending
 upon the hotspot temperature.
+
+Variable vertical metrics, the image icons get resized to the current height,
+adjusting the horizontal metrics to keep track of them. The popup button gets
+placed next to some element that's related to it, and it tracks to its height.
 
 */
 
 class LIBCXX_HIDDEN popup_imagebutton_implObj
-	: public always_visible_elementObj<popup_showhide_elementObj
-					   <image_button_internalObj::implObj>>
+	: public image_button_internalObj::implObj
 {
 
-	typedef always_visible_elementObj<
-		popup_showhide_elementObj<image_button_internalObj::implObj
-					  >> superclass_t;
+	typedef image_button_internalObj::implObj superclass_t;
 
  public:
 	//! Constructor
 
 	popup_imagebutton_implObj(const container_impl &container,
-				  const std::vector<icon> &icon_images,
-				  const ref<elementObj::implObj>
-				  &popup_element_impl);
+				  const std::vector<icon> &icon_images);
 
  private:
 
@@ -45,9 +44,8 @@ class LIBCXX_HIDDEN popup_imagebutton_implObj
 
 	popup_imagebutton_implObj(const container_impl &container,
 				  const std::vector<icon> &icon_images,
-				  const ref<elementObj::implObj
-				  > &popup_element_impl,
-				  dim_t first_icon_width);
+				  dim_t first_icon_width,
+				  dim_t first_icon_height);
  public:
 	//! Destructor
 	~popup_imagebutton_implObj();

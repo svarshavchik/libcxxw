@@ -6,6 +6,8 @@
 #include "popup_imagebutton.H"
 #include "x/w/impl/focus/focusframecontainer_element.H"
 #include "x/w/impl/focus/standard_focusframecontainer_element.H"
+#include "x/w/impl/always_visible_element.H"
+#include "popup/popup_showhide_element.H"
 #include "popup_imagebutton_impl.H"
 #include "hotspot_element.H"
 #include "image_button_internal.H"
@@ -95,10 +97,10 @@ do_create_popup_imagebutton(const gridfactory &f,
 					icon_scale::nomore);
 
 	auto image_button_internal_impl=
-		ref<popup_imagebutton_implObj>
-		::create(cbfc_container_impl,
-			 std::vector<icon>{ icon1, icon2 },
-			 popup_element);
+		ref<popup_showhide_elementObj<always_visible_elementObj<
+			popup_imagebutton_implObj>>>
+		::create(popup_element, cbfc_container_impl,
+			 std::vector<icon>{ icon1, icon2 });
 
 	// Create the "public" object.
 	auto popup_button=image_button_internal

@@ -4,11 +4,9 @@
 */
 #include "libcxxw_config.h"
 #include "popup_imagebutton_impl.H"
-#include "popup/popup_showhide_element.H"
 #include "pixmap_with_picture.H"
 #include "icon.H"
 #include "x/w/metrics/axis.H"
-#include "x/w/impl/always_visible_element.H"
 #include <X11/keysym.h>
 
 LIBCXXW_NAMESPACE_START
@@ -17,23 +15,23 @@ LIBCXXW_NAMESPACE_START
 
 popup_imagebutton_implObj
 ::popup_imagebutton_implObj(const container_impl &container,
-			    const std::vector<icon> &icon_images,
-			    const ref<elementObj::implObj> &popup_element_impl)
+			    const std::vector<icon> &icon_images)
 	: popup_imagebutton_implObj{container,
 		icon_images,
-		popup_element_impl, icon_images.at(0)->image->get_width()}
+		icon_images.at(0)->image->get_width(),
+		icon_images.at(0)->image->get_height()}
 {
 }
 
 popup_imagebutton_implObj
 ::popup_imagebutton_implObj(const container_impl &container,
 			    const std::vector<icon> &icon_images,
-			    const ref<elementObj::implObj> &popup_element_impl,
-			    dim_t first_icon_width)
-	: superclass_t{popup_element_impl, container, icon_images,
+			    dim_t first_icon_width,
+			    dim_t first_icon_height)
+	: superclass_t{container, icon_images,
 		metrics::axis{first_icon_width, first_icon_width,
 			first_icon_width},
-		metrics::axis{0, first_icon_width, dim_t::infinite()}}
+		metrics::axis{0, first_icon_height, dim_t::infinite()}}
 {
 }
 
