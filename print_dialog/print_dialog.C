@@ -537,9 +537,6 @@ void print_dialogObj::initial_show()
 
 	auto mcguffin=my_main_window->get_wait_busy_mcguffin();
 
-	// TODO -- invoke cancel_callback_impl if an exception gets thrown
-	// in the lambda.
-
 	run_lambda([]
 		   (const auto &my_main_window,
 		    const auto &mcguffin, const auto &me)

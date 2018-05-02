@@ -58,24 +58,18 @@ public:
 	}
 
 	// Scrollbar has been dragged.
-	//
-	// TODO: this always gets invoked in the connection thread, as such
-	// run_as() is not really needed.
 
-	inline void updated_value(const scrollbar_info_t &config)
+	inline void updated_value(ONLY IN_THREAD,
+				  const scrollbar_info_t &config)
 	{
 		auto p=get_layoutmanager();
 
 		if (!p)
 			return;
 
-		p->get_element_impl().THREAD
-			->run_as([p, update_func=this->update_func,
-				  v=dim_t::truncate(config.dragged_value)]
-				 (ONLY IN_THREAD)
-				 {
-					 ((*p).*update_func)(IN_THREAD, v);
-				 });
+		auto v=dim_t::truncate(config.dragged_value);
+
+		((*p).*update_func)(IN_THREAD, v);
 	}
 };
 
@@ -98,18 +92,18 @@ create_peephole_scrollbars(const container_impl &container,
 		(container, background_color, scrollbar_config{},
 		 0,
 		 [=]
-		 (THREAD_CALLBACK, const auto &config)
+		 (ONLY IN_THREAD, const auto &config)
 		 {
-			 horizontal_impl->updated_value(config);
+			 horizontal_impl->updated_value(IN_THREAD, config);
 		 });
 
 	auto vertical=do_create_v_scrollbar
 		(container, background_color, scrollbar_config{},
 		 0,
 		 [=]
-		 (THREAD_CALLBACK, const auto &config)
+		 (ONLY IN_THREAD, const auto &config)
 		 {
-			 vertical_impl->updated_value(config);
+			 vertical_impl->updated_value(IN_THREAD, config);
 		 });
 
 	return {horizontal, vertical, horizontal_impl, vertical_impl};
