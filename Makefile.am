@@ -439,6 +439,7 @@ libcxxw_la_SOURCES=\
 	menu/menubarlayoutmanager_impl.H	    \
 	menu/menu_popup.H			    \
 	menu/menu_popup.C			    \
+	messages.C				    \
 	messages.H				    \
 	metrics_axis.C				    \
 	metrics_axis.H				    \

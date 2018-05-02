@@ -11,10 +11,10 @@ See COPYING for distribution information.
   <para>
     An
     <link linkend="inputfields">input field</link> often represents a
-    data type that's not an ordinary text string.
-    An input field, for example, may prompt for an integer number that
-    should get stored in an <classname>int</classname>, so the free-form
-    text entered into the input field has to get parsed into an
+    data type that's not just a boring, plain text string.
+    An input field, for example, may prompt for an integer that
+    should be an <classname>int</classname>. It becomes necessary to take
+    the free-form text entered into the input field and parse it into an
     <classname>int</classname>.
   </para>
 
@@ -28,7 +28,8 @@ See COPYING for distribution information.
     converted to the <replaceable>type</replaceable>, and stored into the
     <classname>std:optional</classname>.
     A <literal>std::nullopt</literal> <classname>std:optional</classname>
-    indicates that the input field is empty, or the entered text cannot
+    indicates that no value is yet entered in the input field,
+    or the entered text cannot
     be converted into the <replaceable>type</replaceable>.
   </para>
 
@@ -56,16 +57,39 @@ See COPYING for distribution information.
     This object represents the most recently validated value.
   </para>
 
+  <note>
+    <para>
+      The closure returns a <classname>std::optional</classname> without
+      a value to indicate that the entered text is not valid. The closure
+      gets called when leaving the input field. Returning a value-less
+      <classname>std::optional</classname> results in the input focus
+      staying in the input field, but no other visible action. An appropriate
+      error message should appear somewhere to provide usable feedback, to
+      clearly indicate that the entered input is not valid.
+    </para>
+
+    <para>
+      The closure's first parameter is a <classname>std::string</classname> or
+      a <classname>std::u32string</classname> containing the entered text,
+      and the escond parameter is its own
+      <classname>&ns;::w::input_field</classname> object.
+      <filename>validatedinput.C</filename> shows a simple example of
+      using its <methodname>stop_message</methodname>() method, which
+      display a modal dialog with a <quote>stop</quote> icon, and an error
+      message.
+    </para>
+  </note>
+
   <para>
     The second parameter to
     <methodname>set_validator</methodname>() and
-    <methodname>set_string_validator</methodname>() is a closure, or a
+    <methodname>set_string_validator</methodname>() is another closure, or a
     callable object, that takes a
     <classname>std::optional&lt;<replaceable>type</replaceable>&gt;</classname>
     and converts it to some standardized, or canonical, format, returning it as
     a <classname>std::string</classname> or a
     <classname>std::u32string</classname> which replaces the typed-in text,
-    if it differes from the canonical format.
+    if it differs from the canonical format.
   </para>
 
   <note>
@@ -81,7 +105,7 @@ See COPYING for distribution information.
 
   <para>
     <link linkend="dateinputfield">Date input fields</link> use this
- n   to allow only a month and a day to be typed into the date input field,
+    to allow only a month and a day to be typed into the date input field,
     which gets supplemented by the default year. Input field validation
     occurs when tabbing out of the date input field, or clicking outside of
     it with the pointer button. The typed in text gets replaced by its

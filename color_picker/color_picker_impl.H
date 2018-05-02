@@ -12,6 +12,8 @@
 #include "x/w/rgb.H"
 #include "x/w/color_picker_configfwd.H"
 #include "x/w/callback_triggerfwd.H"
+#include "x/w/input_fieldfwd.H"
+#include "x/w/labelfwd.H"
 #include <x/mpobj.H>
 
 LIBCXXW_NAMESPACE_START
@@ -61,6 +63,9 @@ class LIBCXX_HIDDEN color_pickerObj::implObj : virtual public obj {
 	//! Show the two variable gradients here.
 	const color_picker_square variable_gradients;
 
+	//! The error message field
+	const label error_message_field;
+
 	//! Constructor
 	implObj(const ref<handlerObj> &handler,
 		const image_button_internal &popup_button,
@@ -71,7 +76,9 @@ class LIBCXX_HIDDEN color_pickerObj::implObj : virtual public obj {
 		const element &horiz_component_gradient,
 		const element &vert_component_gradient,
 		const element &fixed_component_gradient,
-		const color_picker_square &variable_gradients);
+		const color_picker_square &variable_gradients,
+
+		const label &error_message_field);
 
 
 	//! Destructor
@@ -99,12 +106,30 @@ class LIBCXX_HIDDEN color_pickerObj::implObj : virtual public obj {
 	THREAD_DATA_ONLY(vert_component);
 	THREAD_DATA_ONLY(fixed_component);
 
+	//! Whether to display manual values in hexadecimal
+
+	mpobj<bool> hexadecimal=false;
+
+	//! Whether to display values in full precision
+
+	mpobj<bool> full_precision=false;
+
+ private:
 	//! Most recently picked color
 
 	//! Modified only in the connection thread, also fetched by
 	//! current_color().
 
-	mpobj<rgb> current_color;
+	rgb current_color_thread_only;
+ public:
+
+	THREAD_DATA_ONLY(current_color);
+
+	//! Official color
+
+	//! Pressing "Ok" moves current_color to official_color
+
+	mpobj<rgb> official_color;
 
 	THREAD_DATA_ONLY(callback);
 
@@ -143,6 +168,56 @@ class LIBCXX_HIDDEN color_pickerObj::implObj : virtual public obj {
 	//! Report the new color
 	void new_color(ONLY IN_THREAD,
 		       const callback_trigger_t &trigger);
+
+	//! A new value was entered for R, G, or B.
+	void new_rgb_values(ONLY IN_THREAD);
+
+	//! A new value was entered for H, S, or V.
+	void new_hsv_values(ONLY IN_THREAD);
+
+	//! Compute HSV from RGB.
+
+	//! Used during construction to initialize HSV fields.
+
+	static std::tuple<rgb_component_t, rgb_component_t, rgb_component_t>
+		compute_hsv(const rgb &color);
+
+	//! The manually-entered red component
+	validated_input_fieldptr<rgb_component_t> r_value;
+
+	//! The manually-entered green component
+	validated_input_fieldptr<rgb_component_t> g_value;
+
+	//! The manually-entered blue component
+	validated_input_fieldptr<rgb_component_t> b_value;
+
+	//! The manually-entered hue component
+	validated_input_fieldptr<rgb_component_t> h_value;
+
+	//! The manually-entered saturation component
+	validated_input_fieldptr<rgb_component_t> s_value;
+
+	//! The manually-entered value component
+	validated_input_fieldptr<rgb_component_t> v_value;
+
+	//! Reformat the fields after full_precision or hexadecimal settings are changed.
+
+	void reformat_values(ONLY IN_THREAD);
+
+	//! The "Ok" button in the popup was pressed.
+
+	//! current_color becomes official_color, and we announce that
+	//! official_color_updated().
+	void set_official_color(ONLY IN_THREAD);
+
+	//! The popup has been closed
+
+	//! Restore the official_color, if it's different.
+	void popup_closed(ONLY IN_THREAD);
+
+	//! Invoke the callback, if one is installed.
+	void official_color_updated(ONLY IN_THREAD,
+				    const callback_trigger_t &t);
 };
 
 LIBCXXW_NAMESPACE_END

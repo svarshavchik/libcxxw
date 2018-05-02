@@ -24,7 +24,6 @@
 #include "x/w/button_event.H"
 #include "x/w/tooltip.H"
 #include "x/w/main_window.H"
-#include "x/callback_list.H"
 #include "focus/label_for.H"
 #include "fonts/current_fontcollection.H"
 #include "xim/ximclient.H"

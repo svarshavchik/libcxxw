@@ -965,7 +965,7 @@ static void demo_input(const w::gridlayoutmanager &lm)
 		 (ONLY IN_THREAD,
 		  const std::string &value,
 		  unsigned *parsed_value,
-		  w::text_param &error_message,
+		  const w::input_field &f,
 		  const auto &trigger)
 		 -> std::optional<unsigned>
 		 {
@@ -979,7 +979,7 @@ static void demo_input(const w::gridlayoutmanager &lm)
 				 if (value.empty())
 					 return std::nullopt;
 			 }
-			 error_message=_("Must enter a number 1-49");
+			 f->stop_message(_("Must enter a number 1-49"));
 			 return std::nullopt;
 		 },
 		 []

@@ -94,6 +94,9 @@ A grid layout manager's sophisticated layout capabilities are simply
 not enough sometimes. For those situations, one of its elements can simply
 be another layout manager, such as the grid layout manager.
 
+Also, many specialized display elements, such as combo-boxes, are actually
+containers with a specialized layout manager, as described below.
+
 The first parameter is a lambda that initializes the new container before
 it's attached to its parent display element. The lambda receives a single
 parameter, the new \ref container "INSERT_LIBX_NAMESPACE::w::container" and
@@ -386,6 +389,26 @@ The third parameter sets the minimum size of the scroll-bar,
 in millimeters. The scroll-bar's actual size may be also adjusted by its
 layout manager. Irrespective of the scroll-bar's ultimate size, the reported
 scroll-bar values get scaled to its configured range and page size.
+
+\par Color pickers
+
+\code
+#include <INSERT_LIBX_NAMESPACE/w/color_picker.H>
+#include <INSERT_LIBX_NAMESPACE/w/color_picker_config.H>
+
+INSERT_LIBX_NAMESPACE::w::color_picker_config config{ {0, 0, 0} };
+
+INSERT_LIBX_NAMESPACE::w::color_picker cp=factory->create_color_picker(config);
+
+\endcode
+
+create_color_picker() returns
+\ref color_picker "INSERT_LIBX_NAMESPACE::w::color_picker".
+This is a display element that provides an interactive approach for
+specifying an \ref rgb "INSERT_LIBX_NAMESPACE::w::rgb" value.
+create_color_picker()'s optional
+\ref color_picker_config "INSERT_LIBX_NAMESPACE::w::color_picker_config"
+parameter sets the initial appearance of the color-picker.
 
 */
 

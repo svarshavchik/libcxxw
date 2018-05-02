@@ -206,7 +206,7 @@ date_input_field factoryObj
 		  invalid_input_error_message=config.invalid_input]
 		 (ONLY IN_THREAD,
 		  const std::u32string &d,
-		  text_param &error_message,
+		  const input_field &f,
 		  const callback_trigger_t &trigger) -> std::optional<ymd>
 		 {
 			 std::optional<ymd> parsed_date;
@@ -218,8 +218,8 @@ date_input_field factoryObj
 				 parsed_date=ymd::parser{}.try_parse(d);
 
 				 if (!parsed_date)
-					 error_message=
-						 invalid_input_error_message;
+					 f->stop_message
+						 (invalid_input_error_message);
 			 }
 
 			 auto got=cc.get();

@@ -13,6 +13,12 @@
 
 LIBCXXW_NAMESPACE_START
 
+//! Initial color picker configuration
+
+//! An optional parameter to a \ref factory "factory"'s
+//! create_color_picker() setting the initial value and apperance of a
+//! \ref color_picker "INSERT_LIBX_NAMESPACE::w::color_picker".
+
 struct color_picker_config {
 
 	//! Initial color

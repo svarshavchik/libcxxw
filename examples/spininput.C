@@ -39,7 +39,7 @@ void create_mainwindow(const x::w::main_window &main_window,
 	x::w::input_field_config config{3};
 
 	config.alignment=x::w::halign::right;
-	config.maximum_size=1;
+	config.maximum_size=2;
 
 	// There are two ways to enable spin controls in an input field.
 
@@ -90,9 +90,8 @@ void create_mainwindow(const x::w::main_window &main_window,
 		 (ONLY IN_THREAD,
 		  const std::string &value,
 		  int *parsed_value,
-		  x::w::text_param &error_message,
-		  const x::w::callback_trigger_t &trigger)
-		 -> std::optional<int>
+		  const x::w::input_field &f,
+		  const x::w::callback_trigger_t &trigger) -> std::optional<int>
 		 {
 			 if (parsed_value)
 			 {
@@ -103,11 +102,12 @@ void create_mainwindow(const x::w::main_window &main_window,
 			 {
 				 if (value.empty())
 				 {
+					 f->stop_message("Entry required");
 					 return std::nullopt;
 				 }
 			 }
 
-			 error_message="Must enter a number 1-49";
+			 f->stop_message("Must enter a number 1-49");
 			 return std::nullopt;
 		 },
 		 []

@@ -5,23 +5,23 @@
 #ifndef messages_H
 #define messages_H
 
+#include "x/w/namespace.H"
 #include <x/messages.H>
 #include <courier-unicode.h>
 
 #define _(x) dgettext("libcxxw", x)
 
-namespace LIBCXX_NAMESPACE {
-	namespace w {
-#if 0
-	}
-}
-#endif
+LIBCXXW_NAMESPACE_START
 
-#if 0
-{
-	{
-#endif
-	}
-}
+//! Strip prefix from localized strings.
+
+//! Localized string may be of the form "TAG:MEAT". This returns the meat.
+//!
+//! This provides different tags with the same meat, and separate localization
+//! for each tag.
+
+const char *TAG(const char *) LIBCXX_HIDDEN;
+
+LIBCXXW_NAMESPACE_END
 
 #endif

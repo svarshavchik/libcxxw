@@ -54,8 +54,13 @@ create_mainwindow(const x::w::main_window &main_window,
 	// std::u32string, and this is what was entered into the input field,
 	// with leading and trailing whitespace trimmed off.
 	//
-	// The remaining parameters are a reference to the returned error
-	// message, and the triggering event.
+	// The remaining parameters are a reference to our input field, that
+	// gets passed in for convenience, and the triggering event.
+	//
+	// A std::nullopt return value indicates that the entered text failed
+	// validation. It's up to the closure to report the parsing failure,
+	// in some way. The passed-in input_field's stop_message() method
+	// is conveniently available.
 	//
 	// set_validator returns an x::w::validated_input<T> object.
 
@@ -63,7 +68,7 @@ create_mainwindow(const x::w::main_window &main_window,
 		([]
 		 (ONLY IN_THREAD,
 		  const std::u32string &value,
-		  x::w::text_param &error_message,
+		  const x::w::input_field &field,
 		  const x::w::callback_trigger_t &trigger)
 		 -> std::optional<char>
 		 {
@@ -87,11 +92,11 @@ create_mainwindow(const x::w::main_window &main_window,
 
 			 if (value.empty())
 			 {
-				 error_message="Input required";
+				 field->stop_message("Input required");
 			 }
 			 else
 			 {
-				 error_message="Letter 'A'-'Z' required.";
+				 field->stop_message("Letter 'A'-'Z' required");
 			 }
 
 			 return std::nullopt;
@@ -152,9 +157,8 @@ create_mainwindow(const x::w::main_window &main_window,
 		 (ONLY IN_THREAD,
 		  const std::string &value,
 		  int *parsed_value,
-		  x::w::text_param &error_message,
-		  const x::w::callback_trigger_t &trigger)
-		 -> std::optional<int>
+		  const x::w::input_field &field,
+		  const x::w::callback_trigger_t &trigger) -> std::optional<int>
 		 {
 			 if (parsed_value)
 			 {
@@ -169,18 +173,42 @@ create_mainwindow(const x::w::main_window &main_window,
 			 {
 				 if (value.empty())
 				 {
-					 error_message="Input required";
+					 field->stop_message("Input required");
 					 return std::nullopt;
 				 }
 			 }
 
-			 error_message="Must enter a number 0-49";
+			 field->stop_message("Must enter a number 0-49");
 			 return std::nullopt;
 		 },
 		 []
 		 (int n)
 		 {
 			 return std::to_string(n);
+		 },
+
+		 // Both set_string_validator() and set_validator() take an
+		 // optional third closure. This closure receives the returned
+		 // value from the first closure. This third closure gets
+		 // invoked after the returned x::w::validated_input_field
+		 // gets updated with the parsed value.
+		 //
+		 // This provides the means of implementing a hook that
+		 // gets invoked with the newly-entered value "already on the
+		 // books". It is not, until the first closure returns, so
+		 // if something gets called from the first closure and it
+		 // looks at the x::w::validated_input_field's contents, it
+		 // will get the previous value, and not the current value.
+		 //
+		 // This is really the only purpose of this closure, but, as
+		 // an added bonus, the closure gets the new value of the
+		 // validated input field as its parameter.
+		 []
+		 (ONLY IN_THREAD, const std::optional<int> &v)
+		 {
+			 if (v)
+				 std::cout << "You entered a " << *v
+					   << std::endl;
 		 });
 
 
@@ -225,12 +253,7 @@ create_mainwindow(const x::w::main_window &main_window,
 				   if (x::w::input_lock{me}.get() == "4")
 					   return true;
 
-				   auto main_window=me->get_main_window();
-
-				   if (!main_window)
-					   return true;
-
-				   main_window->stop_message("No it's not.");
+				   me->stop_message("No it's not");
 
 				   return false;
 			   });

@@ -7,7 +7,6 @@
 
 #include <x/w/peepholed_focusableobj.H>
 #include <x/w/input_fieldfwd.H>
-#include <x/w/text_paramfwd.H>
 #include <x/w/hotspotfwd.H>
 #include <x/functionalrefptrfwd.H>
 #include <string>
@@ -75,9 +74,23 @@ public:
 			   canonical_format_functor &&canonical_factor);
 
 	template<typename validator_functor,
+		 typename canonical_format_functor,
+		 typename new_value_functor>
+	auto set_validator(validator_functor &&validator,
+			   canonical_format_functor &&canonical_factor,
+			   new_value_functor &&new_value);
+
+	template<typename validator_functor,
 		 typename canonical_format_functor>
 	auto set_string_validator(validator_functor &&validator,
 				  canonical_format_functor &&canonical_format);
+
+	template<typename validator_functor,
+		 typename canonical_format_functor,
+		 typename new_value_functor>
+	auto set_string_validator(validator_functor &&validator,
+				  canonical_format_functor &&canonical_format,
+				  new_value_functor &&new_value);
 
 	//! Override peepholed_focusable.
 	void do_get_impl(const function<internal_focusable_cb> &)

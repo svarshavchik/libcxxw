@@ -102,7 +102,7 @@ input field getting updated.
 \code
 f->on_validate([f=INSERT_LIBX_NAMESPACE::make_weak_capture(f)]
               (ONLY IN_THREAD,
-               const x::w::callback_trigger_t &triggering_event)
+               const INSERT_LIBX_NAMESPACE::w::callback_trigger_t &triggering_event)
               {
                   auto got=me.get();
 
@@ -141,12 +141,12 @@ click else. Returning \c false does not move the input focus, and the
 field's contents remain unvalidated.
 
 \code
-x::w::validated_input_field<int> validated_field=field->set_validator
+INSERT_LIBX_NAMESPACE::w::validated_input_field<int> validated_field=field->set_validator
        ([]
          (ONLY IN_THREAD,
           const std::string &value,
-          x::w::text_param &error_message,
-          const x::w::callback_trigger_t &trigger)-> std::optional<int>
+          const INSERT_LIBX_NAMESPACE::w::input_field &field,
+          const INSERT_LIBX_NAMESPACE::w::callback_trigger_t &trigger)-> std::optional<int>
          {
              std::istringstream i{value};
 
@@ -155,14 +155,22 @@ x::w::validated_input_field<int> validated_field=field->set_validator
              if (i >> n)
                   return n;
 
-             error_message="Numeric input required";
+             field->stop_message("Numeric input required");
 
              return std::nullopt;
          },
          []
-         (const std::optional<int> &v) -> std::string
+         (int v) -> std::string
          {
-             return v ? std::to_string(*v) : std::string{""};
+             return std::to_string(v);
+         },
+         []
+         (ONLY IN_THREAD, const std::optional<int> &v)
+         {
+             if (v)
+	         std::cout << "New value: " << *v << std::endl;
+             else
+                 std::cout << "No new value" << std::endl;
          });
 
 // ...
@@ -189,30 +197,31 @@ set_validator()'s first closure receives the following parameters:
 the current contents of the input field as either a UTF-8 string, or a
 unicode string.
 
-- a reference to a \ref text_param "INSERT_LIBX_NAMESPACE::w::text_param"
-that the closure sets to an error message, if the input field text is not
-valid.
+- an \c INSERT_LIBX_NAMESPACE::w::input_field reference, to its own input
+field, for convenience.
 
 - the triggering event.
 
 The closure returns a \c T value to indicate the value of the converted
 string, or a \c std::nullopt if the string is not valid.
 
-set_validator()'s closure returns \c false to on_validate() if
-set_validator()'s closure sets the \c error_message, with the contents
-of the error message shown in an error dialog popup; and \c true otherwise.
+The closure is responsible for reporting invalid input, and the usual
+way to do that is to use the \c field parameter and call the input field
+element's stop_message(), that displays an error dialog in the input field's
+window.
+
 In all cases the value returned by the closure gets placed into the
 \ref validated_input_field "validated_input_field<T>" object that gets
 returned from set_validator().
 
 The second closure passed to set_validator() takes a
-\c std::optional<T> parameter and returns either a UTF-8
-\c std::string or a unicode string. The returned string represents the
+T parameter and returns either a \c std::string in the current locale's
+encoding or a unicode string. The returned string represents the
 entered \c T value in canonical form. It may or may not be identical
 to what was entered into the text input field. It's expected that if the
 returned value gets passed to the first closure, the first closure returns
 the same value of \c T. The validator updates the text input field to the
-canonical format, if necessary.
+canonical format.
 
 The \ref date_input_field "date input field"'s parser provides a default
 year, if none was typed in, and its formatter converts the full date to
@@ -220,14 +229,22 @@ canonical format. In this manner, typing in just the month and the day
 then tabbing out of the date input field updates it to show the full
 date.
 
+The third closure is an optional parameter. If provided, the third closure
+gets invoked after the first closure returns, and after the returned
+\ref validated_input_field "INSERT_LIBX_NAMESPACE::w::validated_input_field<T>"
+gets updated with the validated value. This provides a hook that gets
+executed in the context where the \c validated_input_field reflects the
+new value (it doesn't until the first closure returns). But, for convenience's
+sake, the parsed value also gets passed to it as its first parameter.
+
 \code
-x::w::validated_input_field<int> validated_int=field->set_string_validator
+INSERT_LIBX_NAMESPACE::w::validated_input_field<int> validated_int=field->set_string_validator
         ([]
          (ONLY IN_THREAD,
           const std::string &value,
           int *parsed_value,
-          x::w::text_param &error_message,
-          const x::w::callback_trigger_t &trigger) -> std::optional<int>
+          const INSERT_LIBX_NAMESPACE::w::input_field &field,
+          const INSERT_LIBX_NAMESPACE::w::callback_trigger_t &trigger) -> std::optional<int>
          {
              if (parsed_value)
              {
@@ -238,18 +255,26 @@ x::w::validated_input_field<int> validated_int=field->set_string_validator
              {
                  if (value.empty())
                  {
-                     error_message="Input required";
+                     field->stop_message("Input required");
                      return std::nullopt;
                  }
              }
 
-             error_message="Must enter a number 0-99";
+             field->stop_message("Must enter a number 0-99");
              return std::nullopt;
          },
          []
-         (int n)
+         (int v) -> std::string
          {
-             return std::to_string(n);
+             return std::to_string(*v);
+         },
+         []
+         (ONLY IN_THREAD, const std::optional<int> &v)
+         {
+             if (v)
+	         std::cout << "New value: " << *v << std::endl;
+             else
+                 std::cout << "No new value" << std::endl;
          });
 \endcode
 
@@ -267,6 +292,7 @@ parameter is either a pointer to the extracted value, or a \c nullptr
 if the formatted extraction operator fails.
 
 set_string_validator()'s second closure is the same as \c set_validator()'s.
+The third, optional, closure is also the same as  \c set_validator()'s.
 
 \note
 set_validator() and set_string_validator() automatically trim off any
@@ -290,7 +316,7 @@ auto validated_int=field->set_string_validator
          (ONLY IN_THREAD,
           const std::string &value,
           int *parsed_value,
-          INSERT_LIBX_NAMESPACE::w::text_param &error_message,
+          const INSERT_LIBX_NAMESPACE::w::text_param &field,
           const INSERT_LIBX_NAMESPACE::w::callback_trigger_t &trigger)
          -> std::optional<int>
          {
@@ -358,7 +384,7 @@ typedef const_ptr<input_fieldObj> const_input_fieldptr;
 //!		 (ONLY IN_THREAD,
 //!               const std::string &value,
 //!		  int *parsed_value,
-//!		  INSERT_LIBX_NAMESPACE::w::text_param &error_message,
+//!		  const INSERT_LIBX_NAMESPACE::w::input_field &field,
 //!		  const INSERT_LIBX_NAMESPACE::w::callback_trigger_t &trigger) -> std::optional<int>
 //!              {
 //!                  // ...
@@ -378,9 +404,9 @@ typedef const_ptr<input_fieldObj> const_input_fieldptr;
 //! The callback installed by
 //! set_validator() and set_string_validator() owns a reference to this object.
 //! Its sole \c validated_value member is the most recently entered value.
-//! Generally, no value gets returned if the input field is empty, or if its
-//! contents could not be validated. The exact condition for "no value" are
-//! determined by the installed validator.
+//! Generally, no value gets returned before the first value gets entered into
+//! the input field, or if the entered
+//! contents could not be validated.
 
 template<typename type>
 using validated_input_field=ref<validated_input_fieldObj<type>>;

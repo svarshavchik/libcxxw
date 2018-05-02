@@ -1,3 +1,14 @@
+2018-04-26  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* includes/x/w/elementobj.H: added stop_message() and
+	exception_message() to x::w::element.
+
+	* includes/x/w/input_field.H (set_validator): Replaced the text_param
+	parameter to validator callbacks with x::w::input_field, and the
+	callback is responsible for reporting an error, in some way; perhaps
+	by calling the input_field's stop_message().
+
+
 2018-04-22  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* text_param.C (operator): Treat the string as encoded in the

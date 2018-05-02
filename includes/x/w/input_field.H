@@ -7,7 +7,6 @@
 
 #include <x/w/input_fieldfwd.H>
 #include <x/w/input_fieldobj.H>
-#include <x/w/text_param.H>
 #include <x/w/input_field_config.H>
 #include <x/w/input_field_lock.H>
 #include <x/w/busy.H>
@@ -68,7 +67,7 @@ class input_field_detect_validator_functor_parameter<
 	std::void_t<decltype(std::declval<validator_functor &&>()
 			     (std::declval<THREAD_CALLBACK>(),
 			      std::declval<const std::string &>(),
-			      std::declval<text_param &>(),
+			      std::declval<const input_field &>(),
 			      std::declval<const callback_trigger_t &>()))>>
 	: public input_field_get_for_validator<std::string> {};
 
@@ -79,7 +78,7 @@ class input_field_detect_validator_functor_parameter<
 	std::void_t<decltype(std::declval<validator_functor &&>()
 			     (std::declval<THREAD_CALLBACK>(),
 			      std::declval<const std::u32string &>(),
-			      std::declval<text_param &>(),
+			      std::declval<const input_field &>(),
 			      std::declval<const callback_trigger_t &>()))>>
 	: public input_field_get_for_validator<std::u32string> {};
 
@@ -183,6 +182,9 @@ public:
 		*value_lock=v;
 
 		if (!v)
+			// Do not set() the input field. No value means it's
+			// not valid, and set()ing it validates the contents
+			// of the input field.
 			return;
 
 		auto s=formatter(*v);
@@ -197,15 +199,32 @@ public:
 	}
 };
 
+template<typename validator_functor,
+	 typename canonical_format_functor>
+inline auto input_fieldObj::set_validator(validator_functor &&validator,
+					  canonical_format_functor
+					  &&canonical_format)
+{
+	return set_validator(std::forward<validator_functor>(validator),
+			     std::forward<canonical_format_functor>
+			     (canonical_format),
+			     []
+			     (ONLY IN_THREAD, const auto &ignore)
+			     {
+			     });
+}
+
 //! Install input field validation.
 
 //! \see input_field
 
 template<typename validator_functor,
-	 typename canonical_format_functor>
+	 typename canonical_format_functor,
+	 typename new_value_functor>
 auto input_fieldObj::set_validator(validator_functor &&validator,
 				   canonical_format_functor
-				   &&canonical_format)
+				   &&canonical_format,
+				   new_value_functor &&new_value)
 {
 	// Figure out the validator's first parameter.
 
@@ -220,7 +239,7 @@ auto input_fieldObj::set_validator(validator_functor &&validator,
 
 	typedef decltype(validator(std::declval<THREAD_CALLBACK>(),
 				   std::declval<const validated_string_t &>(),
-				   std::declval<text_param &>(),
+				   std::declval<input_field &>(),
 				   std::declval<const callback_trigger_t &>()))
 		validator_optional_ret_t;
 
@@ -240,7 +259,7 @@ auto input_fieldObj::set_validator(validator_functor &&validator,
 	on_validate
 		([=]
 		 (ONLY IN_THREAD,
-		  const callback_trigger_t &trigger)
+		  const callback_trigger_t &trigger)->bool
 		 {
 			 auto my_field_ptr=validated->my_inputfield.getptr();
 
@@ -248,55 +267,79 @@ auto input_fieldObj::set_validator(validator_functor &&validator,
 				 return true;
 
 			 // An input_lock is obtained first...
-			 input_lock my_input_field_lock{my_field_ptr};
-
 			 // ... then the validated_value lock.
 			 //
-			 // Same locking order as above...
+			 // Same locking order as above, but release the locks
+			 // before calling the new_value callback, so that it
+			 // gets called with all the locks released.
 
-			 typename mpobj<std::optional<type>>::lock
-				 lock{validated->validated_value};
+			 auto v=({
+					 input_lock my_input_field_lock{
+						 my_field_ptr};
 
-			 text_param error_message;
+					 typename mpobj<std::optional<type>>
+						 ::lock
+						 lock{validated
+							 ->validated_value};
 
-			 // Get the contents of the input field, trim off the
-			 // leading and the trailing whitespace, invoke
-			 // the validator function.
-			 auto v=validator(IN_THREAD,
-					  trim(validator_t
-					       ::get(my_input_field_lock)),
-					  error_message, trigger);
+					 // Get the contents of the input
+					 // field, trim off the
+					 // leading and the trailing
+					 // whitespace, invoke
+					 // the validator function.
 
-			 // And set the validated value, then report the
-			 // error message, if there is one.
+					 auto v=validator
+						 (IN_THREAD,
+						  trim(validator_t::get
+						       (my_input_field_lock)),
+						  my_field_ptr, trigger);
 
-			 validated->set(v, my_field_ptr,
-					my_input_field_lock, lock);
+					 // And set the validated value.
 
-			 if (!error_message.string.empty())
-			 {
-				 my_field_ptr->stop_message(error_message);
-				 return false;
-			 }
-			 return true;
+					 validated->set(v, my_field_ptr,
+							my_input_field_lock,
+							lock);
+
+					 v;
+				 });
+
+			 new_value(IN_THREAD, v);
+			 return v.has_value();
 		 });
 
 	return validated_input_field<type>(validated);
 }
 
+template<typename validator_functor,
+	 typename canonical_format_functor>
+inline auto input_fieldObj::set_string_validator(validator_functor &&validator,
+						 canonical_format_functor
+						 &&canonical_format)
+{
+	return set_string_validator(std::forward<validator_functor>(validator),
+				    std::forward<canonical_format_functor>
+				    (canonical_format),
+				    []
+				    (ONLY IN_THREAD, const auto &ignore)
+				    {
+				    });
+}
+
 //! Create a set_validator() by using a formatted string extraction operator, \c >>.
 
 template<typename validator_functor,
-	 typename canonical_format_functor>
+	 typename canonical_format_functor,
+	 typename new_value_functor>
 auto input_fieldObj::set_string_validator(validator_functor &&validator,
 					  canonical_format_functor
-					  &&canonical_format)
+					  &&canonical_format,
+					  new_value_functor &&new_value)
 {
 	return set_validator
 		([=]
 		 (ONLY IN_THREAD,
 		  const std::string &value,
-		  text_param &error_message,
+		  const input_field &f,
 		  const callback_trigger_t &trigger)
 		 {
 			 // The validator returns a std::optional, figure out
@@ -308,8 +351,8 @@ auto input_fieldObj::set_string_validator(validator_functor &&validator,
 						    std::declval<const
 						    std::string &>(),
 						    nullptr,
-						    std::declval<text_param
-						    &>(),
+						    std::declval<const input_field &>
+						    (),
 						    trigger))>::type_t
 				 object_type;
 
@@ -335,7 +378,7 @@ auto input_fieldObj::set_string_validator(validator_functor &&validator,
 					 {
 						 return validator(IN_THREAD,
 								  value, &v,
-								  error_message,
+								  f,
 								  trigger);
 					 }
 				 }
@@ -343,10 +386,11 @@ auto input_fieldObj::set_string_validator(validator_functor &&validator,
 
 			 return validator(IN_THREAD,
 					  value, nullptr,
-					  error_message, trigger);
+					  f, trigger);
 		 },
 
-		 std::forward<canonical_format_functor>(canonical_format));
+		 std::forward<canonical_format_functor>(canonical_format),
+		 std::forward<new_value_functor>(new_value));
 }
 
 LIBCXXW_NAMESPACE_END
