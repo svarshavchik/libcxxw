@@ -34,9 +34,11 @@ class LIBCXX_HIDDEN shared_handler_dataObj : virtual public obj {
 
 	weakptr<ptr<generic_windowObj::handlerObj>> toplevel_handler;
 
-	//! Currently opened exclusive
+	//! A container for currently-opened exclusive popups.
+	typedef weaklist<handler_mcguffinObj> opened_exclusive_popups_t;
 
-	weakptr<ptr<handler_mcguffinObj>> opened_exclusive_popup;
+	//! Currently opened exclusive popups.
+	opened_exclusive_popups_t opened_exclusive_popups;
 
 	//! A container for an opened hierarchy of popup menus.
 
@@ -81,7 +83,7 @@ public:
 				    const popupObj::handlerObj &popup);
 
 	//! Close the currently-opened exclusive popup, if there is one.
-	void close_exclusive_popup(ONLY IN_THREAD);
+	void close_all_exclusive_popups(ONLY IN_THREAD);
 
 	//! A new menu popup is being opened.
 

@@ -484,7 +484,7 @@ size_t view_menu(const LIBCXX_NAMESPACE::w::listlayoutmanager &m)
 		"Options"
 			});
 
-	return m->size()-1;
+	return 1;
 }
 
 

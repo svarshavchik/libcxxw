@@ -11,7 +11,8 @@
 
 LIBCXXW_NAMESPACE_START
 
-class shared_handler_dataObj::handler_mcguffinObj : virtual public obj {
+class LIBCXX_HIDDEN shared_handler_dataObj::handler_mcguffinObj
+	: virtual public obj {
 
 public:
 	weakptr<ptr<popupObj::handlerObj>> handler;
@@ -33,7 +34,8 @@ public:
 };
 
 shared_handler_dataObj::shared_handler_dataObj()
-	: opened_menu_popups(opened_menu_popups_t::create())
+	: opened_exclusive_popups{opened_exclusive_popups_t::create()},
+	  opened_menu_popups(opened_menu_popups_t::create())
 {
 }
 
@@ -51,9 +53,7 @@ ref<obj> shared_handler_dataObj
 {
 	auto mcguffin=ref<handler_mcguffinObj>::create(popup);
 
-	close_exclusive_popup(IN_THREAD);
-
-	opened_exclusive_popup=mcguffin;
+	opened_exclusive_popups->push_front(mcguffin);
 
 	return mcguffin;
 }
@@ -64,12 +64,15 @@ void shared_handler_dataObj
 {
 }
 
-void shared_handler_dataObj::close_exclusive_popup(ONLY IN_THREAD)
+void shared_handler_dataObj::close_all_exclusive_popups(ONLY IN_THREAD)
 {
-	auto p=opened_exclusive_popup.getptr();
+	for (const auto &p:*opened_exclusive_popups)
+	{
+		auto pp=p.getptr();
 
-	if (p)
-		p->hide(IN_THREAD);
+		if (pp)
+			pp->hide(IN_THREAD);
+	}
 }
 
 void shared_handler_dataObj
@@ -89,7 +92,7 @@ ref<obj> shared_handler_dataObj
 ::opening_menu_popup(ONLY IN_THREAD,
 		     const ref<popupObj::handlerObj> &popup)
 {
-	close_exclusive_popup(IN_THREAD);
+	close_all_exclusive_popups(IN_THREAD);
 
 	auto mcguffin=ref<handler_mcguffinObj>::create(popup);
 
@@ -128,16 +131,35 @@ bool shared_handler_dataObj
 
 	// If there's a combo-box popup, it either deals with the keypress,
 	// or not.
-	auto exclusive_popup=opened_exclusive_popup.getptr();
 
-	if (exclusive_popup)
+	for (auto &b:*opened_exclusive_popups)
 	{
+		auto exclusive_popup=b.getptr();
+
+		if (!exclusive_popup)
+			continue;
+
 		auto handler=exclusive_popup->handler.getptr();
 
-		if (handler && handler->data(IN_THREAD).requested_visibility)
-			return handler->handle_key_event(IN_THREAD, event,
-							 keypress);
-		return false;
+		if (handler &&
+		    handler->data(IN_THREAD).requested_visibility)
+		{
+			// Once we found an exclusive popup it will
+			// process the keypress. Even if it doesn't, we
+			// consider it processed.
+			//
+			// The input focus in the main window is on a button
+			// that opened an attached popup. In the attached popup
+			// the cursor is in an input field. The input field
+			// ignores the cursor left, and we don't want to
+			// return false, and have the main window process this
+			// key event and have the popup button close the
+			// popup.
+			(void)handler->handle_key_event(IN_THREAD,
+							event,
+							keypress);
+			return true;
+		}
 	}
 
 	// Check for visible menu popups.
@@ -201,21 +223,30 @@ shared_handler_dataObj::find_popup_for_xy(ONLY IN_THREAD,
 					const motion_event &me)
 {
 	// If there's a combo-box popup, all motion events go there.
-	auto exclusive_popup=opened_exclusive_popup.getptr();
 
-	if (exclusive_popup)
+	bool have_exclusive_popup=false;
+
+	for (auto &b:*opened_exclusive_popups)
 	{
+		auto exclusive_popup=b.getptr();
+
+		if (!exclusive_popup)
+			continue;
+
 		auto handler=exclusive_popup->handler.getptr();
 
 		if (handler && handler->data(IN_THREAD).requested_visibility)
 			return handler;
-		return ptr<generic_windowObj::handlerObj>();
+		have_exclusive_popup=true;
 	}
+
+	if (have_exclusive_popup)
+		return ptr<generic_windowObj::handlerObj>();
 
 	// Otherwise go through all the menu popups, and find the first one
 	// that's under the pointer.
 
-	for (auto &b:*opened_menu_popups)
+	for (auto &b : *opened_menu_popups)
 	{
 		auto popup=b.second.getptr();
 
@@ -246,12 +277,7 @@ shared_handler_dataObj::find_popup_for_xy(ONLY IN_THREAD,
 
 void shared_handler_dataObj::opening_dialog(ONLY IN_THREAD)
 {
-	hide_menu_popups_until(IN_THREAD, opened_menu_popups->end());
-
-	auto p=opened_exclusive_popup.getptr();
-
-	if (p)
-		p->hide(IN_THREAD);
+	close_all_exclusive_popups(IN_THREAD);
 	hide_menu_popups_until(IN_THREAD, opened_menu_popups->end());
 }
 
