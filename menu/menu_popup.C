@@ -106,7 +106,7 @@ do_create_dropdown_menu(const element_impl &e,
 				 "menu_popup_border",
 				 2,
 				 attached_to_how,
-				 create_menu_popup,
+				 menu_popup_type,
 				 style,
 				 above_color,
 				 below_color

@@ -147,8 +147,7 @@ date_input_field factoryObj
 	auto attachedto_handler=
 		popup_attachedto_handler::create
 		(popup_attachedto_handler_args{
-			&shared_handler_dataObj::opening_exclusive_popup,
-			&shared_handler_dataObj::closing_exclusive_popup,
+			exclusive_popup_type,
 			"date_input",
 			parent_handler,
 			attachedto_info,

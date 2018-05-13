@@ -285,7 +285,7 @@ focusable_container new_custom_comboboxlayoutmanager
 				// the popup gets recalculated.
 				3,
 				attached_to::combobox_above_or_below,
-				create_exclusive_popup,
+				exclusive_popup_type,
 				style,
 				"combobox_above_background_color",
 				"combobox_below_background_color"},

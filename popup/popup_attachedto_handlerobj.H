@@ -14,6 +14,22 @@
 
 LIBCXXW_NAMESPACE_START
 
+struct popup_visibility_semantics;
+
+//! Menu popup semantics
+
+//! Close any "exclusive" popup when this popup opens, and any other menu
+//! popups with a higher nesting level.
+
+extern const popup_visibility_semantics LIBCXX_HIDDEN menu_popup_type;
+
+//! "Exclusive" popup semantics.
+
+//! Close all menu popups when this "exclusive" popup opens, and any other
+//! exclusive popups at the same nesting level.
+
+extern const popup_visibility_semantics LIBCXX_HIDDEN exclusive_popup_type;
+
 //! Implementation object
 
 //! \see popup_attachedto_handler
@@ -24,24 +40,8 @@ class LIBCXX_HIDDEN popup_attachedto_handlerObj : public popupObj::handlerObj {
 
 	const popup_attachedto_info attachedto_info;
 
- public:
-	//! Signature for an opened_popup report.
-
-	typedef ref<obj> (shared_handler_dataObj::*opened_popup_t)
-		(ONLY IN_THREAD, const ref<popupObj::handlerObj> &);
-
-	//! Signature for an closed_popup report.
-
-	typedef void (shared_handler_dataObj::*closed_popup_t)
-		(ONLY IN_THREAD, const popupObj::handlerObj &);
- private:
-	//! Which shared_handler_dataObj method we report our visibility to.
-
-	const opened_popup_t opened_popup;
-
-	//! Which shared_handler_dataObj method we report our visibility to.
-
-	const closed_popup_t closed_popup;
+	//! When popup semantics this popup belongs to.
+	const popup_visibility_semantics &attachedto_type;
 
 	//! What WM_CLASS instance this is
 
@@ -83,10 +83,9 @@ class LIBCXX_HIDDEN popup_attachedto_handlerObj : public popupObj::handlerObj {
 //! Arguments to \ref popup_attachedto_handler "attached popup handler"'s constructor.
 
 struct LIBCXX_HIDDEN popup_attachedto_handler_args {
-	//! Which shared_handler_dataObj method we report our visibility to.
-	popup_attachedto_handlerObj::opened_popup_t opened_popup;
-	//! Which shared_handler_dataObj method we report our visibility to.
-	popup_attachedto_handlerObj::closed_popup_t closed_popup;
+
+	//! The new popup's semantics
+	const popup_visibility_semantics &attachedto_type;
 
 	//! What WM_CLASS instance this is
 	const char *wm_class_instance;

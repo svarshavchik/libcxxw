@@ -67,25 +67,6 @@ peepholed_toplevel_listcontainer_handler
 create_p_t_l_handler(const peepholed_toplevel_listcontainer_handler_args &)
 	LIBCXX_HIDDEN;
 
-//! The type that specifies what kind of a popup it is.
-
-//! This value get passed to \ref create_peepholed_toplevel_listcontainer_popup "create_peepholed_toplevel_listcontainer_popup"().
-
-typedef std::tuple<
-	ref<obj> (shared_handler_dataObj::*)(ONLY IN_THREAD,
-					   const ref<popupObj::handlerObj> &),
-
-	void (shared_handler_dataObj::*)(ONLY IN_THREAD,
-					 const popupObj::handlerObj &)
-	> popup_type_t;
-
-//! Parameter for \ref create_peepholed_toplevel_listcontainer_popup "create_peepholed_toplevel_listcontainer_popup"().
-
-popup_type_t create_exclusive_popup() LIBCXX_HIDDEN;
-
-//! Parameter for \ref create_peepholed_toplevel_listcontainer_popup "create_peepholed_toplevel_listcontainer_popup"().
-popup_type_t create_menu_popup() LIBCXX_HIDDEN;
-
 //! Non-factory parameters to create_peepholed_toplevel_listcontainer_popup().
 
 struct LIBCXX_HIDDEN create_peepholed_toplevel_listcontainer_popup_args {
@@ -119,11 +100,7 @@ struct LIBCXX_HIDDEN create_peepholed_toplevel_listcontainer_popup_args {
 	attached_to attached_to_style;
 
 	//! Popup type
-
-	//! This is set to either \c create_exclusive_popup or
-	//! \c create_menu_popup.
-
-	popup_type_t (*popup_type)();
+	const popup_visibility_semantics &popup_type;
 
 	//! The style of the list container.
 	const new_listlayoutmanager &list_style;

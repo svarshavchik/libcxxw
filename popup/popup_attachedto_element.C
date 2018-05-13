@@ -56,8 +56,7 @@ create_popup_attachedto_element_impl(factoryObj &parent_factory,
 	auto attachedto_handler=
 		ref<popup_attachedto_handlerObj>::create
 		(popup_attachedto_handler_args{
-			&shared_handler_dataObj::opening_exclusive_popup,
-			&shared_handler_dataObj::closing_exclusive_popup,
+			exclusive_popup_type,
 			"element_popup",
 			parent_handler,
 			attachedto_info,

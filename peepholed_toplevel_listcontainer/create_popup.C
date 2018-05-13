@@ -58,18 +58,6 @@ class LIBCXX_HIDDEN peepholed_toplevel_listcontainer_popupObj
 #endif
 }
 
-popup_type_t create_exclusive_popup()
-{
-	return {&shared_handler_dataObj::opening_exclusive_popup,
-			&shared_handler_dataObj::closing_exclusive_popup};
-}
-
-popup_type_t create_menu_popup()
-{
-	return {&shared_handler_dataObj::opening_menu_popup,
-			&shared_handler_dataObj::closing_menu_popup};
-}
-
 create_p_t_l_popup_ret_t
 do_create_peepholed_toplevel_listcontainer_popup
 (const create_peepholed_toplevel_listcontainer_popup_args &args,
@@ -84,13 +72,10 @@ do_create_peepholed_toplevel_listcontainer_popup
 	auto attachedto_info=popup_attachedto_info::create
 		(rectangle{}, args.attached_to_style);
 
-	auto [opened_popup, closed_popup]=(*args.popup_type)();
-
 	auto popup_handler=handler_factory({
 			args.topleft_color,
 			args.bottomright_color,	{
-				opened_popup,
-				closed_popup,
+				args.popup_type,
 				args.popup_wm_class_instance,
 				parent_handler,
 				attachedto_info,
