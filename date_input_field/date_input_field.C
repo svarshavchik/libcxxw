@@ -255,7 +255,6 @@ date_input_field factoryObj
 
 	auto popup_imagebutton=create_standard_popup_imagebutton
 		(f, attachedto_handler,
-		 date_picker_popup->elementObj::impl,
 		 {
 			 config.border,
 				 config.background_color,

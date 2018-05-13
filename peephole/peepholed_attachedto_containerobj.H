@@ -61,6 +61,32 @@ public:
 	dim_t max_height_value;
 };
 
+//! A reference to an \ref peepholed_attachedto_container "peepholed container in an attahced popup"'s implementation object.
+
+typedef ref<peepholed_attachedto_containerObj
+	    ::implObj> peepholed_attachedto_container_impl;
+
+//! A constant \ref peepholed_attachedto_container_impl "attached popup container's implementation object".
+
+//! \see peepholed_attachedto_container
+
+typedef const_ref<peepholed_attachedto_containerObj
+	    ::implObj> const_peepholed_attachedto_container_impl;
+
+//! A nullable pointer reference to a \ref peepholed_attachedto_container_impl "attached popup container's implementation object".
+
+//! \see peepholed_attachedto_container
+
+typedef ptr<peepholed_attachedto_containerObj
+	    ::implObj> peepholed_attachedto_container_implptr;
+
+//! A nullable pointer reference to a const \ref peepholed_attachedto_container_impl "attached popup container's implementation object".
+
+//! \see peepholed_attachedto_container
+
+typedef const_ptr<peepholed_attachedto_containerObj
+	    ::implObj> const_peepholed_attachedto_container_implptr;
+
 LIBCXXW_NAMESPACE_END
 
 #endif

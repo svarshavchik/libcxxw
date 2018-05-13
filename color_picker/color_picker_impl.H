@@ -5,11 +5,12 @@
 #ifndef color_picker_impl_h
 #define color_picker_impl_h
 
-#include "color_picker/color_picker_handler.H"
 #include "color_picker/color_picker_squarefwd.H"
+#include "popup/popup_attachedto_elementfwd.H"
 #include "image_button_internalfwd.H"
 #include "x/w/impl/popup/popupfwd.H"
 #include "x/w/rgb.H"
+#include "x/w/color_picker.H"
 #include "x/w/color_picker_configfwd.H"
 #include "x/w/callback_triggerfwd.H"
 #include "x/w/input_fieldfwd.H"
@@ -17,6 +18,7 @@
 #include <x/mpobj.H>
 
 LIBCXXW_NAMESPACE_START
+
 
 //! Internal implementation object.
 
@@ -38,7 +40,7 @@ class LIBCXX_HIDDEN color_pickerObj::implObj : virtual public obj {
 
 	//! The real internal implementation.
 
-	const ref<handlerObj> handler;
+	const popup_attachedto_element_impl impl;
 
 	//! The popup button in the color picker.
 
@@ -67,7 +69,7 @@ class LIBCXX_HIDDEN color_pickerObj::implObj : virtual public obj {
 	const label error_message_field;
 
 	//! Constructor
-	implObj(const ref<handlerObj> &handler,
+	implObj(const popup_attachedto_element_impl &handler,
 		const image_button_internal &popup_button,
 		const popup &color_picker_popup,
 		const element &current_color_element,

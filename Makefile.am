@@ -89,8 +89,6 @@ libcxxw_la_SOURCES=\
 	catch_exceptions.H			    \
 	child_element.C				    \
 	color_picker/color_picker.C		    \
-	color_picker/color_picker_handler.C	    \
-	color_picker/color_picker_handler.H	    \
 	color_picker/color_picker_impl.C	    \
 	color_picker/color_picker_impl.H	    \
 	color_picker/color_picker_selector.C	    \
@@ -588,6 +586,9 @@ libcxxw_la_SOURCES=\
 	popup/popup_handler.H			    \
 	popup/popup_impl.C			    \
 	popup/popup_impl.H			    \
+	popup/popup_attachedto_element.C	    \
+	popup/popup_attachedto_element.H	    \
+	popup/popup_attachedto_elementfwd.H	    \
 	popup/popup_attachedto_handler.C	    \
 	popup/popup_attachedto_handler.H	    \
 	popup/popup_attachedto_handlerfwd.H	    \

@@ -7,8 +7,7 @@
 
 #include <x/w/color_picker_configfwd.H>
 #include <x/w/color_pickerfwd.H>
-#include <x/w/border_arg.H>
-#include <x/w/rgb.H>
+#include <x/w/element_popup_config.H>
 #include <x/functionalrefptr.H>
 
 LIBCXXW_NAMESPACE_START
@@ -27,25 +26,8 @@ struct color_picker_config {
 	//! Initial callback
 	functionptr<color_picker_callback_t> initial_callback;
 
-	//! Border
-
-	border_arg border="color_picker_border";
-
-	//! Background color
-
-	color_arg background_color="color_picker_background_color";
-
-	//! Popup border
-	border_arg popup_border="color_picker_popup_border";
-
-	//! Popup background color
-	color_arg popup_background_color="color_picker_popup_background_color";
-
-	//! Button focus border.
-	border_arg focusoff_border="color_pickerbuttonfocusoff_border";
-
-	//! Button focus border.
-	border_arg focuson_border="color_pickerbuttonfocuson_border";
+	//! Popup configuration
+	element_popup_config popup_config;
 };
 
 LIBCXXW_NAMESPACE_END

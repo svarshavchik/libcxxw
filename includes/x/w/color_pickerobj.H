@@ -19,7 +19,6 @@ LIBCXXW_NAMESPACE_START
 class color_pickerObj : public focusable_containerObj {
 
 public:
-	class handlerObj;
 	class implObj;
 
 	//! Internal implementation object.

@@ -928,36 +928,40 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
   <color id="dateedit_day_highlight_fg" scale="100%" />
   <color id="dateedit_day_highlight_bg" scale="10%" />
 
-  <!-- Color picker -->
+  <!--
+      Element popups
+  -->
 
-  <border id="color_picker_border" from="thin_0%" />
+  <border id="element_attached_border" from="thin_0%" />
+
+  <!-- Border when an alpha channel is available -->
+
+  <border id="element_attached_popup_border" from="thin_0%">
+    <hradius>1</hradius>
+    <vradius>1</vradius>
+  </border>
+
+  <!-- A popup attached to an element -->
+
+  <!-- Border when an alpha channel is not available -->
+
+  <border id="element_attached_popup_border_square" from="thin_0%" />
+  <dim id="element_attached_popup_border_square_padding_h" axis="horiz">1</dim>
+  <dim id="element_attached_popup_border_square_padding_v" axis="vert">1</dim>
+
+  <color id="element_attached_popup_background_color" scale="80%" />
+
+  <border id="element_attached_popup_button_focusoff_border" from="inputfocusoff_border">
+    <color>inputfocus_color2</color>
+  </border>
+  <border id="element_attached_popup_button_focuson_border" from="inputfocuson_border" />
+
+  <!-- Color picker -->
 
   <!-- Size of the element showing the current color -->
 
   <dim id="color_picker_current_width" axis="horiz">10</dim>
   <dim id="color_picker_current_height" axis="vert">6</dim>
-
-  <!-- Border when an alpha channel is available -->
-
-  <border id="color_picker_popup_border" from="thin_0%">
-    <hradius>1</hradius>
-    <vradius>1</vradius>
-  </border>
-
-  <!-- Border when an alpha channel is not available -->
-
-  <border id="color_picker_popup_border_square" from="thin_0%" />
-  <dim id="color_picker_popup_border_square_padding_h" axis="horiz">1</dim>
-  <dim id="color_picker_popup_border_square_padding_v" axis="vert">1</dim>
-
-  <color id="color_picker_background_color" scale="textedit_background_color" />
-
-  <color id="color_picker_popup_background_color" scale="80%" />
-
-  <border id="color_pickerbuttonfocusoff_border" from="inputfocusoff_border">
-    <color>inputfocus_color2</color>
-  </border>
-  <border id="color_pickerbuttonfocuson_border" from="inputfocuson_border" />
 
   <!--
       In the color picker popup, the dimensions of the gradient square.

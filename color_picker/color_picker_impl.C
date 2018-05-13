@@ -3,6 +3,7 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
+#include "popup/popup_attachedto_element.H"
 #include "color_picker/color_picker_impl.H"
 #include "color_picker/color_picker_square_impl.H"
 #include "image_button_internal.H"
@@ -128,7 +129,7 @@ color_pickerObj::implObj::compute_hsv(const rgb &color)
 			v};
 }
 
-color_pickerObj::implObj::implObj(const ref<handlerObj> &handler,
+color_pickerObj::implObj::implObj(const popup_attachedto_element_impl &impl,
 				  const image_button_internal &popup_button,
 				  const popup &color_picker_popup,
 				  const element &current_color_element,
@@ -139,7 +140,7 @@ color_pickerObj::implObj::implObj(const ref<handlerObj> &handler,
 				  const element &fixed_component_gradient,
 				  const color_picker_square &variable_gradients,
 				  const label &error_message_field)
-	: handler{handler}, popup_button{popup_button},
+	: impl{impl}, popup_button{popup_button},
 	  color_picker_popup{color_picker_popup},
 	  current_color_element{current_color_element},
 

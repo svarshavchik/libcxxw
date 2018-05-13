@@ -7,17 +7,10 @@
 #include "x/w/canvas.H"
 #include "x/w/button.H"
 #include "x/w/button_event.H"
+#include "popup/popup_attachedto_element.H"
 #include "color_picker/color_picker_impl.H"
-#include "color_picker/color_picker_handler.H"
 #include "color_picker/color_picker_selector_impl.H"
 #include "color_picker/color_picker_square_impl.H"
-#include "popup/popup_attachedto_info.H"
-#include "popup/popup_attachedto_handler.H"
-#include "popup/popup_impl.H"
-#include "peephole/peephole_toplevel.H"
-#include "peephole/peepholed_fontelement.H"
-#include "peephole/peepholed_toplevel_element.H"
-#include "popup_imagebutton.H"
 #include "x/w/impl/always_visible.H"
 #include "x/w/impl/focus/focusable.H"
 #include "x/w/label.H"
@@ -44,7 +37,7 @@ LIBCXXW_NAMESPACE_START
 
 color_pickerObj::color_pickerObj(const ref<implObj> &impl,
 				 const layout_impl &container_layoutmanager)
-	: focusable_containerObj{impl->handler, container_layoutmanager},
+	: focusable_containerObj{impl->impl, container_layoutmanager},
 	  impl{impl}
 {
 }
@@ -290,23 +283,13 @@ inline standard_dialog_elements_t color_picker_layout_helper::elements()
 // color_picker_selector as the element.
 
 static inline std::tuple<color_picker_selector, color_picker_popup_fields>
-create_contents(const popup_attachedto_info &attachedto_info,
-		const color_picker_config &config,
-		const container_impl &parent)
+create_contents(const ref<color_picker_selectorObj::implObj>
+		&contents_container_impl,
+		const ref<gridlayoutmanagerObj::implObj> &lm_impl,
+		const popup_attachedto_info &attachedto_info,
+		const color_picker_config &config)
 {
-	child_element_init_params init_params;
-
-	init_params.background_color=
-		config.popup_background_color;
-
-	auto container_impl=
-		ref<color_picker_selectorObj::implObj>::create(parent,
-							       init_params);
-
-	auto glm_impl=ref<gridlayoutmanagerObj::implObj>
-		::create(container_impl);
-
-	auto glm=glm_impl->create_gridlayoutmanager();
+	auto glm=lm_impl->create_gridlayoutmanager();
 
 	color_picker_layout_helper helper{config};
 	gridtemplate tmpl{helper.elements()};
@@ -314,8 +297,8 @@ create_contents(const popup_attachedto_info &attachedto_info,
 	glm->create("color-picker-popup", tmpl);
 
 	auto p=color_picker_selector::create(attachedto_info,
-					     container_impl,
-					     glm_impl);
+					     contents_container_impl,
+					     lm_impl);
 
 	// Tooltips
 	text_param button_tooltip{
@@ -628,91 +611,50 @@ make_manual_input_validator(const input_field &f,
 color_picker factoryObj
 ::create_color_picker(const color_picker_config &config)
 {
-	auto parent_container=get_container_impl();
-
-	auto attachedto_info=
-		popup_attachedto_info::create(rectangle{},
-					      attached_to::submenu_next);
-
-	// Our container implementation object, for the current color field and
-	// the popup button.
-	auto handler=ref<color_pickerObj::handlerObj>
-		::create(parent_container);
-
-	// We will use the grid layout manager, of course.
-
-	auto glm_impl=ref<gridlayoutmanagerObj::implObj>::create(handler);
-
-	auto glm=glm_impl->create_gridlayoutmanager();
-
-	// Create the current color picker.
-
-	// We use the grid layout manager to draw the border around it
-	// (config.border)...
-	auto f=glm->append_row();
-	f->padding(0);
-	f->border(config.border);
-
-	// The current color element
-
-	dim_arg w{"color_picker_current_width"};
-	dim_arg h{"color_picker_current_height"};
-
-	auto color_picker_current=f->create_canvas
-		([&](const auto &c)
-		 {
-			 c->set_background_color(config.initial_color);
-		 },
-		 {w, w, w},
-		 {h, h, h});
-
-	color_picker_current->show();
-
-	// Before creating the button that pops up the color picker,
-	// we need to create the popup itself.
-
-	auto parent_handler=ref(&parent_container->get_window_handler());
-
-	auto attachedto_handler=
-		ref<popup_attachedto_handlerObj>::create
-		(popup_attachedto_handler_args{
-			&shared_handler_dataObj::opening_exclusive_popup,
-			&shared_handler_dataObj::closing_exclusive_popup,
-			"color_picker",
-			parent_handler,
-			attachedto_info,
-			parent_container->container_element_impl()
-				.nesting_level+2});
-
-	attachedto_handler->set_window_type("popup_menu,dropdown_menu");
-
-	auto popup_impl=ref<popupObj::implObj>::create(attachedto_handler,
-						       parent_handler);
-
-	peephole_style popup_peephole_style{halign::fill};
-
-	color_picker_selectorptr selector;
+	canvasptr color_picker_current;
 
 	std::optional<color_picker_popup_fields> contents_opt;
 
-	// Create the contents of the popup.
+	ptr<color_picker_selectorObj::implObj> color_picker_selector_impl;
 
-	auto popup_lm=create_peephole_toplevel
-		(attachedto_handler,
-		 config.popup_border,
-		 config.popup_background_color,
-		 config.popup_background_color,
-		 popup_peephole_style,
+	auto [real_impl, popup_imagebutton, glm, color_picker_popup]
+		=create_popup_attachedto_element
+		(*this, config.popup_config,
+
 		 [&]
-		 (const container_impl &parent)
+		 (const auto &f)
+		 {
+			 // The current value element shows the current
+			 // color.
+
+			 dim_arg w{"color_picker_current_width"};
+			 dim_arg h{"color_picker_current_height"};
+
+			 color_picker_current=f->create_canvas
+			 ([&](const auto &c) {
+				 c->set_background_color(config.initial_color);
+			 }, {w}, {h});
+
+			 color_picker_current->show();
+		 },
+
+		 [&](const container_impl &parent,
+		     const child_element_init_params &init_params)
+		 {
+			 auto impl=ref<color_picker_selectorObj::implObj>
+			 ::create(parent, init_params);
+			 color_picker_selector_impl=impl;
+
+			 return impl;
+		 },
+		 [&](const popup_attachedto_info &info,
+		     const ref<gridlayoutmanagerObj::implObj> &lm_impl)
+
 		 {
 			 auto [selector_ret,
-			       fields_ret]=create_contents(attachedto_info,
-							   config,
-							   parent);
-			 selector=selector_ret;
+			       fields_ret]=create_contents
+			 (color_picker_selector_impl, lm_impl, info, config);
 			 contents_opt=fields_ret;
-			 selector_ret->show_all();
 			 return selector_ret;
 		 });
 
@@ -721,27 +663,10 @@ color_picker factoryObj
 
 	const auto &contents=contents_opt.value();
 
-	auto color_picker_popup=popup::create(popup_impl, popup_lm->impl);
-
-	// We can now create the popup button next to the current color
-	// element.
-
-	auto popup_imagebutton=create_standard_popup_imagebutton
-		(f, attachedto_handler,
-		 color_picker_popup->elementObj::impl,
-		 {
-			 config.border,
-				 config.background_color,
-				 "scroll-right1",
-				 "scroll-right2",
-				 config.focusoff_border,
-				 config.focuson_border
-		 });
-
 	// Capture the elements in the implementation object.
 
 	auto impl=ref<color_pickerObj::implObj>
-		::create(handler, popup_imagebutton, color_picker_popup,
+		::create(real_impl, popup_imagebutton, color_picker_popup,
 			 color_picker_current,
 
 			 config,
@@ -987,7 +912,7 @@ color_picker factoryObj
 			 popup->hide();
 		 });
 
-	auto p=color_picker::create(impl, glm_impl);
+	auto p=color_picker::create(impl, glm->impl);
 
 	created(p);
 	return p;

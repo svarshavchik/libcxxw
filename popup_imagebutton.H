@@ -123,7 +123,6 @@ image_button_internal
 create_standard_popup_imagebutton(const gridfactory &f,
 				  const popup_attachedto_handler
 				  &attachedto_handler,
-				  const ref<elementObj::implObj> &popup_element,
 				  const popup_imagebutton_config &config)
 	LIBCXX_HIDDEN;
 
