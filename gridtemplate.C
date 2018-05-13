@@ -28,16 +28,8 @@ void gridtemplate::generate(const factory &f,
 
 
 void gridlayoutmanagerObj::create(const std::string_view &name,
-				  const std::unordered_map<std::string,
-				  functionref<void (const factory &)>>
-				  &elements,
-				  const std::unordered_map<std::string,
-				  shortcut> &shortcuts,
-				  std::unordered_map<std::string,
-				  container> &new_layouts)
+				  gridtemplate &telements)
 {
-	gridtemplate telements{elements, shortcuts, new_layouts};
-
 	remove();
 
 	auto theme=*current_theme_t::lock{
@@ -45,7 +37,11 @@ void gridlayoutmanagerObj::create(const std::string_view &name,
 		->container_element_impl().get_screen()
 		->impl->current_theme};
 
-	theme->layout_insert(gridlayoutmanager(this), &telements,
+	// style-sheet generated parses takes its paramaters by reference,
+	// and expects them to be refs. This is close enough.
+	gridtemplate *elementsptr=&telements;
+
+	theme->layout_insert(gridlayoutmanager(this), elementsptr,
 			     std::string{name.begin(), name.end()});
 }
 

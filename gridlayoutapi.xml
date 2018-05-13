@@ -134,7 +134,7 @@ static void [objectname]_parseconfig(const xml::doc::base::readlock &lock,
     </parameter>
 
     <parameter>
-      <type>gridtemplate *</type>
+      <type>gridtemplateptr</type>
       <name>elements</name>
     </parameter>
 
@@ -380,7 +380,7 @@ static void [objectname]_parseconfig(const xml::doc::base::readlock &lock,
     </parameter>
 
     <parameter>
-      <type>gridtemplate *</type>
+      <type>gridtemplateptr</type>
       <name>elements</name>
     </parameter>
 
@@ -672,7 +672,7 @@ static void [objectname]_parseconfig(const xml::doc::base::readlock &lock,
     </parameter>
 
     <parameter>
-      <type>gridtemplate *</type>
+      <type>gridtemplateptr</type>
       <name>elements</name>
     </parameter>
 
@@ -723,7 +723,7 @@ static void [objectname]_parseconfig(const xml::doc::base::readlock &lock,
     </parameter>
 
     <parameter>
-      <type>gridtemplate *</type>
+      <type>gridtemplateptr</type>
       <name>elements</name>
     </parameter>
 

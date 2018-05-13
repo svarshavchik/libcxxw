@@ -28,6 +28,8 @@
 
 LIBCXXW_NAMESPACE_START
 
+class gridtemplate;
+
 //! The grid layout manager
 
 //! \see gridlayoutmanager
@@ -192,11 +194,7 @@ public:
 	//! This is used by create_standard_dialog().
 
 	void create(const std::string_view &name,
-		    const std::unordered_map<std::string,
-		    functionref<void (const factory &)>> &elements,
-		    const std::unordered_map<std::string,
-		    shortcut> &shortcuts,
-		    std::unordered_map<std::string, container> &new_layouts);
+		    gridtemplate &);
 };
 
 LIBCXXW_NAMESPACE_END

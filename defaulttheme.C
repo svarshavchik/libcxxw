@@ -1954,7 +1954,7 @@ void defaultthemeObj::load_factories(const theme_parser_lock &root_lock)
 }
 
 void defaultthemeObj::layout_append_row(const gridlayoutmanager &glm,
-					const gridtemplate *elements,
+					const gridtemplateptr &elements,
 					const std::string &name)
 {
 	auto iter=gridfactories.find(name);
@@ -1973,7 +1973,7 @@ void defaultthemeObj::layout_append_row(const gridlayoutmanager &glm,
 }
 
 void defaultthemeObj::layout_insert(const factory &f,
-				    const gridtemplate *elements,
+				    gridtemplate *elements,
 				    const std::string &name,
 				    const std::string &background_color)
 {
@@ -1996,7 +1996,7 @@ void defaultthemeObj::layout_insert(const factory &f,
 }
 
 void defaultthemeObj::layout_book_container(const factory &f,
-					    const gridtemplate *elements,
+					    const gridtemplateptr &elements,
 					    const std::string &name,
 					    const std::string &background_color,
 					    const std::string &border)
@@ -2025,7 +2025,7 @@ void defaultthemeObj::layout_book_container(const factory &f,
 }
 
 void defaultthemeObj::layout_insert(const gridlayoutmanager &glm,
-				    const gridtemplate *elements,
+				    gridtemplate *elements,
 				    const std::string &name)
 {
 	auto iter=gridlayouts.find(name);
@@ -2042,7 +2042,7 @@ void defaultthemeObj::layout_insert(const gridlayoutmanager &glm,
 
 
 void defaultthemeObj::layout_book_container(const booklayoutmanager &blm,
-					    const gridtemplate *elements,
+					    const gridtemplateptr &elements,
 					    const std::string &name)
 {
 	auto iter=booklayouts.find(name);
@@ -2058,7 +2058,7 @@ void defaultthemeObj::layout_book_container(const booklayoutmanager &blm,
 }
 
 void defaultthemeObj::layout_append_pages(const booklayoutmanager &blm,
-					  const gridtemplate *elements,
+					  const gridtemplateptr &elements,
 					  const std::string &name)
 {
 	auto f=blm->append();
@@ -2076,7 +2076,7 @@ void defaultthemeObj::layout_append_pages(const booklayoutmanager &blm,
 }
 
 void defaultthemeObj::layout_add_page(const bookpagefactory &f,
-				      const gridtemplate *elements,
+				      const gridtemplateptr &elements,
 				      const std::string &label,
 				      const std::string &sc,
 				      const std::string &name)

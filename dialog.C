@@ -23,20 +23,12 @@ LIBCXXW_NAMESPACE_START
 // we get something other than an rvalue ref, delegate this to the proper
 // constructor.
 
-std::unordered_map<std::string, container>
-main_windowObj::initialize_theme_dialog(const std::string_view &name,
-					const standard_dialog_elements_t
-					&standard_elements,
-					const std::unordered_map<
-					std::string, shortcut>&shortcuts)
+void main_windowObj::initialize_theme_dialog(const std::string_view &name,
+					     gridtemplate &info)
 {
-	std::unordered_map<std::string, container> new_layouts;
-
 	gridlayoutmanager glm=get_layoutmanager();
 
-	glm->create(name, standard_elements, shortcuts, new_layouts);
-
-	return new_layouts;
+	glm->create(name, info);
 }
 
 dialogObj::dialogObj(const dialog_args &args)

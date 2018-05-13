@@ -7,6 +7,7 @@
 #include "dirlisting/filedirlist_manager.H"
 #include "main_window.H"
 #include "dialog.H"
+#include "gridtemplate.H"
 #include "x/w/impl/element.H"
 #include "messages.H"
 #include "x/w/input_field.H"
@@ -523,9 +524,12 @@ file_dialog main_windowObj
 			 file_dialogObj::init_args init_args{
 				 conf.initial_directory};
 
+			 gridtemplate tmpl{
+				 init_args.create_elements(conf)
+					 };
+
 			 args.dialog_window->initialize_theme_dialog
-				 ("file-dialog",
-				  init_args.create_elements(conf), {});
+				 ("file-dialog", tmpl);
 
 			 return file_dialog::create(args,
 						    conf,

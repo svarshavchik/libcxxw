@@ -10,6 +10,7 @@
 #include <x/w/generic_windowobj.H>
 #include <x/w/menubarlayoutmanagerfwd.H>
 #include <x/w/gridlayoutmanagerfwd.H>
+#include <x/w/gridlayoutmanagerobj.H>
 #include <x/w/gridfactoryfwd.H>
 #include <x/w/dialogfwd.H>
 #include <x/w/shortcutfwd.H>
@@ -89,11 +90,8 @@ public:
 	//! Constructor for a standard theme-specified dialog.
 
 	//! \internal
-	std::unordered_map<std::string, container>
-	initialize_theme_dialog(const std::string_view &,
-				const standard_dialog_elements_t &,
-				const std::unordered_map<std::string,
-				shortcut> &);
+	void initialize_theme_dialog(const std::string_view &,
+				     gridtemplate &info);
 
 	//! Return the layout manager for the menu bar.
 

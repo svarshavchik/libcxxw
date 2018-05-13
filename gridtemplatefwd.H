@@ -11,6 +11,10 @@ LIBCXXW_NAMESPACE_START
 
 class gridtemplate;
 
+//! A pointer to a \ref gridtemplate "grid template".
+
+typedef gridtemplate *gridtemplateptr;
+
 LIBCXXW_NAMESPACE_END
 
 #endif

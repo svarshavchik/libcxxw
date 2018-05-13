@@ -7,6 +7,7 @@
 #include "dialog.H"
 #include "catch_exceptions.H"
 #include "print_dialog/print_dialog_impl.H"
+#include "gridtemplate.H"
 #include "x/w/print_dialog_config.H"
 #include "x/w/input_field.H"
 #include "x/w/button.H"
@@ -452,15 +453,17 @@ print_dialog main_windowObj
 		 [&]
 		 (const dialog_args &args)
 		 {
-			 auto containers=args.dialog_window
-				->initialize_theme_dialog
-				("print-dialog",
-				  helper.create_elements(conf,
-							 future_parent), {});
+			 gridtemplate tmpl{
+				 helper.create_elements(conf, future_parent)
+			 };
 
-			 auto iter=containers.find("print-dialog-options");
+			 args.dialog_window->initialize_theme_dialog
+				 ("print-dialog", tmpl);
 
-			 if (iter == containers.end())
+			 auto iter=tmpl.new_layouts
+			 .find("print-dialog-options");
+
+			 if (iter == tmpl.new_layouts.end())
 				 throw EXCEPTION("Internal error: dialog "
 						 "container was not created.");
 

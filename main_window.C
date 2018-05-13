@@ -33,6 +33,7 @@
 #include "x/w/label.H"
 #include "dialog_impl.H"
 #include "dialog_handler.H"
+#include "gridtemplate.H"
 #include "x/w/impl/always_visible.H"
 #include <x/weakcapture.H>
 #include <variant>
@@ -500,11 +501,10 @@ dialog main_windowObj
 		 [&]
 		 (const dialog &d)
 		 {
-			 d->dialog_window->initialize_theme_dialog
-			 ("ok-dialog",
-			  standard_dialog_elements_t{
-				 {"icon", icon_element(icon)},
-				 {"message", content_factory},
+			 gridtemplate tmpl{
+				 {
+					 {"icon", icon_element(icon)},
+					 {"message", content_factory},
 
 					 // Still need to add a filler
 					 // element to the container
@@ -518,9 +518,14 @@ dialog main_windowObj
 					 // of wrappable labels used
 					 // for the message.
 
-				 {"filler", dialog_filler()},
-				 {"ok", dialog_ok_button(ok_label, ok_button, '\e')}
-			 }, {});
+					 {"filler", dialog_filler()},
+					 {"ok", dialog_ok_button(ok_label,
+								 ok_button,
+								 '\e')}
+				 }};
+
+			 d->dialog_window->initialize_theme_dialog
+			 ("ok-dialog", tmpl);
 		 },
 		 modal);
 
@@ -689,18 +694,22 @@ dialog main_windowObj
 		 [&]
 		 (const dialog &d)
 		 {
+			 gridtemplate tmpl{
+				 {
+					 {"icon", icon_element(icon)},
+					 {"message", content_factory},
+					 {"ok", dialog_ok_button(ok_label,
+								 ok_button,
+								 '\n')},
+					 {"filler", dialog_filler()},
+					 {"cancel", dialog_cancel_button
+					  (cancel_label,
+					   cancel_button, '\e')}
+				 }
+			 };
+
 			 d->dialog_window->initialize_theme_dialog
-			 ("ok-cancel-dialog", standard_dialog_elements_t{
-				 {"icon", icon_element(icon)},
-				 {"message", content_factory},
-				 {"ok", dialog_ok_button(ok_label,
-							 ok_button,
-							 '\n')},
-				 {"filler", dialog_filler()},
-				 {"cancel", dialog_cancel_button
-						 (cancel_label,
-						  cancel_button, '\e')}
-			 }, {});
+			 ("ok-cancel-dialog", tmpl);
 		 },
 		 modal);
 
@@ -763,25 +772,29 @@ input_dialog main_windowObj
 		 [&]
 		 (const auto &args)
 		 {
+			 gridtemplate tmpl{
+				 {
+					 {"icon", icon_element(icon)},
+					 {"label", label_factory},
+					 {"input", [&](const auto &factory)
+					  {
+						  field=factory
+						  ->create_input_field
+						  (initial_text,
+						   config);
+					  }},
+					 {"ok", dialog_ok_button(ok_label,
+								 ok_button,
+								 '\n')},
+					 {"filler", dialog_filler()},
+					 {"cancel", dialog_cancel_button
+					  (cancel_label,
+					   cancel_button, '\e')}
+				 }
+			 };
+
 			 args.dialog_window->initialize_theme_dialog
-			 ("input-dialog", standard_dialog_elements_t{
-				 {"icon", icon_element(icon)},
-				 {"label", label_factory},
-				 {"input", [&](const auto &factory)
-					 {
-						 field=factory
-							 ->create_input_field
-							 (initial_text,
-							  config);
-					 }},
-				 {"ok", dialog_ok_button(ok_label,
-							 ok_button,
-							 '\n')},
-				 {"filler", dialog_filler()},
-				 {"cancel", dialog_cancel_button
-						 (cancel_label,
-						  cancel_button, '\e')}
-			 }, {});
+			 ("input-dialog", tmpl);
 
 			 auto id=input_dialog::create(args, field);
 

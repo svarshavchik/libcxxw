@@ -27,16 +27,15 @@ public:
 
 	//! Our generators
 
-	const std::unordered_map<std::string,
-				 functionref<void (const factory &)>
-				 > &generators;
+	std::unordered_map<std::string,
+			   functionref<void (const factory &)>> generators;
 
 	//! Our standalone shortcuts, currently used for book pages.
 
-	const std::unordered_map<std::string, shortcut> &shortcuts;
+	std::unordered_map<std::string, shortcut> shortcuts;
 
 	//! The internal containers that get created.
-	std::unordered_map<std::string, container> &new_layouts;
+	std::unordered_map<std::string, container> new_layouts;
 
 	//! Execute a generator
 

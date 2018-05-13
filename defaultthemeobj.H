@@ -113,14 +113,14 @@ public:
 	//! Type-erased grid layout generator.
 
 	typedef functionref<void (const gridlayoutmanager &,
-				  const gridtemplate * &,
+				  const gridtemplateptr &,
 				  const defaulttheme &)
 			    > gridlayout_generator_t;
 
 	//! Type-erased book layout generator.
 
 	typedef functionref<void (const booklayoutmanager &,
-				  const gridtemplate * &,
+				  const gridtemplateptr &,
 				  const defaulttheme &)
 			      > booklayout_generator_t;
 
@@ -136,14 +136,14 @@ public:
 	//! Type-erased factory generator.
 
 	typedef functionref<void (const gridfactory &,
-				    const gridtemplate * &,
+				    const gridtemplateptr &,
 				    const defaulttheme &)
 			      > gridfactory_generator_t;
 
 	//! Type-erased factory generator.
 
 	typedef functionref<void (const bookpagefactory &,
-				  const gridtemplate * &,
+				  const gridtemplateptr &,
 				  const defaulttheme &)
 			    > bookpagefactory_generator_t;
 
@@ -317,38 +317,38 @@ public:
 
 	//! Add a new row to the grid layout manager.
 	void layout_append_row(const gridlayoutmanager &,
-			       const gridtemplate *,
+			       const gridtemplateptr &,
 			       const std::string &);
 
 	//! Insert another template
 
 	void layout_insert(const factory &,
-			   const gridtemplate *,
+			   gridtemplate *,
 			   const std::string &,
 			   const std::string &);
 
 	//! Insert a book container
 
 	void layout_book_container(const factory &,
-				   const gridtemplate *,
+				   const gridtemplateptr &,
 				   const std::string &,
 				   const std::string &,
 				   const std::string &);
 
 	//! Insert a book container
 	void layout_book_container(const booklayoutmanager &,
-				   const gridtemplate *,
+				   const gridtemplateptr &,
 				   const std::string &);
 
 	//! Add a new page to the book layout manager.
 	void layout_append_pages(const booklayoutmanager &,
-				 const gridtemplate *,
+				 const gridtemplateptr &,
 				 const std::string &);
 
 	//! Add a new page.
 
 	void layout_add_page(const bookpagefactory &,
-			     const gridtemplate *,
+			     const gridtemplateptr &,
 			     const std::string &label,
 			     const std::string &shortcut,
 			     const std::string &);
@@ -356,7 +356,7 @@ public:
  public:
 	//! Insert a theme template
 	void layout_insert(const gridlayoutmanager &glm,
-			   const gridtemplate *elements,
+			   gridtemplate *elements,
 			   const std::string &name);
 };
 
