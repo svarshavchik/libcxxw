@@ -555,18 +555,20 @@ class LIBCXX_HIDDEN editorObj::implObj
  private:
 	//! Whether the contents of the input field have been modified since they were validated.
 
-	bool validation_required=true;
+	bool validation_required_thread_only=true;
 
+ public:
 	//! Invoke validation_callback if validation_required.
 
 	bool validate_modified(ONLY IN_THREAD, const callback_trigger_t &);
-
+ private:
 	//! The validation callback.
 
 	functionptr<input_field_validation_callback_t>
 		validation_callback_thread_only;
 
  public:
+	THREAD_DATA_ONLY(validation_required);
 	THREAD_DATA_ONLY(validation_callback);
 
 };

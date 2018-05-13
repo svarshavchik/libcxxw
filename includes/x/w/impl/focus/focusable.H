@@ -169,6 +169,10 @@ class focusableObj::implObj : virtual public obj {
 	void set_focus_only(ONLY IN_THREAD,
 			    const callback_trigger_t &);
 
+	//! If this focusable is enabled, then set_focus_and_ensure_visibility()
+
+	void request_focus(ONLY IN_THREAD);
+
 	//! Set focus to this focusable element and make sure it is visible.
 
 	virtual void set_focus_and_ensure_visibility(ONLY IN_THREAD,

@@ -490,6 +490,19 @@ void focusableObj::implObj::set_focus_only(ONLY IN_THREAD,
 				       trigger);
 }
 
+void focusableObj::implObj::request_focus(ONLY IN_THREAD)
+{
+	auto &e=get_focusable_element();
+
+	if (!e.enabled(IN_THREAD))
+	{
+		e.stop_message("Cannot set focus to requested display element");
+		return;
+	}
+
+	set_focus_and_ensure_visibility(IN_THREAD, {});
+}
+
 void focusableObj::implObj
 ::set_focus_and_ensure_visibility(ONLY IN_THREAD,
 				  const callback_trigger_t &trigger)

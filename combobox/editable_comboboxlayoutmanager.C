@@ -4,7 +4,8 @@
 */
 #include "libcxxw_config.h"
 #include "combobox/editable_comboboxlayoutmanager.H"
-#include "x/w/input_field.H"
+#include "input_field.H"
+#include "editor_impl.H"
 #include "x/w/input_field_lock.H"
 #include "x/w/impl/container.H"
 #include "busy.H"
@@ -146,6 +147,9 @@ static custom_combobox_selection_changed_t editable_selection_changed=
 		standard_combobox_lock lock{lm};
 
 		info.popup_element->hide();
+
+		auto editor_impl=current_selection->impl->editor_element->impl;
+
 		if (info.list_item_status_info.selected)
 		{
 			// initial trigger variant is specified when the
@@ -158,10 +162,24 @@ static custom_combobox_selection_changed_t editable_selection_changed=
 			{
 				input_lock i_lock{current_selection};
 
-				current_selection
-					->set(lock.item
-					      (info.list_item_status_info
-					       .item_number).string);
+				editor_impl->set(IN_THREAD,
+						 lock.item
+						 (info.list_item_status_info
+						  .item_number).string);
+
+				// Make sure that any validation callback
+				// that gets installed into the input element
+				// will process the new item. We do this by
+				// setting the required flag, moving the input
+				// focus into the editor, and invoking the
+				// validation function.
+				editor_impl->validation_required(IN_THREAD)=
+					true;
+
+				focusableObj &f=*current_selection;
+
+				f.get_impl()->request_focus(IN_THREAD);
+				editor_impl->validate_modified(IN_THREAD, {});
 			}
 		}
 		else // Unselected.
@@ -172,7 +190,7 @@ static custom_combobox_selection_changed_t editable_selection_changed=
 			    lock.item(info.list_item_status_info.item_number)
 			    .string)
 			{
-				current_selection->set("");
+				editor_impl->set(IN_THREAD, U"");
 			}
 		}
 

@@ -16,8 +16,6 @@
 
 LIBCXXW_NAMESPACE_START
 
-LOG_FUNC_SCOPE_DECL(LIBCXX_NAMESPACE::w::focusable, focusable_log);
-
 focusableObj::focusableObj()
 {
 }
@@ -363,30 +361,18 @@ void focusableObj::on_key_event(const functionref<key_event_callback_t> &cb)
 
 void focusableObj::request_focus()
 {
-	auto impl=get_impl();
-
 	// If request_focus() is invoked after using the layout manager to
 	// change something in the container, the request_focus() action
 	// may depend on the results of the layout manager changes. Therefore
 	// we must schedule this to be batch-executed, after the batch job
 	// finishes.
 
-	impl->get_focusable_element().THREAD
+	get_impl()->get_focusable_element().THREAD
 		->get_batch_queue()
-		->run_as([impl]
+		->run_as([impl=get_impl()]
 			 (ONLY IN_THREAD)
 			 {
-				 LOG_FUNC_SCOPE(focusable_log);
-
-				 if (!impl->get_focusable_element()
-				     .enabled(IN_THREAD))
-				 {
-					 LOG_ERROR("Cannot set focus to requested display element");
-					 return;
-				 }
-
-				 impl->set_focus_and_ensure_visibility
-					 (IN_THREAD, {});
+				 impl->request_focus(IN_THREAD);
 			 });
 }
 

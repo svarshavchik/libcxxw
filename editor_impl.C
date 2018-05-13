@@ -882,7 +882,7 @@ void editorObj::implObj::draw_changes(ONLY IN_THREAD,
 	text->redraw_whatsneeded(IN_THREAD, *this,
 				 {cursor_lock.cursor, cursor},
 				 get_draw_info(IN_THREAD));
-	validation_required=true;
+	validation_required(IN_THREAD)=true;
 
 	try {
 		auto &cb=on_change(IN_THREAD);
@@ -1374,7 +1374,7 @@ void editorObj::implObj::set(ONLY IN_THREAD, const std::u32string &string)
 
 	// We ass-ume that since the app explicitly set() this, it does
 	// not need to be validated.
-	validation_required=false;
+	validation_required(IN_THREAD)=false;
 }
 
 void editorObj::implObj::set(ONLY IN_THREAD, const std::u32string &string,
@@ -1439,13 +1439,13 @@ bool editorObj::implObj::validate_modified(ONLY IN_THREAD,
 		// that case.
 		return true;
 
-	if (!validation_required)
+	if (!validation_required(IN_THREAD))
 		// That was easy, it's already been validated, presumably.
 		return true;
 
 	if (!validation_callback(IN_THREAD))
 	{
-		validation_required=false;
+		validation_required(IN_THREAD)=false;
 		return true; // By default.
 	}
 
@@ -1456,7 +1456,7 @@ bool editorObj::implObj::validate_modified(ONLY IN_THREAD,
 	} REPORT_EXCEPTIONS(this);
 
 	if (flag)
-		validation_required=false;
+		validation_required(IN_THREAD)=false;
 	return flag;
 }
 
