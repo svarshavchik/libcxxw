@@ -125,9 +125,6 @@ bool connection_threadObj
 				run_event(IN_THREAD, event);
 				continue;
 			}
-
-			if (process_buffered_motion_event(IN_THREAD))
-				continue;
 		}
 
 		if (maybe_theres_something_in_batch_queue)
@@ -144,6 +141,17 @@ bool connection_threadObj
 		return false;
 
 	xcb_flush(info->conn);
+
+	// We check for buffered motion events, and if so, process them
+	// at this stage. Dragging a scrollbar that scrolls a peephole
+	// may result in large number of drawing operations, so we do this
+	// after we redraw, and flush, the display.
+
+	if (npoll == 2)
+	{
+		if (process_buffered_motion_event(IN_THREAD))
+			return false;
+	}
 
 	if (run_idle(IN_THREAD))
 		return false;
