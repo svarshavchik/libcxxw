@@ -494,7 +494,7 @@ static custom_combobox_selection_changed_t standard_selection_changed=
 
 		standard_combobox_lock lock{lm};
 
-		info.popup_element->hide();
+		info.popup_element->impl->request_visibility(IN_THREAD, false);
 		if (info.list_item_status_info.selected)
 		{
 			current_selection->update

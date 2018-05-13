@@ -146,7 +146,7 @@ static custom_combobox_selection_changed_t editable_selection_changed=
 
 		standard_combobox_lock lock{lm};
 
-		info.popup_element->hide();
+		info.popup_element->impl->request_visibility(IN_THREAD, false);
 
 		auto editor_impl=current_selection->impl->editor_element->impl;
 
