@@ -17,6 +17,7 @@
 #include "x/w/motion_event.H"
 #include "x/w/key_event.H"
 #include "x/w/main_window.H"
+#include "x/w/impl/layoutmanager.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -169,6 +170,24 @@ void popupObj::handlerObj::configure_notify_received(ONLY IN_THREAD,
 						     const rectangle &)
 {
 	// Ignoring the ConfigureNotify event, see?
+}
+
+void popupObj::handlerObj::absolute_location_updated(ONLY IN_THREAD)
+{
+	superclass_t::absolute_location_updated(IN_THREAD);
+
+	// The layoutmanager is toplevelpeephole_layoutmanagerObj.
+	//
+	// Its recalculate() checks the popup's current position, and updates
+	// the popup's peepholed element's metrics to be no larger than
+	// the popup's peephole, keeping it in sync. We need to make sure
+	// recalculate() processes the popup's current position.
+
+	invoke_layoutmanager([&]
+			     (const auto &lm)
+			     {
+				     lm->needs_recalculation(IN_THREAD);
+			     });
 }
 
 void popupObj::handlerObj::do_button_event(ONLY IN_THREAD,

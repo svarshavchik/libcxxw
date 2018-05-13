@@ -131,6 +131,10 @@ public:
 				      &visibility_info)
 		override;
 
+	//! Override absolute_location_updated
+
+	void absolute_location_updated(ONLY IN_THREAD) override;
+
 	//! Implement
  private:
 
