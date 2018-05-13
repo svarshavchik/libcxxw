@@ -1,0 +1,75 @@
+<collection>
+  <name>color_picker_popup_fields</name>
+  <ref>
+    <name>h_button</name>
+    <type>button</type>
+  </ref>
+  <ref>
+    <name>h_canvas</name>
+    <type>canvas</type>
+  </ref>
+  <ref>
+    <name>v_button</name>
+    <type>button</type>
+  </ref>
+  <ref>
+    <name>v_canvas</name>
+    <type>canvas</type>
+  </ref>
+
+  <ref>
+    <name>fixed_canvas</name>
+    <type>canvas</type>
+  </ref>
+
+  <ref>
+    <name>square</name>
+    <type>element</type>
+  </ref>
+
+  <ref>
+    <name>r_input_field</name>
+    <type>input_field</type>
+  </ref>
+  <ref>
+    <name>g_input_field</name>
+    <type>input_field</type>
+  </ref>
+  <ref>
+    <name>b_input_field</name>
+    <type>input_field</type>
+  </ref>
+  <ref>
+    <name>h_input_field</name>
+    <type>input_field</type>
+  </ref>
+  <ref>
+    <name>s_input_field</name>
+    <type>input_field</type>
+  </ref>
+  <ref>
+    <name>v_input_field</name>
+    <type>input_field</type>
+  </ref>
+  <ref>
+    <name>hexadecimal</name>
+    <type>image_button</type>
+  </ref>
+  <ref>
+    <name>full_precision</name>
+    <type>image_button</type>
+  </ref>
+
+  <ref>
+    <name>error_message_field</name>
+    <type>label</type>
+  </ref>
+  <ref>
+    <name>cancel_button</name>
+    <type>button</type>
+  </ref>
+  <ref>
+    <name>ok_button</name>
+    <type>button</type>
+  </ref>
+</collection>

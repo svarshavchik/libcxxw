@@ -27,6 +27,8 @@
 #include "reference_font_element.H"
 #include "gridlayoutmanager.H"
 #include "messages.H"
+#include "dialog.H"
+#include "gridtemplate.H"
 
 #include <x/chrcasecmp.H>
 #include <x/weakcapture.H>
@@ -61,271 +63,225 @@ color_picker factoryObj::create_color_picker()
 	return create_color_picker({});
 }
 
-//////////////////////////////////////////////////////////////////////////
-//
-// The left half of the color picker selector popup.
-//
-// The layout looks like this
-//
-// +---+-------------------------------+
-// |   | HHHHHHHHHHHHHHHHHHHHHHHHHHHHHH|
-// +---+-------------------------------+
-// |                                   |
-// +-+-+-------------------------------+
-// |V| | SSSSSSSSSSSSSSSSSSSSSSSSSSSSSS|
-// |V| | SSSSSSSSSSSSSSSSSSSSSSSSSSSSSS|
-// |V| | SSSSSSSSSSSSSSSSSSSSSSSSSSSSSS|
-// |V| | SSSSSSSSSSSSSSSSSSSSSSSSSSSSSS|
-//
-//   .....
-// |V| | SSSSSSSSSSSSSSSSSSSSSSSSSSSSSS|
-// +-+-+--------------------------------
-// |                                   |
-// +---+-------------------------------+
-// |   | CCCCCCCCCCCCCCCCCCCCCCCCCCCCCC|
-// +---+-------------------------------+
-//
-// H - the button that swaps the horizontal component with the third component.
-//
-// V - the button that swaps the vertical component with the third component
-//
-// S - the color_picker_square that displays the gradient of the horizontal
-// and vertical components, with a fixed third component
-//
-// C - display-only strip that shows the third component's gradient.
-//
-// An explicit row and column provides a buffer between the color_picker_square
-// and the elements around it, for visual separation, and so that we can use
-// the grid layout manager's borders for it.
+namespace {
+#if 0
+}
+#endif
 
-typedef std::tuple<button, canvas, button, canvas,
-		   canvas, element> left_side_contents_t;
+#pragma GCC visibility push(hidden)
+#include "color_picker/color_picker.inc.H"
 
-static inline left_side_contents_t
-create_left_side_contents(const gridlayoutmanager &glm,
-			  const color_picker_config &config)
-{
+struct color_picker_layout_helper : public color_picker_popup_fieldsptr {
+
+	const color_picker_config &config;
+
+	static constexpr auto digits=
+		std::numeric_limits<rgb_component_t>::digits10+1;
+
+	// The input field has one more position, for the trailing cursor.
+	input_field_config input_fields_conf{digits+1};
+
+	color_picker_layout_helper(const color_picker_config &config)
+		: config{config}
+	{
+		input_fields_conf.alignment=halign::right;
+		input_fields_conf.maximum_size=digits;
+		input_fields_conf.autoselect=true;
+		input_fields_conf.set_default_spin_control_factories();
+	}
+
 	dim_arg bw{"color_picker_buffer_width"};
 	dim_arg bh{"color_picker_buffer_height"};
 
 	dim_arg sw{"color_picker_strip_width"};
 	dim_arg sh{"color_picker_strip_height"};
 
-	// Row 0
-	auto f=glm->append_row();
+	standard_dialog_elements_t elements();
+};
 
-	f->colspan(2).create_canvas();
+inline standard_dialog_elements_t color_picker_layout_helper::elements()
+{
+	return {
+		{"filler", dialog_filler()},
+		{"h-button", [&](const auto &f)
+			{
+				h_button=f->create_normal_button
+					([&]
+					 (const auto &button_factory)
+					 {
+						 h_canvas=button_factory
+						 ->create_canvas
+						 ([] (const auto &){}, {
+						 }, {sh});
+					 });
+			}},
+		{"v-button", [&](const auto &f)
+			{
+				v_button=f->create_normal_button
+					([&]
+					 (const auto &button_factory)
+					 {
+						 v_canvas=button_factory
+						 ->create_canvas
+						 ([](const auto &) {}, {
+							 sw}, {});
+					 });
+			}},
+		{"h-button-spacing", [&](const auto &f)
+			{
+				f->create_canvas([](const auto &) {},
+						 {},
+						 {bh});
+			}},
+		{"v-button-spacing", [&](const auto &f)
+			{
+				f->create_canvas([](const auto &) {},
+						 {bw},
+						 {});
+			}},
+		{"fixed-canvas", [&](const auto &f)
+			{
+				fixed_canvas=f->create_canvas([]
+							      (const auto &){},
+							      {},
+							      {sh});
 
-	// HHHHH
+			}},
+		{"square", [&](const auto &f)
+			{
+				auto parent_container=f->get_container_impl();
 
-	f->padding(0);
-	canvasptr h_canvas;
-	auto h_button=f->create_normal_button
-		([&]
-		 (const auto &button_factory)
-		 {
-			 h_canvas=button_factory->create_canvas
-				([]
-				 (const auto &){},
-				 {},
-				 {sh});
-		 });
+				rgb initial_fixed_color;
 
-	// Row 1
+				initial_fixed_color.*
+					(color_pickerObj::
+					 implObj::
+					 initial_fixed_component
+					 )=
+					config.initial_color.*
+					(color_pickerObj::
+					 implObj::
+					 initial_fixed_component
+					 );
 
-	f=glm->append_row();
-	f->colspan(3).create_canvas([](const auto &) {},
-					   {},
-					   {bh});
+				auto impl=ref<color_picker_squareObj::implObj>
+					::create(parent_container,
+						 // Initial channel color,
+						 initial_fixed_color,
+						 // Vary the red and the
+						 // green channels.
+						 color_pickerObj
+						 ::implObj
+						 ::initial_horiz_component,
+						 color_pickerObj
+						 ::implObj
+						 ::initial_vert_component,
+						 canvas_init_params{
+							 {"color_picker_square_width"},
+							 {"color_picker_square_height"},
+								 "color_picker_square@libcxx.com"});
 
-	// Row 2
-	f=glm->append_row();
+				auto cps=color_picker_square::create(impl);
+				square=cps;
+				f->created_internally(cps);
+			}},
 
-	// VVVVV
+		{"r-label", [&](const auto &f)
+			{
+				f->create_label(TAG(_("RED:R:")));
+			}},
+		{"g-label", [&](const auto &f)
+			{
+				f->create_label(TAG(_("GREEN:G:")));
+			}},
+		{"b-label", [&](const auto &f)
+			{
+				f->create_label(TAG(_("BLUE:B:")));
+			}},
+		{"h-label", [&](const auto &f)
+			{
+				f->create_label(TAG(_("HUE:H:")));
+			}},
+		{"s-label", [&](const auto &f)
+			{
+				f->create_label(TAG(_("SATURATION:S:")));
+			}},
+		{"v-label", [&](const auto &f)
+			{
+				f->create_label(TAG(_("VALUE:V:")));
+			}},
 
-	canvasptr v_canvas;
-
-	f->padding(0);
-	auto v_button=f->create_normal_button
-		([&]
-		 (const auto &button_factory)
-		 {
-			 v_canvas=button_factory->create_canvas
-				([](const auto &) {},
-		                 {sw},
-		                 {});
-		 });
-
-	f->create_canvas([](const auto &) {},
-			       {bw},
-			       {});
-
-	// SSSSS
-
-	f->padding(0).border("color_picker_gradient_border");
-
-	auto parent_container=f->get_container_impl();
-
-	rgb initial_fixed_color;
-
-	initial_fixed_color.*(color_pickerObj::
-			      implObj::
-			      initial_fixed_component
-			      )=
-		config.initial_color.*(color_pickerObj::
-				       implObj::
-				       initial_fixed_component
-				       );
-
-	auto impl=ref<color_picker_squareObj::implObj>
-		::create(parent_container,
-			 // Initial channel color,
-			 initial_fixed_color,
-			 // Vary the red and the green channels.
-			 color_pickerObj::implObj::initial_horiz_component,
-			 color_pickerObj::implObj::initial_vert_component,
-			 canvas_init_params{
-				 {"color_picker_square_width"},
-				 {"color_picker_square_height"},
-					 "color_picker_square@libcxx.com"});
-
-	auto square=color_picker_square::create(impl);
-
-	f->created_internally(square);
-
-	// Row 3
-
-	f=glm->append_row();
-	f->colspan(3).create_canvas([](const auto &) {},
-					   {},
-					   {bh});
-	// Row 4
-	f=glm->append_row();
-	f->colspan(2).create_canvas();
-
-	// CCCCCC
-
-	f->padding(0).border("color_picker_fixed_component_border");
-	auto fixed_canvas=f->create_canvas([] (const auto &){},
-					   {},
-					   {sh});
-
-	// Tooltips
-	text_param button_tooltip{_("Select this color channel for adjustment")};
-
-	h_button->create_tooltip(button_tooltip);
-	v_button->create_tooltip(button_tooltip);
-	fixed_canvas->create_tooltip(_("Click to adjust this color channel in the currently selected color"));
-	square->create_tooltip(_("Pick a color"));
-	return {h_button, h_canvas,
-			v_button, v_canvas,
-			fixed_canvas,
-			square
+		{"r-input-field", [&](const auto &f)
+			{
+				r_input_field=f->create_input_field
+					("", input_fields_conf);
+			}},
+		{"g-input-field", [&](const auto &f)
+			{
+				g_input_field=f->create_input_field
+					("", input_fields_conf);
+			}},
+		{"b-input-field", [&](const auto &f)
+			{
+				b_input_field=f->create_input_field
+					("", input_fields_conf);
+			}},
+		{"h-input-field", [&](const auto &f)
+			{
+				h_input_field=f->create_input_field
+					("", input_fields_conf);
+			}},
+		{"s-input-field", [&](const auto &f)
+			{
+				s_input_field=f->create_input_field
+					("", input_fields_conf);
+			}},
+		{"v-input-field", [&](const auto &f)
+			{
+				v_input_field=f->create_input_field
+					("", input_fields_conf);
+			}},
+		{"hexadecimal", [&](const auto &f)
+			{
+				hexadecimal=f->create_checkbox
+					([]
+					 (const auto &f)
+					 {
+						 f->create_label
+							 (_("Hexadecimal"));
+					 });
+			}},
+		{"full-precision", [&](const auto &f)
+			{
+				full_precision=f->create_checkbox
+					([]
+					 (const auto &f)
+					 {
+						 f->create_label
+							 (_("Full Precision"));
+					 });
+			}},
+		{"error-message-field", [&](const auto &f)
+			{
+				error_message_field=f->create_label(" ");
+			}},
+		{"ok", dialog_ok_button(_("Ok"),
+					ok_button,
+					0)},
+		{"cancel", dialog_cancel_button
+				(_("Cancel"),
+				 cancel_button, 0)},
 			};
+}
 
+#pragma GCC visibility pop
+
+#if 0
+{
+#endif
 }
 
 /////////////////////////////////////////////////////////////////////////////
-//
-// The right half of the popup, with the input fields for manually entering
-// RGB and HSV values, and for selecting full precision and hexadecimal.
-
-typedef std::tuple<input_field, input_field, input_field,
-		   input_field, input_field, input_field,
-		   image_button, image_button> right_side_contents_t;
-
-static inline right_side_contents_t
-create_right_side_contents(const gridlayoutmanager &glm,
-			   const color_picker_config &config)
-{
-	// Two columns. The first column has the input field label, the
-	// second column the input fields themselves. Right-align the
-	// first column, to make the labels line up with their input fields.
-
-	glm->col_alignment(0, halign::right);
-
-	// Number of decimal digits required to represent all values of an
-	// rgb_component_t.
-	constexpr auto digits=std::numeric_limits<rgb_component_t>::digits10+1;
-
-	// The input field has one more position, for the trailing cursor.
-	input_field_config conf{digits+1};
-
-	conf.alignment=halign::right;
-	conf.maximum_size=digits;
-	conf.autoselect=true;
-	conf.set_default_spin_control_factories();
-
-	// Meticulously create the six input fields.
-	auto f=glm->append_row();
-
-	f->create_label(TAG(_("RED:R:")));
-
-	auto r=f->create_input_field("", conf);
-
-	f=glm->append_row();
-
-	f->create_label(TAG(_("GREEN:G:")));
-
-	auto g=f->create_input_field("", conf);
-
-	f=glm->append_row();
-
-	f->create_label(TAG(_("BLUE:B:")));
-
-	auto b=f->create_input_field("", conf);
-
-	f=glm->append_row();
-
-	f->create_label(TAG(_("HUE:H:")));
-
-	auto h=f->create_input_field("", conf);
-
-	f=glm->append_row();
-
-	f->create_label(TAG(_("SATURATION:S:")));
-
-	auto s=f->create_input_field("", conf);
-
-	f=glm->append_row();
-
-	f->create_label(TAG(_("VALUE:V:")));
-
-	auto v=f->create_input_field("", conf);
-
-	// It would be rather rude for the first one of them to grab the
-	// input focus automatically.
-
-	r->autofocus(false);
-	g->autofocus(false);
-	b->autofocus(false);
-	h->autofocus(false);
-	s->autofocus(false);
-	v->autofocus(false);
-
-	// The two option checkboxes are below them. Each one is on its
-	// own row, and each one spans both columns.
-
-	f=glm->append_row();
-
-	auto hexadecimal=f->colspan(2).halign(halign::left).create_checkbox
-		([]
-		 (const auto &f)
-		 {
-			 f->create_label("Hexadecimal");
-		 });
-
-	f=glm->append_row();
-
-	auto full_precision=f->colspan(2).halign(halign::left).create_checkbox
-		([]
-		 (const auto &f)
-		 {
-			 f->create_label("Full precision");
-		 });
-
-	return {r, g, b, h, s, v, hexadecimal, full_precision};
-}
 
 // Create the contents of the color picker popup. Factored out for readability.
 //
@@ -333,18 +289,10 @@ create_right_side_contents(const gridlayoutmanager &glm,
 // this creates a color_picker_selectorObj as its child, with a
 // color_picker_selector as the element.
 
-static inline color_picker_selector
+static inline std::tuple<color_picker_selector, color_picker_popup_fields>
 create_contents(const popup_attachedto_info &attachedto_info,
 		const color_picker_config &config,
-		const container_impl &parent,
-
-		// We initialize this
-
-		std::optional<left_side_contents_t> &left_side_contents,
-		std::optional<right_side_contents_t> &right_side_contents,
-		labelptr &error_message_field,
-		buttonptr &cancel,
-		buttonptr &ok)
+		const container_impl &parent)
 {
 	child_element_init_params init_params;
 
@@ -360,68 +308,27 @@ create_contents(const popup_attachedto_info &attachedto_info,
 
 	auto glm=glm_impl->create_gridlayoutmanager();
 
-	glm->row_alignment(0, valign::middle);
+	color_picker_layout_helper helper{config};
+	gridtemplate tmpl{helper.elements()};
 
-	auto f=glm->append_row();
-
-	f->padding(0);
-
-	f->create_container
-		([&]
-		 (const auto &left_side)
-		 {
-			 left_side_contents=create_left_side_contents
-				 (left_side->get_layoutmanager(), config);
-		 },
-		 new_gridlayoutmanager{});
-
-	f->left_padding("color_picker_buffer_width");
-
-	f->create_container
-		([&]
-		 (const auto &right_side)
-		 {
-			 right_side_contents=create_right_side_contents
-				 (right_side->get_layoutmanager(), config);
-		 },
-		 new_gridlayoutmanager{});
+	glm->create("color-picker-popup", tmpl);
 
 	auto p=color_picker_selector::create(attachedto_info,
 					     container_impl,
 					     glm_impl);
 
-	// A label for an error message, on the last row.
+	// Tooltips
+	text_param button_tooltip{
+		_("Select this color channel for adjustment")};
 
-	f=glm->append_row();
+	helper.h_button->create_tooltip(button_tooltip);
+	helper.v_button->create_tooltip(button_tooltip);
+	helper.fixed_canvas->create_tooltip
+		(_("Click to adjust this color channel in the currently"
+		   " selected color"));
+	helper.square->create_tooltip(_("Click to pick a color"));
 
-	f->colspan(2);
-	f->halign(halign::center);
-
-	error_message_field=f->create_label(" ");
-
-	// Ok and Cancel buttons on the last row. Need to create a separate
-	// container for them, for alignment purposes.
-
-	f=glm->append_row();
-	f->colspan(2);
-	f->halign(halign::right);
-	f->padding(0);
-	f->create_container
-		([&]
-		 (const auto &c)
-		 {
-			 gridlayoutmanager glm=c->get_layoutmanager();
-
-			 auto f=glm->append_row();
-
-			 cancel=f->create_normal_button_with_label
-				 (_("Cancel"));
-
-			 ok=f->create_special_button_with_label
-				 (_("Ok"));
-		 },
-		 new_gridlayoutmanager{});
-	return p;
+	return {p, helper};
 }
 
 // Clicked in an element. Translate the click's position into 0..rgb::maximum
@@ -786,11 +693,7 @@ color_picker factoryObj
 
 	color_picker_selectorptr selector;
 
-	std::optional<left_side_contents_t> left_side_contents;
-	std::optional<right_side_contents_t> right_side_contents;
-	labelptr error_message_field;
-	buttonptr cancel;
-	buttonptr ok;
+	std::optional<color_picker_popup_fields> contents_opt;
 
 	// Create the contents of the popup.
 
@@ -803,28 +706,20 @@ color_picker factoryObj
 		 [&]
 		 (const container_impl &parent)
 		 {
-			 auto p=create_contents(attachedto_info,
-						config,
-						parent,
-						left_side_contents,
-						right_side_contents,
-						error_message_field,
-						cancel, ok);
-			 selector=p;
-			 p->show_all();
-			 return p;
+			 auto [selector_ret,
+			       fields_ret]=create_contents(attachedto_info,
+							   config,
+							   parent);
+			 selector=selector_ret;
+			 contents_opt=fields_ret;
+			 selector_ret->show_all();
+			 return selector_ret;
 		 });
 
 	// Grab the elements that were created in the popup, and finish
 	// creating it.
 
-	auto &[h_button, h_canvas, v_button, v_canvas, fixed_canvas, square]=
-		left_side_contents.value();
-
-	auto &[r_input_field, g_input_field, b_input_field,
-	       h_input_field, s_input_field, v_input_field,
-	       hexadecimal, full_precision]=
-		right_side_contents.value();
+	const auto &contents=contents_opt.value();
 
 	auto color_picker_popup=popup::create(popup_impl, popup_lm->impl);
 
@@ -850,20 +745,23 @@ color_picker factoryObj
 			 color_picker_current,
 
 			 config,
-			 h_canvas, v_canvas, fixed_canvas,
-			 square, error_message_field);
+			 contents.h_canvas,
+			 contents.v_canvas,
+			 contents.fixed_canvas,
+			 contents.square,
+			 contents.error_message_field);
 
 	auto wimpl=weak_impl::create(impl);
 
 	// Install validators for manual R, G, and B fields.
 	impl->r_value=make_manual_input_validator
-		(r_input_field, wimpl,
+		(contents.r_input_field, wimpl,
 		 &color_pickerObj::implObj::new_rgb_values);
 	impl->g_value=make_manual_input_validator
-		(g_input_field, wimpl,
+		(contents.g_input_field, wimpl,
 		 &color_pickerObj::implObj::new_rgb_values);
 	impl->b_value=make_manual_input_validator
-		(b_input_field, wimpl,
+		(contents.b_input_field, wimpl,
 		 &color_pickerObj::implObj::new_rgb_values);
 
 	// And set their initial values
@@ -874,13 +772,13 @@ color_picker factoryObj
 	// Install validators for manual H, S, and V fields.
 
 	impl->h_value=make_manual_input_validator
-		(h_input_field, wimpl,
+		(contents.h_input_field, wimpl,
 		 &color_pickerObj::implObj::new_hsv_values);
 	impl->s_value=make_manual_input_validator
-		(s_input_field, wimpl,
+		(contents.s_input_field, wimpl,
 		 &color_pickerObj::implObj::new_hsv_values);
 	impl->v_value=make_manual_input_validator
-		(v_input_field, wimpl,
+		(contents.v_input_field, wimpl,
 		 &color_pickerObj::implObj::new_hsv_values);
 
 	// And set their initial values.
@@ -894,12 +792,12 @@ color_picker factoryObj
 		impl->v_value->set(v);
 	}
 
-	hexadecimal->set_value(impl->hexadecimal.get() ? 1:0);
-	full_precision->set_value(impl->full_precision.get() ? 1:0);
+	contents.hexadecimal->set_value(impl->hexadecimal.get() ? 1:0);
+	contents.full_precision->set_value(impl->full_precision.get() ? 1:0);
 
 	// Invoke reformat_values() when the display options change.
 
-	hexadecimal->on_activate
+	contents.hexadecimal->on_activate
 		([wimpl]
 		 (ONLY IN_THREAD,
 		  size_t value,
@@ -918,7 +816,7 @@ color_picker factoryObj
 			 }
 		 });
 
-	full_precision->on_activate
+	contents.full_precision->on_activate
 		([wimpl]
 		 (ONLY IN_THREAD,
 		  size_t value,
@@ -938,8 +836,8 @@ color_picker factoryObj
 
 	// Clicking on the square gradient.
 
-	square->on_button_event
-		([get=make_weak_capture(impl, square)]
+	contents.square->on_button_event
+		([get=make_weak_capture(impl, contents.square)]
 		 (ONLY IN_THREAD,
 		  const auto &be,
 		  bool activated,
@@ -978,7 +876,7 @@ color_picker factoryObj
 
 	// Clicking on the gradient strips
 
-	h_button->on_activate
+	contents.h_button->on_activate
 		([wimpl]
 		 (ONLY IN_THREAD,
 		  const auto &trigger,
@@ -992,7 +890,7 @@ color_picker factoryObj
 			 impl->swap_horiz_gradient(IN_THREAD);
 		 });
 
-	v_button->on_activate
+	contents.v_button->on_activate
 		([wimpl]
 		 (ONLY IN_THREAD,
 		  const auto &trigger,
@@ -1006,8 +904,8 @@ color_picker factoryObj
 			 impl->swap_vert_gradient(IN_THREAD);
 		 });
 
-	fixed_canvas->on_button_event
-		([get=make_weak_capture(impl, fixed_canvas)]
+	contents.fixed_canvas->on_button_event
+		([get=make_weak_capture(impl, contents.fixed_canvas)]
 		 (ONLY IN_THREAD,
 		  const auto &be,
 		  bool activate_for,
@@ -1053,7 +951,7 @@ color_picker factoryObj
 				 impl->popup_closed(IN_THREAD);
 		 });
 
-	cancel->on_activate
+	contents.cancel_button->on_activate
 		([popup=make_weak_capture(color_picker_popup)]
 		 (ONLY IN_THREAD,
 		  const auto &trigger,
@@ -1069,7 +967,7 @@ color_picker factoryObj
 			 popup->hide();
 		 });
 
-	ok->on_activate
+	contents.ok_button->on_activate
 		([wimpl, popup=make_weak_capture(color_picker_popup)]
 		 (ONLY IN_THREAD,
 		  const auto &trigger,

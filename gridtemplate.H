@@ -19,7 +19,8 @@ LIBCXXW_NAMESPACE_START
 
 //! Temporary information carried out while generating the contents of a grid.
 
-//! Keeps track of all the element generators.
+//! Gets passed to gridlayoutmanagerObj::create(). Keeps track of all the
+//! element generators.
 
 class LIBCXX_HIDDEN gridtemplate {
 

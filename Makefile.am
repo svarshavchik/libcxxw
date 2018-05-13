@@ -792,6 +792,9 @@ libcxxw_la_SOURCES=\
 $(call REFCOLLECTION_GEN,print_dialog/print_dialog.inc.H, \
 			print_dialog/print_dialog.xml)
 
+$(call REFCOLLECTION_GEN,color_picker/color_picker.inc.H, \
+			color_picker/color_picker.xml)
+
 libcxxwcups_la_LIBADD=libcxxw.la -lcxxcups -lcxx -lcourier-unicode
 libcxxwcups_la_LDFLAGS=$(STATICLINKFLAGS) -version-info @VERSION_INFO@
 libcxxwcups_la_SOURCES=\

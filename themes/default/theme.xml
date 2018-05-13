@@ -146,6 +146,17 @@
     <dash>.75</dash>
   </border>
 
+  <!--
+      Borders around the horizontal bar at the bottom of dialogs/popups
+      with "Ok"/"Cancel" buttons.
+  -->
+
+  <border id="ok_button_border" from="thick">
+    <color>30%</color>
+  </border>
+
+  <border id="ok_cancel_button_border" from="ok_button_border" />
+
   <!-- grid padding -->
 
   <dim id="grid_horiz_padding" axis="horiz">.5</dim>
@@ -941,7 +952,7 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
 
   <color id="color_picker_background_color" scale="textedit_background_color" />
 
-  <color id="color_picker_popup_background_color" scale="70%" />
+  <color id="color_picker_popup_background_color" scale="80%" />
 
   <border id="color_pickerbuttonfocusoff_border" from="inputfocusoff_border">
     <color>inputfocus_color2</color>
@@ -1052,11 +1063,6 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
       <padding>dialog-h-padding</padding>
     </padding>
 
-    <border>
-      <side>bottom</side>
-      <border>thick_50%</border>
-    </border>
-
     <element>
       <name>icon</name>
     </element>
@@ -1075,11 +1081,6 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
       <side>right</side>
       <padding>dialog-h-padding</padding>
     </padding>
-
-    <border>
-      <side>bottom</side>
-      <border>thick_50%</border>
-    </border>
 
     <element>
       <name>message</name>
@@ -1113,6 +1114,26 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
     <halign>
       <halign>right</halign>
     </halign>
+
+    <border>
+      <side>top</side>
+      <border>ok_button_border</border>
+    </border>
+
+    <border>
+      <side>bottom</side>
+      <border>ok_button_border</border>
+    </border>
+
+    <border>
+      <side>left</side>
+      <border>ok_button_border</border>
+    </border>
+
+    <border>
+      <side>right</side>
+      <border>ok_button_border</border>
+    </border>
 
     <include>
       <name>ok-button-row</name>
@@ -1191,6 +1212,26 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
       <halign>fill</halign>
     </halign>
 
+    <border>
+      <side>top</side>
+      <border>ok_cancel_button_border</border>
+    </border>
+
+    <border>
+      <side>bottom</side>
+      <border>ok_cancel_button_border</border>
+    </border>
+
+    <border>
+      <side>left</side>
+      <border>ok_cancel_button_border</border>
+    </border>
+
+    <border>
+      <side>right</side>
+      <border>ok_cancel_button_border</border>
+    </border>
+
     <include>
       <name>ok-cancel-button-row</name>
       <background_color>button-row-color</background_color>
@@ -1221,6 +1262,26 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
     <halign>
       <halign>fill</halign>
     </halign>
+
+    <border>
+      <side>top</side>
+      <border>ok_cancel_button_border</border>
+    </border>
+
+    <border>
+      <side>bottom</side>
+      <border>ok_cancel_button_border</border>
+    </border>
+
+    <border>
+      <side>left</side>
+      <border>ok_cancel_button_border</border>
+    </border>
+
+    <border>
+      <side>right</side>
+      <border>ok_cancel_button_border</border>
+    </border>
 
     <include>
       <name>ok-cancel-button-row</name>
@@ -1301,11 +1362,6 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
       <padding>dialog-h-padding</padding>
     </padding>
 
-    <border>
-      <side>bottom</side>
-      <border>thick_50%</border>
-    </border>
-
     <element>
       <name>icon</name>
     </element>
@@ -1324,11 +1380,6 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
       <side>right</side>
       <padding>dialog-h-padding</padding>
     </padding>
-
-    <border>
-      <side>bottom</side>
-      <border>thick_50%</border>
-    </border>
 
     <include>
       <name>label-and-input-container</name>
@@ -1552,6 +1603,443 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
     <point_size>12</point_size>
   </font>
 
+  <!--
+      Color picker.
+
+
+
+
+  -->
+
+  <layout type="grid" id="color-picker-popup">
+
+    <!-- First row in the color picker: two containers, left and right half -->
+
+    <valign>
+      <row>0</row>
+      <valign>middle</valign>
+    </valign>
+
+    <append_row>
+      <name>color-picker-main-container</name>
+    </append_row>
+
+    <append_row>
+      <name>color-picker-error-message-row</name>
+    </append_row>
+
+    <append_row>
+      <name>ok-cancel-button-container</name>
+    </append_row>
+
+  </layout>
+
+  <factory type="grid" id="color-picker-main-container">
+    <padding>
+      <side>top</side>
+      <padding>no-padding</padding>
+    </padding>
+    <padding>
+      <side>bottom</side>
+      <padding>no-padding</padding>
+    </padding>
+    <padding>
+      <side>left</side>
+      <padding>no-padding</padding>
+    </padding>
+    <padding>
+      <side>right</side>
+      <padding>no-padding</padding>
+    </padding>
+    <include>
+      <name>color-picker-left-container</name>
+    </include>
+
+    <padding>
+      <side>top</side>
+      <padding>no-padding</padding>
+    </padding>
+    <padding>
+      <side>bottom</side>
+      <padding>no-padding</padding>
+    </padding>
+    <padding>
+      <side>left</side>
+      <padding>color_picker_buffer_width</padding>
+    </padding>
+    <padding>
+      <side>right</side>
+      <padding>no-padding</padding>
+    </padding>
+    <include>
+      <name>color-picker-right-container</name>
+    </include>
+  </factory>
+
+  <!--
+
+The left half of the color picker selector popup.
+
+The layout looks like this
+
++===+===============================+
+|   | HHHHHHHHHHHHHHHHHHHHHHHHHHHHHH|
++===+===============================+
+|                                   |
++=+=+===============================+
+|V| | SSSSSSSSSSSSSSSSSSSSSSSSSSSSSS|
+|V| | SSSSSSSSSSSSSSSSSSSSSSSSSSSSSS|
+|V| | SSSSSSSSSSSSSSSSSSSSSSSSSSSSSS|
+|V| | SSSSSSSSSSSSSSSSSSSSSSSSSSSSSS|
+
+  .....
+|V| | SSSSSSSSSSSSSSSSSSSSSSSSSSSSSS|
++=+=+===============================+
+|                                   |
++===+===============================+
+|   | CCCCCCCCCCCCCCCCCCCCCCCCCCCCCC|
++===+===============================+
+
+H - the button that swaps the horizontal component with the third component.
+
+V - the button that swaps the vertical component with the third component
+
+S - the color_picker_square that displays the gradient of the horizontal
+and vertical components, with a fixed third component
+
+C - display-only strip that shows the third component's gradient.
+
+An explicit row and column provides a buffer between the color_picker_square
+and the elements around it, for visual separation, and so that we can use
+the grid layout manager's borders for it.
+
+  -->
+
+  <layout type="grid" id="color-picker-left-container">
+    <append_row>
+      <name>color-picker-left-container-top-row</name>
+    </append_row>
+    <append_row>
+      <name>color-picker-left-container-top-spacing</name>
+    </append_row>
+    <append_row>
+      <name>color-picker-left-container-middle-row</name>
+    </append_row>
+    <append_row>
+      <name>color-picker-left-container-bottom-spacing</name>
+    </append_row>
+    <append_row>
+      <name>color-picker-left-container-bottom-row</name>
+    </append_row>
+  </layout>
+
+  <factory type="grid" id="color-picker-left-container-top-row">
+    <colspan>
+      <columns>2</columns>
+    </colspan>
+    <element>
+      <name>filler</name>
+    </element>
+
+    <padding>
+      <side>top</side>
+      <padding>no-padding</padding>
+    </padding>
+    <padding>
+      <side>bottom</side>
+      <padding>no-padding</padding>
+    </padding>
+    <padding>
+      <side>left</side>
+      <padding>no-padding</padding>
+    </padding>
+    <padding>
+      <side>right</side>
+      <padding>no-padding</padding>
+    </padding>
+
+    <!-- HHHHH -->
+
+    <element>
+      <name>h-button</name>
+    </element>
+  </factory>
+
+  <factory type="grid" id="color-picker-left-container-top-spacing">
+    <colspan>
+      <columns>3</columns>
+    </colspan>
+
+    <element>
+      <name>h-button-spacing</name>
+    </element>
+  </factory>
+
+  <factory type="grid" id="color-picker-left-container-middle-row">
+    <padding>
+      <side>top</side>
+      <padding>no-padding</padding>
+    </padding>
+    <padding>
+      <side>bottom</side>
+      <padding>no-padding</padding>
+    </padding>
+    <padding>
+      <side>left</side>
+      <padding>no-padding</padding>
+    </padding>
+    <padding>
+      <side>right</side>
+      <padding>no-padding</padding>
+    </padding>
+
+    <element>
+      <name>v-button</name>
+    </element>
+
+    <element>
+      <name>v-button-spacing</name>
+    </element>
+
+    <!-- SSSSS -->
+
+    <padding>
+      <side>top</side>
+      <padding>no-padding</padding>
+    </padding>
+    <padding>
+      <side>bottom</side>
+      <padding>no-padding</padding>
+    </padding>
+    <padding>
+      <side>left</side>
+      <padding>no-padding</padding>
+    </padding>
+    <padding>
+      <side>right</side>
+      <padding>no-padding</padding>
+    </padding>
+
+    <border>
+      <side>left</side>
+      <border>color_picker_gradient_border</border>
+    </border>
+    <border>
+      <side>right</side>
+      <border>color_picker_gradient_border</border>
+    </border>
+    <border>
+      <side>top</side>
+      <border>color_picker_gradient_border</border>
+    </border>
+    <border>
+      <side>bottom</side>
+      <border>color_picker_gradient_border</border>
+    </border>
+    <element>
+      <name>square</name>
+    </element>
+  </factory>
+  <factory type="grid" id="color-picker-left-container-bottom-spacing">
+    <colspan>
+      <columns>3</columns>
+    </colspan>
+
+    <element>
+      <name>h-button-spacing</name>
+    </element>
+  </factory>
+
+  <factory type="grid" id="color-picker-left-container-bottom-row">
+    <colspan>
+      <columns>2</columns>
+    </colspan>
+    <element>
+      <name>filler</name>
+    </element>
+
+    <!-- CCCCCC -->
+
+    <padding>
+      <side>top</side>
+      <padding>no-padding</padding>
+    </padding>
+    <padding>
+      <side>bottom</side>
+      <padding>no-padding</padding>
+    </padding>
+    <padding>
+      <side>left</side>
+      <padding>no-padding</padding>
+    </padding>
+    <padding>
+      <side>right</side>
+      <padding>no-padding</padding>
+    </padding>
+    <border>
+      <side>left</side>
+      <border>color_picker_fixed_component_border</border>
+    </border>
+    <border>
+      <side>right</side>
+      <border>color_picker_fixed_component_border</border>
+    </border>
+    <border>
+      <side>top</side>
+      <border>color_picker_fixed_component_border</border>
+    </border>
+    <border>
+      <side>bottom</side>
+      <border>color_picker_fixed_component_border</border>
+    </border>
+
+    <element>
+      <name>fixed-canvas</name>
+    </element>
+  </factory>
+
+  <!--
+
+The right half of the popup, with the input fields for manually entering
+RGB and HSV values, and for selecting full precision and hexadecimal.
+
+Two columns. The first column has the input field label, the
+second column the input fields themselves. Right-align the
+first column, to make the labels line up with their input fields.
+
+  -->
+
+  <layout type="grid" id="color-picker-right-container">
+    <halign>
+      <col>0</col>
+      <halign>right</halign>
+    </halign>
+
+    <append_row>
+      <name>color-picker-right-container-r-row</name>
+    </append_row>
+
+    <append_row>
+      <name>color-picker-right-container-g-row</name>
+    </append_row>
+
+    <append_row>
+      <name>color-picker-right-container-b-row</name>
+    </append_row>
+
+    <append_row>
+      <name>color-picker-right-container-h-row</name>
+    </append_row>
+
+    <append_row>
+      <name>color-picker-right-container-s-row</name>
+    </append_row>
+
+    <append_row>
+      <name>color-picker-right-container-v-row</name>
+    </append_row>
+
+    <append_row>
+      <name>color-picker-right-container-hexadecimal-row</name>
+    </append_row>
+
+    <append_row>
+      <name>color-picker-right-container-full-precision-row</name>
+    </append_row>
+  </layout>
+
+  <factory type="grid" id="color-picker-right-container-r-row">
+    <element>
+      <name>r-label</name>
+    </element>
+    <element>
+      <name>r-input-field</name>
+    </element>
+  </factory>
+
+  <factory type="grid" id="color-picker-right-container-g-row">
+    <element>
+      <name>g-label</name>
+    </element>
+    <element>
+      <name>g-input-field</name>
+    </element>
+  </factory>
+
+  <factory type="grid" id="color-picker-right-container-b-row">
+    <element>
+      <name>b-label</name>
+    </element>
+    <element>
+      <name>b-input-field</name>
+    </element>
+  </factory>
+
+  <factory type="grid" id="color-picker-right-container-h-row">
+    <element>
+      <name>h-label</name>
+    </element>
+    <element>
+      <name>h-input-field</name>
+    </element>
+  </factory>
+
+  <factory type="grid" id="color-picker-right-container-s-row">
+    <element>
+      <name>s-label</name>
+    </element>
+    <element>
+      <name>s-input-field</name>
+    </element>
+  </factory>
+
+  <factory type="grid" id="color-picker-right-container-v-row">
+    <element>
+      <name>v-label</name>
+    </element>
+    <element>
+      <name>v-input-field</name>
+    </element>
+  </factory>
+
+  <factory type="grid" id="color-picker-right-container-hexadecimal-row">
+    <colspan>
+      <columns>2</columns>
+    </colspan>
+    <halign>
+      <halign>left</halign>
+    </halign>
+    <element>
+      <name>hexadecimal</name>
+    </element>
+  </factory>
+
+  <factory type="grid" id="color-picker-right-container-full-precision-row">
+    <colspan>
+      <columns>2</columns>
+    </colspan>
+    <halign>
+      <halign>left</halign>
+    </halign>
+    <element>
+      <name>full-precision</name>
+    </element>
+  </factory>
+
+  <!--  A label for an error message, on the last row -->
+
+  <factory type="grid" id="color-picker-error-message-row">
+    <colspan>
+      <columns>2</columns>
+    </colspan>
+    <halign>
+      <halign>centered</halign>
+    </halign>
+    <element>
+      <name>error-message-field</name>
+    </element>
+  </factory>
+
   <!-- Print dialog -->
 
   <!--
@@ -1769,7 +2257,7 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
   </factory>
 
   <!--
-      nested layout for the print selectes pages radio button and input field.
+      nested layout for the print select pages radio button and input field.
   -->
 
   <layout type="grid" id="print-dialog-print-selected-pages-radio-button-and-input-field">
