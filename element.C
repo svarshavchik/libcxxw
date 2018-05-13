@@ -249,7 +249,7 @@ void elementObj::install_contextpopup_callback
 				 auto a=ref<contextpopup_shortcut_activatorObj>
 					 ::create(callback, me);
 
-				 i->install_shortcut(sc, a);
+				 i->install_shortcut(sc, a, false);
 
 				 sc_impl=i;
 				 sc_active=a;

@@ -803,12 +803,20 @@ bool generic_windowObj::handlerObj
 	if (processed)
 		return true;
 
-	installed_shortcutptr best_shortcut;
+	if (!activate_for(ke))
+		return false;
 
-	if (activate_for(ke))
+	installed_shortcutptr best_shortcut;
+	int best_ordinal=0;
+
+	// Search this window's local shortcuts, and global shortcuts.
+	mpobj<shortcut_lookup_t> * const all_shortcuts[]={
+		&local_shortcuts,
+		&handler_data->global_shortcuts};
+
+	for (const auto shortcut_collection:all_shortcuts)
 	{
-		mpobj<shortcut_lookup_t>::lock
-			lock{handler_data->installed_shortcuts};
+		mpobj<shortcut_lookup_t>::lock lock{*shortcut_collection};
 
 		auto shortcuts=lock->equal_range(unicode_lc(ke.unicode));
 
@@ -818,8 +826,8 @@ bool generic_windowObj::handlerObj
 
 			++shortcuts.first;
 
-			// Find the first shortcut that's enabled and matches
-			// the key.
+			// Find the first shortcut that's enabled and
+			// matches the key.
 
 			if (!p->enabled(IN_THREAD)
 			    ||
@@ -827,52 +835,45 @@ bool generic_windowObj::handlerObj
 				continue;
 
 			// If there are shortcuts for both shift-Foo and
-			// shift-ctrl-Foo, make sure that shift-ctrl-Foo matches
-			// the right shortcut.
+			// shift-ctrl-Foo, make sure that
+			// shift-ctrl-Foo matches the right shortcut.
 
-			auto best_ordinal=
-				p->installed_shortcut(IN_THREAD).ordinal();
+			int ordinal=p->installed_shortcut(IN_THREAD).ordinal();
 
-			best_shortcut=p;
-
-			// If there are any other shortcuts that also match,
-			// keep only the best ordinal.
-
-			while (shortcuts.first != shortcuts.second)
+			if (best_shortcut && ordinal == best_ordinal)
 			{
-				p=shortcuts.first->second;
+				auto &a=p->installed_shortcut(IN_THREAD);
 
-				++shortcuts.first;
+				auto &b=best_shortcut
+					->installed_shortcut(IN_THREAD);
 
-				if (!p->enabled(IN_THREAD)
-				    ||
-				    !p->installed_shortcut(IN_THREAD)
-				    .matches(ke))
-					continue;
+				auto s1=unicode::iconvert::fromu
+					::convert(a, unicode_locale_chset())
+					.first;
 
-				auto ordinal=p->installed_shortcut(IN_THREAD)
-					.ordinal();
+				auto s2=unicode::iconvert::fromu
+					::convert(b, unicode_locale_chset())
+					.first;
 
-				if (ordinal < best_ordinal)
-					continue;
+				LOG_ERROR("Conflicting shortcuts: "
+					  << s1 << " and " << s2);
+			}
 
+			if (!best_shortcut || ordinal > best_ordinal)
+			{
 				best_shortcut=p;
 				best_ordinal=ordinal;
 			}
 		}
 	}
 
-	if (best_shortcut)
-	{
-		auto main_window=get_main_window();
+	if (!best_shortcut)
+		return false;
 
-		if (main_window)
-			try {
-				best_shortcut->activated(IN_THREAD, &ke);
-			} REPORT_EXCEPTIONS(main_window);
-		processed=true;
-	}
-	return processed;
+	try {
+		best_shortcut->activated(IN_THREAD, &ke);
+	} REPORT_EXCEPTIONS(this);
+	return true;
 }
 
 void generic_windowObj::handlerObj

@@ -13,6 +13,7 @@
 #include "iconfwd.H"
 #include "icon_images_set_elementfwd.H"
 #include "cursor_pointer_elementfwd.H"
+#include "shortcut/installed_shortcutfwd.H"
 #include "x/w/impl/background_colorfwd.H"
 #include "x/w/impl/background_color_elementfwd.H"
 #include "x/w/connection_threadfwd.H"
@@ -145,6 +146,10 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! Keep track of opened popups and shortcuts.
 
 	const shared_handler_data handler_data;
+
+	//! Local shortcuts, in this window only
+
+	mpobj<shortcut_lookup_t> local_shortcuts;
 
 	//! Container that keeps track of immediate popups
 

@@ -176,8 +176,11 @@ void extra_list_row_infoObj::set_meta(const listlayoutmanager &lm,
 		current_shortcut=shortcut_impl::create(lm, extra);
 
 	// Our destructor explicitly calls uninstall_shortcut().
+
+	// Install a global shortcut. This must be a shortcut for a
+	// menu item.
 	current_shortcut->install_shortcut(*meta.listitem_shortcut,
-					   current_shortcut);
+					   current_shortcut, true);
 }
 
 void extra_list_row_infoObj::show_submenu(ONLY IN_THREAD, const rectangle &r)

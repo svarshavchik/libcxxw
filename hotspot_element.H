@@ -133,7 +133,7 @@ void hotspot_elementObj<element_impl>
 ::install_shortcut(const shortcut &new_shortcut,
 		   const activated_in_thread &what_to_activate)
 {
-	superclass_t::install_shortcut(new_shortcut, what_to_activate);
+	superclass_t::install_shortcut(new_shortcut, what_to_activate, false);
 }
 
 //! Implement uninstall_shortcut(), inherited from hotspotObj::implObj.

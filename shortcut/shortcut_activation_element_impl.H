@@ -26,6 +26,8 @@ class shortcut_activation_element_implObj : virtual public obj {
 	//! Iterator in the window handler where the shortcut is installed.
 	shortcut_lookup_t::iterator current_shortcut_iter;
 
+	//! Whether the current_shortcut_iter is installed globally or locally.
+	bool global=false;
 public:
 
 	//! Constructor
@@ -42,7 +44,8 @@ public:
 
 	//! Install a new shortcut here.
 	void install_shortcut(const shortcut &new_shortcut,
-			      const activated_in_thread &what_to_activate);
+			      const activated_in_thread &what_to_activate,
+			      bool global);
 
 	//! Uninstall a new shortcut here.
 	void uninstall_shortcut();

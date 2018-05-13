@@ -129,9 +129,9 @@ public:
 	ptr<generic_windowObj::handlerObj>
 		find_popup_for_xy(ONLY IN_THREAD, const motion_event &);
 
-	//! Look up installed shortcuts
+	//! Look up installed global shortcuts
 
-	mpobj<shortcut_lookup_t> installed_shortcuts;
+	mpobj<shortcut_lookup_t> global_shortcuts;
 
 	//! A dialog is being opened.
 	void opening_dialog(ONLY IN_THREAD);
