@@ -1,3 +1,9 @@
+2018-05-13  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* combobox/editable_comboboxlayoutmanager_impl.C: Size the input
+	field large enough to display the cursor after the largest item
+	without scrolling.
+
 2018-04-26  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* includes/x/w/elementobj.H: added stop_message() and

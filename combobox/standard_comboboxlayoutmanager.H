@@ -48,6 +48,16 @@ class LIBCXX_HIDDEN standard_comboboxlayoutmanagerObj::implObj
 	//! Override create_public_object to create the standard_comboboxlayoutmanager.
 
 	layoutmanager create_public_object() override;
+
+	//! Modify items before they get added to combo-box's dropdown list.
+
+	//! Editable combo-box's input field needs to be sized wide enough
+	//! for the largest combo-box list item, plus a space for the trailing
+	//! cursor, so that the input field does not scroll when the cursor
+	//! is after the last item in the combo-box.
+
+	virtual void update_items_if_needed(std::vector<list_item_param>
+					    &items);
 };
 
 LIBCXXW_NAMESPACE_END

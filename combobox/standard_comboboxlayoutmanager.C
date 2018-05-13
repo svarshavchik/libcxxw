@@ -137,8 +137,12 @@ void standard_combobox_lock::append_items(ONLY IN_THREAD,
 		 });
 	ti.insert(ti.end(), t.begin(), t.end());
 
+	auto updated_items=items;
+	locked_layoutmanager->impl->update_items_if_needed(updated_items);
+
 	s.guard();
-	locked_layoutmanager->superclass_t::append_items(IN_THREAD, items);
+	locked_layoutmanager->superclass_t::append_items(IN_THREAD,
+							 updated_items);
 	s.unguard();
 }
 
@@ -174,8 +178,11 @@ void standard_combobox_lock::insert_items(ONLY IN_THREAD,
 
 	ti.insert(ti.begin()+i, t.begin(), t.end());
 
+	auto updated_items=items;
+	locked_layoutmanager->impl->update_items_if_needed(updated_items);
 	s.guard();
-	locked_layoutmanager->superclass_t::insert_items(IN_THREAD, i, items);
+	locked_layoutmanager->superclass_t::insert_items(IN_THREAD, i,
+							 updated_items);
 	s.unguard();
 }
 
@@ -205,7 +212,10 @@ void standard_combobox_lock::replace_items(ONLY IN_THREAD,
 	if (ti.size() < i || ti.size()-i < t.size())
 		nosuchitem(i);
 
-	locked_layoutmanager->superclass_t::replace_items(IN_THREAD, i, items);
+	auto updated_items=items;
+	locked_layoutmanager->impl->update_items_if_needed(updated_items);
+	locked_layoutmanager->superclass_t::replace_items(IN_THREAD, i,
+							  updated_items);
 
 	std::copy(t.begin(), t.end(), ti.begin()+i);
 }
@@ -250,9 +260,12 @@ void standard_combobox_lock::replace_all_items(ONLY IN_THREAD,
 			 text_items().clear();
 		 });
 
+	auto updated_items=items;
+	locked_layoutmanager->impl->update_items_if_needed(updated_items);
+
 	s.guard();
 	locked_layoutmanager->superclass_t::replace_all_items(IN_THREAD,
-							      items);
+							      updated_items);
 
 	text_items()=t;
 	s.unguard();

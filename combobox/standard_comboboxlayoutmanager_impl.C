@@ -29,4 +29,9 @@ layoutmanager standard_comboboxlayoutmanagerObj::implObj::create_public_object()
 
 }
 
+void standard_comboboxlayoutmanagerObj::implObj
+::update_items_if_needed(std::vector<list_item_param> &items)
+{
+}
+
 LIBCXXW_NAMESPACE_END

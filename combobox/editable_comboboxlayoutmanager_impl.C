@@ -38,4 +38,18 @@ layoutmanager editable_comboboxlayoutmanagerObj::implObj::create_public_object()
 			 ->listlayout_impl);
 }
 
+void editable_comboboxlayoutmanagerObj::implObj
+::update_items_if_needed(std::vector<list_item_param> &items)
+{
+	for (auto &item:items)
+	{
+		if (!std::holds_alternative<text_param>(item))
+			continue;
+
+		text_param &t=std::get<text_param>(item);
+
+		t(U" ");
+	}
+}
+
 LIBCXXW_NAMESPACE_END
