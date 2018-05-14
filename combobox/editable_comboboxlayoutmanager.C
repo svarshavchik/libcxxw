@@ -203,7 +203,7 @@ static custom_combobox_selection_changed_t editable_selection_changed=
 
 		lm->impl->selection_changed.get()
 		(IN_THREAD, editable_combobox_selection_changed_info_t{
-			lock, info.list_item_status_info, yes_i_am, lm});
+			lm, lock, info.list_item_status_info, yes_i_am, lm});
 	};
 
 

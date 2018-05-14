@@ -20,6 +20,9 @@ LIBCXXW_NAMESPACE_START
 
 struct LIBCXX_HIDDEN standard_combobox_selection_changed_info_t {
 
+	//! The layout manager
+	const standard_comboboxlayoutmanager &lm;
+
 	//! A lock on combo-box's underlying list
 	standard_combobox_lock &lock;
 

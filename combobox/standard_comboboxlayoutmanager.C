@@ -515,6 +515,7 @@ static custom_combobox_selection_changed_t standard_selection_changed=
 
 		lm->impl->selection_changed.get()
 		(IN_THREAD, standard_combobox_selection_changed_info_t{
+			lm,
 			lock, info.list_item_status_info, yes_i_am});
 	};
 
