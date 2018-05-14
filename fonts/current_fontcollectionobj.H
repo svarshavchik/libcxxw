@@ -55,6 +55,15 @@ public:
 
  public:
 
+	//! Create a new font collection
+
+	//! Internal entry point used by the font picker display element.
+
+	static fontcollection create_fc(const font &font_spec,
+					const screen &font_screen,
+					const depth_t depth,
+					const defaulttheme &font_theme);
+
 	THREAD_DATA_ONLY(font_spec);
 	THREAD_DATA_ONLY(fc);
 

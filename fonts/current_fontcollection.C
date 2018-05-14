@@ -56,6 +56,15 @@ void current_fontcollectionObj::theme_updated(ONLY IN_THREAD,
 
 fontcollection current_fontcollectionObj::create_fc(const font &font_spec)
 {
+	return create_fc(font_spec, font_screen, depth, font_theme);
+}
+
+fontcollection current_fontcollectionObj
+::create_fc(const font &font_spec,
+	    const screen &font_screen,
+	    const depth_t depth,
+	    const defaulttheme &font_theme)
+{
 	auto screen_impl=font_screen->impl;
 
 	auto dpi_scaled=
@@ -76,7 +85,7 @@ fontcollection current_fontcollectionObj::create_fc(const font &font_spec)
 
 	return (*lock)->find_or_create
 		(key,
-		 [&, this]
+		 [=]
 		 {
 			 return fontcollection::create
 				 (ref<fontcollectionObj::implObj>::create
