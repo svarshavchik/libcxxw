@@ -45,6 +45,7 @@ struct font {
 
 	//! Scaled size
 
+	//! This is currently used by SXG files.
 	double scaled_size=0;
 
 	//! Pixel size
@@ -242,7 +243,7 @@ struct font {
 	//! Request a specific font
 
 	//! Specifies the size of the font on some arbitrary scale.
-	//! This is currently used by SXG files.
+	//! This is currently used only by SXG files.
 
 	inline font &set_scaled_size(double arg)
 	{
@@ -273,6 +274,12 @@ struct font {
 
 	//! Multiplies point_size and scaled_size by the ratio.
 	font &scale(double ratio);
+
+	//! Provide a descriptive string for this font.
+
+	//! Does include scaled_size, which is for internal use only.
+
+	operator std::string() const;
 };
 
 LIBCXXW_NAMESPACE_END

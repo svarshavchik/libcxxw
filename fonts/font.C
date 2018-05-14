@@ -7,6 +7,7 @@
 #include <x/chrcasecmp.H>
 #include <x/exception.H>
 #include <x/strtok.H>
+#include <x/visitor.H>
 #include "x/w/font.H"
 #include "messages.H"
 #include <fontconfig/fontconfig.h>
@@ -331,4 +332,48 @@ font operator"" _font(const char *str, size_t s)
 
 	return f;
 }
+
+font::operator std::string() const
+{
+	std::ostringstream o;
+	const char *sep="";
+
+	auto v=visitor{
+		[&](const char *name, const std::string &v)
+		{
+			if (v.empty())
+				return;
+
+			o << sep << name << "=" << v;
+			sep=", ";
+		},
+		[&](const char *name, int v)
+		{
+			if (v < 0)
+				return;
+
+			o << sep << name << "=" << v;
+			sep=", ";
+		},
+		[&](const char *name, double v)
+		{
+			if (v <= 0)
+				return;
+
+			o << sep << name << "=" << v;
+			sep=", ";
+		}};
+
+	v("foundry", foundry);
+	v("family", family);
+	v("weight", weight);
+	v("slant", slant);
+	v("width", width);
+	v("style", style);
+	v("point_size", point_size);
+	v("pixel_size", pixel_size);
+
+	return o.str();
+}
+
 LIBCXXW_NAMESPACE_END
