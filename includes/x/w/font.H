@@ -282,6 +282,10 @@ struct font {
 	operator std::string() const;
 };
 
+//! Overload << operator
+
+std::ostream &operator<<(std::ostream &, const font &);
+
 LIBCXXW_NAMESPACE_END
 
 #endif

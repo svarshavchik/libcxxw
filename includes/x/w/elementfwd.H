@@ -156,6 +156,26 @@ parent display elements, or any of its child display elements (if the
 element is a container). This creates a circular references. Weak captures
 must be used.
 
+\par Metrics callback.
+
+\code
+#include <x/w/metrics/axis.H>
+
+element->on_metrics_callback([]
+                            (ONLY IN_THREAD,
+                             const INSERT_LIBX_NAMESPACE::metrics::axis &h,
+                             const INSERT_LIBX_NAMESPACE::metrics::axis &v)
+                             {
+                               // ...
+                             });
+\endcode
+
+on_metrics_callback() installs a callback that gets invoked with the element's
+current \ref metrics::axis "metrics". The callback gets invoked with the
+element's current metrics, and then every time the metrics change. Only
+one metrics callback can be installed at the same time, installing another
+callback replaces the existing one.
+
 \par Context popups
 
 \code

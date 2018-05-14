@@ -173,10 +173,18 @@ void color_pickerObj::implObj::update_hv_components(ONLY IN_THREAD,
 						    const callback_trigger_t
 						    &trigger)
 {
-	auto &c=current_color(IN_THREAD);
+	auto c=current_color(IN_THREAD);
 
 	c.*horiz_component(IN_THREAD)=h;
 	c.*vert_component(IN_THREAD)=v;
+
+	set_color(IN_THREAD, c);
+}
+
+void color_pickerObj::implObj::set_color(ONLY IN_THREAD,
+					 const rgb &c)
+{
+	current_color(IN_THREAD)=c;
 
 	r_value->set(c.r);
 	g_value->set(c.g);

@@ -652,7 +652,7 @@ auto new_custom_dialog=mw->create_custom_dialog(
       the new &dialogid;. It's second parameter is a callable object
       that receives a
       <classname>&ns;::w::dialog_args</classname> parameter, and returns a
-      reference to a reference to a subclass of a
+      a reference to a subclass of a
       <classname>&ns;::w::dialog</classname>;
       <methodname>create_custom_dialog</methodname>() returns what the
       callable object itself returns. The remaining parameters are the new

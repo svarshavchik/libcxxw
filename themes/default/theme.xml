@@ -949,7 +949,18 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
   <dim id="element_attached_popup_border_square_padding_h" axis="horiz">1</dim>
   <dim id="element_attached_popup_border_square_padding_v" axis="vert">1</dim>
 
-  <color id="element_attached_popup_background_color" scale="80%" />
+  <color id="element_attached_popup_background_color" type="linear_gradient">
+    <gradient>
+      <value>0</value>
+      <color>70%</color>
+    </gradient>
+    <gradient>
+      <value>1</value>
+      <color>100%</color>
+    </gradient>
+  </color>
+
+  <color id="noshade:element_attached_popup_background_color" scale="80%" />
 
   <border id="element_attached_popup_button_focusoff_border" from="inputfocusoff_border">
     <color>inputfocus_color2</color>
@@ -2523,4 +2534,231 @@ first column, to make the labels line up with their input fields.
   <font id="printer_status" from="mono">
     <point_size>10</point_size>
   </font>
+
+  <!-- Font picker popup -->
+
+  <!-- Border around the preview element -->
+
+  <border id="font_picker_preview_border" from="thin_0%">
+    <rounded />
+    <hradius>1</hradius>
+    <vradius>1</vradius>
+  </border>
+
+  <layout type="grid" id="font-picker-popup">
+
+    <valign>
+      <row>0</row>
+      <valign>middle</valign>
+    </valign>
+
+    <append_row>
+      <name>font-picker-popup-main-row</name>
+    </append_row>
+
+    <append_row>
+      <name>ok-cancel-button-container</name>
+    </append_row>
+  </layout>
+
+  <dim id="font_picker_preview_width" axis="horiz">40</dim>
+  <dim id="font_picker_preview_height" axis="vert">40</dim>
+
+  <!--
+      Foreground color for font options that are not available with
+      the current font and point size
+  -->
+
+  <color id="font_picker_unavailable_option_color" scale="50%" />
+
+  <!--
+      Divide the layout into the left half and the right half.
+      And the button row below it.
+  -->
+
+  <factory type="grid" id="font-picker-popup-main-row">
+    <padding>
+      <side>top</side>
+      <padding>no-padding</padding>
+    </padding>
+    <padding>
+      <side>bottom</side>
+      <padding>no-padding</padding>
+    </padding>
+    <padding>
+      <side>left</side>
+      <padding>no-padding</padding>
+    </padding>
+    <padding>
+      <side>right</side>
+      <padding>no-padding</padding>
+    </padding>
+    <include>
+      <name>font-picker-popup-left-contents</name>
+    </include>
+
+    <padding>
+      <side>top</side>
+      <padding>no-padding</padding>
+    </padding>
+    <padding>
+      <side>bottom</side>
+      <padding>no-padding</padding>
+    </padding>
+
+    <!--
+	Borrow color picker's width to provide some separation between the
+	columns
+    -->
+
+    <padding>
+      <side>left</side>
+      <padding>color_picker_buffer_width</padding>
+    </padding>
+    <padding>
+      <side>right</side>
+      <padding>no-padding</padding>
+    </padding>
+    <include>
+      <name>font-picker-popup-right-contents</name>
+    </include>
+  </factory>
+
+  <!--
+      The left half of the font picker popup: the font family
+      and font size combo-boxes, and the preview window.
+  -->
+
+  <layout type="grid" id="font-picker-popup-left-contents">
+    <valign>
+      <row>0</row>
+      <valign>middle</valign>
+    </valign>
+
+    <valign>
+      <row>1</row>
+      <valign>middle</valign>
+    </valign>
+
+    <append_row>
+      <name>font-picker-popup-font-family-row</name>
+    </append_row>
+    <append_row>
+      <name>font-picker-popup-font-size-row</name>
+    </append_row>
+    <append_row>
+      <name>font-picker-popup-font-preview-row</name>
+    </append_row>
+  </layout>
+
+  <factory type="grid" id="font-picker-popup-font-family-row">
+    <halign>
+      <halign>right</halign>
+    </halign>
+
+    <element>
+      <name>font-family-label</name>
+    </element>
+
+    <element>
+      <name>font-family-combobox</name>
+    </element>
+  </factory>
+
+  <factory type="grid" id="font-picker-popup-font-size-row">
+    <halign>
+      <halign>right</halign>
+    </halign>
+
+    <element>
+      <name>font-size-label</name>
+    </element>
+
+    <element>
+      <name>font-size-combobox</name>
+    </element>
+  </factory>
+
+  <factory type="grid" id="font-picker-popup-font-preview-row">
+    <halign>
+      <halign>centered</halign>
+    </halign>
+    <colspan>
+      <columns>2</columns>
+    </colspan>
+
+    <element>
+      <name>font-preview</name>
+    </element>
+  </factory>
+
+  <!--
+      The left half of the font picker popup: various font options.
+  -->
+
+  <layout type="grid" id="font-picker-popup-right-contents">
+    <halign>
+      <col>0</col>
+      <halign>right</halign>
+    </halign>
+
+    <valign>
+      <row>0</row>
+      <valign>middle</valign>
+    </valign>
+
+    <valign>
+      <row>1</row>
+      <valign>middle</valign>
+    </valign>
+    <valign>
+      <row>2</row>
+      <valign>middle</valign>
+    </valign>
+    <valign>
+      <row>3</row>
+      <valign>middle</valign>
+    </valign>
+    <append_row>
+      <name>font-picker-popup-font-weight-row</name>
+    </append_row>
+
+    <append_row>
+      <name>font-picker-popup-font-slant-row</name>
+    </append_row>
+
+    <append_row>
+      <name>font-picker-popup-font-width-row</name>
+    </append_row>
+ </layout>
+
+  <factory type="grid" id="font-picker-popup-font-weight-row">
+    <element>
+      <name>font-weight-label</name>
+    </element>
+
+    <element>
+      <name>font-weight-combobox</name>
+    </element>
+  </factory>
+
+  <factory type="grid" id="font-picker-popup-font-slant-row">
+    <element>
+      <name>font-slant-label</name>
+    </element>
+
+    <element>
+      <name>font-slant-combobox</name>
+    </element>
+  </factory>
+
+  <factory type="grid" id="font-picker-popup-font-width-row">
+    <element>
+      <name>font-width-label</name>
+    </element>
+
+    <element>
+      <name>font-width-combobox</name>
+    </element>
+  </factory>
 </theme>

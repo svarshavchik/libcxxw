@@ -228,6 +228,19 @@ libcxxw_la_SOURCES=\
 	focus/label_forobj.H			    \
 	focus/standard_focusframecontainer_element.C \
 	focus/standard_focusframecontainer_element_impl.C \
+	font_picker/font_picker.C		    \
+	font_picker/font_picker_impl.C		    \
+	font_picker/font_picker_impl.H		    \
+	font_picker/font_family_group_entry.C	    \
+	font_picker/font_family_group_entry.H	    \
+	font_picker/font_family_group_entryfwd.H    \
+	font_picker/font_family_group_entryobj.H    \
+	font_picker/font_picker_preview.C	    \
+	font_picker/font_picker_preview.H	    \
+	font_picker/font_picker_previewfwd.H	    \
+	font_picker/font_picker_previewobj.H	    \
+	font_picker/font_picker_preview_impl.C	    \
+	font_picker/font_picker_preview_impl.H	    \
 	fonts/composite_text_stream.C		    \
 	fonts/composite_text_stream.H		    \
 	fonts/composite_text_streamfwd.H	    \
@@ -797,6 +810,9 @@ $(call REFCOLLECTION_GEN,print_dialog/print_dialog.inc.H, \
 $(call REFCOLLECTION_GEN,color_picker/color_picker.inc.H, \
 			color_picker/color_picker.xml)
 
+$(call REFCOLLECTION_GEN,font_picker/font_picker.inc.H, \
+			font_picker/font_picker.xml)
+
 libcxxwcups_la_LIBADD=libcxxw.la -lcxxcups -lcxx -lcourier-unicode
 libcxxwcups_la_LDFLAGS=$(STATICLINKFLAGS) -version-info @VERSION_INFO@
 libcxxwcups_la_SOURCES=\
@@ -891,6 +907,7 @@ testbutton_SOURCES=testbutton.C
 testbutton_LDADD=libcxxw.la
 testbutton_LDFLAGS=$(TESTLINKTYPE)
 
+$(call OPTIONS_GEN,testcolorpicker.inc.H,testcolorpicker.xml)
 testcolorpicker_SOURCES=testcolorpicker.C
 testcolorpicker_LDADD=libcxxw.la
 testcolorpicker_LDFLAGS=$(TESTLINKTYPE)

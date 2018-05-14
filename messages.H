@@ -9,7 +9,9 @@
 #include <x/messages.H>
 #include <courier-unicode.h>
 
-#define _(x) dgettext("libcxxw", x)
+#define cxxwlibmsg(x) dgettext("libcxxw", x)
+#define _(x) cxxwlibmsg(x)
+#define _txt(x) x
 
 LIBCXXW_NAMESPACE_START
 

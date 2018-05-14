@@ -1,0 +1,35 @@
+<collection>
+  <name>font_picker_popup_fields</name>
+  <ref>
+    <name>font_family</name>
+    <type>focusable_container</type>
+  </ref>
+  <ref>
+    <name>font_size</name>
+    <type>focusable_container</type>
+  </ref>
+  <ref>
+    <name>font_weight</name>
+    <type>focusable_container</type>
+  </ref>
+  <ref>
+    <name>font_slant</name>
+    <type>focusable_container</type>
+  </ref>
+  <ref>
+    <name>font_width</name>
+    <type>focusable_container</type>
+  </ref>
+  <ref>
+    <name>preview_label</name>
+    <type>font_picker_preview</type>
+  </ref>
+  <ref>
+    <name>ok_button</name>
+    <type>button</type>
+  </ref>
+  <ref>
+    <name>cancel_button</name>
+    <type>button</type>
+  </ref>
+</collection>

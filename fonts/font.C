@@ -376,4 +376,11 @@ font::operator std::string() const
 	return o.str();
 }
 
+//! Overload << operator
+
+std::ostream &operator<<(std::ostream &o, const font &f)
+{
+	return o << (std::string)f;
+}
+
 LIBCXXW_NAMESPACE_END

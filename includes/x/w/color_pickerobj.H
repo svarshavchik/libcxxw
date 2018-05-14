@@ -42,6 +42,14 @@ public:
 	//! Return the currently selected color.
 
 	rgb current_color() const;
+
+	//! Set the current color
+
+	void current_color(const rgb &);
+
+	//! Set the current color
+
+	void current_color(ONLY IN_THREAD, const rgb &);
 };
 
 LIBCXXW_NAMESPACE_END

@@ -182,17 +182,11 @@ static custom_combobox_selection_changed_t editable_selection_changed=
 				editor_impl->validate_modified(IN_THREAD, {});
 			}
 		}
-		else // Unselected.
-		{
-			input_lock i_lock{current_selection};
-
-			if (i_lock.get_unicode() ==
-			    lock.item(info.list_item_status_info.item_number)
-			    .string)
-			{
-				editor_impl->set(IN_THREAD, U"");
-			}
-		}
+		// else - don't clear the input field
+		//
+		// The input field in an editable combo-box is free-form
+		// association, and just a suggestion. Besides, if the
+		// input field has a validator, it won't know about this.
 
 		// The busy mcguffin in info is the busy
 		// mcguffin for the popup window. The callback

@@ -15,11 +15,17 @@
 #include "x/w/gridfactory.H"
 #include "x/w/screen.H"
 #include "x/w/connection.H"
+#include "x/w/label.H"
+#include "x/w/button.H"
 #include "x/w/color_picker.H"
-#include "x/w/impl/container.H"
-#include "x/w/impl/canvas.H"
+#include "x/w/font_picker.H"
+#include "x/w/font_picker_config.H"
+#include "x/w/canvas.H"
 #include <string>
+#include <list>
 #include <iostream>
+#include <random>
+#include "testcolorpicker.inc.H"
 
 using namespace LIBCXX_NAMESPACE;
 using namespace LIBCXX_NAMESPACE::w;
@@ -43,14 +49,30 @@ public:
 
 typedef ref<close_flagObj> close_flag_ref;
 
+struct rand_color_sourceObj : virtual public obj {
 
-void testcolorpicker()
+	std::mt19937 rng;
+
+	std::uniform_int_distribution<rgb_component_t> dist{0, rgb::maximum};
+
+	rand_color_sourceObj()
+	{
+		rng.seed(std::random_device{}());
+	}
+
+	rgb random_color()
+	{
+		return {dist(rng), dist(rng), dist(rng)};
+	}
+};
+
+void testcolorpicker(const testcolorpicker_options &options)
 {
 	destroy_callback::base::guard guard;
 
 	auto close_flag=close_flag_ref::create();
 
-	LIBCXX_NAMESPACE::w::color_pickerptr cpp;
+	color_pickerptr cpp;
 
 	auto main_window=main_window::create
 		([&]
@@ -60,22 +82,140 @@ void testcolorpicker()
 				 main_window->get_layoutmanager()
 			 };
 
+			 layout->row_alignment(0, valign::middle);
+			 layout->row_alignment(1, valign::middle);
+
 			 auto factory=layout->append_row();
 
-			 auto p=factory->create_color_picker();
+			 factory->create_label("Color:")->show();
+			 auto cp=factory->create_color_picker();
 
-			 p->on_color_update([]
-					    (ONLY IN_THREAD,
-					     const LIBCXX_NAMESPACE::w::rgb &color,
-					     const LIBCXX_NAMESPACE::w::callback_trigger_t &trigger,
-					     const LIBCXX_NAMESPACE::w::busy &mcguffin) {
+			 cp->on_color_update([]
+					     (ONLY IN_THREAD,
+					      const LIBCXX_NAMESPACE::w::rgb &color,
+					      const LIBCXX_NAMESPACE::w::callback_trigger_t &trigger,
+					      const LIBCXX_NAMESPACE::w::busy &mcguffin) {
 
-						    std::cout << color << std::endl;
+						     std::cout << color << std::endl;
+					     });
+
+			 cp->show();
+
+			 cpp=cp;
+
+			 factory=layout->append_row();
+			 factory->create_label("Font:")->show();
+
+			 font_picker_config config;
+
+			 config.selection_required=options.required->value;
+
+			 font f;
+
+			 bool set_font=false;
+
+			 if (!options.font_family->value.empty())
+			 {
+				 set_font=true;
+				 f.family=options.font_family->value;
+			 }
+
+			 if (options.font_size->isSet())
+			 {
+				 set_font=true;
+				 f.point_size=options.font_size->value;
+			 }
+
+			 if (options.font_weight->isSet())
+			 {
+				 set_font=true;
+				 f.set_weight(options.font_weight->value);
+			 }
+
+			 if (set_font)
+				 config.initial_font=f;
+
+			 auto fp=factory->create_font_picker(config);
+
+			 fp->on_font_update([mru=std::list<font_picker_group_id>
+					     {}]
+					    (THREAD_CALLBACK,
+					     const font &new_font,
+					     const font_picker_group_id *new_font_group,
+					     const font_picker &myself,
+					     const callback_trigger_t &trigger,
+					     const busy &mcguffin)
+					    mutable {
+						    if (!new_font_group)
+							    return;
+
+						    auto iter=std::find(mru.begin(),
+									mru.end(),
+									*new_font_group);
+
+						    if (iter != mru.end())
+							    mru.erase(iter);
+
+						    if (mru.size() >= 3)
+							    mru.pop_back();
+
+						    mru.push_front(*new_font_group);
+						    myself->most_recently_used
+							    ({mru.begin(),
+									    mru.end()});
+
 					    });
+			 fp->show();
 
-			 p->show();
+			 auto b=layout->append_row()->colspan(2)
+			 .halign(halign::center)
+			 .padding(4).create_normal_button_with_label
+			 ("Random color");
 
-			 cpp=p;
+			 b->on_activate([cp,
+					 source=ref<rand_color_sourceObj>
+					 ::create()]
+					(ONLY IN_THREAD,
+					 const auto &trigger,
+					 const auto &busy) {
+						cp->current_color
+							(IN_THREAD,
+							 source->random_color()
+							 );
+					});
+			 b->show_all();
+
+			 b=layout->append_row()->colspan(2)
+			 .halign(halign::center)
+			 .padding(4).create_normal_button_with_label
+			 ("Normal font");
+
+			 b->on_activate([fp]
+					(ONLY IN_THREAD,
+					 const auto &trigger,
+					 const auto &busy) {
+						font f{"liberation sans",
+								12};
+
+						fp->current_font(IN_THREAD, f);
+					});
+			 b->show_all();
+
+			 b=layout->append_row()->colspan(2)
+			 .halign(halign::center)
+			 .padding(4).create_normal_button_with_label
+			 ("Title font");
+
+			 b->on_activate([fp]
+					(ONLY IN_THREAD,
+					 const auto &trigger,
+					 const auto &busy) {
+						font f{"liberation mono",
+								18};
+						f.set_weight("bold");
+						fp->current_font(IN_THREAD, f);
+					});
+			 b->show_all();
 		 },
 		 LIBCXX_NAMESPACE::w::new_gridlayoutmanager{});
 
@@ -109,10 +249,10 @@ void testcolorpicker()
 int main(int argc, char **argv)
 {
 	try {
-		LIBCXX_NAMESPACE::property
-			::load_property(LIBCXX_NAMESPACE_STR "::themes",
-					"themes", true, true);
-		testcolorpicker();
+		testcolorpicker_options options;
+
+		options.parse(argc, argv);
+		testcolorpicker(options);
 	} catch (const exception &e)
 	{
 		e->caught();

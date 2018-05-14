@@ -107,6 +107,10 @@ class LIBCXX_HIDDEN print_dialog_parentObj : virtual public obj {
 
 //! Helper object for creating the print dialog.
 
+//! The create_elements() method returns the standard_dialog_elements_t
+//! parameter that gets passed to initialize_theme_dialog(), to populate
+//! the contents of the font dialog.
+
 struct LIBCXX_HIDDEN print_dialog_init_helper {
 
 	//! Who is creating the dialog.

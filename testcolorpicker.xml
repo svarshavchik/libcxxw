@@ -1,0 +1,32 @@
+<optclass name="testcolorpicker_options">
+  <option>
+    <name>required</name>
+    <type>bool</type>
+    <default>true</default>
+    <opt>r</opt>
+    <longopt>required</longopt>
+    <descr>Explicit font is required</descr>
+  </option>
+  <option>
+    <name>font_family</name>
+    <type>std::string</type>
+    <opt>f</opt>
+    <longopt>family</longopt>
+    <descr>Initial font family</descr>
+  </option>
+  <option>
+    <name>font_size</name>
+    <type>double</type>
+    <opt>s</opt>
+    <longopt>size</longopt>
+    <descr>Initial font size</descr>
+  </option>
+  <option>
+    <name>font_weight</name>
+    <type>std::string</type>
+    <opt>w</opt>
+    <longopt>weight</longopt>
+    <descr>Initial font weight</descr>
+  </option>
+  <defaultoptions />
+</optclass>

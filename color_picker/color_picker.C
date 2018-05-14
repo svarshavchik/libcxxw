@@ -860,6 +860,8 @@ color_picker factoryObj
 
 	///////////////////////////////////////////////////////////////////
 
+	// If the popup gets closed for any reason, invoke popup_closed().
+
 	color_picker_popup->on_state_update
 		([wimpl]
 		 (ONLY IN_THREAD,
@@ -876,6 +878,7 @@ color_picker factoryObj
 				 impl->popup_closed(IN_THREAD);
 		 });
 
+	// The cancel button closes the popup.
 	contents.cancel_button->on_activate
 		([popup=make_weak_capture(color_picker_popup)]
 		 (ONLY IN_THREAD,
@@ -889,9 +892,11 @@ color_picker factoryObj
 
 			 auto &[popup]=*got;
 
-			 popup->hide();
+			 popup->elementObj::impl->request_visibility(IN_THREAD,
+								     false);
 		 });
 
+	//! The ok button calls set_official_color(), then closes the popup.
 	contents.ok_button->on_activate
 		([wimpl, popup=make_weak_capture(color_picker_popup)]
 		 (ONLY IN_THREAD,
@@ -909,7 +914,8 @@ color_picker factoryObj
 
 			 if (impl)
 				 impl->set_official_color(IN_THREAD);
-			 popup->hide();
+			 popup->elementObj::impl->request_visibility(IN_THREAD,
+								     false);
 		 });
 
 	auto p=color_picker::create(impl, glm->impl);
@@ -934,6 +940,22 @@ void color_pickerObj::on_color_update(const functionref<color_picker_callback_t>
 rgb color_pickerObj::current_color() const
 {
 	return impl->official_color.get();
+}
+
+void color_pickerObj::current_color(const rgb &c)
+{
+	in_thread([me=ref(this), c]
+		  (ONLY IN_THREAD)
+		  {
+			  me->current_color(IN_THREAD, c);
+		  });
+}
+
+void color_pickerObj::current_color(ONLY IN_THREAD, const rgb &c)
+{
+	impl->official_color=c;
+	impl->set_color(IN_THREAD, c);
+	impl->official_color_updated(IN_THREAD, {});
 }
 
 LIBCXXW_NAMESPACE_END

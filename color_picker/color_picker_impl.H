@@ -167,6 +167,8 @@ class LIBCXX_HIDDEN color_pickerObj::implObj : virtual public obj {
 	void refresh_variable_gradients(ONLY IN_THREAD);
 
  public:
+	//! Set the current color to a particular value
+	void set_color(ONLY IN_THREAD, const rgb &c);
 	//! Report the new color
 	void new_color(ONLY IN_THREAD,
 		       const callback_trigger_t &trigger);

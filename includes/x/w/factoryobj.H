@@ -31,6 +31,8 @@
 #include <x/w/date_input_field_configfwd.H>
 #include <x/w/color_pickerfwd.H>
 #include <x/w/color_picker_configfwd.H>
+#include <x/w/font_pickerfwd.H>
+#include <x/w/font_picker_configfwd.H>
 #include <x/obj.H>
 #include <x/functional.H>
 
@@ -481,6 +483,12 @@ public:
 
 	//! Create a color picker
 	color_picker create_color_picker(const color_picker_config &);
+
+	//! Create a font picker
+	font_picker create_font_picker();
+
+	//! Create a font picker
+	font_picker create_font_picker(const font_picker_config &);
 };
 
 LIBCXXW_NAMESPACE_END

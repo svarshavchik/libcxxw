@@ -266,7 +266,7 @@ INSERT_LIBX_NAMESPACE::w::validated_input_field<int> validated_int=field->set_st
          []
          (int v) -> std::string
          {
-             return std::to_string(*v);
+             return std::to_string(v);
          },
          []
          (ONLY IN_THREAD, const std::optional<int> &v)
