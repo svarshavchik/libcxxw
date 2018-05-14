@@ -17,6 +17,8 @@
 	* editor_impl.C (process_keypress): \n in a single line input field
 	validates its contents.
 
+	* includes/x/w/rgb.H: Define standard HTML 3.2 colors.
+
 2018-04-26  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* includes/x/w/elementobj.H: added stop_message() and

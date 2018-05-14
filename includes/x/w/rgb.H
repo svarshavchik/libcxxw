@@ -16,6 +16,21 @@ LIBCXXW_NAMESPACE_START
 
 //! RGB color, with an alpha channel
 
+//!
+//! \see black
+//! \see gray
+//! \see silver
+//! \see white
+//! \see maroon
+//! \see red
+//! \see olive
+//! \see yellow
+//! \see green
+//! \see lime
+//! \see teal
+//! \see aqua
+//! \see navy
+
 class rgb {
 
 public:
@@ -36,11 +51,13 @@ public:
 	static constexpr rgb_component_t maximum=0xFFFF;
 
 	//! Default constructor
-	rgb() : r(0), g(0), b(0), a(maximum) {}
+	constexpr rgb() : r{0}, g{0}, b{0}, a{maximum} {}
 
 	//! Constructor
-	rgb(rgb_component_t rv, rgb_component_t gv, rgb_component_t bv,
-	    rgb_component_t av=maximum) : r(rv), g(gv), b(bv), a(av) {}
+	constexpr rgb(rgb_component_t rv, rgb_component_t gv,
+		      rgb_component_t bv,
+		      rgb_component_t av=maximum)
+	: r{rv}, g{gv}, b{bv}, a{av} {}
 
 	//! Comparator
 
@@ -72,6 +89,43 @@ public:
 	//! Convert to a readable label
 	operator std::string() const;
 };
+
+//! Standard HTML 3.2 color
+constexpr rgb black{0, 0, 0};
+//! Standard HTML 3.2 color
+constexpr rgb gray{rgb::maximum/2+1, rgb::maximum/2+1, rgb::maximum/2+1};
+//! Standard HTML 3.2 color
+constexpr rgb silver{(rgb::maximum/4+1)*3, (rgb::maximum/4+1)*3,
+		(rgb::maximum/4+1)*3};
+//! Standard HTML 3.2 color
+constexpr rgb white{rgb::maximum, rgb::maximum, rgb::maximum};
+
+//! Standard HTML 3.2 color
+constexpr rgb maroon{rgb::maximum/2+1, 0, 0};
+//! Standard HTML 3.2 color
+constexpr rgb red{rgb::maximum, 0, 0};
+//! Standard HTML 3.2 color
+constexpr rgb olive{rgb::maximum/2+1, rgb::maximum/2+1, 0};
+//! Standard HTML 3.2 color
+constexpr rgb yellow{rgb::maximum, rgb::maximum, 0};
+
+//! Standard HTML 3.2 color
+constexpr rgb green{0, rgb::maximum/2+1, 0};
+//! Standard HTML 3.2 color
+constexpr rgb lime{0, rgb::maximum, 0};
+//! Standard HTML 3.2 color
+constexpr rgb teal{0, rgb::maximum/2+1, rgb::maximum/2+1};
+//! Standard HTML 3.2 color
+constexpr rgb aqua{0, rgb::maximum, rgb::maximum};
+
+//! Standard HTML 3.2 color
+constexpr rgb navy{0, 0, rgb::maximum/2+1};
+//! Standard HTML 3.2 color
+constexpr rgb blue{0, 0, rgb::maximum};
+//! Standard HTML 3.2 color
+constexpr rgb fuchsia{rgb::maximum, 0, rgb::maximum};
+//! Standard HTML 3.2 color
+constexpr rgb purple{rgb::maximum/2+1, 0, rgb::maximum/2+1};
 
 //! Overload << operator
 
