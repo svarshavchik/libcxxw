@@ -286,6 +286,7 @@ libcxxw_la_SOURCES=\
 	fonts/freetype.H			    \
 	fonts/freetypefwd.H			    \
 	fonts/freetypeobj.H			    \
+	fonts/freetypeerror.C			    \
 	fonts/freetypefont.C			    \
 	fonts/freetypefont.H			    \
 	fonts/freetypefontfwd.H			    \

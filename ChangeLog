@@ -4,6 +4,8 @@
 	field large enough to display the cursor after the largest item
 	without scrolling.
 
+	* fonts: bug fixes, improve error reporting.
+
 2018-04-26  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* includes/x/w/elementobj.H: added stop_message() and

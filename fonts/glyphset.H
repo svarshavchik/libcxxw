@@ -60,6 +60,7 @@ class LIBCXX_HIDDEN glyphsetObj : public xidObj {
 
 	glyphs_t loaded_glyphs;
 
+ public:
 	//! Glyphs in the process of being added to a glyphset.
 
 	class addObj : virtual public obj {
@@ -115,8 +116,6 @@ class LIBCXX_HIDDEN glyphsetObj : public xidObj {
 			       const xcb_render_glyphinfo_t &glyphinfo,
 			       get_pixelrow_lambda &&get_pixelrow);
 	};
-
- public:
 
 	//! Begin the process of loading glyphs into this glyphset.
 

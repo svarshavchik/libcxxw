@@ -143,7 +143,6 @@ cached_fontptr freetypeObj::font(const const_screen &screenArg,
 					 // defined characters.
 
 					 std::vector<char32_t> characters_in_font;
-
 					 cs->enumerate
 						 ([&]
 						  (const auto &coverage)
@@ -159,7 +158,7 @@ cached_fontptr freetypeObj::font(const const_screen &screenArg,
 
 					 dim_squared_t total_width=0;
 
-					 for (char c:characters_in_font)
+					 for (auto c:characters_in_font)
 						 total_width +=
 							 impl->width_lookup(c);
 
@@ -197,7 +196,7 @@ freetypeObj::ftbitmap::ftbitmap(const const_freetype &libraryArg)
 {
 	bitmap_t::lock lock(bitmap);
 
-	FT_Bitmap_New(&*lock);
+	FT_Bitmap_Init(&*lock);
 }
 
 freetypeObj::ftbitmap::~ftbitmap()

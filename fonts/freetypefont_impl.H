@@ -104,11 +104,19 @@ class LIBCXX_HIDDEN freetypefontObj::implObj : virtual public obj {
 
  private:
 
+	//! Call load_and_render_glyph(), and if everything is cool, add it.
+
+	bool add_real_glyph(face_t::const_lock &lock,
+			    const size_t glyph_index,
+			    const char32_t c,
+			    const ref<glyphsetObj::addObj> &add,
+			    const uint32_t num_alpha) const;
+
 	//! Prepare a glyph for rendering.
 
 	//! \internal
 	static bool load_and_render_glyph(face_t::const_lock &lock,
-					  size_t glyph_index);
+					  size_t glyph_index, char32_t c);
 };
 
 LIBCXXW_NAMESPACE_END

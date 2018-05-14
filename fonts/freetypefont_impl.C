@@ -13,6 +13,7 @@
 
 #include <fontconfig/fontconfig.h>
 #include <fontconfig/fcfreetype.h>
+#include <iomanip>
 
 #include FT_BITMAP_H
 
@@ -49,9 +50,22 @@ static inline FT_Face create_face(const const_freetype &library,
 
 	if (error)
 		throw EXCEPTION((std::string)
-				gettextmsg(_("%1%: cannot open font"),
-					   filename));
+				gettextmsg(_("%1%: cannot open font: %2%"),
+					   filename,
+					   freetype_error(error)));
 
+#if 0
+	std::cout << "**** OPENED " << filename
+		  << " FOR " << width << "x" << height
+		  << std::endl;
+
+	for (FT_Int n=0; n<f->num_fixed_sizes; ++n)
+		std::cout << "   SIZE: "
+			  << f->available_sizes[n].width
+			  << "x"
+			  << f->available_sizes[n].height
+			  << std::endl;
+#endif
 	// Opening the font was the easy part, let's try to set its size to
 	// what we want.
 
@@ -108,6 +122,8 @@ freetypefontObj::implObj::~implObj()
 	FT_Done_Face(*lock);
 }
 
+
+
 // Load glyphs from a freetype font into the display server. We look up
 // the unicode character in the font. We check if the character has been
 // loaded, if not we load it into the server.
@@ -149,99 +165,162 @@ void freetypefontObj::implObj
 		if (!add->ready_to_add_glyph(glyph_index))
 			continue;
 
-		if (!load_and_render_glyph(lock, glyph_index))
+		if (add_real_glyph(lock, glyph_index, c, add, num_alpha))
 			continue;
+
+		// We need a glyph of some kind, no matter what.
 
 		xcb_render_glyphinfo_t glyphinfo={
-			.width=(uint16_t)(*lock)->glyph->bitmap.width,
-			.height=(uint16_t)(*lock)->glyph->bitmap.rows,
-			.x=(int16_t)-(*lock)->glyph->bitmap_left,
-			.y=(int16_t)(*lock)->glyph->bitmap_top,
-			.x_off=(int16_t)((*lock)->glyph->advance.x >> 6),
-			.y_off=(int16_t)((*lock)->glyph->advance.y >> 6),
+			.width=1,
+			.height=1,
+			.x=0,
+			.y=0,
+			.x_off=0,
+			.y_off=0,
 		};
-
-		freetypeObj::ftbitmap bitmap(face.get_library());
-
-		// Thank goodness for recursive mutexes
-
-		freetypeObj::ftbitmap::bitmap_t::lock bmlock(bitmap.bitmap);
-
-		{
-			freetypeObj::library_t::lock
-				library_lock(bitmap.bitmap.get_library()
-					     ->library);
-
-			// Convert to grayscale.
-
-			if (FT_Bitmap_Convert(*library_lock,
-					      &(*lock)->glyph->bitmap,
-					      &*bmlock,
-					      sizeof(int)))
-			{
-				LOG_ERROR("FT_Bitmap_Convert failed for glyph "
-					  << c);
-				continue;
-			}
-		}
-
-		if (bmlock->pixel_mode != FT_PIXEL_MODE_GRAY)
-		{
-			LOG_ERROR("Unknown freetype bitmap format "
-				  << (int)bmlock->pixel_mode);
-			continue;
-		}
-
-		// Handle bitmap data
-
-		auto bmbuffer=bmlock->buffer;
-
-		// Number of gray levels in the font.
-
-		auto num_grays=bmlock->num_grays;
-
-		if (num_grays < 2)
-		{
-			LOG_ERROR(num_grays << " gray levels for glyph " << c);
-			continue;
-		}
 
 		add->add_glyph(glyph_index, glyphinfo,
 			       [&]
-			       (size_t y)
+			       (size_t )
 			       {
-				       auto p=bmbuffer;
-
-				       bmbuffer += bmlock->pitch;
-
-				       return [p, num_alpha, num_grays]
-					       (size_t i)
+				       return []
+					       (size_t)
 				       {
-					       // Scale gray level
-					       // to alpha depth range
-					       return ((uint16_t)p[i]
-						       * num_alpha
-						       / (num_grays-1));
+					       return 0;
 				       };
 			       });
 	}
 }
 
-bool freetypefontObj::implObj::load_and_render_glyph(face_t::const_lock &lock,
-						     size_t glyph_index)
+bool freetypefontObj::implObj
+::add_real_glyph(face_t::const_lock &lock,
+		 const size_t glyph_index, const char32_t c,
+		 const ref<glyphsetObj::addObj> &add,
+		 const uint32_t num_alpha) const
 {
-	if (FT_Load_Glyph((*lock), glyph_index, FT_LOAD_RENDER))
+	if (!load_and_render_glyph(lock, glyph_index, c))
+		return false;
+
+	xcb_render_glyphinfo_t glyphinfo={
+		.width=(uint16_t)(*lock)->glyph->bitmap.width,
+		.height=(uint16_t)(*lock)->glyph->bitmap.rows,
+		.x=(int16_t)-(*lock)->glyph->bitmap_left,
+		.y=(int16_t)(*lock)->glyph->bitmap_top,
+		.x_off=(int16_t)((*lock)->glyph->advance.x >> 6),
+		.y_off=(int16_t)((*lock)->glyph->advance.y >> 6),
+	};
+
+	freetypeObj::ftbitmap bitmap(face.get_library());
+
+	// Thank goodness for recursive mutexes
+
+	freetypeObj::ftbitmap::bitmap_t::lock bmlock(bitmap.bitmap);
+
 	{
-		LOG_ERROR("FT_Load_Glyph failed for glyph " << glyph_index);
+		freetypeObj::library_t::lock
+			library_lock(bitmap.bitmap.get_library()
+				     ->library);
+
+		// Convert to grayscale.
+
+		auto error=FT_Bitmap_Convert(*library_lock,
+					     &(*lock)->glyph->bitmap,
+					     &*bmlock,
+					     sizeof(int));
+
+		if (error)
+		{
+			LOG_ERROR("FT_Bitmap_Convert failed for glyph "
+				  << c
+				  << ", source mode "
+				  << (int)(*lock)->glyph->bitmap.pixel_mode
+				  << ", family "
+				  << (*lock)->family_name
+				  << "/"
+				  << (*lock)->style_name
+				  << ": "
+				  << freetype_error(error));
+			return false;
+		}
+	}
+
+	if (bmlock->pixel_mode != FT_PIXEL_MODE_GRAY)
+	{
+		LOG_ERROR("Unknown freetype bitmap format "
+			  << (int)bmlock->pixel_mode);
 		return false;
 	}
 
+	// Handle bitmap data
+
+	auto bmbuffer=bmlock->buffer;
+
+	// Number of gray levels in the font.
+
+	auto num_grays=bmlock->num_grays;
+
+	if (num_grays < 2)
+	{
+		LOG_ERROR(num_grays << " gray levels for glyph " << c);
+		return false;
+	}
+
+	add->add_glyph(glyph_index, glyphinfo,
+		       [&]
+		       (size_t y)
+		       {
+			       auto p=bmbuffer;
+
+			       bmbuffer += bmlock->pitch;
+
+			       return [p, num_alpha, num_grays]
+				       (size_t i)
+			       {
+				       // Scale gray level
+				       // to alpha depth range
+				       return ((uint16_t)p[i]
+					       * num_alpha
+					       / (num_grays-1));
+			       };
+		       });
+	return true;
+}
+
+bool freetypefontObj::implObj::load_and_render_glyph(face_t::const_lock &lock,
+						     size_t glyph_index,
+						     char32_t c)
+{
+	auto error=FT_Load_Glyph((*lock), glyph_index, FT_LOAD_RENDER);
+
+	if (error)
+	{
+		error=FT_Load_Glyph((*lock), glyph_index,
+				    FT_LOAD_RENDER|FT_LOAD_NO_SCALE);
+
+		if (error)
+		{
+			LOG_ERROR("FT_Load_Glyph failed for glyph #" << glyph_index
+				  << " U+0x"
+				  << std::hex << c
+				  << ", family "
+				  << (*lock)->family_name
+				  << "/"
+				  << (*lock)->style_name
+				  << ": " << freetype_error(error));
+			return false;
+		}
+	}
+#if 0
 	if (FT_Render_Glyph((*lock)->glyph,
 			    FT_RENDER_MODE_NORMAL))
 	{
-		LOG_ERROR("FT_Render_Glyph failed for glyph " << glyph_index);
+		LOG_ERROR("FT_Render_Glyph failed for glyph " << glyph_index
+			  << " U+0x"
+			  << std::hex << c
+			  FONT_ID);
 		return false;
 	}
+#endif
 	return true;
 }
 
@@ -253,7 +332,7 @@ dim_t freetypefontObj::implObj::width_lookup(char32_t c)
 
 	dim_t width=0;
 
-	if (load_and_render_glyph(lock, glyph_index))
+	if (load_and_render_glyph(lock, glyph_index, c))
 		width=(*lock)->glyph->bitmap.width;
 
 	return width;
@@ -307,7 +386,11 @@ void freetypefontObj::implObj
 		{
 			LOG_ERROR((std::string)
 				  gettextmsg(_("No glyph information found for character %1%"),
-					     c));
+					     c)
+				  << ", family "
+				  << (*lock)->family_name
+				  << "/"
+				  << (*lock)->style_name);
 			prev_glyph=0;
 			continue;
 		}
@@ -383,7 +466,11 @@ void freetypefontObj::implObj::do_glyphs_width(const function<bool ()> &more,
 		{
 			LOG_ERROR((std::string)
 				  gettextmsg(_("No glyph information found for character %1%"),
-					     c));
+					     c)
+				  << ", family "
+				  << (*lock)->family_name
+				  << "/"
+				  << (*lock)->style_name);
 			prev_glyph=0;
 			if (!width(0, 0))
 				return;

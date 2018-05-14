@@ -15,6 +15,8 @@
 
 LIBCXXW_NAMESPACE_START
 
+const char *freetype_error(FT_Error err) LIBCXX_HIDDEN;
+
 //! Base class for \ref freetype "graphic context"s.
 
 //! Refer to this class as \c INSERT_LIBX_NAMESPACE::w::freetype::base
