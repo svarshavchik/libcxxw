@@ -14,6 +14,9 @@
 	that gets copied to the popup's list layout manager, making it possible
 	to create multiple combo-boxes with the same width.
 
+	* editor_impl.C (process_keypress): \n in a single line input field
+	validates its contents.
+
 2018-04-26  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* includes/x/w/elementobj.H: added stop_message() and

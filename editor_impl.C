@@ -693,6 +693,17 @@ bool editorObj::implObj::process_keypress(ONLY IN_THREAD, const key_event &ke)
 		return true;
 	}
 
+	if (ke.unicode == '\n')
+	{
+		// Must be an Enter in a single-line field. We intuitively
+		// expect to validate the input field's contents, if nothing
+		// else happens.
+		if (!validate_modified(IN_THREAD, &ke))
+			return true; // We did something
+
+		// Otherwise, fall through, and we didn't do anything.
+	}
+
 	if (ke.unicode == '\b')
 	{
 		delete_selection_info del_info{IN_THREAD, *this};
