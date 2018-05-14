@@ -6,6 +6,10 @@
 
 	* fonts: bug fixes, improve error reporting.
 
+	* includes/x/w/stop_message.H (stop_message_config): add widthmm
+	to have the message automatically wrap. Use this to improve appearance
+	of caught exceptions.
+
 2018-04-26  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* includes/x/w/elementobj.H: added stop_message() and

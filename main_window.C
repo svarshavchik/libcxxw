@@ -543,7 +543,11 @@ dialog main_windowObj
 
 void main_windowObj::exception_message(const exception &e)
 {
-	exception_message(e, {});
+	stop_message_config conf;
+
+	// Exception messages can be very wide, wrap them.
+	conf.widthmm=100;
+	exception_message(e, conf);
 }
 
 
@@ -572,7 +576,7 @@ void main_windowObj::stop_message(const text_param &msg,
 				[&]
 				(const auto &f)
 				{
-					f->create_label(msg);
+					f->create_label(msg, config.widthmm);
 				},
 				[autodestroy, cb=config.acknowledged_callback]
 				(ONLY IN_THREAD, const auto &ignore)

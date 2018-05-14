@@ -40,6 +40,12 @@ struct stop_message_config {
 	//! Default value for ok_label.
 	static text_param default_ok_label() noexcept;
 
+	//! Optionally word wrap
+
+	//! If not 0, specifies widthmm to create_label().
+
+	double widthmm=0;
+
 	//! Whether the dialog is modal
 	bool modal=true;
 
