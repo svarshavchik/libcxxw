@@ -92,6 +92,8 @@ public:
 		       const function< void(const freetypefont &)
 		       > &callback);
 
+	//! Return the best matching font's charset.
+	fontconfig::const_charset default_charset();
 
  private:
 	//! Make sure that the best matching font is open.

@@ -5,6 +5,7 @@
 
 #include "libcxxw_config.h"
 #include "fonts/fontcollection_impl.H"
+#include "fonts/fontcharset.H"
 #include "x/w/namespace.H"
 
 LIBCXXW_NAMESPACE_START
@@ -52,6 +53,11 @@ void fontcollectionObj::do_lookup(const function< bool(char32_t &) > &next,
 				  &callback)
 {
 	impl->do_lookup(next, callback);
+}
+
+fontconfig::const_charset fontcollectionObj::default_charset() const
+{
+	return impl->default_charset();
 }
 
 LIBCXXW_NAMESPACE_END

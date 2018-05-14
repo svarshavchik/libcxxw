@@ -11,6 +11,8 @@
 #include "x/w/screenfwd.H"
 #include "fonts/fontlistobj.H"
 #include "fonts/freetypefont.H"
+#include "fonts/fontcharsetfwd.H"
+
 #include "x/w/types.H"
 
 LIBCXXW_NAMESPACE_START
@@ -53,6 +55,9 @@ public:
 
 	//! Whether this is a fixed width font
 	bool fixed_width() const;
+
+	//! Return the best matching font's charset
+	fontconfig::const_charset default_charset() const;
 
 	//! Look up fonts for a unicode character sequence.
 

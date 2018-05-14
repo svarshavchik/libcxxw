@@ -149,6 +149,21 @@ size_t fontcollectionObj::implObj
 	return i;
 }
 
+fontconfig::const_charset fontcollectionObj::implObj::default_charset()
+{
+	auto iter=sortedlist->begin();
+	if (iter==sortedlist->end())
+		throw EXCEPTION("Unexpected empty font list");
+
+	auto p=*iter;
+	fontconfig::const_charsetptr cs;
+
+	if (!p->get_charset(FC_CHARSET, cs))
+		throw EXCEPTION("FC_CHARSET value is missing?");
+
+	return cs;
+}
+
 // Add up the largest ascender+descender
 
 dim_t fontcollectionObj::implObj::height()
