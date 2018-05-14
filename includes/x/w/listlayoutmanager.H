@@ -53,6 +53,24 @@ typedef functionptr<void (THREAD_CALLBACK, const list_item_status_info_t &)
 //!
 //! The remaining fields get initialized to their default values and may be
 //! modified prior before using \c create_focusable_container().
+//!
+//! \par Synchronized lists
+//!
+//! It is possible to use the same \c new_listlayoutmanager to create more
+//! than one selection list. Each individual selection list's width gets
+//! automatically sized to be big enough to show the widest list item;
+//! but using the same \c new_listlayoutmanager makes all individual selection
+//! lists have the same width, the width of the widest selection list.
+//! This results in a tidy visual appearance when these selection lists appear
+//! in the same column.
+//!
+//! This is due to the default-constructed \c synchronized_columns member.
+//! Each selection list constructed with the same
+//! \ref synchronized_axis "synchronized axis object" and the same number
+//! of columns gets sized together with all selection lists that link to the
+//! same synchronized axis object. It is possible to constructed multiple
+//! selection lists using different \c new_listlayoutmanager objects, provided
+//! that the synchronized axis object gets carefully copied to each one.
 
 class LIBCXX_HIDDEN new_listlayoutmanager : public new_focusable_layoutmanager {
 

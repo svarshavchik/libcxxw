@@ -18,9 +18,16 @@ class editable_comboboxlayoutmanagerObj;
 
 A subclass of a \ref standard_comboboxlayoutmanager "standard combo-box layout manager"
 that uses an editable \ref input_field "input_field" instead of a read-only
-label for the currently selected combo-box item, to provide an alternative
-of typing in the currently-selected value in addition to selecting one of
-the pre-set ones.
+label for the currently selected combo-box item.
+
+Typing in the combo-box's input field auto-completes the closest matching
+list item, if possible; but it;s possible to type in something that does
+not match any combo-box list item.
+
+\ref new_editable_comboboxlayoutmanager "INSERT_LIBX_NAMESPACE::w::new_editable_comboboxlayoutmanager"
+creates a
+\ref focusable_container "focusable container" that uses the editable
+combo-box layout manager.
 
 */
 

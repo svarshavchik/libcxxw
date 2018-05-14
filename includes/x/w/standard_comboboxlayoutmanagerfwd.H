@@ -19,6 +19,11 @@ class standard_comboboxlayoutmanagerObj;
 A subclass of a \ref custom_comboboxlayoutmanager "custom combo-box layout manager"
 that implements a standard combo-box containing plain text labels.
 
+\ref new_standard_comboboxlayoutmanager "INSERT_LIBX_NAMESPACE::w::new_standard_comboboxlayoutmanager"
+creates a
+\ref focusable_container "focusable container" that uses the standard
+combo-box layout manager.
+
 Use only the methods documented here to modify the contents of the
 combo-box. Do not use the methods from the inherited custom combo-box list
 layout manager, and the underlying list layout manager, except as noted.

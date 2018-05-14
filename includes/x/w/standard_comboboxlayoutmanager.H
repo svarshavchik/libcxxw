@@ -38,20 +38,40 @@ struct LIBCXX_HIDDEN standard_combobox_selection_changed_info_t {
 /*! Create a standard combobox.
 
 Passed to create_focusable_container() to create a focusable container
-with a \ref standard_comboboxlayoutmanager "standard combo-box layout manager".
+with a \ref standard_comboboxlayoutmanager "standard combo-box layout manager":
 
 \code
-INSERT_LIBX_NAMESPACE::w::new_standard_comboboxlayoutmanager cclm{
+INSERT_LIBX_NAMESPACE::w::new_standard_comboboxlayoutmanager sclm{
     []
     (const standard_combobox_selection_changed_info_t &info)
     {
     }
 };
+
+auto new_container=factory->create_focusable_container(
+    []
+    (const INSERT_LIBX_NAMESPACE::w::focusable_container &new_container)
+    {
+    },
+    sclm);
+
 \endcode
 
 The members/methods of this class are not thread-safe. It is intended that
 an execution thread constructs an instance of this class in automatic scope,
 then passes the class instance to create_focusable_container().
+
+\par Synchronized combo-boxes
+
+The width of each individual combo-box gets sized to be just wide enough to
+show the widest combo-box item. It's possible to create several combo-boxes
+with the same width, sizing all combo-boxes's width based on the wide item
+in all the combo-boxes, combined together.
+
+This is simply done by using the same \c new_standard_comboboxlayoutmanager
+object. See
+\ref new_listlayoutmanager "INSERT_LIBX_NAMESPACE::w::new_listlayoutmanager"
+for more information.
 
 */
 

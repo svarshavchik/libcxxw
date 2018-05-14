@@ -101,7 +101,13 @@ INSERT_LIBX_NAMESPACE::w::new_custom_comboboxlayoutmanager cclm{
         return f->create_focusable_label("");
     }
 };
-};
+
+auto new_container=factory->create_focusable_container(
+    []
+    (const INSERT_LIBX_NAMESPACE::w::focusable_container &new_container)
+    {
+    },
+    cclm);
 \endcode
 
 The members/methods of this class are not thread-safe. It is intended that
@@ -118,6 +124,7 @@ must return the focusable element as well, so for a basic, simple
 focusable element the element created by the factory gets returned.
 
 \code
+
 cclm.selection_changed=
     []
     (const custom_combobox_selection_changed_info_t &info)
@@ -145,6 +152,18 @@ and
 \ref new_editable_comboboxlayoutmanager "INSERT_LIBX_NAMESPACE::w::new_editable_comboboxlayoutmanager"
 provide layout managers that implement a more conventional combo-box display
 element.
+
+\par Synchronized combo-boxes
+
+The width of each individual combo-box gets sized to be just wide enough to
+show the widest combo-box item. It's possible to create several combo-boxes
+with the same width, sizing all combo-boxes's width based on the wide item
+in all the combo-boxes, combined together.
+
+This is simply done by using the same \c new_custom_comboboxlayoutmanager
+object. See
+\ref new_listlayoutmanager "INSERT_LIBX_NAMESPACE::w::new_listlayoutmanager"
+for more information.
 
 */
 
@@ -182,6 +201,12 @@ class LIBCXX_HIDDEN new_custom_comboboxlayoutmanager
 	//! tangible result with editable combo-boxes.
 
 	bool selection_required=true;
+
+	//! What other combo-box this combo-box's popup list get synchronized with.
+
+	//! This allows several combo-boxes to have the same width.
+
+	synchronized_axis synchronized_columns;
 
 	//! Create the focusable container.
 

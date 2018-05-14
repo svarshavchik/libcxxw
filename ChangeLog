@@ -10,6 +10,10 @@
 	to have the message automatically wrap. Use this to improve appearance
 	of caught exceptions.
 
+	* includes/x/w/custom_comboboxlayoutmanager.H: add synchronized_columns,
+	that gets copied to the popup's list layout manager, making it possible
+	to create multiple combo-boxes with the same width.
+
 2018-04-26  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* includes/x/w/elementobj.H: added stop_message() and

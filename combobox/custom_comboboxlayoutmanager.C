@@ -15,6 +15,7 @@
 
 #include "x/w/focusable_container.H"
 #include "x/w/key_event.H"
+#include "x/w/synchronized_axis.H"
 #include "busy.H"
 #include "capturefactory.H"
 #include "run_as.H"
@@ -237,7 +238,8 @@ new_custom_comboboxlayoutmanager
 				   &selection_factory)
 	: selection_factory{selection_factory},
 	  selection_changed{noop_selection_changed},
-	  selection_search{noop_selection_search}
+	  selection_search{noop_selection_search},
+	  synchronized_columns{synchronized_axis::create()}
 {
 }
 
@@ -256,6 +258,7 @@ focusable_container new_custom_comboboxlayoutmanager
 
 	new_listlayoutmanager style{highlighted_list};
 
+	style.synchronized_columns=synchronized_columns;
 	style.background_color="combobox_background_color";
 	style.selected_color="combobox_selected_color";
 	style.highlighted_color="combobox_highlighted_color";
