@@ -49,21 +49,24 @@ bool font::operator==(const font &o) const
 		spacing == o.spacing;
 }
 
-#define DECLARE_INT(ln,un,lv,uv) \
+#define DECLARE_INT(ln,un,lv,uv,s)		\
 	const int font:: ln ## _ ## lv=FC_ ## un ## _ ## uv;
 
-#define DECLARE_STR(ln,un,lv,uv) \
+#define DECLARE_STR(ln,un,lv,uv,s)		\
 	{ # lv, &font:: ln ## _ ## lv },
 
-#define WEIGHTS \
-	DO(weight,WEIGHT,thin,THIN)		\
-	DO(weight,WEIGHT,light,LIGHT)		\
-	DO(weight,WEIGHT,normal,NORMAL)		\
-	DO(weight,WEIGHT,medium,MEDIUM)		\
-	DO(weight,WEIGHT,demibold,DEMIBOLD)	\
-	DO(weight,WEIGHT,bold,BOLD)		\
-	DO(weight,WEIGHT,heavy,HEAVY)		\
-	DO(weight,WEIGHT,extrablack,EXTRABLACK)
+#define DECLARE_MAP(ln,un,lv,uv,s)		\
+	{ ln ## _ ## lv, s},
+
+#define WEIGHTS							\
+	DO(weight,WEIGHT,thin,THIN,_("Thin"))			\
+	DO(weight,WEIGHT,light,LIGHT,_("Light"))		\
+	DO(weight,WEIGHT,normal,NORMAL,_("Normal"))		\
+	DO(weight,WEIGHT,medium,MEDIUM,_("Medium"))		\
+	DO(weight,WEIGHT,demibold,DEMIBOLD,_("Demibold"))	\
+	DO(weight,WEIGHT,bold,BOLD,_("Bold"))			\
+	DO(weight,WEIGHT,heavy,HEAVY,_("Heavy"))		\
+	DO(weight,WEIGHT,extrablack,EXTRABLACK,_("Extra Black"))
 
 #define DO DECLARE_INT
 
@@ -108,10 +111,19 @@ font &font::set_weight(const std::string_view &value)
 	LOOKUP(weights_str, value, set_weight);
 }
 
+#define DO DECLARE_MAP
+
+font::values_t font::standard_weights()
+{
+	return { WEIGHTS };
+}
+
+#undef DO
+
 #define SLANTS \
-	DO(slant,SLANT,roman,ROMAN)		\
-	DO(slant,SLANT,italic,ITALIC)		\
-	DO(slant,SLANT,oblique,OBLIQUE)
+	DO(slant,SLANT,roman,ROMAN,_("Roman"))		\
+	DO(slant,SLANT,italic,ITALIC,_("Italic"))	\
+	DO(slant,SLANT,oblique,OBLIQUE,_("Oblique"))
 
 #define DO DECLARE_INT
 
@@ -134,10 +146,19 @@ font &font::set_slant(const std::string_view &value)
 	LOOKUP(slants_str, value, set_slant);
 }
 
+#define DO DECLARE_MAP
+
+font::values_t font::standard_slants()
+{
+	return { SLANTS };
+}
+
+#undef DO
+
 #define WIDTHS \
-	DO(width,WIDTH,condensed,CONDENSED)	\
-	DO(width,WIDTH,normal,NORMAL)		\
-	DO(width,WIDTH,expanded,EXPANDED)
+	DO(width,WIDTH,condensed,CONDENSED,_("Condensed"))	\
+	DO(width,WIDTH,normal,NORMAL,_("Normal"))		\
+	DO(width,WIDTH,expanded,EXPANDED,_("Expanded"))
 
 #define DO DECLARE_INT
 
@@ -160,6 +181,15 @@ font &font::set_width(const std::string_view &value)
 	LOOKUP(widths_str, value, set_width);
 }
 
+#define DO DECLARE_MAP
+
+font::values_t font::standard_widths()
+{
+	return { WIDTHS };
+}
+
+#undef DO
+
 const int font::spacing_proportional=FC_PROPORTIONAL;
 const int font::spacing_dual_width=FC_DUAL;
 const int font::spacing_monospace=FC_MONO;
@@ -175,11 +205,19 @@ static const struct CHARMAP spacings_str[] = {
 	{nullptr, nullptr}
 };
 
-#undef DO
-
 font &font::set_spacing(const std::string_view &value)
 {
 	LOOKUP(spacings_str, value, set_spacing);
+}
+
+font::values_t font::standard_spacings()
+{
+	return {
+		{ spacing_proportional, _("Proportional")},
+		{ spacing_dual_width, _("Dual Width")},
+		{ spacing_monospace, _("Monospaced")},
+		{ spacing_charcell, _("Character Cell")},
+			};
 }
 
 font &font::scale(unsigned numerator,

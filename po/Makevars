@@ -8,7 +8,7 @@ subdir = po
 top_builddir = ..
 
 # These options get passed to xgettext.
-XGETTEXT_OPTIONS = --directory=.. --keyword=_ --keyword=N_ --keyword=_txt --keyword=_txtw --keyword=_txtn:1,2 --keyword=_txtnw:1,2 `ls $(top_srcdir)/*.C ../*.C | sed 's@.*/@@' | sort | uniq`
+XGETTEXT_OPTIONS = --directory=.. --keyword=_ --keyword=N_ --keyword=_txt --keyword=_txtw --keyword=_txtn:1,2 --keyword=_txtnw:1,2 `((cd ..; ls *.C */*.C); (cd $(top_srcdir); ls *.C */*.C)) | sort | uniq`
 
 # This is the copyright holder that gets inserted into the header of the
 # $(DOMAIN).pot file.  Set this to the copyright holder of the surrounding

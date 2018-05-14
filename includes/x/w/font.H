@@ -8,6 +8,7 @@
 
 #include <string>
 #include <string_view>
+#include <map>
 #include <x/w/fontfwd.H>
 
 LIBCXXW_NAMESPACE_START
@@ -73,6 +74,10 @@ struct font {
 
 	~font();
 
+	// Map of predefined int values and the corresponding localized string.
+
+	typedef std::map<int, std::string> values_t;
+
 	/////////////////////////////////////////////////////////////////////
 
 	//! Predefined font weight()
@@ -104,6 +109,9 @@ struct font {
 	//! Specifies weight as a character string
 	font &set_weight(const std::string_view &value);
 
+	//! Return a list of all predefined weights
+	static values_t standard_weights();
+
 	//////////////////////////////////////////////////////////////////////
 
 	//! Predefined font slant()
@@ -124,6 +132,9 @@ struct font {
 
 	//! Specify slant as a character string
 	font &set_slant(const std::string_view &value);
+
+	//! Return a list of all predefined slants
+	static values_t standard_slants();
 
 	//////////////////////////////////////////////////////////////////////
 
@@ -147,6 +158,9 @@ struct font {
 
 	//! Specify width as a character string
 	font &set_width(const std::string_view &value);
+
+	//! Return a list of all predefined widths
+	static values_t standard_widths();
 
 	///////////////////////////////////////////////////////////////////////
 
@@ -206,6 +220,9 @@ struct font {
 
 	//! Specify spacing as a character string
 	font &set_spacing(const std::string_view &value);
+
+	//! Return a list of all predefined weights
+	static values_t standard_spacings();
 
 	/////////////////////////////////////////////////////////////////////
 
