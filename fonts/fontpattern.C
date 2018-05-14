@@ -9,8 +9,11 @@
 #include "fonts/fontconfig_impl.H"
 #include "fonts/fontsortedlist_impl.H"
 #include "fonts/fontconfig.H"
+#include "screen.H"
+#include "defaulttheme.H"
 
 #include <x/exception.H>
+#include <cmath>
 
 LIBCXXW_NAMESPACE_START
 
@@ -152,6 +155,35 @@ sortedlist patternObj::match(bool trim)
 	return sortedlist::create(ref<sortedlistObj::implObj>
 				  ::create(impl->c, fs, csp,
 					   pattern(this)));
+}
+
+size_t patternObj::get_point_size(const ref<screenObj::implObj> &screen)
+	const
+{
+	auto theme=screen->current_theme.get();
+
+	double v=0;
+
+	if (get_double(FC_PIXEL_SIZE, v))
+	{
+		// height in pixels / height in millimeters
+		// = pixels per millimeter
+		//
+		// (multiply by themescale, of course)
+		//
+		// v is number of pixels. Divide by pixels per
+		// millimeter gives number of millimeters.
+		//
+		// number of millimeters / 25.4 * 72 = point
+		// size.
+
+		v = v / ((dim_t::value_type)(screen->height_in_pixels())
+			 * theme->themescale /(dim_t::value_type)
+			 (screen->height_in_millimeters()))
+			* (72.0/25.4);
+	}
+
+	return std::round(v);
 }
 
 #if 0

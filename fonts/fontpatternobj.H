@@ -6,13 +6,14 @@
 #ifndef fontpatternobj_H
 #define fontpatternobj_H
 
-#include <x/ref.H>
+#include <x/ptrfwd.H>
 #include <x/obj.H>
 
 #include <string_view>
 #include "fonts/fontcharsetfwd.H"
 #include "fonts/fontpatternfwd.H"
 #include "fonts/fontsortedlistfwd.H"
+#include "x/w/screenobj.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -96,6 +97,11 @@ public:
 
 	//! Return a list of fonts sorted by best match.
 	sortedlist match(bool trim=true);
+
+	//! Return this pattern's point size for the given screen.
+
+	//! Returns 0 if no point size is defined (scalable font?)
+	size_t get_point_size(const ref<screenObj::implObj> &screen) const;
 };
 
 #if 0
