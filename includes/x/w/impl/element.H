@@ -1102,6 +1102,25 @@ class elementObj::implObj : public element_drawObj,
 
 	virtual bool process_key_event(ONLY IN_THREAD, const key_event &ke);
 
+	//! And here go the keypress
+
+	//! A popup is shamelessly stealing my events. This is invoked
+	//! every time a key release event gets stolen by a popup.
+	//!
+	//! The default implementation does nothing. Overridden by hotspots,
+	//! to set their temperature to cold, when:
+	//!
+	//! - the hotspot becomes hot
+	//!
+	//! - the hotspot activates
+	//!
+	//! - the activation opens a popup which grabs the key events.
+	//!
+	//! - upon a key release event, this hook is used to bring the
+	//! hotspot temperature to cold, again.
+
+	virtual void grabbed_key_event(ONLY IN_THREAD);
+
 	//! When keyboard-bound action should be taken.
 
 	//! On a key press, or key release.

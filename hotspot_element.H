@@ -90,6 +90,16 @@ bool hotspot_elementObj<element_impl>
 		superclass_t::process_key_event(IN_THREAD, ke);
 }
 
+//! Override grabbed_key_event
+
+//! If our key events are being grabbed, the hotspot is cold.
+template<typename element_impl>
+void hotspot_elementObj<element_impl>::grabbed_key_event(ONLY IN_THREAD)
+{
+	hotspotObj::implObj::grabbed_key_event(IN_THREAD);
+	superclass_t::grabbed_key_event(IN_THREAD);
+}
+
 //! Implement window_focus_change(), inherited from elementObj::implObj
 
 //! Has same effect as key release event. If a button opens a popup after

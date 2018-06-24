@@ -8,6 +8,8 @@
 #include "generic_window_handler.H"
 #include "shortcut/installed_shortcut.H"
 #include "x/w/button_event.H"
+#include "x/w/impl/focus/focusable.H"
+#include "x/w/impl/child_element.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -124,7 +126,9 @@ void shared_handler_dataObj::close_all_menu_popups(ONLY IN_THREAD)
 
 bool shared_handler_dataObj
 ::handle_key_event(ONLY IN_THREAD,
+		   const ref<generic_windowObj::handlerObj> &key_event_from,
 		   const xcb_key_release_event_t *event,
+		   uint16_t sequencehi,
 		   bool keypress)
 {
 	// There are popups open, and we have a key event.
@@ -155,9 +159,13 @@ bool shared_handler_dataObj
 			// return false, and have the main window process this
 			// key event and have the popup button close the
 			// popup.
-			(void)handler->handle_key_event(IN_THREAD,
-							event,
-							keypress);
+			reporting_key_event_to(IN_THREAD, key_event_from,
+					       handler,
+					       event, keypress);
+			(void)handler->forward_key_event_to_xim(IN_THREAD,
+								event,
+								sequencehi,
+								keypress);
 			return true;
 		}
 	}
@@ -178,8 +186,12 @@ bool shared_handler_dataObj
 		if (!handler || !handler->data(IN_THREAD).requested_visibility)
 			continue;
 
-		if (handler->handle_key_event(IN_THREAD, event, keypress))
-			return true;
+		reporting_key_event_to(IN_THREAD, key_event_from, handler,
+				       event, keypress);
+		(void)handler->forward_key_event_to_xim(IN_THREAD, event,
+							sequencehi,
+							keypress);
+		return true;
 	}
 	return false;
 }
@@ -215,6 +227,74 @@ void shared_handler_dataObj
 			continue;
 
 		from->pointer_focus_lost(IN_THREAD);
+	}
+}
+
+void shared_handler_dataObj
+::reporting_key_event_to(ONLY IN_THREAD,
+			 const ref<generic_windowObj::handlerObj> &from,
+			 const ref<generic_windowObj::handlerObj> &to,
+			 const xcb_key_release_event_t *event,
+			 bool keypress)
+{
+	if (keypress)
+		return;
+
+	if (from == to)
+		return;
+
+	{
+		auto &from_kb=from->most_recent_keyboard_focus(IN_THREAD);
+
+		if (from_kb)
+			from_kb->get_focusable_element()
+				.grabbed_key_event(IN_THREAD);
+	}
+
+	for (auto &b:*opened_menu_popups)
+	{
+		auto popup=b.second.getptr();
+
+		if (!popup)
+			continue;
+
+		ptr<generic_windowObj::handlerObj>
+			handler=popup->handler.getptr();
+
+		if (!handler)
+			continue;
+
+		if (handler == to)
+			continue;
+
+		auto &kb=handler->most_recent_keyboard_focus(IN_THREAD);
+
+		if (kb)
+			kb->get_focusable_element()
+				.grabbed_key_event(IN_THREAD);
+	}
+
+	for (auto &b:*opened_exclusive_popups)
+	{
+		auto popup=b.getptr();
+
+		if (!popup)
+			continue;
+
+		ptr<generic_windowObj::handlerObj>
+			handler=popup->handler.getptr();
+
+		if (!handler)
+			continue;
+
+		if (handler == to)
+			continue;
+
+		auto &kb=handler->most_recent_keyboard_focus(IN_THREAD);
+
+		if (kb)
+			kb->get_focusable_element()
+				.grabbed_key_event(IN_THREAD);
 	}
 }
 

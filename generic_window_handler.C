@@ -725,6 +725,27 @@ void generic_windowObj::handlerObj
 		    uint16_t sequencehi,
 		    bool keypress)
 {
+	// Popup has grabbed pointer and keyboard input?
+
+	auto pg=current_pointer_grab(IN_THREAD).getptr();
+
+	if (pg)
+	{
+		if (handler_data->handle_key_event(IN_THREAD, ref(this),
+						   event, sequencehi,
+						   keypress))
+			return;
+	}
+
+	forward_key_event_to_xim(IN_THREAD, event, sequencehi, keypress);
+}
+
+void generic_windowObj::handlerObj
+::forward_key_event_to_xim(ONLY IN_THREAD,
+			   const xcb_key_release_event_t *event,
+			   uint16_t sequencehi,
+			   bool keypress)
+{
 	bool forwarded=false;
 
 	if (most_recent_keyboard_focus(IN_THREAD) &&
@@ -745,16 +766,6 @@ void generic_windowObj::handlerObj
 	}
 	if (forwarded)
 		return;
-
-	// Popup has grabbed pointer and keyboard input?
-
-	auto pg=current_pointer_grab(IN_THREAD).getptr();
-
-	if (pg)
-	{
-		if (handler_data->handle_key_event(IN_THREAD, event, keypress))
-			return;
-	}
 
 	handle_key_event(IN_THREAD, event, keypress);
 }

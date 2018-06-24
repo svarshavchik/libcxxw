@@ -1193,6 +1193,10 @@ bool elementObj::implObj::process_key_event(ONLY IN_THREAD, const key_event &e)
 	return ret;
 }
 
+void elementObj::implObj::grabbed_key_event(ONLY IN_THREAD)
+{
+}
+
 bool elementObj::implObj::uses_input_method()
 {
 	return false;

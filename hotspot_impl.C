@@ -70,6 +70,12 @@ bool hotspotObj::implObj::process_key_event(ONLY IN_THREAD, const key_event &ke)
 	return false;
 }
 
+void hotspotObj::implObj::grabbed_key_event(ONLY IN_THREAD)
+{
+	is_key_down=false;
+	update(IN_THREAD, {});
+}
+
 bool hotspotObj::implObj::activate_on_key(const key_event &ke)
 {
 	return select_key(ke);

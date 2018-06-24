@@ -105,7 +105,10 @@ public:
 	//! Forward a key event to whichever popup should be getting them.
 
 	bool handle_key_event(ONLY IN_THREAD,
+			      const ref<generic_windowObj
+			      ::handlerObj> &key_event_from,
 			      const xcb_key_release_event_t *event,
+			      uint16_t sequencehi,
 			      bool keypress);
 
 	//! The window handler takes care of button events, just an FYI.
@@ -121,6 +124,23 @@ public:
 		 const ref<generic_windowObj::handlerObj> &to,
 		 const button_event &);
 
+ private:
+
+	//! We are about to report a key event to a popup.
+
+	//! Makes sure that if a key press opens a popup, it'll see the
+	//! key release event, even though it, officially, will go to the
+	//! popup.
+
+	void reporting_key_event_to(ONLY IN_THREAD,
+				    const ref<generic_windowObj
+				    ::handlerObj> &from,
+				    const ref<generic_windowObj
+				    ::handlerObj> &to,
+				    const xcb_key_release_event_t *event,
+				    bool keypress);
+
+ public:
 	//! Find a popup to report a pointer event to.
 
 	//! Given a motion event with x/y coordinates relative to the root

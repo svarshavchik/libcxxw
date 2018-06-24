@@ -573,13 +573,22 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	friend class shared_handler_dataObj;
  protected:
 
-	//! Forward key event to the X Input Method server.
+	//! If the keyboard is grabbed by a popup, forward it.
 
-	//! If XIM not available, call handle_key_event().
+	//! Otherwise call forward_key_event_to_xim().
+
 	void forward_key_event(ONLY IN_THREAD,
 			       const xcb_key_release_event_t *event,
 			       uint16_t sequencehi,
 			       bool keypress);
+
+	//! Forward key event to the X Input Method server.
+
+	//! If XIM not available, call handle_key_event().
+	void forward_key_event_to_xim(ONLY IN_THREAD,
+				      const xcb_key_release_event_t *event,
+				      uint16_t sequencehi,
+				      bool keypress);
 
 	//! Process a key press or release event.
 	bool handle_key_event(ONLY IN_THREAD,

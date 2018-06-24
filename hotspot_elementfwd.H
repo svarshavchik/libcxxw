@@ -58,6 +58,8 @@ class LIBCXX_HIDDEN hotspot_elementObj
 
 	bool process_key_event(ONLY IN_THREAD, const key_event &ke) override;
 
+	void grabbed_key_event(ONLY IN_THREAD) override;
+
 	void window_focus_change(ONLY IN_THREAD, bool flag) override;
 
 	bool process_button_event(ONLY IN_THREAD,
