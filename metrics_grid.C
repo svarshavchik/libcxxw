@@ -139,8 +139,7 @@ void apply_metrics(grid_metrics_t &m,
 		   const std::set<grid_xy> &all_grid_positions,
 		   const grid_axisrange &r,
 		   const axis &aa,
-		   dim_t axis_padding,
-		   const function<bool (grid_xy)> &freeze_func)
+		   dim_t axis_padding)
 {
 	// Ok, here's how big this grid element is.
 
@@ -359,7 +358,8 @@ void apply_metrics(grid_metrics_t &m,
 		}
 
 		// If we still need to increase minimum column size, we can
-		// only do it for the axises that freeze_func() doesn't mind.
+		// only do it for the axises that IS_BORDER_RESERVED_COORD()
+		// doesn't mind.
 
 		if (adjust_minimums_by > 0)
 		{
@@ -372,7 +372,7 @@ void apply_metrics(grid_metrics_t &m,
 
 			while (b != e)
 			{
-				if (!freeze_func(b->first))
+				if (!IS_BORDER_RESERVED_COORD(b->first))
 					v2.push_back(b->second);
 				++b;
 			}

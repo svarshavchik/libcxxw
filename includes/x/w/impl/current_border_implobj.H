@@ -65,6 +65,9 @@ class current_border_implObj: virtual public obj {
 
 	void initialize(ONLY IN_THREAD);
 
+	//! This border's width or height is 0, or it has no colors
+	bool no_border(ONLY IN_THREAD) const;
+
 	//! The current theme has been updated.
 
 	//! Check if the border has changed, and update it.

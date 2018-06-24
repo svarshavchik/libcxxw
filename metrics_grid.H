@@ -12,6 +12,7 @@
 #include "metrics_grid_pos.H"
 #include "metrics_grid_xy.H"
 #include "metrics_grid_axisrangefwd.H"
+#include "calculate_borders.H"
 #include "x/w/metrics/axis.H"
 #include <x/number_hash.H>
 #include <x/functional.H>
@@ -110,39 +111,29 @@ namespace metrics {
 			   const std::set<grid_xy> &all_grid_positions,
 			   const grid_axisrange &r,
 			   const axis &a,
-			   dim_t axis_padding,
-			   const function<bool (grid_xy)> &freeze_func)
+			   dim_t axis_padding)
 		LIBCXX_HIDDEN;
 
 	// Visibility declarations.
 
-	template<typename GRID_T,
-		 typename freeze_func_t> grid_metrics_t
-	calculate_grid_horiz_metrics(GRID_T &&g,
-				     freeze_func_t &&f) LIBCXX_HIDDEN;
+	template<typename GRID_T> grid_metrics_t
+	calculate_grid_horiz_metrics(GRID_T &&g) LIBCXX_HIDDEN;
 
-	template<typename GRID_T,
-		 typename freeze_func_t> grid_metrics_t
-	calculate_grid_vert_metrics(GRID_T &&g,
-				    freeze_func_t &&f) LIBCXX_HIDDEN;
+	template<typename GRID_T> grid_metrics_t
+	calculate_grid_vert_metrics(GRID_T &&g) LIBCXX_HIDDEN;
 
 	template<typename GRID_T> grid_metrics_t
 	calculate_grid_metrics(GRID_T &&g,
-			       const function<bool (grid_xy)> &freeze_func,
 			       const grid_major &major) LIBCXX_HIDDEN;
 
 	//! Calculate horizontal metrics.
 
 	//! This is called with a container of pos_axis objects.
 
-	template<typename GRID_T,
-		 typename freeze_func_t> grid_metrics_t
-	calculate_grid_horiz_metrics(GRID_T &&g,
-				     freeze_func_t &&f)
+	template<typename GRID_T> grid_metrics_t
+	calculate_grid_horiz_metrics(GRID_T &&g)
 	{
 		return calculate_grid_metrics(std::forward<GRID_T>(g),
-					      make_function<bool (grid_xy)>
-					      (std::forward<freeze_func_t>(f)),
 					      h_grid);
 	}
 
@@ -150,14 +141,10 @@ namespace metrics {
 
 	//! This is called with a container of pos_axis objects.
 
-	template<typename GRID_T,
-		 typename freeze_func_t> grid_metrics_t
-	calculate_grid_vert_metrics(GRID_T &&g,
-				    freeze_func_t &&f)
+	template<typename GRID_T> grid_metrics_t
+	calculate_grid_vert_metrics(GRID_T &&g)
 	{
 		return calculate_grid_metrics(std::forward<GRID_T>(g),
-					      make_function<bool (grid_xy)>
-					      (std::forward<freeze_func_t>(f)),
 					      v_grid);
 	}
 
@@ -165,7 +152,6 @@ namespace metrics {
 
 	template<typename GRID_T> grid_metrics_t
 	calculate_grid_metrics(GRID_T &&g,
-			       const function<bool (grid_xy)> &freeze_func,
 			       const grid_major &major)
 	{
 		grid_metrics_t grid_metrics;
@@ -199,6 +185,24 @@ namespace metrics {
 			all_grid_positions.insert(range.end);
 		}
 
+		// For grid positions that correspond to borders, prime
+		// those metrics to {0,0,0}. This is a preventative measure,
+		// preventing those grid positions from having unlimited
+		// maximum size.
+
+		if (!all_grid_positions.empty())
+		{
+			grid_xy last=*--all_grid_positions.end();
+
+			do
+			{
+				if (IS_BORDER_RESERVED_COORD(last))
+				{
+					all_grid_positions.insert(last);
+					grid_metrics.insert({last, {0,0,0}});
+				}
+			} while (last-- > 0);
+		}
 		// Now we iterate over everything, in the right order,
 		// and factor in each cell's metrics.
 		//
@@ -215,8 +219,7 @@ namespace metrics {
 					      (element),
 					      major.get_axis(element),
 					      element.padding
-					      .*(major.axis_padding),
-					      freeze_func);
+					      .*(major.axis_padding));
 			}
 		}
 		return grid_metrics;

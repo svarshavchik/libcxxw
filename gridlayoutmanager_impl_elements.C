@@ -230,6 +230,28 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(ONLY IN_THREAD)
 					  default_border=col_default->second
 						  .default_border;
 
+				  // Take the bull by the horns and determine
+				  // if we will have a real border here.
+				  // If not, don't bother creating it.
+				  bool nonempty_border=false;
+
+				  if (default_border &&
+				      !default_border->no_border(IN_THREAD))
+					  nonempty_border=true;
+
+				  if (eleft && eleft->right_border &&
+				      !eleft->right_border->no_border(IN_THREAD)
+				      )
+					  nonempty_border=true;
+
+				  if (eright && eright->left_border &&
+				      !eright->left_border->no_border(IN_THREAD)
+				      )
+					  nonempty_border=true;
+
+				  if (!nonempty_border)
+					  return;
+
 				  auto b=ge->get_straight_border
 					  (IN_THREAD,
 					   this->layout_container_impl,
@@ -360,6 +382,28 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(ONLY IN_THREAD)
 				      (*lock)->row_defaults.end())
 					  default_border=row_default->second
 						  .default_border;
+
+				  // Take the bull by the horns and determine
+				  // if we will have a real border here.
+				  // If not, don't bother creating it.
+				  bool nonempty_border=false;
+
+				  if (default_border &&
+				      !default_border->no_border(IN_THREAD))
+					  nonempty_border=true;
+
+				  if (eabove && eabove->bottom_border &&
+				      !eabove->bottom_border
+				      ->no_border(IN_THREAD))
+					  nonempty_border=true;
+
+				  if (ebelow && ebelow->top_border &&
+				      !ebelow->top_border->no_border(IN_THREAD)
+				      )
+					  nonempty_border=true;
+
+				  if (!nonempty_border)
+					  return;
 
 				  auto b=ge->get_straight_border
 					  (IN_THREAD,
@@ -763,19 +807,11 @@ gridlayoutmanagerObj::implObj::elementsObj
 ::recalculate_metrics(ONLY IN_THREAD,
 		      bool flag)
 {
-	auto do_not_expand_borders=[]
-		(metrics::grid_xy rowcol)
-		{
-			return IS_BORDER_RESERVED_COORD(rowcol);
-		};
-
 	auto new_horiz_metrics=
-		metrics::calculate_grid_horiz_metrics(all_elements,
-						      do_not_expand_borders);
+		metrics::calculate_grid_horiz_metrics(all_elements);
 
 	auto new_vert_metrics=
-		metrics::calculate_grid_vert_metrics(all_elements,
-						     do_not_expand_borders);
+		metrics::calculate_grid_vert_metrics(all_elements);
 
 #if 0
 

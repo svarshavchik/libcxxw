@@ -165,4 +165,9 @@ void current_border_implObj::initialize(ONLY IN_THREAD)
 		border(IN_THREAD)->color2->initialize(IN_THREAD);
 }
 
+bool current_border_implObj::no_border(ONLY IN_THREAD) const
+{
+	return border(IN_THREAD)->no_border();
+}
+
 LIBCXXW_NAMESPACE_END
