@@ -412,13 +412,21 @@ class elementObj::implObj : public element_drawObj,
 
 	void scroll_by_parent_container(ONLY IN_THREAD, coord_t x, coord_t y);
 
+	//! What is the reason for updating the absolute locatoin only.
+
+	enum class absolute_location_update_reason {
+		external, //!< Our top level window has moved
+		internal  //!< The element moved, but without changing its size
+	};
 	//! The top level window's position changed, but not its size
 
 	//! So nothing has to be recalculated, however popups need to know
 	//! about this.
 	//!
 	//! Propagate absolute_location_updated() to all elements.
-	virtual void absolute_location_updated(ONLY IN_THREAD);
+	virtual void absolute_location_updated(ONLY IN_THREAD,
+					       absolute_location_update_reason
+					       reason);
 
 	//! This element's current_position has been updated.
 

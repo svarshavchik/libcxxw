@@ -89,7 +89,7 @@ create_constructor_params(const screen &parent_screen,
 			  const color_arg &background_color,
 			  size_t nesting_level)
 {
-	rectangle dimensions={0, 0, 1, 1};
+	rectangle dimensions={0, 0, 0, 0};
 
 	values_and_mask vm(XCB_CW_EVENT_MASK,
 			   (uint32_t)
@@ -1144,7 +1144,9 @@ void generic_windowObj::handlerObj::process_configure_notify(ONLY IN_THREAD,
 	// update_current_position() won't trickle down to it.
 
 	if (old_x != root_x(IN_THREAD) || old_y != root_x(IN_THREAD))
-		absolute_location_updated(IN_THREAD);
+		absolute_location_updated(IN_THREAD,
+					  absolute_location_update_reason
+					  ::external);
 }
 
 void generic_windowObj::handlerObj::current_position_updated(ONLY IN_THREAD)

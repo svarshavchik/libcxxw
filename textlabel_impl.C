@@ -217,24 +217,9 @@ void textlabelObj::implObj::theme_updated(ONLY IN_THREAD,
 	updated(IN_THREAD);
 }
 
-void textlabelObj::implObj::position_set(ONLY IN_THREAD)
-{
-	if (position_set_flag)
-		return;
-
-	// We avoided expensive rewrapping until the container sets our
-	// initial position, at which point we can wrap everything to our
-	// actual width.
-
-	position_set_flag=true;
-	if (preferred_width == 0)
-		return;
-
-	rewrap_due_to_updated_position(IN_THREAD);
-}
-
 void textlabelObj::implObj::process_updated_position(ONLY IN_THREAD)
 {
+	position_set_flag=true;
 	rewrap_due_to_updated_position(IN_THREAD);
 }
 

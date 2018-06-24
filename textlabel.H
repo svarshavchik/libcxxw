@@ -174,14 +174,6 @@ class LIBCXX_HIDDEN textlabelObj::implObj : virtual public obj {
 
 	void process_updated_position(ONLY IN_THREAD);
 
-	//! The layout manager has set our position.
-
-	//! Word-wrappable labels fix their metrics to their preferred
-	//! width and height, until their layout manager positions it
-	//! accordingly, then the fixed metrics get unfrozen, and the metrics
-	//! then indicate the word-wrappability of the label.
-
-	void position_set(ONLY IN_THREAD);
  private:
 
 	//! Whether the label's position has been set at least once.

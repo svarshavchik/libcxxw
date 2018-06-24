@@ -75,13 +75,6 @@ public:
 	void process_updated_position(ONLY IN_THREAD)
 		override;
 
-	//! Override update_current_position().
-
-	//! Call the superclass, then invoke call position_set(), to
-	//! indicate that the layout manager has set the label's position.
-	void update_current_position(ONLY IN_THREAD,
-				     const rectangle &r) override;
-
 	//! Override process_buton_event().
 
 	//! Detect clicks over hotspots.

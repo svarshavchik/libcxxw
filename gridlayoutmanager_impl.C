@@ -324,8 +324,14 @@ void gridlayoutmanagerObj::implObj::recalculate(ONLY IN_THREAD)
 	set_element_metrics(IN_THREAD, horiz_metrics, vert_metrics);
 
 	// Even though the current position hasn't changed, we need to
-	// recalculate and reposition our display elements.
-	get_element_impl().schedule_update_position_processing(IN_THREAD);
+	// recalculate and reposition our display elements if we already have
+	// been sized by our own container.
+
+	auto &e=get_element_impl();
+
+	if (e.data(IN_THREAD).current_position.width > 0 &&
+	    e.data(IN_THREAD).current_position.height > 0)
+		e.schedule_update_position_processing(IN_THREAD);
 
 #ifdef GRIDLAYOUTMANAGER_RECALCULATE_LOG
 	GRIDLAYOUTMANAGER_RECALCULATE_LOG(grid_elements(IN_THREAD));

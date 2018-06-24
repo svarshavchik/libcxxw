@@ -84,15 +84,6 @@ void label_elementObj<element_impl>
 }
 
 template<typename element_impl>
-void label_elementObj<element_impl>
-::update_current_position(ONLY IN_THREAD,
-			  const rectangle &r)
-{
-	element_impl::update_current_position(IN_THREAD, r);
-	textlabelObj::implObj::position_set(IN_THREAD);
-}
-
-template<typename element_impl>
 bool label_elementObj<element_impl>
 ::process_button_event(ONLY IN_THREAD,
 		       const button_event &be,

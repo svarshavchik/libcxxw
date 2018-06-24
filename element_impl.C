@@ -16,6 +16,7 @@
 #include "cursor_pointer.H"
 #include "run_as.H"
 #include "x/w/impl/background_color.H"
+#include "x/w/impl/child_elementobj.H"
 #include "grabbed_pointer.H"
 #include "x/w/element_state.H"
 #include "x/w/scratch_buffer.H"
@@ -513,6 +514,17 @@ void elementObj::implObj::update_current_position(ONLY IN_THREAD,
 	if (r == current_data.current_position)
 		return;
 
+	if (r.width == current_data.current_position.width &&
+	    r.height == current_data.current_position.height)
+	{
+		current_data.current_position=r;
+		notify_updated_position(IN_THREAD);
+		absolute_location_updated(IN_THREAD,
+					  absolute_location_update_reason
+					  ::internal);
+		return;
+	}
+
 	current_data.current_position=r;
 
 	notify_updated_position(IN_THREAD);
@@ -523,29 +535,12 @@ void elementObj::implObj::scroll_by_parent_container(ONLY IN_THREAD,
 						     coord_t x,
 						     coord_t y)
 {
-	auto &current_position=data(IN_THREAD).current_position;
-
-	if (current_position.x == x && current_position.y == y)
-		return;
+	auto current_position=data(IN_THREAD).current_position;
 
 	current_position.x=x;
 	current_position.y=y;
 
-	invalidate_cached_draw_info(IN_THREAD, {});
-
-	auto r=current_position;
-
-	// Our update_position() will not do anything because, supposedly
-	// the current position is not getting changed. This is just
-	// in case it is overridden by a subclass:
-	update_current_position(IN_THREAD, r);
-
-	// Since update_current_position() did nothing, we have to do this:
-	notify_updated_position(IN_THREAD);
-
-	// And also notify ourselves and any child processes as if our
-	// absolute location has changed:
-	absolute_location_updated(IN_THREAD);
+	update_current_position(IN_THREAD, current_position);
 }
 
 void elementObj::implObj::current_position_updated(ONLY IN_THREAD)
@@ -562,13 +557,22 @@ void elementObj::implObj::current_position_updated(ONLY IN_THREAD)
 		       });
 }
 
-void elementObj::implObj::absolute_location_updated(ONLY IN_THREAD)
+void elementObj::implObj
+::absolute_location_updated(ONLY IN_THREAD,
+			    absolute_location_update_reason reason)
 {
+	if (reason == absolute_location_update_reason::internal)
+	{
+		invalidate_cached_draw_info(IN_THREAD, {});
+		schedule_redraw(IN_THREAD);
+	}
+
 	for_each_child(IN_THREAD,
 		       [&]
 		       (const element &e)
 		       {
-			       e->impl->absolute_location_updated(IN_THREAD);
+			       e->impl->absolute_location_updated(IN_THREAD,
+								  reason);
 		       });
 }
 

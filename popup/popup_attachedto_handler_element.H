@@ -57,9 +57,11 @@ void popup_attachedto_handler_elementObj<element_impl>
 
 template<typename element_impl>
 void popup_attachedto_handler_elementObj<element_impl>
-::absolute_location_updated(ONLY IN_THREAD)
+::absolute_location_updated(ONLY IN_THREAD,
+			    elementObj::implObj
+			    ::absolute_location_update_reason reason)
 {
-	element_impl::absolute_location_updated(IN_THREAD);
+	element_impl::absolute_location_updated(IN_THREAD, reason);
 	update_attachedto_info(IN_THREAD);
 }
 

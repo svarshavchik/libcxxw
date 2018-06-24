@@ -172,9 +172,11 @@ void popupObj::handlerObj::configure_notify_received(ONLY IN_THREAD,
 	// Ignoring the ConfigureNotify event, see?
 }
 
-void popupObj::handlerObj::absolute_location_updated(ONLY IN_THREAD)
+void popupObj::handlerObj
+::absolute_location_updated(ONLY IN_THREAD,
+			    absolute_location_update_reason reason)
 {
-	superclass_t::absolute_location_updated(IN_THREAD);
+	superclass_t::absolute_location_updated(IN_THREAD, reason);
 
 	// The layoutmanager is toplevelpeephole_layoutmanagerObj.
 	//

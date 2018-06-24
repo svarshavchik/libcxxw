@@ -7,6 +7,7 @@
 
 #include "popup/popup_attachedto_handlerfwd.H"
 #include "x/w/connection_threadfwd.H"
+#include "x/w/impl/element.H"
 #include <x/ptrfwd.H>
 
 LIBCXXW_NAMESPACE_START
@@ -37,7 +38,10 @@ class LIBCXX_HIDDEN popup_attachedto_handler_elementObj : public element_impl {
 
 	void process_updated_position(ONLY IN_THREAD) override;
 
-	void absolute_location_updated(ONLY IN_THREAD) override;
+	void absolute_location_updated(ONLY IN_THREAD,
+				       elementObj::implObj
+				       ::absolute_location_update_reason reason)
+		override;
 
  private:
 
