@@ -8,6 +8,8 @@
 
 #include "x/w/pixmap.H"
 #include "x/w/picture.H"
+#include "x/w/rectangle.H"
+#include "x/w/impl/metrics_horizvert.H"
 #include "pixmap_with_picture.H"
 
 LIBCXXW_NAMESPACE_START
@@ -59,25 +61,43 @@ void imageObj::implObj::do_draw(ONLY IN_THREAD,
 	auto w=current_icon(IN_THREAD)->image->get_width();
 	auto h=current_icon(IN_THREAD)->image->get_height();
 
+	// If our layout manager gave us more room, center ourselves.
+
+	auto aligned=metrics::align(di.absolute_location.width,
+				    di.absolute_location.height,
+				    w,
+				    h,
+				    halign::center,
+				    valign::middle);
+
+	// And clear the rest to our background color.
+
+	auto extra_space=subtract({ {0, 0, di.absolute_location.width,
+				     di.absolute_location.height}}, {aligned});
+
+	if (!extra_space.empty())
+		clear_to_color(IN_THREAD, di, extra_space);
+
 	clip_region_set clipped{IN_THREAD, get_window_handler(), di};
 
-	draw_using_scratch_buffer(IN_THREAD,
-				  [&, this]
-				  (const auto &pic,
-				   const auto &,
-				   const auto &)
-				  {
-					  pic->composite(this->current_icon
-							 (IN_THREAD)->image
-							 ->icon_picture,
-							 0, 0,
-							 0, 0,
-							 w, h,
-							 render_pict_op
-							 ::op_atop);
-				  },
-				  {0, 0, w, h},
-				  di, di, clipped);
+	draw_using_scratch_buffer
+		(IN_THREAD,
+		 [&, this]
+		 (const auto &pic,
+		  const auto &,
+		  const auto &)
+		 {
+
+			 pic->composite(this->current_icon
+					(IN_THREAD)->image
+					->icon_picture,
+					0, 0,
+					0, 0,
+					aligned.width, aligned.height,
+					render_pict_op::op_atop);
+		 },
+		 aligned,
+		 di, di, clipped);
 }
 
 void imageObj::implObj::theme_updated(ONLY IN_THREAD,
