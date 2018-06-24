@@ -365,6 +365,10 @@ void elementObj::implObj::schedule_redraw(ONLY IN_THREAD)
 	if (!get_window_handler().has_exposed(IN_THREAD))
 		return;
 
+	if (data(IN_THREAD).current_position.width == 0 ||
+	    data(IN_THREAD).current_position.height == 0)
+		return; // Nothing to redraw.
+
 	IN_THREAD->elements_to_redraw(IN_THREAD)->insert(element_impl(this));
 }
 
@@ -379,6 +383,10 @@ void elementObj::implObj::schedule_redraw_recursively()
 
 void elementObj::implObj::schedule_redraw_recursively(ONLY IN_THREAD)
 {
+	if (data(IN_THREAD).current_position.width == 0 ||
+	    data(IN_THREAD).current_position.height == 0)
+		return; // Nothing to redraw.
+
 	schedule_redraw(IN_THREAD);
 
 	for_each_child(IN_THREAD,
