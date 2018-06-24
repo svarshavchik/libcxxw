@@ -281,6 +281,11 @@ class child_elementObj
 	//! the call is forwarded to the parent.
 
 	cursor_pointerptr get_cursor_pointer(ONLY IN_THREAD) override;
+
+	//! Override element_name().
+
+	//! Include the parent name.
+	void element_name(std::ostream &) override;
 };
 
 LIBCXXW_NAMESPACE_END

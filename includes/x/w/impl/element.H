@@ -1373,6 +1373,12 @@ class elementObj::implObj : public element_drawObj,
 
 	//! Convenient shortcut
 	void stop_message(const text_param &);
+
+	//! Name of this element, for debugging purposes.
+	std::string element_name();
+
+	//! Recursively build this element's name.
+	virtual void element_name(std::ostream &);
 };
 
 LIBCXXW_NAMESPACE_END

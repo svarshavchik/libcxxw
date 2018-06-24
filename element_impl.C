@@ -33,6 +33,8 @@
 #include <x/logger.H>
 #include <x/weakcapture.H>
 #include <x/visitor.H>
+#include <x/strtok.H>
+#include <x/join.H>
 
 LOG_CLASS_INIT(LIBCXX_NAMESPACE::w::elementObj::implObj);
 
@@ -574,6 +576,40 @@ void elementObj::implObj
 			       e->impl->absolute_location_updated(IN_THREAD,
 								  reason);
 		       });
+}
+
+std::string elementObj::implObj::element_name()
+{
+	std::ostringstream o;
+
+	element_name(o);
+	return o.str();
+}
+
+void elementObj::implObj::element_name(std::ostream &o)
+{
+	// Some heuristics, to come up with a reasonable label, based on the
+	// class name.
+
+	std::vector<std::string> components;
+
+	strtok_str(objname(), ":", components);
+
+	size_t n=components.size();
+
+	if (n >= 2)
+	{
+		n -= 2;
+
+		if (components.at(n) == "w")
+			++n;
+	}
+	else
+		n=0;
+
+	std::string s=join(components.begin()+n, components.end(), "::");
+
+	o << s.substr(0, s.find('>'));
 }
 
 void elementObj::implObj::schedule_update_position_processing(ONLY IN_THREAD)

@@ -412,5 +412,11 @@ cursor_pointerptr child_elementObj::get_cursor_pointer(ONLY IN_THREAD)
 	return p;
 }
 
+void child_elementObj::element_name(std::ostream &o)
+{
+	child_container->container_element_impl().element_name(o);
+	o << "/";
+	superclass_t::element_name(o);
+}
 
 LIBCXXW_NAMESPACE_END
