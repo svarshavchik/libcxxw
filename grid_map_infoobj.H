@@ -168,6 +168,9 @@ public:
 
 	elements_t elements;
 
+	//! Additional border elements in the grid.
+	std::vector<element> border_elements;
+
 	//! Column defaults
 
 	std::unordered_map<metrics::grid_xy, grid_map_column_defaults> column_defaults;

@@ -492,6 +492,10 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(ONLY IN_THREAD)
 	all_elements.clear();
 	all_elements.reserve(total_size);
 
+	(*lock)->border_elements.clear();
+	(*lock)->border_elements.reserve(ge->straight_borders.size()+
+					 ge->corner_borders.size());
+
 	for (const auto &row:(*lock)->elements)
 		for (const auto &col:row)
 		{
@@ -542,6 +546,7 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(ONLY IN_THREAD)
 					  b.second.border,
 					  halign::fill,
 					  valign::fill);
+		(*lock)->border_elements.emplace_back(b.second.border);
 
 #ifdef STRAIGHT_BORDERS_DEBUG
 		std::cout << "*** STRAIGHT BORDER: FINAL: "
@@ -564,6 +569,7 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(ONLY IN_THREAD)
 					  b.second.border,
 					  halign::fill,
 					  valign::fill);
+		(*lock)->border_elements.emplace_back(b.second.border);
 	}
 
 	(*lock)->element_modifications_are_processed();
@@ -733,35 +739,22 @@ void gridlayoutmanagerObj::implObj
 ::do_for_each_child(ONLY IN_THREAD,
 		    const function<void (const element &e)> &callback)
 {
-	// It's possible that we get here before processing any new elements
-	// that were added to the grid. So iterating over
-	// grid_elements->all_elements is not enough. First, copy all the
-	// "official" grid elements.
+	grid_map_t::lock lock(grid_map);
 
-	std::unordered_set<element> all_elements;
+	for (const auto &row:(*lock)->elements)
+		for (const auto &col:row)
+		{
+			col->grid_element->impl
+				->initialize_if_needed(IN_THREAD);
 
+			// And pass them to the callback.
+			callback(col->grid_element);
+		}
+
+	for (const auto &border:(*lock)->border_elements)
 	{
-		grid_map_t::lock lock(grid_map);
-
-		for (const auto &row:(*lock)->elements)
-			for (const auto &col:row)
-			{
-				all_elements.insert(col->grid_element);
-				col->grid_element->impl
-					->initialize_if_needed(IN_THREAD);
-
-				// And pass them to the callback.
-				callback(col->grid_element);
-			}
-	}
-
-	// Now, pass over all_elements, skipping the ones that were already
-	// called.
-	for (const auto &child:grid_elements(IN_THREAD)->all_elements)
-	{
-		if (all_elements.find(child.child_element) ==
-		    all_elements.end())
-			callback(child.child_element);
+		border->impl->initialize_if_needed(IN_THREAD);
+		callback(border);
 	}
 }
 
