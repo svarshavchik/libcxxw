@@ -16,12 +16,12 @@ LIBCXXW_NAMESPACE_START
 create_attachedto_element_ret_t
 create_popup_attachedto_element_impl(factoryObj &parent_factory,
 				     const element_popup_config &args,
-				     const function<void (const factory &)
-				     > &current_value_factory,
 				     const function<create_popup_contents_impl_t
 				     > &popup_contents_impl_factory,
 				     const function<create_popup_contents_t
-				     > &popup_contents_factory)
+				     > &popup_contents_factory,
+				     const function<void (const factory &)
+				     > &current_value_factory)
 {
 	auto parent_container=parent_factory.get_container_impl();
 
@@ -38,15 +38,6 @@ create_popup_attachedto_element_impl(factoryObj &parent_factory,
 	auto glm_impl=ref<gridlayoutmanagerObj::implObj>::create(real_impl);
 
 	auto glm=glm_impl->create_gridlayoutmanager();
-
-	// Create the current color picker.
-
-	// We use the grid layout manager to draw the border around it
-	// (config.border)...
-	auto f=glm->append_row();
-	f->padding(0);
-	f->border(args.element_border);
-	current_value_factory(f);
 
 	// Before creating the button that shows the popup
 	// we need to create the popup itself.
@@ -97,6 +88,17 @@ create_popup_attachedto_element_impl(factoryObj &parent_factory,
 			 return c;
 		 });
 
+	auto popup=popup::create(popup_impl, popup_lm->impl);
+
+	// Create the current value element.
+
+	// We use the grid layout manager to draw the border around it
+	// (config.border)...
+	auto f=glm->append_row();
+	f->padding(0);
+	f->border(args.element_border);
+	current_value_factory(f);
+
 	// We can now create the popup button next to the current color
 	// element.
 
@@ -110,8 +112,6 @@ create_popup_attachedto_element_impl(factoryObj &parent_factory,
 			 args.button_focusoff_border,
 			 args.button_focuson_border
 		 });
-
-	auto popup=popup::create(popup_impl, popup_lm->impl);
 
 	return {real_impl, popup_imagebutton, glm, popup};
 }

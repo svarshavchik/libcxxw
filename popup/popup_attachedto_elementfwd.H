@@ -96,12 +96,7 @@ create_popup_contents_t(const popup_attachedto_info &,
 //! Receives a reference to the factory object that's creating it,
 //! an \ref element_popup_config "element_popup_config", and three closures.
 //!
-//! The first closure gets called with a \ref factory "factory" parameter.
-//! The closure uses the factor to construct something that shows the
-//! "current value" of the new display element. The closure must show()
-//! its created display element.
-//!
-//! The second closure receives two parameters: a
+//! The first closure receives two parameters: a
 //! \ref container_impl "container implementation object", and a
 //! \ref child_element_init_params "child_element_init_params". The second
 //! closure needs to create a
@@ -109,7 +104,7 @@ create_popup_contents_t(const popup_attachedto_info &,
 //! object, constructed using the two parameters, and return it. This is
 //! the implementation object for the contents of the attached popup.
 //!
-//! The third closure gets called next, with a
+//! The second closure gets called next, with a
 //! \ref popup_attachedto_info "popup_attachedto_info object",
 //! and a \ref gridlayoutmanagerObj::implObj "gridlayoutmanagerObj::implObj".
 //! The popup's contents use the grid layout manager. The third closure
@@ -120,6 +115,11 @@ create_popup_contents_t(const popup_attachedto_info &,
 //! parameters.
 //!
 //! The returned peepholed container element gets show_all()ed automatically.
+//!
+//! The third closure gets called with a \ref factory "factory" parameter.
+//! The closure uses the factory to construct something that shows the
+//! "current value" of the new display element. The closure must show()
+//! its created display element.
 //!
 //! create_popup_attachedto_element() returns the following values:
 //!
@@ -152,18 +152,19 @@ template<typename current_value_t,
 	 typename popup_contents_t> create_attachedto_element_ret_t
 create_popup_attachedto_element(factoryObj &parent_factory,
 				const element_popup_config &args,
-				current_value_t &&current_value,
 				popup_contents_impl_t &&popup_contents_impl,
-				popup_contents_t &&popup_contents)
+				popup_contents_t &&popup_contents,
+				current_value_t &&current_value)
 {
 	return create_popup_attachedto_element_impl
 		(parent_factory, args,
-		 make_function<void (const factory &)>
-		 (std::forward<current_value_t>(current_value)),
 		 make_function<create_popup_contents_impl_t>
 		 (std::forward<popup_contents_impl_t>(popup_contents_impl)),
 		 make_function<create_popup_contents_t>
-		 (std::forward<popup_contents_t>(popup_contents)));
+		 (std::forward<popup_contents_t>(popup_contents)),
+		 make_function<void (const factory &)>
+		 (std::forward<current_value_t>(current_value)));
+
 }
 
 //! Type-erased created_popup_attachedto_element().
@@ -171,12 +172,12 @@ create_popup_attachedto_element(factoryObj &parent_factory,
 create_attachedto_element_ret_t
 create_popup_attachedto_element_impl(factoryObj &parent_factory,
 				     const element_popup_config &args,
-				     const function<void (const factory &)
-				     > &current_value_factory,
 				     const function<create_popup_contents_impl_t
 				     > &popup_contents_impl_factory,
 				     const function<create_popup_contents_t
-				     > &popup_contents_factory)
+				     > &popup_contents_factory,
+				     const function<void (const factory &)
+				     > &current_value_factory)
 	LIBCXX_HIDDEN;
 
 

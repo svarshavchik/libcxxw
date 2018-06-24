@@ -688,23 +688,6 @@ color_picker factoryObj
 		=create_popup_attachedto_element
 		(*this, config.popup_config,
 
-		 [&]
-		 (const auto &f)
-		 {
-			 // The current value element shows the current
-			 // color.
-
-			 dim_arg w{"color_picker_current_width"};
-			 dim_arg h{"color_picker_current_height"};
-
-			 color_picker_current=f->create_canvas
-			 ([&](const auto &c) {
-				 c->set_background_color(config.initial_color);
-			 }, {w}, {h});
-
-			 color_picker_current->show();
-		 },
-
 		 [&](const container_impl &parent,
 		     const child_element_init_params &init_params)
 		 {
@@ -721,6 +704,21 @@ color_picker factoryObj
 			 return create_contents
 			 (color_picker_selector_impl, helper,
 			  lm_impl, info, config);
+		 },
+		 [&](const auto &f)
+		 {
+			 // The current value element shows the current
+			 // color.
+
+			 dim_arg w{"color_picker_current_width"};
+			 dim_arg h{"color_picker_current_height"};
+
+			 color_picker_current=f->create_canvas
+			 ([&](const auto &c) {
+				 c->set_background_color(config.initial_color);
+			 }, {w}, {h});
+
+			 color_picker_current->show();
 		 });
 
 	// Grab the elements that were created in the popup, and finish

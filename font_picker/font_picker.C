@@ -370,20 +370,6 @@ font_picker factoryObj::create_font_picker(const font_picker_config &config)
 		=create_popup_attachedto_element
 		(*this, config.popup_config,
 
-		 [&]
-		 (const auto &f)
-		 {
-			 auto label_impl=ref<current_font_placeholderObj>
-			 ::create(f->get_container_impl(), "",
-				  halign::center, 0, false);
-
-			 auto l=label::create(label_impl, label_impl);
-
-			 helper.current_font_shown_impl=label_impl;
-			 helper.current_font_shown=l;
-			 f->created_internally(l);
-		 },
-
 		 [&](const container_impl &parent,
 		     const child_element_init_params &params)
 		 {
@@ -406,6 +392,18 @@ font_picker factoryObj::create_font_picker(const font_picker_config &config)
 
 			 return peepholed_attachedto_container
 			 ::create(info, popup_container_impl, lm_impl);
+		 },
+		 [&](const auto &f)
+		 {
+			 auto label_impl=ref<current_font_placeholderObj>
+			 ::create(f->get_container_impl(), "",
+				  halign::center, 0, false);
+
+			 auto l=label::create(label_impl, label_impl);
+
+			 helper.current_font_shown_impl=label_impl;
+			 helper.current_font_shown=l;
+			 f->created_internally(l);
 		 });
 
 	font_picker_impl_init_params init_params{
