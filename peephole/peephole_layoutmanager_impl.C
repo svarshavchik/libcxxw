@@ -194,10 +194,6 @@ void peepholeObj::layoutmanager_implObj::initialize(ONLY IN_THREAD)
 void peepholeObj::layoutmanager_implObj
 ::recalculate_with_requested_visibility(ONLY IN_THREAD, bool flag)
 {
-	// Wait until this container is initialized.
-	if (!get_element_impl().data(IN_THREAD).initialized)
-		return;
-
 	auto peephole_element_impl=
 		element_in_peephole->get_peepholed_element()->impl;
 
@@ -378,7 +374,11 @@ void peepholeObj::layoutmanager_implObj
 
 	LOG_DEBUG("Positioning element to: " << element_pos);
 
-	if (!attempt_scroll_to(IN_THREAD, element_pos))
+	// If our size hasn't been set yet, don't both to position the
+	// peepholed element.
+	if (current_position.width > 0 &&
+	    current_position.height > 0 &&
+	    !attempt_scroll_to(IN_THREAD, element_pos))
 		peephole_element_impl->update_current_position(IN_THREAD,
 							       element_pos);
 

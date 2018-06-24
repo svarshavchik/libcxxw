@@ -470,8 +470,21 @@ void elementObj::implObj
 void elementObj::implObj
 ::on_metrics_update(const functionref<metrics_update_callback_t> &cb)
 {
-	THREAD->get_batch_queue()->run_as
-		([cb, me=ref(this)]
+	// We want to install the metrics callback immediately, however
+	// keep a reference on the batch queue until this is done, in order
+	// to delay element position update and recalculation until
+	// the metrics callback gets installed.
+	//
+	// Font picker hooks the metrics update of the font element dropdown
+	// in the popup, in order to set the metrics of the current font name,
+	// so we want this to get propagated to the current font name
+	// display element before the font name label's metrics get
+	// factored in.
+
+	auto batch_queue=THREAD->get_batch_queue();
+
+	THREAD->run_as
+		([cb, me=ref(this), batch_queue]
 		 (ONLY IN_THREAD)
 		 {
 			 me->data(IN_THREAD).metrics_update_callback=cb;
