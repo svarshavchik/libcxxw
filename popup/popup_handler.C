@@ -153,13 +153,43 @@ void popupObj::handlerObj::set_popup_position(ONLY IN_THREAD)
 	POPUP_SIZE_SET();
 #endif
 
+	most_recent_configuration=r;
+	update_my_configuration(IN_THREAD);
+}
+
+void popupObj::handlerObj::request_visibility(ONLY IN_THREAD, bool flag)
+{
+	superclass_t::request_visibility(IN_THREAD, flag);
+	update_my_configuration(IN_THREAD);
+}
+
+void popupObj::handlerObj::update_my_configuration(ONLY IN_THREAD)
+{
+	// Wait until we're becoming visible, before moving us.
+	//
+	// request_visibility() will call us, when we are, and that's when
+	// the show starts.
+
+	if (!data(IN_THREAD).requested_visibility)
+		return;
+
+	{
+		mpobj<rectangle>::lock lock(current_position);
+
+		if (*lock == most_recent_configuration)
+			return;
+	}
 	// Do not wait for the ConfigureNotify event, take the bull by the
 	// horns. When it arrives it'll be ignored.
 
-	generic_windowObj::handlerObj::configure_notify_received(IN_THREAD, r);
-	generic_windowObj::handlerObj::process_configure_notify(IN_THREAD, r);
-}
+	generic_windowObj::handlerObj
+		::configure_notify_received(IN_THREAD,
+					    most_recent_configuration);
+	generic_windowObj::handlerObj
+		::process_configure_notify(IN_THREAD,
+					   most_recent_configuration);
 
+}
 void popupObj::handlerObj::process_configure_notify(ONLY IN_THREAD,
 						    const rectangle &)
 {

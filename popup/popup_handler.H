@@ -131,14 +131,30 @@ public:
 				      &visibility_info)
 		override;
 
+	//! Override request_visibility()
+
+	//! We resize/reposition ourselves only when we're visible.
+	//! This optimizes recalculations that might occur several times
+	//! when the popup is being created.
+	//!
+	//! Calls update_my_configuration().
+	void request_visibility(ONLY IN_THREAD, bool flag) override;
+
 	//! Override absolute_location_updated
 
 	void absolute_location_updated(ONLY IN_THREAD,
 				       absolute_location_update_reason reason)
 		override;
 
-	//! Implement
  private:
+
+	//! Our intended size.
+	rectangle most_recent_configuration;
+
+	//! Make sure most_recent_configuration is our actual configuration.
+
+	//! Only when we're visible.
+	void update_my_configuration(ONLY IN_THREAD);
 
 	//! The pointer is grabbed while the popup is open.
 	ptr<obj> current_grab;
