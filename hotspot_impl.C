@@ -84,8 +84,21 @@ bool hotspotObj::implObj::process_button_event(ONLY IN_THREAD,
 		if (is_button1_down == be.press)
 			return true; // Could be due to enter/leave. Ignore.
 
-		is_button1_down=be.press;
-		update(IN_THREAD, &be);
+		// This element should have pointer focus. It's possible
+		// we get a button event without the pointer focus. This
+		// happens if a label_for this focusable element was clicked
+		// on, and the button event gets forwarded here.
+		//
+		// We'll still check activate_for() and do activated(),
+		// but do not change the temperature of the hotspot. If the
+		// button click opens a popup that grabs pointer focus we
+		// have no means of knowing when the button is released.
+
+		if (get_hotspot_element().current_pointer_focus(IN_THREAD))
+		{
+			is_button1_down=be.press;
+			update(IN_THREAD, &be);
+		}
 
 		if (get_hotspot_element().activate_for(be))
 			activated(IN_THREAD, &be);
