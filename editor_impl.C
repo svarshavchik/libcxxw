@@ -890,9 +890,14 @@ void editorObj::implObj::draw_changes(ONLY IN_THREAD,
 				      size_t deleted,
 				      size_t inserted)
 {
-	text->redraw_whatsneeded(IN_THREAD, *this,
-				 {cursor_lock.cursor, cursor},
-				 get_draw_info(IN_THREAD));
+	// We can be called from set() before the editor element is visible.
+	// Don't bother calling get_draw_info(), because that might get
+	// stale anyway.
+	if (data(IN_THREAD).inherited_visibility)
+		text->redraw_whatsneeded(IN_THREAD, *this,
+					 {cursor_lock.cursor, cursor},
+					 get_draw_info(IN_THREAD));
+
 	validation_required(IN_THREAD)=true;
 
 	try {

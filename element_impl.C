@@ -700,6 +700,11 @@ clip_region_set::clip_region_set(ONLY IN_THREAD,
 void elementObj::implObj::exposure_event_recursive(ONLY IN_THREAD,
 						   const rectangle_set &areas)
 {
+	auto &current_position=data(IN_THREAD).current_position;
+
+	if (current_position.width == 0 || current_position.height == 0)
+		return;
+
 	auto &di=get_draw_info(IN_THREAD);
 
 #ifdef DEBUG_EXPOSURE_CALCULATIONS
@@ -730,8 +735,8 @@ void elementObj::implObj::exposure_event_recursive(ONLY IN_THREAD,
 		auto &r=*draw_area.begin();
 
 		if (r.x == 0 && r.y == 0 &&
-		    r.width == data(IN_THREAD).current_position.width &&
-		    r.width == data(IN_THREAD).current_position.height)
+		    r.width == current_position.width &&
+		    r.height == current_position.height)
 		{
 			// Any queued redraws are moot, now.
 			//
