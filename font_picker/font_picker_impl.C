@@ -663,12 +663,18 @@ void font_pickerObj::implObj
 	// Recompute the contents of the combo-box.
 	std::vector<list_item_param> items;
 
-	sorted_families=compute_font_family_combobox_items(selection_required,
-							   families,
-							   mru,
-							   items,
-							   e,
-							   n);
+	auto new_sorted_families=compute_font_family_combobox_items
+		(selection_required,
+		 families,
+		 mru,
+		 items,
+		 e,
+		 n);
+
+	if (new_sorted_families==sorted_families)
+		return; // Unchanged.
+
+	sorted_families=new_sorted_families;
 
 	lm->replace_all_items(IN_THREAD, items);
 
