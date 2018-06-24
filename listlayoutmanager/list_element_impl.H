@@ -425,6 +425,8 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 	void enabled(ONLY IN_THREAD, size_t i, bool flag);
 
  private:
+	struct textlist_info_lock;
+
 	//! Redraw only those rows whose status has changed.
 
 	void redraw_needed_rows(ONLY IN_THREAD);
@@ -433,6 +435,7 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 	void do_draw(ONLY IN_THREAD,
 		     const draw_info &di,
 		     const rectangle_set &areas,
+		     textlist_info_lock &lock,
 		     bool only_whats_needed);
 
 	//! Unselect all rows, after acquiring a lock.

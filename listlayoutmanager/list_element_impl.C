@@ -944,32 +944,37 @@ void list_elementObj::implObj::do_draw(ONLY IN_THREAD,
 				       const draw_info &di,
 				       const rectangle_set &areas)
 {
-	do_draw(IN_THREAD, di, areas, false);
+	textlist_info_lock lock{IN_THREAD, *this};
+
+	lock->row_redraw_needed=false; // We're taking care of everything now.
+
+	do_draw(IN_THREAD, di, areas, lock, false);
 }
 
 void list_elementObj::implObj::redraw_needed_rows(ONLY IN_THREAD)
 {
+	textlist_info_lock lock{IN_THREAD, *this};
+
+	if (!lock->row_redraw_needed)
+		return;
+
+	lock->row_redraw_needed=false;
+
+	if (!data(IN_THREAD).inherited_visibility)
+		return; // Don't bother if we're not visible.
+
 	const auto &di=get_draw_info(IN_THREAD);
 
-	do_draw(IN_THREAD, di, di.entire_area(), true);
+	do_draw(IN_THREAD, di, di.entire_area(), lock, true);
 }
 
 void list_elementObj::implObj::do_draw(ONLY IN_THREAD,
 				       const draw_info &di,
 				       const rectangle_set &areas,
+				       textlist_info_lock &lock,
 				       bool only_whats_needed)
 {
 	richtext_draw_boundaries bounds{di, areas};
-
-	textlist_info_lock lock{IN_THREAD, *this};
-
-	if (only_whats_needed)
-	{
-		if (!lock->row_redraw_needed)
-			return;
-	}
-
-	lock->row_redraw_needed=false;
 
 	if (redraw_scheduled(IN_THREAD))
 		return; // Don't bother.
