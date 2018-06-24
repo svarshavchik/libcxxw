@@ -994,6 +994,13 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
   <dim id="color_picker_strip_width" axis="horiz">6</dim>
   <dim id="color_picker_strip_height" axis="vert">6</dim>
 
+  <!--
+      In the color picker popup, the dimensions of each basic color button
+  -->
+
+  <dim id="color_picker_basic_color_width" axis="horiz">5</dim>
+  <dim id="color_picker_basic_color_height" axis="vert">5</dim>
+
   <!-- Border around the gradient square -->
 
   <border id="color_picker_gradient_border" from="thick_0%">
@@ -1644,6 +1651,10 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
     </append_row>
 
     <append_row>
+      <name>color-picker-basic-colors-row</name>
+    </append_row>
+
+    <append_row>
       <name>ok-cancel-button-container</name>
     </append_row>
 
@@ -2052,6 +2063,19 @@ first column, to make the labels line up with their input fields.
     </halign>
     <element>
       <name>error-message-field</name>
+    </element>
+  </factory>
+
+  <factory type="grid" id="color-picker-basic-colors-row">
+    <colspan>
+      <columns>2</columns>
+    </colspan>
+    <halign>
+      <halign>centered</halign>
+    </halign>
+
+    <element>
+      <name>basic-colors</name>
     </element>
   </factory>
 

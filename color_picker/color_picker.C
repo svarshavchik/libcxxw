@@ -17,6 +17,7 @@
 #include "x/w/input_field.H"
 #include "x/w/image_button.H"
 #include "x/w/button.H"
+#include "x/w/rgb.H"
 #include "reference_font_element.H"
 #include "gridlayoutmanager.H"
 #include "messages.H"
@@ -88,6 +89,59 @@ struct color_picker_layout_helper : public color_picker_popup_fieldsptr {
 
 	dim_arg sw{"color_picker_strip_width"};
 	dim_arg sh{"color_picker_strip_height"};
+
+	std::vector<std::tuple<rgb, button>> basic_colors;
+
+	inline void create_basic_colors(const gridlayoutmanager &glm)
+	{
+		static const rgb rgb_values[2][8]={
+			{
+				black,
+				gray,
+				silver,
+				white,
+				maroon,
+				red,
+				olive,
+				yellow,
+			},
+			{
+				green,
+				lime,
+				teal,
+				aqua,
+				navy,
+				blue,
+				fuchsia,
+				purple,
+			}};
+
+		basic_colors.reserve(16);
+
+		for (const auto &row:rgb_values)
+		{
+			auto f=glm->append_row();
+
+			for (const auto &col:row)
+			{
+				auto b=f->create_normal_button
+					([&]
+					 (const auto &f)
+					 {
+						 f->create_canvas
+						 ([&]
+						  (const auto &c) {
+							 c->set_background_color
+							 (col);
+						 },
+					{"color_picker_basic_color_width"},
+					{"color_picker_basic_color_height"});
+					 });
+
+				basic_colors.push_back(std::tuple{col, b});
+			}
+		}
+	}
 
 	standard_dialog_elements_t elements();
 };
@@ -258,6 +312,19 @@ inline standard_dialog_elements_t color_picker_layout_helper::elements()
 			{
 				error_message_field=f->create_label(" ");
 			}},
+		{"basic-colors", [&](const auto &f)
+			{
+				f->create_container
+					([&]
+					 (const container &c)
+					 {
+						 create_basic_colors
+							 (c->get_layoutmanager()
+							  );
+					 },
+					 new_gridlayoutmanager{});
+			}},
+
 		{"ok", dialog_ok_button(_("Ok"),
 					ok_button,
 					0)},
@@ -282,16 +349,16 @@ inline standard_dialog_elements_t color_picker_layout_helper::elements()
 // this creates a color_picker_selectorObj as its child, with a
 // color_picker_selector as the element.
 
-static inline std::tuple<color_picker_selector, color_picker_popup_fields>
+static inline auto
 create_contents(const ref<color_picker_selectorObj::implObj>
 		&contents_container_impl,
+		color_picker_layout_helper &helper,
 		const ref<gridlayoutmanagerObj::implObj> &lm_impl,
 		const popup_attachedto_info &attachedto_info,
 		const color_picker_config &config)
 {
 	auto glm=lm_impl->create_gridlayoutmanager();
 
-	color_picker_layout_helper helper{config};
 	gridtemplate tmpl{helper.elements()};
 
 	glm->create("color-picker-popup", tmpl);
@@ -311,7 +378,7 @@ create_contents(const ref<color_picker_selectorObj::implObj>
 		   " selected color"));
 	helper.square->create_tooltip(_("Click to pick a color"));
 
-	return {p, helper};
+	return p;
 }
 
 // Clicked in an element. Translate the click's position into 0..rgb::maximum
@@ -613,9 +680,9 @@ color_picker factoryObj
 {
 	canvasptr color_picker_current;
 
-	std::optional<color_picker_popup_fields> contents_opt;
-
 	ptr<color_picker_selectorObj::implObj> color_picker_selector_impl;
+
+	color_picker_layout_helper helper{config};
 
 	auto [real_impl, popup_imagebutton, glm, color_picker_popup]
 		=create_popup_attachedto_element
@@ -651,17 +718,15 @@ color_picker factoryObj
 		     const ref<gridlayoutmanagerObj::implObj> &lm_impl)
 
 		 {
-			 auto [selector_ret,
-			       fields_ret]=create_contents
-			 (color_picker_selector_impl, lm_impl, info, config);
-			 contents_opt=fields_ret;
-			 return selector_ret;
+			 return create_contents
+			 (color_picker_selector_impl, helper,
+			  lm_impl, info, config);
 		 });
 
 	// Grab the elements that were created in the popup, and finish
 	// creating it.
 
-	const auto &contents=contents_opt.value();
+	color_picker_popup_fields contents{helper};
 
 	// Capture the elements in the implementation object.
 
@@ -720,6 +785,25 @@ color_picker factoryObj
 	contents.hexadecimal->set_value(impl->hexadecimal.get() ? 1:0);
 	contents.full_precision->set_value(impl->full_precision.get() ? 1:0);
 
+	// Load basic colors
+
+	for (const auto &basic_color:helper.basic_colors)
+	{
+		auto &[color,b]=basic_color;
+
+		b->on_activate([color,wimpl]
+			       (ONLY IN_THREAD,
+				const auto &trigger,
+				const auto &busy)
+			       {
+				       auto impl=wimpl->get();
+
+				       if (!impl)
+					       return;
+
+				       impl->set_color(IN_THREAD, color);
+			       });
+	}
 	// Invoke reformat_values() when the display options change.
 
 	contents.hexadecimal->on_activate
