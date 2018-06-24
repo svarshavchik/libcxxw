@@ -903,9 +903,28 @@ bool gridlayoutmanagerObj::implObj::elementsObj
 }
 
 void gridlayoutmanagerObj::implObj
-::process_updated_position(ONLY IN_THREAD,
-			   const rectangle &position)
+::process_updated_position(ONLY IN_THREAD, const rectangle &position)
 {
+	reposition_child_elements(IN_THREAD, position);
+}
+
+void gridlayoutmanagerObj::implObj
+::process_same_position(ONLY IN_THREAD, const rectangle &position)
+{
+	if (!reposition_child_elements(IN_THREAD, position))
+		return;
+
+	// Some child element was moved, we must redraw the container,
+	// because moving might've exposed some parts of the container that
+	// are no longer occupied by the child element.
+	get_element_impl().schedule_redraw(IN_THREAD);
+}
+
+bool gridlayoutmanagerObj::implObj
+::reposition_child_elements(ONLY IN_THREAD, const rectangle &position)
+{
+	bool repositioned=false;
+
 	auto &elements=*grid_elements(IN_THREAD);
 
 	// Ignore the return value from recalculate_sizes(). We can get
@@ -943,6 +962,12 @@ void gridlayoutmanagerObj::implObj
 
 			p.x=coord_t::truncate(position.width);
 			p.y=0;
+
+			if (element->impl->data(IN_THREAD).current_position
+			    == p)
+				continue;
+
+			repositioned=true;
 
 			element->impl->update_current_position(IN_THREAD, p);
 			continue;
@@ -1012,8 +1037,14 @@ void gridlayoutmanagerObj::implObj
 		element_position.width=aligned.width;
 		element_position.height=aligned.height;
 
-		element->impl->update_current_position(IN_THREAD,
-						       element_position);
+		if (element->impl->data(IN_THREAD).current_position !=
+		    element_position)
+		{
+			repositioned=true;
+			element->impl->update_current_position
+				(IN_THREAD,
+				 element_position);
+		}
 
 #ifdef PROCESS_UPDATED_POSITION_DEBUG
 		if (element_position.width > 0 && element_position.height > 0)
@@ -1039,6 +1070,8 @@ void gridlayoutmanagerObj::implObj
 #ifdef PROCESS_UPDATED_POSITION_DEBUG
 	std::cout << "SET: " << total_set.size() << std::endl;
 #endif
+
+	return repositioned;
 }
 
 rectangle gridlayoutmanagerObj::implObj

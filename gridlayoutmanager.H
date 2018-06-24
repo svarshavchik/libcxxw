@@ -227,6 +227,20 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 	void process_updated_position(ONLY IN_THREAD,
 				      const rectangle &position) override;
 
+	//! The container's position has not been updated.
+
+	//! But we still reposition the child elements.
+
+	void process_same_position(ONLY IN_THREAD,
+				   const rectangle &position) override;
+
+	//! Reposition child elements.
+
+	//! Called by process_updated_position() and process_same_position().
+
+	bool reposition_child_elements(ONLY IN_THREAD,
+				       const rectangle &position);
+
 	//! Redraw the borders around the child element.
 
 	void child_background_color_changed(ONLY IN_THREAD,

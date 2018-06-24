@@ -62,6 +62,11 @@ void layoutmanagerObj::implObj::current_position_updated(ONLY IN_THREAD)
 	get_element_impl().current_position_updated(IN_THREAD);
 }
 
+void layoutmanagerObj::implObj::process_same_position(ONLY IN_THREAD,
+						      const rectangle &position)
+{
+}
+
 void layoutmanagerObj::implObj
 ::child_background_color_changed(ONLY IN_THREAD, const element_impl &child)
 {

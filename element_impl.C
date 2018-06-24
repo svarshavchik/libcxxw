@@ -47,15 +47,8 @@ elementObj::implObj::implObj(size_t nesting_level,
 			     const screen &my_screen,
 			     const const_pictformat &my_pictformat,
 			     const std::string &scratch_buffer_id)
-	: data_thread_only
-	  ({
-	      initial_position
-	  }),
-	  nesting_level(nesting_level),
-	  element_scratch_buffer(my_screen->impl->create_scratch_buffer
-				 (my_screen, scratch_buffer_id, my_pictformat,
-				  initial_position.width / 20 + 1,
-				  initial_position.height / 20 + 1))
+	: implObj{nesting_level, initial_position, {{0,0,0},{0,0,0}},
+		  my_screen, my_pictformat, scratch_buffer_id}
 {
 }
 
@@ -68,7 +61,7 @@ elementObj::implObj::implObj(size_t nesting_level,
 	: metrics::horizvertObj(initial_metrics),
 	data_thread_only
 	({
-		initial_position,
+		initial_position, initial_position
 	}),
 	nesting_level(nesting_level),
 	element_scratch_buffer(my_screen->impl->create_scratch_buffer
@@ -641,7 +634,10 @@ void elementObj::implObj::process_updated_position(ONLY IN_THREAD)
 	invalidate_cached_draw_info(IN_THREAD,
 				    draw_info_invalidation_reason
 				    ::something_changed);
+}
 
+void elementObj::implObj::process_same_position(ONLY IN_THREAD)
+{
 }
 
 void elementObj::implObj::notify_updated_position(ONLY IN_THREAD)

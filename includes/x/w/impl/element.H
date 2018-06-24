@@ -111,6 +111,22 @@ class elementObj::implObj : public element_drawObj,
 
 		rectangle current_position;
 
+		//! Previous position
+
+		//! The grid layout manager schedules itself for position update
+		//! processing if its grid metrics change in order to reposition
+		//! its child elements, rather than itself. But if in the
+		//! meantime its position gets recalculated this will also
+		//! reposition its child elements.
+		//!
+		//! This is the element's previous position. If its
+		//! current_position really changes, when we're about to
+		//! call process_updated_position() this will be its previous
+		//! position, we update it, and invoke it. If it's the same
+		//! we call process_same_position() instead.
+
+		rectangle previous_position;
+
 		//! Cached draw_info
 
 		//! get_draw_info() retrieves the cached draw_info, or
@@ -464,6 +480,14 @@ class elementObj::implObj : public element_drawObj,
 	//! before invoking notify_updated_position().
 
 	virtual void process_updated_position(ONLY IN_THREAD);
+
+	//! Invoked by the connection thread.
+
+	//! The default implementation does nothing.
+	//!
+	//! OVerridden by containers, which notify their layout manager.
+
+	virtual void process_same_position(ONLY IN_THREAD);
 
 	//! Calls invoke_element_state_updates().
 

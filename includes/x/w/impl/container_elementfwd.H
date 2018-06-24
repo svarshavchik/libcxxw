@@ -41,6 +41,8 @@ public:
 
 	void process_updated_position(ONLY IN_THREAD) override;
 
+	void process_same_position(ONLY IN_THREAD) override;
+
 	void request_visibility_recursive(ONLY IN_THREAD, bool flag) override;
 
 	void draw_after_visibility_updated(ONLY IN_THREAD, bool flag) override;

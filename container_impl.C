@@ -323,10 +323,23 @@ void containerObj::implObj::process_updated_position(ONLY IN_THREAD)
 		([&]
 		 (const auto &manager)
 		 {
-			 manager->process_updated_position(IN_THREAD,
-							   container_element_impl()
-							   .data(IN_THREAD)
-							   .current_position);
+			 manager->process_updated_position
+				 (IN_THREAD,
+				  container_element_impl().data(IN_THREAD)
+				  .current_position);
+		 });
+}
+
+void containerObj::implObj::process_same_position(ONLY IN_THREAD)
+{
+	invoke_layoutmanager
+		([&]
+		 (const auto &manager)
+		 {
+			 manager->process_same_position(IN_THREAD,
+							container_element_impl()
+							.data(IN_THREAD)
+							.current_position);
 		 });
 }
 

@@ -58,6 +58,20 @@ void container_elementObj<element_impl>
 	element_impl::schedule_redraw_recursively(IN_THREAD);
 }
 
+//! Override process_same_position().
+
+//! Forwarded to containerObj::implObj to make any required changes to the
+//! child elements' positions. Then forwarded to the parent element's
+//! process_same_position().
+
+template<typename element_impl>
+void container_elementObj<element_impl>
+::process_same_position(ONLY IN_THREAD)
+{
+	containerObj::implObj::process_same_position(IN_THREAD);
+	element_impl::process_same_position(IN_THREAD);
+}
+
 //! Override request_visibility_recursive().
 
 //! Forwarded to containerObj::implObj.

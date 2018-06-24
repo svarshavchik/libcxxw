@@ -177,6 +177,13 @@ public:
 
 	void process_updated_position(ONLY IN_THREAD);
 
+	//! The container's position has not been updated.
+
+	//! Breaking news? No, not really. But the grid layout manager may
+	//! want to rethink its child elements' positions.
+
+	void process_same_position(ONLY IN_THREAD);
+
 	//! Recursive show() or hide().
 
 	//! Invokes request_child_visibility_recursive(), then invoke

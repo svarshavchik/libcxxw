@@ -145,7 +145,18 @@ bool connection_threadObj::process_element_position_updated(ONLY IN_THREAD)
 		LOG_TRACE("element_position_updated: " << e->objname()
 			  << "(" << &*e << ")");
 		try {
-			e->process_updated_position(IN_THREAD);
+			auto &data=e->data(IN_THREAD);
+
+			if (data.current_position !=
+			    data.previous_position)
+			{
+				data.previous_position=data.current_position;
+				e->process_updated_position(IN_THREAD);
+			}
+			else
+			{
+				e->process_same_position(IN_THREAD);
+			}
 		} CATCH_EXCEPTIONS;
 	}
 	return true;

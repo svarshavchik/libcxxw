@@ -114,6 +114,14 @@ class layoutmanagerObj::implObj : virtual public obj {
 	virtual void process_updated_position(ONLY IN_THREAD,
 					      const rectangle &position)=0;
 
+	//! The container's position has not been changed.
+
+	//! But the container can, if necessary, recalculate and update
+	//! the child elements' positions.
+
+	virtual void process_same_position(ONLY IN_THREAD,
+					   const rectangle &position);
+
 	//! A child element's background color has changed
 
 	//! The default implementation does nothing
