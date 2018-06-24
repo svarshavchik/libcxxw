@@ -127,9 +127,10 @@ public:
 
 	//! Draw the container.
 
-	//! The only thing we need to do is clear all parts of the container
-	//! that are not occupted by any element in the container. The
-	//! elements in the container will take care of drawing themselves.
+	//! Sets up the clipping, and calls the layout manager's do_draw().
+	//! Whatever the layout manager indicates is off limits, because it's
+	//! occupied by child elements, or padding around them, will be
+	//! clear_to_color().
 
 	void do_draw(ONLY IN_THREAD,
 		     const draw_info &di,

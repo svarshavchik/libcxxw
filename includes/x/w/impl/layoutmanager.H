@@ -9,7 +9,9 @@
 #include <x/w/containerobj.H>
 #include <x/w/rectangle.H>
 #include <x/w/batch_queuefwd.H>
+#include <x/w/rectanglefwd.H>
 #include <x/w/impl/draw_infofwd.H>
+#include <x/w/impl/scratch_buffer_drawfwd.H>
 #include <x/w/impl/child_elementfwd.H>
 #include <x/w/impl/element.H>
 #include <x/w/connection_threadfwd.H>
@@ -192,6 +194,18 @@ class layoutmanagerObj::implObj : virtual public obj {
 	//! Invoke request_visibility_recursive() for each child.
 
 	virtual void request_visibility_recursive(ONLY IN_THREAD, bool);
+
+	//! Invoked to draw the contents of the container.
+
+	//! The default implementation uses container_clear_padding() to clear
+	//! the padding around each display element. The passed-in drawn_areas
+	//! gets forwarded to container_clear_padding(), in this manner it
+	//! is populated with the areas occupied by all the elements in the
+	//! container.
+	virtual void do_draw(ONLY IN_THREAD,
+			     const draw_info &di,
+			     clip_region_set &clip,
+			     rectangle_set &drawn_areas);
 
 	//! Convenient shortcut
 	void run_as(const functionref<void (ONLY IN_THREAD)> &f);

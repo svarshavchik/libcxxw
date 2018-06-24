@@ -162,18 +162,7 @@ void containerObj::implObj::do_draw(ONLY IN_THREAD,
 		([&]
 		 (const auto &manager)
 		 {
-			 manager->for_each_child
-				 (IN_THREAD,
-				  [&]
-				  (const element &e)
-				  {
-					  container_clear_padding(IN_THREAD,
-								  element_impl,
-								  *manager,
-								  e->impl,
-								  di, clip,
-								  child_areas);
-				  });
+			 manager->do_draw(IN_THREAD, di, clip, child_areas);
 		 });
 
 	// Subtract it from our area.

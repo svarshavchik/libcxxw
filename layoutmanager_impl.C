@@ -8,6 +8,7 @@
 #include "generic_window_handler.H"
 #include "xid_t.H"
 #include "connection_thread.H"
+#include "container_impl.H"
 #include "x/w/impl/draw_info.H"
 #include "x/w/impl/child_element.H"
 #include "catch_exceptions.H"
@@ -126,6 +127,27 @@ void layoutmanagerObj::implObj::request_visibility_recursive(ONLY IN_THREAD,
 		 {
 			 e->impl->request_visibility_recursive
 				 (IN_THREAD, flag);
+		 });
+}
+
+void layoutmanagerObj::implObj::do_draw(ONLY IN_THREAD,
+					const draw_info &di,
+					clip_region_set &clip,
+					rectangle_set &drawn_areas)
+{
+	auto &element_impl=layout_container_impl->container_element_impl();
+
+	for_each_child
+		(IN_THREAD,
+		 [&]
+		 (const element &e)
+		 {
+			 container_clear_padding(IN_THREAD,
+						 element_impl,
+						 *this,
+						 e->impl,
+						 di, clip,
+						 drawn_areas);
 		 });
 }
 
