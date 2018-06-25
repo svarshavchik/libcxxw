@@ -35,7 +35,7 @@ public:
 	//! Override get_impl().
 	focusable_impl get_impl() const override LIBCXX_HIDDEN;
 
-	//! Install a callback that gets invoked to report a new color.
+	//! Install a new callback that gets invoked to report a new color.
 
 	void on_color_update(const functionref<color_picker_callback_t> &cb);
 

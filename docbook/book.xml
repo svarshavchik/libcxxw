@@ -50,6 +50,7 @@
 <!ENTITY printdialog SYSTEM "printdialog.xml">
 <!ENTITY progressbar SYSTEM "progressbar.xml">
 <!ENTITY scrollbar SYSTEM "scrollbar.xml">
+<!ENTITY fontcolorpickers SYSTEM "fontcolorpickers.xml">
 <!ENTITY sxgdoc SYSTEM "sxg.xml">
 <!ENTITY singleton SYSTEM "singleton.xml">
 <!ENTITY connections_and_screens SYSTEM "connections_and_screens.xml">
@@ -109,6 +110,7 @@ See COPYING for distribution information.
     &printdialog;
     &progressbar;
     &scrollbar;
+    &fontcolorpickers;
   </part>
 
   <part id="custom">

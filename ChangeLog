@@ -1,3 +1,7 @@
+2018-05-15  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* Font and color picker display elements.
+
 2018-05-13  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* combobox/editable_comboboxlayoutmanager_impl.C: Size the input

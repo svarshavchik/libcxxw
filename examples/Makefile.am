@@ -11,6 +11,7 @@ noinst_PROGRAMS=\
 	customkeyfocus				\
 	dateinputfield				\
 	focusable				\
+	fontcolorpickers			\
 	gridlayoutmanager			\
 	helloworld				\
 	inputfieldsandbuttons			\
@@ -62,6 +63,9 @@ dateinputfield_LDADD=-lcxxw -lcxx
 
 focusable_SOURCES=focusable.C close_flag.H
 focusable_LDADD=-lcxxw -lcxx
+
+fontcolorpickers_SOURCES=fontcolorpickers.C close_flag.H
+fontcolorpickers_LDADD=-lcxxw -lcxx
 
 $(call REFCOLLECTION_GEN,gridlayoutmanager.inc.H,gridlayoutmanager.xml)
 

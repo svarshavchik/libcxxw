@@ -266,6 +266,8 @@ initial_sorted_families(const std::vector<const_font_family_group_entry>
 			&families,
 			const std::vector<font_picker_group_id>
 			&most_recently_used,
+			std::vector<font_picker_group_id>
+			&validated_most_recently_used,
 			const standard_comboboxlayoutmanager &lm,
 			const label &current_font_shown,
 			font &initial_font,
@@ -277,11 +279,13 @@ initial_sorted_families(const std::vector<const_font_family_group_entry>
 	std::vector<list_item_param> items;
 
 	auto list=font_pickerObj::implObj
-		::compute_font_family_combobox_items(config.selection_required,
-						     families,
-						     most_recently_used,
-						     items,
-						     {}, dummy);
+		::compute_font_family_combobox_items
+		(config.selection_required,
+		 families,
+		 most_recently_used,
+		 validated_most_recently_used,
+		 items,
+		 {}, dummy);
 
 	lm->replace_all_items(items);
 	if (!items.empty())
@@ -537,6 +541,7 @@ font_picker_impl_init_params(const image_button_internal &popup_button,
 	sorted_families=initial_sorted_families
 		(families,
 		 config.most_recently_used,
+		 most_recently_used,
 		 font_family_lm,
 		 current_font_shown,
 		 // Update the initial
@@ -548,7 +553,7 @@ font_picker_impl_init_params(const image_button_internal &popup_button,
 		 // it here.
 		 initial_font,
 		 config,
-		 // initial-sorted_families()
+		 // initial_sorted_families()
 		 // populates this.
 		 initial_official_values);
 
@@ -566,6 +571,7 @@ font_pickerObj::implObj::implObj(const font_picker_impl_init_params
 	  callback_thread_only{init_params.config.callback},
 	  sorted_families{init_params.sorted_families},
 	  official_font{init_params.initial_official_values},
+	  validated_most_recently_used{init_params.most_recently_used},
 	  current_font_shown{init_params.current_font_shown}
 {
 	// Initialize the placeholder font family name label element.
@@ -663,18 +669,26 @@ void font_pickerObj::implObj
 	// Recompute the contents of the combo-box.
 	std::vector<list_item_param> items;
 
-	auto new_sorted_families=compute_font_family_combobox_items
-		(selection_required,
-		 families,
-		 mru,
-		 items,
-		 e,
-		 n);
+	{
+		mpobj<std::vector<font_picker_group_id>>
+			::lock validated_most_recently_used_lock{
+			validated_most_recently_used
+				};
 
-	if (new_sorted_families==sorted_families)
-		return; // Unchanged.
+		auto new_sorted_families=compute_font_family_combobox_items
+			(selection_required,
+			 families,
+			 mru,
+			 *validated_most_recently_used_lock,
+			 items,
+			 e,
+			 n);
 
-	sorted_families=new_sorted_families;
+		if (new_sorted_families==sorted_families)
+			return; // Unchanged.
+
+		sorted_families=new_sorted_families;
+	}
 
 	lm->replace_all_items(IN_THREAD, items);
 
@@ -689,6 +703,7 @@ std::vector<const_font_family_group_entryptr> font_pickerObj::implObj
 (bool selection_required,
  const std::vector<const_font_family_group_entry> &families, // Sorted by ID.
  const std::vector<font_picker_group_id> &most_recently_used,
+ std::vector<font_picker_group_id> &validated_most_recently_used,
  std::vector<list_item_param> &items,
  const const_font_family_group_entryptr &current_family_sel,
  std::optional<size_t> &n)
@@ -699,6 +714,8 @@ std::vector<const_font_family_group_entryptr> font_pickerObj::implObj
 
 	items.reserve(families.size()+2);
 	sorted_families.reserve(families.size()+2);
+	validated_most_recently_used.clear();
+	validated_most_recently_used.reserve(most_recently_used.size());
 
 	if (!selection_required)
 	{
@@ -743,6 +760,7 @@ std::vector<const_font_family_group_entryptr> font_pickerObj::implObj
 		{
 			items.emplace_back(f.second->name);
 			sorted_families.emplace_back(f.second);
+			validated_most_recently_used.push_back(f.second->id);
 
 			if (current_family_sel && current_family_sel==f.second)
 				n=items.size()-1;

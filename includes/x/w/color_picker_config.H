@@ -20,11 +20,11 @@ LIBCXXW_NAMESPACE_START
 
 struct color_picker_config {
 
-	//! Initial color
-	rgb initial_color=rgb{rgb::maximum, rgb::maximum, rgb::maximum};
-
 	//! Initial callback
 	functionptr<color_picker_callback_t> initial_callback;
+
+	//! Initial color
+	rgb initial_color=rgb{rgb::maximum, rgb::maximum, rgb::maximum};
 
 	//! Popup configuration
 	element_popup_config popup_config;

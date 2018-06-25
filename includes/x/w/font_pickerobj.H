@@ -26,7 +26,8 @@ public:
 	//! Constructor
 	font_pickerObj(const ref<implObj> &impl,
 		       const ref<containerObj::implObj> &c_impl,
-		       const layout_impl &container_layoutmanager);
+		       const layout_impl &container_layoutmanager)
+		LIBCXX_HIDDEN;
 
 	//! Destructor
 	~font_pickerObj() LIBCXX_HIDDEN;
@@ -34,7 +35,7 @@ public:
 	//! Override get_impl().
 	focusable_impl get_impl() const override LIBCXX_HIDDEN;
 
-	//! Install a callback that gets invoked to report a new font.
+	//! Install a new callback that gets invoked to report a new font.
 	void on_font_update(const functionref<font_picker_callback_t> &cb);
 
 	//! Return the currently selected font.
@@ -52,6 +53,10 @@ public:
 	//! Set most recently used font family groups.
 	void most_recently_used(ONLY IN_THREAD,
 				const std::vector<font_picker_group_id> &);
+
+	//! Get the most recently used font family groups
+
+	std::vector<font_picker_group_id> most_recently_used() const;
 };
 
 LIBCXXW_NAMESPACE_END

@@ -283,7 +283,7 @@ standard_dialog_elements_t font_picker_init_helper
 
 		{"font-family-label", [](const auto &f)
 			{
-				f->create_label("Font family:");
+				f->create_label("Font:");
 			}},
 
 		{"font-family-combobox", [&, this](const auto &f)
@@ -295,7 +295,7 @@ standard_dialog_elements_t font_picker_init_helper
 
 		{"font-size-label", [](const auto &f)
 			{
-				f->create_label("Point size:");
+				f->create_label("Size:");
 			}},
 
 		{"font-size-combobox", [&, this](const auto &f)
@@ -305,9 +305,14 @@ standard_dialog_elements_t font_picker_init_helper
 					 new_editable_comboboxlayoutmanager{});
 			}},
 
+		{"font-size-error", [&](const auto &f)
+			{
+				font_size_error=f->create_label(" ");
+			}},
+
 		{"font-weight-label", [](const auto &f)
 			{
-				f->create_label("Font weight:");
+				f->create_label("Font Weight:");
 			}},
 
 		{"font-weight-combobox", [&, same_width, this](const auto &f)
@@ -322,7 +327,7 @@ standard_dialog_elements_t font_picker_init_helper
 
 		{"font-slant-label", [](const auto &f)
 			{
-				f->create_label("Font slant:");
+				f->create_label("Font Slant:");
 			}},
 
 		{"font-slant-combobox", [&, same_width, this](const auto &f)
@@ -336,7 +341,7 @@ standard_dialog_elements_t font_picker_init_helper
 			}},
 		{"font-width-label", [](const auto &f)
 			{
-				f->create_label("Font width:");
+				f->create_label("Font Width:");
 			}},
 
 		{"font-width-combobox", [&, same_width, this](const auto &f)
@@ -481,17 +486,22 @@ font_picker factoryObj::create_font_picker(const font_picker_config &config)
 
 	auto font_size_validator=input_field{fs_lm->current_selection()}
 	->set_string_validator
-		  ([selection_required=config.selection_required]
+		  ([selection_required=config.selection_required,
+		    font_size_error=font_picker_impl
+		    ->popup_fields.font_size_error]
 		   (ONLY IN_THREAD,
 		    const std::string &value,
 		    unsigned *parsed_value,
 		    const auto &my_field,
 		    const auto &trigger)->std::optional<unsigned>
 		   {
-			   // TODO -- report errors.
 			   if (selection_required &&
 			       (!parsed_value || *parsed_value == 0))
 			   {
+				   font_size_error->update
+					   (value.empty() ?
+					    _("Font size required") :
+					    _("Invalid size"));
 				   return std::nullopt;
 			   }
 
@@ -500,13 +510,17 @@ font_picker factoryObj::create_font_picker(const font_picker_config &config)
 				   if (value.empty())
 					   return 0;
 
+				   font_size_error->update(_("Invalid size"));
 				   return std::nullopt;
 			   }
 
 			   if (*parsed_value > 999)
 			   {
+				   font_size_error->update(_("Maximum point size is 999"));
 				   return std::nullopt;
 			   }
+
+			   font_size_error->update(" ");
 
 			   return *parsed_value;
 		   },
@@ -698,6 +712,12 @@ void font_pickerObj::font_pickerObj
 		     const std::vector<font_picker_group_id> &mru)
 {
 	impl->most_recently_used(IN_THREAD, mru);
+}
+
+std::vector<font_picker_group_id> font_pickerObj::font_pickerObj
+::most_recently_used() const
+{
+	return impl->validated_most_recently_used.get();
 }
 
 LIBCXXW_NAMESPACE_END

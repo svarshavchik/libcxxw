@@ -2599,6 +2599,10 @@ first column, to make the labels line up with their input fields.
     </append_row>
 
     <append_row>
+      <name>font-size-error-row</name>
+    </append_row>
+
+    <append_row>
       <name>ok-cancel-button-container</name>
     </append_row>
   </layout>
@@ -2701,7 +2705,6 @@ first column, to make the labels line up with their input fields.
     <element>
       <name>font-family-label</name>
     </element>
-
     <element>
       <name>font-family-combobox</name>
     </element>
@@ -2801,6 +2804,34 @@ first column, to make the labels line up with their input fields.
 
     <element>
       <name>font-width-combobox</name>
+    </element>
+  </factory>
+
+  <!--
+      The error row.
+
+      The padding above it actually comes from the reserved size for the
+      font preview label peephole's scrollbars.
+
+      We only need to provide for the padding below
+  -->
+
+  <factory type="grid" id="font-size-error-row">
+
+    <halign>
+      <halign>centered</halign>
+    </halign>
+    <colspan>
+      <columns>2</columns>
+    </colspan>
+
+    <padding>
+      <side>bottom</side>
+      <padding>dialog-v-padding</padding>
+    </padding>
+
+    <element>
+      <name>font-size-error</name>
     </element>
   </factory>
 </theme>

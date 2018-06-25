@@ -418,7 +418,7 @@ scroll-bar values get scaled to its configured range and page size.
 #include <INSERT_LIBX_NAMESPACE/w/color_picker.H>
 #include <INSERT_LIBX_NAMESPACE/w/color_picker_config.H>
 
-INSERT_LIBX_NAMESPACE::w::color_picker_config config{ {0, 0, 0} };
+INSERT_LIBX_NAMESPACE::w::color_picker_config config;
 
 INSERT_LIBX_NAMESPACE::w::color_picker cp=factory->create_color_picker(config);
 
@@ -431,6 +431,26 @@ specifying an \ref rgb "INSERT_LIBX_NAMESPACE::w::rgb" value.
 create_color_picker()'s optional
 \ref color_picker_config "INSERT_LIBX_NAMESPACE::w::color_picker_config"
 parameter sets the initial appearance of the color-picker.
+
+\par Font pickers
+
+\code
+#include <INSERT_LIBX_NAMESPACE/w/font_picker.H>
+#include <INSERT_LIBX_NAMESPACE/w/font_picker_config.H>
+
+INSERT_LIBX_NAMESPACE::w::color_picker_config config;
+
+INSERT_LIBX_NAMESPACE::w::color_picker cp=factory->create_color_picker(config);
+
+\endcode
+
+create_font_picker() returns
+\ref font_picker "INSERT_LIBX_NAMESPACE::w::font_picker".
+This is a display element that provides an interactive approach for
+setting a \ref font "INSERT_LIBX_NAMESPACE::w::font" specification.
+create_font_picker()'s optional
+\ref font_picker_config "INSERT_LIBX_NAMESPACE::w::font_picker_config"
+parameter sets the initial appearance of the font-picker.
 
 */
 

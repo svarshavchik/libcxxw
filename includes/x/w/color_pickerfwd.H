@@ -67,16 +67,19 @@ red, green, and blue color component values with full levels of color precision.
 Entering an 8 bit value into the input field quietly scales the value to the
 entire full color precision.
 
-\par "Ok" and "Cancel" buttons
+\par The "Ok" and "Cancel" buttons
 
 The "Cancel" button closes the color picker popup and restores the original
-color if it was changed. "Ok" closes the popup and preserves the current
+color if it was changed. "Ok" closes the popup and saves the current
 color if it was changed. Closing the color picker popup in any other way
 (the "Esc" key, or clicking outside of it with the pointer) is equivalent to
 a "Cancel".
 
 \code
-INSERT_LIBX_NAMESPACE::w::rgb c=cp->get_current_color();
+INSERT_LIBX_NAMESPACE::w::rgb c=cp->current_color();
+
+cp->current_color(INSERT_LIBX_NAMESPACE::w::rgb{});
+cp->current_color(IN_THREAD, INSERT_LIBX_NAMESPACE::w::rgb{});
 
 cp->on_color_update([]
                     (ONLY IN_THREAD,
@@ -85,20 +88,20 @@ cp->on_color_update([]
                      const INSERT_LIBX_NAMESPACE::w::busy &mcguffin)
                     {
                     });
+
 \endcode
 
-get_current_color() returns the color picker's most recently saved value,
-either the initial value or the value saved by the color picker popup's
-"Ok" button.
+current_color() returns or sets the the color picker's most recently saved
+value. This is the color value saved by the popup's "Ok" button.
 
 on_color_update() installs a callback that gets executed by the color picker
-popup's "Ok" button. The callback gets initially executed
+popup's "Ok" button. A newly-installed callback gets initially executed
 by the library's internal connection thread passing a
 \c INSERT_LIBX_NAMESPACE::w::initial{} value for
 the \ref callback_trigger_t "trigger parameter". This specifies the picker's
 current color value at the time the callback gets installed.
-The callback then gets invoked by the "Ok" button, but only if the color
-was changed.
+The callback then gets invoked by the "Ok" button, or by current_color()
+setting a new color.
 
 Only one color picker callback is active at any time.
 Installing another color picker callback replaces the previous one.

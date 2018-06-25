@@ -15,16 +15,37 @@
 
 LIBCXXW_NAMESPACE_START
 
-//! Initial color picker configuration
+//! Initial font picker configuration
 
 //! An optional parameter to a \ref factory "factory"'s
-//! create_font_picker() setting the initial value and apperance of a
+//! create_font_picker() setting the initial value and appearance of a
 //! \ref font_picker "INSERT_LIBX_NAMESPACE::w::font_picker".
 
 struct font_picker_config {
 
-	//! Popup configuration
-	element_popup_config popup_config;
+	//! Most recently used font families
+
+	//! These will be shown first, in the dropdown. The "foundry_required"
+	//! setting must remain the same, each time the font picker gets
+	//! created, in order for the most_recently_used list to work.
+	//!
+	//! Any group ids that no longer exist get automatically
+	//! ignored.
+	std::vector<font_picker_group_id> most_recently_used;
+
+	//! The initial callback
+
+	//! The callback gets invoked upon installation with
+	//! \ref initial "initial" callback trigger indication, and the
+	//! initial value of the font family group.
+
+	functionptr<font_picker_callback_t> callback;
+
+	//! Initial picker font.
+
+	//! The default library font is used if not specified.
+
+	std::optional<font> initial_font;
 
 	//! Whether a font family+group must be specified
 
@@ -53,29 +74,8 @@ struct font_picker_config {
 
 	bool foundry_required=false;
 
-	//! Initial picker font.
-
-	//! The default library font is used if not specified.
-
-	std::optional<font> initial_font;
-
-	//! Most recently used font families
-
-	//! These will be shown first, in the dropdown. The "foundry_required"
-	//! setting must remain the same, each time the font picker gets
-	//! created, in order for the most_recently_used list to work.
-	//!
-	//! Any group ids that no longer exist get automatically
-	//! ignored.
-	std::vector<font_picker_group_id> most_recently_used;
-
-	//! The initial callback
-
-	//! The callback gets invoked upon installation with
-	//! \ref initial "initial" callback trigger indication, and the
-	//! initial value of the font family group.
-
-	functionptr<font_picker_callback_t> callback;
+	//! Popup configuration
+	element_popup_config popup_config;
 };
 
 LIBCXXW_NAMESPACE_END

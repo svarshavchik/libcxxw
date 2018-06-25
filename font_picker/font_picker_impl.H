@@ -129,6 +129,7 @@ class LIBCXX_HIDDEN font_pickerObj::implObj : virtual public obj {
 		(bool selection_required,
 		 const std::vector<const_font_family_group_entry> &families,
 		 const std::vector<font_picker_group_id> &most_recently_used,
+		 std::vector<font_picker_group_id> &validated_mru,
 		 std::vector<list_item_param> &items,
 		 const const_font_family_group_entryptr &current_family_sel,
 		 std::optional<size_t> &new_current_family_sel_index);
@@ -312,6 +313,9 @@ class LIBCXX_HIDDEN font_pickerObj::implObj : virtual public obj {
 	//! The official, saved font.
 	official_font_t official_font;
 
+	//! Validated most recently used vector
+	mpobj<std::vector<font_picker_group_id>> validated_most_recently_used;
+
 	//! The label display element, that shows the name of the currnt font.
 	const label current_font_shown;
 };
@@ -360,6 +364,8 @@ struct LIBCXX_HIDDEN font_picker_impl_init_params {
 
 	std::vector<const_font_family_group_entry> families;
 	std::vector<const_font_family_group_entryptr> sorted_families;
+
+	std::vector<font_picker_group_id> most_recently_used;
 
 	font_picker_impl_init_params(const image_button_internal &popup_button,
 				     const popup &font_picker_popup,

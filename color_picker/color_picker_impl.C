@@ -394,12 +394,12 @@ void color_pickerObj::implObj::new_hsv_values(ONLY IN_THREAD)
 		}
 	}
 
-	refresh_component_gradients(IN_THREAD);
-	refresh_variable_gradients(IN_THREAD);
-
 	r_value->set(c.r);
 	g_value->set(c.g);
 	b_value->set(c.b);
+	current_color(IN_THREAD)=c;
+	refresh_component_gradients(IN_THREAD);
+	refresh_variable_gradients(IN_THREAD);
 	new_color(IN_THREAD, {});
 }
 
