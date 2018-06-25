@@ -25,11 +25,14 @@ focusframecontainer_elementObj(const border_arg &focusoff_border,
 			       Args && ...args)
 	: superclass_t{focusoff_border,
 		       focuson_border,
-		       bordercontainer_implObj::initial_bordercontainer_border
-		       (focusoff_border, parent_container),
+
+		       focusoff_border, focusoff_border, focusoff_border, focusoff_border,
+
 		       hpad,
 		       vpad,
-		       std::forward<Args>(args)...}
+		       std::forward<Args>(args)...},
+	  focusoff_border{focusoff_border},
+	  focuson_border{focuson_border}
 {
 }
 
@@ -52,11 +55,10 @@ focusframecontainer_elementObj<element_impl>::~focusframecontainer_elementObj()
 //! Inherited from focusframecontainer_implObj.
 
 template<typename element_impl>
-current_border_impl focusframecontainer_elementObj<element_impl>
+border_arg focusframecontainer_elementObj<element_impl>
 ::get_focusoff_border(ONLY IN_THREAD) const
 {
-	return this->themeborder_element_impl<focusoff_border_tag>
-		::current_border(IN_THREAD);
+	return this->focusoff_border;
 }
 
 //! Implement get_focuson_border().
@@ -64,11 +66,10 @@ current_border_impl focusframecontainer_elementObj<element_impl>
 //! Inherited from focusframecontainer_implObj.
 
 template<typename element_impl>
-current_border_impl focusframecontainer_elementObj<element_impl>
+border_arg focusframecontainer_elementObj<element_impl>
 ::get_focuson_border(ONLY IN_THREAD) const
 {
-	return this->themeborder_element_impl<focuson_border_tag>
-		::current_border(IN_THREAD);
+	return this->focuson_border;
 }
 
 //! Override keyboard_focus().

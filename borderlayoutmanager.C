@@ -35,8 +35,7 @@ container factoryObj
 
 	auto c_impl=ref<bordercontainer_elementObj<container_elementObj
 						   <child_elementObj>>>
-		::create(bordercontainer_implObj
-			 ::initial_bordercontainer_border(border, parent),
+		::create(border, border, border, border,
 			 hpad, vpad,
 			 parent);
 

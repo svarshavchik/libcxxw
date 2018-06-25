@@ -9,6 +9,7 @@
 #include "x/w/impl/singletonlayoutmanager.H"
 #include "x/w/impl/bordercontainer_impl.H"
 #include "x/w/impl/border_implfwd.H"
+#include <tuple>
 
 LIBCXXW_NAMESPACE_START
 
@@ -28,7 +29,19 @@ class LIBCXX_HIDDEN borderlayoutmanagerObj::implObj
 
 	//! Current border being used for drawing.
 
-	const_border_implptr current_border;
+	const_border_implptr current_left_border;
+
+	//! Current border being used for drawing.
+
+	const_border_implptr current_right_border;
+
+	//! Current border being used for drawing.
+
+	const_border_implptr current_top_border;
+
+	//! Current border being used for drawing.
+
+	const_border_implptr current_bottom_border;
 
  public:
 	//! Constructor
@@ -76,6 +89,39 @@ class LIBCXX_HIDDEN borderlayoutmanagerObj::implObj
 		     const draw_info &di,
 		     clip_region_set &clip,
 		     rectangle_set &drawn_areas) override;
+
+ private:
+
+	//! What get_all_borders returns.
+
+	struct border_info {
+
+		const_border_impl lb, //!< Left border.
+			rb, //!< Right border.
+			tb, //!< Top border.
+			bb, //!< Bottom border.
+			tl, //!< Top-left border.
+			tr, //!< Top-right border.
+			bl, //!< Bottom-left border.
+			br; //!< Bottom-right border.
+
+		dim_t left_pad,	        //!< Padding
+			right_pad,	//!< Padding
+			top_pad,	//!< Padding
+			bottom_pad;	//!< Padding
+	};
+
+	//! Cached border_info
+	std::optional<border_info> cached_border_info;
+
+	//! Obtain all four borders from the container, compute four corner borders.
+
+	const border_info &get_all_borders(ONLY IN_THREAD);
+
+ public:
+	//! Override theme_updated().
+
+	void theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme) override;
 };
 
 LIBCXXW_NAMESPACE_END

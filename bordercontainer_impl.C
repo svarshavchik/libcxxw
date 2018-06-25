@@ -60,13 +60,4 @@ bordercontainer_implObj
 
 bordercontainer_implObj::~bordercontainer_implObj()=default;
 
-current_border_impl
-bordercontainer_implObj::initial_bordercontainer_border
-(const border_arg &initial_border,
- const container_impl &parent_container)
-{
-	return parent_container->container_element_impl()
-		.get_screen()->impl->get_cached_border(initial_border);
-}
-
 LIBCXXW_NAMESPACE_END

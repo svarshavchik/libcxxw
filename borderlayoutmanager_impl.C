@@ -30,40 +30,93 @@ layoutmanager borderlayoutmanagerObj::implObj::create_public_object()
 
 dim_t borderlayoutmanagerObj::implObj::get_left_padding(ONLY IN_THREAD)
 {
-	return dim_t::truncate
-		(bordercontainer_impl->get_border_hpad(IN_THREAD) +
-		 bordercontainer_impl->get_border(IN_THREAD)->border(IN_THREAD)
-		 ->calculated_border_width);
+	return dim_t::truncate(get_all_borders(IN_THREAD).left_pad +
+			       bordercontainer_impl->get_border_hpad(IN_THREAD))
+		;
 }
 
 dim_t borderlayoutmanagerObj::implObj::get_right_padding(ONLY IN_THREAD)
 {
-	return get_left_padding(IN_THREAD);
+	return dim_t::truncate(get_all_borders(IN_THREAD).right_pad +
+			       bordercontainer_impl->get_border_hpad(IN_THREAD))
+		;
 }
 
 dim_t borderlayoutmanagerObj::implObj::get_top_padding(ONLY IN_THREAD)
 {
-	return dim_t::truncate
-		(bordercontainer_impl->get_border_vpad(IN_THREAD) +
-		 bordercontainer_impl->get_border(IN_THREAD)->border(IN_THREAD)
-		 ->calculated_border_height);
+	return dim_t::truncate(get_all_borders(IN_THREAD).top_pad +
+			       bordercontainer_impl->get_border_vpad(IN_THREAD))
+		;
 }
 
 dim_t borderlayoutmanagerObj::implObj::get_bottom_padding(ONLY IN_THREAD)
 {
-	return get_top_padding(IN_THREAD);
+	return dim_t::truncate(get_all_borders(IN_THREAD).bottom_pad +
+			       bordercontainer_impl->get_border_vpad(IN_THREAD))
+		;
+}
+
+const borderlayoutmanagerObj::implObj::border_info &
+borderlayoutmanagerObj::implObj::get_all_borders(ONLY IN_THREAD)
+{
+	if (cached_border_info)
+		return *cached_border_info;
+
+	auto lb=bordercontainer_impl->get_left_border(IN_THREAD)
+		->border(IN_THREAD);
+	auto rb=bordercontainer_impl->get_right_border(IN_THREAD)
+		->border(IN_THREAD);
+	auto tb=bordercontainer_impl->get_top_border(IN_THREAD)
+		->border(IN_THREAD);
+	auto bb=bordercontainer_impl->get_bottom_border(IN_THREAD)
+		->border(IN_THREAD);
+
+	// Which border is "better" for each corner.
+
+	auto tl=lb->compare(*tb) ? tb:lb;
+	auto tr=rb->compare(*tb) ? tb:rb;
+	auto bl=lb->compare(*bb) ? bb:lb;
+	auto br=rb->compare(*bb) ? bb:rb;
+
+	// Compute each side's padding by choosing the "better" of the two
+	// corner borders.
+
+	dim_t left_pad=(tl->compare(*bl) ? bl:tl)->calculated_border_width;
+	dim_t right_pad=(tr->compare(*br) ? br:tr)->calculated_border_width;
+
+	dim_t top_pad=(tl->compare(*tr) ? tr:tl)->calculated_border_height;
+	dim_t bottom_pad=(bl->compare(*br) ? br:bl)->calculated_border_height;
+
+	// HOWEVER: if the given side's border is all wet, there is no padding.
+
+	if (lb->no_border())
+		left_pad=0;
+
+	if (rb->no_border())
+		right_pad=0;
+
+	if (tb->no_border())
+		top_pad=0;
+
+	if (bb->no_border())
+		bottom_pad=0;
+
+	cached_border_info=
+		{
+		 lb, rb, tb, bb, tl, tr, bl, br, left_pad, right_pad, top_pad,
+		 bottom_pad
+		};
+
+	return *cached_border_info;
 }
 
 rectangle borderlayoutmanagerObj::implObj
 ::padded_position(ONLY IN_THREAD, const element_impl &e)
 {
-	auto b=bordercontainer_impl->get_border(IN_THREAD)->border(IN_THREAD);
+	const auto &info=get_all_borders(IN_THREAD);
 
-	dim_t hpad=b->calculated_border_width;
-	dim_t vpad=b->calculated_border_height;
-
-	dim_t hpad2=dim_t::truncate(hpad+hpad);
-	dim_t vpad2=dim_t::truncate(vpad+vpad);
+	dim_t hpad2=dim_t::truncate(info.left_pad+info.right_pad);
+	dim_t vpad2=dim_t::truncate(info.top_pad+info.bottom_pad);
 
 	auto &current_position=bordercontainer_impl->get_container_impl()
 		.container_element_impl().data(IN_THREAD).current_position;
@@ -73,7 +126,8 @@ rectangle borderlayoutmanagerObj::implObj
 	dim_t padded_height=
 		current_position.height > vpad2 ? current_position.height-vpad2:dim_t{};
 
-	return {coord_t::truncate(hpad), coord_t::truncate(vpad),
+	return {coord_t::truncate(info.left_pad),
+		coord_t::truncate(info.right_pad),
 		padded_width, padded_height};
 }
 
@@ -90,16 +144,43 @@ void borderlayoutmanagerObj::implObj
 	}
 }
 
+void borderlayoutmanagerObj::implObj::theme_updated(ONLY IN_THREAD,
+						    const defaulttheme &new_theme)
+{
+	superclass_t::theme_updated(IN_THREAD, new_theme);
+
+	needs_recalculation(IN_THREAD);
+}
+
 void borderlayoutmanagerObj::implObj::recalculate(ONLY IN_THREAD)
 {
-	superclass_t::recalculate(IN_THREAD);
-
 	// If the border changed, we need to redraw even if recalculate()
-	// did nothing.
-	if (current_border != bordercontainer_impl->get_border(IN_THREAD)
+	// will do nothing, and we always need to clear the cached_border_info, in
+	// order for it to be computed from scratch.
+
+	if (current_left_border != bordercontainer_impl->get_left_border(IN_THREAD)
+	    ->border(IN_THREAD) ||
+	    current_right_border != bordercontainer_impl->get_right_border(IN_THREAD)
+	    ->border(IN_THREAD) ||
+	    current_top_border != bordercontainer_impl->get_top_border(IN_THREAD)
+	    ->border(IN_THREAD) ||
+	    current_bottom_border != bordercontainer_impl->get_bottom_border(IN_THREAD)
 	    ->border(IN_THREAD))
+	{
+		cached_border_info.reset();
+
+		const auto &info=get_all_borders(IN_THREAD);
+
+		current_left_border=info.lb;
+		current_right_border=info.rb;
+		current_top_border=info.tb;
+		current_bottom_border=info.bb;
+
 		bordercontainer_impl->get_container_impl()
 			.container_element_impl().schedule_redraw(IN_THREAD);
+	}
+
+	superclass_t::recalculate(IN_THREAD);
 }
 
 void borderlayoutmanagerObj::implObj::do_draw(ONLY IN_THREAD,
@@ -109,11 +190,9 @@ void borderlayoutmanagerObj::implObj::do_draw(ONLY IN_THREAD,
 {
 	superclass_t::do_draw(IN_THREAD, di, clip, drawn_areas);
 
-	auto b=bordercontainer_impl->get_border(IN_THREAD)->border(IN_THREAD);
-	current_border=b;
+	const auto &info=get_all_borders(IN_THREAD);
 
-	auto &e=bordercontainer_impl->get_container_impl()
-		.container_element_impl();
+	auto &e=bordercontainer_impl->get_container_impl().container_element_impl();
 
 	element my_element=get();
 
@@ -128,19 +207,15 @@ void borderlayoutmanagerObj::implObj::do_draw(ONLY IN_THREAD,
 	// a top-left corner the element is the bottomright element.
 
 	struct {
+		const const_border_impl &which_border;
 		rectangle r;
 		decltype(border_impl::base::cornertl()) which_corner;
 		element_implptr surrounding_elements_info::*this_corner;
 	} four_corners[4]=
 		  {
 		   {
-		    //
-		    // All four corners have calculated_border_width/height,
-		    // and the coordinates vary only in the starting X and Y
-		    // positions, which we will set below.
-		    {0, 0, b->calculated_border_width,
-		     b->calculated_border_height},
-
+		    info.tl,
+		    {0, 0, info.left_pad, info.top_pad},
 		    // Specifies which corner border_implObj will draw.
 		    border_impl::base::cornerbr(),
 
@@ -155,20 +230,20 @@ void borderlayoutmanagerObj::implObj::do_draw(ONLY IN_THREAD,
 		    &surrounding_elements_info::bottomright,
 		   },
 		   {
-		    {0, 0, b->calculated_border_width,
-		     b->calculated_border_height},
+		    info.tr,
+		    {0, 0, info.right_pad, info.top_pad},
 		    border_impl::base::cornerbl(),
 		    &surrounding_elements_info::bottomleft,
 		   },
 		   {
-		    {0, 0, b->calculated_border_width,
-		     b->calculated_border_height},
+		    info.bl,
+		    {0, 0, info.left_pad, info.bottom_pad},
 		    border_impl::base::cornertr(),
 		    &surrounding_elements_info::topright,
 		   },
 		   {
-		    {0, 0, b->calculated_border_width,
-		     b->calculated_border_height},
+		    info.br,
+		    {0, 0, info.right_pad, info.bottom_pad},
 		    border_impl::base::cornertl(),
 		    &surrounding_elements_info::topleft,
 		   }
@@ -177,13 +252,13 @@ void borderlayoutmanagerObj::implObj::do_draw(ONLY IN_THREAD,
 	// The starting X coordinate for the two corners on the right.
 	four_corners[1].r.x=four_corners[3].r.x=
 		coord_t::truncate(e.data(IN_THREAD).current_position.width-
-				  b->calculated_border_width);
+				  info.right_pad);
 
 	// The starting Y coordinate for the two corners at the bottom.
 
 	four_corners[2].r.y=four_corners[3].r.y=
 		coord_t::truncate(e.data(IN_THREAD).current_position.height-
-				  b->calculated_border_height);
+				  info.bottom_pad);
 
 	for (const auto &corner_info:four_corners)
 	{
@@ -206,10 +281,9 @@ void borderlayoutmanagerObj::implObj::do_draw(ONLY IN_THREAD,
 			  const pixmap &pm,
 			  const gc &c)
 			 {
-				 bordercontainer_impl->corner_mask_buffer
-					 ->get
-					 (b->calculated_border_width,
-					  b->calculated_border_height,
+				 bordercontainer_impl->corner_mask_buffer->get
+					 (r.width,
+					  r.height,
 					  [&, this]
 					  (const picture &scratch_p,
 					   const pixmap &scratch_pm,
@@ -235,7 +309,12 @@ void borderlayoutmanagerObj::implObj::do_draw(ONLY IN_THREAD,
 							   (di.absolute_location
 							    .y + r.y)};
 
-						  b->draw_corner
+						  if (corner_info.which_border
+						      ->no_corner_border(bdi))
+							  return;
+
+						  corner_info.which_border
+							  ->draw_corner
 							  (IN_THREAD,
 							   bdi,
 							   corner_info
@@ -260,11 +339,13 @@ void borderlayoutmanagerObj::implObj::do_draw(ONLY IN_THREAD,
 
 	struct {
 		coord_t starting_coord;
+		dim_t thickness;
+		const_border_impl border;
 		elementptr first_e;
 		elementptr second_e;
 	} lines[2]={
-		    {0, {}, my_element},
-		    {0, my_element, {}}
+		    {0, info.top_pad, info.tb, {}, my_element},
+		    {0, info.bottom_pad, info.bb, my_element, {}}
 	};
 
 	// Compute the Y coordinate for the bottom border.
@@ -272,21 +353,20 @@ void borderlayoutmanagerObj::implObj::do_draw(ONLY IN_THREAD,
 	lines[1].starting_coord=
 		coord_t::truncate(coord_t::truncate(e.data(IN_THREAD)
 						    .current_position.height)
-				  -b->calculated_border_height);
+				  -info.bottom_pad);
 
 	// Compute the length of the horizontal border.
 	dim_t length=dim_t::truncate(coord_t::truncate(e.data(IN_THREAD)
 						       .current_position.width)
-				     - (b->calculated_border_width
-					+b->calculated_border_width));
+				     - (info.left_pad+info.right_pad));
 
 	for (const auto &line_info:lines)
 	{
 		// Calculate where the drawn border sohuld go.
-		rectangle r{coord_t::truncate(b->calculated_border_width),
+		rectangle r{coord_t::truncate(info.left_pad),
 			    line_info.starting_coord,
 			    length,
-			    b->calculated_border_height};
+			    line_info.thickness};
 		drawn_areas.insert(r); // We are drawing this rectangle.
 
 		// Acquire the scratch buffers, and create the draw_info
@@ -303,82 +383,8 @@ void borderlayoutmanagerObj::implObj::do_draw(ONLY IN_THREAD,
 			  const pixmap &pm,
 			  const gc &c)
 			 {
-				 bordercontainer_impl->h_mask_buffer
-					 ->get
+				 bordercontainer_impl->h_mask_buffer->get
 					 (r.width,
-					  b->calculated_border_height,
-					  [&, this]
-					  (const picture &scratch_p,
-					   const pixmap &scratch_pm,
-					   const gc &scratch_gc)
-					  {
-						  border_implObj::draw_info bdi
-							  {
-							   p,
-							   {0, 0, r.width,
-							    r.height},
-							   pm,
-							   scratch_p,
-							   scratch_pm,
-							   scratch_gc,
-							   coord_t::truncate
-							   (di.absolute_location
-							    .x + r.x),
-							   coord_t::truncate
-							   (di.absolute_location
-							    .y + r.y)};
-
-						  bdi.background_horizontal
-							  (IN_THREAD,
-							   line_info.first_e,
-							   line_info.second_e);
-
-						  b->draw_horizontal(IN_THREAD,
-								     bdi);
-
-					  });
-			 },
-			 r,
-			 di, di, clip,
-			 bordercontainer_impl->h_scratch_buffer);
-	}
-
-	// And now for the two vertical borders, which are drawn similary.
-	//
-	// Compute the starting X coordinate of the right border, and
-	// the height of both vertical borders.
-	lines[1].starting_coord=
-		coord_t::truncate(coord_t::truncate(e.data(IN_THREAD)
-						    .current_position.width)
-				  -b->calculated_border_width);
-
-	length=dim_t::truncate(coord_t::truncate(e.data(IN_THREAD)
-						 .current_position.height)
-			       - (b->calculated_border_height
-				  +b->calculated_border_height));
-
-	// And now do similar things for vertical borders; using
-	// background_vertical() and draw_vertical().
-
-	for (const auto &line_info:lines)
-	{
-		rectangle r{line_info.starting_coord,
-			    coord_t::truncate(b->calculated_border_height),
-			    b->calculated_border_width,
-			    length};
-
-		drawn_areas.insert(r);
-
-		e.draw_using_scratch_buffer
-			(IN_THREAD,
-			 [&, this]
-			 (const picture &p,
-			  const pixmap &pm,
-			  const gc &c)
-			 {
-				 bordercontainer_impl->h_mask_buffer
-					 ->get
-					 (b->calculated_border_height,
 					  r.height,
 					  [&, this]
 					  (const picture &scratch_p,
@@ -401,13 +407,102 @@ void borderlayoutmanagerObj::implObj::do_draw(ONLY IN_THREAD,
 							   (di.absolute_location
 							    .y + r.y)};
 
+						  if (line_info.border
+						      ->no_horizontal_border(bdi)
+						      )
+							  return;
+
+						  bdi.background_horizontal
+							  (IN_THREAD,
+							   line_info.first_e,
+							   line_info.second_e);
+
+						  line_info.border
+							  ->draw_horizontal
+							  (IN_THREAD, bdi);
+
+					  });
+			 },
+			 r,
+			 di, di, clip,
+			 bordercontainer_impl->h_scratch_buffer);
+	}
+
+	// And now for the two vertical borders, which are drawn similary.
+	//
+	// Compute the starting X coordinate of the right border, and
+	// the height of both vertical borders.
+
+	lines[0].thickness=info.left_pad;
+	lines[1].thickness=info.right_pad;
+	lines[0].border=info.lb;
+	lines[1].border=info.rb;
+
+	lines[1].starting_coord=
+		coord_t::truncate(coord_t::truncate(e.data(IN_THREAD)
+						    .current_position.width)
+				  -info.right_pad);
+
+	length=dim_t::truncate(coord_t::truncate(e.data(IN_THREAD)
+						 .current_position.height)
+			       - (info.top_pad+info.bottom_pad));
+
+	// And now do similar things for vertical borders; using
+	// background_vertical() and draw_vertical().
+
+	for (const auto &line_info:lines)
+	{
+		rectangle r{line_info.starting_coord,
+			    coord_t::truncate(info.top_pad),
+			    line_info.thickness,
+			    length};
+
+		drawn_areas.insert(r);
+
+		e.draw_using_scratch_buffer
+			(IN_THREAD,
+			 [&, this]
+			 (const picture &p,
+			  const pixmap &pm,
+			  const gc &c)
+			 {
+				 bordercontainer_impl->h_mask_buffer
+					 ->get
+					 (r.width,
+					  r.height,
+					  [&, this]
+					  (const picture &scratch_p,
+					   const pixmap &scratch_pm,
+					   const gc &scratch_gc)
+					  {
+						  border_implObj::draw_info bdi
+							  {
+							   p,
+							   {0, 0, r.width,
+							    r.height},
+							   pm,
+							   scratch_p,
+							   scratch_pm,
+							   scratch_gc,
+							   coord_t::truncate
+							   (di.absolute_location
+							    .x + r.x),
+							   coord_t::truncate
+							   (di.absolute_location
+							    .y + r.y)};
+
+						  if (line_info.border
+						      ->no_vertical_border(bdi)
+						      )
+							  return;
+
 						  bdi.background_vertical
 							  (IN_THREAD,
 							   line_info.first_e,
 							   line_info.second_e);
 
-						  b->draw_vertical(IN_THREAD,
-								   bdi);
+						  line_info.border->draw_vertical
+							  (IN_THREAD, bdi);
 
 					  });
 			 },

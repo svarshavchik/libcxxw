@@ -24,14 +24,6 @@ class bordercontainer_implObj : virtual public obj {
 
  public:
 
-	//! Create the initial container border.
-
-	//! Used by template mixins to create the initial current_border_impl().
-
-	static current_border_impl
-	initial_bordercontainer_border(const border_arg &initial_border,
-				       const container_impl &parent_container);
-
 	//! Scratch buffer for the corner border
 
 	//! For optimal use of scratch buffers, separate scratch buffer are
@@ -105,12 +97,18 @@ public:
 
 	//! Implemented by the mixin template, to return my border.
 
-	virtual current_border_impl get_border(ONLY IN_THREAD) const=0;
+	virtual current_border_impl get_left_border(ONLY IN_THREAD) const=0;
+	virtual current_border_impl get_right_border(ONLY IN_THREAD) const=0;
+	virtual current_border_impl get_top_border(ONLY IN_THREAD) const=0;
+	virtual current_border_impl get_bottom_border(ONLY IN_THREAD) const=0;
 
 	//! Implemented by the mixin template, to set my border.
 
 	virtual void set_border(ONLY IN_THREAD,
-				const current_border_impl &)=0;
+				const border_arg &left_border,
+				const border_arg &right_border,
+				const border_arg &top_border,
+				const border_arg &bottom_border)=0;
 
 	//! Additional padding.
 

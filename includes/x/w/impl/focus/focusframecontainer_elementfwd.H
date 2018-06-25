@@ -34,6 +34,20 @@ class focusframecontainer_elementObj
 	typedef themeborder_elementObj<bordercontainer_elementObj<element_impl>,
 				       focusoff_border_tag,
 				       focuson_border_tag> superclass_t;
+
+	//! Saved focus-off border
+
+	//! This is what bordercontainer_impl wants, but we'll also save it in our
+	//! own themeborder_element mixin, in order to cache it.
+
+	const border_arg focusoff_border;
+
+	//! Saved focus-on border
+
+	//! This is what bordercontainer_impl wants, but we'll also save it in our
+	//! own themeborder_element mixin, in order to cache it.
+
+	const border_arg focuson_border;
  public:
 
 	template<typename ...Args>
@@ -47,8 +61,8 @@ class focusframecontainer_elementObj
 	~focusframecontainer_elementObj();
 
 	bordercontainer_implObj &focusframe_bordercontainer_impl() override;
-	current_border_impl get_focusoff_border(ONLY IN_THREAD) const override;
-	current_border_impl get_focuson_border(ONLY IN_THREAD) const override;
+	border_arg get_focusoff_border(ONLY IN_THREAD) const override;
+	border_arg get_focuson_border(ONLY IN_THREAD) const override;
 
 	void keyboard_focus(ONLY IN_THREAD,
 			    const callback_trigger_t &trigger) override;
