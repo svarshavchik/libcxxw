@@ -248,8 +248,11 @@ void date_input_field_calendarObj
 
 			 auto f=row0_lm->append_row();
 
+			 create_image_button_info scroll_button_info
+				 {*f, valign::bottom, true};
+
 			 create_image_button
-				 (true,
+				 (scroll_button_info,
 				  [this]
 				  (const auto &parent)
 				  {
@@ -275,12 +278,10 @@ void date_input_field_calendarObj
 						   });
 					  return b;
 				  },
-				  *f,
-				  valign::bottom,
 				  [](const auto &){})->show();
 
 			 create_image_button
-				 (true,
+				 (scroll_button_info,
 				  [this]
 				  (const auto &parent)
 				  {
@@ -307,15 +308,13 @@ void date_input_field_calendarObj
 
 					  return b;
 				  },
-				  *f,
-				  valign::bottom,
 				  [](const auto &){})->show();
 
 			 f->create_label(get_month_label(e, current_ym))
 				 ->show();
 
 			 create_image_button
-				 (true,
+				 (scroll_button_info,
 				  [this]
 				  (const auto &parent)
 				  {
@@ -342,12 +341,10 @@ void date_input_field_calendarObj
 
 					  return b;
 				  },
-				  *f,
-				  valign::bottom,
 				  [](const auto &){})->show();
 
 			 create_image_button
-				 (true,
+				 (scroll_button_info,
 				  [this]
 				  (const auto &parent)
 				  {
@@ -374,8 +371,6 @@ void date_input_field_calendarObj
 
 					  return b;
 				  },
-				  *f,
-				  valign::bottom,
 				  [](const auto &){})->show();
 		 },
 		 new_gridlayoutmanager{})->show();

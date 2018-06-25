@@ -601,8 +601,11 @@ new_booklayoutmanager::create(const container_impl &parent) const
 	ptr<image_button_internalObj::implObj> left_scroll_impl,
 		right_scroll_impl;
 
+	create_image_button_info scroll_button_info{*factory, valign::bottom,
+						    true};
+
 	auto left_scroll=create_image_button
-		(true,
+		(scroll_button_info,
 		 [&]
 		 (const auto &container_impl)
 		 {
@@ -618,7 +621,7 @@ new_booklayoutmanager::create(const container_impl &parent) const
 			 left_scroll_impl=impl;
 
 			 return impl;
-		 }, *factory, valign::bottom,
+		 },
 		 [](const auto &ignore){});
 
 	left_scroll->set_background_color(background_color);
@@ -681,7 +684,7 @@ new_booklayoutmanager::create(const container_impl &parent) const
 	factory->padding(0).border(border);
 
 	auto right_scroll=create_image_button
-		(true,
+		(scroll_button_info,
 		 [&]
 		 (const auto &container_impl)
 		 {
@@ -694,7 +697,7 @@ new_booklayoutmanager::create(const container_impl &parent) const
 			 right_scroll_impl=impl;
 
 			 return impl;
-		 }, *factory, valign::bottom,
+		 },
 		 [](const auto &ignore){});
 
 	right_scroll->set_background_color(background_color);

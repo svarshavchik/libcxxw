@@ -26,6 +26,8 @@ LIBCXXW_NAMESPACE_START
 
 LOG_FUNC_SCOPE_DECL(INSERT_LIBX_NAMESPACE::w::image_button, image_log);
 
+create_image_button_info::~create_image_button_info()=default;
+
 image_buttonObj::image_buttonObj(const ref<implObj> &impl,
 				 const container_impl
 				 &container_impl,
@@ -208,12 +210,9 @@ class LIBCXX_HIDDEN image_button_containerObj
 // implementation object.
 
 image_button
-do_create_image_button(bool disable_recursive_visibility,
+do_create_image_button(const create_image_button_info &info,
 		       const function<image_button_internal_factory_t>
 		       &img_impl_factory,
-		       factoryObj &f,
-		       valign alignment,
-
 		       const function<void (const factory &)> &label_factory)
 {
 	// Create an image_button_containerObj, a container with a grid
@@ -221,8 +220,8 @@ do_create_image_button(bool disable_recursive_visibility,
 
 	auto image_button_outer_container_impl=
 		ref<image_button_containerObj>
-		::create(disable_recursive_visibility,
-			 f.get_container_impl());
+		::create(info.disable_recursive_visibility,
+			 info.f.get_container_impl());
 
 	auto image_button_outer_container_layout=
 		ref<gridlayoutmanagerObj::implObj>
@@ -230,7 +229,7 @@ do_create_image_button(bool disable_recursive_visibility,
 
 	auto glm=image_button_outer_container_layout->create_gridlayoutmanager();
 
-	glm->row_alignment(0, alignment);
+	glm->row_alignment(0, info.alignment);
 
 	// If there's going to be a label, it gets all extra space.
 	glm->requested_col_width(1, 100);
@@ -278,7 +277,7 @@ do_create_image_button(bool disable_recursive_visibility,
 	auto b=image_button::create(impl, image_button_outer_container_impl,
 				    image_button_outer_container_layout);
 
-	f.created_internally(b);
+	info.f.created_internally(b);
 
 	// The internal grid layout manager does not introduce any of its own
 	// padding, but keep the left padding, to separate the image button
@@ -331,14 +330,12 @@ image_button factoryObj::do_create_checkbox(const function<factory_creator_t>
 		throw EXCEPTION(_("Attempt to create a checkbox without any images."));
 
 	return create_image_button_with_label_factory
-		(false,
+		({*this, alignment},
 		 [&]
 		 (const auto &container)
 		 {
 			 return create_checkbox_impl(container, icons);
-		 },
-		 *this,
-		 alignment, label_factory);
+		 }, label_factory);
 }
 
 image_button factoryObj::create_radio(const radio_group &group,
@@ -383,14 +380,14 @@ image_button factoryObj::do_create_radio(const radio_group &group,
 
 
 	return create_image_button_with_label_factory
-		(false,
+		({*this, alignment},
 		 [&]
 		 (const auto &container)
 		 {
 			 return create_radio_impl(group,
 						  container,
 						  icons);
-		 }, *this, alignment, label_creator);
+		 }, label_creator);
 }
 
 LIBCXXW_NAMESPACE_END

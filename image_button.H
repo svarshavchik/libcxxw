@@ -17,15 +17,23 @@ LIBCXXW_NAMESPACE_START
 typedef ref<image_button_internalObj::implObj>
 image_button_internal_factory_t(const container_impl);
 
+//! Parameters used when creating an image button.
+
+struct LIBCXX_HIDDEN create_image_button_info {
+
+	factoryObj &f;
+	valign alignment=valign::middle;
+	bool disable_recursive_visibility=false;
+
+	~create_image_button_info();
+};
+
 //! Type-erased create_image_button() and create_image_button_with_label_factory().
 
 image_button
-do_create_image_button(bool disable_recursive_visibility,
+do_create_image_button(const create_image_button_info &info,
 		       const function<image_button_internal_factory_t>
 		       &img_impl_factory,
-		       factoryObj &f,
-		       valign alignment,
-
 		       const function<void (const factory &)> &label_factory)
 	LIBCXX_HIDDEN;
 
@@ -38,28 +46,23 @@ do_create_image_button(bool disable_recursive_visibility,
 
 template<typename functor1>
 image_button
-create_image_button_with_label_factory(bool disable_recursive_visibility,
+create_image_button_with_label_factory(const create_image_button_info &info,
 				       functor1 &&creator,
-				       factoryObj &f,
-				       valign alignment,
 				       const function<void (const factory &)>
 				       &label_factory)
 	LIBCXX_HIDDEN;
 
 template<typename functor1>
 image_button
-create_image_button_with_label_factory(bool disable_recursive_visibility,
+create_image_button_with_label_factory(const create_image_button_info &info,
 				       functor1 &&creator,
-				       factoryObj &f,
-				       valign alignment,
 				       const function<void (const factory &)>
 				       &label_factory)
 {
-	return do_create_image_button(disable_recursive_visibility,
+	return do_create_image_button(info,
 				      make_function
 				      <image_button_internal_factory_t>
 				      (std::forward<functor1>(creator)),
-				      f, alignment,
 				      label_factory);
 }
 
@@ -90,25 +93,20 @@ create_image_button_with_label_factory(bool disable_recursive_visibility,
 
 template<typename functor1, typename functor2>
 image_button
-create_image_button(bool disable_recursive_visibility,
+create_image_button(const create_image_button_info &info,
 		    functor1 &&creator,
-		    factoryObj &f,
-		    valign alignment,
 		    functor2 &&label_creator)
 	LIBCXX_HIDDEN;
 
 template<typename functor1, typename functor2>
 image_button
-create_image_button(bool disable_recursive_visibility,
+create_image_button(const create_image_button_info &info,
 		    functor1 &&creator,
-		    factoryObj &f,
-		    valign alignment,
 		    functor2 &&label_creator)
 {
 	return create_image_button_with_label_factory
-		(disable_recursive_visibility,
-		 std::forward<functor1>(creator), f,
-		 alignment,
+		(info,
+		 std::forward<functor1>(creator),
 		 make_function<void (const factory &)>
 		 (std::forward<functor2>(label_creator)));
 }
