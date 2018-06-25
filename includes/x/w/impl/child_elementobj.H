@@ -50,6 +50,16 @@ class child_elementObj
 
  public:
 
+	//! Override background_color_changed
+
+	//! Updates cached_draw_info, if needed.
+	void background_color_changed(ONLY IN_THREAD) override;
+
+private:
+	//! After change in visibility update our cached background color
+
+	void update_draw_info_background_color(ONLY IN_THREAD);
+public:
 	//! My parent element
 	const container_impl child_container LIBCXX_PUBLIC;
 

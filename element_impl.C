@@ -291,11 +291,6 @@ void elementObj::implObj
 
 	data(IN_THREAD).inherited_visibility=flag;
 
-	// inherited_visibility gets factored into the contents of
-	// cached_draw_info, so this is no longer valid.
-	invalidate_cached_draw_info(IN_THREAD,
-				    draw_info_invalidation_reason
-				    ::something_changed);
 	if (!flag)
 	{
 		unschedule_hover_action(IN_THREAD);
@@ -979,17 +974,6 @@ void elementObj::implObj
 
 void elementObj::implObj::background_color_changed(ONLY IN_THREAD)
 {
-	if (!data(IN_THREAD).inherited_visibility)
-	{
-		// We shouldn't be drawing this, just make sure all the
-		// cached draw_infos are flushed down the drain.
-
-		invalidate_cached_draw_info(IN_THREAD,
-					    draw_info_invalidation_reason
-					    ::recursive_invalidation);
-		return;
-	}
-
 	schedule_redraw(IN_THREAD);
 
 	// background color factors into the cached_draw_info, so

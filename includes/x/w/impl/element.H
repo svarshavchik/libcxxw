@@ -312,7 +312,7 @@ class elementObj::implObj : public element_drawObj,
 	//! container has any visible child elements that use the parent's
 	//! background color, they need to be redrawn too!
 
-	void background_color_changed(ONLY IN_THREAD);
+	virtual void background_color_changed(ONLY IN_THREAD);
 
 	//! Return the element's screen
 	screen get_screen();

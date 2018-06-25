@@ -121,6 +121,8 @@ draw_info &child_elementObj::get_draw_info_from_scratch(ONLY IN_THREAD)
 	di.absolute_location=cpy;
 
 	// Figure out the background color.
+	//
+	// See also: update_draw_info_background_color().
 
 	if (has_own_background_color(IN_THREAD) &&
 	    data(IN_THREAD).inherited_visibility)
@@ -133,6 +135,38 @@ draw_info &child_elementObj::get_draw_info_from_scratch(ONLY IN_THREAD)
 	}
 
 	return di;
+}
+
+void child_elementObj
+::update_draw_info_background_color(ONLY IN_THREAD)
+{
+	if (!data(IN_THREAD).cached_draw_info)
+		return; // We don't have anything cached.
+
+	auto &di=*data(IN_THREAD).cached_draw_info;
+
+	auto &parent_di=child_container
+		->container_element_impl().get_draw_info(IN_THREAD);
+
+	di.window_background=parent_di.window_background;
+	di.background_x=parent_di.background_x;
+	di.background_y=parent_di.background_y;
+
+	if (has_own_background_color(IN_THREAD) &&
+	    data(IN_THREAD).inherited_visibility)
+		// If we're not visible, we use the parent background
+	{
+		auto bg=background_color_element_implObj::get(IN_THREAD);
+		di.window_background=bg->get_current_color(IN_THREAD)->impl;
+		di.background_x=di.absolute_location.x;
+		di.background_y=di.absolute_location.y;
+	}
+}
+
+void child_elementObj::background_color_changed(ONLY IN_THREAD)
+{
+	update_draw_info_background_color(IN_THREAD);
+	superclass_t::background_color_changed(IN_THREAD);
 }
 
 rectangle child_elementObj::get_absolute_location(ONLY IN_THREAD)
@@ -272,9 +306,12 @@ void child_elementObj
 					       visibility_info);
 
 	if (current_flag != new_flag)
+	{
+		update_draw_info_background_color(IN_THREAD);
 		child_container->inherited_child_visibility_updated
 			(IN_THREAD, element_impl(this),
 			 visibility_info);
+	}
 }
 
 bool child_elementObj::has_own_background_color(ONLY IN_THREAD)
