@@ -15,9 +15,12 @@ LIBCXXW_NAMESPACE_START
 borderlayoutmanagerObj::implObj::implObj(const container_impl &container_impl,
 					 const ref<bordercontainer_implObj>
 					 &bordercontainer_impl,
-					 const element &initial_element)
+					 const element &initial_element,
+					 halign element_halign,
+					 valign element_valign)
 	: singletonlayoutmanagerObj::implObj{container_impl, initial_element,
-					     halign::fill, valign::fill},
+					     element_halign,
+					     element_valign},
 	  bordercontainer_impl{bordercontainer_impl}
 {
 }

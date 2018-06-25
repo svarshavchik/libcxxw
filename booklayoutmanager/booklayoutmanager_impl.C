@@ -9,6 +9,8 @@
 #include "peephole/peephole.H"
 #include "peephole/peephole_layoutmanager_impl.H"
 #include "image_button.H"
+#include "x/w/impl/container.H"
+#include "x/w/impl/singletonlayoutmanager.H"
 #include "x/w/pagelayoutmanager.H"
 #include "x/w/container.H"
 
@@ -41,9 +43,12 @@ pagetabptr booklayoutmanagerObj::implObj::get_pagetab(size_t index) const
 
 	if (e)
 	{
-		gridlayoutmanager g=e->get_layoutmanager();
-
-		p=g->get(0, 0);
+		e->impl->invoke_layoutmanager
+			([&]
+			 (const ref<singletonlayoutmanagerObj::implObj> &slm)
+			 {
+				 p=slm->get();
+			 });
 	}
 
 	return p;

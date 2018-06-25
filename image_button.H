@@ -8,6 +8,7 @@
 #include "x/w/image_button.H"
 #include "x/w/alignment.H"
 #include "x/w/factoryfwd.H"
+#include "x/w/border_arg.H"
 #include "x/w/rgb.H"
 #include "image_button_internalfwd.H"
 #include "image_button_internalobj.H"
@@ -24,6 +25,16 @@ struct LIBCXX_HIDDEN create_image_button_info {
 	factoryObj &f;
 	valign alignment=valign::middle;
 	bool disable_recursive_visibility=false;
+
+	struct borders_t {
+
+		border_arg focusoff_border;
+		border_arg focuson_border;
+
+		borders_t();
+	};
+
+	borders_t borders;
 
 	~create_image_button_info();
 };

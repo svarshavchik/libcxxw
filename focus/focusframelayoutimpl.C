@@ -20,7 +20,8 @@ focusframelayoutimplObj
 	  ::implObj{parent_container,
 		    ref(&focusframe_container_impl
 			->focusframe_bordercontainer_impl()),
-		    initial_element},
+		    initial_element,
+		    halign::fill, valign::fill},
 	  focusframe_container_impl{focusframe_container_impl}
 {
 }

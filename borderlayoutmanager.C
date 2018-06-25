@@ -50,7 +50,9 @@ container factoryObj
 	// Finish everything up.
 	auto lm_impl=ref<borderlayoutmanagerObj::implObj>::create(c_impl,
 								  c_impl,
-								  e);
+								  e,
+								  halign::fill,
+								  valign::fill);
 	auto new_container=container::create(c_impl, lm_impl);
 	created(new_container);
 	return new_container;

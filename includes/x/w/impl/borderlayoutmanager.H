@@ -47,7 +47,9 @@ class LIBCXX_HIDDEN borderlayoutmanagerObj::implObj
 	//! Constructor
 	implObj(const container_impl &container_impl,
 		const ref<bordercontainer_implObj> &bordercontainer_impl,
-		const element &initial_element);
+		const element &initial_element,
+		halign element_halign,
+		valign element_valign);
 
 	//! Destructor
 	~implObj();

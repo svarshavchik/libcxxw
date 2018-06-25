@@ -26,6 +26,12 @@ LIBCXXW_NAMESPACE_START
 
 LOG_FUNC_SCOPE_DECL(INSERT_LIBX_NAMESPACE::w::image_button, image_log);
 
+create_image_button_info::borders_t::borders_t()
+	: focusoff_border{"thin_inputfocusoff_border"},
+	  focuson_border{"thin_inputfocuson_border"}
+{
+}
+
 create_image_button_info::~create_image_button_info()=default;
 
 image_buttonObj::image_buttonObj(const ref<implObj> &impl,
@@ -239,8 +245,8 @@ do_create_image_button(const create_image_button_info &info,
 	auto focus_frame_impl=
 		create_always_visible_focusframe_impl
 		(image_button_outer_container_impl,
-		 "thin_inputfocusoff_border",
-		 "thin_inputfocuson_border", 0, 0);
+		 info.borders.focusoff_border,
+		 info.borders.focuson_border, 0, 0);
 
 	// Create an image_button_internal implementation object. Its
 	// container is the focusframecontainer.

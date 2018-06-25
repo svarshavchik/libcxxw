@@ -1,5 +1,5 @@
 /*
-** Copyright 2017 Double Precision, Inc.
+** Copyright 2017-2018 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
@@ -22,6 +22,8 @@
 #include "x/w/impl/container_visible_element.H"
 #include "x/w/impl/child_element.H"
 #include "x/w/impl/always_visible.H"
+#include "x/w/impl/bordercontainer_element.H"
+#include "x/w/impl/borderlayoutmanager.H"
 #include "capturefactory.H"
 #include "busy.H"
 #include "run_as.H"
@@ -263,7 +265,7 @@ static inline void tab_activate(ONLY IN_THREAD,
 // The caller is responsible for invoking gridfactory->created_internally()
 // for the returned element.
 
-static
+static inline
 auto create_new_tab(const gridfactory &gridfactory,
 		    const booklayoutmanager &layout_manager,
 		    const pagefactory &book_pagefactory,
@@ -276,42 +278,26 @@ auto create_new_tab(const gridfactory &gridfactory,
 	gridfactory->padding(0);
 	gridfactory->valign(valign::fill);
 
-	// First-ly, an inner container with the grid layout manager, for this
+	// First-ly, an inner container with the border layout manager, for this
 	// new tab's individual borders.
 
+	border_arg book_tab_border{"book_tab_border"};
+
 	auto inner_tab_gridcontainer_impl=
-		ref<container_visible_elementObj<
-			always_visibleObj<container_elementObj
-					  <child_elementObj>>>>
-		::create(gridfactory->get_container_impl());
-
-	// Inner container's grid layoutmanager.
-
-	auto inner_tab_lm=
-		new_gridlayoutmanager{}.create(inner_tab_gridcontainer_impl);
-
-	// And the inner container itself.
-	auto inner_tab_container=container::create(inner_tab_gridcontainer_impl,
-						   inner_tab_lm);
-
-	// Now, inside the inner container, we need to put in the pagetab
-	// element. First, obtain the gridfactory, and configure the new,
-	// single cell.
-
-	gridlayoutmanager inner_tab_glm=
-		inner_tab_container->get_layoutmanager();
-	auto inner_tab_element_factory=inner_tab_glm->append_row();
-
-	inner_tab_element_factory->padding(0);
-	inner_tab_element_factory->valign(valign::bottom);
-	inner_tab_element_factory->left_border("book_tab_border");
-	inner_tab_element_factory->right_border("book_tab_border");
-	inner_tab_element_factory->top_border("book_tab_border");
+		ref<always_visibleObj<container_visible_elementObj<
+			bordercontainer_elementObj<
+				container_elementObj<child_elementObj>>>>>
+		::create(book_tab_border,
+			 book_tab_border,
+			 book_tab_border,
+			 border_infomm{},
+			 0, 0,
+			 gridfactory->get_container_impl());
 
 	// Create the implementation object for the pagetab.
 
 	auto impl=ref<pagetabObj::implObj>
-		::create(inner_tab_element_factory->get_container_impl(),
+		::create(inner_tab_gridcontainer_impl,
 			 layout_manager->impl->book_pagetabgridlayoutmanager
 			 ->impl->my_container,
 			 "book_tab_warm_color",
@@ -346,8 +332,18 @@ auto create_new_tab(const gridfactory &gridfactory,
 
 	auto new_page=pagetab::create(impl, lm);
 
-	// Now, tell the inner container that we created its element.
-	inner_tab_element_factory->created_internally(new_page);
+	// Now we can create the border layout manager for the new page tab.
+
+	auto inner_tab_lm=ref<borderlayoutmanagerObj::implObj>::create
+		(inner_tab_gridcontainer_impl,
+		 inner_tab_gridcontainer_impl,
+		 new_page,
+		 halign::fill,
+		 valign::bottom);
+
+	// And the inner container itself.
+	auto inner_tab_container=container::create(inner_tab_gridcontainer_impl,
+						   inner_tab_lm);
 
 	return std::tuple{inner_tab_container, new_page, page_element};
 }
@@ -587,13 +583,13 @@ new_booklayoutmanager::create(const container_impl &parent) const
 
 	auto gridlm=grid->create_gridlayoutmanager();
 
-	auto factory=gridlm->append_row();
-
 	// Left scroll image button.
 
 	gridlm->row_alignment(0, valign::bottom);
+
+	auto factory=gridlm->append_row();
 	gridlm->requested_row_height(1, 100);
-	factory->padding(0).border(border);
+	factory->padding(0);
 
 	// We will not use image button callbacks, instead we'll hook into
 	// the activation callbacks.
@@ -603,6 +599,9 @@ new_booklayoutmanager::create(const container_impl &parent) const
 
 	create_image_button_info scroll_button_info{*factory, valign::bottom,
 						    true};
+
+	scroll_button_info.borders.focusoff_border=
+		"thin_inputfocusoff_border_color2";
 
 	auto left_scroll=create_image_button
 		(scroll_button_info,
@@ -624,18 +623,22 @@ new_booklayoutmanager::create(const container_impl &parent) const
 		 },
 		 [](const auto &ignore){});
 
-	left_scroll->set_background_color(background_color);
 	left_scroll->show();
 
 	////////////////////////////////////////////////////////////////////
 	//
 	// The page tab element is, first and foremost, a peephole.
 
-	factory->padding(0).halign(halign::fill);
+	factory->padding(0).halign(halign::fill).border(border);
+
+	child_element_init_params peephole_impl_init_params;
+
+	peephole_impl_init_params.background_color="book_tab_background_color";
 
 	auto peephole_impl=
 		ref<always_visibleObj<peepholeObj::implObj>>
-		::create(factory->get_container_impl());
+		::create(factory->get_container_impl(),
+			 peephole_impl_init_params);
 
 	// And inside this peephole is the actual tab.
 
@@ -681,7 +684,7 @@ new_booklayoutmanager::create(const container_impl &parent) const
 
 	// It's time for the right scroll button.
 
-	factory->padding(0).border(border);
+	factory->padding(0);
 
 	auto right_scroll=create_image_button
 		(scroll_button_info,
@@ -700,7 +703,6 @@ new_booklayoutmanager::create(const container_impl &parent) const
 		 },
 		 [](const auto &ignore){});
 
-	right_scroll->set_background_color(background_color);
 	right_scroll->show();
 
 	// It's very nice for an image_button to provide callbacks that
