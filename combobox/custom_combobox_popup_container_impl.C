@@ -35,7 +35,7 @@ void custom_combobox_popup_containerObj::implObj
 
 bool custom_combobox_popup_containerObj::implObj
 ::update_tallest_row_height(ONLY IN_THREAD,
-			    dim_t new_tallest_height)
+			    const tallest_row_height_t &new_tallest_height)
 {
 	auto flag=superclass_t::update_tallest_row_height(IN_THREAD,
 							  new_tallest_height);
@@ -56,7 +56,8 @@ void custom_combobox_popup_containerObj::implObj
 			->set_minimum_override(IN_THREAD,
 					       get_horizvert(IN_THREAD)
 					       ->horiz.preferred(),
-					       tallest_row_height(IN_THREAD));
+					       tallest_row_height(IN_THREAD)
+					       .without_padding);
 }
 
 void custom_combobox_popup_containerObj::implObj

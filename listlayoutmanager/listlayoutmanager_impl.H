@@ -67,7 +67,8 @@ class LIBCXX_HIDDEN listlayoutmanagerObj::implObj
 
 	//! Used to size the combo-box current element. The default
 	//! implementation does nothing.
-	virtual void update_tallest_row_height(ONLY IN_THREAD, dim_t);
+	virtual void update_tallest_row_height(ONLY IN_THREAD,
+					       const tallest_row_height_t &);
 };
 
 LIBCXXW_NAMESPACE_END

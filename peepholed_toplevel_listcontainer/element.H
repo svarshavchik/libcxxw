@@ -94,7 +94,8 @@ template<typename element_impl>
 dim_t peepholed_toplevel_listcontainer_elementObj<element_impl>
 ::vertical_increment(ONLY IN_THREAD) const
 {
-	return toplevel_listcontainer_impl->tallest_row_height(IN_THREAD);
+	return toplevel_listcontainer_impl->tallest_row_height(IN_THREAD)
+		.with_padding;
 }
 
 LIBCXXW_NAMESPACE_END

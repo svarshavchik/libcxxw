@@ -65,7 +65,8 @@ void listlayoutmanagerObj::implObj
 }
 
 void listlayoutmanagerObj::implObj
-::update_tallest_row_height(ONLY IN_THREAD, dim_t v)
+::update_tallest_row_height(ONLY IN_THREAD,
+			    const tallest_row_height_t &)
 {
 }
 

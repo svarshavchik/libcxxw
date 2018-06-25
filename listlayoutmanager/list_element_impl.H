@@ -228,7 +228,7 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 	//! Tallest row height
 
 	//! Statistics kept by recalculate().
-	dim_t tallest_row_height_thread_only;
+	tallest_row_height_t tallest_row_height_thread_only;
 
  public:
 	THREAD_DATA_ONLY(tallest_row_height);

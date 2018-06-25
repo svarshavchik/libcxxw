@@ -72,7 +72,8 @@ class LIBCXX_HIDDEN custom_combobox_popup_containerObj::implObj
 	//! changed.
 
 	bool update_tallest_row_height(ONLY IN_THREAD,
-				       dim_t new_tallest_height) override;
+				       const tallest_row_height_t
+				       &new_tallest_height) override;
 
 	//! Install a link to the current combobox selection element.
 

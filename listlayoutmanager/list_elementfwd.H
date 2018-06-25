@@ -6,6 +6,7 @@
 #define x_w_list_elementfwd_h
 
 #include "x/w/namespace.H"
+#include "x/w/types.H"
 #include <x/ptrfwd.H>
 
 LIBCXXW_NAMESPACE_START
@@ -44,6 +45,37 @@ typedef ptr<list_elementObj> list_elementptr;
 //! \see list_element
 
 typedef const_ptr<list_elementObj> const_list_elementptr;
+
+//! How tall is the tallest row managed by the list layout manager.
+
+//! Sometimes we want to know the height of the tallest row with padding,
+//! sometimes without including the padding between the rows.
+//!
+//! Each row in the list layout manager has padding above and below it.
+//! When the list is in the peephole, we want the peephole's scroll buttons
+//! to scroll the peephole by one row, this should include the padding, so
+//! the peephole scrolls by the height of the row itself, plus the padding to
+//! get to the next row.
+//!
+//! The combo-box layout manager also sized the current list element to the
+//! height of the tallest row, but that should not include any padding, so that
+//! it uses just the height of the row.
+
+struct LIBCXX_HIDDEN tallest_row_height_t {
+
+        //! The height of the tallest row, full stop.
+	dim_t without_padding;
+
+	//! The height of the tallest row, plus padding between the rows.
+	dim_t with_padding;
+
+	//! Comparison operator.
+	inline bool operator==(const tallest_row_height_t &o) const
+	{
+		return without_padding == o.without_padding &&
+			with_padding == o.with_padding;
+	}
+};
 
 LIBCXXW_NAMESPACE_END
 

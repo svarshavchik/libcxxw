@@ -656,7 +656,7 @@ void list_elementObj::implObj::recalculate(ONLY IN_THREAD,
 	auto screen=get_screen()->impl;
 	auto current_theme=*current_theme_t::lock{screen->current_theme};
 
-	tallest_row_height(IN_THREAD)=0;
+	tallest_row_height(IN_THREAD)={0, 0};
 
 	for (size_t i=0; i<n; ++i, ++row)
 	{
@@ -720,15 +720,17 @@ void list_elementObj::implObj::recalculate(ONLY IN_THREAD,
 					->calculated_border_height;
 			}
 		}
-		coord_t old_y=y;
 
 		y=coord_t::truncate(y+row->height);
 		y=coord_t::truncate(y+v_padding_times_two);
 
-		dim_t total_height=dim_t::truncate(y-old_y);
-
-		if (total_height > tallest_row_height(IN_THREAD))
-			tallest_row_height(IN_THREAD)=total_height;
+		if (row->height > tallest_row_height(IN_THREAD).without_padding)
+		{
+			tallest_row_height(IN_THREAD).with_padding=
+				dim_t::truncate
+				((tallest_row_height(IN_THREAD).without_padding=
+				  row->height) + v_padding_times_two);
+		}
 	}
 
 	calculate_column_widths(IN_THREAD, lock);

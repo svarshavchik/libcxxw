@@ -35,7 +35,9 @@ class LIBCXX_HIDDEN peepholed_toplevel_listcontainer_layoutmanager_implObj
 	//! Destructor
 	~peepholed_toplevel_listcontainer_layoutmanager_implObj();
 
-	void update_tallest_row_height(ONLY IN_THREAD, dim_t v) override;
+	void update_tallest_row_height(ONLY IN_THREAD,
+				       const tallest_row_height_t &v)
+		override;
 };
 
 LIBCXXW_NAMESPACE_END

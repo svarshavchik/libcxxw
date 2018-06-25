@@ -18,7 +18,7 @@ peepholed_toplevel_listcontainer_implObj
 
 bool peepholed_toplevel_listcontainer_implObj
 ::update_tallest_row_height(ONLY IN_THREAD,
-			    dim_t new_tallest_height)
+			    const tallest_row_height_t &new_tallest_height)
 {
 	if (tallest_row_height(IN_THREAD) == new_tallest_height)
 		return false;
@@ -30,8 +30,7 @@ bool peepholed_toplevel_listcontainer_implObj
 	// to recalculate, so that the toplevelpeephole_layoutmanagerObj's
 	// recalculate() can update the vertical increment.
 
-	listcontainer_element()
-		.child_container->needs_recalculation(IN_THREAD);
+	listcontainer_element().child_container->needs_recalculation(IN_THREAD);
 	return true;
 }
 

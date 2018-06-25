@@ -10,6 +10,7 @@
 #include "x/w/types.H"
 #include "x/w/impl/child_element.H"
 #include "x/w/impl/focus/focusable.H"
+#include "listlayoutmanager/list_elementfwd.H"
 #include <x/obj.H>
 
 LIBCXXW_NAMESPACE_START
@@ -27,7 +28,7 @@ class LIBCXX_HIDDEN peepholed_toplevel_listcontainer_implObj
 
 	//! Current tallest row height
 
-	dim_t tallest_row_height_thread_only=1;
+	tallest_row_height_t tallest_row_height_thread_only={1,1};
 
  public:
 	THREAD_DATA_ONLY(tallest_row_height);
@@ -45,7 +46,8 @@ class LIBCXX_HIDDEN peepholed_toplevel_listcontainer_implObj
 	//! listcontainer_element's container's needs_recalculation().
 
 	virtual bool update_tallest_row_height(ONLY IN_THREAD,
-					       dim_t new_tallest_height);
+					       const tallest_row_height_t
+					       &new_tallest_height);
 
 	//! Return the child_elementObj this mixin implementation is a part of.
 
