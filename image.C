@@ -31,7 +31,8 @@ image factoryObj::create_image(const std::string &name,
 	auto icon=container_impl->get_window_handler()
 		.create_icon({name, render_repeat::none, width, height});
 
-	auto impl=ref<imageObj::implObj>::create(container_impl, icon);
+	auto impl=ref<imageObj::implObj>::create(image_impl_init_params
+						 {container_impl, icon});
 
 	auto i=image::create(impl);
 	created(i);

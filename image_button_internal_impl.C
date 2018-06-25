@@ -23,24 +23,33 @@ static auto get_first_icon_image(const std::vector<icon> &v)
 	return v.at(0);
 }
 
-image_button_internalObj::implObj
-::implObj(const container_impl &container,
-	  const std::vector<icon> &icon_images)
-	: superclass_t(icon_images, container,
-		       get_first_icon_image(icon_images)),
-	  current_image(0)
+
+image_button_internal_impl_init_params
+::image_button_internal_impl_init_params(const container_impl &container,
+					 const std::vector<icon> &icon_images)
+	: image_impl_init_params{container, get_first_icon_image(icon_images)},
+	  icon_images{icon_images}
 {
 }
 
+image_button_internal_impl_init_params
+::image_button_internal_impl_init_params(const container_impl &container,
+					 const std::vector<icon> &icon_images,
+					 const metrics::axis &horiz_metrics,
+					 const metrics::axis &vert_metrics)
+	: image_impl_init_params{container, get_first_icon_image(icon_images),
+				 horiz_metrics, vert_metrics},
+	  icon_images{icon_images}
+{
+}
+
+image_button_internal_impl_init_params
+::~image_button_internal_impl_init_params()=default;
+
 image_button_internalObj::implObj
-::implObj(const container_impl &container,
-	  const std::vector<icon> &icon_images,
-	  const metrics::axis &horiz_metrics,
-	  const metrics::axis &vert_metrics)
-	: superclass_t(icon_images, container,
-		       get_first_icon_image(icon_images),
-		       horiz_metrics, vert_metrics),
-	  current_image(0)
+::implObj(const image_button_internal_impl_init_params &init_params)
+	: superclass_t{init_params.icon_images, init_params},
+	  current_image{0}
 {
 }
 
@@ -110,7 +119,9 @@ ref<image_button_internalObj::implObj>
 create_checkbox_impl(const container_impl &container,
 		     const std::vector<icon> &icon_images)
 {
-	return ref<checkbox_image_buttonObj>::create(container, icon_images);
+	return ref<checkbox_image_buttonObj>::create
+		(image_button_internal_impl_init_params{container,
+							icon_images});
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -126,10 +137,10 @@ class LIBCXX_HIDDEN radio_image_buttonObj :
 
 	//! Constructor
 	radio_image_buttonObj(const radio_group &group,
-			      const container_impl &container,
-			      const std::vector<icon> &icon_images)
-		: checkbox_image_buttonObj(container, icon_images),
-		group(group)
+			      const image_button_internal_impl_init_params
+			      &init_params)
+		: checkbox_image_buttonObj{init_params},
+		group{group}
 		{
 		}
 
@@ -155,8 +166,10 @@ create_radio_impl(const radio_group &group,
 		  const container_impl &container,
 		  const std::vector<icon> &icon_images)
 {
-	auto r=ref<radio_image_buttonObj>::create(group,
-						  container, icon_images);
+	auto r=ref<radio_image_buttonObj>::create
+		(group,
+		 image_button_internal_impl_init_params{
+			container, icon_images});
 
 	r->group->impl->button_list->push_back(r);
 

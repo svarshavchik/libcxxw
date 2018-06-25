@@ -28,10 +28,10 @@ popup_imagebutton_implObj
 			    const std::vector<icon> &icon_images,
 			    dim_t first_icon_width,
 			    dim_t first_icon_height)
-	: superclass_t{container, icon_images,
-		metrics::axis{first_icon_width, first_icon_width,
-			first_icon_width},
-		metrics::axis{0, first_icon_height, dim_t::infinite()}}
+	: superclass_t{{container, icon_images,
+			metrics::axis{first_icon_width, first_icon_width,
+				      first_icon_width},
+			metrics::axis{0, first_icon_height, dim_t::infinite()}}}
 {
 }
 

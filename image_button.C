@@ -134,18 +134,16 @@ scroll_imagebutton_specific_height(const container_impl
 {
 	auto &wh=parent_container->get_window_handler();
 
-	return ref<scroll_imagebuttonObj>::create
-		(parent_container,
-		 std::vector<icon>{
-			 wh.create_icon
-				 ({image1, render_repeat::none,
-						 0,
-						 height_arg}),
-				 wh.create_icon
-				 ({image2, render_repeat::none,
-						 0,
-						 height_arg}),
-				 });
+	image_button_internal_impl_init_params init_params
+		{
+		 parent_container,
+		 {
+		  wh.create_icon({image1, render_repeat::none, 0, height_arg}),
+		  wh.create_icon({image2, render_repeat::none, 0, height_arg}),
+		 }
+		};
+
+	return ref<scroll_imagebuttonObj>::create(init_params);
 }
 
 ///////////////////////////////////////////////////////////////////////////

@@ -20,6 +20,26 @@
 
 LIBCXXW_NAMESPACE_START
 
+//! Parameters to image_button_internalObj::implObj's constructor
+
+struct LIBCXX_HIDDEN image_button_internal_impl_init_params :
+	public image_impl_init_params {
+
+	std::vector<icon> icon_images;
+
+	image_button_internal_impl_init_params
+		(const container_impl &container,
+		 const std::vector<icon> &icon_images);
+
+	image_button_internal_impl_init_params
+		(const container_impl &container,
+		 const std::vector<icon> &icon_images,
+		 const metrics::axis &horiz_metrics,
+		 const metrics::axis &vert_metrics);
+
+	~image_button_internal_impl_init_params();
+};
+
 //! Imlementation object for the internal image button.
 
 class LIBCXX_HIDDEN image_button_internalObj::implObj :
@@ -44,14 +64,7 @@ public:
 	THREAD_DATA_ONLY(current_callback);
 
 	//! Constructor
-	implObj(const container_impl &container,
-		const std::vector<icon> &icon_images);
-
-	//! Constructor
-	implObj(const container_impl &container,
-		const std::vector<icon> &icon_images,
-		const metrics::axis &horiz_metrics,
-		const metrics::axis &vert_metrics);
+	implObj(const image_button_internal_impl_init_params &init_params);
 
 	//! Destructor
 	~implObj();

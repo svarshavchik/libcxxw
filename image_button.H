@@ -8,6 +8,7 @@
 #include "x/w/image_button.H"
 #include "x/w/alignment.H"
 #include "x/w/factoryfwd.H"
+#include "x/w/rgb.H"
 #include "image_button_internalfwd.H"
 #include "image_button_internalobj.H"
 

@@ -12,6 +12,29 @@
 
 LIBCXXW_NAMESPACE_START
 
+//! Parameters to imageObj::implObj's constructor
+
+struct LIBCXX_HIDDEN image_impl_init_params : public child_element_init_params {
+
+	container_impl parent_container;
+	icon initial_icon;
+
+	image_impl_init_params(const container_impl &container,
+			       const icon &initial_icon);
+
+	image_impl_init_params(const container_impl &container,
+			       const icon &initial_icon,
+			       dim_t icon_width,
+			       dim_t icon_height);
+
+	image_impl_init_params(const container_impl &container,
+			       const icon &initial_icon,
+			       const metrics::axis &horiz_metrics,
+			       const metrics::axis &vert_metrics);
+
+	~image_impl_init_params();
+};
+
 class LIBCXX_HIDDEN imageObj::implObj : public child_elementObj {
 
 	//! The currently shown image.
@@ -22,21 +45,7 @@ public:
 	THREAD_DATA_ONLY(current_icon);
 
 	//! Constructor
-	implObj(const container_impl &container,
-		const icon &initial_icon);
-
-private:
-	//! Internal constructor
-	implObj(const container_impl &container,
-		const icon &initial_icon,
-		dim_t icon_width,
-		dim_t icon_height);
-public:
-	//! Constructor
-	implObj(const container_impl &container,
-		const icon &initial_icon,
-		const metrics::axis &horiz_metrics,
-		const metrics::axis &vert_metrics);
+	implObj(const image_impl_init_params &init_params);
 
 	//! Inherited from elementObj::implObj
 

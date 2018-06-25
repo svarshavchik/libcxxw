@@ -9,36 +9,47 @@
 #include "x/w/pixmap.H"
 #include "x/w/picture.H"
 #include "x/w/rectangle.H"
+#include "x/w/impl/container.H"
 #include "x/w/impl/metrics_horizvert.H"
 #include "pixmap_with_picture.H"
 
 LIBCXXW_NAMESPACE_START
 
-imageObj::implObj::implObj(const container_impl &container,
-			   const icon &initial_icon)
-	: implObj(container, initial_icon,
-		  initial_icon->image->get_width(),
-		  initial_icon->image->get_height())
+image_impl_init_params::image_impl_init_params(const container_impl &container,
+					       const icon &initial_icon)
+	: image_impl_init_params{container, initial_icon,
+				 initial_icon->image->get_width(),
+				 initial_icon->image->get_height()}
 {
 }
 
-imageObj::implObj::implObj(const container_impl &container,
-			   const icon &initial_icon,
-			   dim_t icon_width,
-			   dim_t icon_height)
-	: implObj(container, initial_icon,
-		  {icon_width, icon_width, icon_width},
-		  {icon_height, icon_height, icon_height})
+image_impl_init_params::image_impl_init_params(const container_impl &container,
+					       const icon &initial_icon,
+					       dim_t icon_width,
+					       dim_t icon_height)
+	: image_impl_init_params{container, initial_icon,
+				 {icon_width, icon_width, icon_width},
+				 {icon_height, icon_height, icon_height}}
 {
 }
 
-imageObj::implObj::implObj(const container_impl &container,
-			   const icon &initial_icon,
-			   const metrics::axis &horiz_metrics,
-			   const metrics::axis &vert_metrics)
-	: child_elementObj{container, {"image@libcxx.com",
-		{ horiz_metrics, vert_metrics }}},
-	  current_icon_thread_only(initial_icon)
+image_impl_init_params
+::image_impl_init_params(const container_impl &container,
+			 const icon &initial_icon,
+			 const metrics::axis &horiz_metrics,
+			 const metrics::axis &vert_metrics)
+	: child_element_init_params{"image@libcxx.com",
+				    { horiz_metrics, vert_metrics }},
+	  parent_container{container},
+	  initial_icon{initial_icon}
+{
+}
+
+image_impl_init_params::~image_impl_init_params()=default;
+
+imageObj::implObj::implObj(const image_impl_init_params &init_params)
+	: child_elementObj{init_params.parent_container, init_params},
+	  current_icon_thread_only{init_params.initial_icon}
 {
 }
 
