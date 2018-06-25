@@ -103,13 +103,6 @@ void gridlayoutmanagerObj::implObj::theme_updated(ONLY IN_THREAD,
 {
 	grid_map_t::lock lock(grid_map);
 
-	for_each_child(IN_THREAD,
-		       [&]
-		       (const auto &child)
-		       {
-			       child->impl->theme_updated(IN_THREAD, new_theme);
-		       });
-
 	(*lock)->padding_recalculated();
 	(*lock)->borders_changed();
 
