@@ -4,6 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "x/w/impl/focus/focusframecontainer_impl.H"
+#include "x/w/impl/current_border_impl.H"
 #include "gridlayoutmanager.H"
 #include "grid_map_info.H"
 #include "container_impl.H"
@@ -28,18 +29,21 @@ void focusframecontainer_implObj::window_focus_change(ONLY IN_THREAD, bool flag)
 
 void focusframecontainer_implObj::update_focusframe(ONLY IN_THREAD)
 {
-	// The focus frame gets updated by overriding
-	// gridlayoutmanagerObj::focusframecontainer_implObj's rebuild_element_start(). So what
-	// we need to do is to pretend that the grid's elements were modified.
+	auto &bc=focusframe_bordercontainer_impl();
 
-	get_container_impl().invoke_layoutmanager
+	bc.set_border(IN_THREAD,
+		      bc.get_container_impl().container_element_impl()
+		      .current_keyboard_focus(IN_THREAD)
+		      ? get_focuson_border()
+		      : get_focusoff_border());
+
+	bc.get_container_impl().invoke_layoutmanager
 		([&]
 		 (const ref<gridlayoutmanagerObj::implObj> &manager)
 		 {
 			 grid_map_t::lock lock{manager->grid_map};
 
 			 (*lock)->elements_have_been_modified();
-			 manager->needs_recalculation(IN_THREAD);
 		 });
 }
 

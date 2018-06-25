@@ -109,8 +109,7 @@ struct themedims_element_types<base, arg1, arg2, args...> {
 //! That is, if the template results in two themedimObj superclasses, the first
 //! four parameters initialize them. In each pair of parameters, the
 //! first one is the name of the theme dimension, and the second parameter
-//! is either &defaultthemeObj::get_theme_width_dim_t or
-//! &defaultthemeObj::get_theme_height_dim_t.
+//! is either themedimaxis::width or themedimaxis::height.
 //!
 //! If optional parameters are not specified, a single void template
 //! parameter gets used to mix in a single dimension.

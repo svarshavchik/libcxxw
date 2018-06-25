@@ -9,6 +9,7 @@
 #include <x/w/elementobj.H>
 #include <x/w/focus.H>
 #include <x/w/impl/current_border_implfwd.H>
+#include <x/w/impl/bordercontainer_impl.H>
 #include <x/w/connection_threadfwd.H>
 
 LIBCXXW_NAMESPACE_START
@@ -27,13 +28,9 @@ class focusframecontainer_implObj : virtual public obj {
 	//! Destructor
 	~focusframecontainer_implObj();
 
-	//! Implemented by the mixin template, to return my container.
+	//! Implemented by the mixin template, to return my bordercontainer.
 
-	virtual containerObj::implObj &get_container_impl()=0;
-
-	//! Implemented by the mixin template, to return my container.
-
-	virtual const containerObj::implObj &get_container_impl() const=0;
+	virtual bordercontainer_implObj &focusframe_bordercontainer_impl()=0;
 
 	//! Implemented by the mixin template, to return my focusoff border.
 

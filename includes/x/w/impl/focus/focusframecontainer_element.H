@@ -6,36 +6,46 @@
 #define x_w_impl_focusframecontainer_element_h
 
 #include <x/w/impl/focus/focusframecontainer_elementfwd.H>
+#include <x/w/impl/bordercontainer_element.H>
 #include <x/w/impl/themeborder_element.H>
+#include <x/w/impl/container.H>
 
 LIBCXXW_NAMESPACE_START
+
+//! Constructor
+
+template<typename element_impl>
+template<typename ...Args>
+focusframecontainer_elementObj<element_impl>::
+focusframecontainer_elementObj(const border_arg &focusoff_border,
+			       const border_arg &focuson_border,
+			       const dim_arg &hpad,
+			       const dim_arg &vpad,
+			       const container_impl &parent_container,
+			       Args && ...args)
+	: superclass_t{focusoff_border,
+		       focuson_border,
+		       bordercontainer_implObj::initial_bordercontainer_border
+		       (focusoff_border, parent_container),
+		       hpad,
+		       vpad,
+		       std::forward<Args>(args)...}
+{
+}
+
+//! Implement focusframe_bordercontainer_impl().
+
+template<typename element_impl>
+bordercontainer_implObj &
+focusframecontainer_elementObj<element_impl>::focusframe_bordercontainer_impl()
+{
+	return *this;
+}
 
 //! Destructor
 template<typename element_impl>
 focusframecontainer_elementObj<element_impl>::~focusframecontainer_elementObj()
 =default;
-
-//! Implement get_container_impl().
-
-//! Inherited from focusframecontainer_implObj.
-
-template<typename element_impl>
-containerObj::implObj &focusframecontainer_elementObj<element_impl>
-::get_container_impl()
-{
-	return *this;
-}
-
-//! Implement get_container_impl().
-
-//! Inherited from focusframecontainer_implObj.
-
-template<typename element_impl>
-const containerObj::implObj &focusframecontainer_elementObj<element_impl>
-::get_container_impl() const
-{
-	return *this;
-}
 
 //! Implement get_focusoff_border().
 
@@ -48,7 +58,6 @@ current_border_impl focusframecontainer_elementObj<element_impl>
 	return this->themeborder_element_impl<focusoff_border_tag>
 		::current_border;
 }
-
 
 //! Implement get_focuson_border().
 

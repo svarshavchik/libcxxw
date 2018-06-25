@@ -66,6 +66,7 @@ libcxxw_la_SOURCES=\
 	border_impl.C				    \
 	border_info.C				    \
 	border_infomm.C				    \
+	bordercontainer_impl.C			    \
 	builtin_atoms.C				    \
 	builtin_atoms.H				    \
 	busy.H					    \

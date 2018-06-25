@@ -40,6 +40,9 @@ create_standard_popup_imagebutton(const gridfactory &f,
 				 ::create(attachedto_handler,
 					  focusoff_border,
 					  focuson_border,
+					  0,
+					  0,
+					  parent_container,
 					  parent_container,
 					  init_params);
 
@@ -81,7 +84,8 @@ do_create_popup_imagebutton(const gridfactory &f,
 			     parent_container,
 			     focusframe_init_params);
 
-	auto cbfc_container_impl=ref(&cbfc->get_container_impl());
+	auto cbfc_container_impl=ref(&cbfc->focusframe_bordercontainer_impl()
+				     .get_container_impl());
 
 	// The focus frame implementation object is the parent of the
 	// popup button. Create its implementation button.

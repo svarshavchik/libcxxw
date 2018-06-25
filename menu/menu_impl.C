@@ -17,11 +17,14 @@ menuObj::implObj::implObj(const popup &menu_popup,
 			  const ref<popup_attachedto_handlerObj>
 			  &attachedto_handler,
 			  const container_impl &parent_container)
-	: superclass_t(attachedto_handler,
+	: superclass_t{attachedto_handler,
 		       focusoff_border, focuson_border,
+		       0,
+		       0,
 		       parent_container,
-		       child_element_init_params{"menufocusframe@libcxx.com"}),
-	  menu_popup(menu_popup)
+		       parent_container,
+		       child_element_init_params{"menufocusframe@libcxx.com"}},
+	  menu_popup{menu_popup}
 {
 }
 

@@ -18,7 +18,8 @@ focusframelayoutimplObj
 			  &focusframe_container_impl,
 			  const element &initial_element)
 	: gridlayoutmanagerObj::implObj{ref(&focusframe_container_impl
-					    ->get_container_impl())},
+					    ->focusframe_bordercontainer_impl()
+					    .get_container_impl())},
 	focusframe_container_impl{focusframe_container_impl}
 {
 	requested_col_width(0, 100);
@@ -34,10 +35,8 @@ void focusframelayoutimplObj::rebuild_elements_start(ONLY IN_THREAD,
 {
 	// Pick the border based on whether my container has input focus.
 
-	auto correct_border=
-		get_element_impl().current_keyboard_focus(IN_THREAD)
-		? focusframe_container_impl->get_focuson_border()
-		: focusframe_container_impl->get_focusoff_border();
+	auto correct_border=focusframe_container_impl
+		->focusframe_bordercontainer_impl().get_border(IN_THREAD);
 
 	// Should always be one element, here.
 

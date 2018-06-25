@@ -550,6 +550,29 @@ while (!appdata->close_flag)
 
 	<varlistentry>
 	  <term>
+	    <ulink url="&link-typedef-x--w-borderlayoutmanager;"><classname>&ns;::w::borderlayoutmanager</classname></ulink>
+	  </term>
+	  <listitem>
+	    <para>
+	      This layout manager draws a border around a single display
+	      element, the only display element in this layout manager's
+	      container.
+	    </para>
+
+	    <para>
+	      This layout manager is optimized for this purpose. The grid
+	      layout manager is capable of drawing borders around the elements
+	      in the rectangular grid too, and manage multiple elements.
+	      The grid layout manager's complexity results in non-trivial
+	      overhead, and when all that's needed is a simple border
+	      around an element the border layout manager does the job faster
+	      and with less cost.
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>
 	    <link linkend="menu"><classname>&ns;::w::menubarlayoutmanager</classname></link>
 	  </term>
 	  <listitem>

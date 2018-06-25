@@ -25,6 +25,9 @@ pane_slider_focusframeObj
 	: superclass_t{custom_pointer,
 		"pane_slider_focusoff_border",
 		"pane_slider_focuson_border",
+		0,
+		0,
+		parent,
 		parent,
 		child_element_init_params{FOCUSFRAME_SCRATCH_BUFFER_ID, {},
 			background_color}}

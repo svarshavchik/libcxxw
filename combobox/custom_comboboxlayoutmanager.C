@@ -371,6 +371,9 @@ focusable_container new_custom_comboboxlayoutmanager
 			 return ref<popup_imagebutton_focusframe_implObj>
 			 ::create(focusoff_border,
 				  focuson_border,
+				  0,
+				  0,
+				  parent_container,
 				  parent_container,
 				  init_params);
 		 },
