@@ -185,13 +185,6 @@ public:
 
 	void process_same_position(ONLY IN_THREAD);
 
-	//! Recursive show() or hide().
-
-	//! Invokes request_child_visibility_recursive(), then invoke
-	//! the container's element's request_visibility.
-
-	void request_visibility_recursive(ONLY IN_THREAD, bool flag);
-
 	//! request_visibility_recursive() for all elements in the container.
 
 	//! Recursively invoke the child elements'

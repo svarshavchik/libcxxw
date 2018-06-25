@@ -74,13 +74,24 @@ void container_elementObj<element_impl>
 
 //! Override request_visibility_recursive().
 
-//! Forwarded to containerObj::implObj.
+//! Forwarded to containerObj::implObj and the superclass.
+//!
+//! If the element is getting shown, the container gets shown first, then
+//! all the elements in the container get shown. If the element is getting
+//! hidden, all elements inthe container get hidden first, then the container.
 
 template<typename element_impl>
 void container_elementObj<element_impl>
 ::request_visibility_recursive(ONLY IN_THREAD, bool flag)
 {
-	containerObj::implObj::request_visibility_recursive(IN_THREAD, flag);
+	if (!flag)
+		element_impl::request_visibility_recursive(IN_THREAD, flag);
+
+	containerObj::implObj::request_child_visibility_recursive
+		(IN_THREAD, flag);
+
+	if (flag)
+		element_impl::request_visibility_recursive(IN_THREAD, flag);
 }
 
 //! Override do_for_each_child().

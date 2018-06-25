@@ -335,16 +335,6 @@ void containerObj::implObj::request_child_visibility_recursive(ONLY IN_THREAD,
 		 });
 }
 
-void containerObj::implObj::request_visibility_recursive(ONLY IN_THREAD,
-							 bool flag)
-{
-	request_child_visibility_recursive(IN_THREAD, flag);
-
-	auto &element_impl=container_element_impl();
-	element_impl.elementObj::implObj::request_visibility_recursive
-		(IN_THREAD, flag);
-}
-
 #if 0
 void containerObj::implObj::child_visibility_updated(ONLY IN_THREAD,
 						     bool flag)
