@@ -60,10 +60,6 @@ public:
 		// Label ID for the scratch mask.
 		        "my_element_mask@examples.w.libcxx.com",
 
-		// Our initial size will be 50x50 pixels
-
-			50, 50,
-
 		// Background color will be a linear gradient
 
 			x::w::linear_gradient{

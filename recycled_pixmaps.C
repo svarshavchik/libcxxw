@@ -38,35 +38,25 @@ recycled_pixmapsObj::recycled_pixmapsObj()
 recycled_pixmapsObj::~recycled_pixmapsObj()=default;
 
 scratch_buffer screenObj::create_scratch_buffer(const std::string &identifier,
-						const const_pictformat &pf,
-						dim_t initial_width,
-						dim_t initial_height)
+						const const_pictformat &pf)
 {
 	return impl->create_scratch_buffer(screen(this),
 					   identifier,
-					   pf,
-					   initial_width,
-					   initial_height);
+					   pf);
 }
 
 scratch_buffer screenObj::implObj
 ::create_scratch_buffer(const screen &public_object,
 			const std::string &identifier,
-			const const_pictformat &pf,
-			dim_t initial_width,
-			dim_t initial_height)
+			const const_pictformat &pf)
 {
 	return recycled_pixmaps_cache->scratch_buffer_cache
 		->find_or_create({ identifier, pf },
 				 [&]
 				 {
-					 auto pmi=ref<pixmapObj::implObj>
-						 ::create(pf, public_object,
-							  initial_width,
-							  initial_height);
-
 					 auto i=ref<scratch_bufferObj::implObj>
-						 ::create(pixmap::create(pmi));
+						 ::create(pf,
+							  public_object);
 
 					 return scratch_buffer::create(i);
 				 });

@@ -81,8 +81,6 @@ public:
 			  const child_element_init_params &child_init_params)
 		: superclass_t{
 		        "my_canvas@examples.w.libcxx.com",
-			child_init_params.initial_metrics.horiz.preferred(),
-			child_init_params.initial_metrics.vert.preferred(),
 		        "0%",
 			parent_container, init_params, child_init_params}
 	{

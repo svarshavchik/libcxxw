@@ -39,22 +39,22 @@ bordercontainer_implObj
 	// Same IDs as in straight_border_impl.C
 	: corner_scratch_buffer{s->impl->create_scratch_buffer
 				(s, "corner@libcxx.com",
-				 my_pictformat, 1, 1)},
+				 my_pictformat)},
 	  h_scratch_buffer{s->impl->create_scratch_buffer
 			   (s, "horiz-border@libcxx.com",
-			    my_pictformat, 1, 1)},
+			    my_pictformat)},
 	  v_scratch_buffer{s->impl->create_scratch_buffer
 			   (s, "vert-border@libcxx.com",
-			    my_pictformat, 1, 1)},
+			    my_pictformat)},
 	  corner_mask_buffer{s->impl->create_scratch_buffer
 			     (s, "corner@libcxx.com",
-			      mask_pictformat, 1, 1)},
+			      mask_pictformat)},
 	  h_mask_buffer{s->impl->create_scratch_buffer
 			(s, "horiz-border@libcxx.com",
-			 mask_pictformat, 1, 1)},
+			 mask_pictformat)},
 	  v_mask_buffer{s->impl->create_scratch_buffer
 			(s, "vert-border@libcxx.com",
-			 mask_pictformat, 1, 1)}
+			 mask_pictformat)}
 {
 }
 

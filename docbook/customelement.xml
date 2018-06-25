@@ -28,12 +28,12 @@ See COPYING for distribution information.
 	  <classname>&ns;::w::elementObj</classname>'s internal
 	  implementation class is
 	  <ulink url="&link-x--w--elementObj--implObj;"><classname>&ns;::w::elementObj::implObj</classname></ulink>
-	  but a custom subclass must derive from an intermediate subclass,
+	  but a custom subclass always uses an intermediate subclass,
 	  <ulink url="&link-x--w--child-elementObj;"><classname>&ns;::w::child_elementObj</classname></ulink>.
 	  <classname>&ns;::w::child_elementObj</classname>
 	  is a subclass that represents an implementation class of a display
-	  element in its parent container. All custom display elements must
-	  be placed in a container, and therefore must derive from
+	  element in its parent container. All custom display elements always
+	  get placed in a container, and therefore must derive from
 	  <classname>&ns;::w::child_elementObj</classname>.
 	</para>
       </listitem>

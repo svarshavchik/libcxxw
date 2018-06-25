@@ -123,11 +123,6 @@ public:
 		// Label ID for the scratch mask.
 		        "my_canvas_mask@examples.w.libcxx.com",
 
-		// Initial dimensions of the scratch mask buffer.
-		// We expect to open using the preferred pixel size.
-			child_init_params.initial_metrics.horiz.preferred(),
-			child_init_params.initial_metrics.vert.preferred(),
-
 
 		// The background_color_element mixin constructor param:
 

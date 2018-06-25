@@ -231,9 +231,7 @@ public:
 	//! \internal
 
 	scratch_buffer create_scratch_buffer(const std::string &identifier,
-					     const const_pictformat &pf,
-					     dim_t initial_width,
-					     dim_t initial_height)
+					     const const_pictformat &pf)
 		LIBCXX_HIDDEN;
 };
 

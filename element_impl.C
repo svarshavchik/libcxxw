@@ -65,9 +65,7 @@ elementObj::implObj::implObj(size_t nesting_level,
 	}),
 	nesting_level(nesting_level),
 	element_scratch_buffer(my_screen->impl->create_scratch_buffer
-			       (my_screen, scratch_buffer_id, my_pictformat,
-				initial_position.width / 20 + 1,
-				initial_position.height / 20 + 1))
+			       (my_screen, scratch_buffer_id, my_pictformat))
 {
 }
 

@@ -48,8 +48,8 @@ See COPYING for distribution information.
 	<para>
 	  &appshort;'s internal header files define several
 	  <quote>mixin templates</quote>. Each such template creates
-	  a class that inherits from its template parameter,
-	  which usually must be a
+	  a class that inherits from its template parameter.
+	  This class is usually a
 	  subclass of
 	  <ulink url="&link-x--w--child-elementObj;"><classname>&ns;::w::child_elementObj</classname></ulink>.
 	  The template either directly overrides any methods itself,
@@ -100,9 +100,10 @@ See COPYING for distribution information.
       <ulink url="&link-x--w--canvas-init-params;"><classname>&ns;::w::canvas_init_params</classname></ulink>
       object.
       The object's first two members specify the new display element's metrics:
-      the horizontal metric and the vertical metric,
-      which specified as a
-      <ulink url="&link-x--w--dim-axis-arg;"><classname>&ns;::w::dim_axis_arg</classname></ulink>.
+      the horizontal metric and the vertical metric.
+      They are specified as a
+      <ulink url="&link-x--w--dim-axis-arg;"><classname>&ns;::w::dim_axis_arg</classname></ulink>
+      values.
     </para>
 
     <para>
@@ -131,16 +132,17 @@ See COPYING for distribution information.
 	Its possible that a container resizes a display element to be larger
 	than its maximum requested metric. For example, the
 	<link linkend="gridlayoutmanager">grid layout manager</link> can
-	be instructed to set its container element's alignment to
+	be instructed to use
 	<literal><literal>&ns;::w::halign::fill</literal></literal> or
-	<literal><literal>&ns;::w::valign::fill</literal></literal>,
+	<literal><literal>&ns;::w::valign::fill</literal></literal>
+	for an element's alignment,
 	which may exceed the element's maximum metric.
       </para>
 
       <para>
 	It's unlikely that a container
 	will size an element to be smaller than its minimum metrics.
-	However, a new display element's width or height can be 0, until
+	However, a new display element's width or height is usually 0, until
 	it gets formally sized by its container. So it's possible that
 	a display element's state indicates that its smaller than its minimum
 	metric; this can also happen in some edge cases when the
@@ -307,10 +309,10 @@ typedef &ns;::w::scratch_and_mask_buffer_draw&lt;
     <para>
       The
       <ulink url="&link-x--w--scratch-and-mask-buffer-draw;"><classname>&ns;::w::scratch_and_mask_buffer_draw</classname></ulink>
-      template mixin's constructor requires three parameters.
+      template mixin's constructor requires one parameter.
       <ulink url="&link-typedef-x--w-background-color-elementObj;"><classname>&ns;::w::background_color_elementObj</classname></ulink>'s
       constructor requires one.
-      This means that whatever <classname>my_canvas_implObj</classname>
+      This means that <classname>my_canvas_implObj</classname>
       passes the following parameters to its parent class:
     </para>
 
@@ -319,7 +321,7 @@ typedef &ns;::w::scratch_and_mask_buffer_draw&lt;
 	<para>
 	  Its immediate parent class is the
 	  <classname>&ns;::w::scratch_and_mask_buffer_draw</classname>
-	  mixin. This mixin's constructor uses its first three parameters,
+	  mixin. This mixin's constructor uses its first parameter
 	  and forwards
 	  the rest to its parent class.
 	</para>
@@ -458,8 +460,17 @@ void my_canvas_implObj::do_draw(ONLY IN_THREAD,
 	specify different labels get separate scratch buffers.
       </para>
 
-      <para>
+      <note>
+	<para>
+	  A scratch buffer's unique identifier is actually its label
+	  and its <ulink url="&link-typedef-x--w-pictformat;"><classname>&ns;::w::pictformat</classname></ulink>,
+	  The same label with a regular scratch buffer and a one
+	  bit-deep masking buffer creates two actual, independent,
+	  scratch buffers.
+	</para>
+      </note>
 
+      <para>
 	The scratch buffers get
 	sized appropriately for each display element that uses them. For
 	that reason <methodname>do_draw</methodname>() can get a scratch

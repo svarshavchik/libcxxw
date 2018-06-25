@@ -5,13 +5,19 @@
 #include "libcxxw_config.h"
 #include "x/w/picture.H"
 #include "x/w/pixmap.H"
+#include "x/w/screen.H"
+#include "x/w/pictformat.H"
 #include "x/w/impl/scratch_buffer.H"
 #include <x/exception.H>
 
 LIBCXXW_NAMESPACE_START
 
-scratch_bufferObj::implObj::implObj(const pixmap &pm)
-	: cached_picture(pm, pm->create_picture(), pm->create_gc())
+scratch_bufferObj::implObj::implObj(const const_pictformat &scratch_pictformat,
+				    const screen &scratch_screen)
+
+	: scratch_pictformat{scratch_pictformat},
+	  scratch_screen{scratch_screen},
+	  cached_picture{std::nullopt}
 {
 }
 
@@ -29,25 +35,46 @@ void scratch_bufferObj::implObj
 
 	cached_picture_t::lock lock(cached_picture);
 
-	if (minimum_width > lock->pm->get_width() ||
-	    minimum_height > lock->pm->get_height())
+	if (*lock)
 	{
-		dim_t w=dim_t::truncate(minimum_width * 2);
-		dim_t h=dim_t::truncate(minimum_height * 2);
+		auto &info=**lock;
 
-		if (w == dim_t::infinite())
-			w -= 1;
-		if (h == dim_t::infinite())
-			h -= 1;
-		auto new_pm=lock->pm->create_pixmap(w, h);
-		auto new_pic=new_pm->create_picture();
-		auto new_gc=new_pm->create_gc();
+		auto current_width=info.pm->get_width();
+		auto current_height=info.pm->get_height();
 
-		lock->pm=new_pm;
-		lock->pic=new_pic;
-		lock->graphic_context=new_gc;
+		// If the current scratch buffer is big enough, great!
+		if (minimum_width <= current_width &&
+		    minimum_height <= current_height)
+		{
+			callback(info.pic, info.pm, info.graphic_context);
+			return;
+		}
+
+		// Hmm, let's leave room for growth.
+
+		if (minimum_width > current_width)
+			current_width = dim_t::truncate(minimum_width * 2);
+		else
+			minimum_width=current_width;
+
+		if (minimum_height > current_height)
+			current_height = dim_t::truncate(minimum_height * 2);
+		else
+			minimum_height=current_height;
 	}
-	callback(lock->pic, lock->pm, lock->graphic_context);
+
+	lock->reset(); // Politely release the current resources, first.
+
+	auto new_pm=scratch_screen->create_pixmap(scratch_pictformat,
+						  minimum_width,
+						  minimum_height);
+
+	auto new_pic=new_pm->create_picture();
+	auto new_gc=new_pm->create_gc();
+
+	(*lock)={new_pm, new_pic, new_gc};
+
+	callback(new_pic, new_pm, new_gc);
 }
 
 LIBCXXW_NAMESPACE_END

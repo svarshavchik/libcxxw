@@ -25,9 +25,7 @@ class scratch_and_mask_buffer_draw_impl {
 	//! Constructor
 
 	scratch_and_mask_buffer_draw_impl(const std::string &label,
-					  generic_windowObj::handlerObj &h,
-					  dim_t estimated_width,
-					  dim_t estimated_height)
+					  generic_windowObj::handlerObj &h)
 		LIBCXX_PUBLIC;
 
 	//! Destructor
@@ -132,8 +130,6 @@ class scratch_and_mask_buffer_draw : public scratch_buffer_draw<child_type>,
 
 	template<typename name1_type, typename ...Args>
 		scratch_and_mask_buffer_draw(name1_type &&mask_picture_name,
-					     dim_t estimated_width,
-					     dim_t estimated_height,
 					     Args && ...args);
 
 	~scratch_and_mask_buffer_draw();

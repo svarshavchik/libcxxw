@@ -6,9 +6,12 @@
 #define x_w_impl_scratch_buffer_h
 
 #include <x/w/scratch_buffer.H>
+#include <x/w/pictformatfwd.H>
+#include <x/w/screenfwd.H>
 #include <x/w/gc.H>
 #include <x/mpobj.H>
 #include <x/functional.H>
+#include <optional>
 
 LIBCXXW_NAMESPACE_START
 
@@ -33,13 +36,20 @@ class scratch_bufferObj::implObj : virtual public obj {
 
 	//! The cached pixmap and picture are mutex-protected.
 
-	typedef mpobj<cached_picture_info> cached_picture_t;
+	typedef mpobj<std::optional<cached_picture_info>> cached_picture_t;
+
+	//! The scratch buffer's pictformat.
+	const const_pictformat scratch_pictformat;
+
+	//! The scratch buffer's screen
+	const screen scratch_screen;
 
 	//! The cached picture.
 	cached_picture_t cached_picture;
 public:
 	//! Constructor
-	implObj(const pixmap &pm);
+	implObj(const const_pictformat &scratch_pictformat,
+		const screen &scratch_screen);
 
 	//! Destructor
 	~implObj();

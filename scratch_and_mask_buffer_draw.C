@@ -18,14 +18,11 @@ template class scratch_and_mask_buffer_draw<child_elementObj>;
 
 scratch_and_mask_buffer_draw_impl
 ::scratch_and_mask_buffer_draw_impl(const std::string &label,
-				    generic_windowObj::handlerObj &h,
-				    dim_t estimated_width,
-				    dim_t estimated_height)
+				    generic_windowObj::handlerObj &h)
 	: mask_scratch(h.get_screen()
 		       ->create_scratch_buffer
 		       (label,
-			h.get_screen()->find_alpha_pictformat_by_depth(1),
-			estimated_width, estimated_height))
+			h.get_screen()->find_alpha_pictformat_by_depth(1)))
 {
 }
 

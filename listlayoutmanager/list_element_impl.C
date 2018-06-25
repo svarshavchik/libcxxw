@@ -183,8 +183,7 @@ list_elementObj::implObj::implObj(const ref<listcontainer_pseudo_implObj>
 	  scratch_buffer_for_separator(container_screen->create_scratch_buffer
 				       ("list_separator_scratch@libcxx.com",
 					container_screen
-					->find_alpha_pictformat_by_depth(1),
-					0, 0)),
+					->find_alpha_pictformat_by_depth(1))),
 	  bullet1(container_element_impl.get_window_handler()
 		  .create_icon({"bullet1"})),
 	  bullet2(container_element_impl.get_window_handler()
