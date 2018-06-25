@@ -13,7 +13,9 @@ pagetabsingletonlayoutmanager_implObj
 	(const ref<pagetabObj::implObj> &pagetab_container,
 	 const element &initial_element)
 		: singletonlayoutmanagerObj::implObj{pagetab_container,
-		initial_element},
+						     initial_element,
+						     halign::fill,
+						     valign::fill},
 	pagetab_container{pagetab_container}
 {
 }

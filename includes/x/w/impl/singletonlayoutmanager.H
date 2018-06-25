@@ -18,16 +18,21 @@ class singletonlayoutmanagerObj::implObj :
 
 	//! The container for the current element, and/or new elements.
 
-	typedef mpobj<elementptr> current_element_t;
+	typedef mpobj<element> current_element_t;
 
 	//! The current element.
 
 	current_element_t current_element;
 
- public:
+	const halign element_halign;
+	const valign element_valign;
+
+public:
 	//! Constructor
 	implObj(const container_impl &container_impl,
-		const elementptr &initial_element);
+		const element &initial_element,
+		halign element_halign,
+		valign element_valign);
 
 	//! Destructor
 	~implObj();
@@ -47,12 +52,12 @@ class singletonlayoutmanagerObj::implObj :
 
 	//! Return the existing element.
 
-	elementptr get();
+	element get();
  private:
 	//! Return list_element's implementation object.
 
 	//! Invoking initialize_if_needed()
-	element_implptr get_list_element_impl(ONLY IN_THREAD);
+	element_impl get_list_element_impl(ONLY IN_THREAD);
 
  public:
 

@@ -100,7 +100,7 @@ void pagefactoryObj::created(const element &e)
 	// Finish the job started in get_container_impl(), above.
 
 	auto lm_impl=ref<singletonlayoutmanagerObj::implObj>
-		::create(container_impl, e);
+		::create(container_impl, e, halign::fill, valign::fill);
 	auto c=container::create(container_impl, lm_impl);
 
 	// Reset the factory's locked element properties after constructing

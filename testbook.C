@@ -171,7 +171,7 @@ static void create_book(const LIBCXX_NAMESPACE::w::booklayoutmanager &sl)
 		(const auto &tab_factory,
 		 const auto &page_factory)
 		{
-			tab_factory->create_label("Name")->show();
+			tab_factory->create_label("First/Last\nName")->show();
 			page_factory->create_container
 				([&]
 				 (const auto &container)
