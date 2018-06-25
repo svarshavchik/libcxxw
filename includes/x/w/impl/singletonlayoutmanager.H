@@ -55,6 +55,14 @@ class singletonlayoutmanagerObj::implObj :
 	element_implptr get_list_element_impl(ONLY IN_THREAD);
 
  public:
+
+	//! Override initialize()
+	void initialize(ONLY IN_THREAD) override;
+
+	//! Override theme_updated()
+	void theme_updated(ONLY IN_THREAD,
+			   const defaulttheme &new_theme) override;
+
 	//! Left margin padding.
 
 	//! The default implementation returns 0

@@ -340,7 +340,13 @@ my_element create_with_focusframe(const x::w::factory &f,
 		x::w::create_nonrecursive_visibility_focusframe_impl
 		(f_c_impl,
 		 custom_focusoff_border,
-		 custom_focuson_border);
+		 custom_focuson_border,
+
+		 // Additional padding between the focus frame and the
+		 // display element.
+
+		 0, 0
+		 );
 
 	// And our real custom display element will be a display element in
 	// the focus frame container. So, we pass the focus frame container

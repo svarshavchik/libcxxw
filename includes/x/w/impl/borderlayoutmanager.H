@@ -8,6 +8,7 @@
 #include "x/w/borderlayoutmanager.H"
 #include "x/w/impl/singletonlayoutmanager.H"
 #include "x/w/impl/bordercontainer_impl.H"
+#include "x/w/impl/border_implfwd.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -23,6 +24,13 @@ class LIBCXX_HIDDEN borderlayoutmanagerObj::implObj
 	//! Our container
 	const ref<bordercontainer_implObj> bordercontainer_impl;
 
+ private:
+
+	//! Current border being used for drawing.
+
+	const_border_implptr current_border;
+
+ public:
 	//! Constructor
 	implObj(const container_impl &container_impl,
 		const ref<bordercontainer_implObj> &bordercontainer_impl,
@@ -30,6 +38,9 @@ class LIBCXX_HIDDEN borderlayoutmanagerObj::implObj
 
 	//! Destructor
 	~implObj();
+
+	//! Override recalculated()
+	void recalculate(ONLY IN_THREAD) override;
 
 	//! Implement create_public_object().
 

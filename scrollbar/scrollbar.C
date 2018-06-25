@@ -105,7 +105,7 @@ static scrollbar create_scrollbar(const container_impl &parent_container,
 		create_nonrecursive_visibility_focusframe_impl
 		(parent_container,
 		 "scrollbarfocusoff_border",
-		 "inputfocuson_border", background_color);
+		 "inputfocuson_border", 0, 0, background_color);
 
 	// The focus frame will manage the actual scrollbar element. Create
 	// the implementation object. Since the focus-framed element will
@@ -131,6 +131,7 @@ static scrollbar create_scrollbar(const container_impl &parent_container,
 	// And this will be its layout manager.
 
 	auto fflayout=ref<focusframelayoutimplObj>::create(ffcontainer_impl,
+							   ffcontainer_impl,
 							   e);
 
 	// We are now ready to construct the elements.
@@ -139,9 +140,6 @@ static scrollbar create_scrollbar(const container_impl &parent_container,
 	auto sb=scrollbar::create(scrollbar_impl,
 				  ffcontainer_impl,
 				  fflayout);
-
-
-	install_focusframe_element(sb, e);
 
 	return sb;
 }

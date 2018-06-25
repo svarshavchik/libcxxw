@@ -116,10 +116,8 @@ menu menubarlayoutmanagerObj::implObj
 						       hotspot_impl);
 
 	auto ff_impl=ref<focusframelayoutimplObj>
-		::create(menu_impl, hotspot);
+		::create(menu_impl, menu_impl, hotspot);
 
-	auto ff_factory=ff_impl->create_gridlayoutmanager()->append_row();
-	ff_factory->padding(0);
 	x::w::gridlayoutmanager glm=hotspot->get_layoutmanager();
 
 	auto creator_factory=glm->append_row();
@@ -129,8 +127,6 @@ menu menubarlayoutmanagerObj::implObj
 	creator(glm->append_row());
 
 	hotspot->show_all();
-
-	ff_factory->created_internally(hotspot);
 
 	auto new_menu=menu::create(menu_impl, ff_impl);
 

@@ -6,6 +6,7 @@
 #include "x/w/focusable_label.H"
 #include "x/w/factoryobj.H"
 #include "x/w/label.H"
+#include "x/w/borderlayoutmanager.H"
 #include "x/w/impl/focus/standard_focusframecontainer_element_impl.H"
 #include "focus/focusframelayoutimpl.H"
 #include "x/w/impl/focus/focusable.H"
@@ -33,21 +34,14 @@ focusable_label factoryObj
 	auto ff=create_nonrecursive_visibility_focusframe_impl
 		(get_container_impl(),
 		 config.off_border,
-		 config.on_border);
+		 config.on_border, 0, 0);
 
 	auto focusable_label_impl=ref<focusable_labelObj::implObj>
 		::create(ff, text, config.widthmm, config.alignment);
 
 	auto l=label::create(focusable_label_impl, focusable_label_impl);
 
-	auto ffl=ref<focusframelayoutimplObj>::create(ff, l);
-
-	auto glm=ffl->create_gridlayoutmanager();
-
-	auto gf=glm->append_row();
-
-	gf->padding(0);
-	gf->created_internally(l);
+	auto ffl=ref<focusframelayoutimplObj>::create(ff, ff, l);
 
 	l->show();
 
@@ -81,9 +75,9 @@ focusable_impl focusable_labelObj::get_impl() const
 ref<elementObj::implObj> focusable_labelObj
 ::get_minimum_override_element_impl()
 {
-	gridlayoutmanager glm=get_layoutmanager();
+	borderlayoutmanager blm=get_layoutmanager();
 
-	return glm->get(0, 0)->impl;
+	return blm->get()->impl;
 }
 
 LIBCXXW_NAMESPACE_END

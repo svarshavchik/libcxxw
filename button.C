@@ -115,7 +115,7 @@ create_button_focusframe(const ref<buttonObj::implObj> &impl,
 
 	creator(cf);
 
-	auto ff=create_focusframe_container_owner(ffi, cf->get(), ffi);
+	auto ff=create_focusframe_container_owner(ffi, ffi, cf->get(), ffi);
 
 	// Now, it's time to go back to the new button's grid
 	// layout manager, and insert the fully-cooked focusframecontainer.

@@ -90,6 +90,18 @@ void borderlayoutmanagerObj::implObj
 	}
 }
 
+void borderlayoutmanagerObj::implObj::recalculate(ONLY IN_THREAD)
+{
+	superclass_t::recalculate(IN_THREAD);
+
+	// If the border changed, we need to redraw even if recalculate()
+	// did nothing.
+	if (current_border != bordercontainer_impl->get_border(IN_THREAD)
+	    ->border(IN_THREAD))
+		bordercontainer_impl->get_container_impl()
+			.container_element_impl().schedule_redraw(IN_THREAD);
+}
+
 void borderlayoutmanagerObj::implObj::do_draw(ONLY IN_THREAD,
 					      const draw_info &di,
 					      clip_region_set &clip,
@@ -98,6 +110,8 @@ void borderlayoutmanagerObj::implObj::do_draw(ONLY IN_THREAD,
 	superclass_t::do_draw(IN_THREAD, di, clip, drawn_areas);
 
 	auto b=bordercontainer_impl->get_border(IN_THREAD)->border(IN_THREAD);
+	current_border=b;
+
 	auto &e=bordercontainer_impl->get_container_impl()
 		.container_element_impl();
 

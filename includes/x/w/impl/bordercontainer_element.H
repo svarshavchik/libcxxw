@@ -77,6 +77,9 @@ template<typename element_impl>
 void bordercontainer_elementObj<element_impl>
 ::set_border(ONLY IN_THREAD, const current_border_impl &new_border)
 {
+	if (this->current_border(IN_THREAD)==new_border)
+		return;
+
 	this->current_border(IN_THREAD)=new_border;
 
 	this->get_container_impl().invoke_layoutmanager

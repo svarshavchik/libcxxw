@@ -102,7 +102,7 @@ void panelayoutmanagerObj::implObj::create_slider(const gridfactory &f)
 
 	auto slider=pane_slider::create(slider_impl);
 
-	auto slider_container=create_focusframe_container_owner(ff, slider,
+	auto slider_container=create_focusframe_container_owner(ff, ff, slider,
 								slider_impl);
 
 	slider_container->label_for(slider);

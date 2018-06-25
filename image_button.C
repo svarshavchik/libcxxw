@@ -243,7 +243,7 @@ do_create_image_button(bool disable_recursive_visibility,
 		create_always_visible_focusframe_impl
 		(image_button_outer_container_impl,
 		 "thin_inputfocusoff_border",
-		 "thin_inputfocuson_border");
+		 "thin_inputfocuson_border", 0, 0);
 
 	// Create an image_button_internal implementation object. Its
 	// container is the focusframecontainer.
@@ -262,8 +262,10 @@ do_create_image_button(bool disable_recursive_visibility,
 	// nonrecursive_visibilityObj, so its show_all/hide_all() will not
 	// recursively show/hide the internal display elements.
 
-	auto focus_frame=create_focusframe_container_owner(focus_frame_impl,
-							   ibi, ibii);
+	auto focus_frame=create_focusframe_container_owner
+		(focus_frame_impl,
+		 focus_frame_impl,
+		 ibi, ibii);
 
 	ibi->show();
 

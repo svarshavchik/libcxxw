@@ -7,7 +7,7 @@
 
 #include "focus/focusframelayoutimplfwd.H"
 #include "x/w/impl/focus/focusframecontainer_impl.H"
-#include "gridlayoutmanager.H"
+#include "x/w/impl/borderlayoutmanager.H"
 #include "x/w/impl/current_border_implfwd.H"
 #include "x/w/impl/themeborder_elementfwd.H"
 #include "x/w/containerobj.H"
@@ -20,25 +20,19 @@ LIBCXXW_NAMESPACE_START
 //! grid layout manager.
 
 class LIBCXX_HIDDEN focusframelayoutimplObj
-	: public gridlayoutmanagerObj::implObj {
-
+	: public borderlayoutmanagerObj::implObj {
 
  public:
 	//! My container.
 	const ref<focusframecontainer_implObj> focusframe_container_impl;
 
 	//! Constructor
-	focusframelayoutimplObj(const ref<focusframecontainer_implObj> &,
+	focusframelayoutimplObj(const container_impl &,
+				const ref<focusframecontainer_implObj> &,
 				const element &);
 
 	//! Destructor
 	~focusframelayoutimplObj();
-
-	//! Set the appropriate border for our element.
-
-	void rebuild_elements_start(ONLY IN_THREAD,
-				    grid_map_t::lock &lock) override;
-
 };
 
 LIBCXXW_NAMESPACE_END

@@ -46,6 +46,20 @@ void singletonlayoutmanagerObj::implObj
 	callback(c);
 }
 
+void singletonlayoutmanagerObj::implObj::initialize(ONLY IN_THREAD)
+{
+	auto c=current_element.get();
+
+	if (c)
+	{
+		c->impl->initialize_if_needed(IN_THREAD);
+	}
+
+	layoutmanagerObj::implObj::initialize(IN_THREAD);
+	needs_recalculation(IN_THREAD);
+
+}
+
 dim_t singletonlayoutmanagerObj::implObj::get_left_padding(ONLY IN_THREAD)
 {
 	return 0;
@@ -87,6 +101,14 @@ element_implptr singletonlayoutmanagerObj::implObj
 	return e->impl;
 }
 
+void singletonlayoutmanagerObj::implObj
+::theme_updated(ONLY IN_THREAD,
+		const defaulttheme &new_theme)
+{
+	layoutmanagerObj::implObj::theme_updated(IN_THREAD, new_theme);
+	needs_recalculation(IN_THREAD);
+}
+
 void singletonlayoutmanagerObj::implObj::recalculate(ONLY IN_THREAD)
 {
 	auto list_impl=get_list_element_impl(IN_THREAD);
@@ -111,13 +133,6 @@ void singletonlayoutmanagerObj::implObj::recalculate(ONLY IN_THREAD)
 	}
 
 	update_metrics(IN_THREAD, horiz, vert);
-
-	// Also update the element's position based on the element's new
-	// metrics and our current position.
-
-	process_updated_position(IN_THREAD,
-				 get_element_impl()
-				 .data(IN_THREAD).current_position);
 }
 
 void singletonlayoutmanagerObj::implObj
@@ -146,8 +161,6 @@ void singletonlayoutmanagerObj::implObj
 	if (!lei)
 		return;
 
-	auto child_horizvert=lei->get_horizvert(IN_THREAD);
-
 	// The usable size for position the element is the container's
 	// current size, less the specified padding.
 
@@ -162,37 +175,10 @@ void singletonlayoutmanagerObj::implObj
 	dim_t usable_height=position.height > h_overhead
 		? position.height-h_overhead:dim_t{0};
 
-	// Opening bid is that the element's height is its maximum height,
-	// reduce if the container is not tlal enough.
-	auto h=child_horizvert->vert.maximum();
-
-	if (h > position.height)
-		h=usable_height;
-
-	// ... but not below the container's minimum height.
-	if (h < child_horizvert->vert.minimum())
-		h=child_horizvert->vert.minimum();
-
-	// Similar logic for the width.
-	auto w=child_horizvert->horiz.maximum();
-
-	if (w > usable_width)
-		w=usable_width;
-
-	if (w < child_horizvert->horiz.minimum())
-		w=child_horizvert->horiz.minimum();
-
-	// Vertically center the element if the usable height is more than
-	// the element needs.
-	coord_t y=0;
-
-	if (h < usable_height)
-		y=coord_t::truncate( (usable_height-h)/2 );
-
 	lei->update_current_position(IN_THREAD, {
 			coord_t::truncate(get_left_padding(IN_THREAD)),
-				coord_t::truncate(y+get_top_padding(IN_THREAD)),
-				w, h});
+				coord_t::truncate(get_top_padding(IN_THREAD)),
+				usable_width, usable_height});
 }
 
 LIBCXXW_NAMESPACE_END

@@ -100,7 +100,7 @@ create_peepholed_focusable_with_frame_impl
 	refptr_traits<always_visible_focusframe_ref_t>
 		::ptr_t focusframecontainer_impl;
 
-	factory->create_container
+	auto pfc=factory->create_container
 		([&]
 		 (const auto &new_container)
 		 {
@@ -129,6 +129,8 @@ create_peepholed_focusable_with_frame_impl
 				 (new_container->impl,
 				  args.inputfocusoff_border,
 				  args.inputfocuson_border,
+				  args.focusable_padding,
+				  args.focusable_padding,
 				  args.focusable_background_color);
 
 			 // Now that the focusframe implementation object
@@ -141,7 +143,9 @@ create_peepholed_focusable_with_frame_impl
 
 			 focusframecontainer_impl=focusframe_impl_ret;
 		 },
-		 new_gridlayoutmanager())->show();
+		 new_gridlayoutmanager());
+
+	pfc->show();
 
 	// We can now create our layout manager, and give it the created
 	// peepholed_element.
@@ -175,6 +179,7 @@ create_peepholed_focusable_with_frame_impl
 	auto ff=focusable_container_owner::create
 		(focusframecontainer_impl,
 		 ref<focusframelayoutimplObj>::create(focusframecontainer_impl,
+						      focusframecontainer_impl,
 						      peephole_container),
 		 focusable_element_impl);
 
@@ -189,24 +194,17 @@ create_peepholed_focusable_with_frame_impl
 	// Explicitly show() the peephole_container and the focusframe, since
 	// the whole thing has nonrecursive_visibility.
 	//
-	// Officially place the peephole_container in focusframe's layout
-	// manager, it was created_internally().
-	//
 	// Officially place the focusframe inside the grid
 	// layout manager, it was created_internally().
 
-	gridlayoutmanager l=ff->get_layoutmanager();
-
 	peephole_container->show();
-	l->append_row()->padding(args.focusable_padding)
-		.created_internally(peephole_container);
 	ff->show();
 
 	ff_factory->created_internally(ff);
 
 	auto factory2=grid->append_row();
 
-	install_peephole_scrollbars(l,
+	install_peephole_scrollbars(grid,
 				    scrollbars.vertical_scrollbar,
 				    args.vertical_visibility,
 				    factory,

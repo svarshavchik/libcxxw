@@ -111,7 +111,7 @@ do_create_popup_imagebutton(const gridfactory &f,
 
 	// We can now create the focusframe public object.
 
-	auto ff=create_focusframe_container_owner(cbfc,
+	auto ff=create_focusframe_container_owner(cbfc, cbfc,
 						  popup_button,
 						  image_button_internal_impl);
 

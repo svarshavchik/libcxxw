@@ -15,8 +15,7 @@ LIBCXXW_NAMESPACE_START
 //! Create a focusable_container_owner for a standard focusframe.
 
 //! Mostly for internal library use. Creates a focusable_container_owner
-//! for a standard focusframe implementation object, and simultaneously installs
-//! an element into the focus frame using install_focusframe_element().
+//! for a standard focusframe implementation object.
 //!
 //! The focusable_container_owner gets registered as an owner for the specified
 //! focusable implementation. This is typically some focusable object in the
@@ -30,27 +29,19 @@ LIBCXXW_NAMESPACE_START
 //! focusable_container becomes its public owner/object.
 
 focusable_container_owner
-create_focusframe_container_owner(const ref<focusframecontainer_implObj> &impl,
+create_focusframe_container_owner(const container_impl &parent_container,
+				  const ref<focusframecontainer_implObj> &impl,
 				  const element &e,
 				  const focusable_impl &element_focusable_impl);
 
 //! Create a container for a standard focusframe.
 
 //! Constructs a container public object for a standard focusframe
-//! implementation object, and uses install_focusframe_element() to install
-//! the element.
+//! implementation object.
 
 container create_focusframe_container(const
 				      ref<focusframecontainer_implObj> &impl,
 				      const element &e);
-
-//! Install an element into the focus frame layout manager.
-
-//! The newly-constructed container uses focusframelayoutimplObj as the
-//! layout manager. Install an element into this container.
-
-void install_focusframe_element(const container &c,
-				const element &e);
 
 LIBCXXW_NAMESPACE_END
 

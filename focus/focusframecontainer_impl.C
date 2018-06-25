@@ -31,20 +31,12 @@ void focusframecontainer_implObj::update_focusframe(ONLY IN_THREAD)
 {
 	auto &bc=focusframe_bordercontainer_impl();
 
+	auto &e=bc.get_container_impl().container_element_impl();
+
 	bc.set_border(IN_THREAD,
-		      bc.get_container_impl().container_element_impl()
-		      .current_keyboard_focus(IN_THREAD)
+		      e.current_keyboard_focus(IN_THREAD)
 		      ? get_focuson_border()
 		      : get_focusoff_border());
-
-	bc.get_container_impl().invoke_layoutmanager
-		([&]
-		 (const ref<gridlayoutmanagerObj::implObj> &manager)
-		 {
-			 grid_map_t::lock lock{manager->grid_map};
-
-			 (*lock)->elements_have_been_modified();
-		 });
 }
 
 LIBCXXW_NAMESPACE_END

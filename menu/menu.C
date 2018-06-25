@@ -7,6 +7,7 @@
 #include "x/w/listlayoutmanager.H"
 #include "gridlayoutmanager.H"
 #include "x/w/impl/focus/focusable.H"
+#include "x/w/impl/singletonlayoutmanager.H"
 #include "popup/popup.H"
 
 LIBCXXW_NAMESPACE_START
@@ -24,9 +25,10 @@ focusable_impl menuObj::get_impl() const
 	focusable_implptr f_impl;
 
 	impl->invoke_layoutmanager([&]
-				   (const ref<gridlayoutmanagerObj::implObj> &l)
+				   (const ref<singletonlayoutmanagerObj
+				    ::implObj> &l)
 				   {
-					   f_impl=focusable(l->get(0, 0))
+					   f_impl=focusable(l->get())
 						   ->get_impl();
 				   });
 
