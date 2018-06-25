@@ -5,7 +5,6 @@
 
 #include "libcxxw_config.h"
 #include "corner_border.H"
-#include "grid_element.H"
 #include "x/w/impl/current_border_impl.H"
 #include "x/w/impl/border_impl.H"
 #include "straight_border.H"
@@ -222,8 +221,7 @@ void corner_borderObj::implObj::do_draw(ONLY IN_THREAD,
 	if ((info.all_corners & border_impl::base::cornertl())
 	    && elements.topleft)
 	{
-		auto &e_draw_info=elements.topleft->grid_element->impl
-			->get_draw_info(IN_THREAD);
+		auto &e_draw_info=elements.topleft->get_draw_info(IN_THREAD);
 
 		auto xy=e_draw_info.background_xy_to(di);
 
@@ -238,8 +236,7 @@ void corner_borderObj::implObj::do_draw(ONLY IN_THREAD,
 	if ((info.all_corners & border_impl::base::cornertr())
 	    && elements.topright)
 	{
-		auto &e_draw_info=elements.topright->grid_element->impl
-			->get_draw_info(IN_THREAD);
+		auto &e_draw_info=elements.topright->get_draw_info(IN_THREAD);
 
 		auto xy=e_draw_info.background_xy_to(di,
 						     coord_t::truncate(leftwidth),
@@ -257,8 +254,7 @@ void corner_borderObj::implObj::do_draw(ONLY IN_THREAD,
 	if ((info.all_corners & border_impl::base::cornerbl())
 	    && elements.bottomleft)
 	{
-		auto &e_draw_info=elements.bottomleft->grid_element->impl
-			->get_draw_info(IN_THREAD);
+		auto &e_draw_info=elements.bottomleft->get_draw_info(IN_THREAD);
 
 		auto xy=e_draw_info.background_xy_to(di,
 						     0,
@@ -276,8 +272,8 @@ void corner_borderObj::implObj::do_draw(ONLY IN_THREAD,
 	if ((info.all_corners & border_impl::base::cornerbr())
 	    && elements.bottomright)
 	{
-		auto &e_draw_info=elements.bottomright->grid_element->impl
-			->get_draw_info(IN_THREAD);
+		auto &e_draw_info=
+			elements.bottomright->get_draw_info(IN_THREAD);
 
 		auto xy=e_draw_info.background_xy_to(di,
 						     coord_t::truncate(leftwidth),

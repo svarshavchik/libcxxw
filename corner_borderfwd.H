@@ -7,7 +7,8 @@
 
 #include <x/ptrfwd.H>
 #include "x/w/namespace.H"
-#include "x/w/impl/grid_elementfwd.H"
+#include "x/w/elementfwd.H"
+#include "x/w/elementobj.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -47,16 +48,16 @@ struct LIBCXX_HIDDEN surrounding_elements_info {
 	surrounding_elements_info(const surrounding_elements_info &);
 
 	//! The top/left element, maybe null if this is the grid edge.
-	grid_elementptr topleft;
+	element_implptr topleft;
 
 	//! The bottom/right element, maybe null if this is the grid edge.
-	grid_elementptr topright;
+	element_implptr topright;
 
 	//! The bottom/left element, maybe null if this is the grid edge.
-	grid_elementptr bottomleft;
+	element_implptr bottomleft;
 
 	//! The bottom/right element, maybe null if this is the grid edge.
-	grid_elementptr bottomright;
+	element_implptr bottomright;
 };
 
 

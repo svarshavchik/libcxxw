@@ -7,10 +7,8 @@
 #include "x/w/picture.H"
 #include "x/w/pixmap.H"
 #include "x/w/gc.H"
-#include "grid_element.H"
 #include "x/w/impl/element.H"
 #include "picture.H"
-#include "grid_element.H"
 #include "corner_borderfwd.H"
 #include "x/w/impl/draw_info.H"
 #include "x/w/impl/background_color.H"
@@ -128,8 +126,7 @@ struct border_implObj::corner_draw_info {
 		if (!elements.topleft)
 			return;
 
-		auto &e_draw_info=elements.topleft->grid_element->impl
-			->get_draw_info(IN_THREAD);
+		auto &e_draw_info=elements.topleft->get_draw_info(IN_THREAD);
 
 		auto xy=e_draw_info.background_xy_to(di.area_x,
 						     di.area_y,
@@ -150,8 +147,7 @@ struct border_implObj::corner_draw_info {
 		if (!elements.topright)
 			return;
 
-		auto &e_draw_info=elements.topright->grid_element->impl
-			->get_draw_info(IN_THREAD);
+		auto &e_draw_info=elements.topright->get_draw_info(IN_THREAD);
 
 		auto new_x=coord_t::truncate(x+left_half_width);
 
@@ -174,8 +170,7 @@ struct border_implObj::corner_draw_info {
 		if (!elements.bottomleft)
 			return;
 
-		auto &e_draw_info=elements.bottomleft->grid_element->impl
-			->get_draw_info(IN_THREAD);
+		auto &e_draw_info=elements.bottomleft->get_draw_info(IN_THREAD);
 
 		auto new_y=coord_t::truncate(y+top_half_height);
 
@@ -198,8 +193,8 @@ struct border_implObj::corner_draw_info {
 		if (!elements.bottomright)
 			return;
 
-		auto &e_draw_info=elements.bottomright->grid_element->impl
-			->get_draw_info(IN_THREAD);
+		auto &e_draw_info=
+			elements.bottomright->get_draw_info(IN_THREAD);
 
 		auto new_x=coord_t::truncate(x+left_half_width);
 		auto new_y=coord_t::truncate(y+top_half_height);
@@ -660,7 +655,8 @@ void border_implObj::draw_round_corner(ONLY IN_THREAD,
 				       coord_t y,
 				       bool subtract_width,
 				       bool subtract_height,
-				       const grid_elementptr &element) const
+				       const element_implptr &corner_element)
+	const
 {
 	mask_gc_clear(di);
 
@@ -736,10 +732,10 @@ void border_implObj::draw_round_corner(ONLY IN_THREAD,
 		// Before clearing the inner border, use this mask to
 		// fill the inner border with the element's background_color
 
-		if (element)
+		if (corner_element)
 		{
-			auto &e_draw_info=element->grid_element->impl
-				->get_draw_info(IN_THREAD);
+			auto &e_draw_info=
+				corner_element->get_draw_info(IN_THREAD);
 
 			auto xy=e_draw_info.background_xy_to
 				(coord_t::truncate(di.area_x+x),

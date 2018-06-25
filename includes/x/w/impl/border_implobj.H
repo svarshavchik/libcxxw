@@ -12,12 +12,12 @@
 #include <x/w/pixmapobj.H>
 #include <x/w/gcfwd.H>
 #include <x/w/gcobj.H>
+#include <x/w/elementobj.H>
 #include <x/w/rectangle.H>
 #include <x/w/impl/defaultthemefwd.H>
 #include <x/w/impl/border_info.H>
 #include <x/w/impl/border_implfwd.H>
 #include <x/w/connection_threadfwd.H>
-#include <x/w/impl/grid_elementfwd.H>
 #include <vector>
 #include <tuple>
 
@@ -272,7 +272,8 @@ class border_implObj: virtual public obj, public border_info {
 			       coord_t y,
 			       bool subtract_width,
 			       bool subtract_height,
-			       const grid_elementptr &element) const;
+			       const element_implptr &corner_element)
+		const;
 
  public:
 	//! There's no border to draw, here.

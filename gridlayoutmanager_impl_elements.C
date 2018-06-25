@@ -291,8 +291,13 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(ONLY IN_THREAD)
 					  cb1->impl->surrounding_elements
 					  (IN_THREAD);
 
-				  top_info.bottomleft=eleft;
-				  top_info.bottomright=eright;
+				  if (eleft)
+					  top_info.bottomleft=eleft
+						  ->grid_element->impl;
+
+				  if (eright)
+					  top_info.bottomright=eright
+						  ->grid_element->impl;
 				  top_info.frombottom_border=b;
 
 				  // The corner border on the top of this new
@@ -312,8 +317,12 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(ONLY IN_THREAD)
 				  auto &bottom_info=
 					  cb2->impl->surrounding_elements
 					  (IN_THREAD);
-				  bottom_info.topleft=eleft;
-				  bottom_info.topright=eright;
+				  if (eleft)
+					  bottom_info.topleft=eleft
+						  ->grid_element->impl;
+				  if (eright)
+					  bottom_info.topright=eright
+						  ->grid_element->impl;
 				  bottom_info.fromtop_border=b;
 
 				  // Register the vertical border with the
@@ -453,8 +462,12 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(ONLY IN_THREAD)
 					  cb->impl->surrounding_elements
 					  (IN_THREAD);
 
-				  left_info.topright=eabove;
-				  left_info.bottomright=ebelow;
+				  if (eabove)
+					  left_info.topright=eabove
+						  ->grid_element->impl;
+				  if (ebelow)
+					  left_info.bottomright=ebelow
+						  ->grid_element->impl;
 				  left_info.fromright_border=b;
 
 				  // The corner border on the right of this new
@@ -475,8 +488,12 @@ bool gridlayoutmanagerObj::implObj::rebuild_elements(ONLY IN_THREAD)
 					  cb->impl->surrounding_elements
 					  (IN_THREAD);
 
-				  right_info.topleft=eabove;
-				  right_info.bottomleft=ebelow;
+				  if (eabove)
+					  right_info.topleft=eabove
+						  ->grid_element->impl;
+				  if (ebelow)
+					  right_info.bottomleft=ebelow
+						  ->grid_element->impl;
 				  right_info.fromleft_border=b;
 			  });
 

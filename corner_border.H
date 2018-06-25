@@ -7,7 +7,6 @@
 
 #include "x/w/impl/child_elementobj.H"
 #include "x/w/impl/scratch_and_mask_buffer_drawfwd.H"
-#include "x/w/impl/grid_elementfwd.H"
 #include "x/w/scratch_bufferfwd.H"
 #include "straight_borderfwd.H"
 #include "corner_borderfwd.H"
