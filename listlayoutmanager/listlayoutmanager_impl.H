@@ -6,7 +6,7 @@
 #define listlayoutmanager_impl_h
 
 #include "x/w/listlayoutmanager.H"
-#include "singletonlayoutmanager_impl.H"
+#include "x/w/impl/singletonlayoutmanager.H"
 #include "listlayoutmanager/list_elementfwd.H"
 #include "listlayoutmanager/listcontainer_pseudo_impl.H"
 #include <x/functionalrefptr.H>

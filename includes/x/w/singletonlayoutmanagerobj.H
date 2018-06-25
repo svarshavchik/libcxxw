@@ -2,12 +2,12 @@
 ** Copyright 2017 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
-#ifndef singletonlayoutmanagerobj_h
-#define singletonlayoutmanagerobj_h
+#ifndef x_w_singletonlayoutmanagerobj_h
+#define x_w_singletonlayoutmanagerobj_h
 
-#include "singletonlayoutmanagerfwd.H"
-#include "x/w/layoutmanagerobj.H"
-#include "x/w/factoryfwd.H"
+#include <x/w/singletonlayoutmanagerfwd.H>
+#include <x/w/layoutmanagerobj.H>
+#include <x/w/factoryfwd.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -15,7 +15,7 @@ LIBCXXW_NAMESPACE_START
 
 //! \see singletonlayoutmanager
 
-class LIBCXX_HIDDEN singletonlayoutmanagerObj : public layoutmanagerObj {
+class singletonlayoutmanagerObj : public layoutmanagerObj {
 
 public:
 	class implObj;

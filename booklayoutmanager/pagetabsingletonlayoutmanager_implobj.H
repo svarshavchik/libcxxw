@@ -6,7 +6,7 @@
 #define x_w_pagetabsingletonlayoutmanager_implobj_h
 
 #include <booklayoutmanager/pagetab_impl.H>
-#include "singletonlayoutmanager_impl.H"
+#include "x/w/impl/singletonlayoutmanager.H"
 
 LIBCXXW_NAMESPACE_START
 

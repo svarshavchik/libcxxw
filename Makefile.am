@@ -724,11 +724,7 @@ libcxxw_la_SOURCES=\
 	shortcut/shortcut_activation_element_impl.C \
 	shortcut/shortcut_activation_element_impl.H \
 	singletonlayoutmanager.C		    \
-	singletonlayoutmanager.H		    \
-	singletonlayoutmanagerfwd.H		    \
-	singletonlayoutmanagerobj.H		    \
 	singletonlayoutmanager_impl.C		    \
-	singletonlayoutmanager_impl.H		    \
 	selection/current_selection.C		    \
 	selection/current_selection.H		    \
 	selection/current_selectionfwd.H	    \

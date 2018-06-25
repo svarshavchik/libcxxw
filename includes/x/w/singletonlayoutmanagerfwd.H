@@ -2,8 +2,8 @@
 ** Copyright 2017 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
-#ifndef singletonlayoutmanagerfwd_h
-#define singletonlayoutmanagerfwd_h
+#ifndef x_w_singletonlayoutmanagerfwd_h
+#define x_w_singletonlayoutmanagerfwd_h
 
 #include "x/w/namespace.H"
 #include <x/ptrfwd.H>

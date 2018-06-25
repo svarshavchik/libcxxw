@@ -3,8 +3,8 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
-#include "singletonlayoutmanager_impl.H"
-#include "singletonlayoutmanager.H"
+#include "x/w/impl/singletonlayoutmanager.H"
+#include "x/w/singletonlayoutmanager.H"
 #include "catch_exceptions.H"
 #include "x/w/impl/container.H"
 #include "x/w/impl/child_element.H"

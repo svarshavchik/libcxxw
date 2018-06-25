@@ -2,11 +2,11 @@
 ** Copyright 2017 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
-#ifndef singletonlayoutmanager_h
-#define singletonlayoutmanager_h
+#ifndef x_w_singletonlayoutmanager_h
+#define x_w_singletonlayoutmanager_h
 
-#include "singletonlayoutmanagerfwd.H"
-#include "singletonlayoutmanagerobj.H"
+#include <x/w/singletonlayoutmanagerfwd.H>
+#include <x/w/singletonlayoutmanagerobj.H>
 #include <x/ref.H>
 
 LIBCXXW_NAMESPACE_START

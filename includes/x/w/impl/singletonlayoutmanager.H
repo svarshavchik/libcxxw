@@ -1,20 +1,19 @@
 /*
-** Copyright 2017 Double Precision, Inc.
+** Copyright 2017-2018 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
-#ifndef singletonlayoutmanager_impl_h
-#define singletonlayoutmanager_impl_h
+#ifndef x_w_impl_singletonlayoutmanager_h
+#define x_w_impl_singletonlayoutmanager_h
 
-#include "x/w/impl/layoutmanager.H"
-#include "singletonlayoutmanagerobj.H"
+#include <x/w/impl/layoutmanager.H>
+#include <x/w/singletonlayoutmanagerobj.H>
 #include <x/mpobj.H>
-#include <vector>
 
 LIBCXXW_NAMESPACE_START
 
 //! \ref singletonlayoutmanager "Singleton layout manager" implementation.
 
-class LIBCXX_HIDDEN singletonlayoutmanagerObj::implObj :
+class singletonlayoutmanagerObj::implObj :
 	public layoutmanagerObj::implObj {
 
 	//! The container for the current element, and/or new elements.
