@@ -6,12 +6,20 @@
 #include "button.H"
 #include "x/w/impl/container_element.H"
 #include "x/w/impl/container_visible_element.H"
+#include "x/w/impl/bordercontainer_element.H"
 
 LIBCXXW_NAMESPACE_START
 
-buttonObj::implObj::implObj(const container_impl &container,
+buttonObj::implObj::implObj(const border_arg &left_border,
+			    const border_arg &right_border,
+			    const border_arg &top_border,
+			    const border_arg &bottom_border,
+			    const container_impl &container,
 			    const child_element_init_params &init_params)
-	: superclass_t{container, init_params}
+	: superclass_t{left_border, right_border,
+		       top_border, bottom_border,
+		       0, 0,
+		       container, init_params}
 {
 }
 

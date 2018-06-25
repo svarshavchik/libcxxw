@@ -11,6 +11,8 @@
 #include "x/w/border_arg.H"
 #include "x/w/impl/container_element.H"
 #include "x/w/impl/container_visible_element.H"
+#include "x/w/impl/bordercontainer_element.H"
+#include "x/w/impl/borderlayoutmanager.H"
 #include "hotspot_bgcolor_element.H"
 #include "capturefactory.H"
 #include "x/w/impl/always_visible.H"
@@ -53,7 +55,7 @@ class LIBCXX_HIDDEN button_focusframeObj : public ff_impl_t {
 
 struct LIBCXX_HIDDEN buttonObj::internal_construction_info {
 
-	ref<gridlayoutmanagerObj::implObj> glmi;
+	ref<borderlayoutmanagerObj::implObj> blmi;
 
 	ref<ff_impl_t> ff_impl;
 };
@@ -72,22 +74,11 @@ typedef factoryObj::factory_creator_t factory_creator_t;
 
 static buttonObj::internal_construction_info
 create_button_focusframe(const ref<buttonObj::implObj> &impl,
-			 const border_arg &left_border,
-			 const border_arg &right_border,
-			 const border_arg &top_border,
-			 const border_arg &bottom_border,
 			 const color_arg &normal_color,
 			 const color_arg &selected_color,
 			 const color_arg &active_color,
 			 const function<factory_creator_t> &creator)
 {
-	// Create the grid layout manager that the button uses
-	// for its real contents: the focusframecontainer.
-
-	auto glmi=ref<gridlayoutmanagerObj::implObj>::create(impl);
-
-	auto glm=glmi->create_gridlayoutmanager();
-
 	// Now, create the focusframecontainer.
 	//
 	// Obtain the factory for its contents, via set_focusable(), and
@@ -104,8 +95,7 @@ create_button_focusframe(const ref<buttonObj::implObj> &impl,
 			 "inputfocuson_border",
 			 0,
 			 0,
-			 glmi->layout_container_impl,
-			 glmi->layout_container_impl,
+			 impl, impl,
 			 child_element_init_params{"focusframe@libcxx.com"});
 
 	// Call the application-provided creator to populate the contents
@@ -117,33 +107,20 @@ create_button_focusframe(const ref<buttonObj::implObj> &impl,
 
 	auto ff=create_focusframe_container_owner(ffi, ffi, cf->get(), ffi);
 
-	// Now, it's time to go back to the new button's grid
-	// layout manager, and insert the fully-cooked focusframecontainer.
+	// Create the border layout manager for the border
+	// for its real contents: the focusframecontainer.
 
-	auto factory=glm->append_row();
+	auto blmi=ref<borderlayoutmanagerObj::implObj>
+		::create(impl, impl, ff);
 
-	factory->padding(0);	// No padding for the focus frame.
-	factory->left_border(left_border); // And set its border, too.
-	factory->right_border(right_border);
-	factory->top_border(top_border);
-	factory->bottom_border(bottom_border);
-
-	// If the button is placed in a grid cell that fill()ed, it will
-	// stretch the button element. Stretch the focusframe too, in that
-	// case.
-	factory->halign(halign::fill);
-	factory->valign(valign::fill);
-
-	factory->created_internally(ff);
-
-	return {glmi, ffi};
+	return {blmi, ffi};
 }
 
 buttonObj::buttonObj(const ref<implObj> &impl,
 		     const internal_construction_info &ici)
-	: containerObj(impl, ici.glmi),
-	  hotspot_bgcolorObj(ici.ff_impl),
-	  impl(impl)
+	: containerObj{impl, ici.blmi},
+	  hotspot_bgcolorObj{ici.ff_impl},
+	  impl{impl}
 {
 }
 
@@ -151,9 +128,14 @@ buttonObj::~buttonObj()=default;
 
 focusable_impl buttonObj::get_impl() const
 {
-	const_gridlayoutmanager m=get_layoutmanager();
+	focusableptr ffc;
 
-	focusable ffc=m->get(0, 0);
+	containerObj::impl->invoke_layoutmanager
+		([&]
+		 (const ref<singletonlayoutmanagerObj::implObj> &impl)
+		 {
+			 ffc=impl->get();
+		 });
 
 	return ffc->get_impl();
 }
@@ -211,13 +193,15 @@ button do_create_button_with_explicit_borders
  const shortcut &shortcut_key,
  const child_element_init_params &init_params)
 {
-	auto impl=ref<buttonObj::implObj>::create(f.get_container_impl(),
+	auto impl=ref<buttonObj::implObj>::create(left_border, right_border,
+						  top_border,
+						  bottom_border,
+						  f.get_container_impl(),
 						  init_params);
 
 	auto ab=button::create(impl,
 			       create_button_focusframe
-			       (impl, left_border, right_border,
-				top_border, bottom_border,
+			       (impl,
 				normal_color, selected_color, active_color,
 				creator));
 
