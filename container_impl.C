@@ -237,14 +237,6 @@ void containerObj::implObj
 ::inherited_visibility_updated_after(ONLY IN_THREAD,
 				     inherited_visibility_info &info)
 {
-	invoke_layoutmanager
-		([&]
-		 (const auto &manager)
-		 {
-			 manager->inherited_visibility_updated(IN_THREAD,
-							       info.flag);
-		 });
-
 	if (info.flag)
 		propagate_inherited_visibility(IN_THREAD, info);
 }

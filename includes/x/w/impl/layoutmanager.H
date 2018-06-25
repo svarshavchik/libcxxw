@@ -145,11 +145,6 @@ class layoutmanagerObj::implObj : virtual public obj {
 		 const element_impl &child,
 		 inherited_visibility_info &info);
 
-	//! The container's visibility has changed
-
-	//! The default implementation does nothing
-	virtual void inherited_visibility_updated(ONLY IN_THREAD, bool);
-
 	//! Return the child element position that includes any container-provided padding.
 
 	//! The default implementation returns the same rectangle as the
