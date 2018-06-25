@@ -36,6 +36,10 @@ class bordercontainer_elementObj
 	: public themedim_elementObj<element_impl,
 				     borderhpad_tag,
 				     bordervpad_tag>,
+
+// bordercontainer_implObj's constructor takes a ref to the container, which
+// we can do because we constructed the superclass first.
+
 	  public bordercontainer_implObj {
 
 	//! Alias.

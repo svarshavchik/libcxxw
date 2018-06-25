@@ -57,7 +57,8 @@ corner_borderObj::implObj
 ::implObj(const container_impl &container,
 	  generic_windowObj::handlerObj &h)
 	: scratch_and_mask_buffer_draw<child_elementObj>
-	("cornermask@libcxx.com",
+	// Using same ID as in bordercontainer_impl.C
+	("corner@libcxx.com",
 	 h.get_width()/20+1,
 	 h.get_height()/20+1, container,
 	 child_element_init_params{"corner@libcxx.com"})

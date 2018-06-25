@@ -7,7 +7,7 @@
 
 #include <x/w/singletonlayoutmanagerfwd.H>
 #include <x/w/singletonlayoutmanagerobj.H>
-#include <x/ref.H>
+#include <x/w/element.H>
 
 LIBCXXW_NAMESPACE_START
 

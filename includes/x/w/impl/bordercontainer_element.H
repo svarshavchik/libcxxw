@@ -24,6 +24,7 @@ bordercontainer_elementObj<element_impl>
 	: superclass_t{hpad, themedimaxis::width,
 		       vpad, themedimaxis::height,
 		       std::forward<Args>(args)...},
+	  bordercontainer_implObj{this->child_container},
 	  current_border_thread_only{initial_border}
 {
 }

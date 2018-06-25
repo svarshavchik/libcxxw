@@ -14,6 +14,7 @@
 #include "x/w/main_window.H"
 #include "x/w/input_field.H"
 #include "x/w/label.H"
+#include "x/w/borderlayoutmanager.H"
 #include "x/w/gridlayoutmanager.H"
 #include "x/w/gridfactory.H"
 #include "x/w/text_param.H"
@@ -73,6 +74,65 @@ void testbutton()
 			 layout=main_window->get_layoutmanager();
 			 LIBCXX_NAMESPACE::w::gridfactory factory=
 			 layout->append_row();
+
+			 LIBCXX_NAMESPACE::w::border_infomm my_border;
+
+			 my_border.color1=LIBCXX_NAMESPACE::w::black;
+
+			 my_border.width=.1;
+			 my_border.height=.1;
+			 my_border.rounded=true;
+			 my_border.radius=2;
+
+			 factory->create_bordered_element
+				 ([&]
+				  (const auto &f)
+				  {
+					  auto l=f->create_label
+						  ("Border Layout Manager");
+
+					  LIBCXX_NAMESPACE::w::radial_gradient
+						  g;
+
+					  g.gradient={
+						      {0, LIBCXX_NAMESPACE::w
+						       ::silver},
+						      {1, LIBCXX_NAMESPACE::w
+						       ::white}};
+					  l->set_background_color(g);
+					  l->show();
+				  },
+				  my_border,
+				  3,
+				  3);
+			 factory=layout->append_row();
+
+			 auto be=factory->create_bordered_element
+				 ([&]
+				  (const auto &f)
+				  {
+					  auto l=f->create_label
+						  ("Border Layout Manager");
+
+					  LIBCXX_NAMESPACE::w::linear_gradient
+						  g;
+
+					  g.gradient={
+						      {0, LIBCXX_NAMESPACE::w
+						       ::silver},
+						      {1, LIBCXX_NAMESPACE::w
+						       ::white}};
+					  l->set_background_color(g);
+				  },
+				  my_border,
+				  3,
+				  3);
+
+			 LIBCXX_NAMESPACE::w::borderlayoutmanager{
+				 be->get_layoutmanager()
+					 }->get()->show();
+
+			 factory=layout->append_row();
 
 			 LIBCXX_NAMESPACE::w::input_field_config conf1{30, 1,
 					 true};

@@ -176,6 +176,28 @@ spcified, the label's size remains fixed.
 
 An optional third parameter sets the label's \ref halign "alignment".
 
+\par Bordered elements
+
+\code
+INSERT_LIBX_NAMESPACE::w::container border_container=
+   factory->create_bordered_element
+     ([]
+      (const INSERT_LIBX_NAMESPACE::w::factory &f)
+      {
+         auto l=f->create_label("There's a border around me");
+
+         l->show();
+      },
+      "inputfocuson_border",
+      1, 1);
+\endcode
+
+created_bordered_element() creates a container with a single element that
+has a border drawn around it. The container uses a special-purpose
+\ref borderlayoutmanager "border layout manager" that's optimized for this
+specific purpose. Using the \ref gridlayoutmanager "grid layout manager"
+with a bordered cell results in the same appearance, but with more overhead.
+
 \par Buttons
 
 \code

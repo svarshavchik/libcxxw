@@ -43,6 +43,7 @@ horizontal_straight_borderObj
 				const current_border_implptr &border_default)
 	: horizontal_impl(c,
 			  metrics::horizvert_axi(),
+			  // Same ID as in bordercontainer_impl.C
 			  "horiz-border@libcxx.com",
 			  element_1,
 			  border1,
@@ -99,6 +100,7 @@ vertical_straight_borderObj
 			      const current_border_implptr &border_default)
 	: vertical_impl(c,
 			metrics::horizvert_axi(),
+			// Same ID as in bordercontainer_impl.C
 			"vert-border@libcxx.com",
 			element_1,
 			border1,

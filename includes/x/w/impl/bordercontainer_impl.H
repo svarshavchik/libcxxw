@@ -9,6 +9,9 @@
 #include <x/w/border_arg.H>
 #include <x/w/connection_threadfwd.H>
 #include <x/w/containerobj.H>
+#include <x/w/generic_windowobj.H>
+#include <x/w/pictformatfwd.H>
+#include <x/w/scratch_bufferfwd.H>
 #include <x/w/impl/current_border_implfwd.H>
 
 LIBCXXW_NAMESPACE_START
@@ -29,8 +32,65 @@ class bordercontainer_implObj : virtual public obj {
 	initial_bordercontainer_border(const border_arg &initial_border,
 				       const container_impl &parent_container);
 
+	//! Scratch buffer for the corner border
+
+	//! For optimal use of scratch buffers, separate scratch buffer are
+	//! used for horizontal, vertical, and corner borders. The corner
+	//! border uses the element's default scratch buffer.
+
+	const scratch_buffer corner_scratch_buffer;
+
+	//! Scratch buffer for the horizontal border
+
+	//! For optimal use of scratch buffers, separate scratch buffer are
+	//! used for horizontal, vertical, and corner borders. The corner
+	//! border uses the element's default scratch buffer.
+
+	const scratch_buffer h_scratch_buffer;
+
+	//! Scratch buffer for the horizontal border
+
+	//! For optimal use of scratch buffers, separate scratch buffer are
+	//! used for horizontal, vertical, and corner borders. The corner
+	//! border uses the element's default scratch buffer.
+
+	const scratch_buffer v_scratch_buffer;
+
+	//! Masking scratch buffer for the display element.
+
+	//! For optimal use of scratch buffers, separate scratch buffer are
+	//! used for horizontal, vertical, and corner borders. The corner
+	//! border uses the element's default scratch buffer.
+	const scratch_buffer corner_mask_buffer;
+
+	//! Masking scratch buffer for the horizontal border
+
+	//! For optimal use of scratch buffers, separate scratch buffer are
+	//! used for horizontal, vertical, and corner borders. The corner
+	//! border uses the element's default scratch buffer.
+	const scratch_buffer h_mask_buffer;
+
+	//! Masking scratch buffer for the vertical border
+
+	//! For optimal use of scratch buffers, separate scratch buffer are
+	//! used for horizontal, vertical, and corner borders. The corner
+	//! border uses the element's default scratch buffer.
+	const scratch_buffer v_mask_buffer;
+
 	//! Constructor
-	bordercontainer_implObj();
+	bordercontainer_implObj(const container_impl &parent_container);
+
+private:
+	//! Internal constructor
+	bordercontainer_implObj(const container_impl &parent_container,
+				generic_windowObj::handlerObj &h);
+
+	//! Internal constructor
+	bordercontainer_implObj(const container_impl &parent_container,
+				const const_pictformat &my_pictformat,
+				const const_pictformat &mask_pictformat,
+				const screen &s);
+public:
 
 	//! Destructor
 	~bordercontainer_implObj();

@@ -57,4 +57,9 @@ factory singletonlayoutmanagerObj::replace()
 		::create(singletonlayoutmanager(this));
 }
 
+elementptr singletonlayoutmanagerObj::get() const
+{
+	return impl->get();
+}
+
 LIBCXXW_NAMESPACE_END

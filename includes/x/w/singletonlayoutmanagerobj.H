@@ -7,6 +7,7 @@
 
 #include <x/w/singletonlayoutmanagerfwd.H>
 #include <x/w/layoutmanagerobj.H>
+#include <x/w/elementfwd.H>
 #include <x/w/factoryfwd.H>
 
 LIBCXXW_NAMESPACE_START
@@ -29,6 +30,8 @@ public:
 	//! Destructor
 	~singletonlayoutmanagerObj() LIBCXX_HIDDEN;
 
+	//! Return the current element
+	elementptr get() const;
 
 	//! Return a factory for replacing the singleton element.
 

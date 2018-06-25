@@ -130,6 +130,28 @@ public:
 					   layout_manager);
 	}
 
+	//! Create a container with a border around an element.
+
+	template<typename creator>
+	container create_bordered_element(creator &&c,
+					  const border_arg &border,
+					  const dim_arg &hpad=0,
+					  const dim_arg &vpad=0)
+	{
+		return do_create_bordered_element(make_function
+						  <void (const factory &)>
+						  (std::forward<creator>(c)),
+						  border, hpad, vpad);
+	}
+
+	//! Type-erased create_bordered_element()
+
+	container do_create_bordered_element(const function<void (const factory
+								  &)>
+					     &creator,
+					     const border_arg &border,
+					     const dim_arg &hpad,
+					     const dim_arg &vpad);
 	//! Create a nested container
 
 	container do_create_container(const function<void (const container &)>
