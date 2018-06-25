@@ -7,6 +7,8 @@
 
 #include <x/w/impl/current_border_implfwd.H>
 #include <x/w/impl/defaultthemefwd.H>
+#include <x/w/impl/connection_threadfwd.H>
+#include <x/w/impl/border_impl.H>
 #include <x/w/connection_threadfwd.H>
 #include <x/w/border_arg.H>
 #include <x/w/elementobj.H>
@@ -22,11 +24,13 @@ LIBCXXW_NAMESPACE_START
 
 class themeborder_element_implObj : virtual public obj {
 
- public:
-
 	//! The current border.
 
-	const current_border_impl current_border;
+	current_border_impl current_border_thread_only;
+
+ public:
+
+	THREAD_DATA_ONLY(current_border);
 
 	//! Constructor
 	themeborder_element_implObj(const border_arg &arg,
@@ -45,6 +49,8 @@ class themeborder_element_implObj : virtual public obj {
 	void theme_updated(ONLY IN_THREAD,
 			   const defaulttheme &new_theme);
 
+	//! Set a new theme border
+	void set_new_border(ONLY IN_THREAD, const border_arg &arg);
 };
 
 LIBCXXW_NAMESPACE_END

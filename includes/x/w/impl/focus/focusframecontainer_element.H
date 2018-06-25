@@ -53,10 +53,10 @@ focusframecontainer_elementObj<element_impl>::~focusframecontainer_elementObj()
 
 template<typename element_impl>
 current_border_impl focusframecontainer_elementObj<element_impl>
-::get_focusoff_border() const
+::get_focusoff_border(ONLY IN_THREAD) const
 {
 	return this->themeborder_element_impl<focusoff_border_tag>
-		::current_border;
+		::current_border(IN_THREAD);
 }
 
 //! Implement get_focuson_border().
@@ -65,10 +65,10 @@ current_border_impl focusframecontainer_elementObj<element_impl>
 
 template<typename element_impl>
 current_border_impl focusframecontainer_elementObj<element_impl>
-::get_focuson_border() const
+::get_focuson_border(ONLY IN_THREAD) const
 {
 	return this->themeborder_element_impl<focuson_border_tag>
-		::current_border;
+		::current_border(IN_THREAD);
 }
 
 //! Override keyboard_focus().

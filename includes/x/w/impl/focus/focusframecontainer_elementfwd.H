@@ -47,8 +47,8 @@ class focusframecontainer_elementObj
 	~focusframecontainer_elementObj();
 
 	bordercontainer_implObj &focusframe_bordercontainer_impl() override;
-	current_border_impl get_focusoff_border() const override;
-	current_border_impl get_focuson_border() const override;
+	current_border_impl get_focusoff_border(ONLY IN_THREAD) const override;
+	current_border_impl get_focuson_border(ONLY IN_THREAD) const override;
 
 	void keyboard_focus(ONLY IN_THREAD,
 			    const callback_trigger_t &trigger) override;

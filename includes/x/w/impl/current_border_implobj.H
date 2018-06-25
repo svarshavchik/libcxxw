@@ -21,9 +21,11 @@ LIBCXXW_NAMESPACE_START
 
 class current_border_implObj: virtual public obj {
 
+public:
 	//! My screen.
 	const ref<screenObj::implObj> screen;
 
+private:
 	//! The border argument specification.
 	const border_arg arg;
 

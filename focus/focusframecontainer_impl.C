@@ -35,8 +35,8 @@ void focusframecontainer_implObj::update_focusframe(ONLY IN_THREAD)
 
 	bc.set_border(IN_THREAD,
 		      e.current_keyboard_focus(IN_THREAD)
-		      ? get_focuson_border()
-		      : get_focusoff_border());
+		      ? get_focuson_border(IN_THREAD)
+		      : get_focusoff_border(IN_THREAD));
 }
 
 LIBCXXW_NAMESPACE_END

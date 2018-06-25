@@ -717,7 +717,7 @@ void list_elementObj::implObj::recalculate(ONLY IN_THREAD,
 				// This row becomes a separator line.
 
 				row->extra->row_type=list_row_type_t::separator;
-				row->height=current_border->border(IN_THREAD)
+				row->height=current_border(IN_THREAD)->border(IN_THREAD)
 					->calculated_border_height;
 			}
 		}
@@ -1107,7 +1107,7 @@ rectangle list_elementObj::implObj::do_draw_row(ONLY IN_THREAD,
 							       mask_gc,
 							       di.absolute_location.x,
 							       di.absolute_location.y};
-						       current_border->border
+						       current_border(IN_THREAD)->border
 							       (IN_THREAD)
 							       ->draw_horizontal
 							       (IN_THREAD, bdi);

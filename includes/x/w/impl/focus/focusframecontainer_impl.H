@@ -34,11 +34,11 @@ class focusframecontainer_implObj : virtual public obj {
 
 	//! Implemented by the mixin template, to return my focusoff border.
 
-	virtual current_border_impl get_focusoff_border() const=0;
+	virtual current_border_impl get_focusoff_border(ONLY IN_THREAD) const=0;
 
 	//! Implemented by the mixin template, to return my focuson border.
 
-	virtual current_border_impl get_focuson_border() const=0;
+	virtual current_border_impl get_focuson_border(ONLY IN_THREAD) const=0;
 
 	//! Trigger a container rebuild, in order to update the focus frame.
 
