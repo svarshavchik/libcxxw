@@ -131,6 +131,24 @@ class border_implObj: virtual public obj, public border_info {
 		//! picture/pixmap's represents a rectangle in its parent
 		//! display element whose top-left corner is this coordinate.
 		coord_t area_y;
+
+		//! Fill in the background color.
+
+		//! Called before calling draw_horizontal().
+
+		void background_horizontal(ONLY IN_THREAD,
+					   const elementptr &above_element,
+					   const elementptr &below_element)
+			const;
+
+		//! Fill in the background color.
+
+		//! Called before calling draw_vertical().
+
+		void background_vertical(ONLY IN_THREAD,
+					 const elementptr &left_element,
+					 const elementptr &right_element)
+			const;
 	};
 
 	//! Draw a horizontal border
@@ -158,6 +176,7 @@ class border_implObj: virtual public obj, public border_info {
 			     //! The length of the border to draw, in pixels.
 			     dim_t length) const;
  public:
+
 	//! Draw a vertical border
 
 	void draw_vertical(//! Invoked from the connection thread

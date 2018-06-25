@@ -289,78 +289,40 @@ void straight_borderObj::implObj
 ::background_horizontal(ONLY IN_THREAD,
 			const border_implObj::draw_info &bg) const
 {
-	dim_t top_height=bg.area_rectangle.height/2;
-	dim_t bottom_height=bg.area_rectangle.height - top_height;
+	elementptr element_1;
+	elementptr element_2;
 
-	if (borders(IN_THREAD).element_1 && top_height > 0)
+	if (borders(IN_THREAD).element_1)
 	{
-		auto &di=borders(IN_THREAD).element_1->grid_element->impl
-			->get_draw_info(IN_THREAD);
-
-		auto xy=di.background_xy_to(bg.area_x, bg.area_y);
-
-		bg.area_picture->impl->composite(di.window_background,
-						 xy.first, xy.second,
-						 0, 0,
-						 bg.area_rectangle.width,
-						 top_height);
+		element_1=borders(IN_THREAD).element_1->grid_element;
 	}
 
-	if (borders(IN_THREAD).element_2 && bottom_height > 0)
+	if (borders(IN_THREAD).element_2)
 	{
-		auto &di=borders(IN_THREAD).element_2->grid_element->impl
-			->get_draw_info(IN_THREAD);
-
-		auto xy=di.background_xy_to(bg.area_x, bg.area_y,
-					    0,
-					    dim_t::value_type(top_height));
-
-		bg.area_picture->impl->composite(di.window_background,
-						 xy.first, xy.second,
-						 0,
-						 coord_t::truncate(top_height),
-						 bg.area_rectangle.width,
-						 bottom_height);
+		element_2=borders(IN_THREAD).element_2->grid_element;
 	}
+
+	bg.background_horizontal(IN_THREAD, element_1, element_2);
 }
 
 void straight_borderObj::implObj
 ::background_vertical(ONLY IN_THREAD,
 		      const border_implObj::draw_info &bg) const
 {
-	dim_t left_width=bg.area_rectangle.width/2;
-	dim_t right_width=bg.area_rectangle.width - left_width;
+	elementptr element_1;
+	elementptr element_2;
 
-	if (borders(IN_THREAD).element_1 && left_width > 0)
+	if (borders(IN_THREAD).element_1)
 	{
-		auto &di=borders(IN_THREAD).element_1->grid_element->impl
-			->get_draw_info(IN_THREAD);
-
-		auto xy=di.background_xy_to(bg.area_x, bg.area_y);
-
-		bg.area_picture->impl->composite(di.window_background,
-						 xy.first, xy.second,
-						 0, 0,
-						 left_width,
-						 bg.area_rectangle.height);
+		element_1=borders(IN_THREAD).element_1->grid_element;
 	}
 
-	if (borders(IN_THREAD).element_2 && right_width > 0)
+	if (borders(IN_THREAD).element_2)
 	{
-		auto &di=borders(IN_THREAD).element_2->grid_element->impl
-			->get_draw_info(IN_THREAD);
-
-		auto xy=di.background_xy_to(bg.area_x, bg.area_y,
-					    dim_t::value_type(left_width),
-					    0);
-
-		bg.area_picture->impl->composite(di.window_background,
-						 xy.first, xy.second,
-						 coord_t::truncate(left_width),
-						 0,
-						 right_width,
-						 bg.area_rectangle.height);
+		element_2=borders(IN_THREAD).element_2->grid_element;
 	}
+
+	bg.background_vertical(IN_THREAD, element_1, element_2);
 }
 
 LIBCXXW_NAMESPACE_END

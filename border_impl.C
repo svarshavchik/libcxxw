@@ -337,6 +337,44 @@ bool border_implObj::no_vertical_border(const draw_info &di) const
 		|| (di.area_rectangle.width < calculated_border_width);
 }
 
+void border_implObj
+::draw_info::background_horizontal(ONLY IN_THREAD,
+				   const elementptr &above_element,
+				   const elementptr &below_element) const
+{
+	dim_t top_height=area_rectangle.height/2;
+	dim_t bottom_height=area_rectangle.height - top_height;
+
+	if (above_element && top_height > 0)
+	{
+		auto &di=above_element->impl->get_draw_info(IN_THREAD);
+
+		auto xy=di.background_xy_to(area_x, area_y);
+
+		area_picture->impl->composite(di.window_background,
+					      xy.first, xy.second,
+					      0, 0,
+					      area_rectangle.width,
+					      top_height);
+	}
+
+	if (below_element && bottom_height > 0)
+	{
+		auto &di=below_element->impl->get_draw_info(IN_THREAD);
+
+		auto xy=di.background_xy_to(area_x, area_y,
+					    0,
+					    dim_t::value_type(top_height));
+
+		area_picture->impl->composite(di.window_background,
+					      xy.first, xy.second,
+					      0,
+					      coord_t::truncate(top_height),
+					      area_rectangle.width,
+					      bottom_height);
+	}
+}
+
 void border_implObj::draw_horizontal(ONLY IN_THREAD,
 				     const draw_info &di) const
 {
@@ -396,6 +434,44 @@ void border_implObj::draw_vertical(ONLY IN_THREAD,
 		return;
 
 	draw_vertical(IN_THREAD, di, 0, di.area_rectangle.height);
+}
+
+void border_implObj::draw_info
+::background_vertical(ONLY IN_THREAD,
+		      const elementptr &left_element,
+		      const elementptr &right_element) const
+{
+	dim_t left_width=area_rectangle.width/2;
+	dim_t right_width=area_rectangle.width - left_width;
+
+	if (left_element && left_width > 0)
+	{
+		auto &di=left_element->impl->get_draw_info(IN_THREAD);
+
+		auto xy=di.background_xy_to(area_x, area_y);
+
+		area_picture->impl->composite(di.window_background,
+						 xy.first, xy.second,
+						 0, 0,
+						 left_width,
+						 area_rectangle.height);
+	}
+
+	if (right_element && right_width > 0)
+	{
+		auto &di=right_element->impl->get_draw_info(IN_THREAD);
+
+		auto xy=di.background_xy_to(area_x, area_y,
+					    dim_t::value_type(left_width),
+					    0);
+
+		area_picture->impl->composite(di.window_background,
+						 xy.first, xy.second,
+						 coord_t::truncate(left_width),
+						 0,
+						 right_width,
+						 area_rectangle.height);
+	}
 }
 
 void border_implObj::draw_vertical(ONLY IN_THREAD, const draw_info &di,
