@@ -216,7 +216,7 @@ class LIBCXX_HIDDEN contextpopup_shortcut_activatorObj
 		if (!eptr)
 			return false;
 
-		return eptr->impl->data(IN_THREAD).inherited_visibility;
+		return eptr->impl->data(IN_THREAD).logical_inherited_visibility;
 	}
 };
 

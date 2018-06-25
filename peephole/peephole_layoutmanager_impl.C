@@ -415,7 +415,7 @@ bool peepholeObj::layoutmanager_implObj
 
 	auto &e=get_element_impl();
 
-	if (!e.data(IN_THREAD).inherited_visibility)
+	if (!e.data(IN_THREAD).logical_inherited_visibility)
 		return false;
 
 	if (!e.current_background_color(IN_THREAD)->is_scrollable_background())

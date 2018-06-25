@@ -241,27 +241,22 @@ void popupObj::handlerObj::do_button_event(ONLY IN_THREAD,
 						       me);
 }
 
-void popupObj::handlerObj::set_inherited_visibility(ONLY IN_THREAD,
-						    inherited_visibility_info
-						    &visibility_info)
+void popupObj::handlerObj::set_inherited_visibility_mapped(ONLY IN_THREAD)
 {
+	popup_opened(IN_THREAD);
+	opened_mcguffin=get_opened_mcguffin(IN_THREAD);
+	superclass_t::set_inherited_visibility_mapped(IN_THREAD);
+}
 
-	if (visibility_info.flag)
-	{
-		popup_opened(IN_THREAD);
-		opened_mcguffin=get_opened_mcguffin(IN_THREAD);
-	}
 
-	generic_windowObj::handlerObj::set_inherited_visibility
-		(IN_THREAD, visibility_info);
+void popupObj::handlerObj::set_inherited_visibility_unmapped(ONLY IN_THREAD)
+{
+	superclass_t::set_inherited_visibility_unmapped(IN_THREAD);
 
-	if (!visibility_info.flag)
-	{
-		opened_mcguffin=nullptr;
-		released_opened_mcguffin(IN_THREAD);
-		closing_popup(IN_THREAD);
-		unset_keyboard_focus(IN_THREAD, {});
-	}
+	opened_mcguffin=nullptr;
+	released_opened_mcguffin(IN_THREAD);
+	closing_popup(IN_THREAD);
+	unset_keyboard_focus(IN_THREAD, {});
 }
 
 std::string popupObj::handlerObj::default_wm_class_resource(ONLY IN_THREAD)

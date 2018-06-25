@@ -159,6 +159,21 @@ void connection_threadObj::run_event(ONLY IN_THREAD,
 			DISPATCH_HANDLER(focus_change_event, (IN_THREAD, false));
 		}
 		return;
+	case XCB_MAP_NOTIFY:
+		{
+			GET_MSG(map_notify_event);
+			FIND_HANDLER(window);
+			DISPATCH_HANDLER(process_map_notify_event, (IN_THREAD));
+		}
+		return;
+	case XCB_UNMAP_NOTIFY:
+		{
+			GET_MSG(unmap_notify_event);
+			FIND_HANDLER(window);
+			DISPATCH_HANDLER(process_unmap_notify_event,
+					 (IN_THREAD));
+		}
+		return;
 	case XCB_CONFIGURE_NOTIFY:
 		{
 			GET_MSG(configure_notify_event);

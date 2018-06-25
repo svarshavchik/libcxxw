@@ -221,6 +221,12 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 	virtual void process_configure_notify(ONLY IN_THREAD,
 					      const rectangle &);
 
+	//! MapNotify event
+	virtual void process_map_notify_event(ONLY IN_THREAD);
+
+	//! UnmapNotify event
+	virtual void process_unmap_notify_event(ONLY IN_THREAD);
+
 	//! Key press event
 	virtual void key_press_event(ONLY IN_THREAD,
 				     const xcb_key_press_event_t *event,

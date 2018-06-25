@@ -268,7 +268,7 @@ grabbed_pointerptr real_pointer_grabObj
 
 grabbed_pointerptr elementObj::implObj::grab_pointer(ONLY IN_THREAD)
 {
-	if ( !data(IN_THREAD).inherited_visibility ||
+	if ( !data(IN_THREAD).logical_inherited_visibility ||
 	     data(IN_THREAD).removed)
 		return grabbed_pointerptr();
 

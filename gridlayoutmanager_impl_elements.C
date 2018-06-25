@@ -60,7 +60,8 @@ void gridlayoutmanagerObj::implObj
 {
 	elementObj::implObj &container_element_impl=get_element_impl();
 
-	if (!container_element_impl.data(IN_THREAD).inherited_visibility)
+	if (!container_element_impl.data(IN_THREAD)
+	    .logical_inherited_visibility)
 		return; // This container is not visible, don't bother.
 
 	if (container_element_impl.redraw_scheduled(IN_THREAD))
@@ -1024,7 +1025,9 @@ bool gridlayoutmanagerObj::implObj
 		auto hv=element->impl->get_horizvert(IN_THREAD);
 
 		auto element_position=
-			elements.compute_element_position(child.pos);
+			elements.compute_element_position(IN_THREAD,
+							  child.pos,
+							  element->impl);
 
 		// Adjust for the element's requested padding. Reduce
 		// the computed position by the element's stated padding,
@@ -1142,11 +1145,14 @@ rectangle gridlayoutmanagerObj::implObj
 	    !ge->takes_up_space(IN_THREAD))
 		return ret;
 
-	return grid_elements(IN_THREAD)->compute_element_position(ge->pos);
+	return grid_elements(IN_THREAD)->compute_element_position(IN_THREAD,
+								  ge->pos,
+								  e_impl);
 }
 
 rectangle gridlayoutmanagerObj::implObj::elementsObj
-::compute_element_position(const metrics::grid_pos &pos)
+::compute_element_position(ONLY IN_THREAD, const metrics::grid_pos &pos,
+			   const element_impl &e_impl)
 {
 	// Find the element's first and last row and column.
 
@@ -1164,9 +1170,13 @@ rectangle gridlayoutmanagerObj::implObj::elementsObj
 	    v_start == vert_sizes.end() ||
 	    v_end == vert_sizes.end())
 	{
-		LOG_FATAL("Internal: cannot find grid rows or columns for an element, horiz_pos=" << horiz_pos.start << "-" << horiz_pos.end
-			  << ", vert_pos=" << vert_pos.start << "-" <<vert_pos.end);
-		return {};
+		const auto &element_pos=
+			e_impl->data(IN_THREAD).current_position;
+		if (element_pos.width > 0 ||
+		    element_pos.height > 0)
+			LOG_FATAL("Internal: cannot find grid rows or columns for an element, horiz_pos=" << horiz_pos.start << "-" << horiz_pos.end
+				  << ", vert_pos=" << vert_pos.start << "-" <<vert_pos.end);
+		return element_pos;
 	}
 
 	coord_t x=std::get<coord_t>(h_start->second);

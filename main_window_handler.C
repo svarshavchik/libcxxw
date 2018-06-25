@@ -120,7 +120,7 @@ void main_windowObj::handlerObj::horizvert_updated(ONLY IN_THREAD)
 	preferred_width(IN_THREAD)=p->horiz.preferred();
 	preferred_height(IN_THREAD)=p->vert.preferred();
 
-	if (data(IN_THREAD).inherited_visibility)
+	if (data(IN_THREAD).reported_inherited_visibility)
 		update_size_hints(IN_THREAD);
 }
 
@@ -187,7 +187,7 @@ void main_windowObj::handlerObj::update_size_hints(ONLY IN_THREAD)
 	// explicitly send it via ConfigureWindow(). Apparently the hints
 	// are not enough for XFCE.
 
-	if (!data(IN_THREAD).inherited_visibility &&
+	if (!data(IN_THREAD).reported_inherited_visibility &&
 	    (hints.flags & XCB_ICCCM_SIZE_HINT_US_POSITION))
 	{
 		values_and_mask configure_window_vals

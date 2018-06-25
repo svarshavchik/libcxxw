@@ -36,22 +36,12 @@ bool dialogObj::handlerObj::handle_our_own_placement()
 	return !get_screen()->supported("_NET_WM_FULL_PLACEMENT");
 }
 
-void dialogObj::handlerObj
-::set_inherited_visibility(ONLY IN_THREAD,
-			   inherited_visibility_info &visibility_info)
+void dialogObj::handlerObj::set_inherited_visibility_mapped(ONLY IN_THREAD)
 {
-	if (visibility_info.flag && modal)
+	if (modal)
 		acquired_busy_mcguffin(IN_THREAD)=
 			parent_handler->get_shade_busy_mcguffin();
 
-	superclass_t::set_inherited_visibility(IN_THREAD,
-							     visibility_info);
-	if (!visibility_info.flag)
-		acquired_busy_mcguffin(IN_THREAD)=nullptr;
-}
-
-void dialogObj::handlerObj::set_inherited_visibility_mapped(ONLY IN_THREAD)
-{
 	if (handle_our_own_placement())
 	{
 		// Before we become visible we are going to
@@ -134,6 +124,7 @@ void dialogObj::handlerObj::set_inherited_visibility_unmapped(ONLY IN_THREAD)
 {
 	superclass_t::set_inherited_visibility_unmapped(IN_THREAD);
 	parent_handler->handler_data->closing_dialog(IN_THREAD);
+	acquired_busy_mcguffin(IN_THREAD)=nullptr;
 }
 
 std::string dialogObj::handlerObj::default_wm_class_resource(ONLY IN_THREAD)

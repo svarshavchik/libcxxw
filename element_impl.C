@@ -121,7 +121,7 @@ void elementObj::implObj::removed_from_container(ONLY IN_THREAD)
 		       {
 			       e->impl->removed_from_container(IN_THREAD);
 		       });
-	set_inherited_visibility_flag(IN_THREAD, false);
+	set_inherited_visibility_flag(IN_THREAD, false, false);
 
 	get_window_handler().removing_element_from_window(IN_THREAD,
 							  ref(this));
@@ -222,7 +222,7 @@ void elementObj::implObj::visibility_updated(ONLY IN_THREAD, bool flag)
 	// If the visibility matches the current inherited_visibility, do
 	// nothing.
 
-	if (data(IN_THREAD).inherited_visibility == flag)
+	if (data(IN_THREAD).reported_inherited_visibility == flag)
 		return;
 
 	// Prepare the default inherited_visibility_info object: here's the
@@ -281,17 +281,20 @@ void elementObj::implObj
 ::set_inherited_visibility(ONLY IN_THREAD,
 			   inherited_visibility_info &info)
 {
-	set_inherited_visibility_flag(IN_THREAD, info.flag);
+	set_inherited_visibility_flag(IN_THREAD, info.flag, info.flag);
 }
 
 void elementObj::implObj
-::set_inherited_visibility_flag(ONLY IN_THREAD, bool flag)
+::set_inherited_visibility_flag(ONLY IN_THREAD,
+				bool logical_flag,
+				bool reported_flag)
 {
 	// Offically update this element's "real" visibility.
 
-	data(IN_THREAD).inherited_visibility=flag;
+	data(IN_THREAD).logical_inherited_visibility=logical_flag;
+	data(IN_THREAD).reported_inherited_visibility=reported_flag;
 
-	if (!flag)
+	if (!reported_flag)
 	{
 		unschedule_hover_action(IN_THREAD);
 
@@ -662,7 +665,7 @@ element_state elementObj::implObj
 		element_state_for,
 			// We send this update any time inherited visibility
 			// changes, see do_inherited_visibility_updated().
-		current_data.inherited_visibility,
+		current_data.reported_inherited_visibility,
 			// We send this update any time current_position
 			// changes. update_current_position() calls
 			// notify_updated_position().
@@ -771,7 +774,8 @@ void elementObj::implObj::exposure_event_recursive(ONLY IN_THREAD,
 		}
 	}
 
-	if (should_preclear_entirely_exposed_element(IN_THREAD))
+	if (should_preclear_entirely_exposed_element(IN_THREAD) &&
+	    get_window_handler().should_preclear_exposed(IN_THREAD))
 		clear_to_color(IN_THREAD,
 			       get_draw_info(IN_THREAD),
 			       draw_area);
@@ -894,7 +898,7 @@ void elementObj::implObj
 
 	if ((draw_to_window_picture_as_disabled(IN_THREAD) ||
 	     set.draw_as_disabled) &&
-	    data(IN_THREAD).inherited_visibility)
+	    data(IN_THREAD).logical_inherited_visibility)
 	{
 		// Disabled element rendering -- dither in the main window's
 		// background color.
@@ -1020,7 +1024,7 @@ void elementObj::implObj::background_color_changed(ONLY IN_THREAD)
 		       (const element &e)
 		       {
 			       if (e->impl->data(IN_THREAD)
-				   .inherited_visibility &&
+				   .logical_inherited_visibility &&
 				   e->impl->has_own_background_color(IN_THREAD))
 				       return;
 			       e->impl->background_color_changed(IN_THREAD);
@@ -1034,7 +1038,7 @@ void elementObj::implObj::theme_updated(ONLY IN_THREAD,
 				    draw_info_invalidation_reason
 				    ::recursive_invalidation);
 
-	if (data(IN_THREAD).inherited_visibility)
+	if (data(IN_THREAD).logical_inherited_visibility)
 		schedule_redraw(IN_THREAD);
 
 	for_each_child(IN_THREAD, [&]

@@ -125,7 +125,7 @@ draw_info &child_elementObj::get_draw_info_from_scratch(ONLY IN_THREAD)
 	// See also: update_draw_info_background_color().
 
 	if (has_own_background_color(IN_THREAD) &&
-	    data(IN_THREAD).inherited_visibility)
+	    data(IN_THREAD).logical_inherited_visibility)
 		// If we're not visible, we use the parent background
 	{
 		auto bg=background_color_element_implObj::get(IN_THREAD);
@@ -153,7 +153,7 @@ void child_elementObj
 	di.background_y=parent_di.background_y;
 
 	if (has_own_background_color(IN_THREAD) &&
-	    data(IN_THREAD).inherited_visibility)
+	    data(IN_THREAD).logical_inherited_visibility)
 		// If we're not visible, we use the parent background
 	{
 		auto bg=background_color_element_implObj::get(IN_THREAD);
@@ -184,7 +184,7 @@ rectangle child_elementObj::get_absolute_location(ONLY IN_THREAD)
 void child_elementObj::visibility_updated(ONLY IN_THREAD, bool flag)
 {
 	if (!child_container->container_element_impl()
-	    .data(IN_THREAD).inherited_visibility)
+	    .data(IN_THREAD).logical_inherited_visibility)
 		flag=false;
 
 	superclass_t::visibility_updated(IN_THREAD, flag);
@@ -299,7 +299,7 @@ void child_elementObj
 ::set_inherited_visibility(ONLY IN_THREAD,
 			   inherited_visibility_info &visibility_info)
 {
-	bool current_flag=data(IN_THREAD).inherited_visibility;
+	bool current_flag=data(IN_THREAD).logical_inherited_visibility;
 	bool new_flag=visibility_info.flag;
 
 	superclass_t::set_inherited_visibility(IN_THREAD,

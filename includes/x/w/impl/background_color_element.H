@@ -38,7 +38,7 @@ void background_color_element<tag>
 {
 	auto &e=this->background_color_element_impl();
 
-	if (!e.data(IN_THREAD).inherited_visibility)
+	if (!e.data(IN_THREAD).logical_inherited_visibility)
 		return;
 
 	background_color_element_implObj

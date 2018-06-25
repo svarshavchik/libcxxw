@@ -88,7 +88,7 @@ void testunfocus()
 
 	lock.wait_for(std::chrono::seconds(5), [&] { return *lock; });
 
-	main_window->hide();
+	main_window->hide_all();
 
 	lock.wait_for(std::chrono::seconds(2), [&] { return *lock; });
 

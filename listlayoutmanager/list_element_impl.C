@@ -960,7 +960,7 @@ void list_elementObj::implObj::redraw_needed_rows(ONLY IN_THREAD)
 
 	lock->row_redraw_needed=false;
 
-	if (!data(IN_THREAD).inherited_visibility)
+	if (!data(IN_THREAD).logical_inherited_visibility)
 		return; // Don't bother if we're not visible.
 
 	const auto &di=get_draw_info(IN_THREAD);

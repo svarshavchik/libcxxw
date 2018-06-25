@@ -682,6 +682,10 @@ runtestthemescale(const testmainwindowoptions &options)
 		 (THREAD_CALLBACK, const auto &what, const auto &ignore)
 		 mutable
 		 {
+			 if (what.current_position.width == 0 ||
+			     what.current_position.height == 0)
+				 return;
+
 			 if (first_time)
 			 {
 				 first_time=false;

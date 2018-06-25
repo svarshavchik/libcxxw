@@ -222,7 +222,9 @@ public:
 
 	//! Now that everything's calculate, compute an element's position
 
-	rectangle compute_element_position(const metrics::grid_pos &child);
+	rectangle compute_element_position(ONLY IN_THREAD,
+					   const metrics::grid_pos &child,
+					   const element_impl &e_impl);
 };
 
 LIBCXXW_NAMESPACE_END

@@ -39,7 +39,7 @@ class focusable_elementObj : public element_impl,
 				  const button_event &be,
 				  xcb_timestamp_t timestamp) override;
 
-	void set_inherited_visibility_flag(ONLY IN_THREAD, bool) override;
+	void set_inherited_visibility_flag(ONLY IN_THREAD, bool, bool) override;
 };
 
 

@@ -170,6 +170,14 @@ void focusableObj::implObj::unfocus_later(ONLY IN_THREAD)
 {
 	(void)GET_FOCUSABLE_FIELD_ITER();
 
+	// This is called when the focusable is no longer visible. If this
+	// focusable has focus we want to move the input focus somewhere
+	// else.
+	//
+	// For optimization purposes, postpone this action until it's
+	// an idle_callback. So if a whole bunch of fields are losing
+	// visibility, we will not bounce input focus from one to another.
+
 	auto ptr_impl=focusable_implptr(this);
 
 	if (get_focusable_element().get_window_handler()
@@ -278,7 +286,8 @@ bool elementObj::implObj::enabled(ONLY IN_THREAD)
 	// prevent the input focus from bouncing until it escapes the
 	// elements that are being destroyed.
 
-	if (data(IN_THREAD).removed || !data(IN_THREAD).inherited_visibility)
+	if (data(IN_THREAD).removed ||
+	    !data(IN_THREAD).logical_inherited_visibility)
 		return false;
 
 	// If this element is a label for another element we have to check
@@ -299,7 +308,7 @@ bool elementObj::implObj::enabled(ONLY IN_THREAD)
 
 	// Should check this again now, in case this is the labeled element.
 	if (check_this->data(IN_THREAD).removed ||
-	    !check_this->data(IN_THREAD).inherited_visibility)
+	    !check_this->data(IN_THREAD).logical_inherited_visibility)
 		return false;
 
 	// Finally.

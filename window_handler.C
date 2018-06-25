@@ -133,6 +133,14 @@ void window_handlerObj::process_configure_notify(ONLY IN_THREAD,
 {
 }
 
+void window_handlerObj::process_map_notify_event(ONLY IN_THREAD)
+{
+}
+
+void window_handlerObj::process_unmap_notify_event(ONLY IN_THREAD)
+{
+}
+
 void window_handlerObj::client_message_event(ONLY IN_THREAD,
 					     const xcb_client_message_event_t *)
 {

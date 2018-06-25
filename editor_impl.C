@@ -893,7 +893,7 @@ void editorObj::implObj::draw_changes(ONLY IN_THREAD,
 	// We can be called from set() before the editor element is visible.
 	// Don't bother calling get_draw_info(), because that might get
 	// stale anyway.
-	if (data(IN_THREAD).inherited_visibility)
+	if (data(IN_THREAD).logical_inherited_visibility)
 		text->redraw_whatsneeded(IN_THREAD, *this,
 					 {cursor_lock.cursor, cursor},
 					 get_draw_info(IN_THREAD));
@@ -1449,7 +1449,7 @@ bool editorObj::implObj::ok_to_lose_focus(ONLY IN_THREAD,
 bool editorObj::implObj::validate_modified(ONLY IN_THREAD,
 					   const callback_trigger_t &trigger)
 {
-	if (!data(IN_THREAD).inherited_visibility)
+	if (!data(IN_THREAD).logical_inherited_visibility)
 		// We could be here because we're losing keyboard focus after
 		// we become invisible. Don't want to invoke validation in
 		// that case.

@@ -46,25 +46,22 @@ class LIBCXX_HIDDEN dialogObj::handlerObj : public main_windowObj::handlerObj {
 		   const color_arg &background_color,
 		   bool modal);
 
-	//! Override set_inherited_visibility()
-
-	//! If modal, acquire or release the busy mcguffin, accordingly.
-
-	void set_inherited_visibility(ONLY IN_THREAD,
-				      inherited_visibility_info &) override;
-
 	//! Override set_inherited_visibility_mapped)(.
 
 	//! If we need to handle_our_own_placement(), figure out what it
 	//! should be, if we're made visible.
 	//!
 	//! Also call our parent's shared handler data's opening_dialog().
+	//!
+	//! If modal, acquire the busy mcguffin, accordingly.
 
 	void set_inherited_visibility_mapped(ONLY IN_THREAD) override;
 
 	//! Override set_inherited_visibility_unmapped().
 
 	//! Calls our parent's shared handler data's closing_dialog().
+	//!
+	//! If modal, release the busy mcguffin, accordingly.
 
 	void set_inherited_visibility_unmapped(ONLY IN_THREAD) override;
 

@@ -84,10 +84,13 @@ bool focusable_elementObj<element_impl>
 
 template<typename element_impl>
 void focusable_elementObj<element_impl>
-::set_inherited_visibility_flag(ONLY IN_THREAD, bool flag)
+::set_inherited_visibility_flag(ONLY IN_THREAD, bool logical_flag,
+				bool reported_flag)
 {
-	element_impl::set_inherited_visibility_flag(IN_THREAD, flag);
-	if (!flag)
+	element_impl::set_inherited_visibility_flag(IN_THREAD,
+						    logical_flag,
+						    reported_flag);
+	if (!reported_flag)
 		this->unfocus_later(IN_THREAD);
 }
 

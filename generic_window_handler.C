@@ -177,6 +177,8 @@ generic_windowObj::handlerObj
 	current_theme_thread_only{params.window_handler_params.screenref
 			->impl->current_theme.get()}
 {
+	top_level_always_visible();
+
 	char hostnamebuf[256];
 
 	if (gethostname(hostnamebuf, sizeof(hostnamebuf)))
@@ -326,52 +328,31 @@ void generic_windowObj::handlerObj
 }
 
 void generic_windowObj::handlerObj
-::set_inherited_visibility(ONLY IN_THREAD,
-			   inherited_visibility_info &visibility_info)
+::inherited_visibility_updated(ONLY IN_THREAD,
+			       inherited_visibility_info &visibility_info)
 {
-	if (visibility_info.flag)
+	visibility_info.do_not_redraw=true;
+
+	do_inherited_visibility_updated(IN_THREAD, visibility_info);
+}
+
+void generic_windowObj::handlerObj
+::set_inherited_visibility_flag(ONLY IN_THREAD,
+				bool logical_flag,
+				bool reported_flag)
+{
+	superclass_t::set_inherited_visibility_flag(IN_THREAD,
+						    true,
+						    reported_flag);
+
+	if (reported_flag)
 	{
-		visibility_info.do_not_redraw=true;
-
-		// Need to delay mapping until the connection thread
-		// is completely idle. Recursive call to request_visibility()
-		// may get short-circuited in update_visibility() bailing out
-		// if !initialized, that gets rescheduled after some pending
-		// connection thread callback finally initializes the display
-		// element, so in order for mapping to work, we need to make
-		// sure all of this settles down before mapping.
-
-		IN_THREAD->idle_callbacks(IN_THREAD)->push_back
-			([me=make_weak_capture(ref(this))]
-			 (ONLY IN_THREAD)
-			 {
-				 auto got=me.get();
-
-				 if (!got)
-					 return;
-
-				 auto &[me]=*got;
-
-				 if (!me->data(IN_THREAD).inherited_visibility)
-					 return; // The show is cancelled
-
-				 if (me->is_really_mapped)
-					 return; // Definitely cancelled
-
-				 me->is_really_mapped=true;
-				 me->set_inherited_visibility_mapped(IN_THREAD);
-			 });
+		set_inherited_visibility_mapped(IN_THREAD);
 	}
 	else
 	{
-		if (is_really_mapped)
-		{
-			is_really_mapped=false;
-			set_inherited_visibility_unmapped(IN_THREAD);
-		}
+		set_inherited_visibility_unmapped(IN_THREAD);
 	}
-
-	superclass_t::set_inherited_visibility(IN_THREAD, visibility_info);
 }
 
 std::string
@@ -1044,6 +1025,17 @@ void generic_windowObj::handlerObj::grab(ONLY IN_THREAD)
 	throw EXCEPTION("Internal error: called grab() on the top level window.");
 }
 
+void generic_windowObj::handlerObj::process_map_notify_event(ONLY IN_THREAD)
+{
+	// If exposure processing follows, preclear the window.
+
+	should_preclear_exposed(IN_THREAD)=true;
+}
+
+void generic_windowObj::handlerObj::process_unmap_notify_event(ONLY IN_THREAD)
+{
+}
+
 void generic_windowObj::handlerObj::configure_notify_received(ONLY IN_THREAD,
 							      const rectangle
 							      &r)
@@ -1060,6 +1052,9 @@ void generic_windowObj::handlerObj::configure_notify_received(ONLY IN_THREAD,
 		// Forget, meaning that we should always get EXPOSURE events
 		// after a size change.
 		has_exposed(IN_THREAD)=false;
+
+		// But we should not preclear, to avoid flickering.
+		should_preclear_exposed(IN_THREAD)=false;
 
 		// And we can throw away all accumulated exposure rectangles
 		// because we are guaranteed to get new ones.
@@ -1540,7 +1535,7 @@ void generic_windowObj::handlerObj
 						  return;
 
 					  if (!child->data(IN_THREAD)
-					      .inherited_visibility)
+					      .reported_inherited_visibility)
 						  return;
 
 					  const auto &p=child->data(IN_THREAD)

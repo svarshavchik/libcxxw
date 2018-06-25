@@ -190,6 +190,9 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! Whether this window has been exposed
 	bool has_exposed_thread_only=false;
 
+	//! Whether exposure processing should_preclear_entirely_exposed_element
+	bool should_preclear_exposed_thread_only=false;
+
 	//! Window manager's frame size and screen geometry.
 	struct frame_extents_t {
 
@@ -309,6 +312,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	THREAD_DATA_ONLY(frame_extents);
 	THREAD_DATA_ONLY(current_pointer_grab);
 	THREAD_DATA_ONLY(has_exposed);
+	THREAD_DATA_ONLY(should_preclear_exposed);
 	THREAD_DATA_ONLY(current_theme);
 
 	//! Invoked after the handler gets installed.
@@ -640,22 +644,12 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	void draw_child_elements_after_visibility_updated(ONLY IN_THREAD,
 							  bool flag) override;
 
-	//! Setting the inherited_visibility flag.
+	void inherited_visibility_updated(ONLY IN_THREAD,
+					  inherited_visibility_info &) override;
 
-	//! This gets translated to mapping/unmapping the window.
-
-	void set_inherited_visibility(ONLY IN_THREAD,
-				      inherited_visibility_info &info) override;
- private:
-
-	//! Whether this window should be mapped.
-
-	//! Mapping/unmapping gets triggered by set_inherited_visibility().
-	//! However, mapping gets delayed using idle_callbacks, in order
-	//! for metrics to get finalized, via all queued up callbacks, before
-	//! the window is actually mapped.
-
-	bool is_really_mapped=false;
+	void set_inherited_visibility_flag(ONLY IN_THREAD,
+					   bool logical_flag,
+					   bool reported_flag) override;
 
  protected:
 
@@ -677,6 +671,12 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 	void process_configure_notify(ONLY IN_THREAD, const rectangle &r)
 		override;
+
+	//! Implement process_map_notify_event().
+	void process_map_notify_event(ONLY IN_THREAD) override;
+
+	//! Implement process_unmap_notify_event().
+	void process_unmap_notify_event(ONLY IN_THREAD) override;
 
 	//! Update frame extents
 

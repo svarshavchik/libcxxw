@@ -164,7 +164,30 @@ class elementObj::implObj : public element_drawObj,
 		//! An element is actually visible only if the element,
 		//! and all of its parent elements are visible.
 
-		bool inherited_visibility=false;
+		bool logical_inherited_visibility=false;
+
+		//! Inherited visibility
+
+		//! reported_inherited_visibility is always the same as
+		//! logical_inherited_visibility except for top level display
+		//! elements, because top_level-always_visible(). Top level
+		//! elements are always considered to be visible, and their
+		//! logical_inherited_visibility is always true, only their
+		//! reported_inherited_visibility gets updated in response
+		//! to show()ing or hide()ing them.
+		//!
+		//! When determining whether the display element is visible
+		//! the library code looks at logical_inherited_visibility
+		//! except when:
+		//!
+		//! - need to determine whether the top level window is mapped
+		//! or not (this is reflected by reported_inherited_visibility).
+		//!
+		//! - when reporting the visibility status of a display element,
+		//! so that the visibility report reflects the top level
+		//! display element's visibility.
+
+		bool reported_inherited_visibility=false;
 
 		//! Whether initialize() has been called.
 
@@ -262,6 +285,14 @@ class elementObj::implObj : public element_drawObj,
 	{
 		data_thread_only.requested_visibility=true;
 	}
+
+	//! Invoked from generic_windowObj::HandlerObj's constrcutor.
+
+	inline void top_level_always_visible()
+	{
+		data_thread_only.logical_inherited_visibility=true;
+		data_thread_only.actual_visibility=true;
+	}
  public:
 
 	//! Use parent display element's background color.
@@ -358,7 +389,7 @@ class elementObj::implObj : public element_drawObj,
 
 	inline bool DO_NOT_DRAW(ONLY IN_THREAD) const
 	{
-		return (!data(IN_THREAD).inherited_visibility);
+		return (!data(IN_THREAD).logical_inherited_visibility);
 	}
  public:
 	//! Install minimum element size overrides.
@@ -557,7 +588,7 @@ class elementObj::implObj : public element_drawObj,
 
 	//! If different visibility was updated, invoke update_visibility().
 
-	void update_visibility(ONLY IN_THREAD);
+	virtual void update_visibility(ONLY IN_THREAD);
 
 	//! update_visibility() invokes this callback.
 
@@ -601,10 +632,7 @@ class elementObj::implObj : public element_drawObj,
 	//!
 	//! The default implementation sets data.inherited_visibility.
 	//!
-	//! Overridden in generic_window_handler to also invoke
-	//! xcb_map_window or xcb_unmap_window.
-	//!
-	//! Also overridden in child_elementObj to also invoke its container's
+	//! Overridden in child_elementObj to also invoke its container's
 	//! child_background_color_changed() callback, since when the
 	//! child element is not shown, it falls back to using the parent's
 	//! background color, so officially its background color has changed.
@@ -617,7 +645,8 @@ class elementObj::implObj : public element_drawObj,
 	//! Ditto
 
 	//! Implement set_inherited_visibility flag.
-	virtual void set_inherited_visibility_flag(ONLY IN_THREAD, bool);
+	virtual void set_inherited_visibility_flag(ONLY IN_THREAD,
+						   bool, bool);
 
 	//! Redraw this display element, after showing or hiding it.
 

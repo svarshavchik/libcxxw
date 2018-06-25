@@ -126,10 +126,10 @@ public:
 			     const motion_event &me) override;
 
 	//! Perform any needed grab/pointer processing due to visibility change.
-	void set_inherited_visibility(ONLY IN_THREAD,
-				      inherited_visibility_info
-				      &visibility_info)
-		override;
+	void set_inherited_visibility_mapped(ONLY IN_THREAD) override;
+
+	//! Perform any needed grab/pointer processing due to visibility change.
+	void set_inherited_visibility_unmapped(ONLY IN_THREAD) override;
 
 	//! Override request_visibility()
 
