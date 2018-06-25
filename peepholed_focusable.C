@@ -174,7 +174,8 @@ create_peepholed_focusable_with_frame_impl
 
 	auto ff=focusable_container_owner::create
 		(focusframecontainer_impl,
-		 ref<focusframelayoutimplObj>::create(focusframecontainer_impl),
+		 ref<focusframelayoutimplObj>::create(focusframecontainer_impl,
+						      peephole_container),
 		 focusable_element_impl);
 
 	// Make sure that the the focusframe and the scrollbars use the

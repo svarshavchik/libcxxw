@@ -102,11 +102,6 @@ menu menubarlayoutmanagerObj::implObj
 			 popup_handler,
 			 container_impl);
 
-	auto ff_impl=ref<focusframelayoutimplObj>
-		::create(menu_impl);
-
-	auto ff_factory=ff_impl->create_gridlayoutmanager()->append_row();
-	ff_factory->padding(0);
 	auto hotspot_impl=ref<menubar_hotspot_implObj>
 		::create(menu_popup,
 			 e.create_background_color("menu_background_color"),
@@ -120,6 +115,11 @@ menu menubarlayoutmanagerObj::implObj
 						       (hotspot_impl),
 						       hotspot_impl);
 
+	auto ff_impl=ref<focusframelayoutimplObj>
+		::create(menu_impl, hotspot);
+
+	auto ff_factory=ff_impl->create_gridlayoutmanager()->append_row();
+	ff_factory->padding(0);
 	x::w::gridlayoutmanager glm=hotspot->get_layoutmanager();
 
 	auto creator_factory=glm->append_row();

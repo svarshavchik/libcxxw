@@ -17,7 +17,7 @@ create_focusframe_container_owner(const ref<focusframecontainer_implObj> &impl,
 				  const element &e,
 				  const focusable_impl &element_focusable_impl)
 {
-	auto lm=ref<focusframelayoutimplObj>::create(impl);
+	auto lm=ref<focusframelayoutimplObj>::create(impl, e);
 
 	auto c=focusable_container_owner::create(impl, lm,
 						 element_focusable_impl);
@@ -31,7 +31,7 @@ container create_focusframe_container(const
 				      ref<focusframecontainer_implObj> &impl,
 				      const element &e)
 {
-	auto lm=ref<focusframelayoutimplObj>::create(impl);
+	auto lm=ref<focusframelayoutimplObj>::create(impl, e);
 
 	auto c=container::create(lm->layout_container_impl, lm);
 

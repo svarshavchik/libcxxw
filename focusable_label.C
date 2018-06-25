@@ -35,16 +35,16 @@ focusable_label factoryObj
 		 config.off_border,
 		 config.on_border);
 
-	auto ffl=ref<focusframelayoutimplObj>::create(ff);
-
-	auto glm=ffl->create_gridlayoutmanager();
-
-	auto gf=glm->append_row();
-
 	auto focusable_label_impl=ref<focusable_labelObj::implObj>
 		::create(ff, text, config.widthmm, config.alignment);
 
 	auto l=label::create(focusable_label_impl, focusable_label_impl);
+
+	auto ffl=ref<focusframelayoutimplObj>::create(ff, l);
+
+	auto glm=ffl->create_gridlayoutmanager();
+
+	auto gf=glm->append_row();
 
 	gf->padding(0);
 	gf->created_internally(l);
