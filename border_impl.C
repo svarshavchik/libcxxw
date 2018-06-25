@@ -65,72 +65,56 @@ struct border_implObj::corner_draw_info {
 
 	// Draw extra lines in the padding areas.
 
-	void draw_top_pad(ONLY IN_THREAD, const grid_elementptr &left_element,
-			  const grid_elementptr &right_element)
+	void draw_top_pad(ONLY IN_THREAD)
 	{
 		me.draw_vertical(IN_THREAD,
-				 di, 0, top_pad, left_element, right_element);
+				 di, 0, top_pad);
 	}
 
-	void draw_bottom_pad(ONLY IN_THREAD,
-			     const grid_elementptr &left_element,
-			     const grid_elementptr &right_element)
+	void draw_bottom_pad(ONLY IN_THREAD)
 	{
 		me.draw_vertical(IN_THREAD, di,
 				 coord_t::truncate(top_pad
 						   +me.calculated_border_height
 						   ),
-				 bottom_pad,
-				 left_element, right_element);
+				 bottom_pad);
 	}
 
-	void draw_left_pad(ONLY IN_THREAD, const grid_elementptr &top_element,
-			   const grid_elementptr &bottom_element)
+	void draw_left_pad(ONLY IN_THREAD)
 	{
 		me.draw_horizontal(IN_THREAD,
-				   di, 0, left_pad, top_element, bottom_element);
+				   di, 0, left_pad);
 	}
 
-	void draw_right_pad(ONLY IN_THREAD, const grid_elementptr &top_element,
-			    const grid_elementptr &bottom_element)
+	void draw_right_pad(ONLY IN_THREAD)
 	{
 		me.draw_horizontal(IN_THREAD, di,
 				   coord_t::truncate(left_pad
 						     +me.calculated_border_width
 						     ),
-				   right_pad,
-				   top_element, bottom_element);
+				   right_pad);
 	}
 
 	// Now, draw the corresponding line to the center of the border.
 
-	void draw_top_stub(ONLY IN_THREAD, const grid_elementptr &left_element,
-			   const grid_elementptr &right_element)
+	void draw_top_stub(ONLY IN_THREAD)
 	{
-		me.draw_vertical(IN_THREAD, di, y, top_half_height,
-				 left_element, right_element);
+		me.draw_vertical(IN_THREAD, di, y, top_half_height);
 	}
 
-	void draw_bottom_stub(ONLY IN_THREAD,
-			      const grid_elementptr &left_element,
-			      const grid_elementptr &right_element)
+	void draw_bottom_stub(ONLY IN_THREAD)
 	{
-		me.draw_vertical(IN_THREAD, di, center_y, bottom_half_height,
-				 left_element, right_element);
+		me.draw_vertical(IN_THREAD, di, center_y, bottom_half_height);
 	}
 
-	void draw_left_stub(ONLY IN_THREAD, const grid_elementptr &top_element,
-			    const grid_elementptr &bottom_element)
+	void draw_left_stub(ONLY IN_THREAD)
 	{
-		me.draw_horizontal(IN_THREAD, di, 0, left_half_width,
-				   top_element, bottom_element);
+		me.draw_horizontal(IN_THREAD, di, 0, left_half_width);
 	}
 
-	void draw_right_stub(ONLY IN_THREAD, const grid_elementptr &top_element,
-			     const grid_elementptr &bottom_element)
+	void draw_right_stub(ONLY IN_THREAD)
 	{
-		me.draw_horizontal(IN_THREAD, di, center_x, right_half_width,
-				   top_element, bottom_element);
+		me.draw_horizontal(IN_THREAD, di, center_x, right_half_width);
 	}
 
 	// Fill the corner from that corner's element's background color
@@ -361,27 +345,16 @@ bool border_implObj::no_vertical_border(const draw_info &di) const
 void border_implObj::draw_horizontal(ONLY IN_THREAD,
 				     const draw_info &di) const
 {
-	draw_horizontal(IN_THREAD, di, grid_elementptr(), grid_elementptr());
-}
-
-void border_implObj::draw_horizontal(ONLY IN_THREAD,
-				     const draw_info &di,
-				     const grid_elementptr &top_element,
-				     const grid_elementptr &bottom_element) const
-{
 	if (no_horizontal_border(di))
 		return;
 
-	draw_horizontal(IN_THREAD, di, 0, di.area_rectangle.width,
-			top_element, bottom_element);
+	draw_horizontal(IN_THREAD, di, 0, di.area_rectangle.width);
 }
 
 void border_implObj::draw_horizontal(ONLY IN_THREAD,
 				     const draw_info &di,
 				     coord_t x,
-				     dim_t length,
-				     const grid_elementptr &top_element,
-				     const grid_elementptr &bottom_element) const
+				     dim_t length) const
 {
 	if (length == 0)
 		return; // Corner case.
@@ -422,22 +395,17 @@ void border_implObj::draw_horizontal(ONLY IN_THREAD,
 // Same logic as draw_horizontal, but in the other direction.
 
 void border_implObj::draw_vertical(ONLY IN_THREAD,
-				   const draw_info &di,
-				   const grid_elementptr &left_element,
-				   const grid_elementptr &right_element) const
+				   const draw_info &di) const
 {
 	if (no_vertical_border(di))
 		return;
 
-	draw_vertical(IN_THREAD, di, 0, di.area_rectangle.height,
-		      left_element, right_element);
+	draw_vertical(IN_THREAD, di, 0, di.area_rectangle.height);
 }
 
 void border_implObj::draw_vertical(ONLY IN_THREAD, const draw_info &di,
 				   coord_t y,
-				   dim_t length,
-				   const grid_elementptr &left_element,
-				   const grid_elementptr &right_element) const
+				   dim_t length) const
 {
 	if (length == 0)
 		return;
@@ -482,16 +450,16 @@ void border_implObj::draw_corner(ONLY IN_THREAD,
 	bool br=which_corners & border_impl::base::cornerbr() ? true:false;
 
 	if (tl || tr)
-		cdi.draw_top_pad(IN_THREAD, elements.topleft, elements.topright);
+		cdi.draw_top_pad(IN_THREAD);
 
 	if (bl || br)
-		cdi.draw_bottom_pad(IN_THREAD, elements.bottomleft, elements.bottomright);
+		cdi.draw_bottom_pad(IN_THREAD);
 
 	if (tl || bl)
-		cdi.draw_left_pad(IN_THREAD, elements.topleft, elements.bottomleft);
+		cdi.draw_left_pad(IN_THREAD);
 
 	if (tr || br)
-		cdi.draw_right_pad(IN_THREAD, elements.topright, elements.bottomright);
+		cdi.draw_right_pad(IN_THREAD);
 
 	// If which_corners is a single corner, we have special code for that.
 
@@ -545,29 +513,27 @@ void border_implObj::draw_corner(ONLY IN_THREAD,
 	// If there are two adjacent corners, find the straggler in the
 	// middle, and draw it.
 
-	grid_elementptr dummy;
-
 	if ( (tl && tr) && !bl && !br)
 	{
-		cdi.draw_top_stub(IN_THREAD, dummy, dummy);
+		cdi.draw_top_stub(IN_THREAD);
 		drew_top=true;
 	}
 
 	if ( (bl && br) && !tl && !tr)
 	{
-		cdi.draw_bottom_stub(IN_THREAD, dummy, dummy);
+		cdi.draw_bottom_stub(IN_THREAD);
 		drew_bottom=true;
 	}
 
 	if ( (tl && bl) && !tr && !br)
 	{
-		cdi.draw_left_stub(IN_THREAD, dummy, dummy);
+		cdi.draw_left_stub(IN_THREAD);
 		drew_left=true;
 	}
 
 	if ( (tr && br) && !tl && !bl)
 	{
-		cdi.draw_right_stub(IN_THREAD, dummy, dummy);
+		cdi.draw_right_stub(IN_THREAD);
 		drew_right=true;
 	}
 
@@ -576,28 +542,25 @@ void border_implObj::draw_corner(ONLY IN_THREAD,
 	if ( (tl || tr) && !drew_top)
 	{
 		draw_vertical(IN_THREAD,
-			      di, cdi.y, cdi.top_half_height, dummy, dummy);
+			      di, cdi.y, cdi.top_half_height);
 	}
 
 	if ( (bl || br) && !drew_bottom)
 	{
 		draw_vertical(IN_THREAD,
-			      di, cdi.center_y, cdi.bottom_half_height,
-			      dummy, dummy);
+			      di, cdi.center_y, cdi.bottom_half_height);
 
 	}
 
 	if ( (tl || bl) && !drew_left)
 	{
-		draw_horizontal(IN_THREAD, di, 0, cdi.left_half_width,
-				dummy, dummy);
+		draw_horizontal(IN_THREAD, di, 0, cdi.left_half_width);
 	}
 
 	if ( (tr || br) && !drew_right)
 	{
 		draw_horizontal(IN_THREAD, di, cdi.center_x,
-				cdi.right_half_width,
-				dummy, dummy);
+				cdi.right_half_width);
 	}
 }
 
@@ -839,30 +802,28 @@ void border_implObj::draw_stubs(ONLY IN_THREAD,
 	// We don't need to clear to each elements' background colors,
 	// corner_border has already done that, on this code path.
 
-	grid_elementptr dummy;
-
 	if (stubs & border_impl::base::top_stub())
 	{
-		cdi.draw_top_pad(IN_THREAD, dummy, dummy);
-		cdi.draw_top_stub(IN_THREAD, dummy, dummy);
+		cdi.draw_top_pad(IN_THREAD);
+		cdi.draw_top_stub(IN_THREAD);
 	}
 
 	if (stubs & border_impl::base::bottom_stub())
 	{
-		cdi.draw_bottom_pad(IN_THREAD, dummy, dummy);
-		cdi.draw_bottom_stub(IN_THREAD, dummy, dummy);
+		cdi.draw_bottom_pad(IN_THREAD);
+		cdi.draw_bottom_stub(IN_THREAD);
 	}
 
 	if (stubs & border_impl::base::left_stub())
 	{
-		cdi.draw_left_pad(IN_THREAD, dummy, dummy);
-		cdi.draw_left_stub(IN_THREAD, dummy, dummy);
+		cdi.draw_left_pad(IN_THREAD);
+		cdi.draw_left_stub(IN_THREAD);
 	}
 
 	if (stubs & border_impl::base::right_stub())
 	{
-		cdi.draw_right_pad(IN_THREAD, dummy, dummy);
-		cdi.draw_right_stub(IN_THREAD, dummy, dummy);
+		cdi.draw_right_pad(IN_THREAD);
+		cdi.draw_right_stub(IN_THREAD);
 	}
 }
 

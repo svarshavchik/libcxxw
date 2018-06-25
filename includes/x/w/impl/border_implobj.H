@@ -141,20 +141,6 @@ class border_implObj: virtual public obj, public border_info {
 			     //! Information needed to draw the border
 			     const draw_info &di) const;
 
-	//! Draw a horizontal border
-
-	void draw_horizontal(//! Invoked from the connection thread
-
-			     ONLY IN_THREAD,
-			     //! Information needed to draw the border
-			     const draw_info &di,
-
-			     //! Element above the border.
-			     const grid_elementptr &top_element,
-
-			     //! Element below the border
-			     const grid_elementptr &bottom_element) const;
-
 	struct corner_draw_info;
 
  private:
@@ -170,13 +156,7 @@ class border_implObj: virtual public obj, public border_info {
 			     coord_t x,
 
 			     //! The length of the border to draw, in pixels.
-			     dim_t length,
-
-			     //! Element above the border.
-			     const grid_elementptr &top_element,
-
-			     //! Element below the border
-			     const grid_elementptr &bottom_element) const;
+			     dim_t length) const;
  public:
 	//! Draw a vertical border
 
@@ -185,13 +165,7 @@ class border_implObj: virtual public obj, public border_info {
 			   ONLY IN_THREAD,
 
 			   //! Information needed to draw the border
-			   const draw_info &di,
-
-			   //! Element to the left of the border
-			   const grid_elementptr &left_element,
-
-			   //! Element to the right of the border
-			   const grid_elementptr &right_element) const;
+			   const draw_info &di) const;
 
  private:
 	//! Draw a vertical border
@@ -206,13 +180,7 @@ class border_implObj: virtual public obj, public border_info {
 			   coord_t y,
 
 			   //! The length of the border to draw, in pixels.
-			   dim_t length,
-
-			   //! Element to the left of the border
-			   const grid_elementptr &left_element,
-
-			   //! Element to the right of the border
-			   const grid_elementptr &right_element) const;
+			   dim_t length) const;
 
 	//! Composite color into the area_picture.
 

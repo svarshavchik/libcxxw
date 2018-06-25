@@ -45,9 +45,7 @@ template<dim_t border_implObj::*calc_major,
 	 // draw_horizontal, or draw_vertical, of course.
 	 void (border_implObj::*do_draw_horizvert)
 				  (ONLY IN_THREAD,
-				   const border_implObj::draw_info &,
-				   const grid_elementptr &,
-				   const grid_elementptr &) const>
+				   const border_implObj::draw_info &) const>
 class LIBCXX_HIDDEN straight_border_implObj
 	: public straight_borderObj::implObj {
 
@@ -153,9 +151,7 @@ class LIBCXX_HIDDEN straight_border_implObj
 // Straight border object already took care of filling in the background
 // color.
 
-			((*b_impl).*do_draw_horizvert)
-				(IN_THREAD, di, borders(IN_THREAD).element_1,
-				 borders(IN_THREAD).element_2);
+			((*b_impl).*do_draw_horizvert)(IN_THREAD, di);
 		}
 	}
 
