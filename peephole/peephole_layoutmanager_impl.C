@@ -570,7 +570,7 @@ bool peepholeObj::layoutmanager_implObj
 
 	peephole_element_impl->scroll_by_parent_container(IN_THREAD, r.x, r.y);
 	if (!redrawn.empty())
-		e.exposure_event_recursive(IN_THREAD, redrawn);
+		e.exposure_event_recursively_top_down(IN_THREAD, redrawn);
 
 	return true;
 }

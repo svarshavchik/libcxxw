@@ -94,6 +94,14 @@ class LIBCXX_HIDDEN peephole_toplevel_implObj
 
 	~peephole_toplevel_implObj()=default;
 
+	//! Override should_preclear_entirely_exposed_element()
+
+	bool should_preclear_entirely_exposed_element(ONLY IN_THREAD)
+		override
+	{
+		return true;
+	}
+
 	//! Override focusable_initialized()
 
 	void focusable_initialized(ONLY IN_THREAD,

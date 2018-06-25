@@ -514,16 +514,17 @@ bool generic_windowObj::handlerObj::has_own_background_color(ONLY IN_THREAD)
 void generic_windowObj::handlerObj::process_collected_exposures(ONLY IN_THREAD)
 {
 	has_exposed(IN_THREAD)=true;
-	exposure_event_recursive(IN_THREAD,
-				 exposure_rectangles(IN_THREAD).rectangles);
+	exposure_event_recursively_top_down
+		(IN_THREAD,
+		 exposure_rectangles(IN_THREAD).rectangles);
 }
 
 void generic_windowObj::handlerObj
 ::process_collected_graphics_exposures(ONLY IN_THREAD)
 {
-	exposure_event_recursive(IN_THREAD,
-				 graphics_exposure_rectangles(IN_THREAD)
-				 .rectangles);
+	exposure_event_recursively_top_down
+		(IN_THREAD,
+		 graphics_exposure_rectangles(IN_THREAD).rectangles);
 }
 
 void generic_windowObj::handlerObj::theme_updated_event(ONLY IN_THREAD)

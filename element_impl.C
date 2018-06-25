@@ -434,6 +434,9 @@ void elementObj::implObj::explicit_redraw(ONLY IN_THREAD)
 
 	IN_THREAD->elements_to_redraw(IN_THREAD)->erase(ref<implObj>(this));
 
+	if (data(IN_THREAD).removed)
+		return;
+
 	// Invoke draw() to refresh the contents of this disiplay element.
 
 	auto &di=get_draw_info(IN_THREAD);
@@ -696,8 +699,29 @@ clip_region_set::clip_region_set(ONLY IN_THREAD,
 	h.set_clip_rectangles(di.element_viewport);
 }
 
+void elementObj::implObj
+::exposure_event_recursively_top_down(ONLY IN_THREAD,
+				      const rectangle_set &r)
+{
+	std::queue<std::tuple<element_impl, rectangle_set>> q;
+
+	q.emplace(ref{this}, r);
+
+	while (!q.empty())
+	{
+		auto &[impl, s]=q.front();
+
+		impl->exposure_event_recursive(IN_THREAD, s, q);
+
+		q.pop();
+	}
+}
+
 void elementObj::implObj::exposure_event_recursive(ONLY IN_THREAD,
-						   const rectangle_set &areas)
+						   const rectangle_set &areas,
+						   std::queue<std::tuple
+						   <element_impl, rectangle_set>
+						   > &q)
 {
 	auto &current_position=data(IN_THREAD).current_position;
 
@@ -747,6 +771,11 @@ void elementObj::implObj::exposure_event_recursive(ONLY IN_THREAD,
 		}
 	}
 
+	if (should_preclear_entirely_exposed_element(IN_THREAD))
+		clear_to_color(IN_THREAD,
+			       get_draw_info(IN_THREAD),
+			       draw_area);
+
 #ifdef DEBUG_EXPOSURE_CALCULATIONS
 
 	std::cout << "    Draw:" << std::endl;
@@ -763,9 +792,14 @@ void elementObj::implObj::exposure_event_recursive(ONLY IN_THREAD,
 		       [&]
 		       (const element &e)
 		       {
-			       e->impl->exposure_event_recursive(IN_THREAD,
-								 areas);
+			       q.emplace(e->impl, areas);
 		       });
+}
+
+bool elementObj::implObj
+::should_preclear_entirely_exposed_element(ONLY IN_THREAD)
+{
+	return false;
 }
 
 void elementObj::implObj::draw(ONLY IN_THREAD,
