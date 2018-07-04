@@ -9,6 +9,8 @@
 #include <xcb/xcb_renderutil.h>
 #include "fonts/freetypefontfwd.H"
 #include "x/w/namespace.H"
+#include "x/w/types.H"
+#include "x/w/picturefwd.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -36,6 +38,13 @@ public:
 
 	composite_text_stream(const composite_text_stream &)=delete;
 	composite_text_stream &operator=(const composite_text_stream &)=delete;
+
+	//! Render the composite text stream
+
+	void composite(const picture &dst,
+		       const const_picture &color,
+		       coord_t color_x,
+		       coord_t color_y) const;
 };
 
 LIBCXXW_NAMESPACE_END

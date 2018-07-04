@@ -24,8 +24,6 @@
 #include <x/sentry.H>
 #include <cmath>
 #include <courier-unicode.h>
-#include <ft2build.h>
-#include FT_BITMAP_H
 
 LOG_CLASS_INIT(LIBCXX_NAMESPACE::w::richtextfragmentObj);
 
@@ -764,15 +762,11 @@ inline void richtextfragmentObj
 		   start_x, start_y,
 		   range_info.xpos, range_info.ypos);
 
-	xcb_render_util_composite_text
-		(range_info.info.scratch_buffer->impl->picture_conn()->conn,
-		 XCB_RENDER_PICT_OP_OVER,
-		 foreground_color->impl->picture_id(),
-		 range_info.info.scratch_buffer->impl->picture_id(),
-		 XCB_NONE,
-		 coord_t::value_type(color_x),
-		 coord_t::value_type(color_y),
-		 s.s);
+	s.composite(range_info.info.scratch_buffer,
+		    foreground_color,
+		    color_x,
+		    color_y);
+
 	range_info.prev_char=range_info.str[range_info.end_char-1];
 }
 

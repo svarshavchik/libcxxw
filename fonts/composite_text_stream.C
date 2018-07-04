@@ -6,6 +6,9 @@
 #include "libcxxw_config.h"
 #include "fonts/composite_text_stream.H"
 #include "fonts/freetypefont_impl.H"
+#include "picture.H"
+#include "xid_t.H"
+#include "connection_thread.H"
 #include <x/exception.H>
 
 LIBCXXW_NAMESPACE_START
@@ -27,6 +30,22 @@ composite_text_stream
 composite_text_stream::~composite_text_stream()
 {
 	xcb_render_util_composite_text_free(s);
+}
+
+void composite_text_stream::composite(const picture &dst,
+				      const const_picture &color,
+				      coord_t x,
+				      coord_t y) const
+{
+	xcb_render_util_composite_text
+		(dst->impl->picture_conn()->conn,
+		 XCB_RENDER_PICT_OP_OVER,
+		 color->impl->picture_id(),
+		 dst->impl->picture_id(),
+		 XCB_NONE,
+		 coord_t::value_type(x),
+		 coord_t::value_type(y),
+		 s);
 }
 
 LIBCXXW_NAMESPACE_END
