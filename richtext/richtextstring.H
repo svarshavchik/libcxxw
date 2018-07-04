@@ -8,7 +8,7 @@
 
 #include "x/w/impl/defaultthemefwd.H"
 #include "richtext/richtextmetafwd.H"
-#include "fonts/freetypefontfwd.H"
+#include "x/w/impl/fonts/freetypefontfwd.H"
 #include "x/w/connection_threadfwd.H"
 #include "x/w/types.H"
 #include <courier-unicode.h>

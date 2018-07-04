@@ -5,7 +5,7 @@
 
 #include "libcxxw_config.h"
 #include "fonts/cached_font.H"
-#include "fonts/freetypefont.H"
+#include "x/w/impl/fonts/freetypefont.H"
 #include "fonts/fontcharset.H"
 
 #include "x/w/namespace.H"

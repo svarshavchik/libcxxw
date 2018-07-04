@@ -3,17 +3,14 @@
 ** See COPYING for distribution information.
 */
 
-#ifndef freetypefontobj_H
-#define freetypefontobj_H
+#ifndef x_w_impl_freetypefontobj_H
+#define x_w_impl_freetypefontobj_H
 
 #include <x/obj.H>
 #include <x/functional.H>
-#include <courier-unicode.h>
-#include "fonts/freetypefontfwd.H"
-#include "fonts/composite_text_streamfwd.H"
-#include "x/w/gcfwd.H"
-#include "x/w/screenfwd.H"
-#include "x/w/types.H"
+#include <x/w/impl/fonts/freetypefontfwd.H>
+#include <x/w/impl/fonts/composite_text_streamfwd.H>
+#include <x/w/types.H>
 
 LIBCXXW_NAMESPACE_START
 

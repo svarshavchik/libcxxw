@@ -5,7 +5,7 @@
 #include "libcxxw_config.h"
 #include "panelayoutmanager/panecontainer_impl.H"
 #include "x/w/impl/container_element.H"
-#include "reference_font_element.H"
+#include "x/w/impl/theme_font_element.H"
 
 LIBCXXW_NAMESPACE_START
 

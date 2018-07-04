@@ -7,7 +7,7 @@
 
 #include "peephole/peepholed_fontelementfwd.H"
 #include "peephole/peepholed_element.H"
-#include "reference_font.H"
+#include "x/w/impl/theme_font.H"
 
 LIBCXXW_NAMESPACE_START
 

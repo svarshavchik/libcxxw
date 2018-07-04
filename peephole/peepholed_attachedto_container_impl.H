@@ -6,7 +6,7 @@
 #define peepholed_attachedto_container_impl_h
 
 #include "peephole/peepholed_attachedto_container.H"
-#include "reference_font_elementfwd.H"
+#include "x/w/impl/theme_font_elementfwd.H"
 #include "x/w/impl/always_visiblefwd.H"
 #include "x/w/impl/container_elementfwd.H"
 #include "x/w/impl/child_elementobj.H"
@@ -16,13 +16,13 @@ LIBCXXW_NAMESPACE_START
 //! Internal implementation object.
 
 class LIBCXX_HIDDEN peepholed_attachedto_containerObj::implObj
-	: public reference_font_elementObj<always_visibleObj<
+	: public theme_font_elementObj<always_visibleObj<
 						   container_elementObj<
 							   child_elementObj>>
 					   > {
 
 	//! Alias
-	typedef reference_font_elementObj<always_visibleObj<
+	typedef theme_font_elementObj<always_visibleObj<
 		container_elementObj<
 			child_elementObj>>> superclass_t;
 

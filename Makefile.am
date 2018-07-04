@@ -246,24 +246,17 @@ libcxxw_la_SOURCES=\
 	font_picker/font_picker_preview_impl.H	    \
 	fonts/composite_text_stream.C		    \
 	fonts/composite_text_stream.H		    \
-	fonts/composite_text_streamfwd.H	    \
 	fonts/current_fontcollection.C		    \
-	fonts/current_fontcollection.H		    \
-	fonts/current_fontcollectionobj.H	    \
 	fonts/cached_font.C			    \
 	fonts/cached_font.H			    \
 	fonts/cached_fontfwd.H			    \
 	fonts/font.C				    \
 	fonts/fontcharset.C			    \
 	fonts/fontcharset.H			    \
-	fonts/fontcharsetfwd.H			    \
 	fonts/fontcharsetobj.H			    \
 	fonts/fontcharset_impl.H		    \
 	fonts/fontcharset_impl.C		    \
 	fonts/fontcollection.C			    \
-	fonts/fontcollection.H			    \
-	fonts/fontcollectionfwd.H		    \
-	fonts/fontcollectionobj.H		    \
 	fonts/fontcollection_impl.C		    \
 	fonts/fontcollection_impl.H		    \
 	fonts/fontconfig.C			    \
@@ -304,9 +297,6 @@ libcxxw_la_SOURCES=\
 	fonts/freetypeobj.H			    \
 	fonts/freetypeerror.C			    \
 	fonts/freetypefont.C			    \
-	fonts/freetypefont.H			    \
-	fonts/freetypefontfwd.H			    \
-	fonts/freetypefontobj.H			    \
 	fonts/freetypefont_impl.C		    \
 	fonts/freetypefont_impl.H		    \
 	fonts/glyphset.C			    \
@@ -635,12 +625,6 @@ libcxxw_la_SOURCES=\
 	recycled_pixmaps.H			    \
 	recycled_pixmapsfwd.H			    \
 	recycled_pixmapsobj.H			    \
-	reference_font.C			    \
-	reference_font.H			    \
-	reference_fontfwd.H			    \
-	reference_fontobj.H			    \
-	reference_font_element.H		    \
-	reference_font_elementfwd.H		    \
 	render.C				    \
 	render.H				    \
 	returned_pointer.H			    \
@@ -766,6 +750,7 @@ libcxxw_la_SOURCES=\
 	themedim.C				    \
 	themedim_element_minoverride.H		    \
 	themedim_element_minoverridefwd.H	    \
+	theme_font.C				    \
 	themeiconobj.H				    \
 	themeicon.C				    \
 	themeiconpixmapobj.H			    \

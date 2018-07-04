@@ -7,7 +7,7 @@
 
 #include "x/w/impl/container_elementfwd.H"
 #include "x/w/impl/child_element.H"
-#include "reference_font_elementfwd.H"
+#include "x/w/impl/theme_font_elementfwd.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -17,13 +17,13 @@ LIBCXXW_NAMESPACE_START
 //! amount o f keyboard-based sliding.
 
 class LIBCXX_HIDDEN panecontainer_implObj
-	: public reference_font_elementObj<container_elementObj
+	: public theme_font_elementObj<container_elementObj
 					   <child_elementObj>>
 {
 
 	//! Alias.
 
-	typedef reference_font_elementObj<container_elementObj
+	typedef theme_font_elementObj<container_elementObj
 					  <child_elementObj>> superclass_t;
 
  public:

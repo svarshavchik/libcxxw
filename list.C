@@ -17,7 +17,7 @@
 #include "peepholed_focusable.H"
 #include "x/w/impl/background_color.H"
 #include "x/w/impl/container.H"
-#include "reference_font_element.H"
+#include "x/w/impl/theme_font_element.H"
 #include "x/w/impl/container_element.H"
 #include "x/w/impl/nonrecursive_visibility.H"
 

@@ -9,7 +9,7 @@
 #include "textlabel.H"
 #include "label_elementfwd.H"
 #include "cursor_pointer_elementfwd.H"
-#include "reference_font_elementfwd.H"
+#include "x/w/impl/theme_font_elementfwd.H"
 #include "x/w/impl/background_color_elementfwd.H"
 #include "x/w/impl/fonts/current_fontcollectionfwd.H"
 #include "x/w/impl/focus/focusable_elementfwd.H"
@@ -46,7 +46,7 @@ struct textedit_disabled_background_color;
 //! - and the last, but not least, this is a focusable label element.
 
 typedef background_color_elementObj<
-	cursor_pointer_elementObj<reference_font_elementObj
+	cursor_pointer_elementObj<theme_font_elementObj
 				  <focusable_elementObj
 				   <label_elementObj<child_elementObj>
 				    >>>,

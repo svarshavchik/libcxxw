@@ -6,9 +6,9 @@
 #include "libcxxw_config.h"
 #include "richtext/richtextstring.H"
 #include "richtext/richtextmeta.H"
-#include "fonts/current_fontcollection.H"
-#include "fonts/fontcollection.H"
-#include "fonts/freetypefont.H"
+#include "x/w/impl/fonts/current_fontcollection.H"
+#include "x/w/impl/fonts/fontcollection.H"
+#include "x/w/impl/fonts/freetypefont.H"
 #include "x/w/impl/background_color.H"
 #include "assert_or_throw.H"
 

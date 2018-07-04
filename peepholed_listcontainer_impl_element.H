@@ -7,7 +7,7 @@
 
 #include "peepholed_listcontainer_impl_elementfwd.H"
 #include "listlayoutmanager/listcontainer_dim_element.H"
-#include "reference_font_element.H"
+#include "x/w/impl/theme_font_element.H"
 #include "x/w/impl/themedim.H"
 #include "x/w/impl/themedim_axis_element.H"
 #include "x/w/impl/metrics_horizvert.H"
@@ -82,7 +82,7 @@ void peepholed_listcontainer_impl_element_baseObj<element_impl>
 //!   else provides a default one, to the themedim_axis_elementObj mixin
 //! template.
 //!
-//! - passes the name of the font for the reference_font_elementObj mixin
+//! - passes the name of the font for the theme_font_elementObj mixin
 //! template.
 //!
 //! - passes the style for the listcontainer_dim_elementObj mixin template.
@@ -118,7 +118,7 @@ peepholed_listcontainer_impl_elementObj<element_impl>
 //! Used by peepholed_listcontainerObj::implObj.
 
 template<typename element_impl>
-const reference_fontObj &peepholed_listcontainer_impl_elementObj<element_impl>
+const theme_fontObj &peepholed_listcontainer_impl_elementObj<element_impl>
 ::list_reference_font() const
 {
 	return *this;

@@ -3,16 +3,15 @@
 ** See COPYING for distribution information.
 */
 
-#ifndef freetypefontfwd_H
-#define freetypefontfwd_H
+#ifndef x_w_impl_fonts_freetypefontfwd_H
+#define x_w_impl_fonts_freetypefontfwd_H
 
 #include <x/ptrfwd.H>
-#include "x/w/namespace.H"
+#include <x/w/namespace.H>
 
 LIBCXXW_NAMESPACE_START
 
 class freetypefontObj;
-class freetypefontBase;
 
 //! A loaded freetype font.
 
@@ -27,18 +26,18 @@ class freetypefontBase;
 
 //! \internal
 
-typedef ref<freetypefontObj, freetypefontBase> freetypefont;
+typedef ref<freetypefontObj> freetypefont;
 
 //! A nullable pointer reference to an \ref font "font"
 
-typedef ptr<freetypefontObj, freetypefontBase> freetypefontptr;
+typedef ptr<freetypefontObj> freetypefontptr;
 
 //! A constant \ref font "font"
-typedef const_ref<freetypefontObj, freetypefontBase> const_freetypefont;
+typedef const_ref<freetypefontObj> const_freetypefont;
 
 //! A nullable pointer reference to a constant \ref font "font"
 
-typedef const_ptr<freetypefontObj, freetypefontBase> const_freetypefontptr;
+typedef const_ptr<freetypefontObj> const_freetypefontptr;
 
 LIBCXXW_NAMESPACE_END
 

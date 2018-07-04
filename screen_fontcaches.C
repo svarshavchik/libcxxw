@@ -7,7 +7,7 @@
 #include "screen_fontcaches.H"
 #include "generic_window_handler.H"
 #include "x/w/font_hash.H"
-#include "fonts/current_fontcollection.H"
+#include "x/w/impl/fonts/current_fontcollection.H"
 #include "x/number_hash.H"
 #include "defaulttheme.H"
 #include <x/weakunordered_multimap.H>

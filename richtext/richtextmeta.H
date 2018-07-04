@@ -9,7 +9,7 @@
 #include "x/w/rgb.H"
 #include "richtext/richtextmetafwd.H"
 #include "x/w/text_hotspotfwd.H"
-#include "fonts/current_fontcollection.H"
+#include "x/w/impl/fonts/current_fontcollection.H"
 #include "x/w/impl/background_colorfwd.H"
 #include "x/w/namespace.H"
 

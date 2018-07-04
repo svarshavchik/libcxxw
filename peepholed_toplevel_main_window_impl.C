@@ -7,7 +7,7 @@
 #include "peepholed_toplevel_main_window_impl.H"
 #include "peephole/peepholed_toplevel_element.H"
 #include "generic_window_handler.H"
-#include "reference_font_element.H"
+#include "x/w/impl/theme_font_element.H"
 #include "x/w/impl/layoutmanager.H"
 #include "x/w/impl/always_visible.H"
 #include "gridlayoutmanager.H"

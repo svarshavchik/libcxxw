@@ -10,7 +10,7 @@
 #include "x/w/containerobj.H"
 #include "x/w/dim_axis_arg.H"
 #include "x/w/metrics/axis.H"
-#include "reference_font_elementfwd.H"
+#include "x/w/impl/theme_font_elementfwd.H"
 #include "x/w/impl/themedimfwd.H"
 #include "x/w/impl/metrics_horizvertfwd.H"
 #include "x/w/impl/child_elementfwd.H"
@@ -49,7 +49,7 @@ class LIBCXX_HIDDEN peepholed_listcontainerObj::implObj : virtual public obj {
 	//! Return the list reference font.
 
 	//! Implemented by the mixin template.
-	virtual const reference_fontObj &list_reference_font() const=0;
+	virtual const theme_fontObj &list_reference_font() const=0;
 
 	//! Return padding amount.
 

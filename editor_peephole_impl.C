@@ -9,8 +9,8 @@
 #include "editor.H"
 #include "editor_impl.H"
 #include "peephole/peephole_layoutmanager_impl.H"
-#include "fonts/current_fontcollection.H"
-#include "fonts/fontcollection.H"
+#include "x/w/impl/fonts/current_fontcollection.H"
+#include "x/w/impl/fonts/fontcollection.H"
 #include "x/w/button_event.H"
 
 LIBCXXW_NAMESPACE_START

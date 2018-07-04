@@ -6,7 +6,7 @@
 #define peepholed_fontelementfwd_h
 
 #include "peephole/peepholed_elementfwd.H"
-#include "reference_fontfwd.H"
+#include "x/w/impl/theme_fontfwd.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -19,7 +19,7 @@ LIBCXXW_NAMESPACE_START
 //! vertical_increment().
 //!
 //! The second template parameter is a tag. The first parameter to the
-//! constructor must be a ref<reference_font_tag<tag>>, the remaining
+//! constructor must be a ref<theme_font_tag<tag>>, the remaining
 //! template parameters get forwarded to the superclass.
 //!
 //! Implements horizontal_increment() and vertical_increment() based on
@@ -30,7 +30,7 @@ class LIBCXX_HIDDEN peepholed_fontelementObj : public element_impl {
 
 	//! Alias.
 
-	typedef ref<reference_font_tag<font_tag>> font_impl_t;
+	typedef ref<theme_font_tag<font_tag>> font_impl_t;
 
 	//! The reference font.
 

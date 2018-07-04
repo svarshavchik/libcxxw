@@ -3,8 +3,8 @@
 ** See COPYING for distribution information.
 */
 
-#ifndef x_w_impl_current_fontcollectionfwd_H
-#define x_w_impl_current_fontcollectionfwd_H
+#ifndef x_w_impl_fonts_current_fontcollectionfwd_H
+#define x_w_impl_fonts_current_fontcollectionfwd_H
 
 #include <x/ptrfwd.H>
 #include <x/w/namespace.H>

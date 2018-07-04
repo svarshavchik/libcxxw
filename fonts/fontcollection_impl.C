@@ -9,7 +9,7 @@
 #include "fonts/cached_font.H"
 #include "screen.H"
 #include "connection.H"
-#include "fonts/freetypefont.H"
+#include "x/w/impl/fonts/freetypefont.H"
 #include "fonts/fontsortedlist.H"
 #include "fonts/fontpattern.H"
 #include "fonts/fontcharset.H"

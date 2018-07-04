@@ -26,7 +26,7 @@
 #include "x/w/tooltip.H"
 #include "x/w/main_window.H"
 #include "focus/label_for.H"
-#include "fonts/current_fontcollection.H"
+#include "x/w/impl/fonts/current_fontcollection.H"
 #include "xim/ximclient.H"
 #include "popup/popup.H"
 #include "catch_exceptions.H"

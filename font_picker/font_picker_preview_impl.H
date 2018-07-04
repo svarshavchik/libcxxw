@@ -6,7 +6,7 @@
 #define font_picker_preview_impl_h
 
 #include "font_picker/font_picker_preview.H"
-#include "reference_font_elementfwd.H"
+#include "x/w/impl/theme_font_elementfwd.H"
 #include "label_elementfwd.H"
 #include "x/w/impl/always_visible_elementfwd.H"
 #include "x/w/impl/fonts/current_fontcollectionfwd.H"
@@ -19,13 +19,13 @@ LIBCXXW_NAMESPACE_START
 //! Internal implementation object.
 
 class LIBCXX_HIDDEN font_picker_previewObj::implObj
-	: public always_visible_elementObj<reference_font_elementObj<
+	: public always_visible_elementObj<theme_font_elementObj<
 						   label_elementObj
 						   <child_elementObj>>> {
 
 	//! Alias
 
-	typedef always_visible_elementObj<reference_font_elementObj
+	typedef always_visible_elementObj<theme_font_elementObj
 					  <label_elementObj
 					   <child_elementObj>>> superclass_t;
 

@@ -7,10 +7,11 @@
 #define composite_text_stream_H
 
 #include <xcb/xcb_renderutil.h>
-#include "fonts/freetypefontfwd.H"
+#include "x/w/impl/fonts/freetypefontfwd.H"
 #include "x/w/namespace.H"
 #include "x/w/types.H"
 #include "x/w/picturefwd.H"
+#include "x/w/impl/fonts/composite_text_streamfwd.H"
 
 LIBCXXW_NAMESPACE_START
 

@@ -7,6 +7,7 @@
 #define fontid_t_H
 
 #include <x/ref.H>
+#include <x/weakunordered_multimap.H>
 #include <string>
 #include "x/w/types.H"
 
@@ -49,6 +50,16 @@ struct LIBCXX_HIDDEN font_id_t {
 };
 
 struct LIBCXX_HIDDEN font_id_t_hash;
+
+struct font_id_t_hash;
+
+class fontcollectionObj;
+
+//! A container for a cache of instantiated font collections, by \ref font_id_t "identifier".
+
+typedef weakunordered_multimap<font_id_t,
+			       fontcollectionObj,
+			       font_id_t_hash> sorted_font_cache_t;
 
 LIBCXXW_NAMESPACE_END
 

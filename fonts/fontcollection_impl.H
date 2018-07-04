@@ -7,18 +7,17 @@
 #define font_H
 
 #include "fonts/fontconfigfwd.H"
-#include "fonts/fontcollection.H"
-#include "fonts/freetypefontobj.H"
+#include "x/w/impl/fonts/fontcollection.H"
+#include "x/w/impl/fonts/freetypefontobj.H"
 #include "fonts/freetypefwd.H"
 #include "fonts/fontsortedlist.H"
-#include "fonts/fontcharsetfwd.H"
+#include "x/w/impl/fonts/fontcharsetfwd.H"
 #include "fonts/fontpatternfwd.H"
 #include "x/w/screenfwd.H"
 #include <x/mpobj.H>
 #include <x/functional.H>
 
 #include "fonts/cached_fontfwd.H"
-#include "fonts/fontcollectionfwd.H"
 #include "fonts/fontid_t.H"
 
 #include <courier-unicode.h>

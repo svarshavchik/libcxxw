@@ -7,7 +7,7 @@
 #define fontsortedlist_impl_H
 
 #include "fonts/fontconfigfwd.H"
-#include "fonts/fontcharsetfwd.H"
+#include "x/w/impl/fonts/fontcharsetfwd.H"
 #include "fonts/fontpatternfwd.H"
 #include "fonts/fontlist_impl.H"
 #include "fonts/fontsortedlist.H"

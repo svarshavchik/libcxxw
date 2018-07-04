@@ -7,7 +7,7 @@
 #include "assert_or_throw.H"
 #include "richtext/richtextstring.H"
 #include "richtext/richtextmeta.H"
-#include "fonts/current_fontcollection.H"
+#include "x/w/impl/fonts/current_fontcollection.H"
 #include <x/sentry.H>
 #include <algorithm>
 

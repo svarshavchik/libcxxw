@@ -12,7 +12,7 @@
 #include "defaulttheme.H"
 #include "configfile.H"
 #include "fonts/cached_font.H"
-#include "fonts/fontcollection.H"
+#include "x/w/impl/fonts/fontcollection.H"
 #include "fonts/fontid_t_hash.H"
 #include "xim/ximxtransport.H"
 #include "x/w/pictformat.H"

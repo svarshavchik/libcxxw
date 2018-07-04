@@ -3,18 +3,18 @@
 ** See COPYING for distribution information.
 */
 
-#ifndef current_fontcollectionobj_H
-#define current_fontcollectionobj_H
+#ifndef x_w_impl_fonts_current_fontcollectionobj_H
+#define x_w_impl_fonts_current_fontcollectionobj_H
 
 #include <x/ref.H>
 #include <x/obj.H>
-#include "fonts/fontcollectionfwd.H"
-#include "x/w/impl/fonts/current_fontcollectionfwd.H"
-#include "x/w/impl/connection_threadfwd.H"
-#include "x/w/impl/defaultthemefwd.H"
-#include "x/w/screenfwd.H"
-#include "x/w/font.H"
-#include "x/w/types.H"
+#include <x/w/fontcollectionfwd.H>
+#include <x/w/impl/fonts/current_fontcollectionfwd.H>
+#include <x/w/impl/connection_threadfwd.H>
+#include <x/w/impl/defaultthemefwd.H>
+#include <x/w/screenfwd.H>
+#include <x/w/font.H>
+#include <x/w/types.H>
 
 LIBCXXW_NAMESPACE_START
 

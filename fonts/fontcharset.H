@@ -7,7 +7,7 @@
 #define fontcharset_H
 
 #include <x/ref.H>
-#include "fonts/fontcharsetfwd.H"
+#include "x/w/impl/fonts/fontcharsetfwd.H"
 #include "fonts/fontcharsetobj.H"
 
 LIBCXXW_NAMESPACE_START

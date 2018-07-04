@@ -5,7 +5,7 @@
 
 #include "libcxxw_config.h"
 #include "fonts/fontcollection_impl.H"
-#include "fonts/current_fontcollection.H"
+#include "x/w/impl/fonts/current_fontcollection.H"
 #include "fonts/fontpattern.H"
 #include "fonts/fontid_t_hash.H"
 #include "fonts/fontconfig.H"

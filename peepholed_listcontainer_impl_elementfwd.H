@@ -7,7 +7,7 @@
 
 #include "peepholed_listcontainer_impl.H"
 #include "listlayoutmanager/listcontainer_dim_elementfwd.H"
-#include "reference_font_elementfwd.H"
+#include "x/w/impl/theme_font_elementfwd.H"
 #include "x/w/impl/themedimfwd.H"
 #include "x/w/impl/themedim_axis_elementfwd.H"
 
@@ -65,12 +65,12 @@ class LIBCXX_HIDDEN peepholed_listcontainer_impl_element_baseObj
 template<typename element_impl>
 class LIBCXX_HIDDEN peepholed_listcontainer_impl_elementObj :
 	public themedim_axis_heightObj<
-	reference_font_elementObj<
+	theme_font_elementObj<
 		listcontainer_dim_elementObj
 		<peepholed_listcontainer_impl_element_baseObj<element_impl>>>> {
 
 public:
-	typedef themedim_axis_heightObj<reference_font_elementObj<
+	typedef themedim_axis_heightObj<theme_font_elementObj<
 		listcontainer_dim_elementObj<
 			peepholed_listcontainer_impl_element_baseObj<
 				element_impl>>>
@@ -83,7 +83,7 @@ public:
 
 	~peepholed_listcontainer_impl_elementObj();
 
-	const reference_fontObj &list_reference_font()
+	const theme_fontObj &list_reference_font()
 		const override;
 
 	child_elementObj &get_child_elementObj() override;

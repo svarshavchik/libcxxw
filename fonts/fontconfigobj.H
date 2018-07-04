@@ -11,7 +11,7 @@
 #include "fonts/fontobjectsetfwd.H"
 #include "fonts/fontpatternfwd.H"
 #include "fonts/fontlistfwd.H"
-#include "fonts/fontcharsetfwd.H"
+#include "x/w/impl/fonts/fontcharsetfwd.H"
 #include "x/w/fontfwd.H"
 
 #include <set>

@@ -6,8 +6,8 @@
 #ifndef cached_font_H
 #define cached_font_H
 
-#include "fonts/freetypefont.H"
-#include "fonts/fontcharsetfwd.H"
+#include "x/w/impl/fonts/freetypefont.H"
+#include "x/w/impl/fonts/fontcharsetfwd.H"
 #include "fonts/cached_fontfwd.H"
 
 #include <x/ref.H>

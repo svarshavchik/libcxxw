@@ -18,7 +18,7 @@
 #include "x/w/image_button.H"
 #include "x/w/button.H"
 #include "x/w/rgb.H"
-#include "reference_font_element.H"
+#include "x/w/impl/theme_font_element.H"
 #include "gridlayoutmanager.H"
 #include "messages.H"
 #include "dialog.H"

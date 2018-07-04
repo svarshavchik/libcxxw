@@ -3,8 +3,8 @@
 ** See COPYING for distribution information.
 */
 
-#ifndef x_w_fontcharsetfwd_H
-#define x_w_fontcharsetfwd_H
+#ifndef x_w_impl_fonts_fontcharsetfwd_H
+#define x_w_impl_fonts_fontcharsetfwd_H
 
 #include <x/ptrfwd.H>
 

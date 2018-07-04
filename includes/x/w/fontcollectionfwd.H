@@ -3,13 +3,11 @@
 ** See COPYING for distribution information.
 */
 
-#ifndef fontcollectionfwd_H
-#define fontc0llectionfwd_H
+#ifndef x_w_fontcollectionfwd_H
+#define x_w_fontcollectionfwd_H
 
 #include <x/ptrfwd.H>
-#include <x/weakunordered_multimap.H>
-#include "fonts/fontid_t.H"
-#include "x/w/namespace.H"
+#include <x/w/namespace.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -61,14 +59,6 @@ typedef const_ref<fontcollectionObj> const_fontcollection;
 //! A nullable pointer reference to constant \ref fontcollection "font collection".
 
 typedef const_ptr<fontcollectionObj> const_fontcollectionptr;
-
-struct font_id_t_hash;
-
-//! A container for a cache of instantiated font collections, by \ref font_id_t "identifier".
-
-typedef weakunordered_multimap<font_id_t,
-			       fontcollectionObj,
-			       font_id_t_hash> sorted_font_cache_t;
 
 LIBCXXW_NAMESPACE_END
 

@@ -10,7 +10,7 @@
 #include "x/w/impl/container_elementfwd.H"
 #include "x/w/impl/child_element.H"
 #include "x/w/impl/always_visiblefwd.H"
-#include "reference_font_elementfwd.H"
+#include "x/w/impl/theme_font_elementfwd.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -23,13 +23,13 @@ LIBCXXW_NAMESPACE_START
 //! \see peepholed_toplevel_main_window
 
 class LIBCXX_HIDDEN peepholed_toplevel_main_windowObj::implObj
-	: public reference_font_elementObj<always_visibleObj
+	: public theme_font_elementObj<always_visibleObj
 					   <container_elementObj
 					    <child_elementObj>>> {
 
 	//! Parent class.
 
-	typedef reference_font_elementObj<always_visibleObj
+	typedef theme_font_elementObj<always_visibleObj
 					   <container_elementObj
 					    <child_elementObj>>> superclass_t;
 
@@ -49,7 +49,7 @@ class LIBCXX_HIDDEN peepholed_toplevel_main_windowObj::implObj
 	~implObj();
 
 	//! Convenient typedef alias.
-	typedef reference_font_tag<> reference_font;
+	typedef theme_font_tag<> reference_font;
 
 	//! Inherited from elementObj::implObj
 

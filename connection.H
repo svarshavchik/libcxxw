@@ -15,7 +15,7 @@
 #include "connection_infofwd.H"
 #include "x/w/impl/current_border_implfwd.H"
 #include "fonts/cached_fontfwd.H"
-#include "fonts/fontcollectionfwd.H"
+#include "x/w/fontcollectionfwd.H"
 #include "xim/ximxtransportfwd.H"
 #include "x/w/connection.H"
 #include "x/w/screenobj.H"

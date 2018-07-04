@@ -10,7 +10,7 @@
 #include <x/obj.H>
 
 #include <string_view>
-#include "fonts/fontcharsetfwd.H"
+#include "x/w/impl/fonts/fontcharsetfwd.H"
 #include "fonts/fontpatternfwd.H"
 #include "fonts/fontsortedlistfwd.H"
 #include "x/w/screenobj.H"

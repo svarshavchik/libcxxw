@@ -10,7 +10,7 @@
 #include "peephole/peephole_impl.H"
 #include "x/w/impl/always_visiblefwd.H"
 #include "x/w/impl/container_elementfwd.H"
-#include "reference_font_elementfwd.H"
+#include "x/w/impl/theme_font_elementfwd.H"
 #include "x/w/impl/child_element.H"
 
 LIBCXXW_NAMESPACE_START
@@ -25,12 +25,12 @@ LIBCXXW_NAMESPACE_START
 //! This is the container for the peephole with the actual display element.
 
 class LIBCXX_HIDDEN pane_peepholeObj::implObj
-	: public reference_font_elementObj<always_visibleObj
+	: public theme_font_elementObj<always_visibleObj
 					   <peepholeObj::implObj>> {
 
 	//! Alias.
 
-	typedef reference_font_elementObj<always_visibleObj
+	typedef theme_font_elementObj<always_visibleObj
 					  <peepholeObj::implObj>> superclass_t;
  public:
 	//! My parent container.

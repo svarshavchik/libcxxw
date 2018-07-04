@@ -6,7 +6,7 @@
 #include "peephole/peepholed_element.H"
 #include "peepholed_listcontainer_impl.H"
 #include "peepholed_listcontainer.H"
-#include "reference_font_element.H"
+#include "x/w/impl/theme_font_element.H"
 
 LIBCXXW_NAMESPACE_START
 

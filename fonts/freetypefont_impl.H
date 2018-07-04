@@ -11,8 +11,8 @@
 #include <x/functional.H>
 #include <courier-unicode.h>
 
-#include "fonts/freetypefont.H"
-#include "fonts/fontcharsetfwd.H"
+#include "x/w/impl/fonts/freetypefont.H"
+#include "x/w/impl/fonts/fontcharsetfwd.H"
 #include "fonts/fontconfigfwd.H"
 
 #include "fonts/freetype.H"
