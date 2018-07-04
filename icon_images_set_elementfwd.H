@@ -7,7 +7,7 @@
 
 #include "iconfwd.H"
 #include "x/w/connection_threadfwd.H"
-#include "x/w/impl/defaultthemefwd.H"
+#include "x/w/defaultthemefwd.H"
 #include <x/ptrfwd.H>
 #include <utility>
 

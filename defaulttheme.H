@@ -6,7 +6,7 @@
 #define defaulttheme_h
 
 #include <x/ref.H>
-#include "x/w/impl/defaultthemefwd.H"
+#include "x/w/defaultthemefwd.H"
 #include "defaultthemeobj.H"
 
 LIBCXXW_NAMESPACE_START

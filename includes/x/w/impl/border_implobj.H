@@ -14,7 +14,7 @@
 #include <x/w/gcobj.H>
 #include <x/w/elementobj.H>
 #include <x/w/rectangle.H>
-#include <x/w/impl/defaultthemefwd.H>
+#include <x/w/defaultthemefwd.H>
 #include <x/w/impl/border_info.H>
 #include <x/w/impl/border_implfwd.H>
 #include <x/w/connection_threadfwd.H>

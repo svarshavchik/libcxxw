@@ -5,7 +5,7 @@
 #ifndef cursor_pointer_cacheobj_H
 #define cursor_pointer_cacheobj_H
 
-#include "x/w/impl/defaultthemefwd.H"
+#include "x/w/defaultthemefwd.H"
 #include "cursor_pointer_cachefwd.H"
 #include "cursor_pointerobj.H"
 #include "x/w/impl/cursor_pointerfwd.H"

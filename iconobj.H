@@ -5,7 +5,7 @@
 #ifndef iconobj_H
 #define iconobj_H
 
-#include "x/w/impl/defaultthemefwd.H"
+#include "x/w/defaultthemefwd.H"
 #include "iconfwd.H"
 #include "pixmap_with_picturefwd.H"
 #include "x/w/connection_threadfwd.H"

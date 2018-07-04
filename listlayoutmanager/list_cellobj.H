@@ -9,7 +9,7 @@
 #include "listlayoutmanager/list_element_impl.H"
 #include "x/w/connection_threadfwd.H"
 #include "x/w/impl/draw_infofwd.H"
-#include "x/w/impl/defaultthemefwd.H"
+#include "x/w/defaultthemefwd.H"
 #include "richtext/richtext_draw_boundariesfwd.H"
 #include "x/w/metrics/axis.H"
 

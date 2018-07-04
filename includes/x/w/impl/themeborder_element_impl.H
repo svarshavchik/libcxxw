@@ -6,7 +6,7 @@
 #define x_w_impl_themeborder_element_impl_H
 
 #include <x/w/impl/current_border_implfwd.H>
-#include <x/w/impl/defaultthemefwd.H>
+#include <x/w/defaultthemefwd.H>
 #include <x/w/impl/connection_threadfwd.H>
 #include <x/w/impl/border_impl.H>
 #include <x/w/connection_threadfwd.H>

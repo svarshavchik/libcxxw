@@ -15,7 +15,7 @@
 #include <x/functional.H>
 #include <x/vector.H>
 #include "x/w/connection_threadfwd.H"
-#include "x/w/impl/defaultthemefwd.H"
+#include "x/w/defaultthemefwd.H"
 #include "richtext/richtextmeta.H"
 #include "richtext/richtextstring.H"
 #include "richtext/richtextcursorlocationfwd.H"

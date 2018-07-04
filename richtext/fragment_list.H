@@ -8,7 +8,7 @@
 
 #include "richtext/richtextfragment.H"
 #include "x/w/connection_threadfwd.H"
-#include "x/w/impl/defaultthemefwd.H"
+#include "x/w/defaultthemefwd.H"
 
 LIBCXXW_NAMESPACE_START
 

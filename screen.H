@@ -15,7 +15,7 @@
 #include "x/w/rgb.H"
 #include "connection.H"
 #include "x/w/connection_threadfwd.H"
-#include "x/w/impl/defaultthemefwd.H"
+#include "x/w/defaultthemefwd.H"
 #include "x/w/impl/background_colorfwd.H"
 #include "screen_picturecachefwd.H"
 #include "screen_fontcachesfwd.H"

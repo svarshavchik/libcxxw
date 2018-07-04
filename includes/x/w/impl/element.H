@@ -24,7 +24,7 @@
 #include <x/w/text_param.H>
 #include <x/w/impl/clock.H>
 #include <x/w/impl/connection_threadfwd.H>
-#include <x/w/impl/defaultthemefwd.H>
+#include <x/w/defaultthemefwd.H>
 #include <x/w/impl/inherited_visibility_infofwd.H>
 #include <x/w/impl/element_draw.H>
 #include <x/w/impl/draw_info.H>

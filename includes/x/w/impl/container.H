@@ -11,7 +11,7 @@
 #include <x/w/generic_windowobj.H>
 #include <x/w/rectangle.H>
 #include <x/w/connection_threadfwd.H>
-#include <x/w/impl/defaultthemefwd.H>
+#include <x/w/defaultthemefwd.H>
 #include <x/w/impl/draw_infofwd.H>
 #include <x/w/impl/inherited_visibility_infofwd.H>
 #include <x/mpobj.H>

@@ -26,7 +26,7 @@
 #include "x/w/dim_arg.H"
 #include "x/w/connectionfwd.H"
 #include "x/w/connection_threadfwd.H"
-#include "x/w/impl/defaultthemefwd.H"
+#include "x/w/defaultthemefwd.H"
 #include "x/w/impl/themedimfwd.H"
 #include "x/w/impl/border_implfwd.H"
 #include "gridtemplatefwd.H"

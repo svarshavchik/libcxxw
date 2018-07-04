@@ -7,7 +7,7 @@
 
 #include "x/w/impl/cursor_pointerfwd.H"
 #include "iconfwd.H"
-#include "x/w/impl/defaultthemefwd.H"
+#include "x/w/defaultthemefwd.H"
 #include "xid_t.H"
 #include "x/w/connection_threadfwd.H"
 #include <x/obj.H>

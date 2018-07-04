@@ -6,7 +6,7 @@
 #ifndef richtextstring_H
 #define richtextstring_H
 
-#include "x/w/impl/defaultthemefwd.H"
+#include "x/w/defaultthemefwd.H"
 #include "richtext/richtextmetafwd.H"
 #include "x/w/impl/fonts/freetypefontfwd.H"
 #include "x/w/connection_threadfwd.H"

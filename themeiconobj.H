@@ -6,7 +6,7 @@
 #define themeiconobj_H
 
 #include "iconobj.H"
-#include "x/w/impl/defaultthemefwd.H"
+#include "x/w/defaultthemefwd.H"
 #include "pixmap_with_picturefwd.H"
 #include <string>
 

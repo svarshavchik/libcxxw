@@ -11,7 +11,7 @@
 #include "x/w/impl/always_visible_elementfwd.H"
 #include "x/w/impl/fonts/current_fontcollectionfwd.H"
 #include "x/w/impl/child_elementobj.H"
-#include "x/w/impl/defaultthemefwd.H"
+#include "x/w/defaultthemefwd.H"
 #include "x/w/font.H"
 
 LIBCXXW_NAMESPACE_START

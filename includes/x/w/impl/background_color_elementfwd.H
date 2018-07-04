@@ -7,7 +7,7 @@
 
 #include <x/w/impl/background_colorfwd.H>
 #include <x/w/connection_threadfwd.H>
-#include <x/w/impl/defaultthemefwd.H>
+#include <x/w/defaultthemefwd.H>
 #include <x/w/rgb.H>
 #include <x/w/element_state.H>
 #include <x/w/elementobj.H>

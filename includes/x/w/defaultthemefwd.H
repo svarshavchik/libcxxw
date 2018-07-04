@@ -2,8 +2,8 @@
 ** Copyright 2017 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
-#ifndef x_w_impl_defaultthemefwd_h
-#define x_w_impl_defaultthemefwd_h
+#ifndef x_w_defaultthemefwd_h
+#define x_w_defaultthemefwd_h
 
 #include <x/ptrfwd.H>
 #include <x/mpobj.H>

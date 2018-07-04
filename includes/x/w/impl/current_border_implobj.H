@@ -8,7 +8,7 @@
 #include <x/w/impl/current_border_implfwd.H>
 #include <x/w/impl/border_implfwd.H>
 #include <x/w/impl/connection_threadfwd.H>
-#include <x/w/impl/defaultthemefwd.H>
+#include <x/w/defaultthemefwd.H>
 #include <x/w/border_arg.H>
 #include <x/w/screenobj.H>
 #include <x/obj.H>

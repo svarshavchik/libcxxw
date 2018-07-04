@@ -11,7 +11,7 @@
 #include <x/w/fontcollectionfwd.H>
 #include <x/w/impl/fonts/current_fontcollectionfwd.H>
 #include <x/w/impl/connection_threadfwd.H>
-#include <x/w/impl/defaultthemefwd.H>
+#include <x/w/defaultthemefwd.H>
 #include <x/w/screenfwd.H>
 #include <x/w/font.H>
 #include <x/w/types.H>

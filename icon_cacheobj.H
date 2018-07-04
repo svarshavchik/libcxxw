@@ -5,7 +5,7 @@
 #ifndef icon_cacheobj_H
 #define icon_cacheobj_H
 
-#include "x/w/impl/defaultthemefwd.H"
+#include "x/w/defaultthemefwd.H"
 #include "icon_cachefwd.H"
 #include "pixmap_with_picturefwd.H"
 #include "iconobj.H"

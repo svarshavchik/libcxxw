@@ -7,7 +7,7 @@
 
 #include <x/w/impl/themedimfwd.H>
 #include "x/w/impl/connection_threadfwd.H"
-#include "x/w/impl/defaultthemefwd.H"
+#include "x/w/defaultthemefwd.H"
 #include "x/w/screen.H"
 #include "x/w/dim_arg.H"
 #include <string>
