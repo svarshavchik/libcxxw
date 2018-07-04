@@ -26,6 +26,9 @@ struct sausage_factory {
 	bool correct_metrics_set_to_configure_window=false;
 	bool correct_metrics_set_when_mapping_window=false;
 	bool drew_stub_border=false;
+
+	bool initial_clear_to_color=true;
+	bool initial_clear_to_color_rect=true;
 };
 
 typedef LIBCXX_NAMESPACE::mpcobj<sausage_factory> sausage_factory_t;
@@ -46,20 +49,43 @@ sausage_factory_t sausages;
 		sausage_factory_t::lock					\
 			lock(sausages);					\
 									\
-		lock->number_of_areas += areas.size();			\
-		LOG_CLEAR_TO_COLOR_AREAS();				\
-		lock->number_of_calls++;				\
-		lock.notify_all();					\
+		/* The initial clear to background color, upon exposure	\
+		   does not count.*/					\
+									\
+		if (!lock->initial_clear_to_color)			\
+		{							\
+			lock->number_of_areas += areas.size();		\
+			LOG_CLEAR_TO_COLOR_AREAS();			\
+			lock->number_of_calls++;			\
+			lock.notify_all();				\
+		}							\
+									\
+		lock->initial_clear_to_color=false;			\
+									\
 	} while(0)
 
 #define CLEAR_TO_COLOR_RECT() do {					\
 		sausage_factory_t::lock					\
 			lock(sausages);					\
 									\
-		auto cpy=area;						\
-		cpy.x = coord_t::truncate(cpy.x+di.absolute_location.x); \
-		cpy.y = coord_t::truncate(cpy.y+di.absolute_location.y); \
-		lock->drawn_rectangles.insert(cpy);			\
+		/* The initial clear to background color, upon exposure	\
+		   does not count.					\
+		   We expect it to be a clear of the entire window,	\
+		   starting at (0, 0).					\
+		*/							\
+									\
+		if (!lock->initial_clear_to_color_rect ||		\
+		    area.x != 0 || area.y != 0)				\
+		{							\
+			auto cpy=area;					\
+			cpy.x = coord_t::truncate(cpy.x+		\
+						  di.absolute_location.x); \
+			cpy.y = coord_t::truncate(cpy.y+		\
+						  di.absolute_location.y); \
+			lock->drawn_rectangles.insert(cpy);		\
+		}							\
+									\
+		lock->initial_clear_to_color_rect=false;		\
 	} while(0)
 
 #define REQUEST_VISIBILITY_LOG(w,h) do {				\
