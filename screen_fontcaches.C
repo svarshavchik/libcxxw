@@ -11,6 +11,7 @@
 #include "x/number_hash.H"
 #include "defaulttheme.H"
 #include <x/weakunordered_multimap.H>
+#include <x/visitor.H>
 
 namespace std {
 
@@ -63,15 +64,6 @@ screen_fontcachesObj::screen_fontcachesObj()
 screen_fontcachesObj::~screen_fontcachesObj()=default;
 
 current_fontcollection
-generic_windowObj::handlerObj::create_font(const font &font_spec)
-{
-	auto s=get_screen();
-
-	return s->impl->fontcaches->create_custom_font(s, font_alpha_depth(),
-						       font_spec);
-}
-
-current_fontcollection
 screen_fontcachesObj::create_custom_font(const screen &s,
 					 depth_t depth,
 					 const font &font_spec)
@@ -84,6 +76,11 @@ screen_fontcachesObj::create_custom_font(const screen &s,
 						(s, depth, font_spec);
 				});
 }
+
+namespace {
+#if 0
+}
+#endif
 
 // Subclass of current_fontcollectionObj that implements a real theme font.
 
@@ -125,23 +122,43 @@ class LIBCXX_HIDDEN current_themefontcollectionObj
 	}
 };
 
-current_fontcollection generic_windowObj::handlerObj
-::create_theme_font(const std::string_view &font_name_sv)
+#if 0
 {
-	std::string font_name{font_name_sv};
+#endif
+}
 
-	auto s=get_screen();
-	auto depth=font_alpha_depth();
-
-	return s->impl->fontcaches->theme_font_cache
-		->find_or_create
-		({font_name, depth},
+current_fontcollection
+screen_fontcachesObj::create_theme_font(const screen &s,
+					depth_t depth,
+					const std::string &name)
+{
+	return theme_font_cache->find_or_create
+		({name, depth},
 		 [&]
 		 {
 			 return ref<current_themefontcollectionObj>
-				 ::create(s, depth, font_name);
+				 ::create(s, depth, name);
 		 });
 }
 
+current_fontcollection
+elementObj::implObj::create_current_fontcollection(const font_arg &f)
+{
+	auto &wh=get_window_handler();
+	auto s=wh.get_screen();
+	auto depth=wh.font_alpha_depth();
+
+	return std::visit
+		(visitor{[&](const theme_font &f)
+			 {
+				 return s->impl->fontcaches
+					 ->create_theme_font(s, depth, f.name);
+			 },
+			 [&](const font &f)
+			 {
+				 return s->impl->fontcaches
+					 ->create_custom_font(s, depth, f);
+			 }}, f);
+}
 
 LIBCXXW_NAMESPACE_END

@@ -973,25 +973,9 @@ class elementObj::implObj : public element_drawObj,
 
 	virtual color_arg label_theme_color() const;
 
-	//! Create a font for this display element.
-
-	//! Creates a non-standard font. This gets forwarded to
-	//! \ref generic_windowObj::handlerObj "window handler's"
-	//! create_font().
-
-	current_fontcollection create_font(const font &props);
-
-	//! Create a theme font for a display element in this window.
-
-	//! Creates a theme font. This gets forwarded to
-	//! \ref generic_windowObj::handlerObj "window handler's"
-	//! create_theme_font().
-
-	current_fontcollection create_theme_font(const std::string_view &font);
-
 	//! Convert a font_arg into a current_fontcollection
 
-	current_fontcollection create_fontcollection(const font_arg &);
+	current_fontcollection create_current_fontcollection(const font_arg &);
 
 	//! Shortcut for invoking the same screen method
 

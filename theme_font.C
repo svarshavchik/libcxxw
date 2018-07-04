@@ -14,7 +14,7 @@ LIBCXXW_NAMESPACE_START
 
 theme_fontObj::theme_fontObj(elementObj::implObj &e,
 			     const font_arg &f)
-	: theme_fontObj(e.create_fontcollection(f))
+	: theme_fontObj(e.create_current_fontcollection(f))
 {
 }
 

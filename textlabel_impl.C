@@ -53,9 +53,9 @@ textlabelObj::implObj::implObj(const text_param &text,
 			       elementObj::implObj &element_impl)
 	: implObj(text,
 		  {element_impl.create_background_color
-				  (element_impl.label_theme_color()),
-				  element_impl.create_theme_font
-				  (element_impl.label_theme_font())},
+		   (element_impl.label_theme_color()),
+		   element_impl.create_current_fontcollection
+		   (theme_font{element_impl.label_theme_font()})},
 		  alignment,
 		  initial_width,
 		  allow_links,

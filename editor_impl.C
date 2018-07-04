@@ -47,8 +47,8 @@ create_default_meta(const container_impl &container,
 
 	auto bg_color=element.create_background_color
 		("textedit_foreground_color");
-	auto font=element.create_theme_font(config.password_char
-					    ? "password":"textedit");
+	auto font=element.create_current_fontcollection(theme_font{
+			config.password_char ? "password":"textedit"});
 
 	return {bg_color, font};
 }

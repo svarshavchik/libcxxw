@@ -13,6 +13,7 @@
 #include <x/weakunordered_multimapfwd.H>
 #include <x/obj.H>
 #include <x/ref.H>
+#include <string>
 
 LIBCXXW_NAMESPACE_START
 
@@ -50,6 +51,16 @@ class LIBCXX_HIDDEN screen_fontcachesObj : virtual public obj {
 	//! Custom fonts.
 	const theme_font_cache_t theme_font_cache;
 
+	//! find_or_create() a font in the theme_font_cache
+
+	//! The screen parameter is the screen this fontcache is a part of.
+	//!
+	//! Creates or returns a current_fontcollection for font_spec of
+	//! the given depth.
+
+	current_fontcollection create_theme_font(const screen &s,
+						 depth_t depth,
+						 const std::string &theme_font);
 	//! Constructor
 	screen_fontcachesObj();
 

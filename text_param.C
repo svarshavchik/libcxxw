@@ -30,7 +30,7 @@ theme_color operator"" _color(const char *s, size_t l)
 	return LIBCXXW_NAMESPACE::theme_color{{s, s+l}};
 }
 
-text_decoration operator""_decoration(const char *s, size_t l)
+text_decoration operator"" _decoration(const char *s, size_t l)
 {
 	std::string_view n{s, l};
 
@@ -219,16 +219,18 @@ richtextstring elementObj::implObj
 			auto iter=t.fonts.find(p);
 
 			if (iter != t.fonts.end())
-				font=font.replace_font(create_font
-						       (iter->second));
+				font=font.replace_font
+					(create_current_fontcollection
+					 (iter->second));
 		}
 
 		{
 			auto iter=t.theme_fonts.find(p);
 
 			if (iter != t.theme_fonts.end())
-				font=font.replace_font(create_theme_font
-						       (iter->second));
+				font=font.replace_font
+					(create_current_fontcollection
+					 (theme_font{iter->second}));
 		}
 
 		{

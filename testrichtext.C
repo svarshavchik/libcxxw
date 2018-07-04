@@ -380,8 +380,10 @@ int main(int argc, char **argv)
 					    {
 					    });
 
-		auto font1=mw->impl->handler->create_theme_font("serif");
-		auto font2=mw->impl->handler->create_theme_font("sans_serif");
+		auto font1=mw->impl->handler->create_current_fontcollection
+			(theme_font{"serif"});
+		auto font2=mw->impl->handler->create_current_fontcollection
+			(theme_font{"sans_serif"});
 
 		testresolvedfonts(font1, font2, mw);
 		testrichtext(font1, font2, mw);

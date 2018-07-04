@@ -35,7 +35,8 @@ void testtextparam(const main_window &mw)
 					->impl
 					->create_background_color("0%"),
 					mw->impl->handler
-					->create_theme_font("serif")},
+					->create_current_fontcollection
+					  (theme_font{"serif"})},
 			param2);
 
 	const auto &m=string.get_meta();

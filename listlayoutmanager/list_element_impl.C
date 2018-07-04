@@ -190,9 +190,10 @@ list_elementObj::implObj::implObj(const ref<listcontainer_pseudo_implObj>
 		  .create_icon({"bullet2"})),
 
 	  itemlabel_meta{create_background_color("label_foreground_color"),
-			  create_fontcollection(style.list_font)},
+			 create_current_fontcollection(style.list_font)},
 	  itemshortcut_meta{create_background_color("label_foreground_color"),
-			  create_theme_font("menu_shortcut")}
+			    create_current_fontcollection(theme_font
+			  {"menu_shortcut"})}
 
 {
 	// Some sanity checks.
