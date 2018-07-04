@@ -23,7 +23,7 @@ struct richtextfragmentObj::render_info {
 
 	//! The background color of the display element being drawn.
 
-	ref<pictureObj::implObj> background_color_impl;
+	const_picture window_background_color;
 
 	//! The absolute location of background color's (0, 0)
 

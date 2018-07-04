@@ -668,10 +668,10 @@ static inline void underline(const picture_internal &src,
 static inline void attributes(const richtextmeta &markup,
 			      const freetypefont &font,
 			      bool has_background_color,
-			      const picture_internal &src,
+			      const const_picture &foreground_color,
 			      coord_t src_x,
 			      coord_t src_y,
-			      const picture_internal &src_background,
+			      const const_picture &background_color,
 			      coord_t background_x,
 			      coord_t background_y,
 			      const picture_internal &dst,
@@ -704,7 +704,7 @@ static inline void attributes(const richtextmeta &markup,
 		text_background(font->ascender,
 				adjust_descender_for_underline(font->ascender,
 							       font->descender),
-				src_background,
+				background_color->impl,
 				background_x, background_y,
 				dst, x1, y1, x2, y2,
 				delta_x, delta_y, length);
@@ -719,7 +719,7 @@ static inline void attributes(const richtextmeta &markup,
 		dim_t thickness=underline_size(font->ascender+
 					       font->descender);
 
-		underline(src, dst, x1, y1, x2, y2,
+		underline(foreground_color->impl, dst, x1, y1, x2, y2,
 			  delta_x, delta_y, length, thickness,
 			  src_x, src_y);
 	}
@@ -731,10 +731,10 @@ inline void richtextfragmentObj
 ::render_range(render_range_info &range_info,
 	       const richtextmeta &markup,
 	       bool has_background_color,
-	       const picture_internal &color_impl,
+	       const const_picture &foreground_color,
 	       coord_t color_x,
 	       coord_t color_y,
-	       const picture_internal &background_color_impl,
+	       const const_picture &background_color,
 	       coord_t background_x,
 	       coord_t background_y)
 {
@@ -755,10 +755,10 @@ inline void richtextfragmentObj
 	attributes(markup,
 		   *range_info.font,
 		   has_background_color,
-		   color_impl,
+		   foreground_color,
 		   color_x,
 		   color_y,
-		   background_color_impl,
+		   background_color,
 		   background_x, background_y,
 		   range_info.info.scratch_buffer->impl,
 		   start_x, start_y,
@@ -767,7 +767,7 @@ inline void richtextfragmentObj
 	xcb_render_util_composite_text
 		(range_info.info.scratch_buffer->impl->picture_conn()->conn,
 		 XCB_RENDER_PICT_OP_OVER,
-		 color_impl->picture_id(),
+		 foreground_color->impl->picture_id(),
 		 range_info.info.scratch_buffer->impl->picture_id(),
 		 XCB_NONE,
 		 coord_t::value_type(color_x),
@@ -806,8 +806,8 @@ inline void richtextfragmentObj
 
 		richtextmeta markup=*range_info.font_info;
 
-		auto color_impl=markup.textcolor
-			->get_current_color(IN_THREAD)->impl;
+		auto foreground_color=markup.textcolor
+			->get_current_color(IN_THREAD);
 		coord_t color_x=range_info.xpos;
 		coord_t color_y=range_info.ypos;
 
@@ -819,17 +819,16 @@ inline void richtextfragmentObj
 		auto background_x=range_info.info.background_x;
 		auto background_y=range_info.info.background_y;
 
-		auto background_color_impl=
-			range_info.info.background_color_impl;
+		auto window_background_color=
+			range_info.info.window_background_color;
 
 		if (has_background_color)
 		{
 			background_x=range_info.info.absolute_x;
 			background_y=range_info.info.absolute_y;
 
-			background_color_impl=
-				markup.bg_color->get_current_color(IN_THREAD)
-				->impl;
+			window_background_color=
+				markup.bg_color->get_current_color(IN_THREAD);
 		}
 
 		background_x=coord_t::truncate(background_x-
@@ -847,12 +846,15 @@ inline void richtextfragmentObj
 			has_background_color=true;
 			std::swap(color_x, background_x);
 			std::swap(color_y, background_y);
-			std::swap(color_impl, background_color_impl);
+			std::swap(foreground_color,
+				  window_background_color);
 			break;
 		}
 		render_range(range_info, markup,
-			     has_background_color, color_impl, color_x, color_y,
-			     background_color_impl, background_x, background_y);
+			     has_background_color, foreground_color,
+			     color_x, color_y,
+			     window_background_color,
+			     background_x, background_y);
 		range_info.start_char=range_info.end_char;
 	}
 }

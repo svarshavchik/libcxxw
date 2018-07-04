@@ -414,10 +414,10 @@ public:
 	void render_range(render_range_info &range_info,
 			  const richtextmeta &markup,
 			  bool has_background_color,
-			  const ref<pictureObj::implObj> &color_impl,
+			  const const_picture &foreground_color,
 			  coord_t color_x,
 			  coord_t color_y,
-			  const ref<pictureObj::implObj> &background_color_impl,
+			  const const_picture &background_color,
 			  coord_t background_x,
 			  coord_t background_y);
 

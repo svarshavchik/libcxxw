@@ -353,22 +353,22 @@ void richtextObj::draw(ONLY IN_THREAD,
 			  const pixmap &scratch_pixmap,
 			  const gc &scratch_gc)
 			 {
-				 richtextfragmentObj::render_info
-					 render_info{ scratch_picture,
-						 di.window_background_color
-						      ->impl,
-						 di.background_x,
-						 di.background_y,
-						 coord_t::truncate
-						 (di.absolute_location.x +
-						  draw_bounds.position.x),
-						 coord_t::truncate
-						 (di.absolute_location.y +
-						  draw_bounds.position.y),
+				 richtextfragmentObj::render_info render_info
+					 {
+					  scratch_picture,
+					  di.window_background_color,
+					  di.background_x,
+					  di.background_y,
+					  coord_t::truncate
+					  (di.absolute_location.x +
+					   draw_bounds.position.x),
+					  coord_t::truncate
+					  (di.absolute_location.y +
+					   draw_bounds.position.y),
 
-						 draw_bounds.draw_bounds.width,
-						 dim_t::truncate(draw_bounds.draw_bounds.x),
-						 };
+					  draw_bounds.draw_bounds.width,
+					  dim_t::truncate(draw_bounds.draw_bounds.x),
+					 };
 
 				 // If we're drawing a selection, figure out
 				 // which part of it is on this line.
@@ -498,10 +498,9 @@ std::tuple<pixmap, picture> richtextObj::create(ONLY IN_THREAD,
 
 		richtextfragmentObj::render_info
 			render_info{ scratch_picture,
-				transparent_color->impl,
-				0, 0,
-				0, 0,
-				width};
+				     transparent_color, 0, 0,
+				     0, 0,
+				     width};
 		f->render(IN_THREAD, render_info);
 		p->composite(scratch_picture,
 			     0, 0,
