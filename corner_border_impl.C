@@ -224,12 +224,13 @@ void corner_borderObj::implObj::do_draw(ONLY IN_THREAD,
 
 		auto xy=e_draw_info.background_xy_to(di);
 
-		area_picture->impl->composite(e_draw_info.window_background,
-					      xy.first,
-					      xy.second,
-					      0, 0,
-					      leftwidth,
-					      topheight);
+		area_picture->impl->composite
+			(e_draw_info.window_background_color->impl,
+			 xy.first,
+			 xy.second,
+			 0, 0,
+			 leftwidth,
+			 topheight);
 	}
 
 	if ((info.all_corners & border_impl::base::cornertr())
@@ -241,12 +242,13 @@ void corner_borderObj::implObj::do_draw(ONLY IN_THREAD,
 						     coord_t::truncate(leftwidth),
 						     0);
 
-		area_picture->impl->composite(e_draw_info.window_background,
-					      xy.first,
-					      xy.second,
-					      coord_t::truncate(leftwidth), 0,
-					      rightwidth,
-					      topheight);
+		area_picture->impl->composite
+			(e_draw_info.window_background_color->impl,
+			 xy.first,
+			 xy.second,
+			 coord_t::truncate(leftwidth), 0,
+			 rightwidth,
+			 topheight);
 	}
 
 
@@ -259,13 +261,14 @@ void corner_borderObj::implObj::do_draw(ONLY IN_THREAD,
 						     0,
 						     coord_t::truncate(topheight));
 
-		area_picture->impl->composite(e_draw_info.window_background,
-					      xy.first,
-					      xy.second,
-					      0,
-					      coord_t::truncate(topheight),
-					      leftwidth,
-					      bottomheight);
+		area_picture->impl->composite
+			(e_draw_info.window_background_color->impl,
+			 xy.first,
+			 xy.second,
+			 0,
+			 coord_t::truncate(topheight),
+			 leftwidth,
+			 bottomheight);
 	}
 
 	if ((info.all_corners & border_impl::base::cornerbr())
@@ -278,13 +281,14 @@ void corner_borderObj::implObj::do_draw(ONLY IN_THREAD,
 						     coord_t::truncate(leftwidth),
 						     coord_t::truncate(topheight));
 
-		area_picture->impl->composite(e_draw_info.window_background,
-					      xy.first,
-					      xy.second,
-					      coord_t::truncate(leftwidth),
-					      coord_t::truncate(topheight),
-					      rightwidth,
-					      bottomheight);
+		area_picture->impl->composite
+			(e_draw_info.window_background_color->impl,
+			 xy.first,
+			 xy.second,
+			 coord_t::truncate(leftwidth),
+			 coord_t::truncate(topheight),
+			 rightwidth,
+			 bottomheight);
 	}
 
 	for (const auto &b:info.stubs)

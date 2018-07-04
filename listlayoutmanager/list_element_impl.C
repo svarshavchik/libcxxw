@@ -1129,12 +1129,12 @@ rectangle list_elementObj::implObj::do_draw_row(ONLY IN_THREAD,
 	{
 		auto cpy=di;
 
-		cpy.window_background=
+		cpy.window_background_color=
 			(is_key_or_button_down
 			 ? background_color_element<
 			 listcontainer_highlighted_color>::get(IN_THREAD)
 			 : background_color_element<listcontainer_current_color>
-			 ::get(IN_THREAD))->get_current_color(IN_THREAD)->impl;
+			 ::get(IN_THREAD))->get_current_color(IN_THREAD);
 
 
 		return do_draw_row(IN_THREAD, cpy, bounds, lock, row_number, r,

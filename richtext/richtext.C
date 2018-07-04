@@ -355,7 +355,8 @@ void richtextObj::draw(ONLY IN_THREAD,
 			 {
 				 richtextfragmentObj::render_info
 					 render_info{ scratch_picture,
-						 di.window_background,
+						 di.window_background_color
+						      ->impl,
 						 di.background_x,
 						 di.background_y,
 						 coord_t::truncate

@@ -864,9 +864,11 @@ void elementObj::implObj
 
 			 area_picture->impl
 				 ->composite(background_color_di
-					     .window_background,
-					     coord_t::truncate(bgxy.first + rect.x),
-					     coord_t::truncate(bgxy.second + rect.y),
+					     .window_background_color->impl,
+					     coord_t::truncate(bgxy.first
+							       + rect.x),
+					     coord_t::truncate(bgxy.second
+							       + rect.y),
 					     area_entire_rect);
 
 			 cb(area_picture, area_pixmap, area_gc);
@@ -905,7 +907,7 @@ void elementObj::implObj
 
 		auto xy=di.background_xy_to(cpy.x, cpy.y);
 
-		contents->impl->composite(di.window_background,
+		contents->impl->composite(di.window_background_color->impl,
 					  wh.disabled_mask(IN_THREAD)
 					  ->image->icon_picture->impl,
 					  xy.first, xy.second,

@@ -132,12 +132,13 @@ struct border_implObj::corner_draw_info {
 						     di.area_y,
 						     x, y);
 
-		di.area_picture->impl->composite(e_draw_info.window_background,
-						 xy.first,
-						 xy.second,
-						 x, y,
-						 left_half_width,
-						 top_half_height);
+		di.area_picture->impl->composite
+			(e_draw_info.window_background_color->impl,
+			 xy.first,
+			 xy.second,
+			 x, y,
+			 left_half_width,
+			 top_half_height);
 	}
 
 	void topright_background_fill(ONLY IN_THREAD,
@@ -155,12 +156,13 @@ struct border_implObj::corner_draw_info {
 						     di.area_y,
 						     new_x, y);
 
-		di.area_picture->impl->composite(e_draw_info.window_background,
-						 xy.first,
-						 xy.second,
-						 new_x, y,
-						 right_half_width,
-						 top_half_height);
+		di.area_picture->impl->composite
+			(e_draw_info.window_background_color->impl,
+			 xy.first,
+			 xy.second,
+			 new_x, y,
+			 right_half_width,
+			 top_half_height);
 	}
 
 	void bottomleft_background_fill(ONLY IN_THREAD,
@@ -178,12 +180,13 @@ struct border_implObj::corner_draw_info {
 						     di.area_y,
 						     x, new_y);
 
-		di.area_picture->impl->composite(e_draw_info.window_background,
-						 xy.first,
-						 xy.second,
-						 x, new_y,
-						 left_half_width,
-						 bottom_half_height);
+		di.area_picture->impl
+			->composite(e_draw_info.window_background_color->impl,
+				    xy.first,
+				    xy.second,
+				    x, new_y,
+				    left_half_width,
+				    bottom_half_height);
 	}
 
 	void bottomright_background_fill(ONLY IN_THREAD,
@@ -203,12 +206,13 @@ struct border_implObj::corner_draw_info {
 						     di.area_y,
 						     new_x, new_y);
 
-		di.area_picture->impl->composite(e_draw_info.window_background,
-						 xy.first,
-						 xy.second,
-						 new_x, new_y,
-						 right_half_width,
-						 bottom_half_height);
+		di.area_picture->impl->composite
+			(e_draw_info.window_background_color->impl,
+			 xy.first,
+			 xy.second,
+			 new_x, new_y,
+			 right_half_width,
+			 bottom_half_height);
 	}
 
 	//! Invoke the appropriate background_fill based on which_corners.
@@ -351,7 +355,7 @@ void border_implObj
 
 		auto xy=di.background_xy_to(area_x, area_y);
 
-		area_picture->impl->composite(di.window_background,
+		area_picture->impl->composite(di.window_background_color->impl,
 					      xy.first, xy.second,
 					      0, 0,
 					      area_rectangle.width,
@@ -366,7 +370,7 @@ void border_implObj
 					    0,
 					    dim_t::value_type(top_height));
 
-		area_picture->impl->composite(di.window_background,
+		area_picture->impl->composite(di.window_background_color->impl,
 					      xy.first, xy.second,
 					      0,
 					      coord_t::truncate(top_height),
@@ -450,11 +454,11 @@ void border_implObj::draw_info
 
 		auto xy=di.background_xy_to(area_x, area_y);
 
-		area_picture->impl->composite(di.window_background,
-						 xy.first, xy.second,
-						 0, 0,
-						 left_width,
-						 area_rectangle.height);
+		area_picture->impl->composite(di.window_background_color->impl,
+					      xy.first, xy.second,
+					      0, 0,
+					      left_width,
+					      area_rectangle.height);
 	}
 
 	if (right_element && right_width > 0)
@@ -465,12 +469,12 @@ void border_implObj::draw_info
 					    dim_t::value_type(left_width),
 					    0);
 
-		area_picture->impl->composite(di.window_background,
-						 xy.first, xy.second,
-						 coord_t::truncate(left_width),
-						 0,
-						 right_width,
-						 area_rectangle.height);
+		area_picture->impl->composite(di.window_background_color->impl,
+					      xy.first, xy.second,
+					      coord_t::truncate(left_width),
+					      0,
+					      right_width,
+					      area_rectangle.height);
 	}
 }
 
@@ -822,7 +826,7 @@ void border_implObj::draw_round_corner(ONLY IN_THREAD,
 						      0, 0);
 
 			di.area_picture->impl->composite
-				(e_draw_info.window_background,
+				(e_draw_info.window_background_color->impl,
 				 xy.first, xy.second,
 				 0, 0,
 				 di.area_rectangle.width,

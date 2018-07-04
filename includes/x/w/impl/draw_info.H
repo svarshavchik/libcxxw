@@ -29,7 +29,7 @@ struct draw_info {
 	{
 		return absolute_location == o.absolute_location &&
 			element_viewport == o.element_viewport &&
-			window_background == o.window_background &&
+			window_background_color == o.window_background_color &&
 			background_x == o.background_x &&
 			background_y == o.background_y;
 	}
@@ -80,7 +80,7 @@ struct draw_info {
 	}
 
 	//! The window's background color
-	const_picture_internal window_background;
+	const_picture window_background_color;
 
 	//! Origin for the window_background.
 

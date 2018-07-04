@@ -129,7 +129,7 @@ draw_info &child_elementObj::get_draw_info_from_scratch(ONLY IN_THREAD)
 		// If we're not visible, we use the parent background
 	{
 		auto bg=background_color_element_implObj::get(IN_THREAD);
-		di.window_background=bg->get_current_color(IN_THREAD)->impl;
+		di.window_background_color=bg->get_current_color(IN_THREAD);
 		di.background_x=di.absolute_location.x;
 		di.background_y=di.absolute_location.y;
 	}
@@ -148,7 +148,7 @@ void child_elementObj
 	auto &parent_di=child_container
 		->container_element_impl().get_draw_info(IN_THREAD);
 
-	di.window_background=parent_di.window_background;
+	di.window_background_color=parent_di.window_background_color;
 	di.background_x=parent_di.background_x;
 	di.background_y=parent_di.background_y;
 
@@ -157,7 +157,7 @@ void child_elementObj
 		// If we're not visible, we use the parent background
 	{
 		auto bg=background_color_element_implObj::get(IN_THREAD);
-		di.window_background=bg->get_current_color(IN_THREAD)->impl;
+		di.window_background_color=bg->get_current_color(IN_THREAD);
 		di.background_x=di.absolute_location.x;
 		di.background_y=di.absolute_location.y;
 	}

@@ -409,8 +409,8 @@ class LIBCXX_HIDDEN highlighted_listlayoutstyle_impl
 				     const background_color &bgcolor)
 		const override
 	{
-		di.window_background=
-			bgcolor->get_current_color(IN_THREAD)->impl;
+		di.window_background_color=
+			bgcolor->get_current_color(IN_THREAD);
 	}
 
 	size_t extra_leading_columns() const override

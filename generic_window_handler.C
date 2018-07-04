@@ -250,11 +250,10 @@ draw_info &generic_windowObj::handlerObj::get_draw_info_from_scratch(ONLY IN_THR
 			viewport,
 			{viewport}, // No parent, everything is visible.
 			current_background_color(IN_THREAD)
-				->get_current_color(IN_THREAD)
-				->impl,
+			->get_current_color(IN_THREAD),
 			0,
 			0,
-				});
+		});
 
 }
 
