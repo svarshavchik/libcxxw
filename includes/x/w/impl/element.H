@@ -469,7 +469,7 @@ class elementObj::implObj : public element_drawObj,
 
 	void scroll_by_parent_container(ONLY IN_THREAD, coord_t x, coord_t y);
 
-	//! What is the reason for updating the absolute locatoin only.
+	//! What is the reason for updating the absolute location only.
 
 	enum class absolute_location_update_reason {
 		external, //!< Our top level window has moved

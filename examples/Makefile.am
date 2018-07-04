@@ -8,6 +8,7 @@ noinst_PROGRAMS=\
 	customcanvas				\
 	customcontainer				\
 	customelement				\
+	customfontrenderer			\
 	customkeyfocus				\
 	dateinputfield				\
 	focusable				\
@@ -53,6 +54,9 @@ customcontainer_LDADD=-lcxxw -lcxx
 
 customelement_SOURCES=customelement.C close_flag.H
 customelement_LDADD=-lcxxw -lcxx
+
+customfontrenderer_SOURCES=customfontrenderer.C close_flag.H
+customfontrenderer_LDADD=-lcxxw -lcxx
 
 $(call OPTIONS_GEN,customkeyfocus.H,customkeyfocus.xml)
 customkeyfocus_SOURCES=customkeyfocus.C close_flag.H

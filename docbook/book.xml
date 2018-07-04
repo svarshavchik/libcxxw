@@ -18,6 +18,7 @@
 <!ENTITY factories "<link linkend='factory'>factories</link>">
 <!ENTITY focusable "<link linkend='focusable'>focusable</link>">
 <!ENTITY container "<link linkend='container'>container</link>">
+<!ENTITY picture "<link linkend='customdraw'>picture</link>">
 <!ENTITY layoutmanager "<link linkend='layoutmanager'>layout manager</link>">
 <!ENTITY creator "<link linkend='creator'>creator lambda</link>">
 <!ENTITY itemmethods "<link linkend='listitemmethods'><methodname>append_items</methodname>(), <methodname>insert_items</methodname>(), <methodname>replace_items</methodname>(), and <methodname>replace_all_items</methodname>()</link>">
@@ -66,6 +67,7 @@
 <!ENTITY template_mixin "<link linkend='mixintemplates'>template mixin</link>">
 <!ENTITY customfocusableelement SYSTEM "customfocusableelement.xml">
 <!ENTITY customcontainer SYSTEM "customcontainer.xml">
+<!ENTITY customfontrendering SYSTEM "customfontrendering.xml">
 <!ENTITY cxxwtheme SYSTEM "cxxwtheme.xml">
 
 %entity-list;
@@ -121,6 +123,7 @@ See COPYING for distribution information.
     &customelement;
     &customfocusableelement;
     &customcontainer;
+    &customfontrendering;
   </part>
 
   <part id="misctopics">

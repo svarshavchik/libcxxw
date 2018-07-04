@@ -1,0 +1,187 @@
+<!--
+
+Copyright 2018 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<chapter id="customfontrendering">
+  <title>Custom font rendering</title>
+
+  <mediaobject>
+    <imageobject>
+      <imagedata fileref="customfontrendering.png" format="PNG"
+		 contentwidth="248px" contentdepth="91px" />
+    </imageobject>
+    <textobject>
+      <phrase>
+	Custom font rendering
+      </phrase>
+    </textobject>
+    <caption>
+      <para>
+	&appshort;'s
+	<link linkend="labels">text label</link> display element
+	provides deceptively simple ways to show text labels.
+	The <ulink url="&link-typedef-x--w-label;"><classname>&ns;::w::label</classname></ulink>
+	handles multiple colors, fonts, and word-wrapping all by itself.
+	It even automatically updates its appearance when
+	<link linkend="cxxwtheme.1">the current display theme</link> changes.
+      </para>
+
+      <para>
+	But sometimes even that may not be sufficient. This chapter gives
+	an example of using &appshort;'s internal, low-level text rendering
+	classes and templates to draw a text string with a visible drop
+	shadow. The gray shadow gets rendered by repeatedly drawing the same
+	text string over itself, but slightly adjusting the string's position
+	every time; and finally rendering the topmost layer, in black.
+	This produces a shadow-like effect.
+      </para>
+    </caption>
+  </mediaobject>
+
+  <blockquote>
+    <title><ulink url="examples/customfontrenderer.C">customfontrenderer.C</ulink></title>
+
+    <informalexample>
+      <programlisting><xi:include href="../examples/customfontrenderer.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <section id="fontcollection">
+    <title>Font collections</title>
+
+    <para>
+      <filename>customfontrenderer.C</filename> gives a basic example of using
+      the following classes and templates:
+    </para>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  An
+	  <ulink url="&link-typedef-x--w-fontcollection;"><classname>&ns;::w::fontcollection</classname></ulink>
+	  is a cached object that represents a particular font.
+	  An <ulink url="&link-x--w--font;"><classname>&ns;::w::font</classname></ulink>
+	  gets prepared first, which specifies the font's face, size, and
+	  other attributes, then passed to
+	  any <ulink url="&link-x--w--elementObj--implObj;">internal
+	    display element implementation object</ulink> to construct a
+	  font collection.
+	</para>
+
+	<para>
+	  This class is called a
+	  <classname>&ns;::w::fontcollection</classname> because it may
+	  represent more than one actual font. Drawn text strings are
+	  unicode strings, <classname>std::u32string</classname>, and
+	  it's possible that different
+	  system fonts are required for rendering the entire unicode text.
+	</para>
+
+	<note>
+	  <para>
+	    <classname>&ns;::w::fontcollection</classname> and
+	    <classname>&ns;::w::freetypefont</classname> operate on a sequence
+	    of unicode text by a beginning and an ending iterator. Any
+	    container of <classname>char32_t</classname>, not just a
+	    <classname>std::u32string</classname> works as long as its
+	    iterators are at least forward iterators.
+	  </para>
+	</note>
+      </listitem>
+      <listitem>
+	<para>
+	  An
+	  <ulink url="&link-typedef-x--w-freetypefont;"><classname>&ns;::w::freetypefont</classname></ulink>
+	  is one individual font in a
+	  <classname>&ns;::w::fontcollection</classname>.
+	  The
+	  <classname>&ns;::w::fontcollection</classname>
+	  iterates over the unicode string, and computes the
+	  <classname>&ns;::w::freetypefont</classname> for each
+	  part of the <classname>std::u32string</classname>.
+	  In nearly all cases, the
+	  <classname>&ns;::w::fontcollection</classname> produces one, lonely
+	  <classname>&ns;::w::freetypefont</classname> for the entire
+	  <classname>std::u32string</classname>;
+	  but the
+	  <filename>customfontrenderer.C</filename> examples shows how
+	  to deal with multiple
+	  <classname>&ns;::w::freetypefont</classname>s.
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  Finally, an
+	  <ulink url="&link-x--w--composite-text-stream;"><classname>&ns;::w::composite_text_stream</classname></ulink>
+	  is a helper object that prepares and renders the actual text.
+	  Each <classname>&ns;::w::freetypefont</classname> takes a range
+	  of unicode characters that it renders, and places them into a
+	  <classname>&ns;::w::composite_text_stream</classname>.
+	  Then, its <methodname>composite</methodname>() methods composites
+	  the text into a &picture;.
+	</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>
+      <filename>customfontrenderer.C</filename> demonstrates the proper
+      sequence of events for rendering unicode text:
+    </para>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  Use a
+	  <ulink url="&link-x--w--font;"><classname>&ns;::w::font</classname></ulink>
+	  to <methodname>create_fontcollection</methodname>().
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  Use the resulting
+	  <ulink url="&link-typedef-x--w-fontcollection;"><classname>&ns;::w::fontcollection</classname></ulink>'s
+	  <methodname>load_glyphs</methodname>() method to load the actual
+	  glyphs, or characters (if they're not yet cached or loaded already).
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  Other <classname>&ns;::w::fontcollection</classname> methods return
+	  various other metadata of the loaded glyphs, such as their size.
+	  <filename>customfontrenderer.C</filename> uses them to compute
+	  the size of the custom display element, in advance, when creating
+	  it. This can be done any time before drawing the actual text, and
+	  <filename>customfontrenderer.C</filename> does this work just once,
+	  when creating the custom display element.
+	</para>
+
+	<para>
+	  Using the same <classname>&ns;::w::fontcollection</classname>
+	  to draw different text requires the new text's glyphs to be
+	  loaded; starting the whole process from the beginning. Although
+	  it's necessary to load only any new character's glyphs, it's simpler
+	  to just pass the entire new string to
+	  <methodname>load_glyphs</methodname>(), which keeps track of what's
+	  been loaded, and quickly skips over previously-loaded glyphs.
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  Use the
+	  <ulink url="&link-x--w--composite-text-stream;"><classname>&ns;::w::composite_text_stream</classname></ulink>
+	  to render the text into a &picture; buffer.
+	</para>
+      </listitem>
+    </itemizedlist>
+  </section>
+</chapter>
+
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "book" "chapter")
+End:
+-->
