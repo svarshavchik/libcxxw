@@ -89,7 +89,8 @@ public:
 
 	void do_lookup(const function< bool(char32_t &) > &next,
 		       const function< void(const freetypefont &)
-		       > &callback);
+		       > &callback,
+		       char32_t unprintable_char);
 
 	//! Return the best matching font's charset.
 	fontconfig::const_charset default_charset();

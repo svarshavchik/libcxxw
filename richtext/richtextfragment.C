@@ -13,7 +13,7 @@
 #include "richtext/paragraph_list.H"
 #include "x/w/text_hotspot.H"
 #include "x/w/impl/fonts/freetypefont.H"
-#include "fonts/composite_text_stream.H"
+#include "x/w/impl/fonts/composite_text_stream.H"
 #include "screen.H"
 #include "x/w/impl/background_color.H"
 #include "assert_or_throw.H"

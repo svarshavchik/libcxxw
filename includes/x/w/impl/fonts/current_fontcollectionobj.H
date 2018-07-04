@@ -22,7 +22,7 @@ LIBCXXW_NAMESPACE_START
 
 //! \see current_fontcollection
 
-class LIBCXX_HIDDEN current_fontcollectionObj : virtual public obj {
+class current_fontcollectionObj : virtual public obj {
 
  protected:
 
@@ -55,38 +55,31 @@ public:
 
  public:
 
-	//! Create a new font collection
-
-	//! Internal entry point used by the font picker display element.
-
-	static fontcollection create_fc(const font &font_spec,
-					const screen &font_screen,
-					const depth_t depth,
-					const defaulttheme &font_theme);
-
 	THREAD_DATA_ONLY(font_spec);
 	THREAD_DATA_ONLY(fc);
 
 	//! Constructor
 	current_fontcollectionObj(const screen &font_screen,
 				  depth_t depth,
-				  const font &font_spec);
+				  const font &font_spec) LIBCXX_HIDDEN;
  protected:
 	//! Internal constructor
 	current_fontcollectionObj(const screen &font_screen,
 				  depth_t depth,
 				  const font &font_spec,
-				  const defaulttheme &font_theme);
+				  const defaulttheme &font_theme)
+		LIBCXX_HIDDEN;
  public:
 	//! Destructor
-	~current_fontcollectionObj();
+	~current_fontcollectionObj() LIBCXX_HIDDEN;
 
 	//! Create a new \ref fontcollection "font collection".
 
 	void theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme);
 
  private:
-	virtual void theme_was_really_updated(ONLY IN_THREAD);
+	virtual void theme_was_really_updated(ONLY IN_THREAD)
+		LIBCXX_HIDDEN;
 };
 
 

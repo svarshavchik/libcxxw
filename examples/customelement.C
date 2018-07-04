@@ -154,7 +154,7 @@ void my_element_implObj::do_draw(ONLY IN_THREAD,
 				x::w::render_pict_op::op_over);
 }
 
-// "Public" object subclasses the public canvas object. Not really needed
+// "Public" object subclasses the public element object. Not really needed
 // here, just for completeness sake.
 
 class my_elementObj : public x::w::elementObj {

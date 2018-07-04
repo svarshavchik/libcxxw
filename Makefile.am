@@ -245,7 +245,6 @@ libcxxw_la_SOURCES=\
 	font_picker/font_picker_preview_impl.C	    \
 	font_picker/font_picker_preview_impl.H	    \
 	fonts/composite_text_stream.C		    \
-	fonts/composite_text_stream.H		    \
 	fonts/current_fontcollection.C		    \
 	fonts/cached_font.C			    \
 	fonts/cached_font.H			    \

@@ -18,7 +18,7 @@ LIBCXXW_NAMESPACE_START
 
 //! \internal
 
-class LIBCXX_HIDDEN freetypefontObj : virtual public obj {
+class freetypefontObj : virtual public obj {
 
 public:
 
@@ -55,13 +55,13 @@ public:
 			dim_t max_advance,
 			dim_t nominal_width,
 			bool fixed_width,
-			const ref<implObj> &implArg);
+			const ref<implObj> &implArg) LIBCXX_HIDDEN;
 
 	//! Internal constructor
-	freetypefontObj(const freetypefont &original);
+	freetypefontObj(const freetypefont &original) LIBCXX_HIDDEN;
 
 	//! Destructor
-	~freetypefontObj();
+	~freetypefontObj() LIBCXX_HIDDEN;
 
 	// Load glyphs into the server, if they have not been loaded yet.
 

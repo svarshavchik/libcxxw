@@ -25,6 +25,7 @@
 #include <x/w/impl/clock.H>
 #include <x/w/impl/connection_threadfwd.H>
 #include <x/w/defaultthemefwd.H>
+#include <x/w/fontcollectionfwd.H>
 #include <x/w/impl/inherited_visibility_infofwd.H>
 #include <x/w/impl/element_draw.H>
 #include <x/w/impl/draw_info.H>
@@ -79,6 +80,14 @@ LIBCXXW_NAMESPACE_START
 //! TODO: documentation
 
 //! \class focusframelayoutimplObj
+//!
+//! TODO: documentation
+
+//! \class x::w::fontconfig::sortedlist
+//!
+//! TODO: documentation
+
+//! \class x::w::freetype
 //!
 //! TODO: documentation
 
@@ -976,6 +985,13 @@ class elementObj::implObj : public element_drawObj,
 	//! Convert a font_arg into a current_fontcollection
 
 	current_fontcollection create_current_fontcollection(const font_arg &);
+
+	//! Convert a font specification into a fontcollection
+	fontcollection create_fontcollection(const font &);
+
+	//! Convert a font specification into a fontcollection
+	fontcollection create_fontcollection(const font &,
+					     const defaulttheme &);
 
 	//! Shortcut for invoking the same screen method
 

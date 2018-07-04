@@ -7,6 +7,7 @@
 #include "fonts/fontcollection_impl.H"
 #include "fonts/freetype.H"
 #include "fonts/cached_font.H"
+#include "fonts/freetypefont_impl.H"
 #include "screen.H"
 #include "connection.H"
 #include "x/w/impl/fonts/freetypefont.H"
@@ -32,7 +33,8 @@ fontcollectionObj::implObj::~implObj()
 
 void fontcollectionObj::implObj
 ::do_lookup(const function< bool(char32_t &) > &next,
-	    const function< void(const freetypefont &) > &callback)
+	    const function< void(const freetypefont &) > &callback,
+	    char32_t unprintable_char)
 {
 	std::map<size_t, cached_font>::iterator prev;
 
@@ -44,6 +46,9 @@ void fontcollectionObj::implObj
 
 	for ( ; next(c); prev_char=c)
 	{
+		if (UNPRINTABLE(c))
+			c=unprintable_char;
+
 		// Fast check. If consecutive characters have the same
 		// unicode script value, and the first character's font
 		// has an entry for the second character, use the same font.

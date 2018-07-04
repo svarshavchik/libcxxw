@@ -50,9 +50,10 @@ bool fontcollectionObj::fixed_width() const
 
 void fontcollectionObj::do_lookup(const function< bool(char32_t &) > &next,
 				  const function< void(const freetypefont &) >
-				  &callback)
+				  &callback,
+				  char32_t unprintable_char)
 {
-	impl->do_lookup(next, callback);
+	impl->do_lookup(next, callback, unprintable_char);
 }
 
 fontconfig::const_charset fontcollectionObj::default_charset() const

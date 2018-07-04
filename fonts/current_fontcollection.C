@@ -21,9 +21,7 @@ current_fontcollectionObj
 			    depth_t depth,
 			    const font &font_spec)
 	: current_fontcollectionObj(font_screen, depth, font_spec,
-				    *current_theme_t::lock{
-					    font_screen->impl->current_theme
-						    })
+				    font_screen->impl->current_theme.get())
 {
 }
 
@@ -56,28 +54,34 @@ void current_fontcollectionObj::theme_updated(ONLY IN_THREAD,
 
 fontcollection current_fontcollectionObj::create_fc(const font &font_spec)
 {
-	return create_fc(font_spec, font_screen, depth, font_theme);
+	return font_screen->create_fontcollection(font_spec,
+						  depth,
+						  font_theme);
 }
 
-fontcollection current_fontcollectionObj
-::create_fc(const font &font_spec,
-	    const screen &font_screen,
-	    const depth_t depth,
-	    const defaulttheme &font_theme)
+fontcollection screenObj
+::create_fontcollection(const font &font_spec,
+			const depth_t depth)
 {
-	auto screen_impl=font_screen->impl;
+	return create_fontcollection(font_spec, depth,
+				     impl->current_theme.get());
+}
 
+fontcollection screenObj
+::create_fontcollection(const font &font_spec,
+			const depth_t depth,
+			const defaulttheme &font_theme)
+{
 	auto dpi_scaled=
 		std::round(dim_t::value_type
-			   (screen_impl->height_in_pixels())
+			   (impl->height_in_pixels())
 			   * font_theme->themescale  / dim_t::value_type
-			   (screen_impl->height_in_millimeters())
+			   (impl->height_in_millimeters())
 			   * 25.4);
 
-	auto p=font_screen->impl->fc
-		->create_pattern(font_spec, dpi_scaled);
+	auto p=impl->fc->create_pattern(font_spec, dpi_scaled);
 
-	auto conn=font_screen->get_connection()->impl;
+	auto conn=get_connection()->impl;
 
 	font_id_t key{p->unparse(), depth};
 
@@ -85,12 +89,12 @@ fontcollection current_fontcollectionObj
 
 	return (*lock)->find_or_create
 		(key,
-		 [=]
+		 [=, me=ref(this)]
 		 {
 			 return fontcollection::create
 				 (ref<fontcollectionObj::implObj>::create
-				  (key, p->match(), font_screen,
-				   font_screen->impl->ft));
+				  (key, p->match(), me,
+				   me->impl->ft));
 		 });
 }
 

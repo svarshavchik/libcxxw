@@ -29,6 +29,10 @@
 
 LIBCXXW_NAMESPACE_START
 
+#define UNPRINTABLE(c) ((c) < 32)
+#define REPLACE_WITH_PRINTABLE(c,unprintable_char) \
+	((c) ? (unprintable_char):0)
+
 //! \ref freetypefont "freetypefont" implementation object.
 
 class LIBCXX_HIDDEN freetypefontObj::implObj : virtual public obj {

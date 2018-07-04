@@ -12,6 +12,9 @@
 #include <x/w/rectangle.H>
 #include <x/w/picturefwd.H>
 #include <x/w/pictformatfwd.H>
+#include <x/w/fontfwd.H>
+#include <x/w/fontcollectionfwd.H>
+#include <x/w/defaultthemefwd.H>
 #include <x/w/scratch_bufferfwd.H>
 #include <x/w/main_windowfwd.H>
 #include <x/w/rgbfwd.H>
@@ -233,6 +236,21 @@ public:
 	scratch_buffer create_scratch_buffer(const std::string &identifier,
 					     const const_pictformat &pf)
 		LIBCXX_HIDDEN;
+
+	//! Create a font collection.
+
+	//! Method used internally by the library to create a collection of
+	//! fonts for rendering text.
+	fontcollection create_fontcollection(const font &font_spec,
+					     const depth_t depth);
+
+	//! Create a font collection.
+
+	//! Method used internally by the library to create a collection of
+	//! fonts for rendering text.
+	fontcollection create_fontcollection(const font &font_spec,
+					     const depth_t depth,
+					     const defaulttheme &font_theme);
 };
 
 LIBCXXW_NAMESPACE_END

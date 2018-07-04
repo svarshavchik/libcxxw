@@ -4,6 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "x/w/impl/element.H"
+#include "defaulttheme.H"
 #include "inherited_visibility_info.H"
 #include "screen.H"
 #include "connection_thread.H"
@@ -26,7 +27,7 @@
 #include "x/w/tooltip.H"
 #include "x/w/main_window.H"
 #include "focus/label_for.H"
-#include "x/w/impl/fonts/current_fontcollection.H"
+#include "x/w/impl/fonts/fontcollection.H"
 #include "xim/ximclient.H"
 #include "popup/popup.H"
 #include "catch_exceptions.H"
@@ -1072,6 +1073,25 @@ const char *elementObj::implObj::label_theme_font() const
 color_arg elementObj::implObj::label_theme_color() const
 {
 	return "label_foreground_color";
+}
+
+fontcollection elementObj::implObj::create_fontcollection(const font &f)
+{
+	auto &wh=get_window_handler();
+
+	auto s=wh.get_screen();
+
+	return s->create_fontcollection(f, wh.font_alpha_depth(),
+					s->impl->current_theme.get());
+}
+
+fontcollection elementObj::implObj::create_fontcollection(const font &f,
+							  const defaulttheme &t)
+{
+	auto &wh=get_window_handler();
+
+	return wh.get_screen()->create_fontcollection(f, wh.font_alpha_depth(),
+						      t);
 }
 
 background_color elementObj::implObj

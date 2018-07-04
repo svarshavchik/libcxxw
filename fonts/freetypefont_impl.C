@@ -7,7 +7,7 @@
 #include "fonts/freetypefont_impl.H"
 #include "messages.H"
 #include "fonts/fontconfig.H"
-#include "fonts/composite_text_stream.H"
+#include "x/w/impl/fonts/composite_text_stream.H"
 #include <x/messages.H>
 #include <x/logger.H>
 
@@ -16,10 +16,6 @@
 #include <iomanip>
 
 #include FT_BITMAP_H
-
-#define UNPRINTABLE(c) ((c) < 32)
-#define REPLACE_WITH_PRINTABLE(c,unprintable_char) \
-	((c) ? (unprintable_char):0)
 
 LOG_CLASS_INIT(LIBCXX_NAMESPACE::w::freetypefontObj::implObj);
 
@@ -353,9 +349,19 @@ void freetypefontObj::implObj
 		      char32_t unprintable_char)
 	const
 {
+	xcb_render_util_change_glyphset(s.s, glyphset->glyphset_id());
+
 	face_t::const_lock lock(face);
 
 	glyphsetObj::get_loaded_glyphs glyphs(*glyphset);
+
+	if (UNPRINTABLE(prev_char))
+	{
+		prev_char=REPLACE_WITH_PRINTABLE(prev_char, unprintable_char);
+
+		if (UNPRINTABLE(prev_char))
+			prev_char=0;
+	}
 
 	auto prev_glyph=prev_char ? FT_Get_Char_Index((*lock), prev_char):0;
 
@@ -395,6 +401,15 @@ void freetypefontObj::implObj
 			continue;
 		}
 
+		// The first rendered glyph's coordinates are absolute. All
+		// others are deltas.
+
+		if (!s.first_glyph)
+		{
+			initial_x=0;
+			initial_y=0;
+		}
+
 		int16_t delta_x=0;
 		int16_t delta_y=0;
 
@@ -409,12 +424,13 @@ void freetypefontObj::implObj
 			delta_y += (delta.y >> 6);
 		}
 
-		xcb_render_util_glyphs_32(s.s,
-					  coord_t::value_type(initial_x + delta_x),
-					  coord_t::value_type(initial_y + delta_y), 1, &glyph_index);
+		xcb_render_util_glyphs_32
+			(s.s,
+			 coord_t::value_type(initial_x + delta_x),
+			 coord_t::value_type(initial_y + delta_y),
+			 1, &glyph_index);
 
-		initial_x=0;
-		initial_y=0;
+		s.first_glyph=false;
 
 		x += iter->second.x_off;
 		y += iter->second.y_off;
@@ -436,6 +452,14 @@ void freetypefontObj::implObj::do_glyphs_width(const function<bool ()> &more,
 	face_t::const_lock lock(face);
 
 	glyphsetObj::get_loaded_glyphs glyphs(*glyphset);
+
+	if (UNPRINTABLE(prev_char))
+	{
+		prev_char=REPLACE_WITH_PRINTABLE(prev_char, unprintable_char);
+
+		if (UNPRINTABLE(prev_char))
+			prev_char=0;
+	}
 
 	auto prev_glyph=prev_char ? FT_Get_Char_Index((*lock), prev_char):0;
 

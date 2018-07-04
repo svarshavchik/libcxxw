@@ -66,7 +66,7 @@ const richtextstring::resolved_fonts_t
 
 				 resolved_fonts.emplace_back(start_char, font);
 				 last_font=--resolved_fonts.end();
-			 });
+			 }, ' ');
 	}
 	fonts_need_resolving=false;
 	return resolved_fonts;

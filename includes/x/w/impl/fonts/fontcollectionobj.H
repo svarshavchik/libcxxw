@@ -19,7 +19,7 @@ LIBCXXW_NAMESPACE_START
 
 //! \see fontcollection
 
-class LIBCXX_HIDDEN fontcollectionObj : virtual public obj {
+class fontcollectionObj : virtual public obj {
 
 public:
 	class implObj;
@@ -28,10 +28,10 @@ public:
 	const ref<implObj> impl;
 
 	//! Constructor
-	fontcollectionObj(const ref<implObj> &implArg);
+	fontcollectionObj(const ref<implObj> &implArg) LIBCXX_HIDDEN;
 
 	//! Destructor
-	~fontcollectionObj();
+	~fontcollectionObj() LIBCXX_HIDDEN;
 
 	//! Fonts' largest ascender
 	dim_t ascender() const;
@@ -60,11 +60,13 @@ public:
 	template<typename iter_type, typename callback_functor>
 		void lookup(iter_type beg_iter,
 			    const iter_type &end_iter,
-			    callback_functor &&callback);
+			    callback_functor &&callback,
+			    char32_t unprintable_char);
 
 	template<typename iter_type>
 		void load_glyphs(const iter_type &beg_iter,
-				 const iter_type &end_iter);
+				 const iter_type &end_iter,
+				 char32_t unprintable_char);
 
 	template<typename iter_type, typename lambda_type>
 		void glyphs_width(iter_type &&beg_iter,
@@ -79,7 +81,8 @@ public:
 
 	void do_lookup(const function< bool(char32_t &) > &next,
 		       const function< void(const freetypefont &)
-		       > &callback);
+		       > &callback,
+		       char32_t unprintable_char);
 
 };
 

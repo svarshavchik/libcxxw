@@ -4,7 +4,7 @@
 */
 
 #include "libcxxw_config.h"
-#include "fonts/composite_text_stream.H"
+#include "x/w/impl/fonts/composite_text_stream.H"
 #include "fonts/freetypefont_impl.H"
 #include "picture.H"
 #include "xid_t.H"

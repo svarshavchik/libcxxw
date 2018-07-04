@@ -16,7 +16,11 @@ class current_fontcollectionObj;
 //! A font collection based on the current theme.
 
 //! A \ref current_fontcollection "font collection" that's accessible only to
-//! the current execution thread.
+//! the library execution thread.
+//!
+//! The \ref theme_font_elementObj "theme_font_elementObj" mixin template
+//! attaches one or more of these to a display element, updating the
+//! font collection when the display theme changes.
 //!
 //! theme_updated() recreates the font collection after a new theme is
 //! installed.

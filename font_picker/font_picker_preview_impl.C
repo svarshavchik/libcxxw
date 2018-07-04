@@ -135,9 +135,8 @@ void font_picker_previewObj::implObj::refresh_preview(ONLY IN_THREAD)
 {
 	auto &wh=get_window_handler();
 
-	auto new_fc=current_fontcollectionObj::create_fc
+	auto new_fc=wh.get_screen()->create_fontcollection
 		(current_font(IN_THREAD),
-		 wh.get_screen(),
 		 wh.font_alpha_depth(),
 		 current_theme);
 
