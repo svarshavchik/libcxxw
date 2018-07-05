@@ -11,8 +11,8 @@
 #include <x/w/gcfwd.H>
 #include <x/w/rectanglefwd.H>
 #include <x/w/scratch_bufferfwd.H>
-#include <x/w/generic_windowobj.H>
 #include <x/w/elementobj.H>
+#include <x/w/impl/get_window_handler.H>
 #include <x/w/impl/draw_infofwd.H>
 #include <x/functional.H>
 #include <x/obj.H>
@@ -63,16 +63,10 @@ public:
 //! header file, and avoid pulling in all of elementObj::implObj's
 //! dependencies.
 
-class element_drawObj : virtual public obj {
+class element_drawObj : public get_window_handlerObj,
+			virtual public obj {
 
 public:
-
-	//! Return my window
-
-	virtual generic_windowObj::handlerObj &get_window_handler()=0;
-
-	//! Return my window
-	virtual const generic_windowObj::handlerObj &get_window_handler() const=0;
 
 	//! Signature of draw_using_scratch_buffer()'s callback.
 	typedef void scratch_buffer_draw_func_t(const picture &,

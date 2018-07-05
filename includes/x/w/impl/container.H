@@ -8,12 +8,12 @@
 #include <x/w/elementobj.H>
 #include <x/w/containerobj.H>
 #include <x/w/layoutmanagerobj.H>
-#include <x/w/generic_windowobj.H>
 #include <x/w/rectangle.H>
 #include <x/w/connection_threadfwd.H>
 #include <x/w/defaultthemefwd.H>
 #include <x/w/impl/draw_infofwd.H>
 #include <x/w/impl/inherited_visibility_infofwd.H>
+#include <x/w/impl/get_window_handler.H>
 #include <x/mpobj.H>
 #include <x/functional.H>
 
@@ -28,7 +28,8 @@ LIBCXXW_NAMESPACE_START
 //! installed and torn down by the container's public object, see
 //! layoutmanagerObj::implObj.
 
-class containerObj::implObj : virtual public obj {
+class containerObj::implObj : public get_window_handlerObj,
+			      virtual public obj {
 
 public:
 
@@ -53,10 +54,11 @@ public:
 	virtual const elementObj::implObj &container_element_impl() const=0;
 
 	//! Return my window
-	generic_windowObj::handlerObj &get_window_handler();
+	generic_windowObj::handlerObj &get_window_handler() override;
 
 	//! Return my window
-	const generic_windowObj::handlerObj &get_window_handler() const;
+	const generic_windowObj::handlerObj &get_window_handler() const
+		override;
 
 	//! The mutex-protected container for the layout manager implementation.
 
