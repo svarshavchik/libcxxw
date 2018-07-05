@@ -13,7 +13,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-//! Alternative constructor parameter to \ref themedim_elementObj "themedim_elementObj"
+//! Alternative constructor parameter to \ref #themedim_elementObj "themedim_elementObj"
 
 //! The regular constructor takes a \ref dim_arg "dim_arg" and a
 //! \ref themedimaxis "themedimaxis" parameter, forwarding the remaining

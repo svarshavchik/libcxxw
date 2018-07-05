@@ -108,8 +108,8 @@ struct themedims_element_types<base, arg1, arg2, args...> {
 //!
 //! Additional template parameters may follow.
 //! This makes it possible to have multiple reference dimensions, referring to
-//! them as themedim_element<X>::pixels,
-//! themedim_element<Y>::pixels.
+//! them as themedim_element<X>::pixels(IN_THREAD),
+//! themedim_element<Y>::pixels(IN_THREAD).
 //!
 //! Each themedimObj takes the leading two parameters to the constructor.
 //! That is, if the template results in two themedimObj superclasses, the first

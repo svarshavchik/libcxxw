@@ -65,6 +65,7 @@
 <!ENTITY implementation_object "<link linkend='pubimpl'>implementation object</link>">
 <!ENTITY public_object "<link linkend='pubimpl'>public object</link>">
 <!ENTITY template_mixin "<link linkend='mixintemplates'>template mixin</link>">
+<!ENTITY metrics "<link linkend='dim_axis_arg'>metrics</link>">
 <!ENTITY customfocusableelement SYSTEM "customfocusableelement.xml">
 <!ENTITY customcontainer SYSTEM "customcontainer.xml">
 <!ENTITY customfontrendering SYSTEM "customfontrendering.xml">

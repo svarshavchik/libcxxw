@@ -177,6 +177,179 @@ See COPYING for distribution information.
       </listitem>
     </itemizedlist>
   </section>
+
+  <section id="customthemefont">
+    <title>Theme font rendering</title>
+
+    <para>
+      The <link linkend="customfontrendering"><filename>customfontrenderer.C</filename></link>
+      has some missing functionality with respect to &appshort;'s theming
+      support.
+      Specifying the font size in points computes the actual font size using
+      the current &appshort; display theme size, and it remains fixed at
+      that size. Using the
+      <link linkend="cxxwtheme.1"><command>cxxwtheme</command></link>
+      utility to set a larger or a smaller display theme does not update
+      the appearance of the custom element until
+      <filename>customfontrenderer</filename> gets stopped and restarted.
+    </para>
+
+    <para>
+      A modified example,
+      <ulink url="examples/customfontrenderer2.C"><filename>customfontrenderer2.C</filename></ulink>,
+      shows the additional steps required for adding proper theming support:
+    </para>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  The
+	  <ulink url="&link-typedef-x--w-current-fontcollection;"><classname>&ns;;::w::current_fontcollection</classname></ulink>
+	  object represents a
+	  <link linkend="fontcollection"><classname>&ns;::w::fontcollection</classname></link>
+	  from the current display theme.
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  <ulink url="&link-typedef-x--w-theme-font-elementObj;"><classname>&ns;::w::theme_font_elementObj</classname></ulink>
+	  is a &template_mixin; that automatically updates
+	  one or more
+	  <classname>&ns;;::w::current_fontcollection</classname>s when
+	  the current display theme changes.
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  A custom display element overrides
+	  <methodname>initialize</methodname>() and
+	  <methodname>theme_updated</methodname>() methods.
+	  Both overrides invoke their overriden methods, first. At that
+	  point the custom display element works the current display theme
+	  into its appearance.
+	</para>
+	<para>
+	  <filename>customfontrenderer2.C</filename>'s overriden
+	  <methodname>initialize</methodname>() and
+	  <methodname>theme_update</methodname>() invoke a private
+	  <methodname>update</methodname>() method.
+	  <methodname>update</methodname>() looks at the
+	  <classname>&ns;;::w::current_fontcollection</classname>, and
+	  extracts its
+	  <classname>&ns;;::w::fontcollection</classname>. If an updated
+	  theme results in a new font (changing the current display theme's
+	  size replaces the current font with a new font with a different size),
+	  <methodname>update</methodname>() recomputes the custom display
+	  element's size, based on the new
+	  <classname>&ns;;::w::fontcollection</classname>.
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  <methodname>update</methodname>() uses
+	  <methodname>set_element_metrics</methodname>() to install its
+	  updated &metrics;.
+	  This results in the custom element's container resizing the
+	  custom element, triggering a redraw, with
+	  <methodname>do_draw</methodname>() eventually doing its job.
+	</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>
+      As a result of these additional steps,
+      using <command>cxxwtheme</command> to set a new display theme size
+      results in <command>customfontrenderer2</command>'s window getting
+      resized
+      automatically.
+    </para>
+
+    <note>
+      <para>
+	Specifying a font size in pixels generally means that the font's
+	size does not depend on the display theme, and the font remains the
+	same. This means that a new theme has no effect, and
+	<classname>&ns;;::w::current_fontcollection</classname>'s
+	<classname>&ns;;::w::fontcollection</classname> remaining the same.
+	<command>customfontrenderer2</command> keeps track of the
+	<classname>&ns;;::w::fontcollection</classname> it's using, and
+	only doing the extra work when it sees a new
+	<classname>&ns;;::w::fontcollection</classname>.
+      </para>
+    </note>
+
+    <para>
+      This extra work consists of calling
+      <methodname>load_glyphs</methodname>() again.
+      This is a new <classname>&ns;;::w::fontcollection</classname> in town,
+      and it needs to have its glyphs loaded, before they can get rendered,
+      just like any other
+      <classname>&ns;;::w::fontcollection</classname>.
+    </para>
+
+    <section id="themedimelement">
+      <title>The <classname>&ns;::themedim_elementObj</classname> template mixin.</title>
+
+      <para>
+	<link linkend="customfontrendering"><filename>customfontrenderer.C</filename></link>
+	sets the size of the dropdown shadow to one-fifth the size of the
+	font's height.
+	<ulink url="examples/customfontrenderer2.C"><filename>customfontrenderer2.C</filename></ulink>
+	takes a different approach,
+	the <ulink url="&link-typedef-x--w-themedim-elementObj;"><classname>&ns;::w::themedim_elementObj</classname></ulink>.
+	This is a &template_mixin; that attaches a theme-based dimension
+	(width or height) to a display element.
+      </para>
+
+      <para>
+	Instead of using one-fifth the size of the font's height,
+	<filename>customfontrenderer2.C</filename> sets the shadow's size
+	to 3.0 millimeters.
+	<filename>customfontrenderer2.C</filename> constructs a
+	<ulink url="&link-x--w--themedim-element-init;"><classname>&ns;::w::themedim_element_init</classname></ulink>
+	which computes the initial shadow pixel size based on the current
+	theme size, and passes the resulting object to the constructor.
+	The <classname>&ns;::w::themedim_elementObj</classname> &template_mixin;
+	then updates the pixel size whenever the display theme changes.
+      </para>
+    </section>
+
+    <section id="usingthemes">
+      <title>Typical implementation of custom theme-aware custom display
+	elements</title>
+
+      <para>
+	<ulink url="examples/customfontrenderer2.C"><filename>customfontrenderer2.C</filename></ulink>
+	gives the general approach of implementing proper theme support
+	with custom display elements:
+      </para>
+
+      <itemizedlist>
+	<listitem>
+	  <para>
+	    Compute the custom display element's initial metrics before
+	    constructing it, and pass along the data that went into the
+	    calculations into the object.
+	    <filename>customfontrenderer2.C</filename>'s computed metrics
+	    depend on a <classname>&ns;;::w::fontcollection</classname>,
+	    The custom display element saves a private reference to this
+	    <classname>&ns;;::w::fontcollection</classname>.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Both <methodname>initialize</methodname>() and
+	    <methodname>theme_updated</methodname>() recheck and update
+	    the saved data. A new
+	    <classname>&ns;;::w::fontcollection</classname> results
+	    in the display element's metrics getting updated, together with
+	    any ancillary data that derived from it.
+	  </para>
+	</listitem>
+      </itemizedlist>
+    </section>
+  </section>
 </chapter>
 
 <!--
