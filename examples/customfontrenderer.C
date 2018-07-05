@@ -305,19 +305,20 @@ static my_font_renderer create_my_font_renderer(const x::w::container_impl
 				     ' ');
 
 	// Compute the text's width.
-	title_fontcollection->glyphs_width(label.begin(),
-					   label.end(),
-					   [&]
-					   (const x::w::dim_t c_width,
-					    int16_t c_kerning)
-					   {
-						   width=x::w::dim_t::truncate
-							   (width+c_width+
-							    c_kerning);
-						   return true;
-					   },
-					   0,
-					   ' ');
+	title_fontcollection->glyphs_size_and_kernings
+		(label.begin(),
+		 label.end(),
+		 [&]
+		 (x::w::dim_t c_width,
+		  x::w::dim_t c_height,
+		  int16_t x_kerning,
+		  int16_t y_kerning)
+		 {
+			 width=x::w::dim_t::truncate(width+c_width+x_kerning);
+			 return true;
+		 },
+		 0,
+		 ' ');
 
 	// Now we have everything that the implementation object needs to
 	// construct itself...

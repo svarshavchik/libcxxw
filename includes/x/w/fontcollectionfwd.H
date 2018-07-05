@@ -31,7 +31,8 @@ class fontcollectionObj;
 //! load_glyphs() looks up the fonts for the specified characters, then invokes
 //! each \ref freetypefont "freetypefont"'s load_glyphs() method.
 //!
-//! glyphs_width() computes the width of the text.
+//! glyphs_size_and_kernings() computes the size and the kerning of each
+//! character.
 //!
 //! lookup() is a generic function that invokes a callback, passing a
 //! beginning and an ending iterator to the callback together with a

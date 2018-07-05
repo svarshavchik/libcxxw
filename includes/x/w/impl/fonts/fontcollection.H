@@ -102,15 +102,15 @@ void fontcollectionObj::load_glyphs(const iter_type &beg_iter,
 
 //! Calculate unicode text width.
 
-//! Uses lookup() and invokes glyphs_width() of each underlying
+//! Uses lookup() and invokes glyphs_size_and_kernings() of each underlying
 //! \ref freetypefont font.
 
 template<typename iter_type, typename lambda_type>
-void fontcollectionObj::glyphs_width(iter_type &&beg_iter,
-				     iter_type &&end_iter,
-				     lambda_type &&lambda,
-				     char32_t prev_char,
-				     char32_t unprintable_char)
+void fontcollectionObj::glyphs_size_and_kernings(iter_type &&beg_iter,
+						 iter_type &&end_iter,
+						 lambda_type &&lambda,
+						 char32_t prev_char,
+						 char32_t unprintable_char)
 {
 	lookup(beg_iter, end_iter,
 	       [&]
@@ -118,9 +118,9 @@ void fontcollectionObj::glyphs_width(iter_type &&beg_iter,
 		const iter_type &end_iter,
 		const freetypefont &f)
 	       {
-		       f->glyphs_width(beg_iter, end_iter,
-				       lambda, prev_char,
-				       unprintable_char);
+		       f->glyphs_size_and_kernings(beg_iter, end_iter,
+						   lambda, prev_char,
+						   unprintable_char);
 	       },
 	       unprintable_char);
 }

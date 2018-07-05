@@ -92,13 +92,15 @@ class LIBCXX_HIDDEN freetypefontObj::implObj : virtual public obj {
 				 char32_t prev_char,
 				 char32_t unprintable_char) const;
 
-	//! Type-erased glyphs_width() implementation.
+	//! Type-erased glyphs_size() implementation.
 
-	void do_glyphs_width(const function<bool ()> &more,
-			     const function<char32_t ()> &next,
-			     const function<bool(dim_t, int16_t)> &width,
-			     char32_t prev_char,
-			     char32_t unprintable_char) const;
+	void do_glyphs_size_and_kernings(const function<bool ()> &more,
+					 const function<char32_t ()> &next,
+					 const function<bool(dim_t, dim_t,
+							     int16_t, int16_t)>
+					 &size_and_kerning,
+					 char32_t prev_char,
+					 char32_t unprintable_char) const;
 
 	//! Quick lookup of a character's pixel width.
 
@@ -121,6 +123,18 @@ class LIBCXX_HIDDEN freetypefontObj::implObj : virtual public obj {
 	//! \internal
 	static bool load_and_render_glyph(face_t::const_lock &lock,
 					  size_t glyph_index, char32_t c);
+
+	typedef bool process_glyphs_callback_t(uint32_t,
+					       dim_t, dim_t,
+					       int16_t, int16_t);
+
+	void process_glyphs(const function<bool ()> &more,
+			    const function<char32_t ()> &next,
+			    char32_t prev_char,
+			    char32_t unprintable_char,
+			    const function<process_glyphs_callback_t> &callback
+			    ) const;
+
 };
 
 LIBCXXW_NAMESPACE_END

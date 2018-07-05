@@ -69,11 +69,11 @@ public:
 				 char32_t unprintable_char);
 
 	template<typename iter_type, typename lambda_type>
-		void glyphs_width(iter_type &&beg_iter,
-				  iter_type &&end_iter,
-				  lambda_type &&lambda,
-				  char32_t prev_char,
-				  char32_t unprintable_char);
+		void glyphs_size_and_kernings(iter_type &&beg_iter,
+					      iter_type &&end_iter,
+					      lambda_type &&lambda,
+					      char32_t prev_char,
+					      char32_t unprintable_char);
 
  private:
 

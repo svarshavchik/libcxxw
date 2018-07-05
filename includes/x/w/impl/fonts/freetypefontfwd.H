@@ -22,7 +22,8 @@ class freetypefontObj;
 //! glyphset, after which they can be collected into a composite text stream
 //! using glyphs_to_stream().
 //!
-//! The width of all the glyphs also gets computed by glyphs_width().
+//! glyphs_size_and_kernings() computes the size and the kerning of each
+//! glyph.
 
 //! \internal
 

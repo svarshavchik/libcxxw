@@ -54,13 +54,16 @@ void freetypefontObj::do_glyphs_to_stream(const function<bool ()> &more,
 				  unprintable_char);
 }
 
-void freetypefontObj::do_glyphs_width(const function<bool ()> &more,
-				      const function<char32_t ()> &next,
-				      const function<bool(dim_t, int16_t)> &width,
-				      char32_t prev_char,
-				      char32_t unprintable_char) const
+void freetypefontObj
+::do_glyphs_size_and_kernings(const function<bool ()> &more,
+			      const function<char32_t ()> &next,
+			      const function<bool(dim_t, dim_t,
+						  int16_t, int16_t)> &callback,
+			      char32_t prev_char,
+			      char32_t unprintable_char) const
 {
-	impl->do_glyphs_width(more, next, width, prev_char, unprintable_char);
+	impl->do_glyphs_size_and_kernings(more, next, callback,
+					  prev_char, unprintable_char);
 }
 
 LIBCXXW_NAMESPACE_END

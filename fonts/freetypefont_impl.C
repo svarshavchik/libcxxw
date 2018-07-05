@@ -351,103 +351,78 @@ void freetypefontObj::implObj
 {
 	xcb_render_util_change_glyphset(s.s, glyphset->glyphset_id());
 
-	face_t::const_lock lock(face);
-
-	glyphsetObj::get_loaded_glyphs glyphs(*glyphset);
-
-	if (UNPRINTABLE(prev_char))
-	{
-		prev_char=REPLACE_WITH_PRINTABLE(prev_char, unprintable_char);
-
-		if (UNPRINTABLE(prev_char))
-			prev_char=0;
-	}
-
-	auto prev_glyph=prev_char ? FT_Get_Char_Index((*lock), prev_char):0;
-
 	coord_t initial_x=x;
 	coord_t initial_y=y;
 
-	while (more())
-	{
-		// Look up the character in the font
-		auto c=next();
-
-		if (UNPRINTABLE(c))
-		{
-			c=REPLACE_WITH_PRINTABLE(c, unprintable_char);
-
-			if (UNPRINTABLE(c))
+	process_glyphs(more, next, prev_char, unprintable_char,
+		       make_function<process_glyphs_callback_t>
+		       ([&]
+			(uint32_t glyph_index,
+			 dim_t w,
+			 dim_t h,
+			 int16_t kerning_x,
+			 int16_t kerning_y)
 			{
-				prev_glyph=0;
-				continue;
-			}
-		}
+				if (!glyph_index)
+					return true;
 
-		uint32_t glyph_index=FT_Get_Char_Index((*lock), c);
+				// The first rendered glyph's coordinates are
+				// absolute. All others are deltas.
 
-		auto iter=glyphs->find(glyph_index);
+				if (!s.first_glyph)
+				{
+					initial_x=0;
+					initial_y=0;
+				}
 
-		if (iter == glyphs->end())
-		{
-			LOG_ERROR((std::string)
-				  gettextmsg(_("No glyph information found for character %1%"),
-					     c)
-				  << ", family "
-				  << (*lock)->family_name
-				  << "/"
-				  << (*lock)->style_name);
-			prev_glyph=0;
-			continue;
-		}
+				xcb_render_util_glyphs_32
+					(s.s,
+					 coord_t::value_type(initial_x
+							     + kerning_x),
+					 coord_t::value_type(initial_y
+							     + kerning_y),
+					 1, &glyph_index);
 
-		// The first rendered glyph's coordinates are absolute. All
-		// others are deltas.
+				s.first_glyph=false;
 
-		if (!s.first_glyph)
-		{
-			initial_x=0;
-			initial_y=0;
-		}
-
-		int16_t delta_x=0;
-		int16_t delta_y=0;
-
-		if (has_kerning && prev_glyph && glyph_index)
-		{
-			FT_Vector delta;
-
-			FT_Get_Kerning( (*lock), prev_glyph, glyph_index,
-					FT_KERNING_DEFAULT, &delta );
-
-			delta_x += (delta.x >> 6);
-			delta_y += (delta.y >> 6);
-		}
-
-		xcb_render_util_glyphs_32
-			(s.s,
-			 coord_t::value_type(initial_x + delta_x),
-			 coord_t::value_type(initial_y + delta_y),
-			 1, &glyph_index);
-
-		s.first_glyph=false;
-
-		x += iter->second.x_off;
-		y += iter->second.y_off;
-
-		x += delta_x;
-		y += delta_y;
-
-		prev_glyph=glyph_index;
-	}
+				x = coord_t::truncate(x+w+kerning_x);
+				y = coord_t::truncate(y+h+kerning_y);
+				return true;
+			}));
 }
 
-void freetypefontObj::implObj::do_glyphs_width(const function<bool ()> &more,
-					 const function<char32_t ()> &next,
-					 const function<bool(dim_t, int16_t)> &width,
-					 char32_t prev_char,
-					 char32_t unprintable_char)
+void freetypefontObj::implObj
+::do_glyphs_size_and_kernings(const function<bool ()> &more,
+			      const function<char32_t ()> &next,
+			      const function<bool(dim_t, dim_t,
+						  int16_t, int16_t)
+			      > &size_and_kerning,
+			      char32_t prev_char,
+			      char32_t unprintable_char)
 	const
+{
+
+	process_glyphs(more, next, prev_char, unprintable_char,
+		       make_function<process_glyphs_callback_t>
+		       ([&]
+			(uint32_t glyph_index,
+			 dim_t w,
+			 dim_t h,
+			 int16_t kerning_x,
+			 int16_t kerning_y)
+			{
+				return size_and_kerning(w, h,
+							kerning_x, kerning_y);
+			}));
+}
+
+
+void freetypefontObj::implObj
+::process_glyphs(const function<bool ()> &more,
+		 const function<char32_t ()> &next,
+		 char32_t prev_char,
+		 char32_t unprintable_char,
+		 const function<process_glyphs_callback_t> &callback) const
 {
 	face_t::const_lock lock(face);
 
@@ -475,7 +450,7 @@ void freetypefontObj::implObj::do_glyphs_width(const function<bool ()> &more,
 			if (UNPRINTABLE(c))
 			{
 				prev_glyph=0;
-				if (!width(0, 0))
+				if (!callback(0, 0, 0, 0, 0))
 					return;
 
 				continue;
@@ -496,27 +471,33 @@ void freetypefontObj::implObj::do_glyphs_width(const function<bool ()> &more,
 				  << "/"
 				  << (*lock)->style_name);
 			prev_glyph=0;
-			if (!width(0, 0))
+			if (!callback(0, 0, 0, 0, 0))
 				return;
 
 			continue;
 		}
 
-		int16_t kerning=0;
+		int16_t kerning_x=0;
+		int16_t kerning_y=0;
 
-		if (has_kerning && prev_glyph && glyph_index)
+		if (has_kerning && prev_glyph)
 		{
 			FT_Vector delta;
 
 			FT_Get_Kerning( (*lock), prev_glyph, glyph_index,
 					FT_KERNING_DEFAULT, &delta );
 
-			kerning=(delta.x >> 6);
+			kerning_x=(delta.x >> 6);
+			kerning_y=(delta.y >> 6);
 		}
-		if (!width(iter->second.x_off, kerning))
+
+		if (!callback(glyph_index,
+			      iter->second.x_off,
+			      iter->second.y_off,
+			      kerning_x, kerning_y))
 			return;
+
 		prev_glyph=glyph_index;
 	}
 }
-
 LIBCXXW_NAMESPACE_END

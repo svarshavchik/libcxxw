@@ -202,11 +202,13 @@ void richtextstring::compute_width(ONLY IN_THREAD,
 
 		b->second->load_glyphs(sb, se, unprintable_char);
 
-		b->second->glyphs_width
+		b->second->glyphs_size_and_kernings
 			(sb, se,
 			 [&]
 			 (dim_t w,
-			  int16_t kerning)
+			  dim_t h,
+			  int16_t kerning_x,
+			  int16_t kerning_y)
 			 {
 				 // Update the metrics ONLY for
 				 // characters in the [skip, end_skip)
@@ -219,7 +221,7 @@ void richtextstring::compute_width(ONLY IN_THREAD,
 				     start_char < end_skip)
 				 {
 					 widths[start_char]=w;
-					 kernings[start_char]=kerning;
+					 kernings[start_char]=kerning_x;
 				 }
 				 ++start_char;
 				 return true;

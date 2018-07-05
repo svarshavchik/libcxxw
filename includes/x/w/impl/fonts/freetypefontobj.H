@@ -127,50 +127,54 @@ public:
 				    unprintable_char);
 	}
 
-	//! Compute width of unicode characters.
+	//! Compute size and kerning of unicode characters.
 
-	//! Obtain widths of each unicode character in an input iterator
+	//! Obtain sizes of each unicode character in an input iterator
 	//! sequence. The lambda gets invoked for each unicode character
 	//! in the input sequence, receiving two pieces of information: the
-	//! character's width, in pixels, and its kerning offset from the
-	//! previous character.
+	//! character's width and height, in pixels, and its kerning horizontal
+	//! and vertical offset from the previous character.
 	//!
-	//! If the lambda returns true, glyphs_width() proceeds
+	//! If the lambda returns true, glyphs_size_and_kernings() proceeds
 	//! with the next unicode character. If the lambda returns false,
-	//! glyphs_width() returns.
+	//! glyphs_size_and_kernings() returns.
 	//!
 	//! unprintable_char sets the replacement character for unprintable
 	//! characters (characters U+0x0000 to U+0x001F). A 0 character
-	//! returns a 0 width. richtexteditorwindow passes a space, in order
-	//! to make the cursor visible on paragraph newline characters.
+	//! returns a 0 width/height.
 
 	template<typename iter_type, typename lambda_type>
-		void glyphs_width(iter_type b,
-				  iter_type e,
-				  lambda_type &&lambda,
-				  char32_t prev_char,
-				  char32_t unprintable_char) const
+		void glyphs_size_and_kernings(iter_type b,
+					      iter_type e,
+					      lambda_type &&lambda,
+					      char32_t prev_char,
+					      char32_t unprintable_char) const
 	{
-		return do_glyphs_width(make_function<bool ()>
-				       ([&]
-					{
-						return b != e;
-					}),
+		return do_glyphs_size_and_kernings
+			(make_function<bool ()>
+			 ([&]
+			  {
+				  return b != e;
+			  }),
 
-				       make_function<char32_t ()>
-				       ([&]
-					{
-						char32_t c=*b;
-						++b;
-						return c;
-					}),
-				       make_function<bool(dim_t, int16_t)>
-				       ([&]
-					(dim_t w, int16_t kerning)
-					{
-						return lambda(w, kerning);
-					}),
-				       prev_char, unprintable_char);
+			 make_function<char32_t ()>
+			 ([&]
+			  {
+				  char32_t c=*b;
+				  ++b;
+				  return c;
+			  }),
+			 make_function<bool(dim_t, dim_t,
+					    int16_t, int16_t)>
+			 ([&]
+			  (dim_t w, dim_t h,
+			   int16_t kerning_w, int16_t kerning_h)
+			  {
+				  return lambda(w, h,
+						kerning_w,
+						kerning_h);
+			  }),
+			 prev_char, unprintable_char);
 	}
 
  private:
@@ -191,13 +195,16 @@ public:
 				 char32_t prev_char,
 				 char32_t unprintable_char) const;
 
-	//! Type-erased glyphs_width() implementation.
+	//! Type-erased glyphs_size_and_kernings() implementation.
 
-	void do_glyphs_width(const function<bool ()> &more,
-			     const function<char32_t ()> &next,
-			     const function<bool(dim_t, int16_t)> &width,
-			     char32_t prev_char,
-			     char32_t unprintable_char) const;
+	void do_glyphs_size_and_kernings(const function<bool ()> &more,
+					 const function<char32_t ()> &next,
+					 const function<bool(dim_t, dim_t,
+							     int16_t,
+							     int16_t)>
+					 &callback,
+					 char32_t prev_char,
+					 char32_t unprintable_char) const;
 
 };
 
