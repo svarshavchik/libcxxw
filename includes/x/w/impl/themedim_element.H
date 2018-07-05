@@ -7,8 +7,79 @@
 
 #include <x/w/impl/themedim_elementfwd.H>
 #include <x/w/impl/themedim.H>
+#include <x/w/impl/get_window_handler.H>
+#include <x/refptr_traits.H>
+#include <type_traits>
 
 LIBCXXW_NAMESPACE_START
+
+//! Alternative constructor parameter to \ref themedim_elementObj "themedim_elementObj"
+
+//! The regular constructor takes a \ref dim_arg "dim_arg" and a
+//! \ref themedimaxis "themedimaxis" parameter, forwarding the remaining
+//! parameters to the superclass.
+//!
+//! The computed number of pixels isn't known until
+//! \ref themedimObj "themedimObj" get constructed. It would be convenient
+//! to have that before construcing everything, in order to figure out the
+//! required metrics.
+//!
+//! Pass this themedim_element_init as an alternative. Construct this
+//! themedim_element_init using:
+//!
+//! - the parent container_impl or element_impl.
+//!
+//! - the \ref dim_arg "dim_arg" and \ref themedimaxis "themedimaxis".
+//!
+//! You can now peek at \c pixels, do some calculations, then pass this
+//! themedim_element_init to the constructor.
+
+struct themedim_element_init {
+
+	//! Captured dimension name argument.
+
+	dim_arg dimname;
+
+	//! Computed number of pixels.
+
+	dim_t pixels;
+
+	//! Captured axis
+
+	themedimaxis width_or_height;
+
+	//! Constructor
+
+	//! The first parameter to a constructor must be either container_impl
+	//! or element_impl. The parameter must be a ref to
+	//! get_window_handlerObj.
+
+	template<typename must_be_ref,
+		 typename=std::enable_if_t<
+			 std::is_same_v<
+				 std::remove_cv_t<
+					 std::remove_reference_t<must_be_ref>>,
+				 typename refptr_traits<std::remove_cv_t
+							<std::remove_reference_t
+							 <must_be_ref>>>::ref_t
+				 >>>
+	inline themedim_element_init(must_be_ref &&r,
+				     const dim_arg &dimname,
+				     themedimaxis width_or_height)
+		: themedim_element_init{dimname, width_or_height, *r}
+	{
+	}
+
+private:
+
+	//! Delegated constructor
+	themedim_element_init(const dim_arg &dimname,
+			      themedimaxis width_or_height,
+			      get_window_handlerObj &gw);
+public:
+	//! Destructor
+	~themedim_element_init();
+};
 
 template<typename tag>
 inline themedim themedim_element<tag>::getref() { return themedim(this); }
@@ -38,6 +109,20 @@ themedim1_elementObj<element_impl, tag>
 	: element_impl(std::forward<Args>(args)...),
 	  themedim_element<tag>(dimname, this->get_screen()->impl,
 				width_or_height)
+{
+}
+//! Constructor
+
+//! The first parameter is a themedim_element_init, and the remaining
+//! parameters get forwarded to the superclass.
+
+template<typename element_impl, typename tag>
+template<typename ...Args>
+themedim1_elementObj<element_impl, tag>
+::themedim1_elementObj(const themedim_element_init &init,
+		       Args && ...args)
+	: element_impl(std::forward<Args>(args)...),
+	  themedim_element<tag>(init)
 {
 }
 

@@ -38,6 +38,9 @@ class themedimObj : virtual public obj {
 		    const ref<screenObj::implObj> &screen_impl,
 		    themedimaxis width_or_height);
 
+	//! Constructor
+	themedimObj(const themedim_element_init &init);
+
 	//! Destructor
 	~themedimObj();
 

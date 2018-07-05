@@ -10,6 +10,8 @@
 
 LIBCXXW_NAMESPACE_START
 
+struct themedim_element_init;
+
 //! Attach a tag to a themedimObj
 
 //! \see themedim_elementObj
@@ -51,6 +53,10 @@ public:
 	template<typename ...Args>
 	themedim1_elementObj(const dim_arg &dimname,
 			     themedimaxis width_or_height,
+			     Args && ...args);
+
+	template<typename ...Args>
+	themedim1_elementObj(const themedim_element_init &init_param,
 			     Args && ...args);
 
 	~themedim1_elementObj();
@@ -109,9 +115,10 @@ struct themedims_element_types<base, arg1, arg2, args...> {
 //! That is, if the template results in two themedimObj superclasses, the first
 //! four parameters initialize them. In each pair of parameters, the
 //! first one is the name of the theme dimension, and the second parameter
-//! is either themedimaxis::width or themedimaxis::height.
+//! is either themedimaxis::width or themedimaxis::height. Alternatively,
+//! the constructor may also take a themedim_element_init parameter.
 //!
-//! If optional parameters are not specified, a single void template
+//! If optional template parameters are not specified, a single void template
 //! parameter gets used to mix in a single dimension.
 
 template<typename base, typename arg1=void, typename ...args>

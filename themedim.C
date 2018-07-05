@@ -4,7 +4,9 @@
 */
 #include "libcxxw_config.h"
 #include "x/w/impl/themedim.H"
+#include "x/w/impl/themedim_element.H"
 #include "screen.H"
+#include "generic_window_handler.H"
 #include "defaulttheme.H"
 
 LIBCXXW_NAMESPACE_START
@@ -18,6 +20,18 @@ static dim_t compute_dim(const ref<screenObj::implObj> &screen_impl,
 	return (*lock)->get_theme_dim_t(dimname, width_or_height);
 }
 
+themedim_element_init::themedim_element_init(const dim_arg &dimname,
+					     themedimaxis width_or_height,
+					     get_window_handlerObj &gw)
+	: dimname{dimname},
+	  pixels{compute_dim(gw.get_window_handler().get_screen()->impl,
+			     dimname, width_or_height)},
+	  width_or_height{width_or_height}
+{
+}
+
+themedim_element_init::~themedim_element_init()=default;
+
 themedimObj::themedimObj(const dim_arg &dimname,
 			 const ref<screenObj::implObj> &screen_impl,
 			 themedimaxis width_or_height)
@@ -25,6 +39,13 @@ themedimObj::themedimObj(const dim_arg &dimname,
 	  pixels_thread_only(compute_dim(screen_impl, this->dimname,
 					 width_or_height)),
 	  width_or_height(width_or_height)
+{
+}
+
+themedimObj::themedimObj(const themedim_element_init &init)
+	: dimname{init.dimname},
+	  pixels_thread_only{init.pixels},
+	  width_or_height{init.width_or_height}
 {
 }
 

@@ -11,6 +11,7 @@
 LIBCXXW_NAMESPACE_START
 
 class themedimObj;
+struct themedim_element_init;
 
 //! Whether the theme dimension is width or height
 
