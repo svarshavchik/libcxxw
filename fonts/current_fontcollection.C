@@ -34,7 +34,8 @@ current_fontcollectionObj
 	  font_theme{font_theme},
 	  font_screen{font_screen},
 	  depth{depth},
-	  fc_thread_only{create_fc(font_spec)}
+	  fc_thread_only{create_fc(font_spec)},
+	  fc_public{fc_thread_only}
 {
 }
 
@@ -49,7 +50,7 @@ void current_fontcollectionObj::theme_updated(ONLY IN_THREAD,
 	font_theme=new_theme;
 	theme_was_really_updated(IN_THREAD);
 
-	fc(IN_THREAD)=create_fc(font_spec(IN_THREAD));
+	fc_public=fc(IN_THREAD)=create_fc(font_spec(IN_THREAD));
 }
 
 fontcollection current_fontcollectionObj::create_fc(const font &font_spec)

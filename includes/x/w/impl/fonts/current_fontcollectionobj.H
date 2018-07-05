@@ -58,6 +58,13 @@ public:
 	THREAD_DATA_ONLY(font_spec);
 	THREAD_DATA_ONLY(fc);
 
+	//! Mutex-protected copy of fc(IN_THREAD)
+
+	//! fc(IN_THREAD) is used for speed, in the internal execution
+	//! thread, which keeps fc_public updated.
+
+	mpobj<fontcollection> fc_public;
+
 	//! Constructor
 	current_fontcollectionObj(const screen &font_screen,
 				  depth_t depth,
