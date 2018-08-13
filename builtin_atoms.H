@@ -53,6 +53,7 @@ class LIBCXX_HIDDEN builtin_atoms {
 	xcb_atom_t text_plain_mime;
 	xcb_atom_t text_plain_utf8_mime;
 	xcb_atom_t text_plain_iso8859_mime;
+	xcb_atom_t text_uri_list_mime;
 
 	builtin_atoms(xcb_connection_t *conn);
 };

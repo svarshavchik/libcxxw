@@ -104,7 +104,19 @@ class LIBCXX_HIDDEN file_dialogObj::implObj : virtual public obj {
 
 	// Enter pressed in the filename field.
 
+	// Obtain the contents of the filename field, then call
+	// process_filename().
+
 	void enter_key(ONLY IN_THREAD, const busy &mcguffin);
+
+	// Process a filename
+
+	// It was either entered in the filename field, or dragged and dropped
+	// into the dialog.
+
+	void process_filename(ONLY IN_THREAD,
+			      const std::string &filename,
+			      const busy &mcguffin);
 
 	//! Existing contents of the directory was selected, or typed in.
 

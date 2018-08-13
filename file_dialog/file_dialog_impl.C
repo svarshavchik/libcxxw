@@ -9,6 +9,8 @@
 #include "dialog.H"
 #include "gridtemplate.H"
 #include "x/w/impl/element.H"
+#include "x/w/impl/container_element.H"
+#include "x/w/impl/child_element.H"
 #include "messages.H"
 #include "x/w/input_field.H"
 #include "x/w/input_field_lock.H"
@@ -21,14 +23,25 @@
 #include "x/w/text_param_literals.H"
 #include "x/w/gridfactory.H"
 #include "x/w/gridlayoutmanager.H"
+#include "x/w/impl/layoutmanager.H"
 #include "x/w/standard_comboboxlayoutmanager.H"
+#include "drag_destination_element.H"
+#include "connection_info.H"
+#include "selection/current_selection_handler.H"
+#include "connection_thread.H"
+#include "messages.H"
+#include "generic_window_handler.H"
+#include "busy.H"
 #include <x/fd.H>
 #include <x/visitor.H>
 #include <x/fileattr.H>
 #include <x/pcre.H>
 #include <x/weakcapture.H>
+#include <x/strtok.H>
+#include <x/uriimpl.H>
 #include <courier-unicode.h>
 #include <algorithm>
+#include <vector>
 #include <errno.h>
 #include <sys/stat.h>
 
@@ -122,7 +135,15 @@ bool file_dialogObj::implObj::button_clicked(const button_event &be)
 void file_dialogObj::implObj::enter_key(ONLY IN_THREAD,
 					const busy &mcguffin)
 {
-	auto filename=input_lock{filename_field}.get();
+	process_filename(IN_THREAD, input_lock{filename_field}.get(),
+			 mcguffin);
+}
+
+void file_dialogObj::implObj::process_filename(ONLY IN_THREAD,
+					       const std::string &filename_arg,
+					       const busy &mcguffin)
+{
+	auto filename=filename_arg;
 
 	if (filename.empty())
 		return;
@@ -511,6 +532,185 @@ standard_dialog_elements_t file_dialogObj::init_args
 	};
 }
 
+namespace {
+#if 0
+}
+#endif
+
+// Weak reference to the file dialog implementation object.
+//
+// file_dialogObj::implObj gets constructed after all the elements and
+// their encompassing container, for the file dialog. Additionally,
+// the callback from the dialog container needs to invoke
+// file_dialogObj::implObj::process_filename(). Safely store a weak pointer
+// to the file_dialogObj::implObj object, for use when needed.
+
+class LIBCXX_HIDDEN file_dialog_weak_refObj : virtual public obj {
+
+
+ public:
+
+	mpobj<weakptr<ptr<file_dialogObj::implObj>>> file_dialog_impl;
+};
+
+typedef ref<file_dialog_weak_refObj> file_dialog_weak_ref;
+
+// Handler for a text/uri-list selection that's getting dropped into the
+// file dialog.
+//
+// Parse it, and invoke process_filename() in the file dialog, as if the file
+// was manually typed in or clicked on.
+
+class LIBCXX_HIDDEN text_uri_selection_handlerObj
+	: public current_selection_handlerObj {
+
+	const ref<obj> mcguffin;
+
+	const file_dialog_weak_ref r;
+
+	std::string text;
+
+ public:
+	text_uri_selection_handlerObj(const ref<obj> &mcguffin,
+				      const file_dialog_weak_ref &r)
+		: mcguffin{mcguffin}, r{r}
+	{
+	}
+
+	bool begin_converted_data(ONLY IN_THREAD,
+				  xcb_atom_t type,
+				  xcb_timestamp_t timestamp) override
+	{
+		return type==IN_THREAD->info
+			->atoms_info.text_uri_list_mime;
+	}
+
+	//! Received converted data.
+	void converted_data(ONLY IN_THREAD,
+			    void *data,
+			    size_t size,
+			    generic_windowObj::handlerObj &me) override
+	{
+		char *p=reinterpret_cast<char *>(data);
+
+		text.insert(text.end(), p, p+size);
+	}
+
+	//! End of conversion.
+	void end_converted_data(ONLY IN_THREAD,
+				generic_windowObj::handlerObj &me) override
+	{
+		std::vector<std::string> uri_strings;
+
+		strtok_str(text, "\r\n", uri_strings);
+
+		for (const auto &s:uri_strings)
+		{
+			if (s.empty() || *s.c_str() == '#')
+				continue;
+
+			uriimpl u{s};
+
+			auto scheme=u.getScheme();
+
+			if (!scheme.empty() && scheme != "file")
+			{
+				me.stop_message(gettextmsg
+						(_("I can only open files, I "
+						   "don't speak %1%"),
+						 scheme));
+				return;
+			}
+
+			auto authority=u.getAuthority().toString();
+
+			if (!authority.empty() && authority != "localhost")
+			{
+				me.stop_message(gettextmsg
+						(_("I can only open files, I "
+						   "cannot open files on "
+						   "\"%1%\""),
+						 authority));
+				return;
+			}
+
+			auto path=u.getPath();
+
+			auto file_dialog_impl=r->file_dialog_impl
+				.get().getptr();
+
+			if (!file_dialog_impl)
+				return;
+
+			busy_impl yes_i_am{me};
+
+			file_dialog_impl->process_filename(IN_THREAD, path,
+							   yes_i_am);
+		}
+	}
+
+	//! Conversion has failed.
+	void conversion_failed(ONLY IN_THREAD,
+			       xcb_atom_t type,
+			       generic_windowObj::handlerObj &me) override
+	{
+	}
+};
+
+// Implementation object for the file dialog parent container.
+//
+// Implements accepting dropped text/uri-list content, as if it was
+// selected directly from the file dialog.
+
+class LIBCXX_HIDDEN file_dialog_container_implObj :
+	public drag_destination_elementObj<container_elementObj
+					   <child_elementObj>> {
+
+ public:
+
+	const file_dialog_weak_ref dialog_impl_ref;
+
+	typedef drag_destination_elementObj<
+		container_elementObj<child_elementObj>> superclass_t;
+
+	file_dialog_container_implObj(const ref<containerObj::implObj>
+				      &parent_container)
+		: superclass_t{
+		parent_container,
+			child_element_init_params{"background@libcxx.com"}},
+		dialog_impl_ref{file_dialog_weak_ref::create()}
+	{
+	}
+
+
+	bool accepts_drop(ONLY IN_THREAD,
+			  const source_dnd_formats_t &formats,
+			  xcb_timestamp_t timestamp) override
+	{
+		return formats.find(IN_THREAD->info
+				    ->atoms_info.text_uri_list_mime)
+			!= formats.end();
+	}
+
+	// Create a text_uri_selection_handler for dropping the URI list.
+
+	current_selection_handlerptr drop(ONLY IN_THREAD,
+					  xcb_atom_t &type,
+					  const ref<obj> &finish_mcguffin)
+		override
+	{
+		type=IN_THREAD->info->atoms_info.text_uri_list_mime;
+
+		return ref<text_uri_selection_handlerObj>
+			::create(finish_mcguffin, dialog_impl_ref);
+	}
+};
+
+#if 0
+{
+#endif
+}
+
 file_dialog main_windowObj
 ::create_file_dialog(const std::string_view &dialog_id,
 		     const file_dialog_config &conf,
@@ -528,12 +728,36 @@ file_dialog main_windowObj
 				 init_args.create_elements(conf)
 					 };
 
-			 args.dialog_window->initialize_theme_dialog
-				 ("file-dialog", tmpl);
+			 gridlayoutmanager glm=
+				 args.dialog_window->get_layoutmanager();
+			 auto f=glm->append_row();
 
-			 return file_dialog::create(args,
-						    conf,
-						    init_args);
+			 f->padding(0);
+
+			 new_gridlayoutmanager nglm;
+
+			 auto child_impl=
+				 ref<file_dialog_container_implObj>
+				 ::create(f->get_container_impl());
+			 auto c=container::create(child_impl,
+						  nglm.create(child_impl));
+
+			 gridlayoutmanager inner_glm=c->get_layoutmanager();
+
+			 inner_glm->create("file-dialog", tmpl);
+			 f->created_internally(c);
+
+			 auto fd=file_dialog::create(args,
+						     conf,
+						     init_args);
+
+			 // Now that everything's built, we can fill in the
+			 // last missing piece.
+
+			 child_impl->dialog_impl_ref->file_dialog_impl=
+				 fd->impl;
+
+			 return fd;
 		 },
 		 modal);
 }

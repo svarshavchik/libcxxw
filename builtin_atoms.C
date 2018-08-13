@@ -58,6 +58,7 @@ builtin_atoms::builtin_atoms(xcb_connection_t *conn)
 		{"text/plain", &builtin_atoms::text_plain_mime},
 		{"text/plain;charset=utf-8", &builtin_atoms::text_plain_utf8_mime},
 		{"text/plain;charset=iso-8859-1", &builtin_atoms::text_plain_iso8859_mime},
+		{"text/uri-list", &builtin_atoms::text_uri_list_mime},
 	};
 
 	std::vector<xcb_intern_atom_cookie_t> cookies;
