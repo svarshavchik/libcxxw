@@ -218,6 +218,7 @@ class LIBCXX_HIDDEN connection_threadObj
 
 	bool run_idle(ONLY IN_THREAD);
 
+ public:
 	//! Compute timeout parameter for poll().
 
 	//! Used by invoke_scheduled_callbacks() and
@@ -227,6 +228,7 @@ class LIBCXX_HIDDEN connection_threadObj
 
 	static int compute_poll_until(tick_clock_t::time_point now,
 				      tick_clock_t::time_point when);
+ private:
 	//! Nothing to do.
 
 	//! And when there's nothing else to do, just before waiting for

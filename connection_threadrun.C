@@ -93,6 +93,13 @@ bool connection_threadObj
 
 		expire_incremental_updates(IN_THREAD, poll_for);
 
+		for (const auto &handler:*window_handlers_thread_only)
+			try {
+				handler.second->timeout_selection_request
+					(IN_THREAD, poll_for);
+			} CATCH_EXCEPTIONS;
+
+
 		// Check if the connection errored out, if not, check for
 		// a message.
 

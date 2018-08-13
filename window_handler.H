@@ -10,6 +10,7 @@
 #include "x/w/values_and_mask.H"
 #include "x/w/rectangle.H"
 #include "x/w/screenfwd.H"
+#include "x/w/impl/clock.H"
 #include "selection/current_selectionfwd.H"
 #include "xim/ximclientfwd.H"
 #include <x/logger.H>
@@ -57,6 +58,27 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 	std::unordered_map<xcb_atom_t,
 			   current_selection> selections_thread_only;
 
+	//! There's a conversion in progress, for us.
+	std::optional<tick_clock_t::time_point
+		      > selection_request_expiration_thread_only;
+
+	//! Conversion is over, or timed out.
+
+	void end_conversion_request(ONLY IN_THREAD);
+
+	//! Once a conversion is in progress, whether the converted type is ok.
+
+	std::optional<bool> do_this_conversion;
+
+	//! INCR conversion in progress
+	bool converting_incrementally=false;
+
+	//! The type of the data being converted.
+	xcb_atom_t conversion_type=XCB_NONE;
+
+	//! The conversion target
+	xcb_atom_t conversion_property=XCB_NONE;
+
 	//! Exposed rectangles.
 
 	//! connection_thread collects Exposure events here, then calls
@@ -98,6 +120,7 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 	THREAD_DATA_ONLY(grabbed_timestamp);
 	THREAD_DATA_ONLY(grab_locked);
 	THREAD_DATA_ONLY(selections);
+	THREAD_DATA_ONLY(selection_request_expiration);
 	THREAD_DATA_ONLY(exposure_rectangles);
 	THREAD_DATA_ONLY(graphics_exposure_rectangles);
 	THREAD_DATA_ONLY(pending_configure_notify_event);
@@ -310,37 +333,33 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 
 	//! Convert selection to the given type.
 
-	//! A subclass invokes convert_selection(). This will have two
+	//! A subclass invokes convert_selection(). This will have three
 	//! possible results.
 	//!
-	//! - conversion_failed() gets invoked if the conversion failed for
+	//! - a false gets returned if another conversion in progress. Only
+	//! one conversion can be in progress. Otherwise true gets returned
+	//! to indicate that the conversion is in progress.
+	//!
+	//! - conversion_failed() gets invoked if the conversion fails for
 	//!   some reason.
 	//!
 	//! - otherwise, at some point later, begin_converted_data(),
 	//!   converted_data(), and end_converted_data() get invoked.
-	//!
-	//! But wait, there's more. If the selection is being sent
-	//! incrementally, this will result in, firstly,
-	//! converting_incrementally() instead of converted_data() (followed
-	//! by end_converted_data().
-	//!
-	//! The incrementally sent data will result in subsequent calls to
-	//! begin_converted_data(), converted_data(), and end_converted_data()
-	//! sequences.
-	//!
-	//! The end of the incrementally sent data is indicated by a call to
-	//! begin_converted_data() and end_converted_data(), without a call to
-	//! converted_data() between them.
 
-	void convert_selection(ONLY IN_THREAD, xcb_atom_t clipboard,
+	bool convert_selection(ONLY IN_THREAD, xcb_atom_t selection,
+			       xcb_atom_t property,
 			       xcb_atom_t type, xcb_timestamp_t timestamp);
 
 	//! Selection conversion failed.
 
-	virtual void conversion_failed(ONLY IN_THREAD, xcb_atom_t clipboard,
-				       xcb_atom_t type,
-				       xcb_timestamp_t timestamp);
+	virtual void conversion_failed(ONLY IN_THREAD,
+				       xcb_atom_t type);
 
+	//! Called by the connection thread.
+
+	//! Checks if the conversion timed out.
+
+	void timeout_selection_request(ONLY IN_THREAD, int &poll_for);
 	//! Potentially convert the requested selection.
 
 	//! The subclass that calls convert_selection() must implement
@@ -371,38 +390,29 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 
 	//! Converted selection data.
 
-	virtual void converted_data(ONLY IN_THREAD, xcb_atom_t clipboard,
+	virtual void converted_data(ONLY IN_THREAD, xcb_atom_t selection,
 				    xcb_atom_t actual_type,
 				    xcb_atom_t format,
 				    void *data,
 				    size_t size);
-
-	//! Converted selection data will be sent incrementally.
-
-	virtual void converting_incrementally(ONLY IN_THREAD,
-					      xcb_atom_t type,
-					      xcb_timestamp_t timestamp,
-					      uint32_t estimated_size);
 
 	//! Notify the subclass of the end of converted selection.
 
 	//! If the converted selection's data was empty, converted_data()
 	//! never gets called, only end_converted_data().
 
-	virtual void end_converted_data(ONLY IN_THREAD,
-					xcb_atom_t clipboard,
-					xcb_timestamp_t timestamp);
+	virtual void end_converted_data(ONLY IN_THREAD);
 
 	//! Someone pasted something to us?
 
-	//! This default implementation results in calls to
+	//! This default implementation checks for CXXWPASTE property
+	//! notifications, and makes the appropriate calls to
 	//! begin_converted_data(), converted_data()/converting_incrementally()
 	//! and end_converted_data().
 
-	void property_notify_event(ONLY IN_THREAD,
-				   const xcb_property_notify_event_t *msg);
-
-
+	virtual void property_notify_event(ONLY IN_THREAD,
+					   const xcb_property_notify_event_t
+					   *msg);
 
 	///////////////////////////////////////////////////////////////////
 

@@ -22,6 +22,7 @@ class LIBCXX_HIDDEN builtin_atoms {
 	xcb_atom_t string;
 	xcb_atom_t utf8_string;
 	xcb_atom_t cxxwtheme;
+	xcb_atom_t cxxwpaste;
 	xcb_atom_t multiple;
 	xcb_atom_t targets;
 	xcb_atom_t incr;

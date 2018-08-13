@@ -91,9 +91,7 @@ class LIBCXX_HIDDEN service_window_handlerObj : public window_handlerObj {
 
 	//! Calls server_failed().
 	void conversion_failed(ONLY IN_THREAD,
-			       xcb_atom_t clipboard,
-			       xcb_atom_t type,
-			       xcb_timestamp_t timestamp) override;
+			       xcb_atom_t type) override;
 
 	//! Received new property.
 
@@ -109,9 +107,7 @@ class LIBCXX_HIDDEN service_window_handlerObj : public window_handlerObj {
 			    size_t size) override;
 
 	//! End of the currently probed server's attribute.
-	void end_converted_data(ONLY IN_THREAD,
-				xcb_atom_t clipboard,
-				xcb_timestamp_t timestamp) override;
+	void end_converted_data(ONLY IN_THREAD) override;
 
  private:
 

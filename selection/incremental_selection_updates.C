@@ -118,12 +118,6 @@ connection_threadObj::incremental_selection_update_info
 void connection_threadObj::expire_incremental_updates(ONLY IN_THREAD,
 						      int &poll_for)
 {
-	auto now=tick_clock_t::now();
-
-	const auto maximum_poll=
-		std::chrono::duration_cast<tick_clock_t::duration>
-		(std::chrono::minutes(30));
-
 	auto &incremental_updates=
 		*IN_THREAD->pending_incremental_updates(IN_THREAD);
 
@@ -136,6 +130,8 @@ void connection_threadObj::expire_incremental_updates(ONLY IN_THREAD,
 
 		if (b == e)
 			break;
+
+		auto now=tick_clock_t::now();
 
 		if (b->first <= now)
 		{

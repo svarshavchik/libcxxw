@@ -28,6 +28,7 @@ builtin_atoms::builtin_atoms(xcb_connection_t *conn)
 		{"STRING", &builtin_atoms::string},
 		{"UTF8_STRING", &builtin_atoms::utf8_string},
 		{"CXXWTHEME", &builtin_atoms::cxxwtheme},
+		{"CXXWPASTE", &builtin_atoms::cxxwpaste},
 		{"MULTIPLE", &builtin_atoms::multiple},
 		{"TARGETS", &builtin_atoms::targets},
 		{"INCR", &builtin_atoms::incr},

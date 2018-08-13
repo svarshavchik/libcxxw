@@ -13,50 +13,60 @@
 
 LIBCXXW_NAMESPACE_START
 
+static property::value<hms>
+conversion_request_timeout(LIBCXX_NAMESPACE_STR
+			   "::w::conversion_request_timeout",
+			   hms(0, 0, 10));
+
+static auto compute_conversion_request_timeout()
+{
+	return tick_clock_t::now()+std::chrono::duration_cast
+		<tick_clock_t::duration>
+		(std::chrono::seconds
+		 (conversion_request_timeout.get().seconds()));
+}
+
 LOG_FUNC_SCOPE_DECL(LIBCXXW_NAMESPACE::window_handlerObj::convert,
 		    convert_log);
 
-void window_handlerObj::convert_selection(ONLY IN_THREAD, xcb_atom_t clipboard,
+bool window_handlerObj::convert_selection(ONLY IN_THREAD, xcb_atom_t selection,
+					  xcb_atom_t property,
 					  xcb_atom_t type,
 					  xcb_timestamp_t timestamp)
 {
 	LOG_FUNC_SCOPE(convert_log);
 
+	if (selection_request_expiration(IN_THREAD))
+	{
+		LOG_ERROR("Conversion request already in progress.");
+		return false;
+	}
+
 	LOG_DEBUG("Convert "
-		  << IN_THREAD->info->get_atom_name(clipboard) << " to "
-		  << IN_THREAD->info->get_atom_name(type));
+		  << IN_THREAD->info->get_atom_name(selection) << " to "
+		  << IN_THREAD->info->get_atom_name(type) << " using "
+		  << IN_THREAD->info->get_atom_name(property));
 
 	returned_pointer<xcb_generic_error_t *> error;
 
 	auto conn=IN_THREAD->info->conn;
 
-	auto value=return_pointer(xcb_get_selection_owner_reply
-				  (conn, xcb_get_selection_owner(conn,
-								 clipboard),
-				   error.addressof()));
+	xcb_delete_property(conn, id(), property);
 
-	if (error)
-	{
-		LOG_ERROR(connection_error(error));
-		conversion_failed(IN_THREAD, clipboard, type, timestamp);
-		return;
-	}
-
-	if (value->owner == XCB_NONE)
-	{
-		LOG_DEBUG(IN_THREAD->info->get_atom_name(clipboard)
-			  << " is not available");
-		conversion_failed(IN_THREAD, clipboard, type, timestamp);
-		return;
-	}
-
-	xcb_delete_property(conn, id(), type);
 	xcb_convert_selection(conn,
 			      id(),
-			      clipboard,
+			      selection,
 			      type,
-			      type,
+			      property,
 			      timestamp);
+
+	converting_incrementally=false;
+	conversion_type=type;
+	conversion_property=property;
+	do_this_conversion.reset();
+	selection_request_expiration(IN_THREAD)=
+		compute_conversion_request_timeout();
+	return true;
 }
 
 void window_handlerObj
@@ -73,8 +83,8 @@ void window_handlerObj
 			  << IN_THREAD->info->get_atom_name(msg->target)
 			  << " failed");
 
-		conversion_failed(IN_THREAD, msg->selection,
-				  msg->target, msg->time);
+		selection_request_expiration(IN_THREAD).reset();
+		conversion_failed(IN_THREAD, conversion_type);
 	}
 }
 
@@ -87,35 +97,32 @@ void window_handlerObj
 	if (msg->state != XCB_PROPERTY_NEW_VALUE)
 		return;
 
+	if (!selection_request_expiration(IN_THREAD))
+		return; // Stale message?
+
+	if (msg->atom != conversion_property)
+		return;
+
 	LOG_DEBUG("New Property Value: "
 		  << IN_THREAD->info->get_atom_name(msg->atom));
 
-	bool do_conversion=false;
-
 	LOG_DEBUG("Property conversion started");
 
-	try {
-
-		do_conversion=begin_converted_data(IN_THREAD, msg->atom,
-						   msg->time);
-	} CATCH_EXCEPTIONS;
-
-	if (!do_conversion)
-	{
-		LOG_TRACE("Ignoring conversion");
-		return;
-	}
+	bool empty_property_data=true;
 
 	IN_THREAD->info->get_entire_property_with
 		(id(), msg->atom,
 		 XCB_GET_PROPERTY_TYPE_ANY, true,
-		 [&]
+		 [&, this]
 		 (xcb_atom_t type,
 		  uint8_t format,
 		  void *data,
 		  size_t data_size)
 		 {
-			 LOG_TRACE("Property: size=" << data_size);
+			 // Ok we received something.
+			 empty_property_data=false;
+
+			 // Set a flag if what we got was an INCR.
 
 			 if (type == IN_THREAD->info->atoms_info.incr)
 			 {
@@ -133,14 +140,44 @@ void window_handlerObj
 				 LOG_DEBUG("Incremental conversion, estimated "
 					   "size is " << size);
 
+				 converting_incrementally=true;
+				 return;
+			 }
+
+			 if (!do_this_conversion) // First time here.
+			 {
+				 do_this_conversion=false;
+				 conversion_type=type;
+
+				 LOG_TRACE("Start conversion of "
+					   << IN_THREAD->info
+					   ->get_atom_name(type));
+
+				 // Check the actual type in the first
+				 // invocation of this callback.
+
 				 try {
-					 converting_incrementally
-						 (IN_THREAD,
-						  msg->atom,
-						  msg->time,
-						  size);
+					 *do_this_conversion=
+						 begin_converted_data
+						 (IN_THREAD, type, msg->time);
 				 } CATCH_EXCEPTIONS;
 
+				 if (!*do_this_conversion)
+				 {
+					 LOG_TRACE("Ignoring conversion");
+				 }
+			 }
+
+			 LOG_TRACE("Property: size=" << data_size);
+
+			 if (!*do_this_conversion)
+				 return;
+
+			 if (conversion_type != type)
+			 {
+				 LOG_ERROR("Property type changed during "
+					   "conversion: " << conversion_type
+					   << " to " << type);
 				 return;
 			 }
 
@@ -152,15 +189,75 @@ void window_handlerObj
 
 	LOG_DEBUG("Property conversion complete");
 
-	try {
-		end_converted_data(IN_THREAD, msg->atom, msg->time);
-	} CATCH_EXCEPTIONS;
+	if (converting_incrementally)
+	{
+		if (!empty_property_data)
+		{
+			LOG_TRACE("Resetting for the next chunk");
+			selection_request_expiration(IN_THREAD)=
+				compute_conversion_request_timeout();
+			return;
+		}
+	}
+	LOG_DEBUG("Property conversion finished");
+	end_conversion_request(IN_THREAD);
 }
 
+void window_handlerObj::end_conversion_request(ONLY IN_THREAD)
+{
+	LOG_FUNC_SCOPE(convert_log);
+
+	selection_request_expiration(IN_THREAD).reset();
+
+	bool succeeded=do_this_conversion && *do_this_conversion;
+
+	try {
+		if (succeeded)
+		{
+			LOG_DEBUG("Completed conversion of "
+				  << IN_THREAD->info
+				  ->get_atom_name(conversion_type));
+			end_converted_data(IN_THREAD);
+		}
+		else
+		{
+			LOG_DEBUG("Failed to convert "
+				  << IN_THREAD->info
+				  ->get_atom_name(conversion_type));
+			conversion_failed(IN_THREAD, conversion_type);
+		}
+	} CATCH_EXCEPTIONS;
+	do_this_conversion.reset();
+}
+
+void window_handlerObj::timeout_selection_request(ONLY IN_THREAD, int &poll_for)
+{
+	LOG_FUNC_SCOPE(convert_log);
+
+	if (!selection_request_expiration(IN_THREAD))
+		return;
+
+	auto now=tick_clock_t::now();
+
+	if (*selection_request_expiration(IN_THREAD) <= now)
+	{
+		LOG_ERROR("Selection conversion request timed out.");
+		end_conversion_request(IN_THREAD);
+		return;
+	}
+
+	auto expiration=
+		connection_threadObj::compute_poll_until
+		(now,
+		 *selection_request_expiration(IN_THREAD));
+
+	if (poll_for < 0 || expiration < poll_for)
+		poll_for=expiration;
+}
+
+
 void window_handlerObj
-::conversion_failed(ONLY IN_THREAD, xcb_atom_t clipboard,
-		    xcb_atom_t type,
-		    xcb_timestamp_t timestamp)
+::conversion_failed(ONLY IN_THREAD, xcb_atom_t type)
 {
 }
 
@@ -172,15 +269,7 @@ bool window_handlerObj
 }
 
 void window_handlerObj
-::converting_incrementally(ONLY IN_THREAD,
-			   xcb_atom_t type,
-			   xcb_timestamp_t timestamp,
-			   uint32_t estimated_size)
-{
-}
-
-void window_handlerObj
-::converted_data(ONLY IN_THREAD, xcb_atom_t clipboard,
+::converted_data(ONLY IN_THREAD, xcb_atom_t selection,
 		 xcb_atom_t actual_type,
 		 xcb_atom_t format,
 		 void *data,
@@ -189,9 +278,7 @@ void window_handlerObj
 }
 
 void window_handlerObj
-::end_converted_data(ONLY IN_THREAD,
-		     xcb_atom_t type,
-		     xcb_timestamp_t timestamp)
+::end_converted_data(ONLY IN_THREAD)
 {
 }
 

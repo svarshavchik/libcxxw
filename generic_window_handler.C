@@ -1721,62 +1721,127 @@ void generic_windowObj::handlerObj
 void generic_windowObj::handlerObj::paste(ONLY IN_THREAD, xcb_atom_t clipboard,
 					  xcb_timestamp_t timestamp)
 {
-	incremental_conversion_in_progress=false;
+	if (convert_selection(IN_THREAD, clipboard,
+			      IN_THREAD->info->atoms_info.cxxwpaste,
+			      IN_THREAD->info->atoms_info.utf8_string,
+			      timestamp))
+	{
+		clipboard_being_pasted=clipboard;
+		clipboard_paste_timestamp=timestamp;
+		conversion_handler=paste_selected_text{};
+	}
 
-	convert_selection(IN_THREAD, clipboard,
-			  IN_THREAD->info->atoms_info.utf8_string,
-			  timestamp);
+}
+
+
+bool generic_windowObj::handlerObj::paste_selected_text
+::begin_converted_data(ONLY IN_THREAD,
+		       xcb_atom_t type,
+		       xcb_timestamp_t timestamp)
+{
+	if (type == IN_THREAD->info->atoms_info.string)
+	{
+		unicode::iconvert::tou::end();
+		unicode::iconvert::tou::begin(unicode::iso_8859_1);
+	}
+	else if (type == IN_THREAD->info->atoms_info.utf8_string)
+	{
+		unicode::iconvert::tou::end();
+		unicode::iconvert::tou::begin(unicode::utf_8);
+	}
+	else
+	{
+		return false;
+	}
+	return true;
+}
+
+void generic_windowObj::handlerObj::paste_selected_text
+::converted_data(ONLY IN_THREAD,
+		 void *data,
+		 size_t size,
+		 generic_windowObj::handlerObj &me)
+{
+	unicode::iconvert::tou::operator()
+		(reinterpret_cast<char *>(data), size);
+
+	try {
+		if (!text.empty())
+			me.pasted_string(IN_THREAD, text);
+	} REPORT_EXCEPTIONS(&me);
+	text.clear();
+}
+
+int generic_windowObj::handlerObj::paste_selected_text
+::converted(const char32_t *ptr, size_t cnt)
+{
+	// This is called from C code. Shouldn't be any exceptions here,
+	// but just in case...
+	try {
+		text.insert(text.end(), ptr, ptr+cnt);
+	} CATCH_EXCEPTIONS;
+	return 0;
+}
+
+void generic_windowObj::handlerObj::paste_selected_text
+::end_converted_data(ONLY IN_THREAD,
+		     generic_windowObj::handlerObj &me)
+{
+	unicode::iconvert::tou::end();
+	try {
+		if (!text.empty())
+			me.pasted_string(IN_THREAD, text);
+	} REPORT_EXCEPTIONS(&me);
+	text.clear();
+}
+
+void generic_windowObj::handlerObj::paste_selected_text
+::conversion_failed(ONLY IN_THREAD,
+		    xcb_atom_t type,
+		    generic_windowObj::handlerObj &me)
+{
+	if (type == IN_THREAD->info->atoms_info.utf8_string)
+		me.convert_selection(IN_THREAD, me.clipboard_being_pasted,
+				     IN_THREAD->info->atoms_info.cxxwpaste,
+				     IN_THREAD->info->atoms_info.string,
+				     me.clipboard_paste_timestamp);
+}
+
+
+void generic_windowObj::handlerObj
+::conversion_failed(ONLY IN_THREAD, xcb_atom_t type)
+{
+	std::visit([&, this]
+		   (auto &h)
+		   {
+			   h.conversion_failed(IN_THREAD, type, *this);
+		   }, conversion_handler);
 }
 
 void generic_windowObj::handlerObj
-::conversion_failed(ONLY IN_THREAD, xcb_atom_t clipboard,
-		    xcb_atom_t type,
-		    xcb_timestamp_t timestamp)
+::property_notify_event(ONLY IN_THREAD,
+			const xcb_property_notify_event_t *msg)
 {
-	if (type == IN_THREAD->info->atoms_info.utf8_string)
-		convert_selection(IN_THREAD, clipboard,
-				  IN_THREAD->info->atoms_info.string,
-				  timestamp);
+	if (msg->atom == IN_THREAD->info->atoms_info.net_frame_extents)
+	{
+		update_frame_extents(IN_THREAD);
+		return;
+	}
+
+	window_handlerObj::property_notify_event(IN_THREAD, msg);
 }
 
 bool generic_windowObj::handlerObj
 ::begin_converted_data(ONLY IN_THREAD, xcb_atom_t type,
 		       xcb_timestamp_t timestamp)
 {
-	if (type == IN_THREAD->info->atoms_info.string)
-	{
-		if (!incremental_conversion_in_progress)
-		{
-			unicode::iconvert::tou::end();
-			unicode::iconvert::tou::begin(unicode::iso_8859_1);
-		}
-	}
-	else if (type == IN_THREAD->info->atoms_info.utf8_string)
-	{
-		if (!incremental_conversion_in_progress)
-		{
-			unicode::iconvert::tou::end();
-			unicode::iconvert::tou::begin(unicode::utf_8);
-		}
-	}
-	else
-	{
-		if (type == IN_THREAD->info->atoms_info.net_frame_extents)
-			update_frame_extents(IN_THREAD);
-		return false;
-	}
-	received_converted_data=false;
-	return true;
-}
-
-void generic_windowObj::handlerObj
-::converting_incrementally(ONLY IN_THREAD,
-			   xcb_atom_t type,
-			   xcb_timestamp_t timestamp,
-			   uint32_t estimated_size)
-{
-	incremental_conversion_in_progress=true;
-	received_converted_data=true;
+	return std::visit([&]
+			  (auto &h)
+			  {
+				  return h.begin_converted_data(IN_THREAD,
+								type,
+								timestamp);
+			  }, conversion_handler);
 }
 
 void generic_windowObj::handlerObj
@@ -1786,29 +1851,21 @@ void generic_windowObj::handlerObj
 		 void *data,
 		 size_t size)
 {
-	received_converted_data=true;
-	unicode::iconvert::tou::operator()
-		(reinterpret_cast<char *>(data), size);
+	std::visit([&, this]
+		   (auto &h)
+		   {
+			   h.converted_data(IN_THREAD, data, size, *this);
+		   }, conversion_handler);
 }
 
 void generic_windowObj::handlerObj
-::end_converted_data(ONLY IN_THREAD, xcb_atom_t clipboard,
-				xcb_timestamp_t timestamp)
+::end_converted_data(ONLY IN_THREAD)
 {
-	if (!received_converted_data)
-		incremental_conversion_in_progress=false;
-
-	if (!incremental_conversion_in_progress)
-		unicode::iconvert::tou::end();
-}
-
-int generic_windowObj::handlerObj::converted(const char32_t *ptr, size_t cnt)
-{
-	try {
-		// This is called from the operator(), this is cool.
-		pasted_string(thread(), {ptr, cnt});
-	} CATCH_EXCEPTIONS;
-	return 0;
+	std::visit([&, this]
+		   (auto &h)
+		   {
+			   h.end_converted_data(IN_THREAD, *this);
+		   }, conversion_handler);
 }
 
 void generic_windowObj::handlerObj

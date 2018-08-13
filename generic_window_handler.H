@@ -64,9 +64,6 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 // The picture for the window
 	  public pictureObj::implObj::fromDrawableObj,
 
-// Used by paste() code to convert pasted text to unicode
-	  public unicode::iconvert::tou,
-
 // The container
 	  public background_color_elementObj<icon_images_set_elementObj<
 					     cursor_pointer_elementObj<
@@ -751,69 +748,99 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! Paste a string from a clipboard.
 
 	//! Should only be called by an element that's receiving keyboard
-	//! input focus. Results in that element's pasted() getting invoked,
+	//! input focus.
+	//!
+	//! Installs paste_selected_text as our conversion_handler, which
+	//! invokes pasted_string() to pass through the converted selection
 	//! piecemeal, with the pasted text.
+	//!
+	//! We try to convert to a utf8_string, if that fails we'll try
+	//! to convert to a string, and treat it as iso-8859-1.
 
 	void paste(ONLY IN_THREAD, xcb_atom_t clipboard,
 		   xcb_timestamp_t timestamp);
 
+	//! Override property_notify_event().
+
+	//! Calls update_frame_extents() for a net_frame_extents notification.
+	//! Otherwise forwards it to the superclass.
+
+	void property_notify_event(ONLY IN_THREAD,
+				   const xcb_property_notify_event_t *msg)
+		override;
+
  private:
+
+	xcb_atom_t clipboard_being_pasted;
+	xcb_timestamp_t clipboard_paste_timestamp;
+
+	//! Conversion handler for pasted text.
+
+	class LIBCXX_HIDDEN paste_selected_text : unicode::iconvert::tou {
+
+	public:
+		std::u32string text;
+
+		bool begin_converted_data(ONLY IN_THREAD,
+					  xcb_atom_t type,
+					  xcb_timestamp_t timestamp);
+
+		void converted_data(ONLY IN_THREAD,
+				    void *data,
+				    size_t size,
+				    generic_windowObj::handlerObj &me);
+
+		int converted(const char32_t *ptr, size_t cnt) override;
+
+		void end_converted_data(ONLY IN_THREAD,
+					generic_windowObj::handlerObj &me);
+
+		void conversion_failed(ONLY IN_THREAD,
+				       xcb_atom_t type,
+				       generic_windowObj::handlerObj &me);
+	};
+
+	//! Currently installed handler for receiving converted selections.
+
+	std::variant<paste_selected_text> conversion_handler;
 
 	////////////////////////////////////////////////////////////////////
 	//
 	// Inherited from window_handlerObj. Implements its conversion
-	// callbacks to convert the pasted text to unicode.
+	// callbacks to convert the pasted content.
 
 	//! Should this data be converted?
 
-	//! Recognize STRING and UTF8_STRING atoms, that start the conversion.
+	//! Gets forwarded to the current conversion_handler.
 
 	bool begin_converted_data(ONLY IN_THREAD, xcb_atom_t type,
 				  xcb_timestamp_t timestamp) override;
 
 	//! Receive converted data.
 
+	//! Gets forwarded to the current conversion_handler.
 	void converted_data(ONLY IN_THREAD, xcb_atom_t clipboard,
 			    xcb_atom_t actual_type,
 			    xcb_atom_t format,
 			    void *data,
 			    size_t size) override;
 
-	//! Whether converted_data was called after begin_converted_data.
-
-	bool received_converted_data;
-
 	//! Converted data has been received.
-	void end_converted_data(ONLY IN_THREAD, xcb_atom_t clipboard,
-				xcb_timestamp_t timestamp) override;
 
-	//! Incremental conversion in progress.
+	//! Gets forwarded to the current conversion_handler.
 
-	void converting_incrementally(ONLY IN_THREAD,
-				      xcb_atom_t type,
-				      xcb_timestamp_t timestamp,
-				      uint32_t estimated_size) override;
-
-	//! Incremental conversion in progress.
-	bool incremental_conversion_in_progress;
+	void end_converted_data(ONLY IN_THREAD) override;
 
 	//! Implement conversion_failed().
 
-	//! This means that paste() failed.
+	//! Gets forwarded to the current conversion_handler.
 
-	void conversion_failed(ONLY IN_THREAD, xcb_atom_t clipboard,
-			       xcb_atom_t type,
-			       xcb_timestamp_t timestamp) override;
-
-	//! Inherited from unicode::iconvert::tou
-
-	//! Handles the converted_data() as unicode.
-
-	int converted(const char32_t *ptr, size_t cnt) override;
+	void conversion_failed(ONLY IN_THREAD, xcb_atom_t type) override;
 
  public:
 	//! Pasted text into this window. Forward to pasted().
 
+	//! paste_selected_text() forwards the converted unicode text to here.
 	//! This is also called to commit an string from the XIM server.
 
 	void pasted_string(ONLY IN_THREAD,

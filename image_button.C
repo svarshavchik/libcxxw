@@ -24,7 +24,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-LOG_FUNC_SCOPE_DECL(INSERT_LIBX_NAMESPACE::w::image_button, image_log);
+LOG_FUNC_SCOPE_DECL(LIBCXXW_NAMESPACE::image_button, image_log);
 
 create_image_button_info::borders_t::borders_t()
 	: focusoff_border{"thin_inputfocusoff_border"},

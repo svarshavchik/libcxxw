@@ -179,25 +179,29 @@ void service_window_handlerObj::check_next_attribute(ONLY IN_THREAD)
 		  << IN_THREAD->info
 		  ->get_atom_name(attribute_atoms[current_attribute_checked]));
 
-	convert_selection(IN_THREAD, server_atoms.at(0),
-			  attribute_atoms[current_attribute_checked],
-			  XCB_CURRENT_TIME);
+	if (!convert_selection(IN_THREAD, server_atoms.at(0),
+			       /*
+			       Ibus is buggy, and requires the target and
+			       target atoms to be the same.
+			       */
+			       attribute_atoms[current_attribute_checked],
+			       attribute_atoms[current_attribute_checked],
+			       XCB_CURRENT_TIME))
+	{
+		LOG_DEBUG("convert_selection() failed");
+		server_failed(IN_THREAD);
+	}
 }
 
-void service_window_handlerObj
-::conversion_failed(ONLY IN_THREAD, xcb_atom_t clipboard,
-		    xcb_atom_t type,
-		    xcb_timestamp_t timestamp)
+void service_window_handlerObj::conversion_failed(ONLY IN_THREAD,
+						  xcb_atom_t type)
 {
 	LOG_FUNC_SCOPE(service_log);
 
-	if (server_atoms.at(0) == clipboard)
-	{
-		LOG_DEBUG(IN_THREAD->info
-			  ->get_atom_name(server_atoms.at(0))
-			  << " attribute conversion failed");
-		server_failed(IN_THREAD);
-	}
+	LOG_DEBUG(IN_THREAD->info
+		  ->get_atom_name(server_atoms.at(0))
+		  << " attribute conversion failed");
+	server_failed(IN_THREAD);
 }
 
 bool service_window_handlerObj
@@ -227,22 +231,17 @@ void service_window_handlerObj
 }
 
 void service_window_handlerObj
-::end_converted_data(ONLY IN_THREAD,
-		     xcb_atom_t clipboard,
-		     xcb_timestamp_t timestamp)
+::end_converted_data(ONLY IN_THREAD)
 {
 	LOG_FUNC_SCOPE(service_log);
 
-	if (clipboard == attribute_atoms.at(current_attribute_checked))
-	{
-		LOG_DEBUG(IN_THREAD->info
-			  ->get_atom_name(attribute_atoms.at
-					  (current_attribute_checked))
-			  << " attribute converted: "
-			  << attribute_values.at(current_attribute_checked));
-		++current_attribute_checked;
-		check_next_attribute(IN_THREAD);
-	}
+	LOG_DEBUG(IN_THREAD->info
+		  ->get_atom_name(attribute_atoms.at
+				  (current_attribute_checked))
+		  << " attribute converted: "
+		  << attribute_values.at(current_attribute_checked));
+	++current_attribute_checked;
+	check_next_attribute(IN_THREAD);
 }
 
 void service_window_handlerObj::server_failed(ONLY IN_THREAD)

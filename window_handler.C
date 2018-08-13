@@ -207,7 +207,7 @@ void window_handlerObj::focus_change_event(ONLY IN_THREAD, bool)
 }
 
 
-LOG_FUNC_SCOPE_DECL(INSERT_LIBX_NAMESPACE::w::selection, selection_debug_log);
+LOG_FUNC_SCOPE_DECL(LIBCXXW_NAMESPACE::selection, selection_debug_log);
 
 void window_handlerObj
 ::selection_request_event(ONLY IN_THREAD,
@@ -232,7 +232,10 @@ void window_handlerObj
 		return;
 	}
 
-	if (reply.target == IN_THREAD->info->atoms_info.multiple &&
+	LOG_DEBUG("Converting to "
+		  << IN_THREAD->info->get_atom_name(request.target));
+
+	if (request.target == IN_THREAD->info->atoms_info.multiple &&
 	    reply.property != XCB_NONE)
 	{
 		selection_request_multiple(IN_THREAD, request, reply,
@@ -240,23 +243,33 @@ void window_handlerObj
 		return;
 	}
 
-	if (reply.property == XCB_NONE)
-		reply.property=reply.target;
-
-	auto v=reply.target != IN_THREAD->info->atoms_info.targets
+	auto v=request.target != IN_THREAD->info->atoms_info.targets
 		? iter->second->convert(IN_THREAD, request.target)
 		: ({
 				// TARGETS
 
-				LOG_DEBUG("TARGETS requested");
 				auto targets=iter->second->supported(IN_THREAD);
+				LOG_DEBUG("TARGETS requested, we support: "
+					  << ({
+							  std::ostringstream o;
+							  const char *sep="";
+
+							  for (auto a:targets)
+							  {
+								  o << sep <<
+									  IN_THREAD->info->get_atom_name(a);
+								  sep=", ";
+							  }
+							  o.str();
+						  }));
+
+				auto b=&*targets.begin();
+				auto e=b+targets.size();
 
 				vector<uint8_t> data=
 					vector<uint8_t>::create
-					(reinterpret_cast<uint8_t *>
-					 (&targets[0]),
-					 reinterpret_cast<uint8_t *>
-					 (&targets[targets.size()]));
+					(reinterpret_cast<uint8_t *>(b),
+					 reinterpret_cast<uint8_t *>(e));
 
 				ptr<current_selectionObj::convertedValueObj>
 					::create(XA_ATOM, 32,
@@ -387,10 +400,16 @@ void window_handlerObj
 
 		if (v.null())
 		{
+			LOG_DEBUG("Cannot convert to "
+				  << IN_THREAD->info->get_atom_name(atoms[i]));
+
 			atoms[i]=XCB_NONE;
 			conversion_failed=true;
 			continue;
 		}
+
+		LOG_DEBUG("Converting to "
+			  << IN_THREAD->info->get_atom_name(atoms[i]));
 
 		if (v->incremental)
 		{

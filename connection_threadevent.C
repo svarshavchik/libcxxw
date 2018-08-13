@@ -249,9 +249,14 @@ void connection_threadObj::run_event(ONLY IN_THREAD,
 
 			FIND_HANDLER(owner);
 
+			auto request=*msg;
+
+			if (request.property == XCB_NONE)
+				request.property=info->atoms_info.cxxwpaste;
+
 			xcb_selection_notify_event_t reply{};
 			DISPATCH_HANDLER(selection_request_event,
-					 (IN_THREAD, *msg, reply));
+					 (IN_THREAD, request, reply));
 
 			xcb_send_event(info->conn, 0,
 				       msg->requestor, 0,
