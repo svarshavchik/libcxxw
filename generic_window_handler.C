@@ -1539,13 +1539,8 @@ element_impl generic_windowObj::handlerObj
 					  if (found)
 						  return;
 
-					  // Ignore zombies!
-
-					  if (child->data(IN_THREAD).removed)
-						  return;
-
-					  if (!child->data(IN_THREAD)
-					      .reported_inherited_visibility)
+					  if (!child
+					      ->can_be_under_pointer(IN_THREAD))
 						  return;
 
 					  const auto &p=child->data(IN_THREAD)

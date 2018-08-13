@@ -710,6 +710,13 @@ class elementObj::implObj : public element_drawObj,
 	//! We need get_absolute_location() for the screen!
 	rectangle get_absolute_location_on_screen(ONLY IN_THREAD);
 
+	//! Whether this element can be under the mouse pointer.
+
+	//! Returns true if this element is eligible to be consider to be
+	//! under the mouse pointer.
+
+	bool can_be_under_pointer(ONLY IN_THREAD) const;
+
 	//! Schedule the connection thread to invoke explicit_redraw().
 
 	void schedule_redraw(ONLY IN_THREAD);

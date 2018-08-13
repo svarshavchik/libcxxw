@@ -422,6 +422,19 @@ rectangle elementObj::implObj::get_absolute_location_on_screen(ONLY IN_THREAD)
 	return r;
 }
 
+bool elementObj::implObj::can_be_under_pointer(ONLY IN_THREAD) const
+{
+	// Ignore zombies!
+
+	if (data(IN_THREAD).removed)
+		return false;
+
+	if (!data(IN_THREAD).reported_inherited_visibility)
+		return false;
+
+	return true;
+}
+
 bool elementObj::implObj::redraw_scheduled(ONLY IN_THREAD)
 {
 	auto elements_to_redraw=IN_THREAD->elements_to_redraw(IN_THREAD);
