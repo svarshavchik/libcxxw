@@ -1,6 +1,6 @@
 <!--
 
-Copyright 2017 Double Precision, Inc.
+Copyright 2017-2018 Double Precision, Inc.
 See COPYING for distribution information.
 
 -->
@@ -147,6 +147,20 @@ See COPYING for distribution information.
 	  </listitem>
 	</varlistentry>
       </variablelist>
+
+      <para>
+	Additionally all text input fields accept dropped plain text from other
+	running	applications.
+	After making a primary selection: pressing the
+	first pointer button with the pointer on top of the primary selection
+	drags the selected text for dropping into other running applications
+	that receive plain text content. The pointer changes shape to indicate
+	whether the other application accepts plain text dropped content.
+      </para>
+
+      <para>
+	This includes other enabled text input fields on the same window.
+      </para>
     </section>
 
     <section id="input_field">

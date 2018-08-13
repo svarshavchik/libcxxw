@@ -276,6 +276,15 @@ const &ns;::w::main_window dialog_window;</programlisting>
       ways: typing in the filename manually followed by
       <quote>Enter</quote>, or clicking the <quote>Ok</quote> button;
       or double-clicking on an existing file in the list of shown files.
+      It's also possible to use the system
+      file managers to drag an icon for a file into the file dialog and
+      drop it on top of the file directory listing (anywhere except for
+      the filename field, which is a text input field
+      <link linkend="textclipboards">that only accepts dropped plain
+	text content</link>. Dropping a file icon is equivalent to
+      typing in its filename, followed by <quote>Enter</quote>.
+    </para>
+    <para>
       The dialog does not get automatically closed, but the first parameter
       to the lambda is the <classname>&ns;::w::file_dialog</classname>,
       in case it should be <methodname>hide</methodname>()-en.
