@@ -188,6 +188,13 @@ libcxxw_la_SOURCES=\
 	dirlisting/filedir_file.H		    \
 	dirlisting/filedir_filefwd.H		    \
 	dirlisting/filedir_fileobj.H		    \
+	drag_destination_element.H		    \
+	drag_destination_elementfwd.H		    \
+	drag_source.C				    \
+	drag_source.H				    \
+	drag_source_element.H			    \
+	drag_source_elementfwd.H		    \
+	drop_destination.C			    \
 	drawable.C				    \
 	drawable.H				    \
 	drawable_impl.C				    \
@@ -713,6 +720,13 @@ libcxxw_la_SOURCES=\
 	selection/current_selection.C		    \
 	selection/current_selection.H		    \
 	selection/current_selectionfwd.H	    \
+	selection/current_selection_handler.C	    \
+	selection/current_selection_handler.H	    \
+	selection/current_selection_handlerobj.H    \
+	selection/current_selection_paste_handler.C \
+	selection/current_selection_paste_handler.H \
+	selection/current_selection_paste_handlerfwd.H \
+	selection/current_selection_paste_handlerobj.H \
 	selection/incremental_selection_updates.C   \
 	selection/incremental_selection_updates.H   \
 	selection/convert_selection.C		    \

@@ -14,6 +14,8 @@
 #include "icon_images_set_elementfwd.H"
 #include "cursor_pointer_elementfwd.H"
 #include "shortcut/installed_shortcutfwd.H"
+#include "selection/current_selectionfwd.H"
+#include "x/w/impl/selection/current_selection_handlerfwd.H"
 #include "x/w/impl/background_colorfwd.H"
 #include "x/w/impl/background_color_elementfwd.H"
 #include "x/w/connection_threadfwd.H"
@@ -27,6 +29,7 @@
 #include "x/w/rgb.H"
 #include "x/w/main_windowfwd.H"
 #include "x/w/impl/focus/focusablefwd.H"
+#include "x/w/impl/dnd.H"
 #include "x/w/fontfwd.H"
 #include <string_view>
 #include <courier-unicode.h>
@@ -219,6 +222,14 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 	weakptr<grabbed_pointerptr> current_pointer_grab_thread_only;
  public:
+
+	//! Determine which element is receiving pointer events now.
+
+	//! This can be current_pointer_grab(), or
+	//! most_recent_popup_with_pointer(),
+	//! most_recent_element_with_pointer().
+
+	element_implptr current_pointer_event_destination(ONLY IN_THREAD);
 
 	//! Attempt to grab a pointer on behalf of an element.
 
@@ -580,6 +591,26 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 	void grab(ONLY IN_THREAD, const ref<elementObj::implObj> &e);
 
+	//! Process XdndEnter from drag source
+	void process_drag_enter(ONLY IN_THREAD,
+				const xcb_client_message_event_t *event);
+
+	//! Process XdndPosition from drag source
+	void process_drag_position(ONLY IN_THREAD,
+				   const xcb_client_message_event_t *event);
+
+	//! Process XdndLeave from drag source
+	void process_drag_leave(ONLY IN_THREAD,
+				const xcb_client_message_event_t *event);
+
+	//! Process XdndDrop from drag source
+	void process_drag_drop(ONLY IN_THREAD,
+			       const xcb_client_message_event_t *event);
+
+	//! Process XdndStatus and XdndFinish from the drop target.
+
+	void process_drag_response(ONLY IN_THREAD,
+				   const xcb_client_message_event_t *event);
 	friend class shared_handler_dataObj;
  protected:
 
@@ -780,39 +811,22 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
  private:
 
-	xcb_atom_t clipboard_being_pasted;
-	xcb_timestamp_t clipboard_paste_timestamp;
+	//! Which clipboard is in use for the current paste operation.
+	xcb_atom_t clipboard_being_pasted_thread_only;
 
-	//! Conversion handler for pasted text.
-
-	class LIBCXX_HIDDEN paste_selected_text : unicode::iconvert::tou {
-
-	public:
-		std::u32string text;
-
-		bool begin_converted_data(ONLY IN_THREAD,
-					  xcb_atom_t type,
-					  xcb_timestamp_t timestamp);
-
-		void converted_data(ONLY IN_THREAD,
-				    void *data,
-				    size_t size,
-				    generic_windowObj::handlerObj &me);
-
-		int converted(const char32_t *ptr, size_t cnt) override;
-
-		void end_converted_data(ONLY IN_THREAD,
-					generic_windowObj::handlerObj &me);
-
-		void conversion_failed(ONLY IN_THREAD,
-				       xcb_atom_t type,
-				       generic_windowObj::handlerObj &me);
-	};
+	//! Current paste operation's timestamp.
+	xcb_timestamp_t clipboard_paste_timestamp_thread_only;
 
 	//! Currently installed handler for receiving converted selections.
 
-	std::variant<paste_selected_text> conversion_handler;
+	current_selection_handlerptr conversion_handler_thread_only;
 
+ public:
+	THREAD_DATA_ONLY(clipboard_being_pasted);
+	THREAD_DATA_ONLY(clipboard_paste_timestamp);
+	THREAD_DATA_ONLY(conversion_handler);
+
+ private:
 	////////////////////////////////////////////////////////////////////
 	//
 	// Inherited from window_handlerObj. Implements its conversion
@@ -880,6 +894,33 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! Set XCB_CW_CURSOR accordingly.
 	void update_displayed_cursor_pointer(ONLY IN_THREAD);
 
+	//! Implement client_message_event.
+
+	//! X drag and drop implementation
+	void client_message_event(ONLY IN_THREAD,
+				  const xcb_client_message_event_t *event)
+		override;
+
+ private:
+	//! Drag-and-drop source wants to drop something to us.
+
+	xcb_window_t source_dnd_thread_only=XCB_NONE;
+
+	//! Which DND version the source implements.
+
+	unsigned char source_dnd_version_thread_only=0;
+
+	//! Which formats the source supports.
+	source_dnd_formats_t source_dnd_formats_thread_only;
+
+	//! Which element is accepting the drop
+
+	weakptr<element_implptr> dnd_drop_target_thread_only;
+ public:
+	THREAD_DATA_ONLY(source_dnd);
+	THREAD_DATA_ONLY(source_dnd_version);
+	THREAD_DATA_ONLY(source_dnd_formats);
+	THREAD_DATA_ONLY(dnd_drop_target);
 };
 
 LIBCXXW_NAMESPACE_END

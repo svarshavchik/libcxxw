@@ -16,7 +16,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-//! A mixin for inherting from a display element, and a hotspotObj::implObj.
+//! A mixin for inheriting from a display element, and a hotspotObj::implObj.
 
 //! The template parameter must be a subclass of child_elementObj.
 //! This mixin alos requires the focusable_element mixin. A hotspot is

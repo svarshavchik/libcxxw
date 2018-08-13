@@ -36,6 +36,8 @@
 #include <x/w/impl/focus/label_forfwd.H>
 #include <x/w/impl/fonts/current_fontcollectionfwd.H>
 #include <x/w/impl/popup/popupfwd.H>
+#include <x/w/impl/dnd.H>
+#include <x/w/impl/selection/current_selection_handlerfwd.H>
 #include <x/w/key_eventfwd.H>
 #include <x/w/fontfwd.H>
 #include <x/w/tooltipfwd.H>
@@ -1466,6 +1468,45 @@ class elementObj::implObj : public element_drawObj,
 
 	//! Recursively build this element's name.
 	virtual void element_name(std::ostream &);
+
+	//! Find an element that will accept something dropped into it.
+
+	//! find_acceptable_drop() gets called for the element under the current
+	//! drag position.
+	//!
+	//! The default implementation returns false.
+	//!
+	//! child_elementObj forwards the call to its container's element.
+	//!
+	//! If a display element accepts this drop, find_acceptable_drop()
+	//! returns true, with accepting_element set to the accepting element.
+	//!
+	//! Otherwise the passed-in accepting_element should not be modified.
+
+	virtual bool find_acceptable_drop(ONLY IN_THREAD,
+					  ref<implObj> &accepting_element,
+					  const source_dnd_formats_t
+					  &source_formats,
+					  xcb_timestamp_t timestamp);
+
+	//! Update dragging location.
+
+	//! If accepts_drop(), the accepting element's dragging_location()
+	//! gets called.
+	virtual void dragging_location(ONLY IN_THREAD, coord_t x, coord_t y,
+				       xcb_timestamp_t timestamp);
+
+	//! Drop the dragged content.
+
+	virtual current_selection_handlerptr drop(ONLY IN_THREAD,
+						  xcb_atom_t &type,
+						  const ref<obj>
+						  &finish_mcguffin);
+
+	//! Process a response to my drag messages (from the drop target)
+
+	virtual bool drag_response(ONLY IN_THREAD,
+				   const xcb_client_message_event_t *event);
 };
 
 LIBCXXW_NAMESPACE_END

@@ -6,11 +6,15 @@
 #include "editor.H"
 #include "editor_impl.H"
 #include "cursor_pointer_element.H"
+#include "drag_source_element.H"
+#include "drag_destination_element.H"
 #include "x/w/impl/theme_font_element.H"
 #include "x/w/impl/background_color_element.H"
 #include "screen.H"
 #include "x/w/impl/draw_info.H"
+#include "x/w/impl/themedimfwd.H"
 #include "busy.H"
+#include "defaulttheme.H"
 #include "x/w/impl/fonts/current_fontcollection.H"
 #include "x/w/impl/fonts/fontcollection.H"
 #include "x/w/impl/focus/focusable_element.H"
@@ -20,6 +24,7 @@
 #include "richtext/richtextiterator.H"
 #include "richtext/richtext_draw_info.H"
 #include "selection/current_selection.H"
+#include "selection/current_selection_paste_handler.H"
 #include "x/w/impl/background_color.H"
 #include "messages.H"
 #include "connection_thread.H"
@@ -36,6 +41,7 @@
 #include <chrono>
 #include <iterator>
 #include <algorithm>
+#include <xcb/xproto.h>
 
 LIBCXXW_NAMESPACE_START
 
@@ -209,9 +215,6 @@ struct LIBCXX_HIDDEN editorObj::implObj::moving_cursor {
 
 class editorObj::implObj::selectionObj : public current_selectionObj {
 
-	// Indicates a removed selection.
-	bool valid_flag_thread_only=true;
-
 	// My editor object. Must be weakly captured to avoid circular refs.
 
 	weakptr<ptr<implObj>> me;
@@ -220,21 +223,82 @@ class editorObj::implObj::selectionObj : public current_selectionObj {
 	std::u32string cut_text;
 
 public:
-	THREAD_DATA_ONLY(valid_flag);
+	// Whether the cut_text contains only US-ASCII
+
+	bool us_ascii_only() const
+	{
+		for (auto c:cut_text)
+			if (c < 0 || c > 127)
+				return false;
+		return true;
+	}
+
+	// Whether the cut_text contains only ISO-8859-1
+
+	bool iso_8859_only() const
+	{
+		for (auto c:cut_text)
+			if (c < 0 || c > 255)
+				return false;
+		return true;
+	}
 
 	selectionObj(xcb_timestamp_t timestamp, const ref<implObj> &me,
 		     const richtextiterator &other);
 
 	~selectionObj()=default;
 
-	bool stillvalid(ONLY IN_THREAD) override;
-
 	void clear(ONLY IN_THREAD) override;
+
+	virtual void clear(ONLY IN_THREAD, const ref<implObj> &me)=0;
 
 	ptr<convertedValueObj> convert(ONLY IN_THREAD, xcb_atom_t type)
 		override;
 
 	std::vector<xcb_atom_t> supported(ONLY IN_THREAD) override;
+};
+
+class editorObj::implObj::primary_selectionObj : public selectionObj {
+
+public:
+
+	using selectionObj::selectionObj;
+
+	void clear(ONLY IN_THREAD, const ref<implObj> &me) override
+	{
+		bool ignored;
+
+		// Leverage moving_cursor for all the heavy lifting.
+		//
+		// We pretend that we're moving the cursor without
+		// a selection in progress, that's all.
+		moving_cursor dummy{IN_THREAD, *me, false, true, ignored};
+
+		me->primary_selection(IN_THREAD)=nullptr;
+	}
+};
+
+class editorObj::implObj::secondary_selectionObj : public selectionObj {
+
+public:
+
+	using selectionObj::selectionObj;
+
+	void clear(ONLY IN_THREAD, const ref<implObj> &me) override
+	{
+		me->secondary_selection(IN_THREAD)=nullptr;
+	}
+};
+
+class editorObj::implObj::xdnd_selectionObj : public selectionObj {
+
+public:
+	using selectionObj::selectionObj;
+
+	void clear(ONLY IN_THREAD, const ref<implObj> &me) override
+	{
+		me->abort_dragging(IN_THREAD);
+	}
 };
 
 ////////////////////////////////////////////////////////////////////////////
@@ -272,23 +336,34 @@ editorObj::implObj::selection_cursor_t::lock::~lock()=default;
 editorObj::implObj::implObj(init_args &args)
 	: richtext_password_info{args.config},
 	  superclass_t{args.config.background_color,	// Background colors
-			  args.config.disabled_background_color,
+		       args.config.disabled_background_color,
 
-			  // Invisible pointer cursor
-			  args.parent_peephole->container_element_impl()
-			  .get_window_handler()
-			  .create_icon({"cursor-invisible"})->create_cursor(),
-			  // Capture the string's font.
-			  args.default_meta.getfont(),
-			  args.parent_peephole, args.config.alignment, 0,
-			  create_initial_string(args, *this),
-			  args.default_meta,
-			  false,
-			  "textedit@libcxx.com",
+		       // Invisible pointer cursor
+		       args.parent_peephole->container_element_impl()
+		       .get_window_handler()
+		       .create_icon({"cursor-invisible"})->create_cursor(),
 
-			  // Initial background_color
-			  args.config.background_color},
+		       // Dragging cursor pointer
+		       args.parent_peephole->container_element_impl()
+		       .get_window_handler()
+		       .create_icon({"cursor-dragging"})->create_cursor(),
+
+		       // Dragging cursor pointer
+		       args.parent_peephole->container_element_impl()
+		       .get_window_handler()
+		       .create_icon({"cursor-dragging-wontdrop"})->create_cursor(),
+		       // Capture the string's font.
+		       args.default_meta.getfont(),
+		       args.parent_peephole, args.config.alignment, 0,
+		       create_initial_string(args, *this),
+		       args.default_meta,
+		       false,
+		       "textedit@libcxx.com",
+
+		       // Initial background_color
+		       args.config.background_color},
 	  cursor{this->text->end()},
+	  dragged_pos{cursor->clone()},
 	  parent_peephole{args.parent_peephole},
 	  config{args.config}
 {
@@ -550,9 +625,9 @@ bool editorObj::implObj::process_key_event(ONLY IN_THREAD, const key_event &ke)
 	// The peephole's report_motion_event() restores the default pointer.
 
 	if (ke.keypress)
-		parent_peephole->get_element_impl()
-			.set_cursor_pointer(IN_THREAD,
-					    tagged_cursor_pointer(IN_THREAD));
+		set_cursor_pointer(IN_THREAD,
+				   cursor_pointer_1tag<invisible_pointer>
+				   ::tagged_cursor_pointer(IN_THREAD));
 
 	if (ke.keypress && ke.notspecial())
 	{
@@ -572,6 +647,12 @@ bool editorObj::implObj::process_key_event(ONLY IN_THREAD, const key_event &ke)
 		}
 
 	return superclass_t::process_key_event(IN_THREAD, ke);
+}
+
+void editorObj::implObj::set_cursor_pointer(ONLY IN_THREAD,
+					    const cursor_pointer &p)
+{
+	parent_peephole->get_element_impl().set_cursor_pointer(IN_THREAD, p);
 }
 
 bool editorObj::implObj::process_keypress(ONLY IN_THREAD, const key_event &ke)
@@ -991,22 +1072,91 @@ bool editorObj::implObj::process_button_event(ONLY IN_THREAD,
 	{
 		bool ignored;
 
-		moving_cursor moving{IN_THREAD, *this, be, ignored};
+		abort_dragging(IN_THREAD); // Something stale?
 
-		cursor->moveto(IN_THREAD, most_recent_x, most_recent_y);
+		if (be.button == 1)
+		{
+			selection_cursor_t::lock
+				cursor_lock{IN_THREAD, *this};
+
+			// If we're clicking in a middle of a selection,
+			// we might end up dragging the selected text.
+
+			if (cursor_lock.cursor)
+			{
+				richtextiterator a{cursor_lock.cursor};
+				richtextiterator b=cursor;
+
+				if (a->compare(b) > 0)
+					std::swap(a, b);
+
+				richtextiterator c=b->clone();
+
+				if (c->moveto(IN_THREAD,
+					      most_recent_x,
+					      most_recent_y) &&
+				    a->compare(c) <= 0 &&
+				    b->compare(c) > 0)
+				{
+					auto s=ref<xdnd_selectionObj>::create
+						(timestamp, ref(this),
+						 cursor_lock.cursor);
+
+
+					std::vector<xcb_atom_t> source_formats
+						{IN_THREAD->info->atoms_info
+						 .text_plain_utf8_mime};
+
+					if (s->iso_8859_only())
+					{
+						source_formats.push_back
+							(IN_THREAD->info
+							 ->atoms_info
+							 .text_plain_mime);
+					}
+
+					start_dragging(IN_THREAD,
+						       s, source_formats,
+						       most_recent_x,
+						       most_recent_y);
+				}
+			}
+
+		}
 
 		// We grab the pointer while the button is held down.
 		grab(IN_THREAD);
 
-		if (be.button == 2)
-			get_window_handler().paste(IN_THREAD, XCB_ATOM_PRIMARY,
-						   timestamp);
+		// If we figured out we're not dragging currently selected text,
+		// we'll do what we normally do when a button is pressed.
+
+		if (!grab_inprogress)
+		{
+			moving_cursor moving{IN_THREAD, *this, be, ignored};
+
+			cursor->moveto(IN_THREAD, most_recent_x, most_recent_y);
+
+			if (be.button == 2)
+				get_window_handler().paste(IN_THREAD,
+							   XCB_ATOM_PRIMARY,
+							   timestamp);
+		}
 	}
 	else if (be.button == 1)
 	{
-		stop_scrolling(IN_THREAD);
-		create_primary_selection(IN_THREAD);
+		if (grab_inprogress)
+		{
+			release_dragged_selection(IN_THREAD);
+		}
+		else
+		{
+			stop_scrolling(IN_THREAD);
+			create_primary_selection(IN_THREAD);
+		}
 	}
+
+	if (!be.press)
+		abort_dragging(IN_THREAD);
 
 	// We do not consume the button event. The peephole with this editor
 	// element also consumes the button press, and moves the input focus
@@ -1018,12 +1168,18 @@ bool editorObj::implObj::process_button_event(ONLY IN_THREAD,
 void editorObj::implObj::report_motion_event(ONLY IN_THREAD,
 					     const motion_event &me)
 {
-	superclass_t::report_motion_event(IN_THREAD, me);
-
-	// If we're hiding the pointer, remove it.
-
 	most_recent_x=me.x;
 	most_recent_y=me.y;
+
+	if (grab_inprogress)
+	{
+		report_dragged_motion_event(IN_THREAD, me);
+		return;
+	}
+
+	// If we're hiding the pointer, remove it. This is done
+	// in editor_peephole_impl:
+	superclass_t::report_motion_event(IN_THREAD, me);
 
 	if ((me.mask.buttons & 1) && me.type == motion_event_type::real_motion)
 	{
@@ -1037,6 +1193,65 @@ void editorObj::implObj::report_motion_event(ONLY IN_THREAD,
 		if (!motion_scroll_callback)
 			start_scrolling(IN_THREAD);
 	}
+}
+
+bool editorObj::implObj::accepts_drop(ONLY IN_THREAD,
+				      const source_dnd_formats_t
+				      &source_formats,
+				      xcb_timestamp_t timestamp)
+{
+	if (source_formats.count(IN_THREAD->info
+				 ->atoms_info.text_plain_utf8_mime) > 0)
+	{
+		dropped_atom=IN_THREAD->info->atoms_info.text_plain_utf8_mime;
+		return true;
+	}
+
+	if (source_formats.count(IN_THREAD->info
+				 ->atoms_info.text_plain_mime) > 0)
+	{
+		dropped_atom=IN_THREAD->info->atoms_info.text_plain_mime;
+		return true;
+	}
+
+	if (source_formats.count(IN_THREAD->info
+				 ->atoms_info.text_plain_iso8859_mime) > 0)
+	{
+		dropped_atom=
+			IN_THREAD->info->atoms_info.text_plain_iso8859_mime;
+		return true;
+	}
+	return false;
+}
+
+void editorObj::implObj::dragging_location(ONLY IN_THREAD, coord_t x, coord_t y,
+					   xcb_timestamp_t timestamp)
+{
+	dragged_pos->moveto(IN_THREAD, x, y);
+}
+
+current_selection_handlerptr
+editorObj::implObj::drop(ONLY IN_THREAD,
+			 xcb_atom_t &type,
+			 const ref<obj> &finish_mcguffin)
+{
+	// The first step is to move the cursor to where the drag was dropped.
+	//
+	// We're borrowing the cut-paste framework, which pastes text to
+	// where the current input focus is.
+
+	bool moved=false;
+	{
+		moving_cursor moving{IN_THREAD, *this, false, false, moved};
+
+		cursor->swap(dragged_pos);
+		set_focus_only(IN_THREAD, {});
+	}
+
+	type=dropped_atom;
+
+	return current_selection_paste_handler
+		::create(std::vector<xcb_atom_t>{}, finish_mcguffin);
 }
 
 void editorObj::implObj::start_scrolling(ONLY IN_THREAD)
@@ -1095,27 +1310,13 @@ selectionObj(xcb_timestamp_t timestamp, const ref<implObj> &me,
 {
 }
 
-bool editorObj::implObj::selectionObj::stillvalid(ONLY IN_THREAD)
-{
-	return valid_flag(IN_THREAD);
-}
-
 void editorObj::implObj::selectionObj::clear(ONLY IN_THREAD)
 {
 	auto p=me.getptr();
 
-	if (p)
-	{
-		bool ignored;
-
-		// Leverage moving_cursor for all the heavy lifting.
-		//
-		// We pretend that we're moving the cursor without
-		// a selection in progress, that's all.
-		moving_cursor dummy{IN_THREAD, *p, false, true, ignored};
-
-		p->primary_selection(IN_THREAD)=nullptr;
-	}
+	if (!p)
+		return;
+	clear(IN_THREAD, p);
 }
 
 std::vector<xcb_atom_t> editorObj::implObj::selectionObj
@@ -1129,8 +1330,16 @@ std::vector<xcb_atom_t> editorObj::implObj::selectionObj
 	{
 		const auto &atoms=IN_THREAD->info->atoms_info;
 
+		v.push_back(atoms.text_plain_utf8_mime);
 		v.push_back(atoms.utf8_string);
-		v.push_back(atoms.string);
+
+		if (us_ascii_only())
+			v.push_back(atoms.string);
+		if (iso_8859_only())
+		{
+			v.push_back(atoms.text_plain_mime);
+			v.push_back(atoms.text_plain_iso8859_mime);
+		}
 	}
 
 	return v;
@@ -1151,8 +1360,19 @@ ptr<current_selectionObj::convertedValueObj> editorObj::implObj::selectionObj
 			->info->atoms_info;
 
 		if (type == atoms.string)
-			charset=unicode::iso_8859_1;
-		if (type == atoms.utf8_string)
+		{
+			if (us_ascii_only())
+				charset=unicode::iso_8859_1;
+		}
+
+		if (type == atoms.text_plain_mime ||
+		    type == atoms.text_plain_iso8859_mime)
+		{
+			if (iso_8859_only())
+				charset=unicode::iso_8859_1;
+		}
+		if (type == atoms.utf8_string ||
+		    type == atoms.text_plain_utf8_mime)
 			charset=unicode::utf_8;
 	}
 
@@ -1204,17 +1424,6 @@ void editorObj::implObj::delete_selection_info::do_delete(ONLY IN_THREAD)
 	me.remove_primary_selection(IN_THREAD);
 }
 
-editorObj::implObj::selection
-editorObj::implObj::create_selection(ONLY IN_THREAD)
-{
-	selection_cursor_t::lock cursor_lock{IN_THREAD, *this};
-
-	return selection::create(get_screen()->impl->thread
-				 ->timestamp(IN_THREAD),
-				 ref<implObj>(this),
-				 cursor_lock.cursor);
-}
-
 void editorObj::implObj::create_primary_selection(ONLY IN_THREAD)
 {
 	if (!config.update_clipboards)
@@ -1231,7 +1440,10 @@ void editorObj::implObj::create_primary_selection(ONLY IN_THREAD)
 
 	remove_primary_selection(IN_THREAD);
 
-	auto s=create_selection(IN_THREAD);
+	auto s=ref<primary_selectionObj>
+		::create(get_screen()->impl->thread->timestamp(IN_THREAD),
+			 ref(this), cursor_lock.cursor);
+
 	primary_selection(IN_THREAD)=s;
 	get_window_handler().selection_announce(IN_THREAD, XCB_ATOM_PRIMARY, s);
 }
@@ -1252,7 +1464,10 @@ void editorObj::implObj::create_secondary_selection(ONLY IN_THREAD)
 
 	remove_secondary_selection(IN_THREAD);
 
-	auto s=create_selection(IN_THREAD);
+	auto s=ref<secondary_selectionObj>
+		::create(get_screen()->impl->thread->timestamp(IN_THREAD),
+			 ref(this), cursor_lock.cursor);
+
 	secondary_selection(IN_THREAD)=s;
 	get_window_handler().selection_announce(IN_THREAD, XCB_ATOM_SECONDARY,
 						s);
@@ -1266,7 +1481,7 @@ void editorObj::implObj::remove_primary_selection(ONLY IN_THREAD)
 	if (!primary_selection(IN_THREAD))
 		return;
 
-	primary_selection(IN_THREAD)->valid_flag(IN_THREAD)=false;
+	primary_selection(IN_THREAD)->stillvalid(IN_THREAD)=false;
 	primary_selection(IN_THREAD)=nullptr;
 
 	get_window_handler().selection_discard(IN_THREAD, XCB_ATOM_PRIMARY);
@@ -1280,7 +1495,7 @@ void editorObj::implObj::remove_secondary_selection(ONLY IN_THREAD)
 	if (!secondary_selection(IN_THREAD))
 		return;
 
-	secondary_selection(IN_THREAD)->valid_flag(IN_THREAD)=false;
+	secondary_selection(IN_THREAD)->stillvalid(IN_THREAD)=false;
 	secondary_selection(IN_THREAD)=nullptr;
 
 	get_window_handler().selection_discard(IN_THREAD, XCB_ATOM_SECONDARY);
@@ -1474,6 +1689,20 @@ bool editorObj::implObj::validate_modified(ONLY IN_THREAD,
 	if (flag)
 		validation_required(IN_THREAD)=false;
 	return flag;
+}
+
+void editorObj::implObj::show_droppable_pointer(ONLY IN_THREAD)
+{
+	set_cursor_pointer(IN_THREAD,
+			   cursor_pointer_1tag<dragging_pointer>
+			   ::tagged_cursor_pointer(IN_THREAD));
+}
+
+void editorObj::implObj::show_notdroppable_pointer(ONLY IN_THREAD)
+{
+	set_cursor_pointer(IN_THREAD,
+			   cursor_pointer_1tag<dragging_wontdrop_pointer>
+			   ::tagged_cursor_pointer(IN_THREAD));
 }
 
 LIBCXXW_NAMESPACE_END

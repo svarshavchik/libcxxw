@@ -364,7 +364,7 @@ bool child_elementObj::process_button_event(ONLY IN_THREAD,
 
 void child_elementObj::grab(ONLY IN_THREAD)
 {
-	get_window_handler().grab(IN_THREAD, ref<elementObj::implObj>(this));
+	get_window_handler().grab(IN_THREAD, element_impl{this});
 }
 
 void child_elementObj::report_motion_event(ONLY IN_THREAD,

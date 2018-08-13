@@ -76,6 +76,14 @@
   <color id="inputfocus_color1" scale="10%" />
   <color id="inputfocus_color2" scale="50%" />
 
+  <!--
+      Wait until something is dragged this much, before changing the pointer
+      to the dragging pointer.
+  -->
+
+  <dim id="drag_horiz_buffer" axis="horiz">2</dim>
+  <dim id="drag_vert_buffer" axis="vert">2</dim>
+
   <!-- Stock borders -->
 
   <border id="empty">

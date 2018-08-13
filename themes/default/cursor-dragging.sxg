@@ -1,0 +1,121 @@
+<?xml version="1.0"?>
+
+<sxg xmlns:xi="http://www.w3.org/2003/XInclude">
+  <width>14</width>
+  <height>7</height>
+
+  <widthmm>10</widthmm>
+  <heightmm>5</heightmm>
+
+  <widthfactor>14</widthfactor>
+  <heightfactor>7</heightfactor>
+
+  <location id="hotspot">
+    <x>7</x>
+    <y>3.5</y>
+  </location>
+
+  <picture id="black">
+    <type>rgb</type>
+    <color>0%</color>
+  </picture>
+
+  <picture id="white">
+    <type>rgb</type>
+    <color>100%</color>
+  </picture>
+
+  <render id="main">
+    <composite>
+      <op>over</op>
+      <src>
+	<picture>black</picture>
+      </src>
+      <x>0</x>
+      <y>0</y>
+      <width>14</width>
+      <height>7</height>
+    </composite>
+
+    <composite>
+      <op>over</op>
+      <src>
+	<picture>white</picture>
+      </src>
+      <x>1</x>
+      <y>1</y>
+      <width>12</width>
+      <height>5</height>
+    </composite>
+
+    <!-- first line -->
+
+    <composite>
+      <op>over</op>
+      <src>
+	<picture>black</picture>
+      </src>
+      <x>2</x>
+      <y>2</y>
+      <width>3</width>
+      <height>1</height>
+    </composite>
+
+    <composite>
+      <op>over</op>
+      <src>
+	<picture>black</picture>
+      </src>
+      <x>6</x>
+      <y>2</y>
+      <width>3</width>
+      <height>1</height>
+    </composite>
+
+    <composite>
+      <op>over</op>
+      <src>
+	<picture>black</picture>
+      </src>
+      <x>8</x>
+      <y>2</y>
+      <width>3</width>
+      <height>1</height>
+    </composite>
+
+    <!-- second line -->
+
+    <composite>
+      <op>over</op>
+      <src>
+	<picture>black</picture>
+      </src>
+      <x>2</x>
+      <y>4</y>
+      <width>2</width>
+      <height>1</height>
+    </composite>
+
+    <composite>
+      <op>over</op>
+      <src>
+	<picture>black</picture>
+      </src>
+      <x>5</x>
+      <y>4</y>
+      <width>1</width>
+      <height>1</height>
+    </composite>
+
+    <composite>
+      <op>over</op>
+      <src>
+	<picture>black</picture>
+      </src>
+      <x>7</x>
+      <y>4</y>
+      <width>3</width>
+      <height>1</height>
+    </composite>
+  </render>
+</sxg>

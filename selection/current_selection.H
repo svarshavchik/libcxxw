@@ -10,12 +10,12 @@
 #include <xcb/xcb.h>
 #include <xcb/xproto.h>
 
-#include "x/w/connection_threadfwd.H"
+#include "x/w/impl/connection_threadfwd.H"
 #include "selection/current_selectionfwd.H"
 
 LIBCXXW_NAMESPACE_START
 
-/*! An object representing a primary or a secondary selection.
+/*! An object representing an X selection.
 
 A window that wishes to publish a selection sends this object to the
 connection thread, the selection_announce() message.
@@ -32,7 +32,18 @@ is going to return false, then sends a selection_withdraw() message.
 
 class LIBCXX_HIDDEN current_selectionObj : virtual public obj {
 
+	//! Whether this selection is still valid.
+
+	//! Indicates whether the original display element still considers
+	//! this a valid selection.
+	//!
+	//! A display element discards a selection by setting stillvalid to
+	//! false, then calling selection_discard().
+	bool stillvalid_thread_only=true;
+
  public:
+
+	THREAD_DATA_ONLY(stillvalid);
 
 	//! Selection's timestamp.
 	const xcb_timestamp_t timestamp;
@@ -42,12 +53,6 @@ class LIBCXX_HIDDEN current_selectionObj : virtual public obj {
 
 	//! Destructor
 	~current_selectionObj();
-
-	//! Whether this selection is still valid.
-
-	//! Indicates whether the original display element still considers
-	//! this a valid selection.
-	virtual bool stillvalid(ONLY IN_THREAD)=0;
 
 	//! This selection will not be used any more.
 
@@ -62,7 +67,7 @@ class LIBCXX_HIDDEN current_selectionObj : virtual public obj {
 	// a null ptr if the current selection value cannot be converted.
 	virtual ptr<convertedValueObj> convert(ONLY IN_THREAD, xcb_atom_t)=0;
 
-	// For which targets convert() is supported.
+	// For which formats convert() is supported.
 
 	virtual std::vector<xcb_atom_t> supported(ONLY IN_THREAD)=0;
 };

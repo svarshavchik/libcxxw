@@ -9,6 +9,7 @@
 #include "editor.H"
 #include "editor_impl.H"
 #include "peephole/peephole_layoutmanager_impl.H"
+#include "drag_destination_element.H"
 #include "x/w/impl/fonts/current_fontcollection.H"
 #include "x/w/impl/fonts/fontcollection.H"
 #include "x/w/button_event.H"
@@ -49,6 +50,26 @@ bool editor_peephole_implObj::process_button_event(ONLY IN_THREAD,
 			    f->get_impl()->set_focus_only(IN_THREAD, &be);
 		    });
 	return true;
+}
+
+bool editor_peephole_implObj
+::find_acceptable_drop(ONLY IN_THREAD,
+		       element_impl &accepting_element,
+		       const source_dnd_formats_t &source_formats,
+		       xcb_timestamp_t timestamp)
+{
+	bool flag=false;
+
+	get_element([&]
+		    (const editor &e)
+		    {
+			    flag=e->impl->this_element_accepts_this_drop
+				    (IN_THREAD,
+				     accepting_element,
+				     source_formats,
+				     timestamp);
+		    });
+	return flag;
 }
 
 void editor_peephole_implObj::report_motion_event(ONLY IN_THREAD,

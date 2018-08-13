@@ -1,5 +1,5 @@
 headerdir=$(includedir)/x/w/impl
-SUBDIRS=focus fonts popup
+SUBDIRS=focus fonts popup selection
 
 header_HEADERS = $(shell cd $(srcdir) && echo *.H)
 

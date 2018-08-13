@@ -109,6 +109,7 @@ void main_windowObj::handlerObj
 					 screenref->impl->xcb_screen->root))
 			return;
 	}
+	superclass_t::client_message_event(IN_THREAD, event);
 }
 
 void main_windowObj::handlerObj::horizvert_updated(ONLY IN_THREAD)

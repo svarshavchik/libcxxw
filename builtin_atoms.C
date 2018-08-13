@@ -38,6 +38,26 @@ builtin_atoms::builtin_atoms(xcb_connection_t *conn)
 		{"_XIM_PROTOCOL", &builtin_atoms::xim_protocol},
 		{"_XIM_MOREDATA", &builtin_atoms::xim_moredata},
 		{"_clientXXX", &builtin_atoms::xim_clientXXX},
+
+		{"XdndAware", &builtin_atoms::XdndAware},
+		{"XdndProxy", &builtin_atoms::XdndProxy},
+		{"XdndEnter", &builtin_atoms::XdndEnter},
+		{"XdndLeave", &builtin_atoms::XdndLeave},
+		{"XdndPosition", &builtin_atoms::XdndPosition},
+		{"XdndStatus", &builtin_atoms::XdndStatus},
+		{"XdndFinished", &builtin_atoms::XdndFinished},
+		{"XdndDrop", &builtin_atoms::XdndDrop},
+		{"XdndActionAsk", &builtin_atoms::XdndActionAsk},
+		{"XdndActionCopy", &builtin_atoms::XdndActionCopy},
+		{"XdndActionLink", &builtin_atoms::XdndActionLink},
+		{"XdndActionList", &builtin_atoms::XdndActionList},
+		{"XdndActionMove", &builtin_atoms::XdndActionMove},
+		{"XdndActionPrivate", &builtin_atoms::XdndActionPrivate},
+		{"XdndSelection", &builtin_atoms::XdndSelection},
+		{"XdndTypeList", &builtin_atoms::XdndTypeList},
+		{"text/plain", &builtin_atoms::text_plain_mime},
+		{"text/plain;charset=utf-8", &builtin_atoms::text_plain_utf8_mime},
+		{"text/plain;charset=iso-8859-1", &builtin_atoms::text_plain_iso8859_mime},
 	};
 
 	std::vector<xcb_intern_atom_cookie_t> cookies;

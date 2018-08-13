@@ -1,5 +1,5 @@
 /*
-** Copyright 2017 Double Precision, Inc.
+** Copyright 2017-2018 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 #ifndef editor_impl_h
@@ -18,6 +18,9 @@
 #include "richtext/richtextstring.H"
 #include "richtext/richtextmeta.H"
 #include "richtext/richtext_password_info.H"
+#include "drag_source_elementfwd.H"
+#include "drag_destination_elementfwd.H"
+#include "selection/current_selectionfwd.H"
 
 #include "x/w/input_fieldfwd.H"
 #include "x/w/input_field_config.H"
@@ -33,6 +36,10 @@ LIBCXXW_NAMESPACE_START
 struct textedit_background_color;
 struct textedit_disabled_background_color;
 
+struct invisible_pointer;
+struct dragging_pointer;
+struct dragging_wontdrop_pointer;
+
 //! Compose the superclass for editorObj::implObj.
 
 //! Pulls in various mixins:
@@ -46,10 +53,15 @@ struct textedit_disabled_background_color;
 //! - and the last, but not least, this is a focusable label element.
 
 typedef background_color_elementObj<
-	cursor_pointer_elementObj<theme_font_elementObj
-				  <focusable_elementObj
-				   <label_elementObj<child_elementObj>
-				    >>>,
+	cursor_pointer_elementObj<drag_source_elementObj
+				  <drag_destination_elementObj
+				   <theme_font_elementObj
+				    <focusable_elementObj
+				     <label_elementObj<child_elementObj>
+				      >>>>,
+				  invisible_pointer,
+				  dragging_pointer,
+				  dragging_wontdrop_pointer>,
 	textedit_background_color,
 	textedit_disabled_background_color> editor_impl_superclass_t;
 
@@ -81,6 +93,12 @@ class LIBCXX_HIDDEN editorObj::implObj
 	//! The current cursor position.
 	const richtextiterator cursor;
 
+	//! The current dragging position
+
+	//! dragging_location() updates this cursor. If we ever drop something,
+	//! it'll go here.
+
+	const richtextiterator dragged_pos;
 	//! All access to the contents of the input field goes through here.
 
 	//! Removes the characters between the \c cursor and the \c other
@@ -188,6 +206,10 @@ class LIBCXX_HIDDEN editorObj::implObj
 
 	class selectionObj;
 
+	class primary_selectionObj;
+	class secondary_selectionObj;
+	class xdnd_selectionObj;
+
 	//! Typedef alias
 
 	typedef ref<selectionObj> selection;
@@ -219,6 +241,18 @@ class LIBCXX_HIDDEN editorObj::implObj
 	//! Cleared by a button event or any processed key event.
 
 	bool autoselected=false;
+
+	//! Implement show_droppable_pointer
+
+	//! Invoked from the drag_source_element mixin to change the pointer
+	//! to indicate that the dragged text can be dropped now.
+	void show_droppable_pointer(ONLY IN_THREAD) override;
+
+	//! Implement show_notdroppable_pointer
+
+	//! Invoked from the drag_source_element mixin to change the pointer
+	//! to indicate that the dragged text cannot be dropped now.
+	void show_notdroppable_pointer(ONLY IN_THREAD) override;
 
  public:
 
@@ -345,6 +379,12 @@ class LIBCXX_HIDDEN editorObj::implObj
 	//! Processes a key event.
 	bool process_key_event(ONLY IN_THREAD, const key_event &ke) override;
 
+	//! Set the cursor pointer.
+
+	//! We actually set the cursor pointer on our parent peephole.
+
+	void set_cursor_pointer(ONLY IN_THREAD,
+				const cursor_pointer &p);
 	//! This display element uses XIM.
 
 	bool uses_input_method() override;
@@ -354,11 +394,36 @@ class LIBCXX_HIDDEN editorObj::implObj
 	bool process_button_event(ONLY IN_THREAD,
 				  const button_event &be,
 				  xcb_timestamp_t timestamp) override;
+
 	//! Pointer motion event
 	void report_motion_event(ONLY IN_THREAD, const motion_event &)
 		override;
 
+	//! Check if we will accept dragged content.
+
+	bool accepts_drop(ONLY IN_THREAD,
+			  const source_dnd_formats_t &source_formats,
+			  xcb_timestamp_t timestamp)
+		override;
+
+	//! Update dragging location.
+
+	//! If accepts_drop(), the accepting element's dragging_location()
+	//! gets called.
+	void dragging_location(ONLY IN_THREAD, coord_t x, coord_t y,
+			       xcb_timestamp_t timestamp) override;
+
+	//! Ok, time to drop was the cat dragged in.
+
+	current_selection_handlerptr drop(ONLY IN_THREAD,
+					  xcb_atom_t &type,
+					  const ref<obj> &finish_mcguffin)
+		override;
  private:
+
+	//! The that was dropped.
+	xcb_atom_t dropped_atom=XCB_NONE;
+
 	//! Most recently reported coordinates.
 	coord_t most_recent_x;
 
@@ -482,9 +547,6 @@ class LIBCXX_HIDDEN editorObj::implObj
 
 		void do_delete(ONLY IN_THREAD);
 	};
-
-	//! Create a new selection object.
-	selection create_selection(ONLY IN_THREAD);
 
 	//! Prepare a new primary selection, if we can.
 	void create_primary_selection(ONLY IN_THREAD);

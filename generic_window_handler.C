@@ -21,6 +21,7 @@
 #include "x/w/impl/background_color.H"
 #include "x/w/impl/background_color_element.H"
 #include "cursor_pointer.H"
+#include "selection/current_selection_paste_handler.H"
 #include "x/w/impl/focus/focusable.H"
 #include "grabbed_pointer.H"
 #include "xim/ximclient.H"
@@ -41,7 +42,7 @@
 #include <courier-unicode.h>
 #include <xcb/xcb_icccm.h>
 #include <string>
-
+#include <algorithm>
 LIBCXXW_NAMESPACE_START
 
 static property::value<bool> disable_grabs(LIBCXX_NAMESPACE_STR
@@ -205,17 +206,67 @@ generic_windowObj::handlerObj::~handlerObj()=default;
 
 void generic_windowObj::handlerObj::installed(ONLY IN_THREAD)
 {
-	{
-		mpobj<ewmh>::lock lock{screenref->get_connection()
-				->impl->ewmh_info};
+	auto conn=screenref->get_connection();
 
-		lock->request_frame_extents(screenref->impl->screen_number, id());
+	{
+		mpobj<ewmh>::lock lock{conn->impl->ewmh_info};
+
+		lock->request_frame_extents(screenref->impl->screen_number,
+					    id());
 	}
 
+	// Drag and drop version 5
+
+	xcb_atom_t version=5;
+	change_property(IN_THREAD,
+			XCB_PROP_MODE_REPLACE,
+			conn->impl->info->atoms_info.XdndAware,
+			XCB_ATOM_ATOM,
+			sizeof(xcb_atom_t)*8,
+			1,
+			&version);
 	// The top level window is not a child element in a container,
 	// so it is, hereby, initialized!
 
 	initialize_if_needed(IN_THREAD);
+}
+
+void generic_windowObj::handlerObj
+::client_message_event(ONLY IN_THREAD,
+		       const xcb_client_message_event_t *event)
+{
+	// Drag and drop target processing.
+
+	if (event->type == IN_THREAD->info->atoms_info.XdndEnter)
+	{
+		process_drag_enter(IN_THREAD, event);
+		return;
+	}
+	if (event->type == IN_THREAD->info->atoms_info.XdndPosition)
+	{
+		process_drag_position(IN_THREAD, event);
+		return;
+	}
+	if (event->type == IN_THREAD->info->atoms_info.XdndLeave)
+	{
+		process_drag_leave(IN_THREAD, event);
+		return;
+	}
+
+	if (event->type == IN_THREAD->info->atoms_info.XdndDrop)
+	{
+		process_drag_drop(IN_THREAD, event);
+		return;
+	}
+
+	// Drag and drop source processing.
+
+	if (event->type == IN_THREAD->info->atoms_info.XdndStatus ||
+	    event->type == IN_THREAD->info->atoms_info.XdndFinished)
+	{
+		process_drag_response(IN_THREAD, event);
+	}
+	window_handlerObj::client_message_event(IN_THREAD, event);
 }
 
 ////////////////////////////////////////////////////////////////////
@@ -960,6 +1011,33 @@ void generic_windowObj::handlerObj
 
 	if (was_grabbed && !buttonpress)
 		report_to->report_pointer_xy(IN_THREAD, me, false);
+}
+
+element_implptr generic_windowObj::handlerObj
+::current_pointer_event_destination(ONLY IN_THREAD)
+{
+	auto pg=current_pointer_grab(IN_THREAD).getptr();
+
+	if (pg)
+	{
+		auto grabbing_element=pg->get_grab_element(IN_THREAD);
+
+		if (grabbing_element)
+			return grabbing_element;
+
+		auto popup=most_recent_popup_with_pointer(IN_THREAD).getptr();
+
+		if (popup)
+		{
+			auto g=popup->most_recent_element_with_pointer
+				(IN_THREAD);
+
+			if (g)
+				return g;
+		}
+	}
+
+	return most_recent_element_with_pointer(IN_THREAD);
 }
 
 void generic_windowObj::handlerObj
@@ -1723,101 +1801,33 @@ void generic_windowObj::handlerObj
 void generic_windowObj::handlerObj::paste(ONLY IN_THREAD, xcb_atom_t clipboard,
 					  xcb_timestamp_t timestamp)
 {
+	auto handler=current_selection_paste_handler
+		::create(std::vector<xcb_atom_t>{
+				{IN_THREAD->info->atoms_info.string}});
+
 	if (convert_selection(IN_THREAD, clipboard,
 			      IN_THREAD->info->atoms_info.cxxwpaste,
 			      IN_THREAD->info->atoms_info.utf8_string,
 			      timestamp))
 	{
-		clipboard_being_pasted=clipboard;
-		clipboard_paste_timestamp=timestamp;
-		conversion_handler=paste_selected_text{};
+		clipboard_being_pasted(IN_THREAD)=clipboard;
+		clipboard_paste_timestamp(IN_THREAD)=timestamp;
+		conversion_handler(IN_THREAD)=handler;
 	}
 
 }
-
-
-bool generic_windowObj::handlerObj::paste_selected_text
-::begin_converted_data(ONLY IN_THREAD,
-		       xcb_atom_t type,
-		       xcb_timestamp_t timestamp)
-{
-	if (type == IN_THREAD->info->atoms_info.string)
-	{
-		unicode::iconvert::tou::end();
-		unicode::iconvert::tou::begin(unicode::iso_8859_1);
-	}
-	else if (type == IN_THREAD->info->atoms_info.utf8_string)
-	{
-		unicode::iconvert::tou::end();
-		unicode::iconvert::tou::begin(unicode::utf_8);
-	}
-	else
-	{
-		return false;
-	}
-	return true;
-}
-
-void generic_windowObj::handlerObj::paste_selected_text
-::converted_data(ONLY IN_THREAD,
-		 void *data,
-		 size_t size,
-		 generic_windowObj::handlerObj &me)
-{
-	unicode::iconvert::tou::operator()
-		(reinterpret_cast<char *>(data), size);
-
-	try {
-		if (!text.empty())
-			me.pasted_string(IN_THREAD, text);
-	} REPORT_EXCEPTIONS(&me);
-	text.clear();
-}
-
-int generic_windowObj::handlerObj::paste_selected_text
-::converted(const char32_t *ptr, size_t cnt)
-{
-	// This is called from C code. Shouldn't be any exceptions here,
-	// but just in case...
-	try {
-		text.insert(text.end(), ptr, ptr+cnt);
-	} CATCH_EXCEPTIONS;
-	return 0;
-}
-
-void generic_windowObj::handlerObj::paste_selected_text
-::end_converted_data(ONLY IN_THREAD,
-		     generic_windowObj::handlerObj &me)
-{
-	unicode::iconvert::tou::end();
-	try {
-		if (!text.empty())
-			me.pasted_string(IN_THREAD, text);
-	} REPORT_EXCEPTIONS(&me);
-	text.clear();
-}
-
-void generic_windowObj::handlerObj::paste_selected_text
-::conversion_failed(ONLY IN_THREAD,
-		    xcb_atom_t type,
-		    generic_windowObj::handlerObj &me)
-{
-	if (type == IN_THREAD->info->atoms_info.utf8_string)
-		me.convert_selection(IN_THREAD, me.clipboard_being_pasted,
-				     IN_THREAD->info->atoms_info.cxxwpaste,
-				     IN_THREAD->info->atoms_info.string,
-				     me.clipboard_paste_timestamp);
-}
-
 
 void generic_windowObj::handlerObj
 ::conversion_failed(ONLY IN_THREAD, xcb_atom_t type)
 {
-	std::visit([&, this]
-		   (auto &h)
-		   {
-			   h.conversion_failed(IN_THREAD, type, *this);
-		   }, conversion_handler);
+	auto handler=conversion_handler(IN_THREAD);
+
+	if (!handler)
+		return;
+
+	conversion_handler(IN_THREAD)=nullptr;
+
+	handler->conversion_failed(IN_THREAD, type, *this);
 }
 
 void generic_windowObj::handlerObj
@@ -1837,13 +1847,12 @@ bool generic_windowObj::handlerObj
 ::begin_converted_data(ONLY IN_THREAD, xcb_atom_t type,
 		       xcb_timestamp_t timestamp)
 {
-	return std::visit([&]
-			  (auto &h)
-			  {
-				  return h.begin_converted_data(IN_THREAD,
-								type,
-								timestamp);
-			  }, conversion_handler);
+	if (!conversion_handler(IN_THREAD))
+		return false;
+
+	return conversion_handler(IN_THREAD)->begin_converted_data(IN_THREAD,
+								   type,
+								   timestamp);
 }
 
 void generic_windowObj::handlerObj
@@ -1853,21 +1862,24 @@ void generic_windowObj::handlerObj
 		 void *data,
 		 size_t size)
 {
-	std::visit([&, this]
-		   (auto &h)
-		   {
-			   h.converted_data(IN_THREAD, data, size, *this);
-		   }, conversion_handler);
+	if (!conversion_handler(IN_THREAD))
+		return;
+
+	conversion_handler(IN_THREAD)->converted_data(IN_THREAD, data, size,
+						      *this);
 }
 
 void generic_windowObj::handlerObj
 ::end_converted_data(ONLY IN_THREAD)
 {
-	std::visit([&, this]
-		   (auto &h)
-		   {
-			   h.end_converted_data(IN_THREAD, *this);
-		   }, conversion_handler);
+	auto handler=conversion_handler(IN_THREAD);
+
+	if (!handler)
+		return;
+
+	conversion_handler(IN_THREAD)=nullptr;
+
+	handler->end_converted_data(IN_THREAD, *this);
 }
 
 void generic_windowObj::handlerObj

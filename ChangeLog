@@ -1,3 +1,7 @@
+2018-08-12  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* Implement XDND protocol, version 5.
+
 0.5
 
 2018-05-15  Sam Varshavchik  <mrsam@courier-mta.com>

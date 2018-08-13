@@ -12,6 +12,8 @@
 #include <x/mpobj.H>
 #include <x/functional.H>
 #include <queue>
+#include <vector>
+#include <string>
 
 LIBCXXW_NAMESPACE_START
 

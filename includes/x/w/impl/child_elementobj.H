@@ -296,6 +296,16 @@ public:
 
 	//! Include the parent name.
 	void element_name(std::ostream &) override;
+
+
+	//! Forward find_acceptable_drop() to the parent container.
+
+	//! This display element does not, so pass the buck to the container.
+	bool find_acceptable_drop(ONLY IN_THREAD,
+				  element_impl &accepting_element,
+				  const source_dnd_formats_t &source_formats,
+				  xcb_timestamp_t) override;
+
 };
 
 LIBCXXW_NAMESPACE_END

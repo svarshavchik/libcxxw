@@ -6,6 +6,7 @@
 #define builtin_atoms_h
 
 #include <xcb/xcb.h>
+#include <x/namespace.h>
 
 LIBCXXW_NAMESPACE_START
 
@@ -32,6 +33,26 @@ class LIBCXX_HIDDEN builtin_atoms {
 	xcb_atom_t xim_protocol;
 	xcb_atom_t xim_moredata;
 	xcb_atom_t xim_clientXXX;
+
+	xcb_atom_t XdndAware;
+	xcb_atom_t XdndProxy;
+	xcb_atom_t XdndEnter;
+	xcb_atom_t XdndLeave;
+	xcb_atom_t XdndPosition;
+	xcb_atom_t XdndStatus;
+	xcb_atom_t XdndFinished;
+	xcb_atom_t XdndDrop;
+	xcb_atom_t XdndActionAsk;
+	xcb_atom_t XdndActionCopy;
+	xcb_atom_t XdndActionLink;
+	xcb_atom_t XdndActionList;
+	xcb_atom_t XdndActionMove;
+	xcb_atom_t XdndActionPrivate;
+	xcb_atom_t XdndSelection;
+	xcb_atom_t XdndTypeList;
+	xcb_atom_t text_plain_mime;
+	xcb_atom_t text_plain_utf8_mime;
+	xcb_atom_t text_plain_iso8859_mime;
 
 	builtin_atoms(xcb_connection_t *conn);
 };
