@@ -315,6 +315,8 @@ class LIBCXX_INTERNAL rect_slice_pass {
 		std::sort(slicee.begin(), slicee.end(), comparator);
 		std::sort(slicer.begin(), slicer.end(), comparator);
 
+		// Ballpark estimate:
+		//
 		// Each slicer rectangle can potentially slice each slicee
 		// into three rectangles. One of those would replace the
 		// original rectangle, that leaves two more.
@@ -412,7 +414,7 @@ class LIBCXX_INTERNAL rect_slice_pass {
 
 					      copy_size -= n;
 				      });
-			current_slicee=slicee_copy; // Remainder replaces orig.
+			slicee[n]=slicee_copy; // Remainder replaces orig.
 
 			++n;
 		}
