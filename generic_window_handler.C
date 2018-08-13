@@ -1509,9 +1509,20 @@ void generic_windowObj::handlerObj
 		g->report_motion_event(IN_THREAD, me);
 		return;
 	}
-	// Locate the lowermost visible element for the given position.
 
-	ref<elementObj::implObj> e{this};
+	element_impl e{find_element_under(IN_THREAD, me.x, me.y)};
+
+	set_element_with_pointer(IN_THREAD, e);
+
+	if (most_recent_element_with_pointer(IN_THREAD))
+		most_recent_element_with_pointer(IN_THREAD)
+			->report_motion_event(IN_THREAD, me);
+}
+
+element_impl generic_windowObj::handlerObj
+::find_element_under(ONLY IN_THREAD, coord_t &x, coord_t &y)
+{
+	element_impl e{this};
 
 	bool found;
 
@@ -1540,22 +1551,18 @@ void generic_windowObj::handlerObj
 					  const auto &p=child->data(IN_THREAD)
 						  .current_position;
 
-					  if (!p.overlaps(me.x, me.y))
+					  if (!p.overlaps(x, y))
 						  return;
 
 					  found=true;
 					  e=child;
 
-					  me.x=coord_t::truncate(me.x-p.x);
-					  me.y=coord_t::truncate(me.y-p.y);
+					  x=coord_t::truncate(x-p.x);
+					  y=coord_t::truncate(y-p.y);
 				  });
 	} while (found);
 
-	set_element_with_pointer(IN_THREAD, e);
-
-	if (most_recent_element_with_pointer(IN_THREAD))
-		most_recent_element_with_pointer(IN_THREAD)
-			->report_motion_event(IN_THREAD, me);
+	return e;
 }
 
 void generic_windowObj::handlerObj

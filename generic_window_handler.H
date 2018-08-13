@@ -455,6 +455,15 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 					       motion_event me,
 					       bool was_grabbed);
 
+	//! Find the element under the given (x, y) coordinates.
+
+	//! Returns the element, and adjusts x and y to be relative to the
+	//! element's position.
+
+	element_impl find_element_under(ONLY IN_THREAD,
+					coord_t &x,
+					coord_t &y);
+
 	//! This is the element that should be receiving pointer events.
 
 	void set_element_with_pointer(ONLY IN_THREAD,
