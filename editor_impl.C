@@ -1130,7 +1130,7 @@ bool editorObj::implObj::process_button_event(ONLY IN_THREAD,
 		// If we figured out we're not dragging currently selected text,
 		// we'll do what we normally do when a button is pressed.
 
-		if (!grab_inprogress)
+		if (!grab_inprogress(IN_THREAD))
 		{
 			moving_cursor moving{IN_THREAD, *this, be, ignored};
 
@@ -1144,7 +1144,7 @@ bool editorObj::implObj::process_button_event(ONLY IN_THREAD,
 	}
 	else if (be.button == 1)
 	{
-		if (grab_inprogress)
+		if (grab_inprogress(IN_THREAD))
 		{
 			release_dragged_selection(IN_THREAD);
 		}
@@ -1171,7 +1171,7 @@ void editorObj::implObj::report_motion_event(ONLY IN_THREAD,
 	most_recent_x=me.x;
 	most_recent_y=me.y;
 
-	if (grab_inprogress)
+	if (grab_inprogress(IN_THREAD))
 	{
 		report_dragged_motion_event(IN_THREAD, me);
 		return;

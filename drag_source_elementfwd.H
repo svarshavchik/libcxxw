@@ -10,6 +10,7 @@
 #include "x/w/elementobj.H"
 #include "x/w/motion_eventfwd.H"
 #include "x/w/callback_triggerfwd.H"
+#include "x/w/impl/connection_threadfwd.H"
 #include <xcb/xproto.h>
 #include <x/obj.H>
 #include <optional>
@@ -54,19 +55,21 @@ class LIBCXX_HIDDEN grab_inprogress_info : public drag_source {
 
 class LIBCXX_HIDDEN drag_source_element_baseObj : virtual public obj {
 
- public:
-	//! Constructor
-	drag_source_element_baseObj();
-
-	//! Destructor
-	~drag_source_element_baseObj();
-
 	//! Whether motion events are dragging the selected text.
 
 	//! We decide when button 1 is pressed what happens, and if we're
 	//! dragging this gets initialize.
 
-	std::optional<grab_inprogress_info> grab_inprogress;
+	std::optional<grab_inprogress_info> grab_inprogress_thread_only;
+
+ public:
+	THREAD_DATA_ONLY(grab_inprogress);
+
+	//! Constructor
+	drag_source_element_baseObj();
+
+	//! Destructor
+	~drag_source_element_baseObj();
 
 	//! Create a grab_inprogress.
 	void start_dragging(ONLY IN_THREAD,
@@ -131,7 +134,7 @@ class LIBCXX_HIDDEN drag_source_element_baseObj : virtual public obj {
 //! The display element can check
 //!
 //! \code
-//!    if (grab_inprogress)
+//!    if (grab_inprogress(IN_THREAD))
 //! \endcode
 //!
 //! To determine if a drag is currently in progress. This returns \c true

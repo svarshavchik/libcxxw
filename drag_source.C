@@ -27,11 +27,11 @@ void drag_source_element_baseObj
 		 coord_t start_x,
 		 coord_t start_y)
 {
-	grab_inprogress.emplace(IN_THREAD,
-				*this,
-				dnd_selection,
-				source_formats,
-				start_x, start_y);
+	grab_inprogress(IN_THREAD).emplace(IN_THREAD,
+					   *this,
+					   dnd_selection,
+					   source_formats,
+					   start_x, start_y);
 
 	get_dragging_element_impl()
 		.get_window_handler()
@@ -44,12 +44,12 @@ bool drag_source_element_baseObj
 ::handle_drag_response(ONLY IN_THREAD,
 		       const xcb_client_message_event_t *event)
 {
-	if (!grab_inprogress)
+	if (!grab_inprogress(IN_THREAD))
 		return false;
 
 	if (event->type == IN_THREAD->info->atoms_info.XdndStatus)
 	{
-		grab_inprogress->status_update
+		grab_inprogress(IN_THREAD)->status_update
 			(IN_THREAD, event->data.data32[0],
 			 (event->data.data32[1] & 1) != 0,
 			 {
@@ -66,10 +66,10 @@ bool drag_source_element_baseObj
 
 void drag_source_element_baseObj::release_dragged_selection(ONLY IN_THREAD)
 {
-	if (!grab_inprogress)
+	if (!grab_inprogress(IN_THREAD))
 		return;
 
-	if (grab_inprogress->drop(IN_THREAD))
+	if (grab_inprogress(IN_THREAD)->drop(IN_THREAD))
 		stop_dragging(IN_THREAD, true);
 }
 
@@ -80,7 +80,7 @@ void drag_source_element_baseObj
 	if (me.type != motion_event_type::real_motion)
 		return;
 
-	grab_inprogress->report_motion_event(IN_THREAD,
+	grab_inprogress(IN_THREAD)->report_motion_event(IN_THREAD,
 					     me.x,
 					     me.y);
 }
@@ -93,24 +93,24 @@ void drag_source_element_baseObj::abort_dragging(ONLY IN_THREAD)
 void drag_source_element_baseObj::stop_dragging(ONLY IN_THREAD,
 						bool because_of_a_drop)
 {
-	if (!grab_inprogress)
+	if (!grab_inprogress(IN_THREAD))
 		return;
 
-	grab_inprogress->dnd_selection->stillvalid(IN_THREAD)=false;
+	grab_inprogress(IN_THREAD)->dnd_selection->stillvalid(IN_THREAD)=false;
 
 	// If we just dropped this dragged selection, the drop target already
 	// knows about this.
 
 	if (!because_of_a_drop)
 	{
-		grab_inprogress->leave_window(IN_THREAD);
+		grab_inprogress(IN_THREAD)->leave_window(IN_THREAD);
 		get_dragging_element_impl()
 			.get_window_handler().selection_discard
 			(IN_THREAD,
 			 IN_THREAD->info->atoms_info
 			 .XdndSelection);
 	}
-	grab_inprogress.reset();
+	grab_inprogress(IN_THREAD).reset();
 }
 
 grab_inprogress_info
