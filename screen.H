@@ -154,6 +154,11 @@ class LIBCXX_HIDDEN screenObj::implObj
 	//! Destructor
 	~implObj();
 
+	//! Invoked from the connection thread to update current_theme
+
+	void update_current_theme(ONLY IN_THREAD,
+				  const defaulttheme &new_theme);
+
 	////////////////////////////////////////////////////////////////
 	//
 	// Screen dimension for informational purposes only.

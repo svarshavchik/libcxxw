@@ -263,11 +263,13 @@ get_screens(const connection_thread &thread,
 // We take care of loading and installing the new theme into each
 // screen object. The connection thread takes care of notifying all windows.
 
-static void update_themes(const std::vector<ref<screenObj::implObj>> &s,
+static void update_themes(ONLY IN_THREAD,
+			  const std::vector<ref<screenObj::implObj>> &s,
 			  const defaulttheme::base::config &theme_config)
 	LIBCXX_HIDDEN;
 
-static void update_themes(const std::vector<ref<screenObj::implObj>> &s,
+static void update_themes(ONLY IN_THREAD,
+			  const std::vector<ref<screenObj::implObj>> &s,
 			  const defaulttheme::base::config &theme_config)
 {
 	// Construct all the themes first.
@@ -291,16 +293,7 @@ static void update_themes(const std::vector<ref<screenObj::implObj>> &s,
 
 	for (const auto &screen:s)
 	{
-		// cxxwtheme set the CXXWTHEME property, this makes it
-		// back to us, typically, before cxxwtheme gets around
-		// to destroying the main window. Make sure to update
-		// the screen's theme object only when needed.
-
-		current_theme_t::lock lock{screen->current_theme};
-
-		if ((*lock)->is_different_theme(*theme_iter))
-			*lock=*theme_iter;
-
+		screen->update_current_theme(IN_THREAD, *theme_iter);
 		++theme_iter;
 	}
 }
@@ -342,16 +335,17 @@ connectionObj::implObj::implObj(const connection_info &info,
 {
 	thread->set_theme_changed_callback
 		(screens.at(0)->xcb_screen->root,
-		 [screens=this->screens, thread]
+		 [screens=this->screens]
+		 (ONLY IN_THREAD)
 		 {
 			 auto screen_0=screens.at(0)->xcb_screen;
 
 			 auto property=defaulttheme::base
-				 ::cxxwtheme_property(screen_0, thread);
+				 ::cxxwtheme_property(screen_0, IN_THREAD);
 			 auto theme_config=defaulttheme::base
 				 ::get_config(property);
 
-			 update_themes(screens, theme_config);
+			 update_themes(IN_THREAD, screens, theme_config);
 		 });
 }
 
@@ -461,7 +455,7 @@ void connectionObj::set_theme(const std::string &identifier,
 		throw EXCEPTION(gettextmsg(_("Theme scaling factor must be between %1% and %2%"),
 					   SCALE_MIN, SCALE_MAX));
 
-	if (this_connection_only)
+	if (this_connection_only) // cxxwtheme
 	{
 		auto config=defaulttheme::base::get_config(identifier,
 							   factor/100.0,
@@ -471,7 +465,8 @@ void connectionObj::set_theme(const std::string &identifier,
 			([impl=this->impl, config]
 			 (ONLY IN_THREAD)
 			 {
-				 update_themes(impl->screens, config);
+				 update_themes(IN_THREAD, impl->screens,
+					       config);
 				 IN_THREAD->theme_updated(IN_THREAD);
 			 });
 		return;

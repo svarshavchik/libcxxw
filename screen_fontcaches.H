@@ -24,8 +24,10 @@ class LIBCXX_HIDDEN screen_fontcachesObj : virtual public obj {
  public:
 
 	//! Custom fonts are cached by their font description+alpha depth.
+	typedef std::pair<font, depth_t> custom_font_cache_key_t;
 
-	typedef x::weakunordered_multimap<std::pair<font, depth_t>,
+	//! Custom font cache container.
+	typedef x::weakunordered_multimap<custom_font_cache_key_t,
 					  current_fontcollectionObj>
 		custom_font_cache_t;
 
@@ -44,11 +46,14 @@ class LIBCXX_HIDDEN screen_fontcachesObj : virtual public obj {
 						  const font &font_spec);
 
 	//! Theme fonts are cached by their font name+alpha depth
-	typedef x::weakunordered_multimap<std::pair<std::string, depth_t>,
+	typedef std::pair<std::string, depth_t> theme_font_cache_key_t;
+
+	//! Theme font cache container.
+	typedef x::weakunordered_multimap<theme_font_cache_key_t,
 					  current_fontcollectionObj>
 		theme_font_cache_t;
 
-	//! Custom fonts.
+	//! Theme fonts.
 	const theme_font_cache_t theme_font_cache;
 
 	//! find_or_create() a font in the theme_font_cache

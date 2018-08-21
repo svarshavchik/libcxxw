@@ -56,7 +56,8 @@ void connection_threadObj::run(x::ptr<x::obj> &threadmsgdispatcher_mcguffin)
 	incremental_selection_update_info pending_incremental_updates;
 	idle_callbacks_t idle_callbacks;
 
-	functionref<void ()> cxxwtheme_changed=[] {};
+	functionref<void (ONLY IN_THREAD)> cxxwtheme_changed=
+		[](ONLY IN_THREAD) {};
 
 	window_handlers_thread_only= &window_handlers;
 	destroyed_xids_thread_only= &destroyed_xids;

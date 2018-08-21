@@ -27,15 +27,11 @@ theme_fontObj::~theme_fontObj()=default;
 
 void theme_fontObj::initialize(ONLY IN_THREAD)
 {
-	auto theme=font_element().get_screen()->impl->current_theme.get();
-
-	theme_updated(IN_THREAD, theme);
+	theme_updated(IN_THREAD);
 }
 
-void theme_fontObj::theme_updated(ONLY IN_THREAD,
-				  const defaulttheme &new_theme)
+void theme_fontObj::theme_updated(ONLY IN_THREAD)
 {
-	current_font(IN_THREAD)->theme_updated(IN_THREAD, new_theme);
 	font_nominal_width(IN_THREAD)=
 		current_font(IN_THREAD)->fc(IN_THREAD)->nominal_width();
 	font_height(IN_THREAD)=

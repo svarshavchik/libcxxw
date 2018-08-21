@@ -47,7 +47,7 @@
 	//! The callback
       </comment>
 
-      <decl>const functionref&lt;void ()&gt; &amp;callback</decl>
+      <decl>const functionref&lt;void (ONLY IN_THREAD)&gt; &amp;callback</decl>
     </param>
   </method>
 </class>

@@ -43,7 +43,7 @@ typedef ptr<defaultthemeObj, defaultthemeBase> defaultthemeptr;
 //! as well.
 
 
-typedef mpobj<defaulttheme> current_theme_t;
+typedef mpobj<defaulttheme, std::recursive_mutex> current_theme_t;
 
 LIBCXXW_NAMESPACE_END
 

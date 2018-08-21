@@ -562,18 +562,11 @@ void generic_windowObj::handlerObj::theme_updated_event(ONLY IN_THREAD)
 {
 	auto new_theme=get_screen()->impl->current_theme.get();
 
-	bool is_different_theme=
-		new_theme->is_different_theme(current_theme(IN_THREAD));
-
-	// Even if they're "the same", still update our current_theme.
-	// Even if they're "the same", they are different objects, as such
-	// we drop our ref to the old one, thus saving a little bit of
-	// memory.
-
+	if (new_theme == current_theme(IN_THREAD))
+		return;
 	current_theme(IN_THREAD)=new_theme;
 
-	if (is_different_theme)
-		theme_updated(IN_THREAD, new_theme);
+	theme_updated(IN_THREAD, new_theme);
 }
 
 void generic_windowObj::handlerObj::theme_updated(ONLY IN_THREAD,

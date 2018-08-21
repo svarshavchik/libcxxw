@@ -213,7 +213,8 @@ void connection_threadObj::run_event(ONLY IN_THREAD,
 				// The callback loads and parses the new theme.
 
 				try {
-					(*cxxwtheme_changed_thread_only)();
+					(*cxxwtheme_changed_thread_only)
+						(IN_THREAD);
 				} CATCH_EXCEPTIONS;
 
 				theme_updated(IN_THREAD);
@@ -350,7 +351,8 @@ void connection_threadObj::recycle_xid(uint32_t xid)
 
 void connection_threadObj
 ::dispatch_set_theme_changed_callback(xcb_window_t root_window,
-				      const functionref<void ()> &callback)
+				      const functionref<void (ONLY IN_THREAD)
+				      > &callback)
 {
 	root_window_thread_only=root_window;
 	*cxxwtheme_changed_thread_only=callback;

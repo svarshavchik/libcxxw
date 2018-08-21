@@ -235,7 +235,6 @@ void richtextstring::theme_updated(ONLY IN_THREAD,
 {
 	for (const auto &m:meta)
 	{
-		m.second.getfont()->theme_updated(IN_THREAD, new_theme);
 		m.second.textcolor->theme_updated(IN_THREAD, new_theme);
 		if (!m.second.bg_color.null())
 			m.second.bg_color->theme_updated(IN_THREAD, new_theme);

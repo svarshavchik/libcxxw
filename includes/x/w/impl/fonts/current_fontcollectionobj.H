@@ -29,13 +29,6 @@ class current_fontcollectionObj : virtual public obj {
 	//! The collection is for this font specification.
 	font font_spec_thread_only;
 
-	//! Current theme this collection is based on.
-
-	//! When a theme gets updated we rebuild the font collection.
-	//! The theme is cached here, so we know when the theme has changed.
-
-	defaulttheme font_theme;
-
 public:
 	//! This font is for this screen.
 	const screen font_screen;
@@ -51,7 +44,8 @@ public:
 
 	//! Create the new font collection
 
-	fontcollection create_fc(const font &font_spec);
+	fontcollection create_fc(const font &font_spec,
+				 const defaulttheme &font_theme);
 
  public:
 
@@ -68,24 +62,18 @@ public:
 	//! Constructor
 	current_fontcollectionObj(const screen &font_screen,
 				  depth_t depth,
-				  const font &font_spec) LIBCXX_HIDDEN;
- protected:
-	//! Internal constructor
-	current_fontcollectionObj(const screen &font_screen,
-				  depth_t depth,
 				  const font &font_spec,
-				  const defaulttheme &font_theme)
-		LIBCXX_HIDDEN;
+				  const defaulttheme &font_theme) LIBCXX_HIDDEN;
+
  public:
 	//! Destructor
 	~current_fontcollectionObj() LIBCXX_HIDDEN;
 
 	//! Create a new \ref fontcollection "font collection".
 
-	void theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme);
-
- private:
-	virtual void theme_was_really_updated(ONLY IN_THREAD)
+	//! This is invoked from update_current_theme().
+	virtual void current_theme_updated(ONLY IN_THREAD,
+					   const defaulttheme &new_theme)
 		LIBCXX_HIDDEN;
 };
 

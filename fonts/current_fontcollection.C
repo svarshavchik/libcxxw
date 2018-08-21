@@ -19,41 +19,29 @@ LIBCXXW_NAMESPACE_START
 current_fontcollectionObj
 ::current_fontcollectionObj(const screen &font_screen,
 			    depth_t depth,
-			    const font &font_spec)
-	: current_fontcollectionObj(font_screen, depth, font_spec,
-				    font_screen->impl->current_theme.get())
-{
-}
-
-current_fontcollectionObj
-::current_fontcollectionObj(const screen &font_screen,
-			    depth_t depth,
 			    const font &font_spec,
 			    const defaulttheme &font_theme)
 	: font_spec_thread_only{font_spec},
-	  font_theme{font_theme},
 	  font_screen{font_screen},
 	  depth{depth},
-	  fc_thread_only{create_fc(font_spec)},
+	  fc_thread_only{create_fc(font_spec, font_theme)},
 	  fc_public{fc_thread_only}
 {
 }
 
 current_fontcollectionObj::~current_fontcollectionObj()=default;
 
-void current_fontcollectionObj::theme_updated(ONLY IN_THREAD,
-					      const defaulttheme &new_theme)
+void current_fontcollectionObj
+::current_theme_updated(ONLY IN_THREAD,
+			const defaulttheme &new_theme)
 {
-	if (new_theme == font_theme)
-		return; // Hasn't changed.
-
-	font_theme=new_theme;
-	theme_was_really_updated(IN_THREAD);
-
-	fc_public=fc(IN_THREAD)=create_fc(font_spec(IN_THREAD));
+	fc_public=fc(IN_THREAD)=create_fc(font_spec(IN_THREAD),
+					  new_theme);
 }
 
-fontcollection current_fontcollectionObj::create_fc(const font &font_spec)
+fontcollection current_fontcollectionObj::create_fc(const font &font_spec,
+						    const defaulttheme
+						    &font_theme)
 {
 	return font_screen->create_fontcollection(font_spec,
 						  depth,
@@ -97,10 +85,6 @@ fontcollection screenObj
 				  (key, p->match(), me,
 				   me->impl->ft));
 		 });
-}
-
-void current_fontcollectionObj::theme_was_really_updated(ONLY IN_THREAD)
-{
 }
 
 LIBCXXW_NAMESPACE_END

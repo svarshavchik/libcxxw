@@ -112,7 +112,7 @@ class LIBCXX_HIDDEN connection_threadObj
 
 	// Callback for when CXXWTHEME on the root window changes.
 
-	functionref<void ()> *cxxwtheme_changed_thread_only;
+	functionref<void (ONLY IN_THREAD)> *cxxwtheme_changed_thread_only;
 
  public:
 
