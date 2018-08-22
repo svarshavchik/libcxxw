@@ -129,6 +129,7 @@ class LIBCXX_HIDDEN textlabelObj::implObj : virtual public obj {
 	implObj(halign alignment,
 		double initial_width,
 		elementObj::implObj &parent_element_impl,
+		const defaulttheme &initial_theme,
 		richtextstring &&string,
 		const richtext &text,
 		const richtextmeta &default_meta,
@@ -209,7 +210,7 @@ class LIBCXX_HIDDEN textlabelObj::implObj : virtual public obj {
 	//! to the preferred width.
 
 	virtual std::pair<metrics::axis, metrics::axis>
-		calculate_current_metrics(ONLY IN_THREAD);
+		calculate_current_metrics();
 
 
  public:

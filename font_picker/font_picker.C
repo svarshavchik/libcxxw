@@ -96,10 +96,8 @@ class LIBCXX_HIDDEN current_font_placeholderObj :
 	typedef always_visible_elementObj<
 		label_elementObj<child_elementObj>> superclass_t;
 
-	std::pair<metrics::axis, metrics::axis>
-		overridden_metrics_thread_only;
  public:
-	THREAD_DATA_ONLY(overridden_metrics);
+	mpobj<std::pair<metrics::axis, metrics::axis>> overridden_metrics;
 
 	using superclass_t::superclass_t;
 
@@ -107,9 +105,9 @@ class LIBCXX_HIDDEN current_font_placeholderObj :
 	//! Override calculate_current_metrics
 
 	std::pair<metrics::axis, metrics::axis>
-		calculate_current_metrics(ONLY IN_THREAD) override
+		calculate_current_metrics() override
 	{
-		return overridden_metrics(IN_THREAD);
+		return overridden_metrics.get();
 	}
 };
 
@@ -470,8 +468,8 @@ font_picker factoryObj::create_font_picker(const font_picker_config &config)
 		  const metrics::axis &h,
 		  const metrics::axis &v)
 		 {
-			 current_selection_placeholder->overridden_metrics
-				 (IN_THREAD)=std::make_pair(h, v);
+			 current_selection_placeholder->overridden_metrics=
+				 std::make_pair(h, v);
 
 			 current_selection_placeholder->get_horizvert(IN_THREAD)
 				 ->set_element_metrics(IN_THREAD, h, v);

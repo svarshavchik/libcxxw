@@ -445,9 +445,9 @@ void editorObj::implObj::set_minimum_override(ONLY IN_THREAD,
 }
 
 std::pair<metrics::axis, metrics::axis>
-editorObj::implObj::calculate_current_metrics(ONLY IN_THREAD)
+editorObj::implObj::calculate_current_metrics()
 {
-	auto metrics=text->get_metrics(IN_THREAD, preferred_width);
+	auto metrics=text->get_metrics(preferred_width);
 
 	// If we word-wrap, fixate to the word wrapping width. Otherwise
 	// get_metrics() uses the current width as the preferred width, so
@@ -474,7 +474,7 @@ void editorObj::implObj::rewrap_due_to_updated_position(ONLY IN_THREAD)
 					  .width;
 			  });
 
-	text->rewrap(IN_THREAD, preferred_width);
+	text->rewrap(preferred_width);
 }
 
 void editorObj::implObj::keyboard_focus(ONLY IN_THREAD,

@@ -64,8 +64,7 @@ void richtextObj::set(ONLY IN_THREAD, const richtextstring &string)
 	(*lock)->set(IN_THREAD, string);
 }
 
-bool richtextObj::rewrap(ONLY IN_THREAD,
-			 dim_t width)
+bool richtextObj::rewrap(dim_t width)
 {
 	impl_t::lock lock{impl};
 
@@ -80,7 +79,7 @@ dim_t richtextObj::get_width()
 }
 
 std::pair<metrics::axis, metrics::axis>
-richtextObj::get_metrics(ONLY IN_THREAD, dim_t preferred_width)
+richtextObj::get_metrics(dim_t preferred_width)
 {
 	impl_t::lock lock{impl};
 

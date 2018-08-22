@@ -132,6 +132,8 @@ textlabelObj::implObj::implObj(halign alignment,
 			       bool allow_links)
 	: implObj{alignment, initial_width,
 		  parent_element_impl,
+		  parent_element_impl.get_window_handler().get_screen()
+		  ->impl->current_theme.get(),
 		  std::move(string),
 		  richtext::create(string, alignment, 0),
 		  default_meta, allow_links}
@@ -141,6 +143,7 @@ textlabelObj::implObj::implObj(halign alignment,
 textlabelObj::implObj::implObj(halign alignment,
 			       double initial_width,
 			       elementObj::implObj &parent_element_impl,
+			       const defaulttheme &initial_theme,
 			       richtextstring &&string,
 			       const richtext &text,
 			       const richtextmeta &default_meta,
@@ -162,6 +165,10 @@ textlabelObj::implObj::implObj(halign alignment,
 
 	if (initial_width < 0)
 		throw EXCEPTION(_("Label width cannot be negative"));
+
+	// We do what initialize() does here, based on the current theme.
+	preferred_width=initial_theme->compute_width(initial_width);
+	text->rewrap(preferred_width);
 }
 
 textlabelObj::implObj::~implObj()=default;
@@ -205,6 +212,8 @@ void textlabelObj::implObj::initialize(ONLY IN_THREAD)
 	text->theme_updated(IN_THREAD, current_theme);
 	ellipsis->theme_updated(IN_THREAD, current_theme);
 
+	// Repeat what the constructor did, in case the theme changed.
+
 	compute_preferred_width(IN_THREAD);
 
 	updated(IN_THREAD);
@@ -238,7 +247,7 @@ void textlabelObj::implObj::rewrap_due_to_updated_position(ONLY IN_THREAD)
 {
 	if (preferred_width == 0)
 	{
-		text->rewrap(IN_THREAD, 0);
+		text->rewrap(0);
 		recalculate(IN_THREAD);
 		return; // Not word wrapping.
 	}
@@ -251,7 +260,7 @@ void textlabelObj::implObj::rewrap_due_to_updated_position(ONLY IN_THREAD)
 	if (!position_set_flag)
 		rewrap_to=preferred_width;
 
-	text->rewrap(IN_THREAD, rewrap_to);
+	text->rewrap(rewrap_to);
 
 	// And we should now update our metrics, accordingly.
 	recalculate(IN_THREAD);
@@ -269,7 +278,7 @@ void textlabelObj::implObj::do_draw(ONLY IN_THREAD,
 
 void textlabelObj::implObj::recalculate(ONLY IN_THREAD)
 {
-	auto metrics=calculate_current_metrics(IN_THREAD);
+	auto metrics=calculate_current_metrics();
 
 	if (!position_set_flag)
 	{
@@ -286,9 +295,9 @@ void textlabelObj::implObj::recalculate(ONLY IN_THREAD)
 }
 
 std::pair<metrics::axis, metrics::axis>
-textlabelObj::implObj::calculate_current_metrics(ONLY IN_THREAD)
+textlabelObj::implObj::calculate_current_metrics()
 {
-	return text->get_metrics(IN_THREAD, preferred_width);
+       return text->get_metrics(preferred_width);
 }
 
 bool textlabelObj::implObj::process_button_event(ONLY IN_THREAD,

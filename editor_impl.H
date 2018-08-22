@@ -342,7 +342,7 @@ class LIBCXX_HIDDEN editorObj::implObj
 	//! get_metrics() to reflect that.
 
 	std::pair<metrics::axis, metrics::axis>
-		calculate_current_metrics(ONLY IN_THREAD) override;
+		calculate_current_metrics() override;
 
 	//! Override rewrap_due_to_updated_position().
 

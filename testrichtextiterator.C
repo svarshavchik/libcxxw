@@ -685,7 +685,7 @@ void testrichtext5(const main_window &w,
 			 return (*lock)->width();
 		 });
 
-	richtext->rewrap(IN_THREAD, text_width / 3);
+	richtext->rewrap(text_width / 3);
 
 	static const char * const tests[]={
 		"abra cadabra",

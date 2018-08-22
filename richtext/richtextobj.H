@@ -68,7 +68,7 @@ class LIBCXX_HIDDEN richtextObj : virtual public obj {
 
 	//! Updated word_wrap_width. A width of 0 un-wordwraps the label.
 
-	bool rewrap(ONLY IN_THREAD, dim_t width);
+	bool rewrap(dim_t width);
 
 	//! Return the text object's current width
 	dim_t get_width();
@@ -78,7 +78,7 @@ class LIBCXX_HIDDEN richtextObj : virtual public obj {
 	//! Return the text object's current horizontal and vertical sizes.
 
 	std::pair<metrics::axis, metrics::axis>
-		get_metrics(ONLY IN_THREAD, dim_t preferred_width);
+		get_metrics(dim_t preferred_width);
 
 	//! Theme has been updated
 
