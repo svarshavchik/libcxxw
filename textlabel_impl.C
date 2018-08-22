@@ -4,6 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "textlabel.H"
+#include "ellipsiscache.H"
 #include "label_element.H"
 #include "generic_window_handler.H"
 #include "screen.H"
@@ -50,16 +51,16 @@ textlabelObj::implObj::implObj(const text_param &text,
 			       halign alignment,
 			       double initial_width,
 			       bool allow_links,
-			       elementObj::implObj &element_impl)
+			       elementObj::implObj &parent_element_impl)
 	: implObj(text,
-		  {element_impl.create_background_color
-		   (element_impl.label_theme_color()),
-		   element_impl.create_current_fontcollection
-		   (theme_font{element_impl.label_theme_font()})},
+		  {parent_element_impl.create_background_color
+		   (parent_element_impl.label_theme_color()),
+		   parent_element_impl.create_current_fontcollection
+		   (theme_font{parent_element_impl.label_theme_font()})},
 		  alignment,
 		  initial_width,
 		  allow_links,
-		  element_impl)
+		  parent_element_impl)
 {
 }
 
@@ -114,39 +115,47 @@ textlabelObj::implObj::implObj(const text_param &text,
 			       halign alignment,
 			       double initial_width,
 			       bool allow_links,
-			       elementObj::implObj &element_impl)
-	: implObj(alignment, initial_width,
-		  element_impl.create_richtextstring
+			       elementObj::implObj &parent_element_impl)
+	: implObj{alignment, initial_width,
+		  parent_element_impl,
+		  parent_element_impl.create_richtextstring
 		  (default_meta, text, allow_links),
-		  default_meta, allow_links)
+		  default_meta, allow_links}
 {
 }
 
 textlabelObj::implObj::implObj(halign alignment,
 			       double initial_width,
+			       elementObj::implObj &parent_element_impl,
 			       richtextstring &&string,
 			       const richtextmeta &default_meta,
 			       bool allow_links)
-	: implObj(alignment, initial_width, std::move(string),
+	: implObj{alignment, initial_width,
+		  parent_element_impl,
+		  std::move(string),
 		  richtext::create(string, alignment, 0),
-		  default_meta, allow_links)
+		  default_meta, allow_links}
 {
 }
 
 textlabelObj::implObj::implObj(halign alignment,
 			       double initial_width,
+			       elementObj::implObj &parent_element_impl,
 			       richtextstring &&string,
 			       const richtext &text,
 			       const richtextmeta &default_meta,
 			       bool allow_links_param)
-	: word_wrap_widthmm_thread_only(initial_width),
-	  hotspot_info_thread_only(create_hotspot_info(string, text)),
-	  ordered_hotspots(rebuild_ordered_hotspots(hotspot_info_thread_only)),
-	  text(text),
-	  hotspot_cursor(allow_links_param ? (richtextiteratorptr)text->begin()
-			 : richtextiteratorptr{}),
-	  default_meta(default_meta),
-	  allow_links(allow_links_param)
+	: word_wrap_widthmm_thread_only{initial_width},
+	  hotspot_info_thread_only{create_hotspot_info(string, text)},
+	  ordered_hotspots{rebuild_ordered_hotspots(hotspot_info_thread_only)},
+	  text{text},
+	  ellipsis{parent_element_impl.get_window_handler()
+		   .thread()->thread_ellipsiscache
+		   ->get(parent_element_impl)},
+	  hotspot_cursor{allow_links_param ? (richtextiteratorptr)text->begin()
+			 : richtextiteratorptr{}},
+	  default_meta{default_meta},
+	  allow_links{allow_links_param}
 {
 	if (std::isnan(initial_width))
 		initial_width=0;
@@ -194,6 +203,7 @@ void textlabelObj::implObj::initialize(ONLY IN_THREAD)
 	auto screen=get_label_element_impl().get_screen()->impl;
 	auto current_theme=screen->current_theme.get();
 	text->theme_updated(IN_THREAD, current_theme);
+	ellipsis->theme_updated(IN_THREAD, current_theme);
 
 	compute_preferred_width(IN_THREAD);
 
@@ -213,6 +223,7 @@ void textlabelObj::implObj::theme_updated(ONLY IN_THREAD,
 				      const defaulttheme &new_theme)
 {
 	text->theme_updated(IN_THREAD, new_theme);
+	ellipsis->theme_updated(IN_THREAD, new_theme);
 	compute_preferred_width(IN_THREAD);
 	updated(IN_THREAD);
 }

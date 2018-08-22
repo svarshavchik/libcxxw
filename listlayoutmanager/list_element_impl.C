@@ -196,7 +196,8 @@ list_elementObj::implObj::implObj(const ref<listcontainer_pseudo_implObj>
 			  {"menu_shortcut"})}
 
 {
-	// Some sanity checks.
+	// Some sanity checks will be done here, instead of in
+	// update_peephole_metrics().
 
 	if (std::holds_alternative<size_t>(style.height) &&
 	    std::get<size_t>(style.height) <= 0)

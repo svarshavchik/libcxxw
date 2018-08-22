@@ -39,6 +39,7 @@ label_elementObj<element_impl>
 		       child_element_init_params{element_id, {},
 				       initial_background_color}),
 	  textlabelObj::implObj(alignment, initial_width,
+				parent_container->container_element_impl(),
 				std::move(string), default_meta, allow_links)
 {
 }

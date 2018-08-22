@@ -3,8 +3,8 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
-#include "connection_info.H"
 #include "connection_thread.H"
+#include "ellipsiscache.H"
 #include "window_handler.H"
 #include "x/w/impl/element.H"
 #include "x/w/impl/container.H"
@@ -23,6 +23,7 @@ LIBCXXW_NAMESPACE_START
 connection_threadObj
 ::connection_threadObj(const connection_info &info)
 	: info{info},
+	  thread_ellipsiscache{ellipsiscache::create()},
 	  disconnect_callback_thread_only{[] {}}
 {
 }

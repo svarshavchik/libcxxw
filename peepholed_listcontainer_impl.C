@@ -77,10 +77,16 @@ void peepholed_listcontainerObj::implObj
 			}},
 		height);
 
-	auto hv=get_child_elementObj().get_horizvert(IN_THREAD);
+	// Update the peephole metrics based on the peepholed list container's
+	// metrics, as adjusted above.
 
-	get_child_elementObj().child_container->container_element_impl()
-		.get_horizvert(IN_THREAD)
+	auto &peepholed_listcontainer=get_peepholed_listcontainerObj();
+	auto &peephole=	peepholed_listcontainer.child_container
+		->container_element_impl();
+
+	auto hv=peepholed_listcontainer.get_horizvert(IN_THREAD);
+
+	peephole.get_horizvert(IN_THREAD)
 		->set_element_metrics(IN_THREAD, hv->horiz, v);
 }
 

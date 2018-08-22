@@ -208,6 +208,10 @@ libcxxw_la_SOURCES=\
 	editor_peephole_impl.H			    \
 	element.C				    \
 	element_impl.C				    \
+	ellipsiscache.C				    \
+	ellipsiscache.H				    \
+	ellipsiscachefwd.H			    \
+	ellipsiscacheobj.H			    \
 	ewmh.C					    \
 	ewmh.H					    \
 	factory.C				    \

@@ -86,6 +86,10 @@ class LIBCXX_HIDDEN textlabelObj::implObj : virtual public obj {
 
 	const richtext text;
 
+	//! The ellipsis text, if we need it.
+
+	const richtext ellipsis;
+
 	//! A cursor we use to determine whether the pointer is in a hotspot.
 
 	const richtextiteratorptr hotspot_cursor;
@@ -100,20 +104,21 @@ class LIBCXX_HIDDEN textlabelObj::implObj : virtual public obj {
 		halign alignment,
 		double initial_width,
 		bool allow_links,
-		elementObj::implObj &element_impl);
-
+		elementObj::implObj &parent_element_impl);
+ private:
 	//! Internal constructor
 	implObj(const text_param &text,
 		const richtextmeta &default_meta,
 		halign alignment,
 		double initial_width,
 		bool allow_links,
-		elementObj::implObj &element_impl);
-
+		elementObj::implObj &parent_element_impl);
+ public:
 	//! Constructor used by editor subclass.
 
 	implObj(halign alignment,
 		double initial_width,
+		elementObj::implObj &parent_element_impl,
 		richtextstring &&string,
 		const richtextmeta &default_meta,
 		bool allow_links);
@@ -123,6 +128,7 @@ class LIBCXX_HIDDEN textlabelObj::implObj : virtual public obj {
 
 	implObj(halign alignment,
 		double initial_width,
+		elementObj::implObj &parent_element_impl,
 		richtextstring &&string,
 		const richtext &text,
 		const richtextmeta &default_meta,

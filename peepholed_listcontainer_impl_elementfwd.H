@@ -25,7 +25,7 @@ LIBCXXW_NAMESPACE_START
 //! and the container_element mixin.
 //!
 //! One of the combining elements is listcontainerObj::implObj which also
-//! uses the same fond and dimension mixin.
+//! uses the same font and dimension mixin.
 //!
 //! The first constructor parameter is a new_listlayoutmanager that gets
 //! passed to peepholed_listcontainer_impl_elementObj's constructor.
@@ -86,8 +86,8 @@ public:
 	const theme_fontObj &list_reference_font()
 		const override;
 
-	child_elementObj &get_child_elementObj() override;
-	const child_elementObj &get_child_elementObj() const override;
+	child_elementObj &get_peepholed_listcontainerObj() override;
+	const child_elementObj &get_peepholed_listcontainerObj() const override;
 
 	virtual metrics::axis get_height_metrics(ONLY IN_THREAD) const override;
 };

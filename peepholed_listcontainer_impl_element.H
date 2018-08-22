@@ -124,24 +124,24 @@ const theme_fontObj &peepholed_listcontainer_impl_elementObj<element_impl>
 	return *this;
 }
 
-//! Implement get_child_elementObj().
+//! Implement get_peepholed_listcontainerObj().
 
 //! Used by peepholed_listcontainerObj::implObj.
 
 template<typename element_impl>
 child_elementObj &peepholed_listcontainer_impl_elementObj<element_impl>
-::get_child_elementObj()
+::get_peepholed_listcontainerObj()
 {
 	return *this;
 }
 
-//! Implement get_child_elementObj().
+//! Implement get_peepholed_listcontainerObj().
 
 //! Used by peepholed_listcontainerObj::implObj.
 
 template<typename element_impl>
 const child_elementObj &peepholed_listcontainer_impl_elementObj<element_impl>
-::get_child_elementObj() const
+::get_peepholed_listcontainerObj() const
 {
 	return *this;
 }

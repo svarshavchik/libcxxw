@@ -11,6 +11,7 @@
 #include "x/w/batch_queuefwd.H"
 #include "x/w/elementobj.H"
 #include "connection_info.H"
+#include "ellipsiscachefwd.H"
 #include "x/w/rectangle.H"
 #include <x/threadmsgdispatcher.H>
 #include <x/logger.H>
@@ -54,6 +55,15 @@ class LIBCXX_HIDDEN connection_threadObj
 
 	//! Destructor
 	~connection_threadObj();
+
+	//! A weird place for the label ellipsis cache.
+
+	//! Cache for the ellipsis string that's shown when the label is
+	//! too long to fit within its alloted width. Because the innards
+	//! of a richtextstring are accessible ONLY IN_THREAD, these things
+	//! are tied to their connection, so that's why they're there.
+
+	const ellipsiscache thread_ellipsiscache;
 
 	//! Call get_error() and log the results.
 

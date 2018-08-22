@@ -59,12 +59,12 @@ class LIBCXX_HIDDEN peepholed_listcontainerObj::implObj : virtual public obj {
 	//! Return the element is mixin is a part of.
 
 	//! Implemented by the mixin template.
-	virtual child_elementObj &get_child_elementObj()=0;
+	virtual child_elementObj &get_peepholed_listcontainerObj()=0;
 
 	//! Return the element is mixin is a part of.
 
 	//! Implemented by the mixin template.
-	virtual const child_elementObj &get_child_elementObj() const=0;
+	virtual const child_elementObj &get_peepholed_listcontainerObj() const=0;
 
 	//! Update_peephole_metrics().
 	void initialize(ONLY IN_THREAD);
