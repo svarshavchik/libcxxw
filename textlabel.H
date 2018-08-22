@@ -14,6 +14,7 @@
 #include "x/w/key_eventfwd.H"
 #include "x/w/motion_eventfwd.H"
 #include "x/w/button_eventfwd.H"
+#include "x/w/fontcollectionfwd.H"
 #include "richtext/richtextfwd.H"
 #include "richtext/richtextmeta.H"
 #include "richtext/richtextstring.H"
@@ -77,9 +78,12 @@ class LIBCXX_HIDDEN textlabelObj::implObj : virtual public obj {
 	//! \see textlabel_config
 	const bool fixed_width_metrics;
 
+ private:
 	//! Compute preferred_width
 
-	virtual void compute_preferred_width(ONLY IN_THREAD);
+	void compute_preferred_width(const defaulttheme &theme,
+				     double widthmm,
+				     const fontcollection &fc);
 
  public:
 	//! Info about each links.

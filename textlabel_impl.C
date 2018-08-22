@@ -174,16 +174,8 @@ textlabelObj::implObj::implObj(const textlabel_config &config,
 				<< config.config.widthmm);
 
 	// We do what initialize() does here, based on the current theme.
-	preferred_width=initial_theme->compute_width(config.config.widthmm);
-
-	if (width_in_columns > 0)
-	{
-		preferred_width=dim_t::truncate(width_in_columns *
-						(dim_t::value_type)
-						default_meta.getfont()
-						->fc_public.get()
-						->nominal_width());
-	}
+	compute_preferred_width(initial_theme, config.config.widthmm,
+				default_meta.getfont()->fc_public.get());
 	text->rewrap(preferred_width);
 }
 
@@ -221,12 +213,19 @@ void textlabelObj::implObj::set_minimum_override(ONLY IN_THREAD,
 	min_vert_override=vert_override;
 }
 
-void textlabelObj::implObj::compute_preferred_width(ONLY IN_THREAD)
+void textlabelObj::implObj::compute_preferred_width(const defaulttheme &theme,
+						    double widthmm,
+						    const fontcollection &fc)
 {
-	auto screen=get_label_element_impl().get_screen()->impl;
+	preferred_width=theme->compute_width(widthmm);
 
-	preferred_width=screen->current_theme.get()
-		->compute_width(word_wrap_widthmm(IN_THREAD));
+
+	if (width_in_columns > 0)
+	{
+		preferred_width=dim_t::truncate(width_in_columns *
+						(dim_t::value_type)
+						fc->nominal_width());
+	}
 }
 
 void textlabelObj::implObj::initialize(ONLY IN_THREAD)
@@ -236,18 +235,10 @@ void textlabelObj::implObj::initialize(ONLY IN_THREAD)
 	text->theme_updated(IN_THREAD, current_theme);
 	ellipsis->theme_updated(IN_THREAD, current_theme);
 
-	if (width_in_columns > 0)
-	{
-		preferred_width=dim_t::truncate(width_in_columns *
-						(dim_t::value_type)
-						default_meta.getfont()
-						->fc(IN_THREAD)
-						->nominal_width());
-	}
-
 	// Repeat what the constructor did, in case the theme changed.
 
-	compute_preferred_width(IN_THREAD);
+	compute_preferred_width(current_theme, word_wrap_widthmm(IN_THREAD),
+				default_meta.getfont()->fc(IN_THREAD));
 
 	updated(IN_THREAD);
 }
@@ -266,15 +257,8 @@ void textlabelObj::implObj::theme_updated(ONLY IN_THREAD,
 {
 	text->theme_updated(IN_THREAD, new_theme);
 	ellipsis->theme_updated(IN_THREAD, new_theme);
-	if (width_in_columns > 0)
-	{
-		preferred_width=dim_t::truncate(width_in_columns *
-						(dim_t::value_type)
-						default_meta.getfont()
-						->fc(IN_THREAD)
-						->nominal_width());
-	}
-	compute_preferred_width(IN_THREAD);
+	compute_preferred_width(new_theme, word_wrap_widthmm(IN_THREAD),
+				default_meta.getfont()->fc(IN_THREAD));
 	updated(IN_THREAD);
 }
 
