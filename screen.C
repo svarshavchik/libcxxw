@@ -12,6 +12,7 @@
 #include "picture.H"
 #include "screen_picturecache.H"
 #include "screen_fontcaches.H"
+#include "ellipsiscache.H"
 #include "recycled_pixmaps.H"
 #include "x/w/impl/border_impl.H"
 #include "border_cache.H"
@@ -198,6 +199,7 @@ screenObj::implObj::implObj(const xcb_screen_t *xcb_screen,
 	  recycled_pixmaps_cache(recycled_pixmaps::create()),
 	  screen_border_cache(border_cache::create()),
 	  fontcaches(screen_fontcaches::create()),
+	  ellipsiscaches{ellipsiscache::create()},
 	  iconcaches(icon_cache::create()),
 	  cursor_pointercaches(cursor_pointer_cache::create())
 {

@@ -35,6 +35,13 @@ ellipsiscacheObj::~ellipsiscacheObj()=default;
 
 richtext ellipsiscacheObj::get(elementObj::implObj &parent_element)
 {
+	// Note that all of this is protected by current_theme_t::lock
+	//
+	// This is called from textlabelObj::implObj, with a current_theme_t
+	// lock being for the duration of its construction. A lock is
+	// also held by update_current_theme() while calling theme_updated()
+	// on the cached ellipsis objects.
+
 	auto cfc=parent_element.create_current_fontcollection
 		(theme_font{parent_element.label_theme_font()});
 	color_arg color{parent_element.label_theme_color()};

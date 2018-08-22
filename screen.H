@@ -19,6 +19,7 @@
 #include "x/w/impl/background_colorfwd.H"
 #include "screen_picturecachefwd.H"
 #include "screen_fontcachesfwd.H"
+#include "ellipsiscachefwd.H"
 #include "x/w/impl/border_implfwd.H"
 #include "border_cachefwd.H"
 #include "xid_t.H"
@@ -121,6 +122,13 @@ class LIBCXX_HIDDEN screenObj::implObj
 	//! Use by create_font().
 
 	const screen_fontcaches fontcaches;
+
+	//! Label ellipsis cache.
+
+	//! Cache for the ellipsis string that's shown when the label is
+	//! too long to fit within its alloted width.
+
+	const ellipsiscache ellipsiscaches;
 
 	//! Loaded icons for this screen.
 

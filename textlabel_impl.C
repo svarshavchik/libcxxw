@@ -8,7 +8,6 @@
 #include "label_element.H"
 #include "generic_window_handler.H"
 #include "screen.H"
-#include "connection_thread.H"
 #include "richtext/richtext.H"
 #include "richtext/richtextmeta.H"
 #include "richtext/richtext_draw_info.H"
@@ -161,7 +160,7 @@ textlabelObj::implObj::implObj(textlabel_config &config,
 	  ordered_hotspots{rebuild_ordered_hotspots(hotspot_info_thread_only)},
 	  text{text},
 	  ellipsis{parent_element_impl.get_window_handler()
-		   .thread()->thread_ellipsiscache
+		   .get_screen()->impl->ellipsiscaches
 		   ->get(parent_element_impl)},
 	  hotspot_cursor{config.allow_links
 			 ? (richtextiteratorptr)text->begin()
@@ -251,7 +250,6 @@ void textlabelObj::implObj::initialize(ONLY IN_THREAD)
 	current_theme=current_theme_now;
 
 	text->theme_updated(IN_THREAD, current_theme);
-	ellipsis->theme_updated(IN_THREAD, current_theme);
 
 	// Repeat what the constructor did.
 
@@ -283,7 +281,6 @@ void textlabelObj::implObj::theme_updated(ONLY IN_THREAD,
 	current_theme=new_theme;
 
 	text->theme_updated(IN_THREAD, new_theme);
-	ellipsis->theme_updated(IN_THREAD, new_theme);
 	compute_preferred_width(new_theme, word_wrap_widthmm(IN_THREAD),
 				default_meta.getfont()->fc(IN_THREAD));
 	updated(IN_THREAD);

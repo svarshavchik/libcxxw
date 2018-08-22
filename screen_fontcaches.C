@@ -5,7 +5,9 @@
 #include "libcxxw_config.h"
 #include "screen.H"
 #include "screen_fontcaches.H"
+#include "ellipsiscache.H"
 #include "generic_window_handler.H"
+#include "richtext/richtext.H"
 #include "x/w/font_hash.H"
 #include "x/w/impl/fonts/current_fontcollection.H"
 #include "x/number_hash.H"
@@ -102,6 +104,17 @@ void screenObj::implObj::update_current_theme(ONLY IN_THREAD,
 
 		if (p)
 			p->current_theme_updated(IN_THREAD, new_theme);
+	}
+
+	// We also hold this lock in place while calling theme_updated of
+	// cached ellipsis.
+
+	for (auto &cached_ellipsis:*ellipsiscaches->cache)
+	{
+		auto p=cached_ellipsis.second.getptr();
+
+		if (p)
+			p->theme_updated(IN_THREAD, new_theme);
 	}
 }
 
