@@ -55,7 +55,19 @@ struct LIBCXX_HIDDEN richtext_draw_boundaries {
 
 	void position_at(const rectangle &);
 
-	//! The last parameter to position_at().
+	//! The last parameter that was passed in to position_at().
+
+	//! If position_at() was never called, this is initialized by the
+	//! constructor with x and y set to 0, and width and height set to
+	//! the size of the drawing element, obtained from the draw_info
+	//! parameter to the constructor.
+	//!
+	//! This basically specifies the area when the label gets drawn,
+	//! and the constructor initializes it, by default, to specify the
+	//! entire drawing area of the element.
+	//!
+	//! The list layout manager draws each column in each row by
+	//! using position_at() to specify each column's drawing area, here:
 
 	rectangle position;
 };

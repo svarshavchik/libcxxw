@@ -42,7 +42,10 @@ richtext_draw_boundaries::richtext_draw_boundaries(const draw_info &di,
 							rects.end()},
 					areas);
 			}))},
-	  draw_bounds{limits}
+	  draw_bounds{limits},
+	  position{0, 0,
+		   di.absolute_location.width,
+		   di.absolute_location.height}
 {
 }
 
