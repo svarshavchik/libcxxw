@@ -27,6 +27,10 @@ class richtextObj;
 
 typedef ref<richtextObj> richtext;
 
+//! A nullable pointer reference to a \ref richtext "rich text string".
+
+typedef ptr<richtextObj> richtextptr;
+
 LIBCXXW_NAMESPACE_END
 
 #endif

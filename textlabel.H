@@ -5,6 +5,7 @@
 #ifndef textlabel_h
 #define textlabel_h
 
+#include "richtext/richtext_alteration_config.H"
 #include "x/w/textlabelobj.H"
 #include "x/w/elementobj.H"
 #include "x/w/text_param.H"
@@ -59,11 +60,16 @@ struct LIBCXX_HIDDEN textlabel_config {
 	//! be resizable. The editor element sets this, and we fix the
 	//! width metrics.
 	bool fixed_width_metrics=false;
+
+
+	bool truncatable=false;
 };
 
 //! Base class for a label implementation.
 
-class LIBCXX_HIDDEN textlabelObj::implObj : virtual public obj {
+class LIBCXX_HIDDEN textlabelObj::implObj
+	: private richtext_alteration_config,
+	  virtual public obj {
 
 	//! Word wrapping width, in millimeters.
 
@@ -134,10 +140,6 @@ class LIBCXX_HIDDEN textlabelObj::implObj : virtual public obj {
 	//! The text in the label.
 
 	const richtext text;
-
-	//! The ellipsis text, if we need it.
-
-	const richtext ellipsis;
 
 	//! A cursor we use to determine whether the pointer is in a hotspot.
 

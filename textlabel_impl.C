@@ -152,16 +152,19 @@ textlabelObj::implObj::implObj(textlabel_config &config,
 			       richtextstring &&string,
 			       const richtext &text,
 			       const richtextmeta &default_meta)
-	: word_wrap_widthmm_thread_only{config.config.widthmm},
+	: richtext_alteration_config{config.truncatable ? richtextptr
+				     {
+				      parent_element_impl.get_window_handler()
+				      .get_screen()->impl->ellipsiscaches
+				      ->get(parent_element_impl)}
+				     : richtextptr{}},
+	  word_wrap_widthmm_thread_only{config.config.widthmm},
 	  width_in_columns{config.width_in_columns},
 	  fixed_width_metrics{config.fixed_width_metrics},
 	  current_theme{initial_theme},
 	  hotspot_info_thread_only{create_hotspot_info(string, text)},
 	  ordered_hotspots{rebuild_ordered_hotspots(hotspot_info_thread_only)},
 	  text{text},
-	  ellipsis{parent_element_impl.get_window_handler()
-		   .get_screen()->impl->ellipsiscaches
-		   ->get(parent_element_impl)},
 	  hotspot_cursor{config.allow_links
 			 ? (richtextiteratorptr)text->begin()
 			 : richtextiteratorptr{}},
