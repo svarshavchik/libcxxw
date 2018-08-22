@@ -21,11 +21,10 @@ richtextparagraphObj::~richtextparagraphObj()
 	fragments.paragraph_destroyed();
 }
 
-bool richtextparagraphObj::rewrap(ONLY IN_THREAD,
-				  paragraph_list &my_paragraphs,
+bool richtextparagraphObj::rewrap(paragraph_list &my_paragraphs,
 				  dim_t width)
 {
-	fragment_list my_fragments(IN_THREAD, my_paragraphs, *this);
+	fragment_list my_fragments(my_paragraphs, *this);
 
 	size_t my_fragment_n=0;
 	bool changed=false;
@@ -34,7 +33,7 @@ bool richtextparagraphObj::rewrap(ONLY IN_THREAD,
 	{
 		bool toosmall, toobig;
 
-		rewrap_fragment(IN_THREAD, my_fragments,
+		rewrap_fragment(my_fragments,
 				width, my_fragment_n, toosmall, toobig);
 		++my_fragment_n;
 
@@ -48,10 +47,9 @@ bool richtextparagraphObj::rewrap(ONLY IN_THREAD,
 	return changed;
 }
 
-bool richtextparagraphObj::unwrap(ONLY IN_THREAD,
-				  paragraph_list &my_paragraphs)
+bool richtextparagraphObj::unwrap(paragraph_list &my_paragraphs)
 {
-	fragment_list my_fragments(IN_THREAD, my_paragraphs, *this);
+	fragment_list my_fragments(my_paragraphs, *this);
 
 	if (my_fragments.size() == 0)
 		return false;
@@ -60,7 +58,7 @@ bool richtextparagraphObj::unwrap(ONLY IN_THREAD,
 
 	while (my_fragments.size() > 1)
 	{
-		get_fragment(0)->merge(IN_THREAD, my_fragments);
+		get_fragment(0)->merge(my_fragments);
 		flag=true;
 	}
 
@@ -69,8 +67,7 @@ bool richtextparagraphObj::unwrap(ONLY IN_THREAD,
 	return flag;
 }
 
-void richtextparagraphObj::rewrap_fragment(ONLY IN_THREAD,
-					   fragment_list &my_fragments,
+void richtextparagraphObj::rewrap_fragment(fragment_list &my_fragments,
 					   dim_t width,
 					   size_t fragment_n,
 					   bool &toosmall,
@@ -91,7 +88,7 @@ void richtextparagraphObj::rewrap_fragment(ONLY IN_THREAD,
 	       + (*get_fragment_iter(fragment_n+1))->minimum_width <= wwidth)
 	{
 		// We'll merge the whole thing, and sort things out later.
-		(*iter)->merge(IN_THREAD, my_fragments);
+		(*iter)->merge(my_fragments);
 		iter=get_fragment_iter(fragment_n);
 		toosmall=true;
 
@@ -140,7 +137,7 @@ void richtextparagraphObj::rewrap_fragment(ONLY IN_THREAD,
 
 	if (last_break_pos && last_break_pos < n)
 	{
-		(*iter)->split(IN_THREAD, my_fragments, last_break_pos);
+		(*iter)->split(my_fragments, last_break_pos);
 
 		iter=get_fragment_iter(fragment_n);
 

@@ -35,7 +35,7 @@ LIBCXXW_NAMESPACE_START
 			"Internal error: paragraph or text linkage sanity check failed.")
 
 #define RESOLVE_FONTS() \
-	(string.resolve_fonts(IN_THREAD))
+	(string.resolve_fonts())
 
 // Given a font height, compute how big the underline would be. A tiny one
 // line for a huge font doesn't look good.
@@ -84,9 +84,9 @@ richtextfragmentObj
 {
 }
 
-void richtextfragmentObj::finish_setting(ONLY IN_THREAD)
+void richtextfragmentObj::finish_setting()
 {
-	load_glyphs_widths_kernings(IN_THREAD, nullptr);
+	load_glyphs_widths_kernings(nullptr);
 }
 
 richtextfragmentObj
@@ -180,19 +180,18 @@ void richtextfragmentObj
 					const defaulttheme &new_theme)
 {
 	string.theme_updated(IN_THREAD, new_theme);
-	load_glyphs_widths_kernings(IN_THREAD);
-	recalculate_size_called_by_fragment_list(IN_THREAD);
+	load_glyphs_widths_kernings();
+	recalculate_size_called_by_fragment_list();
 	redraw_needed=true;
 }
 
-void richtextfragmentObj::load_glyphs_widths_kernings(ONLY IN_THREAD)
+void richtextfragmentObj::load_glyphs_widths_kernings()
 {
-	load_glyphs_widths_kernings(IN_THREAD, prev_fragment());
+	load_glyphs_widths_kernings(prev_fragment());
 }
 
 void richtextfragmentObj
-::load_glyphs_widths_kernings(ONLY IN_THREAD,
-			      richtextfragmentObj *previous_fragment)
+::load_glyphs_widths_kernings(richtextfragmentObj *previous_fragment)
 {
 	USING_MY_PARAGRAPH();
 
@@ -200,8 +199,7 @@ void richtextfragmentObj
 			  (auto &widths,
 			   auto &kernings)
 			  {
-				  string.compute_width(IN_THREAD,
-						       previous_fragment ?
+				  string.compute_width(previous_fragment ?
 						       &previous_fragment->string:NULL,
 						       my_paragraph->my_richtext->unprintable_char,
 						       widths,
@@ -209,8 +207,7 @@ void richtextfragmentObj
 			  });
 }
 
-void richtextfragmentObj::update_glyphs_widths_kernings(ONLY IN_THREAD,
-							size_t pos,
+void richtextfragmentObj::update_glyphs_widths_kernings(size_t pos,
 							size_t count)
 {
 	USING_MY_PARAGRAPH();
@@ -221,8 +218,7 @@ void richtextfragmentObj::update_glyphs_widths_kernings(ONLY IN_THREAD,
 			  (auto &widths,
 			   auto &kernings)
 			  {
-				  string.compute_width(IN_THREAD,
-						       previous_fragment ?
+				  string.compute_width(previous_fragment ?
 						       &previous_fragment->string:NULL,
 						       my_paragraph->my_richtext->unprintable_char,
 						       widths,
@@ -285,7 +281,7 @@ richtextfragmentObj *richtextfragmentObj::next_fragment() const
 	return nullptr;
 }
 
-void richtextfragmentObj::recalculate_size_called_by_fragment_list(ONLY IN_THREAD)
+void richtextfragmentObj::recalculate_size_called_by_fragment_list()
 {
 	width=0;
 	minimum_width=0;
@@ -392,16 +388,15 @@ size_t richtextfragmentObj::insert(ONLY IN_THREAD,
 	no_meta_for_trailing_space();
 #endif
 
-	update_glyphs_widths_kernings(IN_THREAD, pos, n_size);
+	update_glyphs_widths_kernings(pos, n_size);
 
 	recalculate_linebreaks();
 
-	fragment_list my_fragments{IN_THREAD, my_paragraphs, *my_paragraph};
+	fragment_list my_fragments{my_paragraphs, *my_paragraph};
 
 	auto old_width=width;
 
-	my_fragments.fragment_text_changed(IN_THREAD,
-					   my_fragment_number,
+	my_fragments.fragment_text_changed(my_fragment_number,
 					   n_size);
 
 	assert_or_throw(width >= old_width,
@@ -431,7 +426,7 @@ size_t richtextfragmentObj::insert(ONLY IN_THREAD,
 	{
 		if (breaks[--p] == UNICODE_LB_MANDATORY && p != 0)
 		{
-			split(IN_THREAD, my_fragments, p);
+			split(my_fragments, p);
 			++counter;
 		}
 	}
@@ -1120,8 +1115,7 @@ void richtextfragmentObj::render(ONLY IN_THREAD,
 
 ////////////////////////////////////////////////////////////////////////////
 
-richtextfragment richtextfragmentObj::split(ONLY IN_THREAD,
-					    fragment_list &my_fragments,
+richtextfragment richtextfragmentObj::split(fragment_list &my_fragments,
 					    size_t pos)
 {
 	USING_MY_PARAGRAPH();
@@ -1184,32 +1178,29 @@ richtextfragment richtextfragmentObj::split(ONLY IN_THREAD,
 
 		// This was split from here.
 		fragment_list
-			new_paragraph_fragments{IN_THREAD,
-				my_fragments.my_paragraphs,
-				*new_paragraph};
+			new_paragraph_fragments{my_fragments.my_paragraphs,
+						*new_paragraph};
 
 		// Move the remaining fragments to the new paragraph
-		new_paragraph_fragments.split_from(IN_THREAD,
-						   new_fragment, this);
+		new_paragraph_fragments.split_from(new_fragment, this);
 	}
 	else
 	{
-		appended_no_change_in_char_count(IN_THREAD, my_fragments,
+		appended_no_change_in_char_count(my_fragments,
 						 new_fragment);
 	}
 
 	if (new_fragment->string.size())
-		new_fragment->update_glyphs_widths_kernings(IN_THREAD, 0, 1);
+		new_fragment->update_glyphs_widths_kernings(0, 1);
 
-	my_fragments.fragment_text_changed(IN_THREAD, my_fragment_number, 0);
+	my_fragments.fragment_text_changed(my_fragment_number, 0);
 
 	redraw_needed=true;
 	return new_fragment;
 }
 
 void richtextfragmentObj
-::appended_no_change_in_char_count(ONLY IN_THREAD,
-				   fragment_list &my_fragments,
+::appended_no_change_in_char_count(fragment_list &my_fragments,
 				   const richtextfragment &new_fragment)
 {
 	USING_MY_PARAGRAPH();
@@ -1218,11 +1209,10 @@ void richtextfragmentObj
 
 	++iter;
 
-	my_fragments.insert_no_change_in_char_count(IN_THREAD, iter,
-						    new_fragment);
+	my_fragments.insert_no_change_in_char_count(iter, new_fragment);
 }
 
-void richtextfragmentObj::merge(ONLY IN_THREAD, fragment_list &my_fragments)
+void richtextfragmentObj::merge(fragment_list &my_fragments)
 {
 	USING_MY_PARAGRAPH();
 
@@ -1265,7 +1255,7 @@ void richtextfragmentObj::merge(ONLY IN_THREAD, fragment_list &my_fragments)
 
 		horiz_info.append(other->horiz_info);
 
-		update_glyphs_widths_kernings(IN_THREAD, orig_pos, 1);
+		update_glyphs_widths_kernings(orig_pos, 1);
 	}
 
 	// Migrate the cursor locations too
@@ -1281,11 +1271,10 @@ void richtextfragmentObj::merge(ONLY IN_THREAD, fragment_list &my_fragments)
 		l->split_from_fragment(0);
 	}
 	my_fragments.erase(my_paragraph->fragments.get_iter(n));
-	my_fragments.fragment_text_changed(IN_THREAD, my_fragment_number, 0);
+	my_fragments.fragment_text_changed(my_fragment_number, 0);
 }
 
-void richtextfragmentObj::remove(ONLY IN_THREAD,
-				 size_t pos,
+void richtextfragmentObj::remove(size_t pos,
 				 size_t nchars,
 				 fragment_list &my_fragments)
 {
@@ -1310,7 +1299,7 @@ void richtextfragmentObj::remove(ONLY IN_THREAD,
 
 	breaks.erase(breaks.begin()+pos, breaks.begin()+pos+nchars);
 	horiz_info.erase(pos, nchars);
-	update_glyphs_widths_kernings(IN_THREAD, pos, 1);
+	update_glyphs_widths_kernings(pos, 1);
 
 	// Adjust all locations on or after the removal point.
 	for (const auto &l:locations)
@@ -1320,8 +1309,7 @@ void richtextfragmentObj::remove(ONLY IN_THREAD,
 
 	recalculate_linebreaks();
 
-	my_fragments.fragment_text_changed(IN_THREAD,
-					   my_fragment_number, -nchars);
+	my_fragments.fragment_text_changed(my_fragment_number, -nchars);
 }
 
 void richtextfragmentObj

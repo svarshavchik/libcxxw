@@ -30,9 +30,12 @@ richtextObj::richtextObj(const richtextstring &string,
 
 richtextObj::richtextObj(const ref<richtext_implObj> &impl,
 			 dim_t word_wrap_width)
-	: impl(impl),
-	  word_wrap_width_thread_only(word_wrap_width)
+	: impl{impl},
+	  word_wrap_width_thread_only{word_wrap_width}
 {
+	impl_t::lock lock{this->impl};
+
+	(*lock)->finish_initialization();
 }
 
 richtextObj::~richtextObj()=default;
@@ -40,10 +43,9 @@ richtextObj::~richtextObj()=default;
 // We must make sure that finish_initialization() gets invoked after the
 // object gets constructed.
 
-richtextObj::impl_t::lock::lock(ONLY IN_THREAD, impl_t &me)
+richtextObj::impl_t::lock::lock(impl_t &me)
 	: internal_richtext_impl_t::lock(me)
 {
-	(**this)->finish_initialization(IN_THREAD);
 }
 
 size_t richtextObj::size(ONLY IN_THREAD)
@@ -57,7 +59,7 @@ size_t richtextObj::size(ONLY IN_THREAD)
 
 void richtextObj::set(ONLY IN_THREAD, const richtextstring &string)
 {
-	impl_t::lock lock{IN_THREAD, impl};
+	impl_t::lock lock{impl};
 
 	(*lock)->set(IN_THREAD, string);
 }
@@ -68,17 +70,17 @@ bool richtextObj::rewrap(ONLY IN_THREAD,
 	if (word_wrap_width(IN_THREAD) == width)
 		return false;
 
-	impl_t::lock lock{IN_THREAD, impl};
+	impl_t::lock lock{impl};
 
 	word_wrap_width(IN_THREAD)=width;
 
-	return width > 0 ? (*lock)->rewrap(IN_THREAD, width)
-		: (*lock)->unwrap(IN_THREAD);
+	return width > 0 ? (*lock)->rewrap(width)
+		: (*lock)->unwrap();
 }
 
-dim_t richtextObj::get_width(ONLY IN_THREAD)
+dim_t richtextObj::get_width()
 {
-	impl_t::lock lock{IN_THREAD, impl};
+	impl_t::lock lock{impl};
 
 	return dim_t::truncate((*lock)->width());
 }
@@ -86,7 +88,7 @@ dim_t richtextObj::get_width(ONLY IN_THREAD)
 std::pair<metrics::axis, metrics::axis>
 richtextObj::get_metrics(ONLY IN_THREAD, dim_t preferred_width)
 {
-	impl_t::lock lock{IN_THREAD, impl};
+	impl_t::lock lock{impl};
 
 	dim_t width= dim_t::truncate((*lock)->width());
 	dim_t height= dim_t::truncate((*lock)->height());
@@ -133,7 +135,7 @@ richtextObj::get_metrics(ONLY IN_THREAD, dim_t preferred_width)
 
 void richtextObj::theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme)
 {
-	impl_t::lock lock{IN_THREAD, impl};
+	impl_t::lock lock{impl};
 
 	(*lock)->theme_updated(IN_THREAD, new_theme);
 }
@@ -265,7 +267,7 @@ void richtextObj::draw(ONLY IN_THREAD,
 	assert_or_throw(draw_bounds.draw_bounds.x >= 0 &&
 			draw_bounds.draw_bounds.y >= 0,
 			"Bounding rectangle cannot start on a negative coordinate");
-	impl_t::lock lock{IN_THREAD, impl};
+	impl_t::lock lock{impl};
 
 	clip_region_set clipped{IN_THREAD, element.get_window_handler(), di};
 
@@ -459,7 +461,7 @@ void richtextObj::draw(ONLY IN_THREAD,
 std::tuple<pixmap, picture> richtextObj::create(ONLY IN_THREAD,
 						const drawable &for_drawable)
 {
-	impl_t::lock lock{IN_THREAD, impl};
+	impl_t::lock lock{impl};
 
 	dim_t width= dim_t::truncate((*lock)->width());
 	dim_t height= dim_t::truncate((*lock)->height());
@@ -553,8 +555,8 @@ richtextiterator richtextObj::at(internal_richtext_impl_t::lock &lock, size_t np
 }
 
 void richtextObj::insert_at_location(ONLY IN_THREAD,
-				       impl_t::lock &lock,
-				       const richtext_insert_base &new_text)
+				     impl_t::lock &lock,
+				     const richtext_insert_base &new_text)
 {
 	(*lock)->insert_at_location(IN_THREAD,
 				    word_wrap_width(IN_THREAD),
@@ -566,8 +568,7 @@ void richtextObj::remove_at_location(ONLY IN_THREAD,
 				     const richtextcursorlocation &a,
 				     const richtextcursorlocation &b)
 {
-	return (*lock)->remove_at_location(IN_THREAD,
-					   word_wrap_width(IN_THREAD),
+	return (*lock)->remove_at_location(word_wrap_width(IN_THREAD),
 					   a, b);
 }
 
@@ -656,7 +657,7 @@ void richtextObj::get(const internal_richtext_impl_t::lock &lock,
 
 ref<richtext_implObj> richtextObj::debug_get_impl(ONLY IN_THREAD)
 {
-	impl_t::lock lock{IN_THREAD, impl};
+	impl_t::lock lock{impl};
 
 	return *lock;
 }

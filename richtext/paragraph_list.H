@@ -84,10 +84,10 @@ public:
 	friend class const_fragment_list;
 
 	//! Invoke all paragraphs' rewrap() method.
-	bool rewrap(ONLY IN_THREAD, dim_t width);
+	bool rewrap(dim_t width);
 
 	//! Invoke all paragraphs' unwrap() method.
-	bool unwrap(ONLY IN_THREAD);
+	bool unwrap();
 
 	//! Invoke all paragraphs's fragments' theme_updated().
 

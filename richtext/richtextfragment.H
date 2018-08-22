@@ -212,12 +212,11 @@ public:
 	//! This invokes richtextstring's compute_width(), after some minor
 	//! prep work.
 
-	void load_glyphs_widths_kernings(ONLY IN_THREAD);
+	void load_glyphs_widths_kernings();
 
 	//! Internal implementation.
 
-	void load_glyphs_widths_kernings(ONLY IN_THREAD,
-					 richtextfragmentObj *prev_fragment);
+	void load_glyphs_widths_kernings(richtextfragmentObj *prev_fragment);
 
 	//! Compute glyphs, widths, and kernings for a subset of characters.
 
@@ -226,8 +225,7 @@ public:
 	//! of the whole thing.
 	//!
 	//! Invokes richtextstring's compute_width().
-	void update_glyphs_widths_kernings(ONLY IN_THREAD,
-					   size_t pos,
+	void update_glyphs_widths_kernings(size_t pos,
 					   size_t count);
 
  public:
@@ -250,7 +248,7 @@ public:
 	//! set() must add the new fragment to its paragraph, before we can
 	//! wrap things up and load_glyphs_widths_kernings().
 
-	void finish_setting(ONLY IN_THREAD);
+	void finish_setting();
 
 	//! Private constructor
 
@@ -269,8 +267,7 @@ public:
 	//! Returns a new text fragment, containing character #n and
 	//! onwards. This text fragment is truncated to character #n.
 
-	richtextfragment split(ONLY IN_THREAD,
-			       //! Fragment's paragraph's fragment list
+	richtextfragment split(//! Fragment's paragraph's fragment list
 			       fragment_list &my_fragments,
 
 			       //! Split position
@@ -278,8 +275,7 @@ public:
 
 	//! Take the next fragment in this paragraph and merge it into this one.
 
-	void merge(ONLY IN_THREAD,
-		   //! Fragment's paragraph's fragment list
+	void merge(//! Fragment's paragraph's fragment list
 		   fragment_list &my_fragments);
 
 	//! Calculate the fragment index from start of rich text.
@@ -300,8 +296,7 @@ public:
 
 	//! Delete text.
 
-	void remove(ONLY IN_THREAD,
-		    size_t pos,
+	void remove(size_t pos,
 		    size_t nchars,
 		    fragment_list &my_fragments);
 
@@ -368,7 +363,7 @@ public:
 
 	//! Invoked by fragment_list to recalculate this fragment.
 
-	void recalculate_size_called_by_fragment_list(ONLY IN_THREAD);
+	void recalculate_size_called_by_fragment_list();
 
 	struct render_info;
 
@@ -425,8 +420,7 @@ public:
 
 	//! This is called from split_from(), no change in the number of
 	//! characters in this fragment's paragraph.
-	void appended_no_change_in_char_count(ONLY IN_THREAD,
-					      //! Fragment's paragraph's fragment list
+	void appended_no_change_in_char_count(//! Fragment's paragraph's fragment list
 					      fragment_list &my_fragments,
 					      const richtextfragment &new_fragment);
 

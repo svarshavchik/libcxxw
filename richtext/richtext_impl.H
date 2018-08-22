@@ -167,8 +167,6 @@ public:
 
  public:
 
-	bool initialized=false;
-
 	//! Finish initialization of new text.
 
 	//! If initialized is not set, calculate the new text size, and load
@@ -179,7 +177,7 @@ public:
 	//! Also invoked from the parent rich text object, after acquiring
 	//! the lock ONLY IN_THREAD, to finish the construction of this object.
 
-	void finish_initialization(ONLY IN_THREAD);
+	void finish_initialization();
 
 	//! Destructor
 	~richtext_implObj();
@@ -233,20 +231,18 @@ public:
 	//! Rewrap this rich text to requested width, in pixels.
 
 	//! Returns true if the rich text was reformatted.
-	bool rewrap(ONLY IN_THREAD,
-		    dim_t width);
+	bool rewrap(dim_t width);
 
 	// Text was removed and inserted here. Rewrap only from here.
 
-	void rewrap_at_fragment(ONLY IN_THREAD,
-				dim_t width,
+	void rewrap_at_fragment(dim_t width,
 				richtextfragmentObj *fragment,
 				fragment_list &fragment_list_arg);
 
 	//! Unwrap all text
 
 	//! Returns true if the rich text was reformatted.
-	bool unwrap(ONLY IN_THREAD);
+	bool unwrap();
 
 	/////////////////////////////////////////////////////////////////////
 
@@ -265,8 +261,7 @@ public:
 	//! Invoked from the public object's remove_at_location(), after
 	//! locking everything down tightly, and supplying us with the
 	//! word_wrap_width.
-	void remove_at_location(ONLY IN_THREAD,
-				dim_t word_wrap_width,
+	void remove_at_location(dim_t word_wrap_width,
 				const richtextcursorlocation &a,
 				const richtextcursorlocation &b);
 
@@ -284,8 +279,7 @@ public:
 
 	//! Common code shared by remove_at_location() and replace_at_location().
 
-	void remove_at_location(ONLY IN_THREAD,
-				const remove_info &,
+	void remove_at_location(const remove_info &,
 				paragraph_list &,
 				dim_t);
 	//! Common code shared by remove_at_location() and replace_at_location().

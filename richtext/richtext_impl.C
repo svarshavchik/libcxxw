@@ -72,8 +72,7 @@ void richtext_implObj::set(ONLY IN_THREAD, const richtextstring &string)
 
 	do_set(string);
 
-	initialized=false;
-	finish_initialization(IN_THREAD);
+	finish_initialization();
 
 	// Ok, now move all locations to the last character of the new text.
 
@@ -178,11 +177,8 @@ void richtext_implObj::do_set(const richtextstring &string)
 	}
 }
 
-void richtext_implObj::finish_initialization(ONLY IN_THREAD)
+void richtext_implObj::finish_initialization()
 {
-	if (initialized)
-		return;
-
 	paragraph_list my_paragraphs(*this);
 
 	paragraphs.for_paragraphs
@@ -190,8 +186,8 @@ void richtext_implObj::finish_initialization(ONLY IN_THREAD)
 		 [&]
 		 (const auto &new_paragraph)
 		 {
-			 fragment_list my_fragments{IN_THREAD,
-					 my_paragraphs, *new_paragraph};
+			 fragment_list my_fragments{my_paragraphs,
+						    *new_paragraph};
 
 			 if (my_fragments.size() != 1)
 				 throw EXCEPTION("Internal error: expected 1 fragment in finish_initialization()");
@@ -199,16 +195,14 @@ void richtext_implObj::finish_initialization(ONLY IN_THREAD)
 			 auto new_fragment=
 				 new_paragraph->get_fragment(0);
 
-			 new_fragment->finish_setting(IN_THREAD);
+			 new_fragment->finish_setting();
 
 			 // Now that the fragment has been initialized, the
 			 // paragraph's metrics can be recalculated
-			 my_fragments.fragment_text_changed(IN_THREAD, 0,
-							    0);
+			 my_fragments.fragment_text_changed(0, 0);
 
 			 return true;
 		 });
-	initialized=true;
 }
 
 richtext_implObj::~richtext_implObj()=default;
@@ -218,18 +212,18 @@ void richtext_implObj::rich_text_paragraph_out_of_bounds()
 	throw EXCEPTION("Internal error: rich text paragraph out of bounds.");
 }
 
-bool richtext_implObj::rewrap(ONLY IN_THREAD, dim_t width)
+bool richtext_implObj::rewrap(dim_t width)
 {
 	paragraph_list my_paragraphs(*this);
 
-	return my_paragraphs.rewrap(IN_THREAD, width);
+	return my_paragraphs.rewrap(width);
 }
 
-bool richtext_implObj::unwrap(ONLY IN_THREAD)
+bool richtext_implObj::unwrap()
 {
 	paragraph_list my_paragraphs(*this);
 
-	return my_paragraphs.unwrap(IN_THREAD);
+	return my_paragraphs.unwrap();
 }
 
 size_t richtext_implObj::find_paragraph_for_pos(size_t &pos)
@@ -377,10 +371,9 @@ void richtext_implObj::theme_updated(ONLY IN_THREAD,
 }
 
 
-void richtext_implObj::rewrap_at_fragment(ONLY IN_THREAD,
-					      dim_t width,
-					      richtextfragmentObj *fragment,
-					      fragment_list &fragment_list_arg)
+void richtext_implObj::rewrap_at_fragment(dim_t width,
+					  richtextfragmentObj *fragment,
+					  fragment_list &fragment_list_arg)
 {
 	assert_or_throw(fragment && fragment->my_paragraph,
 			"Internal error: fragment or paragraph is null");
@@ -395,15 +388,14 @@ void richtext_implObj::rewrap_at_fragment(ONLY IN_THREAD,
 	}
 
 	paragraph_list my_paragraphs{*this};
-	fragment_list my_fragments{IN_THREAD, my_paragraphs, *paragraph};
+	fragment_list my_fragments{my_paragraphs, *paragraph};
 
 	bool wrapped=false;
 	while (n && fragment_n < paragraph->fragments.size())
 	{
 		bool toosmall, toobig;
 
-		paragraph->rewrap_fragment(IN_THREAD,
-					   my_fragments,
+		paragraph->rewrap_fragment(my_fragments,
 					   width,
 					   fragment_n,
 					   toosmall, toobig);
@@ -473,8 +465,7 @@ void richtext_implObj::insert_at_location(ONLY IN_THREAD,
 				 [&]
 				 (const richtextparagraph &p)
 				 {
-					 p->rewrap(IN_THREAD,
-						   my_paragraphs,
+					 p->rewrap(my_paragraphs,
 						   word_wrap_width);
 					 return true;
 				 });
@@ -482,11 +473,10 @@ void richtext_implObj::insert_at_location(ONLY IN_THREAD,
 
 		// Now, rewrap the inserted-into paragraph
 
-		fragment_list my_fragments(IN_THREAD, my_paragraphs,
-					   *orig_fragment->my_paragraph);
+		fragment_list my_fragments{my_paragraphs,
+				*orig_fragment->my_paragraph};
 
-		rewrap_at_fragment(IN_THREAD,
-				   word_wrap_width,
+		rewrap_at_fragment(word_wrap_width,
 				   orig_fragment, my_fragments);
 	}
 }
@@ -516,8 +506,7 @@ struct LIBCXX_HIDDEN richtext_implObj::remove_info {
 		}
 };
 
-void richtext_implObj::remove_at_location(ONLY IN_THREAD,
-					  dim_t word_wrap_width,
+void richtext_implObj::remove_at_location(dim_t word_wrap_width,
 					  const richtextcursorlocation &ar,
 					  const richtextcursorlocation &br)
 {
@@ -528,7 +517,7 @@ void richtext_implObj::remove_at_location(ONLY IN_THREAD,
 
 	paragraph_list my_paragraphs{*this};
 
-	remove_at_location(IN_THREAD, info, my_paragraphs,
+	remove_at_location(info, my_paragraphs,
 			   word_wrap_width);
 }
 
@@ -549,14 +538,13 @@ void richtext_implObj
 			   ([&, this]
 			    {
 				    if (info.diff != 0)
-					    remove_at_location(IN_THREAD, info,
+					    remove_at_location(info,
 							       my_paragraphs,
 							       0);
 			    }));
 }
 
-void richtext_implObj::remove_at_location(ONLY IN_THREAD,
-					  const remove_info &info,
+void richtext_implObj::remove_at_location(const remove_info &info,
 					  paragraph_list &my_paragraphs,
 					  dim_t word_wrap_width)
 {
@@ -567,8 +555,7 @@ void richtext_implObj::remove_at_location(ONLY IN_THREAD,
 	auto fragment_a=info.location_a->my_fragment;
 	auto fragment_b=info.location_b->my_fragment;
 
-	fragment_list fragment_a_list(IN_THREAD,
-				      my_paragraphs,
+	fragment_list fragment_a_list(my_paragraphs,
 				      *fragment_a->my_paragraph);
 
 	auto diff=info.diff;
@@ -586,9 +573,8 @@ void richtext_implObj::remove_at_location(ONLY IN_THREAD,
 			{
 				{
 					fragment_list
-						rem_fragments{IN_THREAD,
-							my_paragraphs,
-							*p->my_paragraph};
+						rem_fragments{my_paragraphs,
+							      *p->my_paragraph};
 
 					diff -= rem_fragments
 						.remove(p->my_fragment_number,
@@ -602,17 +588,17 @@ void richtext_implObj::remove_at_location(ONLY IN_THREAD,
 
 		// Then merge the next fragment into this one.
 
-		fragment_a->merge(IN_THREAD, fragment_a_list);
+		fragment_a->merge(fragment_a_list);
 		my_paragraphs.recalculation_required();
 	}
 
-	fragment_a->remove(IN_THREAD, info.location_a->get_offset(),
+	fragment_a->remove(info.location_a->get_offset(),
 			   info.location_b->get_offset()-
 			   info.location_a->get_offset(),
 			   fragment_a_list);
 
 	if (word_wrap_width > 0)
-		rewrap_at_fragment(IN_THREAD, word_wrap_width,
+		rewrap_at_fragment(word_wrap_width,
 				   fragment_a, fragment_a_list);
 }
 

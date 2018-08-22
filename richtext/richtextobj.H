@@ -80,7 +80,7 @@ class LIBCXX_HIDDEN richtextObj : virtual public obj {
 	bool rewrap(ONLY IN_THREAD, dim_t width);
 
 	//! Return the text object's current width
-	dim_t get_width(ONLY IN_THREAD);
+	dim_t get_width();
 
 	//! Return the text object's current metrics
 
@@ -245,7 +245,7 @@ class LIBCXX_HIDDEN richtextObj : virtual public obj {
 	template<typename lambda>
 		auto thread_lock(ONLY IN_THREAD, lambda &&l)
 	{
-		impl_t::lock lock{IN_THREAD, impl};
+		impl_t::lock lock{impl};
 
 		return l(IN_THREAD, lock);
 	}
@@ -308,7 +308,7 @@ class richtextObj::impl_t::lock : public internal_richtext_impl_t::lock {
 
 
 public:
-	lock(ONLY IN_THREAD, impl_t &);
+	lock(impl_t &);
 };
 
 LIBCXXW_NAMESPACE_END;

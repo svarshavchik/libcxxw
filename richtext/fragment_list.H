@@ -71,8 +71,6 @@ class LIBCXX_HIDDEN fragment_list : public const_fragment_list {
 
  private:
 
-	ONLY IN_THREAD;
-
 	//! Internal flag set by the methods when the fragments were modified.
 
 	//! Checked in the destructor
@@ -86,13 +84,12 @@ class LIBCXX_HIDDEN fragment_list : public const_fragment_list {
 		size_changed=true;
 	}
 
-	//! Manually set in theme_updated().
-
-	defaultthemeptr theme_was_updated;
-
 	//! Constructor
-	fragment_list(ONLY IN_THREAD, paragraph_list &my_paragraphsArg,
+	fragment_list(paragraph_list &my_paragraphsArg,
 		      richtextparagraphObj &paragraphArg);
+
+	void theme_was_updated(ONLY IN_THREAD,
+			       const defaulttheme &new_theme);
 
 	//! Destructor
 
@@ -126,8 +123,7 @@ class LIBCXX_HIDDEN fragment_list : public const_fragment_list {
 	//! recalculate_fragment_size() (for the new fragment),
 	//! and sets the size_changed flag.
 
-	void insert_no_change_in_char_count(ONLY IN_THREAD,
-					    fragments_t::iterator at,
+	void insert_no_change_in_char_count(fragments_t::iterator at,
 					    const richtextfragment &fragment);
 
 	//! Erase the fragment at the given position.
@@ -141,7 +137,7 @@ class LIBCXX_HIDDEN fragment_list : public const_fragment_list {
 	//! Append a new fragment.
 
 	//! Like insert(), but uses append_no_recalculate() instead.
-	void append(ONLY IN_THREAD, const richtextfragment &new_fragment);
+	void append(const richtextfragment &new_fragment);
 
  public:
 
@@ -165,8 +161,7 @@ class LIBCXX_HIDDEN fragment_list : public const_fragment_list {
 	//! any and all fragments that follow \c split_after into the new
 	//! paragraph, adjusting all character counts accordingly...
 
-	void split_from(ONLY IN_THREAD,
-			const richtextfragment &new_fragment,
+	void split_from(const richtextfragment &new_fragment,
 			richtextfragmentObj *split_after);
 
 	// Move next paragraph's fragments to this paragraph.
@@ -196,16 +191,14 @@ class LIBCXX_HIDDEN fragment_list : public const_fragment_list {
 	//! This is also called from set(), when initializing the entire
 	//! rich text object.
 
-	void fragment_text_changed(ONLY IN_THREAD,
-				   size_t fragment_number,
+	void fragment_text_changed(size_t fragment_number,
 				   ssize_t text_count_changed);
 
  private:
 
 	//! Recalculate the dimensions of the given fragment
 
-	void recalculate_fragment_size(ONLY IN_THREAD,
-				       size_t fragment_number);
+	void recalculate_fragment_size(size_t fragment_number);
 
 	//! Recalculate the width and the height of this text paragraph.
 

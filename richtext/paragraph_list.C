@@ -140,23 +140,23 @@ void paragraph_list::recalculate_size()
 	}
 }
 
-bool paragraph_list::rewrap(ONLY IN_THREAD, dim_t width)
+bool paragraph_list::rewrap(dim_t width)
 {
 	bool changed=false;
 
 	for (const auto &paragraph:text.paragraphs)
-		if (paragraph->rewrap(IN_THREAD, *this, width))
+		if (paragraph->rewrap(*this, width))
 			changed=true;
 
 	return changed;
 }
 
-bool paragraph_list::unwrap(ONLY IN_THREAD)
+bool paragraph_list::unwrap()
 {
 	bool changed=false;
 
 	for (const auto &paragraph:text.paragraphs)
-		if (paragraph->unwrap(IN_THREAD, *this))
+		if (paragraph->unwrap(*this))
 			changed=true;
 
 	if (changed)
@@ -179,9 +179,10 @@ void paragraph_list::theme_updated(ONLY IN_THREAD,
 				 first_fragment_y_position;
 
 			 {
-				 fragment_list fragments{IN_THREAD, *this, *p};
+				 fragment_list fragments{*this, *p};
 
-				 fragments.theme_was_updated=new_theme;
+				 fragments.theme_was_updated(IN_THREAD,
+							     new_theme);
 			 }
 
 			 p->first_fragment_y_position=

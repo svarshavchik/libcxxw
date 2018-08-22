@@ -16,8 +16,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-const richtextstring::resolved_fonts_t
-&richtextstring::resolve_fonts(ONLY IN_THREAD)
+const richtextstring::resolved_fonts_t &richtextstring::resolve_fonts()
 {
 	if (!fonts_need_resolving)
 		return resolved_fonts;
@@ -48,7 +47,7 @@ const richtextstring::resolved_fonts_t
 
 		// Now, look up the font for each character in the range
 		// covered by this metadata entry.
-		p->second.getfont()->fc(IN_THREAD)->lookup
+		p->second.getfont()->fc_public.get()->lookup
 			(rb, re,
 			 [&, this]
 			 (auto b,
@@ -72,8 +71,7 @@ const richtextstring::resolved_fonts_t
 	return resolved_fonts;
 }
 
-void richtextstring::compute_width(ONLY IN_THREAD,
-				   richtextstring *previous_string,
+void richtextstring::compute_width(richtextstring *previous_string,
 				   char32_t unprintable_char,
 				   std::vector<dim_t> &widths,
 				   std::vector<int16_t> &kernings)
@@ -81,15 +79,14 @@ void richtextstring::compute_width(ONLY IN_THREAD,
 	widths.resize(string.size());
 	kernings.resize(string.size());
 
-	compute_width(IN_THREAD, previous_string,
+	compute_width(previous_string,
 		      unprintable_char,
 		      widths,
 		      kernings,
 		      0, string.size());
 }
 
-void richtextstring::compute_width(ONLY IN_THREAD,
-				   richtextstring *previous_string,
+void richtextstring::compute_width(richtextstring *previous_string,
 				   char32_t unprintable_char,
 				   std::vector<dim_t> &widths,
 				   std::vector<int16_t> &kernings,
@@ -118,7 +115,7 @@ void richtextstring::compute_width(ONLY IN_THREAD,
 	if (end_skip < string.size())
 		++end_skip;
 
-	const auto &fonts=resolve_fonts(IN_THREAD);
+	const auto &fonts=resolve_fonts();
 	char32_t previous_char=0;
 
 	// For element #0, if the previous string ends in the same font,
@@ -128,7 +125,7 @@ void richtextstring::compute_width(ONLY IN_THREAD,
 	if (previous_string)
 	{
 		const auto &previous_fonts=
-			previous_string->resolve_fonts(IN_THREAD);
+			previous_string->resolve_fonts();
 
 		if (!previous_fonts.empty() && !fonts.empty() &&
 		    (--previous_fonts.end())->second == fonts.begin()->second)

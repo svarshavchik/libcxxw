@@ -468,14 +468,12 @@ void testrichtext3(const main_window &w,
 					 paragraph_list
 						 my_paragraphs(**lock);
 					 fragment_list
-						 my_fragments(IN_THREAD,
-							      my_paragraphs,
+						 my_fragments(my_paragraphs,
 							      **p);
 
 					 auto f=(*p)->fragments.get_iter(0);
 
-					 (*f)->split(IN_THREAD,
-						     my_fragments, 10);
+					 (*f)->split(my_fragments, 10);
 					 my_fragments
 						 .fragments_were_rewrapped();
 				 }
@@ -618,14 +616,13 @@ void testrichtext4(const main_window &w,
 
 			 {
 				 paragraph_list my_paragraphs(**lock);
-				 fragment_list my_fragments{IN_THREAD,
-						 my_paragraphs,
-						 **p};
+				 fragment_list my_fragments{my_paragraphs,
+							    **p};
 
 				 auto f=*(*p)->fragments.get_iter(0);
 
-				 f->split(IN_THREAD, my_fragments, 12);
-				 f->split(IN_THREAD, my_fragments, 6);
+				 f->split(my_fragments, 12);
+				 f->split(my_fragments, 6);
 				 my_fragments.fragments_were_rewrapped();
 			 }
 		 });

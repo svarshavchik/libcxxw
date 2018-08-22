@@ -381,7 +381,7 @@ editorObj::implObj::implObj(init_args &args)
 		([]
 		 (const auto &impl)
 		 {
-			 (*impl)->unprintable_char=' ';
+			 (*impl)->unprintable_char=' '; // TODO
 		 });
 }
 

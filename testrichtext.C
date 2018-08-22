@@ -61,7 +61,7 @@ void testrichtext(const current_fontcollection &font1,
 			throw EXCEPTION("Somehow we ended up with multiple my_fragments");
 	}
 
-	impl->rewrap(IN_THREAD, 1);
+	impl->rewrap(1);
 
 	std::vector<size_t> n_fragments;
 
@@ -72,7 +72,7 @@ void testrichtext(const current_fontcollection &font1,
 		n_fragments.push_back(paragraph->fragments.size());
 	}
 
-	impl->unwrap(IN_THREAD);
+	impl->unwrap();
 
 	for (size_t i=0, s=impl->paragraphs.size(); i<s; ++i)
 	{
@@ -154,9 +154,8 @@ void testsplit(const current_fontcollection &font1,
 
 		LIBCXX_NAMESPACE::w::paragraph_list my_paragraphs{*impl};
 		LIBCXX_NAMESPACE::w::fragment_list
-			my_fragments{IN_THREAD,
-				my_paragraphs,
-				*paragraph};
+			my_fragments{my_paragraphs,
+				     *paragraph};
 
 		auto fragment=*paragraph->fragments.get_iter(0);
 
@@ -165,7 +164,7 @@ void testsplit(const current_fontcollection &font1,
 
 		auto control_horiz=fragment->horiz_info;
 
-		auto new_fragment=fragment->split(IN_THREAD, my_fragments,
+		auto new_fragment=fragment->split(my_fragments,
 						  test.split_pos);
 
 		fragment=*paragraph->fragments.get_iter(0);
@@ -202,7 +201,7 @@ void testsplit(const current_fontcollection &font1,
 					+ test.results + ", got: " + s);
 		}
 
-		fragment->merge(IN_THREAD, my_fragments);
+		fragment->merge(my_fragments);
 
 		if (control_text.get_string() != fragment->string.get_string()
 		    ||
@@ -231,7 +230,7 @@ void testresolvedfonts(const current_fontcollection &font1,
 			{5, {black, font2}},
 		}};
 
-	const auto &resolved_fonts=ustring.resolve_fonts(IN_THREAD);
+	const auto &resolved_fonts=ustring.resolve_fonts();
 
 	if (ustring.need_font_resolution())
 		throw EXCEPTION("resolve_fonts() didn't cache");
@@ -282,7 +281,7 @@ void testresolvedfonts(const current_fontcollection &font1,
 		if (substr.need_font_resolution())
 			throw EXCEPTION("substr() didn't produce cached results");
 
-		if (substr.resolve_fonts(IN_THREAD)!=t.results)
+		if (substr.resolve_fonts()!=t.results)
 			throw EXCEPTION("substr(" << t.pos << ", "
 					<< t.len << ") did not recalculate"
 					" resolved fonts correctly");
@@ -332,7 +331,7 @@ void testresolvedfonts(const current_fontcollection &font1,
 		if (orig.need_font_resolution())
 			throw EXCEPTION("substr() didn't produce cached results");
 
-		if (orig.resolve_fonts(IN_THREAD)!=t.results)
+		if (orig.resolve_fonts()!=t.results)
 			throw EXCEPTION("insert(" << t.pos
 					<< ") did not recalculate"
 					" resolved fonts correctly");
@@ -342,8 +341,7 @@ void testresolvedfonts(const current_fontcollection &font1,
 		if (orig.need_font_resolution())
 			throw EXCEPTION("substr() didn't produce cached results");
 
-		if (orig.resolve_fonts(IN_THREAD) !=
-		    ustring.resolve_fonts(IN_THREAD))
+		if (orig.resolve_fonts() != ustring.resolve_fonts())
 			throw EXCEPTION("erase(" << t.pos
 					<< ") did not recalculate"
 					" resolved fonts correctly");

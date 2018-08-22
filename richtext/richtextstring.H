@@ -196,7 +196,7 @@ class LIBCXX_HIDDEN richtextstring {
 	//! The freetypefont remains in effect until the next element's index,
 	//! or the end of the string.
 
-	const resolved_fonts_t &resolve_fonts(ONLY IN_THREAD);
+	const resolved_fonts_t &resolve_fonts();
 
 	//! Calculate the width and the kerning of each character.
 
@@ -212,8 +212,7 @@ class LIBCXX_HIDDEN richtextstring {
 	//! Characters that cannot be represented get replaced by
 	//! unprintable_char.
 
-	void compute_width(ONLY IN_THREAD,
-			   richtextstring *previous_string,
+	void compute_width(richtextstring *previous_string,
 			   char32_t unprintable_char,
 			   std::vector<dim_t> &widths,
 			   std::vector<int16_t> &kernings);
@@ -229,8 +228,7 @@ class LIBCXX_HIDDEN richtextstring {
 	//! "count" gives the count of characters, starting at "skip", that
 	//! get updated.
 
-	void compute_width(ONLY IN_THREAD,
-			   richtextstring *previous_string,
+	void compute_width(richtextstring *previous_string,
 			   char32_t unprintable_char,
 			   std::vector<dim_t> &widths,
 			   std::vector<int16_t> &kernings,
