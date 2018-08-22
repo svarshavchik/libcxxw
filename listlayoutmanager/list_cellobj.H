@@ -33,7 +33,7 @@ struct LIBCXX_HIDDEN list_cellObj : virtual public obj {
 			    element_drawObj &draw,
 			    const draw_info &di,
 			    bool draw_as_disabled,
-			    const richtext_draw_boundaries &boundaries)=0;
+			    richtext_draw_boundaries &boundaries)=0;
 
 	//! Initialize this cell, in the connection thread.
 	virtual void cell_initialize(ONLY IN_THREAD,

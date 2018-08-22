@@ -105,12 +105,15 @@ class LIBCXX_HIDDEN richtextObj : virtual public obj {
 	//! This is used by the rich text layout manager that positions
 	//! multiple text elements inside its element. It supplies a custom
 	//! richtext_draw_boundaries.
-
+	//!
+	//! The richtext_draw_boundaries parameter is mutable. full_redraw()
+	//! calls draw(), which may temporarily modify the boundaries in
+	//! order to attach an ellipsis to a truncated label.
 	void full_redraw(ONLY IN_THREAD,
 			 element_drawObj &,
 			 const richtext_draw_info &,
 			 const draw_info &,
-			 const richtext_draw_boundaries &);
+			 richtext_draw_boundaries &);
 
 	//! Redraw only the fragments that need redrawing.
 
@@ -191,7 +194,11 @@ class LIBCXX_HIDDEN richtextObj : virtual public obj {
 		  bool clear_padding,
 
 		  //! Which areas to redraw
-		  const richtext_draw_boundaries &draw_bounds);
+
+		  //! This parameter is mutable. We may temporarily modify the
+		  //! boundaries in order to attach an ellipsis to a truncated
+		  //! label.
+		  richtext_draw_boundaries &draw_bounds);
  public:
 	//! Return an iterator to the first character of the rich text.
 

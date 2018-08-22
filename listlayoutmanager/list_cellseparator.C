@@ -21,8 +21,7 @@ void list_cellseparatorObj::cell_redraw(ONLY IN_THREAD,
 				       element_drawObj &draw,
 				       const draw_info &di,
 				       bool draw_as_disabled,
-				       const richtext_draw_boundaries
-				       &boundaries)
+				       richtext_draw_boundaries &boundaries)
 {
 }
 

@@ -108,7 +108,7 @@ void richtextObj::full_redraw(ONLY IN_THREAD,
 			      element_drawObj &element,
 			      const richtext_draw_info &rdi,
 			      const draw_info &di,
-			      const richtext_draw_boundaries &draw_bounds)
+			      richtext_draw_boundaries &draw_bounds)
 {
 	draw(IN_THREAD, element, rdi, di,
 	     make_function<bool (richtextfragmentObj *)>
@@ -210,9 +210,10 @@ void richtextObj::draw(ONLY IN_THREAD,
 		       element_drawObj &element,
 		       const richtext_draw_info &rdi,
 		       const draw_info &di,
-		       const function<bool (richtextfragmentObj *)> &redraw_fragment,
+		       const function<bool (richtextfragmentObj *)>
+		       &redraw_fragment,
 		       bool clear_padding,
-		       const richtext_draw_boundaries &draw_bounds)
+		       richtext_draw_boundaries &draw_bounds)
 {
 	if (draw_bounds.nothing_to_draw())
 		return;

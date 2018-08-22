@@ -39,7 +39,7 @@ struct LIBCXX_HIDDEN list_celltextObj : public list_cellObj,
 			 element_drawObj &draw,
 			 const draw_info &di,
 			 bool draw_as_disabled,
-			 const richtext_draw_boundaries &boundaries) override;
+			 richtext_draw_boundaries &boundaries) override;
 
 	//! Implement cell_initialize().
 	void cell_initialize(ONLY IN_THREAD,

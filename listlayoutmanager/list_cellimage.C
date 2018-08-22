@@ -44,11 +44,10 @@ list_cellimageObj::cell_get_metrics(ONLY IN_THREAD, dim_t preferred_width)
 }
 
 void list_cellimageObj::cell_redraw(ONLY IN_THREAD,
-					element_drawObj &draw,
-					const draw_info &di,
-					bool draw_as_disabled,
-					const richtext_draw_boundaries
-					&boundaries)
+				    element_drawObj &draw,
+				    const draw_info &di,
+				    bool draw_as_disabled,
+				    richtext_draw_boundaries &boundaries)
 {
 	clip_region_set clip{IN_THREAD, draw.get_window_handler(), di};
 
