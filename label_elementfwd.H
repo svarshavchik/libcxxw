@@ -8,6 +8,7 @@
 #include "textlabel.H"
 #include "x/w/impl/element.H"
 #include "x/w/text_paramfwd.H"
+#include "x/w/defaultthemefwd.H"
 #include "x/w/rgb.H"
 
 LIBCXXW_NAMESPACE_START
@@ -35,8 +36,8 @@ public:
 
 	label_elementObj(const container_impl &container,
 			 const textlabel_config &config,
+			 const defaulttheme &theme,
 			 richtextstring &&string,
-			 const richtextmeta &default_meta,
 			 const char *element_id,
 			 const color_arg &initial_background_color);
 
@@ -95,6 +96,16 @@ public:
 	//! If no longer have pointer focus, disable any active hotspots.
 	void pointer_focus(ONLY IN_THREAD,
 			   const callback_trigger_t &trigger) override;
+
+
+	//! Override set_minimum_override()
+
+	//! Forwarded to textlabelObj::implObj, so it is aware of it for
+	//! the purposes of calculate_current_metrics().
+
+	void set_minimum_override(ONLY IN_THREAD,
+				  dim_t horiz_override,
+				  dim_t vert_override) override;
 };
 
 LIBCXXW_NAMESPACE_END

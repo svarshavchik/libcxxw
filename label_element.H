@@ -27,8 +27,8 @@ template<typename element_impl>
 label_elementObj<element_impl>
 ::label_elementObj(const container_impl &parent_container,
 		   const textlabel_config &config,
+		   const defaulttheme &theme,
 		   richtextstring &&string,
-		   const richtextmeta &default_meta,
 		   const char *element_id,
 		   const color_arg &initial_background_color)
 	: element_impl(parent_container,
@@ -36,7 +36,8 @@ label_elementObj<element_impl>
 				       initial_background_color}),
 	  textlabelObj::implObj(config,
 				parent_container->container_element_impl(),
-				std::move(string), default_meta)
+				theme,
+				std::move(string))
 {
 }
 
@@ -116,6 +117,19 @@ void label_elementObj<element_impl>
 {
 	element_impl::pointer_focus(IN_THREAD, trigger);
 	textlabelObj::implObj::pointer_focus(IN_THREAD, trigger);
+}
+
+template<typename element_impl>
+void label_elementObj<element_impl>
+::set_minimum_override(ONLY IN_THREAD,
+		       dim_t horiz_override,
+		       dim_t vert_override)
+{
+	element_impl::set_minimum_override(IN_THREAD, horiz_override,
+					   vert_override);
+	textlabelObj::implObj::set_minimum_override(IN_THREAD,
+						    horiz_override,
+						    vert_override);
 }
 
 LIBCXXW_NAMESPACE_END

@@ -66,10 +66,24 @@ editorObj::implObj::init_args
 	: parent_peephole{parent_peephole},
 	  text{text},
 	  config{config},
+
+	  // The theme lock exists before we create the rich text string
+	  // that goes into the label implementation superclass
+	  theme_lock{parent_peephole->container_element_impl()
+		     .get_window_handler().get_screen()
+		     ->impl->current_theme},
 	  textlabel_config_args{label_config_args},
 	  default_meta{create_default_meta(parent_peephole, config)}
 {
 	label_config_args.alignment=config.alignment;
+	textlabel_config_args.width_in_columns=config.columns;
+	textlabel_config_args.fixed_width_metrics=true;
+
+	if (config.columns < 2)
+		throw EXCEPTION("Input fields must have at least two columns");
+
+	if (config.oneline())
+		textlabel_config_args.width_in_columns=0;
 }
 
 editorObj::implObj::init_args::~init_args()=default;
@@ -358,8 +372,8 @@ editorObj::implObj::implObj(init_args &args)
 		       args.default_meta.getfont(),
 		       args.parent_peephole,
 		       args.textlabel_config_args,
+		       *args.theme_lock,
 		       create_initial_string(args, *this),
-		       args.default_meta,
 		       "textedit@libcxx.com",
 
 		       // Initial background_color
@@ -376,9 +390,6 @@ editorObj::implObj::implObj(init_args &args)
 #ifdef EDITOR_CONSTRUCTOR_DEBUG
 	EDITOR_CONSTRUCTOR_DEBUG();
 #endif
-	if (config.columns < 2)
-		throw EXCEPTION("Input fields must have at least two columns");
-
 	cursor->my_richtext->read_only_lock
 		([]
 		 (const auto &impl)
@@ -400,11 +411,6 @@ void editorObj::implObj::theme_updated(ONLY IN_THREAD,
 {
 	superclass_t::theme_updated(IN_THREAD, new_theme);
 	parent_peephole->recalculate(IN_THREAD, *this);
-}
-
-void editorObj::implObj::compute_preferred_width(ONLY IN_THREAD)
-{
-	preferred_width=config.oneline() ? 0:nominal_width(IN_THREAD);
 }
 
 dim_t editorObj::implObj::nominal_width(ONLY IN_THREAD) const
@@ -446,24 +452,6 @@ void editorObj::implObj::set_minimum_override(ONLY IN_THREAD,
 	parent_peephole->recalculate(IN_THREAD, *this);
 }
 
-std::pair<metrics::axis, metrics::axis>
-editorObj::implObj::calculate_current_metrics()
-{
-	auto metrics=text->get_metrics(preferred_width);
-
-	// If we word-wrap, fixate to the word wrapping width. Otherwise
-	// get_metrics() uses the current width as the preferred width, so
-	// fixate that.
-	auto w=preferred_width;
-
-	if (config.oneline())
-		w=metrics.first.preferred();
-
-	metrics.first={w, w, w};
-
-	return metrics;
-}
-
 void editorObj::implObj::rewrap_due_to_updated_position(ONLY IN_THREAD)
 {
 	initialize_if_needed(IN_THREAD);
@@ -476,7 +464,7 @@ void editorObj::implObj::rewrap_due_to_updated_position(ONLY IN_THREAD)
 					  .width;
 			  });
 
-	text->rewrap(preferred_width);
+	// text->rewrap(preferred_width);
 }
 
 void editorObj::implObj::keyboard_focus(ONLY IN_THREAD,

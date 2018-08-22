@@ -189,6 +189,12 @@ void testbutton()
 
 			 factory=layout->append_row();
 
+			 fields.second=factory->create_input_field
+			 ("The quick brown fox jumped over "
+			  "the lazy dog's tail", conf2);
+
+			 factory=layout->append_row();
+
 			 auto n=factory->create_input_field("", {5});
 
 			 n->set_string_validator([]

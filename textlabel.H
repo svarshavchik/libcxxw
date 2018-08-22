@@ -36,6 +36,20 @@ struct LIBCXX_HIDDEN textlabel_config {
 
 	//! Whether hotspot links are allowed (focusable labels only).
 	bool allow_links=false;
+
+	//! Fixed width, in columns.
+
+	//! Set to non-0 by the editor element. This fixates the word wrap
+	//! width, in columns.
+	size_t width_in_columns=0;
+
+	//! Fixed width metrics
+
+	//! Set to true for the editor element. The width metrics of the
+	//! label element are normally open-ended, allowing the label to
+	//! be resizable. The editor element sets this, and we fix the
+	//! width metrics.
+	bool fixed_width_metrics=false;
 };
 
 //! Base class for a label implementation.
@@ -52,6 +66,16 @@ class LIBCXX_HIDDEN textlabelObj::implObj : virtual public obj {
 
 	//! This is word_wrap_widthmm converted to pixels.
 	dim_t preferred_width=0;
+
+	//! Preferred width in columns
+
+	//! \see textlabel_config
+	const dim_t width_in_columns;
+
+	//! Whether width metrics are fixed at the preferred width.
+
+	//! \see textlabel_config
+	const bool fixed_width_metrics;
 
 	//! Compute preferred_width
 
@@ -109,6 +133,13 @@ class LIBCXX_HIDDEN textlabelObj::implObj : virtual public obj {
 
 	const richtextmeta default_meta;
 
+
+	//! Current minimum metrics override
+	mpobj<dim_t> min_horiz_override=0;
+
+	//! Current minimum vertical override
+	mpobj<dim_t> min_vert_override=0;
+
 	//! Constructor for a label element.
 
 	implObj(const text_param &text,
@@ -117,16 +148,25 @@ class LIBCXX_HIDDEN textlabelObj::implObj : virtual public obj {
  private:
 	//! Internal constructor
 	implObj(const text_param &text,
+		current_theme_t::lock &&theme_lock,
 		const richtextmeta &default_meta,
 		const textlabel_config &config,
 		elementObj::implObj &parent_element_impl);
+
+	//! Internal constructor
+	implObj(const textlabel_config &config,
+		elementObj::implObj &parent_element_impl,
+		const defaulttheme &initial_theme,
+		richtextstring &&string,
+		const richtextmeta &default_meta);
+
  public:
 	//! Constructor used by editor subclass.
 
 	implObj(const textlabel_config &config,
 		elementObj::implObj &parent_element_impl,
-		richtextstring &&string,
-		const richtextmeta &default_meta);
+		const defaulttheme &initial_theme,
+		richtextstring &&string);
 
  private:
 	//! Internal constructor
@@ -183,6 +223,12 @@ class LIBCXX_HIDDEN textlabelObj::implObj : virtual public obj {
 	//! The label's position has changed.
 
 	void process_updated_position(ONLY IN_THREAD);
+
+	//! Recalculate based on new overrides
+
+	void set_minimum_override(ONLY IN_THREAD,
+				  dim_t horiz_override,
+				  dim_t vert_override);
 
  private:
 

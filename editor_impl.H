@@ -300,6 +300,7 @@ class LIBCXX_HIDDEN editorObj::implObj
 		const ref<editor_peephole_implObj> &parent_peephole;
 		const text_param &text;
 		const input_field_config &config;
+		current_theme_t::lock theme_lock;
 
 		// Forwarded to the internal label implementation constructor:
 		label_config label_config_args;
@@ -336,19 +337,6 @@ class LIBCXX_HIDDEN editorObj::implObj
 	void removed(ONLY IN_THREAD) override;
 
  protected:
-	//! Override compute_preferred_width().
-
-	//! We compute it directly from font and columns.
-	void compute_preferred_width(ONLY IN_THREAD) override;
-
-	//! Override calculate_current_metrics().
-
-	//! The editor is not resizable, so we adjust the text's
-	//! get_metrics() to reflect that.
-
-	std::pair<metrics::axis, metrics::axis>
-		calculate_current_metrics() override;
-
 	//! Override rewrap_due_to_updated_position().
 
 	//! The editor doesn't rewrap in response to resizing. Instead, the

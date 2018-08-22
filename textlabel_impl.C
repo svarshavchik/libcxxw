@@ -51,6 +51,8 @@ textlabelObj::implObj::implObj(const text_param &text,
 			       const textlabel_config &config,
 			       elementObj::implObj &parent_element_impl)
 	: implObj(text,
+		  parent_element_impl.get_window_handler().get_screen()
+		  ->impl->current_theme,
 		  {parent_element_impl.create_background_color
 		   (parent_element_impl.label_theme_color()),
 		   parent_element_impl.create_current_fontcollection
@@ -105,13 +107,14 @@ static auto rebuild_ordered_hotspots(const textlabelObj::implObj
 	return m;
 }
 
-// Order hotspots by their appearance order.
 textlabelObj::implObj::implObj(const text_param &text,
+			       current_theme_t::lock &&theme_lock,
 			       const richtextmeta &default_meta,
 			       const textlabel_config &config,
 			       elementObj::implObj &parent_element_impl)
 	: implObj{config,
 		  parent_element_impl,
+		  *theme_lock,
 		  parent_element_impl.create_richtextstring
 		  (default_meta, text, config.allow_links),
 		  default_meta}
@@ -120,15 +123,27 @@ textlabelObj::implObj::implObj(const text_param &text,
 
 textlabelObj::implObj::implObj(const textlabel_config &config,
 			       elementObj::implObj &parent_element_impl,
+			       const defaulttheme &initial_theme,
 			       richtextstring &&string,
 			       const richtextmeta &default_meta)
-	: implObj{config,
-		  parent_element_impl,
-		  parent_element_impl.get_window_handler().get_screen()
-		  ->impl->current_theme.get(),
+	: implObj{config, parent_element_impl,
+		  initial_theme,
 		  std::move(string),
 		  richtext::create(string, config.config.alignment, 0),
 		  default_meta}
+{
+}
+
+textlabelObj::implObj::implObj(const textlabel_config &config,
+			       elementObj::implObj &parent_element_impl,
+			       const defaulttheme &initial_theme,
+			       richtextstring &&string)
+	: implObj{config,
+		  parent_element_impl,
+		  initial_theme,
+		  std::move(string),
+		  richtext::create(string, config.config.alignment, 0),
+		  string.meta_at(0)}
 {
 }
 
@@ -139,6 +154,8 @@ textlabelObj::implObj::implObj(const textlabel_config &config,
 			       const richtext &text,
 			       const richtextmeta &default_meta)
 	: word_wrap_widthmm_thread_only{config.config.widthmm},
+	  width_in_columns{config.width_in_columns},
+	  fixed_width_metrics{config.fixed_width_metrics},
 	  hotspot_info_thread_only{create_hotspot_info(string, text)},
 	  ordered_hotspots{rebuild_ordered_hotspots(hotspot_info_thread_only)},
 	  text{text},
@@ -158,6 +175,15 @@ textlabelObj::implObj::implObj(const textlabel_config &config,
 
 	// We do what initialize() does here, based on the current theme.
 	preferred_width=initial_theme->compute_width(config.config.widthmm);
+
+	if (width_in_columns > 0)
+	{
+		preferred_width=dim_t::truncate(width_in_columns *
+						(dim_t::value_type)
+						default_meta.getfont()
+						->fc_public.get()
+						->nominal_width());
+	}
 	text->rewrap(preferred_width);
 }
 
@@ -187,6 +213,14 @@ void textlabelObj::implObj::update(ONLY IN_THREAD, const text_param &string)
 	get_label_element_impl().schedule_redraw(IN_THREAD);
 }
 
+void textlabelObj::implObj::set_minimum_override(ONLY IN_THREAD,
+						 dim_t horiz_override,
+						 dim_t vert_override)
+{
+	min_horiz_override=horiz_override;
+	min_vert_override=vert_override;
+}
+
 void textlabelObj::implObj::compute_preferred_width(ONLY IN_THREAD)
 {
 	auto screen=get_label_element_impl().get_screen()->impl;
@@ -201,6 +235,15 @@ void textlabelObj::implObj::initialize(ONLY IN_THREAD)
 	auto current_theme=screen->current_theme.get();
 	text->theme_updated(IN_THREAD, current_theme);
 	ellipsis->theme_updated(IN_THREAD, current_theme);
+
+	if (width_in_columns > 0)
+	{
+		preferred_width=dim_t::truncate(width_in_columns *
+						(dim_t::value_type)
+						default_meta.getfont()
+						->fc(IN_THREAD)
+						->nominal_width());
+	}
 
 	// Repeat what the constructor did, in case the theme changed.
 
@@ -223,6 +266,14 @@ void textlabelObj::implObj::theme_updated(ONLY IN_THREAD,
 {
 	text->theme_updated(IN_THREAD, new_theme);
 	ellipsis->theme_updated(IN_THREAD, new_theme);
+	if (width_in_columns > 0)
+	{
+		preferred_width=dim_t::truncate(width_in_columns *
+						(dim_t::value_type)
+						default_meta.getfont()
+						->fc(IN_THREAD)
+						->nominal_width());
+	}
 	compute_preferred_width(IN_THREAD);
 	updated(IN_THREAD);
 }
@@ -246,6 +297,9 @@ void textlabelObj::implObj::rewrap_due_to_updated_position(ONLY IN_THREAD)
 	element_impl.initialize_if_needed(IN_THREAD); // Just make sure
 
 	auto rewrap_to=element_impl.data(IN_THREAD).current_position.width;
+
+	if (rewrap_to == 0)
+		rewrap_to=1;
 
 	if (!position_set_flag)
 		rewrap_to=preferred_width;
@@ -287,7 +341,17 @@ void textlabelObj::implObj::recalculate(ONLY IN_THREAD)
 std::pair<metrics::axis, metrics::axis>
 textlabelObj::implObj::calculate_current_metrics()
 {
-       return text->get_metrics(preferred_width);
+       auto ret=text->get_metrics(preferred_width);
+
+       ret.first.set_minimum(min_horiz_override.get());
+
+       if (fixed_width_metrics)
+       {
+	       auto w=ret.first.preferred();
+
+	       ret.first={w, w, w};
+       }
+       return ret;
 }
 
 bool textlabelObj::implObj::process_button_event(ONLY IN_THREAD,

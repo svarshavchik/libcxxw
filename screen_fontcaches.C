@@ -84,6 +84,9 @@ void screenObj::implObj::update_current_theme(ONLY IN_THREAD,
 	// create_theme_font() and create_custom_font() also acquire this
 	// lock before constructing a new theme. This way, the themes the
 	// fonts are based on are all synchronized.
+	//
+	// textlabel_implObj is also constructed with this lock being held,
+	// thus synchronizing the theme stored in textlabelObj::implObj.
 
 	for (auto &cached_font:*fontcaches->custom_font_cache)
 	{

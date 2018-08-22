@@ -48,21 +48,7 @@ class LIBCXX_HIDDEN font_picker_previewObj::implObj
 	//! Constructor
 	implObj(const container_impl &parent_container,
 		const textlabel_config &init_args);
-#if 0
- private:
-	//! Delegated constructor
-	implObj(const container_impl &parent_container,
-		const font &initial_font,
-		const defaulttheme &initial_theme,
-		const textlabel_init_args &init_args);
 
-	//! Delegated constructor
-	implObj(const container_impl &parent_container,
-		const font &initial_font,
-		const fontcollection &initial_fontcollection,
-		const defaulttheme &initial_theme,
-		const textlabel_init_args &init_args);
-#endif
  public:
 	//! Destructor
 	~implObj();

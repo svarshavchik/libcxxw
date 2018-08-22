@@ -13,6 +13,8 @@ static inline textlabel_config create_textlabel_config(const label_config &l)
 {
 	textlabel_config config{l};
 
+	// Tell textlabelObj::implObj to allow links in the label.
+
 	config.allow_links=true;
 
 	return config;
