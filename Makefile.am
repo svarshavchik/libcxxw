@@ -956,6 +956,7 @@ testgrid_SOURCES=testgrid.C
 testgrid_LDADD=libcxxw.la
 testgrid_LDFLAGS=-static
 
+$(call OPTIONS_GEN,testlabel.inc.H,testlabel.xml)
 testlabel_SOURCES=testlabel.C
 testlabel_LDADD=libcxxw.la
 testlabel_LDFLAGS=-static $(STATICLINKFLAGS)

@@ -71,11 +71,13 @@ class LIBCXX_HIDDEN textlabelObj::implObj
 	: protected richtext_alteration_config,
 	  virtual public obj {
 
+ public:
 	//! Word wrapping width, in millimeters.
 
 	//! A width of 0 means don't word-wrap the text.
-	const double word_wrap_widthmm_thread_only;
+	const double word_wrap_widthmm;
 
+ private:
 	//! Preferred width.
 
 	//! This is word_wrap_widthmm converted to pixels.
@@ -90,6 +92,11 @@ class LIBCXX_HIDDEN textlabelObj::implObj
 
 	//! \see textlabel_config
 	const bool fixed_width_metrics;
+
+	//! Whether the label is truncatable
+
+	//! \see textlabel_config
+	const bool truncatable;
 
 	//! Cached current theme
 
@@ -133,7 +140,6 @@ class LIBCXX_HIDDEN textlabelObj::implObj
 	ordered_hotspots_t ordered_hotspots;
 
  public:
-	THREAD_DATA_ONLY(word_wrap_widthmm);
 	THREAD_DATA_ONLY(hotspot_info);
 	THREAD_DATA_ONLY(hotspot_highlighted);
 

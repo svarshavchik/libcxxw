@@ -1027,8 +1027,7 @@ void richtextfragmentObj::render(ONLY IN_THREAD,
 	coord_squared_t end_x=
 		coord_squared_t::truncate(info.render_x_size);
 
-	// For rendering text, the y position is the baseline row.
-	coord_t ypos=coord_t::truncate(above_baseline);
+	coord_t ypos=info.ypos;
 
 	// Keep rendering until we reach the end of the string...
 	while (start_char < current_string.size())

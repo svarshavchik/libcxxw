@@ -14,6 +14,7 @@
 #include "richtext/richtextcursorlocation.H"
 #include "richtext/richtext_draw_info.H"
 #include "richtext/richtext_draw_boundaries.H"
+#include "richtext/richtext_alteration_config.H"
 #include "x/w/impl/draw_info.H"
 #include "x/w/impl/element_draw.H"
 #include "screen.H"
@@ -221,6 +222,181 @@ void richtextObj::draw(ONLY IN_THREAD,
 	assert_or_throw(draw_bounds.draw_bounds.x >= 0 &&
 			draw_bounds.draw_bounds.y >= 0,
 			"Bounding rectangle cannot start on a negative coordinate");
+
+	// Check if the rich text should have a trailing ellipsis if it's
+	// truncated.
+
+	if (rdi.richtext_alteration.ellipsis)
+	{
+		impl_t::lock lock{rdi.richtext_alteration.ellipsis->impl};
+
+		// We use ellipsis' first fragment only. Too bad.
+
+		if (!(*lock)->paragraphs.empty())
+		{
+			auto &p= *(*lock)->paragraphs.get_paragraph(0);
+
+			if (!p->fragments.empty())
+			{
+				auto &f=*p->fragments.get_iter(0);
+
+				draw_with_ellipsis(IN_THREAD, element,
+						   rdi, di, redraw_fragment,
+						   clear_padding,
+						   draw_bounds, &*f);
+				return;
+			}
+		}
+	}
+
+	draw_with_ellipsis(IN_THREAD, element, rdi, di, redraw_fragment,
+			   clear_padding,
+			   draw_bounds, nullptr);
+}
+
+// Data and logic for rendering a single fragment of text
+
+// draw_fragment/draw_with_ellipsis calls this to draw_using_scratch_buffer
+// each fragment (line) of the label.
+//
+// If this is a truncated label with ellipsis, this also is used to draw the
+// trailing ellipsis separately, after fudging the draw_bounds.
+
+struct LIBCXX_HIDDEN richtextObj::draw_fragment_info {
+
+	// The main information that's needed to draw each fragment:
+	element_drawObj &element;
+	const draw_info &di;
+	clip_region_set &clipped;
+	richtext_draw_boundaries &draw_bounds;
+
+	// If the richtext-draw_info parameter to the drawing function
+	// specifies that this label has a selection (this is the label
+	// code used by editorObj::implObj to draw the contents of the
+	// input field, and the input field has a selected, highlighted
+	// chunk.
+	//
+	// This is translated into starting and ending fragment index number
+	// and the offset in each fragment where the selection starts and
+	// ends, and has_selection gets set to true.
+	//
+	// This is ignored when has_selection=false
+	size_t selection_start_fragment_index=0;
+	size_t selection_start_offset=0;
+	size_t selection_end_fragment_index=0;
+	size_t selection_end_offset=0;
+	bool has_selection=false;
+
+	// The index # (the line #) of the fragment being drawn.
+	size_t fragment_index;
+
+	// Position in the scratch buffer where the baseline of the drawn
+	// text is.
+	//
+	// This is each label's above_baseline value. If a trailing ellipsis
+	// gets drawn, the fragment_ypos value remains unchanged, drawing
+	// the ellipsis with the same baseline.
+	coord_t fragment_ypos;
+
+	// While drawing fragments, we capture the height of the scratch
+	// pixmap we're using at the first opportunity.
+
+	dim_t scratch_height=0;
+
+	// The starting y coordinate and the height of the line. This is used
+	// for correctly compositing the gradient background color.
+
+	coord_squared_t y_position=0;
+	dim_t height=0;
+
+	void draw_fragment(ONLY IN_THREAD, richtextfragmentObj *f);
+};
+
+void richtextObj::draw_fragment_info::draw_fragment(ONLY IN_THREAD,
+						    richtextfragmentObj  *f)
+{
+	if (draw_bounds.nothing_to_draw())
+		return;
+
+	element.draw_using_scratch_buffer
+		(IN_THREAD,
+		 [&]
+		 (const picture &scratch_picture,
+		  const pixmap &scratch_pixmap,
+		  const gc &scratch_gc)
+		 {
+			 richtextfragmentObj::render_info render_info
+				 {
+				  scratch_picture,
+				  di.window_background_color,
+				  di.background_x,
+				  di.background_y,
+				  coord_t::truncate
+				  (di.absolute_location.x +
+				   draw_bounds.position.x),
+				  coord_t::truncate
+				  (di.absolute_location.y +
+				   draw_bounds.position.y),
+
+				  draw_bounds.draw_bounds.width,
+				  dim_t::truncate(draw_bounds
+						  .draw_bounds
+						  .x),
+
+				  fragment_ypos,
+				 };
+
+			 // If we're drawing a selection,
+			 // figure out which part of it is
+			 // on this line.
+
+			 if (has_selection &&
+			     fragment_index >= selection_start_fragment_index &&
+			     fragment_index <= selection_end_fragment_index)
+			 {
+				 size_t from=0;
+				 size_t to=f->string.size();
+
+				 if (fragment_index ==
+				     selection_start_fragment_index)
+					 from=selection_start_offset;
+
+				 if (fragment_index ==
+				     selection_end_fragment_index)
+					 to=selection_end_offset;
+
+				 render_info.selection_start=from;
+				 render_info.selection_end=to;
+			 }
+
+			 f->render(IN_THREAD, render_info);
+
+			 scratch_height=scratch_pixmap->get_height();
+
+		 },
+		 rectangle{coord_t::truncate(draw_bounds.draw_bounds.x +
+					     draw_bounds.position.x),
+				   coord_t::truncate(coord_t::truncate
+						     (y_position) +
+						     draw_bounds
+						     .position.y),
+				   draw_bounds.draw_bounds.width,
+				   height},
+		 di, di,
+		 clipped);
+}
+
+void richtextObj::draw_with_ellipsis(ONLY IN_THREAD,
+				     element_drawObj &element,
+				     const richtext_draw_info &rdi,
+				     const draw_info &di,
+				     const function<bool (richtextfragmentObj
+							  *)>
+				     &redraw_fragment,
+				     bool clear_padding,
+				     richtext_draw_boundaries &draw_bounds,
+				     richtextfragmentObj *ellipsis_fragment)
+{
 	impl_t::lock lock{impl};
 
 	clip_region_set clipped{IN_THREAD, element.get_window_handler(), di};
@@ -240,11 +416,6 @@ void richtextObj::draw(ONLY IN_THREAD,
 			f=&*frag;
 	}
 
-	// We'll capture the height of the scratch pixmap we're using
-	// at the first opportunity.
-
-	dim_t scratch_height=0;
-
 	// It's unlikely, but possible that the container gave us
 	// more height than we'll actually draw. Keep track of the ending
 	// y coordinate that was rendered.
@@ -254,11 +425,7 @@ void richtextObj::draw(ONLY IN_THREAD,
 
 	// Determine if there's a current selection.
 
-	size_t selection_start_fragment_index=0;
-	size_t selection_start_offset=0;
-	size_t selection_end_fragment_index=0;
-	size_t selection_end_offset=0;
-	bool has_selection=false;
+	draw_fragment_info dfi{element, di, clipped, draw_bounds};
 
 	if (rdi.selection_start && rdi.selection_end)
 	{
@@ -272,99 +439,106 @@ void richtextObj::draw(ONLY IN_THREAD,
 			if (cmp > 0)
 				std::swap(a, b);
 
-			selection_start_fragment_index=a->my_fragment->index();
-			selection_start_offset=a->get_offset();
+			dfi.selection_start_fragment_index=
+				a->my_fragment->index();
+			dfi.selection_start_offset=a->get_offset();
 
-			selection_end_fragment_index=b->my_fragment->index();
-			selection_end_offset=b->get_offset();
-			has_selection=true;
+			dfi.selection_end_fragment_index=b->my_fragment->index();
+			dfi.selection_end_offset=b->get_offset();
+			dfi.has_selection=true;
 		}
 	}
 
 	// Now draw each fragment. Loop iteration advances y by each
 	// fragment's height.
 
-	auto fragment_index=f ? f->index():0;
+	dfi.fragment_index=f ? f->index():0;
 
-	for (; f; (f=f->next_fragment()), ++fragment_index)
+	rectangle original_position=draw_bounds.position;
+
+	for (; f; (f=f->next_fragment()), ++dfi.fragment_index)
 	{
 		// We rely on the fragments' y_position()s being accurate.
 
-		auto y_position=coord_squared_t{f->y_position()};
+		dfi.y_position=coord_squared_t{f->y_position()};
 
-		if (ending_y_position <= y_position)
+		if (ending_y_position <= dfi.y_position)
 			break;
 
-		auto height=f->height();
+		dfi.height=f->height();
 
-		y=coord_t::truncate(y_position+height);
+		y=coord_t::truncate(dfi.y_position+dfi.height);
 
 		if (!redraw_fragment(f))
 			continue;
 
-		element.draw_using_scratch_buffer
-			(IN_THREAD,
-			 [&]
-			 (const picture &scratch_picture,
-			  const pixmap &scratch_pixmap,
-			  const gc &scratch_gc)
-			 {
-				 richtextfragmentObj::render_info render_info
-					 {
-					  scratch_picture,
-					  di.window_background_color,
-					  di.background_x,
-					  di.background_y,
-					  coord_t::truncate
-					  (di.absolute_location.x +
-					   draw_bounds.position.x),
-					  coord_t::truncate
-					  (di.absolute_location.y +
-					   draw_bounds.position.y),
+		rectangle ellipsis_rectangle;
 
-					  draw_bounds.draw_bounds.width,
-					  dim_t::truncate(draw_bounds.draw_bounds.x),
-					 };
+		// Fragment is smaller than the bounds it's being drawn in?
 
-				 // If we're drawing a selection, figure out
-				 // which part of it is on this line.
+		if (ellipsis_fragment && f->width > draw_bounds.position.width)
+		{
+			// Subtract the width of the ellipsis from the
+			// width of the drawing boundaries. We will cut off
+			// the fragment at this point.
 
-				 if (has_selection &&
-				     fragment_index >=
-				     selection_start_fragment_index &&
-				     fragment_index <=
-				     selection_end_fragment_index)
-				 {
-					 size_t from=0;
-					 size_t to=f->string.size();
+			dim_t truncate_at=
+				ellipsis_fragment->width
+				> draw_bounds.position.width
+				? dim_t{0}:draw_bounds.position.width
+				  - ellipsis_fragment->width;
 
-					 if (fragment_index ==
-					     selection_start_fragment_index)
-						 from=selection_start_offset;
+			// Copy the draw bounds to the ellipsis_rectangle,
+			// then adjust the ellipsis_rectangle to start at
+			// truncate_at.
+			ellipsis_rectangle=draw_bounds.position;
 
-					 if (fragment_index ==
-					     selection_end_fragment_index)
-						 to=selection_end_offset;
+			ellipsis_rectangle.width=
+				ellipsis_rectangle.width-truncate_at;
+			ellipsis_rectangle.x=coord_t::truncate
+				(ellipsis_rectangle.x+truncate_at);
 
-					 render_info.selection_start=from;
-					 render_info.selection_end=to;
-				 }
 
-				 f->render(IN_THREAD, render_info);
+			// Ok, if we decided that we'll be drawing a
+			// trailing ellipsis on this row, adjust the
+			// fragment's bounds accordingly.
+			if (ellipsis_rectangle.width > 0 &&
+			    ellipsis_rectangle.height > 0)
+			{
+				rectangle adjusted_draw_rectangle
+					{original_position};
 
-				 scratch_height=scratch_pixmap->get_height();
+				adjusted_draw_rectangle.width=truncate_at;
 
-			 },
-			 rectangle{coord_t::truncate(draw_bounds.draw_bounds.x +
-						     draw_bounds.position.x),
-					 coord_t::truncate(coord_t::truncate
-							   (y_position) +
-							   draw_bounds
-							   .position.y),
-					 draw_bounds.draw_bounds.width,
-					 height},
-			 di, di,
-			 clipped);
+				draw_bounds.position_at
+					(adjusted_draw_rectangle);
+			}
+		}
+
+		// Y position for rendering the fragment in the scratch
+		// buffer.
+		//
+		// This gets set to fragment->above_baseline
+		dfi.fragment_ypos=coord_t::truncate(f->above_baseline);
+
+		dfi.draw_fragment(IN_THREAD, f);
+
+		// Did we decide to draw the ellipsis here?
+		if (ellipsis_rectangle.width > 0 &&
+		    ellipsis_rectangle.height > 0)
+		{
+			// Fudge our coordinates for the ellipsis.
+			draw_bounds.position_at(ellipsis_rectangle);
+
+			auto has_selection=dfi.has_selection;
+
+			dfi.has_selection=false;
+			dfi.draw_fragment(IN_THREAD, ellipsis_fragment);
+			dfi.has_selection=has_selection;
+
+			// Need to restore this, for the next loop iteration.
+			draw_bounds.position_at(original_position);
+		}
 	}
 
 	if (!clear_padding)
@@ -382,13 +556,13 @@ void richtextObj::draw(ONLY IN_THREAD,
 		// advantage of it fully, to clear the remaining space.
 		//
 		// But make sure that it's at least 16 pixels.
-		if (scratch_height < 16)
-			scratch_height=16;
+		if (dfi.scratch_height < 16)
+			dfi.scratch_height=16;
 
 		dim_t remaining_height=dim_t::truncate(ending_y_position - y);
 
-		if (remaining_height < scratch_height)
-			scratch_height=remaining_height;
+		if (remaining_height < dfi.scratch_height)
+			dfi.scratch_height=remaining_height;
 
 		element.draw_using_scratch_buffer
 			(IN_THREAD,
@@ -397,20 +571,20 @@ void richtextObj::draw(ONLY IN_THREAD,
 			  const pixmap &scratch_pixmap,
 			  const gc &scratch_gc)
 			 {
-				 y=dim_t::truncate(y + scratch_height);
-				 scratch_height=scratch_pixmap->get_height();
+				 y=dim_t::truncate(y + dfi.scratch_height);
+				 dfi.scratch_height=scratch_pixmap->get_height();
 			 },
 			 rectangle{draw_bounds.position.x,
 					 coord_t::truncate(y +
 							   draw_bounds
 							   .position.y),
 					 di.absolute_location.width,
-					 scratch_height},
+					 dfi.scratch_height},
 			 di, di,
 			 clipped);
 	}
-
 }
+
 
 std::tuple<pixmap, picture> richtextObj::create(ONLY IN_THREAD,
 						const drawable &for_drawable)

@@ -36,6 +36,9 @@ label factoryObj::create_label(const text_param &text,
 {
 	textlabel_config internal_config{config};
 
+#ifdef DEBUG_TRUNCATABLE_LABEL
+	DEBUG_TRUNCATABLE_LABEL();
+#endif
 	auto label_impl=ref<label_elementObj<child_elementObj>>
 		::create(get_container_impl(), text, internal_config);
 
@@ -158,9 +161,10 @@ textlabelObj::implObj::implObj(textlabel_config &config,
 				      .get_screen()->impl->ellipsiscaches
 				      ->get(parent_element_impl)}
 				     : richtextptr{}},
-	  word_wrap_widthmm_thread_only{config.config.widthmm},
+	  word_wrap_widthmm{config.config.widthmm},
 	  width_in_columns{config.width_in_columns},
 	  fixed_width_metrics{config.fixed_width_metrics},
+	  truncatable{config.truncatable},
 	  current_theme{initial_theme},
 	  hotspot_info_thread_only{create_hotspot_info(string, text)},
 	  ordered_hotspots{rebuild_ordered_hotspots(hotspot_info_thread_only)},
@@ -171,8 +175,8 @@ textlabelObj::implObj::implObj(textlabel_config &config,
 	  default_meta{default_meta},
 	  allow_links{config.allow_links}
 {
-	if (std::isnan(word_wrap_widthmm_thread_only) ||
-	    word_wrap_widthmm_thread_only < 0)
+	if (std::isnan(word_wrap_widthmm) ||
+	    word_wrap_widthmm < 0)
 		throw EXCEPTION(_("Invalid label width: ")
 				<< config.config.widthmm);
 
@@ -256,7 +260,7 @@ void textlabelObj::implObj::initialize(ONLY IN_THREAD)
 
 	// Repeat what the constructor did.
 
-	compute_preferred_width(current_theme_now, word_wrap_widthmm(IN_THREAD),
+	compute_preferred_width(current_theme_now, word_wrap_widthmm,
 				default_meta.getfont()->fc(IN_THREAD));
 
 	updated(IN_THREAD);
@@ -284,7 +288,7 @@ void textlabelObj::implObj::theme_updated(ONLY IN_THREAD,
 	current_theme=new_theme;
 
 	text->theme_updated(IN_THREAD, new_theme);
-	compute_preferred_width(new_theme, word_wrap_widthmm(IN_THREAD),
+	compute_preferred_width(new_theme, word_wrap_widthmm,
 				default_meta.getfont()->fc(IN_THREAD));
 	updated(IN_THREAD);
 }
@@ -364,6 +368,23 @@ textlabelObj::implObj::calculate_current_metrics()
 	       auto w=ret.first.preferred();
 
 	       ret.first={w, w, w};
+       }
+       else
+       {
+	       // If this is not a word-wrapping label, allow its minimum
+	       // size to be reduced, and we'll show the ellipsis.
+
+	       if (truncatable)
+	       {
+		       auto w=ellipsis->get_width();
+
+		       if (w < ret.first.minimum())
+		       {
+			       ret.first=metrics::axis
+				       {w, ret.first.preferred(),
+					ret.first.maximum()};
+		       }
+	       }
        }
        return ret;
 }

@@ -55,7 +55,12 @@ struct richtextfragmentObj::render_info {
 	//! -100, text starting at, and to the right of pixel #100 will
 	//! be written (starting at X coordinate 0 in the scratch buffer).
 
-	dim_t render_x_start=0;
+	dim_t render_x_start;
+
+	//! Y position for rendering the fragment.
+
+	//! This gets set to fragment->above_baseline
+	coord_t ypos;
 
 	//! Used by richtexteditorwindow to highlight selected text
 	size_t selection_start=0;

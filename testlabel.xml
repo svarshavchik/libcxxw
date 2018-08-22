@@ -1,0 +1,11 @@
+<optclass name="testlabel_options">
+  <option>
+    <name>truncatable</name>
+    <type>bool</type>
+    <default>false</default>
+    <opt>t</opt>
+    <longopt>truncatable</longopt>
+    <descr>Truncatable label test</descr>
+  </option>
+  <defaultoptions />
+</optclass>

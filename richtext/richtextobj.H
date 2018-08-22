@@ -199,6 +199,25 @@ class LIBCXX_HIDDEN richtextObj : virtual public obj {
 		  //! boundaries in order to attach an ellipsis to a truncated
 		  //! label.
 		  richtext_draw_boundaries &draw_bounds);
+
+	//! Draw the text
+
+	//! An additional richtextfragmentObj * pointer points to the
+	//! text fragment from the ellipsis string, if the drawing area is
+	//! to short. The drawn text is cut off even further, to make room
+	//! for the ellipsis which is drawn immediately after it.
+
+	void draw_with_ellipsis(ONLY IN_THREAD,
+				element_drawObj &element,
+				const richtext_draw_info &rdi,
+				const draw_info &di,
+				const function<bool (richtextfragmentObj *)>
+				&redraw_fragment,
+				bool clear_padding,
+				richtext_draw_boundaries &draw_bounds,
+				richtextfragmentObj *ellipsis_fragment);
+
+	struct draw_fragment_info;
  public:
 	//! Return an iterator to the first character of the rich text.
 

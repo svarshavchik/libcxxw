@@ -9,6 +9,11 @@
 #include <x/destroy_callback.H>
 #include <x/ref.H>
 #include <x/obj.H>
+
+static bool override_truncatable=false;
+
+#define DEBUG_TRUNCATABLE_LABEL() \
+	(internal_config.truncatable=override_truncatable)
 #define DEBUG_INITIAL_METRICS
 #include "textlabel_impl.C"
 #include "x/w/main_window.H"
@@ -21,6 +26,8 @@
 #include "x/w/connection.H"
 #include <string>
 #include <iostream>
+
+#include "testlabel.inc.H"
 
 class close_flagObj : public LIBCXX_NAMESPACE::obj {
 
@@ -41,36 +48,64 @@ public:
 
 typedef LIBCXX_NAMESPACE::ref<close_flagObj> close_flag_ref;
 
+void create_mainwindow(const LIBCXX_NAMESPACE::w::main_window &main_window,
+		       const testlabel_options &options)
+{
+	LIBCXX_NAMESPACE::w::gridlayoutmanager layout=
+		main_window->get_layoutmanager();
 
-void testlabel()
+	LIBCXX_NAMESPACE::w::gridfactory factory=
+		layout->append_row();
+
+	factory->padding(2.0);
+
+	if (options.truncatable->value)
+	{
+		override_truncatable=true;
+
+		LIBCXX_NAMESPACE::w::linear_gradient g;
+
+		g.gradient={{0, LIBCXX_NAMESPACE::w::gray},
+			    {1, LIBCXX_NAMESPACE::w::white}};
+
+		main_window->set_background_color(g);
+
+		factory->create_label({
+				       "liberation mono;point_size=24"_font,
+				       "The quick brown fox\n"
+				      "jumped over the lazy\n"
+				       "dog's tail."});
+		return;
+	}
+
+	LIBCXX_NAMESPACE::w::label_config config;
+
+	config.alignment=LIBCXX_NAMESPACE::w::halign::center;
+	factory->create_label({
+			       "Hello ",
+			       "50%"_color,
+			       "0%"_color,
+			       "world",
+			       "100%"_color,
+			       U"!\n",
+			       "liberation mono;point_size=40"_font,
+			       "Here I come!"
+			},
+			config);
+}
+
+void testlabel(const testlabel_options &options)
 {
 	LIBCXX_NAMESPACE::destroy_callback::base::guard guard;
 
 	auto close_flag=close_flag_ref::create();
 
 	auto main_window=LIBCXX_NAMESPACE::w::main_window
-		::create([]
+		::create([&]
 			 (const auto &main_window)
 			 {
-				 LIBCXX_NAMESPACE::w::gridlayoutmanager
-				     layout=main_window->get_layoutmanager();
-				 LIBCXX_NAMESPACE::w::gridfactory factory=
-				     layout->append_row();
-
-				 LIBCXX_NAMESPACE::w::label_config config;
-
-				 config.alignment=LIBCXX_NAMESPACE::w::halign::center;
-				 factory->padding(2.0).create_label({
-						 "Hello ",
-							 "50%"_color,
-							 "0%"_color,
-							 "world",
-							 "100%"_color,
-							 U"!\n",
-							 "liberation mono;point_size=40"_font,
-							 "Here I come!"
-							 },
-					 config);
+				 create_mainwindow(main_window,
+						   options);
 			 });
 
 	main_window->set_window_title("Hello world!");
@@ -92,11 +127,17 @@ void testlabel()
 
 	main_window->show_all();
 
+	LIBCXX_NAMESPACE::mpcobj<bool>::lock lock{close_flag->flag};
+
+	if (options.truncatable->value)
+	{
+		lock.wait();
+		return;
+	}
+
 	auto [original_theme, original_scale, original_options]
 		=main_window->get_screen()->get_connection()
 		->current_theme();
-
-	LIBCXX_NAMESPACE::mpcobj<bool>::lock lock{close_flag->flag};
 
 	for (int i=0; i < 4 && !*lock; ++i)
 	{
@@ -120,10 +161,10 @@ void testlabel()
 int main(int argc, char **argv)
 {
 	try {
-		LIBCXX_NAMESPACE::property
-			::load_property(LIBCXX_NAMESPACE_STR "::themes",
-					"themes", true, true);
-		testlabel();
+		testlabel_options options;
+
+		options.parse(argc, argv);
+		testlabel(options);
 	} catch (const LIBCXX_NAMESPACE::exception &e)
 	{
 		e->caught();
