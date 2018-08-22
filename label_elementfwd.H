@@ -21,8 +21,8 @@ LIBCXXW_NAMESPACE_START
 //! Multiply inherits from the template parameter, and textlabelObj::implObj.
 
 template<typename element_impl>
-class LIBCXX_HIDDEN label_elementObj : public element_impl,
-				       public textlabelObj::implObj {
+class LIBCXX_HIDDEN label_elementObj : public textlabelObj::implObj,
+				       public element_impl {
 
 public:
 

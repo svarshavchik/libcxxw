@@ -16,10 +16,10 @@ label_elementObj<element_impl>
 ::label_elementObj(const container_impl &parent_container,
 		   const text_param &text,
 		   const textlabel_config &config)
-	: element_impl(parent_container,
-		       child_element_init_params{"label@libcxx.com"}),
-	  textlabelObj::implObj(text, config,
-				parent_container->container_element_impl())
+	: textlabelObj::implObj(text, config,
+				parent_container->container_element_impl()),
+	  element_impl(parent_container,
+		       child_element_init_params{"label@libcxx.com"})
 {
 }
 
@@ -31,13 +31,13 @@ label_elementObj<element_impl>
 		   richtextstring &&string,
 		   const char *element_id,
 		   const color_arg &initial_background_color)
-	: element_impl(parent_container,
-		       child_element_init_params{element_id, {},
-				       initial_background_color}),
-	  textlabelObj::implObj(config,
+	: textlabelObj::implObj(config,
 				parent_container->container_element_impl(),
 				theme,
-				std::move(string))
+				std::move(string)),
+	  element_impl(parent_container,
+		       child_element_init_params{element_id, {},
+				       initial_background_color})
 {
 }
 

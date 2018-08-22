@@ -21,8 +21,7 @@ editor_peephole_implObj::~editor_peephole_implObj()=default;
 void editor_peephole_implObj::recalculate(ONLY IN_THREAD,
 					  editorObj::implObj &e)
 {
-	dim_t height=e.nominal_height(IN_THREAD);
-	dim_t width=e.nominal_width(IN_THREAD);
+	auto [width, height]=e.nominal_size(IN_THREAD);
 
 	if (width == dim_t::infinite())
 		--width;

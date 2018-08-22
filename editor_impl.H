@@ -274,12 +274,9 @@ class LIBCXX_HIDDEN editorObj::implObj
 
 	void theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme) override;
 
-	//! Multiply columns by font's nominal width.
+	//! Multiply rows/columns by font's nominal width/height.
 
-	dim_t nominal_width(ONLY IN_THREAD) const;
-
-	//! Multiple rows by font's height.
-	dim_t nominal_height(ONLY IN_THREAD) const;
+	std::tuple<dim_t, dim_t> nominal_size(ONLY IN_THREAD) const;
 
 	//! Override set_minimum_override()
 

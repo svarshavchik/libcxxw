@@ -369,7 +369,12 @@ editorObj::implObj::implObj(init_args &args)
 		       .get_window_handler()
 		       .create_icon({"cursor-dragging-wontdrop"})->create_cursor(),
 		       // Capture the string's font.
+		       //
+		       // We are used by peepholed_fontelementObj, so we
+		       // simply use the theme_fontObj mixin for convenience.
 		       args.default_meta.getfont(),
+
+		       // label_elementObj::
 		       args.parent_peephole,
 		       args.textlabel_config_args,
 		       *args.theme_lock,
@@ -413,33 +418,27 @@ void editorObj::implObj::theme_updated(ONLY IN_THREAD,
 	parent_peephole->recalculate(IN_THREAD, *this);
 }
 
-dim_t editorObj::implObj::nominal_width(ONLY IN_THREAD) const
+std::tuple<dim_t, dim_t> editorObj::implObj::nominal_size(ONLY IN_THREAD) const
 {
+	auto fc=default_meta.getfont()->fc(IN_THREAD);
+
 	dim_t w=dim_t::truncate(config.columns *
 				(dim_t::value_type)
-				font_nominal_width(IN_THREAD));
+				fc->nominal_width());
+
+	dim_t h=dim_t::truncate(config.rows *
+				(dim_t::value_type)
+				fc->height());
 
 	auto &hv=*get_horizvert(IN_THREAD);
 
 	if (w < hv.minimum_horiz_override(IN_THREAD))
 		w=hv.minimum_horiz_override(IN_THREAD);
 
-	return w;
-}
-
-dim_t editorObj::implObj::nominal_height(ONLY IN_THREAD) const
-{
-
-	dim_t h=dim_t::truncate(config.rows *
-				(dim_t::value_type)
-				font_height(IN_THREAD));
-
-	auto &hv=*get_horizvert(IN_THREAD);
-
 	if (h < hv.minimum_vert_override(IN_THREAD))
 		h=hv.minimum_vert_override(IN_THREAD);
 
-	return h;
+	return {w, h};
 }
 
 void editorObj::implObj::set_minimum_override(ONLY IN_THREAD,
