@@ -158,7 +158,7 @@ textlabelObj::implObj::implObj(halign alignment,
 	  allow_links{allow_links_param}
 {
 	if (std::isnan(initial_width))
-		initial_width=0;
+		initial_width=word_wrap_widthmm_thread_only=0;
 
 	if (initial_width < 0)
 		throw EXCEPTION(_("Label width cannot be negative"));

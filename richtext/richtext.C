@@ -23,19 +23,19 @@ LIBCXXW_NAMESPACE_START
 
 richtextObj::richtextObj(const richtextstring &string,
 			 halign alignment, dim_t initial_width)
-	: richtextObj(ref<richtext_implObj>
-		      ::create(string, alignment), initial_width)
+	: richtextObj{ref<richtext_implObj>::create(string, alignment),
+		      initial_width}
 {
 }
 
 richtextObj::richtextObj(const ref<richtext_implObj> &impl,
-			 dim_t word_wrap_width)
-	: impl{impl},
-	  word_wrap_width_thread_only{word_wrap_width}
+			 dim_t initial_width)
+	: impl{impl}
 {
 	impl_t::lock lock{this->impl};
 
 	(*lock)->finish_initialization();
+	(*lock)->rewrap(initial_width);
 }
 
 richtextObj::~richtextObj()=default;
@@ -67,15 +67,9 @@ void richtextObj::set(ONLY IN_THREAD, const richtextstring &string)
 bool richtextObj::rewrap(ONLY IN_THREAD,
 			 dim_t width)
 {
-	if (word_wrap_width(IN_THREAD) == width)
-		return false;
-
 	impl_t::lock lock{impl};
 
-	word_wrap_width(IN_THREAD)=width;
-
-	return width > 0 ? (*lock)->rewrap(width)
-		: (*lock)->unwrap();
+	return (*lock)->rewrap(width);
 }
 
 dim_t richtextObj::get_width()
@@ -90,47 +84,7 @@ richtextObj::get_metrics(ONLY IN_THREAD, dim_t preferred_width)
 {
 	impl_t::lock lock{impl};
 
-	dim_t width= dim_t::truncate((*lock)->width());
-	dim_t height= dim_t::truncate((*lock)->height());
-
-	if (width >= dim_t::infinite())
-		width=width-1;
-	if (height >= dim_t::infinite())
-		height=height-1;
-
-	auto min_width=width;
-	auto max_width=width;
-
-	if (word_wrap_width(IN_THREAD) > 0)
-	{
-		// This label is word-wrapped, and it is visible.
-		// We compute the metrics like this. Here's our minimum
-		// and maximum widths:
-		max_width=dim_t::truncate((*lock)->real_maximum_width);
-
-		if (max_width == dim_t::infinite()) // Let's not go there.
-			max_width=max_width-1;
-
-		min_width=(*lock)->minimum_width;
-
-		// And let's try to be sane.
-
-		if (min_width > max_width)
-			min_width=max_width;
-
-		width=preferred_width;
-
-		if (width < min_width)
-			width=min_width;
-
-		if (width > max_width)
-			width=max_width;
-	}
-
-	return {
-		{min_width, width, max_width},
-		{height, height, height}
-	};
+	return (*lock)->get_metrics(preferred_width);
 }
 
 void richtextObj::theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme)
@@ -559,7 +513,6 @@ void richtextObj::insert_at_location(ONLY IN_THREAD,
 				     const richtext_insert_base &new_text)
 {
 	(*lock)->insert_at_location(IN_THREAD,
-				    word_wrap_width(IN_THREAD),
 				    new_text);
 }
 
@@ -568,8 +521,7 @@ void richtextObj::remove_at_location(ONLY IN_THREAD,
 				     const richtextcursorlocation &a,
 				     const richtextcursorlocation &b)
 {
-	return (*lock)->remove_at_location(word_wrap_width(IN_THREAD),
-					   a, b);
+	return (*lock)->remove_at_location(a, b);
 }
 
 void richtextObj::replace_at_location(ONLY IN_THREAD,
@@ -579,7 +531,6 @@ void richtextObj::replace_at_location(ONLY IN_THREAD,
 				      const richtextcursorlocation &remove_to)
 {
 	return (*lock)->replace_at_location(IN_THREAD,
-					    word_wrap_width(IN_THREAD),
 					    new_text, remove_from, remove_to);
 }
 

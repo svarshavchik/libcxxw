@@ -25,8 +25,8 @@
 LIBCXXW_NAMESPACE_START
 
 richtext_implObj::richtext_implObj(const richtextstring &string,
-			      halign alignmentArg)
-	: alignment(alignmentArg)
+				   halign alignmentArg)
+	: word_wrap_width{0}, alignment{alignmentArg}
 {
 	do_set(string);
 }
@@ -214,9 +214,17 @@ void richtext_implObj::rich_text_paragraph_out_of_bounds()
 
 bool richtext_implObj::rewrap(dim_t width)
 {
+	if (word_wrap_width == width)
+		return false;
+
+	word_wrap_width=width;
+
+	if (word_wrap_width == 0)
+		return unwrap();
+
 	paragraph_list my_paragraphs(*this);
 
-	return my_paragraphs.rewrap(width);
+	return my_paragraphs.rewrap(word_wrap_width);
 }
 
 bool richtext_implObj::unwrap()
@@ -414,19 +422,17 @@ void richtext_implObj::rewrap_at_fragment(dim_t width,
 }
 
 void richtext_implObj::insert_at_location(ONLY IN_THREAD,
-					  dim_t word_wrap_width,
 					  const richtext_insert_base
 					  &new_text)
 {
 	paragraph_list my_paragraphs{*this};
 
-	insert_at_location(IN_THREAD, my_paragraphs, word_wrap_width, new_text,
+	insert_at_location(IN_THREAD, my_paragraphs, new_text,
 			   make_function<void ()>([] {}));
 }
 
 void richtext_implObj::insert_at_location(ONLY IN_THREAD,
 					  paragraph_list &my_paragraphs,
-					  dim_t word_wrap_width,
 					  const richtext_insert_base
 					  &new_text,
 					  const function<void ()> &after_insert)
@@ -506,8 +512,7 @@ struct LIBCXX_HIDDEN richtext_implObj::remove_info {
 		}
 };
 
-void richtext_implObj::remove_at_location(dim_t word_wrap_width,
-					  const richtextcursorlocation &ar,
+void richtext_implObj::remove_at_location(const richtextcursorlocation &ar,
 					  const richtextcursorlocation &br)
 {
 	remove_info info{ar, br};
@@ -517,13 +522,11 @@ void richtext_implObj::remove_at_location(dim_t word_wrap_width,
 
 	paragraph_list my_paragraphs{*this};
 
-	remove_at_location(info, my_paragraphs,
-			   word_wrap_width);
+	remove_at_location(info, my_paragraphs);
 }
 
 void richtext_implObj
 ::replace_at_location(ONLY IN_THREAD,
-		      dim_t word_wrap_width,
 		      const richtext_insert_base &new_text,
 		      const richtextcursorlocation &remove_from,
 		      const richtextcursorlocation &remove_to)
@@ -532,21 +535,94 @@ void richtext_implObj
 
 	paragraph_list my_paragraphs{*this};
 
-	insert_at_location(IN_THREAD, my_paragraphs, word_wrap_width,
+	insert_at_location(IN_THREAD, my_paragraphs,
 			   new_text,
 			   make_function<void ()>
 			   ([&, this]
 			    {
 				    if (info.diff != 0)
-					    remove_at_location(info,
-							       my_paragraphs,
-							       0);
+					    remove_at_location_no_rewrap
+						    (info,
+						     my_paragraphs);
 			    }));
 }
 
+std::pair<metrics::axis, metrics::axis>
+richtext_implObj::get_metrics(dim_t preferred_width)
+{
+	dim_t w= dim_t::truncate(width());
+	dim_t h= dim_t::truncate(height());
+
+	if (w >= dim_t::infinite())
+		w=w-1;
+	if (h >= dim_t::infinite())
+		h=h-1;
+
+	auto min_width=w;
+	auto max_width=w;
+
+	if (word_wrap_width > 0)
+	{
+		// This label is word-wrapped, and it is visible.
+		// We compute the metrics like this. Here's our minimum
+		// and maximum widths:
+		max_width=dim_t::truncate(real_maximum_width);
+
+		if (max_width == dim_t::infinite()) // Let's not go there.
+			max_width=max_width-1;
+
+		min_width=minimum_width;
+
+		// And let's try to be sane.
+
+		if (min_width > max_width)
+			min_width=max_width;
+
+		w=preferred_width;
+
+		if (w < min_width)
+			w=min_width;
+
+		if (w > max_width)
+			w=max_width;
+	}
+
+	return {
+		{min_width, w, max_width},
+		{h, h, h}
+	};
+}
+
 void richtext_implObj::remove_at_location(const remove_info &info,
-					  paragraph_list &my_paragraphs,
-					  dim_t word_wrap_width)
+					  paragraph_list &my_paragraphs)
+{
+	remove_at_location_no_rewrap(info, my_paragraphs);
+
+	if (word_wrap_width > 0)
+	{
+		// Note: the text removal inside remove_at_location_no_rewrap
+		// destroys the fragment_a_list which updates fragment sizes.
+		//
+		// This is needed before invoking rewrap_at_fragment, which
+		// then looks at the current fragment sizes, in order to decide
+		// what to rewrap.
+		//
+		// We need to update the fragment's minimum_size, in order
+		// to consider whether the fragment can be wrapped back to its
+		// previous fragment, reflecting the removed text.
+
+		auto fragment_a=info.location_a->my_fragment;
+
+		fragment_list fragment_a_list(my_paragraphs,
+					      *fragment_a->my_paragraph);
+		rewrap_at_fragment(word_wrap_width,
+				   fragment_a, fragment_a_list);
+	}
+}
+
+void richtext_implObj
+::remove_at_location_no_rewrap(const remove_info &info,
+			       paragraph_list &my_paragraphs)
 {
 	assert_or_throw(info.location_a->my_fragment &&
 			info.location_b->my_fragment,
@@ -596,10 +672,6 @@ void richtext_implObj::remove_at_location(const remove_info &info,
 			   info.location_b->get_offset()-
 			   info.location_a->get_offset(),
 			   fragment_a_list);
-
-	if (word_wrap_width > 0)
-		rewrap_at_fragment(word_wrap_width,
-				   fragment_a, fragment_a_list);
 }
 
 LIBCXXW_NAMESPACE_END

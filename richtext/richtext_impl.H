@@ -34,6 +34,10 @@ class richtext_insert_base;
 
 class LIBCXX_HIDDEN richtext_implObj : virtual public obj {
 
+	//! Targeted word wrap width.
+
+	dim_t word_wrap_width;
+
 public:
 
 	static void rich_text_paragraph_out_of_bounds();
@@ -253,7 +257,6 @@ public:
 	//! word_wrap_width.
 
 	void insert_at_location(ONLY IN_THREAD,
-				dim_t word_wrap_width,
 				const richtext_insert_base &new_text);
 
 	//! Remove content between two cursors.
@@ -261,14 +264,12 @@ public:
 	//! Invoked from the public object's remove_at_location(), after
 	//! locking everything down tightly, and supplying us with the
 	//! word_wrap_width.
-	void remove_at_location(dim_t word_wrap_width,
-				const richtextcursorlocation &a,
+	void remove_at_location(const richtextcursorlocation &a,
 				const richtextcursorlocation &b);
 
 	//! Combine replace and insert at location, together.
 
 	void replace_at_location(ONLY IN_THREAD,
-				 dim_t word_wrap_width,
 				 const richtext_insert_base &new_text,
 				 const richtextcursorlocation &remove_from,
 				 const richtextcursorlocation &remove_to);
@@ -280,39 +281,54 @@ public:
 	//! Common code shared by remove_at_location() and replace_at_location().
 
 	void remove_at_location(const remove_info &,
-				paragraph_list &,
-				dim_t);
+				paragraph_list &);
+
+	//! Remove content between two cursors, without rewrapping it.
+
+	//! remove_at_location() calls remove_at_location_no_rewrap(),
+	//! then rewraps the removed text.
+	//!
+	//! replace_at_location() calls this in order to complete
+	//! avoid rewrapping, since insert_at_location(), which
+	//! replace_at_location() uses, will do this anyway.
+
+	void remove_at_location_no_rewrap(const remove_info &,
+					  paragraph_list &);
+
 	//! Common code shared by remove_at_location() and replace_at_location().
 
 	void insert_at_location(ONLY IN_THREAD,
 				paragraph_list &my_paragraphs,
-				dim_t word_wrap_width,
 				const richtext_insert_base &new_text,
 				const function<void ()> &after_insert);
 
  public:
-	// Locate the paragraph containing character #pos
+	//! Locate the paragraph containing character #pos
 
-	// Updates pos to reflect the position of the character in the
-	// returned paragraph.
-	//
-	// Updates pos if it exceeds the number of characters in the
-	// text. An exception gets thrown if text is empty, no paragraphs.
+	//! Updates pos to reflect the position of the character in the
+	//! returned paragraph.
+	//!
+	//! Updates pos if it exceeds the number of characters in the
+	//! text. An exception gets thrown if text is empty, no paragraphs.
 	size_t find_paragraph_for_pos(size_t &pos);
 
-	// Locate the fragment containing the given y position.
+	//! Locate the fragment containing the given y position.
 
-	// Returns null if the y position is below the last fragment
+	//! Returns null if the y position is below the last fragment
 
 	ptr<richtextfragmentObj> find_fragment_for_y_position(size_t y_pos);
 
-	// A null ptr gets returned if the
-	// Extract text string.
+	//! A null ptr gets returned if the
+	//! Extract text string.
 
 	richtextstring get_as_richtext() const;
 
-	// Theme was updated.
+	//! Theme was updated.
 	void theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme);
+
+	//! Return the rich text string's metrics.
+	std::pair<metrics::axis, metrics::axis>
+		get_metrics(dim_t preferred_width);
 };
 
 LIBCXXW_NAMESPACE_END

@@ -49,27 +49,18 @@ class LIBCXX_HIDDEN richtextObj : virtual public obj {
 
 	impl_t impl;
 
-	//! Whether this rich text object is word-wrapped.
-
-	//! If word_wrap_width is 0, this richtext object is not wrapped
-	//! (each paragraph consists of a single line); otherwise this is the
-	//! targeted word wrap width, in pixels.
-
-	dim_t word_wrap_width_thread_only;
-
  public:
-
-	THREAD_DATA_ONLY(word_wrap_width);
 
 	//! Constructor
 	richtextObj(const richtextstring &string,
 		    halign alignment,
 		    dim_t word_wrap_width);
 
-	//! Constructor
+ private:
+	//! Internal constructor
 	richtextObj(const ref<richtext_implObj> &impl,
 		    dim_t word_wrap_width);
-
+ public:
 	//! Destructor
 	~richtextObj();
 
