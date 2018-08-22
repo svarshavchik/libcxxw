@@ -88,7 +88,7 @@ static text_param create_preview(const font &f, const fontcollection &fc)
 }
 
 font_picker_previewObj::implObj::implObj(const container_impl &parent_container,
-					 const textlabel_config &init_args)
+					 textlabel_config &init_args)
 	: superclass_t{theme_font{"label"},
 		       parent_container,
 

@@ -9,22 +9,11 @@
 
 LIBCXXW_NAMESPACE_START
 
-static inline textlabel_config create_textlabel_config(const label_config &l)
-{
-	textlabel_config config{l};
-
-	// Tell textlabelObj::implObj to allow links in the label.
-
-	config.allow_links=true;
-
-	return config;
-}
-
 focusable_labelObj::implObj
 ::implObj(const container_impl &container,
 	  const text_param &text,
-	  const label_config &config)
-	: superclass_t{container, text, create_textlabel_config(config)}
+	  textlabel_config &config)
+	: superclass_t{container, text, config}
 {
 }
 

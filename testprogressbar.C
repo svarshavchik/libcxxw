@@ -27,6 +27,7 @@ x::mpobj<int> label_counter=0;
 	while(0);
 
 #include "progressbar_slider.C"
+#define DEBUG_INITIAL_METRICS
 #include "textlabel_impl.C"
 #include "picture_impl.C"
 

@@ -84,6 +84,13 @@ editorObj::implObj::init_args
 
 	if (config.oneline())
 		textlabel_config_args.width_in_columns=0;
+
+	textlabel_config_args.child_element_init
+		.scratch_buffer_id="textedit@libcxx.com";
+
+	// Initial background_color
+	textlabel_config_args.child_element_init
+		.background_color=config.background_color;
 }
 
 editorObj::implObj::init_args::~init_args()=default;
@@ -378,11 +385,7 @@ editorObj::implObj::implObj(init_args &args)
 		       args.parent_peephole,
 		       args.textlabel_config_args,
 		       *args.theme_lock,
-		       create_initial_string(args, *this),
-		       "textedit@libcxx.com",
-
-		       // Initial background_color
-		       args.config.background_color},
+		       create_initial_string(args, *this)},
 	  cursor{this->text->end()},
 	  dragged_pos{cursor->clone()},
 	  parent_peephole{args.parent_peephole},

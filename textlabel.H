@@ -21,6 +21,7 @@
 #include "richtext/richtextiteratorfwd.H"
 #include "x/w/impl/draw_infofwd.H"
 #include "x/w/impl/connection_threadfwd.H"
+#include "x/w/impl/child_element.H"
 #include "x/w/labelfwd.H"
 #include <x/refptr_hash.H>
 #include <unordered_map>
@@ -34,6 +35,13 @@ struct LIBCXX_HIDDEN textlabel_config {
 
 	//! Public options.
         const label_config &config;
+
+	//! child_elementObj initialization parameter.
+
+	child_element_init_params child_element_init=
+	default_child_element_init();
+
+	static child_element_init_params default_child_element_init();
 
 	//! Whether hotspot links are allowed (focusable labels only).
 	bool allow_links=false;
@@ -62,7 +70,6 @@ class LIBCXX_HIDDEN textlabelObj::implObj : virtual public obj {
 	//! A width of 0 means don't word-wrap the text.
 	const double word_wrap_widthmm_thread_only;
 
- protected:
 	//! Preferred width.
 
 	//! This is word_wrap_widthmm converted to pixels.
@@ -78,7 +85,10 @@ class LIBCXX_HIDDEN textlabelObj::implObj : virtual public obj {
 	//! \see textlabel_config
 	const bool fixed_width_metrics;
 
- private:
+	//! Cached current theme
+
+	defaulttheme current_theme;
+
 	//! Compute preferred_width
 
 	void compute_preferred_width(const defaulttheme &theme,
@@ -147,18 +157,18 @@ class LIBCXX_HIDDEN textlabelObj::implObj : virtual public obj {
 	//! Constructor for a label element.
 
 	implObj(const text_param &text,
-		const textlabel_config &config,
+		textlabel_config &config,
 		elementObj::implObj &parent_element_impl);
  private:
 	//! Internal constructor
 	implObj(const text_param &text,
 		current_theme_t::lock &&theme_lock,
 		const richtextmeta &default_meta,
-		const textlabel_config &config,
+		textlabel_config &config,
 		elementObj::implObj &parent_element_impl);
 
 	//! Internal constructor
-	implObj(const textlabel_config &config,
+	implObj(textlabel_config &config,
 		elementObj::implObj &parent_element_impl,
 		const defaulttheme &initial_theme,
 		richtextstring &&string,
@@ -167,7 +177,7 @@ class LIBCXX_HIDDEN textlabelObj::implObj : virtual public obj {
  public:
 	//! Constructor used by editor subclass.
 
-	implObj(const textlabel_config &config,
+	implObj(textlabel_config &config,
 		elementObj::implObj &parent_element_impl,
 		const defaulttheme &initial_theme,
 		richtextstring &&string);
@@ -175,7 +185,7 @@ class LIBCXX_HIDDEN textlabelObj::implObj : virtual public obj {
  private:
 	//! Internal constructor
 
-	implObj(const textlabel_config &config,
+	implObj(textlabel_config &config,
 		elementObj::implObj &parent_element_impl,
 		const defaulttheme &initial_theme,
 		richtextstring &&string,

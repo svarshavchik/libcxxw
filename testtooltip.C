@@ -11,6 +11,8 @@
 #include <x/obj.H>
 #include <x/property_properties.H>
 
+#define DEBUG_INITIAL_METRICS
+#include "textlabel_impl.C"
 #include "x/w/main_window.H"
 #include "x/w/label.H"
 #include "x/w/input_field.H"

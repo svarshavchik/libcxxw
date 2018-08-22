@@ -6,6 +6,7 @@
 #include "font_picker/font_picker_impl.H"
 #include "font_picker/font_picker_preview_impl.H"
 #include "textlabel.H"
+#include "label_element.H"
 #include "x/w/font_picker_config.H"
 #include "x/w/gridlayoutmanager.H"
 #include "x/w/shortcut.H"
@@ -191,10 +192,11 @@ static inline font_picker_preview create_preview_label(const factory &f)
 
 	font_picker_label_config.alignment=halign::center;
 
+	textlabel_config internal_config{font_picker_label_config};
+
 	auto label_impl=
 		ref<font_picker_previewObj::implObj>
-		::create(preview_peep_container_impl,
-			 textlabel_config{font_picker_label_config});
+		::create(preview_peep_container_impl, internal_config);
 
 	auto new_preview_label=
 		font_picker_preview::create(label_impl);
@@ -407,9 +409,11 @@ font_picker factoryObj::create_font_picker(const font_picker_config &config)
 
 			 config.alignment=halign::center;
 
+			 textlabel_config internal_config{config};
+
 			 auto label_impl=ref<current_font_placeholderObj>
 				 ::create(f->get_container_impl(), "",
-					  textlabel_config{config});
+					  internal_config);
 
 			 auto l=label::create(label_impl, label_impl);
 

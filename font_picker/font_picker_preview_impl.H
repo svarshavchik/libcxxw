@@ -47,7 +47,7 @@ class LIBCXX_HIDDEN font_picker_previewObj::implObj
 
 	//! Constructor
 	implObj(const container_impl &parent_container,
-		const textlabel_config &init_args);
+		textlabel_config &init_args);
 
  public:
 	//! Destructor

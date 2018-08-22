@@ -23,6 +23,8 @@
 #include "x/w/text_hotspot.H"
 #include "x/w/input_field.H"
 #include "testwordwrappablelabel.inc.H"
+#define DEBUG_INITIAL_METRICS
+#include "textlabel_impl.C"
 #include <string>
 #include <iostream>
 

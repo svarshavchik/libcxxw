@@ -15,29 +15,24 @@ template<typename element_impl>
 label_elementObj<element_impl>
 ::label_elementObj(const container_impl &parent_container,
 		   const text_param &text,
-		   const textlabel_config &config)
-	: textlabelObj::implObj(text, config,
-				parent_container->container_element_impl()),
-	  element_impl(parent_container,
-		       child_element_init_params{"label@libcxx.com"})
+		   textlabel_config &config)
+	: textlabelObj::implObj{text, config,
+				parent_container->container_element_impl()},
+	  element_impl{parent_container, config.child_element_init}
 {
 }
 
 template<typename element_impl>
 label_elementObj<element_impl>
 ::label_elementObj(const container_impl &parent_container,
-		   const textlabel_config &config,
+		   textlabel_config &config,
 		   const defaulttheme &theme,
-		   richtextstring &&string,
-		   const char *element_id,
-		   const color_arg &initial_background_color)
-	: textlabelObj::implObj(config,
+		   richtextstring &&string)
+	: textlabelObj::implObj{config,
 				parent_container->container_element_impl(),
 				theme,
-				std::move(string)),
-	  element_impl(parent_container,
-		       child_element_init_params{element_id, {},
-				       initial_background_color})
+				std::move(string)},
+	  element_impl{parent_container, config.child_element_init}
 {
 }
 

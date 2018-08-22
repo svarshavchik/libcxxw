@@ -28,18 +28,18 @@ public:
 
 	//! Constructor
 
+	//! Note that the textlabel_config gets passed by reference.
 	label_elementObj(const container_impl &parent_container,
 			 const text_param &text,
-			 const textlabel_config &config);
+			 textlabel_config &config);
 
 	//! Constructor used by the editor subclass.
 
+	//! Note that the textlabel_config gets passed by reference.
 	label_elementObj(const container_impl &container,
-			 const textlabel_config &config,
+			 textlabel_config &config,
 			 const defaulttheme &theme,
-			 richtextstring &&string,
-			 const char *element_id,
-			 const color_arg &initial_background_color);
+			 richtextstring &&string);
 
 	//! Destructor
 	~label_elementObj();

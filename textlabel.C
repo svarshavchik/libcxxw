@@ -7,6 +7,13 @@
 
 LIBCXXW_NAMESPACE_START
 
+child_element_init_params textlabel_config::default_child_element_init()
+{
+	return {
+		"label@libcxx.com"
+	};
+}
+
 textlabelObj::textlabelObj(const ref<implObj> &label_impl)
 	: label_impl(label_impl)
 {

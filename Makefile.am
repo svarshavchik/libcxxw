@@ -956,7 +956,7 @@ testgrid_LDFLAGS=-static
 
 testlabel_SOURCES=testlabel.C
 testlabel_LDADD=libcxxw.la
-testlabel_LDFLAGS=$(TESTLINKTYPE)
+testlabel_LDFLAGS=-static $(STATICLINKFLAGS)
 
 testlist_SOURCES=testlist.C
 testlist_LDADD=libcxxw.la

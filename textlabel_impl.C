@@ -48,7 +48,7 @@ label factoryObj::create_label(const text_param &text,
 }
 
 textlabelObj::implObj::implObj(const text_param &text,
-			       const textlabel_config &config,
+			       textlabel_config &config,
 			       elementObj::implObj &parent_element_impl)
 	: implObj(text,
 		  parent_element_impl.get_window_handler().get_screen()
@@ -110,7 +110,7 @@ static auto rebuild_ordered_hotspots(const textlabelObj::implObj
 textlabelObj::implObj::implObj(const text_param &text,
 			       current_theme_t::lock &&theme_lock,
 			       const richtextmeta &default_meta,
-			       const textlabel_config &config,
+			       textlabel_config &config,
 			       elementObj::implObj &parent_element_impl)
 	: implObj{config,
 		  parent_element_impl,
@@ -121,7 +121,7 @@ textlabelObj::implObj::implObj(const text_param &text,
 {
 }
 
-textlabelObj::implObj::implObj(const textlabel_config &config,
+textlabelObj::implObj::implObj(textlabel_config &config,
 			       elementObj::implObj &parent_element_impl,
 			       const defaulttheme &initial_theme,
 			       richtextstring &&string,
@@ -134,7 +134,7 @@ textlabelObj::implObj::implObj(const textlabel_config &config,
 {
 }
 
-textlabelObj::implObj::implObj(const textlabel_config &config,
+textlabelObj::implObj::implObj(textlabel_config &config,
 			       elementObj::implObj &parent_element_impl,
 			       const defaulttheme &initial_theme,
 			       richtextstring &&string)
@@ -147,7 +147,7 @@ textlabelObj::implObj::implObj(const textlabel_config &config,
 {
 }
 
-textlabelObj::implObj::implObj(const textlabel_config &config,
+textlabelObj::implObj::implObj(textlabel_config &config,
 			       elementObj::implObj &parent_element_impl,
 			       const defaulttheme &initial_theme,
 			       richtextstring &&string,
@@ -156,6 +156,7 @@ textlabelObj::implObj::implObj(const textlabel_config &config,
 	: word_wrap_widthmm_thread_only{config.config.widthmm},
 	  width_in_columns{config.width_in_columns},
 	  fixed_width_metrics{config.fixed_width_metrics},
+	  current_theme{initial_theme},
 	  hotspot_info_thread_only{create_hotspot_info(string, text)},
 	  ordered_hotspots{rebuild_ordered_hotspots(hotspot_info_thread_only)},
 	  text{text},
@@ -177,6 +178,12 @@ textlabelObj::implObj::implObj(const textlabel_config &config,
 	compute_preferred_width(initial_theme, config.config.widthmm,
 				default_meta.getfont()->fc_public.get());
 	text->rewrap(preferred_width);
+
+	// We can now compute the initial metrics.
+	auto metrics=calculate_current_metrics();
+
+	config.child_element_init.initial_metrics.horiz=metrics.first;
+	config.child_element_init.initial_metrics.vert=metrics.second;
 }
 
 textlabelObj::implObj::~implObj()=default;
@@ -231,16 +238,34 @@ void textlabelObj::implObj::compute_preferred_width(const defaulttheme &theme,
 void textlabelObj::implObj::initialize(ONLY IN_THREAD)
 {
 	auto screen=get_label_element_impl().get_screen()->impl;
-	auto current_theme=screen->current_theme.get();
+	auto current_theme_now=screen->current_theme.get();
+
+#ifdef DEBUG_INITIAL_METRICS
+	auto hv=get_label_element_impl().get_horizvert(IN_THREAD);
+	auto orig_horiz=hv->horiz;
+	auto orig_vert=hv->vert;
+#else
+	if (current_theme == current_theme_now)
+		return;
+#endif
+	current_theme=current_theme_now;
+
 	text->theme_updated(IN_THREAD, current_theme);
 	ellipsis->theme_updated(IN_THREAD, current_theme);
 
-	// Repeat what the constructor did, in case the theme changed.
+	// Repeat what the constructor did.
 
-	compute_preferred_width(current_theme, word_wrap_widthmm(IN_THREAD),
+	compute_preferred_width(current_theme_now, word_wrap_widthmm(IN_THREAD),
 				default_meta.getfont()->fc(IN_THREAD));
 
 	updated(IN_THREAD);
+
+#ifdef DEBUG_INITIAL_METRICS
+
+	if (hv->horiz != orig_horiz ||
+	    hv->vert != orig_vert)
+		throw EXCEPTION("Metrics have changed");
+#endif
 }
 
 void textlabelObj::implObj::updated(ONLY IN_THREAD)
@@ -253,8 +278,10 @@ void textlabelObj::implObj::updated(ONLY IN_THREAD)
 }
 
 void textlabelObj::implObj::theme_updated(ONLY IN_THREAD,
-				      const defaulttheme &new_theme)
+					  const defaulttheme &new_theme)
 {
+	current_theme=new_theme;
+
 	text->theme_updated(IN_THREAD, new_theme);
 	ellipsis->theme_updated(IN_THREAD, new_theme);
 	compute_preferred_width(new_theme, word_wrap_widthmm(IN_THREAD),
@@ -285,6 +312,15 @@ void textlabelObj::implObj::rewrap_due_to_updated_position(ONLY IN_THREAD)
 	if (rewrap_to == 0)
 		rewrap_to=1;
 
+	// Until our container places us we wish to maintain our initial
+	// word-wrap width. Because the word-wrap width ultimately determines
+	// the height of the label, which sets the label's vertical metrics,
+	// we want to hold the initial word wrap width in order to maintain
+	// the initial metrics until the container positions us. If, for
+	// external reasons, the container sets our width to be something else
+	// we are then free to start word-wrapping the label text to whatever
+	// width the container sizes us to.
+
 	if (!position_set_flag)
 		rewrap_to=preferred_width;
 
@@ -307,13 +343,6 @@ void textlabelObj::implObj::do_draw(ONLY IN_THREAD,
 void textlabelObj::implObj::recalculate(ONLY IN_THREAD)
 {
 	auto metrics=calculate_current_metrics();
-
-	if (!position_set_flag)
-	{
-		metrics.first={metrics.first.preferred(),
-			       metrics.first.preferred(),
-			       metrics.first.preferred()};
-	}
 
 	get_label_element_impl()
 		.get_horizvert(IN_THREAD)->set_element_metrics

@@ -9,7 +9,8 @@
 #include <x/destroy_callback.H>
 #include <x/ref.H>
 #include <x/obj.H>
-
+#define DEBUG_INITIAL_METRICS
+#include "textlabel_impl.C"
 #include "x/w/main_window.H"
 #include "x/w/label.H"
 #include "x/w/gridlayoutmanager.H"

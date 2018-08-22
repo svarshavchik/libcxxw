@@ -29,7 +29,7 @@ class LIBCXX_HIDDEN focusable_labelObj::implObj
 
 	implObj(const container_impl &container,
 		const text_param &text,
-		const label_config &config);
+		textlabel_config &config);
 
 	//! Destructor
 	~implObj();

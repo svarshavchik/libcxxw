@@ -36,8 +36,12 @@ focusable_label factoryObj
 		 config.off_border,
 		 config.on_border, 0, 0);
 
+	textlabel_config internal_config{config};
+
+	internal_config.allow_links=true;
+
 	auto focusable_label_impl=ref<focusable_labelObj::implObj>
-		::create(ff, text, config);
+		::create(ff, text, internal_config);
 
 	auto l=label::create(focusable_label_impl, focusable_label_impl);
 
