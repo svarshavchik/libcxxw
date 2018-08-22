@@ -8,18 +8,26 @@
 #include "listlayoutmanager/list_celltextfwd.H"
 #include "listlayoutmanager/list_cellobj.H"
 #include "richtext/richtext.H"
+#include "richtext/richtext_alteration_configfwd.H"
 
 LIBCXXW_NAMESPACE_START
 
 //! Internal implementation object.
 
 struct LIBCXX_HIDDEN list_celltextObj : public list_cellObj,
-					    public richtextObj {
+					public richtextObj {
 
 	//! Constructor
-	list_celltextObj(const richtextstring &string,
-			     halign alignment,
-			     dim_t word_wrap_width);
+	list_celltextObj(const richtext_alteration_config &richtext_alteration,
+			 const richtextstring &string,
+			 halign alignment,
+			 dim_t word_wrap_width);
+
+	//! TODO
+
+	//! These list_cells are stored in a vector in list_elementObj::implObj,
+	//! and this is a reference to its superclass;
+	const richtext_alteration_config &richtext_alteration;
 
 	//! Implement cell_get_metrics().
 	std::pair<metrics::axis, metrics::axis>

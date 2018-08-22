@@ -18,6 +18,7 @@
 #include "richtext/richtextstring.H"
 #include "richtext/richtextmeta.H"
 #include "richtext/richtext_password_info.H"
+#include "richtext/richtext_draw_infofwd.H"
 #include "drag_source_elementfwd.H"
 #include "drag_destination_elementfwd.H"
 #include "selection/current_selectionfwd.H"
@@ -163,6 +164,9 @@ class LIBCXX_HIDDEN editorObj::implObj
 
 		//! Gain access to the selection cursor
 
+		//! Also constructs the richtext_draw_info() object for
+		//! passing to the richtext drawing functions.
+
 		class const_lock {
 
 			//! The lock on the underlying rich text object.
@@ -182,6 +186,9 @@ class LIBCXX_HIDDEN editorObj::implObj
 			~const_lock();
 
 			std::optional<size_t> cursor_pos() const;
+
+			richtext_draw_info get_richtext_draw_info(implObj &me)
+				const;
 		};
 
 		class lock : public const_lock {

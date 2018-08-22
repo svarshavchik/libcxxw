@@ -26,6 +26,7 @@
 #include "richtext/richtextfwd.H"
 #include "richtext/richtext_draw_boundariesfwd.H"
 #include "richtext/richtextmeta.H"
+#include "richtext/richtext_alteration_config.H"
 #include <x/mpobj.H>
 #include <x/derivedvaluefwd.H>
 #include <unordered_map>
@@ -196,7 +197,8 @@ typedef background_color_elementObj<themeborder_elementObj
 //! \see list_element
 
 class LIBCXX_HIDDEN list_elementObj::implObj :
-	public list_element_impl_superclass_t {
+	public list_element_impl_superclass_t,
+	public richtext_alteration_config { // TODO
 
  public:
 

@@ -10,10 +10,13 @@
 LIBCXXW_NAMESPACE_START
 
 
-list_celltextObj::list_celltextObj(const richtextstring &string,
+list_celltextObj::list_celltextObj(const richtext_alteration_config
+				   &richtext_alteration,
+				   const richtextstring &string,
 				   halign alignment,
 				   dim_t word_wrap_width)
-	: richtextObj(string, alignment, word_wrap_width)
+	: richtextObj{string, alignment, word_wrap_width},
+	  richtext_alteration{richtext_alteration}
 {
 }
 
@@ -30,7 +33,7 @@ void list_celltextObj::cell_redraw(ONLY IN_THREAD,
 				   bool draw_as_disabled,
 				   const richtext_draw_boundaries &boundaries)
 {
-	richtext_draw_info rdi;
+	richtext_draw_info rdi{richtext_alteration};
 
 	rdi.draw_as_disabled=draw_as_disabled;
 	text_width(boundaries.draw_bounds.width);

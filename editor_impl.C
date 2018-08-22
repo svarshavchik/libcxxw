@@ -343,6 +343,12 @@ std::optional<size_t> editorObj::implObj::selection_cursor_t::const_lock
 	return cursor->pos();
 }
 
+richtext_draw_info editorObj::implObj::selection_cursor_t::const_lock
+::get_richtext_draw_info(implObj &me) const
+{
+	return {me, cursor, me.cursor};
+}
+
 editorObj::implObj::selection_cursor_t::lock::lock(ONLY IN_THREAD,
 						   implObj &impl,
 						   bool blinking_or_clearing)
@@ -605,7 +611,7 @@ void editorObj::implObj::blink(ONLY IN_THREAD,
 	current_position.width=at.position.width;
 	current_position.y=0;
 	text->redraw_whatsneeded(IN_THREAD, *this,
-				 {cursor_lock.cursor, cursor},
+				 cursor_lock.get_richtext_draw_info(*this),
 				 get_draw_info(IN_THREAD),
 				 {current_position});
 }
@@ -881,7 +887,7 @@ void editorObj::implObj::clear_password_peek(ONLY IN_THREAD)
 	p->remove(IN_THREAD, cursor);
 
 	text->redraw_whatsneeded(IN_THREAD, *this,
-				 {cursor_lock.cursor, cursor},
+				 cursor_lock.get_richtext_draw_info(*this),
 				 get_draw_info(IN_THREAD));
 }
 
@@ -968,7 +974,8 @@ void editorObj::implObj::draw_changes(ONLY IN_THREAD,
 	// stale anyway.
 	if (data(IN_THREAD).logical_inherited_visibility)
 		text->redraw_whatsneeded(IN_THREAD, *this,
-					 {cursor_lock.cursor, cursor},
+					 cursor_lock.get_richtext_draw_info
+					 (*this),
 					 get_draw_info(IN_THREAD));
 
 	validation_required(IN_THREAD)=true;
@@ -1019,7 +1026,7 @@ void editorObj::implObj::do_draw(ONLY IN_THREAD,
 	selection_cursor_t::lock cursor_lock{IN_THREAD, *this};
 
 	text->full_redraw(IN_THREAD, *this,
-			     {cursor_lock.cursor, cursor},
+			  cursor_lock.get_richtext_draw_info(*this),
 			  di, areas);
 }
 
@@ -1031,7 +1038,7 @@ void editorObj::implObj::draw_between(ONLY IN_THREAD,
 
 	text->redraw_between(IN_THREAD, *this,
 			     a, b,
-			     {cursor_lock.cursor, cursor},
+			     cursor_lock.get_richtext_draw_info(*this),
 			     get_draw_info(IN_THREAD));
 }
 

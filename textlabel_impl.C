@@ -331,13 +331,14 @@ void textlabelObj::implObj::rewrap_due_to_updated_position(ONLY IN_THREAD)
 }
 
 void textlabelObj::implObj::do_draw(ONLY IN_THREAD,
-				const draw_info &di,
-				const rectangle_set &areas)
+				    const draw_info &di,
+				    const rectangle_set &areas)
 {
 #ifdef TEST_TEXTLABEL_DRAW
 	TEST_TEXTLABEL_DRAW();
 #endif
-	text->full_redraw(IN_THREAD, get_label_element_impl(), {}, di, areas);
+	text->full_redraw(IN_THREAD, get_label_element_impl(), {*this},
+			  di, areas);
 }
 
 void textlabelObj::implObj::recalculate(ONLY IN_THREAD)
@@ -561,7 +562,7 @@ void textlabelObj::implObj::link_update(ONLY IN_THREAD,
 	updated(IN_THREAD);
 
 	text->redraw_whatsneeded(IN_THREAD, e,
-				 {},
+				 {*this},
 				 e.get_draw_info(IN_THREAD));
 }
 

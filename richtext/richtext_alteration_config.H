@@ -7,6 +7,7 @@
 #define richtext_alteration_config_H
 
 #include "richtext/richtextfwd.H"
+#include "richtext/richtext_alteration_configfwd.H"
 
 LIBCXXW_NAMESPACE_START
 

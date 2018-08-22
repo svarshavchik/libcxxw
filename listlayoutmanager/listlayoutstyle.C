@@ -348,7 +348,8 @@ void listlayoutstyle_impl::do_process_list_item_param
 					   (textlist_element.itemlabel_meta, s);
 
 				   auto t=list_celltext
-					   ::create(rts, alignment, 0);
+					   ::create(textlist_element,
+						    rts, alignment, 0);
 
 				   item_callback(t);
 			   },
@@ -602,7 +603,8 @@ class LIBCXX_HIDDEN menu_list_style_impl
 			.create_richtextstring(textlist_element
 					       .itemshortcut_meta, s);
 
-		return list_celltext::create(rt, halign::left, 0);
+		return list_celltext::create(textlist_element,
+					     rt, halign::left, 0);
 	}
 
 	void menu_attribute_requested() const override

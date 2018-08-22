@@ -7,6 +7,7 @@
 #define richtext_draw_info_H
 
 #include "richtext/richtext_draw_infofwd.H"
+#include "richtext/richtext_alteration_configfwd.H"
 #include "richtext/richtextiterator.H"
 
 LIBCXXW_NAMESPACE_START
@@ -28,6 +29,8 @@ LIBCXXW_NAMESPACE_START
 //! disabled list items.
 
 struct LIBCXX_HIDDEN richtext_draw_info {
+
+	const richtext_alteration_config &richtext_alteration;
 
 	richtextiteratorptr selection_start;
 	richtextiteratorptr selection_end;

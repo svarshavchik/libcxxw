@@ -68,7 +68,7 @@ struct LIBCXX_HIDDEN textlabel_config {
 //! Base class for a label implementation.
 
 class LIBCXX_HIDDEN textlabelObj::implObj
-	: private richtext_alteration_config,
+	: protected richtext_alteration_config,
 	  virtual public obj {
 
 	//! Word wrapping width, in millimeters.
