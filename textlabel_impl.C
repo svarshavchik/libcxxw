@@ -27,18 +27,18 @@
 
 LIBCXXW_NAMESPACE_START
 
-label factoryObj::create_label(const text_param &text,
-			       halign alignment)
+label factoryObj::create_label(const text_param &text)
 {
-	return create_label(text, 0, alignment);
+	return create_label(text, {});
 }
 
 label factoryObj::create_label(const text_param &text,
-			       double widthmm,
-			       halign alignment)
+			       const label_config &config)
 {
+	textlabel_config internal_config{config};
+
 	auto label_impl=ref<label_elementObj<child_elementObj>>
-		::create(get_container_impl(), text, alignment, widthmm, false);
+		::create(get_container_impl(), text, internal_config);
 
 	auto l=label::create(label_impl, label_impl);
 
@@ -48,18 +48,14 @@ label factoryObj::create_label(const text_param &text,
 }
 
 textlabelObj::implObj::implObj(const text_param &text,
-			       halign alignment,
-			       double initial_width,
-			       bool allow_links,
+			       const textlabel_config &config,
 			       elementObj::implObj &parent_element_impl)
 	: implObj(text,
 		  {parent_element_impl.create_background_color
 		   (parent_element_impl.label_theme_color()),
 		   parent_element_impl.create_current_fontcollection
 		   (theme_font{parent_element_impl.label_theme_font()})},
-		  alignment,
-		  initial_width,
-		  allow_links,
+		  config,
 		  parent_element_impl)
 {
 }
@@ -112,62 +108,56 @@ static auto rebuild_ordered_hotspots(const textlabelObj::implObj
 // Order hotspots by their appearance order.
 textlabelObj::implObj::implObj(const text_param &text,
 			       const richtextmeta &default_meta,
-			       halign alignment,
-			       double initial_width,
-			       bool allow_links,
+			       const textlabel_config &config,
 			       elementObj::implObj &parent_element_impl)
-	: implObj{alignment, initial_width,
+	: implObj{config,
 		  parent_element_impl,
 		  parent_element_impl.create_richtextstring
-		  (default_meta, text, allow_links),
-		  default_meta, allow_links}
+		  (default_meta, text, config.allow_links),
+		  default_meta}
 {
 }
 
-textlabelObj::implObj::implObj(halign alignment,
-			       double initial_width,
+textlabelObj::implObj::implObj(const textlabel_config &config,
 			       elementObj::implObj &parent_element_impl,
 			       richtextstring &&string,
-			       const richtextmeta &default_meta,
-			       bool allow_links)
-	: implObj{alignment, initial_width,
+			       const richtextmeta &default_meta)
+	: implObj{config,
 		  parent_element_impl,
 		  parent_element_impl.get_window_handler().get_screen()
 		  ->impl->current_theme.get(),
 		  std::move(string),
-		  richtext::create(string, alignment, 0),
-		  default_meta, allow_links}
+		  richtext::create(string, config.config.alignment, 0),
+		  default_meta}
 {
 }
 
-textlabelObj::implObj::implObj(halign alignment,
-			       double initial_width,
+textlabelObj::implObj::implObj(const textlabel_config &config,
 			       elementObj::implObj &parent_element_impl,
 			       const defaulttheme &initial_theme,
 			       richtextstring &&string,
 			       const richtext &text,
-			       const richtextmeta &default_meta,
-			       bool allow_links_param)
-	: word_wrap_widthmm_thread_only{initial_width},
+			       const richtextmeta &default_meta)
+	: word_wrap_widthmm_thread_only{config.config.widthmm},
 	  hotspot_info_thread_only{create_hotspot_info(string, text)},
 	  ordered_hotspots{rebuild_ordered_hotspots(hotspot_info_thread_only)},
 	  text{text},
 	  ellipsis{parent_element_impl.get_window_handler()
 		   .thread()->thread_ellipsiscache
 		   ->get(parent_element_impl)},
-	  hotspot_cursor{allow_links_param ? (richtextiteratorptr)text->begin()
+	  hotspot_cursor{config.allow_links
+			 ? (richtextiteratorptr)text->begin()
 			 : richtextiteratorptr{}},
 	  default_meta{default_meta},
-	  allow_links{allow_links_param}
+	  allow_links{config.allow_links}
 {
-	if (std::isnan(initial_width))
-		initial_width=word_wrap_widthmm_thread_only=0;
-
-	if (initial_width < 0)
-		throw EXCEPTION(_("Label width cannot be negative"));
+	if (std::isnan(word_wrap_widthmm_thread_only) ||
+	    word_wrap_widthmm_thread_only < 0)
+		throw EXCEPTION(_("Invalid label width: ")
+				<< config.config.widthmm);
 
 	// We do what initialize() does here, based on the current theme.
-	preferred_width=initial_theme->compute_width(initial_width);
+	preferred_width=initial_theme->compute_width(config.config.widthmm);
 	text->rewrap(preferred_width);
 }
 

@@ -129,8 +129,12 @@ void testtooltip(int width)
 			 auto l=factory->padding(2.0).create_input_field
 			 ("");
 
+			 LIBCXX_NAMESPACE::w::label_config config;
+
+			 config.widthmm=width;
+
 			 l->create_tooltip("This is a word-wrapping tooltip!",
-					   width);
+					   config);
 		 },
 		 LIBCXX_NAMESPACE::w::new_gridlayoutmanager{});
 

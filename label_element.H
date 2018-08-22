@@ -15,12 +15,10 @@ template<typename element_impl>
 label_elementObj<element_impl>
 ::label_elementObj(const container_impl &parent_container,
 		   const text_param &text,
-		   halign alignment,
-		   double initial_width,
-		   bool allow_links)
+		   const textlabel_config &config)
 	: element_impl(parent_container,
 		       child_element_init_params{"label@libcxx.com"}),
-	  textlabelObj::implObj(text, alignment, initial_width, allow_links,
+	  textlabelObj::implObj(text, config,
 				parent_container->container_element_impl())
 {
 }
@@ -28,19 +26,17 @@ label_elementObj<element_impl>
 template<typename element_impl>
 label_elementObj<element_impl>
 ::label_elementObj(const container_impl &parent_container,
-		   halign alignment,
-		   double initial_width,
+		   const textlabel_config &config,
 		   richtextstring &&string,
 		   const richtextmeta &default_meta,
-		   bool allow_links,
 		   const char *element_id,
 		   const color_arg &initial_background_color)
 	: element_impl(parent_container,
 		       child_element_init_params{element_id, {},
 				       initial_background_color}),
-	  textlabelObj::implObj(alignment, initial_width,
+	  textlabelObj::implObj(config,
 				parent_container->container_element_impl(),
-				std::move(string), default_meta, allow_links)
+				std::move(string), default_meta)
 {
 }
 

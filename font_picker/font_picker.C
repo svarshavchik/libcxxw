@@ -187,9 +187,14 @@ static inline font_picker_preview create_preview_label(const factory &f)
 	// The implementation object for the element
 	// in the peephole.
 
+	label_config font_picker_label_config;
+
+	font_picker_label_config.alignment=halign::center;
+
 	auto label_impl=
 		ref<font_picker_previewObj::implObj>
-		::create(preview_peep_container_impl);
+		::create(preview_peep_container_impl,
+			 textlabel_config{font_picker_label_config});
 
 	auto new_preview_label=
 		font_picker_preview::create(label_impl);
@@ -398,9 +403,13 @@ font_picker factoryObj::create_font_picker(const font_picker_config &config)
 		 },
 		 [&](const auto &f)
 		 {
+			 label_config config;
+
+			 config.alignment=halign::center;
+
 			 auto label_impl=ref<current_font_placeholderObj>
-			 ::create(f->get_container_impl(), "",
-				  halign::center, 0, false);
+				 ::create(f->get_container_impl(), "",
+					  textlabel_config{config});
 
 			 auto l=label::create(label_impl, label_impl);
 

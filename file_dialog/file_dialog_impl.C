@@ -391,7 +391,11 @@ void file_dialogObj::implObj::error_dialog(const file_dialog &the_file_dialog,
 		 [error_message]
 		 (const auto &f)
 		 {
-			 f->create_label(error_message, 100.00, halign::center);
+			 label_config config;
+
+			 config.widthmm=100;
+			 config.alignment=halign::center;
+			 f->create_label(error_message, config);
 		 },
 		 the_file_dialog->dialog_window
 		 ->destroy_when_closed("error@libcxx.com"),

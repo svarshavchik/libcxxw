@@ -26,6 +26,7 @@
 #include "x/w/input_field_config.H"
 #include "x/w/input_field_lock.H"
 #include "x/w/button_eventfwd.H"
+#include "x/w/label.H"
 
 #include <functional>
 
@@ -299,6 +300,10 @@ class LIBCXX_HIDDEN editorObj::implObj
 		const ref<editor_peephole_implObj> &parent_peephole;
 		const text_param &text;
 		const input_field_config &config;
+
+		// Forwarded to the internal label implementation constructor:
+		label_config label_config_args;
+		textlabel_config textlabel_config_args;
 
 		//! init_args also constructs some additional objects.
 

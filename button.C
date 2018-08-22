@@ -228,54 +228,88 @@ button do_create_button_with_explicit_borders
 }
 
 button
+factoryObj::create_normal_button_with_label(const text_param &text)
+{
+	return create_normal_button_with_label(text, label_config{});
+}
+
+button
 factoryObj::create_normal_button_with_label(const text_param &text,
-					    halign alignment)
+					    const label_config &config)
 {
 	return create_normal_button_with_label(text,
 					       {},
-					       alignment);
+					       config);
+}
+
+button
+factoryObj::create_normal_button_with_label(const text_param &text,
+					    const shortcut &shortcut_key)
+{
+	return create_normal_button_with_label(text, shortcut_key, {});
 }
 
 button
 factoryObj::create_normal_button_with_label(const text_param &text,
 					    const shortcut &shortcut_key,
-					    halign alignment)
+					    const label_config &config)
 {
 	return create_button_with_label("normal_button_border",
-					text, shortcut_key, alignment);
+					text, shortcut_key, config);
+}
+
+button
+factoryObj::create_special_button_with_label(const text_param &text)
+{
+	return create_special_button_with_label(text, label_config{});
 }
 
 button
 factoryObj::create_special_button_with_label(const text_param &text,
-					     halign alignment)
+					     const label_config &config)
 {
 	return create_special_button_with_label(text,
 						{},
-						alignment);
+						config);
+}
+
+button
+factoryObj::create_special_button_with_label(const text_param &text,
+					     const shortcut &shortcut_key)
+{
+	return create_special_button_with_label(text, shortcut_key, {});
 }
 
 button
 factoryObj::create_special_button_with_label(const text_param &text,
 					     const shortcut &shortcut_key,
-					     halign alignment)
+					     const label_config &config)
 {
 	return create_button_with_label("special_button_border",
-					text, shortcut_key, alignment);
+					text, shortcut_key, config);
+}
+
+button
+factoryObj::create_button_with_label(const border_arg &theme_border,
+				     const text_param &text,
+				     const shortcut &shortcut_key)
+{
+	return create_button_with_label(theme_border, text, shortcut_key, {});
 }
 
 button
 factoryObj::create_button_with_label(const border_arg &theme_border,
 				     const text_param &text,
 				     const shortcut &shortcut_key,
-				     halign alignment)
+				     const label_config &config)
 {
 	return do_create_button
 		(theme_border,
 		 make_function<factory_creator_t>
-		 ([&text, alignment]
+		 ([&]
 		  (const auto &f)
 		  {
-			  f->create_label(text, alignment)->show();
+			  f->create_label(text, config)->show();
 		  }),
 		 shortcut_key);
 }

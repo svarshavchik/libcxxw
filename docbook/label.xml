@@ -33,15 +33,22 @@ See COPYING for distribution information.
 
   <para>
     <quote><literal>\n</literal></quote> characters in the text string
-    create labels with multiple lines. An optional second parameter
-    controls the alignment of multiple lines of text:
+    create labels with multiple lines.
+    <methodname>create_label</methodname>() takes an optional second parameter
+    which is a
+    <ulink url="&link-x--w--label-config;"><classname>&ns;::w::label_config</classname></ulink>
+    that configures the label element's appearance.
+    <classname>&ns;::w::label_config</classname>'s
+    <varname>alignment</varname> value specifies the formatting of labels
+    that have multiple lines of text:
   </para>
+
   <variablelist>
     <varlistentry>
       <term><literal>&ns;::w::halign::left</literal> (default)</term>
       <listitem>
 	<para>
-	  Display the lines normally, left-aligned.
+	  Display all lines in the label normally, left-aligned.
 	</para>
       </listitem>
     </varlistentry>

@@ -9,12 +9,20 @@
 
 LIBCXXW_NAMESPACE_START
 
+static inline textlabel_config create_textlabel_config(const label_config &l)
+{
+	textlabel_config config{l};
+
+	config.allow_links=true;
+
+	return config;
+}
+
 focusable_labelObj::implObj
 ::implObj(const container_impl &container,
 	  const text_param &text,
-	  double widthmm,
-	  halign alignment)
-	: superclass_t(container, text, alignment, widthmm, true)
+	  const label_config &config)
+	: superclass_t{container, text, create_textlabel_config(config)}
 {
 }
 

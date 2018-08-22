@@ -20,12 +20,23 @@
 #include "richtext/richtextiteratorfwd.H"
 #include "x/w/impl/draw_infofwd.H"
 #include "x/w/impl/connection_threadfwd.H"
-
+#include "x/w/labelfwd.H"
 #include <x/refptr_hash.H>
 #include <unordered_map>
 #include <xcb/xproto.h>
 
 LIBCXXW_NAMESPACE_START
+
+//! Options for creating elements.
+
+struct LIBCXX_HIDDEN textlabel_config {
+
+	//! Public options.
+        const label_config &config;
+
+	//! Whether hotspot links are allowed (focusable labels only).
+	bool allow_links=false;
+};
 
 //! Base class for a label implementation.
 
@@ -34,7 +45,7 @@ class LIBCXX_HIDDEN textlabelObj::implObj : virtual public obj {
 	//! Word wrapping width, in millimeters.
 
 	//! A width of 0 means don't word-wrap the text.
-	double word_wrap_widthmm_thread_only;
+	const double word_wrap_widthmm_thread_only;
 
  protected:
 	//! Preferred width.
@@ -101,39 +112,31 @@ class LIBCXX_HIDDEN textlabelObj::implObj : virtual public obj {
 	//! Constructor for a label element.
 
 	implObj(const text_param &text,
-		halign alignment,
-		double initial_width,
-		bool allow_links,
+		const textlabel_config &config,
 		elementObj::implObj &parent_element_impl);
  private:
 	//! Internal constructor
 	implObj(const text_param &text,
 		const richtextmeta &default_meta,
-		halign alignment,
-		double initial_width,
-		bool allow_links,
+		const textlabel_config &config,
 		elementObj::implObj &parent_element_impl);
  public:
 	//! Constructor used by editor subclass.
 
-	implObj(halign alignment,
-		double initial_width,
+	implObj(const textlabel_config &config,
 		elementObj::implObj &parent_element_impl,
 		richtextstring &&string,
-		const richtextmeta &default_meta,
-		bool allow_links);
+		const richtextmeta &default_meta);
 
  private:
 	//! Internal constructor
 
-	implObj(halign alignment,
-		double initial_width,
+	implObj(const textlabel_config &config,
 		elementObj::implObj &parent_element_impl,
 		const defaulttheme &initial_theme,
 		richtextstring &&string,
 		const richtext &text,
-		const richtextmeta &default_meta,
-		bool allow_links);
+		const richtextmeta &default_meta);
 
  public:
 	//! Whether links are allowed

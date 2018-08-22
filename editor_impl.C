@@ -66,8 +66,10 @@ editorObj::implObj::init_args
 	: parent_peephole{parent_peephole},
 	  text{text},
 	  config{config},
+	  textlabel_config_args{label_config_args},
 	  default_meta{create_default_meta(parent_peephole, config)}
 {
+	label_config_args.alignment=config.alignment;
 }
 
 editorObj::implObj::init_args::~init_args()=default;
@@ -354,10 +356,10 @@ editorObj::implObj::implObj(init_args &args)
 		       .create_icon({"cursor-dragging-wontdrop"})->create_cursor(),
 		       // Capture the string's font.
 		       args.default_meta.getfont(),
-		       args.parent_peephole, args.config.alignment, 0,
+		       args.parent_peephole,
+		       args.textlabel_config_args,
 		       create_initial_string(args, *this),
 		       args.default_meta,
-		       false,
 		       "textedit@libcxx.com",
 
 		       // Initial background_color

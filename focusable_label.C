@@ -37,7 +37,7 @@ focusable_label factoryObj
 		 config.on_border, 0, 0);
 
 	auto focusable_label_impl=ref<focusable_labelObj::implObj>
-		::create(ff, text, config.widthmm, config.alignment);
+		::create(ff, text, config);
 
 	auto l=label::create(focusable_label_impl, focusable_label_impl);
 

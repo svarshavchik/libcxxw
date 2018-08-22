@@ -161,18 +161,14 @@ public:
 
 	//! Create a label
 
-	label create_label(const text_param &text,
-			   halign alignment=halign::left);
+	label create_label(const text_param &text);
 
-	//! Create a label that word-wraps the text to the given width
+	//! Create a label with custom properties
 
-	//! The initial width of the label is specified in millimeters.
-	//! The label's text gets word-wrapped accordingly, and the label's
-	//! width will adjust to match the width of its column.
+	//! Specifies custom alignment, or word wrapping.
 
 	label create_label(const text_param &text,
-			   double widthmm,
-			   halign alignment=halign::left);
+			   const label_config &props);
 
 	//! Create a focusable label.
 
@@ -184,27 +180,48 @@ public:
 					       const focusable_label_config &);
 
 	//! Create an button with a label, and a normal border.
+	button create_normal_button_with_label(const text_param &text);
+
+	//! Create an button with a label, and a normal border.
+
+	//! \overload
 	button create_normal_button_with_label(const text_param &text,
-					       halign alignment=halign::left);
+					       const label_config &config);
+
+	//! Create an button with a label, and a normal border.
+
+	//! \overload
+	button create_normal_button_with_label(const text_param &text,
+					       const shortcut &key_shortcut);
 
 	//! Create an button with a label, and a normal border.
 
 	//! \overload
 	button create_normal_button_with_label(const text_param &text,
 					       const shortcut &key_shortcut,
-					       halign alignment=halign::left);
+					       const label_config &config);
 
 	//! Create an button with a label, and a special border.
+	button create_special_button_with_label(const text_param &text);
+
+	//! Create an button with a label, and a special border.
+
+	//! \overload
 	button create_special_button_with_label(const text_param &text,
-						halign alignment=halign::left);
+						const label_config &config);
+
+	//! Create an button with a label, and a special border.
+
+	//! \overload
+	button create_special_button_with_label(const text_param &text,
+						const shortcut &key_shortcut);
 
 	//! Create an button with a label, and a special border.
 
 	//! \overload
 	button create_special_button_with_label(const text_param &text,
 						const shortcut &key_shortcut,
-						halign alignment=halign::left);
-
+						const label_config &config);
 
 	//! Create an button with custom contents and a normal border.
 	template<typename functor>
@@ -293,8 +310,13 @@ public:
 	//! Helper for creating buttons.
 	button create_button_with_label(const border_arg &theme_border,
 					const text_param &text,
+					const shortcut &shortcut_key);
+
+	//! Helper for creating buttons.
+	button create_button_with_label(const border_arg &theme_border,
+					const text_param &text,
 					const shortcut &shortcut_key,
-					halign alignment=halign::left);
+					const label_config &config);
 
 	//! Create a text input field
 

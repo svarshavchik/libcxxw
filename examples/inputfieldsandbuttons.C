@@ -134,7 +134,12 @@ void create_mainwindow(const x::w::main_window &main_window,
 	// The tooltip for the text field. Slightly longer tooltip, word
 	// wrap it to 30 mm width.
 
-	text_field->create_tooltip("A brief message, a few lines long.", 30);
+	x::w::label_config tooltip_label_config;
+
+	tooltip_label_config.widthmm=30;
+
+	text_field->create_tooltip("A brief message, a few lines long.",
+				   tooltip_label_config);
 
 	// Save it in new_inputfields
 

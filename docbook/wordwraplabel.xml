@@ -26,6 +26,9 @@ See COPYING for distribution information.
 	It uses <link linkend="labels">a
 	<methodname>create_label()</methodname> overload</link> to
 	create a label that word-wraps its text to the given width.
+	A word-wrapping label gets created by setting
+	<ulink url="&link-x--w--label-config;"><classname>&ns;::w::label_config</classname></ulink>'s
+	<varname>widthmm</varname> value.
       </para>
 
       <para>
@@ -62,9 +65,9 @@ See COPYING for distribution information.
     </listitem>
     <listitem>
       <para>
-	A word-wrapped label gets created by passing an estimated width
-	after its <ulink url="&link-x--w--text-param;"><classname>&ns;::w::text_param</classname></ulink>.
-	The estimated width is in millimeters, and not pixels.
+	A word-wrapped label gets created by setting
+	<varname>widthmm</varname>. This sets the width of the label
+	in millimeters, and not pixels.
 	The estimated width gets scaled by the display screen's resolution
 	automatically, to compute the targeted width in pixels.
 	Furthermore, the eventual width of the word-wrapped label may differ,
@@ -101,7 +104,8 @@ See COPYING for distribution information.
     </listitem>
     <listitem>
       <para>
-	An optional <classname>x::w::halign</classname> parameter sets the
+	Setting <varname>alignment</varname> together with
+	<varname>widthmm</varname> sets the
 	horizontal alignment of each line. If not specified the text is
 	shown left-aligned, normally.
       </para>

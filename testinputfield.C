@@ -181,7 +181,11 @@ void testbutton()
 						 LIBCXX_NAMESPACE::w::rgb::maximum},
 					 "Hello world!"}, conf2);
 
-			 fields.second->create_tooltip("A brief message, a few lines long.", 30);
+			 LIBCXX_NAMESPACE::w::label_config config;
+
+			 config.widthmm=30;
+
+			 fields.second->create_tooltip("A brief message, a few lines long.", config);
 
 			 factory=layout->append_row();
 

@@ -87,18 +87,18 @@ static text_param create_preview(const font &f, const fontcollection &fc)
 	return {f, any};
 }
 
-font_picker_previewObj::implObj::implObj(const container_impl &parent_container)
+font_picker_previewObj::implObj::implObj(const container_impl &parent_container,
+					 const textlabel_config &init_args)
 	: superclass_t{theme_font{"label"},
-		parent_container,
+		       parent_container,
 
 			// create_font_picker() will manually call
 			// compute_new_preview(), which will update us with the
 			// initial preview font.
-			text_param{" "},
-			halign::center,
-			0, false},
+		       text_param{" "},
+		       init_args},
 	  current_theme{parent_container->container_element_impl()
-			  .get_screen()->impl->current_theme.get()}
+			.get_screen()->impl->current_theme.get()}
 {
 }
 

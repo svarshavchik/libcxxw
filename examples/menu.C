@@ -500,6 +500,12 @@ void create_help_about(const x::w::main_window &main_window)
 
 				 black{};
 
+			 x::w::label_config config;
+
+			 // 100mm-wide label (initial word-wrapped width).
+
+			 config.widthmm=100;
+
 			 f->create_label
 				 ({
 					 blue,
@@ -522,7 +528,7 @@ void create_help_about(const x::w::main_window &main_window)
 		"sunt in culpa qui officia deserunt mollit anim id est "
 		"laborum."
 						 },
-					 100.0);
+					 config);
 		 },
 		 []
 		 (ONLY IN_THREAD, const x::w::busy &)

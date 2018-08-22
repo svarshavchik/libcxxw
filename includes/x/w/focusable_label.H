@@ -11,6 +11,7 @@
 #include <x/w/focusable.H>
 #include <x/w/alignment.H>
 #include <x/w/border_arg.H>
+#include <x/w/label.H>
 #include <x/ref.H>
 
 LIBCXXW_NAMESPACE_START
@@ -20,13 +21,7 @@ LIBCXXW_NAMESPACE_START
 //! Optional parameter passed to \ref factory "a factory's"
 //! create_focusable_label() method.
 
-struct focusable_label_config {
-
-	//! Label wrap width (0=don't wrap)
-	double widthmm=0.0;
-
-	//! Label alignment
-	halign alignment=halign::left;
+struct focusable_label_config : public label_config {
 
 	//! Default border when the focusable label does not have focus.
 	static const char LIBCXX_PUBLIC default_off_border[];

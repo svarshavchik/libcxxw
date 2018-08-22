@@ -66,6 +66,21 @@ void testlabel()
 				 x::w::gridfactory factory=
 				     layout->append_row();
 
+				 // Pass an optional label_config parameter
+				 // to create_label().
+
+				 x::w::label_config hello_world_label_config;
+
+				 // Center the label's rows. This is
+				 // an optional parameter, and defaults
+				 // to x::w::halign::left. "right"
+				 // is also an option (other halign
+				 // values are not used by the label
+				 // display element).
+
+				 hello_world_label_config.alignment=
+					 x::w::halign::center;
+
 				 // Pad the next new grid element with
 				 // an 8 millimeter border, and create an
 				 // x::w::label element.
@@ -78,14 +93,7 @@ void testlabel()
 						// to a non-default font.
 					"liberation mono;point_size=40"_font,
 					"Here I come!"
-				     },
-					 // Center the label's rows. This is
-					 // an optional parameter, and defaults
-					 // to x::w::halign::left. "right"
-					 // is also an option (other halign
-					 // values are not used by the label
-					 // display element).
-					 x::w::halign::center);
+				     }, hello_world_label_config);
 
 				 // Create a factory for the second row.
 				 factory=layout->append_row();

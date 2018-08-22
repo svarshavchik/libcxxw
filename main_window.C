@@ -576,7 +576,10 @@ void main_windowObj::stop_message(const text_param &msg,
 				[&]
 				(const auto &f)
 				{
-					f->create_label(msg, config.widthmm);
+					label_config lconfig;
+
+					lconfig.widthmm=config.widthmm;
+					f->create_label(msg, lconfig);
 				},
 				[autodestroy, cb=config.acknowledged_callback]
 				(ONLY IN_THREAD, const auto &ignore)

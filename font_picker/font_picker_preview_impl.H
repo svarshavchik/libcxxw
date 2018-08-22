@@ -13,6 +13,7 @@
 #include "x/w/impl/child_elementobj.H"
 #include "x/w/defaultthemefwd.H"
 #include "x/w/font.H"
+#include "textlabel.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -45,20 +46,23 @@ class LIBCXX_HIDDEN font_picker_previewObj::implObj
 	THREAD_DATA_ONLY(current_font);
 
 	//! Constructor
-	implObj(const container_impl &parent_container);
-
+	implObj(const container_impl &parent_container,
+		const textlabel_config &init_args);
+#if 0
  private:
 	//! Delegated constructor
 	implObj(const container_impl &parent_container,
 		const font &initial_font,
-		const defaulttheme &initial_theme);
+		const defaulttheme &initial_theme,
+		const textlabel_init_args &init_args);
 
 	//! Delegated constructor
 	implObj(const container_impl &parent_container,
 		const font &initial_font,
 		const fontcollection &initial_fontcollection,
-		const defaulttheme &initial_theme);
-
+		const defaulttheme &initial_theme,
+		const textlabel_init_args &init_args);
+#endif
  public:
 	//! Destructor
 	~implObj();

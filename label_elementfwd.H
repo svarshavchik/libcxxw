@@ -29,18 +29,14 @@ public:
 
 	label_elementObj(const container_impl &parent_container,
 			 const text_param &text,
-			 halign alignment,
-			 double initial_width,
-			 bool allow_links);
+			 const textlabel_config &config);
 
 	//! Constructor used by the editor subclass.
 
 	label_elementObj(const container_impl &container,
-			 halign alignment,
-			 double initial_width,
+			 const textlabel_config &config,
 			 richtextstring &&string,
 			 const richtextmeta &default_meta,
-			 bool allow_links,
 			 const char *element_id,
 			 const color_arg &initial_background_color);
 

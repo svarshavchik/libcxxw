@@ -40,6 +40,13 @@ void create_mainwindow(const x::w::main_window &main_window)
 
 	x::w::gridfactory factory=layout->append_row();
 
+	x::w::label_config config;
+
+	config.widthmm=100.0; // Initial text width is 100 millimeters
+
+	// Optional parameter, alignment:
+	config.alignment=x::w::halign::center;
+
 	factory->create_label({
 		 blue,
 		"underline"_decoration,
@@ -60,12 +67,7 @@ void create_mainwindow(const x::w::main_window &main_window)
 		"Excepteur sint occaecat cupidatat non proident, "
 		"sunt in culpa qui officia deserunt mollit anim id est "
 		"laborum."
-	  },
-		100.0, // Initial text width is 100 millimeters
-
-
-		// Optional parameter, alignment:
-		x::w::halign::center);
+	  }, config);
 }
 
 void wordwrap()

@@ -37,7 +37,11 @@ void bookpagefactoryObj::do_add(const text_param &label,
 	    (const factory &label_factory,
 	     const factory &page_factory)
 	    {
-		    label_factory->create_label(label, h)->show();
+		    label_config config;
+
+		    config.alignment=h;
+
+		    label_factory->create_label(label, config)->show();
 		    f(page_factory);
 	    }, shortcut);
 }

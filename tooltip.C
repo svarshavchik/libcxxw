@@ -242,26 +242,11 @@ void tooltip_factory_impl::create(const function<void (const container &)>
 
 void elementObj::create_tooltip(const text_param &text)
 {
-	create_custom_tooltip
-		([=]
-		 (ONLY IN_THREAD, const auto &factory)
-		 {
-			 factory([&]
-				 (const auto &c)
-				 {
-					 gridlayoutmanager l=
-						 c->get_layoutmanager();
-
-					 auto f=l->append_row();
-					 f->padding(0);
-					 f->create_label(text);
-				 },
-				 new_gridlayoutmanager());
-		 });
+	create_tooltip(text, {});
 }
 
 void elementObj::create_tooltip(const text_param &text,
-				double width)
+				const label_config &config)
 {
 	create_custom_tooltip
 		([=]
@@ -275,7 +260,7 @@ void elementObj::create_tooltip(const text_param &text,
 
 					 auto f=l->append_row();
 					 f->padding(0);
-					 f->create_label(text, width);
+					 f->create_label(text, config);
 				 },
 				 new_gridlayoutmanager());
 		 });

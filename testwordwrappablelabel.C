@@ -136,6 +136,11 @@ static void initialize_label(const LIBCXX_NAMESPACE::w::factory &factory)
 				return std::visit(processor, e);
 			});
 
+	LIBCXX_NAMESPACE::w::focusable_label_config config;
+
+	config.widthmm=100;
+	config.alignment=LIBCXX_NAMESPACE::w::halign::center;
+
 	factory->create_focusable_label
 		({
 			hotspot1,
@@ -159,8 +164,7 @@ static void initialize_label(const LIBCXX_NAMESPACE::w::factory &factory)
 			"sunt in culpa qui officia deserunt mollit anim id est ",
 			hotspot2,
 			"laborum."
-		  },
-			{100, LIBCXX_NAMESPACE::w::halign::center});
+		  }, config);
 }
 
 void testlabel(const testwordwrappablelabel_options &options)

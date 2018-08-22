@@ -56,6 +56,9 @@ void testlabel()
 				 LIBCXX_NAMESPACE::w::gridfactory factory=
 				     layout->append_row();
 
+				 LIBCXX_NAMESPACE::w::label_config config;
+
+				 config.alignment=LIBCXX_NAMESPACE::w::halign::center;
 				 factory->padding(2.0).create_label({
 						 "Hello ",
 							 "50%"_color,
@@ -66,7 +69,7 @@ void testlabel()
 							 "liberation mono;point_size=40"_font,
 							 "Here I come!"
 							 },
-					 x::w::halign::center);
+					 config);
 			 });
 
 	main_window->set_window_title("Hello world!");

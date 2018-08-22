@@ -12,6 +12,10 @@ LIBCXXW_NAMESPACE_START
 
 class labelObj;
 
+//! Labels properties
+
+struct label_config;
+
 //! A text label display element.
 
 //! Multiply-inherits from \ref textlabel "textlabel" and

@@ -16,6 +16,7 @@
 #include <x/w/picturefwd.H>
 #include <x/w/rgbfwd.H>
 #include <x/w/busyfwd.H>
+#include <x/w/labelfwd.H>
 #include <x/w/types.H>
 #include <x/w/focus.H>
 #include <x/w/listlayoutmanagerfwd.H>
@@ -124,7 +125,7 @@ public:
 
 	//! The specified width, in millimeters results in word-wrapped text.
 	void create_tooltip(const text_param &text,
-			    double widthmm);
+			    const label_config &config);
 
 	//! Create a custom tooltip.
 
