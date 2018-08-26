@@ -32,7 +32,7 @@ class LIBCXX_HIDDEN peepholed_listcontainerObj::implObj : virtual public obj {
  public:
 
 	//! Size peephole to this many rows, based on the reference font.
-	const std::variant<size_t, dim_axis_arg> height;
+	const std::variant<std::tuple<size_t, size_t>, dim_axis_arg> height;
 
 	//! Constructor
 	implObj(const new_listlayoutmanager &style);

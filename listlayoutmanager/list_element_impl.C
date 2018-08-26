@@ -198,10 +198,21 @@ list_elementObj::implObj::implObj(const ref<listcontainer_pseudo_implObj>
 {
 	// Some sanity checks will be done here, instead of in
 	// update_peephole_metrics().
+	if (std::holds_alternative<std::tuple<size_t, size_t>>
+	    (style.height_value))
+	{
+		auto &min_max=std::get<std::tuple<size_t, size_t>
+				       >(style.height_value);
+		auto &[min, max]=min_max;
 
-	if (std::holds_alternative<size_t>(style.height) &&
-	    std::get<size_t>(style.height) <= 0)
-		throw EXCEPTION(_("Cannot create a list with 0 visible rows."));
+		if (min <= 0)
+			throw EXCEPTION(_("Cannot create a list with 0 "
+					  "visible rows."));
+
+		if (max < min)
+			throw EXCEPTION(_("Cannot have maximum number of rows "
+					  "less than the minimum."));
+	}
 
 	for (auto &info:requested_col_widths)
 	{
@@ -741,6 +752,8 @@ void list_elementObj::implObj::recalculate(ONLY IN_THREAD,
 	dim_t height=dim_t::truncate(y);
 
 	lock->row_infos.modified=false;
+	textlist_container->rows(IN_THREAD)=n;
+
 	get_horizvert(IN_THREAD)
 		->set_element_metrics(IN_THREAD,
 				      { width, width, width},

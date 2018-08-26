@@ -25,6 +25,7 @@
 #include <x/functionalrefptr.H>
 #include <string>
 #include <variant>
+#include <tuple>
 #include <unordered_map>
 
 LIBCXXW_NAMESPACE_START
@@ -108,13 +109,37 @@ class LIBCXX_HIDDEN new_listlayoutmanager : public new_focusable_layoutmanager {
 
 	//! The height may be specified either as a number of rows, this
 	//! sets the actual size of the list element based on the number
-	//! of rows and the default list fon't height.
+	//! of rows and the default list font height. The tuple specifies
+	//! the minimum and the maximum number of rows.
 	//!
 	//! Alternatively the list's height may be specified as a dim_axis_arg.
 	//!
 	//! The default height is four rows.
 
-	std::variant<size_t, dim_axis_arg> height;
+	std::variant<std::tuple<size_t, size_t>, dim_axis_arg> height_value;
+
+	//! The list's height is set to this number of rows.
+
+	inline void height(size_t rows)
+	{
+		height_value=std::tuple{rows, rows};
+	}
+
+	//! The list's height is between these many rows.
+
+	//! Minimum list height, and maximum list height.
+
+	inline void height(size_t min_rows, size_t max_rows)
+	{
+		height_value=std::tuple{min_rows, max_rows};
+	}
+
+	//! Specify the list's height as a dim_axis_arg
+
+	inline void height(const dim_axis_arg &arg)
+	{
+		height_value=arg;
+	}
 
 	//! Set the new list's height as completely variable.
 
@@ -123,7 +148,7 @@ class LIBCXX_HIDDEN new_listlayoutmanager : public new_focusable_layoutmanager {
 
 	inline void variable_height()
 	{
-		height=dim_axis_arg{0, 0};
+		height_value=dim_axis_arg{0, 0};
 	}
 
 	//! Number of columns in the list

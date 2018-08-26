@@ -4,7 +4,14 @@
     <type>size_t</type>
     <opt>r</opt>
     <longopt>rows</longopt>
-    <descr>Number of rows in the list</descr>
+    <descr>Minimum number of rows in the list that are visible</descr>
+  </option>
+  <option>
+    <name>maxrows</name>
+    <type>size_t</type>
+    <opt>m</opt>
+    <longopt>maxrows</longopt>
+    <descr>Maximum number of rows in the list that are visible</descr>
   </option>
   <option>
     <name>multiple</name>

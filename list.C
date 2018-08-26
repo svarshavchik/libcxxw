@@ -72,7 +72,7 @@ new_listlayoutmanager
 ::new_listlayoutmanager(const listlayoutstyle_impl &list_style)
 	: list_style{list_style},
 	  selection_type{single_selection_type},
-	  height{4},
+	  height_value{std::tuple<size_t, size_t>{4,4}},
 	  columns{1},
 	  synchronized_columns{synchronized_axis::create()},
 	  list_border{"list_border"},

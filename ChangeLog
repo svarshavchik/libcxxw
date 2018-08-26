@@ -1,3 +1,7 @@
+2018-08-23  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* Variable height selection lists. new_listlayoutmanager.height().
+
 0.7
 2018-08-12  Sam Varshavchik  <mrsam@courier-mta.com>
 

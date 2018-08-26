@@ -77,14 +77,17 @@ See COPYING for distribution information.
     <blockquote>
       <informalexample>
 	<programlisting>
-new_list.height=6;
+new_list.height(6);
 	</programlisting>
       </informalexample>
     </blockquote>
 
     <para>
-      A typical selection list consists of rows of items. The selection list
+      The selection list consists of rows of items. The selection list
       automatically sizes itself to be wide enough to show its widest item.
+      The selection list's default height is four rows.
+      <quote><literal>height(6)</literal></quote> sets the list's height
+      to six rows.
       The selection list provides a vertical scrollbar for scrolling the
       list vertically when the selection list has more items than its set
       number of rows.
@@ -92,6 +95,30 @@ new_list.height=6;
       <option>--rows</option> option sets the number of rows in the shown
       list.
     </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+new_list.height(4, 10);
+	</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      This example sets the list's minimum height to four rows and maximum
+      height to 10. The list's height starts to grow after four items, and
+      stops growing and starts scrolling after ten.
+    </para>
+
+    <note>
+      <para>
+	The list's height gets computed based on the list's default font's
+	height and the number of rows in the list. Setting a variable list
+	height may not work correctly if the list contains
+	<link linkend="listitemmethods">separators or items with custom
+	  fonts</link>.
+      </para>
+    </note>
 
     <para>
       An item in a list is selected by clicking on it, or by tabbing

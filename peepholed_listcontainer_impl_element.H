@@ -98,8 +98,8 @@ peepholed_listcontainer_impl_elementObj<element_impl>
 ::peepholed_listcontainer_impl_elementObj(const new_listlayoutmanager &style,
 					  Args && ...args)
 	: superclass_t{
-	(std::holds_alternative<dim_axis_arg>(style.height)
-		? std::get<dim_axis_arg>(style.height):
+	(std::holds_alternative<dim_axis_arg>(style.height_value)
+		? std::get<dim_axis_arg>(style.height_value):
 	 dim_axis_arg{}),
 		style.list_font,
 		style, style,

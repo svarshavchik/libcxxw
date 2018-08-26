@@ -188,7 +188,7 @@ standard_dialog_elements_t print_dialog_init_helper
 
 					nlm.list_font=theme_font{
 						"printer_local_font"};
-					nlm.height=4;
+					nlm.height(4);
 
 					auto f=factory
 						->create_focusable_container

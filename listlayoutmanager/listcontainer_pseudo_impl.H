@@ -29,7 +29,14 @@ LIBCXXW_NAMESPACE_START
 class LIBCXX_HIDDEN listcontainer_pseudo_implObj :
 	public container_elementObj<child_elementObj> {
 
+	//! Number of rows currently in the list
+
+	//! Advertized number of rows, used in update_peephole_metrics().
+
+	size_t rows_thread_only=0;
  public:
+
+	THREAD_DATA_ONLY(rows);
 
 	//! Alias
 	typedef container_elementObj<child_elementObj> superclass_t;

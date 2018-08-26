@@ -17,7 +17,7 @@ LIBCXXW_NAMESPACE_START
 
 peepholed_listcontainerObj::implObj
 ::implObj(const new_listlayoutmanager &style)
-	: height{style.height}
+	: height{style.height_value}
 {
 }
 
@@ -61,11 +61,20 @@ void peepholed_listcontainerObj::implObj
 	// dimensions from the mixin-specified get_height_metrics().
 
 	auto v=std::visit(visitor{
-			[&, this](size_t rows)
+			[&, this](const std::tuple<size_t, size_t> &rows)
 			{
+				auto &[min, max]=rows;
+
+				auto n=get_pseudo_impl().rows(IN_THREAD);
+
+				if (n > max)
+					n=max;
+
+				if (n < min)
+					n=min;
+
 				auto h=dim_t::truncate(rowsize(IN_THREAD) *
-						       dim_t{dim_t::truncate
-								       (rows)}
+						       dim_t{dim_t::truncate(n)}
 						       );
 
 				return metrics::axis{h, h, h};
