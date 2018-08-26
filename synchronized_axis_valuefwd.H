@@ -101,8 +101,19 @@ typedef mpobj<synchronized_axis_values_t> synchronized_values;
 //! of a thrown exception during construction), the destructor removes
 //! the my_value, as a last resort.
 //!
-//! The display element updates its metrics in my_value directly, then calls
-//! synchronize().
+//! \par Updating metrics
+//!
+//! \code
+//! std::vector<metrics::axis> v;
+//!
+//! my_synchronized_axis::lock lock{msa};
+//!
+//! msa.update_values(v);
+//!
+//! auto d=lock->derived_values;
+//! \endcode
+//!
+//! The display element computes its new metrics and calls update_values().
 //!
 //! This computes metrics that represent all display elements' derived
 //! metrics (a minimum large enough for al synchronized elements'
@@ -111,9 +122,21 @@ typedef mpobj<synchronized_axis_values_t> synchronized_values;
 //! the minimums and the maximums). Then each synchronized elements'
 //! updated() callback gets invoked from synchronize(), except that the
 //! element that called synchronized() does not have its updated() callback
-//! invoked. It's expected that synchronized()'s caller is responsible for
+//! invoked. It's expected that update_values()'s caller is responsible for
 //! that.
-
+//!
+//! \code
+//! class my_derived_valuesObj : public synchronized_axis_valueObj {
+//!
+//! // ...
+//!
+//!     void updated(ONLY IN_THREAD, const std::vector<metrics::derivedaxis> &);
+//! \endcode
+//!
+//! The display element implements updated(), and passes an instance of
+//! the implementation to the constructor. updated() gets invoked when a
+//! synchronized display element calls update_values().
+//!
 struct LIBCXX_HIDDEN my_synchronized_axis {
 
  public:
@@ -148,13 +171,37 @@ struct LIBCXX_HIDDEN my_synchronized_axis {
 
 	void removed_from_container(ONLY IN_THREAD);
 
-	//! After updating my_value, recalculated the synchronized axis.
+	//! Acquire a lock for the purpose of updating the synchronized values.
 
-	//! Invoke all updated(), except for this element's my_value's
-	//! updated() callback. It is expected that synchronize()'s
-	//! caller will be responsible for accessing the synchronized_value.
+	class lock : public synchronized_values::lock {
 
-	void synchronize(ONLY IN_THREAD, synchronized_values::lock &);
+
+		my_synchronized_axis &me;
+
+	public:
+		//! Constructor
+		lock(my_synchronized_axis &);
+
+		//! Destructor
+		~lock();
+
+		using synchronized_values::lock::operator->;
+
+		//! After updating my_value, recalculate the synchronized axis.
+
+		//! Pass in the new values to be synchronized with all others.
+		//! Compares the passed-in values to my_value->values,
+		//! and does nothing if they're the same. Otherwise:
+		//!
+		//! Invoke all updated(), except for this element's my_value's
+		//! updated() callback. It is expected that synchronize()'s
+		//! caller will be responsible for accessing the
+		//! synchronized_value after update_values() returns, and
+		//! process it.
+
+		void update_values(ONLY IN_THREAD,
+				   const std::vector<metrics::axis> &);
+	};
 };
 
 LIBCXXW_NAMESPACE_END

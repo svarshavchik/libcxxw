@@ -845,19 +845,9 @@ dim_t list_elementObj::implObj
 
 	// Synchronize this list's column widths with the other lists'.
 
-	synchronized_values::lock
-		sync_lock{synchronized_info.axis->impl->values};
+	my_synchronized_axis::lock sync_lock{synchronized_info};
 
-	if (synchronized_info.my_value->values(IN_THREAD) !=
-	    our_column_widths_values)
-	{
-		// Our column widths have changed.
-
-		synchronized_info.my_value->values(IN_THREAD)=
-			our_column_widths_values;
-
-		synchronized_info.synchronize(IN_THREAD, sync_lock);
-	}
+	sync_lock.update_values(IN_THREAD, our_column_widths_values);
 
 	// We now use the synchronized column_widths to compute the final
 	// position and width of our columns.

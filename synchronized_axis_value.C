@@ -62,10 +62,24 @@ void my_synchronized_axis::removed_from_container(ONLY IN_THREAD)
 	lock->recalculate(IN_THREAD, e);
 }
 
-void my_synchronized_axis::synchronize(ONLY IN_THREAD,
-				       synchronized_values::lock &lock)
+my_synchronized_axis::lock::lock(my_synchronized_axis &me)
+	: synchronized_values::lock{me.axis->impl->values},
+	  me{me}
 {
-	lock->recalculate(IN_THREAD, value_list_iterator);
+}
+
+my_synchronized_axis::lock::~lock()=default;
+
+
+void my_synchronized_axis::lock
+::update_values(ONLY IN_THREAD,	const std::vector<metrics::axis> &values)
+{
+	if (me.my_value->values(IN_THREAD) == values)
+		return;
+
+	me.my_value->values(IN_THREAD)=values;
+
+	(*this)->recalculate(IN_THREAD, me.value_list_iterator);
 }
 
 ///////////////////////////////////////////////////////////////////////
