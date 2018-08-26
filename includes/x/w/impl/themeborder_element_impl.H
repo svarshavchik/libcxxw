@@ -42,9 +42,6 @@ class themeborder_element_implObj : virtual public obj {
 	//! Return the element the border is attached to.
 	virtual elementObj::implObj &get_border_element_impl()=0;
 
-	//! Implement initialize().
-	void initialize(ONLY IN_THREAD);
-
 	//! Implement theme_updated().
 	void theme_updated(ONLY IN_THREAD,
 			   const defaulttheme &new_theme);

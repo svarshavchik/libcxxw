@@ -112,17 +112,12 @@ public:
 		return gradient_color;
 	}
 
-	//! Always a no-op.
-	void initialize(ONLY IN_THREAD) override
-	{
-	}
+	//! Always a no-op
 
-	//! Forward theme_updated to the base background color.
-
-	void theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme)
+	void current_theme_updated(ONLY IN_THREAD,
+				   const defaulttheme &new_theme)
 		override
 	{
-		base_color->theme_updated(IN_THREAD, new_theme);
 	}
 
 	//! Forward get_background_color_for to the base background color.
@@ -232,11 +227,8 @@ public:
 		return std::holds_alternative<rgb>(color) ? false:true;
 	}
 
-	void initialize(ONLY IN_THREAD) override
-	{
-	}
-
-	void theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme)
+	void current_theme_updated(ONLY IN_THREAD,
+				   const defaulttheme &new_theme)
 		override
 	{
 	}
@@ -378,19 +370,10 @@ class theme_background_colorObj : public nontheme_background_colorObj {
 
 	const std::string theme_color;
 	const ref<screenObj::implObj> screen;
-	defaulttheme current_theme;
 
  public:
 
 	// The constructor gets initializes with the current background color
-
-	theme_background_colorObj(const std::string &theme_color,
-				  const ref<screenObj::implObj> &screen)
-		: theme_background_colorObj(theme_color,
-					    screen,
-					    screen->current_theme.get())
-	{
-	}
 
 	theme_background_colorObj(const std::string &theme_color,
 				  const ref<screenObj::implObj> &screen,
@@ -399,38 +382,23 @@ class theme_background_colorObj : public nontheme_background_colorObj {
 		std::visit([&](const auto &c)
 			   {
 				   return color_t{c};
-			   }, current_theme
-			   ->get_theme_color(theme_color)),
+			   }, current_theme->get_theme_color(theme_color)),
 			screen},
 		  theme_color{theme_color},
-		  screen{screen},
-		  current_theme{current_theme}
+		  screen{screen}
 	{
 	}
 
 	~theme_background_colorObj()=default;
 
-	// Potential rare race condition, the theme changing after the
-	// background color object was created and before it is installed.
-
-	void initialize(ONLY IN_THREAD) override
-	{
-		theme_updated(IN_THREAD, screen->current_theme.get());
-	}
-
-	void theme_updated(ONLY IN_THREAD,
+	void current_theme_updated(ONLY IN_THREAD,
 			   const defaulttheme &new_theme) override
 	{
-		if (new_theme == current_theme)
-			return;
-
-		current_theme=new_theme;
-
 		std::visit([&, this]
 			   (const auto &c)
 			   {
 				   this->color=c;
-			   }, current_theme->get_theme_color(theme_color));
+			   }, new_theme->get_theme_color(theme_color));
 
 		fixed_color=create_fixed_color(screen);
 	}
@@ -444,17 +412,22 @@ class theme_background_colorObj : public nontheme_background_colorObj {
 background_color screenObj::implObj
 ::create_background_color(const color_arg &color_name)
 {
+	// We lock the current theme for the duration of this.
+
+	current_theme_t::lock lock{current_theme};
+
 	return recycled_pixmaps_cache->theme_background_color_cache
 		->find_or_create
 		(color_name,
 		 [&,this]
 		 {
 			 return std::visit(visitor{
-				 [this](const std::string &name)
+				 [&,this](const std::string &name)
 					 ->background_color
 				 {
 					 return ref<theme_background_colorObj>
-						 ::create(name, ref(this));
+						 ::create(name, ref(this),
+							  *lock);
 				 },
 				 [this](const auto &nontheme_color)
 					 ->background_color

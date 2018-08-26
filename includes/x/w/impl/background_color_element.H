@@ -86,7 +86,6 @@ background_color_1elementObj<element_impl, tag>::~background_color_1elementObj()
 template<typename element_impl, typename tag>
 void background_color_1elementObj<element_impl, tag>::initialize(ONLY IN_THREAD)
 {
-	background_color_element<tag>::initialize(IN_THREAD);
 	background_color_element<tag>::set_background_color_for_element
 		(IN_THREAD);
 

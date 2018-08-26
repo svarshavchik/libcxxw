@@ -19,11 +19,6 @@ themeborder_element_implObj::themeborder_element_implObj(const border_arg &arg,
 
 themeborder_element_implObj::~themeborder_element_implObj()=default;
 
-void themeborder_element_implObj::initialize(ONLY IN_THREAD)
-{
-	current_border(IN_THREAD)->initialize(IN_THREAD);
-}
-
 void themeborder_element_implObj::theme_updated(ONLY IN_THREAD,
 						const defaulttheme &new_theme)
 {
@@ -34,7 +29,6 @@ void themeborder_element_implObj::set_new_border(ONLY IN_THREAD, const border_ar
 {
 	current_border(IN_THREAD)=
 		current_border(IN_THREAD)->screen->get_cached_border(arg);
-	current_border(IN_THREAD)->initialize(IN_THREAD);
 }
 
 LIBCXXW_NAMESPACE_END

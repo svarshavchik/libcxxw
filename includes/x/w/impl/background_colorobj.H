@@ -16,7 +16,7 @@ LIBCXXW_NAMESPACE_START
 //! An abstract handle for a "background colors".
 
 //! A background color is just a picture. This abstracts away the picture
-//! object, and implements initialize() and theme_updated().
+//! object.
 
 class background_colorObj : virtual public obj {
 
@@ -46,12 +46,14 @@ public:
 	//! Return the current color picture.
 	virtual const_picture get_current_color(ONLY IN_THREAD)=0;
 
-	//! This background color's display element is about to be initialized.
-	virtual void initialize(ONLY IN_THREAD)=0;
-
 	//! The current display theme has been changed.
-	virtual void theme_updated(ONLY IN_THREAD,
-				   const defaulttheme &new_theme)=0;
+
+	//! This gets invoked from update_current_theme() while holding
+	//! a theme lock. This blocks other threads from creating new
+	//! background_colors.
+
+	virtual void current_theme_updated(ONLY IN_THREAD,
+					   const defaulttheme &new_theme)=0;
 };
 
 LIBCXXW_NAMESPACE_END

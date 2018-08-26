@@ -51,9 +51,6 @@ public:
 			   const defaulttheme &new_theme,
 			   elementObj::implObj &);
 
-	//! Initialize after construction
-	void initialize(ONLY IN_THREAD);
-
 	//! The size of the background color's element.
 	void set_background_color_for_element(ONLY IN_THREAD,
 					      elementObj::implObj &);

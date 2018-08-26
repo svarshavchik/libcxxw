@@ -77,12 +77,6 @@ class LIBCXX_HIDDEN straight_border_implObj
 		straight_borderObj::implObj::initialize(IN_THREAD);
 		theme_updated(IN_THREAD,
 			      get_screen()->impl->current_theme.get());
-
-		for_each_non_null_border(IN_THREAD, [&]
-					 (const auto &b)
-					 {
-						 b->initialize(IN_THREAD);
-					 });
 	}
 
 	//! The screen's theme has been updated.

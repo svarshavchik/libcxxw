@@ -148,21 +148,6 @@ void current_border_implObj
 	t=new_theme;
 
 	border(IN_THREAD)=border_impl_from_arg(screen, arg, new_theme);
-
-	initialized=false;
-	initialize(IN_THREAD);
-}
-
-void current_border_implObj::initialize(ONLY IN_THREAD)
-{
-	if (initialized)
-		return;
-	initialized=true;
-
-	border(IN_THREAD)->color1->initialize(IN_THREAD);
-
-	if (border(IN_THREAD)->color2)
-		border(IN_THREAD)->color2->initialize(IN_THREAD);
 }
 
 bool current_border_implObj::no_border(ONLY IN_THREAD) const

@@ -9,8 +9,10 @@
 #include "x/w/fontfwd.H"
 #include "x/w/types.H"
 #include "x/w/screenfwd.H"
+#include "x/w/font_hash.H"
 #include "x/w/impl/fonts/current_fontcollectionfwd.H"
 #include <x/weakunordered_multimapfwd.H>
+#include <x/number_hash.H>
 #include <x/obj.H>
 #include <x/ref.H>
 #include <string>
@@ -74,5 +76,47 @@ class LIBCXX_HIDDEN screen_fontcachesObj : virtual public obj {
 };
 
 LIBCXXW_NAMESPACE_END
+
+namespace std {
+
+	typedef LIBCXX_NAMESPACE::w::screen_fontcachesObj
+	::theme_font_cache_key_t theme_font_cache_key_t;
+
+	typedef LIBCXX_NAMESPACE::w::screen_fontcachesObj
+	::custom_font_cache_key_t custom_font_cache_key_t;
+
+	//! Specialization of \c std::hash for custom font cache key.
+
+	template<>
+	struct LIBCXX_HIDDEN hash<custom_font_cache_key_t>
+		: public hash<LIBCXX_NAMESPACE::w::font>,
+		hash<LIBCXX_NAMESPACE::w::depth_t> {
+
+		inline size_t operator()(const custom_font_cache_key_t &key)
+			const noexcept
+		{
+			return hash<LIBCXX_NAMESPACE::w::font>::operator()
+				(key.first) +
+				hash<LIBCXX_NAMESPACE::w::depth_t>::operator()
+				(key.second);
+		}
+	};
+
+	//! Specialization of \c std::hash for theme font cache key.
+
+	template<>
+	struct LIBCXX_HIDDEN hash<theme_font_cache_key_t>
+		: public hash<string>,
+		hash<LIBCXX_NAMESPACE::w::depth_t> {
+
+		inline size_t operator()(const theme_font_cache_key_t &key)
+			const noexcept
+		{
+			return hash<string>::operator()(key.first) +
+				hash<LIBCXX_NAMESPACE::w::depth_t>::operator()
+				(key.second);
+		}
+	};
+}
 
 #endif

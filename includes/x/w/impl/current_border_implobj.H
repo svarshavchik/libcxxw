@@ -37,9 +37,6 @@ private:
 
 	const_border_impl border_thread_only;
 
-	//! Whether it's been formally initialized
-
-	bool initialized=false;
  public:
 
 	THREAD_DATA_ONLY(current_theme);
@@ -59,13 +56,6 @@ private:
  public:
 	//! Destructor
 	~current_border_implObj();
-
-	//! Initialize the border
-
-	//! The element with the border is being initialized by the connection
-	//! thread.
-
-	void initialize(ONLY IN_THREAD);
 
 	//! This border's width or height is 0, or it has no colors
 	bool no_border(ONLY IN_THREAD) const;

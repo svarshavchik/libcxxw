@@ -37,20 +37,6 @@ themeborder1_elementObj<element_impl, tag>
 //! Inherited from elementObj::implObj
 
 //! Invokes the superclass, and the themeborderObj::theme_updated().
-//!
-//! Addresses the potential race condition with the theme changing before
-//! initialization.
-template<typename element_impl, typename tag>
-void themeborder1_elementObj<element_impl, tag>
-::initialize(ONLY IN_THREAD)
-{
-	element_impl::initialize(IN_THREAD);
-	themeborder_element_impl<tag>::initialize(IN_THREAD);
-}
-
-//! Inherited from elementObj::implObj
-
-//! Invokes the superclass, and the themeborderObj::theme_updated().
 
 template<typename element_impl, typename tag>
 void themeborder1_elementObj<element_impl, tag>

@@ -21,7 +21,6 @@ void background_color_element_implObj::do_update(ONLY IN_THREAD,
 						 elementObj::implObj &e)
 {
 	color=new_color;
-	color->initialize(IN_THREAD);
 	background_color_element_width=0;
 	background_color_element_height=0;
 	set_background_color_for_element(IN_THREAD, e);
@@ -32,7 +31,6 @@ void background_color_element_implObj::theme_updated(ONLY IN_THREAD,
 						     &new_theme,
 						     elementObj::implObj &e)
 {
-	color->theme_updated(IN_THREAD, new_theme);
 	background_color_element_width=0;
 	background_color_element_height=0;
 	set_background_color_for_element(IN_THREAD, e);
@@ -41,11 +39,6 @@ void background_color_element_implObj::theme_updated(ONLY IN_THREAD,
 void background_color_element_implObj
 ::background_color_was_recalculated(ONLY IN_THREAD)
 {
-}
-
-void background_color_element_implObj::initialize(ONLY IN_THREAD)
-{
-	color->initialize(IN_THREAD);
 }
 
 void background_color_element_implObj

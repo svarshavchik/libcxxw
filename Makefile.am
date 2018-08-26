@@ -698,6 +698,7 @@ libcxxw_la_SOURCES=\
 	screen_picturecache.H			    \
 	screen_picturecachefwd.H		    \
 	screen_positions.C			    \
+	screen_update_current_theme.C		    \
 	scrollbar/scrollbar.C			    \
 	scrollbar/scrollbar_icon_set.H		    \
 	scrollbar/scrollbar_impl.C		    \
