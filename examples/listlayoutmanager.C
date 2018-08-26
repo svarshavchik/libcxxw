@@ -75,10 +75,18 @@ static inline void create_main_window(const x::w::main_window &main_window,
 
 	// x::w::single_selection_type is the default:
 	//
+	// The default value is:
+	//
 	// new_list.selection_type=x::w::single_selection_type;
 
 	if (opts.multiple->value)
 		new_list.selection_type=x::w::multiple_selection_type;
+
+	// Other possible values also include:
+	//
+	// x::w::single_optional_selection_type
+	//
+	// x::w::no_selection_type
 
 	if (opts.rows->isSet())
 	{

@@ -560,6 +560,17 @@ LIBCXX_PUBLIC;
 
 extern const list_selection_type_cb_t multiple_selection_type LIBCXX_PUBLIC;
 
+//! No-selection list.
+
+//! No list items can be selected at any time.
+//!
+//! This results in a list, potentially scrollable, that exists solely
+//! for the virtue of presenting a potentially scrollable list. Clicking
+//! on a list item has no effect. (The individual list item can still be
+//! selected().
+
+extern const list_selection_type_cb_t no_selection_type LIBCXX_PUBLIC;
+
 LIBCXXW_NAMESPACE_END
 
 #endif

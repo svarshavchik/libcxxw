@@ -80,9 +80,10 @@ class LIBCXX_HIDDEN new_listlayoutmanager : public new_focusable_layoutmanager {
 	//! Style of the new list.
 	const listlayoutstyle_impl &list_style;
 
-	//! Single or multiple selection
+	//! Single or multiple selections
 
-	//! This may be set to:
+	//! This specifies whether only one list item may be visually selected
+	//! at any time, or multiple list items (or none).
 	//!
 	//! - \c INSERT_LIBX_NAMESPACE::w::single_selection_type (default):
 	//!
@@ -90,9 +91,12 @@ class LIBCXX_HIDDEN new_listlayoutmanager : public new_focusable_layoutmanager {
 	//!
 	//! - \c INSERT_LIBX_NAMESPACE::w::multiple_selection_type
 	//!
+	//! - \c INSERT_LIBX_NAMESPACE::w::no_selection_type
+	//!
 	//! \see single_selection_type
 	//! \see single_optional_selection_type
 	//! \see multiple_selection_type
+	//! \see no_selection_type
 
 	list_selection_type_cb_t selection_type;
 

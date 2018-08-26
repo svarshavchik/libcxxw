@@ -191,5 +191,13 @@ const list_selection_type_cb_t multiple_selection_type=
 				 trigger);
 };
 
+const list_selection_type_cb_t no_selection_type=
+	[](ONLY IN_THREAD,
+	   const listlayoutmanager &layout_manager,
+	   size_t i,
+	   const callback_trigger_t &trigger,
+	   const busy &mcguffin)
+{
+};
 
 LIBCXXW_NAMESPACE_END

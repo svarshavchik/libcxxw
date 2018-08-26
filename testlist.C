@@ -316,6 +316,7 @@ void create_process_table(const LIBCXX_NAMESPACE::w::gridfactory &f)
 	LIBCXX_NAMESPACE::w::new_listlayoutmanager nlm{LIBCXX_NAMESPACE::w
 						       ::highlighted_list};
 
+	nlm.selection_type=LIBCXX_NAMESPACE::w::no_selection_type;
 	nlm.columns=5;
 
 	nlm.col_alignments={
