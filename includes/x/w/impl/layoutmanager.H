@@ -61,6 +61,11 @@ class layoutmanagerObj::implObj : virtual public obj {
 	//! Destructor
 	~implObj();
 
+	//! This layout manager is about to be uninstalled from its container.
+
+	//! The default implementation does nothing.
+	virtual void uninstalling(ONLY IN_THREAD);
+
 	//! An element in the container has updated metrics.
 
 	//! The default implementation invokes needs_recalculation().

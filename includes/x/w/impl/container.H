@@ -88,11 +88,11 @@ public:
 
 	//! Invoked from layoutmanager's public object's constructor
 
-	void install_layoutmanager(const layout_impl &);
+	void install_layoutmanager(const layout_impl &) LIBCXX_HIDDEN;
 
 	//! Invoked from layoutmanager's public object's destructor
 
-	void uninstall_layoutmanager();
+	void uninstall_layoutmanager(ONLY IN_THREAD) LIBCXX_HIDDEN;
 
 	//! If this element is visible, recursively invoke draw_after_visibility_updated().
 

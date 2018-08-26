@@ -28,6 +28,10 @@ layoutmanagerObj::implObj
 
 layoutmanagerObj::implObj::~implObj()=default;
 
+void layoutmanagerObj::implObj::uninstalling(ONLY IN_THREAD)
+{
+}
+
 void layoutmanagerObj::implObj::run_as(const functionref<void (ONLY IN_THREAD)>
 				       &f)
 {

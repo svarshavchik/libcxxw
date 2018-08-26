@@ -47,13 +47,17 @@ void containerObj::implObj
 }
 
 
-void containerObj::implObj::uninstall_layoutmanager()
+void containerObj::implObj::uninstall_layoutmanager(ONLY IN_THREAD)
 {
-	layoutmanager_ptr_t::lock lock(layoutmanager_ptr);
+	{
+		layoutmanager_ptr_t::lock lock(layoutmanager_ptr);
 
-	if (!*lock)
-		throw EXCEPTION("Internal error - no layout manager to uninstall");
-	*lock=layout_implptr();
+		auto p=*lock;
+
+		if (!p)
+			throw EXCEPTION("Internal error - no layout manager to uninstall");
+		*lock=layout_implptr();
+	}
 }
 
 void containerObj::implObj::removed_from_container(ONLY IN_THREAD)
@@ -70,7 +74,7 @@ void containerObj::implObj::removed_from_container(ONLY IN_THREAD)
 			::removed_from_container(IN_THREAD);
 	} CATCH_EXCEPTIONS;
 
-	uninstall_layoutmanager();
+	uninstall_layoutmanager(IN_THREAD);
 }
 
 void containerObj::implObj::do_for_each_child(ONLY IN_THREAD,
