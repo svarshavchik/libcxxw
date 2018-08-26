@@ -46,12 +46,11 @@ list_cellimageObj::cell_get_metrics(ONLY IN_THREAD, dim_t preferred_width)
 void list_cellimageObj::cell_redraw(ONLY IN_THREAD,
 				    element_drawObj &draw,
 				    const draw_info &di,
+				    clip_region_set &clipped,
 				    bool draw_as_disabled,
 				    richtext_draw_boundaries &boundaries)
 {
-	clip_region_set clip{IN_THREAD, draw.get_window_handler(), di};
-
-	clip.draw_as_disabled=draw_as_disabled;
+	clipped.draw_as_disabled=draw_as_disabled;
 
 	draw.draw_using_scratch_buffer
 		(IN_THREAD,
@@ -97,7 +96,7 @@ void list_cellimageObj::cell_redraw(ONLY IN_THREAD,
 		 boundaries.position,
 		 di,
 		 di,
-		 clip);
+		 clipped);
 }
 
 void list_cellimageObj::cell_initialize(ONLY IN_THREAD,

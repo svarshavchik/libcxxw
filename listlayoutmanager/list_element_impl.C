@@ -1027,22 +1027,25 @@ void list_elementObj::implObj::do_draw(ONLY IN_THREAD,
 	// coordinates.
 	rectangle_set drawn;
 
-	for (; iter != e; ++iter)
 	{
-		if (iter->y >= last_y)
-			break;
+		clip_region_set clipped{IN_THREAD, get_window_handler(), di};
 
-		if (only_whats_needed)
+		for (; iter != e; ++iter)
 		{
-			if (!iter->redraw_needed)
-				continue;
+			if (iter->y >= last_y)
+				break;
+
+			if (only_whats_needed)
+			{
+				if (!iter->redraw_needed)
+					continue;
+			}
+			auto rect=do_draw_row(IN_THREAD, di, clipped, bounds,
+					      lock, iter-b, false);
+
+			drawn.insert(rect);
 		}
-		auto rect=do_draw_row(IN_THREAD, di, bounds, lock, iter-b,
-				      false);
-
-		drawn.insert(rect);
 	}
-
 	if (only_whats_needed)
 		return;
 
@@ -1067,17 +1070,20 @@ void list_elementObj::implObj::redraw_rows(ONLY IN_THREAD,
 	const auto &di=get_draw_info(IN_THREAD);
 
 	richtext_draw_boundaries bounds{di, di.entire_area()};
+	clip_region_set clipped{IN_THREAD, get_window_handler(), di};
 
-	do_draw_row(IN_THREAD, di, bounds, lock, row_number2,
+	do_draw_row(IN_THREAD, di, clipped, bounds, lock, row_number2,
 		    make_sure_row2_is_visible);
 
 	if (row_number1 != row_number2)
-		do_draw_row(IN_THREAD, di, bounds, lock, row_number1, false);
+		do_draw_row(IN_THREAD, di, clipped, bounds, lock, row_number1,
+			    false);
 }
 
 
 rectangle list_elementObj::implObj::do_draw_row(ONLY IN_THREAD,
 						const draw_info &di,
+						clip_region_set &clipped,
 						richtext_draw_boundaries &bounds,
 						listimpl_info_t::lock &lock,
 						size_t row_number,
@@ -1131,7 +1137,7 @@ rectangle list_elementObj::implObj::do_draw_row(ONLY IN_THREAD,
 
 			 },
 			 border_rect,
-			 di, di, clip);
+			 di, di, clipped);
 
 		return border_rect;
 	}
@@ -1152,7 +1158,8 @@ rectangle list_elementObj::implObj::do_draw_row(ONLY IN_THREAD,
 			 ::get(IN_THREAD))->get_current_color(IN_THREAD);
 
 
-		return do_draw_row(IN_THREAD, cpy, bounds, lock, row_number, r,
+		return do_draw_row(IN_THREAD, cpy, clipped, bounds,
+				   lock, row_number, r,
 				   make_sure_row_is_visible);
 	}
 
@@ -1168,17 +1175,19 @@ rectangle list_elementObj::implObj::do_draw_row(ONLY IN_THREAD,
 			 background_color_element<listcontainer_selected_color>
 			 ::get(IN_THREAD));
 
-		return do_draw_row(IN_THREAD, cpy, bounds, lock, row_number, r,
+		return do_draw_row(IN_THREAD, cpy, clipped, bounds, lock,
+				   row_number, r,
 				   make_sure_row_is_visible);
 	}
 
-	return do_draw_row(IN_THREAD, di, bounds, lock, row_number, r,
+	return do_draw_row(IN_THREAD, di, clipped, bounds, lock, row_number, r,
 			   make_sure_row_is_visible);
 }
 
 rectangle list_elementObj::implObj
 ::do_draw_row(ONLY IN_THREAD,
 	      const draw_info &di,
+	      clip_region_set &clipped,
 	      richtext_draw_boundaries &bounds,
 	      listimpl_info_t::lock &lock,
 	      size_t row_number,
@@ -1216,7 +1225,7 @@ rectangle list_elementObj::implObj
 		bounds.position_at(rc);
 		drawn_columns.insert(rc);
 
-		(*cell)->cell_redraw(IN_THREAD, *this, di,
+		(*cell)->cell_redraw(IN_THREAD, *this, di, clipped,
 				     r.extra->row_type == list_row_type_t::disabled,
 				     bounds);
 

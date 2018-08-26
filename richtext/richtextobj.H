@@ -113,6 +113,7 @@ class LIBCXX_HIDDEN richtextObj : virtual public obj {
 			 element_drawObj &,
 			 const richtext_draw_info &,
 			 const draw_info &,
+			 clip_region_set &,
 			 richtext_draw_boundaries &);
 
 	//! Redraw only the fragments that need redrawing.
@@ -180,6 +181,9 @@ class LIBCXX_HIDDEN richtextObj : virtual public obj {
 		  //! The drawn element's draw_info
 		  const draw_info &di,
 
+		  //! Element clipping region must be established already.
+		  clip_region_set &clipped,
+
 		  //! Whether to redraw the given fragment
 
 		  //! full_redraw() always returns true. redraw_whatsneeded
@@ -211,6 +215,7 @@ class LIBCXX_HIDDEN richtextObj : virtual public obj {
 				element_drawObj &element,
 				const richtext_draw_info &rdi,
 				const draw_info &di,
+				clip_region_set &clipped,
 				const function<bool (richtextfragmentObj *)>
 				&redraw_fragment,
 				bool clear_padding,

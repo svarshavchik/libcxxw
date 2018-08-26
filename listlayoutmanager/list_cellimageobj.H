@@ -41,6 +41,7 @@ struct LIBCXX_HIDDEN list_cellimageObj : public list_cellObj,
 	void cell_redraw(ONLY IN_THREAD,
 			 element_drawObj &draw,
 			 const draw_info &di,
+			 clip_region_set &clipped,
 			 bool draw_as_disabled,
 			 richtext_draw_boundaries &boundaries) override;
 

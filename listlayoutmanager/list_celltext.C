@@ -30,6 +30,7 @@ list_celltextObj::cell_get_metrics(ONLY IN_THREAD, dim_t preferred_width)
 void list_celltextObj::cell_redraw(ONLY IN_THREAD,
 				   element_drawObj &draw,
 				   const draw_info &di,
+				   clip_region_set &clipped,
 				   bool draw_as_disabled,
 				   richtext_draw_boundaries &boundaries)
 {
@@ -38,7 +39,7 @@ void list_celltextObj::cell_redraw(ONLY IN_THREAD,
 	rdi.draw_as_disabled=draw_as_disabled;
 	text_width(boundaries.draw_bounds.width);
 
-	full_redraw(IN_THREAD, draw, rdi, di, boundaries);
+	full_redraw(IN_THREAD, draw, rdi, di, clipped, boundaries);
 }
 
 void list_celltextObj::cell_initialize(ONLY IN_THREAD,

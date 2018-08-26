@@ -30,10 +30,11 @@ struct LIBCXX_HIDDEN list_cellObj : virtual public obj {
 
 	//! Draw this cell's contents.
 	virtual void cell_redraw(ONLY IN_THREAD,
-			    element_drawObj &draw,
-			    const draw_info &di,
-			    bool draw_as_disabled,
-			    richtext_draw_boundaries &boundaries)=0;
+				 element_drawObj &draw,
+				 const draw_info &di,
+				 clip_region_set &clipped,
+				 bool draw_as_disabled,
+				 richtext_draw_boundaries &boundaries)=0;
 
 	//! Initialize this cell, in the connection thread.
 	virtual void cell_initialize(ONLY IN_THREAD,

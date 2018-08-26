@@ -101,17 +101,19 @@ void richtextObj::full_redraw(ONLY IN_THREAD,
 			      const rectangle_set &areas)
 {
 	richtext_draw_boundaries draw_bounds{di, areas};
+	clip_region_set clipped{IN_THREAD, element.get_window_handler(), di};
 
-	full_redraw(IN_THREAD, element, rdi, di, draw_bounds);
+	full_redraw(IN_THREAD, element, rdi, di, clipped, draw_bounds);
 }
 
 void richtextObj::full_redraw(ONLY IN_THREAD,
 			      element_drawObj &element,
 			      const richtext_draw_info &rdi,
 			      const draw_info &di,
+			      clip_region_set &clipped,
 			      richtext_draw_boundaries &draw_bounds)
 {
-	draw(IN_THREAD, element, rdi, di,
+	draw(IN_THREAD, element, rdi, di, clipped,
 	     make_function<bool (richtextfragmentObj *)>
 	     ([]
 	      (richtextfragmentObj *ignore)
@@ -136,8 +138,9 @@ void richtextObj::redraw_whatsneeded(ONLY IN_THREAD,
 				     const rectangle_set &areas)
 {
 	richtext_draw_boundaries draw_bounds{di, areas};
+	clip_region_set clipped{IN_THREAD, element.get_window_handler(), di};
 
-	draw(IN_THREAD, element, rdi, di,
+	draw(IN_THREAD, element, rdi, di, clipped,
 	     make_function<bool (richtextfragmentObj *)>
 	     ([]
 	      (richtextfragmentObj *f)
@@ -175,7 +178,9 @@ void richtextObj::redraw_between(ONLY IN_THREAD,
 
 	richtext_draw_boundaries draw_bounds{di, di.entire_area()};
 
-	draw(IN_THREAD, element, rdi, di,
+	clip_region_set clipped{IN_THREAD, element.get_window_handler(), di};
+
+	draw(IN_THREAD, element, rdi, di, clipped,
 	     make_function<bool (richtextfragmentObj *)>
 	     ([&]
 	      (richtextfragmentObj *f)
@@ -211,6 +216,7 @@ void richtextObj::draw(ONLY IN_THREAD,
 		       element_drawObj &element,
 		       const richtext_draw_info &rdi,
 		       const draw_info &di,
+		       clip_region_set &clipped,
 		       const function<bool (richtextfragmentObj *)>
 		       &redraw_fragment,
 		       bool clear_padding,
@@ -241,7 +247,8 @@ void richtextObj::draw(ONLY IN_THREAD,
 				auto &f=*p->fragments.get_iter(0);
 
 				draw_with_ellipsis(IN_THREAD, element,
-						   rdi, di, redraw_fragment,
+						   rdi, di, clipped,
+						   redraw_fragment,
 						   clear_padding,
 						   draw_bounds, &*f);
 				return;
@@ -249,7 +256,8 @@ void richtextObj::draw(ONLY IN_THREAD,
 		}
 	}
 
-	draw_with_ellipsis(IN_THREAD, element, rdi, di, redraw_fragment,
+	draw_with_ellipsis(IN_THREAD, element, rdi, di, clipped,
+			   redraw_fragment,
 			   clear_padding,
 			   draw_bounds, nullptr);
 }
@@ -390,6 +398,7 @@ void richtextObj::draw_with_ellipsis(ONLY IN_THREAD,
 				     element_drawObj &element,
 				     const richtext_draw_info &rdi,
 				     const draw_info &di,
+				     clip_region_set &clipped,
 				     const function<bool (richtextfragmentObj
 							  *)>
 				     &redraw_fragment,
@@ -398,8 +407,6 @@ void richtextObj::draw_with_ellipsis(ONLY IN_THREAD,
 				     richtextfragmentObj *ellipsis_fragment)
 {
 	impl_t::lock lock{impl};
-
-	clip_region_set clipped{IN_THREAD, element.get_window_handler(), di};
 
 	clipped.draw_as_disabled=rdi.draw_as_disabled;
 
