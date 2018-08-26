@@ -112,19 +112,10 @@ border_impl_from_arg(const ref<screenObj::implObj> &screen,
 
 current_border_implObj
 ::current_border_implObj(const ref<screenObj::implObj> &screen,
-			 const border_arg &arg)
-	: current_border_implObj(screen, arg,
-				 current_theme_t::lock(screen->current_theme))
-{
-}
-
-current_border_implObj
-::current_border_implObj(const ref<screenObj::implObj> &screen,
 			 const border_arg &arg,
 			 const current_theme_t::lock &lock)
 	: screen(screen),
 	  arg(arg),
-	  current_theme_thread_only(*lock),
 	  border_thread_only(border_impl_from_arg(screen, arg, *lock))
 {
 }
@@ -133,20 +124,8 @@ current_border_implObj
 ::~current_border_implObj()=default;
 
 void current_border_implObj
-::theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme)
+::current_theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme)
 {
-	// This custom border object can be attached to multiple
-	// border display elements. Go through the motions of
-	// creating a new border object only the first time we're
-	// called, here.
-
-	auto &t=current_theme(IN_THREAD);
-
-	if (new_theme == t)
-		return;
-
-	t=new_theme;
-
 	border(IN_THREAD)=border_impl_from_arg(screen, arg, new_theme);
 }
 

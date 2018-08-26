@@ -11,9 +11,12 @@
 #include "x/w/impl/fonts/current_fontcollection.H"
 #include "richtext/richtext.H"
 #include "recycled_pixmaps.H"
+#include "border_cache.H"
+#include "x/w/border_arg_hash.H"
 #include "defaulttheme.H"
 #include "x/w/impl/background_colorobj.H"
 #include "x/w/impl/fonts/current_fontcollection.H"
+#include "x/w/impl/current_border_impl.H"
 
 #include <x/weakunordered_multimap.H>
 LIBCXXW_NAMESPACE_START
@@ -75,6 +78,17 @@ void screenObj::implObj::update_current_theme(ONLY IN_THREAD,
 		     *recycled_pixmaps_cache->theme_background_color_cache)
 	{
 		auto p=cached_bgcolor.second.getptr();
+
+		if (p)
+			p->current_theme_updated(IN_THREAD, new_theme);
+	}
+
+	// We also hold this lock in place while calling current_theme_updated
+	// of all borders.
+
+	for (auto &cached_border: *screen_border_cache->map)
+	{
+		auto p=cached_border.second.getptr();
 
 		if (p)
 			p->current_theme_updated(IN_THREAD, new_theme);

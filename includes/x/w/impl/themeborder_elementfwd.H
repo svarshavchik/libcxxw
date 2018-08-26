@@ -42,10 +42,6 @@ public:
 
 	~themeborder1_elementObj();
 
-	//! Recalculate the dimension, after a theme change.
-	void theme_updated(ONLY IN_THREAD,
-			   const defaulttheme &new_theme) override;
-
 	elementObj::implObj &get_border_element_impl() override;
 };
 
@@ -94,7 +90,7 @@ struct themeborder_element_types<base, arg1, arg2, args...> {
 //! consumes a leading parameter to the constructor, which can be either a
 //! border_arg or a current_border_impl.
 //!
-//! That is, if there are two themedim_element_impl superclasses that
+//! That is, if there are two themeborder_element_impl superclasses that
 //! get inherited from, the constructor takes two border_arg parameters.
 //!
 //! The remaining parameters get forwarded to the superclass specified by

@@ -19,12 +19,6 @@ themeborder_element_implObj::themeborder_element_implObj(const border_arg &arg,
 
 themeborder_element_implObj::~themeborder_element_implObj()=default;
 
-void themeborder_element_implObj::theme_updated(ONLY IN_THREAD,
-						const defaulttheme &new_theme)
-{
-	current_border(IN_THREAD)->theme_updated(IN_THREAD, new_theme);
-}
-
 void themeborder_element_implObj::set_new_border(ONLY IN_THREAD, const border_arg &arg)
 {
 	current_border(IN_THREAD)=

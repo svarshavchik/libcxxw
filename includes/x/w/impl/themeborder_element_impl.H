@@ -20,6 +20,11 @@ LIBCXXW_NAMESPACE_START
 //! Maintains a current_border_impl, made available as a current_border,
 //! that a display element uses.
 //!
+//! There is no value-added to the themeborder_element_implObj, at this time.
+//! This is a placeholder in case some features that alter a border's
+//! appearance, based on the element that it's attached to, ever get
+//! developed.
+//!
 //! \see themeborder_element
 
 class themeborder_element_implObj : virtual public obj {
@@ -41,10 +46,6 @@ class themeborder_element_implObj : virtual public obj {
 
 	//! Return the element the border is attached to.
 	virtual elementObj::implObj &get_border_element_impl()=0;
-
-	//! Implement theme_updated().
-	void theme_updated(ONLY IN_THREAD,
-			   const defaulttheme &new_theme);
 
 	//! Set a new theme border
 	void set_new_border(ONLY IN_THREAD, const border_arg &arg);

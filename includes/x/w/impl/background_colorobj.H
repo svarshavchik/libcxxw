@@ -22,10 +22,10 @@ class background_colorObj : virtual public obj {
 
 public:
 	//! Constructor
-	background_colorObj();
+	background_colorObj() LIBCXX_HIDDEN;
 
 	//! Destructor
-	~background_colorObj();
+	~background_colorObj() LIBCXX_HIDDEN;
 
 	//! Adjust this background color for an element of the given size.
 
@@ -53,7 +53,8 @@ public:
 	//! background_colors.
 
 	virtual void current_theme_updated(ONLY IN_THREAD,
-					   const defaulttheme &new_theme)=0;
+					   const defaulttheme &new_theme)
+		LIBCXX_HIDDEN=0;
 };
 
 LIBCXXW_NAMESPACE_END

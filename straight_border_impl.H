@@ -55,19 +55,6 @@ class LIBCXX_HIDDEN straight_border_implObj
 
 	~straight_border_implObj()=default;
 
-	template<typename F>
-		inline void for_each_non_null_border(ONLY IN_THREAD,
-						     F &&f)
-	{
-		const auto &b=this->borders(IN_THREAD);
-		if (b.border_1)
-			f(b.border_1);
-		if (b.border_2)
-			f(b.border_2);
-		if (b.border_default)
-			f(b.border_default);
-	}
-
 	//! This border element was just added to its container.
 
 	//! Compute our metrics for the first time.
@@ -84,13 +71,6 @@ class LIBCXX_HIDDEN straight_border_implObj
 	void theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme)
 		override
 	{
-		for_each_non_null_border(IN_THREAD,
-					 [&, this]
-					 (const auto &b)
-					 {
-						 b->theme_updated(IN_THREAD,
-								  new_theme);
-					 });
 		compute_metrics(IN_THREAD);
 		straight_borderObj::implObj::theme_updated(IN_THREAD,
 							   new_theme);

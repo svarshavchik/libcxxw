@@ -29,29 +29,19 @@ private:
 	//! The border argument specification.
 	const border_arg arg;
 
-	//! Screen's current theme.
-
-	defaulttheme current_theme_thread_only;
-
 	//! Current border.
 
 	const_border_impl border_thread_only;
 
  public:
 
-	THREAD_DATA_ONLY(current_theme);
 	THREAD_DATA_ONLY(border);
-
-	//! Constructor
-	current_border_implObj(const ref<screenObj::implObj> &screen,
-			       const border_arg &arg);
-
- private:
 
 	//! Internal constructor
 	current_border_implObj(const ref<screenObj::implObj> &screen,
 			       const border_arg &arg,
-			       const current_theme_t::lock &lock);
+			       const current_theme_t::lock &lock)
+		LIBCXX_HIDDEN;
 
  public:
 	//! Destructor
@@ -63,9 +53,12 @@ private:
 	//! The current theme has been updated.
 
 	//! Check if the border has changed, and update it.
+	//!
+	//! Called from update_current_theme, while holding a lock.
 
-	void theme_updated(ONLY IN_THREAD,
-			   const defaulttheme &new_theme);
+	void current_theme_updated(ONLY IN_THREAD,
+				   const defaulttheme &new_theme)
+		LIBCXX_HIDDEN;
 };
 
 LIBCXXW_NAMESPACE_END

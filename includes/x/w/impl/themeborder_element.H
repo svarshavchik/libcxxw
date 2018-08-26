@@ -34,18 +34,6 @@ template<typename element_impl, typename tag>
 themeborder1_elementObj<element_impl, tag>
 ::~themeborder1_elementObj()=default;
 
-//! Inherited from elementObj::implObj
-
-//! Invokes the superclass, and the themeborderObj::theme_updated().
-
-template<typename element_impl, typename tag>
-void themeborder1_elementObj<element_impl, tag>
-::theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme)
-{
-	element_impl::theme_updated(IN_THREAD, new_theme);
-	themeborder_element_impl<tag>::theme_updated(IN_THREAD, new_theme);
-}
-
 //! Return the parent element, which hopefully inherits from elementObj::implObj
 
 template<typename element_impl, typename tag>

@@ -22,12 +22,14 @@ border_cacheObj::~border_cacheObj()=default;
 
 current_border_impl screenObj::implObj::get_cached_border(const border_arg &arg)
 {
+	current_theme_t::lock lock{current_theme};
+
 	return screen_border_cache->map->find_or_create
 		(arg,
 		 [&, this]
 		 {
 			 return ref<current_border_implObj>
-				 ::create(ref<implObj>(this), arg);
+				 ::create(ref<implObj>(this), arg, lock);
 		 });
 }
 
