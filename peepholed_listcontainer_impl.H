@@ -6,6 +6,7 @@
 #define peepholed_listcontainer_impl_h
 
 #include "peepholed_listcontainerobj.H"
+#include "listlayoutmanager/listcontainer_pseudo_impl.H"
 #include "x/w/listlayoutmanagerfwd.H"
 #include "x/w/containerobj.H"
 #include "x/w/dim_axis_arg.H"
@@ -58,13 +59,9 @@ class LIBCXX_HIDDEN peepholed_listcontainerObj::implObj : virtual public obj {
 
 	//! Return the element is mixin is a part of.
 
-	//! Implemented by the mixin template.
-	virtual child_elementObj &get_peepholed_listcontainerObj()=0;
+	virtual listcontainer_pseudo_implObj &get_pseudo_impl()=0;
 
-	//! Return the element is mixin is a part of.
-
-	//! Implemented by the mixin template.
-	virtual const child_elementObj &get_peepholed_listcontainerObj() const=0;
+	virtual const listcontainer_pseudo_implObj &get_pseudo_impl() const=0;
 
 	//! Update_peephole_metrics().
 	void initialize(ONLY IN_THREAD);

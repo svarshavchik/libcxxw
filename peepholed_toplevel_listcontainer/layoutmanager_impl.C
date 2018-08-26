@@ -11,9 +11,10 @@ LIBCXXW_NAMESPACE_START
 peepholed_toplevel_listcontainer_layoutmanager_implObj
 ::peepholed_toplevel_listcontainer_layoutmanager_implObj
 (const ref<peepholed_toplevel_listcontainer_implObj> &container_impl,
+ const ref<listcontainer_pseudo_implObj> &listcontainer_impl,
  const list_element &list_element_instance)
-	: listlayoutmanagerObj::implObj(container_impl,
-					    list_element_instance),
+	: listlayoutmanagerObj::implObj(listcontainer_impl,
+					list_element_instance),
 	container_impl(container_impl)
 {
 }

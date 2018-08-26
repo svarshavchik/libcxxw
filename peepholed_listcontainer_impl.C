@@ -80,7 +80,7 @@ void peepholed_listcontainerObj::implObj
 	// Update the peephole metrics based on the peepholed list container's
 	// metrics, as adjusted above.
 
-	auto &peepholed_listcontainer=get_peepholed_listcontainerObj();
+	auto &peepholed_listcontainer=get_pseudo_impl();
 	auto &peephole=	peepholed_listcontainer.child_container
 		->container_element_impl();
 

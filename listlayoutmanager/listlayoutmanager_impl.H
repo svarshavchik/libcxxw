@@ -9,6 +9,7 @@
 #include "x/w/impl/singletonlayoutmanager.H"
 #include "listlayoutmanager/list_elementfwd.H"
 #include "listlayoutmanager/listcontainer_pseudo_impl.H"
+#include "peepholed_listcontainerobj.H"
 #include <x/functionalrefptr.H>
 
 LIBCXXW_NAMESPACE_START
@@ -24,6 +25,10 @@ class LIBCXX_HIDDEN listlayoutmanagerObj::implObj
 
  public:
 
+	//! Our container.
+
+	const ref<listcontainer_pseudo_implObj> container_impl;
+
 	//! Our only singleton element.
 
 	//! Stores the actual contents of the list.
@@ -31,7 +36,7 @@ class LIBCXX_HIDDEN listlayoutmanagerObj::implObj
 	const list_element list_element_singleton;
 
 	//! Constructor
-	implObj(const container_impl &container_impl,
+	implObj(const ref<listcontainer_pseudo_implObj> &container_impl,
 		const list_element &list_element_singleton);
 
 	//! Destructor

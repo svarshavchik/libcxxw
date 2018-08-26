@@ -11,12 +11,13 @@
 LIBCXXW_NAMESPACE_START
 
 listlayoutmanagerObj::implObj
-::implObj(const container_impl &container_impl,
+::implObj(const ref<listcontainer_pseudo_implObj> &container_impl,
 	  const list_element &list_element_singleton)
 	: singletonlayoutmanagerObj::implObj{container_impl,
 					     list_element_singleton,
 					     halign::fill, valign::fill},
-	list_element_singleton(list_element_singleton)
+	  container_impl{container_impl},
+	  list_element_singleton(list_element_singleton)
 {
 }
 

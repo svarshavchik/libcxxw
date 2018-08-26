@@ -58,7 +58,8 @@ do_create_menu_popup(const element_impl &e,
 				 ::create(impl, style);
 
 			 auto lm=ref<peepholed_toplevel_listcontainer_layoutmanager_implObj>
-				 ::create(impl,list_element::create
+				 ::create(impl, impl,
+					  list_element::create
 					  (textlist_impl));
 
 			 auto c=ref<p_t_l_t>::create

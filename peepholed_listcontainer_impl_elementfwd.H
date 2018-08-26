@@ -7,6 +7,7 @@
 
 #include "peepholed_listcontainer_impl.H"
 #include "listlayoutmanager/listcontainer_dim_elementfwd.H"
+#include "listlayoutmanager/listcontainer_pseudo_impl.H"
 #include "x/w/impl/theme_font_elementfwd.H"
 #include "x/w/impl/themedimfwd.H"
 #include "x/w/impl/themedim_axis_elementfwd.H"
@@ -21,8 +22,8 @@ LIBCXXW_NAMESPACE_START
 //! themedim_axis_elementObj mixin to handle the list height when it is
 //! specified as a dim_axis_arg. This makes these mixins to
 //! be the subclass of both peepholed_listcontainer_impl_elementObj and
-//! the template parameter, which must be a subclass of child_elementObj
-//! and the container_element mixin.
+//! the template parameter, which must be a subclass of
+//! listcontainer_pseudo_implObj.
 //!
 //! One of the combining elements is listcontainerObj::implObj which also
 //! uses the same font and dimension mixin.
@@ -58,6 +59,8 @@ class LIBCXX_HIDDEN peepholed_listcontainer_impl_element_baseObj
 //! The template parameter is a superclass. This template multiply-inherits
 //! from the template parameter and peepholed_listcontainerObj::implObj.
 //!
+//! The template parameter is a subclass of
+//!
 //! The first template parameter must be \c new_listlayoutmanager, the
 //! remaining template parameters get passed to the superclass specified
 //! by the template parameter.
@@ -86,8 +89,8 @@ public:
 	const theme_fontObj &list_reference_font()
 		const override;
 
-	child_elementObj &get_peepholed_listcontainerObj() override;
-	const child_elementObj &get_peepholed_listcontainerObj() const override;
+	listcontainer_pseudo_implObj &get_pseudo_impl() override;
+	const listcontainer_pseudo_implObj &get_pseudo_impl() const override;
 
 	virtual metrics::axis get_height_metrics(ONLY IN_THREAD) const override;
 };

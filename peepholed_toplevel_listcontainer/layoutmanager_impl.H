@@ -17,6 +17,11 @@ LIBCXXW_NAMESPACE_START
 //! of the largest row, which is used to set the height of the combo-box
 //! current selection element (so that it's tall enough to show any
 //! combo-box selection).
+//!
+//! This layout manager's container must have a
+//! peepholed_toplevel_listcontainer_implObj mixin, but also be
+//! derived from listcontainer_pseudo_implObj. The first two parameters
+//! passed to the constructor must be the same object.
 
 class LIBCXX_HIDDEN peepholed_toplevel_listcontainer_layoutmanager_implObj
 	: public listlayoutmanagerObj::implObj {
@@ -30,6 +35,7 @@ class LIBCXX_HIDDEN peepholed_toplevel_listcontainer_layoutmanager_implObj
 	peepholed_toplevel_listcontainer_layoutmanager_implObj
 		(const ref<peepholed_toplevel_listcontainer_implObj
 		 > &container_impl,
+		 const ref<listcontainer_pseudo_implObj> &listcontainer_impl,
 		 const list_element &list_element_instance);
 
 	//! Destructor

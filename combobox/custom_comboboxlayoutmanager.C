@@ -303,9 +303,10 @@ focusable_container new_custom_comboboxlayoutmanager
 			 auto textlist_impl=ref<list_elementObj::implObj>
 			 ::create(impl, style);
 
-			 auto lm=ref<peepholed_toplevel_listcontainer_layoutmanager_implObj
-			 >::create(impl,
-				   list_element::create(textlist_impl));
+			 auto lm=ref<
+				 peepholed_toplevel_listcontainer_layoutmanager_implObj
+				 >::create(impl, impl,
+					   list_element::create(textlist_impl));
 
 			 auto container=custom_combobox_popup_container
 			 ::create(impl,
