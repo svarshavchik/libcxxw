@@ -870,6 +870,8 @@ TESTPROGRAMS=\
 	testtextparam					\
 	#
 
+$(call OPTIONS_GEN,testprogramoptions.H,testprogramoptions.xml)
+
 INTERACTIVETESTPROGRAMS=\
 	testbook					\
 	testbusy					\
@@ -1183,7 +1185,7 @@ uninstall-hook:
 EXTRA_DIST += $(patsubst $(srcdir)/%,%,$(all_theme_source_files))
 
 check-am:
-	@test -n "$(BUILT_TESTPROGRAMS)" || exit 0; for p in $(BUILT_TESTPROGRAMS); do echo $$p; ./$$p; done
+	@test -n "$(BUILT_TESTPROGRAMS)" || exit 0; for p in $(BUILT_TESTPROGRAMS); do echo $$p; ./$$p --test; done
 
 test:
 	./testmainwindow --state

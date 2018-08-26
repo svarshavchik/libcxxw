@@ -142,6 +142,28 @@ class LIBCXX_HIDDEN list_element_synchronized_columnsObj
 
 ////////////////////////////////////////////////////////////////////////////
 
+static inline auto create_column_borders(elementObj::implObj &e,
+					 const new_listlayoutmanager &style)
+{
+	auto s=e.get_window_handler().get_screen()->impl;
+
+	std::unordered_map<size_t, current_border_impl> column_borders;
+
+	for (const auto &cb:style.column_borders)
+	{
+		if (cb.first < 1 || cb.first >= style.columns)
+		{
+			throw EXCEPTION(_("Border numbers must be between 1 "
+					  "and one less than the number of "
+					  "columns in the list."));
+		}
+		column_borders.emplace(cb.first,
+				       s->get_cached_border(cb.second));
+	}
+
+	return column_borders;
+}
+
 list_elementObj::implObj::implObj(const ref<listcontainer_pseudo_implObj>
 				  &textlist_container,
 				  const new_listlayoutmanager &style)
@@ -170,24 +192,31 @@ list_elementObj::implObj::implObj(const ref<listcontainer_pseudo_implObj>
 		style.current_color,
 		"list_separator_border",
 		textlist_container},
-	  textlist_container(textlist_container),
-	  list_style(style.list_style),
-	  columns(list_style.actual_columns(style)),
-	  requested_col_widths(list_style.actual_col_widths(style)),
-	  col_alignments(list_style.actual_col_alignments(style)),
+	  textlist_container{textlist_container},
+	  list_style{style.list_style},
+	  columns{list_style.actual_columns(style)},
+	  requested_col_widths{list_style.actual_col_widths(style)},
+	  col_alignments{list_style.actual_col_alignments(style)},
+	  column_borders{create_column_borders(textlist_container
+					       ->container_element_impl(),
+					       style)},
 	  synchronized_info{style.synchronized_columns,
 		ref<list_element_synchronized_columnsObj>::create
 		(textlist_container)},
 	  textlist_info{listimpl_info_s{style.selection_type,
-				  style.selection_changed}},
-	  scratch_buffer_for_separator(container_screen->create_scratch_buffer
+					style.selection_changed}},
+	  scratch_buffer_for_separator{container_screen->create_scratch_buffer
 				       ("list_separator_scratch@libcxx.com",
 					container_screen
-					->find_alpha_pictformat_by_depth(1))),
-	  bullet1(container_element_impl.get_window_handler()
-		  .create_icon({"bullet1"})),
-	  bullet2(container_element_impl.get_window_handler()
-		  .create_icon({"bullet2"})),
+					->find_alpha_pictformat_by_depth(1))},
+	  scratch_buffer_for_borders{container_screen->create_scratch_buffer
+				     ("list_border_scratch@libcxx.com",
+				      container_screen
+				      ->find_alpha_pictformat_by_depth(1))},
+	  bullet1{container_element_impl.get_window_handler()
+		  .create_icon({"bullet1"})},
+	  bullet2{container_element_impl.get_window_handler()
+		  .create_icon({"bullet2"})},
 
 	  itemlabel_meta{create_background_color("label_foreground_color"),
 			 create_current_fontcollection(style.list_font)},
@@ -833,7 +862,8 @@ dim_t list_elementObj::implObj
 	// We now use the synchronized column_widths to compute the final
 	// position and width of our columns.
 
-	std::vector<std::pair<coord_t, dim_t>> new_columns_poswidths;
+	std::vector<std::tuple<coord_t, dim_t>> new_columns_poswidths;
+	std::unordered_map<size_t, coord_t> new_border_positions;
 
 	new_columns_poswidths.reserve(n);
 
@@ -855,6 +885,27 @@ dim_t list_elementObj::implObj
 
 	for (const auto &axis:sync_lock->derived_values)
 	{
+		// Don't forget to advance past the border area before this
+		// column
+
+		if (i > 0)
+		{
+			auto iter=column_borders.find(i);
+
+			if (iter != column_borders.end())
+			{
+				new_border_positions
+					.emplace(i,
+						 coord_t::truncate(final_width)
+						 );
+
+				final_width=dim_t::truncate
+					(final_width+iter->second
+					 ->border(IN_THREAD)
+					 ->calculated_border_width);
+			}
+		}
+
 		if (++i > n)
 			continue; // Ignore extra columns
 
@@ -909,10 +960,9 @@ dim_t list_elementObj::implObj
 
 		for (size_t i=0; i<columns; ++i)
 		{
-			auto &poswidth=new_columns_poswidths.at(i);
+			auto &[x, width]=new_columns_poswidths.at(i);
 
-			poswidth.first=coord_t::truncate(poswidth.first +
-							 coord_offset);
+			x=coord_t::truncate(x + coord_offset);
 
 			unsigned n=0;
 
@@ -932,7 +982,7 @@ dim_t list_elementObj::implObj
 				numerator %= denominator;
 			}
 
-			poswidth.second=dim_t::truncate(poswidth.second+extra);
+			width=dim_t::truncate(width+extra);
 			coord_offset=dim_t::truncate(coord_offset+extra);
 		}
 	}
@@ -943,7 +993,8 @@ dim_t list_elementObj::implObj
 	if (lock->columns_poswidths != new_columns_poswidths)
 	{
 		lock->columns_poswidths=std::move(new_columns_poswidths);
-		lock->full_redraw_needed=false;
+		lock->border_positions=std::move(new_border_positions);
+		lock->full_redraw_needed=true;
 	}
 
 
@@ -1089,6 +1140,8 @@ rectangle list_elementObj::implObj::do_draw_row(ONLY IN_THREAD,
 						size_t row_number,
 						bool make_sure_row_is_visible)
 {
+	clip_region_set clip{IN_THREAD, get_window_handler(), di};
+
 	auto &r=lock->row_infos.at(row_number);
 
 	r.redraw_needed=false;
@@ -1101,8 +1154,6 @@ rectangle list_elementObj::implObj::do_draw_row(ONLY IN_THREAD,
 
 		if (redraw_scheduled(IN_THREAD))
 			return border_rect;
-
-		clip_region_set clip{IN_THREAD, get_window_handler(), di};
 
 		draw_using_scratch_buffer
 			(IN_THREAD,
@@ -1217,9 +1268,11 @@ rectangle list_elementObj::implObj
 
 	for (const auto &poswidth:lock->columns_poswidths)
 	{
-		rectangle rc{poswidth.first,
+		const auto &[x, width]=poswidth;
+
+		rectangle rc{x,
 				coord_t::truncate(bottom_y-(*cell)->height),
-				poswidth.second,
+				width,
 				(*cell)->height};
 
 		bounds.position_at(rc);
@@ -1231,6 +1284,53 @@ rectangle list_elementObj::implObj
 
 		++cell;
 	}
+
+	for (const auto &border_position:lock->border_positions)
+	{
+		auto iter=column_borders.find(border_position.first);
+
+		if (iter == column_borders.end()) continue; // Wut?
+
+		auto b=iter->second->border(IN_THREAD);
+
+		rectangle border_rect=entire_row;
+
+		border_rect.x=border_position.second;
+		border_rect.width=b->calculated_border_width;
+
+		draw_using_scratch_buffer
+			(IN_THREAD,
+			 [&, this]
+			 (const picture &area_picture,
+			  const pixmap &area_pixmap,
+			  const gc &area_gc)
+			 {
+				 scratch_buffer_for_borders
+					 ->get(border_rect.width,
+					       border_rect.height,
+					       [&, this]
+					       (const picture &mask_picture,
+						const pixmap &mask_pixmap,
+						const gc &mask_gc)
+					       {
+						       border_implObj::draw_info bdi=
+							       {area_picture,
+								border_rect,
+								area_pixmap,
+								mask_picture,
+								mask_pixmap,
+								mask_gc,
+								di.absolute_location.x,
+								di.absolute_location.y};
+						       b->draw_vertical(IN_THREAD, bdi);
+					       });
+			 },
+			 border_rect,
+			 di, di, clipped);
+
+		drawn_columns.insert(border_rect);
+	}
+
 
 	auto to_clear=subtract(rectangle_set{{entire_row}},
 			       drawn_columns);

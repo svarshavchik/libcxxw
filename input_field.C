@@ -96,15 +96,15 @@ factoryObj::create_input_field(const text_param &text,
 
 	auto [peephole_info, lm]=create_peepholed_focusable_with_frame
 		({config.border,
-				"inputfocusoff_border",
-				"inputfocuson_border",
-				.2,
-				config.background_color,
-				impl_mixin,
-				input_field_peephole_style,
-				scrollbar_visibility::never,
-				config.oneline() ? scrollbar_visibility::never
-				: config.vertical_scrollbar},
+		  config.focusoff_border,
+		  config.focuson_border,
+		  .2,
+		  config.background_color,
+		  impl_mixin,
+		  input_field_peephole_style,
+		  scrollbar_visibility::never,
+		  config.oneline() ? scrollbar_visibility::never
+		  : config.vertical_scrollbar},
 		 [&]
 		 (const auto &parent_container_impl)
 		 {

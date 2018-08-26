@@ -88,6 +88,14 @@ struct input_field_config {
 
 	border_arg border="textedit_border";
 
+	//! Inner border when the input field does not have input focus
+
+	border_arg focusoff_border="texteditfocusoff_border";
+
+	//! Inner border when the input field has input focus
+
+	border_arg focuson_border="texteditfocuson_border";
+
 	//! Background color
 
 	color_arg background_color="textedit_background_color";

@@ -355,6 +355,9 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
 
   <border id="textedit_border" from="thin_0%" />
 
+  <border id="texteditfocusoff_border" from="inputfocusoff_border" />
+  <border id="texteditfocuson_border" from="inputfocuson_border" />
+
   <!-- Scrollbars -->
 
   <color  id="scrollbar_background_color" scale="30%" />
@@ -542,6 +545,11 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
   <dim id="list_right_padding" axis="horiz">.2</dim>
 
   <border id="list_border" from="thin_0%" />
+
+  <border id="listfocusoff_border" from="thin_inputfocusoff_border" />
+  <border id="listfocuson_border" from="thin_inputfocuson_border" />
+  <border id="listvisiblefocusoff_border"
+	  from="thin_inputfocusoff_border_color2" />
 
   <border id="list_separator_border" from="thin_0%">
     <color>0%</color>

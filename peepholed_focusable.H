@@ -39,10 +39,12 @@ typedef std::tuple<ref<peepholeObj::implObj>, peepholed,
 struct LIBCXX_HIDDEN create_peepholed_focusable_args_t {
 	//! The border around the focus frame and scrollbars.
 	const border_arg &border;
+
 	//! Focus off border
-	const char *inputfocusoff_border;
+	const border_arg &inputfocusoff_border;
 	//! Focus on border
-	const char *inputfocuson_border;
+	const border_arg &inputfocuson_border;
+
 	//! Padding between the scrollbar and the peephole.
 	double focusable_padding;
 

@@ -76,6 +76,8 @@ new_listlayoutmanager
 	  columns{1},
 	  synchronized_columns{synchronized_axis::create()},
 	  list_border{"list_border"},
+	  focusoff_border{"listfocusoff_border"},
+	  focuson_border{"listfocuson_border"},
 	  v_padding{"list_v_padding"},
 	  left_padding{"list_left_padding"},
 	  inner_padding{"list_inner_padding"},
@@ -104,14 +106,14 @@ new_listlayoutmanager::create(const container_impl
 
 	auto [peephole_info, lm]=create_peepholed_focusable_with_frame
 		({list_border,
-				"inputfocusoff_border",
-				"inputfocuson_border",
-				0,
-				background_color,
-				focusable_container_impl,
-				list_peephole_style,
-				scrollbar_visibility::never,
-				vertical_scrollbar},
+		  focusoff_border,
+		  focuson_border,
+		  0,
+		  background_color,
+		  focusable_container_impl,
+		  list_peephole_style,
+		  scrollbar_visibility::never,
+		  vertical_scrollbar},
 		 [&, this]
 		 (const container_impl &peepholed_parent)
 		 {

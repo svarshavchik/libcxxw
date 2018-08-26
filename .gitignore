@@ -57,6 +57,7 @@ suppressfile*
 /testmenu
 /testpane
 /testping
+/testprogramoptions.H
 /testprogressbar
 /testwordwrappablelabel
 /testmainwindow

@@ -20,7 +20,24 @@
 #include <vector>
 #include <sstream>
 
-using namespace LIBCXX_NAMESPACE::w;
+class close_flagObj : public LIBCXX_NAMESPACE::obj {
+
+public:
+	LIBCXX_NAMESPACE::mpcobj<bool> flag;
+
+	close_flagObj() : flag{false} {}
+	~close_flagObj()=default;
+
+	void close()
+	{
+		LIBCXX_NAMESPACE::mpcobj<bool>::lock lock{flag};
+
+		*lock=true;
+		lock.notify_all();
+	}
+};
+
+typedef LIBCXX_NAMESPACE::ref<close_flagObj> close_flag_ref;
 
 typedef LIBCXX_NAMESPACE::mpobj<std::vector<std::tuple<size_t, size_t, bool>>
 				> invocations_t;
@@ -64,7 +81,7 @@ void flush(const LIBCXX_NAMESPACE::w::element &e)
 	flag->wait();
 }
 
-void testlist2(const listlayoutmanager &tlm)
+void testlist2(const LIBCXX_NAMESPACE::w::listlayoutmanager &tlm)
 {
 	auto callback_factory=[counter=0]
 		()
@@ -209,7 +226,7 @@ void testlist2(const listlayoutmanager &tlm)
 	tlm->selected(2, true);
 }
 
-void testlist3(const element &e)
+void testlist3(const LIBCXX_NAMESPACE::w::element &e)
 {
 	flush(e);
 	invocations_t::lock lock{invocations};
@@ -249,20 +266,22 @@ void testlist3(const element &e)
 		throw EXCEPTION("Unexpected results");
 }
 
-void testlist()
+void testlist1()
 {
 	LIBCXX_NAMESPACE::w::containerptr c;
 
-	auto main_window=main_window
+	auto main_window=LIBCXX_NAMESPACE::w::main_window
 		::create([&]
 			 (const auto &main_window)
 			 {
-				 gridlayoutmanager
+				 LIBCXX_NAMESPACE::w::gridlayoutmanager
 				     layout=main_window->get_layoutmanager();
-				 gridfactory factory=
+				 LIBCXX_NAMESPACE::w::gridfactory factory=
 				     layout->append_row();
 
-				 new_listlayoutmanager nlm{highlighted_list};
+				 LIBCXX_NAMESPACE::w::new_listlayoutmanager
+					 nlm{LIBCXX_NAMESPACE::w
+					     ::highlighted_list};
 
 				 c=factory->create_focusable_container
 				 ([]
@@ -274,12 +293,141 @@ void testlist()
 	testlist3(c);
 }
 
+struct mondata {
+	std::string process;
+	int cpu;
+	int ram;
+	int diskio;
+	int netio;
+};
+
+static mondata processes[]=
+	{
+	 {"Compiler", 40, 12, 3, 0},
+	 {"Idle", 35, 0, 0, 0},
+	 {"Updater", 12, 4, 2, 2},
+	 {"Editor", 4, 7, 0, 0},
+	 {"Downloader", 5, 6, 4, 4},
+	 {"Backup", 4, 5, 5, 0},
+	};
+
+void create_process_table(const LIBCXX_NAMESPACE::w::gridfactory &f)
+{
+	LIBCXX_NAMESPACE::w::new_listlayoutmanager nlm{LIBCXX_NAMESPACE::w
+						       ::highlighted_list};
+
+	nlm.columns=5;
+
+	nlm.col_alignments={
+			    {1, LIBCXX_NAMESPACE::w::halign::right},
+			    {2, LIBCXX_NAMESPACE::w::halign::right},
+			    {3, LIBCXX_NAMESPACE::w::halign::right},
+			    {4, LIBCXX_NAMESPACE::w::halign::right},
+	};
+
+	nlm.column_borders={
+			    {1, "thin_0%"},
+			    {2, "thin_dashed_0%"},
+			    {3, "thin_dashed_0%"},
+			    {4, "thin_dashed_0%"},
+	};
+	nlm.focusoff_border="listvisiblefocusoff_border";
+
+	f->create_focusable_container
+		([&]
+		 (const LIBCXX_NAMESPACE::w::focusable_container &c)
+		 {
+			 LIBCXX_NAMESPACE::w::listlayoutmanager lm=
+				 c->get_layoutmanager();
+
+			 std::vector<LIBCXX_NAMESPACE::w::list_item_param>
+				 items;
+
+			 items.reserve((std::end(processes)-
+					std::begin(processes)) * 5);
+
+			 for (const auto &p:processes)
+			 {
+				 std::ostringstream cpu, ram, diskio, netio;
+
+				 cpu << p.cpu << "%";
+
+				 ram << p.ram << "%";
+
+				 diskio << p.diskio << " Mbps";
+
+				 netio << p.netio << " Mbps";
+
+				 std::string fields[5]={
+							p.process,
+							cpu.str(),
+							ram.str(),
+							diskio.str(),
+							netio.str()
+				 };
+
+				 items.insert(items.end(),
+					      std::begin(fields),
+					      std::end(fields));
+			 }
+			 lm->append_items(items);
+		 },
+		 nlm);
+}
+
+void testlist()
+{
+	LIBCXX_NAMESPACE::w::containerptr c;
+
+	auto close_flag=close_flag_ref::create();
+
+	auto main_window=LIBCXX_NAMESPACE::w::main_window
+		::create([&]
+			 (const auto &main_window)
+			 {
+				 LIBCXX_NAMESPACE::w::gridlayoutmanager
+				     layout=main_window->get_layoutmanager();
+				 LIBCXX_NAMESPACE::w::gridfactory factory=
+				     layout->append_row();
+
+				 create_process_table(factory);
+			 });
+
+	main_window->on_disconnect([]
+				   {
+					   exit(1);
+				   });
+
+	main_window->on_delete
+		([close_flag]
+		 (THREAD_CALLBACK,
+		  const auto &ignore)
+		 {
+			 close_flag->close();
+		 });
+
+	main_window->show_all();
+
+	LIBCXX_NAMESPACE::mpcobj<bool>::lock lock{close_flag->flag};
+	lock.wait([&] { return *lock; });
+}
+
+#include "testprogramoptions.H"
+
 int main(int argc, char **argv)
 {
 	try {
 		LIBCXX_NAMESPACE::property
 			::load_property(LIBCXX_NAMESPACE_STR "::themes",
 					"themes", true, true);
+		testprogramoptions options;
+
+		options.parse(argc, argv);
+		if (options.test->value)
+		{
+			testlist1();
+			return 0;
+		}
 		testlist();
 	} catch (const LIBCXX_NAMESPACE::exception &e)
 	{

@@ -166,11 +166,44 @@ class LIBCXX_HIDDEN new_listlayoutmanager : public new_focusable_layoutmanager {
 	//! Alignment of all columns.
 	std::unordered_map<size_t, halign> col_alignments;
 
+	//! Optional borders between columns
+
+	//! Draw these borders between the columns. columns_borders[1]
+	//! specifies the border between the 1st and the 2nd column
+	//! (column #0 and column #1).
+	//!
+	//! Map keys must be between 1 and (columns-1).
+	//!
+	//! The focus border gets drawn around the list, and there should
+	//! always be a focus border that visually connects with the column
+	//! borders, see focusoff_border, below.
+
+	std::unordered_map<size_t, border_arg> column_borders;
+
 	//! What other list this list's columns get synchronized with.
 	synchronized_axis synchronized_columns;
 
 	//! The border around the list.
 	border_arg list_border;
+
+	//! Inner border around the list when the list does not have input focus
+
+	//! Note that if the list has column_borders, they connect to the
+	//! input focus frame, so this should be visible. The default
+	//! is "listfocusoff_border", which is empty, no border drawn around
+	//! the list when it has no focus. This border is the same size as
+	//! "listfocuson_border".
+	//!
+	//! "listvisiblefocusoff_border draws a lesser intensity border that's
+	//! visible, but does not indicate input focus, and provides a visual
+	//! connection with column_borders.
+
+	border_arg focusoff_border;
+
+	//! Inner border around the list when the list has input focus
+
+	//! Border should be the same size as the focusoff_border
+	border_arg focuson_border;
 
 	//! Padding above and below each list item
 	dim_arg v_padding;

@@ -169,7 +169,11 @@ struct LIBCXX_HIDDEN listimpl_info_s {
 
 	//! Scaled to current element width, factoring in the padding.
 
-	std::vector<std::pair<coord_t, dim_t>> columns_poswidths;
+	std::vector<std::tuple<coord_t, dim_t>> columns_poswidths;
+
+	//! Starting position and width of any borders
+
+	std::unordered_map<size_t, coord_t> border_positions;
 
 	//! The rows
 	list_row_info_vector row_infos;
@@ -265,6 +269,11 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 
 	//! Specified in new_listlayoutmanager.
 	const std::unordered_map<size_t, halign> col_alignments;
+
+	//! Borders
+
+	//! Specified in new_listlayoutmanager.
+	const std::unordered_map<size_t, current_border_impl> column_borders;
 
  private:
 	//! Synchronization info
@@ -491,6 +500,9 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 
 	//! Scratch buffer for drawing separators
 	const scratch_buffer scratch_buffer_for_separator;
+
+	//! Scratch buffer for drawing borders
+	const scratch_buffer scratch_buffer_for_borders;
 
 	//! Precreate an icon that we might need.
 	const icon bullet1;
