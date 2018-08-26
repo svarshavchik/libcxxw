@@ -173,16 +173,16 @@ class LIBCXX_HIDDEN new_listlayoutmanager : public new_focusable_layoutmanager {
 	border_arg list_border;
 
 	//! Padding above and below each list item
-	std::string v_padding;
+	dim_arg v_padding;
 
 	//! Left margin
-	std::string left_padding;
+	dim_arg left_padding;
 
 	//! Padding between columns of multicolumn lists
-	std::string inner_padding;
+        dim_arg inner_padding;
 
 	//! Right margin padding
-	std::string right_padding;
+	dim_arg right_padding;
 
 	//! Visibility of the vertical scrollbar
 	scrollbar_visibility vertical_scrollbar;
