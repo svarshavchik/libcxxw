@@ -10,6 +10,7 @@
 #include "x/w/impl/element.H"
 #include "straight_borderfwd.H"
 #include "corner_borderfwd.H"
+#include "synchronized_axis_valueobj.H"
 #include "metrics_grid_xy.H"
 #include <vector>
 #include <tuple>
@@ -24,8 +25,12 @@ LIBCXXW_NAMESPACE_START
 //!
 //! This is an ONLY IN_THREAD object.
 
-class gridlayoutmanagerObj::implObj::elementsObj : virtual public obj {
+class gridlayoutmanagerObj::implObj::elementsObj
+	: public synchronized_axis_valueObj {
 
+	//! My container element.
+
+	const container_impl my_container;
 public:
 
 	//! One element in the grid.
@@ -170,7 +175,7 @@ public:
 					metrics::grid_xy y);
 
 	//! Register a bor
-	elementsObj();
+	elementsObj(const container_impl &);
 
 	~elementsObj();
 
@@ -180,7 +185,9 @@ public:
 
 	//! Cached metrics for all columns.
 
-	metrics::grid_metrics_t horiz_metrics;
+	metrics::grid_metrics_t unsynchronized_horiz_metrics;
+
+	metrics::grid_metrics_t synchronized_horiz_metrics;
 
 	//! Cached metrics for all rows.
 
@@ -204,7 +211,15 @@ public:
 
 	std::tuple<bool, metrics::axis, metrics::axis>
 	recalculate_metrics(ONLY IN_THREAD,
+			    my_synchronized_axis &synchronized_columns,
 			    bool flag);
+
+	//! Implement synchronized_axis_updated
+
+	//! Triggers recalculation.
+	void synchronized_axis_updated(ONLY IN_THREAD,
+				       const std::vector<metrics::derivedaxis>
+				       &) override;
 
 	//! Cached sizes for all columns
 

@@ -187,6 +187,11 @@ struct LIBCXX_HIDDEN my_synchronized_axis {
 
 		using synchronized_values::lock::operator->;
 
+		//! Whether there are any other values that will be synchronized with.
+
+		//! Allows the caller to avoid doing hard work.
+		bool has_synchronized_values();
+
 		//! After updating my_value, recalculate the synchronized axis.
 
 		//! Pass in the new values to be synchronized with all others.

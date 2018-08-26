@@ -70,6 +70,10 @@ my_synchronized_axis::lock::lock(my_synchronized_axis &me)
 
 my_synchronized_axis::lock::~lock()=default;
 
+bool my_synchronized_axis::lock::has_synchronized_values()
+{
+	return (*this)->all_values.size() > 1;
+}
 
 void my_synchronized_axis::lock
 ::update_values(ONLY IN_THREAD,	const std::vector<metrics::axis> &values)
@@ -125,7 +129,8 @@ void synchronized_axis_values_t
 		if (b == iter) continue;	// The one to skip
 
 		try {
-			(*b)->updated(IN_THREAD, derived_values);
+			(*b)->synchronized_axis_updated(IN_THREAD,
+							derived_values);
 		} CATCH_EXCEPTIONS;
 	}
 }

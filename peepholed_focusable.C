@@ -143,7 +143,7 @@ create_peepholed_focusable_with_frame_impl
 
 			 focusframecontainer_impl=focusframe_impl_ret;
 		 },
-		 new_gridlayoutmanager());
+		 new_gridlayoutmanager{});
 
 	pfc->show();
 

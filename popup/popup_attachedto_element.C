@@ -35,7 +35,8 @@ create_popup_attachedto_element_impl(factoryObj &parent_factory,
 
 	// We will use the grid layout manager, of course.
 
-	auto glm_impl=ref<gridlayoutmanagerObj::implObj>::create(real_impl);
+	ref<gridlayoutmanagerObj::implObj> glm_impl=
+		new_gridlayoutmanager{}.create(real_impl);
 
 	auto glm=glm_impl->create_gridlayoutmanager();
 
@@ -78,8 +79,9 @@ create_popup_attachedto_element_impl(factoryObj &parent_factory,
 			 auto impl=popup_contents_impl_factory(parent,
 							       c_params);
 
-			 auto glm_impl=ref<gridlayoutmanagerObj::implObj>
-			 ::create(impl);
+			 new_gridlayoutmanager nglm;
+
+			 auto glm_impl=nglm.create(impl);
 
 			 auto c=popup_contents_factory(attachedto_info,
 						       glm_impl);

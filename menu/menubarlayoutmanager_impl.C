@@ -34,8 +34,8 @@ menupopup_delay(LIBCXX_NAMESPACE_STR "::w::menupopup_delay", 500);
 
 menubarlayoutmanagerObj::implObj::implObj(const ref<menubar_container_implObj>
 					  &container_impl)
-	: gridlayoutmanagerObj::implObj(container_impl),
-	container_impl(container_impl)
+	: gridlayoutmanagerObj::implObj{container_impl, {}},
+	  container_impl{container_impl}
 {
 }
 
@@ -110,9 +110,8 @@ menu menubarlayoutmanagerObj::implObj
 			 menu_impl);
 
 	auto hotspot=focusable_owner_container::create(hotspot_impl,
-						       ref<gridlayoutmanagerObj
-						       ::implObj>::create
-						       (hotspot_impl),
+						       new_gridlayoutmanager{}
+						       .create(hotspot_impl),
 						       hotspot_impl);
 
 	auto ff_impl=ref<focusframelayoutimplObj>

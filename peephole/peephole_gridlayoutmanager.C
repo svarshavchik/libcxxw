@@ -14,7 +14,7 @@ LIBCXXW_NAMESPACE_START
 peephole_gridlayoutmanagerObj
 ::peephole_gridlayoutmanagerObj(const container_impl
 				&container_impl)
-	: gridlayoutmanagerObj::implObj(container_impl)
+	: gridlayoutmanagerObj::implObj{container_impl, {}}
 {
 	// If the peephole itself is fill-ed horizontally or vertically,
 	// we want to make sure this carries over to the actual peephole

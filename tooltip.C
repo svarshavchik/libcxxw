@@ -208,8 +208,8 @@ void tooltip_factory_impl::create(const function<void (const container &)>
 
 
 	auto tooltip_popup=popup::create(popup_impl,
-					 ref<gridlayoutmanagerObj::implObj>
-					 ::create(popup_handler));
+					 new_gridlayoutmanager{}
+					 .create(popup_handler));
 
 	gridlayoutmanager glm=tooltip_popup->get_layoutmanager();
 

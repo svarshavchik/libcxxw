@@ -30,6 +30,12 @@ LIBCXXW_NAMESPACE_START
 
 #define BORDER_COORD_TO_ROWCOL(n) ((n)/2)
 
+//! Given a non-border coordinate, translate to logical row or column number.
+
+//! Same thing, really.
+
+#define NONBORDER_COORD_TO_ROWCOL(n) ((n)/2)
+
 //! Invoke v_lambda passed to calculate_borders()
 
 //! The logical calls to v_lambda pass logical rows and column. This

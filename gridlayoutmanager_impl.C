@@ -6,6 +6,7 @@
 #include "gridlayoutmanager.H"
 #include "gridlayoutmanager_impl_elements.H"
 #include "grid_map_info.H"
+#include "synchronized_axis_value.H"
 #include "x/w/impl/element.H"
 #include "inherited_visibility_info.H"
 #include "x/w/impl/container.H"
@@ -20,14 +21,25 @@
 LIBCXXW_NAMESPACE_START
 
 gridlayoutmanagerObj::implObj
-::implObj(const container_impl &container_impl)
-	: layoutmanagerObj::implObj(container_impl),
-	grid_map(ref<grid_map_infoObj>::create()),
-	grid_elements_thread_only(ref<elementsObj>::create())
+::implObj(const container_impl &container_impl,
+	  const new_gridlayoutmanager &glm)
+	: layoutmanagerObj::implObj{container_impl},
+	  grid_map{ref<grid_map_infoObj>::create()},
+	  grid_elements_thread_only{ref<elementsObj>::create(container_impl)},
+
+	  // elementsObj inherits from synchronized_axis_valueObj
+
+	  synchronized_columns{glm.synchronized_columns,
+			       grid_elements_thread_only}
 {
 }
 
 gridlayoutmanagerObj::implObj::~implObj()=default;
+
+void gridlayoutmanagerObj::implObj::uninstalling(ONLY IN_THREAD)
+{
+	synchronized_columns.removed_from_container(IN_THREAD);
+}
 
 void gridlayoutmanagerObj::implObj
 ::requested_col_width(size_t col, int percentage)
@@ -316,7 +328,8 @@ void gridlayoutmanagerObj::implObj::recalculate(ONLY IN_THREAD)
 #endif
 
 	auto [final_flag, horiz_metrics, vert_metrics]=
-		grid_elements(IN_THREAD)->recalculate_metrics(IN_THREAD, flag);
+		grid_elements(IN_THREAD)->recalculate_metrics
+		(IN_THREAD, synchronized_columns, flag);
 
 	if (!final_flag)
 		return;

@@ -14,6 +14,7 @@
 #include "x/w/connection_threadfwd.H"
 #include "x/w/impl/current_border_implfwd.H"
 #include "grid_elementobj.H"
+#include "synchronized_axis_valuefwd.H"
 #include <x/vector.H>
 #include <tuple>
 #include <utility>
@@ -29,10 +30,15 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
  public:
 
 	//! Constructor
-	implObj(const container_impl &container_impl);
+	implObj(const container_impl &container_impl,
+		const new_gridlayoutmanager &glm);
 
 	//! Destructor
 	~implObj();
+
+	//! Preparing to uninstall.
+
+	void uninstalling(ONLY IN_THREAD) override;
 
 	//! Set requested column width.
 
@@ -197,11 +203,15 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 
  private:
 
-	//! Store the grid calculation data out of harm's way.
-
 	class elementsObj;
 
+	//! Store the grid calculation data out of harm's way.
+
 	const ref<elementsObj> grid_elements_thread_only;
+
+	//! What other columns are this grid's columns synchronized with.
+
+	my_synchronized_axis synchronized_columns;
 
 	//! Rebuild elements, if needed.
 

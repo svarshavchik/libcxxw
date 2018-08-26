@@ -16,6 +16,7 @@
 #include "x/w/gridfactory.H"
 #include "x/w/listlayoutmanager.H"
 #include "x/w/listlayoutmanager.H"
+#include "x/w/label.H"
 
 #include <vector>
 #include <sstream>
@@ -320,6 +321,7 @@ void create_process_table(const LIBCXX_NAMESPACE::w::gridfactory &f)
 	nlm.columns=5;
 
 	nlm.col_alignments={
+			    {0, LIBCXX_NAMESPACE::w::halign::center},
 			    {1, LIBCXX_NAMESPACE::w::halign::right},
 			    {2, LIBCXX_NAMESPACE::w::halign::right},
 			    {3, LIBCXX_NAMESPACE::w::halign::right},
@@ -333,6 +335,21 @@ void create_process_table(const LIBCXX_NAMESPACE::w::gridfactory &f)
 			    {4, "thin_dashed_0%"},
 	};
 	nlm.focusoff_border="listvisiblefocusoff_border";
+
+	nlm.header_factory=[]
+		(const LIBCXX_NAMESPACE::w::factory &f, size_t i)
+		{
+			static const char * const titles[]=
+				{
+				 "Process",
+				 "CPU %",
+				 "RAM %",
+				 "Disk I/O (Mbps)",
+				 "Net I/O (Mbps)",
+				};
+
+			f->create_label(titles[i])->show();
+		};
 
 	f->create_focusable_container
 		([&]

@@ -13,8 +13,7 @@ LIBCXXW_NAMESPACE_START
 pagetabgridlayoutmanagerObj::implObj
 ::implObj(const pagetabgridcontainer_impl &my_container,
 	  const container_impl &parent_container)
-
-	: superclass_t{my_container},
+	: superclass_t{my_container, {}},
 	  my_container{my_container},
 	  parent_container{parent_container}
 {
@@ -36,7 +35,7 @@ void pagetabgridlayoutmanagerObj::implObj::recalculate(ONLY IN_THREAD)
 
 	dim_t minimum_width=0;
 
-	for (const auto &m:grid_elements(IN_THREAD)->horiz_metrics)
+	for (const auto &m:grid_elements(IN_THREAD)->synchronized_horiz_metrics)
 	{
 		auto this_minimum=m.second.minimum();
 

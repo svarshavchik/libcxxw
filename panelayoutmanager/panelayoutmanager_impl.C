@@ -31,9 +31,9 @@ LIBCXXW_NAMESPACE_START
 panelayoutmanagerObj::implObj::implObj(const ref<panecontainer_implObj>
 				       &pane_container_impl,
 				       const pane_style &style)
-	: gridlayoutmanagerObj::implObj{pane_container_impl},
-	pane_container_impl{pane_container_impl},
-	style{style}
+	: gridlayoutmanagerObj::implObj{pane_container_impl, {}},
+	  pane_container_impl{pane_container_impl},
+	  style{style}
 {
 }
 

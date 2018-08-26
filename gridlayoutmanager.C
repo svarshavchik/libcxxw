@@ -8,6 +8,7 @@
 #include "gridlayoutmanager.H"
 #include "gridfactory.H"
 #include "grid_map_info.H"
+#include "x/w/synchronized_axis.H"
 #include "x/w/element.H"
 #include "gridfactory.H"
 #include "metrics_grid_pos.H"
@@ -16,13 +17,16 @@
 
 LIBCXXW_NAMESPACE_START
 
-new_gridlayoutmanager::new_gridlayoutmanager()=default;
+new_gridlayoutmanager::new_gridlayoutmanager()
+	: synchronized_columns{synchronized_axis::create()}
+{
+}
 
 new_gridlayoutmanager::~new_gridlayoutmanager()=default;
 
 layout_impl new_gridlayoutmanager::create(const container_impl &parent) const
 {
-	return ref<gridlayoutmanagerObj::implObj>::create(parent);
+	return ref<gridlayoutmanagerObj::implObj>::create(parent, *this);
 }
 
 gridlayoutmanagerObj::gridlayoutmanagerObj(const ref<implObj> &impl)

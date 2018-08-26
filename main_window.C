@@ -167,8 +167,7 @@ init_containers(const container_impl &parent,
 
 	auto menu_and_app=peepholed_toplevel_main_window
 		::create(menu_and_app_impl,
-			 ref<gridlayoutmanagerObj::implObj>::create
-			 (menu_and_app_impl));
+			 new_gridlayoutmanager{}.create(menu_and_app_impl));
 
 	gridlayoutmanager glm=menu_and_app->get_layoutmanager();
 

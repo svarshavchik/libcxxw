@@ -229,9 +229,9 @@ do_create_image_button(const create_image_button_info &info,
 		::create(info.disable_recursive_visibility,
 			 info.f.get_container_impl());
 
-	auto image_button_outer_container_layout=
-		ref<gridlayoutmanagerObj::implObj>
-		::create(image_button_outer_container_impl);
+	ref<gridlayoutmanagerObj::implObj> image_button_outer_container_layout=
+		new_gridlayoutmanager{}
+	.create(image_button_outer_container_impl);
 
 	auto glm=image_button_outer_container_layout->create_gridlayoutmanager();
 

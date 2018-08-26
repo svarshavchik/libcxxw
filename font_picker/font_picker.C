@@ -230,8 +230,8 @@ static inline font_picker_preview create_preview_label(const factory &f)
 	// Construct the grid layout manager, for
 	// the peephole element.
 
-	auto glm_impl=ref<gridlayoutmanagerObj::implObj>
-		::create(preview_container_impl);
+	ref<gridlayoutmanagerObj::implObj> glm_impl=
+		new_gridlayoutmanager{}.create(preview_container_impl);
 
 	auto glm=glm_impl->create_gridlayoutmanager();
 

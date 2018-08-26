@@ -18,6 +18,7 @@ LIBCXXW_NAMESPACE_START
 class LIBCXX_HIDDEN borderlayoutmanagerObj::implObj
 	: public singletonlayoutmanagerObj::implObj {
 
+ protected:
 	// Alias
 	typedef singletonlayoutmanagerObj::implObj superclass_t;
 

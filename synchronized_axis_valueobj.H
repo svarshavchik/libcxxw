@@ -33,8 +33,9 @@ public:
 
 	//! New synchronized values have been computed.
 
-	virtual void updated(ONLY IN_THREAD,
-			     const std::vector<metrics::derivedaxis> &)=0;
+	virtual void synchronized_axis_updated
+		(ONLY IN_THREAD,
+		 const std::vector<metrics::derivedaxis> &)=0;
 };
 
 LIBCXXW_NAMESPACE_END

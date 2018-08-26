@@ -114,7 +114,8 @@ date_input_field factoryObj
 
 	// We use the grid layout manager, of course.
 
-	auto glm_impl=ref<gridlayoutmanagerObj::implObj>::create(handler);
+	ref<gridlayoutmanagerObj::implObj> glm_impl=
+		new_gridlayoutmanager{}.create(handler);
 
 	auto glm=glm_impl->create_gridlayoutmanager();
 
@@ -178,20 +179,20 @@ date_input_field factoryObj
 			 config.popup_background_color;
 
 			 auto container_impl=ref<date_input_field_calendarObj
-			 ::implObj>::create
-			 (parent, init_params);
+						 ::implObj>::create
+				 (parent, init_params);
 
-			 auto glm_impl=ref<gridlayoutmanagerObj::implObj>
-			 ::create(container_impl);
+			 ref<gridlayoutmanagerObj::implObj> glm_impl=
+				 new_gridlayoutmanager{}.create(container_impl);
 
 			 auto glm=glm_impl->create_gridlayoutmanager();
 
 			 auto container=date_input_field_calendar
-			 ::create(attachedto_info,
-				  container_impl,
-				  glm_impl,
-				  ymd{},
-				  text_input_field);
+				 ::create(attachedto_info,
+					  container_impl,
+					  glm_impl,
+					  ymd{},
+					  text_input_field);
 
 			 calendar_containerptr=container;
 

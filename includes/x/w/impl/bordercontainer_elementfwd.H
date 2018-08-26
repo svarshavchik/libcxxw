@@ -28,14 +28,10 @@ struct bottom_border_tag;
 //! and two dims that specify additional padding between the border and the
 //! display element inside it.
 //!
-//! The first parameter to the constructor is the initial current_border_impl,
-//! followed by two border_args, and the remaining parameters get forwarded
+//! The first four parameters to the constructor are the four border_args
+//! that set the initial borders, the remaining two arguments are any
+//! additional padding, and the remaining parameters get forwarded
 //! to the superclass.
-//!
-//! \note
-//! This template mixin is not responsible for invoking current_border_impl's
-//! initialize(). Both the initial current border's, and the new set_border()'s
-//! callers are responsible for this.
 
 template<typename element_impl>
 class bordercontainer_elementObj

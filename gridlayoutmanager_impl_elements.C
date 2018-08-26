@@ -9,6 +9,7 @@
 #include "calculate_borders.H"
 #include "straight_border.H"
 #include "corner_border.H"
+#include "metrics_grid_xy.H"
 #include "x/w/impl/current_border_impl.H"
 #include "container_impl.H"
 #include "connection_thread.H"
@@ -26,7 +27,11 @@ size_t gridlayoutmanagerObj::implObj::elementsObj::border_map_hash
 	return (((size_t)std::get<0>(xy).n) << 16) ^ (size_t)std::get<1>(xy).n;
 }
 
-gridlayoutmanagerObj::implObj::elementsObj::elementsObj()=default;
+gridlayoutmanagerObj::implObj::elementsObj::elementsObj(const container_impl
+							&my_container)
+	: my_container{my_container}
+{
+}
 
 gridlayoutmanagerObj::implObj::elementsObj::~elementsObj()=default;
 
@@ -816,6 +821,7 @@ void gridlayoutmanagerObj::implObj
 std::tuple<bool, metrics::axis, metrics::axis>
 gridlayoutmanagerObj::implObj::elementsObj
 ::recalculate_metrics(ONLY IN_THREAD,
+		      my_synchronized_axis &synchronized_columns,
 		      bool flag)
 {
 	auto new_horiz_metrics=
@@ -843,17 +849,139 @@ gridlayoutmanagerObj::implObj::elementsObj
 	}
 #endif
 
-	if (horiz_metrics != new_horiz_metrics ||
-	    vert_metrics != new_vert_metrics)
+	// Synchronize this grid's columns's sizes with any others.
+
+	my_synchronized_axis::lock sync_lock{synchronized_columns};
+
+	if (unsynchronized_horiz_metrics != new_horiz_metrics)
+	{
+		flag=true; // Our metrics have changed in any case.
+		unsynchronized_horiz_metrics=std::move(new_horiz_metrics);
+
+		// We are synchronizing ONLY the columns that correspond to
+		// the actual cells. We have not implemented synchronization
+		// of border columns. Synchronizing border columns with other
+		// grids is easy, but the list layout manager needs more work
+		// to be able to deal with it.
+
+		// Use has_synchronized_values() to check if all this extrsa
+		// work is really needed.
+
+		std::vector<metrics::axis> new_metrics_to_synchronize;
+
+		if (sync_lock.has_synchronized_values())
+		{
+			if (!unsynchronized_horiz_metrics.empty())
+			{
+				new_metrics_to_synchronize.resize
+					( BORDER_COORD_TO_ROWCOL
+					  ((metrics::grid_xy::value_type)
+					   (--unsynchronized_horiz_metrics
+					    .end())->first)+1);
+
+				for (const auto &m:unsynchronized_horiz_metrics)
+				{
+					metrics::grid_xy::value_type v{m.first};
+
+					if (IS_BORDER_RESERVED_COORD(v))
+						continue;
+
+					new_metrics_to_synchronize
+						[NONBORDER_COORD_TO_ROWCOL(v)]=
+						m.second;
+				}
+			}
+
+			sync_lock.update_values(IN_THREAD,
+						new_metrics_to_synchronize);
+		}
+	}
+
+	if (vert_metrics != new_vert_metrics)
 	{
 		flag=true;
 	}
 
-	horiz_metrics=new_horiz_metrics;
-	vert_metrics=new_vert_metrics;
+	// Compare the synchronized column metrics with our current
+	// synchronized metrics. Set the _flag_ if they are different.
 
-	return {flag, total_metrics(horiz_metrics),
+	if (sync_lock.has_synchronized_values())
+	{
+		// The following logic relies on this being an ordered
+		// container:
+		std::map<metrics::grid_xy, metrics::axis>::iterator iter=
+			synchronized_horiz_metrics.begin(),
+			end=synchronized_horiz_metrics.end();
+
+		size_t i=0;
+
+		for (const auto &axis:sync_lock->derived_values)
+		{
+			auto c=CALCULATE_BORDERS_COORD(i)+1;
+
+			while (iter != end && iter->first < c)
+				++c;
+
+			if (iter != end)
+			{
+				if (iter->first != c ||
+				    iter->second != axis)
+				{
+					flag=true;
+					break;
+				}
+			}
+			i=CALCULATE_BORDERS_INCR_SPAN(i);
+		}
+	}
+
+	// We now update and merge synchronized metrics with total metrics.
+	synchronized_horiz_metrics=unsynchronized_horiz_metrics;
+
+	if (sync_lock.has_synchronized_values())
+	{
+		// Now, replace all the coordinates
+
+		// This logic also relies on this being an ordered
+		// container:
+
+		std::map<metrics::grid_xy, metrics::axis>::iterator iter=
+			synchronized_horiz_metrics.begin(),
+			end=synchronized_horiz_metrics.end();
+
+		size_t i=CALCULATE_BORDERS_COORD(0);
+
+		for (const auto &derived_value:sync_lock->derived_values)
+		{
+			while (iter != end)
+			{
+				if (iter->first < i)
+				{
+					++iter;
+					continue;
+				}
+
+				iter->second=derived_value;
+				break;
+			}
+			i=CALCULATE_BORDERS_INCR_SPAN(i);
+		}
+	}
+
+	vert_metrics=std::move(new_vert_metrics);
+
+	return {flag, total_metrics(synchronized_horiz_metrics),
 			total_metrics(vert_metrics) };
+}
+
+void gridlayoutmanagerObj::implObj::elementsObj
+::synchronized_axis_updated(ONLY IN_THREAD,
+			    const std::vector<metrics::derivedaxis> &)
+{
+	// Synchronized metrics have been updated. Trigger recalculation
+	// and eventually we'll make it up there.
+
+	my_container->needs_recalculation(IN_THREAD);
 }
 
 metrics::axis gridlayoutmanagerObj::implObj::elementsObj
@@ -926,7 +1054,7 @@ bool gridlayoutmanagerObj::implObj::elementsObj
 			 return iter->second;
 		 });
 
-	if (metrics::do_calculate_grid_size(horiz_metrics,
+	if (metrics::do_calculate_grid_size(synchronized_horiz_metrics,
 					    horiz_sizes,
 					    target_width, lookup))
 		flag=true;

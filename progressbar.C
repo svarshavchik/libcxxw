@@ -76,9 +76,8 @@ progressbar factoryObj
 	auto progressbar_handler=ref<progressbarObj::handlerObj>
 		::create(get_container_impl(), config);
 
-	auto progressbar_lm=
-		ref<gridlayoutmanagerObj::implObj>::create(progressbar_handler);
-
+	ref<gridlayoutmanagerObj::implObj> progressbar_lm=
+		new_gridlayoutmanager{}.create(progressbar_handler);
 
 	// Inserting the slider into the progress bar.
 

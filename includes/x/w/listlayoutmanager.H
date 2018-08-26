@@ -20,6 +20,7 @@
 #include <x/w/dim_axis_arg.H>
 #include <x/w/font_arg.H>
 #include <x/w/synchronized_axisfwd.H>
+#include <x/w/factoryfwd.H>
 #include <x/ref.H>
 #include <x/refptr_traits.H>
 #include <x/functionalrefptr.H>
@@ -184,7 +185,47 @@ class LIBCXX_HIDDEN new_listlayoutmanager : public new_focusable_layoutmanager {
 
 	std::unordered_map<size_t, border_arg> column_borders;
 
+	//! Optional header row.
+
+	// \code
+	//! header_factory=[]
+	//!                (const INSERT_LIBX_NAMESPACE::w::factory &f,
+	//!                 size_t column)
+	//!                {
+	//!                     f->create_label("Header!")->show();
+	//!                };
+	//! \endcode
+	//!
+	//! Setting header_factory creates a header row. This callback
+	//! gets invoked by create_focusable_container() to populate each
+	//! column's header. The callback gets called once for each
+	//! column, with the \column parameter varying from 0 to
+	//! columns-1.
+	//!
+	//! The callback must use the given factory to construct exactly
+	//! one display element. The callback is responsible for show()ing
+	//! the element.
+
+	functionptr<void (const factory &, size_t)> header_factory;
+
 	//! What other list this list's columns get synchronized with.
+
+	//! It is also possible to, very carefully, synchronize the columns
+	//! between a grid and the list, by using the same
+	//! synchronized_columns with a.
+	//! \ref new_gridlayoutmanager "new_gridlayoutmanager".
+	//!
+	//! This works correctly only if:
+	//!
+	//! - both this list and the other list or grid have the same number
+	//! of columns
+	//!
+	//! - their borders are the same.
+	//!
+	//! - Their paddings (left_padding, inner_padding, right_padding)
+	//! are the same (specified individually for each cell in a grid,
+	//! as the cell's left and right padding).
+
 	synchronized_axis synchronized_columns;
 
 	//! The border around the list.
@@ -233,10 +274,18 @@ class LIBCXX_HIDDEN new_listlayoutmanager : public new_focusable_layoutmanager {
 	color_arg selected_color;
 
 	//! Highlighted color
+
+	//! Item's color when the pointer button #1 is pressed on top of it.
 	color_arg highlighted_color;
 
 	//! Currently selected color
+
+	//! Item's color when the pointer is hovering on top of it, without
+	//! the button being pressed.
 	color_arg current_color;
+
+	//! Background color for the optional header row.
+	color_arg header_color;
 
 	//! List font
 	font_arg list_font;
