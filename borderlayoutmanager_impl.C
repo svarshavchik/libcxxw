@@ -131,7 +131,7 @@ rectangle borderlayoutmanagerObj::implObj
 		current_position.height > vpad2 ? current_position.height-vpad2:dim_t{};
 
 	return {coord_t::truncate(info.left_pad),
-		coord_t::truncate(info.right_pad),
+		coord_t::truncate(info.top_pad),
 		padded_width, padded_height};
 }
 
