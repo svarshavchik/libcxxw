@@ -63,7 +63,7 @@ public:
 	//! Whether there are any other values that will be synchronized with.
 
 	//! Allows the caller to avoid doing hard work.
-	bool has_synchronized_values();
+	bool has_synchronized_values(ONLY IN_THREAD);
 
 	//! After updating my_value, recalculate the synchronized axis.
 
@@ -80,6 +80,20 @@ public:
 	void update_values(ONLY IN_THREAD,
 			   const std::vector<metrics::axis> &);
 
+	//! Recalculate the synchronized axis, with minimums and req widths
+
+	//! Specifies that the sum total of the axis' minimum should be
+	//! increase to at least the minimum, and the extra space distributed
+	//! according to requested_col_width.
+	//!
+	//! requested_col_width: key is the column number, weight is the
+	//! weighted amount of extra minimums distributed to this axi.
+
+	void update_values(ONLY IN_THREAD,
+			   const std::vector<metrics::axis> &,
+			   dim_t minimum,
+			   const std::unordered_map<size_t, int>
+			   &requested_col_widths);
 };
 
 //! Internal implementation object.

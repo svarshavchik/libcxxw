@@ -22,8 +22,16 @@ class LIBCXX_HIDDEN synchronized_axis_valueObj : virtual public obj {
 	//! The values being synchronized
 
 	std::vector<metrics::axis> values_thread_only;
+
+	//! The values being synchronized
+	dim_t minimum_thread_only;
+
+	//! The values being synchronized
+	std::unordered_map<size_t, int> requested_col_widths_thread_only;
 public:
 	THREAD_DATA_ONLY(values);
+	THREAD_DATA_ONLY(minimum);
+	THREAD_DATA_ONLY(requested_col_widths);
 
 	//! Constructor
 	synchronized_axis_valueObj();

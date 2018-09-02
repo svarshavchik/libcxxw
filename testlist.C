@@ -17,6 +17,10 @@
 #include "x/w/listlayoutmanager.H"
 #include "x/w/listlayoutmanager.H"
 #include "x/w/label.H"
+#include "x/w/button.H"
+#include "x/w/canvas.H"
+#include "x/w/screen.H"
+#include "x/w/connection.H"
 
 #include <vector>
 #include <sstream>
@@ -312,7 +316,10 @@ static mondata processes[]=
 	 {"Backup", 4, 5, 5, 0},
 	};
 
-void create_process_table(const LIBCXX_NAMESPACE::w::gridfactory &f)
+#include "testlistoptions.H"
+
+void create_process_table(const LIBCXX_NAMESPACE::w::gridfactory &f,
+			  const testlistoptions &options)
 {
 	LIBCXX_NAMESPACE::w::new_listlayoutmanager nlm{LIBCXX_NAMESPACE::w
 						       ::highlighted_list};
@@ -320,6 +327,7 @@ void create_process_table(const LIBCXX_NAMESPACE::w::gridfactory &f)
 	nlm.selection_type=LIBCXX_NAMESPACE::w::no_selection_type;
 	nlm.columns=5;
 
+	nlm.requested_col_widths={{0, 100}};
 	nlm.col_alignments={
 			    {0, LIBCXX_NAMESPACE::w::halign::center},
 			    {1, LIBCXX_NAMESPACE::w::halign::right},
@@ -393,23 +401,67 @@ void create_process_table(const LIBCXX_NAMESPACE::w::gridfactory &f)
 		 nlm);
 }
 
-void testlist()
+void testlist(const testlistoptions &options)
 {
+	LIBCXX_NAMESPACE::destroy_callback::base::guard guard;
+
 	LIBCXX_NAMESPACE::w::containerptr c;
 
 	auto close_flag=close_flag_ref::create();
 
-	auto main_window=LIBCXX_NAMESPACE::w::main_window
-		::create([&]
-			 (const auto &main_window)
-			 {
-				 LIBCXX_NAMESPACE::w::gridlayoutmanager
-				     layout=main_window->get_layoutmanager();
-				 LIBCXX_NAMESPACE::w::gridfactory factory=
+	auto default_screen=LIBCXX_NAMESPACE::w::screen::create();
+
+	auto [original_theme, original_scale, original_options]
+		=default_screen->get_connection()->current_theme();
+
+	auto main_window=default_screen->create_mainwindow
+		([&]
+		 (const auto &main_window)
+		 {
+			 LIBCXX_NAMESPACE::w::gridlayoutmanager
+				 layout=main_window->get_layoutmanager();
+			 LIBCXX_NAMESPACE::w::gridfactory factory=
 				     layout->append_row();
 
-				 create_process_table(factory);
-			 });
+			 factory->halign(LIBCXX_NAMESPACE::w
+					 ::halign::fill);
+			 create_process_table(factory, options);
+
+			 if (options.expand->value)
+			 {
+				 factory=layout->append_row();
+
+				 factory->create_canvas
+					 ([](const auto &){},
+					  {200},
+					  {10})->show();
+			 }
+
+			 factory=layout->append_row();
+
+			 auto b=factory->create_normal_button_with_label
+				 ("Bigger/Smaller");
+
+			 b->on_activate
+				 ([=]
+				  (THREAD_CALLBACK,
+				   const auto &trigger,
+				   const auto &busy)
+				  mutable
+				  {
+					  original_scale=original_scale == 100
+						  ? 200:100;
+
+					  default_screen->get_connection()
+						  ->set_theme(original_theme,
+							      original_scale,
+							      original_options,
+							      true);
+				  });
+
+		 });
+
+	guard(main_window->connection_mcguffin());
 
 	main_window->on_disconnect([]
 				   {
@@ -430,15 +482,13 @@ void testlist()
 	lock.wait([&] { return *lock; });
 }
 
-#include "testprogramoptions.H"
-
 int main(int argc, char **argv)
 {
 	try {
 		LIBCXX_NAMESPACE::property
 			::load_property(LIBCXX_NAMESPACE_STR "::themes",
 					"themes", true, true);
-		testprogramoptions options;
+		testlistoptions options;
 
 		options.parse(argc, argv);
 		if (options.test->value)
@@ -446,7 +496,7 @@ int main(int argc, char **argv)
 			testlist1();
 			return 0;
 		}
-		testlist();
+		testlist(options);
 	} catch (const LIBCXX_NAMESPACE::exception &e)
 	{
 		e->caught();

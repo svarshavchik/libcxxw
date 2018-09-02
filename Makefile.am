@@ -870,8 +870,6 @@ TESTPROGRAMS=\
 	testtextparam					\
 	#
 
-$(call OPTIONS_GEN,testprogramoptions.H,testprogramoptions.xml)
-
 INTERACTIVETESTPROGRAMS=\
 	testbook					\
 	testbusy					\
@@ -964,6 +962,7 @@ testlabel_SOURCES=testlabel.C
 testlabel_LDADD=libcxxw.la
 testlabel_LDFLAGS=-static $(STATICLINKFLAGS)
 
+$(call OPTIONS_GEN,testlistoptions.H,testlistoptions.xml)
 testlist_SOURCES=testlist.C
 testlist_LDADD=libcxxw.la
 testlist_LDFLAGS=$(TESTLINKTYPE)

@@ -198,6 +198,9 @@ new_listlayoutmanager::create(const container_impl
 		// We don't need any extra padding from the outer grid.
 		f->padding(0);
 
+		// And make sure it's left-aligned
+		f->halign(halign::left);
+
 		// Create a replica list border.
 		child_element_init_params header_init_params;
 		header_init_params.background_color=header_color;

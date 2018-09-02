@@ -811,10 +811,36 @@ dim_t list_elementObj::implObj
 
 	our_column_widths_values.reserve(n);
 
+	// Compute the total width we would like to synchronize to.
+	//
+	// We start with our current width, and subtract the width of any
+	// vertical borders.
+	//
+	// The end result is the total width that list columns should
+	// take up.
+
+	dim_t width_to_synchronize_to=data(IN_THREAD).current_position.width;
+
 	size_t i=0;
 
 	for (const auto &w:lock->calculated_column_widths)
 	{
+		if (i > 0)
+		{
+			auto iter=column_borders.find(i);
+
+			if (iter != column_borders.end())
+			{
+				auto w=iter->second
+					->border(IN_THREAD)
+					->calculated_border_width;
+
+				width_to_synchronize_to=
+					w > width_to_synchronize_to ? dim_t{}
+				: width_to_synchronize_to-w;
+			}
+		}
+
 		auto [left_h_padding, right_h_padding] =
 			textlist_container->get_paddings(IN_THREAD, i);
 		++i;
@@ -835,7 +861,9 @@ dim_t list_elementObj::implObj
 
 	my_synchronized_axis::lock sync_lock{synchronized_info};
 
-	sync_lock.update_values(IN_THREAD, our_column_widths_values);
+	sync_lock.update_values(IN_THREAD, our_column_widths_values,
+				width_to_synchronize_to,
+				requested_col_widths);
 
 	// We now use the synchronized column_widths to compute the final
 	// position and width of our columns.
@@ -899,59 +927,6 @@ dim_t list_elementObj::implObj
 			 total_usable_width);
 
 		final_width=dim_t::truncate(final_width+total_column_width);
-	}
-
-	auto total_column_width=final_width;
-	if (total_column_width==dim_t::infinite())
-		total_column_width=dim_t::infinite()-1;
-
-	// If the list is wider than final_width, distribute the additional
-	// real estate according to requested_col_widths
-
-	dim_t available_width=data(IN_THREAD).current_position.width;
-
-	if (final_width != dim_t::infinite() // If we didn't overflow
-	    && available_width > final_width)
-	{
-		unsigned denominator=0;
-
-		for (const auto &requested_col_width:requested_col_widths)
-			denominator += requested_col_width.second;
-
-		dim_squared_t::value_type total_to_distribute=
-			dim_squared_t::truncate(available_width-final_width);
-
-		dim_squared_t::value_type numerator=0;
-
-		dim_t coord_offset=0;
-
-		for (size_t i=0; i<columns; ++i)
-		{
-			auto &[x, width]=new_columns_poswidths.at(i);
-
-			x=coord_t::truncate(x + coord_offset);
-
-			unsigned n=0;
-
-			auto iter=requested_col_widths.find(i);
-
-			if (iter!=requested_col_widths.end())
-				n=iter->second;
-
-			numerator += total_to_distribute * n;
-
-			dim_t extra=0;
-
-			if (denominator)
-			{
-				extra=dim_t::truncate(numerator / denominator);
-
-				numerator %= denominator;
-			}
-
-			width=dim_t::truncate(width+extra);
-			coord_offset=dim_t::truncate(coord_offset+extra);
-		}
 	}
 
 	// We will definitely need a redraw if something changes.

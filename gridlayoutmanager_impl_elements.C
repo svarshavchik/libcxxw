@@ -870,7 +870,7 @@ gridlayoutmanagerObj::implObj::elementsObj
 
 		std::vector<metrics::axis> new_metrics_to_synchronize;
 
-		if (sync_lock.has_synchronized_values())
+		if (sync_lock.has_synchronized_values(IN_THREAD))
 		{
 			if (!unsynchronized_horiz_metrics.empty())
 			{
@@ -906,7 +906,7 @@ gridlayoutmanagerObj::implObj::elementsObj
 	// Compare the synchronized column metrics with our current
 	// synchronized metrics. Set the _flag_ if they are different.
 
-	if (sync_lock.has_synchronized_values())
+	if (sync_lock.has_synchronized_values(IN_THREAD))
 	{
 		// The following logic relies on this being an ordered
 		// container:
@@ -939,7 +939,7 @@ gridlayoutmanagerObj::implObj::elementsObj
 	// We now update and merge synchronized metrics with total metrics.
 	synchronized_horiz_metrics=unsynchronized_horiz_metrics;
 
-	if (sync_lock.has_synchronized_values())
+	if (sync_lock.has_synchronized_values(IN_THREAD))
 	{
 		// Now, replace all the coordinates
 

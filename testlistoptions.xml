@@ -1,0 +1,29 @@
+<optclass name="testlistoptions">
+  <option>
+    <name>test</name>
+    <type>bool</type>
+    <default>false</default>
+    <opt>t</opt>
+    <longopt>test</longopt>
+    <descr>Invoked by make check</descr>
+  </option>
+
+
+  <option>
+    <name>adjustable</name>
+    <type>bool</type>
+    <default>false</default>
+    <longopt>adjustable</longopt>
+    <descr>Create an adjustable table</descr>
+  </option>
+
+  <option>
+    <name>expand</name>
+    <type>bool</type>
+    <default>false</default>
+    <longopt>expand</longopt>
+    <descr>Artificially expand the table</descr>
+  </option>
+
+  <defaultoptions />
+</optclass>
