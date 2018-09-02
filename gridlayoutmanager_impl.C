@@ -315,12 +315,14 @@ gridlayoutmanagerObj::implObj::lookup_row_col(grid_map_t::lock &lock,
 
 void gridlayoutmanagerObj::implObj::recalculate(ONLY IN_THREAD)
 {
+	grid_map_t::lock lock{grid_map};
+
 	// Not all recalculation is the result of inserting or removing
 	// elements. rebuild_elements() will do its work only if needed.
-	bool flag=rebuild_elements(IN_THREAD);
+	bool flag=rebuild_elements(IN_THREAD, lock);
 
 	if (flag)
-		initialize_new_elements(IN_THREAD);
+		initialize_new_elements(IN_THREAD, lock);
 
 
 #ifdef CALLING_RECALCULATE
@@ -329,7 +331,7 @@ void gridlayoutmanagerObj::implObj::recalculate(ONLY IN_THREAD)
 
 	auto [final_flag, horiz_metrics, vert_metrics]=
 		grid_elements(IN_THREAD)->recalculate_metrics
-		(IN_THREAD, synchronized_columns, flag);
+		(IN_THREAD, lock, synchronized_columns, flag);
 
 	if (!final_flag)
 		return;

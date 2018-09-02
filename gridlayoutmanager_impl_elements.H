@@ -211,6 +211,7 @@ public:
 
 	std::tuple<bool, metrics::axis, metrics::axis>
 	recalculate_metrics(ONLY IN_THREAD,
+			    grid_map_t::lock &lock,
 			    my_synchronized_axis &synchronized_columns,
 			    bool flag);
 

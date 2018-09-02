@@ -215,7 +215,7 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 
 	//! Rebuild elements, if needed.
 
-	bool rebuild_elements(ONLY IN_THREAD);
+	bool rebuild_elements(ONLY IN_THREAD, grid_map_t::lock &lock);
 
 	//! Invoked from rebuild_elements() after the grid map gets locked.
 
@@ -227,7 +227,7 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 
 	//! After rebuilding the elements initialize() the new ones.
 
-	void initialize_new_elements(ONLY IN_THREAD);
+	void initialize_new_elements(ONLY IN_THREAD, grid_map_t::lock &lock);
 
  public:
 	THREAD_DATA_ONLY(grid_elements);

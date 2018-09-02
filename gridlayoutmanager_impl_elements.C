@@ -116,10 +116,9 @@ void gridlayoutmanagerObj::implObj::theme_updated(ONLY IN_THREAD,
 	needs_recalculation(IN_THREAD);
 }
 
-bool gridlayoutmanagerObj::implObj::rebuild_elements(ONLY IN_THREAD)
+bool gridlayoutmanagerObj::implObj::rebuild_elements(ONLY IN_THREAD,
+						     grid_map_t::lock &lock)
 {
-	grid_map_t::lock lock(grid_map);
-
 	auto &ge=grid_elements(IN_THREAD);
 
 	if (!(*lock)->element_modifications_need_processing())
@@ -767,10 +766,10 @@ corner_border gridlayoutmanagerObj::implObj::elementsObj
 	return new_border;
 }
 
-void gridlayoutmanagerObj::implObj::initialize_new_elements(ONLY IN_THREAD)
+void gridlayoutmanagerObj::implObj::initialize_new_elements(ONLY IN_THREAD,
+							    grid_map_t::lock
+							    &lock)
 {
-	grid_map_t::lock lock(grid_map);
-
 	bool flag;
 
 	// Before calculating the metrics, check if any of these
@@ -789,10 +788,10 @@ void gridlayoutmanagerObj::implObj::initialize_new_elements(ONLY IN_THREAD)
 		// initialize_new_elements() was invoked only if
 		// rebuild_elements() retursn true.
 		//
-		// Maybe the initialize() callback add more elements
+		// Maybe the initialize() callback added more elements
 		// to this grid? If so, let's do this again.
 
-		flag=rebuild_elements(IN_THREAD);
+		flag=rebuild_elements(IN_THREAD, lock);
 	} while (flag);
 }
 
@@ -822,6 +821,7 @@ void gridlayoutmanagerObj::implObj
 std::tuple<bool, metrics::axis, metrics::axis>
 gridlayoutmanagerObj::implObj::elementsObj
 ::recalculate_metrics(ONLY IN_THREAD,
+		      grid_map_t::lock &lock,
 		      my_synchronized_axis &synchronized_columns,
 		      bool flag)
 {
@@ -1109,7 +1109,7 @@ bool gridlayoutmanagerObj::implObj
 	// the child element's maximum metrics have changed, the child
 	// element might need to be reposition within its cells, by the
 	// code below.
-	elements.recalculate_sizes(grid_map_t::lock(grid_map),
+	elements.recalculate_sizes(grid_map_t::lock{grid_map},
 				   position.width, position.height);
 
 #ifdef PROCESS_UPDATED_POSITION_DEBUG
