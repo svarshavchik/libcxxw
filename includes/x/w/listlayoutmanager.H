@@ -166,6 +166,9 @@ class LIBCXX_HIDDEN new_listlayoutmanager : public new_focusable_layoutmanager {
 
 	//! If the selection list is filled horizontally, inside its parent
 	//! grid layout manager, the additional space goes to these columns.
+	//!
+	//! This specifies the request width of a column as a percentage of
+	//! the total width of the list, in the range 0-100.
 	std::unordered_map<size_t, int> requested_col_widths;
 
 	//! Alignment of all columns.
@@ -210,9 +213,27 @@ class LIBCXX_HIDDEN new_listlayoutmanager : public new_focusable_layoutmanager {
 
 	//! What other list this list's columns get synchronized with.
 
+	//! Lists created using the same synchronized_columns will have
+	//! their columns' widths equalized. Positioning the lists above
+	//! each results in both lists's columns ligning up with each other.
+	//!
+	//! For this to work correctly:
+	//!
+	//! - Both lists must be sized to the same width by their container.
+	//! Using the grid layout manager and using halign::fill is the
+	//! simplest way to do that.
+	//!
+	//! - both lists must have the same number of columns.
+	//!
+	//! - both lists must have same borders. This includes the list_border,
+	//! focusoff_border, focuson_border, and column_borders. Or, at least,
+	//! the borders must have the same width.
+	//!
+	//! - Both list have the same h_padding.
+	//!
 	//! It is also possible to, very carefully, synchronize the columns
 	//! between a grid and the list, by using the same
-	//! synchronized_columns with a.
+	//! synchronized_columns with a
 	//! \ref new_gridlayoutmanager "new_gridlayoutmanager".
 	//!
 	//! This works correctly only if:
@@ -220,9 +241,9 @@ class LIBCXX_HIDDEN new_listlayoutmanager : public new_focusable_layoutmanager {
 	//! - both this list and the other list or grid have the same number
 	//! of columns
 	//!
-	//! - their borders are the same.
+	//! - all borders are the same.
 	//!
-	//! - Their left and right paddings are the same.
+	//! - Their left and right paddings are the same as v_padding.
 
 	synchronized_axis synchronized_columns;
 

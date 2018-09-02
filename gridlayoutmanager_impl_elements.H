@@ -187,7 +187,22 @@ public:
 
 	metrics::grid_metrics_t unsynchronized_horiz_metrics;
 
-	metrics::grid_metrics_t synchronized_horiz_metrics;
+	//! Whether this grid is synchronized with another grid.
+	bool do_synchronization=false;
+
+	//! Synchronized metrics with other grids, before they're scaled.
+
+	//! If we're not synchronizing this is the same as
+	//! unsynchronized_horiz_metrics, otherwise this is copied from
+	//! synchronized_columns.
+	metrics::grid_metrics_t unscaled_horiz_metrics;
+
+	//! Scaled synchronized metrics with other grids.
+
+	//! If we're not synchronizing this is the same as
+	//! unsynchronized_horiz_metrics, otherwise this is copied from
+	//! synchronized_columns.
+	metrics::grid_metrics_t scaled_horiz_metrics;
 
 	//! Cached metrics for all rows.
 
@@ -219,8 +234,14 @@ public:
 
 	//! Triggers recalculation.
 	void synchronized_axis_updated(ONLY IN_THREAD,
-				       const std::vector<metrics::derivedaxis>
-				       &) override;
+				       const synchronized_axis_values_t &)
+		override;
+
+	//! Update scaled_horiz_metrics
+
+	//! From the synchronized axis.
+	bool update_scaled_metrics(ONLY IN_THREAD,
+				   const synchronized_axis_values_t &);
 
 	//! Cached sizes for all columns
 
@@ -232,7 +253,9 @@ public:
 
 	//! Recalculate horiz_sizes and vert_sizes
 
-	bool recalculate_sizes(const grid_map_t::lock &lock,
+	bool recalculate_sizes(ONLY IN_THREAD,
+			       const grid_map_t::lock &lock,
+			       my_synchronized_axis &synchronized_columns,
 			       dim_t target_width,
 			       dim_t target_height);
 

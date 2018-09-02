@@ -854,47 +854,134 @@ gridlayoutmanagerObj::implObj::elementsObj
 
 	my_synchronized_axis::lock sync_lock{synchronized_columns};
 
+	// Synchronization is extra work, that's usually not needed.
+
+	do_synchronization=sync_lock.has_synchronized_values(IN_THREAD);
+
 	if (unsynchronized_horiz_metrics != new_horiz_metrics)
 	{
 		flag=true; // Our metrics have changed in any case.
-		unsynchronized_horiz_metrics=std::move(new_horiz_metrics);
+		std::swap(unsynchronized_horiz_metrics,
+			  new_horiz_metrics);
+		new_horiz_metrics.clear();
 
-		// We are synchronizing ONLY the columns that correspond to
-		// the actual cells. We have not implemented synchronization
-		// of border columns. Synchronizing border columns with other
-		// grids is easy, but the list layout manager needs more work
-		// to be able to deal with it.
-
-		// Use has_synchronized_values() to check if all this extrsa
-		// work is really needed.
+		// The opening bid is to copy unsynchronized_horiz_metrics
+		// to both scaled and unscaled metrics. If we do not do
+		// synchronization we'll leave it at that.
+		scaled_horiz_metrics=unscaled_horiz_metrics=
+			unsynchronized_horiz_metrics;
 
 		std::vector<metrics::axis> new_metrics_to_synchronize;
+		std::unordered_map<size_t, int> widths;
 
-		if (sync_lock.has_synchronized_values(IN_THREAD))
+		if (do_synchronization && !unsynchronized_horiz_metrics.empty())
 		{
-			if (!unsynchronized_horiz_metrics.empty())
+			// The following logic relies on grid_metrics_t
+			// being an ordered container:
+			//
+			// This is also relied on, below.
+			std::map<metrics::grid_xy, metrics::axis>::iterator
+				iter=unsynchronized_horiz_metrics.begin(),
+				end=unsynchronized_horiz_metrics.end(),
+				last=end;
+
+			--last;
+
+			// The synchronization logic cannot work with abnormal
+			// grids, with missing columns (the column is spanned
+			// in every row). What we are going to do here is to
+			// verify that each cell column exists in the grid.
+			// It's ok for columns that have borders in them to
+			// be missing.
+			//
+			// We know the last column in the grid, "last" points
+			// there. We make sure, here, that every cell column
+			// exists in the grid.
+			//
+			// We start with cell column #0.
+
+			metrics::grid_xy i=CALCULATE_BORDERS_COORD(0);
+
+			while (i < last->first)
 			{
-				new_metrics_to_synchronize.resize
-					( BORDER_COORD_TO_ROWCOL
-					  ((metrics::grid_xy::value_type)
-					   (--unsynchronized_horiz_metrics
-					    .end())->first)+1);
+				// Advance the iterator until the expected
+				// column or bust.
+				while (iter != end && iter->first < i)
+					++iter;
 
-				for (const auto &m:unsynchronized_horiz_metrics)
+				if (iter == end || iter->first != i)
 				{
-					metrics::grid_xy::value_type v{m.first};
-
-					if (IS_BORDER_RESERVED_COORD(v))
-						continue;
-
-					new_metrics_to_synchronize
-						[NONBORDER_COORD_TO_ROWCOL(v)]=
-						m.second;
+					do_synchronization=false;
+					break;
 				}
+				i=CALCULATE_BORDERS_INCR_SPAN(i);
+			}
+
+			// If we're still in the game, preallocate
+			// new_metrics_to_synchronize.
+			if (do_synchronization)
+				new_metrics_to_synchronize
+					.reserve((metrics::grid_xy::value_type)
+						 last->first+1);
+
+		}
+
+		if (do_synchronization)
+		{
+			// Now we need to fill in new_metrics_to_synchronize,
+			// which is a vector that includes every column,
+			// including border columns.
+
+			metrics::grid_xy i=0;
+
+			// Once again we're relying on grid_metrics_t being
+			// an ordered container. We iterate over it. If we
+			// detect any gap in its keys, it must be a border
+			// column without any border in it, so we'll set
+			// that columns's metrics to a goose egg.
+
+			for (const auto &m:unsynchronized_horiz_metrics)
+			{
+				while (i < m.first)
+				{
+					// Goose egg.
+
+					new_metrics_to_synchronize.emplace_back
+						(0, 0, 0);
+					unscaled_horiz_metrics[i]={0, 0, 0};
+					scaled_horiz_metrics[i]={0, 0, 0};
+					++i;
+				}
+
+				new_metrics_to_synchronize.push_back(m.second);
+				++i;
+
+				// If this is a border column we're done.
+
+				if (IS_BORDER_RESERVED_COORD(m.first))
+					continue;
+
+				// Otherwise we need to check for any specified
+				// requested column width. We're working with
+				// actual, raw columns here, so we need to
+				// translate them to logical grid cell columns,
+				// and use that to look up column_defaults.
+
+				auto col=NONBORDER_COORD_TO_ROWCOL(m.first);
+				auto iter=(*lock)->column_defaults.find(col);
+
+				if (iter == (*lock)->column_defaults.end()
+				    || iter->second.axis_size < 0)
+					continue;
+
+				widths.emplace((metrics::grid_xy::value_type)
+					       (i-1),
+					       iter->second.axis_size);
 			}
 
 			sync_lock.update_values(IN_THREAD,
-						new_metrics_to_synchronize);
+						new_metrics_to_synchronize,
+						widths);
 		}
 	}
 
@@ -906,78 +993,40 @@ gridlayoutmanagerObj::implObj::elementsObj
 	// Compare the synchronized column metrics with our current
 	// synchronized metrics. Set the _flag_ if they are different.
 
-	if (sync_lock.has_synchronized_values(IN_THREAD))
+	if (do_synchronization)
 	{
 		// The following logic relies on this being an ordered
 		// container:
-		std::map<metrics::grid_xy, metrics::axis>::iterator iter=
-			synchronized_horiz_metrics.begin(),
-			end=synchronized_horiz_metrics.end();
-
-		size_t i=0;
-
-		for (const auto &axis:sync_lock->derived_values)
-		{
-			auto c=CALCULATE_BORDERS_COORD(i)+1;
-
-			while (iter != end && iter->first < c)
-				++c;
-
-			if (iter != end)
-			{
-				if (iter->first != c ||
-				    iter->second != axis)
-				{
-					flag=true;
-					break;
-				}
-			}
-			i=CALCULATE_BORDERS_INCR_SPAN(i);
-		}
-	}
-
-	// We now update and merge synchronized metrics with total metrics.
-	synchronized_horiz_metrics=unsynchronized_horiz_metrics;
-
-	if (sync_lock.has_synchronized_values(IN_THREAD))
-	{
-		// Now, replace all the coordinates
-
-		// This logic also relies on this being an ordered
-		// container:
 
 		std::map<metrics::grid_xy, metrics::axis>::iterator iter=
-			synchronized_horiz_metrics.begin(),
-			end=synchronized_horiz_metrics.end();
+			unscaled_horiz_metrics.begin(),
+			end=unscaled_horiz_metrics.end();
 
-		size_t i=CALCULATE_BORDERS_COORD(0);
-
-		for (const auto &derived_value:sync_lock->derived_values)
+		for (const auto &axis:sync_lock->unscaled_values)
 		{
-			while (iter != end)
-			{
-				if (iter->first < i)
-				{
-					++iter;
-					continue;
-				}
-
-				iter->second=derived_value;
+			if (iter == end)
 				break;
+
+			if (iter->second != axis)
+			{
+				iter->second=axis;
+				flag=true;
 			}
-			i=CALCULATE_BORDERS_INCR_SPAN(i);
+			++iter;
 		}
+
+		if (update_scaled_metrics(IN_THREAD, *sync_lock))
+			flag=true;
 	}
 
 	vert_metrics=std::move(new_vert_metrics);
 
-	return {flag, total_metrics(synchronized_horiz_metrics),
+	return {flag, total_metrics(unsynchronized_horiz_metrics),
 			total_metrics(vert_metrics) };
 }
 
 void gridlayoutmanagerObj::implObj::elementsObj
-::synchronized_axis_updated(ONLY IN_THREAD,
-			    const std::vector<metrics::derivedaxis> &)
+::synchronized_axis_updated(ONLY IN_THREAD, const synchronized_axis_values_t &)
 {
 	// Synchronized metrics have been updated. Trigger recalculation
 	// and eventually we'll make it up there.
@@ -1008,13 +1057,63 @@ metrics::axis gridlayoutmanagerObj::implObj::elementsObj
 	return total;
 }
 
+bool gridlayoutmanagerObj::implObj::elementsObj
+::update_scaled_metrics(ONLY IN_THREAD,
+			const synchronized_axis_values_t &values)
+{
+	bool flag=false;
+
+	// In all cases, recalculate_metrics() updates
+	// scaled_horiz_metrics from unsynchronized_horiz_metrics as
+	// a starting point.
+	//
+	// Because do_synchronization=true;
+	// recalculate_metrics() made sure that scaled_horiz_metrics's
+	// keys are consecutive. Unused border_columns get backfilled
+	// to {0,0,0}.
+	//
+	// The following logic relies on this being an ordered
+	// container.
+	//
+	// Furthermore, by relying on the fact that all keys must be
+	// present, we can avoid deallocating the existing map and
+	// rebuilding it simply by iterating over the existing map.
+
+	std::map<metrics::grid_xy, metrics::axis>::iterator iter=
+		scaled_horiz_metrics.begin(),
+		end=scaled_horiz_metrics.end();
+
+	for (const auto &axis:values.scaled_values)
+	{
+		if (iter == end)
+			break;
+
+		if (iter->second != axis)
+		{
+			iter->second=axis;
+			flag=true;
+		}
+		++iter;
+	}
+	return flag;
+}
 
 bool gridlayoutmanagerObj::implObj::elementsObj
-::recalculate_sizes(const grid_map_t::lock &lock,
+::recalculate_sizes(ONLY IN_THREAD,
+		    const grid_map_t::lock &lock,
+		    my_synchronized_axis &synchronized_columns,
 		    dim_t target_width,
 		    dim_t target_height)
 {
 	bool flag=false;
+
+	my_synchronized_axis::lock sync_lock{synchronized_columns};
+
+	if (do_synchronization && sync_lock.update_minimum(IN_THREAD,
+							   target_width))
+	{
+		update_scaled_metrics(IN_THREAD, *sync_lock);
+	}
 
 	// Requested axis size:
 
@@ -1055,7 +1154,7 @@ bool gridlayoutmanagerObj::implObj::elementsObj
 			 return iter->second;
 		 });
 
-	if (metrics::do_calculate_grid_size(synchronized_horiz_metrics,
+	if (metrics::do_calculate_grid_size(scaled_horiz_metrics,
 					    horiz_sizes,
 					    target_width, lookup))
 		flag=true;
@@ -1109,7 +1208,9 @@ bool gridlayoutmanagerObj::implObj
 	// the child element's maximum metrics have changed, the child
 	// element might need to be reposition within its cells, by the
 	// code below.
-	elements.recalculate_sizes(grid_map_t::lock{grid_map},
+	elements.recalculate_sizes(IN_THREAD,
+				   grid_map_t::lock{grid_map},
+				   synchronized_columns,
 				   position.width, position.height);
 
 #ifdef PROCESS_UPDATED_POSITION_DEBUG

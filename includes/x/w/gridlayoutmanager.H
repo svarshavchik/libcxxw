@@ -35,9 +35,9 @@ public:
 
 	//! This is mostly for internal use. Using the same
 	//! new_gridlayoutmanager to create multiple containers results
-	//! in columns in both containers always haveing the same width.
+	//! in columns in both containers always having the same width.
 	//!
-	//! For this to work correctly, both containers should have the
+	//! For this to work correctly, both grids should have the
 	//! same number of columns, AND the same vertical borders.
 	//!
 	//! It is also possible to, very carefully, synchronize the columns

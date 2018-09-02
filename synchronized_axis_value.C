@@ -6,6 +6,7 @@
 #include "synchronized_axis_value.H"
 #include "synchronized_axis_impl.H"
 #include "catch_exceptions.H"
+#include "calculate_borders.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -72,17 +73,58 @@ my_synchronized_axis::lock::~lock()=default;
 
 bool my_synchronized_axis::lock::has_synchronized_values(ONLY IN_THREAD)
 {
-	// If this is the only element in the list, and we are not
-	// asking for any minimum width, we don't need to do anything here.
-
-	return (*this)->all_values.size() > 1
-		|| me.my_value->minimum(IN_THREAD) > 0;
+	return (*this)->all_values.size() > 1;
 }
 
+#if 0
 void my_synchronized_axis::lock
 ::update_values(ONLY IN_THREAD,	const std::vector<metrics::axis> &values)
 {
 	update_values(IN_THREAD, values, 0, {});
+}
+#endif
+
+void my_synchronized_axis::lock
+::update_values(ONLY IN_THREAD,
+		const std::vector<metrics::axis> &values,
+		const std::unordered_map<size_t, int>
+		&requested_col_widths)
+{
+	// Compare the passed-in values, and something_changed only if they
+	// are different.
+	//
+	// We diligently compare each value individually, and burn electrons
+	// on copying the entire container only if absolutely needed. This is
+	// a hot path.
+
+	bool something_changed=false;
+
+	if (me.my_value->values(IN_THREAD) != values)
+	{
+		something_changed=true;
+		me.my_value->values(IN_THREAD)=values;
+	}
+
+	if (me.my_value->requested_col_widths(IN_THREAD) !=
+	    requested_col_widths)
+	{
+		something_changed=true;
+		me.my_value->requested_col_widths(IN_THREAD)=
+			requested_col_widths;
+	}
+
+	if (something_changed)
+		(*this)->recalculate(IN_THREAD, me.value_list_iterator);
+}
+
+bool my_synchronized_axis::lock::update_minimum(ONLY IN_THREAD, dim_t minimum)
+{
+	if (me.my_value->minimum(IN_THREAD) == minimum)
+		return false;
+
+	me.my_value->minimum(IN_THREAD)=minimum;
+	(*this)->recalculate(IN_THREAD, me.value_list_iterator);
+	return true;
 }
 
 void my_synchronized_axis::lock
@@ -138,15 +180,47 @@ void synchronized_axis_values_t
 {
 	LOG_FUNC_SCOPE(recalculate_loggerObj);
 
-	auto new_derived_values=me.compute_derived_values(IN_THREAD,
-							  *this);
+	bool changed_flag=false;
 
-	// If the computed synchronized axises are unchanged, we're done.
-	if (derived_values == new_derived_values)
-		return;
+	{
+		std::vector<metrics::derivedaxis> new_derived_values;
 
-	// Save new synchronized axises
-	derived_values=std::move(new_derived_values);
+		for (const auto &v:all_values)
+		{
+			size_t n=v->values(IN_THREAD).size();
+
+			if (n > new_derived_values.size())
+				new_derived_values.resize(n);
+
+			auto iter=new_derived_values.begin();
+
+			for (const auto &a:v->values(IN_THREAD))
+			{
+				(*iter)(a);
+				++iter;
+			}
+		}
+
+		if (new_derived_values != unscaled_values)
+		{
+			changed_flag=true;
+			std::swap(unscaled_values, new_derived_values);
+		}
+	}
+
+	{
+		auto new_scaled_values=me.scale_derived_values(IN_THREAD,
+							       *this,
+							       unscaled_values);
+		if (new_scaled_values != scaled_values)
+		{
+			changed_flag=true;
+			std::swap(new_scaled_values, scaled_values);
+		}
+	}
+
+	if (!changed_flag)
+		return; // Nothing changed.
 
 	// Now, invoke all individual axises that got synchronized what the
 	// new synchronized values are.
@@ -156,33 +230,19 @@ void synchronized_axis_values_t
 		if (b == iter) continue;	// The one to skip
 
 		try {
-			(*b)->synchronized_axis_updated(IN_THREAD,
-							derived_values);
+			(*b)->synchronized_axis_updated(IN_THREAD, *this);
 		} CATCH_EXCEPTIONS;
 	}
 }
 
-std::vector<metrics::derivedaxis> synchronized_axisObj::implObj
-::compute_derived_values(ONLY IN_THREAD,
-			 const synchronized_axis_values_t &values)
+std::vector<metrics::axis> synchronized_axisObj::implObj
+::scale_derived_values(ONLY IN_THREAD,
+		       const synchronized_axis_values_t &values,
+		       const std::vector<metrics
+		       ::derivedaxis> &derived_values)
 {
-	std::vector<metrics::derivedaxis> new_derived_values;
-
-	for (const auto &v:values.all_values)
-	{
-		size_t n=v->values(IN_THREAD).size();
-
-		if (n > new_derived_values.size())
-			new_derived_values.resize(n);
-
-		auto iter=new_derived_values.begin();
-
-		for (const auto &a:v->values(IN_THREAD))
-		{
-			(*iter)(a);
-			++iter;
-		}
-	}
+	std::vector<metrics::axis> new_derived_values{derived_values.begin(),
+						      derived_values.end()};
 
 	// Compute the total minimum value.
 
@@ -219,76 +279,131 @@ std::vector<metrics::derivedaxis> synchronized_axisObj::implObj
 	{
 		auto &v=*largest_minimum;
 
-		dim_squared_t::value_type denominator=0;
+		auto &target_width=v->minimum(IN_THREAD);
 
-		// Sum up the total weights of all adjustable columns,
-		// if any were specified.
+		// total_minimum is the total of the synchronized axis's
+		// minimums, which must be less than *largest_minimum, or v,
+		// otherwise we will not be here.
+		//
+		// total_to_add is by how much we want to embiggen our
+		// new_derived_values;
 
-		denominator=0;
+		dim_t total_to_add=target_width-total_minimum;
+
+		dim_t total_can_add=0;
+		std::vector<std::tuple<size_t, dim_t>> to_expand;
+
+		dim_squared_t::value_type denominator;
+
+		// First, go through and find all columns that have indicated
+		// that they're willing to be embiggened.
 
 		for (size_t i=new_derived_values.size(); i; )
 		{
 			--i;
 			auto iter=v->requested_col_widths(IN_THREAD).find(i);
 
-			if (iter != v->requested_col_widths(IN_THREAD).end())
-				denominator += iter->second;
+			if (iter == v->requested_col_widths(IN_THREAD).end())
+				continue;
+
+			// iter->second is the percentage of the target_width
+			// this column is willing to be expanded to.
+
+			dim_t col_desired_size=dim_t::truncate
+				(target_width*iter->second/100);
+
+			// And this is it's current size.
+			auto current_size=new_derived_values[i].minimum();
+
+			if (col_desired_size < current_size)
+				continue;
+
+			dim_t add_more=col_desired_size-current_size;
+
+			to_expand.emplace_back(i, add_more);
+			total_can_add=dim_t::truncate(total_can_add+add_more);
 		}
 
-		// If none were specified, scale all columns equally.
-		auto all_weights_are_one=denominator == 0;
+		// So now we have a list of columns, and how much each
+		// one can be embiggened, with the sum total of embiggenment
+		// being total_can_add.
 
-		if (all_weights_are_one)
-			denominator=new_derived_values.size();
-
-		// denominator > 0
-		//
-		// v->minimum(IN_THREAD) > total_minimum
-		//
-		// Firstly: here's how much to increase the minimums by:
-
-		dim_squared_t::value_type
-			total_to_distribute=
-			dim_squared_t::truncate(v->minimum(IN_THREAD)
-						-total_minimum);
-
-		// What we add to each column:
-		//
-		// (total_to_distribute / denominator) * requested_col_width.
-		//
-		// "denominator" is the sum total of all columns'
-		// requested_col-width, according to the above, so this
-		// will end up adding "total_to_distribute" to all columns,
-		// proportionately.
-		//
-		// We multiply total_to_distribute * requested_col_width,
-		// then divide by denominator, and carry forward the remainder.
-		//
-		// The carry-forward is held in nominator:
-
-		dim_squared_t::value_type nominator=0;
-
-		for (size_t i=new_derived_values.size(); i; )
+		if (total_can_add < total_to_add)
 		{
-			--i;
+			// Ok, we won't get there. However, let's take up
+			// everyone's offer, first.
 
-			dim_squared_t::value_type n=0;
+			for (const auto &add_all:to_expand)
+			{
+				auto &[index, how_much]=add_all;
 
-			auto iter=v->requested_col_widths(IN_THREAD).find(i);
+				metrics::axis &v=new_derived_values[index];
+				v=v.increase_minimum_by(how_much);
+			}
 
-			if (iter != v->requested_col_widths(IN_THREAD).end())
-				n=iter->second;
+			// So, this is how much there's left to embiggen:
+			total_to_add = total_to_add - total_can_add;
 
-			if (all_weights_are_one)
-				n=1;
+			// Now, let's wipe out to_expand, and set each
+			// non-border's column's to_expand to 1,
+			// # columns.
+			//
+			// The scaling code below, then, ends up embiggening
+			// each non-border column to (1/# columns)*total_to_add
 
-			auto product=nominator + n * total_to_distribute;
+			to_expand.clear();
+			to_expand.reserve(new_derived_values.size()/2+1);
 
-			auto extra=product / denominator;
+			size_t n=0;
+
+			for (size_t i=CALCULATE_BORDERS_COORD(0);
+			     i < new_derived_values.size();
+			     CALCULATE_BORDERS_INCR_SPAN(i))
+			{
+				to_expand.emplace_back(i, 1);
+				++n;
+			}
+			denominator=n;
+		}
+		else
+		{
+			// The sum total of to_expand's is total_can_add.
+			//
+			// So that's our denominator.
+			//
+			// Set the denominator to total_to_add.
+			//
+			// The scaling code, below, therefore, embiggens
+			// everything by total_to_add in total...
+
+			denominator=(dim_t::value_type)total_can_add;
+		}
+
+		// At this point:
+		//
+		// Multiply total_to_add, the nominator value by the weight
+		// of each to_expand divided by denominator.
+		//
+		// total_to_add is the sum total of what to embiggen all
+		// columns by, and we scale it by each to_expand columns
+		// by its nominator, divided by the denominator.
+
+		if (denominator == 0)
+			to_expand.clear();
+
+		dim_squared_t nominator{0};
+
+		for (const auto &column:to_expand)
+		{
+			auto &[index, how_much]=column;
+
+			auto product=nominator + how_much * total_to_add;
+
+			auto extra=dim_t::truncate(product / denominator);
 
 			nominator=product % denominator;
 
-			metrics::axis &v=new_derived_values[i];
+			metrics::axis &v=new_derived_values[index];
 
 			v=v.increase_minimum_by(extra);
 		}

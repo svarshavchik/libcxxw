@@ -201,9 +201,9 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 
 	void remove_all_defaults();
 
- private:
-
 	class elementsObj;
+
+ private:
 
 	//! Store the grid calculation data out of harm's way.
 

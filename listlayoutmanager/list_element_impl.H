@@ -173,7 +173,7 @@ struct LIBCXX_HIDDEN listimpl_info_s {
 
 	//! Starting position and width of any borders
 
-	std::unordered_map<size_t, coord_t> border_positions;
+	std::unordered_map<size_t, std::tuple<coord_t, dim_t>> border_positions;
 
 	//! The rows
 	list_row_info_vector row_infos;

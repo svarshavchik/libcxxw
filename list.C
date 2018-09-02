@@ -198,8 +198,11 @@ new_listlayoutmanager::create(const container_impl
 		// We don't need any extra padding from the outer grid.
 		f->padding(0);
 
-		// And make sure it's left-aligned
-		f->halign(halign::left);
+		// And make sure it's filled to its column's width.
+		// Same width as the peephole with the list. The header
+		// row's width is, therefore, same as the peephole's, and
+		// their horizontal axis gets synchronized.
+		f->halign(halign::fill);
 
 		// Create a replica list border.
 		child_element_init_params header_init_params;
@@ -230,6 +233,7 @@ new_listlayoutmanager::create(const container_impl
 
 		new_gridlayoutmanager nglm;
 
+		// Synchronize the horizontal axis.
 		nglm.synchronized_columns=synchronized_columns;
 
 		// Container implementation object for the header row.
@@ -245,6 +249,11 @@ new_listlayoutmanager::create(const container_impl
 
 		auto glm=gridlayoutmanager_impl->create_gridlayoutmanager();
 
+		// Have the header row's grid layout manager use same
+		// requested column widths as the list.
+		for (const auto &requested_col_width:requested_col_widths)
+			glm->requested_col_width(requested_col_width.first,
+						 requested_col_width.second);
 		auto hf=glm->append_row();
 
 		// Must use the padding logic as the
@@ -327,7 +336,8 @@ new_listlayoutmanager::create(const container_impl
 
 		f->created_internally(header_border_container);
 
-		// Need to create a spacer for the vertical scrollbar.
+		// There's an additional column for the vertical scrollbar.
+		// Put a dummy spacer in there.
 		f->padding(0);
 		f->create_canvas()->show();
 	}

@@ -940,7 +940,7 @@ testinputfield_LDFLAGS=-static $(STATICLINKFLAGS)
 
 testcollapse_SOURCES=testcollapse.C
 testcollapse_LDADD=-lcxx
-testcollapse_LDFLAGS=-static
+testcollapse_LDFLAGS=$(TESTLINKTYPE)
 
 testderivedaxis_SOURCES=testderivedaxis.C
 testderivedaxis_LDADD=libcxxw.la

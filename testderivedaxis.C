@@ -6,11 +6,19 @@
 #include "libcxxw_config.h"
 #include <x/exception.H>
 #include <iostream>
+#include <sstream>
 #include <vector>
 #include <algorithm>
 #include "metrics_axis.H"
 #include "x/w/metrics/derivedaxis.H"
+#include "metrics_grid_axisrange.C"
+#include "metrics_grid_pos.C"
+#include "metrics_axis.C"
+#include "synchronized_axis_value.C"
+#include "synchronized_axis_impl.C"
+#include "connection.H"
 
+using namespace LIBCXX_NAMESPACE::w;
 using namespace LIBCXX_NAMESPACE::w::metrics;
 
 typedef LIBCXX_NAMESPACE::w::dim_t dim_t;
@@ -248,6 +256,89 @@ void test_decrease_maximums_by(const char *testname,
 		throw EXCEPTION(testname << " failed");
 }
 
+static void testsync_case(ONLY IN_THREAD,
+		       my_synchronized_axis &sa,
+		       const std::vector<dim_t> &minimum_values,
+		       const std::unordered_map<size_t,
+		       int> &requested_col_widths,
+		       dim_t minimum,
+		       const std::vector<dim_t> &expected_results)
+{
+	std::vector<metrics::axis> metrics;
+
+	metrics.reserve(minimum_values.size());
+
+	for (const auto &v:minimum_values)
+		metrics.emplace_back(v, v, v);
+
+	my_synchronized_axis::lock lock{sa};
+
+	lock.update_values(IN_THREAD, metrics, minimum, requested_col_widths);
+
+	std::vector<dim_t> results;
+
+	results.reserve(expected_results.size());
+
+	for (const auto &v:lock->scaled_values)
+		results.push_back(v.minimum());
+
+	if (results != expected_results)
+		throw EXCEPTION("synchronized update_values() failed: expected"
+				<<
+				({
+					std::ostringstream o;
+
+					for (const auto v:expected_results)
+						o << " " << v;
+
+					o.str();
+				})
+				<< ", got "
+				<<
+				({
+					std::ostringstream o;
+
+					for (const auto v:results)
+						o << " " << v;
+
+					o.str();
+				})
+				);
+}
+
+class LIBCXX_HIDDEN my_synchronized_axis_valueObj
+	: public synchronized_axis_valueObj {
+
+public:
+	void synchronized_axis_updated(ONLY IN_THREAD,
+				       const synchronized_axis_values_t &)
+		override
+	{
+	}
+};
+
+void test_synchronization(ONLY IN_THREAD)
+{
+	my_synchronized_axis sa{synchronized_axis::create(),
+				LIBCXX_NAMESPACE
+				::ref<my_synchronized_axis_valueObj>
+				::create()};
+
+	testsync_case(IN_THREAD, sa,
+		      {2, 10, 3, 10},{{1,75},{3,20}}, 100,
+		      {2, 75, 3, 20});
+
+	testsync_case(IN_THREAD, sa,
+		      {2, 10, 3, 10},{{1,60},{3,25}}, 100,
+		      {2, 65, 3, 30});
+
+	testsync_case(IN_THREAD, sa,
+		      {2, 10, 3, 10, 2, 10, 3},
+		      {{1, 60}, {3, 60}, {5, 30}},
+		      100,
+		      {2, 35, 3, 35, 2, 20, 3});
+}
+
 int main()
 {
 	try {
@@ -421,6 +512,9 @@ int main()
 			 dim_t::infinite(),
 			 { {10, 10, 10}, {20, 20, 20}, {30, 30, 30} });
 
+		auto c=connection::create();
+
+		test_synchronization(c->impl->thread);
 	} catch (const LIBCXX_NAMESPACE::exception &e)
 	{
 		e->caught();

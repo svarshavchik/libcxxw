@@ -312,7 +312,7 @@ static mondata processes[]=
 	 {"Idle", 35, 0, 0, 0},
 	 {"Updater", 12, 4, 2, 2},
 	 {"Editor", 4, 7, 0, 0},
-	 {"Downloader", 5, 6, 4, 4},
+	 {"Torrent Downloader", 5, 6, 4, 4},
 	 {"Backup", 4, 5, 5, 0},
 	};
 

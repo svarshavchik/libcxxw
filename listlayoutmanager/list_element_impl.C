@@ -16,6 +16,7 @@
 #include "icon.H"
 #include "richtext/richtext.H"
 #include "richtext/richtext_draw_boundaries.H"
+#include "calculate_borders.H"
 #include "x/w/motion_event.H"
 #include "x/w/key_event.H"
 #include "x/w/button_event.H"
@@ -79,26 +80,8 @@ list_elementObj::implObj::textlist_info_lock::~textlist_info_lock()=default;
 //
 // synchronized_axis are used to synchronized the columns widths.
 //
-// Implement synchronized_axis_valueObj::updated(), when the synchronized
-// column widths get update. We update the container's metrics based on the
-// new synchronized column widths. Even if the metrics didn't change it's
-// possible that the individual column widths have changed (but the net change
-// is 0), so schedule a redraw in any case.
-
-static dim_t compute_derived_width(const std::vector<metrics::derivedaxis> &v)
-{
-	dim_t total_width=0;
-
-	for (const auto &m:v)
-	{
-		total_width=dim_t::truncate(total_width + m.preferred());
-	}
-
-	if (total_width == dim_t::infinite())
-		--total_width;
-
-	return total_width;
-}
+// Implement synchronized_axis_valueObj::synchronized_axis_updated() to
+// schedule recalculate(), which will take it into consideration.
 
 class LIBCXX_HIDDEN list_element_synchronized_columnsObj
 	: public synchronized_axis_valueObj {
@@ -116,28 +99,14 @@ class LIBCXX_HIDDEN list_element_synchronized_columnsObj
  public:
 
 	void synchronized_axis_updated(ONLY IN_THREAD,
-				       const std::vector<metrics::derivedaxis>
-				       &v) override
+				       const synchronized_axis_values_t &)
+		override
 	{
-		auto &e=parent_container->container_element_impl();
-
-		auto hv=e.get_horizvert(IN_THREAD);
-
-		// What's our width now?
-
-		auto w=compute_derived_width(v);
-
-		// If unchanged, well the individual axises might've changed,
-		// so redraw.
-		if (w == hv->horiz.preferred())
-		{
-			e.schedule_redraw(IN_THREAD);
-			return;
-		}
-
-		// Set the metrics, this eventually triggers a redraw.
-		hv->set_element_metrics(IN_THREAD, {w, w, w},
-					hv->vert);
+		// Trigger a call to recalculate(), whihc calls
+		// calculate_column_poswidths, which will grab the
+		// updated metrics.
+		parent_container->tell_layout_manager_it_needs_recalculation
+			(IN_THREAD);
 	}
 };
 
@@ -185,6 +154,24 @@ list_elementObj::implObj::implObj(const ref<listcontainer_pseudo_implObj>
 {
 }
 
+// Validate column width values.
+
+static std::unordered_map<size_t, int> &&
+validate_col_widths(std::unordered_map<size_t,
+		    int> &&requested_col_widths)
+{
+	for (auto &cw:requested_col_widths)
+	{
+		if (cw.second < 0)
+			cw.second=0;
+
+		if (cw.second > 100)
+			cw.second=100;
+	}
+
+	return std::move(requested_col_widths);
+}
+
 list_elementObj::implObj::implObj(const ref<listcontainer_pseudo_implObj>
 			      &textlist_container,
 			      const new_listlayoutmanager &style,
@@ -199,7 +186,8 @@ list_elementObj::implObj::implObj(const ref<listcontainer_pseudo_implObj>
 	  textlist_container{textlist_container},
 	  list_style{style.list_style},
 	  columns{list_style.actual_columns(style)},
-	  requested_col_widths{list_style.actual_col_widths(style)},
+	  requested_col_widths{validate_col_widths
+			       (list_style.actual_col_widths(style))},
 	  col_alignments{list_style.actual_col_alignments(style)},
 	  column_borders{create_column_borders(textlist_container
 					       ->container_element_impl(),
@@ -803,42 +791,46 @@ dim_t list_elementObj::implObj
 ::calculate_column_poswidths(ONLY IN_THREAD,
 			     listimpl_info_t::lock &lock)
 {
-	// our_column_width is calculate_column_widths plus paddings.
+	// These are the columns that we will synchronize with any other
+	// lists or grid.
 
 	std::vector<metrics::axis> our_column_widths_values;
 
 	const size_t n=lock->calculated_column_widths.size();
 
-	our_column_widths_values.reserve(n);
+	our_column_widths_values.reserve(n*2+1);
 
-	// Compute the total width we would like to synchronize to.
-	//
-	// We start with our current width, and subtract the width of any
-	// vertical borders.
-	//
-	// The end result is the total width that list columns should
-	// take up.
-
-	dim_t width_to_synchronize_to=data(IN_THREAD).current_position.width;
+	// We want to build our_column_widths_values as we were a grid
+	// which has border columns interspersed with cell columns.
 
 	size_t i=0;
 
 	for (const auto &w:lock->calculated_column_widths)
 	{
-		if (i > 0)
+		if (i == 0)
 		{
+			// First column in a grid is the grid's left border.
+			// Lists don't have a left border, so simulate one.
+			our_column_widths_values.emplace_back(0, 0, 0);
+		}
+		else
+		{
+			// If there's a border column before this cell column,
+			// grab it's width, otherwise the border column still
+			// exists, but it's 0.
+
 			auto iter=column_borders.find(i);
+
+			dim_t w{0};
 
 			if (iter != column_borders.end())
 			{
-				auto w=iter->second
+				w=iter->second
 					->border(IN_THREAD)
 					->calculated_border_width;
-
-				width_to_synchronize_to=
-					w > width_to_synchronize_to ? dim_t{}
-				: width_to_synchronize_to-w;
 			}
+
+			our_column_widths_values.emplace_back(w, w, w);
 		}
 
 		auto [left_h_padding, right_h_padding] =
@@ -857,25 +849,38 @@ dim_t list_elementObj::implObj
 						      total_column_width);
 	}
 
+	// Prepared requested column widths, for synchronization.
+
+	std::unordered_map<size_t, int> requested_col_and_border_widths;
+
+	for (const auto &colwidth:requested_col_widths)
+	{
+		requested_col_and_border_widths.emplace
+			(CALCULATE_BORDERS_COORD(colwidth.first),
+			 colwidth.second);
+	}
+
 	// Synchronize this list's column widths with the other lists'.
 
 	my_synchronized_axis::lock sync_lock{synchronized_info};
 
 	sync_lock.update_values(IN_THREAD, our_column_widths_values,
-				width_to_synchronize_to,
-				requested_col_widths);
+				data(IN_THREAD).current_position.width,
+				requested_col_and_border_widths);
 
 	// We now use the synchronized column_widths to compute the final
-	// position and width of our columns.
+	// position and width of our columns and borders. We extract the
+	// combined list of borders and columns into columns_poswidths and
+	// border_positions.
 
 	std::vector<std::tuple<coord_t, dim_t>> new_columns_poswidths;
-	std::unordered_map<size_t, coord_t> new_border_positions;
+	std::unordered_map<size_t, std::tuple<coord_t, dim_t>
+			   > new_border_positions;
 
 	new_columns_poswidths.reserve(n);
 
 	i=0;
 
-	// Add up the total width.
 	dim_t final_width=0;
 
 	// Now, we take the synchronized column widths. Since it is based on
@@ -883,38 +888,43 @@ dim_t list_elementObj::implObj
 	// each column's padding from each derived_value, in order to
 	// compute what goes into the new_columns_poswidths.
 
-	for (const auto &axis:sync_lock->derived_values)
+	for (const auto &axis:sync_lock->scaled_values)
 	{
 		// Don't forget to advance past the border area before this
 		// column
 
-		if (i > 0)
+		if (IS_BORDER_RESERVED_COORD(i))
 		{
-			auto iter=column_borders.find(i);
+			auto col=BORDER_COORD_TO_ROWCOL(i);
+			++i;
 
-			if (iter != column_borders.end())
-			{
-				new_border_positions
-					.emplace(i,
-						 coord_t::truncate(final_width)
-						 );
+			// Ignore column #0, the left border before the list
+			// or grid. Lists don't have column #0, this is for
+			// compatibility with grids.
+			if (col == 0 && col >= n)
+				continue;
 
-				final_width=dim_t::truncate
-					(final_width+iter->second
-					 ->border(IN_THREAD)
-					 ->calculated_border_width);
-			}
+			coord_t x{coord_t::truncate(final_width)};
+			auto w=axis.minimum();
+
+			new_border_positions.emplace(col, std::tuple{x, w});
+
+			final_width=dim_t::truncate(final_width+w);
+			continue;
 		}
 
-		if (++i > n)
+		auto col=NONBORDER_COORD_TO_ROWCOL(i);
+		++i;
+
+		if (col >= n)
 			continue; // Ignore extra columns
 
 		auto [left_h_padding, right_h_padding]=
-			textlist_container->get_paddings(IN_THREAD, i-1);
+			textlist_container->get_paddings(IN_THREAD, col);
 
 		dim_t total_padding=dim_t::truncate(left_h_padding +
 						   right_h_padding);
-		dim_t total_column_width=axis.preferred();
+		dim_t total_column_width=axis.minimum();
 
 		dim_t total_usable_width=total_column_width-total_padding;
 
@@ -934,13 +944,24 @@ dim_t list_elementObj::implObj
 
 	if (lock->columns_poswidths != new_columns_poswidths)
 	{
-		lock->columns_poswidths=std::move(new_columns_poswidths);
-		lock->border_positions=std::move(new_border_positions);
+		std::swap(lock->columns_poswidths, new_columns_poswidths);
 		lock->full_redraw_needed=true;
 	}
 
+	if (lock->border_positions != new_border_positions)
+	{
+		std::swap(lock->border_positions, new_border_positions);
+		lock->full_redraw_needed=true;
+	}
 
-	return final_width;
+	dim_t minimum_width=
+		dim_t::truncate(metrics::axis::total_minimum
+				(sync_lock->unscaled_values.begin(),
+				 sync_lock->unscaled_values.end()));
+
+	if (minimum_width == dim_t::infinite())
+		--minimum_width;
+	return minimum_width;
 }
 
 void list_elementObj::implObj::process_updated_position(ONLY IN_THREAD)
@@ -1236,8 +1257,10 @@ rectangle list_elementObj::implObj
 
 		rectangle border_rect=entire_row;
 
-		border_rect.x=border_position.second;
-		border_rect.width=b->calculated_border_width;
+		auto &[x, width]=border_position.second;
+
+		border_rect.x=x;
+		border_rect.width=width;
 
 		draw_using_scratch_buffer
 			(IN_THREAD,
@@ -1246,25 +1269,28 @@ rectangle list_elementObj::implObj
 			  const pixmap &area_pixmap,
 			  const gc &area_gc)
 			 {
-				 scratch_buffer_for_borders
-					 ->get(border_rect.width,
-					       border_rect.height,
-					       [&, this]
-					       (const picture &mask_picture,
-						const pixmap &mask_pixmap,
-						const gc &mask_gc)
-					       {
-						       border_implObj::draw_info bdi=
-							       {area_picture,
-								border_rect,
-								area_pixmap,
-								mask_picture,
-								mask_pixmap,
-								mask_gc,
-								di.absolute_location.x,
-								di.absolute_location.y};
-						       b->draw_vertical(IN_THREAD, bdi);
-					       });
+				 scratch_buffer_for_borders->get
+					 (width,
+					  border_rect.height,
+					  [&, this]
+					  (const picture &mask_picture,
+					   const pixmap &mask_pixmap,
+					   const gc &mask_gc)
+					  {
+						  border_implObj::draw_info bdi=
+							  {area_picture,
+							   {x, border_rect.y,
+							    width,
+							    border_rect.height},
+							   area_pixmap,
+							   mask_picture,
+							   mask_pixmap,
+							   mask_gc,
+							   0, 0};
+
+						  b->draw_vertical(IN_THREAD,
+								   bdi);
+					  });
 			 },
 			 border_rect,
 			 di, di, clipped);

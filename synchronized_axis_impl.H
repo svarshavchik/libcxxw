@@ -29,7 +29,26 @@ struct LIBCXX_HIDDEN synchronized_axis_values_t {
 	std::list<synchronized_axis_value> all_values;
 
 	//! The computed synchronized set of values.
-	std::vector<metrics::derivedaxis> derived_values;
+
+	//! For intermediate use only. The unscaled values should be used to
+	//! compute the metrics of the display element.
+	std::vector<metrics::derivedaxis> unscaled_values;
+
+	//! The derived_values, scaled to the largest minimum size.
+
+	//! This should be used by the display element for drawing its
+	//! contents. Typically, the synchronized elements compute their
+	//! metrics, and dump them into their values. Then we compute
+	//! unscaled_values based on them, and all display elements use them
+	//! to set their final metrics. Arrangements are then made by the
+	//! elements' container to set their total size to at least their
+	//! final metrics, but it could be more than that.
+	//!
+	//! We expect that all elements end up having the same minimum and
+	//! requested widths. But if not we pick the largest minimum, then
+	//! use that element's requested column widths to compute the
+	//! scaled values that all synchronized elements use to draw themselves.
+	std::vector<metrics::axis> scaled_values;
 
 	//! Recalculate the derived_values.
 
@@ -78,7 +97,14 @@ public:
 	//! process it.
 
 	void update_values(ONLY IN_THREAD,
-			   const std::vector<metrics::axis> &);
+			   const std::vector<metrics::axis> &,
+			   const std::unordered_map<size_t, int>
+			   &requested_col_widths);
+
+	//! Update minimum size.
+
+	bool update_minimum(ONLY IN_THREAD,
+			    dim_t minimum);
 
 	//! Recalculate the synchronized axis, with minimums and req widths
 
@@ -115,21 +141,18 @@ class LIBCXX_HIDDEN synchronized_axisObj::implObj : virtual public obj {
 	friend class synchronized_axis_values_t;
 
 protected:
-	//! Compute the derived values.
 
-	//! Invoked from synchronized_axis_values_t::recalculate()
-	//!
-	//! The default implementation combines all synchronized columns
-	//! and produces the derived metric for each synchronized column.
-	//! The default implementation does nothing. To create an adjustable
-	//! table, the list layout manager overrides this in a subclass to
-	//! explicitly set the size of the synchronized axises to their
-	//! manually-adjusted values.
+	//! Scale the derived values
 
-	virtual std::vector<metrics::derivedaxis>
-		compute_derived_values(ONLY IN_THREAD,
-				       const synchronized_axis_values_t &);
+	//! The default implementation finds the synchronized values with
+	//! the largest minimum size, then scales the derived values so that
+	//! they are at least as the largest minimum.
 
+	virtual std::vector<metrics::axis>
+		scale_derived_values(ONLY IN_THREAD,
+				     const synchronized_axis_values_t &values,
+				     const std::vector<metrics
+				     ::derivedaxis> &derived_values);
 };
 
 LIBCXXW_NAMESPACE_END
