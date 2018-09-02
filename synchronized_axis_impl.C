@@ -11,13 +11,20 @@
 LIBCXXW_NAMESPACE_START
 
 synchronized_axisObj::synchronized_axisObj()
-	: impl{ref<implObj>::create()}
+	: synchronized_axisObj{ref<implObj>::create()}
+{
+}
+
+synchronized_axisObj::synchronized_axisObj(const ref<implObj> &impl)
+	: impl{impl}
 {
 }
 
 synchronized_axisObj::~synchronized_axisObj()=default;
 
-synchronized_axisObj::implObj::implObj()=default;
+synchronized_axisObj::implObj::implObj() : values{*this}
+{
+}
 
 synchronized_axisObj::implObj::~implObj()=default;
 

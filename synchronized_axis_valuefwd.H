@@ -45,25 +45,7 @@ typedef const_ptr<synchronized_axis_valueObj> const_synchronized_axis_valueptr;
 
 //! A structure with derived synchronized axis values, and what goes into them.
 
-struct LIBCXX_HIDDEN synchronized_axis_values_t {
-
-	//! List of all the values being synchronized.
-
-	std::list<synchronized_axis_value> all_values;
-
-	//! The computed synchronized set of values.
-	std::vector<metrics::derivedaxis> derived_values;
-
-	//! Recalculate the derived_values.
-
-	//! Invokes all_values' updated(), except the ones whose iterator
-	//! gets passed into here. This is the value that was changed, and
-	//! the values' element is already responsible for recalculating it,
-	//! so no need to do it again.
-
-	void recalculate(ONLY IN_THREAD,
-			 std::list<synchronized_axis_value>::iterator iter);
-};
+struct LIBCXX_HIDDEN synchronized_axis_values_t;
 
 //! Mutex-protected synchronized_axis_values_t
 
@@ -171,42 +153,7 @@ struct LIBCXX_HIDDEN my_synchronized_axis {
 
 	void removed_from_container(ONLY IN_THREAD);
 
-	//! Acquire a lock for the purpose of updating the synchronized values.
-
-	class lock : public synchronized_values::lock {
-
-
-		my_synchronized_axis &me;
-
-	public:
-		//! Constructor
-		lock(my_synchronized_axis &);
-
-		//! Destructor
-		~lock();
-
-		using synchronized_values::lock::operator->;
-
-		//! Whether there are any other values that will be synchronized with.
-
-		//! Allows the caller to avoid doing hard work.
-		bool has_synchronized_values();
-
-		//! After updating my_value, recalculate the synchronized axis.
-
-		//! Pass in the new values to be synchronized with all others.
-		//! Compares the passed-in values to my_value->values,
-		//! and does nothing if they're the same. Otherwise:
-		//!
-		//! Invoke all updated(), except for this element's my_value's
-		//! updated() callback. It is expected that synchronize()'s
-		//! caller will be responsible for accessing the
-		//! synchronized_value after update_values() returns, and
-		//! process it.
-
-		void update_values(ONLY IN_THREAD,
-				   const std::vector<metrics::axis> &);
-	};
+	class lock;
 };
 
 LIBCXXW_NAMESPACE_END

@@ -88,31 +88,20 @@ void my_synchronized_axis::lock
 
 ///////////////////////////////////////////////////////////////////////
 
+synchronized_axis_values_t
+::synchronized_axis_values_t(synchronized_axisObj::implObj &me)
+	: me{me}
+{
+}
+
 void synchronized_axis_values_t
 ::recalculate(ONLY IN_THREAD,
 	      std::list<synchronized_axis_value>::iterator iter)
 {
 	LOG_FUNC_SCOPE(recalculate_loggerObj);
 
-	// Dynamically derive how many axises get synchronized.
-
-	std::vector<metrics::derivedaxis> new_derived_values;
-
-	for (const auto &v:all_values)
-	{
-		size_t n=v->values(IN_THREAD).size();
-
-		if (n > new_derived_values.size())
-			new_derived_values.resize(n);
-
-		auto iter=new_derived_values.begin();
-
-		for (const auto &a:v->values(IN_THREAD))
-		{
-			(*iter)(a);
-			++iter;
-		}
-	}
+	auto new_derived_values=me.compute_derived_values(IN_THREAD,
+							  *this);
 
 	// If the computed synchronized axises are unchanged, we're done.
 	if (derived_values == new_derived_values)
@@ -134,5 +123,33 @@ void synchronized_axis_values_t
 		} CATCH_EXCEPTIONS;
 	}
 }
+
+std::vector<metrics::derivedaxis> synchronized_axisObj::implObj
+::compute_derived_values(ONLY IN_THREAD,
+			 const synchronized_axis_values_t &values)
+{
+	std::vector<metrics::derivedaxis> new_derived_values;
+
+	for (const auto &v:values.all_values)
+	{
+		size_t n=v->values(IN_THREAD).size();
+
+		if (n > new_derived_values.size())
+			new_derived_values.resize(n);
+
+		auto iter=new_derived_values.begin();
+
+		for (const auto &a:v->values(IN_THREAD))
+		{
+			(*iter)(a);
+			++iter;
+		}
+	}
+
+	return new_derived_values;
+}
+
+void override_derived_values(std::vector<metrics::derivedaxis>
+					     &);
 
 LIBCXXW_NAMESPACE_END

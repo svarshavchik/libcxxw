@@ -11,6 +11,7 @@
 #include "corner_border.H"
 #include "metrics_grid_xy.H"
 #include "x/w/impl/current_border_impl.H"
+#include "synchronized_axis_impl.H"
 #include "container_impl.H"
 #include "connection_thread.H"
 #include <x/number_hash.H>

@@ -25,6 +25,9 @@ public:
 	//! Constructor
 	synchronized_axisObj();
 
+	//! Constructor
+	synchronized_axisObj(const ref<implObj> &impl);
+
 	//! Destructor
 	~synchronized_axisObj();
 };
