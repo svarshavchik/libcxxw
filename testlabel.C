@@ -13,7 +13,7 @@
 static bool override_truncatable=false;
 
 #define DEBUG_TRUNCATABLE_LABEL() \
-	(internal_config.truncatable=override_truncatable)
+	(internal_config.allow_shrinkage=override_truncatable)
 #define DEBUG_INITIAL_METRICS
 #include "textlabel_impl.C"
 #include "x/w/main_window.H"

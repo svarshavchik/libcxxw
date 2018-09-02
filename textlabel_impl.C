@@ -36,6 +36,8 @@ label factoryObj::create_label(const text_param &text,
 {
 	textlabel_config internal_config{config};
 
+	internal_config.use_ellipsis=true;
+
 #ifdef DEBUG_TRUNCATABLE_LABEL
 	DEBUG_TRUNCATABLE_LABEL();
 #endif
@@ -155,7 +157,7 @@ textlabelObj::implObj::implObj(textlabel_config &config,
 			       richtextstring &&string,
 			       const richtext &text,
 			       const richtextmeta &default_meta)
-	: richtext_alteration_config{config.truncatable ? richtextptr
+	: richtext_alteration_config{config.use_ellipsis ? richtextptr
 				     {
 				      parent_element_impl.get_window_handler()
 				      .get_screen()->impl->ellipsiscaches
@@ -164,7 +166,7 @@ textlabelObj::implObj::implObj(textlabel_config &config,
 	  word_wrap_widthmm{config.config.widthmm},
 	  width_in_columns{config.width_in_columns},
 	  fixed_width_metrics{config.fixed_width_metrics},
-	  truncatable{config.truncatable},
+	  allow_shrinkage{config.allow_shrinkage},
 	  current_theme{initial_theme},
 	  hotspot_info_thread_only{create_hotspot_info(string, text)},
 	  ordered_hotspots{rebuild_ordered_hotspots(hotspot_info_thread_only)},
@@ -374,7 +376,7 @@ textlabelObj::implObj::calculate_current_metrics()
 	       // If this is not a word-wrapping label, allow its minimum
 	       // size to be reduced, and we'll show the ellipsis.
 
-	       if (truncatable)
+	       if (allow_shrinkage)
 	       {
 		       auto w=ellipsis->get_width();
 

@@ -61,8 +61,17 @@ struct LIBCXX_HIDDEN textlabel_config {
 	//! width metrics.
 	bool fixed_width_metrics=false;
 
+	//! Whether ellipsis should be used if label doesn't fit.
 
-	bool truncatable=false;
+	//! This is set of plain text label elements, in case they're used
+	//! in an adjustable table. Because allow_shrinkage is false this
+	//! usually has no effect.
+	bool use_ellipsis=false;
+
+	//! Whether labels metrics should specify no minimum width.
+
+	//! Typically use_ellipsis is also set, and ellipsis get drawn.
+	bool allow_shrinkage=false;
 };
 
 //! Base class for a label implementation.
@@ -93,10 +102,10 @@ class LIBCXX_HIDDEN textlabelObj::implObj
 	//! \see textlabel_config
 	const bool fixed_width_metrics;
 
-	//! Whether the label is truncatable
+	//! Whether the label's width can be shrinked
 
 	//! \see textlabel_config
-	const bool truncatable;
+	const bool allow_shrinkage;
 
 	//! Cached current theme
 
