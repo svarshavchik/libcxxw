@@ -41,7 +41,8 @@ void textlist_rowinfo::setting_menu_item()
 std::tuple<container, peepholed, focusable, focusable_impl>
 listlayoutstyle_impl
 ::create(const ref<peepholeObj::implObj> &peephole_parent,
-	 const new_listlayoutmanager &style) const
+	 const new_listlayoutmanager &style,
+	 const synchronized_axis &synchronized_columns) const
 {
 	// A container that uses the listlayoutmanager.
 
@@ -54,7 +55,8 @@ listlayoutstyle_impl
 	// its public object.
 
 	auto t_impl=ref<list_elementObj::implObj>
-		::create(internal_listcontainer_impl, style);
+		::create(internal_listcontainer_impl, style,
+			 synchronized_columns);
 
 	auto t=list_element::create(t_impl);
 

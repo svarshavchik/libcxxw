@@ -161,7 +161,9 @@ new_listlayoutmanager::create(const container_impl
 			       peepholed_element,
 			       focusable_element,
 			       focusable_element_impl
-			       ]=this->list_style.create(peephole_impl, *this);
+			       ]=this->list_style.create(peephole_impl,
+							 *this,
+							 synchronized_columns);
 
 			 container_element->show();
 

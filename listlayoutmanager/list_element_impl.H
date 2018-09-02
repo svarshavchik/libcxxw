@@ -215,19 +215,29 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 
 	//! Constructor
 	implObj(const ref<listcontainer_pseudo_implObj> &textlist_container,
-		const new_listlayoutmanager &style);
+		const new_listlayoutmanager &style,
+
+		//! Which other columns we synchronize with
+
+		//! This defaults to style.synchronized_columns. The list
+		//! layout manager will provide a custom object here for
+		//! an adjustable table.
+
+		const synchronized_axis &synchronized_columns);
 
  private:
 	//! Internal constructor
 
 	implObj(const ref<listcontainer_pseudo_implObj> &textlist_container,
 		const new_listlayoutmanager &style,
+		const synchronized_axis &synchronized_columns,
 		elementObj::implObj &container_element_impl);
 
 	//! Internal constructor
 
 	implObj(const ref<listcontainer_pseudo_implObj> &textlist_container,
 		const new_listlayoutmanager &style,
+		const synchronized_axis &synchronized_columns,
 		elementObj::implObj &container_element_impl,
 		const screen &container_screen);
 

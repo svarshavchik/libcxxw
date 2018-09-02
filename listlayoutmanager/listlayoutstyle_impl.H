@@ -53,7 +53,8 @@ class LIBCXX_HIDDEN listlayoutstyle_impl {
 	//! Create a new list element.
 	std::tuple<container, peepholed, focusable, focusable_impl>
 		create(const ref<peepholeObj::implObj> &,
-		       const new_listlayoutmanager &) const;
+		       const new_listlayoutmanager &,
+		       const synchronized_axis &synchronized_columns) const;
 
 	//! How many actual columns there are in the list.
 

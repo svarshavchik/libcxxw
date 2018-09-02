@@ -167,32 +167,35 @@ static inline auto create_column_borders(elementObj::implObj &e,
 
 list_elementObj::implObj::implObj(const ref<listcontainer_pseudo_implObj>
 				  &textlist_container,
-				  const new_listlayoutmanager &style)
-	: implObj(textlist_container, style,
-		  textlist_container->get_element_impl())
+				  const new_listlayoutmanager &style,
+				  const synchronized_axis &synchronized_columns)
+	: implObj{textlist_container, style, synchronized_columns,
+		  textlist_container->get_element_impl()}
 {
 }
 
 list_elementObj::implObj::implObj(const ref<listcontainer_pseudo_implObj>
-			      &textlist_container,
-			      const new_listlayoutmanager &style,
-			      elementObj::implObj &container_element_impl)
-	: implObj(textlist_container, style,
+				  &textlist_container,
+				  const new_listlayoutmanager &style,
+				  const synchronized_axis &synchronized_columns,
+				  elementObj::implObj &container_element_impl)
+	: implObj{textlist_container, style, synchronized_columns,
 		  container_element_impl,
-		  container_element_impl.get_screen())
+		  container_element_impl.get_screen()}
 {
 }
 
 list_elementObj::implObj::implObj(const ref<listcontainer_pseudo_implObj>
 			      &textlist_container,
 			      const new_listlayoutmanager &style,
+				  const synchronized_axis &synchronized_columns,
 			      elementObj::implObj &container_element_impl,
 			      const screen &container_screen)
 	: superclass_t{style.selected_color,
-		style.highlighted_color,
-		style.current_color,
-		"list_separator_border",
-		textlist_container},
+		       style.highlighted_color,
+		       style.current_color,
+		       "list_separator_border",
+		       textlist_container},
 	  textlist_container{textlist_container},
 	  list_style{style.list_style},
 	  columns{list_style.actual_columns(style)},
@@ -201,9 +204,9 @@ list_elementObj::implObj::implObj(const ref<listcontainer_pseudo_implObj>
 	  column_borders{create_column_borders(textlist_container
 					       ->container_element_impl(),
 					       style)},
-	  synchronized_info{style.synchronized_columns,
-		ref<list_element_synchronized_columnsObj>::create
-		(textlist_container)},
+	  synchronized_info{synchronized_columns,
+			    ref<list_element_synchronized_columnsObj>::create
+			    (textlist_container)},
 	  textlist_info{listimpl_info_s{style.selection_type,
 					style.selection_changed}},
 	  scratch_buffer_for_separator{container_screen->create_scratch_buffer

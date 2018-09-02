@@ -298,10 +298,12 @@ focusable_container new_custom_comboboxlayoutmanager
 			->create_popup_factory_ret_t
 		 {
 			 auto impl=ref<custom_combobox_popup_containerObj
-			 ::implObj>::create(peephole_container, style);
+				       ::implObj>::create(peephole_container,
+							  style);
 
 			 auto textlist_impl=ref<list_elementObj::implObj>
-			 ::create(impl, style);
+				 ::create(impl, style,
+					  style.synchronized_columns);
 
 			 auto lm=ref<
 				 peepholed_toplevel_listcontainer_layoutmanager_implObj
