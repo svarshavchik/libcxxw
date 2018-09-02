@@ -691,7 +691,7 @@ void list_elementObj::implObj::recalculate(ONLY IN_THREAD,
 	calculate_column_widths(IN_THREAD, lock);
 
 	auto v_padding_times_two=
-		textlist_container->list_v_padding()->pixels(IN_THREAD);
+		textlist_container->list_v_padding(IN_THREAD);
 
 	v_padding_times_two=dim_t::truncate(v_padding_times_two +
 					    v_padding_times_two);
@@ -808,26 +808,13 @@ dim_t list_elementObj::implObj
 
 	our_column_widths_values.reserve(n);
 
-	auto list_left_padding=
-		textlist_container->list_left_padding()->pixels(IN_THREAD);
-	auto list_inner_padding=
-		textlist_container->list_inner_padding()->pixels(IN_THREAD);
-	auto list_right_padding=
-		textlist_container->list_right_padding()->pixels(IN_THREAD);
-
-	// Padding on the left of the first column
-	dim_t left_h_padding=list_left_padding;
-
-	// Padding on the right of the first column
-	dim_t right_h_padding=list_inner_padding;
-
 	size_t i=0;
 
 	for (const auto &w:lock->calculated_column_widths)
 	{
-		// If this is the last common, this is the padding on its right
-		if (++i == n)
-			right_h_padding=list_right_padding;
+		auto [left_h_padding, right_h_padding] =
+			textlist_container->get_paddings(IN_THREAD, i);
+		++i;
 
 		dim_t total_padding=dim_t::truncate(left_h_padding +
 						   right_h_padding);
@@ -839,9 +826,6 @@ dim_t list_elementObj::implObj
 		our_column_widths_values.emplace_back(total_column_width,
 						      total_column_width,
 						      total_column_width);
-
-		// Left padding for the 2nd and subsequent columns.
-		left_h_padding=list_inner_padding;
 	}
 
 	// Synchronize this list's column widths with the other lists'.
@@ -862,12 +846,6 @@ dim_t list_elementObj::implObj
 
 	// Add up the total width.
 	dim_t final_width=0;
-
-	// Padding on the left of the first column
-	left_h_padding=list_left_padding;
-
-	// Padding on the right of the first column
-	right_h_padding=list_inner_padding;
 
 	// Now, we take the synchronized column widths. Since it is based on
 	// the width of each column including its padding, we now substract
@@ -900,10 +878,8 @@ dim_t list_elementObj::implObj
 		if (++i > n)
 			continue; // Ignore extra columns
 
-		// If this is the last column, this is the padding on its right
-
-		if (i == n)
-			right_h_padding=list_right_padding;
+		auto [left_h_padding, right_h_padding]=
+			textlist_container->get_paddings(IN_THREAD, i-1);
 
 		dim_t total_padding=dim_t::truncate(left_h_padding +
 						   right_h_padding);
@@ -920,9 +896,6 @@ dim_t list_elementObj::implObj
 			 total_usable_width);
 
 		final_width=dim_t::truncate(final_width+total_column_width);
-
-		// Left padding for the 2nd and subsequent columns.
-		left_h_padding=list_inner_padding;
 	}
 
 	auto total_column_width=final_width;
@@ -1240,8 +1213,7 @@ rectangle list_elementObj::implObj
 
 	coord_t y=r.y;
 
-	dim_t v_padding=textlist_container->list_v_padding()
-		->pixels(IN_THREAD);
+	dim_t v_padding=textlist_container->list_v_padding(IN_THREAD);
 
 	rectangle entire_row{0, y, di.absolute_location.width,
 			dim_t::truncate(r.height + v_padding + v_padding)};

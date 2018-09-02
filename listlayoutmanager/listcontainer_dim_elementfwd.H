@@ -10,17 +10,48 @@
 
 LIBCXXW_NAMESPACE_START
 
-// Tags for padding between list items: bottom/bottom botting, and horizontal
-// padding - left + right borders, and between multi-column list items.
+// Tags for padding between list items: bottom/bottom botting, and the default
+// horizontal padding, plus explicit paddings.
 
 struct listcontainer_dim_v;
-struct listcontainer_dim_left;
-struct listcontainer_dim_inner;
-struct listcontainer_dim_right;
+struct listcontainer_dim_h;
+
+//! We need to also keep track of the individual cell paddings.
+
+class listcontainer_cell_paddingsObj : virtual public obj {
+
+	const std::unordered_map<size_t, std::tuple<dim_arg, dim_arg>
+				 > lr_paddings;
+
+	std::unordered_map<size_t, std::tuple<dim_t, dim_t>
+			   > lr_padding_pixels_thread_only;
+
+
+public:
+	THREAD_DATA_ONLY(lr_padding_pixels);
+
+	//! Constructor
+	listcontainer_cell_paddingsObj(const new_listlayoutmanager &);
+
+	//! Destructor
+	~listcontainer_cell_paddingsObj();
+
+	//! Calculate the size in pixels.
+	void initialize(ONLY IN_THREAD,
+			elementObj::implObj &element_impl);
+
+	//! Recalculate the size in pixels.
+	void theme_updated(ONLY IN_THREAD,
+			   const defaulttheme &new_theme);
+
+	std::tuple<dim_t, dim_t> get_paddings(ONLY IN_THREAD,
+					      size_t,
+					      dim_t) const;
+};
 
 //! List padding dimension mixin.
 
-//! The template parameter is a subclass of list_container_implObj, that
+//! The template parameter is a subclass of listcontainer_pseudo_implObj, that
 //! defines list_v_padding(), list_left_padding(), list_right_padding(),
 //! and list_inner_padding() virtual methods. This mixin implements them.
 //!
@@ -34,17 +65,14 @@ template<typename element_impl>
 class LIBCXX_HIDDEN listcontainer_dim_elementObj :
 	public themedim_elementObj<element_impl,
 				   listcontainer_dim_v,
-				   listcontainer_dim_left,
-				   listcontainer_dim_inner,
-				   listcontainer_dim_right>
+				   listcontainer_dim_h>,
+	public listcontainer_cell_paddingsObj
 {
 
 	//! The superclass
 	typedef themedim_elementObj<element_impl,
 				     listcontainer_dim_v,
-				     listcontainer_dim_left,
-				     listcontainer_dim_inner,
-				     listcontainer_dim_right
+				     listcontainer_dim_h
 				    > superclass_t;
 
  public:
@@ -54,13 +82,17 @@ class LIBCXX_HIDDEN listcontainer_dim_elementObj :
 
 	~listcontainer_dim_elementObj();
 
-	const_themedim list_v_padding() const override;
+	void initialize(ONLY IN_THREAD)
+		override;
 
-	const_themedim list_left_padding() const override;
+	void theme_updated(ONLY IN_THREAD,
+			   const defaulttheme &new_theme)
+		override;
 
-	const_themedim list_right_padding() const override;
+	dim_t list_v_padding(ONLY IN_THREAD) const override;
 
-	const_themedim list_inner_padding() const override;
+	std::tuple<dim_t, dim_t> get_paddings(ONLY IN_THREAD, size_t)
+		const override;
 };
 
 LIBCXXW_NAMESPACE_END

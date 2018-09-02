@@ -222,9 +222,7 @@ class LIBCXX_HIDDEN new_listlayoutmanager : public new_focusable_layoutmanager {
 	//!
 	//! - their borders are the same.
 	//!
-	//! - Their paddings (left_padding, inner_padding, right_padding)
-	//! are the same (specified individually for each cell in a grid,
-	//! as the cell's left and right padding).
+	//! - Their left and right paddings are the same.
 
 	synchronized_axis synchronized_columns;
 
@@ -253,14 +251,16 @@ class LIBCXX_HIDDEN new_listlayoutmanager : public new_focusable_layoutmanager {
 	//! Padding above and below each list item
 	dim_arg v_padding;
 
-	//! Left margin
-	dim_arg left_padding;
+	//! Default padding
 
-	//! Padding between columns of multicolumn lists
-        dim_arg inner_padding;
+	dim_arg h_padding;
 
-	//! Right margin padding
-	dim_arg right_padding;
+	//! Optionally-specified paddings for each cell
+
+	//! Map keyed by column number. Value is {left_padding, right_padding}
+	//! for that column. h_padding is the default, if not specified.
+
+	std::unordered_map<size_t, std::tuple<dim_arg, dim_arg>> lr_paddings;
 
 	//! Visibility of the vertical scrollbar
 	scrollbar_visibility vertical_scrollbar;

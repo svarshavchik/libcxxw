@@ -48,16 +48,11 @@ class LIBCXX_HIDDEN listcontainer_pseudo_implObj :
 	~listcontainer_pseudo_implObj();
 
 	//! Implemented in the subclass.
-	virtual const_themedim list_v_padding() const=0;
+	virtual dim_t list_v_padding(ONLY IN_THREAD) const=0;
 
 	//! Implemented in the subclass.
-	virtual const_themedim list_left_padding() const=0;
-
-	//! Implemented in the subclass.
-	virtual const_themedim list_right_padding() const=0;
-	//! Implemented in the subclass.
-
-	virtual const_themedim list_inner_padding() const=0;
+	virtual std::tuple<dim_t, dim_t> get_paddings(ONLY IN_THREAD,
+						      size_t) const=0;
 
 	//! Override do_draw().
 

@@ -117,9 +117,7 @@ new_listlayoutmanager
 	  focusoff_border{"listfocusoff_border"},
 	  focuson_border{"listfocuson_border"},
 	  v_padding{"list_v_padding"},
-	  left_padding{"list_left_padding"},
-	  inner_padding{"list_inner_padding"},
-	  right_padding{"list_right_padding"},
+	  h_padding{"list_h_padding"},
 	  vertical_scrollbar{scrollbar_visibility::automatic},
 	  background_color{"list_background_color"},
 	  selected_color{"list_selected_color"},
@@ -247,9 +245,6 @@ new_listlayoutmanager::create(const container_impl
 		// Must use the padding logic as the
 		// actual list.
 
-		auto padding_left=left_padding;
-		auto padding_right=inner_padding;
-
 		for (size_t i=0; i<columns; ++i)
 		{
 			auto cf=capturefactory::create
@@ -257,9 +252,16 @@ new_listlayoutmanager::create(const container_impl
 
 			header_factory(cf, i);
 
-			if (i == columns-1)
+			auto left_padding=h_padding;
+			auto right_padding=h_padding;
+
+			auto lr_iter=lr_paddings.find(i);
+
+			if (lr_iter != lr_paddings.end())
 			{
-				padding_right=right_padding;
+				auto &[l, r]=lr_iter->second;
+				left_padding=l;
+				right_padding=r;
 			}
 
 			hf->left_padding(left_padding);

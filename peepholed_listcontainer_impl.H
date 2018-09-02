@@ -55,7 +55,7 @@ class LIBCXX_HIDDEN peepholed_listcontainerObj::implObj : virtual public obj {
 	//! Return padding amount.
 
 	//! Implemented by the mixin template.
-	virtual const_themedim list_v_padding() const=0;
+	virtual dim_t list_v_padding(ONLY IN_THREAD) const=0;
 
 	//! Return the element is mixin is a part of.
 
