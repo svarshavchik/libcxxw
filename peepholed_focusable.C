@@ -139,7 +139,7 @@ create_peepholed_focusable_with_frame_impl
 
 			 std::tie(impl, peepholed_element, focusable_element,
 				  focusable_element_impl)=
-				 make_peepholed(focusframe_impl_ret);
+				 make_peepholed(focusframe_impl_ret, grid);
 
 			 focusframecontainer_impl=focusframe_impl_ret;
 		 },

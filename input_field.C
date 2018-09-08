@@ -104,29 +104,32 @@ factoryObj::create_input_field(const text_param &text,
 		  input_field_peephole_style,
 		  scrollbar_visibility::never,
 		  config.oneline() ? scrollbar_visibility::never
-		  : config.vertical_scrollbar},
-		 [&]
-		 (const auto &parent_container_impl)
-		 {
-			auto peephole_impl=ref<editor_peephole_implObj>
-			::create(parent_container_impl);
+		  : config.vertical_scrollbar
+		},
+			[&]
+			(const auto &parent_container_impl,
+			 const gridlayoutmanager &lm)
+		   {
+			   auto peephole_impl=ref<editor_peephole_implObj>
+				   ::create(parent_container_impl);
 
-			// The peephole contains the real editor element.
+			   // The peephole contains the real editor element.
 
-			editorObj::implObj::init_args args{
-				peephole_impl, text, config};
-			auto e_impl=ref<editorObj::implObj>::create(args);
+			   editorObj::implObj::init_args args
+				   {
+				    peephole_impl, text, config};
+			   auto e_impl=ref<editorObj::implObj>::create(args);
 
-			auto e=editor::create(e_impl);
+			   auto e=editor::create(e_impl);
 
-			created_editor=e;
+			   created_editor=e;
 
-			// We'll make the editor element visible.
+			   // We'll make the editor element visible.
 
-			e->show();
+			   e->show();
 
-			return std::make_tuple(peephole_impl, e, e, e->impl);
-		 });
+			   return std::make_tuple(peephole_impl, e, e, e->impl);
+		   });
 
 	auto impl=ref<input_fieldObj::implObj>
 		::create(impl_mixin,

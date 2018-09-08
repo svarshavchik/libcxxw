@@ -119,30 +119,31 @@ new_listlayoutmanager::create_impl(const container_impl &parent_container,
 		  focusable_container_impl,
 		  list_peephole_style,
 		  scrollbar_visibility::never,
-		  vertical_scrollbar},
-		 [&, this]
-		 (const container_impl &peepholed_parent)
-		 {
-			 auto peephole_impl=ref<peepholeObj::implObj>
-			 ::create(peepholed_parent);
+		  vertical_scrollbar
+		}, [&, this]
+			(const container_impl &peepholed_parent,
+			 const gridlayoutmanager &glm)
+		   {
+			   auto peephole_impl=ref<peepholeObj::implObj>
+				   ::create(peepholed_parent);
 
-			 auto [container_element,
-			       peepholed_element,
-			       focusable_element,
-			       focusable_element_impl
-			       ]=this->list_style.create
-				 (peephole_impl,
-				  *this,
-				  list_synchronized_columns);
+			   auto [container_element,
+				 peepholed_element,
+				 focusable_element,
+				 focusable_element_impl
+				 ]=this->list_style.create
+				   (peephole_impl,
+				    *this,
+				    list_synchronized_columns);
 
-			 container_element->show();
+			   container_element->show();
 
-			 internal_listcontainer=container_element;
+			   internal_listcontainer=container_element;
 
-			 return std::make_tuple(peephole_impl,
-						peepholed_element,
-						focusable_element,
-						focusable_element_impl);
+			   return std::make_tuple(peephole_impl,
+						  peepholed_element,
+						  focusable_element,
+						  focusable_element_impl);
 		 });
 
 	create_table_header_row(lm, tci);
