@@ -134,21 +134,15 @@ static inline auto create_column_borders(elementObj::implObj &e,
 	return column_borders;
 }
 
-list_elementObj::implObj::implObj(const ref<listcontainer_pseudo_implObj>
-				  &textlist_container,
-				  const new_listlayoutmanager &style,
-				  const synchronized_axis &synchronized_columns)
-	: implObj{textlist_container, style, synchronized_columns,
-		  textlist_container->get_element_impl()}
+list_elementObj::implObj::implObj(const list_element_impl_init_args &init_args)
+	: implObj{init_args,
+		  init_args.textlist_container->get_element_impl()}
 {
 }
 
-list_elementObj::implObj::implObj(const ref<listcontainer_pseudo_implObj>
-				  &textlist_container,
-				  const new_listlayoutmanager &style,
-				  const synchronized_axis &synchronized_columns,
+list_elementObj::implObj::implObj(const list_element_impl_init_args &init_args,
 				  elementObj::implObj &container_element_impl)
-	: implObj{textlist_container, style, synchronized_columns,
+	: implObj{init_args,
 		  container_element_impl,
 		  container_element_impl.get_screen()}
 {
@@ -172,31 +166,28 @@ validate_col_widths(std::unordered_map<size_t,
 	return std::move(requested_col_widths);
 }
 
-list_elementObj::implObj::implObj(const ref<listcontainer_pseudo_implObj>
-			      &textlist_container,
-			      const new_listlayoutmanager &style,
-				  const synchronized_axis &synchronized_columns,
-			      elementObj::implObj &container_element_impl,
-			      const screen &container_screen)
-	: superclass_t{style.selected_color,
-		       style.highlighted_color,
-		       style.current_color,
+list_elementObj::implObj::implObj(const list_element_impl_init_args &init_args,
+				  elementObj::implObj &container_element_impl,
+				  const screen &container_screen)
+	: superclass_t{init_args.style.selected_color,
+		       init_args.style.highlighted_color,
+		       init_args.style.current_color,
 		       "list_separator_border",
-		       textlist_container},
-	  textlist_container{textlist_container},
-	  list_style{style.list_style},
-	  columns{list_style.actual_columns(style)},
+		       init_args.textlist_container},
+	  textlist_container{init_args.textlist_container},
+	  list_style{init_args.style.list_style},
+	  columns{list_style.actual_columns(init_args.style)},
 	  requested_col_widths{validate_col_widths
-			       (list_style.actual_col_widths(style))},
-	  col_alignments{list_style.actual_col_alignments(style)},
+			       (list_style.actual_col_widths(init_args.style))},
+	  col_alignments{list_style.actual_col_alignments(init_args.style)},
 	  column_borders{create_column_borders(textlist_container
 					       ->container_element_impl(),
-					       style)},
-	  synchronized_info{synchronized_columns,
+					       init_args.style)},
+	  synchronized_info{init_args.synchronized_columns,
 			    ref<list_element_synchronized_columnsObj>::create
 			    (textlist_container)},
-	  textlist_info{listimpl_info_s{style.selection_type,
-					style.selection_changed}},
+	  textlist_info{listimpl_info_s{init_args.style.selection_type,
+					init_args.style.selection_changed}},
 	  scratch_buffer_for_separator{container_screen->create_scratch_buffer
 				       ("list_separator_scratch@libcxx.com",
 					container_screen
@@ -211,7 +202,8 @@ list_elementObj::implObj::implObj(const ref<listcontainer_pseudo_implObj>
 		  .create_icon({"bullet2"})},
 
 	  itemlabel_meta{create_background_color("label_foreground_color"),
-			 create_current_fontcollection(style.list_font)},
+			 create_current_fontcollection(init_args.style
+						       .list_font)},
 	  itemshortcut_meta{create_background_color("label_foreground_color"),
 			    create_current_fontcollection(theme_font
 			  {"menu_shortcut"})}
@@ -220,10 +212,10 @@ list_elementObj::implObj::implObj(const ref<listcontainer_pseudo_implObj>
 	// Some sanity checks will be done here, instead of in
 	// update_peephole_metrics().
 	if (std::holds_alternative<std::tuple<size_t, size_t>>
-	    (style.height_value))
+	    (init_args.style.height_value))
 	{
 		auto &min_max=std::get<std::tuple<size_t, size_t>
-				       >(style.height_value);
+				       >(init_args.style.height_value);
 		auto &[min, max]=min_max;
 
 		if (min <= 0)

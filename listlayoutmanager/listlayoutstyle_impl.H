@@ -23,6 +23,7 @@
 
 LIBCXXW_NAMESPACE_START
 
+class listcontainer_pseudo_implObj;
 
 //! Metadata for each list item returned by \ref listlayoutstyle_impl "create_newcell()
 
@@ -201,6 +202,22 @@ class LIBCXX_HIDDEN listlayoutstyle_impl {
 		 textlist_rowinfo &,
 		 const function<void (const list_cell &)> &,
 		 const function<void ()> &) const;
+};
+
+//! Parameters to list_elementObj::implObj's constructor
+
+//! Encapsulated in one place.
+
+struct LIBCXX_HIDDEN list_element_impl_init_args {
+	ref<listcontainer_pseudo_implObj> textlist_container;
+	const new_listlayoutmanager &style;
+
+	//! Which other columns we synchronize with
+
+	//! This defaults to style.synchronized_columns. The list
+	//! layout manager will provide a custom object here for
+	//! an adjustable table.
+	synchronized_axis synchronized_columns;
 };
 
 LIBCXXW_NAMESPACE_END

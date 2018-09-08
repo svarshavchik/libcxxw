@@ -302,8 +302,11 @@ focusable_container new_custom_comboboxlayoutmanager
 							  style);
 
 			 auto textlist_impl=ref<list_elementObj::implObj>
-				 ::create(impl, style,
-					  style.synchronized_columns);
+				 ::create(list_element_impl_init_args
+					  {
+					   impl, style,
+					   style.synchronized_columns
+					  });
 
 			 auto lm=ref<
 				 peepholed_toplevel_listcontainer_layoutmanager_implObj

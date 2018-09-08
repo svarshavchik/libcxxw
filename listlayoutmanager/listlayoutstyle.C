@@ -55,8 +55,11 @@ listlayoutstyle_impl
 	// its public object.
 
 	auto t_impl=ref<list_elementObj::implObj>
-		::create(internal_listcontainer_impl, style,
-			 synchronized_columns);
+		::create(list_element_impl_init_args
+			 {
+			  internal_listcontainer_impl, style,
+			  synchronized_columns
+			 });
 
 	auto t=list_element::create(t_impl);
 
