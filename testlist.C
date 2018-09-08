@@ -355,6 +355,8 @@ void create_process_table(const LIBCXX_NAMESPACE::w::gridfactory &f,
 			    {4, "thin_dashed_0%"},
 	};
 
+	ntlm.adjustable_column_widths=options.adjustable->value;
+
 	if (options.width->isSet())
 		ntlm.table_width=ntlm.maximum_table_width=options.width->value;
 

@@ -6,6 +6,9 @@
 #include "x/w/tablelayoutmanager.H"
 #include "x/w/canvas.H"
 #include "x/w/synchronized_axis.H"
+#include "x/w/motion_event.H"
+#include "x/w/button_event.H"
+#include "x/w/input_mask.H"
 #include "gridlayoutmanager.H"
 #include "capturefactory.H"
 #include "tablelayoutmanager/table_synchronized_axis.H"
@@ -17,6 +20,9 @@
 #include "x/w/impl/themedim_element.H"
 #include "x/w/impl/container_element.H"
 #include "x/w/impl/borderlayoutmanager.H"
+#include "cursor_pointer_element.H"
+#include "generic_window_handler.H"
+#include "icon.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -62,31 +68,54 @@ public:
 
 struct table_width_tag{};
 struct maximum_table_width_tag{};
+struct table_drag_buffer_tag{};
 
 class LIBCXX_HIDDEN header_container_implObj
-	: public themedim_elementObj<always_visible_elementObj<
-					     container_elementObj
-					     <child_elementObj>>,
-				     table_width_tag, maximum_table_width_tag>
+	: public themedim_elementObj<cursor_pointer_elementObj<
+					     always_visible_elementObj<
+						     container_elementObj
+						     <child_elementObj>>>,
+				     table_width_tag, maximum_table_width_tag,
+				     table_drag_buffer_tag>
 {
-	typedef themedim_elementObj<always_visible_elementObj
-				    <container_elementObj
-				     <child_elementObj>>,
-				    table_width_tag, maximum_table_width_tag>
+	typedef themedim_elementObj<cursor_pointer_elementObj
+				    <always_visible_elementObj<
+					    container_elementObj
+					     <child_elementObj>>>,
+				    table_width_tag, maximum_table_width_tag,
+				    table_drag_buffer_tag>
 		superclass_t;
 
 	//! Whether the preferred metrics should be overriden.
 
 	//! Set when table_width was specified as non-0.
 	const bool preferred_override;
+
+	//! The synchronized list columns.
+
+	const table_synchronized_axis axis;
+
+	//! If not 0, first column being adjusted.
+	size_t first_draggable_column=0;
+
+	//! If not 0, second column being adjusted
+	size_t second_draggable_column=0;
+
 public:
 	header_container_implObj(const new_tablelayoutmanager &ntlm,
+				 const table_synchronized_axis &axis,
 				 const container_impl &parent_container,
 				 const child_element_init_params &init_params)
 		: superclass_t{ntlm.table_width, themedimaxis::width,
 			ntlm.maximum_table_width, themedimaxis::width,
+			"drag_horiz_buffer", themedimaxis::width,
+			parent_container->container_element_impl()
+			.get_window_handler()
+			.create_icon({"slider-horiz"})->create_cursor(),
 			parent_container, init_params},
-		preferred_override{ntlm.table_width != 0}
+		preferred_override{ntlm.table_width != 0},
+		// axis{table_synchronized_axis::create(ntlm)}
+			axis{axis}
 	{
 	}
 
@@ -101,6 +130,40 @@ public:
 
 	metrics::axis adjust_horiz_metrics(ONLY IN_THREAD,
 					   const metrics::axis &h);
+
+
+	//! Override report_motion_event
+
+	//! Detect when the pointer is on top of a draggable border, change
+	//! the pointer.
+
+	void report_motion_event(ONLY IN_THREAD, const motion_event &)
+		override;
+
+	//! Override process_button_event()
+
+	//! Button 1 click begins adjusting, and remembers starting positions.
+
+	bool process_button_event(ONLY IN_THREAD,
+				  const button_event &be,
+				  xcb_timestamp_t timestamp) override;
+
+	//! Override report_motion_event
+
+	//! Make sure to reset the pointer if pointer focus was lost after
+	//! the pointer was on top of a draggable border.
+	void pointer_focus(ONLY IN_THREAD,
+			   const callback_trigger_t &trigger)
+		override;
+
+ public:
+
+	//! Remove dragging pointer, and call stop_adjusting().
+	void undrag(ONLY IN_THREAD);
+
+	//! Clear dragging fields, and tell axis that adjustment has stopped.
+
+	void stop_adjusting(ONLY IN_THREAD);
 };
 
 metrics::axis header_container_implObj
@@ -131,6 +194,93 @@ metrics::axis header_container_implObj
 	}
 
 	return new_h;
+}
+
+void header_container_implObj
+::report_motion_event(ONLY IN_THREAD, const motion_event &me)
+{
+	superclass_t::report_motion_event(IN_THREAD, me);
+
+	if (me.mask.buttons & 1)
+	{
+		if (first_draggable_column)
+			axis->adjust(IN_THREAD, me.x,
+				     first_draggable_column,
+				     second_draggable_column);
+
+		return;
+	}
+
+	size_t col=axis->lookup_draggable_border
+		(IN_THREAD, me.x,
+		 themedim_element<table_drag_buffer_tag>::pixels(IN_THREAD));
+
+	if (col == 0 || col+2 >=
+	    synchronized_values::lock{axis->values}
+	    ->scaled_values.size())
+	{
+		undrag(IN_THREAD);
+		return;
+	}
+
+	first_draggable_column=col;
+	second_draggable_column=col+2;
+
+	set_cursor_pointer(IN_THREAD,
+			   tagged_cursor_pointer(IN_THREAD));
+}
+
+bool header_container_implObj
+::process_button_event(ONLY IN_THREAD,
+		       const button_event &be,
+		       xcb_timestamp_t timestamp)
+{
+	if (be.button == 1)
+	{
+		if (!be.press)
+		{
+			stop_adjusting(IN_THREAD);
+		}
+		else if (first_draggable_column)
+		{
+			axis->start_adjusting_from(IN_THREAD,
+						   data(IN_THREAD)
+						   .last_motion_x,
+						   first_draggable_column,
+						   second_draggable_column);
+			grab(IN_THREAD);
+		}
+
+		return true;
+	}
+
+	return superclass_t::process_button_event(IN_THREAD, be, timestamp);
+}
+
+
+void header_container_implObj
+::pointer_focus(ONLY IN_THREAD,
+		const callback_trigger_t &trigger)
+{
+	superclass_t::pointer_focus(IN_THREAD, trigger);
+
+	if (!current_pointer_focus(IN_THREAD))
+	{
+		undrag(IN_THREAD);
+	}
+}
+
+void header_container_implObj::undrag(ONLY IN_THREAD)
+{
+	remove_cursor_pointer(IN_THREAD);
+	stop_adjusting(IN_THREAD);
+}
+
+void header_container_implObj::stop_adjusting(ONLY IN_THREAD)
+{
+	axis->adjusting(IN_THREAD).reset();
+	first_draggable_column=0;
+	second_draggable_column=0;
 }
 
 //! Header grid row layout manager.
@@ -239,8 +389,8 @@ struct LIBCXX_HIDDEN new_listlayoutmanager::table_create_info {
 focusable_container
 new_tablelayoutmanager::create(const container_impl &parent_container) const
 {
-	auto axis_impl=table_synchronized_axis::create();
-	auto axis=synchronized_axis::create();
+	auto axis_impl=table_synchronized_axis::create(*this);
+	auto axis=synchronized_axis::create(axis_impl);
 
 	table_create_info tci{axis_impl, axis};
 
@@ -303,7 +453,9 @@ void new_tablelayoutmanager::created_list_container(const gridlayoutmanager
 
 	auto header_container_impl=
 		ref<header_container_implObj>
-		::create(*this, header_focusframe_container_impl,
+		::create(*this,
+			 tci->axis_impl,
+			 header_focusframe_container_impl,
 			 header_init_params);
 
 	auto gridlayoutmanager_impl=ref<header_gridlayoutmanager_implObj>

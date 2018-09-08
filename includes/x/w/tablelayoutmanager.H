@@ -78,6 +78,9 @@ class LIBCXX_HIDDEN new_tablelayoutmanager : public new_listlayoutmanager {
 		maximum_table_width=NAN;
 	}
 
+	//! Whether the table borders can be dragged to adjust column widths.
+
+	bool adjustable_column_widths=false;
 	//! Create the focusable container.
 
 	//! \internal

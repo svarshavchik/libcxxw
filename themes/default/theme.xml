@@ -565,7 +565,18 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
 
   <color id="list_current_color" scale="70%" />
 
-  <color id="list_header_color" scale="70%" />
+  <color id="list_header_color" type="linear_gradient">
+    <gradient>
+      <value>0</value>
+      <color>70%</color>
+    </gradient>
+    <gradient>
+      <value>1</value>
+      <color>90%</color>
+    </gradient>
+  </color>
+
+  <color id="noshade:list_header_color" scale="70%" />
 
   <!-- Combo-boxes -->
 

@@ -60,6 +60,18 @@ struct LIBCXX_HIDDEN synchronized_axis_values_t {
 	void recalculate(ONLY IN_THREAD,
 			 std::list<synchronized_axis_value>::iterator
 			 iter);
+
+	//! Notify all synchronized axises, that we were updated.
+
+	//! Invoked by the table layout manager
+	//! when it manually adjusts the scaled_values
+	void notify(ONLY IN_THREAD);
+
+	//! Notify all synchronized axises, that we were updated.
+
+	//! Invoked by recalculate().
+	void notify(ONLY IN_THREAD,
+		    std::list<synchronized_axis_value>::iterator);
 };
 
 //! Acquire a lock for the purpose of updating the synchronized values.

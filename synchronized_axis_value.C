@@ -178,8 +178,6 @@ void synchronized_axis_values_t
 ::recalculate(ONLY IN_THREAD,
 	      std::list<synchronized_axis_value>::iterator iter)
 {
-	LOG_FUNC_SCOPE(recalculate_loggerObj);
-
 	bool changed_flag=false;
 
 	{
@@ -221,6 +219,20 @@ void synchronized_axis_values_t
 
 	if (!changed_flag)
 		return; // Nothing changed.
+
+	notify(IN_THREAD, iter);
+}
+
+void synchronized_axis_values_t::notify(ONLY IN_THREAD)
+{
+	notify(IN_THREAD, all_values.end());
+}
+
+void synchronized_axis_values_t
+::notify(ONLY IN_THREAD,
+	 std::list<synchronized_axis_value>::iterator iter)
+{
+	LOG_FUNC_SCOPE(recalculate_loggerObj);
 
 	// Now, invoke all individual axises that got synchronized what the
 	// new synchronized values are.
