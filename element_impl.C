@@ -969,13 +969,12 @@ void elementObj::implObj::clear_to_color(ONLY IN_THREAD,
 	// If we have a large element inside a peephole, this avoids us having
 	// to allocate a huge scratch buffer, with most of it being unused.
 
-	rectarea absareas;
+	rectarea absareas=di.element_viewport;
 
-	for (auto area:di.element_viewport)
+	for (auto &area:absareas)
 	{
 		area.x = coord_t::truncate(area.x-di.absolute_location.x);
 		area.y = coord_t::truncate(area.y-di.absolute_location.y);
-		absareas.insert(area);
 	}
 
 	absareas=intersect(absareas, areas);
@@ -1076,6 +1075,11 @@ void elementObj::implObj::do_for_each_child(ONLY IN_THREAD,
 					    const function<void
 					    (const element &e)> &)
 {
+}
+
+size_t elementObj::implObj::num_children(ONLY IN_THREAD)
+{
+	return 0;
 }
 
 const char *elementObj::implObj::label_theme_font() const

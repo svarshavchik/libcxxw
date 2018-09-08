@@ -7,17 +7,16 @@
 
 #include <x/w/types.H>
 #include <iostream>
-#include <unordered_set>
+#include <vector>
 
 LIBCXXW_NAMESPACE_START
 
 struct rectangle;
 class rectangle_hash;
 
-//! A set of rectangles
+//! An area defined by a list of rectangles.
 
-typedef std::unordered_set<rectangle, rectangle_hash> rectarea;
-
+typedef std::vector<rectangle> rectarea;
 
 //! Dump the rectangle into an output stream.
 

@@ -194,6 +194,8 @@ void borderlayoutmanagerObj::implObj::do_draw(ONLY IN_THREAD,
 {
 	superclass_t::do_draw(IN_THREAD, di, clip, drawn_areas);
 
+	drawn_areas.reserve(drawn_areas.size()+8);
+
 	const auto &info=get_all_borders(IN_THREAD);
 
 	auto &e=bordercontainer_impl->get_container_impl().container_element_impl();
@@ -268,7 +270,7 @@ void borderlayoutmanagerObj::implObj::do_draw(ONLY IN_THREAD,
 	{
 		const auto &r=corner_info.r;
 
-		drawn_areas.insert(r); // Inform the caller we drew this.
+		drawn_areas.push_back(r); // Inform the caller we drew this.
 
 		// Need to tell border_implObj which element allegedly
 		// exists at this corner.
@@ -371,7 +373,7 @@ void borderlayoutmanagerObj::implObj::do_draw(ONLY IN_THREAD,
 			    line_info.starting_coord,
 			    length,
 			    line_info.thickness};
-		drawn_areas.insert(r); // We are drawing this rectangle.
+		drawn_areas.push_back(r); // We are drawing this rectangle.
 
 		// Acquire the scratch buffers, and create the draw_info
 		// that tells border_implObj what to do.
@@ -461,7 +463,7 @@ void borderlayoutmanagerObj::implObj::do_draw(ONLY IN_THREAD,
 			    line_info.thickness,
 			    length};
 
-		drawn_areas.insert(r);
+		drawn_areas.push_back(r);
 
 		e.draw_using_scratch_buffer
 			(IN_THREAD,

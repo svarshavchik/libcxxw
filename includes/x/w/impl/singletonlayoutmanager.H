@@ -47,6 +47,9 @@ public:
 			       const function<void (const element &e)> &)
 		override;
 
+	//! Inherited from layoutmanagerObj::implObj
+	size_t num_children(ONLY IN_THREAD) override;
+
 	//! New element, replace the existing one.
 	void created(const element &e);
 

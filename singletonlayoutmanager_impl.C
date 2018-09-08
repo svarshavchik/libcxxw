@@ -47,6 +47,11 @@ void singletonlayoutmanagerObj::implObj
 	callback(c);
 }
 
+size_t singletonlayoutmanagerObj::implObj::num_children(ONLY IN_THREAD)
+{
+	return 1;
+}
+
 void singletonlayoutmanagerObj::implObj::initialize(ONLY IN_THREAD)
 {
 	auto c=current_element.get();

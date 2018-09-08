@@ -63,6 +63,11 @@ void peepholeObj::layoutmanager_implObj
 	callback(element_in_peephole->get_peepholed_element());
 }
 
+size_t peepholeObj::layoutmanager_implObj::num_children(ONLY IN_THREAD)
+{
+	return 1;
+}
+
 layoutmanager peepholeObj::layoutmanager_implObj::create_public_object()
 {
 	return layoutmanager::create(layout_impl{this});
@@ -507,7 +512,7 @@ bool peepholeObj::layoutmanager_implObj
 	std::cout << "TO: " << scrolled_rectangle << std::endl;
 #endif
 	auto after_scroll_rectangle_set=intersect(di.element_viewport,
-						  {scrolled_rectangle});
+						  scrolled_rectangle);
 
 	// Should always be a single rectangle.
 

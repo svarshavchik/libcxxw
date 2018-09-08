@@ -970,6 +970,13 @@ class elementObj::implObj : public element_drawObj,
 				       const function<void
 				       (const element &e)> &);
 
+	//! Return the estimated number of children.
+
+	//! The default implementation returns 0. This is overridden in
+	//! containerObj.
+
+	virtual size_t num_children(ONLY IN_THREAD);
+
 	////////////////////////////////////////////////////////////////////
 	//
 	// Fonts, colors, text.

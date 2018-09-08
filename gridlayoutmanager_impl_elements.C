@@ -818,6 +818,11 @@ void gridlayoutmanagerObj::implObj
 	}
 }
 
+size_t gridlayoutmanagerObj::implObj::num_children(ONLY IN_THREAD)
+{
+	return grid_elements(IN_THREAD)->all_elements.size();
+}
+
 std::tuple<bool, metrics::axis, metrics::axis>
 gridlayoutmanagerObj::implObj::elementsObj
 ::recalculate_metrics(ONLY IN_THREAD,

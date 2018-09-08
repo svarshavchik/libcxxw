@@ -6,10 +6,24 @@
 #define rectangle_h
 
 #include "x/w/rectangle.H"
-#include <set>
-#include <vector>
+#include <unordered_set>
 
 LIBCXXW_NAMESPACE_START
+
+struct LIBCXX_HIDDEN rectangle_slicer {
+
+	rectarea first, second;
+
+	rectangle_slicer(const rectarea &a, const rectarea &b);
+
+private:
+	rectangle_slicer(const rectarea &a, const rectarea &b,
+			 const std::vector<coord_t> &h_slices,
+			 const std::vector<coord_t> &v_slices);
+
+};
+
+typedef std::unordered_set<rectangle, rectangle_hash> rectangle_uset;
 
 //! Merge adjacent rectangles.
 
@@ -19,28 +33,7 @@ LIBCXXW_NAMESPACE_START
 //! When there are more than one way to merge a set of rectangles, it is
 //! unspecified how the rectangles get merged.
 
-void merge(rectarea &rectangles) LIBCXX_HIDDEN;
-
-struct rectangle_slicer {
-
-	std::vector<rectangle> slicee_v;
-	std::vector<rectangle> slicer_v;
-
-	rectangle_slicer(const rectarea &slicee,
-			 const rectarea &slicer);
-	~rectangle_slicer();
-
-	void slice_slicee();
-	void slice_slicer();
-};
-
-//! Slice rectangles.
-
-//! If any slicer rectangle's edge goes through a slicee, split the slicee
-//! at the edge.
-
-void slice(rectarea &slicee,
-	   const rectarea &slicer) LIBCXX_HIDDEN;
+void merge(rectangle_uset &rectangles) LIBCXX_HIDDEN;
 
 LIBCXXW_NAMESPACE_END
 

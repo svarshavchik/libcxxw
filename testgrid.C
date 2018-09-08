@@ -159,8 +159,8 @@ static void do_size(const char *testname,
 }
 
 void do_rectmerge(const char *testname,
-		  rectarea rectangles,
-		  const rectarea &expected)
+		  rectangle_uset rectangles,
+		  const rectangle_uset &expected)
 {
 	merge(rectangles);
 
@@ -182,7 +182,7 @@ void do_rectmerge(const char *testname,
 }
 
 
-static dim_squared_t total_area(const rectarea &r)
+static dim_squared_t total_area(const rectangle_uset &r)
 {
 	dim_squared_t sum{0};
 
@@ -197,7 +197,7 @@ static dim_squared_t total_area(const rectarea &r)
 }
 
 void do_rectmergearea(const char *testname,
-		      rectarea rectangles,
+		      rectangle_uset rectangles,
 		      size_t nrectangles,
 		      dim_squared_t expected_total_area)
 {
@@ -224,14 +224,12 @@ void do_rectmergearea(const char *testname,
 void do_testslice(const char *testname,
 		  const rectarea &slicee,
 		  const rectarea &slicer,
-		  const rectarea &right_result)
+		  const rectangle_uset &right_result)
 {
 	rectangle_slicer rslicer{slicee, slicer};
 
-	rslicer.slice_slicee();
-
-	rectarea
-		result{rslicer.slicee_v.begin(), rslicer.slicee_v.end()};
+	rectangle_uset
+		result{rslicer.first.begin(), rslicer.first.end()};
 
 	if (result != right_result)
 	{
@@ -530,7 +528,10 @@ void testgrid()
 			     {10, 10, 1, 10},
 			     {11, 10, 3, 10},
 			     {14, 10, 1, 10},
-			     {15, 10, 5, 10},
+			     {15, 10, 3, 10},
+			     {18, 10, 1, 10},
+			     {19, 10, 1, 10},
+
 		     });
 
 	{
@@ -546,7 +547,7 @@ void testgrid()
 		auto res=add(rectarea( {{10, 10, 10, 10}} ),
 			     rectarea( {{15, 15, 10, 10}} ));
 
-		if (total_area(res) != 10 * 10 * 2 - 5 * 5)
+		if (total_area({res.begin(), res.end()}) != 10 * 10 * 2 - 5 * 5)
 		{
 			std::ostringstream o;
 			const char *sep="";
@@ -576,7 +577,7 @@ void testgrid()
 		auto res=subtract(rectarea( {{10, 10, 10, 10}} ),
 				  rectarea( {{15, 15, 10, 10}} ));
 
-		if (total_area(res) != 10 * 10 - 5 * 5)
+		if (total_area({res.begin(), res.end()}) != 10 * 10 - 5 * 5)
 		{
 			std::ostringstream o;
 			const char *sep="";
@@ -594,11 +595,38 @@ void testgrid()
 	}
 
 	{
-		auto res=intersect(rectarea( {{10, 10, 10, 10}} ),
+		auto res=intersect(rectarea( {{10, 10, 10, 10},
+						   {10, 50, 2, 5}} ),
 				   rectarea( {{15, 15, 10, 10}} ),
 				   -5, -10);
 
-		if (res != rectarea({{10, 5, 5, 5}}))
+		if (rectangle_uset{res.begin(), res.end()} !=
+		    rectangle_uset({{10, 5, 5, 5}}))
+		{
+			std::ostringstream o;
+			const char *sep="";
+
+			std::for_each(res.begin(), res.end(),
+				      [&]
+				      (const auto &r)
+				      {
+					      o << sep << r;
+					      sep="; ";
+				      });
+
+			throw EXCEPTION("operator* failed: " << o.str());
+		}
+	}
+
+	{
+		rectarea r{{75, 33, 4, 46},
+				{33, 33, 4, 46},
+				{37, 75, 38, 4},
+				{37, 33, 38, 4}};
+		auto res=intersect(r, {{0, 0, 112, 112}});
+
+		if (total_area(rectangle_uset{res.begin(), res.end()})
+		    != 4 * 46 * 2 + 38 * 4 * 2)
 		{
 			std::ostringstream o;
 			const char *sep="";

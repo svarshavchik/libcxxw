@@ -135,6 +135,8 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 			       const function<void
 			       (const element &e)> &callback) override;
 
+	size_t num_children(ONLY IN_THREAD) override;
+
 	layoutmanager create_public_object() override;
 
 	// create_public_object() simply calls this.

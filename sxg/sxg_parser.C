@@ -804,7 +804,7 @@ struct LIBCXX_HIDDEN sxg_parserObj::sxg_rectangle {
 			    const auto &rw,
 			    const auto &rh)
 			   {
-				   r.insert({rx, ry, rw, rh});
+				   r.push_back({rx, ry, rw, rh});
 			   });
 	}
 
@@ -1652,6 +1652,8 @@ sxg_parserObj::parse_gc_clip(const theme_parser_lock &lock,
 
 				 size_t n=rectangles->size();
 
+				 convrectangles.reserve(n);
+
 				 for (size_t i=0; i<n; ++i)
 					 rectangles->at(i)
 						 .scale(info.scale,
@@ -2403,6 +2405,7 @@ sxg_parserObj::parse_render_clip(const theme_parser_lock &render_element,
 				 rectarea convrectangles;
 				 size_t n=rectangles->size();
 
+				 convrectangles.reserve(n);
 				 for (size_t i=0; i<n; ++i)
 					 rectangles->at(i)
 						 .scale(info.scale,

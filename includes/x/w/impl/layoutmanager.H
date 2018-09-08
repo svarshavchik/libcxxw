@@ -96,6 +96,16 @@ class layoutmanagerObj::implObj : virtual public obj {
 				       const function<void
 				       (const element &e)> &)=0;
 
+	//! The layout manager should know how many children it has.
+
+	//! This is mostly for estimation purposes. The number of child
+	//! elements can change at any time, so layout managers that have
+	//! at most one child element, and usually do, are free to return 1
+	//! all the time. This is used to reserve() a vector that might need
+	//! to deal with all the children, and for_each_child() gives an
+	//! authoritative answer.
+	virtual size_t num_children(ONLY IN_THREAD)=0;
+
 	//! Create a public object for this layout manager
 
 	//! This is invoked by the container's get_layoutmanager().

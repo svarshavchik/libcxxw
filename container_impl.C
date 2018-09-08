@@ -87,6 +87,18 @@ void containerObj::implObj::do_for_each_child(ONLY IN_THREAD,
 			     });
 }
 
+size_t containerObj::implObj::num_children(ONLY IN_THREAD)
+{
+	size_t n=0;
+
+	invoke_layoutmanager([&]
+			     (const auto &manager)
+			     {
+				     n=manager->num_children(IN_THREAD);
+			     });
+	return n;
+}
+
 // Common code shared by the container and the layout manager, to clear
 // the container-provided padding around an element in the container, using
 // the element's background color.
@@ -123,7 +135,7 @@ void container_clear_padding(ONLY IN_THREAD,
 	rectangle padded_position=manager.padded_position(IN_THREAD, e_impl);
 
 	// We combine all padded child areas into child_areas.
-	child_areas.insert(padded_position);
+	child_areas.push_back(padded_position);
 
 	rectangle position=e_impl->data(IN_THREAD).current_position;
 

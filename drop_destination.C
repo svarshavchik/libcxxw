@@ -215,6 +215,8 @@ void generic_windowObj::handlerObj
 
 			rectarea child_rects;
 
+			child_rects.reserve(e->num_children(IN_THREAD));
+
 			e->for_each_child
 				(IN_THREAD,
 				 [&]
@@ -227,7 +229,7 @@ void generic_windowObj::handlerObj
 					     (IN_THREAD))
 						 return;
 
-					 child_rects.insert
+					 child_rects.push_back
 						 (child->data(IN_THREAD)
 						  .current_position);
 				 });

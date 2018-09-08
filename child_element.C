@@ -113,7 +113,7 @@ draw_info &child_elementObj::get_draw_info_from_scratch(ONLY IN_THREAD)
 	// between the parent's viewport and this element's absolute_location,
 	// to derive this element's viewport.
 
-	di.element_viewport=intersect(di.element_viewport, {cpy});
+	di.element_viewport=intersect(di.element_viewport, cpy);
 
 	if (data(IN_THREAD).removed)
 		di.element_viewport.clear(); // See above.

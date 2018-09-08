@@ -25,10 +25,8 @@ richtext_draw_boundaries::richtext_draw_boundaries(const draw_info &di,
 						   const rectarea &areas)
 	: limits{bounds
 		(({
-				std::vector<rectangle>
-					rects{di.element_viewport.begin(),
-						di.element_viewport.end()
-						};
+				std::vector<rectangle> rects=
+					di.element_viewport;
 
 				for (auto &r:rects)
 				{
@@ -38,9 +36,7 @@ richtext_draw_boundaries::richtext_draw_boundaries(const draw_info &di,
 						(r.y-di.absolute_location.y);
 				}
 
-				intersect(rectarea{rects.begin(),
-							rects.end()},
-					areas);
+				intersect(rects, areas);
 			}))},
 	  draw_bounds{limits},
 	  position{0, 0,
@@ -56,7 +52,7 @@ void richtext_draw_boundaries::position_at(const rectangle &pos)
 	if (pos.x < 0 || pos.y < 0)
 		throw EXCEPTION("Internal error: negative coordinates in position_at()");
 
-	auto res=intersect({limits}, {pos});
+	auto res=intersect({limits}, pos);
 
 	if (res.empty())
 	{

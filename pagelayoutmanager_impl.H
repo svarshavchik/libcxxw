@@ -87,6 +87,9 @@ class LIBCXX_HIDDEN pagelayoutmanagerObj::implObj
 			       const function<void(const element &)> &)
 		override;
 
+	//! Implement num_children().
+	size_t num_children(ONLY IN_THREAD) override;
+
 	//! Implement create_public_object()
 	layoutmanager create_public_object() override;
 

@@ -106,6 +106,16 @@ void container_elementObj<element_impl>
 	containerObj::implObj::do_for_each_child(IN_THREAD, e);
 }
 
+//! Override num_children.
+
+//! Forwarded to containerObj::implObj.
+
+template<typename element_impl>
+size_t container_elementObj<element_impl>::num_children(ONLY IN_THREAD)
+{
+	return containerObj::implObj::num_children(IN_THREAD);
+}
+
 //! Override draw_after_visibility_updated().
 
 //! Invokes the superclass's draw_after_visibility_updated(), then invokes

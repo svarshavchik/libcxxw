@@ -136,6 +136,8 @@ void layoutmanagerObj::implObj::do_draw(ONLY IN_THREAD,
 {
 	auto &element_impl=layout_container_impl->container_element_impl();
 
+	drawn_areas.reserve(drawn_areas.size()+num_children(IN_THREAD));
+
 	for_each_child
 		(IN_THREAD,
 		 [&]

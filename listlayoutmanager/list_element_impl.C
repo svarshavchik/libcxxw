@@ -1044,6 +1044,7 @@ void list_elementObj::implObj::do_draw(ONLY IN_THREAD,
 	// coordinates.
 	rectarea drawn;
 
+	drawn.reserve(e-iter);
 	{
 		clip_region_set clipped{IN_THREAD, get_window_handler(), di};
 
@@ -1060,7 +1061,7 @@ void list_elementObj::implObj::do_draw(ONLY IN_THREAD,
 			auto rect=do_draw_row(IN_THREAD, di, clipped, bounds,
 					      lock, iter-b, false);
 
-			drawn.insert(rect);
+			drawn.push_back(rect);
 		}
 	}
 	if (only_whats_needed)
@@ -1213,6 +1214,8 @@ rectangle list_elementObj::implObj
 {
 	rectarea drawn_columns;
 
+	drawn_columns.reserve(lock->columns_poswidths.size());
+
 	coord_t y=r.y;
 
 	dim_t v_padding=textlist_container->list_v_padding(IN_THREAD);
@@ -1241,7 +1244,7 @@ rectangle list_elementObj::implObj
 				(*cell)->height};
 
 		bounds.position_at(rc);
-		drawn_columns.insert(rc);
+		drawn_columns.push_back(rc);
 
 		(*cell)->cell_redraw(IN_THREAD, *this, di, clipped,
 				     r.extra->row_type == list_row_type_t::disabled,
@@ -1298,7 +1301,7 @@ rectangle list_elementObj::implObj
 			 border_rect,
 			 di, di, clipped);
 
-		drawn_columns.insert(border_rect);
+		drawn_columns.push_back(border_rect);
 	}
 
 

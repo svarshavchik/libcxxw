@@ -269,7 +269,7 @@ void gcObj::fill_rectangle(const rectangle &rectangleArg,
 {
 	rectarea rectangles;
 
-	rectangles.insert(rectangleArg);
+	rectangles.push_back(rectangleArg);
 	fill_rectangles(rectangles, props);
 }
 

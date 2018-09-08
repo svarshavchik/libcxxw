@@ -120,6 +120,13 @@ void pagelayoutmanagerObj::implObj
 		callback(e.the_container);
 }
 
+size_t pagelayoutmanagerObj::implObj::num_children(ONLY IN_THREAD)
+{
+	page_layout_info_t::lock lock{info};
+
+	return lock->elements.size();
+}
+
 layoutmanager pagelayoutmanagerObj::implObj::create_public_object()
 {
 	return pagelayoutmanager::create(ref(this));

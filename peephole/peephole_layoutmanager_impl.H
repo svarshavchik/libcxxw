@@ -62,6 +62,9 @@ class LIBCXX_HIDDEN peepholeObj::layoutmanager_implObj
 			       const function<void (const element &e)> &)
 		override;
 
+	//! Implement num_children().
+	size_t num_children(ONLY IN_THREAD) override;
+
 	//! Implement create_public_object().
 
 	//! We just construct a base layoutmanager object.

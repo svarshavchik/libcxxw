@@ -118,7 +118,7 @@ rectarea add(const rectarea &,
 	     coord_t offsetx=0,
 	     coord_t offsety=0);
 
-//! Return an intersection set of two rectangles.
+//! Return an intersection set of two rectangle sets.
 
 //! The returned rectangle set consists of only rectangular areas present
 //! in both sets.
@@ -131,6 +131,15 @@ rectarea intersect(const rectarea &,
 		   const rectarea &,
 		   coord_t offsetx=0,
 		   coord_t offsety=0);
+
+//! Return an intersection set of two rectangle sets.
+
+//! With the second set consisting of one element. Most often used optimized
+//! path.
+rectarea intersect(const rectarea &,
+			const rectangle &,
+			coord_t offsetx=0,
+			coord_t offsety=0);
 
 //! Subtract two rectangle sets.
 

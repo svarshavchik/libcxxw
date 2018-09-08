@@ -297,7 +297,7 @@ void connection_threadObj::run_event(ONLY IN_THREAD,
 
 			auto &r=iter->second->exposure_rectangles(IN_THREAD);
 
-			r.rectangles.insert({msg->x, msg->y, msg->width,
+			r.rectangles.push_back({msg->x, msg->y, msg->width,
 						msg->height});
 			r.complete=msg->count == 0;
 		}
@@ -311,7 +311,7 @@ void connection_threadObj::run_event(ONLY IN_THREAD,
 			auto &r=iter->second
 				->graphics_exposure_rectangles(IN_THREAD);
 
-			r.rectangles.insert({msg->x, msg->y, msg->width,
+			r.rectangles.push_back({msg->x, msg->y, msg->width,
 						msg->height});
 			r.complete=msg->count == 0;
 		}

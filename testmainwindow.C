@@ -82,7 +82,7 @@ sausage_factory_t sausages;
 						  di.absolute_location.x); \
 			cpy.y = coord_t::truncate(cpy.y+		\
 						  di.absolute_location.y); \
-			lock->drawn_rectangles.insert(cpy);		\
+			lock->drawn_rectangles.push_back(cpy);		\
 		}							\
 									\
 		lock->initial_clear_to_color_rect=false;		\
@@ -378,22 +378,22 @@ void teststate(testmainwindowoptions &options, bool flag)
 
 	LIBCXXW_NAMESPACE::rectangle_slicer
 		slicer{lock->drawn_rectangles,
-			lock->drawn_rectangles};
+		       lock->drawn_rectangles};
 
-	slicer.slice_slicee();
-	slicer.slice_slicer();
+	LIBCXXW_NAMESPACE::rectangle_uset test_set{slicer.first.begin(),
+						   slicer.first.end()
+	};
 
-	LIBCXXW_NAMESPACE::rectarea test_set{slicer.slicee_v.begin(),
-			slicer.slicee_v.end()
-			};
+	LIBCXXW_NAMESPACE::rectangle_uset
+		rect_set{lock->drawn_rectangles.begin(),
+			 lock->drawn_rectangles.end()
+	};
 
-	if (test_set == lock->drawn_rectangles)
-	{
-		LIBCXXW_NAMESPACE::merge(test_set);
+	LIBCXXW_NAMESPACE::merge(test_set);
+	LIBCXXW_NAMESPACE::merge(rect_set);
 
-		if (test_set.size() == 1)
-			return;
-	}
+	if (test_set == rect_set && test_set.size() == 1)
+		return;
 	std::ostringstream o;
 
 	for (const auto &r:lock->drawn_rectangles)

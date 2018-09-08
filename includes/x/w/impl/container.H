@@ -18,6 +18,7 @@
 #include <x/functional.H>
 
 #include <map>
+#include <unordered_set>
 
 LIBCXXW_NAMESPACE_START
 
@@ -224,6 +225,12 @@ public:
 
 	void do_for_each_child(ONLY IN_THREAD,
 			       const function<void (const element &)> &);
+
+	//! Return number of child elements.
+
+	//! Invoke the layout manager's num_children.
+
+	size_t num_children(ONLY IN_THREAD);
 
 	//! Child element's background color has changed
 
