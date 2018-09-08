@@ -204,7 +204,7 @@ struct list_element_impl_init_args;
 
 class LIBCXX_HIDDEN list_elementObj::implObj :
 	public list_element_impl_superclass_t,
-	public richtext_alteration_config { // TODO
+	public richtext_alteration_config {
 
  public:
 

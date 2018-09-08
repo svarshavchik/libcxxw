@@ -32,6 +32,7 @@
 #include "catch_exceptions.H"
 #include "defaulttheme.H"
 #include "synchronized_axis_value.H"
+#include "ellipsiscache.H"
 #include <algorithm>
 #include <X11/keysym.h>
 
@@ -174,6 +175,11 @@ list_elementObj::implObj::implObj(const list_element_impl_init_args &init_args,
 		       init_args.style.current_color,
 		       "list_separator_border",
 		       init_args.textlist_container},
+	  richtext_alteration_config{
+				     container_element_impl.get_window_handler()
+				     .get_screen()->impl->ellipsiscaches
+				     ->get(container_element_impl)
+	  },
 	  textlist_container{init_args.textlist_container},
 	  list_style{init_args.style.list_style},
 	  columns{list_style.actual_columns(init_args.style)},
