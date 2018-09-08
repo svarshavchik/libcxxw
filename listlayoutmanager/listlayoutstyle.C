@@ -42,6 +42,7 @@ std::tuple<container, peepholed, focusable, focusable_impl>
 listlayoutstyle_impl
 ::create(const ref<peepholeObj::implObj> &peephole_parent,
 	 const new_listlayoutmanager &style,
+	 const new_listlayoutmanager::list_create_info &create_info,
 	 const synchronized_axis &synchronized_columns) const
 {
 	// A container that uses the listlayoutmanager.
@@ -54,12 +55,11 @@ listlayoutstyle_impl
 	// The single element in the container, used to draw the list, and
 	// its public object.
 
-	auto t_impl=ref<list_elementObj::implObj>
-		::create(list_element_impl_init_args
-			 {
-			  internal_listcontainer_impl, style,
-			  synchronized_columns
-			 });
+	auto t_impl=create_info
+		.create_list_element_impl({
+					   internal_listcontainer_impl, style,
+					   synchronized_columns
+			});
 
 	auto t=list_element::create(t_impl);
 

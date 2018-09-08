@@ -313,13 +313,22 @@ class LIBCXX_HIDDEN new_listlayoutmanager : public new_focusable_layoutmanager {
 
 	struct LIBCXX_HIDDEN table_create_info;
 
+	struct LIBCXX_HIDDEN list_create_info;
+
  protected:
 	//! Internal implementation
 	focusable_container create_impl(const container_impl &,
 					const synchronized_axis &,
-					table_create_info *)
+					table_create_info *,
+					const list_create_info &)
 		const;
  public:
+	//! Implemented in \ref new_tablelayoutmanager "new_tablelayoutmanager".
+
+	//! \internal
+	virtual void created_list_container(const gridlayoutmanager &,
+					    table_create_info *) const;
+
 	//! Implemented in \ref new_tablelayoutmanager "new_tablelayoutmanager".
 
 	//! \internal

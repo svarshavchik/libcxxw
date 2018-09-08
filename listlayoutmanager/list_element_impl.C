@@ -592,11 +592,9 @@ void list_elementObj::implObj::recalculate(ONLY IN_THREAD)
 	{
 		dim_t width=calculate_column_poswidths(IN_THREAD, lock);
 
-		auto hv=get_horizvert(IN_THREAD);
-
-		hv->set_element_metrics(IN_THREAD,
-					{ width, width, width},
-					hv->vert);
+		update_metrics(IN_THREAD,
+			       { width, width, width},
+			       get_horizvert(IN_THREAD)->vert);
 
 		if (lock->full_redraw_needed)
 		{
@@ -604,6 +602,14 @@ void list_elementObj::implObj::recalculate(ONLY IN_THREAD)
 			schedule_redraw(IN_THREAD);
 		}
 	}
+}
+
+void list_elementObj::implObj::update_metrics(ONLY IN_THREAD,
+					      const metrics::axis &h,
+					      const metrics::axis &v)
+{
+	get_horizvert(IN_THREAD)
+		->set_element_metrics(IN_THREAD, h, v);
 }
 
 void list_elementObj::implObj
@@ -767,10 +773,9 @@ void list_elementObj::implObj::recalculate(ONLY IN_THREAD,
 	lock->row_infos.modified=false;
 	textlist_container->rows(IN_THREAD)=n;
 
-	get_horizvert(IN_THREAD)
-		->set_element_metrics(IN_THREAD,
-				      { width, width, width},
-				      { height, height, height});
+	update_metrics(IN_THREAD,
+		       { width, width, width},
+		       { height, height, height});
 
 	if (lock->full_redraw_needed)
 	{

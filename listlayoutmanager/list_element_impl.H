@@ -343,6 +343,14 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 	//! Invoked from listlayoutmanagerObj::implObj.
 	void recalculate(ONLY IN_THREAD);
 
+	//! New metrics computed, so set_element_metrics().
+
+	//! Overridden by the table layout manager.
+
+	virtual void update_metrics(ONLY IN_THREAD,
+				    const metrics::axis &new_horiz,
+				    const metrics::axis &new_vert);
+
 	//! Override process_updated_position().
 
 	//! Calls recalculate().

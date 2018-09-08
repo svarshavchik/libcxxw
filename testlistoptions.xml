@@ -18,11 +18,19 @@
   </option>
 
   <option>
-    <name>expand</name>
-    <type>bool</type>
-    <default>false</default>
-    <longopt>expand</longopt>
-    <descr>Artificially expand the table</descr>
+    <name>width</name>
+    <type>double</type>
+    <default>0</default>
+    <longopt>width</longopt>
+    <descr>Table width (mm)</descr>
+  </option>
+
+  <option>
+    <name>maximum_table_width</name>
+    <type>double</type>
+    <default>0</default>
+    <longopt>maximum-width</longopt>
+    <descr>Maximum table width (mm)</descr>
   </option>
 
   <defaultoptions />

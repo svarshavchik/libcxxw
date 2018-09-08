@@ -355,6 +355,12 @@ void create_process_table(const LIBCXX_NAMESPACE::w::gridfactory &f,
 			    {4, "thin_dashed_0%"},
 	};
 
+	if (options.width->isSet())
+		ntlm.table_width=ntlm.maximum_table_width=options.width->value;
+
+	if (options.maximum_table_width->isSet())
+		ntlm.maximum_table_width=options.maximum_table_width->value;
+
 	f->create_focusable_container
 		([&]
 		 (const LIBCXX_NAMESPACE::w::focusable_container &c)
@@ -421,17 +427,8 @@ void testlist(const testlistoptions &options)
 
 			 factory->halign(LIBCXX_NAMESPACE::w
 					 ::halign::fill);
+			 factory->colspan(2);
 			 create_process_table(factory, options);
-
-			 if (options.expand->value)
-			 {
-				 factory=layout->append_row();
-
-				 factory->create_canvas
-					 ([](const auto &){},
-					  {200},
-					  {10})->show();
-			 }
 
 			 factory=layout->append_row();
 
@@ -454,7 +451,7 @@ void testlist(const testlistoptions &options)
 							      original_options,
 							      true);
 				  });
-
+			 factory->create_canvas();
 		 });
 
 	guard(main_window->connection_mcguffin());

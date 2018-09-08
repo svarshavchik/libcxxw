@@ -93,14 +93,28 @@ new_listlayoutmanager::~new_listlayoutmanager()=default;
 focusable_container
 new_listlayoutmanager::create(const container_impl &parent_container) const
 {
-	return create_impl(parent_container, synchronized_columns, nullptr);
+	auto create_list_element_impl=
+		make_function< ref<list_elementObj::implObj>
+			       (const list_element_impl_init_args &)>
+		([]
+		 (const auto &init_args)
+		 {
+			 return ref<list_elementObj::implObj>
+				 ::create(init_args);
+		 });
+
+	list_create_info lci{create_list_element_impl};
+
+	return create_impl(parent_container, synchronized_columns,
+			   nullptr, lci);
 }
 
 focusable_container
 new_listlayoutmanager::create_impl(const container_impl &parent_container,
 				   const synchronized_axis
 				   &list_synchronized_columns,
-				   table_create_info *tci) const
+				   table_create_info *tci,
+				   const list_create_info &lci) const
 {
 
 	auto focusable_container_impl=
@@ -124,6 +138,8 @@ new_listlayoutmanager::create_impl(const container_impl &parent_container,
 			(const container_impl &peepholed_parent,
 			 const gridlayoutmanager &glm)
 		   {
+			   created_list_container(glm, tci);
+
 			   auto peephole_impl=ref<peepholeObj::implObj>
 				   ::create(peepholed_parent);
 
@@ -134,6 +150,7 @@ new_listlayoutmanager::create_impl(const container_impl &parent_container,
 				 ]=this->list_style.create
 				   (peephole_impl,
 				    *this,
+				    lci,
 				    list_synchronized_columns);
 
 			   container_element->show();
@@ -150,6 +167,12 @@ new_listlayoutmanager::create_impl(const container_impl &parent_container,
 
 	return ref<listObj>::create(internal_listcontainer, peephole_info,
 				    lm->impl);
+}
+
+void new_listlayoutmanager::created_list_container(const gridlayoutmanager &,
+						   table_create_info *)
+	const
+{
 }
 
 void new_listlayoutmanager::create_table_header_row(const gridlayoutmanager &,

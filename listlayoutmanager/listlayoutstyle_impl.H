@@ -55,6 +55,7 @@ class LIBCXX_HIDDEN listlayoutstyle_impl {
 	std::tuple<container, peepholed, focusable, focusable_impl>
 		create(const ref<peepholeObj::implObj> &,
 		       const new_listlayoutmanager &,
+		       const new_listlayoutmanager::list_create_info &,
 		       const synchronized_axis &synchronized_columns) const;
 
 	//! How many actual columns there are in the list.
@@ -218,6 +219,21 @@ struct LIBCXX_HIDDEN list_element_impl_init_args {
 	//! layout manager will provide a custom object here for
 	//! an adjustable table.
 	synchronized_axis synchronized_columns;
+};
+
+//! Additional parameters used by new_listlayoutmanager::create_impl
+
+struct LIBCXX_HIDDEN new_listlayoutmanager::list_create_info {
+
+	//! Create list_elementObj::implObj
+
+	//! new_listlayoutmanager::create() provides a default implementation.
+	//! new_tablelayoutmanager::create() provides an implementation that
+	//! construct a subclass.
+
+	const function< ref<list_elementObj::implObj>
+			(const list_element_impl_init_args &)
+			> &create_list_element_impl;
 };
 
 LIBCXXW_NAMESPACE_END

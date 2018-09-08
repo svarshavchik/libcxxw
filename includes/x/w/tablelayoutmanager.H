@@ -8,6 +8,7 @@
 #include <x/w/tablelayoutmanagerfwd.H>
 #include <x/w/tablelayoutmanagerobj.H>
 #include <x/w/listlayoutmanager.H>
+#include <cmath>
 
 LIBCXXW_NAMESPACE_START
 
@@ -63,6 +64,20 @@ class LIBCXX_HIDDEN new_tablelayoutmanager : public new_listlayoutmanager {
 	//! Background color for the header row.
 	color_arg header_color;
 
+	//! A non-default table size, in millimeters.
+
+	//! A width of 0 means use the default initial table size.
+	double table_width=0;
+
+	//! Maximum table width.
+	double maximum_table_width=0;
+
+	//! Specify an unlimited table width.
+	void unlimited_table_width()
+	{
+		maximum_table_width=NAN;
+	}
+
 	//! Create the focusable container.
 
 	//! \internal
@@ -70,6 +85,12 @@ class LIBCXX_HIDDEN new_tablelayoutmanager : public new_listlayoutmanager {
 		const override;
  private:
 
+	//! Implement created_list_container().
+
+	//! \internal
+	virtual void created_list_container(const gridlayoutmanager &,
+					    table_create_info *)
+		const override;
 	//! Implement create_table_header_row()
 
 	void create_table_header_row(const gridlayoutmanager &,
