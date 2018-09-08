@@ -28,7 +28,7 @@ static inline auto insert_into_list(const synchronized_axis &axis,
 	synchronized_values::lock lock{axis->impl->values};
 
 	lock->all_values.push_back(my_value);
-	return lock->all_values.end();
+	return --lock->all_values.end();
 }
 
 my_synchronized_axis
