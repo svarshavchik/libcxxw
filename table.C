@@ -8,6 +8,7 @@
 #include "x/w/synchronized_axis.H"
 #include "gridlayoutmanager.H"
 #include "capturefactory.H"
+#include "tablelayoutmanager/table_synchronized_axis.H"
 #include "tablelayoutmanager/tablelayoutmanager_impl.H"
 #include "x/w/impl/always_visible_element.H"
 #include "x/w/impl/bordercontainer_element.H"
@@ -72,9 +73,36 @@ new_tablelayoutmanager
 
 new_tablelayoutmanager::~new_tablelayoutmanager()=default;
 
+// A table uses its own internal synchronized axis.
+//
+// Override create(), and pass through an opaque table_create_info pointer
+// to create_impl(), which creates the list portion of the table.
+// create_impl() invokes create_table_header_row(), which will grab the
+// custom synchronized axis implementation from here, an duse it.
+
+struct LIBCXX_HIDDEN new_listlayoutmanager::table_create_info {
+
+	const table_synchronized_axis axis_impl;
+
+	const synchronized_axis axis;
+
+};
+
+focusable_container
+new_tablelayoutmanager::create(const container_impl &parent_container) const
+{
+	auto axis_impl=table_synchronized_axis::create();
+	auto axis=synchronized_axis::create();
+
+	table_create_info tci{axis_impl, axis};
+
+	return create_impl(parent_container,
+			   axis, &tci);
+}
 
 void new_tablelayoutmanager::create_table_header_row(const gridlayoutmanager
-						     &lm)
+						     &lm,
+						     table_create_info *tci)
 	const
 {
 	// We need to have the header row lined up with the list
@@ -131,8 +159,8 @@ void new_tablelayoutmanager::create_table_header_row(const gridlayoutmanager
 
 	new_gridlayoutmanager nglm;
 
-	// Synchronize the horizontal axis.
-	nglm.synchronized_columns=synchronized_columns;
+	// Synchronize the horizontal axis with the list's axis.
+	nglm.synchronized_columns=tci->axis;
 
 	// Container implementation object for the header row.
 

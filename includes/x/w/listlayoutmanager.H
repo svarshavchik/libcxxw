@@ -305,23 +305,27 @@ class LIBCXX_HIDDEN new_listlayoutmanager : public new_focusable_layoutmanager {
 	//! Destructor
 	~new_listlayoutmanager() LIBCXX_PUBLIC;
 
-	//! \internal
 	//! Create the focusable container.
 
+	//! \internal
 	focusable_container create(const container_impl &)
 		const override;
 
- private:
-	//! Overridden by \ref new_tablelayoutmanager "new_tablelayoutmanager".
+	struct LIBCXX_HIDDEN table_create_info;
+
+ protected:
+	//! Internal implementation
+	focusable_container create_impl(const container_impl &,
+					const synchronized_axis &,
+					table_create_info *)
+		const;
+ public:
+	//! Implemented in \ref new_tablelayoutmanager "new_tablelayoutmanager".
 
 	//! \internal
-	virtual synchronized_axis get_synchronized_columns() const;
 
-	//! Overridden by \ref new_tablelayoutmanager "new_tablelayoutmanager".
-
-	//! \internal
-
-	virtual void create_table_header_row(const gridlayoutmanager &) const;
+	virtual void create_table_header_row(const gridlayoutmanager &,
+					     table_create_info *) const;
 };
 
 //! Lock the list layout manager.

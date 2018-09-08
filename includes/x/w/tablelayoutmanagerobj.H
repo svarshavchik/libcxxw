@@ -22,6 +22,9 @@ public:
 	//! Internal implementation object.
 	const ref<implObj> impl;
 
+	//! Internal implementation object.
+	class table_synchronized_axisObj;
+
 	//! Constructor
 	tablelayoutmanagerObj(const ref<implObj> &impl) LIBCXX_HIDDEN;
 

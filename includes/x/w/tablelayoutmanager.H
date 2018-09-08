@@ -63,11 +63,17 @@ class LIBCXX_HIDDEN new_tablelayoutmanager : public new_listlayoutmanager {
 	//! Background color for the header row.
 	color_arg header_color;
 
+	//! Create the focusable container.
+
+	//! \internal
+	focusable_container create(const container_impl &)
+		const override;
  private:
 
 	//! Implement create_table_header_row()
 
-	void create_table_header_row(const gridlayoutmanager &) const override;
+	void create_table_header_row(const gridlayoutmanager &,
+				     table_create_info *) const override;
 };
 
 LIBCXXW_NAMESPACE_END

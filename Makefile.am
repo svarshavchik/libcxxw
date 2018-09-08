@@ -761,6 +761,10 @@ libcxxw_la_SOURCES=\
 	tablelayoutmanager/tablelayoutmanager.C	    \
 	tablelayoutmanager/tablelayoutmanager_impl.C \
 	tablelayoutmanager/tablelayoutmanager_impl.H \
+	tablelayoutmanager/table_synchronized_axis.C \
+	tablelayoutmanager/table_synchronized_axis.H \
+	tablelayoutmanager/table_synchronized_axisfwd.H \
+	tablelayoutmanager/table_synchronized_axisobj.H \
 	textlabel.C				    \
 	textlabel.H				    \
 	textlabel_impl.C			    \
