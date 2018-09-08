@@ -91,6 +91,27 @@ public:
 		    coord_t x_coordinate,
 		    size_t first_adjusted_column,
 		    size_t second_adjusted_column);
+
+	//! Something unexpected happen and we want to stop dragging.
+
+	//! If it's in progress.
+	void abort_dragging(ONLY IN_THREAD);
+
+	//! It appears that we've been resized after dragging.
+
+	void resize_dragged_scaled_axis(ONLY IN_THREAD,
+					std::vector<metrics::axis> &scaled,
+					dim_squared_t
+					total_scaled_except_borders_width,
+					dim_squared_t
+					total_dragged_except_borders_width);
+
+	struct resize_reference_info_t {
+		std::vector<metrics::axis> reference_axis_for_sizing;
+		dim_squared_t reference_axis_except_borders_width;
+	};
+
+	std::optional<resize_reference_info_t> resize_reference_info;
 };
 
 LIBCXXW_NAMESPACE_END
