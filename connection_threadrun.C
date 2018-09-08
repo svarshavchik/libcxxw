@@ -8,7 +8,6 @@
 #include "returned_pointer.H"
 #include "catch_exceptions.H"
 #include "window_handler.H"
-#include "batch_queue.H"
 #include <x/sysexception.H>
 #include <x/functionalrefptr.H>
 #include <x/mcguffinmultimap.H>
@@ -57,10 +56,7 @@ bool connection_threadObj
 
 	// Assume we'll poll() indefinitely, unless there's a change in plans.
 
-	auto batch_queue=get_batch_queue();
-	bool maybe_theres_something_in_batch_queue=false;
-
-	for ( ; ; maybe_theres_something_in_batch_queue=true)
+	for ( ; ; )
 	{
 		poll_for= -1;
 
@@ -133,11 +129,6 @@ bool connection_threadObj
 				continue;
 			}
 		}
-
-		if (maybe_theres_something_in_batch_queue)
-			// Give the batch queue an opportunity to flush the
-			// batched jobs.
-			return false;
 
 		if (redraw_elements(IN_THREAD))
 			continue;
