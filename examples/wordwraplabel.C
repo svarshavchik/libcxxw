@@ -11,6 +11,7 @@
 #include <x/config.H>
 
 #include <x/w/main_window.H>
+#include <x/w/screen_positions.H>
 #include <x/w/gridlayoutmanager.H>
 #include <x/w/gridfactory.H>
 #include <x/w/label.H>
@@ -84,21 +85,23 @@ void wordwrap()
 
 	// Load the saved window position.
 	//
-	// x::w::screen_positions_t is a container, a std::unordered_map.
-	// The key is a std::string, the value is an x::w::screen_position.
-	// An overloaded main_window create() takes additional parameters
-	// specifying the container, and the name of the key for the saved
-	// window position. This allows the container to hold multiple
-	// windows' saved positions. Window names are arbitrary labels.
-	//
-	// load_screen_positions() returns an empty container if the
-	// configuration file does not exist. It is not an error if the
-	// named window's position does not exist in the container, the
-	// main_window gets created normally, but without the restored
-	// position.
+	// x::w::screen_positions captures the position and size of
+	// main_windows. If the configuration file exists, the previously
+	// captured positions and sizes of main_windows get loaded. Nothing
+	// happens if the file does not exist.
+	x::w::screen_positions pos{configfile};
 
-	x::w::screen_positions_t pos=
-		x::w::load_screen_positions(configfile);
+	// It's possible to capture more than one main_window's position and
+	// size, and save it. Each main_window must have a unique label, that
+	// identifies the stored position.
+	//
+	// Creating a new main_window with an optional screen_position and
+	// a label ends up reopening the window (eventually, when it gets
+	// show()n) in its former position and size (hopefully).
+	//
+	// This has no effect if no memorized position was loaded from the
+	// the configuration (which includes the situation where the
+	// configuration file does not exist).
 
 	auto main_window=
 		x::w::main_window::create(pos, "main", create_mainwindow);
@@ -124,13 +127,24 @@ void wordwrap()
 
 	close_flag->wait();
 
-	// And save the window's final position, so that it get be used the
-	// next time this program runs.
+	// Before terminating the most recent window position and save
+	// needs to be saved into a screen_positions object:
 
-	pos.clear();
-	pos.emplace("main", main_window->get_screen_position());
+	main_window->save("main", pos);
 
-	x::w::save_screen_positions(configfile, pos);
+	// In this case we're using the initial screen_positions that were
+	// loaded from the configuration file. Specifying an existing label
+	// replaces the existing saved position with the same label.
+	//
+	// It's also possible to default-construct a new screen_positions,
+	// and use it.
+	//
+	// Multiple main_windows must have a unique label, each.
+	//
+	// Finally, the screen_positions gets save()d into the configuration
+	// file, for next time:
+
+	pos.save(configfile);
 }
 
 int main(int argc, char **argv)

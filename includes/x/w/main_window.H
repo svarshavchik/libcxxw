@@ -7,6 +7,7 @@
 
 #include <x/w/main_windowfwd.H>
 #include <x/w/main_windowobj.H>
+#include <x/w/screen_positionsfwd.H>
 #include <x/w/gridlayoutmanager.H>
 #include <x/w/generic_window.H>
 #include <x/w/text_param.H>
@@ -61,7 +62,7 @@ public:
 
 	template<typename functor,
 		 typename =is_main_window_creator<functor>>
-	static main_window create(const screen_positions_t &pos,
+	static main_window create(const screen_positions &pos,
 				  const std::string_view &name,
 				  functor &&f)
 	{
@@ -72,7 +73,7 @@ public:
 
 	//! Create a new top level window using a custom layout manager.
 	template<typename functor>
-	static main_window create(const screen_positions_t &pos,
+	static main_window create(const screen_positions &pos,
 				  const std::string_view &name,
 				  functor &&f,
 				  const new_layoutmanager &layout_factory)
@@ -96,14 +97,14 @@ public:
 
 	//! create() implementation.
 
-	static main_window do_create(const screen_positions_t &pos,
+	static main_window do_create(const screen_positions &pos,
 				     const std::string_view &name,
 				     const function<main_window_creator_t> &f)
 		LIBCXX_PUBLIC;
 
 	//! create() implementation.
 
-	static main_window do_create(const screen_positions_t &pos,
+	static main_window do_create(const screen_positions &pos,
 				     const std::string_view &name,
 				     const function<main_window_creator_t> &f,
 				     const new_layoutmanager &factory)

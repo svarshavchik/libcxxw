@@ -13,6 +13,7 @@
 #include <x/config.H>
 
 #include "x/w/main_window.H"
+#include "x/w/screen_positions.H"
 #include "x/w/image_button.H"
 #include "x/w/gridlayoutmanager.H"
 #include "x/w/gridfactory.H"
@@ -222,7 +223,7 @@ void testimagebuttons()
 	auto configfile=
 		LIBCXX_NAMESPACE::configdir("testimagebuttons@libcxx.com")
 		+ "/windows";
-	auto pos=LIBCXX_NAMESPACE::w::load_screen_positions(configfile);
+	LIBCXX_NAMESPACE::w::screen_positions pos{configfile};
 
 	LIBCXX_NAMESPACE::destroy_callback::base::guard guard;
 
@@ -276,9 +277,8 @@ void testimagebuttons()
 				    (i % 2) ? 100:200);
 	}
 #endif
-	pos.clear();
-	pos.emplace("main", main_window->get_screen_position());
-	LIBCXX_NAMESPACE::w::save_screen_positions(configfile, pos);
+	main_window->save("main", pos);
+	pos.save(configfile);
 }
 
 int main(int argc, char **argv)

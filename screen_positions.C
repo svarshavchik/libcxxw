@@ -3,7 +3,9 @@
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
-#include "x/w/main_windowfwd.H"
+#include "x/w/screen_positions.H"
+#include "main_window_handler.H"
+#include "screen.H"
 #include "catch_exceptions.H"
 #include <x/xml/doc.H>
 #include <x/exception.H>
@@ -19,87 +21,151 @@ static property::value<bool>
 preserve_screen_number_prop(LIBCXX_NAMESPACE_STR "::w::preserve_screen_number",
 			    true);
 
-void save_screen_positions(const std::string &filename,
-			   const screen_positions_t &coordinates)
+screen_positions::screen_positions() : data{xml::doc::create()}
 {
-	auto doc=xml::doc::create();
+}
 
-	auto lock=doc->writelock();
+screen_positions::~screen_positions()=default;
 
-	auto windows=lock->create_child()->element({"windows"});
+screen_positions::screen_positions(screen_positions &&)=default;
 
-	for (const auto &coords:coordinates)
-	{
-		// Position the lock:
 
-		lock->get_xpath("/windows")->to_node();
-
-		auto window=lock->create_child()->element({"window"})
-			->element({"name"})->text(coords.first);
-
-		std::ostringstream x, y, width, height;
-
-		x << coords.second.x;
-		y << coords.second.y;
-		width << coords.second.width;
-		height << coords.second.height;
-
-		if (coords.second.screen_number &&
-		    preserve_screen_number_prop.get())
-		{
-			std::ostringstream screen_number;
-
-			screen_number << *coords.second.screen_number;
-			window=window->parent()->create_next_sibling()
-				->element({"screen"})
-				->create_child()->text(screen_number.str());
-		}
-		window=window->parent()->create_next_sibling()->element({"x"})
-			->create_child()->text(x.str());
-		window=window->parent()->create_next_sibling()->element({"y"})
-			->create_child()->text(y.str());
-		window=window->parent()->create_next_sibling()
-			->element({"width"})->create_child()->text(width.str());
-		window->parent()->create_next_sibling()->element({"height"})
-			->create_child()->text(height.str());
-	}
+void screen_positions::save(const std::string &filename) const
+{
+	auto lock=data->readlock();
 
 	lock->save_file(filename);
 }
 
 LOG_FUNC_SCOPE_DECL(LIBCXX_NAMESPACE::w::load_screen_positions, load_log);
 
-static void load_screen_positions(const std::string &filename,
-				  screen_positions_t &pos)
+static auto load(const std::string &filename)
 {
 	LOG_FUNC_SCOPE(load_log);
 
-	LOG_DEBUG("Loading " << filename);
-	auto doc=xml::doc::create(filename);
-
-	auto lock=doc->readlock();
-
-	lock->get_root();
-	auto windows=lock->get_xpath("/windows/window");
-
-	size_t n=windows->count();
-
-	LOG_DEBUG("Found " << n << " saved positions");
-
-	for (size_t i=1; i<=n; ++i)
+	if (access(filename.c_str(), R_OK) == 0)
 	{
-		windows->to_node(i);
+		try
+		{
+			try {
+				return xml::doc::create(filename);
+			} catch (const exception &e)
+			{
+				throw EXCEPTION(filename << ": " << e);
+			}
+		} CATCH_EXCEPTIONS;
+	}
+
+	return xml::doc::create();
+}
+
+screen_positions::screen_positions(const std::string &filename)
+	: data{load(filename)}
+{
+}
+
+static std::string window_name_to_xpath(const std::string &window_name)
+{
+	return "/windows/window[name="
+		+ xml::quote_string_literal(window_name) + "]";
+}
+
+void main_windowObj::save(const std::string &window_name,
+			  screen_positions &pos) const
+{
+	auto handler=impl->handler;
+
+	auto [wx, wy] = handler->root_xy.get();
+
+	auto r=handler->current_position.get();
+
+	auto lock=pos.data->writelock();
+
+	if (lock->get_root())
+	{
+		auto xpath=lock->get_xpath(window_name_to_xpath(window_name));
+
+		size_t n=xpath->count();
+
+		for (size_t i=1; i <= n; ++i)
+		{
+			xpath->to_node(i);
+			lock->remove();
+		}
+	}
+	else
+	{
+		lock->create_child()->element({"windows"});
+		lock->get_root();
+	}
+
+	auto xpath=lock->get_xpath("/windows");
+
+	if (xpath->count() <= 0)
+	{
+		lock->remove();
+		lock->create_child()->element({"windows"});
+	}
+	else
+	{
+		xpath->to_node();
+	}
+
+	auto window=lock->create_child()->element({"window"})
+		->element({"name"})->text(window_name);
+
+	std::ostringstream x, y, width, height;
+
+	x << wx;
+	y << wy;
+	width << r.width;
+	height << r.height;
+
+	if (preserve_screen_number_prop.get())
+	{
+		std::ostringstream screen_number;
+
+		screen_number << get_screen()->impl->screen_number;
+
+		window=window->parent()->create_next_sibling()
+			->element({"screen"})
+			->create_child()->text(screen_number.str());
+	}
+	window=window->parent()->create_next_sibling()->element({"x"})
+		->create_child()->text(x.str());
+	window=window->parent()->create_next_sibling()->element({"y"})
+		->create_child()->text(y.str());
+	window=window->parent()->create_next_sibling()
+		->element({"width"})->create_child()->text(width.str());
+	window->parent()->create_next_sibling()->element({"height"})
+		->create_child()->text(height.str());
+}
+
+
+std::optional<screen_positions::window_info>
+screen_positions::find(const std::string &window_name) const
+{
+	LOG_FUNC_SCOPE(load_log);
+
+	auto lock=data->readlock();
+
+	std::optional<window_info> info;
+
+	if (!lock->get_root())
+		return info;
+
+	auto xpath=lock->get_xpath(window_name_to_xpath(window_name));
+
+	size_t n=xpath->count();
+
+	if (n == 1)
+	{
+		xpath->to_node();
 
 		try {
+			info={lock};
+
 			auto value=lock->clone();
-
-			value->get_xpath("name")->to_node();
-
-			auto name=value->get_text();
-
-			LOG_DEBUG("Loading " << name);
-
-			value=lock->clone();
 
 			value->get_xpath("x")->to_node();
 
@@ -123,18 +189,16 @@ static void load_screen_positions(const std::string &filename,
 
 			auto height=value->get_text();
 
-			rectangle r;
+			auto &r=info->coordinates;
 
 			std::istringstream{x} >> r.x;
 			std::istringstream{y} >> r.y;
 			std::istringstream{width} >> r.width;
 			std::istringstream{height} >> r.height;
 
-			std::optional<size_t> screen_number;
-
 			value=lock->clone();
 
-			auto xpath=value->get_xpath("screen_number");
+			auto xpath=value->get_xpath("screen");
 
 			if (xpath->count() == 1 &&
 			    preserve_screen_number_prop.get())
@@ -143,36 +207,16 @@ static void load_screen_positions(const std::string &filename,
 
 				size_t n=0;
 				std::istringstream{value->get_text()} >> n;
-				screen_number=n;
+				info->screen_number=n;
 			}
 
-			pos.emplace(name, screen_position{r, screen_number});
+			return info;
+		} CATCH_EXCEPTIONS;
 
-		} catch (const exception &e)
-		{
-			LOG_ERROR(filename << ": " << e);
-			continue;
-		}
+		info.reset();
 	}
-}
 
-screen_positions_t load_screen_positions(const std::string &filename)
-{
-	LOG_FUNC_SCOPE(load_log);
-
-	screen_positions_t pos;
-
-	try {
-		try {
-			if (access(filename.c_str(), R_OK) == 0)
-				load_screen_positions(filename, pos);
-		} catch (const exception &e)
-		{
-			throw EXCEPTION(filename << ": " << e);
-		}
-	} CATCH_EXCEPTIONS;
-
-	return pos;
+	return info;
 }
 
 void preserve_screen_number(bool flag)

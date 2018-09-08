@@ -149,39 +149,40 @@ See COPYING for distribution information.
       should open its window in the same position where it was previously,
       This stickiness needs some additional coding, and the actual behavior may
       vary depending upon the display screen's window manager, the ultimate
-      judge where windows open and how big they are.
+      judge where new windows open and how big they are.
     </para>
 
     <blockquote>
       <informalexample>
 	<programlisting>
 #include &lt;&ns;/config.H&gt;
+#include &lt;&ns;/w/screen_positions.H&gt;
 
 std::string configfile=
    &ns;::configdir("wordwraplabel@examples.w.libcxx.com")
 		+ "/windows";
 
-&ns;::w::screen_positions_t pos;
+&ns;::w::screen_positions pos;
 
-pos.emplace("main", main_window->get_screen_position());
-&ns;::w::save_screen_positions(configfile, pos);</programlisting>
+// ...
+
+main_window->save("main", pos);
+pos->save(configfile);</programlisting>
       </informalexample>
     </blockquote>
 
     <para>
       <ulink url="&link-typedef-x--w-main-window;"><classname>&ns;::w::main_window</classname></ulink>'s
-      <methodname>get_screen_position</methodname>() gets called before
-      the program ends. This returns the window's last known position on
-      the screen.
-      The position gets saved in an
-      <ulink url="&link-typedef-x--w-screen-positions-t;"><classname>&ns;::w::screen_positions_t</classname></ulink>,
-      which is a container whose key is the window's identifier, a string
-      assigned by the application. The application may put more than one
+      <methodname>save</methodname>() gets called before
+      the program ends. This records the window's last known position on
+      the screening an
+      <ulink url="&link-x--w--screen-positions;"><classname>&ns;::w::screen_positions</classname></ulink>.
+      More than one window's position may be recorded, and each position
+      is identified by a unique label. The application may put more than one
       window's position in the container, using a unique identifier for each
       window.
-      <ulink url="&link-function-x--w-save-screen-positions;"><function>&ns;::w::save_screen_positions</function></ulink>() saves the
-      contents of the
-      <ulink url="&link-typedef-x--w-screen-positions-t;"><classname>&ns;::w::screen_positions_t</classname></ulink>
+      <ulink url="&link-x--w--screen-positions;"><classname>&ns;::w::screen_positions</classname></ulink>'s
+      <methodname>save</methodname>() saves all positions
       in a file.
       This example program uses &libcxx;'s base library's
       <ulink url="/configdir.html"><function>&ns;::configdir</function></ulink>
@@ -193,8 +194,7 @@ pos.emplace("main", main_window->get_screen_position());
     <blockquote>
       <informalexample>
 	<programlisting>
-&ns;::w::screen_positions_t pos=
-   &ns;::w::load_screen_positions(configfile);
+&ns;::w::screen_positions pos{configfile};
 
 auto main_window=
     &ns;::w::main_window::create(pos, "main",
@@ -206,15 +206,16 @@ auto main_window=
     </blockquote>
 
     <para>
-      <ulink url="&link-function-x--w-load-screen-positions;"><function>&ns;::w::load_screen_positions</function></ulink>()
-      loads the previously-saved positions into the
-      <ulink url="&link-typedef-x--w-screen-positions-t;"><classname>&ns;::w::screen_positions_t</classname></ulink>
-      container, if the file exists.
-      The resulting container, and the application-assigned label for the
+      Passing a filename to
+      <ulink url="&link-x--w--screen-positions;"><classname>&ns;::w::screen_positions</classname></ulink>'s
+      constructor
+      reads the previously saved positions from the file, if the file exists.
+      The <classname>&ns;::w::screen_positions</classname> object
+      and the application-assigned label for the
       main window gets passed to the overloaded main window
       <function>create</function>()or.
       If the named window's position
-      got saved the last time
+      were saved the last time
       <filename>wordwraplabel</filename> ran, the same position and size
       gets set for the new window.
     </para>

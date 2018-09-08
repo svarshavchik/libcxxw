@@ -4,6 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "x/w/screen.H"
+#include "x/w/screen_positions.H"
 #include "x/w/main_window.H"
 #include "x/w/gridlayoutmanager.H"
 #include "x/w/gridfactory.H"
@@ -1079,7 +1080,7 @@ void cxxwtheme()
 {
 	w::preserve_screen_number(false);
 	auto configfile=configdir("cxxwtheme@w.libcxx.com")+"/windows";
-	auto pos=w::load_screen_positions(configfile);
+	w::screen_positions pos{configfile};
 
 	destroy_callback::base::guard guard;
 
@@ -1160,9 +1161,8 @@ void cxxwtheme()
 	mpcobj<bool>::lock lock{appstate->close_flag};
 	lock.wait([&] { return *lock; });
 
-	pos.clear();
-	pos.emplace("main", main_window->get_screen_position());
-	LIBCXX_NAMESPACE::w::save_screen_positions(configfile, pos);
+	main_window->save("main", pos);
+	pos.save(configfile);
 }
 
 class args_retObj : virtual public x::obj {

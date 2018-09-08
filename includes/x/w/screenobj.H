@@ -17,6 +17,7 @@
 #include <x/w/defaultthemefwd.H>
 #include <x/w/scratch_bufferfwd.H>
 #include <x/w/main_windowfwd.H>
+#include <x/w/screen_positionsfwd.H>
 #include <x/w/rgbfwd.H>
 #include <x/w/types.H>
 #include <x/w/new_layoutmanagerfwd.H>
@@ -164,7 +165,7 @@ public:
 
 	template<typename functor,
 		 typename =is_main_window_creator<functor>>
-	main_window create_mainwindow(const screen_positions_t &pos,
+	main_window create_mainwindow(const screen_positions &pos,
 				      const std::string_view &name,
 				      functor &&f)
 	{
@@ -176,7 +177,7 @@ public:
 	//! Create a new top level window using a custom layout manager.
 	template<typename functor,
 		 typename =is_main_window_creator<functor>>
-	main_window create_mainwindow(const screen_positions_t &pos,
+	main_window create_mainwindow(const screen_positions &pos,
 				      const std::string_view &name,
 				      functor &&f,
 				      const new_layoutmanager &layout_factory)
@@ -201,23 +202,24 @@ public:
 
 	//! create_mainwindow() implementation.
 
-	main_window do_create_mainwindow(const screen_positions_t &pos,
+	main_window do_create_mainwindow(const screen_positions &pos,
 					 const std::string_view &name,
 					 const function<main_window_creator_t>
 					 &f);
 
 	//! create_mainwindow() implementation.
 
-	main_window do_create_mainwindow(const screen_positions_t &pos,
+	main_window do_create_mainwindow(const screen_positions &pos,
 					 const std::string_view &name,
 					 const function<main_window_creator_t>
 					 &f,
 					 const new_layoutmanager &factory)
 		LIBCXX_PUBLIC;
 
+	struct pos_info;
+
 	//! create_mainwindow() implementation.
-	main_window do_create_mainwindow(const std::optional<screen_position>
-					 &pos,
+	main_window do_create_mainwindow(const pos_info &pos,
 					 const function<main_window_creator_t>
 					 &f,
 					 const new_layoutmanager &factory)

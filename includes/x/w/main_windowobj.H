@@ -6,6 +6,7 @@
 #define x_w_main_windowobj_h
 
 #include <x/w/main_windowfwd.H>
+#include <x/w/screen_positionsfwd.H>
 #include <x/w/new_layoutmanagerfwd.H>
 #include <x/w/generic_windowobj.H>
 #include <x/w/menubarlayoutmanagerfwd.H>
@@ -334,8 +335,14 @@ public:
 	functionref<void (THREAD_CALLBACK, const busy &)
 		    > destroy_when_closed(const std::string_view &);
 
-	//! Get current screen position
-	screen_position get_screen_position() const;
+	//! Save the main window's current position and size.
+
+	//! Each main window has a unique identifier. The main window's
+	//! position replaces any previous memorized position with the same
+	//! identifier, if it exists.
+	//!
+	//! \see screen_positions
+	void save(const std::string &window_name, screen_positions &pos) const;
 };
 
 LIBCXXW_NAMESPACE_END

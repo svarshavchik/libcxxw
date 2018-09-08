@@ -12,6 +12,7 @@
 #include <x/config.H>
 
 #include "x/w/main_window.H"
+#include "x/w/screen_positions.H"
 #include "x/w/label.H"
 #include "x/w/focusable_label.H"
 #include "x/w/gridlayoutmanager.H"
@@ -30,12 +31,22 @@
 
 static int mainwindow_hints_update_counter=0;
 
-#define MAINWINDOW_HINTS_DEBUG()					\
+#define MAINWINDOW_HINTS_DEBUG1()					\
 	do {								\
-		std::cout << "MAIN: " << hints.width			\
-			  << "/" << hints.height << std::endl;		\
+		std::cout << "MAIN: (" << x << ", " << y		\
+			  << ")x(" << width << ", " << height << ")"	\
+			  << std::endl;					\
 		++mainwindow_hints_update_counter;			\
 	} while(0)
+
+#define MAINWINDOW_HINTS_DEBUG2()					\
+	do {								\
+		std::cout << "MAIN: minimum: " << minimum_width		\
+		  << "x" << minimum_height << "; "			\
+		  << "maximum: " << p->horiz.maximum()			\
+			  << "x" << p->vert.maximum() << std::endl;	\
+	} while(0)
+
 #include "main_window_handler.C"
 
 class close_flagObj : public LIBCXX_NAMESPACE::obj {
@@ -178,7 +189,7 @@ void testlabel(const testwordwrappablelabel_options &options)
 
 	auto close_flag=close_flag_ref::create();
 
-	auto pos=LIBCXX_NAMESPACE::w::load_screen_positions(configfile);
+	LIBCXX_NAMESPACE::w::screen_positions pos{configfile};
 
 	auto main_window=LIBCXX_NAMESPACE::w::main_window
 		::create(pos, "main",
@@ -248,9 +259,8 @@ void testlabel(const testwordwrappablelabel_options &options)
 		lock.wait([&] { return *lock; });
 	}
 
-	pos.clear();
-	pos.emplace("main", main_window->get_screen_position());
-	LIBCXX_NAMESPACE::w::save_screen_positions(configfile, pos);
+	main_window->save("main", pos);
+	pos.save(configfile);
 }
 
 int main(int argc, char **argv)
