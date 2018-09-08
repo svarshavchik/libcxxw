@@ -14,8 +14,7 @@
 #include "x/w/main_window.H"
 #include "x/w/gridlayoutmanager.H"
 #include "x/w/gridfactory.H"
-#include "x/w/listlayoutmanager.H"
-#include "x/w/listlayoutmanager.H"
+#include "x/w/tablelayoutmanager.H"
 #include "x/w/label.H"
 #include "x/w/button.H"
 #include "x/w/canvas.H"
@@ -321,14 +320,27 @@ static mondata processes[]=
 void create_process_table(const LIBCXX_NAMESPACE::w::gridfactory &f,
 			  const testlistoptions &options)
 {
-	LIBCXX_NAMESPACE::w::new_listlayoutmanager nlm{LIBCXX_NAMESPACE::w
-						       ::highlighted_list};
+	LIBCXX_NAMESPACE::w::new_tablelayoutmanager
+		ntlm{[]
+		    (const LIBCXX_NAMESPACE::w::factory &f, size_t i)
+		    {
+			    static const char * const titles[]=
+				    {
+				     "Process",
+				     "CPU %",
+				     "RAM %",
+				     "Disk I/O (Mbps)",
+				     "Net I/O (Mbps)",
+				    };
 
-	nlm.selection_type=LIBCXX_NAMESPACE::w::no_selection_type;
-	nlm.columns=5;
+			    f->create_label(titles[i])->show();
+		    }};
 
-	nlm.requested_col_widths={{0, 100}};
-	nlm.col_alignments={
+	ntlm.selection_type=LIBCXX_NAMESPACE::w::no_selection_type;
+	ntlm.columns=5;
+
+	ntlm.requested_col_widths={{0, 100}};
+	ntlm.col_alignments={
 			    {0, LIBCXX_NAMESPACE::w::halign::center},
 			    {1, LIBCXX_NAMESPACE::w::halign::right},
 			    {2, LIBCXX_NAMESPACE::w::halign::right},
@@ -336,28 +348,12 @@ void create_process_table(const LIBCXX_NAMESPACE::w::gridfactory &f,
 			    {4, LIBCXX_NAMESPACE::w::halign::right},
 	};
 
-	nlm.column_borders={
+	ntlm.column_borders={
 			    {1, "thin_0%"},
 			    {2, "thin_dashed_0%"},
 			    {3, "thin_dashed_0%"},
 			    {4, "thin_dashed_0%"},
 	};
-	nlm.focusoff_border="listvisiblefocusoff_border";
-
-	nlm.header_factory=[]
-		(const LIBCXX_NAMESPACE::w::factory &f, size_t i)
-		{
-			static const char * const titles[]=
-				{
-				 "Process",
-				 "CPU %",
-				 "RAM %",
-				 "Disk I/O (Mbps)",
-				 "Net I/O (Mbps)",
-				};
-
-			f->create_label(titles[i])->show();
-		};
 
 	f->create_focusable_container
 		([&]
@@ -398,7 +394,7 @@ void create_process_table(const LIBCXX_NAMESPACE::w::gridfactory &f,
 			 }
 			 lm->append_items(items);
 		 },
-		 nlm);
+		 ntlm);
 }
 
 void testlist(const testlistoptions &options)

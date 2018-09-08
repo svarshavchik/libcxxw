@@ -757,6 +757,10 @@ libcxxw_la_SOURCES=\
 	pagelayoutmanager.C			    \
 	pagelayoutmanager_impl.C		    \
 	pagelayoutmanager_impl.H		    \
+	table.C					    \
+	tablelayoutmanager/tablelayoutmanager.C	    \
+	tablelayoutmanager/tablelayoutmanager_impl.C \
+	tablelayoutmanager/tablelayoutmanager_impl.H \
 	textlabel.C				    \
 	textlabel.H				    \
 	textlabel_impl.C			    \

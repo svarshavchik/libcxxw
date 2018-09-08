@@ -14,7 +14,7 @@ LIBCXXW_NAMESPACE_START
 
 //! \see synchronized_axis
 
-class synchronized_axisObj : virtual public obj {
+class LIBCXX_HIDDEN synchronized_axisObj : virtual public obj {
 
 public:
 	class implObj;

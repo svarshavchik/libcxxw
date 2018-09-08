@@ -7,6 +7,7 @@
 
 #include <x/w/listlayoutmanagerfwd.H>
 #include <x/w/listlayoutmanagerobj.H>
+#include <x/w/gridlayoutmanagerfwd.H>
 #include <x/w/new_focusable_layoutmanagerfwd.H>
 #include <x/w/alignment.H>
 #include <x/w/layoutmanager.H>
@@ -188,29 +189,6 @@ class LIBCXX_HIDDEN new_listlayoutmanager : public new_focusable_layoutmanager {
 
 	std::unordered_map<size_t, border_arg> column_borders;
 
-	//! Optional header row.
-
-	// \code
-	//! header_factory=[]
-	//!                (const INSERT_LIBX_NAMESPACE::w::factory &f,
-	//!                 size_t column)
-	//!                {
-	//!                     f->create_label("Header!")->show();
-	//!                };
-	//! \endcode
-	//!
-	//! Setting header_factory creates a header row. This callback
-	//! gets invoked by create_focusable_container() to populate each
-	//! column's header. The callback gets called once for each
-	//! column, with the \column parameter varying from 0 to
-	//! columns-1.
-	//!
-	//! The callback must use the given factory to construct exactly
-	//! one display element. The callback is responsible for show()ing
-	//! the element.
-
-	functionptr<void (const factory &, size_t)> header_factory;
-
 	//! What other list this list's columns get synchronized with.
 
 	//! Lists created using the same synchronized_columns will have
@@ -244,6 +222,11 @@ class LIBCXX_HIDDEN new_listlayoutmanager : public new_focusable_layoutmanager {
 	//! - all borders are the same.
 	//!
 	//! - Their left and right paddings are the same as v_padding.
+	//!
+	//! This field is ignored if this list is part of the table, and
+	//! this is overridden by
+	//! \ref new_tablelayoutmanager "INSERT_LIBX_NAMESPACE::w::new_tablelayoutmanager"
+	//! which uses this to implement the table's header.
 
 	synchronized_axis synchronized_columns;
 
@@ -258,9 +241,15 @@ class LIBCXX_HIDDEN new_listlayoutmanager : public new_focusable_layoutmanager {
 	//! the list when it has no focus. This border is the same size as
 	//! "listfocuson_border".
 	//!
-	//! "listvisiblefocusoff_border draws a lesser intensity border that's
+	//! If this is a superclass of
+	//! \ref new_tablelayoutmanager "INSERT_LIBX_NAMESPACE::w::new_tablelayoutmanager"
+	//! this defaults to "listvisiblefocusoff_border".
+	//!
+	//! "listvisiblefocusoff_border" draws a lesser intensity border that's
 	//! visible, but does not indicate input focus, and provides a visual
-	//! connection with column_borders.
+	//! connection with column_borders, which are common to tables.
+	//! "listvisiblefocusoff_border" is not restricted to the table
+	//! layout manager, and can be used with plain lists.
 
 	border_arg focusoff_border;
 
@@ -305,9 +294,6 @@ class LIBCXX_HIDDEN new_listlayoutmanager : public new_focusable_layoutmanager {
 	//! the button being pressed.
 	color_arg current_color;
 
-	//! Background color for the optional header row.
-	color_arg header_color;
-
 	//! List font
 	font_arg list_font;
 
@@ -324,6 +310,18 @@ class LIBCXX_HIDDEN new_listlayoutmanager : public new_focusable_layoutmanager {
 
 	focusable_container create(const container_impl &)
 		const override;
+
+ private:
+	//! Overridden by \ref new_tablelayoutmanager "new_tablelayoutmanager".
+
+	//! \internal
+	virtual synchronized_axis get_synchronized_columns() const;
+
+	//! Overridden by \ref new_tablelayoutmanager "new_tablelayoutmanager".
+
+	//! \internal
+
+	virtual void create_table_header_row(const gridlayoutmanager &) const;
 };
 
 //! Lock the list layout manager.
