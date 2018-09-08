@@ -338,7 +338,7 @@ void textlabelObj::implObj::rewrap_due_to_updated_position(ONLY IN_THREAD)
 
 void textlabelObj::implObj::do_draw(ONLY IN_THREAD,
 				    const draw_info &di,
-				    const rectangle_set &areas)
+				    const rectarea &areas)
 {
 #ifdef TEST_TEXTLABEL_DRAW
 	TEST_TEXTLABEL_DRAW();

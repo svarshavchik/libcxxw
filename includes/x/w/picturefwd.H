@@ -36,7 +36,7 @@ INSERT_LIBX_NAMESPACE::w::const_picture yellow=screen->create_solid_color_pictur
 dst_picture->composite(yellow, 0, 0, {0, 0, 100, 100},
                        INSERT_LIBX_NAMESPACE::w::render_pict_op::op_over);
 
-INSERT_LIBX_NAMESPACE::w::rectangle_set rectangles;
+INSERT_LIBX_NAMESPACE::w::rectarea rectangles;
 
 dst_picture->clip_rectangles(rectangles);
 

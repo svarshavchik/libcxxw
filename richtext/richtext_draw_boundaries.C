@@ -22,7 +22,7 @@ LIBCXXW_NAMESPACE_START
 // rectangle.
 
 richtext_draw_boundaries::richtext_draw_boundaries(const draw_info &di,
-						   const rectangle_set &areas)
+						   const rectarea &areas)
 	: limits{bounds
 		(({
 				std::vector<rectangle>
@@ -38,7 +38,7 @@ richtext_draw_boundaries::richtext_draw_boundaries(const draw_info &di,
 						(r.y-di.absolute_location.y);
 				}
 
-				intersect(rectangle_set{rects.begin(),
+				intersect(rectarea{rects.begin(),
 							rects.end()},
 					areas);
 			}))},

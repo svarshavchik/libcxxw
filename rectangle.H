@@ -19,15 +19,15 @@ LIBCXXW_NAMESPACE_START
 //! When there are more than one way to merge a set of rectangles, it is
 //! unspecified how the rectangles get merged.
 
-void merge(rectangle_set &rectangles) LIBCXX_HIDDEN;
+void merge(rectarea &rectangles) LIBCXX_HIDDEN;
 
 struct rectangle_slicer {
 
 	std::vector<rectangle> slicee_v;
 	std::vector<rectangle> slicer_v;
 
-	rectangle_slicer(const rectangle_set &slicee,
-			 const rectangle_set &slicer);
+	rectangle_slicer(const rectarea &slicee,
+			 const rectarea &slicer);
 	~rectangle_slicer();
 
 	void slice_slicee();
@@ -39,8 +39,8 @@ struct rectangle_slicer {
 //! If any slicer rectangle's edge goes through a slicee, split the slicee
 //! at the edge.
 
-void slice(rectangle_set &slicee,
-	   const rectangle_set &slicer) LIBCXX_HIDDEN;
+void slice(rectarea &slicee,
+	   const rectarea &slicer) LIBCXX_HIDDEN;
 
 LIBCXXW_NAMESPACE_END
 

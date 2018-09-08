@@ -58,7 +58,7 @@ class LIBCXX_HIDDEN listcontainer_pseudo_implObj :
 
 	void do_draw(ONLY IN_THREAD,
 		     const draw_info &di,
-		     const rectangle_set &areas) override;
+		     const rectarea &areas) override;
  private:
 
 	//! do_draw() saves the visible height of the list contanier.

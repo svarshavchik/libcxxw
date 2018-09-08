@@ -190,7 +190,7 @@ void borderlayoutmanagerObj::implObj::recalculate(ONLY IN_THREAD)
 void borderlayoutmanagerObj::implObj::do_draw(ONLY IN_THREAD,
 					      const draw_info &di,
 					      clip_region_set &clip,
-					      rectangle_set &drawn_areas)
+					      rectarea &drawn_areas)
 {
 	superclass_t::do_draw(IN_THREAD, di, clip, drawn_areas);
 

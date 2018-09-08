@@ -66,7 +66,7 @@ void color_picker_squareObj::implObj
 
 void color_picker_squareObj::implObj::do_draw(ONLY IN_THREAD,
 					      const draw_info &di,
-					      const rectangle_set &areas)
+					      const rectarea &areas)
 {
 	clip_region_set clipped{IN_THREAD, *this, di};
 

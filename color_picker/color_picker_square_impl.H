@@ -59,7 +59,7 @@ class color_picker_squareObj::implObj
 
 	void do_draw(ONLY IN_THREAD,
 		     const draw_info &di,
-		     const rectangle_set &areas) override;
+		     const rectarea &areas) override;
 
 	//! Update my gradient.
 

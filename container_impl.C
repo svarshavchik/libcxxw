@@ -103,13 +103,13 @@ void containerObj::implObj::do_for_each_child(ONLY IN_THREAD,
 // - The element whose padding needs to get drawn
 // - The container element's get_draw_info().
 // - The container element's instantiated clip region.
-// - A rectangle_set where the area of the element, including its padding
+// - A rectarea where the area of the element, including its padding
 //   region, gets added to.
 //
 // The calling convention is optimized for the do_draw() caller, with do_draw
 // acquiring its get_draw_info() and clip region once, and using it for
 // drawing all of its elements' padding; and accumulated the total area drawn
-// into a rectangle_set. The layout manager, when it calls this as a result
+// into a rectarea. The layout manager, when it calls this as a result
 // of the element's background color change, simply rides the coat-tails.
 
 void container_clear_padding(ONLY IN_THREAD,
@@ -118,7 +118,7 @@ void container_clear_padding(ONLY IN_THREAD,
 			     const element_impl &e_impl,
 			     const draw_info &di,
 			     clip_region_set &clip,
-			     rectangle_set &child_areas)
+			     rectarea &child_areas)
 {
 	rectangle padded_position=manager.padded_position(IN_THREAD, e_impl);
 
@@ -152,13 +152,13 @@ void containerObj::implObj::do_draw(ONLY IN_THREAD)
 
 void containerObj::implObj::do_draw(ONLY IN_THREAD,
 				    const draw_info &di,
-				    const rectangle_set &areas)
+				    const rectarea &areas)
 {
 	auto &element_impl=container_element_impl();
 
 	// Compute the areas where the child elements are.
 
-	rectangle_set child_areas;
+	rectarea child_areas;
 
 	clip_region_set clip{IN_THREAD, element_impl.get_window_handler(), di};
 
@@ -176,7 +176,7 @@ void containerObj::implObj::do_draw(ONLY IN_THREAD,
 	current_position.x=0;
 	current_position.y=0;
 
-	rectangle_set my_area{ current_position };
+	rectarea my_area{ current_position };
 
 	auto remaining=subtract(my_area, child_areas);
 

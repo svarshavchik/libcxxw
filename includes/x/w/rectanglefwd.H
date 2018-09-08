@@ -16,7 +16,7 @@ class rectangle_hash;
 
 //! A set of rectangles
 
-typedef std::unordered_set<rectangle, rectangle_hash> rectangle_set;
+typedef std::unordered_set<rectangle, rectangle_hash> rectarea;
 
 
 //! Dump the rectangle into an output stream.

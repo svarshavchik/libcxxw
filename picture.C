@@ -97,7 +97,7 @@ void pictureObj::repeat(render_repeat value)
 	impl->repeat(value);
 }
 
-void pictureObj::set_clip_rectangles(const rectangle_set &clipregion,
+void pictureObj::set_clip_rectangles(const rectarea &clipregion,
 				     coord_t x,
 				     coord_t y)
 {
@@ -142,7 +142,7 @@ pictureObj::clip_mask::~clip_mask()
 
 pictureObj::rectangular_clip_mask
 ::rectangular_clip_mask(const picture &clipped_picture,
-			const rectangle_set &rectangles,
+			const rectarea &rectangles,
 			coord_t x,
 			coord_t y)
 	: clipped_picture(clipped_picture)

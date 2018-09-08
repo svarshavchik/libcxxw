@@ -82,7 +82,7 @@ void gridlayoutmanagerObj::implObj
 		clip_region_set clip{IN_THREAD,
 				container_element_impl.get_window_handler(),
 				di};
-		rectangle_set dummy;
+		rectarea dummy;
 
 		container_clear_padding(IN_THREAD,
 					container_element_impl,
@@ -1215,7 +1215,7 @@ bool gridlayoutmanagerObj::implObj
 
 #ifdef PROCESS_UPDATED_POSITION_DEBUG
 
-	rectangle_set total_set;
+	rectarea total_set;
 
 	std::cout << "----" << std::endl;
 #endif
@@ -1328,7 +1328,7 @@ bool gridlayoutmanagerObj::implObj
 #ifdef PROCESS_UPDATED_POSITION_DEBUG
 		if (element_position.width > 0 && element_position.height > 0)
 		{
-			rectangle_set check_overlap=intersect(total_set, {
+			rectarea check_overlap=intersect(total_set, {
 					element_position
 					});
 

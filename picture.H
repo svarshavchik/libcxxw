@@ -85,7 +85,7 @@ class LIBCXX_HIDDEN pictureObj::implObj : virtual public obj {
 				coord_t y=0);
 
 	//! SetPictureClipRectangles RENDER operation.
-	void set_clip_rectangles(const rectangle_set &clipregion,
+	void set_clip_rectangles(const rectarea &clipregion,
 				 coord_t x=0,
 				 coord_t y=0);
 

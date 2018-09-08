@@ -136,7 +136,7 @@ public:
 
 	void do_draw(ONLY IN_THREAD,
 		     const draw_info &di,
-		     const rectangle_set &areas);
+		     const rectarea &areas);
 
 	//! Forcibly redraw the entire container.
 

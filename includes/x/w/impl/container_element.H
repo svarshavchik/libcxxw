@@ -32,7 +32,7 @@ void container_elementObj<element_impl>
 template<typename element_impl>
 void container_elementObj<element_impl>::do_draw(ONLY IN_THREAD,
 						 const draw_info &di,
-						 const rectangle_set &areas)
+						 const rectarea &areas)
 {
 	containerObj::implObj::do_draw(IN_THREAD, di, areas);
 }

@@ -761,20 +761,20 @@ class elementObj::implObj : public element_drawObj,
 	//! This is more visually appealing.
 
 	void exposure_event_recursively_top_down(ONLY IN_THREAD,
-						 const rectangle_set &r)
+						 const rectarea &r)
 		LIBCXX_HIDDEN;
 
 	//! Exposure event handling.
 
 	//! We get areas to redraw for this element. Invoke draw(),
 	//! then recursively invoke ourselves for all visible children,
-	//! after calculating each child's rectangle_set consisting of the
-	//! given rectangle_set intersected with the child's viewport.
+	//! after calculating each child's rectarea consisting of the
+	//! given rectarea intersected with the child's viewport.
 
 	void exposure_event_recursive(ONLY IN_THREAD,
-				      const rectangle_set &areas,
+				      const rectarea &areas,
 				      std::queue<std::tuple<element_impl,
-				      rectangle_set>> &exposure_queue)
+				      rectarea>> &exposure_queue)
 		LIBCXX_HIDDEN;
 
 	//! Should clear to background color when exposure_event_recursive
@@ -800,7 +800,7 @@ class elementObj::implObj : public element_drawObj,
 	//! Otherwise calls do_draw().
 	void draw(ONLY IN_THREAD,
 		  const draw_info &di,
-		  const rectangle_set &areas) LIBCXX_HIDDEN;
+		  const rectarea &areas) LIBCXX_HIDDEN;
 
 	//! Draw the display element.
 
@@ -810,7 +810,7 @@ class elementObj::implObj : public element_drawObj,
 
 	virtual void do_draw(ONLY IN_THREAD,
 			     const draw_info &di,
-			     const rectangle_set &areas);
+			     const rectarea &areas);
 
 
 	//! Implementation of draw_using_scratch_buffer() with element_scratch_uffer.
@@ -880,7 +880,7 @@ class elementObj::implObj : public element_drawObj,
 
 	void clear_to_color(ONLY IN_THREAD,
 			    const draw_info &di,
-			    const rectangle_set &areas);
+			    const rectarea &areas);
 
 	//! Clear to background color
 
@@ -891,7 +891,7 @@ class elementObj::implObj : public element_drawObj,
 			    const clip_region_set &,
 			    const draw_info &di,
 			    const draw_info &background_color_di,
-			    const rectangle_set &areas);
+			    const rectarea &areas);
 
 	//! A new theme has been installed.
 

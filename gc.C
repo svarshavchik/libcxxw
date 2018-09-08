@@ -229,7 +229,7 @@ gcObj::properties &gcObj::properties::clipmask(const pixmap &pixmap_arg,
 	return *this;
 }
 
-gcObj::properties &gcObj::properties::clipmask(const rectangle_set &r,
+gcObj::properties &gcObj::properties::clipmask(const rectarea &r,
 					       uint32_t origin_x,
 					       uint32_t origin_y)
 {
@@ -267,13 +267,13 @@ gcObj::~gcObj() noexcept
 void gcObj::fill_rectangle(const rectangle &rectangleArg,
 			   const properties &props)
 {
-	rectangle_set rectangles;
+	rectarea rectangles;
 
 	rectangles.insert(rectangleArg);
 	fill_rectangles(rectangles, props);
 }
 
-void gcObj::fill_rectangles(const rectangle_set &rectangles,
+void gcObj::fill_rectangles(const rectarea &rectangles,
 			    const properties &props)
 {
 	if (rectangles.empty())

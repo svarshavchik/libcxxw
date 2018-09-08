@@ -213,7 +213,7 @@ void generic_windowObj::handlerObj
 			rect.x=0;
 			rect.y=0;
 
-			rectangle_set child_rects;
+			rectarea child_rects;
 
 			e->for_each_child
 				(IN_THREAD,
@@ -237,7 +237,7 @@ void generic_windowObj::handlerObj
 
 			// Visible parts of the container.
 
-			rectangle_set visible_areas=
+			rectarea visible_areas=
 				subtract( {rect}, child_rects,
 					  abspos.x, abspos.y);
 

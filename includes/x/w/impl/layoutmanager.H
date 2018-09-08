@@ -205,7 +205,7 @@ class layoutmanagerObj::implObj : virtual public obj {
 	virtual void do_draw(ONLY IN_THREAD,
 			     const draw_info &di,
 			     clip_region_set &clip,
-			     rectangle_set &drawn_areas);
+			     rectarea &drawn_areas);
 
 	//! Convenient shortcut
 	void run_as(const functionref<void (ONLY IN_THREAD)> &f);

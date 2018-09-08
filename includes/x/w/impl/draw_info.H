@@ -51,12 +51,12 @@ struct draw_info {
 
 	rectangle absolute_location;
 
-	//! Return a rectangle_set containing just absolute_location, at (0, 0)
+	//! Return a rectarea containing just absolute_location, at (0, 0)
 
-	//! This used to construct a rectangle_set to redraw this entire
+	//! This used to construct a rectarea to redraw this entire
 	//! element.
 
-	rectangle_set entire_area() const;
+	rectarea entire_area() const;
 
 	//! The element is clipped to this viewport.
 
@@ -70,7 +70,7 @@ struct draw_info {
 	//! is some subset (element_viewport's (0,0) is the top level window's
 	//! top left corner).
 
-	rectangle_set element_viewport;
+	rectarea element_viewport;
 
 	//! Everything is clipped.
 

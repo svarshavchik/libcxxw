@@ -27,10 +27,10 @@ LIBCXXW_NAMESPACE_START
 struct LIBCXX_HIDDEN richtext_draw_boundaries {
 
 	richtext_draw_boundaries(const draw_info &di,
-				 const rectangle_set &areas);
+				 const rectarea &areas);
 	~richtext_draw_boundaries();
 
-	// Viewable limits based on draw_info+rectangle_set
+	// Viewable limits based on draw_info+rectarea
 	rectangle limits;
 
 	// Which portion of the text to draw.

@@ -364,7 +364,7 @@ bool scrollbarObj::implObj::calculate_scrollbar_metrics(ONLY IN_THREAD)
 
 void scrollbarObj::implObj::do_draw(ONLY IN_THREAD,
 				   const draw_info &di,
-				   const rectangle_set &areas)
+				   const rectarea &areas)
 {
 	// We just draw the entire universe.
 

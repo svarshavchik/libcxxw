@@ -335,7 +335,7 @@ class LIBCXX_HIDDEN editorObj::implObj
 
 	void do_draw(ONLY IN_THREAD,
 		     const draw_info &di,
-		     const rectangle_set &areas) override;
+		     const rectarea &areas) override;
 
 	//! Override removed()
 	void removed(ONLY IN_THREAD) override;

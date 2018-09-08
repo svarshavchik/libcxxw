@@ -71,7 +71,7 @@ listcontainer_pseudo_implObj::~listcontainer_pseudo_implObj()=default;
 
 void listcontainer_pseudo_implObj::do_draw(ONLY IN_THREAD,
 					 const draw_info &di,
-					 const rectangle_set &areas)
+					 const rectarea &areas)
 {
 	auto b=di.element_viewport.begin();
 	auto e=di.element_viewport.end();

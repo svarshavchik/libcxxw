@@ -287,7 +287,7 @@ class LIBCXX_HIDDEN scrollbarObj::implObj :
 	//! for it.
 	void do_draw(ONLY IN_THREAD,
 		     const draw_info &di,
-		     const rectangle_set &areas) override;
+		     const rectarea &areas) override;
 
 	//! Process key events.
 	bool process_key_event(ONLY IN_THREAD, const key_event &ke) override;

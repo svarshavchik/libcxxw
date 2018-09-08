@@ -91,7 +91,7 @@ class LIBCXX_HIDDEN borderlayoutmanagerObj::implObj
 	void do_draw(ONLY IN_THREAD,
 		     const draw_info &di,
 		     clip_region_set &clip,
-		     rectangle_set &drawn_areas) override;
+		     rectarea &drawn_areas) override;
 
  private:
 

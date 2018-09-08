@@ -1018,7 +1018,7 @@ void editorObj::implObj::draw_changes(ONLY IN_THREAD,
 
 void editorObj::implObj::do_draw(ONLY IN_THREAD,
 				 const draw_info &di,
-				 const rectangle_set &areas)
+				 const rectarea &areas)
 {
 #ifdef EDITOR_DRAW
 	EDITOR_DRAW();

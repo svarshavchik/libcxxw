@@ -361,7 +361,7 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 	//! Draw ourselves.
 	void do_draw(ONLY IN_THREAD,
 		     const draw_info &di,
-		     const rectangle_set &areas) override;
+		     const rectarea &areas) override;
 
 	//! Handle motion events.
 
@@ -452,7 +452,7 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 	//! Redraw all visible rows.
 	void do_draw(ONLY IN_THREAD,
 		     const draw_info &di,
-		     const rectangle_set &areas,
+		     const rectarea &areas,
 		     textlist_info_lock &lock,
 		     bool only_whats_needed);
 

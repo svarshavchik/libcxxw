@@ -113,10 +113,10 @@ public:
 //!
 //! offsetx and offsety are added to all rectangles' returned coordinates.
 
-rectangle_set add(const rectangle_set &,
-		  const rectangle_set &,
-		  coord_t offsetx=0,
-		  coord_t offsety=0);
+rectarea add(const rectarea &,
+	     const rectarea &,
+	     coord_t offsetx=0,
+	     coord_t offsety=0);
 
 //! Return an intersection set of two rectangles.
 
@@ -127,10 +127,10 @@ rectangle_set add(const rectangle_set &,
 //!
 //! offsetx and offsety are added to all rectangles' returned coordinates.
 
-rectangle_set intersect(const rectangle_set &,
-			const rectangle_set &,
-			coord_t offsetx=0,
-			coord_t offsety=0);
+rectarea intersect(const rectarea &,
+		   const rectarea &,
+		   coord_t offsetx=0,
+		   coord_t offsety=0);
 
 //! Subtract two rectangle sets.
 
@@ -139,14 +139,14 @@ rectangle_set intersect(const rectangle_set &,
 //!
 //! offsetx and offsety are added to all rectangles' returned coordinates.
 
-rectangle_set subtract(const rectangle_set &,
-		       const rectangle_set &,
-		       coord_t ofssetx=0,
-		       coord_t offsety=0);
+rectarea subtract(const rectarea &,
+		  const rectarea &,
+		  coord_t ofssetx=0,
+		  coord_t offsety=0);
 
 //! Return a bounding rectangle for the given rectangle set
 
-rectangle bounds(const rectangle_set &);
+rectangle bounds(const rectarea &);
 
 LIBCXXW_NAMESPACE_END
 

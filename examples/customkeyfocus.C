@@ -127,7 +127,7 @@ public:
 
 	void do_draw(ONLY IN_THREAD,
 		     const x::w::draw_info &di,
-		     const x::w::rectangle_set &areas) override;
+		     const x::w::rectarea &areas) override;
 
 // Focusable elements can override keyboard_focus() and process_key_event().
 
@@ -187,7 +187,7 @@ bool my_element_implObj::process_key_event(ONLY IN_THREAD,
 
 void my_element_implObj::do_draw(ONLY IN_THREAD,
 				 const x::w::draw_info &di,
-				 const x::w::rectangle_set &areas)
+				 const x::w::rectarea &areas)
 {
 	// This basic implementation of do_draw() redraws only the rectangles
 	// that need redrawing, according to the display server.

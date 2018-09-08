@@ -29,7 +29,7 @@ scratch_buffer_draw<child_type>::~scratch_buffer_draw()=default;
 template<typename child_type>
 void scratch_buffer_draw<child_type>::do_draw(ONLY IN_THREAD,
 					      const draw_info &di,
-					      const rectangle_set &areas)
+					      const rectarea &areas)
 {
 	this->get_scratch_buffer(IN_THREAD, *this, di);
 }

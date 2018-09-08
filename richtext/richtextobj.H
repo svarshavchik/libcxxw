@@ -98,7 +98,7 @@ class LIBCXX_HIDDEN richtextObj : virtual public obj {
 			 element_drawObj &,
 			 const richtext_draw_info &,
 			 const draw_info &,
-			 const rectangle_set &);
+			 const rectarea &);
 
 	//! Redraw this element fully.
 
@@ -141,7 +141,7 @@ class LIBCXX_HIDDEN richtextObj : virtual public obj {
 				element_drawObj &,
 				const richtext_draw_info &,
 				const draw_info &,
-				const rectangle_set &);
+				const rectarea &);
 
 	//! Redraw a fragment range.
 

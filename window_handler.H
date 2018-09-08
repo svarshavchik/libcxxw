@@ -89,7 +89,7 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 
 		//! The collected rectangles
 
-		rectangle_set rectangles;
+		rectarea rectangles;
 
 		//! Count on the most recent Exposure event was 0
 

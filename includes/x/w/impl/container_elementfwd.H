@@ -33,7 +33,7 @@ public:
 
 	void do_draw(ONLY IN_THREAD,
 		     const draw_info &di,
-		     const rectangle_set &areas) override;
+		     const rectarea &areas) override;
 
 	void inherited_visibility_updated(ONLY IN_THREAD,
 					  inherited_visibility_info &info)

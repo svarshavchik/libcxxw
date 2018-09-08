@@ -63,7 +63,7 @@ void label_elementObj<element_impl>
 
 template<typename element_impl>
 void label_elementObj<element_impl>
-::do_draw(ONLY IN_THREAD, const draw_info &di, const rectangle_set &areas)
+::do_draw(ONLY IN_THREAD, const draw_info &di, const rectarea &areas)
 {
 	textlabelObj::implObj::do_draw(IN_THREAD, di, areas);
 }

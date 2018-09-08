@@ -132,7 +132,7 @@ void layoutmanagerObj::implObj::request_visibility_recursive(ONLY IN_THREAD,
 void layoutmanagerObj::implObj::do_draw(ONLY IN_THREAD,
 					const draw_info &di,
 					clip_region_set &clip,
-					rectangle_set &drawn_areas)
+					rectarea &drawn_areas)
 {
 	auto &element_impl=layout_container_impl->container_element_impl();
 

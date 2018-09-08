@@ -98,7 +98,7 @@ void richtextObj::full_redraw(ONLY IN_THREAD,
 			      element_drawObj &element,
 			      const richtext_draw_info &rdi,
 			      const draw_info &di,
-			      const rectangle_set &areas)
+			      const rectarea &areas)
 {
 	richtext_draw_boundaries draw_bounds{di, areas};
 	clip_region_set clipped{IN_THREAD, element.get_window_handler(), di};
@@ -135,7 +135,7 @@ void richtextObj::redraw_whatsneeded(ONLY IN_THREAD,
 				     element_drawObj &element,
 				     const richtext_draw_info &rdi,
 				     const draw_info &di,
-				     const rectangle_set &areas)
+				     const rectarea &areas)
 {
 	richtext_draw_boundaries draw_bounds{di, areas};
 	clip_region_set clipped{IN_THREAD, element.get_window_handler(), di};

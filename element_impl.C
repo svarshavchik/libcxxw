@@ -405,7 +405,7 @@ void elementObj::implObj::enablability_changed(ONLY IN_THREAD)
 		       });
 }
 
-rectangle_set draw_info::entire_area() const
+rectarea draw_info::entire_area() const
 {
 	if (absolute_location.width == 0 || absolute_location.height == 0)
 		return {};
@@ -715,9 +715,9 @@ clip_region_set::clip_region_set(ONLY IN_THREAD,
 
 void elementObj::implObj
 ::exposure_event_recursively_top_down(ONLY IN_THREAD,
-				      const rectangle_set &r)
+				      const rectarea &r)
 {
-	std::queue<std::tuple<element_impl, rectangle_set>> q;
+	std::queue<std::tuple<element_impl, rectarea>> q;
 
 	q.emplace(ref{this}, r);
 
@@ -732,9 +732,9 @@ void elementObj::implObj
 }
 
 void elementObj::implObj::exposure_event_recursive(ONLY IN_THREAD,
-						   const rectangle_set &areas,
+						   const rectarea &areas,
 						   std::queue<std::tuple
-						   <element_impl, rectangle_set>
+						   <element_impl, rectarea>
 						   > &q)
 {
 	auto &current_position=data(IN_THREAD).current_position;
@@ -819,7 +819,7 @@ bool elementObj::implObj
 
 void elementObj::implObj::draw(ONLY IN_THREAD,
 			       const draw_info &di,
-			       const rectangle_set &areas)
+			       const rectarea &areas)
 {
 	if (areas.empty() || di.element_viewport.empty())
 		return; // Don't bother.
@@ -832,7 +832,7 @@ void elementObj::implObj::draw(ONLY IN_THREAD,
 
 void elementObj::implObj::do_draw(ONLY IN_THREAD,
 				  const draw_info &di,
-				  const rectangle_set &areas)
+				  const rectarea &areas)
 {
 	clear_to_color(IN_THREAD, di, areas);
 }
@@ -948,7 +948,7 @@ void elementObj::implObj
 }
 void elementObj::implObj::clear_to_color(ONLY IN_THREAD,
 					 const draw_info &di,
-					 const rectangle_set &areas)
+					 const rectarea &areas)
 {
 	clear_to_color(IN_THREAD,
 		       clip_region_set(IN_THREAD, get_window_handler(), di),
@@ -959,7 +959,7 @@ void elementObj::implObj::clear_to_color(ONLY IN_THREAD,
 					 const clip_region_set &clip,
 					 const draw_info &di,
 					 const draw_info &background_color_di,
-					 const rectangle_set &areas)
+					 const rectarea &areas)
 {
 #ifdef CLEAR_TO_COLOR_LOG
 	CLEAR_TO_COLOR_LOG();
@@ -969,7 +969,7 @@ void elementObj::implObj::clear_to_color(ONLY IN_THREAD,
 	// If we have a large element inside a peephole, this avoids us having
 	// to allocate a huge scratch buffer, with most of it being unused.
 
-	rectangle_set absareas;
+	rectarea absareas;
 
 	for (auto area:di.element_viewport)
 	{

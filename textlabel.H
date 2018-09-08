@@ -247,7 +247,7 @@ class LIBCXX_HIDDEN textlabelObj::implObj
 
 	void do_draw(ONLY IN_THREAD,
 		     const draw_info &di,
-		     const rectangle_set &areas);
+		     const rectarea &areas);
 
 	//! Override process_updated_position()
 

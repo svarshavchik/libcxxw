@@ -64,7 +64,7 @@ public:
 
 	void do_draw(ONLY IN_THREAD,
 		     const draw_info &di,
-		     const rectangle_set &areas) override;
+		     const rectarea &areas) override;
 
 	//! Override process_updated_position()
 

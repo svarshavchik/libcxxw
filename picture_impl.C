@@ -35,7 +35,7 @@ inline static constexpr xcb_render_color_t to_color(const rgb &rgb)
 }
 
 static void to_xcb_rectangles(std::vector<xcb_rectangle_t> &v,
-			      const rectangle_set &rectangles)
+			      const rectarea &rectangles)
 {
 	v.clear();
 	v.reserve(rectangles.size());
@@ -61,12 +61,12 @@ void pictureObj::implObj::set_clip_rectangle(const rectangle &r,
 					     coord_t x,
 					     coord_t y)
 {
-	rectangle_set s={ r };
+	rectarea s={ r };
 
 	set_clip_rectangles(s, x, y);
 }
 
-void pictureObj::implObj::set_clip_rectangles(const rectangle_set &clipregion,
+void pictureObj::implObj::set_clip_rectangles(const rectarea &clipregion,
 					      coord_t x,
 					      coord_t y)
 {

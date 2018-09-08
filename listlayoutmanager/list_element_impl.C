@@ -975,7 +975,7 @@ void list_elementObj::implObj::process_updated_position(ONLY IN_THREAD)
 
 void list_elementObj::implObj::do_draw(ONLY IN_THREAD,
 				       const draw_info &di,
-				       const rectangle_set &areas)
+				       const rectarea &areas)
 {
 	textlist_info_lock lock{IN_THREAD, *this};
 
@@ -1003,7 +1003,7 @@ void list_elementObj::implObj::redraw_needed_rows(ONLY IN_THREAD)
 
 void list_elementObj::implObj::do_draw(ONLY IN_THREAD,
 				       const draw_info &di,
-				       const rectangle_set &areas,
+				       const rectarea &areas,
 				       textlist_info_lock &lock,
 				       bool only_whats_needed)
 {
@@ -1042,7 +1042,7 @@ void list_elementObj::implObj::do_draw(ONLY IN_THREAD,
 
 	// Draw all the rows, collecting the drawn areas, in absolute
 	// coordinates.
-	rectangle_set drawn;
+	rectarea drawn;
 
 	{
 		clip_region_set clipped{IN_THREAD, get_window_handler(), di};
@@ -1211,7 +1211,7 @@ rectangle list_elementObj::implObj
 	      const list_row_info_t &r,
 	      bool make_sure_row_is_visible)
 {
-	rectangle_set drawn_columns;
+	rectarea drawn_columns;
 
 	coord_t y=r.y;
 
@@ -1302,7 +1302,7 @@ rectangle list_elementObj::implObj
 	}
 
 
-	auto to_clear=subtract(rectangle_set{{entire_row}},
+	auto to_clear=subtract(rectarea{{entire_row}},
 			       drawn_columns);
 
 	superclass_t::do_draw(IN_THREAD, di, to_clear);

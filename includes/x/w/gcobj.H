@@ -114,7 +114,7 @@ public:
 		references_t references;
 
 		//! Clip rectangles
-		rectangle_set current_cliprects;
+		rectarea current_cliprects;
 
 		//! Whether there are cliprects.
 		bool has_cliprects=false;
@@ -194,7 +194,7 @@ public:
 				     uint32_t origin_y=0);
 
 		//! Set clip mask rectangles
-		properties &clipmask(const rectangle_set &r,
+		properties &clipmask(const rectarea &r,
 				     uint32_t origin_x=0,
 				     uint32_t origin_y=0);
 
@@ -217,7 +217,7 @@ public:
 	}
 
 	//! Fill rectangles
-	void fill_rectangles(const rectangle_set &rectangles,
+	void fill_rectangles(const rectarea &rectangles,
 			     const properties &props);
 
 	//! A line

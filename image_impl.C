@@ -65,7 +65,7 @@ void imageObj::implObj::initialize(ONLY IN_THREAD)
 
 void imageObj::implObj::do_draw(ONLY IN_THREAD,
 				const draw_info &di,
-				const rectangle_set &areas)
+				const rectarea &areas)
 {
 	// We ignore areas for now, and just composite the entire icon picture.
 

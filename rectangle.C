@@ -100,7 +100,7 @@ class LIBCXX_INTERNAL rectangle_to_merge {
  public:
 
 	// The original rectangle in the original std::set
-	rectangle_set::iterator rect_iter;
+	rectarea::iterator rect_iter;
 
 	// Points to the edge object for the left or the top of this rectangle.
 	std::set<rectangle_edge>::iterator prev;
@@ -109,7 +109,7 @@ class LIBCXX_INTERNAL rectangle_to_merge {
 
 	std::set<rectangle_edge>::iterator next;
 
-	rectangle_to_merge(rectangle_set::iterator rect_iter,
+	rectangle_to_merge(rectarea::iterator rect_iter,
 			   std::set<rectangle_edge>::iterator prev,
 			   std::set<rectangle_edge>::iterator next)
 		: rect_iter(rect_iter),
@@ -124,7 +124,7 @@ class LIBCXX_INTERNAL rect_merge_pass {
  public:
 
 	const rect_op_orientation &orientation;
-	rectangle_set &rectangles;
+	rectarea &rectangles;
 
 	std::vector<rectangle_to_merge> merge_list;
 	std::set<rectangle_edge> edges;
@@ -132,7 +132,7 @@ class LIBCXX_INTERNAL rect_merge_pass {
 	bool merged=false;
 
 	rect_merge_pass(const rect_op_orientation &orientation,
-			rectangle_set &rectangles)
+			rectarea &rectangles)
 		: orientation(orientation), rectangles(rectangles)
 	{
 		merge_list.reserve(rectangles.size());
@@ -255,9 +255,9 @@ class LIBCXX_INTERNAL rect_merge_pass {
 	}
 };
 
-void merge(rectangle_set &rectangles) LIBCXX_HIDDEN;
+void merge(rectarea &rectangles) LIBCXX_HIDDEN;
 
-void merge(rectangle_set &rectangles)
+void merge(rectarea &rectangles)
 {
 	bool merged_horizontally;
 	bool merged_vertically;
@@ -429,8 +429,8 @@ class LIBCXX_INTERNAL rect_slice_pass {
 // Each rectangle set is unrolled into a vector, then each set slices each
 // other.
 
-rectangle_slicer::rectangle_slicer(const rectangle_set &slicee,
-				   const rectangle_set &slicer)
+rectangle_slicer::rectangle_slicer(const rectarea &slicee,
+				   const rectarea &slicer)
 	: slicee_v(slicee.begin(), slicee.end()),
 	  slicer_v(slicer.begin(), slicer.end())
 {
@@ -450,10 +450,10 @@ void rectangle_slicer::slice_slicer()
 	rect_slice_pass(vertical_dim, slicer_v, slicee_v);
 }
 
-rectangle_set add(const rectangle_set &a,
-		  const rectangle_set &b,
-		  coord_t x_offset,
-		  coord_t y_offset)
+rectarea add(const rectarea &a,
+	     const rectarea &b,
+	     coord_t x_offset,
+	     coord_t y_offset)
 {
 	rectangle_slicer slicer{a, b};
 
@@ -472,7 +472,7 @@ rectangle_set add(const rectangle_set &a,
 		r.y = (coord_squared_t::value_type)(r.y + y_offset);
 	}
 
-	rectangle_set result{slicer.slicee_v.begin(),
+	rectarea result{slicer.slicee_v.begin(),
 			slicer.slicee_v.end()
 			};
 
@@ -484,25 +484,25 @@ rectangle_set add(const rectangle_set &a,
 	return result;
 }
 
-rectangle_set intersect(const rectangle_set &a,
-			const rectangle_set &b,
-			coord_t x_offset,
-			coord_t y_offset)
+rectarea intersect(const rectarea &a,
+		   const rectarea &b,
+		   coord_t x_offset,
+		   coord_t y_offset)
 {
 	rectangle_slicer slicer{a, b};
 
 	slicer.slice_slicee();
 	slicer.slice_slicer();
 
-	rectangle_set result{slicer.slicee_v.begin(),
+	rectarea result{slicer.slicee_v.begin(),
 			slicer.slicee_v.end()
 			};
 
-	rectangle_set other_result{
+	rectarea other_result{
 		slicer.slicer_v.begin(),
 			slicer.slicer_v.end()};
 
-	rectangle_set intersection;
+	rectarea intersection;
 
 	for (auto p=result.begin(); p != result.end(); )
 	{
@@ -525,17 +525,17 @@ rectangle_set intersect(const rectangle_set &a,
 	return intersection;
 }
 
-rectangle_set subtract(const rectangle_set &a,
-		       const rectangle_set &b,
-		       coord_t x_offset,
-		       coord_t y_offset)
+rectarea subtract(const rectarea &a,
+		  const rectarea &b,
+		  coord_t x_offset,
+		  coord_t y_offset)
 {
 	rectangle_slicer slicer{a, b};
 
 	slicer.slice_slicee();
 	slicer.slice_slicer();
 
-	rectangle_set result{slicer.slicee_v.begin(),
+	rectarea result{slicer.slicee_v.begin(),
 			slicer.slicee_v.end()
 			};
 
@@ -552,7 +552,7 @@ rectangle_set subtract(const rectangle_set &a,
 	if (x_offset == 0 && y_offset == 0)
 		return result;
 
-	rectangle_set subtraction;
+	rectarea subtraction;
 
 	for (auto c:result)
 	{
@@ -565,7 +565,7 @@ rectangle_set subtract(const rectangle_set &a,
 
 }
 
-rectangle bounds(const rectangle_set &s)
+rectangle bounds(const rectarea &s)
 {
 	if (s.empty())
 		return {};

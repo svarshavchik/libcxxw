@@ -795,7 +795,7 @@ struct LIBCXX_HIDDEN sxg_parserObj::sxg_rectangle {
 		get_width_height(parent, points, width, height);
 	}
 
-	void scale(const scale_info &scale, rectangle_set &r) const
+	void scale(const scale_info &scale, rectarea &r) const
 	{
 		convert_to(scale,
 			   [&]
@@ -1648,7 +1648,7 @@ sxg_parserObj::parse_gc_clip(const theme_parser_lock &lock,
 
 			 if (pixmap_iter == info.info.pixmaps.end())
 			 {
-				 rectangle_set convrectangles;
+				 rectarea convrectangles;
 
 				 size_t n=rectangles->size();
 
@@ -2400,7 +2400,7 @@ sxg_parserObj::parse_render_clip(const theme_parser_lock &render_element,
 		 {
 			 if (clip_to_pixmap.empty())
 			 {
-				 rectangle_set convrectangles;
+				 rectarea convrectangles;
 				 size_t n=rectangles->size();
 
 				 for (size_t i=0; i<n; ++i)

@@ -18,7 +18,7 @@ struct sausage_factory {
 	int created_straight_border=0;
 	int changed_corner_border=0;
 
-	LIBCXXW_NAMESPACE::rectangle_set drawn_rectangles;
+	LIBCXXW_NAMESPACE::rectarea drawn_rectangles;
 	int called_recalculate_with_false_flag=0;
 	int called_recalculate_with_true_flag=0;
 	std::vector<int> border_elements_survey;
@@ -383,7 +383,7 @@ void teststate(testmainwindowoptions &options, bool flag)
 	slicer.slice_slicee();
 	slicer.slice_slicer();
 
-	LIBCXXW_NAMESPACE::rectangle_set test_set{slicer.slicee_v.begin(),
+	LIBCXXW_NAMESPACE::rectarea test_set{slicer.slicee_v.begin(),
 			slicer.slicee_v.end()
 			};
 
