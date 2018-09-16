@@ -9,6 +9,7 @@
 #include "connectionfwd.H"
 #include "defaulttheme.H"
 #include "pictformat.H"
+#include "pixmap_extractor.H"
 #include "icon.H"
 #include "icon_images_set_element.H"
 #include "cursor_pointer_element.H"
@@ -83,6 +84,39 @@ bool generic_windowObj::handlerObj::frame_extents_t
 		top == o.top && bottom == o.bottom;
 }
 
+// Modern technology meets ancient protocols.
+//
+// We need to set the background-pixel, and all we have is a RENDER-based
+// picture, representing the window's background color.
+//
+// Create a one pixel pixmap, and render the background color into its
+// picture, then pluck out the brave pixel.
+//
+// Fortunately, we will do it only when needed, when constructing the new
+// window, using its initial background color, and when the background color
+// changes.
+
+static auto compute_background_pixel(ONLY IN_THREAD,
+				     const screen &parent_screen,
+				     const background_color &col,
+				     const rectangle &window_rectangle)
+{
+	auto pf=parent_screen->impl->toplevelwindow_pictformat;
+
+	auto pm=parent_screen->create_pixmap(pf, 1, 1);
+
+	auto pic=pm->create_picture();
+
+	pic->composite(col->get_current_color(IN_THREAD),
+		       coord_t::truncate(window_rectangle.width)-1,
+		       coord_t::truncate(window_rectangle.height)-1,
+		       0, 0, 1, 1);
+
+	pixmap_extractor pex{pm};
+
+	return pex.get_pixel(0, 0);
+}
+
 //////////////////////////////////////////////////////////////////////////
 
 static inline generic_windowObj::handlerObj::constructor_params
@@ -92,27 +126,42 @@ create_constructor_params(const screen &parent_screen,
 {
 	rectangle dimensions={0, 0, 0, 0};
 
-	values_and_mask vm(XCB_CW_EVENT_MASK,
-			   (uint32_t)
-			   generic_windowObj::handlerObj::initial_event_mask(),
-			   XCB_CW_COLORMAP,
-			   parent_screen->impl->toplevelwindow_colormap->id(),
-			   XCB_CW_BORDER_PIXEL,
-			   parent_screen->impl->xcb_screen->black_pixel);
+	auto background_color_obj=
+		default_background_color(parent_screen, background_color);
+
+	values_and_mask vm
+		{
+		 XCB_CW_EVENT_MASK,
+		 (uint32_t)
+		 generic_windowObj::handlerObj::initial_event_mask(),
+		 XCB_CW_COLORMAP,
+		 parent_screen->impl->toplevelwindow_colormap->id(),
+		 XCB_CW_BIT_GRAVITY,
+		 XCB_GRAVITY_NORTH_WEST,
+		 XCB_CW_BORDER_PIXEL,
+		 parent_screen->impl->xcb_screen->black_pixel,
+		 XCB_CW_BACK_PIXEL,
+		 compute_background_pixel(parent_screen->impl->thread,
+					  parent_screen,
+					  background_color_obj,
+					  dimensions)
+		};
 
 	return {
 		{
-			parent_screen,
-			parent_screen->impl->xcb_screen->root, // parent
-			parent_screen->impl->toplevelwindow_pictformat->depth, // depth
-			dimensions, // initial_position
-			XCB_WINDOW_CLASS_INPUT_OUTPUT, // window_class
-			parent_screen->impl->toplevelwindow_visual->impl->visual_id, // visual
-			vm, // events_and_mask
+		 parent_screen,
+		 parent_screen->impl->xcb_screen->root, // parent
+		 parent_screen->impl->toplevelwindow_pictformat->depth, // depth
+		 dimensions, // initial_position
+		 XCB_WINDOW_CLASS_INPUT_OUTPUT, // window_class
+		 parent_screen->impl->toplevelwindow_visual
+		 ->impl->visual_id, // visual
+		 vm, // events_and_mask
 		},
 		parent_screen->impl->toplevelwindow_pictformat,
 		nesting_level,
-		background_color
+		background_color,
+		background_color_obj,
 	};
 }
 
@@ -132,51 +181,59 @@ generic_windowObj::handlerObj
 ::handlerObj(ONLY IN_THREAD,
 	     const shared_handler_data &handler_data,
 	     const constructor_params &params)
-	: // This sets up the xcb_window_t
-	  window_handlerObj(IN_THREAD,
-			    params.window_handler_params),
-	  // And we inherit it as the xcb_drawable_t
-	  drawableObj::implObj(IN_THREAD,
-			       window_handlerObj::id(),
-			       params.drawable_pictformat),
+	// This sets up the xcb_window_t
+	: window_handlerObj
+	{
+	 IN_THREAD, params.window_handler_params,
+	},
+	// And we inherit it as the xcb_drawable_t
+	  drawableObj::implObj{
+			       IN_THREAD, window_handlerObj::id(),
+			       params.drawable_pictformat,
+	  },
 
-	// We can now construct a picture for the window
-	pictureObj::implObj::fromDrawableObj(IN_THREAD,
-					     window_handlerObj::id(),
-					     params.drawable_pictformat->impl
-					     ->id),
+	  // We can now construct a picture for the window
+	  pictureObj::implObj::fromDrawableObj
+	{
+	 IN_THREAD,window_handlerObj::id(),
+	 params.drawable_pictformat->impl->id
+	},
 	// And now, the element that represents the window itself, and
 	// all the theme-based resources: background colors, icons, and
 	// masks
-	superclass_t{
-	default_background_color(params.window_handler_params.screenref,
-				 params.background_color),
-		default_background_color(params.window_handler_params.screenref,
-					 "modal_shade"),
-		drawableObj::implObj::create_icon(create_icon_args_t{
-				"disabled_mask",
-					render_repeat::normal},
-			params.window_handler_params.screenref),
-		cursor_pointer::create
-		(drawableObj::implObj::create_icon(create_icon_args_t{
-				"cursor-wait"},
-			params.window_handler_params.screenref)),
-		params.nesting_level,
-		element_position(params.window_handler_params.initial_position),
-		params.window_handler_params.screenref,
-		params.drawable_pictformat,
-		"background@libcxx.com"},
-	current_events_thread_only{(xcb_event_mask_t)
-			params.window_handler_params
-			.events_and_mask.m.at(XCB_CW_EVENT_MASK)},
-	current_position{params.window_handler_params.initial_position},
-	handler_data{handler_data},
-	my_popups{my_popups_t::create()},
-	original_background_color{params.background_color},
-	frame_extents_thread_only{params.window_handler_params.screenref
-			->get_workarea()},
-	current_theme_thread_only{params.window_handler_params.screenref
-			->impl->current_theme.get()}
+	  superclass_t
+	{
+	 params.background_color_obj,
+	 default_background_color(params.window_handler_params.screenref,
+				  "modal_shade"),
+	 drawableObj::implObj::create_icon
+	 (create_icon_args_t
+		{
+		 "disabled_mask",
+		 render_repeat::normal
+		},
+	  params.window_handler_params.screenref),
+	 cursor_pointer::create
+	 (drawableObj::implObj::create_icon(create_icon_args_t{"cursor-wait"},
+					    params.window_handler_params
+					    .screenref)),
+	 params.nesting_level,
+	 element_position(params.window_handler_params.initial_position),
+	 params.window_handler_params.screenref,
+	 params.drawable_pictformat,
+	 "background@libcxx.com"
+	},
+	  current_events_thread_only{(xcb_event_mask_t)
+				     params.window_handler_params
+				     .events_and_mask.m.at(XCB_CW_EVENT_MASK)},
+	  current_position{params.window_handler_params.initial_position},
+	  handler_data{handler_data},
+	  my_popups{my_popups_t::create()},
+	  original_background_color{params.background_color_arg},
+	  frame_extents_thread_only{params.window_handler_params.screenref
+				    ->get_workarea()},
+	  current_theme_thread_only{params.window_handler_params.screenref
+				    ->impl->current_theme.get()}
 {
 	top_level_always_visible();
 
@@ -323,6 +380,54 @@ void generic_windowObj::handlerObj
 
 	// Background color changed (1/2).
 	background_color_changed(IN_THREAD);
+}
+
+void generic_windowObj::handlerObj::background_color_changed(ONLY IN_THREAD)
+{
+	superclass_t::background_color_changed(IN_THREAD);
+
+	update_background_pixel(IN_THREAD,
+				current_background_color(IN_THREAD));
+}
+
+void generic_windowObj::handlerObj::process_updated_position(ONLY IN_THREAD)
+{
+	// If we have the misfortune of dealing with a gradient color,
+	// we may need to update our background-pixel whenever the
+	// window's size changes.
+	//
+	// We detect it by saving the current_background_color before
+	// processing the position update, and see if it changed after
+	// processing it.
+	auto old_background_color=current_background_color(IN_THREAD);
+	superclass_t::process_updated_position(IN_THREAD);
+
+	auto new_background_color=current_background_color(IN_THREAD);
+
+	if (old_background_color == new_background_color)
+		return;
+
+	// Gradient color changed.
+
+	update_background_pixel(IN_THREAD, new_background_color);
+}
+
+void generic_windowObj::handlerObj
+::update_background_pixel(ONLY IN_THREAD,
+			  const background_color &col)
+{
+	values_and_mask vm
+		{
+		 XCB_CW_BACK_PIXEL,
+		 compute_background_pixel(IN_THREAD, get_screen(),
+					  col,
+					  data(IN_THREAD).current_position),
+		};
+
+	xcb_change_window_attributes(IN_THREAD->info->conn,
+				     id(),
+				     vm.mask(),
+				     vm.values().data());
 }
 
 background_color generic_windowObj::handlerObj

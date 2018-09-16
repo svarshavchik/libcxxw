@@ -279,7 +279,10 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 		size_t nesting_level;
 
 		//! Background color
-		color_arg background_color;
+		color_arg background_color_arg;
+
+		//! The instantiated background_color
+		background_color background_color_obj;
 	};
 
 	//! Public constructor
@@ -304,10 +307,20 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 	//! Return the current background color.
 	background_color current_background_color(ONLY IN_THREAD) override;
 
-	//! Implement set_bakcground_color() for the top level window.
+	//! Implement set_background_color() for the top level window.
 	void set_background_color(ONLY IN_THREAD,
 				  const background_color &) override;
 
+	//! Override background_color_changed().
+	void background_color_changed(ONLY IN_THREAD) override;
+
+	//! Override process_updated_position().
+	void process_updated_position(ONLY IN_THREAD) override;
+
+ private:
+	void update_background_pixel(ONLY IN_THREAD,
+				     const background_color &);
+ public:
 	//! Return the color for drawing a shade over a disabled window.
 	const background_color shaded_color(ONLY IN_THREAD);
 

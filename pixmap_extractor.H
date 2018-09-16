@@ -58,9 +58,19 @@ private:
 
  public:
 
+	//! I just want one lousy pixel.
+
+	inline uint32_t get_pixel(dim_t x, dim_t y) const
+	{
+		if ( x >= width || y >= height)
+			return 0;
+		return xcb_image_get_pixel(image,
+					   (dim_t::value_type)x,
+					   (dim_t::value_type)y);
+	}
 	//! Retrieve a pixel.
 
-	inline rgb get_rgb(dim_t x, dim_t y)
+	inline rgb get_rgb(dim_t x, dim_t y) const
 	{
 		if ( x >= width || y >= height)
 			return {0, 0, 0, 0};
