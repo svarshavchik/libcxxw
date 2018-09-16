@@ -23,6 +23,7 @@
 #include "cursor_pointer_element.H"
 #include "generic_window_handler.H"
 #include "icon.H"
+#include "screen.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -172,13 +173,22 @@ metrics::axis header_container_implObj
 {
 	auto new_h=h;
 
+	// User-specified table width?
 	auto preferred=themedim_element<table_width_tag>::pixels(IN_THREAD);
+
+	if (preferred < new_h.minimum())
+		preferred=new_h.preferred();
 
 	auto maximum=themedim_element<maximum_table_width_tag>
 		::pixels(IN_THREAD);
 
-	if (maximum > new_h.maximum())
-		new_h={new_h.minimum(), new_h.preferred(), maximum};
+	if (maximum < preferred)
+		maximum=preferred;
+
+	if (maximum < new_h.maximum())
+		maximum=new_h.maximum();
+
+	new_h={new_h.minimum(), preferred, maximum};
 
 	if (preferred_override && preferred != dim_t::infinite())
 	{

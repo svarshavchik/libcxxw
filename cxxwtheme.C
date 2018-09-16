@@ -25,6 +25,8 @@
 #include "x/w/image_button.H"
 #include "x/w/radio_group.H"
 #include "x/w/progressbar.H"
+#include "x/w/tablelayoutmanager.H"
+#include "x/w/font_literals.H"
 #include "x/w/menubarlayoutmanager.H"
 #include "x/w/menubarfactory.H"
 #include "x/w/file_dialog.H"
@@ -49,6 +51,7 @@
 #include <algorithm>
 #include <vector>
 #include <iterator>
+#include <string>
 #include <unistd.h>
 
 LOG_FUNC_SCOPE_DECL("cxxwtheme", cxxwLog);
@@ -833,6 +836,7 @@ static void help_menu(const w::main_window &mw,
 static void demo_list(const w::gridlayoutmanager &lm);
 static void demo_input(const w::gridlayoutmanager &lm);
 static void demo_misc(const w::gridlayoutmanager &lm);
+static void demo_table(const w::gridlayoutmanager &lm);
 
 static void create_demo(const w::booklayoutmanager &lm)
 {
@@ -873,6 +877,19 @@ static void create_demo(const w::booklayoutmanager &lm)
 				(const auto &c)
 				{
 					demo_misc(c->get_layoutmanager());
+				},
+				w::new_gridlayoutmanager{});
+	       });
+
+	f->add("Table",
+	       []
+	       (const auto &f)
+	       {
+		       f->create_container
+			       ([]
+				(const auto &c)
+				{
+					demo_table(c->get_layoutmanager());
 				},
 				w::new_gridlayoutmanager{});
 	       });
@@ -1059,9 +1076,16 @@ static void demo_misc(const w::gridlayoutmanager &lm)
 			 pb->update(75, 100);
 		 });
 
-	lm->append_row()->colspan(2).halign(w::halign::center)
+	auto b=lm->append_row()->colspan(2).halign(w::halign::center)
 		.create_normal_button_with_label
-		("Busy pointer")->on_activate
+		("Busy pointer with a tooltip");
+
+	b->create_tooltip("Click me to be busy for 5 seconds\n"
+			  "\n"
+			  "Lorem ipsum dolor sit amet,\n"
+			  "consectetur adipisicing elit.");
+
+	b->on_activate
 		([]
 		 (THREAD_CALLBACK,
 		  const auto &ignore,
@@ -1074,6 +1098,86 @@ static void demo_misc(const w::gridlayoutmanager &lm)
 				    });
 		 });
 
+}
+
+static void demo_table(const w::gridlayoutmanager &lm)
+{
+	auto f=lm->append_row();
+
+	LIBCXX_NAMESPACE::w::new_tablelayoutmanager ntlm
+		{[]
+		 (const LIBCXX_NAMESPACE::w::factory &f, size_t i)
+		 {
+			 static const char * const titles[]=
+				 {
+				  "Name",
+				  "Red",
+				  "Green",
+				  "Blue",
+				 };
+			 f->create_label(titles[i])->show();
+		 }};
+
+	ntlm.columns=4;
+
+	ntlm.selection_type=LIBCXX_NAMESPACE::w::no_selection_type;
+
+	ntlm.adjustable_column_widths=true;
+	ntlm.table_width=150;
+	ntlm.col_alignments={
+			     {1, LIBCXX_NAMESPACE::w::halign::right},
+			     {2, LIBCXX_NAMESPACE::w::halign::right},
+			     {3, LIBCXX_NAMESPACE::w::halign::right},
+	};
+
+	ntlm.column_borders={
+			     {1, "thin_0%"},
+			     {2, "thin_dashed_0%"},
+			     {3, "thin_dashed_0%"}
+	};
+
+	f->create_focusable_container
+		([]
+		 (const auto &c)
+		 {
+			 LIBCXX_NAMESPACE::w::tablelayoutmanager tlm
+				 {c->get_layoutmanager()};
+
+#define FMT(n) ({					\
+					 std::ostringstream o;		\
+				 o << std::fixed << std::setprecision(3) \
+				   << n;				\
+				 					\
+				 LIBCXX_NAMESPACE::w::text_param{	\
+					 "liberation mono"_font,	\
+						 o.str()};		\
+				 })
+
+#define FMTFL(c) FMT(((c) + 0.0) / LIBCXX_NAMESPACE::w::rgb::maximum)
+
+#define FMTRGB(name) FMTFL(name.r), FMTFL(name.g), FMTFL(name.b)
+#define FMTRGBNS(name) FMTRGB(LIBCXX_NAMESPACE::w::name)
+
+			 tlm->append_items
+				 ({"Black", FMTRGBNS(black),
+				   "Gray", FMTRGBNS(gray),
+				   "Silver", FMTRGBNS(silver),
+				   "White", FMTRGBNS(white),
+				   "Maroon", FMTRGBNS(maroon),
+				   "Red", FMTRGBNS(red),
+				   "Olive", FMTRGBNS(olive),
+				   "Yellow", FMTRGBNS(yellow),
+				   "Green", FMTRGBNS(green),
+				   "Lime", FMTRGBNS(lime),
+				   "Teal", FMTRGBNS(teal),
+				   "Aqua", FMTRGBNS(aqua),
+				   "Navy", FMTRGBNS(navy),
+				   "Blue", FMTRGBNS(blue),
+				   "Fuchsia", FMTRGBNS(fuchsia),
+				   "Purple", FMTRGBNS(purple),
+				 });
+		 },
+		 ntlm)->show();
 }
 
 void cxxwtheme()

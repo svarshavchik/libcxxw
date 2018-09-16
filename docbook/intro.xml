@@ -28,20 +28,20 @@ See COPYING for distribution information.
     <itemizedlist>
       <listitem>
 	<para>
-	  Uses modern C++17 language features:
-	  lambdas handle events like mouse button clicks and other
-	  user activity; overloaded, variadic-parameter methods offering
-	  alternative means of configuring various display elements; and
+	  Uses modern C++17 language features, such as:
+	  lambdas for handling events like mouse button clicks and other
+	  user activity; variant parameter types for providing a compact
+	  API selecting alternative options;
+	  all display elements are reference-counted objects; and
 	  other C++17 features.
 	</para>
       </listitem>
 
       <listitem>
 	<para>
-	  Implements basic, traditional UI elements: labels, text input fields,
-	  lists, combo boxes, menus, and dialogs. The UI elements support
-	  basic theming, including scaling -- adjusting the
-	  scaled size of the UI.
+	  Implements basic, themeable UI elements: labels, text input fields,
+	  lists, combo boxes, menus, and dialogs. The default theme uses
+	  subtle gradients to implement a light 3D effect.
 	</para>
 
 	<para>
@@ -70,21 +70,6 @@ See COPYING for distribution information.
 	  blocks all pointer and keyboard events, but the background thread
 	  continues to update the display elements, and process X events
 	  as needed, all by itself.
-	</para>
-      </listitem>
-
-      <listitem>
-	<para>
-	  All display elements are
-	  &libcxx;'s reference-counted objects (based on smart pointers).
-	  There are no explicit methods
-	  to destroy input fields, buttons, and other display elements.
-	  Each display element is a reference-counted object, with
-	  containers holding references to the elements in the container.
-	  Removing an element from the container results in the last
-	  reference to the object going out of scope, which destroyes it.
-	  This
-	  results in the corresponding display element getting destroyed.
 	</para>
       </listitem>
 
