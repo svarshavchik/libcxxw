@@ -43,7 +43,10 @@ the first one, "Cursor-Up" highlights the previous item in the list, and
 The list layout manager also serves as the underlying layout manager for
 pop-up menus and the list of options for a combo-box; in which case selecting
 a list item results in the action that corresponding to selecting the
-menu item, or the combo-box option item.
+menu item, or the combo-box option item. The
+\ref standard_comboboxlayoutmanager "standard combo-box layout manager"
+overrides many of the methods in order to require, by definition, that only
+text labels can be added to the list.
 
 \code
 #include <INSERT_LIBX_NAMESPACE/w/listlayoutmanager.H>
@@ -233,6 +236,37 @@ for a horizontal line that visually separates groups of items in the list.
 The separator line is considered a list item, gets numbered like all
 other items, and may be removed or replaced, with remove_item(), or
 replace_items().
+
+\par Sorting the list
+
+\code
+std::vector<size_t> index;
+
+l->resort_items(index);
+\endcode
+
+resort_items() reorders the items in the list. The index vector's size must
+match the number of items in the list. The index vector's values must consist
+of strictly increasing values, starting at 0, in some particular order,
+meaning that: for a list of 8 items, the index vector must contain values
+0 through 7.
+
+resort_items() reorders the items in its list as if the index vector gets
+sorted in its natural order, and the corresponding item in the list gets
+repositioned accordingly. For example, when the index vector contains
+the values:
+
+\code
+std::vector<size_t> index={6, 1, 2, 0, 4, 5, 3, 7};
+
+l->resort_items(index);
+\endcode
+
+This ends up moving the first item in the list, item index \#0 to item \#6,
+item \#6 to \#3, and item \#3 to position \#0.
+
+The results are unspecified if the index vector fails to meet the stated
+requirements.
 
 \par Selection callbacks
 

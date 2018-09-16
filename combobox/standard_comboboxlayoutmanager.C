@@ -11,6 +11,8 @@
 #include <x/exception.H>
 #include <x/sentry.H>
 #include <x/visitor.H>
+#include <x/algorithm.H>
+#include <utility>
 #include <courier-unicode.h>
 
 LIBCXXW_NAMESPACE_START
@@ -89,21 +91,22 @@ static std::vector<text_param> to_text_param(const std::vector<list_item_param>
 		std::visit
 			(visitor
 			 {
-				 [&](const text_param &t)
-				 {
-					 ret.push_back(t);
-				 },
-				 [&](const separator &s)
-				 {
-					 ret.push_back({});
-				 },
-				 [](const list_item_status_change_callback &)
-				 {
-				 },
-				 [](const auto &s)
-				 {
-					 throw EXCEPTION(_("This combo-box cannot contain this item."));
-				 }
+			  [&](const text_param &t)
+			  {
+				  ret.push_back(t);
+			  },
+			  [&](const separator &s)
+			  {
+				  ret.push_back({});
+			  },
+			  [](const list_item_status_change_callback &)
+			  {
+			  },
+			  [](const auto &s)
+			  {
+				  throw EXCEPTION(_("This combo-box cannot "
+						    "contain this item."));
+			  }
 			 }, i);
 	return ret;
 }
@@ -271,6 +274,42 @@ void standard_combobox_lock::replace_all_items(ONLY IN_THREAD,
 	s.unguard();
 }
 
+void standard_combobox_lock::resort_items(const std::vector<size_t> &indexes)
+{
+	locked_layoutmanager->resort_items(indexes);
+}
+
+void standard_combobox_lock::resort_items(ONLY IN_THREAD,
+					  const std::vector<size_t> &indexes)
+{
+	// Try to do the right thing when an exception gets thrown.
+
+	auto s=make_sentry
+		([&, this]
+		 {
+			 this->locked_layoutmanager
+				 ->superclass_t::replace_all_items(IN_THREAD,
+								   std::vector<list_item_param>{});
+			 text_items().clear();
+		 });
+
+	auto cpy=indexes;
+
+	s.guard();
+	locked_layoutmanager->superclass_t::resort_items(IN_THREAD, indexes);
+
+	auto &ti=text_items();
+
+	sort_by(cpy,
+		[&]
+		(size_t a, size_t b)
+		{
+			std::swap(ti.at(a), ti.at(b));
+		});
+
+	s.unguard();
+}
+
 bool standard_combobox_lock::search(size_t starting_index,
 				    const std::u32string &text,
 				    size_t &found,
@@ -418,6 +457,14 @@ void standard_comboboxlayoutmanagerObj
 	standard_combobox_lock lock{standard_comboboxlayoutmanager(this)};
 
 	lock.replace_all_items(IN_THREAD, items);
+}
+
+void standard_comboboxlayoutmanagerObj
+::resort_items(ONLY IN_THREAD, const std::vector<size_t> &indexes)
+{
+	standard_combobox_lock lock{standard_comboboxlayoutmanager(this)};
+
+	lock.resort_items(IN_THREAD, indexes);
 }
 
 //////////////////////////////////////////////////////////////////////////////

@@ -74,6 +74,13 @@ public:
 				       const std::vector<list_item_param>
 				       &items);
 
+	//! Resort items.
+	virtual void resort_items(const std::vector<size_t> &indexes);
+
+	//! Resort items.
+	virtual void resort_items(ONLY IN_THREAD,
+				  const std::vector<size_t> &indexes);
+
 	//! Number of items in the list
 
 	size_t size() const;

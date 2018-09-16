@@ -201,6 +201,12 @@ public:
 	void replace_all_items(ONLY IN_THREAD,
 			       const std::vector<list_item_param> &items);
 
+	//! Re-sort the existing items in the combo-box.
+	void resort_items(const std::vector<size_t> &indexes);
+
+	//! Re-sort the existing items in the combo-box.
+	void resort_items(ONLY IN_THREAD, const std::vector<size_t> &indexes);
+
 	//! Combo-box search.
 
 	//! Mostly for internal use.

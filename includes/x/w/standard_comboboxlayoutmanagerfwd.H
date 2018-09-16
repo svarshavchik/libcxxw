@@ -33,6 +33,10 @@ lm->append_items("Item");
 lm->insert_items(0, "Item");
 lm->remove_item(0);
 lm->replace_all({"Lorem","Ipsum"});
+
+std::vector<size_t> index;
+
+lm->resort_items(index);
 \endcode
 
 append_items() inserts a new item to the end of the combo-box's item list.
@@ -42,8 +46,13 @@ remove_item() removes an item.
 replace_all()'s parameter is a vector of text items, which replaces all
 existing items in the combo-box.
 
-Like with the underlying list layout manager, empty text strings create
-horizontal dividers.
+These methods are inherited from the underlying
+\ref listlayoutmanager "list layout manager",
+and the parameters are actually
+\ref list_item_param "list_item_param" variants, however the only permissible
+items in a standard combo-box item are text labels,
+\c INSERT_LIBX_NAMESPACE::w::separator, or a
+list item status change callback.
 
 \code
 size_t n=lm->size();

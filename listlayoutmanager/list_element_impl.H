@@ -333,6 +333,11 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 			      const std::vector<list_cell> &texts,
 			      const std::vector<textlist_rowinfo> &meta);
 
+	//! Resort rows.
+	void resort_rows(ONLY IN_THREAD,
+			 const listlayoutmanager &lm,
+			 std::vector<size_t> &indexes);
+
 	//! Recalculate after a theme update.
 
 	void recalculate_with_new_theme(ONLY IN_THREAD,

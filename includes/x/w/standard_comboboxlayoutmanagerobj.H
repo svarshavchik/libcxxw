@@ -83,6 +83,12 @@ public:
 			       const std::vector<list_item_param> &items)
 		override;
 
+	using superclass_t::resort_items;
+
+	//! Override resort_items().
+	void resort_items(ONLY IN_THREAD,
+			  const std::vector<size_t> &indexes) override;
+
 	//! Return combo-box item.
 	text_param item(size_t i) const;
 

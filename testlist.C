@@ -319,7 +319,7 @@ static mondata processes[]=
 
 #include "testlistoptions.H"
 
-void create_process_table(const LIBCXX_NAMESPACE::w::main_window &mw,
+auto create_process_table(const LIBCXX_NAMESPACE::w::main_window &mw,
 			  const LIBCXX_NAMESPACE::w::screen_positions &pos,
 			  const LIBCXX_NAMESPACE::w::gridfactory &f,
 			  const testlistoptions &options)
@@ -368,7 +368,7 @@ void create_process_table(const LIBCXX_NAMESPACE::w::main_window &mw,
 	if (options.maximum_table_width->isSet())
 		ntlm.maximum_table_width=options.maximum_table_width->value;
 
-	mw->appdata=f->create_focusable_container
+	auto c=f->create_focusable_container
 		([&]
 		 (const LIBCXX_NAMESPACE::w::focusable_container &c)
 		 {
@@ -408,6 +408,10 @@ void create_process_table(const LIBCXX_NAMESPACE::w::main_window &mw,
 			 lm->append_items(items);
 		 },
 		 ntlm);
+
+	mw->appdata=c;
+
+	return c;
 }
 
 void testlist(const testlistoptions &options)
@@ -441,8 +445,8 @@ void testlist(const testlistoptions &options)
 			 factory->halign(LIBCXX_NAMESPACE::w
 					 ::halign::fill);
 			 factory->colspan(2);
-			 create_process_table(main_window, pos,
-					      factory, options);
+			 auto l=create_process_table(main_window, pos,
+						     factory, options);
 
 			 factory=layout->append_row();
 
@@ -464,6 +468,39 @@ void testlist(const testlistoptions &options)
 							      original_scale,
 							      original_options,
 							      true);
+				  });
+			 factory->create_canvas();
+			 factory=layout->append_row();
+
+
+			 b=factory->create_normal_button_with_label("Reorder");
+
+			 b->on_activate
+				 ([l]
+				  (ONLY IN_THREAD,
+				   const auto &trigger,
+				   const auto &busy)
+				  {
+					  LIBCXX_NAMESPACE::w::listlayoutmanager
+						  lm=l->get_layoutmanager();
+
+					  size_t n=lm->size();
+
+					  std::vector<size_t> i;
+
+					  i.resize(n);
+
+					  std::generate(i.begin(), i.end(),
+							[n=0]
+							()
+							mutable
+							{
+								return n++;
+							});
+
+					  std::random_shuffle(i.begin(),
+							      i.end());
+					  lm->resort_items(IN_THREAD, i);
 				  });
 			 factory->create_canvas();
 		 });

@@ -119,6 +119,25 @@ void listlayoutmanagerObj::replace_all_items(ONLY IN_THREAD,
 							     items);
 }
 
+void listlayoutmanagerObj::resort_items(const std::vector<size_t> &indexes)
+{
+	impl->run_as([indexes, me=ref(this)]
+		     (ONLY IN_THREAD)
+		     {
+			     me->resort_items(IN_THREAD, indexes);
+		     });
+}
+
+void listlayoutmanagerObj::resort_items(ONLY IN_THREAD,
+					const std::vector<size_t> &indexes)
+{
+	auto copy=indexes;
+
+	impl->list_element_singleton->impl->resort_rows(IN_THREAD,
+							ref(this),
+							copy);
+}
+
 size_t listlayoutmanagerObj::size() const
 {
 	return impl->list_element_singleton->impl->size();

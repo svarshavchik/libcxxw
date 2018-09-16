@@ -34,6 +34,7 @@
 #include "synchronized_axis_value.H"
 #include "ellipsiscache.H"
 #include <algorithm>
+#include <x/algorithm.H>
 #include <X11/keysym.h>
 
 LIBCXXW_NAMESPACE_START
@@ -500,6 +501,35 @@ void list_elementObj::implObj
 	for (auto &column_widths:lock->column_widths)
 		column_widths.clear();
 	insert_rows(IN_THREAD, lm, ll, 0, texts, meta);
+}
+
+void list_elementObj::implObj
+::resort_rows(ONLY IN_THREAD,
+	      const listlayoutmanager &lm,
+	      std::vector<size_t> &indexes)
+{
+	list_lock ll{lm};
+	listimpl_info_t::lock &lock=ll;
+
+	current_element(lock)={};
+	current_keyed_element(lock)={};
+
+	lock->row_infos.modified=true; // We don't do anything that gets flagged
+	lock->full_redraw_needed=true;
+
+	sort_by(indexes,
+		[&, cells_b=lock->cells.begin()]
+		(size_t a, size_t b)
+		{
+			std::swap(lock->row_infos.at(a),
+				  lock->row_infos.at(b));
+
+			auto ca=cells_b+a*columns;
+			auto cb=cells_b+b*columns;
+
+			std::swap_ranges(ca, ca+columns, cb);
+		});
+
 }
 
 void list_elementObj::implObj::remove_rows(ONLY IN_THREAD,
