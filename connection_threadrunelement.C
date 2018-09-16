@@ -4,6 +4,7 @@
 */
 #include "libcxxw_config.h"
 #include "connection_thread.H"
+#include "generic_window_handler.H"
 #include "x/w/impl/element.H"
 #include "x/w/impl/container.H"
 #include "x/w/impl/layoutmanager.H"
@@ -65,6 +66,28 @@ element_impl connection_threadObj::next_highest_element(element_set_t &s)
 		s.erase(iter);
 
 	return element;
+}
+
+bool connection_threadObj::resize_pending(ONLY IN_THREAD,
+					  const element_impl &e,
+					  int &poll_for)
+{
+	auto &wh=e->get_window_handler();
+
+	if (!wh.resizing(IN_THREAD))
+		return false;
+
+	auto now=tick_clock_t::now();
+
+	if (now >= wh.resizing_timeout(IN_THREAD))
+	{
+		wh.resizing(IN_THREAD)=false;
+		return false;
+	}
+
+	compute_poll_until(now, wh.resizing_timeout(IN_THREAD), poll_for);
+
+	return true;
 }
 
 // Some display element changed their visibility. Invoke

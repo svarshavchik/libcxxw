@@ -97,6 +97,14 @@ class LIBCXX_HIDDEN connection_threadObj
 
 	static element_impl next_lowest_element(element_set_t &s);
 	static element_impl next_highest_element(element_set_t &s);
+
+	//! Check whether the element's window is about to be resized
+
+	//! If so, lowest_sizable_element_first() and
+	//! highest_sizable_element_first() skips this element.
+
+	static bool resize_pending(ONLY IN_THREAD, const element_impl &,
+				   int &poll_for);
  private:
 	//! A list of elements that have requested their visibility to be changed.
 
