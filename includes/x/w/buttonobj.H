@@ -8,17 +8,15 @@
 #include <x/w/buttonfwd.H>
 #include <x/w/containerobj.H>
 #include <x/w/focusableobj.H>
+#include <x/w/factoryfwd.H>
 #include <x/w/hotspot_bgcolorobj.H>
+#include <x/w/singletonlayoutmanagerfwd.H>
 
 LIBCXXW_NAMESPACE_START
 
 //! Button implementation object.
 
 //! \see button
-//!
-//! Internally derived from a container and a focusable object. The button
-//! manages its own internal container. Do not use container methods, they're
-//! for internal use only.
 
 class buttonObj : public containerObj,
 		  public focusableObj,
@@ -46,6 +44,19 @@ public:
 	//! \internal
 
 	focusable_impl get_impl() const override LIBCXX_INTERNAL;
+
+	//! Override get_layout_impl().
+
+	//! Returns the singleton layout manager with the button's content.
+	layout_impl get_layout_impl() const override LIBCXX_HIDDEN;
+
+	//! Soft override of get_layoutmanager().
+
+	singletonlayoutmanager get_layoutmanager();
+
+	//! Soft override of get_layoutmanager().
+
+	const_singletonlayoutmanager get_layoutmanager() const;
 };
 
 LIBCXXW_NAMESPACE_END

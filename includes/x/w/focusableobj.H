@@ -49,6 +49,10 @@ public:
 
 	void set_enabled(bool);
 
+	//! Enable/disable the focusable object.
+
+	void set_enabled(ONLY IN_THREAD, bool);
+
 	//! This focusable should be tabbed to before the other one.
 
 	void get_focus_before(const focusable &other);

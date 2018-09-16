@@ -8,6 +8,7 @@
 #include <x/w/impl/layoutmanager.H>
 #include <x/w/singletonlayoutmanagerobj.H>
 #include <x/mpobj.H>
+#include <deque>
 
 LIBCXXW_NAMESPACE_START
 
@@ -18,7 +19,9 @@ class singletonlayoutmanagerObj::implObj :
 
 	//! The container for the current element, and/or new elements.
 
-	typedef mpobj<element> current_element_t;
+	//! created() pushes new elements at the end. The connection thread
+	//! when it gets around to it will remove the old element.
+	typedef mpobj<std::deque<element>> current_element_t;
 
 	//! The current element.
 
@@ -56,7 +59,16 @@ public:
 	//! Return the existing element.
 
 	element get();
+
+	//! Return the existing element.
+
+	element get(ONLY IN_THREAD);
  private:
+	//! Return list_element's implementation object.
+
+	//! Invoking initialize_if_needed()
+	element get_list_element(ONLY IN_THREAD);
+
 	//! Return list_element's implementation object.
 
 	//! Invoking initialize_if_needed()
@@ -118,6 +130,10 @@ public:
 
 	void process_updated_position(ONLY IN_THREAD,
 				      const rectangle &position) override;
+
+private:
+	void recalculate(ONLY IN_THREAD, const rectangle &,
+			 const element_impl &);
 };
 
 LIBCXXW_NAMESPACE_END

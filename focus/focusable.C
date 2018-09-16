@@ -95,19 +95,20 @@ void focusableObj::set_enabled(bool flag)
 		([me, flag]
 		 (ONLY IN_THREAD)
 		 {
-			 // Enable or disable all real focusables
+			 me->set_enabled(IN_THREAD, flag);
+		 });
+}
 
-			 me->get_impl
-				 ([&]
-				  (const auto &info)
-				  {
-					  for (size_t i=0;
-					       i<info.internal_impl_count;
-					       ++i)
-						  info.impls[i]->set_enabled
-							  (IN_THREAD, flag);
-				  });
-			 });
+void focusableObj::set_enabled(ONLY IN_THREAD, bool flag)
+{
+	// Enable or disable all real focusables
+
+	get_impl([&]
+		 (const auto &info)
+		 {
+			 for (size_t i=0; i<info.internal_impl_count; ++i)
+				 info.impls[i]->set_enabled(IN_THREAD, flag);
+		 });
 }
 
 static auto sanity_check(const focusable_impl &impl1,

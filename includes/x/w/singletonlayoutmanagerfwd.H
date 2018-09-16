@@ -16,6 +16,16 @@ class singletonlayoutmanagerObj;
 
 Shared code for layout managers that have a single child element.
 
+\code
+INSERT_LIBX_NAMESPACE::element e=l->get();
+
+INSERT_LIBX_NAMESPACE::factory f=l->replace();
+\endcode
+
+get() returns the current element. replace() returns an
+\ref factory "element factory". Using the factory to create and show()
+a new display element replaces the contents of the button.
+
 */
 
 typedef ref<singletonlayoutmanagerObj> singletonlayoutmanager;

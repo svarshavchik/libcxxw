@@ -57,7 +57,7 @@ factory singletonlayoutmanagerObj::replace()
 		::create(singletonlayoutmanager(this));
 }
 
-elementptr singletonlayoutmanagerObj::get() const
+element singletonlayoutmanagerObj::get() const
 {
 	return impl->get();
 }

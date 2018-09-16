@@ -25,6 +25,17 @@ class buttonObj;
 //!
 //! on_activate() installs a callback that gets invoked by clicking on the
 //! button.
+//!
+//! \code
+//! #include <INSERT_LIBX_NAMESPACE/w/singletonlayoutmanager.H>
+//!
+//! INSERT_LIBX_NAMESPACE::w::singletonlayoutmanager l=button->get_layoutmanager();
+//! \endcode
+//!
+//! get_layoutmanager() returns the
+//! \ref singletonlayoutmanager "singleton layout manager"
+//! for accessing or replacing
+//! the button's contents.
 
 typedef ref<buttonObj> button;
 

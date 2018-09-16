@@ -68,7 +68,7 @@ typedef factoryObj::factory_creator_t factory_creator_t;
 //
 // A created implementation object.
 //
-// button border: normal or special.
+// button colors.
 //
 // Factory for creating the contents of the button.
 
@@ -312,6 +312,32 @@ factoryObj::create_button_with_label(const border_arg &theme_border,
 			  f->create_label(text, config)->show();
 		  }),
 		 shortcut_key);
+}
+
+layout_impl buttonObj::get_layout_impl() const
+{
+	layout_implptr l;
+
+	containerObj::impl->invoke_layoutmanager
+		([&]
+		 (const ref<singletonlayoutmanagerObj::implObj> &border)
+		 {
+			 container focusframe=border->get();
+
+			 l=focusframe->get_layout_impl();
+		 });
+
+	return l;
+}
+
+singletonlayoutmanager buttonObj::get_layoutmanager()
+{
+	return containerObj::get_layoutmanager();
+}
+
+const_singletonlayoutmanager buttonObj::get_layoutmanager() const
+{
+	return containerObj::get_layoutmanager();
 }
 
 LIBCXXW_NAMESPACE_END

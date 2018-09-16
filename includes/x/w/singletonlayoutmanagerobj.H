@@ -31,7 +31,7 @@ public:
 	~singletonlayoutmanagerObj() LIBCXX_HIDDEN;
 
 	//! Return the current element
-	elementptr get() const;
+	element get() const;
 
 	//! Return a factory for replacing the singleton element.
 

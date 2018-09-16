@@ -9,6 +9,8 @@
 #include <x/destroy_callback.H>
 #include <x/ref.H>
 #include <x/obj.H>
+#include <x/weakcapture.H>
+#include <x/threads/run.H>
 
 #include "x/w/main_window.H"
 #include "x/w/gridlayoutmanager.H"
@@ -22,9 +24,11 @@
 #include "x/w/focusable_label.H"
 #include "x/w/input_field_lock.H"
 #include "x/w/shortcut.H"
+#include "x/w/singletonlayoutmanager.H"
 #include <string>
 #include <iostream>
-
+#include <algorithm>
+#include <utility>
 #include "testcombobox.inc.H"
 
 using namespace LIBCXX_NAMESPACE;
@@ -138,6 +142,51 @@ focusable_container create_standard_combobox(const factory &f)
 	return create_combobox(f, sc);
 }
 
+static void do_resort(ONLY IN_THREAD,
+		      const focusable_container &combobox,
+		      const button &b)
+{
+	b->set_enabled(IN_THREAD, false);
+	x::run_lambda
+		([=]
+		 {
+			 for (int i=5; i>0; --i)
+			 {
+				 std::ostringstream o;
+
+				 o << "Resort in " << i << "...";
+
+				 b->get_layoutmanager()->replace()
+					 ->create_label(o.str())->show();
+
+				 sleep(1);
+			 }
+
+			 b->get_layoutmanager()->replace()
+				 ->create_label("Resort")->show();
+
+			 b->set_enabled(true);
+
+			 LIBCXX_NAMESPACE::w::listlayoutmanager lm=
+				 combobox->get_layoutmanager();
+
+			 std::vector<size_t> n;
+
+			 n.resize(lm->size());
+
+			 std::generate(n.begin(), n.end(),
+				       [n=0]
+				       ()
+				       mutable
+				       {
+					       return n++;
+				       });
+
+			 std::random_shuffle(n.begin(), n.end());
+
+			 lm->resort_items(n);
+		 });
+}
 
 void testcombobox(const testcombobox_options &options)
 {
@@ -151,9 +200,10 @@ void testcombobox(const testcombobox_options &options)
 		([&]
 		 (const auto &main_window)
 		 {
-			 gridlayoutmanager layout{
-				 main_window->get_layoutmanager()
-			 };
+			 gridlayoutmanager layout
+				 {
+				  main_window->get_layoutmanager()
+				 };
 
 			 auto factory=layout->append_row();
 
@@ -165,71 +215,117 @@ void testcombobox(const testcombobox_options &options)
 			 factory=layout->append_row();
 
 			 factory->halign(halign::fill)
-			 .create_normal_button_with_label({"Append"},{"Alt", 'A'})
-			 ->on_activate([combobox, i=0](THREAD_CALLBACK,
-						       const auto &,
-						       const auto &) mutable {
-					 standard_comboboxlayoutmanager lm=
-						 combobox->get_layoutmanager();
+				 .create_normal_button_with_label
+				 ({"Append"},{"Alt", 'A'})
+				 ->on_activate
+				 ([combobox, i=0](THREAD_CALLBACK,
+						  const auto &,
+						  const auto &)
+				  mutable
+				  {
+					  standard_comboboxlayoutmanager lm=
+						  combobox->get_layoutmanager();
 
-					 lm->append_items({moretext[i]});
+					  lm->append_items({moretext[i]});
 
-					 i=(i+1) % (sizeof(moretext)/
-						    sizeof(moretext[0]));
-					 std::cout << "Appended" << std::endl;
-				 });
+					  i=(i+1) % (sizeof(moretext)/
+						     sizeof(moretext[0]));
+					  std::cout << "Appended" << std::endl;
+				  });
 
 			 factory=layout->append_row();
 
 			 factory->halign(halign::fill)
-			 .create_normal_button_with_label("Delete")
-			 ->on_activate([combobox](THREAD_CALLBACK,
-						  const auto &, const auto &) {
-					 standard_comboboxlayoutmanager lm=
-						 combobox->get_layoutmanager();
+				 .create_normal_button_with_label("Delete")
+				 ->on_activate
+				 ([combobox](THREAD_CALLBACK,
+					     const auto &,
+					     const auto &)
+				  {
+					  standard_comboboxlayoutmanager lm=
+						  combobox->get_layoutmanager();
 
-					 if (lm->size() == 0)
-						 return;
+					  if (lm->size() == 0)
+						  return;
 
-					 lm->remove_item(0);
-				 });
-
-			 factory=layout->append_row();
-
-			 factory->halign(halign::center)
-			 .create_normal_button_with_label({"Append Separator"})
-			 ->on_activate([combobox](THREAD_CALLBACK,
-						  const auto &, const auto &) {
-					 standard_comboboxlayoutmanager lm=
-						 combobox->get_layoutmanager();
-
-					 lm->append_items({LIBCXX_NAMESPACE::w::separator{}});
-				 });
+					  lm->remove_item(0);
+				  });
 
 			 factory=layout->append_row();
 
 			 factory->halign(halign::center)
-			 .create_normal_button_with_label({"Insert Separator"})
-			 ->on_activate([combobox](THREAD_CALLBACK,
-						  const auto &, const auto &) {
-					 standard_comboboxlayoutmanager lm=
-						 combobox->get_layoutmanager();
+				 .create_normal_button_with_label
+				 ({"Append Separator"})
+				 ->on_activate
+				 ([combobox](THREAD_CALLBACK,
+					     const auto &, const auto &)
+				  {
+					  standard_comboboxlayoutmanager lm=
+						  combobox->get_layoutmanager();
 
-					 lm->insert_items(0, {LIBCXX_NAMESPACE::w::separator{}});
-				 });
+					  lm->append_items
+						  (
+						   {LIBCXX_NAMESPACE::w::
+								   separator{}
+						   });
+				  });
 
 			 factory=layout->append_row();
 
 			 factory->halign(halign::center)
-			 .create_normal_button_with_label({"Disable/Enable 1st item"})
-			 ->on_activate([combobox](THREAD_CALLBACK,
-						  const auto &, const auto &) {
-					 standard_comboboxlayoutmanager lm=
-						 combobox->get_layoutmanager();
+				 .create_normal_button_with_label
+				 ({"Insert Separator"})
+				 ->on_activate
+				 ([combobox](THREAD_CALLBACK,
+					     const auto &,
+					     const auto &)
+				  {
+					  standard_comboboxlayoutmanager lm=
+						  combobox->get_layoutmanager();
 
-					 lm->enabled(0, !lm->enabled(0));
-				 });
+					  lm->insert_items
+						  (0,
+						   {LIBCXX_NAMESPACE::w
+								   ::separator{}
+						   });
+				  });
 
+			 factory=layout->append_row();
+
+			 factory->halign(halign::center)
+				 .create_normal_button_with_label
+				 ({"Disable/Enable 1st item"})
+				 ->on_activate
+				 ([combobox](THREAD_CALLBACK,
+					     const auto &, const auto &) {
+					  standard_comboboxlayoutmanager lm=
+						  combobox->get_layoutmanager();
+
+					  lm->enabled(0, !lm->enabled(0));
+				  });
+
+			 factory=layout->append_row();
+
+			 auto resort=factory->halign(halign::center)
+				 .create_normal_button_with_label
+				 ({"Resort"});
+
+			 resort->on_activate
+				 ([combobox,
+				   resort=make_weak_capture(resort)]
+				  (ONLY IN_THREAD,
+				   const auto &, const auto &)
+				  {
+					  auto got=resort.get();
+
+					  if (!got)
+						  return;
+
+					  auto &[resort]=*got;
+
+					  do_resort(IN_THREAD,
+						    combobox, resort);
+				  });
 		 },
 		 LIBCXX_NAMESPACE::w::new_gridlayoutmanager{});
 

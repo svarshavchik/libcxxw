@@ -18,7 +18,7 @@ singletonlayoutmanagerObj::implObj
 	  halign element_halign,
 	  valign element_valign)
 	: layoutmanagerObj::implObj{container_impl},
-	  current_element{initial_element},
+	  current_element{1, initial_element},
 	  element_halign{element_halign},
 	  element_valign{element_valign}
 {
@@ -40,11 +40,7 @@ void singletonlayoutmanagerObj::implObj
 ::do_for_each_child(ONLY IN_THREAD,
 		    const function<void (const element &e)> &callback)
 {
-	auto c=current_element.get();
-
-	c->impl->initialize_if_needed(IN_THREAD);
-
-	callback(c);
+	callback(get_list_element(IN_THREAD));
 }
 
 size_t singletonlayoutmanagerObj::implObj::num_children(ONLY IN_THREAD)
@@ -54,9 +50,7 @@ size_t singletonlayoutmanagerObj::implObj::num_children(ONLY IN_THREAD)
 
 void singletonlayoutmanagerObj::implObj::initialize(ONLY IN_THREAD)
 {
-	auto c=current_element.get();
-
-	c->impl->initialize_if_needed(IN_THREAD);
+	(void)get_list_element(IN_THREAD);
 
 	layoutmanagerObj::implObj::initialize(IN_THREAD);
 	needs_recalculation(IN_THREAD);
@@ -85,20 +79,51 @@ dim_t singletonlayoutmanagerObj::implObj::get_bottom_padding(ONLY IN_THREAD)
 
 void singletonlayoutmanagerObj::implObj::created(const element &e)
 {
-	current_element=e;
+	current_element_t::lock lock{current_element};
+
+	lock->push_back(e);
 }
 
 element singletonlayoutmanagerObj::implObj::get()
 {
-	return current_element.get();
+	current_element_t::lock lock{current_element};
+
+	return lock->at(0);
 }
 
 element_impl singletonlayoutmanagerObj::implObj
 ::get_list_element_impl(ONLY IN_THREAD)
 {
-	auto e=get();
+	return get_list_element(IN_THREAD)->impl;
+}
 
-	return e->impl;
+element singletonlayoutmanagerObj::implObj::get_list_element(ONLY IN_THREAD)
+{
+	while (1)
+	{
+		// We cannot hold a lock while invoking element callbacks.
+
+		auto [e, n]=({
+
+				current_element_t::lock lock{current_element};
+
+				auto e=lock->at(0);
+
+				size_t n=lock->size();
+
+				if (n > 1)
+					lock->pop_front();
+
+				std::tuple{e, n};
+			});
+
+		e->impl->initialize_if_needed(IN_THREAD);
+
+		if (n == 1)
+			return e;
+
+		e->impl->removed_from_container(IN_THREAD);
+	}
 }
 
 void singletonlayoutmanagerObj::implObj
@@ -130,6 +155,12 @@ void singletonlayoutmanagerObj::implObj::recalculate(ONLY IN_THREAD)
 	vert=child_horizvert->vert + vert;
 
 	update_metrics(IN_THREAD, horiz, vert);
+
+	// We can get here after a new element was create()d. We need to
+	// position this element.
+
+	recalculate(IN_THREAD, get_element_impl().data(IN_THREAD)
+		    .current_position, list_impl);
 }
 
 void singletonlayoutmanagerObj::implObj
@@ -148,12 +179,19 @@ void singletonlayoutmanagerObj::implObj
 ::process_updated_position(ONLY IN_THREAD,
 			   const rectangle &position)
 {
+	auto lei=get_list_element_impl(IN_THREAD);
+
+	recalculate(IN_THREAD, position, get_list_element_impl(IN_THREAD));
+}
+
+void singletonlayoutmanagerObj::implObj::recalculate(ONLY IN_THREAD,
+						     const rectangle &position,
+						     const element_impl &lei)
+{
 	// If our own width/height is 0, don't bother updating the element's
 	// position. This is used by the page layout manager to hide us.
 	if (position.width == 0 || position.height == 0)
 		return;
-
-	auto lei=get_list_element_impl(IN_THREAD);
 
 	auto lp=get_left_padding(IN_THREAD);
 	auto tp=get_top_padding(IN_THREAD);
