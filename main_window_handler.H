@@ -83,6 +83,14 @@ class LIBCXX_HIDDEN main_windowObj::handlerObj :
 
 	void update_size_hints(ONLY IN_THREAD);
 
+	//! Override update_resizing_timeout().
+
+	//! Until the first time this main_window gets shown, we need to
+	//! override our defaults assumption as to whether the window manager
+	//! will resize us. It doesn't pay attention until it's time to
+	//! show us.
+	void update_resizing_timeout(ONLY IN_THREAD) override;
+
  private:
 	//! Recommended screen position for this window.
 

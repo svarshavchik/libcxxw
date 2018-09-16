@@ -143,6 +143,36 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 	mutable mpobj<rectangle> current_position;
 
+ private:
+	//! Whether we expect the window manager to resize us, shortly.
+
+	//! update_resizing_timeout() sets this flag if it believes that
+	//! we will be resized soon.
+	bool resizing_thread_only=false;
+
+	//! When we give up the hope of the window manager resizing us.
+
+	//! update_resizing_timeout() sets this when it determines that
+	//! the window manager should resize us soon.
+	tick_clock_t::time_point resizing_timeout_thread_only;
+ public:
+	THREAD_DATA_ONLY(resizing);
+	THREAD_DATA_ONLY(resizing_timeout);
+
+	//! Determine whether we expect to be resized by the window manager.
+
+	//! If our current size is outside of our minimum or maximum size we
+	//! expect our window manager to resize it. Set the resizing flag
+	//! if that's the case, and compute the resizing_timeout.
+	//!
+	//! resize_pending() returns true if resizing, but if resizing_timeout
+	//! is reached the resizing flag gets cleared, we gave up hope.
+	//! We postpone some processing pending resizing by the window manager,
+	//! in order to save some work that gets mooted by the resize, so if
+	//! the respected resize does not come we will proceed and do what we
+	//! wanted.
+	virtual void update_resizing_timeout(ONLY IN_THREAD);
+
 	//! Keep track of opened popups and shortcuts.
 
 	const shared_handler_data handler_data;

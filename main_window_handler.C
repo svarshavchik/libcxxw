@@ -295,6 +295,17 @@ xcb_size_hints_t main_windowObj::handlerObj::compute_size_hints(ONLY IN_THREAD)
 	return hints;
 }
 
+void main_windowObj::handlerObj::update_resizing_timeout(ONLY IN_THREAD)
+{
+	if (!preferred_dimensions_set(IN_THREAD))
+	{
+		resizing(IN_THREAD)=false;
+		return;
+	}
+
+	superclass_t::update_resizing_timeout(IN_THREAD);
+}
+
 void main_windowObj::handlerObj::request_visibility(ONLY IN_THREAD,
 						    bool flag)
 {
@@ -364,6 +375,7 @@ void main_windowObj::handlerObj::request_visibility(ONLY IN_THREAD,
 
 			 me->configure_notify_received(IN_THREAD, r);
 			 me->process_configure_notify(IN_THREAD);
+			 me->update_resizing_timeout(IN_THREAD);
 
 			 // Ok, need to wait for the reconfiguration to shake
 			 // itself out too, so schedule another job to finally

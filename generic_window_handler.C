@@ -52,6 +52,9 @@ static property::value<bool> disable_grabs(LIBCXX_NAMESPACE_STR
 static property::value<unsigned> double_click(LIBCXX_NAMESPACE_STR
 					      "::w::double_click", 1000);
 
+static property::value<unsigned> resize_timeout(LIBCXX_NAMESPACE_STR
+						"::w::resize_timeout", 1000);
+
 static rectangle element_position(const rectangle &r)
 {
 	auto cpy=r;
@@ -1309,6 +1312,8 @@ void generic_windowObj::handlerObj::process_configure_notify(ONLY IN_THREAD)
 	// If the relative position changed, send out the notifications.
 	update_current_position(IN_THREAD, new_position);
 
+	update_resizing_timeout(IN_THREAD);
+
 	// If the absolute location changed, do that too. We can't rely
 	// on update_current_position() doing the job. If something wanted
 	// to know when its absolute location has changed, it's possible
@@ -1328,6 +1333,8 @@ void generic_windowObj::handlerObj::current_position_updated(ONLY IN_THREAD)
 
 void generic_windowObj::handlerObj::horizvert_updated(ONLY IN_THREAD)
 {
+	update_resizing_timeout(IN_THREAD);
+
 	if (data(IN_THREAD).metrics_update_callback)
 		try {
 			auto hv=get_horizvert(IN_THREAD);
@@ -1335,6 +1342,30 @@ void generic_windowObj::handlerObj::horizvert_updated(ONLY IN_THREAD)
 			data(IN_THREAD).metrics_update_callback
 				(IN_THREAD, hv->horiz, hv->vert);
 		} REPORT_EXCEPTIONS(this);
+}
+
+void generic_windowObj::handlerObj::update_resizing_timeout(ONLY IN_THREAD)
+{
+	const auto &pos=data(IN_THREAD).current_position;
+	auto hv=get_horizvert(IN_THREAD);
+
+	bool flag=(pos.width < hv->horiz.minimum()) ||
+		(pos.width > hv->horiz.maximum()) ||
+		(pos.height < hv->vert.minimum()) ||
+		(pos.height > hv->vert.maximum());
+
+	if (flag == resizing(IN_THREAD))
+		return;
+
+	resizing(IN_THREAD)=flag;
+
+	if (flag)
+	{
+		resizing_timeout(IN_THREAD)=
+			tick_clock_t::now()+
+			std::chrono::duration_cast<tick_clock_t::duration>
+			(std::chrono::milliseconds(resize_timeout.get()));
+	}
 }
 
 bool generic_windowObj::handlerObj::process_key_event(ONLY IN_THREAD,
