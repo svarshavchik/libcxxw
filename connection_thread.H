@@ -97,6 +97,67 @@ class LIBCXX_HIDDEN connection_threadObj
 
 	static element_impl next_lowest_element(element_set_t &s);
 	static element_impl next_highest_element(element_set_t &s);
+ private:
+
+	//! Invoke a closure for each element in a set, lowest to highest.
+
+	//! Invokes the closure for each element starting with the elements
+	//! with the highest nesting_level (highest nesting_level means
+	//! elements that do not contain any other elements in the set).
+	//!
+	//! Skips any elements whose window is resize_pending (updating the
+	//! poll_for accordingly).
+
+	template<typename functor>
+		static inline
+		void lowest_sizable_elements_first(ONLY IN_THREAD,
+						   element_set_t &s,
+						   int &poll_for,
+						   functor &&f)
+	{
+		do_lowest_sizable_element_first(IN_THREAD, s, poll_for,
+						make_function
+						<void (const element_impl &)>
+						(f));
+	}
+
+	//! Invoke a closure for each element in a set, highest to lowest.
+
+	//! Invokes the closure for each element starting with the elements
+	//! with the lowest nesting_level (lowest nesting_level means
+	//! elements that are the most top-level elements).
+	//!
+	//! Skips any elements whose window is resize_pending (updating the
+	//! poll_for accordingly).
+
+	template<typename functor>
+		static inline
+		void highest_sizable_elements_first(ONLY IN_THREAD,
+						    element_set_t &s,
+						    int &poll_for,
+						    functor &&f)
+	{
+		do_highest_sizable_element_first(IN_THREAD, s, poll_for,
+						 make_function
+						 <void (const element_impl &)>
+						 (f));
+	}
+
+	//! Type-erased lowest_sizable_element_first().
+
+	static void do_lowest_sizable_element_first
+		(ONLY IN_THREAD,
+		 element_set_t &s,
+		 int &poll_for,
+		 const function<void (const element_impl &)> &f);
+
+	//! Type-erased highest_sizable_element_first().
+
+	static void do_highest_sizable_element_first
+		(ONLY IN_THREAD,
+		 element_set_t &s,
+		 int &poll_for,
+		 const function<void (const element_impl &)> &f);
 
 	//! Check whether the element's window is about to be resized
 
@@ -105,7 +166,7 @@ class LIBCXX_HIDDEN connection_threadObj
 
 	static bool resize_pending(ONLY IN_THREAD, const element_impl &,
 				   int &poll_for);
- private:
+
 	//! A list of elements that have requested their visibility to be changed.
 
 	element_set_t *visibility_updated_thread_only;

@@ -90,6 +90,88 @@ bool connection_threadObj::resize_pending(ONLY IN_THREAD,
 	return true;
 }
 
+void connection_threadObj
+::do_lowest_sizable_element_first(ONLY IN_THREAD,
+				  element_set_t &s,
+				  int &poll_for,
+				  const function<void (const element_impl &)>
+				  &f)
+{
+	// Start at the end of the nesting level map, work our way up.
+
+	auto iter=s.end();
+
+	while (iter != s.begin())
+	{
+		--iter;
+
+		auto &last_set=iter->second;
+
+		// Work our way through all elements at this nesting level.
+
+		auto b=last_set.begin(), e=last_set.end();
+
+		while (b != e)
+		{
+			auto element=*b;
+
+			if (resize_pending(IN_THREAD, element, poll_for))
+			{
+				++b;
+				continue;
+			}
+
+			b=last_set.erase(b);
+
+			f(element);
+		}
+
+		if (last_set.empty())
+			iter=s.erase(iter);
+	}
+}
+
+void connection_threadObj
+::do_highest_sizable_element_first(ONLY IN_THREAD,
+				   element_set_t &s,
+				   int &poll_for,
+				   const function<void (const element_impl &)>
+				   &f)
+{
+	// Start at the end of the nesting level map, work our way up.
+
+	auto iter=s.begin();
+
+	while (iter != s.end())
+	{
+		auto &first_set=iter->second;
+
+		auto p=iter++;
+
+		// Work our way through all elements at this nesting level.
+
+		auto b=first_set.begin(), e=first_set.end();
+
+		while (b != e)
+		{
+			auto element=*b;
+
+			if (resize_pending(IN_THREAD, element, poll_for))
+			{
+				++b;
+				continue;
+			}
+
+			b=first_set.erase(b);
+
+			f(element);
+		}
+
+		if (first_set.empty())
+			s.erase(p);
+	}
+}
+
 // Some display element changed their visibility. Invoke
 // their update_visibility() methods.
 
