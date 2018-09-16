@@ -44,6 +44,7 @@
 <!ENTITY booklayoutmanager SYSTEM "booklayoutmanager.xml">
 <!ENTITY panelayoutmanager SYSTEM "panelayoutmanager.xml">
 <!ENTITY list SYSTEM "list.xml">
+<!ENTITY table SYSTEM "table.xml">
 <!ENTITY combobox SYSTEM "combobox.xml">
 <!ENTITY menu SYSTEM "menu.xml">
 <!ENTITY popupmenu SYSTEM "popupmenu.xml">
@@ -105,6 +106,7 @@ See COPYING for distribution information.
     &pagelayoutmanager;
     &booklayoutmanager;
     &list;
+    &table;
     &combobox;
     &menu;
     &popupmenu;

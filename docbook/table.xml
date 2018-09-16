@@ -1,0 +1,253 @@
+<!--
+
+Copyright 2018 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<chapter id="tables">
+  <title>Tables</title>
+
+  <mediaobject>
+    <imageobject>
+      <imagedata fileref="table.png" format="PNG"
+		 contentwidth="659px" contentdepth="153px" />
+    </imageobject>
+    <textobject>
+      <phrase>
+	Using the table with the table layout manager.
+      </phrase>
+    </textobject>
+    <caption>
+      <para>
+	A table is a list with a header row. Tables are derived from lists,
+	and inherit list functions.
+      </para>
+    </caption>
+  </mediaobject>
+
+  <blockquote>
+    <title><ulink url="examples/table.C">table.C</ulink></title>
+
+    <informalexample>
+      <programlisting><xi:include href="../examples/table.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <section id="tablelayoutmanager">
+    <title>Creating a table layout manager</title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+#include &lt;&ns;/w/focusable_container.H&gt;
+#include &lt;&ns;/w/tablelayoutmanager.H&gt;
+
+&ns;::w::new_tablelayoutmanager new_table{
+    []
+    (const x::w::factory &amp;f, size_t i)
+    {
+          // ...
+    }};
+
+new_table.columns=2;
+
+&ns;::w::focusable_container list=f->create_focusable_container(
+       []
+       (const &ns;::w::focusable_container &amp;c)
+       {
+            &ns;::w::tablelayoutmanager tbl=c->get_layoutmanager();
+       },
+       new_table);
+
+&ns;::w::tablelayoutmanager tblmanager=list->get_layoutmanager();</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      Passing a
+      <ulink url="&link-x--w--new-tablelayoutmanager;"><classname>&ns;::w::new_tablelayoutmanager</classname></ulink>
+      to a &factory;'s <methodname>create_focusable_container</methodname>()
+      creates a table. The resulting &container; returned by
+      <methodname>create_focusable_container</methodname>(), and passed
+      as a parameter to its &creator;, uses the
+      <ulink url="&link-typedef-x--w-tablelayoutmanager;"><classname>&ns;::w::tablelayoutmanager</classname></ulink>.
+    </para>
+
+    <para>
+      <classname>&ns;::w::new_tablelayoutmanager</classname> is derived from
+      a <link linkend="list"><classname>&ns;::w::new_listlayoutmanager</classname></link>,
+      and a
+      <classname>&ns;::w::tablelayoutmanager</classname> is derived from
+      a <classname>&ns;::w::listlayoutmanager</classname>. A table is a list
+      with a header row.
+      The required parameter to
+      <classname>&ns;::w::new_tablelayoutmanager</classname>'s constructor
+      is a &creator; for the list's header.
+      <methodname>create_focusable_container</methodname> calls this closure
+      to create the header for each column. The passed in &factory; must
+      be used to create and <methodname>show</methodname>() the header for
+      each column. The second parameter specifies the column number.
+    </para>
+  </section>
+
+  <section id="adjustabletables">
+    <title>Adjustable tables</title>
+
+    <mediaobject>
+      <imageobject>
+	<imagedata fileref="table2.png" format="PNG"
+		   contentwidth="876px" contentdepth="153px" />
+      </imageobject>
+      <textobject>
+	<phrase>
+	  Adjustable tables.
+	</phrase>
+      </textobject>
+      <caption>
+	<para>
+	  Tables' default width gets computed based on the width of the
+	  tables' items. An optional table setting enables adjustable
+	  tables. Adjustable tables allow their width to expand, and their
+	  individual columns' relative width to be manually adjusted using
+	  the mouse pointer.
+	</para>
+      </caption>
+    </mediaobject>
+
+    <para>
+      <ulink url="examples/table.C">table2.C</ulink> is a modified version
+      of the example from this chapter that enables adjustable table features:
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+ntlm.adjustable_column_widths=true;
+ntlm.table_width=200;
+ntlm.maximum_table_width=500;</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      Setting <ulink url="&link-x--w--new-tablelayoutmanager;"><classname>&ns;::w::new_tablelayoutmanager</classname></ulink>'s
+      <varname>adjustable_column_widths</varname> to
+      <literal>true</literal>
+      enables adjusting of the table's columns' widths.
+      Moving the mouse pointer on top of a dividing border
+      <emphasis>in the header row</emphasis> changes the pointer to
+      a bi-directional horizontal arrow. Pressing pointer button #1 drags
+      the border under the pointer horizontally and adjusts the relative
+      widths of the columns on both sides of the border.
+    </para>
+
+    <para>
+      Setting <varname>table_width</varname> and
+      <varname>maximum_table_width</varname> specifies the initial and the
+      maximum width of the table, in millimeters.
+      <filename>table2.C</filename>'s window's width is expandable, this
+      adjusts the size of its table until its table reaches its maximum
+      width.
+      Calling <methodname>unlimited_table_width</methodname>() removes the
+      maximum limit for the table's width, completely.
+    </para>
+
+    <note>
+      <para>
+	Other display elements in the same window affect the table's actual
+	and maximum widths. The main window's grid layout manager
+	(or the table's container's layout manager) has to calculate the
+	other window elements' metrics. Unless the other display elements
+	in the window can be sized accordingly, the table may not end up
+	being sizable to its maximum width.
+      </para>
+    </note>
+
+    <section id="preservetablecolumnwidths">
+      <title>Preserving table columns' widths</title>
+
+      <para>
+	It's natural to expect that reopening an application preserves a
+	table's appearance, and
+	<xref linkend="screen_positions" /> describes how to preserve the
+	position and the size of the main application window. But this
+	only preserves size and the position of the main window itself.
+	Any adjustments to a table's columns' width does not get preserved,
+	and the reopened table's columns' widths get reset to their defaults.
+      </para>
+
+      <para>
+	<ulink url="examples/table.C">table2.C</ulink> shows what additional
+	steps are necessary for taking care of this last detail:
+      </para>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting>
+main_window->save("main", pos);
+
+my_appdata appdata=main_window->appdata;
+
+&ns;::w::tablelayoutmanager tlm=appdata->main_table->get_layoutmanager();
+
+tlm->save("main_table", pos);
+
+pos.save(configfile);</programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	A necessary prerequisite for preserving table column widths is that
+	the table's main application window's size also has to be preserved;
+	so <filename>table2.C</filename> <methodname>save</methodname>()s
+	its main window's size (and position), first, just like the
+	<link linkend="wordwraplabel">word wrap label example</link>.
+      </para>
+
+      <para>
+	The table layout manager's <methodname>save</methodname>() takes the
+	table's column widths and puts it into the
+	<ulink url="&link-x--w--screen-positions;"><classname>&ns;::w::screen_positions</classname></ulink>
+	object together with the window's size and position, before
+	<classname>&ns;::w::screen_positions</classname>'s
+	<methodname>save</methodname>() saves all of its contents into the
+	application's configuration file.
+      </para>
+
+      <para>
+	It is necessary to use a unique identifier for
+	each table's (across all windows) saved information.
+	<filename>table2.C</filename> calls its sole table, unimaginatively,
+	<quote>main_table</quote>.
+      </para>
+
+      <blockquote>
+	<informalexample>
+	  <programlisting>
+ntlm.restore(saved_positions, "main_table");</programlisting>
+	</informalexample>
+      </blockquote>
+
+      <para>
+	<filename>table2.C</filename> reads the
+	<varname>saved_positions</varname> from its configuration file,
+	the next time it runs, and restores its main window's position and
+	size, first.
+	Then
+	<classname>&ns;::w::new_tablelayoutmanager</classname>'s
+	<methodname>restore()</methodname> reads the saved column widths
+	called <quote>main_table</quote>, which coincidently references the
+	previous column widths of this new table.
+	If everything goes according to plan,
+	<filename>table2.C</filename>'s window and table reappear just as
+	it was the last time it ran.
+      </para>
+    </section>
+  </section>
+</chapter>
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "book" "chapter")
+End:
+-->

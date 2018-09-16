@@ -175,11 +175,12 @@ pos->save(configfile);</programlisting>
       <ulink url="&link-typedef-x--w-main-window;"><classname>&ns;::w::main_window</classname></ulink>'s
       <methodname>save</methodname>() gets called before
       the program ends. This records the window's last known position on
-      the screening an
+      the screen in the
       <ulink url="&link-x--w--screen-positions;"><classname>&ns;::w::screen_positions</classname></ulink>.
-      More than one window's position may be recorded, and each position
-      is identified by a unique label. The application may put more than one
-      window's position in the container, using a unique identifier for each
+      More than one window's position may be recorded, and a unique label
+      association each position with its window. The application may put more
+      than one
+      window's position in the container, by using a unique identifier for each
       window.
       <ulink url="&link-x--w--screen-positions;"><classname>&ns;::w::screen_positions</classname></ulink>'s
       <methodname>save</methodname>() saves all positions
@@ -231,6 +232,14 @@ auto main_window=
 	on the screen.
       </para>
     </note>
+
+    <para>
+      Some display elements also use a
+      <ulink url="&link-x--w--screen-positions;"><classname>&ns;::w::screen_positions</classname></ulink>
+      to save and restore their appearance.
+      See <xref linkend="preservetablecolumnwidths" />
+      for an example.
+    </para>
   </section>
 </chapter>
 <!--

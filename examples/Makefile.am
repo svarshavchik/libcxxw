@@ -28,6 +28,8 @@ noinst_PROGRAMS=\
 	scrollbar				\
 	singleton				\
 	spininput				\
+	table					\
+	table2				        \
 	validatedinput				\
 	wordwraplabel
 
@@ -123,6 +125,12 @@ singleton_LDADD=-lcxxw -lcxx
 $(call OPTIONS_GEN,spininput.H,spininput.xml)
 spininput_SOURCES=spininput.C close_flag.H
 spininput_LDADD=-lcxxw -lcxx
+
+table_SOURCES=table.C close_flag.H
+table_LDADD=-lcxxw -lcxx
+
+table2_SOURCES=table2.C close_flag.H
+table2_LDADD=-lcxxw -lcxx
 
 validatedinput_SOURCES=validatedinput.C close_flag.H
 validatedinput_LDADD=-lcxxw -lcxx
