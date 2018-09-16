@@ -246,13 +246,9 @@ void window_handlerObj::timeout_selection_request(ONLY IN_THREAD, int &poll_for)
 		return;
 	}
 
-	auto expiration=
-		connection_threadObj::compute_poll_until
+	connection_threadObj::compute_poll_until
 		(now,
-		 *selection_request_expiration(IN_THREAD));
-
-	if (poll_for < 0 || expiration < poll_for)
-		poll_for=expiration;
+		 *selection_request_expiration(IN_THREAD), poll_for);
 }
 
 

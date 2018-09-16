@@ -225,7 +225,7 @@ bool connection_threadObj::invoke_scheduled_callbacks(ONLY IN_THREAD,
 		}
 
 		if (b != e)
-			poll_for=compute_poll_until(now, b->first);
+			compute_poll_until(now, b->first, poll_for);
 
 		break;
 	}
@@ -233,8 +233,9 @@ bool connection_threadObj::invoke_scheduled_callbacks(ONLY IN_THREAD,
 	return invoked;
 }
 
-int connection_threadObj::compute_poll_until(tick_clock_t::time_point now,
-					     tick_clock_t::time_point when)
+void connection_threadObj::compute_poll_until(tick_clock_t::time_point now,
+					      tick_clock_t::time_point when,
+					      int &poll_for)
 {
 	const auto maximum_poll=
 		std::chrono::duration_cast<tick_clock_t::duration>
@@ -247,7 +248,13 @@ int connection_threadObj::compute_poll_until(tick_clock_t::time_point now,
 	// timeouts.
 
 	if (when > now + maximum_poll)
-		return 30*60 * 1000;
+	{
+		const int cantbe=30*60 * 1000;
+
+		if (poll_for < 0 || poll_for > cantbe)
+			poll_for=cantbe;
+		return;
+	}
 
 	auto v=std::chrono::duration_cast
 		<std::chrono::milliseconds>
@@ -262,7 +269,9 @@ int connection_threadObj::compute_poll_until(tick_clock_t::time_point now,
 
 	if (v == 0)
 		v=1;
-	return v;
+
+	if (poll_for < 0 || v < poll_for)
+		poll_for=v;
 }
 
 void connection_threadObj

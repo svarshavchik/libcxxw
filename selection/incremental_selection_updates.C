@@ -149,10 +149,7 @@ void connection_threadObj::expire_incremental_updates(ONLY IN_THREAD,
 		// compute_poll_until() the first window to expire, and update
 		// poll_for, if needed.
 
-		auto expiration=compute_poll_until(now, b->first);
-
-		if (poll_for < 0 || expiration < poll_for)
-			poll_for=expiration;
+		compute_poll_until(now, b->first, poll_for);
 		break;
 	}
 }
