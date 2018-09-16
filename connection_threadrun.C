@@ -60,13 +60,13 @@ bool connection_threadObj
 	{
 		poll_for= -1;
 
-		if (recalculate_containers(IN_THREAD))
+		if (recalculate_containers(IN_THREAD, poll_for))
 			continue;
 
-		if (process_element_position_updated(IN_THREAD))
+		if (process_element_position_updated(IN_THREAD, poll_for))
 			continue;
 
-		if (process_visibility_updated(IN_THREAD))
+		if (process_visibility_updated(IN_THREAD, poll_for))
 			continue;
 
 		// Process a message in the message queue. If processing a
@@ -133,7 +133,7 @@ bool connection_threadObj
 		if (process_buffered_events(IN_THREAD))
 			continue;
 
-		if (redraw_elements(IN_THREAD))
+		if (redraw_elements(IN_THREAD, poll_for))
 			continue;
 		break;
 	}

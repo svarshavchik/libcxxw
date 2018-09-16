@@ -112,7 +112,7 @@ class LIBCXX_HIDDEN connection_threadObj
 
 	//! Check for a visibility change, and process it.
 
-	bool process_visibility_updated(ONLY IN_THREAD);
+	bool process_visibility_updated(ONLY IN_THREAD, int &poll_for);
 
 	//! Root window on screen 0
 
@@ -158,13 +158,13 @@ class LIBCXX_HIDDEN connection_threadObj
 	elements_to_redraw_set *elements_to_redraw_thread_only;
 
 	//! Draw elements.
-	bool redraw_elements(ONLY IN_THREAD);
+	bool redraw_elements(ONLY IN_THREAD, int &poll_for);
 
 	//! Which containers need to be recalculated in bulk
 	containers_2_recalculate_map *containers_2_recalculate_thread_only;
 
 	//! Find a container to recalculate
-	bool recalculate_containers(ONLY IN_THREAD);
+	bool recalculate_containers(ONLY IN_THREAD, int &poll_for);
 
 	//! Display elements that need their updated positions processed.
 
@@ -175,7 +175,7 @@ class LIBCXX_HIDDEN connection_threadObj
 	element_set_t *element_position_updated_thread_only;
 
 	//! Process an element's position.
-	bool process_element_position_updated(ONLY IN_THREAD);
+	bool process_element_position_updated(ONLY IN_THREAD, int &poll_for);
 
 	//! tick_clock_t's time_point.
 

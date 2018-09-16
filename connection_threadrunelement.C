@@ -93,7 +93,8 @@ bool connection_threadObj::resize_pending(ONLY IN_THREAD,
 // Some display element changed their visibility. Invoke
 // their update_visibility() methods.
 
-bool connection_threadObj::process_visibility_updated(ONLY IN_THREAD)
+bool connection_threadObj::process_visibility_updated(ONLY IN_THREAD,
+						      int &poll_for)
 {
 	if (visibility_updated_thread_only->empty())
 		return false;
@@ -111,7 +112,7 @@ bool connection_threadObj::process_visibility_updated(ONLY IN_THREAD)
 	return true;
 }
 
-bool connection_threadObj::recalculate_containers(ONLY IN_THREAD)
+bool connection_threadObj::recalculate_containers(ONLY IN_THREAD, int &poll_for)
 {
 	if (containers_2_recalculate_thread_only->empty())
 		return false;
@@ -156,7 +157,8 @@ bool connection_threadObj::recalculate_containers(ONLY IN_THREAD)
 	return true;
 }
 
-bool connection_threadObj::process_element_position_updated(ONLY IN_THREAD)
+bool connection_threadObj::process_element_position_updated(ONLY IN_THREAD,
+							    int &poll_for)
 {
 	if (element_position_updated_thread_only->empty())
 		return false;
@@ -185,7 +187,7 @@ bool connection_threadObj::process_element_position_updated(ONLY IN_THREAD)
 	return true;
 }
 
-bool connection_threadObj::redraw_elements(ONLY IN_THREAD)
+bool connection_threadObj::redraw_elements(ONLY IN_THREAD, int &poll_for)
 {
 	if (elements_to_redraw_thread_only->empty())
 		return false;
