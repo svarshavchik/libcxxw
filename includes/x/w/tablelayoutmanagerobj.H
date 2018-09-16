@@ -6,6 +6,7 @@
 #define x_w_tablelayoutmanagerobj_h
 
 #include <x/w/tablelayoutmanagerfwd.H>
+#include <x/w/screen_positionsfwd.H>
 #include <x/w/listlayoutmanagerobj.H>
 
 LIBCXXW_NAMESPACE_START
@@ -30,6 +31,11 @@ public:
 
 	//! Destructor
 	~tablelayoutmanagerObj() LIBCXX_HIDDEN;
+
+	//! Save current adjusted size of the columns in the tables.
+
+	//! For adjustable tables, to be restored next time.
+	void save(const std::string &, screen_positions &);
 };
 
 LIBCXXW_NAMESPACE_END

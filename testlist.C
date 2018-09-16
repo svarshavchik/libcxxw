@@ -10,8 +10,10 @@
 #include <x/ref.H>
 #include <x/obj.H>
 #include <x/mpobj.H>
+#include <x/config.H>
 
 #include "x/w/main_window.H"
+#include "x/w/screen_positions.H"
 #include "x/w/gridlayoutmanager.H"
 #include "x/w/gridfactory.H"
 #include "x/w/tablelayoutmanager.H"
@@ -317,7 +319,9 @@ static mondata processes[]=
 
 #include "testlistoptions.H"
 
-void create_process_table(const LIBCXX_NAMESPACE::w::gridfactory &f,
+void create_process_table(const LIBCXX_NAMESPACE::w::main_window &mw,
+			  const LIBCXX_NAMESPACE::w::screen_positions &pos,
+			  const LIBCXX_NAMESPACE::w::gridfactory &f,
 			  const testlistoptions &options)
 {
 	LIBCXX_NAMESPACE::w::new_tablelayoutmanager
@@ -336,6 +340,7 @@ void create_process_table(const LIBCXX_NAMESPACE::w::gridfactory &f,
 			    f->create_label(titles[i])->show();
 		    }};
 
+	ntlm.restore(pos, "list");
 	ntlm.selection_type=LIBCXX_NAMESPACE::w::no_selection_type;
 	ntlm.columns=5;
 
@@ -363,7 +368,7 @@ void create_process_table(const LIBCXX_NAMESPACE::w::gridfactory &f,
 	if (options.maximum_table_width->isSet())
 		ntlm.maximum_table_width=options.maximum_table_width->value;
 
-	f->create_focusable_container
+	mw->appdata=f->create_focusable_container
 		([&]
 		 (const LIBCXX_NAMESPACE::w::focusable_container &c)
 		 {
@@ -413,13 +418,19 @@ void testlist(const testlistoptions &options)
 
 	auto close_flag=close_flag_ref::create();
 
+	auto configfile=
+		LIBCXX_NAMESPACE::configdir("testlist@libcxx.com") + "/windows";
+
+	LIBCXX_NAMESPACE::w::screen_positions pos{configfile};
+
 	auto default_screen=LIBCXX_NAMESPACE::w::screen::create();
 
 	auto [original_theme, original_scale, original_options]
 		=default_screen->get_connection()->current_theme();
 
 	auto main_window=default_screen->create_mainwindow
-		([&]
+		(pos, "main",
+		 [&]
 		 (const auto &main_window)
 		 {
 			 LIBCXX_NAMESPACE::w::gridlayoutmanager
@@ -430,7 +441,8 @@ void testlist(const testlistoptions &options)
 			 factory->halign(LIBCXX_NAMESPACE::w
 					 ::halign::fill);
 			 factory->colspan(2);
-			 create_process_table(factory, options);
+			 create_process_table(main_window, pos,
+					      factory, options);
 
 			 factory=layout->append_row();
 
@@ -475,6 +487,15 @@ void testlist(const testlistoptions &options)
 
 	LIBCXX_NAMESPACE::mpcobj<bool>::lock lock{close_flag->flag};
 	lock.wait([&] { return *lock; });
+
+	main_window->save("main", pos);
+
+	LIBCXX_NAMESPACE::w::tablelayoutmanager tlm=
+		LIBCXX_NAMESPACE::w::focusable_container(main_window->appdata)
+		->get_layoutmanager();
+	tlm->save("list", pos);
+
+	pos.save(configfile);
 }
 
 int main(int argc, char **argv)

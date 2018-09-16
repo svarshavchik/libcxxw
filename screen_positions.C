@@ -64,27 +64,24 @@ screen_positions::screen_positions(const std::string &filename)
 {
 }
 
-static std::string window_name_to_xpath(const std::string &window_name)
+std::string saved_element_to_xpath(const std::string &type,
+				   const std::string &name)
 {
-	return "/windows/window[name="
-		+ xml::quote_string_literal(window_name) + "]";
+	return "/windows/" + type + "[name="
+		+ xml::quote_string_literal(name) + "]";
 }
 
-void main_windowObj::save(const std::string &window_name,
-			  screen_positions &pos) const
+xml::doc::base::writelock
+screen_positions::create_writelock_for_saving(const std::string &type,
+					      const std::string &name)
 {
-	auto handler=impl->handler;
-
-	auto [wx, wy] = handler->root_xy.get();
-
-	auto r=handler->current_position.get();
-
-	auto lock=pos.data->writelock();
+	auto lock=data->writelock();
 
 	if (lock->get_root())
 	{
-		auto xpath=lock->get_xpath(window_name_to_xpath(window_name));
+		auto xpath=lock->get_xpath(saved_element_to_xpath(type, name));
 
+		// Remove any existing memorized setting.
 		size_t n=xpath->count();
 
 		for (size_t i=1; i <= n; ++i)
@@ -96,23 +93,26 @@ void main_windowObj::save(const std::string &window_name,
 	else
 	{
 		lock->create_child()->element({"windows"});
-		lock->get_root();
 	}
 
-	auto xpath=lock->get_xpath("/windows");
+	lock->get_xpath("/windows")->to_node();
 
-	if (xpath->count() <= 0)
-	{
-		lock->remove();
-		lock->create_child()->element({"windows"});
-	}
-	else
-	{
-		xpath->to_node();
-	}
+	lock->create_child()->element({type})
+		->element({"name"})->text(name)->parent()->parent();
 
-	auto window=lock->create_child()->element({"window"})
-		->element({"name"})->text(window_name);
+	return lock;
+}
+
+void main_windowObj::save(const std::string &window_name,
+			  screen_positions &pos) const
+{
+	auto handler=impl->handler;
+
+	auto [wx, wy] = handler->root_xy.get();
+
+	auto r=handler->current_position.get();
+
+	auto lock=pos.create_writelock_for_saving("window", window_name);
 
 	std::ostringstream x, y, width, height;
 
@@ -120,6 +120,14 @@ void main_windowObj::save(const std::string &window_name,
 	y << wy;
 	width << r.width;
 	height << r.height;
+
+	auto window=lock->create_child()->element({"x"})->text(x.str());
+	window=window->parent()->create_next_sibling()->element({"y"})
+		->create_child()->text(y.str());
+	window=window->parent()->create_next_sibling()
+		->element({"width"})->create_child()->text(width.str());
+	window->parent()->create_next_sibling()->element({"height"})
+		->create_child()->text(height.str());
 
 	if (preserve_screen_number_prop.get())
 	{
@@ -131,14 +139,6 @@ void main_windowObj::save(const std::string &window_name,
 			->element({"screen"})
 			->create_child()->text(screen_number.str());
 	}
-	window=window->parent()->create_next_sibling()->element({"x"})
-		->create_child()->text(x.str());
-	window=window->parent()->create_next_sibling()->element({"y"})
-		->create_child()->text(y.str());
-	window=window->parent()->create_next_sibling()
-		->element({"width"})->create_child()->text(width.str());
-	window->parent()->create_next_sibling()->element({"height"})
-		->create_child()->text(height.str());
 }
 
 
@@ -154,7 +154,8 @@ screen_positions::find(const std::string &window_name) const
 	if (!lock->get_root())
 		return info;
 
-	auto xpath=lock->get_xpath(window_name_to_xpath(window_name));
+	auto xpath=lock->get_xpath(saved_element_to_xpath("window",
+							  window_name));
 
 	size_t n=xpath->count();
 

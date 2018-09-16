@@ -407,8 +407,22 @@ new_tablelayoutmanager::create(const container_impl &parent_container) const
 				 ::create(init_args,
 					  tci.header_container_impl);
 		 });
+	auto create_listlayoutmanager_impl=
+		make_function< ref<listlayoutmanagerObj::implObj>
+			       (const ref<listcontainer_pseudo_implObj> &,
+				const list_element &)>
+		([&]
+		 (const ref<listcontainer_pseudo_implObj> &container_impl,
+		  const list_element &list_element_singleton)
+		 {
+			 return ref<tablelayoutmanagerObj::implObj>
+				 ::create(container_impl,
+					  list_element_singleton,
+					  axis_impl);
+		 });
 
-	list_create_info lci{create_list_element_impl};
+	list_create_info lci{create_list_element_impl,
+			     create_listlayoutmanager_impl};
 
 	return create_impl(parent_container,
 			   axis, &tci, lci);

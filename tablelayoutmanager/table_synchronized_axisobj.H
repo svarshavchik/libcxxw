@@ -52,6 +52,13 @@ public:
 		override;
 
  private:
+	//! Previously saved restore columns width
+
+	//! Initialized in the constructor, and moved to scaled_derived_axis
+	//! at the first opportunity.
+
+	std::vector<dim_t> restored_widths;
+
 	//! Cached coordinates and sizes of border columns only
 
 	//! Cached for lookup_draggable_border()'s speed.

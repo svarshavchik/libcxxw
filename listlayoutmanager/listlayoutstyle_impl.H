@@ -229,11 +229,23 @@ struct LIBCXX_HIDDEN new_listlayoutmanager::list_create_info {
 
 	//! new_listlayoutmanager::create() provides a default implementation.
 	//! new_tablelayoutmanager::create() provides an implementation that
-	//! construct a subclass.
+	//! constructs a subclass.
 
 	const function< ref<list_elementObj::implObj>
 			(const list_element_impl_init_args &)
 			> &create_list_element_impl;
+
+	//! Create the list layout manager implementation object.
+
+
+	//! new_listlayoutmanager::create() provides a default implementation
+	//! that creates a listlayoutmanagerObj::implObj.
+	//!
+	//! new_tablelayoutmanager::create() provides an implementation that
+	//! constructs a tablelayoutmanagerObj::implObj.
+	const function< ref<listlayoutmanagerObj::implObj>
+			(const ref<listcontainer_pseudo_implObj> &,
+			 const list_element &)> &create_listlayoutmanager_impl;
 };
 
 LIBCXXW_NAMESPACE_END

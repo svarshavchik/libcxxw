@@ -4,14 +4,19 @@
 */
 #include "libcxxw_config.h"
 #include "tablelayoutmanager/table_synchronized_axis.H"
+#include "tablelayoutmanager/tablelayoutmanager_impl.H"
 #include "calculate_borders.H"
+#include "x/w/screen_positions.H"
+#include "catch_exceptions.H"
+#include <x/exception.H>
 #include <algorithm>
 
 LIBCXXW_NAMESPACE_START
 
 tablelayoutmanagerObj::table_synchronized_axisObj
 ::table_synchronized_axisObj(const new_tablelayoutmanager &ntlm)
-	: adjustable_column_widths{ntlm.adjustable_column_widths}
+	: adjustable_column_widths{ntlm.adjustable_column_widths},
+	  restored_widths{ntlm.restored_widths}
 {
 }
 
@@ -103,6 +108,22 @@ tablelayoutmanagerObj::table_synchronized_axisObj
 		return scaled; // Avoid this work.
 
 	dragged_scaled_axis_t::lock scaled_lock{dragged_scaled_axis};
+
+	if (scaled.size() == restored_widths.size())
+	{
+		// If we restored previously-saved widths, now is the time
+		// to put them back, here.
+
+		scaled_lock->emplace();
+		auto &v=**scaled_lock;
+		v.clear();
+		v.reserve(scaled.size());
+
+		for (const auto &w:restored_widths)
+			v.emplace_back(w, w, w);
+
+		restored_widths.clear();
+	}
 
 	if (*scaled_lock)
 	{
@@ -385,4 +406,84 @@ void tablelayoutmanagerObj::table_synchronized_axisObj
 	resize_reference_info.reset();
 }
 
+
+void tablelayoutmanagerObj::save(const std::string &name,
+				 screen_positions &pos)
+{
+	auto writelock=pos.create_writelock_for_saving("table", name);
+
+	table_synchronized_axisObj::dragged_scaled_axis_t::lock lock
+		{
+		 impl->axis_impl->dragged_scaled_axis
+		};
+
+	if (!*lock)
+		return;
+
+	for (const auto &m:**lock)
+	{
+		std::ostringstream o;
+
+		o << m.minimum();
+
+		writelock->create_child()->element({"width"})->text(o.str())
+			->parent()->parent();
+	}
+}
+
+LOG_FUNC_SCOPE_DECL(LIBCXX_NAMESPACE::w::new_tablelayoutmanager_restore,
+		    restore_log);
+
+void new_tablelayoutmanager::restore(const screen_positions &pos,
+				     const std::string &name)
+{
+	LOG_FUNC_SCOPE(restore_log);
+
+	auto lock=pos.data->readlock();
+
+	if (!lock->get_root())
+	    return;
+
+	auto xpath=lock->get_xpath(saved_element_to_xpath("table", name));
+
+	if (xpath->count() != 1)
+		return;
+	xpath->to_node();
+
+	xpath=lock->get_xpath("width");
+
+	size_t n=xpath->count();
+
+	restored_widths.clear();
+	restored_widths.reserve(n);
+
+	try {
+		try {
+			for (size_t i=1; i <= n; ++i)
+			{
+				xpath->to_node(i);
+
+				std::istringstream w{lock->get_text()};
+
+				dim_t n;
+
+				if (!(w >> n))
+					throw EXCEPTION("Invalid saved value.");
+
+				restored_widths.push_back(n);
+			}
+			return;
+		} catch (const exception &e)
+		{
+			std::stringstream o;
+
+			o << "Error restoring table \""
+			  << name << "\": " << e;
+
+			throw EXCEPTION(e);
+		}
+	} CATCH_EXCEPTIONS;
+
+	restored_widths.clear();
+}
 LIBCXXW_NAMESPACE_END

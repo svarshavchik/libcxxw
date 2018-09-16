@@ -65,9 +65,8 @@ listlayoutstyle_impl
 
 	// Layout manager implementation object...
 
-	auto internal_listlayoutmanager_impl=
-		ref<listlayoutmanagerObj::implObj>::create
-		(internal_listcontainer_impl, t);
+	auto internal_listlayoutmanager_impl=create_info
+		.create_listlayoutmanager_impl(internal_listcontainer_impl, t);
 
 	/// ... which is registered as the container for the peepholed object.
 	auto container=peepholed_listcontainer::create

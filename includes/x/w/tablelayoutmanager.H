@@ -39,6 +39,8 @@ LIBCXXW_NAMESPACE_START
 //! The callback must use the given factory to construct exactly
 //! one display element. The callback is responsible for show()ing
 //! the element.
+//!
+//! This is not a thread-safe object.
 
 class LIBCXX_HIDDEN new_tablelayoutmanager : public new_listlayoutmanager {
 
@@ -81,6 +83,21 @@ class LIBCXX_HIDDEN new_tablelayoutmanager : public new_listlayoutmanager {
 	//! Whether the table borders can be dragged to adjust column widths.
 
 	bool adjustable_column_widths=false;
+
+	//! Restore previously save()d columns widths.
+
+	void restore(const screen_positions &,
+		     const std::string &) LIBCXX_PUBLIC;
+
+	//! Restored widths.
+
+	//! \internal
+	//!
+	//! Use restore() to populate this.
+	std::vector<dim_t> restored_widths;
+
+ private:
+
 	//! Create the focusable container.
 
 	//! \internal

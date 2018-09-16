@@ -102,8 +102,21 @@ new_listlayoutmanager::create(const container_impl &parent_container) const
 			 return ref<list_elementObj::implObj>
 				 ::create(init_args);
 		 });
+	auto create_listlayoutmanager_impl=
+		make_function< ref<listlayoutmanagerObj::implObj>
+			       (const ref<listcontainer_pseudo_implObj> &,
+				const list_element &)>
+		([]
+		 (const ref<listcontainer_pseudo_implObj> &container_impl,
+		  const list_element &list_element_singleton)
+		 {
+			 return ref<listlayoutmanagerObj::implObj>
+				 ::create(container_impl,
+					  list_element_singleton);
+		 });
 
-	list_create_info lci{create_list_element_impl};
+	list_create_info lci{create_list_element_impl,
+			     create_listlayoutmanager_impl};
 
 	return create_impl(parent_container, synchronized_columns,
 			   nullptr, lci);
