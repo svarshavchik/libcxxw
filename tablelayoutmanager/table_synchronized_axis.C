@@ -37,12 +37,13 @@ tablelayoutmanagerObj::table_synchronized_axisObj::~table_synchronized_axisObj()
 
 inline void tablelayoutmanagerObj::table_synchronized_axisObj
 ::resize_dragged_scaled_axis(ONLY IN_THREAD,
-			     std::vector<metrics::axis> &scaled,
+			     dragged_scaled_axis_t::lock &scaled_lock,
 			     dim_squared_t
 			     total_scaled_except_borders_width,
 			     dim_squared_t
 			     total_dragged_except_borders_width)
 {
+	auto &scaled=**scaled_lock;
 	// If this is the first such resize, capture the current numbers
 	// as a reference.
 
@@ -50,7 +51,7 @@ inline void tablelayoutmanagerObj::table_synchronized_axisObj
 	{
 		resize_reference_info=
 			{
-			 dragged_scaled_axis(IN_THREAD).value(),
+			 scaled,
 			 total_dragged_except_borders_width,
 			};
 	}
@@ -60,7 +61,7 @@ inline void tablelayoutmanagerObj::table_synchronized_axisObj
 	if (i != scaled.size() ||
 	    info.reference_axis_except_borders_width == 0)
 	{
-		abort_dragging(IN_THREAD); // Shouldn't happen
+		abort_dragging(IN_THREAD, scaled_lock); // Shouldn't happen
 		return;
 	}
 	dim_squared_t numerator=0;
@@ -101,15 +102,17 @@ tablelayoutmanagerObj::table_synchronized_axisObj
 	if (!adjustable_column_widths)
 		return scaled; // Avoid this work.
 
-	if (dragged_scaled_axis(IN_THREAD))
+	dragged_scaled_axis_t::lock scaled_lock{dragged_scaled_axis};
+
+	if (*scaled_lock)
 	{
-		auto &v=*dragged_scaled_axis(IN_THREAD);
+		auto &v=**scaled_lock;
 
 		// We do not expect any changes in # of columns, or
 		// metrics of borders. If there are, call the show off!
 
 		if (v.size() != scaled.size())
-			abort_dragging(IN_THREAD);
+			abort_dragging(IN_THREAD, scaled_lock);
 		else
 		{
 			dim_squared_t total_scaled_width=0;
@@ -152,16 +155,16 @@ tablelayoutmanagerObj::table_synchronized_axisObj
 			{
 				resize_dragged_scaled_axis
 					(IN_THREAD,
-					 *dragged_scaled_axis(IN_THREAD),
+					 scaled_lock,
 					 total_scaled_except_borders_width,
 					 total_dragged_except_borders_width);
 			}
 		}
 	}
 
-	if (dragged_scaled_axis(IN_THREAD))
+	if (*scaled_lock)
 	{
-		scaled=*dragged_scaled_axis(IN_THREAD);
+		scaled=**scaled_lock;
 		return scaled;
 	}
 
@@ -263,13 +266,14 @@ void tablelayoutmanagerObj::table_synchronized_axisObj
 		       size_t first_adjusted_column,
 		       size_t second_adjusted_column)
 {
-	if (!dragged_scaled_axis(IN_THREAD))
+	dragged_scaled_axis_t::lock scaled_lock{dragged_scaled_axis};
+
+	if (!*scaled_lock)
 	{
-		dragged_scaled_axis(IN_THREAD)=
-			synchronized_values::lock{values}->scaled_values;
+		*scaled_lock=synchronized_values::lock{values}->scaled_values;
 	}
 
-	auto &dragged_scaled_axis_values=*dragged_scaled_axis(IN_THREAD);
+	auto &dragged_scaled_axis_values=**scaled_lock;
 
 	size_t s=dragged_scaled_axis_values.size();
 
@@ -291,15 +295,17 @@ void tablelayoutmanagerObj::table_synchronized_axisObj
 	 size_t first_adjusted_column,
 	 size_t second_adjusted_column)
 {
+	dragged_scaled_axis_t::lock scaled_lock{dragged_scaled_axis};
+
 	// Sanity check.
 
-	if (!dragged_scaled_axis(IN_THREAD) || !adjusting(IN_THREAD))
+	if (!*scaled_lock || !adjusting(IN_THREAD))
 		return;
 
 	// Get rid of any reference info we were using for resizing
 	resize_reference_info.reset();
 
-	auto &dragged_scaled_axis_values=*dragged_scaled_axis(IN_THREAD);
+	auto &dragged_scaled_axis_values=**scaled_lock;
 
 	size_t s=dragged_scaled_axis_values.size();
 
@@ -372,9 +378,10 @@ void tablelayoutmanagerObj::table_synchronized_axisObj
 }
 
 void tablelayoutmanagerObj::table_synchronized_axisObj
-::abort_dragging(ONLY IN_THREAD)
+::abort_dragging(ONLY IN_THREAD,
+		 dragged_scaled_axis_t::lock &lock)
 {
-	dragged_scaled_axis(IN_THREAD).reset();
+	lock->reset();
 	resize_reference_info.reset();
 }
 

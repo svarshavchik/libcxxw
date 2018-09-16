@@ -10,6 +10,8 @@
 #include "includes/x/w/tablelayoutmanager.H"
 #include "includes/x/w/impl/connection_threadfwd.H"
 
+#include <x/mpobj.H>
+
 LIBCXXW_NAMESPACE_START
 
 //! Implementation object.
@@ -20,6 +22,19 @@ class LIBCXX_HIDDEN tablelayoutmanagerObj::table_synchronized_axisObj
 	: public synchronized_axisObj::implObj {
 
 public:
+
+	//! A thread-safe container for dragged columns values.
+
+	//! This is what's safe, requiring this to be thread-safe.
+	typedef mpobj<std::optional<std::vector<metrics::axis>
+				    >> dragged_scaled_axis_t;
+
+	//! Columns have been dragged.
+
+	//! Once columns are dragged, scaled_derived_axis() returns this.
+
+	dragged_scaled_axis_t dragged_scaled_axis;
+
 	//! Constructor
 	table_synchronized_axisObj(const new_tablelayoutmanager &);
 
@@ -48,13 +63,6 @@ public:
 	void update_border_positions(ONLY IN_THREAD,
 				     std::vector<metrics::axis> &scaled);
 
-	//! Columns have been dragged.
-
-	//! Once columns are dragged, scaled_derived_axis() returns this.
-
-	std::optional<std::vector<metrics::axis>
-		      > dragged_scaled_axis_thread_only;
-
 	struct adjusting_t {
 
 		coord_t initial_x_coordinate;
@@ -68,7 +76,6 @@ public:
 
  public:
 	THREAD_DATA_ONLY(border_positions);
-	THREAD_DATA_ONLY(dragged_scaled_axis);
 	THREAD_DATA_ONLY(adjusting);
 
 	//! Is this x coordinate on top of a draggable border?
@@ -92,25 +99,48 @@ public:
 		    size_t first_adjusted_column,
 		    size_t second_adjusted_column);
 
+ private:
 	//! Something unexpected happen and we want to stop dragging.
 
 	//! If it's in progress.
-	void abort_dragging(ONLY IN_THREAD);
-
+	void abort_dragging(ONLY IN_THREAD,
+			    dragged_scaled_axis_t::lock &lock);
+ public:
 	//! It appears that we've been resized after dragging.
 
 	void resize_dragged_scaled_axis(ONLY IN_THREAD,
-					std::vector<metrics::axis> &scaled,
+					dragged_scaled_axis_t::lock
+					&scaled_lock,
 					dim_squared_t
 					total_scaled_except_borders_width,
 					dim_squared_t
 					total_dragged_except_borders_width);
 
+	//! A container of reference sizes, for resizing the table.
+
+	//! The first time the table gets resized, the pre-resize
+	//! dragged_scaled_axis becomes the reference_axis_for_resizing
+	//! and the resized axis get computed each time by scaling
+	//! the same reference_axis_for_sizing.
+	//!
+	//! This avoids rounding errors from accumulating as a result of
+	//! repeatedly scaling the previously-scaled values.
+	//!
+	//! Manually adjust()ing the axis drops the reference info. No longer
+	//! valid.
+
 	struct resize_reference_info_t {
+
+		//! Original dragged_scaled_axis values.
 		std::vector<metrics::axis> reference_axis_for_sizing;
+
+		//! The sum total of all non-border reference_axis columns
+
+		//! Cached for speed. Only the non-border columns get scaled.
 		dim_squared_t reference_axis_except_borders_width;
 	};
 
+	//! Reference sizes when resizing the table.
 	std::optional<resize_reference_info_t> resize_reference_info;
 };
 
