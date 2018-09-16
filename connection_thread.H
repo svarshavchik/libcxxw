@@ -225,19 +225,27 @@ class LIBCXX_HIDDEN connection_threadObj
 	//! expire_incremental_updates(), when now is before the next
 	//! scheduled timeout, when. Computes the timeout parameter, in
 	//! milliseconds, for poll().
+	//!
+	//! Also used to set the timeout for receiving a ConfigureNotify
+	//! event from the window manager accomodating our update hints for
+	//! our minimum and maximum size.
 
-	static int compute_poll_until(tick_clock_t::time_point now,
-				      tick_clock_t::time_point when);
+	static void compute_poll_until(tick_clock_t::time_point now,
+				       tick_clock_t::time_point when,
+				       int &poll_for);
  private:
 	//! Nothing to do.
 
-	//! And when there's nothing else to do, just before waiting for
-	//! events, check for any established grabs, and grab them.
-	//!
-	//! Also, if we buffered any configure and/or exposure events,
-	//! process them.
+	//! Before redrawing anything check if we have received any
+	//! ConfigureNotify or Exposure events, and process them.
 
-	bool release_grabs_and_process_buffered_events(ONLY IN_THREAD);
+	bool process_buffered_events(ONLY IN_THREAD);
+
+	//! Still nothing to do.
+
+	//! We can release any grabs now.
+
+	void release_grabs(ONLY IN_THREAD);
 
 	//! on_disconnect() callback
 

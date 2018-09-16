@@ -130,13 +130,15 @@ bool connection_threadObj
 			}
 		}
 
+		if (process_buffered_events(IN_THREAD))
+			continue;
+
 		if (redraw_elements(IN_THREAD))
 			continue;
 		break;
 	}
 
-	if (release_grabs_and_process_buffered_events(IN_THREAD))
-		return false;
+	release_grabs(IN_THREAD);
 
 	xcb_flush(info->conn);
 

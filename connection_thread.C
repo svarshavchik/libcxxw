@@ -160,15 +160,12 @@ batch_queue connection_threadObj::get_batch_queue()
 	return new_batch_queue;
 }
 
-bool connection_threadObj
-::release_grabs_and_process_buffered_events(ONLY IN_THREAD)
+bool connection_threadObj::process_buffered_events(ONLY IN_THREAD)
 {
-	bool flag=false;
+	bool processed_buffered_event=false;
 
 	for (const auto &window_handler:*window_handlers(IN_THREAD))
 	{
-		bool processed_buffered_event=false;
-
 		auto &w=*window_handler.second;
 
 		// We get ConfigureNotify, followed by Exposure events, which
@@ -189,6 +186,14 @@ bool connection_threadObj
 
 			processed_buffered_event=true;
 		}
+	}
+
+	if (processed_buffered_event)
+		return true;
+
+	for (const auto &window_handler:*window_handlers(IN_THREAD))
+	{
+		auto &w=*window_handler.second;
 
 		auto &exposure_rectangles=w.exposure_rectangles(IN_THREAD);
 
@@ -222,22 +227,21 @@ bool connection_threadObj
 			graphics_exposure_rectangles.rectangles.clear();
 			processed_buffered_event=true;
 		}
+	}
 
-		if (processed_buffered_event)
-		{
-			// In case ConfigureNotify resulted in more events
-			// happening, we don't want to release all the grabs
-			// just yet.
+	return processed_buffered_event;
+}
 
-			flag=true;
-			continue;
-		}
+void connection_threadObj::release_grabs(ONLY IN_THREAD)
+{
+	for (const auto &window_handler:*window_handlers(IN_THREAD))
+	{
+		auto &w=*window_handler.second;
 
 		// At this point, all window activity has ceased, so any
 		// grabs can be released.
 		w.release_grabs(IN_THREAD);
 	}
-	return flag;
 }
 
 void connection_threadObj
