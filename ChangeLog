@@ -1,5 +1,8 @@
 2018-09-09  Sam Varshavchik  <mrsam@courier-mta.com>
 
+	* Support updates of button's contents. button's get_layoutmanager()
+	returns a suitable singletonlayoutmanager, for that purpose.
+
 	* resort_items() of a selection list.
 
 2018-08-26  Sam Varshavchik  <mrsam@courier-mta.com>

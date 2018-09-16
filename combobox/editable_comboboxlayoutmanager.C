@@ -92,6 +92,10 @@ new_editable_comboboxlayoutmanager
 				   false	// do not update clipboards
 				   };
 
+		   // We have our own border, no need for the input field
+		   // do add its own.
+		   config.border="empty";
+
 		   auto input_field=f->create_input_field
 			   ({theme_font({f->get_element_impl()
 							   .label_theme_font()
