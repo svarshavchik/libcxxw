@@ -133,6 +133,17 @@ class LIBCXX_HIDDEN main_windowObj::handlerObj :
 
  public:
 
+	//! Override configure_notify_received()
+
+	//! Until preferred_dimensions_set(), we think that our size is 0.
+	//! However because X11 proto throws a red flag if you attempt to
+	//! size a window to 0 width or depth, we will set it to 1x1, however
+	//! we still need to think that the window size is (0, 0), for our
+	//! purposes.
+
+	void configure_notify_received(ONLY IN_THREAD, const rectangle &r)
+		override;
+
 	//! Install new icons.
 	void install_window_theme_icon(const std::vector<std::tuple<std::string,
 				       dim_t, dim_t>> &icons);

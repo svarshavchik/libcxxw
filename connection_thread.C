@@ -188,6 +188,21 @@ bool connection_threadObj::process_buffered_events(ONLY IN_THREAD)
 		}
 	}
 
+	// If we received and process any ConfigureNotifys we bail out
+	// now. This results in the following sequence of events.
+	//
+	// 1. We get a ConfigureNotify.
+	// 2. generic_windowObj::handlerObj::process_configure_notify arranges
+	//    things so that (hopefully), exposure events get received and
+	//    queued up.
+	// 3. Configure processing resizes all events. After we return from
+	//    here we're going to recalculate all the containers and move
+	//    everything that needs to be moved.
+	// 4. Finally everything's been recalculated and repositioned, and
+	//    we wind up back there, so we can look at the exposure events,
+	//    in Part II, and perform exposure processing, drawing everything
+	//    where it's been moved to.
+
 	if (processed_buffered_event)
 		return true;
 
@@ -197,8 +212,26 @@ bool connection_threadObj::process_buffered_events(ONLY IN_THREAD)
 
 		auto &exposure_rectangles=w.exposure_rectangles(IN_THREAD);
 
-		if (!exposure_rectangles.rectangles.empty() &&
-		    exposure_rectangles.complete)
+		// If we are expecting a full_exposure, we'll do exposure
+		// processing even if the rectangle set is empty.
+		//
+		// But if we received some exposure rectangles, then we
+		// will wait for exposure processing until
+		// exposure_rectangles.complete, even if we're expecting
+		// to do a full_exposure.
+
+		bool process_exposure=false;
+
+		if (exposure_rectangles.rectangles.empty())
+		{
+			process_exposure=exposure_rectangles.full_exposure;
+		}
+		else
+		{
+			process_exposure=exposure_rectangles.complete;
+		}
+
+		if (process_exposure)
 		{
 			// Exposure events were received, and the last one
 			// had a 0 count.

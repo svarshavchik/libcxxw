@@ -95,8 +95,6 @@ class LIBCXX_HIDDEN connection_threadObj
 	static void insert_element_set(element_set_t &s,
 				       const element_impl &i);
 
-	static element_impl next_lowest_element(element_set_t &s);
-	static element_impl next_highest_element(element_set_t &s);
  private:
 
 	//! Invoke a closure for each element in a set, lowest to highest.

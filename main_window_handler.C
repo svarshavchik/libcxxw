@@ -295,6 +295,19 @@ xcb_size_hints_t main_windowObj::handlerObj::compute_size_hints(ONLY IN_THREAD)
 	return hints;
 }
 
+void main_windowObj::handlerObj
+::configure_notify_received(ONLY IN_THREAD, const rectangle &r)
+{
+	if (!preferred_dimensions_set(IN_THREAD))
+	{
+		rectangle fake_r={r.x, r.y, 0, 0};
+
+		superclass_t::configure_notify_received(IN_THREAD, fake_r);
+		return;
+	}
+	superclass_t::configure_notify_received(IN_THREAD, r);
+}
+
 void main_windowObj::handlerObj::update_resizing_timeout(ONLY IN_THREAD)
 {
 	if (!preferred_dimensions_set(IN_THREAD))

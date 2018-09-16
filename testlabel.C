@@ -9,11 +9,29 @@
 #include <x/destroy_callback.H>
 #include <x/ref.H>
 #include <x/obj.H>
+#include <x/mpobj.H>
 
+#include "textlabel.H"
 static bool override_truncatable=false;
+
+LIBCXX_NAMESPACE::mpobj<int> redraw_counter=0;
+
+void count_label_redraws(ONLY IN_THREAD, x::w::textlabelObj::implObj &me)
+{
+	int n=redraw_counter.get()+1;
+
+	redraw_counter=n;
+	std::cout << "DRAW " << n << std::endl;
+	std::cout << "  " << me.get_label_element_impl()
+		.data(IN_THREAD).current_position << std::endl;
+}
 
 #define DEBUG_TRUNCATABLE_LABEL() \
 	(internal_config.allow_shrinkage=override_truncatable)
+#define TEST_TEXTLABEL_DRAW()			\
+	do {					\
+		count_label_redraws(IN_THREAD, *this);	\
+	} while(0)
 #define DEBUG_INITIAL_METRICS
 #include "textlabel_impl.C"
 #include "x/w/main_window.H"
@@ -24,6 +42,7 @@ static bool override_truncatable=false;
 #include "x/w/font_literals.H"
 #include "x/w/screen.H"
 #include "x/w/connection.H"
+#include "x/w/canvas.H"
 #include <string>
 #include <iostream>
 
@@ -75,6 +94,9 @@ void create_mainwindow(const LIBCXX_NAMESPACE::w::main_window &main_window,
 				       "The quick brown fox\n"
 				      "jumped over the lazy\n"
 				       "dog's tail."});
+		factory=layout->append_row();
+		factory->create_canvas([](const auto &){},
+				       {10,10,10},{10,10,10})->show();
 		return;
 	}
 
@@ -131,7 +153,30 @@ void testlabel(const testlabel_options &options)
 
 	if (options.truncatable->value)
 	{
-		lock.wait();
+		lock.wait_for(std::chrono::seconds(1),
+			      [&] { return *lock; });
+
+		for (int i=0; i < 4 && !*lock; ++i)
+		{
+			{
+				LIBCXX_NAMESPACE::w::gridlayoutmanager glm=
+					main_window->get_layoutmanager();
+				glm->remove_row(1);
+
+				auto size=(i % 2) ? 10:100;
+				glm->append_row()->create_canvas
+					([](const auto &){},{size, size, size},
+					 {10,10,10})->show();
+			}
+			lock.wait_for(std::chrono::seconds(1),
+				      [&] { return *lock; });
+		}
+
+		auto n=redraw_counter.get();
+
+		if (n != 5)
+			throw EXCEPTION("The label should've been drawn "
+					"5 times instead of " << n);
 		return;
 	}
 
@@ -151,6 +196,14 @@ void testlabel(const testlabel_options &options)
 				    true);
 	}
 
+	lock.wait_for(std::chrono::seconds(1),
+		      [&] { return *lock; });
+
+	auto n=redraw_counter.get();
+
+	if (n != 5)
+		throw EXCEPTION("The label should've been drawn "
+				"5 times instead of " << n);
 	main_window->get_screen()->get_connection()
 		->set_theme(original_theme,
 			    original_scale,

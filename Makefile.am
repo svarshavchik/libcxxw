@@ -1208,6 +1208,7 @@ test:
 	./testmainwindow --themescale
 	./testmainwindow --themescale --nopadding
 	./testlabel
+	./testlabel --truncatable
 	LC_ALL=ru_RU.UTF-8 ./testtooltip --width=25
 	./testtooltip --width=50
 	./testprogressbar

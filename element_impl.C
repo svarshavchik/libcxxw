@@ -742,6 +742,9 @@ void elementObj::implObj::exposure_event_recursive(ONLY IN_THREAD,
 	if (current_position.width == 0 || current_position.height == 0)
 		return;
 
+	if (data(IN_THREAD).removed)
+		return;
+
 	auto &di=get_draw_info(IN_THREAD);
 
 #ifdef DEBUG_EXPOSURE_CALCULATIONS
@@ -775,21 +778,28 @@ void elementObj::implObj::exposure_event_recursive(ONLY IN_THREAD,
 		    r.width == current_position.width &&
 		    r.height == current_position.height)
 		{
-			// Any queued redraws are moot, now.
-			//
-			// We are redrawing the entire display element right
-			// now.
+			// The entire element is exposed. It looks better
+			// for a popup to have its entire area immediately
+			// cleared, before proceeding and rendering all the
+			// elements inside the popup. A complicated popup
+			// will take noticably longer to render, and it looks
+			// sloppy to have the popup drawn, rectangle by
+			// rectangle. This clears the top level popup element
+			// (well, the element inside the real top level popup
+			// element, which contains the popup's borders)
+			// to the popup's background color, and we'll proceed
+			// and draw what's inside the popup.
 
-			IN_THREAD->elements_to_redraw(IN_THREAD)
-				->erase(element_impl(this));
+			if (should_preclear_entirely_exposed_element(IN_THREAD)
+			    &&
+			    get_window_handler()
+			    .should_preclear_exposed(IN_THREAD))
+				clear_to_color(IN_THREAD,
+					       get_draw_info(IN_THREAD),
+					       draw_area);
 		}
 	}
 
-	if (should_preclear_entirely_exposed_element(IN_THREAD) &&
-	    get_window_handler().should_preclear_exposed(IN_THREAD))
-		clear_to_color(IN_THREAD,
-			       get_draw_info(IN_THREAD),
-			       draw_area);
 
 #ifdef DEBUG_EXPOSURE_CALCULATIONS
 
@@ -799,7 +809,21 @@ void elementObj::implObj::exposure_event_recursive(ONLY IN_THREAD,
 		std::cout << "        " << r << std::endl;
 #endif
 
-	draw(IN_THREAD, di, draw_area);
+	if (draw_area.empty())
+		return;
+
+	// If there's a queued redraw, we'll just redraw it right now, and
+	// forget it.
+
+	if (IN_THREAD->elements_to_redraw(IN_THREAD)->find(ref(this))
+	    != IN_THREAD->elements_to_redraw(IN_THREAD)->end())
+	{
+		explicit_redraw(IN_THREAD);
+	}
+	else
+	{
+		draw(IN_THREAD, di, draw_area);
+	}
 
 	// Now, we need to recursively propagate this event.
 

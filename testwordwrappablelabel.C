@@ -48,7 +48,13 @@ static int mainwindow_hints_update_counter=0;
 			  << "x" << p->vert.maximum() << std::endl;	\
 	} while(0)
 
+// The main window gets updated with the frame extents metrics after it opens,
+// this triggers hints recalculation. Disable this. We're testing to make
+// sure that we're setting the hints just once.
+#define UPDATE_DEST_METRICS_RECEIVED() return
+
 #include "main_window_handler.C"
+#include "generic_window_handler.C"
 
 class close_flagObj : public LIBCXX_NAMESPACE::obj {
 

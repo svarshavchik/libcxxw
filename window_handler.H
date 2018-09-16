@@ -91,6 +91,9 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 
 		rectarea rectangles;
 
+		//! The next exposure event processing should be a full exposure
+		bool full_exposure=false;
+
 		//! Count on the most recent Exposure event was 0
 
 		//! Updated by connection_thread, which uses it, as part of its
@@ -237,9 +240,6 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 	//! ConfigureNotify event, and this should take little time.
 	//!
 	//! The expensive work goes into process_configure_notify().
-	//! Exposure events follow configure notifications. The default
-	//! window bit gravity of FORGET means that exposure events
-	//! always follow a configure notify with a size change.
 	//!
 	//! connection_thread buffers Exposure and ConfigureNotify events.
 	//! After the message queue from the X servers gets drained, if there

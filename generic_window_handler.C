@@ -653,6 +653,26 @@ bool generic_windowObj::handlerObj::has_own_background_color(ONLY IN_THREAD)
 void generic_windowObj::handlerObj::process_collected_exposures(ONLY IN_THREAD)
 {
 	has_exposed(IN_THREAD)=true;
+
+	if (exposure_rectangles(IN_THREAD).full_exposure)
+	{
+		// This is an exposure after a resize. Because we set a
+		// gravity for our window's pixels we'll only be notified
+		// about newly-exposed areas of our window, and the window
+		// shrunk we won't get any exposures at all, and we get
+		// here without any actual exposure rectangles. So, we can
+		// pretty much ignore everything in rectangles, and put
+		// a single rectangle in here.
+
+		exposure_rectangles(IN_THREAD).rectangles.clear();
+		exposure_rectangles(IN_THREAD).rectangles.push_back
+			({
+			  0, 0,
+			  data(IN_THREAD).current_position.width,
+			  data(IN_THREAD).current_position.height
+			});
+		exposure_rectangles(IN_THREAD).full_exposure=false;
+	}
 	exposure_event_recursively_top_down
 		(IN_THREAD,
 		 exposure_rectangles(IN_THREAD).rectangles);
@@ -1218,27 +1238,10 @@ void generic_windowObj::handlerObj::configure_notify_received(ONLY IN_THREAD,
 							      const rectangle
 							      &r)
 {
-	mpobj<rectangle>::lock lock(current_position);
+	// We can get a bunch of these in a row. Save them, and process them
+	// when the dust settles, in process_configure_notify().
 
-	if (*lock == r)
-		return;
-
-	if (lock->width != r.width ||
-	    lock->height != r.height)
-	{
-		// Exposure event coming. We use the default bit-gravity of
-		// Forget, meaning that we should always get EXPOSURE events
-		// after a size change.
-		has_exposed(IN_THREAD)=false;
-
-		// But we should not preclear, to avoid flickering.
-		should_preclear_exposed(IN_THREAD)=false;
-
-		// And we can throw away all accumulated exposure rectangles
-		// because we are guaranteed to get new ones.
-		exposure_rectangles(IN_THREAD).rectangles.clear();
-	}
-	*lock=r;
+	current_position=r;
 }
 
 void generic_windowObj::handlerObj::raise(ONLY IN_THREAD)
@@ -1285,6 +1288,17 @@ void generic_windowObj::handlerObj::process_configure_notify(ONLY IN_THREAD)
 
 	auto c=conn()->conn;
 
+	// Ok, we just received a ConfigureNotify, and exposure are on the
+	// way. We're sending a TranslateCoordinates request, and we expect
+	// to get the reply to it after we receive all our exposures, if there
+	// are any. X protocol specifies that any exposures follow a
+	// ConfigureNotify. It's not mandated that they immediately follow it,
+	// but we're going to hope that this is the case. So, before we proceed
+	// we're going to already have all exposure events received, and waiting
+	// to be processed in the main event loop.
+	//
+	// See process_buffered_events().
+
 	auto value=return_pointer(xcb_translate_coordinates_reply
 				  (c, xcb_translate_coordinates
 				   (c, id(), screenref->impl->xcb_screen->root,
@@ -1293,6 +1307,23 @@ void generic_windowObj::handlerObj::process_configure_notify(ONLY IN_THREAD)
 
 	auto r=current_position.get();
 
+	if (data(IN_THREAD).current_position.width != r.width ||
+	    data(IN_THREAD).current_position.height != r.height)
+	{
+		// We've already been exposed, so we expect to have exposure
+		// processing. to take place. Set full_exposure to indicate
+		// that this is what needs to happen.
+
+		if (has_exposed(IN_THREAD))
+		{
+			exposure_rectangles(IN_THREAD).full_exposure=true;
+			exposure_rectangles(IN_THREAD).complete=true;
+
+			// Should not preclear top level elements, to avoid
+			// flickering.
+			should_preclear_exposed(IN_THREAD)=false;
+		}
+	}
 	if (error)
 		throw EXCEPTION(connection_error(error));
 
@@ -1824,6 +1855,9 @@ void generic_windowObj::handlerObj::pointer_focus_lost(ONLY IN_THREAD)
 
 void generic_windowObj::handlerObj::update_frame_extents(ONLY IN_THREAD)
 {
+#ifdef UPDATE_DEST_METRICS_RECEIVED
+	UPDATE_DEST_METRICS_RECEIVED();
+#endif
 	auto &data=frame_extents(IN_THREAD);
 
 	auto old_data=data;

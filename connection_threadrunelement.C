@@ -18,56 +18,6 @@ void connection_threadObj::insert_element_set(element_set_t &s,
 	s[i->nesting_level].insert(i);
 }
 
-// Remove the lowest element from the non-empty element_set_t.
-//
-// Returns the next element with the largest nesting_level. This is used
-// for optimally processing visibility changes, for example, so that the
-// so that the topmost element's visibility is updated last.
-
-element_impl connection_threadObj::next_lowest_element(element_set_t &s)
-{
-	auto iter=--s.end();
-
-	auto &last_set=iter->second;
-
-	auto element_iter=last_set.begin();
-
-	auto element=*element_iter;
-
-	last_set.erase(element_iter);
-
-	if (last_set.empty())
-		s.erase(iter);
-
-	return element;
-}
-
-// Remove the highest element from the non-empty element_set_t.
-//
-// Returns the next element with the smallest nesting_level. This is used
-// for optimally processing sizing changes, for example, so that the
-// so that the consequences of the topmost element's size change is processed
-// last, since the topmost element may choose to recalculate the sizes of its
-// child elements.
-
-element_impl connection_threadObj::next_highest_element(element_set_t &s)
-{
-	auto iter=s.begin();
-
-	auto &first_set=iter->second;
-
-	auto element_iter=first_set.begin();
-
-	auto element=*element_iter;
-
-	first_set.erase(element_iter);
-
-	if (first_set.empty())
-		s.erase(iter);
-
-	return element;
-}
-
 bool connection_threadObj::resize_pending(ONLY IN_THREAD,
 					  const element_impl &e,
 					  int &poll_for)
@@ -178,110 +128,151 @@ void connection_threadObj
 bool connection_threadObj::process_visibility_updated(ONLY IN_THREAD,
 						      int &poll_for)
 {
-	if (visibility_updated_thread_only->empty())
-		return false;
+	bool flag=false;
 
-	while (!visibility_updated_thread_only->empty())
-	{
-		auto e=next_lowest_element(*visibility_updated_thread_only);
+	// Start with the lower-most elements and work our way up to the
+	// top level elements. Since until the top-level is visible anything
+	// inside it is not visible, everything inherits visibility at the
+	// last possible moment.
 
-		LOG_TRACE("update_visibility: " << e->objname()
-			  << "(" << &*e << ")");
-		try {
-			e->update_visibility(IN_THREAD);
-		} CATCH_EXCEPTIONS;
-	}
-	return true;
+	lowest_sizable_elements_first
+		(IN_THREAD,
+		 *visibility_updated(IN_THREAD),
+		 poll_for,
+		 [&]
+		 (const auto &e)
+		 {
+			 flag=true;
+
+			 LOG_TRACE("update_visibility: " << e->objname()
+				   << "(" << &*e << ")");
+			 try {
+				 e->update_visibility(IN_THREAD);
+			 } CATCH_EXCEPTIONS;
+		 });
+	return flag;
 }
 
 bool connection_threadObj::recalculate_containers(ONLY IN_THREAD, int &poll_for)
 {
-	if (containers_2_recalculate_thread_only->empty())
-		return false;
+	bool flag=false;
 
-	// Get the next container to be recalculated, with the
-	// highest nesting level.
-
-	while (!containers_2_recalculate_thread_only->empty())
+	for (auto b=containers_2_recalculate_thread_only->begin(),
+		     e=containers_2_recalculate_thread_only->end(); b != e;)
 	{
-		auto p=--containers_2_recalculate_thread_only->end();
+		--e;
 
-		auto first=p->second.begin();
+		for (auto first=e->second.begin(), firste=e->second.end();
+		     first != firste; ++first)
+		{
+			auto container=*first;
 
-		auto container=*first;
+			if (resize_pending(IN_THREAD,
+					   ref(&container
+					       ->container_element_impl()),
+					   poll_for))
+				continue;
 
-		// Wait until recalculate() is invoked before removing it.
+			// Wait until recalculate() is invoked before
+			// removing it.
 
-		// A layout manager might invoke theme_updated() for a
-		// newly-added child element, which might result in the
-		// child element attempting to schedule its container
-		// for recalculation :-)
-		//
-		// This avoid needless work. The 'first' iterator is not
-		// going to go anywhere...
+			// A layout manager might invoke theme_updated() for a
+			// newly-added child element, which might result in the
+			// child element attempting to schedule its container
+			// for recalculation :-)
+			//
+			// This avoid needless work. The 'first' iterator is not
+			// going to go anywhere...
 
-		try {
-			container->invoke_layoutmanager
-				([&]
-				 (const auto &l)
-				 {
-					 l->recalculate(IN_THREAD);
-				 });
-		} CATCH_EXCEPTIONS;
+			try {
+				container->invoke_layoutmanager
+					([&]
+					 (const auto &l)
+					 {
+						 l->recalculate(IN_THREAD);
+					 });
+			} CATCH_EXCEPTIONS;
 
-		// Ok, we can get rid of this.
+			flag=true;
+			// Ok, we can get rid of this.
 
-		p->second.erase(first);
+			e->second.erase(first);
 
-		if (p->second.empty())
-			containers_2_recalculate_thread_only->erase(p);
+			if (e->second.empty())
+				containers_2_recalculate_thread_only->erase(e);
+
+			b=containers_2_recalculate_thread_only->begin();
+			e=containers_2_recalculate_thread_only->end();
+			break;
+		}
 	}
-	return true;
+	return flag;
 }
 
 bool connection_threadObj::process_element_position_updated(ONLY IN_THREAD,
 							    int &poll_for)
 {
-	if (element_position_updated_thread_only->empty())
-		return false;
+	bool flag=false;
 
-	while (!element_position_updated_thread_only->empty())
-	{
-		auto e=next_highest_element(*element_position_updated_thread_only);
+	// We start with the "highest", or the topmost element waiting for
+	// its updated position to be processed, since when its resized it'll
+	// usually update the position of all elements inside it, which have
+	// a numerically higher nesting level, and we'll pick them up
+	// immediately, right here, and so process everyone's updated position
+	// in one pass.
 
-		LOG_TRACE("element_position_updated: " << e->objname()
-			  << "(" << &*e << ")");
-		try {
-			auto &data=e->data(IN_THREAD);
+	highest_sizable_elements_first
+		(IN_THREAD,
+		 *element_position_updated(IN_THREAD),
+		 poll_for,
+		 [&]
+		 (const auto &e)
+		 {
+			 try {
+				 auto &data=e->data(IN_THREAD);
 
-			if (data.current_position !=
-			    data.previous_position)
-			{
-				data.previous_position=data.current_position;
-				e->process_updated_position(IN_THREAD);
-			}
-			else
-			{
-				e->process_same_position(IN_THREAD);
-			}
-		} CATCH_EXCEPTIONS;
-	}
-	return true;
+				 if (data.current_position !=
+				     data.previous_position)
+				 {
+					 data.previous_position=
+						 data.current_position;
+					 e->process_updated_position(IN_THREAD);
+				 }
+				 else
+				 {
+					 e->process_same_position(IN_THREAD);
+				 }
+			 } CATCH_EXCEPTIONS;
+			 flag=true;
+		 });
+
+	return flag;
 }
 
 bool connection_threadObj::redraw_elements(ONLY IN_THREAD, int &poll_for)
 {
-	if (elements_to_redraw_thread_only->empty())
-		return false;
+	bool flag=false;
 
-	while (!elements_to_redraw_thread_only->empty())
+	for (auto b=elements_to_redraw(IN_THREAD)->begin(),
+		     e=elements_to_redraw(IN_THREAD)->end(); b != e; )
 	{
-		auto e=*elements_to_redraw_thread_only->begin();
+		auto p=*b;
 
-		e->explicit_redraw(IN_THREAD);
+		if (resize_pending(IN_THREAD, p, poll_for))
+		{
+			++b;
+			continue;
+		}
+
+		// explicit_redraw() removes itself from elements_to_redraw,
+		// just need to make sure we increment the iterator, here.
+		++b;
+
+		p->explicit_redraw(IN_THREAD);
+		flag=true;
 	}
 
-	return true;
+	return flag;
 }
 
 LIBCXXW_NAMESPACE_END
