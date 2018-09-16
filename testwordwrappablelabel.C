@@ -33,8 +33,9 @@ static int mainwindow_hints_update_counter=0;
 
 #define MAINWINDOW_HINTS_DEBUG1()					\
 	do {								\
-		std::cout << "MAIN: (" << x << ", " << y		\
-			  << ")x(" << width << ", " << height << ")"	\
+		std::cout << "MAIN: (" << hints.x << ", " << hints.y	\
+			  << ")x(" << hints.width << ", "		\
+			  << hints.height << ")"			\
 			  << std::endl;					\
 		++mainwindow_hints_update_counter;			\
 	} while(0)

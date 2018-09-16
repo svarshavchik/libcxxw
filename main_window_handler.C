@@ -176,6 +176,9 @@ void main_windowObj::handlerObj
 void main_windowObj::handlerObj::update_size_hints(ONLY IN_THREAD)
 {
 	auto hints=compute_size_hints(IN_THREAD);
+#ifdef MAINWINDOW_HINTS_DEBUG1
+	MAINWINDOW_HINTS_DEBUG1();
+#endif
 
 	auto conn=screenref->get_connection()->impl;
 
@@ -271,9 +274,6 @@ xcb_size_hints_t main_windowObj::handlerObj::compute_size_hints(ONLY IN_THREAD)
 
 		xcb_icccm_size_hints_set_win_gravity(&hints,
 						     XCB_GRAVITY_STATIC);
-#ifdef MAINWINDOW_HINTS_DEBUG1
-	MAINWINDOW_HINTS_DEBUG1();
-#endif
 	}
 	xcb_icccm_size_hints_set_min_size(&hints,
 					  (dim_t::value_type)minimum_width,
