@@ -107,13 +107,19 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 
 	exposed_t graphics_exposure_rectangles_thread_only;
 
-	//! Most recently received ConfigureNotify event, if there is one.
+	//! A ConfigureNotify was received for this window
 
+	//! configure_notify_received() gets invoked as soon as it's received.
+	//! It does not get processed immediately. When resizing a window it's
+	//! common to get a bunch of these. They are expensive to process.
+	//! So, configure_notify_received() gets invoked immediately, and when
+	//! the dust settles process_configure_notify() gets invoked to deal
+	//! with it.
 	//! This is for connection_thread's use. It records the particulars
 	//! of the ConfigureNotify event here. configure_notify_received()
 	//! and process_configure_notify()
 
-	std::optional<rectangle> pending_configure_notify_event_thread_only;
+	bool pending_configure_notify_event_thread_only=false;
 
  public:
 
@@ -241,8 +247,7 @@ class LIBCXX_HIDDEN window_handlerObj : public xid_t<xcb_window_t>,
 	//! process_configure_notify() gets called where all expensive work,
 	//! that results from a resized window, occurs.
 
-	virtual void process_configure_notify(ONLY IN_THREAD,
-					      const rectangle &);
+	virtual void process_configure_notify(ONLY IN_THREAD);
 
 	//! MapNotify event
 	virtual void process_map_notify_event(ONLY IN_THREAD);

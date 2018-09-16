@@ -181,15 +181,11 @@ bool connection_threadObj
 		if (w.pending_configure_notify_event(IN_THREAD))
 		{
 			// One or more ConfigureNotify events were received.
+			w.pending_configure_notify_event(IN_THREAD)=false;
 
 			try {
-				w.process_configure_notify
-					(IN_THREAD,
-					 *w.pending_configure_notify_event
-					 (IN_THREAD));
+				w.process_configure_notify(IN_THREAD);
 			} CATCH_EXCEPTIONS;
-
-			w.pending_configure_notify_event(IN_THREAD).reset();
 
 			processed_buffered_event=true;
 		}

@@ -706,8 +706,7 @@ class LIBCXX_HIDDEN generic_windowObj::handlerObj
 
 	//! Implement process_configure_notify().
 
-	void process_configure_notify(ONLY IN_THREAD, const rectangle &r)
-		override;
+	void process_configure_notify(ONLY IN_THREAD) override;
 
 	//! Implement process_map_notify_event().
 	void process_map_notify_event(ONLY IN_THREAD) override;

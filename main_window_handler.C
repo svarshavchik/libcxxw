@@ -362,7 +362,8 @@ void main_windowObj::handlerObj::request_visibility(ONLY IN_THREAD,
 			 r.width=w;
 			 r.height=h;
 
-			 me->process_configure_notify(IN_THREAD, r);
+			 me->configure_notify_received(IN_THREAD, r);
+			 me->process_configure_notify(IN_THREAD);
 
 			 // Ok, need to wait for the reconfiguration to shake
 			 // itself out too, so schedule another job to finally

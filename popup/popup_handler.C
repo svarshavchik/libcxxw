@@ -186,12 +186,10 @@ void popupObj::handlerObj::update_my_configuration(ONLY IN_THREAD)
 		::configure_notify_received(IN_THREAD,
 					    most_recent_configuration);
 	generic_windowObj::handlerObj
-		::process_configure_notify(IN_THREAD,
-					   most_recent_configuration);
+		::process_configure_notify(IN_THREAD);
 
 }
-void popupObj::handlerObj::process_configure_notify(ONLY IN_THREAD,
-						    const rectangle &)
+void popupObj::handlerObj::process_configure_notify(ONLY IN_THREAD)
 {
 	// Ignoring the ConfigureNotify event, see?
 }

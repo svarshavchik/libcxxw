@@ -128,8 +128,7 @@ void window_handlerObj::configure_notify_received(ONLY IN_THREAD,
 {
 }
 
-void window_handlerObj::process_configure_notify(ONLY IN_THREAD,
-						 const rectangle &)
+void window_handlerObj::process_configure_notify(ONLY IN_THREAD)
 {
 }
 

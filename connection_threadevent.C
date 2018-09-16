@@ -193,7 +193,7 @@ void connection_threadObj::run_event(ONLY IN_THREAD,
 
 			rectangle r{msg->x, msg->y, msg->width, msg->height};
 			iter->second->pending_configure_notify_event(IN_THREAD)=
-				r;
+				true;
 			iter->second->configure_notify_received(IN_THREAD, r);
 		}
 		return;

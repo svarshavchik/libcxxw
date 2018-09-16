@@ -1171,8 +1171,7 @@ void generic_windowObj::handlerObj::lower(ONLY IN_THREAD)
 			     configure_window_vals.values().data());
 }
 
-void generic_windowObj::handlerObj::process_configure_notify(ONLY IN_THREAD,
-							     const rectangle &r)
+void generic_windowObj::handlerObj::process_configure_notify(ONLY IN_THREAD)
 {
 	returned_pointer<xcb_generic_error_t *> error;
 
@@ -1183,6 +1182,8 @@ void generic_windowObj::handlerObj::process_configure_notify(ONLY IN_THREAD,
 				   (c, id(), screenref->impl->xcb_screen->root,
 				    0, 0),
 				   error.addressof()));
+
+	auto r=current_position.get();
 
 	if (error)
 		throw EXCEPTION(connection_error(error));

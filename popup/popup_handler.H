@@ -107,8 +107,7 @@ public:
 
 	//! We manage our own size, and ignore ConfigureNotify messages
 	//! from the server.
-	void process_configure_notify(ONLY IN_THREAD,
-				      const rectangle &) override;
+	void process_configure_notify(ONLY IN_THREAD) override;
 
 	//! Override configure_notify_received()
 
