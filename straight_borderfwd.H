@@ -13,7 +13,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class straight_borderObj;
+class LIBCXX_HIDDEN straight_borderObj;
 class straight_borderBase;
 
 //! A straight border element in a grid

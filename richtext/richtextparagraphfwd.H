@@ -11,7 +11,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class richtextparagraphObj;
+class LIBCXX_HIDDEN richtextparagraphObj;
 
 //! A list of text fragments in a \ref richtext "rich text object".
 

@@ -12,7 +12,9 @@
 
 LIBCXXW_NAMESPACE_START
 
-class editable_comboboxlayoutmanagerObj;
+struct LIBCXX_HIDDEN editable_combobox_selection_changed_info_t;
+class LIBCXX_HIDDEN new_editable_comboboxlayoutmanager;
+class LIBCXX_PUBLIC editable_comboboxlayoutmanagerObj;
 
 /*! Editable combo-box layout managager.
 

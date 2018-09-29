@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class ellipsiscacheObj;
+class LIBCXX_HIDDEN ellipsiscacheObj;
 
 /*! Cache of ellipsis richtext objects shown by labels that are too big.
 

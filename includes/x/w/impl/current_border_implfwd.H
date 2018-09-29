@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class current_border_implObj;
+class LIBCXX_PUBLIC current_border_implObj;
 
 //! Current border around a display element.
 

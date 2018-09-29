@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class current_selection_paste_handlerObj;
+class LIBCXX_HIDDEN current_selection_paste_handlerObj;
 
 /*! Implement a conversion handler for text.
 

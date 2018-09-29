@@ -6,6 +6,7 @@
 #define x_w_impl_child_elementobj_h
 
 #include <x/w/impl/element.H>
+#include <x/w/impl/child_elementfwd.H>
 #include <x/w/containerobj.H>
 #include <x/w/impl/background_color_elementfwd.H>
 #include <x/w/connection_threadfwd.H>
@@ -61,7 +62,7 @@ private:
 	void update_draw_info_background_color(ONLY IN_THREAD);
 public:
 	//! My parent element
-	const container_impl child_container LIBCXX_PUBLIC;
+	const container_impl child_container;
 
 	//! Constructor.
 

@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class panefactoryObj;
+class LIBCXX_PUBLIC panefactoryObj;
 
 /*! A factory for new panes in a \ref panelayoutmanager "pane layout manager"'s container.
 

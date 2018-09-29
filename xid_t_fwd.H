@@ -9,7 +9,8 @@
 #include "x/w/namespace.H"
 
 LIBCXXW_NAMESPACE_START
-class xidObj;
+
+class LIBCXX_HIDDEN xidObj;
 
 //! An allocated X protocol identifier.
 

@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class focusable_labelObj;
+class LIBCXX_PUBLIC focusable_labelObj;
 
 struct focusable_label_config;
 

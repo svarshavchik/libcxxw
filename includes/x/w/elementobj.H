@@ -36,7 +36,7 @@ LIBCXXW_NAMESPACE_START
 class elementObj : virtual public obj {
 
 public:
-	class implObj;
+	class LIBCXX_PUBLIC implObj;
 
 	//! Internal implementation details.
 

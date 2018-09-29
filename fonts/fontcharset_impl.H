@@ -20,7 +20,7 @@ namespace fontconfig {
 
 //! charset implementation object.
 
-class charsetObj::implObj : virtual public obj {
+class LIBCXX_HIDDEN charsetObj::implObj : virtual public obj {
 
 public:
 	//! Normal constructor. Creates a new FcCharset.

@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class menuObj;
+class LIBCXX_PUBLIC menuObj;
 
 /*! A menu button in a \ref menubarlayoutmanager "menu bar".
 

@@ -11,7 +11,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class richtextiteratorObj;
+class LIBCXX_HIDDEN richtextiteratorObj;
 
 //! Iterator, or a pointer, into a \ref "rich text object".
 

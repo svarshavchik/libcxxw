@@ -11,8 +11,8 @@
 
 LIBCXXW_NAMESPACE_START
 
-class gcObj;
-class gcBase;
+class LIBCXX_PUBLIC gcObj;
+class LIBCXX_PUBLIC gcBase;
 
 /*! A graphic context
 

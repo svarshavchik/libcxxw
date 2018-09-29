@@ -113,6 +113,8 @@ class elementObj::implObj : public element_drawObj,
 	LOG_CLASS_SCOPE;
  private:
 
+	struct LIBCXX_HIDDEN data_thread_only_t;
+
 	//! Most of the stuff is for the connection thread's consumption, only.
 
 	struct data_thread_only_t {

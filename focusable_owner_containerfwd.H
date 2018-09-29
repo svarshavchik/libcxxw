@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class focusable_owner_containerObj;
+class LIBCXX_HIDDEN focusable_owner_containerObj;
 
 //! A focusable container, with ownership.
 

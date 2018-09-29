@@ -12,8 +12,8 @@
 
 LIBCXXW_NAMESPACE_START
 
-class connectionObj;
-class connectionBase;
+class LIBCXX_PUBLIC connectionObj;
+class LIBCXX_PUBLIC connectionBase;
 struct theme_option;
 
 //! Which options are enabled for the given theme.

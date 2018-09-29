@@ -12,7 +12,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class ximclientObj;
+class LIBCXX_HIDDEN ximclientObj;
 
 //! XIM Input Context ID.
 

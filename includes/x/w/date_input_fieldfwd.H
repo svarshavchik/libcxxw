@@ -13,7 +13,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class date_input_fieldObj;
+class LIBCXX_PUBLIC date_input_fieldObj;
 
 /*! A date input field.
 

@@ -18,7 +18,7 @@ LIBCXXW_NAMESPACE_START
 //! This callback gets invoked whenever a standard combo-box currently
 //! selectem item changes.
 
-struct LIBCXX_HIDDEN standard_combobox_selection_changed_info_t {
+struct standard_combobox_selection_changed_info_t {
 
 	//! The layout manager
 	const standard_comboboxlayoutmanager &lm;
@@ -75,7 +75,7 @@ for more information.
 
 */
 
-class LIBCXX_HIDDEN new_standard_comboboxlayoutmanager
+class new_standard_comboboxlayoutmanager
 	: public new_custom_comboboxlayoutmanager {
 
  public:

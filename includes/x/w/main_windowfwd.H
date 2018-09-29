@@ -13,8 +13,8 @@
 
 LIBCXXW_NAMESPACE_START
 
-class main_windowObj;
-class main_windowBase;
+class LIBCXX_PUBLIC main_windowObj;
+class LIBCXX_PUBLIC main_windowBase;
 
 //! \anchor main_window Top level application window.
 

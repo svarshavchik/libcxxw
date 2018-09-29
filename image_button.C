@@ -24,8 +24,6 @@
 
 LIBCXXW_NAMESPACE_START
 
-LOG_FUNC_SCOPE_DECL(LIBCXXW_NAMESPACE::image_button, image_log);
-
 create_image_button_info::borders_t::borders_t()
 	: focusoff_border{"thin_inputfocusoff_border"},
 	  focuson_border{"thin_inputfocuson_border"}
@@ -70,8 +68,6 @@ void image_buttonObj::set_value(size_t n)
 
 void image_buttonObj::on_activate(const image_button_callback_t &callback)
 {
-	LOG_FUNC_SCOPE(image_log);
-
 	element_impl e=impl->button->impl;
 
 	e->get_window_handler().thread()->run_as

@@ -21,7 +21,7 @@ class image_buttonObj : public containerObj,
 			public focusableObj {
 
 public:
-	class implObj;
+	class LIBCXX_HIDDEN implObj;
 
 	//! Internal implementation details.
 

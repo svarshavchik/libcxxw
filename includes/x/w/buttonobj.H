@@ -23,7 +23,7 @@ class buttonObj : public containerObj,
 		  public hotspot_bgcolorObj {
 
 public:
-	class implObj;
+	class LIBCXX_HIDDEN implObj;
 
 	struct internal_construction_info;
 

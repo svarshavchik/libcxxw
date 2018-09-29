@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class font_family_group_entryObj;
+class LIBCXX_HIDDEN font_family_group_entryObj;
 
 /*! A font family entry, for the font family combo-box in the font selection dialog popup.
 

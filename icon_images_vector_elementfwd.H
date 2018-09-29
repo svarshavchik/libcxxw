@@ -9,6 +9,9 @@
 
 LIBCXXW_NAMESPACE_START
 
+template<typename element_impl>
+class LIBCXX_HIDDEN icon_images_vector_elementObj;
+
 //! Attach an icon_images_vector to an element.
 
 //! The template parameter must be a subclass of elementObj::implObj.
@@ -17,7 +20,7 @@ LIBCXXW_NAMESPACE_START
 //! and icon_images_vector.
 
 template<typename element_impl>
-class LIBCXX_HIDDEN icon_images_vector_elementObj
+class icon_images_vector_elementObj
 	: public element_impl,
 	  public icon_images_vector {
 

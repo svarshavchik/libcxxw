@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class ximxtransportObj;
+class LIBCXX_HIDDEN ximxtransportObj;
 
 //! An interface to the X Input Method server.
 

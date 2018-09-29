@@ -9,7 +9,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class peephole_toplevel_gridlayoutmanagerObj;
+class LIBCXX_HIDDEN peephole_toplevel_gridlayoutmanagerObj;
 
 //! Grid layout manager for the top level display element.
 

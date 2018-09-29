@@ -47,6 +47,8 @@ typedef ref<close_flagObj> close_flag_ref;
 
 struct circle_color_tag;
 
+class LIBCXX_PUBLIC my_canvas_implObj;
+
 class my_canvas_implObj :
 	public scratch_and_mask_buffer_draw<background_color_elementObj<
 						    canvasObj::implObj,
@@ -154,6 +156,8 @@ void my_canvas_implObj::do_draw(ONLY IN_THREAD,
 				area_entire_rect.height,
 				render_pict_op::op_over);
 }
+
+class my_canvasObj;
 
 class my_canvasObj : public canvasObj {
 

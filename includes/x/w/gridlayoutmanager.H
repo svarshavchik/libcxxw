@@ -21,7 +21,7 @@ LIBCXXW_NAMESPACE_START
 //! when creating a main window, or a container that
 //! uses the grid layout manager.
 
-class LIBCXX_HIDDEN new_gridlayoutmanager : public new_layoutmanager {
+class new_gridlayoutmanager : public new_layoutmanager {
 
 public:
 

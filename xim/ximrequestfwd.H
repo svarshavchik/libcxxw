@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class ximrequestObj;
+class LIBCXX_HIDDEN ximrequestObj;
 
 //! A synchronous request pending with the XIM server.
 

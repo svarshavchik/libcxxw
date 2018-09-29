@@ -1,0 +1,26 @@
+# serial @VERSION@.@LIBCXX_VERSION@
+
+AC_DEFUN([LIBCXXW_INIT],[
+if test "$LIBCXX_VERSION" = ""
+then
+    # aclocal seems to go bonkers, recursing infinitely, if it sees my
+    # symbol literally.
+    init="_INIT"
+    AC_MSG_ERROR([Use LIBCXX${init} before LIBCXXW${init}])
+fi
+if test "$LIBCXXW_VERSION" = ""
+then
+	LIBCXXW_VERSION="@ABIVER@"
+fi
+
+PKG_CHECK_EXISTS([libcxxw-$LIBCXXW_VERSION.$LIBCXX_VERSION],[:],[AC_MSG_ERROR([Libcxxw package $LIBCXXW_VERSION.$LIBCXX_VERSION not found])])
+
+libcxxw_pkgdatadir="`$PKG_CONFIG --variable=pkgdatadir libcxxw-$LIBCXXW_VERSION.$LIBCXX_VERSION`"
+
+CFLAGS="$CFLAGS `$PKG_CONFIG --cflags libcxxw-$LIBCXXW_VERSION.$LIBCXX_VERSION`"
+CXXFLAGS="$CXXFLAGS `$PKG_CONFIG --cflags libcxxw-$LIBCXXW_VERSION.$LIBCXX_VERSION`"
+LDFLAGS="$LDFLAGS `$PKG_CONFIG --libs libcxxw-$LIBCXXW_VERSION.$LIBCXX_VERSION`"
+LIBCXXW_AM="include $libcxxw_pkgdatadir/*.mk"
+AC_SUBST([LIBCXXW_AM])
+
+])

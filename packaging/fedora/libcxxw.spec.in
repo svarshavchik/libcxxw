@@ -1,11 +1,20 @@
-Summary: LibCXXW
+%define libcxx_version %{expand:%(v="$LIBCXX_VERSION"; test "$v" = "" && v=@LIBCXX_VERSION@; echo $v)}
+
+%{?compat: %define do_compat 1}
+%{!?compat: %define do_compat 0}
+
+%if %do_compat
+Name: libcxxw%{expand:%(echo @ABIVER@cxx%{libcxx_version} | tr -d '.')}
+%else
 Name: libcxxw
-Version: @VERSION@
+%endif
+Summary: LibCXXW
+Version: @VERSION@.%{libcxx_version}
 Release: 1%{?extrarelease}
 License: GPL
 Group: System Environment/Libraries
 URL: http://www.libcxx.org/w/
-Source0: %{name}-%{version}.tar.bz2
+Source0: libcxxw-@VERSION@.tar.bz2
 
 %define _hardened_build 1
 
@@ -15,8 +24,7 @@ Requires: font(liberationmono)
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
 
-BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
-BuildRequires: libcxxbase-devel
+BuildRequires: libcxxbase-abi = %{libcxx_version}
 BuildRequires: freetype-devel
 BuildRequires: fontconfig-devel
 BuildRequires: libxcb-devel
@@ -46,7 +54,7 @@ This package installs the LibCXXW printing dialog library.
 Group: Development/Libraries
 Summary: LibCXXW development libraries
 Requires: %{name} = 0:%{version}-%{release}
-Requires: libcxxbase-devel
+Requires: libcxxbase-abi = %{libcxx_version}
 Requires: libX11-devel
 
 %description devel
@@ -64,7 +72,7 @@ This package installs additional internal header files for building
 custom LibCXXW display elements.
 
 %prep
-%setup -q
+%setup -q -n libcxxw-@VERSION@
 %configure
 
 %build
@@ -74,39 +82,49 @@ custom LibCXXW display elements.
 rm -rf $RPM_BUILD_ROOT
 %{__make} install DESTDIR=$RPM_BUILD_ROOT
 RPM_BUILD_ROOT="$RPM_BUILD_ROOT" desktop-file-install cxxwtheme.desktop
-rm -f $RPM_BUILD_ROOT/%{_libdir}/*.la
+rm -f $RPM_BUILD_ROOT/%{_libdir}/*/*.la
 
 echo '%defattr(-,root,root,-)' >public-headers
 
-(cd $RPM_BUILD_ROOT; find .%{_includedir}/x/w -name impl -prune -o -type f -print) | sed 's/^.//' >>public-headers
+(cd $RPM_BUILD_ROOT; find .%{_includedir}/* -name impl -prune -o -type f -print) | sed 's/^.//' >>public-headers
 
-(cd $RPM_BUILD_ROOT; find .%{_includedir}/x/w -name impl -prune -o -type d -print) | sed 's@^.@%dir @' >>public-headers
+(cd $RPM_BUILD_ROOT; find .%{_includedir}/* -name impl -prune -o -type d -print) | sed 's@^.@%dir @' >>public-headers
+
+%if %do_compat
+rm -f $RPM_BUILD_ROOT%{_datadir}/applications/*
+rm -f $RPM_BUILD_ROOT%{_bindir}/*
+rm -f $RPM_BUILD_ROOT%{_mandir}/*/*
+%endif
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%post -p /sbin/ldconfig
-
-%postun -p /sbin/ldconfig
-
 %files
 %defattr(-,root,root,-)
-%{_libdir}/libcxxw.so.*
-%{_datadir}/libcxxw
+%dir %{_libdir}/libcxxw*
+%{_libdir}/libcxxw*/libcxxw.so.*
+%{_datadir}/libcxxw*
+
+%if %do_compat
+
+%else
 %{_datadir}/applications/*
 %{_bindir}/*
 %{_mandir}/*/*
+%endif
 
 %files cups
 %defattr(-,root,root,-)
-%{_libdir}/libcxxwcups.so.*
+%{_libdir}/libcxxw*/libcxxwcups.so.*
 
 %files devel -f public-headers
 %defattr(-,root,root,-)
-%{_libdir}/*.so
-%{_libdir}/*.a
+%{_libdir}/libcxxw*/*.so
+%{_libdir}/libcxxw*/*.a
+%{_libdir}/pkgconfig/*
+%{_datadir}/aclocal/*
 %doc examples
 
 %files devel-internals
 %defattr(-,root,root,-)
-%{_includedir}/x/w/impl
+%{_includedir}/*/x/w/impl

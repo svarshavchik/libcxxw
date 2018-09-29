@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class pagetabObj;
+class LIBCXX_HIDDEN pagetabObj;
 
 /*! An element in a \ref pagetabgridlayoutmanager "pagetabgridlayoutmanager".
 

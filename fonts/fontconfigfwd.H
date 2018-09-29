@@ -16,7 +16,7 @@ namespace fontconfig {
 }
 #endif
 
-class configObj;
+class LIBCXX_HIDDEN configObj;
 class configBase;
 
 //! Font configuration

@@ -279,8 +279,6 @@ void connection_threadObj::compute_poll_until(tick_clock_t::time_point now,
 void connection_threadObj
 ::dispatch_do_run_as(const x::function<void (ONLY IN_THREAD)> &func)
 {
-	LOG_FUNC_SCOPE(runLogger);
-
 	// Make sure all changes in the main execution thread are
 	// committed by now. Although this should theoretically
 	// taken care of by the mutex, this is technically required

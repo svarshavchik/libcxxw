@@ -18,7 +18,7 @@ LIBCXXW_NAMESPACE_START
 class pixmapObj : public drawableObj {
 
 public:
-	class implObj;
+	class LIBCXX_HIDDEN implObj;
 
 	//! Internal implementation details
 

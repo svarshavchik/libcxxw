@@ -14,7 +14,7 @@ LIBCXXW_NAMESPACE_START
 
 //! Internal handler.
 
-class LIBCXX_HIDDEN dialogObj::handlerObj : public main_windowObj::handlerObj {
+class dialogObj::handlerObj : public main_windowObj::handlerObj {
 
 	//! Alias
 

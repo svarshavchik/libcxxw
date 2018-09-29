@@ -9,11 +9,10 @@
 #include <x/ptrfwd.H>
 #include <x/logger.H>
 
+#include "window_handlerfwd.H"
 #include "x/w/namespace.H"
 
 LIBCXXW_NAMESPACE_START
-
-class window_handlerObj;
 
 //! Owner of a \ref window_handler "window handler"
 

@@ -23,7 +23,7 @@ LIBCXXW_NAMESPACE_START
 class gcObj : virtual public obj {
 
 public:
-	class implObj;
+	class LIBCXX_HIDDEN implObj;
 
 	//! The drawable this graphic context is for.
 	const drawable gc_drawable;
@@ -120,7 +120,7 @@ public:
 		bool has_cliprects=false;
 
 	public:
-		friend class implObj;
+		friend class LIBCXX_HIDDEN implObj;
 
 		//! Specification for dashed lines
 		std::vector<uint8_t> dashes;

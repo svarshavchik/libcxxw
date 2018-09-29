@@ -13,7 +13,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class color_pickerObj;
+class LIBCXX_PUBLIC color_pickerObj;
 
 /*! Color picker display element.
 

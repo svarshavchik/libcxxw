@@ -14,10 +14,10 @@ LIBCXXW_NAMESPACE_START
 
 //! \see synchronized_axis
 
-class LIBCXX_HIDDEN synchronized_axisObj : virtual public obj {
+class synchronized_axisObj : virtual public obj {
 
 public:
-	class implObj;
+	class LIBCXX_HIDDEN implObj;
 
 	//! Internal implementation object.
 	const ref<implObj> impl;

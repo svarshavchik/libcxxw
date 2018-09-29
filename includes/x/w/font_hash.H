@@ -14,7 +14,7 @@ namespace std {
 	//! Specialization of \c std::hash for \c INSERT_LIBX_NAMESPACE::w::font
 
 	template<>
-	struct LIBCXX_HIDDEN hash<LIBCXX_NAMESPACE::w::font>
+	struct hash<LIBCXX_NAMESPACE::w::font>
 		: public hash<string>, hash<int> {
 
 		inline size_t operator()(const LIBCXX_NAMESPACE::w::font &r)

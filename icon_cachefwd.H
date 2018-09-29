@@ -11,7 +11,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class icon_cacheObj;
+class LIBCXX_HIDDEN icon_cacheObj;
 
 /*!
 Cache of icon-related objects.

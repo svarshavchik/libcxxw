@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class labelObj;
+class LIBCXX_PUBLIC labelObj;
 
 //! Labels properties
 

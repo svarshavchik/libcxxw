@@ -38,7 +38,7 @@ struct pane_style {
 //! \c create_focusable_container() to create a container that uses the
 //! pane layout manager.
 
-class LIBCXX_HIDDEN new_panelayoutmanager :
+class new_panelayoutmanager :
 	public new_focusable_layoutmanager,
 	public pane_style {
 

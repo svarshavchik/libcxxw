@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class peepholedObj;
+class LIBCXX_HIDDEN peepholedObj;
 
 //! An element in a peephole.
 

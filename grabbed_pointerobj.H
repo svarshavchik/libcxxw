@@ -16,7 +16,7 @@ LIBCXXW_NAMESPACE_START
 
 //! \see grabbed_pointer.
 
-class LIBCXX_HIDDEN grabbed_pointerObj : virtual public obj {
+class grabbed_pointerObj : virtual public obj {
 
  public:
 

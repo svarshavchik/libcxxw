@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class list_cellObj;
+class LIBCXX_HIDDEN list_cellObj;
 
 /*! A single cell in a \ref listlayoutmanager "list".
 

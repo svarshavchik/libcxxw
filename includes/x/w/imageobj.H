@@ -17,7 +17,7 @@ LIBCXXW_NAMESPACE_START
 class imageObj : public elementObj {
 
 public:
-	class implObj;
+	class LIBCXX_HIDDEN implObj;
 
 	//! Internal implementation details.
 

@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class pagetabgridcontainer_implObj;
+class LIBCXX_HIDDEN pagetabgridcontainer_implObj;
 
 /*! Container for \ref booklayoutmanager "booklayoutmanager"'s tab strip.
 

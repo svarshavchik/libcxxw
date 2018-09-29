@@ -25,7 +25,7 @@ LIBCXXW_NAMESPACE_START
 //! when creating a main window, or a container that
 //! uses the book layout manager.
 
-class LIBCXX_HIDDEN new_booklayoutmanager
+class new_booklayoutmanager
 	: public new_focusable_layoutmanager {
  public:
 	//! Constructor
@@ -69,7 +69,7 @@ public:
 
 //! \see booklayoutmanager
 
-struct LIBCXX_PUBLIC book_status_info_t {
+struct book_status_info_t {
 
 	//! The lock on the book layout manager.
 

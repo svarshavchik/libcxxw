@@ -11,6 +11,7 @@
 #include "x/w/rectangle.H"
 #include "x/w/screenfwd.H"
 #include "x/w/impl/clock.H"
+#include "window_handlerfwd.H"
 #include "selection/current_selectionfwd.H"
 #include "xim/ximclientfwd.H"
 #include <x/logger.H>

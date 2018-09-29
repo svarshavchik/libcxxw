@@ -10,7 +10,8 @@
 
 LIBCXXW_NAMESPACE_START
 
-class tablelayoutmanagerObj;
+class LIBCXX_HIDDEN new_tablelayoutmanager;
+class LIBCXX_PUBLIC tablelayoutmanagerObj;
 
 /*! The table layout manager
 

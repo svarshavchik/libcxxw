@@ -12,7 +12,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class font_pickerObj;
+class LIBCXX_PUBLIC font_pickerObj;
 
 //! \ref font_picker "Font picker" grouping.
 

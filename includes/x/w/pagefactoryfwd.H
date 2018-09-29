@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class pagefactoryObj;
+class LIBCXX_PUBLIC pagefactoryObj;
 
 /*! Factory for containers managed by the \ref pagelayoutmanager "page layout manager".
 

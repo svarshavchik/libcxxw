@@ -152,13 +152,13 @@ static auto sanity_check(const focusable_impl &impl1,
 
 template<typename callback>
 static void get_two_impls(const focusable &focus1, const focusable &focus2,
-			  callback &&cb) LIBCXX_HIDDEN;
+			  callback &&cb);
 
 static void do_get_two_impl(const focusable &focus1, const focusable &focus2,
 			    const function<void
 			    (const internal_focusable_group &,
 			     const internal_focusable_group &)>
-			    &cb) LIBCXX_HIDDEN;
+			    &cb);
 
 template<typename callback>
 inline static void get_two_impls(const focusable &focus1,

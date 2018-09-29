@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class filedircontentsObj;
+class LIBCXX_HIDDEN filedircontentsObj;
 
 /*! Directory contents monitor.
 

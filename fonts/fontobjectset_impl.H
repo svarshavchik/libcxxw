@@ -20,7 +20,7 @@ namespace fontconfig {
 
 //! \ref objsectset "objsectset" implementation object.
 
-class objectsetObj::implObj : virtual public obj {
+class LIBCXX_HIDDEN objectsetObj::implObj : virtual public obj {
 
 public:
 	//! Constructor

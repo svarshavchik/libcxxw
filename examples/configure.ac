@@ -10,6 +10,7 @@ AM_INIT_AUTOMAKE([dist-bzip2 foreign -Wno-portability])
 # Checks for programs.
 AC_PROG_CXX
 LIBCXX_INIT
+LIBCXXW_INIT
 AC_CONFIG_FILES([Makefile
 	])
 

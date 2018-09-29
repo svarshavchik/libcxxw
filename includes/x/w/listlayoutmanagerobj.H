@@ -18,7 +18,7 @@ class listlayoutmanagerObj : public layoutmanagerObj,
 			     virtual public obj {
 
 public:
-	class implObj;
+	class LIBCXX_HIDDEN implObj;
 
 	//! Internal implementation object.
 	const ref<implObj> impl;

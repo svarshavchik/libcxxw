@@ -11,7 +11,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class list_elementObj;
+class LIBCXX_HIDDEN list_elementObj;
 
 /*! The singleton element managed by the \ref listlayoutmanager "list layout manager".
 

@@ -13,6 +13,8 @@
 
 LIBCXXW_NAMESPACE_START
 
+class LIBCXX_HIDDEN new_layoutmanager;
+
 //! A new layout manager
 
 //! A new container's layout manager gets created before the
@@ -21,7 +23,7 @@ LIBCXXW_NAMESPACE_START
 //! A subclass of new_layoutmanager gets passed to methods that create
 //! layout managers.
 
-class LIBCXX_HIDDEN new_layoutmanager {
+class new_layoutmanager {
 
 public:
 

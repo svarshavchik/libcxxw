@@ -12,7 +12,7 @@ LIBCXXW_NAMESPACE_START
 
 //! A popup "public" object.
 
-class LIBCXX_HIDDEN popupObj : public generic_windowObj {
+class popupObj : public generic_windowObj {
 
 public:
 
@@ -25,10 +25,10 @@ public:
 
 	//! Constructor
 	popupObj(const ref<implObj> &impl,
-		 const layout_impl &layout);
+		 const layout_impl &layout) LIBCXX_HIDDEN;
 
 	//! Destructor
-	~popupObj();
+	~popupObj() LIBCXX_HIDDEN;
 };
 
 LIBCXXW_NAMESPACE_END

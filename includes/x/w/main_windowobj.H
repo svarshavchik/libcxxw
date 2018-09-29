@@ -54,8 +54,8 @@ class main_windowObj : public generic_windowObj {
 public:
 	LOG_CLASS_SCOPE;
 
-	class implObj;
-	class handlerObj;
+	class LIBCXX_HIDDEN implObj;
+	class LIBCXX_HIDDEN handlerObj;
 
 	//! Internal implementation details
 

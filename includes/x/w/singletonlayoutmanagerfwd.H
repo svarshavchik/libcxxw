@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class singletonlayoutmanagerObj;
+class LIBCXX_PUBLIC singletonlayoutmanagerObj;
 
 /*! A layout manager for one element only.
 

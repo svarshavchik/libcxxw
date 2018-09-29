@@ -26,19 +26,21 @@ namespace metrics {
 #endif
 
 
-const struct grid_major h_grid LIBCXX_HIDDEN ={
-	&grid_posObj::horiz_pos,
-	&horizvertObj::horiz,
-	&pos_axis_padding::total_horiz_padding,
-	&v_grid,
-};
+const struct grid_major h_grid =
+	{
+	 &grid_posObj::horiz_pos,
+	 &horizvertObj::horiz,
+	 &pos_axis_padding::total_horiz_padding,
+	 &v_grid,
+	};
 
-const struct grid_major v_grid LIBCXX_INTERNAL ={
-	&grid_posObj::vert_pos,
-	&horizvertObj::vert,
-	&pos_axis_padding::total_vert_padding,
-	&h_grid,
-};
+const struct grid_major v_grid =
+	{
+	 &grid_posObj::vert_pos,
+	 &horizvertObj::vert,
+	 &pos_axis_padding::total_vert_padding,
+	 &h_grid,
+	};
 
 // For speed, we also want a vector-like view into grid_metrics_t
 
@@ -49,7 +51,7 @@ create_grid_metrics_refvec(grid_metrics_t &m,
 			   grid_xy start_pos,
 			   grid_xy end_pos,
 			   const std::set<grid_xy> &all_grid_positions,
-			   std::set<grid_xy> &missing_pos) LIBCXX_INTERNAL;
+			   std::set<grid_xy> &missing_pos);
 
 // We have an element with the given start/ending position on a grid's axis.
 // grid_metrics_t are the metrics for the computed positions on the axis.
@@ -449,17 +451,16 @@ static void do_prorated_size(const grid_metrics_t &m,
 			     dim_squared_t total,
 
 			     const function<do_apply_functor_t> &do_apply,
-			     const function<towards_functor_t> &towards)
-	LIBCXX_INTERNAL;
+			     const function<towards_functor_t> &towards);
 
-static bool apply_all(const grid_xy &ignore, const axis &) LIBCXX_INTERNAL;
-static bool apply_noninfinites(const grid_xy &ignore, const axis &a) LIBCXX_INTERNAL;
+static bool apply_all(const grid_xy &ignore, const axis &);
+static bool apply_noninfinites(const grid_xy &ignore, const axis &a);
 static dim_t apply_minimum_size(const grid_xy &ignore,
-				const axis &a) LIBCXX_INTERNAL;
+				const axis &a);
 static dim_t apply_preferred_size(const grid_xy &ignore,
-				  const axis &a) LIBCXX_INTERNAL;
+				  const axis &a);
 static dim_t apply_maximum_size(const grid_xy &ignore,
-				const axis &a) LIBCXX_INTERNAL;
+				const axis &a);
 
 // prorated_size: apply to all axises.
 

@@ -6,6 +6,7 @@
 #define peepholed_toplevelobj_h
 
 #include "peephole/peepholedobj.H"
+#include "peephole/peepholed_toplevelfwd.H"
 #include "x/w/screenfwd.H"
 
 LIBCXXW_NAMESPACE_START

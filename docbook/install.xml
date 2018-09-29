@@ -43,109 +43,137 @@ See COPYING for distribution information.
   </informaltable>
 
   <para>
-    The following components must be installed first before building &app;:
+    The &app; should be converted into an installable package, instead of
+    building
+    and installing the &app; directly. The source tarball
+    includes a canned build script for Fedora. Running
+    <quote><command>rpmbuild -ta libcxxw-<replaceable>version</replaceable>.tar.bz2</command></quote>
+    creates the following packages:
   </para>
 
   <itemizedlist>
     <listitem>
-      <para>
-	&libcxx;.
-      </para>
+      <para>The main binary rpm package, with runtime libraries.</para>
     </listitem>
-
     <listitem>
       <para>
-	Version 2 of <ulink url="http://www.freetype.org">Freetype</ulink>.
-      </para>
-    </listitem>
-
-    <listitem>
-      <para>
-	The <ulink url="http://fontconfig.org">Fontconfig</ulink>
-	library.
+	The <quote>devel</quote> subpackage, containing header files and
+	other supporting files used for developing applications that use the
+	&app;.
       </para>
     </listitem>
     <listitem>
       <para>
-	<ulink url="http://xcb.freedesktop.org/">XCB library</ulink>,
-	including its util modules:
-	xcb-xproto,
-	xcb-keysym,
-	xcb-ewmh,
-	xcb-icccm,
-	xcb-image.
-      </para>
-    </listitem>
-    <listitem>
-      <para>
-	<ulink url="http://sourceforge.net/projects/libjpeg-turbo/">libjpeg-turbo</ulink>,
-	<ulink url="http://www.libpng.org/pub/png/">libpng</ulink>,
-	and
-	<ulink url="http://www.sourceforge.net/projects/giflib/">giflib</ulink>.
+	The <quote>devel-internals</quote> subpackage, containing additional
+	header files exposing internal library API's, for
+	<link linkend="custom">developing custom display elements</link>.
       </para>
     </listitem>
   </itemizedlist>
 
-  <note>
-    <para>
-      Linux distributions typically have separate runtime and
-      development packages for these libraries. In all cases, the
-      development packages must be installed to build &app;, and
-      only the runtime packages are required to run the applications.
-    </para>
-  </note>
-
   <para>
-    Implicit from these requirements:
-    using &app; to build applications requires knowledge and familiarity
-    with the core &libcxx; classes and templates, as well as the
-    GNU toolchain (autoconf, automake, and libtool).
+    Use the following documentation as a guide for preparing an
+    installable the &app; package on platforms other than Fedora.
   </para>
+
+  <simplesect>
+    <title>Requirements and prerequisites</title>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  <ulink url="../INSTALL.html">Install &libcxx; first</ulink> before
+	  installing the &app;. All &libcxx;'s own requirements apply here as
+	  well (<application>gcc</application> version,
+	  <application>gmake</application>, and others).
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Version 2 of <ulink url="http://www.freetype.org">Freetype</ulink>.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  The <ulink url="http://fontconfig.org">Fontconfig</ulink>
+	  library.
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  <ulink url="http://xcb.freedesktop.org/">XCB library</ulink>,
+	  including its util modules:
+	  xcb-xproto,
+	  xcb-keysym,
+	  xcb-ewmh,
+	  xcb-icccm,
+	  xcb-image.
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  <ulink url="http://sourceforge.net/projects/libjpeg-turbo/">libjpeg-turbo</ulink>,
+	  <ulink url="http://www.libpng.org/pub/png/">libpng</ulink>,
+	  and
+	  <ulink url="http://www.sourceforge.net/projects/giflib/">giflib</ulink>.
+	</para>
+      </listitem>
+    </itemizedlist>
+
+
+    <note>
+      <para>
+	Linux distributions typically have separate runtime and
+	development packages for these libraries. In all cases, the
+	development packages must be installed to build &app;, and
+	only the runtime packages are required to run the applications.
+      </para>
+    </note>
+  </simplesect>
 
   <simplesect>
     <title>Configuring and building</title>
 
     <para>
-      The recommended approach is to convert
-      &app; into an installable package; rather than manually building
-      and installing &app; directly. The source tarball
-      is directly buildable on Fedora. Running
-      <quote><command>rpmbuild -ta libcxxw-<replaceable>version</replaceable>.tar.bz2</command></quote>
-      creates the following packages:
-    </para>
-
-    <itemizedlist>
-      <listitem>
-	<para>The main binary rpm package, with runtime libraries.</para>
-      </listitem>
-      <listitem>
-	<para>
-	  The <quote>devel</quote> subpackage, containing header files and
-	  other supporting files used for developing applications that use the
-	  &app;.
-	</para>
-      </listitem>
-      <listitem>
-	<para>
-	  The <quote>devel-internals</quote> subpackage, containing additional
-	  header files exposing internal library API's, for
-	  <link linkend="custom">developing custom display elements</link>.
-	</para>
-      </listitem>
-    </itemizedlist>
-
-    <para>
-      Use the following documentation as a guide for building &app; on
-      non <acronym>RPM</acronym>-based Linux distirbutions.
+      As mentioned above, the &app; should be built into a standalone,
+      installable
+      package. Use the following documentation as a guide to create an
+      installation script or a package.
     </para>
 
     <para>
       Run the <filename>configure</filename> script, followed by
       <command>make</command>
-      (or <command>gmake</command>).
+      (or <command>gmake</command>), and
+      <command>make install</command>.
       <filename>configure</filename> takes the usual options that specify
-      non-default installation directories, for various files.
+      non-default installation directories for various files
+      (see <command>configure --help</command>).
+      Additional options are:
     </para>
+
+    <variablelist>
+      <varlistentry>
+	<term>--with-pkgconfigdir=<replaceable>dir</replaceable></term>
+
+	<listitem>
+	  <para>
+	    Specifies where pkgconfig configuration file gets installed.
+	    The <command>configure</command> script goes through the list of
+	    some common directories, and checks if they exist.
+	  </para>
+
+	  <para>
+	    This option may be needed to override the default even if
+	    <command>configure</command> finds it, and does not complain, if
+	    it ends up finding and installs its pkgconfig file into the wrong
+	    directory.
+	  </para>
+	</listitem>
+      </varlistentry>
+    </variablelist>
 
     <para>
       Run <command>(g)make install DESTDIR=/tmp/libcxxw-install</command>. This
@@ -163,6 +191,179 @@ See COPYING for distribution information.
       installable package, and placed in the desktop application directory
       (usually <filename>/usr/share/applications</filename>).
     </para>
+  </simplesect>
+
+  <simplesect id="developing">
+    <title>Developing applications with the &app;</title>
+
+    <para>
+      See <ulink url="../core.html">&libcxxname;'s autotools
+	instructions</ulink>. The &app; uses the same build framework.
+      In <filename>configure.ac</filename>:
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+LIBCXX_INIT
+LIBCXXW_INIT</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      &libcxx;'s <command>LIBCXX_INIT</command> gets supplemented by
+      &app;'s <command>LIBCXXW_INIT</command>,
+      The <filename>Makefile.am</filename> can also use
+      &libcxx;'s <command>@LIBCXX_AM@</command>, if needed,
+      and applications link with -lcxxw and -lcxx
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+@LIBCXX_AM@
+
+bin_PROGRAMS=main
+main_SOURCES=main.C
+main_LDADD=-lcxxw -lcxx</programlisting>
+      </informalexample>
+    </blockquote>
+  </simplesect>
+
+  <simplesect id="multiver">
+    <title>Packaging different versions of the &app;</title>
+
+    <para>
+      It is possible to install multiple versions of the &app; to accomodate
+      software that gets built with different versions of the &app;.
+      See <ulink url="/INSTALL.html#multiver">&libcxx;'s documentation
+	for more information</ulink>. The same process gets used for the
+      &app; too.
+    </para>
+
+    <para>
+      &app;'s compatibility package does not have:
+    </para>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  The tools in <replaceable>$bindir</replaceable> (the
+	  <command>cxxw</command> and <command>cxxwtheme</command>
+	  commands.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  The <command>cxxwtheme</command> desktop file,
+	  <filename>cxxwtheme.desktop</filename>
+	  (usually in <filename>/usr/share/applications</filename>, see
+	  above).
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Manual pages in <replaceable>$mandir</replaceable>.
+	</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>
+      The compatibility packages contents are, only:
+    </para>
+
+    <variablelist>
+      <varlistentry>
+	<term><filename><replaceable>$libdir</replaceable>/libcxxw-<replaceable>$version</replaceable></filename></term>
+	<listitem>
+	  <para>
+	    This directory whose name includes the &app; and &libcxx;'s API/ABI
+	    versions contains the runtime libraries.
+	    Multiple concurrently-installed version of the &app;
+	    get installed into different directories in
+	    <filename><replaceable>$libdir</replaceable></filename>.
+	  </para>
+	</listitem>
+      </varlistentry>
+      <varlistentry>
+	<term><filename><replaceable>$includedir</replaceable>/libcxxsw-<replaceable>$version</replaceable></filename></term>
+	<listitem>
+	  <para>
+	    This directory whose name includes the &app;'s and &libcxx;'s
+	    API/ABI version contains the header files.
+	    Multiple concurrently-installed version of the &app;
+	    install their header files into different directories in
+	    <filename><replaceable>$includedir</replaceable></filename>.
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term><filename><replaceable>$datadir</replaceable>/libcxxsw-<replaceable>$version</replaceable></filename></term>
+	<listitem>
+	  <para>
+	    This directory whose name includes the &app;'s and &libcxx;'s
+	    API/ABI version contains &app;'s visual schemes.
+	    Multiple concurrently-installed version of the &app;
+	    install their header files into different directories in
+	    <filename><replaceable>$includedir</replaceable></filename>.
+	  </para>
+
+	  <para>
+	    Only the primary &app; package provides the
+	    <command>cxxwtheme</command> to switch display themes.
+	    A compatibility &app; library tries to use its corresponding
+	    theme with the same name as the primary's package, falling back
+	    to the default theme if necessary.
+	  </para>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term>The <command>pkgconf/pkg-config</command> and <command>aclocal</command> autoconf macros</term>
+	<listitem>
+	  <para>
+	    The &app; installs a package configuration files and an autoconf
+	    macro files into the shared, global
+	    <filename>pkgconfig</filename> and
+	    <filename>aclocal</filename> directories. The names of these files
+	    include the &app; version, making it possible to install
+	    multiple versions of these files, corresponding to each installed
+	    version of the &app;.
+	  </para>
+	</listitem>
+      </varlistentry>
+    </variablelist>
+  </simplesect>
+
+  <simplesect id="retarget">
+    <title>Re-targeting to a different version of &app;</title>
+
+    <para>
+      Re-targeting code that gets compiled with the &app; to use a
+      different version of the &app;, if that's possible, follows the
+      same general process
+      <ulink url="/INSTALL.html#retarget">&libcxx;'s</ulink>, and
+      sets the <envar>LIBCXXW_VERSION</envar> environment variable which
+      gets checked by the <command>LIBCXXW_INIT</command> macro.
+      This is the &app;'s API/ABI version number which is, generally, the
+      &app; version without the minor release level. One way to obtain
+      the API/ABI version number is that it gets
+      included in the name of the <filename>lib</filename> subdirectory
+      where &app;'s runtime libraries get installed.
+    </para>
+
+    <note>
+      <para>
+	The version label that gets included in the name of the
+	<filename>lib</filename> subdirectory includes both the &app; and
+	&libcxx;'s API/ABI versions. Only the &app;'s ABI version gets
+	specified by <envar>LIBCXXW_VERSION</envar>. The &libcxx; version
+	gets specified by <envar>LIBCXX_VERSION</envar>.
+      </para>
+    </note>
   </simplesect>
 </section>
 

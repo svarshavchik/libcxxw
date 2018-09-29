@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class peepholed_attachedto_containerObj;
+class LIBCXX_HIDDEN peepholed_attachedto_containerObj;
 
 /*! Container for a popup that's attached to a display element.
 

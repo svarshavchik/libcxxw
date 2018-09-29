@@ -11,6 +11,7 @@
 <!ENTITY sxg "<acronym>SXG</acronym>">
 <!ENTITY ns "x">
 <!ENTITY libcxx "<ulink url='/'>LibCXX</ulink>">
+<!ENTITY libcxxname "<application>LIBCXX</application>">
 <!ENTITY callback "<link linkend='callbacks'>callback</link>">
 <!ENTITY connection_thread "<link linkend='connection_thread'>connection thread</link>">
 <!ENTITY focusable "<link linkend='focusable'>focusable</link>">

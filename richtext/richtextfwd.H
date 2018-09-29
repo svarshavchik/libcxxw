@@ -12,7 +12,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class richtextObj;
+class LIBCXX_HIDDEN richtextObj;
 
 //! A list of text paragraphs.
 

@@ -10,8 +10,8 @@
 
 LIBCXXW_NAMESPACE_START
 
-class pictureObj;
-class pictureBase;
+class LIBCXX_PUBLIC pictureObj;
+class LIBCXX_PUBLIC pictureBase;
 
 /*! A Picture object, as specified in the X Rendering extension.
 

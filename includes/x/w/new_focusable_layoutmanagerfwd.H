@@ -13,6 +13,8 @@
 
 LIBCXXW_NAMESPACE_START
 
+class LIBCXX_HIDDEN new_focusable_layoutmanager;
+
 //! A new focusable layout manager
 
 //! A new focusable container's layout manager gets created before the
@@ -21,7 +23,7 @@ LIBCXXW_NAMESPACE_START
 //! A subclass of new_focusable_layoutmanager gets passed to methods that create
 //! focusable layout managers.
 
-class LIBCXX_HIDDEN new_focusable_layoutmanager {
+class new_focusable_layoutmanager {
 
 public:
 

@@ -18,7 +18,7 @@ LIBCXXW_NAMESPACE_START
 
 //! \see label_for
 
-class LIBCXX_HIDDEN label_forObj : virtual public obj {
+class label_forObj : virtual public obj {
 
 	//! The label element.
 	weakptr<ptr<elementObj::implObj>> label_thread_only;
@@ -26,7 +26,7 @@ class LIBCXX_HIDDEN label_forObj : virtual public obj {
 	//! The focusable element.
 	weakptr<focusable_implptr> focusable_thread_only;
 
- public:
+public:
 
 	THREAD_DATA_ONLY(label);
 	THREAD_DATA_ONLY(focusable);

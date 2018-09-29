@@ -6,6 +6,8 @@
 #define connection_thread_h
 
 #include "connection_infofwd.H"
+#include "window_handlerfwd.H"
+#include "xid_t_fwd.H"
 #include "x/w/connection_threadfwd.H"
 #include "x/w/impl/clock.H"
 #include "x/w/batch_queuefwd.H"
@@ -32,8 +34,6 @@
 
 LIBCXXW_NAMESPACE_START
 
-class window_handlerObj;
-class xidObj;
 class containers_2_recalculate_map;
 class containers_2_batch_recalculate_set;
 class elements_2_batch_showhide_map;

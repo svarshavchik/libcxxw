@@ -19,8 +19,8 @@ LIBCXXW_NAMESPACE_START
 class progressbarObj : public containerObj {
 
 public:
-	class implObj;
-	class handlerObj;
+	class LIBCXX_HIDDEN implObj;
+	class LIBCXX_HIDDEN handlerObj;
 
 	//! Internal implementation object.
 	const ref<implObj> impl;

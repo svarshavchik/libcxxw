@@ -12,7 +12,11 @@
 
 LIBCXXW_NAMESPACE_START
 
-class standard_comboboxlayoutmanagerObj;
+struct LIBCXX_HIDDEN standard_combobox_selection_changed_info_t;
+class LIBCXX_HIDDEN new_standard_comboboxlayoutmanager;
+class LIBCXX_PUBLIC standard_comboboxlayoutmanagerObj;
+class LIBCXX_PUBLIC const_standard_combobox_lock;
+class LIBCXX_PUBLIC standard_combobox_lock;
 
 /*! Standard combo-box layout managager.
 
@@ -121,12 +125,6 @@ typedef ptr<standard_comboboxlayoutmanagerObj> standard_comboboxlayoutmanagerptr
 //! \see standard_comboboxlayoutmanager
 
 typedef const_ptr<standard_comboboxlayoutmanagerObj> const_standard_comboboxlayoutmanagerptr;
-
-class new_standard_comboboxlayoutmanager;
-
-class standard_combobox_lock;
-
-struct standard_combobox_selection_changed_info_t;
 
 /*!
 

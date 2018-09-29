@@ -12,7 +12,11 @@
 
 LIBCXXW_NAMESPACE_START
 
-class custom_comboboxlayoutmanagerObj;
+struct LIBCXX_HIDDEN custom_combobox_selection_changed_info_t;
+struct LIBCXX_HIDDEN custom_combobox_selection_search_info_t;
+class LIBCXX_HIDDEN new_custom_comboboxlayoutmanager;
+
+class LIBCXX_PUBLIC custom_comboboxlayoutmanagerObj;
 
 /*! Custom combo-box layout managager.
 
@@ -42,10 +46,6 @@ typedef ptr<custom_comboboxlayoutmanagerObj> custom_comboboxlayoutmanagerptr;
 //! \see custom_comboboxlayoutmanager
 
 typedef const_ptr<custom_comboboxlayoutmanagerObj> const_custom_comboboxlayoutmanagerptr;
-
-class new_custom_comboboxlayoutmanager;
-
-struct LIBCXX_HIDDEN custom_combobox_selection_changed_info_t;
 
 //! Callback that gets invoked when a combo-box selection is made.
 

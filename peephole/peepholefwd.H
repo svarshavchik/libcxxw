@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class peepholeObj;
+class LIBCXX_HIDDEN peepholeObj;
 
 //! The working part of a viewport.
 

@@ -15,7 +15,7 @@ namespace fontconfig {
 }
 #endif
 
-class objectsetObj;
+class LIBCXX_HIDDEN objectsetObj;
 
 //! Font object set
 

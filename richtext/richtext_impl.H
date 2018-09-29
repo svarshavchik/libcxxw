@@ -7,6 +7,7 @@
 #define richtext_impl_H
 
 #include "richtext/richtextparagraphfwd.H"
+#include "richtext/richtextfragmentfwd.H"
 #include "richtext/richtext.H"
 #include "richtext/richtextstring.H"
 #include "richtext/richtextmeta.H"
@@ -21,9 +22,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class paragraph_list;
-class richtextfragmentObj;
-class richtext_insert_base;
+class LIBCXX_HIDDEN richtext_insert_base;
 
 //! A list of text paragraphs that ends with a mandatory line break.
 

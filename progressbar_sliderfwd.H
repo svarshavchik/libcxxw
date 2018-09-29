@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class progressbar_sliderObj;
+class LIBCXX_HIDDEN progressbar_sliderObj;
 
 //! The progress bar's slider.
 

@@ -101,8 +101,8 @@ namespace metrics {
 		}
 	};
 
-	extern const struct grid_major h_grid;
-	extern const struct grid_major v_grid;
+	extern const struct grid_major h_grid LIBCXX_HIDDEN;
+	extern const struct grid_major v_grid LIBCXX_HIDDEN;
 
 	//! Internal calculation function invoked from calculate_grid_metrics().
 

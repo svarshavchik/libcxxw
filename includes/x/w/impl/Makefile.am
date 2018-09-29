@@ -1,4 +1,4 @@
-headerdir=$(includedir)/x/w/impl
+headerdir=$(includedir)/libcxxw-@ABIVER@-@LIBCXX_VERSION@/x/w/impl
 SUBDIRS=focus fonts popup selection
 
 header_HEADERS = $(shell cd $(srcdir) && echo *.H)

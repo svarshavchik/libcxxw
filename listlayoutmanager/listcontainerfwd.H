@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class listcontainerObj;
+class LIBCXX_HIDDEN listcontainerObj;
 
 //! A container with a listlayoutmanager
 

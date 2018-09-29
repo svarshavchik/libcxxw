@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class label_forObj;
+class LIBCXX_HIDDEN label_forObj;
 
 //! A link between a focusable, and its label.
 

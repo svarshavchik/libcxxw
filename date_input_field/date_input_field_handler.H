@@ -14,7 +14,7 @@ LIBCXXW_NAMESPACE_START
 
 //! Internal implementation object.
 
-class LIBCXX_HIDDEN date_input_fieldObj::handlerObj
+class date_input_fieldObj::handlerObj
 	: public nonrecursive_visibilityObj<container_elementObj
 					    <child_elementObj>> {
 

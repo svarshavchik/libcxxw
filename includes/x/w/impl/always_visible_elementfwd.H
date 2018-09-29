@@ -9,6 +9,9 @@
 
 LIBCXXW_NAMESPACE_START
 
+template<typename element_impl>
+class LIBCXX_PUBLIC always_visible_elementObj;
+
 //! A mixin for an always-visible element implementation object.
 
 //! The template parameter is a child_elementObj or a subclass of it.

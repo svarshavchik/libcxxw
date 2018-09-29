@@ -5,6 +5,7 @@
 #ifndef independent_shortcut_activationobj_h
 #define independent_shortcut_activationobj_h
 
+#include "shortcut/independent_shortcut_activationfwd.H"
 #include "shortcut/shortcut_activation_element_impl.H"
 #include "x/w/generic_windowobj.H"
 
@@ -14,7 +15,7 @@ LIBCXXW_NAMESPACE_START
 
 //! \see independent_shortcut_activation
 
-class LIBCXX_HIDDEN independent_shortcut_activationObj
+class independent_shortcut_activationObj
 	: public shortcut_activation_element_implObj {
 
 

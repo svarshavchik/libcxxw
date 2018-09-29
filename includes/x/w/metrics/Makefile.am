@@ -1,4 +1,4 @@
-headerdir=$(includedir)/x/w/metrics
+headerdir=$(includedir)/libcxxw-@ABIVER@-@LIBCXX_VERSION@/x/w/metrics
 
 header_HEADERS = $(shell cd $(srcdir) && echo *.H)
 

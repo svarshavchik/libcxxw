@@ -23,7 +23,7 @@ namespace fontconfig {
 
 //! Implementation object.
 
-class listObj::implObj : virtual public obj {
+class LIBCXX_HIDDEN listObj::implObj : virtual public obj {
 
 public:
 	//! Create a new, empty FcFontSet

@@ -18,8 +18,8 @@ LIBCXXW_NAMESPACE_START
 class dialogObj : virtual public obj {
 
 public:
-	class implObj;
-	class handlerObj;
+	class LIBCXX_HIDDEN implObj;
+	class LIBCXX_HIDDEN handlerObj;
 
 	//! Internal implementation object.
 	const ref<implObj> impl;

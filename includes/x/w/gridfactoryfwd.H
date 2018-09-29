@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class gridfactoryObj;
+class LIBCXX_PUBLIC gridfactoryObj;
 
 /*!
 Factory implementation for a grid.

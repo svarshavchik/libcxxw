@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class borderlayoutmanagerObj;
+class LIBCXX_PUBLIC borderlayoutmanagerObj;
 
 /*! Draw a border around an element.
 

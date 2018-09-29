@@ -10,6 +10,7 @@
 #include "richtext/richtextfwd.H"
 #include "richtext/richtextcursorlocation.H"
 #include "richtext/richtextstring.H"
+#include "richtext/richtextfragmentfwd.H"
 #include "x/w/rectangle.H"
 #include "x/w/text_hotspot.H"
 #include <x/obj.H>
@@ -17,18 +18,16 @@
 
 LIBCXXW_NAMESPACE_START
 
-class richtextfragmentObj;
-
 //! \ref richtextiterator "Rich text iterator" implementation object.
 
-class LIBCXX_HIDDEN richtextiteratorObj : virtual public obj {
+class richtextiteratorObj : virtual public obj {
 
- public:
+public:
 
 	//! My rich text object.
 	const richtext my_richtext;
 
- private:
+private:
 
 	//! My cursor location object.
 

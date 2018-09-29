@@ -17,7 +17,7 @@ LIBCXXW_NAMESPACE_START
 //! This callback gets invoked whenever an editable combo-box currently
 //! selectem item changes as a result of its popup selection.
 
-struct LIBCXX_HIDDEN editable_combobox_selection_changed_info_t
+struct editable_combobox_selection_changed_info_t
 	: public standard_combobox_selection_changed_info_t {
 
 	//! The combo-box's layout manager
@@ -63,7 +63,7 @@ for more information.
 
 */
 
-class LIBCXX_HIDDEN new_editable_comboboxlayoutmanager
+class new_editable_comboboxlayoutmanager
 	: public new_custom_comboboxlayoutmanager {
 
  public:

@@ -15,7 +15,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class synchronized_axis_valueObj;
+class LIBCXX_HIDDEN synchronized_axis_valueObj;
 
 /*! One of the values being synchronized by a \ref synchronized_axis "synchronized axis".
 

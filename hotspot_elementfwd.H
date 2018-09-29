@@ -16,6 +16,9 @@
 
 LIBCXXW_NAMESPACE_START
 
+template<typename element_impl>
+class LIBCXX_HIDDEN hotspot_elementObj;
+
 //! A mixin for inheriting from a display element, and a hotspotObj::implObj.
 
 //! The template parameter must be a subclass of child_elementObj.
@@ -25,8 +28,8 @@ LIBCXXW_NAMESPACE_START
 //! This template class multiply-inherits from the
 //! focusable_elementObj mixin,  and hotspotObj::implObj.
 
-template<typename element_impl=child_elementObj>
-class LIBCXX_HIDDEN hotspot_elementObj
+template<typename element_impl>
+class hotspot_elementObj
 	: public shortcut_activation_elementObj<focusable_elementObj
 						<element_impl>>,
 	  public hotspotObj::implObj {

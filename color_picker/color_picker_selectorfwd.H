@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class color_picker_selectorObj;
+class LIBCXX_HIDDEN color_picker_selectorObj;
 
 /*! Container in the color picker popup.
 

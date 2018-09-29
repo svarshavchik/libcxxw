@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class buttonObj;
+class LIBCXX_PUBLIC buttonObj;
 
 //! A clickable button.
 

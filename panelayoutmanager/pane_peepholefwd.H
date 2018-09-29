@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class pane_peepholeObj;
+class LIBCXX_HIDDEN pane_peepholeObj;
 
 /*! A peephole for the contents of a pane.
 

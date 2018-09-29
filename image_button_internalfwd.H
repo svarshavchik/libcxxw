@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class image_button_internalObj;
+class LIBCXX_HIDDEN image_button_internalObj;
 
 //! A simple button that display a different image when it changes state.
 

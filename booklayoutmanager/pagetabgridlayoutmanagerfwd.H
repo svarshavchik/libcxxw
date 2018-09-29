@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class pagetabgridlayoutmanagerObj;
+class LIBCXX_HIDDEN pagetabgridlayoutmanagerObj;
 
 /*! The grid layout manager for a \ref booklayoutmanager "book layout manager"'s page tab.
 

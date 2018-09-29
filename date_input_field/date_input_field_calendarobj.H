@@ -23,7 +23,7 @@ LIBCXXW_NAMESPACE_START
 
 //! \see date_input_field_calendar
 
-class LIBCXX_HIDDEN date_input_field_calendarObj
+class date_input_field_calendarObj
 	: public peepholed_attachedto_containerObj {
 
  public:

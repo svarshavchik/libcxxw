@@ -14,6 +14,12 @@
 
 LIBCXXW_NAMESPACE_START
 
+template<typename element_impl>
+class LIBCXX_HIDDEN peepholed_listcontainer_impl_element_baseObj;
+
+template<typename element_impl>
+class LIBCXX_HIDDEN peepholed_listcontainer_impl_elementObj;
+
 //! Combine the peepholed_listcontainerObj::implObj with an element.
 
 //! For internal use by peepholed_listcontainer_impl_elementObj, which
@@ -34,7 +40,7 @@ LIBCXXW_NAMESPACE_START
 //! template parameter.
 
 template<typename element_impl>
-class LIBCXX_HIDDEN peepholed_listcontainer_impl_element_baseObj
+class peepholed_listcontainer_impl_element_baseObj
 	: public element_impl, public peepholed_listcontainerObj::implObj {
 
  public:
@@ -66,7 +72,7 @@ class LIBCXX_HIDDEN peepholed_listcontainer_impl_element_baseObj
 //! by the template parameter.
 
 template<typename element_impl>
-class LIBCXX_HIDDEN peepholed_listcontainer_impl_elementObj :
+class peepholed_listcontainer_impl_elementObj :
 	public themedim_axis_heightObj<
 	theme_font_elementObj<
 		listcontainer_dim_elementObj

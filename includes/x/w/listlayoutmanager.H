@@ -75,7 +75,7 @@ typedef functionptr<void (THREAD_CALLBACK, const list_item_status_info_t &)
 //! selection lists using different \c new_listlayoutmanager objects, provided
 //! that the synchronized axis object gets carefully copied to each one.
 
-class LIBCXX_HIDDEN new_listlayoutmanager : public new_focusable_layoutmanager {
+class new_listlayoutmanager : public new_focusable_layoutmanager {
 
  public:
 

@@ -8,6 +8,7 @@
 #include "listlayoutmanager/listlayoutstyle_implfwd.H"
 #include "listlayoutmanager/menu_item.H"
 #include "listlayoutmanager/list_element_impl.H"
+#include "listlayoutmanager/listcontainer_pseudo_implfwd.H"
 #include "peephole/peepholedfwd.H"
 #include "peephole/peepholeobj.H"
 #include "x/w/impl/draw_infofwd.H"
@@ -22,8 +23,6 @@
 #include <x/functional.H>
 
 LIBCXXW_NAMESPACE_START
-
-class listcontainer_pseudo_implObj;
 
 //! Metadata for each list item returned by \ref listlayoutstyle_impl "create_newcell()
 

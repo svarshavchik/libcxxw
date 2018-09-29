@@ -11,7 +11,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class installed_shortcutObj;
+class LIBCXX_HIDDEN installed_shortcutObj;
 
 /*! An installed and active shortcut key.
 

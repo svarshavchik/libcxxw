@@ -19,6 +19,9 @@
 
 LIBCXXW_NAMESPACE_START
 
+struct LIBCXX_HIDDEN grid_map_column_defaults;
+struct LIBCXX_HIDDEN grid_map_row_defaults;
+
 //! Default grid column info
 
 struct grid_map_column_defaults {
@@ -128,7 +131,7 @@ struct grid_map_row_defaults {
 //! or child_metrics_updated is set to true, but it skips rebuilding
 //! all_elements unless modified is true.
 
-class LIBCXX_HIDDEN grid_map_infoObj : virtual public obj {
+class grid_map_infoObj : virtual public obj {
 
 public:
 

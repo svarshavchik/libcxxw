@@ -12,8 +12,10 @@
 
 LIBCXXW_NAMESPACE_START
 
-class booklayoutmanagerObj;
-struct book_status_info_t;
+class LIBCXX_HIDDEN new_booklayoutmanager;
+class LIBCXX_PUBLIC booklayoutmanagerObj;
+struct LIBCXX_PUBLIC book_status_info_t;
+class LIBCXX_PUBLIC book_lock;
 
 /*! The book layout manager.
 

@@ -11,6 +11,9 @@
 
 LIBCXXW_NAMESPACE_START
 
+template<typename container_impl>
+class LIBCXX_PUBLIC container_visible_elementObj;
+
 //! Make the whole container visible, not just its child element.
 
 //! The template parameter is a subclass of container_elementObj.

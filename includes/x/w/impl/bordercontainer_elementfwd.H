@@ -20,6 +20,8 @@ struct left_border_tag;
 struct right_border_tag;
 struct top_border_tag;
 struct bottom_border_tag;
+template<typename element_impl>
+class LIBCXX_PUBLIC bordercontainer_elementObj;
 
 //! A mixin for inheriting from a display element, and a bordercontainer_implObj.
 

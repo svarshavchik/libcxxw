@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class screen_fontcachesObj;
+class LIBCXX_HIDDEN screen_fontcachesObj;
 
 //! A reference to a cache of fonts.
 

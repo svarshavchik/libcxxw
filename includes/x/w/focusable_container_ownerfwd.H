@@ -9,7 +9,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class focusable_container_ownerObj;
+class LIBCXX_PUBLIC focusable_container_ownerObj;
 
 //! A focusable container that's the registered owner of its focusable.
 

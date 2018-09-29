@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class radio_groupObj;
+class LIBCXX_PUBLIC radio_groupObj;
 
 //! A group of radio buttons.
 

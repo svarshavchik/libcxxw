@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class bookpagefactoryObj;
+class LIBCXX_PUBLIC bookpagefactoryObj;
 
 /*! A factory that adds another page to a container with a \ref booklayoutmanager "book layout manager".
 

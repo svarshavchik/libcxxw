@@ -18,7 +18,7 @@ typedef void metrics_update_callback_t(THREAD_CALLBACK,
 				       const metrics::axis &,
 				       const metrics::axis &);
 
-class elementObj;
+class LIBCXX_PUBLIC elementObj;
 
 /*! Methods common to all display elements.
 

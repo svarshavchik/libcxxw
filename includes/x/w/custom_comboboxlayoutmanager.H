@@ -28,7 +28,7 @@ typedef functionref<focusable (const factory &)
 
 //! Information passed to the \ref custom_combobox_selection_changed_t "custom combo-box selection changed callback".
 
-struct LIBCXX_HIDDEN custom_combobox_selection_changed_info_t {
+struct custom_combobox_selection_changed_info_t {
 
 	//! The layout manager
 	const custom_comboboxlayoutmanager &lm;
@@ -54,7 +54,7 @@ struct LIBCXX_HIDDEN custom_combobox_selection_changed_info_t {
 
 //! Information passed to the \ref custom_combobox_selection_search_t "custom combo-box selection search callback".
 
-struct LIBCXX_HIDDEN custom_combobox_selection_search_info_t {
+struct custom_combobox_selection_search_info_t {
 
 	//! A lock on combo-box's underlying list
 	list_lock &lock;
@@ -167,7 +167,7 @@ for more information.
 
 */
 
-class LIBCXX_HIDDEN new_custom_comboboxlayoutmanager
+class new_custom_comboboxlayoutmanager
 	: public new_focusable_layoutmanager {
 
  public:

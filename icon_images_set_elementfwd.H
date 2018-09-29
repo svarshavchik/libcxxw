@@ -13,10 +13,13 @@
 
 LIBCXXW_NAMESPACE_START
 
+template<typename>
+class LIBCXX_HIDDEN icon_1tag;
+
 //! One of the base classes inherited by an icon_images_set_element_impl.
 
 template<typename>
-class LIBCXX_HIDDEN icon_1tag {
+class icon_1tag {
 
 	//! Stored icon.
 
@@ -42,7 +45,7 @@ struct LIBCXX_HIDDEN icon_images_set_element_implObj;
 //! Inherit from the remaining template parameter.
 
 template<typename element_impl>
-struct LIBCXX_HIDDEN icon_images_set_element_implObj<element_impl>
+struct icon_images_set_element_implObj<element_impl>
 	: public element_impl {
 
 	using element_impl::element_impl;
@@ -53,7 +56,7 @@ struct LIBCXX_HIDDEN icon_images_set_element_implObj<element_impl>
 //! Multiply-inherit from one icon_1tag.
 
 template<typename element_impl, typename Tag1, typename ...Tags>
-struct LIBCXX_HIDDEN icon_images_set_element_implObj<element_impl, Tag1,
+struct icon_images_set_element_implObj<element_impl, Tag1,
 						     Tags...>
 	: icon_images_set_element_implObj<element_impl, Tags...>,
 	icon_1tag<Tag1> {

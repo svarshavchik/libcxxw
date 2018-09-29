@@ -23,7 +23,7 @@ LIBCXXW_NAMESPACE_START
 //!
 //! Overrides the default font and color for any labels in the progress bar.
 
-class LIBCXX_HIDDEN progressbarObj::handlerObj
+class progressbarObj::handlerObj
 	: public themedim_element_minoverrideObj<
 	container_elementObj<child_elementObj>> {
 

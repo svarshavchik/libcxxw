@@ -13,7 +13,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class cached_fontObj;
+class LIBCXX_HIDDEN cached_fontObj;
 
 //! A cached \ref freetypefont "freetypefont".
 

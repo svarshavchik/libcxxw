@@ -7,6 +7,7 @@
 #define x_w_drawableobj_H
 
 #include <x/obj.H>
+#include <x/w/drawablefwd.H>
 #include <x/w/picturefwd.H>
 #include <x/w/pictformatfwd.H>
 #include <x/w/screenfwd.H>
@@ -24,7 +25,7 @@ LIBCXXW_NAMESPACE_START
 class drawableObj : virtual public obj {
 
 public:
-	class implObj;
+	class LIBCXX_HIDDEN implObj;
 
 	//! Internal implementation details.
 	const ref<implObj> impl;

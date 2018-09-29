@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class custom_combobox_popup_containerObj;
+class LIBCXX_HIDDEN custom_combobox_popup_containerObj;
 
 /*! The combo-box popup container.
 

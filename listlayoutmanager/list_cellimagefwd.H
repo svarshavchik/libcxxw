@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class list_cellimageObj;
+class LIBCXX_HIDDEN list_cellimageObj;
 
 /*! A single image cell in a \ref listlayoutmanager "list layout manager".
 

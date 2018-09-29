@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class screen_picturecacheObj;
+class LIBCXX_HIDDEN screen_picturecacheObj;
 
 //! A reference to a screen's picture cache.
 

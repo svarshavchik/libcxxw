@@ -13,7 +13,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class image_buttonObj;
+class LIBCXX_PUBLIC image_buttonObj;
 
 //! Signature for an image_button activation function.
 

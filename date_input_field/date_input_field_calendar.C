@@ -44,12 +44,14 @@ date_input_field_calendarObj
 
 date_input_field_calendarObj::~date_input_field_calendarObj()=default;
 
+class LIBCXX_HIDDEN date_input_field_calendar_helperObj;
+
 // The day of the month buttons invoke picked(). Use this helper class to
 // avoid the overhead of separately weakly-capturing the object weakly for
 // every day button. Just one of these gets created, and referenced by each
 // day.
 
-class LIBCXX_HIDDEN date_input_field_calendar_helperObj : virtual public obj {
+class date_input_field_calendar_helperObj : virtual public obj {
 
  public:
 
@@ -468,15 +470,11 @@ void date_input_field_calendarObj::set(ONLY IN_THREAD,
 	report_new_date(IN_THREAD, d, trigger);
 }
 
-LOG_FUNC_SCOPE_DECL(LIBCXX_NAMESPACE::w::date_input_field, date_inputfieldLog);
-
 void date_input_field_calendarObj
 ::report_new_date(ONLY IN_THREAD,
 		  const std::optional<ymd> &d,
 		  const callback_trigger_t &trigger)
 {
-	LOG_FUNC_SCOPE(date_inputfieldLog);
-
 	most_recent_date_t::lock lock{most_recent_date};
 
 	if (lock->date_value == d)

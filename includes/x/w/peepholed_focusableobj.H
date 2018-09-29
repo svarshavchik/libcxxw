@@ -11,6 +11,8 @@
 
 LIBCXXW_NAMESPACE_START
 
+class LIBCXX_PUBLIC peepholed_focusableObj;
+
 //! A focusable in a peephole.
 
 //! An internal class that's used to derive a focusable element inside
@@ -21,7 +23,7 @@ LIBCXXW_NAMESPACE_START
 class peepholed_focusableObj : public focusable_containerObj {
 
 public:
-	class implObj;
+	class LIBCXX_HIDDEN implObj;
 
 	//! Internal implementation
 

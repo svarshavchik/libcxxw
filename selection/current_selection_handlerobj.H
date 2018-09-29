@@ -15,7 +15,7 @@ LIBCXXW_NAMESPACE_START
 
 //! \see current_selection_handler
 
-class LIBCXX_HIDDEN current_selection_handlerObj : virtual public obj {
+class current_selection_handlerObj : virtual public obj {
 
 public:
 	//! Constructor

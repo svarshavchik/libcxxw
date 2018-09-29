@@ -5,6 +5,7 @@
 #ifndef x_w_canvasobj_h
 #define x_w_canvasobj_h
 
+#include <x/w/canvasfwd.H>
 #include <x/w/elementobj.H>
 #include <x/w/dim_axis_arg.H>
 
@@ -17,7 +18,7 @@ LIBCXXW_NAMESPACE_START
 class canvasObj : public elementObj {
 
 public:
-	class implObj;
+	class LIBCXX_PUBLIC implObj;
 
 	const ref<implObj> impl;
 

@@ -34,7 +34,7 @@ LIBCXXW_NAMESPACE_START
 //!
 //! This is not a thread-safe object.
 
-class LIBCXX_HIDDEN new_tablelayoutmanager : public new_listlayoutmanager {
+class new_tablelayoutmanager : public new_listlayoutmanager {
 
  public:
 

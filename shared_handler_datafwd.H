@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class shared_handler_dataObj;
+class LIBCXX_HIDDEN shared_handler_dataObj;
 
 /*! Data shared between top level window handlers.
 

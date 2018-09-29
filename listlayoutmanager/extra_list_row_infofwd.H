@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class extra_list_row_infoObj;
+class LIBCXX_HIDDEN extra_list_row_infoObj;
 
 /*! Extra information about a particular row in the list.
 

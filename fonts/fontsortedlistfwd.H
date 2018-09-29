@@ -15,7 +15,7 @@ namespace fontconfig {
 }
 #endif
 
-class sortedlistObj;
+class LIBCXX_HIDDEN sortedlistObj;
 
 //! A sorted list of fonts.
 

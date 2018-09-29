@@ -6,11 +6,10 @@
 #define popup_attachedto_handlerfwd_h
 
 #include "x/w/namespace.H"
+#include "x/w/impl/popup/popupfwd.H"
 #include <x/ptrfwd.H>
 
 LIBCXXW_NAMESPACE_START
-
-class popup_attachedto_handlerObj;
 
 struct popup_attachedto_handler_args;
 

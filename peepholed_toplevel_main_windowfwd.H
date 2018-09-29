@@ -11,7 +11,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class peepholed_toplevel_main_windowObj;
+class LIBCXX_HIDDEN peepholed_toplevel_main_windowObj;
 
 //! The peepholed element for a normal application window.
 

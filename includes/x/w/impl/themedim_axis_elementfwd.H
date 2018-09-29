@@ -11,6 +11,11 @@
 
 LIBCXXW_NAMESPACE_START
 
+template<typename base>
+class LIBCXX_PUBLIC themedim_axis_widthObj;
+template<typename base>
+class LIBCXX_PUBLIC themedim_axis_heightObj;
+
 struct themedim_width_min;
 struct themedim_width_pref;
 struct themedim_width_max;

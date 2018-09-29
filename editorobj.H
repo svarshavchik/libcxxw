@@ -5,6 +5,7 @@
 #ifndef editorobj_h
 #define editorobj_h
 
+#include "editorfwd.H"
 #include "x/w/elementobj.H"
 #include "x/w/focusableobj.H"
 #include "x/w/impl/focus/focusablefwd.H"

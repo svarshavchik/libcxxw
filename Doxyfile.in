@@ -1985,6 +1985,7 @@ INCLUDE_FILE_PATTERNS  =
 PREDEFINED             = LIBCXX_NAMESPACE=x \
                          LIBCXX_INTERNAL= \
                          LIBCXX_HIDDEN= \
+			 LIBCXX_PUBLIC= \
 			 "LIBCXXW_NAMESPACE_START=namespace x { namespace w {" \
 			 "LIBCXXW_NAMESPACE_END=}}" \
                          DOXYGEN=1 \

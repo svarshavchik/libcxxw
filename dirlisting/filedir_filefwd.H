@@ -11,7 +11,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class filedir_fileObj;
+class LIBCXX_HIDDEN filedir_fileObj;
 
 /*! What's changed a directory reported by a \ref filedircontents "directory contents monitor".
 

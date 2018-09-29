@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class peepholed_listcontainerObj;
+class LIBCXX_HIDDEN peepholed_listcontainerObj;
 
 //! A listcontainer inside a peephole.
 

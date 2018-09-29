@@ -15,7 +15,7 @@ namespace fontconfig {
 }
 #endif
 
-class listObj;
+class LIBCXX_HIDDEN listObj;
 
 //! Font list.
 

@@ -11,7 +11,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class file_dialogObj;
+class LIBCXX_PUBLIC file_dialogObj;
 
 /*! \anchor file_dialog A file open/create dialog.
 

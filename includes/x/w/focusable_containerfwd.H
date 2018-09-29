@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class focusable_containerObj;
+class LIBCXX_PUBLIC focusable_containerObj;
 
 //! A focusable display element that's implemented as an internal container.
 

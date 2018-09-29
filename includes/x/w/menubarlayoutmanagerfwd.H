@@ -10,7 +10,8 @@
 
 LIBCXXW_NAMESPACE_START
 
-class menubarlayoutmanagerObj;
+class LIBCXX_PUBLIC menubar_lock;
+class LIBCXX_PUBLIC menubarlayoutmanagerObj;
 
 /*! Menu bar layout manager.
 
@@ -84,7 +85,7 @@ typedef ptr<menubarlayoutmanagerObj> menubarlayoutmanagerptr;
 
 typedef const_ptr<menubarlayoutmanagerObj> const_menubarlayoutmanagerptr;
 
-class menu_bar_lock;
+class LIBCXX_PUBLIC menu_bar_lock;
 
 LIBCXXW_NAMESPACE_END
 

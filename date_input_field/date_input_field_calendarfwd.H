@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class date_input_field_calendarObj;
+class LIBCXX_HIDDEN date_input_field_calendarObj;
 
 /*! A calendar for a month.
 

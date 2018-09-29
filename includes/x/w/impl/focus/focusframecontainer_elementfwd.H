@@ -14,6 +14,8 @@ LIBCXXW_NAMESPACE_START
 
 struct focusoff_border_tag;
 struct focuson_border_tag;
+template<typename element_impl>
+class LIBCXX_PUBLIC focusframecontainer_elementObj;
 
 //! A mixin for inheriting from a display element, and a focusframecontainer_implObj.
 

@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class independent_shortcut_activationObj;
+class LIBCXX_HIDDEN independent_shortcut_activationObj;
 
 /*! An alternative to a \ref shortcut_activation_elementObj "shortcut_activation_elementObj" mixin.
 

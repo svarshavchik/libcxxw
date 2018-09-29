@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class factoryObj;
+class LIBCXX_PUBLIC factoryObj;
 
 /*! An element factory
 

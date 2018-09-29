@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class menubarfactoryObj;
+class LIBCXX_PUBLIC menubarfactoryObj;
 
 /*! Menu bar factory.
 

@@ -16,7 +16,7 @@ LIBCXXW_NAMESPACE_START
 
 //! \see pagetab
 
-class pagetabObj : public containerObj,
+class LIBCXX_HIDDEN pagetabObj : public containerObj,
 		   public hotspotObj,
 		   public focusableObj::ownerObj {
 

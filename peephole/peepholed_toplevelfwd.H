@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class peepholed_toplevelObj;
+class LIBCXX_HIDDEN peepholed_toplevelObj;
 
 //! An element in a top level peephole.
 

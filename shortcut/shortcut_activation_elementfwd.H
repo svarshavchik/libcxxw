@@ -15,7 +15,7 @@ LIBCXXW_NAMESPACE_START
 //! template combines the mixin, and implements shortcut_window_handler().
 
 template<typename element_impl>
-class shortcut_activation_elementObj
+class LIBCXX_HIDDEN shortcut_activation_elementObj
 	: public element_impl,
 	  public shortcut_activation_element_implObj {
 

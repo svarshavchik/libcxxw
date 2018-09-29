@@ -11,7 +11,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class richtext_alteration_config {
+class LIBCXX_HIDDEN richtext_alteration_config {
 
 public:
 	const richtextptr ellipsis;

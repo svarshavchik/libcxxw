@@ -16,6 +16,9 @@ struct hotspot_cold_color;
 struct hotspot_warm_color;
 struct hotspot_hot_color;
 
+template<typename element_impl>
+class LIBCXX_HIDDEN hotspot_bgcolor_elementObj;
+
 //! A mixin for inheriting from a display element, and a hotspot_bgcolorObj::implObj.
 
 //! The template parameter must be a subclass of child_elementObj. This
@@ -25,8 +28,8 @@ struct hotspot_hot_color;
 //! The first three template parameters are the cold, warm, and hot background
 //! colors, the remaining parameters get forwarded to the superclass.
 
-template<typename element_impl=child_elementObj>
-class LIBCXX_HIDDEN hotspot_bgcolor_elementObj
+template<typename element_impl>
+class hotspot_bgcolor_elementObj
 	: public background_color_elementObj<hotspot_elementObj<element_impl>,
 					     hotspot_cold_color,
 					     hotspot_warm_color,

@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class synchronized_axisObj;
+class LIBCXX_HIDDEN synchronized_axisObj;
 
 /*! Synchronized axis.
 

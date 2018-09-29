@@ -14,8 +14,8 @@ LIBCXXW_NAMESPACE_START
 
 //! Internal implementation object.
 
-struct LIBCXX_HIDDEN list_celltextObj : public list_cellObj,
-					public richtextObj {
+struct list_celltextObj : public list_cellObj,
+			  public richtextObj {
 
 	//! Constructor
 	list_celltextObj(const richtext_alteration_config &richtext_alteration,

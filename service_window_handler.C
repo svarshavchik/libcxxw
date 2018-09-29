@@ -246,8 +246,6 @@ void service_window_handlerObj
 
 void service_window_handlerObj::server_failed(ONLY IN_THREAD)
 {
-	LOG_FUNC_SCOPE(service_log);
-
 	assert_or_throw(!server_atoms.empty(),
 			"Internal error: server_atoms is empty().");
 

@@ -16,7 +16,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class dialogObj;
+class LIBCXX_PUBLIC dialogObj;
 
 /*! A dialog pop-up from another main window (or of a parent dialog).
 

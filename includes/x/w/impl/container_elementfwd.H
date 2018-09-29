@@ -10,6 +10,9 @@
 
 LIBCXXW_NAMESPACE_START
 
+template<typename element_impl>
+class LIBCXX_PUBLIC container_elementObj;
+
 //! A mixin for inheriting from a display element and a containerObj::implObj.
 
 //! The template parameter must be an elementObj::implObj, or one of its

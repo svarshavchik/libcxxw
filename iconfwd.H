@@ -13,7 +13,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class iconObj;
+class LIBCXX_HIDDEN iconObj;
 
 //! A loaded icon.
 

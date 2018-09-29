@@ -17,8 +17,8 @@ LIBCXXW_NAMESPACE_START
 
 //! Implementation object for an image cell in a \ref listlayoutmanager "listlayoutmanager".
 
-struct LIBCXX_HIDDEN list_cellimageObj : public list_cellObj,
-					     public icon_images_vector {
+struct list_cellimageObj : public list_cellObj,
+			   public icon_images_vector {
 
 	//! Image's alignment.
 

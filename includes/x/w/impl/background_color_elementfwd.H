@@ -15,6 +15,14 @@
 
 LIBCXXW_NAMESPACE_START
 
+class LIBCXX_PUBLIC background_color_element_implObj;
+
+template<typename element_impl, typename tag=void>
+class LIBCXX_PUBLIC background_color_1elementObj;
+template<typename tag=void>
+class LIBCXX_PUBLIC background_color_element;
+
+
 //! Attach a tag to a background_colorObj
 
 //! \see background_color_elementObj
@@ -68,7 +76,7 @@ public:
 
 //! Helper class for using tags to attach multiple background color objects to elements
 
-template<typename tag=void>
+template<typename tag>
 class background_color_element
 	: public background_color_element_implObj {
 
@@ -96,7 +104,7 @@ class background_color_element
 //! The constructor forwards its first argument, the initial background color
 //! to the background_color_element_implObj.
 
-template<typename element_impl, typename tag=void>
+template<typename element_impl, typename tag>
 class background_color_1elementObj
 	: public element_impl,
 	  public background_color_element<tag> {
@@ -158,7 +166,7 @@ class background_color_1elementObj
 	elementObj::implObj &background_color_element_impl() override;
 };
 
-template<typename ...args> struct background_colors_element_types;
+template<typename ...args> struct LIBCXX_PUBLIC background_colors_element_types;
 
 //! Helper template used by background_color_elementObj
 

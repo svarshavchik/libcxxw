@@ -13,7 +13,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class pixmapObj;
+class LIBCXX_PUBLIC pixmapObj;
 
 //! A Pixmap object.
 

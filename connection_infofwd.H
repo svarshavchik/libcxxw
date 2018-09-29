@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class connection_infoObj;
+class LIBCXX_HIDDEN connection_infoObj;
 
 typedef ref<connection_infoObj> connection_info;
 

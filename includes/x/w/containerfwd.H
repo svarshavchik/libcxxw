@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class containerObj;
+class LIBCXX_PUBLIC containerObj;
 
 //! Methods common to all display containers.
 

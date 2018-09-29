@@ -1,4 +1,4 @@
-headerdir=$(includedir)/x/w/impl/fonts
+headerdir=$(includedir)/libcxxw-@ABIVER@-@LIBCXX_VERSION@/x/w/impl/fonts
 
 header_HEADERS = $(shell cd $(srcdir) && echo *.H)
 

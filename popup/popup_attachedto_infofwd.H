@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class popup_attachedto_infoObj;
+class LIBCXX_HIDDEN popup_attachedto_infoObj;
 
 /*! Information needed to figure out where an attached popup is shown.
 

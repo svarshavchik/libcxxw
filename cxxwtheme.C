@@ -1319,8 +1319,6 @@ typedef x::ref<cxxwtheme_threadObj> cxxwtheme_thread;
 
 int main(int argc, char **argv)
 {
-	LOG_FUNC_SCOPE(cxxwLog);
-
 	try {
 		x::singletonapp::managed
 			([]

@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([libcxxw], [0.7], [libcxx-users@lists.libcxx.org])
+AC_INIT([libcxxw], [0.7.1], [libcxx-users@lists.libcxx.org])
 AC_CONFIG_SRCDIR([connection.C])
 AC_CONFIG_HEADERS([libcxxw_config.h])
 AM_INIT_AUTOMAKE([dist-bzip2 foreign -Wno-portability])
@@ -10,9 +10,58 @@ AM_GNU_GETTEXT([external])
 AM_SILENT_RULES([yes])
 
 LT_INIT
+
 # Checks for programs.
+AC_ARG_WITH(pkgconfigdir,[AS_HELP_STRING([--with-pkgconfigdir=dir],[Specify where pkgconfig configuration file gets installed])],
+	[PKGCONFIGDIR="$withval"],
+	[
+for d in /usr/lib64/pkgconfig /usr/lib/pkgconfig /usr/local/libdata/pkgconfig
+do
+	if test -d "$d"
+	then
+		PKGCONFIGDIR="$d"
+		break
+	fi
+done
+])
+
+if test "$PKGCONFIGDIR" = ""
+then
+	AC_MSG_ERROR([Unable to find pkgconfig installation directory (use --with-pkgconfigdir to set manually)])
+fi
+AC_SUBST(PKGCONFIGDIR)
+
 AC_PROG_CXX
 LIBCXX_INIT
+CXXFLAGS="$CXXFLAGS -fvisibility-inlines-hidden"
+export CXXFLAGS
+LDFLAGS="$LDFLAGS -z relro -z now"
+export LDFLAGS
+
+# VERSION_INFO is:
+#
+#   libtool's -version-info
+#
+# ABIVER is, basically, the major version, the ABI version.
+#
+#   $libdir/libcxxw-$ABIVER
+#
+#   $includedir/libcxxw-$ABIVER
+#
+#   $datadir/libcxxw-$ABIVER
+#
+#   $pkgdatadir/libcxxw-$ABIVER
+#
+# Our package $VERSION is:
+#
+#   $libdir/pkgconfig/libcxxw-$VERSION.pc
+#   $datadir/aclocak/libcxxw-$VERSION.m4
+#
+ABIVER=0.07
+AC_SUBST(ABIVER)
+
+VERSION_INFO=6:0:0
+AC_SUBST(VERSION_INFO)
 
 # Checks for libraries.
 
@@ -77,6 +126,7 @@ AC_SUBST(BUILT_INTERACTIVETESTPROGRAMS)
 AM_CONDITIONAL(HAVE_DOCS,[test -d $srcdir/docbook])
 AC_CONFIG_FILES([Makefile
 	Doxyfile
+	libcxxw.m4
 	po/Makefile.in
 	includes/x/w/Makefile
 	includes/x/w/deps/Makefile
@@ -88,9 +138,6 @@ AC_CONFIG_FILES([Makefile
 	includes/x/w/metrics/Makefile
 	packaging/fedora/libcxxw.spec
 	])
-
-VERSION_INFO=6:0:0
-AC_SUBST(VERSION_INFO)
 
 AM_CONDITIONAL([LOCALTHEMEDIR], [test "$localthemedir" = "yes" ])
 pwdthemes="`pwd`/themes"

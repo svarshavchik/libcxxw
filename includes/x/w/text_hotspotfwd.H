@@ -11,7 +11,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class text_hotspotObj;
+class LIBCXX_PUBLIC text_hotspotObj;
 
 //! A link, of some kind, associated with a portion of \ref label "label".
 

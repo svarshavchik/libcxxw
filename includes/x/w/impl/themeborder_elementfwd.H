@@ -9,10 +9,15 @@
 
 LIBCXXW_NAMESPACE_START
 
+template<typename tag=void>
+class LIBCXX_PUBLIC themeborder_element_impl;
+template<typename element_impl, typename tag=void>
+class LIBCXX_PUBLIC themeborder1_elementObj;
+
 //! Attach a tag to a themeborder_element_implObj
 
 //! \see themeborder_elementObj
-template<typename tag=void>
+template<typename tag>
 class themeborder_element_impl
 	: public themeborder_element_implObj {
 
@@ -29,7 +34,7 @@ class themeborder_element_impl
 
 //! Helper used by themeborder_elementObj
 
-template<typename element_impl, typename tag=void>
+template<typename element_impl, typename tag>
 class themeborder1_elementObj
 	: public element_impl,
 	  public themeborder_element_impl<tag> {
@@ -47,7 +52,7 @@ public:
 
 //! Helper template used by themeborder_elementObj
 
-template<typename ...args> struct themeborder_element_types;
+template<typename ...args> struct LIBCXX_PUBLIC themeborder_element_types;
 
 //! Helper template used by themeborder_elementObj
 

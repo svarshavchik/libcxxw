@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class color_picker_squareObj;
+class LIBCXX_HIDDEN color_picker_squareObj;
 
 /*! Color square for the color picker.
 

@@ -35,7 +35,7 @@ class gridfactoryObj : public factoryObj {
 
  public:
 
-	class implObj;
+	class LIBCXX_HIDDEN implObj;
 
 	//! Internal implementation details.
 

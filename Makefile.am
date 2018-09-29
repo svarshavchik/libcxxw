@@ -8,14 +8,45 @@ AUTOMAKE_OPTIONS=subdir-objects
 
 SUBDIRS= po includes/x/w
 
+DISTCHECK_CONFIGURE_FLAGS=--with-pkgconfigdir='$$(prefix)/local/pkgconf'
+
+pkgconfdir=@PKGCONFIGDIR@
+
+pkgconf_DATA=libcxxw-@ABIVER@.@LIBCXX_VERSION@.pc
+
+libcxxw-@ABIVER@.@LIBCXX_VERSION@.pc: Makefile
+	echo "prefix=${prefix}" >libcxxw.pc.tmp
+	echo "exec_prefix=${exec_prefix}" >>libcxxw.pc.tmp
+	echo "datadir=${datadir}" >>libcxxw.pc.tmp
+	echo "pkgdatadir=${pkgdatadir}-@ABIVER@-@LIBCXX_VERSION@" >>libcxxw.pc.tmp
+	echo "libdir=${libdir}/libcxxw-@ABIVER@-@LIBCXX_VERSION@" >>libcxxw.pc.tmp
+	echo "includedir=${includedir}" >>libcxxw.pc.tmp
+	echo "" >>libcxxw.pc.tmp
+	echo "Name: LibCXX Windows Library" >>libcxxw.pc.tmp
+	echo "Description: LibCXX Windows Library" >>libcxxw.pc.tmp
+	echo "Version: @VERSION@.@LIBCXX_VERSION@" >>libcxxw.pc.tmp
+	echo "Cflags: -I$(includedir)/libcxxw-@ABIVER@-@LIBCXX_VERSION@" >>libcxxw.pc.tmp
+	echo 'Libs: -L${libdir}/libcxxw-@ABIVER@-@LIBCXX_VERSION@ -Wl,-rpath -Wl,${libdir}/libcxxw-@ABIVER@-@LIBCXX_VERSION@' >>libcxxw.pc.tmp
+	mv -f libcxxw.pc.tmp libcxxw-@ABIVER@.@LIBCXX_VERSION@.pc
+
+aclocaldir=@datadir@/aclocal
+aclocal_DATA=libcxxw-@VERSION@-@LIBCXX_VERSION@.m4
+
+libcxxw-@VERSION@-@LIBCXX_VERSION@.m4: libcxxw.m4
+	rm -f libcxxw-@VERSION@-@LIBCXX_VERSION@.m4
+	ln libcxxw.m4 libcxxw-@VERSION@-@LIBCXX_VERSION@.m4
+
+CLEANFILES=$(aclocal_DATA) $(pkgconf_DATA)
+
 STATICLINKFLAGS=-Wl,-ljpeg -Wl,-lgif -Wl,-lcourier-unicode -Wl,-lpthread @LIBCXXW_LIBS@ -pthread
 
-lib_LTLIBRARIES=libcxxw.la libcxxwcups.la
+abilibdir=$(libdir)/libcxxw-@ABIVER@-@LIBCXX_VERSION@
+abilib_LTLIBRARIES=libcxxw.la libcxxwcups.la
 
 bin_PROGRAMS=cxxw cxxwtheme
 
 CPPFLAGS += -I$(top_srcdir)/includes -I./includes -I$(top_srcdir) -I. \
-            -DPKGDATADIR='"$(pkgdatadir)"'
+            -DPKGDATADIR='"$(pkgdatadir)-@ABIVER@-@LIBCXX_VERSION@"'
 CXXFLAGS += -fvisibility-inlines-hidden $(if $(PROFILE),-pg)
 
 libcxxw_la_LIBADD=-lcxx
@@ -428,6 +459,7 @@ libcxxw_la_SOURCES=\
 	listlayoutmanager/listcontainer_dim_elementfwd.H \
 	listlayoutmanager/listcontainer_pseudo_impl.C \
 	listlayoutmanager/listcontainer_pseudo_impl.H \
+	listlayoutmanager/listcontainer_pseudo_implfwd.H \
 	listlayoutmanager/listlayoutmanager.C \
 	listlayoutmanager/listlayoutmanager_impl.C \
 	listlayoutmanager/listlayoutmanager_impl.H \
@@ -667,6 +699,7 @@ libcxxw_la_SOURCES=\
 	richtext/richtextcursorlocationfwd.H	    \
 	richtext/richtextfragment.C		    \
 	richtext/richtextfragment.H		    \
+	richtext/richtextfragmentfwd.H		    \
 	richtext/richtextfragment_render.H	    \
 	richtext/richtexthorizinfo.C		    \
 	richtext/richtexthorizinfo.H		    \
@@ -790,6 +823,7 @@ libcxxw_la_SOURCES=\
 	windowobj.H				    \
 	window_handler.C			    \
 	window_handler.H			    \
+	window_handlerfwd.H			    \
 	xid_t.C					    \
 	xid_t.H					    \
 	xid_t_connection_thread.H		    \
@@ -948,11 +982,11 @@ testinputfield_LDFLAGS=-static $(STATICLINKFLAGS)
 
 testcollapse_SOURCES=testcollapse.C
 testcollapse_LDADD=-lcxx
-testcollapse_LDFLAGS=$(TESTLINKTYPE)
+testcollapse_LDFLAGS=-static $(STATICLINKFLAGS)
 
 testderivedaxis_SOURCES=testderivedaxis.C
 testderivedaxis_LDADD=libcxxw.la
-testderivedaxis_LDFLAGS=$(TESTLINKTYPE)
+testderivedaxis_LDFLAGS=-static $(STATICLINKFLAGS)
 
 testfiledircontents_SOURCES=testfiledircontents.C
 testfiledircontents_LDADD=libcxxw.la
@@ -985,6 +1019,15 @@ testmenu_SOURCES=testmenu.C
 testmenu_LDADD=libcxxwcups.la libcxxw.la
 testmenu_LDFLAGS=$(TESTLINKTYPE)
 
+$(call OPTIONS_GEN,testpage.inc.H,testpage.xml)
+testpage_SOURCES=testpage.C
+testpage_LDADD=libcxxw.la
+testpage_LDFLAGS=-static $(STATICLINKFLAGS)
+
+testpane_SOURCES=testpane.C
+testpane_LDADD=libcxxw.la
+testpane_LDFLAGS=$(TESTLINKTYPE)
+
 testping_SOURCES=testping.C
 testping_LDADD=libcxxw.la
 testping_LDFLAGS=$(TESTLINKTYPE)
@@ -1016,15 +1059,6 @@ $(call REFCOLLECTION_GEN,testshowhide.inc.H,testshowhide.xml)
 testshowhide_SOURCES=testshowhide.C
 testshowhide_LDADD=libcxxw.la
 
-$(call OPTIONS_GEN,testpage.inc.H,testpage.xml)
-testpage_SOURCES=testpage.C
-testpage_LDADD=libcxxw.la
-testpage_LDFLAGS=-static $(STATICLINKFLAGS)
-
-testpane_SOURCES=testpane.C
-testpane_LDADD=libcxxw.la
-testpane_LDFLAGS=$(TESTLINKTYPE)
-
 testtextparam_SOURCES=testtextparam.C
 testtextparam_LDADD=libcxxw.la
 testtextparam_LDFLAGS=-static $(STATICLINKFLAGS)
@@ -1049,7 +1083,7 @@ BUILT_SOURCES=includes/x/w/constants_inc.H \
 	gridlayoutapi.inc.C \
 	gc_constants.inc.C pic_constants.inc.C
 
-CLEANFILES = gridlayoutapi.inc.C \
+CLEANFILES += gridlayoutapi.inc.C \
 	gc_constants.inc.C pic_constants.inc.C \
         $(XIM_AUTOGEN)
 
@@ -1163,15 +1197,15 @@ endef
 
 define install_theme_file
 
-$(call passthrough,all_installed_theme_files += $(DESTDIR)$(pkgdatadir)/themes/$(2)/$(3))
+$(call passthrough,all_installed_theme_files += $(DESTDIR)$(pkgdatadir)-@ABIVER@-@LIBCXX_VERSION@/themes/$(2)/$(3))
 $(call passthrough,all_theme_source_files += $(1))
 
-$(DESTDIR)$(pkgdatadir)/themes/$(2)/$(3): $(1) install-data-hook-create-dir
-	$(INSTALL_DATA) $(1) $(DESTDIR)$(pkgdatadir)/themes/$(2)/$(3)
+$(DESTDIR)$(pkgdatadir)-@ABIVER@-@LIBCXX_VERSION@/themes/$(2)/$(3): $(1) install-data-hook-create-dir
+	$(INSTALL_DATA) $(1) $(DESTDIR)$(pkgdatadir)-@ABIVER@-@LIBCXX_VERSION@/themes/$(2)/$(3)
 endef
 
 define install_theme
-$(call passthrough,all_installed_theme_dirs += $(pkgdatadir)/themes/$(1))
+$(call passthrough,all_installed_theme_dirs += $(pkgdatadir)-@ABIVER@-@LIBCXX_VERSION@/themes/$(1))
 
 $(foreach f,$(wildcard $(srcdir)/themes/$(1)/*.sxg) $(wildcard $(srcdir)/themes/$(1)/*.xml), $(call install_theme_file,$(f),$(1),$(notdir $(f))))
 endef
@@ -1186,8 +1220,8 @@ install-data-hook-create-dir:
 uninstall-hook:
 	rm -f $(all_installed_theme_files)
 	-rmdir $(foreach d,$(all_installed_theme_dirs),$(DESTDIR)$(d))
-	-rmdir $(DESTDIR)$(pkgdatadir)/themes
-	-rmdir $(DESTDIR)$(pkgdatadir)
+	-rmdir $(DESTDIR)$(pkgdatadir)-@ABIVER@-@LIBCXX_VERSION@/themes
+	-rmdir $(DESTDIR)$(pkgdatadir)-@ABIVER@-@LIBCXX_VERSION@
 
 EXTRA_DIST += $(patsubst $(srcdir)/%,%,$(all_theme_source_files))
 

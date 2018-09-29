@@ -5,6 +5,7 @@
 #ifndef x_w_textlabelobj_h
 #define x_w_textlabelobj_h
 
+#include <x/w/textlabelfwd.H>
 #include <x/w/text_paramfwd.H>
 #include <x/obj.H>
 
@@ -17,7 +18,7 @@ LIBCXXW_NAMESPACE_START
 class textlabelObj : virtual public obj {
 
 public:
-	class implObj;
+	class LIBCXX_HIDDEN implObj;
 
 	const ref<implObj> label_impl;
 

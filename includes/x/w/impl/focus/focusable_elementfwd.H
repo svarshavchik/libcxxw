@@ -11,12 +11,15 @@
 
 LIBCXXW_NAMESPACE_START
 
+template<typename element_impl=child_elementObj>
+class LIBCXX_PUBLIC focusable_elementObj;
+
 //! A mixin for inherting from a display element, and a focusableObj::implObj.
 
 //! The template parameter must be a subclass of child_elementObj. This
 //! multiply-inherits from the template parameter, and focusableObj::implObj.
 
-template<typename element_impl=child_elementObj>
+template<typename element_impl>
 class focusable_elementObj : public element_impl,
 			     public focusableObj::implObj {
 

@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class focusableObj;
+class LIBCXX_PUBLIC focusableObj;
 
 /*! Methods common to all display element that can receive keyboard focus.
 

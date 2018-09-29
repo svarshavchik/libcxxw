@@ -13,6 +13,9 @@
 
 LIBCXXW_NAMESPACE_START
 
+template<typename element_impl>
+class LIBCXX_HIDDEN label_elementObj;
+
 //! A mixin for inheriting from a textlabelObj::implObj.
 
 //! The template parameter must be a child_elementObj, or one of its
@@ -21,8 +24,8 @@ LIBCXXW_NAMESPACE_START
 //! Multiply inherits from the template parameter, and textlabelObj::implObj.
 
 template<typename element_impl>
-class LIBCXX_HIDDEN label_elementObj : public textlabelObj::implObj,
-				       public element_impl {
+class label_elementObj : public textlabelObj::implObj,
+			 public element_impl {
 
 public:
 

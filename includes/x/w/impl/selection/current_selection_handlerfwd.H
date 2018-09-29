@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class current_selection_handlerObj;
+class LIBCXX_HIDDEN current_selection_handlerObj;
 
 /*! Base class for received X selection.
 

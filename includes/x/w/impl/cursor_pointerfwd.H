@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class cursor_pointerObj;
+class LIBCXX_HIDDEN cursor_pointerObj;
 
 /*! A cursor pointer.
 

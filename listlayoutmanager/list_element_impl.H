@@ -15,6 +15,7 @@
 #include "iconfwd.H"
 #include "x/w/impl/child_element.H"
 #include "x/w/impl/themeborder_elementfwd.H"
+#include "x/w/listlayoutmanagerfwd.H"
 #include "x/w/alignment.H"
 #include "x/w/listlayoutmanager.H"
 #include "x/w/text_paramfwd.H"
@@ -148,7 +149,7 @@ struct LIBCXX_HIDDEN list_row_info_vector :
 //! Stored in \ref list_elementObj::implObj "the implementation object", and
 //! accessed by the \ref listlayoutmanager "listlayoutmanager".
 
-struct LIBCXX_HIDDEN listimpl_info_s {
+struct listimpl_info_s {
 
 	//! Callback
 	list_selection_type_cb_t selection_type;

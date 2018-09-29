@@ -12,6 +12,7 @@
 
 #include <courier-unicode.h>
 #include <x/functional.H>
+#include "x/w/impl/fonts/fontcharsetfwd.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -22,7 +23,7 @@ namespace fontconfig {
 
 //! A facade for the fontconfig library's internal FcCharset object.
 
-class LIBCXX_HIDDEN charsetObj : virtual public obj {
+class charsetObj : virtual public obj {
 
 public:
 	class implObj;

@@ -20,13 +20,13 @@ LIBCXXW_NAMESPACE_START
 class tablelayoutmanagerObj : public listlayoutmanagerObj {
 
 public:
-	class implObj;
+	class LIBCXX_HIDDEN implObj;
 
 	//! Internal implementation object.
 	const ref<implObj> impl;
 
 	//! Internal implementation object.
-	class table_synchronized_axisObj;
+	class LIBCXX_HIDDEN table_synchronized_axisObj;
 
 	//! Constructor
 	tablelayoutmanagerObj(const ref<implObj> &impl) LIBCXX_HIDDEN;

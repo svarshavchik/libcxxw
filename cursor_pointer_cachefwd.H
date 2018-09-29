@@ -11,7 +11,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class cursor_pointer_cacheObj;
+class LIBCXX_HIDDEN cursor_pointer_cacheObj;
 
 /*!
 

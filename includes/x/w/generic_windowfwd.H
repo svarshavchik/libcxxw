@@ -10,8 +10,8 @@
 
 LIBCXXW_NAMESPACE_START
 
-class generic_windowObj;
-class generic_windowBase;
+class LIBCXX_PUBLIC generic_windowObj;
+class LIBCXX_PUBLIC generic_windowBase;
 
 //! Generic top level window methods.
 

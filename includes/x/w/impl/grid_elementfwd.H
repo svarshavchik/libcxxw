@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class grid_elementObj;
+class LIBCXX_HIDDEN grid_elementObj;
 
 //! An element in a grid.
 

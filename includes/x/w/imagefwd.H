@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class imageObj;
+class LIBCXX_PUBLIC imageObj;
 
 /*! An image
 

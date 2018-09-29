@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class scratch_bufferObj;
+class LIBCXX_PUBLIC scratch_bufferObj;
 
 //! A picture and a pixmap used for preparing display element images.
 

@@ -15,7 +15,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class input_fieldObj;
+class LIBCXX_PUBLIC input_fieldObj;
 template<typename type> class validated_input_fieldObj;
 
 //! Callback for validating the contents of the input field.
@@ -426,7 +426,7 @@ using const_validated_input_field=const_ref<validated_input_fieldObj<type>>;
 template<typename type>
 using const_validated_input_fieldptr=const_ptr<validated_input_fieldObj<type>>;
 
-class input_lock;
+class LIBCXX_HIDDEN input_lock;
 
 //! Identifies what kind of a change the input field change callback gets invoked for.
 

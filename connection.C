@@ -266,11 +266,6 @@ get_screens(const connection_thread &thread,
 static void update_themes(ONLY IN_THREAD,
 			  const std::vector<ref<screenObj::implObj>> &s,
 			  const defaulttheme::base::config &theme_config)
-	LIBCXX_HIDDEN;
-
-static void update_themes(ONLY IN_THREAD,
-			  const std::vector<ref<screenObj::implObj>> &s,
-			  const defaulttheme::base::config &theme_config)
 {
 	// Construct all the themes first.
 

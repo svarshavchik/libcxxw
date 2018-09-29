@@ -11,7 +11,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class sxg_parserObj;
+class LIBCXX_HIDDEN sxg_parserObj;
 
 /*!
 A parsed SXG file

@@ -12,8 +12,7 @@ LIBCXXW_NAMESPACE_START
 
 namespace metrics {
 
-
-	class grid_posObj;
+	class LIBCXX_HIDDEN grid_posObj;
 
 	//! Everything you want to know about an element in a grid.
 

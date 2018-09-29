@@ -10,8 +10,8 @@
 
 LIBCXXW_NAMESPACE_START
 
-class peepholed_toplevel_listcontainer_handlerObj;
-struct peepholed_toplevel_listcontainer_handler_args;
+class LIBCXX_HIDDEN peepholed_toplevel_listcontainer_handlerObj;
+struct LIBCXX_HIDDEN peepholed_toplevel_listcontainer_handler_args;
 
 //! Subclass of the handler used by the \ref create_peepholed_toplevel_listcontainer_popup "peepholed list container popup".
 

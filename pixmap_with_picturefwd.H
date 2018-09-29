@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class pixmap_with_pictureObj;
+class LIBCXX_HIDDEN pixmap_with_pictureObj;
 
 /*! A pixmap with a cached picture.
 

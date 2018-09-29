@@ -12,7 +12,7 @@ LIBCXXW_NAMESPACE_START
 
 struct progressbar_config;
 
-class progressbarObj;
+class LIBCXX_PUBLIC progressbarObj;
 
 /*! A progress indication bar
 

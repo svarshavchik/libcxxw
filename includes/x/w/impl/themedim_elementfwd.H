@@ -10,13 +10,17 @@
 
 LIBCXXW_NAMESPACE_START
 
-struct themedim_element_init;
+struct LIBCXX_PUBLIC themedim_element_init;
+template<typename tag=void>
+class LIBCXX_PUBLIC themedim_element;
+template<typename element_impl, typename tag=void>
+class LIBCXX_PUBLIC themedim1_elementObj;
 
 //! Attach a tag to a themedimObj
 
 //! \see themedim_elementObj
 
-template<typename tag=void>
+template<typename tag>
 class themedim_element : public themedimObj {
 public:
 
@@ -44,7 +48,7 @@ public:
 
 //! Helper used by themedim_elementObj
 
-template<typename element_impl, typename tag=void>
+template<typename element_impl, typename tag>
 class themedim1_elementObj : public element_impl,
 			     public themedim_element<tag> {
 
@@ -74,7 +78,7 @@ public:
 
 //! Helper template used by themedim_elementObj
 
-template<typename ...args> struct themedims_element_types;
+template<typename ...args> struct LIBCXX_PUBLIC themedims_element_types;
 
 //! Helper template used by themedim_elementObj
 

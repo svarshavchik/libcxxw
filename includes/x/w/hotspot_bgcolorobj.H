@@ -18,7 +18,7 @@ LIBCXXW_NAMESPACE_START
 class hotspot_bgcolorObj : public hotspotObj {
 
 public:
-	class implObj;
+	class LIBCXX_HIDDEN implObj;
 
 	//! Internal implementation details.
 

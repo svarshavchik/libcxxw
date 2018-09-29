@@ -23,7 +23,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-struct surrounding_elements_info;
+struct LIBCXX_HIDDEN surrounding_elements_info;
 
 //! A border implementation
 

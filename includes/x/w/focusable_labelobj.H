@@ -21,7 +21,7 @@ class focusable_labelObj : public containerObj,
 			   public focusableObj::ownerObj {
 
 public:
-	class implObj;
+	class LIBCXX_HIDDEN implObj;
 
 	//! Constructor
 	focusable_labelObj(const container_impl &container_impl,

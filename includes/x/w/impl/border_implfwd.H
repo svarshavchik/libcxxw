@@ -10,9 +10,8 @@
 
 LIBCXXW_NAMESPACE_START
 
-class border_implObj;
-class border_impl_base;
-class border_info;
+class LIBCXX_HIDDEN border_implObj;
+class LIBCXX_HIDDEN border_impl_base;
 
 //! A border implementation.
 

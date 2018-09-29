@@ -10,7 +10,8 @@
 
 LIBCXXW_NAMESPACE_START
 
-class gridlayoutmanagerObj;
+class LIBCXX_HIDDEN new_gridlayoutmanager;
+class LIBCXX_PUBLIC gridlayoutmanagerObj;
 
 /*! The grid layout manager.
 

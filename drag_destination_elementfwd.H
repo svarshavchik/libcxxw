@@ -11,6 +11,9 @@
 
 LIBCXXW_NAMESPACE_START
 
+template<typename element_impl>
+class LIBCXX_HIDDEN drag_destination_elementObj;
+
 //! A mixin for a display element that accepts drag-and-dropped content.
 
 //! The template parameter must be a subclass of child_elementObj, and the
@@ -64,7 +67,7 @@ LIBCXXW_NAMESPACE_START
 //! parent that forwarded it back to the element.
 
 template<typename element_impl>
-class LIBCXX_HIDDEN drag_destination_elementObj : public element_impl {
+class drag_destination_elementObj : public element_impl {
 
  public:
 	typedef element_impl superclass_t;

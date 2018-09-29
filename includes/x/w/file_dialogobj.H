@@ -21,7 +21,7 @@ class file_dialogObj : public dialogObj {
 public:
 	struct init_args;
 
-	class implObj;
+	class LIBCXX_HIDDEN implObj;
 
 	//! Internal implementation object.
 	const ref<implObj> impl;

@@ -9,6 +9,9 @@
 
 LIBCXXW_NAMESPACE_START
 
+template<typename element_impl, typename tag>
+class LIBCXX_PUBLIC theme_font_1elementObj;
+
 //! One tagged theme font
 
 //! \see theme_font_elementObj
@@ -36,12 +39,12 @@ public:
 	void theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme) override;
 };
 
-template<typename ...args> struct theme_font_element_types;
+template<typename ...args> struct LIBCXX_PUBLIC theme_font_element_types;
 
 //! Helper template used by theme_font_elementObj
 
 template<typename base, typename arg>
-struct LIBCXX_HIDDEN theme_font_element_types<base, arg> {
+struct theme_font_element_types<base, arg> {
 
 	typedef theme_font_1elementObj<base, arg> type;
 };
@@ -49,7 +52,7 @@ struct LIBCXX_HIDDEN theme_font_element_types<base, arg> {
 //! Helper template used by theme_font_elementObj
 
 template<typename base, typename arg1, typename arg2, typename ...args>
-struct LIBCXX_HIDDEN theme_font_element_types<base, arg1, arg2, args...>
+struct theme_font_element_types<base, arg1, arg2, args...>
 {
 
 	typedef theme_font_1elementObj

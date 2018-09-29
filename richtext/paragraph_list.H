@@ -6,6 +6,8 @@
 #ifndef paragraph_list_H
 #define paragraph_list_H
 
+#include "richtext/richtextfwd.H"
+#include "richtext/richtextfragmentfwd.H"
 #include "richtext/richtextparagraph.H"
 #include "richtext/richtext_impl.H"
 #include "connection_thread.H"
@@ -13,16 +15,13 @@
 
 LIBCXXW_NAMESPACE_START
 
-class richtextObj;
-class fragment_list;
-
 //! All the \ref richtext "rich text paragraphs".
 
 //! A character with a UNICODE_LB_MANDATORY always begins a new paragraph.
 //! This helper class operates on richtextparagraphObj's. This is the only class
 //! that has full access to a paragraph's paragraphs_t.
 
-class LIBCXX_HIDDEN paragraph_list {
+class paragraph_list {
 
 public:
 

@@ -10,6 +10,7 @@
 #include <x/obj.H>
 
 #include "fonts/fontpatternfwd.H"
+#include "fonts/fontlistfwd.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -23,7 +24,7 @@ namespace fontconfig {
 //! The fontconfig library creates a list of fonts, we wrap it and provide
 //! iterators for them.
 
-class LIBCXX_HIDDEN listObj : virtual public obj {
+class listObj : virtual public obj {
 
 public:
 	class implObj;

@@ -22,7 +22,7 @@ public:
 	//! Alias
 	typedef custom_comboboxlayoutmanagerObj superclass_t;
 
-	class implObj;
+	class LIBCXX_HIDDEN implObj;
 
 	//! Internal implementation object.
 	const ref<implObj> impl;

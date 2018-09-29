@@ -13,7 +13,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class hotspotObj;
+class LIBCXX_PUBLIC hotspotObj;
 
 //! Signature for a hotspot activation function.
 

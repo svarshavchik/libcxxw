@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class input_dialogObj;
+class LIBCXX_PUBLIC input_dialogObj;
 
 /*! A dialog with an input field.
 

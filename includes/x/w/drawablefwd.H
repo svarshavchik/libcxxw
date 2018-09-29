@@ -11,7 +11,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class drawableObj;
+class LIBCXX_PUBLIC drawableObj;
 
 //! A drawable object.
 

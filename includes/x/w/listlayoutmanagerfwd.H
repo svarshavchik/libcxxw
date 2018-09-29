@@ -21,11 +21,11 @@
 
 LIBCXXW_NAMESPACE_START
 
-class listlayoutmanagerObj;
+class LIBCXX_PUBLIC listlayoutmanagerObj;
 struct list_item_param;
-class listlayoutstyle_impl;
-class new_listlayoutmanager;
-class list_lock;
+class LIBCXX_HIDDEN listlayoutstyle_impl;
+class LIBCXX_HIDDEN new_listlayoutmanager;
+class LIBCXX_PUBLIC list_lock;
 
 /*! The list layout manager.
 
@@ -464,7 +464,7 @@ typedef ptr<listlayoutmanagerObj> listlayoutmanagerptr;
 
 typedef const_ptr<listlayoutmanagerObj> const_listlayoutmanagerptr;
 
-struct listimpl_info_s;
+struct LIBCXX_HIDDEN listimpl_info_s;
 
 //! Internal \ref listlayoutmanager "listlayoutmanager" mutex-protected data.
 

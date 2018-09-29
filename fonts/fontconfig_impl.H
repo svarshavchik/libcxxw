@@ -21,7 +21,7 @@ namespace fontconfig {
 
 typedef mpobj<FcConfig * const, std::recursive_mutex> fontconfig_t;
 
-class configObj::implObj : virtual public obj {
+class LIBCXX_HIDDEN configObj::implObj : virtual public obj {
 
 public:
 	//! Constructor

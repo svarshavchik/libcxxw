@@ -17,7 +17,7 @@ LIBCXXW_NAMESPACE_START
 class color_picker_squareObj : public canvasObj {
 
 public:
-	class implObj;
+	class LIBCXX_HIDDEN implObj;
 
 	//! Internal implementation object.
 	const ref<implObj> impl;

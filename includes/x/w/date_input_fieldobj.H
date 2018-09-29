@@ -19,9 +19,9 @@ LIBCXXW_NAMESPACE_START
 class date_input_fieldObj : public focusable_containerObj {
 
 public:
-	class implObj;
+	class LIBCXX_HIDDEN implObj;
 
-	class handlerObj;
+	class LIBCXX_HIDDEN handlerObj;
 
 	//! Internal implementation object.
 	const ref<implObj> impl;

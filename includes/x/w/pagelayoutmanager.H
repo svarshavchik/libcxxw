@@ -17,7 +17,7 @@ LIBCXXW_NAMESPACE_START
 //! Blocks other execution threads from accessing the contents of the
 //! page layout manager.
 
-class LIBCXX_PUBLIC page_lock {
+class page_lock {
 
 	//! Internal lock.
 	mpobj_lock<page_layout_info_s, std::recursive_mutex> lock;
@@ -33,7 +33,7 @@ class LIBCXX_PUBLIC page_lock {
 
 //! Create a new container that uses the \ref pagelayoutmanager "page layout manager"
 
-class LIBCXX_HIDDEN new_pagelayoutmanager : public new_layoutmanager {
+class new_pagelayoutmanager : public new_layoutmanager {
 
 
 public:

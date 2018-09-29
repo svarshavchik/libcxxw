@@ -14,6 +14,8 @@
 
 using namespace LIBCXX_NAMESPACE::w;
 
+struct LIBCXX_PUBLIC my_cell_data;
+
 struct my_cell_data {
 	int grid_element;
 	dim_t width, height;

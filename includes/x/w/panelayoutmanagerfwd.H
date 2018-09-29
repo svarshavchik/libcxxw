@@ -10,7 +10,10 @@
 
 LIBCXXW_NAMESPACE_START
 
-class panelayoutmanagerObj;
+class LIBCXX_PUBLIC panelayoutmanagerObj;
+class LIBCXX_HIDDEN new_panelayoutmanager;
+struct LIBCXX_PUBLIC pane_style;
+class LIBCXX_HIDDEN pane_lock;
 
 /*! Pane layout manager
 

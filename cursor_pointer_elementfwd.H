@@ -12,10 +12,13 @@
 
 LIBCXXW_NAMESPACE_START
 
+template<typename>
+class LIBCXX_HIDDEN cursor_pointer_1tag;
+
 //! One of the base classes inherited by an cursor_pointer_element_implObj.
 
 template<typename>
-class LIBCXX_HIDDEN cursor_pointer_1tag {
+class cursor_pointer_1tag {
 
 	//! Stored cursor_pointer.
 
@@ -40,7 +43,7 @@ struct LIBCXX_HIDDEN cursor_pointer_element_implObj;
 //! Inherit from the remaining template parameter.
 
 template<typename element_impl>
-struct LIBCXX_HIDDEN cursor_pointer_element_implObj<element_impl>
+struct cursor_pointer_element_implObj<element_impl>
 	: public element_impl {
 
 	using element_impl::element_impl;
@@ -51,7 +54,7 @@ struct LIBCXX_HIDDEN cursor_pointer_element_implObj<element_impl>
 //! Multiply-inherit from one cursor_pointer_1tag.
 
 template<typename element_impl, typename Tag1, typename ...Tags>
-struct LIBCXX_HIDDEN cursor_pointer_element_implObj<element_impl, Tag1,
+struct cursor_pointer_element_implObj<element_impl, Tag1,
 						     Tags...>
 	: cursor_pointer_element_implObj<element_impl, Tags...>,
 	cursor_pointer_1tag<Tag1> {

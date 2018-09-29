@@ -31,6 +31,8 @@ configure
 /libcxxw_config.h
 /libcxxw_config.h.in
 /libcxxw_doctags
+/libcxxw*pc
+/libcxxw*m4
 libtool
 ltmain.sh
 man.stamp

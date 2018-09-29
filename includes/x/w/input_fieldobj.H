@@ -24,7 +24,7 @@ LIBCXXW_NAMESPACE_START
 class input_fieldObj : public peepholed_focusableObj {
 
 public:
-	class implObj;
+	class LIBCXX_HIDDEN implObj;
 
 	//! Internal implementation object.
 

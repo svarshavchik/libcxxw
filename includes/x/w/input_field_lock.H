@@ -58,7 +58,7 @@ typedef mpobj<ref<richtext_implObj>, std::recursive_mutex
 //! The second value returned by pos() is the other position.
 //! selection.
 
-class LIBCXX_HIDDEN input_lock : public internal_richtext_impl_t::lock {
+class input_lock : public internal_richtext_impl_t::lock {
 
  public:
 

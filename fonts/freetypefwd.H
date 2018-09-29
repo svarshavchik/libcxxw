@@ -11,7 +11,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class freetypeObj;
+class LIBCXX_HIDDEN freetypeObj;
 class freetypeBase;
 
 class font_search_properties;

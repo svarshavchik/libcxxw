@@ -19,7 +19,7 @@ LIBCXXW_NAMESPACE_START
 class containerObj : public elementObj {
 
 public:
-	class implObj;
+	class LIBCXX_PUBLIC implObj;
 
 	//! Internal implementation object.
 

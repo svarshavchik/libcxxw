@@ -18,7 +18,7 @@ LIBCXXW_NAMESPACE_START
 //! with the shortcut_activation_elementObj template. Alternatively,
 //! derive from independent_shortcut_activationObj.
 
-class shortcut_activation_element_implObj : virtual public obj {
+class LIBCXX_HIDDEN shortcut_activation_element_implObj : virtual public obj {
 
 	//! Currently installed shortcut
 	installed_shortcutptr current_shortcut;

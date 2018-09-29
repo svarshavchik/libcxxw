@@ -15,7 +15,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class filedirlist_managerObj;
+class LIBCXX_HIDDEN filedirlist_managerObj;
 
 /*! Directory contents manager display element.
 

@@ -20,7 +20,7 @@ LIBCXXW_NAMESPACE_START
 class scratch_bufferObj : virtual public obj {
 
 public:
-	class implObj;
+	class LIBCXX_HIDDEN implObj;
 
 	//! Internal implementation details
 

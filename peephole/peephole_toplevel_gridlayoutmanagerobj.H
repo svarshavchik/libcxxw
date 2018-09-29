@@ -6,6 +6,7 @@
 #define peephole_toplevel_gridlayoutmanagerobj_h
 
 #include "peephole/peephole_gridlayoutmanagerobj.H"
+#include "peephole/peephole_toplevel_gridlayoutmanagerfwd.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -13,7 +14,7 @@ LIBCXXW_NAMESPACE_START
 
 //! \see peephole_toplevel_gridlayoutmanager
 
-class LIBCXX_HIDDEN peephole_toplevel_gridlayoutmanagerObj
+class peephole_toplevel_gridlayoutmanagerObj
 	: public peephole_gridlayoutmanagerObj {
 
  public:

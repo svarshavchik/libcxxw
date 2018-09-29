@@ -10,8 +10,8 @@
 
 LIBCXXW_NAMESPACE_START
 
-class screenObj;
-class screenBase;
+class LIBCXX_PUBLIC screenObj;
+class LIBCXX_PUBLIC screenBase;
 
 /*! A screen on a display server.
 

@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class hotspot_bgcolorObj;
+class LIBCXX_PUBLIC hotspot_bgcolorObj;
 
 //! A hotspot that changes colors.
 

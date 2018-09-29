@@ -5,6 +5,7 @@
 #ifndef listcontainer_pseudo_impl_h
 #define listcontainer_pseudo_impl_h
 
+#include "listlayoutmanager/listcontainer_pseudo_implfwd.H"
 #include "x/w/impl/container_elementfwd.H"
 #include "x/w/impl/child_element.H"
 #include "x/w/containerobj.H"

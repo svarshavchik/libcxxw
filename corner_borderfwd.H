@@ -9,10 +9,11 @@
 #include "x/w/namespace.H"
 #include "x/w/elementfwd.H"
 #include "x/w/elementobj.H"
+#include "x/w/impl/border_implobj.H"
 
 LIBCXXW_NAMESPACE_START
 
-class corner_borderObj;
+class LIBCXX_HIDDEN corner_borderObj;
 
 //! A corner border element in a grid
 
@@ -36,7 +37,7 @@ typedef const_ptr<corner_borderObj> const_corner_borderptr;
 
 //! What surrounds the corner element.
 
-struct LIBCXX_HIDDEN surrounding_elements_info {
+struct surrounding_elements_info {
 
 	//! Constructor
 	surrounding_elements_info();

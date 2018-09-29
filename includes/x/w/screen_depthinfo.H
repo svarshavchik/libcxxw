@@ -16,7 +16,7 @@ LIBCXXW_NAMESPACE_START
 class screenObj::visualObj : virtual public obj {
 
 public:
-	class implObj;
+	class LIBCXX_HIDDEN implObj;
 
 	//! Internal implementation details.
 

@@ -88,7 +88,7 @@ namespace std {
 	//! Specialization of \c std::hash for custom font cache key.
 
 	template<>
-	struct LIBCXX_HIDDEN hash<custom_font_cache_key_t>
+	struct hash<custom_font_cache_key_t>
 		: public hash<LIBCXX_NAMESPACE::w::font>,
 		hash<LIBCXX_NAMESPACE::w::depth_t> {
 
@@ -105,7 +105,7 @@ namespace std {
 	//! Specialization of \c std::hash for theme font cache key.
 
 	template<>
-	struct LIBCXX_HIDDEN hash<theme_font_cache_key_t>
+	struct hash<theme_font_cache_key_t>
 		: public hash<string>,
 		hash<LIBCXX_NAMESPACE::w::depth_t> {
 

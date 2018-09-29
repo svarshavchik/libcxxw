@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class textlabelObj;
+class LIBCXX_PUBLIC textlabelObj;
 
 //! Text label interface
 

@@ -15,7 +15,7 @@ namespace fontconfig {
 }
 #endif
 
-class patternObj;
+class LIBCXX_HIDDEN patternObj;
 
 //! Font pattern.
 

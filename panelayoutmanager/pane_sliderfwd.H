@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class pane_sliderObj;
+class LIBCXX_HIDDEN pane_sliderObj;
 
 /*! Slider element.
 

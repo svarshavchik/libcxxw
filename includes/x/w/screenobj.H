@@ -39,7 +39,7 @@ LIBCXXW_NAMESPACE_START
 class screenObj : virtual public obj {
 
 public:
-	class implObj;
+	class LIBCXX_HIDDEN implObj;
 	class depthObj;
 	class visualObj;
 

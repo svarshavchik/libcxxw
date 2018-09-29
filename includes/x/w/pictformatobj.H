@@ -59,7 +59,7 @@ struct pictform_s {
 class pictformatObj : virtual public obj, public pictform_s {
 
 public:
-	class implObj;
+	class LIBCXX_HIDDEN implObj;
 
 	//! Internal implementation details.
 	const ref<implObj> impl;

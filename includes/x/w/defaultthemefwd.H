@@ -17,7 +17,7 @@ LIBCXXW_NAMESPACE_START
 
 std::string themedirroot();
 
-class defaultthemeObj;
+class LIBCXX_HIDDEN defaultthemeObj;
 class defaultthemeBase;
 
 class rgb;

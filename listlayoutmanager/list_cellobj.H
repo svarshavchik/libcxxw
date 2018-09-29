@@ -16,7 +16,7 @@
 LIBCXXW_NAMESPACE_START
 
 //! Base class for individual cells in a \ref listlayoutmanager "listlayoutmanager".
-struct LIBCXX_HIDDEN list_cellObj : virtual public obj {
+struct list_cellObj : virtual public obj {
 
 	//! Our iterator in column_widths
 	list_column_widths_t::iterator column_iterator;

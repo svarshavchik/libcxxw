@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class canvasObj;
+class LIBCXX_PUBLIC canvasObj;
 
 //! A mostly empty display element.
 

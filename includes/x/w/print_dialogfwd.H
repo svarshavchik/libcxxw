@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class print_dialogObj;
+class LIBCXX_PUBLIC print_dialogObj;
 
 struct print_dialog_args;
 

@@ -11,7 +11,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class grabbed_pointerObj;
+class LIBCXX_HIDDEN grabbed_pointerObj;
 
 //! Active pointer grab mcguffin.
 

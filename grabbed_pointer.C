@@ -18,7 +18,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class element_grabObj;
+class LIBCXX_HIDDEN element_grabObj;
 
 grabbed_pointerObj::grabbed_pointerObj()=default;
 
@@ -83,12 +83,12 @@ LIBCXXW_NAMESPACE_START
 
 //! A subclass of grabbed_pointerObj representing a grab by a specific element.
 
-class LIBCXX_HIDDEN element_grabObj : public grabbed_pointerObj {
+class element_grabObj : public grabbed_pointerObj {
 
  public:
 
 	//! The real pointer grab mcguffin.
-		const grabbed_pointer real_grab_pointer;
+	const grabbed_pointer real_grab_pointer;
 
 	//! Which element effected the grab.
 

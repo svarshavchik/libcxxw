@@ -13,11 +13,13 @@
 
 LIBCXXW_NAMESPACE_START
 
+class LIBCXX_HIDDEN peephole_gridlayoutmanagerObj;
+
 //! Grid layout manager for a peephole (with scrollbars).
 
 //! Overrides request_visibility_recursive().
 
-class LIBCXX_HIDDEN peephole_gridlayoutmanagerObj
+class peephole_gridlayoutmanagerObj
 	: public gridlayoutmanagerObj::implObj {
 
  public:

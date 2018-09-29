@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class recycled_pixmapsObj;
+class LIBCXX_HIDDEN recycled_pixmapsObj;
 
 //! A container for recycled pixmaps and pictures.
 

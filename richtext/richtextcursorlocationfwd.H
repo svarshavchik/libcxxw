@@ -11,7 +11,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class richtextcursorlocationObj;
+class LIBCXX_HIDDEN richtextcursorlocationObj;
 
 //! A location in a \ref richtext "rich text object".
 

@@ -12,9 +12,6 @@
 
 LIBCXXW_NAMESPACE_START
 
-class richtextparagraphObj;
-class paragraph_list;
-
 //! A helper class that operates on \ref richtextfragmentObj "fragments".
 
 //! fragment_list and const_fragment_list are the only classes

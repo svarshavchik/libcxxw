@@ -20,7 +20,7 @@ LIBCXXW_NAMESPACE_START
 //! xcb_destroy_window. An implementation class that holds a reference on
 //! this handler is responsible for that.
 
-class LIBCXX_HIDDEN main_windowObj::handlerObj :
+class main_windowObj::handlerObj :
 	public icon_images_vector_elementObj<generic_windowObj::handlerObj> {
 
 	typedef icon_images_vector_elementObj<

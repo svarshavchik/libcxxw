@@ -56,7 +56,7 @@ struct disabled_mask_tag;
 //! xcb_destroy_window. An implementation class that holds a reference on
 //! this handler is responsible for that.
 
-class LIBCXX_HIDDEN generic_windowObj::handlerObj
+class generic_windowObj::handlerObj
 
 // The window handler
 	: public window_handlerObj,

@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class child_elementObj;
+class LIBCXX_PUBLIC child_elementObj;
 
 typedef ref<child_elementObj> child_element;
 

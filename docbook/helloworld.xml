@@ -43,7 +43,8 @@ See COPYING for distribution information.
       (<application>autoconf</application>,
       <application>automake</application>, and
       <application>gmake</application>)
-      is required to build &app;'s example programs:
+      is required to build &app;'s example programs, as explained
+      in <xref linkend="developing" />:
     </para>
 
     <blockquote>

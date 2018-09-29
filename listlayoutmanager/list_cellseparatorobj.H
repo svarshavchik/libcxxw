@@ -12,7 +12,9 @@ LIBCXXW_NAMESPACE_START
 
 //! Internal implementation object.
 
-struct LIBCXX_HIDDEN list_cellseparatorObj : public list_cellObj {
+class list_cellseparatorObj : public list_cellObj {
+
+public:
 
 	//! Constructor
 	list_cellseparatorObj();

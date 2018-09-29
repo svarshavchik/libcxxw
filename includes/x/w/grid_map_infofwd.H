@@ -21,7 +21,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class grid_map_infoObj;
+class LIBCXX_HIDDEN grid_map_infoObj;
 
 #ifdef LIBCXX_W_GRIDMAP_DEBUG
 

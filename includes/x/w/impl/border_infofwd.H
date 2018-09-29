@@ -9,7 +9,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-struct border_info;
+struct LIBCXX_HIDDEN border_info;
 
 LIBCXXW_NAMESPACE_END
 

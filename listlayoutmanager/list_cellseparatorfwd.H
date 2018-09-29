@@ -10,7 +10,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class list_cellseparatorObj;
+class LIBCXX_HIDDEN list_cellseparatorObj;
 
 /*! A separator cell in a \ref listlayoutmanager "list layout manager".
 

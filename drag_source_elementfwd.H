@@ -17,9 +17,10 @@
 
 LIBCXXW_NAMESPACE_START
 
-class drag_source_element_baseObj;
+class LIBCXX_HIDDEN drag_source_element_baseObj;
+class LIBCXX_HIDDEN grab_inprogress_info;
 
-class LIBCXX_HIDDEN grab_inprogress_info : public drag_source {
+class grab_inprogress_info : public drag_source {
 
  public:
 	//! The XdndSelection
@@ -53,7 +54,9 @@ class LIBCXX_HIDDEN grab_inprogress_info : public drag_source {
 	void show_notdroppable_pointer(ONLY IN_THREAD) override;
 };
 
-class LIBCXX_HIDDEN drag_source_element_baseObj : virtual public obj {
+class LIBCXX_HIDDEN drag_source_element_baseObj;
+
+class drag_source_element_baseObj : virtual public obj {
 
 	//! Whether motion events are dragging the selected text.
 
@@ -113,6 +116,9 @@ class LIBCXX_HIDDEN drag_source_element_baseObj : virtual public obj {
 	virtual elementObj::implObj &get_dragging_element_impl()=0;
 };
 
+template<typename element_impl>
+class LIBCXX_HIDDEN drag_source_elementObj;
+
 //! A mixin for a display element with draggable content.
 
 //! The template parameter must be a subclass of child_elementObj, and the
@@ -148,7 +154,7 @@ class LIBCXX_HIDDEN drag_source_element_baseObj : virtual public obj {
 //!
 //!
 template<typename element_impl>
-class LIBCXX_HIDDEN drag_source_elementObj
+class drag_source_elementObj
 	: public element_impl,
 	  public drag_source_element_baseObj {
 

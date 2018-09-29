@@ -16,7 +16,7 @@ LIBCXXW_NAMESPACE_START
 
 //! \see current_selection_paste_handler
 
-class LIBCXX_HIDDEN current_selection_paste_handlerObj
+class current_selection_paste_handlerObj
 	: public current_selection_handlerObj,
 	  public unicode::iconvert::tou {
 

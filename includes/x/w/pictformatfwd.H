@@ -11,7 +11,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-class pictformatObj;
+class LIBCXX_PUBLIC pictformatObj;
 
 //! Available picture formats on the server.
 

@@ -5,6 +5,7 @@
 #ifndef x_w_labelobj_h
 #define x_w_labelobj_h
 
+#include <x/w/labelfwd.H>
 #include <x/w/elementobj.H>
 #include <x/w/textlabelobj.H>
 

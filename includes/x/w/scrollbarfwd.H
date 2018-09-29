@@ -15,7 +15,7 @@ LIBCXXW_NAMESPACE_START
 
 enum class scrollbar_visibility;
 
-class scrollbarObj;
+class LIBCXX_PUBLIC scrollbarObj;
 
 struct scroll_v_tag;
 

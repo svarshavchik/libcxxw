@@ -10,7 +10,8 @@
 
 LIBCXXW_NAMESPACE_START
 
-class layoutmanagerObj;
+class LIBCXX_PUBLIC layoutmanagerObj;
+class LIBCXX_HIDDEN new_layoutmanager;
 
 //! A layout manager
 

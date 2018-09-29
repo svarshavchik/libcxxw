@@ -11,7 +11,9 @@
 
 LIBCXXW_NAMESPACE_START
 
-class pagelayoutmanagerObj;
+class LIBCXX_PUBLIC page_lock;
+class LIBCXX_PUBLIC pagelayoutmanagerObj;
+class LIBCXX_HIDDEN new_pagelayoutmanager;
 
 /*! The page layout manager.
 

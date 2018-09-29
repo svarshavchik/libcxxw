@@ -16,6 +16,7 @@
 #include <x/vector.H>
 #include "x/w/connection_threadfwd.H"
 #include "x/w/defaultthemefwd.H"
+#include "richtext/richtextfragmentfwd.H"
 #include "richtext/richtextmeta.H"
 #include "richtext/richtextstring.H"
 #include "richtext/richtextcursorlocationfwd.H"
@@ -32,26 +33,6 @@
 #include <list>
 
 LIBCXXW_NAMESPACE_START
-
-dim_t adjust_descender_for_underline(dim_t ascender, dim_t descender)
-	LIBCXX_HIDDEN;
-
-class richtextfragmentObj;
-class richtextfragmentBase;
-class richtextparagraphObj;
-class fragment_list;
-class const_fragment_list;
-class paragraph_list;
-
-//! A fragment of unicode text, ending at an allowed or a mandatory line break.
-
-typedef ref<richtextfragmentObj> richtextfragment;
-
-//! Reference to a constant rich text fragment.
-typedef const_ref<richtextfragmentObj> const_richtextfragment;
-
-//! A nullable pointer reference to a text fragment.
-typedef ptr<richtextfragmentObj> richtextfragmentptr;
 
 //! A text fragment, with some metadata (fonts)
 
