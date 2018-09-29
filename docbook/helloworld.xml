@@ -616,11 +616,24 @@ while (!appdata->close_flag)
 
 	<varlistentry>
 	  <term>
+	    <link linkend="table"><classname>&ns;::w::tablelayoutmanager</classname></link>
+	  </term>
+	  <listitem>
+	    <para>
+	      A list with a header row. The table layout manager offers
+	      the optional ability to interactively adjust the relative widths
+	      of the columns in the table by moving the border betweens the
+	      columns.
+	    </para>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term>
 	    <link linkend="combobox"><classname>&ns;::w::standard_comboboxlayoutmanager</classname> and <classname>&ns;::w::editable_comboboxlayoutmanager</classname></link>
 	  </term>
 	  <listitem>
 	    <para>
-	      These layout manager leverage the list layout manager to quickly
+	      These layout managers leverage the list layout manager to quickly
 	      deal with the list of choices shown in the combo-box's pop-up,
 	      and also deal with the display element that represents the
 	      current selection in the combo-box.
@@ -635,7 +648,7 @@ while (!appdata->close_flag)
 	  <listitem>
 	    <para>
 	      Treats its display elements as virtual <quote>pages</quote>,
-	      and showing one page at a time.
+	      showing one page at a time.
 	      <quote>Opening</quote> a different
 	      page element replaces the current page's display element with
 	      the new element.

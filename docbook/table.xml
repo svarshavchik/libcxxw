@@ -176,6 +176,36 @@ ntlm.maximum_table_width=500;</programlisting>
       </para>
     </note>
 
+    <section id="adjustabletableskeyboard">
+      <title>Adjusting table column widths using the keyboard</title>
+
+      <para>
+	Each border between the columns in an adjustable table is
+	draggable directly, by the pointer. This adjusts the relative sizes
+	of the two columns on either sides of the border. The column sizes
+	are also adjustable using the keyboard.
+      </para>
+
+      <para>
+	When <link linkend="focusable">the keyboard focus is on the
+	  table's list</link> the <keycap>Tab</keycap> key highlights each
+	border in the header row in turn
+	the <keycap>Tab</keycap> key moves the keyboard focus out of the
+	talbe list, as with other focusable display elements
+	(<keycap>Shift-Tab</keycap> highlights the previous border in this
+	mode).
+	<keycap>Cursor-Left</keycap> and
+	<keycap>Cursor-Right</keycap> move the highlighted border by a
+	moderate amount, and by one precise pixel together with the
+	<keycap>Ctrl</keycap> key.
+      </para>
+
+      <para>
+	Column width adjusting mode gets terminated immediately by the
+	<keycap>Esc</keycap> key, or by repeatedly tabbing until the keyboard
+	focus leaves the table list, or the header row.
+      </para>
+    </section>
     <section id="preservetablecolumnwidths">
       <title>Preserving table columns' widths</title>
 

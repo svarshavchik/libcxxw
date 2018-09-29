@@ -105,6 +105,18 @@ class LIBCXX_HIDDEN header_container_implObj
 	//! Set when table_width was specified as non-0.
 	const bool preferred_override;
 
+	//! The parent header container
+
+	//! This is the parent header container that has the initial
+	//! default background color set, a gradient in the default theme.
+	//!
+	//! Our override of the background color when adjusting column width
+	//! has to use us to set the background color, in order to
+	//! guarantee correct alignment of the shading. The header container
+	//! peeks out on the left and the right side of us, so we need to
+	//! to deal with it.
+	const element_impl header_container_element;
+
 	//! The synchronized list columns.
 
 	const table_synchronized_axis axis;
@@ -128,6 +140,7 @@ class LIBCXX_HIDDEN header_container_implObj
 
  public:
 	header_container_implObj(const new_tablelayoutmanager &ntlm,
+				 const element_impl &header_container_element,
 				 const table_synchronized_axis &axis,
 				 const container_impl &parent_container,
 				 const child_element_init_params &init_params)
@@ -144,7 +157,7 @@ class LIBCXX_HIDDEN header_container_implObj
 			.create_icon({"slider-horiz"})->create_cursor(),
 			parent_container, init_params},
 		preferred_override{ntlm.table_width != 0},
-		// axis{table_synchronized_axis::create(ntlm)}
+			header_container_element{header_container_element},
 			axis{axis}
 	{
 	}
@@ -364,9 +377,13 @@ void header_container_implObj::stop_adjusting(ONLY IN_THREAD)
 {
 	axis->adjusting(IN_THREAD).reset();
 
-	set_background_color(IN_THREAD,
-			     background_color_element<header_color_tag>
-			     ::get(IN_THREAD));
+	if (first_draggable_column == 0)
+		return;
+
+	header_container_element->set_background_color
+		(background_color_element<header_color_tag>
+		 ::get(IN_THREAD));
+	remove_background_color(IN_THREAD);
 	highlight_pixmap_width=0;
 	highlight_pixmap_highlight_position=0;
 	first_draggable_column=0;
@@ -515,8 +532,12 @@ void header_container_implObj
 
 	// Fill it with the adjustable_header_color, as the first order of
 	// business.
-	p->composite(background_color_element
-		     <adjustable_header_color_tag>::get(IN_THREAD)
+
+	auto adjustable_header_color=
+		background_color_element
+		<adjustable_header_color_tag>::get(IN_THREAD);
+
+	p->composite(adjustable_header_color
 		     ->get_background_color_for_element(IN_THREAD, *this)
 		     ->get_current_color(IN_THREAD),
 		     0, 0,
@@ -545,6 +566,7 @@ void header_container_implObj
 	set_background_color(IN_THREAD,
 			     get_screen()->impl
 			     ->create_background_color(p));
+	header_container_element->set_background_color(adjustable_header_color);
 }
 
 //! Header grid row layout manager.
@@ -770,6 +792,7 @@ void new_tablelayoutmanager::created_list_container(const gridlayoutmanager
 	auto header_container_impl=
 		ref<header_container_implObj>
 		::create(*this,
+			 header_border_container_impl,
 			 tci->axis_impl,
 			 header_focusframe_container_impl,
 			 header_init_params);

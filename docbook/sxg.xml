@@ -165,7 +165,7 @@ See COPYING for distribution information.
 
 	<para>
 	  This is used to create a masking picture, such as the mask
-	  for dithering display elements that are disabled from input.
+	  for dithering disabled display elements.
 	</para>
       </listitem>
 
@@ -316,7 +316,7 @@ See COPYING for distribution information.
 
     <para>
       This results in the &sxg; image always getting scaled
-      by a multiple of its original size,
+      by a multiple of its original size.
       With simple &sxg; images containing only horizontal, vertical, and
       rectangular components, it might be possible to avoid using
       <tag class='element'>widthfactor</tag> and

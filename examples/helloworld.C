@@ -31,7 +31,7 @@ void testlabel()
 	// not return until all display-related resources have been released
 	// and the display server's connection thread stops.
 	//
-	// The guard object muts be declared before the main_window object.
+	// The guard object must be declared before the main_window object.
 
 	x::destroy_callback::base::guard guard;
 

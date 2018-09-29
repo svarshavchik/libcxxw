@@ -28,55 +28,56 @@ See COPYING for distribution information.
     <itemizedlist>
       <listitem>
 	<para>
-	  Uses modern C++17 language features, such as:
-	  lambdas for handling events like mouse button clicks and other
-	  user activity; variant parameter types for providing a compact
-	  API selecting alternative options;
-	  all display elements are reference-counted objects; and
-	  other C++17 features.
+	  Combines traditional UI elements &mdash;
+	  labels, text input fields,
+	  lists, combo-boxes, menus, and dialogs &mdash; with a clean
+	  modern look, with mild gradient shading for a subtle, non-intrusive
+	  3D effect.
 	</para>
       </listitem>
 
       <listitem>
 	<para>
-	  Implements basic, themeable UI elements: labels, text input fields,
-	  lists, combo boxes, menus, and dialogs. The default theme uses
-	  subtle gradients to implement a light 3D effect.
+	  Fully keyboard-accessible. All display elements have full
+	  keyboard navigation, where possible. No explicit application
+	  support is needed. Even scroll-bars have keyboard controls.
 	</para>
+      </listitem>
 
+      <listitem>
 	<para>
-	  The default UI elements are scalable, using a
+	  Takes full advantage of modern C++17 language features. Lambdas
+	  handle UI events (button clicks, menu selections, and other
+	  activity). Variant types provide compact means for
+	  selecting alternative options.
+	  All display elements are reference-counted objects.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Fully scalable and themeable UI uses a
 	  <link linkend="sxg">library-specific
-	    scalable graphic format</link>. Alternatively, an application
-	  may load its own <acronym>GIF</acronym>, <acronym>PNG</acronym>,
-	  or <acronym>JPG</acronym> fixed-size images.
+	    scalable graphic format</link>, to easily scale all UI elements
+	  to a user-preferred size.
 	</para>
       </listitem>
 
       <listitem>
 	<para>
-	  All display elements have full keyboard navigation, where
-	  possible. Even scrollbars have keyboard-based navigation.
-	</para>
-      </listitem>
-
-      <listitem>
-	<para>
-	  Unlike other high-level toolkits,
-	  &app; does not require the application to use an event-driven
-	  design. &app; run an internal execution thread that handles all
-	  X events. The main application
-	  thread can be working on a dedicated, long-running task that
-	  blocks all pointer and keyboard events, but the background thread
+	  &app; does not force the application to use an event-driven
+	  design. &app; runs in an internal execution thread that handles all
+	  X events. The library's execution thread
 	  continues to update the display elements, and process X events
-	  as needed, all by itself.
+	  as needed, all by itself, while the main application performs a
+	  long-running task (with all pointer and button activity suspended).
 	</para>
       </listitem>
 
       <listitem>
 	<para>
 	  &app; is a compositing toolkit. The underlying video hardware
-	  must implement the X RENDER extension. This should supported by all
+	  must implement the X RENDER extension. This should be supported by all
 	  modern video hardware.
 	</para>
       </listitem>
