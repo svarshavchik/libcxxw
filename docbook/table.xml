@@ -152,6 +152,9 @@ ntlm.maximum_table_width=500;</programlisting>
       a bi-directional horizontal arrow. Pressing pointer button #1 drags
       the border under the pointer horizontally and adjusts the relative
       widths of the columns on both sides of the border.
+      Pressing pointer button #1 while holding down the
+      <keycap>Alt</keycap> key restores all columns to their initial
+      unadjusted width.
     </para>
 
     <para>
@@ -204,6 +207,10 @@ ntlm.maximum_table_width=500;</programlisting>
 	Column width adjusting mode gets terminated immediately by the
 	<keycap>Esc</keycap> key, or by repeatedly tabbing until the keyboard
 	focus leaves the table list, or the header row.
+	Pressing <keycap>Esc</keycap> while holding down the
+	<keycap>Alt</keycap> key goes one step further and
+	restores all columns to their initial
+	unadjusted width.
       </para>
     </section>
     <section id="preservetablecolumnwidths">

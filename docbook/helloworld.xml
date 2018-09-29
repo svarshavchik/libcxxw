@@ -616,7 +616,7 @@ while (!appdata->close_flag)
 
 	<varlistentry>
 	  <term>
-	    <link linkend="table"><classname>&ns;::w::tablelayoutmanager</classname></link>
+	    <link linkend="tables"><classname>&ns;::w::tablelayoutmanager</classname></link>
 	  </term>
 	  <listitem>
 	    <para>

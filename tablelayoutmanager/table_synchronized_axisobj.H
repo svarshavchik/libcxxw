@@ -28,7 +28,8 @@ public:
 
 	//! This is what's safe, requiring this to be thread-safe.
 	typedef mpobj<std::optional<std::vector<metrics::axis>
-				    >> dragged_scaled_axis_t;
+				    >,
+		      std::recursive_mutex> dragged_scaled_axis_t;
 
 	//! Columns have been dragged.
 
@@ -118,6 +119,9 @@ public:
 			     dim_t distance,
 			     size_t first_adjusted_column,
 			     size_t second_adjusted_column);
+
+	//! Return the synchronized axi to unadjusted values.
+	void clear_adjustments(ONLY IN_THREAD);
 
 	//! Return the coordinates of the border to the right of the column
 

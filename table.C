@@ -338,6 +338,11 @@ bool header_container_implObj
 		{
 			stop_adjusting(IN_THREAD);
 		}
+		else if (be.alt && axis->adjustable_column_widths)
+		{
+			stop_adjusting(IN_THREAD);
+			axis->clear_adjustments(IN_THREAD);
+		}
 		else if (first_draggable_column)
 		{
 			axis->start_adjusting_from(IN_THREAD,
@@ -404,6 +409,12 @@ bool header_container_implObj::process_list_key_event(ONLY IN_THREAD,
 	if (first_draggable_column && dragging_by != by_keyboard)
 		return false;
 
+	if (ke.unicode == '\e' && ke.alt)
+	{
+		stop_adjusting(IN_THREAD);
+		axis->clear_adjustments(IN_THREAD);
+		return true;
+	}
 	if (is_next_key(ke) && first_draggable_column == 0)
 	{
 		{

@@ -49,7 +49,8 @@ struct LIBCXX_HIDDEN synchronized_axis_values_t;
 
 //! Mutex-protected synchronized_axis_values_t
 
-typedef mpobj<synchronized_axis_values_t> synchronized_values;
+typedef mpobj<synchronized_axis_values_t,
+	      std::recursive_mutex> synchronized_values;
 
 //! Keep track of a list element's synchronized values.
 

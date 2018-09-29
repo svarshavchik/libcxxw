@@ -486,11 +486,25 @@ void tablelayoutmanagerObj::table_synchronized_axisObj
 }
 
 void tablelayoutmanagerObj::table_synchronized_axisObj
+::clear_adjustments(ONLY IN_THREAD)
+{
+	dragged_scaled_axis_t::lock scaled_lock{dragged_scaled_axis};
+
+	abort_dragging(IN_THREAD, scaled_lock);
+}
+
+void tablelayoutmanagerObj::table_synchronized_axisObj
 ::abort_dragging(ONLY IN_THREAD,
 		 dragged_scaled_axis_t::lock &lock)
 {
 	lock->reset();
 	resize_reference_info.reset();
+
+	{
+		synchronized_values::lock lock{values};
+
+		lock->recalculate(IN_THREAD, lock->all_values.end());
+	}
 }
 
 
@@ -505,7 +519,10 @@ void tablelayoutmanagerObj::save(const std::string &name,
 		};
 
 	if (!*lock)
+	{
+		writelock->remove();
 		return;
+	}
 
 	for (const auto &m:**lock)
 	{
