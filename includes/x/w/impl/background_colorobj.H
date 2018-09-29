@@ -32,9 +32,17 @@ public:
 	//! If the background color is a gradient, this gets adjusted
 	//! accordingly.
 
-	virtual background_color get_background_color_for(ONLY IN_THREAD,
+	virtual background_color
+	get_background_color_for(ONLY IN_THREAD,
+				 elementObj::implObj &e,
+				 dim_t width,
+				 dim_t height)=0;
+
+	//! Adjust this background color for the given element.
+
+	background_color get_background_color_for_element(ONLY IN_THREAD,
 							  elementObj::implObj &)
-		=0;
+		;
 
 	//! Whether this background color is scrollable, by a peephole.
 

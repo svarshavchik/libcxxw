@@ -51,7 +51,7 @@ void background_color_element_implObj
 	    background_color_element_height == pos.height)
 		return;
 
-	color=color->get_background_color_for(IN_THREAD, e);
+	color=color->get_background_color_for_element(IN_THREAD, e);
 	background_color_element_width=pos.width;
 	background_color_element_height=pos.height;
 

@@ -123,10 +123,13 @@ public:
 	//! Forward get_background_color_for to the base background color.
 
 	background_color get_background_color_for(ONLY IN_THREAD,
-						  elementObj::implObj &e)
+						  elementObj::implObj &e,
+						  dim_t width,
+						  dim_t height)
 		override
 	{
-		return base_color->get_background_color_for(IN_THREAD, e);
+		return base_color->get_background_color_for(IN_THREAD, e,
+							    width, height);
 	}
 };
 
@@ -238,12 +241,15 @@ private:
 
 	inline background_color make_gradient(ONLY IN_THREAD,
 					      elementObj::implObj &e,
+					      dim_t e_width,
+					      dim_t e_height,
 					      const linear_gradient &g)
 	{
 		auto screen_impl=e.get_screen()->impl;
 
 		auto [x, y, width, height]=
-			get_gradient_params(IN_THREAD, e, screen_impl,
+			get_gradient_params(IN_THREAD, e_width, e_height,
+					    screen_impl,
 					    g.fixed_width,
 					    g.fixed_height);
 
@@ -256,13 +262,15 @@ private:
 
 	inline background_color make_gradient(ONLY IN_THREAD,
 					      elementObj::implObj &e,
+					      dim_t e_width,
+					      dim_t e_height,
 					      const radial_gradient &g)
 	{
 		auto screen_impl=e.get_screen()->impl;
 
 		auto [x, y, width, height]=
 			get_gradient_params(IN_THREAD,
-					    e, screen_impl,
+					    e_width, e_height, screen_impl,
 					    g.fixed_width,
 					    g.fixed_height);
 
@@ -276,7 +284,8 @@ private:
 public:
 
 	background_color get_background_color_for(ONLY IN_THREAD,
-						  elementObj::implObj &e)
+						  elementObj::implObj &e,
+						  dim_t width, dim_t height)
 		override
 	{
 		return std::visit(visitor{
@@ -292,26 +301,30 @@ public:
 				},
 				[&, this](const linear_gradient &g)
 				{
-					return make_gradient(IN_THREAD, e, g);
+					return make_gradient(IN_THREAD, e,
+							     width, height,
+							     g);
 				},
 				[&, this](const radial_gradient &g)
 				{
-					return make_gradient(IN_THREAD, e, g);
+					return make_gradient(IN_THREAD, e,
+							     width, height,
+							     g);
 				}}, color);
 	}
 
 private:
 	static std::tuple<coord_t, coord_t, dim_t, dim_t
 			  > get_gradient_params(ONLY IN_THREAD,
-						elementObj::implObj &e,
+						dim_t e_width,
+						dim_t e_height,
 						const ref<screenObj::implObj>
-						&screen_impl,
+						&s,
 						double fixed_width,
 						double fixed_height)
 	{
-		dim_t width=e.data(IN_THREAD).current_position.width;
-		dim_t height=e.data(IN_THREAD).current_position.height;
-
+		dim_t width=e_width;
+		dim_t height=e_height;
 		// Negative values mean from the opposite side.
 
 		bool from_right=false;
@@ -332,8 +345,7 @@ private:
 		}
 		if (fixed_width > 0 || fixed_height > 0)
 		{
-			current_theme_t::lock lock{e.get_screen()->impl
-					->current_theme};
+			current_theme_t::lock lock{s->current_theme};
 
 			if (fixed_width > 0)
 				width= (*lock)->compute_width(fixed_width);
@@ -344,14 +356,12 @@ private:
 
 		if (from_right)
 			x=coord_t::truncate
-				(coord_t::truncate
-				 (e.data(IN_THREAD).current_position.width)
-				 -width);
+				(coord_t::truncate(e_width)
+				 -coord_t::truncate(width));
 		if (from_bottom)
 			y=coord_t::truncate
-				(coord_t::truncate
-				 (e.data(IN_THREAD).current_position.height)
-				 -height);
+				(coord_t::truncate(e_height)
+				 -coord_t::truncate(height));
 
 		return {x, y, width, height};
 	}
