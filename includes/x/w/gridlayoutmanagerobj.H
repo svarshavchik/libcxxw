@@ -67,6 +67,9 @@ public:
 	//! Insert elements before an existing element on an existing row.
 	gridfactory insert_columns(size_t row_number, size_t col_number);
 
+	//! Replace an existing element
+	gridfactory replace_cell(size_t row_number, size_t col_number);
+
 	//! Remove everything from the grid.
 	void remove();
 

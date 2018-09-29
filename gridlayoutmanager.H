@@ -60,7 +60,8 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 				       //! perhaps the listlayoutmanager
 				       // facade.
 				       layoutmanagerObj *public_object,
-				       size_t row, size_t col);
+				       size_t row, size_t col,
+				       bool replace_existing=false);
 
 	//! Append a row, then call create_gridfactory()
 	gridfactory append_row(layoutmanagerObj *public_object);
@@ -75,6 +76,11 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 	//! Insert elements before an existing element on an existing row.
 	gridfactory insert_columns(layoutmanagerObj *public_object,
 				   size_t row_number, size_t col_number);
+
+	//! Replace an existing element
+
+	gridfactory replace_cell(layoutmanagerObj *public_object,
+				 size_t row_number, size_t col_number);
 
 	//! Remove one or more elements from a row.
 
@@ -185,7 +191,8 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 	//! Insert a new grid element.
 	void insert(grid_map_t::lock &lock,
 		    const element &new_element,
-		    new_grid_element_info &info);
+		    new_grid_element_info &info,
+		    bool replace_existing);
 
 	//! Construct a new border object.
 

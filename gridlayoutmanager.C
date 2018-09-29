@@ -61,6 +61,11 @@ gridfactory gridlayoutmanagerObj::insert_columns(size_t row, size_t col)
 	return impl->insert_columns(this, row, col);
 }
 
+gridfactory gridlayoutmanagerObj::replace_cell(size_t row, size_t col)
+{
+	return impl->replace_cell(this, row, col);
+}
+
 void gridlayoutmanagerObj::remove()
 {
 	grid_map_t::lock lock{impl->grid_map};

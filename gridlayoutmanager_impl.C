@@ -73,14 +73,14 @@ void gridlayoutmanagerObj::implObj
 
 gridfactory gridlayoutmanagerObj::implObj
 ::create_gridfactory(layoutmanagerObj *public_object,
-		     size_t row, size_t col)
+		     size_t row, size_t col, bool replace_existing)
 {
 	grid_map_t::lock lock{grid_map};
 
 	return gridfactory::create(layoutmanager{public_object},
 				   ref<implObj>(this),
 				   ref<gridfactoryObj::implObj>::create
-				   (row, col, *lock));
+				   (row, col, *lock, replace_existing));
 }
 
 gridfactory gridlayoutmanagerObj::implObj
@@ -144,6 +144,32 @@ gridfactory gridlayoutmanagerObj::implObj::insert_columns(layoutmanagerObj
 
 	return create_gridfactory(public_object, row, col);
 }
+
+gridfactory gridlayoutmanagerObj::implObj
+::replace_cell(layoutmanagerObj *public_object,
+	       size_t row_number, size_t col_number)
+{
+	grid_map_t::lock lock(grid_map);
+
+	if ((*lock)->elements.size() <= row_number)
+		throw EXCEPTION(_("Attempting to replace a cell in a nonexistent row"));
+
+	auto &row_at=(*lock)->elements.at(row_number);
+
+	size_t s=row_at.size();
+
+	if (col_number >= s)
+		throw EXCEPTION(_("Attempting to replace a display element that does not exist"));
+
+	auto f=create_gridfactory(public_object, row_number, col_number, true);
+
+	new_grid_element_info &existing_element_info=*row_at[col_number];
+
+	f->impl->new_grid_element=existing_element_info;
+
+	return f;
+}
+
 
 size_t gridlayoutmanagerObj::implObj::rows()
 {
@@ -374,7 +400,8 @@ gridlayoutmanager gridlayoutmanagerObj::implObj::create_gridlayoutmanager()
 void gridlayoutmanagerObj::implObj
 ::insert(grid_map_t::lock &lock,
 	 const element &new_element,
-	 new_grid_element_info &info)
+	 new_grid_element_info &info,
+	 bool replace_existing)
 {
 	if (info.width == 0 || info.height == 0)
 		throw EXCEPTION(_("Width or height of a new grid element cannot be 0"));
@@ -384,17 +411,28 @@ void gridlayoutmanagerObj::implObj
 
 	auto &row=(*lock)->elements.at(dim_t::value_type(info.row));
 
-	if (info.col > row.size())
+	size_t s=row.size();
+
+	if (replace_existing && info.col >= s)
+		throw EXCEPTION(_("Attempting to replace a display element that does not exist"));
+
+	if (info.col > s)
 		throw EXCEPTION(_("Attempting to add a display element into a nonexistent column"));
 	auto elem=grid_element::create(info, new_element);
 
-	if (info.col >= row.size())
-		row.push_back(elem);
+	if (replace_existing)
+		row[dim_t::value_type(info.col)]=elem;
 	else
-		row.insert(row.begin()+dim_t::value_type(info.col), elem);
+	{
+		if (info.col >= s)
+			row.push_back(elem);
+		else
+			row.insert(row.begin()+dim_t::value_type(info.col),
+				   elem);
 
-	// Reset the next element to defaults.
-	info=new_grid_element_info{info.row, info.col+1, *lock};
+		// Reset the next element to defaults.
+		info=new_grid_element_info{info.row, info.col+1, *lock};
+	}
 	(*lock)->elements_have_been_modified();
 }
 

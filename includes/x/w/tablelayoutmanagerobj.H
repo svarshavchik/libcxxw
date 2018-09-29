@@ -8,6 +8,8 @@
 #include <x/w/tablelayoutmanagerfwd.H>
 #include <x/w/screen_positionsfwd.H>
 #include <x/w/listlayoutmanagerobj.H>
+#include <x/w/factoryfwd.H>
+#include <x/w/elementfwd.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -31,6 +33,14 @@ public:
 
 	//! Destructor
 	~tablelayoutmanagerObj() LIBCXX_HIDDEN;
+
+	//! Replace a column header.
+
+	factory replace_header(size_t column);
+
+	//! Return the element representing the column header;
+
+	element header(size_t column) const;
 
 	//! Save current adjusted size of the columns in the tables.
 

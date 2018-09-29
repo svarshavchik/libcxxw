@@ -472,7 +472,6 @@ void testlist(const testlistoptions &options)
 			 factory->create_canvas();
 			 factory=layout->append_row();
 
-
 			 b=factory->create_normal_button_with_label("Reorder");
 
 			 b->on_activate
@@ -501,6 +500,32 @@ void testlist(const testlistoptions &options)
 					  std::random_shuffle(i.begin(),
 							      i.end());
 					  lm->resort_items(IN_THREAD, i);
+				  });
+			 factory->create_canvas();
+
+			 factory=layout->append_row();
+			 b=factory->create_normal_button_with_label
+				 ("Swap Header");
+
+			 b->on_activate
+				 ([l, flag=false]
+				  (ONLY IN_THREAD,
+				   const auto &trigger,
+				   const auto &busy)
+				  mutable
+				  {
+					  LIBCXX_NAMESPACE::w
+						  ::tablelayoutmanager
+						  lm=l->get_layoutmanager();
+
+					  (void)lm->header(0);
+
+					  lm->replace_header(0)
+						  ->create_label
+						  (flag ? "Process":"Task")
+						  ->show();
+
+					  flag=!flag;
 				  });
 			 factory->create_canvas();
 		 });

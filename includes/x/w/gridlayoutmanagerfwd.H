@@ -45,6 +45,8 @@ INSERT_LIBX_NAMESPACE::w::gridfactory factory=gridlayout->replace_row(1);
 
 INSERT_LIBX_NAMESPACE::w::gridfactory factory=gridlayout->insert_columns(1, 2);
 
+INSERT_LIBX_NAMESPACE::w::gridfactory factory=gridlayout->replace_cell(1, 2);
+
 \endcode
 
 append_row() adds a new empty row to the grid, and returns a
@@ -71,6 +73,15 @@ more elements before existing elements in an existing row.
 The factory returned by
 \c insert_columns(1, 2) inserts new elements before element #2 (the third one)
 in row #1 (the second row in the grid).
+
+replace_cell() returns a
+\ref gridfactory "grid factory" that replaces the specified element.
+The factory returned by
+\c replace_cell(1, 2) replaces element #2 (the third one)
+in row #1 (the second row in the grid). Using this factory to create an
+element replaces this existing element. Creating more elements using the
+same factory results in only the last created element replacing the existing
+element.
 
 \code
 gridlayout->remove();

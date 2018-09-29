@@ -191,7 +191,7 @@ void gridfactoryObj::created(const element &new_element)
 {
 	implObj::new_grid_element_t::lock element_lock(impl->new_grid_element);
 
-	gridlayout->insert(lock, new_element, *element_lock);
+	gridlayout->insert(lock, new_element, *element_lock, impl->replacing);
 }
 
 LIBCXXW_NAMESPACE_END

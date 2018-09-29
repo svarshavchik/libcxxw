@@ -16,7 +16,7 @@ class tablelayoutmanagerObj;
 
 
 \code
-INSERT_LIBX_NAMESPACE::w::new_tablelayoutmanager ntlm{
+INSERT_LIBX_NAMESPACE::w::new_tablelayoutmanager new_table{
     []
     (const INSERT_LIBX_NAMESPACE::w::factory &f,
      size_t column)
@@ -24,13 +24,6 @@ INSERT_LIBX_NAMESPACE::w::new_tablelayoutmanager ntlm{
           f->create_label("Header!")->show();
     }
 };
-
-INSERT_LIBX_NAMESPACE::w::new_tablelayoutmanager new_table{
-   []
-   (const x::w::factory &f, size_t i)
-   {
-         // ...
-   }};
 
 new_table.columns=2;
 
@@ -53,15 +46,66 @@ either side of the border.
 inherits most configuration settings from the
 \ref new_listlayoutmanager "INSERT_LIBX_NAMESPACE::w::new_listlayoutmanager".
 
+\par Table width
+
 \code
 new_table.width=60;
 new_table.maximum_table_width=80;
 
 new_table.unlimited_table_width();
+\endcode
 
+The table's width gets automatically computed based on how wide the table's
+elements are. \c width sets a the initial table width, specified in
+millimeters. This is effective only if its more than the default, minimal
+table width.
+
+Setting \c maximum_table_width specifies the maximum table width. The
+resulting table can be wider or narrower than its minimal width.
+unlimited_table_width() specifies no maximum table width, the table will be
+resizable to any width greater than its minimal size.
+
+\note
+The ability of the table to resize itself depends on other elements in
+its container. These settings have no effect beyond the resulting table.
+Whether, and to what extent, the table ends up resizable depends entirely
+on the table's container's layout manager.
+
+\code
 new_table.adjustable_column_widths=true;
 
+new_table.column_borders={
+   {1, "thin_0%"},
+   {2, "thin_dashed_0%"},
+};
 \endcode
+
+Setting \c adjustable_column_widths enables interactive adjustments to
+the table columns' relative widths by dragging table's borders. This is
+independent of the overall table width settings.
+
+Note that the table layout manager inherits from the list layout manager
+which does not draw borders by default. Set \c column_borders to have
+visible borders in the table, for best visual results (column border
+settings get inherited from
+\ref new_listlayoutmanager "INSERT_LIBX_NAMESPACE::new_listlayoutmanager",
+which has no borders by default).
+
+\par Accessing and modifying the table's headers
+
+\code
+INSERT_LIBX_NAMESPACE::w::element e=tbl->header(0);
+
+INSERT_LIBX_NAMESPACE::w::factory f=tbl->replace_header(0);
+\endcode
+
+The initial table headers get specified by the
+\ref new_tablelayoutmanager "INSERT_LIBX_NAMESPACE::w::new_tablelayoutmanager".
+An existing table's layout manager's header() returns the header element of
+the specified column. replace_header() returns a
+\ref factory "factory" for replacing the existing header element with a
+new one. Using the returned factory to create and show() a new display element
+replaces the existing column's header with a new one.
 
 */
 

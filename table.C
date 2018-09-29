@@ -707,6 +707,7 @@ struct LIBCXX_HIDDEN new_listlayoutmanager::table_create_info {
 	container_implptr header_border_container_impl;
 	layout_implptr header_border_container_impl_lm;
 
+	ptr<gridlayoutmanagerObj::implObj> gridlayoutmanager_impl;
 	ptr<header_container_implObj> header_container_impl;
 };
 
@@ -741,6 +742,7 @@ new_tablelayoutmanager::create(const container_impl &parent_container) const
 		 {
 			 return ref<tablelayoutmanagerObj::implObj>
 				 ::create(container_impl,
+					  tci.gridlayoutmanager_impl,
 					  list_element_singleton,
 					  axis_impl);
 		 });
@@ -885,6 +887,7 @@ void new_tablelayoutmanager::created_list_container(const gridlayoutmanager
 
 	tci->header_border_container_impl=header_border_container_impl;
 
+	tci->gridlayoutmanager_impl=gridlayoutmanager_impl;
 	tci->header_container_impl=header_container_impl;
 }
 
