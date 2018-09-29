@@ -18,6 +18,14 @@
   </option>
 
   <option>
+    <name>minwidth</name>
+    <type>bool</type>
+    <default>false</default>
+    <longopt>minwidth</longopt>
+    <descr>Specify minimum column widths</descr>
+  </option>
+
+  <option>
     <name>width</name>
     <type>double</type>
     <default>0</default>

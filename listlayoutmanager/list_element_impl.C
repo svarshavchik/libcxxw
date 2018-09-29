@@ -168,6 +168,40 @@ validate_col_widths(std::unordered_map<size_t,
 	return std::move(requested_col_widths);
 }
 
+// Initial minimum column widths
+
+static auto initial_minimum_column_width_pixels
+(const std::unordered_map<size_t, double> &initial_minimum_column_width,
+ const defaulttheme &theme)
+{
+	std::unordered_map<size_t, std::tuple<double, dim_t>> m;
+
+	for (const auto &v:initial_minimum_column_width)
+		m.emplace(v.first, std::tuple{v.second, theme->compute_width
+						      (v.second)});
+
+
+	return m;
+}
+
+// Recompute minimum_column_width_pixels after a theme change.
+
+// This is called before recursively invoking theme_updated (and initialize).
+// The container_element superclass calls the list layout manager's
+// recalculate() after we already did this.
+
+void list_elementObj::implObj
+::recalculate_minimum_column_width_pixels(ONLY IN_THREAD,
+					  const defaulttheme &theme)
+{
+	for (auto &v:minimum_column_widths(IN_THREAD))
+	{
+		auto &[mm, pixels]=v.second;
+
+		pixels=theme->compute_width(mm);
+	}
+}
+
 list_elementObj::implObj::implObj(const list_element_impl_init_args &init_args,
 				  elementObj::implObj &container_element_impl,
 				  const screen &container_screen)
@@ -193,6 +227,11 @@ list_elementObj::implObj::implObj(const list_element_impl_init_args &init_args,
 	  synchronized_info{init_args.synchronized_columns,
 			    ref<list_element_synchronized_columnsObj>::create
 			    (textlist_container)},
+	  minimum_column_widths_thread_only{initial_minimum_column_width_pixels
+					    (init_args.style
+					     .minimum_column_widths,
+					     container_screen->impl
+					     ->current_theme.get())},
 	  textlist_info{listimpl_info_s{init_args.style.selection_type,
 					init_args.style.selection_changed}},
 	  scratch_buffer_for_separator{container_screen->create_scratch_buffer
@@ -248,6 +287,13 @@ list_elementObj::implObj::implObj(const list_element_impl_init_args &init_args,
 	for (auto &info:col_alignments)
 		if (info.first >= columns)
 			throw EXCEPTION(gettextmsg(_("Column %1% does not exist"),
+						   info.first));
+
+	for (auto &info:minimum_column_widths_thread_only)
+		if (info.first >= columns)
+			throw EXCEPTION(gettextmsg(_("Minimum width specified"
+						     " for non-existent column"
+						     " %1%"),
 						   info.first));
 
 	listimpl_info_t::lock lock{textlist_info};
@@ -656,6 +702,8 @@ void list_elementObj::implObj
 
 	lock->calculated_column_widths.reserve(columns);
 
+	size_t i=0;
+
 	for (auto &column_widths:lock->column_widths)
 	{
 		dim_t maximum_width{0};
@@ -663,12 +711,23 @@ void list_elementObj::implObj
 		if (!column_widths.empty())
 			maximum_width=*column_widths.begin();
 
+		// Minimum column width override:
+		auto iter=minimum_column_widths(IN_THREAD).find(i);
+
+		if (iter != minimum_column_widths(IN_THREAD).end())
+			maximum_width=std::get<dim_t>(iter->second);
+
 		lock->calculated_column_widths.push_back(maximum_width);
+		++i;
 	}
 }
 
 void list_elementObj::implObj::initialize(ONLY IN_THREAD)
 {
+	recalculate_minimum_column_width_pixels(IN_THREAD,
+						get_screen()->impl
+						->current_theme.get());
+
 	superclass_t::initialize(IN_THREAD);
 
 	listimpl_info_t::lock lock{textlist_info};
@@ -680,6 +739,9 @@ void list_elementObj::implObj::initialize(ONLY IN_THREAD)
 void list_elementObj::implObj::theme_updated(ONLY IN_THREAD,
 					     const defaulttheme &new_theme)
 {
+	recalculate_minimum_column_width_pixels(IN_THREAD,
+						get_screen()->impl
+						->current_theme.get());
 	superclass_t::theme_updated(IN_THREAD, new_theme);
 	listimpl_info_t::lock lock{textlist_info};
 

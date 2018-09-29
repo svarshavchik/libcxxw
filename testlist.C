@@ -368,6 +368,15 @@ auto create_process_table(const LIBCXX_NAMESPACE::w::main_window &mw,
 	if (options.maximum_table_width->isSet())
 		ntlm.maximum_table_width=options.maximum_table_width->value;
 
+	if (options.minwidth->isSet())
+		ntlm.minimum_column_widths=
+			{
+			 {1, 30},
+			 {2, 30},
+			 {3, 30},
+			 {4, 30}
+			};
+
 	auto c=f->create_focusable_container
 		([&]
 		 (const LIBCXX_NAMESPACE::w::focusable_container &c)
@@ -518,11 +527,11 @@ void testlist(const testlistoptions &options)
 						  ::tablelayoutmanager
 						  lm=l->get_layoutmanager();
 
-					  (void)lm->header(0);
+					  (void)lm->header(1);
 
-					  lm->replace_header(0)
+					  lm->replace_header(1)
 						  ->create_label
-						  (flag ? "Process":"Task")
+						  (flag ? "CPU":"CPU %")
 						  ->show();
 
 					  flag=!flag;

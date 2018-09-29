@@ -49,16 +49,28 @@ inherits most configuration settings from the
 \par Table width
 
 \code
+new_table.minimum_column_widths={
+    {0, 20},
+    {1, 20}};
+
 new_table.width=60;
 new_table.maximum_table_width=80;
 
 new_table.unlimited_table_width();
 \endcode
 
-The table's width gets automatically computed based on how wide the table's
-elements are. \c width sets a the initial table width, specified in
-millimeters. This is effective only if its more than the default, minimal
-table width.
+There are several different settings that affect the table's visual width.
+Unless otherwise specified, each table column's width gets computed based
+on the contents of each column, and that fixes the table width.
+
+\c minimum_column_widths specifies an explicit column width, in millimeters.
+This is a map indexed by column number. The above example sets the width
+of columns 0 and 1 to 20 millimeters. This affects only these columns.
+Any other columns in the table keep their default minimum width.
+
+\c width optionally sets the table's initial or preferred width.
+This is effective only if its more than the minimum table width, whether
+defaulted or from \c minimum_column_widths.
 
 Setting \c maximum_table_width specifies the maximum table width. The
 resulting table can be wider or narrower than its minimal width.
@@ -71,6 +83,11 @@ its container. These settings have no effect beyond the resulting table.
 Whether, and to what extent, the table ends up resizable depends entirely
 on the table's container's layout manager.
 
+\note
+\c minimum_column_widths specifies the minimum width of each individual
+column. The size of the entire table also includes any borders, and is
+included in \c width and \c maximum_width.
+
 \code
 new_table.adjustable_column_widths=true;
 
@@ -82,11 +99,11 @@ new_table.column_borders={
 
 Setting \c adjustable_column_widths enables interactive adjustments to
 the table columns' relative widths by dragging table's borders. This is
-independent of the overall table width settings.
+independent of the overall column and table width settings.
 
 Note that the table layout manager inherits from the list layout manager
 which does not draw borders by default. Set \c column_borders to have
-visible borders in the table, for best visual results (column border
+visible borders in the table for best visual results (column border
 settings get inherited from
 \ref new_listlayoutmanager "INSERT_LIBX_NAMESPACE::new_listlayoutmanager",
 which has no borders by default).

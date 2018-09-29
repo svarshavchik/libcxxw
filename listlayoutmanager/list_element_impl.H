@@ -278,7 +278,18 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 	//! Synchronization info
 
 	my_synchronized_axis synchronized_info;
+
+	//! Minimum column widths, in pixels
+	std::unordered_map<size_t, std::tuple<double, dim_t>
+			   > minimum_column_widths_thread_only;
+
+	//! Recalculate minimum_column_width_pixels
+
+	void recalculate_minimum_column_width_pixels(ONLY IN_THREAD,
+						     const defaulttheme &);
+
  public:
+	THREAD_DATA_ONLY(minimum_column_widths);
 
 	//! Remove a row.
 	void remove_row(ONLY IN_THREAD,

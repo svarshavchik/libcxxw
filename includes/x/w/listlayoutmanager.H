@@ -189,6 +189,15 @@ class LIBCXX_HIDDEN new_listlayoutmanager : public new_focusable_layoutmanager {
 
 	std::unordered_map<size_t, border_arg> column_borders;
 
+	//! Minimum column widths, specified in millimeters
+
+	//! Mostly for the benefit of the table layout manager. If not specified
+	//! the default gets computed based on list contents.
+	//!
+	//! \see tablelayoutmanager
+
+	std::unordered_map<size_t, double> minimum_column_widths;
+
 	//! What other list this list's columns get synchronized with.
 
 	//! Lists created using the same synchronized_columns will have
