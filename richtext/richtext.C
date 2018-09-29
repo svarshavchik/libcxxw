@@ -638,6 +638,7 @@ std::tuple<pixmap, picture> richtextObj::create(ONLY IN_THREAD,
 				     transparent_color, 0, 0,
 				     0, 0,
 				     width};
+		render_info.ypos=coord_t::truncate(f->above_baseline);
 		f->render(IN_THREAD, render_info);
 		p->composite(scratch_picture,
 			     0, 0,
