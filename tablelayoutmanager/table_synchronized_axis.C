@@ -328,6 +328,110 @@ void tablelayoutmanagerObj::table_synchronized_axisObj
 	 size_t first_adjusted_column,
 	 size_t second_adjusted_column)
 {
+	adjust_common
+		(IN_THREAD,
+		 first_adjusted_column,
+		 second_adjusted_column,
+		 [&]
+		 (dim_t first, dim_t second, dim_t, dim_t)
+		 {
+			 // Compare the current x coordinate with the
+			 // starting x coordinate,
+			 // and then compute the new widths of the
+			 // adjusted columns.
+
+			 if (x_coordinate <
+			     adjusting(IN_THREAD)->initial_x_coordinate)
+			 {
+				 dim_t diff=dim_t::truncate
+					 (adjusting(IN_THREAD)
+					  ->initial_x_coordinate-x_coordinate);
+
+				 if (diff >= first)
+				 {
+					 diff=first;
+					 --diff;
+				 }
+
+				 first -= diff;
+				 second = dim_t::truncate(second + diff);
+			 }
+			 else
+			 {
+				 dim_t diff=dim_t::truncate
+					 (x_coordinate-adjusting(IN_THREAD)
+					  ->initial_x_coordinate);
+
+				 if (diff >= second)
+				 {
+					 diff=second;
+					 --diff;
+				 }
+
+				 second -= diff;
+				 first = dim_t::truncate(first + diff);
+			 }
+
+			 return std::tuple{first, second};
+		 });
+}
+
+void tablelayoutmanagerObj::table_synchronized_axisObj
+::adjust_to_left(ONLY IN_THREAD,
+		 dim_t distance,
+		 size_t first_adjusted_column,
+		 size_t second_adjusted_column)
+{
+	adjust_common
+		(IN_THREAD,
+		 first_adjusted_column,
+		 second_adjusted_column,
+		 [&]
+		 (dim_t, dim_t, dim_t first, dim_t second)
+		 {
+			 if (distance >= first)
+			 {
+				 distance=first;
+				 --distance;
+			 }
+			 first -= distance;
+			 second = dim_t::truncate(second + distance);
+
+			 return std::tuple{first, second};
+		 });
+}
+
+void tablelayoutmanagerObj::table_synchronized_axisObj
+::adjust_to_right(ONLY IN_THREAD,
+		  dim_t distance,
+		  size_t first_adjusted_column,
+		  size_t second_adjusted_column)
+{
+	adjust_common
+		(IN_THREAD,
+		 first_adjusted_column,
+		 second_adjusted_column,
+		 [&]
+		 (dim_t, dim_t, dim_t first, dim_t second)
+		 {
+			 if (distance >= second)
+			 {
+				 distance=second;
+				 --distance;
+			 }
+			 second -= distance;
+			 first = dim_t::truncate(first + distance);
+
+			 return std::tuple{first, second};
+		 });
+}
+
+void tablelayoutmanagerObj::table_synchronized_axisObj
+::do_adjust_common(ONLY IN_THREAD,
+		   size_t first_adjusted_column,
+		   size_t second_adjusted_column,
+		   const function<adjust_callback> &update)
+{
 	dragged_scaled_axis_t::lock scaled_lock{dragged_scaled_axis};
 
 	// Sanity check.
@@ -346,42 +450,13 @@ void tablelayoutmanagerObj::table_synchronized_axisObj
 	    second_adjusted_column >= s)
 		return;
 
-	dim_t first=adjusting(IN_THREAD)->first_adjusted_metric.minimum();
-	dim_t second=adjusting(IN_THREAD)->second_adjusted_metric.minimum();
-
-	// Compare the current x coordinate with the starting x coordinate,
-	// and then compute the new widths of the adjusted columns.
-
-	if (x_coordinate < adjusting(IN_THREAD)->initial_x_coordinate)
-	{
-		dim_t diff=dim_t::truncate
-			(adjusting(IN_THREAD)->initial_x_coordinate
-			 -x_coordinate);
-
-		if (diff >= first)
-		{
-			diff=first;
-			--diff;
-		}
-
-		first -= diff;
-		second = dim_t::truncate(second + diff);
-	}
-	else
-	{
-		dim_t diff=dim_t::truncate
-			(x_coordinate
-			 -adjusting(IN_THREAD)->initial_x_coordinate);
-
-		if (diff >= second)
-		{
-			diff=second;
-			--diff;
-		}
-
-		second -= diff;
-		first = dim_t::truncate(first + diff);
-	}
+	auto [first, second]=
+		update(adjusting(IN_THREAD)->first_adjusted_metric.minimum(),
+		       adjusting(IN_THREAD)->second_adjusted_metric.minimum(),
+		       dragged_scaled_axis_values[first_adjusted_column]
+		       .minimum(),
+		       dragged_scaled_axis_values[second_adjusted_column]
+		       .minimum());
 
 	if (first ==
 	    dragged_scaled_axis_values[first_adjusted_column].minimum() &&

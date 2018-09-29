@@ -21,11 +21,13 @@
 #include "x/w/impl/themedim_element.H"
 #include "x/w/impl/container_element.H"
 #include "x/w/impl/borderlayoutmanager.H"
+#include "x/w/impl/focus/focusable.H"
 #include "cursor_pointer_element.H"
 #include "generic_window_handler.H"
 #include "icon.H"
 #include "screen.H"
 #include "defaulttheme.H"
+#include <X11/keysym.h>
 
 LIBCXXW_NAMESPACE_START
 
@@ -113,6 +115,11 @@ class LIBCXX_HIDDEN header_container_implObj
 	//! If not 0, second column being adjusted
 	size_t second_draggable_column=0;
 
+	//! How the current dragging operation is staged
+
+	//! Set when first_draggable_column is not 0
+	enum { by_pointer, by_keyboard} dragging_by;
+
 	//! Width of the custom background color highlight pixmap.
 	dim_t highlight_pixmap_width=0;
 
@@ -197,6 +204,17 @@ class LIBCXX_HIDDEN header_container_implObj
 
 	void stop_adjusting(ONLY IN_THREAD);
 
+	//! The list element wishes to inform us it lost keyboard focus
+
+	//! Stop adjusting column widths using the keyboard.
+	void lost_keyboard_focus(ONLY IN_THREAD);
+
+	//! The list element received a key event.
+
+	//! Tabs enable keyboard-based column width adjustment. Returns true
+	//! if the header consumed the key event.
+
+	bool process_list_key_event(ONLY IN_THREAD, const key_event &ke);
  private:
 
 	//! If we're showing a highlight background color, update it.
@@ -247,6 +265,9 @@ void header_container_implObj
 {
 	superclass_t::report_motion_event(IN_THREAD, me);
 
+	if (first_draggable_column && dragging_by != by_pointer)
+		return; // Keyboard dragging in progress
+
 	if (me.mask.buttons & 1)
 	{
 		if (first_draggable_column)
@@ -273,7 +294,7 @@ void header_container_implObj
 
 	first_draggable_column=col;
 	second_draggable_column=col+2;
-
+	dragging_by=by_pointer;
 	update_custom_highlight_background_color(IN_THREAD);
 
 	set_cursor_pointer(IN_THREAD,
@@ -350,6 +371,116 @@ void header_container_implObj::stop_adjusting(ONLY IN_THREAD)
 	highlight_pixmap_highlight_position=0;
 	first_draggable_column=0;
 	second_draggable_column=0;
+}
+
+void header_container_implObj::lost_keyboard_focus(ONLY IN_THREAD)
+{
+	undrag(IN_THREAD);
+}
+
+bool header_container_implObj::process_list_key_event(ONLY IN_THREAD,
+						      const key_event &ke)
+{
+	if (!activate_for(ke) || !axis->adjustable_column_widths)
+		return false;
+
+	if (first_draggable_column && dragging_by != by_keyboard)
+		return false;
+
+	if (is_next_key(ke) && first_draggable_column == 0)
+	{
+		{
+			synchronized_values::lock lock{axis->values};
+
+			if (lock->unscaled_values.size()
+			    <= CALCULATE_BORDERS_COORD(1))
+				return false;
+		}
+
+		first_draggable_column=CALCULATE_BORDERS_COORD(0);
+		second_draggable_column=CALCULATE_BORDERS_COORD(1);
+		dragging_by=by_keyboard;
+		axis->start_adjusting_from(IN_THREAD,
+					   data(IN_THREAD).last_motion_x,
+					   first_draggable_column,
+					   second_draggable_column);
+		update_custom_highlight_background_color(IN_THREAD);
+		return true;
+	}
+
+	if (first_draggable_column == 0)
+		return false;
+
+	if (is_next_key(ke))
+	{
+		bool done=false;
+
+		{
+			synchronized_values::lock lock{axis->values};
+
+			CALCULATE_BORDERS_INCR_SPAN(first_draggable_column);
+			CALCULATE_BORDERS_INCR_SPAN(second_draggable_column);
+
+			if (second_draggable_column >=
+			    lock->unscaled_values.size())
+				done=true;
+		}
+
+		if (done)
+		{
+			stop_adjusting(IN_THREAD);
+			return false;
+		}
+	}
+	else if (is_prev_key(ke))
+	{
+		if (first_draggable_column==CALCULATE_BORDERS_COORD(0))
+		{
+			stop_adjusting(IN_THREAD);
+			return true;
+		}
+		CALCULATE_BORDERS_DECR_SPAN(first_draggable_column);
+		CALCULATE_BORDERS_DECR_SPAN(second_draggable_column);
+	}
+	else if (ke.unicode == '\e')
+	{
+		stop_adjusting(IN_THREAD);
+		return true;
+	}
+	else
+	{
+		switch (ke.keysym) {
+		case XK_Left:
+		case XK_KP_Left:
+			axis->adjust_to_left(IN_THREAD,
+					     ke.ctrl ? dim_t{1}:
+					     themedim_element
+					     <adjustable_header_highlight_width>
+					     ::pixels(IN_THREAD),
+					     first_draggable_column,
+					     second_draggable_column);
+			update_custom_highlight_background_color(IN_THREAD);
+			return true;
+		case XK_Right:
+		case XK_KP_Right:
+			axis->adjust_to_right(IN_THREAD,
+					     ke.ctrl ? dim_t{1}:
+					     themedim_element
+					     <adjustable_header_highlight_width>
+					     ::pixels(IN_THREAD),
+					     first_draggable_column,
+					      second_draggable_column);
+			update_custom_highlight_background_color(IN_THREAD);
+			return true;
+		}
+		return false;
+	}
+	axis->start_adjusting_from(IN_THREAD,
+				   data(IN_THREAD).last_motion_x,
+				   first_draggable_column,
+				   second_draggable_column);
+	update_custom_highlight_background_color(IN_THREAD);
+	return true;
 }
 
 void header_container_implObj
@@ -452,6 +583,8 @@ public:
 	}
 };
 
+//! Subclass the list implementation object.
+
 class LIBCXX_HIDDEN list_container_implObj : public list_elementObj::implObj {
 
 	typedef list_elementObj::implObj superclass_t;
@@ -469,6 +602,12 @@ class LIBCXX_HIDDEN list_container_implObj : public list_elementObj::implObj {
 
 	~list_container_implObj()=default;
 
+	//! Override update_metrics()
+
+	//! Use header_container_impl's adjust_horiz_metrics(), so that
+	//! both the header and the list advertize the same exact horiz metrics,
+	//! and their widths will be in sync.
+
 	void update_metrics(ONLY IN_THREAD,
 			    const metrics::axis &new_horiz,
 			    const metrics::axis &new_vert) override
@@ -480,6 +619,31 @@ class LIBCXX_HIDDEN list_container_implObj : public list_elementObj::implObj {
 
 					     new_vert);
 	}
+
+	//! Override keyboard_focus()
+
+	//! Notify the header container if the keyboard focus is lost.
+	void keyboard_focus(ONLY IN_THREAD,
+			    const callback_trigger_t &trigger) override
+	{
+		superclass_t::keyboard_focus(IN_THREAD, trigger);
+
+		if (!current_keyboard_focus(IN_THREAD))
+			header_container_impl->lost_keyboard_focus(IN_THREAD);
+	}
+
+	//! Override process_key_event()
+
+	//! Give the header container first divs and handling keyboard input.
+	bool process_key_event(ONLY IN_THREAD, const key_event &ke) override
+	{
+		if (header_container_impl->process_list_key_event(IN_THREAD,
+								  ke))
+			return true;
+
+		return superclass_t::process_key_event(IN_THREAD, ke);
+	}
+
 };
 
 #if 0

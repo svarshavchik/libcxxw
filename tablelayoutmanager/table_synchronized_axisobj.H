@@ -11,6 +11,7 @@
 #include "includes/x/w/impl/connection_threadfwd.H"
 
 #include <x/mpobj.H>
+#include <x/functional.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -106,6 +107,18 @@ public:
 		    size_t first_adjusted_column,
 		    size_t second_adjusted_column);
 
+	//! This is inokved when adjusting columns using the keybord.
+	void adjust_to_left(ONLY IN_THREAD,
+			    dim_t distance,
+			    size_t first_adjusted_column,
+			    size_t second_adjusted_column);
+
+	//! This is inokved when adjusting columns using the keybord.
+	void adjust_to_right(ONLY IN_THREAD,
+			     dim_t distance,
+			     size_t first_adjusted_column,
+			     size_t second_adjusted_column);
+
 	//! Return the coordinates of the border to the right of the column
 
 	std::optional<std::tuple<coord_t, dim_t>
@@ -118,6 +131,34 @@ public:
 	//! If it's in progress.
 	void abort_dragging(ONLY IN_THREAD,
 			    dragged_scaled_axis_t::lock &lock);
+
+	//! Closure used by adjust_common
+
+	typedef std::tuple<dim_t, dim_t>
+		adjust_callback(dim_t, dim_t, dim_t, dim_t);
+
+	//! Shared logic by adjust(), adjust_to_left(), adjust_to_right().
+
+	template<typename functor>
+		void adjust_common(ONLY IN_THREAD,
+				   size_t first_adjusted_column,
+				   size_t second_adjusted_column,
+				   functor &&f)
+	{
+		do_adjust_common(IN_THREAD,
+				 first_adjusted_column,
+				 second_adjusted_column,
+				 make_function<adjust_callback>
+				 (std::forward<functor>(f)));
+	}
+
+	//! Type-erased adjust_common()
+
+	void do_adjust_common(ONLY IN_THREAD,
+			      size_t first_adjusted_column,
+			      size_t second_adjusted_column,
+			      const function<adjust_callback> &);
+
  public:
 	//! It appears that we've been resized after dragging.
 
