@@ -281,6 +281,18 @@ size_t tablelayoutmanagerObj::table_synchronized_axisObj
 	return 0;
 }
 
+std::optional<std::tuple<coord_t, dim_t>
+	      > tablelayoutmanagerObj::table_synchronized_axisObj
+::border_center(ONLY IN_THREAD, size_t n)
+{
+	n=NONBORDER_COORD_TO_ROWCOL(n)+1;
+
+	if (n >= border_positions(IN_THREAD).size())
+		return std::nullopt;
+
+	return border_positions(IN_THREAD)[n];
+}
+
 void tablelayoutmanagerObj::table_synchronized_axisObj
 ::start_adjusting_from(ONLY IN_THREAD,
 		       coord_t initial_x_coordinate,

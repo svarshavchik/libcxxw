@@ -16,6 +16,7 @@
 #include "listlayoutmanager/listlayoutstyle_impl.H"
 #include "x/w/impl/layoutmanager.H"
 #include "x/w/impl/always_visible_element.H"
+#include "x/w/impl/background_color_element.H"
 #include "x/w/impl/bordercontainer_element.H"
 #include "x/w/impl/themedim_element.H"
 #include "x/w/impl/container_element.H"
@@ -24,6 +25,7 @@
 #include "generic_window_handler.H"
 #include "icon.H"
 #include "screen.H"
+#include "defaulttheme.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -67,25 +69,34 @@ public:
 
 // Container for the header grid row.
 
-struct table_width_tag{};
-struct maximum_table_width_tag{};
-struct table_drag_buffer_tag{};
+struct table_width_tag;
+struct maximum_table_width_tag;
+struct table_drag_buffer_tag;
+
+struct header_color_tag;
+struct adjustable_header_color_tag;
+struct adjustable_header_highlight_tag;
+struct adjustable_header_highlight_width;
+
+typedef background_color_elementObj<
+	themedim_elementObj<cursor_pointer_elementObj<
+				    always_visible_elementObj<
+					    container_elementObj
+					    <child_elementObj>>>,
+			    table_width_tag, maximum_table_width_tag,
+			    table_drag_buffer_tag,
+			    adjustable_header_highlight_width
+			    >,
+	header_color_tag,
+	adjustable_header_color_tag,
+	adjustable_header_highlight_tag> header_container_impl_superclass_t;
 
 class LIBCXX_HIDDEN header_container_implObj
-	: public themedim_elementObj<cursor_pointer_elementObj<
-					     always_visible_elementObj<
-						     container_elementObj
-						     <child_elementObj>>>,
-				     table_width_tag, maximum_table_width_tag,
-				     table_drag_buffer_tag>
+	: public header_container_impl_superclass_t
 {
-	typedef themedim_elementObj<cursor_pointer_elementObj
-				    <always_visible_elementObj<
-					    container_elementObj
-					     <child_elementObj>>>,
-				    table_width_tag, maximum_table_width_tag,
-				    table_drag_buffer_tag>
-		superclass_t;
+	//! Alias
+
+	typedef header_container_impl_superclass_t superclass_t;
 
 	//! Whether the preferred metrics should be overriden.
 
@@ -102,14 +113,25 @@ class LIBCXX_HIDDEN header_container_implObj
 	//! If not 0, second column being adjusted
 	size_t second_draggable_column=0;
 
-public:
+	//! Width of the custom background color highlight pixmap.
+	dim_t highlight_pixmap_width=0;
+
+	//! The highlight location in the custom background color pixmap.
+	coord_t highlight_pixmap_highlight_position=0;
+
+ public:
 	header_container_implObj(const new_tablelayoutmanager &ntlm,
 				 const table_synchronized_axis &axis,
 				 const container_impl &parent_container,
 				 const child_element_init_params &init_params)
-		: superclass_t{ntlm.table_width, themedimaxis::width,
+		: superclass_t{ntlm.header_color,
+			ntlm.adjustable_header_color,
+			ntlm.adjustable_header_highlight_color,
+			ntlm.table_width, themedimaxis::width,
 			ntlm.maximum_table_width, themedimaxis::width,
 			"drag_horiz_buffer", themedimaxis::width,
+			ntlm.adjustable_header_highlight_width,
+			themedimaxis::width,
 			parent_container->container_element_impl()
 			.get_window_handler()
 			.create_icon({"slider-horiz"})->create_cursor(),
@@ -157,7 +179,16 @@ public:
 			   const callback_trigger_t &trigger)
 		override;
 
- public:
+	//! Override theme_updated()
+
+	//! We may need to update_custom_highlight_background_color().
+	void theme_updated(ONLY IN_THREAD,
+			   const defaulttheme &new_theme) override;
+
+	//! Override theme_updated()
+
+	//! We may need to update_custom_highlight_background_color().
+	void process_updated_position(ONLY IN_THREAD) override;
 
 	//! Remove dragging pointer, and call stop_adjusting().
 	void undrag(ONLY IN_THREAD);
@@ -165,6 +196,11 @@ public:
 	//! Clear dragging fields, and tell axis that adjustment has stopped.
 
 	void stop_adjusting(ONLY IN_THREAD);
+
+ private:
+
+	//! If we're showing a highlight background color, update it.
+	void update_custom_highlight_background_color(ONLY IN_THREAD);
 };
 
 metrics::axis header_container_implObj
@@ -214,10 +250,12 @@ void header_container_implObj
 	if (me.mask.buttons & 1)
 	{
 		if (first_draggable_column)
+		{
 			axis->adjust(IN_THREAD, me.x,
 				     first_draggable_column,
 				     second_draggable_column);
-
+			update_custom_highlight_background_color(IN_THREAD);
+		}
 		return;
 	}
 
@@ -236,8 +274,23 @@ void header_container_implObj
 	first_draggable_column=col;
 	second_draggable_column=col+2;
 
+	update_custom_highlight_background_color(IN_THREAD);
+
 	set_cursor_pointer(IN_THREAD,
 			   tagged_cursor_pointer(IN_THREAD));
+}
+
+void header_container_implObj::theme_updated(ONLY IN_THREAD,
+					     const defaulttheme &new_theme)
+{
+	superclass_t::theme_updated(IN_THREAD, new_theme);
+	update_custom_highlight_background_color(IN_THREAD);
+}
+
+void header_container_implObj::process_updated_position(ONLY IN_THREAD)
+{
+	superclass_t::process_updated_position(IN_THREAD);
+	update_custom_highlight_background_color(IN_THREAD);
 }
 
 bool header_container_implObj
@@ -289,8 +342,78 @@ void header_container_implObj::undrag(ONLY IN_THREAD)
 void header_container_implObj::stop_adjusting(ONLY IN_THREAD)
 {
 	axis->adjusting(IN_THREAD).reset();
+
+	set_background_color(IN_THREAD,
+			     background_color_element<header_color_tag>
+			     ::get(IN_THREAD));
+	highlight_pixmap_width=0;
+	highlight_pixmap_highlight_position=0;
 	first_draggable_column=0;
 	second_draggable_column=0;
+}
+
+void header_container_implObj
+::update_custom_highlight_background_color(ONLY IN_THREAD)
+{
+	if (first_draggable_column == 0)
+		return;
+
+	auto border=axis->border_center(IN_THREAD, first_draggable_column);
+
+	if (!border)
+		return;
+
+	auto &[x, w]=*border;
+
+	if (x == highlight_pixmap_highlight_position &&
+	    data(IN_THREAD).current_position.width == highlight_pixmap_width)
+		return;
+
+	// Create a new custom backgrond color with a highlight centered at
+	// the center of theborder being dragged.
+	highlight_pixmap_highlight_position=x;
+	highlight_pixmap_width=data(IN_THREAD).current_position.width;
+
+	// Create the pixmap as wide as us, one pixel tall. Render will
+	// stretch it to full height for us.
+	auto p=containerObj::implObj::get_window_handler()
+		.create_pixmap(highlight_pixmap_width, 1)
+		->create_picture();
+
+	p->repeat(render_repeat::normal);
+
+	// Fill it with the adjustable_header_color, as the first order of
+	// business.
+	p->composite(background_color_element
+		     <adjustable_header_color_tag>::get(IN_THREAD)
+		     ->get_background_color_for_element(IN_THREAD, *this)
+		     ->get_current_color(IN_THREAD),
+		     0, 0,
+		     0, 0,
+		     data(IN_THREAD).current_position.width, 1);
+
+	// Obtain the width of the highlight image.
+	auto highlight_width=themedim_element<adjustable_header_highlight_width>
+		::pixels(IN_THREAD);
+
+	if (highlight_width > w)
+		x=coord_t::truncate(x-(highlight_width-w)/2);
+	else
+		x=coord_t::truncate(x+(w-highlight_width)/2);
+
+	// Now compose the adjustable_header_highlight
+	p->composite(background_color_element
+		     <adjustable_header_highlight_tag>::get(IN_THREAD)
+		     ->get_background_color_for(IN_THREAD, *this,
+						highlight_width, 1)
+		     ->get_current_color(IN_THREAD),
+		     0, 0,
+		     x, 0,
+		     highlight_width, 1);
+
+	set_background_color(IN_THREAD,
+			     get_screen()->impl
+			     ->create_background_color(p));
 }
 
 //! Header grid row layout manager.
@@ -370,7 +493,12 @@ new_tablelayoutmanager
 			 const listlayoutstyle_impl &list_style)
 	: new_listlayoutmanager{list_style},
 	  header_factory{header_factory},
-	  header_color{"list_header_color"}
+	  header_color{"list_header_color"},
+	  adjustable_header_color{"list_adjustable_header_color"},
+	  adjustable_header_highlight_color
+	{"list_adjustable_header_highlight_color"},
+	  adjustable_header_highlight_width
+	{"list_adjustable_header_highlight_width"}
 {
 	focusoff_border="listvisiblefocusoff_border";
 }

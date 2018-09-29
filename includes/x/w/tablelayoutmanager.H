@@ -12,22 +12,14 @@
 
 LIBCXXW_NAMESPACE_START
 
-//! The table layout manager.
+//! Create a new table layout manager.
 
-//! \code
-//! INSERT_LIBX_NAMESPACE::w::new_tablelayoutmanager ntlm{
-//!     []
-//!     (const INSERT_LIBX_NAMESPACE::w::factory &f,
-//!      size_t column)
-//!     {
-//!           f->create_label("Header!")->show();
-//!     }
-//! };
-//! \endcode
-//!
 //! A subclass of the \ref listlayoutmanager "list layout manager" that
 //! adds a header row to the list. Inherits from the
 //! \ref new_listlayoutmanager "INSERT_LIBX_NAMESPACE::w::new_listlayoutmanager".
+//!
+//! The new container uses the
+//! \ref tablelayoutmanager "INSERT_LIBX_NAMESPACE::w::tablelayoutmanager".
 //!
 //! The required constructor parameter is a callable object that gets used
 //! to construct each column's header. This callback ends up getting
@@ -65,6 +57,29 @@ class LIBCXX_HIDDEN new_tablelayoutmanager : public new_listlayoutmanager {
 
 	//! Background color for the header row.
 	color_arg header_color;
+
+	//! Background color for the header row being adjusted.
+
+	//! Header row's temporary background color when a border is being
+	//! dragged, when adjustable_column_widths is set.
+	color_arg adjustable_header_color;
+
+	//! Highlighted backround color for the border being adjusted.
+
+	color_arg adjustable_header_highlight_color;
+
+	//! Width of the adjustable_header_highlight_color.
+
+	//! This must agree with whatever went into
+	//! adjustable_header_highlight_color. The highlight_color gets
+	//! composited on top of the header_color in a one-pixel tall
+	//! pixmap that spans the width of the header row. The highlight_color
+	//! gets positioned behind the border being dragged. In order for
+	//! the calculations to work out, this must correspond to the
+	//! highlight_color (i.e. if the highlight_color is a 4mm wide
+	//! gradient, this must be "4".
+
+	dim_arg adjustable_header_highlight_width;
 
 	//! A non-default table size, in millimeters.
 

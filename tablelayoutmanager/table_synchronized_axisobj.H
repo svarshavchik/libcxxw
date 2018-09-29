@@ -106,6 +106,12 @@ public:
 		    size_t first_adjusted_column,
 		    size_t second_adjusted_column);
 
+	//! Return the coordinates of the border to the right of the column
+
+	std::optional<std::tuple<coord_t, dim_t>
+		      > border_center(ONLY IN_THREAD,
+				      size_t first_adjusted_column);
+
  private:
 	//! Something unexpected happen and we want to stop dragging.
 

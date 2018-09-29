@@ -85,10 +85,23 @@ new_table.columns=2;
       <classname>&ns;::w::new_tablelayoutmanager</classname>'s constructor
       is a &creator; for the list's header.
       <methodname>create_focusable_container</methodname> calls this closure
-      to create the header for each column. The passed in &factory; must
-      be used to create and <methodname>show</methodname>() the header for
-      each column. The second parameter specifies the column number.
+      to create the header for each column. The clouse receives
+      a &factory; parameter and the column number. The closure uses the
+      factory to create exactly one display element that represents the column's
+      header. The closure must call <methodname>show</methodname>()
+      to make the new header element visible.
     </para>
+
+    <note>
+      <para>
+	The header display element should not have a custom background color.
+	The table sets a custom background color for the header row for
+	visual effects when <link linkend="adjustabletables">adjusting the
+	  table column widths</link>. The table layout manager expects the
+	headers' display elements to inherit their background color from the
+	header row.
+      </para>
+    </note>
   </section>
 
   <section id="adjustabletables">
