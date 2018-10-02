@@ -28,16 +28,19 @@ See COPYING for distribution information.
     <itemizedlist>
       <listitem>
 	<para>
-	  Combines traditional UI elements &mdash;
+	  Implements classical, tradition UI elements &mdash;
 	  labels, text input fields,
-	  lists, combo-boxes, menus, and dialogs &mdash; with a clean
-	  modern look, with mild gradient shading for a subtle, non-intrusive
-	  3D effect.
+	  lists, combo-boxes, menus, and dialogs &mdash; updated to modern
+	  UI standards: confirming the last character typed into a
+	  password field before masking it, predictive selection of
+	  combo-box entries, spin buttons for numerical input fields, etc...
 	</para>
       </listitem>
-
       <listitem>
 	<para>
+	  Clean
+	  modern look, with mild gradient shading for a subtle, non-intrusive
+	  3D effect.
 	  Fully keyboard-accessible. All display elements have full
 	  keyboard navigation, where possible. No explicit application
 	  support is needed. Even scroll-bars have keyboard controls.
