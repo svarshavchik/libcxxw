@@ -137,6 +137,8 @@ void testbutton()
 			 LIBCXX_NAMESPACE::w::input_field_config conf1{30, 1,
 					 true};
 
+			 conf1.hint("Enter something here");
+
 			 conf1.maximum_size=30;
 
 			 fields.first=factory->create_input_field({""},

@@ -271,7 +271,50 @@ class LIBCXX_HIDDEN editorObj::implObj
 
 	//! This editor's configuration.
 
-	const input_field_config config;
+	//! The relevant bits of input_field_config that we keep.
+	struct editor_config {
+		size_t columns;
+		size_t rows;
+		bool autoselect;
+		bool autodeselect;
+		constexpr bool oneline() const { return rows <= 1; }
+		size_t maximum_size;
+		bool update_clipboards;
+
+		//! Initialize from input_field_config
+
+		editor_config(const input_field_config &);
+	};
+
+	const editor_config config;
+
+	//! The input field hint, if one was specified in config
+	const richtextptr hint;
+
+ private:
+	//! Whether we were showing the hint the last time we checked.
+
+	bool is_showing_hint=false;
+
+	//! Determine whether we should be showing the input hint right now.
+
+	bool show_hint(ONLY IN_THREAD);
+
+	//! Determine whether we should schedule a redraw in order to show hints
+
+	//! Checks if show_hint() is now different than is_showing_hint,
+	//! returning true if so (and updating is_showing_hint).
+
+	bool should_redraw_to_show_hint(ONLY IN_THREAD);
+
+ public:
+	//! Override keyboard_focus()
+
+	//! Whether we have input focus is factor in whether we should
+	//! show_hint().
+
+	void keyboard_focus(ONLY IN_THREAD,
+			    const callback_trigger_t &trigger) override;
 
 	//! After the reference font is initialized, recalculate the peephole.
 
@@ -319,6 +362,9 @@ class LIBCXX_HIDDEN editorObj::implObj
 		//! Default metadata.
 		richtextmeta default_meta;
 
+		//! Default metadata for the input field hint
+		richtextmeta hint_meta;
+
 		~init_args();
 	};
 
@@ -350,14 +396,6 @@ class LIBCXX_HIDDEN editorObj::implObj
 	//! display element.
 
 	void rewrap_due_to_updated_position(ONLY IN_THREAD) override;
-
-	//! Inherited from elementObj::implObj
-
-	//! Starts or stops the cursor blink. If losing focus also calls
-	//! validate_modified(), just in case.
-
-	void keyboard_focus(ONLY IN_THREAD, const callback_trigger_t &)
-		override;
 
 	//! Starts or stop the cursor blink.
 	void window_focus_change(ONLY IN_THREAD, bool flag) override;

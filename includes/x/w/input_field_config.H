@@ -9,6 +9,7 @@
 
 #include <x/w/types.H>
 #include <x/w/alignment.H>
+#include <x/w/text_param.H>
 #include <x/w/input_field_configfwd.H>
 #include <x/w/scrollbar.H>
 #include <x/w/border_arg.H>
@@ -19,7 +20,7 @@
 
 LIBCXXW_NAMESPACE_START
 
-//! The configuration of an input field.
+//! The configuration of an \ref input_field "input field".
 
 struct input_field_config {
 
@@ -96,8 +97,10 @@ struct input_field_config {
 
 	border_arg focuson_border="texteditfocuson_border";
 
-	//! Background color
+	//! Foreground color
+	color_arg foreground_color="textedit_foreground_color";
 
+	//! Background color
 	color_arg background_color="textedit_background_color";
 
 	//! Background color when the input field is disabled.
@@ -108,6 +111,15 @@ struct input_field_config {
 	color_arg disabled_background_color=
 		"textedit_disabled_background_color";
 
+	//! Optional hint
+
+	//! If specified, this is displayed in the field when it's empty and
+	//! and it does not have input focus.
+
+	text_param hint;
+
+	//! Hint's color
+	color_arg hint_color="textedit_hint_color";
 
 	//! Optional factories for the spin controls next to the input field.
 

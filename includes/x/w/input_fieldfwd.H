@@ -353,6 +353,37 @@ on the appropriate button. A typical implementation uses an input field
 validator to validate the contents of the input field, with the callbacks
 taking the validated input value, incrementing or decrementing it,
 and then updating the input field with the new value.
+
+\par Hint
+
+\code
+#include <INSERT_LIBX_NAMESPACE/w/input_field.H>
+#include <INSERT_LIBX_NAMESPACE/w/input_field_config.H>
+
+INSERT_LIBX_NAMESPACE::w::input_field_config conf{20};
+
+conf.hint("Enter something here");
+
+INSERT_LIBX_NAMESPACE::w::input_field f=factory->create_input_field({""}, conf);
+\endcode
+
+A hint is a brief message that's shown in the input field when it's empty
+and does not have input focus. Its purpose is to provide a brief description
+of what's expected to be entered into this field. The hint disappears when
+the input field gains keyboard focus and its cursor starts blinking.
+
+\note
+There are no provisions for the hint's size exceeding the width of the
+input field, it simply gets cut off. It's your responsibility to make sure
+that it's shorter. Additionally, the hint's text appears starting on the
+first line of a multi-line input field, but it's possible to manually center
+the hint vertical in the field by prepending explicit \c \\n characters in
+the hint.
+
+\note
+\ref input_field_config "input_field_config"'s \c hint is an
+\ref text_param "INSERT_LIBX_NAMESPACE::w::text_param".
+
 */
 
 typedef ref<input_fieldObj> input_field;

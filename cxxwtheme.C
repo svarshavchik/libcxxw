@@ -1032,6 +1032,13 @@ static void demo_input(const w::gridlayoutmanager &lm)
 
 	f=lm->append_row();
 
+	w::input_field_config conf2{40};
+
+	conf2.hint("Type something here...");
+
+	f->create_input_field("", conf2);
+
+	f=lm->append_row();
 	f->create_input_field("", {40, 4});
 }
 

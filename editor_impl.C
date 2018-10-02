@@ -51,8 +51,8 @@ create_default_meta(const container_impl &container,
 {
 	auto &element=container->container_element_impl();
 
-	auto bg_color=element.create_background_color
-		("textedit_foreground_color");
+	auto bg_color=element.create_background_color(config.foreground_color);
+
 	auto font=element.create_current_fontcollection(theme_font{
 			config.password_char ? "password":"textedit"});
 
@@ -73,7 +73,8 @@ editorObj::implObj::init_args
 		     .get_window_handler().get_screen()
 		     ->impl->current_theme},
 	  textlabel_config_args{label_config_args},
-	  default_meta{create_default_meta(parent_peephole, config)}
+	  default_meta{create_default_meta(parent_peephole, config)},
+	  hint_meta{default_meta} // Fixed up in create_initial_string()
 {
 	label_config_args.alignment=config.alignment;
 	textlabel_config_args.width_in_columns=config.columns;
@@ -109,6 +110,12 @@ create_initial_string(editorObj::implObj::init_args &args,
 
 	if (string.get_meta().size() > 1)
 		throw EXCEPTION(_("Input text cannot contain embedded formatting."));
+
+	// If there's a hint, its default font will be the same as the editing
+	// font, just need to update its color.
+	args.hint_meta=string.get_meta().begin()->second;
+	args.hint_meta.textcolor=element.create_background_color
+		(args.config.hint_color);
 
 	// We get called from editorObj::implObj's constructor.
 	// password_info is the superclass, which is already fully
@@ -362,6 +369,16 @@ editorObj::implObj::selection_cursor_t::lock::~lock()=default;
 
 ////////////////////////////////////////////////////////////////////////////
 
+editorObj::implObj::editor_config::editor_config(const input_field_config &c)
+	: columns{c.columns},
+	  rows{c.rows},
+	  autoselect{c.autoselect},
+	  autodeselect{c.autodeselect},
+	  maximum_size{c.maximum_size},
+	  update_clipboards{c.update_clipboards}
+{
+}
+
 editorObj::implObj::implObj(init_args &args)
 	: richtext_password_info{args.config},
 	  superclass_t{args.config.background_color,	// Background colors
@@ -395,7 +412,13 @@ editorObj::implObj::implObj(init_args &args)
 	  cursor{this->text->end()},
 	  dragged_pos{cursor->clone()},
 	  parent_peephole{args.parent_peephole},
-	  config{args.config}
+	  config{args.config},
+	  hint{args.config.hint.string.empty() ? richtextptr{}
+	       : richtextptr::create
+	       (parent_peephole->container_element_impl()
+		.create_richtextstring(args.hint_meta,
+				       args.config.hint),
+		halign::center, 0)}
 {
 	// The first input field in a window gets focus when its shown.
 
@@ -418,6 +441,7 @@ void editorObj::implObj::initialize(ONLY IN_THREAD)
 {
 	superclass_t::initialize(IN_THREAD);
 	parent_peephole->recalculate(IN_THREAD, *this);
+	(void)should_redraw_to_show_hint(IN_THREAD); // Set initial state.
 }
 
 void editorObj::implObj::theme_updated(ONLY IN_THREAD,
@@ -472,6 +496,17 @@ void editorObj::implObj::rewrap_due_to_updated_position(ONLY IN_THREAD)
 					  .width;
 			  });
 
+	if (hint)
+		hint->thread_lock(IN_THREAD,
+				  [&, this]
+				  (ONLY IN_THREAD, const auto &impl)
+				  {
+					  (*impl)->minimum_width_override=
+						  data(IN_THREAD)
+						  .current_position
+						  .width;
+				  });
+
 	// text->rewrap(preferred_width);
 }
 
@@ -482,6 +517,11 @@ void editorObj::implObj::keyboard_focus(ONLY IN_THREAD,
 		(void)validate_modified(IN_THREAD, trigger);
 
 	superclass_t::keyboard_focus(IN_THREAD, trigger);
+
+	auto full_redraw_scheduled=should_redraw_to_show_hint(IN_THREAD);
+
+	if (full_redraw_scheduled)
+		schedule_redraw(IN_THREAD);
 
 	blink_if_has_focus(IN_THREAD);
 
@@ -510,7 +550,9 @@ void editorObj::implObj::keyboard_focus(ONLY IN_THREAD,
 	if (config.autodeselect && !current_keyboard_focus(IN_THREAD))
 		deselect=true;
 
-	if (deselect)
+	if (full_redraw_scheduled)
+		; // Yea?
+	else if (deselect)
 	{
 		// Leverage the existing moving_cursor logic.
 
@@ -969,10 +1011,16 @@ void editorObj::implObj::draw_changes(ONLY IN_THREAD,
 				      size_t deleted,
 				      size_t inserted)
 {
+	// If we originally should've shown the hint, but now not, or vice
+	// versa, we should redraw everything fully.
+
+	if (should_redraw_to_show_hint(IN_THREAD))
+		schedule_redraw(IN_THREAD);
+
 	// We can be called from set() before the editor element is visible.
 	// Don't bother calling get_draw_info(), because that might get
 	// stale anyway.
-	if (data(IN_THREAD).logical_inherited_visibility)
+	else if (data(IN_THREAD).logical_inherited_visibility)
 		text->redraw_whatsneeded(IN_THREAD, *this,
 					 cursor_lock.get_richtext_draw_info
 					 (*this),
@@ -1023,6 +1071,13 @@ void editorObj::implObj::do_draw(ONLY IN_THREAD,
 #ifdef EDITOR_DRAW
 	EDITOR_DRAW();
 #endif
+
+	if (show_hint(IN_THREAD))
+	{
+		hint->full_redraw(IN_THREAD, *this, {*this}, di, areas);
+		return;
+	}
+
 	selection_cursor_t::lock cursor_lock{IN_THREAD, *this};
 
 	text->full_redraw(IN_THREAD, *this,
@@ -1702,6 +1757,30 @@ void editorObj::implObj::show_notdroppable_pointer(ONLY IN_THREAD)
 	set_cursor_pointer(IN_THREAD,
 			   cursor_pointer_1tag<dragging_wontdrop_pointer>
 			   ::tagged_cursor_pointer(IN_THREAD));
+}
+
+bool editorObj::implObj::show_hint(ONLY IN_THREAD)
+{
+	if (!hint)
+		return false;
+
+	// An empty field has one character, the trailing space.
+	if (text->size(IN_THREAD) > 1)
+		return false;
+
+	return !current_keyboard_focus(IN_THREAD);
+}
+
+bool editorObj::implObj::should_redraw_to_show_hint(ONLY IN_THREAD)
+{
+	auto now=show_hint(IN_THREAD);
+
+	if (now == is_showing_hint)
+		return false;
+
+	is_showing_hint=now;
+
+	return true;
 }
 
 LIBCXXW_NAMESPACE_END
