@@ -870,33 +870,34 @@ void border_implObj::draw_round_corner(ONLY IN_THREAD,
 void border_implObj::draw_stubs(ONLY IN_THREAD,
 				const draw_info &di, int stubs) const
 {
-	if (no_corner_border(di))
-		return;
-
 	corner_draw_info cdi{di, *this};
 
 	// We don't need to clear to each elements' background colors,
 	// corner_border has already done that, on this code path.
 
-	if (stubs & border_impl::base::top_stub())
+	if ((stubs & border_impl::base::top_stub())
+	    && !no_vertical_border(di))
 	{
 		cdi.draw_top_pad(IN_THREAD);
 		cdi.draw_top_stub(IN_THREAD);
 	}
 
-	if (stubs & border_impl::base::bottom_stub())
+	if ((stubs & border_impl::base::bottom_stub())
+	    && !no_vertical_border(di))
 	{
 		cdi.draw_bottom_pad(IN_THREAD);
 		cdi.draw_bottom_stub(IN_THREAD);
 	}
 
-	if (stubs & border_impl::base::left_stub())
+	if ((stubs & border_impl::base::left_stub())
+	    && !no_horizontal_border(di))
 	{
 		cdi.draw_left_pad(IN_THREAD);
 		cdi.draw_left_stub(IN_THREAD);
 	}
 
-	if (stubs & border_impl::base::right_stub())
+	if ((stubs & border_impl::base::right_stub())
+	    && !no_horizontal_border(di))
 	{
 		cdi.draw_right_pad(IN_THREAD);
 		cdi.draw_right_stub(IN_THREAD);
