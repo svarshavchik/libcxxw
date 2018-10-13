@@ -48,6 +48,15 @@ struct create_image_button_info {
 	//! another display element, inside it.
 	bool disable_recursive_visibility=false;
 
+	//! Whether clicking anywhere activates the image button.
+
+	//! true: call label_for() on the entire image button element.
+	//!
+	//! false: call label_for() only on the internal button. Clicking on
+	//! any label portion of the image button display element has no effect.
+
+	bool click_anywhere=true;
+
 	//! Focus borders
 	struct borders_t {
 
@@ -111,7 +120,9 @@ create_image_button_with_label_factory(const create_image_button_info &info,
 //!
 //! Image buttons have optional labels. The label_creator parameter must
 //! be a closure that takes a factory parameter. If no label is needed, then
-//! the closure should return without doing anything.
+//! the closure should return without doing anything. Otherwise the closure
+//! can create a single element that represents the image button's label,
+//! that appears next to it.
 //!
 //! create_image_button_with_label_factory is an alternate entry point with
 //! the label creator parameter being a type-erased

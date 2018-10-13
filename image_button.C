@@ -293,7 +293,10 @@ do_create_image_button(const create_image_button_info &info,
 	button_factory->right_padding(0);
 	label_factory(button_factory);
 
-	b->label_for(b);
+	if (info.click_anywhere)
+		b->label_for(b);
+	else
+		focus_frame->label_for(ibi);
 	return b;
 }
 
