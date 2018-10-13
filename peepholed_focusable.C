@@ -16,6 +16,8 @@
 #include "focus/focusframelayoutimpl.H"
 #include "x/w/impl/container_element.H"
 #include "x/w/impl/container_visible_element.H"
+#include "x/w/impl/bordercontainer_element.H"
+#include "x/w/impl/borderlayoutmanager.H"
 #include "gridlayoutmanager.H"
 #include "x/w/factory.H"
 #include "x/w/gridfactory.H"
@@ -91,61 +93,32 @@ create_peepholed_focusable_with_frame_impl
 
 	factory->padding(0);
 
-	ptr<peepholeObj::implObj> impl;
-	peepholedptr peepholed_element;
-	focusableptr focusable_element;
-	focusable_implptr focusable_element_impl;
-	factoryptr ff_factory;
+	auto pfc_impl=ref<bordercontainer_elementObj<container_elementObj
+						     <child_elementObj>>>
+		::create(args.border,
+			 args.border,
+			 args.border,
+			 args.border, 0, 0,
+			 factory->get_container_impl());
 
-	refptr_traits<always_visible_focusframe_ref_t>
-		::ptr_t focusframecontainer_impl;
+	// Create the focusframe implementation object, first.
 
-	auto pfc=factory->create_container
-		([&]
-		 (const auto &new_container)
-		 {
-			 gridlayoutmanager new_container_glm=
-				 new_container->get_layoutmanager();
+	auto focusframecontainer_impl=
+		create_always_visible_focusframe_impl
+		(pfc_impl,
+		 args.inputfocusoff_border,
+		 args.inputfocuson_border,
+		 args.focusable_padding,
+		 args.focusable_padding,
+		 args.focusable_background_color);
 
-			 auto new_container_factory=
-				 new_container_glm->append_row();
+	// Now that the focusframe implementation object
+	// exists we can create the peepholed focusable
+	// element.
 
-			 new_container_factory->padding(0);
-			 new_container_factory->border(args.border);
-
-			 // The focus frame carries the same treatment.
-			 // it gets 100% of its space, and is filled.
-			 new_container_glm->requested_col_width(0, 100);
-			 new_container_glm->requested_row_height(0, 100);
-			 new_container_factory->halign(halign::fill);
-			 new_container_factory->valign(valign::fill);
-
-			 ff_factory=new_container_factory;
-
-			 // Create the focusframe implementation object, first.
-
-			 auto focusframe_impl_ret=
-				 create_always_visible_focusframe_impl
-				 (new_container->impl,
-				  args.inputfocusoff_border,
-				  args.inputfocuson_border,
-				  args.focusable_padding,
-				  args.focusable_padding,
-				  args.focusable_background_color);
-
-			 // Now that the focusframe implementation object
-			 // exists we can create the peepholed focusable
-			 // element.
-
-			 std::tie(impl, peepholed_element, focusable_element,
-				  focusable_element_impl)=
-				 make_peepholed(focusframe_impl_ret, grid);
-
-			 focusframecontainer_impl=focusframe_impl_ret;
-		 },
-		 new_gridlayoutmanager{});
-
-	pfc->show();
+	auto [impl, peepholed_element, focusable_element,
+	      focusable_element_impl]=
+		make_peepholed(focusframecontainer_impl, grid);
 
 	// We can now create our layout manager, and give it the created
 	// peepholed_element.
@@ -200,7 +173,15 @@ create_peepholed_focusable_with_frame_impl
 	peephole_container->show();
 	ff->show();
 
-	ff_factory->created_internally(ff);
+	auto blm_impl=ref<borderlayoutmanagerObj::implObj>
+		::create(pfc_impl, pfc_impl, ff, halign::fill,
+			 valign::fill);
+
+	auto pfc=container::create(pfc_impl, blm_impl);
+
+	pfc->show();
+
+	factory->created_internally(pfc);
 
 	auto factory2=grid->append_row();
 

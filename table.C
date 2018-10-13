@@ -775,8 +775,8 @@ void new_tablelayoutmanager::created_list_container(const gridlayoutmanager
 	header_init_params.background_color=header_color;
 
 	auto header_border_container_impl=
-		ref<bordercontainer_elementObj<
-			always_visible_elementObj<container_elementObj<
+		ref<always_visible_elementObj<
+			bordercontainer_elementObj<container_elementObj<
 				child_elementObj>>>>
 		::create(list_border, list_border,
 			 list_border, "empty", 0, 0,
@@ -786,8 +786,8 @@ void new_tablelayoutmanager::created_list_container(const gridlayoutmanager
 	// Now create a (not quite a) replicable of the focus frame.
 
 	auto header_focusframe_container_impl=
-		ref<bordercontainer_elementObj<
-			always_visible_elementObj<container_elementObj<
+		ref<always_visible_elementObj<
+			bordercontainer_elementObj<container_elementObj<
 				child_elementObj>>>>
 		::create(focusoff_border, focusoff_border,
 			 "empty", "empty", 0, 0,
