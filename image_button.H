@@ -13,10 +13,11 @@
 #include "image_button_internalfwd.H"
 #include "image_button_internalobj.H"
 
+#include <optional>
 LIBCXXW_NAMESPACE_START
 
 typedef ref<image_button_internalObj::implObj>
-image_button_internal_factory_t(const container_impl);
+image_button_internal_factory_t(const container_impl &);
 
 //! Parameters used when creating an image button.
 
@@ -56,6 +57,10 @@ struct create_image_button_info {
 	//! any label portion of the image button display element has no effect.
 
 	bool click_anywhere=true;
+
+	//! Button's background color.
+
+	std::optional<color_arg> button_background_color;
 
 	//! Focus borders
 	struct borders_t {

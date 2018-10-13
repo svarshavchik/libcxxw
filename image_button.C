@@ -104,6 +104,11 @@ void image_buttonObj::do_update_label(const function<void (const factory &)> &f)
 
 //////////////////////////////////////////////////////////////////////////////
 
+namespace {
+#if 0
+}
+#endif
+
 class LIBCXX_HIDDEN scroll_imagebuttonObj
 	: public image_button_internalObj::implObj {
 
@@ -130,6 +135,11 @@ class LIBCXX_HIDDEN scroll_imagebuttonObj
 	}
 };
 
+#if 0
+{
+#endif
+}
+
 ref<image_button_internalObj::implObj>
 scroll_imagebutton_specific_height(const container_impl
 				   &parent_container,
@@ -151,6 +161,11 @@ scroll_imagebutton_specific_height(const container_impl
 	return ref<scroll_imagebuttonObj>::create(init_params);
 }
 
+namespace {
+#if 0
+}
+#endif
+
 ///////////////////////////////////////////////////////////////////////////
 //
 // This is the container implementation button for the image_buttonObj's
@@ -167,9 +182,10 @@ class LIBCXX_HIDDEN image_button_containerObj
 
 	image_button_containerObj(bool disable_recursive_visibility,
 				  const container_impl
-				  &parent_container)
+				  &parent_container,
+				  const child_element_init_params &init_params)
 		: image_button_container_superclass_t(parent_container,
-						      {"focusframe@libcxx.com"}),
+						      init_params),
 		disable_recursive_visibility{disable_recursive_visibility}
 	{
 	}
@@ -209,6 +225,11 @@ class LIBCXX_HIDDEN image_button_containerObj
 
 };
 
+#if 0
+{
+#endif
+}
+
 // The factory do_create_image_button invokes to contsruct the internal
 // implementation object.
 
@@ -220,6 +241,9 @@ do_create_image_button(const create_image_button_info &info,
 {
 	// Create an image_button_containerObj, a container with a grid
 	// layout manager.
+	child_element_init_params init_params{"focusframe@libcxx.com"};
+
+	init_params.background_color=info.button_background_color;
 
 	auto image_button_outer_container_impl=
 		info.always_visible ?
@@ -227,10 +251,10 @@ do_create_image_button(const create_image_button_info &info,
 		{
 		 ref<always_visible_elementObj<image_button_containerObj>>
 		 ::create(info.disable_recursive_visibility,
-			  info.parent_container_impl)
+			  info.parent_container_impl, init_params)
 		} : ref<image_button_containerObj>
 			    ::create(info.disable_recursive_visibility,
-				     info.parent_container_impl);
+				     info.parent_container_impl, init_params);
 
 	ref<gridlayoutmanagerObj::implObj> image_button_outer_container_layout=
 		new_gridlayoutmanager{}
