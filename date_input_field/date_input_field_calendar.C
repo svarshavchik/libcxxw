@@ -251,9 +251,10 @@ void date_input_field_calendarObj
 			 auto f=row0_lm->append_row();
 
 			 create_image_button_info scroll_button_info
-				 {*f, valign::bottom, true};
+				 {f->get_container_impl(), true, valign::bottom,
+				  true};
 
-			 create_image_button
+			 auto b=create_image_button
 				 (scroll_button_info,
 				  [this]
 				  (const auto &parent)
@@ -280,9 +281,13 @@ void date_input_field_calendarObj
 						   });
 					  return b;
 				  },
-				  [](const auto &){})->show();
+				  [](const auto &){});
 
-			 create_image_button
+			 f->created_internally(b);
+
+			 scroll_button_info.parent_container_impl=
+				 f->get_container_impl();
+			 b=create_image_button
 				 (scroll_button_info,
 				  [this]
 				  (const auto &parent)
@@ -310,12 +315,17 @@ void date_input_field_calendarObj
 
 					  return b;
 				  },
-				  [](const auto &){})->show();
+				  [](const auto &){});
+
+			 f->created_internally(b);
 
 			 f->create_label(get_month_label(e, current_ym))
 				 ->show();
 
-			 create_image_button
+			 scroll_button_info.parent_container_impl=
+				 f->get_container_impl();
+
+			 b=create_image_button
 				 (scroll_button_info,
 				  [this]
 				  (const auto &parent)
@@ -343,9 +353,13 @@ void date_input_field_calendarObj
 
 					  return b;
 				  },
-				  [](const auto &){})->show();
+				  [](const auto &){});
 
-			 create_image_button
+			 f->created_internally(b);
+
+			 scroll_button_info.parent_container_impl=
+				 f->get_container_impl();
+			 b=create_image_button
 				 (scroll_button_info,
 				  [this]
 				  (const auto &parent)
@@ -373,7 +387,9 @@ void date_input_field_calendarObj
 
 					  return b;
 				  },
-				  [](const auto &){})->show();
+				  [](const auto &){});
+
+			 f->created_internally(b);
 		 },
 		 new_gridlayoutmanager{})->show();
 

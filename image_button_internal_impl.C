@@ -6,6 +6,7 @@
 #include "x/w/busy.H"
 #include "image_button_internal_impl.H"
 #include "x/w/impl/focus/focusable_element.H"
+#include "x/w/impl/always_visible_element.H"
 #include "hotspot_element.H"
 #include "icon_images_vector_element.H"
 #include "icon.H"

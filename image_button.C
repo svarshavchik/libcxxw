@@ -18,6 +18,7 @@
 #include "x/w/impl/container_element.H"
 #include "gridlayoutmanager.H"
 #include "x/w/impl/container_visible_element.H"
+#include "x/w/impl/always_visible_element.H"
 #include "messages.H"
 #include "generic_window_handler.H"
 #include "catch_exceptions.H"
@@ -221,9 +222,15 @@ do_create_image_button(const create_image_button_info &info,
 	// layout manager.
 
 	auto image_button_outer_container_impl=
+		info.always_visible ?
 		ref<image_button_containerObj>
-		::create(info.disable_recursive_visibility,
-			 info.f.get_container_impl());
+		{
+		 ref<always_visible_elementObj<image_button_containerObj>>
+		 ::create(info.disable_recursive_visibility,
+			  info.parent_container_impl)
+		} : ref<image_button_containerObj>
+			    ::create(info.disable_recursive_visibility,
+				     info.parent_container_impl);
 
 	ref<gridlayoutmanagerObj::implObj> image_button_outer_container_layout=
 		new_gridlayoutmanager{}
@@ -266,8 +273,6 @@ do_create_image_button(const create_image_button_info &info,
 		 focus_frame_impl,
 		 ibi, ibii);
 
-	ibi->show();
-
 	// Now, let's get back to our internal gridlayoutmanager, where we
 	// "create" the focusframecontainer.
 
@@ -278,8 +283,6 @@ do_create_image_button(const create_image_button_info &info,
 
 	auto b=image_button::create(impl, image_button_outer_container_impl,
 				    image_button_outer_container_layout);
-
-	info.f.created_internally(b);
 
 	// The internal grid layout manager does not introduce any of its own
 	// padding, but keep the left padding, to separate the image button
@@ -331,13 +334,15 @@ image_button factoryObj::do_create_checkbox(const function<factory_creator_t>
 	if (icons.empty())
 		throw EXCEPTION(_("Attempt to create a checkbox without any images."));
 
-	return create_image_button_with_label_factory
-		({*this, alignment},
+	auto im=create_image_button_with_label_factory
+		({get_container_impl(), false, alignment},
 		 [&]
 		 (const auto &container)
 		 {
 			 return create_checkbox_impl(container, icons);
 		 }, label_factory);
+	created_internally(im);
+	return im;
 }
 
 image_button factoryObj::create_radio(const radio_group &group,
@@ -381,8 +386,8 @@ image_button factoryObj::do_create_radio(const radio_group &group,
 		throw EXCEPTION(_("Attempt to create a radio button without any images."));
 
 
-	return create_image_button_with_label_factory
-		({*this, alignment},
+	auto b=create_image_button_with_label_factory
+		({get_container_impl(), false, alignment},
 		 [&]
 		 (const auto &container)
 		 {
@@ -390,6 +395,8 @@ image_button factoryObj::do_create_radio(const radio_group &group,
 						  container,
 						  icons);
 		 }, label_creator);
+	created_internally(b);
+	return b;
 }
 
 LIBCXXW_NAMESPACE_END

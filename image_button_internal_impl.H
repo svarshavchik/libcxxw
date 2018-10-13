@@ -7,13 +7,14 @@
 
 #include "x/w/radio_groupfwd.H"
 #include "x/w/image_buttonfwd.H"
+#include "x/w/connection_threadfwd.H"
+#include "x/w/impl/always_visible_elementfwd.H"
 #include "image_button_internal.H"
 #include "icon_images_vector_elementfwd.H"
 #include "iconfwd.H"
 #include "image.H"
 #include "hotspot_elementfwd.H"
 #include <vector>
-#include "x/w/connection_threadfwd.H"
 
 #include <x/mpobj.H>
 #include <x/refptr_traits.H>
@@ -43,12 +44,15 @@ struct LIBCXX_HIDDEN image_button_internal_impl_init_params :
 //! Imlementation object for the internal image button.
 
 class LIBCXX_HIDDEN image_button_internalObj::implObj :
-	public hotspot_elementObj<icon_images_vector_elementObj<
-					  imageObj::implObj>> {
+	public always_visible_elementObj<hotspot_elementObj
+					 <icon_images_vector_elementObj<
+						  imageObj::implObj>>> {
 
 	//! The superclass
-	typedef hotspot_elementObj<icon_images_vector_elementObj<
-		imageObj::implObj>> superclass_t;
+	typedef always_visible_elementObj<hotspot_elementObj
+					  <icon_images_vector_elementObj<
+						  imageObj::implObj>
+					   >> superclass_t;
 
 	//! Container for the current index in icon_images
 

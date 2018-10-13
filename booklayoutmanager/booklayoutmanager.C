@@ -597,8 +597,8 @@ new_booklayoutmanager::create(const container_impl &parent) const
 	ptr<image_button_internalObj::implObj> left_scroll_impl,
 		right_scroll_impl;
 
-	create_image_button_info scroll_button_info{*factory, valign::bottom,
-						    true};
+	create_image_button_info scroll_button_info
+		{factory->get_container_impl(), true, valign::bottom, true};
 
 	scroll_button_info.borders.focusoff_border=
 		"thin_inputfocusoff_border_color2";
@@ -623,7 +623,7 @@ new_booklayoutmanager::create(const container_impl &parent) const
 		 },
 		 [](const auto &ignore){});
 
-	left_scroll->show();
+	factory->created_internally(left_scroll);
 
 	////////////////////////////////////////////////////////////////////
 	//
@@ -686,6 +686,7 @@ new_booklayoutmanager::create(const container_impl &parent) const
 
 	factory->padding(0);
 
+	scroll_button_info.parent_container_impl=factory->get_container_impl();
 	auto right_scroll=create_image_button
 		(scroll_button_info,
 		 [&]
@@ -703,7 +704,7 @@ new_booklayoutmanager::create(const container_impl &parent) const
 		 },
 		 [](const auto &ignore){});
 
-	right_scroll->show();
+	factory->created_internally(right_scroll);
 
 	// It's very nice for an image_button to provide callbacks that
 	// report when its image changes. But what we really need to do is

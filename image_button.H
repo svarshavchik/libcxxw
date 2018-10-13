@@ -20,12 +20,35 @@ image_button_internal_factory_t(const container_impl);
 
 //! Parameters used when creating an image button.
 
-struct LIBCXX_HIDDEN create_image_button_info {
+struct LIBCXX_HIDDEN create_image_button_info;
 
-	factoryObj &f;
+//! Fixed parameters to create_image_button()
+
+struct create_image_button_info {
+	//! The parent container
+
+	//! The parent_container_impl must be returned by some factory's
+	//! get_container_impl(). create_image_button()'s called is
+	//! responsible for notifying the factory that the returned
+	//! image button was created_internally().
+	container_impl parent_container_impl;
+
+	//! Whether the image button is always_visible
+
+	//! By default true, when this image button is used to create another
+	//! display element. This employs the always_visible_elementObj mixin.
+	bool always_visible=true;
+
+	//! Alignment of the image button and its optional label.
 	valign alignment=valign::middle;
+
+	//! Whether non-recursive visiblity is enabled.
+
+	//! Typically set to true when this image button is used to create
+	//! another display element, inside it.
 	bool disable_recursive_visibility=false;
 
+	//! Focus borders
 	struct borders_t {
 
 		border_arg focusoff_border;
@@ -81,8 +104,6 @@ create_image_button_with_label_factory(const create_image_button_info &info,
 
 //! An image_button is a container with a grid layout manager containing a
 //! focus frame, and an image_button_internal.
-//!
-//! The ignore_visibility parameter disables recursive visibility changes.
 //!
 //! create_image_button()'s creator parameter is a closure that takes
 //! a containerObj::implObj and constructs an image_button_internalObj::implObj
