@@ -97,21 +97,15 @@ class LIBCXX_HIDDEN peepholeObj::layoutmanager_implObj
 
 	//! Override initialize().
 	void initialize(ONLY IN_THREAD) override;
- protected:
-
-	//! The peephole element's most recent requested visibility.
-
-	rectangle requested_visibility;
+ private:
 
 	//! Implement recalculate()
 
-	//! If 'flag' is set, make sure client's requested visibility is
-	//! honored.
+	//! If a rectangle is provided, make sure client's requested visibility
+	//! is honored.
 
 	void recalculate_with_requested_visibility(ONLY IN_THREAD,
-						   bool flag);
-
- private:
+						   rectangle *r);
 
 	//! See if we can scroll the element.
 

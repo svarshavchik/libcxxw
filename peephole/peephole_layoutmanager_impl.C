@@ -76,25 +76,58 @@ layoutmanager peepholeObj::layoutmanager_implObj::create_public_object()
 void peepholeObj::layoutmanager_implObj
 ::ensure_visibility(ONLY IN_THREAD,
 		    elementObj::implObj &e,
-		    const rectangle &r)
+		    const rectangle &rArg)
 {
-	if (r.x < 0 || r.y < 0
-	    || dim_t::truncate(r.x+r.width)
-	    > e.data(IN_THREAD).current_position.width
-	    || dim_t::truncate(r.y+r.height)
-	    > e.data(IN_THREAD).current_position.height)
+	auto hv=e.get_horizvert(IN_THREAD);
+
+	rectangle r=rArg;
+
+	// Sanity check the requested visibility against the element's metrics,
+	// not its current size.
+	//
+	// It's possible that appending text into a peephole editor element
+	// results in the editor element request visibility for the cursor
+	// position immediately after announcing its larger metrics but
+	// before it gets resized.
+
+	if (r.x < 0)
 	{
-		LOG_ERROR("Invalid ensure_visibility() request from "
-			  << e.objname()
-			  << ": " << r
-			  << ", its size is "
-			  << e.data(IN_THREAD).current_position.width
-			  << "x"
-			  << e.data(IN_THREAD).current_position.height);
+		coord_t last_x=coord_t::truncate(r.x+r.width);
+
+		if (last_x < 0)
+			return;
+
+		r.x=0;
+		r.width=dim_t::truncate(last_x);
 	}
 
-	requested_visibility=r;
-	recalculate_with_requested_visibility(IN_THREAD, true);
+	if (r.y < 0)
+	{
+		coord_t last_y=coord_t::truncate(r.y+r.height);
+
+		if (last_y < 0)
+			return;
+
+		r.y=0;
+		r.height=dim_t::truncate(last_y);
+	}
+
+	auto max_width=hv->horiz.minimum();
+	auto max_height=hv->horiz.minimum();
+
+	if (dim_t::truncate(r.x) >= max_width ||
+	    dim_t::truncate(r.y) >= max_height)
+		return;
+
+	max_width=max_width-dim_t::truncate(r.x);
+	max_height=max_height-dim_t::truncate(r.y);
+
+	if (max_width < r.width)
+		r.width=max_width;
+	if (max_height < r.height)
+		r.height=max_height;
+
+	recalculate_with_requested_visibility(IN_THREAD, &r);
 }
 
 // Called from recalculate to make sure that the proposed element_pos
@@ -135,7 +168,7 @@ static void adjust_for_visibility(rectangle &element_pos,
 
 void peepholeObj::layoutmanager_implObj::recalculate(ONLY IN_THREAD)
 {
-	recalculate_with_requested_visibility(IN_THREAD, false);
+	recalculate_with_requested_visibility(IN_THREAD, nullptr);
 }
 
 // Used when peephole_scroll::centered
@@ -225,7 +258,7 @@ void peepholeObj::layoutmanager_implObj::update_our_metrics(ONLY IN_THREAD)
 }
 
 void peepholeObj::layoutmanager_implObj
-::recalculate_with_requested_visibility(ONLY IN_THREAD, bool flag)
+::recalculate_with_requested_visibility(ONLY IN_THREAD, rectangle *adjust_for)
 {
 	auto peephole_element_impl=
 		element_in_peephole->get_peepholed_element()->impl;
@@ -311,45 +344,42 @@ void peepholeObj::layoutmanager_implObj
 	// requested_visibility corner into view first. This makes sure that
 	// the bottom/right is scrolled into view first, then top/left.
 
-	if (flag)
+	if (adjust_for)
 	{
-		rectangle adjust_for=requested_visibility;
+		LOG_DEBUG("Element's requested visibility: " << *adjust_for);
 
 		if (style.scroll == peephole_scroll::centered)
 		{
-			center_visibility_at(adjust_for.x, adjust_for.width,
+			center_visibility_at(adjust_for->x, adjust_for->width,
 					     element_pos.width,
 					     current_position.width);
-			center_visibility_at(adjust_for.y, adjust_for.height,
+			center_visibility_at(adjust_for->y, adjust_for->height,
 					     element_pos.height,
 					     current_position.height);
 		}
 
 		adjust_for_visibility(element_pos, current_position,
-				      adjust_for.x+
-				      adjust_for.width,
-				      adjust_for.y+
-				      adjust_for.height);
+				      adjust_for->x+
+				      adjust_for->width,
+				      adjust_for->y+
+				      adjust_for->height);
 
 		adjust_for_visibility(element_pos, current_position,
-				      adjust_for.x+dim_t{0},
-				      adjust_for.y+
-				      adjust_for.height);
+				      adjust_for->x+dim_t{0},
+				      adjust_for->y+
+				      adjust_for->height);
 
 		adjust_for_visibility(element_pos, current_position,
-				      adjust_for.x+
-				      adjust_for.width,
-				      adjust_for.y+dim_t{0});
+				      adjust_for->x+
+				      adjust_for->width,
+				      adjust_for->y+dim_t{0});
 
 		adjust_for_visibility(element_pos, current_position,
-				      adjust_for.x+dim_t{0},
-				      adjust_for.y+dim_t{0});
+				      adjust_for->x+dim_t{0},
+				      adjust_for->y+dim_t{0});
 	}
 
-	LOG_DEBUG("Element's requested visibility: " << requested_visibility
-		  << std::endl
-		  << "   adjusted element position to: "
-		  << element_pos);
+	LOG_DEBUG("Adjusted element position to: " << element_pos);
 
 	// Final set of sanity checks.
 
