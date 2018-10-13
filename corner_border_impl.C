@@ -359,37 +359,74 @@ corner_borderObj::implObj::cached_draw_info_s
 
 	int need=left|right|top|bottom;
 
-	elements.get_same_border(IN_THREAD,
-				 &surrounding_elements_and_borders::fromleft_border,
-				 &surrounding_elements_and_borders::fromtop_border,
-				 border_impl::base::cornertl(),
-				 need,
-				 ~(left | top),
-				 corners);
+	// If we have the same border on the left and the right, or on the
+	// top or the bottom, do not check for the same adjacent border.
+	// This is because if they are also the same as the third border we
+	// still don't want to draw one of them as corner, but rather draw
+	// all of them as stubs.
 
-	elements.get_same_border(IN_THREAD,
-				 &surrounding_elements_and_borders::fromtop_border,
-				 &surrounding_elements_and_borders::fromright_border,
-				 border_impl::base::cornertr(),
-				 need,
-				 ~(right | top),
-				 corners);
+	bool straight_through=false;
 
-	elements.get_same_border(IN_THREAD,
-				 &surrounding_elements_and_borders::frombottom_border,
-				 &surrounding_elements_and_borders::fromright_border,
-				 border_impl::base::cornerbr(),
-				 need,
-				 ~(right | bottom),
-				 corners);
+	if (elements.fromleft_border && elements.fromright_border)
+	{
+		auto best1=elements.fromleft_border->impl
+			->best_border(IN_THREAD);
+		auto best2=elements.fromright_border->impl
+			->best_border(IN_THREAD);
 
-	elements.get_same_border(IN_THREAD,
-				 &surrounding_elements_and_borders::frombottom_border,
-				 &surrounding_elements_and_borders::fromleft_border,
-				 border_impl::base::cornerbl(),
-				 need,
-				 ~(left | bottom),
-				 corners);
+		if (best1 && best1 == best2)
+			straight_through=true;
+	}
+
+	if (elements.fromtop_border && elements.frombottom_border)
+	{
+		auto best1=elements.fromtop_border->impl
+			->best_border(IN_THREAD);
+		auto best2=elements.frombottom_border->impl
+			->best_border(IN_THREAD);
+
+		if (best1 && best1 == best2)
+			straight_through=true;
+	}
+
+	if (!straight_through)
+	{
+		elements.get_same_border
+			(IN_THREAD,
+			 &surrounding_elements_and_borders::fromleft_border,
+			 &surrounding_elements_and_borders::fromtop_border,
+			 border_impl::base::cornertl(),
+			 need,
+			 ~(left | top),
+			 corners);
+
+		elements.get_same_border
+			(IN_THREAD,
+			 &surrounding_elements_and_borders::fromtop_border,
+			 &surrounding_elements_and_borders::fromright_border,
+			 border_impl::base::cornertr(),
+			 need,
+			 ~(right | top),
+			 corners);
+
+		elements.get_same_border
+			(IN_THREAD,
+			 &surrounding_elements_and_borders::frombottom_border,
+			 &surrounding_elements_and_borders::fromright_border,
+			 border_impl::base::cornerbr(),
+			 need,
+			 ~(right | bottom),
+			 corners);
+
+		elements.get_same_border
+			(IN_THREAD,
+			 &surrounding_elements_and_borders::frombottom_border,
+			 &surrounding_elements_and_borders::fromleft_border,
+			 border_impl::base::cornerbl(),
+			 need,
+			 ~(left | bottom),
+			 corners);
+	}
 
 	if (need & left)
 		elements.pick_border(IN_THREAD,
