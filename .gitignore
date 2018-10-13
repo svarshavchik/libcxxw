@@ -54,6 +54,7 @@ suppressfile*
 /testgrid
 /testimagebuttons
 /testinputfield
+/testitemlayoutmanager
 /testlabel
 /testlist
 /testmenu

@@ -415,6 +415,21 @@ libcxxw_la_SOURCES=\
 	input_field.C				    \
 	input_field_impl.C			    \
 	input_mask.C				    \
+	itemlayoutmanager/itembutton.C		    \
+	itemlayoutmanager/itembutton.H		    \
+	itemlayoutmanager/itembuttonfwd.H	    \
+	itemlayoutmanager/itembuttonobj.H	    \
+	itemlayoutmanager/itembutton_impl.C	    \
+	itemlayoutmanager/itembutton_impl.H	    \
+	itemlayoutmanager/itemlayoutmanager.C	    \
+	itemlayoutmanager/itemlayoutmanager_impl.C  \
+	itemlayoutmanager/itemlayoutmanager_impl.H  \
+	itemlayoutmanager/peepholed_item_container.C \
+	itemlayoutmanager/peepholed_item_container.H \
+	itemlayoutmanager/peepholed_item_containerfwd.H \
+	itemlayoutmanager/peepholed_item_containerobj.H \
+	itemlayoutmanager/peepholed_item_container_impl.C \
+	itemlayoutmanager/peepholed_item_container_impl.H \
 	keysyms.C				    \
 	keysyms.H				    \
 	key_event.C				    \
@@ -922,6 +937,7 @@ INTERACTIVETESTPROGRAMS=\
 	testdateinput					\
 	testimagebuttons			        \
 	testinputfield					\
+	testitemlayoutmanager				\
 	testmainwindow					\
 	testmenu					\
 	testlabel					\
@@ -979,6 +995,11 @@ $(call REFCOLLECTION_GEN,testinputfield.inc.H,testinputfield.xml)
 testinputfield_SOURCES=testinputfield.C
 testinputfield_LDADD=libcxxw.la
 testinputfield_LDFLAGS=-static $(STATICLINKFLAGS)
+
+$(call OPTIONS_GEN,testitemlayoutmanager.inc.H,testitemlayoutmanager.xml)
+testitemlayoutmanager_SOURCES=testitemlayoutmanager.C
+testitemlayoutmanager_LDADD=libcxxw.la -lcourier-unicode
+testitemlayoutmanager_LDFLAGS=$(TESTLINKTYPE)
 
 testcollapse_SOURCES=testcollapse.C
 testcollapse_LDADD=-lcxx
@@ -1246,6 +1267,7 @@ test:
 	LC_ALL=ru_RU.UTF-8 ./testtooltip --width=25
 	./testtooltip --width=50
 	./testprogressbar
+	./testitemlayoutmanager --testitems
 	LC_ALL=ru_RU.UTF-8 ./testpage --testfocus
 	./testwordwrappablelabel --testmetrics
 	./testunfocus

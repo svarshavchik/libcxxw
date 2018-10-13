@@ -1,0 +1,11 @@
+<optclass name="testitems_options">
+  <option>
+    <name>testitems</name>
+    <type>bool</type>
+    <default>false</default>
+    <opt>f</opt>
+    <longopt>testitems</longopt>
+    <descr>Automated test option</descr>
+  </option>
+  <defaultoptions />
+</optclass>

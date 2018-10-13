@@ -1,0 +1,233 @@
+<!--
+
+Copyright 2018 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<chapter id="itemlayoutmanager">
+  <title>The item layout manager</title>
+
+  <mediaobject>
+    <imageobject>
+      <imagedata fileref="itemlayoutmanager.png" format="PNG"
+		 contentwidth="460px" contentdepth="104px" />
+    </imageobject>
+    <textobject>
+      <phrase>
+	The item layout manager
+      </phrase>
+    </textobject>
+    <caption>
+      <para>
+	The item layout manager implements a common UI design pattern
+	in combination with an <link linkend="inputfieldsandbuttons">input
+	  field</link>: the input field provides a free-form text entry
+	for typing in a list of objects or entities. The typed-in text
+	gets parsed, validated, and converted into one or more
+	individual items.
+	The parsed items get displayed above
+	or below the input field. Each item gets drawn as a small button
+	with a label inside it, and an <quote>X</quote> that removes the
+	item from the list.
+      </para>
+    </caption>
+  </mediaobject>
+
+  <para>
+    Passing an
+    <ulink url="&link-x--w--new-itemlayoutmanager;"><classname>&ns;::w::new_itemlayoutmanager</classname></ulink>
+    to a &factory;'s <methodname>create_focusable_container</methodname>()
+    creates a &container; that uses the
+    <ulink url="&link-typedef-x--w-itemlayoutmanager;"><classname>&ns;::w::itemlayoutmanager</classname></ulink>.
+    <filename>itemlayoutmanager.C</filename> gives an example of
+    creating a focusable container managed by the item layout manager, and
+    installing an <methodname>on_validate</methodname>() &callback; for a
+    text input field above it.
+    The callback takes the typed-in contents, splits them into
+    a comma-separated text strings, trims off each string's leading and
+    trailing whitespace, and creates an
+    <ulink url="&link-typedef-x--w-label;"><classname>&ns;::w::label</classname></ulink> from each string.
+  </para>
+
+  <para>
+    The item layout manager draws a button around each display element created
+    by its &factory;. Its container adjusts to any width, so it's typically
+    positioned above or below the text input field, in a parent container
+    that uses the <link linkend="gridlayoutmanager">grid layout manager</link>.
+    This sizes the item layout manager's container to its column's full width;
+    the item layout manager lays out all items in its container up to its
+    horizontal width, and creates as many rows as needed to show all items:
+  </para>
+
+  <blockquote>
+    <title><ulink url="examples/itemlayoutmanager.C">itemlayoutmanager.C</ulink></title>
+
+    <informalexample>
+      <programlisting><xi:include href="../examples/itemlayoutmanager.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    <filename>itemlayoutmanager.C</filename> creates a text input field.
+    Free-form text gets typed into the text input field. The text
+    gets parsed as a comma-separated list of <quote>pizza toppings</quote>.
+    Anything goes, anything that gets typed gets parsed as a pizza topping.
+  </para>
+
+  <section id="itemlayoutmanageritems">
+    <title>Items</title>
+
+   <para>
+      <methodname>append_item</methodname>() and
+      <methodname>insert_item</methodname>() add one item to the container.
+      A lambda, or some other suitable callable object, gets passed as a
+      parameter.
+      <methodname>append_item</methodname>() and
+      <methodname>insert_item</methodname>() invoke the callback with a
+      &factory;. The callback must use the factory to create and
+      <methodname>show</methodname>() exactly one display element, which
+      becomes the new item.
+      Each item has an <quote>X</quote> next to it, which invokes
+      a &callback; that uses <methodname>remove_item</methodname>() to
+      remove itself from the container.
+    </para>
+  </section>
+
+  <section id="singletonptr">
+    <title>Using singleton objects</title>
+
+    <para>
+      <link linkend="itemlayoutmanager"><filename>itemlayoutmanager.C</filename></link>
+      gives an example of a design pattern that uses &libcxx;'s
+      <ulink url="/singleton.html"><classname>&ns;::singletonptr</classname></ulink>s
+      in ways that are compatible with &app;'s rules for
+      <link linkend="concepts">reference-counted objects</link> and their
+      references.
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+class appObj : virtual public &ns;::obj {
+
+public:
+
+// ...
+};
+
+typedef &ns;::singletonptr&lt;appObj&gt; app;
+
+// ..............
+
+auto main_window=&ns;::w::main_window::create(
+    []
+    (const auto &amp;main_window)
+    {
+        // ...
+
+    });
+
+app my_app{&ns;::ref&lt;appObj&gt;::create(main_window)};</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      The <classname>appObj</classname> class contains references to
+      key display elements and other application data, such as:
+    </para>
+
+    <itemizedlist>
+      <listitem>
+	<para>The main application window itself.</para>
+      </listitem>
+      <listitem>
+	<para>The main window's display elements.</para>
+      </listitem>
+      <listitem>
+	<para>Other application data.</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>
+      <link linkend="itemlayoutmanager"><filename>itemlayoutmanager.C</filename></link>
+      stores the list of discrete pizza toppings in its application object.
+    </para>
+
+    <para>
+      The <classname>appObj</classname> object and the constructed
+      <classname>&ns;::singletonptr</classname> get
+      constructed in automatic scope. Because they get constructed in
+      automatic scope, both of the object and the
+      <classname>&ns;::singletonptr</classname> get destroyed before the
+      main
+      <function>itemlayoutmanager</function>() function returns.
+      <function>itemlayoutmanager</function>() waits for the application
+      window's <quote>Close</quote> button, that closes and terminates
+      the application.
+    </para>
+
+    <para>
+      All the references to this object go out of scope and get destroyed
+      in the right order. Then, elsewhere in the application code:
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+app my_app;
+
+if (!my_app)
+   return;
+
+my_app-&gt;method();</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      This default-constructed <classname>&ns;::singletonptr</classname>
+      gets declared anywhere in the application code, also in automatic
+      scope, anywhere where it's convenient to do so.
+      The constructed <classname>&ns;::singletonptr</classname> references
+      the same object that's already constructed.
+    </para>
+
+    <para>
+      This basic approach involes constructing the singleton object
+      (<classname>appObj</classname> in this case) in
+      <function>main</function>() or some other high level function that
+      does not terminate until the entire application gets terminated.
+      The singleton object's <classname>&ns;::singletonptr</classname>
+      does <emphasis>not</emphasis> exists in global or static scope, but
+      in automatic scope of this function that returns only when the
+      entire application terminates.
+    </para>
+
+    <para>
+      Elsewhere in the application, as needed, the same
+      <classname>&ns;::singletonptr</classname> gets constructed, also in
+      automatic scope, and this instance ends up referencing the same object
+      that already exists in the high level function's automatic scope
+      (provided that the high level function hasn't terminated and destroying
+      its automatically-scoped objects).
+    </para>
+
+    <para>
+      In this manner, all references to the singleton object exist in
+      automatic scope, and get automatically cleaned up when execution
+      leaves the scope; but the application data behaves as a global
+      singleton, conveniently accessible anywhere in the application.
+    </para>
+
+    <para>
+      See <xref linkend="printdialog" /> for another example of using
+      singleton pointer objects.
+    </para>
+  </section>
+</chapter>
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "book" "chapter")
+End:
+-->

@@ -644,6 +644,43 @@ while (!appdata->close_flag)
 
 	<varlistentry>
 	  <term>
+	    <link linkend="itemlayoutmanager"><classname>&ns;::w::itemlayoutmanager</classname></link>
+	  </term>
+
+	  <listitem>
+	    <para>
+	      Arranges its display elements horizontally and draws them as
+	      individual buttons. The item layout manager typically gets
+	      used together with an
+	      <link linkend="inputfieldsandbuttons">input field</link> to
+	      implement a modern UI design pattern which provides for a
+	      free-form text entry field.
+	    </para>
+
+	    <para>
+	      The typed-in text gets parsed into one or more discrete items,
+	      of some kind. A container with the item layout manager gets
+	      placed above or below the text input field. A display element,
+	      usually a simple <link linkend="labels">label</link> gets created
+	      and added to the item layout manager's container. The
+	      item layout manager draws its display elements with a border,
+	      like buttons.
+	    </para>
+
+	    <para>
+	      In this manner, the text input field provides the means for
+	      entering a list of items of some kind, that appear above or
+	      below the text input field. The item layout manager places
+	      small <quote>X</quote> inside each item button, with the
+	      expectation that clicking on it removes the existing item
+	      from the list (the specific action that gets taken gets
+	      controlled by an installed &callback;).
+	    </para>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term>
 	    <link linkend="pagelayoutmanager"><classname>&ns;::w::pagelayoutmanager</classname></link>
 	  </term>
 	  <listitem>

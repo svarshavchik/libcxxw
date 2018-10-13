@@ -10,9 +10,11 @@
 #include <x/ref.H>
 #include <x/refptr_traits.H>
 #include <x/obj.H>
+#include <x/strtok.H>
 
 #include "x/w/main_window.H"
 #include "x/w/input_field.H"
+#include "x/w/input_field_lock.H"
 #include "x/w/label.H"
 #include "x/w/borderlayoutmanager.H"
 #include "x/w/gridlayoutmanager.H"
@@ -23,6 +25,7 @@
 #include "x/w/screen.H"
 #include "x/w/connection.H"
 #include "x/w/button.H"
+#include "x/w/itemlayoutmanager.H"
 #include <x/weakcapture.H>
 #include <string>
 #include <iostream>
@@ -134,6 +137,35 @@ void testbutton()
 
 			 factory=layout->append_row();
 
+			 LIBCXX_NAMESPACE::w::new_itemlayoutmanager nilm;
+
+			 auto itemc=factory->create_focusable_container
+				 ([]
+				  (const auto &ignore)
+				  {
+				  },
+				  nilm);
+
+			 itemc->show();
+
+			 LIBCXX_NAMESPACE::w::itemlayoutmanager ilm
+				 {itemc->get_layoutmanager()};
+
+			 ilm->on_remove([]
+					(ONLY IN_THREAD,
+					 size_t i,
+					 const auto &lock,
+					 const auto &trigger,
+					 const auto &busy)
+					{
+						lock.layout_manager
+							->remove_item(i);
+						std::cout << "Removed "
+							  << i << std::endl;
+					});
+
+			 factory=layout->append_row();
+
 			 LIBCXX_NAMESPACE::w::input_field_config conf1{30, 1,
 					 true};
 
@@ -166,7 +198,58 @@ void testbutton()
 					   << "]" << std::endl;
 			 });
 
+			 fields.first->on_validate
+				 ([f=make_weak_capture(fields.first), itemc]
+				  (ONLY IN_THREAD,
+				   const auto &trigger)
+				  {
+					  auto got=f.get();
 
+					  if (!got)
+						  return true;
+
+					  auto &[f]=*got;
+
+					  LIBCXX_NAMESPACE::w::input_lock
+						  lock{f};
+
+					  std::vector<std::u32string> words;
+
+					  LIBCXX_NAMESPACE::strtok_str
+						  (lock.get_unicode(),
+						   U",", words);
+
+					  f->set(U"");
+
+					  for (auto &w:words)
+					  {
+						  auto b=w.begin();
+						  auto e=w.end();
+
+						  LIBCXX_NAMESPACE::trim(b, e);
+
+						  if (b == e)
+							  continue;
+
+						  LIBCXX_NAMESPACE::w
+							  ::itemlayoutmanager
+							  lm=itemc
+							  ->get_layoutmanager();
+
+						  lm->append_item
+							  ([&]
+							   (const auto &f)
+							   {
+								   f->create_label
+									   (std::u32string{b, e})
+									   ->show();
+							   });
+
+						  LIBCXX_NAMESPACE::w::label
+							  l=lm->get_item(0);
+					  }
+					  return true;
+				  });
 			 factory=layout->append_row();
 
 			 LIBCXX_NAMESPACE::w::input_field_config conf2{30, 4};
@@ -259,7 +342,7 @@ void testbutton()
 
 			 factory=layout->append_row();
 
-			 auto b=factory->create_special_button_with_label({"Ok"},{'\n'});
+			 auto b=factory->create_special_button_with_label({"Ok"});
 			 b->on_activate([close_flag](THREAD_CALLBACK,
 						     const auto &,
 						     const auto &) {

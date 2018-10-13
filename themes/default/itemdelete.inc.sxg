@@ -1,0 +1,104 @@
+<sxg>
+  <width>15</width>
+  <height>15</height>
+
+  <widthmm>5</widthmm>
+  <heightmm>5</heightmm>
+
+  <widthfactor>15</widthfactor>
+  <heightfactor>15</heightfactor>
+
+  <pixmap id="mask">
+    <size>scaled</size>
+    <width>15</width>
+    <height>15</height>
+    <gc id="mask_gc" />
+  </pixmap>
+
+  <render id="main">
+    <composite>
+      <op>over</op>
+      <x>0</x>
+      <y>0</y>
+      <width>15</width>
+      <height>15</height>
+      <src>
+	<picture>outline</picture>
+	<x>0</x>
+	<y>0</y>
+      </src>
+    </composite>
+
+    <composite>
+      <op>over</op>
+      <x>1</x>
+      <y>1</y>
+      <width>13</width>
+      <height>13</height>
+      <src>
+	<picture>fill</picture>
+	<x>0</x>
+	<y>0</y>
+      </src>
+    </composite>
+  </render>
+
+  <gc id="mask_gc">
+
+    <function>clear</function>
+    <fill>
+      <x>0</x>
+      <y>0</y>
+      <width>15</width>
+      <height>15</height>
+    </fill>
+
+    <function>set</function>
+
+    <line_width>2</line_width>
+    <cap_style>round</cap_style>
+
+    <line>
+      <point>
+	<x>3</x>
+	<y>3</y>
+      </point>
+
+      <point>
+	<x>11</x>
+	<y>11</y>
+      </point>
+    </line>
+    <line>
+      <point>
+	<x>11</x>
+	<y>3</y>
+      </point>
+
+      <point>
+	<x>3</x>
+	<y>11</y>
+      </point>
+    </line>
+  </gc>
+
+  <render id="main">
+    <composite>
+      <op>over</op>
+      <x>0</x>
+      <y>0</y>
+      <width>15</width>
+      <height>15</height>
+      <src>
+	<picture>outline</picture>
+	<x>0</x>
+	<y>0</y>
+      </src>
+      <mask>
+	<pixmap>mask</pixmap>
+	<x>0</x>
+	<y>0</y>
+      </mask>
+    </composite>
+  </render>
+</sxg>

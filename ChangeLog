@@ -1,3 +1,10 @@
+0.8.0
+
+2018-10-12  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* Added the item layout manager.
+0.7.1
+
 2018-09-16  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* Table layout manager, derived from the list layout manager.

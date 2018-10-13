@@ -83,16 +83,13 @@ See COPYING for distribution information.
     </para>
   </section>
 
-  <section id="singletonptr">
-    <title>Using singleton objects</title>
+  <section id="printdialogsingleton">
+    <title>Another singleton example</title>
 
     <para>
       <link linkend="printdialog"><filename>printdialog.C</filename></link>
-      gives an example of a design pattern that uses &libcxx;'s
-      <ulink url="/singleton.html"><classname>&ns;::singletonptr</classname></ulink>s
-      in ways that are compatible with &app;'s rules for
-      <link linkend="concepts">reference-counted objects</link> and their
-      references.
+      gives another example of using <link linkend="singletonptr">global
+	singleton pointers</link>.
     </para>
 
     <blockquote>
@@ -125,8 +122,8 @@ my_app app{app_ptr};</programlisting>
     </blockquote>
 
     <para>
-      The <classname>my_appObj</classname> class contains references to
-      key display elements and other application data, such as:
+      <filename>printdialog.C</filename> uses a global singleton
+      pointer object for:
     </para>
 
     <itemizedlist>
@@ -147,51 +144,6 @@ my_app app{app_ptr};</programlisting>
 	</para>
       </listitem>
     </itemizedlist>
-
-    <para>
-      The object and the constructed
-      <classname>&ns;::singletonptr</classname> get
-      constructed in automatic scope. Because they get constructed in
-      automatic scope, both of the object and the
-      <classname>&ns;::singletonptr</classname> get destroyed before
-      <function>testprintdialog</function>() returns.
-      <function>testprintdialog</function>() waits for the application
-      window's <quote>Close</quote> button, that closes and terminates
-      the application.
-    </para>
-
-    <para>
-      All the references to the underlying object go out of scope and
-      get destroyed in the right order. Elsewhere in the application code:
-    </para>
-
-    <blockquote>
-      <informalexample>
-	<programlisting>
-my_app app;
-
-if (!app)
-   return;
-
-app-&gt;selected_file=filename;</programlisting>
-      </informalexample>
-    </blockquote>
-
-    <para>
-      A default-constructed <classname>&ns;::singletonptr</classname>
-      can be declared anywhere in the application code without any other
-      preliminary setup; anywhere where it's convenient to do so.
-      After verifying that the singleton object still exists, the object
-      and its members or methods are fully accessible. It's the same object
-      that was originally constructed when creating the main application
-      window.
-    </para>
-
-    <para>
-      In this manner, all references to the singleton object exist in
-      automatic scope, and get automatically cleaned up when execution
-      leaves the scope.
-    </para>
   </section>
 </chapter>
 <!--

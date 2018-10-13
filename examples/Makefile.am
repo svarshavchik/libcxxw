@@ -17,6 +17,7 @@ noinst_PROGRAMS=\
 	gridlayoutmanager			\
 	helloworld				\
 	inputfieldsandbuttons			\
+	itemlayoutmanager			\
 	listlayoutmanager			\
 	menu					\
 	pagelayoutmanager			\
@@ -89,6 +90,9 @@ $(call REFCOLLECTION_GEN,inputfields.inc.H,inputfields.xml)
 
 inputfieldsandbuttons_SOURCES=inputfieldsandbuttons.C close_flag.H
 inputfieldsandbuttons_LDADD=-lcxxw -lcxx
+
+itemlayoutmanager_SOURCES=itemlayoutmanager.C close_flag.H
+itemlayoutmanager_LDADD=-lcxxw -lcxx -lcourier-unicode
 
 $(call OPTIONS_GEN,listlayoutmanager.H,listlayoutmanager.xml)
 listlayoutmanager_SOURCES=listlayoutmanager.C close_flag.H

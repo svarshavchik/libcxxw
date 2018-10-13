@@ -111,6 +111,29 @@ See COPYING for distribution information.
     it with the pointer button. The typed in text gets replaced by its
     canonical format that includes the year.
   </para>
+
+  <section id="onvalidate">
+    <title>Using <methodname>on_validate</methodname>()</title>
+
+    <para>
+      <methodname>set_validator</methodname>() and
+      <methodname>set_string_validator</methodname>() implement their
+      validation logic using <methodname>on_validate</methodname>(), which
+      installs a &callback; that gets invoked by enter <keycap>Enter</keycap>,
+      or by attempting to tab out of the text input field.
+      <methodname>on_validate</methodname>() is a low-level &callback;;
+      <methodname>set_validator</methodname>() and
+      <methodname>set_string_validator</methodname>() add their own
+      supplemental logic to retrieve the text input's contents, and
+      validate it according to their rules.
+    </para>
+
+    <para>
+      An additional use case for <methodname>on_validate</methodname>() is
+      in conjunction with the <link linkend="itemlayoutmanager">item
+	layout manager</link>.
+    </para>
+  </section>
 </chapter>
 <!--
 Local Variables:

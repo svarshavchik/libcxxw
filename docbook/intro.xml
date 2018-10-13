@@ -1,6 +1,6 @@
 <!--
 
-Copyright 2014-2017 Double Precision, Inc.
+Copyright 2014-2018 Double Precision, Inc.
 See COPYING for distribution information.
 
 -->
@@ -96,6 +96,15 @@ See COPYING for distribution information.
       &app; is free software, distributed under the terms of the
       <link linkend="COPYING">GPL, version 3</link>.
     </para>
+
+    <section id="status">
+      <title>Status</title>
+
+      <para>
+	&app; is in active development. The most recent build implements
+	the <link linkend="itemlayoutmanager">item layout manager</link>.
+      </para>
+    </section>
   </section>
 
   &install;

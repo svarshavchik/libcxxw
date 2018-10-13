@@ -184,8 +184,6 @@ units width/height.
 
 Special action button border: 2 units radius = 4 padding, 3 unit width/height=7
 
-Padding: (normal|special)_action_inner_(hpad|vpad).
-
   -->
   <dim id="button_base_horiz" axis="horiz">.2</dim>
   <dim id="button_base_vert"  axis="vert">.2</dim>
@@ -785,8 +783,6 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
     <dash>.5</dash>
   </border>
 
-  <dim id="menu_shortcut_padding" axis="horiz">5</dim>
-
   <font id="menu_font" from="serif">
     <point_size>12</point_size>
   </font>
@@ -1086,6 +1082,33 @@ Padding: (normal|special)_action_inner_(hpad|vpad).
     <color2>70%</color2>
     <dash>1</dash>
   </border>
+
+  <!-- Item layout manager -->
+
+  <border id="itembutton_border" from="thick_0%">
+    <color>0%</color>
+    <rounded />
+    <hradius>.5</hradius>
+    <vradius>.5</vradius>
+  </border>
+
+  <dim id="itembutton-h-padding" axis="vert">0</dim>
+  <dim id="itembutton-v-padding" axis="vert">0</dim>
+  <dim id="itemlayout-h-padding" axis="vert">0</dim>
+  <dim id="itemlayout-v-padding" axis="vert">0</dim>
+
+  <color id="itembutton_background_color" type="linear_gradient">
+    <gradient>
+      <value>0</value>
+      <color>70%</color>
+    </gradient>
+    <gradient>
+      <value>1</value>
+      <color>100%</color>
+    </gradient>
+  </color>
+
+  <color  id="noshade:itembutton_background_color" scale="80%" />
 
   <!-- Dialogs -->
 
