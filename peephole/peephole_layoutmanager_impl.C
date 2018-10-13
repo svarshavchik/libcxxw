@@ -50,10 +50,10 @@ peepholeObj::layoutmanager_implObj
 
 peepholeObj::layoutmanager_implObj::~layoutmanager_implObj()=default;
 
-void peepholeObj::layoutmanager_implObj
-::child_metrics_updated(ONLY IN_THREAD)
+void peepholeObj::layoutmanager_implObj::child_metrics_updated(ONLY IN_THREAD)
 {
-	recalculate(IN_THREAD);
+	update_our_metrics(IN_THREAD);
+	layoutmanagerObj::implObj::child_metrics_updated(IN_THREAD);
 }
 
 void peepholeObj::layoutmanager_implObj
@@ -191,9 +191,37 @@ void peepholeObj::layoutmanager_implObj::initialize(ONLY IN_THREAD)
 	element_in_peephole->get_peepholed_element()->impl
 		->initialize_if_needed(IN_THREAD);
 
-	// Trigger recalculation of our container, in order to
-	// recalculate_with_requested_visibility(), at some point.
-	create_public_object();
+	update_our_metrics(IN_THREAD);
+
+	needs_recalculation(IN_THREAD);
+}
+
+void peepholeObj::layoutmanager_implObj::update_our_metrics(ONLY IN_THREAD)
+{
+	// Copy the peepholed element's metrics to ours, if auto width/height.
+
+	if (style.width_algorithm!=peephole_algorithm::stretch_peephole &&
+	    style.height_algorithm!=peephole_algorithm::stretch_peephole)
+		return;
+
+	auto peephole_element_impl=
+		element_in_peephole->get_peepholed_element()->impl;
+
+	// This is its advertised metrics
+	auto element_horizvert=
+		peephole_element_impl->get_horizvert(IN_THREAD);
+
+	auto my_horizvert=get_element_impl().get_horizvert(IN_THREAD);
+
+	auto horiz=my_horizvert->horiz;
+	auto vert=my_horizvert->vert;
+
+	if (style.width_algorithm==peephole_algorithm::stretch_peephole)
+		horiz=element_horizvert->horiz;
+	if (style.height_algorithm==
+	    peephole_algorithm::stretch_peephole)
+		vert=element_horizvert->vert;
+	my_horizvert->set_element_metrics(IN_THREAD, horiz, vert);
 }
 
 void peepholeObj::layoutmanager_implObj
@@ -212,24 +240,6 @@ void peepholeObj::layoutmanager_implObj
 	// This is its advertised metrics
 	auto element_horizvert=
 		peephole_element_impl->get_horizvert(IN_THREAD);
-
-	// Copy the peepholed element's metrics to ours, if auto width/height.
-
-	if (style.width_algorithm==peephole_algorithm::stretch_peephole ||
-	    style.height_algorithm==peephole_algorithm::stretch_peephole)
-	{
-		auto my_horizvert=get_element_impl().get_horizvert(IN_THREAD);
-
-		auto horiz=my_horizvert->horiz;
-		auto vert=my_horizvert->vert;
-
-		if (style.width_algorithm==peephole_algorithm::stretch_peephole)
-			horiz=element_horizvert->horiz;
-		if (style.height_algorithm==
-		    peephole_algorithm::stretch_peephole)
-			vert=element_horizvert->vert;
-		my_horizvert->set_element_metrics(IN_THREAD, horiz, vert);
-	}
 
 	// Compute the peepholed element's new position. Start with its
 	// current x/y coordinates, and tentatively size it at its maximum

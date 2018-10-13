@@ -126,6 +126,8 @@ class LIBCXX_HIDDEN peepholeObj::layoutmanager_implObj
 
 	bool attempt_scroll_to(ONLY IN_THREAD, const rectangle &);
 
+	//! Set our metrics, based on the peepholed element's
+	void update_our_metrics(ONLY IN_THREAD);
  protected:
 	virtual void update_scrollbars(ONLY IN_THREAD,
 				       const rectangle &element_pos,
