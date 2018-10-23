@@ -583,6 +583,9 @@ class LIBCXX_HIDDEN editorObj::implObj
 		void do_delete(ONLY IN_THREAD);
 	};
 
+	//! This element can receive a selection
+	bool selection_can_be_received() override;
+
 	//! Prepare a new primary selection, if we can.
 	void create_primary_selection(ONLY IN_THREAD);
 

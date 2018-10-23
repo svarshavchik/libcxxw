@@ -862,8 +862,12 @@ class generic_windowObj::handlerObj
 	//! We try to convert to a utf8_string, if that fails we'll try
 	//! to convert to a string, and treat it as iso-8859-1.
 
-	void paste(ONLY IN_THREAD, xcb_atom_t clipboard,
-		   xcb_timestamp_t timestamp);
+	void receive_selection(ONLY IN_THREAD, xcb_atom_t selection);
+
+	//! Paste a string from a clipboard.
+
+	//! \overload
+	void receive_selection(ONLY IN_THREAD, const std::string_view &);
 
 	//! Override property_notify_event().
 

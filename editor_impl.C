@@ -724,8 +724,8 @@ bool editorObj::implObj::process_keypress(ONLY IN_THREAD, const key_event &ke)
 		if (ke.unicode == ' ')
 		{
 			get_window_handler()
-				.paste(IN_THREAD, XCB_ATOM_PRIMARY,
-				       IN_THREAD->timestamp(IN_THREAD));
+				.receive_selection(IN_THREAD, XCB_ATOM_PRIMARY);
+			return true;
 		}
 
 		return false;
@@ -812,9 +812,8 @@ bool editorObj::implObj::process_keypress(ONLY IN_THREAD, const key_event &ke)
 	case XK_Insert:
 		if (ke.shift)
 			get_window_handler()
-				.paste(IN_THREAD,
-				       XCB_ATOM_SECONDARY,
-				       IN_THREAD->timestamp(IN_THREAD));
+				.receive_selection(IN_THREAD,
+						   XCB_ATOM_SECONDARY);
 		return true;
 	}
 
@@ -1201,9 +1200,9 @@ bool editorObj::implObj::process_button_event(ONLY IN_THREAD,
 			cursor->moveto(IN_THREAD, most_recent_x, most_recent_y);
 
 			if (be.button == 2)
-				get_window_handler().paste(IN_THREAD,
-							   XCB_ATOM_PRIMARY,
-							   timestamp);
+				get_window_handler()
+					.receive_selection(IN_THREAD,
+							   XCB_ATOM_PRIMARY);
 		}
 	}
 	else if (be.button == 1)
@@ -1486,6 +1485,11 @@ void editorObj::implObj::delete_selection_info::do_delete(ONLY IN_THREAD)
 	me.remove_content(IN_THREAD, cursor_lock.cursor);
 	cursor_lock.cursor=richtextiteratorptr();
 	me.remove_primary_selection(IN_THREAD);
+}
+
+bool editorObj::implObj::selection_can_be_received()
+{
+	return true;
 }
 
 void editorObj::implObj::create_primary_selection(ONLY IN_THREAD)

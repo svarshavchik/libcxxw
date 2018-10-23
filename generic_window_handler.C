@@ -2003,19 +2003,61 @@ void generic_windowObj::handlerObj
 		 });
 }
 
-void generic_windowObj::handlerObj::paste(ONLY IN_THREAD, xcb_atom_t clipboard,
-					  xcb_timestamp_t timestamp)
+void focusableObj
+::focusable_receive_selection(const std::string_view &selection)
 {
+	get_impl()->get_focusable_element().get_window_handler()
+		.thread()->run_as
+		([me=ref{this},
+		  selection=std::string{selection}]
+		 (ONLY IN_THREAD)
+		 {
+			 me->focusable_receive_selection(IN_THREAD, selection);
+		 });
+}
+
+void focusableObj
+::focusable_receive_selection(ONLY IN_THREAD, const std::string_view &selection)
+{
+	auto impl=get_impl();
+	auto &wh=impl->get_focusable_element().get_window_handler();
+
+	auto focusable=wh.get_autorestorable_focusable();
+
+	if (focusable != impl)
+		return;
+
+	wh.receive_selection(IN_THREAD, selection);
+}
+
+void generic_windowObj::handlerObj
+::receive_selection(ONLY IN_THREAD,
+		    const std::string_view &selection)
+{
+	auto selection_atom=IN_THREAD->info->get_atom(selection);
+
+	if (selection_atom == XCB_NONE)
+		return;
+
+	receive_selection(IN_THREAD, selection_atom);
+}
+
+void generic_windowObj::handlerObj
+::receive_selection(ONLY IN_THREAD,
+		    xcb_atom_t selection)
+{
+	const auto timestamp=IN_THREAD->timestamp(IN_THREAD);
+
 	auto handler=current_selection_paste_handler
 		::create(std::vector<xcb_atom_t>{
 				{IN_THREAD->info->atoms_info.string}});
 
-	if (convert_selection(IN_THREAD, clipboard,
+	if (convert_selection(IN_THREAD, selection,
 			      IN_THREAD->info->atoms_info.cxxwpaste,
 			      IN_THREAD->info->atoms_info.utf8_string,
 			      timestamp))
 	{
-		clipboard_being_pasted(IN_THREAD)=clipboard;
+		clipboard_being_pasted(IN_THREAD)=selection;
 		clipboard_paste_timestamp(IN_THREAD)=timestamp;
 		conversion_handler(IN_THREAD)=handler;
 	}

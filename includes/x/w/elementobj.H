@@ -211,6 +211,24 @@ public:
 	//! selection_can_be_received(), so the element that gets to receive
 	//! the selection may not necessarily be this display element.
 	virtual bool selection_can_be_received() const;
+
+	//! Receive a selection
+
+	//! This gets forwarded to this element's
+	//! \ref generic_window "top level window"'s
+	//! receive_selection(), so the element that gets to receive
+	//! the selection may not necessarily be this display element.
+	void receive_selection(const std::string_view &selection="SECONDARY");
+
+	//! Receive a selection
+
+	//! This gets forwarded to this element's
+	//! \ref generic_window "top level window"'s
+	//! receive_selection(), so the element that gets to receive
+	//! the selection may not necessarily be this display element.
+	virtual void receive_selection(ONLY IN_THREAD,
+				       const std::string_view
+				       &selection="SECONDARY");
 };
 
 //! Alias

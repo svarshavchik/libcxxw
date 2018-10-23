@@ -66,6 +66,24 @@ bool elementObj::selection_can_be_received() const
 	return mw && mw->selection_can_be_received();
 }
 
+void elementObj::receive_selection(const std::string_view &selection)
+{
+	in_thread([me=ref{this}, selection=std::string{selection}]
+		  (ONLY IN_THREAD)
+		  {
+			  me->receive_selection(IN_THREAD, selection);
+		  });
+}
+
+void elementObj::receive_selection(ONLY IN_THREAD,
+				   const std::string_view &selection)
+{
+	auto mw=get_main_window();
+
+	if (mw)
+		mw->receive_selection(IN_THREAD, selection);
+}
+
 void elementObj::show_all()
 {
 	impl->request_visibility_recursive(true);

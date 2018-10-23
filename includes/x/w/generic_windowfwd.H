@@ -76,6 +76,20 @@ class LIBCXX_PUBLIC generic_windowBase;
 //! \note
 //! Unless selection_can_be_received() gets invoked from the connection thread,
 //! the keyboard focus can change at any time and this because out of date.
+//!
+//! \code
+//! main_window->receive_selection();
+//!
+//! main_window->receive_selection(IN_THREAD)
+//! \endcode
+//!
+//! Presumably we've checked if selection_can_be_received(), so this
+//! starts the process of converting the X selection into the display element.
+//!
+//! \note
+//! receive_selection() returns immediately after sending a request to the
+//! selection's current owner. The display element gets updated later, when
+//! the owner's response, with the converted selection's data gets received.
 
 typedef ref<generic_windowObj, generic_windowBase> generic_window;
 

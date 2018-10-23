@@ -162,6 +162,25 @@ getting the keyboard focus when its main window gets shown. The first
 display element with autofocus gets the keyboard focus.
 
 The default autofocus() setting depends on the display element.
+
+\par Selections
+
+\code
+f->focusable_receive_selection();
+
+f->focusable_receive_selection(IN_THREAD)
+\endcode
+
+focusable_receive_selection()
+is equivalent to invoking
+receive_selection() on the
+\ref generic_window "top level window object", except that the top level
+window object executes the operation
+for whichever element in the top level window currently has keyboard focus;
+and focusable_receive_selection()
+does this only if this focusable element
+currently receives the keyboard focus, and does nothing otherwise.
+
 */
 
 typedef ref<focusableObj> focusable;

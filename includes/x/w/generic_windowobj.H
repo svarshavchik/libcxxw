@@ -77,6 +77,14 @@ public:
 	//! Whether a selection can be received right now.
 
 	bool selection_can_be_received() const override;
+
+	using containerObj::receive_selection;
+
+	//! Receive the specified selection
+
+	void receive_selection(ONLY IN_THREAD,
+			       const std::string_view &selection="SECONDARY")
+		override;
 };
 
 LIBCXXW_NAMESPACE_END

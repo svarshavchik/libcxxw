@@ -116,6 +116,25 @@ public:
 	//! dialogs may set autofocus for their own fields/
 
 	void autofocus(bool);
+
+	//! Receive a selection, if this focusable has keyboard focus.
+
+	//! Checks that this display element is currently receiving keyboard
+	//! focus, if so then call's \ref generic_window "top level window"'s
+	//! receive_selection().
+
+	void focusable_receive_selection(const std::string_view &selection
+					 ="SECONDARY");
+
+	//! Receive a selection, if this focusable has keyboard focus.
+
+	//! Checks that this display element is currently receiving keyboard
+	//! focus, if so then call's \ref generic_window "top level window"'s
+	//! receive_selection().
+
+	void focusable_receive_selection(ONLY IN_THREAD,
+					 const std::string_view &selection
+					 ="SECONDARY");
 };
 
 template<typename functor>

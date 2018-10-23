@@ -93,5 +93,10 @@ bool generic_windowObj::selection_can_be_received() const
 	return !!impl->handler->element_that_can_receive_selection();
 }
 
+void generic_windowObj::receive_selection(ONLY IN_THREAD,
+					  const std::string_view &selection)
+{
+	return impl->handler->receive_selection(IN_THREAD, selection);
+}
 
 LIBCXXW_NAMESPACE_END
