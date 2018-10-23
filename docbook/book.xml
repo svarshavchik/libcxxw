@@ -50,6 +50,7 @@
 <!ENTITY combobox SYSTEM "combobox.xml">
 <!ENTITY menu SYSTEM "menu.xml">
 <!ENTITY popupmenu SYSTEM "popupmenu.xml">
+<!ENTITY copycutpastemenu SYSTEM "copycutpastemenu.xml">
 <!ENTITY dialogs SYSTEM "dialogs.xml">
 <!ENTITY printdialog SYSTEM "printdialog.xml">
 <!ENTITY progressbar SYSTEM "progressbar.xml">
@@ -113,6 +114,7 @@ See COPYING for distribution information.
     &combobox;
     &menu;
     &popupmenu;
+    &copycutpastemenu;
     &panelayoutmanager;
     &dialogs;
     &printdialog;

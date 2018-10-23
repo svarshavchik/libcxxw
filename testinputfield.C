@@ -26,6 +26,7 @@
 #include "x/w/connection.H"
 #include "x/w/button.H"
 #include "x/w/itemlayoutmanager.H"
+#include "x/w/listlayoutmanager.H"
 #include <x/weakcapture.H>
 #include <string>
 #include <iostream>
@@ -249,6 +250,89 @@ void testbutton()
 							  l=lm->get_item(0);
 					  }
 					  return true;
+				  });
+
+			 auto context_popup=fields.first->create_popup_menu
+				 ([&]
+				  (const auto &llm)
+				  {
+					  llm->append_items
+						  ({
+						    [w=LIBCXX_NAMESPACE::make_weak_capture(fields.first)]
+						    (ONLY IN_THREAD,
+						     const auto &status_info)
+						    {
+							    auto got=w.get();
+
+							    if (!got)
+								    return;
+
+							    auto &[w]=*got;
+							    w->focusable_cut_or_copy_selection(LIBCXX_NAMESPACE::w::cut_or_copy_op::copy);
+						    },
+
+						    {"Copy"},
+						    [w=LIBCXX_NAMESPACE::make_weak_capture(fields.first)]
+						    (ONLY IN_THREAD,
+						     const auto &status_info)
+						    {
+							    auto got=w.get();
+
+							    if (!got)
+								    return;
+
+							    auto &[w]=*got;
+
+							    w->focusable_cut_or_copy_selection(LIBCXX_NAMESPACE::w::cut_or_copy_op::cut);
+						    },
+						    {"Cut"},
+						    [w=LIBCXX_NAMESPACE::make_weak_capture(fields.first)]
+						    (ONLY IN_THREAD,
+						     const auto &status_info)
+						    {
+							    auto got=w.get();
+
+							    if (!got)
+								    return;
+
+							    auto &[w]=*got;
+
+							    w->focusable_receive_selection();
+						    },
+						    {"Paste"}});
+				  });
+
+			 fields.first->install_contextpopup_callback
+				 ([context_popup,
+				   field=make_weak_capture(fields.first)]
+				  (ONLY IN_THREAD,
+				   const auto &e,
+				   const auto &trigger,
+				   const auto &busy)
+				  {
+					  auto got=field.get();
+
+					  if (!got)
+						  return;
+
+					  auto & [field]=*got;
+
+					  LIBCXX_NAMESPACE::w::listlayoutmanager
+						  l=context_popup
+						  ->get_layoutmanager();
+
+					  bool cut_or_copy=field
+						  ->focusable_cut_or_copy_selection
+						  (IN_THREAD,
+						   LIBCXX_NAMESPACE::w
+						   ::cut_or_copy_op::available);
+
+					  l->enabled(IN_THREAD, 0, cut_or_copy);
+					  l->enabled(IN_THREAD, 1, cut_or_copy);
+					  l->enabled(IN_THREAD, 2,
+						     e->selection_has_owner() &&
+						     e->selection_can_be_received());
+					  context_popup->show_all();
 				  });
 			 factory=layout->append_row();
 

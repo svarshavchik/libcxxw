@@ -5,6 +5,7 @@ noinst_PROGRAMS=\
 	busy					\
 	checkradio				\
 	combobox				\
+	copycutpastemenu			\
 	customcanvas				\
 	customcontainer				\
 	customelement				\
@@ -49,6 +50,9 @@ checkradio_LDADD=-lcxxw -lcxx
 $(call OPTIONS_GEN,combobox.H,combobox.xml)
 combobox_SOURCES=combobox.C close_flag.H
 combobox_LDADD=-lcxxw -lcxx
+
+copycutpastemenu_SOURCES=copycutpastemenu.C close_flag.H
+copycutpastemenu_LDADD=-lcxxw -lcxx
 
 customcanvas_SOURCES=customcanvas.C close_flag.H
 customcanvas_LDADD=-lcxxw -lcxx

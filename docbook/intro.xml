@@ -101,8 +101,9 @@ See COPYING for distribution information.
       <title>Status</title>
 
       <para>
-	&app; is in active development. The most recent build implements
-	the <link linkend="itemlayoutmanager">item layout manager</link>.
+	&app; is in active development. The most recent build adds an
+	application API for implementing traditional
+	<link linkend="copycutpastemenu">Copy/Cut/Paste menu items</link>.
       </para>
     </section>
   </section>

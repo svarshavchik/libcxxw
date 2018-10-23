@@ -222,8 +222,7 @@ void dateinputfields()
 
 	main_window->show_all();
 
-	x::mpcobj<bool>::lock lock{close_flag->flag};
-	lock.wait([&] { return *lock; });
+	close_flag->wait();
 
 	// get() returns the current values of the date input field.
 

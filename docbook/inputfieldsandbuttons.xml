@@ -106,18 +106,21 @@ See COPYING for distribution information.
 
 	  <listitem>
 	    <para>
-	      A primary clipboard selection is made by holding the
-	      <keycap>Shift</keycap> while moving the cursor, or by
-	      highlighting text while holding the first mouse pointer button
-	      down. Releasing the <keycap>Shift</keycap> key or the mouse
-	      pointer button copies the highlighted text from the clipboard.
+	      Holding a
+	      <keycap>Shift</keycap> while moving the cursor, or
+	      dragging over the text while holding the first mouse pointer
+	      button down, creates a primary text selection.
+	      Releasing the <keycap>Shift</keycap> key or the mouse
+	      pointer button copies the highlighted text to the
+	      primary clipboard.
+	      The primary clipboard is temporary, and the copied text gets
+	      removed from the clipboard after the next keypress.
 	    </para>
 
 	    <para>
-	      The primary clipboard is temporary, and the copied text gets
-	      removed from the clipboard after the next keypress.
 	      <keycap>Ctrl</keycap>-<keycap>Space</keycap> inserts the text
-	      from the primary keyboard at the current cursor position.
+	      from the primary keyboard at the current cursor position, if
+	      another application copied text to the primary clipboard.
 	    </para>
 	  </listitem>
 	</varlistentry>
@@ -129,9 +132,11 @@ See COPYING for distribution information.
 	    <para>
 	      After making a primary clipboard selection,
 	      <keycap>Ctrl</keycap>-<keycap>Insert</keycap> copies the
-	      primary clipboard selection to the secondary clipboard.
+	      primary clipboard selection to the secondary clipboard (the
+	      <quote>Copy</quote> operation).
 	      <keycap>Shift</keycap>-<keycap>Delete</keycap> copies it
-	      and deletes the selected text
+	      and deletes the selected text, the <quote>Cut</quote>
+	      operation
 	      (<keycap>Delete</keycap> by itself deletes the selected text
 	      without copying it).
 	    </para>
@@ -142,24 +147,34 @@ See COPYING for distribution information.
 	      primary clipboard selection it does not get automatically
 	      removed.
 	      <keycap>Shift</keycap>-<keycap>Insert</keycap> inserts the text
-	      from the secondary clipboard at the current cursor position.
+	      from the secondary clipboard at the current cursor position
+	      (the <quote>Paste</quote> operation).
 	    </para>
 	  </listitem>
 	</varlistentry>
       </variablelist>
 
       <para>
-	Additionally all text input fields accept dropped plain text from other
-	running	applications.
+	Additionally all text input fields accept plain text that gets
+	dragged and dropped from other windows.
 	After making a primary selection: pressing the
 	first pointer button with the pointer on top of the primary selection
-	drags the selected text for dropping into other running applications
-	that receive plain text content. The pointer changes shape to indicate
-	whether the other application accepts plain text dropped content.
+	drags the selected text for dropping into other windows that
+	accept dropped text. The pointer changes shape to indicate
+	whether the other application accepts plain text dropped content
+	(this includes other enabled text input fields in the same window).
       </para>
 
       <para>
-	This includes other enabled text input fields on the same window.
+	It's also possible to create traditional
+	<quote>Copy</quote>,
+	<quote>Cut</quote>, and
+	<quote>Paste</quote> menu items, to implement the cut, copy, and paste
+	operations. It's possible to implement these menu items in the
+	applcation's main menu, or in a context menu
+	that gets popped up by pointer button #3 (typically the right mouse
+	button).
+	See <xref linkend="copycutpastemenu" /> for more information.
       </para>
     </section>
 

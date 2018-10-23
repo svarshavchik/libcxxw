@@ -116,8 +116,7 @@ void testmenu()
 
 	main_window->show_all();
 
-	x::mpcobj<bool>::lock lock{close_flag->flag};
-	lock.wait([&] { return *lock; });
+	close_flag->wait();
 }
 
 size_t view_menu(const x::w::listlayoutmanager &);

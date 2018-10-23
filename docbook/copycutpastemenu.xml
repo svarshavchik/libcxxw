@@ -1,0 +1,311 @@
+<!--
+
+Copyright 2018 Double Precision, Inc.
+See COPYING for distribution information.
+
+-->
+
+<chapter id="copycutpastemenu">
+  <title>Copy/Cut/Paste menu items</title>
+
+  <mediaobject>
+    <imageobject>
+      <imagedata fileref="copycutpastemenu.png" format="PNG"
+		 contentwidth="473px" contentdepth="145px" />
+    </imageobject>
+    <textobject>
+      <phrase>
+	Copy/Cut/Paste menu
+      </phrase>
+    </textobject>
+    <caption>
+      <para>
+	This chapter gives an example of creating and implementing
+	traditional <quote>Copy</quote>, <quote>Cut</quote>, and
+	<quote>Paste</quote> menu options. The application needs to take
+	explicit action to create these menu items in the appropriate place in
+	<link linkend="menu">its menu</link>. It's also possible to create these
+	menu options in a context popup menu that's shown by pressing pointer
+	button #3 (typically the right mouse button).
+      </para>
+    </caption>
+  </mediaobject>
+
+  <para>
+    Using the keyboard to execute copy, cut, and paste text to the primary
+    and secondary clipboards does not require any specific application
+    code, and gets <link linkend="textclipboards">automatically carried
+    out in every text input field</link>.
+    Explicit application code is necessary only to create and implement
+    discrete <quote>Copy</quote>, <quote>Cut</quote>, and
+    <quote>Paste</quote> menu options.
+  </para>
+
+  <para>
+    <filename>copycutpastemenu.C</filename> gives an example of
+    <quote>Copy</quote>, <quote>Cut</quote>, and
+    <quote>Paste</quote> menu options in the main application menu and
+    in a context popup menu. <filename>copycutpastemenu.C</filename>
+    creates an application window with an input field and a button; the
+    button takes no explicit action. The application's main menu has a
+    <quote>Copy</quote>, <quote>Cut</quote>, and
+    <quote>Paste</quote> items that execute the corresponding action. These
+    menu items also appear in a context popup menu that's shown by pressing
+    pointer button #3 over the text input field.
+  </para>
+
+  <blockquote>
+    <title><ulink url="examples/copycutpastemenu.C">copycutpastemenu.C</ulink></title>
+
+    <informalexample>
+      <programlisting><xi:include href="../examples/copycutpastemenu.C" parse="text" xmlns:xi="http://www.w3.org/2001/XInclude" /></programlisting>
+    </informalexample>
+  </blockquote>
+
+  <para>
+    The typical workflow for
+    implementing the stock <quote>Copy</quote>, <quote>Cut</quote>, and
+    <quote>Paste</quote> menu items:
+  </para>
+
+  <itemizedlist>
+    <listitem>
+      <para>
+	Create these actual menu items just like any other menu item,
+	in the appropriate place in the application's menu, or in some
+	context popup menu.
+      </para>
+    </listitem>
+
+    <listitem>
+      <para>
+	Before the menu becomes visible, a &callback; checks whether the
+	appropriate action are possible at this time, and enables or
+	disables these menu items.
+      </para>
+    </listitem>
+
+    <listitem>
+      <para>
+	The usual menu item callback, for these menu items, implements the
+	appropriate action by invoking the appropriate method on an element
+	or a window boject.
+      </para>
+    </listitem>
+  </itemizedlist>
+
+  <section id="on_popup_state_update">
+    <title>The <methodname>on_popup_state_update</methodname> callback</title>
+
+    <para>
+      The <quote>Copy</quote>, <quote>Cut</quote>, and
+      <quote>Paste</quote> options in both the main application menu and
+      the context popup menu are enabled or disabled depending upon whether
+      the corresponding action is available. This is checked just before
+      the corresponding menu gets displayed.
+    </para>
+
+    <para>
+      For the context popup menu, the
+      <link linkend="popupmenu"><methodname>install_contextpopup_callback</methodname></link>()
+      &callback; checks this before showing the popup menu.
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+file_menu->on_popup_state_update([]
+                                 (ONLY IN_THREAD,
+                                  const x::w::element_state &amp;es,
+                                  const x::w::busy &amp;mcguffin)
+                                 {
+                                 });</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      <ulink url="&link-typedef-x--w-menu;"><classname>&ns;::w::menu</classname></ulink>'s
+      <methodname>on_popup_state_update</methodname>() callback gets installed
+      in order to check and set the status of the options in the application's
+      menu. <filename>copycutpastemenu.C</filename> installs this &callback;
+      for its only <quote>File</quote> menu.
+    </para>
+
+    <para>
+      This generic callback gets invoked whenever the popup menu gets shown
+      or hidden, or its size or location changes. For this application, it's
+      only necessary to carry out a specific action before the popup menu
+      becomes visible. The callback receives an
+      <ulink url="&link-x--w--element-state;"><classname>&ns;::w::element_state</classname></ulink>
+      parameter that specifies why it's getting invoked, and
+      <filename>copycutpastemenu.C</filename> checks that its
+      <varname>state_update</varname> indicates
+      <literal>before_showing</literal>. This specifies that the reason
+      for the callback's invocation is that the popup is about to become
+      visible. <filename>copycutpastemenu.C</filename> updates the status
+      of its menu items accordingly.
+    </para>
+  </section>
+
+  <section id="copycutpasteavailable">
+    <title>Determining whether a copy, cut, or paste operation is possible</title>
+
+    <para>
+      <ulink url="examples/copycutpastemenu.C">copycutpastemenu.C</ulink>
+      gives an example for determining whether a copy, cut, or paste operation
+      is possible at the given moment.
+      Passing <literal>&ns;::w::cut_or_copy_op::available</literal> to
+      <methodname>cut_or_copy_selection</methodname>() determines whether
+      a display element in the window has content that's available to be
+      placed into the system clipboard.
+      This determines if the <quote>Copy</quote> and <quote>Cut</quote>
+      menu items are enabled.
+      <methodname>selection_has_owner</methodname>() indicates whether
+      copied or cut content is available for pasting, and
+      <methodname>selection_can_be_received</methodname>() indicates whether
+      the keyboard focus is in a display element that's willing to receive
+      pasted content from a clipboard. Both
+      Typically, the <quote>Paste</quote> menu item gets enabled if both
+      <methodname>selection_has_owner</methodname>() and
+      <methodname>selection_can_be_received</methodname>() are true.
+    </para>
+
+    <para>
+      All display elements have
+      <methodname>cut_or_copy_selection</methodname>(),
+      <methodname>selection_has_owner</methodname>() and
+      <methodname>selection_can_be_received</methodname>(). These methods
+      indicate whether the copy, cut, or paste operation is possible
+      irrespective of the display element with the current keyboard focus,
+      which is not necessarily the same display element whose
+      <methodname>cut_or_copy_selection</methodname>(),
+      <methodname>selection_has_owner</methodname>() or
+      <methodname>selection_can_be_received</methodname>() gets invoked.
+    </para>
+
+    <para>
+      Alternatively, only focusable display elements have the analogous
+      <methodname>focusable_cut_or_copy_selection</methodname>() and
+      <methodname>focusable_receive_selection</methodname>(), which
+      are available only focusable display element has the keyboard input
+      focus. <methodname>focusable_receive_selection</methodname>() always
+      returns <literal>false</literal> when this display element does not
+      have keyboard focus, and
+      <methodname>focusable_cut_or_copy_selection</methodname>() indicates
+      that copy and cut operations are not available, and if requeste they
+      do nothing, unless the focusable display element has keyboard focus.
+      There is no focusable version of
+      <methodname>selection_has_owner</methodname>(); this indicates whether
+      any window, this application's or some other application's window,
+      has a clipboard selection.
+    </para>
+
+    <note>
+      <para>
+	When invoked from a &callback;, use the overloaded versions of
+	<methodname>cut_or_copy_selection</methodname>(),
+        <methodname>selection_can_be_received</methodname>(),
+	<methodname>focusable_cut_or_copy_selection</methodname>() and
+        <methodname>focusable_selection_can_be_received</methodname>() that
+	take a <literal>IN_THREAD</literal> parameter, see
+	<xref linkend='connection_thread' /> for more information.
+      </para>
+    </note>
+
+    <para>
+      <ulink url="examples/copycutpastemenu.C">copycutpastemenu.C</ulink>
+      gives an example of using both the <emphasis>focusable</emphasis>
+      and non-<emphasis>focusable</emphasis> overloaded methods.
+      The
+      <quote>Copy</quote>, <quote>Cut</quote>, and
+      <quote>Paste</quote> menu items in the main application menu use
+      the non-<emphasis>focusable</emphasis> versions, and the
+      input field's context popup menu uses the
+      <emphasis>focusable</emphasis> versions.
+    </para>
+  </section>
+
+  <section id="copycutpasteexecute">
+    <title>Executing a copy, cut, or paste operation</title>
+
+    <para>
+      <ulink url="examples/copycutpastemenu.C">copycutpastemenu.C</ulink>
+      shows how to execute a copy, cut, or paste operation.
+    </para>
+
+    <para>
+      Passing <literal>&ns;::w::cut_or_copy_op::copy</literal> or
+      <literal>&ns;::w::cut_or_copy_op::cut</literal> to a display element's
+      <methodname>cut_or_copy_selection</methodname>() method executes a
+      copy or a cut operation. Invoking a display element's
+      <methodname>receive_selection</methodname>() executes a paste operation.
+    </para>
+
+    <para>
+      All display elements have
+      <methodname>cut_or_copy_selection</methodname>() and
+      <methodname>receive_selection</methodname>() methods, and the
+      requested operation gets carried out in the display element that has
+      the current keyboard focus, not necessarily the same display element.
+    </para>
+
+    <para>
+      Focusable display elements also have
+      <methodname>focusable_cut_or_copy_selection</methodname>() and
+      <methodname>focusable_receive_selection</methodname>() methods which
+      are analogous, but quietly do nothing unless the focusable display
+      element has the current keyboard focus. It's the application's choice
+      which set of methods to invoke, whatever makes the most sense for the
+      particular application.
+      <ulink url="examples/copycutpastemenu.C">copycutpastemenu.C</ulink> uses
+      both sets, the non-<emphasis>focusable</emphasis> versions for the
+      <quote>Copy</quote>, <quote>Cut</quote>, and
+      <quote>Paste</quote> menu items in the main application menu, and
+      the
+      <emphasis>focusable</emphasis> versions for the
+      <quote>Copy</quote>, <quote>Cut</quote>, and
+      <quote>Paste</quote> items in the input field's context popup.
+    </para>
+
+    <note>
+      <para>
+	When invoked from a &callback;, use the overloaded versions of
+	<methodname>cut_or_copy_selection</methodname>(),
+        <methodname>receive_selection</methodname>(),
+	<methodname>focusable_cut_or_copy_selection</methodname>() and
+        <methodname>focusable_receive_selection</methodname>() that
+	take a <literal>IN_THREAD</literal> parameter, see
+	<xref linkend='connection_thread' /> for more information.
+      </para>
+    </note>
+
+    <note>
+      <para>
+	The &xproto; does not provide the means for a general real-time
+	notification mechanism for the availability status of copy/paste
+	content.
+	It's possible that a copying, cuting, or pasting something
+	is available at the time the menu gets shown, and the corresponding
+	menu item gets enabled;
+	but for various reasons it's no longer possible to do that when the
+	menu item gets selected
+	(the text to copy or paste might become unavailable).
+      </para>
+
+      <para>
+	<methodname>cut_or_copy_selection</methodname>(),
+        <methodname>receive_selection</methodname>(),
+	<methodname>focusable_cut_or_copy_selection</methodname>() and
+        <methodname>focusable_receive_selection</methodname>() quietly
+	do nothing, and do not report any errors if the requested operation
+	is no longer possible.
+      </para>
+    </note>
+  </section>
+</chapter>
+<!--
+Local Variables:
+mode: sgml
+sgml-parent-document: ("book.xml" "book" "chapter")
+End:
+-->

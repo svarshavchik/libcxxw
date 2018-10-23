@@ -1,5 +1,7 @@
 2018-10-22  Sam Varshavchik  <mrsam@courier-mta.com>
 
+	* API for implementing Cut/Copy/Paste menu options.
+
 	* menu/menu.C: Implement on_popup_state_update().
 
 0.8.0

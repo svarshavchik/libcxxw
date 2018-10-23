@@ -264,9 +264,7 @@ void create_combobox(const options &opts)
 
 	main_window->show();
 
-	x::mpcobj<bool>::lock lock{close_flag->flag};
-
-	lock.wait([&] { return *lock; });
+	close_flag->wait();
 
 	x::w::focusable_container combobox=main_window->appdata;
 

@@ -377,9 +377,7 @@ void testbook()
 
 	mw->show();
 
-	x::mpcobj<bool>::lock lock{close_flag->flag};
-
-	lock.wait([&] { return *lock; });
+	close_flag->wait();
 }
 
 int main(int argc, char **argv)
