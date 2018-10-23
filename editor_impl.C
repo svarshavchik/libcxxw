@@ -304,7 +304,7 @@ public:
 		// a selection in progress, that's all.
 		moving_cursor dummy{IN_THREAD, *me, false, true, ignored};
 
-		me->primary_selection(IN_THREAD)=nullptr;
+		me->current_primary_selection=nullptr;
 	}
 };
 
@@ -1533,7 +1533,7 @@ void editorObj::implObj::create_primary_selection(ONLY IN_THREAD)
 		::create(get_screen()->impl->thread->timestamp(IN_THREAD),
 			 ref(this), cursor_lock.cursor);
 
-	primary_selection(IN_THREAD)=s;
+	current_primary_selection=s;
 	get_window_handler().selection_announce(IN_THREAD, XCB_ATOM_PRIMARY, s);
 }
 
@@ -1567,11 +1567,16 @@ void editorObj::implObj::remove_primary_selection(ONLY IN_THREAD)
 	if (!config.update_clipboards)
 		return;
 
-	if (!primary_selection(IN_THREAD))
-		return;
+	{
+		mpobj<primary_selectionptr>::lock
+			lock{current_primary_selection};
 
-	primary_selection(IN_THREAD)->stillvalid(IN_THREAD)=false;
-	primary_selection(IN_THREAD)=nullptr;
+		if (!*lock)
+			return;
+
+		(*lock)->stillvalid(IN_THREAD)=false;
+		*lock=nullptr;
+	}
 
 	get_window_handler().selection_discard(IN_THREAD, XCB_ATOM_PRIMARY);
 }

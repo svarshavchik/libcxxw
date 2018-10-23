@@ -15,7 +15,7 @@ LIBCXXW_NAMESPACE_START
 
 //! Internal implementation object.
 
-class richtext_implObj;
+class LIBCXX_HIDDEN richtext_implObj;
 
 //! A container for an internally-implemented object.
 

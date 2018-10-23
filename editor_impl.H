@@ -226,8 +226,8 @@ class LIBCXX_HIDDEN editorObj::implObj
 
 	typedef ptr<selectionObj> selectionptr;
 
-	//! For the X server
-	selectionptr primary_selection_thread_only;
+	//! Typedef alias
+	typedef ptr<primary_selectionObj> primary_selectionptr;
 
 	//! For the X server
 	ptr<secondary_selectionObj> secondary_selection_thread_only;
@@ -264,7 +264,11 @@ class LIBCXX_HIDDEN editorObj::implObj
 
  public:
 
-	THREAD_DATA_ONLY(primary_selection);
+	//! There's currently a primary selection
+
+	//! For the X server's use.
+	mpobj<primary_selectionptr> current_primary_selection;
+
 	THREAD_DATA_ONLY(secondary_selection);
 	THREAD_DATA_ONLY(on_change);
 	THREAD_DATA_ONLY(on_autocomplete);

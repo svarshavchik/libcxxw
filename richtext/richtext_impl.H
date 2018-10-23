@@ -13,6 +13,7 @@
 #include "richtext/richtextmeta.H"
 #include "x/w/metrics/axis.H"
 #include "x/w/screenfwd.H"
+#include "x/w/input_field_lock.H"
 #include <x/functional.H>
 #include <x/vectorfwd.H>
 
@@ -31,7 +32,7 @@ class LIBCXX_HIDDEN richtext_insert_base;
 //! the public object. The ONLY IN_THREAD is in addition to the
 //! general thread-safe requirement.
 
-class LIBCXX_HIDDEN richtext_implObj : virtual public obj {
+class richtext_implObj : virtual public obj {
 
 	//! Targeted word wrap width.
 
