@@ -937,18 +937,16 @@ void elementObj::implObj
 	     set.draw_as_disabled) &&
 	    data(IN_THREAD).logical_inherited_visibility)
 	{
-		// Disabled element rendering -- dither in the main window's
-		// background color.
+		// Disabled element rendering -- dither using our
+		// element's background color.
 
-		auto &di=wh.get_draw_info(IN_THREAD);
-
-		auto xy=di.background_xy_to(cpy.x, cpy.y);
+		auto xy=di.background_xy_to(di, rect.x, rect.y);
 
 		contents->impl->composite(di.window_background_color->impl,
 					  wh.disabled_mask(IN_THREAD)
 					  ->image->icon_picture->impl,
 					  xy.first, xy.second,
-					  cpy.x, cpy.y,
+					  rect.x, rect.y,
 					  0, 0,
 					  cpy.width, cpy.height,
 					  render_pict_op::op_over);
