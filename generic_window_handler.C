@@ -1542,6 +1542,16 @@ void generic_windowObj::handlerObj
 			});
 }
 
+focusable_implptr generic_windowObj::handlerObj
+::get_autorestorable_focusable()
+{
+	autorestorable_focusable_t::lock lock{autorestorable_focusable};
+
+	auto p=lock->getptr();
+
+	return p;
+}
+
 void generic_windowObj::handlerObj
 ::set_keyboard_focus_to(ONLY IN_THREAD, const focusable_impl &element,
 			const callback_trigger_t &trigger)
@@ -1555,6 +1565,9 @@ void generic_windowObj::handlerObj
 	e.request_focus(IN_THREAD, old_focus,
 			&elementObj::implObj::report_keyboard_focus,
 			trigger);
+
+	if (element->focus_autorestorable(IN_THREAD))
+		autorestorable_focusable=element;
 
 	// Update the XIM server.
 
@@ -2061,9 +2074,10 @@ void generic_windowObj::handlerObj
 void generic_windowObj::handlerObj
 ::pasted_string(ONLY IN_THREAD, const std::u32string_view &s)
 {
-	if (most_recent_keyboard_focus(IN_THREAD))
-		most_recent_keyboard_focus(IN_THREAD)->get_focusable_element()
-			.pasted(IN_THREAD, s);
+	auto focusable=get_autorestorable_focusable();
+
+	if (focusable)
+		focusable->get_focusable_element().pasted(IN_THREAD, s);
 }
 
 void generic_windowObj::handlerObj::set_input_focus(ONLY IN_THREAD)

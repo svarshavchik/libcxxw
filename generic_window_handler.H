@@ -816,6 +816,23 @@ class generic_windowObj::handlerObj
 	THREAD_DATA_ONLY(focusable_fields);
 	THREAD_DATA_ONLY(most_recent_keyboard_focus);
 
+	//! Thread-safe container for the most recent autorestorable focusable.
+
+	typedef mpobj<weakptr<focusable_implptr>> autorestorable_focusable_t;
+
+	//! Most recent autorestorable focusable.
+
+	//! Each time keyboard focus gets set to a focus_autorestorable()
+	//! display element, it gets stored here.
+
+	autorestorable_focusable_t autorestorable_focusable;
+
+	//! Return the most recent autorestorable focusable.
+
+	//! Locks and recovers a strong reference, if possible.
+
+	focusable_implptr get_autorestorable_focusable();
+
 	//! Move the current keyboard focus to another element.
 	void set_keyboard_focus_to(ONLY IN_THREAD, const focusable_impl &f,
 				   const callback_trigger_t &trigger);

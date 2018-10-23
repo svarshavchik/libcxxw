@@ -173,6 +173,20 @@ class focusableObj::implObj : virtual public obj {
 
 	void request_focus(ONLY IN_THREAD);
 
+	//! Like request_focus(), but the request is internal
+
+	//! Don't gripe if this focusable is not eligible for keyboard focus,
+	//! just don't do it.
+
+ 	void request_focus_quietly(ONLY IN_THREAD);
+
+	//! Whether this field is eligible to have its focus restored.
+
+	//! When a popup gets closed, the last field with the input focus
+	//! gets request_focusable().
+
+	virtual bool focus_autorestorable(ONLY IN_THREAD);
+
 	//! Set focus to this focusable element and make sure it is visible.
 
 	virtual void set_focus_and_ensure_visibility(ONLY IN_THREAD,

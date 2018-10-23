@@ -18,6 +18,7 @@
 #include "x/w/key_event.H"
 #include "x/w/main_window.H"
 #include "x/w/impl/layoutmanager.H"
+#include "x/w/impl/focus/focusable.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -317,6 +318,17 @@ void popupObj::handlerObj::closing_popup(ONLY IN_THREAD)
 {
 	ungrab(IN_THREAD);
 	current_grab=NULL;
+
+	auto immediate_parent=popup_parent.getptr();
+
+	if (immediate_parent)
+	{
+		auto autorestore_focus_to=
+			immediate_parent->get_autorestorable_focusable();
+
+		if (autorestore_focus_to)
+			autorestore_focus_to->request_focus_quietly(IN_THREAD);
+	}
 }
 
 

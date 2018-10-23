@@ -935,6 +935,7 @@ INTERACTIVETESTPROGRAMS=\
 	testcombobox					\
 	testcustomcanvas				\
 	testdateinput					\
+	testfocusrestore				\
 	testimagebuttons			        \
 	testinputfield					\
 	testitemlayoutmanager				\
@@ -1015,6 +1016,10 @@ testfiledircontents_LDFLAGS=-static $(STATICLINKFLAGS)
 
 testfocusable_SOURCES=testfocusable.C
 testfocusable_LDADD=-lcxx
+
+testfocusrestore_SOURCES=testfocusrestore.C
+testfocusrestore_LDADD=libcxxw.la
+testfocusrestore_LDFLAGS=$(TESTLINKTYPE)
 
 testgrid_SOURCES=testgrid.C
 testgrid_LDADD=libcxxw.la

@@ -28,4 +28,9 @@ menubar_hotspot_implObj
 
 menubar_hotspot_implObj::~menubar_hotspot_implObj()=default;
 
+bool menubar_hotspot_implObj::focus_autorestorable(ONLY IN_THREAD)
+{
+	return false;
+}
+
 LIBCXXW_NAMESPACE_END

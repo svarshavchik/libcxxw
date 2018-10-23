@@ -51,6 +51,7 @@ suppressfile*
 /testderivedaxis
 /testfiledircontents
 /testfocusable
+/testfocusrestore
 /testgrid
 /testimagebuttons
 /testinputfield
