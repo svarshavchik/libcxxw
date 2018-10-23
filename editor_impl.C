@@ -878,7 +878,9 @@ void editorObj::implObj::remove_content(ONLY IN_THREAD,
 		std::swap(a, b);
 
 	cursor->remove(IN_THREAD, other);
-	real_string.erase(a, b-a);
+
+	mpobj<richtextstring>::lock lock{real_string};
+	lock->erase(a, b-a);
 }
 
 void editorObj::implObj::insert_content(ONLY IN_THREAD,
@@ -919,7 +921,10 @@ void editorObj::implObj::insert_content(ONLY IN_THREAD,
 		cursor->insert(IN_THREAD,
 			       std::u32string(str.size(), password_char));
 	}
-	real_string.insert(p, str);
+
+	mpobj<richtextstring>::lock lock{real_string};
+
+	lock->insert(p, str);
 }
 
 void editorObj::implObj::clear_password_peek(ONLY IN_THREAD)
@@ -961,7 +966,20 @@ richtextstring editorObj::implObj::get_content(const richtextiterator &a,
 	if (ap > bp)
 		std::swap(ap, bp);
 
-	return {real_string, ap, bp-ap};
+	mpobj<richtextstring>::lock lock{real_string};
+
+	if (lock->size() == 0)
+		return *lock;
+
+	size_t l=bp-ap;
+
+	if (ap >= lock->size())
+		ap=lock->size()-1;
+
+	if (l > lock->size()-ap)
+		l=lock->size()-ap;
+
+	return {*lock, ap, l};
 }
 
 bool editorObj::implObj::uses_input_method()
