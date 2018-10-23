@@ -21,7 +21,7 @@ LIBCXXW_NAMESPACE_START
 
 const_standard_combobox_lock
 ::const_standard_combobox_lock(const const_standard_comboboxlayoutmanager &ll)
-	: list_lock(ll), locked_layoutmanager(ll)
+	: const_list_lock{ll}, locked_layoutmanager{ll}
 {
 }
 

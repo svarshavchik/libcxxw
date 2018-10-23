@@ -350,22 +350,52 @@ class new_listlayoutmanager : public new_focusable_layoutmanager {
 
 //! Blocks modifications to the contents of the list.
 
-class list_lock : public listimpl_info_lock_t {
+class const_list_lock : public listimpl_info_lock_t {
 
 public:
 
-	const const_listlayoutmanager layout_manager;
+	// My layout manager.
+	const const_listlayoutmanager locked_layoutmanager;
 
 	//! Disambiguating constructor
 	template<typename ref_or_ptr, typename=
-		 typename refptr_traits<ref_or_ptr>::obj_t>
+		 decltype(static_cast<const listlayoutmanagerObj &>
+			  (std::declval<typename refptr_traits<ref_or_ptr>
+			   ::obj_t &>()))>
+	inline const_list_lock(const ref_or_ptr &manager)
+		: const_list_lock(*manager)
+	{
+	}
+
+	//! Constructor
+	const_list_lock(const listlayoutmanagerObj &manager);
+
+	//! Destructor
+	~const_list_lock();
+};
+
+//! Lock the list layout manager
+
+//! Blocks modifications to the contents of the list.
+
+class list_lock : public const_list_lock {
+
+public:
+	// My layout manager.
+	const listlayoutmanager locked_layoutmanager;
+
+	//! Disambiguating constructor
+	template<typename ref_or_ptr, typename=
+		 decltype(static_cast<listlayoutmanagerObj &>
+			  (std::declval<typename refptr_traits<ref_or_ptr>
+			   ::obj_t &>()))>
 	inline list_lock(const ref_or_ptr &manager)
 		: list_lock(*manager)
 	{
 	}
 
 	//! Constructor
-	list_lock(const listlayoutmanagerObj &manager);
+	list_lock(listlayoutmanagerObj &manager);
 
 	//! Destructor
 	~list_lock();

@@ -25,6 +25,7 @@ class LIBCXX_PUBLIC listlayoutmanagerObj;
 struct list_item_param;
 class LIBCXX_HIDDEN listlayoutstyle_impl;
 class LIBCXX_HIDDEN new_listlayoutmanager;
+class LIBCXX_PUBLIC const_list_lock;
 class LIBCXX_PUBLIC list_lock;
 
 /*! The list layout manager.

@@ -42,10 +42,18 @@ LIBCXXW_NAMESPACE_START
 static property::value<unsigned>
 listitempopup_delay(LIBCXX_NAMESPACE_STR "::w::listitempopup_delay", 500);
 
-list_lock::list_lock(const listlayoutmanagerObj &manager)
+const_list_lock::const_list_lock(const listlayoutmanagerObj &manager)
 	: listimpl_info_lock_t{manager.impl->list_element_singleton->impl
 		->textlist_info},
-	  layout_manager{&manager}
+	  locked_layoutmanager{&manager}
+{
+}
+
+const_list_lock::~const_list_lock()=default;
+
+list_lock::list_lock(listlayoutmanagerObj &manager)
+	: const_list_lock{manager},
+	  locked_layoutmanager{&manager}
 {
 }
 

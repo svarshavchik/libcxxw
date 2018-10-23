@@ -116,7 +116,7 @@ class new_standard_comboboxlayoutmanager
 //! that's constructible from a \ref const_standard_comboboxlayoutmanager "const_standard_comboboxlayoutmanager"
 //! with size() and item() methods.
 
-class const_standard_combobox_lock : public list_lock {
+class const_standard_combobox_lock : public const_list_lock {
 
 protected:
 	// For internal use.
