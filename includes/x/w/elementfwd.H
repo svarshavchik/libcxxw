@@ -214,7 +214,7 @@ It's parameter is a creator that gets invoked with a
 the popup menu's items. create_popup_menu() returns a \ref container "container"
 object representing the popup menu.
 
-The popup menu always appear next to the pointer. The expected way
+The popup menu always appears next to the pointer. The expected way
 to make the popup menu appear is to install a context popup callback.
 
 install_contextpopup_callback()'s parameter is a callback that gets
@@ -246,6 +246,11 @@ The above example captures the context popup container, for the callback.
 This results in the display element owning a reference on its callback,
 and the callback owning a reference on the popup, so it remains in scope
 until the callback gets removed.
+
+\note
+Only containers created using the element's create_popup_menu() should be
+shown by the installed callback. Using a container created by another element's
+create_popup_menu() has unspecified results.
 
 \par Invoke an arbitrary callback in the display element's connection thread.
 

@@ -36,8 +36,7 @@ static const list_selection_type_cb_t menuitem_selected_type=
 };
 
 static std::tuple<popup, ref<popup_attachedto_handlerObj> >
-do_create_menu_popup(const element_impl &e,
-		     const function<void (const listlayoutmanager &)> &creator,
+do_create_menu_popup(const function<void (const listlayoutmanager &)> &creator,
 		     const new_listlayoutmanager &style,
 		     const create_peepholed_toplevel_listcontainer_popup_args
 		     &popup_args,
@@ -104,7 +103,7 @@ do_create_dropdown_menu(const element_impl &e,
 	style.selection_type=menuitem_selected_type;
 
 	return do_create_menu_popup
-		(e, creator, style,
+		(creator, style,
 		 {
 			 e, "dropdown_menu,popup_menu",
 				 "menu",
