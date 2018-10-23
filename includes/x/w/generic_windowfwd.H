@@ -63,6 +63,19 @@ class LIBCXX_PUBLIC generic_windowBase;
 //!
 //! For convenience, this is forwarded to this screen's
 //! \ref connection "connection".
+//!
+//! \code
+//! bool flag=main_window->selection_can_be_received();
+//! \endcode
+//!
+//! Returns true if the current keyboard focus is in a display
+//! element that's capable of receiving a converted X selection.
+//! Currently, only \ref input_field "input fields" accept converted
+//! X selections as pasted text.
+//!
+//! \note
+//! Unless selection_can_be_received() gets invoked from the connection thread,
+//! the keyboard focus can change at any time and this because out of date.
 
 typedef ref<generic_windowObj, generic_windowBase> generic_window;
 

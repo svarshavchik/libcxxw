@@ -1552,6 +1552,22 @@ focusable_implptr generic_windowObj::handlerObj
 	return p;
 }
 
+element_implptr generic_windowObj::handlerObj
+::element_that_can_receive_selection()
+{
+	auto p=get_autorestorable_focusable();
+
+	if (p)
+	{
+		auto &e=p->get_focusable_element();
+
+		if (e.selection_can_be_received())
+			return ptr{&e};
+	}
+
+	return {};
+}
+
 void generic_windowObj::handlerObj
 ::set_keyboard_focus_to(ONLY IN_THREAD, const focusable_impl &element,
 			const callback_trigger_t &trigger)

@@ -59,6 +59,13 @@ bool elementObj::selection_has_owner(const std::string_view &selection) const
 	return get_screen()->selection_has_owner(selection);
 }
 
+bool elementObj::selection_can_be_received() const
+{
+	auto mw=get_main_window();
+
+	return mw && mw->selection_can_be_received();
+}
+
 void elementObj::show_all()
 {
 	impl->request_visibility_recursive(true);

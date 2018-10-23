@@ -1438,6 +1438,10 @@ void elementObj::implObj::ensure_entire_visibility(ONLY IN_THREAD)
 				data(IN_THREAD).current_position.height});
 }
 
+bool elementObj::implObj::selection_can_be_received()
+{
+	return false;
+}
 
 bool elementObj::implObj::pasted(ONLY IN_THREAD,
 				 const std::u32string_view &str)

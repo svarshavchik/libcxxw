@@ -203,6 +203,14 @@ public:
 	//! convenience.
 	bool selection_has_owner(const std::string_view &selection="SECONDARY")
 		const;
+
+	//! Whether a selection can be received right now.
+
+	//! This gets forwarded to this element's
+	//! \ref generic_window "top level window"'s
+	//! selection_can_be_received(), so the element that gets to receive
+	//! the selection may not necessarily be this display element.
+	virtual bool selection_can_be_received() const;
 };
 
 //! Alias

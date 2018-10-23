@@ -1454,6 +1454,13 @@ class elementObj::implObj : public element_drawObj,
 	virtual bool pasted(ONLY IN_THREAD,
 			    const std::u32string_view &str);
 
+	//! Whether this display element is capable of receiving a selection()
+
+	//! The default implementation returns false. Overridden by the editor
+	//! implementation element, returning true.
+
+	virtual bool selection_can_be_received();
+
 	//! Creating a focusable element in this container.
 
 	//! The default implementation does nothing. child_elementObj also

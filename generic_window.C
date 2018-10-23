@@ -88,4 +88,10 @@ bool generic_windowObj::selection_has_owner(const std::string_view &selection)
 	return get_screen()->selection_has_owner(selection);
 }
 
+bool generic_windowObj::selection_can_be_received() const
+{
+	return !!impl->handler->element_that_can_receive_selection();
+}
+
+
 LIBCXXW_NAMESPACE_END

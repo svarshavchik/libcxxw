@@ -827,6 +827,12 @@ class generic_windowObj::handlerObj
 
 	autorestorable_focusable_t autorestorable_focusable;
 
+	//! Whether the current selection can be received.
+
+	//! Return the element that can receive the current selection.
+
+	element_implptr element_that_can_receive_selection();
+
 	//! Return the most recent autorestorable focusable.
 
 	//! Locks and recovers a strong reference, if possible.

@@ -73,6 +73,10 @@ public:
 	//! convenience.
 	bool selection_has_owner(const std::string_view &selection="SECONDARY")
 		const;
+
+	//! Whether a selection can be received right now.
+
+	bool selection_can_be_received() const override;
 };
 
 LIBCXXW_NAMESPACE_END
