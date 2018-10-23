@@ -9,6 +9,11 @@
 
 LIBCXXW_NAMESPACE_START
 
+//! Information passed to a \ref element "element's" state update callback.
+
+//! The callback installed by on_state_update() gets invoked with the following
+//! information provided.
+
 struct element_state {
 
 	//! When this is passed to a state update handler, what kind of an update this is.

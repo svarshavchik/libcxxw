@@ -1,3 +1,7 @@
+2018-10-22  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* menu/menu.C: Implement on_popup_state_update().
+
 0.8.0
 
 2018-10-12  Sam Varshavchik  <mrsam@courier-mta.com>

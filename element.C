@@ -146,6 +146,13 @@ void elementObj::on_state_update(const functionref<element_state_callback_t>
 	impl->on_state_update(cb);
 }
 
+void elementObj::on_state_update(ONLY IN_THREAD,
+				 const functionref<element_state_callback_t>
+				 &cb)
+{
+	impl->on_state_update(IN_THREAD, cb);
+}
+
 void elementObj::on_metrics_update(const functionref<metrics_update_callback_t>
 				   &cb)
 {

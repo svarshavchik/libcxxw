@@ -8,6 +8,8 @@
 #include <x/w/menufwd.H>
 #include <x/w/listlayoutmanagerfwd.H>
 #include <x/w/focusable_containerobj.H>
+#include <x/functionalrefptrfwd.H>
+
 LIBCXXW_NAMESPACE_START
 
 //! Implementation object.
@@ -45,6 +47,15 @@ public:
 
 	//! Return this menu's layout manager.
 	const_listlayoutmanager get_layoutmanager() const;
+
+	//! Install a state update callback for the menu popup.
+	void on_popup_state_update(const functionref<element_state_callback_t>
+				   &callback);
+
+	//! Install a state update callback for the menu popup.
+	void on_popup_state_update(ONLY IN_THREAD,
+				   const functionref<element_state_callback_t>
+				   &callback);
 };
 
 LIBCXXW_NAMESPACE_END

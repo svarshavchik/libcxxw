@@ -1,5 +1,5 @@
 /*
-** Copyright 2017 Double Precision, Inc.
+** Copyright 2017-2018 Double Precision, Inc.
 ** See COPYING for distribution information.
 */
 #include "libcxxw_config.h"
@@ -48,6 +48,19 @@ listlayoutmanager menuObj::get_layoutmanager()
 const_listlayoutmanager menuObj::get_layoutmanager() const
 {
 	return focusable_containerObj::get_layoutmanager();
+}
+
+void menuObj::on_popup_state_update(const functionref<element_state_callback_t>
+				    &callback)
+{
+	impl->menu_popup->on_state_update(callback);
+}
+
+void menuObj::on_popup_state_update(ONLY IN_THREAD,
+				    const functionref<element_state_callback_t>
+				    &callback)
+{
+	impl->menu_popup->on_state_update(IN_THREAD, callback);
 }
 
 LIBCXXW_NAMESPACE_END

@@ -187,6 +187,30 @@ element's current metrics, and then every time the metrics change. Only
 one metrics callback can be installed at the same time, installing another
 callback replaces the existing one.
 
+\par Element state callback
+
+\code
+#include <x/w/element_state.H>
+
+m->on_state_update([]
+                   (ONLY IN_THREAD,
+                    const INSERT_LIBX_NAMESPACE::w::element_state &s,
+                    const INSERT_LIBX_NAMESPACE::w::busy &mcguffin)
+                    {
+                    });
+
+m->on_state_update(ONLY IN_THREAD,
+                   []
+                   (ONLY IN_THREAD,
+                    const INSERT_LIBX_NAMESPACE::w::element_state &s,
+                    const INSERT_LIBX_NAMESPACE::w::busy &mcguffin)
+                    {
+                    });
+\endcode
+
+The state update callback reports changes to the display element's visibility,
+and receives the \ref element_state "INSERT_LIBX_NAMESPACE::w::element_state".
+
 \par Context popups
 
 \code

@@ -7,6 +7,7 @@
 
 #include <x/w/menufwd.H>
 #include <x/w/menuobj.H>
+#include <x/w/element_state.H>
 #include <x/ref.H>
 
 LIBCXXW_NAMESPACE_START

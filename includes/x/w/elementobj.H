@@ -87,8 +87,11 @@ public:
 	void remove_background_color();
 
 	//! Install a state update callback.
-
 	void on_state_update(const functionref<element_state_callback_t> &);
+
+	//! Install a state update callback.
+	void on_state_update(ONLY IN_THREAD,
+			     const functionref<element_state_callback_t> &);
 
 	//! Install a metrics update callback.
 	void on_metrics_update(const functionref<metrics_update_callback_t> &);

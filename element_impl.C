@@ -465,18 +465,25 @@ void elementObj::implObj
 ::on_state_update(const functionref<element_state_callback_t> &cb)
 {
 	THREAD->get_batch_queue()->run_as
-		([cb, me=ref(this)]
+		([cb, me=ref{this}]
 		 (ONLY IN_THREAD)
 		 {
-			 me->data(IN_THREAD).element_state_callback=cb;
-
-			 try {
-				 cb(IN_THREAD,
-				    me->create_element_state
-				    (IN_THREAD, element_state::current_state),
-				    busy_impl{*me});
-			 } REPORT_EXCEPTIONS(me);
+			 me->on_state_update(IN_THREAD, cb);
 		 });
+}
+
+void elementObj::implObj
+::on_state_update(ONLY IN_THREAD,
+		  const functionref<element_state_callback_t> &cb)
+{
+	data(IN_THREAD).element_state_callback=cb;
+
+	try {
+		cb(IN_THREAD,
+		   create_element_state(IN_THREAD,
+					element_state::current_state),
+		   busy_impl{*this});
+	} REPORT_EXCEPTIONS(this);
 }
 
 //! Install a metrics update callback.
