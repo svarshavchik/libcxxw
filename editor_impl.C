@@ -312,7 +312,16 @@ class editorObj::implObj::secondary_selectionObj : public selectionObj {
 
 public:
 
-	using selectionObj::selectionObj;
+	secondary_selectionObj(xcb_timestamp_t timestamp, const
+			       ref<implObj> &me,
+			       const richtextiterator &other,
+			       xcb_atom_t selection)
+		: selectionObj{timestamp, me, other},
+		  selection{selection}
+	{
+	}
+
+	const xcb_atom_t selection;
 
 	void clear(ONLY IN_THREAD, const ref<implObj> &me) override
 	{
@@ -701,7 +710,8 @@ bool editorObj::implObj::process_keypress(ONLY IN_THREAD, const key_event &ke)
 	{
 		if (ke.keysym == XK_Insert)
 		{
-			create_secondary_selection(IN_THREAD);
+			create_secondary_selection(IN_THREAD,
+						   XCB_ATOM_SECONDARY);
 			return true;
 		}
 
@@ -1502,7 +1512,8 @@ void editorObj::implObj::create_primary_selection(ONLY IN_THREAD)
 	get_window_handler().selection_announce(IN_THREAD, XCB_ATOM_PRIMARY, s);
 }
 
-void editorObj::implObj::create_secondary_selection(ONLY IN_THREAD)
+void editorObj::implObj::create_secondary_selection(ONLY IN_THREAD,
+						    xcb_atom_t selection)
 {
 	if (!config.update_clipboards)
 		return;
@@ -1520,11 +1531,10 @@ void editorObj::implObj::create_secondary_selection(ONLY IN_THREAD)
 
 	auto s=ref<secondary_selectionObj>
 		::create(get_screen()->impl->thread->timestamp(IN_THREAD),
-			 ref(this), cursor_lock.cursor);
+			 ref(this), cursor_lock.cursor, selection);
 
 	secondary_selection(IN_THREAD)=s;
-	get_window_handler().selection_announce(IN_THREAD, XCB_ATOM_SECONDARY,
-						s);
+	get_window_handler().selection_announce(IN_THREAD, selection, s);
 }
 
 void editorObj::implObj::remove_primary_selection(ONLY IN_THREAD)
@@ -1549,10 +1559,12 @@ void editorObj::implObj::remove_secondary_selection(ONLY IN_THREAD)
 	if (!secondary_selection(IN_THREAD))
 		return;
 
+	auto selection=secondary_selection(IN_THREAD)->selection;
+
 	secondary_selection(IN_THREAD)->stillvalid(IN_THREAD)=false;
 	secondary_selection(IN_THREAD)=nullptr;
 
-	get_window_handler().selection_discard(IN_THREAD, XCB_ATOM_SECONDARY);
+	get_window_handler().selection_discard(IN_THREAD, selection);
 }
 
 bool editorObj::implObj::to_begin(ONLY IN_THREAD, const input_mask &mask)
@@ -1597,7 +1609,8 @@ size_t editorObj::implObj::delete_char_or_selection(ONLY IN_THREAD,
 	if (del_info.cursor_lock.cursor)
 	{
 		if (mask.shift)
-			create_secondary_selection(IN_THREAD);
+			create_secondary_selection(IN_THREAD,
+						   XCB_ATOM_SECONDARY);
 
 		del_info.do_delete(IN_THREAD);
 

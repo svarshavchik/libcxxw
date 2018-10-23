@@ -230,7 +230,7 @@ class LIBCXX_HIDDEN editorObj::implObj
 	selectionptr primary_selection_thread_only;
 
 	//! For the X server
-	selectionptr secondary_selection_thread_only;
+	ptr<secondary_selectionObj> secondary_selection_thread_only;
 
 	//! Callback
 	functionptr< void(THREAD_CALLBACK, const input_change_info_t &)
@@ -587,7 +587,8 @@ class LIBCXX_HIDDEN editorObj::implObj
 	void create_primary_selection(ONLY IN_THREAD);
 
 	//! Prepare a new secondary selection, if we can.
-	void create_secondary_selection(ONLY IN_THREAD);
+	void create_secondary_selection(ONLY IN_THREAD,
+					xcb_atom_t selection);
 
 	//! Remove the announced primary selection.
 	void remove_primary_selection(ONLY IN_THREAD);
