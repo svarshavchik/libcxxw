@@ -322,6 +322,18 @@ public:
 	//! Report a client's spotLocation
 	void set_spot_location(ONLY IN_THREAD, const ximclient &client);
 
+	//! Report a client's spotLocation again
+
+	//! By-passes internal optimization that suppresses repeated
+	//! notifications of the spotLocation. This is done when the
+	//! client window gets repositioned. From its perspective
+	//! the cursor position hasn't changed, but we need to notify the
+	//! XIM server so that it can update itself. Apparently the XIM
+	//! server does not listen for ConfigureNotify messages and does not
+	//! notice that the client window has moved.
+
+	void resend_spot_location(ONLY IN_THREAD, const ximclient &client);
+
 	//! Report a client's focus state
 
 	void focus_state(ONLY IN_THREAD, const ximclient &client, bool flag);

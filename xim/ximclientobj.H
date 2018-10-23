@@ -103,6 +103,17 @@ class LIBCXX_HIDDEN ximclientObj : virtual public obj {
 	//! a request to update the server.
 	void current_cursor_position(ONLY IN_THREAD, const rectangle &);
 
+	//! Notify the XIM server of our input location again.
+
+	//! By-passes internal optimization that suppresses repeated
+	//! notifications of our input location. This is done when the
+	//! client window gets repositioned. From its perspective
+	//! the cursor position hasn't changed, but we need to notify the
+	//! XIM server so that it can update itself. Apparently the XIM
+	//! server does not listen for ConfigureNotify messages and does not
+	//! notice that the client window has moved.
+	void resend_cursor_position(ONLY IN_THREAD);
+
  private:
 
 	//! Whether we should have input focus now, for X Input Method entry.

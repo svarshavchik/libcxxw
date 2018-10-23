@@ -484,7 +484,9 @@ class elementObj::implObj : public element_drawObj,
 	//! So nothing has to be recalculated, however popups need to know
 	//! about this.
 	//!
-	//! Propagate absolute_location_updated() to all elements.
+	//! Propagate absolute_location_updated() to all elements. If the
+	//! absolute_location_update_reason is internal, we need to redraw
+	//! ourselves. If it's external, somebody took care of that.
 	virtual void absolute_location_updated(ONLY IN_THREAD,
 					       absolute_location_update_reason
 					       reason);

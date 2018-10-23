@@ -1327,6 +1327,18 @@ void generic_windowObj::handlerObj::process_configure_notify(ONLY IN_THREAD)
 	if (error)
 		throw EXCEPTION(connection_error(error));
 
+	if (most_recent_keyboard_focus(IN_THREAD) &&
+	    most_recent_keyboard_focus(IN_THREAD)->get_focusable_element()
+	    .uses_input_method())
+	{
+		with_xim_client
+			([&]
+			 (const auto &client)
+			 {
+				 client->resend_cursor_position(IN_THREAD);
+			 });
+	}
+
 	auto old_x=root_x(IN_THREAD);
 	auto old_y=root_y(IN_THREAD);
 

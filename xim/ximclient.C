@@ -47,6 +47,11 @@ void ximclientObj::current_cursor_position(ONLY IN_THREAD,
 	server->set_spot_location(IN_THREAD, ximclient(this));
 }
 
+void ximclientObj::resend_cursor_position(ONLY IN_THREAD)
+{
+	server->resend_spot_location(IN_THREAD, ximclient(this));
+}
+
 void ximclientObj::focus_state(ONLY IN_THREAD, bool flag)
 {
 	if (flag == reported_focus(IN_THREAD))

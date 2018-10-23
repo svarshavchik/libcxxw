@@ -326,6 +326,21 @@ static void set_preedit_position(const std::unordered_map<std::string,
 #endif
 }
 
+static void send_spot_location(ONLY IN_THREAD,
+			       const ximserver &me, const ximclient &client,
+			       const rectangle &pos)
+{
+	std::vector<ximattrvalue> attrs;
+
+	set_preedit_position(me->ic_attributes_by_name(IN_THREAD),
+			     pos,
+			     attrs);
+
+	me->xim_set_ic_values_send(IN_THREAD,
+				   me->input_method_id(IN_THREAD),
+				   client->input_context_id(IN_THREAD),
+				   attrs);
+}
 
 void ximserverObj::badmessage(ONLY IN_THREAD, const char *message)
 {
@@ -1019,27 +1034,31 @@ void ximserverObj::set_spot_location(ONLY IN_THREAD,
 				 return false;
 
 			 pos=client->reported_cursor_position(IN_THREAD);
-			 std::vector<attrvalue> attrs;
-
-			 set_preedit_position
-				 (me->ic_attributes_by_name(IN_THREAD),
-				  pos,
-				  attrs);
 
 			 LOG_DEBUG("Sending cursor position based on "
-				   << pos
-				   << "(" << attrs.size() << ")");
+				   << pos);
 
-			 me->xim_set_ic_values_send(IN_THREAD,
-						    me->input_method_id
-						    (IN_THREAD),
-						    client->input_context_id
-						    (IN_THREAD),
-						    attrs);
-#if 0
-			 me->get_ic_values(IN_THREAD, client,
-					   {"spotlocation","area"});
-#endif
+			 send_spot_location(IN_THREAD, me, client, pos);
+			 return true;
+		 });
+}
+
+void ximserverObj::resend_spot_location(ONLY IN_THREAD, const ximclient &client)
+{
+	add_client_request
+		(IN_THREAD,
+		 ximrequest::create("XIM_SET_IC_VALUES(spotLocation)"),
+		 client,
+		 []
+		 (ONLY IN_THREAD,
+		  const ximserver &me, const ximclient &client)
+		 {
+			 auto &pos=client->sent_cursor_position(IN_THREAD);
+
+			 LOG_DEBUG("Sending cursor position based on "
+				   << pos);
+
+			 send_spot_location(IN_THREAD, me, client, pos);
 			 return true;
 		 });
 }
