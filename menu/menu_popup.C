@@ -95,6 +95,8 @@ do_create_dropdown_menu(const element_impl &e,
 {
 	new_listlayoutmanager style{menu_list};
 
+	style.h_padding="menu_list_h_padding";
+	style.v_padding="menu_list_v_padding";
 	style.background_color="menu_popup_background_color";
 	style.current_color="menu_popup_highlighted_color";
 	style.highlighted_color="menu_popup_clicked_color";
