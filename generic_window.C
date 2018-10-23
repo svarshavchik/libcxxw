@@ -99,4 +99,17 @@ void generic_windowObj::receive_selection(ONLY IN_THREAD,
 	return impl->handler->receive_selection(IN_THREAD, selection);
 }
 
+bool generic_windowObj::cut_or_copy_selection(cut_or_copy_op op,
+					      const std::string_view &selection)
+{
+	return impl->handler->cut_or_copy_selection(op, selection);
+}
+
+bool generic_windowObj::cut_or_copy_selection(ONLY IN_THREAD,
+					      cut_or_copy_op op,
+					      const std::string_view &selection)
+{
+	return impl->handler->cut_or_copy_selection(IN_THREAD, op, selection);
+}
+
 LIBCXXW_NAMESPACE_END

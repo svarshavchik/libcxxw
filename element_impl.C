@@ -1444,6 +1444,17 @@ bool elementObj::implObj::selection_can_be_received()
 	return false;
 }
 
+bool elementObj::implObj::cut_or_copy_selection(cut_or_copy_op, xcb_atom_t)
+{
+	return false;
+}
+
+bool elementObj::implObj::cut_or_copy_selection(ONLY IN_THREAD,
+						cut_or_copy_op, xcb_atom_t)
+{
+	return false;
+}
+
 bool elementObj::implObj::pasted(ONLY IN_THREAD,
 				 const std::u32string_view &str)
 {

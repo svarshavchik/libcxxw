@@ -870,6 +870,21 @@ class generic_windowObj::handlerObj
 	//! \overload
 	void receive_selection(ONLY IN_THREAD, const std::string_view &);
 
+	//! Execute a cut/copy operation.
+
+	//! Forwards this request to autorestorable_focusable.
+
+	bool cut_or_copy_selection(cut_or_copy_op,
+				   const std::string_view
+				   &selection="SECONDARY");
+
+	//! Execute a cut/copy operation.
+
+	//! \overload
+	bool cut_or_copy_selection(ONLY IN_THREAD, cut_or_copy_op,
+				   const std::string_view
+				   &selection="SECONDARY");
+
 	//! Override property_notify_event().
 
 	//! Calls update_frame_extents() for a net_frame_extents notification.

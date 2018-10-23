@@ -20,6 +20,17 @@ typedef void metrics_update_callback_t(THREAD_CALLBACK,
 
 class LIBCXX_PUBLIC elementObj;
 
+//! Cut or copy option
+
+//! This gets passed to passed to \ref generic_window "cut_or_copy_selection()"
+//! or \ref focusable "focusable_cut_or_copy_selection()".
+
+enum class cut_or_copy_op {
+			   available,  //!< Something can be cut or copied
+			   copy,      //!< Copy something
+			   cut,	      //!< Cut something
+};
+
 /*! Methods common to all display elements.
 
 \code

@@ -8,11 +8,13 @@
 #include <x/w/focusablefwd.H>
 #include <x/w/focus.H>
 #include <x/w/key_event.H>
+#include <x/w/elementfwd.H>
 #include <x/obj.H>
 #include <x/functional.H>
 #include <x/functionalrefptr.H>
 
 #include <vector>
+#include <string_view>
 
 LIBCXXW_NAMESPACE_START
 
@@ -116,6 +118,17 @@ public:
 	//! dialogs may set autofocus for their own fields/
 
 	void autofocus(bool);
+
+	//! Check a cut or copy operation if this focusable has keyboard focus.
+	bool focusable_cut_or_copy_selection(cut_or_copy_op,
+					     const std::string_view
+					     &selection="SECONDARY");
+
+	//! Check a cut or copy operation if this focusable has keyboard focus.
+	bool focusable_cut_or_copy_selection(ONLY IN_THREAD,
+					     cut_or_copy_op,
+					     const std::string_view
+					     &selection="SECONDARY");
 
 	//! Receive a selection, if this focusable has keyboard focus.
 

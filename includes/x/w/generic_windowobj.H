@@ -85,6 +85,18 @@ public:
 	void receive_selection(ONLY IN_THREAD,
 			       const std::string_view &selection="SECONDARY")
 		override;
+
+	//! Cut or copy the selection
+
+	bool cut_or_copy_selection(cut_or_copy_op,
+				   const std::string_view
+				   &selection="SECONDARY") override;
+
+	//! Cut or copy the selection
+
+	bool cut_or_copy_selection(ONLY IN_THREAD, cut_or_copy_op,
+				   const std::string_view
+				   &selection="SECONDARY") override;
 };
 
 LIBCXXW_NAMESPACE_END

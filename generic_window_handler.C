@@ -2138,6 +2138,61 @@ void generic_windowObj::handlerObj
 		focusable->get_focusable_element().pasted(IN_THREAD, s);
 }
 
+bool generic_windowObj::handlerObj
+::cut_or_copy_selection(cut_or_copy_op op,
+			const std::string_view &selection)
+{
+	auto focusable=get_autorestorable_focusable();
+	auto selection_atom=thread()->info->get_atom(selection);
+
+	return focusable && selection_atom != XCB_NONE &&
+		focusable->get_focusable_element()
+		.cut_or_copy_selection(op, selection_atom);
+}
+
+bool generic_windowObj::handlerObj
+::cut_or_copy_selection(ONLY IN_THREAD, cut_or_copy_op op,
+			const std::string_view &selection)
+{
+	auto focusable=get_autorestorable_focusable();
+	auto selection_atom=IN_THREAD->info->get_atom(selection);
+
+	return focusable && selection_atom != XCB_NONE &&
+		focusable->get_focusable_element()
+		.cut_or_copy_selection(IN_THREAD, op, selection_atom);
+}
+
+bool focusableObj
+::focusable_cut_or_copy_selection(cut_or_copy_op op,
+				  const std::string_view &selection)
+{
+	auto impl=get_impl();
+	auto &wh=impl->get_focusable_element().get_window_handler();
+
+	auto focusable=wh.get_autorestorable_focusable();
+	auto selection_atom=wh.thread()->info->get_atom(selection);
+
+	return focusable == impl && selection_atom != XCB_NONE &&
+		focusable->get_focusable_element()
+		.cut_or_copy_selection(op, selection_atom);
+}
+
+bool focusableObj
+::focusable_cut_or_copy_selection(ONLY IN_THREAD,
+				  cut_or_copy_op op,
+				  const std::string_view &selection)
+{
+	auto impl=get_impl();
+	auto &wh=impl->get_focusable_element().get_window_handler();
+
+	auto focusable=wh.get_autorestorable_focusable();
+	auto selection_atom=wh.thread()->info->get_atom(selection);
+
+	return focusable == impl && selection_atom != XCB_NONE &&
+		focusable->get_focusable_element()
+		.cut_or_copy_selection(IN_THREAD, op, selection_atom);
+}
+
 void generic_windowObj::handlerObj::set_input_focus(ONLY IN_THREAD)
 {
 	xcb_set_input_focus(conn()->conn, XCB_NONE, id(),

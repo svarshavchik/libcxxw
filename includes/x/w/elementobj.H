@@ -229,6 +229,29 @@ public:
 	virtual void receive_selection(ONLY IN_THREAD,
 				       const std::string_view
 				       &selection="SECONDARY");
+
+	//! Cut or copy the selection
+
+	//! This gets forwarded to this element's
+	//! \ref generic_window "top level window"'s
+	//! cut_or_copy_selection(), so the element whose selection gets cut
+	//! or copied may not necessarily be this display element.
+
+	virtual bool cut_or_copy_selection(cut_or_copy_op,
+					   const std::string_view
+					   &selection="SECONDARY");
+
+	//! Cut or copy the selection
+
+	//! This gets forwarded to this element's
+	//! \ref generic_window "top level window"'s
+	//! cut_or_copy_selection(), so the element whose selection gets cut
+	//! or copied may not necessarily be this display element.
+
+	virtual bool cut_or_copy_selection(ONLY IN_THREAD,
+					   cut_or_copy_op,
+					   const std::string_view
+					   &selection="SECONDARY");
 };
 
 //! Alias

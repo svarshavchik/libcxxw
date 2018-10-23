@@ -166,18 +166,26 @@ The default autofocus() setting depends on the display element.
 \par Selections
 
 \code
+bool flag=f->focusable_cut_or_copy_selection(INSERT_LIBX_NAMESPACE::w::cut_or_copy_op::available);
+
+bool flag=f->focusable_cut_or_copy_selection(IN_THREAD, INSERT_LIBX_NAMESPACE::w::cut_or_copy_op::available);
+
+f->focusable_cut_or_copy_selection(INSERT_LIBX_NAMESPACE::w::cut_or_copy_op::copy);
+
+f->focusable_cut_or_copy_selection(IN_THREAD, INSERT_LIBX_NAMESPACE::w::cut_or_copy_op::copy);
+
 f->focusable_receive_selection();
 
 f->focusable_receive_selection(IN_THREAD)
 \endcode
 
-focusable_receive_selection()
+focusable_cut_or_copy_selection() or focusable_receive_selection()
 is equivalent to invoking
-receive_selection() on the
+cut_or_copy_selection() or receive_selection() on the
 \ref generic_window "top level window object", except that the top level
 window object executes the operation
 for whichever element in the top level window currently has keyboard focus;
-and focusable_receive_selection()
+and focusable_cut_or_copy_selection() or focusable_receive_selection()
 does this only if this focusable element
 currently receives the keyboard focus, and does nothing otherwise.
 

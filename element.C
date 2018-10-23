@@ -84,6 +84,22 @@ void elementObj::receive_selection(ONLY IN_THREAD,
 		mw->receive_selection(IN_THREAD, selection);
 }
 
+bool elementObj::cut_or_copy_selection(cut_or_copy_op op,
+				       const std::string_view &selection)
+{
+	auto mw=get_main_window();
+
+	return mw && mw->cut_or_copy_selection(op, selection);
+}
+
+bool elementObj::cut_or_copy_selection(ONLY IN_THREAD, cut_or_copy_op op,
+				       const std::string_view &selection)
+{
+	auto mw=get_main_window();
+
+	return mw && mw->cut_or_copy_selection(IN_THREAD, op, selection);
+}
+
 void elementObj::show_all()
 {
 	impl->request_visibility_recursive(true);

@@ -16,9 +16,7 @@ LIBCXXW_NAMESPACE_START
 class LIBCXX_PUBLIC main_windowObj;
 class LIBCXX_PUBLIC main_windowBase;
 
-//! \anchor main_window Top level application window.
-
-/*!
+/*! Top level application window.
 
 Inherits some functionality from its \ref generic_window "generic_window"
 superclass.

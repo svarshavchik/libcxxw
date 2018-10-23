@@ -1461,6 +1461,19 @@ class elementObj::implObj : public element_drawObj,
 
 	virtual bool selection_can_be_received();
 
+	//! Whether this display element has something to copy or cut, or do it.
+
+	//! The default implementation returns false.
+	//! Overridden in the editor implementation object.
+	virtual bool cut_or_copy_selection(cut_or_copy_op, xcb_atom_t);
+
+	//! Whether this display element has something to copy or cut, or do it.
+
+	//! The default implementation returns false.
+	//! Overridden in the editor implementation object.
+	virtual bool cut_or_copy_selection(ONLY IN_THREAD,
+					   cut_or_copy_op, xcb_atom_t);
+
 	//! Creating a focusable element in this container.
 
 	//! The default implementation does nothing. child_elementObj also

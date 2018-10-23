@@ -15,6 +15,10 @@ class LIBCXX_PUBLIC generic_windowBase;
 
 //! Generic top level window methods.
 
+//! \ref main_window "INSERT_LIBX_NAMESPACE::w::main_window" is the object
+//! that represents a top-level window. Some of its functionality is implemented
+//! in this superclass.
+//!
 //! \code
 //! main_window->set_window_title("Hello world");
 //!
@@ -90,6 +94,31 @@ class LIBCXX_PUBLIC generic_windowBase;
 //! receive_selection() returns immediately after sending a request to the
 //! selection's current owner. The display element gets updated later, when
 //! the owner's response, with the converted selection's data gets received.
+//!
+//! \code
+//! bool flag=main_window->cut_or_copy_selection(cut_or_copy_op::available);
+//!
+//! bool flag=main_window->cut_or_copy_selection(IN_THREAD, INSERT_LIBX_NAMESPACE::w::cut_or_copy_op::available);
+//!
+//! main_window->cut_or_copy_selection(INSERT_LIBX_NAMESPACE::w::cut_or_copy_op::copy);
+//!
+//! main_window->cut_or_copy_selection(IN_THREAD, INSERT_LIBX_NAMESPACE::w::cut_or_copy_op::copy);
+//! \endcode
+//!
+//! cut_or_copy_selection() executes a cut or a copy operation specified
+//! by the parameter.
+//!
+//! - cut_or_copy_op::available returns \c true if the current input focus
+//! is in a display element that has something to copy or cut, and
+//! \c false otherwise.
+//!
+//! - cut_or_copy_op::copy and cut_or_copy_op::cut start the copy or the cut
+//! process, and always returns true.
+//!
+//! \note
+//! cut_or_copy_op::available is meaningful only IN_THREAD, since things can
+//! change at any time, and a copy or a cut actually takes place only if it
+//! is available.
 
 typedef ref<generic_windowObj, generic_windowBase> generic_window;
 
