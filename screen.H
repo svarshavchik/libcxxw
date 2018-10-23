@@ -85,7 +85,7 @@ class LIBCXX_HIDDEN screenObj::implObj
 	//! Same screen_depths as the public object.
 	const vector<const_ref<depthObj>> screen_depths;
 
-	//! Supported protocols
+	//! Supported protocols, the atoms ewmh sets in _NET_SUPPORTED
 	const std::unordered_set<std::string> supported;
 
 	//! The current theme for this screen.

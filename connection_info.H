@@ -14,6 +14,7 @@
 #include <queue>
 #include <vector>
 #include <string>
+#include <string_view>
 
 LIBCXXW_NAMESPACE_START
 
@@ -148,10 +149,17 @@ class LIBCXX_HIDDEN connection_infoObj : virtual public obj {
 					(std::forward<lambda>(l)));
 	}
 
+	//! Return an atom
+
+	xcb_atom_t get_atom(const std::string_view &name,
+			    bool only_if_exists=true) const;
+
 	//! Return an atom's name
 
 	std::string get_atom_name(xcb_atom_t atom) const;
 
+	//! Return a selection's owner.
+	xcb_window_t get_selection_owner(xcb_atom_t atom) const;
  private:
 	typedef mpobj<std::queue<uint32_t>> available_xids_t;
 

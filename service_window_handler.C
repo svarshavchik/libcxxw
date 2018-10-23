@@ -27,8 +27,6 @@ void service_window_handlerObj
 {
 	LOG_FUNC_SCOPE(service_log);
 
-	auto conn=IN_THREAD->info->conn;
-
 	server_atoms.clear();
 	attribute_atoms.clear();
 
@@ -36,52 +34,35 @@ void service_window_handlerObj
 
 	// Retrieve the server property from screen's root window.
 
+	auto service_atom=IN_THREAD->info->get_atom(service_name);
+
+	if (service_atom == XCB_NONE)
 	{
-		returned_pointer<xcb_generic_error_t *> error;
-
-		auto value=return_pointer(xcb_intern_atom_reply
-					  (conn,
-					   xcb_intern_atom(conn, 1,
-							   strlen(service_name),
-							   service_name),
-					   error.addressof()));
-
-		if (error)
-		{
-			LOG_DEBUG("XIM_SERVERS atom is not defined");
-			all_servers_tried(IN_THREAD);
-			return;
-		}
-
-		if (value->atom == XCB_NONE)
-		{
-			LOG_DEBUG("XIM_SERVERS atom is XCB_NONE");
-			all_servers_tried(IN_THREAD);
-			return;
-		}
-
-		LOG_DEBUG(service_name << " atom is defined");
-
-		IN_THREAD->info->collect_property_with
-			(screenref->impl->xcb_screen->root,
-			 value->atom,
-			 XCB_ATOM_ATOM,
-			 false,
-			 [&]
-			 (xcb_atom_t type,
-			  uint8_t format,
-			  void *data,
-			  size_t data_size)
-			 {
-				 auto data_atoms=reinterpret_cast<xcb_atom_t *>
-					 (data);
-
-				 server_atoms.insert(server_atoms.end(),
-						     data_atoms,
-						     data_atoms+data_size/
-						     sizeof(xcb_atom_t));
-			 });
+		LOG_DEBUG(service_name << " atom is not set");
+		all_servers_tried(IN_THREAD);
+		return;
 	}
+
+	LOG_DEBUG(service_name << " atom is defined");
+
+	IN_THREAD->info->collect_property_with
+		(screenref->impl->xcb_screen->root,
+		 service_atom,
+		 XCB_ATOM_ATOM,
+		 false,
+		 [&]
+		 (xcb_atom_t type,
+		  uint8_t format,
+		  void *data,
+		  size_t data_size)
+		 {
+			 auto data_atoms=reinterpret_cast<xcb_atom_t *>(data);
+
+			 server_atoms.insert(server_atoms.end(),
+					     data_atoms,
+					     data_atoms+data_size/
+					     sizeof(xcb_atom_t));
+		 });
 
 	size_t i;
 	for (i=0; attributes[i]; ++i)
@@ -90,25 +71,17 @@ void service_window_handlerObj
 
 	for (i=0; attributes[i]; ++i)
 	{
-		returned_pointer<xcb_generic_error_t *> error;
+		auto attribute_atom=IN_THREAD->info->get_atom(attributes[i]);
 
-		auto value=return_pointer(xcb_intern_atom_reply
-					  (conn,
-					   xcb_intern_atom
-					   (conn, 1,
-					    strlen(attributes[i]),
-					    attributes[i]),
-					   error.addressof()));
-
-		if (error)
+		if (attribute_atom == XCB_NONE)
+		{
+			LOG_DEBUG(attributes[i] << " atom is not defined");
+			all_servers_tried(IN_THREAD);
 			return;
-
-		if (value->atom == XCB_NONE)
-			return;
-
+		}
 		LOG_DEBUG(attributes[i] << " atom is defined");
 
-		attribute_atoms.push_back(value->atom);
+		attribute_atoms.push_back(attribute_atom);
 	}
 
 	connect_next_server(IN_THREAD);
@@ -127,19 +100,12 @@ void service_window_handlerObj::connect_next_server(ONLY IN_THREAD)
 		LOG_DEBUG("Checking "
 			  << IN_THREAD->info->get_atom_name(server));
 
-		returned_pointer<xcb_generic_error_t *> error;
+		auto owner=IN_THREAD->info->get_selection_owner(server);
 
-		auto value=return_pointer
-			(xcb_get_selection_owner_reply
-			 (IN_THREAD->info->conn,
-			  xcb_get_selection_owner(IN_THREAD->info->conn,
-						  server),
-			  error.addressof()));
-
-		if (error || value->owner == XCB_NONE)
+		if (owner == XCB_NONE)
 			continue; // Nobody claims this server.
 
-		selection_owner=value->owner;
+		selection_owner=owner;
 
 		// Prepare to check all attributes.
 

@@ -105,6 +105,14 @@ INSERT_LIBX_NAMESPACE::w::rectangle size=s->get_workarea();
 \c get_workarea() returns the screen's work area, the usable area of the
 screen.
 
+\par Selections
+
+\code
+bool flag=conn->selection_has_owner("SECONDARY");
+\endcode
+
+For convenience, this is forwarded to this screen's
+\ref connection "connection".
 */
 
 typedef ref<screenObj, screenBase> screen;

@@ -76,6 +76,17 @@ void connectionObj::in_thread_idle(const functionref<void (THREAD_CALLBACK)>
 			     });
 }
 
+bool connectionObj::selection_has_owner(const std::string_view &selection)
+	const
+{
+	auto selection_atom=impl->info->get_atom(selection);
+
+	if (selection_atom == XCB_NONE)
+		return false;
+
+	return impl->info->get_selection_owner(selection_atom) != XCB_NONE;
+}
+
 /////////////////////////////////////////////////////////////////////////////
 
 // The first step is to create the connection info handle.

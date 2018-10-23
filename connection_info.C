@@ -200,6 +200,39 @@ void connection_infoObj
 			 buffer.size());
 }
 
+xcb_atom_t connection_infoObj::get_atom(const std::string_view &name,
+					bool only_if_exists) const
+{
+	returned_pointer<xcb_generic_error_t *> error;
+
+	auto value=return_pointer(xcb_intern_atom_reply
+				  (conn,
+				   xcb_intern_atom(conn, only_if_exists ? 1:0,
+						   name.size(),
+						   name.data()),
+				   error.addressof()));
+
+	if (error)
+		return XCB_NONE;
+
+	return value->atom;
+}
+
+xcb_window_t connection_infoObj::get_selection_owner(xcb_atom_t atom) const
+{
+	returned_pointer<xcb_generic_error_t *> error;
+
+	auto value=return_pointer
+		(xcb_get_selection_owner_reply
+		 (conn, xcb_get_selection_owner(conn, atom),
+		  error.addressof()));
+
+	if (error)
+		return XCB_NONE;
+
+	return value->owner;
+}
+
 std::string connection_infoObj::get_atom_name(xcb_atom_t atom) const
 {
 	returned_pointer<xcb_generic_error_t *> error;

@@ -54,6 +54,11 @@ const_screen elementObj::get_screen() const
        return impl->get_screen();
 }
 
+bool elementObj::selection_has_owner(const std::string_view &selection) const
+{
+	return get_screen()->selection_has_owner(selection);
+}
+
 void elementObj::show_all()
 {
 	impl->request_visibility_recursive(true);

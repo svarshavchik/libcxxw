@@ -82,4 +82,10 @@ void generic_windowObj::lower()
 		 });
 }
 
+bool generic_windowObj::selection_has_owner(const std::string_view &selection)
+	const
+{
+	return get_screen()->selection_has_owner(selection);
+}
+
 LIBCXXW_NAMESPACE_END

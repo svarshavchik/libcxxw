@@ -90,7 +90,15 @@ typedef std::unordered_set<std::string> enabled_theme_options_t;
 //! after all other activity gets processed; after processing any X
 //! display server messages, and updating the display with any
 //! unprocessed changes.
-
+//!
+//! \par Selections
+//!
+//! \code
+//! bool flag=conn->selection_has_owner("SECONDARY");
+//! \endcode
+//!
+//! Returns an indication whether the given selection has an owner window.
+//! This checks where GetSelectionOwner() returns a window handle.
 
 typedef ref<connectionObj, connectionBase> connection;
 

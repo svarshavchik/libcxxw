@@ -91,6 +91,8 @@ public:
 	const std::unordered_set<std::string> &supported() const;
 
 	//! Whether the given protocol is supported
+
+	//! Checks if the window manager supports the named protocol.
 	bool supported(const std::string_view &) const;
 
 	//! Return the screen's work area.
@@ -253,6 +255,13 @@ public:
 	fontcollection create_fontcollection(const font &font_spec,
 					     const depth_t depth,
 					     const defaulttheme &font_theme);
+
+	//! Whether a selection is available.
+
+	//! This is forward to this screen's
+	//! \ref connection "connection"'s selection_has_owner().
+	bool selection_has_owner(const std::string_view &selection="SECONDARY")
+		const;
 };
 
 LIBCXXW_NAMESPACE_END

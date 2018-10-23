@@ -65,6 +65,14 @@ public:
 	//! \see connection
 
 	void on_disconnect(const functionref<void ()> &callback);
+
+	//! Whether a selection is available.
+
+	//! This gets forwarded to this window's
+	//! \ref connection "connection"'s selection_has_owner(), for
+	//! convenience.
+	bool selection_has_owner(const std::string_view &selection="SECONDARY")
+		const;
 };
 
 LIBCXXW_NAMESPACE_END

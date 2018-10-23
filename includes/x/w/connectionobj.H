@@ -77,6 +77,13 @@ class connectionObj : virtual public obj {
 	//! Invoke the callback in the execution thread, after all other callbacks.
 
 	void in_thread_idle(const functionref<void (THREAD_CALLBACK)> &cb);
+
+	//! Whether a selection is available.
+
+	//! Returns an indication whether there's an owner of the specified
+	//! selection on the server.
+	bool selection_has_owner(const std::string_view &selection="SECONDARY")
+		const;
 };
 
 LIBCXXW_NAMESPACE_END

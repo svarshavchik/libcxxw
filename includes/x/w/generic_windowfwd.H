@@ -54,6 +54,15 @@ class LIBCXX_PUBLIC generic_windowBase;
 //! \endcode
 //!
 //! Moves this window above all other windows, or below all other windows.
+//!
+//! \par Selections
+//!
+//! \code
+//! bool flag=main_window->selection_has_owner("SECONDARY");
+//! \endcode
+//!
+//! For convenience, this is forwarded to this screen's
+//! \ref connection "connection".
 
 typedef ref<generic_windowObj, generic_windowBase> generic_window;
 

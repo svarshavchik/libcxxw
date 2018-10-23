@@ -195,6 +195,14 @@ public:
 	//! Invoke the callback in the execution thread, after all other callbacks.
 
 	void in_thread_idle(const functionref<void (THREAD_CALLBACK)> &cb);
+
+	//! Whether a selection is available.
+
+	//! This gets forwarded to this window's
+	//! \ref connection "connection"'s selection_has_owner(), for
+	//! convenience.
+	bool selection_has_owner(const std::string_view &selection="SECONDARY")
+		const;
 };
 
 //! Alias
