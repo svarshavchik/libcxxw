@@ -1200,9 +1200,12 @@ bool editorObj::implObj::process_button_event(ONLY IN_THREAD,
 			cursor->moveto(IN_THREAD, most_recent_x, most_recent_y);
 
 			if (be.button == 2)
+			{
+				set_focus_only(IN_THREAD, &be);
 				get_window_handler()
 					.receive_selection(IN_THREAD,
 							   XCB_ATOM_PRIMARY);
+			}
 		}
 	}
 	else if (be.button == 1)

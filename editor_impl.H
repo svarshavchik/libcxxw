@@ -424,6 +424,8 @@ class LIBCXX_HIDDEN editorObj::implObj
 
 	bool uses_input_method() override;
 
+	//! Override process_button_event().
+
 	//! Button 1 moves the cursor, button2 pastes the primary clipboard.
 
 	bool process_button_event(ONLY IN_THREAD,

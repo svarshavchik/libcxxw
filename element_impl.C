@@ -414,6 +414,7 @@ rectarea draw_info::entire_area() const
 }
 
 rectangle elementObj::implObj::get_absolute_location_on_screen(ONLY IN_THREAD)
+	const
 {
 	auto r=get_absolute_location(IN_THREAD);
 

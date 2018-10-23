@@ -196,7 +196,7 @@ public:
 	draw_info &get_draw_info_from_scratch(ONLY IN_THREAD) override;
 
 	//! Invoke parent_element->get_absolute_location(), and add my x/y
-	rectangle get_absolute_location(ONLY IN_THREAD) override;
+	rectangle get_absolute_location(ONLY IN_THREAD) const override;
 
 	//! update_visibility() invokes this callback.
 

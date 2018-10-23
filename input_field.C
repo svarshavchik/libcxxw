@@ -92,7 +92,7 @@ factoryObj::create_input_field(const text_param &text,
 
 	editorptr created_editor;
 
-	peephole_style input_field_peephole_style{halign::fill};
+	peephole_style input_field_peephole_style{halign::fill, valign::fill};
 
 	auto [peephole_info, lm]=create_peepholed_focusable_with_frame
 		({config.border,

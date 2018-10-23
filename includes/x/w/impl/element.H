@@ -711,10 +711,10 @@ class elementObj::implObj : public element_drawObj,
 
 	//! We don't need the full draw_info, just the absolute location.
 
-	virtual rectangle get_absolute_location(ONLY IN_THREAD)=0;
+	virtual rectangle get_absolute_location(ONLY IN_THREAD) const=0;
 
 	//! We need get_absolute_location() for the screen!
-	rectangle get_absolute_location_on_screen(ONLY IN_THREAD);
+	rectangle get_absolute_location_on_screen(ONLY IN_THREAD) const;
 
 	//! Whether this element can be under the mouse pointer.
 

@@ -35,42 +35,6 @@ void editor_peephole_implObj::recalculate(ONLY IN_THREAD,
 		 {height, height, height});
 }
 
-bool editor_peephole_implObj::process_button_event(ONLY IN_THREAD,
-						   const button_event &be,
-						   xcb_timestamp_t
-						   timestamp)
-{
-	if ((be.button != 1 && be.button != 2) || !be.press)
-		return false;
-
-	get_element([&]
-		    (const focusable &f)
-		    {
-			    f->get_impl()->set_focus_only(IN_THREAD, &be);
-		    });
-	return true;
-}
-
-bool editor_peephole_implObj
-::find_acceptable_drop(ONLY IN_THREAD,
-		       element_impl &accepting_element,
-		       const source_dnd_formats_t &source_formats,
-		       xcb_timestamp_t timestamp)
-{
-	bool flag=false;
-
-	get_element([&]
-		    (const editor &e)
-		    {
-			    flag=e->impl->this_element_accepts_this_drop
-				    (IN_THREAD,
-				     accepting_element,
-				     source_formats,
-				     timestamp);
-		    });
-	return flag;
-}
-
 void editor_peephole_implObj::report_motion_event(ONLY IN_THREAD,
 						  const motion_event &me)
 {

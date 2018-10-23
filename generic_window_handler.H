@@ -398,10 +398,11 @@ class generic_windowObj::handlerObj
 	//! For top level display elements, this is the same as
 	//! their alleged current_position.
 
-	rectangle get_absolute_location(ONLY IN_THREAD) override;
+	rectangle get_absolute_location(ONLY IN_THREAD) const override;
 
 	//! Translate coordinates to screen coordinates.
-	void get_absolute_location_on_screen(ONLY IN_THREAD, rectangle &r);
+	void get_absolute_location_on_screen(ONLY IN_THREAD, rectangle &r)
+		const;
 
 	//! Take local x/y coordinates, add root_[xy].
 	void add_root_xy(ONLY IN_THREAD, coord_t &x, coord_t &y);

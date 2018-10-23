@@ -170,6 +170,7 @@ void child_elementObj::background_color_changed(ONLY IN_THREAD)
 }
 
 rectangle child_elementObj::get_absolute_location(ONLY IN_THREAD)
+	const
 {
 	auto r=child_container->container_element_impl()
 		.get_absolute_location(IN_THREAD);

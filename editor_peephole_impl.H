@@ -28,23 +28,6 @@ class LIBCXX_HIDDEN editor_peephole_implObj
 
 	using peepholeObj::implObj::implObj;
 
-	//! Button 1 sets focus to the element.
-
-	bool process_button_event(ONLY IN_THREAD,
-				  const button_event &be,
-				  xcb_timestamp_t timestamp) override;
-
-	//! Forward find_acceptable_drop() to the element
-
-	//! The editor element may not be entirely in the peephole, but we
-	//! want to have the edit element to entertain drops with the
-	//! dragging located anywhere inside the peephole.
-
-	bool find_acceptable_drop(ONLY IN_THREAD,
-				  element_impl &accepting_element,
-				  const source_dnd_formats_t &source_formats,
-				  xcb_timestamp_t timestamp) override;
-
 	//! Override report_motion_event().
 
 	//! Remove the cursor pointer on any motion event. The key event

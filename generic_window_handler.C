@@ -450,14 +450,14 @@ const icon generic_windowObj::handlerObj::disabled_mask(ONLY IN_THREAD)
 	return icon_1tag<disabled_mask_tag>::tagged_icon(IN_THREAD);
 }
 
-rectangle generic_windowObj::handlerObj
-::get_absolute_location(ONLY IN_THREAD)
+rectangle generic_windowObj::handlerObj::get_absolute_location(ONLY IN_THREAD)
+	const
 {
 	return data(IN_THREAD).current_position;
 }
 
 void generic_windowObj::handlerObj
-::get_absolute_location_on_screen(ONLY IN_THREAD, rectangle &r)
+::get_absolute_location_on_screen(ONLY IN_THREAD, rectangle &r) const
 {
 	r.x=coord_t::truncate(r.x + root_x(IN_THREAD));
 	r.y=coord_t::truncate(r.y + root_y(IN_THREAD));
