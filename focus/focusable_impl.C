@@ -383,21 +383,9 @@ bool elementObj::implObj::process_button_event(ONLY IN_THREAD,
 			 });
 	}
 
-	if (!processed && activate_for(be) && be.button == 3 &&
-	    data(IN_THREAD).contextpopup_callback)
+	if (!processed && activate_for(be) && be.button == 3)
 	{
-		auto main_window=get_window_handler().get_main_window();
-
-		if (main_window)
-		{
-			busy_impl yes_i_am{*this};
-			try {
-				data(IN_THREAD).contextpopup_callback
-					(IN_THREAD, &be, yes_i_am);
-			} REPORT_EXCEPTIONS(main_window);
-		}
-
-		processed=true;
+		processed=invoke_contextpopup_callback(IN_THREAD, &be);
 	}
 
 	if (!processed && data(IN_THREAD).on_button_event_callback)
@@ -418,6 +406,26 @@ bool elementObj::implObj::process_button_event(ONLY IN_THREAD,
 	}
 
 	return processed;
+}
+
+bool elementObj::implObj
+::invoke_contextpopup_callback(ONLY IN_THREAD,
+			       const callback_trigger_t &trigger)
+{
+	if (!data(IN_THREAD).contextpopup_callback)
+		return false;
+
+	auto main_window=get_window_handler().get_main_window();
+
+	if (main_window)
+	{
+		busy_impl yes_i_am{*this};
+		try {
+			data(IN_THREAD).contextpopup_callback
+				(IN_THREAD, trigger, yes_i_am);
+		} REPORT_EXCEPTIONS(main_window);
+	}
+	return true;
 }
 
 void focusableObj::implObj::next_focus(ONLY IN_THREAD,

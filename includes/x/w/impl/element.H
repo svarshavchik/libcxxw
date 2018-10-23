@@ -1263,6 +1263,19 @@ class elementObj::implObj : public element_drawObj,
 						     const button_event &be,
 						     xcb_timestamp_t timestamp);
 
+	//! Invoke the context popup calback, if one is defined.
+
+	//! If contextpopup_callback is set invoke it and return true.
+	//! Returns false if contextpopup_callback is not set.
+	//!
+	//! Overridden in child_elementObj. If the most immediate element
+	//! under the pointer does not have the contextpopup_callback
+	//! popup initialized maybe its parent container does.
+
+	virtual bool invoke_contextpopup_callback(ONLY IN_THREAD,
+						  const callback_trigger_t
+						  &trigger);
+
 	//! Whether this element will use the X Input Method.
 
 	//! The default implementation returns false. When the element

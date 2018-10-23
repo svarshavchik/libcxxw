@@ -153,6 +153,12 @@ public:
 				  const button_event &be,
 				  xcb_timestamp_t timestamp) override;
 
+	//! Override invoke_contextpopup_callback()
+
+	bool invoke_contextpopup_callback(ONLY IN_THREAD,
+					  const callback_trigger_t &trigger)
+		override;
+
 	//! Implement grab().
 
 	void grab(ONLY IN_THREAD) override;
