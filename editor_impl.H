@@ -564,6 +564,7 @@ class LIBCXX_HIDDEN editorObj::implObj
 
 		implObj &me;
 
+	public:
 		//! The lock on me's cursor.
 
 		selection_cursor_t::lock cursor_lock;
@@ -592,12 +593,26 @@ class LIBCXX_HIDDEN editorObj::implObj
 	//! This element can receive a selection
 	bool selection_can_be_received() override;
 
+	//! Override cut_or_copy_selection(), and implement it.
+	bool cut_or_copy_selection(cut_or_copy_op, xcb_atom_t) override;
+
+	//! Override cut_or_copy_selection(), and implement it.
+	bool cut_or_copy_selection(ONLY IN_THREAD,
+				   cut_or_copy_op, xcb_atom_t) override;
+
 	//! Prepare a new primary selection, if we can.
 	void create_primary_selection(ONLY IN_THREAD);
 
 	//! Prepare a new secondary selection, if we can.
 	void create_secondary_selection(ONLY IN_THREAD,
 					xcb_atom_t selection);
+
+	//! Prepare a new secondary selection, if we can.
+
+	//! Returns false if no selection was created.
+	bool create_secondary_selection(ONLY IN_THREAD,
+					xcb_atom_t selection,
+					selection_cursor_t::lock &lock);
 
 	//! Remove the announced primary selection.
 	void remove_primary_selection(ONLY IN_THREAD);

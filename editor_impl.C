@@ -1537,19 +1537,79 @@ void editorObj::implObj::create_primary_selection(ONLY IN_THREAD)
 	get_window_handler().selection_announce(IN_THREAD, XCB_ATOM_PRIMARY, s);
 }
 
+bool editorObj::implObj::cut_or_copy_selection(cut_or_copy_op op,
+					       xcb_atom_t selection)
+{
+	if (op == cut_or_copy_op::available)
+		return current_primary_selection.get() ? true:false;
+
+	get_window_handler().thread()
+		->run_as([me=ref{this}, op, selection]
+			 (ONLY IN_THREAD)
+			 {
+				 me->cut_or_copy_selection(IN_THREAD,
+							   op,
+							   selection);
+			 });
+	return true;
+}
+
+bool editorObj::implObj::cut_or_copy_selection(ONLY IN_THREAD,
+					       cut_or_copy_op op,
+					       xcb_atom_t selection)
+{
+	switch (op) {
+	case cut_or_copy_op::available:
+		return cut_or_copy_selection(op, selection);
+	case cut_or_copy_op::copy:
+		create_secondary_selection(IN_THREAD, selection);
+		break;
+	case cut_or_copy_op::cut:
+		{
+			delete_selection_info del_info{IN_THREAD, *this};
+
+			unblink(IN_THREAD);
+			if (create_secondary_selection(IN_THREAD,
+						       selection,
+						       del_info.cursor_lock))
+			{
+				size_t deleted=del_info.to_be_deleted();
+
+				del_info.do_delete(IN_THREAD);
+				recalculate(IN_THREAD);
+				draw_changes(IN_THREAD, del_info.cursor_lock,
+					     input_change_type::deleted,
+					     deleted, 0);
+			}
+			if (current_keyboard_focus(IN_THREAD))
+				blink(IN_THREAD);
+		}
+		break;
+	}
+	return true;
+}
+
 void editorObj::implObj::create_secondary_selection(ONLY IN_THREAD,
 						    xcb_atom_t selection)
 {
-	if (!config.update_clipboards)
-		return;
-
 	selection_cursor_t::lock cursor_lock{IN_THREAD, *this};
 
+	create_secondary_selection(IN_THREAD, selection, cursor_lock);
+}
+
+bool editorObj::implObj
+::create_secondary_selection(ONLY IN_THREAD,
+			     xcb_atom_t selection,
+			     selection_cursor_t::lock &cursor_lock)
+{
+	if (!config.update_clipboards)
+		return false;
+
 	if (!cursor_lock.cursor)
-		return;
+		return false;
 
 	if (cursor_lock.cursor->compare(cursor) == 0)
-		return; // Nothing selected, really.
+		return false; // Nothing selected, really.
 	// Remove the previous one.
 
 	remove_secondary_selection(IN_THREAD);
@@ -1560,6 +1620,7 @@ void editorObj::implObj::create_secondary_selection(ONLY IN_THREAD,
 
 	secondary_selection(IN_THREAD)=s;
 	get_window_handler().selection_announce(IN_THREAD, selection, s);
+	return true;
 }
 
 void editorObj::implObj::remove_primary_selection(ONLY IN_THREAD)
@@ -1640,7 +1701,8 @@ size_t editorObj::implObj::delete_char_or_selection(ONLY IN_THREAD,
 	{
 		if (mask.shift)
 			create_secondary_selection(IN_THREAD,
-						   XCB_ATOM_SECONDARY);
+						   XCB_ATOM_SECONDARY,
+						   del_info.cursor_lock);
 
 		del_info.do_delete(IN_THREAD);
 

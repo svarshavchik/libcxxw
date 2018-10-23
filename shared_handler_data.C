@@ -119,9 +119,13 @@ void shared_handler_dataObj
 void shared_handler_dataObj::close_all_menu_popups(ONLY IN_THREAD)
 {
 	hide_menu_popups_until(IN_THREAD, opened_menu_popups->end());
+#if 0
+	// invoked on_validate callback in an input field, if it had
+	// keyboard focus.
 	auto h=toplevel_handler.getptr();
 	if (h)
 		h->unset_keyboard_focus(IN_THREAD, {});
+#endif
 }
 
 bool shared_handler_dataObj

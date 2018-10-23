@@ -1574,6 +1574,9 @@ void generic_windowObj::handlerObj
 {
 	auto old_focus=most_recent_keyboard_focus(IN_THREAD);
 
+	if (old_focus == element)
+		return; // Keyboard focus unchanged
+
 	most_recent_keyboard_focus(IN_THREAD)=element;
 
 	auto &e=element->get_focusable_element();
