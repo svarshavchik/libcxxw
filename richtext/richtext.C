@@ -548,6 +548,17 @@ void richtextObj::draw_with_ellipsis(ONLY IN_THREAD,
 		}
 	}
 
+	// If characters are removed from an input field and it becomes
+	// less tall, we need to clear the padding even if we were asked
+	// not to.
+	auto h=(*lock)->height();
+
+	if (h < rendered_height)
+	{
+		clear_padding=true;
+	}
+
+	rendered_height=h;
 	if (!clear_padding)
 		return;
 

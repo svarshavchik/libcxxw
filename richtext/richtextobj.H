@@ -167,6 +167,10 @@ class LIBCXX_HIDDEN richtextObj : virtual public obj {
 	void text_width(const std::optional<dim_t> &s);
 
  private:
+
+	//! Most recently rendered height.
+	size_t rendered_height=0;
+
 	//! Draw the text
 
 	void draw(ONLY IN_THREAD,
