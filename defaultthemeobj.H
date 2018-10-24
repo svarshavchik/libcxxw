@@ -71,6 +71,9 @@ public:
 
 	const std::vector<theme_option> available_theme_options;
 
+	//! Which options are enabled.
+	const enabled_theme_options_t enabled_theme_options;
+
 	//! See if two theme objects are the same
 
 	//! cxxwtheme updates the screen's theme justbefore it terminates.
@@ -358,6 +361,9 @@ public:
 	void layout_insert(const gridlayoutmanager &glm,
 			   gridtemplate *elements,
 			   const std::string &name);
+
+	//! Default cut/paste selection
+	const char *default_cut_paste_selection() const;
 };
 
 LIBCXXW_NAMESPACE_END

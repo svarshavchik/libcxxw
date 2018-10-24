@@ -149,6 +149,12 @@ bool screenObj::supported(const std::string_view &name) const
 		!= impl->supported.end();
 }
 
+bool screenObj::selection_has_owner() const
+{
+	return selection_has_owner(impl->current_theme.get()
+				   ->default_cut_paste_selection());
+}
+
 bool screenObj::selection_has_owner(const std::string_view &selection) const
 {
 	return get_connection()->selection_has_owner(selection);

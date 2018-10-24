@@ -54,6 +54,11 @@ const_screen elementObj::get_screen() const
        return impl->get_screen();
 }
 
+bool elementObj::selection_has_owner() const
+{
+	return selection_has_owner(impl->default_cut_paste_selection());
+}
+
 bool elementObj::selection_has_owner(const std::string_view &selection) const
 {
 	return get_screen()->selection_has_owner(selection);
@@ -66,6 +71,11 @@ bool elementObj::selection_can_be_received() const
 	return mw && mw->selection_can_be_received();
 }
 
+void elementObj::receive_selection()
+{
+	selection_has_owner(impl->default_cut_paste_selection());
+}
+
 void elementObj::receive_selection(const std::string_view &selection)
 {
 	in_thread([me=ref{this}, selection=std::string{selection}]
@@ -73,6 +83,12 @@ void elementObj::receive_selection(const std::string_view &selection)
 		  {
 			  me->receive_selection(IN_THREAD, selection);
 		  });
+}
+
+void elementObj::receive_selection(ONLY IN_THREAD)
+{
+	return receive_selection(IN_THREAD,
+				 impl->default_cut_paste_selection());
 }
 
 void elementObj::receive_selection(ONLY IN_THREAD,
@@ -84,12 +100,24 @@ void elementObj::receive_selection(ONLY IN_THREAD,
 		mw->receive_selection(IN_THREAD, selection);
 }
 
+bool elementObj::cut_or_copy_selection(cut_or_copy_op op)
+{
+	return cut_or_copy_selection
+		(op, impl->default_cut_paste_selection());
+}
+
 bool elementObj::cut_or_copy_selection(cut_or_copy_op op,
 				       const std::string_view &selection)
 {
 	auto mw=get_main_window();
 
 	return mw && mw->cut_or_copy_selection(op, selection);
+}
+
+bool elementObj::cut_or_copy_selection(ONLY IN_THREAD, cut_or_copy_op op)
+{
+	return cut_or_copy_selection
+		(IN_THREAD, op, impl->default_cut_paste_selection());
 }
 
 bool elementObj::cut_or_copy_selection(ONLY IN_THREAD, cut_or_copy_op op,

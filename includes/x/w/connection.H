@@ -21,7 +21,6 @@ LIBCXXW_NAMESPACE_START
 struct theme_option {
 	std::string	label;		//!< Internal label
 	std::u32string	description;	//!< Description
-	bool		selected;	//!< If this theme option is selected
 };
 
 //! Base class for \ref connection "display server connections".

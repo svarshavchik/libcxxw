@@ -704,14 +704,22 @@ void editorObj::implObj::set_cursor_pointer(ONLY IN_THREAD,
 	parent_peephole->get_element_impl().set_cursor_pointer(IN_THREAD, p);
 }
 
+xcb_atom_t editorObj::implObj::secondary_clipboard(ONLY IN_THREAD)
+{
+	return IN_THREAD->info->get_atom
+		(get_window_handler().get_screen()->impl->current_theme.get()
+		 ->default_cut_paste_selection());
+}
+
 bool editorObj::implObj::process_keypress(ONLY IN_THREAD, const key_event &ke)
 {
 	if (ke.ctrl)
 	{
 		if (ke.keysym == XK_Insert)
 		{
-			create_secondary_selection(IN_THREAD,
-						   XCB_ATOM_SECONDARY);
+			create_secondary_selection
+				(IN_THREAD,
+				 secondary_clipboard(IN_THREAD));
 			return true;
 		}
 
@@ -811,9 +819,9 @@ bool editorObj::implObj::process_keypress(ONLY IN_THREAD, const key_event &ke)
 		return to_end(IN_THREAD, ke);
 	case XK_Insert:
 		if (ke.shift)
-			get_window_handler()
-				.receive_selection(IN_THREAD,
-						   XCB_ATOM_SECONDARY);
+			get_window_handler().receive_selection
+				(IN_THREAD,
+				 secondary_clipboard(IN_THREAD));
 		return true;
 	}
 
@@ -1700,9 +1708,10 @@ size_t editorObj::implObj::delete_char_or_selection(ONLY IN_THREAD,
 	if (del_info.cursor_lock.cursor)
 	{
 		if (mask.shift)
-			create_secondary_selection(IN_THREAD,
-						   XCB_ATOM_SECONDARY,
-						   del_info.cursor_lock);
+			create_secondary_selection
+				(IN_THREAD,
+				 secondary_clipboard(IN_THREAD),
+				 del_info.cursor_lock);
 
 		del_info.do_delete(IN_THREAD);
 

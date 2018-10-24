@@ -403,7 +403,7 @@ static w::container create_main_window(const w::main_window &mw)
 
 	auto f=glm->append_row();
 
-	f->create_label("Theme: ");
+	f->halign(w::halign::right).create_label("Theme: ");
 
 	auto conn=mw->get_screen()->get_connection();
 
@@ -508,7 +508,7 @@ static w::container create_main_window(const w::main_window &mw)
 
 	initial_scale << theme_info->scale << "%";
 
-	f->left_padding(4).create_label("Scale:");
+	f->halign(w::halign::right).left_padding(4).create_label("Scale:");
 
 	auto scale_label=f->create_label(initial_scale.str());
 

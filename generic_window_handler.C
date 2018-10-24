@@ -2006,6 +2006,12 @@ void generic_windowObj::handlerObj
 		 });
 }
 
+void focusableObj::focusable_receive_selection()
+{
+	focusable_receive_selection(get_impl()->get_focusable_element()
+				    .default_cut_paste_selection());
+}
+
 void focusableObj
 ::focusable_receive_selection(const std::string_view &selection)
 {
@@ -2166,6 +2172,15 @@ bool generic_windowObj::handlerObj
 }
 
 bool focusableObj
+::focusable_cut_or_copy_selection(cut_or_copy_op op)
+{
+	return focusable_cut_or_copy_selection
+		(op,
+		 get_impl()->get_focusable_element()
+		 .default_cut_paste_selection());
+}
+
+bool focusableObj
 ::focusable_cut_or_copy_selection(cut_or_copy_op op,
 				  const std::string_view &selection)
 {
@@ -2178,6 +2193,16 @@ bool focusableObj
 	return focusable == impl && selection_atom != XCB_NONE &&
 		focusable->get_focusable_element()
 		.cut_or_copy_selection(op, selection_atom);
+}
+
+bool focusableObj
+::focusable_cut_or_copy_selection(ONLY IN_THREAD,
+				  cut_or_copy_op op)
+{
+	return focusable_cut_or_copy_selection
+		(IN_THREAD, op,
+		 get_impl()->get_focusable_element()
+		 .default_cut_paste_selection());
 }
 
 bool focusableObj

@@ -82,7 +82,7 @@ class connectionObj : virtual public obj {
 
 	//! Returns an indication whether there's an owner of the specified
 	//! selection on the server.
-	bool selection_has_owner(const std::string_view &selection="SECONDARY")
+	bool selection_has_owner(const std::string_view &selection)
 		const;
 };
 

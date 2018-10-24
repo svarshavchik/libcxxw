@@ -260,8 +260,14 @@ public:
 
 	//! This is forward to this screen's
 	//! \ref connection "connection"'s selection_has_owner().
-	bool selection_has_owner(const std::string_view &selection="SECONDARY")
+	bool selection_has_owner(const std::string_view &selection)
 		const;
+
+
+	//! Whether a selection is available.
+
+	//! The default selection clipboard is a configuration setting.
+	bool selection_has_owner() const;
 };
 
 LIBCXXW_NAMESPACE_END

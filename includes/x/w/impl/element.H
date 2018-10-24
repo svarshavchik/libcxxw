@@ -1464,6 +1464,11 @@ class elementObj::implObj : public element_drawObj,
 
 	virtual bool selection_can_be_received();
 
+	//! Return the default clipboard for copy/cut/paste selection.
+
+	//! This reaches into the default theme object, in order to get it.
+
+	std::string default_cut_paste_selection() const;
 	//! Whether this display element has something to copy or cut, or do it.
 
 	//! The default implementation returns false.

@@ -82,6 +82,12 @@ void generic_windowObj::lower()
 		 });
 }
 
+bool generic_windowObj::selection_has_owner() const
+{
+	return selection_has_owner(elementObj::impl
+				   ->default_cut_paste_selection());
+}
+
 bool generic_windowObj::selection_has_owner(const std::string_view &selection)
 	const
 {

@@ -121,14 +121,23 @@ public:
 
 	//! Check a cut or copy operation if this focusable has keyboard focus.
 	bool focusable_cut_or_copy_selection(cut_or_copy_op,
-					     const std::string_view
-					     &selection="SECONDARY");
+					     const std::string_view &selection);
+
+	//! Check a cut or copy operation if this focusable has keyboard focus.
+
+	//! The default selection clipboard is a configuration setting.
+	bool focusable_cut_or_copy_selection(cut_or_copy_op);
 
 	//! Check a cut or copy operation if this focusable has keyboard focus.
 	bool focusable_cut_or_copy_selection(ONLY IN_THREAD,
 					     cut_or_copy_op,
-					     const std::string_view
-					     &selection="SECONDARY");
+					     const std::string_view &selection);
+
+	//! Check a cut or copy operation if this focusable has keyboard focus.
+
+	//! The default selection clipboard is a configuration setting.
+	bool focusable_cut_or_copy_selection(ONLY IN_THREAD,
+					     cut_or_copy_op);
 
 	//! Receive a selection, if this focusable has keyboard focus.
 
@@ -136,8 +145,13 @@ public:
 	//! focus, if so then call's \ref generic_window "top level window"'s
 	//! receive_selection().
 
-	void focusable_receive_selection(const std::string_view &selection
-					 ="SECONDARY");
+	void focusable_receive_selection(const std::string_view &selection);
+
+	//! Receive the default selection, if this focusable has keyboard focus.
+
+	//! The default selection clipboard is a configuration setting.
+
+	void focusable_receive_selection();
 
 	//! Receive a selection, if this focusable has keyboard focus.
 
@@ -146,8 +160,13 @@ public:
 	//! receive_selection().
 
 	void focusable_receive_selection(ONLY IN_THREAD,
-					 const std::string_view &selection
-					 ="SECONDARY");
+					 const std::string_view &selection);
+
+	//! Receive the default selection, if this focusable has keyboard focus.
+
+	//! The default selection clipboard is a configuration setting.
+
+	void focusable_receive_selection(ONLY IN_THREAD);
 };
 
 template<typename functor>

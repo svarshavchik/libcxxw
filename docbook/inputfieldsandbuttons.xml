@@ -97,7 +97,7 @@ See COPYING for distribution information.
       <title>Clipboards</title>
 
       <para>
-	&app;'s text input fields make use of two clipboards.
+	&app;'s text input fields use the primary and the secondary clipboard.
       </para>
 
       <variablelist>
@@ -120,15 +120,25 @@ See COPYING for distribution information.
 	    <para>
 	      <keycap>Ctrl</keycap>-<keycap>Space</keycap> inserts the text
 	      from the primary keyboard at the current cursor position, if
-	      another application copied text to the primary clipboard.
+	      another window copied some text to the primary clipboard
+	      (or from another text input field in the same window).
 	    </para>
 	  </listitem>
 	</varlistentry>
 
 	<varlistentry>
-	  <term>Secondary clipboard</term>
+	  <term>Secondary clipboard (copy/cut/paste)</term>
 
 	  <listitem>
+	    <para>
+	      The copy, cut, and paste operations use the system's secondary
+	      clipboard by default.
+	      The
+	      <link linkend="cxxwtheme.1"><command>cxxwtheme</command></link>
+	      command provides an option to use the primary clipboard for
+	      the copy, cut, and paste operation.
+	    </para>
+
 	    <para>
 	      After making a primary clipboard selection,
 	      <keycap>Ctrl</keycap>-<keycap>Insert</keycap> copies the
@@ -149,6 +159,25 @@ See COPYING for distribution information.
 	      <keycap>Shift</keycap>-<keycap>Insert</keycap> inserts the text
 	      from the secondary clipboard at the current cursor position
 	      (the <quote>Paste</quote> operation).
+	    </para>
+
+	    <para>
+	      Enabling the option to use the primary clipboard for
+	      copy/cut/paste operations in
+	      <link linkend="cxxwtheme.1"><command>cxxwtheme</command></link>
+	      has the effect of not use a secondary clipboard, but
+	      have these keyboard commands copy or cut
+	      the selected text semi-permanently to the primary clipboard.
+	      Highlighting the text immediately puts it into the primary
+	      clipboard. The selected text remains in the primary clipboard
+	      if it gets copied or cut,
+	      and the primary keyboard selection remains in place once the
+	      selected text is no longer highlighted.
+	      The paste key combination,
+	      <keycap>Shift</keycap>-<keycap>Insert</keycap>, and the
+	      primary clipboard paste key,
+	      <keycap>Ctrl</keycap>-<keycap>Space</keycap>, have the same
+	      results.
 	    </para>
 	  </listitem>
 	</varlistentry>

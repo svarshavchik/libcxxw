@@ -71,8 +71,13 @@ public:
 	//! This gets forwarded to this window's
 	//! \ref connection "connection"'s selection_has_owner(), for
 	//! convenience.
-	bool selection_has_owner(const std::string_view &selection="SECONDARY")
+	bool selection_has_owner(const std::string_view &selection)
 		const;
+
+	//! Whether the default clipboard selection is available
+
+	//! The default selection clipboard is a configuration setting.
+	bool selection_has_owner() const;
 
 	//! Whether a selection can be received right now.
 
@@ -83,20 +88,20 @@ public:
 	//! Receive the specified selection
 
 	void receive_selection(ONLY IN_THREAD,
-			       const std::string_view &selection="SECONDARY")
+			       const std::string_view &selection)
 		override;
 
 	//! Cut or copy the selection
 
 	bool cut_or_copy_selection(cut_or_copy_op,
-				   const std::string_view
-				   &selection="SECONDARY") override;
+				   const std::string_view &selection) override;
 
 	//! Cut or copy the selection
 
 	bool cut_or_copy_selection(ONLY IN_THREAD, cut_or_copy_op,
-				   const std::string_view
-				   &selection="SECONDARY") override;
+				   const std::string_view &selection) override;
+
+	using containerObj::cut_or_copy_selection;
 };
 
 LIBCXXW_NAMESPACE_END

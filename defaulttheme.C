@@ -51,6 +51,8 @@ themescaleprop(LIBCXX_NAMESPACE_STR "::w::theme::scale", 0);
 static property::value<std::string>
 themeoptionsprop(LIBCXX_NAMESPACE_STR "::w::theme::options", "");
 
+static const char use_primary_clipboard_option_id[]="_use_primary_clipboard";
+
 std::string themedirroot()
 {
 	return themedirbase.get();
@@ -299,32 +301,17 @@ void load_cxxwtheme_property(const screen &screen0,
 				enabled_theme_options);
 }
 
-static inline enabled_theme_options_t
-get_enabled_options(const std::vector<theme_option> &available_theme_options)
-{
-	enabled_theme_options_t opts;
-
-	for (const auto &option:available_theme_options)
-		if (option.selected)
-			opts.insert(option.label);
-
-	return opts;
-}
-
 std::tuple<std::string, int, enabled_theme_options_t>
 connectionObj::current_theme() const
 {
 	auto theme=impl->screens.at(0)->current_theme.get();
 
 	return {theme->themename, std::round(theme->themescale*100),
-			get_enabled_options(theme->available_theme_options)};
+		theme->enabled_theme_options};
 }
 
 static std::vector<theme_option>
-make_available_theme_options(const xml::doc &theme_configfile,
-			     const enabled_theme_options_t
-			     &enabled_theme_options)
-
+parse_available_theme_options(const xml::doc &theme_configfile)
 {
 	std::vector<theme_option> opts;
 
@@ -355,6 +342,9 @@ make_available_theme_options(const xml::doc &theme_configfile,
 			if (seen.find(id) != seen.end())
 				continue;
 
+			if (id.substr(0, 1) == "_")
+				throw EXCEPTION("Theme option id cannot start "
+						"with an underscore.");
 			seen.insert(id);
 
 			if (descr_str.empty())
@@ -362,13 +352,22 @@ make_available_theme_options(const xml::doc &theme_configfile,
 			auto descr=unicode::iconvert::tou
 				::convert(descr_str, unicode::utf_8).first;
 
-			opts.push_back({id, descr,
-						enabled_theme_options.find(id)
-						!=
-						enabled_theme_options.end()});
+			opts.push_back({id, descr});
 		}
 	}
 
+	static const struct {
+		const char *id;
+		const char32_t *description;
+	} reserved_options[]={
+			      {use_primary_clipboard_option_id,
+			       U"Use the primary clipboard for Copy/Cut/Paste"}
+	};
+
+	for (const auto &option:reserved_options)
+	{
+		opts.push_back({option.id, option.description});
+	}
 	return opts;
 }
 
@@ -376,9 +375,8 @@ static std::vector<theme_option>
 make_available_theme_options(const defaultthemeObj::config &config)
 {
 	try {
-		return make_available_theme_options
-			(config.theme_configfile,
-			 config.enabled_theme_options);
+		return parse_available_theme_options
+			(config.theme_configfile);
 	} catch (const exception &e)
 	{
 		throw EXCEPTION("An error occured while parsing the "
@@ -411,7 +409,7 @@ connection::base::available_themes()
 			std::string name=directory.substr(directory.rfind('/')+1);
 			std::string description=name;
 
-			auto options=make_available_theme_options(xml, {});
+			auto options=parse_available_theme_options(xml);
 
 			themes.push_back({name, description, options});
 		} catch (const exception &e)
@@ -474,15 +472,16 @@ defaulttheme::base::get_config(const std::string &themename,
 
 defaultthemeObj::defaultthemeObj(const xcb_screen_t *screen,
 				 const config &theme_config)
-	: themename(theme_config.themename),
-	  themescale(theme_config.themescale),
-	  available_theme_options(make_available_theme_options(theme_config)),
-	  themedir(theme_config.themedir),
-	  h1mm(one_millimeter(screen->width_in_pixels,
-			      screen->width_in_millimeters, themescale)),
-	  v1mm(one_millimeter(screen->height_in_pixels,
-			      screen->height_in_millimeters, themescale)),
-	  screen(screen)
+	: themename{theme_config.themename},
+	  themescale{theme_config.themescale},
+	  available_theme_options{make_available_theme_options(theme_config)},
+	  enabled_theme_options{theme_config.enabled_theme_options},
+	  themedir{theme_config.themedir},
+	  h1mm{one_millimeter(screen->width_in_pixels,
+			      screen->width_in_millimeters, themescale)},
+          v1mm{one_millimeter(screen->height_in_pixels,
+			      screen->height_in_millimeters, themescale)},
+	  screen{screen}
 {
 }
 
@@ -490,6 +489,7 @@ bool defaultthemeObj::is_different_theme(const defaulttheme &t) const
 {
 	if (themename != t->themename ||
 	    themescale != t->themescale ||
+	    enabled_theme_options != t->enabled_theme_options ||
 	    available_theme_options.size() != t->available_theme_options.size())
 		return true;
 
@@ -499,10 +499,6 @@ bool defaultthemeObj::is_different_theme(const defaulttheme &t) const
 	{
 		if (this_o.label != oo->label)
 			return true;
-
-		if (this_o.selected != oo->selected)
-			return true;
-
 		++oo;
 	}
 	return false;
@@ -1486,7 +1482,8 @@ theme_color_t defaultthemeObj::get_theme_color(const std::string_view &id) const
 	{
 		for (const auto &option:available_theme_options)
 		{
-			if (!option.selected)
+			if (enabled_theme_options.find(option.label) ==
+			    enabled_theme_options.end())
 				continue;
 			auto iter=colors.find(option.label + ":"
 					      + try_id);
@@ -2103,5 +2100,13 @@ void defaultthemeObj::layout_add_page(const bookpagefactory &f,
 	       shortcut_iter == elements->shortcuts.end()
 	       ? shortcut{}:shortcut_iter->second);
 }
+
+const char *defaultthemeObj::default_cut_paste_selection() const
+{
+	return enabled_theme_options.find(use_primary_clipboard_option_id) ==
+		enabled_theme_options.end()
+		? "SECONDARY":"PRIMARY";
+}
+
 
 LIBCXXW_NAMESPACE_END

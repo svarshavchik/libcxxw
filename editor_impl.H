@@ -461,6 +461,8 @@ class LIBCXX_HIDDEN editorObj::implObj
 					  const ref<obj> &finish_mcguffin)
 		override;
  private:
+	//! Current theme's secondary clipboard
+	xcb_atom_t secondary_clipboard(ONLY IN_THREAD);
 
 	//! The that was dropped.
 	xcb_atom_t dropped_atom=XCB_NONE;

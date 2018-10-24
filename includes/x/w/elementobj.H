@@ -199,12 +199,17 @@ public:
 
 	void in_thread_idle(const functionref<void (THREAD_CALLBACK)> &cb);
 
+	//! Whether the current theme's default selection is available.
+
+	//! The default selection clipboard is a configuration setting.
+	bool selection_has_owner() const;
+
 	//! Whether a selection is available.
 
 	//! This gets forwarded to this window's
 	//! \ref connection "connection"'s selection_has_owner(), for
 	//! convenience.
-	bool selection_has_owner(const std::string_view &selection="SECONDARY")
+	bool selection_has_owner(const std::string_view &selection)
 		const;
 
 	//! Whether a selection can be received right now.
@@ -221,7 +226,12 @@ public:
 	//! \ref generic_window "top level window"'s
 	//! receive_selection(), so the element that gets to receive
 	//! the selection may not necessarily be this display element.
-	void receive_selection(const std::string_view &selection="SECONDARY");
+	void receive_selection(const std::string_view &selection);
+
+	//! Receive the current theme's default selection .
+
+	//! The default selection clipboard is a configuration setting.
+	void receive_selection();
 
 	//! Receive a selection
 
@@ -230,8 +240,12 @@ public:
 	//! receive_selection(), so the element that gets to receive
 	//! the selection may not necessarily be this display element.
 	virtual void receive_selection(ONLY IN_THREAD,
-				       const std::string_view
-				       &selection="SECONDARY");
+				       const std::string_view &selection);
+
+	//! Receive the current theme's default selection .
+
+	//! The default selection clipboard is a configuration setting.
+	void receive_selection(ONLY IN_THREAD);
 
 	//! Cut or copy the selection
 
@@ -241,8 +255,12 @@ public:
 	//! or copied may not necessarily be this display element.
 
 	virtual bool cut_or_copy_selection(cut_or_copy_op,
-					   const std::string_view
-					   &selection="SECONDARY");
+					   const std::string_view &selection);
+
+	//! Cut or copy the theme's default selection
+
+	//! The default selection clipboard is a configuration setting.
+	bool cut_or_copy_selection(cut_or_copy_op);
 
 	//! Cut or copy the selection
 
@@ -253,8 +271,11 @@ public:
 
 	virtual bool cut_or_copy_selection(ONLY IN_THREAD,
 					   cut_or_copy_op,
-					   const std::string_view
-					   &selection="SECONDARY");
+					   const std::string_view &selection);
+	//! Cut or copy the theme's default selection
+
+	//! The default selection clipboard is a configuration setting.
+	bool cut_or_copy_selection(ONLY IN_THREAD, cut_or_copy_op);
 };
 
 //! Alias
