@@ -277,6 +277,10 @@ public:
 	//! Get the display element at the given location.
 
 	elementptr get(size_t row, size_t col) const;
+
+	//! Remove all defaults.
+
+	void remove_all_defaults();
 };
 
 LIBCXXW_NAMESPACE_END

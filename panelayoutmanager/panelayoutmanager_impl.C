@@ -78,7 +78,12 @@ elementptr panelayoutmanagerObj::implObj
 
 layoutmanager panelayoutmanagerObj::implObj::create_public_object()
 {
-	return panelayoutmanager::create(ref(this));
+	return create_panelayoutmanager();
+}
+
+panelayoutmanager panelayoutmanagerObj::implObj::create_panelayoutmanager()
+{
+	return panelayoutmanager::create(ref{this});
 }
 
 void panelayoutmanagerObj::implObj::create_slider(const gridfactory &f)
@@ -344,7 +349,7 @@ pane_peephole_container panelayoutmanagerObj::implObj
 	set_peephole_scrollbar_focus_order
 		(scrollbars.horizontal_scrollbar,
 		 scrollbars.vertical_scrollbar);
-	request_extra_space_to_canvas();
+	request_extra_space_to_canvas(lock);
 
 	// Now, make sure that the tabbing order remains consistent.
 
@@ -435,9 +440,10 @@ void panelayoutmanagerObj::implObj
 pane_slider_original_sizes
 panelayoutmanagerObj::implObj::start_sliding(ONLY IN_THREAD,
 					     const ref<elementObj::implObj>
-					     &which_slider)
+					     &which_slider,
+					     grid_map_t::lock &grid_lock)
 {
-	auto ret=find_panes(which_slider);
+	auto ret=find_panes(grid_lock, which_slider);
 
 	if (ret)
 	{
@@ -456,13 +462,13 @@ void panelayoutmanagerObj::implObj::slide_start(ONLY IN_THREAD,
 	coord_t reference_height=
 		coord_t::truncate(pane_container_impl->font_height(IN_THREAD));
 
-	grid_map_t::lock lock{grid_map};
+	grid_map_t::lock grid_lock{grid_map};
 
 	// Simulate a slide
 
-	auto original_sizes=start_sliding(IN_THREAD, which_slider);
+	auto original_sizes=start_sliding(IN_THREAD, which_slider, grid_lock);
 
-	sliding(IN_THREAD, which_slider, original_sizes,
+	sliding(IN_THREAD, grid_lock, which_slider, original_sizes,
 		reference_height, reference_height, 0, 0);
 }
 
@@ -473,26 +479,25 @@ void panelayoutmanagerObj::implObj::slide_end(ONLY IN_THREAD,
 	coord_t reference_height=
 		coord_t::truncate(pane_container_impl->font_height(IN_THREAD));
 
-	grid_map_t::lock lock{grid_map};
+	grid_map_t::lock grid_lock{grid_map};
 
 	// Simulate a slide
 
-	auto original_sizes=start_sliding(IN_THREAD, which_slider);
+	auto original_sizes=start_sliding(IN_THREAD, which_slider, grid_lock);
 
-	sliding(IN_THREAD, which_slider, original_sizes, 0, 0,
+	sliding(IN_THREAD, grid_lock, which_slider, original_sizes, 0, 0,
 		reference_height, reference_height);
 }
 
 std::optional<std::tuple<element, element>>
-panelayoutmanagerObj::implObj::find_panes(const ref<elementObj::implObj> &s)
+panelayoutmanagerObj::implObj::find_panes(grid_map_t::lock &grid_lock,
+					  const ref<elementObj::implObj> &s)
 {
 	std::optional<std::tuple<element, element>> ret;
 
-	grid_map_t::lock lock{grid_map};
-
 	// Must have at least two panes.
 
-	if (size(lock) > 1)
+	if (size(grid_lock) > 1)
 	{
 		// Look up the slider's position.
 
@@ -503,10 +508,10 @@ panelayoutmanagerObj::implObj::find_panes(const ref<elementObj::implObj> &s)
 			// Found it, return the slider's neighbors.
 
 			pane_peephole_container above=
-				get_element(lock, (*res)-1);
+				get_element(grid_lock, (*res)-1);
 
 			pane_peephole_container below=
-				get_element(lock, (*res)+1);
+				get_element(grid_lock, (*res)+1);
 
 			ret.emplace(above->get_peephole(),
 				    below->get_peephole());
@@ -530,7 +535,7 @@ void panelayoutmanagerObj::implObj
 		if (pane_number == 1)
 		{
 			remove_element(lock, 2);
-			request_extra_space_to_canvas();
+			request_extra_space_to_canvas(lock);
 			return; // Leaving the slider after the remaining pane.
 		}
 
@@ -545,20 +550,20 @@ void panelayoutmanagerObj::implObj
 		focusable f=get_element(lock, 1);
 		f->get_focus_after(get_element(lock, 0));
 
-		request_extra_space_to_canvas();
+		request_extra_space_to_canvas(lock);
 		return;
 	}
 
 	if (pane_number == 0)
 	{
 		remove_elements(lock, 0, 2);
-		request_extra_space_to_canvas();
+		request_extra_space_to_canvas(lock);
 		return;
 	}
 
 	remove_element(lock, pane_number*2);
 	remove_element(lock, pane_number*2-1);
-	request_extra_space_to_canvas();
+	request_extra_space_to_canvas(lock);
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -653,10 +658,9 @@ panelayoutmanagerObj::implObj::orientation<vertical>
 
 template<>
 void panelayoutmanagerObj::implObj::orientation<vertical>
-::request_extra_space_to_canvas()
+::request_extra_space_to_canvas(grid_map_t::lock &grid_lock)
 {
-	remove_all_defaults();
-	grid_map_t::lock grid_lock{grid_map};
+	(*grid_lock)->remove_all_defaults();
 
 	requested_row_height(grid_lock, (*grid_lock)->rows()-1, 100);
 }
@@ -698,6 +702,7 @@ pane_slider_original_sizes panelayoutmanagerObj::implObj::orientation<vertical>
 template<>
 void panelayoutmanagerObj::implObj::orientation<vertical>
 ::sliding(ONLY IN_THREAD,
+	  grid_map_t::lock &grid_lock,
 	  const ref<elementObj::implObj> &which_slider,
 	  const pane_slider_original_sizes &original_sizes,
 
@@ -708,9 +713,8 @@ void panelayoutmanagerObj::implObj::orientation<vertical>
 	  coord_t current_y)
 {
 	// Figure out how to resize the panes.
-	grid_map_t::lock lock{grid_map};
 
-	auto ret=find_panes(which_slider);
+	auto ret=find_panes(grid_lock, which_slider);
 
 	if (!ret)
 		return;
@@ -852,10 +856,10 @@ panelayoutmanagerObj::implObj::orientation<horizontal>
 
 template<>
 void panelayoutmanagerObj::implObj::orientation<horizontal>
-::request_extra_space_to_canvas()
+::request_extra_space_to_canvas(grid_map_t::lock &grid_lock)
 {
-	remove_all_defaults();
-	grid_map_t::lock grid_lock{grid_map};
+	(*grid_lock)->remove_all_defaults();
+
 	requested_col_width(grid_lock, (*grid_lock)->cols(0)-1, 100);
 }
 
@@ -896,6 +900,7 @@ pane_slider_original_sizes panelayoutmanagerObj::implObj::orientation<horizontal
 template<>
 void panelayoutmanagerObj::implObj::orientation<horizontal>
 ::sliding(ONLY IN_THREAD,
+	  grid_map_t::lock &grid_lock,
 	  const ref<elementObj::implObj> &which_slider,
 	  const pane_slider_original_sizes &original_sizes,
 
@@ -906,9 +911,8 @@ void panelayoutmanagerObj::implObj::orientation<horizontal>
 	  coord_t current_y)
 {
 	// Figure out how to resize the panes.
-	grid_map_t::lock lock{grid_map};
 
-	auto ret=find_panes(which_slider);
+	auto ret=find_panes(grid_lock, which_slider);
 
 	if (!ret)
 		return;

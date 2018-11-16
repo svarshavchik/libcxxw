@@ -129,7 +129,7 @@ void panelayoutmanagerObj::remove_all_panes()
 
 	impl->remove_elements(grid_lock, 2, impl->total_size(grid_lock)-3);
 	impl->remove_element(grid_lock, 0);
-	impl->request_extra_space_to_canvas();
+	impl->request_extra_space_to_canvas(grid_lock);
 }
 
 panefactory panelayoutmanagerObj::replace_all_panes()
@@ -248,7 +248,7 @@ new_panelayoutmanager::create(const container_impl &parent)
 
 	auto c=ref<panecontainerObj>::create(impl, lm_impl);
 
-	panelayoutmanager lm=c->get_layoutmanager();
+	panelayoutmanager lm=lm_impl->create_panelayoutmanager();
 
 	if (orientation != orientation_t::vertical)
 		lm->impl->insert_row(&*lm, 0);
@@ -271,7 +271,7 @@ new_panelayoutmanager::create(const container_impl &parent)
 	}
 	// Initial slider.
 	lm_impl->create_slider(lm_impl->create_slider_factory(&*lm, 0));
-	lm_impl->request_extra_space_to_canvas();
+	lm_impl->request_extra_space_to_canvas(lm->grid_lock);
 
 	return c;
 }

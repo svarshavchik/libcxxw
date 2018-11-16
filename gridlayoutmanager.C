@@ -106,7 +106,7 @@ gridlayoutmanagerObj::lookup_row_col(const element &e)
 void gridlayoutmanagerObj::default_row_border(size_t row,
 					      const border_arg &arg)
 {
-	impl->default_row_border(row, arg);
+	impl->default_row_border(grid_lock, row, arg);
 }
 
 void gridlayoutmanagerObj::requested_row_height(size_t row, int percentage)
@@ -134,7 +134,7 @@ void gridlayoutmanagerObj::row_bottom_padding_set(size_t row,
 void gridlayoutmanagerObj::default_col_border(size_t col,
 					      const border_arg &arg)
 {
-	impl->default_col_border(col, arg);
+	impl->default_col_border(grid_lock, col, arg);
 }
 
 void gridlayoutmanagerObj::requested_col_width(size_t col, int percentage)

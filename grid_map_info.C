@@ -127,4 +127,11 @@ elementptr grid_map_infoObj::get(size_t row, size_t col) const
 	return elementptr{};
 }
 
+void grid_map_infoObj::remove_all_defaults()
+{
+	row_defaults.clear();
+	column_defaults.clear();
+	borders_changed();
+}
+
 LIBCXXW_NAMESPACE_END

@@ -73,8 +73,11 @@ bool pane_slider_focusframeObj::process_button_event(ONLY IN_THREAD,
 				([&, this]
 				 (const ref<panelayoutmanagerObj::implObj> &lm)
 				 {
+					 grid_map_t::lock grid_lock
+						 {lm->grid_map};
 					 original_sizes=lm->start_sliding
-						 (IN_THREAD, ref(this));
+						 (IN_THREAD, ref{this},
+						  grid_lock);
 				 });
 			grab(IN_THREAD);
 		}
@@ -150,7 +153,10 @@ void pane_slider_focusframeObj::report_motion_event(ONLY IN_THREAD,
 					 (me.y
 					  + data(IN_THREAD).current_position.y);
 
+				 grid_map_t::lock grid_lock{lm->grid_map};
+
 				 lm->sliding(IN_THREAD,
+					     grid_lock,
 					     ref(this),
 					     *original_sizes,
 					     grabbed_x,

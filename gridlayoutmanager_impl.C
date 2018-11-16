@@ -287,7 +287,7 @@ gridlayoutmanagerObj::implObj::lookup_row_col(grid_map_t::lock &lock,
 	if (iter != lookup_table.end())
 		return std::tuple{iter->second->row, iter->second->col};
 
-	return {};
+	return std::nullopt;
 }
 
 void gridlayoutmanagerObj::implObj::recalculate(ONLY IN_THREAD)
@@ -402,34 +402,23 @@ void gridlayoutmanagerObj::implObj
 }
 
 void gridlayoutmanagerObj::implObj
-::default_row_border(size_t row, const border_arg &arg)
+::default_row_border(grid_map_t::lock &lock,
+		     size_t row, const border_arg &arg)
 {
 	auto border_impl=get_current_border(arg);
-
-	grid_map_t::lock lock{grid_map};
 
 	(*lock)->row_defaults[row].default_border=border_impl;
 	(*lock)->borders_changed();
 }
 
 void gridlayoutmanagerObj::implObj
-::default_col_border(size_t col, const border_arg &arg)
+::default_col_border(grid_map_t::lock &grid_lock,
+		     size_t col, const border_arg &arg)
 {
 	auto border_impl=get_current_border(arg);
 
-	grid_map_t::lock lock{grid_map};
-
-	(*lock)->column_defaults[col].default_border=border_impl;
-	(*lock)->borders_changed();
-}
-
-void gridlayoutmanagerObj::implObj::remove_all_defaults()
-{
-	grid_map_t::lock lock{grid_map};
-
-	(*lock)->row_defaults.clear();
-	(*lock)->column_defaults.clear();
-	(*lock)->borders_changed();
+	(*grid_lock)->column_defaults[col].default_border=border_impl;
+	(*grid_lock)->borders_changed();
 }
 
 current_border_impl gridlayoutmanagerObj::implObj

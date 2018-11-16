@@ -43,21 +43,23 @@ menubarlayoutmanagerObj::implObj::~implObj()=default;
 
 void menubarlayoutmanagerObj::implObj::check_if_borders_changed()
 {
-	grid_map_t::lock lock{grid_map};
+	grid_map_t::lock grid_lock{grid_map};
 
 	// We ignore the divider element for the purpose of this calculation.
 
-	bool should_be_present=(*lock)->elements.at(0).size() > 1;
+	bool should_be_present=(*grid_lock)->elements.at(0).size() > 1;
 
-	if (info(lock).borders_present == should_be_present)
+	if (info(grid_lock).borders_present == should_be_present)
 		return;
 
-	if (should_be_present)
-		default_row_border(1, "menubar_border");
-	else
-		remove_all_defaults();
-
-	info(lock).borders_present=should_be_present;
+	if (should_be_present != info(grid_lock).borders_present)
+	{
+		if (should_be_present)
+			default_row_border(grid_lock, 1, "menubar_border");
+		else
+			(*grid_lock)->remove_all_defaults();
+	}
+	info(grid_lock).borders_present=should_be_present;
 }
 
 layoutmanager menubarlayoutmanagerObj::implObj::create_public_object()

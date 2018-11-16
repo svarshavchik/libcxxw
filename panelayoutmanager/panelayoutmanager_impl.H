@@ -127,9 +127,13 @@ class LIBCXX_HIDDEN panelayoutmanagerObj::implObj
 	//! Destructor
 	~implObj();
 
-	//! Create a panelayoutmanager
+	//! Implement create_public_object()
 
+	//! By calling create_panelayoutmanager().
 	layoutmanager create_public_object() override;
+
+	//! Create a panelayoutmanager
+	panelayoutmanager create_panelayoutmanager();
 
 	//! Logical size of the container, how many panes.
 
@@ -249,18 +253,20 @@ class LIBCXX_HIDDEN panelayoutmanagerObj::implObj
 	//! After adding or removing panes, adjust the requested row or
 	//! column sizes so that the canvas always gets any extra real
 	//! estate.
-	virtual void request_extra_space_to_canvas()=0;
-
+	virtual void request_extra_space_to_canvas(grid_map_t::lock
+						   &grid_lock)=0;
 
 	//! Callback from a slider element: sliding has started.
 
 	pane_slider_original_sizes
 		start_sliding(ONLY IN_THREAD,
-			      const ref<elementObj::implObj> &which_slider);
+			      const ref<elementObj::implObj> &which_slider,
+			      grid_map_t::lock &grid_lock);
 
 	//! Slide panes.
 
 	virtual void sliding(ONLY IN_THREAD,
+			     grid_map_t::lock &grid_lock,
 			     const ref<elementObj::implObj> &which_slider,
 			     const pane_slider_original_sizes &original_sizes,
 
@@ -323,7 +329,8 @@ class LIBCXX_HIDDEN panelayoutmanagerObj::implObj
 	//! Given a slider element, find for me the two panes next to it.
 
 	std::optional<std::tuple<element, element>
-		      > find_panes(const ref<elementObj::implObj> &slider);
+		      > find_panes(grid_map_t::lock &grid_lock,
+				   const ref<elementObj::implObj> &slider);
 
 	//! Return original sizes of two panes.
 
@@ -383,7 +390,8 @@ class panelayoutmanagerObj::implObj::orientation
 
 	//! Implement request_extra_space_to_canvas().
 
-	void request_extra_space_to_canvas() override;
+	void request_extra_space_to_canvas(grid_map_t::lock &grid_lock)
+		override;
 
 	//! Implement canvas_metrics().
 	std::tuple<dim_axis_arg, dim_axis_arg> canvas_metrics() override;
@@ -414,6 +422,7 @@ class panelayoutmanagerObj::implObj::orientation
 	//! Slide panes.
 
 	void sliding(ONLY IN_THREAD,
+		     grid_map_t::lock &grid_lock,
 		     const ref<elementObj::implObj> &which_slider,
 		     const pane_slider_original_sizes &original_sizes,
 
