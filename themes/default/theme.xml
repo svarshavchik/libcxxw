@@ -4,6 +4,7 @@
   <name>Default theme</name>
 
   <option id="noshade">Disable shading</option>
+  <option id="fixshade">Fixed shading (faster)</option>
 
   <dim id="no-padding" axis="pixels">0</dim>
 
@@ -232,6 +233,51 @@ Special action button border: 2 units radius = 4 padding, 3 unit width/height=7
   </color>
 
   <color  id="button_active_color" type="linear_gradient">
+    <gradient>
+      <value>0</value>
+      <color>90%</color>
+    </gradient>
+
+    <gradient>
+      <value>1</value>
+      <color>100%</color>
+    </gradient>
+  </color>
+
+
+
+
+  <color  id="fixshade:button_normal_color" type="linear_gradient">
+    <widthmm>10</widthmm>
+    <heightmm>10</heightmm>
+    <gradient>
+      <value>0</value>
+      <color>50%</color>
+    </gradient>
+
+    <gradient>
+      <value>1</value>
+      <color>70%</color>
+    </gradient>
+  </color>
+
+  <color  id="fixshade:button_selected_color" type="linear_gradient">
+    <widthmm>10</widthmm>
+    <heightmm>10</heightmm>
+    <gradient>
+      <value>0</value>
+      <color>70%</color>
+    </gradient>
+
+    <gradient>
+      <value>1</value>
+      <color>80%</color>
+    </gradient>
+  </color>
+
+  <color  id="fixshade:button_active_color" type="linear_gradient">
+    <widthmm>10</widthmm>
+    <heightmm>10</heightmm>
     <gradient>
       <value>0</value>
       <color>90%</color>
@@ -575,6 +621,19 @@ Special action button border: 2 units radius = 4 padding, 3 unit width/height=7
     </gradient>
   </color>
 
+  <color id="fixshade:list_header_color" type="linear_gradient">
+    <widthmm>50</widthmm>
+    <heightmm>10</heightmm>
+    <gradient>
+      <value>0</value>
+      <color>70%</color>
+    </gradient>
+    <gradient>
+      <value>1</value>
+      <color>90%</color>
+    </gradient>
+  </color>
+
   <color id="noshade:list_header_color" scale="70%" />
 
   <color id="list_adjustable_header_color" scale="50%" />
@@ -891,6 +950,58 @@ Special action button border: 2 units radius = 4 padding, 3 unit width/height=7
     </gradient>
   </color>
 
+  <color id="fixshade:book_tab_inactive_color" type="linear_gradient">
+    <widthmm>5</widthmm>
+    <heightmm>5</heightmm>
+    <gradient>
+      <value>0</value>
+      <color>50%</color>
+    </gradient>
+    <gradient>
+      <value>1</value>
+      <color>70%</color>
+    </gradient>
+  </color>
+
+  <color id="fixshade:book_tab_active_color" type="linear_gradient">
+    <widthmm>5</widthmm>
+    <heightmm>5</heightmm>
+    <gradient>
+      <value>0</value>
+      <color>70%</color>
+    </gradient>
+    <gradient>
+      <value>1</value>
+      <color>90%</color>
+    </gradient>
+  </color>
+
+  <color id="fixshade:book_tab_warm_color" type="linear_gradient">
+    <widthmm>5</widthmm>
+    <heightmm>5</heightmm>
+    <gradient>
+      <value>0</value>
+      <color>50%</color>
+    </gradient>
+    <gradient>
+      <value>1</value>
+      <color>100%</color>
+    </gradient>
+  </color>
+
+  <color id="fixshade:book_tab_hot_color" type="linear_gradient">
+    <widthmm>5</widthmm>
+    <heightmm>5</heightmm>
+    <gradient>
+      <value>0</value>
+      <color>70%</color>
+    </gradient>
+    <gradient>
+      <value>1</value>
+      <color>100%</color>
+    </gradient>
+  </color>
+
   <color id="noshade:book_tab_inactive_color" scale="50%" />
   <color id="noshade:book_tab_active_color" scale="70%" />
   <color id="noshade:book_tab_warm_color" scale="80%" />
@@ -905,6 +1016,19 @@ Special action button border: 2 units radius = 4 padding, 3 unit width/height=7
   </border>
 
   <color id="book_tab_background_color" type="linear_gradient">
+    <gradient>
+      <value>0</value>
+      <color>50%</color>
+    </gradient>
+    <gradient>
+      <value>1</value>
+      <color>80%</color>
+    </gradient>
+  </color>
+
+  <color id="fixshade:book_tab_background_color" type="linear_gradient">
+    <widthmm>75</widthmm>
+    <heightmm>10</heightmm>
     <gradient>
       <value>0</value>
       <color>50%</color>
@@ -1101,6 +1225,19 @@ Special action button border: 2 units radius = 4 padding, 3 unit width/height=7
   <dim id="itemlayout-v-padding" axis="vert">0</dim>
 
   <color id="itembutton_background_color" type="linear_gradient">
+    <gradient>
+      <value>0</value>
+      <color>70%</color>
+    </gradient>
+    <gradient>
+      <value>1</value>
+      <color>100%</color>
+    </gradient>
+  </color>
+
+  <color id="fixshade:itembutton_background_color" type="linear_gradient">
+    <widthmm>10</widthmm>
+    <heightmm>10</heightmm>
     <gradient>
       <value>0</value>
       <color>70%</color>

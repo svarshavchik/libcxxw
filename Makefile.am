@@ -890,7 +890,7 @@ cxxw_LDADD=libcxxw.la
 cxxw_LDFLAGS=$(TESTLINKTYPE)
 
 cxxwtheme_SOURCES=cxxwtheme.C
-cxxwtheme_LDADD=libcxxw.la
+cxxwtheme_LDADD=libcxxw.la -lcourier-unicode
 cxxwtheme_LDFLAGS=$(TESTLINKTYPE)
 
 $(call OPTIONS_GEN,cxxwoptions.H,cxxwoptions.xml)

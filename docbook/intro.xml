@@ -101,9 +101,10 @@ See COPYING for distribution information.
       <title>Status</title>
 
       <para>
-	&app; is in active development. The most recent build adds an
-	application API for implementing traditional
-	<link linkend="copycutpastemenu">Copy/Cut/Paste menu items</link>.
+	&app; is in active development. The most recent build adds enhancements
+	to the <link linkend="panelayoutmanager">pane layout manager</link>,
+	and adds a theme setting for a reduced gradient shading, for
+	improved performance with slower graphics hardware.
       </para>
     </section>
   </section>

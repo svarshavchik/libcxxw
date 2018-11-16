@@ -26,6 +26,7 @@
 #include "x/w/radio_group.H"
 #include "x/w/progressbar.H"
 #include "x/w/tablelayoutmanager.H"
+#include "x/w/itemlayoutmanager.H"
 #include "x/w/font_literals.H"
 #include "x/w/menubarlayoutmanager.H"
 #include "x/w/menubarfactory.H"
@@ -837,6 +838,7 @@ static void demo_list(const w::gridlayoutmanager &lm);
 static void demo_input(const w::gridlayoutmanager &lm);
 static void demo_misc(const w::gridlayoutmanager &lm);
 static void demo_table(const w::gridlayoutmanager &lm);
+static void item_table(const w::gridlayoutmanager &lm);
 
 static void create_demo(const w::booklayoutmanager &lm)
 {
@@ -890,6 +892,19 @@ static void create_demo(const w::booklayoutmanager &lm)
 				(const auto &c)
 				{
 					demo_table(c->get_layoutmanager());
+				},
+				w::new_gridlayoutmanager{});
+	       });
+
+	f->add("Item List",
+	       []
+	       (const auto &f)
+	       {
+		       f->create_container
+			       ([]
+				(const auto &c)
+				{
+					item_table(c->get_layoutmanager());
 				},
 				w::new_gridlayoutmanager{});
 	       });
@@ -1111,9 +1126,9 @@ static void demo_table(const w::gridlayoutmanager &lm)
 {
 	auto f=lm->append_row();
 
-	LIBCXX_NAMESPACE::w::new_tablelayoutmanager ntlm
+	w::new_tablelayoutmanager ntlm
 		{[]
-		 (const LIBCXX_NAMESPACE::w::factory &f, size_t i)
+		 (const w::factory &f, size_t i)
 		 {
 			 static const char * const titles[]=
 				 {
@@ -1127,14 +1142,14 @@ static void demo_table(const w::gridlayoutmanager &lm)
 
 	ntlm.columns=4;
 
-	ntlm.selection_type=LIBCXX_NAMESPACE::w::no_selection_type;
+	ntlm.selection_type=w::no_selection_type;
 
 	ntlm.adjustable_column_widths=true;
 	ntlm.table_width=150;
 	ntlm.col_alignments={
-			     {1, LIBCXX_NAMESPACE::w::halign::right},
-			     {2, LIBCXX_NAMESPACE::w::halign::right},
-			     {3, LIBCXX_NAMESPACE::w::halign::right},
+			     {1, w::halign::right},
+			     {2, w::halign::right},
+			     {3, w::halign::right},
 	};
 
 	ntlm.column_borders={
@@ -1147,7 +1162,7 @@ static void demo_table(const w::gridlayoutmanager &lm)
 		([]
 		 (const auto &c)
 		 {
-			 LIBCXX_NAMESPACE::w::tablelayoutmanager tlm
+			 w::tablelayoutmanager tlm
 				 {c->get_layoutmanager()};
 
 #define FMT(n) ({					\
@@ -1155,15 +1170,15 @@ static void demo_table(const w::gridlayoutmanager &lm)
 				 o << std::fixed << std::setprecision(3) \
 				   << n;				\
 				 					\
-				 LIBCXX_NAMESPACE::w::text_param{	\
+				 w::text_param{	\
 					 "liberation mono"_font,	\
 						 o.str()};		\
 				 })
 
-#define FMTFL(c) FMT(((c) + 0.0) / LIBCXX_NAMESPACE::w::rgb::maximum)
+#define FMTFL(c) FMT(((c) + 0.0) / w::rgb::maximum)
 
 #define FMTRGB(name) FMTFL(name.r), FMTFL(name.g), FMTFL(name.b)
-#define FMTRGBNS(name) FMTRGB(LIBCXX_NAMESPACE::w::name)
+#define FMTRGBNS(name) FMTRGB(w::name)
 
 			 tlm->append_items
 				 ({"Black", FMTRGBNS(black),
@@ -1185,6 +1200,84 @@ static void demo_table(const w::gridlayoutmanager &lm)
 				 });
 		 },
 		 ntlm)->show();
+}
+
+static void item_table(const w::gridlayoutmanager &lm)
+{
+	w::gridfactory f=lm->append_row();
+
+	f->create_label("Pizza toppings:");
+
+	w::input_field_config config{30};
+
+	auto field=f->create_input_field("", config);
+
+	f=lm->append_row();
+
+	f->create_canvas();
+
+	w::new_itemlayoutmanager nilm;
+
+	auto container=f->create_focusable_container
+		([]
+		 (const auto &c)
+		 {
+		 },
+		 nilm);
+
+
+	field->on_validate
+		([objects=make_weak_capture(container, field)]
+		 (ONLY IN_THREAD,
+		  const w::callback_trigger_t &triggering_event)
+		 {
+			 auto got=objects.get();
+
+			 if (!got)
+				 return true;
+
+			 auto &[container, field]=*got;
+
+			 w::itemlayoutmanager lm=
+				 container->get_layoutmanager();
+
+			 std::vector<std::string> words;
+
+			 {
+				 w::input_lock lock{field};
+
+				 strtok_str(lock.get(), ",", words);
+
+				 field->set("");
+			 }
+
+			 for (auto &w:words)
+			 {
+				 auto b=w.begin();
+				 auto e=w.end();
+				 trim(b, e);
+
+				 auto word=unicode::iconvert
+					 ::convert_tocase
+					 ({b, e},
+					  unicode_default_chset(),
+					  unicode_tc,
+					  unicode_lc);
+
+				 if (word.empty())
+					 continue;
+
+				 lm->append_item
+					 ([&]
+					  (const w::factory &f)
+					  {
+						  f->create_label(word)->show();
+					  });
+			 }
+
+			 return true;
+		 });
+
 }
 
 void cxxwtheme()

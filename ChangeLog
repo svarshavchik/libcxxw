@@ -1,5 +1,7 @@
 2018-11-14  Sam Varshavchik  <mrsam@courier-mta.com>
 
+	* Fixed-size shading theme option.
+
 	* Pane layout manager overhaul.
 
 2018-11-09  Sam Varshavchik  <mrsam@courier-mta.com>
