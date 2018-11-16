@@ -13,7 +13,6 @@ LIBCXXW_NAMESPACE_START
 class LIBCXX_PUBLIC panelayoutmanagerObj;
 class LIBCXX_HIDDEN new_panelayoutmanager;
 struct LIBCXX_PUBLIC pane_style;
-class LIBCXX_HIDDEN pane_lock;
 
 /*! Pane layout manager
 
@@ -55,10 +54,12 @@ to create_focusable_container() creates a new container that uses the
 pane layout manager. new_panelayoutmanager's members set the new container's
 custom borders and colors.
 
+Only one execution thread has access to the underlying container, at a time,
+using the pane layout manager, just like the
+\ref gridlayoutmanager "grid layout manager", from which it derives.
+
 \code
 #include <INSERT_LIBX_NAMESPACE/w/panefactory.H>
-
-INSERT_LIBX_NAMESPACE::w::pane_lock lock{lm};
 
 size_t n=pane_lm->size();
 
@@ -84,10 +85,6 @@ methods gets placed into a new pane.
 The pane layout manager automatically numbers the panes in the container,
 starting with pane #0. size() returns the number of panes currently in
 the container. get() returns the pane element.
-Constructing a
-\ref pane_lock "INSERT_LIBX_NAMESPACE::w::pane_lock"
-blocks other execution thread from accessing the container, until the lock
-object goes out of scope and gets destroyed.
 
 Use
 \ref panefactory "INSERT_LIBX_NAMESPACE::w::panefactory"'s methods before

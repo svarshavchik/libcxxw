@@ -236,11 +236,6 @@ static void insert(const x::w::container &c,
 {
 	x::w::panelayoutmanager lm=c->get_layoutmanager();
 
-	// Lock the pane from being modified by other threads. This is not
-	// really needed here. This is for demonstration purposes.
-
-	x::w::pane_lock lock{lm};
-
 	// insert_panes() returns a factory that creates new panes before
 	// an existing pane. Create a new pane before the first existing
 	// pane.
@@ -271,8 +266,7 @@ static void insert(const x::w::container &c,
 
 	// We know that the label is element #0. get() returns the existing
 	// element in the pane container. size(), see below, returns the number
-	// of elements in the container. If needed, a pane_lock might be
-	// called for, to avoid the rug being pulled from under one's feet.
+	// of elements in the container.
 
 	x::w::label l=lm->get(0);
 

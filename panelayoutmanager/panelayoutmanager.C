@@ -276,11 +276,4 @@ new_panelayoutmanager::create(const container_impl &parent)
 	return c;
 }
 
-pane_lock::pane_lock(const panelayoutmanager &lm)
-	: grid_map_t::lock{lm->impl->grid_map}
-{
-}
-
-pane_lock::~pane_lock()=default;
-
 LIBCXXW_NAMESPACE_END

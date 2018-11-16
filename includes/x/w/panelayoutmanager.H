@@ -73,17 +73,6 @@ public:
 
 };
 
-//! Block other execution threads from accessing the pane.
-
-class pane_lock : public grid_map_t::lock {
-
-public:
-
-	pane_lock(const panelayoutmanager &) LIBCXX_PUBLIC;
-
-	~pane_lock() LIBCXX_PUBLIC;
-};
-
 LIBCXXW_NAMESPACE_END
 
 #endif

@@ -1,3 +1,9 @@
+2018-11-05  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* includes/x/w/panelayoutmanagerobj.H: Remove pane_lock, since
+	the pane layout manager derives from the grid layout manager, and
+	will automatically acquire a lock.
+
 2018-11-01  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* includes/x/w/gridlayoutmanagerobj.H: Add a lock on the internal

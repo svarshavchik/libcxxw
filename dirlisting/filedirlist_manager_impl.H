@@ -128,12 +128,13 @@ class LIBCXX_HIDDEN filedirlist_managerObj::implObj : virtual public obj {
 
 	//! Custom subclass of \c mpobj that stores a protected info_t
 
-	//! The filedir_list uses the pane layout manager, acquiring a lock
-	//! on the pane before invoking any callback. For that reason we
-	//! must make sure that we never attempt to acquire a pane lock
-	//! after info_t is already locked, otherwise a deadlock can occur.
+	//! The filedir_list uses the pane layout manager, which is derived
+	//! from the grid layout manager, which locks its grid before,
+	//! before invoking any callback. For that reason we
+	//! must make sure that we always construct the same lock first,
+	//! otherwise a deadlock can occur.
 	//!
-	//! We do this by acquiring a pane_lock ourselves, first, before
+	//! We do this by constructing the pane layout manager, first, before
 	//! locking the internal mutex that protects info_t.
 	//!
 	//! Define a mutex-protected wrapper for info_t that's derived from
@@ -142,7 +143,7 @@ class LIBCXX_HIDDEN filedirlist_managerObj::implObj : virtual public obj {
 	//!
 	//! The inner \c lock class contains two members, \c pane_lm the layout
 	//! manager, and \c pl which is the pane lock, making
-	//! sure that the pane lock gets acquired first.
+	//! sure that the pane layout manager gets created first.
 
 	struct protected_info_t : private mpobj<info_t, std::recursive_mutex> {
 
@@ -160,12 +161,9 @@ class LIBCXX_HIDDEN filedirlist_managerObj::implObj : virtual public obj {
 			//! The available pane layout manager.
 			panelayoutmanager pane_lm;
 
-			//! The pane lock, which got here first.
-			pane_lock pl;
-
 			//! Constructor
 			lock_panebase(const panelayoutmanager &pane_lm)
-				: pane_lm{pane_lm}, pl{pane_lm}
+				: pane_lm{pane_lm}
 			{
 			}
 

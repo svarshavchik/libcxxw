@@ -116,11 +116,6 @@ See COPYING for distribution information.
       <methodname>size</methodname>() returns the number of elements in the
       pane, and <methodname>get</methodname>() returns an existing element
       in the pane.
-      <filename>panelayoutmanager.C</filename> demonstrates an example of
-      using an
-      <ulink url="&link-x--w--pane-lock;"><classname>&ns;::w::pane_lock</classname></ulink>
-      to block other execution threads from accessing the pane layout
-      manager's container.
     </para>
   </section>
 

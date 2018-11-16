@@ -15,8 +15,32 @@ class LIBCXX_PUBLIC gridlayoutmanagerObj;
 
 /*! The grid layout manager.
 
+\code
+#include <INSERT_LIBX_NAMESPACE/w/gridlayoutmanager.H>
+
+INSERT_LIBX_NAMESPACE::w::new_gridlayoutmanager nglm;
+
+factory->create_container(
+    [&]
+    (const INSERT_LIBX_NAMESPACE::w::focusable_container &c)
+    {
+        INSERT_LIBX_NAMESPACE::w::gridlayoutmanager pane_lm=c->get_layoutmanager();
+    },
+    nglm);
+\endcode
+
+Passing an
+\ref new_gridlayoutmanager "INSERT_LIBX_NAMESPACE::w::new_gridlayoutmanager"
+to create_container() creates a new container that uses the
+grid layout manager.
 The grid layout manager arranges its content elements in a rectangular
 grid.
+
+Only one execution thread at a time has access to the underlying container using
+the grid layout manager. The grid layout manager object holds an internal
+lock on the container, blocking other execution threads from accessing the
+container until the grid layout manager object goes out of scope and gets
+destroyed.
 
 \code
 size_t rows=gridlayout->rows();
