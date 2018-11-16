@@ -136,6 +136,31 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 	static gridfactory replace_row(gridlayoutmanagerObj *public_object,
 				       size_t row);
 
+	//! Called from recalculate() to recompute our metrics.
+
+	//! The passed-in flag indicates whether our container is already
+	//! sized, for informational purposes. Returns a flag indicating whether
+	//! the elements in the container have been changed in some way.
+	//!
+	//! If so, recalculate() makes sure that the container is scheduled
+	//! for positioning processing. The metrics could've been unchanged,
+	//! but the child elements may need to be moved. This is handled by
+	//! position update processing, so this makes sure this happens even
+	//! if this container's metrics are unchanged, and its parent container
+	//! does not reposition it.
+	//!
+	//! The passed in already-sized flag indicates whether the position
+	//! processing will happen, in this case, and its false if this
+	//! container's size is empty (not yet sized), so position processing
+	//! gets skipped. rebuild_elements_and_update_metrics does not do
+	//! anything with this flag, that recalculate() passes in, per se.
+	//! Overridden subclasses can use this flag to indicate whether they
+	//! should care to do anything, themselves.
+
+	virtual bool rebuild_elements_and_update_metrics(ONLY IN_THREAD,
+							 grid_map_t::lock &lock,
+							 bool already_sized);
+
 	/////////////////////////////////////////////////////////////////////
 	//
 	// Overridden methods.

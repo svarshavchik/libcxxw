@@ -319,6 +319,34 @@ void gridlayoutmanagerObj::implObj::recalculate(ONLY IN_THREAD)
 {
 	grid_map_t::lock lock{grid_map};
 
+	// Even though the current position hasn't changed, we need to
+	// recalculate and reposition our display elements if we already have
+	// been sized by our own container.
+
+	auto &e=get_element_impl();
+
+	bool should_update_position=
+		e.data(IN_THREAD).current_position.width > 0 &&
+		e.data(IN_THREAD).current_position.height > 0;
+
+	if (!rebuild_elements_and_update_metrics(IN_THREAD, lock,
+						 should_update_position))
+		return;
+
+	if (should_update_position)
+		e.schedule_update_position_processing(IN_THREAD);
+
+#ifdef GRIDLAYOUTMANAGER_RECALCULATE_LOG
+	GRIDLAYOUTMANAGER_RECALCULATE_LOG(grid_elements(IN_THREAD));
+#endif
+}
+
+bool gridlayoutmanagerObj::implObj
+::rebuild_elements_and_update_metrics(ONLY IN_THREAD,
+				      grid_map_t::lock &lock,
+				      bool already_sized)
+{
+
 	// Not all recalculation is the result of inserting or removing
 	// elements. rebuild_elements() will do its work only if needed.
 	bool flag=rebuild_elements(IN_THREAD, lock);
@@ -335,24 +363,10 @@ void gridlayoutmanagerObj::implObj::recalculate(ONLY IN_THREAD)
 		grid_elements(IN_THREAD)->recalculate_metrics
 		(IN_THREAD, lock, synchronized_columns, flag);
 
-	if (!final_flag)
-		return;
+	if (final_flag)
+		set_element_metrics(IN_THREAD, horiz_metrics, vert_metrics);
 
-	set_element_metrics(IN_THREAD, horiz_metrics, vert_metrics);
-
-	// Even though the current position hasn't changed, we need to
-	// recalculate and reposition our display elements if we already have
-	// been sized by our own container.
-
-	auto &e=get_element_impl();
-
-	if (e.data(IN_THREAD).current_position.width > 0 &&
-	    e.data(IN_THREAD).current_position.height > 0)
-		e.schedule_update_position_processing(IN_THREAD);
-
-#ifdef GRIDLAYOUTMANAGER_RECALCULATE_LOG
-	GRIDLAYOUTMANAGER_RECALCULATE_LOG(grid_elements(IN_THREAD));
-#endif
+	return final_flag;
 }
 
 void gridlayoutmanagerObj::implObj::set_element_metrics(ONLY IN_THREAD,
