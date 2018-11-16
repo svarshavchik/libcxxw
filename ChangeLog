@@ -1,3 +1,10 @@
+2018-10-30  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* listlayoutmanager/list_element_impl.C: Make sure inner list
+	container's borders are always drawn in the full height of the list.
+
+0.9.0
+
 2018-10-22  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* API for implementing Cut/Copy/Paste menu options.

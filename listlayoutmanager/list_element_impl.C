@@ -1145,7 +1145,11 @@ void list_elementObj::implObj::do_draw(ONLY IN_THREAD,
 	rectarea drawn;
 
 	drawn.reserve(e-iter);
+
 	{
+		coord_t end_y{0};
+		dim_t row_height{0};
+
 		clip_region_set clipped{IN_THREAD, get_window_handler(), di};
 
 		for (; iter != e; ++iter)
@@ -1158,15 +1162,46 @@ void list_elementObj::implObj::do_draw(ONLY IN_THREAD,
 				if (!iter->redraw_needed)
 					continue;
 			}
+
 			auto rect=do_draw_row(IN_THREAD, di, clipped, bounds,
 					      lock, iter-b, false);
 
 			drawn.push_back(rect);
+			row_height=rect.height;
+			end_y=coord_t::truncate(rect.y+rect.height);
+		}
+
+		if (only_whats_needed)
+			return;
+
+		// We need to draw any separator borders in any extra space
+		// where we did not draw any rows. We will intelligently pick
+		// how much vertical space to draw the borders into, each time.
+
+		while (end_y < last_y)
+		{
+			dim_t left=dim_t::truncate(last_y - end_y);
+
+			if (row_height == 0)
+				row_height=itemlabel_meta.getfont()
+					->fc(IN_THREAD)->height();
+
+			if (left > row_height)
+				left=row_height;
+
+			rectangle entire_row{0, end_y,
+					     di.absolute_location.width,
+					     left};
+
+			if (!redraw_scheduled(IN_THREAD))
+			{
+				do_draw_row_borders(IN_THREAD, di, clipped,
+						    lock, entire_row, drawn);
+			}
+
+			end_y=coord_t::truncate(end_y + left);
 		}
 	}
-	if (only_whats_needed)
-		return;
-
 	// Subtract the drawn areas from what we have to draw, and clear
 	// the rest to background color.
 	superclass_t::do_draw(IN_THREAD, di, subtract(areas, drawn));

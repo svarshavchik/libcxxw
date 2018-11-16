@@ -135,7 +135,7 @@ new_listlayoutmanager::create_impl(const container_impl &parent_container,
 
 	containerptr internal_listcontainer;
 
-	peephole_style list_peephole_style{halign::fill};
+	peephole_style list_peephole_style{halign::fill, valign::fill};
 
 	auto [peephole_info, lm]=create_peepholed_focusable_with_frame
 		({list_border,

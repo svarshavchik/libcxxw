@@ -945,6 +945,9 @@ void new_tablelayoutmanager::create_table_header_row(const gridlayoutmanager
 	// Put a dummy spacer in there.
 	f->padding(0);
 	f->create_canvas()->show();
+
+	lm->requested_row_height(1, 100);
+	lm->requested_col_width(0, 100);
 }
 
 LIBCXXW_NAMESPACE_END
