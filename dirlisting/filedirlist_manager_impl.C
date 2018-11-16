@@ -44,7 +44,7 @@ static inline auto create_filedir_list(const factory &f,
 				       ::implObj::current_selected_callbackObj>
 				       &current_selected)
 {
-	new_panelayoutmanager nplm{{90}};
+	new_panelayoutmanager nplm{{100}};
 
 	auto pane_container=f->create_focusable_container([]
 							  (const auto &ignore)
@@ -58,8 +58,8 @@ static inline auto create_filedir_list(const factory &f,
 	new_listlayoutmanager nlm{highlighted_list};
 
 	nlm.columns=3;
-	nlm.variable_height();
-	nlm.vertical_scrollbar=scrollbar_visibility::automatic_reserved;
+
+	pf->configure_new_list(nlm);
 
 	// Give all space to the first column, with the filename.
 	nlm.requested_col_widths.emplace(0, 100);
@@ -82,9 +82,6 @@ static inline auto create_filedir_list(const factory &f,
 		};
 
 	pf->set_initial_size(30)
-		.set_scrollbar_visibility(LIBCXX_NAMESPACE::w
-					  ::scrollbar_visibility::never)
-		.halign(LIBCXX_NAMESPACE::w::halign::fill)
 		.create_focusable_container([]
 					    (const auto &ignore)
 					    {
@@ -105,10 +102,8 @@ static inline auto create_filedir_list(const factory &f,
 			 mcguffin);
 		};
 
+	pf->configure_new_list(nlm);
 	pf->set_initial_size(50)
-		.set_scrollbar_visibility(LIBCXX_NAMESPACE::w
-					  ::scrollbar_visibility::never)
-		.halign(LIBCXX_NAMESPACE::w::halign::fill)
 		.create_focusable_container([]
 					    (const auto &ignore)
 					    {

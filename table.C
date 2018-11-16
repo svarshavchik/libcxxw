@@ -704,12 +704,6 @@ new_tablelayoutmanager
 
 new_tablelayoutmanager::~new_tablelayoutmanager()=default;
 
-void new_tablelayoutmanager::as_vertical_pane()
-{
-	variable_height();
-	list_border="empty";
-}
-
 // A table uses its own internal synchronized axis.
 //
 // Override create(), and pass through an opaque table_create_info pointer

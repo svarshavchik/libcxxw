@@ -214,7 +214,7 @@ f->remove_pane(1);</programlisting>
   </section>
 
   <section id="panefocusability">
-    <title>Input focus and selection lists</title>
+    <title>Input focus and selection lists or tables</title>
 
     <para>
       The pane layout manager uses &focusable; display elements internally,
@@ -237,60 +237,112 @@ f->remove_pane(1);</programlisting>
     </para>
 
     <para>
-      The exception is a <link linkend="list">selection list</link>.
-      Creating a pane with a selection list automatically incorporates the
-      selection list into the pane's natural tabbing order. The input
-      focus gets tabbed in and out of the selection list in order with the
+      The exceptions are <link linkend="list">selection lists</link> and
+      <link linkend="tables">tables</link>.
+      Putting a selection list or a table into a pane
+      automatically incorporates the
+      selection list or table into the pane's own natural tabbing order.
+      The input
+      focus gets tabbed in and out of the selection list or table
+      in order with the
       pane's focusable elements.
     </para>
 
-    <para>
-      <link linkend="panelayoutmanager"><filename>panelayoutmanager.C</filename></link>
-      demonstrates how to set several options, for both the selection list
-      itself and its pane, for best results:
-    </para>
+    <section id="paneconfigurelist">
+      <title>Configuring lists and tables in panes</title>
 
-    <itemizedlist>
-      <listitem>
-	<para>
-	  Specifying a <methodname>variable_height</methodname>() for
-	  the selection list, so that it automatically matches it's pane's
-	  height, when the pane's height get adjusted by its dividing sliders.
-	</para>
-      </listitem>
+      <blockquote>
+	<informalexample>
+	  <programlisting>
+auto pf=plm->append_panes();
 
-      <listitem>
-	<para>
-	  Eliminating the selection list element's drawn border, because
-	  the pane layout manager provides a border for all of its panes,
-	  already.
-	</para>
-      </listitem>
+&ns;::w::new_listlayoutmanager nlm{highlighted_list};
 
-      <listitem>
-	<para>
-	  Disabling the pane's scroll-bar. The selection list provides its
-	  own scroll-bar when its size is not sufficient to show all elements
-	  in the list.
-	</para>
-      </listitem>
+nlm.columns=3;
+pf->configure_new_list(nlm);
 
-      <listitem>
-	<para>
-	  Removing the small amount of padding in the list's pane. The
-	  selection list provides the same amount of padding itself.
-	</para>
-      </listitem>
+pf->set_initial_size(30)
+   .create_focusable_container([]
+                   (const auto &amp;creator)
+                   {
+                       // ...
+                   },
+                   nlm)->show();</programlisting>
+	</informalexample>
+      </blockquote>
 
-      <listitem>
-	<para>
-	  Setting the pane element alighment options to fill out the element
-	  in the pane to always match the size of the pane. This automatically
-	  adjusts the list's height to match the pane's, making the
-	  selection list responsible for its own scrolling.
-	</para>
-      </listitem>
-    </itemizedlist>
+      <para>
+	<link linkend="panelayoutmanager"><filename>panelayoutmanager.C</filename></link>
+	shows how to use <methodname>configure_new_list</methodname>() with
+	a pane factory when adding a
+	selection list or a table, for optimal appearance.
+      </para>
+
+      <para>
+	<methodname>configure_new_list</methodname>()'s parameter
+	is either a
+	<link linkend="list"><classname>&ns;::w::new_listlayoutmanager</classname></link>
+	or a
+	<link linkend="tables"><classname>&ns;::w::new_tablelayoutmanager</classname></link>;
+	and
+	<methodname>configure_new_list</methodname>() gets called just
+	before using the pane factory to create a new focusable container
+	with a list layout manager or the table layout manager.
+      </para>
+
+      <para>
+	<methodname>configure_new_list</methodname>() adjusts the pane
+	factory's and the passed-in
+	<classname>&ns;::w::new_listlayoutmanager</classname>
+	or
+	<classname>&ns;::w::new_tablelayoutmanager</classname>
+	with optimal settings:
+      </para>
+
+      <itemizedlist>
+	<listitem>
+	  <para>
+	    Specifying a <methodname>variable_height</methodname>() for
+	    the new selection list or table, so that it automatically matches
+	    its pane's height, when the pane's height gets adjusted by
+	    its dividing sliders.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Eliminating the selection list/table element's drawn border, because
+	    the pane layout manager provides a border for all of its panes,
+	    already.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Disabling the pane's scroll-bar. The selection list or table
+	    provides its
+	    own scroll-bar, when needed.
+	    in the list.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Removing the small amount of padding in the list's pane. The
+	    selection list provides the same amount of padding itself.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Setting the pane element alignment options to fill out the element
+	    in the pane to always match the size of the pane. This automatically
+	    adjusts the list's height to match the pane's, making the
+	    selection list responsible for its own scrolling.
+	  </para>
+	</listitem>
+      </itemizedlist>
+    </section>
 
     <section id="panesynclists">
       <title>Panes with synchronized lists</title>
@@ -303,12 +355,9 @@ auto pf=plm->append_panes();
 &ns;::w::new_listlayoutmanager nlm{highlighted_list};
 
 nlm.columns=3;
-nlm.variable_height();
-nlm.vertical_scrollbar=&ns;::w::scrollbar_visibility::automatic_reserved;
+pf->configure_new_list(nlm);
 
 pf->set_initial_size(30)
-   .set_scrollbar_visibility(&ns;::w::scrollbar_visibility::never)
-   .halign(LIBCXX_NAMESPACE::w::halign::fill)
    .create_focusable_container([]
                    (const auto &amp;creator)
                    {
@@ -316,9 +365,8 @@ pf->set_initial_size(30)
                    },
                    nlm)->show();
 
+pf->configure_new_list(nlm);
 pf->set_initial_size(50)
-   .set_scrollbar_visibility(&ns;::w::scrollbar_visibility::never)
-   .halign(LIBCXX_NAMESPACE::w::halign::fill)
    .create_focusable_container([]
                    (const auto &amp;creator)
                    {
@@ -336,16 +384,16 @@ pf->set_initial_size(50)
       </para>
 
       <para>
-	Normally each selection list sizes its columns individually; and
+	Normally each selection list controls its columns individually; and
 	they're wide enough to accomodate the widest individual item in all rows
 	in that column, in that selection list.
 	The two selection lists are independent of each other. The first one's
 	columns' widths	get computed based on the first list's items' widths.
 	The widths of columns in the second list are set based on the widths
 	of the individual items in the second list. So, normally, the
-	widths of columns in the two lists will be different because
-	the lists have different items; and the two lists' columns will not
-	be the same width.
+	widths of columns in the two lists are different because
+	the lists have different items; and the same column will has
+	a different width in each list.
       </para>
 
       <para>

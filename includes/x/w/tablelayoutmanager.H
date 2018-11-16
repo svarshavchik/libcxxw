@@ -68,16 +68,6 @@ class new_tablelayoutmanager : public new_listlayoutmanager {
 
 	color_arg adjustable_header_highlight_color;
 
-	//! Set the visual appearance for this table in a pane.
-
-	//! Indicates that this table is getting created in a container that
-	//! uses the \ref panelayoutmanager "pane layout manager". Adjusts
-	//! the defaults for better appearance.
-	//! Sets \ref new_listlayoutmanager "list_border",
-	//! and sets variable_height().
-
-	void as_vertical_pane() LIBCXX_PUBLIC;
-
 	//! Width of the adjustable_header_highlight_color.
 
 	//! This must agree with whatever went into

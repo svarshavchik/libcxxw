@@ -56,6 +56,7 @@ Summary: LibCXXW development libraries
 Requires: %{name} = 0:%{version}-%{release}
 Requires: libcxxbase-abi = %{libcxx_version}
 Requires: libX11-devel
+Provides: libcxxw-abi = @ABIVER@
 
 %description devel
 This package installs files needed to develop applications that use LibCXXW.

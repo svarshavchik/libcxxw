@@ -75,19 +75,14 @@ For example, set_background_color() sets only the next new display element's
 pane's background color. Call set_background_color() again to use the same
 (or different) background color before creating the netx display element.
 
-\par Panes with selection lists.
+\par Panes with selection lists and tables
 
 \code
 INSERT_LIBX_NAMESPACE::w::new_listlayoutmanager nlm;
 
-nlm.variable_height();
-nlm.list_border={};
+pane_f->configure_new_list(nlm);
 
 pane_f->set_initial_size(20)
-    .set_scrollbar_visibility(INSERT_LIBX_NAMESPACE::w::scrollbar_visibility::never)
-    .halign(LIBCXX_NAMESPACE::w::halign::fill)
-    .valign(LIBCXX_NAMESPACE::w::valign::fill)
-    .padding(0)
     .create_focusable_container(
          []
          (const auto &container)
@@ -108,34 +103,34 @@ pane_f->set_initial_size(20)
     	 nlm)->show();
 \endcode
 
-This specific combination of settings results in an intuitive interface
-consisting of a vertical pane with a \ref listlayoutmanager "selection list".
+configure_new_list() gets called
+before calling create_focusable_container() for a table or a list.
+Passing a
+\ref new_listlayoutmanager "INSERT_LIBX_NAMESPACE::w::new_listlayoutmanager"
+or
+\ref new_tablelayoutmanager "INSERT_LIBX_NAMESPACE::w::new_tablelayoutmanager"
+to configure_new_list() adjusts several settings for an intuitive interface
+consisting of a vertical pane with a \ref listlayoutmanager "selection list"
+or a
+\ref tablelayoutmanager "table."
 
 Ordinary selection lists have a fixed height specified as the number of
-rows in the list, with the selection list providing a scroll-bar for longer
-lists.
+rows in the list, and the selection list provides a scroll-bar for longer
+lists. Tables also have a fixed height by default.
 
-Using \c variable_height() configures the selection list's container to have
-an adjustable height. After this selection list gets placed in the pane,
+configure_new_list() adjusts the new pane element's padding and positions,
+and disables the scrollbar, and adjusts the new table or list to have
+an adjustable height, and no borders. The pane layout manager-provided borders
+are sufficient.
+
+After this selection list gets placed in the pane,
 the pane's sliders indirectly adjust the selection list's height. The
 pane's sliders adjust the pane's height, and with the pane's now having
 a variable height, the height of the selection list is always the same as
 its containing pane.
 
-Additionally, list_border gets cleared, the pane's borders are enough, and
-the pane-provided padding gets overriden, the list-provided padding is
-sufficient.
-
-The pane's scroll-bar's visibility gets overriden to "never". This removes the
-pane's usual scroll-bar, however the selection list supplies its own
-scroll-bar now when its height isn't enough to fit the entire list.
-The pane's horizontal alignment get set to
-\c LIBCXX_NAMESPACE::w::halign::fill which makes the selection list's width
-fit inside the pane. This ends up putting this selection list's scroll-bar
-in the same position where the pane's own scroll-bar normally goes.
-
-The end result is a selection list that looks like an integral part of the
-pane container.
+The end result is a selection list or a table
+ that looks like an integral part of the pane container.
 This result gets further improved by automatically incorporating
 the \ref focusable "selection list's tabbing order" into
 the pane's tabbing order. Normally the pane's sliders'

@@ -82,7 +82,9 @@ static void create_main_window(const x::w::main_window &mw,
 	x::w::gridlayoutmanager layout=mw->get_layoutmanager();
 	auto factory=layout->append_row();
 
-	auto pane=factory->colspan(2).create_focusable_container
+	auto pane=factory->colspan(2)
+		.halign(x::w::halign::fill)
+		.create_focusable_container
 		([]
 		 (const auto &pane_container) {
 			 // Initially empty
@@ -446,33 +448,16 @@ static void insert_list(const x::w::container &c)
 
 	x::w::new_listlayoutmanager nlm;
 
-	// Normally a selection list has a fixed height specified as a number
-	// of rows in the list. Change it to be variable height, and the
-	// pane layout manager sizes it automatically to match the list's
-	// pane's height.
+	// Update both the pane factory's settings and the new list
+	// layout manager settings for optimal results for a list in
+	// a container with the pane layout manager.
 	//
-	// The pane's scrollbar needs to be explicitly disabled by setting
-	// its visibility to "never". The selection list has its own
-	// scroll-bar, and takes care of making it visible when its pane,
-	// and its height, is smaller than the list's contents.
+	// configure_new_list()'s parameter is either an
+	// x::w::new_listlayoutmanager or an x::w::new_tablelayoutmanager.
 
-	nlm.variable_height();
-
-	// A little bit more work to make the list appear to be a seamless
-	// feature of the pane container. Get rid of the default border
-	// that selection lists have by default, and padding(0) the new pane.
-	//
-	// The default inner padding supplied by list layout manager provides
-	// the visual padding, and the selection list's border is not needed,
-	// because the pane provides one.
-
-	nlm.list_border={};
+	f->configure_new_list(nlm);
 
 	f->set_initial_size(20)
-		.set_scrollbar_visibility(x::w::scrollbar_visibility::never)
-		.padding(0)
-		.halign(x::w::halign::fill)
-		.valign(x::w::valign::fill)
 		.create_focusable_container
 		([]
 		 (const auto &container)

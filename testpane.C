@@ -144,12 +144,9 @@ static void insert_list(const LIBCXX_NAMESPACE::w::container &c)
 
 	LIBCXX_NAMESPACE::w::new_listlayoutmanager nlm;
 
-	nlm.variable_height();
+	f->configure_new_list(nlm);
 
 	f->set_initial_size(20)
-		.set_scrollbar_visibility(LIBCXX_NAMESPACE::w
-					  ::scrollbar_visibility::never)
-		.halign(LIBCXX_NAMESPACE::w::halign::fill)
 		.create_focusable_container
 		([]
 		 (const auto &container)
@@ -377,8 +374,6 @@ void initialize_adjustable_pane(const LIBCXX_NAMESPACE::w::panelayoutmanager
 	ntlm.columns=5;
 	ntlm.requested_col_widths={{0, 100}};
 
-	ntlm.as_vertical_pane();
-
 	ntlm.col_alignments=
 		{
 		 {0, LIBCXX_NAMESPACE::w::halign::center},
@@ -397,13 +392,10 @@ void initialize_adjustable_pane(const LIBCXX_NAMESPACE::w::panelayoutmanager
 		};
 
 	for (size_t i=0; i<2; ++i)
+	{
+		f->configure_new_list(ntlm);
+
 		f->set_initial_size(50)
-			.set_scrollbar_visibility
-			(LIBCXX_NAMESPACE::w::scrollbar_visibility
-			 ::never)
-			.padding(0)
-			.halign(LIBCXX_NAMESPACE::w::halign::fill)
-			.valign(LIBCXX_NAMESPACE::w::valign::fill)
 			.create_focusable_container
 			([]
 			 (const auto &table_container)
@@ -448,6 +440,7 @@ void initialize_adjustable_pane(const LIBCXX_NAMESPACE::w::panelayoutmanager
 				 }
 				 tlm->append_items(items);
 			 }, ntlm)->show();
+	}
 }
 
 static void create_adjustable_pane(const LIBCXX_NAMESPACE::w::main_window &mw,

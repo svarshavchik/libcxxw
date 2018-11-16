@@ -7,6 +7,7 @@
 
 #include <x/w/panefactoryfwd.H>
 #include <x/w/panelayoutmanagerfwd.H>
+#include <x/w/listlayoutmanagerfwd.H>
 #include <x/w/factoryobj.H>
 #include <x/w/dim_arg.H>
 #include <x/w/rgb.H>
@@ -151,6 +152,11 @@ public:
 
 	//! Destructor
 	~panefactoryObj() LIBCXX_HIDDEN;
+
+	//! Configure a new list or a table.
+
+	//! Configure a new list for best visual appearance.
+	void configure_new_list(new_listlayoutmanager &);
 };
 
 LIBCXXW_NAMESPACE_END
