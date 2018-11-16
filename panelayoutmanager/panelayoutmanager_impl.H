@@ -332,12 +332,14 @@ class LIBCXX_HIDDEN panelayoutmanagerObj::implObj
 		      > find_panes(grid_map_t::lock &grid_lock,
 				   const ref<elementObj::implObj> &slider);
 
-	//! Return original sizes of two panes.
+	//! Return the size of the pane, or slider.
 
-	virtual pane_slider_original_sizes
-		original_sizes(ONLY IN_THREAD,
-			       const ref<elementObj::implObj> &before,
-			       const ref<elementObj::implObj> &after)=0;
+	//! sliding() adjusts the panes by updating their metrics (same
+	//! minimum, preferred, and maximum). This returns the size of the
+	//! given element by returning the element's minimum metric.
+
+	virtual dim_t element_size(ONLY IN_THREAD,
+				   const ref<elementObj::implObj> &e)=0;
 
  public:
 	//! Metrics for the trailing canvas element
@@ -412,12 +414,10 @@ class panelayoutmanagerObj::implObj::orientation
 	//! Remove the element.
 	void remove_elements(grid_map_t::lock &, size_t n, size_t c) override;
 
-	//! Capture original sizes of two panes.
+	//! Implement element_size().
 
-	pane_slider_original_sizes
-	original_sizes(ONLY IN_THREAD,
-		       const ref<elementObj::implObj> &before,
-		       const ref<elementObj::implObj> &after) override;
+	virtual dim_t element_size(ONLY IN_THREAD,
+				   const ref<elementObj::implObj> &e) override;
 
 	//! Slide panes.
 

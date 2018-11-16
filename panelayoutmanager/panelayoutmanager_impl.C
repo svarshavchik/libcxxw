@@ -449,7 +449,8 @@ panelayoutmanagerObj::implObj::start_sliding(ONLY IN_THREAD,
 	{
 		auto &[before, after] = *ret;
 
-		return original_sizes(IN_THREAD, before->impl, after->impl);
+		return { element_size(IN_THREAD, before->impl),
+			 element_size(IN_THREAD, after->impl) };
 	}
 
 	return {};
@@ -689,14 +690,13 @@ panelayoutmanagerObj::implObj::orientation<vertical>
 	return { {0, 0, 0}, {s, s, s} };
 }
 
+
 template<>
-pane_slider_original_sizes panelayoutmanagerObj::implObj::orientation<vertical>
-::original_sizes(ONLY IN_THREAD,
-		 const ref<elementObj::implObj> &before,
-		 const ref<elementObj::implObj> &after)
+dim_t panelayoutmanagerObj::implObj::orientation<vertical>
+::element_size(ONLY IN_THREAD,
+	       const ref<elementObj::implObj> &e)
 {
-	return {before->data(IN_THREAD).current_position.height,
-			after->data(IN_THREAD).current_position.height};
+	return e->get_horizvert(IN_THREAD)->vert.minimum();
 }
 
 template<>
@@ -888,13 +888,11 @@ panelayoutmanagerObj::implObj::orientation<horizontal>
 }
 
 template<>
-pane_slider_original_sizes panelayoutmanagerObj::implObj::orientation<horizontal>
-::original_sizes(ONLY IN_THREAD,
-		 const ref<elementObj::implObj> &before,
-		 const ref<elementObj::implObj> &after)
+dim_t panelayoutmanagerObj::implObj::orientation<horizontal>
+::element_size(ONLY IN_THREAD,
+	       const ref<elementObj::implObj> &e)
 {
-	return {before->data(IN_THREAD).current_position.width,
-			after->data(IN_THREAD).current_position.width};
+	return e->get_horizvert(IN_THREAD)->horiz.minimum();
 }
 
 template<>
