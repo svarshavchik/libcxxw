@@ -89,7 +89,7 @@ void peepholed_toplevel_main_windowObj::implObj
 
 			 menubar_lock lock{mblm};
 
-			 size_t n=mblm->impl->cols(0);
+			 size_t n=mblm->cols(0);
 			 if (--n == 0)
 			 {
 				 // Nothing in the menu bar. Carry on.

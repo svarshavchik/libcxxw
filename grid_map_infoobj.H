@@ -256,9 +256,24 @@ public:
 	//! it gets updated.
 	const lookup_t &get_lookup_table();
 
+	//! Constructor
 	grid_map_infoObj();
 
+	//! Destructor
 	~grid_map_infoObj();
+
+	//! How many rows there are here.
+	inline size_t rows() const
+	{
+		return elements.size();
+	}
+
+	//! How many defined cells there are in the given row.
+
+	//! This does not include spanned cells.
+	size_t cols(size_t row) const;
+
+
 };
 
 LIBCXXW_NAMESPACE_END

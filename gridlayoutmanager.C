@@ -82,14 +82,14 @@ void gridlayoutmanagerObj::remove_row(size_t row)
 	impl->remove_row(row);
 }
 
-size_t gridlayoutmanagerObj::rows()
+size_t gridlayoutmanagerObj::rows() const
 {
-	return impl->rows();
+	return (*grid_lock)->rows();
 }
 
-size_t gridlayoutmanagerObj::cols(size_t row)
+size_t gridlayoutmanagerObj::cols(size_t row) const
 {
-	return impl->cols(row);
+	return (*grid_lock)->cols(row);
 }
 
 elementptr gridlayoutmanagerObj::get(size_t row, size_t col) const

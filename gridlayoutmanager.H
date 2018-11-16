@@ -124,14 +124,6 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 	void col_right_padding_set(size_t col,
 			       const dim_arg &padding);
 
-	//! How many rows there are here.
-	size_t rows();
-
-	//! How many defined cells there are in the given row.
-
-	//! This does not include spanned cells.
-	size_t cols(size_t row);
-
 	//! Remove all existing elements in the row, then call create_gridfactory()
 	static gridfactory replace_row(gridlayoutmanagerObj *public_object,
 				       size_t row);

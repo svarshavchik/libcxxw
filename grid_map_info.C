@@ -6,6 +6,7 @@
 #include "libcxxw_config.h"
 #include "grid_map_info.H"
 #include "x/w/impl/current_border_impl.H"
+#include "messages.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -103,6 +104,14 @@ const grid_map_infoObj::lookup_t &grid_map_infoObj::get_lookup_table()
 	}
 
 	return lookup;
+}
+
+size_t grid_map_infoObj::cols(size_t row) const
+{
+	if (row >= elements.size())
+		throw EXCEPTION(_("Attempting to get the number of columns in a nonexistent row"));
+
+	return elements[row].size();
 }
 
 LIBCXXW_NAMESPACE_END

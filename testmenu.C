@@ -597,8 +597,10 @@ void testmenu()
 						       options_menu_item);
 				     });
 
-			 f=mb->append_right_menus();
-
+			 if (getpid() & 1)
+				 f=mb->append_right_menus();
+			 else
+				 f=mb->insert_right_menus(0);
 			 f->add_text("Help",
 				     [&]
 				     (const auto &factory) {

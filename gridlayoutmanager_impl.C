@@ -152,24 +152,6 @@ gridfactory gridlayoutmanagerObj::implObj
 	return f;
 }
 
-
-size_t gridlayoutmanagerObj::implObj::rows()
-{
-	grid_map_t::lock lock{grid_map};
-
-	return (*lock)->elements.size();
-}
-
-size_t gridlayoutmanagerObj::implObj::cols(size_t row)
-{
-	grid_map_t::lock lock{grid_map};
-
-	if (row >= (*lock)->elements.size())
-		throw EXCEPTION(_("Attempting to get the number of columns in a nonexistent row"));
-
-	return (*lock)->elements.at(row).size();
-}
-
 void gridlayoutmanagerObj::implObj::row_alignment(grid_map_t::lock &grid_lock,
 						  size_t row, valign alignment)
 {

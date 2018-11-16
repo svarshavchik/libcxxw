@@ -92,12 +92,12 @@ public:
 	void remove_row(size_t row);
 
 	//! How many rows there are here.
-	size_t rows();
+	size_t rows() const;
 
 	//! How many defined cells there are in the given row.
 
 	//! This does not include spanned cells.
-	size_t cols(size_t row);
+	size_t cols(size_t row) const;
 
 	//! Get the display element at the given location.
 

@@ -16,6 +16,7 @@
 #include "peephole/peephole_layoutmanager_impl.H"
 #include "editor_peephole_impl.H"
 #include "button.H"
+#include "grid_map_info.H"
 #include "xid_t.H"
 #include "x/w/input_field.H"
 #include "x/w/input_field_config.H"
@@ -143,7 +144,7 @@ factoryObj::create_input_field(const text_param &text,
 		// hidden). This will create elements #2 and #3, which
 		// do_get_impl() checks for, below.
 
-#define HAS_SPIN_CONTROLS(impl) ((impl)->cols(0) >= 4)
+#define HAS_SPIN_CONTROLS(impl) ((*grid_lock)->cols(0) >= 4)
 #define SPIN_CONTROL_A(impl) ((impl)->get(0,2))
 #define SPIN_CONTROL_B(impl) ((impl)->get(0,3))
 
@@ -208,6 +209,8 @@ void input_fieldObj::do_get_impl(const function<internal_focusable_cb> &cb)
 		([&, this]
 		 (const ref<gridlayoutmanagerObj::implObj> &impl)
 		 {
+			 grid_map_t::lock grid_lock{impl->grid_map};
+
 			 if (!HAS_SPIN_CONTROLS(impl))
 			 {
 				 peepholed_focusableObj::do_get_impl(cb);
@@ -288,6 +291,8 @@ void input_fieldObj::on_spin(const hotspot_callback_t &a_cb,
 		([&]
 		 (const ref<gridlayoutmanagerObj::implObj> &impl)
 		 {
+			 grid_map_t::lock grid_lock{impl->grid_map};
+
 			 if (!HAS_SPIN_CONTROLS(impl))
 			 {
 				 throw EXCEPTION(_("Input field does not have spin controls."));

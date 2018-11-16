@@ -11,6 +11,7 @@
 #include "messages.H"
 #include "x/w/label.H"
 #include "generic_window_handler.H"
+#include "grid_map_info.H"
 #include "messages.H"
 
 LIBCXXW_NAMESPACE_START
@@ -29,7 +30,7 @@ size_t menubar_lock::menus() const
 
 size_t menubar_lock::right_menus() const
 {
-	return manager->impl->cols(0)-menus()-1;
+	return (*manager->grid_lock)->cols(0)-menus()-1;
 }
 
 menu menubar_lock::get_menu(size_t n) const
@@ -182,7 +183,7 @@ menubarfactory menubarlayoutmanagerObj::insert_right_menus(size_t pos)
 		 {
 			 menubar_lock lock{lm};
 
-			 if (pos > lm->impl->cols(0)-lm->impl->info
+			 if (pos > lm->cols(0)-lm->impl->info
 			     (lock.manager->grid_lock).divider_pos)
 				 throw EXCEPTION(_("Existing menu does not exist."));
 
@@ -191,7 +192,7 @@ menubarfactory menubarlayoutmanagerObj::insert_right_menus(size_t pos)
 					       (&*lm, 0,
 						lm->impl->info(lock.manager
 							       ->grid_lock)
-						.divider_pos+pos),
+						.divider_pos+1+pos),
 					       creator, content_creator, lock);
 			 ++pos;
 			 return mb;

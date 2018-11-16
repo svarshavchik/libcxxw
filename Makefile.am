@@ -38,7 +38,7 @@ libcxxw-@VERSION@-@LIBCXX_VERSION@.m4: libcxxw.m4
 
 CLEANFILES=$(aclocal_DATA) $(pkgconf_DATA)
 
-STATICLINKFLAGS=-Wl,-ljpeg -Wl,-lgif -Wl,-lcourier-unicode -Wl,-lpthread @LIBCXXW_LIBS@ -pthread
+STATICLINKFLAGS=-Wl,-ljpeg -Wl,-lgif -Wl,-lcourier-unicode -Wl,-lpthread @LIBCXXW_LIBS@ -pthread -Wl,-export-dynamic
 
 abilibdir=$(libdir)/libcxxw-@ABIVER@-@LIBCXX_VERSION@
 abilib_LTLIBRARIES=libcxxw.la libcxxwcups.la

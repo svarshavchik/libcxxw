@@ -610,7 +610,7 @@ template<>
 size_t panelayoutmanagerObj::implObj::orientation<vertical>
 ::total_size(grid_map_t::lock &lock)
 {
-	return rows();
+	return (*lock)->rows();
 }
 
 template<>
@@ -661,7 +661,7 @@ void panelayoutmanagerObj::implObj::orientation<vertical>
 	remove_all_defaults();
 	grid_map_t::lock grid_lock{grid_map};
 
-	requested_row_height(grid_lock, rows()-1, 100);
+	requested_row_height(grid_lock, (*grid_lock)->rows()-1, 100);
 }
 
 template<>
@@ -810,7 +810,7 @@ template<>
 size_t panelayoutmanagerObj::implObj::orientation<horizontal>
 ::total_size(grid_map_t::lock &lock)
 {
-	return cols(0);
+	return (*lock)->cols(0);
 }
 
 template<>
@@ -859,7 +859,7 @@ void panelayoutmanagerObj::implObj::orientation<horizontal>
 {
 	remove_all_defaults();
 	grid_map_t::lock grid_lock{grid_map};
-	requested_col_width(grid_lock, cols(0)-1, 100);
+	requested_col_width(grid_lock, (*grid_lock)->cols(0)-1, 100);
 }
 
 template<>
