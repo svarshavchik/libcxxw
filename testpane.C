@@ -19,11 +19,14 @@
 #include "x/w/label.H"
 #include "x/w/standard_comboboxlayoutmanager.H"
 #include "x/w/listlayoutmanager.H"
+#include "x/w/tablelayoutmanager.H"
 #include "x/w/canvas.H"
 
 #include <string>
 #include <iostream>
 #include <sstream>
+
+#include "testpane.inc.H"
 
 class close_flagObj : public LIBCXX_NAMESPACE::obj {
 
@@ -189,12 +192,11 @@ get_scrollbar_visibility(const LIBCXX_NAMESPACE::w::container &container)
 }
 
 static void create_main_window(const LIBCXX_NAMESPACE::w::main_window &mw,
-			       int argc,
-			       char **argv)
+			       const testpaneoptions &options)
 {
-	LIBCXX_NAMESPACE::w::new_panelayoutmanager npl;
+	LIBCXX_NAMESPACE::w::new_panelayoutmanager npl{{20, 100, 200}};
 
-	if (argc > 1 && argv[1][0] == 'h')
+	if (options.horizontal->value)
 		npl.horizontal();
 
 	LIBCXX_NAMESPACE::w::gridlayoutmanager layout=mw->get_layoutmanager();
@@ -330,7 +332,146 @@ static void create_main_window(const LIBCXX_NAMESPACE::w::main_window &mw,
 	factory->create_canvas()->show();
 }
 
-void testpane(int argc, char **argv)
+static inline
+void initialize_adjustable_pane(const LIBCXX_NAMESPACE::w::panelayoutmanager
+				&plm)
+{
+	struct mondata {
+		std::string process;
+		int cpu;
+		int ram;
+		int diskio;
+		int netio;
+	};
+
+	static const mondata processes[]=
+		{
+		 {"Compiler", 40, 12, 3, 0},
+		 {"Idle", 35, 0, 0, 0},
+		 {"Updater", 12, 4, 2, 2},
+		 {"Editor", 4, 7, 0, 0},
+		 {"Torrent Downloader", 5, 6, 4, 4},
+		 {"Backup", 4, 5, 5, 0},
+		};
+
+	LIBCXX_NAMESPACE::w::panefactory f=plm->append_panes();
+
+	LIBCXX_NAMESPACE::w::new_tablelayoutmanager ntlm
+		{
+		 []
+		 (const auto &f, size_t i)
+		 {
+			 static const char * const titles[]=
+				 {
+				  "Process",
+				  "CPU %",
+				  "RAM %",
+				  "Disk I/O (Mbps)",
+				  "Net I/O (Mbps)",
+				 };
+			 f->create_label(titles[i])->show();
+		 }
+		};
+	ntlm.unlimited_table_width();
+	ntlm.adjustable_column_widths=true;
+	ntlm.columns=5;
+	ntlm.requested_col_widths={{0, 100}};
+
+	ntlm.as_vertical_pane();
+
+	ntlm.col_alignments=
+		{
+		 {0, LIBCXX_NAMESPACE::w::halign::center},
+		 {1, LIBCXX_NAMESPACE::w::halign::right},
+		 {2, LIBCXX_NAMESPACE::w::halign::right},
+		 {3, LIBCXX_NAMESPACE::w::halign::right},
+		 {4, LIBCXX_NAMESPACE::w::halign::right},
+		};
+
+	ntlm.column_borders=
+		{
+		 {1, "thin_0%"},
+		 {2, "thin_dashed_0%"},
+		 {3, "thin_dashed_0%"},
+		 {4, "thin_dashed_0%"},
+		};
+
+	for (size_t i=0; i<2; ++i)
+		f->set_initial_size(50)
+			.set_scrollbar_visibility
+			(LIBCXX_NAMESPACE::w::scrollbar_visibility
+			 ::never)
+			.padding(0)
+			.halign(LIBCXX_NAMESPACE::w::halign::fill)
+			.valign(LIBCXX_NAMESPACE::w::valign::fill)
+			.create_focusable_container
+			([]
+			 (const auto &table_container)
+			 {
+				 LIBCXX_NAMESPACE::w::tablelayoutmanager tlm=
+					 table_container
+					 ->get_layoutmanager();
+
+				 std::vector<LIBCXX_NAMESPACE::w
+					     ::list_item_param> items;
+
+				 items.reserve((std::end(processes)-
+						std::begin(processes)) * 5);
+
+				 for (const auto &p:processes)
+				 {
+					 std::ostringstream cpu, ram,
+						 diskio, netio;
+
+					 cpu << p.cpu << "%";
+
+					 ram << p.ram << "%";
+
+					 diskio << p.diskio << " Mbps";
+
+					 netio << p.netio << " Mbps";
+
+					 std::string fields[5]=
+						 {
+						  p.process,
+						  cpu.str(),
+						  ram.str(),
+						  diskio.str(),
+						  netio.str()
+						 };
+
+					 items.insert(items.end(),
+						      std::begin
+						      (fields),
+						      std::end(fields)
+						      );
+				 }
+				 tlm->append_items(items);
+			 }, ntlm)->show();
+}
+
+static void create_adjustable_pane(const LIBCXX_NAMESPACE::w::main_window &mw,
+				   const testpaneoptions &options)
+{
+	LIBCXX_NAMESPACE::w::new_panelayoutmanager npl{{0, 100}};
+
+	if (options.horizontal->value)
+		npl.horizontal();
+
+	LIBCXX_NAMESPACE::w::gridlayoutmanager layout=mw->get_layoutmanager();
+	auto factory=layout->append_row();
+
+	auto pane=factory->create_focusable_container
+		([]
+		 (const auto &pane_container) {
+			 initialize_adjustable_pane
+				 (pane_container->get_layoutmanager());
+		 }, npl);
+
+	pane->show();
+}
+
+void testpane(const testpaneoptions &options)
 {
 	LIBCXX_NAMESPACE::destroy_callback::base::guard guard;
 
@@ -340,7 +481,12 @@ void testpane(int argc, char **argv)
 		::create([&]
 			 (const auto &mw)
 			 {
-				 create_main_window(mw, argc, argv);
+				 if (options.adjustable->value)
+				 {
+					 create_adjustable_pane(mw, options);
+				 }
+				 else
+					 create_main_window(mw, options);
 			 });
 
 	main_window->set_window_title("Panes!");
@@ -370,10 +516,10 @@ void testpane(int argc, char **argv)
 int main(int argc, char **argv)
 {
 	try {
-		LIBCXX_NAMESPACE::property
-			::load_property(LIBCXX_NAMESPACE_STR "::themes",
-					"themes", true, true);
-		testpane(argc, argv);
+		testpaneoptions options;
+		options.parse(argc, argv);
+
+		testpane(options);
 	} catch (const LIBCXX_NAMESPACE::exception &e)
 	{
 		e->caught();

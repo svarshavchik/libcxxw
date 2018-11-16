@@ -74,6 +74,10 @@ class layoutmanagerObj::implObj : virtual public obj {
 
 	//! Mark this layout as needing recalculation.
 
+	void needs_recalculation();
+
+	//! Mark this layout as needing recalculation.
+
 	void needs_recalculation(const batch_queue &queue);
 
 	//! Mark this layout as needing recalculation.

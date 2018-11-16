@@ -13,6 +13,7 @@
 #include <x/w/border_arg.H>
 #include <x/w/rgb.H>
 #include <x/w/grid_map_infofwd.H>
+#include <x/w/dim_axis_arg.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -52,12 +53,15 @@ public:
 
 	orientation_t orientation;
 
-	//! Constructor
-	new_panelayoutmanager(orientation_t orientation=
+	new_panelayoutmanager(const dim_axis_arg &size,
+			      orientation_t orientation=
 			      orientation_t::vertical) LIBCXX_PUBLIC;
 
 	//! Destructor
 	~new_panelayoutmanager() LIBCXX_PUBLIC;
+
+	//! Container's size
+	dim_axis_arg size;
 
 	//! Set horizontal pane layout.
 	inline void horizontal() { orientation=orientation_t::horizontal; }

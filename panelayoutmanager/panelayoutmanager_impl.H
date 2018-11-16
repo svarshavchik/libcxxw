@@ -19,6 +19,7 @@
 #include "panelayoutmanager/panecontainer_impl.H"
 #include "panelayoutmanager/panefactory_impl.H"
 #include "gridlayoutmanager.H"
+#include "metrics_grid.H"
 #include "peephole/peephole_style.H"
 #include "x/w/impl/current_border_implfwd.H"
 #include <tuple>
@@ -42,25 +43,6 @@ contains a sequence of:
 This is for a vertical pane.
 
 Sliders get automatically inserted in between elements.
-
-In all cases, there is an extra row in the grid layout manager that
-contains a canvas, so the above picture is really.
-
-\code
-[ pane element ]
-[ slider ]
-[ pane element ]
-[ slider ]
-[ pane element ]
-[ canvas ]
-\endcode
-
-The canvas's metrics are always zero min/prev/max height and zero min/prev
-and unlimited width for a vertical pane, and the other way for horizontal, but
-the grid is configured to give the canvas element 100% of any extra
-space.
-
-The following ignores the existing of the trailing canvas element.
 
 The initial empty container consists of a placeholder slider in row #0.
 This is because the pane container is a focusable container and it must
@@ -101,6 +83,19 @@ class LIBCXX_HIDDEN panelayoutmanagerObj::implObj
 	//! Alias
 
 	typedef gridlayoutmanagerObj::implObj superclass_t;
+
+	//! Flag that indicates whether the pane elements reference size is set.
+
+	//! Accessed only while holding a grid lock.
+
+	bool reference_size_set_under_lock=false;
+
+	//! reference_size_set is accessible only while holding the grid lock.
+
+	inline bool &reference_size_set(grid_map_t::lock &)
+	{
+		return reference_size_set_under_lock;
+	}
  public:
 
 	//! My container
@@ -248,14 +243,6 @@ class LIBCXX_HIDDEN panelayoutmanagerObj::implObj
 				      size_t position,
 				      grid_map_t::lock &lock);
 
-	//! Adjusted the requested size for the trailing canvas element.
-
-	//! After adding or removing panes, adjust the requested row or
-	//! column sizes so that the canvas always gets any extra real
-	//! estate.
-	virtual void request_extra_space_to_canvas(grid_map_t::lock
-						   &grid_lock)=0;
-
 	//! Callback from a slider element: sliding has started.
 
 	pane_slider_original_sizes
@@ -275,6 +262,14 @@ class LIBCXX_HIDDEN panelayoutmanagerObj::implObj
 
 			     coord_t current_x,
 			     coord_t current_y)=0;
+
+	//! Adjust the size of the peephole.
+
+	//! sliding() and adjust_panes_for_current_size() pass in a peephole
+	//! and its designates size.
+	virtual void resize_peephole_to(ONLY IN_THREAD,
+					const element &peephole,
+					dim_t s)=0;
 
 	//! Key up/left
 	void slide_start(ONLY IN_THREAD,
@@ -342,9 +337,76 @@ class LIBCXX_HIDDEN panelayoutmanagerObj::implObj
 				   const ref<elementObj::implObj> &e)=0;
 
  public:
-	//! Metrics for the trailing canvas element
 
-	virtual std::tuple<dim_axis_arg, dim_axis_arg> canvas_metrics()=0;
+	//! Override theme_updated().
+
+	//! reference_size_set is no longer. It's a brand new world.
+	void theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme)
+		override;
+
+	//! Override  rebuild_elements_and_update_metrics().
+
+	//! We override set_element_metrics(), and it's our responsibility
+	//! to resize the individual panes to match whatever the container's
+	//! current size is, now. After calling grid layout manager's
+	//! rebuild_elements_and_update_metrics() we take a look at our
+	//! pane elements, and adjust_panes_for_current_size().
+	bool rebuild_elements_and_update_metrics(ONLY IN_THREAD,
+						 grid_map_t::lock &grid_lock,
+						 bool already_sized) override;
+
+	//! Override reposition_child_elements().
+
+	//! We also adjust_panes_for_current_size() here.
+	bool reposition_child_elements(ONLY IN_THREAD,
+				       const rectangle &position,
+				       grid_map_t::lock &grid_lock) override;
+
+ private:
+
+	//! Recalculate the size of each individual pane.
+
+	//! If not reference_size_set, take each element_size() and save it
+	//! as the reference size.
+	//!
+	//! Add up all element_size()s. Compute the total size that all panes
+	//! must add up to. This would be the container's current size less
+	//! the overhead. The overhead consists of the sizes of all dividing
+	//! sliders; the extra space in each pane above each pane's
+	//! peephole's size; and the size of the border elements in the grid.
+	//!
+	//! After subtracting all of that, the rest is what we have to work
+	//! with. Take all elements' reference sizes, and scale them so that
+	//! their total size is this size.
+	void adjust_panes_for_current_size(ONLY IN_THREAD,
+					   grid_map_t::lock &grid_lock,
+					   const rectangle &position);
+
+	//! The most recent size of the pane container.
+
+	//! Used for optimization purposes by adjust_panes_for_current_size()
+	//! so that it does its work only when needed.
+	dim_t most_recent_pane_size=0;
+
+	//! Return the size of the container given its position.
+
+	//! adjust_panes_for_current_size() uses it to figure out the
+	//! most_recent_pane_size().
+
+	virtual dim_t size_from_position(const rectangle &)=0;
+
+	//! Compute this border's element's overhead.
+
+	//! adjust_panes_for_current_size() needs to account for the borders
+	//! that exist between the panes and sliders. There are other borders
+	//! in the grid besides those. Given the border's element x and y
+	//! coordinates, determine whether this border should be accounted
+	//! for. If not, return 0. Otherwise return this border's thickness
+	//! (height for vertical panes, width for horizontal panes).
+	virtual dim_t border_overhead(ONLY IN_THREAD,
+				      metrics::grid_xy x,
+				      metrics::grid_xy y,
+				      const element &e)=0;
 };
 
 /////////////////////////////////////////////////////////////////////////
@@ -390,14 +452,6 @@ class panelayoutmanagerObj::implObj::orientation
 		   scrollbar_visibility>
 	pane_peephole_style(scrollbar_visibility) override;
 
-	//! Implement request_extra_space_to_canvas().
-
-	void request_extra_space_to_canvas(grid_map_t::lock &grid_lock)
-		override;
-
-	//! Implement canvas_metrics().
-	std::tuple<dim_axis_arg, dim_axis_arg> canvas_metrics() override;
-
 	//! Which pointer to use for the slider.
 
 	const char *slider_cursor() const override;
@@ -414,10 +468,26 @@ class panelayoutmanagerObj::implObj::orientation
 	//! Remove the element.
 	void remove_elements(grid_map_t::lock &, size_t n, size_t c) override;
 
+	//! Override set element metrics
+
+	//! Override grid layout manager's vertical metric, for vertical
+	//! panes, and horizontal metrics, for horizontal panes.
+	//!
+	//! A panecontainer_implObj subclass overrides those metrics to the
+	//! size specified when creating the pane container.
+
+	void set_element_metrics(ONLY IN_THREAD,
+				 const metrics::axis &h,
+				 const metrics::axis &v) override;
+
 	//! Implement element_size().
 
-	virtual dim_t element_size(ONLY IN_THREAD,
-				   const ref<elementObj::implObj> &e) override;
+	dim_t element_size(ONLY IN_THREAD,
+			   const ref<elementObj::implObj> &e) override;
+
+	//! Implement size_from_position
+
+	dim_t size_from_position(const rectangle &) override;
 
 	//! Slide panes.
 
@@ -431,6 +501,17 @@ class panelayoutmanagerObj::implObj::orientation
 
 		     coord_t current_x,
 		     coord_t current_y) override;
+
+	//! Implement resize_peephole_to().
+	void resize_peephole_to(ONLY IN_THREAD,
+				const element &peephole,
+				dim_t s) override;
+
+	//! Implement border_overhead().
+	dim_t border_overhead(ONLY IN_THREAD,
+			      metrics::grid_xy x,
+			      metrics::grid_xy y,
+			      const element &e) override;
 };
 
 LIBCXXW_NAMESPACE_END

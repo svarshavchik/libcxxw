@@ -8,9 +8,10 @@
 #include "panelayoutmanager/panefactory_impl.H"
 #include "x/w/focusable_container.H"
 #include "x/w/panefactory.H"
-#include "x/w/canvas.H"
 #include "x/w/impl/focus/focusable.H"
+#include "x/w/impl/themedim_axis_element.H"
 #include "defaulttheme.H"
+#include "screen.H"
 
 LIBCXXW_NAMESPACE_START
 
@@ -124,12 +125,9 @@ void panelayoutmanagerObj::remove_all_panes()
 	//
 	// [pane]
 	// [slider]
-	//   ...
-	// [canvas]
 
 	impl->remove_elements(grid_lock, 2, impl->total_size(grid_lock)-3);
 	impl->remove_element(grid_lock, 0);
-	impl->request_extra_space_to_canvas(grid_lock);
 }
 
 panefactory panelayoutmanagerObj::replace_all_panes()
@@ -212,25 +210,152 @@ class LIBCXX_HIDDEN panecontainerObj : public focusable_containerObj {
 	}
 };
 
+//! Pane container implementation object for a vertically-adjustable pane.
+
+//! The vertical pane container's height is specified by explicit dimensions.
+
+class LIBCXX_HIDDEN vertical_adjusted_panecontainer_implObj
+	: public themedim_axis_heightObj<panecontainer_implObj> {
+
+	typedef themedim_axis_heightObj<panecontainer_implObj> superclass_t;
+
+ public:
+	//! Constructor.
+	vertical_adjusted_panecontainer_implObj
+		(const container_impl &parent,
+		 const dim_axis_arg &axis,
+		 const child_element_init_params &init_params)
+		: superclass_t{axis, parent, init_params}
+	{
+	}
+
+	//! Re-verify our metrics, once we're initialized.
+	void initialize(ONLY IN_THREAD) override
+	{
+		reset(IN_THREAD,
+		      get_screen()->impl->current_theme.get());
+		superclass_t::initialize(IN_THREAD);
+	}
+
+	//! Theme was updated.
+
+	void theme_updated(ONLY IN_THREAD, const defaulttheme &theme) override
+	{
+		reset(IN_THREAD, theme);
+		superclass_t::theme_updated(IN_THREAD, theme);
+	}
+
+ private:
+
+	//! Reset only the vertical metrics.
+	void reset(ONLY IN_THREAD, const defaulttheme &theme)
+	{
+		auto hv=get_horizvert(IN_THREAD);
+
+		hv->set_element_metrics(IN_THREAD, hv->horiz,
+					get_height_axis(IN_THREAD));
+
+	}
+};
+
+//! Pane container implementation object for a horizontally-adjustable pane.
+
+//! The horizontal pane container's width is specified by explicit dimensions.
+
+class LIBCXX_HIDDEN horizontal_adjusted_panecontainer_implObj
+	: public themedim_axis_widthObj<panecontainer_implObj> {
+
+	typedef themedim_axis_widthObj<panecontainer_implObj> superclass_t;
+
+ public:
+	//! Constructor.
+	horizontal_adjusted_panecontainer_implObj
+		(const container_impl &parent,
+		 const dim_axis_arg &axis,
+		 const child_element_init_params &init_params)
+		: superclass_t{axis, parent, init_params}
+	{
+	}
+
+	// Re-verify our metrics, once we're initialized.
+
+	void initialize(ONLY IN_THREAD) override
+	{
+		reset(IN_THREAD, get_screen()->impl->current_theme.get());
+
+		superclass_t::initialize(IN_THREAD);
+	}
+
+	//! Theme was updated.
+
+	void theme_updated(ONLY IN_THREAD, const defaulttheme &theme) override
+	{
+		reset(IN_THREAD, theme);
+		superclass_t::theme_updated(IN_THREAD, theme);
+	}
+
+ private:
+
+	//! Reset only the horizontal metrics.
+	void reset(ONLY IN_THREAD, const defaulttheme &theme)
+	{
+		auto hv=get_horizvert(IN_THREAD);
+
+		hv->set_element_metrics(IN_THREAD,
+					get_width_axis(IN_THREAD),
+					hv->vert);
+	}
+};
+
 #if 0
 {
 #endif
 }
 
-new_panelayoutmanager::new_panelayoutmanager(orientation_t orientation)
+new_panelayoutmanager::new_panelayoutmanager(const dim_axis_arg &size,
+					     orientation_t orientation)
 	: pane_style{"pane_border", "pane_slider",
 		"pane_slider_background"},
-	  orientation{orientation}
+	  orientation{orientation},
+	  size{size}
 {
 }
 
 new_panelayoutmanager::~new_panelayoutmanager()=default;
 
+// For optimal results, precompute the initial metrics of the pane container,
+// and construct it.
+
+static inline ref<panecontainer_implObj>
+create_panecontainer_impl(const container_impl &parent,
+			  const new_panelayoutmanager &plm)
+{
+	child_element_init_params init_params;
+
+	auto theme=parent->container_element_impl()
+		.get_screen()->impl->current_theme.get();
+
+	switch (plm.orientation) {
+	case new_panelayoutmanager::orientation_t::horizontal:
+		init_params.initial_metrics.horiz=plm.size
+			.compute(theme, themedimaxis::width);
+		return ref<horizontal_adjusted_panecontainer_implObj>
+			::create(parent, plm.size, init_params);
+	case new_panelayoutmanager::orientation_t::vertical:
+		init_params.initial_metrics.horiz=plm.size
+			.compute(theme, themedimaxis::height);
+		return ref<vertical_adjusted_panecontainer_implObj>
+			::create(parent, plm.size, init_params);
+	default:
+		throw EXCEPTION("Should not happen");
+	}
+}
+
 focusable_container
 new_panelayoutmanager::create(const container_impl &parent)
 	const
 {
-	auto impl=ref<panecontainer_implObj>::create(parent);
+	auto impl=create_panecontainer_impl(parent, *this);
 
 	// Create the appropriate implementation subclass.
 
@@ -253,25 +378,8 @@ new_panelayoutmanager::create(const container_impl &parent)
 	if (orientation != orientation_t::vertical)
 		lm->impl->insert_row(&*lm, 0);
 
-	// Create the canvas element that absorbs any extra space.
-	{
-		auto f=lm_impl->create_slider_factory(&*lm, 0);
-
-		f->padding(0);
-
-		auto [hm, vm]=lm_impl->canvas_metrics();
-
-		f->create_canvas([]
-				 (const auto &canvas)
-				 {
-					 canvas->show();
-				 },
-				 hm,
-				 vm);
-	}
 	// Initial slider.
 	lm_impl->create_slider(lm_impl->create_slider_factory(&*lm, 0));
-	lm_impl->request_extra_space_to_canvas(lm->grid_lock);
 
 	return c;
 }

@@ -9,6 +9,7 @@
 #include "xid_t.H"
 #include "connection_thread.H"
 #include "container_impl.H"
+#include "run_as.H"
 #include "x/w/impl/draw_info.H"
 #include "x/w/impl/child_element.H"
 #include "catch_exceptions.H"
@@ -45,6 +46,11 @@ void layoutmanagerObj::implObj::run_as(const functionref<void (ONLY IN_THREAD)>
 					 f(IN_THREAD);
 				 } REPORT_EXCEPTIONS(e);
 			 });
+}
+
+void layoutmanagerObj::implObj::needs_recalculation()
+{
+	needs_recalculation(get_element_impl().THREAD->get_batch_queue());
 }
 
 void layoutmanagerObj::implObj::needs_recalculation(const batch_queue &queue)

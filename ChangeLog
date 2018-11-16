@@ -1,3 +1,7 @@
+2018-11-14  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* Pane layout manager overhaul.
+
 2018-11-09  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* popup/popup_handler.C: Fix combo-box popup delay.

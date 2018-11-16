@@ -64,6 +64,8 @@ public:
 	{
 		// superclass_t is inherited from the parent. This bypasses
 		// the parent code.
+		borderlayoutmanagerObj::implObj::do_draw(IN_THREAD, di, clip,
+							 drawn_areas);
 
 		superclass_t::do_draw(IN_THREAD, di, clip, drawn_areas);
 	}
@@ -702,6 +704,12 @@ new_tablelayoutmanager
 
 new_tablelayoutmanager::~new_tablelayoutmanager()=default;
 
+void new_tablelayoutmanager::as_vertical_pane()
+{
+	variable_height();
+	list_border="empty";
+}
+
 // A table uses its own internal synchronized axis.
 //
 // Override create(), and pass through an opaque table_create_info pointer
@@ -783,7 +791,7 @@ void new_tablelayoutmanager::created_list_container(const gridlayoutmanager
 			 lm->layoutmanagerObj::impl->layout_container_impl,
 			 header_init_params);
 
-	// Now create a (not quite a) replicable of the focus frame.
+	// Now create a (not quite a) replica of the focus frame.
 
 	auto header_focusframe_container_impl=
 		ref<always_visible_elementObj<

@@ -1049,6 +1049,7 @@ testpage_SOURCES=testpage.C
 testpage_LDADD=libcxxw.la
 testpage_LDFLAGS=-static $(STATICLINKFLAGS)
 
+$(call OPTIONS_GEN,testpane.inc.H,testpane.xml)
 testpane_SOURCES=testpane.C
 testpane_LDADD=libcxxw.la
 testpane_LDFLAGS=$(TESTLINKTYPE)

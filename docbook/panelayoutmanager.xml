@@ -22,16 +22,17 @@ See COPYING for distribution information.
   </para>
 
   <para>
-    The pane layout manager orients its display elements in one vertical
-    column or one horizontal row. Each display element becomes a
-    <quote>pane</quote> with the pane layout manager providing
-    draggable dividers in between the panes. The dividers look like
+    The pane layout manager places the display elements
+    in its container in one vertical
+    column, or one horizontal row. Each display element becomes a
+    <quote>pane</quote>. Draggable dividers separate the
+    panes. The dividers look like
     thick dashed lines.
-    These dividers drag and slide in both directions, and dragging
+    These dividers drag and slide in both directions. dragging
     the dividing sliders visually adjusts the relative sizes of
     the panes on either
-    side of the divider, accordingly. As one pane gets smaller, the other
-    pane gets larger.
+    side of the divider, accordingly. A pane on one side gets smaller,
+    and the other pane gets larger.
   </para>
 
   <para>
@@ -69,7 +70,32 @@ See COPYING for distribution information.
     </informalexample>
   </blockquote>
 
-  <section id="createpanes">
+  <section id="panecontainersize">
+    <title>Pane container's size</title>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+&ns;::w::new_panelayoutmanager npl{
+   &ns;::w::dim_axis_arg{10, 50, 100}
+};</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      <classname>&ns;::w::new_panelayoutmanager</classname>'s constructor
+      takes one parameter, aa
+      <ulink url="&link-x--w--dim-axis-arg;"><classname>&ns;::w::dim_axis_arg</classname></ulink>.
+      This sets the the pane container's size. The pane container's size gets
+      constrained with the bounds set by this parameter. Adding new panes
+      and removing existing panes from the container adjusts its size strictly
+      within these bounds. If they get exceeded, the individual panes' sizes
+      get proportionately scaled to keep the overall container's size within
+      the specified bounds.
+    </para>
+  </section>
+
+  <section id="creatingpanes">
     <title>Creating new panes</title>
 
     <para>
@@ -84,6 +110,74 @@ See COPYING for distribution information.
       Every display element created by the factory becomes a new pane in the
       pane layout manager's container.
     </para>
+
+    <para>
+      The factory's <methodname>set_initial_size</methodname>() sets the
+      new element's initial size(). This is just a suggestion, since the
+      pane container, with all of its elements, always gets constrained by
+      its <link linkend="creatingpanes">specified size</link>.
+    </para>
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+&ns;::w::new_panelayoutmanager npl{
+   &ns;::w::dim_axis_arg{40} // 40 millimeter-long container
+};
+
+factory->create_focusable_container(
+     [&amp;]
+     (const &ns;::w::container &amp;new_container)
+     {
+          &ns;::w::panelayoutmanager plm=new_container->get_layoutmanager();
+
+          &ns;::w::panefactory f=plm->append_panes();
+
+          f->set_initial_size(20); // 20 millimeters (almost)
+          f->create_label("Lorem Ipsum")->show();
+
+          f->set_initial_size(20); // Ditto
+          f->create_label("Lorem Ipsum")->show();
+     }, npl);
+</programlisting>
+      </informalexample>
+    </blockquote>
+
+    <para>
+      This example creates a 40 millimeter-long container, with two initial
+      panes. Each pane's size gets set to 20 millimeters, so the pane
+      container's alloted 40 millimeter size gets evenly divided between them.
+    </para>
+
+    <para>
+      The actual size of each element in this container is slightly less than
+      20 millimeters. The draggable divider between the two panes takes
+      up some space too, and it has to fit within its container's 40 millimeter
+      size. The two new panes' sizes get slightly adjusted, in order to leave
+      sufficient space for the dividers.
+    </para>
+
+    <para>
+      The sizes set by <methodname>set_initial_size</methodname>(), in this
+      manner, are just guidelines, or hints, and the actual size of each new
+      element gets proportionately adjusted, together with the sizes of any
+      existing panes, so that the entire container stays within its bounds.
+    </para>
+  </section>
+
+  <section id="removingpanes">
+    <title>Removing panes</title>
+
+
+    <blockquote>
+      <informalexample>
+	<programlisting>
+f->insert_panes(0);
+
+f->remove_pane(1);</programlisting>
+      </informalexample>
+    </blockquote>
+
 
     <para>
       The pane layout manager consecutively numbers its panes, starting with

@@ -24,6 +24,8 @@
 #include "peephole/peephole_layoutmanager_impl_scrollbars.H"
 #include "peephole/peephole_gridlayoutmanagerobj.H"
 #include "grid_map_info.H"
+#include "gridlayoutmanager_impl_elements.H"
+#include "calculate_borders.H"
 #include "messages.H"
 #include "x/w/panefactory.H"
 
@@ -42,21 +44,21 @@ panelayoutmanagerObj::implObj::~implObj()=default;
 
 size_t panelayoutmanagerObj::implObj::size(const grid_map_t::lock &lock) const
 {
-	// Empty: slider+canvas
+	// Empty: slider
 	//
-	// One pane: pane+slider+canvas
+	// One pane: pane+slider
 	//
-	// Two panes: pane+slider+pane+canvas;
+	// Two panes: pane+slider+pane
 	//
-	// Three panes: pane+slider+pane+slider+pane+canvas;
+	// Three panes: pane+slider+pane+slider+pane
 	//
 
 	auto s=total_size(lock);
 
-	if (s <= 2)
+	if (s <= 1)
 		return 0;
 
-	return s/2;
+	return (s+1)/2;
 }
 
 elementptr panelayoutmanagerObj::implObj
@@ -88,6 +90,10 @@ panelayoutmanager panelayoutmanagerObj::implObj::create_panelayoutmanager()
 
 void panelayoutmanagerObj::implObj::create_slider(const gridfactory &f)
 {
+	// Create the implementation object for the slider element.
+	auto slider_border=pane_container_impl->container_element_impl()
+		.get_screen()->impl->get_cached_border(style.slider);
+
 	// Start with a focus frame.
 
 	auto ff=ref<pane_slider_focusframeObj>::create
@@ -97,9 +103,6 @@ void panelayoutmanagerObj::implObj::create_slider(const gridfactory &f)
 		 .create_icon({slider_cursor()})->create_cursor(),
 		 style.slider_background_color);
 
-	// Create the implementation object for the slider element.
-	auto slider_border=pane_container_impl->container_element_impl()
-		.get_screen()->impl->get_cached_border(style.slider);
 
 	auto slider_impl=create_pane_slider_impl(ff, slider_border);
 
@@ -111,6 +114,7 @@ void panelayoutmanagerObj::implObj::create_slider(const gridfactory &f)
 	slider_container->label_for(slider);
 
 	initialize_factory_for_slider(f);
+
 	f->created_internally(slider_container);
 }
 
@@ -200,6 +204,10 @@ pane_peephole_container panelayoutmanagerObj::implObj
 		throw EXCEPTION(gettextmsg(_("Pane #%1% does not exist"),
 					   position));
 
+	// Reference sizes are no longer valid, there's a new element in
+	// the pane.
+	reference_size_set(lock)=false;
+
 	// The players here are as follows:
 	//
 	// 1) Pane container, with a panelayoutmanager (a grid layout manager
@@ -286,8 +294,7 @@ pane_peephole_container panelayoutmanagerObj::implObj
 
 	if (s == 0)
 	{
-		// Very first pane. What we have now is the stub slider, and
-		// the padding canvas.
+		// Very first pane. What we have now is the stub slider.
 
 		auto f=create_factory_for_pos(public_object, 0);
 		initialize_factory_for_pane(f);
@@ -349,7 +356,6 @@ pane_peephole_container panelayoutmanagerObj::implObj
 	set_peephole_scrollbar_focus_order
 		(scrollbars.horizontal_scrollbar,
 		 scrollbars.vertical_scrollbar);
-	request_extra_space_to_canvas(lock);
 
 	// Now, make sure that the tabbing order remains consistent.
 
@@ -443,6 +449,11 @@ panelayoutmanagerObj::implObj::start_sliding(ONLY IN_THREAD,
 					     &which_slider,
 					     grid_map_t::lock &grid_lock)
 {
+	// Reference sizes are no longer valid, we're adjusting the
+	// panes' sizes. Whatever they'll end up as, they will become the
+	// new reference sizes.
+	reference_size_set(grid_lock)=false;
+
 	auto ret=find_panes(grid_lock, which_slider);
 
 	if (ret)
@@ -531,12 +542,15 @@ void panelayoutmanagerObj::implObj
 	if (pane_number >= s)
 		return;
 
+	// Reference sizes are no longer valid, after removing one of the
+	// panes.
+	reference_size_set(lock)=false;
+
 	if (s == 2)
 	{
 		if (pane_number == 1)
 		{
 			remove_element(lock, 2);
-			request_extra_space_to_canvas(lock);
 			return; // Leaving the slider after the remaining pane.
 		}
 
@@ -551,20 +565,196 @@ void panelayoutmanagerObj::implObj
 		focusable f=get_element(lock, 1);
 		f->get_focus_after(get_element(lock, 0));
 
-		request_extra_space_to_canvas(lock);
 		return;
 	}
 
 	if (pane_number == 0)
 	{
 		remove_elements(lock, 0, 2);
-		request_extra_space_to_canvas(lock);
 		return;
 	}
 
 	remove_element(lock, pane_number*2);
 	remove_element(lock, pane_number*2-1);
-	request_extra_space_to_canvas(lock);
+}
+
+void panelayoutmanagerObj::implObj
+::theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme)
+{
+	{
+		grid_map_t::lock grid_lock{grid_map};
+
+		// Reference sizes are no longer valid. New them.
+		reference_size_set(grid_lock)=false;
+	}
+	gridlayoutmanagerObj::implObj::theme_updated(IN_THREAD, new_theme);
+}
+
+bool panelayoutmanagerObj::implObj
+::rebuild_elements_and_update_metrics(ONLY IN_THREAD,
+				      grid_map_t::lock &grid_lock,
+				      bool already_sized)
+{
+	// Must rebuild the elements first, before calling
+	// adjust_panes_for_current_size(), because any changes to the
+	// elements results in the grid border elements getting rebuilt,
+	// and adjust_panes_for_current_size() computes this.
+
+	auto flag=gridlayoutmanagerObj::implObj
+		::rebuild_elements_and_update_metrics
+		(IN_THREAD, grid_lock, already_sized);
+
+	// Empty container, before getting shown, doesn't matter
+	if (already_sized)
+		adjust_panes_for_current_size(IN_THREAD, grid_lock,
+					      get_element_impl()
+					      .data(IN_THREAD).current_position
+					      );
+
+	return flag;
+}
+
+bool panelayoutmanagerObj::implObj
+::reposition_child_elements(ONLY IN_THREAD,
+			    const rectangle &position,
+			    grid_map_t::lock &grid_lock)
+{
+	adjust_panes_for_current_size(IN_THREAD, grid_lock, position);
+
+	return gridlayoutmanagerObj::implObj::reposition_child_elements
+		(IN_THREAD, position, grid_lock);
+}
+
+void panelayoutmanagerObj::implObj
+::adjust_panes_for_current_size(ONLY IN_THREAD,
+				grid_map_t::lock &grid_lock,
+				const rectangle &position)
+{
+	// Get the current size of the container.
+	auto pane_size=size_from_position(position);
+
+	auto &reference_size_is_set_now=reference_size_set(grid_lock);
+
+	// We want to run through the following calculations if either:
+	//
+	// 1) The size of the pane changed, pane_size is not equal to
+	//    most_recent_pane_size
+	//
+	// 2) Something was changed in the pane, and the reference size
+	//    is not set any more. This happens when a pane element gets
+	//    added or removed.
+
+	if (pane_size == most_recent_pane_size &&
+	    reference_size_is_set_now)
+		return;
+
+	std::vector<pane_peephole_container> pane_peephole_containers;
+	dim_squared_t fixed_overhead{0};
+
+	dim_squared_t total_reference_size;
+
+	size_t n=total_size(grid_lock);
+
+	pane_peephole_containers.reserve(n/2+1);
+
+	// First pass. We scan through the entire container, both panes
+	// and the dividing sliders. The total size of the sliders is
+	// fixed_overhead.
+	//
+	// Add up all reference_sizes, this is the total_reference_size.
+	//
+	// If reference_size_is_set_now we can simply use the reference_size
+	// that's saved in each pane_peephole_container, otherwise we set
+	// its reference_size now.
+
+	for (size_t i=0; i<n; ++i)
+	{
+		// If there's only one element, it's a slider. Otherwise
+		// all elements in odd positions are sliders...
+		if (n <= 1 || (i % 2))
+		{
+			fixed_overhead+=element_size(IN_THREAD,
+						     get_element(grid_lock, i)
+						     ->impl);
+		}
+		else
+		{
+			// ... and all elements in even positions are panes.
+			pane_peephole_container pp=get_element(grid_lock, i);
+
+			// We adjust the peephole's metrics. The overhead is
+			// the difference between the peephole's size and the
+			// pane_peephole_container's size, which is due to the
+			// padding specified for this pane.
+			fixed_overhead +=
+				element_size(IN_THREAD, pp->impl) -
+				element_size(IN_THREAD, pp->get_peephole()
+					     ->impl);
+
+			if (!reference_size_is_set_now)
+			{
+				auto s=element_size(IN_THREAD,
+						    pp->get_peephole()->impl);
+
+				pp->reference_size(IN_THREAD)=s;
+			}
+			total_reference_size += pp->reference_size(IN_THREAD);
+			pane_peephole_containers.push_back(pp);
+		}
+	}
+
+	// Also include the real estate occupied by the borders in the
+	// pane containers.
+
+	for (const auto &ae:grid_elements(IN_THREAD)->all_elements)
+	{
+		auto overhead=border_overhead(IN_THREAD,
+					      ae.pos->horiz_pos.start,
+					      ae.pos->vert_pos.start,
+					      ae.child_element);
+
+		fixed_overhead+=overhead;
+	}
+
+	// Edge case. If we have a goose egg, if somehow all panes have no size
+	// we should just scale them equally.
+	if (total_reference_size == 0)
+	{
+		for (const auto &ppc : pane_peephole_containers)
+			ppc->reference_size(IN_THREAD)=1;
+
+		total_reference_size=pane_peephole_containers.size();
+	}
+
+	reference_size_is_set_now=true;
+
+	// Subtract fixed_overhead from pane_size. This should be the total
+	// size of all pane elements.
+
+	dim_squared_t resize_panes_to=dim_squared_t::truncate(pane_size);
+
+	if (resize_panes_to < fixed_overhead)
+		resize_panes_to=0;
+	else
+		resize_panes_to -= fixed_overhead;
+
+	// resize_panes_to should be the total size of all panes.
+	// The total reference size of the panes is total_reference_size.
+
+	dim_squared_t nominator=0;
+
+	for (const auto &ppc : pane_peephole_containers)
+	{
+		nominator += ppc->reference_size(IN_THREAD) * resize_panes_to;
+
+		dim_t ps=dim_t::truncate(nominator /
+					 total_reference_size);
+
+		resize_peephole_to(IN_THREAD, ppc->get_peephole(), ps);
+
+		nominator = dim_t::truncate(nominator % total_reference_size);
+	}
+	most_recent_pane_size=pane_size;
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -658,26 +848,6 @@ panelayoutmanagerObj::implObj::orientation<vertical>
 }
 
 template<>
-void panelayoutmanagerObj::implObj::orientation<vertical>
-::request_extra_space_to_canvas(grid_map_t::lock &grid_lock)
-{
-	(*grid_lock)->remove_all_defaults();
-
-	requested_row_height(grid_lock, (*grid_lock)->rows()-1, 100);
-}
-
-template<>
-std::tuple<dim_axis_arg, dim_axis_arg>
-panelayoutmanagerObj::implObj::orientation<vertical>
-::canvas_metrics()
-{
-	return {
-		{0, 0},
-		{0, 0, 0}
-	};
-}
-
-template<>
 metrics::horizvert_axi
 panelayoutmanagerObj::implObj::orientation<vertical>
 ::initial_peephole_metrics(const dim_arg &size)
@@ -697,6 +867,22 @@ dim_t panelayoutmanagerObj::implObj::orientation<vertical>
 	       const ref<elementObj::implObj> &e)
 {
 	return e->get_horizvert(IN_THREAD)->vert.minimum();
+}
+
+template<>
+dim_t panelayoutmanagerObj::implObj::orientation<vertical>
+::size_from_position(const rectangle &position)
+{
+	return position.height;
+}
+
+template<>
+void panelayoutmanagerObj::implObj::orientation<vertical>
+::resize_peephole_to(ONLY IN_THREAD, const element &peephole, dim_t s)
+{
+	auto hv=peephole->impl->get_horizvert(IN_THREAD);
+
+	hv->set_element_metrics(IN_THREAD, hv->horiz, {s, s, s});
 }
 
 template<>
@@ -755,13 +941,35 @@ void panelayoutmanagerObj::implObj::orientation<vertical>
 
 	auto &[before, after]=*ret;
 
-	auto before_hv=before->impl->get_horizvert(IN_THREAD);
-	auto after_hv=after->impl->get_horizvert(IN_THREAD);
+	resize_peephole_to(IN_THREAD, before, first_pane);
+	resize_peephole_to(IN_THREAD, after, second_pane);
+}
 
-	before_hv->set_element_metrics(IN_THREAD, before_hv->horiz,
-				       {first_pane, first_pane, first_pane});
-	after_hv->set_element_metrics(IN_THREAD, after_hv->horiz,
-				      {second_pane, second_pane, second_pane});
+template<>
+void panelayoutmanagerObj::implObj::orientation<vertical>
+::set_element_metrics(ONLY IN_THREAD,
+		      const metrics::axis &h,
+		      const metrics::axis &v)
+{
+	gridlayoutmanagerObj::implObj::set_element_metrics
+		(IN_THREAD, h,
+		 get_element_impl().get_horizvert(IN_THREAD)->vert);
+}
+
+template<>
+dim_t panelayoutmanagerObj::implObj::orientation<vertical>
+::border_overhead(ONLY IN_THREAD,
+		  metrics::grid_xy x,
+		  metrics::grid_xy y,
+		  const element &e)
+{
+	if (IS_BORDER_RESERVED_COORD(x))
+		return 0;
+
+	if (!IS_BORDER_RESERVED_COORD(y))
+		return 0;
+
+	return e->impl->get_horizvert(IN_THREAD)->vert.minimum();
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -855,26 +1063,6 @@ panelayoutmanagerObj::implObj::orientation<horizontal>
 }
 
 template<>
-void panelayoutmanagerObj::implObj::orientation<horizontal>
-::request_extra_space_to_canvas(grid_map_t::lock &grid_lock)
-{
-	(*grid_lock)->remove_all_defaults();
-
-	requested_col_width(grid_lock, (*grid_lock)->cols(0)-1, 100);
-}
-
-template<>
-std::tuple<dim_axis_arg, dim_axis_arg>
-panelayoutmanagerObj::implObj::orientation<horizontal>
-::canvas_metrics()
-{
-	return {
-		{0, 0, 0},
-		{0, 0}
-	};
-}
-
-template<>
 metrics::horizvert_axi
 panelayoutmanagerObj::implObj::orientation<horizontal>
 ::initial_peephole_metrics(const dim_arg &size)
@@ -893,6 +1081,23 @@ dim_t panelayoutmanagerObj::implObj::orientation<horizontal>
 	       const ref<elementObj::implObj> &e)
 {
 	return e->get_horizvert(IN_THREAD)->horiz.minimum();
+}
+
+template<>
+dim_t panelayoutmanagerObj::implObj::orientation<horizontal>
+::size_from_position(const rectangle &position)
+{
+	return position.width;
+}
+
+
+template<>
+void panelayoutmanagerObj::implObj::orientation<horizontal>
+::resize_peephole_to(ONLY IN_THREAD, const element &peephole, dim_t s)
+{
+	auto hv=peephole->impl->get_horizvert(IN_THREAD);
+
+	hv->set_element_metrics(IN_THREAD, {s, s, s}, hv->vert);
 }
 
 template<>
@@ -951,15 +1156,35 @@ void panelayoutmanagerObj::implObj::orientation<horizontal>
 
 	auto &[before, after]=*ret;
 
-	auto before_hv=before->impl->get_horizvert(IN_THREAD);
-	auto after_hv=after->impl->get_horizvert(IN_THREAD);
+	resize_peephole_to(IN_THREAD, before, first_pane);
+	resize_peephole_to(IN_THREAD, after, second_pane);
+}
 
-	before_hv->set_element_metrics(IN_THREAD,
-				       {first_pane, first_pane, first_pane},
-				       before_hv->vert);
-	after_hv->set_element_metrics(IN_THREAD,
-				      {second_pane, second_pane, second_pane},
-				      after_hv->vert);
+template<>
+void panelayoutmanagerObj::implObj::orientation<horizontal>
+::set_element_metrics(ONLY IN_THREAD,
+		      const metrics::axis &h,
+		      const metrics::axis &v)
+{
+	gridlayoutmanagerObj::implObj::set_element_metrics
+		(IN_THREAD, get_element_impl().get_horizvert(IN_THREAD)->horiz,
+		 v);
+}
+
+template<>
+dim_t panelayoutmanagerObj::implObj::orientation<horizontal>
+::border_overhead(ONLY IN_THREAD,
+		  metrics::grid_xy x,
+		  metrics::grid_xy y,
+		  const element &e)
+{
+	if (IS_BORDER_RESERVED_COORD(y))
+		return 0;
+
+	if (!IS_BORDER_RESERVED_COORD(x))
+		return 0;
+
+	return e->impl->get_horizvert(IN_THREAD)->horiz.minimum();
 }
 
 LIBCXXW_NAMESPACE_END

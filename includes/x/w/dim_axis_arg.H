@@ -16,8 +16,21 @@ LIBCXXW_NAMESPACE_START
 //! A parameter that specifies the allowable horizontal or vertical
 //! dimensions, typically for a display element.
 //!
-//! The dimensions are given as three values: minimum preferred, and
+//! The dimensions are given as three values: minimum, preferred, and
 //! maximum values.
+//!
+//! The minimum value is the element's smallest size. The preferred value
+//! is typically the display element's initial, or default size (which is
+//! subject to any bounds imposed by the element's container). The maximum
+//! value specifies the upper bounds of the element's size.
+//!
+//! The minimum, preferred, and maximum values are specified as
+//! \ref dim_arg "INSERT_LIBX_NAMESPACE::w::dim_arg"s. A numeric value
+//! specifies the size in millimeters, or a string value uses the size set
+//! by the display theme (this is used mostly internally, by the library).
+//!
+//! Setting the maximum value as NAN specifies a display element with no
+//! maximum size.
 
 struct dim_axis_arg {
 

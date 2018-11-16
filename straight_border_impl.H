@@ -62,8 +62,7 @@ class LIBCXX_HIDDEN straight_border_implObj
 	void initialize(ONLY IN_THREAD) override
 	{
 		straight_borderObj::implObj::initialize(IN_THREAD);
-		theme_updated(IN_THREAD,
-			      get_screen()->impl->current_theme.get());
+		compute_metrics(IN_THREAD);
 	}
 
 	//! The screen's theme has been updated.
@@ -71,9 +70,9 @@ class LIBCXX_HIDDEN straight_border_implObj
 	void theme_updated(ONLY IN_THREAD, const defaulttheme &new_theme)
 		override
 	{
-		compute_metrics(IN_THREAD);
 		straight_borderObj::implObj::theme_updated(IN_THREAD,
 							   new_theme);
+		compute_metrics(IN_THREAD);
 	}
 
  private:

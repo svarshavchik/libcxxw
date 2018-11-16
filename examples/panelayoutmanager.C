@@ -67,8 +67,14 @@ static void create_main_window(const x::w::main_window &mw,
 			       const options &opts)
 {
 	// Create a container that uses the pane layout manager.
+	//
+	// x::w::new_panelayoutmanager's constructor takes an x::w::dim_arg
+	// parameter, that specifies the container's size.
+	//
+	// The minimum size is 10mm, the default (initial) size is 50,
+	// and the maximum size is 100 mm:
 
-	x::w::new_panelayoutmanager npl;
+	x::w::new_panelayoutmanager npl{{10,50,100}};
 
 	if (opts.horizontal->value)
 		npl.horizontal();
@@ -79,7 +85,10 @@ static void create_main_window(const x::w::main_window &mw,
 	auto pane=factory->colspan(2).create_focusable_container
 		([]
 		 (const auto &pane_container) {
-			// Initially empty
+			 // Initially empty
+			 //
+			 // In most cases the panes are predetermined, and
+			 // they'll get initialized here.
 		}, npl);
 
 	pane->show();
@@ -241,6 +250,28 @@ static void insert(const x::w::container &c,
 	// pane.
 	x::w::panefactory f=lm->insert_panes(0);
 
+	// The factory's set_initial_size() specifies the new element's
+	// "virtual" size, in millimeters:
+
+	f->set_initial_size(20);
+
+	// The actual size of the pane container gets set when the pane
+	// layout manager's container gets created. It's given as the
+	// parameter to x::w::new_panelayoutmanager's constructor, and the
+	// size of the container does not vary outside of this preset size.
+	//
+	// Adding a new element to the container only expands the container
+	// up to its maximum size. If it exceeds it, all existing elements
+	// in the pane container get resized proportionately to their existing
+	// size and the size specified by set_initial_size().
+	//
+	// So, for example, if the pane container is full and its already
+	// at its maximum size of 20 millimeters, and this new element's
+	// 20 millimeter makes the new total size of 40, and all elements,
+	// including the new element's size gets cut in half since the pane's
+	// size is limited to 20 mm total.
+
+
 	// The factory's set_initial_size() sets the initial size of the
 	// new page. set_scrollbar_visibility() specifies when and how the
 	// pane's scroll-bar is visible. This, and other, options get set
@@ -252,8 +283,7 @@ static void insert(const x::w::container &c,
 	// properties get reset back to their default values, and must be
 	// explicitly set before creating each new pane.
 
-	f->set_initial_size(20)	// In millimeters.
-		.set_scrollbar_visibility(v)
+	f->set_scrollbar_visibility(v)
 		.create_label("Lorem ipsum\n"
 			      "dolor sit amet\n"
 			      "consectetur\n"

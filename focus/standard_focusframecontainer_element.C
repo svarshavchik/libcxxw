@@ -24,6 +24,7 @@ create_focusframe_container_owner(const container_impl &parent_container,
 	auto c=focusable_container_owner::create(impl, lm,
 						 element_focusable_impl);
 
+	lm->needs_recalculation();
 	return c;
 }
 

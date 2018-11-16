@@ -1,0 +1,20 @@
+<optclass name="testpaneoptions">
+  <option>
+    <name>horizontal</name>
+    <type>bool</type>
+    <default>false</default>
+    <longopt>horizontal</longopt>
+    <descr>Create horizontal panes</descr>
+    <opt>h</opt>
+  </option>
+  <option>
+    <name>adjustable</name>
+    <type>bool</type>
+    <default>false</default>
+    <longopt>adjustable</longopt>
+    <opt>a</opt>
+    <descr>Create an adjustable pane container</descr>
+  </option>
+
+  <defaultoptions />
+</optclass>

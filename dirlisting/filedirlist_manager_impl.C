@@ -44,7 +44,7 @@ static inline auto create_filedir_list(const factory &f,
 				       ::implObj::current_selected_callbackObj>
 				       &current_selected)
 {
-	new_panelayoutmanager nplm;
+	new_panelayoutmanager nplm{{90}};
 
 	auto pane_container=f->create_focusable_container([]
 							  (const auto &ignore)
