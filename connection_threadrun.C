@@ -140,15 +140,50 @@ bool connection_threadObj
 
 	release_grabs(IN_THREAD);
 
-	xcb_flush(info->conn);
+	// Close your eyes, and pretend that this is xcb_flush(). By itself,
+	// xcb_flush() is insufficient. While dragging and quickly redrawing
+	// the dragged widgets, all the rendering stuff can pile up in the
+	// various network buffers (when the client and server are connected
+	// over the network) while the client is quickly consuming all the
+	// motion events. process_buffered_motion_event() doesn't help us.
+	// We seem to be capable of receiving a motion event, and without
+	// anything else being received we'll process the motion event, drag
+	// all widgets, and push out all the rendering messages, get the
+	// next motion event from the server, lather, rinse, repeat. The
+	// server can send us motion events faster than it can rerender
+	// everything.
+	//
+	// So what we do is send the InternAtom request and wait for the
+	// reply. We do this after we shoved a pile of rendering requests
+	// first. After the server chews on them, it acks the InternAtom
+	// and we wait until we get it. In the mean time, all MotionNotifys
+	// get buffered, we go through them before draining the input queue,
+	// and process_buffered_motion_event() deals with the last one:
 
-	// We check for buffered motion events, and if so, process them
-	// at this stage. Dragging a scrollbar that scrolls a peephole
-	// may result in large number of drawing operations, so we do this
-	// after we redraw, and flush, the display.
+	(void)info->get_atom("ATOM", false);
 
 	if (npoll == 2)
 	{
+		// It's possible that our pseudo-flush has buffered some
+		// events.
+
+		if (auto event=return_pointer(xcb_poll_for_queued_event
+					      (info->conn)))
+		{
+			LOG_TRACE("Processing event "
+				  << (int)(event->response_type & ~0x80)
+				  << (event->response_type & 0x80
+				      ? " (SendEvent)":""));
+
+			run_event(IN_THREAD, event);
+			return false;
+		}
+
+		// We check for buffered motion events, and if so, process them
+		// at this stage. Dragging a scrollbar that scrolls a peephole
+		// may result in large number of drawing operations, so we
+		// do this after we redraw, and flush, the display.
+
 		if (process_buffered_motion_event(IN_THREAD))
 			return false;
 	}
