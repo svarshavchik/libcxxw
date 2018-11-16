@@ -260,13 +260,16 @@ new_panelayoutmanager::create(const container_impl &parent)
 		auto f=lm_impl->create_slider_factory(&*lm, 0);
 
 		f->padding(0);
+
+		auto [hm, vm]=lm_impl->canvas_metrics();
+
 		f->create_canvas([]
 				 (const auto &canvas)
 				 {
 					 canvas->show();
 				 },
-				 {0, 0, 0},
-				 {0, 0, 0});
+				 hm,
+				 vm);
 	}
 	// Initial slider.
 	lm_impl->create_slider(lm_impl->create_slider_factory(&*lm, 0));

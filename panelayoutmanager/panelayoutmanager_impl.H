@@ -55,7 +55,8 @@ contains a canvas, so the above picture is really.
 [ canvas ]
 \endcode
 
-The canvas's metrics are always zero min/pref/max width & height, but
+The canvas's metrics are always zero min/prev/max height and zero min/prev
+and unlimited width for a vertical pane, and the other way for horizontal, but
 the grid is configured to give the canvas element 100% of any extra
 space.
 
@@ -329,6 +330,11 @@ class LIBCXX_HIDDEN panelayoutmanagerObj::implObj
 		original_sizes(ONLY IN_THREAD,
 			       const ref<elementObj::implObj> &before,
 			       const ref<elementObj::implObj> &after)=0;
+
+ public:
+	//! Metrics for the trailing canvas element
+
+	virtual std::tuple<dim_axis_arg, dim_axis_arg> canvas_metrics()=0;
 };
 
 /////////////////////////////////////////////////////////////////////////
@@ -377,6 +383,9 @@ class panelayoutmanagerObj::implObj::orientation
 	//! Implement request_extra_space_to_canvas().
 
 	void request_extra_space_to_canvas() override;
+
+	//! Implement canvas_metrics().
+	std::tuple<dim_axis_arg, dim_axis_arg> canvas_metrics() override;
 
 	//! Which pointer to use for the slider.
 

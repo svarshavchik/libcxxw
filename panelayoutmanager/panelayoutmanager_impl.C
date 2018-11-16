@@ -663,6 +663,17 @@ void panelayoutmanagerObj::implObj::orientation<vertical>
 }
 
 template<>
+std::tuple<dim_axis_arg, dim_axis_arg>
+panelayoutmanagerObj::implObj::orientation<vertical>
+::canvas_metrics()
+{
+	return {
+		{0, 0},
+		{0, 0, 0}
+	};
+}
+
+template<>
 metrics::horizvert_axi
 panelayoutmanagerObj::implObj::orientation<vertical>
 ::initial_peephole_metrics(const dim_arg &size)
@@ -846,6 +857,17 @@ void panelayoutmanagerObj::implObj::orientation<horizontal>
 {
 	remove_all_defaults();
 	requested_col_width(cols(0)-1, 100);
+}
+
+template<>
+std::tuple<dim_axis_arg, dim_axis_arg>
+panelayoutmanagerObj::implObj::orientation<horizontal>
+::canvas_metrics()
+{
+	return {
+		{0, 0, 0},
+		{0, 0}
+	};
 }
 
 template<>
