@@ -6,16 +6,12 @@
 #define x_w_impl_themedimfwd_h
 
 #include <x/ptrfwd.H>
-#include <x/w/namespace.H>
+#include <x/w/metrics/axisfwd.H>
 
 LIBCXXW_NAMESPACE_START
 
 class LIBCXX_PUBLIC themedimObj;
 struct themedim_element_init;
-
-//! Whether the theme dimension is width or height
-
-enum class themedimaxis { width, height };
 
 //! A dimension specified by the default theme.
 

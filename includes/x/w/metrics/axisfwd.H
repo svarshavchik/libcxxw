@@ -14,6 +14,10 @@ namespace metrics {
 	class axis;
 }
 
+//! Whether the theme dimension is width or height
+
+enum class themedimaxis { width, height };
+
 LIBCXXW_NAMESPACE_END
 
 #endif

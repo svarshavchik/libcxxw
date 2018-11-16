@@ -12,24 +12,6 @@
 
 LIBCXXW_NAMESPACE_START
 
-static metrics::axis
-initial_axis(const defaulttheme &theme,
-	     themedimaxis wh,
-	     const dim_axis_arg &arg)
-{
-	auto min=theme->get_theme_dim_t(arg.minimum, wh);
-	auto pref=theme->get_theme_dim_t(arg.preferred, wh);
-	auto max=theme->get_theme_dim_t(arg.maximum, wh);
-
-	if (pref < min)
-		pref=min;
-
-	if (max < pref)
-		max=pref;
-
-	return {min, pref, max};
-}
-
 child_element_init_params
 canvasObj::implObj
 ::create_child_element_params(const container_impl &container,
@@ -43,12 +25,10 @@ canvasObj::implObj
 			std::string{"background@libcxx.com"} :
 		params.scratch_buffer_id,
 		{
-			initial_axis(theme,
-				     themedimaxis::width,
-				     params.width),
-			initial_axis(theme,
-				     themedimaxis::height,
-				     params.height),
+			params.width.compute(theme,
+					     themedimaxis::width),
+			params.height.compute(theme,
+					      themedimaxis::height),
 		},
 		params.background_color};
 }

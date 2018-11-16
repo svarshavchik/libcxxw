@@ -6,6 +6,8 @@
 #define x_w_dim_axis_arg_h
 
 #include <x/w/dim_arg.H>
+#include <x/w/defaultthemefwd.H>
+#include <x/w/metrics/axisfwd.H>
 
 LIBCXXW_NAMESPACE_START
 
@@ -56,6 +58,13 @@ struct dim_axis_arg {
 	//! Destructor
 
 	~dim_axis_arg();
+
+	//! Compute actual metrics, using the given theme
+
+	//! Mostly for internal use.
+
+	metrics::axis compute(const defaulttheme &theme,
+			      themedimaxis wh) const;
 };
 
 LIBCXXW_NAMESPACE_END
