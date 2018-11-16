@@ -201,6 +201,12 @@ void popupObj::handlerObj::configure_notify_received(ONLY IN_THREAD,
 	// Ignoring the ConfigureNotify event, see?
 }
 
+void popupObj::handlerObj::update_resizing_timeout(ONLY IN_THREAD)
+{
+	resizing(IN_THREAD)=
+		!data(IN_THREAD).requested_visibility;
+}
+
 void popupObj::handlerObj
 ::absolute_location_updated(ONLY IN_THREAD,
 			    absolute_location_update_reason reason)

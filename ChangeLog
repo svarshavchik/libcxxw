@@ -1,3 +1,7 @@
+2018-11-09  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* popup/popup_handler.C: Fix combo-box popup delay.
+
 2018-11-05  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* includes/x/w/panelayoutmanagerobj.H: Remove pane_lock, since

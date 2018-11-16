@@ -116,6 +116,13 @@ public:
 	void configure_notify_received(ONLY IN_THREAD,
 				      const rectangle &) override;
 
+	//! Override update_resizing_timeout().
+
+	//! recalculate_popup_position() may end up adjusting our position
+	//! outside of the requested metrics.
+
+	void update_resizing_timeout(ONLY IN_THREAD) override;
+
 	//! Override button_press_event
 
 	//! Pressing a button outside of the popup hides it.
