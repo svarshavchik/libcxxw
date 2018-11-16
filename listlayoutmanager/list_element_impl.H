@@ -625,6 +625,15 @@ class LIBCXX_HIDDEN list_elementObj::implObj :
 			      const list_row_info_t &r,
 			      bool make_sure_row_is_visible);
 
+	// Draw the borders in this row.
+
+	void do_draw_row_borders(ONLY IN_THREAD,
+				 const draw_info &di,
+				 clip_region_set &clipped,
+				 listimpl_info_t::lock &lock,
+				 const rectangle &entire_row,
+				 rectarea &drawn_area);
+
 	//! Explicitly redraw one row.
 
 	void redraw_rows(ONLY IN_THREAD,

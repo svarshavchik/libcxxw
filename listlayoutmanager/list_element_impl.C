@@ -1353,6 +1353,26 @@ rectangle list_elementObj::implObj
 		++cell;
 	}
 
+	do_draw_row_borders(IN_THREAD, di, clipped, lock,
+			    entire_row,
+			    drawn_columns);
+
+	auto to_clear=subtract(rectarea{{entire_row}},
+			       drawn_columns);
+
+	superclass_t::do_draw(IN_THREAD, di, to_clear);
+
+	return entire_row; // What we just drew.
+}
+
+void list_elementObj::implObj
+::do_draw_row_borders(ONLY IN_THREAD,
+		      const draw_info &di,
+		      clip_region_set &clipped,
+		      listimpl_info_t::lock &lock,
+		      const rectangle &entire_row,
+		      rectarea &drawn_area)
+{
 	for (const auto &border_position:lock->border_positions)
 	{
 		auto iter=column_borders.find(border_position.first);
@@ -1401,16 +1421,8 @@ rectangle list_elementObj::implObj
 			 border_rect,
 			 di, di, clipped);
 
-		drawn_columns.push_back(border_rect);
+		drawn_area.push_back(border_rect);
 	}
-
-
-	auto to_clear=subtract(rectarea{{entire_row}},
-			       drawn_columns);
-
-	superclass_t::do_draw(IN_THREAD, di, to_clear);
-
-	return entire_row; // What we just drew.
 }
 
 
