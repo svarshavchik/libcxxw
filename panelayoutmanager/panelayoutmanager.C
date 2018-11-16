@@ -15,7 +15,7 @@
 LIBCXXW_NAMESPACE_START
 
 panelayoutmanagerObj::panelayoutmanagerObj(const ref<implObj> &impl)
-	: layoutmanagerObj{impl},
+	: gridlayoutmanagerObj{impl},
 	  impl{impl}
 {
 }

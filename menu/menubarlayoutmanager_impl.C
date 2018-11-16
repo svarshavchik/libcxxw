@@ -71,7 +71,7 @@ void menubarlayoutmanagerObj::implObj::initialize(menubarlayoutmanagerObj
 {
 	auto f=append_row(public_object);
 
-	row_alignment(0, valign::middle);
+	row_alignment(public_object->grid_lock, 0, valign::middle);
 	f->padding(0);
 	f->create_canvas();
 }

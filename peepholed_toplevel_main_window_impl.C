@@ -101,8 +101,8 @@ void peepholed_toplevel_main_windowObj::implObj
 			 // The last element in the menu bar can be the
 			 // divider, if so look at the element before it.
 
-			 if (n == mblm->impl->info(lock).divider_pos &&
-			     n-- == 0)
+			 if (n == mblm->impl->info(lock.manager->grid_lock)
+			     .divider_pos && n-- == 0)
 			 {
 				 superclass_t::get_focus_first(IN_THREAD, f);
 			 }

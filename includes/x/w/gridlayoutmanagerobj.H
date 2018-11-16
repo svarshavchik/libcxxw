@@ -44,6 +44,9 @@ public:
 	//! Internal implementation object.
 	const ref<implObj> impl;
 
+	//! Lock on the underlying grid.
+	grid_map_t::lock grid_lock;
+
 	//! Constructor
 	gridlayoutmanagerObj(const ref<implObj> &impl) LIBCXX_HIDDEN;
 
@@ -106,9 +109,8 @@ public:
 	//! Returns a tuple with the given element's row and column, if the
 	//! element exists in the grid.
 
-	static std::optional<std::tuple<size_t, size_t>
-			     > lookup_row_col(grid_map_t::lock &,
-					      const element &);
+	std::optional<std::tuple<size_t, size_t>
+		      > lookup_row_col(const element &);
 
 	//! Set the default border above this row.
 	void default_row_border(size_t row, const border_arg &arg);

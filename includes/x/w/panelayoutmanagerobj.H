@@ -8,15 +8,18 @@
 #include <x/w/panelayoutmanagerfwd.H>
 #include <x/w/panefactoryfwd.H>
 #include <x/w/elementfwd.H>
-#include <x/w/layoutmanagerobj.H>
+#include <x/w/gridlayoutmanagerobj.H>
 
 LIBCXXW_NAMESPACE_START
 
 //! Implementation object.
 
+//! Do not use grid layout manager's methods directly. Only use methods
+//! defined for the pane layout manager.
+//!
 //! \see panelayoutmanager
 
-class panelayoutmanagerObj : public layoutmanagerObj {
+class panelayoutmanagerObj : public gridlayoutmanagerObj {
 
 public:
 	class LIBCXX_HIDDEN implObj;

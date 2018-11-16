@@ -572,7 +572,7 @@ typedef panelayoutmanagerObj::implObj::vertical vertical;
 
 template<>
 gridfactory panelayoutmanagerObj::implObj::orientation<vertical>
-::create_slider_factory(layoutmanagerObj *public_object,
+::create_slider_factory(gridlayoutmanagerObj *public_object,
 			size_t pos)
 {
 	return insert_row(public_object,
@@ -659,7 +659,9 @@ void panelayoutmanagerObj::implObj::orientation<vertical>
 ::request_extra_space_to_canvas()
 {
 	remove_all_defaults();
-	requested_row_height(rows()-1, 100);
+	grid_map_t::lock grid_lock{grid_map};
+
+	requested_row_height(grid_lock, rows()-1, 100);
 }
 
 template<>
@@ -769,7 +771,7 @@ typedef panelayoutmanagerObj::implObj::horizontal horizontal;
 
 template<>
 gridfactory panelayoutmanagerObj::implObj::orientation<horizontal>
-::create_slider_factory(layoutmanagerObj *public_object,
+::create_slider_factory(gridlayoutmanagerObj *public_object,
 			size_t pos)
 {
 	return insert_columns(public_object,
@@ -856,7 +858,8 @@ void panelayoutmanagerObj::implObj::orientation<horizontal>
 ::request_extra_space_to_canvas()
 {
 	remove_all_defaults();
-	requested_col_width(cols(0)-1, 100);
+	grid_map_t::lock grid_lock{grid_map};
+	requested_col_width(grid_lock, cols(0)-1, 100);
 }
 
 template<>

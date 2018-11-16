@@ -43,44 +43,48 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 	//! Set requested column width.
 
 	//! \see gridlayoutmanager
-	void requested_col_width(size_t col, int percentage);
+	static void requested_col_width(grid_map_t::lock &grid_lock,
+					size_t col, int percentage);
 
 	//! Set requested row height.
 
 	//! \see gridlayoutmanager
-	void requested_row_height(size_t row, int percentage);
+	static void requested_row_height(grid_map_t::lock &grid_lock,
+					 size_t row, int percentage);
 
 	//! Create a gridfactory for me.
 
-	gridfactory create_gridfactory(//! The public layout manager object.
+	static gridfactory
+		create_gridfactory(//! The public layout manager object.
 
-				       //! This is the gridlayoutmanager of
-				       //! which we are the internal
-				       //! implementation object. Or,
-				       //! perhaps the listlayoutmanager
-				       // facade.
-				       layoutmanagerObj *public_object,
-				       size_t row, size_t col,
-				       bool replace_existing=false);
+				   //! This is the gridlayoutmanager of
+				   //! which we are the internal
+				   //! implementation object. Or,
+				   //! perhaps the listlayoutmanager
+				   // facade.
+				   gridlayoutmanagerObj *public_object,
+				   size_t row, size_t col,
+				   bool replace_existing=false);
 
 	//! Append a row, then call create_gridfactory()
-	gridfactory append_row(layoutmanagerObj *public_object);
+	static gridfactory append_row(gridlayoutmanagerObj *public_object);
 
 	//! Insert a row, then call create_gridfactory()
-	gridfactory insert_row(layoutmanagerObj *public_object, size_t row);
+	static gridfactory insert_row(gridlayoutmanagerObj *public_object,
+				      size_t row);
 
 	//! Append elements at the end of an existing row.
-	gridfactory append_columns(layoutmanagerObj *public_object,
-				   size_t row_number);
+	static gridfactory append_columns(gridlayoutmanagerObj *public_object,
+					  size_t row_number);
 
 	//! Insert elements before an existing element on an existing row.
-	gridfactory insert_columns(layoutmanagerObj *public_object,
-				   size_t row_number, size_t col_number);
+	static gridfactory insert_columns(gridlayoutmanagerObj *public_object,
+					  size_t row_number, size_t col_number);
 
 	//! Replace an existing element
 
-	gridfactory replace_cell(layoutmanagerObj *public_object,
-				 size_t row_number, size_t col_number);
+	static gridfactory replace_cell(gridlayoutmanagerObj *public_object,
+					size_t row_number, size_t col_number);
 
 	//! Remove one or more elements from a row.
 
@@ -97,10 +101,12 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 	void remove_all_rows(grid_map_t::lock &lock);
 
 	//! Set default row alignment.
-	void row_alignment(size_t row, valign alignment);
+	static void row_alignment(grid_map_t::lock &lock,
+				  size_t row, valign alignment);
 
 	//! Set default column alignment.
-	void col_alignment(size_t col, halign alignment);
+	static void col_alignment(grid_map_t::lock &lock,
+				  size_t col, halign alignment);
 
 	//! Set default padding.
 	void row_top_padding_set(size_t row,
@@ -127,7 +133,8 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 	size_t cols(size_t row);
 
 	//! Remove all existing elements in the row, then call create_gridfactory()
-	gridfactory replace_row(layoutmanagerObj *public_object, size_t row);
+	static gridfactory replace_row(gridlayoutmanagerObj *public_object,
+				       size_t row);
 
 	/////////////////////////////////////////////////////////////////////
 	//

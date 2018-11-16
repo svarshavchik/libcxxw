@@ -1,3 +1,9 @@
+2018-11-01  Sam Varshavchik  <mrsam@courier-mta.com>
+
+	* includes/x/w/gridlayoutmanagerobj.H: Add a lock on the internal
+	grid map. Constructing a gridlayoutmanager object automatically
+	acquires the lock.
+
 2018-10-30  Sam Varshavchik  <mrsam@courier-mta.com>
 
 	* listlayoutmanager/list_element_impl.C: Make sure inner list

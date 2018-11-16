@@ -30,7 +30,8 @@ layout_impl new_gridlayoutmanager::create(const container_impl &parent) const
 }
 
 gridlayoutmanagerObj::gridlayoutmanagerObj(const ref<implObj> &impl)
-	: layoutmanagerObj(impl), impl(impl)
+	: layoutmanagerObj{impl}, impl{impl},
+	  grid_lock{impl->grid_map}
 {
 }
 
@@ -68,16 +69,12 @@ gridfactory gridlayoutmanagerObj::replace_cell(size_t row, size_t col)
 
 void gridlayoutmanagerObj::remove()
 {
-	grid_map_t::lock lock{impl->grid_map};
-
-	impl->remove_all_rows(lock);
+	impl->remove_all_rows(grid_lock);
 }
 
 void gridlayoutmanagerObj::remove(size_t row, size_t col)
 {
-	grid_map_t::lock lock{impl->grid_map};
-
-	impl->remove(lock, row, col);
+	impl->remove(grid_lock, row, col);
 }
 
 void gridlayoutmanagerObj::remove_row(size_t row)
@@ -101,9 +98,9 @@ elementptr gridlayoutmanagerObj::get(size_t row, size_t col) const
 }
 
 std::optional<std::tuple<size_t, size_t>>
-gridlayoutmanagerObj::lookup_row_col(grid_map_t::lock &l, const element &e)
+gridlayoutmanagerObj::lookup_row_col(const element &e)
 {
-	return implObj::lookup_row_col(l, e);
+	return implObj::lookup_row_col(grid_lock, e);
 }
 
 void gridlayoutmanagerObj::default_row_border(size_t row,
@@ -114,12 +111,12 @@ void gridlayoutmanagerObj::default_row_border(size_t row,
 
 void gridlayoutmanagerObj::requested_row_height(size_t row, int percentage)
 {
-	impl->requested_row_height(row, percentage);
+	impl->requested_row_height(grid_lock, row, percentage);
 }
 
 void gridlayoutmanagerObj::row_alignment(size_t row, valign alignment)
 {
-	impl->row_alignment(row, alignment);
+	impl->row_alignment(grid_lock, row, alignment);
 }
 
 void gridlayoutmanagerObj::row_top_padding_set(size_t row,
@@ -142,12 +139,12 @@ void gridlayoutmanagerObj::default_col_border(size_t col,
 
 void gridlayoutmanagerObj::requested_col_width(size_t col, int percentage)
 {
-	impl->requested_col_width(col, percentage);
+	impl->requested_col_width(grid_lock, col, percentage);
 }
 
 void gridlayoutmanagerObj::col_alignment(size_t col, halign alignment)
 {
-	impl->col_alignment(col, alignment);
+	impl->col_alignment(grid_lock, col, alignment);
 }
 
 void gridlayoutmanagerObj::col_left_padding_set(size_t col,
@@ -164,18 +161,14 @@ void gridlayoutmanagerObj::col_right_padding_set(size_t col,
 
 void gridlayoutmanagerObj::remove_row_defaults(size_t row)
 {
-	grid_map_t::lock lock{impl->grid_map};
-
-	(*lock)->row_defaults.erase(row);
-	(*lock)->defaults_changed();
+	(*grid_lock)->row_defaults.erase(row);
+	(*grid_lock)->defaults_changed();
 }
 
 void gridlayoutmanagerObj::remove_col_defaults(size_t col)
 {
-	grid_map_t::lock lock{impl->grid_map};
-
-	(*lock)->column_defaults.erase(col);
-	(*lock)->defaults_changed();
+	(*grid_lock)->column_defaults.erase(col);
+	(*grid_lock)->defaults_changed();
 }
 
 LIBCXXW_NAMESPACE_END

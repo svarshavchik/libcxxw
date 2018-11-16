@@ -15,9 +15,12 @@ LIBCXXW_NAMESPACE_START
 
 //! Implementation object.
 
+//! Do not use grid layout manager's methods directly. Only use methods
+//! defined for the menu bar layout manager.
+//!
 //! \see menubarlayoutmanager
 
-class menubarlayoutmanagerObj : public layoutmanagerObj {
+class menubarlayoutmanagerObj : public gridlayoutmanagerObj {
 
 public:
 	class LIBCXX_HIDDEN implObj;

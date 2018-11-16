@@ -22,10 +22,12 @@ peephole_gridlayoutmanagerObj
 	// Column 0 and row 0 is set to span 100% of any extra space, and
 	// the peephole element gets force-fully filled.
 
-	requested_row_height(0, 100);
-	requested_col_width(0, 100);
-	col_alignment(0, halign::fill);
-	row_alignment(0, valign::fill);
+	grid_map_t::lock grid_lock{grid_map};
+
+	requested_row_height(grid_lock, 0, 100);
+	requested_col_width(grid_lock, 0, 100);
+	col_alignment(grid_lock, 0, halign::fill);
+	row_alignment(grid_lock, 0, valign::fill);
 }
 
 peephole peephole_gridlayoutmanagerObj::get_peephole()

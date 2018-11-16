@@ -176,7 +176,7 @@ class LIBCXX_HIDDEN panelayoutmanagerObj::implObj
 	*/
 
 	virtual gridfactory
-		create_slider_factory(layoutmanagerObj *public_object,
+		create_slider_factory(gridlayoutmanagerObj *public_object,
 				      size_t pos)=0;
 
 	//! Create the slider element.
@@ -352,7 +352,7 @@ class panelayoutmanagerObj::implObj::orientation
 	//! Implement create_slider_factory()
 
 	gridfactory
-		create_slider_factory(layoutmanagerObj *public_object,
+		create_slider_factory(gridlayoutmanagerObj *public_object,
 				      size_t pos) override;
 
 	//! Implement create_factory_for_pos()
