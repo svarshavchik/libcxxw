@@ -27,6 +27,13 @@ pagelayoutmanagerObj::implObj::implObj(const container_impl &c)
 
 pagelayoutmanagerObj::implObj::~implObj()=default;
 
+size_t pagelayoutmanagerObj::implObj::pages()
+{
+	page_layout_info_t::lock lock{info};
+
+	return lock->elements.size();
+}
+
 void pagelayoutmanagerObj::implObj::append(const switch_element_info &e)
 {
 	page_layout_info_t::lock lock{info};
@@ -129,7 +136,12 @@ size_t pagelayoutmanagerObj::implObj::num_children(ONLY IN_THREAD)
 
 layoutmanager pagelayoutmanagerObj::implObj::create_public_object()
 {
-	return pagelayoutmanager::create(ref(this));
+	return create_pagelayoutmanager();
+}
+
+pagelayoutmanager pagelayoutmanagerObj::implObj::create_pagelayoutmanager()
+{
+	return pagelayoutmanager::create(ref{this});
 }
 
 void pagelayoutmanagerObj::implObj::recalculate(ONLY IN_THREAD)

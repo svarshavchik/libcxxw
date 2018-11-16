@@ -11,6 +11,7 @@
 #include "x/w/impl/layoutmanager.H"
 #include "x/w/impl/always_visible.H"
 #include "gridlayoutmanager.H"
+#include "grid_map_info.H"
 #include "menu/menubarlayoutmanager_impl.H"
 #include "x/w/impl/focus/focusable.H"
 #include "x/w/menu.H"
@@ -79,17 +80,17 @@ void peepholed_toplevel_main_windowObj::implObj
 		([&]
 		 (const ref<gridlayoutmanagerObj::implObj> &glm)
 		 {
-			 auto e=glm->get(0, 0);
+			 containerptr e=glm->get(0, 0);
 
 			 if (!e)
 				 return;
 
-			 menubarlayoutmanager mblm=
-				 container(e)->get_layoutmanager();
+			 ref<menubarlayoutmanagerObj::implObj>
+				 mblm_impl=e->get_layout_impl();
 
-			 menubar_lock lock{mblm};
+			 grid_map_t::lock grid_lock{mblm_impl->grid_map};
 
-			 size_t n=mblm->cols(0);
+			 size_t n=(*grid_lock)->cols(0);
 			 if (--n == 0)
 			 {
 				 // Nothing in the menu bar. Carry on.
@@ -101,18 +102,18 @@ void peepholed_toplevel_main_windowObj::implObj
 			 // The last element in the menu bar can be the
 			 // divider, if so look at the element before it.
 
-			 if (n == mblm->impl->info(lock.manager->grid_lock)
+			 if (n == mblm_impl->info(grid_lock)
 			     .divider_pos && n-- == 0)
 			 {
 				 superclass_t::get_focus_first(IN_THREAD, f);
 			 }
 
-			 menu m=mblm->impl->get(0, n);
+			 menu m=(*grid_lock)->get(0, n);
 
 			 // We need to make sure that, first, this element's
 			 // tabbing order is correct, then the new element's
 			 // tabbing order will be after it.
-			 mblm->impl->fix_order(IN_THREAD, m);
+			 mblm_impl->fix_order(IN_THREAD, m);
 
 			 get_focus_after_in_thread(IN_THREAD, f, m);
 		 });

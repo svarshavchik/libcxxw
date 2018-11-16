@@ -43,8 +43,11 @@ class LIBCXX_HIDDEN pagetabgridlayoutmanagerObj::implObj
 
 	//! Implement create_public_object()
 
-	//! Construct a pagetabgridlayoutmanager
+	//! Invoke create_pagetabgridlayoutmanager().
 	layoutmanager create_public_object() override;
+
+	//! Construct a pagetabgridlayoutmanager.
+	pagetabgridlayoutmanager create_pagetabgridlayoutmanager();
 
 	//! Override recalculate().
 

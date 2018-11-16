@@ -133,14 +133,15 @@ class LIBCXX_HIDDEN panelayoutmanagerObj::implObj
 
 	//! Logical size of the container, how many panes.
 
-	size_t size();
+	size_t size(const grid_map_t::lock &grid_lock) const;
 
 	//! Return the requested element.
-	elementptr get_pane_element(size_t);
+	elementptr get_pane_element(const grid_map_t::lock &lock, size_t);
 
 	//! Remove an existing pane.
 	void remove_pane(const panelayoutmanager &public_object,
-			 size_t pane_number);
+			 size_t pane_number,
+			 grid_map_t::lock &grid_lock);
 
 	/*!
 
@@ -187,11 +188,11 @@ class LIBCXX_HIDDEN panelayoutmanagerObj::implObj
 
 	//! The real size of the container, including the slider elements.
 
-	virtual size_t total_size(grid_map_t::lock &lock)=0;
+	virtual size_t total_size(const grid_map_t::lock &lock) const=0;
 
 	//! Return the given pane or slider.
 
-	virtual element get_element(grid_map_t::lock &lock, size_t n)=0;
+	virtual element get_element(const grid_map_t::lock &lock, size_t n)=0;
 
 	//! Find the element in the pane container.
 	virtual std::optional<size_t>
@@ -367,11 +368,11 @@ class panelayoutmanagerObj::implObj::orientation
 
 	//! Implement total_size()
 
-	size_t total_size(grid_map_t::lock &lock) override;
+	size_t total_size(const grid_map_t::lock &lock) const override;
 
 	//! Implement get_element()
 
-	element get_element(grid_map_t::lock &lock, size_t n) override;
+	element get_element(const grid_map_t::lock &lock, size_t n) override;
 
 	//! Implement pane_peephole_style().
 

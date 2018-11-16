@@ -23,6 +23,12 @@ pagetabgridlayoutmanagerObj::implObj::~implObj()=default;
 
 layoutmanager pagetabgridlayoutmanagerObj::implObj::create_public_object()
 {
+	return create_pagetabgridlayoutmanager();
+}
+
+pagetabgridlayoutmanager pagetabgridlayoutmanagerObj::implObj
+::create_pagetabgridlayoutmanager()
+{
 	return pagetabgridlayoutmanager::create(ref(this));
 }
 

@@ -7,10 +7,12 @@
 
 #include "x/w/booklayoutmanager.H"
 #include "x/w/pagelayoutmanagerfwd.H"
+#include "x/w/pagelayoutmanagerobj.H"
 #include "x/w/focusable.H"
 #include "x/w/callback_triggerfwd.H"
 #include "booklayoutmanager/bookgridlayoutmanager.H"
-#include "booklayoutmanager/pagetabgridlayoutmanagerfwd.H"
+#include "x/w/pagetabgridlayoutmanagerfwd.H"
+#include "booklayoutmanager/pagetabgridlayoutmanagerobj.H"
 #include "booklayoutmanager/pagetabfwd.H"
 #include "image_button.H"
 #include <vector>
@@ -46,47 +48,62 @@ class LIBCXX_HIDDEN booklayoutmanagerObj::implObj : virtual public obj {
 
 	const container book_pagecontainer;
 
+	//! And the underlying page layout manager implementation object.
+	const ref<pagelayoutmanagerObj::implObj> book_pagelayoutmanager_impl;
+
 	//! The underlying pagelayoutmanager
 
-	const pagelayoutmanager book_pagelayoutmanager;
+	pagelayoutmanager book_pagelayoutmanager();
 
 	//! The container with the underlying pagetabgridlayoutmanager
 
 	const container book_pagetabgrid;
 
-	//! The underlying pagetabgridlayoutmanager
+	//! And the underlying page tab grid layout manager implementation object.
+	const ref<pagetabgridlayoutmanagerObj::implObj
+		  > book_pagetabgridlayoutmanager_impl;
 
-	const pagetabgridlayoutmanager book_pagetabgridlayoutmanager;
+	//! The underlying pagetabgridlayoutmanager
+	pagetabgridlayoutmanager book_pagetabgridlayoutmanager();
 
 	//! Constructor
 	implObj(const ref<bookgridlayoutmanagerObj> &impl);
 
+ private:
+
+	//! Delegated constructor
+
+	implObj(const ref<bookgridlayoutmanagerObj> &impl,
+		grid_map_t::lock &&grid_lock);
+ public:
 	//! Destructor
 	~implObj();
 
-	//! Return the given pagetag
+	//! Return the given page tab.
 
-	pagetabptr get_pagetab(size_t) const;
+	static pagetabptr get_pagetab(grid_map_t::lock &lock, size_t);
+
+	//! Return the given page tab.
+
+	static pagetabptr get_pagetab(book_lock &lock, size_t);
 
 	//! Return all the focusables
 
 	//! Returns the left scroll button, the tabs, and the right scroll
 	//! button.
-	//!
-	//! A book_lock must be instantatiated first. The parameter is
-	//! ignored, this is contract enforcement.
-	std::vector<focusable> get_focusables(grid_map_t::lock &) const;
+
+	std::vector<focusable> get_focusables() const;
+
+	//! Return the main focusable.
+
+	//! Returns the first tab. If there are no tabs, returns the
+	//! left scroll button as the main focusable.
+
+	focusable get_focusable() const;
 
 	//! After a new tab is added, we need to rebuild the focusable order.
 
-	void rebuild_focusables(grid_map_t::lock &) const;
-
-	//! Open a page.
-
-	static void open(THREAD_CALLBACK,
-			 const booklayoutmanager &blm, size_t n,
-			 const callback_trigger_t &trigger);
-
+	void rebuild_focusables() const;
 };
 
 LIBCXXW_NAMESPACE_END

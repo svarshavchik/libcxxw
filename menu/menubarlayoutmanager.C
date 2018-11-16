@@ -38,7 +38,7 @@ menu menubar_lock::get_menu(size_t n) const
 	if (n >= menus())
 		throw EXCEPTION(_("Menu does not exist"));
 
-	return manager->impl->get(0, n);
+	return (*manager->grid_lock)->get(0, n);
 }
 
 menu menubar_lock::get_right_menu(size_t n) const
@@ -46,7 +46,7 @@ menu menubar_lock::get_right_menu(size_t n) const
 	if (n >= right_menus())
 		throw EXCEPTION(_("Menu does not exist"));
 
-	return manager->impl->get(0, menus()+1+n);
+	return (*manager->grid_lock)->get(0, menus()+1+n);
 }
 
 ///////////////////////////////////////////////////////////////////////////

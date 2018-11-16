@@ -94,7 +94,7 @@ size_t gridlayoutmanagerObj::cols(size_t row) const
 
 elementptr gridlayoutmanagerObj::get(size_t row, size_t col) const
 {
-	return impl->get(row, col);
+	return (*grid_lock)->get(row, col);
 }
 
 std::optional<std::tuple<size_t, size_t>>

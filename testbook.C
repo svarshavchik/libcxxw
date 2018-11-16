@@ -244,24 +244,8 @@ static void create_mainwindow(const LIBCXX_NAMESPACE::w::main_window &mw)
 	LIBCXX_NAMESPACE::w::gridlayoutmanager glm=mw->get_layoutmanager();
 
 	auto gf=glm->append_row();
-#if 0
-	gf->padding(0);
-	gf->left_border("book_tab_border");
-	gf->right_border("book_tab_border");
-	gf->top_border("book_tab_border");
 
-	gf->create_label("Label!");
-
-	gf=glm->append_row();
-
-	gf->create_canvas([](const auto &){},
-			  {50, 50, 50}, {10, 10, 10})
-		->set_background_color(x::w::rgb{});
-
-	if (0)
-		create_book(gf);
-#else
-	gf->create_focusable_container
+	auto c=gf->colspan(2).create_focusable_container
 		([&]
 		 (const auto &s)
 		 {
@@ -270,7 +254,36 @@ static void create_mainwindow(const LIBCXX_NAMESPACE::w::main_window &mw)
 			 create_book(sl);
 		 },
 		 LIBCXX_NAMESPACE::w::new_booklayoutmanager{});
-#endif
+
+	gf=glm->append_row();
+
+	auto b=gf->create_normal_button_with_label("Open 1st page");
+
+	b->on_activate([c]
+		       (ONLY IN_THREAD,
+			const auto &trigger,
+			const auto &mcguffin)
+		       {
+			       LIBCXX_NAMESPACE::w::booklayoutmanager lm=
+				       c->get_layoutmanager();
+
+			       lm->open(0);
+		       });
+	b->show();
+
+	b=gf->create_normal_button_with_label("Close");
+
+	b->on_activate([c]
+		       (ONLY IN_THREAD,
+			const auto &trigger,
+			const auto &mcguffin)
+		       {
+			       LIBCXX_NAMESPACE::w::booklayoutmanager lm=
+				       c->get_layoutmanager();
+
+			       lm->close();
+		       });
+	b->show();
 }
 
 void testbook()
@@ -292,7 +305,6 @@ void testbook()
 							 });
 
 	mw->set_window_title("Book!");
-	mw->show_all();
 
 	guard(mw->connection_mcguffin());
 
@@ -308,7 +320,7 @@ void testbook()
 			      close_flag->close();
 		      });
 
-	mw->show();
+	mw->show_all();
 
 	LIBCXX_NAMESPACE::mpcobj<bool>::lock lock{close_flag->flag};
 

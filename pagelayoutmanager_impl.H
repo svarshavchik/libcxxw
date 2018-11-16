@@ -68,6 +68,10 @@ class LIBCXX_HIDDEN pagelayoutmanagerObj::implObj
 	//! Destructor
 	~implObj();
 
+	//! Number of pages()
+
+	size_t pages();
+
 	//! Add new element.
 	void append(const switch_element_info &);
 
@@ -90,8 +94,13 @@ class LIBCXX_HIDDEN pagelayoutmanagerObj::implObj
 	//! Implement num_children().
 	size_t num_children(ONLY IN_THREAD) override;
 
-	//! Implement create_public_object()
+	//! Implement create_public_object().
+
+	//! Call create_pagelayoutmanager().
 	layoutmanager create_public_object() override;
+
+	//! Create my page layout manager.
+	pagelayoutmanager create_pagelayoutmanager();
 
 	//! Implement recalculate()
 	void recalculate(ONLY IN_THREAD) override;

@@ -573,6 +573,9 @@ void testmenu()
 			 }, {"F3"});
 
 			 auto mb=main_window->get_menubarlayoutmanager();
+
+			 LIBCXX_NAMESPACE::w::menubar_lock mbl{mb};
+
 			 auto f=mb->append_menus();
 
 			 size_t options_menu_item;
@@ -588,25 +591,34 @@ void testmenu()
 
 			 f=mb->insert_menus(0);
 
-			 f->add_text("File",
-				     [&]
-				     (const auto &factory) {
-					     file_menu(main_window,
-						       factory,
-						       view_m,
-						       options_menu_item);
-				     });
+			 auto file_m=f->add_text
+				 ("File",
+				  [&]
+				  (const auto &factory) {
+					  file_menu(main_window,
+						    factory,
+						    view_m,
+						    options_menu_item);
+				  });
+
+			 if (mbl.get_menu(0) != file_m ||
+			     mbl.get_menu(1) != view_m)
+				 abort();
 
 			 if (getpid() & 1)
 				 f=mb->append_right_menus();
 			 else
 				 f=mb->insert_right_menus(0);
-			 f->add_text("Help",
-				     [&]
-				     (const auto &factory) {
-					     help_menu(main_window,
-						       factory);
-				     });
+			 auto help_m=f->add_text
+				 ("Help",
+				  [&]
+				  (const auto &factory) {
+					  help_menu(main_window,
+						    factory);
+				  });
+
+			 if (help_m != mbl.get_right_menu(0))
+				 abort();
 
 			 main_window->get_menubar()->show();
 
@@ -648,9 +660,6 @@ void testmenu()
 int main(int argc, char **argv)
 {
 	try {
-		LIBCXX_NAMESPACE::property
-			::load_property(LIBCXX_NAMESPACE_STR "::themes",
-					"themes", true, true);
 		LIBCXX_NAMESPACE::locale::base::environment()->global();
 
 		testmenu();

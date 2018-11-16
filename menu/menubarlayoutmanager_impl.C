@@ -156,9 +156,9 @@ void menubarlayoutmanagerObj::implObj::fix_order(ONLY IN_THREAD,
 	// overrides get_focus_first() and makes sure that other focusable
 	// elements won't get ahead of us.
 
-	grid_map_t::lock lock{grid_map};
+	grid_map_t::lock grid_lock{grid_map};
 
-	const auto &lookup=(*lock)->get_lookup_table();
+	const auto &lookup=(*grid_lock)->get_lookup_table();
 
 	auto found=lookup.find(new_element->impl);
 
@@ -167,13 +167,13 @@ void menubarlayoutmanagerObj::implObj::fix_order(ONLY IN_THREAD,
 
 	auto col= found->second->col;
 
-	auto divider_pos=info(lock).divider_pos;
+	auto divider_pos=info(grid_lock).divider_pos;
 
 	if (col > 0)
 	{
 		if (--col != divider_pos || col--)
 		{
-			menu previous=get(0, col);
+			menu previous=(*grid_lock)->get(0, col);
 
 			// It won't do us any good if the previous menu item's
 			// tabbing order is not set correctly yet, so make

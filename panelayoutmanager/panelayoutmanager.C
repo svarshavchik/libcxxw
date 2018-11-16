@@ -24,12 +24,12 @@ panelayoutmanagerObj::~panelayoutmanagerObj()=default;
 
 size_t panelayoutmanagerObj::size() const
 {
-	return impl->size();
+	return impl->size(grid_lock);
 }
 
 elementptr panelayoutmanagerObj::get(size_t n) const
 {
-	return impl->get_pane_element(n);
+	return impl->get_pane_element(grid_lock, n);
 }
 
 class LIBCXX_HIDDEN append_panefactoryObj : public panefactory_implObj {
@@ -56,7 +56,7 @@ panefactory panelayoutmanagerObj::append_panes()
 
 void panelayoutmanagerObj::remove_pane(size_t pane_number)
 {
-	impl->remove_pane(ref(this), pane_number);
+	impl->remove_pane(ref{this}, pane_number, grid_lock);
 }
 
 class LIBCXX_HIDDEN insert_panefactoryObj : public panefactory_implObj {
@@ -117,9 +117,7 @@ panefactory panelayoutmanagerObj::replace_panes(size_t position)
 
 void panelayoutmanagerObj::remove_all_panes()
 {
-	grid_map_t::lock lock{impl->grid_map};
-
-	if (impl->size() == 0)
+	if (impl->size(grid_lock) == 0)
 		return;
 
 	// Minimal situation:
@@ -129,8 +127,8 @@ void panelayoutmanagerObj::remove_all_panes()
 	//   ...
 	// [canvas]
 
-	impl->remove_elements(lock, 2, impl->total_size(lock)-3);
-	impl->remove_element(lock, 0);
+	impl->remove_elements(grid_lock, 2, impl->total_size(grid_lock)-3);
+	impl->remove_element(grid_lock, 0);
 	impl->request_extra_space_to_canvas();
 }
 

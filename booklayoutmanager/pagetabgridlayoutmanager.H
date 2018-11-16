@@ -5,7 +5,7 @@
 #ifndef x_w_pagetabgridlayoutmanager_h
 #define x_w_pagetabgridlayoutmanager_h
 
-#include "booklayoutmanager/pagetabgridlayoutmanagerfwd.H"
+#include "x/w/pagetabgridlayoutmanagerfwd.H"
 #include "booklayoutmanager/pagetabgridlayoutmanagerobj.H"
 #include "x/w/gridlayoutmanager.H"
 #include <x/ref.H>

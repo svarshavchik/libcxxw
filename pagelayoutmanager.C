@@ -80,9 +80,7 @@ void pagelayoutmanagerObj::remove(size_t i)
 
 size_t pagelayoutmanagerObj::pages() const
 {
-	page_layout_info_t::lock lock{impl->info};
-
-	return lock->elements.size();
+	return impl->pages();
 }
 
 element pagelayoutmanagerObj::get(size_t n) const

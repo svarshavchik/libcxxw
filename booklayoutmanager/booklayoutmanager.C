@@ -50,6 +50,8 @@ LIBCXXW_NAMESPACE_START
 booklayoutmanagerObj
 ::booklayoutmanagerObj(const ref<implObj> &impl)
 	: layoutmanagerObj{impl->impl},
+	  book_pagelayoutmanager{impl->book_pagelayoutmanager()},
+	  book_pagetabgridlayoutmanager{impl->book_pagetabgridlayoutmanager()},
 	  impl{impl}
 {
 }
@@ -60,12 +62,12 @@ booklayoutmanagerObj::~booklayoutmanagerObj()=default;
 
 size_t booklayoutmanagerObj::pages() const
 {
-	return impl->book_pagelayoutmanager->pages();
+	return book_pagelayoutmanager->pages();
 }
 
 std::optional<size_t> booklayoutmanagerObj::opened() const
 {
-	return impl->book_pagelayoutmanager->opened();
+	return book_pagelayoutmanager->opened();
 }
 
 void booklayoutmanagerObj
@@ -74,9 +76,11 @@ void booklayoutmanagerObj
 {
 	impl->impl->layout_container_impl->container_element_impl()
 		.get_window_handler().thread()
-		->run_as([me=ref(this), cb]
+		->run_as([me_impl=impl, cb]
 			 (ONLY IN_THREAD)
 			 {
+				 auto me=booklayoutmanager::create(me_impl);
+
 				 book_lock lock{me};
 
 				 lock.layout_manager->impl->impl
@@ -86,36 +90,36 @@ void booklayoutmanagerObj
 
 void booklayoutmanagerObj::open(size_t n)
 {
-	impl->impl->layout_container_impl->container_element_impl()
-		.get_window_handler().thread()
-		->run_as([me=ref(this), n]
-			 (ONLY IN_THREAD)
-			 {
-				 implObj::open(IN_THREAD, me, n, {});
-			 });
+	impl->impl->run_as([me_impl=impl, n]
+			   (ONLY IN_THREAD)
+			   {
+				   auto me=booklayoutmanager::create(me_impl);
+
+				   me->open(IN_THREAD, n);
+			   });
 }
 
-void booklayoutmanagerObj
-::implObj::open(ONLY IN_THREAD,
-		const booklayoutmanager &blm, size_t n,
-		const callback_trigger_t &trigger)
+void booklayoutmanagerObj::open(ONLY IN_THREAD, size_t n)
 {
-	book_lock lock{blm};
+	open(IN_THREAD, n, {});
+}
+
+void booklayoutmanagerObj::open(ONLY IN_THREAD, size_t n,
+				const callback_trigger_t &trigger)
+{
+	book_lock lock{ref{this}};
 
 	// Remember which page is currently open.
 
-	auto opened=blm->impl->book_pagelayoutmanager->opened();
+	auto opened=book_pagelayoutmanager->opened();
 
 	pagetabptr previous_page;
 
 	if (opened)
-		previous_page=blm->impl->get_pagetab(*opened);
-	pagetab next_page=blm->impl->get_pagetab(n);
+		previous_page=impl->get_pagetab(lock, *opened);
+	pagetab next_page=impl->get_pagetab(lock, n);
 
-	// The official switch to the new page can be done immediately, but
-	// need to punt the tab visual update to the connection thread.
-
-	blm->impl->book_pagelayoutmanager->open(n);
+	book_pagelayoutmanager->open(n);
 
 	// Make sure to scroll the opened tab into the view
 	// (the center of the peephole), unless it was a
@@ -154,16 +158,27 @@ void booklayoutmanagerObj
 
 void booklayoutmanagerObj::close()
 {
-	book_lock lock{ ref(this) };
+	impl->impl->run_as([me_impl=impl]
+			   (ONLY IN_THREAD)
+			   {
+				   auto me=booklayoutmanager::create(me_impl);
 
-	auto opened=impl->book_pagelayoutmanager->opened();
+				   me->close(IN_THREAD);
+			   });
+}
+
+void booklayoutmanagerObj::close(ONLY IN_THREAD)
+{
+	book_lock lock{ ref{this} };
+
+	auto opened=book_pagelayoutmanager->opened();
 
 	pagetabptr previous_page;
 
 	if (opened)
-		previous_page=impl->get_pagetab(*opened);
+		previous_page=impl->get_pagetab(lock, *opened);
 
-	impl->book_pagelayoutmanager->close();
+	book_pagelayoutmanager->close();
 
 	// We can officially close the book immediately, but we
 	// have to punt the tab visual update to the connection thread.
@@ -171,18 +186,12 @@ void booklayoutmanagerObj::close()
 	if (!previous_page)
 		return;
 
-	impl->book_pagecontainer->elementObj::impl->THREAD
-		->run_as([previous_page]
-			 (ONLY IN_THREAD)
-			 {
-				 previous_page->impl
-					 ->set_active(IN_THREAD, false);
-			 });
+	previous_page->impl->set_active(IN_THREAD, false);
 }
 
 element booklayoutmanagerObj::get_page(size_t n) const
 {
-	return impl->book_pagelayoutmanager->get(n);
+	return book_pagelayoutmanager->get(n);
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -198,14 +207,9 @@ class LIBCXX_HIDDEN bookpagefactory_implObj : public bookpagefactoryObj {
 	const booklayoutmanager layout_manager;
 	const pagefactory book_pagefactory;
 
-	// The tab factory is accessed only while a lock is being held.
+	// The tab factory
 
-	gridfactory book_tabfactory_under_lock;
-
-	inline gridfactory &book_tabfactory(grid_map_t::lock &)
-	{
-		return book_tabfactory_under_lock;
-	}
+	const gridfactory book_tabfactory;
 
  public:
 
@@ -214,7 +218,7 @@ class LIBCXX_HIDDEN bookpagefactory_implObj : public bookpagefactoryObj {
 				const gridfactory &book_tabfactory)
 		: layout_manager{layout_manager},
 		book_pagefactory{book_pagefactory},
-		book_tabfactory_under_lock{book_tabfactory}
+		book_tabfactory{book_tabfactory}
 	{
 	}
 
@@ -245,16 +249,13 @@ static inline void tab_activate(ONLY IN_THREAD,
 {
 	book_lock lock{layout_manager};
 
-	auto index=layout_manager->impl->book_pagelayoutmanager
+	auto index=layout_manager->book_pagelayoutmanager
 		->lookup(activated_page);
 
 	if (!index)
 		return;
 
-	booklayoutmanagerObj::implObj::open(IN_THREAD,
-					    layout_manager,
-					    *index,
-					    trigger);
+	layout_manager->open(IN_THREAD, *index, trigger);
 }
 
 // Helper for populating a new tab's structure.
@@ -298,7 +299,7 @@ auto create_new_tab(const gridfactory &gridfactory,
 
 	auto impl=ref<pagetabObj::implObj>
 		::create(inner_tab_gridcontainer_impl,
-			 layout_manager->impl->book_pagetabgridlayoutmanager
+			 layout_manager->book_pagetabgridlayoutmanager
 			 ->impl->my_container,
 			 "book_tab_warm_color",
 			 "book_tab_hot_color");
@@ -402,10 +403,10 @@ class LIBCXX_HIDDEN append_bookpagefactoryObj
 	// the internal pagelayoutmanager, and the tab grid layoutmanager.
 
 	append_bookpagefactoryObj(const booklayoutmanager &layout_manager)
-		: bookpagefactory_implObj{layout_manager,
-			layout_manager->impl->book_pagelayoutmanager
-			->append(),
-			layout_manager->impl->book_pagetabgridlayoutmanager
+		: bookpagefactory_implObj{
+		layout_manager,
+			layout_manager->book_pagelayoutmanager->append(),
+			layout_manager->book_pagetabgridlayoutmanager
 			->append_columns(0)}
 	{
 	}
@@ -434,9 +435,9 @@ class LIBCXX_HIDDEN insert_bookpagefactoryObj
 	insert_bookpagefactoryObj(const booklayoutmanager &layout_manager,
 				  size_t page_number)
 		: bookpagefactory_implObj{layout_manager,
-			layout_manager->impl->book_pagelayoutmanager
+			layout_manager->book_pagelayoutmanager
 			->insert(page_number),
-			layout_manager->impl->book_pagetabgridlayoutmanager
+			layout_manager->book_pagetabgridlayoutmanager
 			->insert_columns(0, page_number)},
 		page_number{page_number}
 	{
@@ -461,17 +462,15 @@ void append_bookpagefactoryObj
 ::do_add(const function<void (const factory &, const factory &)> &f,
 	 const shortcut &sc)
 {
-	grid_map_t::lock lock{layout_manager->impl->impl->grid_map};
-
 	auto [tab_element, hotspot_element, page_element]=
-		create_new_tab(book_tabfactory(lock),
+		create_new_tab(book_tabfactory,
 			       layout_manager, book_pagefactory, f, sc);
 
 	install_activate_callback(layout_manager, hotspot_element,
 				  page_element);
-	book_tabfactory(lock)->created_internally(tab_element);
+	book_tabfactory->created_internally(tab_element);
 	book_pagefactory->created_internally(page_element);
-	layout_manager->impl->rebuild_focusables(lock);
+	layout_manager->impl->rebuild_focusables();
 }
 
 bookpagefactory booklayoutmanagerObj::insert(size_t page_number)
@@ -483,19 +482,17 @@ void insert_bookpagefactoryObj
 ::do_add(const function<void (const factory &, const factory &)> &f,
 	 const shortcut &sc)
 {
-	grid_map_t::lock lock{layout_manager->impl->impl->grid_map};
-
 	auto [tab_element, hotspot_element, page_element]=
-		create_new_tab(book_tabfactory(lock),
+		create_new_tab(book_tabfactory,
 			       layout_manager, book_pagefactory, f, sc);
 
 	install_activate_callback(layout_manager, hotspot_element,
 				  page_element);
-	book_tabfactory(lock)->created_internally(tab_element);
+	book_tabfactory->created_internally(tab_element);
 	book_pagefactory->created_internally(page_element);
 
 	++page_number;
-	layout_manager->impl->rebuild_focusables(lock);
+	layout_manager->impl->rebuild_focusables();
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -533,26 +530,19 @@ class LIBCXX_HIDDEN book_focusable_containerObj
 
 	focusable_impl get_impl() const override
 	{
-		focusable_implptr p;
+		const_ref<booklayoutmanagerObj::implObj> layout_impl=
+			get_layout_impl();
 
-		containerObj::impl->invoke_layoutmanager
-			([&]
-			 (const ref<gridlayoutmanagerObj::implObj> &g)
-			 {
-				 p=g->get(0, 0);
-			 });
-
-		return p;
+		return layout_impl->get_focusable();
 	}
 
 	void do_get_impl(const function<internal_focusable_cb> &cb) const
 		override
 	{
-		const_booklayoutmanager lm=get_layoutmanager();
+		const_ref<booklayoutmanagerObj::implObj> layout_impl=
+			get_layout_impl();
 
-		book_lock lock{lm};
-
-		auto focusables=lm->impl->get_focusables(lock);
+		auto focusables=layout_impl->get_focusables();
 
 		process_focusable_impls_from_focusables(cb, focusables);
 	}
@@ -748,8 +738,7 @@ new_booklayoutmanager::create(const container_impl &parent) const
 					  if (next == 0)
 						  return;
 
-					  lm->impl->open(IN_THREAD, lm, --next,
-							 trigger);
+					  lm->open(IN_THREAD, --next, trigger);
 				  });
 		 });
 
@@ -791,8 +780,7 @@ new_booklayoutmanager::create(const container_impl &parent) const
 					  if (next >= n)
 						  return;
 
-					  lm->impl->open(IN_THREAD, lm, next,
-							 trigger);
+					  lm->open(IN_THREAD, next, trigger);
 				  });
 		 });
 
@@ -822,8 +810,7 @@ new_booklayoutmanager::create(const container_impl &parent) const
 //////////////////////////////////////////////////////////////////////////////
 
 book_lock::book_lock(const const_booklayoutmanager &layout_manager)
-	: grid_map_t::lock{layout_manager->impl->impl->grid_map},
-	layout_manager{layout_manager}
+	: layout_manager{layout_manager}
 {
 }
 

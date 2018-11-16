@@ -265,14 +265,7 @@ elementptr gridlayoutmanagerObj::implObj::get(size_t row, size_t col)
 {
 	grid_map_t::lock lock{grid_map};
 
-	if (row < (*lock)->elements.size())
-	{
-		const auto &r=(*lock)->elements.at(row);
-
-		if (col < r.size())
-			return r.at(col)->grid_element;
-	}
-	return elementptr();
+	return (*lock)->get(row, col);
 }
 
 std::optional<std::tuple<size_t, size_t>>

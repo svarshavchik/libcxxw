@@ -18,6 +18,7 @@
 #include "x/w/callback_trigger.H"
 #include "generic_window_handler.H"
 #include "gridlayoutmanager.H"
+#include "grid_map_info.H"
 #include "image_button.H"
 #include "image_button_internal_impl.H"
 #include "catch_exceptions.H"
@@ -537,7 +538,8 @@ void date_input_field_calendarObj::update_month(mpobj<ymd>::lock &lock)
 		([&, this]
 		 (const ref<gridlayoutmanagerObj::implObj> &my_lm)
 		 {
-			 container c=my_lm->get(0, 0);
+			 grid_map_t::lock grid_lock{my_lm->grid_map};
+			 container c=(*grid_lock)->get(0, 0);
 
 			 // Row 0: container with the scroll buttons and
 			 // the current month+year.
@@ -554,7 +556,7 @@ void date_input_field_calendarObj::update_month(mpobj<ymd>::lock &lock)
 
 			 // Row 1: Calendar grid.
 
-			 c=my_lm->get(1, 0);
+			 c=(*grid_lock)->get(1, 0);
 
 			 calendar_grid(c->get_layoutmanager(), e, *lock,
 				       ref(this));

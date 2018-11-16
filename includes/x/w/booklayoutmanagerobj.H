@@ -8,7 +8,10 @@
 #include <x/w/booklayoutmanagerfwd.H>
 #include <x/w/layoutmanagerobj.H>
 #include <x/w/bookpagefactoryfwd.H>
+#include <x/w/pagelayoutmanagerfwd.H>
+#include <x/w/pagetabgridlayoutmanagerfwd.H>
 #include <x/w/elementfwd.H>
+#include <x/w/callback_triggerfwd.H>
 #include <x/functionalrefptrfwd.H>
 
 LIBCXXW_NAMESPACE_START
@@ -20,6 +23,24 @@ LIBCXXW_NAMESPACE_START
 class booklayoutmanagerObj : public layoutmanagerObj {
 
 public:
+
+	//! Internal page layout manager.
+
+	//! Do not access the internal page layout manager, only use
+	//! book layout manager's methods.
+	//!
+	//! \internal
+	const pagelayoutmanager book_pagelayoutmanager;
+
+	//! Internal page tab grid layout manager.
+
+	//! Do not access the internal page layout manager, only use
+	//! book layout manager's methods.
+	//!
+	//! \internal
+
+	const pagetabgridlayoutmanager book_pagetabgridlayoutmanager;
+
 	class LIBCXX_HIDDEN implObj;
 
 	//! Internal implementation object.
@@ -43,8 +64,17 @@ public:
 	//! Open the book to the given page.
 	void open(size_t);
 
+	//! Open the book to the given page.
+	void open(ONLY IN_THREAD, size_t);
+
+	//! Open the book to the given page.
+	void open(ONLY IN_THREAD, size_t, const callback_trigger_t &);
+
 	//! Close the book, don't show any pages.
 	void close();
+
+	//! Close the book, don't show any pages.
+	void close(ONLY IN_THREAD);
 
 	//! Which page is currently open.
 	std::optional<size_t> opened() const;

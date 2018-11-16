@@ -5,7 +5,7 @@
 #ifndef x_w_pagetabgridlayoutmanagerfwd_h
 #define x_w_pagetabgridlayoutmanagerfwd_h
 
-#include "x/w/namespace.H"
+#include <x/w/namespace.H>
 #include <x/ptrfwd.H>
 
 LIBCXXW_NAMESPACE_START
@@ -14,7 +14,7 @@ class LIBCXX_HIDDEN pagetabgridlayoutmanagerObj;
 
 /*! The grid layout manager for a \ref booklayoutmanager "book layout manager"'s page tab.
 
-
+\internal
 */
 
 typedef ref<pagetabgridlayoutmanagerObj> pagetabgridlayoutmanager;

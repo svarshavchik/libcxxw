@@ -6,6 +6,7 @@
 #include "libcxxw_config.h"
 #include "grid_map_info.H"
 #include "x/w/impl/current_border_impl.H"
+#include "x/w/impl/element.H"
 #include "messages.H"
 
 LIBCXXW_NAMESPACE_START
@@ -112,6 +113,18 @@ size_t grid_map_infoObj::cols(size_t row) const
 		throw EXCEPTION(_("Attempting to get the number of columns in a nonexistent row"));
 
 	return elements[row].size();
+}
+
+elementptr grid_map_infoObj::get(size_t row, size_t col) const
+{
+	if (row < elements.size())
+	{
+		const auto &r=elements[row];
+
+		if (col < r.size())
+			return r[col]->grid_element;
+	}
+	return elementptr{};
 }
 
 LIBCXXW_NAMESPACE_END

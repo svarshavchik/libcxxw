@@ -15,6 +15,4 @@ pagetabgridlayoutmanagerObj
 
 pagetabgridlayoutmanagerObj::~pagetabgridlayoutmanagerObj()=default;
 
-
-
 LIBCXXW_NAMESPACE_END

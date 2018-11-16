@@ -144,9 +144,9 @@ factoryObj::create_input_field(const text_param &text,
 		// hidden). This will create elements #2 and #3, which
 		// do_get_impl() checks for, below.
 
-#define HAS_SPIN_CONTROLS(impl) ((*grid_lock)->cols(0) >= 4)
-#define SPIN_CONTROL_A(impl) ((impl)->get(0,2))
-#define SPIN_CONTROL_B(impl) ((impl)->get(0,3))
+#define HAS_SPIN_CONTROLS() ((*grid_lock)->cols(0) >= 4)
+#define SPIN_CONTROL_A() ((*grid_lock)->get(0,2))
+#define SPIN_CONTROL_B() ((*grid_lock)->get(0,3))
 
 		auto f=lm->append_columns(0);
 		f->padding(0);
@@ -211,7 +211,7 @@ void input_fieldObj::do_get_impl(const function<internal_focusable_cb> &cb)
 		 {
 			 grid_map_t::lock grid_lock{impl->grid_map};
 
-			 if (!HAS_SPIN_CONTROLS(impl))
+			 if (!HAS_SPIN_CONTROLS())
 			 {
 				 peepholed_focusableObj::do_get_impl(cb);
 				 return;
@@ -219,8 +219,8 @@ void input_fieldObj::do_get_impl(const function<internal_focusable_cb> &cb)
 
 			 // Additinal spinner elements, created above.
 
-			 focusable a=SPIN_CONTROL_A(impl),
-				 b=SPIN_CONTROL_B(impl);
+			 focusable a=SPIN_CONTROL_A(),
+				 b=SPIN_CONTROL_B();
 
 			 // Recursively invoke do_get_impl from:
 			 //
@@ -293,13 +293,13 @@ void input_fieldObj::on_spin(const hotspot_callback_t &a_cb,
 		 {
 			 grid_map_t::lock grid_lock{impl->grid_map};
 
-			 if (!HAS_SPIN_CONTROLS(impl))
+			 if (!HAS_SPIN_CONTROLS())
 			 {
 				 throw EXCEPTION(_("Input field does not have spin controls."));
 			 }
 
-			 button a=SPIN_CONTROL_A(impl),
-				 b=SPIN_CONTROL_B(impl);
+			 button a=SPIN_CONTROL_A(),
+				 b=SPIN_CONTROL_B();
 
 			 a->on_activate(a_cb);
 			 b->on_activate(b_cb);

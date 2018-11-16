@@ -8,6 +8,7 @@
 #include "x/w/namespace.H"
 #include "x/w/grid_map_infofwd.H"
 #include "x/w/dim_arg.H"
+#include "x/w/elementfwd.H"
 #include "x/w/elementobj.H"
 #include "x/w/impl/grid_elementfwd.H"
 #include "x/w/impl/current_border_implfwd.H"
@@ -273,7 +274,9 @@ public:
 	//! This does not include spanned cells.
 	size_t cols(size_t row) const;
 
+	//! Get the display element at the given location.
 
+	elementptr get(size_t row, size_t col) const;
 };
 
 LIBCXXW_NAMESPACE_END

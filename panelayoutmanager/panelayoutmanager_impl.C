@@ -23,6 +23,7 @@
 #include "peephole/peephole_impl.H"
 #include "peephole/peephole_layoutmanager_impl_scrollbars.H"
 #include "peephole/peephole_gridlayoutmanagerobj.H"
+#include "grid_map_info.H"
 #include "messages.H"
 #include "x/w/panefactory.H"
 
@@ -39,10 +40,8 @@ panelayoutmanagerObj::implObj::implObj(const ref<panecontainer_implObj>
 
 panelayoutmanagerObj::implObj::~implObj()=default;
 
-size_t panelayoutmanagerObj::implObj::size()
+size_t panelayoutmanagerObj::implObj::size(const grid_map_t::lock &lock) const
 {
-	grid_map_t::lock lock{grid_map};
-
 	// Empty: slider+canvas
 	//
 	// One pane: pane+slider+canvas
@@ -60,15 +59,14 @@ size_t panelayoutmanagerObj::implObj::size()
 	return s/2;
 }
 
-elementptr panelayoutmanagerObj::implObj::get_pane_element(size_t n)
+elementptr panelayoutmanagerObj::implObj
+::get_pane_element(const grid_map_t::lock &grid_lock, size_t n)
 {
 	elementptr e;
 
-	grid_map_t::lock lock{grid_map};
-
-	if (n < size())
+	if (n < size(grid_lock))
 	{
-		pane_peephole_container container=get_element(lock, n*2);
+		pane_peephole_container container=get_element(grid_lock, n*2);
 
 		auto peephole=container->get_peephole();
 
@@ -191,7 +189,7 @@ pane_peephole_container panelayoutmanagerObj::implObj
 			size_t position,
 			grid_map_t::lock &lock)
 {
-	auto s=size();
+	auto s=size(lock);
 
 	if (position > s)
 		throw EXCEPTION(gettextmsg(_("Pane #%1% does not exist"),
@@ -212,7 +210,7 @@ pane_peephole_container panelayoutmanagerObj::implObj
 	// peepholeObj::layoutmanager_implObj::scrollbarsObj layout manager.
 	//
 	// 4) "e" parameter, will be the peepholed element placed into the
-	// info.pepehole_impl.
+	// info.peephole_impl.
 
 	auto pane_container_grid_impl=
 		ref<peephole_gridlayoutmanagerObj>
@@ -494,7 +492,7 @@ panelayoutmanagerObj::implObj::find_panes(const ref<elementObj::implObj> &s)
 
 	// Must have at least two panes.
 
-	if (size() > 1)
+	if (size(lock) > 1)
 	{
 		// Look up the slider's position.
 
@@ -519,11 +517,10 @@ panelayoutmanagerObj::implObj::find_panes(const ref<elementObj::implObj> &s)
 
 void panelayoutmanagerObj::implObj
 ::remove_pane(const panelayoutmanager &public_object,
-	      size_t pane_number)
+	      size_t pane_number,
+	      grid_map_t::lock &lock)
 {
-	grid_map_t::lock lock{grid_map};
-
-	size_t s=size();
+	size_t s=size(lock);
 
 	if (pane_number >= s)
 		return;
@@ -608,16 +605,16 @@ gridfactory panelayoutmanagerObj::implObj::orientation<vertical>
 
 template<>
 size_t panelayoutmanagerObj::implObj::orientation<vertical>
-::total_size(grid_map_t::lock &lock)
+::total_size(const grid_map_t::lock &lock) const
 {
 	return (*lock)->rows();
 }
 
 template<>
 element panelayoutmanagerObj::implObj::orientation<vertical>
-::get_element(grid_map_t::lock &lock, size_t n)
+::get_element(const grid_map_t::lock &lock, size_t n)
 {
-	return get(n, 0);
+	return (*lock)->get(n, 0);
 }
 
 template<>
@@ -808,16 +805,16 @@ gridfactory panelayoutmanagerObj::implObj::orientation<horizontal>
 
 template<>
 size_t panelayoutmanagerObj::implObj::orientation<horizontal>
-::total_size(grid_map_t::lock &lock)
+::total_size(const grid_map_t::lock &lock) const
 {
 	return (*lock)->cols(0);
 }
 
 template<>
 element panelayoutmanagerObj::implObj::orientation<horizontal>
-::get_element(grid_map_t::lock &lock, size_t n)
+::get_element(const grid_map_t::lock &lock, size_t n)
 {
-	return get(0, n);
+	return (*lock)->get(0, n);
 }
 
 template<>

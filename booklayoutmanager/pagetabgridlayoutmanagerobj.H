@@ -5,7 +5,7 @@
 #ifndef x_w_pagetabgridlayoutmanagerobj_h
 #define x_w_pagetabgridlayoutmanagerobj_h
 
-#include "booklayoutmanager/pagetabgridlayoutmanagerfwd.H"
+#include "x/w/pagetabgridlayoutmanagerfwd.H"
 #include "x/w/gridlayoutmanagerobj.H"
 
 LIBCXXW_NAMESPACE_START
