@@ -1185,13 +1185,17 @@ bool gridlayoutmanagerObj::implObj::elementsObj
 void gridlayoutmanagerObj::implObj
 ::process_updated_position(ONLY IN_THREAD, const rectangle &position)
 {
-	reposition_child_elements(IN_THREAD, position);
+	grid_map_t::lock grid_lock{grid_map};
+
+	reposition_child_elements(IN_THREAD, position, grid_lock);
 }
 
 void gridlayoutmanagerObj::implObj
 ::process_same_position(ONLY IN_THREAD, const rectangle &position)
 {
-	if (!reposition_child_elements(IN_THREAD, position))
+	grid_map_t::lock grid_lock{grid_map};
+
+	if (!reposition_child_elements(IN_THREAD, position, grid_lock))
 		return;
 
 	// Some child element was moved, we must redraw the container,
@@ -1201,7 +1205,8 @@ void gridlayoutmanagerObj::implObj
 }
 
 bool gridlayoutmanagerObj::implObj
-::reposition_child_elements(ONLY IN_THREAD, const rectangle &position)
+::reposition_child_elements(ONLY IN_THREAD, const rectangle &position,
+			    grid_map_t::lock &grid_lock)
 {
 	bool repositioned=false;
 
@@ -1214,7 +1219,7 @@ bool gridlayoutmanagerObj::implObj
 	// element might need to be reposition within its cells, by the
 	// code below.
 	elements.recalculate_sizes(IN_THREAD,
-				   grid_map_t::lock{grid_map},
+				   grid_lock,
 				   synchronized_columns,
 				   position.width, position.height);
 

@@ -157,9 +157,10 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 	//! Overridden subclasses can use this flag to indicate whether they
 	//! should care to do anything, themselves.
 
-	virtual bool rebuild_elements_and_update_metrics(ONLY IN_THREAD,
-							 grid_map_t::lock &lock,
-							 bool already_sized);
+	virtual bool rebuild_elements_and_update_metrics
+		(ONLY IN_THREAD,
+		 grid_map_t::lock &grid_lock,
+		 bool already_sized);
 
 	/////////////////////////////////////////////////////////////////////
 	//
@@ -289,8 +290,9 @@ class LIBCXX_HIDDEN gridlayoutmanagerObj::implObj
 
 	//! Called by process_updated_position() and process_same_position().
 
-	bool reposition_child_elements(ONLY IN_THREAD,
-				       const rectangle &position);
+	virtual bool reposition_child_elements(ONLY IN_THREAD,
+					       const rectangle &position,
+					       grid_map_t::lock &grid_lock);
 
 	//! Redraw the borders around the child element.
 

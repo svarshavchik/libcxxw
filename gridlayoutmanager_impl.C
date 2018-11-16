@@ -343,16 +343,16 @@ void gridlayoutmanagerObj::implObj::recalculate(ONLY IN_THREAD)
 
 bool gridlayoutmanagerObj::implObj
 ::rebuild_elements_and_update_metrics(ONLY IN_THREAD,
-				      grid_map_t::lock &lock,
+				      grid_map_t::lock &grid_lock,
 				      bool already_sized)
 {
 
 	// Not all recalculation is the result of inserting or removing
 	// elements. rebuild_elements() will do its work only if needed.
-	bool flag=rebuild_elements(IN_THREAD, lock);
+	bool flag=rebuild_elements(IN_THREAD, grid_lock);
 
 	if (flag)
-		initialize_new_elements(IN_THREAD, lock);
+		initialize_new_elements(IN_THREAD, grid_lock);
 
 
 #ifdef CALLING_RECALCULATE
@@ -361,7 +361,7 @@ bool gridlayoutmanagerObj::implObj
 
 	auto [final_flag, horiz_metrics, vert_metrics]=
 		grid_elements(IN_THREAD)->recalculate_metrics
-		(IN_THREAD, lock, synchronized_columns, flag);
+		(IN_THREAD, grid_lock, synchronized_columns, flag);
 
 	if (final_flag)
 		set_element_metrics(IN_THREAD, horiz_metrics, vert_metrics);
