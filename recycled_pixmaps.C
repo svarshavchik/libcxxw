@@ -227,7 +227,7 @@ public:
 
 	bool is_scrollable_background() override
 	{
-		return std::holds_alternative<rgb>(color) ? false:true;
+		return std::holds_alternative<rgb>(color);
 	}
 
 	void current_theme_updated(ONLY IN_THREAD,
