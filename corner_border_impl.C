@@ -81,7 +81,7 @@ void corner_borderObj::implObj::updated(ONLY IN_THREAD)
 #endif
 
 	compute_metrics(IN_THREAD);
-	schedule_redraw(IN_THREAD);
+	schedule_full_redraw(IN_THREAD);
 }
 
 void corner_borderObj::implObj::initialize(ONLY IN_THREAD)

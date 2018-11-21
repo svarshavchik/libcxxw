@@ -42,7 +42,8 @@ void container_elementObj<element_impl>::do_draw(ONLY IN_THREAD,
 //! Forwarded to containerObj::implObj to make any required changes to the
 //! child elements' positions. Then forwarded to the parent element's
 //! process_updated_position(). The default implementation in
-//! in elementObj::implObj calls schedule_redraw(), however we also explicitly
+//! in elementObj::implObj calls schedule_full_redraw(), however we also
+//! explicitly
 //! call schedule_redraw_recursively() since the result of the updated position
 //! is also changed position of child elements. Even if the container's
 //! size has not changed, and it does not end up changing any child elements'

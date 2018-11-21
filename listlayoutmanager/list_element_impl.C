@@ -689,7 +689,7 @@ void list_elementObj::implObj::recalculate(ONLY IN_THREAD)
 		if (lock->full_redraw_needed)
 		{
 			lock->full_redraw_needed=false;
-			schedule_redraw(IN_THREAD);
+			schedule_full_redraw(IN_THREAD);
 		}
 	}
 }
@@ -886,7 +886,7 @@ void list_elementObj::implObj::recalculate(ONLY IN_THREAD,
 	if (lock->full_redraw_needed)
 	{
 		lock->full_redraw_needed=false;
-		schedule_redraw(IN_THREAD);
+		schedule_full_redraw(IN_THREAD);
 	}
 }
 
@@ -1109,7 +1109,7 @@ void list_elementObj::implObj::do_draw(ONLY IN_THREAD,
 {
 	richtext_draw_boundaries bounds{di, areas};
 
-	if (redraw_scheduled(IN_THREAD))
+	if (full_redraw_scheduled(IN_THREAD))
 		return; // Don't bother.
 
 	if (bounds.nothing_to_draw())
@@ -1193,7 +1193,7 @@ void list_elementObj::implObj::do_draw(ONLY IN_THREAD,
 					     di.absolute_location.width,
 					     left};
 
-			if (!redraw_scheduled(IN_THREAD))
+			if (!full_redraw_scheduled(IN_THREAD))
 			{
 				do_draw_row_borders(IN_THREAD, di, clipped,
 						    lock, entire_row, drawn);
@@ -1254,7 +1254,7 @@ rectangle list_elementObj::implObj::do_draw_row(ONLY IN_THREAD,
 			0, r.y, di.absolute_location.width,
 				r.height};
 
-		if (redraw_scheduled(IN_THREAD))
+		if (full_redraw_scheduled(IN_THREAD))
 			return border_rect;
 
 		draw_using_scratch_buffer
@@ -1361,7 +1361,7 @@ rectangle list_elementObj::implObj
 	if (make_sure_row_is_visible)
 		ensure_visibility(IN_THREAD, entire_row);
 
-	if (redraw_scheduled(IN_THREAD))
+	if (full_redraw_scheduled(IN_THREAD))
 		// Don't bother, ensure_visibility() punted us.
 		return entire_row;
 

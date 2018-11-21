@@ -68,7 +68,8 @@ const generic_windowObj::handlerObj &child_elementObj::get_window_handler()
 void child_elementObj::process_updated_position(ONLY IN_THREAD)
 {
 	superclass_t::process_updated_position(IN_THREAD);
-	child_container->container_element_impl().schedule_redraw(IN_THREAD);
+	child_container->container_element_impl()
+		.schedule_full_redraw(IN_THREAD);
 }
 
 draw_info &child_elementObj::get_draw_info(ONLY IN_THREAD)
@@ -77,7 +78,7 @@ draw_info &child_elementObj::get_draw_info(ONLY IN_THREAD)
 	{
 		auto &di=*data(IN_THREAD).cached_draw_info;
 
-		// Between the the time schedule_redraw() was called, we
+		// Between the the time schedule_full_redraw() was called, we
 		// could've been removed from my container. Recalculation
 		// has higher priority than drawing, so we should no longer
 		// scribble over our window after we've been removed.

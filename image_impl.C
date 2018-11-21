@@ -127,7 +127,7 @@ void imageObj::implObj::set_icon(ONLY IN_THREAD, const icon &new_icon)
 	current_icon(IN_THREAD)=new_icon->initialize(IN_THREAD);
 
 	update_image_metrics(IN_THREAD);
-	schedule_redraw(IN_THREAD);
+	schedule_full_redraw(IN_THREAD);
 }
 
 void imageObj::implObj::update_image_metrics(ONLY IN_THREAD)

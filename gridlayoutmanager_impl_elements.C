@@ -70,7 +70,7 @@ void gridlayoutmanagerObj::implObj
 	    .logical_inherited_visibility)
 		return; // This container is not visible, don't bother.
 
-	if (container_element_impl.redraw_scheduled(IN_THREAD))
+	if (container_element_impl.full_redraw_scheduled(IN_THREAD))
 		return; // This container is scheduled for redrawing anyway.
 
 	// Clear any padding around the element to its background color,
@@ -102,7 +102,7 @@ void gridlayoutmanagerObj::implObj
 		return;
 
 	for (const auto &b:iter->second->border_elements)
-		b->impl->schedule_redraw(IN_THREAD);
+		b->impl->schedule_full_redraw(IN_THREAD);
 }
 
 void gridlayoutmanagerObj::implObj::theme_updated(ONLY IN_THREAD,
@@ -1201,7 +1201,7 @@ void gridlayoutmanagerObj::implObj
 	// Some child element was moved, we must redraw the container,
 	// because moving might've exposed some parts of the container that
 	// are no longer occupied by the child element.
-	get_element_impl().schedule_redraw(IN_THREAD);
+	get_element_impl().schedule_full_redraw(IN_THREAD);
 }
 
 bool gridlayoutmanagerObj::implObj

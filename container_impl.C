@@ -356,7 +356,7 @@ void containerObj::implObj::child_visibility_updated(ONLY IN_THREAD,
 						     bool flag)
 {
 	needs_recalculation(IN_THREAD);
-	container_element_impl().schedule_redraw(IN_THREAD);
+	container_element_impl().schedule_full_redraw(IN_THREAD);
 }
 #endif
 

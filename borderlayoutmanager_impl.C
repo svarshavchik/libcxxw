@@ -144,7 +144,8 @@ void borderlayoutmanagerObj::implObj
 	if (child->has_own_background_color(IN_THREAD))
 	{
 		bordercontainer_impl->get_container_impl()
-			.container_element_impl().schedule_redraw(IN_THREAD);
+			.container_element_impl()
+			.schedule_full_redraw(IN_THREAD);
 	}
 }
 
@@ -181,7 +182,8 @@ void borderlayoutmanagerObj::implObj::recalculate(ONLY IN_THREAD)
 		current_bottom_border=info.bb;
 
 		bordercontainer_impl->get_container_impl()
-			.container_element_impl().schedule_redraw(IN_THREAD);
+			.container_element_impl()
+			.schedule_full_redraw(IN_THREAD);
 	}
 
 	superclass_t::recalculate(IN_THREAD);

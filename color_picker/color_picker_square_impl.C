@@ -61,7 +61,7 @@ void color_picker_squareObj::implObj
 	background_color_element<color_picker_v_gradient>
 		::update(IN_THREAD, create_background_color
 			 (vertical_gradient(vertical_gradient_component)));
-	schedule_redraw(IN_THREAD);
+	schedule_full_redraw(IN_THREAD);
 }
 
 void color_picker_squareObj::implObj::do_draw(ONLY IN_THREAD,

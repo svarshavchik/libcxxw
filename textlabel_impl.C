@@ -217,7 +217,7 @@ void textlabelObj::implObj::update(ONLY IN_THREAD, const text_param &string)
 	ordered_hotspots=rebuild_ordered_hotspots(hotspot_info(IN_THREAD));
 	hotspot_highlighted(IN_THREAD)=nullptr;
 	updated(IN_THREAD);
-	get_label_element_impl().schedule_redraw(IN_THREAD);
+	get_label_element_impl().schedule_full_redraw(IN_THREAD);
 }
 
 void textlabelObj::implObj::set_minimum_override(ONLY IN_THREAD,

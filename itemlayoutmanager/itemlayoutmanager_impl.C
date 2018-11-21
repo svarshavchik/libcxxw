@@ -82,7 +82,7 @@ void itemlayoutmanagerObj::implObj
 		redraw_needed=true;
 	}
 	if (redraw_needed)
-		get_element_impl().schedule_redraw(IN_THREAD);
+		get_element_impl().schedule_full_redraw(IN_THREAD);
 
 	lock->removed_buttons.clear();
 	lock->new_buttons.clear();

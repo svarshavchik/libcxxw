@@ -352,7 +352,7 @@ class elementObj::implObj : public element_drawObj,
 
 	//! This element's background color has changed.
 
-	//! Invoke schedule_redraw() if this element is visible.
+	//! Invoke schedule_full_redraw() if this element is visible.
 	//! But wait, there's more!. If this is a container, and the
 	//! container has any visible child elements that use the parent's
 	//! background color, they need to be redrawn too!
@@ -524,7 +524,7 @@ class elementObj::implObj : public element_drawObj,
 
 	//! Invoked by the connection thread.
 
-	//! The default implementation invokes schedule_redraw().
+	//! The default implementation invokes schedule_full_redraw().
 	//!
 	//! Overridden by containers, which notify their layout manager,
 	//! before invoking notify_updated_position().
@@ -671,7 +671,7 @@ class elementObj::implObj : public element_drawObj,
 	//! visibility_updated() invokes it after it invokes
 	//! inherited_visibility_updated().
 	//!
-	//! The default implementation calls schedule_redraw(). Overridden
+	//! The default implementation calls schedule_full_redraw(). Overridden
 	//! by containers to draw their elements after they become visible.
 	//! The containers draw their own area by overriding do_draw().
 	//!
@@ -728,13 +728,13 @@ class elementObj::implObj : public element_drawObj,
 
 	//! Schedule the connection thread to invoke explicit_redraw().
 
-	void schedule_redraw(ONLY IN_THREAD);
+	void schedule_full_redraw(ONLY IN_THREAD);
 
-	//! schedule_redraw() this one, and all child elements.
+	//! schedule_full_redraw() this one, and all child elements.
 
 	void schedule_redraw_recursively();
 
-	//! schedule_redraw() this one, and all child elements.
+	//! schedule_full_redraw() this one, and all child elements.
 
 	void schedule_redraw_recursively(ONLY IN_THREAD);
 
@@ -751,9 +751,9 @@ class elementObj::implObj : public element_drawObj,
 
 	virtual void enablability_changed(ONLY IN_THREAD);
 
-	//! Whether this element is scheduled for redrawing
+	//! Whether this element is scheduled for complete redrawing
 
-	bool redraw_scheduled(ONLY IN_THREAD);
+	bool full_redraw_scheduled(ONLY IN_THREAD);
 
 	//! Forcibly redraw this display element
 

@@ -530,7 +530,7 @@ void editorObj::implObj::keyboard_focus(ONLY IN_THREAD,
 	auto full_redraw_scheduled=should_redraw_to_show_hint(IN_THREAD);
 
 	if (full_redraw_scheduled)
-		schedule_redraw(IN_THREAD);
+		schedule_full_redraw(IN_THREAD);
 
 	blink_if_has_focus(IN_THREAD);
 
@@ -1050,7 +1050,7 @@ void editorObj::implObj::draw_changes(ONLY IN_THREAD,
 	// versa, we should redraw everything fully.
 
 	if (should_redraw_to_show_hint(IN_THREAD))
-		schedule_redraw(IN_THREAD);
+		schedule_full_redraw(IN_THREAD);
 
 	// We can be called from set() before the editor element is visible.
 	// Don't bother calling get_draw_info(), because that might get

@@ -311,8 +311,8 @@ void elementObj::implObj::draw_after_visibility_updated(ONLY IN_THREAD,
 	// generic_window_handler overrides this, and maps or unmaps the
 	// window. This is what this action means for actual windows.
 	//
-	// Otherwise we call schedule_redraw().
-	schedule_redraw(IN_THREAD);
+	// Otherwise we call schedule_full_redraw().
+	schedule_full_redraw(IN_THREAD);
 }
 
 void elementObj::implObj
@@ -356,7 +356,7 @@ void elementObj::implObj
 		       });
 }
 
-void elementObj::implObj::schedule_redraw(ONLY IN_THREAD)
+void elementObj::implObj::schedule_full_redraw(ONLY IN_THREAD)
 {
 	if (!get_window_handler().has_exposed(IN_THREAD))
 		return;
@@ -383,7 +383,7 @@ void elementObj::implObj::schedule_redraw_recursively(ONLY IN_THREAD)
 	    data(IN_THREAD).current_position.height == 0)
 		return; // Nothing to redraw.
 
-	schedule_redraw(IN_THREAD);
+	schedule_full_redraw(IN_THREAD);
 
 	for_each_child(IN_THREAD,
 		       [&]
@@ -395,7 +395,7 @@ void elementObj::implObj::schedule_redraw_recursively(ONLY IN_THREAD)
 
 void elementObj::implObj::enablability_changed(ONLY IN_THREAD)
 {
-	schedule_redraw(IN_THREAD);
+	schedule_full_redraw(IN_THREAD);
 
 	for_each_child(IN_THREAD,
 		       [&]
@@ -436,7 +436,7 @@ bool elementObj::implObj::can_be_under_pointer(ONLY IN_THREAD) const
 	return true;
 }
 
-bool elementObj::implObj::redraw_scheduled(ONLY IN_THREAD)
+bool elementObj::implObj::full_redraw_scheduled(ONLY IN_THREAD)
 {
 	auto elements_to_redraw=IN_THREAD->elements_to_redraw(IN_THREAD);
 
@@ -600,7 +600,7 @@ void elementObj::implObj
 	if (reason == absolute_location_update_reason::internal)
 	{
 		invalidate_cached_draw_info(IN_THREAD, {});
-		schedule_redraw(IN_THREAD);
+		schedule_full_redraw(IN_THREAD);
 	}
 
 	for_each_child(IN_THREAD,
@@ -655,7 +655,7 @@ void elementObj::implObj::schedule_update_position_processing(ONLY IN_THREAD)
 
 void elementObj::implObj::process_updated_position(ONLY IN_THREAD)
 {
-	schedule_redraw(IN_THREAD);
+	schedule_full_redraw(IN_THREAD);
 
 	// Position gets factored into cached_draw_info, so this may no
 	// longer be valid.
@@ -823,8 +823,7 @@ void elementObj::implObj::exposure_event_recursive(ONLY IN_THREAD,
 	// If there's a queued redraw, we'll just redraw it right now, and
 	// forget it.
 
-	if (IN_THREAD->elements_to_redraw(IN_THREAD)->find(ref(this))
-	    != IN_THREAD->elements_to_redraw(IN_THREAD)->end())
+	if (full_redraw_scheduled(IN_THREAD))
 	{
 		explicit_redraw(IN_THREAD);
 	}
@@ -1054,7 +1053,7 @@ void elementObj::implObj
 
 void elementObj::implObj::background_color_changed(ONLY IN_THREAD)
 {
-	schedule_redraw(IN_THREAD);
+	schedule_full_redraw(IN_THREAD);
 
 	// background color factors into the cached_draw_info, so
 	// something_changed.
@@ -1081,7 +1080,7 @@ void elementObj::implObj::theme_updated(ONLY IN_THREAD,
 				    ::recursive_invalidation);
 
 	if (data(IN_THREAD).logical_inherited_visibility)
-		schedule_redraw(IN_THREAD);
+		schedule_full_redraw(IN_THREAD);
 
 	for_each_child(IN_THREAD, [&]
 		       (const element &e)

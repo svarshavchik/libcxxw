@@ -149,10 +149,10 @@ void my_element_implObj::keyboard_focus(ONLY IN_THREAD,
 		white:light_grey;
 
 // Redraw this element. We can do the necessary work to call do_draw()
-// ourselves, but it's more optimal to call schedule_redraw(), which will draw
-// us together with all the other display elements.
+// ourselves, but it's more optimal to call schedule_full_redraw(), which will
+// draw us together with all the other display elements.
 
-	schedule_redraw(IN_THREAD);
+	schedule_full_redraw(IN_THREAD);
 }
 
 bool my_element_implObj::process_key_event(ONLY IN_THREAD,
@@ -169,15 +169,15 @@ bool my_element_implObj::process_key_event(ONLY IN_THREAD,
 		switch (ke.unicode) {
 		case 'r':
 			current_color=red;
-			schedule_redraw(IN_THREAD);
+			schedule_full_redraw(IN_THREAD);
 			return true;
 		case 'g':
 			current_color=green;
-			schedule_redraw(IN_THREAD);
+			schedule_full_redraw(IN_THREAD);
 			return true;
 		case 'b':
 			current_color=blue;
-			schedule_redraw(IN_THREAD);
+			schedule_full_redraw(IN_THREAD);
 			return true;
 		}
 	}
